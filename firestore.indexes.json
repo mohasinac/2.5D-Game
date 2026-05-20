@@ -12,13 +12,6 @@
       "collectionGroup": "matches",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "matches",
-      "queryScope": "COLLECTION",
-      "fields": [
         { "fieldPath": "players",   "arrayConfig": "CONTAINS" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
@@ -27,29 +20,8 @@
       "collectionGroup": "player_stats",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "wins",   "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "player_stats",
-      "queryScope": "COLLECTION",
-      "fields": [
         { "fieldPath": "userId",    "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "arenas",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "name", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "stadiums",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "name", "order": "ASCENDING" }
       ]
     }
   ],
