@@ -1,0 +1,75 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Read-only public collections (game clients read these) ──────────────
+    match /beyblade_stats/{id} {
+      allow read: if true;
+      allow write: if true; // TODO: restrict to authenticated admin once auth is added
+    }
+
+    match /arenas/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /stadiums/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ── Asset collections (admin uploads, clients read) ─────────────────────
+    match /arena_theme_assets/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /obstacle_assets/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /turret_assets/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /water_body_assets/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /portal_assets/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /sound_assets/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ── Game data (server writes via Admin SDK which bypasses rules) ────────
+    // Clients can read matches and leaderboard stats
+    match /matches/{id} {
+      allow read: if true;
+      allow write: if true; // server uses Admin SDK; this covers client-side fallback
+    }
+
+    match /player_stats/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ── Catch-all: deny anything not explicitly listed ──────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -9,6 +9,10 @@
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "nodemon --exec ts-node src/index.ts",
     "dev:client": "cd client && npm run dev",
+    "check": "node scripts/check.js",
+    "deploy": "npm run deploy:client && npm run deploy:rules",
+    "deploy:client": "cd client && npm run build && cd .. && firebase deploy --only hosting",
+    "deploy:rules": "firebase deploy --only firestore:rules,firestore:indexes,storage",
     "loadtest": "colyseus-loadtest loadtest/example.ts --room tryout_room --numClients 2"
   },
   "author": "JustForView.in",
