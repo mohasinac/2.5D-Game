@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## [2.2.0] - 2026-05-20
+
+### Added
+
+- **Zustand game-state store with AES-GCM encrypted persistence** — `client/src/stores/gameStore.tsx` replaces the React Context `GameProvider` as the source of truth for game settings. State is serialised to `localStorage` under the key `beyblade-game-state` and encrypted with AES-GCM (256-bit key, PBKDF2-derived, 100 000 iterations in production). The encryption IV is randomised on every write; corrupted or legacy unencrypted entries are automatically discarded on read.
+- **Stable `userId` across reloads** — `userId` is now persisted, so the Colyseus server can recognise a returning player and reconnect them to their existing room session. Previously a new random ID was generated on every page load.
+- **`activeRoomId` field** — saved when a battle room is joined and cleared on navigate-away. Enables a future "resume active game" affordance from the menu.
+- **`isHydrated` flag** — `useGame()` now exposes `isHydrated: boolean`. Both `BattleGamePage` and `TryoutGamePage` gate their `connect()` call on this flag so the Colyseus join always uses the decrypted `beybladeId`, `arenaId`, and `userId` rather than the pre-load defaults.
+- **`setActiveRoom` action** — exposed on `useGame()` for components that need to record or clear the active room reference.
+
+### Changed
+
+- `GameContext.tsx` is now a thin re-export shim (`export * from "@/stores/gameStore"`) — all existing imports are unchanged.
+- `GameProvider` is a no-op wrapper (`<>{children}</>`) since Zustand is global; the component is retained for API compatibility with `RootLayout` and test mocks.
+- `BattleGamePage` — `autoConnect` changed from `true` to `false`; connection is initiated in a `useEffect` that fires once `isHydrated` is true.
+- `TryoutGamePage` — `connect()` call in `useEffect` is now guarded by `isHydrated`.
+- `GameContext.test.tsx` — added `beforeEach` store reset (`useGameStore.setState(...)`) for Zustand singleton isolation; replaced the "throws outside provider" test with a "works without provider" shape check.
+
+---
+
 ## [2.1.0] - 2026-05-20
 
 ### Fixed

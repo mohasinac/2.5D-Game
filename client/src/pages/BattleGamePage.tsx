@@ -11,7 +11,7 @@ export function BattleGamePage() {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
-  const { settings } = useGame();
+  const { settings, isHydrated, setActiveRoom } = useGame();
 
   const { connectionState, gameState, beyblades, myBeyblade, room, connect, disconnect, sendInput } =
     useColyseus({
@@ -23,8 +23,23 @@ export function BattleGamePage() {
         userId: settings.userId,
         roomId,
       },
-      autoConnect: true,
+      // Connect only after persisted settings are hydrated so we join with the
+      // correct beybladeId / userId rather than the pre-load defaults.
+      autoConnect: false,
     });
+
+  // Save the active room so the menu can offer a "resume" link on reload.
+  useEffect(() => {
+    if (roomId) setActiveRoom(roomId);
+    return () => setActiveRoom(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomId]);
+
+  // Connect once settings have been restored from encrypted storage.
+  useEffect(() => {
+    if (isHydrated) connect();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHydrated]);
 
   const { render, spawnCollisionParticles, spawnSpinOutParticles } = usePixiRenderer(containerRef);
 

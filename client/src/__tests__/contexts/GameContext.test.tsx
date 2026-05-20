@@ -1,10 +1,18 @@
 // FILE 2: src/__tests__/contexts/GameContext.test.tsx
 // Tests for src/contexts/GameContext.tsx
 
-import { render, act } from "@testing-library/react";
+import { act } from "@testing-library/react";
 import { renderHook } from "@testing-library/react";
-import { GameProvider, useGame } from "@/contexts/GameContext";
+import { GameProvider, useGame, useGameStore, defaultSettings } from "@/contexts/GameContext";
 import type { ReactNode } from "react";
+
+// ─── Store reset ─────────────────────────────────────────────────────────────
+// Zustand is a global singleton — reset to default state before each test to
+// prevent state leaking between tests.
+
+beforeEach(() => {
+  useGameStore.setState({ settings: { ...defaultSettings }, _hydrated: true });
+});
 
 // ─── Wrapper ──────────────────────────────────────────────────────────────────
 
@@ -257,17 +265,18 @@ describe("GameContext — startGame", () => {
   });
 });
 
-// ─── useGame outside provider ─────────────────────────────────────────────────
+// ─── useGame — provider-independent ──────────────────────────────────────────
+// Zustand is global — useGame() works without a GameProvider wrapper.
 
-describe("useGame outside GameProvider", () => {
-  it("throws an error when called outside of GameProvider", () => {
-    // Suppress expected React error output
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
-    expect(() => {
-      renderHook(() => useGame());
-    }).toThrow("useGame must be used within a GameProvider");
-
-    consoleSpy.mockRestore();
+describe("useGame — provider-independent", () => {
+  it("returns the expected API shape without a GameProvider", () => {
+    const { result } = renderHook(() => useGame());
+    expect(result.current).toHaveProperty("settings");
+    expect(result.current).toHaveProperty("isReady");
+    expect(result.current).toHaveProperty("isHydrated");
+    expect(result.current).toHaveProperty("setBeyblade");
+    expect(result.current).toHaveProperty("setArena");
+    expect(result.current).toHaveProperty("setGameMode");
+    expect(result.current).toHaveProperty("resetGame");
   });
 });

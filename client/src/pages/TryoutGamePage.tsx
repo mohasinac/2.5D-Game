@@ -9,7 +9,7 @@ import { C } from "@/styles/theme";
 
 export function TryoutGamePage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { settings } = useGame();
+  const { settings, isHydrated } = useGame();
 
   const { connectionState, gameState, beyblades, myBeyblade, room, connect, disconnect, sendInput } =
     useColyseus({
@@ -25,10 +25,13 @@ export function TryoutGamePage() {
 
   const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber } = usePixiRenderer(containerRef);
 
+  // Connect once persisted settings (beybladeId, userId, etc.) are available.
   useEffect(() => {
+    if (!isHydrated) return;
     connect();
     return () => { disconnect(); };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHydrated]);
 
   useEffect(() => {
     let raf: number;
