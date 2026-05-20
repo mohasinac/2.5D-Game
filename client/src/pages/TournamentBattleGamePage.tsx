@@ -102,8 +102,8 @@ export function TournamentBattleGamePage() {
   const alivePlayers = playerList.filter((b) => b.isActive);
 
   const roundLabel = gameState?.roundNumber ? (ROUND_NAMES[gameState.roundNumber] ?? `Round ${gameState.roundNumber}`) : "";
-  const seriesLabel = gameState && gameState.targetWins > 1
-    ? `Game ${gameState.currentGame}/${gameState.targetWins * 2 - 1}`
+  const seriesLabel = gameState && (gameState.targetWins ?? 1) > 1
+    ? `Game ${gameState.currentGame}/${(gameState.targetWins ?? 1) * 2 - 1}`
     : "";
 
   if (loadError) {
@@ -154,7 +154,7 @@ export function TournamentBattleGamePage() {
           <div style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>
             {alivePlayers.length}/{playerList.length} alive
           </div>
-          {gameState && gameState.spectatorCount > 0 && (
+          {gameState && (gameState.spectatorCount ?? 0) > 0 && (
             <div style={{ fontSize: 11, color: C.purple }}>
               {gameState.spectatorCount} watching
             </div>
@@ -175,7 +175,7 @@ export function TournamentBattleGamePage() {
             </span>
           )}
           {/* Series wins */}
-          {gameState && gameState.targetWins > 1 && playerList.length > 0 && (
+          {gameState && (gameState.targetWins ?? 1) > 1 && playerList.length > 0 && (
             <div style={{ background: "rgba(0,0,0,0.65)", borderRadius: 8, padding: "6px 10px", fontSize: 12, color: C.text }}>
               {playerList.map((p) => (
                 <div key={p.id} style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -183,7 +183,7 @@ export function TournamentBattleGamePage() {
                     {p.username}
                   </span>
                   <span style={{ fontWeight: 700, fontFamily: "monospace" }}>
-                    {gameState.seriesWins.get(p.userId) ?? 0}
+                    {gameState.seriesWins?.get(p.userId) ?? 0}
                   </span>
                 </div>
               ))}
@@ -304,7 +304,7 @@ export function TournamentBattleGamePage() {
                   <div key={p.id} style={{ textAlign: "center" }}>
                     <p style={{ fontSize: 12, color: C.muted }}>{p.username}</p>
                     <p style={{ fontSize: 32, fontWeight: 900, color: C.text, fontFamily: "monospace" }}>
-                      {gameState.seriesWins.get(p.userId) ?? 0}
+                      {gameState.seriesWins?.get(p.userId) ?? 0}
                     </p>
                   </div>
                 ))}

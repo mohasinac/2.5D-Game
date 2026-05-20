@@ -36,6 +36,8 @@ const MATERIAL_COLORS: Record<Material, string> = {
   abs: "#3b82f6",
   rubber: "#22c55e",
   metal: "#94a3b8",
+  nylon: "#d4d4d8",
+  pc: "#c084fc",
   pom: "#eab308",
   polycarbonate: "#a855f7",
 };

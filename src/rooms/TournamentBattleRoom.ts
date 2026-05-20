@@ -46,6 +46,10 @@ const SPAWN_OFFSETS = [
 ];
 
 export class TournamentBattleRoom extends Room<GameState> {
+  // Callbacks registered by TournamentScheduler before matchMaker.createRoom() is called.
+  // Keyed by matchId (tournament_brackets doc id). Picked up in onCreate, then deleted.
+  static pendingMatchCallbacks = new Map<string, (winnerId: string, matchFirestoreId: string) => void>();
+
   private physics!: PhysicsEngine;
   private arenaCache: ArenaConfig | null = null;
   private warmupTimer = 3;
@@ -59,7 +63,7 @@ export class TournamentBattleRoom extends Room<GameState> {
   private beybladeDataCache = new Map<string, BeybladeStats | null>();
   private spawnPositions = new Map<string, { x: number; y: number }>();
 
-  // Set by TournamentScheduler before room opens — called when series ends
+  // Called when the series ends — wired up from TournamentScheduler via pendingMatchCallbacks
   onMatchEnd?: (winnerId: string, matchFirestoreId: string) => void;
 
   maxClients = 10; // 2 player slots + 8 spectator slots
@@ -76,6 +80,15 @@ export class TournamentBattleRoom extends Room<GameState> {
     this.state.mode = "tournament";
     this.state.status = "waiting";
     this.state.timer = 180;
+
+    // Pick up onMatchEnd callback registered by TournamentScheduler before room creation
+    if (options.matchId) {
+      const cb = TournamentBattleRoom.pendingMatchCallbacks.get(options.matchId);
+      if (cb) {
+        this.onMatchEnd = cb;
+        TournamentBattleRoom.pendingMatchCallbacks.delete(options.matchId);
+      }
+    }
 
     // Tournament metadata
     this.state.tournamentId = options.tournamentId || "";

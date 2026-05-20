@@ -87,8 +87,8 @@ export function BattleGamePage() {
   const playerList = Array.from(beyblades.values());
   const alivePlayers = playerList.filter((b) => b.isActive);
 
-  const seriesLabel = gameState && gameState.targetWins > 1
-    ? `Game ${gameState.currentGame}/${gameState.targetWins * 2 - 1}`
+  const seriesLabel = gameState && (gameState.targetWins ?? 1) > 1
+    ? `Game ${gameState.currentGame}/${(gameState.targetWins ?? 1) * 2 - 1}`
     : "";
 
   return (
@@ -121,7 +121,7 @@ export function BattleGamePage() {
           <div style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>
             {alivePlayers.length}/{playerList.length} alive
           </div>
-          {gameState && gameState.spectatorCount > 0 && (
+          {gameState && (gameState.spectatorCount ?? 0) > 0 && (
             <div style={{ fontSize: 11, color: C.purple }}>{gameState.spectatorCount} watching</div>
           )}
         </div>
@@ -134,7 +134,7 @@ export function BattleGamePage() {
             Exit
           </Link>
           {/* Series wins scoreboard */}
-          {gameState && gameState.targetWins > 1 && playerList.length > 0 && (
+          {gameState && (gameState.targetWins ?? 1) > 1 && playerList.length > 0 && (
             <div style={{ background: "rgba(0,0,0,0.65)", borderRadius: 8, padding: "6px 10px", fontSize: 12, color: C.text }}>
               {playerList.map((p) => (
                 <div key={p.id} style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -142,7 +142,7 @@ export function BattleGamePage() {
                     {p.username}
                   </span>
                   <span style={{ fontWeight: 700, fontFamily: "monospace" }}>
-                    {gameState.seriesWins.get(p.userId) ?? 0}
+                    {gameState.seriesWins?.get(p.userId) ?? 0}
                   </span>
                 </div>
               ))}
@@ -277,7 +277,7 @@ export function BattleGamePage() {
                   <div key={p.id} style={{ textAlign: "center" }}>
                     <p style={{ fontSize: 12, color: C.muted }}>{p.username}</p>
                     <p style={{ fontSize: 32, fontWeight: 900, color: C.text, fontFamily: "monospace" }}>
-                      {gameState.seriesWins.get(p.userId) ?? 0}
+                      {gameState.seriesWins?.get(p.userId) ?? 0}
                     </p>
                   </div>
                 ))}
@@ -296,7 +296,7 @@ export function BattleGamePage() {
       )}
 
       {/* Single-game finished overlay (BO1 only) */}
-      {gameState?.status === "finished" && !gameEndData && !seriesEndData && gameState.targetWins <= 1 && (
+      {gameState?.status === "finished" && !gameEndData && !seriesEndData && (gameState.targetWins ?? 1) <= 1 && (
         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.85)", zIndex: 50 }}>
           <div style={{ textAlign: "center", maxWidth: 420 }}>
             <div style={{ fontSize: 60, marginBottom: 16 }}>

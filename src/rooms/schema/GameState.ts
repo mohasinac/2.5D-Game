@@ -227,6 +227,7 @@ export class Beyblade extends Schema {
 
   // Combat stats - Dynamic values
   @type("number") health: number = 100;
+  @type("number") maxHealth: number = 100;
   @type("number") stamina: number = 100;
   @type("number") maxStamina: number = 100;
   @type("number") spin: number = 2000; // Current spin (0-maxSpin)
@@ -310,7 +311,60 @@ export class Beyblade extends Schema {
 
   // Active config name per part slot (e.g. "ar" → "Flat", "tip" → "Sharp")
   // Also keyed as "sub_part_0", "sub_part_1" for sub-part attachments.
+  // New key: "spin_track" for SpinTrack config; "detached" reserved for detached sub-parts.
   @type({ map: "string" }) activePartConfigs = new MapSchema<string>();
+
+  // ── Split / Combined Bey (Phantom Fox MS, etc.) ──────────────────────────────
+  @type("boolean") isSplit: boolean = false;
+  @type("number")  splitBodyX: number = 0;
+  @type("number")  splitBodyY: number = 0;
+  @type("number")  splitBodySpin: number = 0;
+
+  // ── Core Spin Injection Reserve (Rock Bison / Wolborg G) ─────────────────────
+  @type("number")  coreReserveRemaining: number = 0;
+
+  // ── Counter-Rotation Sequence State (Dranzer GT) ─────────────────────────────
+  @type("boolean") counterRotActive: boolean = false;
+  @type("number")  counterRotStep: number = 0;
+  @type("number")  counterRotStepTick: number = 0;
+  @type("string")  defaultSpinDirection: string = "right"; // saved at match start for revert
+
+  // ── Jump Core State (distinct from existing isAirborne / airborneTimer) ───────
+  @type("number")  airborneTicksRemaining: number = 0; // countdown ticks for jump-core hop
+  @type("number")  jumpFacingAngle: number = 0;        // radians; direction of current/last hop
+}
+
+/**
+ * DetachedBody — projectile, mini-bey, or fragment spawned from a SubPart detachment.
+ * Three-state lifecycle: projectile → obstacle → removed.
+ * Synced to all clients; Matter.js body managed server-side.
+ */
+export class DetachedBodySchema extends Schema {
+  // Identity
+  @type("string") id: string = "";
+  @type("string") bodyType: string = "projectile"; // 'projectile' | 'mini_bey' | 'fragment'
+  @type("string") state: string = "projectile";    // 'projectile' | 'obstacle' | 'removed'
+  @type("string") ownerSessionId: string = "";
+
+  // Physics position (synced from Matter.js body each tick)
+  @type("number") x: number = 0;
+  @type("number") y: number = 0;
+  @type("number") velocityX: number = 0;
+  @type("number") velocityY: number = 0;
+  @type("number") angle: number = 0;
+  @type("number") radius: number = 10;
+  @type("number") mass: number = 3;
+
+  // mini_bey only — own spin (decays independently)
+  @type("number") spin: number = 0;
+  @type("number") maxSpin: number = 1000;
+  @type("number") spinDecayRate: number = 0.003;
+
+  // State transition thresholds (set at spawn time, read-only after)
+  @type("number") obstacleSpeedThreshold: number = 2;   // speed below which state→obstacle
+  @type("number") spinOutThreshold: number = 100;       // spin below which mini_bey→obstacle
+  @type("number") fragmentLifetimeTicks: number = 0;    // 0 = no time limit
+  @type("number") fragmentAge: number = 0;              // incremented each tick for fragments
 }
 
 /**
@@ -355,6 +409,10 @@ export class ArenaState extends Schema {
 export class GameState extends Schema {
   @type({ map: Beyblade }) beyblades = new MapSchema<Beyblade>();
   @type(ArenaState) arena = new ArenaState();
+
+  // DetachedBody map — projectiles, mini-beys, fragments spawned from SubPart detachments.
+  // Keyed by DetachedBodySchema.id (UUID). Cleaned up when state = 'removed'.
+  @type({ map: DetachedBodySchema }) detachedBodies = new MapSchema<DetachedBodySchema>();
 
   // Arena feature states (UPDATED)
   @type({ map: LoopState }) loops = new MapSchema<LoopState>(); // Speed paths (backward compatible)

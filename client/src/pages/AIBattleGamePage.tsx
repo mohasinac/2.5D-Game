@@ -95,8 +95,8 @@ export function AIBattleGamePage() {
   const allBeyblades = Array.from(beyblades.values());
   const aiBey = allBeyblades.find((b) => b.userId === "__ai__" || b.isAI);
 
-  const isSeries = gameState && gameState.targetWins > 1;
-  const seriesLabel = isSeries ? `Game ${gameState.currentGame}/${gameState.targetWins * 2 - 1}` : "";
+  const isSeries = gameState && (gameState.targetWins ?? 1) > 1;
+  const seriesLabel = isSeries ? `Game ${gameState.currentGame}/${(gameState.targetWins ?? 1) * 2 - 1}` : "";
 
   const timerSeconds = gameState ? Math.ceil(Math.max(0, gameState.timer)) : null;
 
@@ -127,7 +127,7 @@ export function AIBattleGamePage() {
           {seriesLabel && (
             <div style={{ fontSize: 12, color: C.muted, fontFamily: "monospace" }}>{seriesLabel}</div>
           )}
-          {gameState && gameState.spectatorCount > 0 && (
+          {gameState && (gameState.spectatorCount ?? 0) > 0 && (
             <div style={{ fontSize: 11, color: C.purple }}>{gameState.spectatorCount} watching</div>
           )}
         </div>
@@ -148,7 +148,7 @@ export function AIBattleGamePage() {
                     {p.username}
                   </span>
                   <span style={{ fontWeight: 700, fontFamily: "monospace" }}>
-                    {gameState.seriesWins.get(p.userId) ?? 0}
+                    {gameState.seriesWins?.get(p.userId) ?? 0}
                   </span>
                 </div>
               ))}
@@ -232,7 +232,7 @@ export function AIBattleGamePage() {
                   <div key={b.id} style={{ textAlign: "center" }}>
                     <p style={{ fontSize: 12, color: C.muted }}>{b.username}</p>
                     <p style={{ fontSize: 28, fontWeight: 900, color: C.text, fontFamily: "monospace" }}>
-                      {gameState.seriesWins.get(b.userId) ?? 0}
+                      {gameState.seriesWins?.get(b.userId) ?? 0}
                     </p>
                   </div>
                 ))}

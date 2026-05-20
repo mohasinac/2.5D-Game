@@ -22,6 +22,9 @@ function defaultPocket(x: number, y: number): PartPocket {
     ballMaterial: "metal",
     ballCount: 1,
     fixed: true,
+    radialChannel: false,
+    escapable: false,
+    escapeForce: 0,
   };
 }
 

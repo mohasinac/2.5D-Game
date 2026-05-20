@@ -59,4 +59,4 @@ console.log(`🏥 Health check: http://localhost:${port}/health`);
 
 // Start tournament scheduler (polls Firestore every 30s for upcoming bracket matches)
 const scheduler = new TournamentScheduler();
-scheduler.start(gameServer);
+scheduler.start();

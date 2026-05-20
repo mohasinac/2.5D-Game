@@ -1,4 +1,4 @@
-import type { Server } from "colyseus";
+import { matchMaker } from "@colyseus/core";
 import {
   getUpcomingPendingMatches,
   getStaleRoomOpeningMatches,
@@ -26,11 +26,9 @@ const POLL_INTERVAL_MS = 30_000;
 const LOOK_AHEAD_MS = 65_000; // open rooms 65 s before scheduled time
 
 export class TournamentScheduler {
-  private gameServer: Server | null = null;
   private timer: NodeJS.Timeout | null = null;
 
-  start(gameServer: Server): void {
-    this.gameServer = gameServer;
+  start(): void {
     // On startup, reset any stale "room-opening" docs from a previous process crash
     this.resetStaleRoomOpeningDocs().catch(console.error);
     this.timer = setInterval(() => { this.poll().catch(console.error); }, POLL_INTERVAL_MS);
@@ -61,8 +59,6 @@ export class TournamentScheduler {
   // ─── Poll ──────────────────────────────────────────────────────────────────
 
   private async poll(): Promise<void> {
-    if (!this.gameServer) return;
-
     // Check stale room-opening matches (process crash guard)
     const staleMatches = await getStaleRoomOpeningMatches();
     for (const match of staleMatches) {
@@ -86,8 +82,6 @@ export class TournamentScheduler {
   // ─── Open room for a bracket match ────────────────────────────────────────
 
   private async openRoomForMatch(match: TournamentMatchDoc): Promise<void> {
-    if (!this.gameServer) return;
-
     // Re-check capacity per match (in case multiple matches open in same poll)
     if (getActiveRoomCount() >= 20) return;
 
@@ -171,29 +165,30 @@ export class TournamentScheduler {
       participant2BeybladeId: p2BeybladeId,
     });
 
-    // Create the Colyseus room
-    let room: TournamentBattleRoom;
+    // Register the onMatchEnd callback before creating the room so it's available in onCreate
+    TournamentBattleRoom.pendingMatchCallbacks.set(match.id, (winnerId: string, matchFirestoreId: string) => {
+      this.advanceRound(match.tournamentId, match.id, match.round, match.matchNumber, winnerId, matchFirestoreId)
+        .catch(console.error);
+    });
+
+    // Create the Colyseus room via matchMaker (returns RoomListingData, not the room instance)
+    let roomListing: Awaited<ReturnType<typeof matchMaker.createRoom>>;
     try {
-      room = await this.gameServer.createRoom("tournament_battle_room", roomOptions) as TournamentBattleRoom;
+      roomListing = await matchMaker.createRoom("tournament_battle_room", roomOptions);
     } catch (err) {
-      // Roll back status on creation failure
+      // Roll back status and clean up pending callback on creation failure
+      TournamentBattleRoom.pendingMatchCallbacks.delete(match.id);
       await updateMatchStatus(match.id, { status: "pending" });
       throw err;
     }
 
-    // Wire up the onMatchEnd callback so TournamentBattleRoom can call back here
-    room.onMatchEnd = (winnerId: string, matchFirestoreId: string) => {
-      this.advanceRound(match.tournamentId, match.id, match.round, match.matchNumber, winnerId, matchFirestoreId)
-        .catch(console.error);
-    };
-
     // Write colyseusRoomId back to Firestore — clients listening to this doc will auto-navigate
     await updateMatchStatus(match.id, {
       status: "in-progress",
-      colyseusRoomId: room.roomId,
+      colyseusRoomId: roomListing.roomId,
     });
 
-    console.log(`✅ [TournamentScheduler] Opened room ${room.roomId} for match ${match.id}`);
+    console.log(`✅ [TournamentScheduler] Opened room ${roomListing.roomId} for match ${match.id}`);
   }
 
   // ─── Advance winner to next round ─────────────────────────────────────────
