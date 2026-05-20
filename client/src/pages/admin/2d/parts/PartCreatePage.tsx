@@ -49,6 +49,7 @@ export function PartCreatePage() {
         displayName: displayName.trim(),
         color,
         geometry: { type: "preset", preset: "circle" },
+        dimensions: { height: 30, outerRadius: 35, innerRadius: 5 },
         compatibilityTags: [],
         requiredCompatibility: [],
         excludedCompatibility: [],

@@ -113,7 +113,7 @@ type StatModifier = {
   value: number;
   duration?: number;
   event?: string;
-  trigger?: { type: string; threshold: number };
+  trigger?: { type: string; threshold: number; direction?: string; togglePrevious?: boolean };
 };
 
 function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChange }) {

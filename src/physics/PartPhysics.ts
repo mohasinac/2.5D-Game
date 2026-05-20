@@ -331,9 +331,10 @@ export function isTriggerMet(
   impactForce: number,
   impactDirection?: "clockwise" | "counterclockwise"
 ): boolean {
+  if (!trigger) return false;
   switch (trigger.type) {
     case "spin_threshold":
-      return bey.spin / bey.maxSpin < trigger.threshold;
+      return bey.maxSpin > 0 && bey.spin / bey.maxSpin < trigger.threshold;
 
     case "impact_threshold":
       return impactForce >= trigger.threshold;
@@ -639,7 +640,14 @@ export function tickCounterRotation(bey: Beyblade, cfg: CounterRotationConfig): 
  * Applies a single StatModifier to a bey's live numeric stats.
  * Duration tracking is handled by the caller (BattleRoom / TryoutRoom).
  */
+const VALID_STAT_KEYS = new Set([
+  "spin", "maxSpin", "spinDecayRate", "aggressiveness", "gripFactor",
+  "recoilFactor", "spinStealResist", "damageMultiplier", "damageReduction",
+  "surfaceFriction", "contactDamageMultiplier",
+]);
+
 export function applyStatModifier(bey: Beyblade, mod: StatModifier): void {
+  if (!VALID_STAT_KEYS.has(mod.targetStat)) return;
   const key = mod.targetStat as keyof Beyblade;
   const current = (bey[key] as number) ?? 0;
   let next: number;

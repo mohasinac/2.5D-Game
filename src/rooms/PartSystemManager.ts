@@ -338,7 +338,7 @@ export class PartSystemManager {
       if (body.state !== "obstacle") return;
       const dist = Math.hypot(body.x - attacker.x, body.y - attacker.y);
       if (dist < attacker.radius + body.radius + 5) {
-        tickDetachedBody(
+        const removed = tickDetachedBody(
           body,
           this.arenaRadius,
           this.arenaCenterX,
@@ -346,6 +346,7 @@ export class PartSystemManager {
           OBSTACLE_RELAUNCH_THRESHOLD,
           impactForce
         );
+        if (removed) gameState.detachedBodies.delete(body.id);
       }
     });
   }
@@ -358,8 +359,7 @@ export class PartSystemManager {
   adjustSpinStealForBearing(defenderId: string, rawSteal: number): number {
     const state = this.beyStates.get(defenderId);
     if (!state || state.parts.tip?.bearingFriction == null) return rawSteal;
-    const bearingFriction = state!.parts.tip!.bearingFriction ?? 1.0;
-    return applyBearingFrictionToSteal(rawSteal, bearingFriction);
+    return applyBearingFrictionToSteal(rawSteal, state.parts.tip.bearingFriction);
   }
 
   /**
@@ -378,8 +378,9 @@ export class PartSystemManager {
         bey.counterRotActive = true;
         bey.counterRotStep = 0;
         bey.counterRotStepTick = 0;
-        const cfg = state.parts.core.counterRotation;
-        bey.spinDirection = cfg.directionSequence[0];
+        const coreConfig = bey.activePartConfigs.get("core") ?? "";
+        const cfg = this.resolveCounterRotationConfig(state.parts.core, coreConfig);
+        bey.spinDirection = cfg?.directionSequence?.[0] ?? "right";
       }
     }
   }
@@ -495,8 +496,8 @@ export class PartSystemManager {
     bey: Beyblade,
     gameState: GameState
   ): void {
-    const det = subPart.detachment!;
-    if (!det.enabled) return;
+    const det = subPart.detachment;
+    if (!det?.enabled) return;
 
     // Mark the sub-part as detached in activePartConfigs
     bey.activePartConfigs.set(`sub_part_${subPartIndex}`, "detached");

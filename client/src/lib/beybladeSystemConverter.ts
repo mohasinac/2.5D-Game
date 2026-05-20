@@ -205,7 +205,7 @@ export function computeBeybladeStats(
   const spinStealPoints: SpinStealPoint[] = [];
 
   for (const cp of allCPs) {
-    const matMult = MATERIAL_MULTIPLIERS[cp.material];
+    const matMult = MATERIAL_MULTIPLIERS[cp.material] ?? MATERIAL_MULTIPLIERS["abs"];
     if (cp.attackType === "spin_steal" || cp.material === "rubber") {
       spinStealPoints.push({
         angle: cp.angle,
