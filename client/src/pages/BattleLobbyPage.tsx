@@ -1,0 +1,160 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useColyseus } from "@/game/hooks/useColyseus";
+import { useGame } from "@/contexts/GameContext";
+import { C } from "@/styles/theme";
+
+const TYPE_COLORS_MAP: Record<string, string> = {
+  attack: C.red,
+  defense: C.blue,
+  stamina: C.green,
+  balanced: C.yellow,
+};
+
+export function BattleLobbyPage() {
+  const navigate = useNavigate();
+  const { settings } = useGame();
+  const [countdown, setCountdown] = useState<number | null>(null);
+
+  const { connectionState, gameState, beyblades, myBeyblade, room, connect, disconnect } =
+    useColyseus({
+      roomName: "battle_room",
+      options: {
+        beybladeId: settings.beybladeId ?? "default",
+        arenaId: settings.arenaId ?? "default",
+        username: settings.username ?? "Player",
+        userId: settings.userId,
+      },
+      autoConnect: true,
+    });
+
+  useEffect(() => {
+    if (!room) return;
+    room.onMessage("countdown", (data: { count: number }) => { setCountdown(data.count); });
+    room.onMessage("game-start", () => { setCountdown(null); navigate(`/game/battle/${room.roomId}`); });
+  }, [room, navigate]);
+
+  useEffect(() => {
+    if (gameState?.status === "playing" && room) navigate(`/game/battle/${room.roomId}`);
+  }, [gameState?.status, room, navigate]);
+
+  const playerList = Array.from(beyblades.values());
+  const isHost = playerList.length > 0 && playerList[0].userId === settings.userId;
+  const canStart = playerList.length >= 2 && isHost;
+
+  return (
+    <div style={{ minHeight:"100vh", background:C.bg0, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
+      <div style={{ width:"100%", maxWidth:560 }}>
+        {/* Header */}
+        <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:32 }}>
+          <div>
+            <Link to="/game" style={{ color:C.faint, fontSize:13, textDecoration:"none", display:"block", marginBottom:6 }}>
+              ← Back to menu
+            </Link>
+            <h1 style={{ fontSize:28, fontWeight:900, color:C.text, letterSpacing:"-0.02em" }}>PVP Battle Lobby</h1>
+          </div>
+          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+            <div style={{ width:10, height:10, borderRadius:"50%", background: connectionState === "connected" ? C.green : C.yellow }} className={connectionState === "connected" ? "pulse" : ""} />
+            <span style={{ fontSize:13, color:C.muted, fontFamily:"monospace" }}>{connectionState}</span>
+          </div>
+        </div>
+
+        {/* Room code */}
+        {room && (
+          <div style={{ marginBottom:20, background:C.bg2+"88", borderRadius:12, border:`1px solid ${C.border}`, padding:16 }}>
+            <p style={{ fontSize:11, color:C.faint, marginBottom:4 }}>Room ID (share with friends)</p>
+            <p style={{ fontSize:16, fontFamily:"monospace", color:C.text, letterSpacing:"0.1em" }}>{room.roomId}</p>
+          </div>
+        )}
+
+        {/* Player list */}
+        <div style={{ background:C.bg1, borderRadius:16, border:`1px solid ${C.border}`, overflow:"hidden", marginBottom:20 }}>
+          <div style={{ padding:"10px 16px", borderBottom:`1px solid ${C.border}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <span style={{ fontSize:13, fontWeight:600, color:C.muted }}>Players</span>
+            <span style={{ fontSize:12, color:C.faint }}>{playerList.length}/4</span>
+          </div>
+
+          {playerList.length === 0 ? (
+            <div style={{ padding:32, textAlign:"center", color:C.faint }}>
+              <div className="spin" style={{ width:36, height:36, border:`2px solid ${C.border}`, borderTopColor:C.blue, borderRadius:"50%", margin:"0 auto 12px" }} />
+              <p>Waiting for players to join...</p>
+            </div>
+          ) : (
+            <>
+              {playerList.map((player, i) => (
+                <div key={player.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", borderBottom:`1px solid ${C.border}` }}>
+                  <div style={{ width:32, height:32, borderRadius:"50%", background:C.bg3, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:C.muted, flexShrink:0 }}>
+                    {i + 1}
+                  </div>
+                  {player.imageUrl ? (
+                    <img src={player.imageUrl} alt={player.username} style={{ width:40, height:40, borderRadius:"50%", objectFit:"contain", background:C.bg2 }} />
+                  ) : (
+                    <div style={{ width:40, height:40, borderRadius:"50%", background:C.bg3, display:"flex", alignItems:"center", justifyContent:"center", color:C.text, fontWeight:700, flexShrink:0 }}>
+                      {player.username[0]?.toUpperCase()}
+                    </div>
+                  )}
+                  <div style={{ flex:1 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
+                      <span style={{ color:C.text, fontWeight:500, fontSize:14 }}>{player.username}</span>
+                      {i === 0 && (
+                        <span style={{ fontSize:11, color:C.yellow, background:C.yellow+"15", border:`1px solid ${C.yellow}33`, padding:"1px 6px", borderRadius:4 }}>HOST</span>
+                      )}
+                      {player.userId === settings.userId && (
+                        <span style={{ fontSize:11, color:C.faint }}>(you)</span>
+                      )}
+                    </div>
+                    <span style={{ fontSize:11, fontWeight:600, textTransform:"capitalize", color: TYPE_COLORS_MAP[player.type] ?? C.muted }}>
+                      {player.type}
+                    </span>
+                  </div>
+                  <span style={{ color:C.green, fontSize:16 }}>✓</span>
+                </div>
+              ))}
+              {Array.from({ length: Math.max(0, 2 - playerList.length) }).map((_, i) => (
+                <div key={`empty-${i}`} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", opacity:0.4 }}>
+                  <div style={{ width:32, height:32, borderRadius:"50%", background:"transparent", border:`1px dashed ${C.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, color:C.faint }}>
+                    {playerList.length + i + 1}
+                  </div>
+                  <div style={{ width:40, height:40, borderRadius:"50%", background:"transparent", border:`1px dashed ${C.border}` }} />
+                  <span style={{ color:C.faint, fontSize:13 }}>Waiting for player...</span>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+
+        {/* Start button */}
+        <div style={{ textAlign:"center" }}>
+          {isHost ? (
+            <button
+              onClick={() => room && canStart && room.send("start-game", {})}
+              disabled={!canStart}
+              style={{
+                padding:"14px 40px", borderRadius:12, fontWeight:700, fontSize:16,
+                cursor: canStart ? "pointer" : "not-allowed",
+                background: canStart ? C.red : C.bg3,
+                color: canStart ? C.white : C.faint,
+                border: "none",
+              }}
+            >
+              {canStart ? "Start Battle!" : `Waiting for ${2 - playerList.length} more player${2 - playerList.length !== 1 ? "s" : ""}...`}
+            </button>
+          ) : (
+            <p style={{ color:C.faint }}>Waiting for host to start the match...</p>
+          )}
+          <p style={{ fontSize:12, color:C.faint, marginTop:10 }}>2-4 players · Last beyblade standing wins</p>
+        </div>
+      </div>
+
+      {/* Countdown overlay */}
+      {countdown !== null && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:50 }}>
+          <div style={{ textAlign:"center" }}>
+            <div style={{ fontSize:120, fontWeight:900, color:C.text, fontFamily:"monospace" }}>{countdown}</div>
+            <p style={{ color:C.muted, marginTop:16, fontSize:18 }}>Match starting...</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
