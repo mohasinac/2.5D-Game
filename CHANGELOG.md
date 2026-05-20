@@ -1,5 +1,40 @@
 # CHANGELOG
 
+## [2.1.0] - 2026-05-20
+
+### Fixed
+
+- **PixiJS WebGL context loss spam** — React 19 Strict Mode double-mount caused `app.destroy()` to call `gl.getExtension('WEBGL_lose_context').loseContext()`, firing an async `webglcontextlost` event that hit the new app's render loop, producing ~30+ `"refId" not found` errors per second. Fixed by nulling `gl.getExtension` before `app.destroy()` in `PixiRenderer.destroy()`. Added `webglcontextlost` / `webglcontextrestored` event listeners as a backup guard for real GPU context losses.
+- **AI Battle route mismatch** — route was `game/ai/:roomId` but the AI Battle game page reads config from `location.state`, not a URL param. Renamed to static path `game/ai-battle/play` to match the setup page namespace and eliminate the unused dynamic segment.
+- **AIBattleSetupPage navigation** — `navigate("/game/ai/start", ...)` pointed at a non-existent route; corrected to `navigate("/game/ai-battle/play", ...)`. Also calls `setGameConfig()` before navigating so context is seeded before the game page mounts.
+- **RootLayout fullscreen path list** — updated `FULLSCREEN_GAME_PATHS` to use `"/game/ai-battle/play"` (was `"/game/ai/"`) so the AuthChip is correctly hidden during AI battles.
+- **BattleGamePage controls hint** — corrected stale hint text to `"WASD/Arrows: Move · J: Attack · K: Defend · L: Dodge · I: Jump · Space: Charge/Special"`.
+- **AIBattleGamePage options stability** — wrapped `colyseusOptions` in `useMemo` to prevent a new object reference on every render, eliminating redundant reconnects. Typed `location.state` as `AIBattleLocationState` instead of `any`.
+
+### Added
+
+- **Vitest test suite** — 161 tests across 17 files covering the full client codebase:
+  - `types/game.test.ts` — type helpers, stat formulas, color maps (15 tests)
+  - `contexts/GameContext.test.tsx` — provider defaults, `setGameConfig`, persistence (17 tests)
+  - `contexts/AuthContext.test.tsx` — auth state, sign-in, sign-out flows (7 tests)
+  - `game/hooks/useGameInput.test.ts` — key bindings, charge/special threshold, active guard (22 tests)
+  - `game/hooks/useColyseus.test.ts` — connect, disconnect, error, `sendInput` (15 tests)
+  - `game/hooks/usePixiRenderer.test.ts` — lifecycle, render dispatch (6 tests)
+  - `game/renderer/PixiRenderer.test.ts` — init, render guards, particles, destroy (13 tests)
+  - `components/auth/ProtectedRoute.test.tsx` — auth redirect, render (4 tests)
+  - `components/auth/AdminRoute.test.tsx` — admin role guard (4 tests)
+  - `router.test.tsx` — all route paths, auth redirects, 404 (10 tests)
+  - `pages/HomePage.test.tsx` — hero CTAs, nav links (4 tests)
+  - `pages/LoginPage.test.tsx` — form submit, error state, redirect (7 tests)
+  - `pages/GameSelectPage.test.tsx` — Firestore settings flags, card states (7 tests)
+  - `pages/AIBattleSetupPage.test.tsx` — form interactions, navigate target (8 tests)
+  - `pages/BattleLobbyPage.test.tsx` — lobby create/join, Firestore fetch (7 tests)
+  - `pages/TryoutGamePage.test.tsx` — mount, HUD, game loop (6 tests)
+  - `pages/AIBattleGamePage.test.tsx` — mount, overlay states, controls (9 tests)
+- **Test infrastructure** — `client/vitest.config.ts`, global mock setup (`src/__tests__/setup.ts`) for Firebase, Colyseus, PixiJS, react-hot-toast, `import.meta.env`, and RAF stubs. Test scripts added to `client/package.json`: `test`, `test:watch`, `test:coverage`.
+
+---
+
 ## [2.0.0] - 2026-05-20
 
 ### Added — 2.5D Beyblade Part System (Admin)
@@ -51,7 +86,7 @@ Complete modular part-library editor for building Beyblade compositions.
 ### Added — AI Battle Mode
 
 - **AI Battle Setup** (`/game/ai-battle`) — select your Beyblade, AI's Beyblade, arena, and difficulty (Easy / Medium / Hard)
-- **AI Battle Game** (`/game/ai/:roomId`) — connects to `ai_battle_room` when server room is available
+- **AI Battle Game** (`/game/ai-battle/play`) — connects to `ai_battle_room` when server room is available
 - **Game Select Page** now reads `settings/game` from Firestore on load:
   - `enableAI: true` → AI Battle card becomes clickable (purple), links to setup page
   - `enableAI: false` → AI Battle card shows "Coming Soon" (disabled, current default)
@@ -63,7 +98,7 @@ Complete modular part-library editor for building Beyblade compositions.
 
 - `GameSelectPage` — driven by Firestore settings instead of hardcoded disabled states; grid columns auto-adjust to mode count
 - `AdminLayout` — new "2.5D Part System" nav section with Part Search, 7 Part Libraries, Beyblade Systems, Compatibility Tags
-- `router.tsx` — added `/game/ai-battle`, `/game/ai/:roomId`, and all `/admin/2d/**` routes
+- `router.tsx` — added `/game/ai-battle`, `/game/ai-battle/play`, and all `/admin/2d/**` routes
 - `firebase.ts COLLECTIONS` — added 8 new keys for part collections and beyblade systems
 
 ---
