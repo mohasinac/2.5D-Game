@@ -141,4 +141,24 @@ export async function updatePlayerStats(
   }
 }
 
+export async function loadBeybladesBatch(ids: string[]): Promise<Map<string, BeybladeStats>> {
+  const result = new Map<string, BeybladeStats>();
+  if (!db || ids.length === 0) return result;
+  try {
+    // Firestore "in" query limit is 30; chunk if needed
+    const chunks: string[][] = [];
+    for (let i = 0; i < ids.length; i += 30) chunks.push(ids.slice(i, i + 30));
+    for (const chunk of chunks) {
+      const snap = await withTimeout(
+        db.collection(FIREBASE_COLLECTIONS.BEYBLADE_STATS).where(admin.firestore.FieldPath.documentId(), "in", chunk).get(),
+        8000
+      );
+      snap.docs.forEach(d => result.set(d.id, d.data() as BeybladeStats));
+    }
+  } catch (err) {
+    console.error("Error loading beyblades batch:", err);
+  }
+  return result;
+}
+
 export { db };

@@ -1,200 +1,346 @@
-import { useRef, useEffect } from "react";
+// Tryout mode — completely server-free.
+// Physics runs locally in the browser; beyblade + arena data is loaded from
+// Firestore directly. No Colyseus connection is opened.
+
+import { useRef, useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { useColyseus } from "@/game/hooks/useColyseus";
-import { useGameInput } from "@/game/hooks/useGameInput";
+import { doc, getDoc } from "firebase/firestore";
+import { db, COLLECTIONS } from "@/lib/firebase";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
 import { getBeybladeStability, TYPE_COLORS } from "@/types/game";
+import type { ServerBeyblade, ServerGameState } from "@/types/game";
 import { C } from "@/styles/theme";
+
+// ─── Physics constants ────────────────────────────────────────────────────────
+
+const FRICTION    = 0.97;   // velocity multiplier per frame (~60fps)
+const MOVE_ACCEL  = 5.0;    // px applied per frame when key held
+const MAX_SPEED   = 350;    // px/s hard cap
+const BASE_SPIN_DECAY = 7;  // RPM-equivalent units/s (slow for tryout enjoyment)
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function makeDefaultBeyblade(id: string, username: string): ServerBeyblade {
+  return {
+    id, userId: id, username,
+    x: 540, y: 540, rotation: 0,
+    velocityX: 0, velocityY: 0, angularVelocity: 15,
+    health: 100, maxHealth: 100,
+    stamina: 1000, maxStamina: 1000,
+    spin: 2000, maxSpin: 2000,
+    isActive: true, isAI: false,
+    type: "balanced",
+    radius: 5, actualSize: 120,
+    isInvulnerable: false,
+    damageDealt: 0, damageReceived: 0, collisions: 0,
+    spinDirection: "right",
+    power: 0, isAirborne: false, airborneTimer: 0,
+    isDefending: false, attackBuffTimer: 0, dodgeBuffTimer: 0,
+    stunTimer: 0, comboExecuting: false,
+  };
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export function TryoutGamePage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { settings, isHydrated } = useGame();
 
-  const { connectionState, gameState, beyblades, myBeyblade, room, connect, disconnect, sendInput } =
-    useColyseus({
-      roomName: "tryout_room",
-      options: {
-        beybladeId: settings.beybladeId ?? "default",
-        arenaId: settings.arenaId ?? "default",
-        username: settings.username ?? "Player",
-        userId: settings.userId,
-      },
-      autoConnect: false,
-    });
+  // Physics state — all in refs to avoid React re-render on each frame
+  const bey = useRef<ServerBeyblade>(makeDefaultBeyblade(
+    settings.userId ?? "local",
+    settings.username ?? "Player"
+  ));
+  const arenaRadius = useRef(486); // default for 1080px arena
+  const arenaConfig = useRef<ServerGameState["arena"] | null>(null);
+  const keysRef = useRef<Set<string>>(new Set());
+  const timerRef = useRef(0);     // elapsed seconds
+  const lastTsRef = useRef<number | null>(null);
+  const rafRef = useRef<number>(0);
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber } = usePixiRenderer(containerRef);
+  // HUD state — updated at lower frequency
+  const [hud, setHud] = useState({ spin: 2000, maxSpin: 2000, health: 100, timer: 0, loaded: false });
 
-  // Connect once persisted settings (beybladeId, userId, etc.) are available.
+  const { render } = usePixiRenderer(containerRef);
+
+  // ─── Load data from Firestore ───────────────────────────────────────────────
   useEffect(() => {
     if (!isHydrated) return;
-    connect();
-    return () => { disconnect(); };
+
+    async function load() {
+      const beybladeId = settings.beybladeId ?? "default";
+      const arenaId = settings.arenaId ?? "default";
+
+      // Load beyblade stats
+      try {
+        const snap = await getDoc(doc(db, COLLECTIONS.BEYBLADE_STATS, beybladeId));
+        if (snap.exists()) {
+          const d = snap.data() as any;
+          const radiusCm = d.radius ?? 5;
+          const radiusPx = radiusCm * 24;
+          const stamina = d.stamina ?? 100;
+          const maxSpin = 2000 * (1 + stamina * 0.0008);
+          bey.current = {
+            ...bey.current,
+            type: d.type ?? "balanced",
+            radius: radiusCm,
+            actualSize: radiusPx * 2,
+            maxSpin,
+            spin: maxSpin,
+          };
+        }
+      } catch { /* use defaults */ }
+
+      // Load arena config
+      try {
+        const snap = await getDoc(doc(db, COLLECTIONS.ARENAS, arenaId));
+        if (snap.exists()) {
+          const d = snap.data() as any;
+          const w = d.width ?? 1080;
+          const h = d.height ?? 1080;
+          arenaRadius.current = Math.min(w, h) * 0.45;
+          arenaConfig.current = {
+            id: arenaId,
+            name: d.name ?? "Arena",
+            width: w,
+            height: h,
+            shape: d.shape ?? "circle",
+            theme: d.theme ?? "default",
+          };
+          // Place beyblade at center of loaded arena
+          bey.current.x = w / 2;
+          bey.current.y = h / 2;
+        }
+      } catch { /* use defaults */ }
+
+      setHud((h) => ({
+        ...h,
+        spin: bey.current.spin,
+        maxSpin: bey.current.maxSpin,
+        loaded: true,
+      }));
+    }
+
+    load();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrated]);
 
+  // ─── Keyboard listeners ─────────────────────────────────────────────────────
   useEffect(() => {
-    let raf: number;
-    const loop = () => { render(gameState, beyblades); raf = requestAnimationFrame(loop); };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, [render, gameState, beyblades]);
+    const down = (e: KeyboardEvent) => keysRef.current.add(e.code);
+    const up   = (e: KeyboardEvent) => keysRef.current.delete(e.code);
+    window.addEventListener("keydown", down);
+    window.addEventListener("keyup",   up);
+    return () => {
+      window.removeEventListener("keydown", down);
+      window.removeEventListener("keyup",   up);
+    };
+  }, []);
 
+  // ─── Physics + render loop ──────────────────────────────────────────────────
   useEffect(() => {
-    if (!room) return;
-    room.onMessage("collision", (data: any) => {
-      const cx = data.contactPoint.x;
-      const cy = data.contactPoint.y;
-      spawnCollisionParticles(cx, cy, 0xff4444, 0x4488ff);
-      // Floating damage numbers for each beyblade that took damage
-      if (data.damage1 > 0) spawnDamageNumber(cx - 12, cy - 8, data.damage1, 0xff5555);
-      if (data.damage2 > 0) spawnDamageNumber(cx + 12, cy - 8, data.damage2, 0xff5555);
-    });
-    room.onMessage("spin-out", (data: any) => {
-      spawnSpinOutParticles(data.x, data.y, TYPE_COLORS[data.type] ?? 0xffffff);
-    });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber]);
+    let hudTick = 0;
 
-  useGameInput(sendInput, connectionState === "connected");
+    const loop = (ts: number) => {
+      if (lastTsRef.current === null) lastTsRef.current = ts;
+      const dt = Math.min((ts - lastTsRef.current) / 1000, 0.05); // cap at 50ms
+      lastTsRef.current = ts;
+      timerRef.current += dt;
 
-  const myStability = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
-  const stabilityColor = myStability > 0.6 ? C.green : myStability > 0.3 ? C.yellow : C.red;
-  const stabilityLabel = myStability > 0.6 ? "Stable" : myStability > 0.3 ? "Wobbling" : "Critical!";
+      const b = bey.current;
+      const keys = keysRef.current;
+      const ar = arenaRadius.current;
+      const cx = arenaConfig.current ? arenaConfig.current.width / 2 : 540;
+      const cy = arenaConfig.current ? arenaConfig.current.height / 2 : 540;
+
+      // Input → acceleration
+      let ax = 0, ay = 0;
+      if (keys.has("KeyA") || keys.has("ArrowLeft"))  ax -= MOVE_ACCEL;
+      if (keys.has("KeyD") || keys.has("ArrowRight")) ax += MOVE_ACCEL;
+      if (keys.has("KeyW") || keys.has("ArrowUp"))    ay -= MOVE_ACCEL;
+      if (keys.has("KeyS") || keys.has("ArrowDown"))  ay += MOVE_ACCEL;
+
+      // Spin boost with Space
+      if (keys.has("Space") && b.spin < b.maxSpin) {
+        b.spin = Math.min(b.maxSpin, b.spin + 20 * dt);
+      }
+
+      // Velocity update
+      b.velocityX = (b.velocityX + ax) * FRICTION;
+      b.velocityY = (b.velocityY + ay) * FRICTION;
+
+      // Speed cap
+      const spd = Math.sqrt(b.velocityX ** 2 + b.velocityY ** 2);
+      if (spd > MAX_SPEED * dt) {
+        const scale = (MAX_SPEED * dt) / spd;
+        b.velocityX *= scale;
+        b.velocityY *= scale;
+      }
+
+      // Position update
+      b.x += b.velocityX;
+      b.y += b.velocityY;
+
+      // Arena boundary — bounce off edge
+      const dx = b.x - cx, dy = b.y - cy;
+      const dist = Math.sqrt(dx ** 2 + dy ** 2);
+      const radiusPx = b.radius * 24;
+      if (dist + radiusPx > ar) {
+        const nx = dx / dist, ny = dy / dist;
+        b.x = cx + nx * (ar - radiusPx - 1);
+        b.y = cy + ny * (ar - radiusPx - 1);
+        // Reflect velocity
+        const dot = b.velocityX * nx + b.velocityY * ny;
+        b.velocityX -= 2 * dot * nx * 0.6;
+        b.velocityY -= 2 * dot * ny * 0.6;
+      }
+
+      // Spin decay (faster near edge = nutation effect)
+      const stability = b.spin / b.maxSpin;
+      const decayRate = BASE_SPIN_DECAY * (1 + (1 - stability) * 2);
+      b.spin = Math.max(0, b.spin - decayRate * dt);
+
+      // Rotation
+      const angDir = b.spinDirection === "left" ? -1 : 1;
+      b.rotation += angDir * (b.spin / b.maxSpin) * 6 * dt;
+      b.angularVelocity = angDir * (b.spin / b.maxSpin) * 15;
+
+      // Feed to renderer
+      const beyMap = new Map<string, ServerBeyblade>([[b.id, { ...b }]]);
+      const gs: ServerGameState = {
+        status: b.spin > 0 ? "in-progress" : "finished",
+        mode: "tryout",
+        timer: timerRef.current,
+        startTime: 0,
+        winner: b.spin <= 0 ? b.userId : "",
+        matchId: "local",
+        arena: arenaConfig.current,
+        beyblades: beyMap,
+        targetWins: 1, currentGame: 1,
+        seriesWins: new Map(), seriesLeader: "",
+        spectatorCount: 0,
+      } as ServerGameState;
+
+      render(gs, beyMap);
+
+      // HUD update every ~200ms
+      hudTick++;
+      if (hudTick % 12 === 0) {
+        setHud((prev) => ({
+          ...prev,
+          spin: b.spin,
+          maxSpin: b.maxSpin,
+          health: b.health,
+          timer: timerRef.current,
+        }));
+      }
+
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    rafRef.current = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      lastTsRef.current = null;
+    };
+  }, [render]);
+
+  // ─── Reset ───────────────────────────────────────────────────────────────────
+  const reset = useCallback(() => {
+    const b = bey.current;
+    const cx = arenaConfig.current ? arenaConfig.current.width / 2 : 540;
+    const cy = arenaConfig.current ? arenaConfig.current.height / 2 : 540;
+    b.x = cx; b.y = cy;
+    b.velocityX = 0; b.velocityY = 0;
+    b.spin = b.maxSpin;
+    b.health = b.maxHealth;
+    b.rotation = 0;
+    timerRef.current = 0;
+    lastTsRef.current = null;
+    setHud((h) => ({ ...h, spin: b.maxSpin, health: b.maxHealth, timer: 0 }));
+  }, []);
+
+  // ─── Derived HUD values ───────────────────────────────────────────────────────
+  const spinPct = hud.maxSpin > 0 ? hud.spin / hud.maxSpin : 0;
+  const stability = spinPct;
+  const stabilityColor = stability > 0.6 ? C.green : stability > 0.3 ? C.yellow : C.red;
+  const stabilityLabel = stability > 0.6 ? "Stable" : stability > 0.3 ? "Wobbling" : "Critical!";
+  const spinOut = hud.spin <= 0;
 
   return (
-    <div style={{ position:"relative", width:"100%", height:"100vh", background:"#000", overflow:"hidden" }}>
-      <div ref={containerRef} style={{ position:"absolute", inset:0 }} />
+    <div style={{ position: "relative", width: "100%", height: "100vh", background: "#000", overflow: "hidden" }}>
+      <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
 
       {/* HUD top bar */}
-      <div style={{ position:"absolute", top:0, left:0, right:0, display:"flex", alignItems:"flex-start", justifyContent:"space-between", padding:16, pointerEvents:"none" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:8, height:8, borderRadius:"50%", background: connectionState === "connected" ? C.green : C.red }} className={connectionState === "connected" ? "pulse" : ""} />
-          <span style={{ fontSize:11, color:C.muted, fontFamily:"monospace", textTransform:"uppercase" }}>{connectionState}</span>
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: 16, pointerEvents: "none" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: hud.loaded ? C.green : C.yellow }} className={hud.loaded ? "pulse" : ""} />
+          <span style={{ fontSize: 11, color: C.muted, fontFamily: "monospace", textTransform: "uppercase" }}>
+            {hud.loaded ? "LOCAL" : "loading..."}
+          </span>
         </div>
 
-        {gameState && (
-          <div style={{ color:C.text, fontFamily:"monospace", fontSize:24, fontWeight:700 }}>
-            {Math.ceil(gameState.timer)}s
-          </div>
-        )}
+        <div style={{ color: C.text, fontFamily: "monospace", fontSize: 24, fontWeight: 700 }}>
+          {Math.floor(hud.timer)}s
+        </div>
 
         <Link
           to="/game"
-          style={{ pointerEvents:"auto", padding:"4px 12px", fontSize:12, background:"rgba(0,0,0,0.6)", color:C.muted, borderRadius:6, border:`1px solid ${C.border}`, textDecoration:"none" }}
+          style={{ pointerEvents: "auto", padding: "4px 12px", fontSize: 12, background: "rgba(0,0,0,0.6)", color: C.muted, borderRadius: 6, border: `1px solid ${C.border}`, textDecoration: "none" }}
         >
           Exit
         </Link>
       </div>
 
-      {/* HUD bottom — my stats */}
-      {myBeyblade && (
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:16, pointerEvents:"none" }}>
-          <div style={{ maxWidth:320, margin:"0 auto", background:"rgba(15,23,42,0.85)", borderRadius:12, border:`1px solid ${C.border}`, padding:12 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:C.muted, marginBottom:8 }}>
-              <span style={{ fontFamily:"monospace" }}>{myBeyblade.username}</span>
-              <span style={{ textTransform:"capitalize", color:`#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6,"0")}` }}>
-                {myBeyblade.type}
-              </span>
-            </div>
+      {/* HUD bottom — beyblade stats */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, pointerEvents: "none" }}>
+        <div style={{ maxWidth: 320, margin: "0 auto", background: "rgba(15,23,42,0.85)", borderRadius: 12, border: `1px solid ${C.border}`, padding: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 8 }}>
+            <span style={{ fontFamily: "monospace" }}>{settings.username ?? "Player"}</span>
+            <span style={{ textTransform: "capitalize", color: `#${(TYPE_COLORS[bey.current.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>
+              {bey.current.type}
+            </span>
+          </div>
 
-            {/* HP bar */}
-            <div style={{ marginBottom:6 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, marginBottom:4 }}>
-                <span style={{ color:C.red }}>HP</span>
-                <span style={{ color:C.text, fontFamily:"monospace" }}>{Math.round(myBeyblade.health)}</span>
-              </div>
-              <div style={{ width:"100%", height:6, background:C.bg3, borderRadius:3, overflow:"hidden" }}>
-                <div style={{
-                  height:"100%", borderRadius:3, transition:"width 150ms",
-                  width:`${(myBeyblade.health / 100) * 100}%`,
-                  background: myBeyblade.health > 50 ? C.green : myBeyblade.health > 25 ? C.yellow : C.red,
-                }} />
-              </div>
+          {/* Spin bar */}
+          <div style={{ marginBottom: 6 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 4 }}>
+              <span style={{ color: C.blue }}>Spin</span>
+              <span style={{ color: C.text, fontFamily: "monospace" }}>{Math.round(spinPct * 100)}%</span>
             </div>
-
-            {/* Spin bar */}
-            <div style={{ marginBottom:6 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, marginBottom:4 }}>
-                <span style={{ color:C.blue }}>Spin</span>
-                <span style={{ color:C.text, fontFamily:"monospace" }}>
-                  {Math.round((myBeyblade.spin / myBeyblade.maxSpin) * 100)}%
-                </span>
-              </div>
-              <div style={{ width:"100%", height:5, background:C.bg3, borderRadius:3, overflow:"hidden" }}>
-                <div style={{ height:"100%", background:C.blue, borderRadius:3, transition:"width 150ms", width:`${(myBeyblade.spin / myBeyblade.maxSpin) * 100}%` }} />
-              </div>
-            </div>
-
-            {/* Power bar */}
-            <div style={{ marginBottom:6 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, marginBottom:4 }}>
-                <span style={{ color:C.yellow }}>Power</span>
-                <span style={{ color:C.text, fontFamily:"monospace" }}>{Math.round((myBeyblade as any).power ?? 0)}%</span>
-              </div>
-              <div style={{ width:"100%", height:5, background:C.bg3, borderRadius:3, overflow:"hidden" }}>
-                <div style={{
-                  height:"100%", borderRadius:3, transition:"width 150ms",
-                  width:`${(myBeyblade as any).power ?? 0}%`,
-                  background: (myBeyblade as any).power >= 50 ? C.yellow : C.muted,
-                }} />
-              </div>
-            </div>
-
-            {/* State flags */}
-            <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:6 }}>
-              {(myBeyblade as any).isAirborne && <span style={{ fontSize:9, fontFamily:"monospace", background:C.blue+"33", color:C.blue, borderRadius:4, padding:"1px 5px" }}>AIRBORNE</span>}
-              {(myBeyblade as any).isDefending && <span style={{ fontSize:9, fontFamily:"monospace", background:C.green+"33", color:C.green, borderRadius:4, padding:"1px 5px" }}>DEFENDING</span>}
-              {(myBeyblade as any).attackBuffTimer > 0 && <span style={{ fontSize:9, fontFamily:"monospace", background:C.red+"33", color:C.red, borderRadius:4, padding:"1px 5px" }}>ATTACK+</span>}
-              {(myBeyblade as any).stunTimer > 0 && <span style={{ fontSize:9, fontFamily:"monospace", background:C.yellow+"33", color:C.yellow, borderRadius:4, padding:"1px 5px" }}>STUNNED</span>}
-            </div>
-
-            <div style={{ fontSize:11, textAlign:"center", fontFamily:"monospace", color:stabilityColor }}>
-              {stabilityLabel}
+            <div style={{ width: "100%", height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
+              <div style={{ height: "100%", background: C.blue, borderRadius: 3, transition: "width 200ms", width: `${spinPct * 100}%` }} />
             </div>
           </div>
-          <p style={{ textAlign:"center", color:C.faint, fontSize:11, marginTop:8 }}>
-            WASD/Arrows: Move · J: Attack · K: Defend · L: Dodge · I: Jump · Space: Charge/Special
-          </p>
-        </div>
-      )}
 
-      {/* Game over overlay */}
-      {gameState?.status === "finished" && (
-        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.75)" }}>
-          <div style={{ textAlign:"center" }}>
-            <div style={{ fontSize:60, marginBottom:16 }}>🌀</div>
-            <h2 style={{ fontSize:28, fontWeight:900, color:C.text, marginBottom:8 }}>Tryout Complete!</h2>
-            <p style={{ color:C.muted, marginBottom:24 }}>
-              Survived {Math.round(gameState.timer)}s with {Math.round(myBeyblade?.damageDealt ?? 0)} damage dealt
+          <div style={{ fontSize: 11, textAlign: "center", fontFamily: "monospace", color: stabilityColor }}>{stabilityLabel}</div>
+        </div>
+        <p style={{ textAlign: "center", color: C.faint, fontSize: 11, marginTop: 8 }}>
+          WASD/Arrows: Move · Space: Spin boost
+        </p>
+      </div>
+
+      {/* Spin-out overlay */}
+      {spinOut && (
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.80)" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 60, marginBottom: 16 }}>🌀</div>
+            <h2 style={{ fontSize: 28, fontWeight: 900, color: C.text, marginBottom: 8 }}>Spin Out!</h2>
+            <p style={{ color: C.muted, marginBottom: 24 }}>
+              Survived {Math.floor(hud.timer)}s
             </p>
-            <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
               <button
-                onClick={() => { disconnect(); setTimeout(connect, 100); }}
-                style={{ padding:"12px 24px", background:C.blue, color:C.white, borderRadius:10, fontWeight:700, fontSize:14, cursor:"pointer" }}
+                onClick={reset}
+                style={{ padding: "12px 24px", background: C.blue, color: C.white, borderRadius: 10, fontWeight: 700, fontSize: 14, cursor: "pointer", border: "none" }}
               >
-                Play Again
+                Try Again
               </button>
-              <Link to="/game" style={{ padding:"12px 24px", background:C.bg3, color:C.text, borderRadius:10, fontWeight:700, fontSize:14, textDecoration:"none" }}>
+              <Link to="/game" style={{ padding: "12px 24px", background: C.bg3, color: C.text, borderRadius: 10, fontWeight: 700, fontSize: 14, textDecoration: "none" }}>
                 Menu
               </Link>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Connecting overlay */}
-      {connectionState !== "connected" && gameState === null && (
-        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.85)" }}>
-          <div style={{ textAlign:"center" }}>
-            <div className="spin" style={{ width:48, height:48, border:`4px solid ${C.blue}`, borderTopColor:"transparent", borderRadius:"50%", margin:"0 auto 16px" }} />
-            <p style={{ color:C.text }}>
-              {connectionState === "connecting" ? "Entering arena..." : "Connection lost"}
-            </p>
-            {connectionState === "error" && (
-              <button onClick={connect} style={{ marginTop:16, padding:"8px 20px", background:C.blue, color:C.white, borderRadius:8, cursor:"pointer" }}>
-                Retry
-              </button>
-            )}
           </div>
         </div>
       )}

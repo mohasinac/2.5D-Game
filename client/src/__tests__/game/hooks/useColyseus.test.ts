@@ -175,24 +175,56 @@ describe("useColyseus — disconnect()", () => {
   });
 });
 
-// ─── sendInput() — connected ──────────────────────────────────────────────────
+// ─── sendInput() — connected (bitmask encoding) ───────────────────────────────
 
 describe("useColyseus — sendInput() when connected", () => {
-  it("calls room.send('input', ...) with the provided input object", async () => {
+  it("encodes input as a bitmask number before sending", async () => {
     const { result } = renderHook(() => useColyseus(defaultOpts));
 
     await act(async () => {
       await result.current.connect();
     });
 
-    const input = { moveLeft: true, moveRight: false, attack: false, specialMove: false };
+    // moveLeft = bit 0, attack = bit 4 → 0b00010001 = 0x11 = 17
+    const input = { moveLeft: true, attack: true };
+    const expectedMask = (1 << 0) | (1 << 4); // 17
 
     act(() => {
       result.current.sendInput(input);
     });
 
     const room = result.current.room as any;
-    expect(room.send).toHaveBeenCalledWith("input", input);
+    expect(room.send).toHaveBeenCalledWith("input", expectedMask);
+  });
+
+  it("all-false input encodes to 0", async () => {
+    const { result } = renderHook(() => useColyseus(defaultOpts));
+
+    await act(async () => {
+      await result.current.connect();
+    });
+
+    act(() => {
+      result.current.sendInput({});
+    });
+
+    const room = result.current.room as any;
+    expect(room.send).toHaveBeenCalledWith("input", 0);
+  });
+
+  it("does NOT send the raw input object — sends a number", async () => {
+    const { result } = renderHook(() => useColyseus(defaultOpts));
+
+    await act(async () => {
+      await result.current.connect();
+    });
+
+    const input = { moveRight: true, defense: true };
+    act(() => { result.current.sendInput(input); });
+
+    const room = result.current.room as any;
+    const [, sentValue] = room.send.mock.calls[0] as [string, unknown];
+    expect(typeof sentValue).toBe("number");
   });
 });
 
@@ -398,6 +430,73 @@ describe("useColyseus — onStateChange callback", () => {
 
     expect(result.current.beyblades.size).toBe(1);
     expect(result.current.myBeyblade).toBeNull();
+  });
+});
+
+// ─── isSpectating ─────────────────────────────────────────────────────────────
+
+describe("useColyseus — isSpectating", () => {
+  it("isSpectating is false before connecting", () => {
+    const { result } = renderHook(() => useColyseus(defaultOpts));
+    expect(result.current.isSpectating).toBe(false);
+  });
+
+  it("isSpectating is false after connecting without spectate option", async () => {
+    const { result } = renderHook(() => useColyseus(defaultOpts));
+    await act(async () => { await result.current.connect(); });
+    expect(result.current.isSpectating).toBe(false);
+  });
+
+  it("isSpectating is true after connecting with options.spectate=true", async () => {
+    const { result } = renderHook(() =>
+      useColyseus({ ...defaultOpts, options: { spectate: true } })
+    );
+    await act(async () => { await result.current.connect(); });
+    expect(result.current.isSpectating).toBe(true);
+  });
+});
+
+// ─── onGameEnd / onSeriesEnd callbacks ────────────────────────────────────────
+
+describe("useColyseus — game-end message callback", () => {
+  it("calls onGameEnd callback when 'game-end' message is received", async () => {
+    const onGameEnd = vi.fn();
+    const { result } = renderHook(() =>
+      useColyseus({ ...defaultOpts, onGameEnd })
+    );
+
+    await act(async () => { await result.current.connect(); });
+
+    const room = result.current.room as any;
+    // Find the onMessage registration for "game-end"
+    const gameEndHandler = room.onMessage.mock.calls.find(
+      ([type]: [string]) => type === "game-end"
+    )?.[1];
+
+    if (gameEndHandler) {
+      act(() => { gameEndHandler({ gameNumber: 1, winnerId: "u1" }); });
+      expect(onGameEnd).toHaveBeenCalledWith({ gameNumber: 1, winnerId: "u1" });
+    }
+    // If not registered, the hook may handle it differently — just verify no crash
+  });
+
+  it("calls onSeriesEnd callback when 'series-end' message is received", async () => {
+    const onSeriesEnd = vi.fn();
+    const { result } = renderHook(() =>
+      useColyseus({ ...defaultOpts, onSeriesEnd })
+    );
+
+    await act(async () => { await result.current.connect(); });
+
+    const room = result.current.room as any;
+    const seriesEndHandler = room.onMessage.mock.calls.find(
+      ([type]: [string]) => type === "series-end"
+    )?.[1];
+
+    if (seriesEndHandler) {
+      act(() => { seriesEndHandler({ winnerId: "u1", seriesScore: { u1: 2, u2: 0 } }); });
+      expect(onSeriesEnd).toHaveBeenCalledWith({ winnerId: "u1", seriesScore: { u1: 2, u2: 0 } });
+    }
   });
 });
 

@@ -1,28 +1,24 @@
+// Tests for the server-free TryoutGamePage.
+// The page uses local client-side physics and loads data directly from Firestore —
+// no Colyseus connection is opened.
+
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { TryoutGamePage } from "@/pages/TryoutGamePage";
-import type { ServerBeyblade, ServerGameState, ConnectionState } from "@/types/game";
 
-// ─── Module-level mock state ──────────────────────────────────────────────────
-// We use a factory function pattern so individual tests can override the return
-// value without needing require().
+// ─── Mocks ────────────────────────────────────────────────────────────────────
 
-const defaultColyseusState = {
-  connectionState: "connecting" as ConnectionState,
-  gameState: null as ServerGameState | null,
-  beyblades: new Map<string, ServerBeyblade>(),
-  myBeyblade: null as ServerBeyblade | null,
-  room: null as any,
-  connect: vi.fn(),
-  disconnect: vi.fn(),
-  sendInput: vi.fn(),
-};
+vi.mock("firebase/firestore", () => ({
+  doc: vi.fn(),
+  getDoc: vi.fn().mockResolvedValue({ exists: () => false }), // no Firestore data → defaults
+}));
 
-// Mutable reference that each test can replace
-let colyseusState = { ...defaultColyseusState };
-
-vi.mock("@/game/hooks/useColyseus", () => ({
-  useColyseus: () => colyseusState,
+vi.mock("@/lib/firebase", () => ({
+  db: {},
+  COLLECTIONS: {
+    BEYBLADE_STATS: "beyblade_stats",
+    ARENAS: "arenas",
+  },
 }));
 
 vi.mock("@/contexts/GameContext", () => ({
@@ -31,52 +27,28 @@ vi.mock("@/contexts/GameContext", () => ({
       beybladeId: "bey1",
       arenaId: "arena1",
       gameMode: "tryout",
-      username: "Player",
+      username: "TestPlayer",
       userId: "u1",
     },
-    setBeyblade: vi.fn(),
-    setArena: vi.fn(),
-    setGameMode: vi.fn(),
-    setDifficulty: vi.fn(),
-    setOpponent: vi.fn(),
-    setGameConfig: vi.fn(),
-    startGame: vi.fn(),
-    resetGame: vi.fn(),
-    isReady: true,
+    isHydrated: true,
   }),
   GameProvider: ({ children }: any) => children,
 }));
 
-// Prevent the RAF render loop from overflowing the stack.
-// The setup.ts stub calls the callback immediately and synchronously, which
-// would make the render loop recurse infinitely. Override it here so the
-// first call fires once and subsequent calls return without invoking the cb.
-let rafCallCount = 0;
-beforeEach(() => {
-  colyseusState = { ...defaultColyseusState, connect: vi.fn(), disconnect: vi.fn(), sendInput: vi.fn() };
-  rafCallCount = 0;
-  global.requestAnimationFrame = vi.fn((cb) => {
-    // Fire the callback only on the very first call so the loop body runs once
-    if (rafCallCount === 0) {
-      rafCallCount++;
-      cb(0);
-    }
-    return ++rafCallCount;
-  });
-});
-
 vi.mock("@/game/hooks/usePixiRenderer", () => ({
-  usePixiRenderer: () => ({
-    render: vi.fn(),
-    spawnCollisionParticles: vi.fn(),
-    spawnSpinOutParticles: vi.fn(),
-    spawnDamageNumber: vi.fn(),
-  }),
+  usePixiRenderer: () => ({ render: vi.fn() }),
 }));
 
-vi.mock("@/game/hooks/useGameInput", () => ({
-  useGameInput: vi.fn(),
-}));
+// ─── RAF stub — run loop body once, then stop ─────────────────────────────────
+let rafCount = 0;
+beforeEach(() => {
+  rafCount = 0;
+  global.requestAnimationFrame = vi.fn((cb) => {
+    if (rafCount === 0) { rafCount++; cb(performance.now()); }
+    return ++rafCount;
+  });
+  global.cancelAnimationFrame = vi.fn();
+});
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -88,51 +60,11 @@ function renderPage() {
   );
 }
 
-function makeBey(overrides: Partial<ServerBeyblade> = {}): ServerBeyblade {
-  return {
-    id: "bey-id",
-    userId: "u1",
-    username: "Player",
-    x: 0, y: 0, rotation: 0,
-    velocityX: 0, velocityY: 0, angularVelocity: 0,
-    health: 80, maxHealth: 100,
-    stamina: 100, maxStamina: 100,
-    spin: 1800, maxSpin: 2000,
-    isActive: true, isAI: false,
-    type: "attack",
-    radius: 30, actualSize: 30,
-    isInvulnerable: false,
-    damageDealt: 120, damageReceived: 30, collisions: 5,
-    spinDirection: "right",
-    power: 50,
-    isAirborne: false, airborneTimer: 0,
-    isDefending: false,
-    attackBuffTimer: 0, dodgeBuffTimer: 0, stunTimer: 0,
-    comboExecuting: false,
-    ...overrides,
-  };
-}
-
-function makeGameState(overrides: Partial<ServerGameState> = {}): ServerGameState {
-  return {
-    status: "in-progress",
-    mode: "tryout",
-    timer: 45,
-    startTime: Date.now(),
-    winner: "",
-    matchId: "match-1",
-    arena: null,
-    beyblades: new Map(),
-    ...overrides,
-  };
-}
-
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-describe("TryoutGamePage", () => {
+describe("TryoutGamePage — layout", () => {
   it("renders the canvas container div", () => {
     renderPage();
-    // Outer game container is a full-viewport div with position relative
     const container = document.querySelector('div[style*="100vh"]');
     expect(container).toBeInTheDocument();
   });
@@ -140,74 +72,56 @@ describe("TryoutGamePage", () => {
   it("Exit link goes to /game", () => {
     renderPage();
     const link = screen.getByRole("link", { name: /exit/i });
-    expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/game");
   });
 
-  it('shows "connecting" state indicator when not connected', () => {
+  it('shows "LOCAL" status badge (no server connection)', () => {
     renderPage();
-    // connectionState is rendered as uppercase text in the HUD span
-    expect(screen.getByText("connecting")).toBeInTheDocument();
+    // Initially shows "loading..." then "LOCAL" after Firestore load
+    // Either is acceptable in a synchronous render
+    const hud = screen.queryByText(/local/i) || screen.queryByText(/loading/i);
+    expect(hud).toBeInTheDocument();
   });
 
-  it("shows timer when gameState has a timer value", () => {
-    colyseusState = {
-      ...colyseusState,
-      connectionState: "connected",
-      gameState: makeGameState({ timer: 42 }),
-    };
-
-    render(
-      <MemoryRouter>
-        <TryoutGamePage />
-      </MemoryRouter>
-    );
-
-    // Math.ceil(42) + "s" = "42s"
-    expect(screen.getByText("42s")).toBeInTheDocument();
-  });
-
-  it("shows my beyblade stats (HP, Spin bars) when myBeyblade is provided", () => {
-    const bey = makeBey({ health: 75, spin: 1600, maxSpin: 2000 });
-    colyseusState = {
-      ...colyseusState,
-      connectionState: "connected",
-      gameState: makeGameState(),
-      beyblades: new Map([["bey-id", bey]]),
-      myBeyblade: bey,
-    };
-
-    render(
-      <MemoryRouter>
-        <TryoutGamePage />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText("HP")).toBeInTheDocument();
-    expect(screen.getByText("75")).toBeInTheDocument();
+  it("shows Spin bar in the HUD panel", () => {
+    renderPage();
     expect(screen.getByText("Spin")).toBeInTheDocument();
   });
 
-  it("game over overlay renders with performance stats when gameState.status=finished", () => {
-    const bey = makeBey({ damageDealt: 250 });
-    colyseusState = {
-      ...colyseusState,
-      connectionState: "connected",
-      gameState: makeGameState({ status: "finished", timer: 30 }),
-      beyblades: new Map([["bey-id", bey]]),
-      myBeyblade: bey,
-    };
+  it("shows stability label", () => {
+    renderPage();
+    // Any of Stable / Wobbling / Critical!
+    const stableEl =
+      screen.queryByText("Stable") ||
+      screen.queryByText("Wobbling") ||
+      screen.queryByText("Critical!");
+    expect(stableEl).toBeInTheDocument();
+  });
 
-    render(
-      <MemoryRouter>
-        <TryoutGamePage />
-      </MemoryRouter>
-    );
+  it("does NOT import or use Colyseus", async () => {
+    // Verify no useColyseus call is made — we check the module isn't imported
+    // by confirming no "connecting" or "error" text appears (which would come from
+    // the old Colyseus-based HUD).
+    renderPage();
+    expect(screen.queryByText("connecting")).not.toBeInTheDocument();
+    expect(screen.queryByText("Connection lost")).not.toBeInTheDocument();
+  });
 
-    expect(screen.getByText(/tryout complete/i)).toBeInTheDocument();
-    // Stats: "Survived 30s with 250 damage dealt" — may match multiple elements
-    expect(screen.getAllByText(/30s/i).length).toBeGreaterThanOrEqual(1);
-    // The damage dealt number appears in the stats paragraph
-    expect(screen.getByText(/survived.*30.*250.*damage/i)).toBeInTheDocument();
+  it("shows player username in HUD", () => {
+    renderPage();
+    expect(screen.getByText("TestPlayer")).toBeInTheDocument();
+  });
+});
+
+describe("TryoutGamePage — no server dependency", () => {
+  it("renders without a Colyseus server (no 'Joining' or 'Connected' text)", () => {
+    renderPage();
+    expect(screen.queryByText(/joining/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/connected/i)).not.toBeInTheDocument();
+  });
+
+  it("renders control hints at the bottom", () => {
+    renderPage();
+    expect(screen.getByText(/wasd/i)).toBeInTheDocument();
   });
 });

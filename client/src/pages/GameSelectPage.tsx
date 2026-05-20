@@ -65,12 +65,12 @@ export function GameSelectPage() {
     },
     ...(srvSettings.enableTournament
       ? [{
-          to: "#",
+          to: "/game/tournament",
           mode: null,
           icon: "🏆",
           title: "Tournament",
-          desc: "Compete in bracket-style tournaments against other players.",
-          sub: "Beta",
+          desc: "Compete in bracket-style tournaments against other players and AI.",
+          sub: "Up to 8 players",
           subColor: C.yellow,
           hoverBorder: C.yellow,
           disabled: false,

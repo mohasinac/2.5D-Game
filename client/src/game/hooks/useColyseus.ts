@@ -12,6 +12,11 @@ interface UseColyseusOptions {
   roomName: string;
   options?: Record<string, unknown>;
   autoConnect?: boolean;
+  // If set, joins this specific room by ID instead of joinOrCreate
+  roomId?: string;
+  // Callbacks for series messages
+  onGameEnd?: (data: { winner: string; gameNumber: number; seriesScore: Record<string, number> }) => void;
+  onSeriesEnd?: (data: { winner: string; seriesScore: Record<string, number> }) => void;
 }
 
 interface UseColyseusReturn {
@@ -20,29 +25,64 @@ interface UseColyseusReturn {
   gameState: ServerGameState | null;
   beyblades: Map<string, ServerBeyblade>;
   myBeyblade: ServerBeyblade | null;
+  isSpectating: boolean;
   connect: () => Promise<void>;
   disconnect: () => void;
   sendInput: (input: {
     moveLeft?: boolean;
     moveRight?: boolean;
+    moveUp?: boolean;
+    moveDown?: boolean;
     attack?: boolean;
-    specialMove?: boolean;
+    defense?: boolean;
+    dodge?: boolean;
+    jump?: boolean;
+    chargeHeld?: boolean;
+    specialTap?: boolean;
   }) => void;
+}
+
+function encodeInputBitmask(input: {
+  moveLeft?: boolean; moveRight?: boolean; moveUp?: boolean; moveDown?: boolean;
+  attack?: boolean; defense?: boolean; dodge?: boolean; jump?: boolean;
+  chargeHeld?: boolean; specialTap?: boolean;
+}): number {
+  let f = 0;
+  if (input.moveLeft)   f |= 1 << 0;
+  if (input.moveRight)  f |= 1 << 1;
+  if (input.moveUp)     f |= 1 << 2;
+  if (input.moveDown)   f |= 1 << 3;
+  if (input.attack)     f |= 1 << 4;
+  if (input.defense)    f |= 1 << 5;
+  if (input.dodge)      f |= 1 << 6;
+  if (input.jump)       f |= 1 << 7;
+  if (input.chargeHeld) f |= 1 << 8;
+  if (input.specialTap) f |= 1 << 9;
+  return f;
 }
 
 export function useColyseus({
   roomName,
   options = {},
   autoConnect = false,
+  roomId,
+  onGameEnd,
+  onSeriesEnd,
 }: UseColyseusOptions): UseColyseusReturn {
   const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
   const [room, setRoom] = useState<Room | null>(null);
   const [gameState, setGameState] = useState<ServerGameState | null>(null);
   const [beyblades, setBeyblades] = useState<Map<string, ServerBeyblade>>(new Map());
   const [myBeyblade, setMyBeyblade] = useState<ServerBeyblade | null>(null);
+  const [isSpectating, setIsSpectating] = useState(false);
 
   const clientRef = useRef<Client | null>(null);
   const roomRef = useRef<Room | null>(null);
+  const onGameEndRef = useRef(onGameEnd);
+  const onSeriesEndRef = useRef(onSeriesEnd);
+
+  useEffect(() => { onGameEndRef.current = onGameEnd; }, [onGameEnd]);
+  useEffect(() => { onSeriesEndRef.current = onSeriesEnd; }, [onSeriesEnd]);
 
   const connect = useCallback(async () => {
     if (roomRef.current) return;
@@ -55,15 +95,21 @@ export function useColyseus({
       }
 
       const timeout = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Connection timed out after 15s")), 15000)
+        setTimeout(() => reject(new Error("Connection timed out after 15s")), 15000),
       );
-      const connectedRoom = await Promise.race([
-        clientRef.current.joinOrCreate(roomName, options),
-        timeout,
-      ]);
+
+      const joinPromise = roomId
+        ? clientRef.current.joinById(roomId, options)
+        : clientRef.current.joinOrCreate(roomName, options);
+
+      const connectedRoom = await Promise.race([joinPromise, timeout]);
       roomRef.current = connectedRoom;
       setRoom(connectedRoom);
       setConnectionState("connected");
+
+      // Detect spectator mode — spectators have no beyblade entry keyed to their sessionId
+      const spectate = Boolean((options as any).spectate);
+      setIsSpectating(spectate);
 
       // State change listeners — sync Colyseus state to React
       connectedRoom.onStateChange((state: any) => {
@@ -75,8 +121,14 @@ export function useColyseus({
         }
         setBeyblades(nextBeyblades);
 
-        const myB = nextBeyblades.get(connectedRoom.sessionId);
-        setMyBeyblade(myB ?? null);
+        const myB = spectate ? null : nextBeyblades.get(connectedRoom.sessionId) ?? null;
+        setMyBeyblade(myB);
+
+        // Build seriesWins map
+        const seriesWins = new Map<string, number>();
+        if (state.seriesWins) {
+          state.seriesWins.forEach((v: number, k: string) => seriesWins.set(k, v));
+        }
 
         setGameState({
           status: state.status,
@@ -87,7 +139,27 @@ export function useColyseus({
           matchId: state.matchId,
           arena: state.arena ? { ...state.arena } : null,
           beyblades: nextBeyblades,
+          // Tournament fields
+          tournamentId: state.tournamentId ?? "",
+          tournamentName: state.tournamentName ?? "",
+          roundNumber: state.roundNumber ?? 0,
+          tournamentMatchId: state.tournamentMatchId ?? "",
+          // Spectator
+          spectatorCount: state.spectatorCount ?? 0,
+          // Series
+          currentGame: state.currentGame ?? 1,
+          targetWins: state.targetWins ?? 1,
+          seriesWins,
+          seriesLeader: state.seriesLeader ?? "",
         } as ServerGameState);
+      });
+
+      connectedRoom.onMessage("game-end", (data: any) => {
+        onGameEndRef.current?.(data);
+      });
+
+      connectedRoom.onMessage("series-end", (data: any) => {
+        onSeriesEndRef.current?.(data);
       });
 
       connectedRoom.onMessage("idle-disconnect", () => {
@@ -106,12 +178,13 @@ export function useColyseus({
         setGameState(null);
         setBeyblades(new Map());
         setMyBeyblade(null);
+        setIsSpectating(false);
       });
     } catch (err) {
       console.error("Connection failed:", err);
       setConnectionState("error");
     }
-  }, [roomName, options]);
+  }, [roomName, options, roomId]);
 
   const disconnect = useCallback(() => {
     if (roomRef.current) {
@@ -121,13 +194,12 @@ export function useColyseus({
   }, []);
 
   const sendInput = useCallback((input: {
-    moveLeft?: boolean;
-    moveRight?: boolean;
-    attack?: boolean;
-    specialMove?: boolean;
+    moveLeft?: boolean; moveRight?: boolean; moveUp?: boolean; moveDown?: boolean;
+    attack?: boolean; defense?: boolean; dodge?: boolean; jump?: boolean;
+    chargeHeld?: boolean; specialTap?: boolean;
   }) => {
     if (roomRef.current && roomRef.current.connection.isOpen) {
-      roomRef.current.send("input", input);
+      roomRef.current.send("input", encodeInputBitmask(input));
     }
   }, []);
 
@@ -138,7 +210,7 @@ export function useColyseus({
     return () => {
       disconnect();
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { connectionState, room, gameState, beyblades, myBeyblade, connect, disconnect, sendInput };
+  return { connectionState, room, gameState, beyblades, myBeyblade, isSpectating, connect, disconnect, sendInput };
 }

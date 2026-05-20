@@ -11,6 +11,7 @@ const navItems = [
   { to: "/admin/arenas", label: "Arenas", icon: "🏟️" },
   { to: "/admin/stadiums", label: "Stadiums", icon: "⚡" },
   { to: "/admin/assets", label: "Assets", icon: "🎨" },
+  { to: "/admin/tournaments", label: "Tournaments", icon: "🏆" },
   { to: "/admin/stats", label: "Statistics", icon: "📊" },
   { to: "/admin/arena-test", label: "Arena Test", icon: "🧪" },
   { to: "/admin/settings", label: "Settings", icon: "⚙️" },

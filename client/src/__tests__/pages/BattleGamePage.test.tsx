@@ -135,6 +135,12 @@ function makeGameState(overrides: Partial<ServerGameState> = {}): ServerGameStat
     matchId: "match-pvp-1",
     arena: null,
     beyblades: new Map(),
+    // Series fields — default BO1 so "finished" overlay shows
+    targetWins: 1,
+    currentGame: 1,
+    seriesWins: new Map(),
+    seriesLeader: "",
+    spectatorCount: 0,
     ...overrides,
   };
 }
@@ -405,14 +411,14 @@ describe("BattleGamePage — opponent health bars", () => {
   });
 });
 
-// ─── Game over overlay ───────────────────────────────────────────────────────
+// ─── Game over overlay (BO1 single game) ─────────────────────────────────────
 
 describe("BattleGamePage — game over overlay", () => {
-  it("shows VICTORY! and trophy emoji when winner === userId", () => {
+  it("shows VICTORY! and trophy emoji when winner === userId (BO1)", () => {
     colyseusState = {
       ...colyseusState,
       connectionState: "connected",
-      gameState: makeGameState({ status: "finished", winner: USER_ID }),
+      gameState: makeGameState({ status: "finished", winner: USER_ID, targetWins: 1 }),
     };
 
     renderPage();
@@ -421,11 +427,11 @@ describe("BattleGamePage — game over overlay", () => {
     expect(screen.getByText("🏆")).toBeInTheDocument();
   });
 
-  it("shows DEFEATED and skull emoji when winner !== userId", () => {
+  it("shows DEFEATED and skull emoji when winner !== userId (BO1)", () => {
     colyseusState = {
       ...colyseusState,
       connectionState: "connected",
-      gameState: makeGameState({ status: "finished", winner: "opponent-id" }),
+      gameState: makeGameState({ status: "finished", winner: "opponent-id", targetWins: 1 }),
     };
 
     renderPage();
@@ -434,55 +440,11 @@ describe("BattleGamePage — game over overlay", () => {
     expect(screen.getByText("💀")).toBeInTheDocument();
   });
 
-  it("shows leaderboard sorted by damageDealt", () => {
-    const winner = makeBey({ id: "b1", userId: USER_ID, username: "Champ", damageDealt: 500, isActive: true });
-    const loser = makeBey({ id: "b2", userId: "u2", username: "LowDmgRival", damageDealt: 200, isActive: false });
-    colyseusState = {
-      ...colyseusState,
-      connectionState: "connected",
-      gameState: makeGameState({ status: "finished", winner: USER_ID }),
-      beyblades: new Map([["b1", winner], ["b2", loser]]),
-      myBeyblade: winner,
-    };
-
-    renderPage();
-
-    // Both names appear in the leaderboard rows; find them by their damage text
-    // which is unique within the leaderboard (opponent bar shows username only,
-    // leaderboard shows username + damage in the same row).
-    expect(screen.getByText(/500\s*dmg/)).toBeInTheDocument();
-    expect(screen.getByText(/200\s*dmg/)).toBeInTheDocument();
-
-    // Verify ordering: 500 dmg entry (Champ) should appear before 200 dmg (LowDmgRival)
-    const allRows = document.querySelectorAll('[style*="align-items: center"][style*="gap: 12px"][style*="padding: 10px"]');
-    const rowTexts = Array.from(allRows).map(r => r.textContent ?? "");
-    const champIdx = rowTexts.findIndex(t => t.includes("500"));
-    const rivalIdx = rowTexts.findIndex(t => t.includes("200"));
-    expect(champIdx).toBeLessThan(rivalIdx);
-  });
-
-  it("shows 'Survived' for active beyblades and 'KO' for inactive", () => {
-    const me = makeBey({ id: "b1", userId: USER_ID, isActive: true });
-    const ko = makeBey({ id: "b2", userId: "u2", isActive: false });
-    colyseusState = {
-      ...colyseusState,
-      connectionState: "connected",
-      gameState: makeGameState({ status: "finished", winner: USER_ID }),
-      beyblades: new Map([["b1", me], ["b2", ko]]),
-      myBeyblade: me,
-    };
-
-    renderPage();
-
-    expect(screen.getByText("Survived")).toBeInTheDocument();
-    expect(screen.getByText("KO")).toBeInTheDocument();
-  });
-
   it('"Play Again" link goes to /game/battle/lobby', () => {
     colyseusState = {
       ...colyseusState,
       connectionState: "connected",
-      gameState: makeGameState({ status: "finished", winner: USER_ID }),
+      gameState: makeGameState({ status: "finished", winner: USER_ID, targetWins: 1 }),
     };
 
     renderPage();
@@ -495,7 +457,7 @@ describe("BattleGamePage — game over overlay", () => {
     colyseusState = {
       ...colyseusState,
       connectionState: "connected",
-      gameState: makeGameState({ status: "finished", winner: "other" }),
+      gameState: makeGameState({ status: "finished", winner: "other", targetWins: 1 }),
     };
 
     renderPage();
@@ -515,5 +477,19 @@ describe("BattleGamePage — game over overlay", () => {
 
     expect(screen.queryByText("VICTORY!")).not.toBeInTheDocument();
     expect(screen.queryByText("DEFEATED")).not.toBeInTheDocument();
+  });
+
+  it("does not show BO1 overlay when targetWins > 1 (series game)", () => {
+    colyseusState = {
+      ...colyseusState,
+      connectionState: "connected",
+      gameState: makeGameState({ status: "finished", winner: USER_ID, targetWins: 2 }),
+    };
+
+    renderPage();
+
+    // BO1 overlay should not show; series-end or game-end overlay would (requires message)
+    const victoryEl = screen.queryByText("VICTORY!");
+    expect(victoryEl).not.toBeInTheDocument();
   });
 });

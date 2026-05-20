@@ -172,6 +172,6 @@ describe("BattleLobbyPage", () => {
 
     startBtn.click();
 
-    expect(mockSend).toHaveBeenCalledWith("start-game", {});
+    expect(mockSend).toHaveBeenCalledWith("start-game", expect.objectContaining({ bestOf: expect.any(Number) }));
   });
 });

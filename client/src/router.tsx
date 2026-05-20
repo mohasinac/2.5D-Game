@@ -14,6 +14,9 @@ import { BattleLobbyPage } from "./pages/BattleLobbyPage";
 import { BattleGamePage } from "./pages/BattleGamePage";
 import { AIBattleSetupPage } from "./pages/AIBattleSetupPage";
 import { AIBattleGamePage } from "./pages/AIBattleGamePage";
+import { TournamentListPage } from "./pages/TournamentListPage";
+import { TournamentLobbyPage } from "./pages/TournamentLobbyPage";
+import { TournamentBattleGamePage } from "./pages/TournamentBattleGamePage";
 
 // Admin pages
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
@@ -36,6 +39,9 @@ import { SoundAssetsPage } from "./pages/admin/assets/SoundAssetsPage";
 import { StatsPage } from "./pages/admin/StatsPage";
 import { SettingsPage } from "./pages/admin/SettingsPage";
 import { ArenaTestPage } from "./pages/admin/ArenaTestPage";
+import { TournamentsListPage } from "./pages/admin/TournamentsListPage";
+import { TournamentCreatePage } from "./pages/admin/TournamentCreatePage";
+import { TournamentDetailPage } from "./pages/admin/TournamentDetailPage";
 
 // 2.5D part system pages
 import { PartSearchPage } from "./pages/admin/2d/PartSearchPage";
@@ -64,6 +70,10 @@ export const router = createBrowserRouter([
       { path: "game/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
       { path: "game/ai-battle", element: <ProtectedRoute><AIBattleSetupPage /></ProtectedRoute> },
       { path: "game/ai-battle/play", element: <ProtectedRoute><AIBattleGamePage /></ProtectedRoute> },
+      // Tournament routes
+      { path: "game/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
+      { path: "game/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
+      { path: "game/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
     ],
   },
   {
@@ -100,6 +110,11 @@ export const router = createBrowserRouter([
       { path: "stats", element: <StatsPage /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "arena-test", element: <ArenaTestPage /> },
+
+      // Tournament admin
+      { path: "tournaments", element: <TournamentsListPage /> },
+      { path: "tournaments/create", element: <TournamentCreatePage /> },
+      { path: "tournaments/:id", element: <TournamentDetailPage /> },
 
       // ── 2.5D Part System ──
       { path: "2d/parts", element: <PartSearchPage /> },

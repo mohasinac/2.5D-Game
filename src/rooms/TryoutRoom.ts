@@ -9,6 +9,10 @@ import {
 } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena } from "../utils/firebase";
+import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
+import { tryReserveRoom, releaseRoom } from "../utils/roomCounter";
+import { createPRNG } from "../utils/prng";
+import { hashString } from "../utils/hashString";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
 
 // [SERVER-ROOM] TryoutRoom — solo practice mode (maxClients=1)
@@ -22,18 +26,32 @@ interface PlayerInput {
   moveUp?: boolean;
   moveDown?: boolean;
   // Actions (IJKL keys)
-  jump?: boolean;        // I — airborne (visual scale-up, avoids pits)
-  attack?: boolean;      // J — forward burst + 0.5s attack buff
-  defense?: boolean;     // K — defense stance (held: reduce incoming damage)
-  dodge?: boolean;       // L — lateral burst in spin direction + brief invulnerability
+  jump?: boolean;
+  attack?: boolean;
+  defense?: boolean;
+  dodge?: boolean;
   // Power (spacebar)
-  chargeHeld?: boolean;  // spacebar held — charges power meter
-  specialTap?: boolean;  // spacebar tap when power >= 50 — fires special move
+  chargeHeld?: boolean;
+  specialTap?: boolean;
   // Legacy / compat
-  specialMove?: boolean; // legacy — triggers special without power cost
+  specialMove?: boolean;
   direction?: { x: number; y: number };
-  // Combo detection (server validates)
   comboKeys?: string[];
+}
+
+function decodeBitmask(mask: number): PlayerInput {
+  return {
+    moveLeft:   (mask & (1 << 0)) !== 0,
+    moveRight:  (mask & (1 << 1)) !== 0,
+    moveUp:     (mask & (1 << 2)) !== 0,
+    moveDown:   (mask & (1 << 3)) !== 0,
+    attack:     (mask & (1 << 4)) !== 0,
+    defense:    (mask & (1 << 5)) !== 0,
+    dodge:      (mask & (1 << 6)) !== 0,
+    jump:       (mask & (1 << 7)) !== 0,
+    chargeHeld: (mask & (1 << 8)) !== 0,
+    specialTap: (mask & (1 << 9)) !== 0,
+  };
 }
 
 export class TryoutRoom extends Room<GameState> {
@@ -41,16 +59,28 @@ export class TryoutRoom extends Room<GameState> {
   private arenaCache: ArenaConfig | null = null;
   private simulationStarted = false;
   private lastInputTime = 0;
+  private globalSettings: GlobalSettingsDoc | null = null;
+  private rand!: () => number;
 
   maxClients = 1;
 
   async onCreate(options: any) {
+    if (!tryReserveRoom()) throw new Error("Server at capacity (max 20 rooms)");
+
     this.autoDispose = true;
     console.log("TryoutRoom created", options);
+
+    this.globalSettings = await loadGlobalSettings();
+    if (this.globalSettings?.maintenanceMode) throw new Error("Maintenance");
+    if (this.globalSettings?.enableTryout === false) throw new Error("Tryout disabled");
 
     this.setState(new GameState());
     this.state.mode = "tryout";
     this.state.status = "waiting";
+
+    // Seeded PRNG for deterministic physics
+    const seed = hashString(options.sessionId || String(Date.now()));
+    this.rand = createPRNG(seed);
 
     // Load arena ONCE and cache — never call loadArena inside the game loop
     this.arenaCache = await loadArena(options.arenaId);
@@ -81,9 +111,7 @@ export class TryoutRoom extends Room<GameState> {
       this.state.arena.loopCount = arenaData.loops?.length ?? 0;
       this.state.arena.obstacleCount = arenaData.obstacles?.length ?? 0;
       this.state.arena.pitCount = arenaData.pits?.length ?? 0;
-      // turrets replaces laserGuns in new arena config
       this.state.arena.turretCount = arenaData.turrets?.length ?? 0;
-      // waterBodies is now an array; hasWaterBody checks first entry
       this.state.arena.waterBodyCount = arenaData.waterBodies?.length ?? 0;
 
       console.log(`✅ Loaded arena: ${arenaData.name}`);
@@ -126,15 +154,16 @@ export class TryoutRoom extends Room<GameState> {
       );
     }
 
-    this.onMessage("input", (client, message) => {
-      this.handleInput(client, message);
+    this.onMessage("input", (client, message: number | PlayerInput) => {
+      const input: PlayerInput = typeof message === "number"
+        ? decodeBitmask(message)
+        : message;
+      this.handleInput(client, input);
     });
 
     this.onMessage("action", (client, message) => {
       this.handleAction(client, message);
     });
-
-    // Simulation starts in onJoin once a player is present.
   }
 
   async onJoin(client: Client, options: any) {
@@ -193,6 +222,7 @@ export class TryoutRoom extends Room<GameState> {
 
   onDispose() {
     console.log("TryoutRoom disposed");
+    releaseRoom();
     this.physics.destroy();
   }
 
@@ -215,17 +245,11 @@ export class TryoutRoom extends Room<GameState> {
     beyblade.defensePoints = defense;
     beyblade.staminaPoints = stamina;
 
-    // Attack: burst force and damage multiplier (capped at 2.05x — more realistic)
     beyblade.damageMultiplier = 1.0 + attack * 0.007;
     beyblade.speedBonus = 1.0 + attack * 0.007;
-
-    // Defense: damage absorption and gyro resistance
     beyblade.damageTaken = Math.max(0.45, 1 - defense * 0.003);
     beyblade.knockbackDistance = 10 * (1 - defense * 0.00167);
-    // invulnerabilityChance is a true invulnerability-on-special, not per-hit random
     beyblade.invulnerabilityChance = 0.1 + defense * 0.000667;
-
-    // Stamina: endurance and spin recovery
     beyblade.maxStamina = Math.ceil(1000 * (1 + stamina * 0.01333));
     beyblade.stamina = beyblade.maxStamina;
     beyblade.spinStealFactor = 0.1 * (1 + stamina * 0.02667);
@@ -233,7 +257,6 @@ export class TryoutRoom extends Room<GameState> {
     beyblade.maxSpin = Math.ceil(2000 * (1 + stamina * 0.008));
     beyblade.spin = beyblade.maxSpin;
 
-    // Type archetype bonuses applied on top of distribution
     switch (beyblade.type) {
       case "attack":
         beyblade.damageMultiplier *= 1.2;
@@ -249,7 +272,6 @@ export class TryoutRoom extends Room<GameState> {
         beyblade.maxStamina = Math.min(beyblade.maxStamina, 2500);
         beyblade.stamina = beyblade.maxStamina;
         break;
-      // stamina type: keep computed maxStamina (up to 3000)
     }
   }
 
@@ -282,14 +304,11 @@ export class TryoutRoom extends Room<GameState> {
     if (!beyblade || !beyblade.isActive) return;
     this.lastInputTime = Date.now();
 
-    // Spin-linked force: lower spin = weaker control (realistic)
     const stability = Math.min(1, beyblade.spin / beyblade.maxSpin);
     const forceMagnitude = 0.001 * beyblade.mass * stability * beyblade.speedBonus;
 
-    // Full input block during stun or combo lock (movement still allowed during stun)
     const actionBlocked = beyblade.comboExecuting;
 
-    // ── 4-direction movement (WASD) ──────────────────────────────────────────
     if (message.moveLeft) {
       const perpX = -Math.sin(beyblade.rotation);
       const perpY = Math.cos(beyblade.rotation);
@@ -309,13 +328,11 @@ export class TryoutRoom extends Room<GameState> {
 
     if (actionBlocked || beyblade.stunTimer > 0) return;
 
-    // ── Jump (I) — airborne flag, not real Y movement ────────────────────────
     if (message.jump && !beyblade.isAirborne && !beyblade.inPit && !beyblade.isDefending && beyblade.landingLag <= 0) {
       beyblade.isAirborne = true;
       beyblade.airborneTimer = 1.0;
     }
 
-    // ── Attack (J) — forward burst + attack buff ─────────────────────────────
     if (message.attack && beyblade.attackCooldown <= 0) {
       this.physics.applyForce(
         beyblade.id,
@@ -327,15 +344,13 @@ export class TryoutRoom extends Room<GameState> {
       this.broadcast("attack", { playerId: client.sessionId });
     }
 
-    // ── Defense (K) — stance: reduces incoming damage while held ─────────────
     if (message.defense && !beyblade.isAirborne && beyblade.landingLag <= 0) {
       beyblade.isDefending = true;
-      beyblade.defenseBuffTimer = 0.1; // refreshed each input tick while held
+      beyblade.defenseBuffTimer = 0.1;
     } else if (!message.defense) {
       beyblade.isDefending = false;
     }
 
-    // ── Dodge (L) — lateral burst in spin direction + brief invulnerability ──
     const canDodge = !beyblade.inPit && !beyblade.isDefending && beyblade.power >= 10 && beyblade.dodgeBuffTimer <= 0;
     if (message.dodge && canDodge) {
       this.physics.applyLateralForce(beyblade.id, beyblade.spinDirection, forceMagnitude * 4 * beyblade.speedBonus);
@@ -343,13 +358,11 @@ export class TryoutRoom extends Room<GameState> {
       beyblade.power = Math.max(0, beyblade.power - 10);
     }
 
-    // ── Power meter (spacebar) ───────────────────────────────────────────────
     if (message.chargeHeld) {
       const isMoving = !!(message.moveLeft || message.moveRight || message.moveUp || message.moveDown);
       beyblade.power = Math.min(100, beyblade.power + (isMoving ? 2 : 1));
     }
 
-    // ── Special move (spacebar tap when power >= 50) ─────────────────────────
     const wantsSpecial = message.specialTap || message.specialMove;
     if (wantsSpecial && beyblade.specialCooldown <= 0) {
       const hasPower = message.specialTap ? beyblade.power >= 50 : true;
@@ -360,7 +373,6 @@ export class TryoutRoom extends Room<GameState> {
       }
     }
 
-    // ── Legacy direction input ───────────────────────────────────────────────
     if (message.direction && (message.direction.x !== 0 || message.direction.y !== 0)) {
       const mag = Math.sqrt(message.direction.x ** 2 + message.direction.y ** 2);
       this.physics.applyForce(beyblade.id, (message.direction.x / mag) * forceMagnitude, (message.direction.y / mag) * forceMagnitude);
@@ -375,14 +387,12 @@ export class TryoutRoom extends Room<GameState> {
 
     switch (beyblade.type) {
       case "attack": {
-        // Stampede Rush: sudden charge in facing direction + spin boost
         const rushForce = 0.005 * beyblade.mass * beyblade.damageMultiplier;
         this.physics.applyForce(
           beyblade.id,
           Math.cos(beyblade.rotation) * rushForce,
           Math.sin(beyblade.rotation) * rushForce
         );
-        // Boost spin briefly (caps at maxSpin)
         const boostedSpin = Math.min(beyblade.maxSpin, Math.abs(state.angularVelocity) * 1.8);
         this.physics.setAngularVelocity(
           beyblade.id,
@@ -393,13 +403,11 @@ export class TryoutRoom extends Room<GameState> {
       }
 
       case "defense": {
-        // Gyro Anchor: maximize spin, drastically reduce velocity to near zero
         const maxAngular = beyblade.maxSpin / 200;
         this.physics.setAngularVelocity(
           beyblade.id,
           beyblade.spinDirection === "left" ? -maxAngular : maxAngular
         );
-        // Zero out linear velocity (gyroscopic lock-in-place)
         this.physics.applyForce(
           beyblade.id,
           -state.velocityX * beyblade.mass * 0.8,
@@ -412,13 +420,10 @@ export class TryoutRoom extends Room<GameState> {
       }
 
       case "stamina": {
-        // Spin Recovery: enter a precession orbit — apply perpendicular force to create circular movement
-        // Recover spin at same time
         const orbitForce = 0.002 * beyblade.mass;
         const perpX = -Math.sin(beyblade.rotation);
         const perpY = Math.cos(beyblade.rotation);
         this.physics.applyForce(beyblade.id, perpX * orbitForce, perpY * orbitForce);
-        // Recover 40% of max spin
         const recovered = Math.min(beyblade.maxSpin, beyblade.spin + beyblade.maxSpin * 0.4);
         this.physics.setAngularVelocity(
           beyblade.id,
@@ -431,14 +436,12 @@ export class TryoutRoom extends Room<GameState> {
       }
 
       case "balanced": {
-        // Tactical Burst: directional speed burst in current facing direction
         const burstForce = 0.003 * beyblade.mass;
         this.physics.applyForce(
           beyblade.id,
           Math.cos(beyblade.rotation) * burstForce,
           Math.sin(beyblade.rotation) * burstForce
         );
-        // Moderate spin boost
         const boosted = Math.min(beyblade.maxSpin, Math.abs(state.angularVelocity) * 1.5);
         this.physics.setAngularVelocity(
           beyblade.id,
@@ -484,7 +487,7 @@ export class TryoutRoom extends Room<GameState> {
       return;
     }
 
-    const dt = deltaTime / 1000; // seconds
+    const dt = deltaTime / 1000;
     this.physics.update(deltaTime);
 
     const arenaData = this.arenaCache;
@@ -504,67 +507,54 @@ export class TryoutRoom extends Room<GameState> {
         this.processArenaFeatures(beyblade, arenaData, dt);
       }
 
-      // Spin-linked speed cap: high-speed movement penalized when spin is low
+      // Nutation wobble (seeded PRNG for deterministic physics)
       const stability = Math.min(1, beyblade.spin / beyblade.maxSpin);
       if (stability < 0.4) {
-        // Nutation wobble — erratic drift when nearly spun out
         const wobble = (1 - stability) * 0.002 * beyblade.mass;
         this.physics.applyForce(
           beyblade.id,
-          (Math.random() - 0.5) * wobble,
-          (Math.random() - 0.5) * wobble
+          (this.rand() - 0.5) * wobble,
+          (this.rand() - 0.5) * wobble
         );
       }
 
-      // Spin decay (gyroscopic friction against arena surface)
       beyblade.spin = Math.max(0, beyblade.spin - beyblade.spinDecayRate * dt);
-
-      // Stamina drain proportional to angular velocity
       beyblade.stamina = Math.max(0, beyblade.stamina - Math.abs(physicsState.angularVelocity) * 0.01);
 
-      // Spin-out check
       if (beyblade.spin <= 0 && beyblade.isActive) {
         beyblade.isActive = false;
         beyblade.health = 0;
         this.broadcast("spin-out", { playerId: beyblade.id, x: beyblade.x, y: beyblade.y, type: beyblade.type });
       }
 
-      // Cooldown tickers
       if (beyblade.attackCooldown > 0) beyblade.attackCooldown -= dt;
       if (beyblade.specialCooldown > 0) beyblade.specialCooldown -= dt;
 
-      // Invulnerability timer
       if (beyblade.isInvulnerable) {
         beyblade.invulnerabilityTimer -= dt;
         if (beyblade.invulnerabilityTimer <= 0) beyblade.isInvulnerable = false;
       }
 
-      // Special move state
       if (beyblade.specialMoveActive && Date.now() > beyblade.specialMoveEndTime) {
         beyblade.specialMoveActive = false;
       }
 
-      // ── Phase C: new action buff timers ─────────────────────────────────────
       if (beyblade.attackBuffTimer > 0) {
         beyblade.attackBuffTimer = Math.max(0, beyblade.attackBuffTimer - dt);
       }
       if (beyblade.dodgeBuffTimer > 0) {
         beyblade.dodgeBuffTimer = Math.max(0, beyblade.dodgeBuffTimer - dt);
-        // Dodge entering a pit cancels the buff
         if (beyblade.inPit) beyblade.dodgeBuffTimer = 0;
       }
-      // Defense buff: refreshed by handleInput while K is held; expires if not held
       if (beyblade.defenseBuffTimer > 0) {
         beyblade.defenseBuffTimer = Math.max(0, beyblade.defenseBuffTimer - dt);
         if (beyblade.defenseBuffTimer <= 0) beyblade.isDefending = false;
       }
-      // Defense stance stamina drain (≈1 per 60Hz tick)
       if (beyblade.isDefending) {
         beyblade.stamina = Math.max(0, beyblade.stamina - 60 * dt);
         if (beyblade.stamina < 10) { beyblade.isDefending = false; beyblade.defenseBuffTimer = 0; }
       }
 
-      // Airborne timer
       if (beyblade.isAirborne) {
         beyblade.airborneTimer = Math.max(0, beyblade.airborneTimer - dt);
         if (beyblade.airborneTimer <= 0) {
@@ -574,14 +564,12 @@ export class TryoutRoom extends Room<GameState> {
       }
       if (beyblade.landingLag > 0) beyblade.landingLag = Math.max(0, beyblade.landingLag - dt);
 
-      // Stun and combo lock timers
       if (beyblade.stunTimer > 0) beyblade.stunTimer = Math.max(0, beyblade.stunTimer - dt);
       if (beyblade.comboExecuting && beyblade.comboTimer > 0) {
         beyblade.comboTimer = Math.max(0, beyblade.comboTimer - dt);
         if (beyblade.comboTimer <= 0) beyblade.comboExecuting = false;
       }
 
-      // Passive power gain in speed path (+2/tick as per plan)
       if (beyblade.inLoop) {
         beyblade.power = Math.min(100, beyblade.power + 2);
       }
@@ -630,7 +618,7 @@ export class TryoutRoom extends Room<GameState> {
       }
     }
 
-    // Water body collision (new: waterBodies is an array)
+    // Water body collision
     const waterBodies = arenaData.waterBodies;
     if ((waterBodies?.length ?? 0) > 0) {
       const inWater = this.physics.checkWaterCollision(beyblade.id, waterBodies![0]);
@@ -663,7 +651,7 @@ export class TryoutRoom extends Room<GameState> {
         beyblade.spin = Math.max(0, beyblade.spin - beyblade.pitDamageRate * beyblade.spin * dt / 100);
         const escapeThreshold = pitConfig.escapeThreshold ?? 50;
         const canEscape = beyblade.spin > (beyblade.maxSpin * escapeThreshold / 100);
-        if (canEscape && Math.random() < 0.1 * dt) {
+        if (canEscape && this.rand() < 0.1 * dt) {
           beyblade.inPit = false;
           beyblade.currentPitId = "";
           beyblade.pitDamageRate = 0;
@@ -712,12 +700,10 @@ export class TryoutRoom extends Room<GameState> {
         beyblade.health -= wallDamage;
         beyblade.damageReceived += wallDamage;
 
-        let recoilForce = arenaData.wall.recoilDistance;
-
         this.physics.applyKnockback(
           beyblade.id,
           { x: -dx, y: -dy },
-          recoilForce * beyblade.knockbackDistance
+          arenaData.wall.recoilDistance * beyblade.knockbackDistance
         );
         this.broadcast("wall-collision", { playerId: beyblade.id, damage: wallDamage });
       }

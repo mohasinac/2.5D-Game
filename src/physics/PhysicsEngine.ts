@@ -146,6 +146,18 @@ export class PhysicsEngine {
     Matter.Body.setAngularVelocity(body, velocity);
   }
 
+  setPosition(id: string, x: number, y: number): void {
+    const body = this.bodies.get(id);
+    if (!body) return;
+    Matter.Body.setPosition(body, { x, y });
+  }
+
+  setLinearVelocity(id: string, vx: number, vy: number): void {
+    const body = this.bodies.get(id);
+    if (!body) return;
+    Matter.Body.setVelocity(body, { x: vx, y: vy });
+  }
+
   update(deltaTime?: number): void {
     const dt = deltaTime ?? (1000 / 60);
     Matter.Engine.update(this.engine, dt);

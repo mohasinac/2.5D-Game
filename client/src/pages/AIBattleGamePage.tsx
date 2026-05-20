@@ -1,5 +1,5 @@
-import { useRef, useEffect, useMemo } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useRef, useEffect, useState, useMemo } from "react";
+import { Link, useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGameInput } from "@/game/hooks/useGameInput";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
@@ -13,32 +13,43 @@ interface AIBattleLocationState {
   aiBeybladeId?: string;
   arenaId?: string;
   aiDifficulty?: string;
+  bestOf?: 1 | 3 | 5;
 }
 
 export function AIBattleGamePage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { settings } = useGame();
   const { currentUser } = useAuth();
 
+  const spectate = searchParams.get("spectate") === "true";
+  const userId = currentUser?.uid ?? settings.userId ?? "guest";
+
   const loc = (location.state ?? {}) as AIBattleLocationState;
 
-  // Stable options — built once so Colyseus connect() always uses the same values
+  const [gameEndData, setGameEndData] = useState<{ winner: string; gameNumber: number; seriesScore: Record<string, number> } | null>(null);
+  const [seriesEndData, setSeriesEndData] = useState<{ winner: string; seriesScore: Record<string, number> } | null>(null);
+
   const colyseusOptions = useMemo(() => ({
     beybladeId:   loc.beybladeId   ?? settings.beybladeId ?? "default",
     aiBeybladeId: loc.aiBeybladeId ?? "default",
     arenaId:      loc.arenaId      ?? settings.arenaId    ?? "default",
     aiDifficulty: loc.aiDifficulty ?? "medium",
+    bestOf:       loc.bestOf       ?? 1,
     username:     settings.username ?? "Player",
-    userId:       currentUser?.uid  ?? settings.userId ?? "guest",
+    userId,
+    spectate,
   }), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { connectionState, gameState, beyblades, myBeyblade, room, connect, disconnect, sendInput } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput } =
     useColyseus({
       roomName: "ai_battle_room",
       options: colyseusOptions,
       autoConnect: false,
+      onGameEnd: setGameEndData,
+      onSeriesEnd: setSeriesEndData,
     });
 
   const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber } =
@@ -68,85 +79,173 @@ export function AIBattleGamePage() {
     });
   }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber]);
 
-  useGameInput(sendInput, connectionState === "connected");
+  // Auto-dismiss game-end overlay
+  useEffect(() => {
+    if (!gameEndData) return;
+    const id = setTimeout(() => setGameEndData(null), 4000);
+    return () => clearTimeout(id);
+  }, [gameEndData]);
+
+  useGameInput(sendInput, !isSpectating && connectionState === "connected");
 
   const myStability    = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
   const stabilityColor = myStability > 0.6 ? C.green : myStability > 0.3 ? C.yellow : C.red;
   const stabilityLabel = myStability > 0.6 ? "Stable" : myStability > 0.3 ? "Wobbling" : "Critical!";
 
   const allBeyblades = Array.from(beyblades.values());
-  const aiBey = allBeyblades.find(b => b.userId === "__ai__");
+  const aiBey = allBeyblades.find((b) => b.userId === "__ai__" || b.isAI);
 
-  const isFinished = gameState?.status === "finished";
-  const playerWon  = isFinished && gameState?.winner === (currentUser?.uid ?? settings.userId);
+  const isSeries = gameState && gameState.targetWins > 1;
+  const seriesLabel = isSeries ? `Game ${gameState.currentGame}/${gameState.targetWins * 2 - 1}` : "";
 
   const timerSeconds = gameState ? Math.ceil(Math.max(0, gameState.timer)) : null;
 
   return (
-    <div style={{ position:"relative", width:"100%", height:"100vh", background:"#000", overflow:"hidden" }}>
-      <div ref={containerRef} style={{ position:"absolute", inset:0 }} />
+    <div style={{ position: "relative", width: "100%", height: "100vh", background: "#000", overflow: "hidden" }}>
+      <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
 
       {/* HUD top bar */}
-      <div style={{ position:"absolute", top:0, left:0, right:0, display:"flex", alignItems:"flex-start", justifyContent:"space-between", padding:"12px 16px", pointerEvents:"none", zIndex:10 }}>
-        {/* Left: connection indicator */}
-        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:8, height:8, borderRadius:"50%", background: connectionState === "connected" ? C.green : C.red }} className={connectionState === "connected" ? "pulse" : ""} />
-          <span style={{ fontSize:11, color:C.muted, fontFamily:"monospace" }}>VS AI</span>
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "12px 16px", pointerEvents: "none", zIndex: 10 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: connectionState === "connected" ? C.green : C.red }} className={connectionState === "connected" ? "pulse" : ""} />
+            <span style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>{isSpectating ? "SPECTATING" : "VS AI"}</span>
+          </div>
+          {isSpectating && (
+            <span style={{ fontSize: 11, background: C.purple + "44", color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${C.purple}55` }}>
+              SPECTATING
+            </span>
+          )}
         </div>
 
-        {/* Center: timer */}
-        {timerSeconds !== null && (
-          <div style={{ color:C.text, fontFamily:"monospace", fontSize:24, fontWeight:700 }}>
-            {timerSeconds}s
-          </div>
-        )}
+        <div style={{ textAlign: "center" }}>
+          {timerSeconds !== null && (
+            <div style={{ color: C.text, fontFamily: "monospace", fontSize: 24, fontWeight: 700 }}>
+              {timerSeconds}s
+            </div>
+          )}
+          {seriesLabel && (
+            <div style={{ fontSize: 12, color: C.muted, fontFamily: "monospace" }}>{seriesLabel}</div>
+          )}
+          {gameState && gameState.spectatorCount > 0 && (
+            <div style={{ fontSize: 11, color: C.purple }}>{gameState.spectatorCount} watching</div>
+          )}
+        </div>
 
-        {/* Right: Exit — offset down so it clears the AuthChip fixed at top-right */}
-        <Link
-          to="/game/ai-battle"
-          style={{ pointerEvents:"auto", padding:"4px 12px", fontSize:12, background:"rgba(0,0,0,0.6)", color:C.muted, borderRadius:6, border:`1px solid ${C.border}`, textDecoration:"none", marginTop:28 }}
-        >
-          Exit
-        </Link>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
+          <Link
+            to="/game/ai-battle"
+            style={{ pointerEvents: "auto", padding: "4px 12px", fontSize: 12, background: "rgba(0,0,0,0.6)", color: C.muted, borderRadius: 6, border: `1px solid ${C.border}`, textDecoration: "none", marginTop: 28 }}
+          >
+            Exit
+          </Link>
+          {/* Series score */}
+          {isSeries && allBeyblades.length > 0 && (
+            <div style={{ background: "rgba(0,0,0,0.65)", borderRadius: 8, padding: "6px 10px", fontSize: 12, color: C.text }}>
+              {allBeyblades.map((p) => (
+                <div key={p.id} style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <span style={{ color: C.muted, maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {p.username}
+                  </span>
+                  <span style={{ fontWeight: 700, fontFamily: "monospace" }}>
+                    {gameState.seriesWins.get(p.userId) ?? 0}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* HUD bottom — player vs AI comparison */}
-      {myBeyblade && (
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:16, pointerEvents:"none", zIndex:10 }}>
-          <div style={{ maxWidth:480, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr auto 1fr", gap:12, alignItems:"center" }}>
+      {/* HUD bottom */}
+      {myBeyblade && !isSpectating && (
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, pointerEvents: "none", zIndex: 10 }}>
+          <div style={{ maxWidth: 480, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "center" }}>
             <StatCard beyblade={myBeyblade} label="YOU" accentColor={C.blue} stabilityColor={stabilityColor} stabilityLabel={stabilityLabel} />
-            <div style={{ fontSize:18, fontWeight:900, color:C.faint, textAlign:"center" }}>VS</div>
+            <div style={{ fontSize: 18, fontWeight: 900, color: C.faint, textAlign: "center" }}>VS</div>
             {aiBey ? (
               <StatCard beyblade={aiBey} label="CPU" accentColor={C.red} stabilityColor={getBeybladeStability(aiBey) > 0.4 ? C.green : C.red} stabilityLabel={aiBey.username} />
             ) : (
               <div />
             )}
           </div>
-          <p style={{ textAlign:"center", color:C.faint, fontSize:11, marginTop:8 }}>
+          <p style={{ textAlign: "center", color: C.faint, fontSize: 11, marginTop: 8 }}>
             WASD: Move · J: Attack · K: Defend · L: Dodge · I: Jump · Space: Charge/Special
           </p>
         </div>
       )}
 
-      {/* Game over overlay */}
-      {isFinished && (
-        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.8)", zIndex:20 }}>
-          <div style={{ textAlign:"center" }}>
-            <div style={{ fontSize:72, marginBottom:16 }}>{playerWon ? "🏆" : "💀"}</div>
-            <h2 style={{ fontSize:32, fontWeight:900, color: playerWon ? C.yellow : C.red, marginBottom:8 }}>
-              {playerWon ? "Victory!" : "Defeated!"}
-            </h2>
-            <p style={{ color:C.muted, marginBottom:28 }}>
-              {playerWon ? "You defeated the AI!" : "The AI won this round."}
+      {/* Spectator view */}
+      {isSpectating && allBeyblades.length > 0 && (
+        <div style={{ position: "absolute", bottom: 16, left: 0, right: 0, padding: "0 16px", pointerEvents: "none", zIndex: 10 }}>
+          <div style={{ maxWidth: 480, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "center" }}>
+            {allBeyblades.filter((b) => !b.isAI).slice(0, 1).map((b) => (
+              <StatCard key={b.id} beyblade={b} label="PLAYER" accentColor={C.blue} stabilityColor={getBeybladeStability(b) > 0.4 ? C.green : C.red} stabilityLabel={b.username} />
+            ))}
+            <div style={{ fontSize: 18, fontWeight: 900, color: C.faint, textAlign: "center" }}>VS</div>
+            {aiBey ? (
+              <StatCard beyblade={aiBey} label="CPU" accentColor={C.red} stabilityColor={getBeybladeStability(aiBey) > 0.4 ? C.green : C.red} stabilityLabel={aiBey.username} />
+            ) : <div />}
+          </div>
+        </div>
+      )}
+
+      {/* Game-end inter-game overlay */}
+      {gameEndData && (
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.75)", zIndex: 40 }}>
+          <div style={{ textAlign: "center" }}>
+            <p style={{ color: C.yellow, fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Game {gameEndData.gameNumber} Complete</p>
+            <p style={{ color: C.text, fontSize: 22, fontWeight: 900 }}>
+              {allBeyblades.find((p) => p.userId === gameEndData.winner)?.username ?? gameEndData.winner} wins!
             </p>
-            <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
+            <div style={{ marginTop: 12, display: "flex", gap: 16, justifyContent: "center" }}>
+              {Object.entries(gameEndData.seriesScore).map(([uid, wins]) => {
+                const player = allBeyblades.find((p) => p.userId === uid);
+                return (
+                  <div key={uid} style={{ textAlign: "center" }}>
+                    <p style={{ fontSize: 12, color: C.muted }}>{player?.username ?? uid}</p>
+                    <p style={{ fontSize: 28, fontWeight: 900, color: C.text, fontFamily: "monospace" }}>{wins}</p>
+                  </div>
+                );
+              })}
+            </div>
+            <p style={{ color: C.faint, fontSize: 12, marginTop: 12 }}>Next game starting...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Series-end / single-game finished overlay */}
+      {(gameState?.status === "series-finished" || gameState?.status === "finished" || seriesEndData) && !gameEndData && (
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.8)", zIndex: 20 }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 72, marginBottom: 16 }}>
+              {(seriesEndData?.winner ?? gameState?.winner) === userId ? "🏆" : isSpectating ? "🏁" : "💀"}
+            </div>
+            <h2 style={{ fontSize: 32, fontWeight: 900, color: (seriesEndData?.winner ?? gameState?.winner) === userId ? C.yellow : C.red, marginBottom: 8 }}>
+              {isSpectating
+                ? `${allBeyblades.find((p) => p.userId === (seriesEndData?.winner ?? gameState?.winner))?.username ?? "?"} wins!`
+                : (seriesEndData?.winner ?? gameState?.winner) === userId ? "Victory!" : "Defeated!"}
+            </h2>
+            {isSeries && (
+              <div style={{ display: "flex", gap: 16, justifyContent: "center", marginBottom: 16 }}>
+                {allBeyblades.map((b) => (
+                  <div key={b.id} style={{ textAlign: "center" }}>
+                    <p style={{ fontSize: 12, color: C.muted }}>{b.username}</p>
+                    <p style={{ fontSize: 28, fontWeight: 900, color: C.text, fontFamily: "monospace" }}>
+                      {gameState.seriesWins.get(b.userId) ?? 0}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
               <button
                 onClick={() => navigate("/game/ai-battle")}
-                style={{ padding:"12px 28px", background:C.purple, color:C.white, borderRadius:10, fontWeight:700, fontSize:14, cursor:"pointer", border:"none" }}
+                style={{ padding: "12px 28px", background: C.purple, color: C.white, borderRadius: 10, fontWeight: 700, fontSize: 14, cursor: "pointer", border: "none" }}
               >
                 Play Again
               </button>
-              <Link to="/game" style={{ padding:"12px 28px", background:C.bg3, color:C.text, borderRadius:10, fontWeight:700, fontSize:14, textDecoration:"none" }}>
+              <Link to="/game" style={{ padding: "12px 28px", background: C.bg3, color: C.text, borderRadius: 10, fontWeight: 700, fontSize: 14, textDecoration: "none" }}>
                 Menu
               </Link>
             </div>
@@ -156,23 +255,18 @@ export function AIBattleGamePage() {
 
       {/* Connecting overlay */}
       {connectionState !== "connected" && gameState === null && (
-        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.85)", zIndex:20 }}>
-          <div style={{ textAlign:"center" }}>
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.85)", zIndex: 20 }}>
+          <div style={{ textAlign: "center" }}>
             {connectionState !== "error" ? (
-              <div className="spin" style={{ width:48, height:48, border:`4px solid ${C.purple}`, borderTopColor:"transparent", borderRadius:"50%", margin:"0 auto 16px" }} />
+              <div className="spin" style={{ width: 48, height: 48, border: `4px solid ${C.purple}`, borderTopColor: "transparent", borderRadius: "50%", margin: "0 auto 16px" }} />
             ) : (
-              <div style={{ fontSize:40, marginBottom:16 }}>⚠️</div>
+              <div style={{ fontSize: 40, marginBottom: 16 }}>⚠️</div>
             )}
-            <p style={{ color:C.text }}>
+            <p style={{ color: C.text }}>
               {connectionState === "error" ? "Could not connect to game server" : "Loading AI battle..."}
             </p>
-            <p style={{ color:C.faint, fontSize:12, marginTop:4 }}>
-              {connectionState === "error"
-                ? "The server may be starting up — try again in a moment."
-                : "Connecting to server…"}
-            </p>
             {connectionState === "error" && (
-              <button onClick={connect} style={{ marginTop:16, padding:"8px 20px", background:C.purple, color:C.white, borderRadius:8, cursor:"pointer", border:"none" }}>
+              <button onClick={connect} style={{ marginTop: 16, padding: "8px 20px", background: C.purple, color: C.white, borderRadius: 8, cursor: "pointer", border: "none" }}>
                 Retry
               </button>
             )}
@@ -191,30 +285,27 @@ function StatCard({ beyblade, label, accentColor, stabilityColor, stabilityLabel
   const spin = Math.round(Math.min(100, ((beyblade.spin ?? 0) / Math.max(1, beyblade.maxSpin ?? 1)) * 100));
 
   return (
-    <div style={{ background:"rgba(15,23,42,0.85)", borderRadius:12, border:`1px solid ${accentColor}44`, padding:10 }}>
-      <div style={{ fontSize:10, fontWeight:700, color:accentColor, letterSpacing:"0.1em", marginBottom:6 }}>{label}</div>
-
-      <div style={{ marginBottom:4 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", fontSize:10, marginBottom:2 }}>
-          <span style={{ color:C.red }}>HP</span>
-          <span style={{ color:C.text, fontFamily:"monospace" }}>{hp}</span>
+    <div style={{ background: "rgba(15,23,42,0.85)", borderRadius: 12, border: `1px solid ${accentColor}44`, padding: 10 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: accentColor, letterSpacing: "0.1em", marginBottom: 6 }}>{label}</div>
+      <div style={{ marginBottom: 4 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, marginBottom: 2 }}>
+          <span style={{ color: C.red }}>HP</span>
+          <span style={{ color: C.text, fontFamily: "monospace" }}>{hp}</span>
         </div>
-        <div style={{ height:5, background:C.bg3, borderRadius:3, overflow:"hidden" }}>
-          <div style={{ height:"100%", borderRadius:3, background: hp / maxHp > 0.5 ? C.green : hp / maxHp > 0.25 ? C.yellow : C.red, width:`${Math.min(100, (hp / maxHp) * 100)}%`, transition:"width 150ms" }} />
+        <div style={{ height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
+          <div style={{ height: "100%", borderRadius: 3, background: hp / maxHp > 0.5 ? C.green : hp / maxHp > 0.25 ? C.yellow : C.red, width: `${Math.min(100, (hp / maxHp) * 100)}%`, transition: "width 150ms" }} />
         </div>
       </div>
-
       <div>
-        <div style={{ display:"flex", justifyContent:"space-between", fontSize:10, marginBottom:2 }}>
-          <span style={{ color:C.blue }}>Spin</span>
-          <span style={{ color:C.text, fontFamily:"monospace" }}>{spin}%</span>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, marginBottom: 2 }}>
+          <span style={{ color: C.blue }}>Spin</span>
+          <span style={{ color: C.text, fontFamily: "monospace" }}>{spin}%</span>
         </div>
-        <div style={{ height:5, background:C.bg3, borderRadius:3, overflow:"hidden" }}>
-          <div style={{ height:"100%", borderRadius:3, background:C.blue, width:`${spin}%`, transition:"width 150ms" }} />
+        <div style={{ height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
+          <div style={{ height: "100%", borderRadius: 3, background: C.blue, width: `${spin}%`, transition: "width 150ms" }} />
         </div>
       </div>
-
-      <div style={{ fontSize:9, color:stabilityColor, fontFamily:"monospace", marginTop:6 }}>{stabilityLabel}</div>
+      <div style={{ fontSize: 9, color: stabilityColor, fontFamily: "monospace", marginTop: 6 }}>{stabilityLabel}</div>
     </div>
   );
 }

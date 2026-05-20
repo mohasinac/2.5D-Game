@@ -116,6 +116,9 @@ interface GameStore {
   settings: GameSettings;
   /** True once the async persist storage has been read on startup. */
   _hydrated: boolean;
+  // Tournament state (session-only, not persisted)
+  activeTournamentId: string | null;
+  activeTournamentMatchId: string | null;
   setBeyblade: (id: string) => void;
   setArena: (id: string) => void;
   setGameMode: (mode: GameSettings["gameMode"]) => void;
@@ -125,6 +128,7 @@ interface GameStore {
   startGame: (mode: GameSettings["gameMode"]) => void;
   resetGame: () => void;
   setActiveRoom: (roomId: string | null) => void;
+  setActiveTournament: (tournamentId: string | null, matchId: string | null) => void;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -132,6 +136,8 @@ export const useGameStore = create<GameStore>()(
     (set) => ({
       settings: { ...defaultSettings },
       _hydrated: false,
+      activeTournamentId: null,
+      activeTournamentMatchId: null,
 
       setBeyblade: (beybladeId) =>
         set((s) => ({ settings: { ...s.settings, beybladeId } })),
@@ -166,6 +172,9 @@ export const useGameStore = create<GameStore>()(
 
       setActiveRoom: (activeRoomId) =>
         set((s) => ({ settings: { ...s.settings, activeRoomId } })),
+
+      setActiveTournament: (activeTournamentId, activeTournamentMatchId) =>
+        set({ activeTournamentId, activeTournamentMatchId }),
     }),
     {
       name: "beyblade-game-state",
@@ -203,6 +212,9 @@ export function useGame() {
     startGame: store.startGame,
     resetGame: store.resetGame,
     setActiveRoom: store.setActiveRoom,
+    activeTournamentId: store.activeTournamentId,
+    activeTournamentMatchId: store.activeTournamentMatchId,
+    setActiveTournament: store.setActiveTournament,
   };
 }
 

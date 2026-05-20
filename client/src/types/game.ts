@@ -50,14 +50,82 @@ export interface ServerBeyblade {
 }
 
 export interface ServerGameState {
-  status: "waiting" | "warmup" | "in-progress" | "finished";
-  mode: "tryout" | "ai-battle" | "single-battle-pvp" | "single-battle-pvp-ranked";
+  status: "waiting" | "warmup" | "in-progress" | "finished" | "series-finished" | "tournament";
+  mode: "tryout" | "ai-battle" | "single-battle-pvp" | "single-battle-pvp-ranked" | "tournament";
   timer: number;
   startTime: number;
   winner: string;
   matchId: string;
   arena: ServerArenaState | null;
   beyblades: Map<string, ServerBeyblade>;
+  // Tournament metadata
+  tournamentId: string;
+  tournamentName: string;
+  roundNumber: number;
+  tournamentMatchId: string;
+  // Spectator tracking
+  spectatorCount: number;
+  // Series format (BO1 / BO3 / BO5)
+  currentGame: number;
+  targetWins: number;
+  seriesWins: Map<string, number>;
+  seriesLeader: string;
+}
+
+// ─── Tournament types ─────────────────────────────────────────────────────────
+
+export interface TournamentDoc {
+  id: string;
+  name: string;
+  description?: string;
+  type: "pvp" | "player-gauntlet" | "mixed" | "ai-exhibition";
+  status: "draft" | "registration" | "in-progress" | "completed" | "cancelled";
+  maxParticipants: 2 | 4 | 8;
+  scheduledStartTime: any; // Firestore Timestamp (client uses toDate())
+  registrationDeadline: any;
+  roundIntervalMinutes: number;
+  bestOf: 1 | 3 | 5;
+  aiDifficulty: "easy" | "medium" | "hard";
+  autoFillWithAI: boolean;
+  allowedBeybladeIds: string[];
+  disabledBeybladeIds: string[];
+  allowedArenaIds: string[];
+  createdBy: string;
+  createdAt: any;
+  updatedAt: any;
+  winnerId: string | null;
+  winnerUsername: string | null;
+}
+
+export interface TournamentParticipantDoc {
+  id: string;
+  tournamentId: string;
+  userId: string;
+  username: string;
+  beybladeId: string;
+  isAI: boolean;
+  seed: number;
+  registeredAt: any;
+  status: "registered" | "eliminated" | "winner";
+}
+
+export interface TournamentMatchDoc {
+  id: string;
+  tournamentId: string;
+  round: number;
+  matchNumber: number;
+  scheduledTime: any;
+  status: "pending" | "room-opening" | "in-progress" | "completed" | "bye";
+  participant1Id: string;
+  participant2Id: string;
+  participant1BeybladeId: string;
+  participant2BeybladeId: string;
+  winnerId: string | null;
+  colyseusRoomId: string;
+  arenaId: string;
+  matchFirestoreId: string;
+  createdAt: any;
+  updatedAt: any;
 }
 
 export type ConnectionState = "disconnected" | "connecting" | "connected" | "reconnecting" | "error";

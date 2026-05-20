@@ -8,6 +8,8 @@ import { monitor } from "@colyseus/monitor";
 import { TryoutRoom } from "./rooms/TryoutRoom";
 import { BattleRoom } from "./rooms/BattleRoom";
 import { AIBattleRoom } from "./rooms/AIBattleRoom";
+import { TournamentBattleRoom } from "./rooms/TournamentBattleRoom";
+import { TournamentScheduler } from "./tournament/TournamentScheduler";
 
 const port = Number(process.env.PORT || 2567);
 const app = express();
@@ -31,6 +33,7 @@ const gameServer = new Server({
 gameServer.define("tryout_room", TryoutRoom);
 gameServer.define("battle_room", BattleRoom);
 gameServer.define("ai_battle_room", AIBattleRoom);
+gameServer.define("tournament_battle_room", TournamentBattleRoom);
 
 // (Optional) Attach monitoring panel
 app.use("/colyseus", monitor());
@@ -53,3 +56,7 @@ gameServer.listen(port);
 console.log(`🎮 Beyblade Game Server listening on port ${port}`);
 console.log(`📊 Monitor panel: http://localhost:${port}/colyseus`);
 console.log(`🏥 Health check: http://localhost:${port}/health`);
+
+// Start tournament scheduler (polls Firestore every 30s for upcoming bracket matches)
+const scheduler = new TournamentScheduler();
+scheduler.start(gameServer);

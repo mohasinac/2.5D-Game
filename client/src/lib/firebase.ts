@@ -42,4 +42,9 @@ export const COLLECTIONS = {
   CORE_PARTS: "core_parts",
   CASING_PARTS: "casing_parts",
   BEYBLADE_SYSTEMS: "beyblade_systems",
+  // Tournament collections
+  TOURNAMENTS: "tournaments",
+  TOURNAMENT_PARTICIPANTS: "tournament_participants",
+  TOURNAMENT_BRACKETS: "tournament_brackets",
+  SETTINGS: "settings",
 } as const;

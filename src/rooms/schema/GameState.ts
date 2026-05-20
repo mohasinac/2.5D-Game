@@ -365,7 +365,7 @@ export class GameState extends Schema {
   @type({ map: WaterBodyState }) waterBodies = new MapSchema<WaterBodyState>(); // Multiple water bodies
   @type({ map: PortalState }) portals = new MapSchema<PortalState>();
 
-  @type("string") status: string = "waiting"; // waiting, in-progress, finished
+  @type("string") status: string = "waiting"; // waiting, warmup, in-progress, finished, series-finished
   @type("string") winner: string = ""; // userId of winner
   @type("number") timer: number = 180; // seconds
   @type("number") startTime: number = 0;
@@ -373,4 +373,19 @@ export class GameState extends Schema {
   // Match metadata
   @type("string") mode: string = "tryout"; // tryout, single-battle-ai, single-battle-pvp
   @type("string") matchId: string = "";
+
+  // Tournament metadata (populated for tournament_battle_room)
+  @type("string") tournamentId: string = "";
+  @type("string") tournamentName: string = "";
+  @type("uint16") roundNumber: number = 0;
+  @type("string") tournamentMatchId: string = "";
+
+  // Spectator tracking
+  @type("uint16") spectatorCount: number = 0;
+
+  // Series format (BO1 / BO3 / BO5) — used by all room types
+  @type("uint8") currentGame: number = 1;
+  @type("uint8") targetWins: number = 1;   // 1=BO1, 2=BO3, 3=BO5
+  @type({ map: "uint8" }) seriesWins = new MapSchema<number>();
+  @type("string") seriesLeader: string = "";
 }

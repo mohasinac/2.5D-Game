@@ -8,6 +8,10 @@ export const FIREBASE_COLLECTIONS = {
   ARENAS: "arenas",
   MATCHES: "matches",
   PLAYER_STATS: "player_stats",
+  TOURNAMENTS: "tournaments",
+  TOURNAMENT_PARTICIPANTS: "tournament_participants",
+  TOURNAMENT_BRACKETS: "tournament_brackets",
+  SETTINGS: "settings",
 } as const;
 
 export const FIREBASE_BUCKETS = {
