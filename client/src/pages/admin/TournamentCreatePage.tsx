@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { C, S, btn } from "@/styles/theme";
+import toast from "react-hot-toast";
 
 interface FormState {
   name: string;
@@ -84,9 +85,12 @@ export function TournamentCreatePage() {
         winnerId: null,
         winnerUsername: null,
       });
+      toast.success(`Tournament "${form.name.trim()}" created!`);
       navigate(`/admin/tournaments/${docRef.id}`);
     } catch (err: any) {
-      setError(err?.message ?? "Failed to create tournament.");
+      const msg = err?.message ?? "Failed to create tournament.";
+      setError(msg);
+      toast.error(msg);
       setSaving(false);
     }
   };

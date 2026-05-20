@@ -13,6 +13,7 @@ const PART_TYPE_COLLECTION: Record<string, string> = {
   "tips":         COLLECTIONS.TIP_PARTS,
   "cores":        COLLECTIONS.CORE_PARTS,
   "casings":      COLLECTIONS.CASING_PARTS,
+  "spin-tracks":  COLLECTIONS.SPIN_TRACK_PARTS,
 };
 
 const PART_TYPE_LABEL: Record<string, string> = {
@@ -23,6 +24,7 @@ const PART_TYPE_LABEL: Record<string, string> = {
   "tips":         "Tip",
   "cores":        "Core",
   "casings":      "Casing",
+  "spin-tracks":  "Spin Track",
 };
 
 export function PartCreatePage() {

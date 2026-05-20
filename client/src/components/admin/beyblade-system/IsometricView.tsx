@@ -46,16 +46,20 @@ interface LayerDef {
 
 function buildLayers(resolved: ResolvedBeybladeSystem): LayerDef[] {
   const layers: LayerDef[] = [];
+  const tipDoc = resolved.tip as Loose | undefined;
+  const containsCasing = !!(tipDoc?.containsCasing);
+  const trackHeight = (resolved.spinTrack as Loose | undefined)?.height ?? 0;
 
   function add(
     label: string,
     part: Loose | null | undefined,
-    opts: { freeSpin?: boolean; isTip?: boolean } = {},
+    opts: { freeSpin?: boolean; isTip?: boolean; heightOffset?: number } = {},
   ) {
     if (!part) return;
     const dims = part.dimensions as { height?: number; outerRadius?: number; innerRadius?: number; radius?: number; tipWidth?: number; tipOffsetX?: number; tipOffsetY?: number } | undefined;
-    const heightMm = dims?.height ?? 0;
-    if (heightMm <= 0) return;
+    const rawHeight = dims?.height ?? 0;
+    if (rawHeight <= 0) return;
+    const heightMm = rawHeight + (opts.heightOffset ?? 0);
     const geometry = part.geometry as import("@/types/beybladeSystem").PartShape | undefined;
     const fallbackR = dims?.outerRadius ?? dims?.radius ?? 10;
     const radiusMm = opts.isTip
@@ -77,16 +81,45 @@ function buildLayers(resolved: ResolvedBeybladeSystem): LayerDef[] {
     });
   }
 
-  add("Tip",      resolved.tip as Loose,      { isTip: true });
-  add("Core",     resolved.core as Loose);
-  add("Casing",   resolved.casing as Loose);
-  add("WD",       resolved.weightDisk as Loose);
-  add("AR",       resolved.attackRing as Loose);
-  add("BitBeast", resolved.bitBeast as Loose);
+  if (containsCasing) {
+    // Cup-inside-cup: inner parts first, tip cup last (outermost)
+    add("Core",     resolved.core as Loose,       { heightOffset: trackHeight });
+    add("Casing",   resolved.casing as Loose,     { heightOffset: trackHeight });
+    add("WD",       resolved.weightDisk as Loose, { heightOffset: trackHeight });
+    add("AR",       resolved.attackRing as Loose, { heightOffset: trackHeight });
+    add("BitBeast", resolved.bitBeast as Loose,   { heightOffset: trackHeight });
+    add("Tip (cup)", tipDoc, { isTip: false }); // cup drawn at its own height as outermost layer
+  } else {
+    add("Tip",      resolved.tip as Loose,      { isTip: true });
+
+    // SpinTrack column: thin cylinder between tip and casing
+    if (trackHeight > 0) {
+      const track = resolved.spinTrack as Loose;
+      const trackDims = track?.dimensions as { outerRadius?: number } | undefined;
+      layers.push({
+        label: `Track`,
+        color: (track?.color as string) ?? "#64748b",
+        heightMm: trackHeight,
+        radiusMm: trackDims?.outerRadius ?? 4,
+        innerRadiusMm: 2,
+        fourierProfile: undefined,
+        contactPoints: [],
+        freeSpin: false,
+        tipOffsetX: 0, tipOffsetY: 0,
+        isBottom: false,
+      });
+    }
+
+    add("Core",     resolved.core as Loose,       { heightOffset: trackHeight });
+    add("Casing",   resolved.casing as Loose,     { heightOffset: trackHeight });
+    add("WD",       resolved.weightDisk as Loose, { heightOffset: trackHeight });
+    add("AR",       resolved.attackRing as Loose, { heightOffset: trackHeight });
+    add("BitBeast", resolved.bitBeast as Loose,   { heightOffset: trackHeight });
+  }
 
   for (const { part: subPart } of resolved.subParts ?? []) {
     const loose = subPart as Loose;
-    add("Sub", loose, { freeSpin: loose.mode === "free_spin" });
+    add("Sub", loose, { freeSpin: loose.mode === "free_spin", heightOffset: trackHeight });
   }
 
   return layers.sort((a, b) => a.heightMm - b.heightMm);

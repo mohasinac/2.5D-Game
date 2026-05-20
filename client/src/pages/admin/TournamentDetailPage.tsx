@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   doc, onSnapshot, collection, query, where,
   updateDoc, addDoc, serverTimestamp, Timestamp, writeBatch, getDocs,
@@ -7,6 +7,7 @@ import {
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { C, pill, btn } from "@/styles/theme";
 import type { TournamentDoc, TournamentParticipantDoc, TournamentMatchDoc } from "@/types/game";
+import toast from "react-hot-toast";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: C.faint, registration: C.blue,
@@ -23,13 +24,11 @@ const ROUND_NAMES: Record<number, string> = { 1: "Round 1", 2: "Semifinals", 3: 
 
 export function TournamentDetailPage() {
   const { id: tournamentId } = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   const [tournament, setTournament] = useState<TournamentDoc | null>(null);
   const [participants, setParticipants] = useState<TournamentParticipantDoc[]>([]);
   const [matches, setMatches] = useState<TournamentMatchDoc[]>([]);
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
 
   // Add AI participant form state
   const [aiUsername, setAiUsername] = useState("Bot");
@@ -54,7 +53,9 @@ export function TournamentDetailPage() {
     setBusy(true);
     try {
       await updateDoc(doc(db, COLLECTIONS.TOURNAMENTS, tournamentId), { status, updatedAt: serverTimestamp() });
-      setMsg(`Status set to "${status}".`);
+      toast.success(`Status set to "${status}".`);
+    } catch (err: any) {
+      toast.error(`Failed to update status: ${err?.message ?? "unknown error"}`);
     } finally { setBusy(false); }
   };
 
@@ -75,7 +76,9 @@ export function TournamentDetailPage() {
       });
       setAiUsername("Bot");
       setAiBeybladeId("");
-      setMsg("AI participant added.");
+      toast.success("AI participant added.");
+    } catch (err: any) {
+      toast.error(`Failed to add AI: ${err?.message ?? "unknown error"}`);
     } finally { setBusy(false); }
   };
 
@@ -83,23 +86,27 @@ export function TournamentDetailPage() {
     setBusy(true);
     try {
       await updateDoc(doc(db, COLLECTIONS.TOURNAMENT_PARTICIPANTS, participantId), { status: "eliminated" });
-      setMsg("Participant removed.");
+      toast.success("Participant removed.");
+    } catch (err: any) {
+      toast.error(`Failed to remove participant: ${err?.message ?? "unknown error"}`);
     } finally { setBusy(false); }
   };
 
   const generateBracket = async () => {
     if (!tournamentId || !tournament) return;
     if (participants.filter((p) => p.status === "registered").length < 2) {
-      setMsg("Need at least 2 registered participants.");
+      toast.error("Need at least 2 registered participants.");
       return;
     }
     setBusy(true);
-    setMsg("Generating bracket...");
+    const generatingToast = toast.loading("Generating bracket...");
     try {
       // Check if bracket docs already exist
       const existing = await getDocs(query(collection(db, COLLECTIONS.TOURNAMENT_BRACKETS), where("tournamentId", "==", tournamentId)));
       if (!existing.empty) {
-        setMsg("Bracket already exists. Delete existing matches to regenerate.");
+        toast.dismiss(generatingToast);
+        toast.error("Bracket already exists. Delete existing matches to regenerate.");
+        setBusy(false);
         return;
       }
 
@@ -170,9 +177,11 @@ export function TournamentDetailPage() {
 
       await batch.commit();
       await updateDoc(doc(db, COLLECTIONS.TOURNAMENTS, tournamentId), { status: "in-progress", updatedAt: serverTimestamp() });
-      setMsg("Bracket generated and tournament started!");
+      toast.dismiss(generatingToast);
+      toast.success("Bracket generated and tournament started!");
     } catch (err: any) {
-      setMsg(`Error: ${err?.message ?? "unknown"}`);
+      toast.dismiss(generatingToast);
+      toast.error(`Failed to generate bracket: ${err?.message ?? "unknown"}`);
     } finally { setBusy(false); }
   };
 
@@ -196,12 +205,6 @@ export function TournamentDetailPage() {
           <span style={pill(STATUS_COLORS[tournament.status] ?? C.faint)}>{tournament.status}</span>
         </div>
       </div>
-
-      {msg && (
-        <div style={{ background: C.blue + "18", border: `1px solid ${C.blue}44`, borderRadius: 10, padding: "10px 14px", marginBottom: 16, color: C.blue, fontSize: 13 }}>
-          {msg}
-        </div>
-      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 20 }}>
         {/* Left */}

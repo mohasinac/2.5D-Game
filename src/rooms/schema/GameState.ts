@@ -298,6 +298,16 @@ export class Beyblade extends Schema {
   // Special move (determined by BitBeast part)
   @type("string") specialMove: string = "tactical_burst";
 
+  // ── 2.5D resolved part stats — written by applyStatModifier() / PartPhysics ─
+  // These are ephemeral per-tick values; physics engine reads them each frame.
+  @type("number") aggressiveness: number = 0.5;        // orbit aggressiveness (0–1)
+  @type("number") gripFactor: number = 0.3;            // floor grip (0–1)
+  @type("number") recoilFactor: number = 0.5;          // recoil on hit (0–1)
+  @type("number") spinStealResist: number = 1.0;       // spin-steal resistance (0–1; 1=immune)
+  @type("number") surfaceFriction: number = 1.0;       // floor surface friction multiplier
+  @type("number") contactDamageMultiplier: number = 1.0; // CP damage multiplier
+  @type("number") damageReduction: number = 1.0;       // incoming damage multiplier (lower = less damage)
+
   // Tip geometry (for off-center eccentric physics)
   @type("number") tipOffsetX: number = 0;   // mm
   @type("number") tipOffsetY: number = 0;   // mm

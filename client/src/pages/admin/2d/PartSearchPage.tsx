@@ -11,16 +11,18 @@ const PART_TYPES = [
   { label: "Casing", value: "casings" },
   { label: "Sub-Part", value: "sub-parts" },
   { label: "Bit Beast", value: "bit-beasts" },
+  { label: "Spin Track", value: "spin-tracks" },
 ];
 
 const PART_LINKS = [
-  { slug: "bit-beasts", label: "Bit Beasts", icon: "🐉", desc: "Special move identity pieces" },
-  { slug: "attack-rings", label: "Attack Rings", icon: "⚔️", desc: "Blade contact geometry" },
-  { slug: "weight-disks", label: "Weight Disks", icon: "🪨", desc: "Spin inertia and mass distribution" },
-  { slug: "sub-parts", label: "Sub-Parts", icon: "🔩", desc: "Free-spin, ratchet, and slip ring attachments" },
-  { slug: "tips", label: "Tips", icon: "🔺", desc: "Movement pattern and floor contact" },
-  { slug: "cores", label: "Cores", icon: "⚙️", desc: "Engine gear and gimmick cores" },
-  { slug: "casings", label: "Casings", icon: "🛡️", desc: "Body shell and tip-slot housing" },
+  { slug: "bit-beasts",   label: "Bit Beasts",   icon: "🐉", desc: "Special move identity pieces" },
+  { slug: "attack-rings", label: "Attack Rings",  icon: "⚔️", desc: "Blade contact geometry" },
+  { slug: "weight-disks", label: "Weight Disks",  icon: "🪨", desc: "Spin inertia and mass distribution" },
+  { slug: "sub-parts",    label: "Sub-Parts",     icon: "🔩", desc: "Free-spin, ratchet, and switch mechanisms" },
+  { slug: "tips",         label: "Tips",          icon: "🔺", desc: "Movement pattern and floor contact" },
+  { slug: "cores",        label: "Cores",         icon: "⚙️", desc: "Engine gear and gimmick cores" },
+  { slug: "casings",      label: "Casings",       icon: "🛡️", desc: "Body shell and tip-slot housing" },
+  { slug: "spin-tracks",  label: "Spin Tracks",   icon: "📏", desc: "Height piece between tip and fusion wheel" },
 ];
 
 export function PartSearchPage() {

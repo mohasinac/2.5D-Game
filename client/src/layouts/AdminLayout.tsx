@@ -25,6 +25,7 @@ const partLibraryItems = [
   { to: "/admin/2d/parts/tips",         label: "Tips",         icon: "🔺" },
   { to: "/admin/2d/parts/cores",        label: "Cores",        icon: "⚙️" },
   { to: "/admin/2d/parts/casings",      label: "Casings",      icon: "🛡️" },
+  { to: "/admin/2d/parts/spin-tracks",  label: "Spin Tracks",  icon: "📏" },
 ];
 
 function NavItem({ to, label, icon, end, indent = false }: { to: string; label: string; icon: string; end?: boolean; indent?: boolean }) {

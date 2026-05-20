@@ -13,6 +13,7 @@ import type {
   CorePart,
   CasingPart,
   BitBeastPart,
+  SpinTrackPart,
   AnyPart,
   SubPartAttachment,
   SystemContactPoint,
@@ -79,6 +80,7 @@ export interface ResolvedBeybladeSystem {
   tip: TipPart;
   core?: CorePart;
   casing: CasingPart;
+  spinTrack?: SpinTrackPart;
   subParts: Array<{ attachment: SubPartAttachment; part: SubPart }>;
 }
 
@@ -134,7 +136,14 @@ export function resolveBeybladeSystem(
     return { attachment, part };
   });
 
-  return { system, bitBeast, attackRing: ar, weightDisk: wd, tip, core, casing, subParts };
+  const spinTrack = system.spinTrackId
+    ? resolvePartConfig(
+        getRequired<SpinTrackPart>(system.spinTrackId, "spinTrack"),
+        system.activeConfigs?.spinTrack
+      )
+    : undefined;
+
+  return { system, bitBeast, attackRing: ar, weightDisk: wd, tip, core, casing, spinTrack, subParts };
 }
 
 // ─── computeBeybladeStats ─────────────────────────────────────────────────────
@@ -161,7 +170,6 @@ export function computeBeybladeStats(
   // ── Mass (g) ──
   const partMasses: number[] = [
     weightDisk.weight,
-    tip.dimensions.tipWidth, // tipWidth is small — not a real mass field; skip
     core?.weight ?? 0,
     bitBeast?.weight ?? 0,
   ];

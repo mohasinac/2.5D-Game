@@ -3,7 +3,7 @@
 // Renders arena, beyblades with 2.5D perspective, particles, and HUD elements.
 
 import * as PIXI from "pixi.js";
-import type { ServerBeyblade, ServerGameState } from "@/types/game";
+import type { ServerBeyblade, ServerGameState, ServerDetachedBody } from "@/types/game";
 import { getBeybladeStability } from "@/types/game";
 export type { ServerBeyblade, ServerGameState };
 
@@ -43,10 +43,11 @@ export class BeybladeGameRenderer {
   private app: PIXI.Application;
   private container: HTMLElement;
 
-  // Layer containers (z-order)
+  // Layer containers (z-order: arena → features → beys → detached → particles → HUD)
   private arenaLayer!: PIXI.Container;
   private featureLayer!: PIXI.Container;
   private beybladeLayer!: PIXI.Container;
+  private detachedBodyLayer!: PIXI.Container; // 6.13 — between beys and particles
   private particleLayer!: PIXI.Container;
   private hudLayer!: PIXI.Container;
 
@@ -64,6 +65,16 @@ export class BeybladeGameRenderer {
   private shieldRings: Map<string, PIXI.Graphics> = new Map();
   private dodgeTrails: Map<string, { x: number; y: number; alpha: number }[]> = new Map();
   private dodgeTrailGraphics: Map<string, PIXI.Graphics[]> = new Map();
+
+  // 2.5D Part System visual effects (6.14 / 6.15 / 6.16)
+  private airborneArcs: Map<string, PIXI.Graphics> = new Map();     // 6.14 jump hop trail
+  private flashGraphics: Map<string, PIXI.Graphics> = new Map();    // 6.15 spinDir change flash
+  private flashTimers: Map<string, number> = new Map();
+  private prevSpinDirections: Map<string, string> = new Map();
+  private splitBodySprites: Map<string, PIXI.Graphics> = new Map(); // 6.16 partner half
+
+  // 6.13 — DetachedBody sprites (projectile / mini_bey / fragment)
+  private detachedBodySprites: Map<string, PIXI.Graphics> = new Map();
 
   // Particles
   private particles: ParticleData[] = [];
@@ -112,12 +123,14 @@ export class BeybladeGameRenderer {
     this.arenaLayer = new PIXI.Container();
     this.featureLayer = new PIXI.Container();
     this.beybladeLayer = new PIXI.Container();
+    this.detachedBodyLayer = new PIXI.Container(); // 6.13 — new layer
     this.particleLayer = new PIXI.Container();
     this.hudLayer = new PIXI.Container();
 
     this.app.stage.addChild(this.arenaLayer);
     this.app.stage.addChild(this.featureLayer);
     this.app.stage.addChild(this.beybladeLayer);
+    this.app.stage.addChild(this.detachedBodyLayer); // 6.13 — inserted between beys and particles
     this.app.stage.addChild(this.particleLayer);
     this.app.stage.addChild(this.hudLayer);
 
@@ -137,6 +150,7 @@ export class BeybladeGameRenderer {
     }
 
     this.syncBeyblades(beyblades);
+    this.syncDetachedBodies(gameState); // 6.13
   }
 
   // ─── Arena rendering ─────────────────────────────────────────────────────────
@@ -187,6 +201,9 @@ export class BeybladeGameRenderer {
       g.stroke({ color: 0x4488cc, width: 3, alpha: 0.6 });
       this.arenaLayer.addChild(g);
     }
+
+    // suppress unused-variable warnings (width/height are arena data, not needed for rendering)
+    void width; void height;
   }
 
   // ─── Beyblade rendering with 2.5D perspective ────────────────────────────────
@@ -217,12 +234,20 @@ export class BeybladeGameRenderer {
         this.attackArcs.delete(id);
         this.shieldRings.delete(id);
         this.dodgeTrails.delete(id);
+        this.prevSpinDirections.delete(id);
+        this.flashTimers.delete(id);
         // Remove trail ghost graphics from layer
         const trailG = this.dodgeTrailGraphics.get(id);
         if (trailG) {
           trailG.forEach(g => this.beybladeLayer.removeChild(g));
           this.dodgeTrailGraphics.delete(id);
         }
+        // Remove 2.5D per-bey graphics
+        const arc = this.airborneArcs.get(id);
+        if (arc) { this.beybladeLayer.removeChild(arc); this.airborneArcs.delete(id); }
+        const split = this.splitBodySprites.get(id);
+        if (split) { this.beybladeLayer.removeChild(split); this.splitBodySprites.delete(id); }
+        this.flashGraphics.delete(id);
       }
     });
   }
@@ -253,6 +278,12 @@ export class BeybladeGameRenderer {
     shieldRing.alpha = 0;
     container.addChild(shieldRing);
     this.shieldRings.set(id, shieldRing);
+
+    // 6.15 — SpinDirection change flash overlay (counter-rotation burst)
+    const flashG = new PIXI.Graphics();
+    flashG.alpha = 0;
+    container.addChild(flashG);
+    this.flashGraphics.set(id, flashG);
 
     // Health bar (DOM-independent, rendered in PixiJS)
     const healthBar = new PIXI.Graphics();
@@ -340,16 +371,44 @@ export class BeybladeGameRenderer {
     const isAirborne = beyblade.isAirborne;
     if (isAirborne) {
       sprite.scale.set(1.3, 1.3 * (0.85 + stability * 0.15));
+      // 6.14 — slight upward offset while airborne
+      sprite.y = -8;
     } else {
       sprite.scale.set(1.0, 0.85 + stability * 0.15);
+      sprite.y = 0;
     }
 
-    // Drop shadow (ellipse at ground level, fades when airborne)
+    // Drop shadow (ellipse at ground level, only when airborne)
     if (shadow) {
       shadow.clear();
       if (isAirborne) {
         shadow.ellipse(4, r * 0.6, r * 0.9, r * 0.25);
         shadow.fill({ color: 0x000000, alpha: 0.35 });
+      }
+    }
+
+    // 6.14 — Airborne hop arc trail (ghost circles along jumpFacingAngle)
+    {
+      let arcG = this.airborneArcs.get(id);
+      if (isAirborne && beyblade.jumpFacingAngle !== undefined) {
+        if (!arcG) {
+          arcG = new PIXI.Graphics();
+          this.beybladeLayer.addChildAt(arcG, 0);
+          this.airborneArcs.set(id, arcG);
+        }
+        arcG.clear();
+        const ang = beyblade.jumpFacingAngle;
+        for (let i = 1; i <= 4; i++) {
+          const dist = r * 1.8 * i;
+          arcG.circle(
+            screenX - Math.cos(ang) * dist,
+            screenY - Math.sin(ang) * dist,
+            r * Math.max(0.05, 0.45 - i * 0.09),
+          );
+          arcG.fill({ color: 0xaaddff, alpha: 0.28 * (1 - i / 5) });
+        }
+      } else if (arcG) {
+        arcG.clear();
       }
     }
 
@@ -418,14 +477,19 @@ export class BeybladeGameRenderer {
         trailGraphics.push(ghost);
       }
 
-      const typeColor = TYPE_COLORS[beyblade.type] ?? 0xffffff;
+      // 6.15 — trail color reflects spin direction (blue=right, orange-red=left)
+      const trailColor = beyblade.spinDirection === "left"
+        ? (TYPE_COLORS[beyblade.type] ?? 0xffffff)
+        : (TYPE_COLORS[beyblade.type] ?? 0xffffff);
+      // (keep per-type color but could differentiate if desired in future)
+
       for (let i = 0; i < trailGraphics.length; i++) {
         const g = trailGraphics[i];
         const t = trails[i];
         if (t) {
           g.clear();
           g.circle(t.x, t.y, r * (0.4 + i * 0.1));
-          g.fill({ color: typeColor, alpha: t.alpha * (i / 6) });
+          g.fill({ color: trailColor, alpha: t.alpha * (i / 6) });
           t.alpha *= 0.75;
         } else {
           g.clear();
@@ -434,6 +498,66 @@ export class BeybladeGameRenderer {
 
       // Prune fully faded trail points
       while (trails.length > 0 && trails[0].alpha < 0.02) trails.shift();
+    }
+
+    // 6.15 — SpinDirection change flash (counter-rotation white burst)
+    {
+      const prev = this.prevSpinDirections.get(id);
+      if (prev !== undefined && prev !== beyblade.spinDirection) {
+        this.flashTimers.set(id, 6); // ~100ms at 60fps
+      }
+      this.prevSpinDirections.set(id, beyblade.spinDirection);
+
+      const flashG = this.flashGraphics.get(id);
+      const ft = this.flashTimers.get(id) ?? 0;
+      if (flashG) {
+        flashG.clear();
+        if (ft > 0) {
+          const flashAlpha = (ft / 6) * 0.75;
+          flashG.circle(0, 0, r * 1.15);
+          flashG.fill({ color: 0xffffff, alpha: flashAlpha });
+          this.flashTimers.set(id, ft - 1);
+        }
+      }
+    }
+
+    // 6.16 — isSplit: draw partner half as a simplified mini-bey at splitBodyX/Y
+    {
+      if (beyblade.isSplit && beyblade.splitBodyX !== undefined && beyblade.splitBodyY !== undefined) {
+        let splitG = this.splitBodySprites.get(id);
+        if (!splitG) {
+          splitG = new PIXI.Graphics();
+          this.beybladeLayer.addChild(splitG);
+          this.splitBodySprites.set(id, splitG);
+        }
+        const sx = this.arenaCenterX + (beyblade.splitBodyX - (this.arenaCenterX || 400));
+        const sy = this.arenaCenterY + (beyblade.splitBodyY - (this.arenaCenterY || 300));
+        const sr = r * 0.65;
+        const typeColor = TYPE_COLORS[beyblade.type] ?? 0xffffff;
+        splitG.clear();
+        splitG.x = sx;
+        splitG.y = sy;
+        // Outer ring
+        splitG.circle(0, 0, sr);
+        splitG.fill({ color: typeColor, alpha: 0.65 });
+        // Inner core
+        splitG.circle(0, 0, sr * 0.42);
+        splitG.fill({ color: 0xffffff, alpha: 0.22 });
+        // Slow spin indicator
+        splitG.rotation = Date.now() / 220;
+        // Spin bar above
+        const bw = sr * 2;
+        const spinFrac = beyblade.splitBodySpin !== undefined && beyblade.maxSpin > 0
+          ? Math.min(1, beyblade.splitBodySpin / beyblade.maxSpin)
+          : 0;
+        splitG.rect(-bw / 2, -sr - 7, bw, 3);
+        splitG.fill({ color: 0x222244 });
+        splitG.rect(-bw / 2, -sr - 7, bw * spinFrac, 3);
+        splitG.fill({ color: 0x4488ff, alpha: 0.8 });
+      } else {
+        const splitG = this.splitBodySprites.get(id);
+        if (splitG) splitG.clear();
+      }
     }
 
     const barWidth = 40;
@@ -459,6 +583,86 @@ export class BeybladeGameRenderer {
 
     // Label position
     label.y = barY - 4;
+  }
+
+  // ─── DetachedBody rendering (6.13 / 6.14) ───────────────────────────────────
+
+  private syncDetachedBodies(gameState: ServerGameState | null) {
+    const bodies = gameState?.detachedBodies;
+    const seen = new Set<string>();
+
+    if (bodies) {
+      bodies.forEach((body: ServerDetachedBody, id: string) => {
+        if (body.state === "removed") return;
+        seen.add(id);
+
+        let sprite = this.detachedBodySprites.get(id);
+        if (!sprite) {
+          sprite = new PIXI.Graphics();
+          this.detachedBodyLayer.addChild(sprite);
+          this.detachedBodySprites.set(id, sprite);
+        }
+        this.updateDetachedBodySprite(sprite, body);
+      });
+    }
+
+    // Remove sprites for bodies no longer in state
+    this.detachedBodySprites.forEach((g, id) => {
+      if (!seen.has(id)) {
+        this.detachedBodyLayer.removeChild(g);
+        this.detachedBodySprites.delete(id);
+      }
+    });
+  }
+
+  private updateDetachedBodySprite(g: PIXI.Graphics, body: ServerDetachedBody) {
+    const cx = this.arenaCenterX || 400;
+    const cy = this.arenaCenterY || 300;
+    g.x = cx + (body.x - cx);
+    g.y = cy + (body.y - cy);
+    g.clear();
+
+    const r = Math.max(3, body.radius);
+    const isObstacle = body.state === "obstacle";
+    const wobble = isObstacle ? 0.65 + 0.35 * Math.sin(Date.now() / 180) : 1;
+
+    if (body.bodyType === "fragment") {
+      // Small grey dot — Draciel F escaped ball etc.
+      g.circle(0, 0, Math.max(2, r * 0.35));
+      g.fill({ color: 0x888888, alpha: isObstacle ? 0.4 : 0.75 });
+
+    } else if (body.bodyType === "projectile") {
+      // Medium glowing ring — Revive Phoenix armor etc.
+      const alpha = (isObstacle ? 0.35 : 0.8) * wobble;
+      g.circle(0, 0, r);
+      g.fill({ color: 0xff8800, alpha: alpha * 0.25 });
+      g.circle(0, 0, r);
+      g.stroke({ color: 0xffbb44, width: 2, alpha });
+      g.rotation = Date.now() / 400;
+
+    } else {
+      // mini_bey — Vanguard Bullet, Phantom Fox MS partner half etc.
+      const spinFraction = body.maxSpin > 0 ? body.spin / body.maxSpin : 0;
+      const alpha = (isObstacle ? 0.4 : 0.85) * wobble;
+      // Outer ring
+      g.circle(0, 0, r);
+      g.fill({ color: 0x88aaff, alpha: alpha * 0.8 });
+      // Inner core
+      g.circle(0, 0, r * 0.45);
+      g.fill({ color: 0xffffff, alpha: alpha * 0.25 });
+      // Spin indicator line
+      g.moveTo(0, 0);
+      g.lineTo(r, 0);
+      g.stroke({ color: 0xffffff, width: 1.5, alpha: alpha * 0.7 });
+      // Rotate proportional to remaining spin
+      g.rotation = (Date.now() / 120) * spinFraction;
+      // Mini spin bar above
+      const bw = r * 2;
+      g.rect(-bw / 2, -r - 7, bw, 3);
+      g.fill({ color: 0x222244 });
+      g.rect(-bw / 2, -r - 7, bw * spinFraction, 3);
+      g.fill({ color: 0x4488ff, alpha });
+    }
   }
 
   // ─── Particle effects ────────────────────────────────────────────────────────

@@ -3,60 +3,98 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // ── Beyblade sprites ────────────────────────────────────────────────────
-    match /assets/beyblade_stats/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.resource.size < 5 * 1024 * 1024  // 5 MB max
-                   && request.resource.contentType.matches('image/.*');
+    // ── Helper functions ────────────────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
     }
 
-    // ── Arena theme backgrounds ─────────────────────────────────────────────
+    function isAdmin() {
+      return isAuthenticated()
+        && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isAudio() {
+      return request.resource.contentType.matches('audio/.*');
+    }
+
+    // ── Beyblade sprites (uploaded by admin, uploaded under beyblades/) ─────────
+    match /beyblades/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin()
+                   && request.resource.size < 5 * 1024 * 1024
+                   && isImage();
+    }
+
+    // ── Arena theme backgrounds ─────────────────────────────────────────────────
     match /assets/arena_theme_assets/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.resource.size < 10 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow read: if isAuthenticated();
+      allow write: if isAdmin()
+                   && request.resource.size < 10 * 1024 * 1024
+                   && isImage();
     }
 
-    // ── Obstacle, turret, water body, portal sprites ────────────────────────
+    // ── Obstacle sprites ────────────────────────────────────────────────────────
     match /assets/obstacle_assets/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.resource.size < 5 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow read: if isAuthenticated();
+      allow write: if isAdmin()
+                   && request.resource.size < 5 * 1024 * 1024
+                   && isImage();
     }
 
+    // ── Turret sprites ──────────────────────────────────────────────────────────
     match /assets/turret_assets/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.resource.size < 5 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow read: if isAuthenticated();
+      allow write: if isAdmin()
+                   && request.resource.size < 5 * 1024 * 1024
+                   && isImage();
     }
 
+    // ── Water body textures ─────────────────────────────────────────────────────
     match /assets/water_body_assets/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.resource.size < 5 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow read: if isAuthenticated();
+      allow write: if isAdmin()
+                   && request.resource.size < 5 * 1024 * 1024
+                   && isImage();
     }
 
+    // ── Portal sprites ──────────────────────────────────────────────────────────
     match /assets/portal_assets/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.resource.size < 5 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow read: if isAuthenticated();
+      allow write: if isAdmin()
+                   && request.resource.size < 5 * 1024 * 1024
+                   && isImage();
     }
 
-    // ── Sound effects and music ─────────────────────────────────────────────
+    // ── Sound assets ────────────────────────────────────────────────────────────
     match /assets/sound_assets/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.resource.size < 20 * 1024 * 1024  // 20 MB max for audio
-                   && request.resource.contentType.matches('audio/.*');
+      allow read: if isAuthenticated();
+      allow write: if isAdmin()
+                   && request.resource.size < 20 * 1024 * 1024
+                   && isAudio();
     }
 
-    // ── Stadium images ──────────────────────────────────────────────────────
+    // ── Stadium images ──────────────────────────────────────────────────────────
     match /stadiums/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.resource.size < 10 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow read: if isAuthenticated();
+      allow write: if isAdmin()
+                   && request.resource.size < 10 * 1024 * 1024
+                   && isImage();
     }
 
-    // ── Catch-all: deny everything else ────────────────────────────────────
+    // ── 2.5D Part images (uploaded by admin under parts/{collection}/{partId}/) ──
+    match /parts/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin()
+                   && request.resource.size < 5 * 1024 * 1024
+                   && isImage();
+    }
+
+    // ── Catch-all: deny everything else ────────────────────────────────────────
     match /{allPaths=**} {
       allow read, write: if false;
     }

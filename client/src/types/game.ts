@@ -47,6 +47,29 @@ export interface ServerBeyblade {
   dodgeBuffTimer: number;
   stunTimer: number;
   comboExecuting: boolean;
+  // 2.5D Part System fields (optional — only present when PartSystemManager is active)
+  isSplit?: boolean;
+  splitBodyX?: number;
+  splitBodyY?: number;
+  splitBodySpin?: number;
+  counterRotActive?: boolean;
+  jumpFacingAngle?: number;
+}
+
+export interface ServerDetachedBody {
+  id: string;
+  bodyType: "projectile" | "mini_bey" | "fragment";
+  state: "projectile" | "obstacle" | "removed";
+  ownerSessionId: string;
+  x: number;
+  y: number;
+  velocityX: number;
+  velocityY: number;
+  angle: number;
+  radius: number;
+  mass: number;
+  spin: number;
+  maxSpin: number;
 }
 
 export interface ServerGameState {
@@ -58,18 +81,20 @@ export interface ServerGameState {
   matchId: string;
   arena: ServerArenaState | null;
   beyblades: Map<string, ServerBeyblade>;
-  // Tournament metadata
-  tournamentId: string;
-  tournamentName: string;
-  roundNumber: number;
-  tournamentMatchId: string;
+  // 2.5D detached bodies (projectile / mini_bey / fragment) — absent in standard 2D matches
+  detachedBodies?: Map<string, ServerDetachedBody>;
+  // Tournament metadata (optional — absent in non-tournament modes)
+  tournamentId?: string;
+  tournamentName?: string;
+  roundNumber?: number;
+  tournamentMatchId?: string;
   // Spectator tracking
-  spectatorCount: number;
+  spectatorCount?: number;
   // Series format (BO1 / BO3 / BO5)
-  currentGame: number;
-  targetWins: number;
-  seriesWins: Map<string, number>;
-  seriesLeader: string;
+  currentGame?: number;
+  targetWins?: number;
+  seriesWins?: Map<string, number>;
+  seriesLeader?: string;
 }
 
 // ─── Tournament types ─────────────────────────────────────────────────────────

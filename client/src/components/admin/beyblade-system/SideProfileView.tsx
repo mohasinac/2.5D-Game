@@ -64,20 +64,28 @@ interface Props {
   height?: number;
 }
 
-function buildLayers(resolved: ResolvedBeybladeSystem): LayerInfo[] {
+function buildLayers(resolved: ResolvedBeybladeSystem): {
+  layers: LayerInfo[];
+  trackHeight: number;
+  containsCasing: boolean;
+  trackShieldDisk?: { diskHeight: number; diskRadius: number; color: string };
+} {
   const layers: LayerInfo[] = [];
+  const tip = resolved.tip as Loose | undefined;
+  const containsCasing = !!(tip?.containsCasing);
+  const trackHeight = (resolved.spinTrack as Loose | undefined)?.height ?? 0;
 
   const add = (
     label: string,
     part: Loose | null | undefined,
     isTip = false,
-    tipOffsetX = 0,
-    tipOffsetY = 0,
+    heightOffset = 0,
   ) => {
     if (!part) return;
     const dims = part.dimensions as { height?: number; outerRadius?: number; innerRadius?: number; radius?: number; tipWidth?: number } | undefined;
-    const heightMm = dims?.height ?? 0;
-    if (heightMm <= 0) return;
+    const rawHeight = dims?.height ?? 0;
+    if (rawHeight <= 0) return;
+    const heightMm = rawHeight + heightOffset;
     const fallbackR = dims?.outerRadius ?? dims?.radius ?? 10;
     const geometry = part.geometry as PartShape | undefined;
     const radiusMm = isTip
@@ -92,30 +100,65 @@ function buildLayers(resolved: ResolvedBeybladeSystem): LayerInfo[] {
       innerRadiusMm: isTip ? 0 : (dims?.innerRadius ?? 0),
       contactPoints: (part.contactPoints as SystemContactPoint[]) ?? [],
       isTip,
-      tipOffsetX,
-      tipOffsetY,
+      tipOffsetX: 0,
+      tipOffsetY: 0,
     });
   };
 
-  add("Tip",      resolved.tip as Loose,        true);
-  add("Core",     resolved.core as Loose);
-  add("Casing",   resolved.casing as Loose);
-  add("WD",       resolved.weightDisk as Loose);
-  add("AR",       resolved.attackRing as Loose);
-  add("BitBeast", resolved.bitBeast as Loose);
+  if (containsCasing) {
+    // Cup-inside-cup: casing renders first (inner), tip cup renders last (outermost)
+    add("Core",     resolved.core as Loose, false, trackHeight);
+    add("Casing",   resolved.casing as Loose, false, trackHeight);
+    add("WD",       resolved.weightDisk as Loose, false, trackHeight);
+    add("AR",       resolved.attackRing as Loose, false, trackHeight);
+    add("BitBeast", resolved.bitBeast as Loose, false, trackHeight);
+    // Tip cup drawn last with full height — no offset (it IS the outermost shell)
+    add("Tip (cup)", tip, true);
+  } else {
+    // Standard stacking — tip at bottom, track lifts everything above it
+    add("Tip",      tip, true);
+    if (trackHeight > 0) {
+      // SpinTrack column: drawn as a thin rectangular column
+      const track = resolved.spinTrack as Loose;
+      const trackDims = track?.dimensions as { outerRadius?: number } | undefined;
+      layers.push({
+        label: `Track (${trackHeight}mm)`,
+        color: (track?.color as string) ?? "#64748b",
+        heightMm: trackHeight,
+        radiusMm: trackDims?.outerRadius ?? 4,
+        innerRadiusMm: 2,
+        contactPoints: [],
+        isTip: false, tipOffsetX: 0, tipOffsetY: 0,
+      });
+    }
+    add("Core",     resolved.core as Loose, false, trackHeight);
+    add("Casing",   resolved.casing as Loose, false, trackHeight);
+    add("WD",       resolved.weightDisk as Loose, false, trackHeight);
+    add("AR",       resolved.attackRing as Loose, false, trackHeight);
+    add("BitBeast", resolved.bitBeast as Loose, false, trackHeight);
+  }
 
   for (const { part: subPart, attachment } of resolved.subParts ?? []) {
     const hLabel = attachment.placement === "above" ? "↑" : "↓";
-    add(`Sub (${hLabel})`, subPart as Loose);
+    add(`Sub (${hLabel})`, subPart as Loose, false, trackHeight);
   }
 
-  return layers;
+  // Shield disk info for separate rendering
+  const trackDoc = resolved.spinTrack as Loose | undefined;
+  const sd = trackDoc?.shieldDisk as { enabled?: boolean; diskHeight?: number; diskRadius?: number } | undefined;
+  const trackShieldDisk = sd?.enabled
+    ? { diskHeight: (sd.diskHeight ?? 0), diskRadius: sd.diskRadius ?? 17, color: (trackDoc?.color as string) ?? "#64748b" }
+    : undefined;
+
+  return { layers, trackHeight, containsCasing, trackShieldDisk };
 }
 
 function drawView(
   ctx: CanvasRenderingContext2D,
   layers: LayerInfo[],
   maxH: number,
+  trackShieldDisk?: { diskHeight: number; diskRadius: number; color: string },
+  trackHeight = 0,
 ) {
   ctx.clearRect(0, 0, W, H);
   ctx.fillStyle = C.bg0 ?? "#0f172a";
@@ -240,6 +283,38 @@ function drawView(
     }
   }
 
+  // ── Shield disk horizontal bar ────────────────────────────────────────────
+  if (trackShieldDisk) {
+    const dY = toY(trackShieldDisk.diskHeight);
+    const dX1 = toXl(trackShieldDisk.diskRadius);
+    const dX2 = toX(trackShieldDisk.diskRadius);
+    ctx.fillStyle = trackShieldDisk.color + "55";
+    ctx.fillRect(dX1, dY - 3, dX2 - dX1, 6);
+    ctx.strokeStyle = trackShieldDisk.color + "cc";
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 2]);
+    ctx.strokeRect(dX1, dY - 3, dX2 - dX1, 6);
+    ctx.setLineDash([]);
+    ctx.fillStyle = trackShieldDisk.color;
+    ctx.font = "8px sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(`Shield @${trackShieldDisk.diskHeight}mm`, toX(trackShieldDisk.diskRadius) + 3, dY + 3);
+  }
+
+  // ── Track height annotation ───────────────────────────────────────────────
+  if (trackHeight > 0) {
+    const tY = toY(trackHeight);
+    ctx.strokeStyle = "#f59e0b44";
+    ctx.lineWidth = 0.8;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(PAD.left, tY); ctx.lineTo(W - PAD.right, tY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#f59e0b";
+    ctx.font = "8px sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(`+${trackHeight}mm track`, PAD.left + DRAW_W - 2, tY - 3);
+  }
+
   // ── Floor label ───────────────────────────────────────────────────────────
   ctx.fillStyle = C.faint ?? "#475569";
   ctx.font = "9px sans-serif";
@@ -267,9 +342,9 @@ export function SideProfileView({ resolved, width = W, height = H }: Props) {
       return;
     }
 
-    const layers = buildLayers(resolved);
+    const { layers, trackHeight, trackShieldDisk } = buildLayers(resolved);
     const maxH = layers.reduce((m, l) => Math.max(m, l.heightMm), 60);
-    drawView(ctx, layers, maxH + 4);
+    drawView(ctx, layers, maxH + 4, trackShieldDisk, trackHeight);
   }, [resolved, width, height]);
 
   return (

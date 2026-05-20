@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { C, btn, btnOutline } from "@/styles/theme";
+import toast from "react-hot-toast";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -145,9 +146,12 @@ export function CompatibilityTagsPage() {
       );
 
       setRenaming(null);
+      toast.success(`Tag renamed from "${oldName}" to "${newName}".`);
       await fetchTags();
     } catch (err) {
-      setError(`Rename failed: ${String(err)}`);
+      const msg = `Rename failed: ${String(err)}`;
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }

@@ -3,6 +3,8 @@ node_modules/
 dist/
 *.log
 .env
+.env.local
+.env.*.local
 serviceAccountKey.json
 .DS_Store
 *.tsbuildinfo

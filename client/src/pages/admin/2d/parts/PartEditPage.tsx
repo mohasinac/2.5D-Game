@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { COLLECTIONS } from "@/lib/firebase";
 import { C } from "@/styles/theme";
 import { PartEditor } from "@/components/admin/part-editor/PartEditor";
+import { makeTypeFieldRenderer } from "@/components/admin/part-editor/PartTypeFields";
 
 const PART_TYPE_COLLECTION: Record<string, string> = {
   "bit-beasts":   COLLECTIONS.BIT_BEAST_PARTS,
@@ -11,6 +12,7 @@ const PART_TYPE_COLLECTION: Record<string, string> = {
   "tips":         COLLECTIONS.TIP_PARTS,
   "cores":        COLLECTIONS.CORE_PARTS,
   "casings":      COLLECTIONS.CASING_PARTS,
+  "spin-tracks":  COLLECTIONS.SPIN_TRACK_PARTS,
 };
 
 const PART_TYPE_LABEL: Record<string, string> = {
@@ -21,6 +23,7 @@ const PART_TYPE_LABEL: Record<string, string> = {
   "tips":         "Tip",
   "cores":        "Core",
   "casings":      "Casing",
+  "spin-tracks":  "Spin Track",
 };
 
 // Per-type config: some part types don't use contact points or material bands
@@ -32,6 +35,7 @@ const PART_TYPE_CONFIG: Record<string, { hasContactPoints: boolean; hasMaterialB
   "tips":         { hasContactPoints: true,  hasMaterialBands: false, showInnerRadius: false },
   "cores":        { hasContactPoints: false, hasMaterialBands: false, showInnerRadius: false },
   "casings":      { hasContactPoints: true,  hasMaterialBands: true,  showInnerRadius: true  },
+  "spin-tracks":  { hasContactPoints: true,  hasMaterialBands: true,  showInnerRadius: true  },
 };
 
 export function PartEditPage() {
@@ -74,6 +78,7 @@ export function PartEditPage() {
           hasContactPoints={config.hasContactPoints}
           hasMaterialBands={config.hasMaterialBands}
           showInnerRadius={config.showInnerRadius}
+          renderTypeFields={makeTypeFieldRenderer(partType)}
         />
       </div>
     </div>

@@ -4,6 +4,7 @@ import { collection, onSnapshot, query, orderBy, doc, updateDoc, serverTimestamp
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { C, pill, btn } from "@/styles/theme";
 import type { TournamentDoc } from "@/types/game";
+import toast from "react-hot-toast";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: C.faint,
@@ -40,6 +41,9 @@ export function TournamentsListPage() {
     setUpdating(id);
     try {
       await updateDoc(doc(db, COLLECTIONS.TOURNAMENTS, id), { status, updatedAt: serverTimestamp() });
+      toast.success(`Status updated to "${status}".`);
+    } catch (err: any) {
+      toast.error(`Failed to update status: ${err?.message ?? "unknown error"}`);
     } finally {
       setUpdating(null);
     }

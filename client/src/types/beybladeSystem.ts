@@ -1,13 +1,23 @@
 // [2.5D] Beyblade System — part library types, shape math, and composition schema.
 // This is separate from BeybladeStats — it's the modular part-library system.
 // A BeybladeSystem composes parts by ID; computeBeybladeStats() converts it to BeybladeStats.
+//
+// Runtime constants live in beybladeConstants.ts and are re-exported here for
+// backward compatibility — existing imports from this module continue to work.
 
 import type { BeybladeStats } from "./beybladeStats";
 export type { BeybladeStats };
 
 // ─── Core Enums ───────────────────────────────────────────────────────────────
 
-export type Material = "abs" | "rubber" | "metal" | "pom" | "polycarbonate";
+export type Material =
+  | "abs"
+  | "rubber"
+  | "metal"
+  | "pom"
+  | "polycarbonate"
+  | "nylon"
+  | "pc";
 export type AttackType = "smash" | "upper" | "absorb" | "burst" | "spin_steal";
 
 export type PartLayer =
@@ -17,9 +27,10 @@ export type PartLayer =
   | "tip"
   | "core"
   | "casing"
+  | "spin_track"
   | "sub_part"; // generic — sub_ar / wd_sub / sub_casing all unified here
 
-export type SubPartParent = "ar" | "wd" | "casing" | "bit_beast";
+export type SubPartParent = "ar" | "wd" | "casing" | "bit_beast" | "tip" | "core";
 export type SubPartMode = "free_spin" | "partial_slip" | "fixed" | "ratchet";
 
 export type TipShape =
@@ -30,6 +41,9 @@ export type TipShape =
   | "ball"
   | "spike"
   | "rubber_flat"
+  | "hole_flat"   // wide ring with hollow center; orbital, moderately defensive
+  | "rubber_ball" // rubber ball; wide, semi-orbital, defense, high friction
+  | "defense"     // D-tip shape; wider than spike, curved holes, recovery-capable
   | "custom";
 
 export type WDCategory =
@@ -56,27 +70,35 @@ export type CoreGimmick =
   | "weight_shift"
   | "magnetic"
   | "engine_gear"
-  | "clutch_release";
+  | "clutch_release"
+  | "spin_injection"    // actively adds spin per tick from reserve
+  | "counter_rotation"; // zig-zag via spin direction sequence
 
 export type SpecialMove =
+  | "none"
   | "stampede_rush"
   | "gyro_anchor"
   | "spin_recovery"
   | "tactical_burst"
   | "custom";
 
-// ─── Material Multipliers ─────────────────────────────────────────────────────
+// ─── DetachedBody Types ───────────────────────────────────────────────────────
 
-export const MATERIAL_MULTIPLIERS: Record<
-  Material,
-  { damage: number; spinSteal: number; recoil: number }
-> = {
-  abs: { damage: 1.0, spinSteal: 0.5, recoil: 0.7 },
-  rubber: { damage: 0.7, spinSteal: 1.5, recoil: 0.4 },
-  metal: { damage: 1.5, spinSteal: 0.8, recoil: 1.2 },
-  pom: { damage: 1.1, spinSteal: 0.7, recoil: 0.9 },
-  polycarbonate: { damage: 0.9, spinSteal: 0.6, recoil: 0.8 },
-};
+export type DetachedBodyType = "projectile" | "mini_bey" | "fragment";
+export type DetachedBodyState = "projectile" | "obstacle" | "removed";
+
+// ─── Material Stats + Runtime Constants ──────────────────────────────────────
+// Constants live in beybladeConstants.ts (no circular imports).
+// Re-exported here so existing importers continue to work without changes.
+
+export type { MaterialStats } from "./beybladeConstants";
+export {
+  MATERIAL_MULTIPLIERS,
+  MATERIAL_STATS,
+  PART_TYPE_COLLECTION,
+  PART_TYPE_SLUG,
+  SLUG_TO_PART_TYPE,
+} from "./beybladeConstants";
 
 // ─── Mathematical Shape Representations ──────────────────────────────────────
 // All shapes stored as compact mathematical forms — NOT flat pixel arrays.
@@ -179,7 +201,11 @@ export interface PartPocket {
   shape: "round" | "oval" | "channel" | "arc";
   ballMaterial: "metal" | "plastic";
   ballCount: number;
-  fixed: boolean; // false = ball moves under centrifugal/tilt force
+  fixed: boolean;             // false = ball moves under centrifugal/tilt force
+  radialChannel?: boolean;   // ball constrained to radial axis only (arc channel — Draciel F)
+  escapable?: boolean;       // ball can exit pocket under centrifugal force
+  escapeForce?: number;      // centrifugal force threshold; 0 = inescapable
+  escapedBallMass?: number;  // g — escaped ball becomes DetachedBody 'fragment'
 }
 
 // ─── Contact Point ────────────────────────────────────────────────────────────
@@ -255,13 +281,21 @@ export function synthesizeRadialCache(fp: FourierRadialProfile): number[] {
 
 export interface ConfigTrigger {
   type:
-    | "spin_threshold" // bey own spin < threshold (0–1 fraction of maxSpin)
+    | "spin_threshold"       // bey own spin < threshold (0–1 fraction of maxSpin)
     | "subpart_spin_threshold" // sub-part accumulated spin >= threshold RPM
-    | "impact_threshold" // single impact force >= threshold
-    | "timer" // elapsed seconds >= threshold
-    | "core_activated" // engine_gear or clutch_release fires
-    | "external_part_state"; // another part on same bey reaching a condition
+    | "impact_threshold"     // single impact force >= threshold
+    | "timer"                // elapsed seconds >= threshold
+    | "core_activated"       // engine_gear or clutch_release fires
+    | "external_part_state"  // another part on same bey reaching a condition
+    | "impact_any"           // any impact >= threshold, any direction; supports togglePrevious
+    | "impact_direction"     // impact from specific spin direction >= threshold
+    | "tilt_threshold"       // bey's wobbleAmplitude (degrees) exceeds threshold
+    | "special_move";        // fires when the bey's special move is activated
   threshold: number;
+  // impact_direction: restrict to hits from a specific spin direction
+  direction?: "clockwise" | "counterclockwise" | "any";
+  // impact_any / impact_direction: each qualifying fire flip-flops prev ↔ current config
+  togglePrevious?: boolean;
   externalPartSlot?: PartLayer;
   externalCondition?:
     | "config_changed"
@@ -269,6 +303,16 @@ export interface ConfigTrigger {
     | "spin_threshold"
     | "core_activated";
   externalThreshold?: number;
+}
+
+// ─── Switch Target (SubPart-as-Switch architecture) ───────────────────────────
+
+export interface SwitchTarget {
+  targetLayer: PartLayer;        // part slot to affect: 'tip', 'ar', 'wd', 'casing', 'core'
+  activateConfig: string;        // config name to set on that part
+  trigger: ConfigTrigger;        // condition that fires this switch
+  resetToConfig?: string;        // if set: revert to this config when resetCondition met
+  resetCondition?: ConfigResetCondition;
 }
 
 export interface ConfigResetCondition {
@@ -284,11 +328,87 @@ export interface PartConfiguration<TOverrides> {
   resetCondition?: ConfigResetCondition;
 }
 
+// ─── Universal Stat Modifier System ──────────────────────────────────────────
+// Any part can modify any bey stat via triggers or events. Enables user-created cores.
+
+export type BeybladeStatKey =
+  | "spin"
+  | "maxSpin"
+  | "spinDecayRate"
+  | "aggressiveness"
+  | "gripFactor"
+  | "recoilFactor"
+  | "spinStealResist"
+  | "damageMultiplier"
+  | "damageReduction"
+  | "surfaceFriction"
+  | "contactDamageMultiplier";
+
+export type StatModifierEvent =
+  | "on_land"           // bey lands after an airborne hop
+  | "on_hit_opponent"   // bey's CP makes contact with opponent
+  | "on_hit_received"   // bey receives a hit
+  | "on_special_move"   // bey's special move activates
+  | "on_button"         // secondary player button press
+  | "on_config_change"; // fired when this part's activeConfig changes
+
+export interface StatModifier {
+  targetStat: BeybladeStatKey;
+  operation: "add" | "multiply" | "set";
+  value: number;
+  duration?: number;         // ticks; 0=one tick; undefined=permanent for match
+  trigger?: ConfigTrigger;   // condition-based (spin_threshold, impact_any, etc.)
+  event?: StatModifierEvent; // event-based (on_land, on_hit, etc.)
+}
+
+// ─── Core Gimmick Configs ─────────────────────────────────────────────────────
+
+export interface SpinInjectionConfig {
+  enabled: boolean;
+  rateRPM: number;                                                     // spin added per tick = rateRPM / 60 at 60Hz
+  reserveCapacity: number;                                             // total RPM reserve; 0 = unlimited
+  reserveRemaining: number;                                            // runtime state (tracked per-match in BeybladeSchema)
+  activationCondition: "always" | "casing_trigger" | "spin_threshold";
+  spinThreshold?: number;                                              // fraction of maxSpin; active when below this
+}
+
+export interface CounterRotationConfig {
+  enabled: boolean;
+  activationCondition: "casing_trigger" | "player_input";
+  directionSequence: Array<"right" | "left">; // e.g. ['right','left','right','left']
+  stepDurationTicks: number;                  // ticks to hold each direction (30 = 0.5s)
+  spinDecayCostPerStep: number;               // spin fraction lost at each direction transition
+}
+
+// ─── Jump / Movement Override System ─────────────────────────────────────────
+
+export interface LandingDamage {
+  enabled: boolean;
+  damageMultiplier: number;  // landingDamage = (mass × jumpForce²) × mult × (spin/maxSpin)
+  aoeRadius: number;         // mm; opponents within this radius take AOE damage on landing
+  spinBoostOnLand?: number;  // fraction of maxSpin added to own spin on landing
+}
+
+export interface JumpConfig {
+  jumpForce: number;             // velocity burst magnitude per hop (pixels/tick)
+  jumpPeriodTicks: number;       // ticks between hop initiations
+  airborneTickDuration: number;  // ticks the bey is "in the air" per hop
+  landingDamage?: LandingDamage;
+}
+
+export interface MovementOverride {
+  type: "orbit" | "jump" | "fixed";
+  // 'orbit' = default continuous tangential force (standard bey behavior)
+  // 'fixed' = holds position (no movement force applied)
+  // 'jump'  = moves ONLY by discrete hops; smooth orbiting is disabled
+  jumpConfig?: JumpConfig;
+}
+
 // ─── Detachment Config ────────────────────────────────────────────────────────
 
 export interface DetachmentConfig {
   enabled: boolean;
-  type: "projectile" | "mini_bey" | "fragment";
+  type: DetachedBodyType;
   trigger: "impact_threshold" | "spin_threshold" | "timer" | "special_move";
   triggerThreshold: number;
   returnToParent: boolean;
@@ -296,6 +416,8 @@ export interface DetachmentConfig {
   detachedMass: number;
   detachedRadius?: number;
   detachedContactPoints?: SystemContactPoint[];
+  initialSpinFraction?: number; // fraction of parent spin inherited at detachment (0–1)
+  spinDecayRate?: number;       // per-tick spin decay rate for mini_bey bodies
 }
 
 // ─── Base Part ────────────────────────────────────────────────────────────────
@@ -323,6 +445,12 @@ export interface ARPart extends BasePart {
   materials: MaterialBand[];
   contactPoints: SystemContactPoint[];
   defaultSubARId?: string; // suggested default sub-part
+  // Hidden physics stats (not shown in player-visible stat bars)
+  recoilFactor?: number;                                  // 0.1–1.0; high=bounces far; low(rubber)=sticks close
+  smashEfficiency?: number;                               // kinetic energy fraction transferred on smash
+  upperAttackBonus?: number;                              // ×mult when AR CP sweeps under opponent WD
+  aerodynamicProfile?: "compact" | "winged" | "spherical"; // affects orbit stability at edges
+  statModifiers?: StatModifier[];
   configurations: PartConfiguration<{
     contactPoints?: SystemContactPoint[];
     dimensions?: Partial<PartDimensions>;
@@ -333,6 +461,7 @@ export interface ARPart extends BasePart {
 
 export interface SubPart extends BasePart {
   compatibleParents: SubPartParent[];
+  placement?: "above" | "below" | "side"; // where the sub-part physically attaches
   dimensions: PartDimensions;
   materials: MaterialBand[];
   weight: number;
@@ -345,6 +474,12 @@ export interface SubPart extends BasePart {
   slideAngle?: number; // partial_slip variant: max slide degrees (Kreis-style 60°)
   canFlip: boolean;
   detachment?: DetachmentConfig;
+  // SubPart-as-Switch: when trigger fires, change config on a target part layer
+  switchTargets?: SwitchTarget[];
+  // Hidden mechanism wear tracking
+  mechanismDurability?: number;  // 0 = infinite; total trigger fires before mechanism wears
+  triggerSensitivity?: number;   // 1.0 = nominal; <1.0 = worn spring fires at lower force
+  statModifiers?: StatModifier[];
   configurations: PartConfiguration<{
     mode?: SubPartMode;
     contactPoints?: SystemContactPoint[];
@@ -362,9 +497,15 @@ export interface WDPart extends BasePart {
   materials: MaterialBand[];
   weight: number;
   contactPoints: SystemContactPoint[];
+  // Hidden physics stats
+  momentOfInertia?: number;        // kg·mm²; if unset: computed as I = Σ(m × r²)
+  gyroscopicStability?: number;    // 0.0–1.0; suppresses wobbleAmplitude growth per tick
+  spinTransferEfficiency?: number; // 0.0–1.0; co-axial spin-steal efficiency
+  statModifiers?: StatModifier[];
   configurations: PartConfiguration<{
     contactPoints?: SystemContactPoint[];
     dimensions?: Partial<PartDimensions>;
+    weight?: number;
   }>[];
 }
 
@@ -375,22 +516,48 @@ export interface TipPart extends BasePart {
   tipShape: TipShape; // behavioral category — drives movement physics
   material: Material;
   dimensions: {
-    height: number; // mm absolute from floor
-    tipWidth: number; // mm — auto-computed from computeEffectiveRadius(geometry.bottomBezierPath)
+    height: number;        // mm absolute from floor
+    outerRadius?: number;  // mm — physical tip radius; required when extendsAboveCasing=true
+    tipWidth: number;      // mm — auto-computed from computeEffectiveRadius(geometry.bottomBezierPath)
   };
   freeSpin: boolean;
-  gripFactor: number; // 0–1
+  gripFactor: number;    // 0–1
   aggressiveness: number; // 0–1
-  integratedCasing?: boolean; // tip assembly IS the casing (Wolborg G EG bowl)
-  freeSpinOnCore?: boolean; // free-spins only when core_activated fires
+  integratedCasing?: boolean;  // tip assembly IS the casing (legacy flag)
+  freeSpinOnCore?: boolean;    // free-spins only when core_activated fires
   defaultSubTip?: {
     enabled: boolean;
     tipShape: TipShape;
     material: Material;
     freeSpin: boolean;
   };
+  // Directional grip multiplier — R2F-style protrusion-based tips
+  spinBias?: {
+    rightSpin: { gripMultiplier: number };
+    leftSpin: { gripMultiplier: number };
+  };
+  // Bearing friction — B:D, EWD style
+  bearingFriction?: number;   // 0.0 (near-frictionless) to 1.0 (no bearing); B:D=0.02, EWD=0.03
+  // Left-spin hop — Wyborg behavior
+  leftSpinHop?: {
+    enabled: boolean;
+    hopImpulse: number;   // outward radial force magnitude
+    hopChance: number;    // probability per qualifying hit (0–1)
+  };
+  // Rubber wear tracking
+  durabilityDecay?: number; // gripFactor reduction per rubber-mode activation (match-scoped)
+  // Hidden physics stats
+  recoilAbsorption?: number;  // 0.0–1.0; fraction of push-back absorbed (wide/rubber tips)
+  lateralStability?: number;  // resistance to sideways tilt on impact (wider tip = more)
+  surfaceFriction?: number;   // floor contact friction; if unset: computed from material.frictionMult
+  // Structural flags — affect rendering order and CP ownership
+  extendsAboveCasing?: boolean; // tip body extends up into the normal casing height zone (Rock Bison)
+  containsCasing?: boolean;     // tip is outermost shell; casing nests inside (Wolborg G)
+  cupInnerSpline?: BezierSplineProfile; // inner bowl curve (Wolborg G)
+  statModifiers?: StatModifier[];
   configurations: PartConfiguration<{
     tipShape?: TipShape;
+    material?: Material;
     gripFactor?: number;
     aggressiveness?: number;
     tipWidth?: number;
@@ -408,7 +575,21 @@ export interface CorePart extends BasePart {
   dimensions: { height: number; radius: number };
   weight: number;
   gimmick: CoreGimmick;
-  configurations: PartConfiguration<{ gimmick?: CoreGimmick }>[];
+  // Hidden physics stats
+  clutchStrength?: number;       // 0.0–1.0; HMS free-spinning Running Core coupling (0=free, 1=locked)
+  torqueEfficiency?: number;     // 0.0–1.0; spin transmitted from WD hub down to tip per tick
+  internalFriction?: number;     // 0.0–1.0; friction loss inside mechanism housing per tick
+  // Core gimmick configs (named gimmicks — complemented by statModifiers for custom behaviors)
+  spinInjection?: SpinInjectionConfig;
+  counterRotation?: CounterRotationConfig;
+  statModifiers?: StatModifier[];
+  configurations: PartConfiguration<{
+    gimmick?: CoreGimmick;
+    spinInjection?: Partial<SpinInjectionConfig>;
+    counterRotation?: Partial<CounterRotationConfig>;
+    movementOverride?: MovementOverride;
+    statModifiers?: StatModifier[];
+  }>[];
 }
 
 // ─── Casing ───────────────────────────────────────────────────────────────────
@@ -432,6 +613,11 @@ export interface CasingPart extends BasePart {
   materials: MaterialBand[];
   contactPoints: SystemContactPoint[];
   slots: CasingSlots;
+  // Hidden physics stats
+  impactAbsorption?: number;   // 0.0–1.0; fraction of hit force absorbed before reaching WD/Core
+  lateralStiffness?: number;   // 0.0–1.0; resistance to being tilted by side hits
+  clearanceHeight?: number;    // mm; floor-to-bottom gap; affects which opponent CPs can reach under
+  statModifiers?: StatModifier[];
   configurations: PartConfiguration<{
     contactPoints?: SystemContactPoint[];
     slots?: Partial<CasingSlots>;
@@ -447,8 +633,40 @@ export interface BitBeastPart extends BasePart {
   weight: number;
   dimensions: { height: number; radius: number };
   specialMove: SpecialMove;
-  customMoveName?: string; // only when specialMove = 'custom'
+  customMoveName?: string;    // only when specialMove = 'custom'
+  isEnergyRing?: boolean;     // MFB Energy Ring — forces specialMove='none', purely cosmetic + weight
+  spiritualForce?: number;    // 0.5–2.0; multiplies special move base power (lore stat, hidden)
+  resonanceBonus?: number;    // additive speed bonus when facing same-series opponent (hidden)
+  statModifiers?: StatModifier[];
   configurations: PartConfiguration<{ weight?: number }>[];
+}
+
+// ─── Spin Track (MFB / 4D System) ────────────────────────────────────────────
+// Height piece between Tip and Casing; absent in plastic gen / HMS.
+// All AR/WD/Casing CP heightRanges are offset by spinTrack.height at runtime.
+
+export interface SpinTrackShieldDisk {
+  enabled: boolean;
+  diskRadius: number;   // mm — S130: ~17.75mm; 8-arm ring
+  diskHeight: number;   // mm from floor — where disk sits vertically
+  contactPoints: SystemContactPoint[];
+}
+
+export interface SpinTrackPart extends BasePart {
+  height: number;           // mm — primary stat (90, 100, 105, 125, 130, 145, 160, 230)
+  dimensions: PartDimensions;
+  materials: MaterialBand[];
+  weight: number;           // g; plain track ~1.5g; S130 with disk ~3.3g
+  shieldDisk?: SpinTrackShieldDisk;
+  wingProtrusions?: {
+    count: number;
+    contactPoints: SystemContactPoint[];
+  };
+  // Hidden physics stats
+  trackRigidity?: number;   // 0.0–1.0; 1.0=rigid (no flex/absorption); flexible=absorbs some impact
+  heightAdvantage?: number; // computed: track.height / 145 reference (>1=tall, <1=short bey)
+  statModifiers?: StatModifier[];
+  configurations: PartConfiguration<{ contactPoints?: SystemContactPoint[] }>[];
 }
 
 // ─── Beyblade System (Composition) ───────────────────────────────────────────
@@ -478,6 +696,7 @@ export interface BeybladeSystem {
   tipId: string;
   coreId?: string;
   casingId: string;
+  spinTrackId?: string; // MFB — mutually exclusive with casingId in terms of height offset
 
   subPartAttachments: SubPartAttachment[];
 
@@ -488,6 +707,14 @@ export interface BeybladeSystem {
     tip?: string;
     core?: string;
     casing?: string;
+    spinTrack?: string;
+  };
+
+  // Combined / pre-split dual bey (e.g. Phantom Fox MS)
+  combinedWith?: {
+    partnerBeySystemId: string;     // the second half's BeybladeSystem ID
+    linkSubPartIndex: number;       // index in subPartAttachments that is the split spring
+    playerControlTarget: "this" | "partner";
   };
 
   comboParts: ComboPart[];
@@ -505,7 +732,8 @@ export type AnyPart =
   | TipPart
   | CorePart
   | CasingPart
-  | BitBeastPart;
+  | BitBeastPart
+  | SpinTrackPart;
 
 export type PartTypeKey =
   | "attack_ring"
@@ -514,15 +742,6 @@ export type PartTypeKey =
   | "tip"
   | "core"
   | "casing"
-  | "bit_beast";
+  | "bit_beast"
+  | "spin_track";
 
-// Maps PartTypeKey to the Firestore collection name (matches COLLECTIONS in firebase.ts)
-export const PART_TYPE_COLLECTION: Record<PartTypeKey, string> = {
-  attack_ring: "attack_ring_parts",
-  sub_part: "sub_parts",
-  weight_disk: "weight_disk_parts",
-  tip: "tip_parts",
-  core: "core_parts",
-  casing: "casing_parts",
-  bit_beast: "bit_beast_parts",
-};

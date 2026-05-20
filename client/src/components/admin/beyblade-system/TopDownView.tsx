@@ -27,6 +27,28 @@ const MATERIAL_COLORS: Record<string, string> = {
   polycarbonate: "#a855f7",
 };
 
+// Extra rings drawn in material mode for SpinTrack shield disk
+function drawShieldDiskRing(
+  ctx: CanvasRenderingContext2D,
+  diskRadius: number,
+  pxPerMm: number,
+  color: string,
+) {
+  const r = diskRadius * pxPerMm;
+  ctx.beginPath();
+  ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
+  ctx.strokeStyle = color + "99";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 3]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = color + "11";
+  ctx.beginPath();
+  ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
+  ctx.arc(CENTER, CENTER, Math.max(1, r - 3), 0, Math.PI * 2, true);
+  ctx.fill();
+}
+
 // Movement path patterns based on tip shape
 type PathPattern = "flat" | "sharp" | "semi_flat" | "rubber_flat" | "ball" | "off_center";
 
@@ -37,9 +59,9 @@ function getPathPattern(resolved: ResolvedBeybladeSystem): PathPattern {
   const dims = tip.dimensions as { tipOffsetX?: number; tipOffsetY?: number } | undefined;
   if (dims?.tipOffsetX || dims?.tipOffsetY) return "off_center";
   if (tipShape === "sharp" || tipShape === "spike") return "sharp";
-  if (tipShape === "rubber_flat") return "rubber_flat";
+  if (tipShape === "rubber_flat" || tipShape === "rubber_ball") return "rubber_flat";
   if (tipShape === "semi_flat") return "semi_flat";
-  if (tipShape === "ball" || tipShape === "wide") return "ball";
+  if (tipShape === "ball" || tipShape === "wide" || tipShape === "hole_flat" || tipShape === "defense") return "ball";
   return "flat";
 }
 
@@ -265,20 +287,51 @@ function drawMaterialMode(
     }
   }
 
-  // Tip (just the contact patch circle, possibly offset)
+  // Tip — contact patch or cup outer wall
   const tip = resolved.tip as Loose | undefined;
   if (tip) {
-    const tipDims = tip.dimensions as { tipWidth?: number; tipOffsetX?: number; tipOffsetY?: number } | undefined;
-    const tw = (tipDims?.tipWidth ?? 3) * pxPerMm;
+    const tipDims = tip.dimensions as { tipWidth?: number; outerRadius?: number; innerRadius?: number; tipOffsetX?: number; tipOffsetY?: number } | undefined;
+    const containsCasing = !!(tip.containsCasing);
     const ox = (tipDims?.tipOffsetX ?? 0) * pxPerMm;
     const oy = (tipDims?.tipOffsetY ?? 0) * pxPerMm;
-    ctx.beginPath();
-    ctx.arc(CENTER + ox, CENTER + oy, tw, 0, Math.PI * 2);
-    ctx.fillStyle = (tip.color as string ?? C.faint) + "88";
-    ctx.fill();
-    ctx.strokeStyle = tip.color as string ?? C.faint;
-    ctx.lineWidth = 1;
-    ctx.stroke();
+
+    if (containsCasing) {
+      // Draw cup outer wall as large ring, casing as ghost inner ring
+      const outerR = (tipDims?.outerRadius ?? 20) * pxPerMm;
+      const innerR = (tipDims?.innerRadius ?? 15) * pxPerMm;
+      ctx.beginPath();
+      ctx.arc(CENTER + ox, CENTER + oy, outerR, 0, Math.PI * 2);
+      ctx.arc(CENTER + ox, CENTER + oy, innerR, 0, Math.PI * 2, true);
+      ctx.fillStyle = (tip.color as string ?? C.faint) + "44";
+      ctx.fill();
+      ctx.strokeStyle = tip.color as string ?? C.faint;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      // Ghost inner ring (casing position)
+      ctx.beginPath();
+      ctx.arc(CENTER + ox, CENTER + oy, innerR, 0, Math.PI * 2);
+      ctx.strokeStyle = (tip.color as string ?? C.faint) + "44";
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([2, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    } else {
+      const tw = (tipDims?.tipWidth ?? tipDims?.outerRadius ?? 3) * pxPerMm;
+      ctx.beginPath();
+      ctx.arc(CENTER + ox, CENTER + oy, tw, 0, Math.PI * 2);
+      ctx.fillStyle = (tip.color as string ?? C.faint) + "88";
+      ctx.fill();
+      ctx.strokeStyle = tip.color as string ?? C.faint;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+
+  // SpinTrack shield disk ring
+  const spinTrack = (resolved as Loose).spinTrack as Loose | undefined;
+  if (spinTrack?.shieldDisk?.enabled) {
+    const sd = spinTrack.shieldDisk as { diskRadius?: number };
+    drawShieldDiskRing(ctx, sd.diskRadius ?? 17, pxPerMm, (spinTrack.color as string) ?? "#64748b");
   }
 
   // Pocket balls
@@ -388,11 +441,16 @@ export function TopDownView({ resolved, showMaterial = false, showMovementPath =
     // Determine pxPerMm from effective radius
     const ar = resolved.attackRing as Loose;
     const wd = resolved.weightDisk as Loose;
+    const tip = resolved.tip as Loose | undefined;
     const arFallback = (ar?.dimensions?.outerRadius as number) ?? 30;
     const wdFallback = (wd?.dimensions?.outerRadius as number) ?? 30;
     const arR = ar?.geometry ? computeEffectiveRadius(ar.geometry as PartShape, arFallback) : arFallback;
     const wdR = wd?.geometry ? computeEffectiveRadius(wd.geometry as PartShape, wdFallback) : wdFallback;
-    const maxR = Math.max(arR, wdR, 20);
+    // Include tip outerRadius if it's wider than casing (extendsAboveCasing / containsCasing)
+    const tipR = (tip?.containsCasing || tip?.extendsAboveCasing)
+      ? ((tip?.dimensions?.outerRadius as number) ?? 0)
+      : 0;
+    const maxR = Math.max(arR, wdR, tipR, 20);
     const pxPerMm = (SIZE * 0.46) / maxR;
 
     drawGrid(ctx, maxR, pxPerMm);
