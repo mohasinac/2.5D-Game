@@ -197,6 +197,7 @@ export class BattleRoom extends Room<GameState> {
     }
 
     beyblade.health = beyblade.maxStamina;
+    beyblade.maxHealth = beyblade.maxStamina;
 
     // Distribute spawn positions
     const spawnIndex = (this.playerSessions.size - 1) % SPAWN_OFFSETS.length;
@@ -928,6 +929,7 @@ export class BattleRoom extends Room<GameState> {
       beyblade.isActive = true;
       beyblade.isRingOut = false;
       beyblade.health = beyblade.maxStamina;
+    beyblade.maxHealth = beyblade.maxStamina;
       beyblade.spin = beyblade.maxSpin;
       beyblade.stamina = beyblade.maxStamina;
       beyblade.power = 0;

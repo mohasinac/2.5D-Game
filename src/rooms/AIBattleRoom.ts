@@ -156,6 +156,7 @@ export class AIBattleRoom extends Room<GameState> {
     }
 
     human.health = human.maxStamina;
+    human.maxHealth = human.maxStamina;
     human.x = arenaHalfW - spawnRadius;
     human.y = arenaHalfH;
     this.humanSpawnPos = { x: human.x, y: human.y };
@@ -182,6 +183,7 @@ export class AIBattleRoom extends Room<GameState> {
     }
 
     ai.health = ai.maxStamina;
+    ai.maxHealth = ai.maxStamina;
     ai.x = arenaHalfW + spawnRadius;
     ai.y = arenaHalfH;
     this.aiSpawnPos = { x: ai.x, y: ai.y };
@@ -624,6 +626,7 @@ export class AIBattleRoom extends Room<GameState> {
       beyblade.isActive = true;
       beyblade.isRingOut = false;
       beyblade.health = beyblade.maxStamina;
+      beyblade.maxHealth = beyblade.maxStamina;
       beyblade.spin = beyblade.maxSpin;
       beyblade.stamina = beyblade.maxStamina;
       beyblade.power = 0;

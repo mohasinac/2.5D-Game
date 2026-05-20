@@ -167,6 +167,7 @@ export class TournamentBattleRoom extends Room<GameState> {
     }
 
     beyblade.health = beyblade.maxStamina;
+    beyblade.maxHealth = beyblade.maxStamina;
 
     const spawnIndex = this.playerSessions.size - 1;
     const spawnOffset = SPAWN_OFFSETS[spawnIndex % SPAWN_OFFSETS.length];
@@ -251,6 +252,7 @@ export class TournamentBattleRoom extends Room<GameState> {
     }
 
     ai.health = ai.maxStamina;
+    ai.maxHealth = ai.maxStamina;
 
     const spawnIndex = this.playerSessions.size;
     const spawnOffset = SPAWN_OFFSETS[spawnIndex % SPAWN_OFFSETS.length];
@@ -721,7 +723,7 @@ export class TournamentBattleRoom extends Room<GameState> {
     this.state.beyblades.forEach((beyblade) => {
       const spawnPos = this.spawnPositions.get(beyblade.id);
       beyblade.isActive = true; beyblade.isRingOut = false;
-      beyblade.health = beyblade.maxStamina; beyblade.spin = beyblade.maxSpin; beyblade.stamina = beyblade.maxStamina;
+      beyblade.health = beyblade.maxStamina; beyblade.maxHealth = beyblade.maxStamina; beyblade.spin = beyblade.maxSpin; beyblade.stamina = beyblade.maxStamina;
       beyblade.power = 0; beyblade.attackCooldown = 0; beyblade.specialCooldown = 0;
       beyblade.attackBuffTimer = 0; beyblade.dodgeBuffTimer = 0; beyblade.defenseBuffTimer = 0;
       beyblade.isAirborne = false; beyblade.airborneTimer = 0; beyblade.landingLag = 0;

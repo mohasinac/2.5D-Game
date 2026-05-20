@@ -187,6 +187,7 @@ export class TryoutRoom extends Room<GameState> {
     }
 
     beyblade.health = beyblade.maxStamina;
+    beyblade.maxHealth = beyblade.maxStamina;
     beyblade.x = (this.state.arena.width * 16) / 2;
     beyblade.y = (this.state.arena.height * 16) / 2;
 

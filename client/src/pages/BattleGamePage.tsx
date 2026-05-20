@@ -193,8 +193,8 @@ export function BattleGamePage() {
                 <div style={{ width: "100%", height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
                   <div style={{
                     height: "100%", borderRadius: 3, transition: "width 150ms",
-                    width: `${(opp.health / 100) * 100}%`,
-                    background: opp.health > 50 ? C.green : opp.health > 25 ? C.yellow : C.red,
+                    width: `${(opp.health / Math.max(1, opp.maxHealth)) * 100}%`,
+                    background: opp.health / Math.max(1, opp.maxHealth) > 0.5 ? C.green : opp.health / Math.max(1, opp.maxHealth) > 0.25 ? C.yellow : C.red,
                   }} />
                 </div>
                 {!opp.isActive && <p style={{ color: C.red, textAlign: "center", fontSize: 10, marginTop: 4, fontWeight: 700 }}>ELIMINATED</p>}
@@ -214,10 +214,10 @@ export function BattleGamePage() {
             <div style={{ marginBottom: 6 }}>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 4 }}>
                 <span style={{ color: C.red }}>HP</span>
-                <span style={{ color: C.text, fontFamily: "monospace" }}>{Math.round(myBeyblade.health)}</span>
+                <span style={{ color: C.text, fontFamily: "monospace" }}>{Math.round((myBeyblade.health / Math.max(1, myBeyblade.maxHealth)) * 100)}</span>
               </div>
               <div style={{ width: "100%", height: 6, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
-                <div style={{ height: "100%", borderRadius: 3, transition: "width 150ms", width: `${(myBeyblade.health / 100) * 100}%`, background: myBeyblade.health > 50 ? C.green : myBeyblade.health > 25 ? C.yellow : C.red }} />
+                <div style={{ height: "100%", borderRadius: 3, transition: "width 150ms", width: `${(myBeyblade.health / Math.max(1, myBeyblade.maxHealth)) * 100}%`, background: myBeyblade.health / Math.max(1, myBeyblade.maxHealth) > 0.5 ? C.green : myBeyblade.health / Math.max(1, myBeyblade.maxHealth) > 0.25 ? C.yellow : C.red }} />
               </div>
             </div>
             <div style={{ marginBottom: 6 }}>
