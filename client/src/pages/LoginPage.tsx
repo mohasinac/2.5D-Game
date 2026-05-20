@@ -23,10 +23,18 @@ export function LoginPage() {
       toast.success("Signed in!");
       navigate(redirect, { replace: true });
     } catch (err: any) {
-      const msg = err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found"
-        ? "Invalid email or password"
-        : "Sign-in failed. Please try again.";
-      toast.error(msg);
+      console.error("Login error:", err.code, err.message);
+      const msg =
+        err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found"
+          ? "Invalid email or password"
+          : err.code === "auth/operation-not-allowed"
+          ? "Email/Password sign-in is not enabled. Enable it in Firebase Console → Authentication → Sign-in method."
+          : err.code === "auth/too-many-requests"
+          ? "Too many failed attempts. Try again later."
+          : err.code === "auth/network-request-failed"
+          ? "Network error — check your connection."
+          : `Sign-in failed (${err.code ?? "unknown"})`;
+      toast.error(msg, { duration: 6000 });
     } finally {
       setLoading(false);
     }
