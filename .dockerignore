@@ -1,0 +1,10 @@
+node_modules
+lib
+client
+.env
+.env.*
+*.md
+*.log
+.git
+.gitignore
+loadtest
