@@ -6,3 +6,4 @@ dist/
 serviceAccountKey.json
 .DS_Store
 *.tsbuildinfo
+.claude/settings.json
