@@ -63,7 +63,7 @@ export const router = createBrowserRouter([
       { path: "game/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
       { path: "game/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
       { path: "game/ai-battle", element: <ProtectedRoute><AIBattleSetupPage /></ProtectedRoute> },
-      { path: "game/ai/:roomId", element: <ProtectedRoute><AIBattleGamePage /></ProtectedRoute> },
+      { path: "game/ai-battle/play", element: <ProtectedRoute><AIBattleGamePage /></ProtectedRoute> },
     ],
   },
   {

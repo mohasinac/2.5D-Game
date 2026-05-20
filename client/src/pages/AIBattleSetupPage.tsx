@@ -20,7 +20,7 @@ const DIFFICULTY_INFO: Record<Difficulty, { label: string; color: string; desc: 
 
 export function AIBattleSetupPage() {
   const navigate = useNavigate();
-  const { settings } = useGame();
+  const { settings, setGameConfig } = useGame();
   const { currentUser } = useAuth();
 
   const [beyblades, setBeyblades] = useState<BeybladeOption[]>([]);
@@ -60,7 +60,8 @@ export function AIBattleSetupPage() {
       toast.error("Select all options first");
       return;
     }
-    navigate("/game/ai/battle", {
+    setGameConfig({ beybladeId: playerBeyId, arenaId, gameMode: "single-battle" });
+    navigate("/game/ai-battle/play", {
       state: { beybladeId: playerBeyId, aiBeybladeId: aiBeyId, arenaId, aiDifficulty: difficulty },
     });
   };

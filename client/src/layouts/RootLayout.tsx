@@ -1,9 +1,15 @@
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { GameProvider } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Toaster } from "react-hot-toast";
 import { C } from "@/styles/theme";
 import toast from "react-hot-toast";
+
+// Full-screen game pages — hide the global AuthChip so it doesn't overlap the in-game HUD.
+const FULLSCREEN_GAME_PATHS = ["/game/tryout", "/game/battle/", "/game/ai/"];
+function isFullScreenGame(pathname: string) {
+  return FULLSCREEN_GAME_PATHS.some(p => pathname.startsWith(p));
+}
 
 function AuthChip() {
   const { currentUser, signOutUser } = useAuth();
@@ -31,12 +37,17 @@ function AuthChip() {
 }
 
 export function RootLayout() {
+  const location = useLocation();
+  const hideAuth = isFullScreenGame(location.pathname);
+
   return (
     <GameProvider>
       <div style={{ minHeight:"100vh", background:C.bg0, color:C.text }}>
-        <div style={{ position:"fixed", top:12, right:16, zIndex:100 }}>
-          <AuthChip />
-        </div>
+        {!hideAuth && (
+          <div style={{ position:"fixed", top:12, right:16, zIndex:100 }}>
+            <AuthChip />
+          </div>
+        )}
         <Outlet />
       </div>
       <Toaster position="top-right" toastOptions={{ style:{ background:C.bg2, color:C.text, border:`1px solid ${C.border}` } }} />

@@ -74,6 +74,7 @@ export class BeybladeGameRenderer {
   private arenaCenterY = 0;
 
   private initialized = false;
+  private contextLost = false;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -90,6 +91,22 @@ export class BeybladeGameRenderer {
     });
 
     this.container.appendChild(this.app.canvas);
+
+    // Prevent the contextlost → "refId not found" spam that occurs in PixiJS 8
+    // when a context is lost and the internal UBO cache is cleared but object _uboId
+    // values are not reset. We stop the ticker on loss and let the browser restore.
+    this.app.canvas.addEventListener("webglcontextlost", (e) => {
+      e.preventDefault(); // allow browser to restore
+      this.contextLost = true;
+      this.app.ticker.stop();
+    }, false);
+
+    this.app.canvas.addEventListener("webglcontextrestored", () => {
+      this.contextLost = false;
+      // Reset arena so it will be rebuilt with fresh GL resources on the next render.
+      this.arenaRadius = 0;
+      this.app.ticker.start();
+    }, false);
 
     // Build layer stack
     this.arenaLayer = new PIXI.Container();
@@ -113,7 +130,7 @@ export class BeybladeGameRenderer {
   // ─── Main render call (called every animation frame from React) ─────────────
 
   render(gameState: ServerGameState | null, beyblades: Map<string, ServerBeyblade>) {
-    if (!this.initialized) return;
+    if (!this.initialized || this.contextLost) return;
 
     if (gameState?.arena && this.arenaRadius === 0) {
       this.buildArena(gameState);
@@ -558,6 +575,23 @@ export class BeybladeGameRenderer {
   destroy() {
     if (!this.initialized) return;
     this.initialized = false;
+    this.contextLost = false;
+
+    // PixiJS calls gl.getExtension('WEBGL_lose_context').loseContext() inside its
+    // own destroy(), which fires an async contextlost event.  That event can arrive
+    // while a *new* PixiJS app is already rendering (e.g. React 19 Strict Mode
+    // mounts → unmounts → remounts) and triggers the "refId not found" UBO spam on
+    // the new instance.  Nulling out the extension before destroy() prevents the
+    // explicit loseContext() call; the GPU context is still released when the canvas
+    // is garbage-collected, just without the disruptive event.
+    try {
+      const renderer = (this.app as unknown as { renderer?: { context?: { gl?: WebGLRenderingContext } } }).renderer;
+      const gl = renderer?.context?.gl;
+      if (gl) gl.getExtension = () => null;
+    } catch {
+      // ignore — best-effort only
+    }
+
     this.app.destroy(true, { children: true });
   }
 }

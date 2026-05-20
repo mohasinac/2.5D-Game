@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGameInput } from "@/game/hooks/useGameInput";
@@ -8,6 +8,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getBeybladeStability, TYPE_COLORS } from "@/types/game";
 import { C } from "@/styles/theme";
 
+interface AIBattleLocationState {
+  beybladeId?: string;
+  aiBeybladeId?: string;
+  arenaId?: string;
+  aiDifficulty?: string;
+}
+
 export function AIBattleGamePage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
@@ -15,18 +22,22 @@ export function AIBattleGamePage() {
   const { settings } = useGame();
   const { currentUser } = useAuth();
 
-  const roomId    = location.state?.roomId    as string | undefined;
-  const sessionId = location.state?.sessionId as string | undefined;
+  const loc = (location.state ?? {}) as AIBattleLocationState;
+
+  // Stable options — built once so Colyseus connect() always uses the same values
+  const colyseusOptions = useMemo(() => ({
+    beybladeId:   loc.beybladeId   ?? settings.beybladeId ?? "default",
+    aiBeybladeId: loc.aiBeybladeId ?? "default",
+    arenaId:      loc.arenaId      ?? settings.arenaId    ?? "default",
+    aiDifficulty: loc.aiDifficulty ?? "medium",
+    username:     settings.username ?? "Player",
+    userId:       currentUser?.uid  ?? settings.userId ?? "guest",
+  }), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { connectionState, gameState, beyblades, myBeyblade, room, connect, disconnect, sendInput } =
     useColyseus({
       roomName: "ai_battle_room",
-      options: {
-        beybladeId: settings.beybladeId ?? "default",
-        arenaId:    settings.arenaId    ?? "default",
-        username:   settings.username   ?? "Player",
-        userId:     currentUser?.uid    ?? settings.userId ?? "guest",
-      },
+      options: colyseusOptions,
       autoConnect: false,
     });
 
@@ -36,7 +47,7 @@ export function AIBattleGamePage() {
   useEffect(() => {
     connect();
     return () => { disconnect(); };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     let raf: number;
@@ -63,33 +74,37 @@ export function AIBattleGamePage() {
   const stabilityColor = myStability > 0.6 ? C.green : myStability > 0.3 ? C.yellow : C.red;
   const stabilityLabel = myStability > 0.6 ? "Stable" : myStability > 0.3 ? "Wobbling" : "Critical!";
 
-  // Determine opponent (the AI beyblade)
   const allBeyblades = Array.from(beyblades.values());
   const aiBey = allBeyblades.find(b => b.userId === "__ai__");
 
   const isFinished = gameState?.status === "finished";
   const playerWon  = isFinished && gameState?.winner === (currentUser?.uid ?? settings.userId);
 
+  const timerSeconds = gameState ? Math.ceil(Math.max(0, gameState.timer)) : null;
+
   return (
     <div style={{ position:"relative", width:"100%", height:"100vh", background:"#000", overflow:"hidden" }}>
       <div ref={containerRef} style={{ position:"absolute", inset:0 }} />
 
       {/* HUD top bar */}
-      <div style={{ position:"absolute", top:0, left:0, right:0, display:"flex", alignItems:"flex-start", justifyContent:"space-between", padding:16, pointerEvents:"none" }}>
+      <div style={{ position:"absolute", top:0, left:0, right:0, display:"flex", alignItems:"flex-start", justifyContent:"space-between", padding:"12px 16px", pointerEvents:"none", zIndex:10 }}>
+        {/* Left: connection indicator */}
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <div style={{ width:8, height:8, borderRadius:"50%", background: connectionState === "connected" ? C.green : C.red }} className={connectionState === "connected" ? "pulse" : ""} />
           <span style={{ fontSize:11, color:C.muted, fontFamily:"monospace" }}>VS AI</span>
         </div>
 
-        {gameState && (
+        {/* Center: timer */}
+        {timerSeconds !== null && (
           <div style={{ color:C.text, fontFamily:"monospace", fontSize:24, fontWeight:700 }}>
-            {Math.ceil(gameState.timer)}s
+            {timerSeconds}s
           </div>
         )}
 
+        {/* Right: Exit — offset down so it clears the AuthChip fixed at top-right */}
         <Link
-          to="/game/ai"
-          style={{ pointerEvents:"auto", padding:"4px 12px", fontSize:12, background:"rgba(0,0,0,0.6)", color:C.muted, borderRadius:6, border:`1px solid ${C.border}`, textDecoration:"none" }}
+          to="/game/ai-battle"
+          style={{ pointerEvents:"auto", padding:"4px 12px", fontSize:12, background:"rgba(0,0,0,0.6)", color:C.muted, borderRadius:6, border:`1px solid ${C.border}`, textDecoration:"none", marginTop:28 }}
         >
           Exit
         </Link>
@@ -97,15 +112,10 @@ export function AIBattleGamePage() {
 
       {/* HUD bottom — player vs AI comparison */}
       {myBeyblade && (
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:16, pointerEvents:"none" }}>
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:16, pointerEvents:"none", zIndex:10 }}>
           <div style={{ maxWidth:480, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr auto 1fr", gap:12, alignItems:"center" }}>
-
-            {/* Player stats */}
             <StatCard beyblade={myBeyblade} label="YOU" accentColor={C.blue} stabilityColor={stabilityColor} stabilityLabel={stabilityLabel} />
-
             <div style={{ fontSize:18, fontWeight:900, color:C.faint, textAlign:"center" }}>VS</div>
-
-            {/* AI stats */}
             {aiBey ? (
               <StatCard beyblade={aiBey} label="CPU" accentColor={C.red} stabilityColor={getBeybladeStability(aiBey) > 0.4 ? C.green : C.red} stabilityLabel={aiBey.username} />
             ) : (
@@ -120,7 +130,7 @@ export function AIBattleGamePage() {
 
       {/* Game over overlay */}
       {isFinished && (
-        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.8)" }}>
+        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.8)", zIndex:20 }}>
           <div style={{ textAlign:"center" }}>
             <div style={{ fontSize:72, marginBottom:16 }}>{playerWon ? "🏆" : "💀"}</div>
             <h2 style={{ fontSize:32, fontWeight:900, color: playerWon ? C.yellow : C.red, marginBottom:8 }}>
@@ -131,7 +141,7 @@ export function AIBattleGamePage() {
             </p>
             <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
               <button
-                onClick={() => navigate("/game/ai")}
+                onClick={() => navigate("/game/ai-battle")}
                 style={{ padding:"12px 28px", background:C.purple, color:C.white, borderRadius:10, fontWeight:700, fontSize:14, cursor:"pointer", border:"none" }}
               >
                 Play Again
@@ -146,7 +156,7 @@ export function AIBattleGamePage() {
 
       {/* Connecting overlay */}
       {connectionState !== "connected" && gameState === null && (
-        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.85)" }}>
+        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.85)", zIndex:20 }}>
           <div style={{ textAlign:"center" }}>
             <div className="spin" style={{ width:48, height:48, border:`4px solid ${C.purple}`, borderTopColor:"transparent", borderRadius:"50%", margin:"0 auto 16px" }} />
             <p style={{ color:C.text }}>Loading AI battle...</p>
@@ -165,8 +175,9 @@ export function AIBattleGamePage() {
 function StatCard({ beyblade, label, accentColor, stabilityColor, stabilityLabel }: {
   beyblade: any; label: string; accentColor: string; stabilityColor: string; stabilityLabel: string;
 }) {
-  const hp   = Math.round(beyblade.health);
-  const spin = Math.round((beyblade.spin / beyblade.maxSpin) * 100);
+  const hp   = Math.round(beyblade.health ?? 0);
+  const maxHp = Math.max(1, beyblade.maxStamina ?? 100);
+  const spin = Math.round(Math.min(100, ((beyblade.spin ?? 0) / Math.max(1, beyblade.maxSpin ?? 1)) * 100));
 
   return (
     <div style={{ background:"rgba(15,23,42,0.85)", borderRadius:12, border:`1px solid ${accentColor}44`, padding:10 }}>
@@ -178,7 +189,7 @@ function StatCard({ beyblade, label, accentColor, stabilityColor, stabilityLabel
           <span style={{ color:C.text, fontFamily:"monospace" }}>{hp}</span>
         </div>
         <div style={{ height:5, background:C.bg3, borderRadius:3, overflow:"hidden" }}>
-          <div style={{ height:"100%", borderRadius:3, background: hp > 50 ? C.green : hp > 25 ? C.yellow : C.red, width:`${Math.min(100, hp)}%`, transition:"width 150ms" }} />
+          <div style={{ height:"100%", borderRadius:3, background: hp / maxHp > 0.5 ? C.green : hp / maxHp > 0.25 ? C.yellow : C.red, width:`${Math.min(100, (hp / maxHp) * 100)}%`, transition:"width 150ms" }} />
         </div>
       </div>
 
