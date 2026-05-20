@@ -1,13 +1,23 @@
-# Build stage
+# ── Dev stage — ts-node + nodemon, used by docker-compose for local dev ────────
+FROM node:20-alpine AS dev
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+EXPOSE 2567
+CMD ["npx", "nodemon", "--exec", "ts-node", "src/index.ts"]
+
+# ── Build stage — compiles TypeScript to /app/lib ───────────────────────────────
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY tsconfig.json ./
 COPY src/ ./src/
+# Server imports client/src/types/beybladeSystem.ts — copy only the types dir
+COPY client/src/types/ ./client/src/types/
 RUN npx tsc
 
-# Runtime stage
+# ── Production stage — lean runtime image ────────────────────────────────────────
 FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./

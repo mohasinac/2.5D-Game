@@ -1,0 +1,15 @@
+services:
+  server:
+    build:
+      context: .
+      target: dev           # ts-node + nodemon — fast hot reload, no tsc compile step
+    ports:
+      - "2567:2567"
+    volumes:
+      - ./src:/app/src                            # live reload on server changes
+      - ./client/src/types:/app/client/src/types  # types shared with server
+      - ./tsconfig.json:/app/tsconfig.json
+    env_file:
+      - .env                # reads PORT, FIREBASE_ADMIN_* from your local .env
+    environment:
+      NODE_ENV: development
