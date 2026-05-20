@@ -51,5 +51,12 @@ export function usePixiRenderer(containerRef: React.RefObject<HTMLDivElement | n
     []
   );
 
-  return { render, spawnCollisionParticles, spawnSpinOutParticles };
+  const spawnDamageNumber = useCallback(
+    (x: number, y: number, damage: number, color?: number) => {
+      rendererRef.current?.spawnDamageNumber(x, y, damage, color);
+    },
+    []
+  );
+
+  return { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber };
 }

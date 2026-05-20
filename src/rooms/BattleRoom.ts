@@ -15,11 +15,23 @@ import type { BeybladeStats, ArenaConfig } from "../types/shared";
 // Arena config cached in onCreate() — never loaded inside tick.
 
 interface PlayerInput {
+  // Movement (WASD / Arrow keys)
   moveLeft?: boolean;
   moveRight?: boolean;
+  moveUp?: boolean;
+  moveDown?: boolean;
+  // Actions (IJKL keys)
+  jump?: boolean;
   attack?: boolean;
+  defense?: boolean;
+  dodge?: boolean;
+  // Power (spacebar)
+  chargeHeld?: boolean;
+  specialTap?: boolean;
+  // Legacy / compat
   specialMove?: boolean;
   direction?: { x: number; y: number };
+  comboKeys?: string[];
 }
 
 interface JoinOptions {
@@ -114,7 +126,7 @@ export class BattleRoom extends Room<GameState> {
       this.applyDefaultStats(beyblade);
     }
 
-    beyblade.health = 100;
+    beyblade.health = beyblade.maxStamina;
 
     // Distribute spawn positions
     const spawnIndex = (this.playerCount - 1) % SPAWN_OFFSETS.length;
@@ -259,6 +271,25 @@ export class BattleRoom extends Room<GameState> {
     beyblade.spinDecayRate = 8 * (1 - stamina * 0.001);
     beyblade.maxSpin = Math.ceil(2000 * (1 + stamina * 0.008));
     beyblade.spin = beyblade.maxSpin;
+
+    // Type archetype bonuses applied on top of distribution
+    switch (beyblade.type) {
+      case "attack":
+        beyblade.damageMultiplier *= 1.2;
+        beyblade.maxStamina = 2500;
+        beyblade.stamina = 2500;
+        break;
+      case "defense":
+        beyblade.damageTaken *= 0.8;
+        beyblade.maxStamina = 2500;
+        beyblade.stamina = 2500;
+        break;
+      case "balanced":
+        beyblade.maxStamina = Math.min(beyblade.maxStamina, 2500);
+        beyblade.stamina = beyblade.maxStamina;
+        break;
+      // stamina type: keep computed maxStamina (up to 3000)
+    }
   }
 
   private applyDefaultStats(beyblade: Beyblade) {
@@ -293,42 +324,79 @@ export class BattleRoom extends Room<GameState> {
     const stability = Math.min(1, beyblade.spin / beyblade.maxSpin);
     const forceMagnitude = 0.001 * beyblade.mass * stability * beyblade.speedBonus;
 
-    if (message.moveLeft) {
-      const perpX = -Math.sin(beyblade.rotation);
-      const perpY = Math.cos(beyblade.rotation);
-      this.physics.applyForce(beyblade.id, perpX * forceMagnitude * 1.5, perpY * forceMagnitude * 1.5);
+    // ── 4-direction movement (always allowed unless combo lock) ─────────────
+    if (!beyblade.comboExecuting) {
+      if (message.moveLeft) {
+        this.physics.applyForce(beyblade.id, -Math.sin(beyblade.rotation) * forceMagnitude * 1.5, Math.cos(beyblade.rotation) * forceMagnitude * 1.5);
+      }
+      if (message.moveRight) {
+        this.physics.applyForce(beyblade.id, Math.sin(beyblade.rotation) * forceMagnitude * 1.5, -Math.cos(beyblade.rotation) * forceMagnitude * 1.5);
+      }
+      if (message.moveUp) {
+        this.physics.applyForce(beyblade.id, Math.cos(beyblade.rotation) * forceMagnitude * 1.5, Math.sin(beyblade.rotation) * forceMagnitude * 1.5);
+      }
+      if (message.moveDown) {
+        this.physics.applyForce(beyblade.id, -Math.cos(beyblade.rotation) * forceMagnitude, -Math.sin(beyblade.rotation) * forceMagnitude);
+      }
     }
 
-    if (message.moveRight) {
-      const perpX = Math.sin(beyblade.rotation);
-      const perpY = -Math.cos(beyblade.rotation);
-      this.physics.applyForce(beyblade.id, perpX * forceMagnitude * 1.5, perpY * forceMagnitude * 1.5);
+    if (beyblade.comboExecuting || beyblade.stunTimer > 0) return;
+
+    // ── Jump (I) ─────────────────────────────────────────────────────────────
+    if (message.jump && !beyblade.isAirborne && !beyblade.inPit && !beyblade.isDefending && beyblade.landingLag <= 0) {
+      beyblade.isAirborne = true;
+      beyblade.airborneTimer = 1.0;
     }
 
+    // ── Attack (J) ───────────────────────────────────────────────────────────
     if (message.attack && beyblade.attackCooldown <= 0) {
-      const forwardX = Math.cos(beyblade.rotation);
-      const forwardY = Math.sin(beyblade.rotation);
       this.physics.applyForce(
         beyblade.id,
-        forwardX * forceMagnitude * 3 * beyblade.damageMultiplier,
-        forwardY * forceMagnitude * 3 * beyblade.damageMultiplier
+        Math.cos(beyblade.rotation) * forceMagnitude * 3 * beyblade.damageMultiplier,
+        Math.sin(beyblade.rotation) * forceMagnitude * 3 * beyblade.damageMultiplier
       );
-      beyblade.attackCooldown = 0.5;
+      beyblade.attackBuffTimer = 0.5;
+      beyblade.attackCooldown = 1.5;
       this.broadcast("attack", { playerId: client.sessionId });
     }
 
-    if (message.specialMove && beyblade.specialCooldown <= 0) {
-      this.handleSpecialMove(beyblade);
-      beyblade.specialCooldown = 3;
+    // ── Defense (K) ──────────────────────────────────────────────────────────
+    if (message.defense && !beyblade.isAirborne && beyblade.landingLag <= 0) {
+      beyblade.isDefending = true;
+      beyblade.defenseBuffTimer = 0.1;
+    } else if (!message.defense) {
+      beyblade.isDefending = false;
     }
 
+    // ── Dodge (L) ────────────────────────────────────────────────────────────
+    const canDodge = !beyblade.inPit && !beyblade.isDefending && beyblade.power >= 10 && beyblade.dodgeBuffTimer <= 0;
+    if (message.dodge && canDodge) {
+      this.physics.applyLateralForce(beyblade.id, beyblade.spinDirection, forceMagnitude * 4 * beyblade.speedBonus);
+      beyblade.dodgeBuffTimer = 0.4;
+      beyblade.power = Math.max(0, beyblade.power - 10);
+    }
+
+    // ── Power meter (spacebar) ───────────────────────────────────────────────
+    if (message.chargeHeld) {
+      const isMoving = !!(message.moveLeft || message.moveRight || message.moveUp || message.moveDown);
+      beyblade.power = Math.min(100, beyblade.power + (isMoving ? 2 : 1));
+    }
+
+    // ── Special move ─────────────────────────────────────────────────────────
+    const wantsSpecial = message.specialTap || message.specialMove;
+    if (wantsSpecial && beyblade.specialCooldown <= 0) {
+      const hasPower = message.specialTap ? beyblade.power >= 50 : true;
+      if (hasPower) {
+        this.handleSpecialMove(beyblade);
+        if (message.specialTap) beyblade.power = Math.max(0, beyblade.power - 50);
+        beyblade.specialCooldown = 3;
+      }
+    }
+
+    // ── Legacy direction input ────────────────────────────────────────────────
     if (message.direction && (message.direction.x !== 0 || message.direction.y !== 0)) {
       const mag = Math.sqrt(message.direction.x ** 2 + message.direction.y ** 2);
-      this.physics.applyForce(
-        beyblade.id,
-        (message.direction.x / mag) * forceMagnitude,
-        (message.direction.y / mag) * forceMagnitude
-      );
+      this.physics.applyForce(beyblade.id, (message.direction.x / mag) * forceMagnitude, (message.direction.y / mag) * forceMagnitude);
     }
   }
 
@@ -453,6 +521,14 @@ export class BattleRoom extends Room<GameState> {
         b1.collisions++;
         b2.collisions++;
 
+        // Power gains on collision: hit landing = +0.5, damage taken = +0.3
+        b1.power = Math.min(100, b1.power + (dmg.damage2 > 0 ? 0.5 : 0) + (dmg.damage1 > 0 ? 0.3 : 0));
+        b2.power = Math.min(100, b2.power + (dmg.damage1 > 0 ? 0.5 : 0) + (dmg.damage2 > 0 ? 0.3 : 0));
+
+        // Cancel attack buff if taking heavy hit (> 15 damage)
+        if (dmg.damage1 > 15) b1.attackBuffTimer = 0;
+        if (dmg.damage2 > 15) b2.attackBuffTimer = 0;
+
         this.broadcast("collision", {
           p1: id1,
           p2: id2,
@@ -510,6 +586,41 @@ export class BattleRoom extends Room<GameState> {
       if (beyblade.specialMoveActive && Date.now() > beyblade.specialMoveEndTime) {
         beyblade.specialMoveActive = false;
       }
+
+      // ── Phase C: action buff timers ──────────────────────────────────────────
+      if (beyblade.attackBuffTimer > 0) beyblade.attackBuffTimer = Math.max(0, beyblade.attackBuffTimer - dt);
+      if (beyblade.dodgeBuffTimer > 0) {
+        beyblade.dodgeBuffTimer = Math.max(0, beyblade.dodgeBuffTimer - dt);
+        if (beyblade.inPit) beyblade.dodgeBuffTimer = 0;
+      }
+      if (beyblade.defenseBuffTimer > 0) {
+        beyblade.defenseBuffTimer = Math.max(0, beyblade.defenseBuffTimer - dt);
+        if (beyblade.defenseBuffTimer <= 0) beyblade.isDefending = false;
+      }
+      if (beyblade.isDefending) {
+        beyblade.stamina = Math.max(0, beyblade.stamina - 60 * dt);
+        if (beyblade.stamina < 10) { beyblade.isDefending = false; beyblade.defenseBuffTimer = 0; }
+      }
+
+      // Airborne timer
+      if (beyblade.isAirborne) {
+        beyblade.airborneTimer = Math.max(0, beyblade.airborneTimer - dt);
+        if (beyblade.airborneTimer <= 0) {
+          beyblade.isAirborne = false;
+          beyblade.landingLag = 0.2;
+        }
+      }
+      if (beyblade.landingLag > 0) beyblade.landingLag = Math.max(0, beyblade.landingLag - dt);
+
+      // Stun and combo lock
+      if (beyblade.stunTimer > 0) beyblade.stunTimer = Math.max(0, beyblade.stunTimer - dt);
+      if (beyblade.comboExecuting && beyblade.comboTimer > 0) {
+        beyblade.comboTimer = Math.max(0, beyblade.comboTimer - dt);
+        if (beyblade.comboTimer <= 0) beyblade.comboExecuting = false;
+      }
+
+      // Passive power gain in speed path
+      if (beyblade.inLoop) beyblade.power = Math.min(100, beyblade.power + 2);
 
       // Ring-out check
       if (this.state.arena.shape === "circle") {

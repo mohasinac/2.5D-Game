@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -6,6 +6,11 @@ import { db, storage, COLLECTIONS } from "@/lib/firebase";
 import type { BeybladeStats } from "@/types/beybladeStats";
 import toast from "react-hot-toast";
 import { C, S } from "@/styles/theme";
+import WhatsAppStyleImageEditor from "@/components/admin/WhatsAppStyleImageEditor";
+import ImageCropper from "@/components/admin/ImageCropper";
+import type { ImageCropperRef } from "@/components/admin/ImageCropper";
+import BeybladePreview from "@/components/admin/BeybladePreview";
+import Step3ContactPoints from "@/components/admin/Step3ContactPoints";
 
 const TOTAL_POINTS = 360;
 const MAX_PER_TYPE = 150;
@@ -33,6 +38,10 @@ export function BeybladeEditPage() {
   const [beyblade, setBeyblade] = useState<BeybladeStats | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
+  const [editorMode, setEditorMode] = useState<"whatsapp" | "crop" | null>(null);
+  const [rawImageUrl, setRawImageUrl] = useState("");
+  const [imagePosition, setImagePosition] = useState({ x: 0, y: 0, scale: 1, rotation: 0 });
+  const cropperRef = useRef<ImageCropperRef>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -43,6 +52,7 @@ export function BeybladeEditPage() {
         const data = { id:snap.id, ...snap.data() } as BeybladeStats;
         setBeyblade(data);
         setImagePreview(data.imageUrl ?? "");
+        if (data.imagePosition) setImagePosition(data.imagePosition);
       } catch { toast.error("Failed to load beyblade"); }
       finally { setLoading(false); }
     })();
@@ -57,8 +67,29 @@ export function BeybladeEditPage() {
     if (!file) return;
     setImageFile(file);
     const reader = new FileReader();
-    reader.onload = ev => setImagePreview(ev.target?.result as string);
+    reader.onload = ev => {
+      const url = ev.target?.result as string;
+      setRawImageUrl(url);
+      setEditorMode("whatsapp");
+    };
     reader.readAsDataURL(file);
+  };
+
+  const handleEditorSave = async () => {
+    if (editorMode === "crop" && cropperRef.current) {
+      try {
+        const blob = await cropperRef.current.getCroppedImage();
+        const url = URL.createObjectURL(blob);
+        setImagePreview(url);
+        const croppedFile = new File([blob], imageFile?.name ?? "cropped.jpg", { type: "image/jpeg" });
+        setImageFile(croppedFile);
+      } catch {
+        toast.error("Failed to crop image");
+      }
+    } else {
+      setImagePreview(rawImageUrl);
+    }
+    setEditorMode(null);
   };
 
   const handleSave = async () => {
@@ -73,14 +104,31 @@ export function BeybladeEditPage() {
         await uploadBytes(imageRef, imageFile);
         imageUrl = await getDownloadURL(imageRef);
       }
+      let damageMultiplier = 1.0 + attack * 0.007;
+      let damageTaken = Math.max(0.45, 1 - defense * 0.003);
+      const knockbackDistance = 10 * (1 - defense * 0.00167);
+      const invulnerabilityChance = 0.1 + defense * 0.000667;
+      let maxStamina = Math.ceil(1000 * (1 + stamina * 0.01333));
+      const spinStealFactor = 0.1 * (1 + stamina * 0.02667);
+      const spinDecayRate = 8 * (1 - stamina * 0.001);
+      const maxSpin = Math.ceil(2000 * (1 + stamina * 0.0008));
+      const speedBonus = 1.0 + attack * 0.007;
+      switch (beyblade.type) {
+        case "attack": damageMultiplier *= 1.2; maxStamina = 2500; break;
+        case "defense": damageTaken *= 0.8; maxStamina = 2500; break;
+        case "balanced": maxStamina = Math.min(maxStamina, 2500); break;
+      }
       await updateDoc(doc(db, COLLECTIONS.BEYBLADE_STATS, id), {
         displayName: beyblade.displayName, type: beyblade.type,
         spinDirection: beyblade.spinDirection, mass: beyblade.mass, radius: beyblade.radius,
-        imageUrl, typeDistribution: beyblade.typeDistribution,
-        damageMultiplier: 1.0+attack*0.007, damageReduction: 1-defense*0.003,
-        invulnerabilityChance: defense*0.001, knockbackResistance: 1-defense*0.002,
-        spinDecayRate: 8*(1-stamina*0.001), maxSpin: 2000*(1+stamina*0.0008),
-        spinStealFactor: stamina*0.002, updatedAt: serverTimestamp(),
+        imageUrl, imagePosition,
+        typeDistribution: beyblade.typeDistribution,
+        damageMultiplier, damageTaken, knockbackDistance,
+        invulnerabilityChance, spinDecayRate, maxSpin, spinStealFactor,
+        maxStamina, speedBonus,
+        pointsOfContact: beyblade.pointsOfContact ?? [],
+        spinStealPoints: beyblade.spinStealPoints ?? [],
+        updatedAt: serverTimestamp(),
       });
       toast.success("Saved!");
     } catch (err) { console.error(err); toast.error("Save failed"); }
@@ -99,7 +147,7 @@ export function BeybladeEditPage() {
   const remaining = TOTAL_POINTS - usedPoints;
 
   return (
-    <div style={{ padding:24, maxWidth:800, margin:"0 auto" }}>
+    <div style={{ padding:24, maxWidth:980, margin:"0 auto" }}>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
         <div>
           <Link to="/admin/beyblades" style={{ color:C.faint, fontSize:13, textDecoration:"none" }}>← Beyblades</Link>
@@ -110,9 +158,11 @@ export function BeybladeEditPage() {
         </button>
       </div>
 
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
+      {/* Two-column: editors left, preview right */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 390px", gap:20, alignItems:"start", marginBottom:20 }}>
         {/* Left column */}
         <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+          {/* Basic Info */}
           <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
             <div style={S.sectionTitle}>Basic Info</div>
             <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
@@ -146,7 +196,7 @@ export function BeybladeEditPage() {
             </div>
           </div>
 
-          {/* Image upload */}
+          {/* Sprite Image */}
           <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
             <div style={S.sectionTitle}>Sprite Image</div>
             <div style={{ display:"flex", alignItems:"flex-start", gap:16 }}>
@@ -158,15 +208,22 @@ export function BeybladeEditPage() {
                   {imagePreview ? "Replace Image" : "Upload Image"}
                   <input type="file" accept="image/*" onChange={handleImageChange} style={{ display:"none" }} />
                 </label>
-                {imageFile && <p style={{ fontSize:11, color:C.faint, marginTop:4 }}>{imageFile.name}</p>}
+                {imageFile && (
+                  <div style={{ display:"flex", gap:8, marginTop:8 }}>
+                    <button type="button" onClick={() => setEditorMode("whatsapp")} style={{ padding:"4px 12px", background:C.bg3, border:`1px solid ${C.border}`, borderRadius:6, fontSize:11, color:C.muted, cursor:"pointer" }}>
+                      🖼 Reposition
+                    </button>
+                    <button type="button" onClick={() => setEditorMode("crop")} style={{ padding:"4px 12px", background:C.bg3, border:`1px solid ${C.border}`, borderRadius:6, fontSize:11, color:C.muted, cursor:"pointer" }}>
+                      ✂️ Crop
+                    </button>
+                  </div>
+                )}
                 <p style={{ fontSize:11, color:C.faint, marginTop:4 }}>PNG with transparent background, 300×300px</p>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right column */}
-        <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+          {/* Type Distribution */}
           <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
               <div style={S.sectionTitle}>Type Distribution</div>
@@ -179,26 +236,68 @@ export function BeybladeEditPage() {
               <StatBar label="Defense" value={defense} color={C.blue} remaining={remaining} onChange={v => setDist("defense",v)} />
               <StatBar label="Stamina" value={stamina} color={C.green} remaining={remaining} onChange={v => setDist("stamina",v)} />
             </div>
-          </div>
-
-          <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
-            <div style={S.sectionTitle}>Derived Stats</div>
-            {[
-              ["Damage Multiplier", `${(1.0+attack*0.007).toFixed(2)}x`],
-              ["Damage Reduction", `${((1-defense*0.003)*100).toFixed(0)}%`],
-              ["Invuln Chance", `${(defense*0.1).toFixed(1)}%`],
-              ["Max Spin", `${Math.round(2000*(1+stamina*0.0008))}`],
-              ["Spin Decay", `${(8*(1-stamina*0.001)).toFixed(1)}/s`],
-              ["Spin Steal", `${(stamina*0.2).toFixed(1)}%`],
-            ].map(([k,v],i,arr) => (
-              <div key={k} style={{ display:"flex", justifyContent:"space-between", fontSize:12, padding:"6px 0", borderBottom: i<arr.length-1 ? `1px solid ${C.border}` : "none" }}>
-                <span style={{ color:C.muted }}>{k}</span>
-                <span style={{ color:C.text, fontFamily:"monospace" }}>{v}</span>
-              </div>
-            ))}
+            {/* Derived stats inline */}
+            <div style={{ marginTop:14, display:"grid", gridTemplateColumns:"1fr 1fr", gap:"4px 16px", fontSize:11, color:C.faint }}>
+              {((): [string,string][] => {
+                const dmg = (1.0+attack*0.007)*(beyblade.type==="attack"?1.2:1);
+                const taken = Math.max(0.45,1-defense*0.003)*(beyblade.type==="defense"?0.8:1);
+                const hp = beyblade.type==="stamina" ? Math.ceil(1000*(1+stamina*0.01333)) : Math.min(Math.ceil(1000*(1+stamina*0.01333)),2500);
+                return [
+                  ["Damage", `${dmg.toFixed(2)}x`],
+                  ["Taken", `${(taken*100).toFixed(0)}%`],
+                  ["Max HP", `${hp}`],
+                  ["Spin Steal", `${((0.1*(1+stamina*0.02667))*100).toFixed(1)}%`],
+                  ["Max Spin", `${Math.ceil(2000*(1+stamina*0.0008))}`],
+                  ["Decay", `${(8*(1-stamina*0.001)).toFixed(1)}/s`],
+                ];
+              })().map(([k,v]) => (
+                <div key={k} style={{ display:"flex", justifyContent:"space-between" }}>
+                  <span>{k}:</span>
+                  <span style={{ color:C.text, fontFamily:"monospace" }}>{v}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+
+        {/* Right column: sticky preview */}
+        <div style={{ position:"sticky", top:80 }}>
+          <BeybladePreview beyblade={beyblade} />
+        </div>
       </div>
+
+      {/* Full-width contact points section */}
+      <Step3ContactPoints
+        beyblade={beyblade}
+        onChange={(updated) => setBeyblade(b => b ? { ...b, ...updated } : b)}
+      />
+
+      {/* Image editor modal */}
+      {editorMode && rawImageUrl && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000 }}>
+          <div style={{ maxWidth:400, width:"100%", padding:16 }}>
+            {editorMode === "whatsapp" && (
+              <WhatsAppStyleImageEditor
+                imageUrl={rawImageUrl}
+                onPositionChange={(pos) => { setImagePosition(pos); set("imagePosition", pos); }}
+                initialPosition={imagePosition}
+                circleSize={320}
+                onSave={handleEditorSave}
+                onCancel={() => setEditorMode(null)}
+              />
+            )}
+            {editorMode === "crop" && (
+              <div style={{ background:C.bg2, borderRadius:12, padding:16 }}>
+                <ImageCropper ref={cropperRef} imageUrl={rawImageUrl} targetWidth={300} targetHeight={300} />
+                <div style={{ display:"flex", justifyContent:"flex-end", gap:8, marginTop:12 }}>
+                  <button onClick={() => setEditorMode(null)} style={{ padding:"6px 16px", background:C.bg3, border:`1px solid ${C.border}`, borderRadius:8, color:C.muted, fontSize:13, cursor:"pointer" }}>Cancel</button>
+                  <button onClick={handleEditorSave} style={{ padding:"6px 16px", background:C.blue, border:"none", borderRadius:8, color:C.white, fontSize:13, fontWeight:600, cursor:"pointer" }}>Apply Crop</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

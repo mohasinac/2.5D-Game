@@ -36,7 +36,7 @@ interface ParticleData {
   life: number;
   maxLife: number;
   color: number;
-  sprite: PIXI.Graphics;
+  sprite: PIXI.Graphics | PIXI.Text;
 }
 
 export class BeybladeGameRenderer {
@@ -57,6 +57,13 @@ export class BeybladeGameRenderer {
   private spinBars: Map<string, PIXI.Graphics> = new Map();
   private labelTexts: Map<string, PIXI.Text> = new Map();
   private glowFilters: Map<string, PIXI.Filter> = new Map();
+
+  // Phase G visual effect layers (per beyblade)
+  private shadowSprites: Map<string, PIXI.Graphics> = new Map();
+  private attackArcs: Map<string, PIXI.Graphics> = new Map();
+  private shieldRings: Map<string, PIXI.Graphics> = new Map();
+  private dodgeTrails: Map<string, { x: number; y: number; alpha: number }[]> = new Map();
+  private dodgeTrailGraphics: Map<string, PIXI.Graphics[]> = new Map();
 
   // Particles
   private particles: ParticleData[] = [];
@@ -189,6 +196,16 @@ export class BeybladeGameRenderer {
         this.healthBars.delete(id);
         this.spinBars.delete(id);
         this.labelTexts.delete(id);
+        this.shadowSprites.delete(id);
+        this.attackArcs.delete(id);
+        this.shieldRings.delete(id);
+        this.dodgeTrails.delete(id);
+        // Remove trail ghost graphics from layer
+        const trailG = this.dodgeTrailGraphics.get(id);
+        if (trailG) {
+          trailG.forEach(g => this.beybladeLayer.removeChild(g));
+          this.dodgeTrailGraphics.delete(id);
+        }
       }
     });
   }
@@ -197,11 +214,28 @@ export class BeybladeGameRenderer {
     const container = new PIXI.Container();
     const typeColor = TYPE_COLORS[beyblade.type] ?? 0xffffff;
 
+    // Shadow (drawn first, behind sprite)
+    const shadow = new PIXI.Graphics();
+    container.addChild(shadow);
+    this.shadowSprites.set(id, shadow);
+
     // Beyblade body (spinning top shape)
     const sprite = new PIXI.Graphics();
     this.drawBeybladeShape(sprite, typeColor, beyblade.actualSize || 48);
     container.addChild(sprite);
     this.beybladeSprites.set(id, sprite);
+
+    // Attack arc (sword sweep — drawn above sprite, hidden by default)
+    const attackArc = new PIXI.Graphics();
+    attackArc.alpha = 0;
+    container.addChild(attackArc);
+    this.attackArcs.set(id, attackArc);
+
+    // Shield ring (defense orbit — drawn above sprite, hidden by default)
+    const shieldRing = new PIXI.Graphics();
+    shieldRing.alpha = 0;
+    container.addChild(shieldRing);
+    this.shieldRings.set(id, shieldRing);
 
     // Health bar (DOM-independent, rendered in PixiJS)
     const healthBar = new PIXI.Graphics();
@@ -227,6 +261,10 @@ export class BeybladeGameRenderer {
     label.anchor.set(0.5, 1);
     container.addChild(label);
     this.labelTexts.set(id, label);
+
+    // Dodge trail state (positions stored, graphics managed separately)
+    this.dodgeTrails.set(id, []);
+    this.dodgeTrailGraphics.set(id, []);
 
     this.beybladeLayer.addChild(container);
     this.beybladeContainers.set(id, container);
@@ -264,11 +302,11 @@ export class BeybladeGameRenderer {
     const healthBar = this.healthBars.get(id);
     const spinBar = this.spinBars.get(id);
     const label = this.labelTexts.get(id);
+    const shadow = this.shadowSprites.get(id);
+    const attackArc = this.attackArcs.get(id);
+    const shieldRing = this.shieldRings.get(id);
     if (!container || !sprite || !healthBar || !spinBar || !label) return;
 
-    // Convert game coordinates to screen coordinates
-    // Game uses absolute pixel coords from arena size; scale to canvas
-    const scaleX = this.app.screen.width / ((beyblade.x || 400) * 2 || 800);
     const r = (beyblade.actualSize || 48) / 2;
 
     // Simple mapping: game coords are already in pixels — just center them
@@ -281,24 +319,104 @@ export class BeybladeGameRenderer {
     // Stability-based 2.5D perspective effects
     const stability = getBeybladeStability(beyblade);
 
-    // Spin rotation (visual — independent of physics rotation)
-    sprite.rotation = beyblade.rotation;
+    // ── Airborne effect: scale up 1.3× + drop shadow below ────────────────
+    const isAirborne = beyblade.isAirborne;
+    if (isAirborne) {
+      sprite.scale.set(1.3, 1.3 * (0.85 + stability * 0.15));
+    } else {
+      sprite.scale.set(1.0, 0.85 + stability * 0.15);
+    }
 
-    // Squish: full spin → near-circle; dying → ellipse (y scale)
-    sprite.scale.set(1.0, 0.85 + stability * 0.15);
+    // Drop shadow (ellipse at ground level, fades when airborne)
+    if (shadow) {
+      shadow.clear();
+      if (isAirborne) {
+        shadow.ellipse(4, r * 0.6, r * 0.9, r * 0.25);
+        shadow.fill({ color: 0x000000, alpha: 0.35 });
+      }
+    }
 
     // Tilt skew when nearly spun out (spinning top about to fall)
     const tiltAmount = (1 - stability) * 0.25;
     sprite.skew.set(tiltAmount * Math.sin(Date.now() / 300), 0);
 
+    // Spin rotation (visual — independent of physics rotation)
+    sprite.rotation = beyblade.rotation;
+
     // Motion blur: stronger at high angular velocity
-    // PixiJS doesn't have built-in motion blur; simulate with opacity on spin streaks
     const blurAlpha = Math.min(1, Math.abs(beyblade.angularVelocity) / 5);
     sprite.alpha = beyblade.isActive ? (0.7 + blurAlpha * 0.3) : 0.3;
 
-    // Invulnerable: flashing effect
-    if (beyblade.isInvulnerable) {
-      sprite.alpha = Math.sin(Date.now() / 100) > 0 ? 1 : 0.2;
+    // Invulnerable: flashing effect (dodge window or isInvulnerable flag)
+    if (beyblade.isInvulnerable || (beyblade.dodgeBuffTimer > 0)) {
+      sprite.alpha = Math.sin(Date.now() / 80) > 0 ? 1 : 0.15;
+    }
+
+    // ── Attack arc: sword sweep semicircle (visible while attackBuffTimer > 0) ──
+    if (attackArc) {
+      attackArc.clear();
+      if (beyblade.attackBuffTimer > 0) {
+        const arcProgress = 1 - Math.min(1, beyblade.attackBuffTimer / 0.5);
+        const sweepAngle = arcProgress * Math.PI;
+        const baseAngle = sprite.rotation - Math.PI / 4;
+        attackArc.moveTo(0, 0);
+        attackArc.arc(0, 0, r * 1.5, baseAngle, baseAngle + sweepAngle);
+        attackArc.fill({ color: 0xff6644, alpha: 0.6 * (1 - arcProgress) });
+        attackArc.arc(0, 0, r * 1.5, baseAngle, baseAngle + sweepAngle);
+        attackArc.stroke({ color: 0xff8800, width: 2, alpha: 0.9 * (1 - arcProgress) });
+        attackArc.alpha = 1;
+      } else {
+        attackArc.alpha = 0;
+      }
+    }
+
+    // ── Shield ring: blue orbiting ring (visible while isDefending) ────────
+    if (shieldRing) {
+      shieldRing.clear();
+      if (beyblade.isDefending) {
+        const pulse = 0.6 + 0.4 * Math.sin(Date.now() / 160);
+        shieldRing.circle(0, 0, r * 1.4);
+        shieldRing.stroke({ color: 0x4488ff, width: 3, alpha: 0.8 * pulse });
+        shieldRing.circle(0, 0, r * 1.6);
+        shieldRing.stroke({ color: 0x88ccff, width: 1, alpha: 0.4 * pulse });
+        shieldRing.alpha = 1;
+      } else {
+        shieldRing.alpha = 0;
+      }
+    }
+
+    // ── Dodge trail: ghost sprites trailing behind ─────────────────────────
+    const trails = this.dodgeTrails.get(id);
+    const trailGraphics = this.dodgeTrailGraphics.get(id);
+    if (trails !== undefined && trailGraphics !== undefined) {
+      if (beyblade.dodgeBuffTimer > 0) {
+        trails.push({ x: screenX, y: screenY, alpha: 0.5 });
+        if (trails.length > 6) trails.shift();
+      }
+
+      // Ensure enough ghost graphic objects
+      while (trailGraphics.length < 6) {
+        const ghost = new PIXI.Graphics();
+        this.beybladeLayer.addChildAt(ghost, 0);
+        trailGraphics.push(ghost);
+      }
+
+      const typeColor = TYPE_COLORS[beyblade.type] ?? 0xffffff;
+      for (let i = 0; i < trailGraphics.length; i++) {
+        const g = trailGraphics[i];
+        const t = trails[i];
+        if (t) {
+          g.clear();
+          g.circle(t.x, t.y, r * (0.4 + i * 0.1));
+          g.fill({ color: typeColor, alpha: t.alpha * (i / 6) });
+          t.alpha *= 0.75;
+        } else {
+          g.clear();
+        }
+      }
+
+      // Prune fully faded trail points
+      while (trails.length > 0 && trails[0].alpha < 0.02) trails.shift();
     }
 
     const barWidth = 40;
@@ -375,6 +493,34 @@ export class BeybladeGameRenderer {
         sprite: g,
       });
     }
+  }
+
+  spawnDamageNumber(x: number, y: number, damage: number, color: number = 0xff4444) {
+    if (damage <= 0) return;
+    const text = new PIXI.Text({
+      text: `-${Math.round(damage)}`,
+      style: {
+        fontSize: 14,
+        fontWeight: "bold",
+        fill: color,
+        fontFamily: "monospace",
+        dropShadow: { alpha: 0.8, angle: 0, blur: 3, distance: 0, color: 0x000000 },
+      },
+    });
+    text.anchor.set(0.5, 1);
+    text.x = x;
+    text.y = y;
+    this.particleLayer.addChild(text);
+
+    this.particles.push({
+      x, y,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: -2.5 - Math.random(),
+      life: 0,
+      maxLife: 0.9 + Math.random() * 0.3,
+      color,
+      sprite: text,
+    });
   }
 
   private updateParticles(ticker: PIXI.Ticker) {

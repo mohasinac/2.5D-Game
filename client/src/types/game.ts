@@ -34,9 +34,19 @@ export interface ServerBeyblade {
   actualSize: number;
   isInvulnerable: boolean;
   damageDealt: number;
+  damageReceived: number;
   collisions: number;
   spinDirection: "left" | "right";
   imageUrl?: string;
+  // Phase C action state flags (synced from Colyseus schema)
+  power: number;
+  isAirborne: boolean;
+  airborneTimer: number;
+  isDefending: boolean;
+  attackBuffTimer: number;
+  dodgeBuffTimer: number;
+  stunTimer: number;
+  comboExecuting: boolean;
 }
 
 export interface ServerGameState {

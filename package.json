@@ -10,6 +10,12 @@
     "dev:server": "nodemon --exec ts-node src/index.ts",
     "dev:client": "cd client && npm run dev",
     "check": "node scripts/check.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:rooms": "node scripts/test-rooms.js",
+    "seed:beyblades": "node scripts/seed-beyblades.js",
+    "seed:arenas": "node scripts/seed-arenas.js",
+    "seed:all": "node scripts/seed-admin.js && node scripts/seed-beyblades.js && node scripts/seed-arenas.js",
     "deploy": "npm run deploy:client && npm run deploy:rules",
     "deploy:client": "cd client && npm run build && cd .. && firebase deploy --only hosting",
     "deploy:rules": "firebase deploy --only firestore:rules,firestore:indexes,storage",
@@ -36,6 +42,7 @@
     "concurrently": "^9.2.1",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
   }
 }

@@ -23,7 +23,7 @@ export function TryoutGamePage() {
       autoConnect: false,
     });
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles } = usePixiRenderer(containerRef);
+  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber } = usePixiRenderer(containerRef);
 
   useEffect(() => {
     connect();
@@ -40,12 +40,17 @@ export function TryoutGamePage() {
   useEffect(() => {
     if (!room) return;
     room.onMessage("collision", (data: any) => {
-      spawnCollisionParticles(data.contactPoint.x, data.contactPoint.y, 0xff4444, 0x4488ff);
+      const cx = data.contactPoint.x;
+      const cy = data.contactPoint.y;
+      spawnCollisionParticles(cx, cy, 0xff4444, 0x4488ff);
+      // Floating damage numbers for each beyblade that took damage
+      if (data.damage1 > 0) spawnDamageNumber(cx - 12, cy - 8, data.damage1, 0xff5555);
+      if (data.damage2 > 0) spawnDamageNumber(cx + 12, cy - 8, data.damage2, 0xff5555);
     });
     room.onMessage("spin-out", (data: any) => {
       spawnSpinOutParticles(data.x, data.y, TYPE_COLORS[data.type] ?? 0xffffff);
     });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles]);
+  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber]);
 
   useGameInput(sendInput, connectionState === "connected");
 
@@ -117,12 +122,35 @@ export function TryoutGamePage() {
               </div>
             </div>
 
+            {/* Power bar */}
+            <div style={{ marginBottom:6 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, marginBottom:4 }}>
+                <span style={{ color:C.yellow }}>Power</span>
+                <span style={{ color:C.text, fontFamily:"monospace" }}>{Math.round((myBeyblade as any).power ?? 0)}%</span>
+              </div>
+              <div style={{ width:"100%", height:5, background:C.bg3, borderRadius:3, overflow:"hidden" }}>
+                <div style={{
+                  height:"100%", borderRadius:3, transition:"width 150ms",
+                  width:`${(myBeyblade as any).power ?? 0}%`,
+                  background: (myBeyblade as any).power >= 50 ? C.yellow : C.muted,
+                }} />
+              </div>
+            </div>
+
+            {/* State flags */}
+            <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:6 }}>
+              {(myBeyblade as any).isAirborne && <span style={{ fontSize:9, fontFamily:"monospace", background:C.blue+"33", color:C.blue, borderRadius:4, padding:"1px 5px" }}>AIRBORNE</span>}
+              {(myBeyblade as any).isDefending && <span style={{ fontSize:9, fontFamily:"monospace", background:C.green+"33", color:C.green, borderRadius:4, padding:"1px 5px" }}>DEFENDING</span>}
+              {(myBeyblade as any).attackBuffTimer > 0 && <span style={{ fontSize:9, fontFamily:"monospace", background:C.red+"33", color:C.red, borderRadius:4, padding:"1px 5px" }}>ATTACK+</span>}
+              {(myBeyblade as any).stunTimer > 0 && <span style={{ fontSize:9, fontFamily:"monospace", background:C.yellow+"33", color:C.yellow, borderRadius:4, padding:"1px 5px" }}>STUNNED</span>}
+            </div>
+
             <div style={{ fontSize:11, textAlign:"center", fontFamily:"monospace", color:stabilityColor }}>
               {stabilityLabel}
             </div>
           </div>
           <p style={{ textAlign:"center", color:C.faint, fontSize:11, marginTop:8 }}>
-            A/D or ←/→ Move · Space Attack · Shift Special
+            WASD/Arrows: Move · J: Attack · K: Defend · L: Dodge · I: Jump · Space: Charge/Special
           </p>
         </div>
       )}

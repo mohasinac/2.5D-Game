@@ -271,6 +271,27 @@ export class Beyblade extends Schema {
   // Special move active state
   @type("boolean") specialMoveActive: boolean = false;
   @type("number") specialMoveEndTime: number = 0;
+
+  // Power meter (0-100): charged by holding space, consumed by specials/combos
+  @type("number") power: number = 0;
+
+  // Airborne state (I key / jump)
+  @type("boolean") isAirborne: boolean = false;
+  @type("number") airborneTimer: number = 0;
+  @type("number") landingLag: number = 0;
+
+  // Defense stance (K key)
+  @type("boolean") isDefending: boolean = false;
+
+  // Action buff timers (J/K/L key single-press buffs)
+  @type("number") attackBuffTimer: number = 0;
+  @type("number") defenseBuffTimer: number = 0;
+  @type("number") dodgeBuffTimer: number = 0;
+
+  // Stun / combo lock
+  @type("number") stunTimer: number = 0;
+  @type("boolean") comboExecuting: boolean = false;
+  @type("number") comboTimer: number = 0;
 }
 
 /**

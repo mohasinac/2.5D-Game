@@ -1,8 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 import { RootLayout } from "./layouts/RootLayout";
 import { AdminLayout } from "./layouts/AdminLayout";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { AdminRoute } from "./components/auth/AdminRoute";
 
 // Pages
+import { LoginPage } from "./pages/LoginPage";
 import { HomePage } from "./pages/HomePage";
 import { RendererDemoPage } from "./pages/RendererDemoPage";
 import { GameSelectPage } from "./pages/GameSelectPage";
@@ -34,20 +37,24 @@ import { ArenaTestPage } from "./pages/admin/ArenaTestPage";
 
 export const router = createBrowserRouter([
   {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
     path: "/",
     element: <RootLayout />,
     children: [
       { index: true, element: <HomePage /> },
       { path: "demo", element: <RendererDemoPage /> },
-      { path: "game", element: <GameSelectPage /> },
-      { path: "game/tryout", element: <TryoutGamePage /> },
-      { path: "game/battle/lobby", element: <BattleLobbyPage /> },
-      { path: "game/battle/:roomId", element: <BattleGamePage /> },
+      { path: "game", element: <ProtectedRoute><GameSelectPage /></ProtectedRoute> },
+      { path: "game/tryout", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
+      { path: "game/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
+      { path: "game/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
     ],
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: <AdminRoute><AdminLayout /></AdminRoute>,
     children: [
       { index: true, element: <AdminDashboardPage /> },
 

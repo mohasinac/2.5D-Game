@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
 import toast from "react-hot-toast";
 import { C, S } from "@/styles/theme";
+import WhatsAppStyleImageEditor from "./WhatsAppStyleImageEditor";
+import ImageCropper from "./ImageCropper";
+import type { ImageCropperRef } from "./ImageCropper";
 
 interface AssetCrudPageProps {
   collectionName: string; title: string; icon: string; description: string;
@@ -21,6 +24,10 @@ export function AssetCrudPage({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState("all");
   const [form, setForm] = useState({ name:"", tag:tags[0]??"", file:null as File|null });
+  const [rawImageUrl, setRawImageUrl] = useState("");
+  const [imageEditorMode, setImageEditorMode] = useState<"whatsapp" | "crop" | null>(null);
+  const [imagePosition, setImagePosition] = useState({ x:0, y:0, scale:1, rotation:0 });
+  const cropperRef = useRef<ImageCropperRef>(null);
 
   const fetchAssets = async () => {
     setLoading(true);
@@ -37,6 +44,27 @@ export function AssetCrudPage({
     const file = e.target.files?.[0];
     if (!file) return;
     setForm(f => ({ ...f, file, name:f.name||file.name.replace(/\.[^.]+$/,"") }));
+    if (!isAudio) {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        setRawImageUrl(ev.target?.result as string);
+        setImageEditorMode("whatsapp");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageEditorSave = async () => {
+    if (imageEditorMode === "crop" && cropperRef.current) {
+      try {
+        const blob = await cropperRef.current.getCroppedImage();
+        const croppedFile = new File([blob], form.file?.name ?? "cropped.jpg", { type:"image/jpeg" });
+        setForm(f => ({ ...f, file:croppedFile }));
+      } catch {
+        toast.error("Failed to crop image");
+      }
+    }
+    setImageEditorMode(null);
   };
 
   const handleUpload = async () => {
@@ -99,12 +127,45 @@ export function AssetCrudPage({
               <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{form.file ? form.file.name : "Choose file..."}</span>
               <input type="file" accept={acceptTypes} onChange={handleFileChange} style={{ display:"none" }} />
             </label>
+            {form.file && !isAudio && (
+              <div style={{ display:"flex", gap:6, marginTop:6 }}>
+                <button type="button" onClick={() => setImageEditorMode("whatsapp")} style={{ padding:"3px 10px", background:C.bg3, border:`1px solid ${C.border}`, borderRadius:6, fontSize:11, color:C.muted, cursor:"pointer" }}>🖼 Reposition</button>
+                <button type="button" onClick={() => setImageEditorMode("crop")} style={{ padding:"3px 10px", background:C.bg3, border:`1px solid ${C.border}`, borderRadius:6, fontSize:11, color:C.muted, cursor:"pointer" }}>✂️ Crop</button>
+              </div>
+            )}
           </div>
         </div>
         <button onClick={handleUpload} disabled={uploading||!form.file||!form.name.trim()} style={{ padding:"8px 20px", background:C.blue, color:C.white, borderRadius:8, fontSize:13, fontWeight:500, border:"none", cursor:"pointer", opacity: uploading||!form.file||!form.name.trim() ? 0.5 : 1 }}>
           {uploading ? "Uploading..." : "Upload Asset"}
         </button>
       </div>
+
+      {/* Image editor modal */}
+      {imageEditorMode && rawImageUrl && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000 }}>
+          <div style={{ maxWidth:420, width:"100%", padding:16 }}>
+            {imageEditorMode === "whatsapp" && (
+              <WhatsAppStyleImageEditor
+                imageUrl={rawImageUrl}
+                onPositionChange={setImagePosition}
+                initialPosition={imagePosition}
+                circleSize={320}
+                onSave={handleImageEditorSave}
+                onCancel={() => setImageEditorMode(null)}
+              />
+            )}
+            {imageEditorMode === "crop" && (
+              <div style={{ background:C.bg2, borderRadius:12, padding:16 }}>
+                <ImageCropper ref={cropperRef} imageUrl={rawImageUrl} targetWidth={300} targetHeight={300} />
+                <div style={{ display:"flex", justifyContent:"flex-end", gap:8, marginTop:12 }}>
+                  <button onClick={() => setImageEditorMode(null)} style={{ padding:"6px 16px", background:C.bg3, border:`1px solid ${C.border}`, borderRadius:8, color:C.muted, fontSize:13, cursor:"pointer" }}>Cancel</button>
+                  <button onClick={handleImageEditorSave} style={{ padding:"6px 16px", background:C.blue, border:"none", borderRadius:8, color:C.white, fontSize:13, fontWeight:600, cursor:"pointer" }}>Apply Crop</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Tag filter */}
       {tags.length > 0 && (

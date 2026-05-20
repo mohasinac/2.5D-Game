@@ -1,0 +1,87 @@
+import { C } from "@/styles/theme";
+import type { ArenaConfig, ObstacleConfig } from "@/types/arenaConfigNew";
+import { OBSTACLE_ICONS } from "@/types/arenaConfigNew";
+
+interface Props {
+  config: ArenaConfig;
+  onChange: (updated: Partial<ArenaConfig>) => void;
+}
+
+function makeId() { return Math.floor(Date.now() % 1000000); }
+
+const DEFAULT: Omit<ObstacleConfig, "id"> = {
+  x: 0, y: 0, radius: 25, health: 3, damage: 15, recoilDistance: 40,
+};
+
+const SLIDER_FIELDS: { field: keyof ObstacleConfig; label: string; min: number; max: number; step: number }[] = [
+  { field: "x", label: "X (px from center)", min: -500, max: 500, step: 10 },
+  { field: "y", label: "Y (px from center)", min: -500, max: 500, step: 10 },
+  { field: "radius", label: "Radius (px)", min: 10, max: 80, step: 5 },
+  { field: "health", label: "Health (hits)", min: 1, max: 10, step: 1 },
+  { field: "damage", label: "Collision Damage", min: 5, max: 50, step: 5 },
+  { field: "recoilDistance", label: "Recoil Distance (px)", min: 0, max: 150, step: 10 },
+];
+
+export default function ObstaclesTab({ config, onChange }: Props) {
+  const items = config.obstacles ?? [];
+  const themeIcon = OBSTACLE_ICONS[config.theme as keyof typeof OBSTACLE_ICONS] ?? "🪨";
+
+  const add = () => {
+    if (items.length >= 10) return;
+    onChange({ obstacles: [...items, { ...DEFAULT, id: makeId() }] });
+  };
+
+  const remove = (id: number | undefined) =>
+    onChange({ obstacles: items.filter(o => o.id !== id) });
+
+  const update = (id: number | undefined, field: keyof ObstacleConfig, value: any) =>
+    onChange({ obstacles: items.map(o => o.id === id ? { ...o, [field]: value } : o) });
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontSize: 13, color: C.muted }}>{items.length} / 10 obstacles — theme icon: {themeIcon}</span>
+        <button onClick={add} disabled={items.length >= 10} style={{ padding: "5px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer", opacity: items.length >= 10 ? 0.4 : 1 }}>
+          + Add Obstacle
+        </button>
+      </div>
+
+      {items.length === 0 && (
+        <div style={{ textAlign: "center", padding: "40px 0", color: C.faint }}>
+          <div style={{ fontSize: 32, marginBottom: 8 }}>{themeIcon}</div>
+          <p>No obstacles yet. Obstacles damage beyblades on collision.</p>
+        </div>
+      )}
+
+      {items.map((obs, idx) => (
+        <div key={obs.id ?? idx} style={{ background: C.bg3, borderRadius: 12, padding: 16, border: `1px solid ${C.border}` }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: C.text }}>{themeIcon} Obstacle #{idx + 1}</span>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 11, color: C.muted, cursor: "pointer" }}>
+                <input type="checkbox" checked={obs.indestructible ?? false} onChange={e => update(obs.id, "indestructible", e.target.checked)} />
+                Indestructible
+              </label>
+              <button onClick={() => remove(obs.id)} style={{ color: C.red, background: "none", border: "none", fontSize: 12, cursor: "pointer" }}>Remove</button>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+            {SLIDER_FIELDS.map(({ field, label, min, max, step }) => (
+              <div key={field}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+                  <span>{label}</span>
+                  <span style={{ color: C.text, fontFamily: "monospace" }}>{(obs as any)[field] ?? 0}</span>
+                </div>
+                <input type="range" min={min} max={max} step={step}
+                  value={(obs as any)[field] ?? 0}
+                  onChange={e => update(obs.id, field, +e.target.value)}
+                  style={{ width: "100%", accentColor: C.blue }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

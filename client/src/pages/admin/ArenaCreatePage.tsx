@@ -4,6 +4,8 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
 import { C, S } from "@/styles/theme";
+import { DEFAULT_ARENA_CONFIG, initializeWallConfig } from "@/types/arenaConfigNew";
+import type { ArenaShape, ArenaTheme } from "@/types/arenaConfigNew";
 
 const THEMES = ["metrocity","forest","mountains","grasslands","desert","sea","futuristic","prehistoric","safari","riverbank"];
 
@@ -18,7 +20,14 @@ export function ArenaCreatePage() {
     setSaving(true);
     try {
       const docRef = await addDoc(collection(db, COLLECTIONS.ARENAS), {
-        ...form, name:form.name.trim(), features:{}, obstacles:[], waterBodies:[], speedPaths:[], turrets:[], portals:[], pits:[], createdAt:serverTimestamp(),
+        ...DEFAULT_ARENA_CONFIG,
+        name: form.name.trim(),
+        shape: form.shape as ArenaShape,
+        theme: form.theme as ArenaTheme,
+        wall: initializeWallConfig(form.shape as ArenaShape),
+        width: form.width, height: form.height,
+        obstacles: [], waterBodies: [], speedPaths: [], turrets: [], portals: [], pits: [],
+        createdAt: serverTimestamp(),
       });
       toast.success(`Created ${form.name}`);
       navigate(`/admin/arenas/edit/${docRef.id}`);

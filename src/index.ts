@@ -7,6 +7,7 @@ import path from "path";
 import { monitor } from "@colyseus/monitor";
 import { TryoutRoom } from "./rooms/TryoutRoom";
 import { BattleRoom } from "./rooms/BattleRoom";
+import { AIBattleRoom } from "./rooms/AIBattleRoom";
 
 const port = Number(process.env.PORT || 2567);
 const app = express();
@@ -29,6 +30,7 @@ const gameServer = new Server({
 // Register room handlers
 gameServer.define("tryout_room", TryoutRoom);
 gameServer.define("battle_room", BattleRoom);
+gameServer.define("ai_battle_room", AIBattleRoom);
 
 // (Optional) Attach monitoring panel
 app.use("/colyseus", monitor());

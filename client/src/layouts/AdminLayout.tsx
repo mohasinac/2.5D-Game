@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Outlet, NavLink, Link } from "react-router-dom";
+import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { C } from "@/styles/theme";
+import { useAuth } from "@/contexts/AuthContext";
+import toast from "react-hot-toast";
 
 const navItems = [
   { to: "/admin", label: "Dashboard", icon: "🏠", end: true },
@@ -15,6 +16,15 @@ const navItems = [
 ];
 
 export function AdminLayout() {
+  const { currentUser, signOutUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOutUser();
+    toast.success("Signed out");
+    navigate("/login");
+  };
+
   return (
     <div style={{ display:"flex", height:"100vh", background:C.bg0, color:C.text, overflow:"hidden" }}>
       {/* Sidebar */}
@@ -67,6 +77,18 @@ export function AdminLayout() {
             <span>🎮</span>
             <span>Play Game</span>
           </Link>
+          {currentUser && (
+            <div style={{ marginTop:6, padding:"8px 12px", borderRadius:8, background:C.bg2, border:`1px solid ${C.border}` }}>
+              <div style={{ fontSize:10, color:C.faint, marginBottom:4 }}>Signed in as</div>
+              <div style={{ fontSize:11, color:C.text, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", marginBottom:6 }}>{currentUser.email}</div>
+              <button
+                onClick={handleSignOut}
+                style={{ width:"100%", padding:"4px 0", background:"none", border:`1px solid ${C.border}`, borderRadius:5, fontSize:11, color:C.red, cursor:"pointer" }}
+              >
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </aside>
 

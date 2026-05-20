@@ -213,9 +213,13 @@ export class PhysicsEngine {
       ? this.getContactPointMultiplier(stats2.pointsOfContact, collision.contactAngle2)
       : 1.0;
 
-    // Outgoing damage: raw × contact multiplier × attacker's damage multiplier
-    let outDamageFrom1 = rawDamage * contactMult1 * beyblade1.damageMultiplier;
-    let outDamageFrom2 = rawDamage * contactMult2 * beyblade2.damageMultiplier;
+    // Attack buff (J key active): +40% outgoing damage multiplier
+    const attackBuff1 = beyblade1.attackBuffTimer > 0 ? 1.4 : 1.0;
+    const attackBuff2 = beyblade2.attackBuffTimer > 0 ? 1.4 : 1.0;
+
+    // Outgoing damage: raw × contact multiplier × attacker's damage multiplier × attack buff
+    let outDamageFrom1 = rawDamage * contactMult1 * beyblade1.damageMultiplier * attackBuff1;
+    let outDamageFrom2 = rawDamage * contactMult2 * beyblade2.damageMultiplier * attackBuff2;
 
     // Spin steal uses RAW damage (pre-defense) for a fair stamina calculation
     const oppositeSpin = beyblade1.spinDirection !== beyblade2.spinDirection;
@@ -224,15 +228,17 @@ export class PhysicsEngine {
     const spinSteal1 = rawDamage * beyblade1.spinStealFactor * stealMultiplier;
     const spinSteal2 = rawDamage * beyblade2.spinStealFactor * stealMultiplier;
 
-    // Apply defense AFTER spin steal is calculated (defense only reduces HP damage)
-    let damage1 = outDamageFrom2 * beyblade1.damageTaken;
-    let damage2 = outDamageFrom1 * beyblade2.damageTaken;
+    // Defense buff (K stance active): extra 40% damage reduction on top of base damageTaken
+    const defenseBuff1 = beyblade1.defenseBuffTimer > 0 ? 0.6 : 1.0;
+    const defenseBuff2 = beyblade2.defenseBuffTimer > 0 ? 0.6 : 1.0;
 
-    // Invulnerability: isInvulnerable blocks ALL damage (from special move)
-    // invulnerabilityChance is a passive chance to reduce spin steal only, not damage
-    // (Fixed: was incorrectly zeroing all damage via OR with random)
-    if (beyblade1.isInvulnerable) damage1 = 0;
-    if (beyblade2.isInvulnerable) damage2 = 0;
+    // Apply defense AFTER spin steal is calculated (defense only reduces HP damage)
+    let damage1 = outDamageFrom2 * beyblade1.damageTaken * defenseBuff1;
+    let damage2 = outDamageFrom1 * beyblade2.damageTaken * defenseBuff2;
+
+    // Invulnerability: isInvulnerable (special move) or dodgeBuffTimer (L dodge) blocks ALL damage
+    if (beyblade1.isInvulnerable || beyblade1.dodgeBuffTimer > 0) damage1 = 0;
+    if (beyblade2.isInvulnerable || beyblade2.dodgeBuffTimer > 0) damage2 = 0;
 
     return { damage1, damage2, spinSteal1, spinSteal2 };
   }
@@ -393,6 +399,30 @@ export class PhysicsEngine {
       x: (direction.x / magnitude) * force * 0.01,
       y: (direction.y / magnitude) * force * 0.01,
     });
+  }
+
+  // Dodge mechanic: lateral burst perpendicular to current velocity (in spin direction)
+  applyLateralForce(beybladeId: string, spinDirection: string, magnitude: number): void {
+    const body = this.bodies.get(beybladeId);
+    if (!body) return;
+
+    const vel = body.velocity;
+    const speed = Math.sqrt(vel.x * vel.x + vel.y * vel.y);
+
+    let perpX: number, perpY: number;
+    if (speed > 0.1) {
+      const normX = vel.x / speed;
+      const normY = vel.y / speed;
+      // right-spin: dodge right (perpendicular clockwise), left-spin: dodge left
+      if (spinDirection === "right") { perpX = normY; perpY = -normX; }
+      else                           { perpX = -normY; perpY = normX; }
+    } else {
+      const angle = body.angle;
+      if (spinDirection === "right") { perpX = Math.sin(angle);  perpY = -Math.cos(angle); }
+      else                           { perpX = -Math.sin(angle); perpY = Math.cos(angle); }
+    }
+
+    Matter.Body.applyForce(body, body.position, { x: perpX * magnitude, y: perpY * magnitude });
   }
 
   isOutOfBounds(id: string, arenaRadius: number, centerX: number, centerY: number): boolean {

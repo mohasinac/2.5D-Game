@@ -22,6 +22,17 @@ export interface TypeDistribution {
   total: number;
 }
 
+export interface AdminOverrides {
+  maxStamina?: number;
+  spinDecayRate?: number;
+  spinStealFactor?: number;
+  damageMultiplier?: number;
+  damageTaken?: number;
+  knockbackDistance?: number;
+  invulnerabilityChance?: number;
+  speed?: number;
+}
+
 export interface BeybladeStats {
   id: string;
   displayName: string;
@@ -34,16 +45,22 @@ export interface BeybladeStats {
   radius: number;
   actualSize?: number;
   typeDistribution: TypeDistribution;
+  // Derived stats (computed from typeDistribution + type archetype bonuses)
   damageMultiplier: number;
-  damageReduction: number;
+  damageTaken: number;
+  knockbackDistance: number;
   invulnerabilityChance: number;
-  knockbackResistance: number;
   spinDecayRate: number;
   maxSpin: number;
   spinStealFactor: number;
-  maxHealth: number;
+  maxStamina: number;
+  speed?: number;
+  rotationSpeed?: number;
   pointsOfContact: PointOfContact[];
   spinStealPoints?: SpinStealPoint[];
+  // Admin features
+  adminOverrides?: AdminOverrides;
+  enabledCombos?: string[];
   createdAt?: any;
   updatedAt?: any;
 }

@@ -12,7 +12,9 @@ function makeMock(id: string, type: ServerBeyblade["type"], spin: number): Serve
     health: 100, maxHealth: 100, stamina: 1000, maxStamina: 1000,
     spin, maxSpin: 2000, isActive: true, isAI: false, type,
     radius: 4, actualSize: 52, isInvulnerable: false,
-    damageDealt: 0, collisions: 0, spinDirection: "right",
+    damageDealt: 0, damageReceived: 0, collisions: 0, spinDirection: "right",
+    power: 0, isAirborne: false, airborneTimer: 0, isDefending: false,
+    attackBuffTimer: 0, dodgeBuffTimer: 0, stunTimer: 0, comboExecuting: false,
   };
 }
 

@@ -10,7 +10,9 @@ const MOCK_BEYBLADE = (id: string, x: number, y: number): ServerBeyblade => ({
   angularVelocity:12, health:100, maxHealth:100, stamina:1000, maxStamina:1000,
   spin:1800, maxSpin:2000, isActive:true, isAI:false,
   type: id==="b1" ? "attack" : "defense",
-  radius:4, actualSize:48, isInvulnerable:false, damageDealt:0, collisions:0, spinDirection:"right",
+  radius:4, actualSize:48, isInvulnerable:false, damageDealt:0, damageReceived:0, collisions:0, spinDirection:"right",
+  power:0, isAirborne:false, airborneTimer:0, isDefending:false,
+  attackBuffTimer:0, dodgeBuffTimer:0, stunTimer:0, comboExecuting:false,
 });
 
 export function ArenaTestPage() {
