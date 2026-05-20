@@ -41,7 +41,7 @@ export function BattleGamePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrated]);
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles } = usePixiRenderer(containerRef);
+  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber } = usePixiRenderer(containerRef);
 
   useEffect(() => {
     let raf: number;
@@ -53,14 +53,18 @@ export function BattleGamePage() {
   useEffect(() => {
     if (!room) return;
     room.onMessage("collision", (data: any) => {
-      spawnCollisionParticles(data.contactPoint.x, data.contactPoint.y, 0xff4444, 0x4488ff);
+      const cx = data.contactPoint.x;
+      const cy = data.contactPoint.y;
+      spawnCollisionParticles(cx, cy, 0xff4444, 0x4488ff);
+      if (data.damage1 > 0) spawnDamageNumber(cx - 12, cy - 8, data.damage1, 0xff5555);
+      if (data.damage2 > 0) spawnDamageNumber(cx + 12, cy - 8, data.damage2, 0x55aaff);
     });
     room.onMessage("spin-out", (data: any) => {
       spawnSpinOutParticles(data.x, data.y, TYPE_COLORS[data.type] ?? 0xffffff);
     });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles]);
+  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber]);
 
-  useGameInput(sendInput, connectionState === "connected" && gameState?.status === "playing");
+  useGameInput(sendInput, connectionState === "connected" && gameState?.status === "in-progress");
 
   const myStability = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
   const stabilityColor = myStability > 0.6 ? C.green : myStability > 0.3 ? C.yellow : C.red;
@@ -205,7 +209,7 @@ export function BattleGamePage() {
       )}
 
       {/* Countdown overlay */}
-      {gameState?.status === "countdown" && (
+      {gameState?.status === "warmup" && (
         <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.65)", zIndex:50 }}>
           <div style={{ textAlign:"center" }}>
             <div style={{ fontSize:120, fontWeight:900, color:C.text, fontFamily:"monospace" }}>

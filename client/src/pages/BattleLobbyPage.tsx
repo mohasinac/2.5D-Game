@@ -35,7 +35,7 @@ export function BattleLobbyPage() {
   }, [room, navigate]);
 
   useEffect(() => {
-    if (gameState?.status === "playing" && room) navigate(`/game/battle/${room.roomId}`);
+    if (gameState?.status === "in-progress" && room) navigate(`/game/battle/${room.roomId}`);
   }, [gameState?.status, room, navigate]);
 
   const playerList = Array.from(beyblades.values());

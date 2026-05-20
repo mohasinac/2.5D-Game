@@ -95,9 +95,10 @@ interface Props {
   imageUrl?: string;
   maxHeight?: number;   // mm — for axis scaling (default 60)
   maxRadius?: number;   // mm — for axis scaling (default 40)
+  traceKnots?: number;  // knot count produced when tracing from image (default 10)
 }
 
-export function SplineProfileEditor({ value, onChange, imageUrl, maxHeight = 60, maxRadius = 40 }: Props) {
+export function SplineProfileEditor({ value, onChange, imageUrl, maxHeight = 60, maxRadius = 40, traceKnots = 10 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [tracing, setTracing] = useState(false);
   const dragging = useRef<number | null>(null); // knot index being dragged
@@ -191,7 +192,7 @@ export function SplineProfileEditor({ value, onChange, imageUrl, maxHeight = 60,
     if (!imageUrl) return;
     setTracing(true);
     try {
-      const rawKnots = await traceSideProfile(imageUrl, 10);
+      const rawKnots = await traceSideProfile(imageUrl, traceKnots);
       // Scale normalised values to mm
       const knots: SplineKnot[] = rawKnots.map((k) => ({
         height: parseFloat((k.height * maxHeight).toFixed(1)),

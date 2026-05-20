@@ -35,6 +35,13 @@ if (!admin.apps.length) {
 /**
  * Load beyblade data from Firestore
  */
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`Firestore timeout after ${ms}ms`)), ms)),
+  ]);
+}
+
 export async function loadBeyblade(beybladeId: string): Promise<BeybladeStats | null> {
   if (!db) {
     console.error('Firebase not initialized');
@@ -42,7 +49,10 @@ export async function loadBeyblade(beybladeId: string): Promise<BeybladeStats | 
   }
 
   try {
-    const doc = await db.collection(FIREBASE_COLLECTIONS.BEYBLADE_STATS).doc(beybladeId).get();
+    const doc = await withTimeout(
+      db.collection(FIREBASE_COLLECTIONS.BEYBLADE_STATS).doc(beybladeId).get(),
+      5000
+    );
 
     if (!doc.exists) {
       console.error(`Beyblade not found: ${beybladeId}`);
@@ -66,7 +76,10 @@ export async function loadArena(arenaId: string): Promise<ArenaConfig | null> {
   }
 
   try {
-    const doc = await db.collection(FIREBASE_COLLECTIONS.ARENAS).doc(arenaId).get();
+    const doc = await withTimeout(
+      db.collection(FIREBASE_COLLECTIONS.ARENAS).doc(arenaId).get(),
+      5000
+    );
 
     if (!doc.exists) {
       console.error(`Arena not found: ${arenaId}`);

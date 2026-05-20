@@ -61,7 +61,7 @@ export function RendererDemoPage() {
         beyblades.set(id, bey);
       });
       r.render({
-        status:"playing", mode:"pvp", timer:180, startTime:Date.now(),
+        status:"in-progress", mode:"single-battle-pvp", timer:180, startTime:Date.now(),
         winner:"", matchId:"demo",
         arena:{ id:"demo", name:"Demo", width:W, height:H, shape:"circle", theme:s.theme },
         beyblades,

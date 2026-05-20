@@ -125,8 +125,8 @@ function makeBey(overrides: Partial<ServerBeyblade> = {}): ServerBeyblade {
 
 function makeGameState(overrides: Partial<ServerGameState> = {}): ServerGameState {
   return {
-    status: "playing",
-    mode: "ai",
+    status: "in-progress",
+    mode: "ai-battle",
     timer: 60,
     startTime: Date.now(),
     winner: "",

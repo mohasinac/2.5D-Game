@@ -306,7 +306,7 @@ describe("useColyseus — onStateChange callback", () => {
     // Build a Map-like state.beyblades (Colyseus uses a MapSchema with forEach)
     const beyMap = new Map([[sessionId, fakeBey]]);
     const fakeState = {
-      status: "playing",
+      status: "in-progress",
       mode: "tryout",
       timer: 120,
       startTime: Date.now(),
@@ -343,7 +343,7 @@ describe("useColyseus — onStateChange callback", () => {
     const emptyBeyMap = new Map();
     const fakeState = {
       status: "countdown",
-      mode: "ai",
+      mode: "ai-battle",
       timer: 60,
       startTime: 12345,
       winner: "",
@@ -360,7 +360,7 @@ describe("useColyseus — onStateChange callback", () => {
     });
 
     expect(result.current.gameState?.status).toBe("countdown");
-    expect(result.current.gameState?.mode).toBe("ai");
+    expect(result.current.gameState?.mode).toBe("ai-battle");
     expect(result.current.gameState?.timer).toBe(60);
     expect(result.current.gameState?.arena).toBeNull();
   });
@@ -379,8 +379,8 @@ describe("useColyseus — onStateChange callback", () => {
     const otherBey = makeFakeBeyblade("other-session");
     const beyMap = new Map([["other-session", otherBey]]);
     const fakeState = {
-      status: "playing",
-      mode: "pvp",
+      status: "in-progress",
+      mode: "single-battle-pvp",
       timer: 90,
       startTime: 0,
       winner: "",

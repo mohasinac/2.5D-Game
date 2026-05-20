@@ -1,5 +1,40 @@
 # CHANGELOG
 
+## [2.3.0] - 2026-05-21
+
+### Fixed
+
+- **AI Battle infinite "Loading..." spinner** — `useColyseus` now wraps `joinOrCreate` in a 15-second `Promise.race` timeout, so the loading overlay resolves to an error state rather than hanging forever when the server is cold-starting.
+- **Firestore hang blocking room creation** — `loadArena` and `loadBeyblade` in `src/utils/firebase.ts` now use a 5-second timeout via `Promise.race`, preventing slow Firestore reads from stalling `AIBattleRoom.onCreate` indefinitely.
+- **PvP input never enabled (CRITICAL)** — `BattleGamePage` was gating `useGameInput` on `gameState?.status === "playing"` but the server emits `"in-progress"`. Fixed to `"in-progress"`; keyboard input now works in PvP matches.
+- **`ServerGameState` type literals out of sync** — `status` and `mode` union types in `client/src/types/game.ts` were stale (`"playing"`, `"countdown"`, `"pvp"`, `"ai"`). Corrected to match server values (`"in-progress"`, `"warmup"`, `"single-battle-pvp"`, `"ai-battle"`).
+- **Spin-out particles spawning at wrong position/colour** — All three room `"spin-out"` broadcasts were missing `x`, `y`, and `type` fields. Particles were placed at `(undefined, undefined)` in white. Fixed in `AIBattleRoom`, `TryoutRoom`, and `BattleRoom`.
+- **Warmup overlay never shown** — `BattleGamePage` checked `gameState?.status === "countdown"`; corrected to `"warmup"`.
+- **BattleLobbyPage navigation broken** — navigation to `/game/battle/:roomId` was gated on `gameState?.status === "playing"`; corrected to `"in-progress"`.
+- **Damage numbers not spawned on collision** — `BattleGamePage` was not destructuring `spawnDamageNumber` from `usePixiRenderer`; added and wired into the `"collision"` message handler.
+- **`RendererDemoPage` and `ArenaTestPage` type errors** — inline `ServerGameState` literals used stale `"playing"` / `"pvp"` values; corrected to `"in-progress"` / `"single-battle-pvp"`.
+
+### Added
+
+- **60-second idle disconnect across all server rooms** — `AIBattleRoom`, `TryoutRoom`, and `BattleRoom` now track `lastInputTime`. If no human input arrives for 60 seconds the room broadcasts `"idle-disconnect"` and calls `this.disconnect()`. AI inputs do not reset the timer. In `BattleRoom`, any one human player's input resets the timer for all.
+- **Client idle-disconnect toast** — `useColyseus` listens for `"idle-disconnect"` from the server and surfaces a `react-hot-toast` notification: "Disconnected due to inactivity."
+- **Deferred simulation start** — All three rooms no longer call `setSimulationInterval` in `onCreate` (which ran the 60 Hz loop for empty rooms, burning Railway trial compute). `TryoutRoom` and `BattleRoom` now start the loop on the first `onJoin`. `AIBattleRoom` starts it after both beyblades are created.
+- **`autoDispose = true`** set in all three rooms so Colyseus disposes the room automatically when the last client leaves — no manual `this.disconnect()` needed in `onLeave`.
+- **Improved AI Battle error overlay** — shows a warning icon, "Could not connect to game server" heading, and a "server may be starting up" hint when `connectionState === "error"`.
+
+### Changed
+
+- All client test files updated: `"playing"` → `"in-progress"`, `"ai"` → `"ai-battle"`, `"pvp"` → `"single-battle-pvp"` to match corrected type literals.
+
+### Tests
+
+- **`tests/rooms.test.ts`** (32 new server tests) — win-condition logic (last-standing, simultaneous spin-out, timer expiry, no double-fire), idle-disconnect predicate (boundary values, AI-must-not-reset contract, any-human-resets-in-BattleRoom), spin decay → spin-out trigger, nutation wobble threshold (40% boundary, mass scaling), stat formula derivation for all four type distributions, broadcast event payload contracts (collision, game-over, ring-out, idle-disconnect, special-move).
+- **`tests/physics2d.test.ts`** (35 new server tests) — all 2.5D `PhysicsEngine` methods: `checkLoopCollision`, `checkPitCollision`, `checkWaterCollision` (moat/zone/wall-based), `checkObstacleCollision`, `applyLoopBoost`, `applyWaterResistance`, `applyKnockback`, `applyLateralForce`, `isOutOfBounds`, `removeBeyblade`, `destroy`.
+- **`client/src/__tests__/pages/BattleGamePage.test.tsx`** (26 new client tests) — layout, connecting overlay (Joining battle / Connection lost / Back to Lobby), timer, alive count, warmup overlay, my-stats panel (HP, Spin, stability labels), opponent health bars + ELIMINATED badge, game-over overlay (VICTORY!/DEFEATED, leaderboard sort, Survived/KO, Play Again + Menu links).
+- **Total test count: 324** (server 137, client 187 — all passing).
+
+---
+
 ## [2.2.0] - 2026-05-20
 
 ### Added

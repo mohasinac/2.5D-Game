@@ -12,10 +12,12 @@
 
 import type { BezierPath, BezierPathSegment } from "@/types/beybladeSystem";
 
-const ALPHA_THRESHOLD = 32; // pixels with alpha < this are treated as transparent
-
 // ── Step 1+2: rasterise image → binary mask ──────────────────────────────────
-function imageToMask(imageUrl: string, maxDim = 256): Promise<{ mask: Uint8Array; w: number; h: number }> {
+function imageToMask(
+  imageUrl: string,
+  maxDim = 256,
+  alphaThreshold = 32,
+): Promise<{ mask: Uint8Array; w: number; h: number }> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -30,7 +32,7 @@ function imageToMask(imageUrl: string, maxDim = 256): Promise<{ mask: Uint8Array
       ctx.drawImage(img, 0, 0, w, h);
       const data = ctx.getImageData(0, 0, w, h).data;
       const mask = new Uint8Array(w * h);
-      for (let i = 0; i < w * h; i++) mask[i] = data[i * 4 + 3] >= ALPHA_THRESHOLD ? 1 : 0;
+      for (let i = 0; i < w * h; i++) mask[i] = data[i * 4 + 3] >= alphaThreshold ? 1 : 0;
       resolve({ mask, w, h });
     };
     img.onerror = reject;
@@ -131,16 +133,20 @@ export interface TraceResult {
 /**
  * Trace a no-background PNG into a BezierPath (polygon approximation).
  *
- * @param imageUrl  Data URL or Firebase Storage URL of the PNG
- * @param tolerance RDP simplification tolerance in pixels (default 2.0)
- * @param mmPerPx   Scale factor: how many mm one pixel represents (default 0.1)
+ * @param imageUrl       Data URL or Firebase Storage URL of the PNG
+ * @param tolerance      RDP simplification tolerance in pixels (default 2.0)
+ * @param mmPerPx        Scale factor: how many mm one pixel represents (default 0.1)
+ * @param alphaThreshold Pixels with alpha < this are background (default 32)
+ * @param maxDim         Max raster dimension — higher = more detail (default 256)
  */
 export async function traceSilhouette(
   imageUrl: string,
   tolerance = 2.0,
-  mmPerPx = 0.1
+  mmPerPx = 0.1,
+  alphaThreshold = 32,
+  maxDim = 256,
 ): Promise<TraceResult> {
-  const { mask, w, h } = await imageToMask(imageUrl);
+  const { mask, w, h } = await imageToMask(imageUrl, maxDim, alphaThreshold);
   const raw = marchingSquares(mask, w, h);
   if (raw.length < 3) throw new Error("No foreground shape found in image");
 

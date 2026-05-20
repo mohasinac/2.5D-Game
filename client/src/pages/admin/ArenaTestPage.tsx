@@ -58,7 +58,7 @@ export function ArenaTestPage() {
         ["b2", { ...MOCK_BEYBLADE("b2", cx+Math.cos(t+Math.PI)*r, cy+Math.sin(t+Math.PI)*r), rotation:-t*8 }],
       ]);
       const gameState: ServerGameState = {
-        status:"playing", mode:"pvp", timer:180, startTime:Date.now(), winner:"", matchId:"test",
+        status:"in-progress", mode:"single-battle-pvp", timer:180, startTime:Date.now(), winner:"", matchId:"test",
         arena:{ id:selectedArena.id, name:selectedArena.name, width:selectedArena.width??1080, height:selectedArena.height??1080, shape:selectedArena.shape??"circle", theme:selectedArena.theme??"metrocity" },
         beyblades,
       };

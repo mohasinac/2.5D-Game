@@ -55,10 +55,12 @@ export class BattleRoom extends Room<GameState> {
   private matchStarted = false;
   private playerCount = 0;
   private warmupTimer = 3; // seconds before match starts
+  private lastInputTime = 0;
 
   maxClients = 4;
 
   async onCreate(options: any) {
+    this.autoDispose = true;
     console.log("BattleRoom created", options);
 
     this.setState(new GameState());
@@ -101,9 +103,7 @@ export class BattleRoom extends Room<GameState> {
       console.log(`Client ${client.sessionId} is ready`);
     });
 
-    this.setSimulationInterval((deltaTime: number) => {
-      this.tick(deltaTime);
-    }, 1000 / 60);
+    // Simulation starts in onJoin when first player arrives.
   }
 
   async onJoin(client: Client, options: JoinOptions) {
@@ -152,10 +152,11 @@ export class BattleRoom extends Room<GameState> {
 
     this.state.beyblades.set(client.sessionId, beyblade);
 
-    // Start match when first player joins (or once maxClients reached)
     if (!this.matchStarted) {
       this.matchStarted = true;
       this.state.status = "warmup";
+      this.lastInputTime = Date.now();
+      this.setSimulationInterval((dt: number) => { this.tick(dt); }, 1000 / 60);
       this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimer });
     }
   }
@@ -320,6 +321,7 @@ export class BattleRoom extends Room<GameState> {
     const beyblade = this.state.beyblades.get(client.sessionId);
     if (!beyblade || !beyblade.isActive) return;
     if (this.state.status !== "in-progress") return;
+    this.lastInputTime = Date.now();
 
     const stability = Math.min(1, beyblade.spin / beyblade.maxSpin);
     const forceMagnitude = 0.001 * beyblade.mass * stability * beyblade.speedBonus;
@@ -457,6 +459,7 @@ export class BattleRoom extends Room<GameState> {
   private handleAction(client: Client, message: any) {
     const beyblade = this.state.beyblades.get(client.sessionId);
     if (!beyblade || !beyblade.isActive || this.state.status !== "in-progress") return;
+    this.lastInputTime = Date.now();
 
     if (message.type === "charge") {
       const cur = this.physics.getBodyState(beyblade.id);
@@ -470,6 +473,12 @@ export class BattleRoom extends Room<GameState> {
   // ─── Game tick ───────────────────────────────────────────────────────────────
 
   private tick(deltaTime: number) {
+    if (this.state.status === "in-progress" && Date.now() - this.lastInputTime > 60_000) {
+      this.broadcast("idle-disconnect", {});
+      this.disconnect();
+      return;
+    }
+
     const dt = deltaTime / 1000;
 
     // Warmup countdown before match starts
@@ -571,7 +580,7 @@ export class BattleRoom extends Room<GameState> {
       if (beyblade.spin <= 0 && beyblade.isActive) {
         beyblade.isActive = false;
         beyblade.health = 0;
-        this.broadcast("spin-out", { playerId: beyblade.id, username: beyblade.username });
+        this.broadcast("spin-out", { playerId: beyblade.id, username: beyblade.username, x: beyblade.x, y: beyblade.y, type: beyblade.type });
       }
 
       // Cooldowns

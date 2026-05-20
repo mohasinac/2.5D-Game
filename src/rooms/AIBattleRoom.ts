@@ -28,10 +28,12 @@ export class AIBattleRoom extends Room<GameState> {
   private arenaCache: ArenaConfig | null = null;
   private aiController!: AIController;
   private matchStarted = false;
+  private lastInputTime = 0;
 
   maxClients = 1;
 
   async onCreate(options: any) {
+    this.autoDispose = true; // dispose room automatically when the last client leaves
     console.log("AIBattleRoom created", options);
 
     this.setState(new GameState());
@@ -63,9 +65,6 @@ export class AIBattleRoom extends Room<GameState> {
       this.handleInput(client, message);
     });
 
-    this.setSimulationInterval((deltaTime: number) => {
-      this.tick(deltaTime);
-    }, 1000 / 60);
   }
 
   async onJoin(client: Client, options: JoinOptions) {
@@ -128,18 +127,26 @@ export class AIBattleRoom extends Room<GameState> {
     this.matchStarted = true;
     this.state.status = "in-progress";
     this.state.startTime = Date.now();
+    this.lastInputTime = Date.now();
+
+    this.setSimulationInterval((dt: number) => { this.tick(dt); }, 1000 / 60);
+
     this.broadcast("match-start", {});
 
     console.log(`✅ AIBattleRoom ready: ${human.username} vs ${ai.username} (${difficulty})`);
   }
 
-  onLeave(client: Client, consented: boolean) {
+  onLeave(client: Client, _consented: boolean) {
     console.log(`Client ${client.sessionId} left AIBattleRoom`);
-    this.physics.removeBeyblade(client.sessionId);
-    this.state.beyblades.delete(client.sessionId);
-    this.physics.removeBeyblade(AI_SESSION_ID);
-    this.state.beyblades.delete(AI_SESSION_ID);
-    this.disconnect();
+    if (this.matchStarted) {
+      this.physics.removeBeyblade(client.sessionId);
+      this.state.beyblades.delete(client.sessionId);
+      this.physics.removeBeyblade(AI_SESSION_ID);
+      this.state.beyblades.delete(AI_SESSION_ID);
+    }
+    // autoDispose=true handles room disposal once client count reaches 0.
+    // No need to call this.disconnect() here — that forcefully kills the room
+    // before onDispose can run its cleanup.
   }
 
   onDispose() {
@@ -152,6 +159,7 @@ export class AIBattleRoom extends Room<GameState> {
   private handleInput(client: Client, message: any) {
     const beyblade = this.state.beyblades.get(client.sessionId);
     if (!beyblade || !beyblade.isActive || this.state.status !== "in-progress") return;
+    this.lastInputTime = Date.now();
 
     const stability = Math.min(1, beyblade.spin / beyblade.maxSpin);
     const forceMagnitude = 0.001 * beyblade.mass * stability * beyblade.speedBonus;
@@ -259,6 +267,12 @@ export class AIBattleRoom extends Room<GameState> {
   private tick(deltaTime: number) {
     if (this.state.status !== "in-progress") return;
 
+    if (Date.now() - this.lastInputTime > 60_000) {
+      this.broadcast("idle-disconnect", {});
+      this.disconnect();
+      return;
+    }
+
     const dt = deltaTime / 1000;
     this.physics.update(deltaTime);
 
@@ -351,7 +365,7 @@ export class AIBattleRoom extends Room<GameState> {
       if (beyblade.spin <= 0 && beyblade.isActive) {
         beyblade.isActive = false;
         beyblade.health = 0;
-        this.broadcast("spin-out", { playerId: beyblade.id, username: beyblade.username });
+        this.broadcast("spin-out", { playerId: beyblade.id, username: beyblade.username, x: beyblade.x, y: beyblade.y, type: beyblade.type });
       }
 
       // Cooldowns
@@ -424,7 +438,7 @@ export class AIBattleRoom extends Room<GameState> {
 
     if (beyblade.stunTimer > 0) return;
 
-    if (input.jump && !beyblade.isAirborne && !beyblade.inPit && beyblade.landingLag <= 0) {
+    if (input.jump && !beyblade.isAirborne && !beyblade.inPit && !beyblade.isDefending && beyblade.landingLag <= 0) {
       beyblade.isAirborne = true;
       beyblade.airborneTimer = 1.0;
     }
@@ -525,6 +539,8 @@ export class AIBattleRoom extends Room<GameState> {
     this.state.arena.wallEnabled = true;
     this.state.arena.wallBaseDamage = 5;
     this.state.arena.wallRecoilDistance = 2;
+    this.state.arena.wallHasSprings = false;
+    this.state.arena.wallSpringRecoilMultiplier = 1.0;
   }
 
   private buildArenaWalls() {

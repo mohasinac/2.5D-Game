@@ -158,8 +158,19 @@ export function AIBattleGamePage() {
       {connectionState !== "connected" && gameState === null && (
         <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(0,0,0,0.85)", zIndex:20 }}>
           <div style={{ textAlign:"center" }}>
-            <div className="spin" style={{ width:48, height:48, border:`4px solid ${C.purple}`, borderTopColor:"transparent", borderRadius:"50%", margin:"0 auto 16px" }} />
-            <p style={{ color:C.text }}>Loading AI battle...</p>
+            {connectionState !== "error" ? (
+              <div className="spin" style={{ width:48, height:48, border:`4px solid ${C.purple}`, borderTopColor:"transparent", borderRadius:"50%", margin:"0 auto 16px" }} />
+            ) : (
+              <div style={{ fontSize:40, marginBottom:16 }}>⚠️</div>
+            )}
+            <p style={{ color:C.text }}>
+              {connectionState === "error" ? "Could not connect to game server" : "Loading AI battle..."}
+            </p>
+            <p style={{ color:C.faint, fontSize:12, marginTop:4 }}>
+              {connectionState === "error"
+                ? "The server may be starting up — try again in a moment."
+                : "Connecting to server…"}
+            </p>
             {connectionState === "error" && (
               <button onClick={connect} style={{ marginTop:16, padding:"8px 20px", background:C.purple, color:C.white, borderRadius:8, cursor:"pointer", border:"none" }}>
                 Retry

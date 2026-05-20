@@ -39,10 +39,13 @@ interface PlayerInput {
 export class TryoutRoom extends Room<GameState> {
   private physics!: PhysicsEngine;
   private arenaCache: ArenaConfig | null = null;
+  private simulationStarted = false;
+  private lastInputTime = 0;
 
   maxClients = 1;
 
   async onCreate(options: any) {
+    this.autoDispose = true;
     console.log("TryoutRoom created", options);
 
     this.setState(new GameState());
@@ -131,10 +134,7 @@ export class TryoutRoom extends Room<GameState> {
       this.handleAction(client, message);
     });
 
-    // Use Colyseus setSimulationInterval — has proper delta time, no drift
-    this.setSimulationInterval((deltaTime: number) => {
-      this.tick(deltaTime);
-    }, 1000 / 60);
+    // Simulation starts in onJoin once a player is present.
   }
 
   async onJoin(client: Client, options: any) {
@@ -176,15 +176,19 @@ export class TryoutRoom extends Room<GameState> {
     this.state.beyblades.set(client.sessionId, beyblade);
     this.state.status = "in-progress";
     this.state.startTime = Date.now();
+    this.lastInputTime = Date.now();
+
+    if (!this.simulationStarted) {
+      this.simulationStarted = true;
+      this.setSimulationInterval((dt: number) => { this.tick(dt); }, 1000 / 60);
+    }
   }
 
-  onLeave(client: Client, consented: boolean) {
+  onLeave(client: Client, _consented: boolean) {
     console.log(`Client ${client.sessionId} left tryout room`);
     this.physics.removeBeyblade(client.sessionId);
     this.state.beyblades.delete(client.sessionId);
-    if (this.state.beyblades.size === 0) {
-      this.disconnect();
-    }
+    // autoDispose handles room cleanup when client count hits 0.
   }
 
   onDispose() {
@@ -276,6 +280,7 @@ export class TryoutRoom extends Room<GameState> {
   private handleInput(client: Client, message: PlayerInput) {
     const beyblade = this.state.beyblades.get(client.sessionId);
     if (!beyblade || !beyblade.isActive) return;
+    this.lastInputTime = Date.now();
 
     // Spin-linked force: lower spin = weaker control (realistic)
     const stability = Math.min(1, beyblade.spin / beyblade.maxSpin);
@@ -449,6 +454,7 @@ export class TryoutRoom extends Room<GameState> {
   private handleAction(client: Client, message: any) {
     const beyblade = this.state.beyblades.get(client.sessionId);
     if (!beyblade || !beyblade.isActive) return;
+    this.lastInputTime = Date.now();
 
     switch (message.type) {
       case "charge": {
@@ -471,6 +477,12 @@ export class TryoutRoom extends Room<GameState> {
 
   private tick(deltaTime: number) {
     if (this.state.status !== "in-progress") return;
+
+    if (Date.now() - this.lastInputTime > 60_000) {
+      this.broadcast("idle-disconnect", {});
+      this.disconnect();
+      return;
+    }
 
     const dt = deltaTime / 1000; // seconds
     this.physics.update(deltaTime);
@@ -514,7 +526,7 @@ export class TryoutRoom extends Room<GameState> {
       if (beyblade.spin <= 0 && beyblade.isActive) {
         beyblade.isActive = false;
         beyblade.health = 0;
-        this.broadcast("spin-out", { playerId: beyblade.id });
+        this.broadcast("spin-out", { playerId: beyblade.id, x: beyblade.x, y: beyblade.y, type: beyblade.type });
       }
 
       // Cooldown tickers

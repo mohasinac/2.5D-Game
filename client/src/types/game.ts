@@ -50,8 +50,8 @@ export interface ServerBeyblade {
 }
 
 export interface ServerGameState {
-  status: "waiting" | "countdown" | "playing" | "finished";
-  mode: "tryout" | "pvp" | "ai";
+  status: "waiting" | "warmup" | "in-progress" | "finished";
+  mode: "tryout" | "ai-battle" | "single-battle-pvp" | "single-battle-pvp-ranked";
   timer: number;
   startTime: number;
   winner: string;

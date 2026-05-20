@@ -94,7 +94,7 @@ function makeBeyblade(overrides: Partial<ServerBeyblade> = {}): ServerBeyblade {
 
 function makeGameState(overrides: Partial<ServerGameState> = {}): ServerGameState {
   return {
-    status: "playing",
+    status: "in-progress",
     mode: "tryout",
     timer: 60,
     startTime: 0,

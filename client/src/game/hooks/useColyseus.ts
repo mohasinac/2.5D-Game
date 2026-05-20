@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Client, Room } from "colyseus.js";
 import type { ConnectionState, ServerBeyblade, ServerGameState } from "@/types/game";
+import toast from "react-hot-toast";
 
 const GAME_SERVER_URL = import.meta.env.VITE_GAME_SERVER_URL || "ws://localhost:2567";
 
@@ -53,7 +54,13 @@ export function useColyseus({
         clientRef.current = new Client(GAME_SERVER_URL);
       }
 
-      const connectedRoom = await clientRef.current.joinOrCreate(roomName, options);
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Connection timed out after 15s")), 15000)
+      );
+      const connectedRoom = await Promise.race([
+        clientRef.current.joinOrCreate(roomName, options),
+        timeout,
+      ]);
       roomRef.current = connectedRoom;
       setRoom(connectedRoom);
       setConnectionState("connected");
@@ -81,6 +88,10 @@ export function useColyseus({
           arena: state.arena ? { ...state.arena } : null,
           beyblades: nextBeyblades,
         } as ServerGameState);
+      });
+
+      connectedRoom.onMessage("idle-disconnect", () => {
+        toast("Disconnected due to inactivity.", { icon: "💤" });
       });
 
       connectedRoom.onError((code, message) => {
