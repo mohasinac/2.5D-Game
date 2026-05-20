@@ -17,6 +17,7 @@ import { AIBattleGamePage } from "./pages/AIBattleGamePage";
 import { TournamentListPage } from "./pages/TournamentListPage";
 import { TournamentLobbyPage } from "./pages/TournamentLobbyPage";
 import { TournamentBattleGamePage } from "./pages/TournamentBattleGamePage";
+import { LeaderboardPage } from "./pages/LeaderboardPage";
 
 // Admin pages
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
@@ -42,6 +43,7 @@ import { ArenaTestPage } from "./pages/admin/ArenaTestPage";
 import { TournamentsListPage } from "./pages/admin/TournamentsListPage";
 import { TournamentCreatePage } from "./pages/admin/TournamentCreatePage";
 import { TournamentDetailPage } from "./pages/admin/TournamentDetailPage";
+import { UsersPage } from "./pages/admin/UsersPage";
 
 // 2.5D part system pages
 import { PartSearchPage } from "./pages/admin/2d/PartSearchPage";
@@ -74,6 +76,8 @@ export const router = createBrowserRouter([
       { path: "game/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
       { path: "game/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
       { path: "game/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
+      // Leaderboard (public — no ProtectedRoute)
+      { path: "leaderboard", element: <LeaderboardPage /> },
     ],
   },
   {
@@ -115,6 +119,9 @@ export const router = createBrowserRouter([
       { path: "tournaments", element: <TournamentsListPage /> },
       { path: "tournaments/create", element: <TournamentCreatePage /> },
       { path: "tournaments/:id", element: <TournamentDetailPage /> },
+
+      // User management
+      { path: "users", element: <UsersPage /> },
 
       // ── 2.5D Part System ──
       { path: "2d/parts", element: <PartSearchPage /> },

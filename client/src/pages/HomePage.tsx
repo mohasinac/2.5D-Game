@@ -52,6 +52,19 @@ export function HomePage() {
         </Link>
       </div>
 
+      <div style={{ display:"flex", gap:12, marginBottom:20 }}>
+        <Link
+          to="/leaderboard"
+          style={{
+            padding:"10px 20px", background:C.bg2+"99", borderRadius:12,
+            border:`1px solid ${C.border}`, textDecoration:"none",
+            color:C.yellow, fontSize:13, fontWeight:600,
+          }}
+        >
+          🏆 Leaderboard
+        </Link>
+      </div>
+
       <div style={{
         display:"flex", alignItems:"center", gap:10,
         background:C.bg2+"99", borderRadius:12, padding:"10px 20px", border:`1px solid ${C.border}`,

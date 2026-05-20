@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { C, S } from "@/styles/theme";
 
 interface DashboardStats { beyblades: number; arenas: number; matches: number; players: number; }
+interface TournamentStats { active: number; upcoming: number; }
 
 const statCards = [
   { label:"Beyblades", icon:"🌀", href:"/admin/beyblades", accent:C.blue },
@@ -24,19 +25,23 @@ const quickLinks = [
 
 export function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({ beyblades:0, arenas:0, matches:0, players:0 });
+  const [tournamentStats, setTournamentStats] = useState<TournamentStats>({ active:0, upcoming:0 });
   const [recentMatches, setRecentMatches] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const [beybladeSnap, arenaSnap, matchSnap, playerSnap] = await Promise.all([
+        const [beybladeSnap, arenaSnap, matchSnap, playerSnap, activeSnap, upcomingSnap] = await Promise.all([
           getDocs(collection(db, COLLECTIONS.BEYBLADE_STATS)),
           getDocs(collection(db, COLLECTIONS.ARENAS)),
           getDocs(query(collection(db, COLLECTIONS.MATCHES), orderBy("createdAt","desc"), limit(5))),
           getDocs(collection(db, COLLECTIONS.PLAYER_STATS)),
+          getDocs(query(collection(db, COLLECTIONS.TOURNAMENTS), where("status","==","in-progress"))),
+          getDocs(query(collection(db, COLLECTIONS.TOURNAMENTS), where("status","==","registration"))),
         ]);
         setStats({ beyblades:beybladeSnap.size, arenas:arenaSnap.size, matches:matchSnap.size, players:playerSnap.size });
+        setTournamentStats({ active:activeSnap.size, upcoming:upcomingSnap.size });
         setRecentMatches(matchSnap.docs.map(d => ({ id:d.id, ...d.data() })));
       } catch (err) { console.error("Dashboard fetch error:", err); }
       finally { setLoading(false); }
@@ -65,6 +70,27 @@ export function AdminDashboardPage() {
             <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>{card.label}</div>
           </Link>
         ))}
+      </div>
+
+      {/* Tournament stats */}
+      <div style={{ background:`${C.yellow}0f`, border:`1px solid ${C.yellow}22`, borderRadius:14, padding:16, marginBottom:28, display:"flex", alignItems:"center", gap:24 }}>
+        <span style={{ fontSize:28 }}>🏆</span>
+        <div style={{ flex:1 }}>
+          <div style={{ fontSize:13, fontWeight:600, color:C.text, marginBottom:4 }}>Tournaments</div>
+          <div style={{ display:"flex", gap:20 }}>
+            <div>
+              {loading ? <div style={{ height:20, width:32, background:C.bg3, borderRadius:4 }} className="pulse" /> : <span style={{ fontSize:20, fontWeight:700, color:C.yellow, fontFamily:"monospace" }}>{tournamentStats.active}</span>}
+              <span style={{ fontSize:12, color:C.muted, marginLeft:6 }}>active</span>
+            </div>
+            <div>
+              {loading ? <div style={{ height:20, width:32, background:C.bg3, borderRadius:4 }} className="pulse" /> : <span style={{ fontSize:20, fontWeight:700, color:C.blue, fontFamily:"monospace" }}>{tournamentStats.upcoming}</span>}
+              <span style={{ fontSize:12, color:C.muted, marginLeft:6 }}>registration open</span>
+            </div>
+          </div>
+        </div>
+        <Link to="/admin/tournaments" style={{ padding:"8px 16px", background:C.yellow+"22", border:`1px solid ${C.yellow}55`, borderRadius:8, color:C.yellow, fontSize:12, fontWeight:600, textDecoration:"none" }}>
+          Manage →
+        </Link>
       </div>
 
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>

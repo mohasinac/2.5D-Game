@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Outlet, NavLink, Link, useNavigate, useLocation } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
 import { C } from "@/styles/theme";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
@@ -12,6 +11,7 @@ const navItems = [
   { to: "/admin/stadiums", label: "Stadiums", icon: "⚡" },
   { to: "/admin/assets", label: "Assets", icon: "🎨" },
   { to: "/admin/tournaments", label: "Tournaments", icon: "🏆" },
+  { to: "/admin/users", label: "Users", icon: "👥" },
   { to: "/admin/stats", label: "Statistics", icon: "📊" },
   { to: "/admin/arena-test", label: "Arena Test", icon: "🧪" },
   { to: "/admin/settings", label: "Settings", icon: "⚙️" },
@@ -150,10 +150,6 @@ export function AdminLayout() {
         <Outlet />
       </main>
 
-      <Toaster
-        position="top-right"
-        toastOptions={{ style:{ background:C.bg2, color:C.text, border:`1px solid ${C.border}` } }}
-      />
     </div>
   );
 }

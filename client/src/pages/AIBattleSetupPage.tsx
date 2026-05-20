@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { C } from "@/styles/theme";
 
 type Difficulty = "easy" | "medium" | "hard";
+type BestOf = 1 | 3 | 5;
 
 interface BeybladeOption { id: string; displayName: string; type: string; spinDirection: string; }
 interface ArenaOption    { id: string; name: string; difficulty: string; }
@@ -31,6 +32,7 @@ export function AIBattleSetupPage() {
   const [aiBeyId, setAiBeyId]         = useState("");
   const [arenaId, setArenaId]         = useState(settings.arenaId ?? "");
   const [difficulty, setDifficulty]   = useState<Difficulty>("medium");
+  const [bestOf, setBestOf]           = useState<BestOf>(1);
 
   useEffect(() => {
     async function load() {
@@ -62,7 +64,7 @@ export function AIBattleSetupPage() {
     }
     setGameConfig({ beybladeId: playerBeyId, arenaId, gameMode: "single-battle" });
     navigate("/game/ai-battle/play", {
-      state: { beybladeId: playerBeyId, aiBeybladeId: aiBeyId, arenaId, aiDifficulty: difficulty },
+      state: { beybladeId: playerBeyId, aiBeybladeId: aiBeyId, arenaId, aiDifficulty: difficulty, bestOf },
     });
   };
 
@@ -145,6 +147,25 @@ export function AIBattleSetupPage() {
                   </button>
                 );
               })}
+            </div>
+          </Section>
+
+          {/* Series format */}
+          <Section title="Series Format" icon="🏅">
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:8 }}>
+              {([1,3,5] as BestOf[]).map(n => (
+                <button key={n} onClick={() => setBestOf(n)} style={{
+                  padding:"14px 12px", borderRadius:10, cursor:"pointer", textAlign:"center",
+                  background: bestOf === n ? C.blue+"22" : C.bg2,
+                  border: `1px solid ${bestOf === n ? C.blue : C.border}`,
+                  color: bestOf === n ? C.blue : C.text, fontWeight: 700, fontSize: 14,
+                }}>
+                  BO{n}
+                  <div style={{ fontSize:11, color:C.faint, fontWeight:400, marginTop:4 }}>
+                    {n === 1 ? "Single match" : `First to ${Math.ceil(n / 2)} wins`}
+                  </div>
+                </button>
+              ))}
             </div>
           </Section>
 
