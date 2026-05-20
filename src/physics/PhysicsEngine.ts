@@ -13,6 +13,18 @@ import type {
 // [SERVER-PHYSICS] PhysicsEngine — Matter.js wrapper for server-authoritative physics.
 // Coordinates: 1 em = 16px, 1 cm = 24px. Arena center is (arenaW*16/2, arenaH*16/2).
 
+const MATERIAL_MULTIPLIERS: Record<string, { damage: number; spinSteal: number; recoil: number }> = {
+  abs:           { damage: 1.0, spinSteal: 0.5, recoil: 0.7 },
+  rubber:        { damage: 0.7, spinSteal: 1.5, recoil: 0.4 },
+  metal:         { damage: 1.5, spinSteal: 0.8, recoil: 1.2 },
+  pom:           { damage: 1.1, spinSteal: 0.7, recoil: 0.9 },
+  polycarbonate: { damage: 0.9, spinSteal: 0.6, recoil: 0.8 },
+};
+
+// Tolerance in mm for radial contact matching (a CP only fires if the contact radius
+// is within this band of cp.radius — prevents WD contact firing on AR collision).
+const RADIAL_CONTACT_TOLERANCE_MM = 2;
+
 interface CollisionResult {
   beyblade1Id: string;
   beyblade2Id: string;
@@ -205,12 +217,26 @@ export class PhysicsEngine {
     // Raw base damage before any multipliers
     const rawDamage = collision.impactForce * 0.5;
 
-    // Contact point multipliers (what angle each beyblade hits at)
+    // Compute contact radius in mm from each bey's center to the contact point
+    const body1 = this.bodies.get(beyblade1.id);
+    const body2 = this.bodies.get(beyblade2.id);
+    const contactRadiusMm1 = body1
+      ? Math.sqrt((collision.contactPoint.x - body1.position.x) ** 2 + (collision.contactPoint.y - body1.position.y) ** 2) / 24 * 10
+      : 0;
+    const contactRadiusMm2 = body2
+      ? Math.sqrt((collision.contactPoint.x - body2.position.x) ** 2 + (collision.contactPoint.y - body2.position.y) ** 2) / 24 * 10
+      : 0;
+
+    // Spin fractions for extends gimmick evaluation
+    const spinFrac1 = beyblade1.maxSpin > 0 ? beyblade1.spin / beyblade1.maxSpin : 1;
+    const spinFrac2 = beyblade2.maxSpin > 0 ? beyblade2.spin / beyblade2.maxSpin : 1;
+
+    // Contact point multipliers (what angle each beyblade hits at + radial gate + material mult)
     const contactMult1 = stats1
-      ? this.getContactPointMultiplier(stats1.pointsOfContact, collision.contactAngle1)
+      ? this.getContactPointMultiplier(stats1.pointsOfContact, collision.contactAngle1, contactRadiusMm1, spinFrac1)
       : 1.0;
     const contactMult2 = stats2
-      ? this.getContactPointMultiplier(stats2.pointsOfContact, collision.contactAngle2)
+      ? this.getContactPointMultiplier(stats2.pointsOfContact, collision.contactAngle2, contactRadiusMm2, spinFrac2)
       : 1.0;
 
     // Attack buff (J key active): +40% outgoing damage multiplier
@@ -243,15 +269,54 @@ export class PhysicsEngine {
     return { damage1, damage2, spinSteal1, spinSteal2 };
   }
 
-  private getContactPointMultiplier(pointsOfContact: PointOfContact[], angle: number): number {
+  // Returns true only if the contact radius is within tolerance of the CP's defined radius.
+  // Prevents a WD-rim CP from firing when the collision happens at the AR's larger radius.
+  // CPs without a defined radius always match (backward compatible with old flat stats).
+  checkRadialContactMatch(contactRadiusMm: number, cp: PointOfContact): boolean {
+    if (cp.radius === undefined) return true;
+    const activeCPRadius = cp.radius;
+    return Math.abs(contactRadiusMm - activeCPRadius) <= RADIAL_CONTACT_TOLERANCE_MM;
+  }
+
+  private getContactPointMultiplier(
+    pointsOfContact: PointOfContact[],
+    angle: number,
+    contactRadiusMm = 0,
+    currentSpinFraction = 1.0,
+  ): number {
     let maxMultiplier = 1.0;
-    for (const point of pointsOfContact) {
-      const pointAngle = (point.angle * Math.PI) / 180;
-      const halfWidth = (point.width * Math.PI) / 360;
-      const angleDiff = Math.abs(this.normalizeAngle(angle - pointAngle));
-      if (angleDiff <= halfWidth) {
-        maxMultiplier = Math.max(maxMultiplier, point.damageMultiplier);
+    for (const cp of pointsOfContact) {
+      // Radial gate — skip CPs that don't match the contact radius
+      if (!this.checkRadialContactMatch(contactRadiusMm, cp)) continue;
+
+      // Resolve effective radius/width if this CP extends at high spin
+      let effectiveWidth = cp.width;
+      if (cp.extends && cp.extendedWidth !== undefined && cp.extendThreshold !== undefined) {
+        if (currentSpinFraction >= cp.extendThreshold) {
+          effectiveWidth = cp.extendedWidth;
+        }
       }
+
+      const cpAngleRad = (cp.angle * Math.PI) / 180;
+      const halfWidth  = (effectiveWidth * Math.PI) / 360;
+      const angleDiff  = Math.abs(this.normalizeAngle(angle - cpAngleRad));
+      if (angleDiff > halfWidth) continue;
+
+      // Base multiplier from the CP
+      let mult = cp.damageMultiplier;
+
+      // Apply material damage multiplier
+      if (cp.material) {
+        const mat = MATERIAL_MULTIPLIERS[cp.material];
+        if (mat) mult *= mat.damage;
+      }
+
+      // Roller with freeSpin uses rubber multipliers regardless of roller material
+      if (cp.roller?.freeSpin) {
+        mult *= MATERIAL_MULTIPLIERS.rubber.damage;
+      }
+
+      maxMultiplier = Math.max(maxMultiplier, mult);
     }
     return maxMultiplier;
   }

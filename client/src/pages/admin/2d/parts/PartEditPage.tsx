@@ -1,5 +1,17 @@
 import { useParams, Link } from "react-router-dom";
+import { COLLECTIONS } from "@/lib/firebase";
 import { C } from "@/styles/theme";
+import { PartEditor } from "@/components/admin/part-editor/PartEditor";
+
+const PART_TYPE_COLLECTION: Record<string, string> = {
+  "bit-beasts":   COLLECTIONS.BIT_BEAST_PARTS,
+  "attack-rings": COLLECTIONS.ATTACK_RING_PARTS,
+  "weight-disks": COLLECTIONS.WEIGHT_DISK_PARTS,
+  "sub-parts":    COLLECTIONS.SUB_PARTS,
+  "tips":         COLLECTIONS.TIP_PARTS,
+  "cores":        COLLECTIONS.CORE_PARTS,
+  "casings":      COLLECTIONS.CASING_PARTS,
+};
 
 const PART_TYPE_LABEL: Record<string, string> = {
   "bit-beasts":   "Bit Beast",
@@ -11,49 +23,58 @@ const PART_TYPE_LABEL: Record<string, string> = {
   "casings":      "Casing",
 };
 
+// Per-type config: some part types don't use contact points or material bands
+const PART_TYPE_CONFIG: Record<string, { hasContactPoints: boolean; hasMaterialBands: boolean; showInnerRadius: boolean }> = {
+  "bit-beasts":   { hasContactPoints: false, hasMaterialBands: true,  showInnerRadius: false },
+  "attack-rings": { hasContactPoints: true,  hasMaterialBands: true,  showInnerRadius: true  },
+  "weight-disks": { hasContactPoints: true,  hasMaterialBands: true,  showInnerRadius: true  },
+  "sub-parts":    { hasContactPoints: true,  hasMaterialBands: true,  showInnerRadius: true  },
+  "tips":         { hasContactPoints: true,  hasMaterialBands: false, showInnerRadius: false },
+  "cores":        { hasContactPoints: false, hasMaterialBands: false, showInnerRadius: false },
+  "casings":      { hasContactPoints: true,  hasMaterialBands: true,  showInnerRadius: true  },
+};
+
 export function PartEditPage() {
   const { partType = "", id = "" } = useParams<{ partType: string; id: string }>();
+  const collectionName = PART_TYPE_COLLECTION[partType];
   const label = PART_TYPE_LABEL[partType] ?? partType;
+  const config = PART_TYPE_CONFIG[partType] ?? { hasContactPoints: true, hasMaterialBands: true, showInnerRadius: true };
+
+  if (!collectionName) {
+    return (
+      <div style={{ padding: 32, color: C.muted }}>
+        Unknown part type: <code>{partType}</code>
+      </div>
+    );
+  }
+
+  if (!id) {
+    return (
+      <div style={{ padding: 32, color: C.muted }}>Missing part ID.</div>
+    );
+  }
 
   return (
-    <div style={{ padding: 32, maxWidth: 1100 }}>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-          <Link to="/admin/2d/parts" style={{ color: C.muted, fontSize: 12, textDecoration: "none" }}>Part Search</Link>
-          <span style={{ color: C.faint }}>›</span>
-          <Link to={`/admin/2d/parts/${partType}`} style={{ color: C.muted, fontSize: 12, textDecoration: "none" }}>
-            {label}s
-          </Link>
-          <span style={{ color: C.faint }}>›</span>
-          <span style={{ color: C.text, fontSize: 12 }}>Edit</span>
-        </div>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, margin: 0 }}>
-          Edit {label}
-        </h1>
-        <p style={{ color: C.faint, fontSize: 11, marginTop: 4 }}>ID: {id}</p>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      {/* Breadcrumb */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 24px", borderBottom: `1px solid ${C.border}`, background: C.bg1, flexShrink: 0 }}>
+        <Link to="/admin/2d/parts" style={{ color: C.muted, fontSize: 12, textDecoration: "none" }}>Part Search</Link>
+        <span style={{ color: C.faint }}>›</span>
+        <Link to={`/admin/2d/parts/${partType}`} style={{ color: C.muted, fontSize: 12, textDecoration: "none" }}>{label}s</Link>
+        <span style={{ color: C.faint }}>›</span>
+        <span style={{ color: C.text, fontSize: 12 }}>Edit</span>
       </div>
 
-      <div
-        style={{
-          background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10,
-          padding: 40, textAlign: "center", color: C.muted,
-        }}
-      >
-        <div style={{ fontSize: 32, marginBottom: 12 }}>🔧</div>
-        <div style={{ fontSize: 15, fontWeight: 600, color: C.text, marginBottom: 8 }}>
-          Full Part Editor — Sprint 4
-        </div>
-        <div style={{ fontSize: 13, maxWidth: 480, margin: "0 auto", lineHeight: 1.6 }}>
-          The complete part editor (shape tracing from images, Bezier/Fourier profile editors,
-          contact point canvas, configurations, pockets, and 2.5D preview panels) will be
-          implemented in Sprints 3–5 after the shared editor primitives are built.
-        </div>
-        <div style={{ marginTop: 20, padding: "12px 16px", background: C.bg2, borderRadius: 8, display: "inline-block", textAlign: "left" }}>
-          <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Coming sections:</div>
-          {["Shape (Preset / Trace from image)", "Dimensions & Material", "Contact Points", "Configurations", "Pockets", "2.5D Preview (Side / Top / Isometric)"].map((s) => (
-            <div key={s} style={{ fontSize: 12, color: C.faint, marginTop: 2 }}>· {s}</div>
-          ))}
-        </div>
+      {/* Editor fills the remaining height */}
+      <div style={{ flex: 1, overflow: "hidden" }}>
+        <PartEditor
+          collectionName={collectionName}
+          partId={id}
+          partTypeSlug={partType}
+          hasContactPoints={config.hasContactPoints}
+          hasMaterialBands={config.hasMaterialBands}
+          showInnerRadius={config.showInnerRadius}
+        />
       </div>
     </div>
   );
