@@ -27,21 +27,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setCurrentUser(user);
 
       if (user) {
-        // Read role from Firestore users/{uid} — create doc if first sign-in
-        const userRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userRef);
+        try {
+          // Read role from Firestore users/{uid} — create doc if first sign-in
+          const userRef = doc(db, "users", user.uid);
+          const snap = await getDoc(userRef);
 
-        if (!snap.exists()) {
-          // First sign-in — create user doc with default role
-          await setDoc(userRef, {
-            uid: user.uid,
-            email: user.email,
-            role: "user",
-            createdAt: serverTimestamp(),
-          }, { merge: true });
+          if (!snap.exists()) {
+            // First sign-in — create user doc with default role
+            await setDoc(userRef, {
+              uid: user.uid,
+              email: user.email,
+              role: "user",
+              createdAt: serverTimestamp(),
+            }, { merge: true });
+            setIsAdmin(false);
+          } else {
+            setIsAdmin(snap.data()?.role === "admin");
+          }
+        } catch (err) {
+          console.error("Failed to load user role from Firestore:", err);
           setIsAdmin(false);
-        } else {
-          setIsAdmin(snap.data()?.role === "admin");
         }
       } else {
         setIsAdmin(false);
