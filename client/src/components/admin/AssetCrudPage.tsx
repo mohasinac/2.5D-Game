@@ -1,54 +1,32 @@
-// [ADMIN-COMPONENT] AssetCrudPage — reusable CRUD UI for any asset collection.
-// Used by all 6 asset pages (arena themes, obstacles, turrets, water bodies, portals, sounds).
-
 import { useState, useEffect } from "react";
 import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
 import toast from "react-hot-toast";
+import { C, S } from "@/styles/theme";
 
 interface AssetCrudPageProps {
-  collectionName: string;
-  title: string;
-  icon: string;
-  description: string;
-  acceptTypes?: string;
-  isAudio?: boolean;
-  tags?: string[];
-  tagLabel?: string;
+  collectionName: string; title: string; icon: string; description: string;
+  acceptTypes?: string; isAudio?: boolean; tags?: string[]; tagLabel?: string;
 }
-
-interface Asset {
-  id: string;
-  name: string;
-  url: string;
-  storagePath: string;
-  tag?: string;
-  createdAt?: any;
-}
+interface Asset { id:string; name:string; url:string; storagePath:string; tag?:string; createdAt?:any; }
 
 export function AssetCrudPage({
-  collectionName,
-  title,
-  icon,
-  description,
-  acceptTypes = "image/*",
-  isAudio = false,
-  tags = [],
-  tagLabel = "Tag",
+  collectionName, title, icon, description,
+  acceptTypes = "image/*", isAudio = false, tags = [], tagLabel = "Tag",
 }: AssetCrudPageProps) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState("all");
-  const [form, setForm] = useState({ name: "", tag: tags[0] ?? "", file: null as File | null });
+  const [form, setForm] = useState({ name:"", tag:tags[0]??"", file:null as File|null });
 
   const fetchAssets = async () => {
     setLoading(true);
     try {
       const snap = await getDocs(collection(db, collectionName));
-      setAssets(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Asset)));
+      setAssets(snap.docs.map(d => ({ id:d.id, ...d.data() } as Asset)));
     } catch { toast.error("Failed to load assets"); }
     finally { setLoading(false); }
   };
@@ -58,128 +36,85 @@ export function AssetCrudPage({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setForm((f) => ({ ...f, file, name: f.name || file.name.replace(/\.[^.]+$/, "") }));
+    setForm(f => ({ ...f, file, name:f.name||file.name.replace(/\.[^.]+$/,"") }));
   };
 
   const handleUpload = async () => {
     if (!form.file || !form.name.trim()) { toast.error("Name and file are required"); return; }
     setUploading(true);
     try {
-      const ext = form.file.name.split(".").pop();
       const storagePath = `assets/${collectionName}/${Date.now()}_${form.file.name}`;
       const storageRef = ref(storage, storagePath);
       await uploadBytes(storageRef, form.file);
       const url = await getDownloadURL(storageRef);
-
-      await addDoc(collection(db, collectionName), {
-        name: form.name.trim(),
-        url,
-        storagePath,
-        tag: form.tag || null,
-        createdAt: serverTimestamp(),
-      });
-
+      await addDoc(collection(db, collectionName), { name:form.name.trim(), url, storagePath, tag:form.tag||null, createdAt:serverTimestamp() });
       toast.success(`Uploaded ${form.name}`);
-      setForm({ name: "", tag: tags[0] ?? "", file: null });
+      setForm({ name:"", tag:tags[0]??"", file:null });
       fetchAssets();
-    } catch (err) {
-      console.error(err);
-      toast.error("Upload failed");
-    } finally {
-      setUploading(false);
-    }
+    } catch (err) { console.error(err); toast.error("Upload failed"); }
+    finally { setUploading(false); }
   };
 
   const handleDelete = async (asset: Asset) => {
     setDeletingId(asset.id);
     try {
-      if (asset.storagePath) {
-        await deleteObject(ref(storage, asset.storagePath)).catch(() => {});
-      }
+      if (asset.storagePath) await deleteObject(ref(storage, asset.storagePath)).catch(()=>{});
       await deleteDoc(doc(db, collectionName, asset.id));
-      setAssets((prev) => prev.filter((a) => a.id !== asset.id));
+      setAssets(prev => prev.filter(a => a.id !== asset.id));
       toast.success(`Deleted ${asset.name}`);
     } catch { toast.error("Delete failed"); }
     finally { setDeletingId(null); }
   };
 
-  const filtered = selectedTag === "all" ? assets : assets.filter((a) => a.tag === selectedTag);
+  const filtered = selectedTag === "all" ? assets : assets.filter(a => a.tag === selectedTag);
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <span>{icon}</span> {title}
+    <div style={{ padding:24, maxWidth:900, margin:"0 auto" }}>
+      <div style={{ marginBottom:20 }}>
+        <h1 style={{ fontSize:22, fontWeight:700, color:C.text, display:"flex", alignItems:"center", gap:10 }}>
+          <span>{icon}</span>{title}
         </h1>
-        <p className="text-gray-500 text-sm mt-1">{description}</p>
+        <p style={{ color:C.faint, fontSize:13, marginTop:4 }}>{description}</p>
       </div>
 
       {/* Upload form */}
-      <div className="bg-gray-800 border border-gray-700 rounded-2xl p-5 mb-6">
-        <h2 className="text-sm font-semibold text-gray-300 mb-4">Upload New Asset</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20, marginBottom:20 }}>
+        <div style={S.sectionTitle}>Upload New Asset</div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:12 }}>
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Name *</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="Asset name"
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500"
-            />
+            <label style={S.label}>Name *</label>
+            <input type="text" value={form.name} onChange={e => setForm(f => ({...f,name:e.target.value}))} placeholder="Asset name" style={S.input} />
           </div>
-
           {tags.length > 0 && (
             <div>
-              <label className="block text-xs text-gray-400 mb-1">{tagLabel}</label>
-              <select
-                value={form.tag}
-                onChange={(e) => setForm((f) => ({ ...f, tag: e.target.value }))}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500"
-              >
-                {tags.map((t) => <option key={t} value={t} className="capitalize">{t}</option>)}
+              <label style={S.label}>{tagLabel}</label>
+              <select value={form.tag} onChange={e => setForm(f => ({...f,tag:e.target.value}))} style={{ ...S.input, cursor:"pointer" }}>
+                {tags.map(t => <option key={t} value={t} style={{ textTransform:"capitalize" }}>{t}</option>)}
               </select>
             </div>
           )}
-
           <div>
-            <label className="block text-xs text-gray-400 mb-1">File *</label>
-            <label className="cursor-pointer flex items-center gap-2 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-300 hover:border-gray-500 transition-colors">
-              <span className="truncate">{form.file ? form.file.name : "Choose file..."}</span>
-              <input type="file" accept={acceptTypes} onChange={handleFileChange} className="hidden" />
+            <label style={S.label}>File *</label>
+            <label style={{ cursor:"pointer", display:"flex", alignItems:"center", gap:8, background:C.bg3, border:`1px solid ${C.border}`, borderRadius:8, padding:"7px 12px", fontSize:13, color:C.muted }}>
+              <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{form.file ? form.file.name : "Choose file..."}</span>
+              <input type="file" accept={acceptTypes} onChange={handleFileChange} style={{ display:"none" }} />
             </label>
           </div>
         </div>
-
-        <button
-          onClick={handleUpload}
-          disabled={uploading || !form.file || !form.name.trim()}
-          className="mt-3 px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
-        >
+        <button onClick={handleUpload} disabled={uploading||!form.file||!form.name.trim()} style={{ padding:"8px 20px", background:C.blue, color:C.white, borderRadius:8, fontSize:13, fontWeight:500, border:"none", cursor:"pointer", opacity: uploading||!form.file||!form.name.trim() ? 0.5 : 1 }}>
           {uploading ? "Uploading..." : "Upload Asset"}
         </button>
       </div>
 
       {/* Tag filter */}
       {tags.length > 0 && (
-        <div className="flex gap-2 mb-4 flex-wrap">
-          <button
-            onClick={() => setSelectedTag("all")}
-            className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${
-              selectedTag === "all" ? "bg-white text-gray-900 border-white" : "border-gray-700 text-gray-400 hover:border-gray-500"
-            }`}
-          >
+        <div style={{ display:"flex", gap:8, marginBottom:16, flexWrap:"wrap" }}>
+          <button onClick={() => setSelectedTag("all")} style={{ padding:"4px 12px", borderRadius:8, fontSize:12, fontWeight:500, cursor:"pointer", background: selectedTag==="all" ? C.text : "transparent", color: selectedTag==="all" ? C.bg0 : C.muted, border:`1px solid ${selectedTag==="all" ? C.text : C.border}` }}>
             All ({assets.length})
           </button>
-          {tags.map((t) => (
-            <button
-              key={t}
-              onClick={() => setSelectedTag(t)}
-              className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors capitalize ${
-                selectedTag === t ? "bg-white text-gray-900 border-white" : "border-gray-700 text-gray-400 hover:border-gray-500"
-              }`}
-            >
-              {t} ({assets.filter((a) => a.tag === t).length})
+          {tags.map(t => (
+            <button key={t} onClick={() => setSelectedTag(t)} style={{ padding:"4px 12px", borderRadius:8, fontSize:12, fontWeight:500, cursor:"pointer", textTransform:"capitalize", background: selectedTag===t ? C.text : "transparent", color: selectedTag===t ? C.bg0 : C.muted, border:`1px solid ${selectedTag===t ? C.text : C.border}` }}>
+              {t} ({assets.filter(a => a.tag===t).length})
             </button>
           ))}
         </div>
@@ -187,58 +122,44 @@ export function AssetCrudPage({
 
       {/* Asset grid */}
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => <div key={i} className="bg-gray-800 rounded-xl h-40 animate-pulse" />)}
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
+          {[1,2,3,4].map(i => <div key={i} style={{ background:C.bg2, borderRadius:12, height:160 }} className="pulse" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
-          <div className="text-3xl mb-2">{icon}</div>
+        <div style={{ textAlign:"center", padding:"64px 0", color:C.faint }}>
+          <div style={{ fontSize:28, marginBottom:8 }}>{icon}</div>
           <p>No assets yet. Upload your first {title.toLowerCase()} asset.</p>
         </div>
       ) : isAudio ? (
-        // Audio list view
-        <div className="space-y-3">
-          {filtered.map((asset) => (
-            <div key={asset.id} className="bg-gray-800 border border-gray-700 rounded-xl p-4 flex items-center gap-4">
-              <div className="text-2xl">🎵</div>
-              <div className="flex-1 min-w-0">
-                <p className="text-white text-sm font-medium truncate">{asset.name}</p>
-                {asset.tag && <p className="text-gray-500 text-xs capitalize">{asset.tag}</p>}
+        <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+          {filtered.map(asset => (
+            <div key={asset.id} style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:12, padding:14, display:"flex", alignItems:"center", gap:12 }}>
+              <div style={{ fontSize:22 }}>🎵</div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <p style={{ color:C.text, fontSize:13, fontWeight:500, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{asset.name}</p>
+                {asset.tag && <p style={{ color:C.faint, fontSize:11, textTransform:"capitalize" }}>{asset.tag}</p>}
               </div>
-              <audio controls src={asset.url} className="h-8" />
-              <button
-                onClick={() => handleDelete(asset)}
-                disabled={deletingId === asset.id}
-                className="text-red-400 hover:text-red-300 text-xs disabled:opacity-50"
-              >
-                {deletingId === asset.id ? "..." : "Delete"}
+              <audio controls src={asset.url} style={{ height:32 }} />
+              <button onClick={() => handleDelete(asset)} disabled={deletingId===asset.id} style={{ color:C.red, background:"none", border:"none", fontSize:12, cursor:"pointer", opacity:deletingId===asset.id?0.5:1 }}>
+                {deletingId===asset.id ? "..." : "Delete"}
               </button>
             </div>
           ))}
         </div>
       ) : (
-        // Image grid view
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {filtered.map((asset) => (
-            <div key={asset.id} className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden group hover:border-gray-600 transition-colors">
-              <div className="aspect-square bg-gray-900 relative">
-                <img
-                  src={asset.url}
-                  alt={asset.name}
-                  className="w-full h-full object-contain p-2"
-                  loading="lazy"
-                />
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
+          {filtered.map(asset => (
+            <div key={asset.id} style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden", position:"relative" }}>
+              <div style={{ aspectRatio:"1/1", background:C.bg1, position:"relative" }}>
+                <img src={asset.url} alt={asset.name} style={{ width:"100%", height:"100%", objectFit:"contain", padding:8 }} loading="lazy" />
                 <button
-                  onClick={() => handleDelete(asset)}
-                  disabled={deletingId === asset.id}
-                  className="absolute top-2 right-2 w-6 h-6 bg-red-600/90 hover:bg-red-600 text-white rounded text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
-                >
-                  {deletingId === asset.id ? "..." : "×"}
-                </button>
+                  onClick={() => handleDelete(asset)} disabled={deletingId===asset.id}
+                  style={{ position:"absolute", top:6, right:6, width:24, height:24, background:`${C.red}dd`, color:C.white, borderRadius:4, border:"none", fontSize:12, cursor:"pointer", opacity:deletingId===asset.id?0.5:1, display:"flex", alignItems:"center", justifyContent:"center" }}
+                >{deletingId===asset.id?"...":"×"}</button>
               </div>
-              <div className="p-2.5">
-                <p className="text-white text-xs font-medium truncate">{asset.name}</p>
-                {asset.tag && <p className="text-gray-500 text-xs capitalize mt-0.5">{asset.tag}</p>}
+              <div style={{ padding:8 }}>
+                <p style={{ color:C.text, fontSize:11, fontWeight:500, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{asset.name}</p>
+                {asset.tag && <p style={{ color:C.faint, fontSize:10, textTransform:"capitalize", marginTop:2 }}>{asset.tag}</p>}
               </div>
             </div>
           ))}
