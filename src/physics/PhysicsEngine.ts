@@ -281,9 +281,8 @@ export class PhysicsEngine {
     return { inLoop: false, loopIndex: -1, loopConfig: null };
   }
 
-  // Fixed: supports center (circle zone), loop (ring zone), and moat (outer ring) types
   checkWaterCollision(beybladeId: string, waterBody?: WaterBodyConfig): boolean {
-    if (!waterBody || !waterBody.enabled) return false;
+    if (!waterBody) return false;
 
     const body = this.bodies.get(beybladeId);
     if (!body) return false;
@@ -293,28 +292,23 @@ export class PhysicsEngine {
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     switch (waterBody.type) {
-      case "center": {
-        // Circular zone at arena center
-        const radius = (waterBody.radius || 5) * 16;
-        return distance < radius;
-      }
-
       case "moat": {
-        // Ring around the arena edge (between innerRadius and outerRadius)
-        const innerRadius = (waterBody.innerRadius || 15) * 16;
-        const outerRadius = (waterBody.outerRadius || this.arenaRadius / 16) * 16;
+        const innerRadius = waterBody.distanceFromArena * 16;
+        const outerRadius = (waterBody.distanceFromArena + waterBody.thickness) * 16;
         return distance >= innerRadius && distance <= outerRadius;
       }
 
       case "zone": {
-        // Rectangular or circular zone at specific position
-        const zoneX = (waterBody.x || 0) * 16 + this.arenaCenterX;
-        const zoneY = (waterBody.y || 0) * 16 + this.arenaCenterY;
-        const zoneRadius = (waterBody.radius || 5) * 16;
+        const zoneX = waterBody.position.x * 16 + this.arenaCenterX;
+        const zoneY = waterBody.position.y * 16 + this.arenaCenterY;
+        const zoneRadius = (waterBody.radius ?? 5) * 16;
         const zdx = body.position.x - zoneX;
         const zdy = body.position.y - zoneY;
         return Math.sqrt(zdx * zdx + zdy * zdy) < zoneRadius;
       }
+
+      case "wall-based":
+        return false;
 
       default:
         return false;

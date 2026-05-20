@@ -47,7 +47,7 @@ export class TryoutRoom extends Room<GameState> {
       this.state.arena.height = arenaData.height;
       this.state.arena.shape = arenaData.shape;
       this.state.arena.theme = arenaData.theme;
-      this.state.arena.rotation = arenaData.rotation || 0;
+      this.state.arena.rotation = arenaData.rotationSpeed || 0;
       this.state.arena.gravity = arenaData.gravity || 0;
       this.state.arena.airResistance = arenaData.airResistance || 0.01;
       this.state.arena.surfaceFriction = arenaData.surfaceFriction || 0.01;
@@ -58,8 +58,8 @@ export class TryoutRoom extends Room<GameState> {
         this.state.arena.wallRecoilDistance = arenaData.wall.recoilDistance;
         this.state.arena.wallHasSpikes = arenaData.wall.hasSpikes;
         this.state.arena.wallSpikeDamageMultiplier = arenaData.wall.spikeDamageMultiplier;
-        this.state.arena.wallHasSprings = arenaData.wall.hasSprings;
-        this.state.arena.wallSpringRecoilMultiplier = arenaData.wall.springRecoilMultiplier;
+        this.state.arena.wallHasSprings = false;
+        this.state.arena.wallSpringRecoilMultiplier = 1.0;
       }
 
       this.state.arena.loopCount = arenaData.loops?.length ?? 0;
@@ -91,8 +91,8 @@ export class TryoutRoom extends Room<GameState> {
 
     if (arenaData) {
       this.physics.setArenaConfig(arenaData);
-      if (arenaData.obstacles?.length > 0) {
-        this.physics.createObstacles(arenaData.obstacles);
+      if ((arenaData.obstacles?.length ?? 0) > 0) {
+        this.physics.createObstacles(arenaData.obstacles ?? []);
       }
     }
 
@@ -485,8 +485,8 @@ export class TryoutRoom extends Room<GameState> {
 
   private processArenaFeatures(beyblade: Beyblade, arenaData: ArenaConfig, dt: number) {
     // Speed loop collision
-    if (arenaData.loops?.length > 0) {
-      const loopCheck = this.physics.checkLoopCollision(beyblade.id, arenaData.loops);
+    if ((arenaData.loops?.length ?? 0) > 0) {
+      const loopCheck = this.physics.checkLoopCollision(beyblade.id, arenaData.loops ?? []);
       if (loopCheck.inLoop && loopCheck.loopConfig) {
         if (!beyblade.inLoop) {
           beyblade.inLoop = true;
@@ -509,14 +509,15 @@ export class TryoutRoom extends Room<GameState> {
 
     // Water body collision (new: waterBodies is an array)
     const waterBodies = arenaData.waterBodies;
-    if (waterBodies?.length > 0) {
-      const inWater = this.physics.checkWaterCollision(beyblade.id, waterBodies[0]);
+    if ((waterBodies?.length ?? 0) > 0) {
+      const inWater = this.physics.checkWaterCollision(beyblade.id, waterBodies![0]);
       if (inWater) {
         if (!beyblade.inWater) {
           beyblade.inWater = true;
-          const wc = waterBodies[0];
-          beyblade.waterSpeedMultiplier = wc.speedMultiplier ?? 0.7;
-          beyblade.waterSpinDrain = wc.spinDrainRate ?? 10;
+          const wc = waterBodies![0];
+          const speedLoss = wc.effects?.speedLoss ?? 0.3;
+          beyblade.waterSpeedMultiplier = 1 - speedLoss;
+          beyblade.waterSpinDrain = wc.effects?.spinDrainPerSecond ?? 10;
         }
         this.physics.applyWaterResistance(beyblade.id, beyblade.waterSpeedMultiplier);
         beyblade.spin = Math.max(0, beyblade.spin - beyblade.waterSpinDrain * dt);
@@ -528,16 +529,18 @@ export class TryoutRoom extends Room<GameState> {
     }
 
     // Pit collision
-    if (arenaData.pits?.length > 0) {
-      const pitConfig = this.physics.checkPitCollision(beyblade.id, arenaData.pits);
+    if ((arenaData.pits?.length ?? 0) > 0) {
+      const pitConfig = this.physics.checkPitCollision(beyblade.id, arenaData.pits ?? []);
       if (pitConfig) {
         if (!beyblade.inPit) {
           beyblade.inPit = true;
-          beyblade.currentPitId = `pit_${arenaData.pits.indexOf(pitConfig)}`;
+          beyblade.currentPitId = `pit_${arenaData.pits?.indexOf(pitConfig) ?? 0}`;
           beyblade.pitDamageRate = pitConfig.damagePerSecond;
         }
         beyblade.spin = Math.max(0, beyblade.spin - beyblade.pitDamageRate * beyblade.spin * dt / 100);
-        if (Math.random() < pitConfig.escapeChance * dt) {
+        const escapeThreshold = pitConfig.escapeThreshold ?? 50;
+        const canEscape = beyblade.spin > (beyblade.maxSpin * escapeThreshold / 100);
+        if (canEscape && Math.random() < 0.1 * dt) {
           beyblade.inPit = false;
           beyblade.currentPitId = "";
           beyblade.pitDamageRate = 0;
@@ -587,7 +590,6 @@ export class TryoutRoom extends Room<GameState> {
         beyblade.damageReceived += wallDamage;
 
         let recoilForce = arenaData.wall.recoilDistance;
-        if (arenaData.wall.hasSprings) recoilForce *= arenaData.wall.springRecoilMultiplier;
 
         this.physics.applyKnockback(
           beyblade.id,
