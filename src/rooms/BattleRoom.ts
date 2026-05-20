@@ -888,7 +888,7 @@ export class BattleRoom extends Room<GameState> {
             : "timer",
         });
 
-        this.persistMatch(winner, true);
+        this.persistMatch(winner, true).catch(console.error);
         setTimeout(() => this.disconnect(), 5000);
       } else {
         // Series continues — reset for next game after 3s

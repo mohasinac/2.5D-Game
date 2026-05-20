@@ -158,6 +158,23 @@ export async function writeBracketToFirestore(
 
   await batch.commit();
   console.log(`✅ Bracket written for tournament ${tournament.id}: ${matchups.length} matches`);
+
+  // Advance bye winners immediately — they never open a room, so advanceRound is never called for them
+  for (const matchup of matchups) {
+    if (matchup.participant2Seed === "bye") {
+      const p1 = seedToParticipant.get(matchup.participant1Seed);
+      if (p1) {
+        const docId = `${tournament.id}_r${matchup.round}_m${matchup.matchNumber}`;
+        await advanceWinnerToNextRound(
+          tournament.id,
+          docId,
+          matchup.round,
+          matchup.matchNumber,
+          p1.id
+        ).catch(console.error);
+      }
+    }
+  }
 }
 
 /**

@@ -690,7 +690,7 @@ export class TournamentBattleRoom extends Room<GameState> {
           if (this.onMatchEnd && winnerId) {
             this.onMatchEnd(winnerId, matchFirestoreId);
           }
-        });
+        }).catch(console.error);
 
         setTimeout(() => this.disconnect(), 5000);
       } else {

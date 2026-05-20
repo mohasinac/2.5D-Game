@@ -615,11 +615,9 @@ export class AIBattleRoom extends Room<GameState> {
     if (this.humanSessionId === null) return;
 
     this.state.currentGame++;
-    this.state.status = "in-progress"; // AI room skips warmup — AI is always ready
+    this.state.status = "warmup";
     this.state.timer = 180;
     this.state.winner = "";
-    this.state.startTime = Date.now();
-    this.lastInputTime = Date.now();
 
     // Reset beyblades using cached spawn positions (no Firestore reads)
     const resetBeyblade = (beyblade: Beyblade, spawnPos: { x: number; y: number }) => {
@@ -670,7 +668,16 @@ export class AIBattleRoom extends Room<GameState> {
     const aiBeyblade = this.state.beyblades.get(AI_SESSION_ID);
     if (aiBeyblade) resetBeyblade(aiBeyblade, this.aiSpawnPos);
 
-    this.broadcast("match-start", { gameNumber: this.state.currentGame });
+    this.broadcast("match-warmup", { secondsUntilStart: 3, gameNumber: this.state.currentGame });
+
+    // Start game after 3s warmup (no tick-based warmup timer needed — just a timeout)
+    setTimeout(() => {
+      if (this.humanSessionId === null) return;
+      this.state.status = "in-progress";
+      this.state.startTime = Date.now();
+      this.lastInputTime = Date.now();
+      this.broadcast("match-start", { gameNumber: this.state.currentGame });
+    }, 3000);
   }
 
   // ─── Arena helpers ───────────────────────────────────────────────────────────
