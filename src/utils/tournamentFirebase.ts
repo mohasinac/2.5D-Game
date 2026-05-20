@@ -168,7 +168,6 @@ export async function updateBracketWinner(
 export async function getUpcomingPendingMatches(windowMs: number): Promise<TournamentMatchDoc[]> {
   if (!db) return [];
   try {
-    const now = admin.firestore.Timestamp.now();
     const cutoff = admin.firestore.Timestamp.fromMillis(Date.now() + windowMs);
     const snap = await withTimeout(
       db

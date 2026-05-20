@@ -207,8 +207,16 @@ export class TournamentScheduler {
     matchFirestoreId: string
   ): Promise<void> {
     try {
+      // Resolve winnerId (beyblade.userId = Firebase auth UID) → participant doc ID.
+      // advanceWinnerToNextRound writes into participant1Id/participant2Id fields,
+      // and openRoomForMatch later looks up participants by p.id (doc ID), so we
+      // must use the doc ID here or all subsequent round lookups will fail silently.
+      const participants = await getParticipantsForTournament(tournamentId);
+      const winnerParticipant = participants.find(p => p.userId === winnerId || p.id === winnerId);
+      const winnerParticipantId = winnerParticipant?.id ?? winnerId;
+
       // Persist winner on bracket doc
-      await updateBracketWinner(completedMatchId, winnerId, matchFirestoreId);
+      await updateBracketWinner(completedMatchId, winnerParticipantId, matchFirestoreId);
 
       // Advance winner's participant doc to next round bracket slot
       const nextMatchId = await advanceWinnerToNextRound(
@@ -216,7 +224,7 @@ export class TournamentScheduler {
         completedMatchId,
         completedRound,
         completedMatchNumber,
-        winnerId
+        winnerParticipantId
       );
 
       if (!nextMatchId) {
@@ -225,17 +233,15 @@ export class TournamentScheduler {
       }
 
       // Update participant status
-      const participants = await getParticipantsForTournament(tournamentId);
-      const winner = participants.find(p => p.userId === winnerId || p.id === winnerId);
-      if (winner) {
-        await updateParticipantStatus(winner.id, "registered"); // stays registered until final
+      if (winnerParticipant) {
+        await updateParticipantStatus(winnerParticipant.id, "registered"); // stays registered until final
       }
 
-      // Mark losers as eliminated
+      // Mark losers as eliminated — compare using participant doc IDs
       const completedRoundMatches = await getRoundMatchesForTournament(tournamentId, completedRound);
       const completedMatch = completedRoundMatches.find(m => m.id === completedMatchId);
       if (completedMatch) {
-        const loserId = completedMatch.participant1Id === winnerId
+        const loserId = completedMatch.participant1Id === winnerParticipantId
           ? completedMatch.participant2Id
           : completedMatch.participant1Id;
         if (loserId && loserId !== "__bye__") {

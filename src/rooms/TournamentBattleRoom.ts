@@ -686,11 +686,14 @@ export class TournamentBattleRoom extends Room<GameState> {
         });
 
         this.persistMatch(winner).then((matchFirestoreId) => {
-          // Notify TournamentScheduler that this match is done
-          if (this.onMatchEnd && winnerId) {
-            this.onMatchEnd(winnerId, matchFirestoreId);
-          }
-        }).catch(console.error);
+          if (this.onMatchEnd && winnerId) this.onMatchEnd(winnerId, matchFirestoreId);
+        }).catch((err) => {
+          console.error("[TournamentBattleRoom] persistMatch failed:", err);
+          // Still advance the bracket even if persistence failed — an empty matchFirestoreId
+          // means the match result won't be linked in the matches collection, but the
+          // bracket must continue or the tournament stalls permanently.
+          if (this.onMatchEnd && winnerId) this.onMatchEnd(winnerId, "");
+        });
 
         setTimeout(() => this.disconnect(), 5000);
       } else {
