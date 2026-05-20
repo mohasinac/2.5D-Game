@@ -13,16 +13,22 @@ export function usePixiRenderer(containerRef: React.RefObject<HTMLDivElement | n
     const container = containerRef.current;
     if (!container || initializedRef.current) return;
 
+    initializedRef.current = true;
+    let aborted = false;
+
     const renderer = new BeybladeGameRenderer(container);
     rendererRef.current = renderer;
-    initializedRef.current = true;
 
-    renderer.init().catch(console.error);
+    renderer.init().then(() => {
+      // If cleanup already ran before init resolved, destroy immediately.
+      if (aborted) renderer.destroy();
+    }).catch(console.error);
 
     const handleResize = () => renderer.resize();
     window.addEventListener("resize", handleResize);
 
     return () => {
+      aborted = true;
       window.removeEventListener("resize", handleResize);
       renderer.destroy();
       rendererRef.current = null;

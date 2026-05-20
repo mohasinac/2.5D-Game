@@ -556,6 +556,8 @@ export class BeybladeGameRenderer {
   }
 
   destroy() {
+    if (!this.initialized) return;
+    this.initialized = false;
     this.app.destroy(true, { children: true });
   }
 }
