@@ -11,6 +11,17 @@ export interface PointOfContact {
   angle: number;
   damageMultiplier: number;
   width: number;
+  // Optional 2.5D extended fields (present when derived from SystemContactPoint)
+  radius?: number;           // mm from center — collision only registers at this radial band
+  thickness?: number;        // mm — radial depth of the contact zone
+  heightRange?: { min: number; max: number };  // mm from floor
+  material?: string;         // material type (applies MATERIAL_MULTIPLIERS)
+  extends?: boolean;         // true = this CP extends outward at high spin
+  extendThreshold?: number;  // 0–1 fraction of maxSpin to trigger extension
+  extendedRadius?: number;
+  extendedWidth?: number;
+  extendedThickness?: number;
+  roller?: { freeSpin: boolean; material?: string };
 }
 
 export interface SpinStealPoint {

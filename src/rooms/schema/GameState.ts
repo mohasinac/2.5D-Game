@@ -292,6 +292,25 @@ export class Beyblade extends Schema {
   @type("number") stunTimer: number = 0;
   @type("boolean") comboExecuting: boolean = false;
   @type("number") comboTimer: number = 0;
+
+  // ── 2.5D part system fields ─────────────────────────────────────────────────
+  // Special move (determined by BitBeast part)
+  @type("string") specialMove: string = "tactical_burst";
+
+  // Tip geometry (for off-center eccentric physics)
+  @type("number") tipOffsetX: number = 0;   // mm
+  @type("number") tipOffsetY: number = 0;   // mm
+
+  // Gyroscopic wobble amplitude (increases as spin decays below 40%)
+  @type("number") wobbleAmplitude: number = 0;
+
+  // Sub-part spin values — keyed by attachment index (string "0", "1", etc.)
+  // Independent angular momentum for each free_spin/partial_slip sub-part.
+  @type({ map: "number" }) subPartSpins = new MapSchema<number>();
+
+  // Active config name per part slot (e.g. "ar" → "Flat", "tip" → "Sharp")
+  // Also keyed as "sub_part_0", "sub_part_1" for sub-part attachments.
+  @type({ map: "string" }) activePartConfigs = new MapSchema<string>();
 }
 
 /**
