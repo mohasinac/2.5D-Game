@@ -12,6 +12,8 @@ import { GameSelectPage } from "./pages/GameSelectPage";
 import { TryoutGamePage } from "./pages/TryoutGamePage";
 import { BattleLobbyPage } from "./pages/BattleLobbyPage";
 import { BattleGamePage } from "./pages/BattleGamePage";
+import { AIBattleSetupPage } from "./pages/AIBattleSetupPage";
+import { AIBattleGamePage } from "./pages/AIBattleGamePage";
 
 // Admin pages
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
@@ -60,6 +62,8 @@ export const router = createBrowserRouter([
       { path: "game/tryout", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
       { path: "game/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
       { path: "game/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
+      { path: "game/ai-battle", element: <ProtectedRoute><AIBattleSetupPage /></ProtectedRoute> },
+      { path: "game/ai/:roomId", element: <ProtectedRoute><AIBattleGamePage /></ProtectedRoute> },
     ],
   },
   {
