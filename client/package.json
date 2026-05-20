@@ -7,7 +7,10 @@
     "dev": "vite --port 3001",
     "build": "vite build",
     "type-check": "tsc --noEmit",
-    "preview": "vite preview --port 3001"
+    "preview": "vite preview --port 3001",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@colyseus/schema": "^2.0.35",
@@ -23,11 +26,17 @@
     "zustand": "^5.0.5"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^2.1.9",
+    "jsdom": "^25.0.1",
     "postcss": "^8.5.6",
     "typescript": "^5.9.3",
-    "vite": "^6.3.0"
+    "vite": "^6.3.0",
+    "vitest": "^2.1.9"
   }
 }

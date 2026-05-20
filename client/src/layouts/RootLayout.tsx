@@ -6,7 +6,7 @@ import { C } from "@/styles/theme";
 import toast from "react-hot-toast";
 
 // Full-screen game pages — hide the global AuthChip so it doesn't overlap the in-game HUD.
-const FULLSCREEN_GAME_PATHS = ["/game/tryout", "/game/battle/", "/game/ai/"];
+const FULLSCREEN_GAME_PATHS = ["/game/tryout", "/game/battle/", "/game/ai-battle/play"];
 function isFullScreenGame(pathname: string) {
   return FULLSCREEN_GAME_PATHS.some(p => pathname.startsWith(p));
 }

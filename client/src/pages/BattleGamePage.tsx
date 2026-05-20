@@ -148,7 +148,7 @@ export function BattleGamePage() {
             <div style={{ fontSize:11, textAlign:"center", fontFamily:"monospace", color:stabilityColor }}>{stabilityLabel}</div>
           </div>
           <p style={{ textAlign:"center", color:C.faint, fontSize:11, marginTop:8 }}>
-            A/D or ←/→ Move · Space Attack · Shift Special
+            WASD/Arrows: Move · J: Attack · K: Defend · L: Dodge · I: Jump · Space: Charge/Special
           </p>
         </div>
       )}
