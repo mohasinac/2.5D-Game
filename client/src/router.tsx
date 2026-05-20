@@ -35,6 +35,16 @@ import { StatsPage } from "./pages/admin/StatsPage";
 import { SettingsPage } from "./pages/admin/SettingsPage";
 import { ArenaTestPage } from "./pages/admin/ArenaTestPage";
 
+// 2.5D part system pages
+import { PartSearchPage } from "./pages/admin/2d/PartSearchPage";
+import { PartListPage } from "./pages/admin/2d/parts/PartListPage";
+import { PartCreatePage } from "./pages/admin/2d/parts/PartCreatePage";
+import { PartEditPage } from "./pages/admin/2d/parts/PartEditPage";
+import { BeybladeSystemListPage } from "./pages/admin/2d/beyblade-systems/BeybladeSystemListPage";
+import { BeybladeSystemCreatePage } from "./pages/admin/2d/beyblade-systems/BeybladeSystemCreatePage";
+import { BeybladeSystemEditPage } from "./pages/admin/2d/beyblade-systems/BeybladeSystemEditPage";
+import { CompatibilityTagsPage } from "./pages/admin/2d/CompatibilityTagsPage";
+
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -86,6 +96,16 @@ export const router = createBrowserRouter([
       { path: "stats", element: <StatsPage /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "arena-test", element: <ArenaTestPage /> },
+
+      // ── 2.5D Part System ──
+      { path: "2d/parts", element: <PartSearchPage /> },
+      { path: "2d/parts/:partType", element: <PartListPage /> },
+      { path: "2d/parts/:partType/create", element: <PartCreatePage /> },
+      { path: "2d/parts/:partType/edit/:id", element: <PartEditPage /> },
+      { path: "2d/beyblade-systems", element: <BeybladeSystemListPage /> },
+      { path: "2d/beyblade-systems/create", element: <BeybladeSystemCreatePage /> },
+      { path: "2d/beyblade-systems/edit/:id", element: <BeybladeSystemEditPage /> },
+      { path: "2d/compatibility-tags", element: <CompatibilityTagsPage /> },
     ],
   },
 ]);
