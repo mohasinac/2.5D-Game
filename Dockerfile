@@ -26,4 +26,4 @@ COPY --from=builder /app/lib ./lib
 EXPOSE 2567
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
   CMD wget -qO- http://localhost:2567/health || exit 1
-CMD ["node", "lib/index.js"]
+CMD ["node", "lib/src/index.js"]
