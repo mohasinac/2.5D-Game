@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node lib/index.js",
     "build": "tsc",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "local": "concurrently --names \"server,client\" --prefix-colors \"cyan,magenta\" \"npm run dev:server\" \"npm run dev:client\"",
+    "dev": "npm run local",
     "dev:server": "nodemon --exec ts-node src/index.ts",
     "dev:client": "cd client && npm run dev",
     "docker:build": "docker build --target production -t beyblade-server .",
