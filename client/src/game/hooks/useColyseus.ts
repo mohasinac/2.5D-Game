@@ -7,6 +7,7 @@ import type { ConnectionState, ServerBeyblade, ServerGameState } from "@/types/g
 import toast from "react-hot-toast";
 
 const GAME_SERVER_URL = import.meta.env.VITE_GAME_SERVER_URL || "ws://localhost:2567";
+export const IS_LOCAL = import.meta.env.VITE_LOCAL === "true";
 
 interface UseColyseusOptions {
   roomName: string;
