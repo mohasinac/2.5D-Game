@@ -11,3 +11,4 @@ serviceAccountKey.json
 .claude/settings.json
 .firebase/hosting.*
 .next/
+scripts/seed-admin.js
