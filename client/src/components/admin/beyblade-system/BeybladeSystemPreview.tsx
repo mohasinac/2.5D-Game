@@ -152,6 +152,7 @@ export function BeybladeSystemPreview({ resolved }: Props) {
                   <div style={{ fontSize: 10, color: C.faint, padding: "8px 14px 0" }}>Computed Stats</div>
                   <ComputedStatsPanel resolved={resolved} />
                 </div>
+              </div>
             </div>
           </div>
         )}

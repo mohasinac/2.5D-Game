@@ -19,15 +19,18 @@ export class Parts25DAIBattleRoom extends AIBattleRoom {
     if (options.spectate) return;
     if (!this.partSystemManager) return;
 
-    const physicsOpts = { physics: this.physics };
-
-    // Human bey
+    // super.onJoin returns early on spectate, match-full, or second-player —
+    // in those cases no human bey was created. Skip registration entirely so
+    // we don't re-register the AI bey (which would reset its 2.5D mechanism
+    // fire counts and re-launch its physics body mid-match).
     const humanBey = this.state.beyblades.get(client.sessionId);
-    if (humanBey) {
-      await registerBeyOnManager(this.partSystemManager, options.beybladeId, client.sessionId, humanBey, physicsOpts);
-    }
+    if (!humanBey) return;
 
-    // AI bey — id is the static __ai__ session id; resolve from options.aiBeybladeId.
+    const physicsOpts = { physics: this.physics };
+    await registerBeyOnManager(this.partSystemManager, options.beybladeId, client.sessionId, humanBey, physicsOpts);
+
+    // AI bey — created in super.onJoin alongside the human. id is the static
+    // __ai__ session id; resolve from options.aiBeybladeId.
     const aiId = "__ai__";
     const aiBey = this.state.beyblades.get(aiId);
     if (aiBey && options.aiBeybladeId) {

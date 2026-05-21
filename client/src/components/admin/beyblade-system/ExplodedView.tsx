@@ -48,32 +48,36 @@ export function ExplodedView({ resolved, width = 320 }: Props) {
   // Build layers top → bottom in real-world stacking order.
   const layers: Layer[] = [];
 
+  // SubPartParent keys ("ar", "wd", "bit_beast", "casing", "core", "tip")
+  // come from client/src/types/beybladeSystem.ts. Map each layer to its
+  // corresponding parent key — note that there is no parent key for spinTrack
+  // (no sub-part can attach to one), so we don't look it up.
   if (resolved.bitBeast) {
     layers.push({
       key: "bitBeast", label: "Bit Beast",
       part: resolved.bitBeast as BitBeastPart,
       height: 56, widthScale: 0.30,
-      subs: subsByParent.get("bitBeast"),
+      subs: subsByParent.get("bit_beast"),
     });
   }
   layers.push({
     key: "attackRing", label: "Attack Ring",
     part: resolved.attackRing as ARPart,
     height: 84, widthScale: 0.95,
-    subs: subsByParent.get("attackRing"),
+    subs: subsByParent.get("ar"),
   });
   layers.push({
     key: "weightDisk", label: "Weight Disk",
     part: resolved.weightDisk as WDPart,
     height: 60, widthScale: 0.78,
-    subs: subsByParent.get("weightDisk"),
+    subs: subsByParent.get("wd"),
   });
   if (resolved.spinTrack) {
     layers.push({
       key: "spinTrack", label: "Spin Track",
       part: resolved.spinTrack as SpinTrackPart,
       height: 48, widthScale: 0.55,
-      subs: subsByParent.get("spinTrack"),
+      // Spin tracks have no SubPartParent key; never carry sub-parts.
     });
   }
   layers.push({

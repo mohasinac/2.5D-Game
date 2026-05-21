@@ -28,12 +28,25 @@ import { MaterialBandsEditor } from "./MaterialBandsEditor";
 import { ContactPointEditor } from "./ContactPointEditor";
 import { PartConfigurationsEditor } from "./PartConfigurationsEditor";
 import { PocketListEditor } from "./PocketListEditor";
+import { PartLayerPreview, type PartKind } from "./PartLayerPreview";
+
+const SLUG_TO_KIND: Record<string, PartKind> = {
+  "bit-beasts":   "bitBeast",
+  "attack-rings": "attackRing",
+  "weight-disks": "weightDisk",
+  "spin-tracks":  "spinTrack",
+  "casings":      "casing",
+  "cores":        "core",
+  "tips":         "tip",
+  "sub-parts":    "subPart",
+};
 import type { BasePart, PartDimensions, Material, MaterialBand, SystemContactPoint, PartImages } from "@/types/beybladeSystem";
 
-type Tab = "overview" | "shape" | "images" | "dimensions" | "material" | "contacts" | "configs" | "pockets" | "type";
+type Tab = "overview" | "preview" | "shape" | "images" | "dimensions" | "material" | "contacts" | "configs" | "pockets" | "type";
 
 const TABS: Array<{ key: Tab; label: string }> = [
   { key: "overview",    label: "Overview" },
+  { key: "preview",     label: "Preview" },
   { key: "shape",       label: "Shape" },
   { key: "images",      label: "Images" },
   { key: "dimensions",  label: "Dimensions" },
@@ -216,6 +229,19 @@ export function PartEditor({
             <TagsField label="Compatibility Tags" value={compatibilityTags} onChange={(v) => update({ compatibilityTags: v })} />
             <TagsField label="Required Compatibility" value={requiredCompatibility} onChange={(v) => update({ requiredCompatibility: v })} />
             <TagsField label="Excluded Compatibility" value={excludedCompatibility} onChange={(v) => update({ excludedCompatibility: v })} />
+          </div>
+        )}
+
+        {/* Preview — exploded-view-style 3-view render of this part */}
+        {tab === "preview" && (
+          <div style={{ maxWidth: 480, margin: "0 auto" }}>
+            <PartLayerPreview
+              images={images}
+              partKind={SLUG_TO_KIND[partTypeSlug] ?? "subPart"}
+              displayName={(part.displayName as string) || "Untitled Part"}
+              color={part.color as string | undefined}
+              dimensions={dimensions}
+            />
           </div>
         )}
 
