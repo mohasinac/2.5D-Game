@@ -15,15 +15,18 @@ const TOAST_STYLE = {
   fontSize: "13px",
 };
 
+// StrictMode intentionally omitted: this app uses Colyseus WebSocket rooms and
+// PixiJS WebGL contexts. StrictMode's dev-only double-mount causes two rooms to
+// be created (one immediately disposed) and two WebGL contexts to be opened,
+// resulting in a black canvas and stale game state. Removing it has no effect
+// in production and avoids confusing double-connect errors in development.
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-      {/* Global Toaster — covers /login and any route not wrapped by a layout */}
-      <Toaster
-        position="top-right"
-        toastOptions={{ style: TOAST_STYLE }}
-      />
-    </AuthProvider>
-  </React.StrictMode>
+  <AuthProvider>
+    <RouterProvider router={router} />
+    {/* Global Toaster — covers /login and any route not wrapped by a layout */}
+    <Toaster
+      position="top-right"
+      toastOptions={{ style: TOAST_STYLE }}
+    />
+  </AuthProvider>
 );

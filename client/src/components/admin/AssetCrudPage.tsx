@@ -5,6 +5,7 @@ import { db, storage } from "@/lib/firebase";
 import toast from "react-hot-toast";
 import { C, S } from "@/styles/theme";
 import WhatsAppStyleImageEditor from "./WhatsAppStyleImageEditor";
+import type { WhatsAppStyleImageEditorRef } from "./WhatsAppStyleImageEditor";
 import ImageCropper from "./ImageCropper";
 import type { ImageCropperRef } from "./ImageCropper";
 
@@ -27,7 +28,9 @@ export function AssetCrudPage({
   const [rawImageUrl, setRawImageUrl] = useState("");
   const [imageEditorMode, setImageEditorMode] = useState<"whatsapp" | "crop" | null>(null);
   const [imagePosition, setImagePosition] = useState({ x:0, y:0, scale:1, rotation:0 });
+  const [fileInputKey, setFileInputKey] = useState(0);
   const cropperRef = useRef<ImageCropperRef>(null);
+  const whatsappRef = useRef<WhatsAppStyleImageEditorRef>(null);
 
   const fetchAssets = async () => {
     setLoading(true);
@@ -55,14 +58,18 @@ export function AssetCrudPage({
   };
 
   const handleImageEditorSave = async () => {
-    if (imageEditorMode === "crop" && cropperRef.current) {
-      try {
+    try {
+      if (imageEditorMode === "crop" && cropperRef.current) {
         const blob = await cropperRef.current.getCroppedImage();
         const croppedFile = new File([blob], form.file?.name ?? "cropped.jpg", { type:"image/jpeg" });
         setForm(f => ({ ...f, file:croppedFile }));
-      } catch {
-        toast.error("Failed to crop image");
+      } else if (imageEditorMode === "whatsapp" && whatsappRef.current) {
+        const blob = await whatsappRef.current.getCanvasBlob();
+        const editedFile = new File([blob], form.file?.name ?? "edited.jpg", { type:"image/jpeg" });
+        setForm(f => ({ ...f, file:editedFile }));
       }
+    } catch {
+      toast.error("Failed to process image");
     }
     setImageEditorMode(null);
   };
@@ -78,6 +85,8 @@ export function AssetCrudPage({
       await addDoc(collection(db, collectionName), { name:form.name.trim(), url, storagePath, tag:form.tag||null, createdAt:serverTimestamp() });
       toast.success(`Uploaded ${form.name}`);
       setForm({ name:"", tag:tags[0]??"", file:null });
+      setFileInputKey(k => k + 1);
+      setRawImageUrl("");
       fetchAssets();
     } catch (err) { console.error(err); toast.error("Upload failed"); }
     finally { setUploading(false); }
@@ -125,7 +134,7 @@ export function AssetCrudPage({
             <label style={S.label}>File *</label>
             <label style={{ cursor:"pointer", display:"flex", alignItems:"center", gap:8, background:C.bg3, border:`1px solid ${C.border}`, borderRadius:8, padding:"7px 12px", fontSize:13, color:C.muted }}>
               <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{form.file ? form.file.name : "Choose file..."}</span>
-              <input type="file" accept={acceptTypes} onChange={handleFileChange} style={{ display:"none" }} />
+              <input key={fileInputKey} type="file" accept={acceptTypes} onChange={handleFileChange} style={{ display:"none" }} />
             </label>
             {form.file && !isAudio && (
               <div style={{ display:"flex", gap:6, marginTop:6 }}>
@@ -146,6 +155,7 @@ export function AssetCrudPage({
           <div style={{ maxWidth:420, width:"100%", padding:16 }}>
             {imageEditorMode === "whatsapp" && (
               <WhatsAppStyleImageEditor
+                ref={whatsappRef}
                 imageUrl={rawImageUrl}
                 onPositionChange={setImagePosition}
                 initialPosition={imagePosition}

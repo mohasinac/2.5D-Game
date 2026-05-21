@@ -514,19 +514,38 @@ export interface ObstacleConfig {
   autoPlaced?: boolean; // Was this obstacle auto-placed?
 }
 
+export type BowlProfile = "flat" | "shallow" | "medium" | "deep" | "steep";
+
+export const BOWL_PROFILE_ANGLES: Record<BowlProfile, number> = {
+  flat: 0, shallow: 20, medium: 40, deep: 60, steep: 75,
+};
+
+export const BOWL_PROFILE_LABELS: Record<BowlProfile, string> = {
+  flat:    "Flat (0°) — vertical walls",
+  shallow: "Shallow (20°) — slight slope",
+  medium:  "Medium (40°) — classic bowl",
+  deep:    "Deep (60°) — steep funnel",
+  steep:   "Steep (75°) — cup shape",
+};
+
 export interface ArenaConfig {
   // ===== BASIC PROPERTIES =====
   id?: string;
   name: string;
   description?: string;
-  
+
   // ===== GEOMETRY =====
   // NOTE: All arenas use ARENA_RESOLUTION (1080x1080) internally
   // These properties are kept for backward compatibility but should use ARENA_RESOLUTION
   width: number; // Deprecated: use ARENA_RESOLUTION instead
   height: number; // Deprecated: use ARENA_RESOLUTION instead
   shape: ArenaShape;
-  
+
+  // ===== BOWL / CROSS-SECTION =====
+  bowlProfile?: BowlProfile;
+  wallAngle?: number;   // 0–75 degrees; overrides bowlProfile if set explicitly
+  bowlDepth?: number;   // Visual only: 0–1 (default 0.4)
+
   // ===== VISUAL & THEME =====
   theme: ArenaTheme;
   backgroundColor?: string; // Custom background color

@@ -15,6 +15,18 @@ import { createPRNG } from "../utils/prng";
 import { hashString } from "../utils/hashString";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
 
+const BOWL_PROFILE_ANGLES: Record<string, number> = {
+  flat: 0, shallow: 20, medium: 40, deep: 60, steep: 75,
+};
+function resolveWallAngle(arenaData: ArenaConfig): number {
+  if (arenaData.wallAngle !== undefined) return arenaData.wallAngle;
+  return BOWL_PROFILE_ANGLES[arenaData.bowlProfile ?? "medium"] ?? 40;
+}
+function wallBowlForce(baseForce: number, wallAngle: number): number {
+  const rad = (wallAngle * Math.PI) / 180;
+  return baseForce * (1.0 + Math.sin(rad) * 0.8);
+}
+
 // [SERVER-ROOM] TryoutRoom — solo practice mode (maxClients=1)
 // Player vs arena only; no opponent beyblade collision.
 // Arena config is loaded ONCE in onCreate() and cached — never inside the tick.
@@ -108,6 +120,8 @@ export class TryoutRoom extends Room<GameState> {
         this.state.arena.wallSpringRecoilMultiplier = 1.0;
       }
 
+      this.state.arena.wallAngle = resolveWallAngle(arenaData);
+
       this.state.arena.loopCount = arenaData.loops?.length ?? 0;
       this.state.arena.obstacleCount = arenaData.obstacles?.length ?? 0;
       this.state.arena.pitCount = arenaData.pits?.length ?? 0;
@@ -129,6 +143,7 @@ export class TryoutRoom extends Room<GameState> {
       this.state.arena.wallEnabled = true;
       this.state.arena.wallBaseDamage = 5;
       this.state.arena.wallRecoilDistance = 2;
+      this.state.arena.wallAngle = 0;
     }
 
     this.physics = new PhysicsEngine();
@@ -200,7 +215,7 @@ export class TryoutRoom extends Room<GameState> {
       beybladeData || undefined
     );
 
-    const initialAngularVelocity = beyblade.spinDirection === "left" ? -10 : 10;
+    const initialAngularVelocity = (beyblade.spinDirection === "left" ? -1 : 1) * (beyblade.maxSpin / 200);
     this.physics.setAngularVelocity(beyblade.id, initialAngularVelocity);
 
     this.state.beyblades.set(client.sessionId, beyblade);
@@ -575,12 +590,13 @@ export class TryoutRoom extends Room<GameState> {
         beyblade.power = Math.min(100, beyblade.power + 2);
       }
 
-      // Ring-out check (circular arena)
+      // Ring-out check — at 90% of wall radius to catch beyblades before they escape
       if (this.state.arena.shape === "circle") {
-        const arenaRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 / 2;
+        const wallRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 / 2;
+        const ringOutRadius = wallRadius * 0.90;
         const isOut = this.physics.isOutOfBounds(
           beyblade.id,
-          arenaRadius,
+          ringOutRadius,
           (this.state.arena.width * 16) / 2,
           (this.state.arena.height * 16) / 2
         );
@@ -701,11 +717,8 @@ export class TryoutRoom extends Room<GameState> {
         beyblade.health -= wallDamage;
         beyblade.damageReceived += wallDamage;
 
-        this.physics.applyKnockback(
-          beyblade.id,
-          { x: -dx, y: -dy },
-          arenaData.wall.recoilDistance * beyblade.knockbackDistance
-        );
+        const wallForce = wallBowlForce(arenaData.wall.recoilDistance * beyblade.knockbackDistance, this.state.arena.wallAngle);
+        this.physics.applyKnockback(beyblade.id, { x: -dx, y: -dy }, wallForce);
         this.broadcast("wall-collision", { playerId: beyblade.id, damage: wallDamage });
       }
     }

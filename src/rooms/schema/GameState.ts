@@ -294,6 +294,10 @@ export class Beyblade extends Schema {
   @type("boolean") comboExecuting: boolean = false;
   @type("number") comboTimer: number = 0;
 
+  // Combo damage multiplier (applied during combo window)
+  @type("number") comboDamageMultiplier: number = 1.0;
+  @type("number") comboDamageMultiplierTimer: number = 0;
+
   // ── 2.5D part system fields ─────────────────────────────────────────────────
   // Special move (determined by BitBeast part)
   @type("string") specialMove: string = "tactical_burst";
@@ -402,6 +406,10 @@ export class ArenaState extends Schema {
   @type("number") wallSpikeDamageMultiplier: number = 1.0;
   @type("boolean") wallHasSprings: boolean = false;
   @type("number") wallSpringRecoilMultiplier: number = 1.0;
+
+  // Bowl profile — 0=flat/vertical wall, 75=steep cup shape
+  // Steeper bowl redirects beys more forcefully toward center on wall contact.
+  @type("number") wallAngle: number = 0;
 
   // Arena features counts (for client display)
   @type("number") speedPathCount: number = 0; // Updated from loopCount

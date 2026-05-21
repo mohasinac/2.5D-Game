@@ -206,8 +206,9 @@ export function TryoutGamePage() {
       b.rotation += angDir * (b.spin / b.maxSpin) * 6 * dt;
       b.angularVelocity = angDir * (b.spin / b.maxSpin) * 15;
 
-      // Feed to renderer
-      const beyMap = new Map<string, ServerBeyblade>([[b.id, { ...b }]]);
+      // Feed to renderer — scale positions to server physics space (width * 16 units)
+      const scaledBey = { ...b, x: b.x * 16, y: b.y * 16 };
+      const beyMap = new Map<string, ServerBeyblade>([[b.id, scaledBey]]);
       const gs: ServerGameState = {
         status: b.spin > 0 ? "in-progress" : "finished",
         mode: "tryout",

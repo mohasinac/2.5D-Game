@@ -1,19 +1,14 @@
 import { useEffect, useRef, useCallback } from "react";
 import * as PIXI from "pixi.js";
 import { C } from "@/styles/theme";
-import type { ArenaConfig, ArenaShape, WaterBodyConfig, ZoneWaterBodyConfig } from "@/types/arenaConfigNew";
+import type { ArenaConfig, ArenaShape, WaterBodyConfig, ZoneWaterBodyConfig, MoatWaterBodyConfig, WallBasedWaterBodyConfig } from "@/types/arenaConfigNew";
 
-const PREVIEW_RES = 800;
-const PREVIEW_SIZE = 400;
-const ARENA_RES = 1080;
-const EM_TO_PX = 24; // 1 em ≈ 24px in game coordinates
+// Game coordinate constants
+const ARENA_RES = 1080;       // game arena pixel dimensions
+const ARENA_SCALE = 0.45;     // game arena radius = ARENA_RES * ARENA_SCALE = 486px
+const EM_TO_PX = 24;          // 1 em/cm = 24 px in game coordinates
 
-interface Props {
-  arena: ArenaConfig;
-  width?: number;
-}
-
-// ── theme colors ────────────────────────────────────────────────────────────
+// ── theme colors ─────────────────────────────────────────────────────────────
 const THEME_COLORS: Record<string, number> = {
   metrocity: 0x3b82f6, forest: 0x10b981, mountains: 0x06b6d4,
   grasslands: 0x84cc16, desert: 0xf59e0b, sea: 0x0ea5e9,
@@ -25,7 +20,7 @@ const LIQUID_COLORS: Record<string, number> = {
   speedBoost: 0xeab308, quicksand: 0xd97706, oil: 0x374151, poison: 0x8b5cf6,
 };
 
-// ── vertex helpers ───────────────────────────────────────────────────────────
+// ── vertex helpers ────────────────────────────────────────────────────────────
 function polygonVerts(n: number, r: number): { x: number; y: number }[] {
   const offset = n % 2 === 0 ? -Math.PI / n : -Math.PI / 2;
   return Array.from({ length: n }, (_, i) => ({
@@ -67,79 +62,148 @@ function lerp2(ax: number, ay: number, bx: number, by: number, t: number) {
   return { x: ax + (bx - ax) * t, y: ay + (by - ay) * t };
 }
 
-// ── main component ───────────────────────────────────────────────────────────
-export default function ArenaPreview({ arena, width = PREVIEW_SIZE }: Props) {
+// ── main component ────────────────────────────────────────────────────────────
+interface Props {
+  arena: ArenaConfig;
+  width?: number; // kept for API compatibility but ignored — container fills parent
+}
+
+export default function ArenaPreview({ arena }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<PIXI.Application | null>(null);
   const arenaContainerRef = useRef<PIXI.Container | null>(null);
   const rotationRef = useRef(0);
+  // Always-current ref — avoids stale closures in ticker and rebuildScene
+  const arenaRef = useRef(arena);
+  arenaRef.current = arena;
 
-  const scale = (PREVIEW_RES / ARENA_RES);          // arena-pixel → canvas-pixel
-  const displayR = (ARENA_RES / 2) * scale * 0.90;  // arena display radius (~360px at 800res)
-  const themeColor = THEME_COLORS[arena.theme] ?? 0x3b82f6;
-
+  // Stable rebuild — all dynamic values computed from refs + app.screen dimensions
   const rebuildScene = useCallback(() => {
     const app = appRef.current;
-    if (!app) return;
-    app.stage.removeChildren();
-    rotationRef.current = 0;
+    if (!app || app.screen.width === 0) return;
 
-    const cx = PREVIEW_RES / 2;
-    const cy = PREVIEW_RES / 2;
+    app.stage.removeChildren();
+
+    const w = app.screen.width;
+    const h = app.screen.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    // displayR: arena preview radius in CSS pixels (45% of shorter side, matching game ratio)
+    const displayR = Math.min(w, h) * ARENA_SCALE;
+    // scale: maps game pixel coordinates (relative to game center) → preview pixel offset
+    const scale = displayR / (ARENA_RES * ARENA_SCALE); // = Math.min(w, h) / ARENA_RES
+
+    const cur = arenaRef.current;
+    const themeColor = THEME_COLORS[cur.theme] ?? 0x3b82f6;
+    const verts = shapeVerts(cur.shape, displayR);
 
     // Background
     const bg = new PIXI.Graphics();
-    bg.rect(0, 0, PREVIEW_RES, PREVIEW_RES).fill(0x111827);
+    bg.rect(0, 0, w, h).fill(0x111827);
     app.stage.addChild(bg);
 
     // Arena container (rotates when autoRotate)
     const cont = new PIXI.Container();
     cont.position.set(cx, cy);
+    // Restore saved rotation — prevents arena snapping to 0 on config change or resize
+    cont.rotation = rotationRef.current;
     arenaContainerRef.current = cont;
 
-    // ── Arena floor ───────────────────────────────────────────────────────
+    // ── Arena floor ──────────────────────────────────────────────────────────
     const floor = new PIXI.Graphics();
-    const verts = shapeVerts(arena.shape, displayR);
     if (verts) {
-      const pts = verts.flatMap(v => [v.x, v.y]);
-      floor.poly(pts).fill({ color: themeColor, alpha: 0.15 });
+      floor.poly(verts.flatMap(v => [v.x, v.y])).fill({ color: themeColor, alpha: 0.15 });
     } else {
       floor.circle(0, 0, displayR).fill({ color: themeColor, alpha: 0.15 });
     }
     cont.addChild(floor);
 
-    // ── Speed paths ───────────────────────────────────────────────────────
-    (arena.speedPaths ?? []).forEach(sp => {
+    // ── Speed paths ──────────────────────────────────────────────────────────
+    (cur.speedPaths ?? []).forEach(sp => {
       const r = sp.radius * EM_TO_PX * scale;
       const spGfx = new PIXI.Graphics();
       spGfx.circle(0, 0, r).stroke({ color: 0xeab308, width: 4, alpha: 0.7 });
       cont.addChild(spGfx);
     });
 
-    // ── Water bodies ─────────────────────────────────────────────────────
-    (arena.waterBodies ?? []).forEach(wb => {
-      const color = LIQUID_COLORS[(wb as any).liquidType ?? "water"] ?? 0x3b82f6;
-      const wGfx = new PIXI.Graphics();
+    // ── Water bodies ─────────────────────────────────────────────────────────
+    (cur.waterBodies ?? []).forEach(wb => {
+      const color = LIQUID_COLORS[wb.liquidType] ?? 0x3b82f6;
+
       if (wb.type === "zone") {
         const z = wb as ZoneWaterBodyConfig;
         const px = (z.position?.x ?? 0) * EM_TO_PX * scale;
         const py = (z.position?.y ?? 0) * EM_TO_PX * scale;
-        const r  = ((z.radius ?? 5)) * EM_TO_PX * scale;
-        wGfx.circle(px, py, r).fill({ color, alpha: 0.55 });
+        const rot = ((z.rotation ?? 0) * Math.PI) / 180;
+        const zoneGfx = new PIXI.Graphics();
+
+        switch (z.shape) {
+          case "square": {
+            const r = (z.radius ?? 5) * EM_TO_PX * scale;
+            zoneGfx.rect(-r, -r, r * 2, r * 2).fill({ color, alpha: 0.55 });
+            break;
+          }
+          case "rectangle": {
+            const hw = ((z.width ?? 5) * EM_TO_PX * scale) / 2;
+            const hh = ((z.height ?? 3) * EM_TO_PX * scale) / 2;
+            zoneGfx.rect(-hw, -hh, hw * 2, hh * 2).fill({ color, alpha: 0.55 });
+            break;
+          }
+          case "oval": {
+            const hw = ((z.width ?? z.radius ?? 5) * EM_TO_PX * scale) / 2;
+            const hh = ((z.height ?? z.radius ?? 3) * EM_TO_PX * scale) / 2;
+            zoneGfx.ellipse(0, 0, hw, hh).fill({ color, alpha: 0.55 });
+            break;
+          }
+          default: { // "circle"
+            const r = (z.radius ?? 5) * EM_TO_PX * scale;
+            zoneGfx.circle(0, 0, r).fill({ color, alpha: 0.55 });
+          }
+        }
+
+        const zoneCont = new PIXI.Container();
+        zoneCont.position.set(px, py);
+        zoneCont.rotation = rot;
+        zoneCont.addChild(zoneGfx);
+        cont.addChild(zoneCont);
+
       } else if (wb.type === "moat") {
-        const m = wb as any;
-        const r1 = (m.distanceFromArena ?? 20) * EM_TO_PX * scale;
-        const r2 = r1 + (m.thickness ?? 3) * EM_TO_PX * scale;
+        const m = wb as MoatWaterBodyConfig;
+        const r1 = m.distanceFromArena * EM_TO_PX * scale;
+        const r2 = r1 + m.thickness * EM_TO_PX * scale;
+        const wGfx = new PIXI.Graphics();
         wGfx.circle(0, 0, r2).fill({ color, alpha: 0.45 });
         wGfx.circle(0, 0, r1).fill({ color: 0x111827, alpha: 1 });
-      } else {
-        wGfx.circle(0, 0, displayR).stroke({ color, width: (wb as any).thickness * EM_TO_PX * scale * 0.5, alpha: 0.5 });
+        cont.addChild(wGfx);
+
+      } else { // "wall-based"
+        const w = wb as WallBasedWaterBodyConfig;
+        const thick = w.thickness * EM_TO_PX * scale;
+        const offset = (w.offsetFromEdge ?? 0) * EM_TO_PX * scale;
+        const outerR = displayR - offset;
+        const innerR = Math.max(0, outerR - thick);
+        const wGfx = new PIXI.Graphics();
+
+        // Draw water ring: outer fill → erase center → restore arena floor tint
+        if (!verts) {
+          wGfx.circle(0, 0, outerR).fill({ color, alpha: 0.4 });
+          wGfx.circle(0, 0, innerR).fill({ color: 0x111827, alpha: 1 });
+          wGfx.circle(0, 0, innerR).fill({ color: themeColor, alpha: 0.15 });
+        } else {
+          const oF = outerR / displayR;
+          const iF = innerR / displayR;
+          const outerPts = verts.flatMap(v => [v.x * oF, v.y * oF]);
+          const innerPts = verts.flatMap(v => [v.x * iF, v.y * iF]);
+          wGfx.poly(outerPts).fill({ color, alpha: 0.4 });
+          wGfx.poly(innerPts).fill({ color: 0x111827, alpha: 1 });
+          wGfx.poly(innerPts).fill({ color: themeColor, alpha: 0.15 });
+        }
+        cont.addChild(wGfx);
       }
-      cont.addChild(wGfx);
     });
 
-    // ── Pits ──────────────────────────────────────────────────────────────
-    (arena.pits ?? []).forEach(pit => {
+    // ── Pits ─────────────────────────────────────────────────────────────────
+    (cur.pits ?? []).forEach(pit => {
       const px = (pit.position?.x ?? 0) * EM_TO_PX * scale;
       const py = (pit.position?.y ?? 0) * EM_TO_PX * scale;
       const r  = (pit.radius ?? 2) * EM_TO_PX * scale;
@@ -149,9 +213,9 @@ export default function ArenaPreview({ arena, width = PREVIEW_SIZE }: Props) {
       cont.addChild(pGfx);
     });
 
-    // ── Portals ───────────────────────────────────────────────────────────
+    // ── Portals ───────────────────────────────────────────────────────────────
     const PORTAL_COLORS = [0xa855f7, 0x06b6d4, 0x10b981, 0xf97316];
-    (arena.portals ?? []).forEach((portal, i) => {
+    (cur.portals ?? []).forEach((portal, i) => {
       const px = (portal.position?.x ?? 0) * EM_TO_PX * scale;
       const py = (portal.position?.y ?? 0) * EM_TO_PX * scale;
       const r  = (portal.radius ?? 3) * EM_TO_PX * scale;
@@ -162,8 +226,8 @@ export default function ArenaPreview({ arena, width = PREVIEW_SIZE }: Props) {
       cont.addChild(pGfx);
     });
 
-    // ── Obstacles ─────────────────────────────────────────────────────────
-    (arena.obstacles ?? []).forEach(obs => {
+    // ── Obstacles ─────────────────────────────────────────────────────────────
+    (cur.obstacles ?? []).forEach(obs => {
       const px = (obs.x ?? 0) * scale;
       const py = (obs.y ?? 0) * scale;
       const r  = (obs.radius ?? 15) * scale;
@@ -173,39 +237,36 @@ export default function ArenaPreview({ arena, width = PREVIEW_SIZE }: Props) {
       cont.addChild(oGfx);
     });
 
-    // ── Turrets ───────────────────────────────────────────────────────────
-    (arena.turrets ?? []).forEach(turret => {
+    // ── Turrets ───────────────────────────────────────────────────────────────
+    (cur.turrets ?? []).forEach(turret => {
       const px = (turret.x ?? 0) * scale;
       const py = (turret.y ?? 0) * scale;
       const r  = (turret.radius ?? 20) * scale;
       const tGfx = new PIXI.Graphics();
       tGfx.circle(px, py, r).fill({ color: 0xef4444, alpha: 0.85 });
-      // Crosshair mark
       tGfx.moveTo(px - r * 0.7, py).lineTo(px + r * 0.7, py).stroke({ color: 0xffffff, width: 2, alpha: 0.8 });
       tGfx.moveTo(px, py - r * 0.7).lineTo(px, py + r * 0.7).stroke({ color: 0xffffff, width: 2, alpha: 0.8 });
       cont.addChild(tGfx);
     });
 
-    // ── Arena boundary (on top) ────────────────────────────────────────────
+    // ── Arena boundary (drawn on top of features) ─────────────────────────────
     const boundary = new PIXI.Graphics();
     if (verts) {
-      const pts = verts.flatMap(v => [v.x, v.y]);
-      boundary.poly(pts).stroke({ color: themeColor, width: 5, alpha: 1 });
+      boundary.poly(verts.flatMap(v => [v.x, v.y])).stroke({ color: themeColor, width: 5, alpha: 1 });
     } else {
       boundary.circle(0, 0, displayR).stroke({ color: themeColor, width: 5 });
     }
     cont.addChild(boundary);
 
-    // ── Wall segments ─────────────────────────────────────────────────────
-    if (arena.wall?.enabled && arena.wall.edges?.length) {
+    // ── Wall segments ─────────────────────────────────────────────────────────
+    if (cur.wall?.enabled && cur.wall.edges?.length) {
       const wallGfx = new PIXI.Graphics();
       const wallColor = 0xe5e7eb;
       const exitColor = 0xef4444;
       const wallThick = 6;
 
-      if (arena.shape === "circle") {
-        // Single circular edge: walls/exits as arc segments
-        const edge = arena.wall.edges[0];
+      if (cur.shape === "circle") {
+        const edge = cur.wall.edges[0];
         if (edge?.walls?.length) {
           edge.walls.forEach(w => {
             const startAngle = (w.position / 100) * 2 * Math.PI - Math.PI / 2;
@@ -215,17 +276,14 @@ export default function ArenaPreview({ arena, width = PREVIEW_SIZE }: Props) {
           });
         }
       } else if (verts) {
-        // Polygon: walls on each edge
-        arena.wall.edges.forEach((edge, ei) => {
+        cur.wall.edges.forEach((edge, ei) => {
           if (ei >= verts.length) return;
           const va = verts[ei];
           const vb = verts[(ei + 1) % verts.length];
           if (!edge?.walls?.length) {
-            // No walls = all exit (red)
             wallGfx.moveTo(va.x, va.y).lineTo(vb.x, vb.y).stroke({ color: exitColor, width: wallThick, alpha: 0.7 });
             return;
           }
-          // Draw walls and exits
           let covered = 0;
           const sortedWalls = [...edge.walls].sort((a, b) => a.position - b.position);
           sortedWalls.forEach(w => {
@@ -249,13 +307,13 @@ export default function ArenaPreview({ arena, width = PREVIEW_SIZE }: Props) {
       cont.addChild(wallGfx);
     }
 
-    // ── Center dot ────────────────────────────────────────────────────────
+    // ── Center dot ───────────────────────────────────────────────────────────
     const center = new PIXI.Graphics();
     center.circle(0, 0, 6).fill({ color: themeColor, alpha: 0.6 });
     cont.addChild(center);
 
     app.stage.addChild(cont);
-  }, [arena, displayR, scale, themeColor]);
+  }, []); // Stable — reads from refs + app
 
   // Init PixiJS once
   useEffect(() => {
@@ -265,39 +323,65 @@ export default function ArenaPreview({ arena, width = PREVIEW_SIZE }: Props) {
     appRef.current = app;
 
     (async () => {
+      const size = containerRef.current!.offsetWidth || 400;
       await app.init({
-        width: PREVIEW_RES, height: PREVIEW_RES,
-        antialias: true, backgroundAlpha: 1, background: 0x111827,
+        width: size,
+        height: size,
+        antialias: true,
+        resolution: window.devicePixelRatio || 1,
+        autoDensity: true,
+        backgroundAlpha: 1,
+        background: 0x111827,
       });
-      if (cancelled || !containerRef.current) { app.destroy(true); return; }
-      app.canvas.style.width = `${width}px`;
-      app.canvas.style.height = `${width}px`;
-      app.canvas.style.maxWidth = "100%";
+
+      if (cancelled || !containerRef.current) {
+        app.destroy(true);
+        return;
+      }
+
       app.canvas.style.display = "block";
+      app.canvas.style.width = "100%";
+      app.canvas.style.height = "100%";
       containerRef.current.appendChild(app.canvas);
 
-      await rebuildScene();
+      rebuildScene();
 
       app.ticker.add(() => {
         const cont = arenaContainerRef.current;
-        if (!cont || !arena.autoRotate) return;
-        const dir = arena.rotationDirection === "clockwise" ? 1 : -1;
-        rotationRef.current += (arena.rotationSpeed / 60 / 60) * dir * (Math.PI / 180) * 60;
+        const cur = arenaRef.current;
+        if (!cont || !cur.autoRotate) return;
+        const dir = cur.rotationDirection === "clockwise" ? 1 : -1;
+        rotationRef.current += (cur.rotationSpeed / 60 / 60) * dir * (Math.PI / 180) * 60;
         cont.rotation = rotationRef.current;
       });
     })();
 
     return () => {
       cancelled = true;
-      app.destroy(true, { children: true });
+      try { app.destroy(true, { children: true }); } catch { /* init may still be in flight */ }
       appRef.current = null;
       arenaContainerRef.current = null;
     };
-  }, []);
+  }, []); // Init once
 
-  // Rebuild when arena changes
+  // Rebuild when arena config changes
   useEffect(() => {
     if (appRef.current) rebuildScene();
+  }, [arena, rebuildScene]);
+
+  // Respond to container resize
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      const app = appRef.current;
+      if (app && width > 0 && height > 0) {
+        app.renderer.resize(width, height);
+        rebuildScene();
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
   }, [rebuildScene]);
 
   return (
@@ -305,11 +389,14 @@ export default function ArenaPreview({ arena, width = PREVIEW_SIZE }: Props) {
       <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 12 }}>Live Preview</div>
       <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
         <div ref={containerRef} style={{
-          borderRadius: 8, border: `2px solid ${C.border}`, overflow: "hidden",
-          width: width, maxWidth: "100%", aspectRatio: "1 / 1",
+          borderRadius: 8,
+          border: `2px solid ${C.border}`,
+          overflow: "hidden",
+          width: "100%",
+          aspectRatio: "1 / 1",
         }} />
       </div>
-      {/* Feature counts */}
+      {/* Feature badges */}
       <div style={{ fontSize: 11, color: C.faint, display: "flex", flexWrap: "wrap", gap: 8 }}>
         {[
           ["Shape", arena.shape],

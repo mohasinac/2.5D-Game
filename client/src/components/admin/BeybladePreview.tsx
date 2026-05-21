@@ -1,19 +1,12 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import * as PIXI from "pixi.js";
 import { C } from "@/styles/theme";
 import type { BeybladeStats } from "@/types/beybladeStats";
 
-// Inline constants (mirrors beybladeConstants.ts)
-const PIXELS_PER_CM = 24; // 1080 / 45
-const CANVAS_SIZE = 400;
-const CANVAS_RES = 800; // 2x for retina
-
-function getDisplayRadius(radiusCm: number, zoom: number) {
-  // Scale from arena px → preview canvas px, then apply zoom
-  const basePixels = radiusCm * PIXELS_PER_CM;
-  const previewScale = CANVAS_RES / 1080;
-  return basePixels * previewScale * (zoom / 100);
-}
+// Game coordinate constants — match game physics
+const GAME_ARENA_PX = 1080 * 0.45; // 486 — game arena radius in pixels
+const GAME_CM_TO_PX = 24;          // 1 cm = 24 px in game
+const ARENA_SCALE = 0.45;          // preview arena radius as fraction of container
 
 function typeColor(type: string): number {
   switch (type) {
@@ -39,185 +32,208 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
   const [isSpinning, setIsSpinning] = useState(true);
   const [zoom, setZoom] = useState(100);
   const zoomRef = useRef(100);
+  // Persists spin angle across rebuilds so bey doesn't snap to 0 on every zoom/config change
+  const rotationRef = useRef(0);
+  // Generation counter — lets async rebuilds detect when a newer rebuild started mid-load
+  const rebuildGenRef = useRef(0);
+  // Always-current refs — updated synchronously on every render (no stale closures in callbacks)
+  const beybladeRef = useRef(beyblade);
+  beybladeRef.current = beyblade;
 
-  // Keep refs in sync with state
   useEffect(() => { isSpinningRef.current = isSpinning; }, [isSpinning]);
   useEffect(() => { zoomRef.current = zoom; }, [zoom]);
 
-  // Pause spinning in click mode, reset rotation
   useEffect(() => {
     if (clickMode) {
       setIsSpinning(false);
-      if (beybladeContainerRef.current) {
-        beybladeContainerRef.current.rotation = 0;
-      }
+      if (beybladeContainerRef.current) beybladeContainerRef.current.rotation = 0;
     }
   }, [clickMode]);
 
-  // Handle canvas click for contact point placement
   const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!clickMode || !onCanvasClick) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const scaleX = CANVAS_RES / rect.width;
-    const scaleY = CANVAS_RES / rect.height;
-    const x = (e.clientX - rect.left) * scaleX - CANVAS_RES / 2;
-    const y = (e.clientY - rect.top) * scaleY - CANVAS_RES / 2;
+    // autoDensity:true makes canvas CSS size == container CSS size — no extra scaling needed
+    const x = (e.clientX - rect.left) - rect.width / 2;
+    const y = (e.clientY - rect.top) - rect.height / 2;
     let angle = Math.atan2(y, x) * (180 / Math.PI);
     angle = (angle + 360) % 360;
     onCanvasClick(angle);
   }, [clickMode, onCanvasClick]);
 
-  // Build / rebuild the PixiJS scene whenever beyblade data or zoom changes
+  // Stable rebuild — reads everything from refs so deps=[] is safe
   const rebuildScene = useCallback(async () => {
     const app = appRef.current;
-    if (!app) return;
+    if (!app || app.screen.width === 0) return;
 
-    // Clear stage
+    // Bump generation so any older in-flight async rebuild aborts before touching stage
+    const gen = ++rebuildGenRef.current;
     app.stage.removeChildren();
 
-    const cx = CANVAS_RES / 2;
-    const cy = CANVAS_RES / 2;
-    const displayRadius = getDisplayRadius(beyblade.radius, zoomRef.current);
+    const w = app.screen.width;
+    const h = app.screen.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const arenaR = Math.min(w, h) * ARENA_SCALE;
+    const bey = beybladeRef.current;
+    const z = zoomRef.current;
+    // Scale bey proportionally to the preview arena — mirrors game formula: radius_px = radius_cm * 24
+    const beyR = Math.max(12, (bey.radius * GAME_CM_TO_PX / GAME_ARENA_PX) * arenaR * (z / 100));
 
-    // Background
+    // ── Background ──────────────────────────────────────────────────────────
     const bg = new PIXI.Graphics();
-    bg.rect(0, 0, CANVAS_RES, CANVAS_RES).fill(0xf3f4f6);
+    bg.rect(0, 0, w, h).fill(0x0d1a2e);
     app.stage.addChild(bg);
 
-    // Reference circle
-    const refCircle = new PIXI.Graphics();
-    refCircle.circle(cx, cy, 150 * (CANVAS_RES / CANVAS_SIZE)).stroke({ color: 0xd1d5db, width: 2 });
-    app.stage.addChild(refCircle);
+    // ── Arena ring ───────────────────────────────────────────────────────────
+    const ring = new PIXI.Graphics();
+    ring.circle(cx, cy, arenaR).fill({ color: 0x1a2a4a });
+    ring.circle(cx, cy, arenaR).stroke({ color: 0x4488cc, width: 3, alpha: 0.85 });
+    // Center cross
+    ring.moveTo(cx - 14, cy).lineTo(cx + 14, cy).stroke({ color: 0x4488cc, width: 1, alpha: 0.25 });
+    ring.moveTo(cx, cy - 14).lineTo(cx, cy + 14).stroke({ color: 0x4488cc, width: 1, alpha: 0.25 });
+    app.stage.addChild(ring);
 
-    // Beyblade container (rotates)
+    // ── Beyblade container (rotates) ─────────────────────────────────────────
     const bCont = new PIXI.Container();
     bCont.position.set(cx, cy);
-    beybladeContainerRef.current = bCont;
+    // Restore saved rotation — prevents bey snapping to 0 on zoom/config/resize changes
+    bCont.rotation = rotationRef.current;
 
-    // Beyblade disc
+    const color = typeColor(bey.type);
+
+    // Main disc
     const disc = new PIXI.Graphics();
-    const color = typeColor(beyblade.type);
-    disc.circle(0, 0, displayRadius).fill(color);
-    disc.circle(0, 0, displayRadius).stroke({ color: 0x1f2937, width: 3 });
+    disc.circle(0, 0, beyR).fill(color);
+    // Inner highlight ring
+    disc.circle(0, 0, beyR * 0.5).fill({ color: 0xffffff, alpha: 0.12 });
+    // Outer border
+    disc.circle(0, 0, beyR).stroke({ color: 0x1f2937, width: 3 });
     bCont.addChild(disc);
 
     // Beyblade image (if available)
-    if (beyblade.imageUrl) {
+    if (bey.imageUrl) {
       try {
-        const texture = await PIXI.Assets.load(beyblade.imageUrl);
+        const texture = await PIXI.Assets.load(bey.imageUrl);
+        // Discard stale rebuild — a newer one started while image was loading
+        if (gen !== rebuildGenRef.current) return;
+
         const sprite = new PIXI.Sprite(texture as PIXI.Texture);
         sprite.anchor.set(0.5, 0.5);
 
-        const imgPos = beyblade.imagePosition ?? { x: 0, y: 0, scale: 1, rotation: 0 };
+        const imgPos = bey.imagePosition ?? { x: 0, y: 0, scale: 1, rotation: 0 };
         const aspectRatio = texture.width / texture.height;
         let imgW: number, imgH: number;
         if (aspectRatio > 1) {
-          imgW = displayRadius * 2 * imgPos.scale;
+          imgW = beyR * 2 * imgPos.scale;
           imgH = imgW / aspectRatio;
         } else {
-          imgH = displayRadius * 2 * imgPos.scale;
+          imgH = beyR * 2 * imgPos.scale;
           imgW = imgH * aspectRatio;
         }
         sprite.width = imgW;
         sprite.height = imgH;
-        sprite.x = imgPos.x * (displayRadius / 2);
-        sprite.y = imgPos.y * (displayRadius / 2);
+        sprite.x = imgPos.x * (beyR / 2);
+        sprite.y = imgPos.y * (beyR / 2);
         sprite.rotation = (imgPos.rotation * Math.PI) / 180;
 
-        // Circular mask
         const maskGfx = new PIXI.Graphics();
-        maskGfx.circle(0, 0, displayRadius).fill(0xffffff);
+        maskGfx.circle(0, 0, beyR).fill(0xffffff);
         bCont.addChild(maskGfx);
         sprite.mask = maskGfx;
-
         bCont.addChild(sprite);
 
-        // Re-draw border on top of image
         const border = new PIXI.Graphics();
-        border.circle(0, 0, displayRadius).stroke({ color, width: 4 });
+        border.circle(0, 0, beyR).stroke({ color, width: 4 });
         bCont.addChild(border);
-
-        // Remove plain disc (we have the image)
         bCont.removeChild(disc);
       } catch {
-        // Keep plain disc on load failure
+        // Keep plain disc on load failure — still abort if superseded
+        if (gen !== rebuildGenRef.current) return;
       }
     }
 
-    // Spin direction text on plain disc
-    if (!beyblade.imageUrl) {
-      const label = new PIXI.Text({ text: beyblade.spinDirection === "left" ? "◄" : "►", style: { fill: 0xffffff, fontSize: 20, fontWeight: "bold" } });
+    // Spin direction indicator — always shown regardless of image
+    {
+      const hasImage = !!bey.imageUrl;
+      const label = new PIXI.Text({
+        text: bey.spinDirection === "left" ? "◄" : "►",
+        style: {
+          fill: 0xffffff,
+          fontSize: Math.max(10, hasImage ? beyR * 0.28 : beyR * 0.42),
+          fontWeight: "bold",
+        }
+      });
       label.anchor.set(0.5, 0.5);
+      if (hasImage) {
+        // Corner position when image occupies center
+        label.position.set(beyR * 0.55, beyR * 0.55);
+      }
       bCont.addChild(label);
     }
 
-    // Contact points (inside rotating container)
-    if (beyblade.pointsOfContact?.length) {
+    // ── Contact points ───────────────────────────────────────────────────────
+    if (bey.pointsOfContact?.length) {
       const cpGfx = new PIXI.Graphics();
       const cpGlow = new PIXI.Graphics();
-      beyblade.pointsOfContact.forEach((point) => {
+      bey.pointsOfContact.forEach((point) => {
         const angleRad = (point.angle - 90) * (Math.PI / 180);
         const widthRad = ((point.width / 2) * Math.PI) / 180;
-        const r = displayRadius + 5;
+        const r = beyR + 5;
         const hue = Math.min((point.damageMultiplier - 1.0) * 300, 120);
         const strokeColor = hslToHex(hue, 90, 50);
         const glowColor = hslToHex(hue, 90, 60);
-
         cpGfx.arc(0, 0, r, angleRad - widthRad, angleRad + widthRad).stroke({ color: strokeColor, width: 6 });
         cpGlow.arc(0, 0, r, angleRad - widthRad, angleRad + widthRad).stroke({ color: glowColor, width: 12, alpha: 0.3 });
-
-        // Indicator dot
         const dotAngle = point.angle * (Math.PI / 180) - Math.PI / 2;
-        const dotX = Math.cos(dotAngle) * r;
-        const dotY = Math.sin(dotAngle) * r;
-        cpGfx.circle(dotX, dotY, 3).fill(strokeColor);
+        cpGfx.circle(Math.cos(dotAngle) * r, Math.sin(dotAngle) * r, 3).fill(strokeColor);
       });
       bCont.addChild(cpGlow);
       bCont.addChild(cpGfx);
     }
 
-    // Spin steal points (inside rotating container)
-    if (beyblade.spinStealPoints?.length) {
+    // ── Spin steal points ────────────────────────────────────────────────────
+    if (bey.spinStealPoints?.length) {
       const ssGfx = new PIXI.Graphics();
       const ssGlow = new PIXI.Graphics();
-      beyblade.spinStealPoints.forEach((point) => {
+      bey.spinStealPoints.forEach((point) => {
         const angleRad = (point.angle - 90) * (Math.PI / 180);
         const widthRad = ((point.width / 2) * Math.PI) / 180;
-        const r = displayRadius + 12;
+        const r = beyR + 12;
         const hue = 180 + (point.spinStealMultiplier - 1.0) * 40;
         const strokeColor = hslToHex(hue, 90, 50);
         const glowColor = hslToHex(hue, 90, 60);
-
         ssGfx.arc(0, 0, r, angleRad - widthRad, angleRad + widthRad).stroke({ color: strokeColor, width: 6 });
         ssGlow.arc(0, 0, r, angleRad - widthRad, angleRad + widthRad).stroke({ color: glowColor, width: 12, alpha: 0.3 });
-
         const dotAngle = point.angle * (Math.PI / 180) - Math.PI / 2;
-        const dotX = Math.cos(dotAngle) * r;
-        const dotY = Math.sin(dotAngle) * r;
-        ssGfx.circle(dotX, dotY, 3).fill(strokeColor);
+        ssGfx.circle(Math.cos(dotAngle) * r, Math.sin(dotAngle) * r, 3).fill(strokeColor);
       });
       bCont.addChild(ssGlow);
       bCont.addChild(ssGfx);
     }
 
+    // Register as active container and add to stage only after everything is ready
+    beybladeContainerRef.current = bCont;
     app.stage.addChild(bCont);
-  }, [beyblade]);
+  }, []); // Stable — reads from refs
 
-  // Init PixiJS app once
+  // Init PixiJS once
   useEffect(() => {
     if (!containerRef.current) return;
-
     let cancelled = false;
     const app = new PIXI.Application();
     appRef.current = app;
 
     (async () => {
+      const size = containerRef.current!.offsetWidth || 400;
       await app.init({
-        width: CANVAS_RES,
-        height: CANVAS_RES,
+        width: size,
+        height: size,
         antialias: true,
+        resolution: window.devicePixelRatio || 1,
+        autoDensity: true,
         backgroundAlpha: 1,
-        background: 0xf3f4f6,
+        background: 0x0d1a2e,
       });
 
       if (cancelled || !containerRef.current) {
@@ -225,43 +241,56 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
         return;
       }
 
-      // Scale canvas to CANVAS_SIZE display
-      app.canvas.style.width = `${CANVAS_SIZE}px`;
-      app.canvas.style.height = `${CANVAS_SIZE}px`;
-      app.canvas.style.maxWidth = "100%";
-      app.canvas.style.aspectRatio = "1 / 1";
       app.canvas.style.display = "block";
+      app.canvas.style.width = "100%";
+      app.canvas.style.height = "100%";
       containerRef.current.appendChild(app.canvas);
 
       await rebuildScene();
 
-      // Animation ticker
       app.ticker.add(() => {
         const bCont = beybladeContainerRef.current;
         if (!bCont || !isSpinningRef.current) return;
-        const speed = beyblade.spinDirection === "left" ? -0.06 : 0.06;
+        const speed = beybladeRef.current.spinDirection === "left" ? -0.06 : 0.06;
         bCont.rotation += speed;
+        // Save angle so next rebuild can restore it — prevents snap-to-0 on resize/config change
+        rotationRef.current = bCont.rotation;
       });
     })();
 
     return () => {
       cancelled = true;
-      app.destroy(true, { children: true });
+      try { app.destroy(true, { children: true }); } catch { /* init may still be in flight */ }
       appRef.current = null;
       beybladeContainerRef.current = null;
     };
-  }, []); // init once
+  }, []); // Init once
 
-  // Rebuild scene when beyblade data or zoom changes
+  // Rebuild when beyblade data or zoom changes
   useEffect(() => {
     if (appRef.current) rebuildScene();
+  }, [beyblade, zoom, rebuildScene]);
+
+  // Respond to container resize
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      const app = appRef.current;
+      if (app && width > 0 && height > 0) {
+        app.renderer.resize(width, height);
+        rebuildScene();
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
   }, [rebuildScene]);
 
   return (
     <div style={{ background: C.bg2, borderRadius: 12, padding: 16, border: `1px solid ${C.border}` }}>
       <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 12 }}>Live Preview</div>
 
-      {/* Canvas container */}
+      {/* Canvas container — fills width, enforced square */}
       <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
         <div
           ref={containerRef}
@@ -271,8 +300,7 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
             border: `2px solid ${C.border}`,
             overflow: "hidden",
             cursor: clickMode ? "crosshair" : "default",
-            width: CANVAS_SIZE,
-            maxWidth: "100%",
+            width: "100%",
             aspectRatio: "1 / 1",
           }}
         />
@@ -317,6 +345,8 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
           ["Spin", beyblade.spinDirection],
           ["Radius", `${beyblade.radius} cm`],
           ["Mass", `${beyblade.mass}g`],
+          ...(beyblade.speed != null ? [["Speed", String(beyblade.speed)]] : []),
+          ...(beyblade.rotationSpeed != null ? [["Rot. Speed", `${beyblade.rotationSpeed}°/s`]] : []),
         ].map(([k, v]) => (
           <div key={k} style={{ display: "flex", justifyContent: "space-between" }}>
             <span>{k}:</span>
@@ -337,14 +367,10 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
   );
 }
 
-// HSL → hex color for PixiJS
 function hslToHex(h: number, s: number, l: number): number {
   s /= 100; l /= 100;
   const k = (n: number) => (n + h / 30) % 12;
   const a = s * Math.min(l, 1 - l);
   const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-  const r = Math.round(f(0) * 255);
-  const g = Math.round(f(8) * 255);
-  const b = Math.round(f(4) * 255);
-  return (r << 16) | (g << 8) | b;
+  return (Math.round(f(0) * 255) << 16) | (Math.round(f(8) * 255) << 8) | Math.round(f(4) * 255);
 }

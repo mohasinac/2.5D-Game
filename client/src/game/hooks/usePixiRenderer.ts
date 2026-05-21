@@ -64,5 +64,14 @@ export function usePixiRenderer(containerRef: React.RefObject<HTMLDivElement | n
     []
   );
 
-  return { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber };
+  // Convert a physics-space position to screen-space pixels.
+  // Call this before spawning particles at positions received from the server.
+  const physicsToScreen = useCallback(
+    (px: number, py: number): { x: number; y: number } => {
+      return rendererRef.current?.physicsToScreen(px, py) ?? { x: px, y: py };
+    },
+    []
+  );
+
+  return { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen };
 }

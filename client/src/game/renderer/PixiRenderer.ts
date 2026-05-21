@@ -79,10 +79,15 @@ export class BeybladeGameRenderer {
   // Particles
   private particles: ParticleData[] = [];
 
-  // Arena geometry cache
+  // Arena geometry cache — screen space
   private arenaRadius = 0;
   private arenaCenterX = 0;
   private arenaCenterY = 0;
+
+  // Physics coordinate system (server uses width * 16 as physics space)
+  private physicsCenterX = 0;
+  private physicsCenterY = 0;
+  private physicsArenaRadius = 1;
 
   private initialized = false;
   private contextLost = false;
@@ -162,11 +167,18 @@ export class BeybladeGameRenderer {
     const w = this.app.screen.width;
     const h = this.app.screen.height;
 
-    // Arena fits within viewport maintaining aspect ratio
-    const arenaPixelRadius = Math.min(w, h) * 0.42;
+    // Arena fits within viewport maintaining aspect ratio — must match physics engine: radius = min(dim)*16*0.45
+    const arenaPixelRadius = Math.min(w, h) * 0.45;
     this.arenaRadius = arenaPixelRadius;
     this.arenaCenterX = w / 2;
     this.arenaCenterY = h / 2;
+
+    // Server rooms always use width * 16 as the physics coordinate space.
+    // physicsCenterX/Y is the origin (0,0) of game-world coords on screen.
+    this.physicsCenterX = (width * 16) / 2;
+    this.physicsCenterY = (height * 16) / 2;
+    // Must match PhysicsEngine.ts: arenaRadius = min(width, height) * 16 * 0.45
+    this.physicsArenaRadius = Math.min(width, height) * 16 * 0.45;
 
     const bgColor = THEME_COLORS[theme] ?? 0x1a1a2e;
     const g = new PIXI.Graphics();
@@ -186,9 +198,9 @@ export class BeybladeGameRenderer {
       innerRing.circle(this.arenaCenterX, this.arenaCenterY, arenaPixelRadius);
       innerRing.stroke({ color: 0x4488cc, width: 3, alpha: 0.6 });
 
-      // Boundary warning ring (pulses red when beyblades are near edge)
+      // Boundary warning ring (pulses red when beyblades are near edge) — at 90% of arena radius
       const boundaryRing = new PIXI.Graphics();
-      boundaryRing.circle(this.arenaCenterX, this.arenaCenterY, arenaPixelRadius * 0.95);
+      boundaryRing.circle(this.arenaCenterX, this.arenaCenterY, arenaPixelRadius * 0.90);
       boundaryRing.stroke({ color: 0xff2222, width: 1, alpha: 0.2 });
 
       this.arenaLayer.addChild(g, floorGradient, innerRing, boundaryRing);
@@ -202,8 +214,16 @@ export class BeybladeGameRenderer {
       this.arenaLayer.addChild(g);
     }
 
-    // suppress unused-variable warnings (width/height are arena data, not needed for rendering)
-    void width; void height;
+  }
+
+  // Convert a physics-space position (server coordinates) to screen-space pixels.
+  // Use this when placing UI elements or particles at positions received from the server.
+  physicsToScreen(px: number, py: number): { x: number; y: number } {
+    const scale = this.physicsArenaRadius > 0 ? this.arenaRadius / this.physicsArenaRadius : 1;
+    return {
+      x: this.arenaCenterX + (px - this.physicsCenterX) * scale,
+      y: this.arenaCenterY + (py - this.physicsCenterY) * scale,
+    };
   }
 
   // ─── Beyblade rendering with 2.5D perspective ────────────────────────────────
@@ -357,9 +377,10 @@ export class BeybladeGameRenderer {
 
     const r = (beyblade.actualSize || 48) / 2;
 
-    // Simple mapping: game coords are already in pixels — just center them
-    const screenX = this.arenaCenterX + (beyblade.x - (this.arenaCenterX || 400));
-    const screenY = this.arenaCenterY + (beyblade.y - (this.arenaCenterY || 300));
+    // Map physics coords → screen coords using the stored physics scale
+    const physScale = this.physicsArenaRadius > 0 ? this.arenaRadius / this.physicsArenaRadius : 1;
+    const screenX = this.arenaCenterX + (beyblade.x - this.physicsCenterX) * physScale;
+    const screenY = this.arenaCenterY + (beyblade.y - this.physicsCenterY) * physScale;
 
     container.x = screenX;
     container.y = screenY;
@@ -530,8 +551,9 @@ export class BeybladeGameRenderer {
           this.beybladeLayer.addChild(splitG);
           this.splitBodySprites.set(id, splitG);
         }
-        const sx = this.arenaCenterX + (beyblade.splitBodyX - (this.arenaCenterX || 400));
-        const sy = this.arenaCenterY + (beyblade.splitBodyY - (this.arenaCenterY || 300));
+        const splitScale = this.physicsArenaRadius > 0 ? this.arenaRadius / this.physicsArenaRadius : 1;
+        const sx = this.arenaCenterX + (beyblade.splitBodyX - this.physicsCenterX) * splitScale;
+        const sy = this.arenaCenterY + (beyblade.splitBodyY - this.physicsCenterY) * splitScale;
         const sr = r * 0.65;
         const typeColor = TYPE_COLORS[beyblade.type] ?? 0xffffff;
         splitG.clear();
@@ -616,10 +638,9 @@ export class BeybladeGameRenderer {
   }
 
   private updateDetachedBodySprite(g: PIXI.Graphics, body: ServerDetachedBody) {
-    const cx = this.arenaCenterX || 400;
-    const cy = this.arenaCenterY || 300;
-    g.x = cx + (body.x - cx);
-    g.y = cy + (body.y - cy);
+    const detScale = this.physicsArenaRadius > 0 ? this.arenaRadius / this.physicsArenaRadius : 1;
+    g.x = this.arenaCenterX + (body.x - this.physicsCenterX) * detScale;
+    g.y = this.arenaCenterY + (body.y - this.physicsCenterY) * detScale;
     g.clear();
 
     const r = Math.max(3, body.radius);
@@ -740,6 +761,123 @@ export class BeybladeGameRenderer {
       life: 0,
       maxLife: 0.9 + Math.random() * 0.3,
       color,
+      sprite: text,
+    });
+  }
+
+  playSpecialMoveEffect(playerId: string, type: string, physX: number, physY: number, facing: number) {
+    const screenCoords = this.physicsToScreen(physX, physY);
+    const x = screenCoords.x;
+    const y = screenCoords.y;
+
+    const animTypes: Record<string, { particleColor: number; count: number; duration: number }> = {
+      "stampede-rush": { particleColor: 0xff6600, count: 14, duration: 0.5 },
+      "gyro-anchor": { particleColor: 0x4488ff, count: 8, duration: 0.8 },
+      "spin-recovery": { particleColor: 0x44ff88, count: 10, duration: 1.0 },
+      "tactical-burst": { particleColor: 0xffff00, count: 12, duration: 0.3 },
+    };
+
+    const config = animTypes[type] || { particleColor: 0xffffff, count: 12, duration: 0.5 };
+
+    // Burst particles in facing direction (or all directions for anchor)
+    for (let i = 0; i < config.count; i++) {
+      let angle: number;
+      if (type === "gyro-anchor") {
+        angle = (Math.PI * 2 * i) / config.count; // Expand outward
+      } else if (type === "spin-recovery") {
+        angle = (Math.PI * 2 * i) / config.count + facing; // Spiral in rotation
+      } else {
+        angle = facing + (Math.random() - 0.5) * (Math.PI / 3); // Cone forward
+      }
+
+      const speed = 3 + Math.random() * 2;
+      const g = new PIXI.Graphics();
+      g.circle(0, 0, 2 + Math.random() * 2);
+      g.fill({ color: config.particleColor });
+      g.x = x;
+      g.y = y;
+      this.particleLayer.addChild(g);
+
+      this.particles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 0,
+        maxLife: config.duration,
+        color: config.particleColor,
+        sprite: g,
+      });
+    }
+
+    // Invuln ring visual for gyro-anchor
+    if (type === "gyro-anchor") {
+      const ring = new PIXI.Graphics();
+      ring.circle(0, 0, 40);
+      ring.stroke({ color: 0x4488ff, width: 3, alpha: 0.6 });
+      ring.x = x;
+      ring.y = y;
+      this.particleLayer.addChild(ring);
+
+      this.particles.push({
+        x, y,
+        vx: 0,
+        vy: 0,
+        life: 0,
+        maxLife: 1.5,
+        color: 0x4488ff,
+        sprite: ring,
+      });
+    }
+  }
+
+  playComboEffect(playerId: string, comboName: string) {
+    const beyblade = this.beybladeSprites.get(playerId);
+    if (!beyblade) return;
+
+    const x = beyblade.x;
+    const y = beyblade.y;
+
+    // Screen shake for aerial_smash combo
+    if (comboName === "aerial_smash") {
+      const originalX = this.beybladeLayer.x;
+      const originalY = this.beybladeLayer.y;
+      const shakeIntensity = 4;
+      let shakeCount = 0;
+      const shakeInterval = setInterval(() => {
+        this.beybladeLayer.x = originalX + (Math.random() - 0.5) * shakeIntensity;
+        this.beybladeLayer.y = originalY + (Math.random() - 0.5) * shakeIntensity;
+        shakeCount++;
+        if (shakeCount > 4) {
+          this.beybladeLayer.x = originalX;
+          this.beybladeLayer.y = originalY;
+          clearInterval(shakeInterval);
+        }
+      }, 25);
+    }
+
+    // COMBO! text floats up and fades
+    const text = new PIXI.Text({
+      text: "COMBO!",
+      style: {
+        fontSize: 32,
+        fontWeight: "bold",
+        fill: 0x00ff88,
+        fontFamily: "monospace",
+        dropShadow: { alpha: 0.9, angle: 0, blur: 8, distance: 0, color: 0x000000 },
+      },
+    });
+    text.anchor.set(0.5, 0.5);
+    text.x = x;
+    text.y = y;
+    this.particleLayer.addChild(text);
+
+    this.particles.push({
+      x, y,
+      vx: 0,
+      vy: -2,
+      life: 0,
+      maxLife: 1.2,
+      color: 0x00ff88,
       sprite: text,
     });
   }

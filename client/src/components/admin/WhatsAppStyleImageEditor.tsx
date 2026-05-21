@@ -4,7 +4,7 @@
  * Mobile-friendly with touch support
  */
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { C, btn, btnOutline } from "../../styles/theme";
 
 interface WhatsAppStyleImageEditorProps {
@@ -21,14 +21,18 @@ interface WhatsAppStyleImageEditorProps {
   onCancel?: () => void;
 }
 
-export default function WhatsAppStyleImageEditor({
+export interface WhatsAppStyleImageEditorRef {
+  getCanvasBlob: () => Promise<Blob>;
+}
+
+const WhatsAppStyleImageEditor = forwardRef<WhatsAppStyleImageEditorRef, WhatsAppStyleImageEditorProps>(function WhatsAppStyleImageEditor({
   imageUrl,
   onPositionChange,
   initialPosition = { x: 0, y: 0, scale: 1, rotation: 0 },
   circleSize = 300,
   onSave,
   onCancel,
-}: WhatsAppStyleImageEditorProps) {
+}: WhatsAppStyleImageEditorProps, ref) {
   const [position, setPosition] = useState(initialPosition);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -36,6 +40,19 @@ export default function WhatsAppStyleImageEditor({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    getCanvasBlob: (): Promise<Blob> =>
+      new Promise((resolve, reject) => {
+        const canvas = canvasRef.current;
+        if (!canvas) { reject(new Error("Canvas not ready")); return; }
+        canvas.toBlob(
+          (blob) => (blob ? resolve(blob) : reject(new Error("toBlob returned null"))),
+          "image/jpeg",
+          0.95
+        );
+      }),
+  }));
 
   useEffect(() => {
     const img = new Image();
@@ -331,4 +348,8 @@ export default function WhatsAppStyleImageEditor({
       </div>
     </div>
   );
-}
+});
+
+WhatsAppStyleImageEditor.displayName = "WhatsAppStyleImageEditor";
+
+export default WhatsAppStyleImageEditor;

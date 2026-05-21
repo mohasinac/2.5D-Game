@@ -6,6 +6,8 @@ import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
 import { getBeybladeStability, TYPE_COLORS } from "@/types/game";
 import { C } from "@/styles/theme";
+import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
+import { ComboHUD } from "@/components/game/ComboHUD";
 
 export function BattleGamePage() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -19,6 +21,8 @@ export function BattleGamePage() {
 
   const [gameEndData, setGameEndData] = useState<{ winner: string; gameNumber: number; seriesScore: Record<string, number> } | null>(null);
   const [seriesEndData, setSeriesEndData] = useState<{ winner: string; seriesScore: Record<string, number> } | null>(null);
+  const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
+  const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
 
   const colyseusOptions = useMemo(() => ({
     beybladeId: settings.beybladeId ?? "default",
@@ -49,7 +53,7 @@ export function BattleGamePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrated]);
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber } = usePixiRenderer(containerRef);
+  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen } = usePixiRenderer(containerRef);
 
   useEffect(() => {
     let raf: number;
@@ -61,16 +65,28 @@ export function BattleGamePage() {
   useEffect(() => {
     if (!room) return;
     room.onMessage("collision", (data: any) => {
-      const cx = data.contactPoint.x;
-      const cy = data.contactPoint.y;
+      const { x: cx, y: cy } = physicsToScreen(data.contactPoint.x, data.contactPoint.y);
       spawnCollisionParticles(cx, cy, 0xff4444, 0x4488ff);
       if (data.damage1 > 0) spawnDamageNumber(cx - 12, cy - 8, data.damage1, 0xff5555);
       if (data.damage2 > 0) spawnDamageNumber(cx + 12, cy - 8, data.damage2, 0x55aaff);
     });
     room.onMessage("spin-out", (data: any) => {
-      spawnSpinOutParticles(data.x, data.y, TYPE_COLORS[data.type] ?? 0xffffff);
+      const { x, y } = physicsToScreen(data.x, data.y);
+      spawnSpinOutParticles(x, y, TYPE_COLORS[data.type] ?? 0xffffff);
     });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber]);
+    room.onMessage("special-move", (data: any) => {
+      rendererRef.current?.playSpecialMoveEffect?.(data.playerId, data.type, data.x, data.y, data.facing);
+      if (data.playerId === myBeyblade?.id) {
+        setLastSpecialMove(data.type);
+      }
+    });
+    room.onMessage("combo", (data: any) => {
+      rendererRef.current?.playComboEffect?.(data.playerId, data.comboName);
+      if (data.playerId === myBeyblade?.id) {
+        setLastCombo({ name: data.comboName, timestamp: Date.now() });
+      }
+    });
+  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen]);
 
   // Auto-dismiss game-end overlay
   useEffect(() => {
@@ -96,14 +112,14 @@ export function BattleGamePage() {
       <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
 
       {/* HUD top bar */}
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: 16, pointerEvents: "none", zIndex: 10 }}>
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10, flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 8, height: 8, borderRadius: "50%", background: connectionState === "connected" ? C.green : C.red }} className={connectionState === "connected" ? "pulse" : ""} />
-          <span style={{ fontSize: 11, color: C.muted, fontFamily: "monospace", textTransform: "uppercase" }}>
+          <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.muted, fontFamily: "monospace", textTransform: "uppercase" }}>
             {isSpectating ? "SPECTATING" : connectionState}
           </span>
           {isSpectating && (
-            <span style={{ fontSize: 11, background: C.purple + "44", color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${C.purple}55` }}>
+            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", background: C.purple + "44", color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${C.purple}55` }}>
               SPECTATING
             </span>
           )}
@@ -111,18 +127,18 @@ export function BattleGamePage() {
 
         <div style={{ textAlign: "center" }}>
           {gameState && (
-            <div style={{ color: C.text, fontFamily: "monospace", fontSize: 24, fontWeight: 700 }}>
+            <div style={{ color: C.text, fontFamily: "monospace", fontSize: "clamp(14px, 3vw, 24px)", fontWeight: 700 }}>
               {Math.ceil(Math.max(0, gameState.timer))}s
             </div>
           )}
           {seriesLabel && (
-            <div style={{ fontSize: 12, color: C.muted, fontFamily: "monospace" }}>{seriesLabel}</div>
+            <div style={{ fontSize: "clamp(10px, 1.5vw, 12px)", color: C.muted, fontFamily: "monospace" }}>{seriesLabel}</div>
           )}
-          <div style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>
+          <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.muted, fontFamily: "monospace" }}>
             {alivePlayers.length}/{playerList.length} alive
           </div>
           {gameState && (gameState.spectatorCount ?? 0) > 0 && (
-            <div style={{ fontSize: 11, color: C.purple }}>{gameState.spectatorCount} watching</div>
+            <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.purple }}>{gameState.spectatorCount} watching</div>
           )}
         </div>
 
@@ -236,6 +252,25 @@ export function BattleGamePage() {
           </p>
         </div>
       )}
+
+      {/* SpecialMoveHUD */}
+      {myBeyblade && !isSpectating && (
+        <SpecialMoveHUD
+          myBeyblade={myBeyblade}
+          specialMoveData={{
+            id: myBeyblade.type,
+            name: ["stampede-rush", "gyro-anchor", "spin-recovery", "tactical-burst"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "Unknown",
+            iconEmoji: ["⚡", "🛡️", "♻️", "💫"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "✨",
+            visual: {
+              screenFlashColor: ["#ff4444", "#4488ff", "#44ff88", "#ffcc44"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "#ffffff",
+            },
+          }}
+          lastSpecialMoveFired={lastSpecialMove}
+        />
+      )}
+
+      {/* ComboHUD */}
+      <ComboHUD lastCombo={lastCombo} />
 
       {/* Game-end inter-game overlay */}
       {gameEndData && (

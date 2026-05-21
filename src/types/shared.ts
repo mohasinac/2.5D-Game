@@ -392,7 +392,12 @@ export interface ArenaConfig {
   airResistance?: number;
   surfaceFriction?: number;
   difficulty?: "easy" | "medium" | "hard" | "extreme" | "custom";
-  
+
+  // Bowl profile / curvature
+  bowlProfile?: "flat" | "shallow" | "medium" | "deep" | "steep";
+  wallAngle?: number;   // 0–75 degrees; overrides bowlProfile if set explicitly
+  bowlDepth?: number;   // visual only: 0–1 (default 0.4)
+
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;

@@ -514,18 +514,54 @@ export interface ObstacleConfig {
   autoPlaced?: boolean; // Was this obstacle auto-placed?
 }
 
+/**
+ * Bowl cross-section profiles — named presets for the curvature/slope of arena walls.
+ * Maps to wallAngle values used by the physics engine.
+ *
+ *  flat    (0°)  — vertical walls, beys bounce straight back
+ *  shallow (20°) — slight inward slope, gentle redirects
+ *  medium  (40°) — classic beyblade B-200 bowl profile
+ *  deep    (60°) — steep bowl, keeps beys circling center
+ *  steep   (75°) — extreme cup shape, very hard to KO
+ */
+export type BowlProfile = "flat" | "shallow" | "medium" | "deep" | "steep";
+
+export const BOWL_PROFILE_ANGLES: Record<BowlProfile, number> = {
+  flat:    0,
+  shallow: 20,
+  medium:  40,
+  deep:    60,
+  steep:   75,
+};
+
+export const BOWL_PROFILE_LABELS: Record<BowlProfile, string> = {
+  flat:    "Flat (0°) — vertical walls",
+  shallow: "Shallow (20°) — slight slope",
+  medium:  "Medium (40°) — classic bowl",
+  deep:    "Deep (60°) — steep funnel",
+  steep:   "Steep (75°) — cup shape",
+};
+
 export interface ArenaConfig {
   // ===== BASIC PROPERTIES =====
   id?: string;
   name: string;
   description?: string;
-  
+
   // ===== GEOMETRY =====
   // NOTE: All arenas use ARENA_RESOLUTION (1080x1080) internally
   // These properties are kept for backward compatibility but should use ARENA_RESOLUTION
   width: number; // Deprecated: use ARENA_RESOLUTION instead
   height: number; // Deprecated: use ARENA_RESOLUTION instead
   shape: ArenaShape;
+
+  // ===== BOWL / CROSS-SECTION =====
+  // Controls the curvature of the stadium walls (the bowl shape seen in cross-section).
+  // wallAngle: degrees from vertical (0=flat/vertical, 75=near-horizontal cup).
+  // Affects physics: steeper walls redirect beys toward center; flat walls send them out.
+  bowlProfile?: BowlProfile;   // Named preset (resolves to wallAngle via BOWL_PROFILE_ANGLES)
+  wallAngle?: number;           // 0–75 degrees; overrides bowlProfile if set explicitly
+  bowlDepth?: number;           // Visual only: 0–1 scale of the bowl's depth in SideView (default 0.4)
   
   // ===== VISUAL & THEME =====
   theme: ArenaTheme;
@@ -707,8 +743,10 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
     speedPaths: [],
     portals: [],
     waterBodies: [],
+    bowlProfile: "medium",
+    bowlDepth: 0.4,
   },
-  
+
   square_arena: {
     name: "Square Arena",
     shape: "square",
@@ -722,8 +760,10 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
     speedPaths: [],
     portals: [],
     waterBodies: [],
+    bowlProfile: "medium",
+    bowlDepth: 0.4,
   },
-  
+
   hexagon_fortress: {
     name: "Hexagon Fortress",
     shape: "hexagon",
@@ -737,8 +777,10 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
     speedPaths: [],
     portals: [],
     waterBodies: [],
+    bowlProfile: "shallow",
+    bowlDepth: 0.3,
   },
-  
+
   pentagon_chaos: {
     name: "Pentagon Chaos",
     shape: "pentagon",
@@ -752,6 +794,8 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
     speedPaths: [],
     portals: [],
     waterBodies: [],
+    bowlProfile: "deep",
+    bowlDepth: 0.5,
   },
 
   star_fortress: {
@@ -767,6 +811,8 @@ export const ARENA_PRESETS: Record<string, Partial<ArenaConfig>> = {
     speedPaths: [],
     portals: [],
     waterBodies: [],
+    bowlProfile: "steep",
+    bowlDepth: 0.6,
   },
 };
 

@@ -1,6 +1,6 @@
 import { C, S } from "@/styles/theme";
-import type { ArenaConfig, ArenaShape, ArenaTheme } from "@/types/arenaConfigNew";
-import { ARENA_PRESETS, initializeWallConfig } from "@/types/arenaConfigNew";
+import type { ArenaConfig, ArenaShape, ArenaTheme, BowlProfile } from "@/types/arenaConfigNew";
+import { ARENA_PRESETS, initializeWallConfig, BOWL_PROFILE_ANGLES, BOWL_PROFILE_LABELS } from "@/types/arenaConfigNew";
 
 interface Props {
   config: ArenaConfig;
@@ -34,9 +34,69 @@ const THEMES: { value: ArenaTheme; label: string; color: string }[] = [
   { value: "riverbank", label: "Riverbank", color: "#64748b" },
 ];
 
+// ─── Cross-section SVG preview ────────────────────────────────────────────────
+// Renders a 2D side-view of the arena bowl based on wallAngle.
+// Width = 160px; origin is at the center top. Left and right walls mirror each other.
+function BowlCrossSection({ wallAngle = 0, bowlDepth = 0.4 }: { wallAngle?: number; bowlDepth?: number }) {
+  const W = 160;
+  const H = 80;
+  const halfW = W / 2;
+  const angleRad = (wallAngle * Math.PI) / 180;
+  // How far the wall foot moves inward as angle increases
+  const inset = Math.sin(angleRad) * H * bowlDepth;
+  const wallH = Math.cos(angleRad) * H * bowlDepth;
+
+  // Wall polygons (left and right), floor line
+  const leftWallTop  = `${0},${0}`;
+  const leftWallBot  = `${inset},${wallH}`;
+  const floorLeft    = `${inset},${wallH}`;
+  const floorRight   = `${W - inset},${wallH}`;
+  const rightWallBot = `${W - inset},${wallH}`;
+  const rightWallTop = `${W},${0}`;
+
+  // SVG outline: top rim → left wall → floor → right wall → top rim
+  const outline = [leftWallTop, leftWallBot, floorLeft, floorRight, rightWallBot, rightWallTop].join(" ");
+
+  return (
+    <svg width={W} height={H + 8} viewBox={`0 0 ${W} ${H + 8}`} style={{ display: "block" }}>
+      {/* Shadow fill */}
+      <polygon points={`${outline} ${W},0 0,0`} fill="#0f172a" />
+      {/* Bowl inner surface */}
+      <polyline points={`${leftWallTop} ${leftWallBot} ${floorLeft} ${floorRight} ${rightWallBot} ${rightWallTop}`}
+        fill="none" stroke="#3b82f6" strokeWidth={2.5} strokeLinejoin="round" />
+      {/* Floor line */}
+      <line x1={inset} y1={wallH} x2={W - inset} y2={wallH} stroke="#60a5fa" strokeWidth={1.5} strokeDasharray="4 3" />
+      {/* Angle arc indicator */}
+      {wallAngle > 0 && (
+        <path
+          d={`M ${0} ${0} A 24 24 0 0 1 ${Math.sin(angleRad) * 24} ${Math.cos(angleRad) * 24}`}
+          fill="none" stroke="#f59e0b" strokeWidth={1.5}
+        />
+      )}
+      {/* Angle label */}
+      <text x={halfW} y={H + 6} textAnchor="middle" fill="#94a3b8" fontSize={9} fontFamily="monospace">
+        {wallAngle}° wall angle
+      </text>
+    </svg>
+  );
+}
+
+const BOWL_PROFILES: BowlProfile[] = ["flat", "shallow", "medium", "deep", "steep"];
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function BasicsTab({ config, onChange }: Props) {
   const handleShapeChange = (shape: ArenaShape) => {
     onChange({ shape, wall: initializeWallConfig(shape) });
+  };
+
+  const effectiveWallAngle =
+    config.wallAngle !== undefined
+      ? config.wallAngle
+      : BOWL_PROFILE_ANGLES[config.bowlProfile ?? "medium"];
+
+  const handleBowlProfileClick = (profile: BowlProfile) => {
+    onChange({ bowlProfile: profile, wallAngle: undefined });
   };
 
   return (
@@ -110,6 +170,80 @@ export default function BasicsTab({ config, onChange }: Props) {
               {t.label}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Bowl / Cross-Section */}
+      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 12 }}>
+          Bowl Profile <span style={{ fontSize: 11, color: C.faint, fontWeight: 400 }}>— cross-section curvature</span>
+        </div>
+
+        {/* Profile presets */}
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
+          {BOWL_PROFILES.map(profile => {
+            const active = (config.bowlProfile ?? "medium") === profile && config.wallAngle === undefined;
+            return (
+              <button
+                key={profile}
+                onClick={() => handleBowlProfileClick(profile)}
+                style={{
+                  padding: "5px 12px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer",
+                  textTransform: "capitalize",
+                  background: active ? C.blue : "transparent",
+                  color: active ? C.white : C.muted,
+                  border: `1px solid ${active ? C.blue : C.border}`,
+                }}
+              >
+                {profile}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Custom angle slider */}
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+            <span>Wall Angle (custom)</span>
+            <span style={{ color: C.text, fontFamily: "monospace" }}>{effectiveWallAngle}°</span>
+          </div>
+          <input
+            type="range" min={0} max={75} step={1}
+            value={effectiveWallAngle}
+            onChange={e => onChange({ wallAngle: +e.target.value, bowlProfile: undefined })}
+            style={{ width: "100%", accentColor: C.blue }}
+          />
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+            <span>0° — flat / vertical</span>
+            <span>75° — cup shape</span>
+          </div>
+        </div>
+
+        {/* Bowl depth */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+            <span>Bowl Depth</span>
+            <span style={{ color: C.text, fontFamily: "monospace" }}>{Math.round((config.bowlDepth ?? 0.4) * 100)}%</span>
+          </div>
+          <input
+            type="range" min={0} max={100} step={5}
+            value={Math.round((config.bowlDepth ?? 0.4) * 100)}
+            onChange={e => onChange({ bowlDepth: +e.target.value / 100 })}
+            style={{ width: "100%", accentColor: C.blue }}
+          />
+        </div>
+
+        {/* Cross-section preview */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 11, color: C.faint }}>Cross-section preview</span>
+          <div style={{ background: "#0f172a", borderRadius: 8, padding: "10px 16px", border: `1px solid ${C.border}` }}>
+            <BowlCrossSection wallAngle={effectiveWallAngle} bowlDepth={config.bowlDepth ?? 0.4} />
+          </div>
+          <span style={{ fontSize: 10, color: C.faint, textAlign: "center" }}>
+            {config.wallAngle !== undefined
+              ? `Custom angle: ${config.wallAngle}°`
+              : BOWL_PROFILE_LABELS[config.bowlProfile ?? "medium"]}
+          </span>
         </div>
       </div>
 

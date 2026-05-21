@@ -103,7 +103,7 @@ export class PhysicsEngine {
   }
 
   createCircularArena(centerX: number, centerY: number, radius: number): void {
-    const segments = 32;
+    const segments = 64;
     const angleStep = (Math.PI * 2) / segments;
     const wallThickness = 20;
 

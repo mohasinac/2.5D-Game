@@ -1,5 +1,5 @@
 // scripts/seed-beyblades.js
-// Seeds 6 preset beyblades into Firestore beyblade_stats collection.
+// Seeds 16 preset beyblades into Firestore beyblade_stats collection.
 // Run: node scripts/seed-beyblades.js
 // Idempotent — uses the preset ID as the document ID, safe to re-run.
 
@@ -163,6 +163,169 @@ const BEYBLADES = [
     pointsOfContact: contactPoints(1.15, 1.05),
     spinStealPoints: spinStealPoints(1.0, 0.95),
     description: "Heavy counter-spin fortress. Its mass alone deflects most attackers.",
+  },
+
+  // ── 7. Galaxy Pegasus — Attack archetype, right spin ──────────────────────────
+  {
+    id: "galaxy-pegasus",
+    displayName: "Galaxy Pegasus",
+    fileName: "galaxy-pegasus.svg",
+    type: "attack",
+    spinDirection: "right",
+    mass: 43,
+    radius: 3.9,
+    typeDistribution: { attack: 150, defense: 45, stamina: 165, total: 360 },
+    pointsOfContact: contactPoints(1.9, 1.5, 1.3),
+    spinStealPoints: spinStealPoints(1.2, 1.0),
+    description: "Maximum speed attack. Sacrifices defense for unmatched offensive power and endurance.",
+  },
+
+  // ── 8. Meteo L-Drago — Stamina archetype, left spin ────────────────────────────
+  {
+    id: "meteo-l-drago",
+    displayName: "Meteo L-Drago",
+    fileName: "meteo-l-drago.svg",
+    type: "stamina",
+    spinDirection: "left",
+    mass: 38,
+    radius: 3.8,
+    typeDistribution: { attack: 80, defense: 100, stamina: 180, total: 360 },
+    pointsOfContact: contactPoints(1.2, 1.0, 0.95),
+    spinStealPoints: [
+      { angle: 60,  spinStealMultiplier: 1.5, width: 40 },
+      { angle: 180, spinStealMultiplier: 1.8, width: 40 },
+      { angle: 300, spinStealMultiplier: 1.4, width: 40 },
+    ],
+    description: "Left-spin endurance beast. Superior stamina enables prolonged spin-stealing attacks.",
+  },
+
+  // ── 9. Thermal Pisces — Stamina archetype, right spin ────────────────────────────
+  {
+    id: "thermal-pisces",
+    displayName: "Thermal Pisces",
+    fileName: "thermal-pisces.svg",
+    type: "stamina",
+    spinDirection: "right",
+    mass: 41,
+    radius: 4.2,
+    typeDistribution: { attack: 55, defense: 125, stamina: 180, total: 360 },
+    pointsOfContact: contactPoints(1.1, 1.05),
+    spinStealPoints: spinStealPoints(1.7, 1.5),
+    description: "Aquatic endurance. High stamina with defensive properties for long battles.",
+  },
+
+  // ── 10. Fang Leone — Defense archetype, right spin ───────────────────────────────
+  {
+    id: "fang-leone",
+    displayName: "Fang Leone",
+    fileName: "fang-leone.svg",
+    type: "defense",
+    spinDirection: "right",
+    mass: 62,
+    radius: 4.8,
+    typeDistribution: { attack: 75, defense: 145, stamina: 140, total: 360 },
+    pointsOfContact: contactPoints(1.15, 1.1),
+    spinStealPoints: spinStealPoints(1.05, 1.0),
+    description: "Heavy fanged guardian. Extreme defensive capabilities with solid stamina pool.",
+  },
+
+  // ── 11. Jade Jupiter — Stamina archetype, left spin ───────────────────────────────
+  {
+    id: "jade-jupiter",
+    displayName: "Jade Jupiter",
+    fileName: "jade-jupiter.svg",
+    type: "stamina",
+    spinDirection: "left",
+    mass: 44,
+    radius: 4.3,
+    typeDistribution: { attack: 65, defense: 130, stamina: 165, total: 360 },
+    pointsOfContact: contactPoints(1.1, 1.05, 1.0),
+    spinStealPoints: spinStealPoints(1.6, 1.4),
+    description: "Planetary endurance. Left-spin strategy with balanced defense and superior stamina.",
+  },
+
+  // ── 12. Screw Capricorn — Attack archetype, right spin ─────────────────────────────
+  {
+    id: "screw-capricorn",
+    displayName: "Screw Capricorn",
+    fileName: "screw-capricorn.svg",
+    type: "attack",
+    spinDirection: "right",
+    mass: 46,
+    radius: 4.0,
+    typeDistribution: { attack: 145, defense: 80, stamina: 135, total: 360 },
+    pointsOfContact: contactPoints(1.85, 1.4, 1.3),
+    spinStealPoints: spinStealPoints(1.1, 0.95),
+    description: "Spiral attacker. Strong offensive capability with good endurance.",
+  },
+
+  // ── 13. Death Quetzalcoatl — Stamina archetype, left spin ─────────────────────────
+  {
+    id: "death-quetzalcoatl",
+    displayName: "Death Quetzalcoatl",
+    fileName: "death-quetzalcoatl.svg",
+    type: "stamina",
+    spinDirection: "left",
+    mass: 39,
+    radius: 4.1,
+    typeDistribution: { attack: 70, defense: 115, stamina: 175, total: 360 },
+    pointsOfContact: contactPoints(1.1, 1.0, 0.95),
+    spinStealPoints: spinStealPoints(1.8, 1.5),
+    description: "Legendary left-spin endurance. Supreme stamina for ultimate persistence.",
+  },
+
+  // ── 14. Diablo Nemesis — Balanced archetype, right spin ────────────────────────────
+  {
+    id: "diablo-nemesis",
+    displayName: "Diablo Nemesis",
+    fileName: "diablo-nemesis.svg",
+    type: "balanced",
+    spinDirection: "right",
+    mass: 55,
+    radius: 4.5,
+    typeDistribution: { attack: 130, defense: 130, stamina: 100, total: 360 },
+    pointsOfContact: [
+      { angle: 0,   damageMultiplier: 1.4, width: 55 },
+      { angle: 90,  damageMultiplier: 1.3, width: 55 },
+      { angle: 180, damageMultiplier: 1.4, width: 55 },
+      { angle: 270, damageMultiplier: 1.3, width: 55 },
+    ],
+    spinStealPoints: spinStealPoints(1.2, 1.15),
+    description: "Balanced powerhouse. Strong attack and defense with manageable stamina.",
+  },
+
+  // ── 15. Wing Pegasis — Attack archetype, right spin ───────────────────────────────
+  {
+    id: "wing-pegasis",
+    displayName: "Wing Pegasis",
+    fileName: "wing-pegasis.svg",
+    type: "attack",
+    spinDirection: "right",
+    mass: 41,
+    radius: 3.7,
+    typeDistribution: { attack: 140, defense: 55, stamina: 165, total: 360 },
+    pointsOfContact: contactPoints(1.85, 1.35, 1.2),
+    spinStealPoints: spinStealPoints(1.15, 0.95),
+    description: "Swift wing attack. Fastest attacker with good endurance.",
+  },
+
+  // ── 16. Big Bang Pegasis — Balanced archetype, right spin ─────────────────────────
+  {
+    id: "big-bang-pegasis",
+    displayName: "Big Bang Pegasis",
+    fileName: "big-bang-pegasis.svg",
+    type: "balanced",
+    spinDirection: "right",
+    mass: 48,
+    radius: 4.2,
+    typeDistribution: { attack: 135, defense: 115, stamina: 110, total: 360 },
+    pointsOfContact: [
+      { angle: 0,   damageMultiplier: 1.35, width: 50 },
+      { angle: 120, damageMultiplier: 1.25, width: 50 },
+      { angle: 240, damageMultiplier: 1.2,  width: 50 },
+    ],
+    spinStealPoints: spinStealPoints(1.15, 1.05),
+    description: "Explosive balanced force. Great attack with solid defense.",
   },
 ];
 

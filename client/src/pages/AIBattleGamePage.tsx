@@ -7,6 +7,8 @@ import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getBeybladeStability, TYPE_COLORS } from "@/types/game";
 import { C } from "@/styles/theme";
+import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
+import { ComboHUD } from "@/components/game/ComboHUD";
 
 interface AIBattleLocationState {
   beybladeId?: string;
@@ -31,6 +33,8 @@ export function AIBattleGamePage() {
 
   const [gameEndData, setGameEndData] = useState<{ winner: string; gameNumber: number; seriesScore: Record<string, number> } | null>(null);
   const [seriesEndData, setSeriesEndData] = useState<{ winner: string; seriesScore: Record<string, number> } | null>(null);
+  const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
+  const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
 
   const colyseusOptions = useMemo(() => ({
     beybladeId:   loc.beybladeId   ?? settings.beybladeId ?? "default",
@@ -52,7 +56,7 @@ export function AIBattleGamePage() {
       onSeriesEnd: setSeriesEndData,
     });
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber } =
+  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen } =
     usePixiRenderer(containerRef);
 
   useEffect(() => {
@@ -70,14 +74,29 @@ export function AIBattleGamePage() {
   useEffect(() => {
     if (!room) return;
     room.onMessage("collision", (data: any) => {
-      spawnCollisionParticles(data.contactPoint.x, data.contactPoint.y, 0xff4444, 0x44aaff);
-      if (data.damage1 > 0) spawnDamageNumber(data.contactPoint.x - 12, data.contactPoint.y - 8, data.damage1, 0xff5555);
-      if (data.damage2 > 0) spawnDamageNumber(data.contactPoint.x + 12, data.contactPoint.y - 8, data.damage2, 0x55aaff);
+      // Server sends physics-space coordinates — convert to screen space first
+      const { x: cx, y: cy } = physicsToScreen(data.contactPoint.x, data.contactPoint.y);
+      spawnCollisionParticles(cx, cy, 0xff4444, 0x44aaff);
+      if (data.damage1 > 0) spawnDamageNumber(cx - 12, cy - 8, data.damage1, 0xff5555);
+      if (data.damage2 > 0) spawnDamageNumber(cx + 12, cy - 8, data.damage2, 0x55aaff);
     });
     room.onMessage("spin-out", (data: any) => {
-      spawnSpinOutParticles(data.x, data.y, TYPE_COLORS[data.type] ?? 0xffffff);
+      const { x, y } = physicsToScreen(data.x, data.y);
+      spawnSpinOutParticles(x, y, TYPE_COLORS[data.type] ?? 0xffffff);
     });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber]);
+    room.onMessage("special-move", (data: any) => {
+      rendererRef.current?.playSpecialMoveEffect?.(data.playerId, data.type, data.x, data.y, data.facing);
+      if (data.playerId === myBeyblade?.id) {
+        setLastSpecialMove(data.type);
+      }
+    });
+    room.onMessage("combo", (data: any) => {
+      rendererRef.current?.playComboEffect?.(data.playerId, data.comboName);
+      if (data.playerId === myBeyblade?.id) {
+        setLastCombo({ name: data.comboName, timestamp: Date.now() });
+      }
+    });
+  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen]);
 
   // Auto-dismiss game-end overlay
   useEffect(() => {
@@ -86,7 +105,7 @@ export function AIBattleGamePage() {
     return () => clearTimeout(id);
   }, [gameEndData]);
 
-  useGameInput(sendInput, !isSpectating && connectionState === "connected");
+  useGameInput(sendInput, !isSpectating && connectionState === "connected" && gameState?.status === "in-progress");
 
   const myStability    = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
   const stabilityColor = myStability > 0.6 ? C.green : myStability > 0.3 ? C.yellow : C.red;
@@ -98,7 +117,9 @@ export function AIBattleGamePage() {
   const isSeries = gameState && (gameState.targetWins ?? 1) > 1;
   const seriesLabel = isSeries ? `Game ${gameState.currentGame}/${(gameState.targetWins ?? 1) * 2 - 1}` : "";
 
-  const timerSeconds = gameState ? Math.ceil(Math.max(0, gameState.timer)) : null;
+  const timerSeconds = (gameState?.timer != null && isFinite(gameState.timer))
+    ? Math.ceil(Math.max(0, gameState.timer))
+    : null;
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh", background: "#000", overflow: "hidden" }}>
@@ -189,6 +210,25 @@ export function AIBattleGamePage() {
           </div>
         </div>
       )}
+
+      {/* SpecialMoveHUD */}
+      {myBeyblade && !isSpectating && (
+        <SpecialMoveHUD
+          myBeyblade={myBeyblade}
+          specialMoveData={{
+            id: myBeyblade.type,
+            name: ["stampede-rush", "gyro-anchor", "spin-recovery", "tactical-burst"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "Unknown",
+            iconEmoji: ["⚡", "🛡️", "♻️", "💫"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "✨",
+            visual: {
+              screenFlashColor: ["#ff4444", "#4488ff", "#44ff88", "#ffcc44"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "#ffffff",
+            },
+          }}
+          lastSpecialMoveFired={lastSpecialMove}
+        />
+      )}
+
+      {/* ComboHUD */}
+      <ComboHUD lastCombo={lastCombo} />
 
       {/* Game-end inter-game overlay */}
       {gameEndData && (

@@ -26,7 +26,12 @@ vi.mock("@/lib/firebase", () => ({
     TIP_PARTS: "tip_parts",
     CORE_PARTS: "core_parts",
     CASING_PARTS: "casing_parts",
+    SPIN_TRACK_PARTS: "spin_track_parts",
     BEYBLADE_SYSTEMS: "beyblade_systems",
+    TOURNAMENTS: "tournaments",
+    TOURNAMENT_PARTICIPANTS: "tournament_participants",
+    TOURNAMENT_BRACKETS: "tournament_brackets",
+    SETTINGS: "settings",
   },
 }));
 
@@ -64,9 +69,10 @@ vi.mock("firebase/auth", () => ({
 
 vi.mock("firebase/storage", () => ({
   getStorage: vi.fn(() => ({})),
-  ref: vi.fn(),
-  uploadBytes: vi.fn(),
-  getDownloadURL: vi.fn(),
+  ref: vi.fn((_storage, path) => ({ _path: path })),
+  uploadBytes: vi.fn().mockResolvedValue({ ref: {} }),
+  getDownloadURL: vi.fn().mockResolvedValue("https://storage.example.com/test.jpg"),
+  deleteObject: vi.fn().mockResolvedValue(undefined),
 }));
 
 // ─── Colyseus ─────────────────────────────────────────────────────────────────
