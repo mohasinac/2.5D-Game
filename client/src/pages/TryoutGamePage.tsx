@@ -12,6 +12,8 @@ import { useGame } from "@/contexts/GameContext";
 import { getBeybladeStability, TYPE_COLORS } from "@/types/game";
 import type { ServerBeyblade, ServerGameState } from "@/types/game";
 import { C } from "@/styles/theme";
+import { CameraControls } from "@/components/game/CameraControls";
+import { ControlsLegend } from "@/components/game/ControlsLegend";
 
 // ─── Physics constants ────────────────────────────────────────────────────────
 
@@ -65,7 +67,12 @@ export function TryoutGamePage() {
   // HUD state — updated at lower frequency
   const [hud, setHud] = useState({ spin: 2000, maxSpin: 2000, health: 100, timer: 0, loaded: false });
 
-  const { render } = usePixiRenderer(containerRef, mode);
+  const { render, setControlledBeyblade, cameraZoomIn, cameraZoomOut, cameraZoomReset } = usePixiRenderer(containerRef, mode);
+
+  // Local tryout has exactly one bey — follow it.
+  useEffect(() => {
+    setControlledBeyblade(bey.current.id);
+  }, [setControlledBeyblade]);
 
   // ─── Load data from Firestore ───────────────────────────────────────────────
   useEffect(() => {
@@ -297,6 +304,11 @@ export function TryoutGamePage() {
         </Link>
       </div>
 
+      {/* Camera zoom controls — top-right under Exit */}
+      <CameraControls onZoomIn={cameraZoomIn} onZoomOut={cameraZoomOut} onZoomReset={cameraZoomReset} />
+      {/* Controls legend — bottom-left, dismissable */}
+      <ControlsLegend />
+
       {/* HUD bottom — beyblade stats */}
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, pointerEvents: "none" }}>
         <div style={{ maxWidth: 320, margin: "0 auto", background: "rgba(15,23,42,0.85)", borderRadius: 12, border: `1px solid ${C.border}`, padding: 12 }}>
@@ -320,9 +332,6 @@ export function TryoutGamePage() {
 
           <div style={{ fontSize: 11, textAlign: "center", fontFamily: "monospace", color: stabilityColor }}>{stabilityLabel}</div>
         </div>
-        <p style={{ textAlign: "center", color: C.faint, fontSize: 11, marginTop: 8 }}>
-          WASD/Arrows: Move · Space: Spin boost
-        </p>
       </div>
 
       {/* Spin-out overlay */}

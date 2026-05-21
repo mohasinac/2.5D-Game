@@ -64,6 +64,13 @@ vi.mock("@/game/hooks/usePixiRenderer", () => ({
     spawnCollisionParticles: vi.fn(),
     spawnSpinOutParticles: vi.fn(),
     spawnDamageNumber: vi.fn(),
+    physicsToScreen: vi.fn(() => ({ x: 0, y: 0 })),
+    playSpecialMoveEffect: vi.fn(),
+    playComboEffect: vi.fn(),
+    setControlledBeyblade: vi.fn(),
+    cameraZoomIn: vi.fn(),
+    cameraZoomOut: vi.fn(),
+    cameraZoomReset: vi.fn(),
   }),
 }));
 
@@ -266,7 +273,10 @@ describe("BattleGamePage — warmup overlay", () => {
 
     renderPage();
 
-    expect(screen.getByText("3")).toBeInTheDocument();
+    // Two "3"s render: the new big Countdown overlay (Phase 13) and the
+    // legacy "Get ready!" warmup card. Either is sufficient evidence the
+    // warmup state is active.
+    expect(screen.getAllByText("3").length).toBeGreaterThan(0);
     expect(screen.getByText(/get ready/i)).toBeInTheDocument();
   });
 

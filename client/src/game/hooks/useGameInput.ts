@@ -1,6 +1,11 @@
-// [GAME-CONTEXT] useGameInput — keyboard input handler for the game.
-// Tracks held keys and dispatches input to the Colyseus room each animation frame.
-// Full key map: WASD/arrows (movement), I/J/K/L (actions), Space (power/special).
+// [GAME-CONTEXT] useGameInput — keyboard + gamepad input handler.
+// Sends the current bitmask every animation frame (60Hz cadence) — this acts
+// as both the input dispatch and the heartbeat that lets the server recover
+// from any dropped packet within ~16ms. The change-detection from the old
+// design was removed because dropped key transitions would cause "stuck input"
+// failure modes. See plan: Part 8.
+// Key map: WASD / Arrows (move), I=jump, J=attack, K=defense, L=dodge,
+//          Space (tap)=special, Space (hold)=charge. No mouse.
 
 import { useEffect, useRef } from "react";
 
@@ -185,26 +190,12 @@ export function useGameInput(sendInput: SendInputFn, enabled: boolean = true) {
       // Clear one-shot specialTap after reading
       specialTapRef.current = false;
 
-      const last = lastInputRef.current;
-
-      // Send if any input changed
-      const changed =
-        input.moveLeft  !== last.moveLeft  ||
-        input.moveRight !== last.moveRight ||
-        input.moveUp    !== last.moveUp    ||
-        input.moveDown  !== last.moveDown  ||
-        input.jump      !== last.jump      ||
-        input.attack    !== last.attack    ||
-        input.defense   !== last.defense   ||
-        input.dodge     !== last.dodge     ||
-        input.chargeHeld !== last.chargeHeld ||
-        input.specialTap !== last.specialTap ||
-        (input.comboKeys?.join(",") ?? "") !== (last.comboKeys?.join(",") ?? "");
-
-      if (changed) {
-        sendInput(input);
-        lastInputRef.current = { ...input };
-      }
+      // Send every frame. This doubles as a heartbeat — the server keeps the
+      // last received bitmask as its current input, so dropped packets self-heal
+      // within ~16ms. We removed the previous change-detection because dropped
+      // transitions could cause "stuck input" failure modes.
+      sendInput(input);
+      lastInputRef.current = input;
 
       animFrameRef.current = requestAnimationFrame(loop);
     };

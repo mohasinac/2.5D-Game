@@ -499,19 +499,152 @@ export const OBSTACLE_ICONS = {
 
 /**
  * Obstacle Configuration
- * Theme-based destructible obstacles that damage beyblades on collision
+ * Theme-based destructible obstacles that damage beyblades on collision.
+ *
+ * Phase 6 — Drawable obstacles. The base fields (x, y, radius) stay for
+ * backwards-compat; the new `shape` discriminated union extends what can be
+ * placed (arc / ring / polyline / spiral / rectangle / bezier).
  */
+export type ObstacleShape =
+  | { kind: "circle"; radiusCm: number }
+  | { kind: "ring"; innerRadiusCm: number; outerRadiusCm: number }
+  | { kind: "arc"; radiusCm: number; startDeg: number; endDeg: number; thicknessCm: number }
+  | { kind: "spiral"; innerRadiusCm: number; outerRadiusCm: number; turns: number; thicknessCm: number }
+  | { kind: "polyline"; points: Array<{ x_cm: number; y_cm: number }>; thicknessCm: number; closed: boolean }
+  | { kind: "bezier"; controlPoints: Array<{ x_cm: number; y_cm: number }>; thicknessCm: number }
+  | { kind: "rectangle"; widthCm: number; heightCm: number };
+
+export type ObstaclePhysicsType =
+  | "wall"
+  | "bump"
+  | "ramp"
+  | "ledge"
+  | "ridge"
+  | "grip"
+  | "speedline";
+
+export interface ObstaclePhysicsBlock {
+  type: ObstaclePhysicsType;
+  heightCm: number;
+  jumpableHeightCm?: number;
+  direction?: "one-way" | "two-way";
+  oneWayAngleDeg?: number;
+  rampAngleDeg?: number;
+  gripFriction?: number;          // > 1 = sticky, < 1 = slick
+  speedlineBoostCmPerS?: number;  // tangential acceleration along the line
+}
+
+export type ObstacleRenderMode =
+  | { mode: "line"; stroke: "solid" | "dashed" | "dotted"; dashCm?: number; gapCm?: number; colorKey?: string }
+  | { mode: "floor"; topColorKey?: string; sideColorKey?: string };
+
+export interface RotationBlock {
+  mode: "static" | "auto" | "linked-to-arena" | "intervaled" | "partial-swept";
+  speedDegPerSec?: number;
+  direction?: "cw" | "ccw" | "alternating";
+  initialAngleDeg?: number;
+  intervalOn?: { activeMs: number; pauseMs: number };
+  partialSweep?: { fromDeg: number; toDeg: number; cycleMs: number };
+}
+
 export interface ObstacleConfig {
   id?: number;
   x: number; // X position (center-relative, -ARENA_RESOLUTION/2 to +ARENA_RESOLUTION/2)
-  y: number; // Y position (center-relative, -ARENA_RESOLUTION/2 to +ARENA_RESOLUTION/2)
-  radius: number; // Size in pixels (10-50px)
-  health: number; // Hit points before destruction (1-5) - ignored if indestructible
-  damage: number; // Damage dealt on collision (5-30)
-  recoilDistance: number; // Knockback distance in pixels (0-100)
-  indestructible?: boolean; // If true, obstacle cannot be destroyed (ignores health)
-  color?: string; // Optional custom color (defaults to theme color)
-  autoPlaced?: boolean; // Was this obstacle auto-placed?
+  y: number; // Y position
+  radius: number; // Legacy fallback used when `shape` is absent. Pixels at 1cm = 24px.
+  health: number;
+  damage: number;
+  recoilDistance: number;
+  indestructible?: boolean;
+  color?: string;
+  autoPlaced?: boolean;
+
+  // Phase 6 additions — optional, additive.
+  shape?: ObstacleShape;
+  render?: ObstacleRenderMode;
+  physics?: ObstaclePhysicsBlock;
+  rotation?: RotationBlock;
+  triggerState?: "on" | "off";    // toggleable by switches (Part 6)
+}
+
+// ─── Switch obstacle (Part 6) ──────────────────────────────────────────────
+
+export type SwitchAction =
+  | { kind: "toggle" }
+  | { kind: "set-on" }
+  | { kind: "set-off" }
+  | { kind: "pulse"; durationMs: number }
+  | { kind: "rotation-on" }
+  | { kind: "rotation-off" }
+  | { kind: "set-property"; key: string; value: unknown }
+  | { kind: "chain"; nextSwitchId: string };
+
+export interface SwitchTarget {
+  targetType:
+    | "obstacle" | "water" | "portal" | "pit" | "ridge"
+    | "zone" | "trigger-zone" | "spin-zone" | "speedline"
+    | "gravity-hole" | "turret" | "switch";
+  targetId: string;
+  action: SwitchAction;
+}
+
+export interface SwitchConfig {
+  id: string;
+  x: number;
+  y: number;
+  iconKey: string;
+  animationKeys?: { idle?: string; pressed?: string; cooldown?: string };
+  switch: {
+    targets: SwitchTarget[];
+    cooldownMs: number;
+    autoReset?: number;
+    requiresMinSpin?: number;
+    triggerCountToActivate?: number;
+  };
+  shape?: ObstacleShape;
+  rotation?: RotationBlock;
+}
+
+// ─── Gravity hole (Part 5b) ────────────────────────────────────────────────
+
+export interface GravityHoleConfig {
+  id: string;
+  x_cm: number;
+  y_cm: number;
+  forceN: number;                // peak attraction (Matter "force" units)
+  effectiveRadiusCm: number;
+  activeMs: number;              // pull duration per activation
+  intervalMs: number;            // time between activations
+  warningMs: number;             // visual tell before activation
+  visibility: "always-hidden" | "warning-only" | "visible";
+  rotation?: RotationBlock;
+}
+
+// ─── Trigger zones (Part 5c) ───────────────────────────────────────────────
+
+export type TriggerZoneKind =
+  | { type: "safe" }
+  | { type: "damage"; perSecond: number }
+  | { type: "heal"; perSecond: number }
+  | { type: "knockout"; soloHoldMs: number }
+  | { type: "spin-boost"; spinDirection: "cw" | "ccw" | "match" | "alternate"; perSecond: number }
+  | { type: "expel"; impulseCm: number }
+  | { type: "speed-scale"; multiplier: number };
+
+export type TriggerZoneActivation =
+  | { type: "always-on" }
+  | { type: "intervaled"; activeMs: number; pauseMs: number }
+  | { type: "switch-controlled"; defaultState: "on" | "off" };
+
+export interface TriggerZoneConfig {
+  id: string;
+  x_cm: number;
+  y_cm: number;
+  shape: ObstacleShape;
+  kind: TriggerZoneKind;
+  activation: TriggerZoneActivation;
+  rotation?: RotationBlock;
+  vfx?: { idleKey?: string; activeKey?: string };
 }
 
 /**
@@ -593,7 +726,12 @@ export interface ArenaConfig {
   
   // ===== TURRETS =====
   turrets?: TurretConfig[]; // Defensive turrets (max 8)
-  
+
+  // ===== SWITCHES / GRAVITY / ZONES (Phase 6) =====
+  switches?: SwitchConfig[];          // Switch obstacles (toggle other features when hit)
+  gravityHoles?: GravityHoleConfig[]; // Invisible periodic attractors (max 3)
+  triggerZones?: TriggerZoneConfig[]; // Area-based switches: safe / damage / heal / KO / spin-boost zones
+
   // ===== METADATA =====
   createdAt?: string;
   updatedAt?: string;

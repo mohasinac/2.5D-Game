@@ -106,9 +106,15 @@ const makeContainer = () => ({
   removeChildren: vi.fn(),
   destroy: vi.fn(),
   children: [] as unknown[],
+  // Containers in the renderer have these transform props (camera transform).
+  position: { set: vi.fn(), x: 0, y: 0 },
+  scale: { set: vi.fn(), x: 1, y: 1 },
+  rotation: 0,
+  x: 0, y: 0,
 });
 
 const makeGraphics = () => ({
+  ...makeContainer(),
   circle: vi.fn().mockReturnThis(),
   fill: vi.fn().mockReturnThis(),
   stroke: vi.fn().mockReturnThis(),
@@ -118,10 +124,8 @@ const makeGraphics = () => ({
   lineTo: vi.fn().mockReturnThis(),
   arc: vi.fn().mockReturnThis(),
   ellipse: vi.fn().mockReturnThis(),
-  x: 0, y: 0, alpha: 1, rotation: 0,
-  scale: { set: vi.fn(), x: 1, y: 1 },
+  alpha: 1,
   skew: { set: vi.fn(), x: 0, y: 0 },
-  ...makeContainer(),
 });
 
 vi.mock("pixi.js", () => ({

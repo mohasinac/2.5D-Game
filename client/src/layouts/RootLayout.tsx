@@ -3,6 +3,7 @@ import { GameProvider } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { IS_LOCAL } from "@/game/hooks/useColyseus";
 import { C } from "@/styles/theme";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import toast from "react-hot-toast";
 
 // Full-screen game pages — hide the global AuthChip so it doesn't overlap the in-game HUD.
@@ -54,7 +55,8 @@ export function RootLayout() {
           </div>
         )}
         {!hideAuth && (
-          <div style={{ position:"fixed", top:12, right:16, zIndex:100 }}>
+          <div style={{ position:"fixed", top:12, right:16, zIndex:100, display:"flex", alignItems:"center", gap:8 }}>
+            <ThemeToggle compact />
             <AuthChip />
           </div>
         )}

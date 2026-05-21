@@ -131,6 +131,14 @@ export function useColyseus({
           state.seriesWins.forEach((v: number, k: string) => seriesWins.set(k, v));
         }
 
+        // Arena feature maps (Phase 2). These are MapSchemas on the server.
+        const cloneMap = <T,>(src: any): Map<string, T> | undefined => {
+          if (!src || typeof src.forEach !== "function") return undefined;
+          const m = new Map<string, T>();
+          src.forEach((v: any, k: string) => m.set(k, { ...v } as T));
+          return m;
+        };
+
         setGameState({
           status: state.status,
           mode: state.mode,
@@ -140,6 +148,14 @@ export function useColyseus({
           matchId: state.matchId,
           arena: state.arena ? { ...state.arena } : null,
           beyblades: nextBeyblades,
+          // Feature maps
+          obstacles: cloneMap(state.obstacles),
+          pits: cloneMap(state.pits),
+          turrets: cloneMap(state.turrets),
+          projectiles: cloneMap(state.projectiles),
+          waterBodies: cloneMap(state.waterBodies),
+          portals: cloneMap(state.portals),
+          loops: cloneMap(state.loops),
           // Tournament fields
           tournamentId: state.tournamentId ?? "",
           tournamentName: state.tournamentName ?? "",

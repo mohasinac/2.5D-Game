@@ -10,6 +10,8 @@ import { getBeybladeStability, TYPE_COLORS } from "@/types/game";
 import { C } from "@/styles/theme";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
+import { CameraControls } from "@/components/game/CameraControls";
+import { ControlsLegend } from "@/components/game/ControlsLegend";
 
 interface AIBattleLocationState {
   beybladeId?: string;
@@ -58,8 +60,23 @@ export function AIBattleGamePage() {
       onSeriesEnd: setSeriesEndData,
     });
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect } =
-    usePixiRenderer(containerRef, mode);
+  const {
+    render,
+    spawnCollisionParticles,
+    spawnSpinOutParticles,
+    spawnDamageNumber,
+    physicsToScreen,
+    playSpecialMoveEffect,
+    playComboEffect,
+    setControlledBeyblade,
+    cameraZoomIn,
+    cameraZoomOut,
+    cameraZoomReset,
+  } = usePixiRenderer(containerRef, mode);
+
+  useEffect(() => {
+    setControlledBeyblade(myBeyblade?.id ?? null);
+  }, [myBeyblade?.id, setControlledBeyblade]);
 
   useEffect(() => {
     connect();
@@ -180,6 +197,14 @@ export function AIBattleGamePage() {
         </div>
       </div>
 
+      {/* Camera zoom controls — top-right under Exit */}
+      <CameraControls onZoomIn={cameraZoomIn} onZoomOut={cameraZoomOut} onZoomReset={cameraZoomReset} />
+      {/* Controls legend — bottom-left, dismissable */}
+      <ControlsLegend
+        controlLockedUntilMs={myBeyblade?.controlLockedUntilMs}
+        lockSource={myBeyblade?.controlLockSource}
+      />
+
       {/* HUD bottom */}
       {myBeyblade && !isSpectating && (
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10 }}>
@@ -192,9 +217,6 @@ export function AIBattleGamePage() {
               <div />
             )}
           </div>
-          <p style={{ textAlign: "center", color: C.faint, fontSize: "clamp(8px, 1.2vw, 11px)", marginTop: 8 }}>
-            WASD: Move · J: Attack · K: Defend · L: Dodge · I: Jump · Space: Charge/Special
-          </p>
         </div>
       )}
 

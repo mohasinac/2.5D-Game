@@ -13,6 +13,8 @@ import { ComboTracker, detectCombo } from "../shared/utils/comboSystem";
 import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
 import { resolveWallAngle, wallBowlForce } from "../shared/physics/ArenaUtils";
+import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
+import { advanceArenaRotation } from "../shared/rooms/advanceArenaRotation";
 import {
   applyMovementInput,
   applyActionInput,
@@ -341,6 +343,9 @@ export class AIBattleRoom extends Room<GameState> {
     const dt = deltaTime / 1000;
     this.physics.update(deltaTime);
 
+    // Server-authoritative arena rotation (Phase 14 review).
+    advanceArenaRotation(this.state.arena, dt);
+
     if (this.arenaSystem) {
       this.state.beyblades.forEach(b => this.applyArenaSystemSlope(b));
     }
@@ -606,8 +611,12 @@ export class AIBattleRoom extends Room<GameState> {
     this.state.arena.height = arenaData.height;
     this.state.arena.shape = arenaData.shape;
     this.state.arena.theme = arenaData.theme;
-    this.state.arena.rotation = arenaData.rotationSpeed || 0;
+    this.state.arena.rotation = 0; // angle (radians), advanced each tick
+    this.state.arena.autoRotate = !!arenaData.autoRotate;
+    this.state.arena.rotationSpeed = arenaData.rotationSpeed || 0;
+    this.state.arena.rotationDirection = arenaData.rotationDirection === "counter-clockwise" ? "counterclockwise" : "clockwise";
     this.state.arena.gravity = arenaData.gravity || 0;
+    populateArenaFeatures(this.state, arenaData as any);
     this.state.arena.airResistance = arenaData.airResistance || 0.01;
     this.state.arena.surfaceFriction = arenaData.surfaceFriction || 0.01;
     if (arenaData.wall) {

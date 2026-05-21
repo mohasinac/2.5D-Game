@@ -1,6 +1,8 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
+/* Dark theme (default). Tokens consumed by inline-style theme.ts and CSS rules. */
+:root,
+:root[data-theme="dark"] {
   --bg0: #020817;
   --bg1: #0f172a;
   --bg2: #1e293b;
@@ -8,12 +10,31 @@
   --border: #334155;
   --text: #f1f5f9;
   --muted: #94a3b8;
+  --faint: #64748b;
   --blue: #3b82f6;
   --red: #ef4444;
   --green: #22c55e;
   --yellow: #eab308;
   --purple: #a855f7;
   --orange: #f97316;
+}
+
+/* Light theme — softer surface, darker text. */
+:root[data-theme="light"] {
+  --bg0: #f5f7fa;
+  --bg1: #ffffff;
+  --bg2: #eef1f6;
+  --bg3: #dde3ea;
+  --border: #c4cdd6;
+  --text: #0f172a;
+  --muted: #475569;
+  --faint: #94a3b8;
+  --blue: #2563eb;
+  --red: #dc2626;
+  --green: #16a34a;
+  --yellow: #ca8a04;
+  --purple: #9333ea;
+  --orange: #ea580c;
 }
 
 html, body, #root {

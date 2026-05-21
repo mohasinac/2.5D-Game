@@ -294,6 +294,12 @@ export class Beyblade extends Schema {
   @type("boolean") comboExecuting: boolean = false;
   @type("number") comboTimer: number = 0;
 
+  // Loss-of-control (Part 7c): set when a special move or combo executes.
+  // While Date.now() < this value (ms), the input handler ignores movement/action bits.
+  @type("number") controlLockedUntilMs: number = 0;
+  // Source of the lock — "special" or "combo". Used by the HUD for the LOCKED reason.
+  @type("string") controlLockSource: string = "";
+
   // Combo damage multiplier (applied during combo window)
   @type("number") comboDamageMultiplier: number = 1.0;
   @type("number") comboDamageMultiplierTimer: number = 0;
@@ -392,6 +398,11 @@ export class ArenaState extends Schema {
   @type("string") shape: string = "circle";
   @type("string") theme: string = "metrocity";
   @type("number") rotation: number = 0;
+
+  // Rotation control (Part 4 of camera/feature overhaul)
+  @type("boolean") autoRotate: boolean = false;
+  @type("number") rotationSpeed: number = 0;          // degrees per second
+  @type("string") rotationDirection: string = "clockwise"; // "clockwise" | "counterclockwise"
 
   // Physics modifiers
   @type("number") gravity: number = 0;

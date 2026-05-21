@@ -96,5 +96,27 @@ export function usePixiRenderer(
     []
   );
 
-  return { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect };
+  // Camera controls — wired to on-screen buttons + keyboard shortcuts.
+  const setControlledBeyblade = useCallback((id: string | null) => {
+    rendererRef.current?.setControlledBeyblade(id);
+  }, []);
+  const cameraZoomIn = useCallback(() => { rendererRef.current?.cameraZoomIn(); }, []);
+  const cameraZoomOut = useCallback(() => { rendererRef.current?.cameraZoomOut(); }, []);
+  const cameraZoomReset = useCallback(() => { rendererRef.current?.cameraZoomReset(); }, []);
+  const getViewportCm = useCallback(() => rendererRef.current?.getViewportCm() ?? null, []);
+
+  return {
+    render,
+    spawnCollisionParticles,
+    spawnSpinOutParticles,
+    spawnDamageNumber,
+    physicsToScreen,
+    playSpecialMoveEffect,
+    playComboEffect,
+    setControlledBeyblade,
+    cameraZoomIn,
+    cameraZoomOut,
+    cameraZoomReset,
+    getViewportCm,
+  };
 }

@@ -5,7 +5,11 @@
 import * as PIXI from "pixi.js";
 import type { ServerBeyblade, ServerGameState, ServerDetachedBody } from "@/types/game";
 import { getBeybladeStability } from "@/types/game";
+import { PX_PER_CM_BASE, PHYSICS_SCALE } from "@/constants/units";
+import { WorldTransform } from "./WorldTransform";
+import { FeatureRenderer } from "./FeatureRenderer";
 export type { ServerBeyblade, ServerGameState };
+export { WorldTransform } from "./WorldTransform";
 
 // Type color map for beyblade glow effects
 const TYPE_COLORS: Record<string, number> = {
@@ -44,12 +48,33 @@ export class BeybladeGameRenderer {
   private container: HTMLElement;
 
   // Layer containers (z-order: arena → features → beys → detached → particles → HUD)
+  // World layers are children of `worldRoot` which receives the camera transform.
+  // `arenaRotationRoot` wraps arena + feature layers so the entire bowl
+  // (and admin-placed features in arena-frame) spin together. Beyblades remain
+  // in world-frame and do not rotate.
+  // HUD layer stays in screen space (no transform).
+  private worldRoot!: PIXI.Container;
+  private arenaRotationRoot!: PIXI.Container;
   private arenaLayer!: PIXI.Container;
   private featureLayer!: PIXI.Container;
   private beybladeLayer!: PIXI.Container;
   private detachedBodyLayer!: PIXI.Container; // 6.13 — between beys and particles
   private particleLayer!: PIXI.Container;
   private hudLayer!: PIXI.Container;
+
+  // Client-side arena rotation state (advanced each frame if server doesn't drive it).
+  private arenaRotationRad = 0;
+  private arenaRotationSpeedRadPerS = 0;  // set from server arena schema when present
+  private arenaRotationDirection: 1 | -1 = 1;
+  private lastFrameMs = 0;
+
+  // Camera / world transform — single source of truth for cm → screen projection.
+  public readonly world = new WorldTransform();
+  private controlledBeyId: string | null = null;
+  private cameraInitialized = false;
+
+  // Feature layer renderer (obstacles / pits / portals / turrets / water / loops / projectiles).
+  private featureRenderer: FeatureRenderer | null = null;
 
   // Per-beyblade display objects
   private beybladeContainers: Map<string, PIXI.Container> = new Map();
@@ -124,7 +149,10 @@ export class BeybladeGameRenderer {
       this.app.ticker.start();
     }, false);
 
-    // Build layer stack
+    // Build layer stack. World layers live inside `worldRoot` (camera transform applied).
+    // arena + features sit under arenaRotationRoot so a spinning bowl rotates them together.
+    this.worldRoot = new PIXI.Container();
+    this.arenaRotationRoot = new PIXI.Container();
     this.arenaLayer = new PIXI.Container();
     this.featureLayer = new PIXI.Container();
     this.beybladeLayer = new PIXI.Container();
@@ -132,12 +160,18 @@ export class BeybladeGameRenderer {
     this.particleLayer = new PIXI.Container();
     this.hudLayer = new PIXI.Container();
 
-    this.app.stage.addChild(this.arenaLayer);
-    this.app.stage.addChild(this.featureLayer);
-    this.app.stage.addChild(this.beybladeLayer);
-    this.app.stage.addChild(this.detachedBodyLayer); // 6.13 — inserted between beys and particles
-    this.app.stage.addChild(this.particleLayer);
-    this.app.stage.addChild(this.hudLayer);
+    this.arenaRotationRoot.addChild(this.arenaLayer);
+    this.arenaRotationRoot.addChild(this.featureLayer);
+    this.worldRoot.addChild(this.arenaRotationRoot);
+    this.worldRoot.addChild(this.beybladeLayer);
+    this.worldRoot.addChild(this.detachedBodyLayer);
+    this.worldRoot.addChild(this.particleLayer);
+
+    this.app.stage.addChild(this.worldRoot);
+    this.app.stage.addChild(this.hudLayer); // HUD stays in screen space
+
+    // Feature layer renderer (obstacles, pits, portals, turrets, water, loops, projectiles).
+    this.featureRenderer = new FeatureRenderer(this.featureLayer);
 
     // Particle update on ticker
     this.app.ticker.add(this.updateParticles.bind(this));
@@ -154,8 +188,130 @@ export class BeybladeGameRenderer {
       this.buildArena(gameState);
     }
 
+    this.updateCameraTarget(beyblades);
+    this.world.setScreen(this.app.screen.width, this.app.screen.height);
+    this.world.tick();
+    this.applyCameraTransform();
+    this.updateArenaRotation(gameState);
+
+    if (this.featureRenderer && gameState) {
+      this.featureRenderer.sync({
+        obstacles: gameState.obstacles,
+        pits: gameState.pits,
+        turrets: gameState.turrets,
+        projectiles: gameState.projectiles,
+        waterBodies: gameState.waterBodies,
+        portals: gameState.portals,
+        loops: gameState.loops,
+        nowMs: Date.now(),
+        viewportCm: this.world.viewportCm(),
+        marginCm: 6,
+      });
+    }
+
     this.syncBeyblades(beyblades);
     this.syncDetachedBodies(gameState); // 6.13
+  }
+
+  /** Identify the player's bey (or fall back to first alive) and set camera follow target. */
+  private updateCameraTarget(beyblades: Map<string, ServerBeyblade>) {
+    let target: ServerBeyblade | null = null;
+    if (this.controlledBeyId && beyblades.has(this.controlledBeyId)) {
+      target = beyblades.get(this.controlledBeyId)!;
+    } else {
+      for (const b of beyblades.values()) {
+        if (b.isActive) { target = b; break; }
+      }
+      if (!target && beyblades.size > 0) target = beyblades.values().next().value!;
+    }
+    if (target) {
+      const cm = this.physicsToWorldCm(target.x, target.y);
+      this.world.setFollowTarget(cm.x, cm.y);
+      if (!this.cameraInitialized) {
+        this.world.snapTo(cm.x, cm.y);
+        // Initial zoom = fit-arena (minZoom).
+        this.world.setZoom(this.world.limits.minZoom, true);
+        this.cameraInitialized = true;
+      }
+    }
+  }
+
+  /** Apply current camera state to the world layer (position + scale). */
+  private applyCameraTransform() {
+    const z = this.world.camera.zoom;
+    // Compute scale that takes "world px" (= cm * PX_PER_CM_BASE) into screen px.
+    // worldRoot's children render at world-px; we scale by zoom and translate so
+    // camera.{x,y} (in cm) appears at the screen center.
+    this.worldRoot.scale.set(z);
+    const cx_worldPx = this.world.camera.x_cm * PX_PER_CM_BASE;
+    const cy_worldPx = this.world.camera.y_cm * PX_PER_CM_BASE;
+    this.worldRoot.position.set(
+      this.app.screen.width / 2 - cx_worldPx * z,
+      this.app.screen.height / 2 - cy_worldPx * z,
+    );
+  }
+
+  /** Public: declare which bey ID the camera should follow (the local player's). */
+  setControlledBeyblade(id: string | null) {
+    this.controlledBeyId = id;
+    this.cameraInitialized = false; // snap to new target on next frame
+  }
+
+  /** Public: read the current camera viewport in cm (for minimap, debug overlays). */
+  getViewportCm(): { x: number; y: number; w: number; h: number } {
+    return this.world.viewportCm();
+  }
+
+  /** Public: camera control surface for UI buttons / keyboard. */
+  cameraZoomIn() { this.world.nudgeZoom(1.15); }
+  cameraZoomOut() { this.world.nudgeZoom(1 / 1.15); }
+  cameraZoomReset() {
+    const fit = this.world.limits.minZoom;
+    const close = this.world.limits.maxZoom;
+    // Reset = midway between fit and 5-bey close-up, biased toward gameplay zoom.
+    this.world.setZoom(Math.min(close, Math.max(fit, fit * 2)));
+  }
+
+  /**
+   * Spin the arena bowl. If the server publishes `arena.rotation` in radians,
+   * use it directly; otherwise advance our own state using rotationSpeed +
+   * rotationDirection set from the arena schema. Features that live in the
+   * arena frame (under `featureLayer`) rotate along with the bowl; beys do not.
+   */
+  private updateArenaRotation(gameState: ServerGameState | null) {
+    const now = performance.now();
+    const dt = this.lastFrameMs > 0 ? Math.min(0.05, (now - this.lastFrameMs) / 1000) : 0;
+    this.lastFrameMs = now;
+
+    const arena = gameState?.arena as any;
+    if (arena) {
+      if (typeof arena.rotation === "number" && Number.isFinite(arena.rotation)) {
+        // Server is authoritative — accept its angle directly.
+        this.arenaRotationRad = arena.rotation;
+      } else {
+        // Auto-rotate fallback driven by arena config.
+        if (arena.autoRotate && typeof arena.rotationSpeed === "number") {
+          this.arenaRotationSpeedRadPerS = (arena.rotationSpeed * Math.PI) / 180;
+          this.arenaRotationDirection = arena.rotationDirection === "counterclockwise" ? -1 : 1;
+        } else if (!arena.autoRotate) {
+          this.arenaRotationSpeedRadPerS = 0;
+        }
+        this.arenaRotationRad += this.arenaRotationSpeedRadPerS * this.arenaRotationDirection * dt;
+      }
+    }
+    if (this.arenaRotationRoot) {
+      this.arenaRotationRoot.rotation = this.arenaRotationRad;
+    }
+  }
+
+  /** Convert server physics-space coords → world cm coords (origin = arena center). */
+  physicsToWorldCm(px: number, py: number): { x: number; y: number } {
+    // world cm = (physics - physicsCenter) / (PX_PER_CM_BASE * PHYSICS_SCALE)
+    const f = PX_PER_CM_BASE * PHYSICS_SCALE;
+    return {
+      x: (px - this.physicsCenterX) / f,
+      y: (py - this.physicsCenterY) / f,
+    };
   }
 
   // ─── Arena rendering ─────────────────────────────────────────────────────────
@@ -164,56 +320,60 @@ export class BeybladeGameRenderer {
     this.arenaLayer.removeChildren();
 
     const { width, height, shape, theme } = gameState.arena!;
-    const w = this.app.screen.width;
-    const h = this.app.screen.height;
 
-    // Arena fits within viewport maintaining aspect ratio — must match physics engine: radius = min(dim)*16*0.45
-    const arenaPixelRadius = Math.min(w, h) * 0.45;
-    this.arenaRadius = arenaPixelRadius;
-    this.arenaCenterX = w / 2;
-    this.arenaCenterY = h / 2;
+    // World coords: origin at arena center, units = "world px" (= cm * PX_PER_CM_BASE).
+    // 1cm = PX_PER_CM_BASE world-px; the camera transform handles screen scaling.
+    this.arenaCenterX = 0;
+    this.arenaCenterY = 0;
 
-    // Server rooms always use width * 16 as the physics coordinate space.
-    // physicsCenterX/Y is the origin (0,0) of game-world coords on screen.
-    this.physicsCenterX = (width * 16) / 2;
-    this.physicsCenterY = (height * 16) / 2;
-    // Must match PhysicsEngine.ts: arenaRadius = min(width, height) * 16 * 0.45
-    this.physicsArenaRadius = Math.min(width, height) * 16 * 0.45;
+    // Arena dimensions in cm. CLAUDE.md: arena `width/height` are arena-px at 1cm = 24px.
+    const widthCm = width / PX_PER_CM_BASE;
+    const heightCm = height / PX_PER_CM_BASE;
+    // Playable radius matches PhysicsEngine: min(dim) * 0.45.
+    this.arenaRadius = Math.min(widthCm, heightCm) * PX_PER_CM_BASE * 0.45;
+
+    // Physics space (server uses arena_px * PHYSICS_SCALE).
+    this.physicsCenterX = (width * PHYSICS_SCALE) / 2;
+    this.physicsCenterY = (height * PHYSICS_SCALE) / 2;
+    this.physicsArenaRadius = Math.min(width, height) * PHYSICS_SCALE * 0.45;
+
+    // Wire arena bounds + zoom limits into the camera.
+    const halfWcm = widthCm / 2;
+    const halfHcm = heightCm / 2;
+    this.world.setArenaBounds(-halfWcm, -halfHcm, halfWcm, halfHcm, false);
+    this.world.setScreen(this.app.screen.width, this.app.screen.height);
+    // Use a sane default bey radius (cm) for zoom-limit computation; updated each frame
+    // by syncBeyblades once real beys arrive.
+    this.world.computeZoomLimits(2.5);
 
     const bgColor = THEME_COLORS[theme] ?? 0x1a1a2e;
     const g = new PIXI.Graphics();
 
     if (shape === "circle") {
-      // Stadium bowl effect: outer darker ring behind the floor
-      g.circle(this.arenaCenterX, this.arenaCenterY, arenaPixelRadius + 16);
+      g.circle(0, 0, this.arenaRadius + 16);
       g.fill({ color: 0x000000, alpha: 0.6 });
 
-      // Arena floor with radial gradient effect (darker center)
       const floorGradient = new PIXI.Graphics();
-      floorGradient.circle(this.arenaCenterX, this.arenaCenterY, arenaPixelRadius);
+      floorGradient.circle(0, 0, this.arenaRadius);
       floorGradient.fill({ color: bgColor });
 
-      // Inner highlight ring (concave bowl feel)
       const innerRing = new PIXI.Graphics();
-      innerRing.circle(this.arenaCenterX, this.arenaCenterY, arenaPixelRadius);
+      innerRing.circle(0, 0, this.arenaRadius);
       innerRing.stroke({ color: 0x4488cc, width: 3, alpha: 0.6 });
 
-      // Boundary warning ring (pulses red when beyblades are near edge) — at 90% of arena radius
       const boundaryRing = new PIXI.Graphics();
-      boundaryRing.circle(this.arenaCenterX, this.arenaCenterY, arenaPixelRadius * 0.90);
+      boundaryRing.circle(0, 0, this.arenaRadius * 0.90);
       boundaryRing.stroke({ color: 0xff2222, width: 1, alpha: 0.2 });
 
       this.arenaLayer.addChild(g, floorGradient, innerRing, boundaryRing);
     } else {
-      // Rectangular arena
-      const arenaW = arenaPixelRadius * 2;
-      const arenaH = arenaPixelRadius * 2;
-      g.rect(this.arenaCenterX - arenaW / 2, this.arenaCenterY - arenaH / 2, arenaW, arenaH);
+      const arenaW = this.arenaRadius * 2;
+      const arenaH = this.arenaRadius * 2;
+      g.rect(-arenaW / 2, -arenaH / 2, arenaW, arenaH);
       g.fill({ color: bgColor });
       g.stroke({ color: 0x4488cc, width: 3, alpha: 0.6 });
       this.arenaLayer.addChild(g);
     }
-
   }
 
   // Convert a physics-space position (server coordinates) to screen-space pixels.
@@ -230,6 +390,13 @@ export class BeybladeGameRenderer {
 
   private syncBeyblades(beyblades: Map<string, ServerBeyblade>) {
     const seen = new Set<string>();
+
+    // Recompute zoom limits using actual bey radius once we have one.
+    if (beyblades.size > 0) {
+      const first = beyblades.values().next().value!;
+      const radiusCm = first.radius || 2.5;
+      this.world.computeZoomLimits(radiusCm);
+    }
 
     beyblades.forEach((beyblade, id) => {
       seen.add(id);
@@ -742,24 +909,25 @@ export class BeybladeGameRenderer {
     const text = new PIXI.Text({
       text: `-${Math.round(damage)}`,
       style: {
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: "bold",
         fill: color,
         fontFamily: "monospace",
-        dropShadow: { alpha: 0.8, angle: 0, blur: 3, distance: 0, color: 0x000000 },
+        stroke: { color: 0x000000, width: 3 },
+        dropShadow: { alpha: 0.85, angle: 0, blur: 4, distance: 0, color: 0x000000 },
       },
     });
     text.anchor.set(0.5, 1);
-    text.x = x;
+    text.x = x + (Math.random() - 0.5) * 8;  // small horizontal jitter so stacks don't overlap
     text.y = y;
     this.particleLayer.addChild(text);
 
     this.particles.push({
-      x, y,
+      x: text.x, y,
       vx: (Math.random() - 0.5) * 0.8,
-      vy: -2.5 - Math.random(),
+      vy: -3.0 - Math.random() * 0.6,
       life: 0,
-      maxLife: 0.9 + Math.random() * 0.3,
+      maxLife: 1.5 + Math.random() * 0.3,
       color,
       sprite: text,
     });
@@ -911,6 +1079,10 @@ export class BeybladeGameRenderer {
       this.app.resize();
       // Rebuild arena on resize
       this.arenaRadius = 0;
+      this.cameraInitialized = false;
+      // Inform world transform of new screen size; zoom limits recompute
+      // when buildArena runs again next frame.
+      this.world.setScreen(this.app.screen.width, this.app.screen.height);
     }
   }
 
@@ -918,6 +1090,11 @@ export class BeybladeGameRenderer {
     if (!this.initialized) return;
     this.initialized = false;
     this.contextLost = false;
+
+    if (this.featureRenderer) {
+      this.featureRenderer.destroy();
+      this.featureRenderer = null;
+    }
 
     // PixiJS calls gl.getExtension('WEBGL_lose_context').loseContext() inside its
     // own destroy(), which fires an async contextlost event.  That event can arrive

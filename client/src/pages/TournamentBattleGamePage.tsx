@@ -12,6 +12,8 @@ import { getBeybladeStability, TYPE_COLORS } from "@/types/game";
 import { C } from "@/styles/theme";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
+import { CameraControls } from "@/components/game/CameraControls";
+import { ControlsLegend } from "@/components/game/ControlsLegend";
 
 const ROUND_NAMES: Record<number, string> = { 1: "Round 1", 2: "Semifinals", 3: "Final" };
 
@@ -72,7 +74,23 @@ export function TournamentBattleGamePage() {
     return () => { disconnect(); };
   }, [colyseusRoomId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect } = usePixiRenderer(containerRef, mode);
+  const {
+    render,
+    spawnCollisionParticles,
+    spawnSpinOutParticles,
+    spawnDamageNumber,
+    physicsToScreen,
+    playSpecialMoveEffect,
+    playComboEffect,
+    setControlledBeyblade,
+    cameraZoomIn,
+    cameraZoomOut,
+    cameraZoomReset,
+  } = usePixiRenderer(containerRef, mode);
+
+  useEffect(() => {
+    setControlledBeyblade(myBeyblade?.id ?? null);
+  }, [myBeyblade?.id, setControlledBeyblade]);
 
   useEffect(() => {
     let raf: number;
@@ -213,6 +231,14 @@ export function TournamentBattleGamePage() {
         </div>
       </div>
 
+      {/* Camera zoom controls — top-right under Exit */}
+      <CameraControls onZoomIn={cameraZoomIn} onZoomOut={cameraZoomOut} onZoomReset={cameraZoomReset} />
+      {/* Controls legend — bottom-left, dismissable */}
+      <ControlsLegend
+        controlLockedUntilMs={myBeyblade?.controlLockedUntilMs}
+        lockSource={myBeyblade?.controlLockSource}
+      />
+
       {/* Spectator all-player list */}
       {isSpectating && playerList.length > 0 && (
         <div style={{ position: "absolute", top: 60, right: "clamp(8px, 2vw, 16px)", display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none", zIndex: 10, maxHeight: "60vh", overflowY: "auto" }}>
@@ -278,9 +304,6 @@ export function TournamentBattleGamePage() {
             <Bar label="Spin" value={myBeyblade.spin} max={myBeyblade.maxSpin} color={C.blue} />
             <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", textAlign: "center", fontFamily: "monospace", color: stabilityColor, marginTop: 4 }}>{stabilityLabel}</div>
           </div>
-          <p style={{ textAlign: "center", color: C.faint, fontSize: "clamp(8px, 1.2vw, 11px)", marginTop: 8 }}>
-            WASD/Arrows: Move · J: Attack · K: Defend · L: Dodge · I: Jump · Space: Charge/Special
-          </p>
         </div>
       )}
 

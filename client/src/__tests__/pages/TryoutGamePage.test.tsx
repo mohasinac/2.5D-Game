@@ -36,7 +36,13 @@ vi.mock("@/contexts/GameContext", () => ({
 }));
 
 vi.mock("@/game/hooks/usePixiRenderer", () => ({
-  usePixiRenderer: () => ({ render: vi.fn() }),
+  usePixiRenderer: () => ({
+    render: vi.fn(),
+    setControlledBeyblade: vi.fn(),
+    cameraZoomIn: vi.fn(),
+    cameraZoomOut: vi.fn(),
+    cameraZoomReset: vi.fn(),
+  }),
 }));
 
 // ─── RAF stub — run loop body once, then stop ─────────────────────────────────

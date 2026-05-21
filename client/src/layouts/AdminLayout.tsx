@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet, NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { C } from "@/styles/theme";
 import { useAuth } from "@/contexts/AuthContext";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import toast from "react-hot-toast";
 
 const navItems = [
@@ -135,12 +136,15 @@ export function AdminLayout() {
             <div style={{ marginTop:6, padding:"8px 12px", borderRadius:8, background:C.bg2, border:`1px solid ${C.border}` }}>
               <div style={{ fontSize:10, color:C.faint, marginBottom:4 }}>Signed in as</div>
               <div style={{ fontSize:11, color:C.text, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", marginBottom:6 }}>{currentUser.email}</div>
-              <button
-                onClick={handleSignOut}
-                style={{ width:"100%", padding:"4px 0", background:"none", border:`1px solid ${C.border}`, borderRadius:5, fontSize:11, color:C.red, cursor:"pointer" }}
-              >
-                Sign out
-              </button>
+              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                <button
+                  onClick={handleSignOut}
+                  style={{ flex: 1, padding:"4px 0", background:"none", border:`1px solid ${C.border}`, borderRadius:5, fontSize:11, color:C.red, cursor:"pointer" }}
+                >
+                  Sign out
+                </button>
+                <ThemeToggle compact />
+              </div>
             </div>
           )}
         </div>

@@ -367,18 +367,19 @@ describe("useGameInput — duplicate suppression", () => {
   beforeEach(() => installSafeRaf());
   afterEach(() => restoreRaf());
 
-  it("does not call sendInput on a second frame when nothing changed", () => {
+  it("sends every frame (heartbeat) even when nothing changes", () => {
+    // Change-detection was removed — see useGameInput.ts. Each frame sends the
+    // current bitmask so the server can self-heal from dropped packets within
+    // ~16ms and never get a "stuck input" state.
     const sendInput = vi.fn();
     renderHook(() => useGameInput(sendInput, true));
 
-    // First frame — all false, sends initial state
     act(() => { runFrame(); });
     const firstCount = sendInput.mock.calls.length;
+    expect(firstCount).toBeGreaterThan(0);
 
-    // Second frame — nothing changed, should NOT call sendInput again
     act(() => { runFrame(); });
-
-    expect(sendInput.mock.calls.length).toBe(firstCount);
+    expect(sendInput.mock.calls.length).toBeGreaterThan(firstCount);
   });
 
   it("sends again only when input actually changes", () => {

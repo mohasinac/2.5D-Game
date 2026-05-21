@@ -5,10 +5,127 @@
 export interface ServerArenaState {
   id: string;
   name: string;
-  width: number;
+  width: number;            // arena px (1cm = 24px)
   height: number;
   shape: "circle" | "rectangle";
   theme: string;
+  rotation?: number;        // current arena angle (radians) — server-authoritative if set
+  autoRotate?: boolean;
+  rotationSpeed?: number;   // degrees per second
+  rotationDirection?: "clockwise" | "counterclockwise" | string;
+  wallEnabled?: boolean;
+  wallAngle?: number;       // bowl profile, 0=flat .. 75=steep
+}
+
+// ─── Arena feature schemas (Phase 2) ──────────────────────────────────────
+// Positions/radii are in cm (server uses "em units" === cm in this codebase).
+
+export interface ServerObstacle {
+  obstacleId: string;
+  obstacleIndex: number;
+  type: string;             // rock | pillar | barrier | wall | crystal | box | tire | ...
+  x: number; y: number;     // cm, arena-local (origin at arena center)
+  radius: number;
+  destructible: boolean;
+  isDestroyed: boolean;
+  health: number;
+  maxHealth: number;
+  damage: number;
+  recoil: number;
+}
+
+export interface ServerPit {
+  pitId: string;
+  pitIndex: number;
+  x: number; y: number;
+  radius: number;
+  damagePerSecond: number;
+  escapeChance: number;
+  trappedBeybladeId: string;
+}
+
+export interface ServerTurret {
+  turretId: string;
+  turretIndex: number;
+  attackType: "random" | "beam" | "periodic" | "aoe" | "boomerang" | string;
+  x: number; y: number;
+  currentAngle: number;     // degrees
+  targetAngle: number;
+  damage: number;
+  range: number;
+  cooldown: number;
+  warmupTime: number;
+  beamWidth: number;
+  beamDuration: number;
+  bulletSpeed: number;
+  explosionRadius: number;
+  returnSpeed: number;
+  destructible: boolean;
+  isDestroyed: boolean;
+  health: number;
+  maxHealth: number;
+  isActive: boolean;
+  isWarming: boolean;
+  isFiring: boolean;
+}
+
+export interface ServerProjectile {
+  id: string;
+  type: "bullet" | "missile" | "boomerang" | "beam" | string;
+  turretId: string;
+  x: number; y: number;
+  velocityX: number;
+  velocityY: number;
+  angle: number;
+  damage: number;
+  isActive: boolean;
+  isReturning?: boolean;
+  beamWidth?: number;
+  beamEndX?: number;
+  beamEndY?: number;
+  explosionRadius?: number;
+  hasExploded?: boolean;
+}
+
+export interface ServerWaterBody {
+  waterBodyId: string;
+  waterBodyIndex: number;
+  type: "moat" | "zone" | "wall-based" | string;
+  liquidType: "water" | "lava" | "ice" | "acid" | "oil" | "blood" | "healing" | "speedBoost" | "quicksand" | "poison" | string;
+  spinDrainRate: number;
+  speedMultiplier: number;
+  causesSlip: boolean;
+  damage: number;
+  // Optional geometry (server may carry these for zone/moat rendering)
+  x?: number; y?: number;
+  radius?: number;
+  width?: number; height?: number;
+  innerRadius?: number; outerRadius?: number;
+  shape?: "circle" | "square" | "rectangle" | "oval" | "annulus" | string;
+  rotation?: number;
+}
+
+export interface ServerPortal {
+  portalId: string;
+  portalIndex: number;
+  inPointX: number; inPointY: number;
+  outPointX: number; outPointY: number;
+  radius: number;
+  cooldown: number;
+  bidirectional: boolean;
+  isOnCooldown: boolean;
+  cooldownEndTime: number;
+}
+
+export interface ServerLoop {
+  loopIndex: number;
+  radius: number;
+  shape: string;
+  speedBoost: number;
+  spinBoost: number;
+  frictionMultiplier: number;
+  // Optional geometry — server may carry these
+  x?: number; y?: number;
 }
 
 export interface ServerBeyblade {
@@ -54,6 +171,10 @@ export interface ServerBeyblade {
   splitBodySpin?: number;
   counterRotActive?: boolean;
   jumpFacingAngle?: number;
+  // Loss of control (Phase 5 — Part 7c). When `controlLockedUntilMs > Date.now()`,
+  // movement/action inputs are ignored server-side.
+  controlLockedUntilMs?: number;
+  controlLockSource?: "special" | "combo" | "" | string;
 }
 
 export interface ServerDetachedBody {
@@ -83,6 +204,14 @@ export interface ServerGameState {
   beyblades: Map<string, ServerBeyblade>;
   // 2.5D detached bodies (projectile / mini_bey / fragment) — absent in standard 2D matches
   detachedBodies?: Map<string, ServerDetachedBody>;
+  // Arena features (Phase 2 — Part 3)
+  obstacles?: Map<string, ServerObstacle>;
+  pits?: Map<string, ServerPit>;
+  turrets?: Map<string, ServerTurret>;
+  projectiles?: Map<string, ServerProjectile>;
+  waterBodies?: Map<string, ServerWaterBody>;
+  portals?: Map<string, ServerPortal>;
+  loops?: Map<string, ServerLoop>;
   // Tournament metadata (optional — absent in non-tournament modes)
   tournamentId?: string;
   tournamentName?: string;

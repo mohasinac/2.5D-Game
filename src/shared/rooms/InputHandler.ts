@@ -18,7 +18,13 @@ export interface InputEvents {
   specialFired?: boolean;
 }
 
-// Apply 4-direction movement forces. Skipped when beyblade is comboExecuting.
+// True when the bey is in a "loss of control" window (special move / combo executing).
+export function isControlLocked(beyblade: Beyblade): boolean {
+  return (beyblade.controlLockedUntilMs ?? 0) > Date.now();
+}
+
+// Apply 4-direction movement forces. Skipped when beyblade is comboExecuting or
+// inside a loss-of-control window from a special move / combo.
 export function applyMovementInput(
   beyblade: Beyblade,
   input: PlayerInput,
@@ -26,6 +32,7 @@ export function applyMovementInput(
   physics: InputPhysicsBridge,
 ): void {
   if (beyblade.comboExecuting) return;
+  if (isControlLocked(beyblade)) return;
 
   if (input.moveLeft) {
     physics.applyForce(
@@ -68,6 +75,8 @@ export function applyActionInput(
 ): InputEvents {
   const events: InputEvents = {};
   if (beyblade.comboExecuting || beyblade.stunTimer > 0) return events;
+  // Loss of control: ignore movement/action bits during a special / combo window.
+  if (isControlLocked(beyblade)) return events;
 
   if (input.jump && !beyblade.isAirborne && !beyblade.inPit && !beyblade.isDefending && beyblade.landingLag <= 0) {
     beyblade.isAirborne = true;
@@ -115,6 +124,10 @@ export function applyActionInput(
       fireSpecial(beyblade);
       if (input.specialTap) beyblade.power = Math.max(0, beyblade.power - 50);
       beyblade.specialCooldown = 3;
+      // Loss-of-control window during the special animation (~500ms by default).
+      // Per-move duration override comes from special_moves docs in Phase 5 follow-up.
+      beyblade.controlLockedUntilMs = Date.now() + 500;
+      beyblade.controlLockSource = "special";
       events.specialFired = true;
     }
   }

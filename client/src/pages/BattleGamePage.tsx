@@ -9,6 +9,11 @@ import { getBeybladeStability, TYPE_COLORS } from "@/types/game";
 import { C } from "@/styles/theme";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
+import { CameraControls } from "@/components/game/CameraControls";
+import { ControlsLegend } from "@/components/game/ControlsLegend";
+import { Countdown } from "@/components/game/Countdown";
+import { Minimap } from "@/components/game/Minimap";
+import { SoundManager } from "@/game/audio/SoundManager";
 
 export function BattleGamePage() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -56,7 +61,32 @@ export function BattleGamePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrated]);
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect } = usePixiRenderer(containerRef, mode);
+  const {
+    render,
+    spawnCollisionParticles,
+    spawnSpinOutParticles,
+    spawnDamageNumber,
+    physicsToScreen,
+    playSpecialMoveEffect,
+    playComboEffect,
+    setControlledBeyblade,
+    cameraZoomIn,
+    cameraZoomOut,
+    cameraZoomReset,
+    getViewportCm,
+  } = usePixiRenderer(containerRef, mode);
+
+  // Sample camera viewport for the minimap. Cheap to read; refresh @ ~4Hz.
+  const [viewportCm, setViewportCm] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  useEffect(() => {
+    const id = setInterval(() => setViewportCm(getViewportCm()), 250);
+    return () => clearInterval(id);
+  }, [getViewportCm]);
+
+  // Tell the renderer which bey to follow (camera focus).
+  useEffect(() => {
+    setControlledBeyblade(myBeyblade?.id ?? null);
+  }, [myBeyblade?.id, setControlledBeyblade]);
 
   useEffect(() => {
     let raf: number;
@@ -72,31 +102,37 @@ export function BattleGamePage() {
       spawnCollisionParticles(cx, cy, 0xff4444, 0x4488ff);
       if (data.damage1 > 0) spawnDamageNumber(cx - 12, cy - 8, data.damage1, 0xff5555);
       if (data.damage2 > 0) spawnDamageNumber(cx + 12, cy - 8, data.damage2, 0x55aaff);
+      SoundManager.play("collision");
     });
     room.onMessage("spin-out", (data: any) => {
       const { x, y } = physicsToScreen(data.x, data.y);
       spawnSpinOutParticles(x, y, TYPE_COLORS[data.type] ?? 0xffffff);
+      SoundManager.play("spin-out");
     });
     room.onMessage("special-move", (data: any) => {
       playSpecialMoveEffect(data.playerId, data.type, data.x, data.y, data.facing);
+      SoundManager.play("special-move");
       if (data.playerId === myBeyblade?.id) {
         setLastSpecialMove(data.type);
       }
     });
     room.onMessage("combo", (data: any) => {
       playComboEffect(data.playerId, data.comboName);
+      SoundManager.play("combo");
       if (data.playerId === myBeyblade?.id) {
         setLastCombo({ name: data.comboName, timestamp: Date.now() });
       }
     });
   }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect]);
 
-  // Auto-dismiss game-end overlay
+  // Auto-dismiss game-end overlay + play victory/defeat sound.
   useEffect(() => {
     if (!gameEndData) return;
+    const isWinner = gameEndData.winner === userId;
+    SoundManager.play(isWinner ? "victory" : "defeat");
     const id = setTimeout(() => setGameEndData(null), 4000);
     return () => clearTimeout(id);
-  }, [gameEndData]);
+  }, [gameEndData, userId]);
 
   useGameInput(sendInput, !isSpectating && connectionState === "connected" && gameState?.status === "in-progress");
 
@@ -169,6 +205,26 @@ export function BattleGamePage() {
           )}
         </div>
       </div>
+
+      {/* Pre-match countdown */}
+      {gameState && (
+        <Countdown status={gameState.status} timer={gameState.timer} />
+      )}
+      {/* Minimap (auto-hidden for small arenas) */}
+      <Minimap
+        gameState={gameState}
+        beyblades={beyblades}
+        selfId={myBeyblade?.id ?? null}
+        viewportCm={viewportCm}
+      />
+
+      {/* Camera zoom controls — top-right under Exit */}
+      <CameraControls onZoomIn={cameraZoomIn} onZoomOut={cameraZoomOut} onZoomReset={cameraZoomReset} />
+      {/* Controls legend — bottom-left, dismissable */}
+      <ControlsLegend
+        controlLockedUntilMs={myBeyblade?.controlLockedUntilMs}
+        lockSource={myBeyblade?.controlLockSource}
+      />
 
       {/* Spectator: show all player bars */}
       {isSpectating && playerList.length > 0 && (
@@ -250,9 +306,6 @@ export function BattleGamePage() {
             </div>
             <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", textAlign: "center", fontFamily: "monospace", color: stabilityColor }}>{stabilityLabel}</div>
           </div>
-          <p style={{ textAlign: "center", color: C.faint, fontSize: "clamp(8px, 1.2vw, 11px)", marginTop: 8 }}>
-            WASD/Arrows: Move · J: Attack · K: Defend · L: Dodge · I: Jump · Space: Charge/Special
-          </p>
         </div>
       )}
 

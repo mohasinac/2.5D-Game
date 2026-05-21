@@ -62,6 +62,13 @@ vi.mock("@/game/hooks/usePixiRenderer", () => ({
     spawnCollisionParticles: vi.fn(),
     spawnSpinOutParticles: vi.fn(),
     spawnDamageNumber: vi.fn(),
+    physicsToScreen: vi.fn(() => ({ x: 0, y: 0 })),
+    playSpecialMoveEffect: vi.fn(),
+    playComboEffect: vi.fn(),
+    setControlledBeyblade: vi.fn(),
+    cameraZoomIn: vi.fn(),
+    cameraZoomOut: vi.fn(),
+    cameraZoomReset: vi.fn(),
   }),
 }));
 
