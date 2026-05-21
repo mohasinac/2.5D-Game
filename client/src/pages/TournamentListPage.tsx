@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { modeFromPath } from "@/shared/utils/gameMode";
 import { collection, onSnapshot, query, orderBy, where } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
@@ -42,6 +43,8 @@ function formatCountdown(ts: any): string {
 
 export function TournamentListPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const mode = modeFromPath(location.pathname);
   const { settings } = useGame();
   const [tournaments, setTournaments] = useState<TournamentDoc[]>([]);
   const [loading, setLoading] = useState(true);
@@ -119,7 +122,7 @@ export function TournamentListPage() {
               <TournamentCard
                 key={t.id}
                 tournament={t}
-                onJoin={() => navigate(`/game/tournament/${t.id}`)}
+                onJoin={() => navigate(`/game/${mode}/tournament/${t.id}`)}
                 userId={settings.userId}
               />
             ))}

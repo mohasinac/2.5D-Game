@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
+import { modeFromPath } from "@/shared/utils/gameMode";
 import { doc, onSnapshot, collection, query, where } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
@@ -25,6 +26,8 @@ const ROUND_NAMES: Record<number, string> = { 1: "Round 1", 2: "Semifinals", 3: 
 export function TournamentLobbyPage() {
   const { id: tournamentId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const mode = modeFromPath(location.pathname);
   const { settings } = useGame();
 
   const [tournament, setTournament] = useState<TournamentDoc | null>(null);
@@ -96,7 +99,7 @@ export function TournamentLobbyPage() {
   // Auto-navigate when colyseusRoomId is set on my match
   useEffect(() => {
     if (!myMatch?.colyseusRoomId) return;
-    navigate(`/game/tournament/battle/${tournamentId}/${myMatch.id}`);
+    navigate(`/game/${mode}/tournament/battle/${tournamentId}/${myMatch.id}`);
   }, [myMatch?.colyseusRoomId, tournamentId, navigate, myMatch?.id]);
 
   if (!tournament) {
@@ -195,7 +198,7 @@ export function TournamentLobbyPage() {
                               match={m}
                               participants={participants}
                               myParticipantId={myParticipant?.id}
-                              onSpectate={() => navigate(`/game/tournament/battle/${tournamentId}/${m.id}?spectate=true`)}
+                              onSpectate={() => navigate(`/game/${mode}/tournament/battle/${tournamentId}/${m.id}?spectate=true`)}
                             />
                           ))}
                       </div>

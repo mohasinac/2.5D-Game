@@ -9,6 +9,11 @@ import { TryoutRoom } from "./rooms/TryoutRoom";
 import { BattleRoom } from "./rooms/BattleRoom";
 import { AIBattleRoom } from "./rooms/AIBattleRoom";
 import { TournamentBattleRoom } from "./rooms/TournamentBattleRoom";
+import { Parts25DTryoutRoom } from "./rooms/Parts25DTryoutRoom";
+import { Parts25DBattleRoom } from "./rooms/Parts25DBattleRoom";
+import { Parts25DAIBattleRoom } from "./rooms/Parts25DAIBattleRoom";
+import { Parts25DTournamentBattleRoom } from "./rooms/Parts25DTournamentBattleRoom";
+import { ROOM_NAMES } from "./shared/utils/gameMode";
 import { TournamentScheduler } from "./tournament/TournamentScheduler";
 
 const port = Number(process.env.PORT || 2567);
@@ -29,7 +34,21 @@ const gameServer = new Server({
   server: server,
 });
 
-// Register room handlers
+// Register room handlers — strict 2D / 2.5D split, 8 room types total.
+//   - Classic 2D pipeline: uses beyblade_stats / arenas Firestore collections
+//   - 2.5D parts pipeline: uses beyblade_systems / arena_systems (Phase 5 wires the loaders)
+gameServer.define(ROOM_NAMES["2d"].tryout, TryoutRoom);
+gameServer.define(ROOM_NAMES["2d"].battle, BattleRoom);
+gameServer.define(ROOM_NAMES["2d"].aiBattle, AIBattleRoom);
+gameServer.define(ROOM_NAMES["2d"].tournament, TournamentBattleRoom);
+
+gameServer.define(ROOM_NAMES["2.5d"].tryout, Parts25DTryoutRoom);
+gameServer.define(ROOM_NAMES["2.5d"].battle, Parts25DBattleRoom);
+gameServer.define(ROOM_NAMES["2.5d"].aiBattle, Parts25DAIBattleRoom);
+gameServer.define(ROOM_NAMES["2.5d"].tournament, Parts25DTournamentBattleRoom);
+
+// Legacy room names — kept as aliases for one release cycle so existing
+// clients continue to connect. They route to the classic 2D pipeline.
 gameServer.define("tryout_room", TryoutRoom);
 gameServer.define("battle_room", BattleRoom);
 gameServer.define("ai_battle_room", AIBattleRoom);

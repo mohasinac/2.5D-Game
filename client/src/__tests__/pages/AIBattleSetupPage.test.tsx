@@ -152,7 +152,7 @@ describe("AIBattleSetupPage", () => {
     });
   });
 
-  it("clicking Start Battle navigates to /game/ai-battle/play with correct state", async () => {
+  it("clicking Start Battle navigates to /game/2d/ai-battle/play with correct state (mode derived from URL)", async () => {
     const user = userEvent.setup();
     setupGetDocsMock();
     renderPage();
@@ -165,7 +165,7 @@ describe("AIBattleSetupPage", () => {
     await user.click(screen.getByRole("button", { name: /start battle/i }));
 
     await waitFor(() => {
-      expect(lastNavigateTo).toBe("/game/ai-battle/play");
+      expect(lastNavigateTo).toBe("/game/2d/ai-battle/play");
     });
     expect(lastNavigateState).toMatchObject({
       beybladeId: "bey-1",

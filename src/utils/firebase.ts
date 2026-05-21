@@ -1,7 +1,21 @@
 import * as admin from "firebase-admin";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
 import type { ArenaSystem } from "../types/arenaSystem";
+import type {
+  BeybladeSystem,
+  ARPart,
+  WDPart,
+  TipPart,
+  CorePart,
+  CasingPart,
+  BitBeastPart,
+  SpinTrackPart,
+  SubPart,
+} from "../../client/src/types/beybladeSystem";
 import { FIREBASE_COLLECTIONS } from "../constants/firebase";
+import {
+  PARTS_25D_COLLECTIONS,
+} from "../constants/collections";
 
 // Initialize Firebase Admin (if not already initialized)
 let db: admin.firestore.Firestore | null = null;
@@ -119,6 +133,98 @@ export async function loadArenaSystem(arenaSystemId: string): Promise<ArenaSyste
     console.error("Error loading arena system:", error);
     return null;
   }
+}
+
+/**
+ * Load 2.5D beyblade system (composition + part IDs) from Firestore.
+ * Used by the parts25d/* rooms; classic 2D rooms read beyblade_stats via loadBeyblade().
+ */
+export async function loadBeybladeSystem(systemId: string): Promise<BeybladeSystem | null> {
+  if (!db) {
+    console.error('Firebase not initialized');
+    return null;
+  }
+
+  try {
+    const doc = await withTimeout(
+      db.collection(FIREBASE_COLLECTIONS.BEYBLADE_SYSTEMS).doc(systemId).get(),
+      5000
+    );
+
+    if (!doc.exists) {
+      console.error(`Beyblade system not found: ${systemId}`);
+      return null;
+    }
+
+    return doc.data() as BeybladeSystem;
+  } catch (error) {
+    console.error("Error loading beyblade system:", error);
+    return null;
+  }
+}
+
+// Resolved part bundle — matches PartSystemManager.ResolvedPartBundle.
+// Kept here so server-side rooms can load + resolve a BeybladeSystem in one shot.
+export interface ResolvedBeybladeSystem {
+  system: BeybladeSystem;
+  parts: {
+    tip?: TipPart;
+    ar?: ARPart;
+    wd?: WDPart;
+    core?: CorePart;
+    casing?: CasingPart;
+    bitBeast?: BitBeastPart;
+    spinTrack?: SpinTrackPart;
+    subParts: SubPart[];
+  };
+}
+
+async function loadDoc<T>(collection: string, id: string | undefined): Promise<T | null> {
+  if (!db || !id) return null;
+  try {
+    const doc = await withTimeout(db.collection(collection).doc(id).get(), 5000);
+    return doc.exists ? (doc.data() as T) : null;
+  } catch (err) {
+    console.error(`Error loading ${collection}/${id}:`, err);
+    return null;
+  }
+}
+
+/**
+ * Load a 2.5D BeybladeSystem doc AND fetch every part it references in parallel.
+ * Returns null if the system itself can't be loaded; individual missing parts
+ * are silently skipped (the PartSystemManager handles undefined parts gracefully).
+ */
+export async function loadBeybladeSystemBundle(systemId: string): Promise<ResolvedBeybladeSystem | null> {
+  const system = await loadBeybladeSystem(systemId);
+  if (!system) return null;
+
+  const subPartIds = (system.subPartAttachments ?? []).map(a => a.subPartId).filter(Boolean);
+
+  const [tip, ar, wd, core, casing, bitBeast, spinTrack, subParts] = await Promise.all([
+    loadDoc<TipPart>(PARTS_25D_COLLECTIONS.TIP_PARTS, system.tipId),
+    loadDoc<ARPart>(PARTS_25D_COLLECTIONS.ATTACK_RING_PARTS, system.attackRingId),
+    loadDoc<WDPart>(PARTS_25D_COLLECTIONS.WEIGHT_DISK_PARTS, system.weightDiskId),
+    loadDoc<CorePart>(PARTS_25D_COLLECTIONS.CORE_PARTS, system.coreId),
+    loadDoc<CasingPart>(PARTS_25D_COLLECTIONS.CASING_PARTS, system.casingId),
+    loadDoc<BitBeastPart>(PARTS_25D_COLLECTIONS.BIT_BEAST_PARTS, system.bitBeastId),
+    loadDoc<SpinTrackPart>(PARTS_25D_COLLECTIONS.SPIN_TRACK_PARTS, system.spinTrackId),
+    Promise.all(subPartIds.map(id => loadDoc<SubPart>(PARTS_25D_COLLECTIONS.SUB_PARTS, id))),
+  ]);
+
+  return {
+    system,
+    parts: {
+      tip: tip ?? undefined,
+      ar: ar ?? undefined,
+      wd: wd ?? undefined,
+      core: core ?? undefined,
+      casing: casing ?? undefined,
+      bitBeast: bitBeast ?? undefined,
+      spinTrack: spinTrack ?? undefined,
+      subParts: subParts.filter((p): p is SubPart => p != null),
+    },
+  };
 }
 
 /**

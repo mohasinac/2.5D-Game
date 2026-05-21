@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { modeFromPath } from "@/shared/utils/gameMode";
 import { collection, getDocs } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
@@ -21,6 +22,8 @@ const DIFFICULTY_INFO: Record<Difficulty, { label: string; color: string; desc: 
 
 export function AIBattleSetupPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const mode = modeFromPath(location.pathname);
   const { settings, setGameConfig } = useGame();
   const { currentUser } = useAuth();
 
@@ -63,7 +66,7 @@ export function AIBattleSetupPage() {
       return;
     }
     setGameConfig({ beybladeId: playerBeyId, arenaId, gameMode: "single-battle" });
-    navigate("/game/ai-battle/play", {
+    navigate(`/game/${mode}/ai-battle/play`, {
       state: { beybladeId: playerBeyId, aiBeybladeId: aiBeyId, arenaId, aiDifficulty: difficulty, bestOf },
     });
   };

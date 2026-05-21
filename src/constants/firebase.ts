@@ -1,29 +1,5 @@
-/**
- * Firebase Collection and Bucket Names
- * Centralized constants for all Firebase references
- */
+// Back-compat shim. Real source of truth is ./collections.ts.
+// Existing imports of FIREBASE_COLLECTIONS / FIREBASE_BUCKETS continue to work.
 
-export const FIREBASE_COLLECTIONS = {
-  BEYBLADE_STATS: "beyblade_stats",
-  BEYBLADE_SYSTEMS: "beyblade_systems",
-  ARENAS: "arenas",
-  ARENA_SYSTEMS: "arena_systems",
-  MATCHES: "matches",
-  PLAYER_STATS: "player_stats",
-  TOURNAMENTS: "tournaments",
-  TOURNAMENT_PARTICIPANTS: "tournament_participants",
-  TOURNAMENT_BRACKETS: "tournament_brackets",
-  SPECIAL_MOVES: "special_moves",
-  SETTINGS: "settings",
-} as const;
-
-export const FIREBASE_BUCKETS = {
-  BEYBLADES: "beyblades",
-  ARENAS: "arenas",
-  AVATARS: "avatars",
-  GENERAL: "general",
-} as const;
-
-// Type exports for TypeScript
-export type FirebaseCollection = typeof FIREBASE_COLLECTIONS[keyof typeof FIREBASE_COLLECTIONS];
-export type FirebaseBucket = typeof FIREBASE_BUCKETS[keyof typeof FIREBASE_BUCKETS];
+export { COLLECTIONS as FIREBASE_COLLECTIONS, FIREBASE_BUCKETS } from "./collections";
+export type { CollectionName as FirebaseCollection, FirebaseBucket } from "./collections";

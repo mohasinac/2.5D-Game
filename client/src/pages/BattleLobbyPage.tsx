@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
 import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGame } from "@/contexts/GameContext";
 import { C } from "@/styles/theme";
@@ -15,6 +16,8 @@ type BestOf = 1 | 3 | 5;
 
 export function BattleLobbyPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const mode = modeFromPath(location.pathname);
   const { settings } = useGame();
   const [countdown, setCountdown] = useState<number | null>(null);
   const [bestOf, setBestOf] = useState<BestOf>(1);
@@ -22,7 +25,7 @@ export function BattleLobbyPage() {
 
   const { connectionState, gameState, beyblades, myBeyblade, room, connect, disconnect } =
     useColyseus({
-      roomName: "battle_room",
+      roomName: roomNameFor(mode, "battle"),
       options: {
         beybladeId: settings.beybladeId ?? "default",
         arenaId: settings.arenaId ?? "default",
@@ -35,11 +38,11 @@ export function BattleLobbyPage() {
   useEffect(() => {
     if (!room) return;
     room.onMessage("countdown", (data: { count: number }) => { setCountdown(data.count); });
-    room.onMessage("game-start", () => { setCountdown(null); navigate(`/game/battle/${room.roomId}`); });
+    room.onMessage("game-start", () => { setCountdown(null); navigate(`/game/${mode}/battle/${room.roomId}`); });
   }, [room, navigate]);
 
   useEffect(() => {
-    if (gameState?.status === "in-progress" && room) navigate(`/game/battle/${room.roomId}`);
+    if (gameState?.status === "in-progress" && room) navigate(`/game/${mode}/battle/${room.roomId}`);
   }, [gameState?.status, room, navigate]);
 
   const playerList = Array.from(beyblades.values());

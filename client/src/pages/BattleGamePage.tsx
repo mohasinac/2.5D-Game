@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useMemo } from "react";
-import { Link, useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
 import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGameInput } from "@/game/hooks/useGameInput";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
@@ -13,9 +14,11 @@ export function BattleGamePage() {
   const { roomId } = useParams<{ roomId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const containerRef = useRef<HTMLDivElement>(null);
   const { settings, isHydrated, setActiveRoom } = useGame();
 
+  const mode = modeFromPath(location.pathname);
   const spectate = searchParams.get("spectate") === "true";
   const userId = settings.userId ?? "guest";
 
@@ -34,7 +37,7 @@ export function BattleGamePage() {
 
   const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput } =
     useColyseus({
-      roomName: "battle_room",
+      roomName: roomNameFor(mode, "battle"),
       options: colyseusOptions,
       roomId,   // ensures joinById is used so players land in the correct room
       autoConnect: false,
@@ -53,7 +56,7 @@ export function BattleGamePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrated]);
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect } = usePixiRenderer(containerRef);
+  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect } = usePixiRenderer(containerRef, mode);
 
   useEffect(() => {
     let raf: number;

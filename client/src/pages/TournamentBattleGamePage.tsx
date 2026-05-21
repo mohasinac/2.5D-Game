@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useMemo } from "react";
-import { Link, useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
 import { doc, getDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useColyseus } from "@/game/hooks/useColyseus";
@@ -19,9 +20,11 @@ export function TournamentBattleGamePage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
   const { settings } = useGame();
   const { currentUser } = useAuth();
 
+  const mode = modeFromPath(location.pathname);
   const spectate = searchParams.get("spectate") === "true";
   const userId = currentUser?.uid ?? settings.userId ?? "guest";
 
@@ -55,7 +58,7 @@ export function TournamentBattleGamePage() {
 
   const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput } =
     useColyseus({
-      roomName: "tournament_battle_room",
+      roomName: roomNameFor(mode, "tournament"),
       roomId: colyseusRoomId ?? undefined,
       options: colyseusOptions,
       autoConnect: false,
@@ -69,7 +72,7 @@ export function TournamentBattleGamePage() {
     return () => { disconnect(); };
   }, [colyseusRoomId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect } = usePixiRenderer(containerRef);
+  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect } = usePixiRenderer(containerRef, mode);
 
   useEffect(() => {
     let raf: number;

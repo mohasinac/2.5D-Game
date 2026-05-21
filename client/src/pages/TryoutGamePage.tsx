@@ -3,7 +3,8 @@
 // Firestore directly. No Colyseus connection is opened.
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { modeFromPath } from "@/shared/utils/gameMode";
 import { doc, getDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
@@ -45,6 +46,8 @@ function makeDefaultBeyblade(id: string, username: string): ServerBeyblade {
 
 export function TryoutGamePage() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const mode = modeFromPath(location.pathname);
   const { settings, isHydrated } = useGame();
 
   // Physics state — all in refs to avoid React re-render on each frame
@@ -62,7 +65,7 @@ export function TryoutGamePage() {
   // HUD state — updated at lower frequency
   const [hud, setHud] = useState({ spin: 2000, maxSpin: 2000, health: 100, timer: 0, loaded: false });
 
-  const { render } = usePixiRenderer(containerRef);
+  const { render } = usePixiRenderer(containerRef, mode);
 
   // ─── Load data from Firestore ───────────────────────────────────────────────
   useEffect(() => {

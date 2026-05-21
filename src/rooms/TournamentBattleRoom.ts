@@ -2,31 +2,33 @@ import { Room, Client } from "colyseus";
 import { GameState, Beyblade } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats } from "../utils/firebase";
-import { loadGlobalSettings, updateMatchStatus, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
-import { tryReserveRoom, releaseRoom } from "../utils/roomCounter";
-import { createPRNG } from "../utils/prng";
-import { hashString } from "../utils/hashString";
-import { ComboTracker, detectCombo } from "../utils/comboSystem";
+import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
+import { tryReserveRoom, releaseRoom } from "../shared/utils/roomCounter";
+import { createPRNG } from "../shared/utils/prng";
+import { hashString } from "../shared/utils/hashString";
+import { ComboTracker, detectCombo } from "../shared/utils/comboSystem";
+import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
+import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
+import { resolveWallAngle } from "../shared/physics/ArenaUtils";
+import { processArenaFeatures } from "../shared/rooms/ArenaFeatureProcessor";
+import {
+  applyMovementInput,
+  applyActionInput,
+  computeForceMagnitude,
+} from "../shared/rooms/InputHandler";
+import {
+  determineGameWinner,
+  recordGameWin,
+  buildSeriesScore,
+  isSeriesOver,
+  resetStateForNextGame,
+} from "../shared/rooms/SeriesManager";
 import { AIController, type AIDifficulty } from "../ai/AIController";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
 import type { ArenaSystem } from "../types/arenaSystem";
 
-const BOWL_PROFILE_ANGLES: Record<string, number> = {
-  flat: 0, shallow: 20, medium: 40, deep: 60, steep: 75,
-};
-function resolveWallAngle(arenaData: ArenaConfig): number {
-  if (arenaData.wallAngle !== undefined) return arenaData.wallAngle;
-  return BOWL_PROFILE_ANGLES[arenaData.bowlProfile ?? "medium"] ?? 40;
-}
-function wallBowlForce(baseForce: number, wallAngle: number): number {
-  const rad = (wallAngle * Math.PI) / 180;
-  return baseForce * (1.0 + Math.sin(rad) * 0.8);
-}
-
 // [SERVER-ROOM] TournamentBattleRoom — tournament match room (2 players + spectators).
 // maxClients = 10: 2 player slots, up to 8 spectators.
-// AI participants are created server-side (same pattern as AIBattleRoom).
-// On match end calls TournamentScheduler.advanceRound via the onMatchEnd callback.
 
 interface JoinOptions {
   spectate?: boolean;
@@ -40,50 +42,32 @@ interface JoinOptions {
   aiDifficulty?: AIDifficulty;
 }
 
-function decodeBitmask(mask: number): any {
-  return {
-    moveLeft:   (mask & (1 << 0)) !== 0,
-    moveRight:  (mask & (1 << 1)) !== 0,
-    moveUp:     (mask & (1 << 2)) !== 0,
-    moveDown:   (mask & (1 << 3)) !== 0,
-    attack:     (mask & (1 << 4)) !== 0,
-    defense:    (mask & (1 << 5)) !== 0,
-    dodge:      (mask & (1 << 6)) !== 0,
-    jump:       (mask & (1 << 7)) !== 0,
-    chargeHeld: (mask & (1 << 8)) !== 0,
-    specialTap: (mask & (1 << 9)) !== 0,
-  };
-}
-
 const SPAWN_OFFSETS = [
   { angle: 0 },
   { angle: Math.PI },
 ];
 
 export class TournamentBattleRoom extends Room<GameState> {
-  // Callbacks registered by TournamentScheduler before matchMaker.createRoom() is called.
-  // Keyed by matchId (tournament_brackets doc id). Picked up in onCreate, then deleted.
   static pendingMatchCallbacks = new Map<string, (winnerId: string, matchFirestoreId: string) => void>();
 
-  private physics!: PhysicsEngine;
-  private arenaCache: ArenaConfig | null = null;
-  private arenaSystem: ArenaSystem | null = null;
+  protected physics!: PhysicsEngine;
+  protected arenaCache: ArenaConfig | null = null;
+  protected arenaSystem: ArenaSystem | null = null;
   private warmupTimer = 3;
   private lastInputTime = 0;
   private globalSettings: GlobalSettingsDoc | null = null;
-  private rand!: () => number;
-  private playerSessions = new Set<string>();
-  private spectatorSessions = new Set<string>();
-  private aiSessions = new Set<string>();
+  protected rand!: () => number;
+  protected playerSessions = new Set<string>();
+  protected spectatorSessions = new Set<string>();
+  protected aiSessions = new Set<string>();
   private aiControllers = new Map<string, AIController>();
   private beybladeDataCache = new Map<string, BeybladeStats | null>();
-  private spawnPositions = new Map<string, { x: number; y: number }>();
-  private comboTrackers = new Map<string, ComboTracker>();
+  protected spawnPositions = new Map<string, { x: number; y: number }>();
+  protected comboTrackers = new Map<string, ComboTracker>();
 
-  // Called when the series ends — wired up from TournamentScheduler via pendingMatchCallbacks
   onMatchEnd?: (winnerId: string, matchFirestoreId: string) => void;
 
-  maxClients = 10; // 2 player slots + 8 spectator slots
+  maxClients = 10;
 
   async onCreate(options: any) {
     if (!tryReserveRoom()) throw new Error("Server at capacity (max 20 rooms)");
@@ -98,7 +82,6 @@ export class TournamentBattleRoom extends Room<GameState> {
     this.state.status = "waiting";
     this.state.timer = 180;
 
-    // Pick up onMatchEnd callback registered by TournamentScheduler before room creation
     if (options.matchId) {
       const cb = TournamentBattleRoom.pendingMatchCallbacks.get(options.matchId);
       if (cb) {
@@ -107,17 +90,14 @@ export class TournamentBattleRoom extends Room<GameState> {
       }
     }
 
-    // Tournament metadata
     this.state.tournamentId = options.tournamentId || "";
     this.state.tournamentName = options.tournamentName || "";
     this.state.roundNumber = options.roundNumber || 0;
     this.state.tournamentMatchId = options.matchId || "";
 
-    // Series format — tournaments use bestOf from tournament config
-    const bestOf: 1 | 3 | 5 = options.bestOf ?? 1;
-    this.state.targetWins = Math.ceil(bestOf / 2);
+    const bestOf = normalizeBestOf(options.bestOf);
+    this.state.targetWins = targetWinsFor(bestOf);
 
-    // Seeded PRNG from matchId for fully deterministic tournament replays
     const seed = hashString(options.matchId || String(Date.now()));
     this.rand = createPRNG(seed);
 
@@ -132,7 +112,6 @@ export class TournamentBattleRoom extends Room<GameState> {
       this.applyDefaultArena(arenaId);
     }
 
-    // Load arena system (2.5D) if provided
     if (options.arenaSystemId) {
       this.arenaSystem = await loadArenaSystem(options.arenaSystemId);
       if (this.arenaSystem) {
@@ -149,19 +128,16 @@ export class TournamentBattleRoom extends Room<GameState> {
     }
     this.buildArenaWalls();
 
-    // Create AI participants immediately if specified in options
     const aiParticipants: Array<{ userId: string; username: string; beybladeId: string; difficulty: AIDifficulty }> =
       options.aiParticipants || [];
     for (const aiP of aiParticipants) {
       await this.createAIParticipant(aiP.userId, aiP.username, aiP.beybladeId, aiP.difficulty);
     }
 
-    this.onMessage("input", (client, message: number | any) => {
-      const input = typeof message === "number" ? decodeBitmask(message) : message;
-      this.handleInput(client, input);
+    this.onMessage("input", (client, message: number | PlayerInput) => {
+      this.handleInput(client, normalizeInput(message));
     });
 
-    // If all participants are AI, start immediately
     if (aiParticipants.length >= 2) {
       this.startMatch();
     }
@@ -170,7 +146,6 @@ export class TournamentBattleRoom extends Room<GameState> {
   }
 
   async onJoin(client: Client, options: JoinOptions) {
-    // Spectator path
     if (options.spectate) {
       this.state.spectatorCount++;
       this.spectatorSessions.add(client.sessionId);
@@ -178,7 +153,6 @@ export class TournamentBattleRoom extends Room<GameState> {
       return;
     }
 
-    // Player slot cap (max 2 human players — AI slots pre-filled in onCreate)
     const humanSlotsFilled = this.playerSessions.size - this.aiSessions.size;
     if (humanSlotsFilled >= 2) {
       client.leave(4000, "Match full");
@@ -223,7 +197,6 @@ export class TournamentBattleRoom extends Room<GameState> {
     this.state.beyblades.set(client.sessionId, beyblade);
     this.state.seriesWins.set(beyblade.userId, 0);
 
-    // Start match when 2 total player slots are filled (human + AI or 2 humans)
     if (this.playerSessions.size >= 2) {
       this.startMatch();
     }
@@ -236,7 +209,6 @@ export class TournamentBattleRoom extends Room<GameState> {
       return;
     }
 
-    // AI sessions are permanent — only human players can "leave"
     if (this.aiSessions.has(client.sessionId)) return;
 
     console.log(`Player ${client.sessionId} left TournamentBattleRoom`);
@@ -254,7 +226,6 @@ export class TournamentBattleRoom extends Room<GameState> {
       this.checkWinCondition();
     }
 
-    // Dispose when no human players remain
     const humanCount = this.playerSessions.size - this.aiSessions.size;
     if (humanCount === 0) {
       this.disconnect();
@@ -313,8 +284,6 @@ export class TournamentBattleRoom extends Room<GameState> {
     this.playerSessions.add(userId);
   }
 
-  // ─── Match start ─────────────────────────────────────────────────────────────
-
   private startMatch() {
     if (this.state.status !== "waiting") return;
     this.state.status = "warmup";
@@ -323,9 +292,9 @@ export class TournamentBattleRoom extends Room<GameState> {
     this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimer });
   }
 
-  // ─── Input handling ──────────────────────────────────────────────────────────
+  // ─── Input handling — delegates to shared/rooms/InputHandler ────────────────
 
-  private handleInput(client: Client, message: any) {
+  private handleInput(client: Client, message: PlayerInput) {
     if (this.spectatorSessions.has(client.sessionId)) return;
     if (this.aiSessions.has(client.sessionId)) return;
 
@@ -333,52 +302,20 @@ export class TournamentBattleRoom extends Room<GameState> {
     if (!beyblade || !beyblade.isActive || this.state.status !== "in-progress") return;
     this.lastInputTime = Date.now();
 
-    const stability = Math.min(1, beyblade.spin / beyblade.maxSpin);
-    const forceMagnitude = 0.001 * beyblade.mass * stability * beyblade.speedBonus;
+    const forceMagnitude = computeForceMagnitude(beyblade);
 
-    if (!beyblade.comboExecuting) {
-      if (message.moveLeft)  this.physics.applyForce(beyblade.id, -Math.sin(beyblade.rotation) * forceMagnitude * 1.5, Math.cos(beyblade.rotation) * forceMagnitude * 1.5);
-      if (message.moveRight) this.physics.applyForce(beyblade.id, Math.sin(beyblade.rotation) * forceMagnitude * 1.5, -Math.cos(beyblade.rotation) * forceMagnitude * 1.5);
-      if (message.moveUp)    this.physics.applyForce(beyblade.id, Math.cos(beyblade.rotation) * forceMagnitude * 1.5, Math.sin(beyblade.rotation) * forceMagnitude * 1.5);
-      if (message.moveDown)  this.physics.applyForce(beyblade.id, -Math.cos(beyblade.rotation) * forceMagnitude, -Math.sin(beyblade.rotation) * forceMagnitude);
-    }
+    applyMovementInput(beyblade, message, forceMagnitude, this.physics);
 
-    if (beyblade.comboExecuting || beyblade.stunTimer > 0) return;
+    const events = applyActionInput(
+      beyblade,
+      message,
+      forceMagnitude,
+      this.physics,
+      (b) => this.handleSpecialMove(b),
+    );
 
-    if (message.jump && !beyblade.isAirborne && !beyblade.inPit && !beyblade.isDefending && beyblade.landingLag <= 0) {
-      beyblade.isAirborne = true;
-      beyblade.airborneTimer = 1.0;
-    }
-    if (message.attack && beyblade.attackCooldown <= 0) {
-      this.physics.applyForce(beyblade.id, Math.cos(beyblade.rotation) * forceMagnitude * 3 * beyblade.damageMultiplier, Math.sin(beyblade.rotation) * forceMagnitude * 3 * beyblade.damageMultiplier);
-      beyblade.attackBuffTimer = 0.5;
-      beyblade.attackCooldown = 1.5;
+    if (events.attacked) {
       this.broadcast("attack", { playerId: client.sessionId });
-    }
-    if (message.defense && !beyblade.isAirborne && beyblade.landingLag <= 0) {
-      beyblade.isDefending = true;
-      beyblade.defenseBuffTimer = 0.1;
-    } else if (!message.defense) {
-      beyblade.isDefending = false;
-    }
-    const canDodge = !beyblade.inPit && !beyblade.isDefending && beyblade.power >= 10 && beyblade.dodgeBuffTimer <= 0;
-    if (message.dodge && canDodge) {
-      this.physics.applyLateralForce(beyblade.id, beyblade.spinDirection, forceMagnitude * 4 * beyblade.speedBonus);
-      beyblade.dodgeBuffTimer = 0.4;
-      beyblade.power = Math.max(0, beyblade.power - 10);
-    }
-    if (message.chargeHeld) {
-      const isMoving = !!(message.moveLeft || message.moveRight || message.moveUp || message.moveDown);
-      beyblade.power = Math.min(100, beyblade.power + (isMoving ? 2 : 1));
-    }
-    const wantsSpecial = message.specialTap || message.specialMove;
-    if (wantsSpecial && beyblade.specialCooldown <= 0) {
-      const hasPower = message.specialTap ? beyblade.power >= 50 : true;
-      if (hasPower) {
-        this.handleSpecialMove(beyblade);
-        if (message.specialTap) beyblade.power = Math.max(0, beyblade.power - 50);
-        beyblade.specialCooldown = 3;
-      }
     }
 
     // ── Combo detection ──────────────────────────────────────────────────────
@@ -448,50 +385,21 @@ export class TournamentBattleRoom extends Room<GameState> {
     }
   }
 
-  // ─── Apply AI input ──────────────────────────────────────────────────────────
+  // ─── AI input — uses shared InputHandler ─────────────────────────────────────
 
-  private applyAIInput(beyblade: Beyblade, input: any) {
-    if (!beyblade.isActive || beyblade.comboExecuting) return;
-    const stability = Math.min(1, beyblade.spin / beyblade.maxSpin);
-    const forceMagnitude = 0.001 * beyblade.mass * stability * beyblade.speedBonus;
+  private applyAIInput(beyblade: Beyblade, input: PlayerInput) {
+    if (!beyblade.isActive) return;
 
-    if (input.moveLeft)  this.physics.applyForce(beyblade.id, -Math.sin(beyblade.rotation) * forceMagnitude * 1.5, Math.cos(beyblade.rotation) * forceMagnitude * 1.5);
-    if (input.moveRight) this.physics.applyForce(beyblade.id, Math.sin(beyblade.rotation) * forceMagnitude * 1.5, -Math.cos(beyblade.rotation) * forceMagnitude * 1.5);
-    if (input.moveUp)    this.physics.applyForce(beyblade.id, Math.cos(beyblade.rotation) * forceMagnitude * 1.5, Math.sin(beyblade.rotation) * forceMagnitude * 1.5);
-    if (input.moveDown)  this.physics.applyForce(beyblade.id, -Math.cos(beyblade.rotation) * forceMagnitude, -Math.sin(beyblade.rotation) * forceMagnitude);
+    const forceMagnitude = computeForceMagnitude(beyblade);
 
-    if (beyblade.stunTimer > 0) return;
-
-    if (input.jump && !beyblade.isAirborne && !beyblade.inPit && !beyblade.isDefending && beyblade.landingLag <= 0) {
-      beyblade.isAirborne = true;
-      beyblade.airborneTimer = 1.0;
-    }
-    if (input.attack && beyblade.attackCooldown <= 0) {
-      this.physics.applyForce(beyblade.id, Math.cos(beyblade.rotation) * forceMagnitude * 3 * beyblade.damageMultiplier, Math.sin(beyblade.rotation) * forceMagnitude * 3 * beyblade.damageMultiplier);
-      beyblade.attackBuffTimer = 0.5;
-      beyblade.attackCooldown = 1.5;
-    }
-    if (input.defense && beyblade.landingLag <= 0) {
-      beyblade.isDefending = true;
-      beyblade.defenseBuffTimer = 0.1;
-    } else if (!input.defense) {
-      beyblade.isDefending = false;
-    }
-    const canDodge = !beyblade.inPit && !beyblade.isDefending && beyblade.power >= 10 && beyblade.dodgeBuffTimer <= 0;
-    if (input.dodge && canDodge) {
-      this.physics.applyLateralForce(beyblade.id, beyblade.spinDirection, forceMagnitude * 4 * beyblade.speedBonus);
-      beyblade.dodgeBuffTimer = 0.4;
-      beyblade.power = Math.max(0, beyblade.power - 10);
-    }
-    if (input.chargeHeld) {
-      const isMoving = !!(input.moveLeft || input.moveRight || input.moveUp || input.moveDown);
-      beyblade.power = Math.min(100, beyblade.power + (isMoving ? 2 : 1));
-    }
-    if (input.specialTap && beyblade.power >= 50 && beyblade.specialCooldown <= 0) {
-      this.handleSpecialMove(beyblade);
-      beyblade.power = Math.max(0, beyblade.power - 50);
-      beyblade.specialCooldown = 3;
-    }
+    applyMovementInput(beyblade, input, forceMagnitude, this.physics);
+    applyActionInput(
+      beyblade,
+      input,
+      forceMagnitude,
+      this.physics,
+      (b) => this.handleSpecialMove(b),
+    );
   }
 
   // ─── Game tick ───────────────────────────────────────────────────────────────
@@ -519,13 +427,9 @@ export class TournamentBattleRoom extends Room<GameState> {
 
     this.physics.update(deltaTime);
 
-    // Apply slope physics if using a 2.5D arena system
-    Array.from(this.state.beyblades.keys()).forEach((id) => {
-      const beyblade = this.state.beyblades.get(id);
-      if (beyblade && this.arenaSystem) {
-        this.applyArenaSystemSlope(beyblade);
-      }
-    });
+    if (this.arenaSystem) {
+      this.state.beyblades.forEach(b => this.applyArenaSystemSlope(b));
+    }
 
     // ── AI input generation ──────────────────────────────────────────────────
     const arenaHalfW = (this.state.arena.width * 16) / 2;
@@ -574,10 +478,14 @@ export class TournamentBattleRoom extends Room<GameState> {
         if (dmg.damage1 > 15) b1.attackBuffTimer = 0;
         if (dmg.damage2 > 15) b2.attackBuffTimer = 0;
         this.broadcast("collision", { p1: beybladeIds[i], p2: beybladeIds[j], damage1: dmg.damage1, damage2: dmg.damage2, contactPoint: collision.contactPoint });
+
+        const impactForce = Math.max(dmg.damage1, dmg.damage2);
+        this.onBeyCollided(beybladeIds[i], beybladeIds[j], impactForce);
       }
     }
 
     // ── Per-beyblade update ──────────────────────────────────────────────────
+    const arenaData = this.arenaCache;
     this.state.beyblades.forEach((beyblade) => {
       const physicsState = this.physics.getBodyState(beyblade.id);
       if (!physicsState) return;
@@ -589,9 +497,19 @@ export class TournamentBattleRoom extends Room<GameState> {
       beyblade.velocityY = physicsState.velocityY;
       beyblade.angularVelocity = physicsState.angularVelocity;
 
-      if (this.arenaCache) this.processArenaFeatures(beyblade, this.arenaCache, dt);
+      if (arenaData) {
+        const events = processArenaFeatures(
+          beyblade,
+          arenaData,
+          this.state.arena,
+          dt,
+          this.physics,
+          this.rand,
+        );
+        if (events.obstacleHit) this.broadcast("obstacle-collision", events.obstacleHit);
+        if (events.wallHit) this.broadcast("wall-collision", events.wallHit);
+      }
 
-      // Nutation wobble (seeded PRNG)
       const stability = Math.min(1, beyblade.spin / beyblade.maxSpin);
       if (stability < 0.4) {
         const wobble = (1 - stability) * 0.002 * beyblade.mass;
@@ -620,6 +538,9 @@ export class TournamentBattleRoom extends Room<GameState> {
       if (beyblade.comboExecuting && beyblade.comboTimer > 0) { beyblade.comboTimer = Math.max(0, beyblade.comboTimer - dt); if (beyblade.comboTimer <= 0) beyblade.comboExecuting = false; }
       if (beyblade.inLoop) beyblade.power = Math.min(100, beyblade.power + 2);
 
+      // 2.5D hook (no-op in base; Parts25DTournamentBattleRoom overrides).
+      this.onTickedBey(beyblade, dt);
+
       if (this.state.arena.shape === "circle") {
         const wallRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 / 2;
         const ringOutRadius = wallRadius * 0.90;
@@ -636,184 +557,52 @@ export class TournamentBattleRoom extends Room<GameState> {
     this.checkWinCondition();
   }
 
-  // ─── Arena features ──────────────────────────────────────────────────────────
-
-  private processArenaFeatures(beyblade: Beyblade, arenaData: ArenaConfig, dt: number) {
-    if ((arenaData.loops?.length ?? 0) > 0) {
-      const loopCheck = this.physics.checkLoopCollision(beyblade.id, arenaData.loops ?? []);
-      if (loopCheck.inLoop && loopCheck.loopConfig) {
-        if (!beyblade.inLoop) {
-          beyblade.inLoop = true;
-          beyblade.loopIndex = loopCheck.loopIndex;
-          beyblade.loopEntryTime = Date.now();
-          beyblade.loopSpeedBoost = loopCheck.loopConfig.speedBoost;
-          beyblade.loopSpinBoost = loopCheck.loopConfig.spinBoost || 0;
-          this.physics.applyLoopBoost(beyblade.id, loopCheck.loopConfig.speedBoost);
-        }
-        if (beyblade.loopSpinBoost > 0) beyblade.spin = Math.min(beyblade.maxSpin, beyblade.spin + beyblade.loopSpinBoost * dt);
-      } else if (beyblade.inLoop) {
-        beyblade.inLoop = false; beyblade.loopIndex = -1; beyblade.loopSpeedBoost = 1.0; beyblade.loopSpinBoost = 0;
-      }
-    }
-
-    const waterBodies = arenaData.waterBodies;
-    if ((waterBodies?.length ?? 0) > 0) {
-      const inWater = this.physics.checkWaterCollision(beyblade.id, waterBodies![0]);
-      if (inWater) {
-        if (!beyblade.inWater) {
-          beyblade.inWater = true;
-          const wc = waterBodies![0];
-          beyblade.waterSpeedMultiplier = 1 - (wc.effects?.speedLoss ?? 0.3);
-          beyblade.waterSpinDrain = wc.effects?.spinDrainPerSecond ?? 10;
-        }
-        this.physics.applyWaterResistance(beyblade.id, beyblade.waterSpeedMultiplier);
-        beyblade.spin = Math.max(0, beyblade.spin - beyblade.waterSpinDrain * dt);
-      } else if (beyblade.inWater) {
-        beyblade.inWater = false; beyblade.waterSpeedMultiplier = 1.0; beyblade.waterSpinDrain = 0;
-      }
-    }
-
-    if ((arenaData.pits?.length ?? 0) > 0) {
-      const pitConfig = this.physics.checkPitCollision(beyblade.id, arenaData.pits ?? []);
-      if (pitConfig) {
-        if (!beyblade.inPit) {
-          beyblade.inPit = true;
-          beyblade.currentPitId = `pit_${arenaData.pits?.indexOf(pitConfig) ?? 0}`;
-          beyblade.pitDamageRate = pitConfig.damagePerSecond;
-        }
-        beyblade.spin = Math.max(0, beyblade.spin - beyblade.pitDamageRate * beyblade.spin * dt / 100);
-        const escapeThreshold = pitConfig.escapeThreshold ?? 50;
-        if (beyblade.spin > (beyblade.maxSpin * escapeThreshold / 100) && this.rand() < 0.1 * dt) {
-          beyblade.inPit = false; beyblade.currentPitId = ""; beyblade.pitDamageRate = 0;
-          this.physics.applyForce(beyblade.id, 0, -0.05 * beyblade.mass);
-        }
-      } else if (beyblade.inPit) {
-        beyblade.inPit = false; beyblade.currentPitId = ""; beyblade.pitDamageRate = 0;
-      }
-    }
-
-    const obstacleCheck = this.physics.checkObstacleCollision(beyblade.id);
-    if (obstacleCheck.colliding) {
-      if (!beyblade.collidingWithObstacle || beyblade.lastObstacleId !== obstacleCheck.obstacleId) {
-        beyblade.collidingWithObstacle = true;
-        beyblade.lastObstacleId = obstacleCheck.obstacleId || "";
-        const damage = obstacleCheck.damage * beyblade.damageTaken;
-        beyblade.health -= damage; beyblade.damageReceived += damage;
-        this.physics.applyKnockback(beyblade.id, { x: beyblade.velocityX, y: beyblade.velocityY }, beyblade.knockbackDistance);
-        this.broadcast("obstacle-collision", { playerId: beyblade.id, damage });
-      }
-    } else { beyblade.collidingWithObstacle = false; beyblade.lastObstacleId = ""; }
-
-    if (arenaData.wall?.enabled) {
-      const dx = beyblade.x - (this.state.arena.width * 16) / 2;
-      const dy = beyblade.y - (this.state.arena.height * 16) / 2;
-      const arenaRad = Math.min(this.state.arena.width, this.state.arena.height) * 16 * 0.45;
-      if (Math.sqrt(dx * dx + dy * dy) > arenaRad * 0.95) {
-        let wd = arenaData.wall.baseDamage;
-        if (arenaData.wall.hasSpikes) wd *= arenaData.wall.spikeDamageMultiplier;
-        wd *= beyblade.damageTaken;
-        beyblade.health -= wd; beyblade.damageReceived += wd;
-        const wallForce = wallBowlForce(arenaData.wall.recoilDistance * beyblade.knockbackDistance, this.state.arena.wallAngle);
-        this.physics.applyKnockback(beyblade.id, { x: -dx, y: -dy }, wallForce);
-        this.broadcast("wall-collision", { playerId: beyblade.id, damage: wd });
-      }
-    }
-  }
-
-  // ─── Win condition + series ───────────────────────────────────────────────────
+  // ─── Win condition + series — delegates to shared/rooms/SeriesManager ───────
 
   private checkWinCondition() {
-    if (this.state.status !== "in-progress") return;
+    const decision = determineGameWinner(this.state);
+    if (!decision) return;
 
-    const activeBeyblades = Array.from(this.state.beyblades.values()).filter(b => b.isActive);
-    const timeExpired = this.state.timer <= 0;
+    const { winner, winnerId, reason } = decision;
 
-    if (activeBeyblades.length <= 1 || timeExpired) {
-      let winner: Beyblade | null = null;
-      if (activeBeyblades.length === 1) {
-        winner = activeBeyblades[0];
-      } else if (activeBeyblades.length > 1) {
-        winner = activeBeyblades.reduce((best, b) => b.spin > best.spin ? b : best, activeBeyblades[0]);
-      }
+    recordGameWin(this.state, winnerId);
+    const seriesOver = isSeriesOver(this.state);
+    const seriesScore = buildSeriesScore(this.state);
 
-      const winnerId = winner?.userId ?? "";
+    if (seriesOver) {
+      this.state.status = "series-finished";
+      this.state.winner = winnerId;
 
-      if (winnerId) {
-        const currentWins = this.state.seriesWins.get(winnerId) ?? 0;
-        this.state.seriesWins.set(winnerId, currentWins + 1);
-        let maxWins = 0; let leader = "";
-        this.state.seriesWins.forEach((wins, uid) => { if (wins > maxWins) { maxWins = wins; leader = uid; } });
-        this.state.seriesLeader = leader;
-      }
+      this.broadcast("series-end", {
+        winner: winner ? { id: winner.id, userId: winner.userId, username: winner.username } : null,
+        seriesScore,
+        reason,
+      });
 
-      const winnerCurrentWins = this.state.seriesWins.get(winnerId) ?? 0;
-      const seriesOver = winnerCurrentWins >= this.state.targetWins;
+      this.persistMatch(winner).then((matchFirestoreId) => {
+        if (this.onMatchEnd && winnerId) this.onMatchEnd(winnerId, matchFirestoreId);
+      }).catch((err) => {
+        console.error("[TournamentBattleRoom] persistMatch failed:", err);
+        if (this.onMatchEnd && winnerId) this.onMatchEnd(winnerId, "");
+      });
 
-      if (seriesOver) {
-        this.state.status = "series-finished";
-        this.state.winner = winnerId;
-
-        const seriesScore: Record<string, number> = {};
-        this.state.seriesWins.forEach((wins, uid) => { seriesScore[uid] = wins; });
-
-        this.broadcast("series-end", {
-          winner: winner ? { id: winner.id, userId: winner.userId, username: winner.username } : null,
-          seriesScore,
-        });
-
-        this.persistMatch(winner).then((matchFirestoreId) => {
-          if (this.onMatchEnd && winnerId) this.onMatchEnd(winnerId, matchFirestoreId);
-        }).catch((err) => {
-          console.error("[TournamentBattleRoom] persistMatch failed:", err);
-          // Still advance the bracket even if persistence failed — an empty matchFirestoreId
-          // means the match result won't be linked in the matches collection, but the
-          // bracket must continue or the tournament stalls permanently.
-          if (this.onMatchEnd && winnerId) this.onMatchEnd(winnerId, "");
-        });
-
-        setTimeout(() => this.disconnect(), 5000);
-      } else {
-        this.state.status = "finished";
-        this.state.winner = winnerId;
-        const seriesScore: Record<string, number> = {};
-        this.state.seriesWins.forEach((wins, uid) => { seriesScore[uid] = wins; });
-        this.broadcast("game-end", {
-          winner: winner ? { id: winner.id, userId: winner.userId, username: winner.username } : null,
-          gameNumber: this.state.currentGame,
-          seriesScore,
-        });
-        setTimeout(() => this.resetForNextGame(), 3000);
-      }
+      setTimeout(() => this.disconnect(), 5000);
+    } else {
+      this.state.status = "finished";
+      this.state.winner = winnerId;
+      this.broadcast("game-end", {
+        winner: winner ? { id: winner.id, userId: winner.userId, username: winner.username } : null,
+        gameNumber: this.state.currentGame,
+        seriesScore,
+        reason,
+      });
+      setTimeout(() => this.resetForNextGame(), 3000);
     }
   }
 
   private resetForNextGame() {
-    this.state.currentGame++;
-    this.state.status = "warmup";
-    this.state.timer = 180;
-    this.state.winner = "";
+    resetStateForNextGame(this.state, this.spawnPositions, this.physics, 180);
     this.warmupTimer = 3;
-
-    this.state.beyblades.forEach((beyblade) => {
-      const spawnPos = this.spawnPositions.get(beyblade.id);
-      beyblade.isActive = true; beyblade.isRingOut = false;
-      beyblade.health = beyblade.maxStamina; beyblade.maxHealth = beyblade.maxStamina; beyblade.spin = beyblade.maxSpin; beyblade.stamina = beyblade.maxStamina;
-      beyblade.power = 0; beyblade.attackCooldown = 0; beyblade.specialCooldown = 0;
-      beyblade.attackBuffTimer = 0; beyblade.dodgeBuffTimer = 0; beyblade.defenseBuffTimer = 0;
-      beyblade.isAirborne = false; beyblade.airborneTimer = 0; beyblade.landingLag = 0;
-      beyblade.inPit = false; beyblade.currentPitId = ""; beyblade.pitDamageRate = 0;
-      beyblade.inWater = false; beyblade.waterSpeedMultiplier = 1.0; beyblade.waterSpinDrain = 0;
-      beyblade.inLoop = false; beyblade.loopIndex = -1; beyblade.loopSpeedBoost = 1.0; beyblade.loopSpinBoost = 0;
-      beyblade.isDefending = false; beyblade.isInvulnerable = false; beyblade.invulnerabilityTimer = 0;
-      beyblade.stunTimer = 0; beyblade.comboExecuting = false; beyblade.comboTimer = 0;
-      beyblade.collidingWithObstacle = false; beyblade.lastObstacleId = "";
-      if (spawnPos) {
-        beyblade.x = spawnPos.x; beyblade.y = spawnPos.y;
-        this.physics.setPosition(beyblade.id, spawnPos.x, spawnPos.y);
-        this.physics.setLinearVelocity(beyblade.id, 0, 0);
-        this.physics.setAngularVelocity(beyblade.id, beyblade.spinDirection === "right" ? 50 : -50);
-      }
-    });
 
     this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimer, gameNumber: this.state.currentGame });
   }
@@ -821,8 +610,7 @@ export class TournamentBattleRoom extends Room<GameState> {
   private async persistMatch(winner: Beyblade | null): Promise<string> {
     try {
       const beyblades = Array.from(this.state.beyblades.values());
-      const seriesScore: Record<string, number> = {};
-      this.state.seriesWins.forEach((wins, uid) => { seriesScore[uid] = wins; });
+      const seriesScore = buildSeriesScore(this.state);
 
       const matchData = {
         mode: "tournament",
@@ -957,6 +745,16 @@ export class TournamentBattleRoom extends Room<GameState> {
     beyblade.damageMultiplier = 1.84; beyblade.damageTaken = 0.64; beyblade.knockbackDistance = 7.99;
     beyblade.invulnerabilityChance = 0.18; beyblade.spinStealFactor = 0.42; beyblade.spinDecayRate = 7.88;
     beyblade.maxStamina = 1600; beyblade.stamina = 1600; beyblade.maxSpin = 2192; beyblade.spin = 2192; beyblade.speedBonus = 1.84;
+  }
+
+  // ─── 2.5D extension hooks — overridden by Parts25DTournamentBattleRoom ──────
+
+  protected onTickedBey(_beyblade: Beyblade, _dt: number): void {
+    // override in 2.5D subclass to call partSystemManager.tickBey()
+  }
+
+  protected onBeyCollided(_id1: string, _id2: string, _impactForce: number): void {
+    // override in 2.5D subclass to call partSystemManager.onBeyCollision()
   }
 
   private applyArenaSystemSlope(beyblade: Beyblade): void {

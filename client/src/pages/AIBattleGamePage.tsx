@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useMemo } from "react";
 import { Link, useLocation, useSearchParams, useNavigate } from "react-router-dom";
+import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
 import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGameInput } from "@/game/hooks/useGameInput";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
@@ -26,6 +27,7 @@ export function AIBattleGamePage() {
   const { settings } = useGame();
   const { currentUser } = useAuth();
 
+  const mode = modeFromPath(location.pathname);
   const spectate = searchParams.get("spectate") === "true";
   const userId = currentUser?.uid ?? settings.userId ?? "guest";
 
@@ -49,7 +51,7 @@ export function AIBattleGamePage() {
 
   const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput } =
     useColyseus({
-      roomName: "ai_battle_room",
+      roomName: roomNameFor(mode, "aiBattle"),
       options: colyseusOptions,
       autoConnect: false,
       onGameEnd: setGameEndData,
@@ -57,7 +59,7 @@ export function AIBattleGamePage() {
     });
 
   const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect } =
-    usePixiRenderer(containerRef);
+    usePixiRenderer(containerRef, mode);
 
   useEffect(() => {
     connect();

@@ -72,12 +72,33 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "demo", element: <RendererDemoPage /> },
       { path: "game", element: <ProtectedRoute><GameSelectPage /></ProtectedRoute> },
+
+      // ── Classic 2D pipeline ──
+      { path: "game/2d/tryout", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
+      { path: "game/2d/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
+      { path: "game/2d/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
+      { path: "game/2d/ai-battle", element: <ProtectedRoute><AIBattleSetupPage /></ProtectedRoute> },
+      { path: "game/2d/ai-battle/play", element: <ProtectedRoute><AIBattleGamePage /></ProtectedRoute> },
+      { path: "game/2d/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
+      { path: "game/2d/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
+      { path: "game/2d/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
+
+      // ── 2.5D parts pipeline ──
+      { path: "game/2.5d/tryout", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
+      { path: "game/2.5d/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
+      { path: "game/2.5d/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
+      { path: "game/2.5d/ai-battle", element: <ProtectedRoute><AIBattleSetupPage /></ProtectedRoute> },
+      { path: "game/2.5d/ai-battle/play", element: <ProtectedRoute><AIBattleGamePage /></ProtectedRoute> },
+      { path: "game/2.5d/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
+      { path: "game/2.5d/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
+      { path: "game/2.5d/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
+
+      // ── Legacy routes (default to classic 2D pipeline via modeFromPath fallback) ──
       { path: "game/tryout", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
       { path: "game/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
       { path: "game/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
       { path: "game/ai-battle", element: <ProtectedRoute><AIBattleSetupPage /></ProtectedRoute> },
       { path: "game/ai-battle/play", element: <ProtectedRoute><AIBattleGamePage /></ProtectedRoute> },
-      // Tournament routes
       { path: "game/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
       { path: "game/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
       { path: "game/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
@@ -133,7 +154,20 @@ export const router = createBrowserRouter([
       // User management
       { path: "users", element: <UsersPage /> },
 
-      // ── 2.5D Part System ──
+      // ── 2.5D Part System — canonical URL ──
+      { path: "2.5d/parts", element: <PartSearchPage /> },
+      { path: "2.5d/parts/:partType", element: <PartListPage /> },
+      { path: "2.5d/parts/:partType/create", element: <PartCreatePage /> },
+      { path: "2.5d/parts/:partType/edit/:id", element: <PartEditPage /> },
+      { path: "2.5d/beyblade-systems", element: <BeybladeSystemListPage /> },
+      { path: "2.5d/beyblade-systems/create", element: <BeybladeSystemCreatePage /> },
+      { path: "2.5d/beyblade-systems/edit/:id", element: <BeybladeSystemEditPage /> },
+      { path: "2.5d/compatibility-tags", element: <CompatibilityTagsPage /> },
+      { path: "2.5d/arena-systems", element: <ArenaSystemListPage /> },
+      { path: "2.5d/arena-systems/create", element: <ArenaSystemCreatePage /> },
+      { path: "2.5d/arena-systems/:id", element: <ArenaSystemEditPage /> },
+
+      // ── Legacy /admin/2d/ routes (kept for back-compat; these manage 2.5D content) ──
       { path: "2d/parts", element: <PartSearchPage /> },
       { path: "2d/parts/:partType", element: <PartListPage /> },
       { path: "2d/parts/:partType/create", element: <PartCreatePage /> },

@@ -1,11 +1,19 @@
 // [GAME-CLIENT] usePixiRenderer — manages PixiJS renderer lifecycle inside a React component.
-// Creates the BeybladeGameRenderer, drives the animation loop, and handles cleanup.
+// Creates the appropriate renderer for the requested mode (2d → Classic2DRenderer,
+// 2.5d → Parts25DRenderer), drives the animation loop, and handles cleanup.
 
 import { useEffect, useRef, useCallback } from "react";
 import { BeybladeGameRenderer } from "@/game/renderer/PixiRenderer";
+import { Classic2DRenderer } from "@/game/renderer/Classic2DRenderer";
+import { Parts25DRenderer } from "@/game/renderer/Parts25DRenderer";
 import type { ServerGameState, ServerBeyblade } from "@/types/game";
 
-export function usePixiRenderer(containerRef: React.RefObject<HTMLDivElement | null>) {
+export type GameRenderMode = "2d" | "2.5d";
+
+export function usePixiRenderer(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  mode: GameRenderMode = "2.5d",
+) {
   const rendererRef = useRef<BeybladeGameRenderer | null>(null);
   const initializedRef = useRef(false);
 
@@ -16,7 +24,8 @@ export function usePixiRenderer(containerRef: React.RefObject<HTMLDivElement | n
     initializedRef.current = true;
     let aborted = false;
 
-    const renderer = new BeybladeGameRenderer(container);
+    const renderer: BeybladeGameRenderer =
+      mode === "2d" ? new Classic2DRenderer(container) : new Parts25DRenderer(container);
     rendererRef.current = renderer;
 
     renderer.init().then(() => {
@@ -34,7 +43,7 @@ export function usePixiRenderer(containerRef: React.RefObject<HTMLDivElement | n
       rendererRef.current = null;
       initializedRef.current = false;
     };
-  }, [containerRef]);
+  }, [containerRef, mode]);
 
   const render = useCallback(
     (gameState: ServerGameState | null, beyblades: Map<string, ServerBeyblade>) => {
