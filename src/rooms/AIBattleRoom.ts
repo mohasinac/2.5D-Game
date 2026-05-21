@@ -9,8 +9,23 @@ import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentF
 import { tryReserveRoom, releaseRoom } from "../utils/roomCounter";
 import { createPRNG } from "../utils/prng";
 import { hashString } from "../utils/hashString";
+import { ComboTracker, detectCombo } from "../utils/comboSystem";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
 import { AIController, type AIDifficulty } from "../ai/AIController";
+
+const BOWL_PROFILE_ANGLES: Record<string, number> = {
+  flat: 0, shallow: 20, medium: 40, deep: 60, steep: 75,
+};
+function resolveWallAngle(arenaData: ArenaConfig): number {
+  if (arenaData.wallAngle !== undefined) return arenaData.wallAngle;
+  return BOWL_PROFILE_ANGLES[arenaData.bowlProfile ?? "medium"] ?? 40;
+}
+
+// Bowl shape multiplier: steeper wall (higher wallAngle) pushes beys more strongly to center.
+function wallBowlForce(baseForce: number, wallAngle: number): number {
+  const rad = (wallAngle * Math.PI) / 180;
+  return baseForce * (1.0 + Math.sin(rad) * 0.8);
+}
 
 // [SERVER-ROOM] AIBattleRoom — one human vs one AI opponent + spectators.
 // maxClients=9 (1 human player slot + 8 spectator slots).
@@ -60,6 +75,7 @@ export class AIBattleRoom extends Room<GameState> {
   private aiSpawnPos = { x: 0, y: 0 };
   private aiDifficulty: AIDifficulty = "medium";
   private aiBeybladeId = "default";
+  private comboTrackers = new Map<string, ComboTracker>();
 
   maxClients = 9; // 1 human + 8 spectators
 
@@ -128,6 +144,7 @@ export class AIBattleRoom extends Room<GameState> {
     }
 
     this.humanSessionId = client.sessionId;
+    this.comboTrackers.set(client.sessionId, { history: [] });
     console.log(`Human player ${client.sessionId} joined AIBattleRoom`);
 
     const difficulty: AIDifficulty = options.aiDifficulty || "medium";
@@ -162,7 +179,7 @@ export class AIBattleRoom extends Room<GameState> {
     this.humanSpawnPos = { x: human.x, y: human.y };
 
     this.physics.createBeyblade(human.id, human.x, human.y, human.radius, human.mass, humanData || undefined);
-    this.physics.setAngularVelocity(human.id, human.spinDirection === "left" ? -10 : 10);
+    this.physics.setAngularVelocity(human.id, (human.spinDirection === "left" ? -1 : 1) * (human.maxSpin / 200));
     this.state.beyblades.set(client.sessionId, human);
     this.state.seriesWins.set(human.userId, 0);
 
@@ -189,7 +206,7 @@ export class AIBattleRoom extends Room<GameState> {
     this.aiSpawnPos = { x: ai.x, y: ai.y };
 
     this.physics.createBeyblade(AI_SESSION_ID, ai.x, ai.y, ai.radius, ai.mass, aiData || undefined);
-    this.physics.setAngularVelocity(AI_SESSION_ID, ai.spinDirection === "left" ? -10 : 10);
+    this.physics.setAngularVelocity(AI_SESSION_ID, (ai.spinDirection === "left" ? -1 : 1) * (ai.maxSpin / 200));
     this.state.beyblades.set(AI_SESSION_ID, ai);
     this.state.seriesWins.set(AI_SESSION_ID, 0);
 
@@ -215,6 +232,7 @@ export class AIBattleRoom extends Room<GameState> {
     // Human player leave
     console.log(`Human player ${client.sessionId} left AIBattleRoom`);
     this.humanSessionId = null;
+    this.comboTrackers.delete(client.sessionId);
     if (this.matchStarted) {
       this.physics.removeBeyblade(client.sessionId);
       this.state.beyblades.delete(client.sessionId);
@@ -297,6 +315,22 @@ export class AIBattleRoom extends Room<GameState> {
       const mag = Math.sqrt(message.direction.x ** 2 + message.direction.y ** 2);
       this.physics.applyForce(beyblade.id, (message.direction.x / mag) * forceMagnitude, (message.direction.y / mag) * forceMagnitude);
     }
+
+    // ── Combo detection ──────────────────────────────────────────────────────
+    const tracker = this.comboTrackers.get(client.sessionId);
+    if (tracker && message.comboKeys && message.comboKeys.length > 0) {
+      const combo = detectCombo(tracker, message.comboKeys, Date.now());
+      if (combo) {
+        beyblade.comboDamageMultiplier = combo.damageMultiplier;
+        beyblade.comboDamageMultiplierTimer = combo.durationMs / 1000;
+        this.broadcast("combo", {
+          playerId: beyblade.id,
+          comboName: combo.name,
+          x: beyblade.x,
+          y: beyblade.y,
+        });
+      }
+    }
   }
 
   // ─── Special moves ───────────────────────────────────────────────────────────
@@ -304,13 +338,21 @@ export class AIBattleRoom extends Room<GameState> {
   private handleSpecialMove(beyblade: Beyblade) {
     const state = this.physics.getBodyState(beyblade.id);
     if (!state) return;
+
+    const movePayload = {
+      playerId: beyblade.id,
+      x: beyblade.x,
+      y: beyblade.y,
+      facing: beyblade.rotation,
+    };
+
     switch (beyblade.type) {
       case "attack": {
         const rushForce = 0.005 * beyblade.mass * beyblade.damageMultiplier;
         this.physics.applyForce(beyblade.id, Math.cos(beyblade.rotation) * rushForce, Math.sin(beyblade.rotation) * rushForce);
         const boosted = Math.min(beyblade.maxSpin, Math.abs(state.angularVelocity) * 1.8);
         this.physics.setAngularVelocity(beyblade.id, beyblade.spinDirection === "left" ? -boosted : boosted);
-        this.broadcast("special-move", { playerId: beyblade.id, type: "stampede-rush" });
+        this.broadcast("special-move", { ...movePayload, type: "stampede-rush" });
         break;
       }
       case "defense": {
@@ -318,7 +360,7 @@ export class AIBattleRoom extends Room<GameState> {
         this.physics.applyForce(beyblade.id, -state.velocityX * beyblade.mass * 0.8, -state.velocityY * beyblade.mass * 0.8);
         beyblade.isInvulnerable = true;
         beyblade.invulnerabilityTimer = 1.5;
-        this.broadcast("special-move", { playerId: beyblade.id, type: "gyro-anchor" });
+        this.broadcast("special-move", { ...movePayload, type: "gyro-anchor" });
         break;
       }
       case "stamina": {
@@ -327,7 +369,7 @@ export class AIBattleRoom extends Room<GameState> {
         this.physics.setAngularVelocity(beyblade.id, beyblade.spinDirection === "left" ? -(recovered / 200) : (recovered / 200));
         beyblade.spin = recovered;
         beyblade.stamina = Math.min(beyblade.maxStamina, beyblade.stamina + beyblade.maxStamina * 0.2);
-        this.broadcast("special-move", { playerId: beyblade.id, type: "spin-recovery" });
+        this.broadcast("special-move", { ...movePayload, type: "spin-recovery" });
         break;
       }
       case "balanced": {
@@ -335,7 +377,7 @@ export class AIBattleRoom extends Room<GameState> {
         const boosted = Math.min(beyblade.maxSpin, Math.abs(state.angularVelocity) * 1.5);
         this.physics.setAngularVelocity(beyblade.id, beyblade.spinDirection === "left" ? -boosted : boosted);
         beyblade.stamina = Math.min(beyblade.maxStamina, beyblade.stamina + beyblade.maxStamina * 0.15);
-        this.broadcast("special-move", { playerId: beyblade.id, type: "tactical-burst" });
+        this.broadcast("special-move", { ...movePayload, type: "tactical-burst" });
         break;
       }
     }
@@ -412,11 +454,13 @@ export class AIBattleRoom extends Room<GameState> {
         if (dmg.damage1 > 15) b1.attackBuffTimer = 0;
         if (dmg.damage2 > 15) b2.attackBuffTimer = 0;
 
-        this.broadcast("collision", { p1: ids[i], p2: ids[j], damage1: dmg.damage1, damage2: dmg.damage2, contactPoint: collision.contactPoint });
+        this.broadcast("collision", { p1: ids[i], p2: ids[j], damage1: dmg.damage1, damage2: dmg.damage2, spinSteal1: dmg.spinSteal1, spinSteal2: dmg.spinSteal2, contactPoint: collision.contactPoint });
       }
     }
 
     // ── Per-beyblade update ──────────────────────────────────────────────────
+    const arenaData = this.arenaCache;
+
     this.state.beyblades.forEach((beyblade) => {
       const physicsState = this.physics.getBodyState(beyblade.id);
       if (!physicsState) return;
@@ -480,10 +524,33 @@ export class AIBattleRoom extends Room<GameState> {
 
       if (beyblade.inLoop) beyblade.power = Math.min(100, beyblade.power + 2);
 
-      // Ring-out check
+      // Wall collision — apply damage and knockback with bowl force multiplier
+      if (arenaData?.wall?.enabled) {
+        const dx = beyblade.x - (this.state.arena.width * 16) / 2;
+        const dy = beyblade.y - (this.state.arena.height * 16) / 2;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const arenaRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 * 0.45;
+
+        if (distance > arenaRadius * 0.95) {
+          let wallDamage = arenaData.wall.baseDamage;
+          if (arenaData.wall.hasSpikes) wallDamage *= arenaData.wall.spikeDamageMultiplier;
+          wallDamage *= beyblade.damageTaken;
+
+          beyblade.health -= wallDamage;
+          beyblade.damageReceived += wallDamage;
+
+          // Steeper bowl (higher wallAngle) redirects beys more forcefully toward center.
+          const wallForce = wallBowlForce(arenaData.wall.recoilDistance * beyblade.knockbackDistance, this.state.arena.wallAngle);
+          this.physics.applyKnockback(beyblade.id, { x: -dx, y: -dy }, wallForce);
+          this.broadcast("wall-collision", { playerId: beyblade.id, damage: wallDamage });
+        }
+      }
+
+      // Ring-out check — at 90% of wall radius to catch beyblades before they escape
       if (this.state.arena.shape === "circle") {
-        const arenaRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 / 2;
-        const isOut = this.physics.isOutOfBounds(beyblade.id, arenaRadius, (this.state.arena.width * 16) / 2, (this.state.arena.height * 16) / 2);
+        const wallRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 / 2;
+        const ringOutRadius = wallRadius * 0.90;
+        const isOut = this.physics.isOutOfBounds(beyblade.id, ringOutRadius, (this.state.arena.width * 16) / 2, (this.state.arena.height * 16) / 2);
         if (isOut && !beyblade.isRingOut) {
           beyblade.isRingOut = true;
           beyblade.isActive = false;
@@ -703,6 +770,7 @@ export class AIBattleRoom extends Room<GameState> {
       this.state.arena.wallHasSpikes = arenaData.wall.hasSpikes;
       this.state.arena.wallSpikeDamageMultiplier = arenaData.wall.spikeDamageMultiplier;
     }
+    this.state.arena.wallAngle = resolveWallAngle(arenaData);
     this.state.arena.loopCount = arenaData.loops?.length ?? 0;
     this.state.arena.obstacleCount = arenaData.obstacles?.length ?? 0;
     this.state.arena.pitCount = arenaData.pits?.length ?? 0;
@@ -720,6 +788,7 @@ export class AIBattleRoom extends Room<GameState> {
     this.state.arena.wallEnabled = true;
     this.state.arena.wallBaseDamage = 5;
     this.state.arena.wallRecoilDistance = 2;
+    this.state.arena.wallAngle = 0;
     this.state.arena.wallHasSprings = false;
     this.state.arena.wallSpringRecoilMultiplier = 1.0;
   }
