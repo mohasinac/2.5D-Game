@@ -7,13 +7,14 @@ import {
   ProjectileState
 } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
-import { loadBeyblade, loadArena, saveMatch, updatePlayerStats } from "../utils/firebase";
+import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats } from "../utils/firebase";
 import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
 import { tryReserveRoom, releaseRoom } from "../utils/roomCounter";
 import { createPRNG } from "../utils/prng";
 import { hashString } from "../utils/hashString";
 import { ComboTracker, detectCombo } from "../utils/comboSystem";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
+import type { ArenaSystem } from "../types/arenaSystem";
 
 // Resolve wallAngle from arenaData (explicit value wins over bowlProfile preset)
 const BOWL_PROFILE_ANGLES: Record<string, number> = {
@@ -59,6 +60,7 @@ interface PlayerInput {
 interface JoinOptions {
   beybladeId: string;
   arenaId: string;
+  arenaSystemId?: string;
   userId: string;
   username: string;
   spectate?: boolean;
@@ -105,6 +107,7 @@ const SPAWN_OFFSETS = [
 export class BattleRoom extends Room<GameState> {
   private physics!: PhysicsEngine;
   private arenaCache: ArenaConfig | null = null;
+  private arenaSystem: ArenaSystem | null = null;
   private matchStarted = false;
   private warmupTimer = 3;
   private lastInputTime = 0;
@@ -151,6 +154,14 @@ export class BattleRoom extends Room<GameState> {
       console.log(`✅ BattleRoom: loaded arena ${arenaData.name}`);
     } else {
       this.applyDefaultArena(arenaId);
+    }
+
+    // Load arena system (2.5D) if provided
+    if (options.arenaSystemId) {
+      this.arenaSystem = await loadArenaSystem(options.arenaSystemId);
+      if (this.arenaSystem) {
+        console.log(`✅ BattleRoom: loaded arena system ${this.arenaSystem.displayName}`);
+      }
     }
 
     this.physics = new PhysicsEngine();
@@ -630,8 +641,16 @@ export class BattleRoom extends Room<GameState> {
 
     this.physics.update(deltaTime);
 
-    const arenaData = this.arenaCache;
+    // Apply slope physics if using a 2.5D arena system
     const beybladeIds = Array.from(this.state.beyblades.keys());
+    beybladeIds.forEach((id) => {
+      const beyblade = this.state.beyblades.get(id);
+      if (beyblade && this.arenaSystem) {
+        this.applyArenaSystemSlope(beyblade);
+      }
+    });
+
+    const arenaData = this.arenaCache;
 
     // ── Beyblade-vs-beyblade collision detection ────────────────────────────
     for (let i = 0; i < beybladeIds.length; i++) {
@@ -1063,6 +1082,36 @@ export class BattleRoom extends Room<GameState> {
       }
     } catch (err) {
       console.error("Failed to persist match result:", err);
+    }
+  }
+
+  // Apply 2.5D arena system slope physics to a beyblade
+  private applyArenaSystemSlope(beyblade: Beyblade): void {
+    if (!this.arenaSystem?.elevationMap || !this.arenaSystem.slopePhysics) return;
+
+    const { tiltAngle = 0, tiltDirection = 0 } = this.arenaSystem.elevationMap;
+    if (!tiltAngle) return;
+
+    const strength = (tiltAngle / 30) * (this.arenaSystem.slopePhysics.gravityStrength ?? 0.5);
+    const rad = (tiltDirection * Math.PI) / 180;
+
+    const forceX = Math.cos(rad) * strength * 0.002 * beyblade.mass;
+    const forceY = Math.sin(rad) * strength * 0.002 * beyblade.mass;
+    this.physics.applyForce(beyblade.id, forceX, forceY);
+
+    // Apply friction zone effects
+    if (this.arenaSystem.slopePhysics.frictionMap) {
+      for (const zone of this.arenaSystem.slopePhysics.frictionMap) {
+        const dx = beyblade.x - zone.x * 24; // convert cm to px
+        const dy = beyblade.y - zone.y * 24;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist <= zone.radius * 24) {
+          // Beyblade is inside friction zone — apply friction multiplier
+          this.physics.setFrictionMultiplier(beyblade.id, zone.frictionMultiplier);
+          break;
+        }
+      }
     }
   }
 }

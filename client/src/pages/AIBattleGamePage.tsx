@@ -56,7 +56,7 @@ export function AIBattleGamePage() {
       onSeriesEnd: setSeriesEndData,
     });
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen } =
+  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect } =
     usePixiRenderer(containerRef);
 
   useEffect(() => {
@@ -85,18 +85,18 @@ export function AIBattleGamePage() {
       spawnSpinOutParticles(x, y, TYPE_COLORS[data.type] ?? 0xffffff);
     });
     room.onMessage("special-move", (data: any) => {
-      rendererRef.current?.playSpecialMoveEffect?.(data.playerId, data.type, data.x, data.y, data.facing);
+      playSpecialMoveEffect(data.playerId, data.type, data.x, data.y, data.facing);
       if (data.playerId === myBeyblade?.id) {
         setLastSpecialMove(data.type);
       }
     });
     room.onMessage("combo", (data: any) => {
-      rendererRef.current?.playComboEffect?.(data.playerId, data.comboName);
+      playComboEffect(data.playerId, data.comboName);
       if (data.playerId === myBeyblade?.id) {
         setLastCombo({ name: data.comboName, timestamp: Date.now() });
       }
     });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen]);
+  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect]);
 
   // Auto-dismiss game-end overlay
   useEffect(() => {
@@ -126,14 +126,14 @@ export function AIBattleGamePage() {
       <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
 
       {/* HUD top bar */}
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "12px 16px", pointerEvents: "none", zIndex: 10 }}>
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10, flexWrap: "wrap" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: connectionState === "connected" ? C.green : C.red }} className={connectionState === "connected" ? "pulse" : ""} />
-            <span style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>{isSpectating ? "SPECTATING" : "VS AI"}</span>
+            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.muted, fontFamily: "monospace" }}>{isSpectating ? "SPECTATING" : "VS AI"}</span>
           </div>
           {isSpectating && (
-            <span style={{ fontSize: 11, background: C.purple + "44", color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${C.purple}55` }}>
+            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", background: C.purple + "44", color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${C.purple}55` }}>
               SPECTATING
             </span>
           )}
@@ -141,31 +141,31 @@ export function AIBattleGamePage() {
 
         <div style={{ textAlign: "center" }}>
           {timerSeconds !== null && (
-            <div style={{ color: C.text, fontFamily: "monospace", fontSize: 24, fontWeight: 700 }}>
+            <div style={{ color: C.text, fontFamily: "monospace", fontSize: "clamp(14px, 3vw, 24px)", fontWeight: 700 }}>
               {timerSeconds}s
             </div>
           )}
           {seriesLabel && (
-            <div style={{ fontSize: 12, color: C.muted, fontFamily: "monospace" }}>{seriesLabel}</div>
+            <div style={{ fontSize: "clamp(10px, 1.5vw, 12px)", color: C.muted, fontFamily: "monospace" }}>{seriesLabel}</div>
           )}
           {gameState && (gameState.spectatorCount ?? 0) > 0 && (
-            <div style={{ fontSize: 11, color: C.purple }}>{gameState.spectatorCount} watching</div>
+            <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.purple }}>{gameState.spectatorCount} watching</div>
           )}
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
           <Link
             to="/game/ai-battle"
-            style={{ pointerEvents: "auto", padding: "4px 12px", fontSize: 12, background: "rgba(0,0,0,0.6)", color: C.muted, borderRadius: 6, border: `1px solid ${C.border}`, textDecoration: "none", marginTop: 28 }}
+            style={{ pointerEvents: "auto", padding: "clamp(3px, 0.5vw, 4px) clamp(8px, 1vw, 12px)", fontSize: "clamp(9px, 1.2vw, 12px)", background: "rgba(0,0,0,0.6)", color: C.muted, borderRadius: 6, border: `1px solid ${C.border}`, textDecoration: "none", marginTop: "clamp(20px, 3vw, 28px)" }}
           >
             Exit
           </Link>
           {/* Series score */}
           {isSeries && allBeyblades.length > 0 && (
-            <div style={{ background: "rgba(0,0,0,0.65)", borderRadius: 8, padding: "6px 10px", fontSize: 12, color: C.text }}>
+            <div style={{ background: "rgba(0,0,0,0.65)", borderRadius: 8, padding: "clamp(4px, 1vw, 10px)", fontSize: "clamp(10px, 1.5vw, 12px)", color: C.text }}>
               {allBeyblades.map((p) => (
                 <div key={p.id} style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <span style={{ color: C.muted, maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ color: C.muted, maxWidth: "clamp(60px, 12vw, 100px)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {p.username}
                   </span>
                   <span style={{ fontWeight: 700, fontFamily: "monospace" }}>
@@ -180,17 +180,17 @@ export function AIBattleGamePage() {
 
       {/* HUD bottom */}
       {myBeyblade && !isSpectating && (
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, pointerEvents: "none", zIndex: 10 }}>
-          <div style={{ maxWidth: 480, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "center" }}>
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10 }}>
+          <div style={{ maxWidth: "min(480px, 90vw)", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "center" }}>
             <StatCard beyblade={myBeyblade} label="YOU" accentColor={C.blue} stabilityColor={stabilityColor} stabilityLabel={stabilityLabel} />
-            <div style={{ fontSize: 18, fontWeight: 900, color: C.faint, textAlign: "center" }}>VS</div>
+            <div style={{ fontSize: "clamp(14px, 2vw, 18px)", fontWeight: 900, color: C.faint, textAlign: "center" }}>VS</div>
             {aiBey ? (
               <StatCard beyblade={aiBey} label="CPU" accentColor={C.red} stabilityColor={getBeybladeStability(aiBey) > 0.4 ? C.green : C.red} stabilityLabel={aiBey.username} />
             ) : (
               <div />
             )}
           </div>
-          <p style={{ textAlign: "center", color: C.faint, fontSize: 11, marginTop: 8 }}>
+          <p style={{ textAlign: "center", color: C.faint, fontSize: "clamp(8px, 1.2vw, 11px)", marginTop: 8 }}>
             WASD: Move · J: Attack · K: Defend · L: Dodge · I: Jump · Space: Charge/Special
           </p>
         </div>
@@ -198,12 +198,12 @@ export function AIBattleGamePage() {
 
       {/* Spectator view */}
       {isSpectating && allBeyblades.length > 0 && (
-        <div style={{ position: "absolute", bottom: 16, left: 0, right: 0, padding: "0 16px", pointerEvents: "none", zIndex: 10 }}>
-          <div style={{ maxWidth: 480, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "center" }}>
+        <div style={{ position: "absolute", bottom: 16, left: 0, right: 0, padding: "0 clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10 }}>
+          <div style={{ maxWidth: "min(480px, 90vw)", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "center" }}>
             {allBeyblades.filter((b) => !b.isAI).slice(0, 1).map((b) => (
               <StatCard key={b.id} beyblade={b} label="PLAYER" accentColor={C.blue} stabilityColor={getBeybladeStability(b) > 0.4 ? C.green : C.red} stabilityLabel={b.username} />
             ))}
-            <div style={{ fontSize: 18, fontWeight: 900, color: C.faint, textAlign: "center" }}>VS</div>
+            <div style={{ fontSize: "clamp(14px, 2vw, 18px)", fontWeight: 900, color: C.faint, textAlign: "center" }}>VS</div>
             {aiBey ? (
               <StatCard beyblade={aiBey} label="CPU" accentColor={C.red} stabilityColor={getBeybladeStability(aiBey) > 0.4 ? C.green : C.red} stabilityLabel={aiBey.username} />
             ) : <div />}

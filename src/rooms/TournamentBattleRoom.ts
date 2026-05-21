@@ -1,7 +1,7 @@
 import { Room, Client } from "colyseus";
 import { GameState, Beyblade } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
-import { loadBeyblade, loadArena, saveMatch, updatePlayerStats } from "../utils/firebase";
+import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats } from "../utils/firebase";
 import { loadGlobalSettings, updateMatchStatus, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
 import { tryReserveRoom, releaseRoom } from "../utils/roomCounter";
 import { createPRNG } from "../utils/prng";
@@ -9,6 +9,7 @@ import { hashString } from "../utils/hashString";
 import { ComboTracker, detectCombo } from "../utils/comboSystem";
 import { AIController, type AIDifficulty } from "../ai/AIController";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
+import type { ArenaSystem } from "../types/arenaSystem";
 
 const BOWL_PROFILE_ANGLES: Record<string, number> = {
   flat: 0, shallow: 20, medium: 40, deep: 60, steep: 75,
@@ -31,6 +32,7 @@ interface JoinOptions {
   spectate?: boolean;
   tournamentId?: string;
   matchId?: string;
+  arenaSystemId?: string;
   userId: string;
   username: string;
   beybladeId: string;
@@ -65,6 +67,7 @@ export class TournamentBattleRoom extends Room<GameState> {
 
   private physics!: PhysicsEngine;
   private arenaCache: ArenaConfig | null = null;
+  private arenaSystem: ArenaSystem | null = null;
   private warmupTimer = 3;
   private lastInputTime = 0;
   private globalSettings: GlobalSettingsDoc | null = null;
@@ -127,6 +130,14 @@ export class TournamentBattleRoom extends Room<GameState> {
       console.log(`✅ TournamentBattleRoom: loaded arena ${arenaData.name}`);
     } else {
       this.applyDefaultArena(arenaId);
+    }
+
+    // Load arena system (2.5D) if provided
+    if (options.arenaSystemId) {
+      this.arenaSystem = await loadArenaSystem(options.arenaSystemId);
+      if (this.arenaSystem) {
+        console.log(`✅ TournamentBattleRoom: loaded arena system ${this.arenaSystem.displayName}`);
+      }
     }
 
     this.physics = new PhysicsEngine();
@@ -507,6 +518,14 @@ export class TournamentBattleRoom extends Room<GameState> {
     if (this.state.status !== "in-progress") return;
 
     this.physics.update(deltaTime);
+
+    // Apply slope physics if using a 2.5D arena system
+    Array.from(this.state.beyblades.keys()).forEach((id) => {
+      const beyblade = this.state.beyblades.get(id);
+      if (beyblade && this.arenaSystem) {
+        this.applyArenaSystemSlope(beyblade);
+      }
+    });
 
     // ── AI input generation ──────────────────────────────────────────────────
     const arenaHalfW = (this.state.arena.width * 16) / 2;
@@ -938,5 +957,32 @@ export class TournamentBattleRoom extends Room<GameState> {
     beyblade.damageMultiplier = 1.84; beyblade.damageTaken = 0.64; beyblade.knockbackDistance = 7.99;
     beyblade.invulnerabilityChance = 0.18; beyblade.spinStealFactor = 0.42; beyblade.spinDecayRate = 7.88;
     beyblade.maxStamina = 1600; beyblade.stamina = 1600; beyblade.maxSpin = 2192; beyblade.spin = 2192; beyblade.speedBonus = 1.84;
+  }
+
+  private applyArenaSystemSlope(beyblade: Beyblade): void {
+    if (!this.arenaSystem?.elevationMap || !this.arenaSystem.slopePhysics) return;
+
+    const { tiltAngle = 0, tiltDirection = 0 } = this.arenaSystem.elevationMap;
+    if (!tiltAngle) return;
+
+    const strength = (tiltAngle / 30) * (this.arenaSystem.slopePhysics.gravityStrength ?? 0.5);
+    const rad = (tiltDirection * Math.PI) / 180;
+
+    const forceX = Math.cos(rad) * strength * 0.002 * beyblade.mass;
+    const forceY = Math.sin(rad) * strength * 0.002 * beyblade.mass;
+    this.physics.applyForce(beyblade.id, forceX, forceY);
+
+    if (this.arenaSystem.slopePhysics.frictionMap) {
+      for (const zone of this.arenaSystem.slopePhysics.frictionMap) {
+        const dx = beyblade.x - zone.x * 24;
+        const dy = beyblade.y - zone.y * 24;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist <= zone.radius * 24) {
+          this.physics.setFrictionMultiplier(beyblade.id, zone.frictionMultiplier);
+          break;
+        }
+      }
+    }
   }
 }

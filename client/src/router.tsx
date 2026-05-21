@@ -55,6 +55,11 @@ import { BeybladeSystemCreatePage } from "./pages/admin/2d/beyblade-systems/Beyb
 import { BeybladeSystemEditPage } from "./pages/admin/2d/beyblade-systems/BeybladeSystemEditPage";
 import { CompatibilityTagsPage } from "./pages/admin/2d/CompatibilityTagsPage";
 
+// 2.5D arena system pages
+import { ArenaSystemListPage } from "./pages/admin/arena-systems/ArenaSystemListPage";
+import { ArenaSystemCreatePage } from "./pages/admin/arena-systems/ArenaSystemCreatePage";
+import { ArenaSystemEditPage } from "./pages/admin/arena-systems/ArenaSystemEditPage";
+
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -91,10 +96,15 @@ export const router = createBrowserRouter([
       { path: "beyblades/create", element: <BeybladeCreatePage /> },
       { path: "beyblades/edit/:id", element: <BeybladeEditPage /> },
 
-      // Arena CRUD
+      // Arena CRUD (2D flat arenas)
       { path: "arenas", element: <ArenasListPage /> },
       { path: "arenas/create", element: <ArenaCreatePage /> },
       { path: "arenas/edit/:id", element: <ArenaEditPage /> },
+
+      // Arena Systems CRUD (2.5D elevated arenas)
+      { path: "arena-systems", element: <ArenaSystemListPage /> },
+      { path: "arena-systems/create", element: <ArenaSystemCreatePage /> },
+      { path: "arena-systems/:id", element: <ArenaSystemEditPage /> },
 
       // Stadium CRUD
       { path: "stadiums", element: <StadiumsListPage /> },

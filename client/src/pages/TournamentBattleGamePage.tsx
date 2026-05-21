@@ -69,7 +69,7 @@ export function TournamentBattleGamePage() {
     return () => { disconnect(); };
   }, [colyseusRoomId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen } = usePixiRenderer(containerRef);
+  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect } = usePixiRenderer(containerRef);
 
   useEffect(() => {
     let raf: number;
@@ -91,18 +91,18 @@ export function TournamentBattleGamePage() {
       spawnSpinOutParticles(x, y, TYPE_COLORS[data.type] ?? 0xffffff);
     });
     room.onMessage("special-move", (data: any) => {
-      rendererRef.current?.playSpecialMoveEffect?.(data.playerId, data.type, data.x, data.y, data.facing);
+      playSpecialMoveEffect(data.playerId, data.type, data.x, data.y, data.facing);
       if (data.playerId === myBeyblade?.id) {
         setLastSpecialMove(data.type);
       }
     });
     room.onMessage("combo", (data: any) => {
-      rendererRef.current?.playComboEffect?.(data.playerId, data.comboName);
+      playComboEffect(data.playerId, data.comboName);
       if (data.playerId === myBeyblade?.id) {
         setLastCombo({ name: data.comboName, timestamp: Date.now() });
       }
     });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen]);
+  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect]);
 
   // Dismiss game-end overlay after 4 seconds
   useEffect(() => {
@@ -142,38 +142,38 @@ export function TournamentBattleGamePage() {
       <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
 
       {/* HUD top bar */}
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: 16, pointerEvents: "none", zIndex: 10 }}>
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10, flexWrap: "wrap" }}>
         {/* Left */}
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: connectionState === "connected" ? C.green : C.red }} className={connectionState === "connected" ? "pulse" : ""} />
-            <span style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>
+            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.muted, fontFamily: "monospace" }}>
               {isSpectating ? "SPECTATING" : "CONNECTED"}
             </span>
           </div>
           {gameState?.tournamentName && (
-            <span style={{ fontSize: 12, color: C.yellow, fontWeight: 700 }}>{gameState.tournamentName}</span>
+            <span style={{ fontSize: "clamp(10px, 1.5vw, 12px)", color: C.yellow, fontWeight: 700 }}>{gameState.tournamentName}</span>
           )}
           {roundLabel && (
-            <span style={{ fontSize: 11, color: C.muted }}>{roundLabel}</span>
+            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.muted }}>{roundLabel}</span>
           )}
         </div>
 
         {/* Center: timer + series */}
         <div style={{ textAlign: "center" }}>
           {gameState && (
-            <div style={{ color: C.text, fontFamily: "monospace", fontSize: 24, fontWeight: 700 }}>
+            <div style={{ color: C.text, fontFamily: "monospace", fontSize: "clamp(14px, 3vw, 24px)", fontWeight: 700 }}>
               {Math.ceil(Math.max(0, gameState.timer))}s
             </div>
           )}
           {seriesLabel && (
-            <div style={{ fontSize: 12, color: C.muted, fontFamily: "monospace" }}>{seriesLabel}</div>
+            <div style={{ fontSize: "clamp(10px, 1.5vw, 12px)", color: C.muted, fontFamily: "monospace" }}>{seriesLabel}</div>
           )}
-          <div style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>
+          <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.muted, fontFamily: "monospace" }}>
             {alivePlayers.length}/{playerList.length} alive
           </div>
           {gameState && (gameState.spectatorCount ?? 0) > 0 && (
-            <div style={{ fontSize: 11, color: C.purple }}>
+            <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.purple }}>
               {gameState.spectatorCount} watching
             </div>
           )}
@@ -183,21 +183,21 @@ export function TournamentBattleGamePage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
           <Link
             to={`/game/tournament/${tournamentId}`}
-            style={{ pointerEvents: "auto", padding: "4px 12px", fontSize: 12, background: "rgba(0,0,0,0.6)", color: C.muted, borderRadius: 6, border: `1px solid ${C.border}`, textDecoration: "none" }}
+            style={{ pointerEvents: "auto", padding: "clamp(3px, 0.5vw, 4px) clamp(8px, 1vw, 12px)", fontSize: "clamp(9px, 1.2vw, 12px)", background: "rgba(0,0,0,0.6)", color: C.muted, borderRadius: 6, border: `1px solid ${C.border}`, textDecoration: "none" }}
           >
             Lobby
           </Link>
           {isSpectating && (
-            <span style={{ fontSize: 11, background: C.purple + "44", color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${C.purple}55` }}>
+            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", background: C.purple + "44", color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${C.purple}55` }}>
               SPECTATING
             </span>
           )}
           {/* Series wins */}
           {gameState && (gameState.targetWins ?? 1) > 1 && playerList.length > 0 && (
-            <div style={{ background: "rgba(0,0,0,0.65)", borderRadius: 8, padding: "6px 10px", fontSize: 12, color: C.text }}>
+            <div style={{ background: "rgba(0,0,0,0.65)", borderRadius: 8, padding: "clamp(4px, 1vw, 10px)", fontSize: "clamp(10px, 1.5vw, 12px)", color: C.text }}>
               {playerList.map((p) => (
                 <div key={p.id} style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <span style={{ color: C.muted, maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ color: C.muted, maxWidth: "clamp(60px, 12vw, 100px)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {p.username}
                   </span>
                   <span style={{ fontWeight: 700, fontFamily: "monospace" }}>
@@ -212,14 +212,14 @@ export function TournamentBattleGamePage() {
 
       {/* Spectator all-player list */}
       {isSpectating && playerList.length > 0 && (
-        <div style={{ position: "absolute", top: 60, right: 16, display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none", zIndex: 10 }}>
+        <div style={{ position: "absolute", top: 60, right: "clamp(8px, 2vw, 16px)", display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none", zIndex: 10, maxHeight: "60vh", overflowY: "auto" }}>
           {playerList.map((p) => (
             <div key={p.id} style={{
               background: "rgba(15,23,42,0.85)", borderRadius: 8, border: `1px solid ${C.border}`,
-              padding: "8px 12px", minWidth: 150, opacity: p.isActive ? 1 : 0.5,
+              padding: "8px 12px", minWidth: "clamp(120px, 20vw, 200px)", opacity: p.isActive ? 1 : 0.5,
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 6 }}>
-                <span style={{ color: C.muted, overflow: "hidden", maxWidth: 90, textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(9px, 1.5vw, 11px)", marginBottom: 6 }}>
+                <span style={{ color: C.muted, overflow: "hidden", maxWidth: "clamp(60px, 12vw, 100px)", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {p.username}{p.isAI ? " (AI)" : ""}
                 </span>
               </div>
@@ -238,17 +238,17 @@ export function TournamentBattleGamePage() {
 
       {/* Non-spectator opponent bars */}
       {!isSpectating && myBeyblade && playerList.length > 1 && (
-        <div style={{ position: "absolute", top: 60, right: 16, display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none", zIndex: 10 }}>
+        <div style={{ position: "absolute", top: 60, right: "clamp(8px, 2vw, 16px)", display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none", zIndex: 10, maxHeight: "60vh", overflowY: "auto" }}>
           {playerList.filter((p) => p.userId !== userId).map((opp) => (
             <div key={opp.id} style={{
               background: "rgba(15,23,42,0.85)", borderRadius: 8, border: `1px solid ${opp.isActive ? C.border : C.bg3}`,
-              padding: "8px 12px", minWidth: 150, opacity: opp.isActive ? 1 : 0.5,
+              padding: "8px 12px", minWidth: "clamp(120px, 20vw, 200px)", opacity: opp.isActive ? 1 : 0.5,
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 6 }}>
-                <span style={{ color: C.muted, overflow: "hidden", maxWidth: 90, textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(9px, 1.5vw, 11px)", marginBottom: 6 }}>
+                <span style={{ color: C.muted, overflow: "hidden", maxWidth: "clamp(60px, 12vw, 100px)", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {opp.username}{opp.isAI ? " (AI)" : ""}
                 </span>
-                <span style={{ color: `#${(TYPE_COLORS[opp.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}`, fontSize: 10 }}>{opp.type}</span>
+                <span style={{ color: `#${(TYPE_COLORS[opp.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}`, fontSize: "clamp(8px, 1.2vw, 10px)" }}>{opp.type}</span>
               </div>
               <div style={{ width: "100%", height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
                 <div style={{
@@ -265,17 +265,17 @@ export function TournamentBattleGamePage() {
 
       {/* My stats bottom */}
       {myBeyblade && !isSpectating && (
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, pointerEvents: "none", zIndex: 10 }}>
-          <div style={{ maxWidth: 320, margin: "0 auto", background: "rgba(15,23,42,0.85)", borderRadius: 12, border: `1px solid ${C.border}`, padding: 12 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 8 }}>
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10 }}>
+          <div style={{ maxWidth: "min(320px, 90vw)", margin: "0 auto", background: "rgba(15,23,42,0.85)", borderRadius: 12, border: `1px solid ${C.border}`, padding: "clamp(8px, 2vw, 12px)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(10px, 1.5vw, 12px)", color: C.muted, marginBottom: 8 }}>
               <span style={{ fontFamily: "monospace" }}>{myBeyblade.username} (you)</span>
               <span style={{ textTransform: "capitalize", color: `#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>{myBeyblade.type}</span>
             </div>
             <Bar label="HP" value={myBeyblade.health} max={myBeyblade.maxHealth} color={myBeyblade.health / Math.max(1, myBeyblade.maxHealth) > 0.5 ? C.green : myBeyblade.health / Math.max(1, myBeyblade.maxHealth) > 0.25 ? C.yellow : C.red} />
             <Bar label="Spin" value={myBeyblade.spin} max={myBeyblade.maxSpin} color={C.blue} />
-            <div style={{ fontSize: 11, textAlign: "center", fontFamily: "monospace", color: stabilityColor, marginTop: 4 }}>{stabilityLabel}</div>
+            <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", textAlign: "center", fontFamily: "monospace", color: stabilityColor, marginTop: 4 }}>{stabilityLabel}</div>
           </div>
-          <p style={{ textAlign: "center", color: C.faint, fontSize: 11, marginTop: 8 }}>
+          <p style={{ textAlign: "center", color: C.faint, fontSize: "clamp(8px, 1.2vw, 11px)", marginTop: 8 }}>
             WASD/Arrows: Move · J: Attack · K: Defend · L: Dodge · I: Jump · Space: Charge/Special
           </p>
         </div>

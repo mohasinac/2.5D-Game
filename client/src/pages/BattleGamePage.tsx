@@ -53,7 +53,7 @@ export function BattleGamePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrated]);
 
-  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen } = usePixiRenderer(containerRef);
+  const { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect } = usePixiRenderer(containerRef);
 
   useEffect(() => {
     let raf: number;
@@ -75,18 +75,18 @@ export function BattleGamePage() {
       spawnSpinOutParticles(x, y, TYPE_COLORS[data.type] ?? 0xffffff);
     });
     room.onMessage("special-move", (data: any) => {
-      rendererRef.current?.playSpecialMoveEffect?.(data.playerId, data.type, data.x, data.y, data.facing);
+      playSpecialMoveEffect(data.playerId, data.type, data.x, data.y, data.facing);
       if (data.playerId === myBeyblade?.id) {
         setLastSpecialMove(data.type);
       }
     });
     room.onMessage("combo", (data: any) => {
-      rendererRef.current?.playComboEffect?.(data.playerId, data.comboName);
+      playComboEffect(data.playerId, data.comboName);
       if (data.playerId === myBeyblade?.id) {
         setLastCombo({ name: data.comboName, timestamp: Date.now() });
       }
     });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen]);
+  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect]);
 
   // Auto-dismiss game-end overlay
   useEffect(() => {
@@ -145,16 +145,16 @@ export function BattleGamePage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
           <Link
             to="/game"
-            style={{ pointerEvents: "auto", padding: "4px 12px", fontSize: 12, background: "rgba(0,0,0,0.6)", color: C.muted, borderRadius: 6, border: `1px solid ${C.border}`, textDecoration: "none" }}
+            style={{ pointerEvents: "auto", padding: "clamp(3px, 0.5vw, 4px) clamp(8px, 1vw, 12px)", fontSize: "clamp(9px, 1.2vw, 12px)", background: "rgba(0,0,0,0.6)", color: C.muted, borderRadius: 6, border: `1px solid ${C.border}`, textDecoration: "none" }}
           >
             Exit
           </Link>
           {/* Series wins scoreboard */}
           {gameState && (gameState.targetWins ?? 1) > 1 && playerList.length > 0 && (
-            <div style={{ background: "rgba(0,0,0,0.65)", borderRadius: 8, padding: "6px 10px", fontSize: 12, color: C.text }}>
+            <div style={{ background: "rgba(0,0,0,0.65)", borderRadius: 8, padding: "clamp(4px, 1vw, 10px)", fontSize: "clamp(10px, 1.5vw, 12px)", color: C.text }}>
               {playerList.map((p) => (
                 <div key={p.id} style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <span style={{ color: C.muted, maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ color: C.muted, maxWidth: "clamp(60px, 12vw, 100px)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {p.username}
                   </span>
                   <span style={{ fontWeight: 700, fontFamily: "monospace" }}>
@@ -169,14 +169,14 @@ export function BattleGamePage() {
 
       {/* Spectator: show all player bars */}
       {isSpectating && playerList.length > 0 && (
-        <div style={{ position: "absolute", top: 60, right: 16, display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none", zIndex: 10 }}>
+        <div style={{ position: "absolute", top: 60, right: "clamp(8px, 2vw, 16px)", display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none", zIndex: 10, maxHeight: "60vh", overflowY: "auto" }}>
           {playerList.map((p) => (
             <div key={p.id} style={{
               background: "rgba(15,23,42,0.85)", borderRadius: 8, border: `1px solid ${C.border}`,
-              padding: "8px 12px", minWidth: 150, opacity: p.isActive ? 1 : 0.5,
+              padding: "8px 12px", minWidth: "clamp(120px, 20vw, 200px)", opacity: p.isActive ? 1 : 0.5,
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 6 }}>
-                <span style={{ color: C.muted, overflow: "hidden", maxWidth: 90, textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.username}</span>
+                <span style={{ color: C.muted, overflow: "hidden", maxWidth: "clamp(60px, 12vw, 100px)", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.username}</span>
                 <span style={{ color: `#${(TYPE_COLORS[p.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}`, fontSize: 10 }}>{p.type}</span>
               </div>
               <div style={{ width: "100%", height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
@@ -194,16 +194,16 @@ export function BattleGamePage() {
 
       {/* Non-spectator opponent health bars */}
       {!isSpectating && playerList.length > 1 && (
-        <div style={{ position: "absolute", top: 60, right: 16, display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none", zIndex: 10 }}>
+        <div style={{ position: "absolute", top: 60, right: "clamp(8px, 2vw, 16px)", display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none", zIndex: 10, maxHeight: "60vh", overflowY: "auto" }}>
           {playerList
             .filter((p) => p.userId !== userId)
             .map((opp) => (
               <div key={opp.id} style={{
                 background: "rgba(15,23,42,0.85)", borderRadius: 8, border: `1px solid ${opp.isActive ? C.border : C.bg3}`,
-                padding: "8px 12px", minWidth: 150, opacity: opp.isActive ? 1 : 0.5,
+                padding: "8px 12px", minWidth: "clamp(120px, 20vw, 200px)", opacity: opp.isActive ? 1 : 0.5,
               }}>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 6 }}>
-                  <span style={{ color: C.muted, overflow: "hidden", maxWidth: 90, textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{opp.username}</span>
+                  <span style={{ color: C.muted, overflow: "hidden", maxWidth: "clamp(60px, 12vw, 100px)", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{opp.username}</span>
                   <span style={{ color: `#${(TYPE_COLORS[opp.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}`, fontSize: 10 }}>{opp.type}</span>
                 </div>
                 <div style={{ width: "100%", height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
@@ -221,14 +221,14 @@ export function BattleGamePage() {
 
       {/* My stats bottom */}
       {myBeyblade && !isSpectating && (
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, pointerEvents: "none", zIndex: 10 }}>
-          <div style={{ maxWidth: 320, margin: "0 auto", background: "rgba(15,23,42,0.85)", borderRadius: 12, border: `1px solid ${C.border}`, padding: 12 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 8 }}>
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10 }}>
+          <div style={{ maxWidth: "min(320px, 90vw)", margin: "0 auto", background: "rgba(15,23,42,0.85)", borderRadius: 12, border: `1px solid ${C.border}`, padding: "clamp(8px, 2vw, 12px)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(10px, 1.5vw, 12px)", color: C.muted, marginBottom: 8 }}>
               <span style={{ fontFamily: "monospace" }}>{myBeyblade.username} (you)</span>
               <span style={{ textTransform: "capitalize", color: `#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>{myBeyblade.type}</span>
             </div>
             <div style={{ marginBottom: 6 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 4 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(9px, 1.5vw, 11px)", marginBottom: 4 }}>
                 <span style={{ color: C.red }}>HP</span>
                 <span style={{ color: C.text, fontFamily: "monospace" }}>{Math.round((myBeyblade.health / Math.max(1, myBeyblade.maxHealth)) * 100)}</span>
               </div>
@@ -237,7 +237,7 @@ export function BattleGamePage() {
               </div>
             </div>
             <div style={{ marginBottom: 6 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 4 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(9px, 1.5vw, 11px)", marginBottom: 4 }}>
                 <span style={{ color: C.blue }}>Spin</span>
                 <span style={{ color: C.text, fontFamily: "monospace" }}>{Math.round((myBeyblade.spin / Math.max(1, myBeyblade.maxSpin)) * 100)}%</span>
               </div>
@@ -245,9 +245,9 @@ export function BattleGamePage() {
                 <div style={{ height: "100%", background: C.blue, borderRadius: 3, transition: "width 150ms", width: `${(myBeyblade.spin / Math.max(1, myBeyblade.maxSpin)) * 100}%` }} />
               </div>
             </div>
-            <div style={{ fontSize: 11, textAlign: "center", fontFamily: "monospace", color: stabilityColor }}>{stabilityLabel}</div>
+            <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", textAlign: "center", fontFamily: "monospace", color: stabilityColor }}>{stabilityLabel}</div>
           </div>
-          <p style={{ textAlign: "center", color: C.faint, fontSize: 11, marginTop: 8 }}>
+          <p style={{ textAlign: "center", color: C.faint, fontSize: "clamp(8px, 1.2vw, 11px)", marginTop: 8 }}>
             WASD/Arrows: Move · J: Attack · K: Defend · L: Dodge · I: Jump · Space: Charge/Special
           </p>
         </div>

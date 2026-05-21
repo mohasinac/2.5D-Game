@@ -73,5 +73,19 @@ export function usePixiRenderer(containerRef: React.RefObject<HTMLDivElement | n
     []
   );
 
-  return { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen };
+  const playSpecialMoveEffect = useCallback(
+    (playerId: string, type: string, x: number, y: number, facing: number) => {
+      rendererRef.current?.playSpecialMoveEffect?.(playerId, type, x, y, facing);
+    },
+    []
+  );
+
+  const playComboEffect = useCallback(
+    (playerId: string, comboName: string) => {
+      rendererRef.current?.playComboEffect?.(playerId, comboName);
+    },
+    []
+  );
+
+  return { render, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect };
 }

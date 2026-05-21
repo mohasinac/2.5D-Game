@@ -5,12 +5,15 @@
 
 export const FIREBASE_COLLECTIONS = {
   BEYBLADE_STATS: "beyblade_stats",
+  BEYBLADE_SYSTEMS: "beyblade_systems",
   ARENAS: "arenas",
+  ARENA_SYSTEMS: "arena_systems",
   MATCHES: "matches",
   PLAYER_STATS: "player_stats",
   TOURNAMENTS: "tournaments",
   TOURNAMENT_PARTICIPANTS: "tournament_participants",
   TOURNAMENT_BRACKETS: "tournament_brackets",
+  SPECIAL_MOVES: "special_moves",
   SETTINGS: "settings",
 } as const;
 

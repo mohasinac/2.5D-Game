@@ -43,6 +43,8 @@ export const COLLECTIONS = {
   CASING_PARTS: "casing_parts",
   SPIN_TRACK_PARTS: "spin_track_parts",
   BEYBLADE_SYSTEMS: "beyblade_systems",
+  ARENA_SYSTEMS: "arena_systems",
+  SPECIAL_MOVES: "special_moves",
   // Tournament collections
   TOURNAMENTS: "tournaments",
   TOURNAMENT_PARTICIPANTS: "tournament_participants",

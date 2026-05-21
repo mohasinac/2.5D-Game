@@ -59,6 +59,13 @@ async function seedAdmin() {
   );
 
   console.log(`✅ Firestore users/${uid} → role: "admin"`);
+
+  // Custom claim — read by Storage rules (request.auth.token.admin) without
+  // needing cross-service Firestore reads. Client must refresh ID token
+  // (getIdToken(true) or re-sign-in) before new claim is visible.
+  await auth.setCustomUserClaims(uid, { admin: true });
+  console.log(`✅ Auth custom claim set: { admin: true } on uid=${uid}`);
+
   console.log(`\n🎮 Admin ready: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);
 }
 

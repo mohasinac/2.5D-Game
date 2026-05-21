@@ -4,13 +4,14 @@ import {
   Beyblade,
 } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
-import { loadBeyblade, loadArena } from "../utils/firebase";
+import { loadBeyblade, loadArena, loadArenaSystem } from "../utils/firebase";
 import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
 import { tryReserveRoom, releaseRoom } from "../utils/roomCounter";
 import { createPRNG } from "../utils/prng";
 import { hashString } from "../utils/hashString";
 import { ComboTracker, detectCombo } from "../utils/comboSystem";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
+import type { ArenaSystem } from "../types/arenaSystem";
 import { AIController, type AIDifficulty } from "../ai/AIController";
 
 const BOWL_PROFILE_ANGLES: Record<string, number> = {
@@ -35,6 +36,7 @@ interface JoinOptions {
   beybladeId: string;
   aiBeybladeId: string;
   arenaId: string;
+  arenaSystemId?: string;
   userId: string;
   username: string;
   aiDifficulty?: AIDifficulty;
@@ -62,6 +64,7 @@ function decodeBitmask(mask: number): any {
 export class AIBattleRoom extends Room<GameState> {
   private physics!: PhysicsEngine;
   private arenaCache: ArenaConfig | null = null;
+  private arenaSystem: ArenaSystem | null = null;
   private aiController!: AIController;
   private matchStarted = false;
   private lastInputTime = 0;
@@ -111,6 +114,14 @@ export class AIBattleRoom extends Room<GameState> {
       console.log(`✅ AIBattleRoom: loaded arena ${arenaData.name}`);
     } else {
       this.applyDefaultArena(options.arenaId || "default");
+    }
+
+    // Load arena system (2.5D) if provided
+    if (options.arenaSystemId) {
+      this.arenaSystem = await loadArenaSystem(options.arenaSystemId);
+      if (this.arenaSystem) {
+        console.log(`✅ AIBattleRoom: loaded arena system ${this.arenaSystem.displayName}`);
+      }
     }
 
     this.physics = new PhysicsEngine();
@@ -396,6 +407,15 @@ export class AIBattleRoom extends Room<GameState> {
 
     const dt = deltaTime / 1000;
     this.physics.update(deltaTime);
+
+    // Apply slope physics if using a 2.5D arena system
+    const beybladeIds = Array.from(this.state.beyblades.keys());
+    beybladeIds.forEach((id) => {
+      const beyblade = this.state.beyblades.get(id);
+      if (beyblade && this.arenaSystem) {
+        this.applyArenaSystemSlope(beyblade);
+      }
+    });
 
     // ── AI input generation ──────────────────────────────────────────────────
     const aiBeyblade = this.state.beyblades.get(AI_SESSION_ID);
@@ -869,5 +889,32 @@ export class AIBattleRoom extends Room<GameState> {
     beyblade.maxSpin = 2192;
     beyblade.spin = 2192;
     beyblade.speedBonus = 1.84;
+  }
+
+  private applyArenaSystemSlope(beyblade: Beyblade): void {
+    if (!this.arenaSystem?.elevationMap || !this.arenaSystem.slopePhysics) return;
+
+    const { tiltAngle = 0, tiltDirection = 0 } = this.arenaSystem.elevationMap;
+    if (!tiltAngle) return;
+
+    const strength = (tiltAngle / 30) * (this.arenaSystem.slopePhysics.gravityStrength ?? 0.5);
+    const rad = (tiltDirection * Math.PI) / 180;
+
+    const forceX = Math.cos(rad) * strength * 0.002 * beyblade.mass;
+    const forceY = Math.sin(rad) * strength * 0.002 * beyblade.mass;
+    this.physics.applyForce(beyblade.id, forceX, forceY);
+
+    if (this.arenaSystem.slopePhysics.frictionMap) {
+      for (const zone of this.arenaSystem.slopePhysics.frictionMap) {
+        const dx = beyblade.x - zone.x * 24;
+        const dy = beyblade.y - zone.y * 24;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist <= zone.radius * 24) {
+          this.physics.setFrictionMultiplier(beyblade.id, zone.frictionMultiplier);
+          break;
+        }
+      }
+    }
   }
 }

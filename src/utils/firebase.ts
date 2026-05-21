@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
+import type { ArenaSystem } from "../types/arenaSystem";
 import { FIREBASE_COLLECTIONS } from "../constants/firebase";
 
 // Initialize Firebase Admin (if not already initialized)
@@ -89,6 +90,33 @@ export async function loadArena(arenaId: string): Promise<ArenaConfig | null> {
     return doc.data() as ArenaConfig;
   } catch (error) {
     console.error("Error loading arena:", error);
+    return null;
+  }
+}
+
+/**
+ * Load arena system (2.5D) data from Firestore
+ */
+export async function loadArenaSystem(arenaSystemId: string): Promise<ArenaSystem | null> {
+  if (!db) {
+    console.error('Firebase not initialized');
+    return null;
+  }
+
+  try {
+    const doc = await withTimeout(
+      db.collection(FIREBASE_COLLECTIONS.ARENA_SYSTEMS).doc(arenaSystemId).get(),
+      5000
+    );
+
+    if (!doc.exists) {
+      console.error(`Arena system not found: ${arenaSystemId}`);
+      return null;
+    }
+
+    return doc.data() as ArenaSystem;
+  } catch (error) {
+    console.error("Error loading arena system:", error);
     return null;
   }
 }

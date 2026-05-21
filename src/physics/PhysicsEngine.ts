@@ -158,6 +158,13 @@ export class PhysicsEngine {
     Matter.Body.setVelocity(body, { x: vx, y: vy });
   }
 
+  setFrictionMultiplier(id: string, multiplier: number): void {
+    const body = this.bodies.get(id);
+    if (!body) return;
+    body.friction = Math.max(0.001, 0.01 * multiplier);
+    body.frictionAir = Math.max(0.001, 0.01 * multiplier);
+  }
+
   update(deltaTime?: number): void {
     const dt = deltaTime ?? (1000 / 60);
     Matter.Engine.update(this.engine, dt);
