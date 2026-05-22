@@ -2,7 +2,11 @@
 // existing PartPhysics behavior so future refactors don't silently break gimmicks).
 
 import { describe, it, expect } from "vitest";
-import { applyStatModifier, dispatchStatModifierEvent } from "../../physics/PartPhysics";
+import {
+  applyStatModifier, dispatchStatModifierEvent,
+  computeSpinSteal, computeContactDamage, getClashType, getClashBlend,
+  CLASH_MULTIPLIERS,
+} from "../../physics/PartPhysics";
 import type { Beyblade } from "../../rooms/schema/GameState";
 import type { StatModifier } from "../../../client/src/types/beybladeSystem";
 
@@ -77,5 +81,98 @@ describe("dispatchStatModifierEvent", () => {
     ];
     dispatchStatModifierEvent(b, "on_hit_opponent", parts);
     expect(b.spin).toBe(1000);
+  });
+});
+
+// ─── O9: Clash Type & Spin Steal ─────────────────────────────────────────────
+
+describe("getClashType", () => {
+  it("same spin direction → same_spin", () => {
+    expect(getClashType("left", "left")).toBe("same_spin");
+    expect(getClashType("right", "right")).toBe("same_spin");
+  });
+
+  it("opposite spin directions → counter_spin", () => {
+    expect(getClashType("left", "right")).toBe("counter_spin");
+    expect(getClashType("right", "left")).toBe("counter_spin");
+  });
+});
+
+describe("getClashBlend", () => {
+  it("head-on (0°) → blend 0 (full clash)", () => {
+    expect(getClashBlend(0)).toBe(0);
+  });
+
+  it("45° → blend 1 (fully glancing)", () => {
+    expect(getClashBlend(45)).toBe(1);
+  });
+
+  it("clamps blend at 1 past 45°", () => {
+    expect(getClashBlend(90)).toBe(1);
+  });
+
+  it("22.5° → blend 0.5", () => {
+    expect(getClashBlend(22.5)).toBeCloseTo(0.5, 5);
+  });
+});
+
+describe("computeSpinSteal", () => {
+  it("baseline: 1.0 factor, 1.0 resist, 1.0 bearing, neutral → raw steal unchanged", () => {
+    expect(computeSpinSteal(100, 1.0, 1.0, 1.0, "neutral")).toBeCloseTo(100, 5);
+  });
+
+  it("counter_spin boosts steal by CLASH_MULTIPLIERS factor", () => {
+    const mult = CLASH_MULTIPLIERS.counter_spin.spinSteal;
+    expect(computeSpinSteal(100, 1.0, 1.0, 1.0, "counter_spin")).toBeCloseTo(100 * mult, 5);
+  });
+
+  it("same_spin reduces steal", () => {
+    const mult = CLASH_MULTIPLIERS.same_spin.spinSteal;
+    expect(computeSpinSteal(100, 1.0, 1.0, 1.0, "same_spin")).toBeCloseTo(100 * mult, 5);
+  });
+
+  it("high spinStealResist reduces the steal", () => {
+    // resist=2 means attacker gets half the steal
+    expect(computeSpinSteal(100, 1.0, 1.0, 2.0, "neutral")).toBeCloseTo(50, 5);
+  });
+
+  it("high attackerSpinStealFactor increases steal", () => {
+    expect(computeSpinSteal(100, 2.0, 1.0, 1.0, "neutral")).toBeCloseTo(200, 5);
+  });
+
+  it("low bearing friction reduces steal", () => {
+    // B:D bearing friction ~0.02
+    expect(computeSpinSteal(100, 1.0, 0.02, 1.0, "neutral")).toBeCloseTo(2, 5);
+  });
+
+  it("resist near 0 clamps to max 0.01 divisor (no division by zero)", () => {
+    const result = computeSpinSteal(100, 1.0, 1.0, 0, "neutral");
+    // 0 resist should clamp to 0.01 → steal * 1/0.01 = steal * 100
+    expect(result).toBeCloseTo(10000, 5);
+  });
+});
+
+describe("computeContactDamage", () => {
+  it("same direction head-on → 0.8× damage (same_spin dampened)", () => {
+    expect(computeContactDamage(100, "left", "left", 0)).toBeCloseTo(80, 5);
+  });
+
+  it("opposite direction head-on → 1.4× damage (counter_spin boosted)", () => {
+    expect(computeContactDamage(100, "left", "right", 0)).toBeCloseTo(140, 5);
+  });
+
+  it("glancing (45°) → neutral 1.0× damage regardless of spin match", () => {
+    expect(computeContactDamage(100, "left", "left", 45)).toBeCloseTo(100, 5);
+    expect(computeContactDamage(100, "left", "right", 45)).toBeCloseTo(100, 5);
+  });
+
+  it("22.5° same-spin → midpoint between 0.8 and 1.0 = 0.9", () => {
+    // blend=0.5 at 22.5°; damage = 0.8 + 0.5*(1.0-0.8) = 0.9
+    expect(computeContactDamage(100, "left", "left", 22.5)).toBeCloseTo(90, 5);
+  });
+
+  it("22.5° counter-spin → midpoint between 1.4 and 1.0 = 1.2", () => {
+    // blend=0.5; damage = 1.4 + 0.5*(1.0-1.4) = 1.2
+    expect(computeContactDamage(100, "left", "right", 22.5)).toBeCloseTo(120, 5);
   });
 });

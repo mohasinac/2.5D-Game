@@ -1,5 +1,16 @@
 # CLAUDE.md — Beyblade Game
 
+## NO DEFERENCE POLICY
+
+**All plan items must be fully implemented — no deferrals, no "leaving for later", no "future work" notes.**
+
+- Every `- [ ]` item in any plan file under `.claude/plans/` must be completed before the session ends.
+- Never mark something as deferred, out-of-scope, or "can be added later" unless the user explicitly agrees to skip it.
+- If an item is already implemented, verify it against the code and mark it `[x]`; do not assume it is done without checking.
+- If a plan item cannot be completed in the current session (e.g., requires external services), say so explicitly with a reason — do not silently skip it.
+
+---
+
 ## Project Structure
 
 Two separate runnable systems in one repo:
