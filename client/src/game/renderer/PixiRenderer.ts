@@ -104,6 +104,11 @@ export class BeybladeGameRenderer {
   // Particles
   private particles: ParticleData[] = [];
 
+  // Phase AA: arena-wide effect overlays (screen-space, above all game layers)
+  private darknessOverlay: PIXI.Graphics | null = null;
+  private fogOverlay: PIXI.Graphics | null = null;
+  private freezeFlashTimer = 0;
+
   // Arena geometry cache — screen space
   private arenaRadius = 0;
   private arenaCenterX = 0;
@@ -170,11 +175,23 @@ export class BeybladeGameRenderer {
     this.app.stage.addChild(this.worldRoot);
     this.app.stage.addChild(this.hudLayer); // HUD stays in screen space
 
+    // Phase AA: arena-wide effect overlays (above HUD so they cover everything)
+    this.darknessOverlay = new PIXI.Graphics();
+    this.darknessOverlay.visible = false;
+    this.darknessOverlay.eventMode = "none";
+    this.app.stage.addChild(this.darknessOverlay);
+
+    this.fogOverlay = new PIXI.Graphics();
+    this.fogOverlay.visible = false;
+    this.fogOverlay.eventMode = "none";
+    this.app.stage.addChild(this.fogOverlay);
+
     // Feature layer renderer (obstacles, pits, portals, turrets, water, loops, projectiles).
     this.featureRenderer = new FeatureRenderer(this.featureLayer);
 
-    // Particle update on ticker
+    // Particle update + arena-effect overlay tick on ticker
     this.app.ticker.add(this.updateParticles.bind(this));
+    this.app.ticker.add((ticker: PIXI.Ticker) => this.tickArenaEffectOverlays(ticker.deltaMS));
 
     this.initialized = true;
   }
@@ -1086,6 +1103,70 @@ export class BeybladeGameRenderer {
     }
   }
 
+  /**
+   * Phase AA — apply or clear a full-arena visual effect.
+   * Called by the game page whenever useColyseus reports an arenaEffect change.
+   */
+  applyArenaEffect(effectType: string | null): void {
+    if (!this.initialized) return;
+
+    // Clear all overlays first
+    if (this.darknessOverlay) this.darknessOverlay.visible = false;
+    if (this.fogOverlay) this.fogOverlay.visible = false;
+
+    if (!effectType) return;
+
+    const w = this.app.screen.width;
+    const h = this.app.screen.height;
+
+    if (effectType === "darkness") {
+      if (this.darknessOverlay) {
+        this.darknessOverlay.clear();
+        this.darknessOverlay.rect(0, 0, w, h).fill({ color: 0x000000, alpha: 0.85 });
+        this.darknessOverlay.visible = true;
+      }
+    } else if (effectType === "fog_of_war") {
+      if (this.fogOverlay) {
+        this.fogOverlay.clear();
+        // Radial fog: transparent center, opaque edge
+        const cx = w / 2; const cy = h / 2;
+        const r = Math.max(w, h) * 0.4;
+        for (let i = 0; i < 8; i++) {
+          const alpha = (i / 8) * 0.7;
+          const ri = r * (1 - i / 8);
+          this.fogOverlay.circle(cx, cy, r - ri + r * 0.1).fill({ color: 0x334455, alpha });
+        }
+        this.fogOverlay.rect(0, 0, w, h).fill({ color: 0x1a2233, alpha: 0.35 });
+        this.fogOverlay.visible = true;
+      }
+    } else if (effectType === "freeze_all") {
+      // Freeze: brief blue flash pulse — set a timer, render handles the fade
+      this.freezeFlashTimer = 600; // ms
+      if (this.darknessOverlay) {
+        this.darknessOverlay.clear();
+        this.darknessOverlay.rect(0, 0, w, h).fill({ color: 0x88ccff, alpha: 0.4 });
+        this.darknessOverlay.visible = true;
+      }
+    }
+  }
+
+  /** Called each render frame to tick transient arena-effect visuals. */
+  private tickArenaEffectOverlays(dtMs: number): void {
+    if (this.freezeFlashTimer > 0) {
+      this.freezeFlashTimer = Math.max(0, this.freezeFlashTimer - dtMs);
+      if (this.darknessOverlay) {
+        const progress = this.freezeFlashTimer / 600;
+        const alpha = progress * 0.4;
+        const w = this.app.screen.width; const h = this.app.screen.height;
+        this.darknessOverlay.clear();
+        if (alpha > 0.005) {
+          this.darknessOverlay.rect(0, 0, w, h).fill({ color: 0x88ccff, alpha });
+        }
+        this.darknessOverlay.visible = alpha > 0.005;
+      }
+    }
+  }
+
   destroy() {
     if (!this.initialized) return;
     // Mark uninitialized FIRST so any concurrent render() calls return early
@@ -1102,6 +1183,9 @@ export class BeybladeGameRenderer {
       this.featureRenderer.destroy();
       this.featureRenderer = null;
     }
+
+    this.darknessOverlay = null;
+    this.fogOverlay = null;
 
     // PixiJS calls gl.getExtension('WEBGL_lose_context').loseContext() inside its
     // own destroy(), which fires an async contextlost event.  That event can arrive

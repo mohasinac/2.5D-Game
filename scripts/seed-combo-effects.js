@@ -133,6 +133,39 @@ const COMBO_EFFECTS = [
       { behaviorId: "movement.meteor_strike", params: { heightCm: 300, hangTimeTicks: 20, landTarget: "opponent", impactRadiusCm: 40, impactDamageMult: 3.0, impactRecoilMult: 4.0 }, delayTicks: 0, parallel: false },
     ],
   },
+  // Phase AA — Arena-Wide Special Moves
+  {
+    id: "glacial-siege",
+    name: "Glacial Siege",
+    cost: 35, cooldownMs: 14000, windupTicks: 15, bleedTicks: 25,
+    tasks: [
+      // Step 1: Override floor with ice hazard for 5 seconds (300 ticks @ 60Hz)
+      { action: { type: "arena_effect", effect: { type: "floor_override", hazardType: "ice", intensity: 0.8, durationTicks: 300 } }, timing: { type: "instant" } },
+      // Step 2 (parallel): Freeze all opponents for 1.5s
+      { action: { type: "arena_effect", effect: { type: "freeze_all", durationTicks: 90, spareTeammates: true } }, timing: { type: "instant" } },
+      // Step 3 (parallel): Boost own spin decay resistance during the freeze
+      { action: { type: "multiplier", statDeltas: [{ stat: "spinDecayRate", multiplier: 0.0 }] }, target: "self", timing: { type: "timed", durationTicks: 90 } },
+    ],
+    steps: [
+      { behaviorId: "arena.effect.floor_override", params: { hazardType: "ice", intensity: 0.8, durationTicks: 300 }, delayTicks: 0, parallel: false },
+      { behaviorId: "arena.effect.freeze_all",     params: { durationTicks: 90, spareTeammates: true },               delayTicks: 0, parallel: true },
+      { behaviorId: "factor.boost",                params: { stat: "spinDecayRate", mult: 0.0, dur: 90 },             delayTicks: 0, parallel: true },
+    ],
+  },
+  {
+    id: "shadow-shroud",
+    name: "Shadow Shroud",
+    cost: 25, cooldownMs: 12000, windupTicks: 8, bleedTicks: 15,
+    tasks: [
+      { action: { type: "arena_effect", effect: { type: "darkness", durationTicks: 180, flashExitMs: 400 } }, timing: { type: "instant" } },
+      { action: { type: "multiplier", statDeltas: [{ stat: "speed", multiplier: 1.5 }, { stat: "spinStealFactor", multiplier: 1.8 }] }, target: "self", timing: { type: "timed", durationTicks: 180 } },
+    ],
+    steps: [
+      { behaviorId: "arena.effect.darkness",  params: { durationTicks: 180, flashExitMs: 400 }, delayTicks: 0, parallel: false },
+      { behaviorId: "factor.boost", params: { stat: "speed",           mult: 1.5, dur: 180 }, delayTicks: 0, parallel: true },
+      { behaviorId: "factor.boost", params: { stat: "spinStealFactor", mult: 1.8, dur: 180 }, delayTicks: 0, parallel: true },
+    ],
+  },
 ];
 
 async function seed() {

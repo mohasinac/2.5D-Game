@@ -3,6 +3,8 @@
  * Focus: Name, Shape, Theme, Auto-Rotate, Walls with proper edge-based configuration
  */
 
+import type { ElementType } from "./elementTypes";
+
 // ============================================================================
 // CONSTANTS
 // ============================================================================
@@ -616,6 +618,7 @@ export interface TurretConfig {
   // Visual
   color?: string; // Optional custom color (defaults to theme color)
   autoPlaced?: boolean; // Was this turret auto-placed?
+  elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
 }
 
@@ -752,6 +755,7 @@ export interface ObstacleConfig {
   controlledBySwitchId?: string;
   /** Self-rotation for visual + damage-face dynamics. Optional. */
   selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
 }
 
@@ -808,6 +812,7 @@ export interface GravityHoleConfig {
   rotation?: RotationBlock;
   controlledBySwitchId?: string;
   selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
 }
 
@@ -858,6 +863,7 @@ export interface SpinZoneConfig {
   assetId?: string;
   controlledBySwitchId?: string;
   selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
 }
 
@@ -874,6 +880,7 @@ export interface BumpConfig {
   assetId?: string;
   controlledBySwitchId?: string;
   selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
 }
 
@@ -971,6 +978,7 @@ export interface FloorHazardZoneConfig {
   durationMs?: number;              // null = permanent
   controlledBySwitchId?: string;
   activeByDefault?: boolean;
+  elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
 }
 
@@ -999,6 +1007,7 @@ export interface EffectZoneConfig {
   durationMs?: number;              // null = permanent while inside
   controlledBySwitchId?: string;
   activeByDefault?: boolean;
+  elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
 }
 
@@ -1011,6 +1020,7 @@ export interface ElevationZoneConfig {
   spinBoostOnPlatform?: number;     // spin/s bonus while on platform (default 0)
   edgeDropForce?: number;           // impulse applied when crossing platform edge (default 0)
   controlledBySwitchId?: string;
+  elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
 }
 

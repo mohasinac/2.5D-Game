@@ -54,6 +54,7 @@ const BEHAVIOR_DEFS = [
 
   // ── ARENA ─────────────────────────────────────────────────────────────────────
   { id: "arena.effect.floor_override",   category: "arena",  description: "Override entire floor hazard type",  params: ["hazardType","intensity","dur"] },
+  { id: "element.override_type",  category: "arena",  description: "ELEMENTAL_BOOST — temporarily override bey element type for N ticks", params: ["elementType","dur"] },
   { id: "arena.effect.gravity_change",   category: "arena",  description: "Change arena gravity multiplier",    params: ["multiplier","dur"] },
   { id: "arena.effect.arena_tilt",       category: "arena",  description: "Tilt arena floor",                   params: ["angleDeg","directionDeg","dur"] },
   { id: "arena.effect.freeze_all",       category: "arena",  description: "Freeze all beys except caster",      params: ["dur","spareTeammates"] },

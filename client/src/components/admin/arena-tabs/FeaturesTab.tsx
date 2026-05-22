@@ -4,7 +4,11 @@
 import { useState } from "react";
 import { C } from "@/styles/theme";
 import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset } from "@/types/arenaConfigNew";
+import type { ElementType } from "@/types/elementTypes";
+import { ELEMENT_ICONS } from "@/types/elementTypes";
 import FeatureAnimationPanel from "./FeatureAnimationPanel";
+
+const ELEMENT_TYPES: ElementType[] = ["fire","water","earth","lightning","wind","ice","shadow","light","metal","nature","thunder","void"];
 
 interface Props {
   config: ArenaConfig;
@@ -171,6 +175,13 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 {HAZARD_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </Row>
+            <Row label="Element Type">
+              <select value={(z as any).elementType ?? ""} onChange={e => updateHazard(i, { elementType: e.target.value || undefined })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
+                <option value="">— none —</option>
+                {ELEMENT_TYPES.map(t => <option key={t} value={t}>{ELEMENT_ICONS[t]} {t}</option>)}
+              </select>
+            </Row>
             <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateHazard(i, { x_cm: v }))}</Row>
             <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateHazard(i, { y_cm: v }))}</Row>
             <Row label="Radius (cm)">{numInput(z.radius_cm, 5, v => updateHazard(i, { radius_cm: v }), 0.5)}</Row>
@@ -208,6 +219,13 @@ export default function FeaturesTab({ config, onChange }: Props) {
               <select value={z.effectType} onChange={e => updateEffect(i, { effectType: e.target.value })}
                 style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
                 {EFFECT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </Row>
+            <Row label="Element Type">
+              <select value={z.elementType ?? ""} onChange={e => updateEffect(i, { elementType: e.target.value || undefined })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
+                <option value="">— none —</option>
+                {ELEMENT_TYPES.map(t => <option key={t} value={t}>{ELEMENT_ICONS[t]} {t}</option>)}
               </select>
             </Row>
             <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateEffect(i, { x_cm: v }))}</Row>

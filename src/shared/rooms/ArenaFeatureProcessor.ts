@@ -242,7 +242,25 @@ export function processFloorHazardZones(
     const inZone = distSq(beyblade.x, beyblade.y, zx, zy) < radiusPx ** 2;
     if (!inZone) continue;
 
-    const intensity = zone.intensity ?? 1.0;
+    // AB7: element immunity check — skip this zone entirely if bey is immune
+    const beyElems: string[] = (beyblade as any).elementTypes ?? [];
+    if (beyElems.length > 0 && (zone as any).elementType) {
+      const VOID_IMMUNE: string[] = ["lava","ice","mud","healing","emp","magnet","antigravity","electric","time_slow","repulsion","size_shrink","size_grow","trampoline","combo_boost","drain"];
+      const ZONE_IMMUNITIES: Record<string, string[]> = {
+        fire:["ice"], water:["fire"], earth:["electric","emp"], lightning:["electric","emp"],
+        wind:["time_slow","sticky","mud"], ice:["ice"], light:["void"], nature:["drain"],
+        thunder:["electric","emp"], void: VOID_IMMUNE,
+      };
+      const isImmune = beyElems.some(e => ZONE_IMMUNITIES[e]?.includes(zone.hazardType ?? ""));
+      if (isImmune) continue;
+    }
+
+    let intensity = zone.intensity ?? 1.0;
+
+    // AB7: zone bonus — bey element matches zone element → bonus effect
+    if (beyElems.length > 0 && (zone as any).elementType && beyElems.includes((zone as any).elementType)) {
+      intensity *= 1.5; // 50% stronger effect for matching element
+    }
 
     switch (zone.hazardType) {
       case "lava":
@@ -459,6 +477,84 @@ export function applyEnvironmentalEffects(
       break;
     }
   }
+}
+
+// ── AA6: Arena-wide spawn position resolution ────────────────────────────────
+
+export interface ResolvedPosition { x: number; y: number; }
+
+/**
+ * Resolve `scattered_in_arena` spawn positions using the room PRNG.
+ * Attempts up to 200 random samples to place `count` non-overlapping points.
+ * Falls back to best effort if constraints can't all be satisfied.
+ */
+export function resolveScatteredInArena(
+  count: number,
+  arenaRadiusPx: number,
+  arenaCx: number,
+  arenaCy: number,
+  rand: () => number,
+  minSpacingCm = 10,
+  avoidCenterCm = 0,
+  avoidEdgeCm = 0,
+): ResolvedPosition[] {
+  const PX_PER_CM = 24;
+  const minSpacingPx = minSpacingCm * PX_PER_CM;
+  const avoidCenterPx = avoidCenterCm * PX_PER_CM;
+  const innerRadius = Math.max(0, avoidCenterPx);
+  const outerRadius = arenaRadiusPx - avoidEdgeCm * PX_PER_CM;
+
+  const positions: ResolvedPosition[] = [];
+  const maxAttempts = 200;
+  let attempt = 0;
+
+  while (positions.length < count && attempt < maxAttempts) {
+    attempt++;
+    const angle = rand() * Math.PI * 2;
+    const r = innerRadius + rand() * (outerRadius - innerRadius);
+    const x = arenaCx + Math.cos(angle) * r;
+    const y = arenaCy + Math.sin(angle) * r;
+
+    const tooClose = positions.some(p => {
+      const dx = p.x - x; const dy = p.y - y;
+      return dx * dx + dy * dy < minSpacingPx * minSpacingPx;
+    });
+    if (!tooClose) positions.push({ x, y });
+  }
+  return positions;
+}
+
+/**
+ * Resolve `ring_around_arena` spawn positions — evenly spaced on a circle.
+ * radiusFraction: 0–1 fraction of arenaRadiusPx.
+ */
+export function resolveRingAroundArena(
+  count: number,
+  radiusFraction: number,
+  arenaRadiusPx: number,
+  arenaCx: number,
+  arenaCy: number,
+  startAngle = 0,
+): ResolvedPosition[] {
+  const r = arenaRadiusPx * Math.max(0.05, Math.min(1.0, radiusFraction));
+  const positions: ResolvedPosition[] = [];
+  for (let i = 0; i < count; i++) {
+    const angle = startAngle + (i / count) * Math.PI * 2;
+    positions.push({ x: arenaCx + Math.cos(angle) * r, y: arenaCy + Math.sin(angle) * r });
+  }
+  return positions;
+}
+
+/**
+ * Resolve `entire_arena` — returns the arena center with the full arena radius.
+ * The caller uses this to create a single zone covering the whole arena.
+ */
+export function resolveEntireArena(
+  arenaRadiusPx: number,
+  arenaCx: number,
+  arenaCy: number,
+): ResolvedPosition & { radiusPx: number } {
+  return { x: arenaCx, y: arenaCy, radiusPx: arenaRadiusPx };
 }
 
 // Process all per-tick arena interactions for a single beyblade.

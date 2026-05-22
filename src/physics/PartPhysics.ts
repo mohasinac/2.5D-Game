@@ -680,6 +680,53 @@ export function computeSpinSteal(
     / Math.max(0.01, defenderSpinStealResist);
 }
 
+// ─── Phase AB: Element Type Effectiveness ────────────────────────────────────
+
+// Inline 12×12 matrix to avoid cross-boundary import from client types.
+// Must stay in sync with client/src/types/elementTypes.ts::TYPE_MATRIX.
+const ELEMENT_TYPES = ["fire","water","earth","lightning","wind","ice","shadow","light","metal","nature","thunder","void"] as const;
+type ET = typeof ELEMENT_TYPES[number];
+const TYPE_MATRIX: Record<ET, Record<ET, number>> = {
+  fire:      { fire:1.0, water:0.5, earth:1.5, lightning:1.0, wind:1.0, ice:2.0,  shadow:1.0, light:1.0, metal:1.0, nature:1.5, thunder:0.5, void:1.0 },
+  water:     { fire:2.0, water:1.0, earth:0.5, lightning:0.5, wind:0.5, ice:0.5,  shadow:1.0, light:1.0, metal:1.5, nature:1.5, thunder:1.0, void:1.0 },
+  earth:     { fire:1.0, water:1.5, earth:1.0, lightning:2.0, wind:1.0, ice:1.0,  shadow:1.0, light:1.0, metal:2.0, nature:0.5, thunder:0.5, void:1.0 },
+  lightning: { fire:1.0, water:2.0, earth:0.5, lightning:1.0, wind:2.0, ice:1.0,  shadow:1.0, light:0.5, metal:1.5, nature:0.5, thunder:1.0, void:1.0 },
+  wind:      { fire:1.0, water:1.5, earth:1.0, lightning:0.5, wind:1.0, ice:1.5,  shadow:1.0, light:0.5, metal:0.5, nature:2.0, thunder:0.5, void:1.0 },
+  ice:       { fire:0.5, water:1.5, earth:1.5, lightning:1.0, wind:0.5, ice:1.0,  shadow:1.0, light:1.0, metal:0.5, nature:0.5, thunder:1.0, void:1.5 },
+  shadow:    { fire:1.0, water:1.0, earth:1.0, lightning:1.0, wind:1.0, ice:1.0,  shadow:1.0, light:0.5, metal:1.0, nature:1.0, thunder:1.0, void:2.0 },
+  light:     { fire:1.0, water:1.0, earth:1.0, lightning:1.5, wind:1.0, ice:1.0,  shadow:2.0, light:1.0, metal:0.5, nature:1.0, thunder:1.0, void:0.5 },
+  metal:     { fire:1.0, water:0.5, earth:0.5, lightning:0.5, wind:2.0, ice:1.5,  shadow:1.0, light:1.5, metal:1.0, nature:1.0, thunder:1.0, void:1.0 },
+  nature:    { fire:0.5, water:1.0, earth:2.0, lightning:2.0, wind:1.0, ice:1.0,  shadow:1.0, light:1.0, metal:1.0, nature:1.0, thunder:1.0, void:1.0 },
+  thunder:   { fire:1.5, water:2.0, earth:0.5, lightning:1.0, wind:1.0, ice:2.0,  shadow:1.0, light:0.5, metal:1.0, nature:1.0, thunder:1.0, void:1.0 },
+  void:      { fire:1.0, water:1.0, earth:1.0, lightning:1.0, wind:1.0, ice:1.0,  shadow:0.5, light:2.0, metal:1.0, nature:1.0, thunder:1.0, void:1.0 },
+};
+
+/**
+ * Returns the damage / spin-steal multiplier for a dual-type attacker vs a dual-type defender.
+ * Attacker dual-type: use the BETTER (max) matchup.
+ * Defender dual-type: MULTIPLY both resistances.
+ * Returns 1.0 if either side has no element types.
+ */
+export function computeElementTypeMultiplier(
+  attackerElems: string[],
+  defenderElems: string[],
+): number {
+  if (attackerElems.length === 0 || defenderElems.length === 0) return 1.0;
+  const attackRow = (e: string) => TYPE_MATRIX[e as ET] ?? null;
+
+  // For each defender element, pick the best attacker matchup
+  let mult = 1.0;
+  for (const def of defenderElems) {
+    let best = 1.0;
+    for (const atk of attackerElems) {
+      const row = attackRow(atk);
+      if (row) best = Math.max(best, row[def as ET] ?? 1.0);
+    }
+    mult *= best;
+  }
+  return mult;
+}
+
 // ─── Universal StatModifier Application ──────────────────────────────────────
 
 /**

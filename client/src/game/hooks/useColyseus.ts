@@ -30,6 +30,15 @@ export interface QTESuccessData {
   refundAmount: number;
 }
 
+export interface ArenaEffectState {
+  active: boolean;
+  effectType: string;
+  /** Remaining ticks (server-reported on start; client counts down locally). */
+  remainingTicks: number;
+  /** True only for the caster session. */
+  isCaster: boolean;
+}
+
 interface UseColyseusOptions {
   roomName: string;
   options?: Record<string, unknown>;
@@ -47,6 +56,9 @@ interface UseColyseusOptions {
   onQTEExpired?: () => void;
   // Callback for arena timeline announcements (Phase T)
   onArenaAnnouncement?: (data: { text: string; style?: "warning" | "info" | "danger" }) => void;
+  // Callbacks for arena-wide effects (Phase AA)
+  onArenaEffectStart?: (data: { effectType: string; durationTicks: number; casterSessionId: string }) => void;
+  onArenaEffectEnd?: (data: { effectType: string }) => void;
 }
 
 interface UseColyseusReturn {
@@ -59,6 +71,8 @@ interface UseColyseusReturn {
   /** Current loading step — used by <LoadingProgress />. */
   loadingStep: LoadingStep;
   loadingError?: string;
+  /** Active arena-wide effect state (Phase AA). Null when no effect is active. */
+  arenaEffect: ArenaEffectState | null;
   connect: () => Promise<void>;
   disconnect: () => void;
   sendQTEInput: (key: string) => void;
@@ -107,6 +121,8 @@ export function useColyseus({
   onQTESuccess,
   onQTEExpired,
   onArenaAnnouncement,
+  onArenaEffectStart,
+  onArenaEffectEnd,
 }: UseColyseusOptions): UseColyseusReturn {
   const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
   const [room, setRoom] = useState<Room | null>(null);
@@ -116,6 +132,7 @@ export function useColyseus({
   const [isSpectating, setIsSpectating] = useState(false);
   const [loadingStep, setLoadingStep] = useState<LoadingStep>("connecting-ws");
   const [loadingError, setLoadingError] = useState<string | undefined>(undefined);
+  const [arenaEffect, setArenaEffect] = useState<ArenaEffectState | null>(null);
 
   const clientRef = useRef<Client | null>(null);
   const roomRef = useRef<Room | null>(null);
@@ -126,6 +143,8 @@ export function useColyseus({
   const onQTESuccessRef = useRef(onQTESuccess);
   const onQTEExpiredRef = useRef(onQTEExpired);
   const onArenaAnnouncementRef = useRef(onArenaAnnouncement);
+  const onArenaEffectStartRef = useRef(onArenaEffectStart);
+  const onArenaEffectEndRef = useRef(onArenaEffectEnd);
 
   useEffect(() => { onGameEndRef.current = onGameEnd; }, [onGameEnd]);
   useEffect(() => { onSeriesEndRef.current = onSeriesEnd; }, [onSeriesEnd]);
@@ -134,6 +153,8 @@ export function useColyseus({
   useEffect(() => { onQTESuccessRef.current = onQTESuccess; }, [onQTESuccess]);
   useEffect(() => { onQTEExpiredRef.current = onQTEExpired; }, [onQTEExpired]);
   useEffect(() => { onArenaAnnouncementRef.current = onArenaAnnouncement; }, [onArenaAnnouncement]);
+  useEffect(() => { onArenaEffectStartRef.current = onArenaEffectStart; }, [onArenaEffectStart]);
+  useEffect(() => { onArenaEffectEndRef.current = onArenaEffectEnd; }, [onArenaEffectEnd]);
 
   const connect = useCallback(async () => {
     if (roomRef.current) return;
@@ -274,6 +295,22 @@ export function useColyseus({
         onArenaAnnouncementRef.current?.(data);
       });
 
+      // Phase AA: arena-wide effect events
+      connectedRoom.onMessage("arena-effect-start", (data: { effectType: string; durationTicks: number; casterSessionId: string }) => {
+        setArenaEffect({
+          active: true,
+          effectType: data.effectType,
+          remainingTicks: data.durationTicks,
+          isCaster: data.casterSessionId === connectedRoom.sessionId,
+        });
+        onArenaEffectStartRef.current?.(data);
+      });
+
+      connectedRoom.onMessage("arena-effect-end", (data: { effectType: string }) => {
+        setArenaEffect(null);
+        onArenaEffectEndRef.current?.(data);
+      });
+
       connectedRoom.onError((code, message) => {
         console.error(`Room error [${code}]: ${message}`);
         setConnectionState("error");
@@ -340,6 +377,7 @@ export function useColyseus({
   return {
     connectionState, room, gameState, beyblades, myBeyblade, isSpectating,
     loadingStep, loadingError,
+    arenaEffect,
     connect, disconnect, sendQTEInput, sendInput,
   };
 }

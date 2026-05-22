@@ -4,6 +4,8 @@ import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage, COLLECTIONS } from "@/lib/firebase";
 import type { BeybladeStats } from "@/types/beybladeStats";
+import { ELEMENT_ICONS, ELEMENT_COLORS } from "@/types/elementTypes";
+import type { ElementType } from "@/types/elementTypes";
 import toast from "react-hot-toast";
 import { C, S } from "@/styles/theme";
 import WhatsAppStyleImageEditor from "@/components/admin/WhatsAppStyleImageEditor";
@@ -259,6 +261,47 @@ export function BeybladeEditPage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Element Types (Phase AB) */}
+          <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
+            <div style={{ fontSize:14, fontWeight:600, color:C.text, marginBottom:12 }}>Element Types (max 2)</div>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:12 }}>
+              {(["fire","water","earth","lightning","wind","ice","shadow","light","metal","nature","thunder","void"] as ElementType[]).map(elem => {
+                const selected = (beyblade.elementTypes ?? []).includes(elem);
+                const canAdd = !selected && (beyblade.elementTypes?.length ?? 0) < 2;
+                return (
+                  <button
+                    key={elem}
+                    type="button"
+                    onClick={() => {
+                      const cur = beyblade.elementTypes ?? [];
+                      if (selected) {
+                        set("elementTypes", cur.filter(e => e !== elem));
+                      } else if (canAdd) {
+                        set("elementTypes", [...cur, elem]);
+                      }
+                    }}
+                    style={{
+                      display:"flex", alignItems:"center", gap:4, padding:"4px 10px",
+                      borderRadius:20, fontSize:12, cursor: selected || canAdd ? "pointer" : "not-allowed",
+                      border:`1px solid ${selected ? ELEMENT_COLORS[elem] : C.border}`,
+                      background: selected ? ELEMENT_COLORS[elem] + "33" : "transparent",
+                      color: selected ? C.text : C.muted,
+                      opacity: !selected && !canAdd ? 0.4 : 1,
+                    }}
+                  >
+                    <span>{ELEMENT_ICONS[elem]}</span>
+                    <span style={{ textTransform:"capitalize" }}>{elem}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {(beyblade.elementTypes?.length ?? 0) >= 2 && (
+              <div style={{ fontSize:11, color:C.muted }}>
+                Type matchup preview: {beyblade.elementTypes!.map(e => `${ELEMENT_ICONS[e]} ${e}`).join(" + ")}
+              </div>
+            )}
           </div>
         </div>
 
