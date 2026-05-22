@@ -643,9 +643,45 @@ function CasingFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 // BitBeast (6.8)
 // ─────────────────────────────────────────────────────────────────────────────
 
+const SPECIAL_MOVE_OPTIONS = [
+  { value: "none",           label: "None" },
+  { value: "stampede_rush",  label: "Stampede Rush (attack)" },
+  { value: "gyro_anchor",    label: "Gyro Anchor (defense)" },
+  { value: "spin_recovery",  label: "Spin Recovery (stamina)" },
+  { value: "tactical_burst", label: "Tactical Burst (balanced)" },
+  { value: "custom",         label: "Custom…" },
+];
+
 function BitBeastFields({ part, onChange }: { part: Part; onChange: OnChange }) {
+  const specialMove = (part.specialMove as string | undefined) ?? "none";
+  const isCustom = specialMove === "custom";
+
   return (
     <div>
+      <SectionHeader>Special Move</SectionHeader>
+      <Field label="Special Move" hint="Triggers at full power bar (Space). One per BitBeast.">
+        <select
+          value={specialMove}
+          onChange={(e) => onChange({ specialMove: e.target.value as any, customMoveName: e.target.value !== "custom" ? undefined : (part.customMoveName as string | undefined) })}
+          style={{ padding: "7px 10px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13, width: "100%" }}
+        >
+          {SPECIAL_MOVE_OPTIONS.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </Field>
+      {isCustom && (
+        <Field label="Custom Move Name">
+          <input
+            type="text"
+            value={(part.customMoveName as string | undefined) ?? ""}
+            onChange={(e) => onChange({ customMoveName: e.target.value.trim() || undefined })}
+            placeholder="e.g. Blazing Tornado"
+            style={{ padding: "7px 10px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13, width: "100%" }}
+          />
+        </Field>
+      )}
+
       <SectionHeader>MFB / Energy Ring</SectionHeader>
       <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 14 }}>
         <input type="checkbox" checked={!!(part.isEnergyRing)} onChange={(e) => onChange({ isEnergyRing: e.target.checked || undefined })} style={{ accentColor: C.blue }} />

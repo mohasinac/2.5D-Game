@@ -316,13 +316,63 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
         <div style={{ flex: 1, minWidth: 260, display: "flex", flexDirection: "column", gap: 12 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>CP #{selected + 1}</div>
 
-          {/* Geometry */}
-          <Section label="Geometry">
-            <SliderField label="Angle (°)" value={sel.angle} min={0} max={359} step={1} onChange={(v) => update(selected, { angle: v })} />
-            <SliderField label="Width (°)" value={sel.width} min={5} max={120} step={1} onChange={(v) => update(selected, { width: v })} />
-            <SliderField label="Radius (mm)" value={sel.radius} min={1} max={50} step={0.5} onChange={(v) => update(selected, { radius: v })} />
-            <SliderField label="Thickness (mm)" value={sel.thickness} min={0.5} max={10} step={0.5} onChange={(v) => update(selected, { thickness: v })} />
-          </Section>
+          {/* Geometry — format toggle */}
+          {(() => {
+            const isArc = sel.arcStart !== undefined || sel.arcEnd !== undefined || sel.lineThickness !== undefined;
+            const switchToArc = () => {
+              const halfW = sel.width / 2;
+              update(selected, {
+                arcStart: sel.arcStart ?? Math.round(sel.angle - halfW),
+                arcEnd:   sel.arcEnd   ?? Math.round(sel.angle + halfW),
+                radiusInner: sel.radiusInner ?? Math.max(0, sel.radius - sel.thickness / 2),
+                radiusOuter: sel.radiusOuter ?? sel.radius + sel.thickness / 2,
+                lineThickness: sel.lineThickness ?? sel.thickness,
+              });
+            };
+            const switchToLegacy = () => {
+              update(selected, { arcStart: undefined, arcEnd: undefined, radiusInner: undefined, radiusOuter: undefined, lineThickness: undefined });
+            };
+            return (
+              <Section label="Geometry">
+                {/* Format toggle */}
+                <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+                  {(["Legacy", "Arc-Segment"] as const).map((fmt) => {
+                    const active = fmt === "Arc-Segment" ? isArc : !isArc;
+                    return (
+                      <button key={fmt} onClick={fmt === "Arc-Segment" ? switchToArc : switchToLegacy}
+                        style={{ padding: "4px 10px", fontSize: 11, borderRadius: 5, cursor: "pointer",
+                          background: active ? alpha(C.blue, 0.13) : C.bg2,
+                          color: active ? C.blue : C.muted,
+                          border: `1px solid ${active ? alpha(C.blue, 0.33) : C.border}` }}
+                      >{fmt}</button>
+                    );
+                  })}
+                </div>
+
+                {isArc ? (
+                  <>
+                    <SliderField label="Arc Start (°)" value={sel.arcStart ?? 0} min={0} max={360} step={1} onChange={(v) => update(selected, { arcStart: v })} />
+                    <SliderField label="Arc End (°)" value={sel.arcEnd ?? 0} min={0} max={360} step={1} onChange={(v) => update(selected, { arcEnd: v })} />
+                    <SliderField label="Inner Radius (mm)" value={sel.radiusInner ?? sel.radius - sel.thickness / 2} min={0} max={50} step={0.5} onChange={(v) => update(selected, { radiusInner: v })} />
+                    <SliderField label="Outer Radius (mm)" value={sel.radiusOuter ?? sel.radius + sel.thickness / 2} min={1} max={60} step={0.5} onChange={(v) => update(selected, { radiusOuter: v })} />
+                    <SliderField label="Line Thickness (mm)" value={sel.lineThickness ?? sel.thickness} min={0.5} max={10} step={0.5} onChange={(v) => update(selected, { lineThickness: v })} />
+                    <div>
+                      <label style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 4 }}>Set ID</label>
+                      <input type="text" value={sel.setId ?? ""} onChange={(e) => update(selected, { setId: e.target.value.trim() || undefined })}
+                        placeholder="(none)" style={{ padding: "5px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11, width: "100%" }} />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <SliderField label="Angle (°)" value={sel.angle} min={0} max={359} step={1} onChange={(v) => update(selected, { angle: v })} />
+                    <SliderField label="Width (°)" value={sel.width} min={5} max={120} step={1} onChange={(v) => update(selected, { width: v })} />
+                    <SliderField label="Radius (mm)" value={sel.radius} min={1} max={50} step={0.5} onChange={(v) => update(selected, { radius: v })} />
+                    <SliderField label="Thickness (mm)" value={sel.thickness} min={0.5} max={10} step={0.5} onChange={(v) => update(selected, { thickness: v })} />
+                  </>
+                )}
+              </Section>
+            );
+          })()}
 
           {/* Height range */}
           <Section label="Height Range (mm from floor)">
