@@ -19,6 +19,7 @@ const quickLinks = [
   { label:"Create Arena", href:"/admin/arenas/create", icon:"🏟️", desc:"Design a new battle arena" },
   { label:"Asset Library", href:"/admin/assets", icon:"🖼️", desc:"Manage sprites and sounds" },
   { label:"Arena Test", href:"/admin/arena-test", icon:"🧪", desc:"Test arena configurations" },
+  { label:"AI vs AI Lab", href:"/admin/ai-vs-ai", icon:"🤖", desc:"Pit two AIs against each other to validate beys & arenas" },
   { label:"Game Monitor", href:"http://localhost:2567/colyseus", icon:"📡", desc:"Colyseus server monitor", external:true },
   { label:"Settings", href:"/admin/settings", icon:"⚙️", desc:"Game-wide settings" },
 ];

@@ -1,7 +1,7 @@
 import type { Client } from "colyseus";
 import { BattleRoom } from "./BattleRoom";
 import { PartSystemManager } from "./PartSystemManager";
-import { buildPartSystemManager, registerBeyOnManager, tickBeyOnManager } from "./parts25d/partSystemHooks";
+import { buildPartSystemManager, registerBeyOnManager, registerModeSwitchHandler, tickBeyOnManager } from "./parts25d/partSystemHooks";
 import type { Beyblade } from "./schema/GameState";
 
 export class Parts25DBattleRoom extends BattleRoom {
@@ -11,6 +11,7 @@ export class Parts25DBattleRoom extends BattleRoom {
     await super.onCreate(options);
     this.state.mode = (options.ranked ? "single-battle-pvp-ranked-2.5d" : "single-battle-pvp-2.5d");
     this.partSystemManager = buildPartSystemManager(this.state.arena);
+    registerModeSwitchHandler(this, () => this.partSystemManager);
     console.log("→ Parts25DBattleRoom active (2.5D parts pipeline)");
   }
 

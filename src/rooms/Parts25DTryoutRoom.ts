@@ -6,7 +6,7 @@
 import type { Client } from "colyseus";
 import { TryoutRoom } from "./TryoutRoom";
 import { PartSystemManager } from "./PartSystemManager";
-import { buildPartSystemManager, registerBeyOnManager, tickBeyOnManager } from "./parts25d/partSystemHooks";
+import { buildPartSystemManager, registerBeyOnManager, registerModeSwitchHandler, tickBeyOnManager } from "./parts25d/partSystemHooks";
 import type { Beyblade } from "./schema/GameState";
 
 export class Parts25DTryoutRoom extends TryoutRoom {
@@ -16,6 +16,7 @@ export class Parts25DTryoutRoom extends TryoutRoom {
     await super.onCreate(options);
     this.state.mode = "tryout-2.5d";
     this.partSystemManager = buildPartSystemManager(this.state.arena);
+    registerModeSwitchHandler(this, () => this.partSystemManager);
     console.log("→ Parts25DTryoutRoom active (2.5D parts pipeline)");
   }
 

@@ -565,6 +565,10 @@ export interface ObstacleConfig {
   physics?: ObstaclePhysicsBlock;
   rotation?: RotationBlock;
   triggerState?: "on" | "off";    // toggleable by switches (Part 6)
+  /** Feature is only active when this switch is on. Optional. */
+  controlledBySwitchId?: string;
+  /** Self-rotation for visual + damage-face dynamics. Optional. */
+  selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
 }
 
 // ─── Switch obstacle (Part 6) ──────────────────────────────────────────────
@@ -618,6 +622,8 @@ export interface GravityHoleConfig {
   warningMs: number;             // visual tell before activation
   visibility: "always-hidden" | "warning-only" | "visible";
   rotation?: RotationBlock;
+  controlledBySwitchId?: string;
+  selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
 }
 
 // ─── Trigger zones (Part 5c) ───────────────────────────────────────────────
@@ -645,6 +651,43 @@ export interface TriggerZoneConfig {
   activation: TriggerZoneActivation;
   rotation?: RotationBlock;
   vfx?: { idleKey?: string; activeKey?: string };
+  /** Feature is only active when this switch is on. Optional. */
+  controlledBySwitchId?: string;
+  /** Feature spins in place — visual + functional. */
+  selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+}
+
+// ─── Spin Zone (new in this overhaul) ──────────────────────────────────────
+// Circular zone that imparts spin or linear orbit force to beyblades inside it.
+
+export interface SpinZoneConfig {
+  id: string;
+  x_cm: number;
+  y_cm: number;
+  radius_cm: number;
+  direction: "cw" | "ccw";
+  intensityRadPerSec: number;
+  /** What the zone affects: linear orbit, spin top-up, or both. */
+  applyTo: "linear" | "spin" | "both";
+  /** Asset id (sprite) — references spin_zone_assets. Optional. */
+  assetId?: string;
+  controlledBySwitchId?: string;
+  selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+}
+
+// ─── Bump (new in this overhaul) ───────────────────────────────────────────
+// Small raised feature that adds vertical impulse + small lateral recoil on contact.
+
+export interface BumpConfig {
+  id: string;
+  x_cm: number;
+  y_cm: number;
+  radius_cm: number;
+  popHeight_cm: number;
+  recoil: number;
+  assetId?: string;
+  controlledBySwitchId?: string;
+  selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
 }
 
 /**
@@ -731,6 +774,10 @@ export interface ArenaConfig {
   switches?: SwitchConfig[];          // Switch obstacles (toggle other features when hit)
   gravityHoles?: GravityHoleConfig[]; // Invisible periodic attractors (max 3)
   triggerZones?: TriggerZoneConfig[]; // Area-based switches: safe / damage / heal / KO / spin-boost zones
+
+  // ===== NEW FEATURE FAMILY (this overhaul) =====
+  spinZones?: SpinZoneConfig[];       // Circular zones that impart orbit or spin
+  bumps?: BumpConfig[];               // Raised features that pop beys vertically
 
   // ===== METADATA =====
   createdAt?: string;

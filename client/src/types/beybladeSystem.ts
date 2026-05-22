@@ -212,10 +212,28 @@ export interface PartPocket {
 
 export interface SystemContactPoint {
   // Circumferential position
-  angle: number; // 0–360° — center of the arc
-  width: number; // arc degrees — angular span; narrow=spike, wide=bumper
-  radius: number; // mm from center — collision only registers at this radius
-  thickness: number; // mm radial depth (radius ± thickness/2 = annular sector)
+  angle: number; // 0–360° — center of the arc (legacy field; still used if arcStart/arcEnd absent)
+  width: number; // arc degrees — angular span; narrow=spike, wide=bumper (legacy)
+  radius: number; // mm from center — collision only registers at this radius (legacy)
+  thickness: number; // mm radial depth (legacy: blends across `width`)
+
+  // ── NEW: arc-segment geometry. When provided, these take precedence over the
+  //         legacy angle/width/radius/thickness fields. They let an editor place
+  //         a strip of contact ONLY along the arc (not across the whole zone),
+  //         with an explicit radial range r1..r2 and a perpendicular line thickness.
+  /** Arc start in degrees (0–360). When absent, `angle - width/2` is used. */
+  arcStart?: number;
+  /** Arc end in degrees (0–360). When absent, `angle + width/2` is used. */
+  arcEnd?: number;
+  /** Inner radius (mm). Partial ring goes r1..r2. When absent, defaults to `radius - thickness/2`. */
+  radiusInner?: number;
+  /** Outer radius (mm). When absent, defaults to `radius + thickness/2`. */
+  radiusOuter?: number;
+  /** Perpendicular protrusion (mm) ON the arc line — added at the centerline of the
+   *  arc segment instead of warping the whole zone. */
+  lineThickness?: number;
+  /** Multi-set grouping id. Default: implicit single set. */
+  setId?: string;
 
   // Extending behavior at high spin
   extends: boolean;
@@ -245,22 +263,88 @@ export interface SystemContactPoint {
   };
 }
 
-// renderRadius — CP fields warp the Fourier profile outward at blade/bumper zones
-// renderRadius(θ) = fourierProfile.radialCache[θ] + Σ_cp (cp.thickness × weight(θ,cp))
-// weight(θ,cp) = max(0, 1 - |cp.angle - θ| / (cp.width / 2))
+/** Resolve arc/radial bounds for a contact point — honors new arc fields, falls back to legacy. */
+export function resolveCpBounds(cp: SystemContactPoint): {
+  arcStart: number; arcEnd: number; rInner: number; rOuter: number; lineThickness: number;
+} {
+  const halfW = cp.width / 2;
+  const arcStart = cp.arcStart ?? (cp.angle - halfW);
+  const arcEnd   = cp.arcEnd   ?? (cp.angle + halfW);
+  const rInner   = cp.radiusInner ?? Math.max(0, cp.radius - cp.thickness / 2);
+  const rOuter   = cp.radiusOuter ?? cp.radius + cp.thickness / 2;
+  // lineThickness defaults to legacy thickness (so existing data keeps current bulge).
+  const lineThickness = cp.lineThickness ?? cp.thickness;
+  return { arcStart, arcEnd, rInner, rOuter, lineThickness };
+}
+
+/** True if `angleDeg` falls inside the contact arc. Handles wrap-around. */
+export function angleInArc(angleDeg: number, arcStart: number, arcEnd: number): boolean {
+  const norm = (x: number) => ((x % 360) + 360) % 360;
+  const a = norm(angleDeg);
+  const s = norm(arcStart);
+  const e = norm(arcEnd);
+  if (s <= e) return a >= s && a <= e;
+  return a >= s || a <= e; // wraps past 360
+}
+
+/**
+ * renderRadius — warps the Fourier radial profile by contact-point protrusion.
+ *
+ * Behaviour depends on whether the CP has new-shape fields:
+ *   - NEW (arcStart/arcEnd/lineThickness): protrusion is applied ONLY along the
+ *     arc segment, with peak at the arc midpoint and falling off to zero at the
+ *     edges. Overlapping CPs on the same angle blend via MAX (not sum) so a
+ *     thicker bumper plus a thin spike resolves to the bumper's height.
+ *   - LEGACY (angle/width/thickness): preserves the original zone-warp behaviour
+ *     (sum-based) for backwards compatibility with existing data.
+ *
+ * For mixed inputs, legacy CPs are summed into the base, then new-shape CPs are
+ * max-blended on top.
+ */
 export function renderRadius(
   θDeg: number,
   fourierCache: number[],
-  cps: Pick<SystemContactPoint, "angle" | "width" | "thickness">[]
+  cps: SystemContactPoint[]
 ): number {
   const base = fourierCache[Math.round(θDeg) % 360] ?? 0;
-  const warp = cps.reduce((sum, cp) => {
-    const diff = Math.abs(cp.angle - θDeg);
-    const halfWidth = cp.width / 2;
-    if (diff >= halfWidth) return sum;
-    return sum + cp.thickness * (1 - diff / halfWidth);
-  }, 0);
-  return base + warp;
+
+  let legacyWarp = 0;
+  let newProtrusionMax = 0;
+
+  for (const cp of cps) {
+    const isNew = cp.arcStart !== undefined || cp.arcEnd !== undefined || cp.lineThickness !== undefined;
+    if (isNew) {
+      const { arcStart, arcEnd, lineThickness } = resolveCpBounds(cp);
+      if (!angleInArc(θDeg, arcStart, arcEnd)) continue;
+      const midpoint = (arcStart + arcEnd) / 2;
+      const halfSpan = Math.abs(arcEnd - arcStart) / 2 || 1;
+      const dist = Math.min(
+        Math.abs(θDeg - midpoint),
+        360 - Math.abs(θDeg - midpoint),
+      );
+      const falloff = Math.max(0, 1 - dist / halfSpan);
+      newProtrusionMax = Math.max(newProtrusionMax, lineThickness * falloff);
+    } else {
+      const diff = Math.abs(cp.angle - θDeg);
+      const halfWidth = cp.width / 2;
+      if (diff >= halfWidth) continue;
+      legacyWarp += cp.thickness * (1 - diff / halfWidth);
+    }
+  }
+
+  return base + legacyWarp + newProtrusionMax;
+}
+
+/** Group CPs by their `setId`. Implicit single set for CPs without one. */
+export function groupContactPointsBySet(cps: SystemContactPoint[]): Map<string, SystemContactPoint[]> {
+  const out = new Map<string, SystemContactPoint[]>();
+  for (const cp of cps) {
+    const k = cp.setId ?? "_default";
+    const list = out.get(k) ?? [];
+    list.push(cp);
+    out.set(k, list);
+  }
+  return out;
 }
 
 // synthesizeRadialCache — evaluate FourierRadialProfile at 0–359°
@@ -326,6 +410,11 @@ export interface PartConfiguration<TOverrides> {
   overrides: TOverrides;
   autoTriggers?: ConfigTrigger[];
   resetCondition?: ConfigResetCondition;
+  /** User-facing label shown in the in-game PartModesHUD. Defaults to `name` if absent. */
+  displayName?: string;
+  /** When true, this configuration appears in the in-game PartModesHUD and can be activated
+   *  by the player via the `mode:switch` Colyseus message. Default: false (auto-only). */
+  playerSwitchable?: boolean;
 }
 
 // ─── Universal Stat Modifier System ──────────────────────────────────────────
@@ -433,6 +522,13 @@ export interface BasePart {
   excludedCompatibility: string[];
   images: PartImages;
   pockets: PartPocket[];
+  /** Per-part combo ids (max 3). Merged with whole-bey BeybladeStats.comboIds at match
+   *  start by PartSystemManager. Must exist in COMBO_REGISTRY. */
+  comboIds?: string[];
+  /** Per-part special move id. Falls back when whole-bey BeybladeStats.specialMoveId is
+   *  empty. Resolution order across parts: bit_beast → core → ar → casing → tip → wd →
+   *  spin_track → sub_part. */
+  specialMoveId?: string;
   createdAt?: unknown;
   updatedAt?: unknown;
 }

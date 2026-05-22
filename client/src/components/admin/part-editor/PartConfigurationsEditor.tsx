@@ -162,6 +162,29 @@ export function PartConfigurationsEditor<T>({ value, onChange }: Props<T>) {
                   />
                 </div>
 
+                {/* Display Name (HUD label) + Player Switchable toggle */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 10, alignItems: "end" }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>
+                      Display Name (shown in in-game PartModesHUD)
+                    </label>
+                    <input
+                      value={config.displayName ?? ""}
+                      onChange={(e) => update(idx, { displayName: e.target.value || undefined })}
+                      placeholder={config.name || "Defaults to Config Name"}
+                      style={{ width: "100%", padding: "7px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 13, boxSizing: "border-box" }}
+                    />
+                  </div>
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.muted, paddingBottom: 8 }}>
+                    <input
+                      type="checkbox"
+                      checked={config.playerSwitchable === true}
+                      onChange={(e) => update(idx, { playerSwitchable: e.target.checked || undefined })}
+                    />
+                    Player-switchable
+                  </label>
+                </div>
+
                 {/* Overrides JSON */}
                 <div>
                   <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>

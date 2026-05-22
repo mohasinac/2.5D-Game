@@ -23,6 +23,8 @@ import type {
   SpinTrackPart,
   StatModifier,
   StatModifierEvent,
+  BasePart,
+  PartConfiguration,
 } from "../../client/src/types/beybladeSystem";
 import { type Beyblade, type GameState, DetachedBodySchema } from "./schema/GameState";
 import {
@@ -76,11 +78,50 @@ interface BeyPartState {
 
 // ─── PartSystemManager ─────────────────────────────────────────────────────────
 
+/** Player-driven mode switch cooldown — prevents spam toggling. */
+export const MODE_SWITCH_COOLDOWN_MS = 2_000;
+/** Hard cap on effective combo count (per-part union with whole-bey) — HUD-sane. */
+const EFFECTIVE_COMBO_CAP = 8;
+
+/** Map a PartLayer key (used in activePartConfigs / mode:switch payloads) to the
+ *  resolved part bundle slot. Keeps the rest of the codebase free of stringly typed
+ *  switches. */
+function pickPartByLayer(parts: ResolvedPartBundle, partLayer: string): BasePart | undefined {
+  switch (partLayer) {
+    case "tip": return parts.tip;
+    case "ar":
+    case "attack_ring": return parts.ar;
+    case "wd":
+    case "weight_disk": return parts.wd;
+    case "core": return parts.core;
+    case "casing": return parts.casing;
+    case "bit_beast": return parts.bitBeast;
+    case "spin_track": return parts.spinTrack;
+    default: {
+      const subMatch = /^sub_part_(\d+)$/.exec(partLayer);
+      if (subMatch) {
+        const idx = Number(subMatch[1]);
+        return parts.subParts[idx];
+      }
+      return undefined;
+    }
+  }
+}
+
+/** Read the configurations list off whichever concrete part type carries one. */
+function partConfigurations(part: BasePart | undefined): PartConfiguration<any>[] {
+  if (!part) return [];
+  const cfgs = (part as any).configurations;
+  return Array.isArray(cfgs) ? cfgs : [];
+}
+
 export class PartSystemManager {
   private beyStates: Map<string, BeyPartState> = new Map();
   private arenaCenterX: number;
   private arenaCenterY: number;
   private arenaRadius: number;
+  /** Effective combo ids per session — union of whole-bey + per-part, capped. */
+  private effectiveCombos: Map<string, string[]> = new Map();
 
   constructor(arenaCenterX: number, arenaCenterY: number, arenaRadius: number) {
     this.arenaCenterX = arenaCenterX;
@@ -117,11 +158,116 @@ export class PartSystemManager {
       arenaCenterY: this.arenaCenterY,
       arenaRadius: this.arenaRadius,
     });
+
+    // ── Merge per-part combos into the bey's runtime combo list ─────────────
+    // Whole-bey combos (from BeybladeStats.comboIds) are already populated on
+    // bey.comboIds by the room's applyBeybladeStats. Add the union of all part
+    // comboIds and clip to EFFECTIVE_COMBO_CAP.
+    const allParts = this.getAllPartsArray(parts);
+    const seen = new Set<string>();
+    const merged: string[] = [];
+    bey.comboIds.forEach((id) => {
+      if (typeof id === "string" && !seen.has(id)) { seen.add(id); merged.push(id); }
+    });
+    for (const p of allParts) {
+      const ids = (p as BasePart).comboIds ?? [];
+      for (const id of ids) {
+        if (!id || seen.has(id) || merged.length >= EFFECTIVE_COMBO_CAP) continue;
+        seen.add(id);
+        merged.push(id);
+      }
+    }
+    this.effectiveCombos.set(sessionId, merged);
+    // Reflect the merged list onto the bey schema so existing combo lookups
+    // (which read bey.comboIds in every room) pick up per-part combos for free.
+    bey.comboIds.clear();
+    for (const id of merged) bey.comboIds.push(id);
+
+    // ── Resolve special move: whole-bey wins, else first part in canonical order ─
+    if (!bey.specialMove || bey.specialMove === "tactical_burst") {
+      const orderedParts: Array<BasePart | undefined> = [
+        parts.bitBeast, parts.core, parts.ar, parts.casing, parts.tip, parts.wd, parts.spinTrack,
+        ...parts.subParts,
+      ];
+      for (const p of orderedParts) {
+        const sid = (p as BasePart | undefined)?.specialMoveId;
+        if (sid) { bey.specialMove = sid; break; }
+      }
+    }
+
+    // ── Seed defaults for any playerSwitchable configs so the HUD starts honest. ─
+    // For each part slot, if no activePartConfig is set, choose the first
+    // playerSwitchable config (if any) as the default starting mode.
+    const setLayerDefault = (layerKey: string, part?: BasePart) => {
+      if (!part) return;
+      const existing = bey.activePartConfigs.get(layerKey);
+      if (existing) return;
+      const cfgs = partConfigurations(part);
+      const def = cfgs.find((c) => c.playerSwitchable === true);
+      if (def?.name) bey.activePartConfigs.set(layerKey, def.name);
+    };
+    setLayerDefault("ar", parts.ar);
+    setLayerDefault("tip", parts.tip);
+    setLayerDefault("wd", parts.wd);
+    setLayerDefault("core", parts.core);
+    setLayerDefault("casing", parts.casing);
+    setLayerDefault("bit_beast", parts.bitBeast);
+    setLayerDefault("spin_track", parts.spinTrack);
+    parts.subParts.forEach((sp, idx) => setLayerDefault(`sub_part_${idx}`, sp));
+  }
+
+  /** Effective combo ids for a bey — union of whole-bey and per-part comboIds. */
+  getEffectiveComboIds(sessionId: string): string[] {
+    return this.effectiveCombos.get(sessionId) ?? [];
+  }
+
+  /**
+   * Player-initiated mode switch — flip activePartConfigs[partLayer] to the named
+   * configuration. If configId is omitted, cycle to the next playerSwitchable
+   * configuration on that part. Returns the activated config name, or null when
+   * rejected (cooldown, unknown layer, no switchable configs, etc.).
+   */
+  applyConfigSwitch(
+    sessionId: string,
+    bey: Beyblade,
+    partLayer: string,
+    configId: string | undefined,
+    nowMs: number = Date.now()
+  ): string | null {
+    const state = this.beyStates.get(sessionId);
+    if (!state) return null;
+    const part = pickPartByLayer(state.parts, partLayer);
+    const cfgs = partConfigurations(part).filter((c) => c.playerSwitchable === true);
+    if (cfgs.length === 0) return null;
+
+    const lastAt = bey.configLastSwitchAt.get(partLayer) ?? 0;
+    if (nowMs - lastAt < MODE_SWITCH_COOLDOWN_MS) return null;
+
+    let target: PartConfiguration<any> | undefined;
+    if (configId) {
+      target = cfgs.find((c) => c.name === configId);
+    } else {
+      // Cycle to next switchable config after the currently active one.
+      const current = bey.activePartConfigs.get(partLayer) ?? "";
+      const currIdx = cfgs.findIndex((c) => c.name === current);
+      target = cfgs[(currIdx + 1) % cfgs.length];
+    }
+    if (!target) return null;
+
+    bey.activePartConfigs.set(partLayer, target.name);
+    bey.configLastSwitchAt.set(partLayer, nowMs);
+
+    // on_config_change hook — dispatch StatModifier events on the affected part.
+    if (part && (part as any).statModifiers) {
+      dispatchStatModifierEvent(bey, "on_config_change", [part as any]);
+    }
+    return target.name;
   }
 
   /** Unregister on leave. */
   unregisterBey(sessionId: string): void {
     this.beyStates.delete(sessionId);
+    this.effectiveCombos.delete(sessionId);
   }
 
   /**

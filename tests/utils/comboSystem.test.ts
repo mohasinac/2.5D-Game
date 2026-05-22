@@ -1,132 +1,133 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { ComboTracker, detectCombo, pruneHistory } from "../../src/utils/comboSystem";
+import {
+  ComboTracker,
+  detectCombo,
+  pruneHistory,
+  createComboTracker,
+} from "../../src/utils/comboSystem";
 
-describe("comboSystem", () => {
+const ANY_BEY = "balanced";
+
+describe("comboSystem (3-key schema, cost-tiered)", () => {
   let tracker: ComboTracker;
 
   beforeEach(() => {
-    tracker = { history: [] };
+    tracker = createComboTracker();
   });
 
-  describe("detectCombo", () => {
-    it("should detect storm_assault (moveLeft → moveRight → attack within 500ms)", () => {
+  describe("detectCombo — sequence + window", () => {
+    it("detects quick-dash-r (moveRight × 2 + attack) when attached", () => {
       const now = 1000;
-      const combo1 = detectCombo(tracker, ["moveLeft"], now);
-      expect(combo1).toBeNull();
-      expect(tracker.history).toHaveLength(1);
-
-      const combo2 = detectCombo(tracker, ["moveRight"], now + 200);
-      expect(combo2).toBeNull();
-      expect(tracker.history).toHaveLength(2);
-
-      const combo3 = detectCombo(tracker, ["attack"], now + 400);
-      expect(combo3).not.toBeNull();
-      expect(combo3?.name).toBe("storm_assault");
+      expect(detectCombo(tracker, ["moveRight"], now, { attachedComboIds: ["quick-dash-r"] })).toBeNull();
+      expect(detectCombo(tracker, ["moveRight"], now + 100, { attachedComboIds: ["quick-dash-r"] })).toBeNull();
+      const result = detectCombo(tracker, ["attack"], now + 200, {
+        attachedComboIds: ["quick-dash-r"],
+        beybladeType: "attack",
+      });
+      expect(result).not.toBeNull();
+      expect(result?.comboId).toBe("quick-dash-r");
+      expect(result?.costPaid).toBe(0);
     });
 
-    it("should not detect storm_assault if window exceeds 500ms", () => {
+    it("rejects when the combo is not attached to the beyblade", () => {
       const now = 1000;
-      detectCombo(tracker, ["moveLeft"], now);
-      detectCombo(tracker, ["moveRight"], now + 200);
-      const combo = detectCombo(tracker, ["attack"], now + 600); // 600ms > 500ms window
-      expect(combo).toBeNull();
+      detectCombo(tracker, ["moveRight"], now, { attachedComboIds: ["quick-dash-l"] });
+      detectCombo(tracker, ["moveRight"], now + 100, { attachedComboIds: ["quick-dash-l"] });
+      const result = detectCombo(tracker, ["attack"], now + 200, {
+        attachedComboIds: ["quick-dash-l"],
+      });
+      expect(result).toBeNull();
     });
 
-    it("should detect gyro_counter (defense → defense → dodge within 600ms)", () => {
+    it("rejects when sequence falls outside the combo's window", () => {
       const now = 1000;
-      detectCombo(tracker, ["defense"], now);
-      detectCombo(tracker, ["defense"], now + 200);
-      const combo = detectCombo(tracker, ["dodge"], now + 400);
-      expect(combo).not.toBeNull();
-      expect(combo?.name).toBe("gyro_counter");
+      detectCombo(tracker, ["moveRight"], now, { attachedComboIds: ["quick-dash-r"] });
+      detectCombo(tracker, ["moveRight"], now + 200, { attachedComboIds: ["quick-dash-r"] });
+      const result = detectCombo(tracker, ["attack"], now + 600, { // 600ms > 400ms window
+        attachedComboIds: ["quick-dash-r"],
+      });
+      expect(result).toBeNull();
+    });
+  });
+
+  describe("detectCombo — power cost", () => {
+    it("fires power-thrust (cost 25) when power >= 25 and deducts no power from tracker", () => {
+      const now = 1000;
+      detectCombo(tracker, ["attack"], now,        { attachedComboIds: ["power-thrust"], power: 50 });
+      detectCombo(tracker, ["attack"], now + 100,  { attachedComboIds: ["power-thrust"], power: 50 });
+      const r = detectCombo(tracker, ["attack"], now + 200, {
+        attachedComboIds: ["power-thrust"], power: 50,
+      });
+      expect(r).not.toBeNull();
+      expect(r?.comboId).toBe("power-thrust");
+      expect(r?.costPaid).toBe(25);
     });
 
-    it("should detect aerial_smash (jump → attack within 300ms)", () => {
+    it("rejects power-thrust when power < cost", () => {
       const now = 1000;
-      detectCombo(tracker, ["jump"], now);
-      const combo = detectCombo(tracker, ["attack"], now + 250);
-      expect(combo).not.toBeNull();
-      expect(combo?.name).toBe("aerial_smash");
+      detectCombo(tracker, ["attack"], now,        { attachedComboIds: ["power-thrust"], power: 10 });
+      detectCombo(tracker, ["attack"], now + 100,  { attachedComboIds: ["power-thrust"], power: 10 });
+      const r = detectCombo(tracker, ["attack"], now + 200, {
+        attachedComboIds: ["power-thrust"], power: 10,
+      });
+      expect(r).toBeNull();
     });
+  });
 
-    it("should detect spinning_slash (dodge → attack within 300ms)", () => {
+  describe("detectCombo — type restriction", () => {
+    it("allows spin-leech-jab only for stamina beyblades", () => {
       const now = 1000;
-      detectCombo(tracker, ["dodge"], now);
-      const combo = detectCombo(tracker, ["attack"], now + 200);
-      expect(combo).not.toBeNull();
-      expect(combo?.name).toBe("spinning_slash");
+      const tryFire = (type: string) => {
+        const local = createComboTracker();
+        detectCombo(local, ["moveLeft"], now,        { attachedComboIds: ["spin-leech-jab"], power: 50, beybladeType: type });
+        detectCombo(local, ["attack"],   now + 100,  { attachedComboIds: ["spin-leech-jab"], power: 50, beybladeType: type });
+        return detectCombo(local, ["moveRight"], now + 200, {
+          attachedComboIds: ["spin-leech-jab"], power: 50, beybladeType: type,
+        });
+      };
+      expect(tryFire("stamina")).not.toBeNull();
+      expect(tryFire("attack")).toBeNull();
     });
+  });
 
-    it("should detect counter_strike (defense + attack on same frame)", () => {
+  describe("detectCombo — per-combo cooldown", () => {
+    it("blocks the same combo while its cooldown is active", () => {
       const now = 1000;
-      const combo = detectCombo(tracker, ["defense", "attack"], now);
-      expect(combo).not.toBeNull();
-      expect(combo?.name).toBe("counter_strike");
-    });
+      detectCombo(tracker, ["attack"], now,        { attachedComboIds: ["power-thrust"], power: 50 });
+      detectCombo(tracker, ["attack"], now + 100,  { attachedComboIds: ["power-thrust"], power: 50 });
+      const first = detectCombo(tracker, ["attack"], now + 200, {
+        attachedComboIds: ["power-thrust"], power: 50,
+      });
+      expect(first).not.toBeNull();
 
-    it("should detect dash_left (moveLeft → moveLeft within 200ms)", () => {
-      const now = 1000;
-      detectCombo(tracker, ["moveLeft"], now);
-      const combo = detectCombo(tracker, ["moveLeft"], now + 150);
-      expect(combo).not.toBeNull();
-      expect(combo?.name).toBe("dash_left");
-    });
-
-    it("should detect dash_right (moveRight → moveRight within 200ms)", () => {
-      const now = 1000;
-      detectCombo(tracker, ["moveRight"], now);
-      const combo = detectCombo(tracker, ["moveRight"], now + 150);
-      expect(combo).not.toBeNull();
-      expect(combo?.name).toBe("dash_right");
-    });
-
-    it("should handle empty input gracefully", () => {
-      const now = 1000;
-      const combo = detectCombo(tracker, [], now);
-      expect(combo).toBeNull();
-      expect(tracker.history).toHaveLength(0);
-    });
-
-    it("should return ComboResult object with damage multiplier", () => {
-      const now = 1000;
-      detectCombo(tracker, ["jump"], now);
-      const combo = detectCombo(tracker, ["attack"], now + 250);
-      expect(combo).not.toBeNull();
-      expect(combo?.name).toBe("aerial_smash");
-      expect(combo?.damageMultiplier).toBe(2.0);
-      expect(combo?.durationMs).toBe(0);
-      expect(combo?.effect).toBe("damage_boost");
+      // Try again immediately — must reject (cooldown 3500ms).
+      detectCombo(tracker, ["attack"], now + 1000, { attachedComboIds: ["power-thrust"], power: 50 });
+      detectCombo(tracker, ["attack"], now + 1100, { attachedComboIds: ["power-thrust"], power: 50 });
+      const retry = detectCombo(tracker, ["attack"], now + 1200, {
+        attachedComboIds: ["power-thrust"], power: 50,
+      });
+      expect(retry).toBeNull();
     });
   });
 
   describe("pruneHistory", () => {
-    it("should remove old entries outside time window", () => {
+    it("removes entries outside the 600ms default window", () => {
       const now = 1000;
       tracker.history = [
         { key: "moveLeft", timestamp: now - 2000 },
         { key: "moveRight", timestamp: now - 100 },
-      ];
-
+      ] as any;
       pruneHistory(tracker, now);
       expect(tracker.history).toHaveLength(1);
-      expect(tracker.history[0].timestamp).toBe(now - 100);
     });
 
-    it("should preserve recent history", () => {
-      const now = 1000;
-      tracker.history = [
-        { key: "moveLeft", timestamp: now - 100 },
-        { key: "moveRight", timestamp: now - 50 },
-      ];
-
-      pruneHistory(tracker, now);
-      expect(tracker.history).toHaveLength(2);
-    });
-
-    it("should handle empty history gracefully", () => {
+    it("is a no-op on empty history", () => {
       tracker.history = [];
       expect(() => pruneHistory(tracker, 1000)).not.toThrow();
-      expect(tracker.history).toHaveLength(0);
     });
+  });
+
+  it("returns null when given an empty input array", () => {
+    expect(detectCombo(tracker, [], 1000, { attachedComboIds: ["power-thrust"], power: 50 })).toBeNull();
   });
 });

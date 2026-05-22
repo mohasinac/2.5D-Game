@@ -29,6 +29,7 @@ import { ContactPointEditor } from "./ContactPointEditor";
 import { PartConfigurationsEditor } from "./PartConfigurationsEditor";
 import { PocketListEditor } from "./PocketListEditor";
 import { PartLayerPreview, type PartKind } from "./PartLayerPreview";
+import { COMBO_REGISTRY } from "@/constants/combos";
 
 const SLUG_TO_KIND: Record<string, PartKind> = {
   "bit-beasts":   "bitBeast",
@@ -229,6 +230,28 @@ export function PartEditor({
             <TagsField label="Compatibility Tags" value={compatibilityTags} onChange={(v) => update({ compatibilityTags: v })} />
             <TagsField label="Required Compatibility" value={requiredCompatibility} onChange={(v) => update({ requiredCompatibility: v })} />
             <TagsField label="Excluded Compatibility" value={excludedCompatibility} onChange={(v) => update({ excludedCompatibility: v })} />
+            <PartCombosField
+              value={Array.isArray(part.comboIds) ? part.comboIds : []}
+              onChange={(v) => update({ comboIds: v })}
+            />
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>
+                Special Move (per-part fallback)
+              </label>
+              <input
+                value={typeof part.specialMoveId === "string" ? part.specialMoveId : ""}
+                onChange={(e) => update({ specialMoveId: e.target.value.trim() || undefined })}
+                placeholder='e.g. "stampede_rush" — used when the whole-bey special is empty'
+                style={{
+                  width: "100%", padding: "9px 12px", background: C.bg2,
+                  border: `1px solid ${C.border}`, borderRadius: 7, color: C.text,
+                  fontSize: 13, boxSizing: "border-box",
+                }}
+              />
+              <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>
+                Resolution order across parts: bit_beast → core → ar → casing → tip → wd → spin_track → sub_part.
+              </div>
+            </div>
           </div>
         )}
 
@@ -326,6 +349,65 @@ export function PartEditor({
             {renderTypeFields(part, update)}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// ── Per-part combo picker (max 3) ─────────────────────────────────────────────
+
+function PartCombosField({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
+  const toggle = (id: string) => {
+    if (value.includes(id)) {
+      onChange(value.filter((x) => x !== id));
+      return;
+    }
+    if (value.length >= 3) return; // cap at 3
+    onChange([...value, id]);
+  };
+  return (
+    <div>
+      <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>
+        Per-Part Combos (max 3)
+      </label>
+      <div style={{ fontSize: 11, color: C.faint, marginBottom: 8 }}>
+        Combos attached here are merged with the whole-bey combos at match start. Detection,
+        cost, and cooldowns are unchanged — the part just contributes more available combos.
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {COMBO_REGISTRY.map((c) => {
+          const checked = value.includes(c.id);
+          const disabled = !checked && value.length >= 3;
+          return (
+            <label
+              key={c.id}
+              style={{
+                display: "flex", alignItems: "flex-start", gap: 8,
+                padding: "8px 10px", background: checked ? C.blue + "10" : C.bg2,
+                border: `1px solid ${checked ? C.blue + "55" : C.border}`,
+                borderRadius: 7, cursor: disabled ? "not-allowed" : "pointer",
+                opacity: disabled ? 0.5 : 1,
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={checked}
+                disabled={disabled}
+                onChange={() => toggle(c.id)}
+                style={{ marginTop: 2 }}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 12, color: C.text, fontWeight: 600 }}>
+                  {c.name}
+                  <span style={{ marginLeft: 8, fontSize: 10, color: C.faint }}>
+                    {c.type} · cost {c.cost}
+                  </span>
+                </div>
+                <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>{c.description}</div>
+              </div>
+            </label>
+          );
+        })}
       </div>
     </div>
   );

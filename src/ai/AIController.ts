@@ -2,7 +2,9 @@
 // Computes a PlayerInput each tick based on difficulty level.
 // All logic is synchronous — no async calls.
 
-export type AIDifficulty = "easy" | "medium" | "hard";
+// Difficulty was previously easy|medium|hard. Easy was removed; Hell added.
+// Defensive: legacy "easy" reads collapse to "medium" at the call site.
+export type AIDifficulty = "medium" | "hard" | "hell";
 
 interface Vec2 { x: number; y: number; }
 
@@ -37,12 +39,11 @@ export class AIController {
   private difficulty: AIDifficulty;
   private tickCounter: number = 0;
   private currentTargetId: string = "";
-  private randomDirTimer: number = 0;
-  private randomDirX: number = 0;
-  private randomDirY: number = 0;
 
-  constructor(difficulty: AIDifficulty) {
-    this.difficulty = difficulty;
+  constructor(difficulty: AIDifficulty | string) {
+    // Defensive: collapse legacy "easy" reads to "medium".
+    const d = (difficulty === "easy" ? "medium" : difficulty) as AIDifficulty;
+    this.difficulty = (d === "medium" || d === "hard" || d === "hell") ? d : "medium";
   }
 
   computeInput(
@@ -58,49 +59,10 @@ export class AIController {
     const nearest = this.getNearestOpponent(ai, activeOpponents);
 
     switch (this.difficulty) {
-      case "easy":   return this.easyInput(ai, nearest, arenaCenterX, arenaCenterY, arenaRadius);
       case "medium": return this.mediumInput(ai, nearest, arenaCenterX, arenaCenterY, arenaRadius);
       case "hard":   return this.hardInput(ai, nearest, arenaCenterX, arenaCenterY, arenaRadius);
+      case "hell":   return this.hellInput(ai, nearest, arenaCenterX, arenaCenterY, arenaRadius);
     }
-  }
-
-  // ── Easy: random direction changes, attack only when close ─────────────────
-
-  private easyInput(
-    ai: BeybladeSnapshot,
-    nearest: BeybladeSnapshot | null,
-    cx: number, cy: number, r: number
-  ): AIPlayerInput {
-    const input: AIPlayerInput = {};
-
-    // Random direction change every ~90 ticks (1.5s)
-    if (this.randomDirTimer <= 0) {
-      const angle = Math.random() * Math.PI * 2;
-      this.randomDirX = Math.cos(angle);
-      this.randomDirY = Math.sin(angle);
-      this.randomDirTimer = 60 + Math.random() * 60;
-    }
-    this.randomDirTimer--;
-
-    this.applyMoveDir(input, this.randomDirX, this.randomDirY);
-
-    // Attack if opponent within 300px
-    if (nearest) {
-      const dist = this.distanceTo(ai, nearest);
-      if (dist < 300) {
-        input.attack = true;
-      }
-    }
-
-    // Avoid being too close to arena edge
-    const dx = ai.x - cx;
-    const dy = ai.y - cy;
-    const distFromCenter = Math.sqrt(dx * dx + dy * dy);
-    if (distFromCenter > r * 0.8) {
-      this.applyMoveDir(input, -dx / distFromCenter, -dy / distFromCenter);
-    }
-
-    return input;
   }
 
   // ── Medium: chase opponent, avoid pits, use special when spin < 40% ────────
@@ -112,7 +74,6 @@ export class AIController {
   ): AIPlayerInput {
     const input: AIPlayerInput = {};
 
-    // Move toward nearest opponent
     if (nearest) {
       const dx = nearest.x - ai.x;
       const dy = nearest.y - ai.y;
@@ -121,15 +82,12 @@ export class AIController {
         this.applyMoveDir(input, dx / dist, dy / dist);
       }
 
-      // Attack when close
       if (dist < 200) input.attack = true;
 
-      // Defense when very close and low spin
       const spinRatio = ai.spin / ai.maxSpin;
       if (dist < 150 && spinRatio < 0.5) input.defense = true;
     }
 
-    // Avoid arena edge
     const dx = ai.x - cx;
     const dy = ai.y - cy;
     const distFromCenter = Math.sqrt(dx * dx + dy * dy);
@@ -137,12 +95,10 @@ export class AIController {
       this.applyMoveDir(input, -dx / distFromCenter, -dy / distFromCenter);
     }
 
-    // Use special when spin < 40%
     if (ai.spin / ai.maxSpin < 0.4 && ai.power >= 50) {
       input.specialTap = true;
     }
 
-    // Charge power passively
     if (ai.power < 50) input.chargeHeld = true;
 
     return input;
@@ -158,7 +114,6 @@ export class AIController {
     const input: AIPlayerInput = {};
 
     if (nearest) {
-      // Predict opponent position 5 ticks ahead
       const predictedX = nearest.x + nearest.velocityX * 5;
       const predictedY = nearest.y + nearest.velocityY * 5;
 
@@ -171,20 +126,16 @@ export class AIController {
         const normY = dy / dist;
 
         if (dist > 120) {
-          // Chase predicted position
           this.applyMoveDir(input, normX, normY);
         } else {
-          // Circle-strafe: perpendicular to opponent
           const perpX = -normY;
           const perpY = normX;
           this.applyMoveDir(input, perpX, perpY);
         }
       }
 
-      // Attack when within range
       if (dist < 180) input.attack = true;
 
-      // Dodge if opponent is charging directly at AI
       const relVelX = nearest.velocityX - ai.velocityX;
       const relVelY = nearest.velocityY - ai.velocityY;
       const closingSpeed = -(relVelX * (nearest.x - ai.x) + relVelY * (nearest.y - ai.y)) / Math.max(dist, 1);
@@ -192,20 +143,17 @@ export class AIController {
         input.dodge = true;
       }
 
-      // Defense when cornered (near edge AND opponent close)
       const distFromCenter = Math.sqrt((ai.x - cx) ** 2 + (ai.y - cy) ** 2);
       if (distFromCenter > r * 0.75 && dist < 200) {
         input.defense = true;
       }
 
-      // Use special move at optimal timing: opponent close + power full
       const spinRatio = ai.spin / ai.maxSpin;
       if (ai.power >= 50 && dist < 250 && spinRatio < 0.6) {
         input.specialTap = true;
       }
     }
 
-    // Avoid arena edge
     const edgeDx = ai.x - cx;
     const edgeDy = ai.y - cy;
     const distFromCenter = Math.sqrt(edgeDx * edgeDx + edgeDy * edgeDy);
@@ -213,11 +161,113 @@ export class AIController {
       this.applyMoveDir(input, -edgeDx / distFromCenter, -edgeDy / distFromCenter);
     }
 
-    // Charge power
     if (ai.power < 80 && !input.dodge) input.chargeHeld = true;
 
-    // Jump occasionally when airborne hasn't been used recently
     if (this.tickCounter % 300 === 0 && !ai.isAirborne) {
+      input.jump = true;
+    }
+
+    return input;
+  }
+
+  // ── Hell: frame-perfect dodges, longer prediction window, ring-out aware,
+  //          aggressive special + combo cadence, opportunistic edge pushes. ──
+
+  private hellInput(
+    ai: BeybladeSnapshot,
+    nearest: BeybladeSnapshot | null,
+    cx: number, cy: number, r: number
+  ): AIPlayerInput {
+    const input: AIPlayerInput = {};
+
+    if (nearest) {
+      // Look 10 ticks ahead (vs 5 in hard) — anticipate further.
+      const predictedX = nearest.x + nearest.velocityX * 10;
+      const predictedY = nearest.y + nearest.velocityY * 10;
+
+      const dx = predictedX - ai.x;
+      const dy = predictedY - ai.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // Vector from arena center to opponent (push direction for ring-out).
+      const oppDx = nearest.x - cx;
+      const oppDy = nearest.y - cy;
+      const oppDistFromCenter = Math.sqrt(oppDx * oppDx + oppDy * oppDy);
+
+      if (dist > 0) {
+        const normX = dx / dist;
+        const normY = dy / dist;
+
+        if (dist > 140) {
+          // Approach from the side that pushes opponent toward the wall.
+          if (oppDistFromCenter > r * 0.45) {
+            const pushNormX = oppDx / Math.max(oppDistFromCenter, 1);
+            const pushNormY = oppDy / Math.max(oppDistFromCenter, 1);
+            // Aim a point opposite the wall — so contact knocks opponent outward.
+            const approachX = nearest.x - pushNormX * 80 - ai.x;
+            const approachY = nearest.y - pushNormY * 80 - ai.y;
+            const aLen = Math.sqrt(approachX * approachX + approachY * approachY) || 1;
+            this.applyMoveDir(input, approachX / aLen, approachY / aLen);
+          } else {
+            this.applyMoveDir(input, normX, normY);
+          }
+        } else {
+          // Tight circle-strafe.
+          const perpX = -normY;
+          const perpY = normX;
+          this.applyMoveDir(input, perpX * 1.2, perpY * 1.2);
+        }
+      }
+
+      // Attack inside a wider window than hard.
+      if (dist < 220) input.attack = true;
+
+      // Frame-perfect dodge: react to any incoming closing speed > 2.
+      const relVelX = nearest.velocityX - ai.velocityX;
+      const relVelY = nearest.velocityY - ai.velocityY;
+      const closingSpeed = -(relVelX * (nearest.x - ai.x) + relVelY * (nearest.y - ai.y)) / Math.max(dist, 1);
+      if (closingSpeed > 2 && dist < 240 && ai.power >= 8) {
+        input.dodge = true;
+      }
+
+      // Defense only when truly cornered; otherwise prefer offensive trade.
+      const distFromCenter = Math.sqrt((ai.x - cx) ** 2 + (ai.y - cy) ** 2);
+      if (distFromCenter > r * 0.85 && dist < 180) {
+        input.defense = true;
+      }
+
+      // Use special the moment it's chargeable and opponent is in kill range.
+      if (ai.power >= 50 && dist < 260) {
+        input.specialTap = true;
+      }
+
+      // Combo cadence: fire a 3-key combo every ~120 ticks (~2s) when in range.
+      // Picks based on relative angle so combos line up with strike direction.
+      if (this.tickCounter % 120 === 0 && dist < 220 && ai.power >= 25) {
+        const angle = Math.atan2(dy, dx);
+        if (angle > -Math.PI / 4 && angle < Math.PI / 4) {
+          input.comboKeys = ["moveRight", "moveRight", "attack"];      // quick-dash-r
+        } else if (angle > 3 * Math.PI / 4 || angle < -3 * Math.PI / 4) {
+          input.comboKeys = ["moveLeft", "moveLeft", "attack"];        // quick-dash-l
+        } else {
+          input.comboKeys = ["attack", "attack", "attack"];            // power-thrust
+        }
+      }
+    }
+
+    // Stay slightly closer to center than hard — better positioning.
+    const edgeDx = ai.x - cx;
+    const edgeDy = ai.y - cy;
+    const distFromCenter = Math.sqrt(edgeDx * edgeDx + edgeDy * edgeDy);
+    if (distFromCenter > r * 0.78) {
+      this.applyMoveDir(input, -edgeDx / distFromCenter, -edgeDy / distFromCenter);
+    }
+
+    // Charge aggressively; recover power quickly between strikes.
+    if (ai.power < 95 && !input.dodge) input.chargeHeld = true;
+
+    // Jump on a faster cadence (~3s) to break tracked motion.
+    if (this.tickCounter % 180 === 0 && !ai.isAirborne) {
       input.jump = true;
     }
 
@@ -242,7 +292,6 @@ export class AIController {
   }
 
   private applyMoveDir(input: AIPlayerInput, normX: number, normY: number): void {
-    // Convert world direction to WASD — apply the dominant axis as both
     if (Math.abs(normX) > 0.3) {
       if (normX > 0) input.moveRight = true; else input.moveLeft = true;
     }

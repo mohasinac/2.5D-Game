@@ -3,6 +3,7 @@
 // Firestore. These helpers wrap the manager calls so each Parts25D room is a
 // thin override around its 2D parent.
 
+import type { Client, Room } from "colyseus";
 import { PartSystemManager } from "../PartSystemManager";
 import { loadBeybladeSystemBundle, type ResolvedBeybladeSystem } from "../../utils/firebase";
 import type { Beyblade, GameState } from "../schema/GameState";
@@ -69,4 +70,33 @@ function sessionIdOf(bey: Beyblade): string {
   // In every room, Beyblade.id mirrors the client.sessionId at register time
   // (or the AI synthetic id). Manager looks up beys by sessionId, so this is it.
   return bey.id;
+}
+
+/**
+ * Wire the "mode:switch" Colyseus message channel to the manager. Clients send:
+ *   { partLayer: "tip" | "ar" | ..., configId?: string }
+ * If `configId` is omitted, the manager cycles to the next playerSwitchable
+ * configuration on that part. Switch is rejected silently when the bey isn't
+ * registered, the layer has no playerSwitchable configs, or the per-part
+ * cooldown hasn't elapsed.
+ */
+export function registerModeSwitchHandler(
+  room: Room<GameState>,
+  getManager: () => PartSystemManager | undefined
+): void {
+  room.onMessage(
+    "mode:switch",
+    (client: Client, message: { partLayer: string; configId?: string }) => {
+      const manager = getManager();
+      if (!manager) return;
+      const bey = room.state.beyblades.get(client.sessionId);
+      if (!bey || !bey.isActive) return;
+      const layer = (message?.partLayer ?? "").toString();
+      if (!layer) return;
+      const activated = manager.applyConfigSwitch(client.sessionId, bey, layer, message?.configId);
+      if (activated) {
+        client.send("mode:switched", { partLayer: layer, configId: activated });
+      }
+    }
+  );
 }

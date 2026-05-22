@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Client, Room } from "colyseus.js";
 import type { ConnectionState, ServerBeyblade, ServerGameState } from "@/types/game";
+import type { LoadingStep } from "@/components/LoadingProgress";
 import toast from "react-hot-toast";
 
 const GAME_SERVER_URL = import.meta.env.VITE_GAME_SERVER_URL || "ws://localhost:2567";
@@ -27,6 +28,9 @@ interface UseColyseusReturn {
   beyblades: Map<string, ServerBeyblade>;
   myBeyblade: ServerBeyblade | null;
   isSpectating: boolean;
+  /** Current loading step — used by <LoadingProgress />. */
+  loadingStep: LoadingStep;
+  loadingError?: string;
   connect: () => Promise<void>;
   disconnect: () => void;
   sendInput: (input: {
@@ -76,6 +80,8 @@ export function useColyseus({
   const [beyblades, setBeyblades] = useState<Map<string, ServerBeyblade>>(new Map());
   const [myBeyblade, setMyBeyblade] = useState<ServerBeyblade | null>(null);
   const [isSpectating, setIsSpectating] = useState(false);
+  const [loadingStep, setLoadingStep] = useState<LoadingStep>("connecting-ws");
+  const [loadingError, setLoadingError] = useState<string | undefined>(undefined);
 
   const clientRef = useRef<Client | null>(null);
   const roomRef = useRef<Room | null>(null);
@@ -89,11 +95,16 @@ export function useColyseus({
     if (roomRef.current) return;
 
     setConnectionState("connecting");
+    setLoadingStep("connecting-ws");
+    setLoadingError(undefined);
 
     try {
       if (!clientRef.current) {
         clientRef.current = new Client(GAME_SERVER_URL);
       }
+
+      // Once we have a client, we're attempting to join the room.
+      setLoadingStep("joining-room");
 
       const timeout = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("Connection timed out after 15s")), 15000),
@@ -107,6 +118,7 @@ export function useColyseus({
       roomRef.current = connectedRoom;
       setRoom(connectedRoom);
       setConnectionState("connected");
+      // Renderer + asset hook will advance to loading-arena-assets / beyblade-assets / audio.
 
       // Detect spectator mode — spectators have no beyblade entry keyed to their sessionId
       const spectate = Boolean((options as any).spectate);
@@ -200,6 +212,7 @@ export function useColyseus({
     } catch (err) {
       console.error("Connection failed:", err);
       setConnectionState("error");
+      setLoadingError(err instanceof Error ? err.message : String(err));
     }
   }, [roomName, options, roomId]);
 
@@ -229,5 +242,19 @@ export function useColyseus({
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { connectionState, room, gameState, beyblades, myBeyblade, isSpectating, connect, disconnect, sendInput };
+  // Watch state.status to advance step to "warmup-ready" once the room reports it.
+  useEffect(() => {
+    if (gameState?.status === "in-progress") {
+      setLoadingStep("warmup-ready");
+    } else if (gameState?.status === "warmup") {
+      // Treat warmup as "almost ready" — sit at loading-audio-assets so the bar shows ~85%.
+      setLoadingStep((s) => (s === "warmup-ready" ? s : "loading-audio-assets"));
+    }
+  }, [gameState?.status]);
+
+  return {
+    connectionState, room, gameState, beyblades, myBeyblade, isSpectating,
+    loadingStep, loadingError,
+    connect, disconnect, sendInput,
+  };
 }

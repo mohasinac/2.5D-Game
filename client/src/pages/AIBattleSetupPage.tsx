@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
 import { collection, getDocs } from "firebase/firestore";
@@ -7,17 +7,54 @@ import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 import { C } from "@/styles/theme";
+import { EntityPicker, type EntityOption } from "@/components/setup/EntityPicker";
+import { getComboDisplay, costIcon, KEY_LABEL } from "@/constants/combos";
 
-type Difficulty = "easy" | "medium" | "hard";
+type Difficulty = "medium" | "hard" | "hell";
 type BestOf = 1 | 3 | 5;
 
-interface BeybladeOption { id: string; displayName: string; type: string; spinDirection: string; }
-interface ArenaOption    { id: string; name: string; difficulty: string; }
+interface BeybladeOption {
+  id: string;
+  displayName: string;
+  type: string;
+  spinDirection: string;
+  /** Era / generation grouping for the dropdown sidebar. */
+  generation?: string;
+  imageUrl?: string;
+  typeDistribution?: { attack: number; defense: number; stamina: number };
+  mass?: number;
+  radius?: number;
+  specialMoveId?: string;
+  comboIds?: string[];
+}
+interface ArenaOption {
+  id: string;
+  name: string;
+  difficulty: string;
+  shape?: string;
+  theme?: string;
+  width?: number;
+  height?: number;
+  obstacles?: unknown[];
+  switches?: unknown[];
+  spinZones?: unknown[];
+  gravityWells?: unknown[];
+  bumps?: unknown[];
+}
+
+/** Best-effort generation tag — derived from id prefix; can be overridden by data. */
+function generationFor(id: string): string {
+  if (/(valtryek|spryzen|roktavor|kerbeus)/.test(id)) return "Burst Gen";
+  if (/(dranzer-spiral|hells-hammer)/.test(id))       return "X Gen";
+  if (/(storm-pegasus|rock-leone|lightning|earth-eagle|flame-sagit|galaxy|wing-pegasis|big-bang)/.test(id))
+    return "Metal Fight";
+  return "Bakuten / Plastic";
+}
 
 const DIFFICULTY_INFO: Record<Difficulty, { label: string; color: string; desc: string }> = {
-  easy:   { label: "Easy",   color: C.green,  desc: "Random movement, attacks at close range" },
   medium: { label: "Medium", color: C.yellow, desc: "Chases you down, uses defense when weakened" },
   hard:   { label: "Hard",   color: C.red,    desc: "Predicts your movement, dodges and combos" },
+  hell:   { label: "Hell",   color: "#ff2a4d", desc: "Frame-perfect dodges, ring-out plays, predictive specials" },
 };
 
 export function AIBattleSetupPage() {
@@ -88,9 +125,24 @@ export function AIBattleSetupPage() {
     </div>
   );
 
+  // Build EntityOption[] for the picker.
+  const beyOptions: EntityOption[] = useMemo(() => beyblades.map((b) => ({
+    id: b.id,
+    name: b.displayName,
+    subtitle: `${b.type} · ${b.spinDirection} spin`,
+    group: b.generation ?? generationFor(b.id),
+    data: b,
+  })), [beyblades]);
+  const arenaOptions: EntityOption[] = useMemo(() => arenas.map((a) => ({
+    id: a.id,
+    name: a.name,
+    subtitle: a.difficulty ? `Difficulty: ${a.difficulty}` : undefined,
+    data: a,
+  })), [arenas]);
+
   return (
     <div style={{ minHeight:"100vh", background:C.bg0, padding:32 }}>
-      <div style={{ maxWidth:640, margin:"0 auto" }}>
+      <div style={{ maxWidth:860, margin:"0 auto" }}>
         <Link to="/game" style={{ color:C.faint, fontSize:13, textDecoration:"none", display:"block", marginBottom:12 }}>← Back to menu</Link>
         <h1 style={{ fontSize:32, fontWeight:900, color:C.text, letterSpacing:"-0.02em", marginBottom:4 }}>🤖 AI Battle</h1>
         <p style={{ color:C.muted, fontSize:14, marginBottom:32 }}>Choose your beyblade, your opponent, and difficulty.</p>
@@ -98,44 +150,37 @@ export function AIBattleSetupPage() {
         <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
 
           {/* Player beyblade */}
-          <Section title="Your Beyblade" icon="🌀">
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(160px, 1fr))", gap:8 }}>
-              {beyblades.map(b => (
-                <BeyCard key={b.id} bey={b} selected={playerBeyId === b.id} onSelect={() => setPlayerBeyId(b.id)} TypeBadge={TypeBadge} />
-              ))}
-            </div>
-          </Section>
+          <EntityPicker
+            title="Your Beyblade" icon="🌀"
+            options={beyOptions}
+            selectedId={playerBeyId || null}
+            onSelect={(id) => setPlayerBeyId(id)}
+            tabs={buildBeybladeTabs(TypeBadge) as any}
+          />
 
           {/* AI beyblade */}
-          <Section title="AI's Beyblade" icon="🤖">
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(160px, 1fr))", gap:8 }}>
-              {beyblades.map(b => (
-                <BeyCard key={b.id} bey={b} selected={aiBeyId === b.id} onSelect={() => setAiBeyId(b.id)} TypeBadge={TypeBadge} dim={b.id === playerBeyId} />
-              ))}
-            </div>
-          </Section>
+          <EntityPicker
+            title="AI's Beyblade" icon="🤖"
+            options={beyOptions}
+            selectedId={aiBeyId || null}
+            onSelect={(id) => setAiBeyId(id)}
+            dimIds={new Set(playerBeyId ? [playerBeyId] : [])}
+            tabs={buildBeybladeTabs(TypeBadge) as any}
+          />
 
           {/* Arena */}
-          <Section title="Arena" icon="🏟️">
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(160px, 1fr))", gap:8 }}>
-              {arenas.map(a => (
-                <button key={a.id} onClick={() => setArenaId(a.id)} style={{
-                  padding:"12px 14px", borderRadius:10, textAlign:"left", cursor:"pointer",
-                  background: arenaId === a.id ? C.purple+"22" : C.bg2,
-                  border: `1px solid ${arenaId === a.id ? C.purple : C.border}`,
-                  color: C.text,
-                }}>
-                  <div style={{ fontWeight:600, fontSize:13 }}>{a.name}</div>
-                  {a.difficulty && <div style={{ fontSize:11, color:C.faint, marginTop:2, textTransform:"capitalize" }}>{a.difficulty}</div>}
-                </button>
-              ))}
-            </div>
-          </Section>
+          <EntityPicker
+            title="Arena" icon="🏟️"
+            options={arenaOptions}
+            selectedId={arenaId || null}
+            onSelect={(id) => setArenaId(id)}
+            tabs={buildArenaTabs() as any}
+          />
 
           {/* Difficulty */}
           <Section title="Difficulty" icon="⚡">
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:8 }}>
-              {(["easy","medium","hard"] as Difficulty[]).map(d => {
+              {(["medium","hard","hell"] as Difficulty[]).map(d => {
                 const info = DIFFICULTY_INFO[d];
                 const active = difficulty === d;
                 return (
@@ -186,6 +231,197 @@ export function AIBattleSetupPage() {
             Start Battle
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Tab builders for the EntityPicker ────────────────────────────────────
+
+function buildBeybladeTabs(TypeBadge: (p: { type: string }) => React.ReactElement) {
+  return [
+    {
+      id: "preview",
+      label: "Preview",
+      render: (sel: EntityOption | null) => {
+        if (!sel) return <EmptyHint>Pick a beyblade.</EmptyHint>;
+        const b = sel.data as BeybladeOption;
+        return (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{
+              width: "100%", aspectRatio: "1 / 1", maxWidth: 280, margin: "0 auto",
+              background: `radial-gradient(circle at center, ${C.bg2} 0%, ${C.bg0} 70%)`,
+              borderRadius: "50%", border: `1px dashed ${C.border}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: C.faint, fontSize: 12,
+            }}>
+              {b.imageUrl ? (
+                <img src={b.imageUrl} alt={b.displayName} style={{ maxWidth: "80%", maxHeight: "80%", objectFit: "contain" }} />
+              ) : (
+                <span>(static preview)</span>
+              )}
+            </div>
+            <div style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "center" }}>
+              <TypeBadge type={b.type} />
+              <span style={{ fontSize: 11, color: C.faint }}>↻ {b.spinDirection} spin</span>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "stats",
+      label: "Stats",
+      render: (sel: EntityOption | null) => {
+        if (!sel) return <EmptyHint>Pick a beyblade.</EmptyHint>;
+        const b = sel.data as BeybladeOption;
+        const td = b.typeDistribution ?? { attack: 120, defense: 120, stamina: 120 };
+        return (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <StatBar label="Attack"  value={td.attack}  max={200} color={C.red} />
+            <StatBar label="Defense" value={td.defense} max={200} color={C.blue} />
+            <StatBar label="Stamina" value={td.stamina} max={200} color={C.green} />
+            <div style={{ display: "flex", gap: 16, marginTop: 8, fontSize: 12, color: C.muted }}>
+              <span>mass: <b style={{ color: C.text }}>{b.mass ?? "—"}g</b></span>
+              <span>radius: <b style={{ color: C.text }}>{b.radius ?? "—"}cm</b></span>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "special",
+      label: "Special",
+      render: (sel: EntityOption | null) => {
+        if (!sel) return <EmptyHint>Pick a beyblade.</EmptyHint>;
+        const b = sel.data as BeybladeOption;
+        if (!b.specialMoveId) return <EmptyHint>This beyblade has no special move.</EmptyHint>;
+        return (
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{b.specialMoveId}</div>
+            <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>
+              Tap your special key when power ≥ 100. Effect depends on move id.
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "combos",
+      label: "Combos",
+      render: (sel: EntityOption | null) => {
+        if (!sel) return <EmptyHint>Pick a beyblade.</EmptyHint>;
+        const b = sel.data as BeybladeOption;
+        const combos = (b.comboIds ?? []).map((id) => getComboDisplay(id)).filter(Boolean);
+        if (combos.length === 0) return <EmptyHint>This beyblade has no combos.</EmptyHint>;
+        return (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {combos.map((c) => c && (
+              <div key={c.id} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 10px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{c.name}</span>
+                  <span style={{ fontSize: 11, color: c.cost === 0 ? C.yellow : C.faint, fontFamily: "monospace" }}>{costIcon(c.cost)}</span>
+                </div>
+                <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>{c.description}</div>
+                <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
+                  {c.sequence.map((k, i) => (
+                    <span key={i} style={{ background: C.bg3, padding: "2px 6px", borderRadius: 4, fontFamily: "monospace", fontSize: 10 }}>{KEY_LABEL[k]}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      },
+    },
+  ];
+}
+
+function buildArenaTabs() {
+  return [
+    {
+      id: "preview",
+      label: "Preview",
+      render: (sel: EntityOption | null) => {
+        if (!sel) return <EmptyHint>Pick an arena.</EmptyHint>;
+        const a = sel.data as ArenaOption;
+        return (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{
+              width: "100%", aspectRatio: "1 / 1", maxWidth: 280, margin: "0 auto",
+              background: `radial-gradient(circle at center, ${C.bg2} 0%, ${C.bg0} 75%)`,
+              borderRadius: a.shape === "rectangle" ? 16 : "50%",
+              border: `1px solid ${C.border}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: C.faint, fontSize: 12,
+            }}>
+              <span>{a.shape ?? "circle"} · {a.theme ?? "default"}</span>
+            </div>
+            <div style={{ textAlign: "center", color: C.muted, fontSize: 12 }}>
+              {a.width && a.height ? `${a.width} × ${a.height} px` : "size unknown"}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "stats",
+      label: "Stats",
+      render: (sel: EntityOption | null) => {
+        if (!sel) return <EmptyHint>Pick an arena.</EmptyHint>;
+        const a = sel.data as ArenaOption;
+        return (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, color: C.muted, fontSize: 13 }}>
+            <div>shape: <b style={{ color: C.text }}>{a.shape ?? "circle"}</b></div>
+            <div>theme: <b style={{ color: C.text }}>{a.theme ?? "default"}</b></div>
+            <div>difficulty: <b style={{ color: C.text, textTransform: "capitalize" }}>{a.difficulty}</b></div>
+          </div>
+        );
+      },
+    },
+    {
+      id: "features",
+      label: "Features",
+      render: (sel: EntityOption | null) => {
+        if (!sel) return <EmptyHint>Pick an arena.</EmptyHint>;
+        const a = sel.data as ArenaOption;
+        const items: { label: string; count: number }[] = [
+          { label: "Obstacles",     count: a.obstacles?.length ?? 0 },
+          { label: "Switches",      count: a.switches?.length ?? 0 },
+          { label: "Spin zones",    count: a.spinZones?.length ?? 0 },
+          { label: "Gravity wells", count: a.gravityWells?.length ?? 0 },
+          { label: "Bumps",         count: a.bumps?.length ?? 0 },
+        ];
+        const any = items.some((i) => i.count > 0);
+        if (!any) return <EmptyHint>No features configured.</EmptyHint>;
+        return (
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 13 }}>
+            {items.map((i) => i.count > 0 && (
+              <div key={i.label} style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ color: C.muted }}>{i.label}</span>
+                <span style={{ color: C.text, fontFamily: "monospace" }}>{i.count}</span>
+              </div>
+            ))}
+          </div>
+        );
+      },
+    },
+  ];
+}
+
+function EmptyHint({ children }: { children: React.ReactNode }) {
+  return <div style={{ color: C.faint, fontSize: 12, textAlign: "center", padding: 24 }}>{children}</div>;
+}
+
+function StatBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+  const pct = Math.min(1, value / max);
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.muted, marginBottom: 4 }}>
+        <span>{label}</span><span style={{ fontFamily: "monospace" }}>{value}</span>
+      </div>
+      <div style={{ width: "100%", height: 6, background: C.bg2, borderRadius: 3, overflow: "hidden" }}>
+        <div style={{ width: `${pct * 100}%`, height: "100%", background: color, transition: "width 200ms" }} />
       </div>
     </div>
   );

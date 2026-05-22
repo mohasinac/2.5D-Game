@@ -13,16 +13,20 @@ export interface TournamentDoc {
   registrationDeadline: admin.firestore.Timestamp;
   roundIntervalMinutes: number;
   bestOf: 1 | 3 | 5;
-  aiDifficulty: "easy" | "medium" | "hard";
+  aiDifficulty: "medium" | "hard" | "hell";
   autoFillWithAI: boolean;
   allowedBeybladeIds: string[];
   disabledBeybladeIds: string[];
   allowedArenaIds: string[];
+  /** Below this at registrationDeadline → tournament auto-cancels. Defaults to 2. */
+  minParticipants?: number;
   createdBy: string;
   createdAt: admin.firestore.Timestamp;
   updatedAt: admin.firestore.Timestamp;
   winnerId: string | null;
   winnerUsername: string | null;
+  /** Cancellation reason, set by scheduler when auto-cancelling. */
+  cancelReason?: string;
 }
 
 export interface TournamentParticipantDoc {
@@ -34,7 +38,9 @@ export interface TournamentParticipantDoc {
   isAI: boolean;
   seed: number;
   registeredAt: admin.firestore.Timestamp;
-  status: "registered" | "eliminated" | "winner";
+  status: "registered" | "eliminated" | "winner" | "quit";
+  /** Tournament-level ready (distinct from per-match readyState). Drives auto-start. */
+  ready?: boolean;
 }
 
 export interface TournamentMatchDoc {
@@ -54,6 +60,10 @@ export interface TournamentMatchDoc {
   matchFirestoreId: string;
   createdAt: admin.firestore.Timestamp;
   updatedAt: admin.firestore.Timestamp;
+  /** Both-ready early-start flags, keyed by userId. Optional — defaults to {}. */
+  readyState?: Record<string, boolean>;
+  /** Set when the room-cap path produced a draw. */
+  isDraw?: boolean;
 }
 
 export interface GlobalSettingsDoc {
@@ -184,6 +194,66 @@ export async function getUpcomingPendingMatches(windowMs: number): Promise<Tourn
   }
 }
 
+/**
+ * Pending matches where BOTH participants have set their readyState=true.
+ * Used to early-start a match before its scheduledTime. Cheaply read by
+ * scanning all pending matches (tournament brackets are small).
+ */
+export async function getReadyPendingMatches(): Promise<TournamentMatchDoc[]> {
+  if (!db) return [];
+  try {
+    const snap = await withTimeout(
+      db
+        .collection(FIREBASE_COLLECTIONS.TOURNAMENT_BRACKETS)
+        .where("status", "==", "pending")
+        .get(),
+      8000
+    );
+    const matches: TournamentMatchDoc[] = snap.docs.map((d) => ({ id: d.id, ...d.data() } as TournamentMatchDoc));
+    return matches.filter((m) => {
+      const rs = m.readyState ?? {};
+      // Both participants must have readyState=true. AI participants can have a synthetic
+      // entry (writer's responsibility), but pure-AI matches are handled by scheduledTime.
+      return rs[m.participant1Id] === true && rs[m.participant2Id] === true;
+    });
+  } catch (err) {
+    console.error("Error fetching ready-to-start matches:", err);
+    return [];
+  }
+}
+
+/** Set or clear a participant's ready flag for a specific bracket match. */
+export async function setMatchReadyState(matchId: string, participantId: string, ready: boolean): Promise<boolean> {
+  if (!db) return false;
+  try {
+    const ref = db.collection(FIREBASE_COLLECTIONS.TOURNAMENT_BRACKETS).doc(matchId);
+    await ref.set({
+      readyState: { [participantId]: ready },
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+    return true;
+  } catch (err) {
+    console.error("Error setting match ready state:", err);
+    return false;
+  }
+}
+
+/** Mark a participant as "quit". Caller (or scheduler) advances opponent via walkover. */
+export async function quitTournamentParticipant(participantId: string): Promise<boolean> {
+  if (!db) return false;
+  try {
+    const ref = db.collection(FIREBASE_COLLECTIONS.TOURNAMENT_PARTICIPANTS).doc(participantId);
+    await ref.set({
+      status: "quit",
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+    return true;
+  } catch (err) {
+    console.error("Error quitting participant:", err);
+    return false;
+  }
+}
+
 export async function getStaleRoomOpeningMatches(): Promise<TournamentMatchDoc[]> {
   if (!db) return [];
   try {
@@ -297,5 +367,78 @@ export async function updateParticipantStatus(
       .set({ status }, { merge: true });
   } catch (err) {
     console.error("Error updating participant status:", err);
+  }
+}
+
+/** Fetch all tournaments currently accepting participants. */
+export async function getRegistrationTournaments(): Promise<TournamentDoc[]> {
+  if (!db) return [];
+  try {
+    const snap = await withTimeout(
+      db
+        .collection(FIREBASE_COLLECTIONS.TOURNAMENTS)
+        .where("status", "==", "registration")
+        .get(),
+      8000
+    );
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() } as TournamentDoc));
+  } catch (err) {
+    console.error("Error fetching registration tournaments:", err);
+    return [];
+  }
+}
+
+/** Pad an under-capacity tournament with AI participants up to maxParticipants. */
+export async function padWithAIParticipants(
+  tournament: TournamentDoc,
+  existing: TournamentParticipantDoc[]
+): Promise<TournamentParticipantDoc[]> {
+  if (!db) return existing;
+  const need = Math.max(0, tournament.maxParticipants - existing.length);
+  if (need === 0) return existing;
+  const usedSeeds = new Set(existing.map((p) => p.seed));
+  const created: TournamentParticipantDoc[] = [];
+  const now = admin.firestore.FieldValue.serverTimestamp() as unknown as admin.firestore.Timestamp;
+  for (let i = 0; i < need; i++) {
+    let seed = 1;
+    while (usedSeeds.has(seed)) seed++;
+    usedSeeds.add(seed);
+    const docRef = db.collection(FIREBASE_COLLECTIONS.TOURNAMENT_PARTICIPANTS).doc();
+    const data: Omit<TournamentParticipantDoc, "id"> = {
+      tournamentId: tournament.id,
+      userId: `__ai__${tournament.id}_${seed}`,
+      username: `Bot ${seed}`,
+      beybladeId: "", // resolved at room-open time by autoPickBeyblade
+      isAI: true,
+      seed,
+      registeredAt: now,
+      status: "registered",
+      ready: true, // AI is always ready
+    };
+    try {
+      await docRef.set(data);
+      created.push({ id: docRef.id, ...data });
+    } catch (err) {
+      console.error("Error creating AI participant:", err);
+    }
+  }
+  return [...existing, ...created];
+}
+
+/** Cancel a tournament with a reason. */
+export async function cancelTournament(tournamentId: string, reason: string): Promise<void> {
+  await updateTournamentStatus(tournamentId, "cancelled", { cancelReason: reason });
+}
+
+/** Set a participant's tournament-level ready flag (used for auto-start). */
+export async function setParticipantReady(participantId: string, ready: boolean): Promise<void> {
+  if (!db) return;
+  try {
+    await db
+      .collection(FIREBASE_COLLECTIONS.TOURNAMENT_PARTICIPANTS)
+      .doc(participantId)
+      .set({ ready }, { merge: true });
+  } catch (err) {
+    console.error("Error setting participant ready:", err);
   }
 }

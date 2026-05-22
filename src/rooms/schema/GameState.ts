@@ -305,8 +305,14 @@ export class Beyblade extends Schema {
   @type("number") comboDamageMultiplierTimer: number = 0;
 
   // ── 2.5D part system fields ─────────────────────────────────────────────────
-  // Special move (determined by BitBeast part)
+  // Special move (determined by BitBeast part). Optional — empty string means no special.
   @type("string") specialMove: string = "tactical_burst";
+
+  // Combos attached to this beyblade (max 3). Optional — empty list = no combos.
+  // Combos are detected/activated server-side; client reads this for the HUD.
+  @type(["string"]) comboIds = new ArraySchema<string>();
+  // Per-combo cooldown timestamps (epoch ms) — broadcast so HUD can show cooldown rings.
+  @type({ map: "number" }) comboCooldowns = new MapSchema<number>();
 
   // ── 2.5D resolved part stats — written by applyStatModifier() / PartPhysics ─
   // These are ephemeral per-tick values; physics engine reads them each frame.
@@ -333,6 +339,10 @@ export class Beyblade extends Schema {
   // Also keyed as "sub_part_0", "sub_part_1" for sub-part attachments.
   // New key: "spin_track" for SpinTrack config; "detached" reserved for detached sub-parts.
   @type({ map: "string" }) activePartConfigs = new MapSchema<string>();
+
+  // Last epoch-ms a player-initiated config (mode) switch fired on a given part slot.
+  // Keyed identically to activePartConfigs. Used to enforce MODE_SWITCH_COOLDOWN_MS.
+  @type({ map: "number" }) configLastSwitchAt = new MapSchema<number>();
 
   // ── Split / Combined Bey (Phantom Fox MS, etc.) ──────────────────────────────
   @type("boolean") isSplit: boolean = false;

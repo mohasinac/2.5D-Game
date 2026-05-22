@@ -6,12 +6,14 @@ import { useGameInput } from "@/game/hooks/useGameInput";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { getBeybladeStability, TYPE_COLORS } from "@/types/game";
+import { getBeybladeStability, mapToRecord, TYPE_COLORS } from "@/types/game";
 import { C } from "@/styles/theme";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
+import { PartModesHUD } from "@/components/game/PartModesHUD";
 import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
+import { LoadingProgress } from "@/components/LoadingProgress";
 
 interface AIBattleLocationState {
   beybladeId?: string;
@@ -19,6 +21,13 @@ interface AIBattleLocationState {
   arenaId?: string;
   aiDifficulty?: string;
   bestOf?: 1 | 3 | 5;
+  /** Admin-only AI vs AI mode — admin spectates while two AIs fight. */
+  aiVsAi?: boolean;
+  aiP1BeybladeId?: string;
+  aiP2BeybladeId?: string;
+  aiP1Difficulty?: string;
+  aiP2Difficulty?: string;
+  matchId?: string;
 }
 
 export function AIBattleGamePage() {
@@ -30,10 +39,12 @@ export function AIBattleGamePage() {
   const { currentUser } = useAuth();
 
   const mode = modeFromPath(location.pathname);
-  const spectate = searchParams.get("spectate") === "true";
+  const querySpectate = searchParams.get("spectate") === "true";
   const userId = currentUser?.uid ?? settings.userId ?? "guest";
 
   const loc = (location.state ?? {}) as AIBattleLocationState;
+  // AI-vs-AI rooms have no human seat — the admin watches as a spectator.
+  const spectate = querySpectate || loc.aiVsAi === true;
 
   const [gameEndData, setGameEndData] = useState<{ winner: string; gameNumber: number; seriesScore: Record<string, number> } | null>(null);
   const [seriesEndData, setSeriesEndData] = useState<{ winner: string; seriesScore: Record<string, number> } | null>(null);
@@ -49,9 +60,16 @@ export function AIBattleGamePage() {
     username:     settings.username ?? "Player",
     userId,
     spectate,
+    // AI-vs-AI extension — passed through to AIBattleRoom.
+    aiVsAi:          loc.aiVsAi === true,
+    aiP1BeybladeId:  loc.aiP1BeybladeId,
+    aiP2BeybladeId:  loc.aiP2BeybladeId,
+    aiP1Difficulty:  loc.aiP1Difficulty,
+    aiP2Difficulty:  loc.aiP2Difficulty,
+    matchId:         loc.matchId,
   }), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, loadingStep, loadingError } =
     useColyseus({
       roomName: roomNameFor(mode, "aiBattle"),
       options: colyseusOptions,
@@ -74,9 +92,24 @@ export function AIBattleGamePage() {
     cameraZoomReset,
   } = usePixiRenderer(containerRef, mode);
 
+  const [spectatorFollowId, setSpectatorFollowId] = useState<string | null>(null);
+
   useEffect(() => {
-    setControlledBeyblade(myBeyblade?.id ?? null);
-  }, [myBeyblade?.id, setControlledBeyblade]);
+    if (isSpectating) {
+      if (spectatorFollowId && beyblades.has(spectatorFollowId)) {
+        setControlledBeyblade(spectatorFollowId);
+      } else {
+        const first = Array.from(beyblades.values()).find(b => !b.isAI && b.isActive)
+          ?? Array.from(beyblades.values())[0];
+        if (first) {
+          setSpectatorFollowId(first.id);
+          setControlledBeyblade(first.id);
+        }
+      }
+    } else {
+      setControlledBeyblade(myBeyblade?.id ?? null);
+    }
+  }, [myBeyblade?.id, isSpectating, beyblades, setControlledBeyblade /* spectatorFollowId intentionally not in deps to avoid loop */]);
 
   useEffect(() => {
     connect();
@@ -140,9 +173,19 @@ export function AIBattleGamePage() {
     ? Math.ceil(Math.max(0, gameState.timer))
     : null;
 
+  const showLoading = !gameState || (gameState.status !== "in-progress" && gameState.status !== "warmup" && gameState.status !== "finished" && gameState.status !== "series-finished");
+
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh", background: "#000", overflow: "hidden" }}>
       <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
+
+      {showLoading && (
+        <LoadingProgress
+          currentStep={loadingStep}
+          stepProgress={connectionState === "connected" ? 0.5 : 0.2}
+          error={loadingError}
+        />
+      )}
 
       {/* HUD top bar */}
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10, flexWrap: "wrap" }}>
@@ -222,16 +265,21 @@ export function AIBattleGamePage() {
 
       {/* Spectator view */}
       {isSpectating && allBeyblades.length > 0 && (
-        <div style={{ position: "absolute", bottom: 16, left: 0, right: 0, padding: "0 clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10 }}>
+        <div style={{ position: "absolute", bottom: 16, left: 0, right: 0, padding: "0 clamp(8px, 2vw, 16px)", pointerEvents: "auto", zIndex: 10 }}>
           <div style={{ maxWidth: "min(480px, 90vw)", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "center" }}>
             {allBeyblades.filter((b) => !b.isAI).slice(0, 1).map((b) => (
-              <StatCard key={b.id} beyblade={b} label="PLAYER" accentColor={C.blue} stabilityColor={getBeybladeStability(b) > 0.4 ? C.green : C.red} stabilityLabel={b.username} />
+              <div key={b.id} onClick={() => setSpectatorFollowId(b.id)} style={{ cursor: "pointer", outline: spectatorFollowId === b.id ? `2px solid ${C.green}` : "none", borderRadius: 8 }}>
+                <StatCard beyblade={b} label="PLAYER" accentColor={C.blue} stabilityColor={getBeybladeStability(b) > 0.4 ? C.green : C.red} stabilityLabel={b.username} />
+              </div>
             ))}
             <div style={{ fontSize: "clamp(14px, 2vw, 18px)", fontWeight: 900, color: C.faint, textAlign: "center" }}>VS</div>
             {aiBey ? (
-              <StatCard beyblade={aiBey} label="CPU" accentColor={C.red} stabilityColor={getBeybladeStability(aiBey) > 0.4 ? C.green : C.red} stabilityLabel={aiBey.username} />
+              <div onClick={() => setSpectatorFollowId(aiBey.id)} style={{ cursor: "pointer", outline: spectatorFollowId === aiBey.id ? `2px solid ${C.green}` : "none", borderRadius: 8 }}>
+                <StatCard beyblade={aiBey} label="CPU" accentColor={C.red} stabilityColor={getBeybladeStability(aiBey) > 0.4 ? C.green : C.red} stabilityLabel={aiBey.username} />
+              </div>
             ) : <div />}
           </div>
+          <div style={{ textAlign: "center", color: C.muted, fontSize: 10, marginTop: 6 }}>Click to follow</div>
         </div>
       )}
 
@@ -252,7 +300,18 @@ export function AIBattleGamePage() {
       )}
 
       {/* ComboHUD */}
-      <ComboHUD lastCombo={lastCombo} />
+      <ComboHUD
+        lastCombo={lastCombo}
+        attachedComboIds={myBeyblade?.comboIds}
+        cooldowns={mapToRecord(myBeyblade?.comboCooldowns)}
+        power={myBeyblade?.power}
+      />
+
+      {/* PartModesHUD — player-switchable 2.5D part configurations.
+          Renders nothing when myBeyblade has no part configs (non-2.5D matches). */}
+      {!isSpectating && myBeyblade && (
+        <PartModesHUD myBeyblade={myBeyblade as any} room={room as any} />
+      )}
 
       {/* Game-end inter-game overlay */}
       {gameEndData && (

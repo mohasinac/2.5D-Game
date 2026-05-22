@@ -175,6 +175,19 @@ export interface ServerBeyblade {
   // movement/action inputs are ignored server-side.
   controlLockedUntilMs?: number;
   controlLockSource?: "special" | "combo" | "" | string;
+  // Optional special move id (empty string = none).
+  specialMove?: string;
+  // Optional combos attached to this beyblade (max 3 ids matching COMBO_REGISTRY).
+  comboIds?: string[];
+  // Per-combo cooldown end timestamps (epoch ms), keyed by combo id.
+  comboCooldowns?: Map<string, number> | Record<string, number>;
+  // Active configuration name per part slot ("ar", "tip", "core", "sub_part_0", ...).
+  // Driven by both auto-triggers (existing) and the player-initiated mode:switch
+  // message (new). Renders in PartModesHUD.
+  activePartConfigs?: Map<string, string> | Record<string, string>;
+  // Last epoch-ms a player-initiated config switch fired on a given part slot.
+  // Used to throttle re-clicks in PartModesHUD (mirror of MODE_SWITCH_COOLDOWN_MS).
+  configLastSwitchAt?: Map<string, number> | Record<string, number>;
 }
 
 export interface ServerDetachedBody {
@@ -239,16 +252,20 @@ export interface TournamentDoc {
   registrationDeadline: any;
   roundIntervalMinutes: number;
   bestOf: 1 | 3 | 5;
-  aiDifficulty: "easy" | "medium" | "hard";
+  aiDifficulty: "medium" | "hard" | "hell";
   autoFillWithAI: boolean;
   allowedBeybladeIds: string[];
   disabledBeybladeIds: string[];
   allowedArenaIds: string[];
+  /** Below this at registrationDeadline → tournament auto-cancels. Defaults to 2. */
+  minParticipants?: number;
   createdBy: string;
   createdAt: any;
   updatedAt: any;
   winnerId: string | null;
   winnerUsername: string | null;
+  /** Cancellation reason, set by scheduler when auto-cancelling. */
+  cancelReason?: string;
 }
 
 export interface TournamentParticipantDoc {
@@ -260,7 +277,9 @@ export interface TournamentParticipantDoc {
   isAI: boolean;
   seed: number;
   registeredAt: any;
-  status: "registered" | "eliminated" | "winner";
+  status: "registered" | "eliminated" | "winner" | "quit";
+  /** Tournament-level ready (distinct from per-match readyState). Drives auto-start. */
+  ready?: boolean;
 }
 
 export interface TournamentMatchDoc {
@@ -280,6 +299,10 @@ export interface TournamentMatchDoc {
   matchFirestoreId: string;
   createdAt: any;
   updatedAt: any;
+  /** Both-ready early-start flags, keyed by userId or participantId. */
+  readyState?: Record<string, boolean>;
+  /** Set when the room-cap path produced a draw. */
+  isDraw?: boolean;
 }
 
 export type ConnectionState = "disconnected" | "connecting" | "connected" | "reconnecting" | "error";
@@ -292,6 +315,17 @@ export interface CollisionEvent {
   spinSteal1: number;
   spinSteal2: number;
   contactPoint: { x: number; y: number };
+}
+
+/** Convert a Colyseus MapSchema (or plain Record) into a plain Record. */
+export function mapToRecord<T>(m: Map<string, T> | Record<string, T> | undefined): Record<string, T> {
+  if (!m) return {};
+  if (m instanceof Map || typeof (m as any).forEach === "function" && typeof (m as any).entries === "function" && !Array.isArray(m)) {
+    const out: Record<string, T> = {};
+    (m as Map<string, T>).forEach((v, k) => { out[k] = v; });
+    return out;
+  }
+  return m as Record<string, T>;
 }
 
 export function getBeybladeStability(beyblade: ServerBeyblade): number {

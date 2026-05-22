@@ -6,7 +6,7 @@ import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentF
 import { tryReserveRoom, releaseRoom } from "../shared/utils/roomCounter";
 import { createPRNG } from "../shared/utils/prng";
 import { hashString } from "../shared/utils/hashString";
-import { ComboTracker, detectCombo } from "../shared/utils/comboSystem";
+import { ComboTracker, detectCombo, createComboTracker } from "../shared/utils/comboSystem";
 import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
 import { resolveWallAngle } from "../shared/physics/ArenaUtils";
@@ -66,6 +66,16 @@ export class TournamentBattleRoom extends Room<GameState> {
   private beybladeDataCache = new Map<string, BeybladeStats | null>();
   protected spawnPositions = new Map<string, { x: number; y: number }>();
   protected comboTrackers = new Map<string, ComboTracker>();
+  /** Per-session camera-follow target id (purely informational). */
+  protected spectatorFollowTargets = new Map<string, string>();
+
+  /** Wall-clock ms when the room first transitioned to in-progress.
+   *  Used by the 3-min tournament cap (independent of per-game state.timer). */
+  private matchStartedAtMs: number = 0;
+  /** Hard cap on the whole room — 3 min for tournament matches. */
+  private roomCapMs: number = 180_000;
+  /** Marks a tournament series as a draw (e.g. tied at the 3-min cap). */
+  private isSeriesDraw: boolean = false;
 
   onMatchEnd?: (winnerId: string, matchFirestoreId: string) => void;
 
@@ -140,6 +150,10 @@ export class TournamentBattleRoom extends Room<GameState> {
       this.handleInput(client, normalizeInput(message));
     });
 
+    this.onMessage("spectator:follow", (client, message: { targetBeybladeId?: string }) => {
+      this.spectatorFollowTargets.set(client.sessionId, message?.targetBeybladeId ?? "");
+    });
+
     if (aiParticipants.length >= 2) {
       this.startMatch();
     }
@@ -162,7 +176,7 @@ export class TournamentBattleRoom extends Room<GameState> {
     }
 
     this.playerSessions.add(client.sessionId);
-    this.comboTrackers.set(client.sessionId, { history: [] });
+    this.comboTrackers.set(client.sessionId, createComboTracker());
     console.log(`Player ${client.sessionId} joined TournamentBattleRoom (${this.playerSessions.size}/2 slots)`);
 
     const beybladeData: BeybladeStats | null = await loadBeyblade(options.beybladeId);
@@ -323,13 +337,28 @@ export class TournamentBattleRoom extends Room<GameState> {
     // ── Combo detection ──────────────────────────────────────────────────────
     const tracker = this.comboTrackers.get(client.sessionId);
     if (tracker && message.comboKeys && message.comboKeys.length > 0) {
-      const combo = detectCombo(tracker, message.comboKeys, Date.now());
+      const now = Date.now();
+      const attachedIds: string[] = Array.from(beyblade.comboIds).filter((s): s is string => typeof s === "string");
+      const combo = detectCombo(tracker, message.comboKeys, now, {
+        attachedComboIds: attachedIds,
+        power: beyblade.power,
+        beybladeType: beyblade.type,
+      });
       if (combo) {
+        beyblade.power = Math.max(0, beyblade.power - combo.costPaid);
         beyblade.comboDamageMultiplier = combo.damageMultiplier;
         beyblade.comboDamageMultiplierTimer = combo.durationMs / 1000;
+        if (combo.lockMs > 0) {
+          beyblade.controlLockedUntilMs = Math.max(beyblade.controlLockedUntilMs, now + combo.lockMs);
+          beyblade.controlLockSource = "combo";
+        }
+        beyblade.comboCooldowns.set(combo.comboId, now + combo.durationMs);
         this.broadcast("combo", {
           playerId: beyblade.id,
+          comboId: combo.comboId,
           comboName: combo.name,
+          costPaid: combo.costPaid,
+          effect: combo.effect,
           x: beyblade.x,
           y: beyblade.y,
         });
@@ -423,12 +452,20 @@ export class TournamentBattleRoom extends Room<GameState> {
       if (this.warmupTimer <= 0) {
         this.state.status = "in-progress";
         this.state.startTime = Date.now();
+        // Start the 3-min room cap on the very first transition only.
+        if (this.matchStartedAtMs === 0) this.matchStartedAtMs = Date.now();
         this.broadcast("match-start", {});
       }
       return;
     }
 
     if (this.state.status !== "in-progress") return;
+
+    // 3-min hard room cap across the entire series (any BO size).
+    if (this.matchStartedAtMs > 0 && Date.now() - this.matchStartedAtMs >= this.roomCapMs) {
+      this.endSeriesOnCap();
+      return;
+    }
 
     this.physics.update(deltaTime);
 
@@ -612,6 +649,44 @@ export class TournamentBattleRoom extends Room<GameState> {
     this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimer, gameNumber: this.state.currentGame });
   }
 
+  /**
+   * Called when the 3-min room cap fires. If someone leads `seriesWins`, they win
+   * a "ring-out-on-clock" style finish; on tie, the series is a draw.
+   */
+  private endSeriesOnCap() {
+    if (this.state.status === "series-finished") return;
+    const beyblades = Array.from(this.state.beyblades.values()).filter(b => !b.isAI);
+    let leader: Beyblade | null = null;
+    let leaderWins = -1;
+    let tie = false;
+    for (const b of beyblades) {
+      const w = this.state.seriesWins.get(b.userId) ?? 0;
+      if (w > leaderWins) { leader = b; leaderWins = w; tie = false; }
+      else if (w === leaderWins && leader && b.userId !== leader.userId) { tie = true; }
+    }
+
+    const seriesScore = buildSeriesScore(this.state);
+    this.state.status = "series-finished";
+    this.isSeriesDraw = tie;
+    this.state.winner = tie ? "" : (leader?.userId ?? "");
+
+    this.broadcast("series-end", {
+      winner: !tie && leader ? { id: leader.id, userId: leader.userId, username: leader.username } : null,
+      isDraw: tie,
+      seriesScore,
+      reason: "room-cap",
+    });
+
+    this.persistMatch(tie ? null : leader).then((matchFirestoreId) => {
+      if (this.onMatchEnd) this.onMatchEnd(this.state.winner, matchFirestoreId);
+    }).catch((err) => {
+      console.error("[TournamentBattleRoom] persistMatch (cap) failed:", err);
+      if (this.onMatchEnd) this.onMatchEnd(this.state.winner, "");
+    });
+
+    setTimeout(() => this.disconnect(), 5000);
+  }
+
   private async persistMatch(winner: Beyblade | null): Promise<string> {
     try {
       const beyblades = Array.from(this.state.beyblades.values());
@@ -645,13 +720,34 @@ export class TournamentBattleRoom extends Room<GameState> {
       const result = await saveMatch(matchData);
       const matchFirestoreId: string = (result as any)?.id ?? "";
 
-      if (winner && !winner.isAI) {
+      // Tournament points: winner +2, draw → both +1, loser +0.
+      const humans = beyblades.filter(b => !b.isAI);
+      if (this.isSeriesDraw) {
+        for (const b of humans) {
+          await updatePlayerStats(b.userId, {
+            matchesPlayed: 1,
+            tournamentPoints: 1,
+            totalDamageDealt: b.damageDealt,
+            totalCollisions: b.collisions,
+          });
+        }
+      } else if (winner && !winner.isAI) {
         await updatePlayerStats(winner.userId, {
           matchesPlayed: 1,
           wins: 1,
+          tournamentPoints: 2,
           totalDamageDealt: winner.damageDealt,
           totalCollisions: winner.collisions,
         });
+        // Loser(s): record matchesPlayed but no points/wins. (Loss field already tracked elsewhere.)
+        for (const b of humans) {
+          if (b.userId === winner.userId) continue;
+          await updatePlayerStats(b.userId, {
+            matchesPlayed: 1,
+            totalDamageDealt: b.damageDealt,
+            totalCollisions: b.collisions,
+          });
+        }
       }
 
       return matchFirestoreId;
@@ -726,6 +822,12 @@ export class TournamentBattleRoom extends Room<GameState> {
     beyblade.mass = data.mass;
     beyblade.radius = data.radius;
     beyblade.actualSize = data.radius * 24;
+    // Optional special move + combos. Both may be undefined on legacy beyblades.
+    if (data.specialMoveId !== undefined) beyblade.specialMove = data.specialMoveId;
+    beyblade.comboIds.clear();
+    if (data.comboIds) {
+      for (const id of data.comboIds.slice(0, 3)) beyblade.comboIds.push(id);
+    }
     const attack = data.typeDistribution.attack;
     const defense = data.typeDistribution.defense;
     const stamina = data.typeDistribution.stamina;

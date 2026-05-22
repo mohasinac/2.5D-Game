@@ -63,6 +63,10 @@ export interface BeybladeStats {
   typeDistribution: TypeDistribution;
   pointsOfContact: PointOfContact[];
   spinStealPoints?: SpinStealPoint[];
+  /** Optional special move id (e.g. "stampede_rush"). Empty/undefined = no special. */
+  specialMoveId?: string;
+  /** Optional combo ids (max 3). Must exist in COMBO_REGISTRY. Undefined = no combos. */
+  comboIds?: string[];
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;

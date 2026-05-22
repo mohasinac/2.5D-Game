@@ -1,7 +1,7 @@
 import type { Client } from "colyseus";
 import { TournamentBattleRoom } from "./TournamentBattleRoom";
 import { PartSystemManager } from "./PartSystemManager";
-import { buildPartSystemManager, registerBeyOnManager, tickBeyOnManager } from "./parts25d/partSystemHooks";
+import { buildPartSystemManager, registerBeyOnManager, registerModeSwitchHandler, tickBeyOnManager } from "./parts25d/partSystemHooks";
 import type { Beyblade } from "./schema/GameState";
 
 export class Parts25DTournamentBattleRoom extends TournamentBattleRoom {
@@ -11,6 +11,7 @@ export class Parts25DTournamentBattleRoom extends TournamentBattleRoom {
     await super.onCreate(options);
     this.state.mode = "tournament-2.5d";
     this.partSystemManager = buildPartSystemManager(this.state.arena);
+    registerModeSwitchHandler(this, () => this.partSystemManager);
     console.log("→ Parts25DTournamentBattleRoom active (2.5D parts pipeline)");
 
     // Tournament AI participants are created during super.onCreate(); register

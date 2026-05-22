@@ -205,9 +205,22 @@ export async function advanceWinnerToNextRound(
 
     // Odd-numbered matches fill participant1; even-numbered fill participant2
     const field = completedMatchNumber % 2 === 1 ? "participant1Id" : "participant2Id";
+
+    // Enforce 5-min gap from now if the next match's scheduledTime is sooner.
+    // Players can still Ready-up to bypass the gap (handled by TournamentScheduler).
+    const existing = nextSnap.data() as TournamentMatchDoc | undefined;
+    const fiveMinFromNow = admin.firestore.Timestamp.fromMillis(Date.now() + 5 * 60 * 1000);
+    const updatedScheduled =
+      existing?.scheduledTime && existing.scheduledTime.toMillis() > fiveMinFromNow.toMillis()
+        ? existing.scheduledTime
+        : fiveMinFromNow;
+
     await nextRef.set(
       {
         [field]: winnerId,
+        scheduledTime: updatedScheduled,
+        // Always reset readyState when advancing a new participant in.
+        readyState: { ...(existing?.readyState ?? {}), [winnerId]: false },
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       },
       { merge: true }

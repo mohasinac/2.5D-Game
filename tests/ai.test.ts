@@ -52,29 +52,15 @@ function runTicks(ai: AIController, count: number, aiSnap: any, opponents: any[]
   return last;
 }
 
-// ─── Easy AI ────────────────────────────────────────────────────────────────
+// ─── Hell AI ────────────────────────────────────────────────────────────────
 
-describe("AIController — easy", () => {
+describe("AIController — hell", () => {
   let controller: AIController;
-  beforeEach(() => { controller = new AIController("easy"); });
+  beforeEach(() => { controller = new AIController("hell"); });
 
-  test("produces at least one movement direction over 200 ticks", () => {
-    const aiSnap = makeAI();
-    const opp = makeOpponent();
-    let anyMove = false;
-    for (let i = 0; i < 200; i++) {
-      const inp = controller.computeInput(aiSnap, [opp], ARENA_CX, ARENA_CY, ARENA_R);
-      if (inp.moveLeft || inp.moveRight || inp.moveUp || inp.moveDown) {
-        anyMove = true;
-        break;
-      }
-    }
-    expect(anyMove).toBe(true);
-  });
-
-  test("attacks when opponent is within 300px", () => {
+  test("attacks inside its 220px range", () => {
     const aiSnap = makeAI({ x: ARENA_CX, y: ARENA_CY });
-    const closeOpp = makeOpponent({ x: ARENA_CX + 200, y: ARENA_CY }); // 200px away
+    const closeOpp = makeOpponent({ x: ARENA_CX + 180, y: ARENA_CY }); // 180px away
     let attacked = false;
     for (let i = 0; i < 60; i++) {
       const inp = controller.computeInput(aiSnap, [closeOpp], ARENA_CX, ARENA_CY, ARENA_R);
@@ -83,38 +69,47 @@ describe("AIController — easy", () => {
     expect(attacked).toBe(true);
   });
 
-  test("does not attack opponent beyond 300px consistently", () => {
-    // Opponent 350px away — easy AI should NOT attack
-    const aiSnap = makeAI({ x: ARENA_CX, y: ARENA_CY });
-    const farOpp  = makeOpponent({ x: ARENA_CX + 350, y: ARENA_CY });
-    let attackCount = 0;
+  test("dodges aggressively at low closing speed (threshold 2)", () => {
+    const aiSnap  = makeAI({ x: ARENA_CX, y: ARENA_CY, power: 30 });
+    const fastOpp = makeOpponent({
+      x: ARENA_CX + 200, y: ARENA_CY,
+      velocityX: -2.5, velocityY: 0, // closing speed > 2 threshold
+    });
+    let dodged = false;
     for (let i = 0; i < 60; i++) {
-      const inp = controller.computeInput(aiSnap, [farOpp], ARENA_CX, ARENA_CY, ARENA_R);
-      if (inp.attack) attackCount++;
+      const inp = controller.computeInput(aiSnap, [fastOpp], ARENA_CX, ARENA_CY, ARENA_R);
+      if (inp.dodge) { dodged = true; break; }
     }
-    expect(attackCount).toBe(0);
+    expect(dodged).toBe(true);
   });
 
-  test("avoids arena edge — produces inward movement near boundary", () => {
-    // Place AI near edge (90% of radius)
-    const edgeX = ARENA_CX + ARENA_R * 0.9;
-    const aiSnap = makeAI({ x: edgeX, y: ARENA_CY });
-    const opp = makeOpponent({ x: ARENA_CX + 50, y: ARENA_CY });
-    // Over 60 ticks some movement should point away from edge (left in this case)
-    let moveLeft = false;
-    for (let i = 0; i < 60; i++) {
-      const inp = controller.computeInput(aiSnap, [opp], ARENA_CX, ARENA_CY, ARENA_R);
-      if (inp.moveLeft) { moveLeft = true; break; }
+  test("emits a 3-key combo on its cadence tick when power>=25 and opponent in range", () => {
+    const aiSnap  = makeAI({ x: ARENA_CX, y: ARENA_CY, power: 80 });
+    const closeOpp = makeOpponent({ x: ARENA_CX + 100, y: ARENA_CY });
+    let comboSeen: string[] | undefined;
+    for (let i = 0; i < 200; i++) {
+      const inp = controller.computeInput(aiSnap, [closeOpp], ARENA_CX, ARENA_CY, ARENA_R);
+      if (inp.comboKeys && inp.comboKeys.length === 3) { comboSeen = inp.comboKeys; break; }
     }
-    expect(moveLeft).toBe(true);
+    expect(comboSeen).toBeDefined();
+    expect(comboSeen).toHaveLength(3);
   });
 
-  test("returns empty object (no inputs) when no opponents", () => {
+  test("fires special as soon as power >= 50 in kill range", () => {
+    const aiSnap  = makeAI({ x: ARENA_CX, y: ARENA_CY, power: 55 });
+    const closeOpp = makeOpponent({ x: ARENA_CX + 100, y: ARENA_CY });
+    let fired = false;
+    for (let i = 0; i < 60; i++) {
+      const inp = controller.computeInput(aiSnap, [closeOpp], ARENA_CX, ARENA_CY, ARENA_R);
+      if (inp.specialTap) { fired = true; break; }
+    }
+    expect(fired).toBe(true);
+  });
+
+  test("collapses legacy 'easy' string into a valid difficulty (no throw)", () => {
+    const legacy = new AIController("easy" as any);
     const aiSnap = makeAI();
-    // With no opponents, easy AI still picks a random direction but won't attack
-    const inp = controller.computeInput(aiSnap, [], ARENA_CX, ARENA_CY, ARENA_R);
-    expect(inp.attack).toBeFalsy();
-    expect(inp.defense).toBeFalsy();
+    expect(() => legacy.computeInput(aiSnap, [makeOpponent()], ARENA_CX, ARENA_CY, ARENA_R)).not.toThrow();
   });
 });
 
@@ -256,7 +251,7 @@ describe("AIController — hard", () => {
 // ─── Shared behaviour ────────────────────────────────────────────────────────
 
 describe("AIController — difficulty-agnostic behaviour", () => {
-  test.each(["easy", "medium", "hard"] as const)(
+  test.each(["medium", "hard", "hell"] as const)(
     "%s AI returns a plain object (not null/undefined)",
     (diff) => {
       const ctrl = new AIController(diff);
@@ -267,8 +262,8 @@ describe("AIController — difficulty-agnostic behaviour", () => {
     }
   );
 
-  test.each(["easy", "medium", "hard"] as const)(
-    "%s AI only sets boolean fields (no numbers/strings in input)",
+  test.each(["medium", "hard", "hell"] as const)(
+    "%s AI only sets boolean fields and an optional comboKeys array",
     (diff) => {
       const ctrl = new AIController(diff);
       const aiSnap = makeAI();
@@ -278,16 +273,17 @@ describe("AIController — difficulty-agnostic behaviour", () => {
         const v = (inp as any)[k];
         if (v !== undefined) expect(typeof v).toBe("boolean");
       }
+      if (inp.comboKeys !== undefined) {
+        expect(Array.isArray(inp.comboKeys)).toBe(true);
+      }
     }
   );
 
   test("tickCounter increments across calls (stateful)", () => {
-    const ctrl = new AIController("easy");
+    const ctrl = new AIController("medium");
     const snap = makeAI();
     ctrl.computeInput(snap, [], ARENA_CX, ARENA_CY, ARENA_R);
     ctrl.computeInput(snap, [], ARENA_CX, ARENA_CY, ARENA_R);
-    // We can verify stateful behaviour indirectly: after 90 ticks the direction should refresh
-    // Just verify it doesn't throw across many ticks
     expect(() => {
       for (let i = 0; i < 200; i++) ctrl.computeInput(snap, [], ARENA_CX, ARENA_CY, ARENA_R);
     }).not.toThrow();

@@ -8,12 +8,14 @@ import { useGameInput } from "@/game/hooks/useGameInput";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { getBeybladeStability, TYPE_COLORS } from "@/types/game";
+import { getBeybladeStability, mapToRecord, TYPE_COLORS } from "@/types/game";
 import { C } from "@/styles/theme";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
+import { PartModesHUD } from "@/components/game/PartModesHUD";
 import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
+import { LoadingProgress } from "@/components/LoadingProgress";
 
 const ROUND_NAMES: Record<number, string> = { 1: "Round 1", 2: "Semifinals", 3: "Final" };
 
@@ -58,7 +60,7 @@ export function TournamentBattleGamePage() {
     beybladeId: settings.beybladeId ?? "default",
   }), [spectate, tournamentId, matchId, userId, settings.username, settings.beybladeId]);
 
-  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, loadingStep, loadingError } =
     useColyseus({
       roomName: roomNameFor(mode, "tournament"),
       roomId: colyseusRoomId ?? undefined,
@@ -88,9 +90,26 @@ export function TournamentBattleGamePage() {
     cameraZoomReset,
   } = usePixiRenderer(containerRef, mode);
 
+  const [spectatorFollowId, setSpectatorFollowId] = useState<string | null>(null);
+  const spectatorFollowIdRef = useRef<string | null>(null);
+  useEffect(() => { spectatorFollowIdRef.current = spectatorFollowId; }, [spectatorFollowId]);
+
   useEffect(() => {
-    setControlledBeyblade(myBeyblade?.id ?? null);
-  }, [myBeyblade?.id, setControlledBeyblade]);
+    if (isSpectating) {
+      if (spectatorFollowIdRef.current && beyblades.has(spectatorFollowIdRef.current)) {
+        setControlledBeyblade(spectatorFollowIdRef.current);
+      } else {
+        const first = Array.from(beyblades.values()).find(b => !b.isAI && b.isActive)
+          ?? Array.from(beyblades.values())[0];
+        if (first) {
+          setSpectatorFollowId(first.id);
+          setControlledBeyblade(first.id);
+        }
+      }
+    } else {
+      setControlledBeyblade(myBeyblade?.id ?? null);
+    }
+  }, [myBeyblade?.id, isSpectating, beyblades, setControlledBeyblade]);
 
   useEffect(() => {
     let raf: number;
@@ -158,9 +177,19 @@ export function TournamentBattleGamePage() {
     );
   }
 
+  const showLoading = !gameState || (gameState.status !== "in-progress" && gameState.status !== "warmup" && gameState.status !== "finished" && gameState.status !== "series-finished");
+
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh", background: "#000", overflow: "hidden" }}>
       <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
+
+      {showLoading && (
+        <LoadingProgress
+          currentStep={loadingStep}
+          stepProgress={connectionState === "connected" ? 0.5 : 0.2}
+          error={loadingError}
+        />
+      )}
 
       {/* HUD top bar */}
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10, flexWrap: "wrap" }}>
@@ -239,14 +268,28 @@ export function TournamentBattleGamePage() {
         lockSource={myBeyblade?.controlLockSource}
       />
 
-      {/* Spectator all-player list */}
+      {/* Spectator all-player list — click to follow */}
       {isSpectating && playerList.length > 0 && (
-        <div style={{ position: "absolute", top: 60, right: "clamp(8px, 2vw, 16px)", display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none", zIndex: 10, maxHeight: "60vh", overflowY: "auto" }}>
+        <div style={{ position: "absolute", top: 60, right: "clamp(8px, 2vw, 16px)", display: "flex", flexDirection: "column", gap: 6, pointerEvents: "auto", zIndex: 10, maxHeight: "60vh", overflowY: "auto" }}>
+          <div style={{ fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 2 }}>
+            Watching — click to follow
+          </div>
           {playerList.map((p) => (
-            <div key={p.id} style={{
-              background: "rgba(15,23,42,0.85)", borderRadius: 8, border: `1px solid ${C.border}`,
-              padding: "8px 12px", minWidth: "clamp(120px, 20vw, 200px)", opacity: p.isActive ? 1 : 0.5,
-            }}>
+            <div
+              key={p.id}
+              onClick={() => setSpectatorFollowId(p.id)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSpectatorFollowId(p.id); }}
+              style={{
+                background: spectatorFollowId === p.id ? "rgba(34,197,94,0.18)" : "rgba(15,23,42,0.85)",
+                borderRadius: 8,
+                border: `1px solid ${spectatorFollowId === p.id ? C.green : C.border}`,
+                padding: "8px 12px", minWidth: "clamp(120px, 20vw, 200px)",
+                opacity: p.isActive ? 1 : 0.5,
+                cursor: "pointer",
+              }}
+            >
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(9px, 1.5vw, 11px)", marginBottom: 6 }}>
                 <span style={{ color: C.muted, overflow: "hidden", maxWidth: "clamp(60px, 12vw, 100px)", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {p.username}{p.isAI ? " (AI)" : ""}
@@ -324,7 +367,17 @@ export function TournamentBattleGamePage() {
       )}
 
       {/* ComboHUD */}
-      <ComboHUD lastCombo={lastCombo} />
+      <ComboHUD
+        lastCombo={lastCombo}
+        attachedComboIds={myBeyblade?.comboIds}
+        cooldowns={mapToRecord(myBeyblade?.comboCooldowns)}
+        power={myBeyblade?.power}
+      />
+
+      {/* PartModesHUD — only renders if myBeyblade has activePartConfigs (2.5D). */}
+      {!isSpectating && myBeyblade && (
+        <PartModesHUD myBeyblade={myBeyblade as any} room={room as any} />
+      )}
 
       {/* Game-end inter-game overlay */}
       {gameEndData && (

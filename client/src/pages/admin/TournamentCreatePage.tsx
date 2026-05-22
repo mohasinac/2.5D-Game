@@ -10,11 +10,12 @@ interface FormState {
   description: string;
   type: "pvp" | "player-gauntlet" | "mixed" | "ai-exhibition";
   maxParticipants: 2 | 4 | 8;
+  minParticipants: number;
   scheduledStartTime: string; // datetime-local string
   registrationDeadline: string;
   roundIntervalMinutes: number;
   bestOf: 1 | 3 | 5;
-  aiDifficulty: "easy" | "medium" | "hard";
+  aiDifficulty: "medium" | "hard" | "hell";
   autoFillWithAI: boolean;
   allowedBeybladeIds: string;
   disabledBeybladeIds: string;
@@ -26,6 +27,7 @@ const defaults: FormState = {
   description: "",
   type: "pvp",
   maxParticipants: 8,
+  minParticipants: 2,
   scheduledStartTime: "",
   registrationDeadline: "",
   roundIntervalMinutes: 15,
@@ -64,12 +66,14 @@ export function TournamentCreatePage() {
         ? Timestamp.fromDate(new Date(form.registrationDeadline))
         : startTs;
 
+      const minP = Math.max(2, Math.min(form.maxParticipants, Math.floor(form.minParticipants)));
       const docRef = await addDoc(collection(db, COLLECTIONS.TOURNAMENTS), {
         name: form.name.trim(),
         description: form.description.trim() || null,
         type: form.type,
         status: "draft",
         maxParticipants: form.maxParticipants,
+        minParticipants: minP,
         scheduledStartTime: startTs,
         registrationDeadline: regTs,
         roundIntervalMinutes: form.roundIntervalMinutes,
@@ -133,6 +137,16 @@ export function TournamentCreatePage() {
               </select>
             </Field>
           </div>
+          <Field label="Minimum Participants (auto-cancels below this at deadline)">
+            <input
+              style={{ ...S.input, width: 100 }}
+              type="number"
+              min={2}
+              max={form.maxParticipants}
+              value={form.minParticipants}
+              onChange={(e) => set("minParticipants", Number(e.target.value))}
+            />
+          </Field>
         </Section>
 
         <Section title="Schedule">
@@ -160,9 +174,9 @@ export function TournamentCreatePage() {
             </Field>
             <Field label="AI Difficulty">
               <select style={S.input} value={form.aiDifficulty} onChange={(e) => set("aiDifficulty", e.target.value as any)}>
-                <option value="easy">Easy</option>
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
+                <option value="hell">Hell</option>
               </select>
             </Field>
             <Field label="Auto-Fill with AI">

@@ -1,6 +1,7 @@
 import { matchMaker } from "@colyseus/core";
 import {
   getUpcomingPendingMatches,
+  getReadyPendingMatches,
   getStaleRoomOpeningMatches,
   loadTournamentSettings,
   loadGlobalSettings,
@@ -10,10 +11,14 @@ import {
   updateParticipantStatus,
   getParticipantsForTournament,
   getRoundMatchesForTournament,
+  getRegistrationTournaments,
+  padWithAIParticipants,
+  cancelTournament,
   type TournamentMatchDoc,
   type TournamentDoc,
+  type TournamentParticipantDoc,
 } from "../utils/tournamentFirebase";
-import { advanceWinnerToNextRound } from "./BracketGenerator";
+import { writeBracketToFirestore, advanceWinnerToNextRound } from "./BracketGenerator";
 import { autoPickBeyblade } from "./AutoPickBeyblade";
 import { getActiveRoomCount } from "../utils/roomCounter";
 import { TournamentBattleRoom } from "../rooms/TournamentBattleRoom";
@@ -24,6 +29,12 @@ import { TournamentBattleRoom } from "../rooms/TournamentBattleRoom";
 
 const POLL_INTERVAL_MS = 30_000;
 const LOOK_AHEAD_MS = 65_000; // open rooms 65 s before scheduled time
+/** Minimum gap between consecutive bracket matches for a single tournament. */
+const BETWEEN_MATCH_GAP_MS = 5 * 60_000;
+/** Grace window after scheduledTime before a not-ready human walks over. */
+const NO_SHOW_GRACE_MS = 60_000;
+/** Default minimum participants when tournament omits the field. */
+const DEFAULT_MIN_PARTICIPANTS = 2;
 
 export class TournamentScheduler {
   private timer: NodeJS.Timeout | null = null;
@@ -71,11 +82,144 @@ export class TournamentScheduler {
       return;
     }
 
-    const upcomingMatches = await getUpcomingPendingMatches(LOOK_AHEAD_MS);
-    for (const match of upcomingMatches) {
+    // Walkover sweep: if a participant has quit, advance their opponent immediately.
+    await this.processQuitWalkovers().catch(console.error);
+
+    // Tournament-level sweeps — finalise registration when the deadline has passed
+    // OR every registered participant has flipped their tournament-level ready flag.
+    await this.processRegistrationFinalisation().catch(console.error);
+
+    // Merge two pools — scheduled + ready-now. Ready matches are opened regardless
+    // of scheduledTime (the 5-min between-match gap can be skipped when BOTH players
+    // explicitly Ready). De-dupe by match id.
+    const [upcoming, ready] = await Promise.all([
+      getUpcomingPendingMatches(LOOK_AHEAD_MS),
+      getReadyPendingMatches(),
+    ]);
+    const seen = new Set<string>();
+    const queue: TournamentMatchDoc[] = [];
+    for (const m of [...ready, ...upcoming]) {
+      if (seen.has(m.id)) continue;
+      seen.add(m.id);
+      queue.push(m);
+    }
+
+    for (const match of queue) {
       await this.openRoomForMatch(match).catch((err) => {
         console.error(`[TournamentScheduler] Failed to open room for match ${match.id}:`, err);
       });
+    }
+  }
+
+  // ─── Registration finalisation sweep ───────────────────────────────────────
+  // Triggers bracket generation when either:
+  //   (a) registrationDeadline has passed, or
+  //   (b) every registered (non-AI) participant has set ready=true.
+  // Cancels the tournament if participant count is below minParticipants at deadline.
+
+  private async processRegistrationFinalisation(): Promise<void> {
+    try {
+      const tournaments = await getRegistrationTournaments();
+      if (tournaments.length === 0) return;
+      const now = Date.now();
+      for (const t of tournaments) {
+        const min = t.minParticipants ?? DEFAULT_MIN_PARTICIPANTS;
+        const deadlineMs = t.registrationDeadline?.toMillis?.() ?? Infinity;
+        const participants = await getParticipantsForTournament(t.id);
+        const registered = participants.filter((p) => p.status === "registered");
+
+        const deadlinePassed = now >= deadlineMs;
+        // AI is always considered ready; only non-AI participants need to flip the flag.
+        const allReady =
+          registered.length >= min &&
+          registered.every((p) => p.isAI || p.ready === true);
+
+        if (!deadlinePassed && !allReady) continue;
+
+        if (deadlinePassed && registered.length < min) {
+          console.log(
+            `[TournamentScheduler] Cancelling ${t.id} — only ${registered.length}/${min} registered at deadline`
+          );
+          await cancelTournament(
+            t.id,
+            `Insufficient participants at deadline (${registered.length}/${min}).`
+          );
+          continue;
+        }
+
+        await this.finaliseRegistration(t, participants, /* startNow */ allReady && !deadlinePassed);
+      }
+    } catch (err) {
+      console.error("[TournamentScheduler] Registration finalisation failed:", err);
+    }
+  }
+
+  /**
+   * Generate the bracket and flip the tournament to "in-progress". If startNow is
+   * true (all-ready early-start path), round-1 matches are scheduled at `now` so the
+   * existing 65s look-ahead picks them up on the very next poll cycle. Otherwise the
+   * bracket honours the tournament's scheduledStartTime.
+   */
+  private async finaliseRegistration(
+    tournament: TournamentDoc,
+    participants: TournamentParticipantDoc[],
+    startNow: boolean
+  ): Promise<void> {
+    let pool = participants.filter((p) => p.status === "registered");
+    if (tournament.autoFillWithAI && pool.length < tournament.maxParticipants) {
+      pool = (await padWithAIParticipants(tournament, pool)).filter((p) => p.status === "registered");
+    }
+
+    // If startNow was requested, override the tournament's scheduledStartTime
+    // in-memory so BracketGenerator produces round-1 matches at now.
+    const effectiveTournament: TournamentDoc = startNow
+      ? {
+          ...tournament,
+          scheduledStartTime: {
+            toDate: () => new Date(Date.now()),
+            toMillis: () => Date.now(),
+          } as any,
+        }
+      : tournament;
+
+    const defaultArenaId =
+      tournament.allowedArenaIds?.[0] ??
+      tournament.allowedArenaIds?.[Math.floor(Math.random() * Math.max(1, tournament.allowedArenaIds.length))] ??
+      "default";
+
+    await writeBracketToFirestore(effectiveTournament, pool, defaultArenaId);
+    await updateTournamentStatus(tournament.id, "in-progress");
+    console.log(
+      `[TournamentScheduler] Finalised ${tournament.id} (startNow=${startNow}, participants=${pool.length})`
+    );
+  }
+
+  // ─── Walkover sweep — opponent advances when a participant has quit ────────
+
+  private async processQuitWalkovers(): Promise<void> {
+    try {
+      const pending = await getUpcomingPendingMatches(24 * 60 * 60 * 1000); // 24h horizon
+      const tournamentIds = Array.from(new Set(pending.map(m => m.tournamentId)));
+      for (const tid of tournamentIds) {
+        const participants = await getParticipantsForTournament(tid);
+        const quitIds = new Set(participants.filter(p => p.status === "quit").map(p => p.id));
+        if (quitIds.size === 0) continue;
+        for (const match of pending.filter(m => m.tournamentId === tid)) {
+          const p1Quit = quitIds.has(match.participant1Id);
+          const p2Quit = quitIds.has(match.participant2Id);
+          if (!p1Quit && !p2Quit) continue;
+          // Both quit → just complete the match with no winner.
+          // One quit → opponent walks over.
+          const winnerParticipantId = p1Quit && p2Quit ? "" : (p1Quit ? match.participant2Id : match.participant1Id);
+          console.log(`[TournamentScheduler] Walkover on match ${match.id}: winner participant=${winnerParticipantId}`);
+          await updateMatchStatus(match.id, { status: "completed", winnerId: winnerParticipantId || null });
+          if (winnerParticipantId) {
+            await this.advanceRound(match.tournamentId, match.id, match.round, match.matchNumber, winnerParticipantId, "");
+          }
+        }
+      }
+    } catch (err) {
+      console.error("[TournamentScheduler] Walkover sweep failed:", err);
     }
   }
 
@@ -107,6 +251,40 @@ export class TournamentScheduler {
 
     if (!p1Doc || !p2Doc) {
       console.warn(`[TournamentScheduler] Missing participants for match ${match.id}`);
+      return;
+    }
+
+    // No-show walkover — past scheduledTime by NO_SHOW_GRACE_MS without a human
+    // participant having flipped ready in either the per-match readyState or their
+    // tournament-level participant.ready flag. AI participants are always present.
+    const scheduledMs = match.scheduledTime?.toMillis?.() ?? 0;
+    const pastGrace = Date.now() > scheduledMs + NO_SHOW_GRACE_MS;
+    const readyState = match.readyState ?? {};
+    const isPresent = (p: TournamentParticipantDoc): boolean =>
+      p.isAI === true || readyState[p.id] === true || p.ready === true;
+    const p1Present = isPresent(p1Doc);
+    const p2Present = isPresent(p2Doc);
+    if (pastGrace && (!p1Present || !p2Present)) {
+      const winnerParticipantId =
+        !p1Present && !p2Present ? "" : (p1Present ? p1Doc.id : p2Doc.id);
+      console.log(
+        `[TournamentScheduler] No-show walkover on match ${match.id}: ` +
+        `p1Present=${p1Present}, p2Present=${p2Present}, winner=${winnerParticipantId || "<none>"}`
+      );
+      await updateMatchStatus(match.id, {
+        status: "completed",
+        winnerId: winnerParticipantId || null,
+      });
+      if (winnerParticipantId) {
+        await this.advanceRound(
+          match.tournamentId,
+          match.id,
+          match.round,
+          match.matchNumber,
+          winnerParticipantId,
+          ""
+        );
+      }
       return;
     }
 

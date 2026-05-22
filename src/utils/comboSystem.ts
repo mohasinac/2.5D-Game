@@ -1,174 +1,132 @@
-// Combo detection system — tracks input sequences and detects predefined combos
+// Combo detection — new schema (3 keys, optional power cost, beyblade-attached).
+// See src/constants/combos.ts for the registry.
+
+import {
+  COMBO_REGISTRY,
+  findComboBySequence,
+  getComboById,
+  type Combo,
+  type ComboKey,
+} from "../constants/combos";
 
 export interface ComboEntry {
-  key: string;
+  key: ComboKey;
   timestamp: number;
 }
 
 export interface ComboTracker {
   history: ComboEntry[];
+  /** When >= now, no new combo may fire (per-tracker cooldown floor). */
+  globalCooldownUntilMs: number;
+  /** Per-combo cooldown (ms epoch). */
+  perComboCooldown: Map<string, number>;
 }
 
+/**
+ * Result of a successful combo activation. Back-compat shape:
+ * `damageMultiplier`, `durationMs`, `lockMs`, `effect` are preserved fields
+ * that existing rooms / HUD already consume.
+ *
+ * `comboId` is new — rooms can look up the full Combo via getComboById().
+ */
 export interface ComboResult {
+  comboId: string;
   name: string;
   damageMultiplier: number;
   durationMs: number;
   lockMs: number;
-  effect: "damage_boost" | "speed_burst_left" | "speed_burst_right" | "full_invuln";
+  /** Power cost actually deducted (0 for free combos). */
+  costPaid: number;
+  /** Coarse effect tag for renderer / SFX selection. */
+  effect: "damage_boost" | "speed_burst_left" | "speed_burst_right" | "speed_burst_back" | "guard" | "spin_steal";
 }
 
-// Defined combo sequences (checked longest-first to avoid partial matches)
-interface ComboDefinition {
-  name: string;
-  keys: string[];
-  windowMs: number;
-  result: ComboResult;
-  sameFrame?: boolean; // for simultaneous key combos like counter_strike
+export function createComboTracker(): ComboTracker {
+  return { history: [], globalCooldownUntilMs: 0, perComboCooldown: new Map() };
 }
 
-const COMBOS: ComboDefinition[] = [
-  // Combo 1: storm_assault (longest sequence first)
-  {
-    name: "storm_assault",
-    keys: ["moveLeft", "moveRight", "attack"],
-    windowMs: 500,
-    result: {
-      name: "storm_assault",
-      damageMultiplier: 2.2,
-      durationMs: 2000,
-      lockMs: 2000,
-      effect: "damage_boost",
-    },
-  },
-  // Combo 2: gyro_counter
-  {
-    name: "gyro_counter",
-    keys: ["defense", "defense", "dodge"],
-    windowMs: 600,
-    result: {
-      name: "gyro_counter",
-      damageMultiplier: 1.0,
-      durationMs: 2000,
-      lockMs: 0,
-      effect: "full_invuln",
-    },
-  },
-  // Combo 3: aerial_smash
-  {
-    name: "aerial_smash",
-    keys: ["jump", "attack"],
-    windowMs: 300,
-    result: {
-      name: "aerial_smash",
-      damageMultiplier: 2.0,
-      durationMs: 0,
-      lockMs: 0,
-      effect: "damage_boost",
-    },
-  },
-  // Combo 4: spinning_slash
-  {
-    name: "spinning_slash",
-    keys: ["dodge", "attack"],
-    windowMs: 300,
-    result: {
-      name: "spinning_slash",
-      damageMultiplier: 1.8,
-      durationMs: 0,
-      lockMs: 0,
-      effect: "damage_boost",
-    },
-  },
-  // Combo 5: counter_strike (simultaneous defense + attack)
-  {
-    name: "counter_strike",
-    keys: ["defense", "attack"],
-    windowMs: 0,
-    sameFrame: true,
-    result: {
-      name: "counter_strike",
-      damageMultiplier: 1.5,
-      durationMs: 1500,
-      lockMs: 0,
-      effect: "damage_boost",
-    },
-  },
-  // Combo 6: dash_left (double-tap left)
-  {
-    name: "dash_left",
-    keys: ["moveLeft", "moveLeft"],
-    windowMs: 200,
-    result: {
-      name: "dash_left",
-      damageMultiplier: 1.0,
-      durationMs: 300,
-      lockMs: 0,
-      effect: "speed_burst_left",
-    },
-  },
-  // Combo 7: dash_right (double-tap right)
-  {
-    name: "dash_right",
-    keys: ["moveRight", "moveRight"],
-    windowMs: 200,
-    result: {
-      name: "dash_right",
-      damageMultiplier: 1.0,
-      durationMs: 300,
-      lockMs: 0,
-      effect: "speed_burst_right",
-    },
-  },
-];
-
-// Prune old entries outside the combo window
 export function pruneHistory(tracker: ComboTracker, now: number, maxWindowMs: number = 600): void {
   tracker.history = tracker.history.filter((entry) => now - entry.timestamp <= maxWindowMs);
 }
 
-// Detect if the current input matches any combo sequence
+interface DetectOptions {
+  /** Beyblade's currently attached combo ids — only these may fire. */
+  attachedComboIds?: string[];
+  /** Current power (0–100). Combos with cost > power are rejected. */
+  power?: number;
+  /** Beyblade type — used for type-restricted combos (e.g. spin-leech-jab is stamina-only). */
+  beybladeType?: string;
+}
+
+/**
+ * Append combo keys to the tracker and detect a match.
+ * Returns null when no combo matches, when the combo isn't attached to the beyblade,
+ * when power is insufficient, or when the combo is on cooldown.
+ *
+ * IMPORTANT: caller is responsible for deducting `power -= result.costPaid`
+ * after a non-null return — keeping this pure makes it testable in isolation.
+ */
 export function detectCombo(
   tracker: ComboTracker,
-  comboKeys: string[],
-  now: number
+  comboKeys: ComboKey[] | string[] | undefined,
+  now: number,
+  opts: DetectOptions = {}
 ): ComboResult | null {
   if (!comboKeys || comboKeys.length === 0) return null;
+  if (now < tracker.globalCooldownUntilMs) return null;
 
   pruneHistory(tracker, now);
+  for (const k of comboKeys) tracker.history.push({ key: k as ComboKey, timestamp: now });
 
-  // Check for simultaneous combos first (counter_strike)
-  const sameFrameCombo = COMBOS.find((c) => c.sameFrame && c.keys.length === comboKeys.length);
-  if (sameFrameCombo) {
-    const hasAllKeys = sameFrameCombo.keys.every((k) => comboKeys.includes(k));
-    if (hasAllKeys) {
-      tracker.history = [];
-      return sameFrameCombo.result;
-    }
-  }
+  // Need at least 3 entries to match a combo.
+  if (tracker.history.length < 3) return null;
 
-  // Append new keys to history
-  for (const key of comboKeys) {
-    tracker.history.push({ key, timestamp: now });
-  }
+  const last3 = tracker.history.slice(-3).map(e => e.key) as ComboKey[];
+  const combo = findComboBySequence(last3);
+  if (!combo) return null;
 
-  // Check sequences from longest to shortest (avoid partial matches)
-  for (const combo of COMBOS) {
-    if (combo.sameFrame) continue; // Already checked above
-    if (combo.keys.length > tracker.history.length) continue;
+  // Window check — first of the 3 must be within combo.windowMs.
+  const last3Entries = tracker.history.slice(-3);
+  if (now - last3Entries[0].timestamp > combo.windowMs) return null;
 
-    // Get the last N entries from history
-    const recentKeys = tracker.history.slice(-combo.keys.length);
+  // Beyblade must have it attached.
+  if (opts.attachedComboIds && !opts.attachedComboIds.includes(combo.id)) return null;
 
-    // Check if keys match AND all are within the window
-    const allMatch = recentKeys.every((entry, idx) => entry.key === combo.keys[idx]);
-    const firstTimestamp = recentKeys[0]?.timestamp ?? now;
-    const allInWindow = now - firstTimestamp <= combo.windowMs;
+  // Type restriction (e.g. spin-leech-jab is stamina-only).
+  if (opts.beybladeType && combo.type !== "universal" && combo.type !== opts.beybladeType) return null;
 
-    if (allMatch && allInWindow) {
-      tracker.history = [];
-      return combo.result;
-    }
-  }
+  // Power check.
+  if (combo.cost > 0 && (opts.power ?? 0) < combo.cost) return null;
 
-  return null;
+  // Per-combo cooldown.
+  const cdUntil = tracker.perComboCooldown.get(combo.id) ?? 0;
+  if (now < cdUntil) return null;
+
+  // Activate — clear history, set cooldowns.
+  tracker.history = [];
+  tracker.perComboCooldown.set(combo.id, now + combo.cooldownMs);
+  tracker.globalCooldownUntilMs = now + Math.min(300, combo.cooldownMs); // small spacer
+
+  return {
+    comboId: combo.id,
+    name: combo.name,
+    damageMultiplier: combo.effect.damageMultiplier ?? 1.0,
+    durationMs: combo.effect.durationMs,
+    lockMs: combo.effect.lockMs,
+    costPaid: combo.cost,
+    effect: classifyEffect(combo),
+  };
 }
+
+function classifyEffect(combo: Combo): ComboResult["effect"] {
+  if (combo.effect.dashDirection === "left")    return "speed_burst_left";
+  if (combo.effect.dashDirection === "right")   return "speed_burst_right";
+  if (combo.effect.dashDirection === "back")    return "speed_burst_back";
+  if ((combo.effect.spinStealBonus ?? 0) > 0)   return "spin_steal";
+  if ((combo.effect.damageMultiplier ?? 1) > 1) return "damage_boost";
+  return "guard";
+}
+
+// Re-export so callers can introspect the registry without two imports.
+export { COMBO_REGISTRY, getComboById };
+export type { Combo, ComboKey };

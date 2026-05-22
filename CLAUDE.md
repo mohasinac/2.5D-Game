@@ -80,6 +80,7 @@ All room types support spectators. Join with `{ spectate: true }` in options.
 - `state.spectatorCount` increments/decrements on spectator join/leave.
 - If all human players leave, the room disposes immediately (spectators are kicked).
 - Client: `?spectate=true` query param on any battle URL triggers spectator mode.
+- **Follow-player camera**: spectators click a player in the right-side list to lock the camera on that beyblade. The client sends `spectator:follow { targetBeybladeId }`; rooms store this in `spectatorFollowTargets: Map<sessionId, beybladeId>` (informational — camera is client-side). Zoom buttons (`+ / 0 / −`) and keyboard shortcuts are exposed to spectators via `CameraControls`.
 
 ## Series Format (BO1 / BO3 / BO5)
 
@@ -98,18 +99,36 @@ All room types (except TryoutRoom) support configurable series format via `optio
 | Collection | Purpose |
 |-----------|---------|
 | `tournaments` | Tournament metadata (type, status, schedule, restrictions) |
-| `tournament_participants` | One doc per participant per tournament (userId, seed, beybladeId) |
-| `tournament_brackets` | One doc per match slot; `colyseusRoomId` populated 60s before match |
+| `tournament_participants` | One doc per participant per tournament (userId, seed, beybladeId). `status` includes `"quit"`. |
+| `tournament_brackets` | One doc per match slot. `colyseusRoomId` populated 60s before match. `readyState: Record<userId, boolean>` drives both-ready early-start. `isDraw` set on a tied room-cap finish. |
+
+### Match Pacing
+
+- **3-min room cap** — `TournamentBattleRoom.endSeriesOnCap()` fires at 180s elapsed (wall-clock from first warmup→in-progress transition). Whoever leads `seriesWins` wins; on tie, `isSeriesDraw = true` and `state.winner = ""`. Series ends regardless of BO size.
+- **5-min between-match gap** — `BracketGenerator.advanceWinnerToNextRound()` advances `scheduledTime` to `max(existing, now + 5 min)` when seating a winner into the next bracket slot.
+- **Both-ready early-start** — `getReadyPendingMatches()` returns pending matches where `readyState[p1Id]` and `readyState[p2Id]` are both `true`. `TournamentScheduler.poll()` merges them with the regular look-ahead queue and opens immediately.
+- **Quit walkover** — `TournamentScheduler.processQuitWalkovers()` sweeps participants with `status === "quit"` and advances opponents via `advanceRound` with no winnerId for matches where both sides quit.
 
 ### Scheduler Flow
 
 1. `TournamentScheduler.poll()` runs every 30s.
-2. Finds `tournament_brackets` where `status == "pending"` and `scheduledTime <= now + 65s`.
-3. Resolves beybladeIds (auto-picks if missing or blacklisted via `autoPickBeyblade()`).
-4. Registers a callback via `TournamentBattleRoom.pendingMatchCallbacks.set(matchId, cb)`.
-5. Calls `matchMaker.createRoom("tournament_battle_room", options)` — returns `RoomListingData`.
-6. Room's `onCreate` picks up the callback from the static map, deletes the entry.
-7. Writes `colyseusRoomId` to the bracket doc — clients on `TournamentLobbyPage` auto-navigate.
+2. Walkover sweep: any participant whose `status === "quit"` triggers `advanceRound(opponent)` on their pending matches.
+3. Loads two pools: `getUpcomingPendingMatches(LOOK_AHEAD_MS=65s)` and `getReadyPendingMatches()` (both-ready early-start). Merges + de-dupes.
+4. For each queued match: resolves beybladeIds (auto-picks if missing or blacklisted via `autoPickBeyblade()`).
+5. Registers a callback via `TournamentBattleRoom.pendingMatchCallbacks.set(matchId, cb)`.
+6. Calls `matchMaker.createRoom("tournament_battle_room", options)` — returns `RoomListingData`.
+7. Room's `onCreate` picks up the callback from the static map, deletes the entry.
+8. Writes `colyseusRoomId` to the bracket doc — clients on `TournamentLobbyPage` auto-navigate.
+
+### Leaderboard Scoring
+
+`updatePlayerStats(userId, updates)` atomically increments numeric fields (via `admin.firestore.FieldValue.increment`) for `matchesPlayed`, `wins`, `losses`, `draws`, `totalDamageDealt`, `totalCollisions`, `tournamentPoints`. Non-numeric fields merge normally. On `TournamentBattleRoom` series end:
+
+- Winner: `tournamentPoints += 2`, `wins += 1`, `matchesPlayed += 1`.
+- Loser:  `matchesPlayed += 1` (no points/wins).
+- Draw (room-cap tie): both players get `tournamentPoints += 1`, `matchesPlayed += 1`.
+
+`/leaderboard` defaults to the **Tournament** tab. Existing Wins / Win Rate / Damage / Matches tabs remain.
 
 ### Admin-side Tournament Pages
 
@@ -127,24 +146,28 @@ All room types (except TryoutRoom) support configurable series format via `optio
 
 | Collection | Purpose |
 |-----------|---------|
-| `beyblade_stats` | Beyblade configurations |
-| `arenas` | Arena configurations (shape, theme, obstacles, etc.) |
+| `beyblade_stats` | Beyblade configurations. Optional `specialMoveId` and `comboIds[]` (max 3). |
+| `arenas` | Arena configurations (shape, theme, obstacles, spin zones, bumps, gravity wells, switches). |
 | `stadiums` | Stadium metadata and images |
 | `matches` | Match results (includes `seriesFormat`, `seriesScore`, `gameResults[]`) |
-| `player_stats` | Per-player win/loss/damage stats — **public read** for leaderboard |
+| `player_stats` | Per-player win/loss/damage stats + `tournamentPoints` — **public read** for leaderboard |
 | `users` | User profiles and roles (`user` / `admin`) |
-| `tournaments` | Tournament docs |
-| `tournament_participants` | Participant docs |
-| `tournament_brackets` | Bracket match docs |
-| `arena_theme_assets` | Background textures per theme |
-| `obstacle_assets` | Obstacle sprites |
-| `turret_assets` | Turret and projectile sprites |
-| `water_body_assets` | Water surface textures |
-| `portal_assets` | Portal sprites |
+| `tournaments` | Tournament docs. `aiDifficulty` is `"medium" \| "hard" \| "hell"`. |
+| `tournament_participants` | Participant docs. `status` includes `"quit"`. |
+| `tournament_brackets` | Bracket match docs. `readyState` drives both-ready early-start; `isDraw` set on tied room-cap finish. |
+| `combos` | New combo registry — id, sequence (3 keys), cost (0/15/25/35), type, windowMs, cooldownMs. Seeded from `src/constants/combos.ts`. |
+| `ai_battles` | Preset AI battle configs (medium/hard/hell quick-launch entries). |
+| `arena_theme_assets` | Background textures per theme. Tags include `switch`. |
+| `obstacle_assets` | Obstacle sprites. Tags include `switch`, `bump`, `spin-zone`, `gravity-well` (shared sprite library for the new feature family). |
+| `turret_assets` | Turret and projectile sprites. Tags include `switch`. |
+| `water_body_assets` | Water surface textures. Tags include `switch`. |
+| `portal_assets` | Portal sprites. Tags include `switch`. |
 | `sound_assets` | Sound effects and music |
 | `settings` | Game-wide config (single doc: `settings/game`) |
 | `beyblade_parts` | 2.5D part library (bit_beast, attack_ring, weight_disk, sub_part, tip, core, casing) |
 | `beyblade_systems` | Assembled 2.5D beyblade configs (slot → partId mapping) |
+
+All asset libraries accept **PNG / JPG / GIF / WebP**. GIF uploads bypass the destructive image editor so animation is preserved.
 
 ## Physics Coordinates
 
@@ -215,6 +238,84 @@ VITE_FIREBASE_APP_ID=
 | Stamina | Spin Recovery | Orbital force (circular path), gradual spin recovery |
 | Balanced | Tactical Burst | Directional burst + 20% spin recovery |
 
+Special moves are **optional** on a beyblade — set `BeybladeStats.specialMoveId` (e.g. `"stampede_rush"`). If empty, the in-match Special HUD panel is hidden. Specials cost ~100 power.
+
+## Combos (3-button registry)
+
+Combo registry in `src/constants/combos.ts` (8 entries: 4 free + 4 cost-tiered). Each combo:
+
+- **Exactly 3 keys** (`moveLeft / moveRight / moveUp / moveDown / attack / defense / dodge / jump`).
+- **Cost** is `0 / 15 / 25 / 35`. Power deducted on activation.
+- **Type restriction** — `universal` or beyblade-type-specific (e.g. `spin-leech-jab` is stamina-only).
+- **Effect ceiling** — `damageMultiplier ≤ 1.5`, `lockMs ≤ 300`, no invulnerability, no AoE, no full spin recovery (those are special-move-only).
+- **Detection** — `src/utils/comboSystem.ts::detectCombo` enforces sliding-3 window, attached check (`beyblade.comboIds` must include the id), power threshold, and per-combo cooldown.
+
+Beyblades opt in via `BeybladeStats.comboIds` (max 3). Combos are **optional** — empty list hides the attached-combos HUD strip.
+
+| ID | Sequence | Cost | Type |
+|----|----------|------|------|
+| `quick-dash-l` | ←←J | 0 | universal |
+| `quick-dash-r` | →→J | 0 | universal |
+| `guard-tap` | KKK | 0 | universal |
+| `feint` | ←→K | 0 | universal |
+| `riposte` | KKJ | 15 | defense |
+| `pivot-strike` | ←→J | 15 | balanced |
+| `power-thrust` | JJJ | 25 | universal |
+| `spin-leech-jab` | ←J→ | 35 | stamina |
+
+## AI Difficulty (Medium / Hard / Hell)
+
+`AIDifficulty = "medium" | "hard" | "hell"`. Legacy `"easy"` reads collapse to `"medium"` defensively. `src/ai/AIController.ts`:
+
+- **Medium** — chases nearest opponent, attacks within 200 px, uses defense when low-spin + close, fires special at < 40 % spin.
+- **Hard** — 5-tick prediction, circle-strafe at close range, dodge on closing speed > 3, defense when cornered.
+- **Hell** — 10-tick prediction, ring-out-aware approach (aims for the side that pushes opponent toward the wall), dodge threshold 2, fires special the moment it's chargeable, periodic 3-key combo emission (~every 2 s) aligned with strike direction.
+
+## Loading Progress
+
+`<LoadingProgress />` (in `client/src/components/LoadingProgress.tsx`) overlays the battle canvas while the room is pre-warmup. Six steps:
+
+1. `connecting-ws` — opening WebSocket
+2. `joining-room` — `joinById` / `joinOrCreate`
+3. `loading-arena-assets`
+4. `loading-beyblade-assets`
+5. `loading-audio-assets`
+6. `warmup-ready`
+
+`useColyseus` emits steps 1–2; transition to 5–6 happens when `state.status` reaches `warmup` / `in-progress`. Errors set the bar red and surface the connection error message.
+
+## New Arena Features (this overhaul)
+
+Types are in `client/src/types/arenaConfigNew.ts`:
+
+- `SpinZoneConfig` — circular zone that imparts cw/ccw orbit or spin to beyblades inside. `applyTo: "linear" | "spin" | "both"`.
+- `BumpConfig` — small raised feature; vertical pop + lateral recoil on contact.
+- `GravityHoleConfig` — already existed; gained `controlledBySwitchId` + `selfRotation`.
+- `ObstacleConfig` / `TriggerZoneConfig` — gained `controlledBySwitchId` + `selfRotation`.
+
+**Switch wiring** — any feature with `controlledBySwitchId` is only active when that switch is on. The existing `SwitchConfig.targets[]` continues to drive the switch graph (toggle / set-on / set-off / pulse / chain to next switch).
+
+**Self-rotation** — any feature can spin in place (`selfRotation: { speedDegPerSec, direction }`) — visual + functional (turrets re-aim, gravity wells orbit, obstacles rotate damage faces).
+
+Top-level fields on `ArenaConfig`:
+```ts
+spinZones?: SpinZoneConfig[];
+bumps?: BumpConfig[];
+```
+
+## 2.5D Contact Points
+
+Type in `client/src/types/beybladeSystem.ts::SystemContactPoint`. Two shapes coexist:
+
+- **Legacy** — `angle / width / radius / thickness`. Renderer warps the Fourier profile symmetrically around the center.
+- **Arc-segment (new)** — `arcStart / arcEnd / radiusInner / radiusOuter / lineThickness / setId`. Protrusion is applied only along the arc line (peak at midpoint, linear falloff to the edges). Overlapping new-shape CPs blend via **max thickness** (not summed).
+
+Helpers exported alongside the type:
+- `resolveCpBounds(cp)` normalises both shapes to `{ arcStart, arcEnd, rInner, rOuter, lineThickness }`.
+- `angleInArc(θ, arcStart, arcEnd)` — wraps past 360°.
+- `groupContactPointsBySet(cps)` — multi-set rendering.
+- `renderRadius(θ, fourierCache, cps)` — applies legacy CPs additively, new-shape CPs as max-blended line protrusion.
+
 ## Client File Layout
 
 ```
@@ -244,9 +345,20 @@ client/src/
 │       ├── StatsPage.tsx              Match statistics + leaderboard
 │       ├── SettingsPage.tsx           Game-wide feature toggles
 │       └── 2d/                        2.5D part library CRUD
-├── components/admin/
-│   ├── beyblade-system/               BeybladeSystem editor
-│   └── part-editor/                   Part CRUD editors (ContactPoint, Pocket, etc.)
+├── components/
+│   ├── LoadingProgress.tsx            6-step connection/asset stepper bar
+│   ├── setup/
+│   │   └── EntityPicker.tsx           Searchable name dropdown + tabbed preview pane
+│   ├── game/
+│   │   ├── ComboHUD.tsx               Attached-combo strip + fired-combo history
+│   │   ├── SpecialMoveHUD.tsx         Special move power/cooldown ring
+│   │   └── CameraControls.tsx         Spectator+player zoom buttons (+ / 0 / −)
+│   └── admin/
+│       ├── beyblade-system/           BeybladeSystem editor
+│       ├── part-editor/               Part CRUD editors (ContactPoint, Pocket, etc.)
+│       └── AssetCrudPage.tsx          Shared asset library page (GIF-aware)
+├── constants/
+│   └── combos.ts                      Client-side combo registry mirror (for HUD/picker)
 ├── contexts/
 │   ├── AuthContext.tsx                Firebase Auth
 │   └── GameContext.tsx                Game settings state
@@ -256,6 +368,23 @@ client/src/
     ├── game.ts                        Shared game types (ServerGameState, TournamentDoc, etc.)
     └── beybladeSystem.ts              2.5D part system types (shared with server)
 ```
+
+## Seed Scripts
+
+All seeders live under `scripts/` and are exposed as npm scripts. Idempotent — safe to re-run.
+
+| Script | Writes to | Notes |
+|--------|-----------|-------|
+| `npm run seed:beyblades` | `beyblade_stats` | ~20 beys grouped by generation (Bakuten/Plastic, MFB, Burst, X). Defaults `specialMoveId` + `comboIds` per type unless overridden per-bey. |
+| `npm run seed:arenas` | `arenas` | Stadium presets. |
+| `npm run seed:combos` | `combos` | 8 combos (4 free + 4 cost-tiered). Mirrors `src/constants/combos.ts`. |
+| `npm run seed:ai-battles` | `ai_battles` | Three quick-launch presets: medium / hard / hell. |
+| `npm run seed:tournament-ai-solo` | `tournaments` + `tournament_participants` + `tournament_brackets` | 4-bracket solo-vs-AI tournament (1 human placeholder + 3 AI). |
+| `npm run seed:special-moves` | `special_moves` | Special move registry. |
+| `npm run seed:2d-parts` | `beyblade_parts` | 2.5D part library. |
+| `npm run seed:bey-systems` | `beyblade_systems` | Assembled 2.5D configs. |
+| `npm run seed:arena-systems` | `arena_systems` | Arena system configs. |
+| `npm run seed:all` | All of the above | Runs in order; safe to use as a first-time bootstrap. |
 
 ## Learning Folder (Deferred)
 

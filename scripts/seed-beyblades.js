@@ -53,6 +53,22 @@ function spinStealPoints(m1, m2 = m1, width = 45) {
   ];
 }
 
+// Default special + combo assignments per type.
+// `specialMoveId` and `comboIds` are BOTH optional on a beyblade. Set per-bey below
+// to override. These defaults make sure every seeded bey has a workable kit.
+const DEFAULT_SPECIAL_BY_TYPE = {
+  attack:   "stampede_rush",
+  defense:  "gyro_anchor",
+  stamina:  "spin_recovery",
+  balanced: "tactical_burst",
+};
+const DEFAULT_COMBOS_BY_TYPE = {
+  attack:   ["quick-dash-r", "power-thrust", "pivot-strike"],
+  defense:  ["guard-tap", "riposte", "feint"],
+  stamina:  ["feint", "spin-leech-jab", "quick-dash-l"],
+  balanced: ["quick-dash-l", "pivot-strike", "guard-tap"],
+};
+
 // ─── Preset definitions ───────────────────────────────────────────────────────
 
 const now = new Date().toISOString();
@@ -327,6 +343,65 @@ const BEYBLADES = [
     spinStealPoints: spinStealPoints(1.15, 1.05),
     description: "Explosive balanced force. Great attack with solid defense.",
   },
+
+  // ─── BURST GEN ─────────────────────────────────────────────────────────────
+  {
+    id: "valtryek-v2",
+    displayName: "Valtryek V2",
+    fileName: "valtryek-v2.svg",
+    type: "attack",
+    spinDirection: "right",
+    mass: 44,
+    radius: 3.9,
+    typeDistribution: { attack: 150, defense: 90, stamina: 120, total: 360 },
+    pointsOfContact: contactPoints(1.85, 1.4, 1.25),
+    spinStealPoints: spinStealPoints(1.1),
+    description: "Burst-gen attack with a chrome wing — fast, brutal, predictable.",
+    comboIds: ["quick-dash-r", "quick-dash-l", "power-thrust"],
+  },
+  {
+    id: "spryzen-s2",
+    displayName: "Spryzen S2",
+    fileName: "spryzen-s2.svg",
+    type: "balanced",
+    spinDirection: "right",
+    mass: 47,
+    radius: 4.0,
+    typeDistribution: { attack: 120, defense: 130, stamina: 110, total: 360 },
+    pointsOfContact: contactPoints(1.45, 1.35, 1.3),
+    spinStealPoints: spinStealPoints(1.1, 1.0),
+    description: "Burst-gen balanced. Switch-strike layer; safe in mirror matches.",
+    comboIds: ["pivot-strike", "guard-tap", "feint"],
+  },
+  // ─── X-GEN ────────────────────────────────────────────────────────────────
+  {
+    id: "dranzer-spiral",
+    displayName: "Dranzer Spiral",
+    fileName: "dranzer-spiral.svg",
+    type: "attack",
+    spinDirection: "right",
+    mass: 49,
+    radius: 4.1,
+    typeDistribution: { attack: 145, defense: 95, stamina: 120, total: 360 },
+    pointsOfContact: contactPoints(1.9, 1.45, 1.25),
+    spinStealPoints: spinStealPoints(1.15),
+    description: "X-gen revival of Dranzer — counter-rotating outer ring trades grip for raw smash.",
+    comboIds: ["quick-dash-r", "power-thrust", "pivot-strike"],
+  },
+  {
+    id: "hells-hammer",
+    displayName: "Hells Hammer",
+    fileName: "hells-hammer.svg",
+    type: "defense",
+    spinDirection: "left",
+    mass: 53,
+    radius: 4.3,
+    typeDistribution: { attack: 100, defense: 150, stamina: 110, total: 360 },
+    pointsOfContact: contactPoints(1.4, 1.5, 1.45),
+    spinStealPoints: spinStealPoints(1.25, 1.1),
+    description: "X-gen left-spin tank. Eats stamina hits and counters smash attempts.",
+    comboIds: ["guard-tap", "riposte", "feint"],
+  },
 ];
 
 // ─── Seed ─────────────────────────────────────────────────────────────────────
@@ -338,6 +413,10 @@ async function seedBeyblades() {
 
   for (const bey of BEYBLADES) {
     const derived = calcStats(bey.typeDistribution);
+    // Optional kit — special + combos. Per-bey overrides win; otherwise fall back to type defaults.
+    const specialMoveId = bey.specialMoveId ?? DEFAULT_SPECIAL_BY_TYPE[bey.type] ?? "tactical_burst";
+    const comboIds      = (bey.comboIds ?? DEFAULT_COMBOS_BY_TYPE[bey.type] ?? []).slice(0, 3);
+
     const docData = {
       ...bey,
       // Derived stats stored for admin UI display
@@ -348,6 +427,9 @@ async function seedBeyblades() {
       rotationSpeed:        derived.rotationSpeed,
       invulnerabilityChance: derived.invulnerabilityChance,
       damageReduction:      parseFloat((1 / derived.damageTaken).toFixed(3)),
+      // Optional kit
+      specialMoveId,
+      comboIds,
       createdAt:            now,
       updatedAt:            now,
       createdBy:            "seed",

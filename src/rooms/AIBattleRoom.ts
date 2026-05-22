@@ -9,7 +9,7 @@ import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentF
 import { tryReserveRoom, releaseRoom } from "../shared/utils/roomCounter";
 import { createPRNG } from "../shared/utils/prng";
 import { hashString } from "../shared/utils/hashString";
-import { ComboTracker, detectCombo } from "../shared/utils/comboSystem";
+import { ComboTracker, detectCombo, createComboTracker } from "../shared/utils/comboSystem";
 import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
 import { resolveWallAngle, wallBowlForce } from "../shared/physics/ArenaUtils";
@@ -44,9 +44,19 @@ interface JoinOptions {
   aiDifficulty?: AIDifficulty;
   spectate?: boolean;
   bestOf?: 1 | 3 | 5;
+  /** Admin-only AI vs AI mode — no human seat; both contestants are AI. */
+  aiVsAi?: boolean;
+  aiP1BeybladeId?: string;
+  aiP2BeybladeId?: string;
+  aiP1Difficulty?: AIDifficulty;
+  aiP2Difficulty?: AIDifficulty;
 }
 
 const AI_SESSION_ID = "__ai__";
+const AI_P1_SESSION_ID = "__ai_p1__";
+const AI_P2_SESSION_ID = "__ai_p2__";
+/** Dispose an AI-vs-AI room if no spectator joins within this window. */
+const AI_VS_AI_NO_SPECTATOR_TIMEOUT_MS = 30_000;
 
 export class AIBattleRoom extends Room<GameState> {
   protected physics!: PhysicsEngine;
@@ -59,6 +69,8 @@ export class AIBattleRoom extends Room<GameState> {
   protected rand!: () => number;
   private humanSessionId: string | null = null;
   private spectatorSessions = new Set<string>();
+  /** Per-session camera-follow target id. Optional — purely informational. */
+  private spectatorFollowTargets = new Map<string, string>();
   private humanBeybladeData: BeybladeStats | null = null;
   private aiBeybladeData: BeybladeStats | null = null;
   private humanSpawnPos = { x: 0, y: 0 };
@@ -66,6 +78,16 @@ export class AIBattleRoom extends Room<GameState> {
   private aiDifficulty: AIDifficulty = "medium";
   private aiBeybladeId = "default";
   private comboTrackers = new Map<string, ComboTracker>();
+  // Separate tracker for the AI beyblade (no session id).
+  private aiComboTracker: ComboTracker = createComboTracker();
+  // AI vs AI — populated when aiVsAi=true (admin spectator-only test mode).
+  private isAiVsAi = false;
+  private aiControllers = new Map<string, AIController>();
+  private aiComboTrackers = new Map<string, ComboTracker>();
+  private aiBeybladeIds = new Map<string, string>(); // sessionId → beybladeId
+  private aiBeybladeDataMap = new Map<string, BeybladeStats | null>();
+  private aiSpawnPositions = new Map<string, { x: number; y: number }>();
+  private noSpectatorTimeout: NodeJS.Timeout | null = null;
 
   maxClients = 9;
 
@@ -119,13 +141,101 @@ export class AIBattleRoom extends Room<GameState> {
     this.onMessage("input", (client, message: number | PlayerInput) => {
       this.handleInput(client, normalizeInput(message));
     });
+
+    // Camera-follow announce from spectators — purely informational. The camera
+    // is client-side; this lets the server know who they're watching so HUDs
+    // (and future analytics) can reflect it.
+    this.onMessage("spectator:follow", (client, message: { targetBeybladeId?: string }) => {
+      this.spectatorFollowTargets.set(client.sessionId, message?.targetBeybladeId ?? "");
+    });
+
+    // ── AI vs AI bootstrap (admin-only) ─────────────────────────────────────
+    // Spawn two AI beyblades immediately and start the match. Human seats are
+    // closed; only spectators may join. Room auto-disposes when the last
+    // spectator leaves (or after 30s with no spectator).
+    if (options.aiVsAi) {
+      this.isAiVsAi = true;
+      this.autoDispose = false;
+      await this.spawnAiVsAiMatch(options);
+      this.noSpectatorTimeout = setTimeout(() => {
+        if (this.spectatorSessions.size === 0) {
+          console.log("[AIBattleRoom] AI-vs-AI: no spectator joined within timeout, disposing");
+          this.disconnect();
+        }
+      }, AI_VS_AI_NO_SPECTATOR_TIMEOUT_MS);
+    }
+  }
+
+  // ─── AI vs AI spawn (admin test mode) ──────────────────────────────────────
+
+  private async spawnAiVsAiMatch(options: JoinOptions): Promise<void> {
+    const arenaHalfW = (this.state.arena.width * 16) / 2;
+    const arenaHalfH = (this.state.arena.height * 16) / 2;
+    const spawnRadius = Math.min(arenaHalfW, arenaHalfH) * 0.5;
+
+    const p1Id = options.aiP1BeybladeId || options.beybladeId || "default";
+    const p2Id = options.aiP2BeybladeId || options.aiBeybladeId || "default";
+    const p1Diff: AIDifficulty = options.aiP1Difficulty || "medium";
+    const p2Diff: AIDifficulty = options.aiP2Difficulty || options.aiDifficulty || "medium";
+
+    await this.addAiContestant(AI_P1_SESSION_ID, p1Id, p1Diff, { x: arenaHalfW - spawnRadius, y: arenaHalfH });
+    await this.addAiContestant(AI_P2_SESSION_ID, p2Id, p2Diff, { x: arenaHalfW + spawnRadius, y: arenaHalfH });
+
+    this.matchStarted = true;
+    this.state.status = "in-progress";
+    this.state.startTime = Date.now();
+    this.lastInputTime = Date.now(); // prevent idle-disconnect from firing immediately
+
+    this.setSimulationInterval((dt: number) => { this.tick(dt); }, 1000 / 60);
+    this.broadcast("match-start", {});
+    console.log(`✅ AIBattleRoom (AI vs AI): ${p1Id}/${p1Diff} vs ${p2Id}/${p2Diff}`);
+  }
+
+  private async addAiContestant(
+    sessionId: string,
+    beybladeId: string,
+    difficulty: AIDifficulty,
+    spawn: { x: number; y: number }
+  ): Promise<void> {
+    const data: BeybladeStats | null = await loadBeyblade(beybladeId);
+    this.aiBeybladeDataMap.set(sessionId, data);
+    this.aiBeybladeIds.set(sessionId, beybladeId);
+    this.aiSpawnPositions.set(sessionId, spawn);
+    this.aiControllers.set(sessionId, new AIController(difficulty));
+    this.aiComboTrackers.set(sessionId, createComboTracker());
+
+    const bey = new Beyblade();
+    bey.id = sessionId;
+    bey.userId = sessionId;
+    bey.username = data?.displayName ? `${data.displayName} (${difficulty})` : `Computer ${sessionId} (${difficulty})`;
+    bey.beybladeId = beybladeId;
+    bey.isAI = true;
+    if (data) this.applyBeybladeStats(bey, data); else this.applyDefaultStats(bey);
+    bey.health = bey.maxStamina;
+    bey.maxHealth = bey.maxStamina;
+    bey.x = spawn.x;
+    bey.y = spawn.y;
+    this.physics.createBeyblade(bey.id, bey.x, bey.y, bey.radius, bey.mass, data || undefined);
+    this.physics.setAngularVelocity(bey.id, (bey.spinDirection === "left" ? -1 : 1) * (bey.maxSpin / 200));
+    this.state.beyblades.set(sessionId, bey);
+    this.state.seriesWins.set(bey.userId, 0);
   }
 
   async onJoin(client: Client, options: JoinOptions) {
     if (options.spectate) {
       this.state.spectatorCount++;
       this.spectatorSessions.add(client.sessionId);
+      if (this.noSpectatorTimeout) {
+        clearTimeout(this.noSpectatorTimeout);
+        this.noSpectatorTimeout = null;
+      }
       console.log(`Spectator ${client.sessionId} joined AIBattleRoom`);
+      return;
+    }
+
+    // AI-vs-AI rooms have no human seat at all — admin must explicitly spectate.
+    if (this.isAiVsAi) {
+      client.leave(4001, "AI vs AI room is spectator-only");
       return;
     }
 
@@ -135,7 +245,7 @@ export class AIBattleRoom extends Room<GameState> {
     }
 
     this.humanSessionId = client.sessionId;
-    this.comboTrackers.set(client.sessionId, { history: [] });
+    this.comboTrackers.set(client.sessionId, createComboTracker());
     console.log(`Human player ${client.sessionId} joined AIBattleRoom`);
 
     const difficulty: AIDifficulty = options.aiDifficulty || "medium";
@@ -216,6 +326,11 @@ export class AIBattleRoom extends Room<GameState> {
     if (this.spectatorSessions.has(client.sessionId)) {
       this.state.spectatorCount = Math.max(0, this.state.spectatorCount - 1);
       this.spectatorSessions.delete(client.sessionId);
+      // AI-vs-AI: dispose when the last spectator leaves (no human to keep room alive).
+      if (this.isAiVsAi && this.spectatorSessions.size === 0) {
+        console.log("[AIBattleRoom] AI-vs-AI: last spectator left, disposing");
+        this.disconnect();
+      }
       return;
     }
 
@@ -234,6 +349,10 @@ export class AIBattleRoom extends Room<GameState> {
 
   onDispose() {
     console.log("AIBattleRoom disposed");
+    if (this.noSpectatorTimeout) {
+      clearTimeout(this.noSpectatorTimeout);
+      this.noSpectatorTimeout = null;
+    }
     releaseRoom();
     this.physics.destroy();
   }
@@ -265,13 +384,28 @@ export class AIBattleRoom extends Room<GameState> {
     // ── Combo detection ──────────────────────────────────────────────────────
     const tracker = this.comboTrackers.get(client.sessionId);
     if (tracker && message.comboKeys && message.comboKeys.length > 0) {
-      const combo = detectCombo(tracker, message.comboKeys, Date.now());
+      const now = Date.now();
+      const attachedIds: string[] = Array.from(beyblade.comboIds).filter((s): s is string => typeof s === "string");
+      const combo = detectCombo(tracker, message.comboKeys, now, {
+        attachedComboIds: attachedIds,
+        power: beyblade.power,
+        beybladeType: beyblade.type,
+      });
       if (combo) {
+        beyblade.power = Math.max(0, beyblade.power - combo.costPaid);
         beyblade.comboDamageMultiplier = combo.damageMultiplier;
         beyblade.comboDamageMultiplierTimer = combo.durationMs / 1000;
+        if (combo.lockMs > 0) {
+          beyblade.controlLockedUntilMs = Math.max(beyblade.controlLockedUntilMs, now + combo.lockMs);
+          beyblade.controlLockSource = "combo";
+        }
+        beyblade.comboCooldowns.set(combo.comboId, now + combo.durationMs);
         this.broadcast("combo", {
           playerId: beyblade.id,
+          comboId: combo.comboId,
           comboName: combo.name,
+          costPaid: combo.costPaid,
+          effect: combo.effect,
           x: beyblade.x,
           y: beyblade.y,
         });
@@ -334,7 +468,9 @@ export class AIBattleRoom extends Room<GameState> {
   private tick(deltaTime: number) {
     if (this.state.status !== "in-progress") return;
 
-    if (Date.now() - this.lastInputTime > 60_000) {
+    // Skip idle-disconnect when no human is at the controls — AI-vs-AI matches
+    // would otherwise self-terminate after 60s with no input.
+    if (!this.isAiVsAi && Date.now() - this.lastInputTime > 60_000) {
       this.broadcast("idle-disconnect", {});
       this.disconnect();
       return;
@@ -351,30 +487,42 @@ export class AIBattleRoom extends Room<GameState> {
     }
 
     // ── AI input generation ──────────────────────────────────────────────────
-    const aiBeyblade = this.state.beyblades.get(AI_SESSION_ID);
-    if (aiBeyblade && aiBeyblade.isActive && this.aiController) {
-      const arenaHalfW = (this.state.arena.width * 16) / 2;
-      const arenaHalfH = (this.state.arena.height * 16) / 2;
-      const arenaRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 * 0.45;
+    const arenaHalfW = (this.state.arena.width * 16) / 2;
+    const arenaHalfH = (this.state.arena.height * 16) / 2;
+    const arenaRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 * 0.45;
+    const allSnapshots = Array.from(this.state.beyblades.values()).map(b => ({
+      id: b.id,
+      x: b.x, y: b.y,
+      velocityX: b.velocityX, velocityY: b.velocityY,
+      rotation: b.rotation,
+      spin: b.spin, maxSpin: b.maxSpin,
+      isAirborne: b.isAirborne,
+      inPit: b.inPit,
+      power: b.power,
+      spinDirection: b.spinDirection,
+      type: b.type,
+    }));
 
-      const allSnapshots = Array.from(this.state.beyblades.values()).map(b => ({
-        id: b.id,
-        x: b.x, y: b.y,
-        velocityX: b.velocityX, velocityY: b.velocityY,
-        rotation: b.rotation,
-        spin: b.spin, maxSpin: b.maxSpin,
-        isAirborne: b.isAirborne,
-        inPit: b.inPit,
-        power: b.power,
-        spinDirection: b.spinDirection,
-        type: b.type,
-      }));
+    // Single-AI (human vs AI) path — preserved as-is.
+    const singleAi = this.state.beyblades.get(AI_SESSION_ID);
+    if (singleAi && singleAi.isActive && this.aiController) {
+      const snap = allSnapshots.find(s => s.id === AI_SESSION_ID)!;
+      const opponents = allSnapshots.filter(s => s.id !== AI_SESSION_ID && (this.state.beyblades.get(s.id)?.isActive ?? false));
+      const input = this.aiController.computeInput(snap, opponents, arenaHalfW, arenaHalfH, arenaRadius);
+      this.applyAIInput(singleAi, input);
+    }
 
-      const aiSnapshot = allSnapshots.find(s => s.id === AI_SESSION_ID)!;
-      const opponentSnapshots = allSnapshots.filter(s => s.id !== AI_SESSION_ID && (this.state.beyblades.get(s.id)?.isActive ?? false));
-
-      const aiInput = this.aiController.computeInput(aiSnapshot, opponentSnapshots, arenaHalfW, arenaHalfH, arenaRadius);
-      this.applyAIInput(aiBeyblade, aiInput);
+    // Dual-AI (admin AI vs AI) path — drive every controller in aiControllers.
+    if (this.aiControllers.size > 0) {
+      for (const [sid, controller] of this.aiControllers) {
+        const bey = this.state.beyblades.get(sid);
+        if (!bey || !bey.isActive) continue;
+        const snap = allSnapshots.find(s => s.id === sid);
+        if (!snap) continue;
+        const opponents = allSnapshots.filter(s => s.id !== sid && (this.state.beyblades.get(s.id)?.isActive ?? false));
+        const input = controller.computeInput(snap, opponents, arenaHalfW, arenaHalfH, arenaRadius);
+        this.applyAIInput(bey, input, sid);
+      }
     }
 
     // ── Beyblade-vs-beyblade collision ───────────────────────────────────────
@@ -522,7 +670,7 @@ export class AIBattleRoom extends Room<GameState> {
 
   // ─── Apply AI computed input to physics — uses shared InputHandler ──────────
 
-  private applyAIInput(beyblade: Beyblade, input: PlayerInput) {
+  private applyAIInput(beyblade: Beyblade, input: PlayerInput, sid?: string) {
     if (!beyblade.isActive) return;
 
     const forceMagnitude = computeForceMagnitude(beyblade);
@@ -535,6 +683,37 @@ export class AIBattleRoom extends Room<GameState> {
       this.physics,
       (b) => this.handleSpecialMove(b),
     );
+
+    // AI combo detection — mirrors the human path in onMessage.
+    if ((input as any).comboKeys && (input as any).comboKeys.length > 0) {
+      const now = Date.now();
+      const attachedIds: string[] = Array.from(beyblade.comboIds).filter((s): s is string => typeof s === "string");
+      const tracker = sid ? (this.aiComboTrackers.get(sid) ?? this.aiComboTracker) : this.aiComboTracker;
+      const combo = detectCombo(tracker, (input as any).comboKeys, now, {
+        attachedComboIds: attachedIds,
+        power: beyblade.power,
+        beybladeType: beyblade.type,
+      });
+      if (combo) {
+        beyblade.power = Math.max(0, beyblade.power - combo.costPaid);
+        beyblade.comboDamageMultiplier = combo.damageMultiplier;
+        beyblade.comboDamageMultiplierTimer = combo.durationMs / 1000;
+        if (combo.lockMs > 0) {
+          beyblade.controlLockedUntilMs = Math.max(beyblade.controlLockedUntilMs, now + combo.lockMs);
+          beyblade.controlLockSource = "combo";
+        }
+        beyblade.comboCooldowns.set(combo.comboId, now + combo.durationMs);
+        this.broadcast("combo", {
+          playerId: beyblade.id,
+          comboId: combo.comboId,
+          comboName: combo.name,
+          costPaid: combo.costPaid,
+          effect: combo.effect,
+          x: beyblade.x,
+          y: beyblade.y,
+        });
+      }
+    }
   }
 
   // ─── Win condition + series logic — delegates to shared/rooms/SeriesManager ─
@@ -576,7 +755,8 @@ export class AIBattleRoom extends Room<GameState> {
   }
 
   private resetForNextGame() {
-    if (this.humanSessionId === null) return;
+    // For AI-vs-AI, there's no human; for the regular path the human must still be present.
+    if (!this.isAiVsAi && this.humanSessionId === null) return;
 
     this.state.currentGame++;
     this.state.status = "warmup";
@@ -591,10 +771,17 @@ export class AIBattleRoom extends Room<GameState> {
     const aiBeyblade = this.state.beyblades.get(AI_SESSION_ID);
     if (aiBeyblade) resetBeybladeForNextGame(aiBeyblade, this.aiSpawnPos, this.physics);
 
+    // AI-vs-AI: reset every aiControllers entry to its stored spawn position.
+    for (const [sid] of this.aiControllers) {
+      const bey = this.state.beyblades.get(sid);
+      const spawn = this.aiSpawnPositions.get(sid);
+      if (bey && spawn) resetBeybladeForNextGame(bey, spawn, this.physics);
+    }
+
     this.broadcast("match-warmup", { secondsUntilStart: 3, gameNumber: this.state.currentGame });
 
     setTimeout(() => {
-      if (this.humanSessionId === null) return;
+      if (!this.isAiVsAi && this.humanSessionId === null) return;
       this.state.status = "in-progress";
       this.state.startTime = Date.now();
       this.lastInputTime = Date.now();
@@ -666,6 +853,13 @@ export class AIBattleRoom extends Room<GameState> {
     beyblade.mass = data.mass;
     beyblade.radius = data.radius;
     beyblade.actualSize = data.radius * 24;
+
+    // Optional special move + combos. Both may be undefined on legacy beyblades.
+    if (data.specialMoveId !== undefined) beyblade.specialMove = data.specialMoveId;
+    beyblade.comboIds.clear();
+    if (data.comboIds) {
+      for (const id of data.comboIds.slice(0, 3)) beyblade.comboIds.push(id);
+    }
 
     const attack = data.typeDistribution.attack;
     const defense = data.typeDistribution.defense;

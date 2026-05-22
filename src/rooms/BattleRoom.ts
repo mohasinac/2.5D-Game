@@ -9,7 +9,7 @@ import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentF
 import { tryReserveRoom, releaseRoom } from "../shared/utils/roomCounter";
 import { createPRNG } from "../shared/utils/prng";
 import { hashString } from "../shared/utils/hashString";
-import { ComboTracker, detectCombo } from "../shared/utils/comboSystem";
+import { ComboTracker, detectCombo, createComboTracker } from "../shared/utils/comboSystem";
 import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
 import { resolveWallAngle } from "../shared/physics/ArenaUtils";
@@ -67,6 +67,8 @@ export class BattleRoom extends Room<GameState> {
   protected beybladeDataCache = new Map<string, BeybladeStats | null>();
   protected spawnPositions = new Map<string, { x: number; y: number }>();
   protected comboTrackers = new Map<string, ComboTracker>();
+  /** Per-session camera-follow target id (purely informational). */
+  protected spectatorFollowTargets = new Map<string, string>();
 
   maxClients = 12; // 4 player slots + 8 spectator slots
 
@@ -124,6 +126,10 @@ export class BattleRoom extends Room<GameState> {
       this.handleInput(client, normalizeInput(message));
     });
 
+    this.onMessage("spectator:follow", (client, message: { targetBeybladeId?: string }) => {
+      this.spectatorFollowTargets.set(client.sessionId, message?.targetBeybladeId ?? "");
+    });
+
     this.onMessage("action", (client, message: any) => {
       this.handleAction(client, message);
     });
@@ -147,7 +153,7 @@ export class BattleRoom extends Room<GameState> {
     }
 
     this.playerSessions.add(client.sessionId);
-    this.comboTrackers.set(client.sessionId, { history: [] });
+    this.comboTrackers.set(client.sessionId, createComboTracker());
     console.log(`Player ${client.sessionId} joined BattleRoom (${this.playerSessions.size}/4)`);
 
     const beybladeData: BeybladeStats | null = await loadBeyblade(options.beybladeId);
@@ -319,6 +325,13 @@ export class BattleRoom extends Room<GameState> {
     beyblade.radius = data.radius;
     beyblade.actualSize = data.radius * 24;
 
+    // Optional special move + combos. Both may be undefined on legacy beyblades.
+    if (data.specialMoveId !== undefined) beyblade.specialMove = data.specialMoveId;
+    beyblade.comboIds.clear();
+    if (data.comboIds) {
+      for (const id of data.comboIds.slice(0, 3)) beyblade.comboIds.push(id);
+    }
+
     const attack = data.typeDistribution.attack;
     const defense = data.typeDistribution.defense;
     const stamina = data.typeDistribution.stamina;
@@ -408,13 +421,28 @@ export class BattleRoom extends Room<GameState> {
     // ── Combo detection ──────────────────────────────────────────────────────
     const tracker = this.comboTrackers.get(client.sessionId);
     if (tracker && message.comboKeys && message.comboKeys.length > 0) {
-      const combo = detectCombo(tracker, message.comboKeys, Date.now());
+      const now = Date.now();
+      const attachedIds: string[] = Array.from(beyblade.comboIds).filter((s): s is string => typeof s === "string");
+      const combo = detectCombo(tracker, message.comboKeys, now, {
+        attachedComboIds: attachedIds,
+        power: beyblade.power,
+        beybladeType: beyblade.type,
+      });
       if (combo) {
+        beyblade.power = Math.max(0, beyblade.power - combo.costPaid);
         beyblade.comboDamageMultiplier = combo.damageMultiplier;
         beyblade.comboDamageMultiplierTimer = combo.durationMs / 1000;
+        if (combo.lockMs > 0) {
+          beyblade.controlLockedUntilMs = Math.max(beyblade.controlLockedUntilMs, now + combo.lockMs);
+          beyblade.controlLockSource = "combo";
+        }
+        beyblade.comboCooldowns.set(combo.comboId, now + combo.durationMs);
         this.broadcast("combo", {
           playerId: beyblade.id,
+          comboId: combo.comboId,
           comboName: combo.name,
+          costPaid: combo.costPaid,
+          effect: combo.effect,
           x: beyblade.x,
           y: beyblade.y,
         });

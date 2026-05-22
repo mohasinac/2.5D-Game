@@ -44,6 +44,7 @@ import { TournamentsListPage } from "./pages/admin/TournamentsListPage";
 import { TournamentCreatePage } from "./pages/admin/TournamentCreatePage";
 import { TournamentDetailPage } from "./pages/admin/TournamentDetailPage";
 import { UsersPage } from "./pages/admin/UsersPage";
+import { AIVsAITestPage } from "./pages/admin/AIVsAITestPage";
 
 // 2.5D part system pages
 import { PartSearchPage } from "./pages/admin/2d/PartSearchPage";
@@ -153,6 +154,9 @@ export const router = createBrowserRouter([
 
       // User management
       { path: "users", element: <UsersPage /> },
+
+      // AI vs AI test lab — admin spectates two AIs fighting
+      { path: "ai-vs-ai", element: <AIVsAITestPage /> },
 
       // ── 2.5D Part System — canonical URL ──
       { path: "2.5d/parts", element: <PartSearchPage /> },

@@ -8,7 +8,7 @@ export interface GameSettings {
   beybladeId: string | null;
   arenaId: string | null;
   gameMode: "tryout" | "single-battle" | "pvp" | "tournament" | null;
-  difficulty?: "easy" | "medium" | "hard";
+  difficulty?: "medium" | "hard" | "hell";
   opponentId?: string;
   username?: string;
   userId?: string;

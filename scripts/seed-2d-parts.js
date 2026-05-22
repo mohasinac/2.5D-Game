@@ -23,7 +23,35 @@ const parts = {
     { id: "six-attack", name: "Six Attack", description: "6-gram light disk", rarity: "uncommon", weight: 6 },
   ],
   tip_parts: [
-    { id: "flat", name: "Flat Tip", description: "Flat contact surface", rarity: "common", friction: 0.8 },
+    {
+      id: "flat",
+      name: "Flat Tip",
+      description: "Flat contact surface with player-switchable attack/defense modes",
+      rarity: "common",
+      friction: 0.8,
+      // Per-part combo (new) — attaches "quick-dash-l" to this tip; merged with
+      // whole-bey BeybladeStats.comboIds at match start by PartSystemManager.
+      comboIds: ["quick-dash-l"],
+      // Two playerSwitchable configurations — shown in PartModesHUD; the player
+      // cycles between them with the in-game "Cycle" button (or the mode:switch
+      // Colyseus message). MODE_SWITCH_COOLDOWN_MS = 2s.
+      configurations: [
+        {
+          name: "attack-mode",
+          displayName: "Attack",
+          description: "Higher aggression, lower stability.",
+          playerSwitchable: true,
+          overrides: { aggressiveness: 0.85, gripFactor: 0.6 },
+        },
+        {
+          name: "defense-mode",
+          displayName: "Defense",
+          description: "Higher stability, lower aggression.",
+          playerSwitchable: true,
+          overrides: { aggressiveness: 0.3, gripFactor: 0.9 },
+        },
+      ],
+    },
     { id: "sharp", name: "Sharp Tip", description: "Sharp pointed tip", rarity: "rare", friction: 0.3 },
     { id: "semi-flat", name: "Semi-Flat Tip", description: "Mixed stability", rarity: "uncommon", friction: 0.6 },
     { id: "rubber-flat", name: "Rubber Flat", description: "Rubber coating", rarity: "uncommon", friction: 0.95 },

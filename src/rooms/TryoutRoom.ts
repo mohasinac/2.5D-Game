@@ -219,6 +219,13 @@ export class TryoutRoom extends Room<GameState> {
     const PIXELS_PER_CM = 24;
     beyblade.actualSize = data.radius * PIXELS_PER_CM;
 
+    // Optional special move + combos. Both may be undefined on legacy beyblades.
+    if (data.specialMoveId !== undefined) beyblade.specialMove = data.specialMoveId;
+    beyblade.comboIds.clear();
+    if (data.comboIds) {
+      for (const id of data.comboIds.slice(0, 3)) beyblade.comboIds.push(id);
+    }
+
     const attack = data.typeDistribution.attack;
     const defense = data.typeDistribution.defense;
     const stamina = data.typeDistribution.stamina;

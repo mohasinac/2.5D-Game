@@ -254,6 +254,23 @@ export async function saveMatch(matchData: any): Promise<string | null> {
 /**
  * Update player stats
  */
+/**
+ * Update player stats. Numeric fields (matchesPlayed, wins, losses, totalDamageDealt,
+ * totalCollisions, tournamentPoints, etc.) are INCREMENTED atomically.
+ * Non-numeric fields are merged via Firestore's `merge: true`.
+ *
+ * Pass `_overwrite: { fieldName: value }` to force a numeric set (rarely needed).
+ */
+const INCREMENT_FIELDS = new Set([
+  "matchesPlayed",
+  "wins",
+  "losses",
+  "draws",
+  "totalDamageDealt",
+  "totalCollisions",
+  "tournamentPoints",
+]);
+
 export async function updatePlayerStats(
   userId: string,
   updates: Partial<any>
@@ -265,7 +282,15 @@ export async function updatePlayerStats(
 
   try {
     const docRef = db.collection(FIREBASE_COLLECTIONS.PLAYER_STATS).doc(userId);
-    await docRef.set(updates, { merge: true });
+    const out: Record<string, any> = {};
+    for (const [k, v] of Object.entries(updates)) {
+      if (typeof v === "number" && INCREMENT_FIELDS.has(k)) {
+        out[k] = admin.firestore.FieldValue.increment(v);
+      } else {
+        out[k] = v;
+      }
+    }
+    await docRef.set(out, { merge: true });
 
     console.log(`Player stats updated: ${userId}`);
     return true;
