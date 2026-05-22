@@ -3,7 +3,7 @@
 import { AssetCrudPage } from "@/components/admin/AssetCrudPage";
 import { COLLECTIONS } from "@/lib/firebase";
 
-const TURRET_TAGS = ["turret-bullet", "turret-laser", "turret-boomerang", "projectile-bullet", "projectile-laser", "projectile-boomerang"];
+const TURRET_TAGS = ["turret-bullet", "turret-laser", "turret-boomerang", "projectile-bullet", "projectile-laser", "projectile-boomerang", "switch"];
 
 export function TurretAssetsPage() {
   return (

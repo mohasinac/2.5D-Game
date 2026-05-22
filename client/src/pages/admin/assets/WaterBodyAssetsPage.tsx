@@ -3,7 +3,7 @@
 import { AssetCrudPage } from "@/components/admin/AssetCrudPage";
 import { COLLECTIONS } from "@/lib/firebase";
 
-const LIQUID_TYPES = ["water", "lava", "sand", "ice", "acid", "mud", "oil"];
+const LIQUID_TYPES = ["water", "lava", "sand", "ice", "acid", "mud", "oil", "switch"];
 
 export function WaterBodyAssetsPage() {
   return (

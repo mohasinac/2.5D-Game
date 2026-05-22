@@ -17,7 +17,7 @@ interface Asset { id:string; name:string; url:string; storagePath:string; tag?:s
 
 export function AssetCrudPage({
   collectionName, title, icon, description,
-  acceptTypes = "image/*", isAudio = false, tags = [], tagLabel = "Tag",
+  acceptTypes = "image/png,image/jpeg,image/gif,image/webp", isAudio = false, tags = [], tagLabel = "Tag",
 }: AssetCrudPageProps) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +51,10 @@ export function AssetCrudPage({
       const reader = new FileReader();
       reader.onload = ev => {
         setRawImageUrl(ev.target?.result as string);
-        setImageEditorMode("whatsapp");
+        // GIFs skip the editor so animation is preserved end-to-end.
+        // Static images go through the WhatsApp-style editor for cropping / positioning.
+        const isGif = file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
+        setImageEditorMode(isGif ? null : "whatsapp");
       };
       reader.readAsDataURL(file);
     }

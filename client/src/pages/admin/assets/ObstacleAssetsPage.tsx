@@ -3,7 +3,7 @@
 import { AssetCrudPage } from "@/components/admin/AssetCrudPage";
 import { COLLECTIONS } from "@/lib/firebase";
 
-const OBSTACLE_TYPES = ["rock", "pillar", "barrier", "wall", "crystal", "box", "tire"];
+const OBSTACLE_TYPES = ["rock", "pillar", "barrier", "wall", "crystal", "box", "tire", "switch", "bump", "spin-zone", "gravity-well"];
 
 export function ObstacleAssetsPage() {
   return (

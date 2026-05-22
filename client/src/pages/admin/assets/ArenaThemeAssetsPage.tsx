@@ -3,7 +3,7 @@
 import { AssetCrudPage } from "@/components/admin/AssetCrudPage";
 import { COLLECTIONS } from "@/lib/firebase";
 
-const THEMES = ["metrocity", "forest", "mountains", "grasslands", "desert", "sea", "futuristic", "prehistoric", "safari", "riverbank"];
+const THEMES = ["metrocity", "forest", "mountains", "grasslands", "desert", "sea", "futuristic", "prehistoric", "safari", "riverbank", "switch"];
 
 export function ArenaThemeAssetsPage() {
   return (

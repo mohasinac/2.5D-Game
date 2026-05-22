@@ -88,7 +88,7 @@ describe("GameContext — setDifficulty", () => {
   it("can cycle through all difficulty values", () => {
     const { result } = renderHook(() => useGame(), { wrapper });
 
-    for (const diff of ["easy", "medium", "hard"] as const) {
+    for (const diff of ["medium", "hard", "hell"] as const) {
       act(() => {
         result.current.setDifficulty(diff);
       });
@@ -123,13 +123,13 @@ describe("GameContext — setGameConfig", () => {
     });
 
     act(() => {
-      result.current.setGameConfig({ beybladeId: "bey-new", difficulty: "easy" });
+      result.current.setGameConfig({ beybladeId: "bey-new", difficulty: "hell" });
     });
 
     expect(result.current.settings.beybladeId).toBe("bey-new");
     // arenaId was not in the partial config — must be preserved
     expect(result.current.settings.arenaId).toBe("arena-init");
-    expect(result.current.settings.difficulty).toBe("easy");
+    expect(result.current.settings.difficulty).toBe("hell");
   });
 
   it("can set multiple fields at once", () => {

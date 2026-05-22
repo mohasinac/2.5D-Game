@@ -3,7 +3,7 @@
 import { AssetCrudPage } from "@/components/admin/AssetCrudPage";
 import { COLLECTIONS } from "@/lib/firebase";
 
-const PORTAL_TAGS = ["portal-ring", "portal-entrance", "portal-exit", "teleport-effect"];
+const PORTAL_TAGS = ["portal-ring", "portal-entrance", "portal-exit", "teleport-effect", "switch"];
 
 export function PortalAssetsPage() {
   return (

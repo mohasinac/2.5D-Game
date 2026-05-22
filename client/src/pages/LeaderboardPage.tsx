@@ -4,7 +4,7 @@ import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { C } from "@/styles/theme";
 
-type SortKey = "wins" | "winRate" | "totalDamageDealt" | "matchesPlayed";
+type SortKey = "tournamentPoints" | "wins" | "winRate" | "totalDamageDealt" | "matchesPlayed";
 
 interface PlayerStat {
   id: string;
@@ -14,10 +14,12 @@ interface PlayerStat {
   matchesPlayed?: number;
   totalDamageDealt?: number;
   totalCollisions?: number;
+  tournamentPoints?: number;
   winRate?: number; // computed
 }
 
 const TABS: { key: SortKey; label: string; icon: string; format: (p: PlayerStat) => string }[] = [
+  { key: "tournamentPoints",label: "Tournament",  icon: "🏟️", format: (p) => `${p.tournamentPoints ?? 0} pts` },
   { key: "wins",            label: "Wins",        icon: "🏆", format: (p) => `${p.wins ?? 0} wins` },
   { key: "winRate",         label: "Win Rate",    icon: "📈", format: (p) => `${((p.winRate ?? 0) * 100).toFixed(1)}%` },
   { key: "totalDamageDealt",label: "Damage",      icon: "💥", format: (p) => `${(p.totalDamageDealt ?? 0).toLocaleString()} dmg` },
@@ -29,7 +31,7 @@ const MEDALS = ["🥇", "🥈", "🥉"];
 export function LeaderboardPage() {
   const [players, setPlayers] = useState<PlayerStat[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<SortKey>("wins");
+  const [tab, setTab] = useState<SortKey>("tournamentPoints");
 
   useEffect(() => {
     getDocs(query(collection(db, COLLECTIONS.PLAYER_STATS), orderBy("wins", "desc"), limit(50)))
@@ -47,6 +49,7 @@ export function LeaderboardPage() {
   }, []);
 
   const sorted = [...players].sort((a, b) => {
+    if (tab === "tournamentPoints") return (b.tournamentPoints ?? 0) - (a.tournamentPoints ?? 0);
     if (tab === "winRate") return (b.winRate ?? 0) - (a.winRate ?? 0);
     if (tab === "totalDamageDealt") return (b.totalDamageDealt ?? 0) - (a.totalDamageDealt ?? 0);
     if (tab === "matchesPlayed") return (b.matchesPlayed ?? 0) - (a.matchesPlayed ?? 0);
