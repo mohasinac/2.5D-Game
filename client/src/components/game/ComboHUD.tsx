@@ -17,9 +17,11 @@ interface ComboHUDProps {
   cooldowns?: Record<string, number>;
   /** Current power level (0–100) — combos with cost > power are shown dimmed. */
   power?: number;
+  /** Charge progress 0–1 for a charged combo being held. 0 = not charging. */
+  comboChargeScale?: number;
 }
 
-export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0 }: ComboHUDProps) {
+export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, comboChargeScale = 0 }: ComboHUDProps) {
   const [comboHistory, setComboHistory] = useState<FiredComboEntry[]>([]);
   const [comboPopup, setComboPopup] = useState<boolean>(false);
   const [now, setNow] = useState<number>(Date.now());
@@ -104,6 +106,33 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0 }: 
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Charge bar — shown while player holds the last key of a charged combo */}
+      {comboChargeScale > 0 && (
+        <div style={{
+          position: "absolute", bottom: 72, left: "50%",
+          transform: "translateX(-50%)",
+          pointerEvents: "none", zIndex: 12,
+          display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+        }}>
+          <div style={{ fontSize: 10, color: C.yellow, fontFamily: "monospace", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            {comboChargeScale >= 1 ? "CHARGED!" : "Charging…"}
+          </div>
+          <div style={{
+            width: 140, height: 6, background: "rgba(255,255,255,0.12)", borderRadius: 3,
+            overflow: "hidden",
+          }}>
+            <div style={{
+              height: "100%",
+              width: `${comboChargeScale * 100}%`,
+              background: comboChargeScale >= 1 ? C.green : C.yellow,
+              borderRadius: 3,
+              transition: "width 100ms linear, background 200ms",
+              boxShadow: comboChargeScale >= 1 ? `0 0 8px ${C.green}` : undefined,
+            }} />
+          </div>
         </div>
       )}
 

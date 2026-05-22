@@ -779,6 +779,16 @@ export interface ArenaConfig {
   spinZones?: SpinZoneConfig[];       // Circular zones that impart orbit or spin
   bumps?: BumpConfig[];               // Raised features that pop beys vertically
 
+  // ===== ROUND MODIFIERS =====
+  defaultModifiers?: string[];      // modifier ids always active in this arena
+  allowedModifiers?: string[];      // only these modifier ids can be selected (null = all allowed)
+  randomModifiers?: boolean;        // if true, server picks 1 random modifier per match
+  maxModifiers?: number;            // max stacked modifiers (default 2)
+
+  // ===== QTE SYSTEM =====
+  qteEnabled?: boolean;             // default true; false = QTEs disabled for this match
+  qteWindowScaling?: "flat" | "by_cost"; // flat = always 60t; by_cost = formula (default)
+
   // ===== METADATA =====
   createdAt?: string;
   updatedAt?: string;

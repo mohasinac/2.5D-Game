@@ -4,6 +4,7 @@ import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
 import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGame } from "@/contexts/GameContext";
 import { C, alpha } from "@/styles/theme";
+import { BUILT_IN_MODIFIERS, MODIFIER_MAP } from "@/types/roundModifier";
 
 const TYPE_COLORS_MAP: Record<string, string> = {
   attack: C.red,
@@ -22,6 +23,15 @@ export function BattleLobbyPage() {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [bestOf, setBestOf] = useState<BestOf>(1);
   const [copied, setCopied] = useState(false);
+  const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
+
+  const MAX_MODIFIERS = 2;
+
+  const toggleModifier = (id: string) => {
+    setSelectedModifierIds(prev =>
+      prev.includes(id) ? prev.filter(m => m !== id) : prev.length < MAX_MODIFIERS ? [...prev, id] : prev
+    );
+  };
 
   const { connectionState, gameState, beyblades, myBeyblade, room, connect, disconnect } =
     useColyseus({
@@ -31,6 +41,7 @@ export function BattleLobbyPage() {
         arenaId: settings.arenaId ?? "default",
         username: settings.username ?? "Player",
         userId: settings.userId,
+        modifierIds: selectedModifierIds,
       },
       autoConnect: true,
     });
@@ -163,6 +174,63 @@ export function BattleLobbyPage() {
             <p style={{ fontSize: 11, color: C.faint, marginBottom: 14 }}>
               {bestOf === 1 ? "Single match — first to win takes it." : `First to ${Math.ceil(bestOf / 2)} wins the series.`}
             </p>
+
+            {/* Round modifier picker */}
+            <p style={{ fontSize: 12, color: C.muted, marginBottom: 8, fontWeight: 600 }}>
+              Round Modifiers
+              <span style={{ fontSize: 11, color: C.faint, fontWeight: 400, marginLeft: 6 }}>
+                ({selectedModifierIds.length}/{MAX_MODIFIERS} selected)
+              </span>
+            </p>
+            {(["physics", "combat", "rules", "chaos"] as const).map(category => {
+              const group = BUILT_IN_MODIFIERS.filter(m => m.category === category);
+              return (
+                <div key={category} style={{ marginBottom: 10 }}>
+                  <p style={{ fontSize: 10, color: C.faint, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 5 }}>{category}</p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                    {group.map(mod => {
+                      const selected = selectedModifierIds.includes(mod.id);
+                      const disabled = !selected && selectedModifierIds.length >= MAX_MODIFIERS;
+                      return (
+                        <button
+                          key={mod.id}
+                          data-testid={`modifier-toggle-${mod.id}`}
+                          onClick={() => toggleModifier(mod.id)}
+                          disabled={disabled}
+                          title={mod.description}
+                          style={{
+                            padding: "4px 10px", borderRadius: 99, fontSize: 11, fontWeight: 600,
+                            cursor: disabled ? "not-allowed" : "pointer",
+                            border: `1px solid ${selected ? C.yellow : C.border}`,
+                            background: selected ? alpha(C.yellow, 0.15) : "transparent",
+                            color: selected ? C.yellow : disabled ? alpha(C.muted, 0.4) : C.muted,
+                            display: "flex", alignItems: "center", gap: 4,
+                            transition: "all 0.1s",
+                          }}
+                        >
+                          {mod.icon && <span style={{ fontSize: 13 }}>{mod.icon}</span>}
+                          {mod.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+            {selectedModifierIds.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 10, padding: "8px 10px", background: alpha(C.yellow, 0.06), borderRadius: 8, border: `1px solid ${alpha(C.yellow, 0.18)}` }}>
+                <span style={{ fontSize: 11, color: C.faint, width: "100%", marginBottom: 4 }}>Active:</span>
+                {selectedModifierIds.map(id => {
+                  const mod = MODIFIER_MAP.get(id);
+                  if (!mod) return null;
+                  return (
+                    <span key={id} style={{ fontSize: 11, color: C.yellow, fontFamily: "monospace" }}>
+                      {mod.icon} {mod.name}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
 
             {spectateUrl && (
               <>

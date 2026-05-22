@@ -175,8 +175,8 @@ export function resolveTipStats(
 
 /**
  * Reduces spin-steal received when a bearing tip is equipped.
- * steal = raw steal amount from opponent's CP
- * Returns actual steal amount after bearing reduction.
+ * Legacy helper — new callers should use computeSpinSteal() which also
+ * incorporates spinStealFactor and spinStealResist from the universal stat table.
  */
 export function applyBearingFrictionToSteal(rawSteal: number, bearingFriction: number): number {
   return rawSteal * bearingFriction; // B:D (0.02) → receives 2% of steal
@@ -634,6 +634,52 @@ export function tickCounterRotation(bey: Beyblade, cfg: CounterRotationConfig): 
   }
 }
 
+// ─── Spin Clash System ────────────────────────────────────────────────────────
+
+export const CLASH_MULTIPLIERS = {
+  same_spin:    { damage: 0.8, spinSteal: 1.5, recoil: 0.7 },
+  counter_spin: { damage: 1.3, spinSteal: 0.5, recoil: 1.5 },
+} as const;
+
+export function getClashType(
+  attackerDir: string,
+  defenderDir: string
+): "same_spin" | "counter_spin" {
+  return attackerDir === defenderDir ? "same_spin" : "counter_spin";
+}
+
+/**
+ * Returns a 0–1 blend factor based on approach angle.
+ * 0° = perfectly grazing (same-spin-like), 90° = full head-on (counter-spin-like).
+ * Use to lerp between same_spin and counter_spin multipliers for smooth gradations.
+ */
+export function getClashBlend(approachAngleDeg: number): number {
+  return Math.max(0, 1 - Math.abs(approachAngleDeg - 90) / 90);
+}
+
+/**
+ * Computes the effective spin steal amount incorporating all relevant factors:
+ * - rawSteal: base steal amount from the contact point
+ * - attackerSpinStealFactor: attacker's outgoing steal rate multiplier (default 1.0)
+ * - defenderBearingFriction: part-level resistance (B:D = 0.02, normal = 1.0)
+ * - defenderSpinStealResist: stat-level incoming steal block (>1 = more resistance)
+ * - clashType: same_spin boosts steal, counter_spin reduces it
+ */
+export function computeSpinSteal(
+  rawSteal: number,
+  attackerSpinStealFactor: number,
+  defenderBearingFriction: number,
+  defenderSpinStealResist: number,
+  clashType: "same_spin" | "counter_spin"
+): number {
+  const clashMult = CLASH_MULTIPLIERS[clashType].spinSteal;
+  return rawSteal
+    * attackerSpinStealFactor
+    * defenderBearingFriction
+    * clashMult
+    / Math.max(0.01, defenderSpinStealResist);
+}
+
 // ─── Universal StatModifier Application ──────────────────────────────────────
 
 /**
@@ -644,6 +690,11 @@ const VALID_STAT_KEYS = new Set([
   "spin", "maxSpin", "spinDecayRate", "aggressiveness", "gripFactor",
   "recoilFactor", "spinStealResist", "damageMultiplier", "damageReduction",
   "surfaceFriction", "contactDamageMultiplier",
+  // Universal stat vocabulary additions:
+  "speed", "mass", "radius", "width", "height", "depth",
+  "spinStealFactor", "jumpForce", "jumpHeight",
+  "suctionForce", "wallClimbFactor", "gravityMult", "bounceRestitution",
+  "tiltResistance", "burstResistance",
 ]);
 
 export function applyStatModifier(bey: Beyblade, mod: StatModifier): void {

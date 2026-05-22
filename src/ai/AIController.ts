@@ -8,6 +8,20 @@ export type AIDifficulty = "medium" | "hard" | "hell";
 
 interface Vec2 { x: number; y: number; }
 
+// Minimal combo slot representation the AI needs to evaluate
+export interface AIComboSlot {
+  sequence: string[];     // e.g. ["moveRight","moveRight","attack"]
+  effectId: string;
+  cost?: number;          // power cost (default 0)
+  condition?: {
+    maxRange?: number;
+    minPower?: number;
+    spinDirectionRequired?: "left" | "right";
+    minSpin?: number;     // % of maxSpin
+    maxSpin?: number;     // % of maxSpin
+  };
+}
+
 interface BeybladeSnapshot {
   id: string;
   x: number; y: number;
@@ -19,6 +33,10 @@ interface BeybladeSnapshot {
   power: number;
   spinDirection: string;
   type: string;
+  // Phase S additions
+  comboSlots?: AIComboSlot[];
+  beyTiltAngle?: number;       // degrees 0–90
+  specialMoveActive?: boolean; // true while opponent's special is executing
 }
 
 export interface AIPlayerInput {
@@ -40,6 +58,13 @@ export class AIController {
   private tickCounter: number = 0;
   private currentTargetId: string = "";
 
+  // Phase S: per-instance combo state
+  private pendingComboKeys: string[] = [];
+  private pendingComboTick: number = 0;
+  private lastComboEvalTick: number = 0;
+  private specialMoveFired: boolean = false;
+  private slotCooldowns: Map<string, number> = new Map(); // effectId → tickWhenAvailable
+
   constructor(difficulty: AIDifficulty | string) {
     // Defensive: collapse legacy "easy" reads to "medium".
     const d = (difficulty === "easy" ? "medium" : difficulty) as AIDifficulty;
@@ -55,6 +80,11 @@ export class AIController {
   ): AIPlayerInput {
     this.tickCounter++;
 
+    // Reset specialMoveFired when power bar drops back to 0 after a fire
+    if (ai.power <= 5 && this.specialMoveFired) {
+      this.specialMoveFired = false;
+    }
+
     const activeOpponents = opponents.filter(o => o.spin > 0);
     const nearest = this.getNearestOpponent(ai, activeOpponents);
 
@@ -63,6 +93,87 @@ export class AIController {
       case "hard":   return this.hardInput(ai, nearest, arenaCenterX, arenaCenterY, arenaRadius);
       case "hell":   return this.hellInput(ai, nearest, arenaCenterX, arenaCenterY, arenaRadius);
     }
+  }
+
+  // ── Phase S: evaluate combo slots and pick the best one ─────────────────────
+
+  /**
+   * Returns the best eligible combo slot for the AI to fire, or null.
+   * Hell AI uses full intelligence; Medium/Hard use simplified filtering.
+   */
+  private evaluateComboSlots(
+    ai: BeybladeSnapshot,
+    nearest: BeybladeSnapshot | null,
+    intelligenceLevel: "simple" | "full"
+  ): AIComboSlot | null {
+    const slots = ai.comboSlots;
+    if (!slots || slots.length === 0) return null;
+
+    const distToNearest = nearest
+      ? Math.sqrt((ai.x - nearest.x) ** 2 + (ai.y - nearest.y) ** 2)
+      : Infinity;
+    const spinRatio = ai.maxSpin > 0 ? ai.spin / ai.maxSpin : 0;
+
+    // Filter: basic eligibility
+    const eligible = slots.filter(slot => {
+      const cost = slot.cost ?? 0;
+      if (ai.power < cost) return false;
+      const cd = this.slotCooldowns.get(slot.effectId) ?? 0;
+      if (this.tickCounter < cd) return false;
+      const cond = slot.condition;
+      if (!cond) return true;
+      if (cond.maxRange !== undefined && distToNearest > cond.maxRange) return false;
+      if (cond.minPower !== undefined && ai.power < cond.minPower) return false;
+      if (cond.minSpin !== undefined && spinRatio * 100 < cond.minSpin) return false;
+      if (cond.maxSpin !== undefined && spinRatio * 100 > cond.maxSpin) return false;
+      return true;
+    });
+
+    if (eligible.length === 0) return null;
+
+    if (intelligenceLevel === "simple") {
+      // Simple: just pick the first eligible slot
+      return eligible[0];
+    }
+
+    // Full (Hell): prefer spin-direction-aligned combos; skip damage combos vs invulnerable opponents
+    const spinAligned = eligible.filter(s => {
+      const req = s.condition?.spinDirectionRequired;
+      return !req || req === ai.spinDirection;
+    });
+
+    const safe = (spinAligned.length ? spinAligned : eligible).filter(s => {
+      // Skip combos that are purely offensive while opponent has special move active
+      if (nearest?.specialMoveActive) {
+        const isDamageFocused = s.effectId.includes("thrust") ||
+          s.effectId.includes("strike") || s.effectId.includes("rush");
+        return !isDamageFocused;
+      }
+      return true;
+    });
+
+    const pool = safe.length ? safe : eligible;
+
+    // Prefer highest cost (more powerful)
+    pool.sort((a, b) => (b.cost ?? 0) - (a.cost ?? 0));
+    return pool[0];
+  }
+
+  /** Fire a chosen combo slot: stage its sequence key-by-key over next N ticks. */
+  private stageCombo(slot: AIComboSlot): void {
+    this.pendingComboKeys = [...slot.sequence];
+    this.pendingComboTick = 0;
+    // Apply a cooldown so the same slot doesn't re-fire too quickly (180t = 3s)
+    this.slotCooldowns.set(slot.effectId, this.tickCounter + 180);
+  }
+
+  /** Consume the next pending combo key if one is staged. Returns true if a key was emitted. */
+  private dequeuePendingCombo(input: AIPlayerInput): boolean {
+    if (this.pendingComboKeys.length === 0) return false;
+    const key = this.pendingComboKeys.shift()!;
+    // Map key name to input field
+    (input as any)[key] = true;
+    return true;
   }
 
   // ── Medium: chase opponent, avoid pits, use special when spin < 40% ────────
@@ -100,6 +211,18 @@ export class AIController {
     }
 
     if (ai.power < 50) input.chargeHeld = true;
+
+    // Phase S: Medium AI — fire first eligible combo slot every 3s (180t)
+    if (this.pendingComboKeys.length > 0) {
+      this.dequeuePendingCombo(input);
+    } else if (this.tickCounter - this.lastComboEvalTick >= 180) {
+      const slot = this.evaluateComboSlots(ai, nearest, "simple");
+      if (slot) {
+        this.stageCombo(slot);
+        this.dequeuePendingCombo(input);
+      }
+      this.lastComboEvalTick = this.tickCounter;
+    }
 
     return input;
   }
@@ -149,8 +272,21 @@ export class AIController {
       }
 
       const spinRatio = ai.spin / ai.maxSpin;
-      if (ai.power >= 50 && dist < 250 && spinRatio < 0.6) {
+      if (ai.power >= 80 && dist < 250 && !this.specialMoveFired) {
         input.specialTap = true;
+        this.specialMoveFired = true;
+      }
+
+      // Phase S: Hard AI — fire best eligible combo every 1s (60t) when in range
+      if (this.pendingComboKeys.length > 0) {
+        this.dequeuePendingCombo(input);
+      } else if (this.tickCounter - this.lastComboEvalTick >= 60 && dist < 300) {
+        const slot = this.evaluateComboSlots(ai, nearest, "simple");
+        if (slot) {
+          this.stageCombo(slot);
+          this.dequeuePendingCombo(input);
+        }
+        this.lastComboEvalTick = this.tickCounter;
       }
     }
 
@@ -171,7 +307,7 @@ export class AIController {
   }
 
   // ── Hell: frame-perfect dodges, longer prediction window, ring-out aware,
-  //          aggressive special + combo cadence, opportunistic edge pushes. ──
+  //          full combo intelligence, opportunistic edge pushes. ──────────────
 
   private hellInput(
     ai: BeybladeSnapshot,
@@ -203,7 +339,6 @@ export class AIController {
           if (oppDistFromCenter > r * 0.45) {
             const pushNormX = oppDx / Math.max(oppDistFromCenter, 1);
             const pushNormY = oppDy / Math.max(oppDistFromCenter, 1);
-            // Aim a point opposite the wall — so contact knocks opponent outward.
             const approachX = nearest.x - pushNormX * 80 - ai.x;
             const approachY = nearest.y - pushNormY * 80 - ai.y;
             const aLen = Math.sqrt(approachX * approachX + approachY * approachY) || 1;
@@ -236,22 +371,37 @@ export class AIController {
         input.defense = true;
       }
 
-      // Use special the moment it's chargeable and opponent is in kill range.
-      if (ai.power >= 50 && dist < 260) {
+      // Fire special immediately at 100 power (full bar).
+      if (ai.power >= 100 && !this.specialMoveFired) {
         input.specialTap = true;
+        this.specialMoveFired = true;
       }
 
-      // Combo cadence: fire a 3-key combo every ~120 ticks (~2s) when in range.
-      // Picks based on relative angle so combos line up with strike direction.
-      if (this.tickCounter % 120 === 0 && dist < 220 && ai.power >= 25) {
-        const angle = Math.atan2(dy, dx);
-        if (angle > -Math.PI / 4 && angle < Math.PI / 4) {
-          input.comboKeys = ["moveRight", "moveRight", "attack"];      // quick-dash-r
-        } else if (angle > 3 * Math.PI / 4 || angle < -3 * Math.PI / 4) {
-          input.comboKeys = ["moveLeft", "moveLeft", "attack"];        // quick-dash-l
-        } else {
-          input.comboKeys = ["attack", "attack", "attack"];            // power-thrust
+      // Phase S: Hell AI — evaluate combo slots with full intelligence every ~30t
+      if (this.pendingComboKeys.length > 0) {
+        this.dequeuePendingCombo(input);
+      } else if (this.tickCounter - this.lastComboEvalTick >= 30) {
+        // Tilt awareness: if self is tilted > 30°, prefer stabilization combos
+        const selfTilt = ai.beyTiltAngle ?? 0;
+        let slot: AIComboSlot | null = null;
+
+        if (selfTilt > 30) {
+          // Look for a stabilization/defense combo first
+          slot = this.evaluateComboSlots(ai, nearest, "full");
+        } else if (nearest && (nearest.beyTiltAngle ?? 0) > 35) {
+          // Opponent is tilted — rush in for burst chance
+          if (dist < 300) {
+            slot = this.evaluateComboSlots(ai, nearest, "full");
+          }
+        } else if (dist < 280) {
+          slot = this.evaluateComboSlots(ai, nearest, "full");
         }
+
+        if (slot) {
+          this.stageCombo(slot);
+          this.dequeuePendingCombo(input);
+        }
+        this.lastComboEvalTick = this.tickCounter;
       }
     }
 

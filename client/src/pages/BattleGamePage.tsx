@@ -7,6 +7,7 @@ import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
 import { getBeybladeStability, mapToRecord, TYPE_COLORS } from "@/types/game";
 import { C, alpha } from "@/styles/theme";
+import { MODIFIER_MAP } from "@/types/roundModifier";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
 import { PartModesHUD } from "@/components/game/PartModesHUD";
@@ -180,15 +181,46 @@ export function BattleGamePage() {
 
       {/* HUD top bar */}
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10, flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: connectionState === "connected" ? C.green : C.red }} className={connectionState === "connected" ? "pulse" : ""} />
-          <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.muted, fontFamily: "monospace", textTransform: "uppercase" }}>
-            {isSpectating ? "SPECTATING" : connectionState}
-          </span>
-          {isSpectating && (
-            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", background: alpha(C.purple, 0.27), color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${alpha(C.purple, 0.33)}` }}>
-              SPECTATING
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: connectionState === "connected" ? C.green : C.red }} className={connectionState === "connected" ? "pulse" : ""} />
+            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.muted, fontFamily: "monospace", textTransform: "uppercase" }}>
+              {isSpectating ? "SPECTATING" : connectionState}
             </span>
+            {isSpectating && (
+              <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", background: alpha(C.purple, 0.27), color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${alpha(C.purple, 0.33)}` }}>
+                SPECTATING
+              </span>
+            )}
+          </div>
+          {/* Active round modifier badges */}
+          {(gameState?.activeModifierIds?.length ?? 0) > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+              {(gameState!.activeModifierIds as unknown as string[]).map((id: string) => {
+                const mod = MODIFIER_MAP.get(id);
+                if (!mod) return null;
+                return (
+                  <span
+                    key={id}
+                    data-testid={`modifier-badge-${id}`}
+                    title={mod.description}
+                    style={{
+                      fontSize: "clamp(9px, 1.2vw, 11px)",
+                      background: "rgba(0,0,0,0.7)",
+                      color: C.yellow,
+                      padding: "2px 7px",
+                      borderRadius: 99,
+                      border: `1px solid ${alpha(C.yellow, 0.4)}`,
+                      fontFamily: "monospace",
+                      display: "flex", alignItems: "center", gap: 4,
+                    }}
+                  >
+                    {mod.icon && <span>{mod.icon}</span>}
+                    {mod.name}
+                  </span>
+                );
+              })}
+            </div>
           )}
         </div>
 

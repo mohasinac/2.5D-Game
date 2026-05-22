@@ -470,7 +470,11 @@ export class TryoutRoom extends Room<GameState> {
         );
       }
 
-      beyblade.spin = Math.max(0, beyblade.spin - beyblade.spinDecayRate * dt);
+      {
+        const spinRatio = beyblade.maxSpin > 0 ? beyblade.spin / beyblade.maxSpin : 0;
+        const decayThisTick = beyblade.spinDecayRate * dt * (1 + (1 - spinRatio) * 0.5);
+        beyblade.spin = Math.max(0, beyblade.spin - decayThisTick);
+      }
       beyblade.stamina = Math.max(0, beyblade.stamina - Math.abs(physicsState.angularVelocity) * 0.01);
 
       if (beyblade.spin <= 0 && beyblade.isActive) {

@@ -10,6 +10,13 @@ import toast from "react-hot-toast";
 const GAME_SERVER_URL = import.meta.env.VITE_GAME_SERVER_URL || "ws://localhost:2567";
 export const IS_LOCAL = import.meta.env.VITE_LOCAL === "true";
 
+export interface BurstEventData {
+  beyId: string;
+  attackerId: string;
+  x: number;
+  y: number;
+}
+
 interface UseColyseusOptions {
   roomName: string;
   options?: Record<string, unknown>;
@@ -19,6 +26,8 @@ interface UseColyseusOptions {
   // Callbacks for series messages
   onGameEnd?: (data: { winner: string; gameNumber: number; seriesScore: Record<string, number> }) => void;
   onSeriesEnd?: (data: { winner: string; seriesScore: Record<string, number> }) => void;
+  // Callback for burst KO event (Phase R)
+  onBurst?: (data: BurstEventData) => void;
 }
 
 interface UseColyseusReturn {
@@ -73,6 +82,7 @@ export function useColyseus({
   roomId,
   onGameEnd,
   onSeriesEnd,
+  onBurst,
 }: UseColyseusOptions): UseColyseusReturn {
   const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
   const [room, setRoom] = useState<Room | null>(null);
@@ -87,9 +97,11 @@ export function useColyseus({
   const roomRef = useRef<Room | null>(null);
   const onGameEndRef = useRef(onGameEnd);
   const onSeriesEndRef = useRef(onSeriesEnd);
+  const onBurstRef = useRef(onBurst);
 
   useEffect(() => { onGameEndRef.current = onGameEnd; }, [onGameEnd]);
   useEffect(() => { onSeriesEndRef.current = onSeriesEnd; }, [onSeriesEnd]);
+  useEffect(() => { onBurstRef.current = onBurst; }, [onBurst]);
 
   const connect = useCallback(async () => {
     if (roomRef.current) return;
@@ -193,6 +205,16 @@ export function useColyseus({
 
       connectedRoom.onMessage("idle-disconnect", () => {
         toast("Disconnected due to inactivity.", { icon: "💤" });
+      });
+
+      // Burst KO event (Phase R) — push to visual event queue via callback
+      connectedRoom.onMessage("burst", (data: BurstEventData) => {
+        onBurstRef.current?.(data);
+        // Fallback toast so spectators/players always see something
+        const mySessionId = connectedRoom.sessionId;
+        if (data.attackerId === mySessionId) {
+          toast("BURST KO!", { icon: "💥", duration: 2500 });
+        }
       });
 
       connectedRoom.onError((code, message) => {

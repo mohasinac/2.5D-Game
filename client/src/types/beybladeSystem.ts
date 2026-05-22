@@ -482,7 +482,23 @@ export type BeybladeStatKey =
   | "damageMultiplier"
   | "damageReduction"
   | "surfaceFriction"
-  | "contactDamageMultiplier";
+  | "contactDamageMultiplier"
+  | "speed"
+  | "mass"
+  | "radius"
+  | "width"
+  | "height"
+  | "depth"
+  | "spinStealFactor"      // outgoing steal rate multiplier
+  | "spinStealResist"      // block incoming steal (>1 = resist)
+  | "jumpForce"            // upward impulse (N) for jump actions
+  | "jumpHeight"           // max jump height ceiling (cm)
+  | "suctionForce"         // 2.5D: adhesion force (N)
+  | "wallClimbFactor"      // 2.5D: 0=none, 1=full climb
+  | "gravityMult"          // 2.5D: per-bey gravity scale
+  | "bounceRestitution"    // 2.5D: wall bounce elasticity
+  | "tiltResistance"       // 2.5D: resist axis tilt on impact (maps to lateralStability)
+  | "burstResistance";     // 0–100; higher = harder to burst
 
 export type StatModifierEvent =
   | "on_land"           // bey lands after an airborne hop

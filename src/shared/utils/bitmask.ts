@@ -52,3 +52,17 @@ export function normalizeInput(raw: number | PlayerInput | undefined): PlayerInp
   if (typeof raw === "number") return decodeBitmask(raw);
   return raw;
 }
+
+/**
+ * Invert directional controls (left↔right, up↔down).
+ * Used by the invert_controls round modifier.
+ */
+export function invertInputControls(input: PlayerInput): PlayerInput {
+  return {
+    ...input,
+    moveLeft:  input.moveRight,
+    moveRight: input.moveLeft,
+    moveUp:    input.moveDown,
+    moveDown:  input.moveUp,
+  };
+}

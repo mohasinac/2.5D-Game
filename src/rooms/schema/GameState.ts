@@ -362,6 +362,35 @@ export class Beyblade extends Schema {
   // ── Jump Core State (distinct from existing isAirborne / airborneTimer) ───────
   @type("number")  airborneTicksRemaining: number = 0; // countdown ticks for jump-core hop
   @type("number")  jumpFacingAngle: number = 0;        // radians; direction of current/last hop
+
+  // ── Universal Stat System (Phase B / Phase R) ────────────────────────────────
+  @type("number")  jumpForce: number = 0;              // upward impulse (N) for jump actions
+  @type("number")  jumpHeight: number = 0;             // max jump height ceiling (cm)
+  @type("number")  burstResistance: number = 50;       // 0–100; higher = harder to burst
+
+  // ── 2.5D Bey-Axis Tilt + Climbing (Phase E) ──────────────────────────────────
+  @type("number")  beyTiltAngle: number = 0;           // 0°=vertical, 90°=fully on side (distinct from arena floor tilt)
+  @type("boolean") adhering: boolean = false;          // true when stuck to ceiling/overhang via suction
+  @type("number")  adheringSurfaceAngle: number = 0;   // degrees: angle of surface bey sticks to
+  @type("boolean") wallClimbing: boolean = false;      // true when climbing a vertical wall
+  @type("number")  effectiveGravity: number = 9.8;     // resolved per tick (arenaGravity × gravityMult)
+
+  // ── Combo Slot System (Phase C) ───────────────────────────────────────────────
+  // JSON-stringified BeybladeComboSlot[] — replaces old comboIds for new system.
+  // comboIds kept above for backward compat.
+  @type(["string"]) comboSlots = new ArraySchema<string>();
+  @type("string")  comboPhase: string = "idle";        // idle | windup | active | bleed | cooldown
+  @type("number")  specialMoveTick: number = 0;        // tick within current special move execution
+  @type("number")  comboChargeScale: number = 0;       // 0=not charging; 0–1=charge progress for charged combos
+
+  // ── Combination Lock (Phase F) ────────────────────────────────────────────────
+  @type("boolean") combinationLocked: boolean = false;
+  @type("string")  linkedBeyId: string = "";           // session id of combination partner
+  @type("string")  combinationType: string = "";       // stack | helical | tandem | cluster
+  @type("number")  linkStrain: number = 0;             // 0–1, approaches 1 before breaking
+
+  // ── Element Type System (Phase AB) ───────────────────────────────────────────
+  @type(["string"]) elementTypes = new ArraySchema<string>(); // 1–2 ElementType values
 }
 
 /**
@@ -440,6 +469,9 @@ export class ArenaState extends Schema {
   @type("number") turretCount: number = 0; // Updated from laserGunCount
   @type("number") waterBodyCount: number = 0; // Multiple water bodies now
   @type("number") portalCount: number = 0;
+
+  // ── Arena Shrink (Phase V) ────────────────────────────────────────────────────
+  @type("number") effectiveRadius: number = 0;    // 0 = use full arena radius; set during shrink
 }
 
 /**
@@ -485,4 +517,7 @@ export class GameState extends Schema {
   @type("uint8") targetWins: number = 1;   // 1=BO1, 2=BO3, 3=BO5
   @type({ map: "uint8" }) seriesWins = new MapSchema<number>();
   @type("string") seriesLeader: string = "";
+
+  // ── Round Modifiers (Phase X) ─────────────────────────────────────────────────
+  @type(["string"]) activeModifierIds = new ArraySchema<string>();
 }

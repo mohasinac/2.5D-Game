@@ -9,9 +9,14 @@ import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentF
 import { tryReserveRoom, releaseRoom } from "../shared/utils/roomCounter";
 import { createPRNG } from "../shared/utils/prng";
 import { hashString } from "../shared/utils/hashString";
-import { ComboTracker, detectCombo, createComboTracker } from "../shared/utils/comboSystem";
+import {
+  ComboTracker, detectCombo, createComboTracker,
+  BeyComboMatchState, createBeyComboMatchState, resetBeyComboMatchState,
+  TriggerState, createTriggerState, detectTriggerCombos, recordComboFired,
+  TriggerContext,
+} from "../shared/utils/comboSystem";
 import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
-import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
+import { normalizeInput, invertInputControls, type PlayerInput } from "../shared/utils/bitmask";
 import { resolveWallAngle } from "../shared/physics/ArenaUtils";
 import { processArenaFeatures } from "../shared/rooms/ArenaFeatureProcessor";
 import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
@@ -30,6 +35,7 @@ import {
 } from "../shared/rooms/SeriesManager";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
 import type { ArenaSystem } from "../types/arenaSystem";
+import { MODIFIER_MAP, type RoundModifier } from "../../client/src/types/roundModifier";
 
 // [SERVER-ROOM] BattleRoom — live PVP for 2-4 players + spectators.
 // Runs full beyblade-vs-beyblade collision detection.
@@ -43,6 +49,7 @@ interface JoinOptions {
   username: string;
   spectate?: boolean;
   bestOf?: 1 | 3 | 5;
+  modifierIds?: string[];   // round modifiers selected by the lobby host
 }
 
 // Spawn positions distributed evenly around the arena at 60% radius
@@ -67,6 +74,12 @@ export class BattleRoom extends Room<GameState> {
   protected beybladeDataCache = new Map<string, BeybladeStats | null>();
   protected spawnPositions = new Map<string, { x: number; y: number }>();
   protected comboTrackers = new Map<string, ComboTracker>();
+  protected comboMatchStates = new Map<string, BeyComboMatchState>();
+  protected triggerStates = new Map<string, TriggerState>();
+  /** Active round modifiers for this match (resolved once in onCreate). */
+  protected activeModifiers: import("../../client/src/types/roundModifier").RoundModifier[] = [];
+  /** Whether controls are inverted this match (from round modifier). */
+  protected invertControlsActive = false;
   /** Per-session camera-follow target id (purely informational). */
   protected spectatorFollowTargets = new Map<string, string>();
 
@@ -122,8 +135,13 @@ export class BattleRoom extends Room<GameState> {
 
     this.buildArenaWalls();
 
+    // Resolve and apply round modifiers (Phase X)
+    this.resolveModifiers(options.modifierIds ?? [], this.arenaCache);
+
     this.onMessage("input", (client, message: number | PlayerInput) => {
-      this.handleInput(client, normalizeInput(message));
+      let input = normalizeInput(message);
+      if (this.invertControlsActive) input = invertInputControls(input);
+      this.handleInput(client, input);
     });
 
     this.onMessage("spectator:follow", (client, message: { targetBeybladeId?: string }) => {
@@ -154,6 +172,8 @@ export class BattleRoom extends Room<GameState> {
 
     this.playerSessions.add(client.sessionId);
     this.comboTrackers.set(client.sessionId, createComboTracker());
+    this.comboMatchStates.set(client.sessionId, createBeyComboMatchState());
+    this.triggerStates.set(client.sessionId, createTriggerState());
     console.log(`Player ${client.sessionId} joined BattleRoom (${this.playerSessions.size}/4)`);
 
     const beybladeData: BeybladeStats | null = await loadBeyblade(options.beybladeId);
@@ -172,6 +192,9 @@ export class BattleRoom extends Room<GameState> {
     } else {
       this.applyDefaultStats(beyblade);
     }
+
+    // Apply global stat factors from active round modifiers (Phase X)
+    this.applyModifierFactors(beyblade);
 
     beyblade.health = beyblade.maxStamina;
     beyblade.maxHealth = beyblade.maxStamina;
@@ -221,6 +244,8 @@ export class BattleRoom extends Room<GameState> {
     console.log(`Player ${client.sessionId} left BattleRoom`);
     this.playerSessions.delete(client.sessionId);
     this.comboTrackers.delete(client.sessionId);
+    this.comboMatchStates.delete(client.sessionId);
+    this.triggerStates.delete(client.sessionId);
     const beyblade = this.state.beyblades.get(client.sessionId);
     if (beyblade) {
       beyblade.isActive = false;
@@ -300,6 +325,122 @@ export class BattleRoom extends Room<GameState> {
     this.state.arena.wallAngle = 0;
   }
 
+  /** Return the active comboCostMultiplier (product of all modifiers; default 1). */
+  protected getComboCostMultiplier(): number {
+    let mult = 1.0;
+    for (const mod of this.activeModifiers) {
+      if (mod.ruleOverrides?.comboCostMultiplier !== undefined) {
+        mult *= mod.ruleOverrides.comboCostMultiplier;
+      }
+    }
+    return mult;
+  }
+
+  /**
+   * Resolve round modifiers from JoinOptions and arena defaults, then apply
+   * physics/stat/rule overrides to the room state.
+   */
+  protected resolveModifiers(requestedIds: string[], arena: ArenaConfig | null) {
+    const maxMods = arena?.maxModifiers ?? 2;
+
+    // Merge: arena defaults first, then player-requested
+    const allIds: string[] = [
+      ...(arena?.defaultModifiers ?? []),
+      ...requestedIds,
+    ];
+
+    // Handle random modifier
+    if (arena?.randomModifiers && allIds.length === 0) {
+      const keys = Array.from(MODIFIER_MAP.keys());
+      const idx = Math.floor(this.rand() * keys.length);
+      allIds.push(keys[idx]);
+    }
+
+    // Filter to allowed list if present
+    const allowed = arena?.allowedModifiers;
+    const filtered = allowed ? allIds.filter(id => allowed.includes(id)) : allIds;
+
+    // Deduplicate and cap
+    const seen = new Set<string>();
+    const resolved: RoundModifier[] = [];
+    for (const id of filtered) {
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const mod = MODIFIER_MAP.get(id);
+      if (mod) {
+        resolved.push(mod);
+        if (resolved.length >= maxMods) break;
+      }
+    }
+
+    this.activeModifiers = resolved;
+
+    // Populate schema field so clients know which modifiers are active
+    this.state.activeModifierIds.splice(0);
+    for (const mod of resolved) {
+      this.state.activeModifierIds.push(mod.id);
+    }
+
+    // Apply physics overrides to arena state
+    for (const mod of resolved) {
+      if (mod.physicsOverrides) {
+        if (mod.physicsOverrides.gravityMult !== undefined) {
+          // Stored for PhysicsEngine to use when applying gravity
+          (this.state.arena as any).gravityMult =
+            ((this.state.arena as any).gravityMult ?? 1.0) * mod.physicsOverrides.gravityMult;
+        }
+        if (mod.physicsOverrides.surfaceFriction !== undefined) {
+          (this.state.arena as any).surfaceFriction = mod.physicsOverrides.surfaceFriction;
+        }
+        if (mod.physicsOverrides.wallRestitution !== undefined) {
+          (this.state.arena as any).wallRestitution = mod.physicsOverrides.wallRestitution;
+        }
+        if (mod.physicsOverrides.airResistance !== undefined) {
+          (this.state.arena as any).airResistance = mod.physicsOverrides.airResistance;
+        }
+      }
+
+      // Chaos: invertControls
+      if (mod.chaosParams?.invertControls) {
+        this.invertControlsActive = true;
+      }
+    }
+
+    if (resolved.length > 0) {
+      console.log(`✅ BattleRoom: active modifiers: ${resolved.map(m => m.name).join(", ")}`);
+    }
+  }
+
+  /** Apply globalFactors from active modifiers to a beyblade's stats. */
+  protected applyModifierFactors(beyblade: import("./schema/GameState").Beyblade) {
+    for (const mod of this.activeModifiers) {
+      if (!mod.globalFactors) continue;
+      for (const delta of mod.globalFactors) {
+        switch (delta.stat) {
+          case "speed":         beyblade.aggressiveness = (beyblade.aggressiveness || 0.5) * delta.multiplier; break;
+          case "damageMultiplier": beyblade.damageMultiplier *= delta.multiplier; break;
+          case "damageReduction":  beyblade.damageReduction *= delta.multiplier; break;
+          case "spinDecayRate":    beyblade.spinDecayRate   *= delta.multiplier; break;
+          case "mass":             beyblade.mass            *= delta.multiplier; break;
+          // additional stat keys can be extended here
+        }
+      }
+      // Rule overrides: burstResistance
+      if (mod.ruleOverrides?.burstResistanceOverride !== undefined) {
+        beyblade.burstResistance = mod.ruleOverrides.burstResistanceOverride;
+      }
+      if (mod.ruleOverrides?.spinDecayRateOverride !== undefined) {
+        beyblade.spinDecayRate = beyblade.spinDecayRate * mod.ruleOverrides.spinDecayRateOverride;
+      }
+      // Chaos: randomize stats
+      if (mod.chaosParams?.randomizeStats) {
+        const scale = 0.5 + this.rand() * 1.5; // 0.5–2.0
+        beyblade.damageMultiplier *= scale;
+        beyblade.spinDecayRate    *= scale;
+      }
+    }
+  }
+
   private buildArenaWalls() {
     if (this.state.arena.shape === "circle") {
       const radius = Math.min(this.state.arena.width, this.state.arena.height) * 16 / 2;
@@ -357,16 +498,27 @@ export class BattleRoom extends Room<GameState> {
         beyblade.damageMultiplier *= 1.2;
         beyblade.maxStamina = 2500;
         beyblade.stamina = 2500;
+        beyblade.burstResistance = 20;
         break;
       case "defense":
         beyblade.damageTaken *= 0.8;
         beyblade.maxStamina = 2500;
         beyblade.stamina = 2500;
+        beyblade.burstResistance = 85;
+        break;
+      case "stamina":
+        beyblade.burstResistance = 50;
         break;
       case "balanced":
         beyblade.maxStamina = Math.min(beyblade.maxStamina, 2500);
         beyblade.stamina = beyblade.maxStamina;
+        beyblade.burstResistance = 55;
         break;
+    }
+
+    // Per-beyblade override from Firestore stats (Phase R)
+    if ((data as any).burstResistance !== undefined) {
+      beyblade.burstResistance = (data as any).burstResistance;
     }
   }
 
@@ -427,6 +579,7 @@ export class BattleRoom extends Room<GameState> {
         attachedComboIds: attachedIds,
         power: beyblade.power,
         beybladeType: beyblade.type,
+        comboCostMultiplier: this.getComboCostMultiplier(),
       });
       if (combo) {
         beyblade.power = Math.max(0, beyblade.power - combo.costPaid);
@@ -607,8 +760,30 @@ export class BattleRoom extends Room<GameState> {
         // bearing friction, hop impulse, detachment, on_hit_* events.
         const impactForce = Math.max(dmg.damage1, dmg.damage2);
         this.onBeyCollided(id1, id2, impactForce);
+
+        // ── Burst chance (Phase R) ────────────────────────────────────────────
+        // Check both beys: the one that received higher damage may burst.
+        const BURST_THRESHOLD = 40;
+        for (const [victim, incomingDmg] of [[b1, dmg.damage1], [b2, dmg.damage2]] as [Beyblade, number][]) {
+          if (!victim.isActive) continue;
+          if (incomingDmg < BURST_THRESHOLD) continue;
+          const spinRatioV = victim.maxSpin > 0 ? victim.spin / victim.maxSpin : 0;
+          const burstRaw = Math.max(0, incomingDmg - BURST_THRESHOLD) * 0.005;
+          const burstSpinMod = 1 + (1 - spinRatioV) * 2.0;
+          const burstResist = victim.burstResistance ?? 50;
+          const burstFinal = burstRaw * burstSpinMod * (1 - burstResist / 100);
+          if (this.rand() < burstFinal) {
+            victim.isActive = false;
+            victim.spin = 0;
+            const attackerId = victim === b1 ? id2 : id1;
+            this.broadcast("burst", { beyId: victim.id, attackerId, x: victim.x, y: victim.y });
+          }
+        }
       }
     }
+
+    // ── Reactive combos (trigger-based, Phase W) ─────────────────────────────
+    this.tickReactiveCombos(Date.now());
 
     // ── Per-beyblade update ──────────────────────────────────────────────────
     this.state.beyblades.forEach((beyblade) => {
@@ -641,13 +816,32 @@ export class BattleRoom extends Room<GameState> {
         this.physics.applyForce(beyblade.id, (this.rand() - 0.5) * wobble, (this.rand() - 0.5) * wobble);
       }
 
-      beyblade.spin = Math.max(0, beyblade.spin - beyblade.spinDecayRate * dt);
+      {
+        const spinRatio = beyblade.maxSpin > 0 ? beyblade.spin / beyblade.maxSpin : 0;
+        const decayThisTick = beyblade.spinDecayRate * dt * (1 + (1 - spinRatio) * 0.5);
+        beyblade.spin = Math.max(0, beyblade.spin - decayThisTick);
+      }
       beyblade.stamina = Math.max(0, beyblade.stamina - Math.abs(physicsState.angularVelocity) * 0.01);
 
       if (beyblade.spin <= 0 && beyblade.isActive) {
         beyblade.isActive = false;
         beyblade.health = 0;
         this.broadcast("spin-out", { playerId: beyblade.id, username: beyblade.username, x: beyblade.x, y: beyblade.y, type: beyblade.type });
+      }
+
+      // Charge combo: update comboChargeScale for HUD rendering
+      const matchState = this.comboMatchStates.get(beyblade.id);
+      if (matchState?.chargeState) {
+        const cs = matchState.chargeState;
+        const ticksHeld = (Date.now() - cs.chargeStartMs) / (1000 / 60);
+        const range = Math.max(1, cs.maxChargeTicks - cs.minChargeTicks);
+        const raw = Math.max(0, ticksHeld - cs.minChargeTicks) / range;
+        let scale = Math.min(1, raw);
+        if (cs.chargeScale === "quadratic") scale = scale * scale;
+        else if (cs.chargeScale === "step") scale = ticksHeld >= cs.minChargeTicks ? 1 : 0;
+        beyblade.comboChargeScale = scale;
+      } else {
+        beyblade.comboChargeScale = 0;
       }
 
       if (beyblade.attackCooldown > 0) beyblade.attackCooldown -= dt;
@@ -718,6 +912,93 @@ export class BattleRoom extends Room<GameState> {
     this.checkWinCondition();
   }
 
+  // ─── Reactive combo tick (Phase W) ──────────────────────────────────────────
+
+  protected tickReactiveCombos(nowMs: number): void {
+    if (this.state.status !== "in-progress") return;
+
+    // Compute arena ring-out zone once
+    const wallRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 / 2;
+    const ringOutZoneInner = wallRadius * 0.90;
+    const ringOutWarningRadius = wallRadius * 0.82; // warn zone: 82–90% of wall radius
+
+    // Check if any opponent has special move active
+    let anyOpponentSpecialActive = false;
+    this.state.beyblades.forEach(b => {
+      if (b.isActive && b.specialMoveActive) anyOpponentSpecialActive = true;
+    });
+
+    this.state.beyblades.forEach((beyblade) => {
+      if (!beyblade.isActive) return;
+      const sid = beyblade.id;
+
+      const matchState = this.comboMatchStates.get(sid);
+      const triggerState = this.triggerStates.get(sid);
+      if (!matchState || !triggerState) return;
+
+      // Resolve combo slots from beyblade — currently comboIds are legacy string IDs;
+      // new slot system uses comboSlots (ArraySchema<string> of JSON-stringified slots).
+      // For now, only trigger combos that have been added via the new slot mechanism.
+      const rawSlots = Array.from(beyblade.comboSlots ?? []);
+      if (rawSlots.length === 0) return;
+
+      const slots = rawSlots.map(s => {
+        try { return JSON.parse(s); } catch { return null; }
+      }).filter(Boolean);
+      if (slots.length === 0) return;
+
+      // Compute how close this bey is to the ring-out zone
+      const centerX = (this.state.arena.width * 16) / 2;
+      const centerY = (this.state.arena.height * 16) / 2;
+      const distFromCenter = Math.sqrt(
+        Math.pow(beyblade.x - centerX, 2) + Math.pow(beyblade.y - centerY, 2)
+      );
+      const nearRingOut = distFromCenter >= ringOutWarningRadius;
+
+      const spinRatio = beyblade.maxSpin > 0 ? beyblade.spin / beyblade.maxSpin : 0;
+
+      const ctx: TriggerContext = {
+        wasHitThisTick: false, // will be set by collision loop if needed
+        nearRingOut,
+        spinRatio,
+        partnerNearRingOut: false, // team battles only — no-op in base room
+        opponentSpecialMoveActive: anyOpponentSpecialActive,
+        burstAttemptThisTick: false, // set externally in burst loop
+        power: beyblade.power,
+        spinDirection: beyblade.spinDirection,
+      };
+
+      const triggered = detectTriggerCombos(slots, matchState, ctx, triggerState, nowMs);
+
+      for (const result of triggered) {
+        recordComboFired(matchState, result.effectId);
+        // Apply legacy combo effects for backward compat (multiplier boost placeholder)
+        beyblade.comboDamageMultiplier = 1.3;
+        beyblade.comboDamageMultiplierTimer = 1.0;
+        this.broadcast("combo", {
+          playerId: sid,
+          comboId: result.effectId,
+          comboName: result.slot.effectId,
+          costPaid: 0,
+          effect: "trigger",
+          x: beyblade.x,
+          y: beyblade.y,
+        });
+      }
+
+      // Charge release detection: if chargeState exists but chargeHeld is no longer set,
+      // fire the charged combo with computed scale.
+      if (matchState.chargeState) {
+        const cs = matchState.chargeState;
+        // chargeHeld is stored on beyblade via controlLockedUntilMs when charging;
+        // we detect release when comboChargeScale stops advancing (next tick will be 0).
+        // Since we can't peek at input bits here, rely on comboChargeScale being 0
+        // when the charge was cleared from outside (handleInput clears it on key release).
+        // The release itself is detected in handleInput — see charge release block below.
+      }
+    });
+  }
+
   // ─── Win condition + series logic — delegates to shared/rooms/SeriesManager ─
 
   private checkWinCondition() {
@@ -759,6 +1040,18 @@ export class BattleRoom extends Room<GameState> {
 
   private resetForNextGame() {
     if (this.playerSessions.size === 0) return;
+
+    // Reset per-game combo state (QTE gate + charge state)
+    this.state.beyblades.forEach((_, sid) => {
+      const ms = this.comboMatchStates.get(sid);
+      if (ms) resetBeyComboMatchState(ms);
+      const ts = this.triggerStates.get(sid);
+      if (ts) {
+        ts.prevNearRingOut = false;
+        ts.prevLowSpin = false;
+        ts.prevOpponentSpecialMove = false;
+      }
+    });
 
     resetStateForNextGame(this.state, this.spawnPositions, this.physics, 180);
     this.warmupTimer = 3;

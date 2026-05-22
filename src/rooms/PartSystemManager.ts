@@ -45,6 +45,7 @@ import {
   FRAGMENT_LIFETIME_TICKS_DEFAULT,
 } from "../physics/PartPhysics";
 import { v4 as uuidv4 } from "uuid";
+import { updateBeyTilt } from "../physics/ClimbingPhysics";
 
 // ─── Part Cache Bundle ─────────────────────────────────────────────────────────
 
@@ -376,6 +377,36 @@ export class PartSystemManager {
       if (remove) toRemove.push(key);
     });
     toRemove.forEach((k) => gameState.detachedBodies.delete(k));
+
+    // ── 8. Bey-axis tilt physics (2.5D) ─────────────────────────────────────
+    // beyTiltAngle is updated each tick; wobbleAmplitude is derived from it.
+    // Impact force is injected by onBeyCollision; here we pass 0 (passive tick).
+    if (typeof (bey as any).beyTiltAngle === "number") {
+      const tiltResult = updateBeyTilt(
+        {
+          beyTiltAngle: (bey as any).beyTiltAngle ?? 0,
+          spin: bey.spin,
+          maxSpin: bey.maxSpin,
+          mass: bey.mass,
+          suctionForce: (bey as any).suctionForce ?? 0,
+          wallClimbFactor: (bey as any).wallClimbFactor ?? 0,
+          gravityMult: (bey as any).gravityMult ?? 1,
+          gripFactor: bey.gripFactor ?? 0.3,
+          tiltResistance: (bey as any).tiltResistance ?? 0.5,
+          lateralStiffness: (bey as any).lateralStiffness ?? 0.5,
+          adhering: (bey as any).adhering ?? false,
+          adheringSurfaceAngle: (bey as any).adheringSurfaceAngle ?? 0,
+          wallClimbing: (bey as any).wallClimbing ?? false,
+          effectiveGravity: (bey as any).effectiveGravity ?? 9.8,
+        },
+        0, // no impact force on passive tick
+        1 / 60 // dt in seconds
+      );
+      (bey as any).beyTiltAngle = tiltResult.beyTiltAngle;
+      if (typeof (bey as any).wobbleAmplitude === "number") {
+        (bey as any).wobbleAmplitude = tiltResult.wobbleAmplitude;
+      }
+    }
 
     return { adjustedSpinDecayRate };
   }

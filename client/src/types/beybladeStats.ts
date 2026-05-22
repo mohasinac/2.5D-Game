@@ -1,5 +1,9 @@
 // [GAME-CLIENT] Beyblade stat types — mirrors root types/beybladeStats.ts for the Vite client.
 
+import type { BeybladeComboSlot } from "./comboTask";
+import type { SpecialMoveConfig } from "./specialMove";
+import type { ElementType } from "./comboTask";
+
 export type BeybladeType = "attack" | "defense" | "stamina" | "balanced";
 export type SpinDirection = "left" | "right";
 
@@ -60,7 +64,20 @@ export interface BeybladeStats {
   spinStealPoints?: SpinStealPoint[];
   // Admin features
   adminOverrides?: AdminOverrides;
+  /** @deprecated Use comboSlots instead */
   enabledCombos?: string[];
+  /** Per-bey combo slot assignments (replaces enabledCombos) */
+  comboSlots?: BeybladeComboSlot[];
+  /** Special move configuration */
+  specialMove?: SpecialMoveConfig;
+  /** Element types (max 2) */
+  elementTypes?: ElementType[];
+  /** Jump force (N) — 0 by default; set > 0 for jump-capable beys */
+  jumpForce?: number;
+  /** Max jump height (cm) */
+  jumpHeight?: number;
+  /** Burst resistance 0–100; higher = harder to burst */
+  burstResistance?: number;
   createdAt?: any;
   updatedAt?: any;
 }

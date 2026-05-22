@@ -320,4 +320,58 @@ export async function loadBeybladesBatch(ids: string[]): Promise<Map<string, Bey
   return result;
 }
 
+export interface BehaviorDefDoc {
+  id: string;
+  category: string;
+  description?: string;
+  params?: unknown[];
+}
+
+export interface ComboEffectDoc {
+  id: string;
+  name: string;
+  cost: number;
+  cooldownMs: number;
+  windupTicks?: number;
+  bleedTicks?: number;
+  tasks?: unknown[];
+  steps?: unknown[];
+}
+
+/**
+ * Load all behavior definitions from Firestore (keyword library).
+ * Called once in room onCreate() and cached.
+ */
+export async function loadBehaviorDefs(): Promise<BehaviorDefDoc[]> {
+  if (!db) return [];
+  try {
+    const snap = await withTimeout(
+      db.collection("behavior_defs").get(),
+      8000
+    );
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as BehaviorDefDoc));
+  } catch (err) {
+    console.error("Error loading behavior_defs:", err);
+    return [];
+  }
+}
+
+/**
+ * Load all combo effect definitions from Firestore.
+ * Called once in room onCreate() and cached.
+ */
+export async function loadComboEffects(): Promise<ComboEffectDoc[]> {
+  if (!db) return [];
+  try {
+    const snap = await withTimeout(
+      db.collection("combo_effects").get(),
+      8000
+    );
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as ComboEffectDoc));
+  } catch (err) {
+    console.error("Error loading combo_effects:", err);
+    return [];
+  }
+}
+
 export { db };
