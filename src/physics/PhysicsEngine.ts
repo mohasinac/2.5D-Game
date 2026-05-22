@@ -165,6 +165,13 @@ export class PhysicsEngine {
     body.frictionAir = Math.max(0.001, 0.01 * multiplier);
   }
 
+  /** Toggle collision sensor mode for a beyblade body (used for high-jump / meteor-strike hang). */
+  setBodySensor(id: string, isSensor: boolean): void {
+    const body = this.bodies.get(id);
+    if (!body) return;
+    Matter.Body.set(body, "isSensor", isSensor);
+  }
+
   update(deltaTime?: number): void {
     const dt = deltaTime ?? (1000 / 60);
     Matter.Engine.update(this.engine, dt);

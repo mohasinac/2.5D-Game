@@ -562,6 +562,8 @@ export interface TurretConfig {
   radius: number; // Turret size in pixels (15-40px)
   health: number; // Hit points (500-1000) - ignored if indestructible
   indestructible?: boolean; // If true, turret cannot be destroyed
+  behaviorId?: string;
+  behaviorParams?: Record<string, unknown>;
   
   // Attack Configuration
   attackType: TurretAttackType;
@@ -744,6 +746,8 @@ export interface ObstacleConfig {
   indestructible?: boolean;
   color?: string;
   autoPlaced?: boolean;
+  behaviorId?: string;
+  behaviorParams?: Record<string, unknown>;
 
   // Phase 6 additions — optional, additive.
   shape?: ObstacleShape;
@@ -814,6 +818,8 @@ export interface GravityHoleConfig {
   selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
+  behaviorId?: string;
+  behaviorParams?: Record<string, unknown>;
 }
 
 // ─── Trigger zones (Part 5c) ───────────────────────────────────────────────
@@ -865,6 +871,8 @@ export interface SpinZoneConfig {
   selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
+  behaviorId?: string;
+  behaviorParams?: Record<string, unknown>;
 }
 
 // ─── Bump (new in this overhaul) ───────────────────────────────────────────
@@ -882,6 +890,8 @@ export interface BumpConfig {
   selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
+  behaviorId?: string;
+  behaviorParams?: Record<string, unknown>;
 }
 
 /**
@@ -1064,6 +1074,68 @@ export interface ArenaEnvironmentalEffect {
 }
 
 // ============================================================================
+// ARENA BEY SPAWN CONFIG (I3)
+// ============================================================================
+
+export interface SpawnPositionSimple {
+  type: "current" | "random_in_arena" | "between_beys" | "opponent";
+  dx?: number;
+  dy?: number;
+  radiusCm?: number;
+}
+
+export interface ArenaBeySawnConfig {
+  enabled: boolean;
+  spawnIntervalSec: number;
+  maxSpawnedBeys: number;
+  despawnCondition: "knockout" | "timeout" | "never";
+  despawnAfterTicks?: number;
+  beyPool: {
+    beyId: string;
+    statsMultiplier?: number;        // 0.5–2.0; default 1.0
+    perSpawnMultiplier?: boolean;    // random ±0.5–1.5 each spawn
+    aiDifficulty: "medium" | "hard" | "hell";
+    controlMode: "ai" | "friendly";
+    spawnPosition?: SpawnPositionSimple;
+    maxFromThisEntry?: number;
+  }[];
+  spawnOnCondition?: {
+    type: "time_elapsed" | "bey_count_below" | "player_spin_below";
+    threshold: number;
+  };
+}
+
+// ============================================================================
+// ARENA LINK CONFIG (L1)
+// Note: arenaConfig.ts does not exist as a separate file — ArenaLink is
+// defined here alongside the rest of the arena type system.
+// ============================================================================
+
+export interface ArenaLink {
+  id: string;
+  fromArenaId: string;         // source arena doc id
+  toArenaId: string;           // destination arena doc id
+  linkType: "corridor" | "portal" | "ramp";
+
+  // Boundary geometry: beys crossing this line segment trigger the link
+  boundaryLine: {
+    x1: number; y1: number;    // start point in cm (arena coords)
+    x2: number; y2: number;    // end point in cm
+  };
+
+  exitPosition: {              // where the bey appears in the destination arena
+    x: number;                 // cm
+    y: number;                 // cm
+  };
+
+  momentumPreserved: boolean;  // if true, bey keeps velocity; if false, spawns at rest
+  levelDelta: number;          // height difference in cm (affects launch velocity for ramps)
+  hazardDamage?: number;       // damage dealt on traversal (for dangerous links)
+  reverseCondition?: "never" | "always" | "spin_above_50";  // one-way vs two-way
+  cooldownTicks?: number;      // ticks before this link can be used again per-bey
+}
+
+// ============================================================================
 // ARENA CONFIG
 // ============================================================================
 
@@ -1127,6 +1199,12 @@ export interface ArenaConfig {
   // ===== NEW FEATURE FAMILY (this overhaul) =====
   spinZones?: SpinZoneConfig[];       // Circular zones that impart orbit or spin
   bumps?: BumpConfig[];               // Raised features that pop beys vertically
+
+  // ===== BEY SPAWN SYSTEM (I3) =====
+  beySpawn?: ArenaBeySawnConfig;      // AI / neutral beyblades that spawn mid-match
+
+  // ===== ARENA LINKS (L1) =====
+  links?: ArenaLink[];                // Cross-arena corridor / portal / ramp connections
 
   // ===== BACKGROUND + ENVIRONMENT (Phase Z) =====
   backgroundParticles?: ArenaBackgroundParticles;

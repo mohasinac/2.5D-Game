@@ -636,25 +636,31 @@ export function tickCounterRotation(bey: Beyblade, cfg: CounterRotationConfig): 
 
 // ─── Spin Clash System ────────────────────────────────────────────────────────
 
-export const CLASH_MULTIPLIERS = {
-  same_spin:    { damage: 0.8, spinSteal: 1.5, recoil: 0.7 },
-  counter_spin: { damage: 1.3, spinSteal: 0.5, recoil: 1.5 },
-} as const;
+export type ClashType = "same_spin" | "counter_spin" | "neutral";
+
+export const CLASH_MULTIPLIERS: Record<ClashType, { damage: number; spinSteal: number; recoil: number }> = {
+  same_spin:    { damage: 0.8,  spinSteal: 0.5,  recoil: 0.6 },
+  counter_spin: { damage: 1.4,  spinSteal: 1.5,  recoil: 1.3 },
+  neutral:      { damage: 1.0,  spinSteal: 1.0,  recoil: 1.0 },
+};
 
 export function getClashType(
-  attackerDir: string,
-  defenderDir: string
-): "same_spin" | "counter_spin" {
-  return attackerDir === defenderDir ? "same_spin" : "counter_spin";
+  attackerSpinDir: "left" | "right",
+  defenderSpinDir: "left" | "right"
+): ClashType {
+  if (attackerSpinDir === defenderSpinDir) return "same_spin";
+  return "counter_spin";
 }
 
 /**
  * Returns a 0–1 blend factor based on approach angle.
- * 0° = perfectly grazing (same-spin-like), 90° = full head-on (counter-spin-like).
- * Use to lerp between same_spin and counter_spin multipliers for smooth gradations.
+ * 0 = head-on (full clash effect), 1 = glancing (no clash effect).
+ * approachAngle in degrees, 0 = direct collision.
  */
-export function getClashBlend(approachAngleDeg: number): number {
-  return Math.max(0, 1 - Math.abs(approachAngleDeg - 90) / 90);
+export function getClashBlend(approachAngle: number): number {
+  // 0 = head-on (full clash), 1 = glancing (no clash effect)
+  // approachAngle in degrees, 0 = direct collision
+  return Math.min(1, Math.abs(approachAngle) / 45);
 }
 
 /**
@@ -663,21 +669,47 @@ export function getClashBlend(approachAngleDeg: number): number {
  * - attackerSpinStealFactor: attacker's outgoing steal rate multiplier (default 1.0)
  * - defenderBearingFriction: part-level resistance (B:D = 0.02, normal = 1.0)
  * - defenderSpinStealResist: stat-level incoming steal block (>1 = more resistance)
- * - clashType: same_spin boosts steal, counter_spin reduces it
+ * - clashType: counter_spin boosts steal, same_spin reduces it
+ *
+ * Formula: rawSteal * (attackerSpinStealFactor * (1 / defenderSpinStealResist)) * bearingFriction * clashMult
  */
 export function computeSpinSteal(
   rawSteal: number,
   attackerSpinStealFactor: number,
   defenderBearingFriction: number,
   defenderSpinStealResist: number,
-  clashType: "same_spin" | "counter_spin"
+  clashType: ClashType
 ): number {
   const clashMult = CLASH_MULTIPLIERS[clashType].spinSteal;
-  return rawSteal
-    * attackerSpinStealFactor
-    * defenderBearingFriction
-    * clashMult
-    / Math.max(0.01, defenderSpinStealResist);
+  // B2: spinStealFactor * (1/spinStealResist) is the core steal scaling pair
+  const stealScale = attackerSpinStealFactor * (1 / Math.max(0.01, defenderSpinStealResist));
+  return rawSteal * stealScale * defenderBearingFriction * clashMult;
+}
+
+/**
+ * Computes the effective contact damage incorporating clash multipliers blended
+ * by the approach angle between the two beyblades.
+ *
+ * @param baseDamage        - raw damage before clash modulation
+ * @param attackerSpinDir   - attacker's current spin direction
+ * @param defenderSpinDir   - defender's current spin direction
+ * @param approachAngle     - collision approach angle in degrees (0 = head-on)
+ * @returns final damage after clash-blend modulation
+ */
+export function computeContactDamage(
+  baseDamage: number,
+  attackerSpinDir: "left" | "right",
+  defenderSpinDir: "left" | "right",
+  approachAngle: number
+): number {
+  const clashType = getClashType(attackerSpinDir, defenderSpinDir);
+  const blend = getClashBlend(approachAngle); // 0 = full clash, 1 = glancing
+
+  // blend=0 → full clash multiplier; blend=1 → neutral multiplier (1.0)
+  const clashDamageMult = CLASH_MULTIPLIERS[clashType].damage;
+  const effectiveMult = clashDamageMult + blend * (CLASH_MULTIPLIERS.neutral.damage - clashDamageMult);
+
+  return baseDamage * effectiveMult;
 }
 
 // ─── Phase AB: Element Type Effectiveness ────────────────────────────────────

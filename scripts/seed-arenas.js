@@ -153,6 +153,15 @@ const ARENAS = [
     airResistance: 0.012,
     surfaceFriction: 0.01,
     difficulty: "medium",
+    beySpawn: {
+      enabled: true,
+      spawnIntervalSec: 30,
+      maxSpawnedBeys: 2,
+      despawnCondition: "knockout",
+      beyPool: [
+        { beyId: "storm-pegasus", statsMultiplier: 0.7, aiDifficulty: "medium", controlMode: "ai" },
+      ],
+    },
   },
 
   // ── 3. Volcanic Crater ─────────────────────────────────────────────────────
@@ -353,6 +362,15 @@ const ARENAS = [
     airResistance: 0.01,
     surfaceFriction: 0.007,
     difficulty: "extreme",
+    beySpawn: {
+      enabled: true,
+      spawnIntervalSec: 30,
+      maxSpawnedBeys: 2,
+      despawnCondition: "knockout",
+      beyPool: [
+        { beyId: "hells-hammer", statsMultiplier: 0.7, aiDifficulty: "medium", controlMode: "ai" },
+      ],
+    },
   },
 
   // ── 5. Crystal Cavern ──────────────────────────────────────────────────────
@@ -643,7 +661,7 @@ const ARENAS = [
     floorColor: "#0a0020",
     backgroundParticles: { type: "stars", density: 20, affectedByArenaRotation: false },
     spinZones: [
-      { id: "sz1", x_cm: 0, y_cm: 0, radius_cm: 10, direction: "cw", intensityRadPerSec: 4.0, applyTo: "both", featureAnimation: { preset: "shockwave_ring", periodMs: 2000, color: "#8b5cf6" } },
+      { id: "sz1", x_cm: 0, y_cm: 0, radius_cm: 10, direction: "cw", intensityRadPerSec: 4.0, applyTo: "both", behaviorId: "movement.orbit", featureAnimation: { preset: "shockwave_ring", periodMs: 2000, color: "#8b5cf6" } },
     ],
     portals: [
       { id: "portal1", portalNumber: 1, position: { x: -18, y: 0 }, radius: 3.5, cooldown: 3, color: "#a855f7", autoPlace: false },

@@ -65,7 +65,14 @@ export default function TurretsTab({ config, onChange }: Props) {
       {items.map((turret, idx) => (
         <div key={turret.id ?? idx} style={{ background: C.bg3, borderRadius: 12, padding: 16, border: `1px solid ${C.border}` }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: C.text }}>🔫 Turret #{idx + 1}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: C.text }}>🔫 Turret #{idx + 1}</span>
+              {turret.behaviorId && (
+                <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 99, background: "rgba(168,85,247,0.15)", color: "#a855f7", border: "1px solid rgba(168,85,247,0.3)" }}>
+                  Behavior: {turret.behaviorId}
+                </span>
+              )}
+            </div>
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 11, color: C.muted, cursor: "pointer" }}>
                 <input type="checkbox" checked={turret.indestructible ?? false} onChange={e => update(turret.id, "indestructible", e.target.checked)} />
@@ -111,6 +118,34 @@ export default function TurretsTab({ config, onChange }: Props) {
                 />
               </div>
             ))}
+          </div>
+          {/* I6: Behavior override */}
+          <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior ID (optional)</label>
+              <input
+                type="text"
+                value={turret.behaviorId ?? ""}
+                onChange={e => update(turret.id, "behaviorId", e.target.value || undefined)}
+                placeholder="e.g. movement.orbit"
+                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior Params (JSON)</label>
+              <textarea
+                value={turret.behaviorParams ? JSON.stringify(turret.behaviorParams, null, 2) : ""}
+                onChange={e => {
+                  try {
+                    const parsed = e.target.value ? JSON.parse(e.target.value) : undefined;
+                    update(turret.id, "behaviorParams", parsed);
+                  } catch { /* invalid JSON, ignore */ }
+                }}
+                placeholder='{ "strength": 0.5 }'
+                rows={2}
+                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 11, fontFamily: "monospace", resize: "vertical", boxSizing: "border-box" }}
+              />
+            </div>
           </div>
         </div>
       ))}

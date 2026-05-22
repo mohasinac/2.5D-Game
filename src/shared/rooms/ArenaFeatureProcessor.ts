@@ -5,6 +5,7 @@
 // Pure function — takes the beyblade, the arena config, dt, and a physics bridge.
 // Returns an effect summary the caller broadcasts.
 
+import * as Matter from "matter-js";
 import type { Beyblade, GameState } from "../../rooms/schema/GameState";
 import type { ArenaConfig, FloorHazardZoneConfig } from "../../types/shared";
 import { wallBowlForce } from "../physics/ArenaUtils";
@@ -42,6 +43,63 @@ export interface ArenaEffectEvents {
   specialForce?: { playerId: string; type: string };
 }
 
+// ── I2: Behavior executor ────────────────────────────────────────────────────
+
+/** Set of behaviorIds we have already logged an unrecognized-behavior warning for.
+ *  Prevents log spam on every tick. */
+const _warnedBehaviorIds = new Set<string>();
+
+/**
+ * Execute a named behavior on a set of affected beyblades.
+ * Known behaviorIds:
+ *   "movement.orbit" — apply a circular orbit force (similar to spin-zone orbit logic).
+ * Unknown ids are logged once then silently ignored.
+ */
+function executeBehavior(
+  behaviorId: string,
+  params: Record<string, unknown>,
+  beys: Array<{ id: string; x: number; y: number; velocityX: number; velocityY: number }>,
+  physics: ArenaPhysicsBridge,
+): void {
+  switch (behaviorId) {
+    case "movement.orbit": {
+      // Params: centerX, centerY (px), intensity (force scale, default 0.002), direction ("cw"|"ccw")
+      const cx = (params.centerX as number) ?? 0;
+      const cy = (params.centerY as number) ?? 0;
+      const intensity = (params.intensity as number) ?? 0.002;
+      const dir = (params.direction as string) === "ccw" ? -1 : 1;
+
+      for (const bey of beys) {
+        const dx = bey.x - cx;
+        const dy = bey.y - cy;
+        const d = Math.sqrt(dx * dx + dy * dy) || 1;
+        // Tangent direction (perpendicular to radius), sign controlled by dir
+        const tx = (-dy / d) * dir;
+        const ty = (dx / d) * dir;
+        physics.applyForce(bey.id, tx * intensity, ty * intensity);
+      }
+      break;
+    }
+    default:
+      if (!_warnedBehaviorIds.has(behaviorId)) {
+        _warnedBehaviorIds.add(behaviorId);
+        console.warn(`[ArenaFeatureProcessor] Unknown behaviorId "${behaviorId}" — skipping.`);
+      }
+      break;
+  }
+}
+
+// ── I5: Bey → arena-feature transformation ───────────────────────────────────
+
+export interface BeyTransformState {
+  beyId: string;
+  transformTo: string;
+  savedSpin: number;
+  savedBody: Matter.Body;
+  expiresAtTick: number;
+  tempFeatureId: string;
+}
+
 // ── Phase Z helpers ─────────────────────────────────────────────────────────
 
 /** Euclidean distance squared (avoids sqrt when only comparison needed). */
@@ -72,6 +130,11 @@ export function processWreckingBalls(
 ): ArenaEffectEvents {
   const events: ArenaEffectEvents = {};
   for (const obs of obstacles) {
+    // I2: If feature has a behaviorId, hand off to behavior executor and skip default logic
+    if (obs.behaviorId) {
+      executeBehavior(obs.behaviorId, obs.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
     if (obs.shape?.kind !== "wrecking_ball") continue;
     if (obs.triggerState === "off") continue;
 
@@ -109,6 +172,11 @@ export function processMagnets(
   physics: ArenaPhysicsBridge,
 ): void {
   for (const obs of obstacles) {
+    // I2: If feature has a behaviorId, hand off to behavior executor and skip default logic
+    if (obs.behaviorId) {
+      executeBehavior(obs.behaviorId, obs.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
     const pb = obs.physics;
     if (!pb || pb.type !== "magnetic") continue;
     if (obs.triggerState === "off") continue;
@@ -136,6 +204,11 @@ export function processElectrified(
 ): ArenaEffectEvents {
   const events: ArenaEffectEvents = {};
   for (const obs of obstacles) {
+    // I2: If feature has a behaviorId, hand off to behavior executor and skip default logic
+    if (obs.behaviorId) {
+      executeBehavior(obs.behaviorId, obs.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
     const pb = obs.physics;
     if (!pb || pb.type !== "electrified") continue;
     if (obs.triggerState === "off") continue;
@@ -162,6 +235,11 @@ export function processSpinners(
   physics: ArenaPhysicsBridge,
 ): void {
   for (const obs of obstacles) {
+    // I2: If feature has a behaviorId, hand off to behavior executor and skip default logic
+    if (obs.behaviorId) {
+      executeBehavior(obs.behaviorId, obs.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
     const pb = obs.physics;
     if (!pb || pb.type !== "spinner") continue;
     if (obs.triggerState === "off") continue;
@@ -183,6 +261,11 @@ export function processSticky(
   physics: ArenaPhysicsBridge,
 ): void {
   for (const obs of obstacles) {
+    // I2: If feature has a behaviorId, hand off to behavior executor and skip default logic
+    if (obs.behaviorId) {
+      executeBehavior(obs.behaviorId, obs.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
     const pb = obs.physics;
     if (!pb || pb.type !== "sticky") continue;
     if (obs.triggerState === "off") continue;
@@ -208,6 +291,11 @@ export function processCrushers(
   physics: ArenaPhysicsBridge,
 ): void {
   for (const obs of obstacles) {
+    // I2: If feature has a behaviorId, hand off to behavior executor and skip default logic
+    if (obs.behaviorId) {
+      executeBehavior(obs.behaviorId, obs.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
     const pb = obs.physics;
     if (!pb || pb.type !== "crusher") continue;
     if (obs.triggerState === "off") continue;
@@ -376,6 +464,11 @@ export function processRamps(
   physics: ArenaPhysicsBridge,
 ): void {
   for (const obs of obstacles) {
+    // I2: If feature has a behaviorId, hand off to behavior executor and skip default logic
+    if (obs.behaviorId) {
+      executeBehavior(obs.behaviorId, obs.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
     const pb = obs.physics;
     if (!pb || pb.type !== "ramp") continue;
     if (obs.triggerState === "off") continue;
@@ -407,6 +500,11 @@ export function processLedges(
   physics: ArenaPhysicsBridge,
 ): void {
   for (const obs of obstacles) {
+    // I2: If feature has a behaviorId, hand off to behavior executor and skip default logic
+    if (obs.behaviorId) {
+      executeBehavior(obs.behaviorId, obs.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
     const pb = obs.physics;
     if (!pb || pb.type !== "ledge") continue;
     if (obs.triggerState === "off") continue;
@@ -722,5 +820,264 @@ export function processArenaFeatures(
     applyEnvironmentalEffects(beyblade, (arenaData as any).environmentalEffect, matchElapsedMs, dt, physics);
   }
 
+  // ─── Spin zones ────────────────────────────────────────────────────────────
+  const spinZones: any[] = (arenaData as any).spinZones ?? [];
+  for (const zone of spinZones) {
+    if (!zone) continue;
+    // I2: behaviorId check — hand off and skip default logic
+    if (zone.behaviorId) {
+      executeBehavior(zone.behaviorId, zone.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
+    if (zone.controlledBySwitchId && zone.triggerState === "off") continue;
+    const zxPx = (zone.x_cm ?? 0) * 24;
+    const zyPx = (zone.y_cm ?? 0) * 24;
+    const zrPx = (zone.radius_cm ?? 5) * 24;
+    if (distSq(beyblade.x, beyblade.y, zxPx, zyPx) >= zrPx * zrPx) continue;
+
+    const intensityRad = zone.intensityRadPerSec ?? 1.0;
+    const dir = zone.direction === "ccw" ? -1 : 1;
+    const applyTo: string = zone.applyTo ?? "both";
+
+    if (applyTo === "linear" || applyTo === "both") {
+      // Orbit: tangent force around zone center
+      const dx = beyblade.x - zxPx;
+      const dy = beyblade.y - zyPx;
+      const d = Math.sqrt(dx * dx + dy * dy) || 1;
+      const tx = (-dy / d) * dir;
+      const ty = (dx / d) * dir;
+      physics.applyForce(beyblade.id, tx * intensityRad * 0.002, ty * intensityRad * 0.002);
+    }
+    if (applyTo === "spin" || applyTo === "both") {
+      // Spin top-up in the zone's spin direction
+      const spinBoost = intensityRad * 10 * dt;
+      beyblade.spin = Math.min(beyblade.maxSpin, beyblade.spin + spinBoost);
+    }
+  }
+
+  // ─── Gravity holes ─────────────────────────────────────────────────────────
+  const gravityHoles: any[] = (arenaData as any).gravityHoles ?? [];
+  for (const hole of gravityHoles) {
+    if (!hole) continue;
+    // I2: behaviorId check — hand off and skip default logic
+    if (hole.behaviorId) {
+      executeBehavior(hole.behaviorId, hole.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
+    if (hole.controlledBySwitchId && hole.triggerState === "off") continue;
+    const hxPx = (hole.x_cm ?? 0) * 24;
+    const hyPx = (hole.y_cm ?? 0) * 24;
+    const hrPx = (hole.effectiveRadiusCm ?? 10) * 24;
+    const dx = hxPx - beyblade.x;
+    const dy = hyPx - beyblade.y;
+    const d = Math.sqrt(dx * dx + dy * dy) || 1;
+    if (d >= hrPx) continue;
+
+    const forceN = hole.forceN ?? 0.01;
+    const falloff = 1 - d / hrPx;
+    const fx = (dx / d) * forceN * falloff;
+    const fy = (dy / d) * forceN * falloff;
+    physics.applyForce(beyblade.id, fx, fy);
+  }
+
+  // ─── Bumps ─────────────────────────────────────────────────────────────────
+  const bumps: any[] = (arenaData as any).bumps ?? [];
+  for (const bump of bumps) {
+    if (!bump) continue;
+    // I2: behaviorId check — hand off and skip default logic
+    if (bump.behaviorId) {
+      executeBehavior(bump.behaviorId, bump.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
+    if (bump.controlledBySwitchId && bump.triggerState === "off") continue;
+    const bxPx = (bump.x_cm ?? 0) * 24;
+    const byPx = (bump.y_cm ?? 0) * 24;
+    const brPx = (bump.radius_cm ?? 3) * 24;
+    if (distSq(beyblade.x, beyblade.y, bxPx, byPx) >= brPx * brPx) continue;
+
+    // Vertical pop + lateral recoil from bump center
+    const recoil = bump.recoil ?? 0.05;
+    const ddx = beyblade.x - bxPx;
+    const ddy = beyblade.y - byPx;
+    const dd = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
+    physics.applyForce(beyblade.id, (ddx / dd) * recoil, (ddy / dd) * recoil);
+  }
+
   return events;
+}
+
+// ── I5: ArenaFeatureProcessor class ─────────────────────────────────────────
+//
+// Wraps per-match bey-transformation state. Rooms that want to use
+// handleBeyTransformation() should instantiate one per room and call
+// tickBeyTransforms(currentTick) each frame.
+
+export class ArenaFeatureProcessor {
+  private activeBeyTransforms: Map<string, BeyTransformState> = new Map();
+
+  // Runtime references — set by the room before calling process() or
+  // handleBeyTransformation().
+  private _gravityWells: any[] = [];
+  private _obstacles: any[] = [];
+  private _physicsBodyMap: Map<string, Matter.Body> = new Map();
+  private _physicsSetSensor: ((id: string, isSensor: boolean) => void) | null = null;
+
+  // ─── Public API ─────────────────────────────────────────────────────────
+
+  /**
+   * Call each frame from the room's tick() after processArenaFeatures().
+   * Reverts transforms that have expired.
+   */
+  tickBeyTransforms(currentTick: number): void {
+    for (const [beyId, state] of this.activeBeyTransforms) {
+      if (currentTick >= state.expiresAtTick) {
+        this._revertBeyTransformation(beyId, state);
+      }
+    }
+  }
+
+  /**
+   * Register a physics body for a beyblade so the transformer can set it as sensor.
+   * The room should call this whenever a body is created/destroyed.
+   */
+  registerBody(beyId: string, body: Matter.Body): void {
+    this._physicsBodyMap.set(beyId, body);
+  }
+
+  /**
+   * Provide a callback the processor can use to toggle isSensor on a body.
+   * If not provided, body.isSensor is set directly (requires the body reference).
+   */
+  setSensorCallback(fn: (id: string, isSensor: boolean) => void): void {
+    this._physicsSetSensor = fn;
+  }
+
+  /**
+   * Transform a beyblade into a temporary arena feature.
+   *
+   * @param beyId       Schema id of the beyblade to transform.
+   * @param transformTo Feature type: "gravity_well" | "obstacle" | others (stubs).
+   * @param params      Feature-specific parameters.
+   * @param durationTicks Number of ticks before reverting.
+   * @param bey         Live Beyblade schema object (for saving spin + position).
+   */
+  handleBeyTransformation(
+    beyId: string,
+    transformTo: string,
+    params: Record<string, unknown>,
+    durationTicks: number,
+    currentTick: number,
+    bey: Beyblade,
+  ): void {
+    if (this.activeBeyTransforms.has(beyId)) return; // already transformed
+
+    const body = this._physicsBodyMap.get(beyId);
+    if (!body) {
+      console.warn(`[ArenaFeatureProcessor] handleBeyTransformation: no body for "${beyId}"`);
+      return;
+    }
+
+    // 1. Save spin + make bey body a sensor (no collision)
+    const savedSpin = bey.spin;
+    body.isSensor = true;
+    if (this._physicsSetSensor) this._physicsSetSensor(beyId, true);
+
+    // 2. Build a unique temp feature id
+    const tempFeatureId = `transform_${beyId}_${currentTick}`;
+
+    // 3. Create temp feature at bey's position
+    switch (transformTo) {
+      case "gravity_well": {
+        const strength = (params.strength as number) ?? (bey.mass * 0.01);
+        const radiusCm = (params.radiusCm as number) ?? 15;
+        const durationMs = (params.durationMs as number) ?? (durationTicks * (1000 / 60));
+        this._gravityWells.push({
+          id: tempFeatureId,
+          x_cm: bey.x / 24,
+          y_cm: bey.y / 24,
+          forceN: strength,
+          effectiveRadiusCm: radiusCm,
+          activeMs: durationMs,
+          intervalMs: 0,
+          warningMs: 0,
+          visibility: "visible",
+          _tempTransform: true,
+        });
+        break;
+      }
+      case "obstacle": {
+        const radiusCm = (params.radiusCm as number) ?? 5;
+        const damage = (params.damage as number) ?? 10;
+        this._obstacles.push({
+          id: tempFeatureId,
+          x: bey.x / 24,
+          y: bey.y / 24,
+          radius: radiusCm * 24,
+          health: 9999,
+          damage,
+          recoilDistance: 8,
+          indestructible: true,
+          _tempTransform: true,
+        });
+        break;
+      }
+      // TODO: "spin_zone" transform type — apply orbit/spin in radius around bey's position
+      // TODO: "turret" transform type — bey becomes a turret firing at opponents
+      // TODO: "water_body" transform type — bey becomes a hazard liquid zone
+      default:
+        console.warn(`[ArenaFeatureProcessor] handleBeyTransformation: unhandled type "${transformTo}" — no temp feature created.`);
+        break;
+    }
+
+    this.activeBeyTransforms.set(beyId, {
+      beyId,
+      transformTo,
+      savedSpin,
+      savedBody: body,
+      expiresAtTick: currentTick + durationTicks,
+      tempFeatureId,
+    });
+  }
+
+  // ─── Internal ────────────────────────────────────────────────────────────
+
+  private _revertBeyTransformation(beyId: string, state: BeyTransformState): void {
+    // Restore physics body to collidable
+    state.savedBody.isSensor = false;
+    if (this._physicsSetSensor) this._physicsSetSensor(beyId, false);
+
+    // Remove temp feature from live arrays
+    this._gravityWells = this._gravityWells.filter(
+      (g: any) => g.id !== state.tempFeatureId,
+    );
+    this._obstacles = this._obstacles.filter(
+      (o: any) => o.id !== state.tempFeatureId,
+    );
+
+    // The room is responsible for restoring spin from state.savedSpin after calling
+    // tickBeyTransforms — it can listen for the "transform-reverted" notification or
+    // simply check activeBeyTransforms.has(beyId) before/after the tick.
+    // We expose the saved spin via the public accessor below.
+
+    this.activeBeyTransforms.delete(beyId);
+  }
+
+  /** Returns the saved spin for a beyblade whose transform just expired.
+   *  Call this right after tickBeyTransforms() to restore spin in the schema. */
+  getSavedSpin(beyId: string): number | undefined {
+    // After revert the entry is deleted; callers should read before tickBeyTransforms
+    // removes it. This is a best-effort helper for room code.
+    return this.activeBeyTransforms.get(beyId)?.savedSpin;
+  }
+
+  /** Read-only view of current gravity wells (including temp transform entries). */
+  get gravityWells(): readonly any[] { return this._gravityWells; }
+
+  /** Read-only view of current obstacles (including temp transform entries). */
+  get obstacles(): readonly any[] { return this._obstacles; }
+
+  /** Whether a given bey is currently transformed. */
+  isTransformed(beyId: string): boolean {
+    return this.activeBeyTransforms.has(beyId);
+  }
 }

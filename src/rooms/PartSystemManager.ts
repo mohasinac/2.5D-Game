@@ -45,7 +45,7 @@ import {
   FRAGMENT_LIFETIME_TICKS_DEFAULT,
 } from "../physics/PartPhysics";
 import { v4 as uuidv4 } from "uuid";
-import { updateBeyTilt } from "../physics/ClimbingPhysics";
+import { computeClimbingForces, updateBeyTilt, type ArenaGeometry } from "../physics/ClimbingPhysics";
 
 // ─── Part Cache Bundle ─────────────────────────────────────────────────────────
 
@@ -148,6 +148,11 @@ export class PartSystemManager {
     if (parts.core?.spinInjection) {
       bey.coreReserveRemaining = parts.core.spinInjection.reserveCapacity;
     }
+
+    // ── Merge climbing / tilt stats from parts ───────────────────────────────
+    // Walk all parts in priority order (most-specific part wins via Math.max).
+    // These stats feed computeClimbingForces() and updateBeyTilt() each tick.
+    this.mergeClimbingStats(bey, parts);
 
     this.beyStates.set(sessionId, {
       system,
@@ -275,12 +280,21 @@ export class PartSystemManager {
    * Main per-tick update for a bey.
    * Call this from the room's tick() loop after syncing physics state.
    * Returns bearing-adjusted spin decay rate to use instead of the base rate.
+   *
+   * @param arenaGeometry  Optional arena geometry for climbing/suction physics.
+   *                       When provided, computeClimbingForces() is called and
+   *                       the resulting forces are applied via the applyForce callback.
+   * @param applyForce     Optional callback to apply a physics force to a bey body.
+   *                       Signature: (sessionId, forceX, forceY) => void.
+   *                       Required when arenaGeometry is provided.
    */
   tickBey(
     sessionId: string,
     bey: Beyblade,
     gameState: GameState,
-    baseSpinDecayRate: number
+    baseSpinDecayRate: number,
+    arenaGeometry?: ArenaGeometry,
+    applyForce?: (sessionId: string, forceX: number, forceY: number) => void
   ): { adjustedSpinDecayRate: number } {
     const state = this.beyStates.get(sessionId);
     if (!state) return { adjustedSpinDecayRate: baseSpinDecayRate };
@@ -381,26 +395,70 @@ export class PartSystemManager {
     // ── 8. Bey-axis tilt physics (2.5D) ─────────────────────────────────────
     // beyTiltAngle is updated each tick; wobbleAmplitude is derived from it.
     // Impact force is injected by onBeyCollision; here we pass 0 (passive tick).
+
+    // Build the shared ClimbingBeyState used by both climbing and tilt functions.
+    const climbingState = {
+      x: bey.x ?? 0,
+      y: bey.y ?? 0,
+      beyTiltAngle: (bey as any).beyTiltAngle ?? 0,
+      spin: bey.spin,
+      maxSpin: bey.maxSpin,
+      mass: bey.mass,
+      suctionForce: (bey as any).suctionForce ?? 0,
+      wallClimbFactor: (bey as any).wallClimbFactor ?? 0,
+      gravityMult: (bey as any).gravityMult ?? 1,
+      gripFactor: bey.gripFactor ?? 0.3,
+      tiltResistance: (bey as any).tiltResistance ?? 0.5,
+      lateralStiffness: (bey as any).lateralStiffness ?? 0.5,
+      adhering: (bey as any).adhering ?? false,
+      adheringSurfaceAngle: (bey as any).adheringSurfaceAngle ?? 0,
+      wallClimbing: (bey as any).wallClimbing ?? false,
+      effectiveGravity: (bey as any).effectiveGravity ?? 9.8,
+    };
+
+    // ── 8a. Climbing / suction forces ────────────────────────────────────────
+    // computeClimbingForces returns adhesion and wall-climb accelerations.
+    // These are converted to Matter.js forces (F = m * a) and applied via the
+    // caller-supplied applyForce callback so the physics engine stays in control.
+    if (arenaGeometry && applyForce) {
+      const climbResult = computeClimbingForces(climbingState, arenaGeometry, 1 / 60);
+
+      // Update climbingState flags so tilt physics below sees the latest values.
+      climbingState.adhering = climbResult.adhering;
+      climbingState.adheringSurfaceAngle = climbResult.adheringSurfaceAngle;
+      climbingState.wallClimbing = climbResult.wallClimbing;
+      climbingState.effectiveGravity = climbResult.effectiveGravity;
+
+      // Write updated state flags back onto the bey schema.
+      (bey as any).adhering = climbResult.adhering;
+      (bey as any).adheringSurfaceAngle = climbResult.adheringSurfaceAngle;
+      (bey as any).wallClimbing = climbResult.wallClimbing;
+      (bey as any).effectiveGravity = climbResult.effectiveGravity;
+
+      // Apply adhesion force (direction converted from degrees to XY vector).
+      if (climbResult.adhesionAccel !== 0) {
+        const adhesionRad = (climbResult.adhesionDirection * Math.PI) / 180;
+        // Mass stored in grams; Matter.js uses kg internally, but forces are
+        // applied in the same unit system as the engine (pixels / s²).
+        // Here we treat mass/1000 as kg for dimensional consistency with ClimbingPhysics.
+        const massKg = (bey.mass ?? 30) / 1000;
+        const forceN = climbResult.adhesionAccel * massKg;
+        applyForce(sessionId, Math.cos(adhesionRad) * forceN, Math.sin(adhesionRad) * forceN);
+      }
+
+      // Apply wall-climb friction (vertical, opposing gravity — i.e. upward: angle 90°).
+      if (climbResult.wallClimbFrictionAccel !== 0) {
+        const massKg = (bey.mass ?? 30) / 1000;
+        const forceN = climbResult.wallClimbFrictionAccel * massKg;
+        // Upward force counteracts gravity: positive Y = up in ClimbingPhysics convention.
+        applyForce(sessionId, 0, forceN);
+      }
+    }
+
+    // ── 8b. Bey-axis tilt update ─────────────────────────────────────────────
     if (typeof (bey as any).beyTiltAngle === "number") {
       const tiltResult = updateBeyTilt(
-        {
-          x: bey.x ?? 0,
-          y: bey.y ?? 0,
-          beyTiltAngle: (bey as any).beyTiltAngle ?? 0,
-          spin: bey.spin,
-          maxSpin: bey.maxSpin,
-          mass: bey.mass,
-          suctionForce: (bey as any).suctionForce ?? 0,
-          wallClimbFactor: (bey as any).wallClimbFactor ?? 0,
-          gravityMult: (bey as any).gravityMult ?? 1,
-          gripFactor: bey.gripFactor ?? 0.3,
-          tiltResistance: (bey as any).tiltResistance ?? 0.5,
-          lateralStiffness: (bey as any).lateralStiffness ?? 0.5,
-          adhering: (bey as any).adhering ?? false,
-          adheringSurfaceAngle: (bey as any).adheringSurfaceAngle ?? 0,
-          wallClimbing: (bey as any).wallClimbing ?? false,
-          effectiveGravity: (bey as any).effectiveGravity ?? 9.8,
-        },
+        climbingState,
         0, // no impact force on passive tick
         1 / 60 // dt in seconds
       );
@@ -625,6 +683,58 @@ export class PartSystemManager {
     return overrides?.movementOverride?.type === "jump";
   }
 
+  // ─── Combination Lock ──────────────────────────────────────────────────────
+
+  /**
+   * Per-tick evaluation of combination-lock / unlock conditions for linked beys.
+   * Call this from BattleRoom (or any room) after the main tick loop.
+   *
+   * @param beys  Map of beyId → any (raw physics/schema bey objects with .body, .spin, etc.)
+   * @param tick  Current simulation tick counter (monotonically increasing).
+   */
+  tickCombinationLock(beys: Map<string, any>, tick: number): void {
+    for (const [, bey] of beys) {
+      if (!bey.combinedWith?.partnerBeySystemId) continue;
+
+      const partner = beys.get(bey.linkedBeyId || "");
+      if (!partner) continue;
+
+      const spinRatio = bey.spin / Math.max(1, bey.maxSpin);
+      const lockCond = bey.combinedWith?.lockCondition;
+      const unlockCond = bey.combinedWith?.unlockCondition;
+
+      if (!bey.combinationLocked && lockCond) {
+        if (lockCond.type === "always") {
+          bey.combinationLocked = true;
+        } else if (lockCond.type === "spin_above" && spinRatio * 100 >= (lockCond.threshold ?? 70)) {
+          bey.combinationLocked = true;
+        }
+      }
+
+      if (bey.combinationLocked && unlockCond) {
+        if (unlockCond.type === "spin_below" && spinRatio * 100 < (unlockCond.threshold ?? 30)) {
+          bey.combinationLocked = false;
+        } else if (unlockCond.type === "timer" && unlockCond.timerTicks != null) {
+          // Track lock start tick; unlock after timerTicks
+          if (!bey._lockStartTick) bey._lockStartTick = tick;
+          if (tick - bey._lockStartTick >= unlockCond.timerTicks) {
+            bey.combinationLocked = false;
+            bey._lockStartTick = undefined;
+          }
+        }
+      }
+
+      // Update linkStrain: distance between partners / idealDistance
+      if (bey.body && partner.body) {
+        const dx = bey.body.position.x - partner.body.position.x;
+        const dy = bey.body.position.y - partner.body.position.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const ideal = (bey.combinedWith?.helicalDistance ?? 60);
+        bey.linkStrain = Math.min(1, Math.max(0, (dist - ideal) / ideal));
+      }
+    }
+  }
+
   // ─── Private Helpers ──────────────────────────────────────────────────────
 
   private getAllPartsArray(parts: ResolvedPartBundle): Array<{ statModifiers?: import("../../client/src/types/beybladeSystem").StatModifier[] }> {
@@ -638,6 +748,59 @@ export class PartSystemManager {
     if (parts.spinTrack) arr.push(parts.spinTrack);
     arr.push(...parts.subParts);
     return arr;
+  }
+
+  /**
+   * Walk all resolved parts and merge climbing/tilt stat overrides onto the bey.
+   * Each stat is initialised to its default if unset, then each part may override
+   * it via a direct property or a StatModifier with operation "set".
+   * Called once at registerBey time so that computeClimbingForces() has valid
+   * values on the very first tick.
+   */
+  private mergeClimbingStats(bey: Beyblade, parts: ResolvedPartBundle): void {
+    const anyBey = bey as any;
+
+    // Defaults — only set if not already populated by prior logic.
+    if (anyBey.suctionForce == null)       anyBey.suctionForce = 0;
+    if (anyBey.wallClimbFactor == null)    anyBey.wallClimbFactor = 0;
+    if (anyBey.gravityMult == null)        anyBey.gravityMult = 1;
+    if (anyBey.bounceRestitution == null)  anyBey.bounceRestitution = 0.3;
+    if (anyBey.tiltResistance == null)     anyBey.tiltResistance = 0.5;
+
+    // Walk parts in canonical order; each part may carry direct stat fields or
+    // StatModifier entries with event "on_register" (operation "set" / "add").
+    const allParts = this.getAllPartsArray(parts);
+    for (const part of allParts) {
+      const p = part as any;
+
+      // Direct part-level stat overrides (e.g. TipPart.suctionForce).
+      if (p.suctionForce      != null) anyBey.suctionForce      = Math.max(anyBey.suctionForce,      p.suctionForce);
+      if (p.wallClimbFactor   != null) anyBey.wallClimbFactor   = Math.max(anyBey.wallClimbFactor,   p.wallClimbFactor);
+      if (p.gravityMult       != null) anyBey.gravityMult       = p.gravityMult; // last-write-wins (multiplicative base)
+      if (p.bounceRestitution != null) anyBey.bounceRestitution = Math.max(anyBey.bounceRestitution, p.bounceRestitution);
+      if (p.tiltResistance    != null) anyBey.tiltResistance    = Math.max(anyBey.tiltResistance,    p.tiltResistance);
+
+      // StatModifier entries with a setup-time event ("on_register" or no event).
+      for (const mod of (part.statModifiers ?? [])) {
+        const key = (mod as any).targetStat as string;
+        if (
+          key === "suctionForce" || key === "wallClimbFactor" ||
+          key === "gravityMult"  || key === "bounceRestitution" ||
+          key === "tiltResistance"
+        ) {
+          const event = (mod as any).event;
+          // Apply modifiers that fire at construction time or have no specific event.
+          if (!event || event === "on_register") {
+            const current: number = anyBey[key] ?? 0;
+            switch ((mod as any).operation) {
+              case "add":      anyBey[key] = current + (mod as any).value; break;
+              case "multiply": anyBey[key] = current * (mod as any).value; break;
+              case "set":      anyBey[key] = (mod as any).value;           break;
+            }
+          }
+        }
+      }
+    }
   }
 
   private resolveSpinInjectionConfig(core: CorePart, activeConfig: string) {

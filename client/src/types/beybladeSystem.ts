@@ -708,6 +708,8 @@ export interface TipPart extends BasePart {
   recoilAbsorption?: number;  // 0.0–1.0; fraction of push-back absorbed (wide/rubber tips)
   lateralStability?: number;  // resistance to sideways tilt on impact (wider tip = more)
   surfaceFriction?: number;   // floor contact friction; if unset: computed from material.frictionMult
+  suctionCap?: number;        // max suction force this tip can sustain (N)
+  climbAssist?: number;       // 0–1: how much this tip helps wall climbing
   // Structural flags — affect rendering order and CP ownership
   extendsAboveCasing?: boolean; // tip body extends up into the normal casing height zone (Rock Bison)
   containsCasing?: boolean;     // tip is outermost shell; casing nests inside (Wolborg G)
@@ -737,6 +739,7 @@ export interface CorePart extends BasePart {
   clutchStrength?: number;       // 0.0–1.0; HMS free-spinning Running Core coupling (0=free, 1=locked)
   torqueEfficiency?: number;     // 0.0–1.0; spin transmitted from WD hub down to tip per tick
   internalFriction?: number;     // 0.0–1.0; friction loss inside mechanism housing per tick
+  suctionEmit?: number;          // suction emission force (N) this core broadcasts to nearby surfaces
   // Core gimmick configs (named gimmicks — complemented by statModifiers for custom behaviors)
   spinInjection?: SpinInjectionConfig;
   counterRotation?: CounterRotationConfig;
@@ -868,6 +871,23 @@ export interface BeybladeSystem {
     partnerBeySystemId: string;     // the second half's BeybladeSystem ID
     linkSubPartIndex: number;       // index in subPartAttachments that is the split spring
     playerControlTarget: "this" | "partner";
+    locked?: boolean;              // true = impact cannot break this link
+    lockCondition?: {
+      type: "always" | "spin_above" | "combo_triggered" | "admin_set";
+      threshold?: number;          // % of maxSpin for spin_above (0–100)
+      comboEffectId?: string;      // which comboEffect triggers lock
+    };
+    unlockCondition?: {
+      type: "spin_below" | "combo_triggered" | "timer" | "opponent_impact_force" | "admin_set";
+      threshold?: number;
+      comboEffectId?: string;
+      timerTicks?: number;         // for timer type
+    };
+    lockedStatMerge?: {
+      massMode: "sum" | "average" | "max";
+      spinMode: "average" | "min" | "sum";
+      damageMode: "sum" | "max";
+    };
   };
 
   comboSlots: BeybladeComboSlot[];

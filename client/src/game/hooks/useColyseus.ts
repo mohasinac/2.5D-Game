@@ -1,10 +1,11 @@
 // [GAME-CONTEXT] useColyseus — manages the Colyseus WebSocket connection lifecycle.
 // Connects to the game server, maintains room reference, and syncs state to React.
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Client, Room } from "colyseus.js";
 import type { ConnectionState, ServerBeyblade, ServerGameState } from "@/types/game";
 import type { LoadingStep } from "@/components/LoadingProgress";
+import type { BeybladeGameRenderer } from "@/game/renderer/PixiRenderer";
 import toast from "react-hot-toast";
 
 const GAME_SERVER_URL = import.meta.env.VITE_GAME_SERVER_URL || "ws://localhost:2567";
@@ -39,6 +40,55 @@ export interface ArenaEffectState {
   isCaster: boolean;
 }
 
+// D3: camera effect triggered by a special move
+export interface SpecialMoveCameraData {
+  beyId: string;
+  cameraConfig: {
+    zoomFactor: number;
+    durationTicks: number;
+    slowMotionFactor: number;
+  };
+}
+
+// D5: per-bey combo visual
+export interface ComboVisualData {
+  beyId: string;
+  introAnimation: string;
+  particlePresetId: string;
+}
+
+// G5: meteor strike (two-phase)
+export interface MeteorStrikeHangData {
+  beyId: string;
+  landingX: number;
+  landingY: number;
+  landingRadius: number;
+  hangTicks: number;
+}
+
+export interface MeteorStrikeLandData {
+  beyId: string;
+  landingX: number;
+  landingY: number;
+  landingRadius: number;
+  damageDealt: number;
+}
+
+// N3: arena-spawned beyblade
+export interface ArenaSpawnData {
+  spawnId: string;
+  beyId: string;
+  controlMode: "friendly" | "hostile" | "neutral";
+  statsMultiplier: number;
+  position: { x: number; y: number };
+}
+
+// N3: bey briefly leaves the arena (jump hang)
+export interface MovementJumpHangData {
+  beyId: string;
+  hangTicks: number;
+}
+
 interface UseColyseusOptions {
   roomName: string;
   options?: Record<string, unknown>;
@@ -59,6 +109,8 @@ interface UseColyseusOptions {
   // Callbacks for arena-wide effects (Phase AA)
   onArenaEffectStart?: (data: { effectType: string; durationTicks: number; casterSessionId: string }) => void;
   onArenaEffectEnd?: (data: { effectType: string }) => void;
+  // Optional renderer ref — used by D3/D5/G5/N3 handlers to push visual events
+  rendererRef?: React.RefObject<BeybladeGameRenderer | null>;
 }
 
 interface UseColyseusReturn {
@@ -73,6 +125,10 @@ interface UseColyseusReturn {
   loadingError?: string;
   /** Active arena-wide effect state (Phase AA). Null when no effect is active. */
   arenaEffect: ArenaEffectState | null;
+  /** D3: true while a special-move camera effect is animating. */
+  cameraEffectActive: boolean;
+  /** N3: map of spawnId → ArenaSpawnData for all arena-spawned beyblades. */
+  spawnedBeys: Map<string, ArenaSpawnData>;
   connect: () => Promise<void>;
   disconnect: () => void;
   sendQTEInput: (key: string) => void;
@@ -123,6 +179,7 @@ export function useColyseus({
   onArenaAnnouncement,
   onArenaEffectStart,
   onArenaEffectEnd,
+  rendererRef,
 }: UseColyseusOptions): UseColyseusReturn {
   const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
   const [room, setRoom] = useState<Room | null>(null);
@@ -133,6 +190,10 @@ export function useColyseus({
   const [loadingStep, setLoadingStep] = useState<LoadingStep>("connecting-ws");
   const [loadingError, setLoadingError] = useState<string | undefined>(undefined);
   const [arenaEffect, setArenaEffect] = useState<ArenaEffectState | null>(null);
+  // D3: true while a special-move camera zoom effect is in flight
+  const [cameraEffectActive, setCameraEffectActive] = useState(false);
+  // N3: arena-spawned beyblades keyed by spawnId
+  const [spawnedBeys, setSpawnedBeys] = useState<Map<string, ArenaSpawnData>>(new Map());
 
   const clientRef = useRef<Client | null>(null);
   const roomRef = useRef<Room | null>(null);
@@ -145,6 +206,9 @@ export function useColyseus({
   const onArenaAnnouncementRef = useRef(onArenaAnnouncement);
   const onArenaEffectStartRef = useRef(onArenaEffectStart);
   const onArenaEffectEndRef = useRef(onArenaEffectEnd);
+  // Keep a stable ref to the injected renderer so closures in connect() always
+  // see the latest renderer without needing to re-run the effect.
+  const rendererRefInternal = useRef<React.RefObject<BeybladeGameRenderer | null> | undefined>(rendererRef);
 
   useEffect(() => { onGameEndRef.current = onGameEnd; }, [onGameEnd]);
   useEffect(() => { onSeriesEndRef.current = onSeriesEnd; }, [onSeriesEnd]);
@@ -155,6 +219,7 @@ export function useColyseus({
   useEffect(() => { onArenaAnnouncementRef.current = onArenaAnnouncement; }, [onArenaAnnouncement]);
   useEffect(() => { onArenaEffectStartRef.current = onArenaEffectStart; }, [onArenaEffectStart]);
   useEffect(() => { onArenaEffectEndRef.current = onArenaEffectEnd; }, [onArenaEffectEnd]);
+  useEffect(() => { rendererRefInternal.current = rendererRef; }, [rendererRef]);
 
   const connect = useCallback(async () => {
     if (roomRef.current) return;
@@ -311,6 +376,47 @@ export function useColyseus({
         onArenaEffectEndRef.current?.(data);
       });
 
+      // D3: special-move camera zoom/slow-motion effect
+      connectedRoom.onMessage("special-move-camera", (data: SpecialMoveCameraData) => {
+        rendererRefInternal.current?.current?.handleSpecialMoveCamera?.(data);
+        if (data.cameraConfig.zoomFactor > 1) {
+          setCameraEffectActive(true);
+          // Duration in ms; clear the active flag once the tween would have finished.
+          const durationMs = Math.round(data.cameraConfig.durationTicks * (1000 / 60));
+          setTimeout(() => setCameraEffectActive(false), durationMs);
+        }
+      });
+
+      // D5: combo visual (intro animation + particle preset)
+      connectedRoom.onMessage("combo-visual", (data: ComboVisualData) => {
+        rendererRefInternal.current?.current?.handleComboVisual?.(data);
+      });
+
+      // G5: meteor strike — hang phase (bey leaves arena, landing ring visible)
+      connectedRoom.onMessage("meteor-strike-hang", (data: MeteorStrikeHangData) => {
+        rendererRefInternal.current?.current?.onMeteorStrikeHang?.(data);
+      });
+
+      // G5: meteor strike — land phase (CRITICAL: camera shake + clear landing ring)
+      connectedRoom.onMessage("meteor-strike-land", (data: MeteorStrikeLandData) => {
+        rendererRefInternal.current?.current?.onMeteorStrikeLand?.(data);
+        toast(`METEOR STRIKE! ${Math.round(data.damageDealt)} damage`, { icon: "☄️", duration: 2500 });
+      });
+
+      // N3: arena-spawned beyblade
+      connectedRoom.onMessage("arena-spawn", (data: ArenaSpawnData) => {
+        rendererRefInternal.current?.current?.onArenaSpawn?.(data);
+        setSpawnedBeys((prev) => new Map(prev).set(data.spawnId, data));
+        if (data.controlMode === "friendly") {
+          toast("A friendly beyblade appeared! Press [1]/[2] to control it", { icon: "🌀", duration: 4000 });
+        }
+      });
+
+      // N3: bey briefly leaves the arena (jump hang) — hide its container for hangTicks
+      connectedRoom.onMessage("movement-jump-hang", (data: MovementJumpHangData) => {
+        rendererRefInternal.current?.current?.onMovementJumpHang?.(data);
+      });
+
       connectedRoom.onError((code, message) => {
         console.error(`Room error [${code}]: ${message}`);
         setConnectionState("error");
@@ -377,7 +483,7 @@ export function useColyseus({
   return {
     connectionState, room, gameState, beyblades, myBeyblade, isSpectating,
     loadingStep, loadingError,
-    arenaEffect,
+    arenaEffect, cameraEffectActive, spawnedBeys,
     connect, disconnect, sendQTEInput, sendInput,
   };
 }

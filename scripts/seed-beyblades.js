@@ -459,6 +459,10 @@ async function seedBeyblades() {
     const specialMoveId = bey.specialMoveId ?? DEFAULT_SPECIAL_BY_TYPE[bey.type] ?? "tactical_burst";
     const comboIds      = (bey.comboIds ?? DEFAULT_COMBOS_BY_TYPE[bey.type] ?? []).slice(0, 3);
 
+    // comboSlots — structured version of comboIds for the new slot system.
+    // Keep comboIds alongside for backward compat — don't remove it.
+    const comboSlots = comboIds.map((comboEffectId, slotIndex) => ({ comboEffectId, slotIndex }));
+
     const docData = {
       ...bey,
       elementTypes: ELEMENT_TYPES_BY_ID[bey.id] ?? [],
@@ -470,9 +474,13 @@ async function seedBeyblades() {
       rotationSpeed:        derived.rotationSpeed,
       invulnerabilityChance: derived.invulnerabilityChance,
       damageReduction:      parseFloat((1 / derived.damageTaken).toFixed(3)),
+      // Jump physics — beys don't jump by default; combos may grant jump behaviour
+      jumpForce:            0,
+      jumpHeight:           0,
       // Optional kit
       specialMoveId,
       comboIds,
+      comboSlots,
       createdAt:            now,
       updatedAt:            now,
       createdBy:            "seed",

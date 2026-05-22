@@ -1,9 +1,10 @@
 // Z10a: Features tab — Elevation Zones, Floor Hazard Zones, Effect Zones,
 //        Background Particles, Environmental Effect sections.
+// I6: Added SpinZone, GravityHole, Bump sections with behaviorId/behaviorParams editors.
 
 import { useState } from "react";
 import { C } from "@/styles/theme";
-import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset } from "@/types/arenaConfigNew";
+import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset, SpinZoneConfig, GravityHoleConfig, BumpConfig } from "@/types/arenaConfigNew";
 import type { ElementType } from "@/types/elementTypes";
 import { ELEMENT_ICONS } from "@/types/elementTypes";
 import FeatureAnimationPanel from "./FeatureAnimationPanel";
@@ -57,6 +58,54 @@ function numInput(val: number | undefined, def: number, onChange: (n: number) =>
   );
 }
 
+/** I6: Reusable behavior override panel for features that support behaviorId/behaviorParams. */
+function BehaviorOverridePanel({ behaviorId, behaviorParams, onChangeBehaviorId, onChangeBehaviorParams }: {
+  behaviorId?: string;
+  behaviorParams?: Record<string, unknown>;
+  onChangeBehaviorId: (id: string | undefined) => void;
+  onChangeBehaviorParams: (params: Record<string, unknown> | undefined) => void;
+}) {
+  return (
+    <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+      <div>
+        <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior ID (optional)</label>
+        <input
+          type="text"
+          value={behaviorId ?? ""}
+          onChange={e => onChangeBehaviorId(e.target.value || undefined)}
+          placeholder="e.g. movement.orbit"
+          style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" }}
+        />
+      </div>
+      <div>
+        <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior Params (JSON)</label>
+        <textarea
+          value={behaviorParams ? JSON.stringify(behaviorParams, null, 2) : ""}
+          onChange={e => {
+            try {
+              const parsed = e.target.value ? JSON.parse(e.target.value) : undefined;
+              onChangeBehaviorParams(parsed);
+            } catch { /* invalid JSON, ignore */ }
+          }}
+          placeholder='{ "strength": 0.5 }'
+          rows={2}
+          style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 11, fontFamily: "monospace", resize: "vertical", boxSizing: "border-box" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** I6: Small badge shown next to cards that have a behaviorId set. */
+function BehaviorBadge({ behaviorId }: { behaviorId?: string }) {
+  if (!behaviorId) return null;
+  return (
+    <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 99, background: "rgba(168,85,247,0.15)", color: "#a855f7", border: "1px solid rgba(168,85,247,0.3)" }}>
+      Behavior: {behaviorId}
+    </span>
+  );
+}
+
 export default function FeaturesTab({ config, onChange }: Props) {
   // ── Background Particles ──────────────────────────────────────────────────
   const bp = config.backgroundParticles;
@@ -102,6 +151,51 @@ export default function FeaturesTab({ config, onChange }: Props) {
   }
   function removeElev(i: number) {
     onChange({ elevationZones: elev.filter((_, idx) => idx !== i) });
+  }
+
+  // ── Spin Zones (I6) ───────────────────────────────────────────────────────
+  const spinZones: SpinZoneConfig[] = config.spinZones ?? [];
+  function addSpinZone() {
+    const id = `sz${Date.now()}`;
+    const next: SpinZoneConfig = { id, x_cm: 0, y_cm: 0, radius_cm: 8, direction: "cw", intensityRadPerSec: 2, applyTo: "both" };
+    onChange({ spinZones: [...spinZones, next] });
+  }
+  function updateSpinZone(i: number, patch: object) {
+    const next = spinZones.map((z, idx) => idx === i ? { ...z, ...patch } : z);
+    onChange({ spinZones: next });
+  }
+  function removeSpinZone(i: number) {
+    onChange({ spinZones: spinZones.filter((_, idx) => idx !== i) });
+  }
+
+  // ── Gravity Holes (I6) ────────────────────────────────────────────────────
+  const gravityHoles: GravityHoleConfig[] = config.gravityHoles ?? [];
+  function addGravityHole() {
+    const id = `gh${Date.now()}`;
+    const next: GravityHoleConfig = { id, x_cm: 0, y_cm: 0, forceN: 0.005, effectiveRadiusCm: 10, activeMs: 2000, intervalMs: 5000, warningMs: 800, visibility: "warning-only" };
+    onChange({ gravityHoles: [...gravityHoles, next] });
+  }
+  function updateGravityHole(i: number, patch: object) {
+    const next = gravityHoles.map((z, idx) => idx === i ? { ...z, ...patch } : z);
+    onChange({ gravityHoles: next });
+  }
+  function removeGravityHole(i: number) {
+    onChange({ gravityHoles: gravityHoles.filter((_, idx) => idx !== i) });
+  }
+
+  // ── Bumps (I6) ────────────────────────────────────────────────────────────
+  const bumps: BumpConfig[] = config.bumps ?? [];
+  function addBump() {
+    const id = `bump${Date.now()}`;
+    const next: BumpConfig = { id, x_cm: 0, y_cm: 0, radius_cm: 3, popHeight_cm: 2, recoil: 0.3 };
+    onChange({ bumps: [...bumps, next] });
+  }
+  function updateBump(i: number, patch: object) {
+    const next = bumps.map((z, idx) => idx === i ? { ...z, ...patch } : z);
+    onChange({ bumps: next });
+  }
+  function removeBump(i: number) {
+    onChange({ bumps: bumps.filter((_, idx) => idx !== i) });
   }
 
   return (
@@ -265,6 +359,141 @@ export default function FeaturesTab({ config, onChange }: Props) {
         ))}
         <button onClick={addElev} style={{ padding: "6px 14px", background: C.purple, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
           + Add Elevation Zone
+        </button>
+      </Section>
+
+      {/* Spin Zones (I6) */}
+      <Section title={`Spin Zones (${spinZones.length})`}>
+        {spinZones.map((z, i) => (
+          <div key={z.id} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
+                <BehaviorBadge behaviorId={z.behaviorId} />
+              </div>
+              <button onClick={() => removeSpinZone(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+            </div>
+            <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateSpinZone(i, { x_cm: v }))}</Row>
+            <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateSpinZone(i, { y_cm: v }))}</Row>
+            <Row label="Radius (cm)">{numInput(z.radius_cm, 8, v => updateSpinZone(i, { radius_cm: v }), 0.5)}</Row>
+            <Row label="Intensity (rad/s)">{numInput(z.intensityRadPerSec, 2, v => updateSpinZone(i, { intensityRadPerSec: v }), 0.5)}</Row>
+            <Row label="Direction">
+              <select value={z.direction} onChange={e => updateSpinZone(i, { direction: e.target.value as "cw" | "ccw" })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
+                <option value="cw">Clockwise</option>
+                <option value="ccw">Counter-clockwise</option>
+              </select>
+            </Row>
+            <Row label="Apply To">
+              <select value={z.applyTo} onChange={e => updateSpinZone(i, { applyTo: e.target.value as "linear" | "spin" | "both" })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
+                <option value="linear">Linear (orbit)</option>
+                <option value="spin">Spin top-up</option>
+                <option value="both">Both</option>
+              </select>
+            </Row>
+            <Row label="Element Type">
+              <select value={(z as any).elementType ?? ""} onChange={e => updateSpinZone(i, { elementType: e.target.value || undefined })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
+                <option value="">— none —</option>
+                {ELEMENT_TYPES.map(t => <option key={t} value={t}>{ELEMENT_ICONS[t]} {t}</option>)}
+              </select>
+            </Row>
+            {/* I6: Behavior override */}
+            <BehaviorOverridePanel
+              behaviorId={z.behaviorId}
+              behaviorParams={z.behaviorParams}
+              onChangeBehaviorId={id => updateSpinZone(i, { behaviorId: id })}
+              onChangeBehaviorParams={params => updateSpinZone(i, { behaviorParams: params })}
+            />
+          </div>
+        ))}
+        <button onClick={addSpinZone} style={{ padding: "6px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+          + Add Spin Zone
+        </button>
+      </Section>
+
+      {/* Gravity Holes (I6) */}
+      <Section title={`Gravity Holes (${gravityHoles.length})`}>
+        {gravityHoles.map((z, i) => (
+          <div key={z.id} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
+                <BehaviorBadge behaviorId={z.behaviorId} />
+              </div>
+              <button onClick={() => removeGravityHole(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+            </div>
+            <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateGravityHole(i, { x_cm: v }))}</Row>
+            <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateGravityHole(i, { y_cm: v }))}</Row>
+            <Row label="Force (N)">{numInput(z.forceN, 0.005, v => updateGravityHole(i, { forceN: v }), 0.001)}</Row>
+            <Row label="Radius (cm)">{numInput(z.effectiveRadiusCm, 10, v => updateGravityHole(i, { effectiveRadiusCm: v }), 0.5)}</Row>
+            <Row label="Active (ms)">{numInput(z.activeMs, 2000, v => updateGravityHole(i, { activeMs: v }), 250)}</Row>
+            <Row label="Interval (ms)">{numInput(z.intervalMs, 5000, v => updateGravityHole(i, { intervalMs: v }), 500)}</Row>
+            <Row label="Warning (ms)">{numInput(z.warningMs, 800, v => updateGravityHole(i, { warningMs: v }), 100)}</Row>
+            <Row label="Visibility">
+              <select value={z.visibility} onChange={e => updateGravityHole(i, { visibility: e.target.value as "always-hidden" | "warning-only" | "visible" })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
+                <option value="always-hidden">Always hidden</option>
+                <option value="warning-only">Warning only</option>
+                <option value="visible">Visible</option>
+              </select>
+            </Row>
+            <Row label="Element Type">
+              <select value={(z as any).elementType ?? ""} onChange={e => updateGravityHole(i, { elementType: e.target.value || undefined })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
+                <option value="">— none —</option>
+                {ELEMENT_TYPES.map(t => <option key={t} value={t}>{ELEMENT_ICONS[t]} {t}</option>)}
+              </select>
+            </Row>
+            {/* I6: Behavior override */}
+            <BehaviorOverridePanel
+              behaviorId={z.behaviorId}
+              behaviorParams={z.behaviorParams}
+              onChangeBehaviorId={id => updateGravityHole(i, { behaviorId: id })}
+              onChangeBehaviorParams={params => updateGravityHole(i, { behaviorParams: params })}
+            />
+          </div>
+        ))}
+        <button onClick={addGravityHole} style={{ padding: "6px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+          + Add Gravity Hole
+        </button>
+      </Section>
+
+      {/* Bumps (I6) */}
+      <Section title={`Bumps (${bumps.length})`}>
+        {bumps.map((z, i) => (
+          <div key={z.id} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
+                <BehaviorBadge behaviorId={z.behaviorId} />
+              </div>
+              <button onClick={() => removeBump(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+            </div>
+            <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateBump(i, { x_cm: v }))}</Row>
+            <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateBump(i, { y_cm: v }))}</Row>
+            <Row label="Radius (cm)">{numInput(z.radius_cm, 3, v => updateBump(i, { radius_cm: v }), 0.5)}</Row>
+            <Row label="Pop Height (cm)">{numInput(z.popHeight_cm, 2, v => updateBump(i, { popHeight_cm: v }), 0.5)}</Row>
+            <Row label="Recoil">{numInput(z.recoil, 0.3, v => updateBump(i, { recoil: v }), 0.05)}</Row>
+            <Row label="Element Type">
+              <select value={(z as any).elementType ?? ""} onChange={e => updateBump(i, { elementType: e.target.value || undefined })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
+                <option value="">— none —</option>
+                {ELEMENT_TYPES.map(t => <option key={t} value={t}>{ELEMENT_ICONS[t]} {t}</option>)}
+              </select>
+            </Row>
+            {/* I6: Behavior override */}
+            <BehaviorOverridePanel
+              behaviorId={z.behaviorId}
+              behaviorParams={z.behaviorParams}
+              onChangeBehaviorId={id => updateBump(i, { behaviorId: id })}
+              onChangeBehaviorParams={params => updateBump(i, { behaviorParams: params })}
+            />
+          </div>
+        ))}
+        <button onClick={addBump} style={{ padding: "6px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+          + Add Bump
         </button>
       </Section>
     </div>

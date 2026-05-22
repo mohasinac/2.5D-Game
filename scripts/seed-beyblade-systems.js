@@ -39,6 +39,11 @@ const beybladeySystems = [
       bitBeast: "pegasus",
       spinTrack: "st-145",
     },
+    combinedWith: "fortress-leone",
+    locked: false,
+    lockCondition: { type: "spin_above", threshold: 70 },
+    unlockCondition: { type: "spin_below", threshold: 30 },
+    lockedStatMerge: { massMode: "sum", spinMode: "average", damageMode: "max" },
   },
   {
     id: "fortress-leone",
