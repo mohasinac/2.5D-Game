@@ -1,6 +1,7 @@
 import { C, S } from "@/styles/theme";
 import type { ArenaConfig, ArenaShape, ArenaTheme, BowlProfile } from "@/types/arenaConfigNew";
 import { ARENA_PRESETS, initializeWallConfig, BOWL_PROFILE_ANGLES, BOWL_PROFILE_LABELS } from "@/types/arenaConfigNew";
+import { PX_PER_CM_BASE } from "@/constants/units";
 
 interface Props {
   config: ArenaConfig;
@@ -111,6 +112,32 @@ export default function BasicsTab({ config, onChange }: Props) {
           style={S.input}
           placeholder="e.g. Classic Stadium"
         />
+      </div>
+
+      {/* Size */}
+      <div>
+        <label style={S.label}>Size (cm) — Width × Height</label>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <input
+            type="number" min={20} max={100} step={1}
+            value={config.width ? Math.round(config.width / PX_PER_CM_BASE) : 50}
+            onChange={e => onChange({ width: Math.round(parseFloat(e.target.value) || 50) * PX_PER_CM_BASE })}
+            style={{ ...S.input, width: 80, textAlign: "right" as const }}
+          />
+          <span style={{ color: C.faint, fontSize: 12 }}>×</span>
+          <input
+            type="number" min={20} max={100} step={1}
+            value={config.height ? Math.round(config.height / PX_PER_CM_BASE) : 50}
+            onChange={e => onChange({ height: Math.round(parseFloat(e.target.value) || 50) * PX_PER_CM_BASE })}
+            style={{ ...S.input, width: 80, textAlign: "right" as const }}
+          />
+          <span style={{ color: C.faint, fontSize: 12 }}>cm</span>
+        </div>
+        <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>
+          {config.width && config.height
+            ? `${config.width} × ${config.height} px stored — displayed as ${Math.round(config.width / PX_PER_CM_BASE)} × ${Math.round(config.height / PX_PER_CM_BASE)} cm`
+            : "Default: 50 × 50 cm (1200 × 1200 px)"}
+        </div>
       </div>
 
       {/* Presets */}

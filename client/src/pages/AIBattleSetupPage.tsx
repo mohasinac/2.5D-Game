@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 import { C } from "@/styles/theme";
 import { EntityPicker, type EntityOption } from "@/components/setup/EntityPicker";
+import { PX_PER_CM_BASE } from "@/constants/units";
 import { getComboDisplay, costIcon, KEY_LABEL } from "@/constants/combos";
 
 type Difficulty = "medium" | "hard" | "hell";
@@ -358,7 +359,9 @@ function buildArenaTabs() {
               <span>{a.shape ?? "circle"} · {a.theme ?? "default"}</span>
             </div>
             <div style={{ textAlign: "center", color: C.muted, fontSize: 12 }}>
-              {a.width && a.height ? `${a.width} × ${a.height} px` : "size unknown"}
+              {a.width && a.height
+  ? `${Math.round(a.width / PX_PER_CM_BASE)} × ${Math.round(a.height / PX_PER_CM_BASE)} cm`
+  : "size unknown"}
             </div>
           </div>
         );

@@ -42,6 +42,9 @@ export function PartDimensionFields({ value, onChange, showInnerRadius = true }:
   const update = (field: keyof PartDimensions, v: number) =>
     onChange({ ...value, [field]: v });
 
+  const outerDiameter = (value.outerRadius * 2).toFixed(1);
+  const innerDiameter = (value.innerRadius * 2).toFixed(1);
+
   return (
     <div>
       <div style={{ fontSize: 12, color: C.muted, marginBottom: 8 }}>Dimensions</div>
@@ -66,6 +69,12 @@ export function PartDimensionFields({ value, onChange, showInnerRadius = true }:
             hint="Central bore"
           />
         )}
+      </div>
+      <div style={{ marginTop: 8, fontSize: 11, color: C.faint }}>
+        Outer ⌀ {outerDiameter} mm
+        {showInnerRadius && ` · Inner ⌀ ${innerDiameter} mm`}
+        {` · H ${value.height} mm`}
+        {` — Effective area: ${outerDiameter} × ${outerDiameter} × ${value.height} mm`}
       </div>
     </div>
   );
