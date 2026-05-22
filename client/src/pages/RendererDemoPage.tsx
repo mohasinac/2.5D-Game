@@ -139,7 +139,7 @@ export function RendererDemoPage() {
             <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:16 }}>
               <div style={{ fontSize:11, fontWeight:600, color:C.muted, textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>Effects</div>
               <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-                <button onClick={burst} style={{ padding:"10px", borderRadius:10, background:C.redDark, color:C.white, fontWeight:600, fontSize:13 }}>💥 Collision Burst</button>
+                <button onClick={burst} style={{ padding:"10px", borderRadius:10, background:C.red, color:C.white, fontWeight:600, fontSize:13 }}>💥 Collision Burst</button>
                 <button onClick={spinOut} style={{ padding:"10px", borderRadius:10, background:C.orange, color:C.white, fontWeight:600, fontSize:13 }}>🌀 Spin-Out Effect</button>
                 <button onClick={reset} style={{ padding:"10px", borderRadius:10, background:"transparent", color:C.muted, border:`1px solid ${C.border}`, fontWeight:600, fontSize:13 }}>↺ Reset Spins</button>
               </div>

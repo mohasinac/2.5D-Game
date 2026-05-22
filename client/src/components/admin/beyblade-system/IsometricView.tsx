@@ -7,7 +7,7 @@
  */
 
 import { useRef, useEffect, useCallback } from "react";
-import { C } from "@/styles/theme";
+import { C, HEX } from "@/styles/theme";
 import { renderRadius, synthesizeRadialCache } from "@/types/beybladeSystem";
 import { computeEffectiveRadius } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
@@ -68,7 +68,7 @@ function buildLayers(resolved: ResolvedBeybladeSystem): LayerDef[] {
     const fp = part.geometry?.fourierProfile as FourierRadialProfile | undefined;
     layers.push({
       label,
-      color: (part.color as string) ?? C.faint,
+      color: (part.color as string) ?? HEX.faint,
       heightMm,
       radiusMm,
       innerRadiusMm: opts.isTip ? 0 : (dims?.innerRadius ?? 0),
@@ -231,12 +231,12 @@ function drawLayer(
   // Inner bore ring
   if (layer.innerRadiusMm > 0) {
     const ir = layer.innerRadiusMm * pxPerMm;
-    drawEllipse(ctx, bx, topCY, ir, ir * ISO_Y, C.bg0 ?? "#0f172a", layer.color + "44");
+    drawEllipse(ctx, bx, topCY, ir, ir * ISO_Y, HEX.bg0, layer.color + "44");
   }
 
   // ── CP arcs on top face ───────────────────────────────────────────────────
   for (const cp of layer.contactPoints) {
-    const cpColor = MATERIAL_COLORS[cp.material] ?? C.blue;
+    const cpColor = MATERIAL_COLORS[cp.material] ?? HEX.blue;
     const cpR = cp.radius * pxPerMm;
     const cpHalf = cp.width / 2;
     const startRad = ((cp.angle + rot - cpHalf - 90) * Math.PI) / 180;
@@ -249,7 +249,7 @@ function drawLayer(
   }
 
   // Label on the side
-  ctx.fillStyle = C.faint ?? "#475569";
+  ctx.fillStyle = HEX.faint;
   ctx.font = "8px sans-serif";
   ctx.textAlign = "left";
   ctx.fillText(layer.label, bx + rx + 3, (by + topCY) / 2);
@@ -269,7 +269,7 @@ export function IsometricView({ resolved }: { resolved?: ResolvedBeybladeSystem 
     if (!ctx) return;
 
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = C.bg0 ?? "#0f172a";
+    ctx.fillStyle = HEX.bg0;
     ctx.fillRect(0, 0, W, H);
 
     for (const layer of layers) {
@@ -283,7 +283,7 @@ export function IsometricView({ resolved }: { resolved?: ResolvedBeybladeSystem 
       const topY = H - 28 - topLayer.heightMm * scaleY - 18;
       ctx.font = "14px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillStyle = spinDir === "right" ? C.blue : "#ef4444";
+      ctx.fillStyle = spinDir === "right" ? HEX.blue : HEX.red;
       ctx.fillText(spinDir === "right" ? "↻" : "↺", CX, topY);
     }
   }, [resolved]);
@@ -295,9 +295,9 @@ export function IsometricView({ resolved }: { resolved?: ResolvedBeybladeSystem 
         const ctx = canvas.getContext("2d");
         if (ctx) {
           ctx.clearRect(0, 0, W, H);
-          ctx.fillStyle = C.bg0 ?? "#0f172a";
+          ctx.fillStyle = HEX.bg0;
           ctx.fillRect(0, 0, W, H);
-          ctx.fillStyle = C.faint ?? "#475569";
+          ctx.fillStyle = HEX.faint;
           ctx.font = "11px sans-serif";
           ctx.textAlign = "center";
           ctx.fillText("No system loaded", W / 2, H / 2);

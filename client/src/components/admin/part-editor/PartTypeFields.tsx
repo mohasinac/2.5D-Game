@@ -9,7 +9,7 @@
  */
 
 import { useState } from "react";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 type Part = Record<string, unknown>;
 type OnChange = (patch: Part) => void;
@@ -69,9 +69,9 @@ function ToggleBtn({ label, active, onClick }: { label: string; active: boolean;
       onClick={onClick}
       style={{
         padding: "4px 10px", fontSize: 11, borderRadius: 5, cursor: "pointer",
-        background: active ? C.blue + "22" : C.bg2,
+        background: active ? alpha(C.blue, 0.13) : C.bg2,
         color: active ? C.blue : C.muted,
-        border: `1px solid ${active ? C.blue + "55" : C.border}`,
+        border: `1px solid ${active ? alpha(C.blue, 0.33) : C.border}`,
       }}
     >
       {label}
@@ -169,7 +169,7 @@ function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChang
                 style={{ width: 70, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
               />
             </div>
-            <button onClick={() => remove(i)} style={{ padding: "5px 10px", background: C.red + "22", border: `1px solid ${C.red}44`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}>Remove</button>
+            <button onClick={() => remove(i)} style={{ padding: "5px 10px", background: alpha(C.red, 0.13), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}>Remove</button>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <div>
@@ -273,7 +273,7 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
               <input value={sw.resetToConfig ?? ""} onChange={(e) => patch(i, { resetToConfig: e.target.value || undefined })} placeholder="(none)"
                 style={{ width: 120, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }} />
             </div>
-            <button onClick={() => remove(i)} style={{ padding: "5px 10px", background: C.red + "22", border: `1px solid ${C.red}44`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}>Remove</button>
+            <button onClick={() => remove(i)} style={{ padding: "5px 10px", background: alpha(C.red, 0.13), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}>Remove</button>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
             <div>

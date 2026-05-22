@@ -6,7 +6,7 @@ import { useGameInput } from "@/game/hooks/useGameInput";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
 import { getBeybladeStability, mapToRecord, TYPE_COLORS } from "@/types/game";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
 import { PartModesHUD } from "@/components/game/PartModesHUD";
@@ -186,7 +186,7 @@ export function BattleGamePage() {
             {isSpectating ? "SPECTATING" : connectionState}
           </span>
           {isSpectating && (
-            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", background: C.purple + "44", color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${C.purple}55` }}>
+            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", background: alpha(C.purple, 0.27), color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${alpha(C.purple, 0.33)}` }}>
               SPECTATING
             </span>
           )}

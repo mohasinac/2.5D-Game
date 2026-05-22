@@ -6,7 +6,7 @@
  */
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { C } from "@/styles/theme";
+import { C, HEX, alpha } from "@/styles/theme";
 import type { PartPocket } from "@/types/beybladeSystem";
 
 const CANVAS_SIZE = 200;
@@ -35,13 +35,13 @@ function drawCanvas(
   outerRadius: number
 ) {
   ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-  ctx.fillStyle = C.bg3;
+  ctx.fillStyle = HEX.bg3;
   ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
   // Outer radius ring
   ctx.beginPath();
   ctx.arc(CENTER, CENTER, outerRadius * PX_PER_MM, 0, Math.PI * 2);
-  ctx.strokeStyle = C.border;
+  ctx.strokeStyle = HEX.border;
   ctx.lineWidth = 1;
   ctx.stroke();
 
@@ -49,13 +49,13 @@ function drawCanvas(
   for (let r = 5; r < outerRadius; r += 5) {
     ctx.beginPath();
     ctx.arc(CENTER, CENTER, r * PX_PER_MM, 0, Math.PI * 2);
-    ctx.strokeStyle = C.border + "55";
+    ctx.strokeStyle = HEX.border + "55";
     ctx.lineWidth = 0.4;
     ctx.stroke();
   }
 
   // Crosshair
-  ctx.strokeStyle = C.faint;
+  ctx.strokeStyle = HEX.faint;
   ctx.lineWidth = 0.5;
   ctx.beginPath();
   ctx.moveTo(CENTER - 8, CENTER); ctx.lineTo(CENTER + 8, CENTER);
@@ -71,14 +71,14 @@ function drawCanvas(
     ctx.beginPath();
     ctx.arc(px, py, r, 0, Math.PI * 2);
     ctx.fillStyle = p.ballMaterial === "metal"
-      ? (isSelected ? C.muted : C.faint)
-      : (isSelected ? C.yellow : C.yellow + "88");
+      ? (isSelected ? HEX.muted : HEX.faint)
+      : (isSelected ? HEX.yellow : HEX.yellow + "88");
     ctx.fill();
-    ctx.strokeStyle = isSelected ? "#fff" : C.border;
+    ctx.strokeStyle = isSelected ? "#fff" : HEX.border;
     ctx.lineWidth = isSelected ? 1.5 : 0.5;
     ctx.stroke();
 
-    ctx.fillStyle = C.faint;
+    ctx.fillStyle = HEX.faint;
     ctx.font = "8px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(`${i + 1}`, px, py + 3);
@@ -202,8 +202,8 @@ export function PocketListEditor({ value, onChange, outerRadius = 35 }: Props) {
                 key={i}
                 onClick={() => setSelected(selected === i ? null : i)}
                 style={{
-                  background: selected === i ? C.blue + "18" : C.bg2,
-                  border: `1px solid ${selected === i ? C.blue + "55" : C.border}`,
+                  background: selected === i ? alpha(C.blue, 0.09) : C.bg2,
+                  border: `1px solid ${selected === i ? alpha(C.blue, 0.33) : C.border}`,
                   borderRadius: 6, padding: "5px 10px", cursor: "pointer",
                   display: "flex", alignItems: "center", gap: 8, fontSize: 11,
                 }}
@@ -288,9 +288,9 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   return (
     <button onClick={onClick} style={{
       padding: "2px 8px", fontSize: 10, borderRadius: 4, cursor: "pointer",
-      background: active ? "#3b82f622" : "#1e293b",
-      color: active ? "#3b82f6" : "#64748b",
-      border: `1px solid ${active ? "#3b82f644" : "#334155"}`,
+      background: active ? alpha(C.blue, 0.13) : C.bg2,
+      color: active ? C.blue : C.faint,
+      border: `1px solid ${active ? alpha(C.blue, 0.27) : C.border}`,
     }}>
       {children}
     </button>

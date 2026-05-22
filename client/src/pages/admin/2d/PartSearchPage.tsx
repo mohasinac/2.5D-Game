@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 const PART_TYPES = [
   { label: "All", value: "all" },
@@ -83,7 +83,7 @@ export function PartSearchPage() {
                 background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10,
                 padding: "16px 18px", cursor: "pointer", transition: "border-color 150ms",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = C.blue + "88")}
+              onMouseEnter={(e) => (e.currentTarget.style.borderColor = alpha(C.blue, 0.53))}
               onMouseLeave={(e) => (e.currentTarget.style.borderColor = C.border)}
             >
               <div style={{ fontSize: 24, marginBottom: 8 }}>{pt.icon}</div>

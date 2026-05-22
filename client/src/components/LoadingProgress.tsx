@@ -1,4 +1,4 @@
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 export type LoadingStep =
   | "connecting-ws"
@@ -78,8 +78,8 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error }: Loadin
 
       {error && (
         <div style={{
-          marginTop: 16, padding: "8px 14px", background: C.red + "20",
-          border: `1px solid ${C.red}66`, borderRadius: 8, color: C.red, fontSize: 12,
+          marginTop: 16, padding: "8px 14px", background: alpha(C.red, 0.13),
+          border: `1px solid ${alpha(C.red, 0.40)}`, borderRadius: 8, color: C.red, fontSize: 12,
           maxWidth: 360, textAlign: "center",
         }}>
           {error}

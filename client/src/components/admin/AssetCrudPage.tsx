@@ -3,7 +3,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "fi
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { C, S } from "@/styles/theme";
+import { C, S, alpha } from "@/styles/theme";
 import WhatsAppStyleImageEditor from "./WhatsAppStyleImageEditor";
 import type { WhatsAppStyleImageEditorRef } from "./WhatsAppStyleImageEditor";
 import ImageCropper from "./ImageCropper";
@@ -228,7 +228,7 @@ export function AssetCrudPage({
                 <img src={asset.url} alt={asset.name} style={{ width:"100%", height:"100%", objectFit:"contain", padding:8 }} loading="lazy" />
                 <button
                   onClick={() => handleDelete(asset)} disabled={deletingId===asset.id}
-                  style={{ position:"absolute", top:6, right:6, width:24, height:24, background:`${C.red}dd`, color:C.white, borderRadius:4, border:"none", fontSize:12, cursor:"pointer", opacity:deletingId===asset.id?0.5:1, display:"flex", alignItems:"center", justifyContent:"center" }}
+                  style={{ position:"absolute", top:6, right:6, width:24, height:24, background:alpha(C.red, 0.87), color:C.white, borderRadius:4, border:"none", fontSize:12, cursor:"pointer", opacity:deletingId===asset.id?0.5:1, display:"flex", alignItems:"center", justifyContent:"center" }}
                 >{deletingId===asset.id?"...":"×"}</button>
               </div>
               <div style={{ padding:8 }}>

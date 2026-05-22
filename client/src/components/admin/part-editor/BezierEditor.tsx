@@ -12,7 +12,7 @@
  */
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { C } from "@/styles/theme";
+import { C, HEX } from "@/styles/theme";
 import type { BezierPath, BezierPathSegment } from "@/types/beybladeSystem";
 
 const CANVAS_SIZE = 260;
@@ -84,7 +84,7 @@ export function BezierEditor({ value, onChange, onSyncFourier, imageUrl, scale =
     if (!canvas) return;
     const ctx = canvas.getContext("2d")!;
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-    ctx.fillStyle = C.bg3;
+    ctx.fillStyle = HEX.bg3;
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
     // Reference image (faint)
@@ -95,7 +95,7 @@ export function BezierEditor({ value, onChange, onSyncFourier, imageUrl, scale =
     }
 
     // Grid lines
-    ctx.strokeStyle = C.border;
+    ctx.strokeStyle = HEX.border;
     ctx.lineWidth = 0.5;
     for (let d = -60; d <= 60; d += 10) {
       const px = toCanvas(d);
@@ -123,9 +123,9 @@ export function BezierEditor({ value, onChange, onSyncFourier, imageUrl, scale =
       prevX = seg.x; prevY = seg.y;
     }
     ctx.closePath();
-    ctx.fillStyle = C.blue + "22";
+    ctx.fillStyle = HEX.blue + "22";
     ctx.fill();
-    ctx.strokeStyle = C.blue;
+    ctx.strokeStyle = HEX.blue;
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
@@ -135,14 +135,14 @@ export function BezierEditor({ value, onChange, onSyncFourier, imageUrl, scale =
       // Endpoint
       ctx.beginPath();
       ctx.arc(toCanvas(seg.x), toCanvas(seg.y), HANDLE_RADIUS, 0, Math.PI * 2);
-      ctx.fillStyle = isSelected ? C.blue : C.muted;
+      ctx.fillStyle = isSelected ? HEX.blue : HEX.muted;
       ctx.fill();
 
       if (isSelected && seg.type === "C") {
         // Control point handles
         const prev = i > 0 ? segs[i - 1] : segs[segs.length - 1];
         ctx.setLineDash([3, 3]);
-        ctx.strokeStyle = C.yellow + "aa";
+        ctx.strokeStyle = HEX.yellow + "aa";
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(toCanvas(prev.x), toCanvas(prev.y));
@@ -157,7 +157,7 @@ export function BezierEditor({ value, onChange, onSyncFourier, imageUrl, scale =
         [{ x: seg.x1!, y: seg.y1! }, { x: seg.x2!, y: seg.y2! }].forEach((cp) => {
           ctx.beginPath();
           ctx.arc(toCanvas(cp.x), toCanvas(cp.y), 4, 0, Math.PI * 2);
-          ctx.fillStyle = C.yellow;
+          ctx.fillStyle = HEX.yellow;
           ctx.fill();
         });
       }

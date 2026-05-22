@@ -19,7 +19,7 @@ import { useState, useEffect } from "react";
 import { useTabFromUrl } from "@/hooks/useTabFromUrl";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import toast from "react-hot-toast";
 import { PartShapeEditor } from "./PartShapeEditor";
 import { PartImagesSection } from "./PartImagesSection";
@@ -158,7 +158,7 @@ export function PartEditor({
           <div style={{ fontSize: 11, color: C.faint }}>ID: {partId}</div>
         </div>
         {dirty && (
-          <span style={{ fontSize: 11, color: C.yellow, background: C.yellow + "18", padding: "3px 8px", borderRadius: 5 }}>
+          <span style={{ fontSize: 11, color: C.yellow, background: alpha(C.yellow, 0.09), padding: "3px 8px", borderRadius: 5 }}>
             Unsaved changes
           </span>
         )}
@@ -397,8 +397,8 @@ function PartCombosField({ value, onChange }: { value: string[]; onChange: (v: s
               key={c.id}
               style={{
                 display: "flex", alignItems: "flex-start", gap: 8,
-                padding: "8px 10px", background: checked ? C.blue + "10" : C.bg2,
-                border: `1px solid ${checked ? C.blue + "55" : C.border}`,
+                padding: "8px 10px", background: checked ? alpha(C.blue, 0.06) : C.bg2,
+                border: `1px solid ${checked ? alpha(C.blue, 0.33) : C.border}`,
                 borderRadius: 7, cursor: disabled ? "not-allowed" : "pointer",
                 opacity: disabled ? 0.5 : 1,
               }}

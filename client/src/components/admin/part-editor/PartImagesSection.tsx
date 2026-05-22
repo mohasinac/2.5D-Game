@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from "@/lib/firebase";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import type { PartImages } from "@/types/beybladeSystem";
 
 type ViewKey = "topView" | "sideView" | "bottomView";
@@ -85,7 +85,7 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
         <div
           style={{
             fontSize: 11, padding: "3px 9px", borderRadius: 99, fontWeight: 600,
-            background: wf.color + "18", color: wf.color, border: `1px solid ${wf.color}44`,
+            background: alpha(wf.color, 0.09), color: wf.color, border: `1px solid ${alpha(wf.color, 0.27)}`,
           }}
         >
           {wf.tier}
@@ -114,7 +114,7 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
               />
               <div
                 style={{
-                  border: `1px solid ${url ? C.blue + "55" : C.border}`,
+                  border: `1px solid ${url ? alpha(C.blue, 0.33) : C.border}`,
                   borderRadius: 9, overflow: "hidden",
                   background: url ? C.bg1 : C.bg2,
                   transition: "border-color 150ms",
@@ -142,7 +142,7 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
                       title="Remove image"
                       style={{
                         position: "absolute", top: 4, right: 4,
-                        background: C.bg0 + "cc", border: `1px solid ${C.border}`,
+                        background: alpha(C.bg0, 0.80), border: `1px solid ${C.border}`,
                         borderRadius: "50%", width: 22, height: 22,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: 11, color: C.red, cursor: "pointer",
@@ -178,9 +178,9 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
                     disabled={busy}
                     style={{
                       width: "100%", padding: "5px 0", fontSize: 11,
-                      background: url ? C.bg3 : C.blue + "22",
+                      background: url ? C.bg3 : alpha(C.blue, 0.13),
                       color: url ? C.muted : C.blue,
-                      border: `1px solid ${url ? C.border : C.blue + "44"}`,
+                      border: `1px solid ${url ? C.border : alpha(C.blue, 0.27)}`,
                       borderRadius: 5, cursor: busy ? "default" : "pointer",
                     }}
                   >

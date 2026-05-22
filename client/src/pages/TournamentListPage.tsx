@@ -4,7 +4,7 @@ import { modeFromPath } from "@/shared/utils/gameMode";
 import { collection, onSnapshot, query, orderBy, where } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
-import { C, pill } from "@/styles/theme";
+import { C, pill, alpha } from "@/styles/theme";
 import type { TournamentDoc } from "@/types/game";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -95,7 +95,7 @@ export function TournamentListPage() {
               style={{
                 padding: "6px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600,
                 cursor: "pointer", border: `1px solid ${filter === f ? C.blue : C.border}`,
-                background: filter === f ? C.blue + "22" : "transparent",
+                background: filter === f ? alpha(C.blue, 0.13) : "transparent",
                 color: filter === f ? C.blue : C.muted,
               }}
             >

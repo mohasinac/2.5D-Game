@@ -10,7 +10,7 @@
  */
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { C } from "@/styles/theme";
+import { C, HEX } from "@/styles/theme";
 import type { BezierSplineProfile, SplineKnot } from "@/types/beybladeSystem";
 
 const CANVAS_W = 200;
@@ -113,11 +113,11 @@ export function SplineProfileEditor({ value, onChange, imageUrl, maxHeight = 60,
     if (!canvas) return;
     const ctx = canvas.getContext("2d")!;
     ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
-    ctx.fillStyle = C.bg3;
+    ctx.fillStyle = HEX.bg3;
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
 
     // Grid
-    ctx.strokeStyle = C.border; ctx.lineWidth = 0.5;
+    ctx.strokeStyle = HEX.border; ctx.lineWidth = 0.5;
     for (let r = 0; r <= maxRadius; r += 10) {
       const px = toCanvasX(r);
       ctx.beginPath(); ctx.moveTo(px, PAD.top); ctx.lineTo(px, CANVAS_H - PAD.bottom); ctx.stroke();
@@ -128,7 +128,7 @@ export function SplineProfileEditor({ value, onChange, imageUrl, maxHeight = 60,
     }
 
     // Axis labels
-    ctx.fillStyle = C.faint; ctx.font = "9px sans-serif"; ctx.textAlign = "right";
+    ctx.fillStyle = HEX.faint; ctx.font = "9px sans-serif"; ctx.textAlign = "right";
     for (let h = 0; h <= maxHeight; h += 10) ctx.fillText(`${h}`, PAD.left - 3, toCanvasY(h) + 3);
     ctx.textAlign = "center";
     for (let r = 0; r <= maxRadius; r += 10) ctx.fillText(`${r}`, toCanvasX(r), CANVAS_H - PAD.bottom + 12);
@@ -141,7 +141,7 @@ export function SplineProfileEditor({ value, onChange, imageUrl, maxHeight = 60,
         const px = toCanvasX(p.radius), py = toCanvasY(p.height);
         i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
       });
-      ctx.strokeStyle = C.blue; ctx.lineWidth = 2;
+      ctx.strokeStyle = HEX.blue; ctx.lineWidth = 2;
       ctx.stroke();
 
       // Mirror (left side)
@@ -150,7 +150,7 @@ export function SplineProfileEditor({ value, onChange, imageUrl, maxHeight = 60,
         const px = toCanvasX(-p.radius) + 2 * PAD.left - 4, py = toCanvasY(p.height);
         i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
       });
-      ctx.strokeStyle = C.blue + "44"; ctx.lineWidth = 1;
+      ctx.strokeStyle = HEX.blue + "44"; ctx.lineWidth = 1;
       ctx.stroke();
     }
 
@@ -158,7 +158,7 @@ export function SplineProfileEditor({ value, onChange, imageUrl, maxHeight = 60,
     value.knots.forEach((k, i) => {
       ctx.beginPath();
       ctx.arc(toCanvasX(k.radius), toCanvasY(k.height), KNOT_R, 0, Math.PI * 2);
-      ctx.fillStyle = dragging.current === i ? C.yellow : C.blue;
+      ctx.fillStyle = dragging.current === i ? HEX.yellow : HEX.blue;
       ctx.fill();
     });
   }, [value, maxHeight, maxRadius]);

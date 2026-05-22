@@ -1,4 +1,4 @@
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 interface Props {
   label: string;
@@ -10,12 +10,12 @@ interface Props {
 
 export function SubComponentToggle({ label, description, enabled, onToggle, children }: Props) {
   return (
-    <div style={{ border: `1px solid ${enabled ? C.blue + "44" : C.border}`, borderRadius: 10, overflow: "hidden", transition: "border-color 150ms" }}>
+    <div style={{ border: `1px solid ${enabled ? alpha(C.blue, 0.27) : C.border}`, borderRadius: 10, overflow: "hidden", transition: "border-color 150ms" }}>
       {/* Header row */}
       <label
         style={{
           display: "flex", alignItems: "center", gap: 12, padding: "12px 16px",
-          background: enabled ? C.blue + "0e" : C.bg2, cursor: "pointer",
+          background: enabled ? alpha(C.blue, 0.06) : C.bg2, cursor: "pointer",
           userSelect: "none",
         }}
       >

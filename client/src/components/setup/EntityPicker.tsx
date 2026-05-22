@@ -3,7 +3,7 @@
 // are provided by the caller.
 
 import { useMemo, useState } from "react";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 export interface EntityOption {
   id: string;
@@ -134,7 +134,7 @@ export function EntityPicker({
                         onClick={() => onSelect(o.id)}
                         style={{
                           width: "100%", textAlign: "left", padding: "10px 12px",
-                          background: isSel ? C.blue + "22" : "transparent",
+                          background: isSel ? alpha(C.blue, 0.13) : "transparent",
                           color: isSel ? C.blue : C.text,
                           border: "none",
                           borderLeft: `3px solid ${isSel ? C.blue : "transparent"}`,

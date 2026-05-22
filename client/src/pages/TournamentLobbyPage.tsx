@@ -7,7 +7,7 @@ import {
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { C, pill } from "@/styles/theme";
+import { C, pill, alpha } from "@/styles/theme";
 import toast from "react-hot-toast";
 import type { TournamentDoc, TournamentParticipantDoc, TournamentMatchDoc } from "@/types/game";
 
@@ -311,7 +311,7 @@ export function TournamentLobbyPage() {
             {/* Countdown */}
             {tournament.status === "registration" && (
               <div style={{
-                background: C.yellow + "15", border: `1px solid ${C.yellow}44`,
+                background: alpha(C.yellow, 0.08), border: `1px solid ${alpha(C.yellow, 0.27)}`,
                 borderRadius: 12, padding: "16px 20px", marginBottom: 16,
                 display: "flex", alignItems: "center", gap: 12,
               }}>
@@ -326,7 +326,7 @@ export function TournamentLobbyPage() {
             {/* My match indicator */}
             {myMatch && (
               <div style={{
-                background: C.green + "15", border: `1px solid ${C.green}44`,
+                background: alpha(C.green, 0.08), border: `1px solid ${alpha(C.green, 0.27)}`,
                 borderRadius: 12, padding: "14px 18px", marginBottom: 16,
               }}>
                 <p style={{ color: C.green, fontWeight: 700, fontSize: 14 }}>
@@ -381,7 +381,7 @@ export function TournamentLobbyPage() {
                     style={{
                       padding: "8px 14px", borderRadius: 8, cursor: "pointer", fontWeight: 700, fontSize: 13,
                       background: "transparent", color: C.red,
-                      border: `1px solid ${C.red}66`,
+                      border: `1px solid ${alpha(C.red, 0.40)}`,
                     }}
                   >
                     Quit tournament
@@ -440,7 +440,7 @@ export function TournamentLobbyPage() {
                   <div key={p.id} style={{
                     display: "flex", alignItems: "center", gap: 10, padding: "10px 14px",
                     borderBottom: i < participants.length - 1 ? `1px solid ${C.border}` : "none",
-                    background: p.userId === settings.userId ? C.blue + "10" : "transparent",
+                    background: p.userId === settings.userId ? alpha(C.blue, 0.06) : "transparent",
                   }}>
                     <div style={{
                       width: 28, height: 28, borderRadius: "50%", background: C.bg3,
@@ -474,7 +474,7 @@ export function TournamentLobbyPage() {
             {/* Winner banner */}
             {tournament.winnerUsername && (
               <div style={{
-                marginTop: 12, background: C.yellow + "15", border: `1px solid ${C.yellow}44`,
+                marginTop: 12, background: alpha(C.yellow, 0.08), border: `1px solid ${alpha(C.yellow, 0.27)}`,
                 borderRadius: 12, padding: "14px 16px", textAlign: "center",
               }}>
                 <p style={{ fontSize: 11, color: C.yellow, fontWeight: 600 }}>TOURNAMENT WINNER</p>
@@ -610,7 +610,7 @@ function BracketMatch({
 
   return (
     <div style={{
-      background: C.bg2, borderRadius: 10, border: `1px solid ${isMine ? C.yellow + "55" : C.border}`,
+      background: C.bg2, borderRadius: 10, border: `1px solid ${isMine ? alpha(C.yellow, 0.33) : C.border}`,
       padding: 10, position: "relative",
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
@@ -621,8 +621,8 @@ function BracketMatch({
           <button
             onClick={onSpectate}
             style={{
-              fontSize: 10, color: C.green, background: C.green + "20",
-              border: `1px solid ${C.green}44`, borderRadius: 4, padding: "1px 6px", cursor: "pointer", fontWeight: 600,
+              fontSize: 10, color: C.green, background: alpha(C.green, 0.13),
+              border: `1px solid ${alpha(C.green, 0.27)}`, borderRadius: 4, padding: "1px 6px", cursor: "pointer", fontWeight: 600,
             }}
           >
             Watch

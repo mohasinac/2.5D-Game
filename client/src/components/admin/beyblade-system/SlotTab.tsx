@@ -3,7 +3,7 @@
  */
 
 import { useState } from "react";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import { PartPicker } from "./PartPicker";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,10 +54,10 @@ export function SlotTab({
           <div style={{ width: 12, height: 12, borderRadius: "50%", background: partData.color ?? C.faint, flexShrink: 0, border: `1px solid ${C.border}` }} />
           <span style={{ flex: 1, fontSize: 12, color: C.text }}>{partData.displayName}</span>
           {selectedConfig && (
-            <span style={{ fontSize: 10, color: C.blue, background: C.blue + "18", padding: "2px 6px", borderRadius: 4 }}>{selectedConfig}</span>
+            <span style={{ fontSize: 10, color: C.blue, background: alpha(C.blue, 0.09), padding: "2px 6px", borderRadius: 4 }}>{selectedConfig}</span>
           )}
           {canFlip && flipped && (
-            <span style={{ fontSize: 9, color: C.yellow, background: C.yellow + "18", padding: "1px 5px", borderRadius: 4 }}>flipped</span>
+            <span style={{ fontSize: 9, color: C.yellow, background: alpha(C.yellow, 0.09), padding: "1px 5px", borderRadius: 4 }}>flipped</span>
           )}
           <span style={{ fontSize: 10, color: C.faint }}>{expanded ? "▾" : "▸"}</span>
         </div>
@@ -88,9 +88,9 @@ export function SlotTab({
                 onClick={() => onConfigSelect(cfg.name)}
                 style={{
                   padding: "4px 10px", fontSize: 11, borderRadius: 5, cursor: "pointer",
-                  background: selectedConfig === cfg.name ? C.blue + "22" : C.bg2,
+                  background: selectedConfig === cfg.name ? alpha(C.blue, 0.13) : C.bg2,
                   color: selectedConfig === cfg.name ? C.blue : C.muted,
-                  border: `1px solid ${selectedConfig === cfg.name ? C.blue + "55" : C.border}`,
+                  border: `1px solid ${selectedConfig === cfg.name ? alpha(C.blue, 0.33) : C.border}`,
                 }}
               >
                 {cfg.name}

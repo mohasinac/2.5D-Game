@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, S, btn } from "@/styles/theme";
+import { C, S, btn, alpha } from "@/styles/theme";
 import toast from "react-hot-toast";
 
 interface FormState {
@@ -107,7 +107,7 @@ export function TournamentCreatePage() {
       </div>
 
       {error && (
-        <div style={{ background: C.red + "18", border: `1px solid ${C.red}44`, borderRadius: 10, padding: "10px 14px", marginBottom: 16, color: C.red, fontSize: 13 }}>
+        <div style={{ background: alpha(C.red, 0.09), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 10, padding: "10px 14px", marginBottom: 16, color: C.red, fontSize: 13 }}>
           {error}
         </div>
       )}

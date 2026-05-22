@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, btn, btnOutline } from "@/styles/theme";
+import { C, btn, btnOutline, alpha } from "@/styles/theme";
 import toast from "react-hot-toast";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -200,8 +200,8 @@ export function CompatibilityTagsPage() {
             key={f}
             style={{
               fontSize: 11, padding: "3px 9px", borderRadius: 5,
-              background: FIELD_COLOR[f] + "1a", color: FIELD_COLOR[f],
-              border: `1px solid ${FIELD_COLOR[f]}44`,
+              background: alpha(FIELD_COLOR[f], 0.10), color: FIELD_COLOR[f],
+              border: `1px solid ${alpha(FIELD_COLOR[f], 0.27)}`,
             }}
           >
             {f}
@@ -227,7 +227,7 @@ export function CompatibilityTagsPage() {
 
       {/* Error */}
       {error && (
-        <div style={{ background: C.red + "1a", border: `1px solid ${C.red}44`, borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 13, color: C.red }}>
+        <div style={{ background: alpha(C.red, 0.10), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 13, color: C.red }}>
           {error}
         </div>
       )}
@@ -277,8 +277,8 @@ export function CompatibilityTagsPage() {
                   <span
                     style={{
                       fontSize: 12, padding: "3px 9px", borderRadius: 5,
-                      background: C.blue + "1a", color: C.blue,
-                      border: `1px solid ${C.blue}33`, fontFamily: "monospace",
+                      background: alpha(C.blue, 0.10), color: C.blue,
+                      border: `1px solid ${alpha(C.blue, 0.20)}`, fontFamily: "monospace",
                     }}
                   >
                     {entry.name}
@@ -392,7 +392,7 @@ export function CompatibilityTagsPage() {
                         {entry.usages.map((u, i) => (
                           <tr
                             key={i}
-                            style={{ borderTop: `1px solid ${C.border}`, background: i % 2 === 0 ? "transparent" : C.bg2 + "88" }}
+                            style={{ borderTop: `1px solid ${C.border}`, background: i % 2 === 0 ? "transparent" : alpha(C.bg2, 0.53) }}
                           >
                             <td style={{ padding: "6px 14px", color: C.text }}>{u.partName}</td>
                             <td style={{ padding: "6px 14px", color: C.muted }}>
@@ -402,9 +402,9 @@ export function CompatibilityTagsPage() {
                               <span
                                 style={{
                                   fontSize: 10, padding: "2px 7px", borderRadius: 4,
-                                  background: FIELD_COLOR[u.field] + "1a",
+                                  background: alpha(FIELD_COLOR[u.field], 0.10),
                                   color: FIELD_COLOR[u.field],
-                                  border: `1px solid ${FIELD_COLOR[u.field]}33`,
+                                  border: `1px solid ${alpha(FIELD_COLOR[u.field], 0.20)}`,
                                 }}
                               >
                                 {u.field}

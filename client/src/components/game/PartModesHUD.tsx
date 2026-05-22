@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import type { Room } from "colyseus.js";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 const PART_LABELS: Record<string, string> = {
   bit_beast: "Bit Beast",
@@ -98,7 +98,7 @@ export function PartModesHUD({ myBeyblade, room }: PartModesHUDProps) {
             style={{
               background: "rgba(15, 23, 42, 0.88)",
               borderRadius: 10,
-              border: `1px solid ${onCooldown ? C.border : C.purple + "66"}`,
+              border: `1px solid ${onCooldown ? C.border : alpha(C.purple, 0.40)}`,
               padding: "8px 10px", minWidth: 180,
               position: "relative", overflow: "hidden",
             }}

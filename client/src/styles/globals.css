@@ -8,6 +8,7 @@
   --bg2: #1e293b;
   --bg3: #334155;
   --border: #334155;
+  --border-light: #475569;
   --text: #f1f5f9;
   --muted: #94a3b8;
   --faint: #64748b;
@@ -26,6 +27,7 @@
   --bg2: #eef1f6;
   --bg3: #dde3ea;
   --border: #c4cdd6;
+  --border-light: #9aaabb;
   --text: #0f172a;
   --muted: #475569;
   --faint: #94a3b8;

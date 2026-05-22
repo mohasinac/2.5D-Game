@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import type { BeybladeStats, PointOfContact } from "@/types/beybladeStats";
 
 interface Step3ContactPointsProps {
@@ -38,7 +38,7 @@ export default function Step3ContactPoints({ beyblade, onChange }: Step3ContactP
   const resetCPDamage = () => onChange({ pointsOfContact: points.map(p => ({ ...p, damageMultiplier: 1.0 })) });
 
   const card = (selected: boolean): React.CSSProperties => ({
-    background: selected ? `${C.blue}22` : C.bg3,
+    background: selected ? alpha(C.blue, 0.13) : C.bg3,
     border: `1px solid ${selected ? C.blue : C.border}`,
     borderRadius: 8,
     padding: "10px 12px",

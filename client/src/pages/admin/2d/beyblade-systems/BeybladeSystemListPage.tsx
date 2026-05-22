@@ -4,7 +4,7 @@ import { collection, getDocs, deleteDoc, doc, orderBy, query } from "firebase/fi
 import { db, COLLECTIONS } from "@/lib/firebase";
 import type { BeybladeSystem } from "@/types/beybladeSystem";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 export function BeybladeSystemListPage() {
   const [systems, setSystems] = useState<BeybladeSystem[]>([]);
@@ -121,7 +121,7 @@ export function BeybladeSystemListPage() {
                   onClick={() => setConfirmDelete(sys)}
                   style={{
                     padding: "6px 14px", background: "none", color: C.red,
-                    border: `1px solid ${C.red}44`, borderRadius: 6, fontSize: 12, cursor: "pointer",
+                    border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 6, fontSize: 12, cursor: "pointer",
                   }}
                 >
                   Delete

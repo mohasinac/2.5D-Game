@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
 import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGame } from "@/contexts/GameContext";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 const TYPE_COLORS_MAP: Record<string, string> = {
   attack: C.red,
@@ -78,7 +78,7 @@ export function BattleLobbyPage() {
 
         {/* Room code */}
         {room && (
-          <div style={{ marginBottom: 20, background: C.bg2 + "88", borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
+          <div style={{ marginBottom: 20, background: alpha(C.bg2, 0.53), borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
             <p style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>Room ID (share with friends)</p>
             <p style={{ fontSize: 16, fontFamily: "monospace", color: C.text, letterSpacing: "0.1em" }}>{room.roomId}</p>
           </div>
@@ -114,7 +114,7 @@ export function BattleLobbyPage() {
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                       <span style={{ color: C.text, fontWeight: 500, fontSize: 14 }}>{player.username}</span>
                       {i === 0 && (
-                        <span style={{ fontSize: 11, color: C.yellow, background: C.yellow + "15", border: `1px solid ${C.yellow}33`, padding: "1px 6px", borderRadius: 4 }}>HOST</span>
+                        <span style={{ fontSize: 11, color: C.yellow, background: alpha(C.yellow, 0.08), border: `1px solid ${alpha(C.yellow, 0.20)}`, padding: "1px 6px", borderRadius: 4 }}>HOST</span>
                       )}
                       {player.userId === settings.userId && (
                         <span style={{ fontSize: 11, color: C.faint }}>(you)</span>
@@ -152,7 +152,7 @@ export function BattleLobbyPage() {
                   style={{
                     flex: 1, padding: "8px 0", borderRadius: 8, fontSize: 13, fontWeight: 700,
                     cursor: "pointer", border: `1px solid ${bestOf === n ? C.blue : C.border}`,
-                    background: bestOf === n ? C.blue + "22" : "transparent",
+                    background: bestOf === n ? alpha(C.blue, 0.13) : "transparent",
                     color: bestOf === n ? C.blue : C.muted,
                   }}
                 >
@@ -175,7 +175,7 @@ export function BattleLobbyPage() {
                   />
                   <button
                     onClick={handleCopySpectateLink}
-                    style={{ padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", background: copied ? C.green + "22" : C.bg3, color: copied ? C.green : C.muted, border: `1px solid ${copied ? C.green : C.border}` }}
+                    style={{ padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", background: copied ? alpha(C.green, 0.13) : C.bg3, color: copied ? C.green : C.muted, border: `1px solid ${copied ? C.green : C.border}` }}
                   >
                     {copied ? "Copied!" : "Copy"}
                   </button>

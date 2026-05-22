@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, pill, btn } from "@/styles/theme";
+import { C, pill, btn, alpha } from "@/styles/theme";
 import type { TournamentDoc } from "@/types/game";
 import toast from "react-hot-toast";
 
@@ -107,7 +107,7 @@ export function TournamentsListPage() {
                         <button
                           onClick={() => setStatus(t.id, "registration")}
                           disabled={updating === t.id}
-                          style={{ padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", background: C.blue + "22", color: C.blue, border: `1px solid ${C.blue}44` }}
+                          style={{ padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", background: alpha(C.blue, 0.13), color: C.blue, border: `1px solid ${alpha(C.blue, 0.27)}` }}
                         >
                           Open Reg.
                         </button>
@@ -116,7 +116,7 @@ export function TournamentsListPage() {
                         <button
                           onClick={() => setStatus(t.id, "cancelled")}
                           disabled={updating === t.id}
-                          style={{ padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", background: C.red + "22", color: C.red, border: `1px solid ${C.red}44` }}
+                          style={{ padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", background: alpha(C.red, 0.13), color: C.red, border: `1px solid ${alpha(C.red, 0.27)}` }}
                         >
                           Cancel
                         </button>

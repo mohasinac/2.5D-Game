@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { ArenaSystem } from "@/types/arenaSystem";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 export function ArenaSystemListPage() {
   const navigate = useNavigate();
@@ -98,7 +98,7 @@ export function ArenaSystemListPage() {
                 <span
                   style={{
                     fontSize: 10,
-                    background: C.blue + "22",
+                    background: alpha(C.blue, 0.13),
                     color: C.blue,
                     padding: "2px 8px",
                     borderRadius: 4,
@@ -110,7 +110,7 @@ export function ArenaSystemListPage() {
                 <span
                   style={{
                     fontSize: 10,
-                    background: C.purple + "22",
+                    background: alpha(C.purple, 0.13),
                     color: C.purple,
                     padding: "2px 8px",
                     borderRadius: 4,

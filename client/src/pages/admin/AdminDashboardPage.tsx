@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, S } from "@/styles/theme";
+import { C, S, alpha } from "@/styles/theme";
 
 interface DashboardStats { beyblades: number; arenas: number; matches: number; players: number; }
 interface TournamentStats { active: number; upcoming: number; }
@@ -61,7 +61,7 @@ export function AdminDashboardPage() {
       {/* Stat cards */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:28 }}>
         {statCards.map((card, i) => (
-          <Link key={card.label} to={card.href} style={{ display:"block", background:`${card.accent}0f`, border:`1px solid ${card.accent}22`, borderRadius:14, padding:16, textDecoration:"none" }}>
+          <Link key={card.label} to={card.href} style={{ display:"block", background:alpha(card.accent, 0.06), border:`1px solid ${alpha(card.accent, 0.13)}`, borderRadius:14, padding:16, textDecoration:"none" }}>
             <div style={{ fontSize:22, marginBottom:8 }}>{card.icon}</div>
             {loading ? (
               <div style={{ height:28, width:48, background:C.bg3, borderRadius:6, marginBottom:4 }} className="pulse" />
@@ -74,7 +74,7 @@ export function AdminDashboardPage() {
       </div>
 
       {/* Tournament stats */}
-      <div style={{ background:`${C.yellow}0f`, border:`1px solid ${C.yellow}22`, borderRadius:14, padding:16, marginBottom:28, display:"flex", alignItems:"center", gap:24 }}>
+      <div style={{ background:alpha(C.yellow, 0.06), border:`1px solid ${alpha(C.yellow, 0.13)}`, borderRadius:14, padding:16, marginBottom:28, display:"flex", alignItems:"center", gap:24 }}>
         <span style={{ fontSize:28 }}>🏆</span>
         <div style={{ flex:1 }}>
           <div style={{ fontSize:13, fontWeight:600, color:C.text, marginBottom:4 }}>Tournaments</div>
@@ -89,7 +89,7 @@ export function AdminDashboardPage() {
             </div>
           </div>
         </div>
-        <Link to="/admin/tournaments" style={{ padding:"8px 16px", background:C.yellow+"22", border:`1px solid ${C.yellow}55`, borderRadius:8, color:C.yellow, fontSize:12, fontWeight:600, textDecoration:"none" }}>
+        <Link to="/admin/tournaments" style={{ padding:"8px 16px", background:alpha(C.yellow, 0.13), border:`1px solid ${alpha(C.yellow, 0.33)}`, borderRadius:8, color:C.yellow, fontSize:12, fontWeight:600, textDecoration:"none" }}>
           Manage →
         </Link>
       </div>

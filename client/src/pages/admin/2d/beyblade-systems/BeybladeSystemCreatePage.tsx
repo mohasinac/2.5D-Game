@@ -4,7 +4,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import type { BeybladeSystem } from "@/types/beybladeSystem";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 export function BeybladeSystemCreatePage() {
   const navigate = useNavigate();
@@ -83,9 +83,9 @@ export function BeybladeSystemCreatePage() {
                 style={{
                   flex: 1, padding: "10px 0", borderRadius: 8, fontSize: 13, fontWeight: 600,
                   cursor: "pointer", transition: "all 150ms",
-                  background: spinDirection === dir ? (dir === "right" ? C.blue : C.red) + "22" : C.bg2,
+                  background: spinDirection === dir ? alpha(dir === "right" ? C.blue : C.red, 0.13) : C.bg2,
                   color: spinDirection === dir ? (dir === "right" ? C.blue : C.red) : C.muted,
-                  border: `1px solid ${spinDirection === dir ? (dir === "right" ? C.blue : C.red) + "88" : C.border}`,
+                  border: `1px solid ${spinDirection === dir ? alpha(dir === "right" ? C.blue : C.red, 0.53) : C.border}`,
                 }}
               >
                 {dir === "right" ? "↻ Right" : "↺ Left"}

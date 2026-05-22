@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 interface ServerSettings {
   enableAI: boolean;
@@ -90,7 +90,7 @@ export function GameSelectPage() {
 
         {srvSettings.maintenanceMode && (
           <div style={{
-            background: C.yellow + "18", border: `1px solid ${C.yellow}55`,
+            background: alpha(C.yellow, 0.09), border: `1px solid ${alpha(C.yellow, 0.33)}`,
             borderRadius: 10, padding: "12px 16px", marginBottom: 24,
             color: C.yellow, fontSize: 13, fontWeight: 600,
           }}>
@@ -101,7 +101,7 @@ export function GameSelectPage() {
 
         {!srvSettings.maintenanceMode && srvSettings.serverMessage && (
           <div style={{
-            background: C.blue + "18", border: `1px solid ${C.blue}44`,
+            background: alpha(C.blue, 0.09), border: `1px solid ${alpha(C.blue, 0.27)}`,
             borderRadius: 10, padding: "12px 16px", marginBottom: 24,
             color: C.blue, fontSize: 13,
           }}>

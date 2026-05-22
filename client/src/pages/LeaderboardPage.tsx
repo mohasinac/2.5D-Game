@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 type SortKey = "tournamentPoints" | "wins" | "winRate" | "totalDamageDealt" | "matchesPlayed";
 
@@ -108,7 +108,7 @@ export function LeaderboardPage() {
                   display: "flex", alignItems: "center", gap: 14,
                   padding: "13px 20px",
                   borderBottom: i < sorted.length - 1 ? `1px solid ${C.border}` : "none",
-                  background: i < 3 ? C.yellow + "06" : "transparent",
+                  background: i < 3 ? alpha(C.yellow, 0.04) : "transparent",
                 }}
               >
                 {/* Rank */}
@@ -119,7 +119,7 @@ export function LeaderboardPage() {
                 {/* Avatar */}
                 <div style={{
                   width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
-                  background: C.blue + "22", display: "flex", alignItems: "center", justifyContent: "center",
+                  background: alpha(C.blue, 0.13), display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 16, fontWeight: 700, color: C.blue,
                 }}>
                   {(player.username ?? player.id)[0]?.toUpperCase()}

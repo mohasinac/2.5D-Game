@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-import { C, btn, btnOutline } from "../../styles/theme";
+import { C, HEX, btn, btnOutline } from "../../styles/theme";
 
 interface WhatsAppStyleImageEditorProps {
   imageUrl: string;
@@ -112,7 +112,7 @@ const WhatsAppStyleImageEditor = forwardRef<WhatsAppStyleImageEditorRef, WhatsAp
       // Red circle border
       ctx.beginPath();
       ctx.arc(circleSize / 2, circleSize / 2, circleSize / 2, 0, Math.PI * 2);
-      ctx.strokeStyle = C.red;
+      ctx.strokeStyle = HEX.red;
       ctx.lineWidth = 4;
       ctx.stroke();
     };

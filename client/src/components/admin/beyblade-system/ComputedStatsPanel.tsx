@@ -2,7 +2,7 @@
  * ComputedStatsPanel — displays live output of computeBeybladeStats().
  */
 
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import { computeBeybladeStats } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
 
@@ -15,7 +15,7 @@ const TYPE_COLORS: Record<string, string> = {
 
 function StatRow({ label, value, unit = "", highlight = false }: { label: string; value: string | number; unit?: string; highlight?: boolean }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0", borderBottom: `1px solid ${C.border}22` }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0", borderBottom: `1px solid ${alpha(C.border, 0.13)}` }}>
       <span style={{ fontSize: 11, color: C.muted }}>{label}</span>
       <span style={{ fontSize: 12, fontWeight: highlight ? 700 : 500, color: highlight ? C.text : C.muted, fontFamily: "monospace" }}>
         {typeof value === "number" ? value.toFixed(2) : value}{unit}
@@ -77,7 +77,7 @@ export function ComputedStatsPanel({ resolved }: Props) {
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <span style={{
           fontSize: 11, padding: "2px 8px", borderRadius: 99, fontWeight: 600,
-          background: typeColor + "22", color: typeColor, border: `1px solid ${typeColor}44`,
+          background: alpha(typeColor, 0.13), color: typeColor, border: `1px solid ${alpha(typeColor, 0.27)}`,
           textTransform: "capitalize",
         }}>
           {s.type}

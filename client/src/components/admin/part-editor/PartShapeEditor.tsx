@@ -12,7 +12,7 @@
  */
 
 import { useState } from "react";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import type { PartShape, FourierRadialProfile, BezierPath, BezierSplineProfile, PartImages } from "@/types/beybladeSystem";
 import { synthesizeRadialCache } from "@/types/beybladeSystem";
 import { BezierEditor } from "./BezierEditor";
@@ -266,7 +266,7 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
         <span style={{ fontSize: 12, color: C.muted }}>Shape workflow:</span>
         <span style={{
           fontSize: 11, padding: "2px 9px", borderRadius: 99, fontWeight: 600,
-          background: tierMeta.color + "18", color: tierMeta.color, border: `1px solid ${tierMeta.color}44`,
+          background: alpha(tierMeta.color, 0.09), color: tierMeta.color, border: `1px solid ${alpha(tierMeta.color, 0.27)}`,
         }}>
           {tierMeta.label}
         </span>
@@ -402,9 +402,9 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
                     onClick={() => applyPreset(p)}
                     style={{
                       padding: "8px 12px", borderRadius: 8, fontSize: 13, cursor: "pointer",
-                      background: active ? C.blue + "22" : C.bg2,
+                      background: active ? alpha(C.blue, 0.13) : C.bg2,
                       color: active ? C.blue : C.muted,
-                      border: `1px solid ${active ? C.blue + "88" : C.border}`,
+                      border: `1px solid ${active ? alpha(C.blue, 0.53) : C.border}`,
                       display: "flex", alignItems: "center", gap: 6,
                     }}
                   >

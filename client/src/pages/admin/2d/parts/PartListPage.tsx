@@ -5,7 +5,7 @@ import {
 } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 const PART_TYPE_META: Record<string, { label: string; icon: string; desc: string; collection: string }> = {
   "bit-beasts":    { label: "Bit Beasts",    icon: "🐉", desc: "Special move identity pieces.", collection: COLLECTIONS.BIT_BEAST_PARTS },
@@ -152,8 +152,8 @@ export function PartListPage() {
                 to={`/admin/2d/parts/${partType}/create`}
                 style={{
                   display: "inline-block", marginTop: 12, padding: "8px 16px",
-                  background: C.blue + "22", color: C.blue, borderRadius: 7,
-                  textDecoration: "none", fontSize: 13, border: `1px solid ${C.blue}44`,
+                  background: alpha(C.blue, 0.13), color: C.blue, borderRadius: 7,
+                  textDecoration: "none", fontSize: 13, border: `1px solid ${alpha(C.blue, 0.27)}`,
                 }}
               >
                 Create first {meta.label.slice(0, -1).toLowerCase()} →
@@ -204,8 +204,8 @@ export function PartListPage() {
                 <button
                   onClick={() => navigate(`/admin/2d/parts/${partType}/edit/${part.id}`)}
                   style={{
-                    padding: "6px 14px", background: C.blue + "22", color: C.blue,
-                    border: `1px solid ${C.blue}44`, borderRadius: 7,
+                    padding: "6px 14px", background: alpha(C.blue, 0.13), color: C.blue,
+                    border: `1px solid ${alpha(C.blue, 0.27)}`, borderRadius: 7,
                     fontSize: 12, cursor: "pointer", fontWeight: 600,
                   }}
                 >
@@ -216,9 +216,9 @@ export function PartListPage() {
                   disabled={deleting === part.id}
                   style={{
                     padding: "6px 14px",
-                    background: deleting === part.id ? C.bg1 : "#ef444422",
-                    color: deleting === part.id ? C.faint : "#ef4444",
-                    border: `1px solid ${deleting === part.id ? C.border : "#ef444444"}`,
+                    background: deleting === part.id ? C.bg1 : alpha(C.red, 0.13),
+                    color: deleting === part.id ? C.faint : C.red,
+                    border: `1px solid ${deleting === part.id ? C.border : alpha(C.red, 0.27)}`,
                     borderRadius: 7, fontSize: 12, cursor: deleting === part.id ? "default" : "pointer",
                   }}
                 >

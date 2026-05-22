@@ -7,7 +7,7 @@
  */
 
 import { useRef, useEffect, useState } from "react";
-import { C } from "@/styles/theme";
+import { C, HEX, alpha } from "@/styles/theme";
 import { renderRadius, synthesizeRadialCache } from "@/types/beybladeSystem";
 import { computeEffectiveRadius } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
@@ -75,7 +75,7 @@ function drawMovementPath(ctx: CanvasRenderingContext2D, pattern: PathPattern) {
       const r = CENTER * 0.70;
       ctx.beginPath();
       ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
-      ctx.strokeStyle = C.blue;
+      ctx.strokeStyle = HEX.blue;
       ctx.lineWidth = 1.5;
       ctx.setLineDash([6, 5]);
       ctx.stroke();
@@ -86,7 +86,7 @@ function drawMovementPath(ctx: CanvasRenderingContext2D, pattern: PathPattern) {
       const r = CENTER * 0.30;
       ctx.beginPath();
       ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
-      ctx.strokeStyle = "#22c55e";
+      ctx.strokeStyle = HEX.green;
       ctx.lineWidth = 1.5;
       ctx.setLineDash([4, 4]);
       ctx.stroke();
@@ -94,7 +94,7 @@ function drawMovementPath(ctx: CanvasRenderingContext2D, pattern: PathPattern) {
     }
     case "sharp": {
       // Jagged charge lines radiating outward
-      ctx.strokeStyle = "#ef4444";
+      ctx.strokeStyle = HEX.red;
       ctx.lineWidth = 1;
       ctx.setLineDash([]);
       for (let i = 0; i < 6; i++) {
@@ -112,12 +112,12 @@ function drawMovementPath(ctx: CanvasRenderingContext2D, pattern: PathPattern) {
       const r = CENTER * 0.50;
       ctx.beginPath();
       ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
-      ctx.strokeStyle = C.yellow;
+      ctx.strokeStyle = HEX.yellow;
       ctx.lineWidth = 1.5;
       ctx.setLineDash([5, 4]);
       ctx.stroke();
       ctx.setLineDash([]);
-      ctx.strokeStyle = C.yellow;
+      ctx.strokeStyle = HEX.yellow;
       ctx.lineWidth = 1;
       for (let i = 0; i < 4; i++) {
         const a = (i / 4) * Math.PI * 2;
@@ -133,13 +133,13 @@ function drawMovementPath(ctx: CanvasRenderingContext2D, pattern: PathPattern) {
       const r = CENTER * 0.50;
       ctx.beginPath();
       ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
-      ctx.strokeStyle = C.muted;
+      ctx.strokeStyle = HEX.muted;
       ctx.lineWidth = 1.5;
       ctx.setLineDash([3, 6]);
       ctx.stroke();
       // Random bounce dots
       ctx.setLineDash([]);
-      ctx.fillStyle = C.muted;
+      ctx.fillStyle = HEX.muted;
       for (let i = 0; i < 8; i++) {
         const a = (i / 8) * Math.PI * 2 + 0.4;
         const dr = (((i * 37) % 5) - 2) * 6;
@@ -153,7 +153,7 @@ function drawMovementPath(ctx: CanvasRenderingContext2D, pattern: PathPattern) {
     }
     case "off_center": {
       // Expanding spiral
-      ctx.strokeStyle = C.orange ?? "#f97316";
+      ctx.strokeStyle = HEX.orange;
       ctx.lineWidth = 1.5;
       ctx.setLineDash([4, 3]);
       ctx.beginPath();
@@ -181,7 +181,7 @@ function drawCPArc(
   pxPerMm: number,
   filled: boolean,
 ) {
-  const color = MATERIAL_COLORS[cp.material] ?? C.blue;
+  const color = MATERIAL_COLORS[cp.material] ?? HEX.blue;
   const r = cp.radius * pxPerMm;
   const thickness = cp.thickness * pxPerMm;
   const halfAngleDeg = cp.width / 2;
@@ -245,7 +245,7 @@ function drawMaterialMode(
     const fallbackR = dims?.outerRadius ?? 20;
     const outerR = geometry ? computeEffectiveRadius(geometry, fallbackR) : fallbackR;
     const innerR = dims?.innerRadius ?? 0;
-    const color = (p.color as string) ?? C.faint;
+    const color = (p.color as string) ?? HEX.faint;
     const fourierProfile = p.geometry?.fourierProfile as FourierRadialProfile | undefined;
     const cps = (p.contactPoints as SystemContactPoint[]) ?? [];
 
@@ -302,15 +302,15 @@ function drawMaterialMode(
       ctx.beginPath();
       ctx.arc(CENTER + ox, CENTER + oy, outerR, 0, Math.PI * 2);
       ctx.arc(CENTER + ox, CENTER + oy, innerR, 0, Math.PI * 2, true);
-      ctx.fillStyle = (tip.color as string ?? C.faint) + "44";
+      ctx.fillStyle = (tip.color as string || HEX.faint) + "44";
       ctx.fill();
-      ctx.strokeStyle = tip.color as string ?? C.faint;
+      ctx.strokeStyle = tip.color as string || HEX.faint;
       ctx.lineWidth = 1.5;
       ctx.stroke();
       // Ghost inner ring (casing position)
       ctx.beginPath();
       ctx.arc(CENTER + ox, CENTER + oy, innerR, 0, Math.PI * 2);
-      ctx.strokeStyle = (tip.color as string ?? C.faint) + "44";
+      ctx.strokeStyle = (tip.color as string || HEX.faint) + "44";
       ctx.lineWidth = 0.8;
       ctx.setLineDash([2, 3]);
       ctx.stroke();
@@ -319,9 +319,9 @@ function drawMaterialMode(
       const tw = (tipDims?.tipWidth ?? tipDims?.outerRadius ?? 3) * pxPerMm;
       ctx.beginPath();
       ctx.arc(CENTER + ox, CENTER + oy, tw, 0, Math.PI * 2);
-      ctx.fillStyle = (tip.color as string ?? C.faint) + "88";
+      ctx.fillStyle = (tip.color as string || HEX.faint) + "88";
       ctx.fill();
-      ctx.strokeStyle = tip.color as string ?? C.faint;
+      ctx.strokeStyle = tip.color as string || HEX.faint;
       ctx.lineWidth = 1;
       ctx.stroke();
     }
@@ -344,7 +344,7 @@ function drawMaterialMode(
       const py = CENTER + pocket.position.y * pxPerMm;
       ctx.beginPath();
       ctx.arc(px, py, 3, 0, Math.PI * 2);
-      ctx.fillStyle = pocket.ballMaterial === "metal" ? C.muted : C.yellow;
+      ctx.fillStyle = pocket.ballMaterial === "metal" ? HEX.muted : HEX.yellow;
       ctx.fill();
     }
   }
@@ -372,7 +372,7 @@ function drawImageMode(
       ctx.drawImage(img, CENTER - r, CENTER - r, r * 2, r * 2);
     } else {
       // Fallback ring
-      const color = part.color as string ?? C.faint;
+      const color = part.color as string || HEX.faint;
       ctx.beginPath();
       ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
       ctx.strokeStyle = color;
@@ -389,7 +389,7 @@ function drawImageMode(
 }
 
 function drawGrid(ctx: CanvasRenderingContext2D, maxRadius: number, pxPerMm: number) {
-  ctx.strokeStyle = (C.border ?? "#1e293b") + "55";
+  ctx.strokeStyle = HEX.border + "55";
   ctx.lineWidth = 0.5;
   ctx.setLineDash([2, 3]);
   for (let r = 5; r <= maxRadius + 5; r += 5) {
@@ -399,7 +399,7 @@ function drawGrid(ctx: CanvasRenderingContext2D, maxRadius: number, pxPerMm: num
   }
   ctx.setLineDash([]);
   // Crosshair
-  ctx.strokeStyle = C.faint ?? "#475569";
+  ctx.strokeStyle = HEX.faint;
   ctx.lineWidth = 0.5;
   ctx.beginPath();
   ctx.moveTo(CENTER - 8, CENTER); ctx.lineTo(CENTER + 8, CENTER);
@@ -427,11 +427,11 @@ export function TopDownView({ resolved, showMaterial = false, showMovementPath =
     if (!ctx) return;
 
     ctx.clearRect(0, 0, SIZE, SIZE);
-    ctx.fillStyle = C.bg0 ?? "#0f172a";
+    ctx.fillStyle = HEX.bg0;
     ctx.fillRect(0, 0, SIZE, SIZE);
 
     if (!resolved) {
-      ctx.fillStyle = C.faint ?? "#475569";
+      ctx.fillStyle = HEX.faint;
       ctx.font = "11px sans-serif";
       ctx.textAlign = "center";
       ctx.fillText("No system loaded", SIZE / 2, SIZE / 2);
@@ -484,9 +484,9 @@ export function TopDownView({ resolved, showMaterial = false, showMovementPath =
             onClick={() => setMaterialMode((m) => !m)}
             style={{
               padding: "3px 8px", fontSize: 10, borderRadius: 5, cursor: "pointer",
-              background: materialMode ? C.blue + "22" : C.bg2,
+              background: materialMode ? alpha(C.blue, 0.13) : C.bg2,
               color: materialMode ? C.blue : C.muted,
-              border: `1px solid ${materialMode ? C.blue + "55" : C.border}`,
+              border: `1px solid ${materialMode ? alpha(C.blue, 0.33) : C.border}`,
             }}
           >
             {materialMode ? "Image" : "Material"}

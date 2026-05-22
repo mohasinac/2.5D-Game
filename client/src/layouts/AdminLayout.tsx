@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet, NavLink, Link, useNavigate, useLocation } from "react-router-dom";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import toast from "react-hot-toast";
@@ -45,9 +45,9 @@ function NavItem({
         justifyContent: collapsed ? "center" : "flex-start",
         borderRadius: 8, fontSize: indent ? 12 : 13,
         textDecoration: "none", transition: "background 150ms",
-        background: isActive ? C.blue + "22" : "transparent",
+        background: isActive ? alpha(C.blue, 0.13) : "transparent",
         color: isActive ? C.text : C.muted,
-        border: `1px solid ${isActive ? C.blue + "44" : "transparent"}`,
+        border: `1px solid ${isActive ? alpha(C.blue, 0.27) : "transparent"}`,
       })}
     >
       <span style={{ fontSize: indent ? 13 : 15 }}>{icon}</span>

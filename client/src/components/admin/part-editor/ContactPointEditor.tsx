@@ -17,7 +17,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { C } from "@/styles/theme";
+import { C, HEX, alpha } from "@/styles/theme";
 import { MaterialSelector } from "./MaterialSelector";
 import { renderRadius, synthesizeRadialCache } from "@/types/beybladeSystem";
 import type {
@@ -75,18 +75,18 @@ function drawCanvas(
   fourierProfile?: FourierRadialProfile
 ) {
   ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-  ctx.fillStyle = C.bg3;
+  ctx.fillStyle = HEX.bg3;
   ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
   // Concentric ring grid every 5mm
-  ctx.strokeStyle = C.border;
+  ctx.strokeStyle = HEX.border;
   ctx.lineWidth = 0.4;
   ctx.setLineDash([3, 4]);
   for (let r = 5; r <= 50; r += 5) {
     ctx.beginPath();
     ctx.arc(CENTER, CENTER, r * PIXELS_PER_MM, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.fillStyle = C.faint;
+    ctx.fillStyle = HEX.faint;
     ctx.font = "8px sans-serif";
     ctx.fillText(`${r}`, CENTER + r * PIXELS_PER_MM + 2, CENTER - 2);
   }
@@ -149,8 +149,8 @@ function drawCanvas(
 
   // Placing mode cursor hint
   if (placing) {
-    ctx.fillStyle = C.blue + "33";
-    ctx.strokeStyle = C.blue;
+    ctx.fillStyle = HEX.blue + "33";
+    ctx.strokeStyle = HEX.blue;
     ctx.lineWidth = 1;
     ctx.setLineDash([4, 4]);
     ctx.beginPath();
@@ -160,7 +160,7 @@ function drawCanvas(
   }
 
   // Center crosshair
-  ctx.strokeStyle = C.faint;
+  ctx.strokeStyle = HEX.faint;
   ctx.lineWidth = 0.5;
   ctx.beginPath();
   ctx.moveTo(CENTER - 8, CENTER); ctx.lineTo(CENTER + 8, CENTER);
@@ -287,8 +287,8 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
               key={i}
               onClick={() => setSelected(selected === i ? null : i)}
               style={{
-                background: selected === i ? C.blue + "18" : C.bg2,
-                border: `1px solid ${selected === i ? C.blue + "55" : C.border}`,
+                background: selected === i ? alpha(C.blue, 0.09) : C.bg2,
+                border: `1px solid ${selected === i ? alpha(C.blue, 0.33) : C.border}`,
                 borderRadius: 7, padding: "7px 10px", cursor: "pointer",
                 display: "flex", alignItems: "center", gap: 8,
               }}
@@ -340,9 +340,9 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
               {ATTACK_LABELS.map((at) => (
                 <button key={at} onClick={() => update(selected, { attackType: at })}
                   style={{ padding: "5px 10px", fontSize: 11, borderRadius: 6, cursor: "pointer",
-                    background: sel.attackType === at ? C.orange + "28" : C.bg2,
+                    background: sel.attackType === at ? alpha(C.orange, 0.16) : C.bg2,
                     color: sel.attackType === at ? C.orange : C.muted,
-                    border: `1px solid ${sel.attackType === at ? C.orange + "66" : C.border}` }}
+                    border: `1px solid ${sel.attackType === at ? alpha(C.orange, 0.40) : C.border}` }}
                 >{at}</button>
               ))}
             </div>
@@ -358,9 +358,9 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
               {LAYER_LABELS.map((l) => (
                 <button key={l} onClick={() => update(selected, { partLayer: l })}
                   style={{ padding: "4px 9px", fontSize: 10, borderRadius: 5, cursor: "pointer",
-                    background: sel.partLayer === l ? C.purple + "28" : C.bg2,
+                    background: sel.partLayer === l ? alpha(C.purple, 0.16) : C.bg2,
                     color: sel.partLayer === l ? C.purple : C.faint,
-                    border: `1px solid ${sel.partLayer === l ? C.purple + "55" : C.border}` }}
+                    border: `1px solid ${sel.partLayer === l ? alpha(C.purple, 0.33) : C.border}` }}
                 >{l}</button>
               ))}
             </div>

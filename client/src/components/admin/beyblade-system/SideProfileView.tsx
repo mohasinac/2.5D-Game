@@ -8,7 +8,7 @@
  */
 
 import { useRef, useEffect } from "react";
-import { C } from "@/styles/theme";
+import { C, HEX } from "@/styles/theme";
 import { computeEffectiveRadius } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
 import type { SystemContactPoint, PartShape } from "@/types/beybladeSystem";
@@ -94,7 +94,7 @@ function buildLayers(resolved: ResolvedBeybladeSystem): {
 
     layers.push({
       label,
-      color: (part.color as string) ?? C.faint,
+      color: (part.color as string) ?? HEX.faint,
       heightMm,
       radiusMm,
       innerRadiusMm: isTip ? 0 : (dims?.innerRadius ?? 0),
@@ -161,7 +161,7 @@ function drawView(
   trackHeight = 0,
 ) {
   ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = C.bg0 ?? "#0f172a";
+  ctx.fillStyle = HEX.bg0;
   ctx.fillRect(0, 0, W, H);
 
   const scaleY = DRAW_H / maxH;           // px per mm height
@@ -173,7 +173,7 @@ function drawView(
   const toXl = (rmm: number) => PAD.left + DRAW_W / 2 - rmm * scaleX;
 
   // ── Grid lines ────────────────────────────────────────────────────────────
-  ctx.strokeStyle = (C.border ?? "#1e293b") + "44";
+  ctx.strokeStyle = HEX.border + "44";
   ctx.lineWidth = 0.5;
   // Horizontal every 10mm
   for (let h = 0; h <= maxH; h += 10) {
@@ -181,7 +181,7 @@ function drawView(
     ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
   }
   // Center line
-  ctx.strokeStyle = C.faint ?? "#475569";
+  ctx.strokeStyle = HEX.faint;
   ctx.lineWidth = 0.5;
   const cx = PAD.left + DRAW_W / 2;
   ctx.beginPath(); ctx.moveTo(cx, PAD.top); ctx.lineTo(cx, PAD.top + DRAW_H); ctx.stroke();
@@ -189,7 +189,7 @@ function drawView(
   ctx.beginPath(); ctx.moveTo(PAD.left, toY(0)); ctx.lineTo(W - PAD.right, toY(0)); ctx.stroke();
 
   // ── Axis labels ───────────────────────────────────────────────────────────
-  ctx.fillStyle = C.faint ?? "#475569";
+  ctx.fillStyle = HEX.faint;
   ctx.font = "9px sans-serif";
   ctx.textAlign = "right";
   for (let h = 0; h <= maxH; h += 10) {
@@ -239,14 +239,14 @@ function drawView(
     ctx.stroke();
 
     // Label
-    ctx.fillStyle = C.muted ?? "#94a3b8";
+    ctx.fillStyle = HEX.muted;
     ctx.font = "9px sans-serif";
     ctx.textAlign = "left";
     ctx.fillText(layer.label, xRight + 3, yTop + 10);
 
     // ── Contact point bands ────────────────────────────────────────────────
     for (const cp of layer.contactPoints) {
-      const bandColor = MATERIAL_COLORS[cp.material] ?? C.blue;
+      const bandColor = MATERIAL_COLORS[cp.material] ?? HEX.blue;
       const yMin = toY(cp.heightRange.max);
       const yMax = toY(cp.heightRange.min);
       const bandH = yMax - yMin;
@@ -316,7 +316,7 @@ function drawView(
   }
 
   // ── Floor label ───────────────────────────────────────────────────────────
-  ctx.fillStyle = C.faint ?? "#475569";
+  ctx.fillStyle = HEX.faint;
   ctx.font = "9px sans-serif";
   ctx.textAlign = "center";
   ctx.fillText("FLOOR", cx, toY(0) + 18);
@@ -333,9 +333,9 @@ export function SideProfileView({ resolved, width = W, height = H }: Props) {
 
     if (!resolved) {
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = C.bg0 ?? "#0f172a";
+      ctx.fillStyle = HEX.bg0;
       ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = C.faint ?? "#475569";
+      ctx.fillStyle = HEX.faint;
       ctx.font = "11px sans-serif";
       ctx.textAlign = "center";
       ctx.fillText("No system loaded", width / 2, height / 2);

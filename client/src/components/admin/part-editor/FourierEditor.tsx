@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { C } from "@/styles/theme";
+import { C, HEX } from "@/styles/theme";
 import { synthesizeRadialCache } from "@/types/beybladeSystem";
 import type { FourierRadialProfile } from "@/types/beybladeSystem";
 
@@ -90,7 +90,7 @@ function PolarPreview({ profile, size = 160 }: { profile: FourierRadialProfile; 
     const cx = size / 2, cy = size / 2;
 
     // Grid circle
-    ctx.strokeStyle = C.border;
+    ctx.strokeStyle = HEX.border;
     ctx.lineWidth = 0.5;
     ctx.beginPath();
     ctx.arc(cx, cy, maxR * scale, 0, Math.PI * 2);
@@ -105,9 +105,9 @@ function PolarPreview({ profile, size = 160 }: { profile: FourierRadialProfile; 
       deg === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     }
     ctx.closePath();
-    ctx.fillStyle = C.blue + "33";
+    ctx.fillStyle = HEX.blue + "33";
     ctx.fill();
-    ctx.strokeStyle = C.blue;
+    ctx.strokeStyle = HEX.blue;
     ctx.lineWidth = 1.5;
     ctx.stroke();
   }, [profile, size]);

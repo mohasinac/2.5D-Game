@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { collection, addDoc, doc, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { ArenaSystem } from "@/types/arenaSystem";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import { ArenaSystemEditor } from "@/components/admin/arena-system/ArenaSystemEditor";
 import { v4 as uuidv4 } from "uuid";
 
@@ -81,7 +81,7 @@ export function ArenaSystemCreatePage() {
       {error && (
         <div
           style={{
-            background: C.red + "22",
+            background: alpha(C.red, 0.13),
             color: C.red,
             padding: 12,
             borderRadius: 6,

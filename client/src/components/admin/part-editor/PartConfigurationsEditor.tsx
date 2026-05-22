@@ -10,7 +10,7 @@
  */
 
 import { useState } from "react";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import type { PartConfiguration, ConfigTrigger, ConfigResetCondition } from "@/types/beybladeSystem";
 
 const TRIGGER_TYPES: ConfigTrigger["type"][] = [
@@ -110,7 +110,7 @@ export function PartConfigurationsEditor<T>({ value, onChange }: Props<T>) {
           <div
             key={idx}
             style={{
-              border: `1px solid ${expanded === idx ? C.blue + "55" : C.border}`,
+              border: `1px solid ${expanded === idx ? alpha(C.blue, 0.33) : C.border}`,
               borderRadius: 9, overflow: "hidden",
             }}
           >
@@ -118,7 +118,7 @@ export function PartConfigurationsEditor<T>({ value, onChange }: Props<T>) {
             <div
               style={{
                 display: "flex", alignItems: "center", gap: 10, padding: "10px 14px",
-                background: expanded === idx ? C.blue + "0e" : C.bg2, cursor: "pointer",
+                background: expanded === idx ? alpha(C.blue, 0.06) : C.bg2, cursor: "pointer",
               }}
               onClick={() => setExpanded(expanded === idx ? null : idx)}
             >
@@ -126,7 +126,7 @@ export function PartConfigurationsEditor<T>({ value, onChange }: Props<T>) {
                 {config.name || `Config ${idx + 1} (unnamed)`}
               </span>
               {config.autoTriggers?.length ? (
-                <span style={{ fontSize: 10, color: C.yellow, background: C.yellow + "18", padding: "2px 6px", borderRadius: 4 }}>
+                <span style={{ fontSize: 10, color: C.yellow, background: alpha(C.yellow, 0.09), padding: "2px 6px", borderRadius: 4 }}>
                   {config.autoTriggers.length} trigger{config.autoTriggers.length > 1 ? "s" : ""}
                 </span>
               ) : null}

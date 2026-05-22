@@ -8,7 +8,7 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 interface PartCard {
   id: string;
@@ -110,8 +110,8 @@ export function PartPicker({
                 style={{
                   display: "flex", alignItems: "center", gap: 8,
                   padding: "6px 10px", borderRadius: 7, cursor: compat.ok ? "pointer" : "default",
-                  background: isSelected ? C.blue + "18" : C.bg2,
-                  border: `1px solid ${isSelected ? C.blue + "55" : C.border}`,
+                  background: isSelected ? alpha(C.blue, 0.09) : C.bg2,
+                  border: `1px solid ${isSelected ? alpha(C.blue, 0.33) : C.border}`,
                   opacity: compat.ok ? 1 : 0.45,
                   transition: "opacity 0.15s",
                 }}
@@ -131,7 +131,7 @@ export function PartPicker({
                     onClick={(e) => { e.stopPropagation(); onSelect(part.id, part); }}
                     style={{
                       padding: "2px 6px", fontSize: 9, borderRadius: 4, cursor: "pointer",
-                      background: C.yellow + "22", color: C.yellow, border: `1px solid ${C.yellow}44`,
+                      background: alpha(C.yellow, 0.13), color: C.yellow, border: `1px solid ${alpha(C.yellow, 0.27)}`,
                     }}
                   >
                     Override

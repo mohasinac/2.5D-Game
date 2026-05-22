@@ -12,7 +12,7 @@ import { useTabFromUrl } from "@/hooks/useTabFromUrl";
 import { doc, getDoc, getDocs, updateDoc, serverTimestamp, collection, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import { SlotTab } from "./SlotTab";
 import { BeybladeSystemPreview } from "./BeybladeSystemPreview";
 import { PartPicker } from "./PartPicker";
@@ -169,14 +169,14 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>{system.displayName}</div>
             <div style={{ fontSize: 11, color: C.faint }}>ID: {systemId}</div>
           </div>
-          {dirty && <span style={{ fontSize: 11, color: C.yellow, background: C.yellow + "18", padding: "3px 8px", borderRadius: 5 }}>Unsaved</span>}
+          {dirty && <span style={{ fontSize: 11, color: C.yellow, background: alpha(C.yellow, 0.09), padding: "3px 8px", borderRadius: 5 }}>Unsaved</span>}
           {resolved && (
             <button
               onClick={publishToStats}
               disabled={saving}
               style={{
-                padding: "7px 14px", background: C.green + "22", color: C.green,
-                border: `1px solid ${C.green}44`, borderRadius: 7, fontSize: 12,
+                padding: "7px 14px", background: alpha(C.green, 0.13), color: C.green,
+                border: `1px solid ${alpha(C.green, 0.27)}`, borderRadius: 7, fontSize: 12,
                 fontWeight: 600, cursor: saving ? "not-allowed" : "pointer",
               }}
             >
@@ -239,9 +239,9 @@ export function BeybladeSystemEditor({ systemId }: Props) {
                       onClick={() => updateSystem({ spinDirection: d })}
                       style={{
                         padding: "7px 18px", fontSize: 13, borderRadius: 7, cursor: "pointer",
-                        background: system.spinDirection === d ? (d === "right" ? C.blue + "22" : "#ef444422") : C.bg2,
-                        color: system.spinDirection === d ? (d === "right" ? C.blue : "#ef4444") : C.muted,
-                        border: `1px solid ${system.spinDirection === d ? (d === "right" ? C.blue + "55" : "#ef444455") : C.border}`,
+                        background: system.spinDirection === d ? (d === "right" ? alpha(C.blue, 0.13) : alpha(C.red, 0.13)) : C.bg2,
+                        color: system.spinDirection === d ? (d === "right" ? C.blue : C.red) : C.muted,
+                        border: `1px solid ${system.spinDirection === d ? (d === "right" ? alpha(C.blue, 0.33) : alpha(C.red, 0.33)) : C.border}`,
                       }}
                     >
                       {d === "right" ? "↻ Right-Spin" : "↺ Left-Spin"}
@@ -294,9 +294,9 @@ export function BeybladeSystemEditor({ systemId }: Props) {
                               onClick={() => updateSystem({ combinedWith: { ...system.combinedWith!, playerControlTarget: opt } })}
                               style={{
                                 padding: "5px 14px", fontSize: 11, borderRadius: 6, cursor: "pointer",
-                                background: system.combinedWith!.playerControlTarget === opt ? C.blue + "22" : C.bg2,
+                                background: system.combinedWith!.playerControlTarget === opt ? alpha(C.blue, 0.13) : C.bg2,
                                 color: system.combinedWith!.playerControlTarget === opt ? C.blue : C.muted,
-                                border: `1px solid ${system.combinedWith!.playerControlTarget === opt ? C.blue + "55" : C.border}`,
+                                border: `1px solid ${system.combinedWith!.playerControlTarget === opt ? alpha(C.blue, 0.33) : C.border}`,
                               }}
                             >
                               {opt === "this" ? "This system" : "Partner system"}
@@ -408,7 +408,7 @@ export function BeybladeSystemEditor({ systemId }: Props) {
                 partData={system.spinTrackId ? partCache[system.spinTrackId] : null}
               />
               {system.spinTrackId && (
-                <div style={{ marginTop: 12, padding: "8px 12px", background: C.yellow + "18", border: `1px solid ${C.yellow}44`, borderRadius: 7, fontSize: 11, color: C.yellow }}>
+                <div style={{ marginTop: 12, padding: "8px 12px", background: alpha(C.yellow, 0.09), border: `1px solid ${alpha(C.yellow, 0.27)}`, borderRadius: 7, fontSize: 11, color: C.yellow }}>
                   Track equipped — all AR/WD/Casing CP height ranges will be offset by track.height at runtime (stored values remain relative to floor).
                 </div>
               )}
@@ -523,9 +523,9 @@ function SubPartsEditor({
                       onClick={() => update(idx, { parentPart: p })}
                       style={{
                         padding: "2px 7px", fontSize: 10, borderRadius: 4, cursor: "pointer",
-                        background: att.parentPart === p ? C.blue + "22" : C.bg3,
+                        background: att.parentPart === p ? alpha(C.blue, 0.13) : C.bg3,
                         color: att.parentPart === p ? C.blue : C.faint,
-                        border: `1px solid ${att.parentPart === p ? C.blue + "44" : C.border}`,
+                        border: `1px solid ${att.parentPart === p ? alpha(C.blue, 0.27) : C.border}`,
                       }}
                     >
                       {p}
@@ -543,9 +543,9 @@ function SubPartsEditor({
                       onClick={() => update(idx, { placement: pl })}
                       style={{
                         padding: "2px 7px", fontSize: 10, borderRadius: 4, cursor: "pointer",
-                        background: att.placement === pl ? C.blue + "22" : C.bg3,
+                        background: att.placement === pl ? alpha(C.blue, 0.13) : C.bg3,
                         color: att.placement === pl ? C.blue : C.faint,
-                        border: `1px solid ${att.placement === pl ? C.blue + "44" : C.border}`,
+                        border: `1px solid ${att.placement === pl ? alpha(C.blue, 0.27) : C.border}`,
                       }}
                     >
                       {pl}
@@ -575,9 +575,9 @@ function SubPartsEditor({
                       onClick={() => update(idx, { activeConfig: cfg.name })}
                       style={{
                         padding: "2px 7px", fontSize: 10, borderRadius: 4, cursor: "pointer",
-                        background: att.activeConfig === cfg.name ? C.blue + "22" : C.bg3,
+                        background: att.activeConfig === cfg.name ? alpha(C.blue, 0.13) : C.bg3,
                         color: att.activeConfig === cfg.name ? C.blue : C.faint,
-                        border: `1px solid ${att.activeConfig === cfg.name ? C.blue + "44" : C.border}`,
+                        border: `1px solid ${att.activeConfig === cfg.name ? alpha(C.blue, 0.27) : C.border}`,
                       }}
                     >
                       {cfg.name}

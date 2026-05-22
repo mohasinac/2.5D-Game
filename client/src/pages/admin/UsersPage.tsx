@@ -3,7 +3,7 @@ import { collection, getDocs, doc, updateDoc, query, orderBy } from "firebase/fi
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
-import { C, S } from "@/styles/theme";
+import { C, S, alpha } from "@/styles/theme";
 
 interface UserDoc {
   id: string;
@@ -97,13 +97,13 @@ export function UsersPage() {
                 style={{
                   display: "flex", alignItems: "center", gap: 12, padding: "12px 16px",
                   borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : "none",
-                  background: isMe ? C.blue + "08" : "transparent",
+                  background: isMe ? alpha(C.blue, 0.05) : "transparent",
                 }}
               >
                 <div
                   style={{
                     width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
-                    background: (ROLE_COLORS[role as keyof typeof ROLE_COLORS] ?? C.muted) + "22",
+                    background: alpha(ROLE_COLORS[role as keyof typeof ROLE_COLORS] ?? C.muted, 0.13),
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 16,
                   }}
@@ -116,7 +116,7 @@ export function UsersPage() {
                     <span style={{ color: C.text, fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {user.displayName ?? user.email ?? user.id.slice(0, 12) + "…"}
                     </span>
-                    {isMe && <span style={{ fontSize: 10, color: C.blue, background: C.blue + "22", padding: "1px 6px", borderRadius: 4 }}>you</span>}
+                    {isMe && <span style={{ fontSize: 10, color: C.blue, background: alpha(C.blue, 0.13), padding: "1px 6px", borderRadius: 4 }}>you</span>}
                   </div>
                   <div style={{ display: "flex", gap: 8, marginTop: 2 }}>
                     <span style={{ fontSize: 11, color: C.faint, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email ?? "—"}</span>
@@ -129,7 +129,7 @@ export function UsersPage() {
                   <span style={{
                     fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em",
                     color: ROLE_COLORS[role as keyof typeof ROLE_COLORS] ?? C.muted,
-                    background: (ROLE_COLORS[role as keyof typeof ROLE_COLORS] ?? C.muted) + "22",
+                    background: alpha(ROLE_COLORS[role as keyof typeof ROLE_COLORS] ?? C.muted, 0.13),
                     padding: "3px 8px", borderRadius: 6,
                   }}>
                     {role}
