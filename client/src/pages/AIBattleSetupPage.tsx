@@ -100,6 +100,21 @@ export function AIBattleSetupPage() {
     load();
   }, []);
 
+  // Build EntityOption[] for the picker — must be before any early returns.
+  const beyOptions: EntityOption[] = useMemo(() => beyblades.map((b) => ({
+    id: b.id,
+    name: b.displayName,
+    subtitle: `${b.type} · ${b.spinDirection} spin`,
+    group: b.generation ?? generationFor(b.id),
+    data: b,
+  })), [beyblades]);
+  const arenaOptions: EntityOption[] = useMemo(() => arenas.map((a) => ({
+    id: a.id,
+    name: a.name,
+    subtitle: a.difficulty ? `Difficulty: ${a.difficulty}` : undefined,
+    data: a,
+  })), [arenas]);
+
   const handleStart = () => {
     if (!playerBeyId || !aiBeyId || !arenaId) {
       toast.error("Select all options first");
@@ -127,21 +142,6 @@ export function AIBattleSetupPage() {
       <div className="spin" style={{ width:40, height:40, border:`3px solid ${C.border}`, borderTopColor:C.purple, borderRadius:"50%" }} />
     </div>
   );
-
-  // Build EntityOption[] for the picker.
-  const beyOptions: EntityOption[] = useMemo(() => beyblades.map((b) => ({
-    id: b.id,
-    name: b.displayName,
-    subtitle: `${b.type} · ${b.spinDirection} spin`,
-    group: b.generation ?? generationFor(b.id),
-    data: b,
-  })), [beyblades]);
-  const arenaOptions: EntityOption[] = useMemo(() => arenas.map((a) => ({
-    id: a.id,
-    name: a.name,
-    subtitle: a.difficulty ? `Difficulty: ${a.difficulty}` : undefined,
-    data: a,
-  })), [arenas]);
 
   return (
     <div style={{ minHeight:"100vh", background:C.bg0, padding:32 }}>
