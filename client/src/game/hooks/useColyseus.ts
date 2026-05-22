@@ -17,6 +17,19 @@ export interface BurstEventData {
   y: number;
 }
 
+export interface QTEPromptData {
+  attackerBeyId: string;
+  sequence: string[];
+  windowTicks: number;
+  powerCost: number;
+  expiresAt: number; // Date.now() + windowMs — set client-side on receipt
+}
+
+export interface QTESuccessData {
+  attackerBeyId: string;
+  refundAmount: number;
+}
+
 interface UseColyseusOptions {
   roomName: string;
   options?: Record<string, unknown>;
@@ -28,6 +41,10 @@ interface UseColyseusOptions {
   onSeriesEnd?: (data: { winner: string; seriesScore: Record<string, number> }) => void;
   // Callback for burst KO event (Phase R)
   onBurst?: (data: BurstEventData) => void;
+  // Callbacks for QTE events (Phase Y)
+  onQTEPrompt?: (data: QTEPromptData) => void;
+  onQTESuccess?: (data: QTESuccessData) => void;
+  onQTEExpired?: () => void;
 }
 
 interface UseColyseusReturn {
@@ -42,6 +59,7 @@ interface UseColyseusReturn {
   loadingError?: string;
   connect: () => Promise<void>;
   disconnect: () => void;
+  sendQTEInput: (key: string) => void;
   sendInput: (input: {
     moveLeft?: boolean;
     moveRight?: boolean;
@@ -83,6 +101,9 @@ export function useColyseus({
   onGameEnd,
   onSeriesEnd,
   onBurst,
+  onQTEPrompt,
+  onQTESuccess,
+  onQTEExpired,
 }: UseColyseusOptions): UseColyseusReturn {
   const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
   const [room, setRoom] = useState<Room | null>(null);
@@ -98,10 +119,16 @@ export function useColyseus({
   const onGameEndRef = useRef(onGameEnd);
   const onSeriesEndRef = useRef(onSeriesEnd);
   const onBurstRef = useRef(onBurst);
+  const onQTEPromptRef = useRef(onQTEPrompt);
+  const onQTESuccessRef = useRef(onQTESuccess);
+  const onQTEExpiredRef = useRef(onQTEExpired);
 
   useEffect(() => { onGameEndRef.current = onGameEnd; }, [onGameEnd]);
   useEffect(() => { onSeriesEndRef.current = onSeriesEnd; }, [onSeriesEnd]);
   useEffect(() => { onBurstRef.current = onBurst; }, [onBurst]);
+  useEffect(() => { onQTEPromptRef.current = onQTEPrompt; }, [onQTEPrompt]);
+  useEffect(() => { onQTESuccessRef.current = onQTESuccess; }, [onQTESuccess]);
+  useEffect(() => { onQTEExpiredRef.current = onQTEExpired; }, [onQTEExpired]);
 
   const connect = useCallback(async () => {
     if (roomRef.current) return;
@@ -217,6 +244,26 @@ export function useColyseus({
         }
       });
 
+      // QTE events (Phase Y)
+      connectedRoom.onMessage("qte-prompt", (data: { attackerBeyId: string; sequence: string[]; windowTicks: number; powerCost: number }) => {
+        const windowMs = Math.round(data.windowTicks * (1000 / 60));
+        onQTEPromptRef.current?.({ ...data, expiresAt: Date.now() + windowMs });
+      });
+
+      connectedRoom.onMessage("qte-success", (data: QTESuccessData) => {
+        onQTESuccessRef.current?.(data);
+        // Show refund toast to this player if they are the attacker
+        if (data.attackerBeyId === connectedRoom.sessionId) {
+          toast(`Intercepted! +${data.refundAmount} power refunded`, { icon: "⚡", duration: 2500 });
+        } else {
+          toast("BLOCKED!", { icon: "🛡️", duration: 2000 });
+        }
+      });
+
+      connectedRoom.onMessage("qte-expired", () => {
+        onQTEExpiredRef.current?.();
+      });
+
       connectedRoom.onError((code, message) => {
         console.error(`Room error [${code}]: ${message}`);
         setConnectionState("error");
@@ -242,6 +289,12 @@ export function useColyseus({
     if (roomRef.current) {
       roomRef.current.leave();
       roomRef.current = null;
+    }
+  }, []);
+
+  const sendQTEInput = useCallback((key: string) => {
+    if (roomRef.current && roomRef.current.connection.isOpen) {
+      roomRef.current.send("qte-input", { key });
     }
   }, []);
 
@@ -277,6 +330,6 @@ export function useColyseus({
   return {
     connectionState, room, gameState, beyblades, myBeyblade, isSpectating,
     loadingStep, loadingError,
-    connect, disconnect, sendInput,
+    connect, disconnect, sendQTEInput, sendInput,
   };
 }

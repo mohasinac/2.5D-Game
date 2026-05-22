@@ -15,6 +15,8 @@ import { PartModesHUD } from "@/components/game/PartModesHUD";
 import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { LoadingProgress } from "@/components/LoadingProgress";
+import { QTEOverlay } from "@/components/game/QTEOverlay";
+import type { QTEPromptData } from "@/game/hooks/useColyseus";
 
 interface AIBattleLocationState {
   beybladeId?: string;
@@ -51,6 +53,7 @@ export function AIBattleGamePage() {
   const [seriesEndData, setSeriesEndData] = useState<{ winner: string; seriesScore: Record<string, number> } | null>(null);
   const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
   const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
+  const [qtePrompt, setQTEPrompt] = useState<QTEPromptData | null>(null);
 
   const colyseusOptions = useMemo(() => ({
     beybladeId:   loc.beybladeId   ?? settings.beybladeId ?? "default",
@@ -70,13 +73,16 @@ export function AIBattleGamePage() {
     matchId:         loc.matchId,
   }), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, loadingStep, loadingError } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, loadingStep, loadingError } =
     useColyseus({
       roomName: roomNameFor(mode, "aiBattle"),
       options: colyseusOptions,
       autoConnect: false,
       onGameEnd: setGameEndData,
       onSeriesEnd: setSeriesEndData,
+      onQTEPrompt: (data) => { if (!spectate) setQTEPrompt(data); },
+      onQTESuccess: () => setQTEPrompt(null),
+      onQTEExpired: () => setQTEPrompt(null),
     });
 
   const {
@@ -404,6 +410,15 @@ export function AIBattleGamePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* QTE Overlay (Phase Y) */}
+      {!spectate && (
+        <QTEOverlay
+          prompt={qtePrompt}
+          onKeyPress={sendQTEInput}
+          onDismiss={() => setQTEPrompt(null)}
+        />
       )}
 
       {/* Connecting overlay */}

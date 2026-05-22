@@ -17,6 +17,9 @@ import { Countdown } from "@/components/game/Countdown";
 import { Minimap } from "@/components/game/Minimap";
 import { SoundManager } from "@/game/audio/SoundManager";
 import { LoadingProgress } from "@/components/LoadingProgress";
+import { QTEOverlay } from "@/components/game/QTEOverlay";
+import type { QTEPromptData } from "@/game/hooks/useColyseus";
+import { ELEMENT_ICONS, ELEMENT_COLORS, type ElementType } from "@/types/elementTypes";
 
 export function BattleGamePage() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -34,6 +37,7 @@ export function BattleGamePage() {
   const [seriesEndData, setSeriesEndData] = useState<{ winner: string; seriesScore: Record<string, number> } | null>(null);
   const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
   const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
+  const [qtePrompt, setQTEPrompt] = useState<QTEPromptData | null>(null);
 
   const colyseusOptions = useMemo(() => ({
     beybladeId: settings.beybladeId ?? "default",
@@ -43,7 +47,7 @@ export function BattleGamePage() {
     spectate,
   }), [settings.beybladeId, settings.arenaId, settings.username, userId, spectate]);
 
-  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, loadingStep, loadingError } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, loadingStep, loadingError } =
     useColyseus({
       roomName: roomNameFor(mode, "battle"),
       options: colyseusOptions,
@@ -51,6 +55,9 @@ export function BattleGamePage() {
       autoConnect: false,
       onGameEnd: setGameEndData,
       onSeriesEnd: setSeriesEndData,
+      onQTEPrompt: (data) => { if (!isSpectating) setQTEPrompt(data); },
+      onQTESuccess: () => setQTEPrompt(null),
+      onQTEExpired: () => setQTEPrompt(null),
     });
 
   useEffect(() => {
@@ -335,10 +342,19 @@ export function BattleGamePage() {
                 background: "rgba(15,23,42,0.85)", borderRadius: 8, border: `1px solid ${opp.isActive ? C.border : C.bg3}`,
                 padding: "8px 12px", minWidth: "clamp(120px, 20vw, 200px)", opacity: opp.isActive ? 1 : 0.5,
               }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 6 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 4 }}>
                   <span style={{ color: C.muted, overflow: "hidden", maxWidth: "clamp(60px, 12vw, 100px)", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{opp.username}</span>
                   <span style={{ color: `#${(TYPE_COLORS[opp.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}`, fontSize: 10 }}>{opp.type}</span>
                 </div>
+                {(opp as any).elementTypes?.length > 0 && (
+                  <div style={{ display: "flex", gap: 3, marginBottom: 4 }}>
+                    {((opp as any).elementTypes as ElementType[]).map((et: ElementType) => (
+                      <span key={et} title={et} style={{ fontSize: 11, color: ELEMENT_COLORS[et], background: `${ELEMENT_COLORS[et]}22`, border: `1px solid ${ELEMENT_COLORS[et]}55`, borderRadius: 4, padding: "0px 4px" }}>
+                        {ELEMENT_ICONS[et]}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <div style={{ width: "100%", height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
                   <div style={{
                     height: "100%", borderRadius: 3, transition: "width 150ms",
@@ -356,9 +372,14 @@ export function BattleGamePage() {
       {myBeyblade && !isSpectating && (
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10 }}>
           <div style={{ maxWidth: "min(320px, 90vw)", margin: "0 auto", background: "rgba(15,23,42,0.85)", borderRadius: 12, border: `1px solid ${C.border}`, padding: "clamp(8px, 2vw, 12px)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(10px, 1.5vw, 12px)", color: C.muted, marginBottom: 8 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(10px, 1.5vw, 12px)", color: C.muted, marginBottom: 4 }}>
               <span style={{ fontFamily: "monospace" }}>{myBeyblade.username} (you)</span>
-              <span style={{ textTransform: "capitalize", color: `#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>{myBeyblade.type}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                {((myBeyblade as any).elementTypes as ElementType[] | undefined)?.map((et: ElementType) => (
+                  <span key={et} title={et} style={{ fontSize: 12, color: ELEMENT_COLORS[et] }}>{ELEMENT_ICONS[et]}</span>
+                ))}
+                <span style={{ textTransform: "capitalize", color: `#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>{myBeyblade.type}</span>
+              </div>
             </div>
             <div style={{ marginBottom: 6 }}>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(9px, 1.5vw, 11px)", marginBottom: 4 }}>
@@ -504,6 +525,15 @@ export function BattleGamePage() {
             <p style={{ color: C.muted, marginTop: 16, fontSize: 20 }}>Get ready!</p>
           </div>
         </div>
+      )}
+
+      {/* QTE Overlay (Phase Y) */}
+      {!isSpectating && (
+        <QTEOverlay
+          prompt={qtePrompt}
+          onKeyPress={sendQTEInput}
+          onDismiss={() => setQTEPrompt(null)}
+        />
       )}
 
       {/* Connecting overlay */}

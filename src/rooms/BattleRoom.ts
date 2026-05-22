@@ -13,7 +13,7 @@ import {
   ComboTracker, detectCombo, createComboTracker,
   BeyComboMatchState, createBeyComboMatchState, resetBeyComboMatchState,
   TriggerState, createTriggerState, detectTriggerCombos, recordComboFired,
-  TriggerContext,
+  TriggerContext, isQTEGateMet,
 } from "../shared/utils/comboSystem";
 import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, invertInputControls, type PlayerInput } from "../shared/utils/bitmask";
@@ -36,6 +36,18 @@ import {
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
 import type { ArenaSystem } from "../types/arenaSystem";
 import { MODIFIER_MAP, type RoundModifier } from "../../client/src/types/roundModifier";
+import { getDualTypeAttackMultiplier, getDualTypeDefenseMultiplier, type ElementType } from "../../client/src/types/elementTypes";
+
+const QTE_KEY_POOL = ["left", "right", "up", "down", "attack", "defense", "dodge"];
+
+function generateQTESequence(rand: () => number, powerCost: number): string[] {
+  const n = Math.max(1, Math.floor(powerCost / 25));
+  const result: string[] = [];
+  for (let i = 0; i < n; i++) {
+    result.push(QTE_KEY_POOL[Math.floor(rand() * QTE_KEY_POOL.length)]);
+  }
+  return result;
+}
 
 // [SERVER-ROOM] BattleRoom — live PVP for 2-4 players + spectators.
 // Runs full beyblade-vs-beyblade collision detection.
@@ -82,6 +94,14 @@ export class BattleRoom extends Room<GameState> {
   protected invertControlsActive = false;
   /** Per-session camera-follow target id (purely informational). */
   protected spectatorFollowTargets = new Map<string, string>();
+  /** Pending QTE state — set when an opponent fires a special move and QTE is eligible. */
+  private pendingQTE: {
+    attackerSessionId: string;
+    sequence: string[];
+    expiresAt: number;
+    powerCost: number;
+    respondersProgress: Map<string, number>;
+  } | null = null;
 
   maxClients = 12; // 4 player slots + 8 spectator slots
 
@@ -154,6 +174,33 @@ export class BattleRoom extends Room<GameState> {
 
     this.onMessage("ready", (client) => {
       console.log(`Client ${client.sessionId} is ready`);
+    });
+
+    this.onMessage("qte-input", (client, message: { key: string }) => {
+      if (!this.pendingQTE) return;
+      if (client.sessionId === this.pendingQTE.attackerSessionId) return;
+      if (this.spectatorSessions.has(client.sessionId)) return;
+      if (Date.now() > this.pendingQTE.expiresAt) return;
+
+      const progress = this.pendingQTE.respondersProgress.get(client.sessionId) ?? 0;
+      const expected = this.pendingQTE.sequence[progress];
+      if (message.key === expected) {
+        const next = progress + 1;
+        if (next >= this.pendingQTE.sequence.length) {
+          // Sequence complete — cancel the special move
+          const attacker = this.state.beyblades.get(this.pendingQTE.attackerSessionId);
+          if (attacker) {
+            this.cancelSpecialMoveViaQTE(attacker, this.pendingQTE.powerCost);
+          } else {
+            this.pendingQTE = null;
+          }
+        } else {
+          this.pendingQTE.respondersProgress.set(client.sessionId, next);
+        }
+      } else {
+        // Wrong key — reset this responder's progress
+        this.pendingQTE.respondersProgress.set(client.sessionId, 0);
+      }
     });
   }
 
@@ -520,6 +567,11 @@ export class BattleRoom extends Room<GameState> {
     if ((data as any).burstResistance !== undefined) {
       beyblade.burstResistance = (data as any).burstResistance;
     }
+
+    // Element types (Phase AB) — max 2, stored as ArraySchema<string>
+    beyblade.elementTypes.clear();
+    const elemTypes: string[] = (data as any).elementTypes ?? [];
+    for (const et of elemTypes.slice(0, 2)) beyblade.elementTypes.push(et);
   }
 
   private applyDefaultStats(beyblade: Beyblade) {
@@ -590,6 +642,9 @@ export class BattleRoom extends Room<GameState> {
           beyblade.controlLockSource = "combo";
         }
         beyblade.comboCooldowns.set(combo.comboId, now + combo.durationMs);
+        // Track for QTE gate (requires ≥30% of combo slots fired this match)
+        const ms = this.comboMatchStates.get(client.sessionId);
+        if (ms) recordComboFired(ms, combo.comboId);
         this.broadcast("combo", {
           playerId: beyblade.id,
           comboId: combo.comboId,
@@ -608,6 +663,43 @@ export class BattleRoom extends Room<GameState> {
   private handleSpecialMove(beyblade: Beyblade) {
     const state = this.physics.getBodyState(beyblade.id);
     if (!state) return;
+
+    // Mark special move as active (cleared in tick loop after specialMoveEndTime)
+    beyblade.specialMoveActive = true;
+    beyblade.specialMoveEndTime = Date.now() + 500;
+
+    // Power cost for this special move (legacy = 50 deducted in InputHandler)
+    const LEGACY_SPECIAL_COST = 50;
+
+    // QTE gate: broadcast prompt to all other players if eligible
+    const arenaQTEEnabled = (this.arenaCache as any)?.qteEnabled !== false;
+    const matchState = this.comboMatchStates.get(beyblade.id);
+    const totalSlots = Array.from(beyblade.comboSlots ?? []).length;
+    const gatemet = matchState ? isQTEGateMet(matchState, totalSlots) : false;
+
+    if (arenaQTEEnabled && gatemet && !this.pendingQTE) {
+      const sequence = generateQTESequence(this.rand, LEGACY_SPECIAL_COST);
+      const windowTicks = Math.max(20, 60 - Math.floor(LEGACY_SPECIAL_COST / 4));
+      const expiresAt = Date.now() + Math.round(windowTicks * (1000 / 60));
+      this.pendingQTE = {
+        attackerSessionId: beyblade.id,
+        sequence,
+        expiresAt,
+        powerCost: LEGACY_SPECIAL_COST,
+        respondersProgress: new Map(),
+      };
+      // Broadcast to all non-attacker, non-spectator clients
+      this.clients.forEach(c => {
+        if (c.sessionId !== beyblade.id && !this.spectatorSessions.has(c.sessionId)) {
+          c.send("qte-prompt", {
+            attackerBeyId: beyblade.id,
+            sequence,
+            windowTicks,
+            powerCost: LEGACY_SPECIAL_COST,
+          });
+        }
+      });
+    }
 
     const movePayload = {
       playerId: beyblade.id,
@@ -662,6 +754,19 @@ export class BattleRoom extends Room<GameState> {
         break;
       }
     }
+  }
+
+  private cancelSpecialMoveViaQTE(beyblade: Beyblade, powerCost: number) {
+    beyblade.specialMoveActive = false;
+    beyblade.specialMoveEndTime = 0;
+    beyblade.controlLockedUntilMs = 0;
+    const refund = Math.floor(powerCost * 0.8);
+    beyblade.power = Math.min(100, beyblade.power + refund);
+    this.broadcast("qte-success", {
+      attackerBeyId: beyblade.id,
+      refundAmount: refund,
+    });
+    this.pendingQTE = null;
   }
 
   private handleAction(client: Client, message: any) {
@@ -729,42 +834,59 @@ export class BattleRoom extends Room<GameState> {
 
         const dmg = this.physics.calculateCollisionDamage(collision, b1, b2);
 
-        b1.health = Math.max(0, b1.health - dmg.damage1);
-        b2.health = Math.max(0, b2.health - dmg.damage2);
-        b1.spin = Math.max(0, b1.spin - dmg.spinSteal2);
-        b2.spin = Math.max(0, b2.spin - dmg.spinSteal1);
-        b1.damageDealt += dmg.damage2;
-        b2.damageDealt += dmg.damage1;
-        b1.damageReceived += dmg.damage1;
-        b2.damageReceived += dmg.damage2;
+        // Element type effectiveness (Phase AB)
+        const b1Elems = Array.from(b1.elementTypes ?? []) as ElementType[];
+        const b2Elems = Array.from(b2.elementTypes ?? []) as ElementType[];
+        const typeMultB1vsB2 = b1Elems.length > 0 && b2Elems.length > 0
+          ? getDualTypeAttackMultiplier(b1Elems, b2Elems[0]) * getDualTypeDefenseMultiplier(b1Elems[0], b2Elems)
+          : 1.0;
+        const typeMultB2vsB1 = b2Elems.length > 0 && b1Elems.length > 0
+          ? getDualTypeAttackMultiplier(b2Elems, b1Elems[0]) * getDualTypeDefenseMultiplier(b2Elems[0], b1Elems)
+          : 1.0;
+
+        const effDmg1 = dmg.damage1 * typeMultB2vsB1;   // damage b1 takes from b2
+        const effDmg2 = dmg.damage2 * typeMultB1vsB2;   // damage b2 takes from b1
+        const effSS1  = dmg.spinSteal1 * typeMultB1vsB2; // spin b2 loses to b1
+        const effSS2  = dmg.spinSteal2 * typeMultB2vsB1; // spin b1 loses to b2
+
+        b1.health = Math.max(0, b1.health - effDmg1);
+        b2.health = Math.max(0, b2.health - effDmg2);
+        b1.spin = Math.max(0, b1.spin - effSS2);
+        b2.spin = Math.max(0, b2.spin - effSS1);
+        b1.damageDealt += effDmg2;
+        b2.damageDealt += effDmg1;
+        b1.damageReceived += effDmg1;
+        b2.damageReceived += effDmg2;
         b1.collisions++;
         b2.collisions++;
 
-        b1.power = Math.min(100, b1.power + (dmg.damage2 > 0 ? 0.5 : 0) + (dmg.damage1 > 0 ? 0.3 : 0));
-        b2.power = Math.min(100, b2.power + (dmg.damage1 > 0 ? 0.5 : 0) + (dmg.damage2 > 0 ? 0.3 : 0));
+        b1.power = Math.min(100, b1.power + (effDmg2 > 0 ? 0.5 : 0) + (effDmg1 > 0 ? 0.3 : 0));
+        b2.power = Math.min(100, b2.power + (effDmg1 > 0 ? 0.5 : 0) + (effDmg2 > 0 ? 0.3 : 0));
 
-        if (dmg.damage1 > 15) b1.attackBuffTimer = 0;
-        if (dmg.damage2 > 15) b2.attackBuffTimer = 0;
+        if (effDmg1 > 15) b1.attackBuffTimer = 0;
+        if (effDmg2 > 15) b2.attackBuffTimer = 0;
 
         this.broadcast("collision", {
           p1: id1,
           p2: id2,
-          damage1: dmg.damage1,
-          damage2: dmg.damage2,
-          spinSteal1: dmg.spinSteal1,
-          spinSteal2: dmg.spinSteal2,
+          damage1: effDmg1,
+          damage2: effDmg2,
+          spinSteal1: effSS1,
+          spinSteal2: effSS2,
           contactPoint: collision.contactPoint,
+          typeEffectB1vsB2: typeMultB1vsB2,
+          typeEffectB2vsB1: typeMultB2vsB1,
         });
 
         // 2.5D hook: PartSystemManager picks this up to fire SubPart switches,
         // bearing friction, hop impulse, detachment, on_hit_* events.
-        const impactForce = Math.max(dmg.damage1, dmg.damage2);
+        const impactForce = Math.max(effDmg1, effDmg2);
         this.onBeyCollided(id1, id2, impactForce);
 
         // ── Burst chance (Phase R) ────────────────────────────────────────────
         // Check both beys: the one that received higher damage may burst.
         const BURST_THRESHOLD = 40;
-        for (const [victim, incomingDmg] of [[b1, dmg.damage1], [b2, dmg.damage2]] as [Beyblade, number][]) {
+        for (const [victim, incomingDmg] of [[b1, effDmg1], [b2, effDmg2]] as [Beyblade, number][]) {
           if (!victim.isActive) continue;
           if (incomingDmg < BURST_THRESHOLD) continue;
           const spinRatioV = victim.maxSpin > 0 ? victim.spin / victim.maxSpin : 0;
@@ -910,6 +1032,12 @@ export class BattleRoom extends Room<GameState> {
 
     this.state.timer -= dt;
     this.checkWinCondition();
+
+    // QTE expiry check
+    if (this.pendingQTE && Date.now() > this.pendingQTE.expiresAt) {
+      this.broadcast("qte-expired", { attackerBeyId: this.pendingQTE.attackerSessionId });
+      this.pendingQTE = null;
+    }
   }
 
   // ─── Reactive combo tick (Phase W) ──────────────────────────────────────────
@@ -1053,6 +1181,7 @@ export class BattleRoom extends Room<GameState> {
       }
     });
 
+    this.pendingQTE = null;
     resetStateForNextGame(this.state, this.spawnPositions, this.physics, 180);
     this.warmupTimer = 3;
 

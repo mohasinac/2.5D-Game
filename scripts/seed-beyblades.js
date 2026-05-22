@@ -420,6 +420,31 @@ const BEYBLADES = [
   },
 ];
 
+// ─── Element type assignments (Phase AB) ─────────────────────────────────────
+// Max 2 per beyblade. Used for type-effectiveness damage multipliers.
+const ELEMENT_TYPES_BY_ID = {
+  "storm-pegasus":       ["wind", "lightning"],
+  "rock-leone":          ["earth"],
+  "earth-eagle":         ["earth", "wind"],
+  "flame-sagittario":    ["fire"],
+  "lightning-l-drago":   ["lightning", "shadow"],
+  "basalt-horogium":     ["earth", "metal"],
+  "galaxy-pegasus":      ["wind"],
+  "meteo-l-drago":       ["shadow", "thunder"],
+  "thermal-pisces":      ["water"],
+  "fang-leone":          ["earth"],
+  "jade-jupiter":        ["nature", "water"],
+  "screw-capricorn":     ["wind", "earth"],
+  "death-quetzalcoatl":  ["shadow"],
+  "diablo-nemesis":      ["void"],
+  "wing-pegasis":        ["wind", "lightning"],
+  "big-bang-pegasis":    ["fire", "wind"],
+  "valtryek-v2":         ["lightning"],
+  "spryzen-s2":          ["metal", "shadow"],
+  "dranzer-spiral":      ["fire", "thunder"],
+  "hells-hammer":        ["metal", "void"],
+};
+
 // ─── Seed ─────────────────────────────────────────────────────────────────────
 
 async function seedBeyblades() {
@@ -436,6 +461,7 @@ async function seedBeyblades() {
 
     const docData = {
       ...bey,
+      elementTypes: ELEMENT_TYPES_BY_ID[bey.id] ?? [],
       // Derived stats stored for admin UI display
       stamina:              derived.maxStamina,
       spinStealFactor:      derived.spinStealFactor,
