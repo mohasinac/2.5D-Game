@@ -224,6 +224,9 @@ const ARENAS = [
         ],
         cooldownTicks: 120,
         maxSimultaneous: 2,
+        maxDurationTicks: 300,    // 5 sec max — attacker can't grind forever
+        breakThreshold: 25,       // a moderate hit from a 3rd bey knocks the driller off
+        breakOnRingOut: true,
       },
       {
         // top_mount: attacker rides atop partner. Dynasty team style — cooperative combo.
@@ -234,13 +237,15 @@ const ARENAS = [
         entryRadiusCm: 2.5,
         triggerCondition: "same_team",
         linkEffects: [
-          // Combine forces — share spin and boost damage
           { type: "spin_share", intensityPerTick: 0.05 },
           { type: "damage_boost", intensityPerTick: 0.25 },
           { type: "shield_boost", intensityPerTick: 0.15 },
         ],
         cooldownTicks: 120,
         maxSimultaneous: 2,
+        maxDurationTicks: 360,    // 6 sec — must re-establish contact
+        breakThreshold: 20,       // enemy hit of 20+ shatters the formation
+        breakOnRingOut: true,
       },
       {
         // side_spin: beys spin side-by-side. Circus-style power combo.
@@ -256,6 +261,9 @@ const ARENAS = [
         ],
         cooldownTicks: 180,
         maxSimultaneous: 3,
+        maxDurationTicks: 480,    // 8 sec
+        breakThreshold: 15,       // fragile — any solid hit from outside breaks it
+        breakOnRingOut: true,
       },
       {
         // Hostile dogfight — continuous rapid collisions forcing both beys apart
@@ -272,6 +280,9 @@ const ARENAS = [
         ],
         cooldownTicks: 90,
         maxSimultaneous: 2,
+        maxDurationTicks: 240,    // 4 sec dogfight window
+        breakThreshold: 30,       // hard to interrupt — needs a heavy external hit
+        breakOnRingOut: false,    // dogfight can continue near the edge
       },
       {
         // Force lock — attacker pulls victim into orbit, draining stamina
@@ -289,6 +300,9 @@ const ARENAS = [
         ],
         cooldownTicks: 150,
         maxSimultaneous: 2,
+        maxDurationTicks: 420,    // 7 sec orbit window
+        breakThreshold: 35,       // very strong pull — needs a big hit to sever
+        breakOnRingOut: true,     // orbit lock breaks at ring edge so it's not a death trap
       },
     ],
   },

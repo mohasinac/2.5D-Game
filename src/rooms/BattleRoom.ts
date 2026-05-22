@@ -1638,6 +1638,32 @@ export class BattleRoom extends Room<GameState> {
           const tickCount = (existing?.tickCount ?? 0) + 1;
           this.beyStackState.set(stackKey, { partnerId: sidB, linkId: link.id, tickCount });
 
+          // ── Max duration: auto-break when stack has lasted too long ──────────
+          if (link.maxDurationTicks && tickCount > link.maxDurationTicks) {
+            this.beyStackState.delete(stackKey);
+            this.pendingBeyLinkQTE.delete(sidB);
+            const cmap = this.beyStackCooldowns.get(sidA) ?? new Map<string, number>();
+            cmap.set(link.id, link.cooldownTicks ?? 120);
+            this.beyStackCooldowns.set(sidA, cmap);
+            this.broadcast("bey-stack-end", { beyIdA: sidA, beyIdB: sidB, linkId: link.id, reason: "max_duration" });
+            continue;
+          }
+
+          // ── Ring-out break ───────────────────────────────────────────────────
+          if (link.breakOnRingOut) {
+            const ringOutRadius = (this.state.arena.width * 16) / 2 * 0.85;
+            const cx = (this.state.arena.width * 16) / 2;
+            const cy = (this.state.arena.height * 16) / 2;
+            const nearEdgeA = Math.hypot(beyA.x - cx, beyA.y - cy) > ringOutRadius;
+            const nearEdgeB = Math.hypot(beyB.x - cx, beyB.y - cy) > ringOutRadius;
+            if (nearEdgeA || nearEdgeB) {
+              this.beyStackState.delete(stackKey);
+              this.pendingBeyLinkQTE.delete(sidB);
+              this.broadcast("bey-stack-end", { beyIdA: sidA, beyIdB: sidB, linkId: link.id, reason: "ring_out_proximity" });
+              continue;
+            }
+          }
+
           if (!existing) {
             this.broadcast("bey-stack-start", {
               beyIdA: sidA, beyIdB: sidB,
@@ -2202,8 +2228,50 @@ export class BattleRoom extends Room<GameState> {
     // override in 2.5D subclass to call partSystemManager.tickBey()
   }
 
-  protected onBeyCollided(_id1: string, _id2: string, _impactForce: number): void {
-    // override in 2.5D subclass to call partSystemManager.onBeyCollision()
+  protected onBeyCollided(id1: string, id2: string, impactForce: number): void {
+    // Check if either bey is in an active stack that should be broken by this collision.
+    // A stack breaks if a third bey hits either participant with force >= link.breakThreshold.
+    // Collisions between the two stacked beys themselves do NOT count (that's normal stack contact).
+    this._checkBeyLinkBreakByCollision(id1, id2, impactForce);
+  }
+
+  private _checkBeyLinkBreakByCollision(colliderId1: string, colliderId2: string, impactForce: number): void {
+    const beyLinks = (this.arenaCache as any)?.beyLinks as BeyLink[] | undefined;
+    if (!beyLinks?.length) return;
+
+    for (const [stackKey, stackState] of this.beyStackState) {
+      const [sidA, sidB] = stackKey.split(":");
+      const link = beyLinks.find(l => l.id === stackState.linkId);
+      if (!link || !link.breakThreshold) continue;
+      if (impactForce < link.breakThreshold) continue;
+
+      // Determine if this collision involves one stacked bey + an external third bey
+      const aInvolved = colliderId1 === sidA || colliderId2 === sidA;
+      const bInvolved = colliderId1 === sidB || colliderId2 === sidB;
+
+      // Collision is between the two stacked beys themselves — don't break
+      if (aInvolved && bInvolved) continue;
+
+      // An external bey hit one of the stack participants
+      if (aInvolved || bInvolved) {
+        this.beyStackState.delete(stackKey);
+        // Clear any pending QTE for the victim
+        this.pendingBeyLinkQTE.delete(sidB);
+        // Short cooldown so the stack can reform but isn't instantly re-triggered
+        const cooldown = Math.floor((link.cooldownTicks ?? 60) * 0.4);
+        const cmap = this.beyStackCooldowns.get(sidA) ?? new Map<string, number>();
+        cmap.set(link.id, cooldown);
+        this.beyStackCooldowns.set(sidA, cmap);
+        this.broadcast("bey-stack-broken", {
+          beyIdA: sidA, beyIdB: sidB,
+          linkId: link.id,
+          breakerId: aInvolved ? (colliderId1 === sidA ? colliderId2 : colliderId1)
+                                : (colliderId1 === sidB ? colliderId2 : colliderId1),
+          impactForce,
+          threshold: link.breakThreshold,
+        });
+      }
+    }
   }
 
   /** N6: Combination lock tick — override in 2.5D subclass to call partSystemManager.tickCombinationLock(). */

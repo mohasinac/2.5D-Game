@@ -1223,6 +1223,10 @@ export interface BeyLink {
 
   cooldownTicks?: number;
   maxSimultaneous?: number;
+  // Duration and break conditions
+  maxDurationTicks?: number;    // stack auto-breaks after this many ticks (default: unlimited)
+  breakThreshold?: number;      // external collision force/damage required to break the stack (default: never)
+  breakOnRingOut?: boolean;     // if true, stack breaks when any participant approaches the ring edge
 }
 
 // ============================================================================

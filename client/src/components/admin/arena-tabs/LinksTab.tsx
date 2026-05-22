@@ -579,17 +579,31 @@ function BeyLinkCard({
             />
           </FieldRow>
           <FieldRow label="Cooldown (ticks)">
-            <NumInput
-              value={link.cooldownTicks ?? 0}
-              onChange={v => onUpdate({ cooldownTicks: v })}
-            />
+            <NumInput value={link.cooldownTicks ?? 0} onChange={v => onUpdate({ cooldownTicks: v })} />
           </FieldRow>
           <FieldRow label="Max Simultaneous">
-            <NumInput
-              value={link.maxSimultaneous ?? 2}
-              onChange={v => onUpdate({ maxSimultaneous: v })}
-            />
+            <NumInput value={link.maxSimultaneous ?? 2} onChange={v => onUpdate({ maxSimultaneous: v })} />
           </FieldRow>
+
+          {/* Duration and break conditions */}
+          <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Break Conditions</div>
+            <FieldRow label="Max Duration (ticks)">
+              <NumInput value={link.maxDurationTicks ?? 0} onChange={v => onUpdate({ maxDurationTicks: v || undefined })} />
+              <span style={{ fontSize: 10, color: C.faint, marginLeft: 4 }}>0 = unlimited</span>
+            </FieldRow>
+            <FieldRow label="Break Threshold">
+              <NumInput value={link.breakThreshold ?? 0} step={5} onChange={v => onUpdate({ breakThreshold: v || undefined })} />
+              <span style={{ fontSize: 10, color: C.faint, marginLeft: 4 }}>collision force (0 = unbreakable)</span>
+            </FieldRow>
+            <FieldRow label="Break on Ring Edge">
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.text, cursor: "pointer" }}>
+                <input type="checkbox" checked={link.breakOnRingOut ?? false}
+                  onChange={e => onUpdate({ breakOnRingOut: e.target.checked })} />
+                Break when participant nears ring-out
+              </label>
+            </FieldRow>
+          </div>
 
           {/* Friendly boost fields */}
           {link.alignment === "friendly" && (

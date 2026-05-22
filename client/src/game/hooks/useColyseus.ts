@@ -406,6 +406,17 @@ export function useColyseus({
         // Auto-clear after the duration elapses
         setTimeout(() => setBeyLinkControlLoss(null), data.durationTicks * (1000 / 60));
       });
+      connectedRoom.onMessage("bey-stack-broken", (data: { beyIdA: string; beyIdB: string; breakerId: string; impactForce: number; threshold: number }) => {
+        // Clear QTE prompt if it was for us
+        setBeyLinkQTE(prev => prev?.stackKey?.startsWith(data.beyIdA) || prev?.stackKey?.includes(data.beyIdB) ? null : prev);
+        // Toast only for the participants
+        if (data.beyIdA === connectedRoom.sessionId || data.beyIdB === connectedRoom.sessionId) {
+          toast("Stack broken!", { icon: "💥", duration: 1500 });
+        }
+      });
+      connectedRoom.onMessage("bey-stack-end", () => {
+        setBeyLinkQTE(null);
+      });
 
       // Phase T: arena timeline announcement
       connectedRoom.onMessage("arena-announcement", (data: { text: string; style?: "warning" | "info" | "danger" }) => {
