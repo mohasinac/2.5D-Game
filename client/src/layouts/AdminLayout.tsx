@@ -7,8 +7,56 @@ import toast from "react-hot-toast";
 import {
   LayoutDashboard, Swords, Shield, Palette, Trophy, Users, BarChart3, FlaskConical,
   Settings, Search, BookOpen, Tag, Layers, Cpu, Box, Circle, Disc, Wrench,
-  Radio, Gamepad2, type LucideIcon,
+  Radio, Gamepad2, LogOut, type LucideIcon,
 } from "lucide-react";
+
+const BREADCRUMB_LABELS: Record<string, string> = {
+  admin: "Admin",
+  beyblades: "Beyblades",
+  arenas: "Arenas",
+  assets: "Assets",
+  tournaments: "Tournaments",
+  users: "Users",
+  stats: "Statistics",
+  "arena-test": "Arena Test",
+  settings: "Settings",
+  "2d": "2.5D",
+  parts: "Parts",
+  "bit-beasts": "Bit Beasts",
+  "attack-rings": "Attack Rings",
+  "weight-disks": "Weight Disks",
+  "sub-parts": "Sub-Parts",
+  tips: "Tips",
+  cores: "Cores",
+  casings: "Casings",
+  "spin-tracks": "Spin Tracks",
+  "beyblade-systems": "Beyblade Systems",
+  "compatibility-tags": "Compat. Tags",
+  create: "Create",
+  edit: "Edit",
+};
+
+function AdminBreadcrumb() {
+  const location = useLocation();
+  const segments = location.pathname.replace(/^\//, "").split("/").filter(Boolean);
+  const crumbs: { label: string; path: string }[] = [];
+  let path = "";
+  for (const seg of segments) {
+    path += "/" + seg;
+    const label = BREADCRUMB_LABELS[seg] ?? seg;
+    crumbs.push({ label, path });
+  }
+  return (
+    <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+      {crumbs.map((c, i) => (
+        <span key={c.path} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          {i > 0 && <span style={{ color: C.faint, fontSize: 10 }}>›</span>}
+          <span style={{ color: i === crumbs.length - 1 ? C.text : C.faint }}>{c.label}</span>
+        </span>
+      ))}
+    </span>
+  );
+}
 
 const navItems = [
   { to: "/admin",            label: "Dashboard",   Icon: LayoutDashboard, end: true },
@@ -177,21 +225,6 @@ export function AdminLayout() {
                 <Gamepad2 size={15} />
                 <span>Play Game</span>
               </Link>
-              {currentUser && (
-                <div style={{ marginTop: 6, padding: "8px 12px", borderRadius: 8, background: C.bg2, border: `1px solid ${C.border}` }}>
-                  <div style={{ fontSize: 10, color: C.faint, marginBottom: 4 }}>Signed in as</div>
-                  <div style={{ fontSize: 11, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 6 }}>{currentUser.email}</div>
-                  <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                    <button
-                      onClick={handleSignOut}
-                      style={{ flex: 1, padding: "4px 0", background: "none", border: `1px solid ${C.border}`, borderRadius: 5, fontSize: 11, color: C.red, cursor: "pointer" }}
-                    >
-                      Sign out
-                    </button>
-                    <ThemeToggle compact />
-                  </div>
-                </div>
-              )}
             </>
           )}
 
@@ -213,9 +246,48 @@ export function AdminLayout() {
       </aside>
 
       {/* Main content */}
-      <main style={{ flex: 1, overflowY: "auto" }}>
-        <Outlet />
-      </main>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+        {/* Top header bar */}
+        <header style={{
+          height: 48, flexShrink: 0,
+          borderBottom: `1px solid ${C.border}`,
+          background: C.bg1,
+          display: "flex", alignItems: "center",
+          padding: "0 20px", gap: 12,
+        }}>
+          {/* Breadcrumb placeholder — filled by page-level context or location */}
+          <div style={{ flex: 1, fontSize: 12, color: C.faint }}>
+            <AdminBreadcrumb />
+          </div>
+          {/* Right side */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <ThemeToggle compact />
+            {currentUser && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 11, color: C.muted, maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {currentUser.email}
+                </span>
+                <button
+                  onClick={handleSignOut}
+                  title="Sign out"
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    padding: 6, background: "none",
+                    border: `1px solid ${C.border}`, borderRadius: 6,
+                    color: C.muted, cursor: "pointer",
+                  }}
+                >
+                  <LogOut size={13} />
+                </button>
+              </div>
+            )}
+          </div>
+        </header>
+
+        <main style={{ flex: 1, overflowY: "auto" }}>
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

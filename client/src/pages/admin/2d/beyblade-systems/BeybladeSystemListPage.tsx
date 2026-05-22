@@ -5,6 +5,8 @@ import { db, COLLECTIONS } from "@/lib/firebase";
 import type { BeybladeSystem } from "@/types/beybladeSystem";
 import toast from "react-hot-toast";
 import { C, alpha } from "@/styles/theme";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Layers } from "lucide-react";
 
 export function BeybladeSystemListPage() {
   const [systems, setSystems] = useState<BeybladeSystem[]>([]);
@@ -62,22 +64,22 @@ export function BeybladeSystemListPage() {
       {loading ? (
         <div style={{ color: C.muted, fontSize: 13 }}>Loading…</div>
       ) : systems.length === 0 ? (
-        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 40, textAlign: "center" }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>🌀</div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: C.text, marginBottom: 8 }}>No Beyblade systems yet</div>
-          <div style={{ fontSize: 13, color: C.muted, marginBottom: 20 }}>
-            Create a system by assembling parts from the part library.
-          </div>
-          <Link
-            to="/admin/2d/beyblade-systems/create"
-            style={{
-              padding: "9px 18px", background: C.blue, color: "#fff",
-              borderRadius: 8, textDecoration: "none", fontSize: 13, fontWeight: 600,
-            }}
-          >
-            Create First System
-          </Link>
-        </div>
+        <EmptyState
+          icon={<Layers size={40} />}
+          title="No Beyblade systems yet"
+          description="Create a system by assembling parts from the part library."
+          action={
+            <Link
+              to="/admin/2d/beyblade-systems/create"
+              style={{
+                padding: "9px 18px", background: C.blue, color: "#fff",
+                borderRadius: 8, textDecoration: "none", fontSize: 13, fontWeight: 600,
+              }}
+            >
+              Create First System
+            </Link>
+          }
+        />
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {systems.map((sys) => (

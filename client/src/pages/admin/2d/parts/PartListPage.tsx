@@ -6,6 +6,8 @@ import {
 import { db, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
 import { C, alpha } from "@/styles/theme";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PackageOpen } from "lucide-react";
 
 const PART_TYPE_META: Record<string, { label: string; icon: string; desc: string; collection: string }> = {
   "bit-beasts":    { label: "Bit Beasts",    icon: "🐉", desc: "Special move identity pieces.", collection: COLLECTIONS.BIT_BEAST_PARTS },
@@ -126,41 +128,38 @@ export function PartListPage() {
       {loading ? (
         <div style={{ color: C.muted, padding: 32, textAlign: "center" }}>Loading parts…</div>
       ) : filtered.length === 0 ? (
-        <div
-          style={{
-            background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10,
-            padding: 40, textAlign: "center", color: C.muted,
-          }}
-        >
-          <div style={{ fontSize: 32, marginBottom: 12 }}>{meta.icon}</div>
-          {search ? (
-            <>
-              <div style={{ fontWeight: 600, color: C.text, marginBottom: 8 }}>No results for "{search}"</div>
+        search ? (
+          <EmptyState
+            icon={<PackageOpen size={40} />}
+            title={`No results for "${search}"`}
+            action={
               <button
                 onClick={() => setSearch("")}
                 style={{ background: "none", border: "none", color: C.blue, cursor: "pointer", fontSize: 13 }}
               >
                 Clear search
               </button>
-            </>
-          ) : (
-            <>
-              <div style={{ fontWeight: 600, color: C.text, marginBottom: 8 }}>
-                No {meta.label.toLowerCase()} yet
-              </div>
+            }
+          />
+        ) : (
+          <EmptyState
+            icon={<PackageOpen size={40} />}
+            title={`No ${meta.label.toLowerCase()} yet`}
+            description={`Create your first ${meta.label.slice(0, -1).toLowerCase()} to start building beyblade systems.`}
+            action={
               <Link
                 to={`/admin/2d/parts/${partType}/create`}
                 style={{
-                  display: "inline-block", marginTop: 12, padding: "8px 16px",
+                  display: "inline-block", padding: "8px 16px",
                   background: alpha(C.blue, 0.13), color: C.blue, borderRadius: 7,
                   textDecoration: "none", fontSize: 13, border: `1px solid ${alpha(C.blue, 0.27)}`,
                 }}
               >
                 Create first {meta.label.slice(0, -1).toLowerCase()} →
               </Link>
-            </>
-          )}
-        </div>
+            }
+          />
+        )
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {filtered.map((part) => (
