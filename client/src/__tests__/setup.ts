@@ -27,6 +27,8 @@ vi.mock("@/lib/firebase", () => ({
     CASING_PARTS: "casing_parts",
     SPIN_TRACK_PARTS: "spin_track_parts",
     BEYBLADE_SYSTEMS: "beyblade_systems",
+    ARENA_SYSTEMS: "arena_systems",
+    SPECIAL_MOVES: "special_moves",
     TOURNAMENTS: "tournaments",
     TOURNAMENT_PARTICIPANTS: "tournament_participants",
     TOURNAMENT_BRACKETS: "tournament_brackets",
@@ -55,6 +57,11 @@ vi.mock("firebase/firestore", () => ({
   orderBy: vi.fn(),
   limit: vi.fn(),
   serverTimestamp: vi.fn(() => new Date()),
+  Timestamp: {
+    now: vi.fn(() => ({ seconds: 0, nanoseconds: 0, toDate: () => new Date() })),
+    fromDate: vi.fn((d: Date) => ({ seconds: Math.floor(d.getTime() / 1000), nanoseconds: 0, toDate: () => d })),
+  },
+  getCountFromServer: vi.fn().mockResolvedValue({ data: () => ({ count: 0 }) }),
 }));
 
 vi.mock("firebase/auth", () => ({
@@ -158,6 +165,21 @@ vi.mock("pixi.js", () => ({
     scale: { set: vi.fn() },
     style: {},
   })),
+  Sprite: vi.fn().mockImplementation(() => ({
+    ...makeContainer(),
+    anchor: { set: vi.fn(), x: 0, y: 0 },
+    texture: null,
+    width: 0,
+    height: 0,
+    alpha: 1,
+    tint: 0xffffff,
+    destroy: vi.fn(),
+  })),
+  Texture: {
+    from: vi.fn(() => ({ destroy: vi.fn(), valid: true })),
+    WHITE: { destroy: vi.fn(), valid: true },
+    EMPTY: { destroy: vi.fn(), valid: false },
+  },
   Ticker: vi.fn(),
   Filter: vi.fn(),
 }));
