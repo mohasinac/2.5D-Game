@@ -746,14 +746,17 @@ export function computeElementTypeMultiplier(
   if (attackerElems.length === 0 || defenderElems.length === 0) return 1.0;
   const attackRow = (e: string) => TYPE_MATRIX[e as ET] ?? null;
 
-  // For each defender element, pick the best attacker matchup
+  // For each defender element, pick the best attacker matchup.
+  // Start at -Infinity so weak (<1.0) single-type matchups are preserved.
+  // If all attacker types are unknown (no valid row), default to 1.0.
   let mult = 1.0;
   for (const def of defenderElems) {
-    let best = 1.0;
+    let best = -Infinity;
     for (const atk of attackerElems) {
       const row = attackRow(atk);
       if (row) best = Math.max(best, row[def as ET] ?? 1.0);
     }
+    if (!isFinite(best)) best = 1.0; // all attacker types unknown → safe fallback
     mult *= best;
   }
   return mult;

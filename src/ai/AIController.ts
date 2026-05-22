@@ -292,7 +292,7 @@ export class AIController {
       }
 
       const spinRatio = ai.spin / ai.maxSpin;
-      if (ai.power >= 80 && dist < 250 && !this.specialMoveFired) {
+      if (ai.power >= 50 && dist < 250 && !this.specialMoveFired) {
         input.specialTap = true;
         this.specialMoveFired = true;
       }
@@ -304,6 +304,7 @@ export class AIController {
         const slot = this.evaluateComboSlots(ai, nearest, "simple");
         if (slot) {
           this.stageCombo(slot);
+          input.comboKeys = [...slot.sequence]; // Signal the full sequence to the room
           this.dequeuePendingCombo(input);
         }
         this.lastComboEvalTick = this.tickCounter;
@@ -391,8 +392,8 @@ export class AIController {
         input.defense = true;
       }
 
-      // Fire special immediately at 100 power (full bar).
-      if (ai.power >= 100 && !this.specialMoveFired) {
+      // Fire special as soon as it's chargeable (>= 50 power).
+      if (ai.power >= 50 && !this.specialMoveFired) {
         input.specialTap = true;
         this.specialMoveFired = true;
       }
@@ -422,6 +423,7 @@ export class AIController {
 
         if (slot) {
           this.stageCombo(slot);
+          input.comboKeys = [...slot.sequence]; // Signal the full sequence to the room
           this.dequeuePendingCombo(input);
         }
         this.lastComboEvalTick = this.tickCounter;

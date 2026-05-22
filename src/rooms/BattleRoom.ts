@@ -149,6 +149,12 @@ export class BattleRoom extends Room<GameState> {
   private beyStackCooldowns: Map<string, Map<string, number>> = new Map();
   /** Per-victim pending QTE to escape a hostile BeyLink stack. */
   private pendingBeyLinkQTE: Map<string, { stackKey: string; linkId: string; key: string; expiresAt: number }> = new Map();
+  /** Control-loss immunity expiry: sessionId → expiresAtTick. While immune, control_loss effects are skipped and immunized bey is unlinked. */
+  private controlLossImmunity: Map<string, number> = new Map();
+  /** Tracks which beys are currently under control loss so we can issue recovery QTEs every 10 sec. */
+  private activeControlLoss: Map<string, { linkId: string; nextQTETick: number; recoveryKey: string }> = new Map();
+  /** Running tick counter (incremented each server tick). */
+  private tickCounter = 0;
 
   /** Arena shrink state (Phase V). */
   private shrinkStartMs = 0;
@@ -297,6 +303,15 @@ export class BattleRoom extends Room<GameState> {
       if (!pending || Date.now() > pending.expiresAt) return;
       if (message.key === pending.key) {
         this._resolveBeyLinkQTE(client.sessionId, pending);
+      }
+    });
+
+    // Control-loss recovery QTE (issued every 10 sec while under control loss)
+    this.onMessage("bey-link-recovery-input", (client, message: { key: string }) => {
+      const ctrl = this.activeControlLoss.get(client.sessionId);
+      if (!ctrl) return;
+      if (message.key === ctrl.recoveryKey) {
+        this._grantControlLossImmunity(client.sessionId, ctrl.linkId);
       }
     });
   }
@@ -894,6 +909,29 @@ export class BattleRoom extends Room<GameState> {
     this.pendingQTE = null;
   }
 
+  // ─── Control-loss immunity ───────────────────────────────────────────────────
+
+  private _grantControlLossImmunity(sessionId: string, linkId: string): void {
+    const IMMUNITY_TICKS = 30 * 60; // 30 seconds at 60 Hz
+    this.controlLossImmunity.set(sessionId, this.tickCounter + IMMUNITY_TICKS);
+    this.activeControlLoss.delete(sessionId);
+    // Break any hostile stacks that apply control_loss to this bey
+    for (const [stackKey, stackState] of this.beyStackState) {
+      const [, sidB] = stackKey.split(":");
+      if (sidB === sessionId && stackState.linkId === linkId) {
+        this.beyStackState.delete(stackKey);
+        const [sidA] = stackKey.split(":");
+        this.broadcast("bey-stack-end", { beyIdA: sidA, beyIdB: sidB, linkId, reason: "control_recovered" });
+      }
+    }
+    const victimClient = this.clients.find(c => c.sessionId === sessionId);
+    victimClient?.send("bey-link-control-recovered", {
+      sessionId,
+      immunityTicks: IMMUNITY_TICKS,
+    });
+    this.broadcast("bey-link-control-immunity-start", { sessionId, immunityTicks: IMMUNITY_TICKS });
+  }
+
   // ─── Bey-link QTE resolution ─────────────────────────────────────────────────
 
   private _resolveBeyLinkQTE(
@@ -974,6 +1012,7 @@ export class BattleRoom extends Room<GameState> {
     // I4: arena bey spawns
     this.tickArenaSpawns(deltaTime);
 
+    this.tickCounter++;
     // L2/L3: arena link crossing detection
     this.tickArenaLinks(deltaTime);
     this.tickBeyLinks(deltaTime);
@@ -1777,8 +1816,12 @@ export class BattleRoom extends Room<GameState> {
                 }
                 break;
 
-              case "control_loss":
-                // Scramble / reverse / freeze victim's input for a burst
+              case "control_loss": {
+                // Skip if victim is immune
+                const immuneUntil = this.controlLossImmunity.get(sidB) ?? 0;
+                if (this.tickCounter < immuneUntil) break;
+
+                // Apply control loss on interval
                 if (tickCount % interval === 1) {
                   const mode = effect.controlMode ?? "reverse";
                   const dur = effect.controlDurationTicks ?? 60;
@@ -1786,8 +1829,34 @@ export class BattleRoom extends Room<GameState> {
                   victimClient?.send("bey-link-control-loss", {
                     mode, durationTicks: dur, attackerId: sidA, linkId: link.id,
                   });
+                  // Register active control loss for recovery QTE tracking
+                  if (!this.activeControlLoss.has(sidB)) {
+                    const recoveryKey = QTE_KEY_POOL[Math.floor(this.rand() * QTE_KEY_POOL.length)];
+                    this.activeControlLoss.set(sidB, {
+                      linkId: link.id,
+                      nextQTETick: this.tickCounter + 10 * 60, // first recovery QTE in 10 sec
+                      recoveryKey,
+                    });
+                  }
+                }
+
+                // Issue recovery QTE every 10 seconds
+                const ctrl = this.activeControlLoss.get(sidB);
+                if (ctrl && this.tickCounter >= ctrl.nextQTETick) {
+                  const victimClient = this.clients.find(c => c.sessionId === sidB);
+                  victimClient?.send("bey-link-control-recovery-qte", {
+                    key: ctrl.recoveryKey,
+                    linkId: link.id,
+                    windowTicks: 60,
+                    expiresAt: Date.now() + 60 * (1000 / 60),
+                  });
+                  // Next window in another 10 sec
+                  ctrl.nextQTETick = this.tickCounter + 10 * 60;
+                  // Rotate key each window so it can't be predicted
+                  ctrl.recoveryKey = QTE_KEY_POOL[Math.floor(this.rand() * QTE_KEY_POOL.length)];
                 }
                 break;
+              }
 
               case "force_lock":
                 // Pull victim toward attacker — gravity-well style orbit lock
@@ -1801,6 +1870,20 @@ export class BattleRoom extends Room<GameState> {
                 }
                 break;
             }
+          }
+
+          // ── 2-body movement patterns per link type ─────────────────────────
+          // Applied every tick regardless of specific effects.
+          this._applyBeyLinkMovement(link.linkType, link.alignment, sidA, sidB, beyA, beyB, tickCount);
+
+          // ── Dogfight spark visuals ─────────────────────────────────────────
+          if (link.linkType === "side_spin" && link.alignment === "hostile" && tickCount % 5 === 1) {
+            this.broadcast("bey-stack-sparks", {
+              beyIdA: sidA, beyIdB: sidB,
+              x: (beyA.x + beyB.x) / 2,
+              y: (beyA.y + beyB.y) / 2,
+              intensity: Math.min(1, (effects.find(e => e.type === "continuous_collision")?.intensityPerTick ?? 3) / 10),
+            });
           }
 
           // ── Legacy friendlyBoost / hostileEffect (when linkEffects absent) ──
@@ -2277,6 +2360,96 @@ export class BattleRoom extends Room<GameState> {
   /** N6: Combination lock tick — override in 2.5D subclass to call partSystemManager.tickCombinationLock(). */
   protected onTickCombinationLock(_deltaTime: number): void {
     // no-op in base room
+  }
+
+  // ─── 2-body movement patterns for linked beys ────────────────────────────────
+
+  private _applyBeyLinkMovement(
+    linkType: string,
+    alignment: string,
+    sidA: string,
+    sidB: string,
+    beyA: { x: number; y: number; velocityX: number; velocityY: number },
+    beyB: { x: number; y: number; velocityX: number; velocityY: number },
+    tickCount: number
+  ): void {
+    const dx = beyB.x - beyA.x;
+    const dy = beyB.y - beyA.y;
+    const dist = Math.hypot(dx, dy) || 1;
+
+    switch (linkType) {
+      case "tip_stack":
+        // Attacker orbits the defender in tight circles (drilling motion).
+        // Radius ~1.5cm (36px). sidA is the driller; nudge it tangentially.
+        {
+          const orbitR = 36; // px
+          const orbitSpeed = 0.08; // radians per tick
+          const angle = Math.atan2(beyA.y - beyB.y, beyA.x - beyB.x) + orbitSpeed;
+          const targetX = beyB.x + Math.cos(angle) * orbitR;
+          const targetY = beyB.y + Math.sin(angle) * orbitR;
+          const fx = (targetX - beyA.x) * 0.04;
+          const fy = (targetY - beyA.y) * 0.04;
+          this.physics.applyForce(sidA, fx, fy);
+          // Keep attacker close — damp separation
+          if (dist > orbitR + 24) {
+            const pullF = (dist - orbitR) * 0.02;
+            this.physics.applyForce(sidA,  (dx / dist) * pullF,  (dy / dist) * pullF);
+          }
+        }
+        break;
+
+      case "top_mount":
+        // Cooperative: both beys maintain contact and rotate together CW.
+        // They orbit each other around a shared midpoint.
+        {
+          const midX = (beyA.x + beyB.x) / 2;
+          const midY = (beyA.y + beyB.y) / 2;
+          const orbitSpeed = alignment === "friendly" ? 0.04 : -0.04;
+          const rA = Math.hypot(beyA.x - midX, beyA.y - midY) || 1;
+          const rB = Math.hypot(beyB.x - midX, beyB.y - midY) || 1;
+          const angA = Math.atan2(beyA.y - midY, beyA.x - midX) + orbitSpeed;
+          const angB = Math.atan2(beyB.y - midY, beyB.x - midX) + orbitSpeed;
+          this.physics.applyForce(sidA,
+            (midX + Math.cos(angA) * rA - beyA.x) * 0.03,
+            (midY + Math.sin(angA) * rA - beyA.y) * 0.03);
+          this.physics.applyForce(sidB,
+            (midX + Math.cos(angB) * rB - beyB.x) * 0.03,
+            (midY + Math.sin(angB) * rB - beyB.y) * 0.03);
+        }
+        break;
+
+      case "side_spin":
+        if (alignment === "friendly") {
+          // Circus pattern: beys spin side-by-side, maintaining ~2cm separation.
+          // Both slowly co-rotate around the arena midpoint.
+          {
+            const targetDist = 48; // 2cm in px
+            if (dist > targetDist + 12) {
+              // Pull toward each other
+              const pullF = (dist - targetDist) * 0.015;
+              this.physics.applyForce(sidA,  (dx / dist) * pullF,  (dy / dist) * pullF);
+              this.physics.applyForce(sidB, -(dx / dist) * pullF, -(dy / dist) * pullF);
+            } else if (dist < targetDist - 12) {
+              // Push apart
+              const pushF = (targetDist - dist) * 0.015;
+              this.physics.applyForce(sidA, -(dx / dist) * pushF, -(dy / dist) * pushF);
+              this.physics.applyForce(sidB,  (dx / dist) * pushF,  (dy / dist) * pushF);
+            }
+          }
+        } else {
+          // Dogfight: beys circle each other, each trying to get behind the other.
+          // Alternating clockwise/counter-clockwise push each tick.
+          {
+            const circleDir = tickCount % 2 === 0 ? 1 : -1;
+            const perpX = -dy / dist;
+            const perpY =  dx / dist;
+            const circleForceMag = 1.8;
+            this.physics.applyForce(sidA, perpX * circleForceMag * circleDir, perpY * circleForceMag * circleDir);
+            this.physics.applyForce(sidB, perpX * circleForceMag * -circleDir, perpY * circleForceMag * -circleDir);
+          }
+        }
+        break;
+    }
   }
 
   // ─── 2.5D arena system slope physics ────────────────────────────────────────

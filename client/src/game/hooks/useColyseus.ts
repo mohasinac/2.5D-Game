@@ -403,8 +403,29 @@ export function useColyseus({
       });
       connectedRoom.onMessage("bey-link-control-loss", (data: BeyLinkControlLossData) => {
         setBeyLinkControlLoss(data);
-        // Auto-clear after the duration elapses
         setTimeout(() => setBeyLinkControlLoss(null), data.durationTicks * (1000 / 60));
+      });
+      // Recovery QTE: show prompt every 10 sec while under control loss
+      connectedRoom.onMessage("bey-link-control-recovery-qte", (data: { key: string; linkId: string; windowTicks: number; expiresAt: number }) => {
+        // Reuse beyLinkQTE state — recovery QTE uses the same HUD slot
+        setBeyLinkQTE({
+          attackerId: "",
+          stackKey: `recovery:${data.linkId}`,
+          linkId: data.linkId,
+          key: data.key,
+          windowTicks: data.windowTicks,
+          expiresAt: data.expiresAt,
+        });
+      });
+      connectedRoom.onMessage("bey-link-control-recovered", () => {
+        setBeyLinkQTE(null);
+        setBeyLinkControlLoss(null);
+        toast("Controls recovered! 30s immunity", { icon: "🛡️", duration: 2500 });
+      });
+      connectedRoom.onMessage("bey-link-control-immunity-start", (data: { sessionId: string; immunityTicks: number }) => {
+        if (data.sessionId === connectedRoom.sessionId) {
+          toast(`Link immune for ${Math.round(data.immunityTicks / 60)}s`, { icon: "✨", duration: 2000 });
+        }
       });
       connectedRoom.onMessage("bey-stack-broken", (data: { beyIdA: string; beyIdB: string; breakerId: string; impactForce: number; threshold: number }) => {
         // Clear QTE prompt if it was for us
