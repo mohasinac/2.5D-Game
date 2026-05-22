@@ -6,6 +6,7 @@ import { AdminRoute } from "./components/auth/AdminRoute";
 
 // Pages
 import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
 import { HomePage } from "./pages/HomePage";
 import { RendererDemoPage } from "./pages/RendererDemoPage";
 import { GameSelectPage } from "./pages/GameSelectPage";
@@ -71,6 +72,10 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
   },
   {
     path: "/",
