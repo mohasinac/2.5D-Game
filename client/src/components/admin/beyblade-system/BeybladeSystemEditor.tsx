@@ -18,7 +18,7 @@ import { BeybladeSystemPreview } from "./BeybladeSystemPreview";
 import { PartPicker } from "./PartPicker";
 import { resolveBeybladeSystem, computeBeybladeStats } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
-import type { BeybladeSystem, SubPartAttachment, SubPartParent } from "@/types/beybladeSystem";
+import type { BeybladeSystem, SubPartAttachment, SubPartParent, BeybladeComboSlot, SpecialMoveConfig } from "@/types/beybladeSystem";
 
 type Tab =
   | "overview"
@@ -29,9 +29,10 @@ type Tab =
   | "core"
   | "casing"
   | "spin_track"
-  | "sub_parts";
+  | "sub_parts"
+  | "combos";
 
-const TABS: Array<{ key: Tab; label: string }> = [
+const TABS: Array<{ key: Tab; label: string; icon?: string }> = [
   { key: "overview",     label: "Overview" },
   { key: "bit_beast",    label: "Bit Beast" },
   { key: "attack_ring",  label: "Attack Ring" },
@@ -41,6 +42,7 @@ const TABS: Array<{ key: Tab; label: string }> = [
   { key: "casing",       label: "Casing" },
   { key: "spin_track",   label: "Spin Track" },
   { key: "sub_parts",    label: "Sub-Parts" },
+  { key: "combos",       label: "Combos", icon: "⚡" },
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -211,7 +213,7 @@ export function BeybladeSystemEditor({ systemId }: Props) {
                 cursor: "pointer", marginBottom: tab === t.key ? -1 : 0,
               }}
             >
-              {t.label}
+              {t.icon ? `${t.icon} ${t.label}` : t.label}
             </button>
           ))}
         </div>
@@ -424,6 +426,15 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             />
           )}
 
+          {/* Combos */}
+          {tab === "combos" && (
+            <BeybladeComboSlotsEditor
+              comboSlots={system.comboSlots ?? []}
+              specialMove={system.specialMove}
+              onChange={(patch) => updateSystem(patch)}
+            />
+          )}
+
         </div>
       </div>
 
@@ -436,6 +447,200 @@ export function BeybladeSystemEditor({ systemId }: Props) {
         <div style={{ flex: 1, overflowY: "auto" }}>
           <BeybladeSystemPreview resolved={resolved} />
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Combos tab sub-component ──────────────────────────────────────────────────
+
+const KEY_LABELS: Record<string, string> = {
+  moveLeft: "←", moveRight: "→", moveUp: "↑", moveDown: "↓",
+  attack: "J", defense: "K", dodge: "G", jump: "H",
+};
+const ALL_KEYS = Object.keys(KEY_LABELS);
+
+function BeybladeComboSlotsEditor({
+  comboSlots,
+  specialMove,
+  onChange,
+}: {
+  comboSlots: BeybladeComboSlot[];
+  specialMove?: SpecialMoveConfig;
+  onChange: (updated: Partial<BeybladeSystem>) => void;
+}) {
+  const updateSlots = (slots: BeybladeComboSlot[]) => onChange({ comboSlots: slots });
+
+  const addSlot = () =>
+    updateSlots([...comboSlots, { sequence: ["attack", "attack", "attack"], effectId: "" }]);
+
+  const removeSlot = (i: number) =>
+    updateSlots(comboSlots.filter((_, idx) => idx !== i));
+
+  const patchSlot = (i: number, patch: Partial<BeybladeComboSlot>) =>
+    updateSlots(comboSlots.map((s, idx) => idx === i ? { ...s, ...patch } : s));
+
+  const patchSeq = (i: number, pos: 0 | 1 | 2, key: string) => {
+    const seq = [...comboSlots[i].sequence] as [string, string, string];
+    seq[pos] = key;
+    patchSlot(i, { sequence: seq });
+  };
+
+  // Detect duplicate sequences
+  const seqStrings = comboSlots.map((s) => s.sequence.join(","));
+  const hasDuplicates = seqStrings.some((s, i) => seqStrings.indexOf(s) !== i);
+
+  const addSpecialMove = () =>
+    onChange({ specialMove: { name: "", steps: [], cancelable: false, locksDurationTicks: 60, powerCost: 100 } });
+
+  const removeSpecialMove = () => onChange({ specialMove: undefined });
+
+  const patchSM = (patch: Partial<SpecialMoveConfig>) =>
+    onChange({ specialMove: { ...specialMove!, ...patch } });
+
+  return (
+    <div style={{ maxWidth: 560, display: "flex", flexDirection: "column", gap: 20 }}>
+      {/* Sequence Assignment */}
+      <div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: C.text, borderBottom: `1px solid ${C.border}`, paddingBottom: 6, marginBottom: 12 }}>
+          Sequence Assignment
+        </div>
+
+        {hasDuplicates && (
+          <div style={{ fontSize: 11, color: C.red, background: alpha(C.red, 0.09), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 6, padding: "6px 10px", marginBottom: 10 }}>
+            Warning: two or more slots have identical sequences — only one will fire per window.
+          </div>
+        )}
+
+        {comboSlots.length === 0 && (
+          <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>No combo slots. Add a slot to assign sequences to effects.</div>
+        )}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {comboSlots.map((slot, i) => {
+            const isDup = seqStrings.filter((s) => s === seqStrings[i]).length > 1;
+            return (
+              <div key={i} style={{
+                background: C.bg1,
+                border: `1px solid ${isDup ? alpha(C.red, 0.4) : C.border}`,
+                borderRadius: 8, padding: 12, display: "flex", flexDirection: "column", gap: 10,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: C.text, flex: 1 }}>
+                    Slot {i + 1}
+                    {slot.effectId
+                      ? <span style={{ marginLeft: 8, fontSize: 11, color: C.purple }}>{slot.effectId}</span>
+                      : <span style={{ marginLeft: 8, fontSize: 11, color: C.faint }}>(no effect)</span>
+                    }
+                  </div>
+                  <button
+                    onClick={() => removeSlot(i)}
+                    style={{ background: "none", border: "none", color: C.red, fontSize: 14, cursor: "pointer" }}
+                  >×</button>
+                </div>
+                <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
+                  {([0, 1, 2] as const).map((pos) => (
+                    <div key={pos}>
+                      <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Key {pos + 1}</div>
+                      <select
+                        value={slot.sequence[pos]}
+                        onChange={(e) => patchSeq(i, pos, e.target.value)}
+                        style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                      >
+                        {ALL_KEYS.map((k) => (
+                          <option key={k} value={k}>{KEY_LABELS[k]} {k}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
+                  <div>
+                    <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Effect ID</div>
+                    <input
+                      value={slot.effectId}
+                      onChange={(e) => patchSlot(i, { effectId: e.target.value.trim() })}
+                      placeholder="e.g. dash-l"
+                      style={{ width: 120, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                    />
+                  </div>
+                </div>
+                <div style={{ fontSize: 11, color: C.faint }}>
+                  Sequence: {slot.sequence.map((k) => KEY_LABELS[k] ?? k).join(" → ")}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <button
+          onClick={addSlot}
+          style={{ marginTop: 10, padding: "6px 14px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}
+        >
+          + Add Slot
+        </button>
+      </div>
+
+      {/* Special Move */}
+      <div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: C.text, borderBottom: `1px solid ${C.border}`, paddingBottom: 6, marginBottom: 12 }}>
+          Special Move
+        </div>
+        {!specialMove ? (
+          <button
+            onClick={addSpecialMove}
+            style={{ padding: "6px 14px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}
+          >
+            + Add Special Move
+          </button>
+        ) : (
+          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 14, display: "flex", flexDirection: "column", gap: 12 }}>
+            <div>
+              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Name</div>
+              <input
+                value={specialMove.name}
+                onChange={(e) => patchSM({ name: e.target.value })}
+                placeholder="e.g. Stampede Rush"
+                style={{ width: "100%", padding: "7px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12, boxSizing: "border-box" }}
+              />
+            </div>
+            <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+              <div>
+                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Locks Duration (ticks)</div>
+                <input
+                  type="number"
+                  min={0}
+                  value={specialMove.locksDurationTicks}
+                  onChange={(e) => patchSM({ locksDurationTicks: Number(e.target.value) })}
+                  style={{ width: 80, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                />
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Power Cost</div>
+                <input
+                  type="number"
+                  min={0}
+                  value={specialMove.powerCost}
+                  onChange={(e) => patchSM({ powerCost: Number(e.target.value) })}
+                  style={{ width: 80, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                />
+              </div>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={specialMove.cancelable}
+                  onChange={(e) => patchSM({ cancelable: e.target.checked })}
+                  style={{ accentColor: C.blue }}
+                />
+                Cancelable
+              </label>
+              <button
+                onClick={removeSpecialMove}
+                style={{ padding: "5px 12px", background: alpha(C.red, 0.1), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

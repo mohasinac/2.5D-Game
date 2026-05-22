@@ -93,7 +93,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 
 const STAT_KEYS = [
   "spin", "maxSpin", "spinDecayRate", "aggressiveness", "gripFactor",
-  "recoilFactor", "spinStealResist", "damageMultiplier", "damageReduction",
+  "recoilFactor", "damageMultiplier", "damageReduction",
   "surfaceFriction", "contactDamageMultiplier",
 ] as const;
 

@@ -82,6 +82,58 @@ export type SpecialMove =
   | "tactical_burst"
   | "custom";
 
+// ─── Combo / Special Move Types ───────────────────────────────────────────────
+
+export type ComboEffectType =
+  | "spinBoost"      // +% spin speed for durationTicks
+  | "dashForce"      // apply force impulse in direction
+  | "defenseLock"    // zero velocity, lock for durationTicks
+  | "spinSteal"      // drain spin from nearest opponent
+  | "gripBoost"      // increase gripFactor temporarily
+  | "wobbleDampen"   // suppress nutation wobble
+  | "orbitForce"     // apply circular orbit force
+  | "custom";        // server handles via customScript
+
+export interface ComboEffectDef {
+  id: string;
+  name: string;
+  type: ComboEffectType;
+  magnitude: number;       // 0–1 for boosts/drains, newtons for force effects
+  direction?: number;      // angle in degrees; undefined = facing direction
+  durationTicks: number;   // effect duration at 60Hz
+  cost: 0 | 15 | 25 | 35;
+  powerThreshold: number;  // min power % to activate (0 = always)
+  cooldownMs: number;
+  overrideRange?: {
+    magnitude?: [number, number];
+    durationTicks?: [number, number];
+  };
+}
+
+export interface BeybladeComboSlot {
+  sequence: [string, string, string]; // 3 ComboKeys (e.g. "moveRight","moveRight","attack")
+  effectId: string;                   // references ComboEffectDef.id
+}
+
+export interface SpecialMoveStep {
+  effectId: string;
+  delayTicks: number;   // offset from special move activation tick
+  parallel: boolean;    // true = overlaps with previous step
+  overrideParams?: {
+    magnitude?: number;
+    durationTicks?: number;
+  };
+}
+
+export interface SpecialMoveConfig {
+  name: string;
+  description?: string;
+  steps: SpecialMoveStep[];
+  cancelable: boolean;         // true = second Space tap interrupts
+  locksDurationTicks: number;  // player control locked for this many ticks
+  powerCost: number;           // usually 100 (full bar)
+}
+
 // ─── DetachedBody Types ───────────────────────────────────────────────────────
 
 export type DetachedBodyType = "projectile" | "mini_bey" | "fragment";
@@ -427,7 +479,6 @@ export type BeybladeStatKey =
   | "aggressiveness"
   | "gripFactor"
   | "recoilFactor"
-  | "spinStealResist"
   | "damageMultiplier"
   | "damageReduction"
   | "surfaceFriction"
@@ -522,13 +573,8 @@ export interface BasePart {
   excludedCompatibility: string[];
   images: PartImages;
   pockets: PartPocket[];
-  /** Per-part combo ids (max 3). Merged with whole-bey BeybladeStats.comboIds at match
-   *  start by PartSystemManager. Must exist in COMBO_REGISTRY. */
-  comboIds?: string[];
-  /** Per-part special move id. Falls back when whole-bey BeybladeStats.specialMoveId is
-   *  empty. Resolution order across parts: bit_beast → core → ar → casing → tip → wd →
-   *  spin_track → sub_part. */
-  specialMoveId?: string;
+  /** ComboEffectDef ids this part contributes to the beyblade. Max 2 per part. */
+  comboEffects: string[];
   createdAt?: unknown;
   updatedAt?: unknown;
 }
@@ -775,11 +821,6 @@ export interface SubPartAttachment {
   activeConfig?: string;
 }
 
-export interface ComboPart {
-  slots: PartLayer[];
-  label: string;
-}
-
 export interface BeybladeSystem {
   id: string;
   displayName: string;
@@ -813,7 +854,8 @@ export interface BeybladeSystem {
     playerControlTarget: "this" | "partner";
   };
 
-  comboParts: ComboPart[];
+  comboSlots: BeybladeComboSlot[];
+  specialMove?: SpecialMoveConfig;
   linkedStatsId?: string;
   createdAt?: unknown;
   updatedAt?: unknown;
