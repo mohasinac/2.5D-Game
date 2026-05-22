@@ -57,6 +57,7 @@ function compileAction(action: ComboAction, delayTicks: number, parallel: boolea
     }
 
     case "spawning": {
+      const spawnVisualConfig = action.spawnParams?.visualOverride;
       return [{
         behaviorId: `spawn.${action.spawnType}`,
         params: {
@@ -66,6 +67,7 @@ function compileAction(action: ComboAction, delayTicks: number, parallel: boolea
           countFormation: action.countFormation,
           countSpacing: action.countSpacing,
           ...action.spawnParams,
+          ...(spawnVisualConfig ? { visualConfig: spawnVisualConfig } : {}),
         },
         delayTicks,
         parallel,
@@ -74,6 +76,22 @@ function compileAction(action: ComboAction, delayTicks: number, parallel: boolea
 
     case "movement": {
       const { pattern } = action;
+      // swap_position compiles to position.swap_with (different behaviorId namespace)
+      if (pattern.type === "swap_position") {
+        return [{
+          behaviorId: "position.swap_with",
+          params: {
+            swapWith: pattern.swapWith,
+            preserveVelocity: pattern.preserveVelocity,
+            preventRingOut: pattern.preventRingOut,
+            snapToGround: pattern.snapToGround,
+            durationTicks: action.durationTicks,
+            visualConfig: action.visualOverride,
+          },
+          delayTicks,
+          parallel,
+        }];
+      }
       const behaviorId = `movement.${pattern.type}`;
       return [{
         behaviorId,
@@ -106,14 +124,10 @@ export function compileComboTask(task: ComboTask): BehaviorRef[] {
   const refs: BehaviorRef[] = [];
 
   if (task.targetedActions && task.targetedActions.length > 0) {
-    // Mixed-target: each TargetedAction compiled as parallel BehaviorRef
-    task.targetedActions.forEach((ta: TargetedAction, i) => {
-      const compiled = compileAction(ta.action, 0, true);
-      compiled.forEach(ref => {
-        refs.push({ ...ref, params: { ...ref.params, target: ta.target } });
-      });
-    });
-    return refs;
+    // Mixed-target: compile each sub-action as a parallel BehaviorRef
+    return task.targetedActions.flatMap((sub: TargetedAction) =>
+      compileComboTask({ ...task, action: sub.action, target: sub.target, targetedActions: undefined })
+    );
   }
 
   if (!task.action) return [];

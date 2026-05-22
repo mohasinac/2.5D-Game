@@ -458,7 +458,7 @@ export interface FloorHazardZoneConfig {
   x_cm: number;
   y_cm: number;
   radius_cm: number;
-  hazardType: "lava" | "ice" | "mud" | "electric" | "time_slow" | "repulsion" | "size_shrink" | "size_grow" | "trampoline" | "combo_boost" | "drain" | "void";
+  hazardType: "lava" | "ice" | "mud" | "electric" | "time_slow" | "repulsion" | "size_shrink" | "size_grow" | "trampoline" | "combo_boost" | "drain" | "void" | "poison";
   intensity?: number;
   damagePerTick?: number;
   spinDecayMult?: number;

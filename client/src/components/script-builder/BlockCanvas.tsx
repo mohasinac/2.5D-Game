@@ -1,9 +1,9 @@
 // Drag-drop canvas for building ComboTask trees with action/timing/flow blocks.
 
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import type { BehaviorDefDoc } from "./ToolboxPanel";
 import { C } from "@/styles/theme";
-import type { BehaviorRef } from "@/types/comboTask";
+import type { BehaviorRef, ComboTask, TargetedAction } from "@/types/comboTask";
 
 const ACTION_COLORS: Record<string, string> = {
   multiplier: "#f97316",
@@ -39,6 +39,7 @@ interface Props {
   onChange: (steps: BehaviorRef[]) => void;
   draggedBlock: BehaviorDefDoc | null;
   onDragEnd: () => void;
+  tasks?: ComboTask[];
 }
 
 let _nextId = 1;
@@ -50,7 +51,22 @@ function renderParam(key: string, val: unknown): string {
   return key;
 }
 
-export function BlockCanvas({ steps, onChange, draggedBlock, onDragEnd }: Props) {
+function renderMixedTask(task: ComboTask): React.ReactNode {
+  if (!task.targetedActions?.length) return null;
+  return (
+    <div className="rounded border border-teal-500 bg-teal-900/20 p-2">
+      <div className="text-xs text-teal-400 font-bold mb-1">MIXED</div>
+      {task.targetedActions.map((sub: TargetedAction, i: number) => (
+        <div key={i} className="flex items-center gap-1 text-xs mb-1">
+          <span className="bg-teal-700 rounded px-1">{sub.target as string}</span>
+          <span className="text-gray-300">{(sub.action as any).type}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function BlockCanvas({ steps, onChange, draggedBlock, onDragEnd, tasks }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
@@ -142,6 +158,27 @@ export function BlockCanvas({ steps, onChange, draggedBlock, onDragEnd }: Props)
         const color = blockColor(block.behaviorId);
         const isSelected = selectedId === block.id;
         const isEditingThis = editingIdx === idx;
+        // Check for MIXED task: either sentinel behaviorId or tasks[idx] has targetedActions
+        const mixedTask = tasks?.[idx]?.targetedActions?.length
+          ? tasks[idx]
+          : block.behaviorId === "mixed"
+            ? (block.params as unknown as ComboTask)
+            : null;
+
+        if (mixedTask) {
+          return (
+            <div key={block.id}>
+              {/* Drop zone above block */}
+              <div
+                style={{ height: dragOverIdx === idx ? 8 : 4, background: dragOverIdx === idx ? C.blue + "88" : "transparent", borderRadius: 4, transition: "all 0.1s", margin: "1px 0" }}
+                onDragOver={e => { e.preventDefault(); e.stopPropagation(); setDragOverIdx(idx); }}
+                onDragLeave={() => setDragOverIdx(null)}
+                onDrop={e => handleDrop(e, idx)}
+              />
+              {renderMixedTask(mixedTask)}
+            </div>
+          );
+        }
 
         return (
           <div key={block.id}>

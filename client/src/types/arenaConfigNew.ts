@@ -954,10 +954,14 @@ export interface ArenaTimelineEvent {
 // ============================================================================
 
 export interface ArenaShrinkConfig {
-  startMs: number;          // ms after match start when ring begins shrinking
-  endMs: number;            // ms when minimum size is reached
-  minRadiusFraction: number; // 0–1: fraction of original arena radius at smallest (e.g. 0.4 = 40%)
-  damageRatePerTick?: number; // damage per tick for beys outside boundary (default 2)
+  startMs: number;              // ms after match start when ring begins shrinking
+  endMs: number;                // ms when minimum size is reached
+  minRadiusFraction: number;    // 0–1: fraction of original arena radius at smallest (e.g. 0.4 = 40%)
+  damageRatePerTick?: number;   // damage per tick for beys outside boundary (default 2)
+  // V6 alternative fields — rate-based specification (converted to startMs/endMs at runtime)
+  enabled?: boolean;            // V6 quick-enable toggle
+  shrinkRateCmPerSec?: number;  // cm per second the arena shrinks (alternative to startMs/endMs pair)
+  minRadiusCm?: number;         // absolute minimum radius in cm (alternative to minRadiusFraction)
 }
 
 export type FloorHazardType =
@@ -972,7 +976,8 @@ export type FloorHazardType =
   | "trampoline"
   | "combo_boost"
   | "drain"
-  | "void";
+  | "void"
+  | "poison";
 
 export interface FloorHazardZoneConfig {
   id: string;
@@ -1023,12 +1028,19 @@ export interface EffectZoneConfig {
 
 export interface ElevationZoneConfig {
   id: string;
+  // Primary coordinate fields (cm, arena-center-relative)
   x_cm: number;
   y_cm: number;
   radius_cm: number;
   heightCm: number;                 // platform height above floor
   spinBoostOnPlatform?: number;     // spin/s bonus while on platform (default 0)
   edgeDropForce?: number;           // impulse applied when crossing platform edge (default 0)
+  // Alternate field names (V4 spec aliases — same values, different keys)
+  x?: number;                       // alias for x_cm
+  y?: number;                       // alias for y_cm
+  radius?: number;                  // alias for radius_cm
+  height?: number;                  // alias for heightCm
+  spinBoostPercent?: number;        // % spin boost while on platform (e.g. 10 = +10%)
   controlledBySwitchId?: string;
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;

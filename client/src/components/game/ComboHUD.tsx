@@ -111,7 +111,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
 
       {/* Charge bar — shown while player holds the last key of a charged combo */}
       {comboChargeScale > 0 && (
-        <div style={{
+        <div data-testid="combo-charge-bar" style={{
           position: "absolute", bottom: 72, left: "50%",
           transform: "translateX(-50%)",
           pointerEvents: "none", zIndex: 12,
@@ -145,7 +145,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
         {comboHistory.map((combo) => {
           const display = getComboDisplay(combo.name) ?? getComboDisplay(comboHistory[0].id.split("-")[0]);
           return (
-            <div key={combo.id} style={{
+            <div key={combo.id} data-testid={`combo-fired-${combo.id}`} style={{
               background: "rgba(15, 23, 42, 0.85)",
               borderRadius: 8,
               border: `1px solid ${C.border}`,

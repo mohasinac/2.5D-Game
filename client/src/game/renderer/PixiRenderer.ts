@@ -102,6 +102,9 @@ export class BeybladeGameRenderer {
   // 6.13 — DetachedBody sprites (projectile / mini_bey / fragment)
   private detachedBodySprites: Map<string, PIXI.Graphics> = new Map();
 
+  // H3: per-bey visual overrides driven by "combo-visual" messages
+  private beyVisualOverrides: Map<string, { spriteUrl?: string; animationId?: string; expiresAt: number }> = new Map();
+
   // Particles
   private particles: ParticleData[] = [];
 
@@ -109,6 +112,10 @@ export class BeybladeGameRenderer {
   private darknessOverlay: PIXI.Graphics | null = null;
   private fogOverlay: PIXI.Graphics | null = null;
   private freezeFlashTimer = 0;
+
+  // AA8: unified arena-effect overlay driven by handleArenaEffect()
+  private arenaEffectOverlay: PIXI.Graphics | null = null;
+  private activeArenaEffect: { type: string; startedAt: number; durationMs: number } | null = null;
 
   // F4: combination-lock link lines (world-space, lives in featureLayer)
   private linkLineGraphics: PIXI.Graphics | null = null;
@@ -250,6 +257,7 @@ export class BeybladeGameRenderer {
     this.updateShrinkRing(gameState);
     this.renderLinkLines(beyblades);    // F4: combination-lock link lines
     this.renderMeteorLandingZone();     // G4: meteor strike landing zone ring
+    this.renderArenaEffectOverlay();    // AA8: darkness/fog/freeze/reverse overlay
   }
 
   /** Identify the player's bey (or fall back to first alive) and set camera follow target. */
@@ -557,6 +565,7 @@ export class BeybladeGameRenderer {
         const split = this.splitBodySprites.get(id);
         if (split) { this.beybladeLayer.removeChild(split); this.splitBodySprites.delete(id); }
         this.flashGraphics.delete(id);
+        this.beyVisualOverrides.delete(id); // H3: clean up any pending visual override
         this.interpolator.remove(id);
       }
     });
@@ -912,6 +921,33 @@ export class BeybladeGameRenderer {
       }
     }
 
+    // H3: apply and expire visual overrides from "combo-visual" messages
+    {
+      const override = this.beyVisualOverrides.get(id);
+      if (override) {
+        if (Date.now() >= override.expiresAt) {
+          // Expired — restore defaults
+          this.beyVisualOverrides.delete(id);
+          sprite.tint = 0xffffff;
+        } else {
+          // H3: spriteUrl swap — tint the sprite distinctively as a proxy
+          // (full texture swap requires async asset load; tint is the sync fallback)
+          if (override.spriteUrl) {
+            // Mark as externally-overridden via a reddish tint so it's visually distinct
+            sprite.tint = 0xff88ff;
+          }
+          // H3: animationId effects (applied every frame for the duration)
+          if (override.animationId === "special_intro") {
+            const pulse = 1.0 + 0.15 * Math.sin(Date.now() / 80);
+            sprite.scale.set(pulse, (0.85 + getBeybladeStability(beyblade) * 0.15) * pulse);
+          } else if (override.animationId === "combo_flash") {
+            const flash = 0.5 + 0.5 * Math.sin(Date.now() / 60);
+            sprite.tint = flash > 0.5 ? 0xffffaa : 0xffffff;
+          }
+        }
+      }
+    }
+
     const barWidth = 40;
     const barHeight = 4;
     const barY = -r - 22;
@@ -1203,25 +1239,52 @@ export class BeybladeGameRenderer {
 
   /**
    * Public: called by the game page when a "combo-visual" server message arrives.
-   * Briefly flashes the bey sprite and optionally triggers a scale pulse animation.
+   * Populates beyVisualOverrides for the target bey; the per-bey render loop applies
+   * and expires these each frame.
+   * H4: if keepVisualAppearance is true, only the animationId is stored (no spriteUrl swap).
    */
-  public handleComboVisual(data: { beyId: string; introAnimation?: string; particlePresetId?: string }): void {
+  public handleComboVisual(data: { beyId: string; introAnimation?: string; particlePresetId?: string; spriteUrl?: string; animationId?: string; keepVisualAppearance?: boolean; durationMs?: number }): void {
     const beyContainer = this.beybladeContainers.get(data.beyId);
     if (!beyContainer) return;
 
+    const durationMs = data.durationMs ?? 400;
+    const expiresAt = Date.now() + durationMs;
+
+    // H3/H4: store visual override — skip spriteUrl if keepVisualAppearance is set
+    const animationId = data.animationId ?? data.introAnimation;
+    this.beyVisualOverrides.set(data.beyId, {
+      spriteUrl: data.keepVisualAppearance ? undefined : data.spriteUrl,
+      animationId,
+      expiresAt,
+    });
+
     // Tint flash on the sprite (first child — the PIXI.Graphics beyblade shape)
-    const sprite = beyContainer.children.length > 0
-      ? (beyContainer.getChildAt(0) as PIXI.Graphics | null)
-      : null;
-    if (sprite && "tint" in sprite) {
-      (sprite as unknown as { tint: number }).tint = 0xffffaa;
-      setTimeout(() => {
-        (sprite as unknown as { tint: number }).tint = 0xffffff;
-      }, 200);
+    // Only apply tint if NOT keeping visual appearance with a sprite swap.
+    if (!data.spriteUrl || data.keepVisualAppearance) {
+      const sprite = beyContainer.children.length > 0
+        ? (beyContainer.getChildAt(0) as PIXI.Graphics | null)
+        : null;
+      if (sprite && "tint" in sprite) {
+        (sprite as unknown as { tint: number }).tint = 0xffffaa;
+        setTimeout(() => {
+          if (!this.beyVisualOverrides.has(data.beyId)) {
+            (sprite as unknown as { tint: number }).tint = 0xffffff;
+          }
+        }, 200);
+      }
     }
 
-    // Trigger intro animation if named — scale pulse
-    if (data.introAnimation) {
+    // Trigger intro animation if named — scale pulse for "special_intro", color flash for "combo_flash"
+    if (animationId === "special_intro") {
+      const origScale = beyContainer.scale.x;
+      beyContainer.scale.set(origScale * 1.5);
+      setTimeout(() => beyContainer.scale.set(origScale), 350);
+    } else if (animationId === "combo_flash") {
+      const origScale = beyContainer.scale.x;
+      beyContainer.scale.set(origScale * 1.3);
+      setTimeout(() => beyContainer.scale.set(origScale), 200);
+    } else if (animationId) {
+      // Generic named animation fallback — scale pulse
       const origScale = beyContainer.scale.x;
       beyContainer.scale.set(origScale * 1.3);
       setTimeout(() => beyContainer.scale.set(origScale), 300);
@@ -1504,6 +1567,65 @@ export class BeybladeGameRenderer {
     }
   }
 
+  // ─── AA8: handleArenaEffect + renderArenaEffectOverlay ──────────────────────
+
+  /**
+   * AA8: Called by useColyseus when "arena-effect-start" / "arena-effect-end"
+   * messages arrive.  Drives a screen-space overlay that fades in over 500 ms
+   * and is drawn every frame by renderArenaEffectOverlay().
+   */
+  public handleArenaEffect(phase: "start" | "end", effectType: string, durationTicks: number): void {
+    if (phase === "end") {
+      this.activeArenaEffect = null;
+      this.arenaEffectOverlay?.clear();
+      return;
+    }
+    this.activeArenaEffect = {
+      type: effectType,
+      startedAt: Date.now(),
+      durationMs: (durationTicks / 60) * 1000,
+    };
+    if (!this.arenaEffectOverlay) {
+      this.arenaEffectOverlay = new PIXI.Graphics();
+      this.arenaEffectOverlay.eventMode = "none";
+      this.app.stage.addChild(this.arenaEffectOverlay); // top layer
+    }
+  }
+
+  private renderArenaEffectOverlay(): void {
+    if (!this.activeArenaEffect || !this.arenaEffectOverlay) return;
+    const elapsed = Date.now() - this.activeArenaEffect.startedAt;
+    if (elapsed > this.activeArenaEffect.durationMs) {
+      this.activeArenaEffect = null;
+      this.arenaEffectOverlay.clear();
+      return;
+    }
+    const fade = Math.min(1, elapsed / 500); // 500 ms fade-in
+    this.arenaEffectOverlay.clear();
+
+    const w = this.app.screen.width;
+    const h = this.app.screen.height;
+
+    switch (this.activeArenaEffect.type) {
+      case "darkness":
+        this.arenaEffectOverlay.rect(0, 0, w, h).fill({ color: 0x000000, alpha: 0.85 * fade });
+        break;
+      case "fog_of_war":
+        this.arenaEffectOverlay.rect(0, 0, w, h).fill({ color: 0x888888, alpha: 0.5 * fade });
+        break;
+      case "freeze_all": {
+        // Brief blue flash that fades out over 800 ms
+        const flashFade = Math.max(0, 1 - elapsed / 800);
+        this.arenaEffectOverlay.rect(0, 0, w, h).fill({ color: 0x4488ff, alpha: 0.35 * flashFade });
+        break;
+      }
+      case "reverse_controls":
+        // Subtle purple tint for the full duration
+        this.arenaEffectOverlay.rect(0, 0, w, h).fill({ color: 0x8800ff, alpha: 0.15 * fade });
+        break;
+    }
+  }
+
   /**
    * Phase AA — apply or clear a full-arena visual effect.
    * Called by the game page whenever useColyseus reports an arenaEffect change.
@@ -1587,6 +1709,8 @@ export class BeybladeGameRenderer {
 
     this.darknessOverlay = null;
     this.fogOverlay = null;
+    this.arenaEffectOverlay = null;
+    this.activeArenaEffect = null;
     this.shrinkRingGraphics = null;
     this.linkLineGraphics = null;
     this.meteorLandingGraphics = null;

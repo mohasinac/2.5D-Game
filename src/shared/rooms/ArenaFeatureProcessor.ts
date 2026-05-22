@@ -410,6 +410,12 @@ export function processFloorHazardZones(
         beyblade.isRingOut = true;
         break;
 
+      case "poison":
+        // Spin drain + health damage (like lava but weaker and no fire theme)
+        beyblade.health -= (zone.damagePerTick ?? 2) * intensity;
+        beyblade.spin = Math.max(0, beyblade.spin - 15 * intensity * dt);
+        break;
+
       // size_shrink / size_grow are visual; no server-side stat changes needed here.
     }
   }
@@ -655,6 +661,106 @@ export function resolveEntireArena(
   return { x: arenaCx, y: arenaCy, radiusPx: arenaRadiusPx };
 }
 
+/**
+ * AA6: Unified spawn position resolver.
+ *
+ * Converts arena-design position types ("entire_arena", "scattered_in_arena",
+ * "ring_around_arena") into concrete cm-space coordinates using a seeded PRNG
+ * so results are deterministic per match.
+ *
+ * All coordinates are returned relative to the arena center (0, 0).
+ *
+ * @param positionType  - Layout strategy.
+ * @param params        - Per-strategy tuning knobs (all optional).
+ * @param arenaRadiusCm - Playable arena radius in centimetres.
+ * @param prng          - Seeded PRNG function; must NOT be Math.random.
+ */
+export function resolveArenaSpawnPositions(
+  positionType: "entire_arena" | "scattered_in_arena" | "ring_around_arena",
+  params: {
+    count?: number;
+    minSpacingCm?: number;
+    avoidCenterCm?: number;
+    avoidEdgeCm?: number;
+    radiusFraction?: number;
+  },
+  arenaRadiusCm: number,
+  prng: () => number,
+): Array<{ x: number; y: number }> {
+  const count = params.count ?? 4;
+  const positions: Array<{ x: number; y: number }> = [];
+
+  if (positionType === "ring_around_arena") {
+    const r = arenaRadiusCm * (params.radiusFraction ?? 0.75);
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
+      positions.push({ x: Math.cos(angle) * r, y: Math.sin(angle) * r });
+    }
+    return positions;
+  }
+
+  if (positionType === "entire_arena") {
+    // One zone covering entire arena — caller uses arenaRadiusCm as zone radius.
+    return [{ x: 0, y: 0 }];
+  }
+
+  // scattered_in_arena: pick N valid positions with minSpacing enforcement.
+  const maxR = arenaRadiusCm - (params.avoidEdgeCm ?? 10);
+  const minR = params.avoidCenterCm ?? 0;
+  const minSpacing = params.minSpacingCm ?? 20;
+
+  let attempts = 0;
+  while (positions.length < count && attempts < count * 20) {
+    attempts++;
+    const angle = prng() * Math.PI * 2;
+    const r = minR + prng() * (maxR - minR);
+    const x = Math.cos(angle) * r;
+    const y = Math.sin(angle) * r;
+    const tooClose = positions.some(p => Math.hypot(x - p.x, y - p.y) < minSpacing);
+    if (!tooClose) positions.push({ x, y });
+  }
+  return positions;
+}
+
+// ── V5: Elevation zone physics ───────────────────────────────────────────────
+
+/**
+ * Apply spin boost to a beyblade while it is inside an elevation zone (raised platform).
+ * Supports both `x_cm`/`y_cm`/`radius_cm` (primary schema fields) and
+ * `x`/`y`/`radius` (V4 spec alias fields).
+ */
+export function processElevationZones(
+  beyblade: Beyblade,
+  zones: any[],
+  dt: number,
+): void {
+  if (!zones?.length) return;
+  for (const zone of zones) {
+    if (!zone) continue;
+    if (zone.activeByDefault === false) continue;
+    if (zone.controlledBySwitchId && zone.triggerState === "off") continue;
+
+    const zx = ((zone.x_cm ?? zone.x) ?? 0) * 24;
+    const zy = ((zone.y_cm ?? zone.y) ?? 0) * 24;
+    const zr = ((zone.radius_cm ?? zone.radius) ?? 5) * 24;
+    if (distSq(beyblade.x, beyblade.y, zx, zy) >= zr * zr) continue;
+
+    // spinBoostPercent (V4 spec field) takes priority over spinBoostOnPlatform (spin/s)
+    const spinBoostPct = zone.spinBoostPercent as number | undefined;
+    const spinBoostPerSec = zone.spinBoostOnPlatform as number | undefined;
+
+    if (spinBoostPct !== undefined && spinBoostPct > 0) {
+      // Percentage of current spin per second
+      beyblade.spin = Math.min(
+        beyblade.maxSpin,
+        beyblade.spin + beyblade.spin * (spinBoostPct / 100) * dt,
+      );
+    } else if (spinBoostPerSec !== undefined && spinBoostPerSec > 0) {
+      beyblade.spin = Math.min(beyblade.maxSpin, beyblade.spin + spinBoostPerSec * dt);
+    }
+  }
+}
+
 // Process all per-tick arena interactions for a single beyblade.
 // Side-effects: mutates beyblade fields, calls into the physics bridge.
 // Returns events the room may want to broadcast.
@@ -808,6 +914,11 @@ export function processArenaFeatures(
   if ((arenaData.floorHazardZones?.length ?? 0) > 0) {
     const fhEvents = processFloorHazardZones(beyblade, arenaData.floorHazardZones!, dt, physics);
     if (fhEvents.electricDisable) events.electricDisable = fhEvents.electricDisable;
+  }
+
+  // V5 — elevation zones (raised platforms with spin boost)
+  if ((arenaData as any).elevationZones?.length) {
+    processElevationZones(beyblade, (arenaData as any).elevationZones, dt);
   }
 
   // Z5c — effect zones

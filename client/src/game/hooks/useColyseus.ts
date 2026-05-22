@@ -56,6 +56,7 @@ export interface ComboVisualData {
   beyId: string;
   introAnimation: string;
   particlePresetId: string;
+  keepVisualAppearance?: boolean;
 }
 
 // G5: meteor strike (two-phase)
@@ -330,10 +331,10 @@ export function useColyseus({
         toast("Disconnected due to inactivity.", { icon: "💤" });
       });
 
-      // Burst KO event (Phase R) — push to visual event queue via callback
+      // Burst KO event (Phase R) — CRITICAL priority so it's never dropped/throttled
       connectedRoom.onMessage("burst", (data: BurstEventData) => {
+        visualEventQueueRef.current.push({ priority: VisualPriority.CRITICAL, type: "burst", payload: data });
         onBurstRef.current?.(data);
-        // Fallback toast so spectators/players always see something
         const mySessionId = connectedRoom.sessionId;
         if (data.attackerId === mySessionId) {
           toast("BURST KO!", { icon: "💥", duration: 2500 });
@@ -374,11 +375,14 @@ export function useColyseus({
           isCaster: data.casterSessionId === connectedRoom.sessionId,
         });
         onArenaEffectStartRef.current?.(data);
+        // Push to VisualEventQueue if available
+        rendererRefInternal.current?.current?.handleArenaEffect?.("start", data.effectType, data.durationTicks);
       });
 
       connectedRoom.onMessage("arena-effect-end", (data: { effectType: string }) => {
         setArenaEffect(null);
         onArenaEffectEndRef.current?.(data);
+        rendererRefInternal.current?.current?.handleArenaEffect?.("end", data.effectType, 0);
       });
 
       // D3: special-move camera zoom/slow-motion effect — queued for throttled dispatch

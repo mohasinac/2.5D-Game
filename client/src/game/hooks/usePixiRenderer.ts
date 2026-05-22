@@ -22,6 +22,8 @@ function dispatchVisualEvent(renderer: BeybladeGameRenderer, ev: VisualEvent): v
     case "meteor-strike-hang":
       renderer.onMeteorStrikeHang?.(ev.payload as Parameters<BeybladeGameRenderer["onMeteorStrikeHang"]>[0]);
       break;
+    // "burst" particles are handled by game-page room.onMessage handlers
+    // (which have physicsToScreen access). Queue tracks burst as CRITICAL for future use.
   }
 }
 

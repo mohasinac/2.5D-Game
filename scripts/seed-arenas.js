@@ -146,6 +146,14 @@ const ARENAS = [
         chargePointCount: 2,
       },
     ],
+    // V7: Shrink config + elevation/hazard zones
+    shrink: { enabled: true, startMs: 60000, endMs: 180000, minRadiusFraction: 0.55, damageRatePerTick: 3, shrinkRateCmPerSec: 0.5, minRadiusCm: 80 },
+    elevationZones: [
+      { id: "elev1", x_cm: 0, y_cm: 0, radius_cm: 6, heightCm: 10, spinBoostOnPlatform: 15, edgeDropForce: 5 },
+    ],
+    floorHazardZones: [
+      { id: "hz1", x_cm: -100, y_cm: 0, radius_cm: 30, hazardType: "lava", damagePerTick: 3, intensity: 1.0 },
+    ],
     pits: [],
     turrets: [],
     portals: [],

@@ -93,6 +93,7 @@ export default function ObstaclesTab({ config, onChange }: Props) {
               <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior ID (optional)</label>
               <input
                 type="text"
+                data-testid={`obstacle-behavior-id-${idx}`}
                 value={obs.behaviorId ?? ""}
                 onChange={e => update(obs.id, "behaviorId", e.target.value || undefined)}
                 placeholder="e.g. movement.orbit"

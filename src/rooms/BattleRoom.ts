@@ -1816,6 +1816,71 @@ export class BattleRoom extends Room<GameState> {
     }
   }
 
+  // ─── K9: Spatial possession for arena-spawned friendly beys ─────────────────
+
+  /**
+   * Transfer control of the calling session to the nearest arena-spawned friendly
+   * bey within a 60° cone in the given direction. Only uncontrolled friendly beys
+   * (controlMode === "friendly") are eligible. Effective next tick.
+   */
+  protected handleSpatialPossession(direction: "left" | "right" | "up" | "down", sessionId: string): void {
+    // Find arena-spawned friendly beys not currently controlled by anyone
+    const friendlyUncontrolled: { id: string; bey: any }[] = [];
+    this.state.beyblades.forEach((bey, id) => {
+      if ((bey as any).isSpawned && (bey as any).controlMode === "friendly" && !(bey as any).controlledBy) {
+        friendlyUncontrolled.push({ id, bey });
+      }
+    });
+
+    if (friendlyUncontrolled.length === 0) return;
+
+    const myBey = this.state.beyblades.get(sessionId);
+    if (!myBey) return;
+
+    // Direction unit vectors (screen coords: y increases downward)
+    const dirVec = {
+      right: { x:  1, y:  0 },
+      up:    { x:  0, y: -1 },
+      left:  { x: -1, y:  0 },
+      down:  { x:  0, y:  1 },
+    }[direction];
+
+    const CONE_HALF_ANGLE = Math.PI / 3; // 60°
+    let best: { id: string; bey: any } | null = null;
+    let bestDist = Infinity;
+
+    for (const { id, bey } of friendlyUncontrolled) {
+      const dx = bey.x - myBey.x;
+      const dy = bey.y - myBey.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 1) continue;
+
+      // Check 60° cone using dot product
+      const nx = dx / dist, ny = dy / dist;
+      const dot = nx * dirVec.x + ny * dirVec.y;
+      if (dot < Math.cos(CONE_HALF_ANGLE)) continue;
+
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = { id, bey };
+      }
+    }
+
+    if (!best) return;
+
+    // Unlink current session from its bey (if it holds one via controlledBy)
+    const currentBey = this.state.beyblades.get(sessionId);
+    if (currentBey) (currentBey as any).controlledBy = null;
+
+    // Link to the target friendly bey
+    (best.bey as any).controlledBy = sessionId;
+    this.broadcast("possession-transferred", {
+      sessionId,
+      fromBeyId: sessionId,
+      toBeyId: best.id,
+    });
+  }
+
   // ─── 2.5D extension hooks — overridden by Parts25DBattleRoom ─────────────────
   // Default implementations are no-ops; the classic 2D path stays untouched.
 

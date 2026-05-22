@@ -35,7 +35,7 @@ const BEHAVIOR_DEFS = [
   { id: "movement.dash_to",      category: "movement", description: "Physics-driven dash toward target",        params: ["target","magnitude"] },
   { id: "movement.orbit_opponent",category:"movement", description: "Orbit nearest opponent",                   params: ["radius","dur"] },
   { id: "position.teleport_offset",category:"movement",description: "Instant position offset (no physics)",     params: ["dx","dy","dz"] },
-  { id: "position.swap_with",    category: "movement", description: "Swap positions with target bey",           params: ["targetId","preserveVelocity","preventRingOut"] },
+  { id: "position.swap_with",    name: "Swap Position", category: "movement", description: "Instantly swap positions with target bey", params: { swapWith: "nearest_opponent", preserveVelocity: false, preventRingOut: true } },
 
   // ── TRANSFORMATION ────────────────────────────────────────────────────────────
   { id: "transform.become_gravity_well",  category: "2.5D",      description: "Bey acts as a gravity well",      params: ["strength","radius","dur"] },

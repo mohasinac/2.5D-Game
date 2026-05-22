@@ -131,7 +131,7 @@ export type MovementPattern =
   | { type: "jump"; heightCm: number; jumpForceMult?: number }
   | { type: "high_jump"; heightCm: number; hangTimeTicks: number; landTarget: "current_position" | "opponent" | "fixed" | "random_in_range"; landRadiusCm?: number }
   | { type: "meteor_strike"; heightCm: number; hangTimeTicks: number; landTarget: "opponent" | "current_position" | "fixed"; impactRadiusCm: number; impactDamageMult: number; impactRecoilMult: number; landingParticlePreset?: string; landingSoundId?: string; landingAnimationId?: string }
-  | { type: "swap_position"; swapWith: ComboTarget; preserveVelocity: boolean; snapToGround?: boolean; preventRingOut?: boolean };
+  | { type: "swap_position"; swapWith: "nearest_opponent" | "random_opponent" | "farthest_opponent"; preserveVelocity?: boolean; snapToGround?: boolean; preventRingOut?: boolean };
 
 export interface MovementAction {
   type: "movement";
@@ -229,8 +229,9 @@ export interface ComboCondition {
 // ─── Mixed-Target Action ───────────────────────────────────────────────────────
 
 export interface TargetedAction {
-  target: ComboTarget;
   action: ComboAction;
+  target: ComboTarget | ComboTarget[];
+  condition?: ComboCondition;
 }
 
 // ─── Combo Task (admin-facing) ─────────────────────────────────────────────────

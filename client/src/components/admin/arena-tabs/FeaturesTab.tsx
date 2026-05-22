@@ -71,6 +71,7 @@ function BehaviorOverridePanel({ behaviorId, behaviorParams, onChangeBehaviorId,
         <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior ID (optional)</label>
         <input
           type="text"
+          data-testid="behavior-id-input"
           value={behaviorId ?? ""}
           onChange={e => onChangeBehaviorId(e.target.value || undefined)}
           placeholder="e.g. movement.orbit"
@@ -365,7 +366,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
       {/* Spin Zones (I6) */}
       <Section title={`Spin Zones (${spinZones.length})`}>
         {spinZones.map((z, i) => (
-          <div key={z.id} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
+          <div key={z.id} data-testid={`spin-zone-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
@@ -416,7 +417,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
       {/* Gravity Holes (I6) */}
       <Section title={`Gravity Holes (${gravityHoles.length})`}>
         {gravityHoles.map((z, i) => (
-          <div key={z.id} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
+          <div key={z.id} data-testid={`gravity-hole-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
@@ -463,7 +464,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
       {/* Bumps (I6) */}
       <Section title={`Bumps (${bumps.length})`}>
         {bumps.map((z, i) => (
-          <div key={z.id} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
+          <div key={z.id} data-testid={`bump-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>

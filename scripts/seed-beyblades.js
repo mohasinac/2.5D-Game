@@ -74,6 +74,17 @@ const DEFAULT_SPECIAL_BY_TYPE = {
   stamina:  "spin_recovery",
   balanced: "tactical_burst",
 };
+// Burst resistance defaults by type (0–100; higher = harder to burst).
+// Attack: low (offensive, fragile under heavy hits)
+// Defense: high (sturdy, resists burst)
+// Stamina: medium (manageable under sustained pressure)
+// Balanced: medium
+const DEFAULT_BURST_RESISTANCE_BY_TYPE = {
+  attack:   35,
+  defense:  75,
+  stamina:  55,
+  balanced: 50,
+};
 const DEFAULT_COMBOS_BY_TYPE = {
   attack:   ["quick-dash-r", "power-thrust", "pivot-strike"],
   defense:  ["guard-tap", "riposte", "feint"],
@@ -477,6 +488,8 @@ async function seedBeyblades() {
       // Jump physics — beys don't jump by default; combos may grant jump behaviour
       jumpForce:            0,
       jumpHeight:           0,
+      // Burst resistance (R1) — per-type default; per-bey override wins
+      burstResistance:      bey.burstResistance ?? DEFAULT_BURST_RESISTANCE_BY_TYPE[bey.type] ?? 50,
       // Optional kit
       specialMoveId,
       comboIds,

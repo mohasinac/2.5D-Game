@@ -1,4 +1,5 @@
 // Z10a: Boundary tab — Shrink Config panel (arena battle-royale ring).
+// V6: Added shrinkRateCmPerSec + minRadiusCm alternative input fields.
 
 import { C } from "@/styles/theme";
 import type { ArenaConfig } from "@/types/arenaConfigNew";
@@ -35,6 +36,38 @@ export default function BoundaryTab({ config, onChange }: Props) {
 
         {shrink && (
           <>
+            {/* V6: Enable toggle + rate-based shrink inputs */}
+            <Row label="Enable shrink">
+              <input
+                type="checkbox"
+                checked={shrink.enabled ?? true}
+                onChange={e => onChange({ shrink: { ...shrink, enabled: e.target.checked } })}
+              />
+            </Row>
+            <Row label="Shrink rate (cm/s)">
+              <input
+                type="number"
+                placeholder="e.g. 0.5"
+                value={shrink.shrinkRateCmPerSec ?? ""}
+                min={0.01}
+                step={0.1}
+                onChange={e => onChange({ shrink: { ...shrink, shrinkRateCmPerSec: e.target.value ? Number(e.target.value) : undefined } })}
+                style={{ width: 100, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+              />
+              <span style={{ fontSize: 11, color: C.muted }}>cm/s</span>
+            </Row>
+            <Row label="Min radius (cm)">
+              <input
+                type="number"
+                placeholder="e.g. 100"
+                value={shrink.minRadiusCm ?? ""}
+                min={10}
+                step={5}
+                onChange={e => onChange({ shrink: { ...shrink, minRadiusCm: e.target.value ? Number(e.target.value) : undefined } })}
+                style={{ width: 100, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+              />
+              <span style={{ fontSize: 11, color: C.muted }}>cm (overrides fraction)</span>
+            </Row>
             <Row label="Start (ms after match)">
               <input
                 type="number"
