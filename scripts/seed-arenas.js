@@ -270,6 +270,16 @@ const ARENAS = [
     airResistance: 0.015,
     surfaceFriction: 0.012,
     difficulty: "hard",
+    arenaTimeline: [
+      { triggerMs: 20_000, type: "announcement", announcement: { text: "LAVA SURGE INCOMING!", style: "warning" } },
+      { triggerMs: 30_000, type: "gravity_change", params: { multiplier: 1.5 } },
+      { triggerMs: 45_000, type: "announcement", announcement: { text: "ERUPTION SUBSIDES", style: "info" } },
+      { triggerMs: 45_000, type: "gravity_change", params: { multiplier: 1.0 } },
+      { triggerMs: 90_000, type: "announcement", announcement: { text: "SUPER ERUPTION!", style: "danger" } },
+      { triggerMs: 90_000, type: "gravity_change", params: { multiplier: 2.0 } },
+      { triggerMs: 110_000, type: "gravity_change", params: { multiplier: 1.0 } },
+      { triggerMs: 150_000, type: "announcement", announcement: { text: "FINAL ERUPTION — SURVIVE!", style: "danger" }, repeat: { intervalMs: 15_000, count: 2 } },
+    ],
   },
 
   // ── 4. Cyber Grid ──────────────────────────────────────────────────────────
@@ -640,6 +650,21 @@ const ARENAS = [
     airResistance: 0.012,
     surfaceFriction: 0.01,
     difficulty: "hard",
+    arenaTimeline: [
+      { triggerMs: 15_000, type: "announcement", announcement: { text: "STORM INTENSIFIES", style: "warning" } },
+      { triggerMs: 15_000, type: "arena_tilt", params: { angleDeg: 8, directionDeg: 0 } },
+      { triggerMs: 40_000, type: "announcement", announcement: { text: "EYE OF THE STORM", style: "info" } },
+      { triggerMs: 40_000, type: "arena_tilt", params: { angleDeg: 0, directionDeg: 0 } },
+      { triggerMs: 60_000, type: "activate_feature", featureId: "ez1" },
+      { triggerMs: 80_000, type: "announcement", announcement: { text: "STORM SURGE!", style: "danger" } },
+      { triggerMs: 80_000, type: "arena_tilt", params: { angleDeg: 15, directionDeg: 90 } },
+      { triggerMs: 80_000, type: "gravity_change", params: { multiplier: 1.3 } },
+      { triggerMs: 120_000, type: "arena_tilt", params: { angleDeg: 0, directionDeg: 0 } },
+      { triggerMs: 120_000, type: "gravity_change", params: { multiplier: 1.0 } },
+      { triggerMs: 120_000, type: "deactivate_feature", featureId: "ez1" },
+      { triggerMs: 150_000, type: "announcement", announcement: { text: "FINAL STORM — NO SHELTER!", style: "danger" } },
+      { triggerMs: 150_000, type: "arena_tilt", params: { angleDeg: 20, directionDeg: 180 }, repeat: { intervalMs: 20_000, count: 2 } },
+    ],
   },
 
   // ── 11. Quantum Realm (Phase Z — new theme) ──────────────────────────────────
