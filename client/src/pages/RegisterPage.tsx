@@ -6,21 +6,13 @@ import {
   GoogleAuthProvider,
   updateProfile,
 } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
+import { createUserDoc } from "@/lib/userDoc";
 import toast from "react-hot-toast";
 import { C, S } from "@/styles/theme";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const googleProvider = new GoogleAuthProvider();
-
-async function createUserDoc(uid: string, email: string | null, displayName: string | null) {
-  await setDoc(
-    doc(db, "users", uid),
-    { uid, email, displayName, role: "user", createdAt: serverTimestamp() },
-    { merge: true },
-  );
-}
 
 export function RegisterPage() {
   const navigate = useNavigate();

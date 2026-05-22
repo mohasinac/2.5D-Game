@@ -454,7 +454,7 @@ function StatCard({ beyblade, label, accentColor, stabilityColor, stabilityLabel
   beyblade: any; label: string; accentColor: string; stabilityColor: string; stabilityLabel: string;
 }) {
   const hp   = Math.round(beyblade.health ?? 0);
-  const maxHp = Math.max(1, beyblade.maxStamina ?? 100);
+  const maxHp = Math.max(1, beyblade.maxHealth ?? beyblade.maxStamina ?? 100);
   const spin = Math.round(Math.min(100, ((beyblade.spin ?? 0) / Math.max(1, beyblade.maxSpin ?? 1)) * 100));
 
   return (

@@ -159,6 +159,32 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /arena_systems/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /spin_track_parts/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ── Combo / special-move / AI-battle registries (admin write, auth read) ──
+    match /combos/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /special_moves/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /ai_battles/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
     // ── Script-builder / combo-effects collections (public read, admin write) ──
     match /particle_presets/{id} { allow read; allow write: if isAdmin(); }
     match /animation_presets/{id} { allow read; allow write: if isAdmin(); }
