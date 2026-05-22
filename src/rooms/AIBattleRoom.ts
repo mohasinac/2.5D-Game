@@ -272,6 +272,7 @@ export class AIBattleRoom extends Room<GameState> {
     } else {
       this.applyDefaultStats(human);
     }
+    // TODO: if options.partOverrides, apply to resolved BeybladeSystem after load
 
     human.health = human.maxStamina;
     human.maxHealth = human.maxStamina;

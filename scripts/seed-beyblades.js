@@ -99,6 +99,7 @@ const BEYBLADES = [
     pointsOfContact: contactPoints(1.8, 1.4, 1.2),
     spinStealPoints: spinStealPoints(1.1),
     description: "The ultimate offensive beyblade. Max attack power with reliable stamina.",
+    linkedBeySystemId: "storm-aggressor",
   },
 
   // ── 2. Rock Leone — Defense archetype, right spin ─────────────────────────
@@ -114,6 +115,7 @@ const BEYBLADES = [
     pointsOfContact: contactPoints(1.1, 1.0),
     spinStealPoints: spinStealPoints(0.9, 0.85),
     description: "An immovable fortress. Absorbs damage and outlasts attackers.",
+    linkedBeySystemId: "fortress-leone",
   },
 
   // ── 3. Earth Eagle — Stamina archetype, right spin ────────────────────────
@@ -133,6 +135,7 @@ const BEYBLADES = [
       { angle: 285, spinStealMultiplier: 1.5, width: 50 },
     ],
     description: "Master of endurance. Drains opponent spin while maintaining its own.",
+    linkedBeySystemId: "endurance-eagle",
   },
 
   // ── 4. Flame Sagittario — Balanced archetype, right spin ─────────────────
@@ -153,6 +156,7 @@ const BEYBLADES = [
     ],
     spinStealPoints: spinStealPoints(1.2, 1.1),
     description: "The all-rounder. Solid in every category — a great starter choice.",
+    linkedBeySystemId: "upper-attacker",
   },
 
   // ── 5. Lightning L-Drago — Attack, LEFT spin (counter to right-spin beys) ─

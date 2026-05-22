@@ -27,6 +27,7 @@ interface BeybladeOption {
   radius?: number;
   specialMoveId?: string;
   comboIds?: string[];
+  linkedBeySystemId?: string;
 }
 interface ArenaOption {
   id: string;
@@ -74,6 +75,7 @@ export function AIBattleSetupPage() {
   const [arenaId, setArenaId]         = useState(settings.arenaId ?? "");
   const [difficulty, setDifficulty]   = useState<Difficulty>("medium");
   const [bestOf, setBestOf]           = useState<BestOf>(1);
+  const [partOverrides, setPartOverrides] = useState<Record<string, string>>({});
 
   useEffect(() => {
     async function load() {
@@ -105,7 +107,7 @@ export function AIBattleSetupPage() {
     }
     setGameConfig({ beybladeId: playerBeyId, arenaId, gameMode: "single-battle" });
     navigate(`/game/${mode}/ai-battle/play`, {
-      state: { beybladeId: playerBeyId, aiBeybladeId: aiBeyId, arenaId, aiDifficulty: difficulty, bestOf },
+      state: { beybladeId: playerBeyId, aiBeybladeId: aiBeyId, arenaId, aiDifficulty: difficulty, bestOf, partOverrides: Object.keys(partOverrides).length > 0 ? partOverrides : undefined },
     });
   };
 
@@ -158,6 +160,54 @@ export function AIBattleSetupPage() {
             onSelect={(id) => setPlayerBeyId(id)}
             tabs={buildBeybladeTabs(TypeBadge) as any}
           />
+
+          {/* Customize Parts — shown only when selected beyblade has a linked 2.5D system */}
+          {(() => {
+            const selectedBey = beyblades.find(b => b.id === playerBeyId);
+            return selectedBey?.linkedBeySystemId ? (
+              <details style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 12, padding: "12px 16px" }}>
+                <summary style={{ cursor: "pointer", fontSize: 13, fontWeight: 600, color: C.text, userSelect: "none" as const }}>
+                  ⚙️ Customize Parts
+                </summary>
+                <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+                  {[
+                    { slot: "attackRingId", label: "Attack Ring", collection: "beyblade_parts/attack_ring/items" },
+                    { slot: "weightDiskId", label: "Weight Disk", collection: "beyblade_parts/weight_disk/items" },
+                    { slot: "tipId",        label: "Tip",         collection: "beyblade_parts/tip/items" },
+                    { slot: "coreId",       label: "Core",        collection: "beyblade_parts/core/items" },
+                    { slot: "casingId",     label: "Casing",      collection: "beyblade_parts/casing/items" },
+                    { slot: "bitBeastId",   label: "Bit Beast",   collection: "beyblade_parts/bit_beast/items" },
+                  ].map(({ slot, label, collection: col }) => (
+                    <div key={slot} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 11, color: C.muted, width: 80, flexShrink: 0 }}>{label}</span>
+                      <div style={{ flex: 1, fontSize: 12, color: partOverrides[slot] ? C.text : C.faint }}>
+                        {partOverrides[slot] ? partOverrides[slot] : "(default)"}
+                      </div>
+                      {partOverrides[slot] && (
+                        <button onClick={() => setPartOverrides(p => { const n = { ...p }; delete n[slot]; return n; })}
+                          style={{ fontSize: 11, color: C.red, background: "none", border: "none", cursor: "pointer" }}>
+                          Reset
+                        </button>
+                      )}
+                      <select
+                        value={partOverrides[slot] ?? ""}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setPartOverrides(p => v ? { ...p, [slot]: v } : (({ [slot]: _, ...rest }) => rest)(p));
+                        }}
+                        style={{ padding: "4px 6px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                      >
+                        <option value="">-- swap --</option>
+                      </select>
+                    </div>
+                  ))}
+                  <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>
+                    Part swap is visual preview only — full part list loads when game starts.
+                  </div>
+                </div>
+              </details>
+            ) : null;
+          })()}
 
           {/* AI beyblade */}
           <EntityPicker
