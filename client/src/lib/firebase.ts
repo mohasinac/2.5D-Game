@@ -49,4 +49,6 @@ export const COLLECTIONS = {
   TOURNAMENT_PARTICIPANTS: "tournament_participants",
   TOURNAMENT_BRACKETS: "tournament_brackets",
   SETTINGS: "settings",
+  PARTICLE_PRESETS: "particle_presets",
+  COMBO_EFFECTS: "combo_effects",
 } as const;

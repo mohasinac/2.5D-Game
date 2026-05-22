@@ -441,6 +441,322 @@ export class FeatureRenderer {
     });
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Phase Z: Dashed / animated stroke helpers (Z2a, Z2b)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Z2a: Walk a polyline path and draw alternating solid/gap dashes.
+   * @param points  Array of {x,y} in world-px.
+   * @param dashPx  Length of each dash in px.
+   * @param gapPx   Length of each gap in px.
+   * @param offsetPx  Phase offset along path (used for animation).
+   */
+  static drawDashedPath(
+    g: PIXI.Graphics,
+    points: Array<{ x: number; y: number }>,
+    color: number,
+    alpha: number,
+    width: number,
+    dashPx: number,
+    gapPx: number,
+    offsetPx = 0,
+  ): void {
+    const cycle = dashPx + gapPx;
+    let distAlong = (-offsetPx % cycle + cycle) % cycle;
+    let drawing = distAlong < dashPx;
+
+    for (let i = 1; i < points.length; i++) {
+      const ax = points[i - 1].x, ay = points[i - 1].y;
+      const bx = points[i].x,     by = points[i].y;
+      const segLen = Math.sqrt((bx - ax) ** 2 + (by - ay) ** 2);
+      if (segLen < 0.001) continue;
+      const ux = (bx - ax) / segLen, uy = (by - ay) / segLen;
+
+      let walked = 0;
+      let sx = ax, sy = ay;
+
+      while (walked < segLen) {
+        const remaining = drawing ? dashPx - (distAlong % dashPx) : gapPx - (distAlong % gapPx);
+        const step = Math.min(remaining, segLen - walked);
+        const ex = sx + ux * step, ey = sy + uy * step;
+
+        if (drawing) {
+          g.moveTo(sx, sy).lineTo(ex, ey).stroke({ color, width, alpha });
+        }
+        walked += step;
+        distAlong += step;
+        sx = ex; sy = ey;
+
+        if (distAlong % cycle < 0.1 || Math.abs(distAlong % cycle - dashPx) < 0.1) {
+          drawing = (distAlong % cycle) < dashPx;
+        }
+        if (step <= 0.001) break;
+      }
+    }
+  }
+
+  /**
+   * Z2b: Broken stroke — random gap lengths per segment.
+   * @param rand  Seeded random or Math.random.
+   */
+  static drawBrokenPath(
+    g: PIXI.Graphics,
+    points: Array<{ x: number; y: number }>,
+    color: number,
+    alpha: number,
+    width: number,
+    rand: () => number,
+  ): void {
+    for (let i = 1; i < points.length; i++) {
+      if (rand() > 0.4) {
+        g.moveTo(points[i - 1].x, points[i - 1].y)
+          .lineTo(points[i].x, points[i].y)
+          .stroke({ color, width, alpha });
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Phase Z: Feature animation presets (Z3b, Z3c)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Z3b: Apply a named animation preset to a Graphics/Container at `nowMs`.
+   * Returns the animated alpha (used by callers to set `g.alpha`).
+   */
+  static applyAnimationPreset(
+    preset: string,
+    nowMs: number,
+    periodMs = 1200,
+    baseColor = 0xffffff,
+    intensity = 1.0,
+  ): { alpha: number; scaleX: number; scaleY: number; tintColor: number } {
+    const t = (nowMs % periodMs) / periodMs; // 0→1 per cycle
+
+    switch (preset) {
+      case "pulse":
+        return { alpha: 0.5 + 0.5 * Math.sin(t * Math.PI * 2) * intensity, scaleX: 1, scaleY: 1, tintColor: baseColor };
+
+      case "scale_pulse": {
+        const s = 1 + 0.15 * Math.sin(t * Math.PI * 2) * intensity;
+        return { alpha: 1, scaleX: s, scaleY: s, tintColor: baseColor };
+      }
+
+      case "flicker":
+        return { alpha: Math.random() > 0.15 ? 0.85 : 0.2, scaleX: 1, scaleY: 1, tintColor: baseColor };
+
+      case "alert": {
+        const flash = t < 0.5 ? 1 : 0;
+        return { alpha: 0.4 + 0.6 * flash * intensity, scaleX: 1, scaleY: 1, tintColor: 0xff2222 };
+      }
+
+      case "shimmer":
+        return { alpha: 0.6 + 0.4 * Math.abs(Math.sin(t * Math.PI * 4)) * intensity, scaleX: 1, scaleY: 1, tintColor: baseColor };
+
+      case "charged": {
+        const charge = (nowMs % (periodMs * 3)) / (periodMs * 3);
+        return { alpha: 0.3 + 0.7 * charge * intensity, scaleX: 1, scaleY: 1, tintColor: baseColor };
+      }
+
+      case "ghost":
+        return { alpha: 0.1 + 0.4 * Math.abs(Math.sin(t * Math.PI)) * intensity, scaleX: 1, scaleY: 1, tintColor: baseColor };
+
+      case "color_cycle": {
+        const h = (t * 360) | 0;
+        const rgb = hslToHex(h, 0.8, 0.6);
+        return { alpha: 0.85 * intensity, scaleX: 1, scaleY: 1, tintColor: rgb };
+      }
+
+      default:
+        return { alpha: 1, scaleX: 1, scaleY: 1, tintColor: baseColor };
+    }
+  }
+
+  /**
+   * Z3c: Default animation preset per floor hazard type.
+   * Used when a zone doesn't have an explicit `featureAnimation` field.
+   */
+  static defaultAnimationForHazard(hazardType: string): string | null {
+    const defaults: Record<string, string> = {
+      lava:         "pulse",
+      electric:     "lightning",
+      void:         "shockwave_ring",
+      trampoline:   "scale_pulse",
+      drain:        "ghost",
+      combo_boost:  "shimmer",
+      ice:          "shimmer",
+    };
+    return defaults[hazardType] ?? null;
+  }
+
+  /**
+   * Z3c: Default animation preset per effect zone type.
+   */
+  static defaultAnimationForEffect(effectType: string): string | null {
+    const defaults: Record<string, string> = {
+      safe_zone:      "shimmer",
+      power_charge:   "charged",
+      spin_recovery:  "pulse",
+      turbo_zone:     "alert",
+      respawn_point:  "scale_pulse",
+    };
+    return defaults[effectType] ?? null;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Phase Z: Animated direction arrows on speed paths (Z6c)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Draw animated arrow dots moving along a circular speed path.
+   * Called each frame inside syncLoops (when showDirectionArrows is set).
+   */
+  private drawDirectionArrows(
+    g: PIXI.Graphics,
+    cx: number,
+    cy: number,
+    r: number,
+    nowMs: number,
+    arrowSpeedCmPerSec = 8,
+    arrowSpacingCm = 6,
+    arrowColor = 0xffffff,
+  ): void {
+    const circumferencePx = r * 2 * Math.PI;
+    const spacingPx = arrowSpacingCm * PX_PER_CM_BASE;
+    const arrowCount = Math.max(1, Math.floor(circumferencePx / spacingPx));
+    const speedPx = arrowSpeedCmPerSec * PX_PER_CM_BASE;
+    const phaseOffset = (nowMs / 1000) * speedPx;
+
+    for (let i = 0; i < arrowCount; i++) {
+      const pos = ((i / arrowCount) * circumferencePx + phaseOffset) % circumferencePx;
+      const angle = (pos / r) - Math.PI / 2;
+      const ax = cx + Math.cos(angle) * r;
+      const ay = cy + Math.sin(angle) * r;
+      // Draw a small forward-pointing chevron dot
+      g.circle(ax, ay, 3).fill({ color: arrowColor, alpha: 0.8 });
+      // Tiny directional tail
+      const tailAngle = angle - 0.3;
+      g.moveTo(ax, ay).lineTo(ax + Math.cos(tailAngle) * 5, ay + Math.sin(tailAngle) * 5)
+        .stroke({ color: arrowColor, width: 1.5, alpha: 0.5 });
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Phase Z: Background particles (Z8b)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  private bgParticleLayer?: PIXI.Container;
+  private bgParticles: Array<{ g: PIXI.Graphics; x: number; y: number; vx: number; vy: number; life: number; maxLife: number }> = [];
+  private bgParticleConfig?: { type: string; density: number; direction: number; speed: number; color: number; affectedByArenaRotation: boolean };
+  private bgLastSpawn = 0;
+
+  /**
+   * Z8b: Set up background particle system.
+   * Call once when arena config loads.
+   */
+  initBackgroundParticles(config: {
+    type: string;
+    density?: number;
+    direction?: number;
+    speed?: number;
+    color?: string;
+    affectedByArenaRotation?: boolean;
+  }, bgLayer: PIXI.Container): void {
+    this.bgParticleLayer = bgLayer;
+    const colorMap: Record<string, number> = {
+      snow: 0xddeeff, rain: 0x88aadd, embers: 0xff8822, leaves: 0x55aa33,
+      bubbles: 0x66aaff, sparks: 0xffcc44, pollen: 0xeedd55,
+      ash: 0xaaaaaa, stars: 0xffffff, glitch_pixels: 0x00ffaa,
+    };
+    this.bgParticleConfig = {
+      type: config.type,
+      density: config.density ?? 20,
+      direction: config.direction ?? 0,
+      speed: config.speed ?? 1.0,
+      color: config.color ? parseInt(config.color.replace("#", ""), 16) : (colorMap[config.type] ?? 0xffffff),
+      affectedByArenaRotation: config.affectedByArenaRotation ?? true,
+    };
+  }
+
+  /**
+   * Z8b: Update background particles each frame.
+   */
+  tickBackgroundParticles(nowMs: number, dt: number, arenaWidthPx: number, arenaHeightPx: number): void {
+    if (!this.bgParticleConfig || !this.bgParticleLayer) return;
+    const cfg = this.bgParticleConfig;
+
+    // Spawn new particles
+    const spawnInterval = 1000 / cfg.density;
+    if (nowMs - this.bgLastSpawn > spawnInterval) {
+      this.bgLastSpawn = nowMs;
+      const dirRad = ((cfg.direction - 90) * Math.PI) / 180;
+      const spd = (30 + Math.random() * 40) * cfg.speed;
+      const perp = dirRad + Math.PI / 2;
+      // Spawn along the opposite edge
+      const startX = (Math.random() - 0.5) * arenaWidthPx;
+      const startY = (Math.random() - 0.5) * arenaHeightPx;
+      const g = new PIXI.Graphics();
+      this.bgParticleLayer.addChild(g);
+      this.bgParticles.push({
+        g,
+        x: startX, y: startY,
+        vx: Math.cos(dirRad) * spd + Math.cos(perp) * (Math.random() - 0.5) * 20,
+        vy: Math.sin(dirRad) * spd + Math.sin(perp) * (Math.random() - 0.5) * 20,
+        life: 0,
+        maxLife: 2000 + Math.random() * 3000,
+      });
+    }
+
+    // Update + draw particles
+    const color = cfg.color;
+    for (let i = this.bgParticles.length - 1; i >= 0; i--) {
+      const p = this.bgParticles[i];
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.life += dt * 1000;
+      const lifeFrac = p.life / p.maxLife;
+
+      p.g.clear();
+      if (lifeFrac > 1 || Math.abs(p.x) > arenaWidthPx || Math.abs(p.y) > arenaHeightPx) {
+        this.bgParticleLayer.removeChild(p.g);
+        p.g.destroy();
+        this.bgParticles.splice(i, 1);
+        continue;
+      }
+
+      const alpha = Math.sin(lifeFrac * Math.PI) * 0.8;
+      switch (cfg.type) {
+        case "rain":
+          p.g.moveTo(p.x, p.y).lineTo(p.x + p.vx * 0.04, p.y + p.vy * 0.04)
+            .stroke({ color, width: 1, alpha });
+          break;
+        case "snow": case "pollen":
+          p.g.circle(p.x, p.y, 2).fill({ color, alpha });
+          break;
+        case "embers": case "sparks":
+          p.g.circle(p.x, p.y, 1.5 + Math.random()).fill({ color, alpha });
+          break;
+        case "bubbles":
+          p.g.circle(p.x, p.y, 3).stroke({ color, width: 1, alpha: alpha * 0.6 });
+          break;
+        case "glitch_pixels":
+          p.g.rect(p.x, p.y, 3, 3).fill({ color, alpha });
+          break;
+        default:
+          p.g.circle(p.x, p.y, 2).fill({ color, alpha });
+      }
+    }
+  }
+
+  destroyBackgroundParticles(): void {
+    for (const p of this.bgParticles) {
+      this.bgParticleLayer?.removeChild(p.g);
+      p.g.destroy();
+    }
+    this.bgParticles = [];
+  }
+
   destroy() {
     this.layer.removeChildren();
     this.obstacleGfx.clear();
@@ -451,5 +767,22 @@ export class FeatureRenderer {
     this.waterGfx.clear();
     this.portalGfx.clear();
     this.loopGfx.clear();
+    this.destroyBackgroundParticles();
   }
+}
+
+// ─── Helper: HSL → 0xRRGGBB ──────────────────────────────────────────────────
+
+function hslToHex(h: number, s: number, l: number): number {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let r = 0, gr = 0, b = 0;
+  if (h < 60) { r = c; gr = x; }
+  else if (h < 120) { r = x; gr = c; }
+  else if (h < 180) { gr = c; b = x; }
+  else if (h < 240) { gr = x; b = c; }
+  else if (h < 300) { r = x; b = c; }
+  else { r = c; b = x; }
+  return (((r + m) * 255) << 16) | (((gr + m) * 255) << 8) | ((b + m) * 255);
 }

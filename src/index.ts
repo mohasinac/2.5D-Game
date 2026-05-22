@@ -13,6 +13,7 @@ import { Parts25DTryoutRoom } from "./rooms/Parts25DTryoutRoom";
 import { Parts25DBattleRoom } from "./rooms/Parts25DBattleRoom";
 import { Parts25DAIBattleRoom } from "./rooms/Parts25DAIBattleRoom";
 import { Parts25DTournamentBattleRoom } from "./rooms/Parts25DTournamentBattleRoom";
+import { TeamBattleRoom } from "./rooms/TeamBattleRoom";
 import { ROOM_NAMES } from "./shared/utils/gameMode";
 import { TournamentScheduler } from "./tournament/TournamentScheduler";
 
@@ -46,6 +47,9 @@ gameServer.define(ROOM_NAMES["2.5d"].tryout, Parts25DTryoutRoom);
 gameServer.define(ROOM_NAMES["2.5d"].battle, Parts25DBattleRoom);
 gameServer.define(ROOM_NAMES["2.5d"].aiBattle, Parts25DAIBattleRoom);
 gameServer.define(ROOM_NAMES["2.5d"].tournament, Parts25DTournamentBattleRoom);
+
+// Team Battle rooms (Phase K)
+gameServer.define("team_battle_room", TeamBattleRoom);
 
 // Legacy room names — kept as aliases for one release cycle so existing
 // clients continue to connect. They route to the classic 2D pipeline.

@@ -8,6 +8,7 @@ const ASSET_CATEGORIES = [
   { href:"/admin/assets/water-bodies", icon:"💧", title:"Water Body Textures", desc:"Surface textures for water, lava, sand, and ice bodies", accent:"#06b6d4", tag:"water_body_assets" },
   { href:"/admin/assets/portals", icon:"🌀", title:"Portal Sprites", desc:"Portal ring and teleport effect sprites", accent:C.blue, tag:"portal_assets" },
   { href:"/admin/assets/sounds", icon:"🔊", title:"Sound Effects", desc:"Hit sounds, spin-out effects, special move audio, and ambient", accent:C.yellow, tag:"sound_assets" },
+  { href:"/admin/assets/particle-presets", icon:"✨", title:"Particle Presets", desc:"PixiJS emitter configs for combo visual effects — referenced by particlePresetId", accent:C.orange, tag:"particle_presets" },
 ];
 
 export function AssetsLibraryPage() {

@@ -45,6 +45,8 @@ interface UseColyseusOptions {
   onQTEPrompt?: (data: QTEPromptData) => void;
   onQTESuccess?: (data: QTESuccessData) => void;
   onQTEExpired?: () => void;
+  // Callback for arena timeline announcements (Phase T)
+  onArenaAnnouncement?: (data: { text: string; style?: "warning" | "info" | "danger" }) => void;
 }
 
 interface UseColyseusReturn {
@@ -104,6 +106,7 @@ export function useColyseus({
   onQTEPrompt,
   onQTESuccess,
   onQTEExpired,
+  onArenaAnnouncement,
 }: UseColyseusOptions): UseColyseusReturn {
   const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
   const [room, setRoom] = useState<Room | null>(null);
@@ -122,6 +125,7 @@ export function useColyseus({
   const onQTEPromptRef = useRef(onQTEPrompt);
   const onQTESuccessRef = useRef(onQTESuccess);
   const onQTEExpiredRef = useRef(onQTEExpired);
+  const onArenaAnnouncementRef = useRef(onArenaAnnouncement);
 
   useEffect(() => { onGameEndRef.current = onGameEnd; }, [onGameEnd]);
   useEffect(() => { onSeriesEndRef.current = onSeriesEnd; }, [onSeriesEnd]);
@@ -129,6 +133,7 @@ export function useColyseus({
   useEffect(() => { onQTEPromptRef.current = onQTEPrompt; }, [onQTEPrompt]);
   useEffect(() => { onQTESuccessRef.current = onQTESuccess; }, [onQTESuccess]);
   useEffect(() => { onQTEExpiredRef.current = onQTEExpired; }, [onQTEExpired]);
+  useEffect(() => { onArenaAnnouncementRef.current = onArenaAnnouncement; }, [onArenaAnnouncement]);
 
   const connect = useCallback(async () => {
     if (roomRef.current) return;
@@ -262,6 +267,11 @@ export function useColyseus({
 
       connectedRoom.onMessage("qte-expired", () => {
         onQTEExpiredRef.current?.();
+      });
+
+      // Phase T: arena timeline announcement
+      connectedRoom.onMessage("arena-announcement", (data: { text: string; style?: "warning" | "info" | "danger" }) => {
+        onArenaAnnouncementRef.current?.(data);
       });
 
       connectedRoom.onError((code, message) => {

@@ -43,7 +43,20 @@ export type ArenaTheme =
   | "desert"
   | "sea"
   | "ocean"
-  | "riverbank";
+  | "riverbank"
+  // Phase Z — new themes
+  | "volcano"
+  | "frozen_tundra"
+  | "cyber_grid"
+  | "underwater_ruins"
+  | "floating_islands"
+  | "crystal_cave"
+  | "ancient_temple"
+  | "quantum_realm"
+  | "haunted_factory"
+  | "lava_core"
+  | "storm_citadel"
+  | "neon_underground";
 
 // ============================================================================
 // SPEED PATHS & PORTALS
@@ -67,6 +80,14 @@ export interface ChargePointConfig {
  * Speed Path Configuration
  * Speed boost paths that stay inside the stadium shape - players travel along the path
  */
+/** Defines a gap (no path surface / no boost) at a position on the speed path. */
+export interface SpeedPathBreak {
+  /** Position along path as 0–1 fraction */
+  position: number;
+  /** Length of the gap as 0–1 fraction of total path length */
+  length: number;
+}
+
 export interface SpeedPathConfig {
   id?: number; // Speed path ID for identification
   radius: number; // em units from center (must be within stadium bounds)
@@ -78,7 +99,12 @@ export interface SpeedPathConfig {
     | "octagon"
     | "star"
     | "oval"
-    | "ring"; // Path shape
+    | "ring"
+    // Phase Z — new shapes
+    | "spiral"
+    | "figure_8"
+    | "zigzag"
+    | "custom_bezier"; // Path shape
   speedBoost: number; // Multiplier (e.g., 1.5 = 50% faster)
   spinBoost?: number; // Optional spin recovery per second
   frictionMultiplier?: number; // Lower = less friction (default: 1.0)
@@ -92,7 +118,32 @@ export interface SpeedPathConfig {
   chargePointCount?: number; // Number of evenly distributed charge points (1-3)
   minPathDuration?: number; // Minimum time on path (2-5 seconds)
   maxPathDuration?: number; // Maximum time before forced exit (2-5 seconds)
-  renderStyle?: "outline" | "filled"; // Render style (default: outline)
+  renderStyle?: "outline" | "filled" | "dashed" | "dotted" | "animated" | "broken"; // Render style
+
+  // Phase Z — spiral/figure_8 specific
+  /** spiral: number of turns (default 2) */
+  spiralTurns?: number;
+  /** spiral: inner radius in em units */
+  spiralInnerRadius?: number;
+  /** figure_8: width of each lobe in em units */
+  figure8LobeWidth?: number;
+
+  // Phase Z — custom_bezier
+  /** bezier control points in em units relative to path center */
+  bezierControlPoints?: Array<{ x: number; y: number }>;
+
+  // Phase Z — breaks
+  breaks?: SpeedPathBreak[];
+
+  // Phase Z — animated direction arrows
+  showDirectionArrows?: boolean;
+  arrowSpeedCmPerSec?: number;
+  arrowSpacingCm?: number;
+  arrowColor?: string;
+
+  // Phase Z — bump/ridge profile on path surface
+  bumpProfile?: { positionFrac: number; heightCm: number }[];
+  ridgeProfile?: { positionFrac: number; heightCm: number }[];
 }
 
 // Keep LoopConfig as alias for backward compatibility
@@ -434,15 +485,69 @@ export interface WallConfig {
 // TURRET CONFIGURATION
 // ============================================================================
 
+// ============================================================================
+// FEATURE ANIMATION CONFIG (Phase Z)
+// ============================================================================
+
+export type FeatureAnimationPreset =
+  | "pulse"           // alpha sin-wave
+  | "scale_pulse"     // container scale oscillate
+  | "color_cycle"     // hue tween
+  | "flicker"         // random alpha flicker
+  | "alert"           // fast red flash
+  | "shimmer"         // bright highlight sweep
+  | "lightning"       // periodic spark emitter
+  | "charged"         // intensifying glow
+  | "ghost"           // phasing alpha
+  | "shockwave_ring"; // expanding ring from center
+
+export interface FeatureAnimationConfig {
+  preset: FeatureAnimationPreset;
+  periodMs?: number;        // cycle duration (default per preset)
+  color?: string;           // override default color
+  intensity?: number;       // 0–1 scale on amplitude (default 1.0)
+  /** Run a second animation layered on top. */
+  secondaryPreset?: FeatureAnimationPreset;
+}
+
+// ============================================================================
+// TURRET CONFIGURATION
+// ============================================================================
+
 /**
  * Turret Attack Types
  */
-export type TurretAttackType = 
+export type TurretAttackType =
   | "random"      // Random shots in any direction
   | "beam"        // Continuous beam with charge period
   | "periodic"    // Shoots bullets periodically
   | "aoe"         // Area of effect blast (missile)
-  | "boomerang";  // Throws boomerang that returns
+  | "boomerang"   // Throws boomerang that returns
+  // Phase Z — new attack types
+  | "laser_sweep"      // Rotating beam that sweeps over beys
+  | "sniper"           // Long charge → single high-damage pinpoint shot
+  | "shotgun"          // Fan of N projectiles in a cone
+  | "mine_layer"       // Drops proximity mines at target position
+  | "gravity_cannon"   // Spawns temporary gravity well at target point
+  | "emp"              // AoE that disables combos + specials for all beys inside
+  | "tracking_missile" // Homing projectile that steers toward nearest bey
+  | "burst_fire"       // Rapid burst of bullets, then reload pause
+  | "plasma_ring"      // Expanding ring of energy that deals damage on contact
+  | "tractor_beam";    // Continuous pull force toward turret
+
+/**
+ * Turret Fire Pattern (Phase Z)
+ * Controls how the turret picks its target.
+ */
+export type TurretFirePattern =
+  | "nearest"         // target closest bey
+  | "furthest"        // target furthest bey
+  | "random"          // random bey each shot
+  | "round_robin"     // cycle through all beys
+  | "lowest_spin"     // target bey with lowest spin
+  | "highest_spin"    // target bey with highest spin
+  | "center"          // fire toward arena center regardless of beys
+  | "sweep_cw";       // rotate aim clockwise continuously
 
 /**
  * Turret Configuration
@@ -470,10 +575,48 @@ export interface TurretConfig {
   aoeRadius?: number; // For AOE: blast radius (50-150px)
   aoeDamageRadius?: number; // For AOE: damage falloff radius (20-100px)
   boomerangReturnTime?: number; // For boomerang: time to return (2-5 seconds)
-  
+
+  // Phase Z — per-type config fields
+  /** laser_sweep: full sweep arc (degrees, default 180) */
+  laserSweepArcDeg?: number;
+  /** laser_sweep: degrees per second the beam rotates */
+  laserSweepSpeedDeg?: number;
+  /** sniper: charge-up duration before shot fires (seconds) */
+  sniperChargeSec?: number;
+  /** shotgun: cone half-angle (degrees) */
+  shotgunConeHalfDeg?: number;
+  /** mine_layer: mine trigger radius (px) */
+  mineTriggerRadius?: number;
+  /** mine_layer: mine lifetime (seconds, 0 = permanent until triggered) */
+  mineLifetimeSec?: number;
+  /** gravity_cannon: gravity well pull force (N) */
+  gravityCannonForce?: number;
+  /** gravity_cannon: gravity well duration (seconds) */
+  gravityCannonDurationSec?: number;
+  /** emp: disable duration (ticks) applied to hit beys */
+  empDisableTicks?: number;
+  /** tracking_missile: turn rate (degrees/second) */
+  missileTrackingDeg?: number;
+  /** burst_fire: bullets per burst */
+  burstCount?: number;
+  /** burst_fire: delay between shots in burst (seconds) */
+  burstIntervalSec?: number;
+  /** burst_fire: reload time after burst (seconds) */
+  burstReloadSec?: number;
+  /** plasma_ring: ring expand speed (px/s) */
+  plasmaRingExpandSpeed?: number;
+  /** plasma_ring: maximum ring radius before disappearing (px) */
+  plasmaRingMaxRadius?: number;
+  /** tractor_beam: sustained pull force (N) */
+  tractorBeamForce?: number;
+
+  // Phase Z — targeting
+  firePattern?: TurretFirePattern;
+
   // Visual
   color?: string; // Optional custom color (defaults to theme color)
   autoPlaced?: boolean; // Was this turret auto-placed?
+  featureAnimation?: FeatureAnimationConfig;
 }
 
 // ============================================================================
@@ -512,7 +655,15 @@ export type ObstacleShape =
   | { kind: "spiral"; innerRadiusCm: number; outerRadiusCm: number; turns: number; thicknessCm: number }
   | { kind: "polyline"; points: Array<{ x_cm: number; y_cm: number }>; thicknessCm: number; closed: boolean }
   | { kind: "bezier"; controlPoints: Array<{ x_cm: number; y_cm: number }>; thicknessCm: number }
-  | { kind: "rectangle"; widthCm: number; heightCm: number };
+  | { kind: "rectangle"; widthCm: number; heightCm: number }
+  // Phase Z — new shapes
+  | { kind: "cross"; armLengthCm: number; armWidthCm: number }
+  | { kind: "L_shape"; longArmCm: number; shortArmCm: number; thicknessCm: number }
+  | { kind: "T_shape"; widthCm: number; heightCm: number; thicknessCm: number }
+  | { kind: "zigzag"; segmentLengthCm: number; segmentCount: number; zigWidthCm: number; thicknessCm: number }
+  | { kind: "star_shape"; outerRadiusCm: number; innerRadiusCm: number; points: number }
+  | { kind: "pinball_bumper"; radiusCm: number; restitution?: number }
+  | { kind: "wrecking_ball"; radiusCm: number; cableLength: number; swingAmplitudeDeg: number; swingPeriodMs: number; startPhaseDeg?: number };
 
 export type ObstaclePhysicsType =
   | "wall"
@@ -521,7 +672,15 @@ export type ObstaclePhysicsType =
   | "ledge"
   | "ridge"
   | "grip"
-  | "speedline";
+  | "speedline"
+  // Phase Z — new physics types
+  | "magnetic"
+  | "trampoline"
+  | "spinner"
+  | "crusher"
+  | "electrified"
+  | "sticky"
+  | "bouncy_net";
 
 export interface ObstaclePhysicsBlock {
   type: ObstaclePhysicsType;
@@ -532,6 +691,30 @@ export interface ObstaclePhysicsBlock {
   rampAngleDeg?: number;
   gripFriction?: number;          // > 1 = sticky, < 1 = slick
   speedlineBoostCmPerS?: number;  // tangential acceleration along the line
+
+  // Phase Z — magnetic
+  magnetRadiusCm?: number;        // effective pull/push radius
+  magnetStrength?: number;        // force magnitude (positive = attract, negative = repel)
+
+  // Phase Z — trampoline
+  trampolineBoost?: number;       // upward velocity impulse multiplier (default 1.5)
+
+  // Phase Z — spinner
+  spinRpmImpulse?: number;        // angular velocity added to bey on contact (rpm)
+
+  // Phase Z — crusher
+  crushAxis?: "x" | "y";         // direction of crush travel
+  crushTravelCm?: number;         // distance the crusher extends
+  crushCyclePeriodMs?: number;    // full extend+retract cycle duration
+
+  // Phase Z — electrified
+  disableTicks?: number;          // ticks combos + specials are disabled on contact
+
+  // Phase Z — sticky
+  stickyDurationTicks?: number;   // ticks bey velocity is frozen on contact
+
+  // Phase Z — bouncy_net
+  netRestitution?: number;        // elasticity coefficient (default 1.8 — extra bouncy)
 }
 
 export type ObstacleRenderMode =
@@ -569,6 +752,7 @@ export interface ObstacleConfig {
   controlledBySwitchId?: string;
   /** Self-rotation for visual + damage-face dynamics. Optional. */
   selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  featureAnimation?: FeatureAnimationConfig;
 }
 
 // ─── Switch obstacle (Part 6) ──────────────────────────────────────────────
@@ -624,6 +808,7 @@ export interface GravityHoleConfig {
   rotation?: RotationBlock;
   controlledBySwitchId?: string;
   selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  featureAnimation?: FeatureAnimationConfig;
 }
 
 // ─── Trigger zones (Part 5c) ───────────────────────────────────────────────
@@ -673,6 +858,7 @@ export interface SpinZoneConfig {
   assetId?: string;
   controlledBySwitchId?: string;
   selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  featureAnimation?: FeatureAnimationConfig;
 }
 
 // ─── Bump (new in this overhaul) ───────────────────────────────────────────
@@ -688,6 +874,7 @@ export interface BumpConfig {
   assetId?: string;
   controlledBySwitchId?: string;
   selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  featureAnimation?: FeatureAnimationConfig;
 }
 
 /**
@@ -717,6 +904,158 @@ export const BOWL_PROFILE_LABELS: Record<BowlProfile, string> = {
   deep:    "Deep (60°) — steep funnel",
   steep:   "Steep (75°) — cup shape",
 };
+
+// ============================================================================
+// ARENA TIMELINE (Phase T)
+// ============================================================================
+
+export type ArenaTimelineEventType =
+  | "activate_feature"
+  | "deactivate_feature"
+  | "spawn_feature"
+  | "arena_tilt"
+  | "gravity_change"
+  | "announcement";
+
+export interface ArenaTimelineEvent {
+  triggerMs: number;                  // ms after match enters "in-progress"
+  type: ArenaTimelineEventType;
+  featureId?: string;                 // target feature id (activate/deactivate)
+  params?: Record<string, unknown>;   // feature-specific params (strength, radius, mult, angle…)
+  announcement?: {
+    text: string;
+    style?: "warning" | "info" | "danger";
+  };
+  repeat?: {
+    intervalMs: number;               // delay between repeats
+    count: number;                    // additional fires (total = count + 1)
+  };
+}
+
+// ============================================================================
+// ENHANCED ARENA CONFIG (Phase V)
+// ============================================================================
+
+export interface ArenaShrinkConfig {
+  startMs: number;          // ms after match start when ring begins shrinking
+  endMs: number;            // ms when minimum size is reached
+  minRadiusFraction: number; // 0–1: fraction of original arena radius at smallest (e.g. 0.4 = 40%)
+  damageRatePerTick?: number; // damage per tick for beys outside boundary (default 2)
+}
+
+export type FloorHazardType =
+  | "lava"
+  | "ice"
+  | "mud"
+  | "electric"
+  | "time_slow"
+  | "repulsion"
+  | "size_shrink"
+  | "size_grow"
+  | "trampoline"
+  | "combo_boost"
+  | "drain"
+  | "void";
+
+export interface FloorHazardZoneConfig {
+  id: string;
+  x_cm: number;
+  y_cm: number;
+  radius_cm: number;
+  hazardType: FloorHazardType;
+  intensity?: number;               // multiplier on default effect strength (default 1.0)
+  damagePerTick?: number;           // lava: damage per tick while inside (default 5)
+  spinDecayMult?: number;           // lava: extra spin decay multiplier (default 1.5)
+  frictionMultiplier?: number;      // ice: friction scale (default 0.05)
+  disableTicks?: number;            // electric: ticks combos+specials are disabled on entry
+  durationMs?: number;              // null = permanent
+  controlledBySwitchId?: string;
+  activeByDefault?: boolean;
+  featureAnimation?: FeatureAnimationConfig;
+}
+
+export type EffectZoneType =
+  | "power_charge"
+  | "spin_recovery"
+  | "combo_boost"
+  | "stat_aura"
+  | "safe_zone"
+  | "turbo_zone"
+  | "respawn_point";
+
+export interface StatDelta {
+  stat: string;
+  multiplier: number;
+}
+
+export interface EffectZoneConfig {
+  id: string;
+  x_cm: number;
+  y_cm: number;
+  radius_cm: number;
+  effectType: EffectZoneType;
+  intensity?: number;
+  statAura?: StatDelta[];           // for "stat_aura" type
+  durationMs?: number;              // null = permanent while inside
+  controlledBySwitchId?: string;
+  activeByDefault?: boolean;
+  featureAnimation?: FeatureAnimationConfig;
+}
+
+export interface ElevationZoneConfig {
+  id: string;
+  x_cm: number;
+  y_cm: number;
+  radius_cm: number;
+  heightCm: number;                 // platform height above floor
+  spinBoostOnPlatform?: number;     // spin/s bonus while on platform (default 0)
+  edgeDropForce?: number;           // impulse applied when crossing platform edge (default 0)
+  controlledBySwitchId?: string;
+  featureAnimation?: FeatureAnimationConfig;
+}
+
+// ============================================================================
+// BACKGROUND PARTICLES + ENVIRONMENTAL EFFECTS (Phase Z)
+// ============================================================================
+
+export type BackgroundParticleType =
+  | "snow"
+  | "rain"
+  | "embers"
+  | "leaves"
+  | "bubbles"
+  | "sparks"
+  | "pollen"
+  | "ash"
+  | "stars"
+  | "glitch_pixels";
+
+export interface ArenaBackgroundParticles {
+  type: BackgroundParticleType;
+  density?: number;           // particles per second (default 20)
+  speed?: number;             // base particle speed multiplier (default 1.0)
+  direction?: number;         // angle in degrees (0 = down, 90 = left)
+  color?: string;             // override default particle color
+  affectedByArenaRotation?: boolean; // default true
+}
+
+export type ArenaEnvironmentalEffectPreset =
+  | "storm"       // oscillating lateral wind force + rain overlay
+  | "blizzard"    // fixed lateral force + snow overlay
+  | "volcanic"    // upward ash particles + ember embers
+  | "underwater"  // subtle drag force, bubble particles
+  | "cyber"       // no physics, glitch_pixels overlay
+  | "earthquake"; // periodic random impulse shake
+
+export interface ArenaEnvironmentalEffect {
+  preset: ArenaEnvironmentalEffectPreset;
+  intensity?: number;         // 0–1 (default 0.5)
+  intervalMs?: number;        // for oscillating/periodic effects — cycle duration
+}
+
+// ============================================================================
+// ARENA CONFIG
+// ============================================================================
 
 export interface ArenaConfig {
   // ===== BASIC PROPERTIES =====
@@ -779,6 +1118,10 @@ export interface ArenaConfig {
   spinZones?: SpinZoneConfig[];       // Circular zones that impart orbit or spin
   bumps?: BumpConfig[];               // Raised features that pop beys vertically
 
+  // ===== BACKGROUND + ENVIRONMENT (Phase Z) =====
+  backgroundParticles?: ArenaBackgroundParticles;
+  environmentalEffect?: ArenaEnvironmentalEffect;
+
   // ===== ROUND MODIFIERS =====
   defaultModifiers?: string[];      // modifier ids always active in this arena
   allowedModifiers?: string[];      // only these modifier ids can be selected (null = all allowed)
@@ -788,6 +1131,15 @@ export interface ArenaConfig {
   // ===== QTE SYSTEM =====
   qteEnabled?: boolean;             // default true; false = QTEs disabled for this match
   qteWindowScaling?: "flat" | "by_cost"; // flat = always 60t; by_cost = formula (default)
+
+  // ===== ARENA TIMELINE (Phase T) =====
+  arenaTimeline?: ArenaTimelineEvent[];  // Scripted events fired at specific match times
+
+  // ===== ENHANCED ARENA (Phase V) =====
+  shrink?: ArenaShrinkConfig;           // Shrinking ring mechanic
+  elevationZones?: ElevationZoneConfig[]; // Raised platforms
+  floorHazardZones?: FloorHazardZoneConfig[]; // Hazard areas on the floor
+  effectZones?: EffectZoneConfig[];     // Positive/neutral effect zones
 
   // ===== METADATA =====
   createdAt?: string;
@@ -919,6 +1271,50 @@ export function generateRandomWalls(shape: ArenaShape): WallConfig {
   
   return config;
 }
+
+// ============================================================================
+// PRESET TEMPLATES
+// ============================================================================
+
+// ============================================================================
+// THEME DEFAULT CONFIGS (Phase Z — Z9b)
+// Applied by ArenaConfigurator as smart defaults when theme is selected.
+// ============================================================================
+
+export interface ThemeDefaults {
+  bowlProfile?: BowlProfile;
+  backgroundColor?: string;
+  floorColor?: string;
+  backgroundParticles?: ArenaBackgroundParticles;
+  environmentalEffect?: ArenaEnvironmentalEffect;
+}
+
+export const THEME_DEFAULTS: Partial<Record<ArenaTheme, ThemeDefaults>> = {
+  forest:          { bowlProfile: "medium",  backgroundColor: "#1a4a2e", floorColor: "#2d7a4a", backgroundParticles: { type: "leaves", density: 12, direction: 80 } },
+  mountains:       { bowlProfile: "deep",    backgroundColor: "#2a3a4a", floorColor: "#6b7280", backgroundParticles: { type: "snow",   density: 8,  direction: 10 } },
+  grasslands:      { bowlProfile: "shallow", backgroundColor: "#3d7a2a", floorColor: "#5a9e35" },
+  metrocity:       { bowlProfile: "flat",    backgroundColor: "#1a1a2e", floorColor: "#374151" },
+  safari:          { bowlProfile: "medium",  backgroundColor: "#c5a35a", floorColor: "#d4a45a" },
+  prehistoric:     { bowlProfile: "deep",    backgroundColor: "#3d2a1a", floorColor: "#5a4a2a", backgroundParticles: { type: "ash", density: 6 } },
+  futuristic:      { bowlProfile: "flat",    backgroundColor: "#0a0a1a", floorColor: "#1a1a3a", backgroundParticles: { type: "sparks", density: 10 } },
+  desert:          { bowlProfile: "shallow", backgroundColor: "#c4a55a", floorColor: "#d4b56a" },
+  sea:             { bowlProfile: "medium",  backgroundColor: "#0a2a4a", floorColor: "#1a4a6a", backgroundParticles: { type: "bubbles", density: 15 } },
+  ocean:           { bowlProfile: "medium",  backgroundColor: "#061a2e", floorColor: "#0a2a4a", backgroundParticles: { type: "bubbles", density: 20 } },
+  riverbank:       { bowlProfile: "shallow", backgroundColor: "#2a4a2a", floorColor: "#3a5a3a" },
+  // Phase Z themes
+  volcano:         { bowlProfile: "steep",   backgroundColor: "#1a0a00", floorColor: "#3a1a00", backgroundParticles: { type: "embers",  density: 25, direction: 355 }, environmentalEffect: { preset: "volcanic", intensity: 0.7 } },
+  frozen_tundra:   { bowlProfile: "deep",    backgroundColor: "#d0e8f8", floorColor: "#b8d4e8", backgroundParticles: { type: "snow",    density: 30, direction: 15  }, environmentalEffect: { preset: "blizzard", intensity: 0.6 } },
+  cyber_grid:      { bowlProfile: "flat",    backgroundColor: "#020c18", floorColor: "#051828", backgroundParticles: { type: "glitch_pixels", density: 8 }, environmentalEffect: { preset: "cyber" } },
+  underwater_ruins:{ bowlProfile: "medium",  backgroundColor: "#051a2e", floorColor: "#0a2a3a", backgroundParticles: { type: "bubbles", density: 18 }, environmentalEffect: { preset: "underwater", intensity: 0.5 } },
+  floating_islands:{ bowlProfile: "shallow", backgroundColor: "#6a9ad0", floorColor: "#8ab8e8", backgroundParticles: { type: "pollen",  density: 10, direction: 20 } },
+  crystal_cave:    { bowlProfile: "deep",    backgroundColor: "#1a0a2e", floorColor: "#2a1a4a", backgroundParticles: { type: "sparks",  density: 6, color: "#a0c0ff" } },
+  ancient_temple:  { bowlProfile: "medium",  backgroundColor: "#2a1a0a", floorColor: "#3a2a1a", backgroundParticles: { type: "ash",     density: 5 } },
+  quantum_realm:   { bowlProfile: "flat",    backgroundColor: "#000010", floorColor: "#0a0020", backgroundParticles: { type: "stars",   density: 20 } },
+  haunted_factory: { bowlProfile: "flat",    backgroundColor: "#0a0a0a", floorColor: "#1a1a1a", backgroundParticles: { type: "ash",     density: 8 } },
+  lava_core:       { bowlProfile: "steep",   backgroundColor: "#2a0500", floorColor: "#4a0a00", backgroundParticles: { type: "embers",  density: 35 }, environmentalEffect: { preset: "volcanic", intensity: 1.0 } },
+  storm_citadel:   { bowlProfile: "medium",  backgroundColor: "#1a1a2a", floorColor: "#2a2a3a", backgroundParticles: { type: "rain",    density: 40, direction: 5  }, environmentalEffect: { preset: "storm",   intensity: 0.8 } },
+  neon_underground:{ bowlProfile: "flat",    backgroundColor: "#050510", floorColor: "#0a0a20", backgroundParticles: { type: "sparks",  density: 15, color: "#ff00aa" } },
+};
 
 // ============================================================================
 // PRESET TEMPLATES

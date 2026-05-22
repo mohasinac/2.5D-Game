@@ -4,7 +4,7 @@ import {
   Beyblade,
 } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
-import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats } from "../utils/firebase";
+import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats, loadComboEffects, type ComboEffectDoc } from "../utils/firebase";
 import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
 import { tryReserveRoom, releaseRoom } from "../shared/utils/roomCounter";
 import { createPRNG } from "../shared/utils/prng";
@@ -37,6 +37,7 @@ import type { BeybladeStats, ArenaConfig } from "../types/shared";
 import type { ArenaSystem } from "../types/arenaSystem";
 import { MODIFIER_MAP, type RoundModifier } from "../../client/src/types/roundModifier";
 import { getDualTypeAttackMultiplier, getDualTypeDefenseMultiplier, type ElementType } from "../../client/src/types/elementTypes";
+import type { ArenaTimelineEvent } from "../types/shared";
 
 const QTE_KEY_POOL = ["left", "right", "up", "down", "attack", "defense", "dodge"];
 
@@ -94,6 +95,21 @@ export class BattleRoom extends Room<GameState> {
   protected invertControlsActive = false;
   /** Per-session camera-follow target id (purely informational). */
   protected spectatorFollowTargets = new Map<string, string>();
+  /** Combo effect definitions keyed by effectId (Phase U — loaded once in onCreate). */
+  protected comboEffectsCache = new Map<string, ComboEffectDoc>();
+  /** Arena-wide effect expiry timestamps keyed by effectId (Phase AA). */
+  protected arenaEffectExpiries = new Map<string, number>();
+  /** Arena timeline state (Phase T) — sorted events + elapsed time tracking. */
+  private matchElapsedMs = 0;
+  private timelineIndex = 0;
+  private timelineEvents: ArenaTimelineEvent[] = [];
+
+  /** Arena shrink state (Phase V). */
+  private shrinkStartMs = 0;
+  private shrinkEndMs = 0;
+  private shrinkMinFraction = 1;
+  private shrinkEnabled = false;
+
   /** Pending QTE state — set when an opponent fires a special move and QTE is eligible. */
   private pendingQTE: {
     attackerSessionId: string;
@@ -133,6 +149,17 @@ export class BattleRoom extends Room<GameState> {
     if (arenaData) {
       this.applyArenaToState(arenaData, arenaId);
       console.log(`✅ BattleRoom: loaded arena ${arenaData.name}`);
+      // Phase T: initialize arena timeline
+      if (arenaData.arenaTimeline && arenaData.arenaTimeline.length > 0) {
+        this.timelineEvents = [...arenaData.arenaTimeline].sort((a, b) => a.triggerMs - b.triggerMs);
+      }
+      // Phase V: initialize shrink config
+      if (arenaData.shrink) {
+        this.shrinkEnabled = true;
+        this.shrinkStartMs = arenaData.shrink.startMs;
+        this.shrinkEndMs = arenaData.shrink.endMs;
+        this.shrinkMinFraction = arenaData.shrink.minRadiusFraction;
+      }
     } else {
       this.applyDefaultArena(arenaId);
     }
@@ -157,6 +184,10 @@ export class BattleRoom extends Room<GameState> {
 
     // Resolve and apply round modifiers (Phase X)
     this.resolveModifiers(options.modifierIds ?? [], this.arenaCache);
+
+    // Phase U — load combo effect definitions for BehaviorRef execution
+    const effectDocs = await loadComboEffects();
+    for (const doc of effectDocs) this.comboEffectsCache.set(doc.id, doc);
 
     this.onMessage("input", (client, message: number | PlayerInput) => {
       let input = normalizeInput(message);
@@ -598,7 +629,7 @@ export class BattleRoom extends Room<GameState> {
 
   // ─── Input handling — delegates to shared/rooms/InputHandler ────────────────
 
-  private handleInput(client: Client, message: PlayerInput) {
+  protected handleInput(client: Client, message: PlayerInput) {
     if (this.spectatorSessions.has(client.sessionId)) return;
 
     const beyblade = this.state.beyblades.get(client.sessionId);
@@ -809,6 +840,16 @@ export class BattleRoom extends Room<GameState> {
     }
 
     if (this.state.status !== "in-progress") return;
+
+    // Phase T: arena timeline events
+    this.matchElapsedMs += deltaTime;
+    this.tickArenaTimeline();
+
+    // Phase V: arena shrink
+    if (this.shrinkEnabled) this.tickArenaShrink();
+
+    // Phase AA: expire arena-wide effects
+    this.tickArenaEffects(Date.now());
 
     this.physics.update(deltaTime);
 
@@ -1040,6 +1081,206 @@ export class BattleRoom extends Room<GameState> {
     }
   }
 
+  // ─── BehaviorRef executor (Phase U / AA) ────────────────────────────────────
+
+  /**
+   * Execute a single compiled BehaviorRef step for the given beyblade session.
+   * Handles movement, factor boosts, and arena-wide effects.
+   */
+  protected executeBehaviorRef(
+    sessionId: string,
+    behaviorId: string,
+    params: Record<string, unknown> = {}
+  ): void {
+    const beyblade = this.state.beyblades.get(sessionId);
+    if (!beyblade || !beyblade.isActive) return;
+
+    // ── movement.swap_position ──────────────────────────────────────────────
+    if (behaviorId === "movement.swap_position") {
+      const targetId = params.targetId as string | undefined;
+      // Find the target: explicit id or nearest opponent
+      let targetSid: string | undefined = targetId;
+      if (!targetSid) {
+        let minDist = Infinity;
+        this.state.beyblades.forEach((other, sid) => {
+          if (sid === sessionId || !other.isActive) return;
+          const d = Math.hypot(other.x - beyblade.x, other.y - beyblade.y);
+          if (d < minDist) { minDist = d; targetSid = sid; }
+        });
+      }
+      if (targetSid) {
+        const target = this.state.beyblades.get(targetSid);
+        if (target && target.isActive) {
+          const ax = beyblade.x, ay = beyblade.y;
+          const avx = beyblade.velocityX, avy = beyblade.velocityY;
+          beyblade.x = target.x; beyblade.y = target.y;
+          beyblade.velocityX = target.velocityX; beyblade.velocityY = target.velocityY;
+          target.x = ax; target.y = ay;
+          target.velocityX = avx; target.velocityY = avy;
+          this.physics.setPosition(sessionId, beyblade.x, beyblade.y);
+          this.physics.setPosition(targetSid, target.x, target.y);
+          this.broadcast("position-swap", { a: sessionId, b: targetSid });
+        }
+      }
+      return;
+    }
+
+    // ── factor.boost ────────────────────────────────────────────────────────
+    if (behaviorId === "factor.boost") {
+      const stat = (params.stat as string) ?? "damageMultiplier";
+      const mult = (params.multiplier as number) ?? 1.3;
+      const ticks = (params.durationTicks as number) ?? 60;
+      if (stat === "damageMultiplier") {
+        beyblade.comboDamageMultiplier = mult;
+        beyblade.comboDamageMultiplierTimer = ticks / 60;
+      } else if (stat === "speed") {
+        const vMag = Math.hypot(beyblade.velocityX, beyblade.velocityY);
+        if (vMag > 0) {
+          beyblade.velocityX *= mult;
+          beyblade.velocityY *= mult;
+        }
+      } else if (stat === "spin") {
+        beyblade.spin = Math.min(beyblade.maxSpin, beyblade.spin * mult);
+      }
+      return;
+    }
+
+    // ── arena.effect.* ──────────────────────────────────────────────────────
+    if (behaviorId.startsWith("arena.effect.")) {
+      const effectKey = behaviorId.slice("arena.effect.".length);
+      const durationMs = (params.durationMs as number) ?? 5000;
+      this.arenaEffectExpiries.set(effectKey, Date.now() + durationMs);
+      this.broadcast("arena-effect-start", { effectKey, durationMs, source: sessionId, params });
+      return;
+    }
+
+    // ── movement.dash ───────────────────────────────────────────────────────
+    if (behaviorId === "movement.dash") {
+      const force = (params.force as number) ?? 8;
+      const angle = (params.angle as number) ?? (Math.atan2(beyblade.velocityY, beyblade.velocityX));
+      beyblade.velocityX += Math.cos(angle) * force;
+      beyblade.velocityY += Math.sin(angle) * force;
+      return;
+    }
+
+    // ── spin.drain_target ───────────────────────────────────────────────────
+    if (behaviorId === "spin.drain_target") {
+      const drainFraction = (params.fraction as number) ?? 0.1;
+      let targetSid: string | undefined;
+      let minDist = Infinity;
+      this.state.beyblades.forEach((other, sid) => {
+        if (sid === sessionId || !other.isActive) return;
+        const d = Math.hypot(other.x - beyblade.x, other.y - beyblade.y);
+        if (d < minDist) { minDist = d; targetSid = sid; }
+      });
+      if (targetSid) {
+        const target = this.state.beyblades.get(targetSid)!;
+        const drain = target.spin * drainFraction;
+        target.spin = Math.max(0, target.spin - drain);
+        beyblade.spin = Math.min(beyblade.maxSpin, beyblade.spin + drain * 0.5);
+      }
+      return;
+    }
+  }
+
+  /** Expire arena-wide effects and broadcast clear events (Phase AA). */
+  protected tickArenaEffects(nowMs: number): void {
+    this.arenaEffectExpiries.forEach((expiresAt, effectKey) => {
+      if (nowMs >= expiresAt) {
+        this.arenaEffectExpiries.delete(effectKey);
+        this.broadcast("arena-effect-end", { effectKey });
+      }
+    });
+  }
+
+  // ─── Arena Timeline (Phase T) ────────────────────────────────────────────────
+
+  private tickArenaTimeline(): void {
+    if (this.timelineEvents.length === 0) return;
+    while (
+      this.timelineIndex < this.timelineEvents.length &&
+      this.matchElapsedMs >= this.timelineEvents[this.timelineIndex].triggerMs
+    ) {
+      this.executeTimelineEvent(this.timelineEvents[this.timelineIndex]);
+      this.timelineIndex++;
+    }
+  }
+
+  private executeTimelineEvent(event: ArenaTimelineEvent): void {
+    switch (event.type) {
+      case "activate_feature":
+        // Notify clients to activate a feature by id
+        this.broadcast("arena-feature-activate", { featureId: event.featureId, params: event.params ?? {} });
+        break;
+      case "deactivate_feature":
+        this.broadcast("arena-feature-deactivate", { featureId: event.featureId });
+        break;
+      case "spawn_feature":
+        this.broadcast("arena-feature-spawn", { params: event.params ?? {} });
+        break;
+      case "arena_tilt":
+        if (event.params?.angle !== undefined) {
+          (this.state.arena as any).tiltAngle = event.params.angle;
+        }
+        if (event.params?.direction !== undefined) {
+          (this.state.arena as any).tiltDirection = event.params.direction;
+        }
+        break;
+      case "gravity_change":
+        if (event.params?.mult !== undefined) {
+          (this.state.arena as any).gravityMult = event.params.mult;
+        }
+        break;
+      case "announcement":
+        if (event.announcement) {
+          this.broadcast("arena-announcement", event.announcement);
+        }
+        break;
+    }
+
+    // Handle repeat: push a cloned event with decremented count back into the sorted list
+    if (event.repeat && event.repeat.count > 0) {
+      const next: ArenaTimelineEvent = {
+        ...event,
+        triggerMs: event.triggerMs + event.repeat.intervalMs,
+        repeat: { ...event.repeat, count: event.repeat.count - 1 },
+      };
+      // Insert maintaining sort order — find correct position from current timelineIndex
+      let insertAt = this.timelineIndex;
+      while (insertAt < this.timelineEvents.length && this.timelineEvents[insertAt].triggerMs <= next.triggerMs) {
+        insertAt++;
+      }
+      this.timelineEvents.splice(insertAt, 0, next);
+    }
+  }
+
+  // ─── Arena Shrink (Phase V) ───────────────────────────────────────────────────
+
+  private tickArenaShrink(): void {
+    if (this.matchElapsedMs < this.shrinkStartMs) return;
+    const arenaBaseRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 / 2;
+    let fraction = 1;
+    if (this.matchElapsedMs >= this.shrinkEndMs) {
+      fraction = this.shrinkMinFraction;
+    } else {
+      const progress = (this.matchElapsedMs - this.shrinkStartMs) / (this.shrinkEndMs - this.shrinkStartMs);
+      fraction = 1 - (1 - this.shrinkMinFraction) * progress;
+    }
+    const effectiveRadius = arenaBaseRadius * fraction;
+    if (this.state.arena.effectiveRadius !== effectiveRadius) {
+      this.state.arena.effectiveRadius = effectiveRadius;
+      // Apply damage to beys outside boundary
+      const shrinkDamage = this.arenaCache?.shrink?.damageRatePerTick ?? 2;
+      this.state.beyblades.forEach(b => {
+        if (!b.isActive) return;
+        const dist = Math.hypot(b.x, b.y); // arena is centered at 0,0
+        if (dist > effectiveRadius) {
+          b.health = Math.max(0, b.health - shrinkDamage);
+        }
+      });
+    }
+  }
+
   // ─── Reactive combo tick (Phase W) ──────────────────────────────────────────
 
   protected tickReactiveCombos(nowMs: number): void {
@@ -1071,6 +1312,7 @@ export class BattleRoom extends Room<GameState> {
       if (rawSlots.length === 0) return;
 
       const slots = rawSlots.map(s => {
+        if (!s) return null;
         try { return JSON.parse(s); } catch { return null; }
       }).filter(Boolean);
       if (slots.length === 0) return;
@@ -1100,14 +1342,21 @@ export class BattleRoom extends Room<GameState> {
 
       for (const result of triggered) {
         recordComboFired(matchState, result.effectId);
-        // Apply legacy combo effects for backward compat (multiplier boost placeholder)
-        beyblade.comboDamageMultiplier = 1.3;
-        beyblade.comboDamageMultiplierTimer = 1.0;
+        const effectDoc = this.comboEffectsCache.get(result.effectId);
+        if (effectDoc?.steps && Array.isArray(effectDoc.steps) && effectDoc.steps.length > 0) {
+          for (const step of effectDoc.steps as Array<{ behaviorId: string; params?: Record<string, unknown> }>) {
+            this.executeBehaviorRef(sid, step.behaviorId, step.params);
+          }
+        } else {
+          // Fallback: generic damage multiplier boost when no steps defined
+          beyblade.comboDamageMultiplier = 1.3;
+          beyblade.comboDamageMultiplierTimer = 1.0;
+        }
         this.broadcast("combo", {
           playerId: sid,
           comboId: result.effectId,
           comboName: result.slot.effectId,
-          costPaid: 0,
+          costPaid: effectDoc?.cost ?? 0,
           effect: "trigger",
           x: beyblade.x,
           y: beyblade.y,
@@ -1182,6 +1431,12 @@ export class BattleRoom extends Room<GameState> {
     });
 
     this.pendingQTE = null;
+    // Reset arena timeline state so each game in a series has its own fresh timeline
+    this.matchElapsedMs = 0;
+    this.timelineIndex = 0;
+    if (this.arenaCache?.arenaTimeline) {
+      this.timelineEvents = [...this.arenaCache.arenaTimeline].sort((a, b) => a.triggerMs - b.triggerMs);
+    }
     resetStateForNextGame(this.state, this.spawnPositions, this.physics, 180);
     this.warmupTimer = 3;
 

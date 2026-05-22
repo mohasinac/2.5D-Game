@@ -26,7 +26,7 @@ function makeLegacyCp(overrides: Partial<SystemContactPoint> = {}): SystemContac
     attackType: "smash",
     spinBehavior: { rightPin: "smash", leftPin: "upper" },
     damageMultiplier: 1.0,
-    partLayer: "attackRing",
+    partLayer: "ar",
     ...overrides,
   };
 }

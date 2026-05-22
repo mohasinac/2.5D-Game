@@ -11,6 +11,8 @@ import PortalsTab from "./arena-tabs/PortalsTab";
 import SpeedPathsTab from "./arena-tabs/SpeedPathsTab";
 import PitsTab from "./arena-tabs/PitsTab";
 import WallsTab from "./arena-tabs/WallsTab";
+import FeaturesTab from "./arena-tabs/FeaturesTab";
+import BoundaryTab from "./arena-tabs/BoundaryTab";
 
 interface Props {
   arena: ArenaConfig;
@@ -19,7 +21,7 @@ interface Props {
   saving?: boolean;
 }
 
-type TabId = "basics" | "walls" | "water" | "obstacles" | "turrets" | "portals" | "speedpaths" | "pits";
+type TabId = "basics" | "walls" | "water" | "obstacles" | "turrets" | "portals" | "speedpaths" | "pits" | "features" | "boundary";
 
 const TABS: { id: TabId; label: string; icon: string; count?: (a: ArenaConfig) => number }[] = [
   { id: "basics",     label: "Basics",      icon: "⚙️" },
@@ -30,6 +32,8 @@ const TABS: { id: TabId; label: string; icon: string; count?: (a: ArenaConfig) =
   { id: "portals",    label: "Portals",     icon: "🌀", count: a => a.portals?.length ?? 0 },
   { id: "speedpaths", label: "Speed Paths", icon: "⚡", count: a => a.speedPaths?.length ?? 0 },
   { id: "pits",       label: "Pits",        icon: "🕳️", count: a => a.pits?.length ?? 0 },
+  { id: "features",   label: "Features",    icon: "✨",  count: a => (a.floorHazardZones?.length ?? 0) + (a.elevationZones?.length ?? 0) + ((a as any).effectZones?.length ?? 0) },
+  { id: "boundary",   label: "Boundary",    icon: "⭕",  count: a => a.shrink ? 1 : 0 },
 ];
 
 export default function ArenaConfigurator({ arena, onChange, onSave, saving }: Props) {
@@ -81,6 +85,8 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
           {tab === "portals"    && <PortalsTab config={arena} onChange={onChange} />}
           {tab === "speedpaths" && <SpeedPathsTab config={arena} onChange={onChange} />}
           {tab === "pits"       && <PitsTab config={arena} onChange={onChange} />}
+          {tab === "features"   && <FeaturesTab config={arena} onChange={onChange} />}
+          {tab === "boundary"   && <BoundaryTab config={arena} onChange={onChange} />}
         </div>
 
         {/* Save button */}

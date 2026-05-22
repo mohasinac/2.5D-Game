@@ -171,7 +171,7 @@ export class PartSystemManager {
       if (typeof id === "string" && !seen.has(id)) { seen.add(id); merged.push(id); }
     });
     for (const p of allParts) {
-      const ids = (p as BasePart).comboIds ?? [];
+      const ids: string[] = ((p as any).comboIds ?? (p as BasePart).comboEffects ?? []);
       for (const id of ids) {
         if (!id || seen.has(id) || merged.length >= EFFECTIVE_COMBO_CAP) continue;
         seen.add(id);
@@ -191,7 +191,7 @@ export class PartSystemManager {
         ...parts.subParts,
       ];
       for (const p of orderedParts) {
-        const sid = (p as BasePart | undefined)?.specialMoveId;
+        const sid = (p as any)?.specialMoveId;
         if (sid) { bey.specialMove = sid; break; }
       }
     }
@@ -384,6 +384,8 @@ export class PartSystemManager {
     if (typeof (bey as any).beyTiltAngle === "number") {
       const tiltResult = updateBeyTilt(
         {
+          x: bey.x ?? 0,
+          y: bey.y ?? 0,
           beyTiltAngle: (bey as any).beyTiltAngle ?? 0,
           spin: bey.spin,
           maxSpin: bey.maxSpin,

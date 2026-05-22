@@ -18,6 +18,8 @@ import { TournamentListPage } from "./pages/TournamentListPage";
 import { TournamentLobbyPage } from "./pages/TournamentLobbyPage";
 import { TournamentBattleGamePage } from "./pages/TournamentBattleGamePage";
 import { LeaderboardPage } from "./pages/LeaderboardPage";
+import { TeamBattleLobbyPage } from "./pages/TeamBattleLobbyPage";
+import { TeamBattleGamePage } from "./pages/TeamBattleGamePage";
 
 // Admin pages
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
@@ -34,6 +36,7 @@ import { TurretAssetsPage } from "./pages/admin/assets/TurretAssetsPage";
 import { WaterBodyAssetsPage } from "./pages/admin/assets/WaterBodyAssetsPage";
 import { PortalAssetsPage } from "./pages/admin/assets/PortalAssetsPage";
 import { SoundAssetsPage } from "./pages/admin/assets/SoundAssetsPage";
+import { ParticlePresetsPage } from "./pages/admin/assets/ParticlePresetsPage";
 import { StatsPage } from "./pages/admin/StatsPage";
 import { SettingsPage } from "./pages/admin/SettingsPage";
 import { ArenaTestPage } from "./pages/admin/ArenaTestPage";
@@ -100,6 +103,12 @@ export const router = createBrowserRouter([
       { path: "game/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
       { path: "game/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
       { path: "game/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
+      // ── Team Battle (Phase K) ──
+      { path: "game/2d/team-battle/lobby", element: <ProtectedRoute><TeamBattleLobbyPage /></ProtectedRoute> },
+      { path: "game/2d/team-battle/:roomId", element: <ProtectedRoute><TeamBattleGamePage /></ProtectedRoute> },
+      { path: "game/2.5d/team-battle/lobby", element: <ProtectedRoute><TeamBattleLobbyPage /></ProtectedRoute> },
+      { path: "game/2.5d/team-battle/:roomId", element: <ProtectedRoute><TeamBattleGamePage /></ProtectedRoute> },
+
       // Leaderboard (public — no ProtectedRoute)
       { path: "leaderboard", element: <LeaderboardPage /> },
     ],
@@ -134,6 +143,7 @@ export const router = createBrowserRouter([
       { path: "assets/water-bodies", element: <WaterBodyAssetsPage /> },
       { path: "assets/portals", element: <PortalAssetsPage /> },
       { path: "assets/sounds", element: <SoundAssetsPage /> },
+      { path: "assets/particle-presets", element: <ParticlePresetsPage /> },
 
       // Utilities
       { path: "stats", element: <StatsPage /> },

@@ -516,6 +516,162 @@ const ARENAS = [
     surfaceFriction: 0.009,
     difficulty: "extreme",
   },
+
+  // ── 9. Lava Core (Phase Z — new theme) ─────────────────────────────────────
+  // Extreme volcanic arena. Electric hazard zones ring the center; wrecking ball
+  // obstacle sweeps across the middle; embers fill the air.
+  {
+    id: "lava-core",
+    name: "Lava Core",
+    description: "The molten heart of a volcano. Electric discharge zones surround a central lava pit, and a wrecking ball swings through the arena.",
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "lava_core",
+    autoRotate: true,
+    rotationSpeed: 3,
+    rotationDirection: "clockwise",
+    wall: circleWall("stone", 25, 14),
+    backgroundColor: "#2a0500",
+    floorColor: "#4a0a00",
+    backgroundParticles: { type: "embers", density: 35, direction: 355, affectedByArenaRotation: true },
+    environmentalEffect: { preset: "volcanic", intensity: 1.0 },
+    obstacles: [
+      {
+        id: 1, x: 0, y: 0, radius: 5, health: 999, damage: 30, recoilDistance: 12,
+        indestructible: true,
+        shape: { kind: "wrecking_ball", radiusCm: 5, cableLength: 18, swingAmplitudeDeg: 75, swingPeriodMs: 3500 },
+        physics: { type: "wall", heightCm: 5 },
+        featureAnimation: { preset: "charged", periodMs: 1200, color: "#ff6600" },
+      },
+    ],
+    floorHazardZones: [
+      { id: "hz1", x_cm: -12, y_cm: -12, radius_cm: 6, hazardType: "electric", disableTicks: 90, intensity: 1.2, featureAnimation: { preset: "lightning", periodMs: 800 } },
+      { id: "hz2", x_cm:  12, y_cm: -12, radius_cm: 6, hazardType: "electric", disableTicks: 90, intensity: 1.2, featureAnimation: { preset: "lightning", periodMs: 800 } },
+      { id: "hz3", x_cm: -12, y_cm:  12, radius_cm: 6, hazardType: "electric", disableTicks: 90, intensity: 1.2, featureAnimation: { preset: "lightning", periodMs: 800 } },
+      { id: "hz4", x_cm:  12, y_cm:  12, radius_cm: 6, hazardType: "electric", disableTicks: 90, intensity: 1.2, featureAnimation: { preset: "lightning", periodMs: 800 } },
+      { id: "hz5", x_cm: 0, y_cm: 0, radius_cm: 5, hazardType: "lava", damagePerTick: 8, spinDecayMult: 2.0, featureAnimation: { preset: "pulse", color: "#ff4400" } },
+    ],
+    waterBodies: [
+      {
+        id: "water1", type: "moat", liquidType: "lava",
+        thickness: 4, distanceFromArena: 20, followsArenaShape: true,
+        opacity: 0.85, depth: 10, wavyEffect: true,
+        effects: { damagePerSecond: 8, speedLoss: 0.5, frictionMultiplier: 2.5, pushForce: 4, showParticles: true, particleColor: "#ff4400" },
+      },
+    ],
+    speedPaths: [],
+    pits: [],
+    turrets: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.015,
+    surfaceFriction: 0.014,
+    difficulty: "extreme",
+  },
+
+  // ── 10. Storm Citadel (Phase Z — new theme) ─────────────────────────────────
+  // A crumbling fortress battered by storms. Rain and wind push beys off-course;
+  // tracking missiles from two turrets punish slow play.
+  {
+    id: "storm-citadel",
+    name: "Storm Citadel",
+    description: "A fortress in the eye of a permanent storm. Wind pushes beys toward the edges; tracking missiles keep pressure on.",
+    width: 1080,
+    height: 1080,
+    shape: "octagon",
+    theme: "storm_citadel",
+    autoRotate: false,
+    wall: hexWall("brick", 20, 10),
+    backgroundColor: "#1a1a2a",
+    floorColor: "#2a2a3a",
+    backgroundParticles: { type: "rain", density: 40, direction: 5, affectedByArenaRotation: false },
+    environmentalEffect: { preset: "storm", intensity: 0.8, intervalMs: 4000 },
+    obstacles: [
+      { id: 1, x: -14, y: -14, radius: 3, health: 999, damage: 20, recoilDistance: 8, indestructible: true, shape: { kind: "circle", radiusCm: 3 } },
+      { id: 2, x:  14, y: -14, radius: 3, health: 999, damage: 20, recoilDistance: 8, indestructible: true, shape: { kind: "circle", radiusCm: 3 } },
+      { id: 3, x: -14, y:  14, radius: 3, health: 999, damage: 20, recoilDistance: 8, indestructible: true, shape: { kind: "circle", radiusCm: 3 } },
+      { id: 4, x:  14, y:  14, radius: 3, health: 999, damage: 20, recoilDistance: 8, indestructible: true, shape: { kind: "circle", radiusCm: 3 } },
+    ],
+    turrets: [
+      {
+        id: 1, x: 0, y: -20, radius: 3, health: 999, indestructible: true,
+        attackType: "tracking_missile", attackDamage: 22, attackRange: 35, attackCooldown: 5,
+        missileTrackingDeg: 120, firePattern: "lowest_spin",
+        color: "#7c3aed",
+        featureAnimation: { preset: "alert", periodMs: 500 },
+      },
+      {
+        id: 2, x: 0, y: 20, radius: 3, health: 999, indestructible: true,
+        attackType: "tracking_missile", attackDamage: 22, attackRange: 35, attackCooldown: 5,
+        missileTrackingDeg: 120, firePattern: "lowest_spin",
+        color: "#7c3aed",
+        featureAnimation: { preset: "alert", periodMs: 500 },
+      },
+    ],
+    speedPaths: [
+      { id: 1, radius: 10, shape: "circle", speedBoost: 1.5, spinBoost: 12, frictionMultiplier: 0.8, renderStyle: "dashed", color: "#6366f1", showDirectionArrows: true, arrowSpeedCmPerSec: 8, arrowColor: "#a5b4fc" },
+    ],
+    effectZones: [
+      { id: "ez1", x_cm: 0, y_cm: 0, radius_cm: 6, effectType: "safe_zone", featureAnimation: { preset: "shimmer", color: "#60a5fa" } },
+    ],
+    waterBodies: [],
+    pits: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.012,
+    surfaceFriction: 0.01,
+    difficulty: "hard",
+  },
+
+  // ── 11. Quantum Realm (Phase Z — new theme) ──────────────────────────────────
+  // A dimension where physics behaves strangely. A spin zone dominates the center;
+  // four portals create chaotic teleportation; an EMP turret disrupts combos.
+  {
+    id: "quantum-realm",
+    name: "Quantum Realm",
+    description: "A sub-dimensional arena where gravity bends. Central spin zone and portals create unpredictable bey paths.",
+    width: 1080,
+    height: 1080,
+    shape: "star5",
+    theme: "quantum_realm",
+    autoRotate: true,
+    rotationSpeed: 5,
+    rotationDirection: "counterclockwise",
+    wall: hexWall("metal", 16, 9),
+    backgroundColor: "#000010",
+    floorColor: "#0a0020",
+    backgroundParticles: { type: "stars", density: 20, affectedByArenaRotation: false },
+    spinZones: [
+      { id: "sz1", x_cm: 0, y_cm: 0, radius_cm: 10, direction: "cw", intensityRadPerSec: 4.0, applyTo: "both", featureAnimation: { preset: "shockwave_ring", periodMs: 2000, color: "#8b5cf6" } },
+    ],
+    portals: [
+      { id: "portal1", portalNumber: 1, position: { x: -18, y: 0 }, radius: 3.5, cooldown: 3, color: "#a855f7", autoPlace: false },
+      { id: "portal2", portalNumber: 2, position: { x:  18, y: 0 }, radius: 3.5, cooldown: 3, color: "#ec4899", autoPlace: false },
+      { id: "portal3", portalNumber: 3, position: { x: 0, y: -18 }, radius: 3.5, cooldown: 3, color: "#06b6d4", autoPlace: false },
+      { id: "portal4", portalNumber: 4, position: { x: 0, y:  18 }, radius: 3.5, cooldown: 3, color: "#10b981", autoPlace: false },
+    ],
+    turrets: [
+      {
+        id: 1, x: -16, y: -16, radius: 2.5, health: 999, indestructible: true,
+        attackType: "emp", attackDamage: 5, attackRange: 28, attackCooldown: 7,
+        empDisableTicks: 120, firePattern: "nearest",
+        color: "#6366f1",
+        featureAnimation: { preset: "charged", periodMs: 1500 },
+      },
+    ],
+    gravityHoles: [
+      { id: "gh1", x_cm: 0, y_cm: 0, forceN: 0.003, effectiveRadiusCm: 8, activeMs: 2000, intervalMs: 4000, warningMs: 600, visibility: "warning-only", featureAnimation: { preset: "ghost", periodMs: 2000 } },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    pits: [],
+    speedPaths: [],
+    gravity: 0,
+    airResistance: 0.005,
+    surfaceFriction: 0.004,
+    difficulty: "extreme",
+  },
 ];
 
 // ─── Seed ─────────────────────────────────────────────────────────────────────

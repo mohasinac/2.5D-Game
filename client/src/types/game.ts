@@ -237,6 +237,10 @@ export interface ServerGameState {
   targetWins?: number;
   seriesWins?: Map<string, number>;
   seriesLeader?: string;
+  // Round modifiers (Phase X)
+  activeModifierIds?: string[];
+  // Arena shrink (Phase V)
+  effectiveRadius?: number;
 }
 
 // ─── Tournament types ─────────────────────────────────────────────────────────

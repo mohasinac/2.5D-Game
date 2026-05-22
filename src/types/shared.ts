@@ -402,7 +402,69 @@ export interface ArenaConfig {
   wallAngle?: number;   // 0–75 degrees; overrides bowlProfile if set explicitly
   bowlDepth?: number;   // visual only: 0–1 (default 0.4)
 
+  // Switch / gravity / zone features (Phase 6)
+  switches?: any[];
+  gravityHoles?: any[];
+  triggerZones?: any[];
+  spinZones?: any[];
+  bumps?: any[];
+
+  // Round modifiers (Phase X)
+  defaultModifiers?: string[];
+  allowedModifiers?: string[];
+  randomModifiers?: boolean;
+  maxModifiers?: number;
+
+  // QTE system (Phase Y)
+  qteEnabled?: boolean;
+  qteWindowScaling?: "flat" | "by_cost";
+
+  // Arena timeline (Phase T)
+  arenaTimeline?: ArenaTimelineEvent[];
+
+  // Enhanced arena (Phase V)
+  shrink?: ArenaShrinkConfig;
+  elevationZones?: any[];
+  floorHazardZones?: FloorHazardZoneConfig[];
+  effectZones?: any[];
+
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;
+}
+
+// ─── Phase T: Arena Timeline ─────────────────────────────────────────────────
+
+export interface ArenaTimelineEvent {
+  triggerMs: number;
+  type: "activate_feature" | "deactivate_feature" | "spawn_feature" | "arena_tilt" | "gravity_change" | "announcement";
+  featureId?: string;
+  params?: Record<string, unknown>;
+  announcement?: { text: string; style?: "warning" | "info" | "danger" };
+  repeat?: { intervalMs: number; count: number };
+}
+
+// ─── Phase V: Enhanced Arena ──────────────────────────────────────────────────
+
+export interface ArenaShrinkConfig {
+  startMs: number;
+  endMs: number;
+  minRadiusFraction: number;
+  damageRatePerTick?: number;
+}
+
+export interface FloorHazardZoneConfig {
+  id: string;
+  x_cm: number;
+  y_cm: number;
+  radius_cm: number;
+  hazardType: "lava" | "ice" | "mud" | "electric" | "time_slow" | "repulsion" | "size_shrink" | "size_grow" | "trampoline" | "combo_boost" | "drain" | "void";
+  intensity?: number;
+  damagePerTick?: number;
+  spinDecayMult?: number;
+  frictionMultiplier?: number;
+  disableTicks?: number;
+  durationMs?: number;
+  controlledBySwitchId?: string;
+  activeByDefault?: boolean;
 }

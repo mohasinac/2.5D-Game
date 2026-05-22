@@ -232,7 +232,7 @@ export function detectComboFromSlots(
     const cdUntil = matchState.slotCooldownUntil.get(slot.effectId) ?? 0;
     if (opts.nowMs < cdUntil) continue;
 
-    const slotCost = Math.round((slot.cost ?? 0) * (opts.comboCostMultiplier ?? 1.0));
+    const slotCost = Math.round(((slot as any).cost ?? 0) * (opts.comboCostMultiplier ?? 1.0));
     if (slotCost > 0 && (opts.power ?? 0) < slotCost) continue;
     if ((slot.condition?.minPower ?? 0) > (opts.power ?? 0)) continue;
     if ((slot.condition?.maxPower ?? 100) < (opts.power ?? 0)) continue;
