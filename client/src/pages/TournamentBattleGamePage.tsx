@@ -60,7 +60,7 @@ export function TournamentBattleGamePage() {
     beybladeId: settings.beybladeId ?? "default",
   }), [spectate, tournamentId, matchId, userId, settings.username, settings.beybladeId]);
 
-  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, loadingStep, loadingError } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, loadingStep, loadingError, visualEventQueue } =
     useColyseus({
       roomName: roomNameFor(mode, "tournament"),
       roomId: colyseusRoomId ?? undefined,
@@ -114,7 +114,7 @@ export function TournamentBattleGamePage() {
 
   useEffect(() => {
     let raf: number;
-    const loop = () => { render(gameState, beyblades); raf = requestAnimationFrame(loop); };
+    const loop = () => { render(gameState, beyblades, visualEventQueue); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, [render, gameState, beyblades]);

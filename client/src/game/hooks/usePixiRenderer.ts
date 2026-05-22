@@ -7,8 +7,23 @@ import { BeybladeGameRenderer } from "@/game/renderer/PixiRenderer";
 import { Classic2DRenderer } from "@/game/renderer/Classic2DRenderer";
 import { Parts25DRenderer } from "@/game/renderer/Parts25DRenderer";
 import type { ServerGameState, ServerBeyblade } from "@/types/game";
+import type { VisualEventQueue, VisualEvent } from "@/game/visual/VisualEventQueue";
 
 export type GameRenderMode = "2d" | "2.5d";
+
+function dispatchVisualEvent(renderer: BeybladeGameRenderer, ev: VisualEvent): void {
+  switch (ev.type) {
+    case "combo-visual":
+      renderer.handleComboVisual?.(ev.payload as Parameters<BeybladeGameRenderer["handleComboVisual"]>[0]);
+      break;
+    case "special-move-camera":
+      renderer.handleSpecialMoveCamera?.(ev.payload as Parameters<BeybladeGameRenderer["handleSpecialMoveCamera"]>[0]);
+      break;
+    case "meteor-strike-hang":
+      renderer.onMeteorStrikeHang?.(ev.payload as Parameters<BeybladeGameRenderer["onMeteorStrikeHang"]>[0]);
+      break;
+  }
+}
 
 export function usePixiRenderer(
   containerRef: React.RefObject<HTMLDivElement | null>,
@@ -48,7 +63,13 @@ export function usePixiRenderer(
   }, [containerRef, mode]);
 
   const render = useCallback(
-    (gameState: ServerGameState | null, beyblades: Map<string, ServerBeyblade>) => {
+    (gameState: ServerGameState | null, beyblades: Map<string, ServerBeyblade>, visualQueue?: VisualEventQueue) => {
+      if (visualQueue && rendererRef.current) {
+        const renderer = rendererRef.current;
+        for (const ev of visualQueue.drain(Date.now())) {
+          dispatchVisualEvent(renderer, ev);
+        }
+      }
       rendererRef.current?.render(gameState, beyblades);
     },
     []

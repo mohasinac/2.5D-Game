@@ -44,7 +44,7 @@ export function TeamBattleGamePage() {
 
   const {
     connectionState, gameState, beyblades, myBeyblade,
-    isSpectating, room, sendInput, loadingStep, loadingError,
+    isSpectating, room, sendInput, loadingStep, loadingError, visualEventQueue,
   } = useColyseus({
     roomName: TEAM_BATTLE_ROOM,
     roomId,
@@ -63,7 +63,7 @@ export function TeamBattleGamePage() {
   // Render loop
   useEffect(() => {
     let raf: number;
-    const loop = () => { render(gameState, beyblades); raf = requestAnimationFrame(loop); };
+    const loop = () => { render(gameState, beyblades, visualEventQueue); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, [render, gameState, beyblades]);

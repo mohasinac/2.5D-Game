@@ -269,6 +269,7 @@ const INCREMENT_FIELDS = new Set([
   "totalDamageDealt",
   "totalCollisions",
   "tournamentPoints",
+  "burstKills",
 ]);
 
 export async function updatePlayerStats(

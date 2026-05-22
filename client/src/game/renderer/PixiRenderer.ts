@@ -8,6 +8,7 @@ import { getBeybladeStability } from "@/types/game";
 import { PX_PER_CM_BASE, PHYSICS_SCALE } from "@/constants/units";
 import { WorldTransform } from "./WorldTransform";
 import { FeatureRenderer } from "./FeatureRenderer";
+import { StateInterpolator } from "../interpolation/StateInterpolator";
 export type { ServerBeyblade, ServerGameState };
 export { WorldTransform } from "./WorldTransform";
 
@@ -138,6 +139,7 @@ export class BeybladeGameRenderer {
 
   private initialized = false;
   private contextLost = false;
+  private interpolator = new StateInterpolator();
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -509,6 +511,22 @@ export class BeybladeGameRenderer {
         this.createBeybladeDisplayObject(beyblade, id);
       }
 
+      this.interpolator.push(id, {
+        time: performance.now(),
+        x: beyblade.x,
+        y: beyblade.y,
+        angle: beyblade.rotation,
+        spin: beyblade.spin,
+        wobbleAmplitude: 0,
+        beyTiltAngle: (beyblade as any).beyTiltAngle ?? 0,
+        adhering: !!(beyblade as any).adhering,
+        wallClimbing: !!(beyblade as any).wallClimbing,
+        spinDirection: beyblade.spinDirection,
+        specialMoveActive: !!(beyblade as any).specialMoveActive,
+        comboPhase: (beyblade as any).comboPhase ?? "",
+        combinationLocked: !!(beyblade as any).combinationLocked,
+      });
+
       this.updateBeybladeDisplayObject(beyblade, id);
     });
 
@@ -539,6 +557,7 @@ export class BeybladeGameRenderer {
         const split = this.splitBodySprites.get(id);
         if (split) { this.beybladeLayer.removeChild(split); this.splitBodySprites.delete(id); }
         this.flashGraphics.delete(id);
+        this.interpolator.remove(id);
       }
     });
   }
@@ -648,18 +667,24 @@ export class BeybladeGameRenderer {
 
     const r = (beyblade.actualSize || 48) / 2;
 
+    // Use interpolated position/angle for smooth motion; fall back to raw server values.
+    const interp = this.interpolator.getInterpolated(id, performance.now());
+    const interpX = interp?.x ?? beyblade.x;
+    const interpY = interp?.y ?? beyblade.y;
+    const interpAngle = interp?.angle ?? beyblade.rotation;
+
     // Map physics coords → screen coords using the stored physics scale
     const physScale = this.physicsArenaRadius > 0 ? this.arenaRadius / this.physicsArenaRadius : 1;
-    const screenX = this.arenaCenterX + (beyblade.x - this.physicsCenterX) * physScale;
-    const screenY = this.arenaCenterY + (beyblade.y - this.physicsCenterY) * physScale;
+    const screenX = this.arenaCenterX + (interpX - this.physicsCenterX) * physScale;
+    const screenY = this.arenaCenterY + (interpY - this.physicsCenterY) * physScale;
 
     container.x = screenX;
     container.y = screenY;
 
     // Phase LOS: cull/fade entities outside 30 cm range (2.5D only)
     if (this.is25D) {
-      const posXcm = (beyblade.x - this.physicsCenterX) * physScale / PX_PER_CM_BASE;
-      const posYcm = (beyblade.y - this.physicsCenterY) * physScale / PX_PER_CM_BASE;
+      const posXcm = (interpX - this.physicsCenterX) * physScale / PX_PER_CM_BASE;
+      const posYcm = (interpY - this.physicsCenterY) * physScale / PX_PER_CM_BASE;
       this.applyLOSCull(container, posXcm, posYcm);
       if (!container.visible) return;
     }
@@ -723,8 +748,8 @@ export class BeybladeGameRenderer {
 
     sprite.skew.set(wobbleSkewX + tiltSkewX, 0);
 
-    // Spin rotation (visual — independent of physics rotation)
-    sprite.rotation = beyblade.rotation;
+    // Spin rotation (visual — uses interpolated angle for smooth motion)
+    sprite.rotation = interpAngle;
 
     // Motion blur: stronger at high angular velocity
     const blurAlpha = Math.min(1, Math.abs(beyblade.angularVelocity) / 5);
@@ -1566,6 +1591,7 @@ export class BeybladeGameRenderer {
     this.linkLineGraphics = null;
     this.meteorLandingGraphics = null;
     this.meteorLandingZone = null;
+    this.interpolator.clear();
 
     // PixiJS calls gl.getExtension('WEBGL_lose_context').loseContext() inside its
     // own destroy(), which fires an async contextlost event.  That event can arrive

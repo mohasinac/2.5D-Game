@@ -237,6 +237,7 @@ export class Beyblade extends Schema {
   @type("number") damageDealt: number = 0;
   @type("number") damageReceived: number = 0;
   @type("number") collisions: number = 0;
+  @type("number") burstKillsDealt: number = 0; // Phase R: how many burst KOs this bey caused
 
   // Special states
   @type("boolean") isActive: boolean = true;

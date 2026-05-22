@@ -73,7 +73,7 @@ export function AIBattleGamePage() {
     matchId:         loc.matchId,
   }), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, loadingStep, loadingError } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, loadingStep, loadingError, visualEventQueue } =
     useColyseus({
       roomName: roomNameFor(mode, "aiBattle"),
       options: colyseusOptions,
@@ -126,7 +126,7 @@ export function AIBattleGamePage() {
 
   useEffect(() => {
     let raf: number;
-    const loop = () => { render(gameState, beyblades); raf = requestAnimationFrame(loop); };
+    const loop = () => { render(gameState, beyblades, visualEventQueue); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, [render, gameState, beyblades]);

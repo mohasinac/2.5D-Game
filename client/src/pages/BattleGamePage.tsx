@@ -47,7 +47,7 @@ export function BattleGamePage() {
     spectate,
   }), [settings.beybladeId, settings.arenaId, settings.username, userId, spectate]);
 
-  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, loadingStep, loadingError } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, loadingStep, loadingError, visualEventQueue } =
     useColyseus({
       roomName: roomNameFor(mode, "battle"),
       options: colyseusOptions,
@@ -116,7 +116,7 @@ export function BattleGamePage() {
 
   useEffect(() => {
     let raf: number;
-    const loop = () => { render(gameState, beyblades); raf = requestAnimationFrame(loop); };
+    const loop = () => { render(gameState, beyblades, visualEventQueue); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, [render, gameState, beyblades]);

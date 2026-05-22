@@ -6,6 +6,7 @@ import { Client, Room } from "colyseus.js";
 import type { ConnectionState, ServerBeyblade, ServerGameState } from "@/types/game";
 import type { LoadingStep } from "@/components/LoadingProgress";
 import type { BeybladeGameRenderer } from "@/game/renderer/PixiRenderer";
+import { VisualEventQueue, VisualPriority } from "@/game/visual/VisualEventQueue";
 import toast from "react-hot-toast";
 
 const GAME_SERVER_URL = import.meta.env.VITE_GAME_SERVER_URL || "ws://localhost:2567";
@@ -129,6 +130,8 @@ interface UseColyseusReturn {
   cameraEffectActive: boolean;
   /** N3: map of spawnId → ArenaSpawnData for all arena-spawned beyblades. */
   spawnedBeys: Map<string, ArenaSpawnData>;
+  /** P5: queue of visual events for combo/special/meteor — drain each rAF frame. */
+  visualEventQueue: VisualEventQueue;
   connect: () => Promise<void>;
   disconnect: () => void;
   sendQTEInput: (key: string) => void;
@@ -194,6 +197,8 @@ export function useColyseus({
   const [cameraEffectActive, setCameraEffectActive] = useState(false);
   // N3: arena-spawned beyblades keyed by spawnId
   const [spawnedBeys, setSpawnedBeys] = useState<Map<string, ArenaSpawnData>>(new Map());
+
+  const visualEventQueueRef = useRef(new VisualEventQueue());
 
   const clientRef = useRef<Client | null>(null);
   const roomRef = useRef<Room | null>(null);
@@ -376,25 +381,24 @@ export function useColyseus({
         onArenaEffectEndRef.current?.(data);
       });
 
-      // D3: special-move camera zoom/slow-motion effect
+      // D3: special-move camera zoom/slow-motion effect — queued for throttled dispatch
       connectedRoom.onMessage("special-move-camera", (data: SpecialMoveCameraData) => {
-        rendererRefInternal.current?.current?.handleSpecialMoveCamera?.(data);
+        visualEventQueueRef.current.push({ priority: VisualPriority.HIGH, type: "special-move-camera", payload: data });
         if (data.cameraConfig.zoomFactor > 1) {
           setCameraEffectActive(true);
-          // Duration in ms; clear the active flag once the tween would have finished.
           const durationMs = Math.round(data.cameraConfig.durationTicks * (1000 / 60));
           setTimeout(() => setCameraEffectActive(false), durationMs);
         }
       });
 
-      // D5: combo visual (intro animation + particle preset)
+      // D5: combo visual — queued so multiple combos in the same tick are rate-limited
       connectedRoom.onMessage("combo-visual", (data: ComboVisualData) => {
-        rendererRefInternal.current?.current?.handleComboVisual?.(data);
+        visualEventQueueRef.current.push({ priority: VisualPriority.HIGH, type: "combo-visual", payload: data });
       });
 
-      // G5: meteor strike — hang phase (bey leaves arena, landing ring visible)
+      // G5: meteor strike — hang phase; CRITICAL priority so it's never dropped
       connectedRoom.onMessage("meteor-strike-hang", (data: MeteorStrikeHangData) => {
-        rendererRefInternal.current?.current?.onMeteorStrikeHang?.(data);
+        visualEventQueueRef.current.push({ priority: VisualPriority.CRITICAL, type: "meteor-strike-hang", payload: data });
       });
 
       // G5: meteor strike — land phase (CRITICAL: camera shake + clear landing ring)
@@ -484,6 +488,7 @@ export function useColyseus({
     connectionState, room, gameState, beyblades, myBeyblade, isSpectating,
     loadingStep, loadingError,
     arenaEffect, cameraEffectActive, spawnedBeys,
+    visualEventQueue: visualEventQueueRef.current,
     connect, disconnect, sendQTEInput, sendInput,
   };
 }

@@ -242,6 +242,11 @@ export class BattleRoom extends Room<GameState> {
       console.log(`Client ${client.sessionId} is ready`);
     });
 
+    // K10: possession-request — player swaps control to a nearby arena-spawned friendly bey
+    this.onMessage("possession-request", (client, data: { direction: "left" | "right" | "up" | "down" }) => {
+      this.handleSpatialPossession(data.direction, client.sessionId);
+    });
+
     this.onMessage("qte-input", (client, message: { key: string }) => {
       if (!this.pendingQTE) return;
       if (client.sessionId === this.pendingQTE.attackerSessionId) return;
@@ -1010,8 +1015,9 @@ export class BattleRoom extends Room<GameState> {
             victim.isActive = false;
             victim.isBurst = true;
             victim.spin = 0;
-            const attackerId = victim === b1 ? id2 : id1;
-            this.broadcast("burst", { beyId: victim.id, attackerId, x: victim.x, y: victim.y });
+            const attacker = victim === b1 ? b2 : b1;
+            attacker.burstKillsDealt++;
+            this.broadcast("burst", { beyId: victim.id, attackerId: attacker.id, x: victim.x, y: victim.y });
           }
         }
       }
@@ -1801,6 +1807,7 @@ export class BattleRoom extends Room<GameState> {
             wins: b.userId === winner?.userId ? 1 : 0,
             totalDamageDealt: b.damageDealt,
             totalCollisions: b.collisions,
+            burstKills: b.burstKillsDealt,
           });
         }
       }

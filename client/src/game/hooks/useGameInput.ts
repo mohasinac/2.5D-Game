@@ -40,6 +40,24 @@ const SPACE_TAP_THRESHOLD_MS = 150;
 
 const GAMEPAD_DEAD_ZONE = 0.15;
 
+function encodeLocalBitmask(input: FullGameInput): number {
+  let f = 0;
+  if (input.moveLeft)   f |= 1 << 0;
+  if (input.moveRight)  f |= 1 << 1;
+  if (input.moveUp)     f |= 1 << 2;
+  if (input.moveDown)   f |= 1 << 3;
+  if (input.attack)     f |= 1 << 4;
+  if (input.defense)    f |= 1 << 5;
+  if (input.dodge)      f |= 1 << 6;
+  if (input.jump)       f |= 1 << 7;
+  if (input.chargeHeld) f |= 1 << 8;
+  if (input.specialTap) f |= 1 << 9;
+  return f;
+}
+
+// Heartbeat: resend even if bitmask unchanged to recover from dropped packets.
+const HEARTBEAT_MS = 500;
+
 export function useGameInput(sendInput: SendInputFn, enabled: boolean = true) {
   const keysRef = useRef<Set<string>>(new Set());
   const animFrameRef = useRef<number>(0);
@@ -48,6 +66,8 @@ export function useGameInput(sendInput: SendInputFn, enabled: boolean = true) {
   const specialTapRef = useRef<boolean>(false);
   const gamepadIndexRef = useRef<number | null>(null);
   const gamepadSpecialTapRef = useRef<boolean>(false);
+  const lastSentBitmaskRef = useRef<number>(-1);
+  const lastSentTimeRef = useRef<number>(0);
 
   useEffect(() => {
     if (!enabled) return;
@@ -190,11 +210,15 @@ export function useGameInput(sendInput: SendInputFn, enabled: boolean = true) {
       // Clear one-shot specialTap after reading
       specialTapRef.current = false;
 
-      // Send every frame. This doubles as a heartbeat — the server keeps the
-      // last received bitmask as its current input, so dropped packets self-heal
-      // within ~16ms. We removed the previous change-detection because dropped
-      // transitions could cause "stuck input" failure modes.
-      sendInput(input);
+      // Dedup: skip send if bitmask unchanged AND heartbeat window hasn't elapsed.
+      // Heartbeat every 500ms ensures the server recovers from any dropped packet.
+      const bitmask = encodeLocalBitmask(input);
+      const now = performance.now();
+      if (bitmask !== lastSentBitmaskRef.current || now - lastSentTimeRef.current >= HEARTBEAT_MS) {
+        sendInput(input);
+        lastSentBitmaskRef.current = bitmask;
+        lastSentTimeRef.current = now;
+      }
       lastInputRef.current = input;
 
       animFrameRef.current = requestAnimationFrame(loop);
