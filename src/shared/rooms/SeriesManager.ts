@@ -87,6 +87,8 @@ export function resetBeybladeForNextGame(
 ): void {
   beyblade.isActive = true;
   beyblade.isRingOut = false;
+  beyblade.isBurst = false;
+  beyblade.eliminationType = "";
   beyblade.health = beyblade.maxStamina;
   beyblade.maxHealth = beyblade.maxStamina;
   beyblade.spin = beyblade.maxSpin;

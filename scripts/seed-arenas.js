@@ -170,6 +170,127 @@ const ARENAS = [
         { beyId: "storm-pegasus", statsMultiplier: 0.7, aiDifficulty: "medium", controlMode: "ai" },
       ],
     },
+    links: [
+      {
+        id: "fg-link-pit-a",
+        pairedLinkId: "fg-link-trampoline-b",
+        fromArenaId: "forest-grove",
+        toArenaId: "forest-grove",
+        linkType: "pit",
+        boundaryLine: { x1: -15, y1: 10, x2: -10, y2: 10 },
+        exitPosition: { x: 15, y: -10 },
+        momentumPreserved: false,
+        levelDelta: -40,
+        hazardDamage: 30,
+        reverseCondition: "never",
+        cooldownTicks: 120,
+        exitVelocityMult: 0.2,
+      },
+      {
+        id: "fg-link-trampoline-b",
+        pairedLinkId: "fg-link-pit-a",
+        fromArenaId: "forest-grove",
+        toArenaId: "forest-grove",
+        linkType: "trampoline",
+        boundaryLine: { x1: 10, y1: -12, x2: 20, y2: -12 },
+        exitPosition: { x: -12, y: 8 },
+        momentumPreserved: true,
+        levelDelta: 40,
+        hazardDamage: 0,
+        reverseCondition: "always",
+        cooldownTicks: 60,
+        exitVelocityMult: 2.5,
+      },
+    ],
+    beyLinks: [
+      {
+        // tip_stack: attacker's spinning TIP (bottom) grinds on defender's BIT CHIP (top).
+        // Kai's Dranzer S style — vertical drill/peck attack from above.
+        // Victim can press a single key to break free (QTE escape).
+        id: "fg-bey-stack-hostile",
+        linkType: "tip_stack",
+        alignment: "hostile",
+        entryRadiusCm: 3,
+        triggerCondition: "opponent_only",
+        qteEscapable: true,
+        qteWindowTicks: 60,
+        linkEffects: [
+          // Drill peck every 15 ticks — tip grinds bit chip, forces victim radially
+          { type: "drill_attack", intensityPerTick: 3, intervalTicks: 15, impactMult: 2.0 },
+          // Continuous spin drain between pecks
+          { type: "spin_drain", intensityPerTick: 1.5 },
+          // Periodic destabilize bursts
+          { type: "destabilize", intensityPerTick: 6, intervalTicks: 20 },
+        ],
+        cooldownTicks: 120,
+        maxSimultaneous: 2,
+      },
+      {
+        // top_mount: attacker rides atop partner. Dynasty team style — cooperative combo.
+        // Two friendly beys spinning together in contact to combine power.
+        id: "fg-bey-stack-top-mount",
+        linkType: "top_mount",
+        alignment: "friendly",
+        entryRadiusCm: 2.5,
+        triggerCondition: "same_team",
+        linkEffects: [
+          // Combine forces — share spin and boost damage
+          { type: "spin_share", intensityPerTick: 0.05 },
+          { type: "damage_boost", intensityPerTick: 0.25 },
+          { type: "shield_boost", intensityPerTick: 0.15 },
+        ],
+        cooldownTicks: 120,
+        maxSimultaneous: 2,
+      },
+      {
+        // side_spin: beys spin side-by-side. Circus-style power combo.
+        id: "fg-bey-stack-friendly",
+        linkType: "side_spin",
+        alignment: "friendly",
+        entryRadiusCm: 5,
+        triggerCondition: "same_team",
+        linkEffects: [
+          { type: "spin_share", intensityPerTick: 0.02 },
+          { type: "spin_heal", intensityPerTick: 2 },
+          { type: "damage_boost", intensityPerTick: 0.3 },
+        ],
+        cooldownTicks: 180,
+        maxSimultaneous: 3,
+      },
+      {
+        // Hostile dogfight — continuous rapid collisions forcing both beys apart
+        id: "fg-bey-stack-dogfight",
+        linkType: "side_spin",
+        alignment: "hostile",
+        entryRadiusCm: 4,
+        triggerCondition: "opponent_only",
+        qteEscapable: true,
+        qteWindowTicks: 45,
+        linkEffects: [
+          { type: "continuous_collision", intensityPerTick: 5, intervalTicks: 8, impactMult: 0.6 },
+          { type: "spin_drain", intensityPerTick: 0.8 },
+        ],
+        cooldownTicks: 90,
+        maxSimultaneous: 2,
+      },
+      {
+        // Force lock — attacker pulls victim into orbit, draining stamina
+        id: "fg-bey-stack-orbit-lock",
+        linkType: "side_spin",
+        alignment: "hostile",
+        entryRadiusCm: 6,
+        triggerCondition: "opponent_only",
+        qteEscapable: true,
+        qteWindowTicks: 90,
+        linkEffects: [
+          { type: "force_lock", intensityPerTick: 3 },
+          { type: "spin_drain", intensityPerTick: 1 },
+          { type: "control_loss", intensityPerTick: 1, intervalTicks: 120, controlMode: "scramble", controlDurationTicks: 45 },
+        ],
+        cooldownTicks: 150,
+        maxSimultaneous: 2,
+      },
+    ],
   },
 
   // ── 3. Volcanic Crater ─────────────────────────────────────────────────────

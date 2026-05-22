@@ -38,7 +38,7 @@ import type { ArenaSystem } from "../types/arenaSystem";
 import { MODIFIER_MAP, type RoundModifier } from "../../client/src/types/roundModifier";
 import { getDualTypeAttackMultiplier, getDualTypeDefenseMultiplier, type ElementType } from "../../client/src/types/elementTypes";
 import type { ArenaTimelineEvent } from "../types/shared";
-import type { ArenaLink, BeyLink } from "../../client/src/types/arenaConfigNew";
+import type { ArenaLink, BeyLink, BeyLinkEffect } from "../../client/src/types/arenaConfigNew";
 
 const QTE_KEY_POOL = ["left", "right", "up", "down", "attack", "defense", "dodge"];
 
@@ -135,6 +135,11 @@ export class BattleRoom extends Room<GameState> {
   private spawnTimer: number = 0;
   private spawnedBeyIds: Set<string> = new Set();
 
+  // ── Per-tick trigger context sets (Phase W) ─────────────────────────────────
+  // Cleared at the start of each collision pass; read by tickReactiveCombos.
+  protected beyHitsThisTick: Set<string> = new Set();     // beyIds hit this tick (on_hit_received)
+  protected burstAttemptsThisTick: Set<string> = new Set(); // beyIds that faced a burst roll this tick
+
   // ── Arena link crossing cooldowns (L2/L3) ────────────────────────────────────
   // beyId → linkId → cooldownTicksRemaining
   private linkCooldowns: Map<string, Map<string, number>> = new Map();
@@ -142,6 +147,8 @@ export class BattleRoom extends Room<GameState> {
   // ── Bey-to-bey stack state (BeyLink system) ──────────────────────────────────
   private beyStackState: Map<string, { partnerId: string; linkId: string; tickCount: number }> = new Map();
   private beyStackCooldowns: Map<string, Map<string, number>> = new Map();
+  /** Per-victim pending QTE to escape a hostile BeyLink stack. */
+  private pendingBeyLinkQTE: Map<string, { stackKey: string; linkId: string; key: string; expiresAt: number }> = new Map();
 
   /** Arena shrink state (Phase V). */
   private shrinkStartMs = 0;
@@ -252,6 +259,12 @@ export class BattleRoom extends Room<GameState> {
     });
 
     this.onMessage("qte-input", (client, message: { key: string }) => {
+      // First: check if this input also satisfies a pending bey-link QTE escape
+      const beyLinkQTE = this.pendingBeyLinkQTE.get(client.sessionId);
+      if (beyLinkQTE && Date.now() <= beyLinkQTE.expiresAt && message.key === beyLinkQTE.key) {
+        this._resolveBeyLinkQTE(client.sessionId, beyLinkQTE);
+      }
+
       if (!this.pendingQTE) return;
       if (client.sessionId === this.pendingQTE.attackerSessionId) return;
       if (this.spectatorSessions.has(client.sessionId)) return;
@@ -275,6 +288,15 @@ export class BattleRoom extends Room<GameState> {
       } else {
         // Wrong key — reset this responder's progress
         this.pendingQTE.respondersProgress.set(client.sessionId, 0);
+      }
+    });
+
+    // Bey-link QTE escape (single-key break-free from hostile stacks)
+    this.onMessage("bey-link-qte-input", (client, message: { key: string }) => {
+      const pending = this.pendingBeyLinkQTE.get(client.sessionId);
+      if (!pending || Date.now() > pending.expiresAt) return;
+      if (message.key === pending.key) {
+        this._resolveBeyLinkQTE(client.sessionId, pending);
       }
     });
   }
@@ -872,6 +894,29 @@ export class BattleRoom extends Room<GameState> {
     this.pendingQTE = null;
   }
 
+  // ─── Bey-link QTE resolution ─────────────────────────────────────────────────
+
+  private _resolveBeyLinkQTE(
+    victimId: string,
+    qte: { stackKey: string; linkId: string; key: string; expiresAt: number }
+  ) {
+    this.beyStackState.delete(qte.stackKey);
+    this.pendingBeyLinkQTE.delete(victimId);
+    // Attacker (sidA) is first segment of stackKey "sidA:sidB:linkId"
+    const sidA = qte.stackKey.split(":")[0];
+    const cmap = this.beyStackCooldowns.get(sidA) ?? new Map<string, number>();
+    cmap.set(qte.linkId, 180);
+    this.beyStackCooldowns.set(sidA, cmap);
+    this.broadcast("bey-link-qte-success", {
+      victimId,
+      attackerId: sidA,
+      stackKey: qte.stackKey,
+    });
+    // Notify victim's client specifically so they can clear the HUD
+    const victimClient = this.clients.find(c => c.sessionId === victimId);
+    victimClient?.send("bey-link-qte-cleared", { stackKey: qte.stackKey });
+  }
+
   private handleAction(client: Client, message: any) {
     if (this.spectatorSessions.has(client.sessionId)) return;
     const beyblade = this.state.beyblades.get(client.sessionId);
@@ -943,6 +988,9 @@ export class BattleRoom extends Room<GameState> {
     const beybladeIds = Array.from(this.state.beyblades.keys());
 
     // ── Beyblade-vs-beyblade collision detection ────────────────────────────
+    // Reset per-tick trigger context sets before processing collisions/bursts
+    this.beyHitsThisTick.clear();
+    this.burstAttemptsThisTick.clear();
     for (let i = 0; i < beybladeIds.length; i++) {
       for (let j = i + 1; j < beybladeIds.length; j++) {
         const id1 = beybladeIds[i];
@@ -976,6 +1024,9 @@ export class BattleRoom extends Room<GameState> {
         b2.health = Math.max(0, b2.health - effDmg2);
         b1.spin = Math.max(0, b1.spin - effSS2);
         b2.spin = Math.max(0, b2.spin - effSS1);
+        // Track which beys were hit this tick for on_hit_received reactive triggers
+        if (effDmg1 > 0) this.beyHitsThisTick.add(id1);
+        if (effDmg2 > 0) this.beyHitsThisTick.add(id2);
         b1.damageDealt += effDmg2;
         b2.damageDealt += effDmg1;
         b1.damageReceived += effDmg1;
@@ -1012,10 +1063,12 @@ export class BattleRoom extends Room<GameState> {
         for (const [victim, incomingDmg] of [[b1, effDmg1], [b2, effDmg2]] as [Beyblade, number][]) {
           if (!victim.isActive) continue;
           if (incomingDmg < BURST_THRESHOLD) continue;
+          // Track burst attempt BEFORE the roll so on_burst_attempt can react this same tick
+          this.burstAttemptsThisTick.add(victim.id);
           const spinRatioV = victim.maxSpin > 0 ? victim.spin / victim.maxSpin : 0;
           const burstRaw = Math.max(0, incomingDmg - BURST_THRESHOLD) * 0.005;
           const burstSpinMod = 1 + (1 - spinRatioV) * 2.0;
-          const burstResist = victim.burstResistance ?? 50;
+          const burstResist = Math.max(0, Math.min(100, victim.burstResistance ?? 50));
           const burstFinal = burstRaw * burstSpinMod * (1 - burstResist / 100);
           if (this.rand() < burstFinal) {
             victim.isActive = false;
@@ -1165,6 +1218,15 @@ export class BattleRoom extends Room<GameState> {
     if (this.pendingQTE && Date.now() > this.pendingQTE.expiresAt) {
       this.broadcast("qte-expired", { attackerBeyId: this.pendingQTE.attackerSessionId });
       this.pendingQTE = null;
+    }
+
+    // Bey-link QTE expiry check
+    const nowMs2 = Date.now();
+    for (const [victimId, qte] of this.pendingBeyLinkQTE) {
+      if (nowMs2 > qte.expiresAt) {
+        this.pendingBeyLinkQTE.delete(victimId);
+        this.broadcast("bey-link-qte-expired", { victimId, stackKey: qte.stackKey });
+      }
     }
 
     // N6: combination lock tick (overridden by 2.5D subclass)
@@ -1546,102 +1608,215 @@ export class BattleRoom extends Room<GameState> {
       const maxSimul = link.maxSimultaneous ?? 2;
       let activeCount = 0;
 
-      // Check all pairs of beys
       for (let i = 0; i < beyEntries.length; i++) {
         for (let j = i + 1; j < beyEntries.length; j++) {
           const [sidA, beyA] = beyEntries[i];
           const [sidB, beyB] = beyEntries[j];
 
-          // Check triggerCondition
           if (link.triggerCondition === "same_team" && (beyA as any).teamId !== (beyB as any).teamId) continue;
           if (link.triggerCondition === "opponent_only" && (beyA as any).teamId === (beyB as any).teamId) continue;
 
-          // Check proximity
-          const distCm = Math.hypot(beyA.x - beyB.x, beyA.y - beyB.y) / 24; // px to cm
+          const distCm = Math.hypot(beyA.x - beyB.x, beyA.y - beyB.y) / 24;
+          const stackKey = `${sidA}:${sidB}:${link.id}`;
+
           if (distCm > link.entryRadiusCm) {
-            // End stack if was active
-            const stackKey = `${sidA}:${sidB}:${link.id}`;
             if (this.beyStackState.has(stackKey)) {
               this.beyStackState.delete(stackKey);
+              this.pendingBeyLinkQTE.delete(sidB);
               this.broadcast("bey-stack-end", { beyIdA: sidA, beyIdB: sidB, linkId: link.id });
             }
             continue;
           }
 
-          // Check cooldown
           const cooldownA = this.beyStackCooldowns.get(sidA)?.get(link.id) ?? 0;
           if (cooldownA > 0) continue;
 
           activeCount++;
           if (activeCount > maxSimul) break;
 
-          const stackKey = `${sidA}:${sidB}:${link.id}`;
           const existing = this.beyStackState.get(stackKey);
           const tickCount = (existing?.tickCount ?? 0) + 1;
           this.beyStackState.set(stackKey, { partnerId: sidB, linkId: link.id, tickCount });
 
           if (!existing) {
-            // First tick of stack — broadcast start event
             this.broadcast("bey-stack-start", {
               beyIdA: sidA, beyIdB: sidB,
               linkId: link.id, linkType: link.linkType,
               alignment: link.alignment,
             });
+            // QTE escape: issue a single-key prompt to the victim (sidB) if no special-move QTE running
+            if (link.alignment === "hostile" && link.qteEscapable) {
+              if (!this.pendingBeyLinkQTE.has(sidB) && !this.pendingQTE) {
+                const escapeKey = QTE_KEY_POOL[Math.floor(this.rand() * QTE_KEY_POOL.length)];
+                const windowTicks = link.qteWindowTicks ?? 60;
+                const expiresAt = Date.now() + windowTicks * (1000 / 60);
+                this.pendingBeyLinkQTE.set(sidB, { stackKey, linkId: link.id, key: escapeKey, expiresAt });
+                const victimClient = this.clients.find(c => c.sessionId === sidB);
+                victimClient?.send("bey-link-qte", {
+                  attackerId: sidA, stackKey, linkId: link.id,
+                  key: escapeKey, windowTicks, expiresAt,
+                });
+              } else if (this.pendingQTE && !this.pendingBeyLinkQTE.has(sidB)) {
+                // A special-move QTE is active — piggyback: completing it also breaks this stack.
+                // Register a pending entry that uses the same expiry as the special-move QTE.
+                const firstKey = this.pendingQTE.sequence[0];
+                this.pendingBeyLinkQTE.set(sidB, {
+                  stackKey, linkId: link.id,
+                  key: firstKey,
+                  expiresAt: this.pendingQTE.expiresAt,
+                });
+              }
+            }
           }
 
-          // Apply effects
-          if (link.alignment === "friendly" && link.friendlyBoost) {
-            const boost = link.friendlyBoost;
-            // Spin transfer: each bey gets a fraction of the other's spin
-            const transferA = beyB.spin * boost.spinTransferRate * dt;
-            const transferB = beyA.spin * boost.spinTransferRate * dt;
-            beyA.spin = Math.min(beyA.maxSpin, beyA.spin + transferA);
-            beyB.spin = Math.min(beyB.maxSpin, beyB.spin + transferB);
-            // Temporary stat boosts broadcast as overlay events (renderer applies visually)
-            // (Actual combat stat boosts are applied at combat calc time via bey-stack-boost message)
-            this.broadcast("bey-stack-boost", {
-              beyIdA: sidA, beyIdB: sidB,
-              damageMultiplierBonus: boost.damageMultiplierBonus,
-              shieldBonus: boost.shieldBonus,
-            });
+          // ── Apply linkEffects (new composable system) ──────────────────────
+          const effects: BeyLinkEffect[] = link.linkEffects ?? [];
+
+          for (const effect of effects) {
+            const intensity = effect.intensityPerTick ?? 1;
+            const interval = effect.intervalTicks ?? (
+              effect.type === "drill_attack" ? 15 :
+              effect.type === "continuous_collision" ? 10 :
+              effect.type === "control_loss" ? 120 : 1
+            );
+
+            switch (effect.type) {
+              case "spin_drain":
+                // sidB is victim; sidA is attacker
+                beyB.spin = Math.max(0, beyB.spin - intensity);
+                break;
+
+              case "spin_share": {
+                // Equalize spin between both beys
+                const avg = (beyA.spin + beyB.spin) / 2;
+                const rate = intensity;
+                beyA.spin += (avg - beyA.spin) * rate;
+                beyB.spin += (avg - beyB.spin) * rate;
+                break;
+              }
+
+              case "spin_heal":
+                // Both beys slowly recover spin
+                beyA.spin = Math.min(beyA.maxSpin, beyA.spin + intensity);
+                beyB.spin = Math.min(beyB.maxSpin, beyB.spin + intensity);
+                break;
+
+              case "damage_boost":
+              case "shield_boost":
+                // Broadcast buff so clients can render the aura
+                if (tickCount % 10 === 1) {
+                  this.broadcast("bey-stack-boost", {
+                    beyIdA: sidA, beyIdB: sidB,
+                    effectType: effect.type,
+                    intensity,
+                  });
+                }
+                break;
+
+              case "destabilize":
+                if (tickCount % interval === 1) {
+                  const angle = Math.atan2(beyB.y - beyA.y, beyB.x - beyA.x);
+                  this.physics.applyForce(sidB, Math.cos(angle) * intensity * 24, Math.sin(angle) * intensity * 24);
+                }
+                break;
+
+              case "continuous_collision":
+                // Rapid virtual collision impacts — dogfight
+                if (tickCount % interval === 1) {
+                  const impactMult = effect.impactMult ?? 0.5;
+                  const dmg = intensity * impactMult;
+                  beyB.spin = Math.max(0, beyB.spin - dmg);
+                  const angle = Math.atan2(beyB.y - beyA.y, beyB.x - beyA.x);
+                  this.physics.applyForce(sidB, Math.cos(angle) * dmg * 12, Math.sin(angle) * dmg * 12);
+                  this.broadcast("bey-stack-collision-tick", {
+                    attackerId: sidA, victimId: sidB, damage: dmg,
+                  });
+                }
+                break;
+
+              case "drill_attack":
+                // Periodic peck — tip drills into bit chip every N ticks
+                // tip_stack: sidA's tip (bottom) is on sidB's bit chip (top), so sidA is the driller
+                if (tickCount % interval === 1) {
+                  const peckForce = (effect.impactMult ?? 2.0) * intensity * 24;
+                  // Push victim radially outward (peck impact from above = radial destabilize in 2D)
+                  const peckAngle = Math.atan2(beyB.y - beyA.y, beyB.x - beyA.x);
+                  this.physics.applyForce(sidB, Math.cos(peckAngle) * peckForce, Math.sin(peckAngle) * peckForce);
+                  // Bit-chip drain: extra spin loss per peck
+                  beyB.spin = Math.max(0, beyB.spin - intensity * 3);
+                  this.broadcast("bey-stack-drill-peck", {
+                    drillerId: sidA, victimId: sidB,
+                    tickCount, peckForce,
+                  });
+                }
+                break;
+
+              case "control_loss":
+                // Scramble / reverse / freeze victim's input for a burst
+                if (tickCount % interval === 1) {
+                  const mode = effect.controlMode ?? "reverse";
+                  const dur = effect.controlDurationTicks ?? 60;
+                  const victimClient = this.clients.find(c => c.sessionId === sidB);
+                  victimClient?.send("bey-link-control-loss", {
+                    mode, durationTicks: dur, attackerId: sidA, linkId: link.id,
+                  });
+                }
+                break;
+
+              case "force_lock":
+                // Pull victim toward attacker — gravity-well style orbit lock
+                {
+                  const dx = beyA.x - beyB.x;
+                  const dy = beyA.y - beyB.y;
+                  const dist2 = Math.hypot(dx, dy) || 1;
+                  const pullFx = (dx / dist2) * intensity * 24;
+                  const pullFy = (dy / dist2) * intensity * 24;
+                  this.physics.applyForce(sidB, pullFx, pullFy);
+                }
+                break;
+            }
           }
 
-          if (link.alignment === "hostile" && link.hostileEffect) {
-            const effect = link.hostileEffect;
-            // B is the victim (top-mounted / tip-stacked)
-            const drainTotal = effect.bitChipDamagePerTick + effect.spinDrainPerTick;
-            beyB.spin = Math.max(0, beyB.spin - drainTotal * dt * 60); // dt is per-frame fraction
-            // Destabilize: apply lateral force to victim
-            if (effect.destabilizeForce > 0) {
-              const angle = Math.atan2(beyB.y - beyA.y, beyB.x - beyA.x);
-              const fx = Math.cos(angle) * effect.destabilizeForce * 24; // cm to px
-              const fy = Math.sin(angle) * effect.destabilizeForce * 24;
-              this.physics.applyForce(sidB, fx, fy);
+          // ── Legacy friendlyBoost / hostileEffect (when linkEffects absent) ──
+          if (!effects.length) {
+            if (link.alignment === "friendly" && link.friendlyBoost) {
+              const boost = link.friendlyBoost;
+              beyA.spin = Math.min(beyA.maxSpin, beyA.spin + beyB.spin * boost.spinTransferRate * dt);
+              beyB.spin = Math.min(beyB.maxSpin, beyB.spin + beyA.spin * boost.spinTransferRate * dt);
+              this.broadcast("bey-stack-boost", {
+                beyIdA: sidA, beyIdB: sidB,
+                damageMultiplierBonus: boost.damageMultiplierBonus,
+                shieldBonus: boost.shieldBonus,
+              });
             }
-            // Check max duration
-            if (effect.maxDurationTicks > 0 && tickCount >= effect.maxDurationTicks) {
-              this.beyStackState.delete(stackKey);
-              // Set cooldown on victim so they can escape
-              const cmap = this.beyStackCooldowns.get(sidB) ?? new Map<string, number>();
-              cmap.set(link.id, link.cooldownTicks ?? 120);
-              this.beyStackCooldowns.set(sidB, cmap);
-              this.broadcast("bey-stack-end", { beyIdA: sidA, beyIdB: sidB, linkId: link.id, reason: "max_duration" });
+            if (link.alignment === "hostile" && link.hostileEffect) {
+              const effect = link.hostileEffect;
+              const drainTotal = effect.bitChipDamagePerTick + effect.spinDrainPerTick;
+              beyB.spin = Math.max(0, beyB.spin - drainTotal * dt * 60);
+              if (effect.destabilizeForce > 0) {
+                const angle = Math.atan2(beyB.y - beyA.y, beyB.x - beyA.x);
+                this.physics.applyForce(sidB, Math.cos(angle) * effect.destabilizeForce * 24, Math.sin(angle) * effect.destabilizeForce * 24);
+              }
+              if (effect.maxDurationTicks > 0 && tickCount >= effect.maxDurationTicks) {
+                this.beyStackState.delete(stackKey);
+                const cmap = this.beyStackCooldowns.get(sidB) ?? new Map<string, number>();
+                cmap.set(link.id, link.cooldownTicks ?? 120);
+                this.beyStackCooldowns.set(sidB, cmap);
+                this.broadcast("bey-stack-end", { beyIdA: sidA, beyIdB: sidB, linkId: link.id, reason: "max_duration" });
+              }
+              this.broadcast("bey-stack-hostile-tick", { attackerId: sidA, victimId: sidB, drainAmount: drainTotal });
             }
-            this.broadcast("bey-stack-hostile-tick", {
-              attackerId: sidA, victimId: sidB,
-              drainAmount: drainTotal, linkId: link.id,
-            });
           }
         }
         if (activeCount > maxSimul) break;
       }
+    }
 
-      // Tick down bey stack cooldowns
-      for (const [sid, cmap] of this.beyStackCooldowns) {
-        for (const [lid, ticks] of cmap) {
-          if (ticks <= 1) cmap.delete(lid);
-          else cmap.set(lid, ticks - 1);
-        }
+    // Tick down bey stack cooldowns
+    for (const [, cmap] of this.beyStackCooldowns) {
+      for (const [lid, ticks] of cmap) {
+        if (ticks <= 1) cmap.delete(lid);
+        else cmap.set(lid, ticks - 1);
       }
     }
   }
@@ -1791,12 +1966,12 @@ export class BattleRoom extends Room<GameState> {
       const spinRatio = beyblade.maxSpin > 0 ? beyblade.spin / beyblade.maxSpin : 0;
 
       const ctx: TriggerContext = {
-        wasHitThisTick: false, // will be set by collision loop if needed
+        wasHitThisTick: this.beyHitsThisTick.has(sid),
         nearRingOut,
         spinRatio,
         partnerNearRingOut: false, // team battles only — no-op in base room
         opponentSpecialMoveActive: anyOpponentSpecialActive,
-        burstAttemptThisTick: false, // set externally in burst loop
+        burstAttemptThisTick: this.burstAttemptsThisTick.has(sid),
         power: beyblade.power,
         spinDirection: beyblade.spinDirection,
       };

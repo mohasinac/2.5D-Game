@@ -1127,7 +1127,7 @@ export interface ArenaLink {
   id: string;
   fromArenaId: string;         // source arena doc id
   toArenaId: string;           // destination arena doc id
-  linkType: "corridor" | "portal" | "ramp";
+  linkType: "corridor" | "portal" | "ramp" | "pit" | "trampoline";
 
   // Boundary geometry: beys crossing this line segment trigger the link
   boundaryLine: {
@@ -1145,6 +1145,84 @@ export interface ArenaLink {
   hazardDamage?: number;       // damage dealt on traversal (for dangerous links)
   reverseCondition?: "never" | "always" | "spin_above_50";  // one-way vs two-way
   cooldownTicks?: number;      // ticks before this link can be used again per-bey
+  pairedLinkId?: string;       // id of the reciprocal link (admin UI wires pairs so you can always go back)
+  exitVelocityMult?: number;   // velocity multiplier on exit (trampoline = high, pit = low, default 1.0)
+}
+
+// ============================================================================
+// BEY LINK CONFIG — dynamic bey-to-bey stacking interactions
+// Inspired by anime: Dranzer S pecking on Draciel's bit chip (hostile),
+// or Dynasty team beys spinning together to combine power (friendly).
+// ============================================================================
+
+export type BeyLinkType =
+  | "tip_stack"  // attacker's spinning TIP (bottom) grinds on defender's BIT CHIP (top) — vertical drill/peck from above. e.g. Kai's Dranzer S pecking on Max's Draciel bit chip
+  | "top_mount"  // bey rides atop partner sharing spin axis — cooperative combo stance
+  | "side_spin"; // beys spin side-by-side in tangential contact, exchanging angular force
+
+export type BeyLinkAlignment = "friendly" | "hostile" | "neutral";
+
+// ─── Composable per-effect entries ───────────────────────────────────────────
+
+export type BeyLinkEffectType =
+  | "spin_drain"            // hostile: continuously drain target's spin
+  | "spin_share"            // friendly: equalize spin between both beys each tick
+  | "spin_heal"             // friendly: gradually recover own spin while linked
+  | "damage_boost"          // friendly: +damageMultiplier bonus while stacked
+  | "shield_boost"          // friendly: +damageReduction bonus while stacked
+  | "destabilize"           // hostile: periodic lateral force burst against target
+  | "continuous_collision"  // hostile: rapid virtual collision impacts (dogfight)
+  | "drill_attack"          // hostile: periodic peck impulse onto bit chip — vertical tip_stack behavior
+  | "control_loss"          // hostile: scramble / reverse / freeze target's input controls
+  | "force_lock";           // hostile: pull target toward attacker each tick (gravity orbit)
+
+export interface BeyLinkEffect {
+  type: BeyLinkEffectType;
+  intensityPerTick?: number;    // spin drain amount / force magnitude / heal amount per tick
+  intervalTicks?: number;       // ticks between events for drill_attack / continuous_collision / control_loss (default: 15 drill, 10 collision, 120 control)
+  impactMult?: number;          // damage/force multiplier per event (default 1.0)
+  // control_loss specific
+  controlMode?: "reverse" | "scramble" | "freeze";
+  controlDurationTicks?: number; // how long each control-loss episode lasts (default 60)
+}
+
+// ─── Legacy convenience wrappers (kept for backwards compat) ─────────────────
+
+export interface BeyLinkFriendlyBoost {
+  damageMultiplierBonus: number;
+  spinTransferRate: number;
+  shieldBonus: number;
+  durationTicks: number;
+}
+
+export interface BeyLinkHostileEffect {
+  bitChipDamagePerTick: number;
+  spinDrainPerTick: number;
+  destabilizeForce: number;
+  maxDurationTicks: number;
+}
+
+export interface BeyLink {
+  id: string;
+  linkType: BeyLinkType;
+  alignment: BeyLinkAlignment;
+  entryRadiusCm: number;
+  triggerCondition: "any" | "same_team" | "opponent_only";
+
+  // Composable effects list (takes precedence over legacy fields below)
+  linkEffects?: BeyLinkEffect[];
+
+  // QTE escape: when hostile, victim can press a single key to break the stack.
+  // If a special-move QTE is already active, that QTE is reused for the escape.
+  qteEscapable?: boolean;
+  qteWindowTicks?: number;    // how many ticks the victim has to press the key (default 60)
+
+  // Legacy convenience fields (still processed if linkEffects is absent)
+  friendlyBoost?: BeyLinkFriendlyBoost;
+  hostileEffect?: BeyLinkHostileEffect;
+
+  cooldownTicks?: number;
+  maxSimultaneous?: number;
 }
 
 // ============================================================================
@@ -1217,6 +1295,7 @@ export interface ArenaConfig {
 
   // ===== ARENA LINKS (L1) =====
   links?: ArenaLink[];                // Cross-arena corridor / portal / ramp connections
+  beyLinks?: BeyLink[];               // Bey-to-bey stacking interaction configs
 
   // ===== BACKGROUND + ENVIRONMENT (Phase Z) =====
   backgroundParticles?: ArenaBackgroundParticles;

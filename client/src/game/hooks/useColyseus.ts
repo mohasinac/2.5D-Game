@@ -91,6 +91,24 @@ export interface MovementJumpHangData {
   hangTicks: number;
 }
 
+// BeyLink QTE escape prompt
+export interface BeyLinkQTEData {
+  attackerId: string;
+  stackKey: string;
+  linkId: string;
+  key: string;          // the single key the victim must press
+  windowTicks: number;
+  expiresAt: number;
+}
+
+// BeyLink control-loss burst
+export interface BeyLinkControlLossData {
+  mode: "reverse" | "scramble" | "freeze";
+  durationTicks: number;
+  attackerId: string;
+  linkId: string;
+}
+
 interface UseColyseusOptions {
   roomName: string;
   options?: Record<string, unknown>;
@@ -133,9 +151,15 @@ interface UseColyseusReturn {
   spawnedBeys: Map<string, ArenaSpawnData>;
   /** P5: queue of visual events for combo/special/meteor — drain each rAF frame. */
   visualEventQueue: VisualEventQueue;
+  /** Active bey-link QTE escape prompt for this player. Null when not applicable. */
+  beyLinkQTE: BeyLinkQTEData | null;
+  /** Active bey-link control-loss state for this player. Null when not applicable. */
+  beyLinkControlLoss: BeyLinkControlLossData | null;
   connect: () => Promise<void>;
   disconnect: () => void;
   sendQTEInput: (key: string) => void;
+  /** Send a bey-link QTE escape key press to the server. */
+  sendBeyLinkQTEInput: (key: string) => void;
   sendInput: (input: {
     moveLeft?: boolean;
     moveRight?: boolean;
@@ -198,6 +222,9 @@ export function useColyseus({
   const [cameraEffectActive, setCameraEffectActive] = useState(false);
   // N3: arena-spawned beyblades keyed by spawnId
   const [spawnedBeys, setSpawnedBeys] = useState<Map<string, ArenaSpawnData>>(new Map());
+  // BeyLink QTE escape prompt and control-loss state
+  const [beyLinkQTE, setBeyLinkQTE] = useState<BeyLinkQTEData | null>(null);
+  const [beyLinkControlLoss, setBeyLinkControlLoss] = useState<BeyLinkControlLossData | null>(null);
 
   const visualEventQueueRef = useRef(new VisualEventQueue());
 
@@ -361,6 +388,25 @@ export function useColyseus({
         onQTEExpiredRef.current?.();
       });
 
+      // BeyLink QTE escape prompt (single-key break-free from hostile stacks)
+      connectedRoom.onMessage("bey-link-qte", (data: BeyLinkQTEData) => {
+        setBeyLinkQTE(data);
+      });
+      connectedRoom.onMessage("bey-link-qte-success", () => {
+        setBeyLinkQTE(null);
+      });
+      connectedRoom.onMessage("bey-link-qte-expired", () => {
+        setBeyLinkQTE(null);
+      });
+      connectedRoom.onMessage("bey-link-qte-cleared", () => {
+        setBeyLinkQTE(null);
+      });
+      connectedRoom.onMessage("bey-link-control-loss", (data: BeyLinkControlLossData) => {
+        setBeyLinkControlLoss(data);
+        // Auto-clear after the duration elapses
+        setTimeout(() => setBeyLinkControlLoss(null), data.durationTicks * (1000 / 60));
+      });
+
       // Phase T: arena timeline announcement
       connectedRoom.onMessage("arena-announcement", (data: { text: string; style?: "warning" | "info" | "danger" }) => {
         onArenaAnnouncementRef.current?.(data);
@@ -459,6 +505,12 @@ export function useColyseus({
     }
   }, []);
 
+  const sendBeyLinkQTEInput = useCallback((key: string) => {
+    if (roomRef.current && roomRef.current.connection.isOpen) {
+      roomRef.current.send("bey-link-qte-input", { key });
+    }
+  }, []);
+
   const sendInput = useCallback((input: {
     moveLeft?: boolean; moveRight?: boolean; moveUp?: boolean; moveDown?: boolean;
     attack?: boolean; defense?: boolean; dodge?: boolean; jump?: boolean;
@@ -493,6 +545,7 @@ export function useColyseus({
     loadingStep, loadingError,
     arenaEffect, cameraEffectActive, spawnedBeys,
     visualEventQueue: visualEventQueueRef.current,
-    connect, disconnect, sendQTEInput, sendInput,
+    beyLinkQTE, beyLinkControlLoss,
+    connect, disconnect, sendQTEInput, sendBeyLinkQTEInput, sendInput,
   };
 }
