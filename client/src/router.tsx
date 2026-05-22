@@ -27,9 +27,6 @@ import { BeybladeEditPage } from "./pages/admin/BeybladeEditPage";
 import { ArenasListPage } from "./pages/admin/ArenasListPage";
 import { ArenaCreatePage } from "./pages/admin/ArenaCreatePage";
 import { ArenaEditPage } from "./pages/admin/ArenaEditPage";
-import { StadiumsListPage } from "./pages/admin/StadiumsListPage";
-import { StadiumCreatePage } from "./pages/admin/StadiumCreatePage";
-import { StadiumEditPage } from "./pages/admin/StadiumEditPage";
 import { AssetsLibraryPage } from "./pages/admin/AssetsLibraryPage";
 import { ArenaThemeAssetsPage } from "./pages/admin/assets/ArenaThemeAssetsPage";
 import { ObstacleAssetsPage } from "./pages/admin/assets/ObstacleAssetsPage";
@@ -128,10 +125,6 @@ export const router = createBrowserRouter([
       { path: "arena-systems/create", element: <ArenaSystemCreatePage /> },
       { path: "arena-systems/:id", element: <ArenaSystemEditPage /> },
 
-      // Stadium CRUD
-      { path: "stadiums", element: <StadiumsListPage /> },
-      { path: "stadiums/create", element: <StadiumCreatePage /> },
-      { path: "stadiums/edit/:id", element: <StadiumEditPage /> },
 
       // Asset CRUD library
       { path: "assets", element: <AssetsLibraryPage /> },

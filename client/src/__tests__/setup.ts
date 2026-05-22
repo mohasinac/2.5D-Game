@@ -10,7 +10,6 @@ vi.mock("@/lib/firebase", () => ({
   COLLECTIONS: {
     BEYBLADE_STATS: "beyblade_stats",
     ARENAS: "arenas",
-    STADIUMS: "stadiums",
     MATCHES: "matches",
     PLAYER_STATS: "player_stats",
     ARENA_THEME_ASSETS: "arena_theme_assets",

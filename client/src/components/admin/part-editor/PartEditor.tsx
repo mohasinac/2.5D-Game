@@ -16,6 +16,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { useTabFromUrl } from "@/hooks/useTabFromUrl";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { C } from "@/styles/theme";
@@ -81,7 +82,7 @@ export function PartEditor({
   hasMaterialBands = true,
   showInnerRadius = true,
 }: Props) {
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useTabFromUrl("overview") as [Tab, (t: Tab) => void];
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

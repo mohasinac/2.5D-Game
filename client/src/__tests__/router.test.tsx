@@ -22,9 +22,6 @@ vi.mock("@/pages/admin/BeybladeEditPage", () => ({ BeybladeEditPage: () => <div>
 vi.mock("@/pages/admin/ArenasListPage", () => ({ ArenasListPage: () => <div>ARENAS</div> }));
 vi.mock("@/pages/admin/ArenaCreatePage", () => ({ ArenaCreatePage: () => <div>ARENA-CREATE</div> }));
 vi.mock("@/pages/admin/ArenaEditPage", () => ({ ArenaEditPage: () => <div>ARENA-EDIT</div> }));
-vi.mock("@/pages/admin/StadiumsListPage", () => ({ StadiumsListPage: () => <div>STADIUMS</div> }));
-vi.mock("@/pages/admin/StadiumCreatePage", () => ({ StadiumCreatePage: () => <div>STADIUM-CREATE</div> }));
-vi.mock("@/pages/admin/StadiumEditPage", () => ({ StadiumEditPage: () => <div>STADIUM-EDIT</div> }));
 vi.mock("@/pages/admin/AssetsLibraryPage", () => ({ AssetsLibraryPage: () => <div>ASSETS</div> }));
 vi.mock("@/pages/admin/assets/ArenaThemeAssetsPage", () => ({ ArenaThemeAssetsPage: () => <div>ARENA-THEME-ASSETS</div> }));
 vi.mock("@/pages/admin/assets/ObstacleAssetsPage", () => ({ ObstacleAssetsPage: () => <div>OBSTACLE-ASSETS</div> }));

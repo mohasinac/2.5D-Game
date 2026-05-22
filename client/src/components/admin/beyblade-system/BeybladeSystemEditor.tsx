@@ -8,6 +8,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { useTabFromUrl } from "@/hooks/useTabFromUrl";
 import { doc, getDoc, getDocs, updateDoc, serverTimestamp, collection, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
@@ -50,7 +51,7 @@ interface Props {
 }
 
 export function BeybladeSystemEditor({ systemId }: Props) {
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useTabFromUrl("overview") as [Tab, (t: Tab) => void];
   const [system, setSystem] = useState<BeybladeSystem | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

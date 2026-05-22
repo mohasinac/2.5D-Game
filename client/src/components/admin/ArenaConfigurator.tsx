@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTabFromUrl } from "@/hooks/useTabFromUrl";
 import { C } from "@/styles/theme";
 import type { ArenaConfig } from "@/types/arenaConfigNew";
 import ArenaPreview from "./ArenaPreview";
@@ -32,7 +33,7 @@ const TABS: { id: TabId; label: string; icon: string; count?: (a: ArenaConfig) =
 ];
 
 export default function ArenaConfigurator({ arena, onChange, onSave, saving }: Props) {
-  const [tab, setTab] = useState<TabId>("basics");
+  const [tab, setTab] = useTabFromUrl("basics") as [TabId, (t: TabId) => void];
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 420px", gap: 20, alignItems: "start" }}>
