@@ -9,6 +9,7 @@ import type {
   BeybladeStats,
   PointOfContact
 } from "../types/shared";
+import { computeElementTypeMultiplier } from "./PartPhysics";
 
 // [SERVER-PHYSICS] PhysicsEngine — Matter.js wrapper for server-authoritative physics.
 // Coordinates: 1 em = 16px, 1 cm = 24px. Arena center is (arenaW*16/2, arenaH*16/2).
@@ -269,9 +270,15 @@ export class PhysicsEngine {
     const attackBuff1 = beyblade1.attackBuffTimer > 0 ? 1.4 : 1.0;
     const attackBuff2 = beyblade2.attackBuffTimer > 0 ? 1.4 : 1.0;
 
-    // Outgoing damage: raw × contact multiplier × attacker's damage multiplier × attack buff
-    let outDamageFrom1 = rawDamage * contactMult1 * beyblade1.damageMultiplier * attackBuff1;
-    let outDamageFrom2 = rawDamage * contactMult2 * beyblade2.damageMultiplier * attackBuff2;
+    // Element type effectiveness (Phase AB): attacker type vs defender type matrix
+    const elemTypes1 = Array.from(beyblade1.elementTypes ?? []).filter((s): s is string => !!s);
+    const elemTypes2 = Array.from(beyblade2.elementTypes ?? []).filter((s): s is string => !!s);
+    const elemMult1vs2 = computeElementTypeMultiplier(elemTypes1, elemTypes2); // bey1 attacks bey2
+    const elemMult2vs1 = computeElementTypeMultiplier(elemTypes2, elemTypes1); // bey2 attacks bey1
+
+    // Outgoing damage: raw × contact multiplier × attacker's damage multiplier × attack buff × element effectiveness
+    let outDamageFrom1 = rawDamage * contactMult1 * beyblade1.damageMultiplier * attackBuff1 * elemMult1vs2;
+    let outDamageFrom2 = rawDamage * contactMult2 * beyblade2.damageMultiplier * attackBuff2 * elemMult2vs1;
 
     // Spin steal uses RAW damage (pre-defense) for a fair stamina calculation
     const oppositeSpin = beyblade1.spinDirection !== beyblade2.spinDirection;

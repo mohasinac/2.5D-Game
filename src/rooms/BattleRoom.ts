@@ -38,7 +38,7 @@ import type { ArenaSystem } from "../types/arenaSystem";
 import { MODIFIER_MAP, type RoundModifier } from "../../client/src/types/roundModifier";
 import { getDualTypeAttackMultiplier, getDualTypeDefenseMultiplier, type ElementType } from "../../client/src/types/elementTypes";
 import type { ArenaTimelineEvent } from "../types/shared";
-import type { ArenaLink } from "../../client/src/types/arenaConfigNew";
+import type { ArenaLink, BeyLink } from "../../client/src/types/arenaConfigNew";
 
 const QTE_KEY_POOL = ["left", "right", "up", "down", "attack", "defense", "dodge"];
 
@@ -138,6 +138,10 @@ export class BattleRoom extends Room<GameState> {
   // ── Arena link crossing cooldowns (L2/L3) ────────────────────────────────────
   // beyId → linkId → cooldownTicksRemaining
   private linkCooldowns: Map<string, Map<string, number>> = new Map();
+
+  // ── Bey-to-bey stack state (BeyLink system) ──────────────────────────────────
+  private beyStackState: Map<string, { partnerId: string; linkId: string; tickCount: number }> = new Map();
+  private beyStackCooldowns: Map<string, Map<string, number>> = new Map();
 
   /** Arena shrink state (Phase V). */
   private shrinkStartMs = 0;
@@ -370,6 +374,7 @@ export class BattleRoom extends Room<GameState> {
     if (beyblade) {
       beyblade.isActive = false;
       beyblade.isRingOut = true;
+      beyblade.eliminationType = "ring_out";
     }
     this.physics.removeBeyblade(client.sessionId);
     this.state.beyblades.delete(client.sessionId);
@@ -926,6 +931,7 @@ export class BattleRoom extends Room<GameState> {
 
     // L2/L3: arena link crossing detection
     this.tickArenaLinks(deltaTime);
+    this.tickBeyLinks(deltaTime);
 
     this.physics.update(deltaTime);
 
@@ -1014,6 +1020,7 @@ export class BattleRoom extends Room<GameState> {
           if (this.rand() < burstFinal) {
             victim.isActive = false;
             victim.isBurst = true;
+            victim.eliminationType = "burst";
             victim.spin = 0;
             const attacker = victim === b1 ? b2 : b1;
             attacker.burstKillsDealt++;
@@ -1067,6 +1074,7 @@ export class BattleRoom extends Room<GameState> {
       if (beyblade.spin <= 0 && beyblade.isActive) {
         beyblade.isActive = false;
         beyblade.health = 0;
+        beyblade.eliminationType = "spin_out";
         this.broadcast("spin-out", { playerId: beyblade.id, username: beyblade.username, x: beyblade.x, y: beyblade.y, type: beyblade.type });
       }
 
@@ -1144,6 +1152,7 @@ export class BattleRoom extends Room<GameState> {
         if (isOut && !beyblade.isRingOut) {
           beyblade.isRingOut = true;
           beyblade.isActive = false;
+          beyblade.eliminationType = "ring_out";
           this.broadcast("ring-out", { playerId: beyblade.id, username: beyblade.username });
         }
       }
@@ -1490,6 +1499,26 @@ export class BattleRoom extends Room<GameState> {
           }
         }
 
+        // Pit: heavy spin loss + momentum halt (simulates falling)
+        if (link.linkType === "pit") {
+          const fallDamage = link.hazardDamage ?? 50;
+          bey.spin = Math.max(0, bey.spin - fallDamage);
+          this.physics.setLinearVelocity(sessionId, 0, 0);
+        }
+
+        // Trampoline: launch boost + spin preservation
+        if (link.linkType === "trampoline") {
+          const bodyState = this.physics.getBodyState(sessionId);
+          if (bodyState) {
+            const exitMult = (link as any).exitVelocityMult ?? 2.5;
+            this.physics.setLinearVelocity(
+              sessionId,
+              bodyState.velocityX * exitMult,
+              bodyState.velocityY * exitMult
+            );
+          }
+        }
+
         // Broadcast link crossing event to clients
         this.broadcast("arena-link-cross", {
           beyId: sessionId,
@@ -1503,6 +1532,116 @@ export class BattleRoom extends Room<GameState> {
         const newCooldowns = this.linkCooldowns.get(sessionId) ?? new Map<string, number>();
         newCooldowns.set(link.id, link.cooldownTicks ?? 60);
         this.linkCooldowns.set(sessionId, newCooldowns);
+      }
+    }
+  }
+
+  tickBeyLinks(dt: number): void {
+    const beyLinks = (this.arenaCache as any)?.beyLinks as BeyLink[] | undefined;
+    if (!beyLinks?.length) return;
+
+    const beyEntries = Array.from(this.state.beyblades.entries()).filter(([, b]) => b.isActive);
+
+    for (const link of beyLinks) {
+      const maxSimul = link.maxSimultaneous ?? 2;
+      let activeCount = 0;
+
+      // Check all pairs of beys
+      for (let i = 0; i < beyEntries.length; i++) {
+        for (let j = i + 1; j < beyEntries.length; j++) {
+          const [sidA, beyA] = beyEntries[i];
+          const [sidB, beyB] = beyEntries[j];
+
+          // Check triggerCondition
+          if (link.triggerCondition === "same_team" && (beyA as any).teamId !== (beyB as any).teamId) continue;
+          if (link.triggerCondition === "opponent_only" && (beyA as any).teamId === (beyB as any).teamId) continue;
+
+          // Check proximity
+          const distCm = Math.hypot(beyA.x - beyB.x, beyA.y - beyB.y) / 24; // px to cm
+          if (distCm > link.entryRadiusCm) {
+            // End stack if was active
+            const stackKey = `${sidA}:${sidB}:${link.id}`;
+            if (this.beyStackState.has(stackKey)) {
+              this.beyStackState.delete(stackKey);
+              this.broadcast("bey-stack-end", { beyIdA: sidA, beyIdB: sidB, linkId: link.id });
+            }
+            continue;
+          }
+
+          // Check cooldown
+          const cooldownA = this.beyStackCooldowns.get(sidA)?.get(link.id) ?? 0;
+          if (cooldownA > 0) continue;
+
+          activeCount++;
+          if (activeCount > maxSimul) break;
+
+          const stackKey = `${sidA}:${sidB}:${link.id}`;
+          const existing = this.beyStackState.get(stackKey);
+          const tickCount = (existing?.tickCount ?? 0) + 1;
+          this.beyStackState.set(stackKey, { partnerId: sidB, linkId: link.id, tickCount });
+
+          if (!existing) {
+            // First tick of stack — broadcast start event
+            this.broadcast("bey-stack-start", {
+              beyIdA: sidA, beyIdB: sidB,
+              linkId: link.id, linkType: link.linkType,
+              alignment: link.alignment,
+            });
+          }
+
+          // Apply effects
+          if (link.alignment === "friendly" && link.friendlyBoost) {
+            const boost = link.friendlyBoost;
+            // Spin transfer: each bey gets a fraction of the other's spin
+            const transferA = beyB.spin * boost.spinTransferRate * dt;
+            const transferB = beyA.spin * boost.spinTransferRate * dt;
+            beyA.spin = Math.min(beyA.maxSpin, beyA.spin + transferA);
+            beyB.spin = Math.min(beyB.maxSpin, beyB.spin + transferB);
+            // Temporary stat boosts broadcast as overlay events (renderer applies visually)
+            // (Actual combat stat boosts are applied at combat calc time via bey-stack-boost message)
+            this.broadcast("bey-stack-boost", {
+              beyIdA: sidA, beyIdB: sidB,
+              damageMultiplierBonus: boost.damageMultiplierBonus,
+              shieldBonus: boost.shieldBonus,
+            });
+          }
+
+          if (link.alignment === "hostile" && link.hostileEffect) {
+            const effect = link.hostileEffect;
+            // B is the victim (top-mounted / tip-stacked)
+            const drainTotal = effect.bitChipDamagePerTick + effect.spinDrainPerTick;
+            beyB.spin = Math.max(0, beyB.spin - drainTotal * dt * 60); // dt is per-frame fraction
+            // Destabilize: apply lateral force to victim
+            if (effect.destabilizeForce > 0) {
+              const angle = Math.atan2(beyB.y - beyA.y, beyB.x - beyA.x);
+              const fx = Math.cos(angle) * effect.destabilizeForce * 24; // cm to px
+              const fy = Math.sin(angle) * effect.destabilizeForce * 24;
+              this.physics.applyForce(sidB, fx, fy);
+            }
+            // Check max duration
+            if (effect.maxDurationTicks > 0 && tickCount >= effect.maxDurationTicks) {
+              this.beyStackState.delete(stackKey);
+              // Set cooldown on victim so they can escape
+              const cmap = this.beyStackCooldowns.get(sidB) ?? new Map<string, number>();
+              cmap.set(link.id, link.cooldownTicks ?? 120);
+              this.beyStackCooldowns.set(sidB, cmap);
+              this.broadcast("bey-stack-end", { beyIdA: sidA, beyIdB: sidB, linkId: link.id, reason: "max_duration" });
+            }
+            this.broadcast("bey-stack-hostile-tick", {
+              attackerId: sidA, victimId: sidB,
+              drainAmount: drainTotal, linkId: link.id,
+            });
+          }
+        }
+        if (activeCount > maxSimul) break;
+      }
+
+      // Tick down bey stack cooldowns
+      for (const [sid, cmap] of this.beyStackCooldowns) {
+        for (const [lid, ticks] of cmap) {
+          if (ticks <= 1) cmap.delete(lid);
+          else cmap.set(lid, ticks - 1);
+        }
       }
     }
   }

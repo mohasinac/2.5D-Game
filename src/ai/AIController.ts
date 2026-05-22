@@ -100,11 +100,15 @@ export class AIController {
   /**
    * Returns the best eligible combo slot for the AI to fire, or null.
    * Hell AI uses full intelligence; Medium/Hard use simplified filtering.
+   * @param approachDirX - normalized X component of approach direction (Hell only)
+   * @param approachDirY - normalized Y component of approach direction (Hell only)
    */
   private evaluateComboSlots(
     ai: BeybladeSnapshot,
     nearest: BeybladeSnapshot | null,
-    intelligenceLevel: "simple" | "full"
+    intelligenceLevel: "simple" | "full",
+    approachDirX = 0,
+    approachDirY = 0,
   ): AIComboSlot | null {
     const slots = ai.comboSlots;
     if (!slots || slots.length === 0) return null;
@@ -154,8 +158,24 @@ export class AIController {
 
     const pool = safe.length ? safe : eligible;
 
-    // Prefer highest cost (more powerful)
-    pool.sort((a, b) => (b.cost ?? 0) - (a.cost ?? 0));
+    // Direction alignment: prefer combos whose first key matches approach direction.
+    // e.g. charging from the left → first key moveRight scores higher.
+    const dirKeyScore = (seq: string[]): number => {
+      if (!seq.length || (approachDirX === 0 && approachDirY === 0)) return 0;
+      const first = seq[0];
+      if (approachDirX > 0.5 && first === "moveRight") return 2;
+      if (approachDirX < -0.5 && first === "moveLeft") return 2;
+      if (approachDirY < -0.5 && first === "moveUp") return 1;
+      if (approachDirY > 0.5 && first === "moveDown") return 1;
+      return 0;
+    };
+
+    // Score = direction alignment (0–2) + cost weight (0.01/unit to break ties)
+    pool.sort((a, b) => {
+      const scoreA = dirKeyScore(a.sequence) + (a.cost ?? 0) * 0.01;
+      const scoreB = dirKeyScore(b.sequence) + (b.cost ?? 0) * 0.01;
+      return scoreB - scoreA;
+    });
     return pool[0];
   }
 
@@ -383,18 +403,21 @@ export class AIController {
       } else if (this.tickCounter - this.lastComboEvalTick >= 30) {
         // Tilt awareness: if self is tilted > 30°, prefer stabilization combos
         const selfTilt = ai.beyTiltAngle ?? 0;
+        // Approach direction normalized toward opponent (for direction-aligned combo picks)
+        const approachDirX = nearest && dist > 0 ? (nearest.x - ai.x) / dist : 0;
+        const approachDirY = nearest && dist > 0 ? (nearest.y - ai.y) / dist : 0;
         let slot: AIComboSlot | null = null;
 
         if (selfTilt > 30) {
           // Look for a stabilization/defense combo first
-          slot = this.evaluateComboSlots(ai, nearest, "full");
+          slot = this.evaluateComboSlots(ai, nearest, "full", approachDirX, approachDirY);
         } else if (nearest && (nearest.beyTiltAngle ?? 0) > 35) {
           // Opponent is tilted — rush in for burst chance
           if (dist < 300) {
-            slot = this.evaluateComboSlots(ai, nearest, "full");
+            slot = this.evaluateComboSlots(ai, nearest, "full", approachDirX, approachDirY);
           }
         } else if (dist < 280) {
-          slot = this.evaluateComboSlots(ai, nearest, "full");
+          slot = this.evaluateComboSlots(ai, nearest, "full", approachDirX, approachDirY);
         }
 
         if (slot) {
