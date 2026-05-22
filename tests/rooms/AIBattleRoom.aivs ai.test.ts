@@ -44,8 +44,8 @@ class AIVsAIRoomStub {
 
   onJoin(client: MockClient, options: { spectate?: boolean } = {}) {
     if (!options.spectate) {
-      // Non-spectators are rejected in aiVsAi mode.
-      client.rejectedCode = 4003;
+      // Non-spectators are rejected in aiVsAi mode (mirrors AIBattleRoom code 4001).
+      client.rejectedCode = 4001;
       return;
     }
     if (this.state.spectatorCount === 0 && this.noSpectatorTimeout) {
@@ -117,11 +117,11 @@ describe("AIBattleRoom aiVsAi — spectator join", () => {
 });
 
 describe("AIBattleRoom aiVsAi — non-spectator rejection", () => {
-  test("non-spectator player is rejected with code 4003", () => {
+  test("non-spectator player is rejected with code 4001", () => {
     const room = new AIVsAIRoomStub();
     const player = makeClient("player-1");
     room.onJoin(player, { spectate: false });
-    expect(player.rejectedCode).toBe(4003);
+    expect(player.rejectedCode).toBe(4001);
   });
 
   test("rejected non-spectator does not modify beyblades", () => {

@@ -173,8 +173,8 @@ export class AIBattleRoom extends Room<GameState> {
     const arenaHalfH = (this.state.arena.height * 16) / 2;
     const spawnRadius = Math.min(arenaHalfW, arenaHalfH) * 0.5;
 
-    const p1Id = options.aiP1BeybladeId || options.beybladeId || "default";
-    const p2Id = options.aiP2BeybladeId || options.aiBeybladeId || "default";
+    const p1Id = options.aiP1BeybladeId || "default";
+    const p2Id = options.aiP2BeybladeId || "default";
     const p1Diff: AIDifficulty = options.aiP1Difficulty || "medium";
     const p2Diff: AIDifficulty = options.aiP2Difficulty || options.aiDifficulty || "medium";
 
@@ -250,7 +250,7 @@ export class AIBattleRoom extends Room<GameState> {
 
     const difficulty: AIDifficulty = options.aiDifficulty || "medium";
     this.aiDifficulty = difficulty;
-    this.aiBeybladeId = options.aiBeybladeId || options.beybladeId || "default";
+    this.aiBeybladeId = options.aiBeybladeId || "default";
     this.aiController = new AIController(difficulty);
 
     const arenaHalfW = (this.state.arena.width * 16) / 2;

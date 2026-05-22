@@ -147,7 +147,9 @@ export class TournamentScheduler {
           continue;
         }
 
-        await this.finaliseRegistration(t, participants, /* startNow */ allReady && !deadlinePassed);
+        // startNow=true whenever all players are ready — even if the deadline has
+        // already passed — so nobody waits for a future scheduledStartTime unnecessarily.
+        await this.finaliseRegistration(t, participants, /* startNow */ allReady);
       }
     } catch (err) {
       console.error("[TournamentScheduler] Registration finalisation failed:", err);
@@ -182,10 +184,12 @@ export class TournamentScheduler {
         }
       : tournament;
 
-    const defaultArenaId =
-      tournament.allowedArenaIds?.[0] ??
-      tournament.allowedArenaIds?.[Math.floor(Math.random() * Math.max(1, tournament.allowedArenaIds.length))] ??
-      "default";
+    // Pick a random arena from the allowed list so different bracket matches
+    // don't all land on the same arena (index-0 selection was dead code before).
+    const arenaPool = tournament.allowedArenaIds;
+    const defaultArenaId = arenaPool?.length
+      ? arenaPool[Math.floor(Math.random() * arenaPool.length)]
+      : "default";
 
     await writeBracketToFirestore(effectiveTournament, pool, defaultArenaId);
     await updateTournamentStatus(tournament.id, "in-progress");
