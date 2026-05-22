@@ -43,11 +43,11 @@ const SLUG_TO_KIND: Record<string, PartKind> = {
 };
 import type { BasePart, PartDimensions, Material, MaterialBand, SystemContactPoint, PartImages } from "@/types/beybladeSystem";
 
-type Tab = "overview" | "preview" | "shape" | "images" | "dimensions" | "material" | "contacts" | "configs" | "pockets" | "type";
+// Preview is no longer a tab — it's always visible in the right panel.
+type Tab = "overview" | "shape" | "images" | "dimensions" | "material" | "contacts" | "configs" | "pockets" | "type";
 
 const TABS: Array<{ key: Tab; label: string }> = [
   { key: "overview",    label: "Overview" },
-  { key: "preview",     label: "Preview" },
   { key: "shape",       label: "Shape" },
   { key: "images",      label: "Images" },
   { key: "dimensions",  label: "Dimensions" },
@@ -134,6 +134,8 @@ export function PartEditor({
   const requiredCompatibility: string[] = part.requiredCompatibility ?? [];
   const excludedCompatibility: string[] = part.excludedCompatibility ?? [];
 
+  const partKind = SLUG_TO_KIND[partTypeSlug] ?? "subPart";
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Top bar */}
@@ -197,6 +199,9 @@ export function PartEditor({
         ))}
       </div>
 
+      {/* Two-column body: left = tab content, right = always-visible part preview */}
+      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+
       {/* Tab content */}
       <div style={{ flex: 1, overflowY: "auto", padding: "24px", background: C.bg0 }}>
 
@@ -252,19 +257,6 @@ export function PartEditor({
                 Resolution order across parts: bit_beast → core → ar → casing → tip → wd → spin_track → sub_part.
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Preview — exploded-view-style 3-view render of this part */}
-        {tab === "preview" && (
-          <div style={{ maxWidth: 480, margin: "0 auto" }}>
-            <PartLayerPreview
-              images={images}
-              partKind={SLUG_TO_KIND[partTypeSlug] ?? "subPart"}
-              displayName={(part.displayName as string) || "Untitled Part"}
-              color={part.color as string | undefined}
-              dimensions={dimensions}
-            />
           </div>
         )}
 
@@ -350,6 +342,27 @@ export function PartEditor({
           </div>
         )}
       </div>
+
+      {/* Right panel — always-visible part preview */}
+      <div style={{
+        width: 260, flexShrink: 0, borderLeft: `1px solid ${C.border}`,
+        background: C.bg1, overflowY: "auto", padding: "20px 16px",
+        display: "flex", flexDirection: "column", gap: 16,
+      }}>
+        <PartLayerPreview
+          images={images}
+          partKind={partKind}
+          displayName={(part.displayName as string) || "Untitled Part"}
+          color={part.color as string | undefined}
+          dimensions={dimensions}
+        />
+        <div style={{ fontSize: 11, color: C.faint, textAlign: "center" }}>
+          {dimensions.outerRadius ? `⌀ ${(dimensions.outerRadius * 2 / 10).toFixed(1)} cm` : ""}
+          {dimensions.height ? `  ×  h ${(dimensions.height / 10).toFixed(1)} cm` : ""}
+        </div>
+      </div>
+
+      </div>{/* end two-column body */}
     </div>
   );
 }

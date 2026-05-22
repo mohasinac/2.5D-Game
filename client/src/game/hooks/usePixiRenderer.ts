@@ -29,8 +29,10 @@ export function usePixiRenderer(
     rendererRef.current = renderer;
 
     renderer.init().then(() => {
-      // If cleanup already ran before init resolved, destroy immediately.
-      if (aborted) renderer.destroy();
+      // If cleanup already ran before init resolved, the cleanup function
+      // already called renderer.destroy() — do not call it again here.
+      // The initialized=false guard in destroy() prevents double-destroy.
+      if (aborted) return;
     }).catch(console.error);
 
     const handleResize = () => renderer.resize();

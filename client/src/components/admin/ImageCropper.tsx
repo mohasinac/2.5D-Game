@@ -154,8 +154,8 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
                 border: `2px solid ${C.blue}`,
                 borderRadius: 8,
                 overflow: "hidden",
-                width: targetWidth,
-                height: targetHeight,
+                width: `min(${targetWidth}px, 90vw)`,
+                height: `min(${targetHeight}px, 90vw)`,
                 touchAction: "none",
                 cursor: isDragging ? "grabbing" : "grab",
               }}

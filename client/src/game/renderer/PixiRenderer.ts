@@ -1088,8 +1088,15 @@ export class BeybladeGameRenderer {
 
   destroy() {
     if (!this.initialized) return;
+    // Mark uninitialized FIRST so any concurrent render() calls return early
+    // before this.app.screen (which reads this._renderer) is accessed.
     this.initialized = false;
     this.contextLost = false;
+
+    // Stop the ticker explicitly before destroy so any pending rAF callbacks
+    // that are already queued in the browser event loop see a stopped ticker
+    // and do not try to access this._renderer after it is nulled by app.destroy().
+    try { this.app.ticker.stop(); } catch { /* already destroyed */ }
 
     if (this.featureRenderer) {
       this.featureRenderer.destroy();

@@ -27,6 +27,9 @@ interface BeybladePreviewProps {
 export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = false }: BeybladePreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<PIXI.Application | null>(null);
+  // True only after await app.init() completes — guards rebuildScene from accessing
+  // app.screen before _renderer is initialized (would crash with "this.renderer is undefined").
+  const appInitializedRef = useRef(false);
   const beybladeContainerRef = useRef<PIXI.Container | null>(null);
   const isSpinningRef = useRef(true);
   const [isSpinning, setIsSpinning] = useState(true);
@@ -64,7 +67,10 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
   // Stable rebuild — reads everything from refs so deps=[] is safe
   const rebuildScene = useCallback(async () => {
     const app = appRef.current;
-    if (!app || app.screen.width === 0) return;
+    // Guard: appInitializedRef is only true after await app.init() completes.
+    // Without this, accessing app.screen on an uninitialized app crashes because
+    // PixiJS Application._renderer is undefined until init() resolves.
+    if (!app || !appInitializedRef.current || app.screen.width === 0) return;
 
     // Bump generation so any older in-flight async rebuild aborts before touching stage
     const gen = ++rebuildGenRef.current;
@@ -215,7 +221,9 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
     if (!containerRef.current) return;
     let cancelled = false;
     const app = new PIXI.Application();
-    appRef.current = app;
+    // Do NOT set appRef.current here — set it only after init() completes.
+    // Setting it before init causes rebuildScene() to access app.screen while
+    // _renderer is still undefined, crashing with "this.renderer is undefined".
 
     (async () => {
       const size = containerRef.current!.offsetWidth || 400;
@@ -239,6 +247,11 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
       app.canvas.style.height = "100%";
       containerRef.current.appendChild(app.canvas);
 
+      // Mark ready BEFORE exposing ref — any pending rebuildScene() calls will
+      // now find a valid initialized app.
+      appInitializedRef.current = true;
+      appRef.current = app;
+
       await rebuildScene();
 
       app.ticker.add(() => {
@@ -253,9 +266,10 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
 
     return () => {
       cancelled = true;
-      try { app.destroy(true, { children: true }); } catch { /* init may still be in flight */ }
+      appInitializedRef.current = false;
       appRef.current = null;
       beybladeContainerRef.current = null;
+      try { app.destroy(true, { children: true }); } catch { /* init may still be in flight */ }
     };
   }, []); // Init once
 
@@ -270,8 +284,9 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
     const observer = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
       const app = appRef.current;
-      if (app && width > 0 && height > 0) {
-        app.renderer.resize(width, height);
+      // appInitializedRef guards against accessing app.renderer before init completes
+      if (app && appInitializedRef.current && width > 0 && height > 0) {
+        try { app.renderer.resize(width, height); } catch { /* destroyed mid-resize */ }
         rebuildScene();
       }
     });

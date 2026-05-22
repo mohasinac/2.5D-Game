@@ -86,7 +86,9 @@ export function BeybladeCreatePage() {
     reader.onload = ev => {
       const url = ev.target?.result as string;
       setRawImageUrl(url);
-      setImageEditorMode("whatsapp");
+      const isGif = file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
+      setImageEditorMode(isGif ? null : "whatsapp");
+      if (isGif) set("imagePreview", url);
     };
     reader.readAsDataURL(file);
   };
