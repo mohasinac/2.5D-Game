@@ -211,10 +211,12 @@ const WhatsAppStyleImageEditor = forwardRef<WhatsAppStyleImageEditorRef, WhatsAp
   const zoomRowStyle: React.CSSProperties = {
     display: "flex",
     alignItems: "center",
-    gap: 12,
+    gap: 8,
     background: C.bg3,
     borderRadius: 999,
-    padding: "10px 20px",
+    padding: "10px 16px",
+    width: "100%",
+    boxSizing: "border-box",
   };
 
   const roundBtn: React.CSSProperties = {
@@ -240,6 +242,8 @@ const WhatsAppStyleImageEditor = forwardRef<WhatsAppStyleImageEditorRef, WhatsAp
       padding: 16,
       background: "#000",
       borderRadius: 12,
+      width: "100%",
+      boxSizing: "border-box",
     }}>
       {/* Header */}
       <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -296,7 +300,7 @@ const WhatsAppStyleImageEditor = forwardRef<WhatsAppStyleImageEditorRef, WhatsAp
           onChange={(e) =>
             setPosition((p) => ({ ...p, scale: parseFloat(e.target.value) }))
           }
-          style={{ width: 140, accentColor: C.blue }}
+          style={{ flex: 1, minWidth: 60, accentColor: C.blue }}
         />
         <span style={{ color: C.text, fontSize: 12, fontWeight: 600, minWidth: 40 }}>
           {Math.round(position.scale * 100)}%

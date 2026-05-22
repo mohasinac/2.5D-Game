@@ -28,8 +28,7 @@ type Tab =
   | "core"
   | "casing"
   | "spin_track"
-  | "sub_parts"
-  | "preview";
+  | "sub_parts";
 
 const TABS: Array<{ key: Tab; label: string }> = [
   { key: "overview",     label: "Overview" },
@@ -41,7 +40,6 @@ const TABS: Array<{ key: Tab; label: string }> = [
   { key: "casing",       label: "Casing" },
   { key: "spin_track",   label: "Spin Track" },
   { key: "sub_parts",    label: "Sub-Parts" },
-  { key: "preview",      label: "Preview" },
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -425,12 +423,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             />
           )}
 
-          {/* Preview tab (full-width single panel) */}
-          {tab === "preview" && (
-            <div style={{ maxWidth: 900 }}>
-              <BeybladeSystemPreview resolved={resolved} />
-            </div>
-          )}
         </div>
       </div>
 

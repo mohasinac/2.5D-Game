@@ -42,7 +42,7 @@ const MATERIAL_COLORS: Record<Material, string> = {
   polycarbonate: "#a855f7",
 };
 
-const ATTACK_LABELS: AttackType[] = ["smash", "upper", "absorb", "burst", "spin_steal"];
+const ATTACK_LABELS: AttackType[] = ["smash", "upper", "absorb", "burst"];
 const LAYER_LABELS: PartLayer[] = ["ar", "wd", "casing", "tip", "core", "sub_part", "bit_beast"];
 
 function defaultCP(angle: number, radius: number): SystemContactPoint {

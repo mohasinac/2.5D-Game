@@ -114,11 +114,24 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
     // Beyblade image (if available)
     if (bey.imageUrl) {
       try {
-        const texture = await PIXI.Assets.load(bey.imageUrl);
+        // Load via HTMLImageElement with crossOrigin to avoid WebGL CORS errors.
+        // Cache-bust URL so the browser re-fetches with CORS headers even if the
+        // <img> thumbnail already cached the same URL without them.
+        const cacheBustUrl = bey.imageUrl.includes('?')
+          ? bey.imageUrl + '&_px=1'
+          : bey.imageUrl + '?_px=1';
+        const loadedImg = await new Promise<HTMLImageElement>((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = cacheBustUrl;
+        });
         // Discard stale rebuild — a newer one started while image was loading
         if (gen !== rebuildGenRef.current) return;
 
-        const sprite = new PIXI.Sprite(texture as PIXI.Texture);
+        const texture = PIXI.Texture.from(loadedImg);
+        const sprite = new PIXI.Sprite(texture);
         sprite.anchor.set(0.5, 0.5);
 
         const imgPos = bey.imagePosition ?? { x: 0, y: 0, scale: 1, rotation: 0 };
@@ -190,26 +203,6 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
       });
       bCont.addChild(cpGlow);
       bCont.addChild(cpGfx);
-    }
-
-    // ── Spin steal points ────────────────────────────────────────────────────
-    if (bey.spinStealPoints?.length) {
-      const ssGfx = new PIXI.Graphics();
-      const ssGlow = new PIXI.Graphics();
-      bey.spinStealPoints.forEach((point) => {
-        const angleRad = (point.angle - 90) * (Math.PI / 180);
-        const widthRad = ((point.width / 2) * Math.PI) / 180;
-        const r = beyR + 12;
-        const hue = 180 + (point.spinStealMultiplier - 1.0) * 40;
-        const strokeColor = hslToHex(hue, 90, 50);
-        const glowColor = hslToHex(hue, 90, 60);
-        ssGfx.arc(0, 0, r, angleRad - widthRad, angleRad + widthRad).stroke({ color: strokeColor, width: 6 });
-        ssGlow.arc(0, 0, r, angleRad - widthRad, angleRad + widthRad).stroke({ color: glowColor, width: 12, alpha: 0.3 });
-        const dotAngle = point.angle * (Math.PI / 180) - Math.PI / 2;
-        ssGfx.circle(Math.cos(dotAngle) * r, Math.sin(dotAngle) * r, 3).fill(strokeColor);
-      });
-      bCont.addChild(ssGlow);
-      bCont.addChild(ssGfx);
     }
 
     // Register as active container and add to stage only after everything is ready
@@ -356,11 +349,10 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
       </div>
 
       {/* Legend */}
-      {((beyblade.pointsOfContact?.length ?? 0) > 0 || (beyblade.spinStealPoints?.length ?? 0) > 0) && (
-        <div style={{ marginTop: 10, background: C.bg3, borderRadius: 8, padding: 10, fontSize: 11, color: C.faint, display: "flex", flexDirection: "column", gap: 4 }}>
-          <span style={{ fontWeight: 600, color: C.muted }}>Legend:</span>
-          {(beyblade.pointsOfContact?.length ?? 0) > 0 && <span>Red→Yellow arcs = Contact points ({beyblade.pointsOfContact.length})</span>}
-          {(beyblade.spinStealPoints?.length ?? 0) > 0 && <span>Cyan→Blue arcs = Spin steal ({beyblade.spinStealPoints!.length})</span>}
+      {(beyblade.pointsOfContact?.length ?? 0) > 0 && (
+        <div style={{ marginTop: 10, background: C.bg3, borderRadius: 8, padding: 10, fontSize: 11, color: C.faint }}>
+          <span style={{ fontWeight: 600, color: C.muted }}>Legend: </span>
+          <span>Red→Yellow arcs = Contact points ({beyblade.pointsOfContact.length})</span>
         </div>
       )}
     </div>

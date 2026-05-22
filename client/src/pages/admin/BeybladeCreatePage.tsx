@@ -9,7 +9,7 @@ import WhatsAppStyleImageEditor from "@/components/admin/WhatsAppStyleImageEdito
 import ImageCropper from "@/components/admin/ImageCropper";
 import type { ImageCropperRef } from "@/components/admin/ImageCropper";
 import Step3ContactPoints from "@/components/admin/Step3ContactPoints";
-import type { BeybladeStats, PointOfContact, SpinStealPoint } from "@/types/beybladeStats";
+import type { BeybladeStats, PointOfContact } from "@/types/beybladeStats";
 
 const TOTAL_POINTS = 360;
 const MAX_PER_TYPE = 150;
@@ -46,7 +46,6 @@ export function BeybladeCreatePage() {
   const [imageEditorMode, setImageEditorMode] = useState<"whatsapp" | "crop" | null>(null);
   const [imagePosition, setImagePosition] = useState({ x:0, y:0, scale:1, rotation:0 });
   const [pointsOfContact, setPointsOfContact] = useState<PointOfContact[]>([]);
-  const [spinStealPoints, setSpinStealPoints] = useState<SpinStealPoint[]>([]);
   const cropperRef = useRef<ImageCropperRef>(null);
 
   const set = (key: keyof FormData, value: any) => setForm(f => ({ ...f, [key]:value }));
@@ -77,7 +76,6 @@ export function BeybladeCreatePage() {
       ? Math.ceil(1000 * (1 + form.stamina * 0.01333))
       : Math.min(Math.ceil(1000 * (1 + form.stamina * 0.01333)), 2500),
     pointsOfContact,
-    spinStealPoints,
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,7 +139,6 @@ export function BeybladeCreatePage() {
         invulnerabilityChance, spinDecayRate, maxSpin, spinStealFactor,
         maxStamina, speedBonus,
         pointsOfContact,
-        spinStealPoints,
         createdAt: serverTimestamp(),
       });
       toast.success(`Created ${form.displayName}!`);
@@ -265,14 +262,14 @@ export function BeybladeCreatePage() {
               </div>
 
               {imageEditorMode && rawImageUrl && (
-                <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000 }}>
-                  <div style={{ maxWidth:420, width:"100%", padding:16 }}>
+                <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"flex-start", justifyContent:"center", zIndex:1000, overflowY:"auto", padding:"20px 16px" }}>
+                  <div style={{ width:"100%", maxWidth: imageEditorMode === "whatsapp" ? "fit-content" : 420 }}>
                     {imageEditorMode === "whatsapp" && (
                       <WhatsAppStyleImageEditor
                         imageUrl={rawImageUrl}
                         onPositionChange={setImagePosition}
                         initialPosition={imagePosition}
-                        circleSize={320}
+                        circleSize={Math.min(320, window.innerWidth - 80)}
                         onSave={handleImageEditorSave}
                         onCancel={() => setImageEditorMode(null)}
                       />
@@ -310,7 +307,6 @@ export function BeybladeCreatePage() {
           beyblade={previewBeyblade}
           onChange={(updated) => {
             if (updated.pointsOfContact !== undefined) setPointsOfContact(updated.pointsOfContact);
-            if (updated.spinStealPoints !== undefined) setSpinStealPoints(updated.spinStealPoints ?? []);
           }}
         />
       )}

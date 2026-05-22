@@ -274,14 +274,14 @@ export function BeybladeEditPage() {
 
       {/* Image editor modal */}
       {editorMode && rawImageUrl && (
-        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000 }}>
-          <div style={{ maxWidth:400, width:"100%", padding:16 }}>
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"flex-start", justifyContent:"center", zIndex:1000, overflowY:"auto", padding:"20px 16px" }}>
+          <div style={{ width:"100%", maxWidth: editorMode === "whatsapp" ? "fit-content" : 400 }}>
             {editorMode === "whatsapp" && (
               <WhatsAppStyleImageEditor
                 imageUrl={rawImageUrl}
                 onPositionChange={(pos) => { setImagePosition(pos); set("imagePosition", pos); }}
                 initialPosition={imagePosition}
-                circleSize={320}
+                circleSize={Math.min(320, window.innerWidth - 80)}
                 onSave={handleEditorSave}
                 onCancel={() => setEditorMode(null)}
               />
