@@ -6,6 +6,7 @@
 // backward compatibility — existing imports from this module continue to work.
 
 import type { BeybladeStats } from "./beybladeStats";
+import type { ComboCondition } from "./comboTask";
 export type { BeybladeStats };
 
 // ─── Core Enums ───────────────────────────────────────────────────────────────
@@ -113,6 +114,7 @@ export interface ComboEffectDef {
 export interface BeybladeComboSlot {
   sequence: [string, string, string]; // 3 ComboKeys (e.g. "moveRight","moveRight","attack")
   effectId: string;                   // references ComboEffectDef.id
+  condition?: ComboCondition; // optional trigger/condition for reactive combos
 }
 
 export interface SpecialMoveStep {

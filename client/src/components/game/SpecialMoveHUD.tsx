@@ -93,7 +93,7 @@ export function SpecialMoveHUD({ myBeyblade, specialMoveData, lastSpecialMoveFir
         </div>
 
         {/* Cooldown Ring with text */}
-        <div style={{ position: "relative", width: 70, height: 70, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div data-testid="special-move-power-ring" style={{ position: "relative", width: 70, height: 70, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <svg width={70} height={70} style={{ position: "absolute", transform: "rotate(-90deg)" }}>
             {/* Background ring */}
             <circle
@@ -127,7 +127,7 @@ export function SpecialMoveHUD({ myBeyblade, specialMoveData, lastSpecialMoveFir
 
         {/* Ready indicator */}
         {isReady && (
-          <div style={{
+          <div data-testid="special-move-active" style={{
             fontSize: 10,
             fontWeight: 700,
             color: C.green,

@@ -159,6 +159,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ── Script-builder / combo-effects collections (public read, admin write) ──
+    match /particle_presets/{id} { allow read; allow write: if isAdmin(); }
+    match /animation_presets/{id} { allow read; allow write: if isAdmin(); }
+    match /behavior_defs/{id} { allow read; allow write: if isAdmin(); }
+    match /combo_effects/{id} { allow read; allow write: if isAdmin(); }
+    match /round_modifiers/{id} { allow read; allow write: if isAdmin(); }
+    match /element_types/{id} { allow read; allow write: if isAdmin(); }
+
     // ── Catch-all: deny unauthenticated and unlisted paths ────────────────────
     match /{document=**} {
       allow read, write: if false;

@@ -53,15 +53,15 @@ const BEHAVIOR_DEFS = [
   { id: "spawn.bey_ai",          category: "spawning", description: "Spawn an AI-controlled bey",               params: ["beyId","aiDifficulty","statsMultiplier"] },
 
   // ── ARENA ─────────────────────────────────────────────────────────────────────
-  { id: "arena.effect.floor_override",   category: "arena",  description: "Override entire floor hazard type",  params: ["hazardType","intensity","dur"] },
+  { id: "arena.effect.floor_override",   name: "Floor Override",    category: "arena",  description: "Replace arena floor with hazard type",              params: { hazardType: "lava", durationTicks: 300 } },
   { id: "element.override_type",  category: "arena",  description: "ELEMENTAL_BOOST — temporarily override bey element type for N ticks", params: ["elementType","dur"] },
-  { id: "arena.effect.gravity_change",   category: "arena",  description: "Change arena gravity multiplier",    params: ["multiplier","dur"] },
-  { id: "arena.effect.arena_tilt",       category: "arena",  description: "Tilt arena floor",                   params: ["angleDeg","directionDeg","dur"] },
-  { id: "arena.effect.freeze_all",       category: "arena",  description: "Freeze all beys except caster",      params: ["dur","spareTeammates"] },
-  { id: "arena.effect.fog_of_war",       category: "arena",  description: "Reduce visibility for all players",  params: ["dur","affectsCaster"] },
-  { id: "arena.effect.darkness",         category: "arena",  description: "Black overlay — only caster visible",params: ["dur","flashExitMs"] },
-  { id: "arena.effect.reverse_controls", category: "arena",  description: "Invert all players controls",        params: ["dur","affectsCaster"] },
-  { id: "arena.effect.no_combos",        category: "arena",  description: "Disable combo detection for all",    params: ["dur","affectsCaster"] },
+  { id: "arena.effect.gravity_change",   name: "Gravity Change",    category: "arena",  description: "Modify arena gravity multiplier",                   params: { gravityMult: 2.0, durationTicks: 300 } },
+  { id: "arena.effect.arena_tilt",       name: "Arena Tilt",        category: "arena",  description: "Tilt the arena floor",                              params: { angleDeg: 15, durationTicks: 300 } },
+  { id: "arena.effect.freeze_all",       name: "Freeze All",        category: "arena",  description: "Lock all bey velocities except caster",             params: { durationTicks: 120 } },
+  { id: "arena.effect.fog_of_war",       name: "Fog of War",        category: "arena",  description: "Reduce visibility range",                           params: { durationTicks: 300 } },
+  { id: "arena.effect.darkness",         name: "Darkness",          category: "arena",  description: "Cover arena in darkness",                           params: { durationTicks: 180 } },
+  { id: "arena.effect.reverse_controls", name: "Reverse Controls",  category: "arena",  description: "Invert all player controls",                        params: { durationTicks: 120 } },
+  { id: "arena.effect.no_combos",        name: "No Combos",         category: "arena",  description: "Disable combo detection",                           params: { durationTicks: 180 } },
 
   // ── CONTROL ───────────────────────────────────────────────────────────────────
   { id: "control.invulnerability",  category: "control",  description: "Grant damage immunity for N ticks",    params: ["dur"] },

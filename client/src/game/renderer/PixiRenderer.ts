@@ -1135,7 +1135,7 @@ export class BeybladeGameRenderer {
     const durationMs = Math.round(durationTicks * (1000 / 60));
     const halfMs = durationMs / 2;
     const baseScale = this.world.scale;
-    const peakScale = baseScale * zoomFactor;
+    const peakScale = Math.min(baseScale * zoomFactor, this.world.limits.maxZoom);
     const startTime = Date.now();
 
     const tween = () => {

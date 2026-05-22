@@ -44,7 +44,7 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error }: Loadin
   const barColor = error ? C.red : isDone ? C.green : C.blue;
 
   return (
-    <div style={{
+    <div data-testid="loading-progress" style={{
       position: "absolute", inset: 0, display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       background: C.bg0, color: C.text, padding: 32, zIndex: 50,
@@ -68,7 +68,7 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error }: Loadin
       {/* Step dots */}
       <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
         {STEP_ORDER.map((step, i) => (
-          <div key={step} title={STEP_LABEL[step]} style={{
+          <div key={step} data-testid={`loading-step-${step}`} title={STEP_LABEL[step]} style={{
             width: 8, height: 8, borderRadius: "50%",
             background: i < idx ? C.green : i === idx ? barColor : C.bg3,
             transition: "background 200ms",

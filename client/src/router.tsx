@@ -46,6 +46,12 @@ import { TournamentDetailPage } from "./pages/admin/TournamentDetailPage";
 import { UsersPage } from "./pages/admin/UsersPage";
 import { AIVsAITestPage } from "./pages/admin/AIVsAITestPage";
 
+// M11: Custom enum admin pages
+import BehaviorDefsPage from "./pages/admin/BehaviorDefsPage";
+import ComboEffectsPage from "./pages/admin/ComboEffectsPage";
+import AnimationPresetsPage from "./pages/admin/AnimationPresetsPage";
+import RoundModifiersPage from "./pages/admin/RoundModifiersPage";
+
 // 2.5D part system pages
 import { PartSearchPage } from "./pages/admin/2d/PartSearchPage";
 import { PartListPage } from "./pages/admin/2d/parts/PartListPage";
@@ -160,6 +166,13 @@ export const router = createBrowserRouter([
 
       // AI vs AI test lab — admin spectates two AIs fighting
       { path: "ai-vs-ai", element: <AIVsAITestPage /> },
+
+      // ── M11: Custom enum admin pages ──
+      { path: "behavior-defs",      element: <BehaviorDefsPage /> },
+      { path: "combo-effects",      element: <ComboEffectsPage /> },
+      { path: "particle-presets",   element: <ParticlePresetsPage /> },
+      { path: "animation-presets",  element: <AnimationPresetsPage /> },
+      { path: "round-modifiers",    element: <RoundModifiersPage /> },
 
       // ── 2.5D Part System — canonical URL ──
       { path: "2.5d/parts", element: <PartSearchPage /> },

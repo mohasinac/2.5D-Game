@@ -723,6 +723,40 @@ const ARENAS = [
     surfaceFriction: 0.004,
     difficulty: "extreme",
   },
+
+  // ── 12. Test Arena (Spawn) — E2E testing ──────────────────────────────────
+  // Minimal circular arena designed for spawn-interval E2E tests.
+  // spawnIntervalSec is intentionally very short (5 s) for fast test feedback.
+  {
+    id: "test-arena-spawn",
+    name: "Test Arena (Spawn)",
+    description: "Minimal E2E test arena with fast bey spawning. Not intended for regular play.",
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "metrocity",
+    autoRotate: false,
+    wall: circleWall("metal", 15, 8),
+    obstacles: [],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.01,
+    surfaceFriction: 0.008,
+    difficulty: "easy",
+    beySpawn: {
+      enabled: true,
+      spawnIntervalSec: 5,
+      maxSpawnedBeys: 3,
+      despawnCondition: "knockout",
+      beyPool: [
+        { beyId: "storm-pegasus", statsMultiplier: 0.5, aiDifficulty: "medium", controlMode: "ai" },
+      ],
+    },
+  },
 ];
 
 // ─── Seed ─────────────────────────────────────────────────────────────────────

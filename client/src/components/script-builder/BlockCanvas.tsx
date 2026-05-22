@@ -66,6 +66,26 @@ function renderMixedTask(task: ComboTask): React.ReactNode {
   );
 }
 
+function renderArenaEffectTaskBlock(task: ComboTask, taskIndex: number): React.ReactNode {
+  const action = task.action as any;
+  if (!action || action.type !== "arena_effect") return null;
+  const effect = action.effect;
+  const effectLabel: string = typeof effect === "object" && effect !== null
+    ? (effect.type ?? "effect")
+    : (String(effect ?? "effect"));
+  return (
+    <div
+      className="rounded border-2 border-orange-500 bg-orange-900/20 p-2 flex items-center gap-2"
+      data-testid={`block-arena-effect-${taskIndex}`}
+    >
+      <span className="text-orange-400">🌍</span>
+      <span className="text-xs text-orange-300 font-bold">ARENA</span>
+      <span className="text-xs text-gray-300">{effectLabel}</span>
+      {/* No target row for arena_effect */}
+    </div>
+  );
+}
+
 export function BlockCanvas({ steps, onChange, draggedBlock, onDragEnd, tasks }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
@@ -176,6 +196,27 @@ export function BlockCanvas({ steps, onChange, draggedBlock, onDragEnd, tasks }:
                 onDrop={e => handleDrop(e, idx)}
               />
               {renderMixedTask(mixedTask)}
+            </div>
+          );
+        }
+
+        // Check for arena_effect task (from tasks[idx] or from behaviorId prefix)
+        const arenaEffectTask = tasks?.[idx]?.action?.type === "arena_effect"
+          ? tasks[idx]
+          : block.behaviorId.startsWith("arena.effect")
+            ? ({ action: { type: "arena_effect", effect: (block.behaviorId.replace("arena.effect.", "") as unknown) as import("@/types/comboTask").ArenaEffectPayload }, timing: { type: "instant" } } as unknown as ComboTask)
+            : null;
+        if (arenaEffectTask) {
+          return (
+            <div key={block.id}>
+              {/* Drop zone above block */}
+              <div
+                style={{ height: dragOverIdx === idx ? 8 : 4, background: dragOverIdx === idx ? C.blue + "88" : "transparent", borderRadius: 4, transition: "all 0.1s", margin: "1px 0" }}
+                onDragOver={e => { e.preventDefault(); e.stopPropagation(); setDragOverIdx(idx); }}
+                onDragLeave={() => setDragOverIdx(null)}
+                onDrop={e => handleDrop(e, idx)}
+              />
+              {renderArenaEffectTaskBlock(arenaEffectTask, idx)}
             </div>
           );
         }

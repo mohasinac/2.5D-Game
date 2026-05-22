@@ -19,6 +19,7 @@ import { PartPicker } from "./PartPicker";
 import { resolveBeybladeSystem, computeBeybladeStats } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
 import type { BeybladeSystem, SubPartAttachment, SubPartParent, BeybladeComboSlot, SpecialMoveConfig } from "@/types/beybladeSystem";
+import type { ComboTrigger } from "@/types/comboTask";
 
 type Tab =
   | "overview"
@@ -460,6 +461,16 @@ const KEY_LABELS: Record<string, string> = {
 };
 const ALL_KEYS = Object.keys(KEY_LABELS);
 
+const TRIGGER_OPTIONS: { value: string; label: string }[] = [
+  { value: "sequence", label: "Sequence (3 keys)" },
+  { value: "on_hit_received", label: "On Hit Received" },
+  { value: "on_near_ring_out", label: "On Near Ring-Out" },
+  { value: "on_low_spin", label: "On Low Spin" },
+  { value: "on_partner_near_ring_out", label: "On Partner Near Ring-Out" },
+  { value: "on_opponent_special_move", label: "On Opponent Special Move" },
+  { value: "on_burst_attempt", label: "On Burst Attempt" },
+];
+
 function BeybladeComboSlotsEditor({
   comboSlots,
   specialMove,
@@ -538,21 +549,26 @@ function BeybladeComboSlotsEditor({
                     style={{ background: "none", border: "none", color: C.red, fontSize: 14, cursor: "pointer" }}
                   >×</button>
                 </div>
+                {/* Trigger type + Effect ID row */}
                 <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
-                  {([0, 1, 2] as const).map((pos) => (
-                    <div key={pos}>
-                      <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Key {pos + 1}</div>
-                      <select
-                        value={slot.sequence[pos]}
-                        onChange={(e) => patchSeq(i, pos, e.target.value)}
-                        style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
-                      >
-                        {ALL_KEYS.map((k) => (
-                          <option key={k} value={k}>{KEY_LABELS[k]} {k}</option>
-                        ))}
-                      </select>
-                    </div>
-                  ))}
+                  <div>
+                    <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger</div>
+                    <select
+                      value={slot.condition?.trigger ?? "sequence"}
+                      onChange={(e) => {
+                        const trigger = e.target.value;
+                        const cond = trigger === "sequence"
+                          ? { ...slot.condition, trigger: undefined }
+                          : { ...slot.condition, trigger: trigger as ComboTrigger };
+                        patchSlot(i, { condition: cond });
+                      }}
+                      style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                    >
+                      {TRIGGER_OPTIONS.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
+                  </div>
                   <div>
                     <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Effect ID</div>
                     <input
@@ -562,10 +578,49 @@ function BeybladeComboSlotsEditor({
                       style={{ width: 120, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
                     />
                   </div>
+                  {/* Trigger cooldown — shown for reactive triggers */}
+                  {slot.condition?.trigger && slot.condition.trigger !== "sequence" && (
+                    <div>
+                      <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Cooldown (ms)</div>
+                      <input
+                        type="number" min={0} step={500}
+                        value={slot.condition?.triggerCooldownMs ?? 3000}
+                        onChange={(e) => patchSlot(i, { condition: { ...slot.condition, triggerCooldownMs: parseInt(e.target.value, 10) } })}
+                        style={{ width: 80, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                      />
+                    </div>
+                  )}
                 </div>
-                <div style={{ fontSize: 11, color: C.faint }}>
-                  Sequence: {slot.sequence.map((k) => KEY_LABELS[k] ?? k).join(" → ")}
-                </div>
+
+                {/* Sequence keys — only shown when trigger type is "sequence" */}
+                {(!slot.condition?.trigger || slot.condition.trigger === "sequence") && (
+                  <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
+                    {([0, 1, 2] as const).map((pos) => (
+                      <div key={pos}>
+                        <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Key {pos + 1}</div>
+                        <select
+                          value={slot.sequence[pos]}
+                          onChange={(e) => patchSeq(i, pos, e.target.value)}
+                          style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                        >
+                          {ALL_KEYS.map((k) => (
+                            <option key={k} value={k}>{KEY_LABELS[k]} {k}</option>
+                          ))}
+                        </select>
+                      </div>
+                    ))}
+                    <div style={{ fontSize: 11, color: C.faint, alignSelf: "center" }}>
+                      {slot.sequence.map((k) => KEY_LABELS[k] ?? k).join(" → ")}
+                    </div>
+                  </div>
+                )}
+
+                {/* Reactive trigger info */}
+                {slot.condition?.trigger && slot.condition.trigger !== "sequence" && (
+                  <div style={{ fontSize: 11, color: C.blue, background: "rgba(80,140,255,0.07)", borderRadius: 5, padding: "5px 9px" }}>
+                    Reactive: fires automatically when <strong>{slot.condition.trigger.replace(/_/g, " ")}</strong> triggers
+                  </div>
+                )}
               </div>
             );
           })}
