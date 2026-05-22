@@ -895,6 +895,7 @@ export interface BeybladeSystem {
   comboSlots: BeybladeComboSlot[];
   specialMove?: SpecialMoveConfig;
   linkedStatsId?: string;
+  elementTypes?: import("./elementTypes").ElementType[]; // up to 2 element types (AB)
   createdAt?: unknown;
   updatedAt?: unknown;
 }

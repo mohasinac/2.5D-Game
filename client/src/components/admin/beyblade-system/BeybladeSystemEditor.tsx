@@ -20,6 +20,8 @@ import { resolveBeybladeSystem, computeBeybladeStats } from "@/lib/beybladeSyste
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
 import type { BeybladeSystem, SubPartAttachment, SubPartParent, BeybladeComboSlot, SpecialMoveConfig } from "@/types/beybladeSystem";
 import type { ComboTrigger } from "@/types/comboTask";
+import { ELEMENT_COLORS, ELEMENT_ICONS } from "@/types/elementTypes";
+import type { ElementType } from "@/types/elementTypes";
 
 type Tab =
   | "overview"
@@ -252,6 +254,44 @@ export function BeybladeSystemEditor({ systemId }: Props) {
                   ))}
                 </div>
               </div>
+              {/* Element Types (AB11) */}
+              <div>
+                <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Element Types (max 2)</label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+                  {(Object.keys(ELEMENT_ICONS) as ElementType[]).map((elem) => {
+                    const active = (system.elementTypes ?? []).includes(elem);
+                    const color = ELEMENT_COLORS[elem];
+                    return (
+                      <button
+                        key={elem}
+                        title={elem}
+                        onClick={() => {
+                          const current = (system.elementTypes ?? []) as ElementType[];
+                          const next = active
+                            ? current.filter(e => e !== elem)
+                            : current.length < 2 ? [...current, elem] : current;
+                          updateSystem({ elementTypes: next });
+                        }}
+                        style={{
+                          padding: "4px 10px", fontSize: 11, borderRadius: 20, cursor: "pointer",
+                          background: active ? `${color}22` : C.bg2,
+                          color: active ? color : C.faint,
+                          border: `1px solid ${active ? color + "55" : C.border}`,
+                          fontWeight: active ? 700 : 400,
+                        }}
+                      >
+                        {ELEMENT_ICONS[elem]} {elem}
+                      </button>
+                    );
+                  })}
+                </div>
+                {(system.elementTypes ?? []).length > 0 && (
+                  <div style={{ fontSize: 11, color: C.faint }}>
+                    Selected: {(system.elementTypes ?? []).map(e => `${ELEMENT_ICONS[e]} ${e}`).join(" + ")}
+                  </div>
+                )}
+              </div>
+
               <div style={{ fontSize: 12, color: C.muted }}>
                 <div style={{ marginBottom: 4 }}>Linked Stats ID: <code style={{ color: C.text }}>{system.linkedStatsId ?? "(none — publish to create)"}</code></div>
               </div>
