@@ -9,6 +9,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { C, alpha } from "@/styles/theme";
+import { isCompatible } from "./partCompatibility";
 
 interface PartCard {
   id: string;
@@ -18,27 +19,6 @@ interface PartCard {
   requiredCompatibility?: string[];
   excludedCompatibility?: string[];
   images?: { topView?: string };
-}
-
-function isCompatible(
-  part: PartCard,
-  existingTags: string[],
-  isAdmin: boolean,
-): { ok: boolean; reason: string } {
-  if (isAdmin) return { ok: true, reason: "" };
-
-  for (const exc of part.excludedCompatibility ?? []) {
-    if (existingTags.includes(exc)) {
-      return { ok: false, reason: `Excluded by tag "${exc}"` };
-    }
-  }
-
-  const required = part.requiredCompatibility ?? [];
-  if (required.length > 0 && !required.some((t) => existingTags.includes(t))) {
-    return { ok: false, reason: `Requires one of: ${required.join(", ")}` };
-  }
-
-  return { ok: true, reason: "" };
 }
 
 interface Props {

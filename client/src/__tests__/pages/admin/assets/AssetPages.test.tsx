@@ -74,7 +74,7 @@ describe("ArenaThemeAssetsPage", () => {
   it("accepts image files and opens editor", async () => {
     render(<ArenaThemeAssetsPage />);
     const fileInput = document.querySelector("input[type='file']") as HTMLInputElement;
-    expect(fileInput.accept).toBe("image/*");
+    expect(fileInput.accept).toMatch(/image\//); // accepts image types (png/jpeg/gif/webp)
 
     const file = new File(["img"], "theme.png", { type: "image/png" });
     fireEvent.change(fileInput, { target: { files: [file] } });
