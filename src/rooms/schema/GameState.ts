@@ -241,6 +241,7 @@ export class Beyblade extends Schema {
   // Special states
   @type("boolean") isActive: boolean = true;
   @type("boolean") isRingOut: boolean = false;
+  @type("boolean") isBurst: boolean = false;   // Phase R: set when eliminated by burst
   @type("boolean") isInvulnerable: boolean = false;
   @type("number") invulnerabilityTimer: number = 0;
 

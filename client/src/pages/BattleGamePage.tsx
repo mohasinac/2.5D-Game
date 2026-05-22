@@ -75,6 +75,7 @@ export function BattleGamePage() {
     render,
     spawnCollisionParticles,
     spawnSpinOutParticles,
+    spawnBurstParticles,
     spawnDamageNumber,
     physicsToScreen,
     playSpecialMoveEffect,
@@ -134,6 +135,11 @@ export function BattleGamePage() {
       spawnSpinOutParticles(x, y, TYPE_COLORS[data.type] ?? 0xffffff);
       SoundManager.play("spin-out");
     });
+    room.onMessage("burst", (data: any) => {
+      const { x, y } = physicsToScreen(data.x, data.y);
+      spawnBurstParticles(x, y);
+      SoundManager.play("spin-out"); // reuse spin-out SFX until burst_sfx is available
+    });
     room.onMessage("special-move", (data: any) => {
       playSpecialMoveEffect(data.playerId, data.type, data.x, data.y, data.facing);
       SoundManager.play("special-move");
@@ -148,7 +154,7 @@ export function BattleGamePage() {
         setLastCombo({ name: data.comboName, timestamp: Date.now() });
       }
     });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect]);
+  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnBurstParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect]);
 
   // Auto-dismiss game-end overlay + play victory/defeat sound.
   useEffect(() => {

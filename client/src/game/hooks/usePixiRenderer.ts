@@ -68,6 +68,13 @@ export function usePixiRenderer(
     []
   );
 
+  const spawnBurstParticles = useCallback(
+    (x: number, y: number) => {
+      rendererRef.current?.spawnBurstParticles(x, y);
+    },
+    []
+  );
+
   const spawnDamageNumber = useCallback(
     (x: number, y: number, damage: number, color?: number) => {
       rendererRef.current?.spawnDamageNumber(x, y, damage, color);
@@ -111,6 +118,7 @@ export function usePixiRenderer(
     render,
     spawnCollisionParticles,
     spawnSpinOutParticles,
+    spawnBurstParticles,
     spawnDamageNumber,
     physicsToScreen,
     playSpecialMoveEffect,

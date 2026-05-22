@@ -14,4 +14,5 @@ import { BeybladeGameRenderer } from "./PixiRenderer";
 
 export class Parts25DRenderer extends BeybladeGameRenderer {
   readonly mode = "2.5d" as const;
+  protected override get is25D(): boolean { return true; }
 }

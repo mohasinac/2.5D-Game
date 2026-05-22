@@ -53,24 +53,29 @@ export class WorldTransform {
     this.limits.allowFreePan = allowFreePan;
   }
 
+  // Hard max-zoom cap: player always sees at least a 20×20 tile viewport (1 tile = 1 cm).
+  static readonly MAX_ZOOM_VIEWPORT_TILES = 20;
+
   /**
    * Compute zoom limits from arena bounds + bey radius.
    * - minZoom = whatever shows the whole arena (unless allowFreePan and arena is huge).
-   * - maxZoom = 5-bey window (~5 beys edge-to-edge on the short screen axis).
+   * - maxZoom = 5-bey window (~5 beys edge-to-edge on the short screen axis),
+   *             further capped so the viewport never shows fewer than MAX_ZOOM_VIEWPORT_TILES cm.
    */
   computeZoomLimits(beyRadiusCm: number) {
     const b = this.limits.arenaBounds;
     if (!b) return;
     const arenaW = b.maxX_cm - b.minX_cm;
     const arenaH = b.maxY_cm - b.minY_cm;
-    const arenaShort = Math.min(arenaW, arenaH);
     const screenShort = Math.min(this.screenW, this.screenH);
     const pxPerCm = getPxPerCm();
-    if (pxPerCm <= 0 || screenShort <= 0 || arenaShort <= 0 || beyRadiusCm <= 0) return;
+    if (pxPerCm <= 0 || screenShort <= 0 || arenaW <= 0 || arenaH <= 0 || beyRadiusCm <= 0) return;
     const fitZoom = screenShort / (Math.max(arenaW, arenaH) * pxPerCm);
     const fiveBeyZoom = screenShort / (5 * 2 * beyRadiusCm * pxPerCm);
+    // 20-tile viewport cap: zoom can never make the short axis show fewer than 20 cm
+    const tileCapZoom = screenShort / (WorldTransform.MAX_ZOOM_VIEWPORT_TILES * pxPerCm);
     this.limits.minZoom = this.limits.allowFreePan ? Math.min(fitZoom, 0.15) : fitZoom;
-    this.limits.maxZoom = Math.max(fiveBeyZoom, fitZoom * 1.5);
+    this.limits.maxZoom = Math.min(Math.max(fiveBeyZoom, fitZoom * 1.5), tileCapZoom);
   }
 
   setZoom(z: number, immediate = false) {
@@ -78,6 +83,12 @@ export class WorldTransform {
     this.camera.targetZoom = clamped;
     if (immediate) this.camera.zoom = clamped;
   }
+
+  /** Alias for camera zoom — used by special-move camera tween. */
+  get scale(): number { return this.camera.zoom; }
+
+  /** Set zoom immediately (for camera tween, clamped by limits). */
+  setScale(z: number) { this.setZoom(z, true); }
 
   nudgeZoom(deltaMul: number) {
     this.setZoom(this.camera.targetZoom * deltaMul);

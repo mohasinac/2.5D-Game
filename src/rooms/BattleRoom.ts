@@ -38,8 +38,19 @@ import type { ArenaSystem } from "../types/arenaSystem";
 import { MODIFIER_MAP, type RoundModifier } from "../../client/src/types/roundModifier";
 import { getDualTypeAttackMultiplier, getDualTypeDefenseMultiplier, type ElementType } from "../../client/src/types/elementTypes";
 import type { ArenaTimelineEvent } from "../types/shared";
+import type { ArenaLink } from "../../client/src/types/arenaConfigNew";
 
 const QTE_KEY_POOL = ["left", "right", "up", "down", "attack", "defense", "dodge"];
+
+// ─── Arena link helper ────────────────────────────────────────────────────────
+
+function pointToSegmentDistance(px: number, py: number, x1: number, y1: number, x2: number, y2: number): number {
+  const dx = x2 - x1, dy = y2 - y1;
+  const lenSq = dx * dx + dy * dy;
+  if (lenSq === 0) return Math.hypot(px - x1, py - y1);
+  const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lenSq));
+  return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+}
 
 function generateQTESequence(rand: () => number, powerCost: number): string[] {
   const n = Math.max(1, Math.floor(powerCost / 25));
@@ -103,6 +114,30 @@ export class BattleRoom extends Room<GameState> {
   private matchElapsedMs = 0;
   private timelineIndex = 0;
   private timelineEvents: ArenaTimelineEvent[] = [];
+
+  // ── Jump physics local state (B3 / G1-G3) — not in Colyseus schema ──────────
+  /** Per-bey jump state for standard jump (B3). */
+  private beyJumpState = new Map<string, {
+    isJumping: boolean;
+    jumpZ: number;
+    jumpVelocity: number;
+  }>();
+  /** Per-bey high-jump / meteor-strike state (G2-G3). */
+  private beyHighJumpState = new Map<string, {
+    isHighJumping: boolean;
+    hangTicksRemaining: number;
+    isMeteorStrike: boolean;
+    landingRadius: number;
+    landingDamage: number;
+  }>();
+
+  // ── Arena bey spawns (I4) ────────────────────────────────────────────────────
+  private spawnTimer: number = 0;
+  private spawnedBeyIds: Set<string> = new Set();
+
+  // ── Arena link crossing cooldowns (L2/L3) ────────────────────────────────────
+  // beyId → linkId → cooldownTicksRemaining
+  private linkCooldowns: Map<string, Map<string, number>> = new Map();
 
   /** Arena shrink state (Phase V). */
   private shrinkStartMs = 0;
@@ -324,6 +359,8 @@ export class BattleRoom extends Room<GameState> {
     this.comboTrackers.delete(client.sessionId);
     this.comboMatchStates.delete(client.sessionId);
     this.triggerStates.delete(client.sessionId);
+    this.beyJumpState.delete(client.sessionId);
+    this.beyHighJumpState.delete(client.sessionId);
     const beyblade = this.state.beyblades.get(client.sessionId);
     if (beyblade) {
       beyblade.isActive = false;
@@ -639,6 +676,20 @@ export class BattleRoom extends Room<GameState> {
 
     const forceMagnitude = computeForceMagnitude(beyblade);
 
+    // B3: jump physics — initiate jump on input
+    if (message.jump && beyblade.jumpForce > 0) {
+      let js = this.beyJumpState.get(client.sessionId);
+      if (!js) {
+        js = { isJumping: false, jumpZ: 0, jumpVelocity: 0 };
+        this.beyJumpState.set(client.sessionId, js);
+      }
+      if (!js.isJumping) {
+        js.isJumping = true;
+        js.jumpVelocity = beyblade.jumpForce;
+        js.jumpZ = 0;
+      }
+    }
+
     applyMovementInput(beyblade, message, forceMagnitude, this.physics);
 
     const events = applyActionInput(
@@ -698,6 +749,17 @@ export class BattleRoom extends Room<GameState> {
     // Mark special move as active (cleared in tick loop after specialMoveEndTime)
     beyblade.specialMoveActive = true;
     beyblade.specialMoveEndTime = Date.now() + 500;
+
+    // N2: broadcast special-move-camera + combo-visual when special move activates
+    this.broadcast("special-move-camera", {
+      beyId: beyblade.id,
+      cameraConfig: { followTarget: beyblade.id, zoomIn: true, durationMs: 500 },
+    });
+    this.broadcast("combo-visual", {
+      beyId: beyblade.id,
+      introAnimation: beyblade.specialMove || beyblade.type,
+      particlePresetId: beyblade.specialMove || beyblade.type,
+    });
 
     // Power cost for this special move (legacy = 50 deducted in InputHandler)
     const LEGACY_SPECIAL_COST = 50;
@@ -851,6 +913,15 @@ export class BattleRoom extends Room<GameState> {
     // Phase AA: expire arena-wide effects
     this.tickArenaEffects(Date.now());
 
+    // B3 / G1-G3: jump physics
+    this.tickJumpStates(deltaTime);
+
+    // I4: arena bey spawns
+    this.tickArenaSpawns(deltaTime);
+
+    // L2/L3: arena link crossing detection
+    this.tickArenaLinks(deltaTime);
+
     this.physics.update(deltaTime);
 
     if (this.arenaSystem) {
@@ -937,6 +1008,7 @@ export class BattleRoom extends Room<GameState> {
           const burstFinal = burstRaw * burstSpinMod * (1 - burstResist / 100);
           if (this.rand() < burstFinal) {
             victim.isActive = false;
+            victim.isBurst = true;
             victim.spin = 0;
             const attackerId = victim === b1 ? id2 : id1;
             this.broadcast("burst", { beyId: victim.id, attackerId, x: victim.x, y: victim.y });
@@ -1079,6 +1151,9 @@ export class BattleRoom extends Room<GameState> {
       this.broadcast("qte-expired", { attackerBeyId: this.pendingQTE.attackerSessionId });
       this.pendingQTE = null;
     }
+
+    // N6: combination lock tick (overridden by 2.5D subclass)
+    this.onTickCombinationLock(deltaTime);
   }
 
   // ─── BehaviorRef executor (Phase U / AA) ────────────────────────────────────
@@ -1180,6 +1255,249 @@ export class BattleRoom extends Room<GameState> {
         beyblade.spin = Math.min(beyblade.maxSpin, beyblade.spin + drain * 0.5);
       }
       return;
+    }
+
+    // ── movement.jump (G1) ──────────────────────────────────────────────────
+    if (behaviorId === "movement.jump") {
+      const jumpForce = (params.jumpForce as number) ?? (beyblade.jumpForce || 5);
+      const landingDamage = (params.landingDamage as number) ?? 10;
+      const landingRadius = (params.landingRadius as number) ?? 3;
+      let js = this.beyJumpState.get(sessionId);
+      if (!js) {
+        js = { isJumping: false, jumpZ: 0, jumpVelocity: 0 };
+        this.beyJumpState.set(sessionId, js);
+      }
+      if (!js.isJumping) {
+        js.isJumping = true;
+        js.jumpVelocity = jumpForce;
+        js.jumpZ = 0;
+        // Store landing params for when the jump lands
+        (js as any).landingDamage = landingDamage;
+        (js as any).landingRadius = landingRadius;
+      }
+      return;
+    }
+
+    // ── movement.high_jump (G2) ─────────────────────────────────────────────
+    if (behaviorId === "movement.high_jump") {
+      const hangTicks = (params.hangTicks as number) ?? 120;
+      let hjs = this.beyHighJumpState.get(sessionId);
+      if (!hjs || !hjs.isHighJumping) {
+        hjs = {
+          isHighJumping: true,
+          hangTicksRemaining: hangTicks,
+          isMeteorStrike: false,
+          landingRadius: 0,
+          landingDamage: 0,
+        };
+        this.beyHighJumpState.set(sessionId, hjs);
+        // Make bey non-colliding while airborne
+        this.physics.setBodySensor(sessionId, true);
+        this.broadcast("movement-jump-hang", { beyId: sessionId, hangTicks });
+      }
+      return;
+    }
+
+    // ── movement.meteor_strike (G3) ─────────────────────────────────────────
+    if (behaviorId === "movement.meteor_strike") {
+      const hangTicks = (params.hangTicks as number) ?? 120;
+      const landingRadius = (params.landingRadius as number) ?? 5;
+      const landingDamage = (params.landingDamage as number) ?? 30;
+      let hjs = this.beyHighJumpState.get(sessionId);
+      if (!hjs || !hjs.isHighJumping) {
+        hjs = {
+          isHighJumping: true,
+          hangTicksRemaining: hangTicks,
+          isMeteorStrike: true,
+          landingRadius,
+          landingDamage,
+        };
+        this.beyHighJumpState.set(sessionId, hjs);
+        this.physics.setBodySensor(sessionId, true);
+        this.broadcast("meteor-strike-hang", {
+          beyId: sessionId,
+          landingX: beyblade.x,
+          landingY: beyblade.y,
+          landingRadius: landingRadius * 24, // convert cm to px
+          hangTicks,
+        });
+      }
+      return;
+    }
+  }
+
+  // ─── Jump state tick (B3 / G1-G3) ───────────────────────────────────────────
+
+  private tickJumpStates(deltaTime: number): void {
+    // Standard jump physics (B3)
+    this.beyJumpState.forEach((js, sessionId) => {
+      if (!js.isJumping) return;
+      const bey = this.state.beyblades.get(sessionId);
+      js.jumpZ += js.jumpVelocity;
+      js.jumpVelocity -= 9.8 * (deltaTime / 1000);
+      if (js.jumpZ <= 0) {
+        // Landing
+        const landingDamage: number = (js as any).landingDamage ?? 0;
+        const landingRadius: number = (js as any).landingRadius ?? 0;
+        js.jumpZ = 0;
+        js.isJumping = false;
+        js.jumpVelocity = 0;
+        // Apply landing damage to nearby beys (G1)
+        if (bey && landingDamage > 0 && landingRadius > 0) {
+          const landingRadiusPx = landingRadius * 24;
+          this.state.beyblades.forEach((other, sid) => {
+            if (sid === sessionId || !other.isActive) return;
+            const dist = Math.hypot(other.x - bey.x, other.y - bey.y);
+            if (dist <= landingRadiusPx) {
+              const falloff = 1 - dist / landingRadiusPx;
+              other.health = Math.max(0, other.health - landingDamage * falloff);
+            }
+          });
+        }
+      } else if (bey) {
+        js.jumpZ = Math.min(js.jumpZ, bey.jumpHeight);
+      }
+    });
+
+    // High-jump / meteor-strike countdown (G2-G3)
+    this.beyHighJumpState.forEach((hjs, sessionId) => {
+      if (!hjs.isHighJumping) return;
+      hjs.hangTicksRemaining--;
+      if (hjs.hangTicksRemaining <= 0) {
+        hjs.isHighJumping = false;
+        // Restore physics collision
+        this.physics.setBodySensor(sessionId, false);
+        const bey = this.state.beyblades.get(sessionId);
+        if (!bey || !bey.isActive) return;
+        if (hjs.isMeteorStrike) {
+          // Apply AoE damage on landing (G3)
+          const landingRadiusPx = hjs.landingRadius * 24;
+          let totalDamage = 0;
+          this.state.beyblades.forEach((other, sid) => {
+            if (sid === sessionId || !other.isActive) return;
+            const dist = Math.hypot(other.x - bey.x, other.y - bey.y);
+            if (dist <= landingRadiusPx) {
+              const falloff = 1 - dist / landingRadiusPx;
+              const dmg = hjs.landingDamage * falloff;
+              other.health = Math.max(0, other.health - dmg);
+              totalDamage += dmg;
+            }
+          });
+          this.broadcast("meteor-strike-land", {
+            beyId: sessionId,
+            landingX: bey.x,
+            landingY: bey.y,
+            landingRadius: landingRadiusPx,
+            damageDealt: totalDamage,
+          });
+        }
+      }
+    });
+  }
+
+  // ─── Arena bey spawns (I4) ───────────────────────────────────────────────────
+
+  private tickArenaSpawns(dt: number): void {
+    const spawnCfg = (this.arenaCache as any)?.beySpawn;
+    if (!spawnCfg?.enabled) return;
+
+    this.spawnTimer += dt;
+    const intervalMs = spawnCfg.spawnIntervalSec * 1000;
+    if (this.spawnTimer < intervalMs) return;
+    this.spawnTimer = 0;
+
+    const currentSpawned = this.spawnedBeyIds.size;
+    if (currentSpawned >= spawnCfg.maxSpawnedBeys) return;
+
+    // Pick random pool entry
+    const pool: any[] = spawnCfg.beyPool;
+    if (!pool || pool.length === 0) return;
+    const entry = pool[Math.floor(Math.random() * pool.length)];
+
+    const spawnId = `spawned_${Date.now()}`;
+    this.spawnedBeyIds.add(spawnId);
+
+    this.broadcast("arena-spawn", {
+      spawnId,
+      beyId: entry.beyId,
+      controlMode: entry.controlMode,
+      statsMultiplier: entry.statsMultiplier ?? 1.0,
+      position: { x: 0, y: 0 }, // center as default
+    });
+  }
+
+  // ─── Arena link crossing detection (L2/L3) ──────────────────────────────────
+
+  tickArenaLinks(dt: number): void {
+    const links = (this.arenaCache as any)?.links as ArenaLink[] | undefined;
+    if (!links?.length) return;
+
+    for (const [sessionId, bey] of this.state.beyblades) {
+      if (!bey.isActive) continue;
+
+      for (const link of links) {
+        // Check cooldown
+        const beyLinkCooldowns = this.linkCooldowns.get(sessionId) ?? new Map<string, number>();
+        const cooldownLeft = beyLinkCooldowns.get(link.id) ?? 0;
+        if (cooldownLeft > 0) {
+          beyLinkCooldowns.set(link.id, cooldownLeft - 1);
+          this.linkCooldowns.set(sessionId, beyLinkCooldowns);
+          continue;
+        }
+
+        // L3: Check reverseCondition before allowing crossing
+        if (link.reverseCondition === "never") continue; // one-way, can't enter from this side
+        if (link.reverseCondition === "spin_above_50" && bey.spin < bey.maxSpin * 0.5) continue;
+
+        // L2: Detect crossing by checking if bey position is near the boundary line
+        const bx = bey.x;  // in pixels
+        const by = bey.y;
+
+        // Convert cm boundary to pixels (1cm = 24px, relative to arena center)
+        const cx = (this.state.arena.width * 16) / 2;
+        const cy = (this.state.arena.height * 16) / 2;
+        const x1 = cx + link.boundaryLine.x1 * 24;
+        const y1 = cy + link.boundaryLine.y1 * 24;
+        const x2 = cx + link.boundaryLine.x2 * 24;
+        const y2 = cy + link.boundaryLine.y2 * 24;
+
+        // Distance from bey to boundary line segment
+        const dist = pointToSegmentDistance(bx, by, x1, y1, x2, y2);
+        const beyRadius = (bey.radius ?? 4) * 24; // cm to px
+
+        if (dist > beyRadius + 10) continue; // not near boundary
+
+        // Bey is crossing the link — teleport to destination arena
+        // (For now, just apply momentum/damage effects since multi-arena rooms aren't implemented)
+
+        // Apply hazard damage if any
+        if (link.hazardDamage && link.hazardDamage > 0) {
+          bey.spin = Math.max(0, bey.spin - link.hazardDamage);
+        }
+
+        // Apply momentum adjustment based on levelDelta
+        if (!link.momentumPreserved) {
+          const bodyState = this.physics.getBodyState(sessionId);
+          if (bodyState) {
+            // Reduce velocity to 20% if momentum not preserved
+            this.physics.setLinearVelocity(sessionId, bodyState.velocityX * 0.2, bodyState.velocityY * 0.2);
+          }
+        }
+
+        // Broadcast link crossing event to clients
+        this.broadcast("arena-link-cross", {
+          beyId: sessionId,
+          linkId: link.id,
+          toArenaId: link.toArenaId,
+          momentumPreserved: link.momentumPreserved,
+          levelDelta: link.levelDelta,
+        });
+
+        // Set cooldown
+        const newCooldowns = this.linkCooldowns.get(sessionId) ?? new Map<string, number>();
+        newCooldowns.set(link.id, link.cooldownTicks ?? 60);
+        this.linkCooldowns.set(sessionId, newCooldowns);
+      }
     }
   }
 
@@ -1431,6 +1749,11 @@ export class BattleRoom extends Room<GameState> {
     });
 
     this.pendingQTE = null;
+    // Reset spawn state (I4)
+    this.spawnTimer = 0;
+    this.spawnedBeyIds.clear();
+    // Reset link crossing cooldowns (L2/L3)
+    this.linkCooldowns.clear();
     // Reset arena timeline state so each game in a series has its own fresh timeline
     this.matchElapsedMs = 0;
     this.timelineIndex = 0;
@@ -1465,7 +1788,7 @@ export class BattleRoom extends Room<GameState> {
           collisions: b.collisions,
           spinRemaining: b.spin,
           isWinner: b.userId === winner?.userId,
-          eliminationType: b.isRingOut ? "ring-out" : b.spin <= 0 ? "spin-out" : "survived",
+          eliminationType: b.isRingOut ? "ring-out" : b.isBurst ? "burst" : b.spin <= 0 ? "spin-out" : "survived",
         })),
       };
 
@@ -1495,6 +1818,11 @@ export class BattleRoom extends Room<GameState> {
 
   protected onBeyCollided(_id1: string, _id2: string, _impactForce: number): void {
     // override in 2.5D subclass to call partSystemManager.onBeyCollision()
+  }
+
+  /** N6: Combination lock tick — override in 2.5D subclass to call partSystemManager.tickCombinationLock(). */
+  protected onTickCombinationLock(_deltaTime: number): void {
+    // no-op in base room
   }
 
   // ─── 2.5D arena system slope physics ────────────────────────────────────────

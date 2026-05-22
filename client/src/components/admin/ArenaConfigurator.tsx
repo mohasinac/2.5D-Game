@@ -13,6 +13,7 @@ import PitsTab from "./arena-tabs/PitsTab";
 import WallsTab from "./arena-tabs/WallsTab";
 import FeaturesTab from "./arena-tabs/FeaturesTab";
 import BoundaryTab from "./arena-tabs/BoundaryTab";
+import TimelineTab from "./arena-tabs/TimelineTab";
 
 interface Props {
   arena: ArenaConfig;
@@ -21,7 +22,7 @@ interface Props {
   saving?: boolean;
 }
 
-type TabId = "basics" | "walls" | "water" | "obstacles" | "turrets" | "portals" | "speedpaths" | "pits" | "features" | "boundary";
+type TabId = "basics" | "walls" | "water" | "obstacles" | "turrets" | "portals" | "speedpaths" | "pits" | "features" | "boundary" | "timeline";
 
 const TABS: { id: TabId; label: string; icon: string; count?: (a: ArenaConfig) => number }[] = [
   { id: "basics",     label: "Basics",      icon: "⚙️" },
@@ -34,6 +35,7 @@ const TABS: { id: TabId; label: string; icon: string; count?: (a: ArenaConfig) =
   { id: "pits",       label: "Pits",        icon: "🕳️", count: a => a.pits?.length ?? 0 },
   { id: "features",   label: "Features",    icon: "✨",  count: a => (a.floorHazardZones?.length ?? 0) + (a.elevationZones?.length ?? 0) + ((a as any).effectZones?.length ?? 0) },
   { id: "boundary",   label: "Boundary",    icon: "⭕",  count: a => a.shrink ? 1 : 0 },
+  { id: "timeline",   label: "Timeline",    icon: "⏱",  count: a => a.arenaTimeline?.length ?? 0 },
 ];
 
 export default function ArenaConfigurator({ arena, onChange, onSave, saving }: Props) {
@@ -87,6 +89,7 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
           {tab === "pits"       && <PitsTab config={arena} onChange={onChange} />}
           {tab === "features"   && <FeaturesTab config={arena} onChange={onChange} />}
           {tab === "boundary"   && <BoundaryTab config={arena} onChange={onChange} />}
+          {tab === "timeline"   && <TimelineTab config={arena} onChange={onChange} />}
         </div>
 
         {/* Save button */}

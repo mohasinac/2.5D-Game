@@ -109,6 +109,23 @@ export class BeybladeGameRenderer {
   private fogOverlay: PIXI.Graphics | null = null;
   private freezeFlashTimer = 0;
 
+  // F4: combination-lock link lines (world-space, lives in featureLayer)
+  private linkLineGraphics: PIXI.Graphics | null = null;
+
+  // G4: meteor strike landing zone ring (world-space, lives in particleLayer)
+  private meteorLandingZone: { x: number; y: number; radius: number; expiresAt: number } | null = null;
+  private meteorLandingGraphics: PIXI.Graphics | null = null;
+
+  // Phase V3: shrinking boundary ring (world-space, lives in arenaLayer)
+  private shrinkRingGraphics: PIXI.Graphics | null = null;
+  private lastShrinkRadiusPx = -1; // track last drawn value to skip redundant redraws
+
+  // Phase LOS: 2.5D line-of-sight cull constants
+  protected readonly LINE_OF_SIGHT_CM = 30;
+  protected readonly FADE_START_CM    = 24;
+  /** Subclass overrides to true to enable LOS culling. */
+  protected get is25D(): boolean { return false; }
+
   // Arena geometry cache — screen space
   private arenaRadius = 0;
   private arenaCenterX = 0;
@@ -228,6 +245,9 @@ export class BeybladeGameRenderer {
 
     this.syncBeyblades(beyblades);
     this.syncDetachedBodies(gameState); // 6.13
+    this.updateShrinkRing(gameState);
+    this.renderLinkLines(beyblades);    // F4: combination-lock link lines
+    this.renderMeteorLandingZone();     // G4: meteor strike landing zone ring
   }
 
   /** Identify the player's bey (or fall back to first alive) and set camera follow target. */
@@ -382,7 +402,12 @@ export class BeybladeGameRenderer {
       boundaryRing.circle(0, 0, this.arenaRadius * 0.90);
       boundaryRing.stroke({ color: 0xff2222, width: 1, alpha: 0.2 });
 
-      this.arenaLayer.addChild(g, floorGradient, innerRing, boundaryRing);
+      // Phase V3: dynamic shrink ring — redrawn each frame when effectiveRadius changes
+      this.shrinkRingGraphics = new PIXI.Graphics();
+      this.shrinkRingGraphics.visible = false;
+      this.lastShrinkRadiusPx = -1;
+
+      this.arenaLayer.addChild(g, floorGradient, innerRing, boundaryRing, this.shrinkRingGraphics);
     } else {
       const arenaW = this.arenaRadius * 2;
       const arenaH = this.arenaRadius * 2;
@@ -393,6 +418,55 @@ export class BeybladeGameRenderer {
     }
   }
 
+  // Phase V3: redraw the shrink boundary ring each frame.
+  private updateShrinkRing(gameState: ServerGameState | null): void {
+    if (!this.shrinkRingGraphics) return;
+
+    const effPhys = gameState?.effectiveRadius;
+    if (!effPhys || effPhys <= 0 || this.physicsArenaRadius <= 0) {
+      this.shrinkRingGraphics.visible = false;
+      this.lastShrinkRadiusPx = -1;
+      return;
+    }
+
+    const scale = this.arenaRadius / this.physicsArenaRadius;
+    const screenR = effPhys * scale;
+
+    // Skip redraw if radius hasn't changed meaningfully (< 0.5px drift)
+    if (Math.abs(screenR - this.lastShrinkRadiusPx) < 0.5) {
+      this.shrinkRingGraphics.visible = true;
+      return;
+    }
+    this.lastShrinkRadiusPx = screenR;
+
+    const WARN_BAND_PX = Math.max(8, screenR * 0.06); // warn zone width scales with ring
+
+    this.shrinkRingGraphics.clear();
+
+    // Warn band: semi-transparent red fill between effectiveRadius and the outer edge
+    const outerR = Math.min(screenR + WARN_BAND_PX, this.arenaRadius);
+    this.shrinkRingGraphics.circle(0, 0, outerR).fill({ color: 0xff3300, alpha: 0.0 });
+    this.shrinkRingGraphics.circle(0, 0, screenR).fill({ color: 0x000000, alpha: 0.0 });
+    // draw the warn band as a thick annular stroke between screenR and outerR
+    const midR = (screenR + outerR) / 2;
+    const bandWidth = outerR - screenR;
+    this.shrinkRingGraphics
+      .circle(0, 0, midR)
+      .stroke({ color: 0xff3300, width: bandWidth, alpha: 0.25 });
+
+    // Bright glowing ring at exact effective radius
+    this.shrinkRingGraphics
+      .circle(0, 0, screenR)
+      .stroke({ color: 0xff2200, width: 3, alpha: 0.9 });
+
+    // Outer soft glow
+    this.shrinkRingGraphics
+      .circle(0, 0, screenR + 4)
+      .stroke({ color: 0xff6600, width: 6, alpha: 0.3 });
+
+    this.shrinkRingGraphics.visible = true;
+  }
+
   // Convert a physics-space position (server coordinates) to screen-space pixels.
   // Use this when placing UI elements or particles at positions received from the server.
   physicsToScreen(px: number, py: number): { x: number; y: number } {
@@ -401,6 +475,19 @@ export class BeybladeGameRenderer {
       x: this.arenaCenterX + (px - this.physicsCenterX) * scale,
       y: this.arenaCenterY + (py - this.physicsCenterY) * scale,
     };
+  }
+
+  // Phase LOS: apply line-of-sight culling/fade to a container (2.5D only).
+  protected applyLOSCull(container: PIXI.Container, entityXcm: number, entityYcm: number): void {
+    const dist = Math.hypot(entityXcm - this.world.camera.x_cm, entityYcm - this.world.camera.y_cm);
+    if (dist >= this.LINE_OF_SIGHT_CM) {
+      container.visible = false;
+      return;
+    }
+    container.visible = true;
+    const fadeRange = this.LINE_OF_SIGHT_CM - this.FADE_START_CM;
+    const fadeT = Math.max(0, dist - this.FADE_START_CM) / fadeRange;
+    container.alpha = 1 - fadeT;
   }
 
   // ─── Beyblade rendering with 2.5D perspective ────────────────────────────────
@@ -569,6 +656,14 @@ export class BeybladeGameRenderer {
     container.x = screenX;
     container.y = screenY;
 
+    // Phase LOS: cull/fade entities outside 30 cm range (2.5D only)
+    if (this.is25D) {
+      const posXcm = (beyblade.x - this.physicsCenterX) * physScale / PX_PER_CM_BASE;
+      const posYcm = (beyblade.y - this.physicsCenterY) * physScale / PX_PER_CM_BASE;
+      this.applyLOSCull(container, posXcm, posYcm);
+      if (!container.visible) return;
+    }
+
     // Stability-based 2.5D perspective effects
     const stability = getBeybladeStability(beyblade);
 
@@ -619,7 +714,14 @@ export class BeybladeGameRenderer {
 
     // Tilt skew when nearly spun out (spinning top about to fall)
     const tiltAmount = (1 - stability) * 0.25;
-    sprite.skew.set(tiltAmount * Math.sin(Date.now() / 300), 0);
+    const wobbleSkewX = tiltAmount * Math.sin(Date.now() / 300);
+
+    // E9: beyTiltAngle skew (2.5D tilt effect — combines with wobble)
+    const tiltAngle = (beyblade as any).beyTiltAngle ?? 0;
+    const tiltFrac = tiltAngle !== 0 ? tiltAngle / 90 : 0;
+    const tiltSkewX = tiltFrac * 0.4; // max 0.4 radians skew at 90°
+
+    sprite.skew.set(wobbleSkewX + tiltSkewX, 0);
 
     // Spin rotation (visual — independent of physics rotation)
     sprite.rotation = beyblade.rotation;
@@ -631,6 +733,24 @@ export class BeybladeGameRenderer {
     // Invulnerable: flashing effect (dodge window or isInvulnerable flag)
     if (beyblade.isInvulnerable || (beyblade.dodgeBuffTimer > 0)) {
       sprite.alpha = Math.sin(Date.now() / 80) > 0 ? 1 : 0.15;
+    }
+
+    // N4: specialMoveActive — white tint to indicate active special move
+    if ((beyblade as any).specialMoveActive) {
+      sprite.tint = 0xffffff;
+      // Overlay a pulsing white ring to suggest a glow effect
+      const flashG = this.flashGraphics.get(id);
+      if (flashG) {
+        const glowPulse = 0.3 + 0.3 * Math.sin(Date.now() / 100);
+        flashG.clear();
+        flashG.circle(0, 0, r * 1.2);
+        flashG.fill({ color: 0xffffff, alpha: glowPulse });
+      }
+    } else if ((beyblade as any).adhering) {
+      // N4: adhering — slight green tint to indicate adhesion state
+      sprite.tint = 0x88ffaa;
+    } else {
+      sprite.tint = 0xffffff;
     }
 
     // ── Attack arc: sword sweep semicircle (visible while attackBuffTimer > 0) ──
@@ -706,7 +826,8 @@ export class BeybladeGameRenderer {
     }
 
     // 6.15 — SpinDirection change flash (counter-rotation white burst)
-    {
+    // Skipped when specialMoveActive is driving the flashGraphics overlay (N4).
+    if (!(beyblade as any).specialMoveActive) {
       const prev = this.prevSpinDirections.get(id);
       if (prev !== undefined && prev !== beyblade.spinDirection) {
         this.flashTimers.set(id, 6); // ~100ms at 60fps
@@ -870,6 +991,218 @@ export class BeybladeGameRenderer {
     }
   }
 
+  // ─── F4: Combination-lock link lines ─────────────────────────────────────────
+
+  private renderLinkLines(beys: Map<string, ServerBeyblade>): void {
+    if (!this.linkLineGraphics) {
+      this.linkLineGraphics = new PIXI.Graphics();
+      this.featureLayer.addChild(this.linkLineGraphics);
+    }
+    this.linkLineGraphics.clear();
+
+    const physScale = this.physicsArenaRadius > 0 ? this.arenaRadius / this.physicsArenaRadius : 1;
+    const drawn = new Set<string>();
+
+    for (const [id, bey] of beys) {
+      const partnerId = (bey as any).linkedBeyId as string | undefined;
+      if (!partnerId || drawn.has(id + partnerId) || drawn.has(partnerId + id)) continue;
+      const partner = beys.get(partnerId);
+      if (!partner) continue;
+
+      drawn.add(id + partnerId);
+
+      const locked: boolean = (bey as any).combinationLocked ?? false;
+      const strain: number = (bey as any).linkStrain ?? 0;
+
+      let color: number;
+      let width: number;
+      let alpha: number;
+
+      if (strain > 0.8) {
+        // Near-breaking: pulsing red
+        color = 0xff2222;
+        width = 1;
+        alpha = 0.5 + 0.5 * Math.sin(Date.now() / 80);
+      } else if (locked) {
+        // Locked: thick gold
+        color = 0xffd700;
+        width = 3;
+        alpha = 0.9;
+      } else {
+        // Unlocked: thin silver
+        color = 0xc0c0c0;
+        width = 1;
+        alpha = 0.6;
+      }
+
+      // Convert physics coords to world-space (same coord system as beybladeLayer, before arenaRotationRoot).
+      // featureLayer is inside arenaRotationRoot; use arenaCenterX/Y as world origin.
+      const ax = this.arenaCenterX + (bey.x - this.physicsCenterX) * physScale;
+      const ay = this.arenaCenterY + (bey.y - this.physicsCenterY) * physScale;
+      const bx = this.arenaCenterX + (partner.x - this.physicsCenterX) * physScale;
+      const by = this.arenaCenterY + (partner.y - this.physicsCenterY) * physScale;
+
+      this.linkLineGraphics.moveTo(ax, ay);
+      this.linkLineGraphics.lineTo(bx, by);
+      this.linkLineGraphics.stroke({ color, width, alpha });
+    }
+  }
+
+  // ─── G4: Meteor strike landing zone ring ──────────────────────────────────────
+
+  /**
+   * Public: called by the game page when a "meteor-strike-hang" server message arrives.
+   * Stores the landing zone state so renderMeteorLandingZone() can draw it each frame.
+   */
+  public onMeteorStrikeHang(data: { landingX: number; landingY: number; landingRadius: number; hangTicks: number }): void {
+    this.meteorLandingZone = {
+      x: data.landingX,
+      y: data.landingY,
+      radius: data.landingRadius * 24, // cm to px (1cm = 24px per CLAUDE.md)
+      expiresAt: Date.now() + (data.hangTicks * 1000 / 60),
+    };
+  }
+
+  /**
+   * Public (D3): called when "special-move-camera" arrives. Tweens a zoom-in then
+   * zoom-out on the stage scale for the configured duration.
+   */
+  public handleSpecialMoveCamera(data: { beyId: string; cameraConfig: { zoomFactor: number; durationTicks: number; slowMotionFactor: number } }): void {
+    const { zoomFactor, durationTicks } = data.cameraConfig;
+    if (zoomFactor <= 1) return; // nothing to animate
+
+    const durationMs = Math.round(durationTicks * (1000 / 60));
+    const halfMs = durationMs / 2;
+    const baseScale = this.world.scale;
+    const peakScale = baseScale * zoomFactor;
+    const startTime = Date.now();
+
+    const tween = () => {
+      const elapsed = Date.now() - startTime;
+      if (elapsed >= durationMs) {
+        this.world.setScale(baseScale);
+        return;
+      }
+      // Ease in for first half, ease out for second half.
+      const t = elapsed < halfMs
+        ? elapsed / halfMs                  // 0 → 1 (zoom in)
+        : 1 - (elapsed - halfMs) / halfMs; // 1 → 0 (zoom out)
+      this.world.setScale(baseScale + (peakScale - baseScale) * t);
+      requestAnimationFrame(tween);
+    };
+    requestAnimationFrame(tween);
+  }
+
+  /**
+   * Public (G5): called when "meteor-strike-land" arrives. Triggers a camera shake
+   * and clears the landing zone ring immediately.
+   */
+  public onMeteorStrikeLand(data: { beyId: string; landingX: number; landingY: number; landingRadius: number; damageDealt: number }): void {
+    // Clear the pending landing zone ring now that impact has occurred.
+    this.meteorLandingGraphics?.clear();
+    this.meteorLandingZone = null;
+
+    // Camera shake: briefly jitter the stage position then restore.
+    const origX = this.app.stage.x;
+    const origY = this.app.stage.y;
+    const shakeMs = 400;
+    const magnitude = Math.min(20, 8 + data.damageDealt / 50);
+    const startTime = Date.now();
+    const shake = () => {
+      const elapsed = Date.now() - startTime;
+      if (elapsed >= shakeMs) {
+        this.app.stage.x = origX;
+        this.app.stage.y = origY;
+        return;
+      }
+      const decay = 1 - elapsed / shakeMs;
+      this.app.stage.x = origX + (Math.random() - 0.5) * magnitude * 2 * decay;
+      this.app.stage.y = origY + (Math.random() - 0.5) * magnitude * 2 * decay;
+      requestAnimationFrame(shake);
+    };
+    requestAnimationFrame(shake);
+  }
+
+  /**
+   * Public (N3): called when "arena-spawn" arrives. No-op stub — visual handling
+   * (e.g. spawn flash) can be added here; the schema-synced bey will appear via
+   * the normal render() path once the server adds it to state.beyblades.
+   */
+  public onArenaSpawn(_data: { spawnId: string; beyId: string; controlMode: string; statsMultiplier: number; position: { x: number; y: number } }): void {
+    // Intentional no-op: the beyblade will appear automatically through state sync.
+    // Subclasses or future updates may add a spawn-flash particle burst here.
+  }
+
+  /**
+   * Public (N3): called when "movement-jump-hang" arrives. Hides the bey's
+   * container for the specified number of ticks then restores it.
+   */
+  public onMovementJumpHang(data: { beyId: string; hangTicks: number }): void {
+    const container = this.beybladeContainers.get(data.beyId);
+    if (!container) return;
+    container.visible = false;
+    const restoreMs = Math.round(data.hangTicks * (1000 / 60));
+    setTimeout(() => {
+      const c = this.beybladeContainers.get(data.beyId);
+      if (c) c.visible = true;
+    }, restoreMs);
+  }
+
+  private renderMeteorLandingZone(): void {
+    if (!this.meteorLandingZone) return;
+
+    if (Date.now() > this.meteorLandingZone.expiresAt) {
+      this.meteorLandingGraphics?.clear();
+      this.meteorLandingZone = null;
+      return;
+    }
+
+    if (!this.meteorLandingGraphics) {
+      this.meteorLandingGraphics = new PIXI.Graphics();
+      this.particleLayer.addChild(this.meteorLandingGraphics);
+    }
+
+    const { x, y, radius } = this.meteorLandingZone;
+    const physScale = this.physicsArenaRadius > 0 ? this.arenaRadius / this.physicsArenaRadius : 1;
+    const sx = this.arenaCenterX + (x - this.physicsCenterX) * physScale;
+    const sy = this.arenaCenterY + (y - this.physicsCenterY) * physScale;
+    const sRadius = radius * physScale;
+
+    const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 150);
+    this.meteorLandingGraphics.clear();
+    this.meteorLandingGraphics.circle(sx, sy, sRadius * (0.9 + 0.1 * pulse));
+    this.meteorLandingGraphics.stroke({ color: 0xff4400, width: 2, alpha: 0.4 + 0.5 * pulse });
+  }
+
+  // ─── N4: Combo visual flash ────────────────────────────────────────────────────
+
+  /**
+   * Public: called by the game page when a "combo-visual" server message arrives.
+   * Briefly flashes the bey sprite and optionally triggers a scale pulse animation.
+   */
+  public handleComboVisual(data: { beyId: string; introAnimation?: string; particlePresetId?: string }): void {
+    const beyContainer = this.beybladeContainers.get(data.beyId);
+    if (!beyContainer) return;
+
+    // Tint flash on the sprite (first child — the PIXI.Graphics beyblade shape)
+    const sprite = beyContainer.children.length > 0
+      ? (beyContainer.getChildAt(0) as PIXI.Graphics | null)
+      : null;
+    if (sprite && "tint" in sprite) {
+      (sprite as unknown as { tint: number }).tint = 0xffffaa;
+      setTimeout(() => {
+        (sprite as unknown as { tint: number }).tint = 0xffffff;
+      }, 200);
+    }
+
+    // Trigger intro animation if named — scale pulse
+    if (data.introAnimation) {
+      const origScale = beyContainer.scale.x;
+      beyContainer.scale.set(origScale * 1.3);
+      setTimeout(() => beyContainer.scale.set(origScale), 300);
+    }
+  }
+
   // ─── Particle effects ────────────────────────────────────────────────────────
 
   spawnCollisionParticles(x: number, y: number, color1: number = 0xffffff, color2: number = 0xffffff) {
@@ -919,6 +1252,47 @@ export class BeybladeGameRenderer {
         sprite: g,
       });
     }
+  }
+
+  spawnBurstParticles(x: number, y: number) {
+    const COLORS = [0xffffff, 0xffdd44, 0xff8800, 0xff3300];
+    const count = 50;
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.3;
+      const speed = 2 + Math.random() * 6;
+      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      const size = 2 + Math.random() * 4;
+      const g = new PIXI.Graphics();
+      g.circle(0, 0, size);
+      g.fill({ color, alpha: 0.9 });
+      g.x = x;
+      g.y = y;
+      this.particleLayer.addChild(g);
+      this.particles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 0,
+        maxLife: 0.5 + Math.random() * 0.6,
+        color,
+        sprite: g,
+      });
+    }
+    // Central flash ring
+    const flash = new PIXI.Graphics();
+    flash.circle(0, 0, 35);
+    flash.stroke({ color: 0xffffff, width: 4, alpha: 0.9 });
+    flash.x = x;
+    flash.y = y;
+    this.particleLayer.addChild(flash);
+    this.particles.push({
+      x, y,
+      vx: 0, vy: 0,
+      life: 0,
+      maxLife: 0.35,
+      color: 0xffffff,
+      sprite: flash,
+    });
   }
 
   spawnDamageNumber(x: number, y: number, damage: number, color: number = 0xff4444) {
@@ -1097,6 +1471,8 @@ export class BeybladeGameRenderer {
       // Rebuild arena on resize
       this.arenaRadius = 0;
       this.cameraInitialized = false;
+      this.shrinkRingGraphics = null;
+      this.lastShrinkRadiusPx = -1;
       // Inform world transform of new screen size; zoom limits recompute
       // when buildArena runs again next frame.
       this.world.setScreen(this.app.screen.width, this.app.screen.height);
@@ -1186,6 +1562,10 @@ export class BeybladeGameRenderer {
 
     this.darknessOverlay = null;
     this.fogOverlay = null;
+    this.shrinkRingGraphics = null;
+    this.linkLineGraphics = null;
+    this.meteorLandingGraphics = null;
+    this.meteorLandingZone = null;
 
     // PixiJS calls gl.getExtension('WEBGL_lose_context').loseContext() inside its
     // own destroy(), which fires an async contextlost event.  That event can arrive

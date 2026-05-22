@@ -89,6 +89,7 @@ export function AIBattleGamePage() {
     render,
     spawnCollisionParticles,
     spawnSpinOutParticles,
+    spawnBurstParticles,
     spawnDamageNumber,
     physicsToScreen,
     playSpecialMoveEffect,
@@ -143,6 +144,10 @@ export function AIBattleGamePage() {
       const { x, y } = physicsToScreen(data.x, data.y);
       spawnSpinOutParticles(x, y, TYPE_COLORS[data.type] ?? 0xffffff);
     });
+    room.onMessage("burst", (data: any) => {
+      const { x, y } = physicsToScreen(data.x, data.y);
+      spawnBurstParticles(x, y);
+    });
     room.onMessage("special-move", (data: any) => {
       playSpecialMoveEffect(data.playerId, data.type, data.x, data.y, data.facing);
       if (data.playerId === myBeyblade?.id) {
@@ -155,7 +160,7 @@ export function AIBattleGamePage() {
         setLastCombo({ name: data.comboName, timestamp: Date.now() });
       }
     });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect]);
+  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnBurstParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect]);
 
   // Auto-dismiss game-end overlay
   useEffect(() => {
