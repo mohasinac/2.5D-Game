@@ -4,34 +4,39 @@ import { C, alpha } from "@/styles/theme";
 import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import toast from "react-hot-toast";
+import {
+  LayoutDashboard, Swords, Shield, Palette, Trophy, Users, BarChart3, FlaskConical,
+  Settings, Search, BookOpen, Tag, Layers, Cpu, Box, Circle, Disc, Wrench,
+  Radio, Gamepad2, type LucideIcon,
+} from "lucide-react";
 
 const navItems = [
-  { to: "/admin", label: "Dashboard", icon: "🏠", end: true },
-  { to: "/admin/beyblades", label: "Beyblades", icon: "🌀" },
-  { to: "/admin/arenas", label: "Arenas", icon: "🏟️" },
-  { to: "/admin/assets", label: "Assets", icon: "🎨" },
-  { to: "/admin/tournaments", label: "Tournaments", icon: "🏆" },
-  { to: "/admin/users", label: "Users", icon: "👥" },
-  { to: "/admin/stats", label: "Statistics", icon: "📊" },
-  { to: "/admin/arena-test", label: "Arena Test", icon: "🧪" },
-  { to: "/admin/settings", label: "Settings", icon: "⚙️" },
+  { to: "/admin",            label: "Dashboard",   Icon: LayoutDashboard, end: true },
+  { to: "/admin/beyblades",  label: "Beyblades",   Icon: Swords },
+  { to: "/admin/arenas",     label: "Arenas",      Icon: Shield },
+  { to: "/admin/assets",     label: "Assets",      Icon: Palette },
+  { to: "/admin/tournaments",label: "Tournaments", Icon: Trophy },
+  { to: "/admin/users",      label: "Users",       Icon: Users },
+  { to: "/admin/stats",      label: "Statistics",  Icon: BarChart3 },
+  { to: "/admin/arena-test", label: "Arena Test",  Icon: FlaskConical },
+  { to: "/admin/settings",   label: "Settings",    Icon: Settings },
 ];
 
 const partLibraryItems = [
-  { to: "/admin/2d/parts/bit-beasts",   label: "Bit Beasts",   icon: "🐉" },
-  { to: "/admin/2d/parts/attack-rings", label: "Attack Rings", icon: "⚔️" },
-  { to: "/admin/2d/parts/weight-disks", label: "Weight Disks", icon: "🪨" },
-  { to: "/admin/2d/parts/sub-parts",    label: "Sub-Parts",    icon: "🔩" },
-  { to: "/admin/2d/parts/tips",         label: "Tips",         icon: "🔺" },
-  { to: "/admin/2d/parts/cores",        label: "Cores",        icon: "⚙️" },
-  { to: "/admin/2d/parts/casings",      label: "Casings",      icon: "🛡️" },
-  { to: "/admin/2d/parts/spin-tracks",  label: "Spin Tracks",  icon: "📏" },
+  { to: "/admin/2d/parts/bit-beasts",   label: "Bit Beasts",   Icon: Layers },
+  { to: "/admin/2d/parts/attack-rings", label: "Attack Rings", Icon: Circle },
+  { to: "/admin/2d/parts/weight-disks", label: "Weight Disks", Icon: Disc },
+  { to: "/admin/2d/parts/sub-parts",    label: "Sub-Parts",    Icon: Wrench },
+  { to: "/admin/2d/parts/tips",         label: "Tips",         Icon: Box },
+  { to: "/admin/2d/parts/cores",        label: "Cores",        Icon: Cpu },
+  { to: "/admin/2d/parts/casings",      label: "Casings",      Icon: Shield },
+  { to: "/admin/2d/parts/spin-tracks",  label: "Spin Tracks",  Icon: Disc },
 ];
 
 function NavItem({
-  to, label, icon, end, indent = false, collapsed = false,
+  to, label, Icon, end, indent = false, collapsed = false,
 }: {
-  to: string; label: string; icon: string; end?: boolean; indent?: boolean; collapsed?: boolean;
+  to: string; label: string; Icon: LucideIcon; end?: boolean; indent?: boolean; collapsed?: boolean;
 }) {
   return (
     <NavLink
@@ -50,7 +55,7 @@ function NavItem({
         border: `1px solid ${isActive ? alpha(C.blue, 0.27) : "transparent"}`,
       })}
     >
-      <span style={{ fontSize: indent ? 13 : 15 }}>{icon}</span>
+      <Icon size={indent ? 13 : 15} />
       {!collapsed && <span>{label}</span>}
     </NavLink>
   );
@@ -112,7 +117,7 @@ export function AdminLayout() {
           display: "flex", flexDirection: "column", gap: 2,
         }}>
           {navItems.map((item) => (
-            <NavItem key={item.to} to={item.to} label={item.label} icon={item.icon} end={item.end} collapsed={collapsed} />
+            <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} end={item.end} collapsed={collapsed} />
           ))}
 
           {/* 2.5D Section */}
@@ -124,7 +129,7 @@ export function AdminLayout() {
             </div>
           )}
 
-          <NavItem to="/admin/2d/parts" label="Part Search" icon="🔍" collapsed={collapsed} />
+          <NavItem to="/admin/2d/parts" label="Part Search" Icon={Search} collapsed={collapsed} />
 
           {/* Part Libraries — collapsible sub-section (hidden when sidebar collapsed) */}
           {!collapsed && (
@@ -138,18 +143,18 @@ export function AdminLayout() {
                   color: is2dSection ? C.text : C.muted, width: "100%", textAlign: "left",
                 }}
               >
-                <span style={{ fontSize: 15 }}>📚</span>
+                <BookOpen size={15} />
                 <span style={{ flex: 1 }}>Part Libraries</span>
                 <span style={{ fontSize: 10, color: C.faint }}>{libExpanded ? "▾" : "▸"}</span>
               </button>
               {libExpanded && partLibraryItems.map((item) => (
-                <NavItem key={item.to} to={item.to} label={item.label} icon={item.icon} indent />
+                <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
               ))}
             </>
           )}
 
-          <NavItem to="/admin/2d/beyblade-systems" label="Beyblade Systems" icon="🌀" collapsed={collapsed} />
-          <NavItem to="/admin/2d/compatibility-tags" label="Compat. Tags" icon="🏷️" collapsed={collapsed} />
+          <NavItem to="/admin/2d/beyblade-systems" label="Beyblade Systems" Icon={Layers} collapsed={collapsed} />
+          <NavItem to="/admin/2d/compatibility-tags" label="Compat. Tags" Icon={Tag} collapsed={collapsed} />
         </nav>
 
         {/* Footer */}
@@ -162,14 +167,14 @@ export function AdminLayout() {
                 rel="noopener noreferrer"
                 style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 8, fontSize: 13, color: C.muted, textDecoration: "none" }}
               >
-                <span>📡</span>
+                <Radio size={15} />
                 <span>Server Monitor</span>
               </a>
               <Link
                 to="/game"
                 style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 8, fontSize: 13, color: C.muted, textDecoration: "none" }}
               >
-                <span>🎮</span>
+                <Gamepad2 size={15} />
                 <span>Play Game</span>
               </Link>
               {currentUser && (
