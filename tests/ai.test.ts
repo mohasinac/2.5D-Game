@@ -84,7 +84,10 @@ describe("AIController — hell", () => {
   });
 
   test("emits a 3-key combo on its cadence tick when power>=25 and opponent in range", () => {
-    const aiSnap  = makeAI({ x: ARENA_CX, y: ARENA_CY, power: 80 });
+    const aiSnap  = makeAI({
+      x: ARENA_CX, y: ARENA_CY, power: 80,
+      comboSlots: [{ effectId: "rush-r", sequence: ["moveRight", "moveRight", "attack"], cost: 0 }],
+    });
     const closeOpp = makeOpponent({ x: ARENA_CX + 100, y: ARENA_CY });
     let comboSeen: string[] | undefined;
     for (let i = 0; i < 200; i++) {
