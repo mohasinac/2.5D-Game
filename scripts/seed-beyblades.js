@@ -20,6 +20,18 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
+async function clearCollection(name) {
+  const snap = await db.collection(name).get();
+  if (snap.empty) return;
+  let batch = db.batch(); let count = 0;
+  for (const doc of snap.docs) {
+    batch.delete(doc.ref);
+    if (++count === 500) { await batch.commit(); batch = db.batch(); count = 0; }
+  }
+  if (count) await batch.commit();
+  console.log(`  🗑️  Cleared ${snap.size} docs from ${name}`);
+}
+
 // ─── Stat formula (mirrors types/beybladeStats.ts:calculateStats) ─────────────
 
 function calcStats(dist) {
@@ -410,6 +422,7 @@ async function seedBeyblades() {
   console.log("\n══════════════════════════════════════");
   console.log("  Beyblade Preset Seed");
   console.log("══════════════════════════════════════\n");
+  await clearCollection("beyblade_stats");
 
   for (const bey of BEYBLADES) {
     const derived = calcStats(bey.typeDistribution);

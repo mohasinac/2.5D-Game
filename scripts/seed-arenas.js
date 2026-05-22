@@ -20,6 +20,18 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
+async function clearCollection(name) {
+  const snap = await db.collection(name).get();
+  if (snap.empty) return;
+  let batch = db.batch(); let count = 0;
+  for (const doc of snap.docs) {
+    batch.delete(doc.ref);
+    if (++count === 500) { await batch.commit(); batch = db.batch(); count = 0; }
+  }
+  if (count) await batch.commit();
+  console.log(`  🗑️  Cleared ${snap.size} docs from ${name}`);
+}
+
 // ─── Shared wall configs ──────────────────────────────────────────────────────
 
 function circleWall(style = "metal", damage = 15, recoil = 8) {
@@ -512,6 +524,7 @@ async function seedArenas() {
   console.log("\n══════════════════════════════════════");
   console.log("  Arena Preset Seed");
   console.log("══════════════════════════════════════\n");
+  await clearCollection("arenas");
 
   for (const arena of ARENAS) {
     const docData = {

@@ -1,19 +1,31 @@
 #!/usr/bin/env node
 // Seed special_moves collection with 4 moves
 
+require('dotenv').config();
 const admin = require('firebase-admin');
-const path = require('path');
 
-// Initialize Firebase Admin
-const serviceAccountPath = path.join(__dirname, '../firebase-key.json');
-const serviceAccount = require(serviceAccountPath);
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+const { FIREBASE_ADMIN_PROJECT_ID: projectId, FIREBASE_ADMIN_CLIENT_EMAIL: clientEmail, FIREBASE_ADMIN_PRIVATE_KEY } = process.env;
+const privateKey = FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n');
+if (!projectId || !clientEmail || !privateKey) { console.error('❌ Missing Firebase Admin env vars.'); process.exit(1); }
+if (!admin.apps.length) admin.initializeApp({ credential: admin.credential.cert({ projectId, clientEmail, privateKey }) });
 
 const db = admin.firestore();
 
+async function clearCollection(name) {
+  const snap = await db.collection(name).get();
+  if (snap.empty) return;
+  let batch = db.batch(); let count = 0;
+  for (const doc of snap.docs) {
+    batch.delete(doc.ref);
+    if (++count === 500) { await batch.commit(); batch = db.batch(); count = 0; }
+  }
+  if (count) await batch.commit();
+  console.log(`  🗑️  Cleared ${snap.size} docs from ${name}`);
+}
+
 const specialMoves = [
   {
-    id: "stampede-rush",
+    id: "stampede_rush",
     name: "Stampede Rush",
     description: "A powerful forward rush attack that damages and pushes opponents.",
     archetype: "attack",
@@ -35,7 +47,7 @@ const specialMoves = [
     },
   },
   {
-    id: "gyro-anchor",
+    id: "gyro_anchor",
     name: "Gyro Anchor",
     description: "Lock in place with maximum spin for 1.5 seconds of invulnerability.",
     archetype: "defense",
@@ -57,7 +69,7 @@ const specialMoves = [
     },
   },
   {
-    id: "spin-recovery",
+    id: "spin_recovery",
     name: "Spin Recovery",
     description: "Orbit around and recover 40% of max spin and stamina.",
     archetype: "stamina",
@@ -79,7 +91,7 @@ const specialMoves = [
     },
   },
   {
-    id: "tactical-burst",
+    id: "tactical_burst",
     name: "Tactical Burst",
     description: "Directional burst with spin boost and stamina recovery.",
     archetype: "balanced",
@@ -105,6 +117,7 @@ const specialMoves = [
 async function seed() {
   try {
     console.log("Seeding special_moves collection...");
+    await clearCollection("special_moves");
 
     for (const move of specialMoves) {
       await db.collection("special_moves").doc(move.id).set(move);

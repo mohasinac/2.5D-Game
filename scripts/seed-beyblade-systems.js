@@ -1,14 +1,27 @@
 #!/usr/bin/env node
 // Seed beyblade_systems collection with 4 assembled 2.5D beyblades
 
+require('dotenv').config();
 const admin = require('firebase-admin');
-const path = require('path');
 
-const serviceAccountPath = path.join(__dirname, '../firebase-key.json');
-const serviceAccount = require(serviceAccountPath);
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+const { FIREBASE_ADMIN_PROJECT_ID: projectId, FIREBASE_ADMIN_CLIENT_EMAIL: clientEmail, FIREBASE_ADMIN_PRIVATE_KEY } = process.env;
+const privateKey = FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n');
+if (!projectId || !clientEmail || !privateKey) { console.error('❌ Missing Firebase Admin env vars.'); process.exit(1); }
+if (!admin.apps.length) admin.initializeApp({ credential: admin.credential.cert({ projectId, clientEmail, privateKey }) });
 
 const db = admin.firestore();
+
+async function clearCollection(name) {
+  const snap = await db.collection(name).get();
+  if (snap.empty) return;
+  let batch = db.batch(); let count = 0;
+  for (const doc of snap.docs) {
+    batch.delete(doc.ref);
+    if (++count === 500) { await batch.commit(); batch = db.batch(); count = 0; }
+  }
+  if (count) await batch.commit();
+  console.log(`  🗑️  Cleared ${snap.size} docs from ${name}`);
+}
 
 const beybladeySystems = [
   {
@@ -80,6 +93,7 @@ const beybladeySystems = [
 async function seed() {
   try {
     console.log("Seeding beyblade_systems collection...");
+    await clearCollection("beyblade_systems");
 
     for (const system of beybladeySystems) {
       await db.collection("beyblade_systems").doc(system.id).set(system);

@@ -18,6 +18,13 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
+async function deleteDocs(collection, ids) {
+  const batch = db.batch();
+  for (const id of ids) batch.delete(db.collection(collection).doc(id));
+  await batch.commit();
+  console.log(`  🗑️  Deleted ${ids.length} docs from ${collection}`);
+}
+
 const TID = "solo-vs-ai-bracket-1";
 const tournamentDoc = {
   name: "Solo Gauntlet — vs AI",
@@ -57,7 +64,7 @@ const BRACKETS = [
     participant1Id: "solo-vs-ai-p1", participant2Id: "solo-vs-ai-p2",
     participant1BeybladeId: "storm-pegasus", participant2BeybladeId: "rock-leone",
     scheduledTime: admin.firestore.Timestamp.fromMillis(now + 5 * 60_000),
-    arenaId: "attack-stadium",
+    arenaId: "bey-stadium-classic",
   },
   {
     id: `${TID}_r1_m2`,
@@ -65,7 +72,7 @@ const BRACKETS = [
     participant1Id: "solo-vs-ai-p3", participant2Id: "solo-vs-ai-p4",
     participant1BeybladeId: "lightning-l-drago", participant2BeybladeId: "earth-eagle",
     scheduledTime: admin.firestore.Timestamp.fromMillis(now + 10 * 60_000),
-    arenaId: "attack-stadium",
+    arenaId: "bey-stadium-classic",
   },
   {
     id: `${TID}_r2_m1`,
@@ -73,7 +80,7 @@ const BRACKETS = [
     participant1Id: "", participant2Id: "",
     participant1BeybladeId: "", participant2BeybladeId: "",
     scheduledTime: admin.firestore.Timestamp.fromMillis(now + 15 * 60_000),
-    arenaId: "attack-stadium",
+    arenaId: "bey-stadium-classic",
   },
 ];
 

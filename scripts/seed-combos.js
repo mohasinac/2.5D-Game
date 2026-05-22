@@ -19,6 +19,18 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
+async function clearCollection(name) {
+  const snap = await db.collection(name).get();
+  if (snap.empty) return;
+  let batch = db.batch(); let count = 0;
+  for (const doc of snap.docs) {
+    batch.delete(doc.ref);
+    if (++count === 500) { await batch.commit(); batch = db.batch(); count = 0; }
+  }
+  if (count) await batch.commit();
+  console.log(`  🗑️  Cleared ${snap.size} docs from ${name}`);
+}
+
 // Keep in sync with src/constants/combos.ts COMBO_REGISTRY.
 const COMBOS = [
   { id: "quick-dash-l",  name: "Quick Dash Left",  sequence: ["moveLeft","moveLeft","attack"],   cost: 0,  type: "universal", windowMs: 400, cooldownMs: 800,  description: "Short leftward dash with a contact pop. Free." },
@@ -35,6 +47,7 @@ async function seedCombos() {
   console.log("\n══════════════════════════════════════");
   console.log("  Combo Registry Seed");
   console.log("══════════════════════════════════════\n");
+  await clearCollection("combos");
   const now = new Date().toISOString();
   for (const c of COMBOS) {
     try {
@@ -48,4 +61,6 @@ async function seedCombos() {
   console.log(`\n✅ Seeded ${COMBOS.length} combos into combos\n`);
 }
 
-seedCombos().catch((err) => { console.error("❌ Seed failed:", err); process.exit(1); });
+seedCombos()
+  .catch((err) => { console.error("❌ Seed failed:", err); process.exit(1); })
+  .finally(() => process.exit(0));

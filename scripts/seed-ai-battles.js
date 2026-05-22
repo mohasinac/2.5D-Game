@@ -18,13 +18,25 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
+async function clearCollection(name) {
+  const snap = await db.collection(name).get();
+  if (snap.empty) return;
+  let batch = db.batch(); let count = 0;
+  for (const doc of snap.docs) {
+    batch.delete(doc.ref);
+    if (++count === 500) { await batch.commit(); batch = db.batch(); count = 0; }
+  }
+  if (count) await batch.commit();
+  console.log(`  🗑️  Cleared ${snap.size} docs from ${name}`);
+}
+
 const PRESETS = [
   {
     id: "ai-medium-warmup",
     name: "Warm-up — Medium AI",
     playerBeybladeId: "storm-pegasus",
     aiBeybladeId: "rock-leone",
-    arenaId: "attack-stadium",
+    arenaId: "bey-stadium-classic",
     difficulty: "medium",
     bestOf: 1,
     description: "Single match against a Medium-difficulty Rock Leone. Good for testing controls.",
@@ -34,7 +46,7 @@ const PRESETS = [
     name: "Challenge — Hard AI",
     playerBeybladeId: "storm-pegasus",
     aiBeybladeId: "lightning-l-drago",
-    arenaId: "attack-stadium",
+    arenaId: "volcanic-crater",
     difficulty: "hard",
     bestOf: 3,
     description: "BO3 against a Hard-difficulty Lightning L-Drago. Predictive dodges; learn to feint.",
@@ -44,7 +56,7 @@ const PRESETS = [
     name: "Hell Gauntlet",
     playerBeybladeId: "valtryek-v2",
     aiBeybladeId: "hells-hammer",
-    arenaId: "big-bang-stadium",
+    arenaId: "cyber-grid",
     difficulty: "hell",
     bestOf: 5,
     description: "BO5 against a Hell-difficulty Hells Hammer in a gravity-well arena. Frame-perfect.",
@@ -55,6 +67,7 @@ async function seedAIBattles() {
   console.log("\n══════════════════════════════════════");
   console.log("  AI Battle Preset Seed");
   console.log("══════════════════════════════════════\n");
+  await clearCollection("ai_battles");
   const now = new Date().toISOString();
   for (const p of PRESETS) {
     try {
