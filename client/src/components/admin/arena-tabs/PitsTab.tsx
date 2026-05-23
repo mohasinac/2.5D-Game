@@ -1,5 +1,6 @@
 import { C } from "@/styles/theme";
 import type { ArenaConfig, PitConfig, PitType } from "@/types/arenaConfigNew";
+import SelfRotationPanel from "./SelfRotationPanel";
 
 interface Props {
   config: ArenaConfig;
@@ -122,6 +123,12 @@ export default function PitsTab({ config, onChange }: Props) {
               />
             </div>
           )}
+          <SelfRotationPanel
+            rotation={pit.rotation}
+            selfRotation={pit.selfRotation}
+            onChangeRotation={v => update(pit.id, "rotation" as any, v)}
+            onChangeSelfRotation={v => update(pit.id, "selfRotation" as any, v)}
+          />
         </div>
       ))}
     </div>

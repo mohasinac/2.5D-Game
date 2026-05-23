@@ -13,6 +13,7 @@
 
 import { useState } from "react";
 import { C, alpha } from "@/styles/theme";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type { PartShape, FourierRadialProfile, BezierPath, BezierSplineProfile, PartImages } from "@/types/beybladeSystem";
 import { synthesizeRadialCache } from "@/types/beybladeSystem";
 import { BezierEditor } from "./BezierEditor";
@@ -336,19 +337,17 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
                 {/* Trace resolution */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   <span style={{ fontSize: 11, color: C.muted }}>Trace resolution</span>
-                  <select
-                    value={traceMaxDim}
-                    onChange={(e) => setTraceMaxDim(+e.target.value)}
-                    style={{
-                      background: C.bg3, border: `1px solid ${C.border}`,
-                      borderRadius: 5, color: C.text, fontSize: 11, padding: "3px 7px",
-                    }}
-                  >
-                    <option value={64}>64 px — fast, blocky</option>
-                    <option value={128}>128 px</option>
-                    <option value={256}>256 px — default</option>
-                    <option value={512}>512 px — high detail</option>
-                  </select>
+                  <SearchableSelect
+                    value={String(traceMaxDim)}
+                    options={[
+                      { value: "64", label: "64 px — fast, blocky" },
+                      { value: "128", label: "128 px" },
+                      { value: "256", label: "256 px — default" },
+                      { value: "512", label: "512 px — high detail" },
+                    ]}
+                    onChange={(v) => setTraceMaxDim(+v)}
+                    style={{ background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                  />
                 </div>
 
                 {/* Side knots */}

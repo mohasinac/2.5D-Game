@@ -39,6 +39,7 @@ export const SHARED_COLLECTIONS = {
   TOURNAMENT_BRACKETS: "tournament_brackets",
   SPECIAL_MOVES: "special_moves",
   SETTINGS: "settings",
+  ELEMENT_TYPE_CONFIGS: "element_type_configs",
 } as const;
 
 // Flat aggregate — everything in one record (back-compat shape for existing FIREBASE_COLLECTIONS/COLLECTIONS consumers)

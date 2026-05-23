@@ -51,4 +51,5 @@ export const COLLECTIONS = {
   SETTINGS: "settings",
   PARTICLE_PRESETS: "particle_presets",
   COMBO_EFFECTS: "combo_effects",
+  ELEMENT_TYPE_CONFIGS: "element_type_configs",
 } as const;

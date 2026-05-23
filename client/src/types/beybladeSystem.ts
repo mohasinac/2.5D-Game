@@ -34,6 +34,100 @@ export type PartLayer =
 export type SubPartParent = "ar" | "wd" | "casing" | "bit_beast" | "tip" | "core";
 export type SubPartMode = "free_spin" | "partial_slip" | "fixed" | "ratchet";
 
+// ─── Part / Contact-Point Self-Rotation ──────────────────────────────────────
+
+/**
+ * Lifecycle type for motor-driven or scheduled part rotation.
+ *
+ * - permanent  : spins continuously for the whole match
+ * - interval   : alternates active/pause on/off cycles
+ * - once       : fires once at match start then stops
+ * - pulsed     : short burst on collision or timer
+ * - oscillate  : sweeps from sweepFromDeg to sweepToDeg and returns, repeating
+ */
+export type PartRotationType = "permanent" | "interval" | "once" | "pulsed" | "oscillate";
+
+/**
+ * Which physical axis the motor rotates around.
+ *
+ * - spin_axis  : parallel to the beyblade's own spin axis (Z-up). Default.
+ * - radial     : axis points outward from bey center through the part.
+ * - tangential : perpendicular to radial, in the bey's equatorial plane.
+ * - custom     : arbitrary axis in part-local space via euler angles.
+ * - arc_pivot  : pivot placed at a specific point ON the contact-point arc/curvature,
+ *                defined by pivotAngleDeg + pivotRadiusMm; motionRadiusMm is the arm
+ *                length from pivot to the moving tip. Supports very small (micro-tick)
+ *                or very large (wide sweep) radii.
+ */
+export type PartRotationAxisType = "spin_axis" | "radial" | "tangential" | "custom" | "arc_pivot";
+
+export interface PartRotationAxis {
+  type: PartRotationAxisType;
+
+  // ── arc_pivot: pivot anywhere on the contact-point curvature ─────────────────
+  /**
+   * Angular position (0–360°) on the part circumference where the hinge/pivot sits.
+   * Only used when type = "arc_pivot".
+   */
+  pivotAngleDeg?: number;
+  /**
+   * Radial distance (mm) from the part center to the pivot point.
+   * Defaults to the contact point's own radius when absent.
+   */
+  pivotRadiusMm?: number;
+  /**
+   * Arm length (mm) from the pivot to the tip that actually moves.
+   * Small = tight micro-oscillation; large = wide sweep arc.
+   */
+  motionRadiusMm?: number;
+
+  // ── custom: arbitrary euler angles in part-local space ─────────────────────
+  /** "custom" only: rotation around local X (degrees). */
+  customX?: number;
+  /** "custom" only: rotation around local Y (degrees). */
+  customY?: number;
+  /** "custom" only: rotation around local Z (degrees, 0 = spin axis). */
+  customZ?: number;
+}
+
+/**
+ * Independent motor-driven rotation on a part or contact point.
+ * Separate from `rotatable` (which is the beyblade-axis coupling flag).
+ */
+export interface PartSelfRotation {
+  type: PartRotationType;
+  speedDegPerSec: number;
+  direction: "cw" | "ccw" | "alternating";
+  /** Which axis / pivot the motor turns around. Defaults to "spin_axis" when absent. */
+  axis?: PartRotationAxis;
+
+  // ── interval ─────────────────────────────────────────────────────────────────
+  intervalActiveMs?: number;
+  intervalPauseMs?: number;
+
+  // ── once ─────────────────────────────────────────────────────────────────────
+  onceDurationMs?: number;
+
+  // ── pulsed ───────────────────────────────────────────────────────────────────
+  pulseOnCollision?: boolean;
+  pulseDurationMs?: number;
+  pulseCooldownMs?: number;
+
+  // ── oscillate (sweep to an arc and optionally return) ────────────────────────
+  /** Start angle of the sweep in degrees relative to part rest position. */
+  sweepFromDeg?: number;
+  /** End angle of the sweep in degrees. */
+  sweepToDeg?: number;
+  /**
+   * true  = sweeps from→to then back to→from, repeating (oscillate).
+   * false = sweeps from→to then snaps back instantly and repeats.
+   * Defaults to true.
+   */
+  oscillateReturn?: boolean;
+  /** Override: how long each half-sweep takes (ms). Computed from speedDegPerSec when absent. */
+  sweepDurationMs?: number;
+}
+
 export type TipShape =
   | "flat"
   | "sharp"
@@ -315,6 +409,8 @@ export interface SystemContactPoint {
     material: Material;
     freeSpin: boolean; // true → rubber multipliers regardless of roller.material
   };
+  /** Motor-driven rotation of this contact point around the part center. */
+  selfRotation?: PartSelfRotation;
 }
 
 /** Resolve arc/radial bounds for a contact point — honors new arc fields, falls back to legacy. */
@@ -593,6 +689,17 @@ export interface BasePart {
   pockets: PartPocket[];
   /** ComboEffectDef ids this part contributes to the beyblade. Max 2 per part. */
   comboEffects: string[];
+  /**
+   * Whether this part rotates rigidly with the beyblade's spin axis.
+   * true  = locked to beyblade rotation (AR, WD, casing, etc.)
+   * false = free-spinning; part has its own independent angular velocity.
+   * Complements SubPart.mode and TipPart.freeSpin — those carry the detailed
+   * physics config; this flag is the authoritative coupling switch.
+   * Defaults to true for all fixed parts.
+   */
+  rotatable: boolean;
+  /** Motor-driven or scheduled rotation independent of the bey spin axis. */
+  selfRotation?: PartSelfRotation;
   createdAt?: unknown;
   updatedAt?: unknown;
 }

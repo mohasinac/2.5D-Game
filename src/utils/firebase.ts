@@ -47,6 +47,8 @@ if (!admin.apps.length) {
   }
 }
 
+export function getFirestoreDb(): admin.firestore.Firestore | null { return db; }
+
 /**
  * Load beyblade data from Firestore
  */

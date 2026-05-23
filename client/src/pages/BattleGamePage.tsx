@@ -10,7 +10,11 @@ import { C, alpha } from "@/styles/theme";
 import { MODIFIER_MAP } from "@/types/roundModifier";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
+import { BeyLinkHijackHUD } from "@/components/game/BeyLinkHijackHUD";
 import { PartModesHUD } from "@/components/game/PartModesHUD";
+import FloorHUD from "@/components/game/FloorHUD";
+import FloorTransitionOverlay from "@/components/game/FloorTransitionOverlay";
+import LinkAlignmentHUD from "@/components/game/LinkAlignmentHUD";
 import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { Countdown } from "@/components/game/Countdown";
@@ -47,7 +51,7 @@ export function BattleGamePage() {
     spectate,
   }), [settings.beybladeId, settings.arenaId, settings.username, userId, spectate]);
 
-  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, loadingStep, loadingError, visualEventQueue } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, beyLinkQTE, beyLinkControlLoss, sendBeyLinkQTEInput, beyLinkHijackQTE, beyLinkHijackBlockQTE, sendHijackBlock, loadingStep, loadingError, visualEventQueue, floorInfo, myFloorIndex, linkAlignments, floorTransition } =
     useColyseus({
       roomName: roomNameFor(mode, "battle"),
       options: colyseusOptions,
@@ -283,12 +287,14 @@ export function BattleGamePage() {
       {gameState && (
         <Countdown status={gameState.status} timer={gameState.timer} />
       )}
-      {/* Minimap (auto-hidden for small arenas) */}
+      {/* Minimap — toggle with M key; side view tab available for multi-floor arenas */}
       <Minimap
         gameState={gameState}
         beyblades={beyblades}
         selfId={myBeyblade?.id ?? null}
         viewportCm={viewportCm}
+        floorInfo={floorInfo}
+        myFloorIndex={myFloorIndex}
       />
 
       {/* Camera zoom controls — top-right under Exit */}
@@ -434,9 +440,43 @@ export function BattleGamePage() {
         power={myBeyblade?.power}
       />
 
+      {/* BeyLink QTE prompts: escape trap, hijack initiation, attacker block, control-loss banner */}
+      {!isSpectating && (
+        <BeyLinkHijackHUD
+          hijackQTE={beyLinkHijackQTE}
+          hijackBlockQTE={beyLinkHijackBlockQTE}
+          onBlock={sendHijackBlock}
+          escapeQTE={beyLinkQTE}
+          onEscape={sendBeyLinkQTEInput}
+          controlLoss={beyLinkControlLoss}
+        />
+      )}
+
       {/* PartModesHUD — only renders if myBeyblade has activePartConfigs (2.5D). */}
       {!isSpectating && myBeyblade && (
         <PartModesHUD myBeyblade={myBeyblade as any} room={room as any} />
+      )}
+
+      {/* Floor-group HUD — only shown when arena belongs to a multi-floor group */}
+      {floorInfo.length > 1 && (
+        <FloorHUD
+          totalFloors={floorInfo.length}
+          currentFloorIndex={myFloorIndex}
+          floors={floorInfo}
+        />
+      )}
+
+      {/* Floor transition overlay — shown while bey crosses a corridor/ramp/pit/portal/trampoline */}
+      {floorTransition && (
+        <FloorTransitionOverlay
+          {...floorTransition}
+          visible={true}
+        />
+      )}
+
+      {/* Link alignment HUD — shown at bottom center when links are misaligned */}
+      {linkAlignments.length > 0 && linkAlignments.some(l => l.alignmentStatus !== "always_open") && (
+        <LinkAlignmentHUD links={linkAlignments} />
       )}
 
       {/* Game-end inter-game overlay */}

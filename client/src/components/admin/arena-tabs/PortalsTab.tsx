@@ -1,5 +1,6 @@
 import { C } from "@/styles/theme";
 import type { ArenaConfig, PortalConfig } from "@/types/arenaConfigNew";
+import SelfRotationPanel from "./SelfRotationPanel";
 
 interface Props {
   config: ArenaConfig;
@@ -100,6 +101,12 @@ export default function PortalsTab({ config, onChange }: Props) {
                 />
               </div>
             </div>
+            <SelfRotationPanel
+              rotation={(portal as any).rotation}
+              selfRotation={(portal as any).selfRotation}
+              onChangeRotation={v => update(portal.id, "rotation" as any, v)}
+              onChangeSelfRotation={v => update(portal.id, "selfRotation" as any, v)}
+            />
           </div>
         );
       })}

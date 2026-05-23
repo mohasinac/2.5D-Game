@@ -8,6 +8,11 @@ import type { LoadingStep } from "@/components/LoadingProgress";
 import type { BeybladeGameRenderer } from "@/game/renderer/PixiRenderer";
 import { VisualEventQueue, VisualPriority } from "@/game/visual/VisualEventQueue";
 import toast from "react-hot-toast";
+import type { FloorInfo, FloorLinkInfo } from "@/components/game/FloorHUD";
+import type { FloorTransitionProps } from "@/components/game/FloorTransitionOverlay";
+import type { LinkAlignmentInfo } from "@/components/game/LinkAlignmentHUD";
+
+export type { FloorInfo, FloorLinkInfo, FloorTransitionProps, LinkAlignmentInfo };
 
 const GAME_SERVER_URL = import.meta.env.VITE_GAME_SERVER_URL || "ws://localhost:2567";
 export const IS_LOCAL = import.meta.env.VITE_LOCAL === "true";
@@ -109,6 +114,22 @@ export interface BeyLinkControlLossData {
   linkId: string;
 }
 
+// Hijack QTE prompts
+export interface BeyLinkHijackQTEData {
+  stackKey: string;
+  linkId: string;
+  windowTicks: number;
+  expiresAt: number;
+}
+
+export interface BeyLinkHijackBlockQTEData {
+  stackKey: string;
+  linkId: string;
+  key: string;
+  windowTicks: number;
+  expiresAt: number;
+}
+
 interface UseColyseusOptions {
   roomName: string;
   options?: Record<string, unknown>;
@@ -155,11 +176,27 @@ interface UseColyseusReturn {
   beyLinkQTE: BeyLinkQTEData | null;
   /** Active bey-link control-loss state for this player. Null when not applicable. */
   beyLinkControlLoss: BeyLinkControlLossData | null;
+  /** Hijack initiation QTE shown to the victim who sent the attempt. */
+  beyLinkHijackQTE: BeyLinkHijackQTEData | null;
+  /** Block QTE shown to the attacker so they can deny the hijack. */
+  beyLinkHijackBlockQTE: BeyLinkHijackBlockQTEData | null;
+  /** Floor-group stack info. Empty when arena has no floor group. */
+  floorInfo: FloorInfo[];
+  /** Zero-based index of the floor this player's bey is currently on. */
+  myFloorIndex: number;
+  /** Per-link alignment status for the LinkAlignmentHUD. */
+  linkAlignments: LinkAlignmentInfo[];
+  /** Active floor-transition animation props. Null when not traversing. */
+  floorTransition: Omit<FloorTransitionProps, "visible"> | null;
   connect: () => Promise<void>;
   disconnect: () => void;
   sendQTEInput: (key: string) => void;
   /** Send a bey-link QTE escape key press to the server. */
   sendBeyLinkQTEInput: (key: string) => void;
+  /** Initiate a hijack attempt as the link victim. */
+  sendHijackAttempt: (stackKey: string, linkId: string) => void;
+  /** Send the block key as the link attacker to deny a hijack. */
+  sendHijackBlock: (stackKey: string, key: string) => void;
   sendInput: (input: {
     moveLeft?: boolean;
     moveRight?: boolean;
@@ -225,6 +262,13 @@ export function useColyseus({
   // BeyLink QTE escape prompt and control-loss state
   const [beyLinkQTE, setBeyLinkQTE] = useState<BeyLinkQTEData | null>(null);
   const [beyLinkControlLoss, setBeyLinkControlLoss] = useState<BeyLinkControlLossData | null>(null);
+  const [beyLinkHijackQTE, setBeyLinkHijackQTE] = useState<BeyLinkHijackQTEData | null>(null);
+  const [beyLinkHijackBlockQTE, setBeyLinkHijackBlockQTE] = useState<BeyLinkHijackBlockQTEData | null>(null);
+  // Floor-group HUD state
+  const [floorInfo, setFloorInfo] = useState<FloorInfo[]>([]);
+  const [myFloorIndex, setMyFloorIndex] = useState(0);
+  const [linkAlignments, setLinkAlignments] = useState<LinkAlignmentInfo[]>([]);
+  const [floorTransition, setFloorTransition] = useState<Omit<FloorTransitionProps, "visible"> | null>(null);
 
   const visualEventQueueRef = useRef(new VisualEventQueue());
 
@@ -439,6 +483,53 @@ export function useColyseus({
         setBeyLinkQTE(null);
       });
 
+      // Hijack QTE: victim is initiating a takeover — show countdown to victim
+      connectedRoom.onMessage("bey-link-hijack-qte", (data: BeyLinkHijackQTEData) => {
+        setBeyLinkHijackQTE(data);
+      });
+      // Hijack block QTE: attacker must press the key to deny the takeover
+      connectedRoom.onMessage("bey-link-hijack-block-qte", (data: BeyLinkHijackBlockQTEData) => {
+        setBeyLinkHijackBlockQTE(data);
+      });
+      // Hijack succeeded (attacker failed to block in time)
+      connectedRoom.onMessage("bey-link-hijacked", (data: { newControllerId: string; newVictimId: string; linkId: string; stackKey: string }) => {
+        setBeyLinkHijackQTE(null);
+        setBeyLinkHijackBlockQTE(null);
+        if (data.newControllerId === connectedRoom.sessionId) {
+          toast("Hijack seized! You control the link.", { icon: "⚡", duration: 2500 });
+        } else if (data.newVictimId === connectedRoom.sessionId) {
+          toast("Link hijacked — roles reversed!", { icon: "🔄", duration: 2500 });
+        }
+      });
+      // Hijack blocked — attacker pressed the key in time
+      connectedRoom.onMessage("bey-link-hijack-failed", (data: { stackKey: string; blockerId: string; victimId: string }) => {
+        setBeyLinkHijackQTE(null);
+        setBeyLinkHijackBlockQTE(null);
+        if (data.blockerId === connectedRoom.sessionId) {
+          toast("Hijack blocked!", { icon: "🛡️", duration: 1800 });
+        } else if (data.victimId === connectedRoom.sessionId) {
+          toast("Hijack attempt failed.", { icon: "✗", duration: 1800 });
+        }
+      });
+
+      // Floor-group HUD: periodic alignment + floor status update
+      connectedRoom.onMessage("arena-link-status", (data: {
+        floors: FloorInfo[];
+        myFloorIndex: number;
+        linkAlignments: LinkAlignmentInfo[];
+      }) => {
+        setFloorInfo(data.floors);
+        setMyFloorIndex(data.myFloorIndex);
+        setLinkAlignments(data.linkAlignments);
+      });
+
+      // Floor-group HUD: bey starts crossing a link
+      connectedRoom.onMessage("arena-link-cross", (data: Omit<FloorTransitionProps, "visible">) => {
+        setFloorTransition(data);
+        const durMs = Math.max((data as any).transitTicks ?? 60, 60) * (1000 / 60);
+        setTimeout(() => setFloorTransition(null), durMs + 1000);
+      });
+
       // Phase T: arena timeline announcement
       connectedRoom.onMessage("arena-announcement", (data: { text: string; style?: "warning" | "info" | "danger" }) => {
         onArenaAnnouncementRef.current?.(data);
@@ -543,6 +634,18 @@ export function useColyseus({
     }
   }, []);
 
+  const sendHijackAttempt = useCallback((stackKey: string, linkId: string) => {
+    if (roomRef.current && roomRef.current.connection.isOpen) {
+      roomRef.current.send("bey-link-hijack-attempt", { stackKey, linkId });
+    }
+  }, []);
+
+  const sendHijackBlock = useCallback((stackKey: string, key: string) => {
+    if (roomRef.current && roomRef.current.connection.isOpen) {
+      roomRef.current.send("bey-link-hijack-block", { stackKey, key });
+    }
+  }, []);
+
   const sendInput = useCallback((input: {
     moveLeft?: boolean; moveRight?: boolean; moveUp?: boolean; moveDown?: boolean;
     attack?: boolean; defense?: boolean; dodge?: boolean; jump?: boolean;
@@ -577,7 +680,8 @@ export function useColyseus({
     loadingStep, loadingError,
     arenaEffect, cameraEffectActive, spawnedBeys,
     visualEventQueue: visualEventQueueRef.current,
-    beyLinkQTE, beyLinkControlLoss,
-    connect, disconnect, sendQTEInput, sendBeyLinkQTEInput, sendInput,
+    beyLinkQTE, beyLinkControlLoss, beyLinkHijackQTE, beyLinkHijackBlockQTE,
+    floorInfo, myFloorIndex, linkAlignments, floorTransition,
+    connect, disconnect, sendQTEInput, sendBeyLinkQTEInput, sendHijackAttempt, sendHijackBlock, sendInput,
   };
 }

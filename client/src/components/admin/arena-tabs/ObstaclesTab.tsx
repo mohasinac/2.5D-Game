@@ -1,6 +1,7 @@
 import { C } from "@/styles/theme";
 import type { ArenaConfig, ObstacleConfig } from "@/types/arenaConfigNew";
 import { OBSTACLE_ICONS } from "@/types/arenaConfigNew";
+import SelfRotationPanel from "./SelfRotationPanel";
 
 interface Props {
   config: ArenaConfig;
@@ -116,6 +117,12 @@ export default function ObstaclesTab({ config, onChange }: Props) {
               />
             </div>
           </div>
+          <SelfRotationPanel
+            rotation={obs.rotation?.initialAngleDeg}
+            selfRotation={obs.selfRotation}
+            onChangeRotation={v => update(obs.id, "rotation", v !== undefined ? { ...(obs.rotation ?? { mode: "static" as const }), initialAngleDeg: v } : undefined)}
+            onChangeSelfRotation={v => update(obs.id, "selfRotation", v)}
+          />
         </div>
       ))}
     </div>

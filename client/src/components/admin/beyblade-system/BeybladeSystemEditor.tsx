@@ -13,6 +13,7 @@ import { doc, getDoc, getDocs, updateDoc, serverTimestamp, collection, setDoc } 
 import { db, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
 import { C, alpha } from "@/styles/theme";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { SlotTab } from "./SlotTab";
 import { BeybladeSystemPreview } from "./BeybladeSystemPreview";
 import { PartPicker } from "./PartPicker";
@@ -593,21 +594,17 @@ function BeybladeComboSlotsEditor({
                 <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
                   <div>
                     <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger</div>
-                    <select
+                    <SearchableSelect
                       value={slot.condition?.trigger ?? "sequence"}
-                      onChange={(e) => {
-                        const trigger = e.target.value;
-                        const cond = trigger === "sequence"
+                      options={TRIGGER_OPTIONS}
+                      onChange={(v) => {
+                        const cond = v === "sequence"
                           ? { ...slot.condition, trigger: undefined }
-                          : { ...slot.condition, trigger: trigger as ComboTrigger };
+                          : { ...slot.condition, trigger: v as ComboTrigger };
                         patchSlot(i, { condition: cond });
                       }}
-                      style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
-                    >
-                      {TRIGGER_OPTIONS.map(opt => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </select>
+                      style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                    />
                   </div>
                   <div>
                     <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Effect ID</div>
@@ -638,15 +635,12 @@ function BeybladeComboSlotsEditor({
                     {([0, 1, 2] as const).map((pos) => (
                       <div key={pos}>
                         <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Key {pos + 1}</div>
-                        <select
+                        <SearchableSelect
                           value={slot.sequence[pos]}
-                          onChange={(e) => patchSeq(i, pos, e.target.value)}
-                          style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
-                        >
-                          {ALL_KEYS.map((k) => (
-                            <option key={k} value={k}>{KEY_LABELS[k]} {k}</option>
-                          ))}
-                        </select>
+                          options={ALL_KEYS.map((k) => ({ value: k, label: `${KEY_LABELS[k]} ${k}` }))}
+                          onChange={(v) => patchSeq(i, pos, v)}
+                          style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                        />
                       </div>
                     ))}
                     <div style={{ fontSize: 11, color: C.faint, alignSelf: "center" }}>

@@ -4,8 +4,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage, COLLECTIONS } from "@/lib/firebase";
 import type { BeybladeStats } from "@/types/beybladeStats";
-import { ELEMENT_ICONS, ELEMENT_COLORS } from "@/types/elementTypes";
-import type { ElementType } from "@/types/elementTypes";
+import { useElementTypes } from "@/hooks/useElementTypes";
 import toast from "react-hot-toast";
 import { C, S } from "@/styles/theme";
 import WhatsAppStyleImageEditor from "@/components/admin/WhatsAppStyleImageEditor";
@@ -13,6 +12,7 @@ import ImageCropper from "@/components/admin/ImageCropper";
 import type { ImageCropperRef } from "@/components/admin/ImageCropper";
 import BeybladePreview from "@/components/admin/BeybladePreview";
 import Step3ContactPoints from "@/components/admin/Step3ContactPoints";
+import { SearchableSelect, type SelectOption } from "@/components/admin/SearchableSelect";
 
 const TOTAL_POINTS = 360;
 const MAX_PER_TYPE = 150;
@@ -44,6 +44,7 @@ export function BeybladeEditPage() {
   const [rawImageUrl, setRawImageUrl] = useState("");
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0, scale: 1, rotation: 0 });
   const cropperRef = useRef<ImageCropperRef>(null);
+  const { configs: elementTypeConfigs, loading: elemTypesLoading } = useElementTypes();
 
   useEffect(() => {
     if (!id) return;
@@ -132,6 +133,9 @@ export function BeybladeEditPage() {
         maxStamina, speedBonus,
         pointsOfContact: beyblade.pointsOfContact ?? [],
         spinStealPoints: beyblade.spinStealPoints ?? [],
+        elementTypes: beyblade.elementTypes ?? [],
+        specialMoveId: (beyblade as any).specialMoveId ?? null,
+        comboIds: (beyblade as any).comboIds ?? [],
         updatedAt: serverTimestamp(),
       });
       toast.success("Saved!");
@@ -173,6 +177,24 @@ export function BeybladeEditPage() {
               <div>
                 <label style={S.label}>Display Name</label>
                 <input type="text" value={beyblade.displayName} onChange={e => set("displayName",e.target.value)} style={S.input} />
+              </div>
+              <div>
+                <label style={S.label}>Beyblade Type</label>
+                <div style={{ display:"flex", gap:6 }}>
+                  {([
+                    { value: "attack",   label: "Attack",   color: C.red },
+                    { value: "defense",  label: "Defense",  color: C.blue },
+                    { value: "stamina",  label: "Stamina",  color: C.green },
+                    { value: "balanced", label: "Balanced", color: C.muted },
+                  ] as const).map(({ value, label, color }) => (
+                    <button key={value} onClick={() => set("type", value)} style={{
+                      flex:1, padding:"6px", borderRadius:6, fontSize:12, fontWeight:500, cursor:"pointer",
+                      background: beyblade.type===value ? color : "transparent",
+                      color: beyblade.type===value ? C.white : C.muted,
+                      border: `1px solid ${beyblade.type===value ? color : C.border}`,
+                    }}>{label}</button>
+                  ))}
+                </div>
               </div>
               <div>
                 <label style={S.label}>Spin Direction</label>
@@ -263,45 +285,123 @@ export function BeybladeEditPage() {
             </div>
           </div>
 
-          {/* Element Types (Phase AB) */}
+          {/* Element Types */}
           <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
-            <div style={{ fontSize:14, fontWeight:600, color:C.text, marginBottom:12 }}>Element Types (max 2)</div>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:12 }}>
-              {(["fire","water","earth","lightning","wind","ice","shadow","light","metal","nature","thunder","void"] as ElementType[]).map(elem => {
-                const selected = (beyblade.elementTypes ?? []).includes(elem);
-                const canAdd = !selected && (beyblade.elementTypes?.length ?? 0) < 2;
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
+              <div style={{ fontSize:14, fontWeight:600, color:C.text }}>Element Types <span style={{ fontWeight:400, color:C.faint, fontSize:12 }}>(max 2)</span></div>
+              <a href="/admin/element-types" target="_blank" rel="noreferrer" style={{ fontSize:11, color:C.blue, textDecoration:"none" }}>Manage types ↗</a>
+            </div>
+
+            {/* Selected badges */}
+            <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:10 }}>
+              {(beyblade.elementTypes ?? []).map(slug => {
+                const cfg = elementTypeConfigs.find(c => c.id === slug);
                 return (
-                  <button
-                    key={elem}
-                    type="button"
-                    onClick={() => {
-                      const cur = beyblade.elementTypes ?? [];
-                      if (selected) {
-                        set("elementTypes", cur.filter(e => e !== elem));
-                      } else if (canAdd) {
-                        set("elementTypes", [...cur, elem]);
-                      }
-                    }}
-                    style={{
-                      display:"flex", alignItems:"center", gap:4, padding:"4px 10px",
-                      borderRadius:20, fontSize:12, cursor: selected || canAdd ? "pointer" : "not-allowed",
-                      border:`1px solid ${selected ? ELEMENT_COLORS[elem] : C.border}`,
-                      background: selected ? ELEMENT_COLORS[elem] + "33" : "transparent",
-                      color: selected ? C.text : C.muted,
-                      opacity: !selected && !canAdd ? 0.4 : 1,
-                    }}
-                  >
-                    <span>{ELEMENT_ICONS[elem]}</span>
-                    <span style={{ textTransform:"capitalize" }}>{elem}</span>
-                  </button>
+                  <span key={slug} style={{
+                    display:"inline-flex", alignItems:"center", gap:5,
+                    padding:"4px 10px", borderRadius:20, fontSize:12,
+                    background: cfg ? cfg.color+"33" : C.bg3,
+                    border:`1px solid ${cfg?.color ?? C.border}`,
+                    color:C.text,
+                  }}>
+                    {cfg?.icon ?? "?"} {cfg?.name ?? slug}
+                    <button
+                      type="button"
+                      onClick={() => set("elementTypes", (beyblade.elementTypes ?? []).filter(e => e !== slug))}
+                      style={{ background:"none", border:"none", color:C.muted, cursor:"pointer", fontSize:14, lineHeight:1, padding:0, marginLeft:2 }}
+                    >×</button>
+                  </span>
                 );
               })}
+              {(beyblade.elementTypes?.length ?? 0) === 0 && (
+                <span style={{ fontSize:12, color:C.faint }}>No types selected</span>
+              )}
             </div>
-            {(beyblade.elementTypes?.length ?? 0) >= 2 && (
-              <div style={{ fontSize:11, color:C.muted }}>
-                Type matchup preview: {beyblade.elementTypes!.map(e => `${ELEMENT_ICONS[e]} ${e}`).join(" + ")}
-              </div>
+
+            {/* Dropdown to add a type */}
+            {(beyblade.elementTypes?.length ?? 0) < 2 && (
+              <SearchableSelect
+                value=""
+                disabled={elemTypesLoading}
+                emptyLabel={elemTypesLoading ? "Loading types…" : "Add element type…"}
+                options={elementTypeConfigs
+                  .filter(cfg => !(beyblade.elementTypes ?? [] as string[]).includes(cfg.id))
+                  .map(cfg => ({ value: cfg.id, label: `${cfg.icon} ${cfg.name}` }))}
+                onChange={v => {
+                  if (!v) return;
+                  const cur = beyblade.elementTypes ?? [] as string[];
+                  if (!cur.includes(v) && cur.length < 2) {
+                    set("elementTypes", [...cur, v]);
+                  }
+                }}
+                style={{
+                  background:C.bg1, border:`1px solid ${C.border}`, borderRadius:8,
+                  color:C.text, padding:"7px 12px", fontSize:13, cursor:"pointer", minWidth:180,
+                }}
+              />
             )}
+          </div>
+          {/* Special Move & Combos */}
+          <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
+            <div style={{ fontSize:14, fontWeight:600, color:C.text, marginBottom:12 }}>Special Move &amp; Combos</div>
+
+            {/* Special Move */}
+            <div style={{ marginBottom:16 }}>
+              <label style={S.label}>Special Move</label>
+              <SearchableSelect
+                value={(beyblade as any).specialMoveId ?? ""}
+                emptyLabel="(none — Special HUD hidden)"
+                options={[
+                  { value: "stampede_rush", label: "Stampede Rush — Attack: linear burst + spin boost" },
+                  { value: "gyro_anchor",   label: "Gyro Anchor — Defense: zero velocity + 1.5s invuln" },
+                  { value: "spin_recovery", label: "Spin Recovery — Stamina: orbital path + spin recover" },
+                  { value: "tactical_burst",label: "Tactical Burst — Balanced: directional burst + 20% spin" },
+                ]}
+                onChange={v => set("specialMoveId" as any, v || undefined)}
+                style={{ width:"100%", background:C.bg1, border:`1px solid ${C.border}`, borderRadius:8, color:C.text, padding:"7px 12px", fontSize:13, cursor:"pointer" }}
+              />
+              <p style={{ fontSize:11, color:C.faint, marginTop:4 }}>Costs ~100 power. If blank, the Special HUD panel is hidden in-match.</p>
+            </div>
+
+            {/* Combo IDs */}
+            <div>
+              <label style={S.label}>Attached Combos <span style={{ fontWeight:400, color:C.faint }}>(max 3)</span></label>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:8 }}>
+                {((beyblade as any).comboIds as string[] ?? []).map((id: string) => (
+                  <span key={id} style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"4px 10px", borderRadius:20, fontSize:12, background:C.bg3, border:`1px solid ${C.border}`, color:C.text }}>
+                    {id}
+                    <button type="button"
+                      onClick={() => set("comboIds" as any, ((beyblade as any).comboIds as string[] ?? []).filter((c: string) => c !== id))}
+                      style={{ background:"none", border:"none", color:C.muted, cursor:"pointer", fontSize:14, lineHeight:1, padding:0 }}>×</button>
+                  </span>
+                ))}
+                {(((beyblade as any).comboIds as string[] ?? []).length === 0) && (
+                  <span style={{ fontSize:12, color:C.faint }}>No combos attached — Combo HUD strip hidden in-match</span>
+                )}
+              </div>
+              {(((beyblade as any).comboIds as string[] ?? []).length < 3) && (
+                <SearchableSelect
+                  value=""
+                  emptyLabel="Add combo…"
+                  options={[
+                    { value:"quick-dash-l",   label:"Quick Dash L — ←←J | free | any type" },
+                    { value:"quick-dash-r",   label:"Quick Dash R — →→J | free | any type" },
+                    { value:"guard-tap",      label:"Guard Tap — KKK | free | any type" },
+                    { value:"feint",          label:"Feint — ←→K | free | any type" },
+                    { value:"riposte",        label:"Riposte — KKJ | 15 power | defense" },
+                    { value:"pivot-strike",   label:"Pivot Strike — ←→J | 15 power | balanced" },
+                    { value:"power-thrust",   label:"Power Thrust — JJJ | 25 power | any type" },
+                    { value:"spin-leech-jab", label:"Spin Leech Jab — ←J→ | 35 power | stamina" },
+                  ].filter(c => !((beyblade as any).comboIds as string[] ?? []).includes(c.value))}
+                  onChange={v => {
+                    if (!v) return;
+                    const cur: string[] = (beyblade as any).comboIds ?? [];
+                    if (!cur.includes(v) && cur.length < 3) set("comboIds" as any, [...cur, v]);
+                  }}
+                  style={{ background:C.bg1, border:`1px solid ${C.border}`, borderRadius:8, color:C.text, padding:"7px 12px", fontSize:13, cursor:"pointer", minWidth:200 }}
+                />
+              )}
+            </div>
           </div>
         </div>
 

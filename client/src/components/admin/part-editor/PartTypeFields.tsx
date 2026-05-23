@@ -10,6 +10,7 @@
 
 import { useState } from "react";
 import { C, alpha } from "@/styles/theme";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 type Part = Record<string, unknown>;
 type OnChange = (patch: Part) => void;
@@ -135,25 +136,21 @@ function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChang
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
             <div>
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Stat</div>
-              <select
+              <SearchableSelect
                 value={mod.targetStat}
-                onChange={(e) => patch(i, { targetStat: e.target.value })}
-                style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
-              >
-                {STAT_KEYS.map((k) => <option key={k} value={k}>{k}</option>)}
-              </select>
+                options={STAT_KEYS.map((k) => ({ value: k, label: k }))}
+                onChange={(v) => patch(i, { targetStat: v })}
+                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+              />
             </div>
             <div>
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Op</div>
-              <select
+              <SearchableSelect
                 value={mod.operation}
-                onChange={(e) => patch(i, { operation: e.target.value as StatModifier["operation"] })}
-                style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
-              >
-                <option value="add">add</option>
-                <option value="multiply">multiply</option>
-                <option value="set">set</option>
-              </select>
+                options={[{ value: "add", label: "add" }, { value: "multiply", label: "multiply" }, { value: "set", label: "set" }]}
+                onChange={(v) => patch(i, { operation: v as StatModifier["operation"] })}
+                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+              />
             </div>
             <div>
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Value</div>
@@ -174,28 +171,25 @@ function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChang
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <div>
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Event (optional)</div>
-              <select
+              <SearchableSelect
                 value={mod.event ?? ""}
-                onChange={(e) => patch(i, { event: e.target.value || undefined })}
-                style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
-              >
-                <option value="">(none)</option>
-                {STAT_EVENTS.map((ev) => <option key={ev} value={ev}>{ev}</option>)}
-              </select>
+                options={STAT_EVENTS.map((ev) => ({ value: ev, label: ev }))}
+                onChange={(v) => patch(i, { event: v || undefined })}
+                emptyLabel="(none)"
+                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+              />
             </div>
             <div>
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger type (optional)</div>
-              <select
+              <SearchableSelect
                 value={mod.trigger?.type ?? ""}
-                onChange={(e) => {
-                  const type = e.target.value;
-                  patch(i, { trigger: type ? { type, threshold: mod.trigger?.threshold ?? 0 } : undefined });
+                options={TRIGGER_TYPES.map((t) => ({ value: t, label: t }))}
+                onChange={(v) => {
+                  patch(i, { trigger: v ? { type: v, threshold: mod.trigger?.threshold ?? 0 } : undefined });
                 }}
-                style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
-              >
-                <option value="">(none)</option>
-                {TRIGGER_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
+                emptyLabel="(none)"
+                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+              />
             </div>
             {mod.trigger?.type && (
               <div>
@@ -258,10 +252,12 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8, alignItems: "flex-end" }}>
             <div>
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Target layer</div>
-              <select value={sw.targetLayer} onChange={(e) => patch(i, { targetLayer: e.target.value })}
-                style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}>
-                {PART_LAYERS.map((l) => <option key={l} value={l}>{l}</option>)}
-              </select>
+              <SearchableSelect
+                value={sw.targetLayer}
+                options={PART_LAYERS.map((l) => ({ value: l, label: l }))}
+                onChange={(v) => patch(i, { targetLayer: v })}
+                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+              />
             </div>
             <div>
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Activate config name</div>
@@ -278,10 +274,12 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
             <div>
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger type</div>
-              <select value={sw.trigger.type} onChange={(e) => patchTrigger(i, { type: e.target.value })}
-                style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}>
-                {TRIGGER_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <SearchableSelect
+                value={sw.trigger.type}
+                options={TRIGGER_TYPES.map((t) => ({ value: t, label: t }))}
+                onChange={(v) => patchTrigger(i, { type: v })}
+                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+              />
             </div>
             <div>
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Threshold</div>
@@ -290,12 +288,12 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
             {sw.trigger.type === "impact_direction" && (
               <div>
                 <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Direction</div>
-                <select value={sw.trigger.direction ?? "any"} onChange={(e) => patchTrigger(i, { direction: e.target.value })}
-                  style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}>
-                  <option value="any">any</option>
-                  <option value="clockwise">clockwise</option>
-                  <option value="counterclockwise">counterclockwise</option>
-                </select>
+                <SearchableSelect
+                  value={sw.trigger.direction ?? "any"}
+                  options={[{ value: "any", label: "any" }, { value: "clockwise", label: "clockwise" }, { value: "counterclockwise", label: "counterclockwise" }]}
+                  onChange={(v) => patchTrigger(i, { direction: v })}
+                  style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                />
               </div>
             )}
             <label style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: C.faint, cursor: "pointer" }}>
@@ -309,10 +307,12 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <div>
                 <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Reset condition type</div>
-                <select value={sw.resetCondition?.type ?? "impact"} onChange={(e) => patchReset(i, { type: e.target.value })}
-                  style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}>
-                  {RESET_CONDITION_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                </select>
+                <SearchableSelect
+                  value={sw.resetCondition?.type ?? "impact"}
+                  options={RESET_CONDITION_TYPES.map((t) => ({ value: t, label: t }))}
+                  onChange={(v) => patchReset(i, { type: v })}
+                  style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                />
               </div>
               <div>
                 <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Reset threshold</div>
@@ -552,12 +552,12 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
           <Field label="Rate (RPM/s)"><NumInput value={si.rateRPM} onChange={(v) => updateSI({ rateRPM: v })} min={0} step={1} width={80} /></Field>
           <Field label="Reserve capacity (0=unlimited)"><NumInput value={si.reserveCapacity} onChange={(v) => updateSI({ reserveCapacity: v })} min={0} step={100} width={90} /></Field>
           <Field label="Activation condition">
-            <select value={si.activationCondition} onChange={(e) => updateSI({ activationCondition: e.target.value })}
-              style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}>
-              <option value="always">always</option>
-              <option value="casing_trigger">casing_trigger</option>
-              <option value="spin_threshold">spin_threshold</option>
-            </select>
+            <SearchableSelect
+              value={si.activationCondition}
+              options={[{ value: "always", label: "always" }, { value: "casing_trigger", label: "casing_trigger" }, { value: "spin_threshold", label: "spin_threshold" }]}
+              onChange={(v) => updateSI({ activationCondition: v })}
+              style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+            />
           </Field>
           {si.activationCondition === "spin_threshold" && (
             <Field label="Spin threshold (0–1)"><NumInput value={si.spinThreshold} onChange={(v) => updateSI({ spinThreshold: v })} min={0} max={1} /></Field>
@@ -574,11 +574,12 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
         <div style={{ marginBottom: 14 }}>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <Field label="Activation">
-              <select value={cr.activationCondition} onChange={(e) => updateCR({ activationCondition: e.target.value })}
-                style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}>
-                <option value="casing_trigger">casing_trigger</option>
-                <option value="player_input">player_input</option>
-              </select>
+              <SearchableSelect
+                value={cr.activationCondition}
+                options={[{ value: "casing_trigger", label: "casing_trigger" }, { value: "player_input", label: "player_input" }]}
+                onChange={(v) => updateCR({ activationCondition: v })}
+                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+              />
             </Field>
             <Field label="Step duration (ticks)"><NumInput value={cr.stepDurationTicks} onChange={(v) => updateCR({ stepDurationTicks: v })} min={1} step={1} width={80} /></Field>
             <Field label="Spin cost per step"><NumInput value={cr.spinDecayCostPerStep} onChange={(v) => updateCR({ spinDecayCostPerStep: v })} min={0} max={1} /></Field>
@@ -660,15 +661,12 @@ function BitBeastFields({ part, onChange }: { part: Part; onChange: OnChange }) 
     <div>
       <SectionHeader>Special Move</SectionHeader>
       <Field label="Special Move" hint="Triggers at full power bar (Space). One per BitBeast.">
-        <select
+        <SearchableSelect
           value={specialMove}
-          onChange={(e) => onChange({ specialMove: e.target.value as any, customMoveName: e.target.value !== "custom" ? undefined : (part.customMoveName as string | undefined) })}
-          style={{ padding: "7px 10px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13, width: "100%" }}
-        >
-          {SPECIAL_MOVE_OPTIONS.map(o => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
+          options={SPECIAL_MOVE_OPTIONS}
+          onChange={(v) => onChange({ specialMove: v as any, customMoveName: v !== "custom" ? undefined : (part.customMoveName as string | undefined) })}
+          style={{ background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13 }}
+        />
       </Field>
       {isCustom && (
         <Field label="Custom Move Name">

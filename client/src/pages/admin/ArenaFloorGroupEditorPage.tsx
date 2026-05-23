@@ -1,0 +1,856 @@
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { C, btn, pill, alpha } from "@/styles/theme";
+import toast from "react-hot-toast";
+import type { ArenaFloorGroup, ArenaLink, ArenaConfig, FloorStackPosition } from "@/types/arenaConfigNew";
+import ArenaLinkEditorPanel from "@/components/admin/ArenaLinkEditorPanel";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
+
+const MAX_FLOORS = 7;
+
+// ─── Link & coupling metadata ─────────────────────────────────────────────────
+
+const LINK_TYPE_META: Record<string, { icon: string; label: string; color: string; defaultAlignment: string; desc: string }> = {
+  corridor:   { icon: "🚪", label: "Corridor",   color: C.blue,   defaultAlignment: "positional", desc: "Horizontal passage — severs when misaligned" },
+  portal:     { icon: "🌀", label: "Portal",     color: C.purple, defaultAlignment: "none",       desc: "Instant warp — always open, ignores rotation" },
+  ramp:       { icon: "📐", label: "Ramp",       color: C.yellow, defaultAlignment: "owner-only", desc: "Physical slope — owned by source arena, severs on misalign" },
+  pit:        { icon: "⬇️",  label: "Pit",        color: C.red,    defaultAlignment: "positional", desc: "Gravity fall — stays open, bey can land anywhere" },
+  trampoline: { icon: "⬆️",  label: "Trampoline", color: C.green,  defaultAlignment: "positional", desc: "Launch upward — auto-bounce from pit, player can cancel" },
+};
+
+const COUPLING_META: Record<string, { label: string; color: string; desc: string; arrows: [string, string] }> = {
+  independent:  { label: "Independent",  color: C.faint,  desc: "Each arena rotates freely",                  arrows: ["↻", "↻"] },
+  synchronized: { label: "Synchronized", color: C.green,  desc: "Both rotate same speed & direction",          arrows: ["↻", "↻"] },
+  counter:      { label: "Counter",      color: C.yellow, desc: "Opposite directions, same speed",             arrows: ["↻", "↺"] },
+  driven:       { label: "Driven",       color: C.blue,   desc: "Lower floor drives upper via gear ratio",     arrows: ["↻", "⚙"] },
+};
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface FloorSlot {
+  arenaId: string;
+  arenaName?: string;
+  rotationSpeedDegPerSec?: number;
+  rotationDirection?: "cw" | "ccw";
+  rotationMode?: "none" | "auto" | "linked";
+  /** Horizontal offset of this floor's center from the group world origin (cm). */
+  xOffsetCm: number;
+  yOffsetCm: number;
+  /** Elevation above ground floor (cm). Ground floor = 0. */
+  zOffsetCm: number;
+}
+
+interface FloorPairLink {
+  lowerFloor: number;
+  links: ArenaLink[];
+}
+
+// ─── Visual sub-components ────────────────────────────────────────────────────
+
+/**
+ * Rotation indicator: two concentric arcs showing direction (CW = arc on right, CCW = arc on left)
+ * with a dot needle showing current rotation.
+ */
+function RotationDial({
+  direction, speedDegPerSec, size = 32,
+}: {
+  direction?: "cw" | "ccw"; speedDegPerSec?: number; size?: number;
+}) {
+  const speed = speedDegPerSec ?? 0;
+  const secPerRev = speed > 0 ? (360 / speed) : 0;
+  const color = speed > 0 ? C.blue : C.faint;
+  const cx = size / 2, cy = size / 2, r = size / 2 - 3;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+      <svg width={size} height={size} style={{ overflow: "visible" }}>
+        {/* Background ring */}
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke={alpha(color, 0.2)} strokeWidth={2} />
+        {/* Active arc — CW = right half, CCW = left half */}
+        {speed > 0 && (
+          <circle
+            cx={cx} cy={cy} r={r}
+            fill="none" stroke={color} strokeWidth={2.5}
+            strokeDasharray={`${r * Math.PI} ${r * 2 * Math.PI}`}
+            strokeDashoffset={direction === "ccw" ? 0 : r * Math.PI}
+            strokeLinecap="round"
+            style={{ transform: "rotate(-90deg)", transformOrigin: `${cx}px ${cy}px` }}
+          />
+        )}
+        {/* Direction arrow dot at 12 o'clock */}
+        <circle cx={cx} cy={cy - r + 1} r={2.5} fill={color} />
+        {/* CW / CCW label */}
+        <text x={cx} y={cy + 1} textAnchor="middle" dominantBaseline="middle"
+          fontSize={7} fontWeight="700" fill={color} fontFamily="monospace">
+          {speed > 0 ? (direction === "cw" ? "CW" : "CCW") : "—"}
+        </text>
+      </svg>
+      {speed > 0 && (
+        <span style={{ fontSize: 9, color: C.faint }}>{speed}°/s</span>
+      )}
+      {speed > 0 && secPerRev > 0 && (
+        <span style={{ fontSize: 9, color, fontWeight: 600 }}>{secPerRev.toFixed(1)}s/rev</span>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Coupling diagram between two floor circles.
+ * Visualizes the rotational relationship arrows.
+ */
+function CouplingStrip({ link }: { link: ArenaLink }) {
+  const coupling = link.rotationCoupling ?? "independent";
+  const m = COUPLING_META[coupling] ?? COUPLING_META.independent;
+  const alignMode = link.alignment?.mode ?? "positional";
+  const meta = LINK_TYPE_META[link.linkType] ?? LINK_TYPE_META.corridor;
+
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 8,
+      padding: "7px 10px", borderRadius: 8, marginBottom: 4,
+      border: `1px solid ${alpha(meta.color, 0.22)}`,
+      background: alpha(meta.color, 0.05),
+      position: "relative",
+    }} className="link-row">
+      {/* Link type */}
+      <span style={{ fontSize: 15 }}>{meta.icon}</span>
+      <span style={{ fontSize: 12, fontWeight: 600, color: meta.color, minWidth: 64 }}>{meta.label}</span>
+
+      {/* Coupling arrows diagram */}
+      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <span style={{ fontSize: 14, color: alpha(m.color, 0.7) }}>{m.arrows[0]}</span>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+          {coupling === "driven" && link.rotationDrivenRatio != null && (
+            <span style={{ fontSize: 9, color: m.color, fontWeight: 700 }}>×{link.rotationDrivenRatio.toFixed(1)}</span>
+          )}
+          <div style={{
+            width: 20, height: 2,
+            background: coupling === "independent" ? alpha(m.color, 0.2) : m.color,
+            borderRadius: 1,
+            backgroundImage: coupling === "independent" ? `repeating-linear-gradient(90deg,${m.color} 0 3px,transparent 3px 6px)` : "none",
+          }} />
+        </div>
+        <span style={{ fontSize: 14, color: alpha(m.color, 0.7) }}>{m.arrows[1]}</span>
+      </div>
+
+      {/* Coupling pill */}
+      <span style={{
+        fontSize: 10, padding: "1px 7px", borderRadius: 20,
+        background: alpha(m.color, 0.12), border: `1px solid ${alpha(m.color, 0.3)}`,
+        color: m.color, fontWeight: 700,
+      }}>{m.label}</span>
+
+      {/* Alignment mode */}
+      <span style={{
+        fontSize: 10, padding: "1px 7px", borderRadius: 20,
+        background: alpha(C.bg3, 0.8), border: `1px solid ${C.border}`,
+        color: alignMode === "none" ? C.purple : alignMode === "owner-only" ? C.yellow : C.blue,
+      }}>
+        {alignMode === "none"
+          ? "always open"
+          : alignMode === "owner-only"
+          ? `owner ±${link.alignment?.errorMarginDeg ?? 12}°`
+          : `±${link.alignment?.errorMarginDeg ?? 10}°`}
+      </span>
+
+      {/* Disconnect badge */}
+      {link.alignment?.disconnectsWhenMisaligned && (
+        <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 20, background: alpha(C.red, 0.12), color: C.red, border: `1px solid ${alpha(C.red, 0.3)}` }}>
+          ⚡ severs
+        </span>
+      )}
+
+      {/* Traversal ticks */}
+      {link.traversal && (
+        <span style={{ marginLeft: "auto", fontSize: 10, color: C.faint }}>
+          {link.traversal.traversalTicks}t transit
+        </span>
+      )}
+
+      {/* Edit / remove */}
+      <div style={{ display: "flex", gap: 5 }}>
+        <button
+          onClick={() => { /* set edit — handled by parent */ }}
+          data-edit-link="true"
+          style={{ padding: "3px 8px", borderRadius: 5, fontSize: 11, cursor: "pointer", background: alpha(C.blue, 0.13), color: C.blue, border: `1px solid ${alpha(C.blue, 0.27)}` }}
+        >Edit</button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Small inline floor → floor motion diagram showing traversal direction and type.
+ */
+function LinkMotionDiagram({ linkType, size = 80 }: { linkType: string; size?: number }) {
+  const DIAGRAMS: Record<string, React.ReactElement> = {
+    pit: (
+      <svg width={size} height={32} style={{ display: "block" }}>
+        {/* Falling bey path */}
+        <circle cx={size/2} cy={6} r={5} fill={alpha(C.red, 0.3)} stroke={C.red} strokeWidth={1.5} />
+        <path d={`M${size/2} 11 L${size/2} 26`} stroke={C.red} strokeWidth={1.5} strokeDasharray="3 2"
+          markerEnd="url(#pit-arr)" />
+        <defs><marker id="pit-arr" markerWidth={6} markerHeight={6} refX={3} refY={3} orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill={C.red} />
+        </marker></defs>
+        <text x={size/2+8} y={20} fontSize={9} fill={C.faint}>gravity fall</text>
+      </svg>
+    ),
+    trampoline: (
+      <svg width={size} height={32} style={{ display: "block" }}>
+        {/* Rising bey path (bounce arc) */}
+        <circle cx={size/2} cy={26} r={5} fill={alpha(C.green, 0.3)} stroke={C.green} strokeWidth={1.5} />
+        <path d={`M${size/2-8} 26 Q${size/2} 10 ${size/2+8} 26`} fill="none" stroke={C.green} strokeWidth={1.5} strokeDasharray="3 2" />
+        <path d={`M${size/2} 21 L${size/2} 6`} stroke={C.green} strokeWidth={1.5} markerEnd="url(#tramp-arr)" />
+        <defs><marker id="tramp-arr" markerWidth={6} markerHeight={6} refX={3} refY={3} orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill={C.green} />
+        </marker></defs>
+        <text x={size/2+8} y={14} fontSize={9} fill={C.faint}>bounce up</text>
+      </svg>
+    ),
+    ramp: (
+      <svg width={size} height={32} style={{ display: "block" }}>
+        {/* Angled ascent */}
+        <circle cx={12} cy={26} r={4} fill={alpha(C.yellow, 0.3)} stroke={C.yellow} strokeWidth={1.5} />
+        <path d={`M12 22 L${size-12} 6`} stroke={C.yellow} strokeWidth={2} markerEnd="url(#ramp-arr)" />
+        <defs><marker id="ramp-arr" markerWidth={6} markerHeight={6} refX={3} refY={3} orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill={C.yellow} />
+        </marker></defs>
+        <text x={size/2-8} y={22} fontSize={9} fill={C.faint} transform={`rotate(-22,${size/2-8},22)`}>climb</text>
+      </svg>
+    ),
+    portal: (
+      <svg width={size} height={32} style={{ display: "block" }}>
+        {/* Warp ring */}
+        <ellipse cx={size/2} cy={16} rx={14} ry={8} fill={alpha(C.purple, 0.12)} stroke={C.purple} strokeWidth={1.5} strokeDasharray="4 2" />
+        <circle cx={size/2} cy={16} r={3} fill={C.purple} />
+        <text x={size/2} y={28} fontSize={8} textAnchor="middle" fill={C.faint}>instant warp</text>
+      </svg>
+    ),
+    corridor: (
+      <svg width={size} height={32} style={{ display: "block" }}>
+        <circle cx={10} cy={16} r={4} fill={alpha(C.blue, 0.3)} stroke={C.blue} strokeWidth={1.5} />
+        <path d={`M16 16 L${size-16} 16`} stroke={C.blue} strokeWidth={2} markerEnd="url(#corr-arr)" />
+        <circle cx={size-10} cy={16} r={4} fill={alpha(C.blue, 0.15)} stroke={C.blue} strokeWidth={1} strokeDasharray="2 2" />
+        <defs><marker id="corr-arr" markerWidth={6} markerHeight={6} refX={3} refY={3} orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill={C.blue} />
+        </marker></defs>
+        <text x={size/2} y={28} fontSize={8} textAnchor="middle" fill={C.faint}>horizontal pass</text>
+      </svg>
+    ),
+  };
+
+  return DIAGRAMS[linkType] ?? DIAGRAMS.corridor;
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function ArenaFloorGroupEditorPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const isNew = id === "new";
+
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState<"active" | "draft">("draft");
+  const [minFloorHeightCm, setMinFloorHeightCm] = useState(60);
+  const [floors, setFloors] = useState<FloorSlot[]>([{ arenaId: "", xOffsetCm: 0, yOffsetCm: 0, zOffsetCm: 0 }]);
+  const [pairLinks, setPairLinks] = useState<FloorPairLink[]>([]);
+  const [availableArenas, setAvailableArenas] = useState<{ id: string; name: string }[]>([]);
+  const [loading, setLoading] = useState(!isNew);
+  const [saving, setSaving] = useState(false);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [editingLink, setEditingLink] = useState<{ pairIdx: number; linkIdx: number | null } | null>(null);
+  const [expandedFloor, setExpandedFloor] = useState<number | null>(null);
+
+  useEffect(() => {
+    getDocs(collection(db, "arenas")).then(snap => {
+      setAvailableArenas(snap.docs.map(d => ({ id: d.id, name: (d.data() as ArenaConfig).name ?? d.id })));
+    });
+  }, []);
+
+  useEffect(() => {
+    if (isNew) return;
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, "arena_floor_groups", id!));
+        if (!snap.exists()) { toast.error("Group not found"); navigate("/admin/arena-floor-groups"); return; }
+        const data = snap.data() as ArenaFloorGroup & { description?: string; status?: string; links?: ArenaLink[] };
+        setName(data.name ?? "");
+        setDescription(data.description ?? "");
+        setStatus((data.status as "active" | "draft") ?? "draft");
+        setMinFloorHeightCm(data.minFloorHeightCm ?? 60);
+        setFloors((data.floorArenaIds ?? []).map((aid, fi) => {
+          const pos = (data.floorPositions ?? []).find(p => p.floorIndex === fi);
+          return {
+            arenaId: aid,
+            xOffsetCm: pos?.xOffsetCm ?? 0,
+            yOffsetCm: pos?.yOffsetCm ?? 0,
+            zOffsetCm: pos?.zOffsetCm ?? fi * (data.minFloorHeightCm ?? 60),
+            rotationSpeedDegPerSec: pos?.rotationSpeedDegPerSec,
+            rotationDirection: pos?.rotationDirection,
+            rotationMode: pos?.rotationMode ?? "none",
+          };
+        }));
+        const flat = data.links ?? [];
+        const pairs: FloorPairLink[] = [];
+        flat.forEach(link => {
+          const fromIdx = (data.floorArenaIds ?? []).indexOf(link.fromArenaId);
+          const toIdx   = (data.floorArenaIds ?? []).indexOf(link.toArenaId);
+          const lower   = Math.min(fromIdx, toIdx);
+          if (lower < 0) return;
+          const existing = pairs.find(p => p.lowerFloor === lower);
+          if (existing) existing.links.push(link);
+          else pairs.push({ lowerFloor: lower, links: [link] });
+        });
+        setPairLinks(pairs);
+      } catch { toast.error("Failed to load group"); }
+      finally { setLoading(false); }
+    })();
+  }, [id, isNew, navigate]);
+
+  function addFloor() {
+    if (floors.length >= MAX_FLOORS) return;
+    setFloors(f => [...f, {
+      arenaId: "",
+      xOffsetCm: 0,
+      yOffsetCm: 0,
+      zOffsetCm: f.length * minFloorHeightCm,
+    }]);
+  }
+
+  function removeFloor(idx: number) {
+    setFloors(f => f.filter((_, i) => i !== idx));
+    setPairLinks(pl => pl
+      .filter(p => p.lowerFloor !== idx && p.lowerFloor !== idx - 1)
+      .map(p => ({ ...p, lowerFloor: p.lowerFloor > idx ? p.lowerFloor - 1 : p.lowerFloor }))
+    );
+  }
+
+  function updateFloor(idx: number, patch: Partial<FloorSlot>) {
+    setFloors(f => f.map((s, i) => i === idx ? { ...s, ...patch } : s));
+  }
+
+  function handleDragStart(idx: number) { setDragIdx(idx); }
+  function handleDrop(targetIdx: number) {
+    if (dragIdx === null || dragIdx === targetIdx) { setDragIdx(null); return; }
+    const next = [...floors];
+    const [moved] = next.splice(dragIdx, 1);
+    next.splice(targetIdx, 0, moved);
+    setFloors(next);
+    setDragIdx(null);
+  }
+
+  function getPairLinks(lowerFloor: number) {
+    return pairLinks.find(p => p.lowerFloor === lowerFloor)?.links ?? [];
+  }
+
+  function upsertLink(pairIdx: number, link: ArenaLink) {
+    setPairLinks(pl => {
+      const existing = pl.find(p => p.lowerFloor === pairIdx);
+      if (existing) {
+        const li = existing.links.findIndex(l => l.id === link.id);
+        if (li >= 0) existing.links[li] = link; else existing.links.push(link);
+        return [...pl];
+      }
+      return [...pl, { lowerFloor: pairIdx, links: [link] }];
+    });
+  }
+
+  function removeLink(pairIdx: number, linkId: string) {
+    setPairLinks(pl => pl.map(p =>
+      p.lowerFloor === pairIdx ? { ...p, links: p.links.filter(l => l.id !== linkId) } : p
+    ));
+  }
+
+  async function save() {
+    if (!name.trim()) { toast.error("Name required"); return; }
+    const filledFloors = floors.filter(f => f.arenaId.trim());
+    if (filledFloors.length < 2) { toast.error("At least 2 floors required"); return; }
+    setSaving(true);
+    try {
+      const docId = isNew ? crypto.randomUUID() : id!;
+      const allLinks = pairLinks.flatMap(p => p.links);
+      const floorPositions: FloorStackPosition[] = filledFloors.map((f, fi) => ({
+        floorIndex: fi,
+        xOffsetCm: f.xOffsetCm ?? 0,
+        yOffsetCm: f.yOffsetCm ?? 0,
+        zOffsetCm: f.zOffsetCm ?? fi * minFloorHeightCm,
+        rotationSpeedDegPerSec: f.rotationSpeedDegPerSec,
+        rotationDirection: f.rotationDirection,
+        rotationMode: f.rotationMode,
+      }));
+      await setDoc(doc(db, "arena_floor_groups", docId), {
+        name: name.trim(),
+        description: description.trim(),
+        status,
+        floorArenaIds: filledFloors.map(f => f.arenaId),
+        floorPositions,
+        minFloorHeightCm,
+        links: allLinks,
+        linkCount: allLinks.length,
+        updatedAt: new Date().toISOString(),
+      });
+      toast.success(isNew ? "Floor group created" : "Saved");
+      if (isNew) navigate(`/admin/arena-floor-groups/${docId}`);
+    } catch { toast.error("Save failed"); }
+    finally { setSaving(false); }
+  }
+
+  if (loading) return <div style={{ padding: 48, textAlign: "center", color: C.muted }}>Loading…</div>;
+
+  const filledCount = floors.filter(f => f.arenaId.trim()).length;
+
+  return (
+    <div style={{ padding: 24, maxWidth: 1240, margin: "0 auto" }}>
+      <style>{`
+        .floor-slot { transition: opacity 0.15s, transform 0.15s; }
+        .floor-slot:hover .slot-drag-handle { opacity: 1 !important; }
+        .link-row:hover { background: ${alpha(C.blue, 0.07)} !important; }
+        @keyframes rotCW  { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
+        @keyframes rotCCW { from { transform: rotate(0deg); }   to { transform: rotate(-360deg); } }
+      `}</style>
+
+      {/* ── Header ── */}
+      <Link to="/admin/arena-floor-groups" style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Floor Groups</Link>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8, marginBottom: 24 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, margin: 0 }}>
+          {isNew ? "New Floor Group" : name || "Floor Group"}
+        </h1>
+        <span style={pill(status === "active" ? C.green : C.faint)}>{status}</span>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
+          <button
+            onClick={() => setStatus(s => s === "active" ? "draft" : "active")}
+            style={{ ...btn(status === "active" ? C.bg3 : C.green), fontSize: 13, color: status === "active" ? C.text : "#fff" }}
+          >
+            {status === "active" ? "Set Draft" : "Set Active"}
+          </button>
+          <button onClick={save} disabled={saving}
+            style={{ ...btn(C.blue), fontSize: 13, color: "#fff", opacity: saving ? 0.6 : 1 }}>
+            {saving ? "Saving…" : "Save"}
+          </button>
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 310px", gap: 20, alignItems: "start" }}>
+
+        {/* ── Left: Visual floor stack ── */}
+        <div>
+          {/* Floor count bar */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+            <div style={{ fontSize: 12, color: C.muted }}>{filledCount}/{MAX_FLOORS} floors configured</div>
+            <div style={{ display: "flex", gap: 4 }}>
+              {Array.from({ length: MAX_FLOORS }).map((_, i) => (
+                <div key={i} title={i < filledCount ? `F${i}` : "empty"} style={{
+                  width: 8, height: 8, borderRadius: 2,
+                  background: i < filledCount ? C.blue : C.bg3,
+                }} />
+              ))}
+            </div>
+            {floors.length < MAX_FLOORS && (
+              <button onClick={addFloor} style={{ ...btn(C.bg3), fontSize: 12, color: C.text, padding: "4px 10px" }}>
+                + Add Floor
+              </button>
+            )}
+          </div>
+
+          {/* Floor slots — rendered top → bottom (highest index = top visually) */}
+          {[...floors].reverse().map((slot, revIdx) => {
+            const idx = floors.length - 1 - revIdx;
+            const linksBelow = getPairLinks(idx - 1);
+            const isExpanded = expandedFloor === idx;
+
+            return (
+              <div key={idx}>
+                {/* ── Floor slot ── */}
+                <div
+                  className="floor-slot"
+                  draggable
+                  onDragStart={() => handleDragStart(idx)}
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={() => handleDrop(idx)}
+                  style={{
+                    background: dragIdx === idx ? alpha(C.blue, 0.15) : C.bg1,
+                    border: `1px solid ${dragIdx === idx ? C.blue : C.border}`,
+                    borderRadius: 12,
+                    padding: "12px 14px",
+                  }}
+                >
+                  <div style={{ display: "grid", gridTemplateColumns: "28px 1fr auto auto auto", gap: 10, alignItems: "center" }}>
+                    {/* Floor badge */}
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 8,
+                      background: alpha(C.blue, 0.15), border: `1px solid ${alpha(C.blue, 0.3)}`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 12, fontWeight: 700, color: C.blue,
+                    }}>
+                      F{idx}
+                    </div>
+
+                    {/* Arena picker */}
+                    <div>
+                      <SearchableSelect
+                        value={slot.arenaId}
+                        options={availableArenas.map(a => ({ value: a.id, label: a.name }))}
+                        onChange={v => updateFloor(idx, { arenaId: v })}
+                        emptyLabel="— Select arena —"
+                        style={{
+                          width: "100%", background: C.bg3, border: `1px solid ${C.border}`,
+                          borderRadius: 8, color: slot.arenaId ? C.text : C.faint, fontSize: 13,
+                        }}
+                      />
+                      {slot.arenaId && (
+                        <div style={{ fontSize: 10, color: C.faint, marginTop: 2, fontFamily: "monospace" }}>{slot.arenaId}</div>
+                      )}
+                    </div>
+
+                    {/* Rotation dial */}
+                    <RotationDial
+                      direction={slot.rotationDirection}
+                      speedDegPerSec={slot.rotationSpeedDegPerSec}
+                      size={32}
+                    />
+
+                    {/* Expand rotation settings */}
+                    <button
+                      onClick={() => setExpandedFloor(isExpanded ? null : idx)}
+                      style={{
+                        padding: "4px 8px", borderRadius: 6, fontSize: 11, cursor: "pointer",
+                        background: isExpanded ? alpha(C.blue, 0.15) : C.bg3,
+                        color: isExpanded ? C.blue : C.faint,
+                        border: `1px solid ${isExpanded ? C.blue : C.border}`,
+                      }}
+                    >
+                      ↻ rot
+                    </button>
+
+                    {/* Remove */}
+                    <button
+                      onClick={() => removeFloor(idx)}
+                      disabled={floors.length <= 1}
+                      style={{
+                        width: 26, height: 26, borderRadius: 6, fontSize: 14, cursor: "pointer",
+                        background: alpha(C.red, 0.13), color: C.red, border: `1px solid ${alpha(C.red, 0.27)}`,
+                        opacity: floors.length <= 1 ? 0.3 : 1,
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  {/* ── Expanded controls: rotation + position ── */}
+                  {isExpanded && (
+                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border}`, display: "flex", flexDirection: "column", gap: 12 }}>
+
+                      {/* Rotation row */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                        {/* Mode */}
+                        <div>
+                          <label style={{ fontSize: 11, color: C.faint, display: "block", marginBottom: 4 }}>ROTATION MODE</label>
+                          <SearchableSelect
+                            value={slot.rotationMode ?? "none"}
+                            options={[{ value: "none", label: "None (static)" }, { value: "auto", label: "Auto (constant)" }, { value: "linked", label: "Linked (coupling)" }]}
+                            onChange={v => updateFloor(idx, { rotationMode: v as FloorSlot["rotationMode"] })}
+                            style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }}
+                          />
+                        </div>
+
+                        {/* Speed */}
+                        <div>
+                          <label style={{ fontSize: 11, color: C.faint, display: "block", marginBottom: 4 }}>
+                            SPEED (°/s) &nbsp;
+                            <span style={{ color: C.muted }}>
+                              {slot.rotationSpeedDegPerSec
+                                ? `${(360 / slot.rotationSpeedDegPerSec).toFixed(1)}s/rev`
+                                : "—"}
+                            </span>
+                          </label>
+                          <input
+                            type="number" min={0} max={360} step={5}
+                            value={slot.rotationSpeedDegPerSec ?? 0}
+                            onChange={e => updateFloor(idx, { rotationSpeedDegPerSec: +e.target.value })}
+                            style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, padding: "5px 8px", color: C.text, fontSize: 12, boxSizing: "border-box" }}
+                          />
+                      </div>
+
+                        {/* Direction */}
+                        <div>
+                          <label style={{ fontSize: 11, color: C.faint, display: "block", marginBottom: 4 }}>DIRECTION</label>
+                          <div style={{ display: "flex", gap: 6 }}>
+                            {(["cw", "ccw"] as const).map(dir => (
+                              <button key={dir} onClick={() => updateFloor(idx, { rotationDirection: dir })}
+                                style={{
+                                  flex: 1, padding: "5px", borderRadius: 6, fontSize: 13, cursor: "pointer",
+                                  background: slot.rotationDirection === dir ? alpha(C.blue, 0.15) : C.bg3,
+                                  border: `1px solid ${slot.rotationDirection === dir ? C.blue : C.border}`,
+                                  color: slot.rotationDirection === dir ? C.blue : C.muted,
+                                }}>
+                                {dir === "cw" ? "↻ CW" : "↺ CCW"}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Position row */}
+                      <div style={{ paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
+                        <label style={{ fontSize: 11, color: C.faint, display: "block", marginBottom: 6 }}>
+                          FLOOR POSITION &nbsp;
+                          <span style={{ color: C.muted, fontWeight: 400 }}>offsets from group world origin (cm)</span>
+                        </label>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                          {([
+                            { key: "xOffsetCm", label: "X offset", hint: "← / →" },
+                            { key: "yOffsetCm", label: "Y offset", hint: "↑ / ↓" },
+                            { key: "zOffsetCm", label: "Elevation", hint: "height" },
+                          ] as { key: keyof FloorSlot; label: string; hint: string }[]).map(({ key, label, hint }) => (
+                            <div key={key as string}>
+                              <label style={{ fontSize: 11, color: C.faint, display: "block", marginBottom: 4 }}>
+                                {label} <span style={{ color: C.muted, fontWeight: 400 }}>({hint})</span>
+                              </label>
+                              <input
+                                type="number" step={1}
+                                value={(slot[key] as number) ?? 0}
+                                onChange={e => updateFloor(idx, { [key]: +e.target.value })}
+                                style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, padding: "5px 8px", color: C.text, fontSize: 12, boxSizing: "border-box" }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <p style={{ fontSize: 10, color: C.faint, marginTop: 4 }}>
+                          Non-zero X/Y offsets misalign floors so beys can knock each other off edges when crossing.
+                          Elevation sets the floor height for camera and collision math.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* ── Links between this floor and the one below ── */}
+                {idx > 0 && (
+                  <div style={{ margin: "6px 0 6px 40px", position: "relative" }}>
+                    {/* Vertical connector line */}
+                    <div style={{
+                      position: "absolute", left: -26, top: 0, bottom: 0,
+                      width: 2,
+                      background: linksBelow.length > 0 ? alpha(C.blue, 0.4) : alpha(C.border, 0.5),
+                      borderRadius: 1,
+                    }} />
+
+                    {/* Existing links */}
+                    {linksBelow.map((link, li) => {
+                      const meta = LINK_TYPE_META[link.linkType] ?? LINK_TYPE_META.corridor;
+                      const coupling = link.rotationCoupling ?? "independent";
+                      const couplingMeta = COUPLING_META[coupling];
+
+                      return (
+                        <div key={link.id} style={{ marginBottom: 6 }}>
+                          {/* Link dot on connector */}
+                          <div style={{
+                            position: "absolute", left: -31, width: 12, height: 12,
+                            borderRadius: "50%", background: meta.color,
+                            border: `2px solid ${C.bg1}`,
+                            marginTop: 8,
+                          }} />
+
+                          {/* Motion diagram + link row */}
+                          <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
+                            <LinkMotionDiagram linkType={link.linkType} size={80} />
+                            <div style={{ flex: 1 }}>
+                              <div style={{
+                                display: "flex", alignItems: "center", gap: 6,
+                                padding: "5px 8px", borderRadius: 8,
+                                border: `1px solid ${alpha(meta.color, 0.2)}`,
+                                background: alpha(meta.color, 0.04),
+                              }} className="link-row">
+                                <span style={{ fontSize: 14 }}>{meta.icon}</span>
+                                <span style={{ fontSize: 12, fontWeight: 600, color: meta.color }}>{meta.label}</span>
+                                {/* Coupling arrows */}
+                                <span style={{ fontSize: 12, color: alpha(couplingMeta.color, 0.8) }}>
+                                  {couplingMeta.arrows[0]}
+                                  {coupling === "driven" && link.rotationDrivenRatio != null
+                                    ? <span style={{ fontSize: 9, color: couplingMeta.color }}>×{link.rotationDrivenRatio.toFixed(1)}</span>
+                                    : null}
+                                  →{couplingMeta.arrows[1]}
+                                </span>
+                                <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 10, background: alpha(couplingMeta.color, 0.12), color: couplingMeta.color, border: `1px solid ${alpha(couplingMeta.color, 0.3)}` }}>
+                                  {couplingMeta.label}
+                                </span>
+                                <span style={{ fontSize: 10, color: link.alignment?.mode === "none" ? C.purple : link.alignment?.mode === "owner-only" ? C.yellow : C.blue }}>
+                                  {link.alignment?.mode === "none"
+                                    ? "always open"
+                                    : `±${link.alignment?.errorMarginDeg ?? 10}°`}
+                                </span>
+                                {link.alignment?.disconnectsWhenMisaligned && (
+                                  <span style={{ fontSize: 10, color: C.red }}>⚡ severs</span>
+                                )}
+                                {link.traversal && (
+                                  <span style={{ marginLeft: "auto", fontSize: 10, color: C.faint }}>
+                                    {link.traversal.traversalTicks}t
+                                  </span>
+                                )}
+                                <button
+                                  onClick={() => setEditingLink({ pairIdx: idx - 1, linkIdx: li })}
+                                  style={{ padding: "2px 7px", borderRadius: 4, fontSize: 10, cursor: "pointer", background: alpha(C.blue, 0.13), color: C.blue, border: `1px solid ${alpha(C.blue, 0.27)}` }}
+                                >Edit</button>
+                                <button
+                                  onClick={() => removeLink(idx - 1, link.id)}
+                                  style={{ padding: "2px 7px", borderRadius: 4, fontSize: 10, cursor: "pointer", background: alpha(C.red, 0.13), color: C.red, border: `1px solid ${alpha(C.red, 0.27)}` }}
+                                >✕</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Add link button */}
+                    <button
+                      onClick={() => setEditingLink({ pairIdx: idx - 1, linkIdx: null })}
+                      disabled={!floors[idx]?.arenaId || !floors[idx - 1]?.arenaId}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 6,
+                        padding: "5px 12px", borderRadius: 8, fontSize: 12, fontWeight: 500,
+                        cursor: "pointer", width: "100%", justifyContent: "center",
+                        background: "transparent", color: C.muted,
+                        border: `1px dashed ${C.border}`,
+                        opacity: (!floors[idx]?.arenaId || !floors[idx - 1]?.arenaId) ? 0.4 : 1,
+                      }}
+                    >
+                      + Add link between F{idx - 1} and F{idx}
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Ground floor label */}
+          <div style={{ textAlign: "center", marginTop: 8, fontSize: 11, color: C.faint }}>
+            ▼ Ground Floor (F0)
+          </div>
+        </div>
+
+        {/* ── Right sidebar ── */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+
+          {/* Group settings */}
+          <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
+            <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 12 }}>Group Settings</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div>
+                <label style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Name</label>
+                <input
+                  value={name} onChange={e => setName(e.target.value)}
+                  placeholder="e.g. Sky Temple"
+                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 10px", color: C.text, fontSize: 13, boxSizing: "border-box" }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</label>
+                <textarea
+                  value={description} onChange={e => setDescription(e.target.value)}
+                  rows={2} placeholder="Optional description…"
+                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 10px", color: C.text, fontSize: 13, resize: "vertical", boxSizing: "border-box" }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
+                  Min Floor Height (cm)
+                </label>
+                <input
+                  type="number" min={20} max={500} step={5}
+                  value={minFloorHeightCm}
+                  onChange={e => setMinFloorHeightCm(+e.target.value)}
+                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 10px", color: C.text, fontSize: 13, boxSizing: "border-box" }}
+                />
+                <p style={{ fontSize: 10, color: C.faint, marginTop: 4, lineHeight: 1.4 }}>
+                  Vertical clearance between floors. Governs camera zoom headroom and whether the floor above occludes the view.
+                  Default: 60 cm.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Summary */}
+          <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
+            <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 12 }}>Summary</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 13 }}>
+              <Row label="Floors" value={`${filledCount} / ${MAX_FLOORS}`} color={C.blue} />
+              <Row label="Total Links" value={pairLinks.reduce((s, p) => s + p.links.length, 0)} />
+              {Object.entries(LINK_TYPE_META).map(([type, meta]) => {
+                const count = pairLinks.reduce((s, p) => s + p.links.filter(l => l.linkType === type).length, 0);
+                return count ? <Row key={type} label={`${meta.icon} ${meta.label}`} value={count} color={meta.color} /> : null;
+              })}
+            </div>
+          </div>
+
+          {/* Rotation coupling visual legend */}
+          <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
+            <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 12 }}>Rotation Coupling</p>
+            <p style={{ fontSize: 11, color: C.muted, marginBottom: 10, lineHeight: 1.5 }}>
+              Controls how each linked arena pair rotates relative to each other.
+              Affects ramp/corridor alignment timing and difficulty.
+            </p>
+            {Object.entries(COUPLING_META).map(([key, m]) => (
+              <div key={key} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
+                <span style={{ fontSize: 14, minWidth: 32 }}>{m.arrows[0]}{m.arrows[1]}</span>
+                <span style={{
+                  fontSize: 10, padding: "1px 7px", borderRadius: 10,
+                  background: alpha(m.color, 0.12), border: `1px solid ${alpha(m.color, 0.3)}`,
+                  color: m.color, fontWeight: 700, minWidth: 64, textAlign: "center",
+                }}>{m.label}</span>
+                <span style={{ fontSize: 11, color: C.muted, lineHeight: 1.4 }}>{m.desc}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Alignment defaults per link type */}
+          <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
+            <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 10 }}>Alignment Behavior</p>
+            <p style={{ fontSize: 11, color: C.muted, marginBottom: 10, lineHeight: 1.5 }}>
+              When two arenas rotate, openings must line up for beys to traverse.
+              Different link types have different tolerances.
+            </p>
+            {Object.entries(LINK_TYPE_META).map(([type, meta]) => (
+              <div key={type} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "flex-start" }}>
+                <span style={{ fontSize: 14, minWidth: 20 }}>{meta.icon}</span>
+                <div>
+                  <span style={{ fontSize: 12, color: C.text, fontWeight: 600 }}>{meta.label}: </span>
+                  <span style={{ fontSize: 11, color: C.muted }}>{meta.desc}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Link editor modal ── */}
+      {editingLink && (
+        <ArenaLinkEditorPanel
+          fromArenaId={floors[editingLink.pairIdx]?.arenaId ?? ""}
+          toArenaId={floors[editingLink.pairIdx + 1]?.arenaId ?? ""}
+          existing={
+            editingLink.linkIdx !== null
+              ? pairLinks.find(p => p.lowerFloor === editingLink.pairIdx)?.links[editingLink.linkIdx!]
+              : undefined
+          }
+          onSave={link => { upsertLink(editingLink.pairIdx, link); setEditingLink(null); }}
+          onClose={() => setEditingLink(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function Row({ label, value, color }: { label: string; value: React.ReactNode; color?: string }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+      <span style={{ color: C.muted }}>{label}</span>
+      <span style={{ color: color ?? C.text, fontWeight: 600 }}>{value}</span>
+    </div>
+  );
+}

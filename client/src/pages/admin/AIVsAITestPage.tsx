@@ -9,6 +9,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { C, S, btn } from "@/styles/theme";
 import toast from "react-hot-toast";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 type Difficulty = "medium" | "hard" | "hell";
 type BestOf = 1 | 3 | 5;
@@ -116,53 +117,59 @@ export function AIVsAITestPage() {
       <Section title="Contestants">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           <Field label="Player 1 Beyblade">
-            <select style={S.input} value={p1BeyId} onChange={(e) => setP1BeyId(e.target.value)}>
-              {beys.map((b) => (
-                <option key={b.id} value={b.id}>{b.displayName}{b.type ? ` (${b.type})` : ""}</option>
-              ))}
-            </select>
+            <SearchableSelect
+              value={p1BeyId}
+              options={beys.map((b) => ({ value: b.id, label: `${b.displayName}${b.type ? ` (${b.type})` : ""}` }))}
+              onChange={setP1BeyId}
+              style={S.input}
+            />
           </Field>
           <Field label="Player 2 Beyblade">
-            <select style={S.input} value={p2BeyId} onChange={(e) => setP2BeyId(e.target.value)}>
-              {beys.map((b) => (
-                <option key={b.id} value={b.id}>{b.displayName}{b.type ? ` (${b.type})` : ""}</option>
-              ))}
-            </select>
+            <SearchableSelect
+              value={p2BeyId}
+              options={beys.map((b) => ({ value: b.id, label: `${b.displayName}${b.type ? ` (${b.type})` : ""}` }))}
+              onChange={setP2BeyId}
+              style={S.input}
+            />
           </Field>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           <Field label="Player 1 Difficulty">
-            <select style={S.input} value={p1Diff} onChange={(e) => setP1Diff(e.target.value as Difficulty)}>
-              {(Object.keys(DIFF_LABEL) as Difficulty[]).map((d) => (
-                <option key={d} value={d}>{DIFF_LABEL[d]}</option>
-              ))}
-            </select>
+            <SearchableSelect
+              value={p1Diff}
+              options={(Object.keys(DIFF_LABEL) as Difficulty[]).map((d) => ({ value: d, label: DIFF_LABEL[d] }))}
+              onChange={(v) => setP1Diff(v as Difficulty)}
+              style={S.input}
+            />
           </Field>
           <Field label="Player 2 Difficulty">
-            <select style={S.input} value={p2Diff} onChange={(e) => setP2Diff(e.target.value as Difficulty)}>
-              {(Object.keys(DIFF_LABEL) as Difficulty[]).map((d) => (
-                <option key={d} value={d}>{DIFF_LABEL[d]}</option>
-              ))}
-            </select>
+            <SearchableSelect
+              value={p2Diff}
+              options={(Object.keys(DIFF_LABEL) as Difficulty[]).map((d) => ({ value: d, label: DIFF_LABEL[d] }))}
+              onChange={(v) => setP2Diff(v as Difficulty)}
+              style={S.input}
+            />
           </Field>
         </div>
       </Section>
 
       <Section title="Arena & Format">
         <Field label="Arena">
-          <select style={S.input} value={arenaId} onChange={(e) => setArenaId(e.target.value)}>
-            {arenas.map((a) => (
-              <option key={a.id} value={a.id}>{a.name}</option>
-            ))}
-          </select>
+          <SearchableSelect
+            value={arenaId}
+            options={arenas.map((a) => ({ value: a.id, label: a.name }))}
+            onChange={setArenaId}
+            style={S.input}
+          />
         </Field>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           <Field label="Best Of">
-            <select style={S.input} value={bestOf} onChange={(e) => setBestOf(Number(e.target.value) as BestOf)}>
-              <option value={1}>BO1</option>
-              <option value={3}>BO3</option>
-              <option value={5}>BO5</option>
-            </select>
+            <SearchableSelect
+              value={String(bestOf)}
+              options={[{ value: "1", label: "BO1" }, { value: "3", label: "BO3" }, { value: "5", label: "BO5" }]}
+              onChange={(v) => setBestOf(Number(v) as BestOf)}
+              style={S.input}
+            />
           </Field>
           <Field label="Deterministic seed (optional)">
             <input

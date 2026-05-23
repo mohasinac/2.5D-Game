@@ -12,6 +12,7 @@
 import { useState } from "react";
 import { C, alpha } from "@/styles/theme";
 import type { PartConfiguration, ConfigTrigger, ConfigResetCondition } from "@/types/beybladeSystem";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 const TRIGGER_TYPES: ConfigTrigger["type"][] = [
   "spin_threshold",
@@ -222,13 +223,12 @@ export function PartConfigurationsEditor<T>({ value, onChange }: Props<T>) {
                   </div>
                   {(config.autoTriggers ?? []).map((trig, ti) => (
                     <div key={ti} style={{ background: C.bg3, borderRadius: 7, padding: "8px 10px", marginBottom: 6, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                      <select
+                      <SearchableSelect
                         value={trig.type}
-                        onChange={(e) => updateTrigger(idx, ti, { type: e.target.value as ConfigTrigger["type"] })}
-                        style={{ padding: "4px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
-                      >
-                        {TRIGGER_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                      </select>
+                        options={TRIGGER_TYPES.map((t) => ({ value: t, label: t }))}
+                        onChange={(v) => updateTrigger(idx, ti, { type: v as ConfigTrigger["type"] })}
+                        style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                      />
                       <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                         <span style={{ fontSize: 10, color: C.muted }}>threshold</span>
                         <input
@@ -252,17 +252,16 @@ export function PartConfigurationsEditor<T>({ value, onChange }: Props<T>) {
                 <div>
                   <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 6 }}>Reset Condition (optional)</label>
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <select
+                    <SearchableSelect
                       value={config.resetCondition?.type ?? ""}
-                      onChange={(e) => {
-                        if (!e.target.value) { update(idx, { resetCondition: undefined }); return; }
-                        update(idx, { resetCondition: { type: e.target.value as ConfigResetCondition["type"], threshold: 0.5 } });
+                      options={RESET_TYPES.map((t) => ({ value: t, label: t }))}
+                      onChange={(v) => {
+                        if (!v) { update(idx, { resetCondition: undefined }); return; }
+                        update(idx, { resetCondition: { type: v as ConfigResetCondition["type"], threshold: 0.5 } });
                       }}
-                      style={{ padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
-                    >
-                      <option value="">— none —</option>
-                      {RESET_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                      emptyLabel="— none —"
+                      style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+                    />
                     {config.resetCondition && (
                       <input
                         type="number" step={0.05} min={0} value={config.resetCondition.threshold}

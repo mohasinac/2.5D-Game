@@ -12,6 +12,7 @@ import { C } from "@/styles/theme";
 import { BeySelector } from "@/components/game/BeySelector";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
+import { BeyLinkHijackHUD } from "@/components/game/BeyLinkHijackHUD";
 import { CameraControls } from "@/components/game/CameraControls";
 import { LoadingProgress } from "@/components/LoadingProgress";
 import type { ServerBeyblade } from "@/types/game";
@@ -44,7 +45,8 @@ export function TeamBattleGamePage() {
 
   const {
     connectionState, gameState, beyblades, myBeyblade,
-    isSpectating, room, sendInput, loadingStep, loadingError, visualEventQueue,
+    isSpectating, room, sendInput, beyLinkHijackQTE, beyLinkHijackBlockQTE, sendHijackBlock,
+    loadingStep, loadingError, visualEventQueue,
   } = useColyseus({
     roomName: TEAM_BATTLE_ROOM,
     roomId,
@@ -152,6 +154,13 @@ export function TeamBattleGamePage() {
             lastSpecialMoveFired={null}
           />
           <ComboHUD lastCombo={null} />
+          {!isSpectating && (
+            <BeyLinkHijackHUD
+              hijackQTE={beyLinkHijackQTE}
+              hijackBlockQTE={beyLinkHijackBlockQTE}
+              onBlock={sendHijackBlock}
+            />
+          )}
         </>
       )}
 

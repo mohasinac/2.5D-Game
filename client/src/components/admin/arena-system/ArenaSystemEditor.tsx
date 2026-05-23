@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArenaSystem } from "@/types/arenaSystem";
 import { C } from "@/styles/theme";
 import { ArenaSystemPreview } from "./ArenaSystemPreview";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 interface Props {
   arenaSystem: ArenaSystem;
@@ -102,47 +103,24 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
               <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
                 Shape
               </label>
-              <select
+              <SearchableSelect
                 value={arenaSystem.shape}
-                onChange={(e) => updateArena({ shape: e.target.value as any })}
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  background: C.bg0,
-                  color: C.text,
-                  border: `1px solid ${C.border}`,
-                  borderRadius: 4,
-                  fontSize: 12,
-                }}
-              >
-                <option value="circle">Circle</option>
-                <option value="hexagon">Hexagon</option>
-                <option value="rectangle">Rectangle</option>
-              </select>
+                options={[{ value: "circle", label: "Circle" }, { value: "hexagon", label: "Hexagon" }, { value: "rectangle", label: "Rectangle" }]}
+                onChange={(v) => updateArena({ shape: v as any })}
+                style={{ width: "100%", background: C.bg0, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontSize: 12 }}
+              />
             </div>
 
             <div>
               <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
                 Difficulty
               </label>
-              <select
+              <SearchableSelect
                 value={arenaSystem.difficulty || "medium"}
-                onChange={(e) => updateArena({ difficulty: e.target.value as any })}
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  background: C.bg0,
-                  color: C.text,
-                  border: `1px solid ${C.border}`,
-                  borderRadius: 4,
-                  fontSize: 12,
-                }}
-              >
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-                <option value="extreme">Extreme</option>
-              </select>
+                options={[{ value: "easy", label: "Easy" }, { value: "medium", label: "Medium" }, { value: "hard", label: "Hard" }, { value: "extreme", label: "Extreme" }]}
+                onChange={(v) => updateArena({ difficulty: v as any })}
+                style={{ width: "100%", background: C.bg0, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontSize: 12 }}
+              />
             </div>
           </div>
 
@@ -192,28 +170,12 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
             <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
               Theme
             </label>
-            <select
+            <SearchableSelect
               value={arenaSystem.theme}
-              onChange={(e) => updateArena({ theme: e.target.value as any })}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                background: C.bg0,
-                color: C.text,
-                border: `1px solid ${C.border}`,
-                borderRadius: 4,
-                fontSize: 12,
-              }}
-            >
-              <option value="volcano">Volcano</option>
-              <option value="mountains">Mountains</option>
-              <option value="sea">Sea</option>
-              <option value="forest">Forest</option>
-              <option value="stone">Stone</option>
-              <option value="ice">Ice</option>
-              <option value="grass">Grass</option>
-              <option value="space">Space</option>
-            </select>
+              options={["volcano","mountains","sea","forest","stone","ice","grass","space"].map(t => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) }))}
+              onChange={(v) => updateArena({ theme: v as any })}
+              style={{ width: "100%", background: C.bg0, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontSize: 12 }}
+            />
           </div>
         </div>
       )}
@@ -225,28 +187,12 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
             <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
               Elevation Type
             </label>
-            <select
+            <SearchableSelect
               value={arenaSystem.elevationMap.type}
-              onChange={(e) =>
-                updateArena({
-                  elevationMap: { ...arenaSystem.elevationMap, type: e.target.value as any },
-                })
-              }
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                background: C.bg0,
-                color: C.text,
-                border: `1px solid ${C.border}`,
-                borderRadius: 4,
-                fontSize: 12,
-              }}
-            >
-              <option value="flat">Flat</option>
-              <option value="bowl">Bowl</option>
-              <option value="ramp">Ramp</option>
-              <option value="pyramid">Pyramid</option>
-            </select>
+              options={[{ value: "flat", label: "Flat" }, { value: "bowl", label: "Bowl" }, { value: "ramp", label: "Ramp" }, { value: "pyramid", label: "Pyramid" }]}
+              onChange={(v) => updateArena({ elevationMap: { ...arenaSystem.elevationMap, type: v as any } })}
+              style={{ width: "100%", background: C.bg0, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontSize: 12 }}
+            />
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>

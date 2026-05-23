@@ -2,7 +2,9 @@
 
 import React, { useState } from "react";
 import { C } from "@/styles/theme";
-import type { ArenaConfig, ArenaLink, BeyLink, BeyLinkType, BeyLinkAlignment, BeyLinkEffect, BeyLinkEffectType } from "@/types/arenaConfigNew";
+import type { ArenaConfig, ArenaLink, BeyLink, BeyLinkType, BeyLinkAlignment, BeyLinkEffect, BeyLinkEffectType, BeyLinkMovementControl, BeyLinkGroupPattern } from "@/types/arenaConfigNew";
+import { BeyLinkMovementGuide } from "@/components/admin/BeyLinkMovementGuide";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 interface Props {
   config: ArenaConfig;
@@ -44,6 +46,8 @@ const BEY_LINK_EFFECT_TYPES: BeyLinkEffectType[] = [
   "destabilize", "continuous_collision", "drill_attack", "control_loss", "force_lock",
 ];
 const CONTROL_MODES: NonNullable<BeyLinkEffect["controlMode"]>[] = ["reverse", "scramble", "freeze"];
+const MOVEMENT_CONTROLS: BeyLinkMovementControl[] = ["auto", "initiator", "player"];
+const GROUP_PATTERNS: BeyLinkGroupPattern[] = ["chain", "star", "wedge", "rigid"];
 
 const ALIGNMENT_COLORS: Record<BeyLinkAlignment, string> = {
   friendly: "#14b8a6",
@@ -124,38 +128,6 @@ function TextInput({
         ...style,
       }}
     />
-  );
-}
-
-function SelectInput<T extends string>({
-  value,
-  options,
-  onChange,
-}: {
-  value: T;
-  options: T[];
-  onChange: (v: T) => void;
-}) {
-  return (
-    <select
-      value={value}
-      onChange={e => onChange(e.target.value as T)}
-      style={{
-        flex: 1,
-        background: "var(--bg3,#1a1a2e)",
-        border: `1px solid ${C.border}`,
-        borderRadius: 6,
-        padding: "3px 6px",
-        color: C.text,
-        fontSize: 11,
-      }}
-    >
-      {options.map(o => (
-        <option key={o} value={o}>
-          {o}
-        </option>
-      ))}
-    </select>
   );
 }
 
@@ -328,17 +300,19 @@ function ArenaLinkCard({
               />
             </FieldRow>
             <FieldRow label="Link Type">
-              <SelectInput
+              <SearchableSelect
                 value={link.linkType}
-                options={LINK_TYPES}
-                onChange={v => onUpdate({ linkType: v })}
+                options={LINK_TYPES.map(o => ({ value: o, label: o }))}
+                onChange={v => onUpdate({ linkType: v as ArenaLink["linkType"] })}
+                style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
             </FieldRow>
             <FieldRow label="Reverse Condition">
-              <SelectInput
+              <SearchableSelect
                 value={link.reverseCondition ?? "always"}
-                options={REVERSE_CONDITIONS}
-                onChange={v => onUpdate({ reverseCondition: v })}
+                options={REVERSE_CONDITIONS.map(o => ({ value: o, label: o }))}
+                onChange={v => onUpdate({ reverseCondition: v as NonNullable<ArenaLink["reverseCondition"]> })}
+                style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
             </FieldRow>
             <FieldRow label="Momentum Preserved">
@@ -551,17 +525,19 @@ function BeyLinkCard({
       {expanded && (
         <div style={{ padding: "12px 14px", background: "var(--bg2,#0d0d1a)" }}>
           <FieldRow label="Link Type">
-            <SelectInput
+            <SearchableSelect
               value={link.linkType}
-              options={BEY_LINK_TYPES}
-              onChange={v => onUpdate({ linkType: v })}
+              options={BEY_LINK_TYPES.map(o => ({ value: o, label: o }))}
+              onChange={v => onUpdate({ linkType: v as BeyLinkType })}
+              style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
             />
           </FieldRow>
           <FieldRow label="Alignment">
-            <SelectInput
+            <SearchableSelect
               value={link.alignment}
-              options={BEY_LINK_ALIGNMENTS}
-              onChange={v => onUpdate({ alignment: v })}
+              options={BEY_LINK_ALIGNMENTS.map(o => ({ value: o, label: o }))}
+              onChange={v => onUpdate({ alignment: v as BeyLinkAlignment })}
+              style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
             />
           </FieldRow>
           <FieldRow label="Entry Radius (cm)">
@@ -572,10 +548,11 @@ function BeyLinkCard({
             />
           </FieldRow>
           <FieldRow label="Trigger Condition">
-            <SelectInput
+            <SearchableSelect
               value={link.triggerCondition}
-              options={TRIGGER_CONDITIONS}
-              onChange={v => onUpdate({ triggerCondition: v })}
+              options={TRIGGER_CONDITIONS.map(o => ({ value: o, label: o }))}
+              onChange={v => onUpdate({ triggerCondition: v as BeyLink["triggerCondition"] })}
+              style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
             />
           </FieldRow>
           <FieldRow label="Cooldown (ticks)">
@@ -788,6 +765,63 @@ function BeyLinkCard({
             </div>
           )}
 
+          {/* ── Movement Control ──────────────────────────────────────────── */}
+          <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Movement Control</div>
+            <FieldRow label="Control Mode">
+              <SearchableSelect
+                value={link.movementControl ?? "auto"}
+                options={MOVEMENT_CONTROLS.map(m => ({ value: m, label: m }))}
+                onChange={v => onUpdate({ movementControl: v as BeyLinkMovementControl })}
+                style={{ flex: 1, background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+              />
+            </FieldRow>
+            <FieldRow label="Group Pattern">
+              <SearchableSelect
+                value={link.groupPattern ?? ""}
+                options={GROUP_PATTERNS.map(p => ({ value: p, label: p }))}
+                onChange={v => onUpdate({ groupPattern: v ? v as BeyLinkGroupPattern : undefined })}
+                emptyLabel="— (pairwise only)"
+                style={{ flex: 1, background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+              />
+              <span style={{ fontSize: 10, color: C.faint, marginLeft: 4 }}>applies when 3+ beys share this link</span>
+            </FieldRow>
+            {(link.movementControl && link.movementControl !== "auto") && (
+              <div style={{ fontSize: 10, color: "#a78bfa", marginTop: 4, padding: "4px 6px", background: "#a78bfa11", borderRadius: 5 }}>
+                {link.movementControl === "initiator"
+                  ? "sidA (link initiator) steers the entire formation via WASD."
+                  : "Any human-controlled bey in the group steers the formation."}
+              </div>
+            )}
+          </div>
+
+          {/* ── Hijack ────────────────────────────────────────────────────── */}
+          <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Hijack</div>
+            <FieldRow label="Hijackable">
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.text, cursor: "pointer" }}>
+                <input type="checkbox" checked={link.hijackable ?? false}
+                  onChange={e => onUpdate({ hijackable: e.target.checked })} />
+                Victim can attempt to seize control
+              </label>
+            </FieldRow>
+            {link.hijackable && (
+              <>
+                <FieldRow label="Hijack Window (ticks)">
+                  <NumInput value={link.hijackWindowTicks ?? 90} onChange={v => onUpdate({ hijackWindowTicks: v })} />
+                  <span style={{ fontSize: 10, color: C.faint, marginLeft: 4 }}>attacker must block within this window</span>
+                </FieldRow>
+                <FieldRow label="Cooldown (ticks)">
+                  <NumInput value={link.hijackCooldownTicks ?? 180} onChange={v => onUpdate({ hijackCooldownTicks: v })} />
+                  <span style={{ fontSize: 10, color: C.faint, marginLeft: 4 }}>applied to both beys after attempt</span>
+                </FieldRow>
+                <div style={{ fontSize: 10, color: "#f97316", marginTop: 4, padding: "4px 6px", background: "#f9731611", borderRadius: 5 }}>
+                  On hijack success: roles reverse. Former victim becomes sidA (initiator). Former attacker suffers effects instead.
+                </div>
+              </>
+            )}
+          </div>
+
           {/* ── Composable Link Effects ───────────────────────────────────── */}
           <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
@@ -804,15 +838,16 @@ function BeyLinkCard({
             {(link.linkEffects ?? []).map((eff, ei) => (
               <div key={ei} style={{ background: "var(--bg3,#1a1a2e)", borderRadius: 8, padding: "8px 10px", marginBottom: 6 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                  <select value={eff.type}
-                    onChange={e => {
+                  <SearchableSelect
+                    value={eff.type}
+                    options={BEY_LINK_EFFECT_TYPES.map(t => ({ value: t, label: t }))}
+                    onChange={v => {
                       const updated = [...(link.linkEffects ?? [])];
-                      updated[ei] = { ...eff, type: e.target.value as BeyLinkEffectType };
+                      updated[ei] = { ...eff, type: v as BeyLinkEffectType };
                       onUpdate({ linkEffects: updated });
                     }}
-                    style={{ flex: 1, background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 6, padding: "2px 6px", color: C.text, fontSize: 11 }}>
-                    {BEY_LINK_EFFECT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                    style={{ flex: 1, background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+                  />
                   <button type="button"
                     onClick={() => {
                       const updated = (link.linkEffects ?? []).filter((_, i) => i !== ei);
@@ -840,11 +875,12 @@ function BeyLinkCard({
                     <>
                       <label style={{ fontSize: 10, color: C.muted, display: "flex", alignItems: "center", gap: 4 }}>
                         mode
-                        <select value={eff.controlMode ?? "reverse"}
-                          onChange={e => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, controlMode: e.target.value as BeyLinkEffect["controlMode"] }; onUpdate({ linkEffects: u }); }}
-                          style={{ background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 4, padding: "1px 4px", color: C.text, fontSize: 10 }}>
-                          {CONTROL_MODES.map(m => <option key={m} value={m}>{m}</option>)}
-                        </select>
+                        <SearchableSelect
+                          value={eff.controlMode ?? "reverse"}
+                          options={CONTROL_MODES.map(m => ({ value: m, label: m }))}
+                          onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, controlMode: v as BeyLinkEffect["controlMode"] }; onUpdate({ linkEffects: u }); }}
+                          style={{ background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 4, color: C.text, fontSize: 10 }}
+                        />
                       </label>
                       <label style={{ fontSize: 10, color: C.muted, display: "flex", alignItems: "center", gap: 4 }}>
                         duration ticks
@@ -870,6 +906,7 @@ export default function LinksTab({ config, onChange }: Props) {
   const beyLinks: BeyLink[] = (config as any).beyLinks ?? [];
   const [expandedLinkId, setExpandedLinkId] = useState<string | null>(null);
   const [expandedBeyLinkId, setExpandedBeyLinkId] = useState<string | null>(null);
+  const [showMovementGuide, setShowMovementGuide] = useState(false);
 
   // ── Arena Link helpers ──────────────────────────────────────────────────────
 
@@ -1054,23 +1091,41 @@ export default function LinksTab({ config, onChange }: Props) {
         <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>
           Bey Links ({beyLinks.length})
         </span>
-        <button
-          type="button"
-          onClick={addBeyLink}
-          data-testid="add-bey-link-btn"
-          style={{
-            fontSize: 12,
-            padding: "5px 14px",
-            background: "#ef444422",
-            border: `1px solid #ef444455`,
-            borderRadius: 8,
-            color: "#ef4444",
-            cursor: "pointer",
-          }}
-        >
-          + Add Bey Link
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            type="button"
+            onClick={() => setShowMovementGuide(true)}
+            title="View movement pattern guide"
+            style={{
+              fontSize: 12,
+              padding: "5px 10px",
+              background: "#818cf822",
+              border: `1px solid #818cf855`,
+              borderRadius: 8,
+              color: "#818cf8",
+              cursor: "pointer",
+            }}
+          >? Guide</button>
+          <button
+            type="button"
+            onClick={addBeyLink}
+            data-testid="add-bey-link-btn"
+            style={{
+              fontSize: 12,
+              padding: "5px 14px",
+              background: "#ef444422",
+              border: `1px solid #ef444455`,
+              borderRadius: 8,
+              color: "#ef4444",
+              cursor: "pointer",
+            }}
+          >
+            + Add Bey Link
+          </button>
+        </div>
       </div>
+
+      {showMovementGuide && <BeyLinkMovementGuide onClose={() => setShowMovementGuide(false)} />}
 
       {beyLinks.length === 0 && (
         <div

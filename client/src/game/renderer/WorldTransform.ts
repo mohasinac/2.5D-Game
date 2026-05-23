@@ -53,8 +53,8 @@ export class WorldTransform {
     this.limits.allowFreePan = allowFreePan;
   }
 
-  // Hard max-zoom cap: player always sees at least a 20×20 tile viewport (1 tile = 1 cm).
-  static readonly MAX_ZOOM_VIEWPORT_TILES = 20;
+  // Hard max-zoom cap: player always sees at least a 100×100 cm viewport (1 tile = 1 cm).
+  static readonly MAX_ZOOM_VIEWPORT_TILES = 100;
 
   /**
    * Compute zoom limits from arena bounds + bey radius.
@@ -72,9 +72,9 @@ export class WorldTransform {
     if (pxPerCm <= 0 || screenShort <= 0 || arenaW <= 0 || arenaH <= 0 || beyRadiusCm <= 0) return;
     const fitZoom = screenShort / (Math.max(arenaW, arenaH) * pxPerCm);
     const fiveBeyZoom = screenShort / (5 * 2 * beyRadiusCm * pxPerCm);
-    // 20-tile viewport cap: zoom can never make the short axis show fewer than 20 cm
+    // 100-tile viewport cap: zoom can never make the short axis show fewer than 100 cm
     const tileCapZoom = screenShort / (WorldTransform.MAX_ZOOM_VIEWPORT_TILES * pxPerCm);
-    this.limits.minZoom = this.limits.allowFreePan ? Math.min(fitZoom, 0.15) : fitZoom;
+    this.limits.minZoom = this.limits.allowFreePan ? Math.min(fitZoom, 0.05) : fitZoom;
     this.limits.maxZoom = Math.min(Math.max(fiveBeyZoom, fitZoom * 1.5), tileCapZoom);
   }
 

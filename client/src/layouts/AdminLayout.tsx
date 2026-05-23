@@ -7,13 +7,16 @@ import toast from "react-hot-toast";
 import {
   LayoutDashboard, Swords, Shield, Palette, Trophy, Users, BarChart3, FlaskConical,
   Settings, Search, BookOpen, Tag, Layers, Cpu, Box, Circle, Disc, Wrench,
-  Radio, Gamepad2, LogOut, type LucideIcon,
+  Radio, Gamepad2, LogOut, Zap, type LucideIcon,
 } from "lucide-react";
 
 const BREADCRUMB_LABELS: Record<string, string> = {
   admin: "Admin",
   beyblades: "Beyblades",
+  "element-types": "Element Types",
   arenas: "Arenas",
+  "arena-systems": "Arena Systems",
+  "arena-floor-groups": "Floor Groups",
   assets: "Assets",
   tournaments: "Tournaments",
   users: "Users",
@@ -34,6 +37,7 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   "compatibility-tags": "Compat. Tags",
   create: "Create",
   edit: "Edit",
+  new: "New",
 };
 
 function AdminBreadcrumb() {
@@ -59,15 +63,18 @@ function AdminBreadcrumb() {
 }
 
 const navItems = [
-  { to: "/admin",            label: "Dashboard",   Icon: LayoutDashboard, end: true },
-  { to: "/admin/beyblades",  label: "Beyblades",   Icon: Swords },
-  { to: "/admin/arenas",     label: "Arenas",      Icon: Shield },
-  { to: "/admin/assets",     label: "Assets",      Icon: Palette },
-  { to: "/admin/tournaments",label: "Tournaments", Icon: Trophy },
-  { to: "/admin/users",      label: "Users",       Icon: Users },
-  { to: "/admin/stats",      label: "Statistics",  Icon: BarChart3 },
-  { to: "/admin/arena-test", label: "Arena Test",  Icon: FlaskConical },
-  { to: "/admin/settings",   label: "Settings",    Icon: Settings },
+  { to: "/admin",                    label: "Dashboard",    Icon: LayoutDashboard, end: true },
+  { to: "/admin/beyblades",          label: "Beyblades",    Icon: Swords },
+  { to: "/admin/element-types",      label: "Element Types", Icon: Zap },
+  { to: "/admin/arenas",             label: "Arenas",       Icon: Shield },
+  { to: "/admin/arena-systems",      label: "Arena Systems",Icon: Layers },
+  { to: "/admin/arena-floor-groups", label: "Floor Groups", Icon: Box },
+  { to: "/admin/assets",             label: "Assets",       Icon: Palette },
+  { to: "/admin/tournaments",        label: "Tournaments",  Icon: Trophy },
+  { to: "/admin/users",              label: "Users",        Icon: Users },
+  { to: "/admin/stats",              label: "Statistics",   Icon: BarChart3 },
+  { to: "/admin/arena-test",         label: "Arena Test",   Icon: FlaskConical },
+  { to: "/admin/settings",           label: "Settings",     Icon: Settings },
 ];
 
 const partLibraryItems = [

@@ -47,6 +47,10 @@ import { TournamentDetailPage } from "./pages/admin/TournamentDetailPage";
 import { UsersPage } from "./pages/admin/UsersPage";
 import { AIVsAITestPage } from "./pages/admin/AIVsAITestPage";
 
+// Element type management
+import { ElementTypesListPage } from "./pages/admin/ElementTypesListPage";
+import { ElementTypeEditPage } from "./pages/admin/ElementTypeEditPage";
+
 // M11: Custom enum admin pages
 import BehaviorDefsPage from "./pages/admin/BehaviorDefsPage";
 import ComboEffectsPage from "./pages/admin/ComboEffectsPage";
@@ -67,6 +71,10 @@ import { CompatibilityTagsPage } from "./pages/admin/2d/CompatibilityTagsPage";
 import { ArenaSystemListPage } from "./pages/admin/arena-systems/ArenaSystemListPage";
 import { ArenaSystemCreatePage } from "./pages/admin/arena-systems/ArenaSystemCreatePage";
 import { ArenaSystemEditPage } from "./pages/admin/arena-systems/ArenaSystemEditPage";
+
+// Arena Floor Group pages
+import ArenaFloorGroupListPage from "./pages/admin/ArenaFloorGroupListPage";
+import ArenaFloorGroupEditorPage from "./pages/admin/ArenaFloorGroupEditorPage";
 
 export const router = createBrowserRouter([
   {
@@ -130,6 +138,11 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <AdminDashboardPage /> },
 
+      // Element Type CRUD
+      { path: "element-types",        element: <ElementTypesListPage /> },
+      { path: "element-types/create", element: <ElementTypeEditPage /> },
+      { path: "element-types/:id",    element: <ElementTypeEditPage /> },
+
       // Beyblade CRUD
       { path: "beyblades", element: <BeybladesListPage /> },
       { path: "beyblades/create", element: <BeybladeCreatePage /> },
@@ -144,6 +157,10 @@ export const router = createBrowserRouter([
       { path: "arena-systems", element: <ArenaSystemListPage /> },
       { path: "arena-systems/create", element: <ArenaSystemCreatePage /> },
       { path: "arena-systems/:id", element: <ArenaSystemEditPage /> },
+
+      // Arena Floor Groups (multi-floor linked arenas)
+      { path: "arena-floor-groups", element: <ArenaFloorGroupListPage /> },
+      { path: "arena-floor-groups/:id", element: <ArenaFloorGroupEditorPage /> },
 
 
       // Asset CRUD library

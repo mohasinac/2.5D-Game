@@ -1,6 +1,7 @@
 import { C } from "@/styles/theme";
 import type { ArenaConfig, WaterBodyConfig, LiquidType, ZoneWaterBodyConfig, MoatWaterBodyConfig } from "@/types/arenaConfigNew";
 import { LIQUID_PRESETS } from "@/types/arenaConfigNew";
+import SelfRotationPanel from "./SelfRotationPanel";
 
 interface Props {
   config: ArenaConfig;
@@ -156,6 +157,14 @@ export default function WaterBodiesTab({ config, onChange }: Props) {
                 style={{ width: "100%", accentColor: C.blue }}
               />
             </div>
+            {(wb.type === "zone" || wb.type === "moat") && (
+              <SelfRotationPanel
+                rotation={(wb as any).rotation}
+                selfRotation={(wb as any).selfRotation}
+                onChangeRotation={v => update(wb.id, "rotation", v)}
+                onChangeSelfRotation={v => update(wb.id, "selfRotation", v)}
+              />
+            )}
           </div>
         );
       })}

@@ -4,6 +4,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage
 import { db, storage } from "@/lib/firebase";
 import toast from "react-hot-toast";
 import { C, S, alpha } from "@/styles/theme";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import WhatsAppStyleImageEditor from "./WhatsAppStyleImageEditor";
 import type { WhatsAppStyleImageEditorRef } from "./WhatsAppStyleImageEditor";
 import ImageCropper from "./ImageCropper";
@@ -128,9 +129,12 @@ export function AssetCrudPage({
           {tags.length > 0 && (
             <div>
               <label style={S.label}>{tagLabel}</label>
-              <select value={form.tag} onChange={e => setForm(f => ({...f,tag:e.target.value}))} style={{ ...S.input, cursor:"pointer" }}>
-                {tags.map(t => <option key={t} value={t} style={{ textTransform:"capitalize" }}>{t}</option>)}
-              </select>
+              <SearchableSelect
+                value={form.tag}
+                options={tags.map(t => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) }))}
+                onChange={v => setForm(f => ({...f, tag: v}))}
+                style={{ ...S.input, cursor: "pointer" }}
+              />
             </div>
           )}
           <div>

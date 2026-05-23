@@ -4,6 +4,7 @@ import { db, COLLECTIONS } from "@/lib/firebase";
 import { BeybladeGameRenderer } from "@/game/renderer/PixiRenderer";
 import type { ServerGameState, ServerBeyblade } from "@/types/game";
 import { C, S } from "@/styles/theme";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 const MOCK_BEYBLADE = (id: string, x: number, y: number): ServerBeyblade => ({
   id, userId:id, username:`Test ${id}`, x, y, rotation:0, velocityX:0, velocityY:0,
@@ -78,13 +79,12 @@ export function ArenaTestPage() {
 
       <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
         <label style={{ fontSize:13, color:C.muted }}>Arena:</label>
-        <select
+        <SearchableSelect
           value={selectedArenaId}
-          onChange={e => setSelectedArenaId(e.target.value)}
+          options={arenas.map(a => ({ value: a.id, label: a.name }))}
+          onChange={v => setSelectedArenaId(v)}
           style={{ background:C.bg3, border:`1px solid ${C.border}`, borderRadius:8, padding:"6px 12px", color:C.text, fontSize:13, maxWidth:280, cursor:"pointer" }}
-        >
-          {arenas.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-        </select>
+        />
         {arenas.length === 0 && <span style={{ color:C.faint, fontSize:13 }}>No arenas found — create one first</span>}
       </div>
 

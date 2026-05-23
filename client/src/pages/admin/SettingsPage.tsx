@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import toast from "react-hot-toast";
 import { C, S } from "@/styles/theme";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 interface GameSettings {
   // Existing
@@ -128,9 +129,12 @@ export function SettingsPage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div>
               <label style={S.label}>Max Players / Room</label>
-              <select value={settings.maxPlayersPerRoom} onChange={(e) => set("maxPlayersPerRoom", +e.target.value)} style={{ ...S.input, cursor: "pointer" }}>
-                {[2, 3, 4].map((n) => <option key={n} value={n}>{n}</option>)}
-              </select>
+              <SearchableSelect
+                value={String(settings.maxPlayersPerRoom)}
+                options={[2, 3, 4].map((n) => ({ value: String(n), label: String(n) }))}
+                onChange={(v) => set("maxPlayersPerRoom", +v)}
+                style={{ ...S.input, cursor: "pointer" }}
+              />
             </div>
             <div>
               <label style={S.label}>Match Timeout (seconds)</label>

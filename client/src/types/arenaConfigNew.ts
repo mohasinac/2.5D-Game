@@ -353,6 +353,9 @@ export interface MoatWaterBodyConfig extends BaseWaterBodyConfig {
   distanceFromArena: number; // Inner radius from center (em units, 5-25)
   followsArenaShape: boolean; // true = matches arena shape, false = uses custom moatShape
   moatShape?: ArenaShape; // Custom shape for moat (only used when followsArenaShape is false)
+  /** Rotational offset of the moat pattern relative to arena center (degrees). */
+  rotation?: number;
+  selfRotation?: SelfRotationConfig;
 }
 
 /**
@@ -400,6 +403,9 @@ export interface PortalConfig {
   autoPlace?: boolean; // Auto-place at equal angles from center
   distanceFromCenter?: number; // Distance from center (em units) for auto-placement
   angle?: number; // Angle from center (degrees) for auto-placement
+  /** Initial sprite orientation (degrees). */
+  rotation?: number;
+  selfRotation?: SelfRotationConfig;
 }
 
 // ============================================================================
@@ -431,6 +437,9 @@ export interface PitConfig {
   autoPlace?: boolean; // Auto-place at edge or random position
   edgeOffset?: number; // Distance from edge for edge-type pits (em units)
   angle?: number; // Angle for edge-type pits (degrees, 0-360)
+  /** Initial sprite orientation (degrees). */
+  rotation?: number;
+  selfRotation?: SelfRotationConfig;
 }
 
 // ============================================================================
@@ -622,6 +631,9 @@ export interface TurretConfig {
   autoPlaced?: boolean; // Was this turret auto-placed?
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
+  /** Initial facing angle + optional continuous rotation of the turret body itself. */
+  rotation?: RotationBlock;
+  selfRotation?: SelfRotationConfig;
 }
 
 // ============================================================================
@@ -733,6 +745,64 @@ export interface RotationBlock {
   initialAngleDeg?: number;
   intervalOn?: { activeMs: number; pauseMs: number };
   partialSweep?: { fromDeg: number; toDeg: number; cycleMs: number };
+  /**
+   * "local" (default) — feature rotates with the arena when autoRotate is on.
+   * "world" — feature stays fixed in world space regardless of arena rotation.
+   */
+  space?: "local" | "world";
+}
+
+/**
+ * Lifecycle type for a rotating arena feature.
+ *
+ * - permanent : spins continuously for the whole match (default)
+ * - temporary : spins for `temporaryDurationMs` ms then stops
+ * - once      : fires once at match start (optionally after `onceFiredAtStartMs` delay), then stops
+ * - pulsed    : alternates on/off using `pulsedActiveMs` / `pulsedPauseMs`
+ * - oscillate : sweeps from `oscillateFromDeg` to `oscillateToDeg` and returns,
+ *               repeating continuously. Like a pendulum — e.g. rotates 20° CW then 20° back.
+ */
+export type SelfRotationType = "permanent" | "temporary" | "once" | "pulsed" | "oscillate";
+
+/**
+ * Continuous self-rotation for a placed feature.
+ * space: "local" (default) — spins relative to the arena frame (goes around with arena rotation).
+ *        "world" — angular velocity is in world space; arena rotation does not add to it.
+ */
+export interface SelfRotationConfig {
+  speedDegPerSec: number;
+  direction: "cw" | "ccw";
+  space?: "local" | "world";
+  /** Lifecycle — defaults to "permanent" when absent. */
+  type?: SelfRotationType;
+
+  // ── temporary ────────────────────────────────────────────────────────────────
+  /** "temporary": total active duration in ms. */
+  temporaryDurationMs?: number;
+
+  // ── once ─────────────────────────────────────────────────────────────────────
+  /** "once": delay from match start before the single rotation fires (ms). */
+  onceFiredAtStartMs?: number;
+
+  // ── pulsed ───────────────────────────────────────────────────────────────────
+  /** "pulsed": on-duration per cycle (ms). */
+  pulsedActiveMs?: number;
+  /** "pulsed": off-duration per cycle (ms). */
+  pulsedPauseMs?: number;
+
+  // ── oscillate (sweep CW n°, then back CCW n°, repeat) ────────────────────────
+  /** "oscillate": start angle of the sweep in degrees from the feature's rest position. */
+  oscillateFromDeg?: number;
+  /** "oscillate": end angle of the sweep in degrees. e.g. 20 = rotate 20° then return. */
+  oscillateToDeg?: number;
+  /**
+   * "oscillate": true = sweeps from→to, then back to→from (pendulum).
+   *              false = sweeps from→to, snaps back instantly, repeats.
+   * Defaults to true (pendulum).
+   */
+  oscillateReturn?: boolean;
+  /** "oscillate": override half-sweep duration in ms. Computed from speedDegPerSec when absent. */
+  oscillateSweepMs?: number;
 }
 
 export interface ObstacleConfig {
@@ -758,7 +828,7 @@ export interface ObstacleConfig {
   /** Feature is only active when this switch is on. Optional. */
   controlledBySwitchId?: string;
   /** Self-rotation for visual + damage-face dynamics. Optional. */
-  selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  selfRotation?: SelfRotationConfig;
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
 }
@@ -815,7 +885,7 @@ export interface GravityHoleConfig {
   visibility: "always-hidden" | "warning-only" | "visible";
   rotation?: RotationBlock;
   controlledBySwitchId?: string;
-  selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  selfRotation?: SelfRotationConfig;
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
   behaviorId?: string;
@@ -850,7 +920,7 @@ export interface TriggerZoneConfig {
   /** Feature is only active when this switch is on. Optional. */
   controlledBySwitchId?: string;
   /** Feature spins in place — visual + functional. */
-  selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  selfRotation?: SelfRotationConfig;
 }
 
 // ─── Spin Zone (new in this overhaul) ──────────────────────────────────────
@@ -868,7 +938,9 @@ export interface SpinZoneConfig {
   /** Asset id (sprite) — references spin_zone_assets. Optional. */
   assetId?: string;
   controlledBySwitchId?: string;
-  selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  /** Initial sprite orientation (degrees). */
+  rotation?: number;
+  selfRotation?: SelfRotationConfig;
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
   behaviorId?: string;
@@ -887,7 +959,9 @@ export interface BumpConfig {
   recoil: number;
   assetId?: string;
   controlledBySwitchId?: string;
-  selfRotation?: { speedDegPerSec: number; direction: "cw" | "ccw" };
+  /** Initial sprite orientation (degrees). */
+  rotation?: number;
+  selfRotation?: SelfRotationConfig;
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
   behaviorId?: string;
@@ -995,6 +1069,9 @@ export interface FloorHazardZoneConfig {
   activeByDefault?: boolean;
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
+  /** Initial sprite orientation (degrees). */
+  rotation?: number;
+  selfRotation?: SelfRotationConfig;
 }
 
 export type EffectZoneType =
@@ -1024,6 +1101,9 @@ export interface EffectZoneConfig {
   activeByDefault?: boolean;
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
+  /** Initial sprite orientation (degrees). */
+  rotation?: number;
+  selfRotation?: SelfRotationConfig;
 }
 
 export interface ElevationZoneConfig {
@@ -1044,6 +1124,9 @@ export interface ElevationZoneConfig {
   controlledBySwitchId?: string;
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
+  /** Initial sprite orientation (degrees). */
+  rotation?: number;
+  selfRotation?: SelfRotationConfig;
 }
 
 // ============================================================================
@@ -1118,10 +1201,183 @@ export interface ArenaBeySawnConfig {
 }
 
 // ============================================================================
-// ARENA LINK CONFIG (L1)
-// Note: arenaConfig.ts does not exist as a separate file — ArenaLink is
-// defined here alongside the rest of the arena type system.
+// ARENA FLOOR GROUP (L1-F)
+// Up to 7 arenas stacked as named floors. Each arena stores its groupId +
+// floorIndex on ArenaConfig. Links between floors are ArenaLink entries whose
+// fromArenaId / toArenaId both appear in the same group.
 // ============================================================================
+
+/**
+ * Per-floor physical positioning within a group.
+ * Describes where each floor arena sits in the shared world space.
+ */
+export interface FloorStackPosition {
+  /** Floor index this position entry applies to (0 = ground). */
+  floorIndex: number;
+  /**
+   * Horizontal offset of this floor's center from the group's world origin (cm).
+   * Non-zero values let arenas be slightly misaligned so beys can fall off edges.
+   */
+  xOffsetCm: number;
+  yOffsetCm: number;
+  /**
+   * Elevation of this floor's surface above the ground floor (cm).
+   * Ground floor (index 0) should be 0. Higher floors stack upward.
+   */
+  zOffsetCm: number;
+  /** Arena rotation speed in degrees/sec (0 = static). */
+  rotationSpeedDegPerSec?: number;
+  rotationDirection?: "cw" | "ccw";
+  rotationMode?: "none" | "auto" | "linked";
+}
+
+export interface ArenaFloorGroup {
+  id: string;
+  name?: string;
+  /**
+   * Arena IDs ordered from ground floor (index 0) up to the top floor.
+   * Maximum 7 arenas per group.
+   */
+  floorArenaIds: string[]; // enforced max length 7 by server
+
+  /**
+   * Physical positions of each floor in the group's world space.
+   * If absent for a floor, defaults to xOffset=0, yOffset=0, zOffset=floorIndex*minFloorHeightCm.
+   */
+  floorPositions?: FloorStackPosition[];
+
+  /**
+   * Minimum vertical clearance (cm) between the surface of one floor and the
+   * underside of the next. Governs camera zoom headroom and ceiling collision.
+   * Default: 60 cm (enough to see a full arena + beys + HUD without obstruction).
+   */
+  minFloorHeightCm?: number;
+}
+
+// ============================================================================
+// ARENA LINK CONFIG (L1)
+// ============================================================================
+
+// ─── Alignment ───────────────────────────────────────────────────────────────
+
+/**
+ * Controls whether and how a link requires the two arenas to be rotationally
+ * aligned before a bey can traverse it.
+ *
+ * "none"        — always open regardless of arena angle (portals).
+ * "positional"  — both arenas must have rotated their boundary openings to within
+ *                 errorMarginDeg of each other. Pits, trampolines, corridors.
+ * "owner-only"  — only the owner arena's rotation is checked against a fixed
+ *                 exit angle on the destination. Used for ramps: the ramp is
+ *                 physically attached to fromArena and sweeps with it; the
+ *                 landing zone on toArena is fixed.
+ */
+export type ArenaLinkAlignmentMode = "none" | "positional" | "owner-only";
+
+export interface ArenaLinkAlignmentConfig {
+  mode: ArenaLinkAlignmentMode;
+
+  /** Degrees of rotational error tolerated for the link to count as aligned. */
+  errorMarginDeg: number;
+
+  /**
+   * When a bey traverses within (errorMarginDeg * 2) but outside errorMarginDeg,
+   * the server applies a correction impulse for this many ticks to nudge the bey
+   * onto the proper landing position. Set 0 to disable correction entirely.
+   */
+  correctionTicks: number;
+
+  /**
+   * If true (ramps, corridors), the link is severed while misaligned — beys
+   * cannot enter it at all and the gap is shown visually.
+   * If false (pits, trampolines), the link is still traversable when misaligned
+   * but correction may not apply; pits land wherever gravity takes the bey.
+   */
+  disconnectsWhenMisaligned: boolean;
+
+  /**
+   * After a disconnection, minimum ticks before alignment is rechecked.
+   * Prevents rapid connect/disconnect flicker at the margin boundary.
+   */
+  reconnectCooldownTicks: number;
+
+  /**
+   * For "owner-only" mode (ramps): the arena ID whose rotation is the reference.
+   * Typically the fromArenaId — the arena the ramp physically extends from.
+   * The ramp reconnects only when this arena's rotation brings the ramp tip
+   * within errorMarginDeg of the fixed landing zone on toArena.
+   */
+  ownerArenaId?: string;
+}
+
+// ─── Traversal timing ────────────────────────────────────────────────────────
+
+export interface ArenaLinkTraversalConfig {
+  /** Ticks spent in transit — fall animation, ramp travel, trampoline arc. */
+  traversalTicks: number;
+
+  /**
+   * Ticks before the same bey can use this link again after completing a
+   * traversal (prevents immediate bounce-back).
+   */
+  perBeyReuseCooldownTicks: number;
+
+  /**
+   * Ticks after any bey exits this link before the next bey can enter
+   * (prevents traffic-jam collisions in the transit tube).
+   */
+  globalGapTicks: number;
+}
+
+// ─── Pit-specific ─────────────────────────────────────────────────────────────
+
+export interface ArenaLinkPitConfig {
+  /**
+   * "fixed"   — bey always exits at the configured exitPosition in the destination arena.
+   * "random"  — bey exits at a random safe position on the destination floor.
+   *             Tolerant of misalignment; good default for pits.
+   * "current" — bey exits at the same relative x/y (coordinates scaled to destination).
+   */
+  landingMode: "fixed" | "random" | "current";
+}
+
+// ─── Trampoline-specific ──────────────────────────────────────────────────────
+
+export interface ArenaLinkTrampolineConfig {
+  /**
+   * If a bey arrives on this trampoline link having fallen from a pit link
+   * directly above (same pairedLinkId chain), automatically launch it back
+   * upward toward the source pit without player input.
+   */
+  autoLaunchFromPit: boolean;
+
+  /** Ticks of launch animation shown before the bey re-enters the pit above. */
+  autoLaunchAnimTicks: number;
+
+  /**
+   * Velocity multiplier applied to the auto-launch impulse.
+   * 1.0 = match the fall speed exactly (symmetric bounce).
+   * Values > 1 send the bey higher than it fell from.
+   */
+  autoLaunchForceMult: number;
+
+  /**
+   * Whether the player can cancel the auto-launch by holding SPACE or DOWN
+   * during the autoLaunchAnimTicks window.
+   * If pressed in time the bey stays on the trampoline floor instead of
+   * being shot back up. Useful for strategic floor-camping.
+   */
+  autoLaunchOptOut: boolean;
+
+  /**
+   * How many ticks after landing the player has to hold the opt-out key
+   * before the launch fires. Only meaningful when autoLaunchOptOut is true.
+   * Defaults to autoLaunchAnimTicks (full window).
+   */
+  autoLaunchOptOutWindowTicks?: number;
+}
+
+// ─── ArenaLink ───────────────────────────────────────────────────────────────
 
 export interface ArenaLink {
   id: string;
@@ -1135,18 +1391,51 @@ export interface ArenaLink {
     x2: number; y2: number;    // end point in cm
   };
 
-  exitPosition: {              // where the bey appears in the destination arena
-    x: number;                 // cm
-    y: number;                 // cm
+  exitPosition: {              // where the bey appears in the destination arena (cm)
+    x: number;
+    y: number;
   };
 
   momentumPreserved: boolean;  // if true, bey keeps velocity; if false, spawns at rest
   levelDelta: number;          // height difference in cm (affects launch velocity for ramps)
   hazardDamage?: number;       // damage dealt on traversal (for dangerous links)
   reverseCondition?: "never" | "always" | "spin_above_50";  // one-way vs two-way
-  cooldownTicks?: number;      // ticks before this link can be used again per-bey
-  pairedLinkId?: string;       // id of the reciprocal link (admin UI wires pairs so you can always go back)
-  exitVelocityMult?: number;   // velocity multiplier on exit (trampoline = high, pit = low, default 1.0)
+  cooldownTicks?: number;      // ticks before a bey can use this link again after traversal
+  pairedLinkId?: string;       // id of the reciprocal link (admin UI wires pairs)
+  exitVelocityMult?: number;   // velocity multiplier on exit (default 1.0)
+
+  /**
+   * How the two linked arenas' rotation relates when both have autoRotate on.
+   *
+   * "independent" (default) — each arena rotates at its own speed/direction.
+   * "synchronized"          — both rotate at the same speed/direction;
+   *                           fromArena's rotationSpeed/Direction is authoritative.
+   * "counter"               — opposite directions at equal speed; natural for
+   *                           arenas sharing a physical boundary edge.
+   * "driven"                — fromArena drives toArena via rotationDrivenRatio;
+   *                           toArena's own rotationSpeed is ignored while linked.
+   */
+  rotationCoupling?: "independent" | "synchronized" | "counter" | "driven";
+  /** Only used when rotationCoupling is "driven". toArena speed = fromArena speed × ratio. */
+  rotationDrivenRatio?: number;
+
+  // ─── Alignment (rotation-aware gating) ─────────────────────────────────────
+  /**
+   * Alignment rules for this link. Sensible defaults by linkType:
+   *   portal      → mode: "none",      disconnectsWhenMisaligned: false
+   *   ramp        → mode: "owner-only", disconnectsWhenMisaligned: true,  ownerArenaId: fromArenaId
+   *   corridor    → mode: "positional", disconnectsWhenMisaligned: true
+   *   pit         → mode: "positional", disconnectsWhenMisaligned: false,  landingMode: "random"
+   *   trampoline  → mode: "positional", disconnectsWhenMisaligned: false
+   */
+  alignment?: ArenaLinkAlignmentConfig;
+
+  // ─── Traversal timing ───────────────────────────────────────────────────────
+  traversal?: ArenaLinkTraversalConfig;
+
+  // ─── Type-specific configs ───────────────────────────────────────────────────
+  pitConfig?: ArenaLinkPitConfig;
+  trampolineConfig?: ArenaLinkTrampolineConfig;
 }
 
 // ============================================================================
@@ -1202,6 +1491,21 @@ export interface BeyLinkHostileEffect {
   maxDurationTicks: number;
 }
 
+// ─── Movement control ─────────────────────────────────────────────────────────
+
+/** Who steers the formation's movement vector while beys are linked. */
+export type BeyLinkMovementControl =
+  | "auto"       // default — automated orbit/dogfight patterns per linkType
+  | "initiator"  // sidA's live bitmask input steers all group members
+  | "player";    // any human-controlled bey in the group steers the formation
+
+/** Formation shape applied when 3+ beys share the same link. */
+export type BeyLinkGroupPattern =
+  | "chain"   // snake/train — each follower trails the bey ahead
+  | "star"    // hub + N followers orbit at evenly-spaced angles
+  | "wedge"   // V-formation: leader at front, wings behind at ±45°
+  | "rigid";  // lock relative positions from stack-entry; move as one mass
+
 export interface BeyLink {
   id: string;
   linkType: BeyLinkType;
@@ -1227,6 +1531,17 @@ export interface BeyLink {
   maxDurationTicks?: number;    // stack auto-breaks after this many ticks (default: unlimited)
   breakThreshold?: number;      // external collision force/damage required to break the stack (default: never)
   breakOnRingOut?: boolean;     // if true, stack breaks when any participant approaches the ring edge
+
+  // ── Movement control ──────────────────────────────────────────────────────
+  movementControl?: BeyLinkMovementControl;  // default "auto"
+  groupPattern?: BeyLinkGroupPattern;         // formation for 3+ beys under this link
+
+  // ── Hijack ────────────────────────────────────────────────────────────────
+  // Victim of a hostile/neutral link can attempt to seize control, reversing
+  // roles. Attacker has a grace window to block; failure hands control to victim.
+  hijackable?: boolean;
+  hijackWindowTicks?: number;    // ticks for attacker to block (default 90)
+  hijackCooldownTicks?: number;  // cooldown on both beys after attempt (default 180)
 }
 
 // ============================================================================
@@ -1323,6 +1638,18 @@ export interface ArenaConfig {
   elevationZones?: ElevationZoneConfig[]; // Raised platforms
   floorHazardZones?: FloorHazardZoneConfig[]; // Hazard areas on the floor
   effectZones?: EffectZoneConfig[];     // Positive/neutral effect zones
+
+  // ===== FLOOR GROUP (L1-F) =====
+  /**
+   * ID of the ArenaFloorGroup this arena belongs to.
+   * If set, this arena is one floor in a multi-arena stack (max 7 floors per group).
+   */
+  floorGroupId?: string;
+  /**
+   * Zero-based floor index within the group (0 = ground floor, 6 = top floor max).
+   * Must match the position of this arena's ID in ArenaFloorGroup.floorArenaIds.
+   */
+  floorIndex?: number;
 
   // ===== METADATA =====
   createdAt?: string;

@@ -4,10 +4,12 @@
 
 import { useState } from "react";
 import { C } from "@/styles/theme";
-import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset, SpinZoneConfig, GravityHoleConfig, BumpConfig } from "@/types/arenaConfigNew";
+import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset, SpinZoneConfig, GravityHoleConfig, BumpConfig, TriggerZoneConfig, TriggerZoneKind, TriggerZoneActivation } from "@/types/arenaConfigNew";
 import type { ElementType } from "@/types/elementTypes";
 import { ELEMENT_ICONS } from "@/types/elementTypes";
 import FeatureAnimationPanel from "./FeatureAnimationPanel";
+import SelfRotationPanel from "./SelfRotationPanel";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 const ELEMENT_TYPES: ElementType[] = ["fire","water","earth","lightning","wind","ice","shadow","light","metal","nature","thunder","void"];
 
@@ -184,6 +186,26 @@ export default function FeaturesTab({ config, onChange }: Props) {
     onChange({ gravityHoles: gravityHoles.filter((_, idx) => idx !== i) });
   }
 
+  // ── Trigger Zones ────────────────────────────────────────────────────────
+  const triggerZones: TriggerZoneConfig[] = (config as any).triggerZones ?? [];
+  function addTriggerZone() {
+    const id = `tz${Date.now()}`;
+    const next: TriggerZoneConfig = {
+      id, x_cm: 0, y_cm: 0,
+      shape: { kind: "circle", radiusCm: 5 },
+      kind: { type: "safe" },
+      activation: { type: "always-on" },
+    };
+    onChange({ triggerZones: [...triggerZones, next] } as any);
+  }
+  function updateTriggerZone(i: number, patch: object) {
+    const next = triggerZones.map((z, idx) => idx === i ? { ...z, ...patch } : z);
+    onChange({ triggerZones: next } as any);
+  }
+  function removeTriggerZone(i: number) {
+    onChange({ triggerZones: triggerZones.filter((_, idx) => idx !== i) } as any);
+  }
+
   // ── Bumps (I6) ────────────────────────────────────────────────────────────
   const bumps: BumpConfig[] = config.bumps ?? [];
   function addBump() {
@@ -211,10 +233,12 @@ export default function FeaturesTab({ config, onChange }: Props) {
         {bp && (
           <>
             <Row label="Type">
-              <select value={bp.type} onChange={e => onChange({ backgroundParticles: { ...bp, type: e.target.value as BackgroundParticleType } })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                {PARTICLE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <SearchableSelect
+                value={bp.type}
+                options={PARTICLE_TYPES.map(t => ({ value: t, label: t }))}
+                onChange={v => onChange({ backgroundParticles: { ...bp, type: v as BackgroundParticleType } })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+              />
             </Row>
             <Row label="Density (p/s)">{numInput(bp.density, 20, v => onChange({ backgroundParticles: { ...bp, density: v } }))}</Row>
             <Row label="Direction (°)">{numInput(bp.direction, 0, v => onChange({ backgroundParticles: { ...bp, direction: v } }))}</Row>
@@ -242,10 +266,12 @@ export default function FeaturesTab({ config, onChange }: Props) {
         {env && (
           <>
             <Row label="Preset">
-              <select value={env.preset} onChange={e => onChange({ environmentalEffect: { ...env, preset: e.target.value as ArenaEnvironmentalEffectPreset } })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                {ENV_PRESETS.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
+              <SearchableSelect
+                value={env.preset}
+                options={ENV_PRESETS.map(p => ({ value: p, label: p }))}
+                onChange={v => onChange({ environmentalEffect: { ...env, preset: v as ArenaEnvironmentalEffectPreset } })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+              />
             </Row>
             <Row label="Intensity">
               <input type="range" min={0} max={1} step={0.05} value={env.intensity ?? 0.5} onChange={e => onChange({ environmentalEffect: { ...env, intensity: Number(e.target.value) } })} style={{ width: 100 }} />
@@ -265,17 +291,21 @@ export default function FeaturesTab({ config, onChange }: Props) {
               <button onClick={() => removeHazard(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
             </div>
             <Row label="Type">
-              <select value={z.hazardType} onChange={e => updateHazard(i, { hazardType: e.target.value })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                {HAZARD_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <SearchableSelect
+                value={z.hazardType}
+                options={HAZARD_TYPES.map(t => ({ value: t, label: t }))}
+                onChange={v => updateHazard(i, { hazardType: v })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
             </Row>
             <Row label="Element Type">
-              <select value={(z as any).elementType ?? ""} onChange={e => updateHazard(i, { elementType: e.target.value || undefined })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                <option value="">— none —</option>
-                {ELEMENT_TYPES.map(t => <option key={t} value={t}>{ELEMENT_ICONS[t]} {t}</option>)}
-              </select>
+              <SearchableSelect
+                value={(z as any).elementType ?? ""}
+                options={ELEMENT_TYPES.map(t => ({ value: t, label: `${ELEMENT_ICONS[t]} ${t}` }))}
+                onChange={v => updateHazard(i, { elementType: v || undefined })}
+                emptyLabel="— none —"
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
             </Row>
             <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateHazard(i, { x_cm: v }))}</Row>
             <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateHazard(i, { y_cm: v }))}</Row>
@@ -295,6 +325,12 @@ export default function FeaturesTab({ config, onChange }: Props) {
               value={(z as any).featureAnimation}
               onChange={v => updateHazard(i, { featureAnimation: v })}
             />
+            <SelfRotationPanel
+              rotation={(z as any).rotation}
+              selfRotation={(z as any).selfRotation}
+              onChangeRotation={v => updateHazard(i, { rotation: v } as any)}
+              onChangeSelfRotation={v => updateHazard(i, { selfRotation: v } as any)}
+            />
           </div>
         ))}
         <button onClick={addHazard} style={{ padding: "6px 14px", background: C.purple, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
@@ -311,17 +347,21 @@ export default function FeaturesTab({ config, onChange }: Props) {
               <button onClick={() => removeEffect(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
             </div>
             <Row label="Effect Type">
-              <select value={z.effectType} onChange={e => updateEffect(i, { effectType: e.target.value })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                {EFFECT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <SearchableSelect
+                value={z.effectType}
+                options={EFFECT_TYPES.map(t => ({ value: t, label: t }))}
+                onChange={v => updateEffect(i, { effectType: v })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
             </Row>
             <Row label="Element Type">
-              <select value={z.elementType ?? ""} onChange={e => updateEffect(i, { elementType: e.target.value || undefined })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                <option value="">— none —</option>
-                {ELEMENT_TYPES.map(t => <option key={t} value={t}>{ELEMENT_ICONS[t]} {t}</option>)}
-              </select>
+              <SearchableSelect
+                value={z.elementType ?? ""}
+                options={ELEMENT_TYPES.map(t => ({ value: t, label: `${ELEMENT_ICONS[t]} ${t}` }))}
+                onChange={v => updateEffect(i, { elementType: v || undefined })}
+                emptyLabel="— none —"
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
             </Row>
             <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateEffect(i, { x_cm: v }))}</Row>
             <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateEffect(i, { y_cm: v }))}</Row>
@@ -330,6 +370,12 @@ export default function FeaturesTab({ config, onChange }: Props) {
               featureId={z.id}
               value={z.featureAnimation}
               onChange={v => updateEffect(i, { featureAnimation: v })}
+            />
+            <SelfRotationPanel
+              rotation={(z as any).rotation}
+              selfRotation={(z as any).selfRotation}
+              onChangeRotation={v => updateEffect(i, { rotation: v } as any)}
+              onChangeSelfRotation={v => updateEffect(i, { selfRotation: v } as any)}
             />
           </div>
         ))}
@@ -356,6 +402,12 @@ export default function FeaturesTab({ config, onChange }: Props) {
               value={(z as any).featureAnimation}
               onChange={v => updateElev(i, { featureAnimation: v })}
             />
+            <SelfRotationPanel
+              rotation={(z as any).rotation}
+              selfRotation={(z as any).selfRotation}
+              onChangeRotation={v => updateElev(i, { rotation: v } as any)}
+              onChangeSelfRotation={v => updateElev(i, { selfRotation: v } as any)}
+            />
           </div>
         ))}
         <button onClick={addElev} style={{ padding: "6px 14px", background: C.purple, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
@@ -379,26 +431,29 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <Row label="Radius (cm)">{numInput(z.radius_cm, 8, v => updateSpinZone(i, { radius_cm: v }), 0.5)}</Row>
             <Row label="Intensity (rad/s)">{numInput(z.intensityRadPerSec, 2, v => updateSpinZone(i, { intensityRadPerSec: v }), 0.5)}</Row>
             <Row label="Direction">
-              <select value={z.direction} onChange={e => updateSpinZone(i, { direction: e.target.value as "cw" | "ccw" })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                <option value="cw">Clockwise</option>
-                <option value="ccw">Counter-clockwise</option>
-              </select>
+              <SearchableSelect
+                value={z.direction}
+                options={[{ value: "cw", label: "Clockwise" }, { value: "ccw", label: "Counter-clockwise" }]}
+                onChange={v => updateSpinZone(i, { direction: v as "cw" | "ccw" })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
             </Row>
             <Row label="Apply To">
-              <select value={z.applyTo} onChange={e => updateSpinZone(i, { applyTo: e.target.value as "linear" | "spin" | "both" })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                <option value="linear">Linear (orbit)</option>
-                <option value="spin">Spin top-up</option>
-                <option value="both">Both</option>
-              </select>
+              <SearchableSelect
+                value={z.applyTo}
+                options={[{ value: "linear", label: "Linear (orbit)" }, { value: "spin", label: "Spin top-up" }, { value: "both", label: "Both" }]}
+                onChange={v => updateSpinZone(i, { applyTo: v as "linear" | "spin" | "both" })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
             </Row>
             <Row label="Element Type">
-              <select value={(z as any).elementType ?? ""} onChange={e => updateSpinZone(i, { elementType: e.target.value || undefined })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                <option value="">— none —</option>
-                {ELEMENT_TYPES.map(t => <option key={t} value={t}>{ELEMENT_ICONS[t]} {t}</option>)}
-              </select>
+              <SearchableSelect
+                value={(z as any).elementType ?? ""}
+                options={ELEMENT_TYPES.map(t => ({ value: t, label: `${ELEMENT_ICONS[t]} ${t}` }))}
+                onChange={v => updateSpinZone(i, { elementType: v || undefined })}
+                emptyLabel="— none —"
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
             </Row>
             {/* I6: Behavior override */}
             <BehaviorOverridePanel
@@ -406,6 +461,12 @@ export default function FeaturesTab({ config, onChange }: Props) {
               behaviorParams={z.behaviorParams}
               onChangeBehaviorId={id => updateSpinZone(i, { behaviorId: id })}
               onChangeBehaviorParams={params => updateSpinZone(i, { behaviorParams: params })}
+            />
+            <SelfRotationPanel
+              rotation={(z as any).rotation}
+              selfRotation={(z as any).selfRotation}
+              onChangeRotation={v => updateSpinZone(i, { rotation: v } as any)}
+              onChangeSelfRotation={v => updateSpinZone(i, { selfRotation: v } as any)}
             />
           </div>
         ))}
@@ -433,19 +494,21 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <Row label="Interval (ms)">{numInput(z.intervalMs, 5000, v => updateGravityHole(i, { intervalMs: v }), 500)}</Row>
             <Row label="Warning (ms)">{numInput(z.warningMs, 800, v => updateGravityHole(i, { warningMs: v }), 100)}</Row>
             <Row label="Visibility">
-              <select value={z.visibility} onChange={e => updateGravityHole(i, { visibility: e.target.value as "always-hidden" | "warning-only" | "visible" })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                <option value="always-hidden">Always hidden</option>
-                <option value="warning-only">Warning only</option>
-                <option value="visible">Visible</option>
-              </select>
+              <SearchableSelect
+                value={z.visibility}
+                options={[{ value: "always-hidden", label: "Always hidden" }, { value: "warning-only", label: "Warning only" }, { value: "visible", label: "Visible" }]}
+                onChange={v => updateGravityHole(i, { visibility: v as "always-hidden" | "warning-only" | "visible" })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
             </Row>
             <Row label="Element Type">
-              <select value={(z as any).elementType ?? ""} onChange={e => updateGravityHole(i, { elementType: e.target.value || undefined })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                <option value="">— none —</option>
-                {ELEMENT_TYPES.map(t => <option key={t} value={t}>{ELEMENT_ICONS[t]} {t}</option>)}
-              </select>
+              <SearchableSelect
+                value={(z as any).elementType ?? ""}
+                options={ELEMENT_TYPES.map(t => ({ value: t, label: `${ELEMENT_ICONS[t]} ${t}` }))}
+                onChange={v => updateGravityHole(i, { elementType: v || undefined })}
+                emptyLabel="— none —"
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
             </Row>
             {/* I6: Behavior override */}
             <BehaviorOverridePanel
@@ -453,6 +516,12 @@ export default function FeaturesTab({ config, onChange }: Props) {
               behaviorParams={z.behaviorParams}
               onChangeBehaviorId={id => updateGravityHole(i, { behaviorId: id })}
               onChangeBehaviorParams={params => updateGravityHole(i, { behaviorParams: params })}
+            />
+            <SelfRotationPanel
+              rotation={(z as any).rotation}
+              selfRotation={(z as any).selfRotation}
+              onChangeRotation={v => updateGravityHole(i, { rotation: v } as any)}
+              onChangeSelfRotation={v => updateGravityHole(i, { selfRotation: v } as any)}
             />
           </div>
         ))}
@@ -478,11 +547,13 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <Row label="Pop Height (cm)">{numInput(z.popHeight_cm, 2, v => updateBump(i, { popHeight_cm: v }), 0.5)}</Row>
             <Row label="Recoil">{numInput(z.recoil, 0.3, v => updateBump(i, { recoil: v }), 0.05)}</Row>
             <Row label="Element Type">
-              <select value={(z as any).elementType ?? ""} onChange={e => updateBump(i, { elementType: e.target.value || undefined })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}>
-                <option value="">— none —</option>
-                {ELEMENT_TYPES.map(t => <option key={t} value={t}>{ELEMENT_ICONS[t]} {t}</option>)}
-              </select>
+              <SearchableSelect
+                value={(z as any).elementType ?? ""}
+                options={ELEMENT_TYPES.map(t => ({ value: t, label: `${ELEMENT_ICONS[t]} ${t}` }))}
+                onChange={v => updateBump(i, { elementType: v || undefined })}
+                emptyLabel="— none —"
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
             </Row>
             {/* I6: Behavior override */}
             <BehaviorOverridePanel
@@ -491,10 +562,160 @@ export default function FeaturesTab({ config, onChange }: Props) {
               onChangeBehaviorId={id => updateBump(i, { behaviorId: id })}
               onChangeBehaviorParams={params => updateBump(i, { behaviorParams: params })}
             />
+            <SelfRotationPanel
+              rotation={(z as any).rotation}
+              selfRotation={(z as any).selfRotation}
+              onChangeRotation={v => updateBump(i, { rotation: v } as any)}
+              onChangeSelfRotation={v => updateBump(i, { selfRotation: v } as any)}
+            />
           </div>
         ))}
         <button onClick={addBump} style={{ padding: "6px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
           + Add Bump
+        </button>
+      </Section>
+
+      {/* Trigger Zones */}
+      <Section title={`Trigger Zones (${triggerZones.length})`}>
+        {triggerZones.map((z, i) => {
+          const kind = z.kind as TriggerZoneKind;
+          const activation = z.activation as TriggerZoneActivation;
+          return (
+            <div key={z.id} data-testid={`trigger-zone-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
+                <button onClick={() => removeTriggerZone(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+              </div>
+
+              {/* Position */}
+              <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateTriggerZone(i, { x_cm: v }))}</Row>
+              <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateTriggerZone(i, { y_cm: v }))}</Row>
+
+              {/* Shape — circle or rectangle only for simplicity */}
+              <Row label="Shape">
+                <SearchableSelect
+                  value={(z.shape as any).kind ?? "circle"}
+                  options={[{ value: "circle", label: "Circle" }, { value: "ring", label: "Ring" }, { value: "rectangle", label: "Rectangle" }]}
+                  onChange={k => {
+                    const shape = k === "rectangle"
+                      ? { kind: "rectangle", widthCm: 8, heightCm: 8 }
+                      : k === "ring"
+                      ? { kind: "ring", innerRadiusCm: 3, outerRadiusCm: 6 }
+                      : { kind: "circle", radiusCm: 5 };
+                    updateTriggerZone(i, { shape });
+                  }}
+                  style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                />
+              </Row>
+              {(z.shape as any).kind === "circle" && (
+                <Row label="Radius (cm)">{numInput((z.shape as any).radiusCm, 5, v => updateTriggerZone(i, { shape: { ...(z.shape as any), radiusCm: v } }), 0.5)}</Row>
+              )}
+              {(z.shape as any).kind === "ring" && (
+                <>
+                  <Row label="Inner radius (cm)">{numInput((z.shape as any).innerRadiusCm, 3, v => updateTriggerZone(i, { shape: { ...(z.shape as any), innerRadiusCm: v } }), 0.5)}</Row>
+                  <Row label="Outer radius (cm)">{numInput((z.shape as any).outerRadiusCm, 6, v => updateTriggerZone(i, { shape: { ...(z.shape as any), outerRadiusCm: v } }), 0.5)}</Row>
+                </>
+              )}
+              {(z.shape as any).kind === "rectangle" && (
+                <>
+                  <Row label="Width (cm)">{numInput((z.shape as any).widthCm, 8, v => updateTriggerZone(i, { shape: { ...(z.shape as any), widthCm: v } }), 0.5)}</Row>
+                  <Row label="Height (cm)">{numInput((z.shape as any).heightCm, 8, v => updateTriggerZone(i, { shape: { ...(z.shape as any), heightCm: v } }), 0.5)}</Row>
+                </>
+              )}
+
+              {/* Kind */}
+              <Row label="Effect">
+                <SearchableSelect
+                  value={kind.type}
+                  options={[
+                    { value: "safe", label: "Safe zone" },
+                    { value: "damage", label: "Damage" },
+                    { value: "heal", label: "Heal" },
+                    { value: "knockout", label: "Knockout hold" },
+                    { value: "spin-boost", label: "Spin boost" },
+                    { value: "expel", label: "Expel" },
+                    { value: "speed-scale", label: "Speed scale" },
+                  ]}
+                  onChange={t => {
+                    const kindType = t as TriggerZoneKind["type"];
+                    const defaults: Record<string, TriggerZoneKind> = {
+                      "safe": { type: "safe" },
+                      "damage": { type: "damage", perSecond: 10 },
+                      "heal": { type: "heal", perSecond: 10 },
+                      "knockout": { type: "knockout", soloHoldMs: 3000 },
+                      "spin-boost": { type: "spin-boost", spinDirection: "cw", perSecond: 50 },
+                      "expel": { type: "expel", impulseCm: 5 },
+                      "speed-scale": { type: "speed-scale", multiplier: 1.5 },
+                    };
+                    updateTriggerZone(i, { kind: defaults[kindType] ?? { type: "safe" } });
+                  }}
+                  style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                />
+              </Row>
+              {kind.type === "damage" && <Row label="Damage/s">{numInput(kind.perSecond, 10, v => updateTriggerZone(i, { kind: { ...kind, perSecond: v } }))}</Row>}
+              {kind.type === "heal" && <Row label="Heal/s">{numInput(kind.perSecond, 10, v => updateTriggerZone(i, { kind: { ...kind, perSecond: v } }))}</Row>}
+              {kind.type === "knockout" && <Row label="Hold time (ms)">{numInput(kind.soloHoldMs, 3000, v => updateTriggerZone(i, { kind: { ...kind, soloHoldMs: v } }), 250)}</Row>}
+              {kind.type === "spin-boost" && (
+                <>
+                  <Row label="Spin direction">
+                    <SearchableSelect
+                      value={kind.spinDirection}
+                      options={[{ value: "cw", label: "CW" }, { value: "ccw", label: "CCW" }, { value: "match", label: "Match bey" }, { value: "alternate", label: "Alternate" }]}
+                      onChange={v => updateTriggerZone(i, { kind: { ...kind, spinDirection: v as any } })}
+                      style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                    />
+                  </Row>
+                  <Row label="Spin/s">{numInput(kind.perSecond, 50, v => updateTriggerZone(i, { kind: { ...kind, perSecond: v } }), 10)}</Row>
+                </>
+              )}
+              {kind.type === "expel" && <Row label="Impulse (cm)">{numInput(kind.impulseCm, 5, v => updateTriggerZone(i, { kind: { ...kind, impulseCm: v } }), 0.5)}</Row>}
+              {kind.type === "speed-scale" && <Row label="Speed multiplier">{numInput(kind.multiplier, 1.5, v => updateTriggerZone(i, { kind: { ...kind, multiplier: v } }), 0.1)}</Row>}
+
+              {/* Activation */}
+              <Row label="Activation">
+                <SearchableSelect
+                  value={activation.type}
+                  options={[{ value: "always-on", label: "Always on" }, { value: "intervaled", label: "Intervaled" }, { value: "switch-controlled", label: "Switch-controlled" }]}
+                  onChange={t => {
+                    const actType = t as TriggerZoneActivation["type"];
+                    const defaults: Record<string, TriggerZoneActivation> = {
+                      "always-on": { type: "always-on" },
+                      "intervaled": { type: "intervaled", activeMs: 2000, pauseMs: 3000 },
+                      "switch-controlled": { type: "switch-controlled", defaultState: "on" },
+                    };
+                    updateTriggerZone(i, { activation: defaults[actType] });
+                  }}
+                  style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                />
+              </Row>
+              {activation.type === "intervaled" && (
+                <>
+                  <Row label="Active (ms)">{numInput(activation.activeMs, 2000, v => updateTriggerZone(i, { activation: { ...activation, activeMs: v } }), 250)}</Row>
+                  <Row label="Pause (ms)">{numInput(activation.pauseMs, 3000, v => updateTriggerZone(i, { activation: { ...activation, pauseMs: v } }), 250)}</Row>
+                </>
+              )}
+              {activation.type === "switch-controlled" && (
+                <Row label="Default state">
+                  <SearchableSelect
+                    value={activation.defaultState}
+                    options={[{ value: "on", label: "On" }, { value: "off", label: "Off" }]}
+                    onChange={v => updateTriggerZone(i, { activation: { ...activation, defaultState: v as "on" | "off" } })}
+                    style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                  />
+                </Row>
+              )}
+
+              <SelfRotationPanel
+                rotation={(z as any).rotation}
+                selfRotation={z.selfRotation}
+                onChangeRotation={v => updateTriggerZone(i, { rotation: v } as any)}
+                onChangeSelfRotation={v => updateTriggerZone(i, { selfRotation: v })}
+              />
+            </div>
+          );
+        })}
+        <button onClick={addTriggerZone} style={{ padding: "6px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+          + Add Trigger Zone
         </button>
       </Section>
     </div>

@@ -2,6 +2,7 @@
 
 import type { ComboVisual } from "@/types/comboVisual";
 import { C } from "@/styles/theme";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 interface Props {
   value: ComboVisual;
@@ -57,12 +58,13 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
         </Field>
 
         <Field label="Sprite Layer">
-          <select style={selectStyle} value={value.spriteLayer ?? ""} onChange={e => set("spriteLayer", (e.target.value || undefined) as ComboVisual["spriteLayer"])}>
-            <option value="">— none —</option>
-            <option value="base">base</option>
-            <option value="overlay">overlay</option>
-            <option value="replace">replace</option>
-          </select>
+          <SearchableSelect
+            value={value.spriteLayer ?? ""}
+            options={[{ value: "base", label: "base" }, { value: "overlay", label: "overlay" }, { value: "replace", label: "replace" }]}
+            onChange={v => set("spriteLayer", (v || undefined) as ComboVisual["spriteLayer"])}
+            emptyLabel="— none —"
+            style={selectStyle}
+          />
         </Field>
 
         <Field label="Animation ID">

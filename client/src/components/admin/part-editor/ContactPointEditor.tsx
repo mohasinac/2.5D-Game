@@ -18,7 +18,9 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { C, HEX, alpha } from "@/styles/theme";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { MaterialSelector } from "./MaterialSelector";
+import { PartSelfRotationSection } from "./PartSelfRotationSection";
 import { renderRadius, synthesizeRadialCache } from "@/types/beybladeSystem";
 import type {
   SystemContactPoint,
@@ -26,6 +28,7 @@ import type {
   AttackType,
   PartLayer,
   FourierRadialProfile,
+  PartSelfRotation,
 } from "@/types/beybladeSystem";
 
 const CANVAS_SIZE = 280;
@@ -270,14 +273,13 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
           >
             {placing ? "Click canvas to place…" : "+ Place CP"}
           </button>
-          <select
-            onChange={(e) => generate(+e.target.value)}
-            defaultValue=""
-            style={{ padding: "5px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11 }}
-          >
-            <option value="" disabled>Generate evenly…</option>
-            {[2, 3, 4, 5, 6, 8].map((n) => <option key={n} value={n}>{n} CPs</option>)}
-          </select>
+          <SearchableSelect
+            value=""
+            options={[2, 3, 4, 5, 6, 8].map((n) => ({ value: String(n), label: `${n} CPs` }))}
+            onChange={(v) => { if (v) generate(+v); }}
+            emptyLabel="Generate evenly…"
+            style={{ background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11 }}
+          />
         </div>
 
         {/* CP list */}
@@ -421,23 +423,21 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Right-spin (↻)</div>
-                <select
+                <SearchableSelect
                   value={sel.spinBehavior.rightPin}
-                  onChange={(e) => update(selected, { spinBehavior: { ...sel.spinBehavior, rightPin: e.target.value as AttackType } })}
-                  style={{ width: "100%", padding: "5px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
-                >
-                  {ATTACK_LABELS.map((a) => <option key={a} value={a}>{a}</option>)}
-                </select>
+                  options={ATTACK_LABELS.map((a) => ({ value: a, label: a }))}
+                  onChange={(v) => update(selected, { spinBehavior: { ...sel.spinBehavior, rightPin: v as AttackType } })}
+                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+                />
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Left-spin (↺)</div>
-                <select
+                <SearchableSelect
                   value={sel.spinBehavior.leftPin}
-                  onChange={(e) => update(selected, { spinBehavior: { ...sel.spinBehavior, leftPin: e.target.value as AttackType } })}
-                  style={{ width: "100%", padding: "5px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
-                >
-                  {ATTACK_LABELS.map((a) => <option key={a} value={a}>{a}</option>)}
-                </select>
+                  options={ATTACK_LABELS.map((a) => ({ value: a, label: a }))}
+                  onChange={(v) => update(selected, { spinBehavior: { ...sel.spinBehavior, leftPin: v as AttackType } })}
+                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+                />
               </div>
             </div>
           </Section>
@@ -461,6 +461,13 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
               </div>
             )}
           </Section>
+
+          {/* Contact-point self-rotation (motor-driven, independent of bey spin axis) */}
+          <PartSelfRotationSection
+            heading="Contact Point Self-Rotation"
+            value={(sel.selfRotation as PartSelfRotation | undefined) ?? null}
+            onChange={(sr) => update(selected, { selfRotation: sr ?? undefined })}
+          />
         </div>
       )}
     </div>

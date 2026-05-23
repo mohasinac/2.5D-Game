@@ -1,5 +1,6 @@
 import { C } from "@/styles/theme";
 import type { ArenaConfig, TurretConfig, TurretAttackType } from "@/types/arenaConfigNew";
+import SelfRotationPanel from "./SelfRotationPanel";
 
 interface Props {
   config: ArenaConfig;
@@ -147,6 +148,12 @@ export default function TurretsTab({ config, onChange }: Props) {
               />
             </div>
           </div>
+          <SelfRotationPanel
+            rotation={(turret as any).rotation}
+            selfRotation={(turret as any).selfRotation}
+            onChangeRotation={v => update(turret.id, "rotation" as any, v)}
+            onChangeSelfRotation={v => update(turret.id, "selfRotation" as any, v)}
+          />
         </div>
       ))}
     </div>

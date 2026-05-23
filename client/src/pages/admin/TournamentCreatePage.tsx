@@ -4,6 +4,7 @@ import { collection, addDoc, serverTimestamp, Timestamp } from "firebase/firesto
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { C, S, btn, alpha } from "@/styles/theme";
 import toast from "react-hot-toast";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 interface FormState {
   name: string;
@@ -122,19 +123,20 @@ export function TournamentCreatePage() {
           </Field>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             <Field label="Type">
-              <select style={S.input} value={form.type} onChange={(e) => set("type", e.target.value as any)}>
-                <option value="pvp">PVP</option>
-                <option value="player-gauntlet">Player Gauntlet</option>
-                <option value="mixed">Mixed (AI fill)</option>
-                <option value="ai-exhibition">AI Exhibition</option>
-              </select>
+              <SearchableSelect
+                value={form.type}
+                options={[{ value: "pvp", label: "PVP" }, { value: "player-gauntlet", label: "Player Gauntlet" }, { value: "mixed", label: "Mixed (AI fill)" }, { value: "ai-exhibition", label: "AI Exhibition" }]}
+                onChange={(v) => set("type", v as any)}
+                style={S.input}
+              />
             </Field>
             <Field label="Max Participants">
-              <select style={S.input} value={form.maxParticipants} onChange={(e) => set("maxParticipants", Number(e.target.value) as any)}>
-                <option value={2}>2</option>
-                <option value={4}>4</option>
-                <option value={8}>8</option>
-              </select>
+              <SearchableSelect
+                value={String(form.maxParticipants)}
+                options={[{ value: "2", label: "2" }, { value: "4", label: "4" }, { value: "8", label: "8" }]}
+                onChange={(v) => set("maxParticipants", Number(v) as any)}
+                style={S.input}
+              />
             </Field>
           </div>
           <Field label="Minimum Participants (auto-cancels below this at deadline)">
@@ -166,18 +168,20 @@ export function TournamentCreatePage() {
         <Section title="Format">
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
             <Field label="Best Of">
-              <select style={S.input} value={form.bestOf} onChange={(e) => set("bestOf", Number(e.target.value) as any)}>
-                <option value={1}>BO1 (Single)</option>
-                <option value={3}>BO3 (First to 2)</option>
-                <option value={5}>BO5 (First to 3)</option>
-              </select>
+              <SearchableSelect
+                value={String(form.bestOf)}
+                options={[{ value: "1", label: "BO1 (Single)" }, { value: "3", label: "BO3 (First to 2)" }, { value: "5", label: "BO5 (First to 3)" }]}
+                onChange={(v) => set("bestOf", Number(v) as any)}
+                style={S.input}
+              />
             </Field>
             <Field label="AI Difficulty">
-              <select style={S.input} value={form.aiDifficulty} onChange={(e) => set("aiDifficulty", e.target.value as any)}>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-                <option value="hell">Hell</option>
-              </select>
+              <SearchableSelect
+                value={form.aiDifficulty}
+                options={[{ value: "medium", label: "Medium" }, { value: "hard", label: "Hard" }, { value: "hell", label: "Hell" }]}
+                onChange={(v) => set("aiDifficulty", v as any)}
+                style={S.input}
+              />
             </Field>
             <Field label="Auto-Fill with AI">
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>

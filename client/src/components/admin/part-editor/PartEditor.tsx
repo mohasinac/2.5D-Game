@@ -30,6 +30,7 @@ import { ContactPointEditor } from "./ContactPointEditor";
 import { PartConfigurationsEditor } from "./PartConfigurationsEditor";
 import { PocketListEditor } from "./PocketListEditor";
 import { PartLayerPreview, type PartKind } from "./PartLayerPreview";
+import { SearchableTabSelect } from "@/components/admin/SearchableSelect";
 
 const SLUG_TO_KIND: Record<string, PartKind> = {
   "bit-beasts":   "bitBeast",
@@ -41,7 +42,8 @@ const SLUG_TO_KIND: Record<string, PartKind> = {
   "tips":         "tip",
   "sub-parts":    "subPart",
 };
-import type { BasePart, PartDimensions, Material, MaterialBand, SystemContactPoint, PartImages } from "@/types/beybladeSystem";
+import type { BasePart, PartDimensions, Material, MaterialBand, SystemContactPoint, PartImages, PartSelfRotation } from "@/types/beybladeSystem";
+import { PartSelfRotationSection } from "./PartSelfRotationSection";
 
 // Preview is no longer a tab — it's always visible in the right panel.
 type Tab = "overview" | "shape" | "images" | "dimensions" | "material" | "contacts" | "configs" | "pockets" | "type";
@@ -175,7 +177,18 @@ export function PartEditor({
       </div>
 
       {/* Tab strip */}
-      <div style={{ display: "flex", gap: 2, padding: "8px 24px 0", borderBottom: `1px solid ${C.border}`, background: C.bg1, flexShrink: 0, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 2, padding: "8px 24px 0", borderBottom: `1px solid ${C.border}`, background: C.bg1, flexShrink: 0, flexWrap: "wrap", alignItems: "flex-end" }}>
+        <SearchableTabSelect
+          tabs={TABS.filter((t) => {
+            if (t.key === "contacts" && !hasContactPoints) return false;
+            if (t.key === "material" && !hasMaterialBands) return false;
+            if (t.key === "type" && !renderTypeFields) return false;
+            return true;
+          }).map(t => ({ key: t.key, label: t.label }))}
+          activeTab={tab}
+          onSelect={(k) => setTab(k as Tab)}
+          style={{ minWidth: 160, marginBottom: 8, marginRight: 8 }}
+        />
         {TABS.filter((t) => {
           if (t.key === "contacts" && !hasContactPoints) return false;
           if (t.key === "material" && !hasMaterialBands) return false;
@@ -232,6 +245,24 @@ export function PartEditor({
                 <input value={part.color ?? ""} onChange={(e) => update({ color: e.target.value })} style={{ width: 100, padding: "7px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12, fontFamily: "monospace" }} />
               </div>
             </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Physics Coupling</label>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: C.text, cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={part.rotatable !== false}
+                  onChange={(e) => update({ rotatable: e.target.checked })}
+                  style={{ accentColor: C.blue, width: 16, height: 16 }}
+                />
+                <span>Rotatable</span>
+                <span style={{ fontSize: 11, color: C.faint }}>(co-rotates with bey spin axis; uncheck to free-spin independently)</span>
+              </label>
+            </div>
+            {/* Part-Driven Rotation */}
+            <PartSelfRotationSection
+              value={(part.selfRotation as PartSelfRotation | undefined) ?? null}
+              onChange={(sr) => update({ selfRotation: sr ?? undefined })}
+            />
             <TagsField label="Compatibility Tags" value={compatibilityTags} onChange={(v) => update({ compatibilityTags: v })} />
             <TagsField label="Required Compatibility" value={requiredCompatibility} onChange={(v) => update({ requiredCompatibility: v })} />
             <TagsField label="Excluded Compatibility" value={excludedCompatibility} onChange={(v) => update({ excludedCompatibility: v })} />
@@ -392,3 +423,4 @@ function TagsField({ label, value, onChange }: { label: string; value: string[];
     </div>
   );
 }
+

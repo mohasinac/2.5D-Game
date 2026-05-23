@@ -312,14 +312,24 @@ export function processCrushers(
 
 // ── Z5c: Floor hazard + effect zone overlap checks ──────────────────────────
 
+const HARDCODED_ZONE_IMMUNITIES: Record<string, string[]> = {
+  fire:["ice"], water:["fire"], earth:["electric","emp"], lightning:["electric","emp"],
+  wind:["time_slow","sticky","mud"], ice:["ice"], light:["void"], nature:["drain"],
+  thunder:["electric","emp"],
+  void:["lava","ice","mud","healing","emp","magnet","antigravity","electric","time_slow","repulsion","size_shrink","size_grow","trampoline","combo_boost","drain"],
+};
+
 export function processFloorHazardZones(
   beyblade: Beyblade,
   zones: FloorHazardZoneConfig[],
   dt: number,
   physics: ArenaPhysicsBridge,
+  customZoneImmunities?: Record<string, string[]>,
 ): ArenaEffectEvents {
   const events: ArenaEffectEvents = {};
   if (!zones?.length) return events;
+
+  const effectiveImmunities = customZoneImmunities ?? HARDCODED_ZONE_IMMUNITIES;
 
   for (const zone of zones) {
     if (zone.activeByDefault === false) continue;
@@ -333,13 +343,7 @@ export function processFloorHazardZones(
     // AB7: element immunity check — skip this zone entirely if bey is immune
     const beyElems: string[] = (beyblade as any).elementTypes ?? [];
     if (beyElems.length > 0 && (zone as any).elementType) {
-      const VOID_IMMUNE: string[] = ["lava","ice","mud","healing","emp","magnet","antigravity","electric","time_slow","repulsion","size_shrink","size_grow","trampoline","combo_boost","drain"];
-      const ZONE_IMMUNITIES: Record<string, string[]> = {
-        fire:["ice"], water:["fire"], earth:["electric","emp"], lightning:["electric","emp"],
-        wind:["time_slow","sticky","mud"], ice:["ice"], light:["void"], nature:["drain"],
-        thunder:["electric","emp"], void: VOID_IMMUNE,
-      };
-      const isImmune = beyElems.some(e => ZONE_IMMUNITIES[e]?.includes(zone.hazardType ?? ""));
+      const isImmune = beyElems.some(e => effectiveImmunities[e]?.includes(zone.hazardType ?? ""));
       if (isImmune) continue;
     }
 
@@ -772,6 +776,7 @@ export function processArenaFeatures(
   physics: ArenaPhysicsBridge,
   rand: () => number,
   matchElapsedMs = 0,
+  customZoneImmunities?: Record<string, string[]>,
 ): ArenaEffectEvents {
   const events: ArenaEffectEvents = {};
 
@@ -912,7 +917,7 @@ export function processArenaFeatures(
 
   // Z5c — floor hazard zones
   if ((arenaData.floorHazardZones?.length ?? 0) > 0) {
-    const fhEvents = processFloorHazardZones(beyblade, arenaData.floorHazardZones!, dt, physics);
+    const fhEvents = processFloorHazardZones(beyblade, arenaData.floorHazardZones!, dt, physics, customZoneImmunities);
     if (fhEvents.electricDisable) events.electricDisable = fhEvents.electricDisable;
   }
 

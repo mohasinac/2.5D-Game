@@ -11,7 +11,11 @@ import { C, alpha } from "@/styles/theme";
 import { MODIFIER_MAP } from "@/types/roundModifier";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
+import { BeyLinkHijackHUD } from "@/components/game/BeyLinkHijackHUD";
 import { PartModesHUD } from "@/components/game/PartModesHUD";
+import FloorHUD from "@/components/game/FloorHUD";
+import FloorTransitionOverlay from "@/components/game/FloorTransitionOverlay";
+import LinkAlignmentHUD from "@/components/game/LinkAlignmentHUD";
 import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { LoadingProgress } from "@/components/LoadingProgress";
@@ -73,7 +77,7 @@ export function AIBattleGamePage() {
     matchId:         loc.matchId,
   }), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, loadingStep, loadingError, visualEventQueue } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, beyLinkQTE, beyLinkControlLoss, sendBeyLinkQTEInput, beyLinkHijackQTE, beyLinkHijackBlockQTE, sendHijackBlock, loadingStep, loadingError, visualEventQueue, floorInfo, myFloorIndex, linkAlignments, floorTransition } =
     useColyseus({
       roomName: roomNameFor(mode, "aiBattle"),
       options: colyseusOptions,
@@ -348,10 +352,29 @@ export function AIBattleGamePage() {
         power={myBeyblade?.power}
       />
 
+      {!isSpectating && (
+        <BeyLinkHijackHUD
+          hijackQTE={beyLinkHijackQTE}
+          hijackBlockQTE={beyLinkHijackBlockQTE}
+          onBlock={sendHijackBlock}
+          escapeQTE={beyLinkQTE}
+          onEscape={sendBeyLinkQTEInput}
+          controlLoss={beyLinkControlLoss}
+        />
+      )}
+
       {/* PartModesHUD — player-switchable 2.5D part configurations.
           Renders nothing when myBeyblade has no part configs (non-2.5D matches). */}
       {!isSpectating && myBeyblade && (
         <PartModesHUD myBeyblade={myBeyblade as any} room={room as any} />
+      )}
+
+      {floorInfo.length > 1 && (
+        <FloorHUD totalFloors={floorInfo.length} currentFloorIndex={myFloorIndex} floors={floorInfo} />
+      )}
+      {floorTransition && <FloorTransitionOverlay {...floorTransition} visible={true} />}
+      {linkAlignments.length > 0 && linkAlignments.some(l => l.alignmentStatus !== "always_open") && (
+        <LinkAlignmentHUD links={linkAlignments} />
       )}
 
       {/* Game-end inter-game overlay */}

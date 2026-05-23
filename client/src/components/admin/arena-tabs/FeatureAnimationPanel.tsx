@@ -3,6 +3,7 @@
 
 import { C } from "@/styles/theme";
 import type { FeatureAnimationConfig, FeatureAnimationPreset } from "@/types/arenaConfigNew";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 const PRESETS: FeatureAnimationPreset[] = [
   "pulse", "scale_pulse", "color_cycle", "flicker", "alert",
@@ -47,15 +48,12 @@ export default function FeatureAnimationPanel({ value, onChange, featureId }: Pr
         <>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <label style={{ fontSize: 12, color: C.muted, minWidth: 100 }}>Preset</label>
-            <select
+            <SearchableSelect
               value={value.preset}
-              onChange={e => onChange({ ...value, preset: e.target.value as FeatureAnimationPreset })}
-              style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
-            >
-              {PRESETS.map(p => (
-                <option key={p} value={p}>{PRESET_LABELS[p]}</option>
-              ))}
-            </select>
+              options={PRESETS.map(p => ({ value: p, label: PRESET_LABELS[p] }))}
+              onChange={v => onChange({ ...value, preset: v as FeatureAnimationPreset })}
+              style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+            />
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

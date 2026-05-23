@@ -4,7 +4,7 @@ import {
   Beyblade,
 } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
-import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats, loadComboEffects, type ComboEffectDoc } from "../utils/firebase";
+import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats, loadComboEffects, getFirestoreDb, type ComboEffectDoc } from "../utils/firebase";
 import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
 import { tryReserveRoom, releaseRoom } from "../shared/utils/roomCounter";
 import { createPRNG } from "../shared/utils/prng";
@@ -36,9 +36,9 @@ import {
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
 import type { ArenaSystem } from "../types/arenaSystem";
 import { MODIFIER_MAP, type RoundModifier } from "../../client/src/types/roundModifier";
-import { getDualTypeAttackMultiplier, getDualTypeDefenseMultiplier, type ElementType } from "../../client/src/types/elementTypes";
+import { loadElementTypeMatrix, computeDynamicTypeMultiplier, type LoadedTypeMatrix } from "../utils/elementTypeLoader";
 import type { ArenaTimelineEvent } from "../types/shared";
-import type { ArenaLink, BeyLink, BeyLinkEffect } from "../../client/src/types/arenaConfigNew";
+import type { ArenaLink, BeyLink, BeyLinkEffect, BeyLinkGroupPattern, BeyLinkMovementControl } from "../../client/src/types/arenaConfigNew";
 
 const QTE_KEY_POOL = ["left", "right", "up", "down", "attack", "defense", "dodge"];
 
@@ -143,6 +143,10 @@ export class BattleRoom extends Room<GameState> {
   // ── Arena link crossing cooldowns (L2/L3) ────────────────────────────────────
   // beyId → linkId → cooldownTicksRemaining
   private linkCooldowns: Map<string, Map<string, number>> = new Map();
+  // beyId → current floor index within the floor group (0 = ground)
+  private beyFloorIndex: Map<string, number> = new Map();
+  // ticks since last arena-link-status broadcast
+  private linkStatusBroadcastTick = 0;
 
   // ── Bey-to-bey stack state (BeyLink system) ──────────────────────────────────
   private beyStackState: Map<string, { partnerId: string; linkId: string; tickCount: number }> = new Map();
@@ -155,6 +159,19 @@ export class BattleRoom extends Room<GameState> {
   private activeControlLoss: Map<string, { linkId: string; nextQTETick: number; recoveryKey: string }> = new Map();
   /** Running tick counter (incremented each server tick). */
   private tickCounter = 0;
+
+  // ── Hijack state (BeyLink hijack mechanic) ───────────────────────────────────
+  /** Active hijack QTEs: stackKey → { blockKey, expiresAt }. Attacker must block before expiry. */
+  private pendingHijackQTE = new Map<string, { blockKey: string; expiresAt: number }>();
+  /** Per-bey hijack cooldowns: beyId → linkId → ticks remaining. */
+  private hijackCooldowns = new Map<string, Map<string, number>>();
+  /** Cached last PlayerInput per session — used by initiator/player movement control modes. */
+  private lastPlayerInput = new Map<string, PlayerInput>();
+  /** Rigid formation offsets: "rigid:${sid}" → { relX, relY } relative to cluster centroid at stack-entry tick. */
+  private rigidFormationOffset = new Map<string, { relX: number; relY: number }>();
+
+  /** Firestore-loaded element type matrix (falls back to hardcoded on failure). */
+  protected elementTypeMatrix: LoadedTypeMatrix | null = null;
 
   /** Arena shrink state (Phase V). */
   private shrinkStartMs = 0;
@@ -241,6 +258,12 @@ export class BattleRoom extends Room<GameState> {
     const effectDocs = await loadComboEffects();
     for (const doc of effectDocs) this.comboEffectsCache.set(doc.id, doc);
 
+    // Load Firestore-backed element type matrix (with hardcoded fallback)
+    const firestoreDb = getFirestoreDb();
+    if (firestoreDb) {
+      this.elementTypeMatrix = await loadElementTypeMatrix(firestoreDb);
+    }
+
     this.onMessage("input", (client, message: number | PlayerInput) => {
       let input = normalizeInput(message);
       if (this.invertControlsActive) input = invertInputControls(input);
@@ -313,6 +336,54 @@ export class BattleRoom extends Room<GameState> {
       if (message.key === ctrl.recoveryKey) {
         this._grantControlLossImmunity(client.sessionId, ctrl.linkId);
       }
+    });
+
+    // ── Hijack: victim initiates a role-reversal attempt ─────────────────────
+    this.onMessage("bey-link-hijack-attempt", (client, data: { stackKey: string; linkId: string }) => {
+      const beyLinks = (this.arenaCache as any)?.beyLinks as BeyLink[] | undefined;
+      const link = beyLinks?.find(l => l.id === data.linkId);
+      if (!link?.hijackable) return;
+
+      const parts = data.stackKey.split(":");
+      const sidA = parts[0], sidB = parts[1];
+      if (client.sessionId !== sidB) return;
+      if (!this.beyStackState.has(data.stackKey)) return;
+
+      const cooldown = this.hijackCooldowns.get(sidB)?.get(data.linkId) ?? 0;
+      if (cooldown > 0) return;
+      if (this.pendingHijackQTE.has(data.stackKey)) return;
+
+      const windowTicks = link.hijackWindowTicks ?? 90;
+      const expiresAt = Date.now() + windowTicks * (1000 / 60);
+      const blockKey = QTE_KEY_POOL[Math.floor(this.rand() * QTE_KEY_POOL.length)];
+
+      this.pendingHijackQTE.set(data.stackKey, { blockKey, expiresAt });
+
+      client.send("bey-link-hijack-qte", { stackKey: data.stackKey, linkId: data.linkId, windowTicks, expiresAt });
+      const attackerClient = this.clients.find(c => c.sessionId === sidA);
+      attackerClient?.send("bey-link-hijack-block-qte", { stackKey: data.stackKey, linkId: data.linkId, key: blockKey, windowTicks, expiresAt });
+    });
+
+    // ── Hijack block: attacker presses the correct key to deny the takeover ──
+    this.onMessage("bey-link-hijack-block", (client, data: { stackKey: string; key: string }) => {
+      const pending = this.pendingHijackQTE.get(data.stackKey);
+      if (!pending || Date.now() > pending.expiresAt) return;
+
+      const parts = data.stackKey.split(":");
+      const sidA = parts[0], sidB = parts[1], lid = parts[2];
+      if (client.sessionId !== sidA) return;
+      if (data.key !== pending.blockKey) return;
+
+      this.pendingHijackQTE.delete(data.stackKey);
+
+      const beyLinks = (this.arenaCache as any)?.beyLinks as BeyLink[] | undefined;
+      const link = beyLinks?.find(l => l.id === lid);
+      const cooldownTicks = link?.hijackCooldownTicks ?? 180;
+      const vcmap = this.hijackCooldowns.get(sidB) ?? new Map<string, number>();
+      vcmap.set(lid, cooldownTicks);
+      this.hijackCooldowns.set(sidB, vcmap);
+
+      this.broadcast("bey-link-hijack-failed", { stackKey: data.stackKey, blockerId: sidA, victimId: sidB });
     });
   }
 
@@ -720,6 +791,7 @@ export class BattleRoom extends Room<GameState> {
     if (!beyblade || !beyblade.isActive) return;
     if (this.state.status !== "in-progress") return;
     this.lastInputTime = Date.now();
+    this.lastPlayerInput.set(client.sessionId, message);
 
     const forceMagnitude = computeForceMagnitude(beyblade);
 
@@ -932,6 +1004,42 @@ export class BattleRoom extends Room<GameState> {
     this.broadcast("bey-link-control-immunity-start", { sessionId, immunityTicks: IMMUNITY_TICKS });
   }
 
+  // ─── Hijack execution ────────────────────────────────────────────────────────
+
+  /**
+   * Execute a successful hijack: remove the original stack, insert a reversed
+   * stack so the former victim (sidB) now acts as sidA (initiator/controller),
+   * and set cooldowns on both beys.
+   */
+  private _executeHijack(stackKey: string, linkId: string, sidA: string, sidB: string): void {
+    this.beyStackState.delete(stackKey);
+    this.pendingBeyLinkQTE.delete(sidB);
+
+    const hijackedKey = `${sidB}:${sidA}:${linkId}`;
+    this.beyStackState.set(hijackedKey, { partnerId: sidA, linkId, tickCount: 0 });
+
+    // Rigid formation offsets no longer apply to the reversed pair
+    this.rigidFormationOffset.delete(`rigid:${sidA}`);
+    this.rigidFormationOffset.delete(`rigid:${sidB}`);
+
+    const beyLinks = (this.arenaCache as any)?.beyLinks as BeyLink[] | undefined;
+    const link = beyLinks?.find(l => l.id === linkId);
+    const cooldownTicks = link?.hijackCooldownTicks ?? 180;
+
+    for (const sid of [sidA, sidB]) {
+      const cmap = this.hijackCooldowns.get(sid) ?? new Map<string, number>();
+      cmap.set(linkId, cooldownTicks);
+      this.hijackCooldowns.set(sid, cmap);
+    }
+
+    this.broadcast("bey-link-hijacked", {
+      newControllerId: sidB,
+      newVictimId: sidA,
+      linkId,
+      stackKey: hijackedKey,
+    });
+  }
+
   // ─── Bey-link QTE resolution ─────────────────────────────────────────────────
 
   private _resolveBeyLinkQTE(
@@ -1044,15 +1152,12 @@ export class BattleRoom extends Room<GameState> {
 
         const dmg = this.physics.calculateCollisionDamage(collision, b1, b2);
 
-        // Element type effectiveness (Phase AB)
-        const b1Elems = Array.from(b1.elementTypes ?? []) as ElementType[];
-        const b2Elems = Array.from(b2.elementTypes ?? []) as ElementType[];
-        const typeMultB1vsB2 = b1Elems.length > 0 && b2Elems.length > 0
-          ? getDualTypeAttackMultiplier(b1Elems, b2Elems[0]) * getDualTypeDefenseMultiplier(b1Elems[0], b2Elems)
-          : 1.0;
-        const typeMultB2vsB1 = b2Elems.length > 0 && b1Elems.length > 0
-          ? getDualTypeAttackMultiplier(b2Elems, b1Elems[0]) * getDualTypeDefenseMultiplier(b2Elems[0], b1Elems)
-          : 1.0;
+        // Element type effectiveness — uses Firestore-backed matrix when available
+        const b1Elems = Array.from(b1.elementTypes ?? []) as string[];
+        const b2Elems = Array.from(b2.elementTypes ?? []) as string[];
+        const mat = this.elementTypeMatrix?.matrix ?? {};
+        const typeMultB1vsB2 = computeDynamicTypeMultiplier(mat, b1Elems, b2Elems);
+        const typeMultB2vsB1 = computeDynamicTypeMultiplier(mat, b2Elems, b1Elems);
 
         const effDmg1 = dmg.damage1 * typeMultB2vsB1;   // damage b1 takes from b2
         const effDmg2 = dmg.damage2 * typeMultB1vsB2;   // damage b2 takes from b1
@@ -1145,6 +1250,8 @@ export class BattleRoom extends Room<GameState> {
           dt,
           this.physics,
           this.rand,
+          undefined,
+          this.elementTypeMatrix?.zoneImmunities,
         );
         if (events.obstacleHit) this.broadcast("obstacle-collision", events.obstacleHit);
         if (events.wallHit) this.broadcast("wall-collision", events.wallHit);
@@ -1548,11 +1655,24 @@ export class BattleRoom extends Room<GameState> {
     const links = (this.arenaCache as any)?.links as ArenaLink[] | undefined;
     if (!links?.length) return;
 
+    const floorGroup = (this.arenaCache as any)?.floorGroup as { floorArenaIds?: string[]; floorPositions?: Array<{ floorIndex: number; xOffsetCm: number; yOffsetCm: number; zOffsetCm: number }>; minFloorHeightCm?: number } | undefined;
+    const floorArenaIds: string[] = floorGroup?.floorArenaIds ?? [];
+
+    // Physics coordinate constants
+    const SCALE = 16;  // 1 cm = 16 physics units (matches PhysicsEngine convention)
+    const PX_PER_CM = 24;
+
     for (const [sessionId, bey] of this.state.beyblades) {
       if (!bey.isActive) continue;
 
+      const beyCurrentFloor = this.beyFloorIndex.get(sessionId) ?? 0;
+      const beyCurrentArenaId = floorArenaIds[beyCurrentFloor] ?? (this.arenaCache as any)?.id;
+
       for (const link of links) {
-        // Check cooldown
+        // Only process links whose source arena matches this bey's current floor
+        if (floorArenaIds.length > 0 && link.fromArenaId !== beyCurrentArenaId) continue;
+
+        // Check per-link cooldown
         const beyLinkCooldowns = this.linkCooldowns.get(sessionId) ?? new Map<string, number>();
         const cooldownLeft = beyLinkCooldowns.get(link.id) ?? 0;
         if (cooldownLeft > 0) {
@@ -1561,79 +1681,157 @@ export class BattleRoom extends Room<GameState> {
           continue;
         }
 
-        // L3: Check reverseCondition before allowing crossing
-        if (link.reverseCondition === "never") continue; // one-way, can't enter from this side
+        // Directional gate
+        if (link.reverseCondition === "never") continue;
         if (link.reverseCondition === "spin_above_50" && bey.spin < bey.maxSpin * 0.5) continue;
 
-        // L2: Detect crossing by checking if bey position is near the boundary line
-        const bx = bey.x;  // in pixels
-        const by = bey.y;
+        // Boundary detection — convert cm boundary to physics units relative to arena center
+        const arenaCx = (this.state.arena.width * SCALE) / 2;
+        const arenaCy = (this.state.arena.height * SCALE) / 2;
+        const x1 = arenaCx + link.boundaryLine.x1 * PX_PER_CM;
+        const y1 = arenaCy + link.boundaryLine.y1 * PX_PER_CM;
+        const x2 = arenaCx + link.boundaryLine.x2 * PX_PER_CM;
+        const y2 = arenaCy + link.boundaryLine.y2 * PX_PER_CM;
 
-        // Convert cm boundary to pixels (1cm = 24px, relative to arena center)
-        const cx = (this.state.arena.width * 16) / 2;
-        const cy = (this.state.arena.height * 16) / 2;
-        const x1 = cx + link.boundaryLine.x1 * 24;
-        const y1 = cy + link.boundaryLine.y1 * 24;
-        const x2 = cx + link.boundaryLine.x2 * 24;
-        const y2 = cy + link.boundaryLine.y2 * 24;
+        const dist = pointToSegmentDistance(bey.x, bey.y, x1, y1, x2, y2);
+        const beyRadius = (bey.radius ?? 4) * PX_PER_CM;
+        if (dist > beyRadius + 10) continue;
 
-        // Distance from bey to boundary line segment
-        const dist = pointToSegmentDistance(bx, by, x1, y1, x2, y2);
-        const beyRadius = (bey.radius ?? 4) * 24; // cm to px
+        // ── Bey is crossing ───────────────────────────────────────────────────
 
-        if (dist > beyRadius + 10) continue; // not near boundary
-
-        // Bey is crossing the link — teleport to destination arena
-        // (For now, just apply momentum/damage effects since multi-arena rooms aren't implemented)
-
-        // Apply hazard damage if any
+        // 1. Hazard damage
         if (link.hazardDamage && link.hazardDamage > 0) {
           bey.spin = Math.max(0, bey.spin - link.hazardDamage);
         }
 
-        // Apply momentum adjustment based on levelDelta
+        // 2. Update floor index
+        const toFloor = floorArenaIds.indexOf(link.toArenaId);
+        if (toFloor >= 0) {
+          this.beyFloorIndex.set(sessionId, toFloor);
+        }
+
+        // 3. Teleport bey to exit position in destination arena
+        if (link.exitPosition) {
+          const destFloorIdx = toFloor >= 0 ? toFloor : beyCurrentFloor;
+          const destPos = floorGroup?.floorPositions?.find(p => p.floorIndex === destFloorIdx);
+          const xOffsetPx = (destPos?.xOffsetCm ?? 0) * PX_PER_CM;
+          const yOffsetPx = (destPos?.yOffsetCm ?? 0) * PX_PER_CM;
+          const destCx = arenaCx + xOffsetPx;
+          const destCy = arenaCy + yOffsetPx;
+          const exitX = destCx + link.exitPosition.x * PX_PER_CM;
+          const exitY = destCy + link.exitPosition.y * PX_PER_CM;
+          this.physics.setPosition(sessionId, exitX, exitY);
+        }
+
+        // 4. Velocity handling
+        const exitMult = (link as any).exitVelocityMult ?? 1.0;
         if (!link.momentumPreserved) {
-          const bodyState = this.physics.getBodyState(sessionId);
-          if (bodyState) {
-            // Reduce velocity to 20% if momentum not preserved
-            this.physics.setLinearVelocity(sessionId, bodyState.velocityX * 0.2, bodyState.velocityY * 0.2);
-          }
-        }
-
-        // Pit: heavy spin loss + momentum halt (simulates falling)
-        if (link.linkType === "pit") {
-          const fallDamage = link.hazardDamage ?? 50;
-          bey.spin = Math.max(0, bey.spin - fallDamage);
           this.physics.setLinearVelocity(sessionId, 0, 0);
-        }
-
-        // Trampoline: launch boost + spin preservation
-        if (link.linkType === "trampoline") {
-          const bodyState = this.physics.getBodyState(sessionId);
-          if (bodyState) {
-            const exitMult = (link as any).exitVelocityMult ?? 2.5;
+        } else if (exitMult !== 1.0) {
+          // Scale existing velocity by exit multiplier
+          const body = (this.physics as any).bodies?.get(sessionId);
+          if (body) {
             this.physics.setLinearVelocity(
               sessionId,
-              bodyState.velocityX * exitMult,
-              bodyState.velocityY * exitMult
+              body.velocity.x * exitMult,
+              body.velocity.y * exitMult
             );
           }
         }
 
-        // Broadcast link crossing event to clients
-        this.broadcast("arena-link-cross", {
-          beyId: sessionId,
-          linkId: link.id,
-          toArenaId: link.toArenaId,
-          momentumPreserved: link.momentumPreserved,
-          levelDelta: link.levelDelta,
-        });
+        // Link-type specific overrides
+        if (link.linkType === "pit") {
+          bey.spin = Math.max(0, bey.spin - (link.hazardDamage ?? 50));
+          this.physics.setLinearVelocity(sessionId, 0, 0);
+        } else if (link.linkType === "trampoline") {
+          const body = (this.physics as any).bodies?.get(sessionId);
+          if (body) {
+            this.physics.setLinearVelocity(
+              sessionId,
+              body.velocity.x * (exitMult > 1 ? exitMult : 2.0),
+              body.velocity.y * (exitMult > 1 ? exitMult : 2.0)
+            );
+          }
+        }
 
-        // Set cooldown
+        // 5. Broadcast crossing event — matches FloorTransitionProps (minus `visible`)
+        const fromLabel = (this.arenaCache as any)?.name ?? `Floor ${beyCurrentFloor}`;
+        const destLabel = floorArenaIds[toFloor >= 0 ? toFloor : beyCurrentFloor] ?? `Floor ${toFloor}`;
+        const trampolineOptOutTicks = (link as any).trampolineConfig?.optOutWindowTicks ?? 0;
+        // Only broadcast to the crossing bey's client (not all spectators)
+        const crossingClient = this.clients.find(c => c.sessionId === sessionId);
+        crossingClient?.send("arena-link-cross", {
+          linkType: link.linkType,
+          fromFloor: beyCurrentFloor,
+          toFloor: toFloor >= 0 ? toFloor : beyCurrentFloor,
+          fromLabel,
+          toLabel: destLabel,
+          progress: 0,
+          state: link.linkType === "trampoline" && trampolineOptOutTicks > 0 ? "opt_out_window" : (link.linkType === "trampoline" ? "auto_launch" : "transit"),
+          optOutTicksLeft: trampolineOptOutTicks > 0 ? trampolineOptOutTicks : undefined,
+          optOutWindowTicks: trampolineOptOutTicks > 0 ? trampolineOptOutTicks : undefined,
+        });
+        // Also broadcast a lighter event to all clients so they can update scoreboard / spectator floor indicators
+        this.broadcast("bey-floor-changed", { beyId: sessionId, fromFloor: beyCurrentFloor, toFloor: toFloor >= 0 ? toFloor : beyCurrentFloor });
+
+        // 6. Set cooldown
         const newCooldowns = this.linkCooldowns.get(sessionId) ?? new Map<string, number>();
-        newCooldowns.set(link.id, link.cooldownTicks ?? 60);
+        newCooldowns.set(link.id, (link as any).traversal?.perBeyReuseCooldown ?? link.cooldownTicks ?? 60);
         this.linkCooldowns.set(sessionId, newCooldowns);
       }
+    }
+
+    // Broadcast floor/alignment status ~every 10 ticks (6 times/sec at 60Hz)
+    this.linkStatusBroadcastTick++;
+    if (this.linkStatusBroadcastTick >= 10) {
+      this.linkStatusBroadcastTick = 0;
+      this.broadcastArenaLinkStatus(links, floorArenaIds);
+    }
+  }
+
+  private broadcastArenaLinkStatus(links: ArenaLink[], floorArenaIds: string[]): void {
+    if (!links.length && !floorArenaIds.length) return;
+
+    for (const [sessionId] of this.state.beyblades) {
+      const myFloor = this.beyFloorIndex.get(sessionId) ?? 0;
+
+      const floors = floorArenaIds.map((aid, fi) => ({
+        floorIndex: fi,
+        arenaName: aid,
+        links: links
+          .filter(l => l.fromArenaId === aid || l.toArenaId === aid)
+          .map(l => {
+            const toIdx = floorArenaIds.indexOf(l.toArenaId);
+            const fromIdx = floorArenaIds.indexOf(l.fromArenaId);
+            // direction from this floor's perspective: up if the other end is a higher index
+            const otherIdx = l.fromArenaId === aid ? toIdx : fromIdx;
+            const direction: "up" | "down" = otherIdx >= 0 ? (otherIdx > fi ? "up" : "down") : (l.levelDelta > 0 ? "up" : "down");
+            return { linkType: l.linkType, direction, status: "aligned" as const, alignmentFraction: 0 };
+          }),
+      }));
+
+      const linkAlignments = links
+        .filter(l => l.fromArenaId === floorArenaIds[myFloor] || l.toArenaId === floorArenaIds[myFloor])
+        .map(l => {
+          const toIdx = floorArenaIds.indexOf(l.toArenaId);
+          const fromIdx = floorArenaIds.indexOf(l.fromArenaId);
+          const otherIdx = l.fromArenaId === floorArenaIds[myFloor] ? toIdx : fromIdx;
+          const direction: "up" | "down" = otherIdx >= 0 ? (otherIdx > myFloor ? "up" : "down") : (l.levelDelta > 0 ? "up" : "down");
+          return {
+            id: l.id,
+            linkType: l.linkType,
+            direction,
+            alignmentStatus: (l.alignment?.mode === "none" ? "always_open" : "aligned") as "always_open" | "aligned",
+            degreesOff: 0,
+            errorMarginDeg: l.alignment?.errorMarginDeg ?? 10,
+          };
+        });
+
+      this.clients.find(c => c.sessionId === sessionId)?.send("arena-link-status", {
+        floors,
+        myFloorIndex: myFloor,
+        linkAlignments,
+      });
     }
   }
 
@@ -1875,6 +2073,8 @@ export class BattleRoom extends Room<GameState> {
           // ── 2-body movement patterns per link type ─────────────────────────
           // Applied every tick regardless of specific effects.
           this._applyBeyLinkMovement(link.linkType, link.alignment, sidA, sidB, beyA, beyB, tickCount);
+          // Overlay player/initiator steering for non-auto control modes.
+          this._applyMovementControlSteering(link, sidA);
 
           // ── Dogfight spark visuals ─────────────────────────────────────────
           if (link.linkType === "side_spin" && link.alignment === "hostile" && tickCount % 5 === 1) {
@@ -1927,6 +2127,45 @@ export class BattleRoom extends Room<GameState> {
         if (ticks <= 1) cmap.delete(lid);
         else cmap.set(lid, ticks - 1);
       }
+    }
+
+    // Tick down hijack cooldowns
+    for (const [, cmap] of this.hijackCooldowns) {
+      for (const [lid, ticks] of cmap) {
+        if (ticks <= 1) cmap.delete(lid);
+        else cmap.set(lid, ticks - 1);
+      }
+    }
+
+    // Check expired hijack QTE windows → auto-execute hijack (attacker failed to block)
+    const nowMs = Date.now();
+    for (const [stackKey, hqte] of this.pendingHijackQTE) {
+      if (nowMs > hqte.expiresAt) {
+        this.pendingHijackQTE.delete(stackKey);
+        const parts = stackKey.split(":");
+        const sidA = parts[0], sidB = parts[1], lid = parts[2];
+        if (this.beyStackState.has(stackKey)) {
+          this._executeHijack(stackKey, lid, sidA, sidB);
+        }
+      }
+    }
+
+    // ── Group movement patterns (3+ beys under same link) ───────────────────
+    const linkGroups = this._buildLinkGroups();
+    for (const [lid, memberSet] of linkGroups) {
+      if (memberSet.size < 3) continue;
+      const link = beyLinks!.find(l => l.id === lid);
+      if (!link) continue;
+      const pattern = link.groupPattern;
+      const control = link.movementControl ?? "auto";
+      if (!pattern && control === "auto") continue;
+      this._applyGroupMovement(
+        Array.from(memberSet),
+        link,
+        pattern ?? "chain",
+        control,
+        this.tickCounter,
+      );
     }
   }
 
@@ -2360,6 +2599,180 @@ export class BattleRoom extends Room<GameState> {
   /** N6: Combination lock tick — override in 2.5D subclass to call partSystemManager.tickCombinationLock(). */
   protected onTickCombinationLock(_deltaTime: number): void {
     // no-op in base room
+  }
+
+  // ─── BeyLink group detection ─────────────────────────────────────────────────
+
+  /** Build a map of linkId → Set<sessionId> for all currently-active stacks. */
+  private _buildLinkGroups(): Map<string, Set<string>> {
+    const groups = new Map<string, Set<string>>();
+    for (const [stackKey] of this.beyStackState) {
+      const parts = stackKey.split(":");
+      const sidA = parts[0], sidB = parts[1], lid = parts[2];
+      if (!groups.has(lid)) groups.set(lid, new Set());
+      groups.get(lid)!.add(sidA);
+      groups.get(lid)!.add(sidB);
+    }
+    return groups;
+  }
+
+  // ─── Movement control steering (2-body + group) ───────────────────────────────
+
+  /**
+   * Derive a normalised (dx, dy) steer vector from the link's movementControl setting,
+   * then push it onto the given leader session.
+   * No-op when movementControl is "auto" or undefined.
+   */
+  private _applyMovementControlSteering(link: BeyLink, leaderSid: string): void {
+    const control = link.movementControl ?? "auto";
+    if (control === "auto") return;
+
+    let steerX = 0, steerY = 0;
+    const accumInput = (sid: string) => {
+      const inp = this.lastPlayerInput.get(sid);
+      if (!inp) return;
+      if (inp.moveLeft)  steerX -= 1;
+      if (inp.moveRight) steerX += 1;
+      if (inp.moveUp)    steerY -= 1;
+      if (inp.moveDown)  steerY += 1;
+    };
+
+    if (control === "initiator") {
+      accumInput(leaderSid);
+    } else if (control === "player") {
+      for (const [stackKey, state] of this.beyStackState) {
+        if (state.linkId !== link.id) continue;
+        const parts = stackKey.split(":");
+        if (this.playerSessions.has(parts[0])) accumInput(parts[0]);
+        if (this.playerSessions.has(parts[1])) accumInput(parts[1]);
+      }
+      const mag = Math.hypot(steerX, steerY);
+      if (mag > 0) { steerX /= mag; steerY /= mag; }
+    }
+
+    if (steerX !== 0 || steerY !== 0) {
+      this.physics.applyForce(leaderSid, steerX * 0.6, steerY * 0.6);
+    }
+  }
+
+  // ─── Group movement patterns (3+ linked beys) ────────────────────────────────
+
+  private _applyGroupMovement(
+    members: string[],
+    link: BeyLink,
+    pattern: BeyLinkGroupPattern,
+    movementControl: BeyLinkMovementControl,
+    tickCount: number,
+  ): void {
+    type BodyState = { x: number; y: number; velocityX: number; velocityY: number };
+    const states: { sid: string; body: BodyState }[] = [];
+    for (const sid of members) {
+      const b = this.physics.getBodyState(sid);
+      if (b) states.push({ sid, body: b });
+    }
+    if (states.length < 2) return;
+
+    const orbitR = (link.entryRadiusCm ?? 2) * 24;
+
+    // Compute steer vector from control mode
+    let steerX = 0, steerY = 0;
+    const accumInput = (sid: string) => {
+      const inp = this.lastPlayerInput.get(sid);
+      if (!inp) return;
+      if (inp.moveLeft)  steerX -= 1;
+      if (inp.moveRight) steerX += 1;
+      if (inp.moveUp)    steerY -= 1;
+      if (inp.moveDown)  steerY += 1;
+    };
+    if (movementControl === "initiator") {
+      accumInput(members[0]);
+    } else if (movementControl === "player") {
+      for (const { sid } of states) {
+        if (this.playerSessions.has(sid)) accumInput(sid);
+      }
+      const mag = Math.hypot(steerX, steerY);
+      if (mag > 0) { steerX /= mag; steerY /= mag; }
+    }
+    const hasSteer = (steerX !== 0 || steerY !== 0) && movementControl !== "auto";
+
+    switch (pattern) {
+      case "chain": {
+        // Each follower targets the bey ahead, trailing behind its velocity direction.
+        for (let i = 1; i < states.length; i++) {
+          const leader = states[i - 1].body;
+          const { sid, body } = states[i];
+          const spd = Math.hypot(leader.velocityX, leader.velocityY) || 1;
+          const targetX = leader.x - (leader.velocityX / spd) * orbitR;
+          const targetY = leader.y - (leader.velocityY / spd) * orbitR;
+          this.physics.applyForce(sid, (targetX - body.x) * 0.04, (targetY - body.y) * 0.04);
+        }
+        if (hasSteer) this.physics.applyForce(states[0].sid, steerX * 0.6, steerY * 0.6);
+        break;
+      }
+
+      case "star": {
+        // Hub = highest-spin bey; followers orbit it at evenly-spaced angles.
+        let hubSid = members[0];
+        let hubSpin = this.state.beyblades.get(hubSid)?.spin ?? 0;
+        for (const sid of members) {
+          const sp = this.state.beyblades.get(sid)?.spin ?? 0;
+          if (sp > hubSpin) { hubSid = sid; hubSpin = sp; }
+        }
+        const hubBody = states.find(e => e.sid === hubSid)?.body;
+        if (!hubBody) break;
+        const followers = states.filter(e => e.sid !== hubSid);
+        const step = (2 * Math.PI) / (followers.length || 1);
+        followers.forEach(({ sid, body }, i) => {
+          const angle = step * i + tickCount * 0.04;
+          const targetX = hubBody.x + Math.cos(angle) * orbitR;
+          const targetY = hubBody.y + Math.sin(angle) * orbitR;
+          this.physics.applyForce(sid, (targetX - body.x) * 0.04, (targetY - body.y) * 0.04);
+        });
+        if (hasSteer) this.physics.applyForce(hubSid, steerX * 0.6, steerY * 0.6);
+        break;
+      }
+
+      case "wedge": {
+        // Leader at front; wings hold ±45° behind, rows of two.
+        const { sid: leadSid, body: leadBody } = states[0];
+        const wings = states.slice(1);
+        wings.forEach(({ sid, body }, i) => {
+          const side = i % 2 === 0 ? 1 : -1;
+          const row = Math.floor(i / 2) + 1;
+          const spd = Math.hypot(leadBody.velocityX, leadBody.velocityY) || 1;
+          const fwdAngle = Math.atan2(leadBody.velocityY, leadBody.velocityX);
+          const wingAngle = fwdAngle + Math.PI + side * (Math.PI / 4);
+          const targetX = leadBody.x + Math.cos(wingAngle) * orbitR * row;
+          const targetY = leadBody.y + Math.sin(wingAngle) * orbitR * row;
+          this.physics.applyForce(sid, (targetX - body.x) * 0.04, (targetY - body.y) * 0.04);
+        });
+        if (hasSteer) this.physics.applyForce(leadSid, steerX * 0.6, steerY * 0.6);
+        break;
+      }
+
+      case "rigid": {
+        // Lock relative positions to centroid at stack-entry tick.
+        const cx = states.reduce((s, e) => s + e.body.x, 0) / states.length;
+        const cy = states.reduce((s, e) => s + e.body.y, 0) / states.length;
+        for (const { sid, body } of states) {
+          const key = `rigid:${sid}`;
+          let off = this.rigidFormationOffset.get(key);
+          if (!off) {
+            off = { relX: body.x - cx, relY: body.y - cy };
+            this.rigidFormationOffset.set(key, off);
+          }
+          const targetX = cx + off.relX;
+          const targetY = cy + off.relY;
+          this.physics.applyForce(sid, (targetX - body.x) * 0.05, (targetY - body.y) * 0.05);
+        }
+        if (hasSteer) {
+          for (const { sid } of states) {
+            this.physics.applyForce(sid, steerX * 0.4, steerY * 0.4);
+          }
+        }
+        break;
+      }
+    }
   }
 
   // ─── 2-body movement patterns for linked beys ────────────────────────────────

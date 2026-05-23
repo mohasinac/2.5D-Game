@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { C } from "@/styles/theme";
 import type { ArenaConfig, ArenaTimelineEvent, ArenaTimelineEventType } from "@/types/arenaConfigNew";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 interface Props {
   config: ArenaConfig;
@@ -156,15 +157,12 @@ export default function TimelineTab({ config, onChange }: Props) {
 
                       {/* Event type */}
                       <Row label="Type">
-                        <select
+                        <SearchableSelect
                           value={ev.type}
-                          onChange={e => update(idx, { type: e.target.value as ArenaTimelineEventType })}
+                          options={EVENT_TYPES.map(t => ({ value: t, label: `${TYPE_ICONS[t]} ${t.replace(/_/g, " ")}` }))}
+                          onChange={v => update(idx, { type: v as ArenaTimelineEventType })}
                           style={{ ...INPUT_STYLE, width: 180 }}
-                        >
-                          {EVENT_TYPES.map(t => (
-                            <option key={t} value={t}>{TYPE_ICONS[t]} {t.replace(/_/g, " ")}</option>
-                          ))}
-                        </select>
+                        />
                       </Row>
 
                       {/* Feature id (for activate/deactivate/spawn) */}
@@ -237,15 +235,16 @@ export default function TimelineTab({ config, onChange }: Props) {
                             />
                           </Row>
                           <Row label="Style">
-                            <select
+                            <SearchableSelect
                               value={ev.announcement?.style ?? "info"}
-                              onChange={e => update(idx, { announcement: { text: ev.announcement?.text ?? "", ...ev.announcement, style: e.target.value as "warning" | "info" | "danger" } })}
+                              options={[
+                                { value: "info", label: "info" },
+                                { value: "warning", label: "warning" },
+                                { value: "danger", label: "danger" },
+                              ]}
+                              onChange={v => update(idx, { announcement: { text: ev.announcement?.text ?? "", ...ev.announcement, style: v as "warning" | "info" | "danger" } })}
                               style={{ ...INPUT_STYLE, width: 100 }}
-                            >
-                              <option value="info">info</option>
-                              <option value="warning">warning</option>
-                              <option value="danger">danger</option>
-                            </select>
+                            />
                           </Row>
                         </>
                       )}

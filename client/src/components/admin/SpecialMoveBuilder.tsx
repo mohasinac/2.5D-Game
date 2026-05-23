@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { C } from "@/styles/theme";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { ComboVisualEditor } from "./ComboVisualEditor";
 import type { SpecialMoveConfig, SpecialMoveStep } from "@/types/specialMove";
 import type { ComboVisual } from "@/types/comboVisual";
@@ -158,16 +159,13 @@ export function SpecialMoveBuilder({ value, onChange }: Props) {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <span style={{ fontSize: 12, fontWeight: 700, color: C.muted, width: 20 }}>#{idx + 1}</span>
-                <select
-                  style={{ ...inputStyle, flex: 1 }}
+                <SearchableSelect
                   value={step.comboEffectId}
-                  onChange={e => updateStep(idx, { comboEffectId: e.target.value })}
-                >
-                  <option value="">— choose effect —</option>
-                  {effects.map(e => (
-                    <option key={e.id} value={e.id}>{e.name} (cost {e.cost})</option>
-                  ))}
-                </select>
+                  options={effects.map(e => ({ value: e.id, label: `${e.name} (cost ${e.cost})` }))}
+                  onChange={v => updateStep(idx, { comboEffectId: v })}
+                  emptyLabel="— choose effect —"
+                  style={{ ...inputStyle, flex: 1 }}
+                />
                 <div style={{ display: "flex", gap: 4 }}>
                   <button type="button" onClick={() => moveStep(idx, -1)} style={{ background: "transparent", border: "none", color: C.muted, cursor: "pointer", fontSize: 13, padding: "2px 5px" }}>↑</button>
                   <button type="button" onClick={() => moveStep(idx, 1)} style={{ background: "transparent", border: "none", color: C.muted, cursor: "pointer", fontSize: 13, padding: "2px 5px" }}>↓</button>
@@ -178,10 +176,12 @@ export function SpecialMoveBuilder({ value, onChange }: Props) {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
                 <div>
                   <label style={{ fontSize: 10, color: C.faint, display: "block", marginBottom: 3 }}>Mode</label>
-                  <select style={inputStyle} value={step.executionMode} onChange={e => updateStep(idx, { executionMode: e.target.value as "sequential" | "parallel" })}>
-                    <option value="sequential">sequential</option>
-                    <option value="parallel">parallel</option>
-                  </select>
+                  <SearchableSelect
+                    value={step.executionMode}
+                    options={[{ value: "sequential", label: "sequential" }, { value: "parallel", label: "parallel" }]}
+                    onChange={v => updateStep(idx, { executionMode: v as "sequential" | "parallel" })}
+                    style={inputStyle}
+                  />
                 </div>
                 <div>
                   <label style={{ fontSize: 10, color: C.faint, display: "block", marginBottom: 3 }}>Delay after prev (ticks)</label>
