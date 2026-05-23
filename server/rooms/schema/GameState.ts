@@ -383,7 +383,7 @@ export class Beyblade extends Schema {
   @type("number")  burstResistance: number = 50;       // 0–100; higher = harder to burst
 
   // ── 2.5D Bey-Axis Tilt + Climbing (Phase E) ──────────────────────────────────
-  @type("number")  beyTiltAngle: number = 0;           // 0°=vertical, 90°=fully on side (distinct from arena floor tilt)
+  @type("number")  beyTiltAngle: number = 0;           // 0°=vertical, 90°=on-side, 180°=on-back, 270°=on-head (airborne), 360°=full rotation; distinct from arena floor tilt
   @type("boolean") adhering: boolean = false;          // true when stuck to ceiling/overhang via suction
   @type("number")  adheringSurfaceAngle: number = 0;   // degrees: angle of surface bey sticks to
   @type("boolean") wallClimbing: boolean = false;      // true when climbing a vertical wall
@@ -428,6 +428,36 @@ export class Beyblade extends Schema {
   @type("boolean") invulnerable: boolean = false;
   @type("boolean") noKnockback: boolean = false;
   @type("string")  teamId: string = "";
+
+  // ── Collision Types (Block CT) ────────────────────────────────────────────────
+  // Damage-layer flags — these drive BattleRoom logic, not Matter.js masks.
+  @type("boolean") collidesWithObstacles: boolean = true;    // receives damage from obstacle hits
+  @type("boolean") collidesWithArena: boolean = true;         // receives wall-bounce damage
+  @type("boolean") collidesWithProjectiles: boolean = true;   // receives turret projectile damage
+  @type("boolean") friendlyCollisionEnabled: boolean = false; // same-team: recoil only, no damage/spin-steal
+
+  // ── Phasing (Block P) ─────────────────────────────────────────────────────────
+  // Passes through the category entirely — no physics response and no damage.
+  @type("boolean") phasesObstacles: boolean = false;    // ghost through obstacles
+  @type("boolean") phasesArenaBounds: boolean = false;  // ignore boundary (no ring-out)
+  @type("boolean") phasesBeys: boolean = false;         // ghost through all other beys
+  @type("boolean") phasesProjectiles: boolean = false;  // turret projectiles pass through
+
+  // ── Immunity (Block IM) ───────────────────────────────────────────────────────
+  // Permanent flags — distinct from i-frame isInvulnerable timer.
+  @type("boolean") damageImmune: boolean = false;    // all incoming damage zeroed
+  @type("boolean") ringOutImmune: boolean = false;   // ring-out check skipped
+  @type("boolean") burstImmune: boolean = false;     // burst roll never fires
+  @type("boolean") spinOutImmune: boolean = false;   // spin ≤ 0 does not eliminate
+  @type("boolean") knockoutImmune: boolean = false;  // shorthand: implies ringOut+burst+spinOut immune
+
+  // ── Launch phase (pre-match) ─────────────────────────────────────────────────
+  @type("float32") launchTilt: number = 0;            // -45 to +45 deg; A/D during launch phase
+  @type("float32") launchPosition: number = 0.5;      // 0=forward/defensive, 1=backward/aggressive
+  @type("float32") launchPower: number = 0;           // 0–150% of maxSpin (charged by holding Space)
+  @type("boolean") launchChargingStarted: boolean = false; // true once Space held → pos/tilt locked
+  @type("boolean") launchReady: boolean = false;      // true when player releases Space (launched)
+  @type("boolean") launchFailed: boolean = false;     // true if timer expired without launch → auto-loss
 }
 
 /**
@@ -479,6 +509,23 @@ export class ArenaState extends Schema {
   @type("boolean") autoRotate: boolean = false;
   @type("number") rotationSpeed: number = 0;          // degrees per second
   @type("string") rotationDirection: string = "clockwise"; // "clockwise" | "counterclockwise"
+  @type("number") rotationPivotX: number = 0;         // cm from arena center
+  @type("number") rotationPivotY: number = 0;         // cm from arena center
+
+  // Tilt (Z-axis) — 0=flat, 90=wall-ride, 180=inverted, 270=wall-ride-back
+  // tiltMode: "fixed" | "oscillate" | "weight" (stored as string for Colyseus)
+  @type("number") tiltAngle: number = 0;
+  @type("number") tiltDirection: number = 0;
+  @type("string") tiltMode: string = "fixed";
+  @type("boolean") autoTilt: boolean = false;
+  @type("number") tiltSpeed: number = 0;
+  @type("number") tiltPivotX: number = 0;             // cm from arena center
+  @type("number") tiltPivotY: number = 0;             // cm from arena center
+  // Oscillation state (tiltMode === "oscillate")
+  @type("number") tiltOscillateMin: number = 0;
+  @type("number") tiltOscillateMax: number = 0;
+  @type("number") tiltOscillatePeriodMs: number = 4000;
+  @type("number") tiltPhaseMs: number = 0;            // internal oscillation clock (ms)
 
   // Physics modifiers
   @type("number") gravity: number = 0;
@@ -514,6 +561,15 @@ export class ArenaState extends Schema {
   @type("string") scoringMode: string = "elimination"; // "elimination" | "points"
   @type("uint8")  pointsTarget: number = 0;            // 0 = no target (timed)
   @type("boolean") hasZeroG: boolean = false;
+
+  // ── Collision Config (Block CC) ───────────────────────────────────────────────
+  // Arena-wide damage multipliers applied on top of per-bey collision values.
+  @type("number") arenaWallDamageMult: number = 1.0;       // multiplier on wall-contact damage
+  @type("number") arenaObstacleDamageMult: number = 1.0;   // multiplier on obstacle-contact damage
+  @type("number") arenaBeyDamageMult: number = 1.0;        // multiplier on bey-vs-bey collision damage
+  @type("number") arenaProjectileDamageMult: number = 1.0; // multiplier on turret projectile damage
+  @type("boolean") arenaFriendlyFireEnabled: boolean = true; // false → same-team beys always use recoil-only
+  @type("boolean") arenaPhaseObstacles: boolean = false;   // all beys phase obstacles (arena-wide override)
 }
 
 /**
@@ -536,9 +592,10 @@ export class GameState extends Schema {
   @type({ map: WaterBodyState }) waterBodies = new MapSchema<WaterBodyState>(); // Multiple water bodies
   @type({ map: PortalState }) portals = new MapSchema<PortalState>();
 
-  @type("string") status: string = "waiting"; // waiting, warmup, in-progress, finished, series-finished
+  @type("string") status: string = "waiting"; // waiting, warmup, launching, in-progress, finished, series-finished
   @type("string") winner: string = ""; // userId of winner
-  @type("number") timer: number = 180; // seconds
+  @type("number") timer: number = 180; // seconds (warmup countdown during warmup; match timer during in-progress)
+  @type("float32") launchTimer: number = 5; // seconds remaining in launch phase
   @type("number") startTime: number = 0;
 
   // Match metadata

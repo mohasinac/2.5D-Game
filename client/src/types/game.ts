@@ -188,6 +188,13 @@ export interface ServerBeyblade {
   // Last epoch-ms a player-initiated config switch fired on a given part slot.
   // Used to throttle re-clicks in PartModesHUD (mirror of MODE_SWITCH_COOLDOWN_MS).
   configLastSwitchAt?: Map<string, number> | Record<string, number>;
+  // Launch phase fields (synced from server during status="launching")
+  launchTilt?: number;
+  launchPosition?: number;
+  launchPower?: number;
+  launchChargingStarted?: boolean;
+  launchReady?: boolean;
+  launchFailed?: boolean;
 }
 
 export interface ServerDetachedBody {
@@ -207,7 +214,7 @@ export interface ServerDetachedBody {
 }
 
 export interface ServerGameState {
-  status: "waiting" | "warmup" | "in-progress" | "finished" | "series-finished" | "tournament";
+  status: "waiting" | "warmup" | "launching" | "in-progress" | "finished" | "series-finished" | "tournament";
   mode: "tryout" | "ai-battle" | "single-battle-pvp" | "single-battle-pvp-ranked" | "tournament";
   timer: number;
   startTime: number;
@@ -245,6 +252,8 @@ export interface ServerGameState {
   scoringMode?: string;
   pointsTarget?: number;
   playerPoints?: Map<string, number>;
+  // Launch phase countdown (seconds remaining during status="launching")
+  launchTimer?: number;
 }
 
 // ─── Tournament types ─────────────────────────────────────────────────────────

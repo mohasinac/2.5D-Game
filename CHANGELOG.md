@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## [2.4.0] - 2026-05-23
+
+### Added
+
+- **Arena Tilt (Z-axis orientation)** — arenas can now be tilted 0–360° around any horizontal azimuth, enabling Zero-G (inverted 180°), wall-ride (90°), tilted-planet, and spinning-tilted-bowl environments.
+  - `ArenaConfig`: full tilt field set — `tiltAngle`, `tiltDirection`, `tiltMode` (`"fixed" | "oscillate" | "weight"`), `autoTilt`, `tiltSpeed`, `tiltPivotX/Y`, `tiltOscillateMin/Max/PeriodMs`. Rotation section gained `rotationPivotX/Y`.
+  - `ArenaState` Colyseus schema: all tilt + pivot fields as `@type` declarations (including `tiltPhaseMs` oscillation clock), synced to all clients at 60 Hz.
+  - **Physics**: `computeTiltForce(tiltAngle, tiltDir, mass)` in `server/shared/physics/ArenaUtils.ts` applies lateral gravity (`sin(tiltAngle) × 0.04 × mass`) toward the downhill side every tick.
+  - **Tilt modes**:
+    - `"fixed"` — static tilt at configured angle + direction. `autoTilt` spins the direction axis at `tiltSpeed` °/s.
+    - `"oscillate"` — `tiltAngle` rocks between `tiltOscillateMin` ↔ `tiltOscillateMax` on a cosine wave with period `tiltOscillatePeriodMs`. `tiltPhaseMs` is the internal clock advanced each tick.
+    - `"weight"` — arena tilts toward the center of mass of all active beyblades. `tiltOscillateMax` is the maximum angle; direction tracks the heavy side automatically.
+  - **Pivot support**: both tilt (`tiltPivotX/Y`) and rotation (`rotationPivotX/Y`) accept a cm offset from arena center. In the renderer, `container.pivot + container.position` compensation keeps the visual origin at world (0,0) while rotating/tilting around the offset point.
+  - **Server tick**: `advanceArenaTilt()` handles `fixed` and `oscillate` mode advancement; new `applyWeightTilt()` handles `weight` mode. Both wired into all four room types.
+  - **Renderer**: three nested PixiJS containers (`arenaTiltOuter → arenaTiltScale → arenaTiltInner`) with configurable pivot. `scaleX = cos(tiltAngle)` produces correct elliptical projection; negative scaleX at 90–270° creates the natural inverted/mirrored look. Rotation root pivot also now reads `rotationPivotX/Y` from arena state.
+  - **Admin UI (BasicsTab)**: tilt mode selector (Fixed / Oscillate / Weight), oscillation range inputs (min / max angle + period), pivot X/Y inputs for both tilt and rotation. Rotation panel gains rotation pivot X/Y inputs.
+- **Switch wiring for all arena features**: `TurretConfig` gained `controlledBySwitchId`. Admin panels for SpinZones, GravityHoles, Bumps (FeaturesTab) and Turrets (TurretsTab) now expose "Controlled By Switch ID" text inputs.
+
 ## [2.3.0] - 2026-05-21
 
 ### Fixed

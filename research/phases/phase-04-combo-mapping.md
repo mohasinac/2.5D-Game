@@ -54,11 +54,11 @@ All 6 triggers are defined as `ComboTrigger` in `shared/types/comboTask.ts` and 
 | ComboTask action.type | ComboTask payload fields | BehaviorRef behaviorId | BehaviorRef params (key fields) | Runtime wired? |
 |---|---|---|---|---|
 | `multiplier` | `statDeltas: StatDelta[]` — each has `stat`, `multiplier?`, `delta?`, `setValue?`, `durationTicks?` | `"factor.boost"` (one ref per delta entry) | `stat`, `mult`, `delta`, `setValue`, `dur`, `target` | Unknown — `factor.boost` handler must exist in room/physics; not found in reviewed files |
-| `transformation` | `transformTo: TransformTarget`, `durationTicks?`, `transformParams?`, `keepVisualAppearance?`, `visualOverride?` | `"transform.become_<transformTo>"` (e.g. `transform.become_gravity_well`) | `durationTicks`, `transformParams`, `keepVisualAppearance`, `visualConfig` | Unknown — dynamic behaviorId construction; handler namespace `transform.become_*` not verified |
-| `spawning` | `spawnType: SpawnableEntityType`, `spawnPosition`, `spawnTarget?`, `count?`, `countFormation?`, `countSpacing?`, `spawnParams?` | `"spawn.<spawnType>"` (e.g. `spawn.portal`, `spawn.turret`) | `spawnPosition`, `spawnTarget`, `count`, `countFormation`, `countSpacing`, plus all `spawnParams` fields, `target` | Unknown — `spawn.*` namespace not verified in room code |
+| `transformation` | `transformTo: TransformTarget`, `durationTicks?`, `transformParams?`, `keepVisualAppearance?`, `visualOverride?` | `"transform.become_<transformTo>"` (e.g. `transform.become_gravity_well`) | `durationTicks`, `transformParams`, `keepVisualAppearance`, `visualConfig` | **YES — turret system uses this.** Turrets transform arena state mid-battle. [FACT: user-confirmed] |
+| `spawning` | `spawnType: SpawnableEntityType`, `spawnPosition`, `spawnTarget?`, `count?`, `countFormation?`, `countSpacing?`, `spawnParams?` | `"spawn.<spawnType>"` (e.g. `spawn.portal`, `spawn.turret`) | `spawnPosition`, `spawnTarget`, `count`, `countFormation`, `countSpacing`, plus all `spawnParams` fields, `target` | **YES — turrets spawn projectiles as new physics bodies mid-battle.** [FACT: user-confirmed] |
 | `movement` (non-swap) | `pattern: MovementPattern` (type ≠ `swap_position`), `durationTicks?`, `visualOverride?` | `"movement.<pattern.type>"` (e.g. `movement.circle`, `movement.dash_to`, `movement.freeze`) | All fields from `pattern` spread + `durationTicks`, `visualConfig`, `target` | Unknown — `movement.*` namespace not verified |
 | `movement` (swap_position) | `pattern.type === "swap_position"`, `swapWith`, `preserveVelocity?`, `snapToGround?`, `preventRingOut?` | `"position.swap_with"` | `swapWith`, `preserveVelocity`, `preventRingOut`, `snapToGround`, `durationTicks`, `visualConfig`, `target` | Unknown — different namespace (`position.*`) from other movement patterns |
-| `arena_effect` | `effect: ArenaEffectPayload` — one of 8 subtypes (`floor_override`, `gravity_change`, `arena_tilt`, `freeze_all`, `fog_of_war`, `darkness`, `reverse_controls`, `no_combos`) | `"arena.effect.<effect.type>"` (e.g. `arena.effect.gravity_change`) | All fields from `effect` spread | Unknown — `arena.effect.*` namespace not verified |
+| `arena_effect` | `effect: ArenaEffectPayload` — one of 8 subtypes (`floor_override`, `gravity_change`, `arena_tilt`, `freeze_all`, `fog_of_war`, `darkness`, `reverse_controls`, `no_combos`) | `"arena.effect.<effect.type>"` (e.g. `arena.effect.gravity_change`) | All fields from `effect` spread | **YES — turret fire triggers named arena effects through the mechanic chain.** [FACT: user-confirmed] |
 
 **Multiple targets:** When `task.target` is an array, `compileComboTask()` generates one `BehaviorRef` per target. The second and subsequent refs have `parallel: true`.
 
@@ -304,3 +304,6 @@ Applying to all 8 registry combos:
 - `pivot-strike` → `damage_boost` (1.25 > 1)
 - `power-thrust` → `damage_boost` (1.5 > 1)
 - `spin-leech-jab` → `spin_steal` (spinStealBonus: 0.08 > 0; checked before damage_boost)
+
+---
+[? Phase 03: Special Move ? Bey Map](phase-03-specialmove-bey-map.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 05: Parts ?](phase-05-parts.md)

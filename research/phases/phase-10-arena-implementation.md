@@ -1206,3 +1206,6 @@ The seed script must:
 | New ArenaFeatureProcessor handlers | 5 (processGearRails, processScoringZones, processTornadoRidge, processTiltMechanic, processTriggerZones) |
 
 Source: `research/phases/phase-09-arenas.md`
+
+---
+[? Phase 09: Arenas](phase-09-arenas.md) &nbsp;·&nbsp; [? Index](../INDEX.md) &nbsp;·&nbsp; [Phase 11: Architecture ?](phase-11-architecture.md)

@@ -1,4 +1,4 @@
-# Phase 02 — Special Move Understanding
+﻿# Phase 02 — Special Move Understanding
 
 > Stage 2 | Source: linka/special-moves/ (39 files read) + engine validation
 > Tag key: FACT | INFERENCE | SPECULATION | UNKNOWN
@@ -784,3 +784,109 @@ All 39 files in `linka/special-moves/` read and incorporated:
 5. **Persistent-state activations**: Turbo Awakening and Vanish Fafnir Spin-Steal are always-on / permanent — they need a `permanent: true` flag in the SpecialMoveConfig state machine, which currently uses a timer-based expiry.
 
 6. **Confidence distribution**: 28 moves tagged FACT (wiki or canonical episode verified), 45 moves tagged INFERENCE (logically deduced from part design), 18 moves tagged SPECULATION (plausible game-original or low-evidence entries). No UNKNOWN tags — all moves have at least a basis for design.
+
+---
+[? Phase 01: Terminology](phase-01-terminology.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 03: Special Move ? Bey Map ?](phase-03-specialmove-bey-map.md)
+
+
+---
+
+## Appendix 2Z — Episode First-Appearance References for Special Moves
+
+> Source: `linka/episodes/` research. Episode columns represent first anime appearance of the move or a direct equivalent. JP season abbreviations used: G1S1=Gen1 S1 Classic, G1V=Gen1 V-Force, G1G=Gen1 G-Rev, G1H=Gen1 HMS, G2MF=Gen2 Metal Fusion, G2MM=Gen2 Metal Masters, G2MFu=Gen2 Metal Fury, G2SS=Gen2 Shogun Steel, G3B=Gen3 Burst S1, G3G=Gen3 Burst God, G3CZ=Gen3 Cho-Z, G3GT=Gen3 GT, G3S=Gen3 Surge, G3QD=Gen3 QuadDrive, G3QS=Gen3 QuadStrike, G4=Gen4 BX.
+
+---
+
+### 2Z-1: Gen1 Special Move Episode First Appearances
+
+| Move Name | Bey | Episode (approx) | Arc | Anime VFX Context |
+|---|---|---|---|---|
+| Dragoon Storm | Dragoon S | G1S1 Ep08 | Classic | Tornado column surrounds Dragoon; opponent launched skyward |
+| Dranzer Flame | Dranzer S | G1S1 Ep09 | Classic | Phoenix fire burst from Dranzer; high-heat spiral |
+| Driger Claw | Driger S | G1S1 Ep11 | Classic | Tiger claw energy slash; contact damage boost |
+| Draciel Shield | Draciel S | G1S1 Ep10 | Classic | Turtle shell energy dome; damage reduction field |
+| Shining Thunder Tornado | Dragoon V2 | G1V Ep06 | V-Force | Storm + lightning combo; upgraded Dragoon Storm |
+| Blazing Gig | Dranzer V2 | G1V Ep07 | V-Force | Fire gig drill; spinning flame contact |
+| Tiger Claw | Driger V2 | G1V Ep08 | V-Force | Upgraded claw with wider arc |
+| Draciel Fortress | Draciel V2 | G1V Ep09 | V-Force | Shell expands to full arena defensive shell |
+| Flash Leopard Rush | Flash Leopard 2 | G1V Ep05 | V-Force | Leopard sprint visual; lateral force burst |
+| Engine Gear Burst | Strata Dragoon G | G1G Ep01 | G-Rev | Chain gear releases stored energy; sudden spin-up |
+| Final Dragon | Dragoon G / Dragoon GT | G1G Ep44 | G-Rev | Maximum Dragoon output; combined all previous storm/flame energy |
+| Zeus Special — "The Zone" | Zeus | G1G Ep42 | G-Rev | No technique visible; perfect read state; no VFX |
+| Upper Dragon | Dragoon MS | G1H Ep42 | HMS | HMS Upper frame launches opponent vertically |
+| Shining Tornado Buster | Dragoon MS | G1H Ep44 | HMS | Tornado + HMS frame combo; strongest Gen1 VFX |
+
+---
+
+### 2Z-2: Gen2 Special Move Episode First Appearances
+
+| Move Name | Bey | Episode (approx) | Arc | Anime VFX Context |
+|---|---|---|---|---|
+| Pegasus Star Blast Attack | Storm Pegasus 105RF | G2MF Ep01 | MFB S1 | Pegasus constellation energy burst; area of effect |
+| Wild Lion King Fang | Rock Leone 145WB | G2MF Ep04 | MFB S1 | Leone roar; spin-out force ring |
+| Spin Steal — Fafnir Absorption | Fafnir F2 | G2MF Ep15 | MFB S1 | Rubber contact visual; opponent's spin visibly draining |
+| Eagle Tornado Assault | Earth Eagle 145WD | G2MF Ep12 | MFB S1 | Eagle screech + storm ring; defensive sweep |
+| Libra Sonic Buster | Flame Libra T125ES | G2MF Ep20 | MFB S1 | Sound wave rings radiate from bey; area denial |
+| Galaxy Nova | Galaxy Pegasus W105R2F | G2MM Ep08 | MFB S2 | Evolved Pegasus; nebula energy burst, wider range |
+| Gravity Destroy | Gravity Destroyer AD145WD | G2MM Ep14 | MFB S2 | Gravity field inversion visual; both spin directions active |
+| Hades Drive | Hades Kerbecs BD145DS | G2MM Ep38 | MFB S2 | Three-headed cerberus energy field; massive AoE |
+| Cosmic Nova | Cosmic Pegasus F:D | G2MFu Ep18 | Metal Fury | Final Pegasus form; 12 constellation powers combined |
+| L-Drago Destructor | L-Drago Destroy F:S | G2MFu Ep14 | Metal Fury | L-Drago absorbs all nearby spin; maximum spin-steal |
+
+---
+
+### 2Z-3: Gen3 Special Move Episode First Appearances
+
+| Move Name | Bey | Episode (approx) | Arc | Anime VFX Context |
+|---|---|---|---|---|
+| Victory Rush (Valtryek) | Victory Valtryek V2 | G3B Ep01 | Burst S1 | Valtryek condor burst; forward charge |
+| Storm Launch (Spryzen) | Storm Spryzen S2 | G3B Ep03 | Burst S1 | Spryzen dual-frame energy spiral |
+| Roaring Roktavor | Raging Roktavor R2 | G3B Ep05 | Burst S1 | Spinning rock burst; lateral sweep |
+| God Valtryek Infinite Rush | God Valtryek V3 | G3G Ep04 | Burst God | Avatar Valtryek; energy wings appear; multi-hit |
+| Spryzen Requiem Absorb | Spryzen Requiem S3 | G3G Ep22 | Burst God | Dual-spin absorption; both directions active |
+| Cho-Z Achilles Last Chance | Cho-Z Achilles A4 | G3CZ Ep12 | Cho-Z | Last-resort awakening; massive spin burst |
+| Cho-Z Valtryek Howling Gale | Cho-Z Valtryek V4 | G3CZ Ep08 | Cho-Z | Awakened form storm; tornado shield |
+| Phoenix P4 Wing Crush | Phoenix P4 | G3CZ Ep18 | Cho-Z | Phi's feather-strike; opponent burst attempt |
+| GT Ace Dragon Sting Charge | Ace Dragon D5 | G3GT Ep01 | GT/Rise | GT Chip unlocks; dragon charge burst |
+| Super Hyperion Xceed Force | Super Hyperion H5 | G3S Ep01 | Surge | Lightning Launch + Overdrive ring; maximum contact |
+| Kolossal Helios Xceed Force | Kolossal Helios H5 | G3S Ep01 | Surge | Twin of Hyperion; complementary burst attack |
+| Dynamite Belial Nexus Blast | Dynamite Belial N60 | G3QD Ep01 | QuadDrive | 4-mode activation; ground-pound burst wave |
+| Ultimate Belial (final form) | Ultimate Belial | G3QD Ep40 | QuadDrive | Maximum QuadDrive; all 4 modes simultaneously active |
+| Elemental Ragnaruk Surge | Glide Ragnaruk 4-60 | G3QS Ep08 | QuadStrike | Elemental tile interaction; wind/fire/earth/water burst |
+
+---
+
+### 2Z-4: Gen4 Special Move Episode First Appearances
+
+| Move Name | Bey | Episode (approx) | Arc | Anime VFX Context |
+|---|---|---|---|---|
+| Sword Dran Xtreme Slash | Sword Dran 3-60F | G4 Ep01 | BX S1 | Xtreme Dash + blade contact; diagonal slash VFX |
+| Cobalt Drake Thunder Strike | Cobalt Drake | G4 Ep03 | BX S1 | Lightning bolt from Ratchet; upper-attack burst |
+| Hells Scythe Death Reap | Hells Scythe | G4 Ep05 | BX S1 | Scythe-swing VFX; heavy lateral force |
+| Strike Hawk Final Dive | Strike Hawk | G4 Ep01 (destroyed) | BX S1 | Robin's last move; bey destroyed immediately after |
+
+---
+
+### 2Z-5: Special Move Mechanic Chain Cross-Reference
+
+> Links episode-first-appearance data to the `mechanicChain` field in Batch 2A-2F rows.
+
+| mechanic_chain entry | Real Behavior | First Anime Evidence | Episode |
+|---|---|---|---|
+| `stampede_rush` | Linear force burst + spin boost | Dragoon Storm / Pegasus Star Blast equivalent | G1S1 Ep08 / G2MF Ep01 |
+| `gyro_anchor` | Zero velocity + invulnerability window | Draciel Shield / Draciel Fortress | G1S1 Ep10 / G1V Ep09 |
+| `spin_recovery` | Orbital path + gradual spin restore | Engine Gear Burst; Spin Recovery (Stamina type) | G1G Ep01 |
+| `tactical_burst` | Directional burst + 20% spin recovery | Balanced type rush (Spryzen, Valtryek variants) | G3B Ep01 |
+| `rubber_spin_steal` | Contact drains opponent spin | Fafnir rubber absorption | G2MF Ep15 |
+| `dual_spin_switch` | Layer flips spin direction | Gravity Destroyer / Spryzen Requiem | G2MM Ep14 / G3G Ep22 |
+| `cho_z_awakening` | Mid-battle stat surge (Cho-Z Layer) | Cho-Z Valtryek V4 awakening | G3CZ Ep08 |
+| `overdrive_ring_burst` | Overdrive ring extends contact arc | Super Hyperion Xceed Force | G3S Ep01 |
+| `quad_drive_mode_switch` | Select 1 of 4 modes before launch | Dynamite Belial Nexus Blast | G3QD Ep01 |
+| `xtreme_dash_strike` | Xtreme Line speed burst into contact | Sword Dran Xtreme Slash | G4 Ep01 |
+| `magnacore_repel` | Magnetic repulsion force | V-Force Magnacore ep | G1V Ep08 |
+| `bearing_drift` | Extended LAD from low-friction bearing | HMS Dragoon MS bearing glide | G1H G-Rev Ep40 |
+
+---
+
+*End of Appendix 2Z*
+

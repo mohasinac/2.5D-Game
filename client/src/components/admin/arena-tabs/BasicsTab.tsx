@@ -84,6 +84,84 @@ function BowlCrossSection({ wallAngle = 0, bowlDepth = 0.4 }: { wallAngle?: numb
 
 const BOWL_PROFILES: BowlProfile[] = ["flat", "shallow", "medium", "deep", "steep"];
 
+// ─── Tilt preview (top-down ellipse) ─────────────────────────────────────────
+// Shows the arena as it would appear from above when tilted.
+// At 0°: perfect circle. At 90°: horizontal/vertical line. At 180°: circle again (inverted).
+function TiltPreview({ tiltAngle = 0, tiltDirection = 0 }: { tiltAngle?: number; tiltDirection?: number }) {
+  const W = 160;
+  const H = 100;
+  const cx = W / 2;
+  const cy = H / 2;
+  const baseR = 40;
+
+  // Compression factor along the tilt direction axis
+  const tiltRad = (tiltAngle * Math.PI) / 180;
+  const dirRad  = (tiltDirection * Math.PI) / 180;
+  const k = Math.cos(tiltRad); // can be negative for inverted (180°)
+
+  // The two axes of the ellipse (major = perpendicular to tilt, minor = along tilt)
+  const majorR = baseR;
+  const minorR = Math.abs(k) * baseR;
+
+  // The ellipse is rotated by tiltDirection
+  const dirDeg = tiltDirection % 360;
+
+  // Downhill arrow direction
+  const arrowLen = 18;
+  const ax = cx + Math.cos(dirRad) * (minorR + 6);
+  const ay = cy + Math.sin(dirRad) * (minorR + 6);
+
+  // Label
+  const label = tiltAngle === 0 ? "flat" : tiltAngle === 180 ? "inverted" : tiltAngle === 90 || tiltAngle === 270 ? "wall-ride" : `${Math.round(tiltAngle)}°`;
+  const isInverted = Math.abs(k) < 0.05 ? false : k < 0;
+
+  return (
+    <svg width={W} height={H + 14} viewBox={`0 0 ${W} ${H + 14}`} style={{ display: "block" }}>
+      {/* Shadow */}
+      <ellipse cx={cx} cy={cy} rx={majorR + 2} ry={minorR + 2}
+        fill="#0a0a14" transform={`rotate(${dirDeg} ${cx} ${cy})`} />
+      {/* Arena surface */}
+      <ellipse cx={cx} cy={cy} rx={majorR} ry={minorR}
+        fill={isInverted ? "#1e1040" : "#1a2a3a"}
+        stroke={isInverted ? "#a78bfa" : "#3b82f6"}
+        strokeWidth={2}
+        transform={`rotate(${dirDeg} ${cx} ${cy})`} />
+      {/* Center dot */}
+      <circle cx={cx} cy={cy} r={3} fill="#60a5fa" />
+      {/* Downhill arrow (only when tilted) */}
+      {tiltAngle !== 0 && tiltAngle !== 360 && minorR > 2 && (
+        <line x1={cx} y1={cy} x2={ax} y2={ay}
+          stroke="#f59e0b" strokeWidth={2} markerEnd="url(#arrow)" />
+      )}
+      {/* Inverted indicator */}
+      {isInverted && (
+        <text x={cx} y={cy + 2} textAnchor="middle" fill="#a78bfa" fontSize={9} fontFamily="monospace" fontWeight="bold">⊗</text>
+      )}
+      {/* Edge-on indicator */}
+      {minorR <= 2 && tiltAngle !== 0 && (
+        <line x1={cx - majorR} y1={cy} x2={cx + majorR} y2={cy}
+          stroke="#3b82f6" strokeWidth={3} transform={`rotate(${dirDeg} ${cx} ${cy})`} />
+      )}
+      <defs>
+        <marker id="arrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#f59e0b" />
+        </marker>
+      </defs>
+      <text x={cx} y={H + 12} textAnchor="middle" fill="#94a3b8" fontSize={9} fontFamily="monospace">
+        {label}
+      </text>
+    </svg>
+  );
+}
+
+const TILT_PRESETS: { label: string; angle: number; description: string }[] = [
+  { label: "Flat",       angle: 0,   description: "Normal arena" },
+  { label: "Tilted",     angle: 30,  description: "Slight slope" },
+  { label: "Steep",      angle: 60,  description: "Strong pull" },
+  { label: "Wall-Ride",  angle: 90,  description: "Edge-on — max lateral gravity" },
+  { label: "Inverted",   angle: 180, description: "Upside-down / Zero-G" },
+];
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function BasicsTab({ config, onChange }: Props) {
@@ -322,8 +400,277 @@ export default function BasicsTab({ config, onChange }: Props) {
                 ))}
               </div>
             </div>
+
+            {/* Rotation pivot */}
+            <div>
+              <label style={S.label}>Pivot Offset (cm from center)</label>
+              <div style={{ display: "flex", gap: 8 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 10, color: C.faint, marginBottom: 2 }}>X</div>
+                  <input
+                    type="number" step={1} min={-200} max={200}
+                    value={config.rotationPivotX ?? 0}
+                    onChange={e => onChange({ rotationPivotX: +e.target.value })}
+                    style={{ ...S.input, width: "100%" }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 10, color: C.faint, marginBottom: 2 }}>Y</div>
+                  <input
+                    type="number" step={1} min={-200} max={200}
+                    value={config.rotationPivotY ?? 0}
+                    onChange={e => onChange({ rotationPivotY: +e.target.value })}
+                    style={{ ...S.input, width: "100%" }}
+                  />
+                </div>
+              </div>
+              <div style={{ fontSize: 10, color: C.faint, marginTop: 3 }}>
+                (0, 0) = arena center. Offset rotates around an eccentric point.
+              </div>
+            </div>
           </div>
         )}
+      </div>
+
+      {/* Tilt */}
+      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>
+          Arena Tilt <span style={{ fontSize: 11, color: C.faint, fontWeight: 400 }}>— Z-axis orientation</span>
+        </div>
+        <div style={{ fontSize: 11, color: C.faint, marginBottom: 14 }}>
+          0° = flat · 90° = wall-ride · 180° = inverted / Zero-G · 270° = wall-ride back
+        </div>
+
+        {/* Tilt mode selector */}
+        <div style={{ marginBottom: 14 }}>
+          <label style={S.label}>Tilt Mode</label>
+          <div style={{ display: "flex", gap: 6 }}>
+            {(["fixed", "oscillate", "weight"] as const).map(mode => {
+              const active = (config.tiltMode ?? "fixed") === mode;
+              const labels: Record<string, string> = { fixed: "Fixed", oscillate: "Oscillate", weight: "Weight" };
+              return (
+                <button
+                  key={mode}
+                  onClick={() => onChange({ tiltMode: mode })}
+                  style={{
+                    flex: 1, padding: "6px 4px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer",
+                    background: active ? C.blue : "transparent",
+                    color: active ? C.white : C.muted,
+                    border: `1px solid ${active ? C.blue : C.border}`,
+                  }}
+                >
+                  {labels[mode]}
+                </button>
+              );
+            })}
+          </div>
+          <div style={{ fontSize: 10, color: C.faint, marginTop: 4 }}>
+            {(config.tiltMode ?? "fixed") === "fixed" && "Static tilt at the configured angle."}
+            {(config.tiltMode ?? "fixed") === "oscillate" && "Angle rocks between min–max on a cosine wave."}
+            {(config.tiltMode ?? "fixed") === "weight" && "Arena tilts toward where beyblades are massed."}
+          </div>
+        </div>
+
+        {/* Quick presets */}
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
+          {TILT_PRESETS.map(p => {
+            const active = (config.tiltAngle ?? 0) === p.angle;
+            return (
+              <button
+                key={p.label}
+                title={p.description}
+                onClick={() => onChange({ tiltAngle: p.angle })}
+                style={{
+                  padding: "5px 12px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer",
+                  background: active ? C.blue : "transparent",
+                  color: active ? C.white : C.muted,
+                  border: `1px solid ${active ? C.blue : C.border}`,
+                }}
+              >
+                {p.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Fixed / Weight mode — angle + direction */}
+        {(config.tiltMode ?? "fixed") !== "oscillate" && (
+          <>
+            {/* Tilt angle slider */}
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+                <span>{(config.tiltMode ?? "fixed") === "weight" ? "Max Tilt Angle" : "Tilt Angle"}</span>
+                <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltAngle ?? 0}°</span>
+              </div>
+              <input
+                type="range" min={0} max={360} step={1}
+                value={config.tiltAngle ?? 0}
+                onChange={e => onChange({ tiltAngle: +e.target.value })}
+                style={{ width: "100%", accentColor: C.blue }}
+              />
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+                <span>0° flat</span><span>90° wall</span><span>180° inverted</span><span>270° wall</span><span>360° flat</span>
+              </div>
+            </div>
+
+            {/* Tilt direction slider (hidden for weight mode — direction is auto) */}
+            {(config.tiltMode ?? "fixed") !== "weight" && (
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+                  <span>Tilt Direction <span style={{ fontSize: 10, color: C.faint }}>(downhill azimuth)</span></span>
+                  <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltDirection ?? 0}°</span>
+                </div>
+                <input
+                  type="range" min={0} max={359} step={1}
+                  value={config.tiltDirection ?? 0}
+                  onChange={e => onChange({ tiltDirection: +e.target.value })}
+                  style={{ width: "100%", accentColor: C.blue }}
+                />
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+                  <span>0° → right</span><span>90° ↓ down</span><span>180° ← left</span><span>270° ↑ up</span>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Oscillate mode — min / max / period */}
+        {(config.tiltMode ?? "fixed") === "oscillate" && (
+          <div style={{ marginBottom: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ display: "flex", gap: 8 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+                  <span>Min Angle</span>
+                  <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltOscillateMin ?? 0}°</span>
+                </div>
+                <input
+                  type="range" min={0} max={180} step={1}
+                  value={config.tiltOscillateMin ?? 0}
+                  onChange={e => onChange({ tiltOscillateMin: +e.target.value })}
+                  style={{ width: "100%", accentColor: C.blue }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+                  <span>Max Angle</span>
+                  <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltOscillateMax ?? 45}°</span>
+                </div>
+                <input
+                  type="range" min={0} max={360} step={1}
+                  value={config.tiltOscillateMax ?? 45}
+                  onChange={e => onChange({ tiltOscillateMax: +e.target.value })}
+                  style={{ width: "100%", accentColor: C.blue }}
+                />
+              </div>
+            </div>
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+                <span>Period</span>
+                <span style={{ color: C.text, fontFamily: "monospace" }}>{((config.tiltOscillatePeriodMs ?? 4000) / 1000).toFixed(1)}s</span>
+              </div>
+              <input
+                type="range" min={500} max={20000} step={500}
+                value={config.tiltOscillatePeriodMs ?? 4000}
+                onChange={e => onChange({ tiltOscillatePeriodMs: +e.target.value })}
+                style={{ width: "100%", accentColor: C.blue }}
+              />
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+                <span>0.5s fast</span><span>4s default</span><span>20s slow</span>
+              </div>
+            </div>
+            <div style={{ marginBottom: 4 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+                <span>Tilt Direction <span style={{ fontSize: 10, color: C.faint }}>(downhill azimuth)</span></span>
+                <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltDirection ?? 0}°</span>
+              </div>
+              <input
+                type="range" min={0} max={359} step={1}
+                value={config.tiltDirection ?? 0}
+                onChange={e => onChange({ tiltDirection: +e.target.value })}
+                style={{ width: "100%", accentColor: C.blue }}
+              />
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+                <span>0° → right</span><span>90° ↓ down</span><span>180° ← left</span><span>270° ↑ up</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Preview */}
+        <div style={{ display: "flex", gap: 20, alignItems: "center", marginBottom: 14 }}>
+          <div style={{ background: "#0f172a", borderRadius: 8, padding: "8px 12px", border: `1px solid ${C.border}` }}>
+            <TiltPreview tiltAngle={config.tiltAngle ?? 0} tiltDirection={config.tiltDirection ?? 0} />
+          </div>
+          <div style={{ fontSize: 11, color: C.faint, lineHeight: 1.6 }}>
+            <div>Yellow arrow = downhill</div>
+            <div>Purple ⊗ = inverted</div>
+            <div>Line = edge-on (wall-ride)</div>
+          </div>
+        </div>
+
+        {/* Tilt pivot */}
+        <div style={{ marginBottom: 14 }}>
+          <label style={S.label}>Tilt Pivot Offset (cm from center)</label>
+          <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 10, color: C.faint, marginBottom: 2 }}>X</div>
+              <input
+                type="number" step={1} min={-200} max={200}
+                value={config.tiltPivotX ?? 0}
+                onChange={e => onChange({ tiltPivotX: +e.target.value })}
+                style={{ ...S.input, width: "100%" }}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 10, color: C.faint, marginBottom: 2 }}>Y</div>
+              <input
+                type="number" step={1} min={-200} max={200}
+                value={config.tiltPivotY ?? 0}
+                onChange={e => onChange({ tiltPivotY: +e.target.value })}
+                style={{ ...S.input, width: "100%" }}
+              />
+            </div>
+          </div>
+          <div style={{ fontSize: 10, color: C.faint, marginTop: 3 }}>
+            (0, 0) = arena center. Offset tilts around an eccentric point.
+          </div>
+        </div>
+
+        {/* Auto-Tilt (spinning tilt direction) */}
+        <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>
+              Auto-Tilt <span style={{ fontSize: 10, color: C.faint, fontWeight: 400 }}>(direction rotates)</span>
+            </span>
+            <button
+              onClick={() => onChange({ autoTilt: !config.autoTilt })}
+              style={{
+                padding: "3px 12px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 12,
+                background: config.autoTilt ? C.green : C.bg2,
+                color: config.autoTilt ? C.white : C.muted,
+              }}
+            >
+              {config.autoTilt ? "ON" : "OFF"}
+            </button>
+          </div>
+          {config.autoTilt && (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+                <span>Tilt-Direction Speed (°/s)</span>
+                <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltSpeed ?? 10}°/s</span>
+              </div>
+              <input
+                type="range" min={1} max={90} step={1}
+                value={config.tiltSpeed ?? 10}
+                onChange={e => onChange({ tiltSpeed: +e.target.value })}
+                style={{ width: "100%", accentColor: C.green }}
+              />
+              <div style={{ fontSize: 10, color: C.faint, marginTop: 4 }}>
+                The downhill direction spins — creates a tilted spinning-bowl effect.
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

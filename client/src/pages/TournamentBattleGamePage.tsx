@@ -23,6 +23,9 @@ import LinkAlignmentHUD from "@/components/game/LinkAlignmentHUD";
 import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { LoadingProgress } from "@/components/LoadingProgress";
+import { Countdown } from "@/components/game/Countdown";
+import { LaunchPhase } from "@/components/game/LaunchPhase";
+import { useLaunchInput } from "@/game/hooks/useLaunchInput";
 
 const ROUND_NAMES: Record<number, string> = { 1: "Round 1", 2: "Semifinals", 3: "Final" };
 const TYPE_FLASH: Record<string, string> = { attack: "#ff4444", defense: "#4488ff", stamina: "#44ff88", balanced: "#ffcc44" };
@@ -136,6 +139,7 @@ export function TournamentBattleGamePage() {
       spawnCollisionParticles(cx, cy, 0xff4444, 0x4488ff);
       if (data.damage1 > 0) spawnDamageNumber(cx - 12, cy - 8, data.damage1, 0xff5555);
       if (data.damage2 > 0) spawnDamageNumber(cx + 12, cy - 8, data.damage2, 0x55aaff);
+      SoundManager.play("collision");
     });
     room.onMessage("spin-out", (data: any) => {
       const { x, y } = physicsToScreen(data.x, data.y);
@@ -167,6 +171,7 @@ export function TournamentBattleGamePage() {
   }, [gameEndData]);
 
   useGameInput(sendInput, !isSpectating && connectionState === "connected" && gameState?.status === "in-progress");
+  const launchState = useLaunchInput(room ?? null, gameState?.status ?? "");
 
   const myStability = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
   const stabilityColor = myStability > 0.6 ? C.green : myStability > 0.3 ? C.yellow : C.red;
@@ -192,7 +197,7 @@ export function TournamentBattleGamePage() {
     );
   }
 
-  const showLoading = !gameState || (gameState.status !== "in-progress" && gameState.status !== "warmup" && gameState.status !== "finished" && gameState.status !== "series-finished");
+  const showLoading = !gameState || (gameState.status !== "in-progress" && gameState.status !== "warmup" && gameState.status !== "launching" && gameState.status !== "finished" && gameState.status !== "series-finished");
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh", background: "#000", overflow: "hidden" }}>
@@ -482,16 +487,35 @@ export function TournamentBattleGamePage() {
         </div>
       )}
 
-      {/* Warmup overlay */}
-      {gameState?.status === "warmup" && !gameEndData && (
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.65)", zIndex: 50 }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 120, fontWeight: 900, color: C.text, fontFamily: "monospace" }}>
-              {Math.ceil(Math.max(0, gameState.timer))}
-            </div>
-            <p style={{ color: C.muted, marginTop: 16, fontSize: 20 }}>Get ready!</p>
-          </div>
-        </div>
+      {/* 3-2-1 countdown + "Let It Rip!" flash */}
+      {gameState && (
+        <Countdown status={gameState.status} timer={gameState.timer} />
+      )}
+
+      {/* Launch phase overlay */}
+      {gameState?.status === "launching" && !isSpectating && (
+        <LaunchPhase
+          launchTimer={gameState.launchTimer ?? 5}
+          launchTilt={launchState.tilt}
+          launchPosition={launchState.position}
+          launchPower={launchState.power}
+          chargingStarted={launchState.chargingStarted}
+          launched={launchState.launched}
+          failed={myBeyblade?.launchFailed ?? false}
+          isSpectating={false}
+        />
+      )}
+      {gameState?.status === "launching" && isSpectating && (
+        <LaunchPhase
+          launchTimer={gameState.launchTimer ?? 5}
+          launchTilt={0}
+          launchPosition={0.5}
+          launchPower={0}
+          chargingStarted={false}
+          launched={false}
+          failed={false}
+          isSpectating={true}
+        />
       )}
 
       {/* Connecting overlay */}

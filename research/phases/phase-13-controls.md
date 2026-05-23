@@ -71,12 +71,12 @@ Status: **partially separated** — movement/action application is shared; speci
 |----------|-------------|-------|
 | Follow own beyblade (smooth lerp) | Yes — described in diagram; PixiRenderer lerps camera toward owned bey each frame | Implemented client-side in `PixiRenderer.ts` |
 | Follow spectator-selected beyblade | Yes — `spectator:follow` message wires target; client camera lerps to target position | Server stores in `spectatorFollowTargets` map (informational) |
-| Zoom in on collision / special move | Partial — `CameraControls` exposes manual zoom; automatic zoom-in on collision event is not confirmed wired | Diagram specifies `EV_CLASH → CI_ZOOM_IN`; not confirmed in source |
-| Screen shake on collision | Partial — diagram specifies `CB_SHAKE`; no shake amplitude source found in CameraControls | Likely in PixiRenderer; not confirmed from this audit |
+| Zoom in on collision / special move | **NO** — `SpecialMoveCameraData` in `useColyseus.ts:50-57` has a `zoomFactor` field but it is not triggered by collision events. `BattleGamePage.tsx:140-145` collision handler only spawns particles + plays sound. [FACT: code-confirmed] | Manual zoom buttons only. Auto-zoom on collision is an unwired gap. |
+| Screen shake on collision | **PARTIAL** — shake IS implemented for `aerial_smash` combo (`PixiRenderer.ts:1488-1503`, intensity=4) and meteor strikes (`PixiRenderer.ts:1159-1186`, magnitude from `damageDealt`). Standard bey-to-bey collision has NO shake. [FACT: code-confirmed] | |
 | Lock camera on spinning-out bey | Partial — diagram specifies `CI_LOCK → CB_TILT`; `beyTiltAngle` field exists in schema | Visual tilt camera tracking not confirmed from CameraControls code |
 | Zoom out on ring-out / series end | Partial — diagram specifies `EV_RINGOUT / EV_SERIES → CI_ZOOM_OUT` | Not confirmed in CameraControls; would be in PixiRenderer |
 | Arena auto-rotate sync | Yes — `ArenaState.autoRotate` + `rotationSpeed` propagated to client; renderer reads these | `advanceArenaRotation()` runs server-authoritative |
-| Fallback to arena center (no selection) | Partial — diagram specifies `AD_NONE → nearest ring edge` | Default fallback behavior not confirmed from CameraControls |
+| Fallback when followed bey eliminated | **PARTIAL — falls back to another active bey, NOT arena center.** `BattleGamePage.tsx:113-119` auto-selects first non-AI active bey; `PixiRenderer.ts:264-284` calls `setFollowTarget()`. No "arena center" camera mode exists. [FACT: code-confirmed] | |
 
 ### Current Manual Controls
 
@@ -87,7 +87,7 @@ Status: **partially separated** — movement/action application is shared; speci
 | Zoom out | `-` or `_` | Yes — `CameraControls.tsx` wires `onZoomOut` |
 | Pinch-to-zoom | Touch gesture | Mentioned in comment ("Pinch handled by the renderer separately") — not in CameraControls |
 | Click to follow (spectator) | Mouse click on player list | Sends `spectator:follow`; camera is client-side |
-| Spectator follow fallback on elimination | Automatic | Diagram specifies fallback to `AD_NONE`; not confirmed |
+| Spectator follow fallback on elimination | **YES** — auto-selects first non-AI active bey (`BattleGamePage.tsx:113-119`). Falls back to any bey if none active. Does NOT snap to arena center. [FACT: code-confirmed] | |
 
 ### Camera Decision Flow (from diagram)
 
@@ -101,11 +101,11 @@ The diagram defines a clean `GameplayEvent → CameraIntent → AutoDecision →
 
 | Gap | Required Work | Priority |
 |-----|---------------|----------|
-| Event-triggered automatic zoom-in (collision, special move) | Wire `CB_ZOOM` step in PixiRenderer to fire on `collision` / `special-move` broadcasts | Medium |
-| Screen shake amplitude from collision force | PixiRenderer shake should read collision damage magnitude from broadcast; not confirmed | Medium |
+| Event-triggered automatic zoom-in (collision, special move) | Wire `CB_ZOOM` in PixiRenderer on `collision` / `special-move` broadcasts. `SpecialMoveCameraData.zoomFactor` field already exists in `useColyseus.ts:50-57` — just needs to be consumed. [FACT: gap confirmed by code audit] | Medium |
+| Screen shake on standard collision | Shake already exists for `aerial_smash` (`PixiRenderer.ts:1488`) and meteor (`PixiRenderer.ts:1159`). Extend same pattern to standard `collision` broadcast, reading `damageDealt` from payload for magnitude. [FACT: gap confirmed by code audit] | Medium |
 | Camera tilt tracking `beyTiltAngle` | Camera rotation channel must track `beyblade.beyTiltAngle`; field exists in schema | Low |
 | Automatic zoom-out on ring-out / series end | PixiRenderer should zoom out when `ring-out` or `series-end` broadcast received | Medium |
-| Spectator follow fallback on target elimination | When target bey is eliminated, camera should fall back to arena center | Medium |
+| Spectator follow fallback to arena center | Currently falls back to another active bey (`BattleGamePage.tsx:113-119`). True "arena center" mode does not exist. If desired, add `setFollowTarget(null)` path that centers camera on arena origin. [FACT: gap confirmed] | Low |
 | Pinch-to-zoom (mobile) | Renderer handles it in comment but no implementation confirmed | Low |
 | Camera profile per arena | No per-arena camera config exists (no `camera_profiles` Firestore collection) | Low |
 
@@ -132,7 +132,7 @@ The diagram defines a clean `GameplayEvent → CameraIntent → AutoDecision →
 
 | Event | SFX (synthesized fallback) | Wired? |
 |-------|---------------------------|--------|
-| `collision` | Square wave 220 Hz, 90ms | Partially — `SoundManager.play("collision")` must be called from the game page on `collision` broadcast; not confirmed fully wired |
+| `collision` | Square wave 220 Hz, 90ms | **PARTIAL** — wired in `BattleGamePage.tsx:145` only. `AIBattleGamePage.tsx` and `TournamentBattleGamePage.tsx` receive collision events but do NOT call `SoundManager.play("collision")`. Gap: add to both missing pages. [FACT: code-confirmed] |
 | `spin-out` | Sawtooth sweep 600→80 Hz, 350ms | Wired in `BattleGamePage.tsx` (found in grep) |
 | `special-move` | Triangle sweep 880→1760 Hz, 420ms | Wired in `BattleGamePage.tsx` |
 | `combo` | Triangle 660 Hz, 220ms | Wired in `BattleGamePage.tsx` |
@@ -239,3 +239,6 @@ interface AudioProfile {
 | audio_profiles Firestore collection + admin UI | Low | Medium | Enables per-arena custom SFX / music without code changes |
 | Gamepad special-tap hold guard | Low | Low | Mirror SPACE_TAP_THRESHOLD_MS logic for gamepad RB |
 | Input replay / record infrastructure | Low | High | Deterministic uint16 heartbeat design supports this; no current use case |
+
+---
+[? Phase 12: Seed Plan](phase-12-seed-plan.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 14: Game Modes ?](phase-14-game-modes.md)

@@ -387,6 +387,8 @@ export function useColyseus({
           targetWins: state.targetWins ?? 1,
           seriesWins,
           seriesLeader: state.seriesLeader ?? "",
+          // Launch phase
+          launchTimer: state.launchTimer ?? 5,
         } as ServerGameState);
       });
 

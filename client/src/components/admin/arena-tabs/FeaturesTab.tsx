@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 import { C } from "@/styles/theme";
-import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset, SpinZoneConfig, GravityHoleConfig, BumpConfig, TriggerZoneConfig, TriggerZoneKind, TriggerZoneActivation, ArenaBeySawnConfig } from "@/types/arenaConfigNew";
+import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset, SpinZoneConfig, GravityHoleConfig, BumpConfig, TriggerZoneConfig, TriggerZoneKind, TriggerZoneActivation, ArenaBeySawnConfig, DirectionalZoneConfig, DirectionalZoneType } from "@/types/arenaConfigNew";
 import type { ElementType } from "@/types/elementTypes";
 import FeatureAnimationPanel from "./FeatureAnimationPanel";
 import SelfRotationPanel from "./SelfRotationPanel";
@@ -224,6 +224,31 @@ export default function FeaturesTab({ config, onChange }: Props) {
   function removeBump(i: number) {
     onChange({ bumps: bumps.filter((_, idx) => idx !== i) });
   }
+
+  // ── Directional Zones (Phase ZP) ─────────────────────────────────────────
+  const directionalZones: DirectionalZoneConfig[] = (config as any).directionalZones ?? [];
+  function addDirectionalZone() {
+    const id = `dz${Date.now()}`;
+    const next: DirectionalZoneConfig = { id, type: "wind_corridor", x_cm: 0, y_cm: 0, radius_cm: 8, width_cm: 8, length_cm: 20, angleDeg: 0, force: 0.005 };
+    onChange({ directionalZones: [...directionalZones, next] } as any);
+  }
+  function updateDirectionalZone(i: number, patch: object) {
+    const next = directionalZones.map((z, idx) => idx === i ? { ...z, ...patch } : z);
+    onChange({ directionalZones: next } as any);
+  }
+  function removeDirectionalZone(i: number) {
+    onChange({ directionalZones: directionalZones.filter((_, idx) => idx !== i) } as any);
+  }
+
+  const DIRECTIONAL_ZONE_TYPES: { value: DirectionalZoneType; label: string; hint: string }[] = [
+    { value: "wind_corridor", label: "Wind Corridor", hint: "Rectangular channel — constant directional push" },
+    { value: "tornado",       label: "Tornado",       hint: "Rotating inward spiral — orbit + pull toward eye" },
+    { value: "vortex",        label: "Vortex",        hint: "Strong inward spiral — quadratic pull near center" },
+    { value: "updraft",       label: "Updraft",       hint: "Upward lift — reduces spin loss + counters outward drift" },
+    { value: "downdraft",     label: "Downdraft",     hint: "Downward press — pins beys + extra spin drain" },
+    { value: "slipstream",    label: "Slipstream",    hint: "Drag-reducing lane — speed boost along stream direction" },
+    { value: "dust_devil",    label: "Dust Devil",    hint: "Small fast-spinning column — erratic orbit + wobble" },
+  ];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
@@ -477,6 +502,15 @@ export default function FeaturesTab({ config, onChange }: Props) {
               onChangeBehaviorId={id => updateSpinZone(i, { behaviorId: id })}
               onChangeBehaviorParams={params => updateSpinZone(i, { behaviorParams: params })}
             />
+            <Row label="Controlled By Switch">
+              <input
+                type="text"
+                value={z.controlledBySwitchId ?? ""}
+                onChange={e => updateSpinZone(i, { controlledBySwitchId: e.target.value || undefined })}
+                placeholder="e.g. sw1"
+                style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
+              />
+            </Row>
             <SelfRotationPanel
               rotation={(z as any).rotation}
               selfRotation={(z as any).selfRotation}
@@ -533,6 +567,15 @@ export default function FeaturesTab({ config, onChange }: Props) {
               onChangeBehaviorId={id => updateGravityHole(i, { behaviorId: id })}
               onChangeBehaviorParams={params => updateGravityHole(i, { behaviorParams: params })}
             />
+            <Row label="Controlled By Switch">
+              <input
+                type="text"
+                value={z.controlledBySwitchId ?? ""}
+                onChange={e => updateGravityHole(i, { controlledBySwitchId: e.target.value || undefined })}
+                placeholder="e.g. sw1"
+                style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
+              />
+            </Row>
             <SelfRotationPanel
               rotation={(z as any).rotation}
               selfRotation={(z as any).selfRotation}
@@ -579,6 +622,15 @@ export default function FeaturesTab({ config, onChange }: Props) {
               onChangeBehaviorId={id => updateBump(i, { behaviorId: id })}
               onChangeBehaviorParams={params => updateBump(i, { behaviorParams: params })}
             />
+            <Row label="Controlled By Switch">
+              <input
+                type="text"
+                value={z.controlledBySwitchId ?? ""}
+                onChange={e => updateBump(i, { controlledBySwitchId: e.target.value || undefined })}
+                placeholder="e.g. sw1"
+                style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
+              />
+            </Row>
             <SelfRotationPanel
               rotation={(z as any).rotation}
               selfRotation={(z as any).selfRotation}
@@ -589,6 +641,128 @@ export default function FeaturesTab({ config, onChange }: Props) {
         ))}
         <button onClick={addBump} style={{ padding: "6px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
           + Add Bump
+        </button>
+      </Section>
+
+      {/* Directional Zones (Phase ZP) */}
+      <Section title={`Directional Zones (${directionalZones.length})`}>
+        {directionalZones.length === 0 && (
+          <p style={{ fontSize: 12, color: C.faint, marginBottom: 10 }}>
+            Zones that apply sustained directional forces — wind corridors, tornadoes, vortices, updrafts, and more.
+          </p>
+        )}
+        {directionalZones.map((z, i) => (
+          <div key={z.id} data-testid={`directional-zone-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
+                <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 99, background: "rgba(68,180,255,0.15)", color: "#44b4ff", border: "1px solid rgba(68,180,255,0.3)" }}>
+                  {z.type}
+                </span>
+                {z.behaviorId && <BehaviorBadge behaviorId={z.behaviorId} />}
+              </div>
+              <button onClick={() => removeDirectionalZone(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+            </div>
+
+            {/* Zone type */}
+            <Row label="Type">
+              <SearchableSelect
+                value={z.type}
+                options={DIRECTIONAL_ZONE_TYPES}
+                onChange={v => updateDirectionalZone(i, { type: v as DirectionalZoneType })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
+            </Row>
+
+            {/* Position */}
+            <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateDirectionalZone(i, { x_cm: v }))}</Row>
+            <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateDirectionalZone(i, { y_cm: v }))}</Row>
+
+            {/* Shape — circular types use radius, rectangular use width+length */}
+            {(z.type === "wind_corridor" || z.type === "slipstream") ? (
+              <>
+                <Row label="Width (cm)">{numInput(z.width_cm, 8, v => updateDirectionalZone(i, { width_cm: v }), 0.5)}</Row>
+                <Row label="Length (cm)">{numInput(z.length_cm, 20, v => updateDirectionalZone(i, { length_cm: v }), 0.5)}</Row>
+                <Row label="Angle (°)">{numInput(z.angleDeg, 0, v => updateDirectionalZone(i, { angleDeg: v }), 5)}</Row>
+              </>
+            ) : (
+              <Row label="Radius (cm)">{numInput(z.radius_cm, 8, v => updateDirectionalZone(i, { radius_cm: v }), 0.5)}</Row>
+            )}
+
+            {/* Force */}
+            <Row label="Force (N)">{numInput(z.force, 0.005, v => updateDirectionalZone(i, { force: v }), 0.001)}</Row>
+
+            {/* Tornado / vortex / dust_devil rotation */}
+            {(z.type === "tornado" || z.type === "vortex" || z.type === "dust_devil") && (
+              <>
+                <Row label="Spin Direction">
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {(["cw", "ccw"] as const).map(d => (
+                      <button key={d} onClick={() => updateDirectionalZone(i, { spinDirection: d })}
+                        style={{ padding: "2px 10px", borderRadius: 5, fontSize: 11, cursor: "pointer",
+                          background: (z.spinDirection ?? "cw") === d ? "#44b4ff" : "transparent",
+                          color: (z.spinDirection ?? "cw") === d ? "#fff" : C.muted,
+                          border: `1px solid ${(z.spinDirection ?? "cw") === d ? "#44b4ff" : C.border}` }}>
+                        {d.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </Row>
+                <Row label="Rotation Factor">{numInput(z.rotationFactor, 1.0, v => updateDirectionalZone(i, { rotationFactor: v }), 0.1)}</Row>
+                <Row label="Center Pull (N)">{numInput(z.centerPullForce, z.force * 0.5, v => updateDirectionalZone(i, { centerPullForce: v }), 0.001)}</Row>
+              </>
+            )}
+
+            {/* Updraft extras */}
+            {z.type === "updraft" && (
+              <Row label="Spin Recovery/s">{numInput(z.spinRecoveryPerSec, 30, v => updateDirectionalZone(i, { spinRecoveryPerSec: v }), 5)}</Row>
+            )}
+
+            {/* Downdraft extras */}
+            {z.type === "downdraft" && (
+              <Row label="Spin Drain Mult">{numInput(z.spinDrainMult, 1.5, v => updateDirectionalZone(i, { spinDrainMult: v }), 0.1)}</Row>
+            )}
+
+            {/* Pulse */}
+            <Row label="Pulse">
+              <input type="checkbox" checked={!!z.pulse}
+                onChange={e => updateDirectionalZone(i, { pulse: e.target.checked ? { activeMs: 2000, pauseMs: 2000 } : undefined })} />
+            </Row>
+            {z.pulse && (
+              <>
+                <Row label="Active (ms)">{numInput(z.pulse.activeMs, 2000, v => updateDirectionalZone(i, { pulse: { ...z.pulse!, activeMs: v } }), 100)}</Row>
+                <Row label="Pause (ms)">{numInput(z.pulse.pauseMs, 2000, v => updateDirectionalZone(i, { pulse: { ...z.pulse!, pauseMs: v } }), 100)}</Row>
+              </>
+            )}
+
+            {/* Element Type */}
+            <Row label="Element Type">
+              <SearchableSelect
+                value={(z as any).elementType ?? ""}
+                disabled={elemLoading}
+                emptyLabel={elemLoading ? "Loading…" : "— none —"}
+                options={elemOpts}
+                onChange={v => updateDirectionalZone(i, { elementType: (v as any) || undefined })}
+                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              />
+            </Row>
+
+            <BehaviorOverridePanel
+              behaviorId={z.behaviorId}
+              behaviorParams={z.behaviorParams}
+              onChangeBehaviorId={id => updateDirectionalZone(i, { behaviorId: id })}
+              onChangeBehaviorParams={params => updateDirectionalZone(i, { behaviorParams: params })}
+            />
+            <SelfRotationPanel
+              rotation={(z as any).rotation as any}
+              selfRotation={z.selfRotation as any}
+              onChangeRotation={v => updateDirectionalZone(i, { rotation: v } as any)}
+              onChangeSelfRotation={v => updateDirectionalZone(i, { selfRotation: v } as any)}
+            />
+          </div>
+        ))}
+        <button onClick={addDirectionalZone} style={{ padding: "6px 14px", background: "#44b4ff", color: "#fff", border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+          + Add Directional Zone
         </button>
       </Section>
 

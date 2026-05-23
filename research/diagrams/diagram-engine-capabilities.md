@@ -9,7 +9,9 @@ graph TD
     PP[PartPhysics<br/>2.5D extensions]
     CP[ClimbingPhysics<br/>wall/ceiling]
     AFP[ArenaFeatureProcessor<br/>shared hazards]
-    SMS[SpecialMoveSystem<br/>state machine]
+    MR[MechanicRegistry<br/>31 namespaced handlers]
+    GE[GimmickExpander<br/>gimmickIds → MechanicInstance[]]
+    SMS[SpecialMoveSystem<br/>5-phase state machine]
     CS[ComboSystem<br/>detect + trigger]
     CTC[ComboTaskCompiler<br/>Task→BehaviorRef]
     ETL[ElementTypeLoader<br/>Firestore matrix]
@@ -17,6 +19,9 @@ graph TD
     SM[SeriesManager<br/>BO1/3/5]
     IH[InputHandler<br/>bitmask→forces]
     RM[RoundModifiers<br/>MODIFIER_MAP]
+    TBG[TournamentScheduler<br/>30s poll, 65s look-ahead]
+    BG[BracketGenerator<br/>advanceWinnerToNextRound]
+    PSM[PartSystemManager<br/>per-room 2.5D state machine]
   end
 
   subgraph "SCHEMA (Colyseus @Schema)"
@@ -31,6 +36,7 @@ graph TD
     WS[WaterBodyState]
     POS[PortalState]
     DBS[DetachedBodySchema]
+    MI[MechanicInstance<br/>type + params + state JSON]
   end
 
   subgraph "SHARED TYPES (compiled at save time)"
@@ -42,16 +48,20 @@ graph TD
     BS[BeybladeSystem<br/>2.5D parts]
   end
 
-  subgraph "ROOMS"
-    TR[TryoutRoom<br/>solo]
-    BR2[BattleRoom<br/>PVP 2–4]
-    AIR[AIBattleRoom<br/>1v1 AI]
-    TBR[TournamentBattleRoom<br/>bracket]
+  subgraph "ROOMS (max 20 active)"
+    TR[TryoutRoom<br/>solo — max 1]
+    BR2[BattleRoom<br/>PVP 2–4 — max 12]
+    AIR[AIBattleRoom<br/>1v1 AI — max 9]
+    TBR[TournamentBattleRoom<br/>bracket — max 10]
+    TEAM[TeamBattleRoom<br/>2v2 — max 12]
     P25BR[Parts25DBattleRoom<br/>2.5D PVP]
+    P25AIR[Parts25DAIBattleRoom<br/>2.5D AI]
+    P25TBR[Parts25DTournamentBattleRoom<br/>2.5D bracket]
+    P25TR[Parts25DTryoutRoom<br/>2.5D solo]
   end
 
   subgraph "FIREBASE RUNTIME"
-    FS[(Firestore)]
+    FS[(Firestore<br/>40 collections)]
     FB_AUTH[Auth]
     FB_STORAGE[Storage]
   end
@@ -60,6 +70,10 @@ graph TD
   PP --> BEY
   CP --> BEY
   AFP --> GS
+  AFP --> MR
+  MR --> BEY
+  GE --> MI
+  MI --> BEY
   SMS --> BEY
   CS --> BEY
   ETL --> FS
@@ -67,12 +81,15 @@ graph TD
   SM --> GS
   IH --> BEY
   RM --> GS
+  TBG --> BG
+  PSM --> PP
 
   CTC --> BR
   CT --> CTC
   SM_T --> CED
   CED --> BR
   BR --> SMS
+  BR --> MR
 
   GS --> BEY
   GS --> AS
@@ -87,34 +104,48 @@ graph TD
 
   TR --> PE
   BR2 --> PE
-  BR2 --> PP
   AIR --> PE
   AIR --> AI
   TBR --> PE
+  TEAM --> PE
   P25BR --> PP
+  P25BR --> PSM
+  P25AIR --> PP
+  P25AIR --> AI
+  P25TBR --> PP
+  P25TR --> PP
 
   BR2 --> FS
   TR --> FS
   AIR --> FS
   TBR --> FS
+  TEAM --> FS
 ```
 
 ## Capability Summary Table
 
-| System | Status | Gap |
-|--------|--------|-----|
-| 2D physics (Matter.js) | ✅ Complete | — |
-| 2.5D part physics | ✅ Complete | — |
-| 3D physics | ❌ Not built | Needs new adapter |
-| Arena hazards (7 types) | ✅ Complete | — |
-| BehaviorRef dispatcher | ⚠️ PARTIAL — only movement.orbit | 19+ handlers missing |
-| Special move pipeline | ✅ Compiled / ⚠️ runtime gap | Firestore→runtime link unconfirmed |
-| Combo system (sequence + trigger) | ✅ Complete | — |
-| Element types | ✅ Complete | — |
-| Round modifiers | ✅ Complete | — |
-| AI (medium/hard/hell) | ✅ Complete | — |
-| Series manager (BO1/3/5) | ✅ Complete | — |
-| Tournament system | ✅ Complete | — |
-| Combination lock (BeyLink) | ⚠️ Types + schema; physics depth unconfirmed | — |
-| Arena rotation + shrink | ✅ Complete | — |
-| Sub-part detachment lifecycle | ✅ Complete | — |
+| System | Status | Notes |
+|--------|--------|-------|
+| 2D physics (Matter.js) | ✅ Complete | PhysicsEngine.ts |
+| 2.5D part physics | ✅ Complete | PartPhysics.ts + PartSystemManager.ts |
+| 3D physics | ❌ Not built | Needs Cannon.js / Rapier adapter |
+| Arena hazards (12+ types) | ✅ Complete | ArenaFeatureProcessor.ts |
+| BehaviorRef dispatcher | ✅ Complete | MechanicRegistry — 31 handlers (movement.*, factor.*, transform.*, spawn.*, arena.*) |
+| Special move pipeline | ✅ Complete | 5-phase state machine |
+| Combo system (sequence + trigger) | ✅ Complete | detectCombo() + detectTriggerCombos() |
+| Element types | ✅ Complete | ElementTypeLoader + ElementTypeEditPage |
+| Round modifiers | ✅ Complete | RoundModifiersPage + MODIFIER_MAP |
+| AI (medium/hard/hell) | ✅ Complete | AIController.ts |
+| Series manager (BO1/3/5) | ✅ Complete | SeriesManager.ts |
+| Tournament system | ✅ Complete | TournamentScheduler + BracketGenerator |
+| GimmickExpander | ✅ Complete | gimmickExpander.ts → MechanicInstance[] |
+| Combination lock (BeyLink) | ⚠️ Types + config admin built; physics depth in PartPhysics | BeyLinkConfigsPage exists |
+| Arena rotation + shrink | ✅ Complete | advanceArenaRotation.ts |
+| Sub-part detachment lifecycle | ✅ Complete | DetachedBodySchema lifecycle |
+| Team battle (2v2) | ✅ Complete | TeamBattleRoom.ts |
+| Gimmick defs admin CRUD | ❌ Not built | No dedicated admin page; hardcoded in server/physics/mechanics/ |
+| Camera profiles | ❌ Not built | No admin page |
+| Audio profiles | ❌ Not built | No admin page |
+
+---
+[? Deterministic Flow](diagram-deterministic-flow.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Extraction Pipeline ?](diagram-extraction-pipeline.md)

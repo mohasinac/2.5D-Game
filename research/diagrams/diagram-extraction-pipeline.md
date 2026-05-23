@@ -30,11 +30,11 @@ flowchart TD
 
   subgraph "Engine Mapping"
     E2D[2D Profile<br/>pointsOfContact[], spinStealPoints[]]
-    E25D[2.5D Profile<br/>ContactPoint (arc or legacy)<br/>pockets[], configurations[]]
+    E25D[2.5D Profile<br/>ContactPoint (arc or legacy)<br/>pockets[], configurations[]<br/>PartSystemManager state machine]
     E3D[3D Profile<br/>❌ Not built]
-    PHYS[Physical Profile<br/>mass, radius, material]
-    VIS[Visual Profile<br/>sprite images, rendererData]
-    BEH[Behavior Profile<br/>gimmickIds[] → mechanic refs]
+    PHYS[Physical Profile<br/>mass, radius, material<br/>abs/rubber/metal/pom/pc]
+    VIS[Visual Profile<br/>sprite images, rendererData<br/>PNG/JPG/GIF/WebP — GIF = no destructive edit]
+    BEH[Behavior Profile<br/>gimmickIds[] → MechanicRegistry handlers<br/>via gimmickExpander.ts → MechanicInstance[]]
   end
 
   IMG --> SE
@@ -71,3 +71,6 @@ flowchart TD
 | Arc-segment (new) | arcStart, arcEnd, radiusInner, radiusOuter, lineThickness, setId | 2.5D contact geometry |
 
 Both coexist. `resolveCpBounds(cp)` normalises to `{arcStart, arcEnd, rInner, rOuter, lineThickness}`.
+
+---
+[? Engine Capabilities](diagram-engine-capabilities.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Input Abstraction ?](diagram-input-abstraction.md)

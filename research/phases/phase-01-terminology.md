@@ -377,7 +377,7 @@ First to 4 points wins the match (standard format). BO3/BO5 series supported via
 | **Xtreme** (Driver) | Xtreme (Performance Tip) | エクストリーム | Driver | Cho-Z / GT | "Xtreme" vs "Xtreme Dash" — these are different things. Xtreme is a specific rubber-flat Tip with high-μ floor contact (Gen3 Driver). "Xtreme Dash" is the BX stadium rail-scoring mechanic. | FACT; Xtreme Driver: rubber material, aggressive floor contact, high spinDecayRate. Xtreme Dash: activated when any compatible BX Bit meshes with the X-Line rail, delivers 2.5× velocity burst and enables Xtreme Finish scoring. They are related in concept (speed burst) but different systems. |
 | **Xtreme Dash** (mechanic) | Xtreme Dash (BX rail mechanic) | エクストリームダッシュ | N/A — stadium mechanic, not a part | BX (Gen4 only) | Confused with Xtreme Driver (Gen3 Tip). Also confused with "Dash" suffix on Gen3 Drivers (Xtreme', Zephyr', etc.). | Xtreme Dash is a *gameplay mechanic*, not a part. It is triggered when a BX Bit grips the X-Line rail. The "Dash (')'" suffix on Gen3 Drivers denotes metal-coated tips for durability — unrelated to Xtreme Dash. |
 | **X-Line** | Xtreme Line (stadium rail) | エクストリームライン | N/A — arena feature | BX (Gen4 only) | Abbreviated "XL" occasionally, which collides with "XL" used for Extra Large or "X:D" in MFB context. | 360° gear rail on inner BX Stadium wall. Height ~15–20mm above floor. Only BX Bits with gear-compatible undersides can engage it. |
-| **B:D** | Bottom Drive (Performance Tip) | ボトムドライブ | Driver | MFB 4D (Gen2) | "B:D" (MFB 4D tip) vs "BD" used as shorthand for Burst/Dynamite Battle era in Gen3. "BD145" is a Track in MFB, not related to B:D. | B:D is a triple-mode self-switching Tip in MFB 4D era (Phantom Orion). BD145 is a separate Track (free-spinning disc). "BD" as sub-system abbreviation means Dynamite Battle (Gen3 burst_db). These three share letters but are unrelated systems. |
+| **B:D** | Bearing Drive (Performance Tip) | ベアリングドライブ | Driver | MFB 4D (Gen2) | "B:D" (MFB 4D tip) vs "BD" used as shorthand for Burst/Dynamite Battle era in Gen3. "BD145" is a Track in MFB, not related to B:D. | B:D = **Bearing Drive** [FACT — batch-004 correction; "Bottom Drive" was an error]. B:D is a triple-mode self-switching Tip in MFB 4D era (Phantom Orion). The colon in B:D marks all MFB 4D Bottoms (B:D, F:D, D:D, X:D). BD145 is a separate Track (free-spinning disc). "BD" (no colon) as sub-system abbreviation means Dynamite Battle (Gen3 burst_db). These three share letters but are unrelated systems. |
 | **BD145** | Bottom Drive 145 (Track/Height) | ボトムドライブ145 | Track (height position) | MFB HWS (Gen2) | "BD145" (MFB Track, free-spinning disc at 14.5mm height) vs "BD Core" (DB era movable sub-layer) vs "BD" (Dynamite Battle system abbreviation). | BD145 is a free-spinning Track (height = 14.5mm). It adds ~8g at a wide radius, boosting inertia. BD Core is a completely separate component from the DB era: the central bearing-axle hub that connects Chassis to Blade. Abbreviation collision risk: all three use "BD". |
 | **DB Core** | Dynamite Balance Core | ダイナマイトバランスコア | Sub-component (connects Chassis to Blade) | DB — Dynamite Battle (Gen3 burst_db) | "DB Core" (DB era axle hub with built-in bearing) vs "DB" as system abbreviation (Dynamite Battle) vs "BD145" (MFB Track). | DB Core is not a Layer. It is the bearing hub in the center of the DB-era Beyblade (between Chassis and Performance Tip). It provides near-zero friction decoupling. Do NOT confuse with "BD145" (MFB Track). "DB" as a system tag always means Dynamite Battle. |
 | **GT Chip** | Gatinko Chip | ガチンコチップ | Layer sub-component (locks with Frame) | GT — Gatinko (Gen3 burst_gt) | "GT Chip" (Gatinko Chip Layer socket) vs "GT" referring to Beyblade G-Revolution (2003 Gen1 anime season 3) vs "GT Booster" (product line name for GT-era boosters). | GT in Gen3 context always means Gatinko. "G-Revolution" is the Gen1 anime title — it has no GT chip. The Gatinko Chip is a physical 3D piece that snaps into the Layer Frame — replacing the standard burst-lock system. Changes burst resistance dynamics. |
@@ -454,3 +454,109 @@ Thirty-one disambiguation entries documented. Four are CRITICAL risk (will cause
 ---
 
 *End of Phase 01 — Terminology, Definitions, Concepts*
+
+---
+[? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 02: Special Moves ?](phase-02-special-moves.md)
+
+
+---
+
+## Batch 1K — Episode-Derived Launch Techniques, Mechanic Introductions & Generation Context
+
+> Source: `linka/episodes/` first-episode files for each season/generation. Entries represent first anime appearance confirmed from episode markdown research.
+
+---
+
+### 1K-1: Named Launch Techniques (All Generations)
+
+| Technique ID | Display Name | Gen | Season | Episode First Appearance | User | Description | Engine Mapping |
+|---|---|---|---|---|---|---|---|
+| `running_aerial_launch` | Running Aerial Launch | 1 | S1 Classic | Gen1 S1 Ep01 "The Blade Raider" | Tyson Granger | Launcher released mid-stride while running; adds kinetic energy of forward momentum to launch RPM | Applies `launchBoostFactor * 1.15`; slight random angle ±5° |
+| `blade_shark_diagonal` | Blade Shark Slam | 1 | S1 Classic | Gen1 S1 Ep01 | Carlos | Aggressive diagonal/angled launch aimed directly at opponent bey rather than arena center | `initialVelocity` directed at opponent position; no center bias |
+| `engine_gear_chain_launch` | Chain Gear Launch | 1 | S3 G-Rev | Gen1 S3 Ep01 | Daichi | Trigger cord pulled in two stages; first stage primes chain; second stage releases amplified spin | `launchBoostFactor * 1.20`; spin +10% |
+| `rush_launch` | Rush Launch | 3 | Burst S1 | Gen3 S1 Ep01 "Let's Go! Valtryek!" | Valt Aoi | Ultra-fast wrist snap; launches bey at near-maximum RPM with short windup | `launchBoostFactor * 1.25`; requires `systemId: burst_s1+` |
+| `lightning_launch` | Lightning Launch | 3 | Burst S5 Surge | Gen3 S5 Ep01 | Hyuga Hizashi | Explosive full-body launch; maximum torque transferred through shoulder+elbow+wrist chain; bey exits at extreme angle | `launchBoostFactor * 1.35`; strong initial `vx` component; requires `systemId: burst_superking+` |
+| `xtreme_launch` | Xtreme Launch | 4 | BX S1 | Gen4 S1 Ep01 "X" | Jaxon Bell | Standard BX launch aimed to intersect Xtreme Line rail in stadium; timing determines entry angle | No RPM boost; adds `targetXtremeLine: true` targeting behavior |
+| `spin_top_upper_launch` | Upper Launch | 4 | BX S1 | Gen4 S1 Ep03 (approx) | Khrome | Upward-angled release angle; optimized for upper-attack Blade geometry | Launch angle +15°; increases initial y-velocity component |
+| `backdraft_launch` | Backdraft Launch | 4 | BX S1 | Gen4 S1 Ep05 (approx) | Miles | Reverse-direction entry into Xtreme Line; bey circles back for counter-attack position | `reverseEntry: true`; sets bey initial angle 180° from standard entry |
+
+---
+
+### 1K-2: Mechanic First-Appearance by Episode (All Generations)
+
+| Mechanic | mechanic_id | Gen | Season | Episode (approx) | User | Narrative Context |
+|---|---|---|---|---|---|---|
+| Bit-Beast resonance | `bit_beast_resonance` | 1 | S1 Classic | Gen1 S1 Ep02 | Kenny explains | Kenny introduces concept of spiritual guardian sealed within bey Attack Ring |
+| Magnacore polarity repel | `magnacore_repel` | 1 | S2 V-Force | Gen1 S2 Ep08 | Ozuma vs Tyson | Ozuma's Magnacore WD generates repulsion field when same-pole magnets align |
+| Magnacore polarity attract | `magnacore_attract` | 1 | S2 V-Force | Gen1 S2 Ep10 | Mariam | Opposite-pole Magnacore draws opponent bey inward for contact boost |
+| Cyber Beyblade spin-copy | `cyber_copy` | 1 | S2 V-Force | Gen1 S2 Ep20 | Team Psykick | Mechanical Cyber Beyblade copies Bit-Beast data; no gimmick ID in game (narrative only) |
+| Engine Gear chain boost | `engine_gear` | 1 | S3 G-Rev | Gen1 S3 Ep01 | Daichi | Engine Gear internal chain stores launch energy and releases in burst for spin recovery |
+| F-Dynasty twin combo attack | `twin_combination` | 1 | S3 G-Rev | Gen1 S3 Ep12 | Julia + Raul | Simultaneous diagonal attacks from two sides; narrative co-op mechanic |
+| Zeus "Zone" perfect state | `zone_state` | 1 | S3 G-Rev | Gen1 S3 Ep42 | Brooklyn | Flow-state: Brooklyn reads all movements; game equivalent = perfect reaction AI |
+| HMS bearing low-friction glide | `bearing_drift` | 1 | HMS | G-Rev Ep40 | Tyson (Dragoon MS) | HMS metal ring floats on near-frictionless bearing; prolongs spin substantially |
+| Spin steal via rubber | `rubber_grip` | 2 | MFB S1 | Gen2 S1 Ep15 (approx) | Free (Fafnir) | Rubber contact points on Layer absorb opponent's rotational energy on contact |
+| Dual-spin direction switch | `dual_spin` | 2 | MFB S2 | Gen2 S2 Ep18 (approx) | Julian (Gravity Perseus) | Wheel can flip spin direction; matches any opponent |
+| Bey Points economy | `bey_points` | 2 | MFB S1 | Gen2 S1 Ep01 | Kenta explains | 30,000+ Bey Points required to enter championship; won by defeating bladers |
+| Avatar / God Layer power flare | `god_layer_boost` | 3 | Burst S2 God | Gen3 S2 Ep01 | Valt | Bey "resonates" with blader's energy; visual power flare; game = temporary stat boost |
+| Cho-Z Awakening | `cho_z_awakening` | 3 | Burst S3 Cho-Z | Gen3 S3 Ep08 (approx) | Valt (Cho-Z Valtryek) | Layer transforms mid-battle into awakened state; attack power surges |
+| GT Chip power unlock | `gt_chip_unlock` | 3 | Burst S4 GT | Gen3 S4 Ep01 | Dante | GT Chip at bey center stores power that unlocks at high spin RPM |
+| Superking Overdrive ring | `overdrive_ring` | 3 | Burst S5 Surge | Gen3 S5 Ep01 | Hyuga | Outer ring extends attack contact radius; activates above spin threshold |
+| QuadDrive 4-mode Layer | `quad_drive_mode` | 3 | Burst S6 QD | Gen3 S6 Ep01 | Bel (Dynamite Belial) | Layer outer ring rotates to select Attack/Stamina/Defense/Balance mode before launch |
+| Elemental Power tiles | `elemental_tile_boost` | 3 | Burst S7 QS | Gen3 S7 Ep01 | Multiple | Stadium floor tiles grant elemental power boosts; color-coded zones |
+| Xtreme Line / Xtreme Dash | `xtreme_dash` | 4 | BX S1 | Gen4 S1 Ep01 "X" | Jaxon | Stadium rail; bey riding the rail gains sudden speed burst (Xtreme Dash) |
+| Xtreme Finish win condition | `xtreme_finish` | 4 | BX S1 | Gen4 S1 Ep01 | Jaxon vs Miles | Bey exits arena after riding Xtreme Line; 2-point win; new Gen4 condition |
+| Ratchet tooth burst resistance | `ratchet_resistance` | 4 | BX S1 | Gen4 S1 Ep02 (approx) | Multiple | Higher tooth count (3/5/7/9) resists burst; lower = power but burst-prone |
+
+---
+
+### 1K-3: Per-Generation Mechanic Introduction Summary
+
+| Generation | System | Key New Mechanic(s) | First Episode |
+|---|---|---|---|
+| Gen1 S1 Classic | Plastic SGS | Bit-Beast resonance; Running Aerial Launch | S1 Ep01 |
+| Gen1 S2 V-Force | Plastic Magnacore | Magnacore polarity (repel/attract) | S2 Ep08 (approx) |
+| Gen1 S3 G-Revolution | Plastic Engine Gear | Engine Gear chain spin-up; F-Dynasty twin combo | S3 Ep01 |
+| Gen1 HMS era | HMS | Bearing low-friction drift; all-metal Upper Attack | G-Rev Ep40 |
+| Gen2 MFB S1 | MFB 5-component | Rubber spin-steal (Fafnir); Bey Points economy | S1 Ep01 / S1 Ep15 |
+| Gen2 MFB S2 | MFB | Dual-spin Layer (Gravity Perseus) | S2 Ep18 |
+| Gen2 MFB S3 4D | 4D System | 4D Wheel inner/outer mode switch | S3 Ep01 |
+| Gen2 Zero-G | Samurai System | Dynamic tilting stadium; Zero-G floor movement | Shogun Steel Ep01 |
+| Gen3 Burst S1 | Standard Layer | Burst Finish; Rush Launch; 3-part scoring | S1 Ep01 |
+| Gen3 Burst S2 God | God Layer | Avatar power flare / God boost | S2 Ep01 |
+| Gen3 Burst S3 Cho-Z | Cho-Z Layer | Cho-Z Awakening in-battle power surge | S3 Ep08 |
+| Gen3 Burst S4 GT | GT Layer | GT Chip RPM-threshold unlock | S4 Ep01 |
+| Gen3 Burst S5 Surge | Super King Layer | Overdrive ring; Lightning Launch | S5 Ep01 |
+| Gen3 Burst S6 QuadDrive | DB Layer | 4-mode QuadDrive Layer; 4-pocket stadiums | S6 Ep01 |
+| Gen3 Burst S7 QuadStrike | Ultimate Layer | Elemental Power floor tiles | S7 Ep01 |
+| Gen4 BX S1 | BX 3-component | Xtreme Line/Dash; Xtreme Finish; Ratchet system | S1 Ep01 |
+
+---
+
+### 1K-4: Scoring System Evolution by Generation
+
+| Gen | Season | Ring-Out | Burst | Xtreme Finish | Survivor | Notes |
+|---|---|---|---|---|---|---|
+| Gen1 | S1–S3 + HMS | Win (3 pt in JP / game-decided) | N/A (not a mechanic) | N/A | Loss for spinner-out | No burst; Beyblades do not disassemble |
+| Gen2 | MFB S1–S3 | Win | N/A | N/A | Loss for spinner-out | No burst; stadium KO or spinner-stop |
+| Gen2 | Shogun Steel | Win | N/A | N/A | Loss | Zero-G tilt changes KO dynamics |
+| Gen3 | Burst S1+ | 2 pt | 2 pt | N/A | 1 pt | Burst mechanic introduced; first multi-point system |
+| Gen4 | BX S1+ | 2 pt | 2 pt | 2 pt | 1 pt | Xtreme Finish added as third 2-pt condition |
+
+---
+
+### 1K-5: Stadium Type → Mechanic Relationship
+
+| Stadium Feature | Mechanic Enabled | Gen Introduced | Episode Context |
+|---|---|---|---|
+| Standard bowl | — | Gen1 S1 | Generic competition stadium; BBA tournaments |
+| Magnacore bowl | `magnacore_repel` / `magnacore_attract` | Gen1 S2 | V-Force Psykick labs and Saint Shields ruins |
+| Zero-G tilting platform | `zero_g_tilt` | Gen2 Shogun Steel | Shogun Steel Ep01; stadium rocks during battle |
+| Burst official bowl | Burst Finish enabled | Gen3 S1 | Standard Burst tournament stadiums |
+| 4-pocket QuadDrive stadium | Quad pocket entry system | Gen3 S6 | QuadDrive arenas have 4 distinct launch pockets |
+| Xtreme Line stadium | `xtreme_dash` / `xtreme_finish` | Gen4 S1 | All BX stadiums have Xtreme Line rail |
+| Elemental tile floor | `elemental_tile_boost` | Gen3 S7 | QuadStrike arenas; color-coded power zones |
+
+---
+
+*End of Batch 1K*
+

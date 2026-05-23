@@ -2,7 +2,7 @@
 // Physics runs locally in the browser; beyblade + arena data is loaded from
 // Firestore directly. No Colyseus connection is opened.
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
 import { doc, getDoc } from "firebase/firestore";
@@ -14,6 +14,8 @@ import type { ServerBeyblade, ServerGameState } from "@/types/game";
 import { C } from "@/styles/theme";
 import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
+import { Countdown } from "@/components/game/Countdown";
+import { LaunchPhase } from "@/components/game/LaunchPhase";
 
 // ─── Physics constants ────────────────────────────────────────────────────────
 
@@ -66,6 +68,15 @@ export function TryoutGamePage() {
 
   // HUD state — updated at lower frequency
   const [hud, setHud] = useState({ spin: 2000, maxSpin: 2000, health: 100, timer: 0, loaded: false });
+
+  // Local launch phase state
+  type Phase = "countdown" | "launching" | "playing";
+  const [phase, setPhase] = useState<Phase>("countdown");
+  const [countdownSecs, setCountdownSecs] = useState(3);
+  const [launchTimer, setLaunchTimer] = useState(5);
+  const [localLaunch, setLocalLaunch] = useState({ tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false });
+  const phaseRef = useRef<Phase>("countdown");
+  const launchRef = useRef({ tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false, chargeStartMs: 0, chargeTick: 0 });
 
   const { render, setControlledBeyblade, cameraZoomIn, cameraZoomOut, cameraZoomReset } = usePixiRenderer(containerRef, mode);
 
@@ -148,103 +159,207 @@ export function TryoutGamePage() {
     };
   }, []);
 
+  // ─── Countdown phase (3-2-1) ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (phase !== "countdown") return;
+    const startMs = performance.now();
+    let raf: number;
+    const loop = () => {
+      const elapsed = (performance.now() - startMs) / 1000;
+      const remaining = Math.max(0, 3 - elapsed);
+      setCountdownSecs(Math.ceil(remaining));
+      if (remaining <= 0) {
+        phaseRef.current = "launching";
+        setPhase("launching");
+        return;
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [phase]);
+
+  // ─── Launch phase input (A/D tilt, W/S pos, Space charge+launch) ─────────────
+  useEffect(() => {
+    if (phase !== "launching") return;
+    const startMs = performance.now();
+    let raf: number;
+    const TILT_RATE = 50, POS_RATE = 0.4, MAX_TILT = 45, MAX_POWER = 150;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      const lr = launchRef.current;
+      if (e.code === "Space" && !lr.chargingStarted) {
+        lr.chargingStarted = true;
+        lr.chargeStartMs = performance.now();
+        lr.chargeTick = 0;
+        e.preventDefault();
+      }
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.code === "Space") {
+        const lr = launchRef.current;
+        if (lr.chargingStarted && !lr.launched && lr.power > 0) {
+          lr.launched = true;
+          applyLaunchAndStart();
+        }
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+
+    const applyLaunchAndStart = () => {
+      const lr = launchRef.current;
+      const b = bey.current;
+      const powerFraction = Math.max(0.01, lr.power / 100);
+      b.spin = b.maxSpin * powerFraction;
+      // position offset: 0=forward(center), 1=backward
+      const cx = arenaConfig.current ? arenaConfig.current.width / 2 : 540;
+      const cy = arenaConfig.current ? arenaConfig.current.height / 2 : 540;
+      const offset = (lr.position - 0.5) * arenaRadius.current * 0.3;
+      b.x = cx + offset;
+      b.y = cy;
+      b.velocityX = 0; b.velocityY = 0;
+      phaseRef.current = "playing";
+      setPhase("playing");
+    };
+
+    let prevTs = performance.now();
+    const loop = (ts: number) => {
+      const dt = Math.min((ts - prevTs) / 1000, 0.05);
+      prevTs = ts;
+      const lr = launchRef.current;
+      const elapsed = (ts - startMs) / 1000;
+      const remaining = Math.max(0, 5 - elapsed);
+      setLaunchTimer(remaining);
+
+      if (!lr.launched) {
+        if (!lr.chargingStarted) {
+          if (keysRef.current.has("KeyA") || keysRef.current.has("ArrowLeft"))  lr.tilt = Math.max(-MAX_TILT, lr.tilt - TILT_RATE * dt);
+          if (keysRef.current.has("KeyD") || keysRef.current.has("ArrowRight")) lr.tilt = Math.min(MAX_TILT, lr.tilt + TILT_RATE * dt);
+          if (keysRef.current.has("KeyW") || keysRef.current.has("ArrowUp"))    lr.position = Math.max(0, lr.position - POS_RATE * dt);
+          if (keysRef.current.has("KeyS") || keysRef.current.has("ArrowDown"))  lr.position = Math.min(1, lr.position + POS_RATE * dt);
+        }
+        if (lr.chargingStarted) {
+          const chargeElapsed = ts - lr.chargeStartMs;
+          const newTick = Math.floor(chargeElapsed / 200);
+          if (newTick > lr.chargeTick) {
+            lr.power = Math.min(MAX_POWER, lr.power + (newTick - lr.chargeTick) * 25);
+            lr.chargeTick = newTick;
+          }
+        }
+        setLocalLaunch({ tilt: lr.tilt, position: lr.position, power: lr.power, chargingStarted: lr.chargingStarted, launched: lr.launched });
+
+        if (remaining <= 0) {
+          // Grace: give 50% power and start
+          if (!lr.launched) {
+            lr.power = lr.power > 0 ? lr.power : 50;
+            lr.launched = true;
+            applyLaunchAndStart();
+          }
+          return;
+        }
+      }
+
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      cancelAnimationFrame(raf);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
+
   // ─── Physics + render loop ──────────────────────────────────────────────────
   useEffect(() => {
     let hudTick = 0;
 
     const loop = (ts: number) => {
       if (lastTsRef.current === null) lastTsRef.current = ts;
-      const dt = Math.min((ts - lastTsRef.current) / 1000, 0.05); // cap at 50ms
+      const dt = Math.min((ts - lastTsRef.current) / 1000, 0.05);
       lastTsRef.current = ts;
-      timerRef.current += dt;
 
-      const b = bey.current;
-      const keys = keysRef.current;
-      const ar = arenaRadius.current;
-      const cx = arenaConfig.current ? arenaConfig.current.width / 2 : 540;
-      const cy = arenaConfig.current ? arenaConfig.current.height / 2 : 540;
+      if (phaseRef.current === "playing") {
+        const b = bey.current;
+        const keys = keysRef.current;
+        const ar = arenaRadius.current;
+        const cx = arenaConfig.current ? arenaConfig.current.width / 2 : 540;
+        const cy = arenaConfig.current ? arenaConfig.current.height / 2 : 540;
 
-      // Input → acceleration
-      let ax = 0, ay = 0;
-      if (keys.has("KeyA") || keys.has("ArrowLeft"))  ax -= MOVE_ACCEL;
-      if (keys.has("KeyD") || keys.has("ArrowRight")) ax += MOVE_ACCEL;
-      if (keys.has("KeyW") || keys.has("ArrowUp"))    ay -= MOVE_ACCEL;
-      if (keys.has("KeyS") || keys.has("ArrowDown"))  ay += MOVE_ACCEL;
+        timerRef.current += dt;
 
-      // Spin boost with Space
-      if (keys.has("Space") && b.spin < b.maxSpin) {
-        b.spin = Math.min(b.maxSpin, b.spin + 20 * dt);
-      }
+        let ax = 0, ay = 0;
+        if (keys.has("KeyA") || keys.has("ArrowLeft"))  ax -= MOVE_ACCEL;
+        if (keys.has("KeyD") || keys.has("ArrowRight")) ax += MOVE_ACCEL;
+        if (keys.has("KeyW") || keys.has("ArrowUp"))    ay -= MOVE_ACCEL;
+        if (keys.has("KeyS") || keys.has("ArrowDown"))  ay += MOVE_ACCEL;
 
-      // Velocity update
-      b.velocityX = (b.velocityX + ax) * FRICTION;
-      b.velocityY = (b.velocityY + ay) * FRICTION;
+        if (keys.has("Space") && b.spin < b.maxSpin) {
+          b.spin = Math.min(b.maxSpin, b.spin + 20 * dt);
+        }
 
-      // Speed cap
-      const spd = Math.sqrt(b.velocityX ** 2 + b.velocityY ** 2);
-      if (spd > MAX_SPEED * dt) {
-        const scale = (MAX_SPEED * dt) / spd;
-        b.velocityX *= scale;
-        b.velocityY *= scale;
-      }
+        b.velocityX = (b.velocityX + ax) * FRICTION;
+        b.velocityY = (b.velocityY + ay) * FRICTION;
 
-      // Position update
-      b.x += b.velocityX;
-      b.y += b.velocityY;
+        const spd = Math.sqrt(b.velocityX ** 2 + b.velocityY ** 2);
+        if (spd > MAX_SPEED * dt) {
+          const scale = (MAX_SPEED * dt) / spd;
+          b.velocityX *= scale;
+          b.velocityY *= scale;
+        }
 
-      // Arena boundary — bounce off edge
-      const dx = b.x - cx, dy = b.y - cy;
-      const dist = Math.sqrt(dx ** 2 + dy ** 2);
-      const radiusPx = b.radius * 24;
-      if (dist + radiusPx > ar) {
-        const nx = dx / dist, ny = dy / dist;
-        b.x = cx + nx * (ar - radiusPx - 1);
-        b.y = cy + ny * (ar - radiusPx - 1);
-        // Reflect velocity
-        const dot = b.velocityX * nx + b.velocityY * ny;
-        b.velocityX -= 2 * dot * nx * 0.6;
-        b.velocityY -= 2 * dot * ny * 0.6;
-      }
+        b.x += b.velocityX;
+        b.y += b.velocityY;
 
-      // Spin decay (faster near edge = nutation effect)
-      const stability = b.spin / b.maxSpin;
-      const decayRate = BASE_SPIN_DECAY * (1 + (1 - stability) * 2);
-      b.spin = Math.max(0, b.spin - decayRate * dt);
+        const dx = b.x - cx, dy = b.y - cy;
+        const dist = Math.sqrt(dx ** 2 + dy ** 2);
+        const radiusPx = b.radius * 24;
+        if (dist + radiusPx > ar) {
+          const nx = dx / dist, ny = dy / dist;
+          b.x = cx + nx * (ar - radiusPx - 1);
+          b.y = cy + ny * (ar - radiusPx - 1);
+          const dot = b.velocityX * nx + b.velocityY * ny;
+          b.velocityX -= 2 * dot * nx * 0.6;
+          b.velocityY -= 2 * dot * ny * 0.6;
+        }
 
-      // Rotation
-      const angDir = b.spinDirection === "left" ? -1 : 1;
-      b.rotation += angDir * (b.spin / b.maxSpin) * 6 * dt;
-      b.angularVelocity = angDir * (b.spin / b.maxSpin) * 15;
+        const stability = b.spin / b.maxSpin;
+        const decayRate = BASE_SPIN_DECAY * (1 + (1 - stability) * 2);
+        b.spin = Math.max(0, b.spin - decayRate * dt);
 
-      // Feed to renderer — scale positions to server physics space (width * 16 units)
-      const scaledBey = { ...b, x: b.x * 16, y: b.y * 16 };
-      const beyMap = new Map<string, ServerBeyblade>([[b.id, scaledBey]]);
-      const gs: ServerGameState = {
-        status: b.spin > 0 ? "in-progress" : "finished",
-        mode: "tryout",
-        timer: timerRef.current,
-        startTime: 0,
-        winner: b.spin <= 0 ? b.userId : "",
-        matchId: "local",
-        arena: arenaConfig.current,
-        beyblades: beyMap,
-        targetWins: 1, currentGame: 1,
-        seriesWins: new Map(), seriesLeader: "",
-        spectatorCount: 0,
-      } as ServerGameState;
+        const angDir = b.spinDirection === "left" ? -1 : 1;
+        b.rotation += angDir * (b.spin / b.maxSpin) * 6 * dt;
+        b.angularVelocity = angDir * (b.spin / b.maxSpin) * 15;
 
-      render(gs, beyMap);
-
-      // HUD update every ~200ms
-      hudTick++;
-      if (hudTick % 12 === 0) {
-        setHud((prev) => ({
-          ...prev,
-          spin: b.spin,
-          maxSpin: b.maxSpin,
-          health: b.health,
+        const scaledBey = { ...b, x: b.x * 16, y: b.y * 16 };
+        const beyMap = new Map<string, ServerBeyblade>([[b.id, scaledBey]]);
+        const gs: ServerGameState = {
+          status: b.spin > 0 ? "in-progress" : "finished",
+          mode: "tryout",
           timer: timerRef.current,
-        }));
+          startTime: 0,
+          winner: b.spin <= 0 ? b.userId : "",
+          matchId: "local",
+          arena: arenaConfig.current,
+          beyblades: beyMap,
+          targetWins: 1, currentGame: 1,
+          seriesWins: new Map(), seriesLeader: "",
+          spectatorCount: 0,
+        } as ServerGameState;
+
+        render(gs, beyMap);
+
+        hudTick++;
+        if (hudTick % 12 === 0) {
+          setHud((prev) => ({
+            ...prev,
+            spin: b.spin,
+            maxSpin: b.maxSpin,
+            health: b.health,
+            timer: timerRef.current,
+          }));
+        }
       }
 
       rafRef.current = requestAnimationFrame(loop);
@@ -270,6 +385,13 @@ export function TryoutGamePage() {
     timerRef.current = 0;
     lastTsRef.current = null;
     setHud((h) => ({ ...h, spin: b.maxSpin, health: b.maxHealth, timer: 0 }));
+    keysRef.current.clear();
+    launchRef.current = { tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false, chargeStartMs: 0, chargeTick: 0 };
+    setLocalLaunch({ tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false });
+    setCountdownSecs(3);
+    setLaunchTimer(5);
+    phaseRef.current = "countdown";
+    setPhase("countdown");
   }, []);
 
   // ─── Derived HUD values ───────────────────────────────────────────────────────
@@ -282,6 +404,25 @@ export function TryoutGamePage() {
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh", background: "#000", overflow: "hidden" }}>
       <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
+
+      {/* 3-2-1 countdown + "Let It Rip!" flash */}
+      <Countdown
+        status={phase === "countdown" ? "warmup" : phase === "launching" ? "launching" : "in-progress"}
+        timer={countdownSecs}
+      />
+
+      {/* Launch configuration overlay */}
+      {phase === "launching" && (
+        <LaunchPhase
+          launchTimer={launchTimer}
+          launchTilt={localLaunch.tilt}
+          launchPosition={localLaunch.position}
+          launchPower={localLaunch.power}
+          chargingStarted={localLaunch.chargingStarted}
+          launched={localLaunch.launched}
+          failed={false}
+        />
+      )}
 
       {/* HUD top bar */}
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: 16, pointerEvents: "none" }}>

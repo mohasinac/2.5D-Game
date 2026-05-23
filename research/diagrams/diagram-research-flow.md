@@ -5,11 +5,11 @@
 ```mermaid
 flowchart TD
   subgraph "Source Material"
-    SRC_CODE[Server + Client TypeScript<br/>authoritative source]
-    SRC_SCHEMA[Colyseus @Schema files<br/>GameState, Beyblade, ArenaState]
-    SRC_ADMIN[Admin UI pages<br/>form fields = data model surface]
-    SRC_CONSTANTS[constants/ + shared/types/<br/>hardcoded registries]
-    SRC_LINKA[linka/ folder<br/>researcher notes — hints only]
+    SRC_CODE[server/ + client/ TypeScript<br/>authoritative source<br/>monorepo: server/ client/ shared/]
+    SRC_SCHEMA[Colyseus @Schema files<br/>GameState, Beyblade, ArenaState<br/>MechanicInstance, DetachedBodySchema]
+    SRC_ADMIN[Admin UI pages (48 total)<br/>form fields = data model surface]
+    SRC_CONSTANTS[server/shared/constants/ + shared/types/<br/>hardcoded registries<br/>MechanicRegistry (31 handlers)]
+    SRC_LINKA[research/ folder<br/>researcher notes — hints only]
   end
 
   subgraph "Fact Tagging"
@@ -48,10 +48,10 @@ flowchart TD
   end
 
   subgraph "Implementation Phase"
-    IP_SERVER[Server-side engine code<br/>PhysicsEngine / BehaviorRef dispatch]
-    IP_CLIENT[Client-side React admin UI<br/>SearchableSelect / forms]
-    IP_SEED[Seed scripts<br/>scripts/*.ts]
-    IP_SHARED[shared/types/ additions<br/>new type contracts]
+    IP_SERVER[Server-side engine code<br/>server/physics/ MechanicRegistry<br/>PartSystemManager, GimmickExpander<br/>BehaviorRef dispatch — ✅ 31 handlers wired]
+    IP_CLIENT[Client-side React admin UI<br/>client/src/pages/admin/ (48 pages)<br/>SearchableSelect / forms]
+    IP_SEED[Seed scripts<br/>scripts/*.ts — 9 seed targets]
+    IP_SHARED[shared/types/ + server/shared/<br/>type contracts, bitmask, comboSystem]
   end
 
   subgraph "Testing Phase"
@@ -126,3 +126,6 @@ flowchart TD
 | 0C | batch-001 + batch-002 | 17 diagram files |
 | 0D | All batch files | batch-003 capability summary + phase-00 |
 | 1–20 | phase-00 + batch files | Implementation + seed scripts |
+
+---
+[? Presentation Flow](diagram-presentation-flow.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Rotation Systems ?](diagram-rotation-systems.md)

@@ -15,7 +15,7 @@ export function Countdown({ status, timer, show }: CountdownProps) {
   const lastSecondRef = useRef<number | null>(null);
   const [flash, setFlash] = useState(false);
 
-  const active = show ?? (status === "warmup" && timer > 0);
+  const active = show ?? (status === "warmup" && timer > 0 && timer <= 3);
   const seconds = Math.ceil(timer);
 
   // Play tick sounds + GO blast on each whole-second change.
@@ -29,15 +29,15 @@ export function Countdown({ status, timer, show }: CountdownProps) {
     }
   }, [active, seconds]);
 
-  // FIGHT! flash for the brief moment timer reaches 0 in warmup.
+  // "Let It Rip!" flash when warmup ends and launch phase begins.
   useEffect(() => {
-    if (status === "warmup" && timer <= 0.5 && timer > 0) {
+    if (status === "launching") {
       SoundManager.play("countdown-go");
       setFlash(true);
-      const t = setTimeout(() => setFlash(false), 600);
+      const t = setTimeout(() => setFlash(false), 1200);
       return () => clearTimeout(t);
     }
-  }, [status, timer]);
+  }, [status]);
 
   if (!active && !flash) return null;
 
@@ -68,7 +68,7 @@ export function Countdown({ status, timer, show }: CountdownProps) {
           letterSpacing: "0.08em",
         }}
       >
-        {flash ? "FIGHT!" : seconds}
+        {flash ? "Let It Rip!" : seconds}
       </div>
     </div>
   );

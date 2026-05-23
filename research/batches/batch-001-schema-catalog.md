@@ -11,7 +11,7 @@ unknowns: 0
 
 ## Research Completed
 
-Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts`, plus all physics engine types, shared type definitions for comboTask, specialMove, and beybladeSystem, and the compiler/runtime pipeline. No external sources required — code-reading stage.
+Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts`, the physics engine, the mechanic registry, all server utilities, and the BattleRoom import graph. No external sources required — code-reading stage only. All facts reflect current code as of this session.
 
 ---
 
@@ -19,12 +19,13 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 
 | Category | Count Catalogued | Notes |
 |----------|-----------------|-------|
-| Colyseus Schema Classes | 10 | LoopState, ObstacleState, PitState, TurretState, ProjectileState, WaterBodyState, PortalState, Beyblade, DetachedBodySchema, ArenaState, GameState |
-| Beyblade Fields | 80+ | Full schema enumerated below |
+| Colyseus Schema Classes | 11 | LoopState, ObstacleState, PitState, TurretState, ProjectileState, WaterBodyState, PortalState, MechanicInstance, Beyblade, DetachedBodySchema, ArenaState, GameState |
+| Beyblade Fields | 95+ | Full schema enumerated below |
 | Arena Feature State Classes | 7 | Loop, Obstacle, Pit, Turret, Projectile, WaterBody, Portal |
-| Physics Engine Methods | 15+ | createBeyblade, createObstacles, applyForce, setVelocity, update, checkCollision, calculateDamage, etc. |
+| Physics Engine Methods | 16+ | createBeyblade, updateCollisionFilter, createObstacles, applyForce, setVelocity, setBodySensor, update, getBodyState, checkBeybladeCollision, calculateCollisionDamage, checkRadialContactMatch, etc. |
+| Mechanic Handlers Registered | 31 | Full list in Mechanic Registry section |
 | Shared Type Systems | 6 | comboTask, specialMove, beybladeSystem, arenaConfigNew, elementTypes, roundModifier |
-| Server Utility Modules | 8 | comboSystem, comboTaskCompiler, specialMoveSystem, elementTypeLoader, prng, hashString, spatialGrid, roomCounter |
+| Server Utility Modules | 10 | comboSystem, comboTaskCompiler, specialMoveSystem, elementTypeLoader, gimmickExpander, firestoreLoaders, physicsFlags, prng, hashString, roomCounter |
 
 ---
 
@@ -156,9 +157,9 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | specialMove | string | "tactical_burst" | special move ID |
-| comboIds | ArraySchema<string> | [] | attached combo IDs (max 3) |
-| comboCooldowns | MapSchema<number> | {} | per-combo cooldown epoch ms |
-| comboSlots | ArraySchema<string> | [] | JSON-encoded BeybladeComboSlot[] |
+| comboIds | ArraySchema\<string\> | [] | attached combo IDs (max 3) |
+| comboCooldowns | MapSchema\<number\> | {} | per-combo cooldown epoch ms |
+| comboSlots | ArraySchema\<string\> | [] | JSON-encoded BeybladeComboSlot[] |
 | comboPhase | string | "idle" | idle/windup/active/bleed/cooldown |
 | specialMoveTick | number | 0 | tick in current special move |
 | comboChargeScale | number | 0 | 0–1 charge progress |
@@ -180,9 +181,9 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 ### 2.5D Sub-Part + Config State
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| subPartSpins | MapSchema<number> | {} | per-sub-part angular momentum |
-| activePartConfigs | MapSchema<string> | {} | active config name per slot |
-| configLastSwitchAt | MapSchema<number> | {} | last mode-switch epoch ms per slot |
+| subPartSpins | MapSchema\<number\> | {} | per-sub-part angular momentum |
+| activePartConfigs | MapSchema\<string\> | {} | active config name per slot |
+| configLastSwitchAt | MapSchema\<number\> | {} | last mode-switch epoch ms per slot |
 
 ### Split Bey State (Phantom Fox MS)
 | Field | Type | Default | Description |
@@ -221,7 +222,7 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 ### 2.5D Bey-Axis Tilt + Climbing (Phase E)
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| beyTiltAngle | number | 0 | 0°=vertical, 90°=on side |
+| beyTiltAngle | number | 0 | 0°=vertical, 90°=on-side, 180°=on-back, 270°=on-head (airborne), 360°=full rotation |
 | adhering | boolean | false | stuck to ceiling/overhang |
 | adheringSurfaceAngle | number | 0 | surface angle in degrees |
 | wallClimbing | boolean | false | climbing a wall |
@@ -238,7 +239,53 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 ### Element Type System (Phase AB)
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| elementTypes | ArraySchema<string> | [] | 1–2 element type values |
+| elementTypes | ArraySchema\<string\> | [] | 1–2 element type values |
+
+### Gimmick / Mechanic Instances
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| mechanics | ArraySchema\<MechanicInstance\> | [] | expanded from gimmickIds[] at match start |
+
+### Gear / Rail State (BX Xtreme Dash)
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| gearCompatibleBit | boolean | false | has gear-compatible tip |
+| xtremeEngaged | boolean | false | currently riding a rail |
+| xtremeRailProgress | float32 | 0 | 0–1 progress along current rail |
+| xtremeRailId | string | "" | which rail is engaged |
+
+### Engine Gear Boost Reserve
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| egBoostOmega | float32 | 0 | stored angular momentum from Engine Gear |
+
+### Burst Pressure
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| burstPressure | float32 | 0 | accumulated impact before burst trigger fires |
+
+### Physics Flags (Block M)
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| collisionWithBeys | boolean | true | collides with other beyblades |
+| collisionWithArena | boolean | true | collides with arena walls |
+| collisionWithObstacles | boolean | true | collides with obstacles |
+| invulnerable | boolean | false | schema-synced invuln flag (distinct from isInvulnerable) |
+| noKnockback | boolean | false | ignores knockback forces |
+| teamId | string | "" | team affiliation (for team modes) |
+
+---
+
+## MechanicInstance Schema
+
+New schema class (one per active mechanic on a beyblade). Populated by `gimmickExpander` at match start.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| type | string | "" | mechanic ID e.g. "free_spin" |
+| params | string | "{}" | JSON-serialized params from GimmickDef.defaultParams |
+| state | string | "{}" | JSON-serialized runtime state |
+| active | boolean | true | mechanic is running |
 
 ---
 
@@ -268,13 +315,16 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 | wallSpringRecoilMultiplier | number | 1.0 | spring recoil mult |
 | wallAngle | number | 0 | bowl profile 0–75 |
 | speedPathCount | number | 0 | loop/path count |
-| loopCount | number | 0 | alias |
+| loopCount | number | 0 | alias for backward compat |
 | obstacleCount | number | 0 | obstacle count |
 | pitCount | number | 0 | pit count |
 | turretCount | number | 0 | turret count |
 | waterBodyCount | number | 0 | water body count |
 | portalCount | number | 0 | portal count |
-| effectiveRadius | number | 0 | 0=full; shrink value |
+| effectiveRadius | number | 0 | 0=full; set during arena shrink (Phase V) |
+| scoringMode | string | "elimination" | "elimination" / "points" (BX scoring) |
+| pointsTarget | uint8 | 0 | points target; 0 = timed (no cap) |
+| hasZeroG | boolean | false | zero-G mode active |
 
 ---
 
@@ -282,16 +332,16 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 
 | Field | Type | Description |
 |-------|------|-------------|
-| beyblades | MapSchema<Beyblade> | all active beyblades keyed by sessionId |
+| beyblades | MapSchema\<Beyblade\> | all active beyblades keyed by sessionId |
 | arena | ArenaState | arena state |
-| detachedBodies | MapSchema<DetachedBodySchema> | sub-part projectiles/fragments |
-| loops | MapSchema<LoopState> | speed paths |
-| obstacles | MapSchema<ObstacleState> | obstacles |
-| pits | MapSchema<PitState> | pits |
-| turrets | MapSchema<TurretState> | turrets |
-| projectiles | MapSchema<ProjectileState> | turret projectiles |
-| waterBodies | MapSchema<WaterBodyState> | water bodies |
-| portals | MapSchema<PortalState> | portals |
+| detachedBodies | MapSchema\<DetachedBodySchema\> | sub-part projectiles/fragments |
+| loops | MapSchema\<LoopState\> | speed paths |
+| obstacles | MapSchema\<ObstacleState\> | obstacles |
+| pits | MapSchema\<PitState\> | pits |
+| turrets | MapSchema\<TurretState\> | turrets |
+| projectiles | MapSchema\<ProjectileState\> | turret projectiles |
+| waterBodies | MapSchema\<WaterBodyState\> | water bodies |
+| portals | MapSchema\<PortalState\> | portals |
 | status | string | waiting / warmup / in-progress / finished / series-finished |
 | winner | string | userId of winner |
 | timer | number | seconds remaining (180 default) |
@@ -305,9 +355,10 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 | spectatorCount | uint16 | active spectator count |
 | currentGame | uint8 | game number within series |
 | targetWins | uint8 | wins needed to take series |
-| seriesWins | MapSchema<uint8> | per-userId win count |
+| seriesWins | MapSchema\<uint8\> | per-userId win count |
 | seriesLeader | string | leading userId |
-| activeModifierIds | ArraySchema<string> | active RoundModifier IDs |
+| activeModifierIds | ArraySchema\<string\> | active RoundModifier IDs |
+| playerPoints | MapSchema\<uint8\> | per-userId BX/points scoring |
 
 ---
 
@@ -333,6 +384,7 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 
 ## Physics Engine Capabilities
 
+**File**: `server/physics/PhysicsEngine.ts`  
 **Library**: Matter.js (server-side, synchronous, 60Hz)  
 **Coordinate system**: 1 em = 16px, 1 cm = 24px. Arena center = (width×16/2, height×16/2).  
 **Arena radius**: `Math.min(width, height) × 16 × 0.45`
@@ -341,7 +393,8 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 | Method | Description |
 |--------|-------------|
 | setArenaConfig(config) | Cache arena config, compute center + radius |
-| createBeyblade(id, x, y, radius, mass, stats) | Add Matter.Body circle; radius in cm→px |
+| createBeyblade(id, x, y, radius, mass, stats, flags?) | Add Matter.Body circle; radius in cm→px; optional physics flags |
+| updateCollisionFilter(id, flags) | Update collision mask at runtime |
 | createObstacles(obstacles[]) | Static circle bodies for each obstacle |
 | createCircularArena(cx, cy, r) | 64-segment wall polygon |
 | createRectangularArena(w, h) | 4 wall rectangles |
@@ -350,10 +403,10 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 | setPosition(id, x, y) | Teleport body |
 | setLinearVelocity(id, vx, vy) | Set velocity directly |
 | setFrictionMultiplier(id, mult) | Modify friction + frictionAir |
-| setBodySensor(id, isSensor) | Toggle sensor mode (for high-jump) |
-| update(deltaTime) | Matter.Engine.update() — 60Hz |
+| setBodySensor(id, isSensor) | Toggle sensor mode (high-jump / meteor-strike hang) |
+| update(deltaTime?) | Matter.Engine.update() — 60Hz |
 | getBodyState(id) | Returns {x, y, rotation, velocityX, velocityY, angularVelocity} |
-| checkBeybladeCollision(id1, id2) | SAT collision check → CollisionResult |
+| checkBeybladeCollision(id1, id2) | Matter.Collision.collides (SAT) → CollisionResult |
 | calculateCollisionDamage(collision, b1, b2) | Returns {damage1, damage2, spinSteal1, spinSteal2} |
 | checkRadialContactMatch(radiusMm, cp) | CP radial gate check (±2mm tolerance) |
 
@@ -372,6 +425,83 @@ Full catalog of all Colyseus schema classes in `server/rooms/schema/GameState.ts
 - Radial gate: CP only fires if contact radius ≈ cp.radius ± 2mm
 - Free-spin roller: applies rubber material multipliers regardless of roller material
 - Takes max multiplier across all matching CPs (not sum)
+
+**Physics Flags** (`server/utils/physicsFlags.ts`):
+| Flag | Default | Description |
+|------|---------|-------------|
+| collisionWithBeys | true | Matter.js mask includes BEYBLADE category |
+| collisionWithArena | true | Matter.js mask includes ARENA_WALL category |
+| collisionWithObstacles | true | Matter.js mask includes OBSTACLE category |
+| collisionWithProjectiles | true | Matter.js mask includes PROJECTILE category |
+| invulnerable | false | takes no damage from any source |
+| noDamageOutput | false | deals no damage on hit |
+| noKnockback | false | ignores knockback forces |
+| noGravityWell | false | not pulled by gravity wells |
+| noSpinZone | false | not affected by spin zones |
+| noTriggerZone | false | not affected by trigger zones |
+
+---
+
+## Mechanic Registry
+
+**File**: `server/physics/MechanicRegistry.ts`  
+**Pattern**: `registerMechanic(id, handler)` — handlers auto-register at import via 31 side-effect imports.  
+**Dispatch**: `dispatchBehaviorRef({ behaviorId, params }, ctx)` — splits `behaviorId` on `.`, takes the last segment as `mechanicId`, looks up in REGISTRY.
+
+**Registered mechanic IDs** (31 total):
+| ID | File |
+|----|------|
+| energyReserve | mechanics/energyReserve.ts |
+| velocityBurst | mechanics/velocityBurst.ts |
+| attackAmplifier | mechanics/attackAmplifier.ts |
+| freeSpin | mechanics/freeSpin.ts |
+| spinTransfer | mechanics/spinTransfer.ts |
+| spinEqualization | mechanics/spinEqualization.ts |
+| rotationReverse | mechanics/rotationReverse.ts |
+| spinThresholdSwitch | mechanics/spinThresholdSwitch.ts |
+| modeSwitch | mechanics/modeSwitch.ts |
+| rubberGrip | mechanics/rubberGrip.ts |
+| contactDeflect | mechanics/contactDeflect.ts |
+| springRecoil | mechanics/springRecoil.ts |
+| weightShift | mechanics/weightShift.ts |
+| spinStealCoupling | mechanics/spinStealCoupling.ts |
+| railLock | mechanics/railLock.ts |
+| centerPull | mechanics/centerPull.ts |
+| bearingDrift | mechanics/bearingDrift.ts |
+| burstSuppress | mechanics/burstSuppress.ts |
+| staminaRecovery | mechanics/staminaRecovery.ts |
+| surfaceFrictionModifier | mechanics/surfaceFrictionModifier.ts |
+| orbitMovement | mechanics/orbitMovement.ts |
+| upperLaunch | mechanics/upperLaunch.ts |
+| smashImpact | mechanics/smashImpact.ts |
+| barrageHit | mechanics/barrageHit.ts |
+| zeroGFloat | mechanics/zeroGFloat.ts |
+| magneticPull | mechanics/magneticPull.ts |
+| contactHeightGate | mechanics/contactHeightGate.ts |
+| spinDirectionBonus | mechanics/spinDirectionBonus.ts |
+| subPartBurst | mechanics/subPartBurst.ts |
+| defenseStance | mechanics/defenseStance.ts |
+| revivalSpin | mechanics/revivalSpin.ts |
+
+**MechanicContext interface** (passed to every handler):
+- `bey`, `opponentId?`, `opponent?`, `dt`
+- `applyForce(id, fx, fy)`, `applyKnockback(id, dir, dist)`
+- `setVelocity?(id, vx, vy)`, `getPosition?(id)`
+
+**MechanicHandler interface**: `onActivate?`, `tick?`, `onCollision?`, `passive?`
+
+---
+
+## Gimmick Expander
+
+**File**: `server/utils/gimmickExpander.ts`
+
+`expandGimmicks(gimmickIds[], gimmickDefsCache)` → `ArraySchema<MechanicInstance>`
+
+- Called ONCE per beyblade in `onCreate()`, never in the game loop.
+- A `GimmickDef` maps one gimmick ID to one or more mechanic IDs plus `defaultParams`.
+- Unknown gimmickIds produce a console warning and are skipped.
+- Result written directly to `beyblade.mechanics`.
 
 ---
 
@@ -446,24 +576,13 @@ cameraConfig?: { zoomFactor, zoomDurationTicks, slowMotionFactor }
 
 ---
 
-## ArenaFeatureProcessor Capabilities
+## BehaviorRef Dispatcher — Status: RESOLVED
 
-**File**: `server/shared/rooms/ArenaFeatureProcessor.ts`
+The old gap (only `movement.orbit` handled) is fully resolved.
 
-**Known behaviorIds** (runtime-executable):
-- `movement.orbit` — circular orbit force (centerX, centerY, intensity, direction)
-- All others produce a warning + skip
+**Current state**: `server/physics/MechanicRegistry.ts` provides `dispatchBehaviorRef()` which routes any `behaviorId` to a registered handler. 31 mechanics are pre-registered. The `comboTaskCompiler` generates `behaviorId` values like `factor.boost`, `transform.become_X`, `spawn.X`, etc. — the dispatcher strips the namespace prefix and looks up the mechanic ID in the REGISTRY.
 
-**Bridge interface**:
-- checkLoopCollision, checkWaterCollision, checkPitCollision, checkObstacleCollision
-- applyLoopBoost, applyWaterResistance, applyForce, applyKnockback
-- setPosition (wrecking_ball, swap_position)
-- setVelocity (sticky physics)
-- getPosition
-
-**BeyTransformState**: beyId, transformTo, savedSpin, savedBody, expiresAtTick, tempFeatureId
-
-**Gap**: Only `movement.orbit` is recognized at runtime. All other BehaviorId values from the compiler (factor.boost, transform.become_X, spawn.X, etc.) are NOT yet wired into the ArenaFeatureProcessor executor. The compiler generates them correctly; the runtime dispatcher is incomplete.
+**Remaining gap**: Whether each compiled `behaviorId` (e.g. `factor.boost`, `transform.become_gravity_well`) maps to a registered mechanic ID depends on naming convention alignment between the compiler output and the registered handler IDs. Not verified at this stage — would require reading each mechanic file's `registerMechanic` call.
 
 ---
 
@@ -471,103 +590,63 @@ cameraConfig?: { zoomFactor, zoomDurationTicks, slowMotionFactor }
 
 | Module | Path | Capability |
 |--------|------|-----------|
-| comboSystem | server/shared/utils/comboSystem.ts | detect combos (3-key + trigger-based), QTE gate, per-tracker cooldown |
+| comboSystem | server/shared/utils/comboSystem.ts | detect combos (3-key + trigger-based), QTE gate, per-tracker cooldown, BeyComboMatchState, slot-based combo system |
 | comboTaskCompiler | server/utils/comboTaskCompiler.ts | converts ComboTask[] → BehaviorRef[] at admin save time |
 | specialMoveSystem | server/utils/specialMoveSystem.ts | full special move state machine |
 | elementTypeLoader | server/utils/elementTypeLoader.ts | Firestore element type matrix + dynamic type multiplier |
+| gimmickExpander | server/utils/gimmickExpander.ts | expands gimmickIds[] → MechanicInstance[] at match start |
+| firestoreLoaders | server/utils/firestoreLoaders.ts | `loadGimmickDefs` and other Firestore loaders |
+| physicsFlags | server/utils/physicsFlags.ts | BeybladePhysicsFlags (10 flags), COLLISION_CATEGORIES, buildCollisionMask, resolvePhysicsFlags |
 | prng | server/shared/utils/prng.ts | seeded PRNG (matchId → seed) for deterministic replays |
-| hashString | server/utils/hashString.ts | string → uint32 hash for PRNG seeding |
-| spatialGrid | server/utils/spatialGrid.ts | spatial partitioning for O(n) collision broad-phase |
-| roomCounter | server/shared/utils/roomCounter.ts | tryReserveRoom / releaseRoom (max 20 rooms) |
+| hashString | server/shared/utils/hashString.ts | string → uint32 hash for PRNG seeding |
+| roomCounter | server/shared/utils/roomCounter.ts | tryReserveRoom / releaseRoom (max 20 rooms), setMaxActiveRooms |
 
 ---
 
 ## BattleRoom Import Graph (key dependencies)
 
 BattleRoom imports:
-- `loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats, loadComboEffects` from firebase
+- `loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats, loadComboEffects, getFirestoreDb` from firebase
+- `loadGimmickDefs` from firestoreLoaders
+- `expandGimmicks` from gimmickExpander
 - `loadGlobalSettings` from tournamentFirebase
-- `ComboTracker, detectCombo, BeyComboMatchState, TriggerState, detectTriggerCombos, recordComboFired, isQTEGateMet` from comboSystem
+- `tryReserveRoom, releaseRoom, setMaxActiveRooms` from roomCounter
+- `createPRNG` from prng
+- `hashString` from hashString
+- `ComboTracker, detectCombo, createComboTracker, BeyComboMatchState, createBeyComboMatchState, resetBeyComboMatchState, TriggerState, createTriggerState, detectTriggerCombos, recordComboFired, TriggerContext, isQTEGateMet` from comboSystem
+- `normalizeBestOf, targetWinsFor` from seriesFormat
+- `normalizeInput, invertInputControls, PlayerInput` from bitmask
+- `resolveWallAngle` from ArenaUtils
+- `resolvePhysicsFlags` from physicsFlags
 - `processArenaFeatures` from ArenaFeatureProcessor
 - `populateArenaFeatures` from populateArenaFeatures
 - `advanceArenaRotation` from advanceArenaRotation
 - `applyMovementInput, applyActionInput, computeForceMagnitude` from InputHandler
 - `determineGameWinner, recordGameWin, buildSeriesScore, isSeriesOver, resetStateForNextGame` from SeriesManager
-- `MODIFIER_MAP, type RoundModifier` from roundModifier
-- `loadElementTypeMatrix, computeDynamicTypeMultiplier` from elementTypeLoader
-- `ArenaTimelineEvent, ArenaLink, BeyLink, BeyLinkEffect` types
+- `MODIFIER_MAP, RoundModifier` from roundModifier
+- `loadElementTypeMatrix, computeDynamicTypeMultiplier, LoadedTypeMatrix` from elementTypeLoader
+- `ArenaTimelineEvent, ArenaLink, BeyLink, BeyLinkEffect, BeyLinkGroupPattern, BeyLinkMovementControl` types
 
 ---
 
-## Multi-Engine Support Assessment (from code)
-
-| Feature | 2D Engine | 2.5D Engine | 3D Engine | Current Status |
-|---------|-----------|-------------|-----------|----------------|
-| Collision detection | ✅ Matter.js SAT | ✅ + CP radial gate | ❌ not built | 2D fully working |
-| Spin physics | ✅ angularVelocity | ✅ subPartSpins | ❌ | |
-| Wall/arena bounds | ✅ circular + rect | ✅ ArenaSystem elevation | ❌ | |
-| Special moves | ✅ specialMoveSystem | ✅ (comboSlots/pipeline) | ❌ | Steps compile correctly |
-| Combos | ✅ detectCombo | ✅ BeybladeComboSlot | ❌ | |
-| BehaviorRef execution | partial (orbit only) | partial | ❌ | Gap: only movement.orbit wired |
-| Element types | ✅ elementTypeLoader | ✅ | ❌ | |
-| Arena hazards | ✅ all 7 types | ✅ | ❌ | |
-| Arena rotation | ✅ advanceArenaRotation | ✅ | ❌ | |
-| Gyro wobble | ✅ (seeded PRNG < 40% spin) | ✅ | ❌ | |
-| BeyLink (multi-bey) | partial | partial | ❌ | Types defined, partial runtime |
-| Round modifiers | ✅ activeModifierIds + MODIFIER_MAP | ✅ | ❌ | |
-| Sub-part detachment | ✅ DetachedBodySchema | ✅ | ❌ | |
-| Combination lock | ✅ (schema + types) | ✅ | ❌ | |
-
----
-
-## Critical Engine Gap: BehaviorRef Dispatcher
-
-The `comboTaskCompiler.ts` produces `BehaviorRef[]` steps with `behaviorId` values like:
-- `factor.boost` (stat modifier)
-- `transform.become_gravity_well`
-- `spawn.portal`, `spawn.obstacle`, etc.
-- `movement.circle`, `movement.dash_to`, etc.
-- `arena.floor_override`, `arena.gravity_change`, etc.
-
-But `ArenaFeatureProcessor.executeBehavior()` only handles ONE: `movement.orbit`.
-All other behaviorIds produce a warning and are silently skipped at runtime.
-
-This means: **the full ComboTask/ComboEffectDef/SpecialMoveStep pipeline compiles correctly but does NOT execute correctly at runtime.** The step data exists in Firestore; the dispatcher is the gap.
-
-This is the most important gap discovered in Stage 0A. It blocks all plan-dependent gimmick and special move behavior.
-
----
-
-## New Discoveries
+## New Discoveries (vs. prior batch-001)
 
 | Discovery | Category | Evidence | Tag |
 |-----------|----------|---------|-----|
-| BehaviorRef dispatcher only handles movement.orbit | ENGINE GAP | ArenaFeatureProcessor.ts:64 switch statement | FACT (code confirmed) |
-| ComboTask compiler is complete (5 action types + all subtypes) | ENGINE CAPABILITY | comboTaskCompiler.ts | FACT |
-| SpecialMove uses pipeline of ComboEffectDef steps (not standalone) | ENGINE DESIGN | specialMove.ts SpecialMoveStep.comboEffectId | FACT |
-| Hardcoded special moves (SPECIAL_MOVES) separate from Firestore pipeline | ENGINE GAP | constants/specialMoves.ts vs specialMoveSystem.ts | FACT |
-| DetachedBodySchema enables sub-part projectile/fragment lifecycle | ENGINE CAPABILITY | GameState.ts:404 | FACT |
-| Combination lock types (stack/helical/tandem/cluster) defined on Beyblade | ENGINE CAPABILITY | GameState.ts:389 | FACT |
-| BeyLink types fully defined (9 categories, ArenaLink, BeyLinkEffect) | ENGINE CAPABILITY | BattleRoom.ts imports | FACT |
-| Round modifiers runtime map exists (MODIFIER_MAP) | ENGINE CAPABILITY | BattleRoom.ts import | FACT |
-| Material system has 5 materials with 3-factor multipliers each | ENGINE CAPABILITY | PhysicsEngine.ts MATERIAL_MULTIPLIERS | FACT |
-| Contact point radial gate is ±2mm tolerance | ENGINE DESIGN | PhysicsEngine.ts RADIAL_CONTACT_TOLERANCE_MM | FACT |
-| Combo trigger system beyond 3-key sequences (6 trigger types) | ENGINE CAPABILITY | comboTask.ts ComboTrigger | FACT |
-| Charged timing type with quadratic/linear/step charge scaling | ENGINE CAPABILITY | comboTask.ts ComboTiming | FACT |
-| Arena shrink (effectiveRadius) already in ArenaState | ENGINE CAPABILITY | GameState.ts:477 | FACT |
-| QTE gate for special move cancellation exists | ENGINE CAPABILITY | specialMoveSystem.ts | FACT |
-| Bey transformation into arena feature (gravity_well, turret, etc.) | ENGINE CAPABILITY | comboTask.ts TransformationAction | FACT (type defined); execution missing |
-
----
-
-## Proposed Extensions (discovered from engine gaps)
-
-| Candidate | Gap Evidence | Priority |
-|-----------|-------------|---------|
-| Implement BehaviorRef dispatcher for all compiled action types | ArenaFeatureProcessor switch has only movement.orbit | CRITICAL |
-| Wire Firestore special_moves pipeline to specialMoveSystem (currently uses hardcoded constants) | constants/specialMoves.ts vs Firestore pipeline | HIGH |
-| mechanic_defs / gimmick_defs Firestore collections + COLLECTIONS entries | Plan Rule 7; absent from firebase.ts | HIGH |
-| camera_profiles / audio_profiles Firestore collections | Plan Rule 6,7; absent from firebase.ts | HIGH |
+| MechanicInstance schema class added to GameState.ts | SCHEMA ADDITION | GameState.ts:187 | FACT |
+| Beyblade.mechanics: ArraySchema\<MechanicInstance\> | SCHEMA ADDITION | GameState.ts:410 | FACT |
+| Gear/Rail fields (gearCompatibleBit, xtremeEngaged, xtremeRailProgress, xtremeRailId) | SCHEMA ADDITION | GameState.ts:413-416 | FACT |
+| egBoostOmega (Engine Gear boost reserve) | SCHEMA ADDITION | GameState.ts:419 | FACT |
+| burstPressure field (accumulated impact tracking) | SCHEMA ADDITION | GameState.ts:422 | FACT |
+| Physics flags Block M (collisionWithBeys etc.) synced to schema | SCHEMA ADDITION | GameState.ts:425-431 | FACT |
+| ArenaState.scoringMode + pointsTarget + hasZeroG | SCHEMA ADDITION | GameState.ts:514-517 | FACT |
+| GameState.playerPoints MapSchema for BX/points scoring | SCHEMA ADDITION | GameState.ts:567 | FACT |
+| BehaviorRef dispatcher gap RESOLVED via MechanicRegistry | ARCHITECTURE CHANGE | server/physics/MechanicRegistry.ts | FACT |
+| 31 mechanic handlers registered (up from 1 in prior catalog) | ENGINE CAPABILITY | MechanicRegistry.ts imports | FACT |
+| physicsFlags.ts: 10-flag system + COLLISION_CATEGORIES bitmask | NEW MODULE | server/utils/physicsFlags.ts | FACT |
+| gimmickExpander.ts: GimmickDef → MechanicInstance[] at match start | NEW MODULE | server/utils/gimmickExpander.ts | FACT |
+| firestoreLoaders.ts: loadGimmickDefs and other Firestore loaders | NEW MODULE | server/utils/firestoreLoaders.ts | FACT |
+| setMaxActiveRooms exported from roomCounter | NEW EXPORT | roomCounter import in BattleRoom.ts | FACT |
 
 ---
 
@@ -576,3 +655,6 @@ This is the most important gap discovered in Stage 0A. It blocks all plan-depend
 
 ## Missing Data
 (none — all server code was accessible)
+
+---
+[? Batch 000: Admin Audit](batch-000-admin-audit.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Batch 002: Discovery Table ?](batch-002-discovery-table.md)

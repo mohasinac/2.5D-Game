@@ -25,3 +25,31 @@ export function wallBowlForce(baseForce: number, wallAngle: number): number {
   const rad = (wallAngle * Math.PI) / 180;
   return baseForce * (1.0 + Math.sin(rad) * 0.8);
 }
+
+// ── Arena Tilt lateral gravity ───────────────────────────────────────────────
+// Tuned so 90° tilt ≈ 15× the max wobble force — noticeable drift without being
+// overwhelming at shallow angles (≤30°).
+const TILT_GRAVITY_SCALE = 0.04;
+
+/**
+ * Compute the 2-D lateral force vector that arena tilt exerts on a beyblade.
+ *
+ * @param tiltAngleDeg  0=flat, 90=vertical wall-ride, 180=fully inverted.
+ * @param tiltDirDeg    Downhill azimuth: 0=right (+X), 90=down (+Y), 180=left, 270=up.
+ * @param mass          Matter.js body mass (same units used by applyForce).
+ * @returns {fx, fy}    Force to pass to physicsEngine.applyForce().
+ */
+export function computeTiltForce(
+  tiltAngleDeg: number,
+  tiltDirDeg: number,
+  mass: number
+): { fx: number; fy: number } {
+  if (tiltAngleDeg === 0 || tiltAngleDeg === 360) return { fx: 0, fy: 0 };
+  const tiltRad = (tiltAngleDeg * Math.PI) / 180;
+  const dirRad  = (tiltDirDeg  * Math.PI) / 180;
+  const magnitude = Math.sin(tiltRad) * TILT_GRAVITY_SCALE * mass;
+  return {
+    fx: Math.cos(dirRad) * magnitude,
+    fy: Math.sin(dirRad) * magnitude,
+  };
+}

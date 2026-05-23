@@ -32,7 +32,7 @@ export interface ClimbingBeyState {
   lateralStiffness: number; // gyroscopic auto-recovery rate (maps to lateralStiffness)
 
   // Current 2.5D orientation state
-  beyTiltAngle: number;    // degrees: 0=vertical, 90=on-side
+  beyTiltAngle: number;    // degrees 0–360: 0=vertical, 90=on-side, 180=on-back, 270=on-head (airborne), 360=full-rotation-completed
   adhering: boolean;
   adheringSurfaceAngle: number; // degrees: angle of surface bey sticks to
   wallClimbing: boolean;
@@ -168,7 +168,7 @@ export function updateBeyTilt(
   }
 
   // 4. Clamp
-  tilt = Math.max(0, Math.min(90, tilt));
+  tilt = Math.max(0, Math.min(360, tilt));
 
   // Wobble amplitude tracks tilt (linked to GameState.ts:332 wobbleAmplitude)
   const wobbleAmplitude = tilt * spinRatio * 0.5;

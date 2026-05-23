@@ -23,6 +23,9 @@ import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { LoadingProgress } from "@/components/LoadingProgress";
 import { QTEOverlay } from "@/components/game/QTEOverlay";
+import { Countdown } from "@/components/game/Countdown";
+import { LaunchPhase } from "@/components/game/LaunchPhase";
+import { useLaunchInput } from "@/game/hooks/useLaunchInput";
 import type { QTEPromptData } from "@/game/hooks/useColyseus";
 
 interface AIBattleLocationState {
@@ -150,6 +153,7 @@ export function AIBattleGamePage() {
       spawnCollisionParticles(cx, cy, 0xff4444, 0x44aaff);
       if (data.damage1 > 0) spawnDamageNumber(cx - 12, cy - 8, data.damage1, 0xff5555);
       if (data.damage2 > 0) spawnDamageNumber(cx + 12, cy - 8, data.damage2, 0x55aaff);
+      SoundManager.play("collision");
     });
     room.onMessage("spin-out", (data: any) => {
       const { x, y } = physicsToScreen(data.x, data.y);
@@ -182,6 +186,8 @@ export function AIBattleGamePage() {
 
   useGameInput(sendInput, !isSpectating && connectionState === "connected" && gameState?.status === "in-progress");
 
+  const launchState = useLaunchInput(room ?? null, gameState?.status ?? "");
+
   const myStability    = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
   const stabilityColor = myStability > 0.6 ? C.green : myStability > 0.3 ? C.yellow : C.red;
   const stabilityLabel = myStability > 0.6 ? "Stable" : myStability > 0.3 ? "Wobbling" : "Critical!";
@@ -196,7 +202,7 @@ export function AIBattleGamePage() {
     ? Math.ceil(Math.max(0, gameState.timer))
     : null;
 
-  const showLoading = !gameState || (gameState.status !== "in-progress" && gameState.status !== "warmup" && gameState.status !== "finished" && gameState.status !== "series-finished");
+  const showLoading = !gameState || (gameState.status !== "in-progress" && gameState.status !== "warmup" && gameState.status !== "launching" && gameState.status !== "finished" && gameState.status !== "series-finished");
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh", background: "#000", overflow: "hidden" }}>
@@ -457,6 +463,23 @@ export function AIBattleGamePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Pre-match countdown (3-2-1 → Let It Rip!) */}
+      {gameState && <Countdown status={gameState.status} timer={gameState.timer} />}
+
+      {/* Launch phase overlay */}
+      {gameState?.status === "launching" && !gameEndData && (
+        <LaunchPhase
+          launchTimer={gameState.launchTimer ?? 5}
+          launchTilt={isSpectating ? 0 : launchState.tilt}
+          launchPosition={isSpectating ? 0.5 : launchState.position}
+          launchPower={isSpectating ? 0 : launchState.power}
+          chargingStarted={isSpectating ? false : launchState.chargingStarted}
+          launched={isSpectating ? false : launchState.launched}
+          failed={isSpectating ? false : (myBeyblade?.launchFailed ?? false)}
+          isSpectating={isSpectating}
+        />
       )}
 
       {/* QTE Overlay (Phase Y) */}

@@ -1,4 +1,4 @@
-# Phase 07 (Gen2/3/4/Original) — Beyblade Systems
+﻿# Phase 07 (Gen2/3/4/Original) — Beyblade Systems
 
 **Sources:** All bey doc files in `linka/beys/gen2/mfb/`, `linka/beys/gen2/zerog/`, `linka/beys/gen3/{burst,god,choz,gt,superking,db,bu}/`, `linka/beys/gen4/bx/`, `linka/beys/game-original/`; parts glossaries in `linka/gen2/parts-glossary.md`, `linka/gen3/parts-glossary.md`, `linka/gen4/parts-glossary.md`.
 **Stat Guidelines recap:** Attack 80–150 / Defense 40–90 / Stamina 40–90 for Attack type; Attack 40–90 / Defense 80–150 / Stamina 40–90 for Defense type; Attack 40–80 / Defense 40–80 / Stamina 90–150 for Stamina type; all moderate 80–120 for Balance type. Sum ≤ 360.
@@ -64,7 +64,7 @@
 | Lightning L-Drago 100HF | BB-43 | gen2 | Attack | left | 140 | 40 | 50 | 30 | spin_steal_coupling,rotation_reverse,velocity_burst | mfb | Lightning left-spin; L Drago CW 180° mode; HF hole-flat; Ryuga S1 | 1 | A |
 | Meteo L-Drago LW105LF | BB-88 | gen2 | Attack | left | 140 | 40 | 60 | 34 | spin_steal_coupling,rotation_reverse,rubber_grip | mfb | Meteo left-spin spin-steal; LF left flat; left asymmetric track; Ryuga S2 | 1 | A |
 | Night Virgo DF145BS | BB-22 | gen2 | Stamina | right | 40 | 70 | 130 | 32 | stamina_recovery | mfb | Night/Virgo smooth wide; DF145; BS tip; Tithi legend bey stamina | 3 | B |
-| Phantom Orion B:D | BB-118 | gen2 | Stamina | right | 30 | 70 | 150 | 36 | free_spin,bearing_zombie,stamina_recovery | mfb | Phantom 31.07g lightest 4D frame; B:D ball-drive free-spin; endurance king | 1 | A |
+| Phantom Orion B:D | BB-118 | gen2 | Stamina | right | 30 | 70 | 150 | 36 | free_spin,bearing_zombie,stamina_recovery | mfb | Phantom 31.07g lightest 4D frame; B:D Bearing Drive free-spin; endurance king | 1 | A |
 | Poison Serpent SW145SD | BB-69 | gen2 | Balance | right | 90 | 70 | 80 | 32 | mode_switch | mfb | Poison 29.4g; SW145 switchable wing; SD semi-defense; Reiji bey | 2 | A |
 | Proto Nemesis AD145D | B-156 | gen2 | Defense | right | 40 | 120 | 70 | 30 | ad145_deflect,contact_deflect | mfb | Proto FW ultra-light; AD145 armor deflect; D tip; Hasbro-only | 3 | B |
 | Ray Striker D125CS | BB-71 | gen2 | Attack | right | 120 | 70 | 70 | 34 | spring_recoil,rubber_grip | mfb | Ray 3-section; D125; CS coat sharp counter-attack rubber; Masamune first | 2 | A |
@@ -444,3 +444,340 @@ Covering remaining God-layer files plus Cho-Z era's Kaiser Kerbeus (burst era la
 | `burst_bu` | Gen3 Burst Ultimate 2022–23 | Ring + Layer Base + Gatinko Chip + Forge Disc + Performance Tip. B-195 through B-210+ range. |
 | `bx` | Gen4 Beyblade X | Blade + Ratchet + Bit. BX-## (Basic), UX-## (Unique), CX-## (Custom) product lines. Xtreme Dash system. |
 | `game_original` | Game-original / narrative expansions | Beys created for game narrative arcs (BX S2/S3 storylines, ZeroG villain expansions). No direct toyline product code confirmed. |
+
+---
+[? Phase 07a: Generation 1](phase-07-gen1.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 08: Gimmicks ?](phase-08-gimmicks.md)
+
+
+---
+
+## Appendix N2 — Gen2, Gen3, Gen4 Narrative, Story & Character Context
+
+> Source: episode files under `linka/episodes/gen2/`, `gen3/`, `gen4/`. English dub/localization numbering unless marked (JP).
+
+---
+
+### N2-A: Gen2 Season Arc Map (Metal Fight Beyblade)
+
+| Arc Label | JP Title | EN Title | Episodes | System Era | Core Hook |
+|-----------|----------|----------|----------|------------|-----------|
+| MFB S1 Metal Fusion | Metal Fight Beyblade | Beyblade: Metal Fusion | 51 ep | MFB 5-component | Gingka arrives in Koma Village; Face Hunter threat; Dark Nebula vs. Bladers |
+| MFB S2 Metal Masters | Metal Fight Beyblade Baku | Beyblade: Metal Masters | 51 ep | MFB (continued) | World Beyblade Championship; national teams; Hades Inc. threat |
+| MFB S3 Metal Fury / Shogun Steel | Metal Fight Beyblade 4D | Beyblade: Metal Fury | 39 ep | 4D System (BB-105+) | Legendary Bladers; Nemesis resurrection arc |
+| Shogun Steel / Zero-G | Beyblade: Shogun Steel | Beyblade: Shogun Steel | 51 ep | Zero-G / Samurai System | Next-gen bladers; Zarkan arena (moving stadiums); successor to MFB era |
+
+---
+
+### N2-B: Character Roster — Gen2 Metal Fusion (S1)
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Gingka Hagane | Storm Pegasus 105RF | Protagonist | Free Agent then Gan Gan Galaxy |
+| Kenta Yumiya | Flame Sagittario C145S | Gingka's first friend | Gan Gan Galaxy (support) |
+| Kyoya Tategami | Rock Leone 145WB | Rival; solo blader | Face Hunters then lone wolf |
+| Benkei Hanawa | Dark Bull H145SD | Comic-relief rival | Face Hunters then ally |
+| Madoka Amano | — (mechanic) | Beyblade tuner / support | Gan Gan Galaxy |
+| Tetsuya Watarigani | Dark Gasher CH120FS | Mid-tier rival | Rogue blader |
+| Doji | Dark Wolf DF145FS | Dark Nebula sub-boss | Dark Nebula |
+| Ryuga | L-Drago Destroy F:S / Lightning L-Drago 100HF | Antagonist ace; solo | Dark Nebula then lone |
+| Yu Tendo | Flame Libra T125ES | Child prodigy rival | Dark Nebula then ally |
+| Tsubasa Otori | Earth Eagle 145WD | Mysterious rival | Dark Nebula spy then ally |
+
+**Faction Structure Gen2 S1:**
+- **Face Hunters** — street gang controlling Koma Village's beydish territory. Kyoya is their captain. Dissolved mid-S1.
+- **Dark Nebula** — villainous organization weaponizing L-Drago's dark power. Doji is the architect; Ryuga is the weapon.
+- **Gan Gan Galaxy** (S2 formation) — Japan's official WBC team: Gingka, Masamune, Yu, Tsubasa, Madoka.
+
+**Key Story Beats S2 S1:**
+1. Gingka 100v1 opening battle (Ep01) — defeats 100 Face Hunters simultaneously with Storm Pegasus. Establishes power scale.
+2. Ryuga acquires L-Drago (right-spin absorb) — absorbs other beys' spin energy on contact.
+3. Dark Nebula's plan: use L-Drago's power to revive the ancient bey Nemesis.
+4. Bey Points system: 30,000+ pts required for championship entry. Introduced Ep01.
+5. L-Drago's forbidden technique: Spin-Steal (rubber contact points absorb rotational energy).
+
+---
+
+### N2-C: Character Roster — Gen2 Metal Masters (S2)
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Gingka Hagane | Galaxy Pegasus W105R2F | Returning protagonist | Gan Gan Galaxy (Japan) |
+| Masamune Kadoya | Ray Striker D125CS | Gan Gan Galaxy member | Japan |
+| Yu Tendo | Flame Libra T125ES | Gan Gan Galaxy member | Japan |
+| Tsubasa Otori | Earth Eagle 145WD | Gan Gan Galaxy member | Japan |
+| Nile (Nehel) | Vulcan Horuseus 145D | Desert Blaze (Egypt) ace | Egypt |
+| Damian Hart | Hades Kerbecs BD145DS | Hades Inc. ace; near-unbeatable | Hades Inc. |
+| Julian Konzern | Gravity Destroyer AD145WD | Excalibur (Europe) captain | Team Excalibur |
+| Sophie | Grand Cetus WA130RS | Excalibur member | Team Excalibur |
+| Wales | Grand Cetus T125RS | Excalibur member | Team Excalibur |
+| Argo Garcia | Ray Gil 100RSF | Garcia Bros. co-captain | Team Garcia (Brazil) |
+
+**Key Story Beats Gen2 S2:**
+1. World Beyblade Championship: national teams compete in block format.
+2. Hades Inc. (HD Academy) brainwashes elite bladers to follow Hades' directive.
+3. Julian Konzern's Gravity Destroyer: first dual-spin bey (can switch rotation direction).
+4. Gingka achieves Galaxy Pegasus evolution from Storm Pegasus mid-arc.
+5. Damian Hart (Hades Kerbecs) defeats multiple national teams before facing Gingka.
+
+---
+
+### N2-D: Character Roster — Gen2 Metal Fury (S3) & Shogun Steel
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Gingka Hagane | Cosmic Pegasus F:D | Returning; Legendary Blader | Solar System Bladers |
+| Kyoya Tategami | Fang Leone 130W2D | Legendary Blader | Solar System Bladers |
+| King (Titi) | Variares D:D | Legendary Blader | Solar System Bladers |
+| Aguma | Jade Jupiter S130RB | Legendary Blader | Solar System Bladers |
+| Ryuga | L-Drago Destroy F:S | Legendary Blader (Dragon); dies at series end | L-Drago side |
+| Nemesis / Proto Nemesis | Diablo Nemesis X:D | Final antagonist; Legendary power bey | Nemesis |
+| Dynamis | Guardian Jupiter (oracle bey, no canonical toy release) | Oracle gatekeeper | Neutral |
+| Zyro Kurogane (Shogun Steel) | Samurai Ifrit W145CF | Next-gen protagonist | New generation |
+| Maru (Shogun Steel) | — (mechanic) | Madoka successor role | Support |
+| Eight (Shogun Steel) | Guardian Leviathan 160SB | Rival | — |
+
+**Key Story Beats Gen2 S3:**
+1. Legendary Bladers arc: 12 bladers corresponding to solar system planets must unite their beys' power.
+2. Nemesis' resurrection: Pluto and Rago attempt to revive Nemesis to destroy the world.
+3. Ryuga's sacrifice: L-Drago Destroy passes its star fragment power to Gingka before Ryuga dies.
+4. Gingka's final Pegasus achieves Cosmic form with all 12 Legendary Bladers' energy.
+5. Shogun Steel time-skip: 3 years later, Zyro uses Samurai system in Zero-G spinning stadiums.
+
+**Zero-G Stadium Mechanic:**
+- Zero-G arenas have tilting/rocking floors — the stadium itself moves during battle.
+- Beys must adapt to dynamic footing; stamina-type advantage shifts.
+- Introduced with Samurai System (stealth/chrome wheel combos over BB).
+
+---
+
+### N2-E: Gen3 Season Arc Map (Beyblade Burst)
+
+| Arc Label | JP Title | EN Title | Episodes | System Era | Core Hook |
+|-----------|----------|----------|----------|------------|-----------|
+| Burst S1 | Beyblade Burst | Beyblade Burst | 51 ep | Standard Layer system | Valt / Shu rivalry; BC Sol; Burst Finish mechanic debut |
+| Burst S2 God | Beyblade Burst God | Beyblade Burst Evolution | 51 ep | God/Cho-Z precursor | International arc; BC Sol in Spain; Avatar powers |
+| Burst S3 Cho-Z | Beyblade Burst Cho-Z | Beyblade Burst Turbo | 52 ep | Cho-Z Layer system | Cho-Z Awakening; Phi as main antagonist; bey destruction |
+| Burst S4 GT / Rise | Beyblade Burst GT | Beyblade Burst Rise | 52 ep | GT Chip system | Gachi League; Dante Koryu as protagonist; Hyuga Hizashi introduced |
+| Burst S5 Surge / Super King | Beyblade Burst Surge / Super King | Beyblade Burst Surge | 52 ep | Super King (Overdrive) Layer | Twin protagonists Hyuga+Hikaru; Lightning Launch; Superking ring |
+| Burst S6 QuadDrive / DB | Beyblade Burst QuadDrive | Beyblade Burst QuadDrive | 52 ep | DB/QuadDrive 4-mode | Bel Daizora "Dark Prince"; Dynamite Belial; 4-pocket stadiums |
+| Burst S7 QuadStrike | Beyblade Burst QuadStrike | Beyblade Burst QuadStrike | 26 ep | Ultimate Layer | Elemental Power tiles; international-only release; final Burst season |
+
+---
+
+### N2-F: Character Roster — Gen3 S1 Burst
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Valt Aoi | Victory Valtryek V2 / Valt Aoi's Valtryek series | Protagonist | BC Sol |
+| Shu Kurenai | Storm Spryzen S2 / Red Eye | Rival (best friend then antagonist) | BC Sol then Snake Pit |
+| Rantaro Kiyama | Raging Roktavor R2 | BC Sol member | BC Sol |
+| Daigo Kurogami | Deep Chaos D2 | BC Sol member | BC Sol |
+| Wakiya Murasaki | Wyvron W2 | Rich rival | Rival then BC Sol |
+| Xander Shakadera | Xeno Xcalius X2 | Strong rival; BC Sol ace initially | BC Sol rival |
+| Free de la Hoya | Fafnir F2 | Prodigy; rubber-based spin-steal | Free agent |
+| Lui Shirosagi | Luinor L2 | Tournament ace antagonist | Antagonist |
+| Snake Pit bladers (various) | Various beys (Red Eye / Shu fully revealed in S2) | Organization introduced in S1; antagonist | Snake Pit (antagonist) |
+
+**Key Mechanics Introduced S1:**
+- **Rush Launch** — high-speed launch technique introduced Ep01 by Valt.
+- **Burst Finish** — bey disassembles (Layer pops off) from impact; 2 points. First shown Ep01.
+- **Scoring**: Ring-Out = 2pt, Burst = 2pt, Survivor = 1pt. Dominant throughout Gen3.
+- **Rubber contact points (Fafnir)** — Free's Fafnir uses rubber on Layer to steal opponent's spin.
+
+---
+
+### N2-G: Character Roster — Gen3 S2 God / Evolution
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Valt Aoi | Valtryek V3 | Protagonist; travels to Spain | BC Sol |
+| Shu Kurenai | Spryzen Requiem S3 (as Red Eye) | Antagonist mid-arc | Snake Pit |
+| Cuza Ackermann | Amazing Ataczak | BC Sol (Spain) member | BC Sol |
+| Rickson Clay | Blast Jinnius J3 | BC Sol support | BC Sol |
+| Joshua Burns | Jinnius J3 | Rival | — |
+| Silas Karlisle | Satomb S3 | Rival | — |
+| Kit Lopez | Kinetic Khalzar K3 | Antagonist | Shadow Blades |
+| Ghasem Madal | Garuda G3 | Antagonist | Shadow Blades |
+
+**Key Story Beats Gen3 S2:**
+1. Valt moves to Spain to join BC Sol's international training ground.
+2. Avatar/God Layer mechanic: beys unlock "resonance" power flares in battle (visual anime upgrade).
+3. Snake Pit organization: secretive group training elite bladers for world domination.
+4. Shu (as Red Eye) becomes primary antagonist; his bey Spryzen Requiem can right-spin or left-spin.
+5. Dual-spin Spryzen mechanic: Requiem can match any opponent's spin direction.
+
+---
+
+### N2-H: Character Roster — Gen3 S3 Cho-Z / Turbo
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Valt Aoi | Cho-Z Valtryek V4 | Protagonist; Cho-Z Awakening | BC Sol |
+| Aiger Akabane | Z Achilles A4 | New protagonist; impulsive | BC Sol |
+| Phi | Phoenix P4 | Main antagonist; destroys beys | Antagonist |
+| Fubuki Sumiye | Emperor Forneus F4 | Rival | WBO |
+| Ranjiro Kiyama | Bushin Ashindra | BC Sol member | BC Sol |
+| Hyde | Hades H4 | Phi's brother; antagonist | Antagonist |
+| Laban Vanot | Luinor L4 | Rival | — |
+
+**Key Story Beats Gen3 S3:**
+1. Cho-Z Awakening: select beys "awaken" into more powerful forms mid-battle (anime power-up).
+2. Phi's goal: smash legendary beys to absorb their power into his Phoenix.
+3. Aiger's corruption arc: Achilles' power overwhelms Aiger; he becomes antagonistic briefly.
+4. Bey destruction stakes raised: destroyed beys (Valtryek V4, multiple others) are permanently lost in-story.
+5. Resolution: Aiger overcomes darkness, defeats Phi with rebuilt Achilles.
+
+---
+
+### N2-I: Character Roster — Gen3 S4 GT / Rise
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Dante Koryu | Ace Dragon D5 | New protagonist | Victories |
+| Hyuga Hizashi | Super Hyperion H5 | Rival; twin of Hikaru | Victories later |
+| Hikaru Hizashi | Kolossal Helios H5 | Hyuga's twin | — |
+| Bell Daikokuten | Buster Xcalius X5 | Antagonist | Antagonist |
+| Delta Zakuro | Venom/Erase Diabolos D5 | Rival | — |
+| Fumiya Kiyama | Slash Valkyrie | Rantaro's little brother | — |
+
+**Key Story Beats Gen3 S4:**
+1. GT Chip system: beys have a removable GT Chip in the Layer that powers up performance.
+2. Gachi League: new competitive format; ranking-based advancement.
+3. Hyuga/Hikaru rivalry: brothers from opposing perspectives.
+
+---
+
+### N2-J: Character Roster — Gen3 S5 Surge / Super King
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Hyuga Hizashi | Super Hyperion Xceed 1A | Protagonist | — |
+| Hikaru Hizashi | Kolossal Helios Xceed 1A | Co-protagonist (twin) | — |
+| Lui Shirosagi | Imperial Dragon I5 | Rival antagonist | — |
+| Basara Suiro | Bushin Ashindra A5 | Rival | — |
+| Lain Valhalla | Lucifer the End E5 / Mirage Fafnir | Mid-season antagonist | — |
+| Bel Daizora (cameo/intro) | Dynamite Belial (teased) | Post-credits tease | — |
+
+**Key Story Beats Gen3 S5:**
+1. Lightning Launch introduced Ep01: Hyuga's signature ultra-high speed launch style.
+2. Superking (Overdrive) Layer: new ring system adds an outer Overdrive ring that extends the bey's attack reach.
+3. Twin protagonists format: Hyuga and Hikaru compete separately and together throughout.
+4. Lain's Lucifer: Mirage Fafnir uses free-spin bearing mechanism for maximum LAD (Life After Death).
+5. Super Hyperion vs. Kolossal Helios: ultimate sibling rivalry resolved mid-arc; brothers unite.
+
+---
+
+### N2-K: Character Roster — Gen3 S6 QuadDrive / Dynamite Battle
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Bel Daizora | Dynamite Belial Nexus 9-60 / Ultimate Belial | "Dark Prince"; primary protagonist | — |
+| Rashad Goodman | Glide Ragnaruk Wheel Revolve 1S | Rival; USA top blader | — |
+| Basara Suiro | Vanish Fafnir | Returning rival | — |
+| Leon Aizetsu | Mirage Fafnir Nothing 2S | Rival | — |
+| Ranzo Kiyama | Ace Dragon Sting Charge Zan | Rantaro's cousin | — |
+| Pax Percival | Prime Apocalypse Over Keep' | Antagonist | Antagonist |
+
+**Key Mechanics Gen3 S6:**
+- **QuadDrive / DB Layer**: 4 selectable modes built into the Layer (Attack / Stamina / Defense / Balance). Switch by rotating outer frame.
+- **4-pocket stadiums**: stadium has four distinct pocket zones; beys launched from any of the four entry points.
+- This is the **final Japanese Burst season**; subsequent seasons are internationally distributed only.
+
+---
+
+### N2-L: Character Roster — Gen3 S7 QuadStrike
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Bird Kite | Glide Ragnaruk 4-60RWD | Protagonist | — |
+| Legendary Bladers (various) | Ultimate Layer beys | Ensemble cast | — |
+
+**Key Mechanics Gen3 S7:**
+- **Elemental Power tiles**: arena has special floor zones that boost attack, defense, or stamina stats.
+- **Ultimate Layer**: final iteration of the DB Layer system; maximum mode-switching complexity.
+- International-only release (no Japanese broadcast); 26-episode abbreviated run.
+
+---
+
+### N2-M: Gen4 Season Arc Map (Beyblade X)
+
+| Arc Label | JP Title | EN Title | Episodes | System Era | Core Hook |
+|-----------|----------|----------|----------|------------|-----------|
+| BX S1 | Beyblade X | Beyblade X | 38+ ep | BX 3-component (Blade/Ratchet/Bit) | Xenon City; Team Persona; Xtreme Line/Dash mechanic |
+| BX S2 | Beyblade X (continued) | Beyblade X S2 | ongoing | BX | Expanded Team Persona roster; new rivals |
+| BX S3 | TBA | TBA | TBA | BX | TBA |
+
+---
+
+### N2-N: Character Roster — Gen4 BX S1
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Jaxon Bell ("Bird") | Sword Dran 3-60F | Protagonist; street blader | Team Persona |
+| Robin | Strike Hawk (destroyed Ep01) | Mentor figure; bey destroyed in opening | Team Persona (origin) |
+| Khrome | Cobalt Drake | Team Persona member | Team Persona |
+| Takumi | Stone Mountain | Team Persona member | Team Persona |
+| Miles / Mighty | Hells Scythe | Antagonist initially | Antagonist |
+| Leon | Leon Claw | Rival | — |
+| Aria | Wyvern Gale | Rival | — |
+
+**Setting — Xenon City:**
+- Futuristic urban environment where "X" tournaments are held.
+- Xtreme Line: a rail/track embedded in the stadium floor. Beys launched onto the Xtreme Line gain massive speed bonus (Xtreme Dash mechanic).
+- Scoring: Ring-Out = 2pt, Burst = 2pt, **Xtreme Finish** (ring-out via Xtreme Line) = 2pt, Survivor = 1pt.
+
+**Key Story Beats Gen4 S1:**
+1. Ep01 "X": Robin's Strike Hawk is destroyed by Miles; Jaxon inherits Robin's Blade component ("Sword").
+2. Team Persona formation: Jaxon, Khrome, Takumi united under Robin's legacy.
+3. Xtreme Dash mechanic introduced Ep01: bey rides the Xtreme Line rail for explosive burst of speed.
+4. Xtreme Finish as new win condition: landing a ring-out via the Xtreme Line grants 2 points (premium finish).
+5. BX 3-component system: Blade (attack ring) + Ratchet (height/tooth count) + Bit (tip material).
+
+**Key Mechanics Gen4:**
+- **Xtreme Line / Xtreme Dash** — stadium rail that provides a massive acceleration burst; skill in timing entry/exit.
+- **Ratchet tooth count** — determines burst resistance (3-tooth = burst-prone but aggressive; 9-tooth = very resistant).
+- **Bit types** — flat bits (F, HF) for attack; ball bits (B) for stamina; needle bits (N) for pure stamina/defense.
+- **Blade shapes** — determines attack profile, upper attack angle, and weight distribution.
+
+---
+
+### N2-O: Gen4 Launch Techniques
+
+| Technique | User | Episode Debut | Notes |
+|-----------|------|---------------|-------|
+| Standard Xtreme Launch | Jaxon | BX S1 Ep01 | Basic Gen4 launch; targets Xtreme Line |
+| Spin-Top Upper Launch | Khrome | BX S1 Ep03 (approx) | Upward angled launch for upper-attack beys |
+| Backdraft Launch | Miles | BX S1 Ep05 (approx) | Reverse-spin entry to Xtreme Line for counter-attack |
+
+---
+
+### N2-P: Gen3/Gen4 Burst/X Scoring Comparison
+
+| Win Type | Gen3 Burst Points | Gen4 BX Points | Trigger |
+|----------|------------------|----------------|---------|
+| Ring-Out Finish | 2 | 2 | Bey exits arena boundary |
+| Burst Finish | 2 | 2 | Bey disassembles (ratchet unlocks) |
+| Xtreme Finish | N/A | 2 | Bey exits via Xtreme Line (BX only) |
+| Survivor Finish | 1 | 1 | Opponent bey stops spinning first |
+
+---
+
+### N2-Q: Gen2/3/4 Faction / Team Summary Table
+
+| Faction | Gen | Season(s) | Alignment | Key Members |
+|---------|-----|-----------|-----------|-------------|
+| Face Hunters | Gen2 | MFB S1 | Antagonist then ally | Kyoya, Benkei |
+| Gan Gan Galaxy | Gen2 | MFB S1-S3 | Protagonist | Gingka, Masamune, Yu, Tsubasa |
+| Dark Nebula | Gen2 | MFB S1 | Antagonist | Doji, Ryuga |
+| Hades Inc. (HD Academy) | Gen2 | MFB S2 | Antagonist | Damian Hart, Jack |
+| Team Excalibur | Gen2 | MFB S2 | Rival | Julian, Sophie, Wales |
+| Solar System Bladers | Gen2 | MFB S3 | Protagonist | Gingka, Kyoya, Ryuga, King, Aguma |
+| BC Sol (Spain) | Gen3 | Burst S1-S2 | Protagonist | Valt, Shu, Rantaro, Daigo, Wakiya |
+| Snake Pit | Gen3 | Burst S1-S2 | Antagonist | Red Eye (Shu), Kit, Ghasem |
+| WBO (World Beyblade Organization) | Gen3 | Burst S2+ | Neutral / governing body | Institutional |
+| Team Persona | Gen4 | BX S1+ | Protagonist | Jaxon (Bird), Khrome, Takumi |
+
+---
+
+*End of Phase 07 Gen2/3/4 Appendix (Narrative)*
+

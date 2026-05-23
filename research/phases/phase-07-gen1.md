@@ -1,4 +1,4 @@
-# Phase 07 — Gen1 Bey Systems Table
+﻿# Phase 07 — Gen1 Bey Systems Table
 
 **Scope:** All Gen1 beyblade entries — Plastic era (SGS / Magnacore / Engine Gear) + HMS era.  
 **Date built:** 2026-05-23  
@@ -129,16 +129,16 @@
 | Torguitar | plastic_sgs | gen1 | Defense | Right | 55 | 130 | 90 | 2.4 | `["contact_deflect","heavy_wheel"]` | [INFERRED] Miguel (Renegades). Anime-exclusive. BB=Metal Ball Base + guitar-string AR deflection. | 3 | B |
 | Trygle | plastic_sgs | gen1 | Attack | Right | 145 | 50 | 75 | 2.5 | `["spring_recoil"]` | [FACT] A-17; Michael (All Starz); AR=Triple Wing (S-tier, recoilFactor 0.08); BB=SG Jumping Base. | 2 | A |
 | Trygle 2 | plastic_sgs | gen1 | Attack | Right | 130 | 55 | 85 | 2.5 | `[]` | [FACT] Random Booster 9; Michael (All Starz G-Rev); AR=Triple Beak (F-tier). No gimmick. | 2 | A |
-| Tryhorn | plastic_sgs | gen1 | Attack | Right | 125 | 50 | 90 | 2.4 | `[]` | [SPECULATION] Steve (All Starz). Anime-only. No confirmed parts. No gimmick. | 3 | C |
+| Tryhorn | plastic_sgs | gen1 | Attack | Right | 125 | 50 | 90 | 2.4 | `[]` | [FACT] Steve (All Starz). AR=Land Attack; WD=Drag Saucer; BB=Drag Ship. No mechanical gimmick. | 3 | B |
 | Trypio | plastic_sgs | gen1 | Defense | Right | 50 | 140 | 100 | 2.5 | `["contact_deflect"]` | [FACT] A-18; Eddy (All Starz); AR=Flying Defense (7g, 8.84cm wide, deflects hits). | 2 | A |
 | Unicolyon | plastic_sgs | gen1 | Defense | Right | 50 | 135 | 95 | 2.4 | `[]` | [SPECULATION] Oliver (Majestics). Anime-exclusive. AR=Tail Defense; WD=Eight Heavy; BB=Unicolyon Base. No gimmick. | 2 | C |
 | Wyborg | plastic_sgs | gen1 | Attack | Right | 130 | 55 | 85 | 2.5 | `[]` | [FACT] A-18; Ian Papov (Demo Boys); AR=Wyvern Wing (~5g, blunt smash C-tier); BB=Spike Base. No gimmick. | 2 | A |
 | Galman | plastic_sgs | gen1 | Defense | Right | 50 | 140 | 100 | 2.5 | `[]` | [FACT] A-10; Kevin (White Tigers); AR=War Monkey (~6g, smooth deflection); WD=Eight Heavy; BB=SG Sharp. No gimmick. | 2 | A |
-| Galux | plastic_sgs | gen1 | Balance | Right | 90 | 95 | 95 | 2.4 | `["heavy_wheel"]` | [SPECULATION] Mariah (White Tigers). Anime-exclusive; BB=Metal Ball Base. | 2 | C |
+| Galux | plastic_sgs | gen1 | Balance | Right | 90 | 95 | 95 | 2.4 | `["heavy_wheel"]` | [FACT] Mariah/Mariam (White Tigers). AR=War Lion; WD=Eight Wide; BB=Metal Ball Base (chrome ball bearing tip). | 2 | B |
 | Galzzly | plastic_sgs | gen1 | Attack | Right | 130 | 55 | 85 | 2.5 | `["free_spin"]` | [FACT] A-9; Gary (All Starz); AR=War Bear with free-spinning SAR (non-competitive in standard use). | 3 | A |
 | Death Driger | plastic_sgs | gen1 | Attack | Right | 125 | 50 | 90 | 2.5 | `[]` | [FACT] A-36 (Shadow Driger TT / Death Driger Hasbro); AR=Star Shape (~3g, five-point star). No gimmick. | 3 | A |
-| Canarias | plastic_sgs | gen1 | Stamina | Right | 50 | 70 | 140 | 2.5 | `["mode_switch"]` | [SPECULATION] Mario (Brazil). Anime-exclusive; BB=Full Auto Clutch Base (unreliable auto-engage). Mode switch maps to mode_switch. | 3 | C |
-| Chameleon | plastic_sgs | gen1 | Balance | Right | 80 | 90 | 100 | 2.4 | `["contact_deflect"]` | [SPECULATION] Team Psykick anime-exclusive. All parts inferred. ChameleonMimicry → contact_deflect (closest match). | 3 | C |
+| Canarias | plastic_sgs | gen1 | Stamina | Right | 50 | 70 | 140 | 2.5 | `["mode_switch"]` | [INFERENCE] Mario (Brazil). AR=Survivor; WD=Wide Attack A (hexagonal); BB=Full Auto Clutch Base. Mode switch not confirmed from sourced description. | 3 | C |
+| Chameleon | plastic_sgs | gen1 | Balance | Right | 80 | 90 | 100 | 2.4 | `[]` | [SPECULATION] Team Psykick anime-exclusive. All parts inferred. ChameleonMimicry = visual camouflage / invisibility (anime-only — no physics gimmick; no engine equivalent). | 3 | C |
 
 ---
 
@@ -283,3 +283,199 @@ Every Dranzer blade base has a switchable tip: S→Spiral Change, F→Flame Chan
 ---
 
 *End of Phase 07 Gen1 Research File*
+
+---
+[? Phase 06: Mechanics](phase-06-mechanics.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 07b: Generations 2-4 ?](phase-07-gen234.md)
+
+
+---
+
+## Appendix N1 — Gen1 Narrative, Story & Character Context
+
+> Source: episode files under `linka/episodes/gen1/`. All episode references are to the English dub (Hasbro) numbering unless marked (JP).
+
+---
+
+### N1-A: Season Arc Map
+
+| Arc Label | JP Title | EN Title | Episodes | System Era | Core Hook |
+|-----------|----------|----------|----------|------------|-----------|
+| S1 Classic | Bakuten Shoot Beyblade | Beyblade | 51 ep | Plastic SGS | Tyson learns the basics; BBA tournament; Blade Sharks antagonists |
+| S2 V-Force | Bakuten Shoot Beyblade 2002 | Beyblade V-Force | 51 ep | Plastic Magnacore | Saint Shields try to steal Bit-Beasts; Cyber Beyblades threat |
+| S3 G-Revolution | Bakuten Shoot Beyblade G-Revolution | Beyblade G-Revolution | 52 ep | Plastic Engine Gear / Engine Gear 2 | World Championship; rival teams (F-Dynasty, Barthez Battalion, JPB); BEGA arc |
+| HMS (G-Rev Ep 40+) | — (integrated into G-Rev) | G-Revolution Ep 40+ | last ~12 ep of S3 | HMS | HMS era debut; all Bladebreakers receive HMS beys; final BEGA arc battles |
+
+---
+
+### N1-B: Character Roster — S1 Classic
+
+| Character | Bey (English) | Bey (Japanese) | Role | Faction |
+|-----------|---------------|----------------|------|---------|
+| Tyson Granger | Dragoon Grip Attacker | Dragoon S (Storm) | Protagonist | BBA team |
+| Kai Hiwatari | Dranzer S | Dranzer S | Rival / anti-hero | BBA team |
+| Ray Kon | Driger S | Driger S | BBA member | BBA team |
+| Max Tate | Draciel S | Draciel S | BBA member | BBA team |
+| Kenny ("The Chief") | Hopper Attack | Hopper Attack | Strategist / mechanic | BBA team |
+| Carlos | Beyblade (unnamed) | — | Blade Sharks member | Blade Sharks (antagonist) |
+| Andrew | Rock Bison | Rock Bison | Minor antagonist early | Blade Sharks |
+| Mr. Dickenson | — | — | BBA chairman / mentor | BBA |
+| Hiro Granger (Tyson's brother) | Master Dragoon | — | Off-screen early | — |
+
+**Faction Structure S1:**
+- **BBA (Beyblade Battle Association) team** — sanctioned tournament team. Tyson, Kai, Ray, Max, Kenny.
+- **Blade Sharks** — street gang of bladders extorting kids for beys. Carlos is their top fighter. Dissolved after Ep 1-3.
+- **White Tiger team (China)** — Ray's old team; introduced at regional tournament. Kevin, Gary, Mariah, Lee (captain).
+- **All Starz (USA)** — Max's home team; Michael, Emily, Eddy, Steve.
+
+---
+
+### N1-C: Character Roster — S2 V-Force
+
+| Character | Bey (English) | Role | Faction |
+|-----------|---------------|------|---------|
+| Tyson Granger | Dragoon V2 | Returning protagonist | BBA team |
+| Kai Hiwatari | Dranzer V2 | Returning | BBA team |
+| Ray Kon | Driger V2 | Returning | BBA team |
+| Max Tate | Draciel V2 | Returning | BBA team |
+| Ozuma | Flash Leopard 2 | Saint Shields leader | Saint Shields |
+| Dunga | Vortex Ape 2 | Saint Shields member | Saint Shields |
+| Joseph | Vanishing Moot | Saint Shields member | Saint Shields |
+| Mariam | Sharkrash | Saint Shields member | Saint Shields |
+| Dr. K | — | Scientist villain; creates Cyber Beyblades | Team Psykick |
+| Zeo Zagart | Burning Cerberus | Main antagonist mid-arc; android boy | Team Psykick |
+
+**Faction Structure S2:**
+- **Saint Shields** — guardians sworn to seal Bit-Beasts back into their stones. Antagonists then allies by end.
+- **Team Psykick** — Zagart Corp's blade team; uses Cyber Beyblades (mechanically powered, no Bit-Beast). Main threat.
+- **Majestics** — European elite team introduced mid-season; Robert (Unicorn), Oliver (Griffolyon), Johnny (Rock Bison), Enrique (Vortex Ape).
+
+**Key Story Beats S2:**
+1. Saint Shields debut: Ozuma challenges Tyson to test if Dragoon is worthy of being sealed.
+2. Cyber Beyblade arc: Team Psykick's beys can copy Bit-Beast powers via data.
+3. Magnacore mechanic introduced: magnetic polarity in Weight Disk fights back against Saint Shields' sealing technique.
+4. Zeo revealed to be a robot built by Zagart to house his dead son's memories.
+5. Saint Shields sacrifice their Bit-Beasts to stop the sealing stones from shattering; reconcile with BBA team.
+
+---
+
+### N1-D: Character Roster — S3 G-Revolution
+
+| Character | Bey | Role | Faction |
+|-----------|-----|------|---------|
+| Tyson Granger | Dragoon GT / Dragoon G | Protagonist; WC challenger | G-Revolutions |
+| Kai Hiwatari | Dranzer G | Rival; defects to BEGA temporarily | BBA then BEGA then BBA |
+| Ray Kon | Driger G | Returning | BBA team |
+| Max Tate | Draciel G | Returning | BBA team |
+| Daichi Sumeragi | Strata Dragoon G | New co-lead with Tyson | G-Revolutions |
+| Ming-Ming (Mie-Mie) | Jiraiya Sword | Pop idol; BEGA member | BEGA |
+| Brooklyn | Zeus | Prodigy antagonist; BEGA's strongest | BEGA |
+| Boris Balkov | Falborg / Wolborg | BEGA director; recurring villain | BEGA |
+| Julia Fernandez | Thunder Dragon | F-Dynasty co-captain | F-Dynasty (Spain) |
+| Raul Fernandez | Torch Aries | F-Dynasty co-captain (twins) | F-Dynasty (Spain) |
+| Garland | Apollon | Strong WC rival | PPB All Starz |
+| Barthez | Bolt Linx | Corrupt coach | Barthez Battalion |
+| Miguel | Torch Pegasus | Barthez Battalion ace | Barthez Battalion |
+
+**Faction Structure S3:**
+- **G-Revolutions** — Tyson + Daichi + Kenny; indie team for the WBBA World Championship.
+- **BEGA (Beyblade Entertainment Global Alliance)** — corporate league trying to replace the WBBA; recruits top bladers.
+- **F-Dynasty (Spain)** — twin siblings Julia and Raul; combative double-threat style.
+- **Barthez Battalion (France)** — cheating team; coach uses magnets and remote controls.
+- **PPB All Starz (USA)** — upgraded US team; Garland as ace.
+
+**Key Story Beats S3:**
+1. WBBA vs. BEGA: Boris recruits top world bladers to BEGA, threatening to shut down official tournaments.
+2. Kai defects to BEGA for a challenge, fights Brooklyn (Zeus), nearly loses his will to blade.
+3. Brooklyn's Zeus has "no-technique" perfect style — he reads all strategies intuitively.
+4. Justice Five matches: BEGA vs. G-Revolutions; 5 one-on-one showdowns decide world beyblade governance.
+5. Tyson vs. Brooklyn (finale): Dragoon GT achieves max power to overcome Brooklyn's "Zone" state. BEGA dissolved.
+
+---
+
+### N1-E: Character Roster — HMS Era (G-Revolution Ep 40+)
+
+| Character | HMS Bey | Previous Bey | Note |
+|-----------|---------|--------------|------|
+| Tyson Granger | Dragoon MS | Dragoon G | First HMS bey received; HMS debut ep 40 |
+| Ray Kon | Driger MS | Driger G | Received same episode |
+| Max Tate | Draciel MS | Draciel G | Received same episode |
+| Daichi Sumeragi | Strata Dragoon MS | Strata Dragoon G | Received same episode |
+| Kai Hiwatari | Dranzer MS | Dranzer G | Received independently (BEGA arc) |
+
+**HMS Era Notes:**
+- HMS (Heavy Metal System) beys introduced in final arc of G-Revolution (ep 40 onward).
+- All-metal construction; no plastic shell; lighter and faster than Engine Gear predecessors.
+- Episode 40 of G-Revolution = effective launch of HMS era in-story.
+- HMS beys have no separate Weight Disk; metal frame IS the primary weight distribution mechanism.
+- The transition serves as a narrative "power-up" moment for BEGA finals.
+
+---
+
+### N1-F: Episode-Derived Mechanic Introduction Dates (Gen1)
+
+| Mechanic / Feature | Episode First Appearance | Arc | Notes |
+|--------------------|--------------------------|-----|-------|
+| Running Aerial Launch | S1 Ep01 "The Blade Raider" | Classic | Tyson launches mid-stride; first named technique in series |
+| Blade Shark aggro approach | S1 Ep01 | Classic | Carlos demonstrates aggressive diagonal slam style |
+| Bit-Beast concept | S1 Ep02 | Classic | Kenny explains spiritual guardian embedded in bey |
+| Magnacore magnet polarity | S2 Ep08 (approx) | V-Force | Ozuma attacks Dragoon's Magnetic Weight Disk; repel effect first shown |
+| Cyber Beyblade data copy | S2 Ep20 (approx) | V-Force | Team Psykick copies Bit-Beast data into Cyber bey |
+| Engine Gear chain boost | S3 Ep01 | G-Revolution | Daichi's Strata Dragoon G shows chain-driven spin amplification |
+| F-Dynasty Twin Combination | S3 Ep12 (approx) | G-Revolution | Julia + Raul synchronize attacks from both sides simultaneously |
+| Zeus "Zone" state | S3 Ep42 (approx) | G-Revolution | Brooklyn enters perfect-flow state; no conscious technique |
+| HMS magnetized low-friction bearing | G-Rev Ep40 | HMS | HMS ring glides on near-frictionless metal bearing |
+| HMS Upper Attack ring-out | G-Rev Ep42 | HMS | Upper metal frame launches opponent vertically; first ring-out via HMS |
+
+---
+
+### N1-G: Stadium Configurations by Arc (Gen1)
+
+| Arc | Stadium Type | Key Characteristics | Representative Episodes |
+|-----|-------------|---------------------|------------------------|
+| S1 Classic early | Rooftop bowl / street bowls | Shallow circular rim; improvised concrete; no special features | Ep01 (rooftop), Ep04 (park bowl) |
+| S1 Classic (BBA tournament) | BBA Tournament Stadium | Official round bowl; deep wall; raised platform | Ep09+ (tournament arc) |
+| S1 Classic (White Tiger match) | Desert rock formation | Natural stone bowl; irregular surface; outdoor daylight | China arc eps |
+| S1 Classic (All Starz match) | Indoor sport arena | Smooth flat floor; side walls; indoor lighting | USA arc eps |
+| S2 V-Force | Psykick Lab Stadium | High-tech enclosed bowl; energy field ring possible | Psykick base eps |
+| S2 V-Force (Saint Shields) | Stone circle / ruins | Outdoor ancient ruins; natural barriers; Bit-Beast energy focus | Saint Shields arc eps |
+| S3 G-Revolution | World Championship Arena | Large tiered stadium; crowd seating; sponsor boards | WC arc eps |
+| S3 G-Revolution (BEGA) | BEGA Justice Stadium | Oversized formal bowl; giant screens; dramatic lighting | Justice Five finals |
+| HMS era | HMS Arena (BEGA HQ) | All-metal bowl surface; no plastic rim; mirrors HMS bey design | G-Rev Ep40+ |
+
+---
+
+### N1-H: Gen1 Faction / Team Summary Table
+
+| Faction | Season | Alignment | Members | Home Region |
+|---------|--------|-----------|---------|-------------|
+| BBA (Beyblade Battle Association) | S1-S3 | Protagonist | Tyson, Kai, Ray, Max, Kenny | Japan |
+| Blade Sharks | S1 | Antagonist (early) | Carlos, Andrew | Japan (street) |
+| White Tiger X | S1-S3 | Rival then ally | Lee, Mariah, Kevin, Gary | China |
+| All Starz | S1-S3 | Rival then ally | Michael, Emily, Eddy, Steve, (S3: Garland) | USA |
+| Majestics | S2 | Rival then ally | Robert (Unicorn), Oliver (Griffolyon), Johnny (Rock Bison), Enrique (Vortex Ape) | Europe |
+| Saint Shields | S2 | Antagonist then ally | Ozuma, Dunga, Joseph, Mariam | — (guardians) |
+| Team Psykick | S2 | Antagonist | Zeo, Gordo, various | Zagart Corp |
+| G-Revolutions | S3 | Protagonist | Tyson, Daichi, Kenny | Japan |
+| F-Dynasty | S3 | Rival | Julia, Raul | Spain |
+| Barthez Battalion | S3 | Antagonist (cheating) | Barthez, Miguel, Aaron, Claude, Mathilda | France |
+| BEGA | S3 | Antagonist | Boris, Brooklyn, Ming-Ming, Kai (temp) | Global corp |
+| PPB All Starz (S3) | S3 | Rival then ally | Garland, Rick, Robert, Oliver | USA |
+
+---
+
+### N1-I: Per-Arc Bey Power Progression (Game Design Notes)
+
+| Arc | Tier Label | Approx Total Stats (atk+def+sta) | Representative Beys |
+|-----|-----------|----------------------------------|-------------------|
+| S1 early (ep01-10) | Entry | 100-150 | Dragoon Grip Attacker, Dranzer S (base) |
+| S1 tournament | Mid | 150-200 | Draciel S, Driger S, Wolborg |
+| S1 finals | High | 200-240 | Dragoon S (evolved), Dranzer S (evolved) |
+| S2 V-Force | High | 220-260 | Dragoon V2, Dranzer V2, Flash Leopard 2 |
+| S3 G-Rev early | High+ | 240-270 | Dragoon G, Strata Dragoon G |
+| S3 BEGA arc | Elite | 270-300 | Zeus, Apollon, Thunder Dragon |
+| HMS era | Elite+ | 280-310 | Dragoon MS, Dranzer MS, Driger MS |
+
+---
+
+*End of Phase 07 Gen1 Appendix (Narrative)*
+

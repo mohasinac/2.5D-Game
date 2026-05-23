@@ -31,9 +31,10 @@ flowchart TD
     MD_ARENA[ArenaFeatureProcessor<br/>processArenaFeatures()]
     MD_SPIN[spin decay + wobble PRNG]
     MD_COLLISION[Matter.Events 'collisionStart'<br/>→ handleCollision()]
-    MD_MODIFIER[RoundModifierSystem<br/>activeModifierIds → effects]
+    MD_MODIFIER[RoundModifierSystem<br/>activeModifierIds → MODIFIER_MAP]
     MD_AI[AIController.computeInput()<br/>per-bey if isAI]
-    MD_BEHAVIOR[executeBehavior()<br/>⚠️ only movement.orbit wired]
+    MD_BEHAVIOR[executeBehavior()<br/>→ MechanicRegistry dispatch<br/>31 namespaced handlers]
+    MD_GIMMICK[GimmickExpander<br/>gimmickIds → MechanicInstance[]]
   end
 
   subgraph "Deterministic Core"
@@ -47,11 +48,12 @@ flowchart TD
     SS_BEY[Beyblade position/spin/health/flags]
     SS_ARENA[ArenaState hazards/projectiles/walls]
     SS_GAME[GameState status/seriesWins/roundNum]
+    SS_MECHANIC[MechanicInstance[] active mechanics]
     SS_SCHEMA[Colyseus @Schema auto-patch]
   end
 
   subgraph "Presentation"
-    PR_PIXI[PixiJS 5-layer render]
+    PR_PIXI[PixiJS 7-layer render<br/>arena→features→beyblades→detached→particles→HUD]
     PR_HUD[HUD: health/spin/power/combo]
     PR_PARTICLE[ParticleSystem collision sparks]
     PR_AUDIO[AudioManager positional SFX]
@@ -80,6 +82,7 @@ flowchart TD
   TICK --> MD_SPIN
   TICK --> MD_AI
   TICK --> MD_MODIFIER
+  TICK --> MD_GIMMICK
 
   MD_FORCE --> DC_MATTER
   MD_SPECIAL --> DC_STAT
@@ -92,15 +95,18 @@ flowchart TD
   MD_COLLISION --> DC_STAT
   MD_COLLISION --> DC_ELEMENT
   DC_MATTER --> MD_COLLISION
+  MD_GIMMICK --> SS_MECHANIC
 
   DC_STAT --> SS_BEY
   DC_ELEMENT --> SS_BEY
   DC_MATTER --> SS_BEY
   MD_MODIFIER --> SS_GAME
   MD_ARENA --> SS_ARENA
+  MD_BEHAVIOR --> SS_BEY
   SS_BEY --> SS_SCHEMA
   SS_ARENA --> SS_SCHEMA
   SS_GAME --> SS_SCHEMA
+  SS_MECHANIC --> SS_SCHEMA
 
   SS_SCHEMA --> SYNC
   SYNC --> PR_PIXI
@@ -119,6 +125,7 @@ flowchart TD
 | Collision order | Matter.js event order is deterministic for same inputs |
 | AI inputs | `computeInput()` is pure function of game state |
 | Element multipliers | `computeDynamicTypeMultiplier()` is pure function |
+| MechanicRegistry | All 31 handlers are pure functions of beyblade + arena state |
 
 ## Non-Determinism Sources (known)
 
@@ -128,6 +135,21 @@ flowchart TD
 | Network jitter | Client prediction not implemented; all authority on server |
 | Firestore load order | `onCreate` async loads are best-effort ordered |
 
-## Critical Gap
+## Tick Execution Order (per 60Hz step)
 
-`executeBehavior()` in `ArenaFeatureProcessor` only dispatches `movement.orbit`. All other `BehaviorRef.behaviorId` values (`factor.boost`, `transform.*`, `spawn.*`, `movement.circle`, `arena.*`) log a warning and are skipped. This breaks all compiled ComboEffect and non-orbit SpecialMoveStep execution at runtime.
+1. `AIController.computeInput()` — update AI bitmask inputs
+2. `applyMovementInput()` — apply force from input bitmask
+3. `applyActionInput()` — apply buffs/jump/dodge
+4. `SpecialMoveSystem.tick()` — advance special move state machine
+5. `detectCombo()` + `detectTriggerCombos()` — check combo windows
+6. `Matter.Engine.update()` — step physics
+7. `handleCollision()` — process collision events
+8. `ArenaFeatureProcessor.processArenaFeatures()` — hazard effects → MechanicRegistry
+9. `RoundModifierSystem` — apply active modifiers
+10. Spin decay + wobble PRNG
+11. Sub-part spin decay (PartSystemManager.tick())
+12. `CombinationLock.tick()` — link strain update
+13. Colyseus auto-patch schema to clients
+
+---
+[? Data Flow](diagram-data-flow.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Engine Capabilities ?](diagram-engine-capabilities.md)

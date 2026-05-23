@@ -1,4 +1,4 @@
-# Phase 09 — Arena Systems
+﻿# Phase 09 — Arena Systems
 
 > Stage 9 | Source: linka/stadiums/ + arenaConfigNew.ts + ArenaFeatureProcessor.ts + diagram-arena-interaction.md
 
@@ -1372,3 +1372,172 @@ All position fields in ArenaConfig JSON skeletons above use **px units at 1 cm =
 - Client re-export: `C:\Users\mohsi\Downloads\Beyblade-Game-master\client\src\types\arenaConfigNew.ts`
 - Runtime processor: `C:\Users\mohsi\Downloads\Beyblade-Game-master\server\shared\rooms\ArenaFeatureProcessor.ts`
 - Arena diagram: `C:\Users\mohsi\Downloads\Beyblade-Game-master\research\diagrams\diagram-arena-interaction.md`
+
+---
+[? Phase 08: Gimmicks](phase-08-gimmicks.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 10: Arena Implementation ?](phase-10-arena-implementation.md)
+
+
+---
+
+## Appendix 9Z — Episode Stadium Context & Arena-Episode Cross-Reference
+
+> Source: `linka/episodes/` research across all generations. Maps stadiums/arenas from the anime to the seeded arena configs and their appearance in specific episodes.
+
+---
+
+### 9Z-1: Gen1 Stadium Episode Cross-Reference
+
+| Stadium Name (game seed) | Anime Label | First Appearance Episode | Arc | Shape | Notable Features | Special Mechanic |
+|---|---|---|---|---|---|---|
+| Street Bowl (rooftop) | Unnamed rooftop bowl | G1 S1 Ep01 "The Blade Raider" | Classic | Circular shallow | Concrete surface; improvised rim; no walls | None |
+| BBA Standard Bowl | BBA Tournament Stadium | G1 S1 Ep09 | Classic | Circular deep | Official high walls; raised platform base; smooth surface | None |
+| Park Bowl | Unnamed park bowl | G1 S1 Ep04 | Classic | Circular | Outdoor grass surrounds; moderate depth | None |
+| Desert Rock Bowl | Natural stone arena (China) | G1 S1 China arc Ep~18 | Classic | Irregular oval | Stone walls; rough floor; outdoor sun glare | Terrain irregularity |
+| USA Sport Arena | Indoor sport arena (All Starz) | G1 S1 USA arc Ep~24 | Classic | Circular | Smooth indoor floor; side wall bumpers; artificial lighting | Wall bumpers |
+| Psykick Lab Arena | Team Psykick lab stadium | G1 S2 Ep~20 | V-Force | Circular enclosed | Energy field rim possible; high-tech lighting | Energy wall (Cyber bey boost zone) |
+| Saint Shields Ruins | Stone circle / ancient ruins | G1 S2 Ep~08 | V-Force | Irregular | Outdoor ruins; natural stone barriers; Bit-Beast energy focus | Magnacore interaction zone |
+| World Championship Arena | WBBA World Championship | G1 S3 Ep~30 | G-Revolution | Circular large | Crowd seating; sponsor boards; professional surface | None |
+| BEGA Justice Arena | BEGA Justice Five Stadium | G1 S3 Ep~48 | G-Revolution | Oversized circular | Giant screens; dramatic lighting; ceremonial feel | None |
+| HMS Battle Arena | HMS Arena (BEGA HQ) | G-Rev Ep40 | HMS | Circular all-metal | All-metal bowl surface; no plastic rim; smooth high-speed surface | Bearing drift enhanced |
+
+---
+
+### 9Z-2: Gen2 Stadium Episode Cross-Reference
+
+| Stadium Name (game seed) | Anime Label | First Appearance Episode | Arc | Shape | Notable Features | Special Mechanic |
+|---|---|---|---|---|---|---|
+| Koma Village Open Bowl | Koma Village square | G2 MF Ep01 "Pegasus Has Landed" | MFB S1 | Circular standard | Outdoor town square; crowd of Face Hunters; natural stone surround | None |
+| Dark Nebula Lab Arena | Dark Nebula facility | G2 MF Ep~22 | MFB S1 | Circular enclosed | Underground lab; dark lighting; power generators surround | None |
+| Beylin Temple (China) | Chinese Beylin arena | G2 MM China arc Ep~20 | MFB S2 | Circular traditional | Temple pillars; outdoor; symbolic decorations | None |
+| WBC Main Stadium | World Beyblade Championship | G2 MM Ep~28 | MFB S2 | Circular large | International crowd; national flags; professional broadcast setup | None |
+| Gravity Perseus Arena | Excalibur team battle arena | G2 MM Ep~14 | MFB S2 | Circular indoor | European castle backdrop; special lighting; Julian's home turf | None |
+| Hades City Arena | HD Academy underground | G2 MM Ep~38 | MFB S2 | Circular extreme-deep | Extremely high walls; Kerbecs reinforced bowl; trap door variants | None |
+| Legendary Blader Shrine | Ancient shrine (Metal Fury) | G2 MFu Ep~10 | Metal Fury | Circular stone | Outdoor ancient site; energy pillars; star fragment zones | Star fragment zones |
+| Zero-G Tilting Arena | Zero-G / Shogun Steel stadium | Shogun Steel Ep01 | Shogun Steel | Circular suspended | Platform tilts/rocks during battle; no fixed ground | Dynamic tilt (Zero-G) |
+
+---
+
+### 9Z-3: Gen3 Stadium Episode Cross-Reference
+
+| Stadium Name (game seed) | Anime Label | First Appearance Episode | Arc | Shape | Notable Features | Special Mechanic |
+|---|---|---|---|---|---|---|
+| BC Sol Practice Bowl | BC Sol training ground | G3 S1 Ep01 "Let's Go! Valtryek!" | Burst S1 | Circular standard | Indoor training; white bowl; standard Burst format | Burst Finish enabled |
+| Beigoma Cup Arena | Official Beigoma Cup stadium | G3 S1 Ep~12 | Burst S1 | Circular | Crowd seats; official tournament setup | None |
+| Snake Pit Hidden Arena | Snake Pit facility | G3 S1 Ep~35 | Burst S1 | Circular dark | Underground; sinister lighting; Red Eye (Shu) battles | None |
+| BC Sol Spain Coliseum | BC Sol Spain training coliseum | G3 S2 Ep01 | Burst God | Circular | Spanish outdoor coliseum style; stone archways | None |
+| World League Stadium | World Beyblade League (WBL) | G3 S2 Ep~25 | Burst God | Circular large | International broadcast; elevated platforms | None |
+| Cho-Z Shrine Arena | Cho-Z Awakening site | G3 S3 Ep~08 | Cho-Z | Circular elevated | Mountain shrine; wind effects; power surge zones | Cho-Z boost zone |
+| WBBA Grand Finals | WBBA Grand Tournament | G3 S3 Ep~48 | Cho-Z | Circular oversized | Largest Gen3 stadium; spectacular lighting | None |
+| Gachi League Arena | Gachi competitive circuit | G3 S4 Ep01 | GT/Rise | Circular modern | Tech-forward design; LED ring; ranking display | None |
+| Surge Championship Bowl | Surge final tournament | G3 S5 Ep~46 | Surge | Circular | Standard with Overdrive launch pockets | None |
+| QuadDrive 4-Pocket Arena | QuadDrive season stadium | G3 S6 Ep01 | QuadDrive | Circular 4-pocket | Four distinct launch entry pockets around perimeter; allows multi-angle approaches | 4-pocket entry system |
+| QuadStrike Elemental Arena | QuadStrike tournament arena | G3 S7 Ep01 | QuadStrike | Circular tiled floor | Floor divided into colored elemental power zones (fire/water/earth/wind) | Elemental tile boost zones |
+
+---
+
+### 9Z-4: Gen4 Stadium Episode Cross-Reference
+
+| Stadium Name (game seed) | Anime Label | First Appearance Episode | Arc | Shape | Notable Features | Special Mechanic |
+|---|---|---|---|---|---|---|
+| Xenon City Street Arena | Xenon City open-air street | G4 S1 Ep01 "X" | BX S1 | Circular with X-rail | Outdoor urban; Xtreme Line rail embedded in floor; crowd barriers | Xtreme Line / Xtreme Dash |
+| Team Persona Hideout Bowl | Team Persona base arena | G4 S1 Ep02 | BX S1 | Circular small | Indoor hideout; practice setup; no Xtreme Line | None |
+| Xenon X League Stadium | X League official tournament | G4 S1 Ep~10 | BX S1 | Circular + X-rail | Full professional Xtreme Line setup; crowd seating; broadcast cameras | Xtreme Line; Xtreme Finish |
+| X World Championship Arena | X World Championship | G4 S1 Ep~35 (approx) | BX S1 | Circular + X-rail large | Largest Gen4 stadium; X-Line features elevated section | Xtreme Line; Xtreme Finish |
+
+---
+
+### 9Z-5: Stadium Feature Flags by Generation (Episode-Confirmed)
+
+| Feature Flag | Description | First Confirmed Episode | Gen |
+|---|---|---|---|
+| `burst_finish_enabled` | Bey can burst (disassemble) on heavy impact | G3 S1 Ep01 | Gen3+ |
+| `xtreme_line_present` | Stadium has Xtreme Line rail for Xtreme Dash | G4 S1 Ep01 | Gen4 |
+| `xtreme_finish_enabled` | Xtreme Finish win condition active | G4 S1 Ep01 | Gen4 |
+| `zero_g_tilt` | Stadium platform tilts/rocks dynamically | Gen2 Shogun Steel Ep01 | Gen2 Zero-G |
+| `magnacore_zone` | Magnacore polarity interaction zones present | G1 V-Force Ep08 | Gen1 V-Force |
+| `elemental_tiles` | Floor tiles grant elemental power boosts | G3 S7 Ep01 | Gen3 QuadStrike |
+| `energy_wall` | Rimwall has energy field (Cyber Beyblade boost) | G1 V-Force Ep~20 | Gen1 V-Force |
+| `star_fragment_zones` | Ancient shrine energy pillars empower Legendary beys | G2 Metal Fury Ep~10 | Gen2 Metal Fury |
+| `four_pocket_entry` | 4 launch pockets around stadium perimeter | G3 S6 Ep01 | Gen3 QuadDrive |
+| `cho_z_boost_zone` | Power surge zones that amplify Cho-Z Awakening | G3 S3 Ep~08 | Gen3 Cho-Z |
+| `all_metal_surface` | HMS all-metal bowl; enhances bearing_drift stamina | G-Rev Ep40 | Gen1 HMS |
+| `dynamic_obstacles` | Moving or spawning obstacles within arena | Various (obstacle arenas) | Multi-gen |
+
+---
+
+### 9Z-6: Arena Seed Priority by Episode Significance
+
+> Arenas listed here are episode-critical and should be seeded at highest priority for authenticity.
+
+| Priority | Arena / Stadium | Significance | Episode Reference |
+|---|---|---|---|
+| P0 (must seed) | BBA Standard Bowl | All Gen1 tournament fights | G1 S1 Ep09+ |
+| P0 (must seed) | BC Sol Practice Bowl | Gen3 all-season opener | G3 S1 Ep01 |
+| P0 (must seed) | Xenon City X League Stadium | Gen4 primary arena | G4 S1 Ep~10 |
+| P0 (must seed) | BEGA Justice Arena | Gen1 finale climax | G1 S3 Ep~48 |
+| P0 (must seed) | QuadDrive 4-Pocket Arena | Gen3 S6 signature arena | G3 S6 Ep01 |
+| P1 | Koma Village Open Bowl | Gen2 intro arena | G2 MF Ep01 |
+| P1 | Zero-G Tilting Arena | Unique mechanic; Zero-G | Shogun Steel Ep01 |
+| P1 | QuadStrike Elemental Arena | Elemental tile mechanic | G3 S7 Ep01 |
+| P1 | WBC Main Stadium | Gen2 international tournament | G2 MM Ep~28 |
+| P2 | Saint Shields Ruins | Magnacore zone; Gen1 V-Force | G1 V-Force Ep~08 |
+| P2 | Cho-Z Shrine Arena | Cho-Z boost zone | G3 S3 Ep~08 |
+| P2 | Street Bowl (rooftop) | Gen1 opening atmosphere | G1 S1 Ep01 |
+| P3 | Desert Rock Bowl | Terrain irregularity feature | G1 S1 China arc |
+| P3 | Dark Nebula Lab Arena | Atmospheric villain arena | G2 MF Ep~22 |
+
+---
+
+## Arena Tilt System (Z-axis orientation)
+
+Added in v2.4.0. Distinct from `bowlProfile`/`wallAngle` (surface curvature) — tilt tilts the entire plane, while slope is local wall geometry. The two are independent and additive.
+
+### Overview
+
+| Concept | What it does |
+|---------|-------------|
+| **Tilt** (`tiltAngle`) | Tilts the arena floor plane 0–360° around a horizontal axis. 0=flat, 90=wall-ride, 180=inverted (Zero-G), 270=wall-ride back |
+| **Direction** (`tiltDirection`) | Downhill azimuth: 0°=right (+X), 90°=down (+Y), 180°=left, 270°=up |
+| **Slope** (`bowlProfile`/`wallAngle`) | Surface wall curvature — independent of tilt |
+
+### Tilt Modes
+
+| Mode | Behavior |
+|------|----------|
+| `"fixed"` | Static angle at `tiltAngle` + `tiltDirection`. `autoTilt` + `tiltSpeed` optionally spins the direction axis. |
+| `"oscillate"` | Angle rocks between `tiltOscillateMin` ↔ `tiltOscillateMax` on a cosine wave. Period controlled by `tiltOscillatePeriodMs` (default 4 s). `autoTilt` also spins the direction simultaneously. |
+| `"weight"` | Direction tracks the center of mass of all active beyblades. Angle scales from 0 to `tiltOscillateMax` (or `tiltAngle` as fallback) proportional to COM distance from arena center. |
+
+### Physics
+
+```
+lateral force = sin(tiltAngle) × 0.04 × mass   (applied toward tiltDirection every tick)
+```
+
+At tilt=90° the arena is edge-on — beyblades experience maximum lateral drift (like a vertical-wall ride). At tilt=180° the force effectively reverses (inverted / Zero-G). Zero-G Stadium uses `tiltMode="weight"` with `tiltAngle ≈ 15°` and `tiltOscillateMax=15`.
+
+### Pivot
+
+Both tilt and rotation support an eccentric pivot (cm offset from arena center):
+
+- `tiltPivotX/Y` — shifts the tilt axis so one edge dips while the other stays high
+- `rotationPivotX/Y` — shifts the rotation center so the arena orbits an off-center point
+
+In the renderer, the pivot is applied as `container.pivot = (pvx, pvy)` with `container.position = (pvx, pvy)` compensation so the visual origin remains at world (0,0).
+
+### Canonical Reference: Zero-G Stadium (BB-G04)
+
+The Zero-G Attack Beystadium (Shogun Steel series, gen2.5) rocks on a pivot base at ±15° driven by beyblade mass distribution — the first canon example of `tiltMode="weight"`. Key parameters:
+
+```
+tiltMode: "weight"
+tiltAngle: 15          // max angle (used as tiltOscillateMax)
+tiltOscillateMax: 15
+tiltDirection: 0       // auto-tracks COM
+autoTilt: false
+```
+
+---
+
+*End of Appendix 9Z*
+

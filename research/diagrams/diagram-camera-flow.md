@@ -102,3 +102,6 @@ flowchart TD
 | `+` | Zoom in |
 | `0` | Reset to default zoom |
 | `-` | Zoom out |
+
+---
+[? Arena Interaction](diagram-arena-interaction.md) &nbsp;·&nbsp; [? Index](../INDEX.md) &nbsp;·&nbsp; [Data Flow ?](diagram-data-flow.md)

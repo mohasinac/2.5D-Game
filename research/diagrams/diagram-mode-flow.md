@@ -9,7 +9,7 @@ flowchart TD
     T_SPIN[Spin threshold<br/>e.g. < 40% spin]
     T_PLAYER[Player manual input<br/>MODE_SWITCH_COOLDOWN_MS]
     T_COMBAT[Combat event<br/>on_hit, on_burst_attempt]
-    T_GIMMICK[Gimmick activation<br/>engine_gear, final_drive]
+    T_GIMMICK[Gimmick activation<br/>engine_gear, final_drive<br/>â†’ MechanicRegistry: modeSwitch handler]
   end
 
   subgraph "Config Resolution"
@@ -57,6 +57,10 @@ flowchart TD
   DECAY --> MOVEMENT
 ```
 
+## Mode Systems via MechanicRegistry
+
+The `modeSwitch` handler in MechanicRegistry applies `resolveTipStats()` and `activePartConfigs` changes. The `rotationReverse` handler drives counter-rotation sequences.
+
 ## Mode Systems Identified in Engine
 
 | System | Trigger | Physical Change | Stat Changes | Runtime Changes |
@@ -67,3 +71,6 @@ flowchart TD
 | Engine Gear | coreReserveRemaining > 0 | attack burst release | attackBuffTimer set | linear impulse on hit |
 | Counter-rotation | sequence trigger | spinDirection reverses | clash multiplier flips | collision calculus changes |
 | Split bey | special move | isSplit=true, splitBodyX/Y set | 2 independent physics bodies | dual Matter.js bodies |
+
+---
+[? Mechanics](diagram-mechanics.md) &nbsp;·&nbsp; [? Index](../INDEX.md) &nbsp;·&nbsp; [Presentation Flow ?](diagram-presentation-flow.md)

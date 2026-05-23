@@ -427,3 +427,6 @@ Mechanic handlers call adapter methods, not physics library methods directly. Th
 | `seed-arena-systems.ts` | `arena_systems` | existing | done |
 | `seed-2d-parts.ts` | `beyblade_parts` | existing | done |
 | `seed-bey-systems.ts` | `beyblade_systems` | existing | done |
+
+---
+[? Phase 10: Arena Implementation](phase-10-arena-implementation.md) &nbsp;·&nbsp; [? Index](../INDEX.md) &nbsp;·&nbsp; [Phase 12: Seed Plan ?](phase-12-seed-plan.md)

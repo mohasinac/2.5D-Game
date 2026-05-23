@@ -35,7 +35,7 @@ interface BeybladeSnapshot {
   type: string;
   // Phase S additions
   comboSlots?: AIComboSlot[];
-  beyTiltAngle?: number;       // degrees 0–90
+  beyTiltAngle?: number;       // degrees 0–360: 0=vertical, 90=on-side, 180=on-back, 270=on-head, 360=full rotation
   specialMoveActive?: boolean; // true while opponent's special is executing
 }
 

@@ -15,17 +15,18 @@ flowchart TD
     DIR[spinDirection: left|right]
   end
 
-  subgraph "Sub-Part Rotation"
+  subgraph "Sub-Part Rotation (PartSystemManager.tick)"
     SUB[subPartSpins MapSchema<br/>per attachment index]
     FREE[freeSpin sub-parts<br/>decay independently]
     BEARING[bearingFriction → spinDecayMod]
+    PSM[PartSystemManager.tick()<br/>per-room 2.5D state machine]
   end
 
   subgraph "Gyro Wobble"
     WOBBLE[stability = spin/maxSpin<br/>if < 0.4 → nutation wobble]
     PRNG_W[seeded PRNG<br/>createPRNG(hashString(matchId))]
     WOBBLE_AMP[wobbleAmplitude increases]
-    TILT[beyTiltAngle 0°–90°]
+    TILT[beyTiltAngle 0°–360°<br/>0=upright · 90=on-side · 180=on-back · 270=on-head · 360=full-rotation]
   end
 
   subgraph "Collision Behavior"
@@ -62,6 +63,7 @@ flowchart TD
   CR_DIR --> CR_CLASH
   SUB --> FREE
   FREE --> BEARING
+  PSM --> SUB
 
   TILT --> CAM
   CR_CLASH --> STEAL
@@ -84,3 +86,6 @@ flowchart TD
 |-----------|-----------------|
 | Same direction | 0.5× (reduced transfer) |
 | Opposite direction | 1.5× (enhanced transfer) |
+
+---
+[? Research Flow](diagram-research-flow.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Script Authoring Flow ?](diagram-script-authoring-flow.md)

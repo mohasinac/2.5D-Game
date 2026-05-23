@@ -1929,3 +1929,6 @@ for (const idx of pocketResult.escapedIndices) {
 [ ] Block M: Physics flags — ghost bey phases through; friendly collision transfers recoil only
 [ ] Block N: Part gaps — ARPart CPs appear in physicsEngine.beybladeStats; detached mini-beys collide
 ```
+
+---
+[? Phase 19: Implementation Plan](phase-19-impl-plan.md) &nbsp;�&nbsp; [? Index](../INDEX.md)

@@ -899,3 +899,6 @@ Add to `GIMMICK_IDS` array (after `"orbit_movement"`):
 Total: 27 gimmick_defs.
 
 Source files: `research/phases/phase-06-mechanics.md`, `research/phases/phase-07-gen234.md`, `research/phases/phase-07-gen1.md`
+
+---
+[? Phase 07b: Generations 2-4](phase-07-gen234.md) &nbsp;·&nbsp; [? Index](../INDEX.md) &nbsp;·&nbsp; [Phase 09: Arenas ?](phase-09-arenas.md)

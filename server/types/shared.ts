@@ -428,6 +428,15 @@ export interface ArenaConfig {
   floorHazardZones?: FloorHazardZoneConfig[];
   effectZones?: any[];
 
+  // ── Collision Config ──────────────────────────────────────────────────────────
+  // Arena-wide multipliers applied on top of individual bey collision values.
+  wallDamageMult?: number;        // wall-contact damage multiplier (default 1.0)
+  obstacleDamageMult?: number;    // obstacle-contact damage multiplier (default 1.0)
+  beyDamageMult?: number;         // bey-vs-bey collision damage multiplier (default 1.0)
+  projectileDamageMult?: number;  // turret projectile damage multiplier (default 1.0)
+  friendlyFireEnabled?: boolean;  // false → same-team beys always use recoil-only collision (default true)
+  phaseObstacles?: boolean;       // arena-wide override: all beys phase through obstacles (default false)
+
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;

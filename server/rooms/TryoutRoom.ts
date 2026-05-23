@@ -12,11 +12,11 @@ import { tryReserveRoom, releaseRoom, setMaxActiveRooms } from "../shared/utils/
 import { createPRNG } from "../shared/utils/prng";
 import { hashString } from "../shared/utils/hashString";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
-import { resolveWallAngle } from "../shared/physics/ArenaUtils";
+import { resolveWallAngle, computeTiltForce } from "../shared/physics/ArenaUtils";
 import { resolvePhysicsFlags } from "../utils/physicsFlags";
 import { processArenaFeatures } from "../shared/rooms/ArenaFeatureProcessor";
 import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
-import { advanceArenaRotation } from "../shared/rooms/advanceArenaRotation";
+import { advanceArenaRotation, advanceArenaTilt, applyWeightTilt } from "../shared/rooms/advanceArenaRotation";
 import {
   applyMovementInput,
   applyActionInput,
@@ -37,6 +37,9 @@ export class TryoutRoom extends Room<GameState> {
   private lastInputTime = 0;
   private globalSettings: GlobalSettingsDoc | null = null;
   protected rand!: () => number;
+  private warmupTimer = 3;
+  private launchPhaseTimer = 5;
+  private spawnAngle = 0; // angle used for position-offset calculation
 
   maxClients = 1;
 
@@ -72,6 +75,19 @@ export class TryoutRoom extends Room<GameState> {
       this.state.arena.autoRotate = !!arenaData.autoRotate;
       this.state.arena.rotationSpeed = arenaData.rotationSpeed || 0;
       this.state.arena.rotationDirection = arenaData.rotationDirection === "counter-clockwise" ? "counterclockwise" : "clockwise";
+      this.state.arena.tiltAngle           = arenaData.tiltAngle           ?? 0;
+      this.state.arena.tiltDirection       = arenaData.tiltDirection       ?? 0;
+      this.state.arena.tiltMode            = arenaData.tiltMode            ?? "fixed";
+      this.state.arena.autoTilt            = !!arenaData.autoTilt;
+      this.state.arena.tiltSpeed           = arenaData.tiltSpeed           ?? 0;
+      this.state.arena.tiltPivotX          = arenaData.tiltPivotX          ?? 0;
+      this.state.arena.tiltPivotY          = arenaData.tiltPivotY          ?? 0;
+      this.state.arena.tiltOscillateMin    = arenaData.tiltOscillateMin    ?? 0;
+      this.state.arena.tiltOscillateMax    = arenaData.tiltOscillateMax    ?? arenaData.tiltAngle ?? 0;
+      this.state.arena.tiltOscillatePeriodMs = arenaData.tiltOscillatePeriodMs ?? 4000;
+      this.state.arena.tiltPhaseMs         = 0;
+      this.state.arena.rotationPivotX      = arenaData.rotationPivotX      ?? 0;
+      this.state.arena.rotationPivotY      = arenaData.rotationPivotY      ?? 0;
       populateArenaFeatures(this.state, arenaData as any);
       this.state.arena.gravity = arenaData.gravity || 0;
       this.state.arena.airResistance = arenaData.airResistance || 0.01;
@@ -150,6 +166,18 @@ export class TryoutRoom extends Room<GameState> {
     this.onMessage("action", (client, message) => {
       this.handleAction(client, message);
     });
+
+    this.onMessage("launch-input", (client, data: { tilt: number; position: number; power: number; charging: boolean; launched: boolean }) => {
+      if (this.state.status !== "launching") return;
+      const bey = this.state.beyblades.get(client.sessionId);
+      if (!bey || bey.launchReady || bey.launchFailed) return;
+
+      bey.launchTilt = Math.max(-45, Math.min(45, data.tilt ?? 0));
+      bey.launchPosition = Math.max(0, Math.min(1, data.position ?? 0.5));
+      bey.launchPower = Math.max(0, Math.min(150, data.power ?? 0));
+      if (data.charging) bey.launchChargingStarted = true;
+      if (data.launched && bey.launchPower > 0) bey.launchReady = true;
+    });
   }
 
   async onJoin(client: Client, options: any) {
@@ -197,6 +225,7 @@ export class TryoutRoom extends Room<GameState> {
     const initialAngularVelocity = (beyblade.spinDirection === "left" ? -1 : 1) * (beyblade.maxSpin / 200);
     this.physics.setAngularVelocity(beyblade.id, initialAngularVelocity);
 
+    this.spawnAngle = 0; // tryout spawns at center; angle 0 for position offset
     this.state.beyblades.set(client.sessionId, beyblade);
 
     // Expand gimmicks for this bey
@@ -207,9 +236,11 @@ export class TryoutRoom extends Room<GameState> {
       instances.forEach(inst => beyblade.mechanics.push(inst));
     }
 
-    this.state.status = "in-progress";
-    this.state.startTime = Date.now();
+    this.state.status = "warmup";
+    this.warmupTimer = 3;
+    this.state.timer = 3;
     this.lastInputTime = Date.now();
+    this.broadcast("match-warmup", { secondsUntilStart: 3 });
 
     if (!this.simulationStarted) {
       this.simulationStarted = true;
@@ -428,9 +459,72 @@ export class TryoutRoom extends Room<GameState> {
     }
   }
 
+  // ─── Launch phase ─────────────────────────────────────────────────────────
+
+  private startMatchFromLaunch() {
+    const arenaHalfW = (this.state.arena.width * 16) / 2;
+    const arenaHalfH = (this.state.arena.height * 16) / 2;
+    const baseRadius = Math.min(arenaHalfW, arenaHalfH) * 0.3; // smaller offset for tryout (centered arena)
+
+    this.state.beyblades.forEach((bey) => {
+      const radiusMult = 0.6 + bey.launchPosition * 0.8;
+      bey.x = arenaHalfW + Math.cos(this.spawnAngle) * baseRadius * radiusMult;
+      bey.y = arenaHalfH + Math.sin(this.spawnAngle) * baseRadius * radiusMult;
+      this.physics.setPosition(bey.id, bey.x, bey.y);
+
+      const powerFraction = Math.max(0.01, bey.launchPower / 100);
+      bey.spin = bey.maxSpin * powerFraction;
+      const angVel = (bey.spinDirection === "left" ? -1 : 1) * (bey.maxSpin * powerFraction / 200);
+      this.physics.setAngularVelocity(bey.id, angVel);
+      bey.beyTiltAngle = Math.abs(bey.launchTilt);
+    });
+
+    this.state.status = "in-progress";
+    this.state.timer = 180;
+    this.state.startTime = Date.now();
+    this.lastInputTime = Date.now();
+    this.broadcast("match-start", {});
+  }
+
   // ─── Game tick — synchronous, no async calls ─────────────────────────────
 
   private tick(deltaTime: number) {
+    const dt = deltaTime / 1000;
+
+    if (this.state.status === "warmup") {
+      this.warmupTimer -= dt;
+      this.state.timer = Math.max(0, this.warmupTimer);
+      if (this.warmupTimer <= 0) {
+        this.state.status = "launching";
+        this.state.launchTimer = this.launchPhaseTimer;
+        this.broadcast("launch-phase-start", {});
+      }
+      return;
+    }
+
+    if (this.state.status === "launching") {
+      this.state.launchTimer = Math.max(0, this.state.launchTimer - dt);
+
+      let allLaunched = true;
+      this.state.beyblades.forEach(bey => {
+        if (!bey.launchReady && !bey.launchFailed) allLaunched = false;
+      });
+
+      if (this.state.launchTimer <= 0 || allLaunched) {
+        // Tryout: grace — if timer expired without launch, give 50% power instead of auto-loss
+        if (this.state.launchTimer <= 0) {
+          this.state.beyblades.forEach(bey => {
+            if (!bey.launchReady) {
+              bey.launchPower = 50;
+              bey.launchReady = true;
+            }
+          });
+        }
+        this.startMatchFromLaunch();
+      }
+      return;
+    }
+
     if (this.state.status !== "in-progress") return;
 
     if (Date.now() - this.lastInputTime > 60_000) {
@@ -439,11 +533,17 @@ export class TryoutRoom extends Room<GameState> {
       return;
     }
 
-    const dt = deltaTime / 1000;
     this.physics.update(deltaTime);
 
     // Server-authoritative arena rotation (Phase 14 review).
     advanceArenaRotation(this.state.arena, dt);
+    advanceArenaTilt(this.state.arena, dt);
+    if (this.state.arena.tiltMode === "weight") {
+      const cx = (this.state.arena.width  * 16) / 2;
+      const cy = (this.state.arena.height * 16) / 2;
+      const r  = Math.min(this.state.arena.width, this.state.arena.height) * 16 * 0.45;
+      applyWeightTilt(this.state.arena, this.state.beyblades, cx, cy, r);
+    }
 
     // Apply slope physics if using a 2.5D arena system
     if (this.arenaSystem) {
@@ -489,6 +589,12 @@ export class TryoutRoom extends Room<GameState> {
           (this.rand() - 0.5) * wobble,
           (this.rand() - 0.5) * wobble
         );
+      }
+
+      // Arena tilt: lateral gravity toward the downhill side
+      if (this.state.arena.tiltAngle !== 0) {
+        const { fx, fy } = computeTiltForce(this.state.arena.tiltAngle, this.state.arena.tiltDirection, beyblade.mass);
+        this.physics.applyForce(beyblade.id, fx, fy);
       }
 
       {

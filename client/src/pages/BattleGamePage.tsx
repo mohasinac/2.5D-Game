@@ -21,6 +21,8 @@ import LinkAlignmentHUD from "@/components/game/LinkAlignmentHUD";
 import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { Countdown } from "@/components/game/Countdown";
+import { LaunchPhase } from "@/components/game/LaunchPhase";
+import { useLaunchInput } from "@/game/hooks/useLaunchInput";
 import { Minimap } from "@/components/game/Minimap";
 import { SoundManager } from "@/game/audio/SoundManager";
 import { LoadingProgress } from "@/components/LoadingProgress";
@@ -179,6 +181,8 @@ export function BattleGamePage() {
 
   useGameInput(sendInput, !isSpectating && connectionState === "connected" && gameState?.status === "in-progress");
 
+  const launchState = useLaunchInput(room ?? null, gameState?.status ?? "");
+
   const myStability = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
   const stabilityColor = myStability > 0.6 ? C.green : myStability > 0.3 ? C.yellow : C.red;
   const stabilityLabel = myStability > 0.6 ? "Stable" : myStability > 0.3 ? "Wobbling" : "Critical!";
@@ -190,7 +194,7 @@ export function BattleGamePage() {
     : "";
 
   // Show the loading overlay until the room reports gameplay status.
-  const showLoading = !gameState || (gameState.status !== "in-progress" && gameState.status !== "warmup" && gameState.status !== "finished" && gameState.status !== "series-finished");
+  const showLoading = !gameState || (gameState.status !== "in-progress" && gameState.status !== "warmup" && gameState.status !== "launching" && gameState.status !== "finished" && gameState.status !== "series-finished");
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh", background: "#000", overflow: "hidden" }}>
@@ -291,9 +295,23 @@ export function BattleGamePage() {
         </div>
       </div>
 
-      {/* Pre-match countdown */}
+      {/* Pre-match countdown (3-2-1 → Let It Rip!) */}
       {gameState && (
         <Countdown status={gameState.status} timer={gameState.timer} />
+      )}
+
+      {/* Launch phase overlay */}
+      {gameState?.status === "launching" && !gameEndData && (
+        <LaunchPhase
+          launchTimer={gameState.launchTimer ?? 5}
+          launchTilt={isSpectating ? 0 : launchState.tilt}
+          launchPosition={isSpectating ? 0.5 : launchState.position}
+          launchPower={isSpectating ? 0 : launchState.power}
+          chargingStarted={isSpectating ? false : launchState.chargingStarted}
+          launched={isSpectating ? false : launchState.launched}
+          failed={isSpectating ? false : (myBeyblade?.launchFailed ?? false)}
+          isSpectating={isSpectating}
+        />
       )}
       {/* Minimap — toggle with M key; side view tab available for multi-floor arenas */}
       <Minimap
@@ -581,17 +599,7 @@ export function BattleGamePage() {
         </div>
       )}
 
-      {/* Warmup overlay */}
-      {gameState?.status === "warmup" && !gameEndData && (
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.65)", zIndex: 50 }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 120, fontWeight: 900, color: C.text, fontFamily: "monospace" }}>
-              {Math.ceil(Math.max(0, gameState.timer))}
-            </div>
-            <p style={{ color: C.muted, marginTop: 16, fontSize: 20 }}>Get ready!</p>
-          </div>
-        </div>
-      )}
+
 
       {/* QTE Overlay (Phase Y) */}
       {!isSpectating && (

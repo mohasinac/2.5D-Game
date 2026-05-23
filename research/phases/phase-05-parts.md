@@ -13,7 +13,7 @@
 
 ## 1. Part Type Catalog
 
-The system defines **8 part slot types** (`PartTypeKey`). The TypeScript union `AnyPart` covers all 8. The `PartLayer` enum (`bit_beast | ar | wd | tip | core | casing | spin_track | sub_part`) maps directly to Firestore collection names via `PART_TYPE_COLLECTION` (exported from `beybladeConstants.ts`).
+The system defines **9 part slot types** (`PartTypeKey`). The TypeScript union `AnyPart` covers all 9. The `PartLayer` enum (`bit_beast | ar | wd | tip | core | casing | spin_track | sub_part | gear`) maps directly to Firestore collection names via `PART_TYPE_COLLECTION` (exported from `beybladeConstants.ts`).
 
 ### 1.1 Attack Ring (`ar` / `ARPart`)
 
@@ -241,7 +241,9 @@ Generic slot for sub-attack-rings, WD sub-parts, sub-casings, and any auxiliary 
 - `fixed` — fully locked to bey rotation
 - `ratchet` — momentary locks at `lockPositions[]` angles for `lockDurationTicks` ticks
 
-**Compatible parents** (`SubPartParent`): `ar | wd | casing | bit_beast | tip | core`
+**Compatible parents** (`SubPartParent`): `ar | wd | casing | bit_beast | tip | core | gear`
+
+`"gear"` was added so that a sub-part can mount directly onto an equipped gear (e.g. a rubber contact pad that clips onto the tip of a Sword Gear).
 
 **`DetachmentConfig` fields:**
 ```
@@ -290,6 +292,69 @@ MFB / 4D system height piece between Tip and Casing. Absent in gen1 plastic / HM
 | `trackRigidity` | `number` (0–1) | 1.0 = rigid; flexible tracks absorb some impact. |
 | `heightAdvantage` | `number` | Computed: `height / 145`. > 1 = tall bey, < 1 = short bey. Used in upper-attack detection. |
 | `statModifiers` | `StatModifier[]` | Universal modifier hooks. |
+
+---
+
+### 1.9 Gear (`gear` / `GearPart`)
+
+**Firestore collection:** `gear_parts`  
+**Admin URL slug:** `/admin/2d/parts/gears`
+
+A modular attachment that clips onto a specific parent part layer and shifts the beyblade's active archetype or mode. Gears are the defining mechanic of the **DB / BU Burst era** (Dynamite Belial Evolution Gears, Ultimate Belial Infinite attachments, Astral Spriggan Q-Gear) and are distinct from SubPart:
+
+| Dimension | SubPart | Gear |
+|-----------|---------|------|
+| Physical size | Auxiliary clip / tab | Full attachment (sword blade, shield disk, etc.) |
+| Archetype impact | Minor behavior tweak | Named archetype shift (attack / defense / stamina / balance) |
+| Slot model | Unordered list | Indexed slot (`slotIndex`) for multi-socket beys |
+| Sub-part hosting | Mounts onto a parent part | Can itself host sub-parts (`SubPartParent = "gear"`) |
+
+**Key interface fields:**
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `attachesTo` | `"ar" \| "wd" \| "casing" \| "core" \| "bit_beast" \| "tip"` | Which part layer the gear clips onto |
+| `slotIndex` | `number` (optional, 0-indexed) | Numbered socket for beys with multiple gear positions (Q-Gear = 4 slots → 16+ mode combos) |
+| `gearShape` | `GearShape` | Physical form: `sword \| shield \| hammer \| wing \| lance \| fortress \| ring \| anchor \| custom` |
+| `archetype` | `GearArchetype` | Archetype this gear drives: `attack \| defense \| stamina \| balance` |
+| `dimensions` | `PartDimensions` | `height`, `outerRadius`, `innerRadius` (all mm) |
+| `materials` | `MaterialBand[]` | Material coverage bands |
+| `weight` | `number` (g) | Added to bey mass while equipped |
+| `contactPoints` | `SystemContactPoint[]` | The gear's own collision contact points |
+| `statModifiers` | `StatModifier[]` | Stat deltas active for the whole match while this gear is equipped |
+| `enabledSubPartIds` | `string[]` | Sub-parts that become available only when this gear is equipped |
+| `compatibleSystemTags` | `string[]` | Filter which `BeybladeSystem` configs can accept this gear |
+
+**`GearShape` values and real-world examples:**
+
+| Shape | Example | Notes |
+|-------|---------|-------|
+| `lance` | Evolution Gear L (Dynamite Belial NV2) | Tapered spike protrusion; attack archetype |
+| `fortress` | Evolution Gear F | Blocky wide plate; defense archetype |
+| `shield` | Evolution Gear S / Infinite Shield | Disk or ring barrier; defense/stamina archetype |
+| `wing` | Evolution Gear V (Venture) | Swept fin; balance archetype |
+| `anchor` | Evolution Gear H (Heavy) | Weighted drop shape; stamina archetype |
+| `sword` | Infinite Sword (Ultimate Belial) | Elongated blade; attack archetype |
+| `ring` | Big Bang / Q-Gear | Full-circumference ring; variable archetype |
+| `hammer` | Hammer Bringer variants | Mallet head shape |
+| `custom` | User-defined | Editor-defined geometry |
+
+**`GearAttachment` (slot in `BeybladeSystem`):**
+
+```typescript
+interface GearAttachment {
+  gearId: string;
+  parentPart: "ar" | "wd" | "casing" | "core" | "bit_beast" | "tip";
+  slotIndex?: number;   // 0-indexed; omit for single-slot beys
+  activeConfig?: string;
+}
+```
+
+`BeybladeSystem.gearAttachments: GearAttachment[]` — empty array = no gears equipped.
+
+**Configurations:** Gear configs can override `contactPoints` and `statModifiers`, allowing the same physical gear to behave differently on config trigger (e.g. a gear that retracts its contact point at low spin via a `spin_threshold` autoTrigger).
+
+**Gap note — GEAR-01:** Gears are not yet wired into `PartSystemManager.registerBey()`. When a `BeybladeSystem` has `gearAttachments`, the manager must resolve each gear's contact points and stat modifiers and merge them into the bey's combined physics stats (same bridge required as PART-01 for ARPart.contactPoints).
 
 ---
 
@@ -493,7 +558,7 @@ This is currently informational — the actual CP height check uses `SubPart.con
 
 ## 4. Part System Seed Plan
 
-The current seed (`scripts/seed-2d-parts.js`) populates 19 parts across 7 collections. This covers baseline functionality but omits several important physics archetypes. The following is an expanded plan for `beyblade_parts`.
+The current seed (`scripts/seed-2d-parts.js`) populates 19 parts across 7 collections. This covers baseline functionality but omits several important physics archetypes. The following is an expanded plan for `beyblade_parts` (now 9 collections including `gear_parts`).
 
 ### 4.1 Attack Ring — 5 Entries
 
@@ -559,7 +624,21 @@ radius (for radial gate), thickness, attackType, heightRange, extends, extendThr
 | `leone` | Leone | `gyro_anchor` | `weight: 2`, `spiritualForce: 1.3`, `beastCategory: beast_silhouette` |
 | `libra` | Libra | `spin_recovery` | `weight: 1.5`, `beastCategory: ring`, `isEnergyRing: false` |
 
-### 4.7 Spin Track — 3 Entries (MFB)
+### 4.7 Gear — 5 Entries
+
+| ID | Display Name | GearShape | GearArchetype | AttachesTo | Weight (g) | Key Stats |
+|----|-------------|-----------|---------------|------------|-----------|-----------|
+| `evolution-gear-l` | Evolution Gear L | `lance` | `attack` | `ar` | 3.5 | 2 CPs at 0°/180°, `attackType: smash`, `damageMultiplier: 1.6`, `material: abs` |
+| `evolution-gear-f` | Evolution Gear F | `fortress` | `defense` | `ar` | 4.0 | 4 CPs at 45° spacing, `attackType: absorb`, `damageMultiplier: 0.9`, `material: rubber` |
+| `evolution-gear-s` | Evolution Gear S | `shield` | `stamina` | `ar` | 3.0 | 1 wide CP (`width: 120`), `damageMultiplier: 1.1`, `material: pom` |
+| `infinite-sword` | Infinite Sword | `sword` | `attack` | `ar` | 4.5 | 1 CP (`angle: 0, width: 15, damageMultiplier: 2.0, material: abs`), `statModifiers: [attackPts +15]` |
+| `infinite-shield` | Infinite Shield | `shield` | `defense` | `ar` | 4.0 | 2 wide CPs (`width: 90`), `material: rubber`, `attackType: absorb`, `statModifiers: [defensePts +15]` |
+
+All gear entries need: `dimensions`, `contactPoints[]` (full `SystemContactPoint`), `materials: MaterialBand[]`, `configurations: []`.
+
+---
+
+### 4.8 Spin Track — 3 Entries (MFB)
 
 | ID | Display Name | Height (mm) | Weight (g) | Key Stats |
 |----|-------------|------------|----------|-----------|
@@ -653,3 +732,7 @@ This makes the physics collision damage profile match the visual shape exactly.
 | PART-03b | SubPart detachment only handles `impact_threshold`; `spin_threshold`/`timer` unimplemented | Low | `PartSystemManager.tickBey()` |
 | PART-03c | Detached bodies have no Matter.js physics body — no real collision | High | `Parts25DBattleRoom.ts` onDetachedBodyAdded callback |
 | PART-03d | `returnToParent` lifecycle not implemented | Low | new `tickDetachedBodyReturn()` helper |
+| GEAR-01 | GearPart CPs and statModifiers not bridged to PhysicsEngine in `registerBey()` | High | `PartSystemManager.registerBey()` — merge gear CPs into combined stats after existing sub-part loop |
+
+---
+[? Phase 04: Combo Mapping](phase-04-combo-mapping.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 06: Mechanics ?](phase-06-mechanics.md)

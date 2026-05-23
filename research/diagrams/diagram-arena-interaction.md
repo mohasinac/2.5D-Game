@@ -9,13 +9,13 @@ flowchart TD
     AC_OBS[obstacles[]]
     AC_LOOPS[loops/speed paths[]]
     AC_PITS[pits[]]
-    AC_WATER[waterBodies[]]
+    AC_WATER[waterBodies[]<br/>water/blood/lava/acid/oil/ice]
     AC_PORTALS[portals[]]
-    AC_TURRETS[turrets[]]
-    AC_SWITCHES[switches[]]
-    AC_SPIN[spinZones[]]
+    AC_TURRETS[turrets[]<br/>random/beam/periodic/aoe/boomerang]
+    AC_SWITCHES[switches[]<br/>toggle/set-on/set-off/pulse/chain]
+    AC_SPIN[spinZones[]<br/>linear/spin/both applyTo]
     AC_BUMPS[bumps[]]
-    AC_GRAV[gravityWells[]]
+    AC_GRAV[gravityWells[]<br/>controlledBySwitchId + selfRotation]
     AC_TRIG[triggerZones[]]
     AC_LINKS[arenaLinks[]]
     AC_BEYLINKS[beyLinks[]]
@@ -44,17 +44,17 @@ flowchart TD
     AFP[ArenaFeatureProcessor<br/>processArenaFeatures()]
     TP[TurretProcessor<br/>aim + fire + projectile tick]
     AA[advanceArenaRotation<br/>rotation state machine]
-    BH[executeBehavior<br/>movement.orbit ONLY ⚠️]
+    MR[MechanicRegistry<br/>✅ 31 namespaced handlers]
   end
 
   subgraph "Beyblade Effects"
     BEY_SPEED[speedMultiplier<br/>waterSpeedMultiplier, loopSpeedBoost]
     BEY_SPIN[spin drain/boost<br/>waterSpinDrain, loopSpinBoost]
     BEY_POS[position teleport<br/>portals, wrecking_ball]
-    BEY_DAMAGE[health damage<br/>pits, obstacles, turrets, lava]
+    BEY_DAMAGE[health damage<br/>pits, obstacles, turrets, lava/acid]
     BEY_FORCE[applied forces<br/>gravity wells, spin zones, bumps]
     BEY_INPIT[inPit flag, pitDamageRate]
-    BEY_INWATER[inWater flag]
+    BEY_INWATER[inWater flag, liquid type effects]
   end
 
   AC_OBS --> GS_OBS
@@ -83,7 +83,11 @@ flowchart TD
   AFP --> BEY_FORCE
   AFP --> BEY_INPIT
   AFP --> BEY_INWATER
-  AFP --> BH
+  AFP --> MR
+
+  MR --> BEY_FORCE
+  MR --> BEY_SPIN
+  MR --> BEY_SPEED
 
   AC_TRIG --> AFP
   AC_SWITCHES --> AFP
@@ -102,15 +106,19 @@ flowchart TD
 | Speed paths (loops) | ✅ | N/A | Complete |
 | Obstacles | ✅ | N/A | Complete |
 | Pits | ✅ | N/A | Complete |
-| Water bodies | ✅ | N/A | Complete |
+| Water bodies (6 liquid types) | ✅ | N/A | Complete |
 | Portals | ✅ | N/A | Complete |
-| Turrets | ✅ | N/A | Complete |
-| Gravity wells | ✅ | movement.orbit | Partial |
-| Spin zones | ✅ | movement.orbit | Partial |
+| Turrets (5 attack types) | ✅ | N/A | Complete |
+| Gravity wells | ✅ | MechanicRegistry (centerPull, magneticPull) | Complete |
+| Spin zones | ✅ | MechanicRegistry (orbitMovement) | Complete |
 | Bumps | ✅ | N/A | Complete |
-| Trigger zones → BehaviorRef | ⚠️ | only movement.orbit | CRITICAL GAP |
-| Switches | ✅ (SwitchConfig.targets[]) | N/A | Complete |
+| Trigger zones → BehaviorRef | ✅ | MechanicRegistry 31 handlers | Complete |
+| Switches (5 modes) | ✅ (SwitchConfig.targets[]) | N/A | Complete |
+| Self-rotation (features) | ✅ (speedDegPerSec) | N/A | Complete |
+| controlledBySwitchId | ✅ | N/A | Complete |
 | Arena links (corridors) | types defined | partial physics | Partial |
-| BeyLinks (multi-bey) | types defined | partial physics | Partial |
+| BeyLinks (multi-bey) | BeyLinkConfigsPage ✅ | physics depth via PartPhysics | Partial |
 | Floor hazard zones | ✅ | N/A | Complete |
-| Self-rotation | ✅ (speedDegPerSec) | N/A | Complete |
+
+---
+[? Index](../INDEX.md) &nbsp;�&nbsp; [Camera Flow ?](diagram-camera-flow.md)

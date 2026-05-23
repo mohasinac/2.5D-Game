@@ -14,10 +14,10 @@ import { hashString } from "../shared/utils/hashString";
 import { ComboTracker, detectCombo, createComboTracker } from "../shared/utils/comboSystem";
 import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
-import { resolveWallAngle, wallBowlForce } from "../shared/physics/ArenaUtils";
+import { resolveWallAngle, wallBowlForce, computeTiltForce } from "../shared/physics/ArenaUtils";
 import { resolvePhysicsFlags } from "../utils/physicsFlags";
 import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
-import { advanceArenaRotation } from "../shared/rooms/advanceArenaRotation";
+import { advanceArenaRotation, advanceArenaTilt, applyWeightTilt } from "../shared/rooms/advanceArenaRotation";
 import {
   applyMovementInput,
   applyActionInput,
@@ -76,8 +76,11 @@ export class AIBattleRoom extends Room<GameState> {
   private spectatorFollowTargets = new Map<string, string>();
   private humanBeybladeData: BeybladeStats | null = null;
   private aiBeybladeData: BeybladeStats | null = null;
-  private humanSpawnPos = { x: 0, y: 0 };
-  private aiSpawnPos = { x: 0, y: 0 };
+  private humanSpawnPos = { x: 0, y: 0, angle: Math.PI };
+  private aiSpawnPos = { x: 0, y: 0, angle: 0 };
+  private warmupTimer = 3;
+  private launchPhaseTimer = 5;
+  private aiLaunchTimer = 1.5; // AI auto-launches ~1.5s into the launch phase
   private aiDifficulty: AIDifficulty = "medium";
   private aiBeybladeId = "default";
   private comboTrackers = new Map<string, ComboTracker>();
@@ -294,7 +297,7 @@ export class AIBattleRoom extends Room<GameState> {
     human.maxHealth = human.maxStamina;
     human.x = arenaHalfW - spawnRadius;
     human.y = arenaHalfH;
-    this.humanSpawnPos = { x: human.x, y: human.y };
+    this.humanSpawnPos = { x: human.x, y: human.y, angle: Math.PI };
 
     const humanFlags = resolvePhysicsFlags((humanData as any)?.physicsFlags);
     human.collisionWithBeys       = humanFlags.collisionWithBeys;
@@ -336,7 +339,7 @@ export class AIBattleRoom extends Room<GameState> {
     ai.maxHealth = ai.maxStamina;
     ai.x = arenaHalfW + spawnRadius;
     ai.y = arenaHalfH;
-    this.aiSpawnPos = { x: ai.x, y: ai.y };
+    this.aiSpawnPos = { x: ai.x, y: ai.y, angle: 0 };
 
     const aiFlags = resolvePhysicsFlags((aiData as any)?.physicsFlags);
     ai.collisionWithBeys       = aiFlags.collisionWithBeys;
@@ -358,12 +361,28 @@ export class AIBattleRoom extends Room<GameState> {
     }
 
     this.matchStarted = true;
-    this.state.status = "in-progress";
-    this.state.startTime = Date.now();
+    this.state.status = "warmup";
+    this.warmupTimer = 3;
+    this.state.timer = 3;
+    this.aiLaunchTimer = 1.5;
     this.lastInputTime = Date.now();
 
     this.setSimulationInterval((dt: number) => { this.tick(dt); }, 1000 / 60);
-    this.broadcast("match-start", {});
+    this.broadcast("match-warmup", { secondsUntilStart: 3 });
+
+    // Register launch-input handler for human
+    this.onMessage("launch-input", (client, data: { tilt: number; position: number; power: number; charging: boolean; launched: boolean }) => {
+      if (this.state.status !== "launching") return;
+      if (client.sessionId !== this.humanSessionId) return;
+      const bey = this.state.beyblades.get(client.sessionId);
+      if (!bey || bey.launchReady || bey.launchFailed) return;
+
+      bey.launchTilt = Math.max(-45, Math.min(45, data.tilt ?? 0));
+      bey.launchPosition = Math.max(0, Math.min(1, data.position ?? 0.5));
+      bey.launchPower = Math.max(0, Math.min(150, data.power ?? 0));
+      if (data.charging) bey.launchChargingStarted = true;
+      if (data.launched && bey.launchPower > 0) bey.launchReady = true;
+    });
 
     console.log(`✅ AIBattleRoom ready: ${human.username} vs ${ai.username} (${difficulty})`);
   }
@@ -512,6 +531,64 @@ export class AIBattleRoom extends Room<GameState> {
   // ─── Game tick ───────────────────────────────────────────────────────────────
 
   private tick(deltaTime: number) {
+    const dt = deltaTime / 1000;
+
+    if (this.state.status === "warmup") {
+      this.warmupTimer -= dt;
+      this.state.timer = Math.max(0, this.warmupTimer);
+      if (this.warmupTimer <= 0) {
+        this.state.status = "launching";
+        this.state.launchTimer = this.launchPhaseTimer;
+        this.aiLaunchTimer = 1.5;
+        this.broadcast("launch-phase-start", {});
+      }
+      return;
+    }
+
+    if (this.state.status === "launching") {
+      this.state.launchTimer = Math.max(0, this.state.launchTimer - dt);
+
+      // AI auto-launches once after aiLaunchTimer seconds
+      if (this.aiLaunchTimer > 0) {
+        this.aiLaunchTimer -= dt;
+        if (this.aiLaunchTimer <= 0) {
+          const aiBey = this.state.beyblades.get(AI_SESSION_ID);
+          if (aiBey && !aiBey.launchReady && !aiBey.launchFailed) {
+            aiBey.launchTilt = (this.rand() - 0.5) * 20;
+            aiBey.launchPosition = 0.3 + this.rand() * 0.3;
+            aiBey.launchPower = 90 + this.rand() * 30;
+            aiBey.launchChargingStarted = true;
+            aiBey.launchReady = true;
+          }
+          for (const [sid] of this.aiControllers) {
+            const bey = this.state.beyblades.get(sid);
+            if (bey && !bey.launchReady && !bey.launchFailed) {
+              bey.launchTilt = (this.rand() - 0.5) * 20;
+              bey.launchPosition = 0.3 + this.rand() * 0.3;
+              bey.launchPower = 90 + this.rand() * 30;
+              bey.launchChargingStarted = true;
+              bey.launchReady = true;
+            }
+          }
+        }
+      }
+
+      let allLaunched = true;
+      this.state.beyblades.forEach(bey => {
+        if (!bey.launchReady && !bey.launchFailed) allLaunched = false;
+      });
+
+      if (this.state.launchTimer <= 0 || allLaunched) {
+        if (this.state.launchTimer <= 0) {
+          this.state.beyblades.forEach(bey => {
+            if (!bey.launchReady) bey.launchFailed = true;
+          });
+        }
+        this.startMatchFromLaunch();
+      }
+      return;
+    }
+
     if (this.state.status !== "in-progress") return;
 
     // Skip idle-disconnect when no human is at the controls — AI-vs-AI matches
@@ -522,11 +599,17 @@ export class AIBattleRoom extends Room<GameState> {
       return;
     }
 
-    const dt = deltaTime / 1000;
     this.physics.update(deltaTime);
 
     // Server-authoritative arena rotation (Phase 14 review).
     advanceArenaRotation(this.state.arena, dt);
+    advanceArenaTilt(this.state.arena, dt);
+    if (this.state.arena.tiltMode === "weight") {
+      const cx = (this.state.arena.width  * 16) / 2;
+      const cy = (this.state.arena.height * 16) / 2;
+      const r  = Math.min(this.state.arena.width, this.state.arena.height) * 16 * 0.45;
+      applyWeightTilt(this.state.arena, this.state.beyblades, cx, cy, r);
+    }
 
     if (this.arenaSystem) {
       this.state.beyblades.forEach(b => this.applyArenaSystemSlope(b));
@@ -626,6 +709,12 @@ export class AIBattleRoom extends Room<GameState> {
       if (stability < 0.4) {
         const wobble = (1 - stability) * 0.002 * beyblade.mass;
         this.physics.applyForce(beyblade.id, (this.rand() - 0.5) * wobble, (this.rand() - 0.5) * wobble);
+      }
+
+      // Arena tilt: lateral gravity toward the downhill side
+      if (this.state.arena.tiltAngle !== 0) {
+        const { fx, fy } = computeTiltForce(this.state.arena.tiltAngle, this.state.arena.tiltDirection, beyblade.mass);
+        this.physics.applyForce(beyblade.id, fx, fy);
       }
 
       {
@@ -804,13 +893,58 @@ export class AIBattleRoom extends Room<GameState> {
     }
   }
 
+  private startMatchFromLaunch() {
+    const arenaHalfW = (this.state.arena.width * 16) / 2;
+    const arenaHalfH = (this.state.arena.height * 16) / 2;
+    const baseRadius = Math.min(arenaHalfW, arenaHalfH) * 0.5;
+
+    const applyLaunch = (bey: import("./schema/GameState").Beyblade, spawnAngle: number) => {
+      if (bey.launchFailed) {
+        bey.isActive = false;
+        bey.health = 0;
+        bey.eliminationType = "ring_out";
+        this.physics.removeBeyblade(bey.id);
+        return;
+      }
+      const radiusMult = 0.6 + bey.launchPosition * 0.8;
+      bey.x = arenaHalfW + Math.cos(spawnAngle) * baseRadius * radiusMult;
+      bey.y = arenaHalfH + Math.sin(spawnAngle) * baseRadius * radiusMult;
+      this.physics.setPosition(bey.id, bey.x, bey.y);
+      const powerFraction = Math.max(0.01, bey.launchPower / 100);
+      bey.spin = bey.maxSpin * powerFraction;
+      const angVel = (bey.spinDirection === "left" ? -1 : 1) * (bey.maxSpin * powerFraction / 200);
+      this.physics.setAngularVelocity(bey.id, angVel);
+      bey.beyTiltAngle = Math.abs(bey.launchTilt);
+    };
+
+    if (this.humanSessionId) {
+      const humanBey = this.state.beyblades.get(this.humanSessionId);
+      if (humanBey) applyLaunch(humanBey, this.humanSpawnPos.angle);
+    }
+    const aiBey = this.state.beyblades.get(AI_SESSION_ID);
+    if (aiBey) applyLaunch(aiBey, this.aiSpawnPos.angle);
+    for (const [sid] of this.aiControllers) {
+      const bey = this.state.beyblades.get(sid);
+      const spawn = this.aiSpawnPositions.get(sid);
+      if (bey && spawn) applyLaunch(bey, (spawn as any).angle ?? 0);
+    }
+
+    this.state.status = "in-progress";
+    this.state.timer = 180;
+    this.state.startTime = Date.now();
+    this.lastInputTime = Date.now();
+    this.broadcast("match-start", {});
+  }
+
   private resetForNextGame() {
     // For AI-vs-AI, there's no human; for the regular path the human must still be present.
     if (!this.isAiVsAi && this.humanSessionId === null) return;
 
     this.state.currentGame++;
     this.state.status = "warmup";
-    this.state.timer = 180;
+    this.state.timer = 3;
+    this.warmupTimer = 3;
+    this.aiLaunchTimer = 1.5;
     this.state.winner = "";
 
     if (this.humanSessionId) {
@@ -829,14 +963,6 @@ export class AIBattleRoom extends Room<GameState> {
     }
 
     this.broadcast("match-warmup", { secondsUntilStart: 3, gameNumber: this.state.currentGame });
-
-    setTimeout(() => {
-      if (!this.isAiVsAi && this.humanSessionId === null) return;
-      this.state.status = "in-progress";
-      this.state.startTime = Date.now();
-      this.lastInputTime = Date.now();
-      this.broadcast("match-start", { gameNumber: this.state.currentGame });
-    }, 3000);
   }
 
   // ─── Arena helpers ───────────────────────────────────────────────────────────
@@ -852,6 +978,19 @@ export class AIBattleRoom extends Room<GameState> {
     this.state.arena.autoRotate = !!arenaData.autoRotate;
     this.state.arena.rotationSpeed = arenaData.rotationSpeed || 0;
     this.state.arena.rotationDirection = arenaData.rotationDirection === "counter-clockwise" ? "counterclockwise" : "clockwise";
+    this.state.arena.tiltAngle           = arenaData.tiltAngle           ?? 0;
+    this.state.arena.tiltDirection       = arenaData.tiltDirection       ?? 0;
+    this.state.arena.tiltMode            = arenaData.tiltMode            ?? "fixed";
+    this.state.arena.autoTilt            = !!arenaData.autoTilt;
+    this.state.arena.tiltSpeed           = arenaData.tiltSpeed           ?? 0;
+    this.state.arena.tiltPivotX          = arenaData.tiltPivotX          ?? 0;
+    this.state.arena.tiltPivotY          = arenaData.tiltPivotY          ?? 0;
+    this.state.arena.tiltOscillateMin    = arenaData.tiltOscillateMin    ?? 0;
+    this.state.arena.tiltOscillateMax    = arenaData.tiltOscillateMax    ?? arenaData.tiltAngle ?? 0;
+    this.state.arena.tiltOscillatePeriodMs = arenaData.tiltOscillatePeriodMs ?? 4000;
+    this.state.arena.tiltPhaseMs         = 0;
+    this.state.arena.rotationPivotX      = arenaData.rotationPivotX      ?? 0;
+    this.state.arena.rotationPivotY      = arenaData.rotationPivotY      ?? 0;
     this.state.arena.gravity = arenaData.gravity || 0;
     populateArenaFeatures(this.state, arenaData as any);
     this.state.arena.airResistance = arenaData.airResistance || 0.01;

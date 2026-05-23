@@ -53,6 +53,7 @@ export const PART_TYPE_COLLECTION: Record<string, string> = {
   casing:      "casing_parts",
   bit_beast:   "bit_beast_parts",
   spin_track:  "spin_track_parts",
+  gear:        "gear_parts",
 };
 
 // ─── Part Type → URL slug Map ─────────────────────────────────────────────────
@@ -67,6 +68,7 @@ export const PART_TYPE_SLUG: Record<string, string> = {
   casing:      "casings",
   bit_beast:   "bit-beasts",
   spin_track:  "spin-tracks",
+  gear:        "gears",
 };
 
 // Reverse map — slug → canonical part type key

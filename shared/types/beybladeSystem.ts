@@ -29,9 +29,10 @@ export type PartLayer =
   | "core"
   | "casing"
   | "spin_track"
-  | "sub_part"; // generic — sub_ar / wd_sub / sub_casing all unified here
+  | "sub_part" // generic — sub_ar / wd_sub / sub_casing all unified here
+  | "gear";    // modular DB/BU attachment (Evolution Gear, Q-Gear, etc.)
 
-export type SubPartParent = "ar" | "wd" | "casing" | "bit_beast" | "tip" | "core";
+export type SubPartParent = "ar" | "wd" | "casing" | "bit_beast" | "tip" | "core" | "gear";
 export type SubPartMode = "free_spin" | "partial_slip" | "fixed" | "ratchet";
 
 // ─── Part / Contact-Point Self-Rotation ──────────────────────────────────────
@@ -939,6 +940,56 @@ export interface SpinTrackPart extends BasePart {
   configurations: PartConfiguration<{ contactPoints?: SystemContactPoint[] }>[];
 }
 
+// ─── Gear (DB/BU Modular Attachment) ─────────────────────────────────────────
+// A Gear clips onto a parent part layer and shifts the bey's archetype / mode.
+// Examples: Infinite Sword (attack), Infinite Shield (defense), Big Bang (burst
+// amplifier) on Ultimate Belial; the five Evolution Gears (L/F/S/V/H) on
+// Dynamite Belial NV2; Q-Gear on Astral Spriggan.
+//
+// Key distinctions from SubPart:
+//   - Physically larger; has its own prominent contact points
+//   - Always triggers a named archetype shift (not a minor behavior tweak)
+//   - May occupy a numbered gear slot when multiple gear positions exist
+
+export type GearShape =
+  | "sword"      // elongated blade protrusion (Infinite Sword)
+  | "shield"     // disk / ring barrier (Infinite Shield)
+  | "hammer"     // mallet head (Hammer Bringer)
+  | "wing"       // swept fin (Evolution Gear V — Venture)
+  | "lance"      // tapered spike (Evolution Gear L — Lance)
+  | "fortress"   // blocky wide plate (Evolution Gear F — Fortress)
+  | "ring"       // full-circumference ring
+  | "anchor"     // weighted drop-shape
+  | "custom";
+
+// Which archetype the gear primarily pushes the bey toward when equipped.
+export type GearArchetype = "attack" | "defense" | "stamina" | "balance";
+
+export interface GearPart extends BasePart {
+  // Where on the beyblade this gear physically attaches.
+  attachesTo: "ar" | "wd" | "casing" | "core" | "bit_beast" | "tip";
+  // Numbered slot position for beys with multiple gear sockets (0-indexed).
+  // Omit (or 0) for beys with a single gear slot.
+  slotIndex?: number;
+  gearShape: GearShape;
+  // Archetype this gear drives when active.
+  archetype: GearArchetype;
+  dimensions: PartDimensions;
+  materials: MaterialBand[];
+  weight: number; // grams
+  contactPoints: SystemContactPoint[];
+  // Stat deltas applied for the whole match while this gear is equipped.
+  statModifiers?: StatModifier[];
+  // Sub-part IDs that are only available when this gear is equipped.
+  enabledSubPartIds?: string[];
+  // Tags that narrow which BeybladeSystem configs can accept this gear.
+  compatibleSystemTags?: string[];
+  configurations: PartConfiguration<{
+    contactPoints?: SystemContactPoint[];
+    statModifiers?: StatModifier[];
+  }>[];
+}
+
 // ─── Beyblade System (Composition) ───────────────────────────────────────────
 
 export interface SubPartAttachment {
@@ -946,6 +997,15 @@ export interface SubPartAttachment {
   parentPart: SubPartParent;
   placement: "above" | "below";
   flipped: boolean;
+  activeConfig?: string;
+}
+
+export interface GearAttachment {
+  gearId: string;
+  // Which part layer the gear clips onto.
+  parentPart: "ar" | "wd" | "casing" | "core" | "bit_beast" | "tip";
+  // 0-indexed slot when the beyblade has multiple gear sockets (e.g. Q-Gear beys).
+  slotIndex?: number;
   activeConfig?: string;
 }
 
@@ -964,6 +1024,9 @@ export interface BeybladeSystem {
   spinTrackId?: string; // MFB — mutually exclusive with casingId in terms of height offset
 
   subPartAttachments: SubPartAttachment[];
+  // Modular gear attachments (DB Evolution Gears, Q-Gears, etc.).
+  // Empty array = no gears equipped.
+  gearAttachments: GearAttachment[];
 
   activeConfigs: {
     bitBeast?: string;
@@ -1017,7 +1080,8 @@ export type AnyPart =
   | CorePart
   | CasingPart
   | BitBeastPart
-  | SpinTrackPart;
+  | SpinTrackPart
+  | GearPart;
 
 export type PartTypeKey =
   | "attack_ring"
@@ -1027,5 +1091,6 @@ export type PartTypeKey =
   | "core"
   | "casing"
   | "bit_beast"
-  | "spin_track";
+  | "spin_track"
+  | "gear";
 

@@ -82,7 +82,7 @@ export function isSeriesOver(state: GameState): boolean {
 // Caller passes the spawn position cached from initial join.
 export function resetBeybladeForNextGame(
   beyblade: Beyblade,
-  spawn: { x: number; y: number } | undefined,
+  spawn: { x: number; y: number; angle?: number } | undefined,
   physics: SeriesPhysicsBridge,
 ): void {
   beyblade.isActive = true;
@@ -121,6 +121,14 @@ export function resetBeybladeForNextGame(
   beyblade.collidingWithObstacle = false;
   beyblade.lastObstacleId = "";
 
+  // Reset launch phase fields for next game
+  beyblade.launchTilt = 0;
+  beyblade.launchPosition = 0.5;
+  beyblade.launchPower = 0;
+  beyblade.launchChargingStarted = false;
+  beyblade.launchReady = false;
+  beyblade.launchFailed = false;
+
   if (spawn) {
     beyblade.x = spawn.x;
     beyblade.y = spawn.y;
@@ -133,7 +141,7 @@ export function resetBeybladeForNextGame(
 // Reset every beyblade in the state for the next game, plus the per-game state fields.
 export function resetStateForNextGame(
   state: GameState,
-  spawnPositions: Map<string, { x: number; y: number }>,
+  spawnPositions: Map<string, { x: number; y: number; angle?: number }>,
   physics: SeriesPhysicsBridge,
   warmupSeconds = 180,
 ): void {

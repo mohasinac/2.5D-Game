@@ -11,11 +11,11 @@ import { hashString } from "../shared/utils/hashString";
 import { ComboTracker, detectCombo, createComboTracker } from "../shared/utils/comboSystem";
 import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
-import { resolveWallAngle } from "../shared/physics/ArenaUtils";
+import { resolveWallAngle, computeTiltForce } from "../shared/physics/ArenaUtils";
 import { resolvePhysicsFlags } from "../utils/physicsFlags";
 import { processArenaFeatures } from "../shared/rooms/ArenaFeatureProcessor";
 import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
-import { advanceArenaRotation } from "../shared/rooms/advanceArenaRotation";
+import { advanceArenaRotation, advanceArenaTilt, applyWeightTilt } from "../shared/rooms/advanceArenaRotation";
 import {
   applyMovementInput,
   applyActionInput,
@@ -67,7 +67,9 @@ export class TournamentBattleRoom extends Room<GameState> {
   protected aiSessions = new Set<string>();
   private aiControllers = new Map<string, AIController>();
   private beybladeDataCache = new Map<string, BeybladeStats | null>();
-  protected spawnPositions = new Map<string, { x: number; y: number }>();
+  protected spawnPositions = new Map<string, { x: number; y: number; angle: number }>();
+  private launchPhaseTimer = 5;
+  private aiLaunchTimer = 1.5;
   protected comboTrackers = new Map<string, ComboTracker>();
   /** Per-session camera-follow target id (purely informational). */
   protected spectatorFollowTargets = new Map<string, string>();
@@ -159,6 +161,20 @@ export class TournamentBattleRoom extends Room<GameState> {
       this.spectatorFollowTargets.set(client.sessionId, message?.targetBeybladeId ?? "");
     });
 
+    this.onMessage("launch-input", (client, data: { tilt: number; position: number; power: number; charging: boolean; launched: boolean }) => {
+      if (this.state.status !== "launching") return;
+      if (this.spectatorSessions.has(client.sessionId)) return;
+      if (this.aiSessions.has(client.sessionId)) return;
+      const bey = this.state.beyblades.get(client.sessionId);
+      if (!bey || bey.launchReady || bey.launchFailed) return;
+
+      bey.launchTilt = Math.max(-45, Math.min(45, data.tilt ?? 0));
+      bey.launchPosition = Math.max(0, Math.min(1, data.position ?? 0.5));
+      bey.launchPower = Math.max(0, Math.min(150, data.power ?? 0));
+      if (data.charging) bey.launchChargingStarted = true;
+      if (data.launched && bey.launchPower > 0) bey.launchReady = true;
+    });
+
     if (aiParticipants.length >= 2) {
       this.startMatch();
     }
@@ -211,7 +227,7 @@ export class TournamentBattleRoom extends Room<GameState> {
 
     beyblade.x = arenaHalfW + Math.cos(spawnOffset.angle) * spawnRadius;
     beyblade.y = arenaHalfH + Math.sin(spawnOffset.angle) * spawnRadius;
-    this.spawnPositions.set(client.sessionId, { x: beyblade.x, y: beyblade.y });
+    this.spawnPositions.set(client.sessionId, { x: beyblade.x, y: beyblade.y, angle: spawnOffset.angle });
 
     const pFlags = resolvePhysicsFlags((beybladeData as any)?.physicsFlags);
     beyblade.collisionWithBeys       = pFlags.collisionWithBeys;
@@ -309,7 +325,7 @@ export class TournamentBattleRoom extends Room<GameState> {
 
     ai.x = arenaHalfW + Math.cos(spawnOffset.angle) * spawnRadius;
     ai.y = arenaHalfH + Math.sin(spawnOffset.angle) * spawnRadius;
-    this.spawnPositions.set(userId, { x: ai.x, y: ai.y });
+    this.spawnPositions.set(userId, { x: ai.x, y: ai.y, angle: spawnOffset.angle });
 
     const aiFlags = resolvePhysicsFlags((aiData as any)?.physicsFlags);
     ai.collisionWithBeys       = aiFlags.collisionWithBeys;
@@ -473,15 +489,58 @@ export class TournamentBattleRoom extends Room<GameState> {
 
     // Server-authoritative arena rotation (Phase 14 review).
     advanceArenaRotation(this.state.arena, dt);
+    advanceArenaTilt(this.state.arena, dt);
+    if (this.state.arena.tiltMode === "weight") {
+      const cx = (this.state.arena.width  * 16) / 2;
+      const cy = (this.state.arena.height * 16) / 2;
+      const r  = Math.min(this.state.arena.width, this.state.arena.height) * 16 * 0.45;
+      applyWeightTilt(this.state.arena, this.state.beyblades, cx, cy, r);
+    }
 
     if (this.state.status === "warmup") {
       this.warmupTimer -= dt;
+      this.state.timer = Math.max(0, this.warmupTimer);
       if (this.warmupTimer <= 0) {
-        this.state.status = "in-progress";
-        this.state.startTime = Date.now();
-        // Start the 3-min room cap on the very first transition only.
-        if (this.matchStartedAtMs === 0) this.matchStartedAtMs = Date.now();
-        this.broadcast("match-start", {});
+        this.state.status = "launching";
+        this.state.launchTimer = this.launchPhaseTimer;
+        this.aiLaunchTimer = 1.5;
+        this.broadcast("launch-phase-start", {});
+      }
+      return;
+    }
+
+    if (this.state.status === "launching") {
+      this.state.launchTimer = Math.max(0, this.state.launchTimer - dt);
+
+      // AI participants auto-launch once after aiLaunchTimer seconds
+      if (this.aiLaunchTimer > 0) {
+        this.aiLaunchTimer -= dt;
+        if (this.aiLaunchTimer <= 0) {
+          this.aiSessions.forEach(aiId => {
+            const bey = this.state.beyblades.get(aiId);
+            if (bey && !bey.launchReady && !bey.launchFailed) {
+              bey.launchTilt = (this.rand() - 0.5) * 20;
+              bey.launchPosition = 0.3 + this.rand() * 0.3;
+              bey.launchPower = 90 + this.rand() * 30;
+              bey.launchChargingStarted = true;
+              bey.launchReady = true;
+            }
+          });
+        }
+      }
+
+      let allLaunched = true;
+      this.state.beyblades.forEach(bey => {
+        if (!bey.launchReady && !bey.launchFailed) allLaunched = false;
+      });
+
+      if (this.state.launchTimer <= 0 || allLaunched) {
+        if (this.state.launchTimer <= 0) {
+          this.state.beyblades.forEach(bey => {
+            if (!bey.launchReady) bey.launchFailed = true;
+          });
+        }
+        this.startMatchFromLaunch();
       }
       return;
     }
@@ -585,6 +644,12 @@ export class TournamentBattleRoom extends Room<GameState> {
         this.physics.applyForce(beyblade.id, (this.rand() - 0.5) * wobble, (this.rand() - 0.5) * wobble);
       }
 
+      // Arena tilt: lateral gravity toward the downhill side
+      if (this.state.arena.tiltAngle !== 0) {
+        const { fx, fy } = computeTiltForce(this.state.arena.tiltAngle, this.state.arena.tiltDirection, beyblade.mass);
+        this.physics.applyForce(beyblade.id, fx, fy);
+      }
+
       {
         const spinRatio = beyblade.maxSpin > 0 ? beyblade.spin / beyblade.maxSpin : 0;
         const decayThisTick = beyblade.spinDecayRate * dt * (1 + (1 - spinRatio) * 0.5);
@@ -673,8 +738,42 @@ export class TournamentBattleRoom extends Room<GameState> {
     }
   }
 
+  private startMatchFromLaunch() {
+    const arenaHalfW = (this.state.arena.width * 16) / 2;
+    const arenaHalfH = (this.state.arena.height * 16) / 2;
+    const baseRadius = Math.min(arenaHalfW, arenaHalfH) * 0.5;
+
+    this.state.beyblades.forEach((bey, sessionId) => {
+      if (bey.launchFailed) {
+        bey.isActive = false;
+        bey.health = 0;
+        bey.eliminationType = "ring_out";
+        this.physics.removeBeyblade(sessionId);
+        return;
+      }
+      const spawnData = this.spawnPositions.get(sessionId);
+      if (spawnData) {
+        const radiusMult = 0.6 + bey.launchPosition * 0.8;
+        bey.x = arenaHalfW + Math.cos(spawnData.angle) * baseRadius * radiusMult;
+        bey.y = arenaHalfH + Math.sin(spawnData.angle) * baseRadius * radiusMult;
+        this.physics.setPosition(bey.id, bey.x, bey.y);
+      }
+      const powerFraction = Math.max(0.01, bey.launchPower / 100);
+      bey.spin = bey.maxSpin * powerFraction;
+      const angVel = (bey.spinDirection === "left" ? -1 : 1) * (bey.maxSpin * powerFraction / 200);
+      this.physics.setAngularVelocity(bey.id, angVel);
+      bey.beyTiltAngle = Math.abs(bey.launchTilt);
+    });
+
+    this.state.status = "in-progress";
+    this.state.timer = 180;
+    this.state.startTime = Date.now();
+    if (this.matchStartedAtMs === 0) this.matchStartedAtMs = Date.now();
+    this.broadcast("match-start", {});
+  }
+
   private resetForNextGame() {
-    resetStateForNextGame(this.state, this.spawnPositions, this.physics, 180);
+    resetStateForNextGame(this.state, this.spawnPositions, this.physics, 3);
     this.warmupTimer = 3;
 
     this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimer, gameNumber: this.state.currentGame });
@@ -801,6 +900,19 @@ export class TournamentBattleRoom extends Room<GameState> {
     this.state.arena.autoRotate = !!arenaData.autoRotate;
     this.state.arena.rotationSpeed = arenaData.rotationSpeed || 0;
     this.state.arena.rotationDirection = arenaData.rotationDirection === "counter-clockwise" ? "counterclockwise" : "clockwise";
+    this.state.arena.tiltAngle           = arenaData.tiltAngle           ?? 0;
+    this.state.arena.tiltDirection       = arenaData.tiltDirection       ?? 0;
+    this.state.arena.tiltMode            = arenaData.tiltMode            ?? "fixed";
+    this.state.arena.autoTilt            = !!arenaData.autoTilt;
+    this.state.arena.tiltSpeed           = arenaData.tiltSpeed           ?? 0;
+    this.state.arena.tiltPivotX          = arenaData.tiltPivotX          ?? 0;
+    this.state.arena.tiltPivotY          = arenaData.tiltPivotY          ?? 0;
+    this.state.arena.tiltOscillateMin    = arenaData.tiltOscillateMin    ?? 0;
+    this.state.arena.tiltOscillateMax    = arenaData.tiltOscillateMax    ?? arenaData.tiltAngle ?? 0;
+    this.state.arena.tiltOscillatePeriodMs = arenaData.tiltOscillatePeriodMs ?? 4000;
+    this.state.arena.tiltPhaseMs         = 0;
+    this.state.arena.rotationPivotX      = arenaData.rotationPivotX      ?? 0;
+    this.state.arena.rotationPivotY      = arenaData.rotationPivotY      ?? 0;
     this.state.arena.gravity = arenaData.gravity || 0;
     populateArenaFeatures(this.state, arenaData as any);
     this.state.arena.airResistance = arenaData.airResistance || 0.01;

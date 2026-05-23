@@ -50,11 +50,17 @@ export class BeybladeGameRenderer {
 
   // Layer containers (z-order: arena → features → beys → detached → particles → HUD)
   // World layers are children of `worldRoot` which receives the camera transform.
-  // `arenaRotationRoot` wraps arena + feature layers so the entire bowl
-  // (and admin-placed features in arena-frame) spin together. Beyblades remain
-  // in world-frame and do not rotate.
-  // HUD layer stays in screen space (no transform).
+  // `arenaTiltOuter/Scale/Inner` form a three-container perspective-tilt chain so the
+  // entire scene can appear tilted (Z-axis — zero-G, inverted, wall-ride arenas).
+  // `arenaRotationRoot` wraps arena + feature layers so the bowl spins together.
+  // Beyblades and other world content are inside the tilt chain but outside arenaRotationRoot
+  // so they don't spin with the bowl, but do tilt with it visually.
+  // HUD stays in screen space (no transform).
   private worldRoot!: PIXI.Container;
+  // Tilt perspective chain: outer rotates to direction, scale compresses, inner rotates back.
+  private arenaTiltOuter!: PIXI.Container;
+  private arenaTiltScale!: PIXI.Container;
+  private arenaTiltInner!: PIXI.Container;
   private arenaRotationRoot!: PIXI.Container;
   private arenaLayer!: PIXI.Container;
   private featureLayer!: PIXI.Container;
@@ -181,8 +187,13 @@ export class BeybladeGameRenderer {
     }, false);
 
     // Build layer stack. World layers live inside `worldRoot` (camera transform applied).
-    // arena + features sit under arenaRotationRoot so a spinning bowl rotates them together.
+    // arenaTiltOuter → arenaTiltScale → arenaTiltInner form a perspective-tilt chain so the
+    // entire scene can appear tilted around the arena center (0,0 in world space).
+    // arena + features sit under arenaRotationRoot so the bowl can also spin in-plane.
     this.worldRoot = new PIXI.Container();
+    this.arenaTiltOuter = new PIXI.Container();
+    this.arenaTiltScale = new PIXI.Container();
+    this.arenaTiltInner = new PIXI.Container();
     this.arenaRotationRoot = new PIXI.Container();
     this.arenaLayer = new PIXI.Container();
     this.featureLayer = new PIXI.Container();
@@ -191,12 +202,16 @@ export class BeybladeGameRenderer {
     this.particleLayer = new PIXI.Container();
     this.hudLayer = new PIXI.Container();
 
+    // Tilt chain: worldRoot → tiltOuter → tiltScale → tiltInner → content layers
+    this.arenaTiltOuter.addChild(this.arenaTiltScale);
+    this.arenaTiltScale.addChild(this.arenaTiltInner);
     this.arenaRotationRoot.addChild(this.arenaLayer);
     this.arenaRotationRoot.addChild(this.featureLayer);
-    this.worldRoot.addChild(this.arenaRotationRoot);
-    this.worldRoot.addChild(this.beybladeLayer);
-    this.worldRoot.addChild(this.detachedBodyLayer);
-    this.worldRoot.addChild(this.particleLayer);
+    this.arenaTiltInner.addChild(this.arenaRotationRoot);
+    this.arenaTiltInner.addChild(this.beybladeLayer);
+    this.arenaTiltInner.addChild(this.detachedBodyLayer);
+    this.arenaTiltInner.addChild(this.particleLayer);
+    this.worldRoot.addChild(this.arenaTiltOuter);
 
     this.app.stage.addChild(this.worldRoot);
     this.app.stage.addChild(this.hudLayer); // HUD stays in screen space
@@ -236,6 +251,7 @@ export class BeybladeGameRenderer {
     this.world.tick();
     this.applyCameraTransform();
     this.updateArenaRotation(gameState);
+    this.updateArenaTilt(gameState);
 
     if (this.featureRenderer && gameState) {
       this.featureRenderer.sync({
@@ -348,7 +364,54 @@ export class BeybladeGameRenderer {
     }
     if (this.arenaRotationRoot) {
       this.arenaRotationRoot.rotation = this.arenaRotationRad;
+      // Configurable pivot for rotation (cm → worldPx).
+      const pvx = (arena && typeof arena.rotationPivotX === "number") ? arena.rotationPivotX * PX_PER_CM_BASE : 0;
+      const pvy = (arena && typeof arena.rotationPivotY === "number") ? arena.rotationPivotY * PX_PER_CM_BASE : 0;
+      this.arenaRotationRoot.pivot.set(pvx, pvy);
+      this.arenaRotationRoot.position.set(pvx, pvy); // compensate so visual origin stays at (0,0)
     }
+  }
+
+  /**
+   * Apply perspective-foreshortening for arena tilt.
+   *
+   * Three nested containers produce the correct 2D projection of a tilted plane:
+   *   arenaTiltOuter  — rotated by tiltDirection  (aligns the tilt axis with local X)
+   *   arenaTiltScale  — scaleX = cos(tiltAngle)   (compresses along that axis)
+   *   arenaTiltInner  — rotated by -tiltDirection  (restores the original orientation)
+   *
+   * Results:
+   *   tiltAngle=0°   → identity (flat arena)
+   *   tiltAngle=45°  → ellipse squished along tiltDirection axis
+   *   tiltAngle=90°  → arena collapses to a line (viewed edge-on — wall-ride)
+   *   tiltAngle=180° → scaleX=-1 → mirror flip (fully inverted / Zero-G)
+   *   tiltAngle=360° → identity again
+   */
+  private updateArenaTilt(gameState: ServerGameState | null) {
+    if (!this.arenaTiltOuter) return;
+    const arena = gameState?.arena as any;
+    const tiltAngle: number = (arena && typeof arena.tiltAngle === "number") ? arena.tiltAngle : 0;
+    const tiltDir:   number = (arena && typeof arena.tiltDirection === "number") ? arena.tiltDirection : 0;
+
+    // Configurable pivot for tilt (cm → worldPx). Setting pivot + matching position
+    // keeps the visual origin at (0,0) while rotation/scale happen around the pivot.
+    const pvx = (arena && typeof arena.tiltPivotX === "number") ? arena.tiltPivotX * PX_PER_CM_BASE : 0;
+    const pvy = (arena && typeof arena.tiltPivotY === "number") ? arena.tiltPivotY * PX_PER_CM_BASE : 0;
+    this.arenaTiltOuter.pivot.set(pvx, pvy);
+    this.arenaTiltOuter.position.set(pvx, pvy);
+
+    if (tiltAngle === 0 || tiltAngle === 360) {
+      this.arenaTiltOuter.rotation = 0;
+      this.arenaTiltScale.scale.x  = 1;
+      this.arenaTiltInner.rotation = 0;
+      return;
+    }
+
+    const dirRad  = (tiltDir   * Math.PI) / 180;
+    const tiltRad = (tiltAngle * Math.PI) / 180;
+    this.arenaTiltOuter.rotation = dirRad;
+    this.arenaTiltScale.scale.x  = Math.cos(tiltRad); // negative 90–270° = visual flip/invert
+    this.arenaTiltInner.rotation = -dirRad;
   }
 
   /** Convert server physics-space coords → world cm coords (origin = arena center). */
@@ -751,9 +814,10 @@ export class BeybladeGameRenderer {
     const wobbleSkewX = tiltAmount * Math.sin(Date.now() / 300);
 
     // E9: beyTiltAngle skew (2.5D tilt effect — combines with wobble)
+    // Uses sin so the skew mirrors the full 0–360° rotation: max skew at 90°, zero at 180° (on back), max negative at 270° (on head), zero again at 360°.
     const tiltAngle = (beyblade as any).beyTiltAngle ?? 0;
-    const tiltFrac = tiltAngle !== 0 ? tiltAngle / 90 : 0;
-    const tiltSkewX = tiltFrac * 0.4; // max 0.4 radians skew at 90°
+    const tiltFrac = tiltAngle !== 0 ? Math.sin(tiltAngle * Math.PI / 180) : 0;
+    const tiltSkewX = tiltFrac * 0.4; // ±0.4 radians skew at 90°/270°
 
     sprite.skew.set(wobbleSkewX + tiltSkewX, 0);
 

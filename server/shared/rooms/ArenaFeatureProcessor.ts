@@ -1045,6 +1045,128 @@ export function processArenaFeatures(
     physics.applyForce(beyblade.id, (ddx / dd) * recoil, (ddy / dd) * recoil);
   }
 
+  // ─── Directional Zones (Phase ZP) ─────────────────────────────────────────
+  const directionalZones: any[] = (arenaData as any).directionalZones ?? [];
+  for (const zone of directionalZones) {
+    if (!zone) continue;
+    if (zone.behaviorId) {
+      executeBehavior(zone.behaviorId, zone.behaviorParams ?? {}, [beyblade], physics);
+      continue;
+    }
+    if (zone.controlledBySwitchId && zone.triggerState === "off") continue;
+
+    // Pulse gating
+    if (zone.pulse) {
+      const cycle = (zone.pulse.activeMs + zone.pulse.pauseMs);
+      const phase = matchElapsedMs % cycle;
+      if (phase > zone.pulse.activeMs) continue;
+    }
+
+    const zxPx = (zone.x_cm ?? 0) * 24;
+    const zyPx = (zone.y_cm ?? 0) * 24;
+    const zrPx = (zone.radius_cm ?? 8) * 24;
+    const angleRad = ((zone.angleDeg ?? 0) * Math.PI) / 180;
+    const force: number = zone.force ?? 0.005;
+    const bx = beyblade.x, by = beyblade.y;
+    const dx = bx - zxPx, dy = by - zyPx;
+
+    switch (zone.type) {
+      case "wind_corridor": {
+        // Rectangle: perpendicular axis check
+        const halfW = ((zone.width_cm ?? 8) * 24) / 2;
+        const halfL = ((zone.length_cm ?? 20) * 24) / 2;
+        const cosA = Math.cos(angleRad), sinA = Math.sin(angleRad);
+        const localX = dx * cosA + dy * sinA;
+        const localY = -dx * sinA + dy * cosA;
+        if (Math.abs(localX) > halfL || Math.abs(localY) > halfW) break;
+        // Push in wind direction
+        physics.applyForce(beyblade.id, Math.cos(angleRad) * force, Math.sin(angleRad) * force);
+        break;
+      }
+      case "tornado": {
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        if (dist > zrPx) break;
+        const falloff = 1 - dist / zrPx;
+        const spinDir = zone.spinDirection === "ccw" ? -1 : 1;
+        const rotFactor = zone.rotationFactor ?? 1.0;
+        // Tangential orbit component
+        const tx = (-dy / dist) * spinDir;
+        const ty = (dx / dist) * spinDir;
+        physics.applyForce(beyblade.id, tx * force * rotFactor * falloff, ty * force * rotFactor * falloff);
+        // Inward pull component — stronger near rim, gentler at eye
+        const pullForce = (zone.centerPullForce ?? force * 0.5);
+        const rimFalloff = dist / zrPx; // 0 at center, 1 at rim
+        physics.applyForce(beyblade.id, (-dx / dist) * pullForce * rimFalloff, (-dy / dist) * pullForce * rimFalloff);
+        break;
+      }
+      case "vortex": {
+        // Pure inward spiral — quadratic pull near center
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        if (dist > zrPx) break;
+        const t = 1 - dist / zrPx; // 0 at rim, 1 at center
+        const pullF = (zone.centerPullForce ?? force) * t * t;
+        physics.applyForce(beyblade.id, (-dx / dist) * pullF, (-dy / dist) * pullF);
+        // Weak tangent at rim, strong at center
+        const spinDir2 = zone.spinDirection === "ccw" ? -1 : 1;
+        const tx2 = (-dy / dist) * spinDir2 * t;
+        const ty2 = (dx / dist) * spinDir2 * t;
+        physics.applyForce(beyblade.id, tx2 * force * 0.4, ty2 * force * 0.4);
+        break;
+      }
+      case "updraft": {
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        if (dist > zrPx) break;
+        // Reduce outward drift (pull toward zone center softly)
+        physics.applyForce(beyblade.id, (-dx / dist) * force * 0.3, (-dy / dist) * force * 0.3);
+        // Spin recovery bonus
+        const recovPerSec = zone.spinRecoveryPerSec ?? 30;
+        beyblade.spin = Math.min(beyblade.maxSpin, beyblade.spin + recovPerSec * dt);
+        break;
+      }
+      case "downdraft": {
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        if (dist > zrPx) break;
+        // Pin beys in place — apply velocity damping
+        if (physics.setVelocity) {
+          physics.setVelocity(beyblade.id, beyblade.velocityX * 0.85, beyblade.velocityY * 0.85);
+        }
+        // Extra spin drain
+        const drainMult = zone.spinDrainMult ?? 1.5;
+        beyblade.spin = Math.max(0, beyblade.spin - (beyblade.spin * 0.008 * drainMult * dt));
+        break;
+      }
+      case "slipstream": {
+        // Rectangular channel aligned with angleDeg — reduces drag, pushes gently along lane
+        const halfW = ((zone.width_cm ?? 6) * 24) / 2;
+        const halfL = ((zone.length_cm ?? 18) * 24) / 2;
+        const cosA = Math.cos(angleRad), sinA = Math.sin(angleRad);
+        const localX = dx * cosA + dy * sinA;
+        const localY = -dx * sinA + dy * cosA;
+        if (Math.abs(localX) > halfL || Math.abs(localY) > halfW) break;
+        // Gentle push + velocity amplification along lane
+        physics.applyForce(beyblade.id, Math.cos(angleRad) * force * 0.6, Math.sin(angleRad) * force * 0.6);
+        beyblade.velocityX *= 1 + 0.02 * dt;
+        beyblade.velocityY *= 1 + 0.02 * dt;
+        break;
+      }
+      case "dust_devil": {
+        // Small fast-spinning column — erratic orbit + random wobble
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        if (dist > zrPx) break;
+        const spinDir3 = zone.spinDirection === "ccw" ? -1 : 1;
+        const tx3 = (-dy / dist) * spinDir3;
+        const ty3 = (dx / dist) * spinDir3;
+        const falloff3 = 1 - dist / zrPx;
+        physics.applyForce(beyblade.id, tx3 * force * 1.8 * falloff3, ty3 * force * 1.8 * falloff3);
+        // Random wobble (seeded from beyblade id to stay deterministic enough)
+        const wobble = force * 0.5;
+        const seed = (beyblade.x * 7 + beyblade.y * 13 + matchElapsedMs * 0.001) % 1;
+        physics.applyForce(beyblade.id, (seed - 0.5) * wobble, ((seed * 1.618) % 1 - 0.5) * wobble);
+        break;
+      }
+    }
+  }
+
   return events;
 }
 
