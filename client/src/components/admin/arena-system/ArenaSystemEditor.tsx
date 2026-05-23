@@ -3,6 +3,7 @@ import { ArenaSystem } from "@/types/arenaSystem";
 import { C } from "@/styles/theme";
 import { ArenaSystemPreview } from "./ArenaSystemPreview";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
+import { PX_PER_CM_BASE } from "@/constants/units";
 
 interface Props {
   arenaSystem: ArenaSystem;
@@ -124,15 +125,16 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 4 }}>
             <div>
               <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
-                Width (px)
+                Width (cm)
               </label>
               <input
                 type="number"
-                value={arenaSystem.width}
-                onChange={(e) => updateArena({ width: parseInt(e.target.value) })}
+                min={10} max={100} step={1}
+                value={Math.round(arenaSystem.width / PX_PER_CM_BASE)}
+                onChange={(e) => updateArena({ width: Math.round(Math.max(10, parseFloat(e.target.value) || 10) * PX_PER_CM_BASE) })}
                 style={{
                   width: "100%",
                   padding: "8px 12px",
@@ -147,12 +149,13 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
 
             <div>
               <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
-                Height (px)
+                Height (cm)
               </label>
               <input
                 type="number"
-                value={arenaSystem.height}
-                onChange={(e) => updateArena({ height: parseInt(e.target.value) })}
+                min={10} max={100} step={1}
+                value={Math.round(arenaSystem.height / PX_PER_CM_BASE)}
+                onChange={(e) => updateArena({ height: Math.round(Math.max(10, parseFloat(e.target.value) || 10) * PX_PER_CM_BASE) })}
                 style={{
                   width: "100%",
                   padding: "8px 12px",
@@ -165,6 +168,9 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
               />
             </div>
           </div>
+          <p style={{ fontSize: 11, color: C.faint, marginBottom: 16 }}>
+            Stored as {arenaSystem.width} × {arenaSystem.height} px internally
+          </p>
 
           <div>
             <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>

@@ -228,9 +228,9 @@ export default function ArenaPreview({ arena }: Props) {
 
     // ── Obstacles ─────────────────────────────────────────────────────────────
     (cur.obstacles ?? []).forEach(obs => {
-      const px = (obs.x ?? 0) * scale;
-      const py = (obs.y ?? 0) * scale;
-      const r  = (obs.radius ?? 15) * scale;
+      const px = (obs.x ?? 0) * EM_TO_PX * scale;
+      const py = (obs.y ?? 0) * EM_TO_PX * scale;
+      const r  = (obs.radius ?? 15) * EM_TO_PX * scale;
       const oGfx = new PIXI.Graphics();
       oGfx.circle(px, py, r).fill({ color: themeColor, alpha: 0.8 });
       oGfx.circle(px, py, r).stroke({ color: 0xffffff, width: 2, alpha: 0.5 });
@@ -239,9 +239,9 @@ export default function ArenaPreview({ arena }: Props) {
 
     // ── Turrets ───────────────────────────────────────────────────────────────
     (cur.turrets ?? []).forEach(turret => {
-      const px = (turret.x ?? 0) * scale;
-      const py = (turret.y ?? 0) * scale;
-      const r  = (turret.radius ?? 20) * scale;
+      const px = (turret.x ?? 0) * EM_TO_PX * scale;
+      const py = (turret.y ?? 0) * EM_TO_PX * scale;
+      const r  = (turret.radius ?? 20) * EM_TO_PX * scale;
       const tGfx = new PIXI.Graphics();
       tGfx.circle(px, py, r).fill({ color: 0xef4444, alpha: 0.85 });
       tGfx.moveTo(px - r * 0.7, py).lineTo(px + r * 0.7, py).stroke({ color: 0xffffff, width: 2, alpha: 0.8 });

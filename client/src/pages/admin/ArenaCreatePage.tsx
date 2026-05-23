@@ -6,26 +6,44 @@ import toast from "react-hot-toast";
 import { C, S } from "@/styles/theme";
 import { DEFAULT_ARENA_CONFIG, initializeWallConfig } from "@/types/arenaConfigNew";
 import type { ArenaShape, ArenaTheme } from "@/types/arenaConfigNew";
+import { PX_PER_CM_BASE } from "@/constants/units";
 
 const THEMES = ["metrocity","forest","mountains","grasslands","desert","sea","futuristic","prehistoric","safari","riverbank"];
+
+const SHAPES: { value: ArenaShape; label: string; icon: string }[] = [
+  { value: "circle",    label: "Circle",    icon: "⭕" },
+  { value: "square",    label: "Square",    icon: "⬛" },
+  { value: "triangle",  label: "Triangle",  icon: "🔺" },
+  { value: "pentagon",  label: "Pentagon",  icon: "⬠" },
+  { value: "hexagon",   label: "Hexagon",   icon: "⬡" },
+  { value: "heptagon",  label: "Heptagon",  icon: "⬠" },
+  { value: "octagon",   label: "Octagon",   icon: "🔷" },
+  { value: "star3",     label: "Star 3",    icon: "✦" },
+  { value: "star4",     label: "Star 4",    icon: "✦" },
+  { value: "star5",     label: "Star 5",    icon: "⭐" },
+  { value: "star6",     label: "Star 6",    icon: "✡" },
+];
 
 export function ArenaCreatePage() {
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ name:"", shape:"circle" as "circle"|"rectangle", theme:"metrocity", width:1080, height:1080 });
+  // widthCm / heightCm stored in cm; converted to px on save
+  const [form, setForm] = useState({ name:"", shape:"circle" as ArenaShape, theme:"metrocity", widthCm:45, heightCm:45 });
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]:v }));
 
   const handleSave = async () => {
     if (!form.name.trim()) { toast.error("Name required"); return; }
     setSaving(true);
     try {
+      const widthPx  = Math.round(form.widthCm  * PX_PER_CM_BASE);
+      const heightPx = Math.round(form.heightCm * PX_PER_CM_BASE);
       const docRef = await addDoc(collection(db, COLLECTIONS.ARENAS), {
         ...DEFAULT_ARENA_CONFIG,
         name: form.name.trim(),
         shape: form.shape as ArenaShape,
         theme: form.theme as ArenaTheme,
         wall: initializeWallConfig(form.shape as ArenaShape),
-        width: form.width, height: form.height,
+        width: widthPx, height: heightPx,
         obstacles: [], waterBodies: [], speedPaths: [], turrets: [], portals: [], pits: [],
         createdAt: serverTimestamp(),
       });
@@ -50,15 +68,17 @@ export function ArenaCreatePage() {
 
         <div>
           <label style={S.label}>Shape</label>
-          <div style={{ display:"flex", gap:10 }}>
-            {(["circle","rectangle"] as const).map(shape => (
-              <button key={shape} onClick={() => set("shape",shape)} style={{
-                flex:1, padding:"10px", borderRadius:10, fontSize:13, fontWeight:500, cursor:"pointer", textTransform:"capitalize",
-                background: form.shape===shape ? C.purple+"22" : "transparent",
-                border: `2px solid ${form.shape===shape ? C.purple : C.border}`,
-                color: form.shape===shape ? C.text : C.muted,
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:6 }}>
+            {SHAPES.map(s => (
+              <button key={s.value} onClick={() => set("shape", s.value)} style={{
+                padding:"8px 4px", borderRadius:8, fontSize:11, fontWeight:500, cursor:"pointer",
+                background: form.shape===s.value ? C.purple+"22" : "transparent",
+                border: `1px solid ${form.shape===s.value ? C.purple : C.border}`,
+                color: form.shape===s.value ? C.text : C.muted,
+                display:"flex", flexDirection:"column", alignItems:"center", gap:2,
               }}>
-                {shape==="circle" ? "⭕" : "▬"} {shape}
+                <span style={{ fontSize:16 }}>{s.icon}</span>
+                <span>{s.label}</span>
               </button>
             ))}
           </div>
@@ -78,15 +98,18 @@ export function ArenaCreatePage() {
           </div>
         </div>
 
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-          <div>
-            <label style={S.label}>Width (px)</label>
-            <input type="number" min={400} max={2000} step={40} value={form.width} onChange={e => set("width",+e.target.value)} style={S.input} />
+        <div>
+          <label style={S.label}>Size (cm) — Width × Height</label>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr auto 1fr", gap:8, alignItems:"center" }}>
+            <input type="number" min={10} max={100} step={1} value={form.widthCm}
+              onChange={e => set("widthCm", Math.max(10, +e.target.value))} style={{ ...S.input, textAlign:"right" as const }} />
+            <span style={{ color:C.faint, fontSize:13 }}>×</span>
+            <input type="number" min={10} max={100} step={1} value={form.heightCm}
+              onChange={e => set("heightCm", Math.max(10, +e.target.value))} style={{ ...S.input, textAlign:"right" as const }} />
           </div>
-          <div>
-            <label style={S.label}>Height (px)</label>
-            <input type="number" min={400} max={2000} step={40} value={form.height} onChange={e => set("height",+e.target.value)} style={S.input} />
-          </div>
+          <p style={{ fontSize:11, color:C.faint, marginTop:4 }}>
+            Stored as {Math.round(form.widthCm * PX_PER_CM_BASE)} × {Math.round(form.heightCm * PX_PER_CM_BASE)} px internally
+          </p>
         </div>
 
         <p style={{ fontSize:12, color:C.faint }}>Arena will be created with empty feature configuration. You can add obstacles, water bodies, speed paths, and more in the editor.</p>
