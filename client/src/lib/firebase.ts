@@ -52,4 +52,8 @@ export const COLLECTIONS = {
   PARTICLE_PRESETS: "particle_presets",
   COMBO_EFFECTS: "combo_effects",
   ELEMENT_TYPE_CONFIGS: "element_type_configs",
+  COMBOS: "combos",
+  TURRET_ATTACK_TYPES: "turret_attack_types",
+  ARENA_FEATURE_CONFIGS: "arena_feature_configs",
+  BEY_LINK_CONFIGS: "bey_link_configs",
 } as const;
