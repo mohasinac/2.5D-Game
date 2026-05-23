@@ -9,7 +9,9 @@ import toast from "react-hot-toast";
 import { C } from "@/styles/theme";
 import { EntityPicker, type EntityOption } from "@/components/setup/EntityPicker";
 import { PX_PER_CM_BASE } from "@/constants/units";
-import { getComboDisplay, costIcon, KEY_LABEL } from "@/constants/combos";
+import { costIcon, KEY_LABEL } from "@/constants/combos";
+import { useCombos } from "@/hooks/useCombos";
+import type { ComboDoc } from "@/stores/gameDataStore";
 
 type Difficulty = "medium" | "hard" | "hell";
 type BestOf = 1 | 3 | 5;
@@ -65,6 +67,7 @@ export function AIBattleSetupPage() {
   const mode = modeFromPath(location.pathname);
   const { settings, setGameConfig } = useGame();
   const { currentUser } = useAuth();
+  const { byId: comboById } = useCombos();
 
   const [beyblades, setBeyblades] = useState<BeybladeOption[]>([]);
   const [arenas, setArenas]       = useState<ArenaOption[]>([]);
@@ -158,7 +161,7 @@ export function AIBattleSetupPage() {
             options={beyOptions}
             selectedId={playerBeyId || null}
             onSelect={(id) => setPlayerBeyId(id)}
-            tabs={buildBeybladeTabs(TypeBadge) as any}
+            tabs={buildBeybladeTabs(TypeBadge, comboById) as any}
           />
 
           {/* Customize Parts — shown only when selected beyblade has a linked 2.5D system */}
@@ -216,7 +219,7 @@ export function AIBattleSetupPage() {
             selectedId={aiBeyId || null}
             onSelect={(id) => setAiBeyId(id)}
             dimIds={new Set(playerBeyId ? [playerBeyId] : [])}
-            tabs={buildBeybladeTabs(TypeBadge) as any}
+            tabs={buildBeybladeTabs(TypeBadge, comboById) as any}
           />
 
           {/* Arena */}
@@ -289,7 +292,7 @@ export function AIBattleSetupPage() {
 
 // ─── Tab builders for the EntityPicker ────────────────────────────────────
 
-function buildBeybladeTabs(TypeBadge: (p: { type: string }) => React.ReactElement) {
+function buildBeybladeTabs(TypeBadge: (p: { type: string }) => React.ReactElement, comboById: Record<string, ComboDoc> = {}) {
   return [
     {
       id: "preview",
@@ -363,11 +366,11 @@ function buildBeybladeTabs(TypeBadge: (p: { type: string }) => React.ReactElemen
       render: (sel: EntityOption | null) => {
         if (!sel) return <EmptyHint>Pick a beyblade.</EmptyHint>;
         const b = sel.data as BeybladeOption;
-        const combos = (b.comboIds ?? []).map((id) => getComboDisplay(id)).filter(Boolean);
+        const combos = (b.comboIds ?? []).map((id) => comboById[id]).filter(Boolean) as ComboDoc[];
         if (combos.length === 0) return <EmptyHint>This beyblade has no combos.</EmptyHint>;
         return (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {combos.map((c) => c && (
+            {combos.map((c) => (
               <div key={c.id} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 10px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{c.name}</span>
@@ -376,7 +379,7 @@ function buildBeybladeTabs(TypeBadge: (p: { type: string }) => React.ReactElemen
                 <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>{c.description}</div>
                 <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
                   {c.sequence.map((k, i) => (
-                    <span key={i} style={{ background: C.bg3, padding: "2px 6px", borderRadius: 4, fontFamily: "monospace", fontSize: 10 }}>{KEY_LABEL[k]}</span>
+                    <span key={i} style={{ background: C.bg3, padding: "2px 6px", borderRadius: 4, fontFamily: "monospace", fontSize: 10 }}>{KEY_LABEL[k as keyof typeof KEY_LABEL]}</span>
                   ))}
                 </div>
               </div>

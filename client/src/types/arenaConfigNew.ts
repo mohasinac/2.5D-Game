@@ -220,6 +220,8 @@ export interface BaseWaterBodyConfig {
   depth?: number; // Visual depth effect (0-10, default: 5)
   wavyEffect?: boolean; // Animated wavy effect (default: false)
   effects?: WaterEffectConfig; // Custom gameplay effects (overrides liquid type defaults)
+  /** Firebase asset doc ID from water_body_assets collection. */
+  textureId?: string;
 }
 
 /**
@@ -406,6 +408,8 @@ export interface PortalConfig {
   /** Initial sprite orientation (degrees). */
   rotation?: number;
   selfRotation?: SelfRotationConfig;
+  /** Firebase asset doc ID from portal_assets collection. */
+  spriteId?: string;
 }
 
 // ============================================================================
@@ -634,6 +638,10 @@ export interface TurretConfig {
   /** Initial facing angle + optional continuous rotation of the turret body itself. */
   rotation?: RotationBlock;
   selfRotation?: SelfRotationConfig;
+  /** Firebase asset doc ID from turret_assets collection. */
+  spriteId?: string;
+  /** Firebase asset doc ID for projectile sprite from turret_assets collection. */
+  projectileSpriteId?: string;
 }
 
 // ============================================================================
@@ -831,6 +839,8 @@ export interface ObstacleConfig {
   selfRotation?: SelfRotationConfig;
   elementType?: ElementType;
   featureAnimation?: FeatureAnimationConfig;
+  /** Firebase asset doc ID from obstacle_assets collection. */
+  spriteId?: string;
 }
 
 // ─── Switch obstacle (Part 6) ──────────────────────────────────────────────

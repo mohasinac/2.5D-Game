@@ -6,22 +6,16 @@ import { useState } from "react";
 import { C } from "@/styles/theme";
 import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset, SpinZoneConfig, GravityHoleConfig, BumpConfig, TriggerZoneConfig, TriggerZoneKind, TriggerZoneActivation } from "@/types/arenaConfigNew";
 import type { ElementType } from "@/types/elementTypes";
-import { ELEMENT_ICONS } from "@/types/elementTypes";
 import FeatureAnimationPanel from "./FeatureAnimationPanel";
 import SelfRotationPanel from "./SelfRotationPanel";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
-
-const ELEMENT_TYPES: ElementType[] = ["fire","water","earth","lightning","wind","ice","shadow","light","metal","nature","thunder","void"];
+import { useElementTypes } from "@/hooks/useElementTypes";
+import { useArenaFeatureConfigs } from "@/hooks/useArenaFeatureConfigs";
 
 interface Props {
   config: ArenaConfig;
   onChange: (patch: Partial<ArenaConfig>) => void;
 }
-
-const HAZARD_TYPES: FloorHazardType[] = ["lava", "ice", "mud", "electric", "time_slow", "repulsion", "size_shrink", "size_grow", "trampoline", "combo_boost", "drain", "void"];
-const EFFECT_TYPES: EffectZoneType[] = ["power_charge", "spin_recovery", "combo_boost", "stat_aura", "safe_zone", "turbo_zone", "respawn_point"];
-const PARTICLE_TYPES: BackgroundParticleType[] = ["snow", "rain", "embers", "leaves", "bubbles", "sparks", "pollen", "ash", "stars", "glitch_pixels"];
-const ENV_PRESETS: ArenaEnvironmentalEffectPreset[] = ["storm", "blizzard", "volcanic", "underwater", "cyber", "earthquake"];
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(true);
@@ -110,6 +104,16 @@ function BehaviorBadge({ behaviorId }: { behaviorId?: string }) {
 }
 
 export default function FeaturesTab({ config, onChange }: Props) {
+  // ── Firebase catalog data ─────────────────────────────────────────────────
+  const { configs: elementTypeConfigs, loading: elemLoading } = useElementTypes();
+  const { byCategory, loading: featLoading } = useArenaFeatureConfigs();
+
+  const elemOpts = elementTypeConfigs.map(cfg => ({ value: cfg.id, label: `${cfg.icon ?? ""} ${cfg.name}` }));
+  const hazardOpts = byCategory.hazard.map(t => ({ value: t.id, label: `${t.icon ?? ""} ${t.label}`, hint: t.description }));
+  const effectOpts = byCategory.effect_zone.map(t => ({ value: t.id, label: `${t.icon ?? ""} ${t.label}`, hint: t.description }));
+  const particleOpts = byCategory.particle.map(t => ({ value: t.id, label: `${t.icon ?? ""} ${t.label}`, hint: t.description }));
+  const envOpts = byCategory.env_preset.map(t => ({ value: t.id, label: `${t.icon ?? ""} ${t.label}`, hint: t.description }));
+
   // ── Background Particles ──────────────────────────────────────────────────
   const bp = config.backgroundParticles;
   const env = config.environmentalEffect;
@@ -235,7 +239,9 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <Row label="Type">
               <SearchableSelect
                 value={bp.type}
-                options={PARTICLE_TYPES.map(t => ({ value: t, label: t }))}
+                disabled={featLoading}
+                emptyLabel={featLoading ? "Loading…" : "Select type"}
+                options={particleOpts}
                 onChange={v => onChange({ backgroundParticles: { ...bp, type: v as BackgroundParticleType } })}
                 style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
               />
@@ -268,7 +274,9 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <Row label="Preset">
               <SearchableSelect
                 value={env.preset}
-                options={ENV_PRESETS.map(p => ({ value: p, label: p }))}
+                disabled={featLoading}
+                emptyLabel={featLoading ? "Loading…" : "Select preset"}
+                options={envOpts}
                 onChange={v => onChange({ environmentalEffect: { ...env, preset: v as ArenaEnvironmentalEffectPreset } })}
                 style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
               />
@@ -293,17 +301,20 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <Row label="Type">
               <SearchableSelect
                 value={z.hazardType}
-                options={HAZARD_TYPES.map(t => ({ value: t, label: t }))}
-                onChange={v => updateHazard(i, { hazardType: v })}
+                disabled={featLoading}
+                emptyLabel={featLoading ? "Loading…" : "Select hazard"}
+                options={hazardOpts}
+                onChange={v => updateHazard(i, { hazardType: v as FloorHazardType })}
                 style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
               />
             </Row>
             <Row label="Element Type">
               <SearchableSelect
                 value={(z as any).elementType ?? ""}
-                options={ELEMENT_TYPES.map(t => ({ value: t, label: `${ELEMENT_ICONS[t]} ${t}` }))}
-                onChange={v => updateHazard(i, { elementType: v || undefined })}
-                emptyLabel="— none —"
+                disabled={elemLoading}
+                emptyLabel={elemLoading ? "Loading…" : "— none —"}
+                options={elemOpts}
+                onChange={v => updateHazard(i, { elementType: (v as ElementType) || undefined })}
                 style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
               />
             </Row>
@@ -349,17 +360,20 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <Row label="Effect Type">
               <SearchableSelect
                 value={z.effectType}
-                options={EFFECT_TYPES.map(t => ({ value: t, label: t }))}
-                onChange={v => updateEffect(i, { effectType: v })}
+                disabled={featLoading}
+                emptyLabel={featLoading ? "Loading…" : "Select effect"}
+                options={effectOpts}
+                onChange={v => updateEffect(i, { effectType: v as EffectZoneType })}
                 style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
               />
             </Row>
             <Row label="Element Type">
               <SearchableSelect
                 value={z.elementType ?? ""}
-                options={ELEMENT_TYPES.map(t => ({ value: t, label: `${ELEMENT_ICONS[t]} ${t}` }))}
-                onChange={v => updateEffect(i, { elementType: v || undefined })}
-                emptyLabel="— none —"
+                disabled={elemLoading}
+                emptyLabel={elemLoading ? "Loading…" : "— none —"}
+                options={elemOpts}
+                onChange={v => updateEffect(i, { elementType: (v as ElementType) || undefined })}
                 style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
               />
             </Row>
@@ -449,9 +463,10 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <Row label="Element Type">
               <SearchableSelect
                 value={(z as any).elementType ?? ""}
-                options={ELEMENT_TYPES.map(t => ({ value: t, label: `${ELEMENT_ICONS[t]} ${t}` }))}
-                onChange={v => updateSpinZone(i, { elementType: v || undefined })}
-                emptyLabel="— none —"
+                disabled={elemLoading}
+                emptyLabel={elemLoading ? "Loading…" : "— none —"}
+                options={elemOpts}
+                onChange={v => updateSpinZone(i, { elementType: (v as ElementType) || undefined })}
                 style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
               />
             </Row>
@@ -504,9 +519,10 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <Row label="Element Type">
               <SearchableSelect
                 value={(z as any).elementType ?? ""}
-                options={ELEMENT_TYPES.map(t => ({ value: t, label: `${ELEMENT_ICONS[t]} ${t}` }))}
-                onChange={v => updateGravityHole(i, { elementType: v || undefined })}
-                emptyLabel="— none —"
+                disabled={elemLoading}
+                emptyLabel={elemLoading ? "Loading…" : "— none —"}
+                options={elemOpts}
+                onChange={v => updateGravityHole(i, { elementType: (v as ElementType) || undefined })}
                 style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
               />
             </Row>
@@ -549,9 +565,10 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <Row label="Element Type">
               <SearchableSelect
                 value={(z as any).elementType ?? ""}
-                options={ELEMENT_TYPES.map(t => ({ value: t, label: `${ELEMENT_ICONS[t]} ${t}` }))}
-                onChange={v => updateBump(i, { elementType: v || undefined })}
-                emptyLabel="— none —"
+                disabled={elemLoading}
+                emptyLabel={elemLoading ? "Loading…" : "— none —"}
+                options={elemOpts}
+                onChange={v => updateBump(i, { elementType: (v as ElementType) || undefined })}
                 style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
               />
             </Row>

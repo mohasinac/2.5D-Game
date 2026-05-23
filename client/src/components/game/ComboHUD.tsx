@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { C } from "@/styles/theme";
-import { getComboDisplay, costIcon, KEY_LABEL } from "@/constants/combos";
+import { costIcon, KEY_LABEL } from "@/constants/combos";
+const KL = KEY_LABEL as Record<string, string>;
+import type { ComboDoc } from "@/stores/gameDataStore";
 
 interface FiredComboEntry {
   id: string;
@@ -19,9 +21,11 @@ interface ComboHUDProps {
   power?: number;
   /** Charge progress 0–1 for a charged combo being held. 0 = not charging. */
   comboChargeScale?: number;
+  /** Pre-loaded combo map from Firebase — keyed by combo id. Replaces getComboDisplay. */
+  comboMap?: Record<string, ComboDoc>;
 }
 
-export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, comboChargeScale = 0 }: ComboHUDProps) {
+export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, comboChargeScale = 0, comboMap = {} }: ComboHUDProps) {
   const [comboHistory, setComboHistory] = useState<FiredComboEntry[]>([]);
   const [comboPopup, setComboPopup] = useState<boolean>(false);
   const [now, setNow] = useState<number>(Date.now());
@@ -46,7 +50,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
     }
   }, [lastCombo]);
 
-  const attached = (attachedComboIds ?? []).map(id => getComboDisplay(id)).filter(Boolean) as Array<ReturnType<typeof getComboDisplay> & object>;
+  const attached = (attachedComboIds ?? []).map(id => comboMap[id]).filter(Boolean) as ComboDoc[];
 
   return (
     <>
@@ -88,7 +92,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
                     <span key={i} style={{
                       background: C.bg3, padding: "2px 6px", borderRadius: 4,
                       fontFamily: "monospace", fontSize: 10,
-                    }}>{KEY_LABEL[k]}</span>
+                    }}>{KL[k] ?? k}</span>
                   ))}
                 </div>
                 {onCooldown && (
@@ -143,7 +147,8 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
         pointerEvents: "none", zIndex: 10,
       }}>
         {comboHistory.map((combo) => {
-          const display = getComboDisplay(combo.name) ?? getComboDisplay(comboHistory[0].id.split("-")[0]);
+          const comboId = combo.id.split("-")[0];
+          const display = comboMap[comboId] ?? comboMap[combo.name];
           return (
             <div key={combo.id} data-testid={`combo-fired-${combo.id}`} style={{
               background: "rgba(15, 23, 42, 0.85)",
@@ -162,7 +167,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
                   <span key={idx} style={{
                     background: C.bg3, padding: "2px 6px", borderRadius: 4,
                     fontFamily: "monospace", fontSize: 9,
-                  }}>{KEY_LABEL[k]}</span>
+                  }}>{KL[k] ?? k}</span>
                 ))}
               </div>
             </div>

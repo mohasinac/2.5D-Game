@@ -145,6 +145,24 @@ const SEEDERS = [
     collections: ["element_type_configs"],
     description: "12 default element types with type matrix",
   },
+  {
+    name: "turret-attack-types",
+    script: "seed-turret-attack-types.js",
+    collections: ["turret_attack_types"],
+    description: "15 turret attack types + 8 fire patterns",
+  },
+  {
+    name: "arena-feature-configs",
+    script: "seed-arena-feature-configs.js",
+    collections: ["arena_feature_configs"],
+    description: "13 hazard types + 7 effect zones + 10 particle types + 6 env presets",
+  },
+  {
+    name: "bey-link-configs",
+    script: "seed-bey-link-configs.js",
+    collections: ["bey_link_configs"],
+    description: "BeyLink + ArenaLink type catalog (9 categories, 43 entries)",
+  },
 ];
 
 // ── 4. Parse CLI flags ────────────────────────────────────────────────────────

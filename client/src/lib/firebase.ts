@@ -56,4 +56,7 @@ export const COLLECTIONS = {
   TURRET_ATTACK_TYPES: "turret_attack_types",
   ARENA_FEATURE_CONFIGS: "arena_feature_configs",
   BEY_LINK_CONFIGS: "bey_link_configs",
+  ANIMATION_PRESETS: "animation_presets",
+  BEHAVIOR_DEFS: "behavior_defs",
+  ROUND_MODIFIERS: "round_modifiers",
 } as const;

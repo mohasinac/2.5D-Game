@@ -1,6 +1,9 @@
 import { C } from "@/styles/theme";
 import type { ArenaConfig, PortalConfig } from "@/types/arenaConfigNew";
 import SelfRotationPanel from "./SelfRotationPanel";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
+import { useAssetLibrary } from "@/hooks/useAssetLibrary";
+import { COLLECTIONS } from "@/lib/firebase";
 
 interface Props {
   config: ArenaConfig;
@@ -21,6 +24,8 @@ const DEFAULTS: Omit<PortalConfig, "id">[] = [
 
 export default function PortalsTab({ config, onChange }: Props) {
   const portals = config.portals ?? [];
+  const { assets: portalAssets, loading: assetsLoading } = useAssetLibrary(COLLECTIONS.PORTAL_ASSETS);
+  const assetOpts = portalAssets.map(a => ({ value: a.id, label: a.name ?? a.id, hint: a.tags?.join(", ") }));
 
   const add = () => {
     if (portals.length >= 4) return;
@@ -100,6 +105,18 @@ export default function PortalsTab({ config, onChange }: Props) {
                   style={{ width: "100%", accentColor: color }}
                 />
               </div>
+            </div>
+            {/* Sprite picker */}
+            <div style={{ marginTop: 12 }}>
+              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Portal Sprite</label>
+              <SearchableSelect
+                value={(portal as any).spriteId ?? ""}
+                options={assetOpts}
+                onChange={v => update(portal.id, "spriteId" as any, v || undefined)}
+                disabled={assetsLoading}
+                emptyLabel={assetsLoading ? "Loading…" : "No portal assets found"}
+                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+              />
             </div>
             <SelfRotationPanel
               rotation={(portal as any).rotation}

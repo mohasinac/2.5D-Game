@@ -2,6 +2,9 @@ import { C } from "@/styles/theme";
 import type { ArenaConfig, ObstacleConfig } from "@/types/arenaConfigNew";
 import { OBSTACLE_ICONS } from "@/types/arenaConfigNew";
 import SelfRotationPanel from "./SelfRotationPanel";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
+import { useAssetLibrary } from "@/hooks/useAssetLibrary";
+import { COLLECTIONS } from "@/lib/firebase";
 
 interface Props {
   config: ArenaConfig;
@@ -26,6 +29,8 @@ const SLIDER_FIELDS: { field: keyof ObstacleConfig; label: string; min: number; 
 export default function ObstaclesTab({ config, onChange }: Props) {
   const items = config.obstacles ?? [];
   const themeIcon = OBSTACLE_ICONS[config.theme as keyof typeof OBSTACLE_ICONS] ?? "🪨";
+  const { assets: obstacleAssets, loading: assetsLoading } = useAssetLibrary(COLLECTIONS.OBSTACLE_ASSETS);
+  const assetOpts = obstacleAssets.map(a => ({ value: a.id, label: a.name ?? a.id, hint: a.tags?.join(", ") }));
 
   const add = () => {
     if (items.length >= 10) return;
@@ -88,8 +93,21 @@ export default function ObstaclesTab({ config, onChange }: Props) {
               </div>
             ))}
           </div>
+          {/* Sprite picker */}
+          <div style={{ marginTop: 12, marginBottom: 12 }}>
+            <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Obstacle Sprite</label>
+            <SearchableSelect
+              value={(obs as any).spriteId ?? ""}
+              options={assetOpts}
+              onChange={v => update(obs.id, "spriteId" as any, v || undefined)}
+              disabled={assetsLoading}
+              emptyLabel={assetsLoading ? "Loading…" : "No obstacle assets found"}
+              style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+            />
+          </div>
+
           {/* I6: Behavior override */}
-          <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <div>
               <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior ID (optional)</label>
               <input

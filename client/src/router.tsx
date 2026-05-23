@@ -57,6 +57,13 @@ import ComboEffectsPage from "./pages/admin/ComboEffectsPage";
 import AnimationPresetsPage from "./pages/admin/AnimationPresetsPage";
 import RoundModifiersPage from "./pages/admin/RoundModifiersPage";
 
+// Catalog CRUD pages
+import { CombosPage } from "./pages/admin/CombosPage";
+import { SpecialMovesPage } from "./pages/admin/SpecialMovesPage";
+import { TurretAttackTypesPage } from "./pages/admin/TurretAttackTypesPage";
+import { ArenaFeatureConfigsPage } from "./pages/admin/ArenaFeatureConfigsPage";
+import { BeyLinkConfigsPage } from "./pages/admin/BeyLinkConfigsPage";
+
 // 2.5D part system pages
 import { PartSearchPage } from "./pages/admin/2d/PartSearchPage";
 import { PartListPage } from "./pages/admin/2d/parts/PartListPage";
@@ -195,6 +202,13 @@ export const router = createBrowserRouter([
       { path: "particle-presets",   element: <ParticlePresetsPage /> },
       { path: "animation-presets",  element: <AnimationPresetsPage /> },
       { path: "round-modifiers",    element: <RoundModifiersPage /> },
+
+      // ── Catalog CRUD ──
+      { path: "combos",                  element: <CombosPage /> },
+      { path: "special-moves",           element: <SpecialMovesPage /> },
+      { path: "turret-attack-types",     element: <TurretAttackTypesPage /> },
+      { path: "arena-feature-configs",   element: <ArenaFeatureConfigsPage /> },
+      { path: "bey-link-configs",        element: <BeyLinkConfigsPage /> },
 
       // ── 2.5D Part System — canonical URL ──
       { path: "2.5d/parts", element: <PartSearchPage /> },

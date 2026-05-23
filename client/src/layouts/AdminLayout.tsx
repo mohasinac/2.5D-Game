@@ -7,7 +7,8 @@ import toast from "react-hot-toast";
 import {
   LayoutDashboard, Swords, Shield, Palette, Trophy, Users, BarChart3, FlaskConical,
   Settings, Search, BookOpen, Tag, Layers, Cpu, Box, Circle, Disc, Wrench,
-  Radio, Gamepad2, LogOut, Zap, type LucideIcon,
+  Radio, Gamepad2, LogOut, Zap, List, Sparkles, Target, Map, Link2, Film, Sliders, Brain,
+  type LucideIcon,
 } from "lucide-react";
 
 const BREADCRUMB_LABELS: Record<string, string> = {
@@ -15,6 +16,15 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   beyblades: "Beyblades",
   "element-types": "Element Types",
   arenas: "Arenas",
+  combos: "Combos",
+  "special-moves": "Special Moves",
+  "turret-attack-types": "Turret Attack Types",
+  "arena-feature-configs": "Arena Feature Configs",
+  "bey-link-configs": "BeyLink Configs",
+  "combo-effects": "Combo Effects",
+  "animation-presets": "Animation Presets",
+  "round-modifiers": "Round Modifiers",
+  "behavior-defs": "Behavior Defs",
   "arena-systems": "Arena Systems",
   "arena-floor-groups": "Floor Groups",
   assets: "Assets",
@@ -77,6 +87,18 @@ const navItems = [
   { to: "/admin/settings",           label: "Settings",     Icon: Settings },
 ];
 
+const catalogItems = [
+  { to: "/admin/combos",                label: "Combos",               Icon: List },
+  { to: "/admin/special-moves",         label: "Special Moves",        Icon: Sparkles },
+  { to: "/admin/turret-attack-types",   label: "Turret Attack Types",  Icon: Target },
+  { to: "/admin/arena-feature-configs", label: "Arena Feature Configs", Icon: Map },
+  { to: "/admin/bey-link-configs",      label: "BeyLink Configs",      Icon: Link2 },
+  { to: "/admin/combo-effects",         label: "Combo Effects",        Icon: Zap },
+  { to: "/admin/animation-presets",     label: "Animation Presets",    Icon: Film },
+  { to: "/admin/round-modifiers",       label: "Round Modifiers",      Icon: Sliders },
+  { to: "/admin/behavior-defs",         label: "Behavior Defs",        Icon: Brain },
+];
+
 const partLibraryItems = [
   { to: "/admin/2d/parts/bit-beasts",   label: "Bit Beasts",   Icon: Layers },
   { to: "/admin/2d/parts/attack-rings", label: "Attack Rings", Icon: Circle },
@@ -121,6 +143,10 @@ export function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [libExpanded, setLibExpanded] = useState(() => location.pathname.startsWith("/admin/2d"));
+  const [catalogExpanded, setCatalogExpanded] = useState(() => {
+    const catalogPaths = ["/admin/combos", "/admin/special-moves", "/admin/turret-attack-types", "/admin/arena-feature-configs", "/admin/bey-link-configs", "/admin/combo-effects", "/admin/animation-presets", "/admin/round-modifiers", "/admin/behavior-defs"];
+    return catalogPaths.some(p => location.pathname.startsWith(p));
+  });
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem("admin.sidebar") === "1");
 
   const toggleSidebar = () => {
@@ -174,6 +200,39 @@ export function AdminLayout() {
           {navItems.map((item) => (
             <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} end={item.end} collapsed={collapsed} />
           ))}
+
+          {/* Catalog Section */}
+          {!collapsed && (
+            <div style={{ marginTop: 12, marginBottom: 2 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.faint, letterSpacing: "0.08em", padding: "4px 12px 2px", textTransform: "uppercase" }}>
+                Catalog
+              </div>
+            </div>
+          )}
+          {!collapsed ? (
+            <>
+              <button
+                onClick={() => setCatalogExpanded(e => !e)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "8px 12px", borderRadius: 8, fontSize: 13,
+                  background: "transparent", border: "none", cursor: "pointer",
+                  color: C.muted, width: "100%", textAlign: "left",
+                }}
+              >
+                <List size={15} />
+                <span style={{ flex: 1 }}>Catalog Items</span>
+                <span style={{ fontSize: 10, color: C.faint }}>{catalogExpanded ? "▾" : "▸"}</span>
+              </button>
+              {catalogExpanded && catalogItems.map(item => (
+                <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
+              ))}
+            </>
+          ) : (
+            catalogItems.map(item => (
+              <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} collapsed />
+            ))
+          )}
 
           {/* 2.5D Section */}
           {!collapsed && (

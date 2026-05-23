@@ -5,6 +5,7 @@ import { C } from "@/styles/theme";
 import type { ArenaConfig, ArenaLink, BeyLink, BeyLinkType, BeyLinkAlignment, BeyLinkEffect, BeyLinkEffectType, BeyLinkMovementControl, BeyLinkGroupPattern } from "@/types/arenaConfigNew";
 import { BeyLinkMovementGuide } from "@/components/admin/BeyLinkMovementGuide";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
+import { useBeyLinkConfigs } from "@/hooks/useBeyLinkConfigs";
 
 interface Props {
   config: ArenaConfig;
@@ -28,8 +29,6 @@ const EMPTY_LINK: Omit<ArenaLink, "id"> = {
   reverseCondition: "always",
 };
 
-const LINK_TYPES: ArenaLink["linkType"][] = ["corridor", "portal", "ramp", "pit", "trampoline"];
-const REVERSE_CONDITIONS: NonNullable<ArenaLink["reverseCondition"]>[] = ["always", "never", "spin_above_50"];
 const TYPE_COLORS: Record<ArenaLink["linkType"], string> = {
   corridor: "#3b82f6",
   portal: "#a855f7",
@@ -37,17 +36,6 @@ const TYPE_COLORS: Record<ArenaLink["linkType"], string> = {
   pit: "#ef4444",
   trampoline: "#22c55e",
 };
-
-const BEY_LINK_TYPES: BeyLinkType[] = ["tip_stack", "top_mount", "side_spin"];
-const BEY_LINK_ALIGNMENTS: BeyLinkAlignment[] = ["friendly", "hostile", "neutral"];
-const TRIGGER_CONDITIONS: BeyLink["triggerCondition"][] = ["any", "same_team", "opponent_only"];
-const BEY_LINK_EFFECT_TYPES: BeyLinkEffectType[] = [
-  "spin_drain", "spin_share", "spin_heal", "damage_boost", "shield_boost",
-  "destabilize", "continuous_collision", "drill_attack", "control_loss", "force_lock",
-];
-const CONTROL_MODES: NonNullable<BeyLinkEffect["controlMode"]>[] = ["reverse", "scramble", "freeze"];
-const MOVEMENT_CONTROLS: BeyLinkMovementControl[] = ["auto", "initiator", "player"];
-const GROUP_PATTERNS: BeyLinkGroupPattern[] = ["chain", "star", "wedge", "rigid"];
 
 const ALIGNMENT_COLORS: Record<BeyLinkAlignment, string> = {
   friendly: "#14b8a6",
@@ -184,6 +172,9 @@ function ArenaLinkCard({
   onToggle,
   onRemove,
   onUpdate,
+  linkTypeOpts,
+  reverseConditionOpts,
+  configsLoading,
 }: {
   link: ArenaLink;
   allLinks: ArenaLink[];
@@ -191,6 +182,9 @@ function ArenaLinkCard({
   onToggle: () => void;
   onRemove: () => void;
   onUpdate: (patch: Partial<ArenaLink>) => void;
+  linkTypeOpts: { value: string; label: string }[];
+  reverseConditionOpts: { value: string; label: string }[];
+  configsLoading: boolean;
 }) {
   const typeColor = TYPE_COLORS[link.linkType] ?? "#3b82f6";
   const hasPair = !!link.pairedLinkId;
@@ -302,16 +296,20 @@ function ArenaLinkCard({
             <FieldRow label="Link Type">
               <SearchableSelect
                 value={link.linkType}
-                options={LINK_TYPES.map(o => ({ value: o, label: o }))}
+                options={linkTypeOpts}
                 onChange={v => onUpdate({ linkType: v as ArenaLink["linkType"] })}
+                disabled={configsLoading}
+                emptyLabel={configsLoading ? "Loading…" : "No types found"}
                 style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
             </FieldRow>
             <FieldRow label="Reverse Condition">
               <SearchableSelect
                 value={link.reverseCondition ?? "always"}
-                options={REVERSE_CONDITIONS.map(o => ({ value: o, label: o }))}
+                options={reverseConditionOpts}
                 onChange={v => onUpdate({ reverseCondition: v as NonNullable<ArenaLink["reverseCondition"]> })}
+                disabled={configsLoading}
+                emptyLabel={configsLoading ? "Loading…" : "No conditions found"}
                 style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
             </FieldRow>
@@ -448,12 +446,28 @@ function BeyLinkCard({
   onToggle,
   onRemove,
   onUpdate,
+  beyLinkTypeOpts,
+  alignmentOpts,
+  triggerConditionOpts,
+  effectTypeOpts,
+  controlModeOpts,
+  movementControlOpts,
+  groupPatternOpts,
+  configsLoading,
 }: {
   link: BeyLink;
   expanded: boolean;
   onToggle: () => void;
   onRemove: () => void;
   onUpdate: (patch: Partial<BeyLink>) => void;
+  beyLinkTypeOpts: { value: string; label: string }[];
+  alignmentOpts: { value: string; label: string }[];
+  triggerConditionOpts: { value: string; label: string }[];
+  effectTypeOpts: { value: string; label: string }[];
+  controlModeOpts: { value: string; label: string }[];
+  movementControlOpts: { value: string; label: string }[];
+  groupPatternOpts: { value: string; label: string }[];
+  configsLoading: boolean;
 }) {
   const alignColor = ALIGNMENT_COLORS[link.alignment];
 
@@ -527,16 +541,20 @@ function BeyLinkCard({
           <FieldRow label="Link Type">
             <SearchableSelect
               value={link.linkType}
-              options={BEY_LINK_TYPES.map(o => ({ value: o, label: o }))}
+              options={beyLinkTypeOpts}
               onChange={v => onUpdate({ linkType: v as BeyLinkType })}
+              disabled={configsLoading}
+              emptyLabel={configsLoading ? "Loading…" : "No types found"}
               style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
             />
           </FieldRow>
           <FieldRow label="Alignment">
             <SearchableSelect
               value={link.alignment}
-              options={BEY_LINK_ALIGNMENTS.map(o => ({ value: o, label: o }))}
+              options={alignmentOpts}
               onChange={v => onUpdate({ alignment: v as BeyLinkAlignment })}
+              disabled={configsLoading}
+              emptyLabel={configsLoading ? "Loading…" : "No alignments found"}
               style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
             />
           </FieldRow>
@@ -550,8 +568,10 @@ function BeyLinkCard({
           <FieldRow label="Trigger Condition">
             <SearchableSelect
               value={link.triggerCondition}
-              options={TRIGGER_CONDITIONS.map(o => ({ value: o, label: o }))}
+              options={triggerConditionOpts}
               onChange={v => onUpdate({ triggerCondition: v as BeyLink["triggerCondition"] })}
+              disabled={configsLoading}
+              emptyLabel={configsLoading ? "Loading…" : "No conditions found"}
               style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
             />
           </FieldRow>
@@ -771,16 +791,19 @@ function BeyLinkCard({
             <FieldRow label="Control Mode">
               <SearchableSelect
                 value={link.movementControl ?? "auto"}
-                options={MOVEMENT_CONTROLS.map(m => ({ value: m, label: m }))}
+                options={movementControlOpts}
                 onChange={v => onUpdate({ movementControl: v as BeyLinkMovementControl })}
+                disabled={configsLoading}
+                emptyLabel={configsLoading ? "Loading…" : "No modes found"}
                 style={{ flex: 1, background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
             </FieldRow>
             <FieldRow label="Group Pattern">
               <SearchableSelect
                 value={link.groupPattern ?? ""}
-                options={GROUP_PATTERNS.map(p => ({ value: p, label: p }))}
+                options={groupPatternOpts}
                 onChange={v => onUpdate({ groupPattern: v ? v as BeyLinkGroupPattern : undefined })}
+                disabled={configsLoading}
                 emptyLabel="— (pairwise only)"
                 style={{ flex: 1, background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
@@ -840,12 +863,14 @@ function BeyLinkCard({
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                   <SearchableSelect
                     value={eff.type}
-                    options={BEY_LINK_EFFECT_TYPES.map(t => ({ value: t, label: t }))}
+                    options={effectTypeOpts}
                     onChange={v => {
                       const updated = [...(link.linkEffects ?? [])];
                       updated[ei] = { ...eff, type: v as BeyLinkEffectType };
                       onUpdate({ linkEffects: updated });
                     }}
+                    disabled={configsLoading}
+                    emptyLabel={configsLoading ? "Loading…" : "No effect types found"}
                     style={{ flex: 1, background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
                   />
                   <button type="button"
@@ -877,8 +902,9 @@ function BeyLinkCard({
                         mode
                         <SearchableSelect
                           value={eff.controlMode ?? "reverse"}
-                          options={CONTROL_MODES.map(m => ({ value: m, label: m }))}
+                          options={controlModeOpts}
                           onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, controlMode: v as BeyLinkEffect["controlMode"] }; onUpdate({ linkEffects: u }); }}
+                          disabled={configsLoading}
                           style={{ background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 4, color: C.text, fontSize: 10 }}
                         />
                       </label>
@@ -907,6 +933,18 @@ export default function LinksTab({ config, onChange }: Props) {
   const [expandedLinkId, setExpandedLinkId] = useState<string | null>(null);
   const [expandedBeyLinkId, setExpandedBeyLinkId] = useState<string | null>(null);
   const [showMovementGuide, setShowMovementGuide] = useState(false);
+
+  const { byCategory, loading: configsLoading } = useBeyLinkConfigs();
+  const toOpts = (items: { id: string; label: string }[]) => items.map(i => ({ value: i.id, label: i.label }));
+  const linkTypeOpts = toOpts(byCategory.link_type);
+  const reverseConditionOpts = toOpts(byCategory.reverse_condition);
+  const beyLinkTypeOpts = toOpts(byCategory.bey_link_type);
+  const alignmentOpts = toOpts(byCategory.alignment);
+  const triggerConditionOpts = toOpts(byCategory.trigger_condition);
+  const effectTypeOpts = toOpts(byCategory.effect_type);
+  const controlModeOpts = toOpts(byCategory.control_mode);
+  const movementControlOpts = toOpts(byCategory.movement_control);
+  const groupPatternOpts = toOpts(byCategory.group_pattern);
 
   // ── Arena Link helpers ──────────────────────────────────────────────────────
 
@@ -1067,6 +1105,9 @@ export default function LinksTab({ config, onChange }: Props) {
             onToggle={() => setExpandedLinkId(expandedLinkId === link.id ? null : link.id)}
             onRemove={() => removeLink(link.id)}
             onUpdate={patch => updateLink(link.id, patch)}
+            linkTypeOpts={linkTypeOpts}
+            reverseConditionOpts={reverseConditionOpts}
+            configsLoading={configsLoading}
           />
         ))}
       </div>
@@ -1154,6 +1195,14 @@ export default function LinksTab({ config, onChange }: Props) {
             }
             onRemove={() => removeBeyLink(bl.id)}
             onUpdate={patch => updateBeyLink(bl.id, patch)}
+            beyLinkTypeOpts={beyLinkTypeOpts}
+            alignmentOpts={alignmentOpts}
+            triggerConditionOpts={triggerConditionOpts}
+            effectTypeOpts={effectTypeOpts}
+            controlModeOpts={controlModeOpts}
+            movementControlOpts={movementControlOpts}
+            groupPatternOpts={groupPatternOpts}
+            configsLoading={configsLoading}
           />
         ))}
       </div>

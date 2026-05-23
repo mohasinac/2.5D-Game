@@ -5,6 +5,9 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage, COLLECTIONS } from "@/lib/firebase";
 import type { BeybladeStats } from "@/types/beybladeStats";
 import { useElementTypes } from "@/hooks/useElementTypes";
+import { useCombos } from "@/hooks/useCombos";
+import { useSpecialMoves } from "@/hooks/useSpecialMoves";
+import { KEY_LABEL } from "@/constants/combos";
 import toast from "react-hot-toast";
 import { C, S } from "@/styles/theme";
 import WhatsAppStyleImageEditor from "@/components/admin/WhatsAppStyleImageEditor";
@@ -45,6 +48,8 @@ export function BeybladeEditPage() {
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0, scale: 1, rotation: 0 });
   const cropperRef = useRef<ImageCropperRef>(null);
   const { configs: elementTypeConfigs, loading: elemTypesLoading } = useElementTypes();
+  const { combos, loading: combosLoading } = useCombos();
+  const { specialMoves, loading: specialMovesLoading } = useSpecialMoves();
 
   useEffect(() => {
     if (!id) return;
@@ -350,13 +355,13 @@ export function BeybladeEditPage() {
               <label style={S.label}>Special Move</label>
               <SearchableSelect
                 value={(beyblade as any).specialMoveId ?? ""}
-                emptyLabel="(none — Special HUD hidden)"
-                options={[
-                  { value: "stampede_rush", label: "Stampede Rush — Attack: linear burst + spin boost" },
-                  { value: "gyro_anchor",   label: "Gyro Anchor — Defense: zero velocity + 1.5s invuln" },
-                  { value: "spin_recovery", label: "Spin Recovery — Stamina: orbital path + spin recover" },
-                  { value: "tactical_burst",label: "Tactical Burst — Balanced: directional burst + 20% spin" },
-                ]}
+                disabled={specialMovesLoading}
+                emptyLabel={specialMovesLoading ? "Loading moves…" : "(none — Special HUD hidden)"}
+                options={specialMoves.map(m => ({
+                  value: m.id,
+                  label: `${m.iconEmoji ?? ""} ${m.name}`,
+                  hint: m.description ?? (m.type ? `Type: ${m.type}` : undefined),
+                }))}
                 onChange={v => set("specialMoveId" as any, v || undefined)}
                 style={{ width:"100%", background:C.bg1, border:`1px solid ${C.border}`, borderRadius:8, color:C.text, padding:"7px 12px", fontSize:13, cursor:"pointer" }}
               />
@@ -367,14 +372,18 @@ export function BeybladeEditPage() {
             <div>
               <label style={S.label}>Attached Combos <span style={{ fontWeight:400, color:C.faint }}>(max 3)</span></label>
               <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:8 }}>
-                {((beyblade as any).comboIds as string[] ?? []).map((id: string) => (
-                  <span key={id} style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"4px 10px", borderRadius:20, fontSize:12, background:C.bg3, border:`1px solid ${C.border}`, color:C.text }}>
-                    {id}
-                    <button type="button"
-                      onClick={() => set("comboIds" as any, ((beyblade as any).comboIds as string[] ?? []).filter((c: string) => c !== id))}
-                      style={{ background:"none", border:"none", color:C.muted, cursor:"pointer", fontSize:14, lineHeight:1, padding:0 }}>×</button>
-                  </span>
-                ))}
+                {((beyblade as any).comboIds as string[] ?? []).map((cid: string) => {
+                  const combo = combos.find(c => c.id === cid);
+                  const seq = combo?.sequence?.map(k => KEY_LABEL[k as keyof typeof KEY_LABEL] ?? k).join("") ?? "";
+                  return (
+                    <span key={cid} style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"4px 10px", borderRadius:20, fontSize:12, background:C.bg3, border:`1px solid ${C.border}`, color:C.text }}>
+                      {combo ? `${combo.name}${seq ? ` (${seq})` : ""}` : cid}
+                      <button type="button"
+                        onClick={() => set("comboIds" as any, ((beyblade as any).comboIds as string[] ?? []).filter((c: string) => c !== cid))}
+                        style={{ background:"none", border:"none", color:C.muted, cursor:"pointer", fontSize:14, lineHeight:1, padding:0 }}>×</button>
+                    </span>
+                  );
+                })}
                 {(((beyblade as any).comboIds as string[] ?? []).length === 0) && (
                   <span style={{ fontSize:12, color:C.faint }}>No combos attached — Combo HUD strip hidden in-match</span>
                 )}
@@ -382,17 +391,15 @@ export function BeybladeEditPage() {
               {(((beyblade as any).comboIds as string[] ?? []).length < 3) && (
                 <SearchableSelect
                   value=""
-                  emptyLabel="Add combo…"
-                  options={[
-                    { value:"quick-dash-l",   label:"Quick Dash L — ←←J | free | any type" },
-                    { value:"quick-dash-r",   label:"Quick Dash R — →→J | free | any type" },
-                    { value:"guard-tap",      label:"Guard Tap — KKK | free | any type" },
-                    { value:"feint",          label:"Feint — ←→K | free | any type" },
-                    { value:"riposte",        label:"Riposte — KKJ | 15 power | defense" },
-                    { value:"pivot-strike",   label:"Pivot Strike — ←→J | 15 power | balanced" },
-                    { value:"power-thrust",   label:"Power Thrust — JJJ | 25 power | any type" },
-                    { value:"spin-leech-jab", label:"Spin Leech Jab — ←J→ | 35 power | stamina" },
-                  ].filter(c => !((beyblade as any).comboIds as string[] ?? []).includes(c.value))}
+                  disabled={combosLoading}
+                  emptyLabel={combosLoading ? "Loading combos…" : "Add combo…"}
+                  options={combos
+                    .filter(c => !((beyblade as any).comboIds as string[] ?? []).includes(c.id))
+                    .map(c => ({
+                      value: c.id,
+                      label: `${c.name} — ${c.sequence.map(k => KEY_LABEL[k as keyof typeof KEY_LABEL] ?? k).join("")}`,
+                      hint: `${c.cost === 0 ? "free" : `${c.cost} power`} | ${c.type}`,
+                    }))}
                   onChange={v => {
                     if (!v) return;
                     const cur: string[] = (beyblade as any).comboIds ?? [];

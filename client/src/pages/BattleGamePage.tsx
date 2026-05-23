@@ -10,6 +10,8 @@ import { C, alpha } from "@/styles/theme";
 import { MODIFIER_MAP } from "@/types/roundModifier";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
+import { useCombos } from "@/hooks/useCombos";
+import { useSpecialMoves } from "@/hooks/useSpecialMoves";
 import { BeyLinkHijackHUD } from "@/components/game/BeyLinkHijackHUD";
 import { PartModesHUD } from "@/components/game/PartModesHUD";
 import FloorHUD from "@/components/game/FloorHUD";
@@ -25,6 +27,8 @@ import { QTEOverlay } from "@/components/game/QTEOverlay";
 import type { QTEPromptData } from "@/game/hooks/useColyseus";
 import { ELEMENT_ICONS, ELEMENT_COLORS, type ElementType } from "@/types/elementTypes";
 
+const TYPE_FLASH: Record<string, string> = { attack: "#ff4444", defense: "#4488ff", stamina: "#44ff88", balanced: "#ffcc44" };
+
 export function BattleGamePage() {
   const { roomId } = useParams<{ roomId: string }>();
   const [searchParams] = useSearchParams();
@@ -32,6 +36,9 @@ export function BattleGamePage() {
   const location = useLocation();
   const containerRef = useRef<HTMLDivElement>(null);
   const { settings, isHydrated, setActiveRoom } = useGame();
+
+  const { byId: comboMap } = useCombos();
+  const { resolve: resolveSpecialMove } = useSpecialMoves();
 
   const mode = modeFromPath(location.pathname);
   const spectate = searchParams.get("spectate") === "true";
@@ -417,20 +424,22 @@ export function BattleGamePage() {
       )}
 
       {/* SpecialMoveHUD */}
-      {myBeyblade && !isSpectating && (
-        <SpecialMoveHUD
-          myBeyblade={myBeyblade}
-          specialMoveData={{
-            id: myBeyblade.type,
-            name: ["stampede-rush", "gyro-anchor", "spin-recovery", "tactical-burst"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "Unknown",
-            iconEmoji: ["⚡", "🛡️", "♻️", "💫"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "✨",
-            visual: {
-              screenFlashColor: ["#ff4444", "#4488ff", "#44ff88", "#ffcc44"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "#ffffff",
-            },
-          }}
-          lastSpecialMoveFired={lastSpecialMove}
-        />
-      )}
+      {myBeyblade && !isSpectating && (() => {
+        const move = resolveSpecialMove((myBeyblade as any).specialMoveId, myBeyblade.type);
+        if (!move) return null;
+        return (
+          <SpecialMoveHUD
+            myBeyblade={myBeyblade}
+            specialMoveData={{
+              id: move.id,
+              name: move.name,
+              iconEmoji: move.iconEmoji,
+              visual: { screenFlashColor: TYPE_FLASH[myBeyblade.type] ?? "#ffffff" },
+            }}
+            lastSpecialMoveFired={lastSpecialMove}
+          />
+        );
+      })()}
 
       {/* ComboHUD */}
       <ComboHUD
@@ -438,6 +447,7 @@ export function BattleGamePage() {
         attachedComboIds={myBeyblade?.comboIds}
         cooldowns={mapToRecord(myBeyblade?.comboCooldowns)}
         power={myBeyblade?.power}
+        comboMap={comboMap}
       />
 
       {/* BeyLink QTE prompts: escape trap, hijack initiation, attacker block, control-loss banner */}

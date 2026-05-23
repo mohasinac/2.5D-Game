@@ -12,6 +12,8 @@ import { getBeybladeStability, mapToRecord, TYPE_COLORS } from "@/types/game";
 import { C, alpha } from "@/styles/theme";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
+import { useCombos } from "@/hooks/useCombos";
+import { useSpecialMoves } from "@/hooks/useSpecialMoves";
 import { BeyLinkHijackHUD } from "@/components/game/BeyLinkHijackHUD";
 import { PartModesHUD } from "@/components/game/PartModesHUD";
 import FloorHUD from "@/components/game/FloorHUD";
@@ -22,6 +24,7 @@ import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { LoadingProgress } from "@/components/LoadingProgress";
 
 const ROUND_NAMES: Record<number, string> = { 1: "Round 1", 2: "Semifinals", 3: "Final" };
+const TYPE_FLASH: Record<string, string> = { attack: "#ff4444", defense: "#4488ff", stamina: "#44ff88", balanced: "#ffcc44" };
 
 export function TournamentBattleGamePage() {
   const { tournamentId, matchId } = useParams<{ tournamentId: string; matchId: string }>();
@@ -31,6 +34,8 @@ export function TournamentBattleGamePage() {
   const location = useLocation();
   const { settings } = useGame();
   const { currentUser } = useAuth();
+  const { byId: comboMap } = useCombos();
+  const { resolve: resolveSpecialMove } = useSpecialMoves();
 
   const mode = modeFromPath(location.pathname);
   const spectate = searchParams.get("spectate") === "true";
@@ -360,20 +365,22 @@ export function TournamentBattleGamePage() {
       )}
 
       {/* SpecialMoveHUD */}
-      {myBeyblade && !isSpectating && (
-        <SpecialMoveHUD
-          myBeyblade={myBeyblade}
-          specialMoveData={{
-            id: myBeyblade.type,
-            name: ["stampede-rush", "gyro-anchor", "spin-recovery", "tactical-burst"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "Unknown",
-            iconEmoji: ["⚡", "🛡️", "♻️", "💫"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "✨",
-            visual: {
-              screenFlashColor: ["#ff4444", "#4488ff", "#44ff88", "#ffcc44"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "#ffffff",
-            },
-          }}
-          lastSpecialMoveFired={lastSpecialMove}
-        />
-      )}
+      {myBeyblade && !isSpectating && (() => {
+        const move = resolveSpecialMove((myBeyblade as any).specialMoveId, myBeyblade.type);
+        if (!move) return null;
+        return (
+          <SpecialMoveHUD
+            myBeyblade={myBeyblade}
+            specialMoveData={{
+              id: move.id,
+              name: move.name,
+              iconEmoji: move.iconEmoji,
+              visual: { screenFlashColor: TYPE_FLASH[myBeyblade.type] ?? "#ffffff" },
+            }}
+            lastSpecialMoveFired={lastSpecialMove}
+          />
+        );
+      })()}
 
       {/* ComboHUD */}
       <ComboHUD
@@ -381,6 +388,7 @@ export function TournamentBattleGamePage() {
         attachedComboIds={myBeyblade?.comboIds}
         cooldowns={mapToRecord(myBeyblade?.comboCooldowns)}
         power={myBeyblade?.power}
+        comboMap={comboMap}
       />
 
       {!isSpectating && (

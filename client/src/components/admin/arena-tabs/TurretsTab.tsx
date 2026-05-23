@@ -1,6 +1,10 @@
 import { C } from "@/styles/theme";
-import type { ArenaConfig, TurretConfig, TurretAttackType } from "@/types/arenaConfigNew";
+import type { ArenaConfig, TurretConfig } from "@/types/arenaConfigNew";
 import SelfRotationPanel from "./SelfRotationPanel";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
+import { useTurretAttackTypes } from "@/hooks/useTurretAttackTypes";
+import { useAssetLibrary } from "@/hooks/useAssetLibrary";
+import { COLLECTIONS } from "@/lib/firebase";
 
 interface Props {
   config: ArenaConfig;
@@ -15,14 +19,6 @@ const DEFAULT: Omit<TurretConfig, "id"> = {
   bulletSpeed: 200, bulletCount: 1,
 };
 
-const ATTACK_TYPES: { value: TurretAttackType; label: string; desc: string }[] = [
-  { value: "periodic", label: "Periodic", desc: "Regular bullet bursts" },
-  { value: "beam", label: "Beam", desc: "Continuous laser beam" },
-  { value: "aoe", label: "AOE Blast", desc: "Area-of-effect missile" },
-  { value: "boomerang", label: "Boomerang", desc: "Returning projectile" },
-  { value: "random", label: "Random", desc: "Unpredictable shots" },
-];
-
 const COMMON_FIELDS: { field: keyof TurretConfig; label: string; min: number; max: number; step: number }[] = [
   { field: "x", label: "X (px from center)", min: -500, max: 500, step: 10 },
   { field: "y", label: "Y (px from center)", min: -500, max: 500, step: 10 },
@@ -35,6 +31,10 @@ const COMMON_FIELDS: { field: keyof TurretConfig; label: string; min: number; ma
 
 export default function TurretsTab({ config, onChange }: Props) {
   const items = config.turrets ?? [];
+  const { types: attackTypes, loading: typesLoading } = useTurretAttackTypes();
+  const { assets: turretAssets, loading: assetsLoading } = useAssetLibrary(COLLECTIONS.TURRET_ASSETS);
+  const assetOpts = turretAssets.map(a => ({ value: a.id, label: a.name ?? a.id, hint: a.tags?.join(", ") }));
+  const attackTypeOpts = attackTypes.map(t => ({ value: t.id, label: t.label, hint: t.description }));
 
   const add = () => {
     if (items.length >= 8) return;
@@ -86,22 +86,39 @@ export default function TurretsTab({ config, onChange }: Props) {
           {/* Attack type */}
           <div style={{ marginBottom: 12 }}>
             <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 6 }}>Attack Type</label>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {ATTACK_TYPES.map(at => (
-                <button
-                  key={at.value}
-                  onClick={() => update(turret.id, "attackType", at.value)}
-                  title={at.desc}
-                  style={{
-                    padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer",
-                    background: turret.attackType === at.value ? C.red : C.bg2,
-                    color: turret.attackType === at.value ? C.white : C.muted,
-                    border: `1px solid ${turret.attackType === at.value ? C.red : C.border}`,
-                  }}
-                >
-                  {at.label}
-                </button>
-              ))}
+            <SearchableSelect
+              value={turret.attackType ?? "periodic"}
+              options={attackTypeOpts}
+              onChange={v => update(turret.id, "attackType", v)}
+              disabled={typesLoading}
+              emptyLabel={typesLoading ? "Loading…" : "No attack types found"}
+              style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+            />
+          </div>
+
+          {/* Sprite pickers */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Turret Sprite</label>
+              <SearchableSelect
+                value={turret.spriteId ?? ""}
+                options={assetOpts}
+                onChange={v => update(turret.id, "spriteId" as any, v || undefined)}
+                disabled={assetsLoading}
+                emptyLabel={assetsLoading ? "Loading…" : "No turret assets found"}
+                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Projectile Sprite</label>
+              <SearchableSelect
+                value={(turret as any).projectileSpriteId ?? ""}
+                options={assetOpts}
+                onChange={v => update(turret.id, "projectileSpriteId" as any, v || undefined)}
+                disabled={assetsLoading}
+                emptyLabel={assetsLoading ? "Loading…" : "No turret assets found"}
+                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+              />
             </div>
           </div>
 

@@ -2,6 +2,9 @@ import { C } from "@/styles/theme";
 import type { ArenaConfig, WaterBodyConfig, LiquidType, ZoneWaterBodyConfig, MoatWaterBodyConfig } from "@/types/arenaConfigNew";
 import { LIQUID_PRESETS } from "@/types/arenaConfigNew";
 import SelfRotationPanel from "./SelfRotationPanel";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
+import { useAssetLibrary } from "@/hooks/useAssetLibrary";
+import { COLLECTIONS } from "@/lib/firebase";
 
 interface Props {
   config: ArenaConfig;
@@ -24,6 +27,8 @@ const NUM_FIELDS: (keyof ZoneWaterBodyConfig)[] = ["radius"];
 
 export default function WaterBodiesTab({ config, onChange }: Props) {
   const bodies = config.waterBodies ?? [];
+  const { assets: waterAssets, loading: assetsLoading } = useAssetLibrary(COLLECTIONS.WATER_BODY_ASSETS);
+  const assetOpts = waterAssets.map(a => ({ value: a.id, label: a.name ?? a.id, hint: a.tags?.join(", ") }));
 
   const add = (type: "zone" | "moat") => {
     if (bodies.length >= 3) return;
@@ -155,6 +160,18 @@ export default function WaterBodiesTab({ config, onChange }: Props) {
                 value={wb.opacity ?? 0.6}
                 onChange={e => update(wb.id, "opacity", +e.target.value)}
                 style={{ width: "100%", accentColor: C.blue }}
+              />
+            </div>
+            {/* Texture picker */}
+            <div style={{ marginTop: 12 }}>
+              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Water Texture</label>
+              <SearchableSelect
+                value={(wb as any).textureId ?? ""}
+                options={assetOpts}
+                onChange={v => update(wb.id, "textureId", v || undefined)}
+                disabled={assetsLoading}
+                emptyLabel={assetsLoading ? "Loading…" : "No water body assets found"}
+                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
             </div>
             {(wb.type === "zone" || wb.type === "moat") && (

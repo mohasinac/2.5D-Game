@@ -11,6 +11,8 @@ import { C, alpha } from "@/styles/theme";
 import { MODIFIER_MAP } from "@/types/roundModifier";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
+import { useCombos } from "@/hooks/useCombos";
+import { useSpecialMoves } from "@/hooks/useSpecialMoves";
 import { BeyLinkHijackHUD } from "@/components/game/BeyLinkHijackHUD";
 import { PartModesHUD } from "@/components/game/PartModesHUD";
 import FloorHUD from "@/components/game/FloorHUD";
@@ -37,11 +39,15 @@ interface AIBattleLocationState {
   matchId?: string;
 }
 
+const TYPE_FLASH: Record<string, string> = { attack: "#ff4444", defense: "#4488ff", stamina: "#44ff88", balanced: "#ffcc44" };
+
 export function AIBattleGamePage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { byId: comboMap } = useCombos();
+  const { resolve: resolveSpecialMove } = useSpecialMoves();
   const { settings } = useGame();
   const { currentUser } = useAuth();
 
@@ -329,20 +335,22 @@ export function AIBattleGamePage() {
       )}
 
       {/* SpecialMoveHUD */}
-      {myBeyblade && !isSpectating && (
-        <SpecialMoveHUD
-          myBeyblade={myBeyblade}
-          specialMoveData={{
-            id: myBeyblade.type,
-            name: ["stampede-rush", "gyro-anchor", "spin-recovery", "tactical-burst"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "Unknown",
-            iconEmoji: ["⚡", "🛡️", "♻️", "💫"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "✨",
-            visual: {
-              screenFlashColor: ["#ff4444", "#4488ff", "#44ff88", "#ffcc44"][["attack", "defense", "stamina", "balanced"].indexOf(myBeyblade.type)] || "#ffffff",
-            },
-          }}
-          lastSpecialMoveFired={lastSpecialMove}
-        />
-      )}
+      {myBeyblade && !isSpectating && (() => {
+        const move = resolveSpecialMove((myBeyblade as any).specialMoveId, myBeyblade.type);
+        if (!move) return null;
+        return (
+          <SpecialMoveHUD
+            myBeyblade={myBeyblade}
+            specialMoveData={{
+              id: move.id,
+              name: move.name,
+              iconEmoji: move.iconEmoji,
+              visual: { screenFlashColor: TYPE_FLASH[myBeyblade.type] ?? "#ffffff" },
+            }}
+            lastSpecialMoveFired={lastSpecialMove}
+          />
+        );
+      })()}
 
       {/* ComboHUD */}
       <ComboHUD
@@ -350,6 +358,7 @@ export function AIBattleGamePage() {
         attachedComboIds={myBeyblade?.comboIds}
         cooldowns={mapToRecord(myBeyblade?.comboCooldowns)}
         power={myBeyblade?.power}
+        comboMap={comboMap}
       />
 
       {!isSpectating && (
