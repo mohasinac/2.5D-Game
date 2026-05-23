@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 EXPOSE 2567
-CMD ["npx", "nodemon", "--exec", "ts-node", "src/index.ts"]
+CMD ["npx", "nodemon", "--exec", "ts-node", "server/index.ts"]
 
 # ── Build stage — compiles TypeScript to /app/lib ───────────────────────────────
 FROM node:20-alpine AS builder
@@ -12,9 +12,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY tsconfig.json ./
-COPY src/ ./src/
-# Server imports client/src/types/beybladeSystem.ts — copy only the types dir
-COPY client/src/types/ ./client/src/types/
+COPY server/ ./server/
+COPY shared/ ./shared/
 RUN npx tsc
 
 # ── Production stage — lean runtime image ────────────────────────────────────────
@@ -26,4 +25,4 @@ COPY --from=builder /app/lib ./lib
 EXPOSE 2567
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
   CMD wget -qO- http://localhost:2567/health || exit 1
-CMD ["node", "lib/src/index.js"]
+CMD ["node", "lib/server/index.js"]

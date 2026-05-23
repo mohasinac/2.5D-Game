@@ -7,7 +7,7 @@ import {
   createComboTracker,
   detectCombo,
   pruneHistory,
-} from "../../../src/utils/comboSystem";
+} from "../../../server/utils/comboSystem";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 

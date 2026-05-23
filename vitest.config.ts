@@ -9,7 +9,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
-    include: ["tests/**/*.test.ts", "src/__tests__/**/*.test.ts"],
+    include: ["tests/**/*.test.ts", "server/__tests__/**/*.test.ts"],
     // Each test file runs in its own process (avoids Colyseus schema decorator conflicts)
     pool: "forks",
   },
