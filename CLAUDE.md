@@ -11,6 +11,26 @@
 
 ---
 
+## TypeScript: Fix TSC Errors First
+
+**Before starting any task, run `cd client && npx tsc --noEmit`. If there are existing errors, fix them all before doing anything else.**
+
+---
+
+## TypeScript: Zero Errors Policy
+
+**After every code change, `cd client && npx tsc --noEmit` must pass with zero errors before the task is considered done.**
+
+- Run `npx tsc --noEmit` in `client/` after any edit to `.ts` / `.tsx` files or to anything under `shared/types/`.
+- Fix every error before moving on — do not leave type errors for later.
+- Common patterns to watch for:
+  - New types added to `shared/types/` that reference sibling files (e.g. `./beybladeConstants`) must have those files present in `shared/types/` — copy from `client/src/types/` if needed.
+  - Adding optional geometry fields (radius, length, width) to server-synced types when the renderer starts reading them.
+  - Missing imports when a new helper or class is used in a page file.
+  - `Record<string, unknown>` property access used in JSX must be cast with `!!` or `as` before use as a `ReactNode` condition.
+
+---
+
 ## Project Structure
 
 Two separate runnable systems in one repo:
@@ -197,6 +217,8 @@ All room types (except TryoutRoom) support configurable series format via `optio
 | `settings` | Game-wide config (single doc: `settings/game`) |
 | `beyblade_parts` | 2.5D part library (bit_beast, attack_ring, weight_disk, sub_part, tip, core, casing) |
 | `beyblade_systems` | Assembled 2.5D beyblade configs (slot → partId mapping) |
+| `mechanic_defs` | 31 MechanicRegistry handler definitions (id, name, category, description, params). Seeded by `seed-mechanics.js`. Admin: `/admin/mechanic-defs`. |
+| `gimmick_defs` | 27 gimmick recipes (behaviorRefs → MechanicInstance[]). Expanded at match start by `gimmickExpander.ts`. Admin: `/admin/gimmick-defs`. |
 
 All asset libraries accept **PNG / JPG / GIF / WebP**. GIF uploads bypass the destructive image editor so animation is preserved.
 
@@ -448,6 +470,8 @@ All seeders live under `scripts/` and are exposed as npm scripts. Idempotent —
 | `npm run seed:2d-parts` | `beyblade_parts` | 2.5D part library. |
 | `npm run seed:bey-systems` | `beyblade_systems` | Assembled 2.5D configs. |
 | `npm run seed:arena-systems` | `arena_systems` | Arena system configs. |
+| `npm run seed:mechanics` | `mechanic_defs` | 31 mechanic handler docs — one per MechanicRegistry entry. |
+| `npm run seed:gimmicks` | `gimmick_defs` | 27 gimmick recipes (22 original + 5 new: magnacore_repel/attract, dual_spin_launch, mode_switch_tip, spring_launch). |
 | `npm run seed:all` | All of the above | Runs in order; safe to use as a first-time bootstrap. |
 
 ## Learning Folder (Deferred)

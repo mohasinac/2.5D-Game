@@ -61,4 +61,8 @@ export const COLLECTIONS = {
   ROUND_MODIFIERS: "round_modifiers",
   AI_BATTLES: "ai_battles",
   PART_MATERIALS: "part_materials",
+  MECHANIC_DEFS: "mechanic_defs",
+  GIMMICK_DEFS: "gimmick_defs",
+  GEOMETRY_DEFS: "geometry_defs",
+  STAT_DEFS: "stat_defs",
 } as const;

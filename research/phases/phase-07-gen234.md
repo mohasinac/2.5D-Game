@@ -446,7 +446,7 @@ Covering remaining God-layer files plus Cho-Z era's Kaiser Kerbeus (burst era la
 | `game_original` | Game-original / narrative expansions | Beys created for game narrative arcs (BX S2/S3 storylines, ZeroG villain expansions). No direct toyline product code confirmed. |
 
 ---
-[? Phase 07a: Generation 1](phase-07-gen1.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 08: Gimmicks ?](phase-08-gimmicks.md)
+[← Phase 07a: Generation 1](phase-07-gen1.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 08: Gimmicks →](phase-08-gimmicks.md)
 
 
 ---

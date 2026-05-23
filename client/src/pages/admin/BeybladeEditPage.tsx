@@ -346,6 +346,27 @@ export function BeybladeEditPage() {
               />
             )}
           </div>
+          {/* Advanced Physics */}
+          <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
+            <div style={{ fontSize:14, fontWeight:600, color:C.text, marginBottom:12 }}>Advanced Physics</div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
+              <div>
+                <label style={S.label}>Jump Force (N)</label>
+                <input type="number" min={0} step={0.5} value={(beyblade as any).jumpForce ?? 0} onChange={e => set("jumpForce" as any, parseFloat(e.target.value) || 0)} style={S.input} />
+                <p style={{ fontSize:11, color:C.faint, marginTop:2 }}>0 = not jump-capable</p>
+              </div>
+              <div>
+                <label style={S.label}>Jump Height (cm)</label>
+                <input type="number" min={0} step={1} value={(beyblade as any).jumpHeight ?? 0} onChange={e => set("jumpHeight" as any, parseFloat(e.target.value) || 0)} style={S.input} />
+              </div>
+              <div>
+                <label style={S.label}>Burst Resistance (0–100)</label>
+                <input type="number" min={0} max={100} step={1} value={(beyblade as any).burstResistance ?? 0} onChange={e => set("burstResistance" as any, Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))} style={S.input} />
+                <p style={{ fontSize:11, color:C.faint, marginTop:2 }}>Higher = harder to burst</p>
+              </div>
+            </div>
+          </div>
+
           {/* Special Move & Combos */}
           <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
             <div style={{ fontSize:14, fontWeight:600, color:C.text, marginBottom:12 }}>Special Move &amp; Combos</div>

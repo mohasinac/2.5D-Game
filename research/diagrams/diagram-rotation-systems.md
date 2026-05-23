@@ -1,4 +1,4 @@
-# Diagram: Rotation Systems
+﻿# Diagram: Rotation Systems
 
 > **Stage 0C Diagram 12** — Rule 11: Launch → Main Rotation → Sub-Part → Collision → Mechanics.
 
@@ -88,4 +88,4 @@ flowchart TD
 | Opposite direction | 1.5× (enhanced transfer) |
 
 ---
-[? Research Flow](diagram-research-flow.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Script Authoring Flow ?](diagram-script-authoring-flow.md)
+[← Research Flow](diagram-research-flow.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Script Authoring Flow →](diagram-script-authoring-flow.md)

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { C } from "@/styles/theme";
+import { PX_PER_CM_BASE } from "@/constants/units";
 import type {
   ArenaConfig, ObstacleConfig, ObstacleShape, ObstaclePhysicsBlock, ObstaclePhysicsType,
   ObstacleRenderMode,
@@ -24,13 +25,13 @@ const DEFAULT: Omit<ObstacleConfig, "id"> = {
   x: 0, y: 0, radius: 25, health: 3, damage: 15, recoilDistance: 40,
 };
 
-const SLIDER_FIELDS: { field: keyof ObstacleConfig; label: string; min: number; max: number; step: number }[] = [
-  { field: "x", label: "X (px from center)", min: -500, max: 500, step: 10 },
-  { field: "y", label: "Y (px from center)", min: -500, max: 500, step: 10 },
-  { field: "radius", label: "Radius (px)", min: 10, max: 80, step: 5 },
+const SLIDER_FIELDS: { field: keyof ObstacleConfig; label: string; min: number; max: number; step: number; pxUnit?: true }[] = [
+  { field: "x", label: "X (cm from center)", min: -500, max: 500, step: 10, pxUnit: true },
+  { field: "y", label: "Y (cm from center)", min: -500, max: 500, step: 10, pxUnit: true },
+  { field: "radius", label: "Radius (cm)", min: 10, max: 80, step: 5, pxUnit: true },
   { field: "health", label: "Health (hits)", min: 1, max: 10, step: 1 },
   { field: "damage", label: "Collision Damage", min: 5, max: 50, step: 5 },
-  { field: "recoilDistance", label: "Recoil Distance (px)", min: 0, max: 150, step: 10 },
+  { field: "recoilDistance", label: "Recoil Distance (cm)", min: 0, max: 150, step: 10, pxUnit: true },
 ];
 
 const SHAPE_KINDS: ObstacleShape["kind"][] = [
@@ -557,19 +558,26 @@ export default function ObstaclesTab({ config, onChange }: Props) {
 
           {/* Base sliders */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
-            {SLIDER_FIELDS.map(({ field, label, min, max, step }) => (
-              <div key={field}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
-                  <span>{label}</span>
-                  <span style={{ color: C.text, fontFamily: "monospace" }}>{(obs as any)[field] ?? 0}</span>
+            {SLIDER_FIELDS.map(({ field, label, min, max, step, pxUnit }) => {
+              const raw = (obs as any)[field] ?? 0;
+              const display = pxUnit ? Math.round(raw / PX_PER_CM_BASE * 10) / 10 : raw;
+              return (
+                <div key={field}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+                    <span>{label}</span>
+                    <span style={{ color: C.text, fontFamily: "monospace" }}>{pxUnit ? display.toFixed(1) : raw}</span>
+                  </div>
+                  <input type="range"
+                    min={pxUnit ? min / PX_PER_CM_BASE : min}
+                    max={pxUnit ? max / PX_PER_CM_BASE : max}
+                    step={pxUnit ? 0.5 : step}
+                    value={display}
+                    onChange={e => update(obs.id, field, pxUnit ? Math.round(+e.target.value * PX_PER_CM_BASE) : +e.target.value)}
+                    style={{ width: "100%", accentColor: C.blue }}
+                  />
                 </div>
-                <input type="range" min={min} max={max} step={step}
-                  value={(obs as any)[field] ?? 0}
-                  onChange={e => update(obs.id, field, +e.target.value)}
-                  style={{ width: "100%", accentColor: C.blue }}
-                />
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Sprite picker */}
@@ -585,8 +593,8 @@ export default function ObstaclesTab({ config, onChange }: Props) {
             />
           </div>
 
-          {/* Element type + switch */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+          {/* Element type + switch + trigger state */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
             <div>
               <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Element Type</label>
               <SearchableSelect
@@ -606,6 +614,15 @@ export default function ObstaclesTab({ config, onChange }: Props) {
                 onChange={e => update(obs.id, "controlledBySwitchId", e.target.value || undefined)}
                 placeholder="e.g. sw1"
                 style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Initial State</label>
+              <SearchableSelect
+                value={obs.triggerState ?? "on"}
+                options={[{ value: "on", label: "On (active)" }, { value: "off", label: "Off (inactive)" }]}
+                onChange={v => update(obs.id, "triggerState", v as "on" | "off")}
+                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
             </div>
           </div>

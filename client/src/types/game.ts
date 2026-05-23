@@ -85,6 +85,9 @@ export interface ServerProjectile {
   beamEndY?: number;
   explosionRadius?: number;
   hasExploded?: boolean;
+  radius?: number;
+  length?: number;
+  width?: number;
 }
 
 export interface ServerWaterBody {

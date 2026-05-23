@@ -1,4 +1,4 @@
-# Batch 003 — Engine Capability Summary
+﻿# Batch 003 — Engine Capability Summary
 
 > **Stage 0D** — Synthesised from batch-000 (admin audit), batch-001 (schema catalog), batch-002 (discovery table) and all Stage-0C diagrams.
 > All claims tagged: FACT | INFERENCE | SPECULATION | UNKNOWN
@@ -423,4 +423,4 @@ part_materials (new), ai_battles (new)
 | 3D physics adapter | LOW | `server/` (no implementation) | Would require a separate physics library |
 
 ---
-[? Batch 002: Discovery Table](batch-002-discovery-table.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Batch 004: MFB Parts Disambiguation ?](batch-004-mfb-parts-disambiguation.md)
+[← Batch 002: Discovery Table](batch-002-discovery-table.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Batch 004: MFB Parts Disambiguation →](batch-004-mfb-parts-disambiguation.md)

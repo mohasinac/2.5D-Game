@@ -109,28 +109,83 @@ export default function WaterBodiesTab({ config, onChange }: Props) {
             </div>
 
             {/* Zone-specific fields */}
-            {wb.type === "zone" && (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
-                {(["x", "y"] as const).map(axis => (
-                  <div key={axis}>
-                    <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3, textTransform: "uppercase" }}>Pos {axis} (em)</label>
-                    <input type="number" step={0.5}
-                      value={(wb as ZoneWaterBodyConfig).position?.[axis] ?? 0}
-                      onChange={e => updatePos(wb.id, axis, +e.target.value)}
+            {wb.type === "zone" && (() => {
+              const z = wb as ZoneWaterBodyConfig;
+              const shape = z.shape ?? "circle";
+              return (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {/* Shape selector */}
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Zone Shape</label>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      {(["circle", "oval", "square", "rectangle"] as const).map(s => (
+                        <button key={s} onClick={() => update(wb.id, "shape", s)}
+                          style={{ flex: 1, padding: "5px 4px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer", textTransform: "capitalize",
+                            background: shape === s ? C.blue : "transparent", color: shape === s ? C.white : C.muted,
+                            border: `1px solid ${shape === s ? C.blue : C.border}` }}>
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Position */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    {(["x", "y"] as const).map(axis => (
+                      <div key={axis}>
+                        <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3, textTransform: "uppercase" }}>Pos {axis} (em)</label>
+                        <input type="number" step={0.5}
+                          value={z.position?.[axis] ?? 0}
+                          onChange={e => updatePos(wb.id, axis, +e.target.value)}
+                          style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, padding: "4px 8px", color: C.text, fontSize: 12, boxSizing: "border-box" }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  {/* Dimensions based on shape */}
+                  <div style={{ display: "grid", gridTemplateColumns: (shape === "rectangle" || shape === "oval") ? "1fr 1fr" : "1fr", gap: 10 }}>
+                    {(shape === "circle" || shape === "oval" || shape === "square") && (
+                      <div>
+                        <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3 }}>Radius (em)</label>
+                        <input type="number" min={1} max={20} step={0.5}
+                          value={z.radius ?? 5}
+                          onChange={e => update(wb.id, "radius", +e.target.value)}
+                          style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, padding: "4px 8px", color: C.text, fontSize: 12, boxSizing: "border-box" }}
+                        />
+                      </div>
+                    )}
+                    {(shape === "rectangle" || shape === "oval") && (
+                      <>
+                        <div>
+                          <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3 }}>Width (em)</label>
+                          <input type="number" min={1} max={40} step={0.5}
+                            value={z.width ?? 10}
+                            onChange={e => update(wb.id, "width", +e.target.value)}
+                            style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, padding: "4px 8px", color: C.text, fontSize: 12, boxSizing: "border-box" }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3 }}>Height (em)</label>
+                          <input type="number" min={1} max={40} step={0.5}
+                            value={z.height ?? 6}
+                            onChange={e => update(wb.id, "height", +e.target.value)}
+                            style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, padding: "4px 8px", color: C.text, fontSize: 12, boxSizing: "border-box" }}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  {/* Rotation */}
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3 }}>Rotation (°)</label>
+                    <input type="number" min={0} max={359} step={5}
+                      value={z.rotation ?? 0}
+                      onChange={e => update(wb.id, "rotation", +e.target.value)}
                       style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, padding: "4px 8px", color: C.text, fontSize: 12, boxSizing: "border-box" }}
                     />
                   </div>
-                ))}
-                <div>
-                  <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3 }}>Radius (em)</label>
-                  <input type="number" min={1} max={20} step={0.5}
-                    value={(wb as ZoneWaterBodyConfig).radius ?? 5}
-                    onChange={e => update(wb.id, "radius", +e.target.value)}
-                    style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, padding: "4px 8px", color: C.text, fontSize: 12, boxSizing: "border-box" }}
-                  />
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Moat-specific fields */}
             {wb.type === "moat" && (

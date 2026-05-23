@@ -134,7 +134,7 @@
 | Unicolyon | plastic_sgs | gen1 | Defense | Right | 50 | 135 | 95 | 2.4 | `[]` | [SPECULATION] Oliver (Majestics). Anime-exclusive. AR=Tail Defense; WD=Eight Heavy; BB=Unicolyon Base. No gimmick. | 2 | C |
 | Wyborg | plastic_sgs | gen1 | Attack | Right | 130 | 55 | 85 | 2.5 | `[]` | [FACT] A-18; Ian Papov (Demo Boys); AR=Wyvern Wing (~5g, blunt smash C-tier); BB=Spike Base. No gimmick. | 2 | A |
 | Galman | plastic_sgs | gen1 | Defense | Right | 50 | 140 | 100 | 2.5 | `[]` | [FACT] A-10; Kevin (White Tigers); AR=War Monkey (~6g, smooth deflection); WD=Eight Heavy; BB=SG Sharp. No gimmick. | 2 | A |
-| Galux | plastic_sgs | gen1 | Balance | Right | 90 | 95 | 95 | 2.4 | `["heavy_wheel"]` | [FACT] Mariah/Mariam (White Tigers). AR=War Lion; WD=Eight Wide; BB=Metal Ball Base (chrome ball bearing tip). | 2 | B |
+| Galux | plastic_sgs | gen1 | Balance | Right | 90 | 95 | 95 | 2.4 | `["orbit_movement","contact_deflect"]` | [FACT] Mariah/Mariam (White Tigers). AR=War Lion (lion-head deflect); WD=Eight Wide; BB=Metal Ball Base (ball tip → orbit wander). | 2 | B |
 | Galzzly | plastic_sgs | gen1 | Attack | Right | 130 | 55 | 85 | 2.5 | `["free_spin"]` | [FACT] A-9; Gary (All Starz); AR=War Bear with free-spinning SAR (non-competitive in standard use). | 3 | A |
 | Death Driger | plastic_sgs | gen1 | Attack | Right | 125 | 50 | 90 | 2.5 | `[]` | [FACT] A-36 (Shadow Driger TT / Death Driger Hasbro); AR=Star Shape (~3g, five-point star). No gimmick. | 3 | A |
 | Canarias | plastic_sgs | gen1 | Stamina | Right | 50 | 70 | 140 | 2.5 | `["mode_switch"]` | [INFERENCE] Mario (Brazil). AR=Survivor; WD=Wide Attack A (hexagonal); BB=Full Auto Clutch Base. Mode switch not confirmed from sourced description. | 3 | C |
@@ -285,7 +285,7 @@ Every Dranzer blade base has a switchable tip: S→Spiral Change, F→Flame Chan
 *End of Phase 07 Gen1 Research File*
 
 ---
-[? Phase 06: Mechanics](phase-06-mechanics.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 07b: Generations 2-4 ?](phase-07-gen234.md)
+[← Phase 06: Mechanics](phase-06-mechanics.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 07b: Generations 2-4 →](phase-07-gen234.md)
 
 
 ---

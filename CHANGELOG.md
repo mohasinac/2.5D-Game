@@ -16,7 +16,16 @@
   - **Server tick**: `advanceArenaTilt()` handles `fixed` and `oscillate` mode advancement; new `applyWeightTilt()` handles `weight` mode. Both wired into all four room types.
   - **Renderer**: three nested PixiJS containers (`arenaTiltOuter → arenaTiltScale → arenaTiltInner`) with configurable pivot. `scaleX = cos(tiltAngle)` produces correct elliptical projection; negative scaleX at 90–270° creates the natural inverted/mirrored look. Rotation root pivot also now reads `rotationPivotX/Y` from arena state.
   - **Admin UI (BasicsTab)**: tilt mode selector (Fixed / Oscillate / Weight), oscillation range inputs (min / max angle + period), pivot X/Y inputs for both tilt and rotation. Rotation panel gains rotation pivot X/Y inputs.
-- **Switch wiring for all arena features**: `TurretConfig` gained `controlledBySwitchId`. Admin panels for SpinZones, GravityHoles, Bumps (FeaturesTab) and Turrets (TurretsTab) now expose "Controlled By Switch ID" text inputs.
+- **Switch wiring for all arena features**: `TurretConfig` gained `controlledBySwitchId`. Admin panels for SpinZones, GravityHoles, Bumps, DirectionalZones, TriggerZones (FeaturesTab) and Turrets (TurretsTab) now expose "Controlled By Switch ID" text inputs — all 7 feature types that accept switch gating are now covered.
+- **Arena description + difficulty**: `ArenaConfig` already had `description?: string` and `difficulty?: "easy"|"medium"|"hard"|"extreme"|"custom"` but neither was exposed in the admin UI. BasicsTab now shows a Description textarea and a four-button Difficulty selector (Easy / Medium / Hard / Extreme) directly below the arena name.
+- **Admin UI (BasicsTab) — Physics & Gameplay panel**:
+  - `staminaDrainMultiplier` slider (0.25×–4.0×) — scales spin decay rate arena-wide. Infinity Stadium's 25% faster drain is now configurable.
+  - `qteEnabled` toggle (default ON) — disables QTEs for the arena.
+  - `qteWindowScaling` selector (`flat` = always 60 ticks / `by_cost` = formula-scaled by combo/special cost).
+  - `randomModifiers` toggle — server picks one random match modifier per match when ON.
+  - `maxModifiers` number input (1–10) — caps stacked modifier count.
+- **Admin UI (BasicsTab) — Visual Overrides panel**: `backgroundColor` and `floorColor` color inputs with both a color picker and hex text field, plus a clear button to revert to theme defaults.
+- **Admin UI (ArenaConfigurator) — Features tab count fix**: features tab badge now counts all 8 feature sub-types: `floorHazardZones + elevationZones + effectZones + spinZones + gravityHoles + bumps + directionalZones + triggerZones`. Previously only the first three were counted.
 
 ## [2.3.0] - 2026-05-21
 

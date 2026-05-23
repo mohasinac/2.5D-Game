@@ -1,4 +1,4 @@
-# Phase 14 — Game Modes
+﻿# Phase 14 — Game Modes
 
 > Stage 14 | Source: room files + GameState schema
 
@@ -183,4 +183,4 @@ Based on research findings, the following new room types would complete game mod
 | `points_battle_room` | PVP room where the win condition is accumulated damage dealt (or collision count) rather than last-bey-standing elimination. Uses schema fields `damageDealt` and `collisions` already present | Low |
 
 ---
-[? Phase 13: Controls](phase-13-controls.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 16: Gap Analysis ?](phase-16-gap-analysis.md)
+[← Phase 13: Controls](phase-13-controls.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 16: Gap Analysis →](phase-16-gap-analysis.md)

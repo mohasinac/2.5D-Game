@@ -472,7 +472,7 @@ function SubPartFields({ part, onChange }: { part: Part; onChange: OnChange }) {
         <input type="checkbox" checked={!!(detachment?.enabled)} onChange={e => patchDetach({ enabled: e.target.checked })} style={{ accentColor: C.blue }} />
         Enable detachment
       </label>
-      {detachment?.enabled && (
+      {!!(detachment?.enabled) && (
         <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 12 }}>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
             <Field label="Type">
@@ -758,7 +758,7 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
         </div>
       )}
 
-      </>{/* end spin_injection gate */}
+      </>}{/* end spin_injection gate */}
 
       {(gimmick === "counter_rotation" || gimmick === "none") && <><SectionHeader>Counter-Rotation (Dranzer GT)</SectionHeader>
       <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 10 }}>
@@ -794,7 +794,7 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
         </div>
       )}
 
-      </>{/* end counter_rotation gate */}
+      </>}{/* end counter_rotation gate */}
 
       <SectionHeader>Hidden Stats</SectionHeader>
       <Field label="Clutch Strength" hint="0=fully free-spinning (HMS Running Core) → 1=fully locked.">
@@ -856,7 +856,7 @@ function CasingFields({ part, onChange }: { part: Part; onChange: OnChange }) {
             Core Slot enabled
           </label>
         </div>
-        {coreSlot?.enabled && (
+        {!!(coreSlot?.enabled) && (
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <Field label="Radius (mm)"><NumInput value={coreSlot.radius as number | undefined} onChange={v => patchCoreSlot({ radius: v })} min={1} step={0.5} width={70} /></Field>
             <Field label="Depth (mm)"><NumInput value={coreSlot.depth as number | undefined} onChange={v => patchCoreSlot({ depth: v })} min={0} step={0.5} width={70} /></Field>

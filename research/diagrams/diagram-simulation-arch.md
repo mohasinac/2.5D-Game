@@ -1,4 +1,4 @@
-# Diagram: Simulation Architecture — Shared Layer + Adapters
+﻿# Diagram: Simulation Architecture — Shared Layer + Adapters
 
 > **Stage 0C Diagram 5** — Multi-engine simulation support (Rule 2).
 
@@ -108,4 +108,4 @@ Differences allowed: simulation accuracy, collision precision — NOT intended b
 Max 20 rooms active at once — enforced by `roomCounter.ts` (`tryReserveRoom()` / `releaseRoom()`).
 
 ---
-[? Sequence Launch](diagram-sequence-launch.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Tilt Angle ?](diagram-tilt-angle.md)
+[← Sequence Launch](diagram-sequence-launch.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Tilt Angle →](diagram-tilt-angle.md)

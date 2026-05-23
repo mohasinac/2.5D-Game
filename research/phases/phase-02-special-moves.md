@@ -7,6 +7,55 @@
 
 ---
 
+## Amendment — Session 18: Special Moves Use Pillar 1 (BehaviorDef)
+
+> See **[Phase 21 — Unified Foundation](phase-21-unified-foundation.md)** for the full spec.
+
+Special moves are expressed as `mechanicRefs: MechanicInstance[]` on the `special_moves` collection doc, replacing the bespoke `mechanicChain` string array and any hardcoded effect logic. The `costPower` field becomes a `StatModifier` against `stat_defs."bey.special_power"`.
+
+All 4 existing special moves mapped to `mechanicRefs`:
+
+| Special | mechanicRefs |
+|---------|-------------|
+| `stampede_rush` | `velocity_burst(force:0.12) + attack_amplifier(mult:1.4, ticks:30)` |
+| `gyro_anchor` | `defense_stance(ticks:90) + stamina_recovery(rate:5, max:100)` |
+| `spin_recovery` | `orbit_movement(radius:150) + stamina_recovery(rate:3, max:80)` |
+| `tactical_burst` | `velocity_burst(force:0.06) + stamina_recovery(rate:2, max:40)` |
+
+New special moves are authored via the Behavior Panel in SpecialMovesPage — no code changes required.
+
+---
+
+### Shared-Types Canonicalization Note (session 15)
+
+`SpecialMoveConfig` and `ComboVisual` now live in `shared/types/`:
+
+| Type | Old location | Canonical location |
+|------|-------------|-------------------|
+| `SpecialMoveConfig` | `client/src/types/specialMove.ts` | `shared/types/specialMove.ts` |
+| `ComboVisual` | `client/src/types/comboVisual.ts` | `shared/types/comboVisual.ts` |
+| `BeybladeStats` | `client/src/types/beybladeStats.ts` | `shared/types/beybladeStats.ts` |
+
+`client/src/types/` re-exports from `shared/types/` for backward compatibility. When adding new special move types or `ComboVisual` fields, edit `shared/types/` — not `client/src/types/`.
+
+`ServerProjectile` in `client/src/types/game.ts` now carries optional `radius?`, `length?`, `width?` fields — the renderer reads these for shape-specific projectile visuals (e.g. `daiguren_front` uses `p.radius ?? 30` for the ice ring).
+
+---
+
+### Arena-Tilt Interaction Note (session 13)
+
+Special moves that apply velocity impulses (`velocity_burst`, `orbit_movement`, `upper_launch`) are additively affected by arena tilt. `computeTiltForce()` applies `sin(tiltAngle) × 0.04 × mass` lateral force every tick, which continues to act on a bey during and after a special move's impulse window.
+
+Key implications for special move design:
+- **Downhill moves** — moves aimed in the `tiltDirection` receive a sustained tail-wind; `stampede_rush` style bursts become more dangerous when aimed downhill on a tilted arena.
+- **Orbit moves** (`spin_recovery` / `orbit_movement`) — circular orbit paths are distorted on tilted arenas; the orbital radius drifts toward the downhill side. This is cosmetically accurate (echoes Zero-G stadium wobble) and requires no special-move changes.
+- **Inverted / Zero-G** (tiltAngle=180° or `tiltMode:"weight"`) — effective gravity reverses; upward-launching moves (`sky_strike`, airborne archetype) are pulled *away* from the arena floor. `AirborneSystem.airborneTicks` counts down normally but the bey's vertical position is unaffected in the 2D engine (tilt is a lateral-only force). No code change needed; lateral drift during aerial is a valid gameplay outcome.
+- **`gyro_anchor` (Gyro Anchor special)** — zeros linear velocity each tick. On a tilted arena this must re-zero every tick or tilt force will reintroduce linear drift. This is already correct: the `defense_stance` handler fires on `onActivate` and subsequent `tick` calls re-apply the zero-velocity, winning the race against tilt force.
+
+No special-move handler code changes were required. This is a documentation-only note.
+
+---
+
 ## Notation
 
 - **FACT** — confirmed from official source (wiki, anime, manga, physical product)
@@ -786,7 +835,7 @@ All 39 files in `linka/special-moves/` read and incorporated:
 6. **Confidence distribution**: 28 moves tagged FACT (wiki or canonical episode verified), 45 moves tagged INFERENCE (logically deduced from part design), 18 moves tagged SPECULATION (plausible game-original or low-evidence entries). No UNKNOWN tags — all moves have at least a basis for design.
 
 ---
-[? Phase 01: Terminology](phase-01-terminology.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 03: Special Move ? Bey Map ?](phase-03-specialmove-bey-map.md)
+[← Phase 01: Terminology](phase-01-terminology.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 03: Special Move → Bey Map →](phase-03-specialmove-bey-map.md)
 
 
 ---
@@ -889,4 +938,93 @@ All 39 files in `linka/special-moves/` read and incorporated:
 ---
 
 *End of Appendix 2Z*
+
+---
+
+## Appendix 2T — Turret Attack Move Catalog (Sessions 10–12)
+
+> These are **arena turret** moves — fired by static turret structures at beyblades. They are not traditional special moves (player-activated). They are sourced from anime, games, and original mechanics. All 175+ moves are implemented in `TurretProcessor.ts`.
+>
+> Dispatch key: `TurretConfig.attackType: TurretAttackType`
+
+### Table 2T-1: Core Turret Types (Phase Z)
+
+| Type | Source | Physics Pattern | Key Config |
+|------|--------|----------------|-----------|
+| `periodic` | Original | Projectile body toward target | `bulletSpeed`, `bulletCount` |
+| `laser_sweep` | Original | Rotating beam line, continuous | `laserSweepArcDeg`, `laserSweepSpeedDeg` |
+| `sniper` | Original | Charge then instant-hit | `sniperChargeSec` |
+| `shotgun` | Original | Cone spread of projectiles | `shotgunConeHalfDeg` |
+| `mine_layer` | Original | Proximity mine placed at position | `mineTriggerRadius`, `mineLifetimeSec` |
+| `gravity_cannon` | Original | Gravity well AoE at target | `gravityCannonForce`, `gravityCannonDurationSec` |
+| `emp` | Original | All beys in range: disable for N ticks | `empDisableTicks` |
+| `tracking_missile` | Original | Homing projectile with turn rate | `missileTrackingDeg` |
+| `burst_fire` | Original | Burst of projectiles, reload cycle | `burstCount`, `burstIntervalSec` |
+| `plasma_ring` | Original | Expanding ring, damage on pass-through | `plasmaRingExpandSpeed`, `plasmaRingMaxRadius` |
+| `tractor_beam` | Original | Sustained pull force to turret | `tractorBeamForce` |
+
+### Table 2T-2: Franchise Moves (Sessions 10–11)
+
+| Category | Moves | Source Franchise |
+|----------|-------|-----------------|
+| Pokémon (basic) | `surf`, `hydro_pump`, `fire_spin`, `thunderbolt`, `psychic`, `gust`, `shadow_ball`, `fire_blast`, `sludge_bomb`, `toxic_spikes`, `roar`, `multi_missile` | Pokémon |
+| Pokémon (extended) | `blizzard`, `earthquake`, `flamethrower`, `ice_beam`, `dragon_breath`, `confuse_ray`, `leech_seed`, `vine_whip`, `sticky_web`, `hyper_beam`, `gravity_field`, `sand_tomb`, `zap_cannon`, `overheat`, `chain_lightning`, `spore`, `dark_void`, `rock_slide`, `whirlpool`, `stealth_rock` | Pokémon |
+| Pokémon (type moves) | `ember`, `magma_storm`, `eruption`, `bubble_beam`, `aqua_ring`, `origin_pulse`, `icicle_spear`, `hail`, `glacial_lance`, `thunder_wave`, `discharge`, `bolt_strike`, `air_slash`, `hurricane`, `aeroblast`, `stone_edge`, `dig`, `tectonic_rage`, `flash_cannon`, `bullet_punch`, `steel_surge`, `absorb`, `petal_dance`, `bloom_doom`, `night_shade`, `shadow_force`, `phantom_force`, `flash`, `solar_beam`, `solar_flare`, `spark`, `magnetic_field`, `thunder_storm`, `distortion`, `black_hole_shot`, `spacial_rend` | Pokémon |
+| Fighting/Close | `cross_slash`, `impact_burst`, `armor_pierce`, `flurry_barrage`, `mach_shot`, `gravity_grip`, `ram_charge`, `graviton_throw`, `razor_spin`, `point_blank`, `static_field`, `acid_spray`, `shockwave`, `spin_slash`, `guillotine`, `anti_grav` | Original |
+| Bug/Dark/Steel/Normal | `drain_sting`, `string_shot`, `silver_wind`, `sting_bolt`, `foul_play`, `dark_pulse`, `steel_ram`, `metal_sound`, `magnet_bomb`, `tackle`, `drill_shot`, `hyper_voice` | Pokémon |
+| Stat/Charge | `swords_dance`, `tail_whip`, `growl`, `meditate`, `nasty_plot`, `agility`, `charge`, `charge_beam`, `charge_cannon`, `solar_charge`, `flare_blitz`, `thunder_ram`, `thunder_drive`, `power_drive`, `poison_jab`, `venoshock`, `psyshock`, `future_sight`, `dragon_slash`, `outrage`, `hex`, `ghost_strike`, `moonblast`, `dazzling_gleam` | Pokémon |
+| Naruto (basic) | `rasengan`, `chidori`, `shadow_clone`, `sand_burial`, `fireball_jutsu`, `eight_trigrams`, `amaterasu`, `susanoo` | Naruto |
+| Naruto (ninja) | `substitution`, `shadow_shuriken`, `kunai_barrage`, `smoke_bomb`, `wire_trap`, `exploding_tag` | Naruto |
+| Naruto (transformations) | `ultra_form`, `demon_form`, `sage_mode`, `bankai_release`, `susanoo_full`, `titan_shift` | Naruto/Bleach |
+| Naruto (summons) | `summon_toad`, `summon_snake`, `summon_slug`, `summon_kirin`, `summon_eagle`, `summon_clones`, `summon_ryuchi`, `summon_myoboku`, `summon_slugs_army`, `summon_garuda`, `summon_enma`, `summon_gamaken`, `edo_tensei` | Naruto |
+| Naruto (Akatsuki) | `shinra_tensei`, `chibaku_tensei`, `samehada_drain`, `shark_bomb`, `earth_grudge_fear`, `jashin_ritual`, `paper_bomb_storm` | Naruto |
+| Naruto (Obito) | `kamui`, `limbo_hengoku`, `wood_dragon`, `spiral_eye`, `phantom_pass`, `black_zetsu_bind`, `orange_mask_dash`, `ten_tails_bijuudama`, `truth_seeker_orbs` | Naruto |
+| Naruto (Rinnegan) | `bansho_tenin`, `human_path`, `preta_path`, `asura_path` | Naruto |
+| Naruto (Minato/8G) | `flying_thunder_god`, `rasenshuriken`, `odama_rasengan`, `eight_gates_release`, `evening_elephant`, `night_guy` | Naruto |
+| Naruto (Otsutsuki) | `tengai_shinsei`, `kaguya_bones` | Naruto |
+| Naruto (Itachi/Genjutsu) | `tsukuyomi`, `amaterasu_mark`, `izanagi`, `izanami`, `sharingan_lock`, `crow_genjutsu`, `susanoo_itachi` | Naruto |
+| Naruto (forms) | `kyuubi_mode`, `bijuu_mode`, `tailed_beast_bomb`, `curse_mark_2`, `six_paths_mode`, `ten_tails_jinchuriki`, `berserk_hollow` | Naruto |
+| Deidara | `clay_spider`, `clay_dragon`, `clay_bomb`, `clay_clones_c4`, `katsu` | Naruto |
+| Bleach (Bankai) | `tensa_zangetsu`, `senbonzakura`, `daiguren_ice`, `absolute_zero`, `muken_poison`, `zanka_incinerate`, `suzumebachi`, `hihio_construct` | Bleach |
+| Bleach (extended) | `gigantification`, `ryujin_jakka_full`, `minazuki_heal`, `katen_kyokotsu`, `senbonzakura_kageyoshi`, `daiguren_full` | Bleach |
+| Bleach (Arrancar) | `cero`, `gran_rey_cero`, `cero_oscuras`, `bala`, `hierro`, `sonido`, `pesquisa`, `descorrer`, `lanza_del_relampago`, `santa_teresa`, `resurreccion` | Bleach |
+| Bleach (Gotei-13) | `shunpo`, `reiatsu_burst`, `kido_hado_31`, `kido_hado_63`, `kido_hado_90`, `kido_bakudo_61`, `kido_bakudo_99`, `roar_of_seireitei` | Bleach |
+| Bleach (Visored) | `mask_on`, `hollow_cero`, `inner_hollow`, `getsuga_tensho`, `mugetsu`, `fullbring_boost` | Bleach |
+| Bleach (Aizen/Barragan/Grimmjow) | `kyoka_suigetsu`, `respira`, `desgarron` | Bleach |
+| Dragon Ball | `kamehameha`, `spirit_bomb`, `final_flash`, `death_beam` | Dragon Ball |
+| Street Fighter | `hadoken`, `shoryuken`, `sonic_boom`, `flash_kick`, `raging_demon`, `spiral_drill`, `hundred_kicks`, `electric_body` | Street Fighter |
+| Tekken | `devil_beam`, `wind_god_fist`, `hellsweep`, `laser_scraper`, `rage_drive`, `heat_smash`, `ki_charge_tek`, `twin_pistols` | Tekken |
+| Mortal Kombat | `spear_chain`, `cryo_lance`, `ring_blade`, `portal_strike`, `dragon_fireball`, `inferno_slam` | Mortal Kombat |
+| Time | `time_warp`, `time_stop`, `time_loop`, `time_acceleration`, `age_drain` | Original |
+| Size/Weight | `enlarge`, `shrink`, `mass_shift`, `density_crush` | Original |
+| Hollow/Forms | `hollow_transform` | Bleach |
+
+### Table 2T-3: Illusion / Deception Moves (Session 12)
+
+| Move | Mechanism | Duration |
+|------|-----------|---------|
+| `kyoka_suigetsu` | Ghost positions for all beys via schema override | 3s |
+| `mirror_world` | Larger random ghost offsets, drifting | 3.5s |
+| `perfect_mirage` | Target becomes invisible (`isActive = false`) | 2.5s |
+| `broken_reality` | Mass teleport all beys to random arena positions | Instant |
+| `phantasmal_shift` | 50% damage reduction + ghost visual on target | 3s |
+| `echo_image` | Two static ghost decoys that absorb 1 hit each | Persistent |
+| `genjutsu_veil` | Small random drift per tick, arena-wide | 4s |
+| `false_flag` | Swap `_displayName` of two random beys | 5s |
+| `mind_fracture` | Ghost offset + inverted inputs simultaneously | 3s |
+
+### Table 2T-4: Contra Bey Power-Up Moves (Session 12)
+
+> These moves give the targeted bey a power-up buff. The **bey IS the weapon**.
+
+| Move | Effect | Key Mechanic |
+|------|--------|-------------|
+| `spread_bey` | Next collision fans into N impact vectors | `_spreadBeyCount` flag |
+| `railbey` | 4× speed straight-line pierce phase | `_railbeyActive` + `railbeyUntilMs` |
+| `minigun_bey` | 12 rapid pulses from shooter to nearest | Runtime pulse loop |
+| `heat_seeker_bey` | Auto-ram nearest opponent | Instant `applyKnockback` |
+| `bomb_bey` | Timed explosive, AoE on detonation | Fuse `bombBeyDetonateMs` |
+| `shield_bey` | Full invuln + 1-hit absorb + AoE retaliation | `target.invulnerable = true` |
+| `turbo_bey` | Speed + collision damage surge | `_turboSpeedMult/_turboCollisionMult` |
+| `cannon_bey` | Catapult toward furthest opponent at 3000 force | `applyKnockback` max force |
 

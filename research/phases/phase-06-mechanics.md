@@ -7,6 +7,59 @@
 
 ---
 
+## Amendment — Session 18: Mechanics Are the Universal Behavior Base
+
+> See **[Phase 21 — Unified Foundation](phase-21-unified-foundation.md)** for the full architectural spec.
+
+The scope of `mechanic_defs` and `gimmick_defs` is expanded from "beyblade gimmicks only" to **every behavior in the game**:
+
+| Previously only used for | Now also used for |
+|--------------------------|------------------|
+| Beyblade `gimmickIds[]` | Special move `mechanicRefs` |
+| | Combo `effectRefs` |
+| | Arena feature `mechanicRefs` (spin zones, bumps, gravity holes, directional zones, water bodies) |
+| | Turret attack `mechanicRefs` (long-term replacement for the 175+ hardcoded union types) |
+| | Part `mechanics: MechanicInstance[]` (tip movement, core gimmicks, gear behaviors) |
+| | Obstacle `onContactMechanics` |
+
+**New mechanic IDs needed** (beyond the 31 existing) to cover expanded scope:
+
+| ID | Purpose |
+|----|---------|
+| `stamina_drain_rate` | Arena-global spin decay multiplier (replaces `staminaDrainMultiplier` field) |
+| `combo_window_scale` | QTE window width multiplier (replaces `qteWindowScaling` field) |
+| `arena_gravity` | Match-wide gravity override (extends `zero_g_float` to arena scope) |
+| `floor_friction_override` | Arena floor friction for all beys |
+| `water_drag` | Per-tick velocity reduction inside water zone |
+| `water_spin_drain` | Per-tick spin reduction inside water zone |
+| `directional_push` | Directional force vector (generalizes directional zone) |
+| `bump_launch` | Upward + lateral recoil on contact (wraps `upper_launch` + `spring_recoil` for bumps) |
+| `spin_boost_zone` | Per-tick spin increase inside zone |
+| `orbit_force_zone` | Tangential force inside zone (already close to `orbit_movement`) |
+| `aura_damage` | AoE damage pulse centered on bey (for special moves / turrets) |
+
+**gimmicks.ts** needs the 5 new entries from session 14 added (see Phase 08 §7 — status: NEEDS UPDATE), and eventually needs all 11 new mechanic IDs above registered.
+
+---
+
+---
+
+### Session 15 Note — Renderer Type Fix
+
+`ServerProjectile` in `client/src/types/game.ts` now has optional geometry fields:
+
+```typescript
+radius?: number;   // used by ring/circle projectiles (daiguren_front, muken_cloud, zanka_field, sand_cage…)
+length?: number;   // used by beam/lance projectiles
+width?: number;    // used by rectangle/beam projectiles
+```
+
+Any future turret attack type that renders a non-point projectile should set these on the server-side runtime state and forward them via Colyseus schema to the renderer. The pattern: `p.radius ?? <default>` for circle draws, `p.length ?? <default>` for beam draws.
+
+Admin CRUD page theme fix: `MechanicDefsPage.tsx` and `GimmickDefsPage.tsx` now correctly use `C.muted` (not `C.textMuted`) and `C.blue` (not `C.accent`). This was a pre-existing TSC error introduced in session 14.
+
+---
+
 ## 1. Mechanic Registry Overview
 
 The `MECHANIC_REGISTRY` is a server-side map of `mechanicId → handler`. Handlers are pure functions called each tick or on collision events. They modify existing Beyblade schema fields — they do NOT read Firestore at runtime.
@@ -92,6 +145,26 @@ The `MECHANIC_REGISTRY` is a server-side map of `mechanicId → handler`. Handle
 | `sub_part_burst` | ✅ | ✅ | ✅ | Yes |
 | `defense_stance` | ✅ | ✅ + tilt | ✅ | Yes |
 | `revival_spin` | ✅ | ✅ | ✅ | Yes |
+
+---
+
+## 3b. Arena-Level Physics Modifiers
+
+These are `ArenaConfig` fields (not MECHANIC_REGISTRY entries) that alter mechanic behaviour globally for a match. They are applied at room startup (`applyArenaToState`) or each tick and do not trigger on specific events.
+
+| Field | Type | Default | Effect on Mechanics | Admin UI |
+|-------|------|---------|---------------------|----------|
+| `staminaDrainMultiplier` | `number` | `1.0` | Multiplies `spinDecayRate` on every tick for every bey in the arena. `1.0` = normal; `0.25` = near-frictionless slow-drain; `4.0` = rapid spin-out. Interacts with: `free_spin` (decay override partially cancelled), `revival_spin` (higher drain makes recovery harder), `stamina_recovery` (higher drain can fight recovery rate). | BasicsTab → Physics & Gameplay — slider 0.25×–4× |
+| `qteEnabled` | `boolean` | `true` | When `false`, the QTE system is globally disabled for the arena: all `comboSystem.detectCombo()` calls short-circuit, no combo effects fire. Special moves are unaffected (they use a separate power system). | BasicsTab → Physics & Gameplay — toggle |
+| `qteWindowScaling` | `"flat"\|"by_cost"` | `"by_cost"` | Controls how many ticks a QTE victim has to respond: `flat` = always 60 ticks (1 second). `by_cost` = `max(20, 60 - cost)` formula. Affects `attack_amplifier` and `spin_steal_coupling` window width. | BasicsTab → Physics & Gameplay — selector |
+| `randomModifiers` | `boolean` | `false` | When `true`, the server picks one random match modifier at round start (e.g. reversed-input, double-stamina, wind). Modifiers are drawn from a modifier registry; this flag is the per-arena opt-in gate. | BasicsTab → Physics & Gameplay — toggle |
+| `maxModifiers` | `number` | `2` | Maximum number of modifier layers that can stack in a single match. Only relevant when `randomModifiers` is on. Caps modifier application loop. | BasicsTab → Physics & Gameplay — number input |
+| `backgroundColor` | `string?` | theme default | Client-only: overrides the background canvas fill colour. No physics effect. | BasicsTab → Visual Overrides — color picker |
+| `floorColor` | `string?` | theme default | Client-only: overrides the arena floor fill colour. No physics effect. | BasicsTab → Visual Overrides — color picker |
+| `tiltAngle` | `number` | `0` | Angle (0–360°) of the arena plane tilt. Drives `computeTiltForce(tiltAngle, tiltDir, mass)` = `sin(tiltAngle) × 0.04 × mass` lateral force every tick. At 180° the force direction reverses (Zero-G / inverted). At 90°/270° lateral gravity is at maximum (wall-ride). | BasicsTab → Tilt |
+| `tiltMode` | `"fixed"\|"oscillate"\|"weight"` | `"fixed"` | `fixed`: tilt stays at `tiltAngle`; `oscillate`: cosine wave between `tiltOscillateMin` ↔ `tiltOscillateMax`; `weight`: arena tilts toward COM of active beys (Zero-G BB-G04 canonical mode). | BasicsTab → Tilt |
+
+> **Interaction note**: `staminaDrainMultiplier` stacks multiplicatively with `free_spin`'s `decayModifier`. If an arena has `staminaDrainMultiplier: 2.0` and a bey has `free_spin.decayModifier: 0.3`, effective decay = `spinDecayRate × 2.0 × 0.3`. Similarly, `revival_spin.recoveryRate` must exceed the modified drain rate to actually recover spin.
 
 ---
 
@@ -337,4 +410,184 @@ Per plan Rule 4 — before any system is declared needed:
 | Magnacore system | ❌ (no fields) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | REQUIRES NEW — magnetic_pull mechanic |
 
 ---
-[? Phase 05: Parts](phase-05-parts.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 07a: Generation 1 ?](phase-07-gen1.md)
+
+## 9. Turret Attack System
+
+The turret attack system is a **second runtime physics layer** alongside the MECHANIC_REGISTRY. It is NOT part of the mechanic registry — it has its own dispatch pipeline, runtime state, and handler library.
+
+### Architecture
+
+```
+ArenaConfig.turrets[] → TurretConfig.attackType (TurretAttackType union)
+                        ↓ dispatched in BattleRoom.tick()
+                     TurretProcessor.ts — exported handler functions
+                        ↓
+                     TurretRuntimeState — per-turret persistent state
+                        ↓
+                     TurretProcessorBridge — physics operations
+                           applyForce(id, fx, fy)
+                           applyKnockback(id, {x,y}, scalar)
+                           getPosition(id) → {x,y}
+                           setVelocity?(id, vx, vy)
+```
+
+### TurretAttackType union (~175+ entries as of session 12)
+
+Defined in `shared/types/arenaConfigNew.ts`. Every new type requires a 4-file addition:
+
+| File | Addition |
+|------|----------|
+| `shared/types/arenaConfigNew.ts` | Union entry + config fields |
+| `server/shared/rooms/TurretProcessor.ts` | `TurretRuntimeState` fields + handler functions |
+| `client/src/game/renderer/FeatureRenderer.ts` | `TURRET_COLORS` entry + `syncProjectiles()` branch |
+| `client/src/components/admin/arena-tabs/TurretsTab.tsx` | `TypeSpecificParams()` UI block |
+
+### Physics sub-patterns
+
+| Pattern | How It Works | Example Moves |
+|---------|-------------|---------------|
+| AoE radius | Distance check loop, falloff `(1 - dist/r)` | `ten_tails_bijuudama`, `spirit_bomb`, `bomb_bey` |
+| Beam line | Axis-projection intersection test | `kamehameha`, `death_beam` |
+| Timed buff/debuff | `runtimeState.*UntilMs` + tick processor | `eight_gates_release`, `turbo_bey`, `railbey` |
+| Ghost position | `bey.x/y` schema override; physics body unchanged | `kyoka_suigetsu`, `mirror_world`, `genjutsu_veil` |
+| Multi-target loop | Iterate all `bey.isActive` beys | `shinra_tensei`, `broken_reality` |
+| Piercing (bypass invuln) | Save `invulnerable`, set false, apply, restore | `kaguya_bones`, `death_beam`, `limbo_hengoku` |
+| Bey-as-weapon buff | `(bey as any)._xxx` flag checked in collision | `spread_bey`, `bomb_bey`, `shield_bey`, `turbo_bey` |
+| Per-tick drain | Field active check, subtract `rate * dt` | `respira`, `black_zetsu_bind` |
+| Seeking/ram | Find nearest/furthest, `applyKnockback` toward | `heat_seeker_bey`, `cannon_bey` |
+| Phased multi-step | `runtimeState.phase` switch, advance on condition | `spiral_eye` (pull→fling), `spirit_bomb` (charge→fire) |
+
+### Ghost / Illusion sub-system (8 moves)
+
+Schema position override: save `bey.x/y` → set false coords (Colyseus syncs to all clients) → physics uses real Matter.js body → drift each tick → restore on expiry.
+
+| Move | Mechanism |
+|------|-----------|
+| `kyoka_suigetsu` | Random offset 60-200px for all beys, slow drift |
+| `mirror_world` | Larger random offset 90-270px, moderate drift |
+| `genjutsu_veil` | Small drift per tick accumulates (arena-wide) |
+| `mind_fracture` | Ghost offset + `_mindFractureInvertInputs` flag |
+| `perfect_mirage` | Sets `bey.isActive = false` (renders nothing) |
+| `broken_reality` | Mass teleport all beys to random valid positions |
+| `echo_image` | Two static ghost decoys at offset positions |
+| `false_flag` | Swaps `_displayName` of two random beys |
+
+### Contra bey power-up sub-system (8 moves)
+
+Turret targets a bey and gives it a Contra-style buff. The **bey IS the weapon**:
+
+| Move | Buff Mechanic |
+|------|--------------|
+| `spread_bey` | On next collision, fan N impact vectors outward |
+| `railbey` | `_railbeyActive` → 4× speed straight-line phase, pierce |
+| `minigun_bey` | Runtime pulse loop from shooter to nearest bey |
+| `heat_seeker_bey` | Find nearest, `applyKnockback` at 600 force |
+| `bomb_bey` | Fuse timer → AoE explosion at bey position |
+| `shield_bey` | `target.invulnerable = true` + 1-hit absorb shield |
+| `turbo_bey` | `_turboSpeedMult` + `_turboCollisionMult` boost |
+| `cannon_bey` | `applyKnockback` at 3000 toward furthest opponent |
+
+### Coordinate system
+
+All turret positions in cm, multiplied ×24 in handlers. Knockback scalar ranges: 400–1200 (moderate), 1500–3000 (heavy), 3000+ (finisher).
+
+---
+
+## 10. Firestore Seed Layer — mechanic_defs + gimmick_defs (session 14)
+
+Both collections are now seeded and have admin CRUD pages.
+
+### mechanic_defs collection
+
+Seeded by `scripts/seed-mechanics.js` (`npm run seed:mechanics`). 31 documents — one per MechanicRegistry handler.
+
+**Document schema:**
+```typescript
+{
+  id: string;           // snake_case mechanic ID (matches MechanicRegistry key)
+  name: string;         // human-readable display name
+  category: "stamina" | "defense" | "attack" | "movement" | "special";
+  description: string;  // what it does and which fields it modifies
+  params: Record<string, unknown>;  // default param values
+}
+```
+
+**Admin UI:** `/admin/mechanic-defs` → `MechanicDefsPage.tsx`  
+List grouped by category. Create/Edit modal with name, category (SearchableSelect), description textarea, and params JSON editor.
+
+### gimmick_defs collection
+
+Seeded by `scripts/seed-gimmicks.js` (`npm run seed:gimmicks`). 27 documents — 22 original gimmicks + 5 added in session 14.
+
+**Document schema:**
+```typescript
+{
+  id: string;               // snake_case gimmick ID (matches beyblade_stats.gimmickIds[] entries)
+  name: string;             // human-readable name
+  description: string;      // what the gimmick does in-match
+  beybladeTypes: string[];  // compatible types ("attack" | "defense" | "stamina" | "balanced")
+  behaviorRefs: Array<{     // ordered list of mechanic handlers to compose
+    behaviorId: string;     // must match a key in mechanic_defs
+    params: Record<string, unknown>;  // override params for this gimmick instance
+  }>;
+}
+```
+
+**Admin UI:** `/admin/gimmick-defs` → `GimmickDefsPage.tsx`  
+List with inline behaviorRef chips. Create/Edit modal includes SearchableMultiSelect for beybladeTypes and JSON editor for behaviorRefs array.
+
+### 22 Original Gimmick IDs
+
+| ID | Mechanics | Types |
+|----|-----------|-------|
+| `energy_core` | energy_reserve | attack, balanced |
+| `speed_boost_tip` | velocity_burst | attack |
+| `heavy_metal_disc` | weight_shift, burst_suppress | defense |
+| `recoil_guard` | rubber_grip, contact_deflect | defense, balanced |
+| `free_spin_tip` | free_spin, bearing_drift | stamina |
+| `spin_absorber` | spin_transfer, spin_steal_coupling | stamina |
+| `mode_change` | mode_switch | balanced |
+| `dual_tip` | bearing_drift, surface_friction_modifier | balanced |
+| `smash_attack_ring` | smash_impact | attack |
+| `upper_attack_ring` | upper_launch | attack |
+| `barrage_ring` | barrage_hit | attack |
+| `counter_spin` | spin_direction_bonus | attack, stamina |
+| `gyro_defense_disc` | center_pull, spring_recoil | defense |
+| `rubber_tip` | rubber_grip | defense, attack |
+| `orbit_tip` | orbit_movement | stamina, balanced |
+| `spin_equalizer` | spin_equalization | stamina |
+| `burst_ring` | sub_part_burst | attack |
+| `recovery_disc` | stamina_recovery | stamina, balanced |
+| `anti_gravity_tip` | zero_g_float | stamina |
+| `magnet_bit` | magnetic_pull | balanced |
+| `revival_core` | revival_spin | stamina, defense |
+| `height_gate_blade` | contact_height_gate | defense |
+
+### 5 New Gimmicks (session 14)
+
+| ID | Mechanics | Types | Design basis |
+|----|-----------|-------|--------------|
+| `magnacore_repel` | magnetic_pull (repel, strength 0.006) | defense, balanced | Magnacore stadium repulsion variant |
+| `magnacore_attract` | magnetic_pull (attract) + spin_steal_coupling | attack, stamina | Magnacore predatory pull + spin drain |
+| `dual_spin_launch` | rotation_reverse + velocity_burst | attack, balanced | Left-spin launcher gimmick (Dranzer GT style) |
+| `mode_switch_tip` | spin_threshold_switch + mode_switch | balanced | Tip physically changes shape at spin threshold |
+| `spring_launch` | spring_recoil (2.5×) + velocity_burst (0.10) | attack | Coiled spring burst-tip on demand |
+
+### Runtime wiring
+
+`gimmickExpander.ts` reads `beyblade_stats.gimmickIds[]` at `onCreate()`, loads each `gimmick_defs` doc, and expands `behaviorRefs[]` into a `MechanicInstance[]` array. This is the **only Firestore read** for gimmicks — the expanded list is cached and used synchronously in each tick.
+
+```
+beyblade_stats.gimmickIds: ["free_spin_tip", "magnet_bit"]
+        ↓ gimmickExpander.ts (onCreate only)
+MechanicInstance[] = [
+  { mechanicId: "free_spin",   params: { decayReduction: 0.45 } },
+  { mechanicId: "bearing_drift", params: { driftFactor: 0.85 } },
+  { mechanicId: "magnetic_pull", params: { strength: 0.0035, attract: true } },
+]
+        ↓ tick / onCollision
+MechanicRegistry[mechanicId].tick(bey, dt, params)
+```
+
+---
+[← Phase 05: Parts](phase-05-parts.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 07a: Generation 1 →](phase-07-gen1.md)

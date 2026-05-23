@@ -1,4 +1,34 @@
-# Phase 05 — 2.5D Part System Research
+﻿# Phase 05 — 2.5D Part System Research
+
+---
+
+## Amendment — Session 18: Parts Use All Three Foundation Pillars
+
+> See **[Phase 21 — Unified Foundation](phase-21-unified-foundation.md)** for the full architectural spec.
+
+All 9 part types gain three standardized fields alongside their existing type-specific fields:
+
+| New field | Type | Purpose |
+|-----------|------|---------|
+| `statModifiers: StatModifier[]` | Pillar 3 (StatDef) | Numeric stat contributions when equipped — replaces scattered inline scalar fields |
+| `mechanics: MechanicInstance[]` | Pillar 1 (BehaviorDef) | Behaviors when equipped — replaces `CoreGimmick` enum, `tipShape` hardcoding, config action strings |
+| `geometryId?: string` | Pillar 2 (GeometryDef) | Primary geometry reference (supplements existing contact point geometry) |
+
+**Contact points** gain `geometryId?: string` to reference `geometry_defs`. Both legacy inline fields and new geometry refs coexist during migration.
+
+**CoreGimmick → gimmick_defs migration:**
+
+| CoreGimmick value | Replacement |
+|------------------|-------------|
+| `engine_gear` | `gimmickId: "engine_gear"` in mechanics[] |
+| `spin_injection` | `gimmickId: "stamina_recovery"` or new `spin_injection` gimmick |
+| `counter_rotation` | `gimmickId: "counter_rotation"` |
+| `speed_boost` | `mechanicId: "velocity_burst"` direct |
+| `magnetic` | `gimmickId: "magnacore_pull"` or `"magnacore_repel"` |
+
+Tip `tipShape` behavioral meanings move into `mechanics: MechanicInstance[]` on the tip doc, making behavioral intent explicit rather than implied by enum string.
+
+---
 
 **Source files examined:**
 - `shared/types/beybladeSystem.ts` — canonical type definitions for all part slots, contact points, pockets, shape math
@@ -735,4 +765,4 @@ This makes the physics collision damage profile match the visual shape exactly.
 | GEAR-01 | GearPart CPs and statModifiers not bridged to PhysicsEngine in `registerBey()` | High | `PartSystemManager.registerBey()` — merge gear CPs into combined stats after existing sub-part loop |
 
 ---
-[? Phase 04: Combo Mapping](phase-04-combo-mapping.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 06: Mechanics ?](phase-06-mechanics.md)
+[← Phase 04: Combo Mapping](phase-04-combo-mapping.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 06: Mechanics →](phase-06-mechanics.md)

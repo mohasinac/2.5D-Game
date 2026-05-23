@@ -1,4 +1,4 @@
-# Diagram: Data Flow — Database → Validation → Compiler → Runtime
+﻿# Diagram: Data Flow — Database → Validation → Compiler → Runtime
 
 > **Stage 0C Diagram 8** — Rule 7 data flow: database is for authoring; engine uses preloaded runtime store.
 
@@ -115,4 +115,4 @@ CORRECT: this.setSimulationInterval((dt) => { this.tick(dt); })
 | audio_profiles | ❌ Not loaded | ❌ Not used | ❌ No page |
 
 ---
-[? Camera Flow](diagram-camera-flow.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Deterministic Flow ?](diagram-deterministic-flow.md)
+[← Camera Flow](diagram-camera-flow.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Deterministic Flow →](diagram-deterministic-flow.md)

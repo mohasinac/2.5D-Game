@@ -224,7 +224,7 @@ const GIMMICK_DEFS = [
     description: "Internal mechanism triggers a spin revival when near elimination.",
     beybladeTypes: ["stamina", "defense"],
     behaviorRefs: [
-      { behaviorId: "revival_spin", params: { threshold: 0.12, burstAmount: 450 } },
+      { behaviorId: "revival_spin", params: { threshold: 0.2, recoveryRate: 10 } },
     ],
   },
   {

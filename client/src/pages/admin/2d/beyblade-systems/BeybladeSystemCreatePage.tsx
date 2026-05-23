@@ -25,6 +25,7 @@ export function BeybladeSystemCreatePage() {
         tipId: "",
         casingId: "",
         subPartAttachments: [],
+        gearAttachments: [],
         activeConfigs: {},
         comboSlots: [],
         createdAt: serverTimestamp() as unknown as undefined,

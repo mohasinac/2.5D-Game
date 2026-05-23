@@ -1,4 +1,4 @@
-# Diagram: Engine Capabilities Map
+﻿# Diagram: Engine Capabilities Map
 
 > **Stage 0C Diagram 1** — Full engine capability map.
 
@@ -148,4 +148,4 @@ graph TD
 | Audio profiles | ❌ Not built | No admin page |
 
 ---
-[? Deterministic Flow](diagram-deterministic-flow.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Extraction Pipeline ?](diagram-extraction-pipeline.md)
+[← Deterministic Flow](diagram-deterministic-flow.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Extraction Pipeline →](diagram-extraction-pipeline.md)

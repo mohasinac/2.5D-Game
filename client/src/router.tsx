@@ -59,6 +59,10 @@ import BehaviorDefsPage from "./pages/admin/BehaviorDefsPage";
 import ComboEffectsPage from "./pages/admin/ComboEffectsPage";
 import AnimationPresetsPage from "./pages/admin/AnimationPresetsPage";
 import RoundModifiersPage from "./pages/admin/RoundModifiersPage";
+import MechanicDefsPage from "./pages/admin/MechanicDefsPage";
+import GimmickDefsPage from "./pages/admin/GimmickDefsPage";
+import GeometryDefsPage from "./pages/admin/GeometryDefsPage";
+import StatDefsPage from "./pages/admin/StatDefsPage";
 
 // Catalog CRUD pages
 import { CombosPage } from "./pages/admin/CombosPage";
@@ -216,6 +220,10 @@ export const router = createBrowserRouter([
       { path: "particle-presets",   element: <ParticlePresetsPage /> },
       { path: "animation-presets",  element: <AnimationPresetsPage /> },
       { path: "round-modifiers",    element: <RoundModifiersPage /> },
+      { path: "mechanic-defs",      element: <MechanicDefsPage /> },
+      { path: "gimmick-defs",       element: <GimmickDefsPage /> },
+      { path: "geometry-defs",      element: <GeometryDefsPage /> },
+      { path: "stat-defs",          element: <StatDefsPage /> },
 
       // ── Catalog CRUD ──
       { path: "combos",                  element: <CombosPage /> },

@@ -1,4 +1,4 @@
-# Phase 11 — Shared Architecture
+﻿# Phase 11 — Shared Architecture
 
 > **Stage 11** — Runtime architecture for MechanicRegistry, adapters, schema extensions, and all new systems.
 > Source: confirmed engine code + Stages 0-10 research.
@@ -429,4 +429,4 @@ Mechanic handlers call adapter methods, not physics library methods directly. Th
 | `seed-bey-systems.ts` | `beyblade_systems` | existing | done |
 
 ---
-[? Phase 10: Arena Implementation](phase-10-arena-implementation.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 12: Seed Plan ?](phase-12-seed-plan.md)
+[← Phase 10: Arena Implementation](phase-10-arena-implementation.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 12: Seed Plan →](phase-12-seed-plan.md)

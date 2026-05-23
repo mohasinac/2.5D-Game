@@ -1,5 +1,6 @@
 import { C } from "@/styles/theme";
 import type { ArenaConfig, TurretConfig, TurretAttackType, TurretFirePattern } from "@/types/arenaConfigNew";
+import { PX_PER_CM_BASE } from "@/constants/units";
 import SelfRotationPanel from "./SelfRotationPanel";
 import RotationBlockEditor from "./RotationBlockEditor";
 import FeatureAnimationPanel from "./FeatureAnimationPanel";
@@ -22,13 +23,13 @@ const DEFAULT: Omit<TurretConfig, "id"> = {
   bulletSpeed: 200, bulletCount: 1,
 };
 
-const COMMON_FIELDS: { field: keyof TurretConfig; label: string; min: number; max: number; step: number }[] = [
-  { field: "x", label: "X (px from center)", min: -500, max: 500, step: 10 },
-  { field: "y", label: "Y (px from center)", min: -500, max: 500, step: 10 },
-  { field: "radius", label: "Turret Size (px)", min: 15, max: 50, step: 5 },
+const COMMON_FIELDS: { field: keyof TurretConfig; label: string; min: number; max: number; step: number; pxUnit?: true }[] = [
+  { field: "x", label: "X (cm from center)", min: -500, max: 500, step: 10, pxUnit: true },
+  { field: "y", label: "Y (cm from center)", min: -500, max: 500, step: 10, pxUnit: true },
+  { field: "radius", label: "Turret Size (cm)", min: 15, max: 50, step: 5, pxUnit: true },
   { field: "health", label: "Health", min: 100, max: 2000, step: 100 },
   { field: "attackDamage", label: "Damage Per Hit", min: 5, max: 75, step: 5 },
-  { field: "attackRange", label: "Attack Range (px)", min: 100, max: 500, step: 25 },
+  { field: "attackRange", label: "Attack Range (cm)", min: 100, max: 500, step: 25, pxUnit: true },
   { field: "attackCooldown", label: "Cooldown (s)", min: 0.5, max: 10, step: 0.5 },
 ];
 
@@ -48,6 +49,17 @@ function numInput(val: number | undefined, def: number, onChange: (n: number) =>
     <input
       type="number" value={val ?? def} step={step}
       onChange={e => onChange(Number(e.target.value))}
+      style={{ width, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+    />
+  );
+}
+
+function cmNumInput(val: number | undefined, defPx: number, onChange: (n: number) => void, _step = 1, width = 80) {
+  const cm = Math.round((val ?? defPx) / PX_PER_CM_BASE * 10) / 10;
+  return (
+    <input
+      type="number" value={cm} step={0.5}
+      onChange={e => onChange(Math.round(Number(e.target.value) * PX_PER_CM_BASE))}
       style={{ width, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
     />
   );
@@ -90,12 +102,12 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "aoe") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>AoE Radius (px)</label>
-        {numInput(turret.aoeRadius, 80, v => update("aoeRadius", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>AoE Radius (cm)</label>
+        {cmNumInput(turret.aoeRadius, 80, v => update("aoeRadius", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Damage Radius (px)</label>
-        {numInput(turret.aoeDamageRadius, 50, v => update("aoeDamageRadius", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Damage Radius (cm)</label>
+        {cmNumInput(turret.aoeDamageRadius, 50, v => update("aoeDamageRadius", v), 10)}
       </div>
     </div>
   );
@@ -132,8 +144,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "mine_layer") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 85 }}>Trigger Radius (px)</label>
-        {numInput(turret.mineTriggerRadius, 50, v => update("mineTriggerRadius", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 85 }}>Trigger Radius (cm)</label>
+        {cmNumInput(turret.mineTriggerRadius, 50, v => update("mineTriggerRadius", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 85 }}>Lifetime (s, 0=∞)</label>
@@ -188,8 +200,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.plasmaRingExpandSpeed, 150, v => update("plasmaRingExpandSpeed", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Max Radius (px)</label>
-        {numInput(turret.plasmaRingMaxRadius, 200, v => update("plasmaRingMaxRadius", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Max Radius (cm)</label>
+        {cmNumInput(turret.plasmaRingMaxRadius, 200, v => update("plasmaRingMaxRadius", v), 10)}
       </div>
     </div>
   );
@@ -204,8 +216,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "surf") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Wave Width (px)</label>
-        {numInput(turret.surfWaveWidthPx, 120, v => update("surfWaveWidthPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Wave Width (cm)</label>
+        {cmNumInput(turret.surfWaveWidthPx, 120, v => update("surfWaveWidthPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Wave Speed (px/s)</label>
@@ -232,8 +244,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "fire_spin") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Ring Radius (px)</label>
-        {numInput(turret.fireSpinRadiusPx, 60, v => update("fireSpinRadiusPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Ring Radius (cm)</label>
+        {cmNumInput(turret.fireSpinRadiusPx, 60, v => update("fireSpinRadiusPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
@@ -306,8 +318,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "sludge_bomb") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Zone Radius (px)</label>
-        {numInput(turret.sludgeBombRadiusPx, 70, v => update("sludgeBombRadiusPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Zone Radius (cm)</label>
+        {cmNumInput(turret.sludgeBombRadiusPx, 70, v => update("sludgeBombRadiusPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Lifetime (s)</label>
@@ -326,8 +338,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.toxicSpikeCount, 4, v => update("toxicSpikeCount", Math.round(v)), 1)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Trigger (px)</label>
-        {numInput(turret.toxicSpikeTriggerPx, 30, v => update("toxicSpikeTriggerPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Trigger (cm)</label>
+        {cmNumInput(turret.toxicSpikeTriggerPx, 30, v => update("toxicSpikeTriggerPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Poison/s</label>
@@ -390,8 +402,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "flamethrower") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Beam Width (px)</label>
-        {numInput(turret.flamethrowerBeamWidthPx, 15, v => update("flamethrowerBeamWidthPx", v), 1)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Beam Width (cm)</label>
+        {cmNumInput(turret.flamethrowerBeamWidthPx, 15, v => update("flamethrowerBeamWidthPx", v), 1)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Burn/s</label>
@@ -468,8 +480,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "sticky_web") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Radius (px)</label>
-        {numInput(turret.stickyWebRadiusPx, 60, v => update("stickyWebRadiusPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Radius (cm)</label>
+        {cmNumInput(turret.stickyWebRadiusPx, 60, v => update("stickyWebRadiusPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
@@ -508,8 +520,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "sand_tomb") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Radius (px)</label>
-        {numInput(turret.sandTombRadiusPx, 70, v => update("sandTombRadiusPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Radius (cm)</label>
+        {cmNumInput(turret.sandTombRadiusPx, 70, v => update("sandTombRadiusPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
@@ -568,8 +580,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "spore") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Radius (px)</label>
-        {numInput(turret.sporeRadiusPx, 60, v => update("sporeRadiusPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Radius (cm)</label>
+        {cmNumInput(turret.sporeRadiusPx, 60, v => update("sporeRadiusPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
@@ -604,20 +616,20 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.rockSlideBoulderCount, 5, v => update("rockSlideBoulderCount", Math.round(v)), 1)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Scatter (px)</label>
-        {numInput(turret.rockSlideScatterPx, 120, v => update("rockSlideScatterPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Scatter (cm)</label>
+        {cmNumInput(turret.rockSlideScatterPx, 120, v => update("rockSlideScatterPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>AoE (px)</label>
-        {numInput(turret.rockSlideBoulderAoePx, 30, v => update("rockSlideBoulderAoePx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>AoE (cm)</label>
+        {cmNumInput(turret.rockSlideBoulderAoePx, 30, v => update("rockSlideBoulderAoePx", v), 5)}
       </div>
     </div>
   );
   if (t === "whirlpool") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Radius (px)</label>
-        {numInput(turret.whirlpoolRadiusPx, 80, v => update("whirlpoolRadiusPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Radius (cm)</label>
+        {cmNumInput(turret.whirlpoolRadiusPx, 80, v => update("whirlpoolRadiusPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Orbit Force</label>
@@ -636,8 +648,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.stealthRockCount, 6, v => update("stealthRockCount", Math.round(v)), 1)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.stealthRockRadiusPx, 40, v => update("stealthRockRadiusPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.stealthRockRadiusPx, 40, v => update("stealthRockRadiusPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Dmg/s</label>
@@ -669,12 +681,12 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "magma_storm") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Ring Radius (px)</label>
-        {numInput(turret.magmaStormRingRadiusPx, 100, v => update("magmaStormRingRadiusPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Ring Radius (cm)</label>
+        {cmNumInput(turret.magmaStormRingRadiusPx, 100, v => update("magmaStormRingRadiusPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Ring Width (px)</label>
-        {numInput(turret.magmaStormRingWidthPx, 24, v => update("magmaStormRingWidthPx", v), 2)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Ring Width (cm)</label>
+        {cmNumInput(turret.magmaStormRingWidthPx, 24, v => update("magmaStormRingWidthPx", v), 2)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Rotation (°/s)</label>
@@ -685,8 +697,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "eruption") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Geyser AoE (px)</label>
-        {numInput(turret.eruptionGeyserAoePx, 80, v => update("eruptionGeyserAoePx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Geyser AoE (cm)</label>
+        {cmNumInput(turret.eruptionGeyserAoePx, 80, v => update("eruptionGeyserAoePx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Extra Dmg/Bey</label>
@@ -755,20 +767,20 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.hailChunkCount, 6, v => update("hailChunkCount", Math.round(v)), 1)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Scatter (px)</label>
-        {numInput(turret.hailScatterRadiusPx, 100, v => update("hailScatterRadiusPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Scatter (cm)</label>
+        {cmNumInput(turret.hailScatterRadiusPx, 100, v => update("hailScatterRadiusPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 55 }}>AoE (px)</label>
-        {numInput(turret.hailChunkAoePx, 25, v => update("hailChunkAoePx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 55 }}>AoE (cm)</label>
+        {cmNumInput(turret.hailChunkAoePx, 25, v => update("hailChunkAoePx", v), 5)}
       </div>
     </div>
   );
   if (t === "glacial_lance") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Width (px)</label>
-        {numInput(turret.glacialLanceWidthPx, 60, v => update("glacialLanceWidthPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Width (cm)</label>
+        {cmNumInput(turret.glacialLanceWidthPx, 60, v => update("glacialLanceWidthPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Freeze (s)</label>
@@ -792,8 +804,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "discharge") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.dischargeRadiusPx, 150, v => update("dischargeRadiusPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.dischargeRadiusPx, 150, v => update("dischargeRadiusPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Spin Drain/s</label>
@@ -841,8 +853,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "aeroblast") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Beam Width (px)</label>
-        {numInput(turret.aeroblastBeamWidthPx, 50, v => update("aeroblastBeamWidthPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Beam Width (cm)</label>
+        {cmNumInput(turret.aeroblastBeamWidthPx, 50, v => update("aeroblastBeamWidthPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Push Force</label>
@@ -874,8 +886,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.digDelayMs, 800, v => update("digDelayMs", v), 50)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Surface AoE (px)</label>
-        {numInput(turret.digAoePx, 50, v => update("digAoePx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Surface AoE (cm)</label>
+        {cmNumInput(turret.digAoePx, 50, v => update("digAoePx", v), 5)}
       </div>
     </div>
   );
@@ -886,8 +898,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.tectonicRageFissures, 4, v => update("tectonicRageFissures", Math.round(v)), 1)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Width (px)</label>
-        {numInput(turret.tectonicRageFissureWidthPx, 40, v => update("tectonicRageFissureWidthPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Width (cm)</label>
+        {cmNumInput(turret.tectonicRageFissureWidthPx, 40, v => update("tectonicRageFissureWidthPx", v), 5)}
       </div>
     </div>
   );
@@ -954,8 +966,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.petalDanceDurationSec, 3, v => update("petalDanceDurationSec", v), 0.5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Scatter (px)</label>
-        {numInput(turret.petalDanceScatterPx, 120, v => update("petalDanceScatterPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Scatter (cm)</label>
+        {cmNumInput(turret.petalDanceScatterPx, 120, v => update("petalDanceScatterPx", v), 10)}
       </div>
     </div>
   );
@@ -1072,8 +1084,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "black_hole_shot") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.blackHoleShotRadiusPx, 80, v => update("blackHoleShotRadiusPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.blackHoleShotRadiusPx, 80, v => update("blackHoleShotRadiusPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Pull Force</label>
@@ -1101,8 +1113,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "cross_slash") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Range (px)</label>
-        {numInput(turret.crossSlashRangePx, 80, v => update("crossSlashRangePx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Range (cm)</label>
+        {cmNumInput(turret.crossSlashRangePx, 80, v => update("crossSlashRangePx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Bonus Mult</label>
@@ -1184,8 +1196,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "razor_spin") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.razorSpinRadiusPx, 70, v => update("razorSpinRadiusPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.razorSpinRadiusPx, 70, v => update("razorSpinRadiusPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Dmg/s</label>
@@ -1196,8 +1208,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "point_blank") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Max Range (px)</label>
-        {numInput(turret.pointBlankRangePx, 60, v => update("pointBlankRangePx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Max Range (cm)</label>
+        {cmNumInput(turret.pointBlankRangePx, 60, v => update("pointBlankRangePx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Dmg Mult</label>
@@ -1208,8 +1220,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "static_field") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.staticFieldRadiusPx, 80, v => update("staticFieldRadiusPx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.staticFieldRadiusPx, 80, v => update("staticFieldRadiusPx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Shock Dmg</label>
@@ -1240,8 +1252,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "shockwave") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.shockwaveRadiusPx, 120, v => update("shockwaveRadiusPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.shockwaveRadiusPx, 120, v => update("shockwaveRadiusPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Push Force</label>
@@ -1280,8 +1292,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.antiGravAirborneSec, 1.5, v => update("antiGravAirborneSec", v), 0.1)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Slam AoE (px)</label>
-        {numInput(turret.antiGravSlamAoePx, 70, v => update("antiGravSlamAoePx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Slam AoE (cm)</label>
+        {cmNumInput(turret.antiGravSlamAoePx, 70, v => update("antiGravSlamAoePx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Slam Dmg</label>
@@ -1297,8 +1309,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.drainStingFraction, 0.1, v => update("drainStingFraction", v), 0.01)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Range (px)</label>
-        {numInput(turret.drainStingRangePx, 70, v => update("drainStingRangePx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Range (cm)</label>
+        {cmNumInput(turret.drainStingRangePx, 70, v => update("drainStingRangePx", v), 5)}
       </div>
     </div>
   );
@@ -1317,8 +1329,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "silver_wind") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.silverWindRadiusPx, 150, v => update("silverWindRadiusPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.silverWindRadiusPx, 150, v => update("silverWindRadiusPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Damage</label>
@@ -1341,8 +1353,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "dark_pulse") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.darkPulseRadiusPx, 160, v => update("darkPulseRadiusPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.darkPulseRadiusPx, 160, v => update("darkPulseRadiusPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Stagger (s)</label>
@@ -1385,8 +1397,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.magnetBombPullSec, 1.0, v => update("magnetBombPullSec", v), 0.1)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Explosion (px)</label>
-        {numInput(turret.magnetBombRadiusPx, 200, v => update("magnetBombRadiusPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Explosion (cm)</label>
+        {cmNumInput(turret.magnetBombRadiusPx, 200, v => update("magnetBombRadiusPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Push Force</label>
@@ -1401,8 +1413,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.drillShotCritChance, 0.25, v => update("drillShotCritChance", v), 0.05)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Pierce (px)</label>
-        {numInput(turret.drillShotPiercePx, 80, v => update("drillShotPiercePx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Pierce (cm)</label>
+        {cmNumInput(turret.drillShotPiercePx, 80, v => update("drillShotPiercePx", v), 5)}
       </div>
     </div>
   );
@@ -1434,8 +1446,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "tail_whip") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.tailWhipRadiusPx, 140, v => update("tailWhipRadiusPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.tailWhipRadiusPx, 140, v => update("tailWhipRadiusPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Dmg Taken Mult</label>
@@ -1450,8 +1462,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "growl") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.growlRadiusPx, 140, v => update("growlRadiusPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.growlRadiusPx, 140, v => update("growlRadiusPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Spin Drain Mult</label>
@@ -1552,8 +1564,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   );
   if (t === "ghost_strike") return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <label style={{ fontSize: 11, color: C.faint, minWidth: 100 }}>Max Range (px)</label>
-      {numInput(turret.ghostStrikeRangePx, 80, v => update("ghostStrikeRangePx", v), 5)}
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 100 }}>Max Range (cm)</label>
+      {cmNumInput(turret.ghostStrikeRangePx, 80, v => update("ghostStrikeRangePx", v), 5)}
     </div>
   );
   if (t === "moonblast") return (
@@ -1565,8 +1577,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "dazzling_gleam") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.dazzlingGleamRadiusPx, 120, v => update("dazzlingGleamRadiusPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.dazzlingGleamRadiusPx, 120, v => update("dazzlingGleamRadiusPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Lock (s)</label>
@@ -1636,8 +1648,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "uppercut") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Range (px)</label>
-        {numInput(turret.uppercutRangePx, 80, v => update("uppercutRangePx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Range (cm)</label>
+        {cmNumInput(turret.uppercutRangePx, 80, v => update("uppercutRangePx", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Airborne (s)</label>
@@ -1647,8 +1659,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   );
   if (t === "launch_spike") return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Spike AoE (px)</label>
-      {numInput(turret.launchSpikeAoePx, 60, v => update("launchSpikeAoePx", v), 5)}
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Spike AoE (cm)</label>
+      {cmNumInput(turret.launchSpikeAoePx, 60, v => update("launchSpikeAoePx", v), 5)}
     </div>
   );
   // ── Mortal Kombat inspired ──────────────────────────────────────────────
@@ -1673,8 +1685,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "ring_blade") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Width (px)</label>
-        {numInput(turret.ringBladeWidthPx, 20, v => update("ringBladeWidthPx", v), 2)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Width (cm)</label>
+        {cmNumInput(turret.ringBladeWidthPx, 20, v => update("ringBladeWidthPx", v), 2)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 55 }}>Passes</label>
@@ -1684,8 +1696,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   );
   if (t === "portal_strike") return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <label style={{ fontSize: 11, color: C.faint, minWidth: 110 }}>Burst Radius (px)</label>
-      {numInput(turret.portalStrikeBurstRadiusPx, 100, v => update("portalStrikeBurstRadiusPx", v), 10)}
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 110 }}>Burst Radius (cm)</label>
+      {cmNumInput(turret.portalStrikeBurstRadiusPx, 100, v => update("portalStrikeBurstRadiusPx", v), 10)}
     </div>
   );
   if (t === "dragon_fireball") return (
@@ -1695,15 +1707,15 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.dragonFireballBounces, 3, v => update("dragonFireballBounces", Math.round(v)), 1)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>AoE (px)</label>
-        {numInput(turret.dragonFireballAoePx, 40, v => update("dragonFireballAoePx", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>AoE (cm)</label>
+        {cmNumInput(turret.dragonFireballAoePx, 40, v => update("dragonFireballAoePx", v), 5)}
       </div>
     </div>
   );
   if (t === "inferno_slam") return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>AoE (px)</label>
-      {numInput(turret.infernoSlamAoePx, 120, v => update("infernoSlamAoePx", v), 10)}
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>AoE (cm)</label>
+      {cmNumInput(turret.infernoSlamAoePx, 120, v => update("infernoSlamAoePx", v), 10)}
     </div>
   );
   // ── Defensive self-buff ─────────────────────────────────────────────────
@@ -2140,15 +2152,15 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   );
   if (t === "orange_mask_dash") return (
     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-      <label style={{ fontSize: 11, color: C.faint, minWidth: 85 }}>Range (px)</label>
-      {numInput(turret.orangeMaskRange, 300, v => update("orangeMaskRange", v), 20)}
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 85 }}>Range (cm)</label>
+      {cmNumInput(turret.orangeMaskRange, 300, v => update("orangeMaskRange", v), 20)}
     </div>
   );
   if (t === "ten_tails_bijuudama") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.tenTailsBijuudamaRadius, 320, v => update("tenTailsBijuudamaRadius", v), 20)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.tenTailsBijuudamaRadius, 320, v => update("tenTailsBijuudamaRadius", v), 20)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Damage</label>
@@ -2184,8 +2196,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.banshoTenInForce, 1000, v => update("banshoTenInForce", v), 50)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.banshoTenInRadius, 350, v => update("banshoTenInRadius", v), 25)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.banshoTenInRadius, 350, v => update("banshoTenInRadius", v), 25)}
       </div>
     </div>
   );
@@ -2229,8 +2241,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "rasenshuriken") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.rasenShurikenRadius, 80, v => update("rasenShurikenRadius", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.rasenShurikenRadius, 80, v => update("rasenShurikenRadius", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Damage</label>
@@ -2245,8 +2257,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "odama_rasengan") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.odamaRasenganRadius, 100, v => update("odamaRasenganRadius", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.odamaRasenganRadius, 100, v => update("odamaRasenganRadius", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Damage</label>
@@ -2282,8 +2294,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.eveningElephantDamage, 200, v => update("eveningElephantDamage", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.eveningElephantRadius, 60, v => update("eveningElephantRadius", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.eveningElephantRadius, 60, v => update("eveningElephantRadius", v), 5)}
       </div>
     </div>
   );
@@ -2303,8 +2315,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "tengai_shinsei") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.tengaiShinSeiRadius, 200, v => update("tengaiShinSeiRadius", v), 20)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.tengaiShinSeiRadius, 200, v => update("tengaiShinSeiRadius", v), 20)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Damage</label>
@@ -2338,8 +2350,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.respiraDurationSec, 4, v => update("respiraDurationSec", v), 0.5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.respiraRadius, 150, v => update("respiraRadius", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.respiraRadius, 150, v => update("respiraRadius", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Spin Decay×</label>
@@ -2371,12 +2383,12 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.kamehamehaDamage, 120, v => update("kamehamehaDamage", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Width (px)</label>
-        {numInput(turret.kamehamehaWidth, 60, v => update("kamehamehaWidth", v), 5)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Width (cm)</label>
+        {cmNumInput(turret.kamehamehaWidth, 60, v => update("kamehamehaWidth", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Range (px)</label>
-        {numInput(turret.kamehamehaRange, 400, v => update("kamehamehaRange", v), 20)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Range (cm)</label>
+        {cmNumInput(turret.kamehamehaRange, 400, v => update("kamehamehaRange", v), 20)}
       </div>
     </div>
   );
@@ -2387,8 +2399,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.spiritBombChargeSec, 3, v => update("spiritBombChargeSec", v), 0.5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (px)</label>
-        {numInput(turret.spiritBombRadius, 180, v => update("spiritBombRadius", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Radius (cm)</label>
+        {cmNumInput(turret.spiritBombRadius, 180, v => update("spiritBombRadius", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Damage</label>
@@ -2523,8 +2535,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.tensaZangetsuDamage, 80, v => update("tensaZangetsuDamage", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Width (px)</label>
-        {numInput(turret.tensaZangetsuWidth, 12, v => update("tensaZangetsuWidth", v), 1)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Width (cm)</label>
+        {cmNumInput(turret.tensaZangetsuWidth, 12, v => update("tensaZangetsuWidth", v), 1)}
       </div>
     </div>
   );
@@ -2656,8 +2668,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "chidori") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Length (px)</label>
-        {numInput(turret.chidoriLength, 200, v => update("chidoriLength", v), 20)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Length (cm)</label>
+        {cmNumInput(turret.chidoriLength, 200, v => update("chidoriLength", v), 20)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Damage</label>
@@ -2700,8 +2712,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.fireballJutsuConeHalfDeg, 25, v => update("fireballJutsuConeHalfDeg", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Range (px)</label>
-        {numInput(turret.fireballJutsuRange, 250, v => update("fireballJutsuRange", v), 20)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Range (cm)</label>
+        {cmNumInput(turret.fireballJutsuRange, 250, v => update("fireballJutsuRange", v), 20)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Damage</label>
@@ -2992,8 +3004,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.devilBeamDamage, 85, v => update("devilBeamDamage", v), 5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Width (px)</label>
-        {numInput(turret.devilBeamWidth, 10, v => update("devilBeamWidth", v), 1)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Width (cm)</label>
+        {cmNumInput(turret.devilBeamWidth, 10, v => update("devilBeamWidth", v), 1)}
       </div>
     </div>
   );
@@ -3264,7 +3276,7 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
       </div>
     </div>
   );
-  if (t === "resurreccion") return (
+  if (t === "resurrección") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
@@ -3489,8 +3501,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "summon_enma") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Reach (px)</label>
-        {numInput(turret.summonEnmaReach, 300, v => update("summonEnmaReach", v), 20)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Reach (cm)</label>
+        {cmNumInput(turret.summonEnmaReach, 300, v => update("summonEnmaReach", v), 20)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Damage</label>
@@ -3542,8 +3554,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "mirror_world") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Offset (px)</label>
-        {numInput(turret.mirrorWorldOffsetPx, 180, v => update("mirrorWorldOffsetPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Offset (cm)</label>
+        {cmNumInput(turret.mirrorWorldOffsetPx, 180, v => update("mirrorWorldOffsetPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
@@ -3578,8 +3590,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "echo_image") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Offset (px)</label>
-        {numInput(turret.echoImageOffsetPx, 120, v => update("echoImageOffsetPx", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Offset (cm)</label>
+        {cmNumInput(turret.echoImageOffsetPx, 120, v => update("echoImageOffsetPx", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Decoy HP</label>
@@ -3590,8 +3602,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
   if (t === "genjutsu_veil") return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Drift/tick (px)</label>
-        {numInput(turret.genjutsuVeilDriftPx, 10, v => update("genjutsuVeilDriftPx", v), 1)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Drift/tick (cm)</label>
+        {cmNumInput(turret.genjutsuVeilDriftPx, 10, v => update("genjutsuVeilDriftPx", v), 1)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
@@ -3680,8 +3692,8 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
         {numInput(turret.bombBeyFuseSec, 4, v => update("bombBeyFuseSec", v), 0.5)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Radius (px)</label>
-        {numInput(turret.bombBeyRadius, 160, v => update("bombBeyRadius", v), 10)}
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Radius (cm)</label>
+        {cmNumInput(turret.bombBeyRadius, 160, v => update("bombBeyRadius", v), 10)}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 55 }}>Damage</label>
@@ -3726,6 +3738,100 @@ function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: 
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Impact Dmg</label>
         {numInput(turret.cannonBeyDamage, 120, v => update("cannonBeyDamage", v), 10)}
+      </div>
+    </div>
+  );
+
+  // ── Contra movement power-ups ─────────────────────────────────────────────
+  if (t === "speed_surge") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Speed×</label>
+        {numInput(turret.speedSurgeSpeedMult, 3.0, v => update("speedSurgeSpeedMult", v), 0.5)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
+        {numInput(turret.speedSurgeDurationSec, 2, v => update("speedSurgeDurationSec", v), 0.5)}
+      </div>
+    </div>
+  );
+  if (t === "gravity_flip") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Repel Force</label>
+        {numInput(turret.gravityFlipForce, 0.018, v => update("gravityFlipForce", v), 0.002)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
+        {numInput(turret.gravityFlipDurationSec, 3, v => update("gravityFlipDurationSec", v), 0.5)}
+      </div>
+    </div>
+  );
+  if (t === "magnet_bey") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Chase Force</label>
+        {numInput(turret.magnetBeyChaseForce, 0.015, v => update("magnetBeyChaseForce", v), 0.002)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
+        {numInput(turret.magnetBeyDurationSec, 2.5, v => update("magnetBeyDurationSec", v), 0.5)}
+      </div>
+    </div>
+  );
+  if (t === "bounce_storm") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Recoil Mult</label>
+        {numInput(turret.bounceStormRecoilMult, 3.0, v => update("bounceStormRecoilMult", v), 0.5)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
+        {numInput(turret.bounceStormDurationSec, 3, v => update("bounceStormDurationSec", v), 0.5)}
+      </div>
+    </div>
+  );
+  if (t === "freeze_step") return (
+    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Freeze (s)</label>
+      {numInput(turret.freezeStepDurationSec, 1.5, v => update("freezeStepDurationSec", v), 0.5)}
+    </div>
+  );
+  if (t === "ghost_walk") return (
+    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Duration (s)</label>
+      {numInput(turret.ghostWalkDurationSec, 2, v => update("ghostWalkDurationSec", v), 0.5)}
+    </div>
+  );
+  if (t === "boomerang_path") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Radius (cm)</label>
+        {cmNumInput(turret.boomerangOrbitRadius, 120, v => update("boomerangOrbitRadius", v), 10)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Speed °/s</label>
+        {numInput(turret.boomerangOrbitSpeed, 180, v => update("boomerangOrbitSpeed", v), 10)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Duration (s)</label>
+        {numInput(turret.boomerangDurationSec, 3, v => update("boomerangDurationSec", v), 0.5)}
+      </div>
+    </div>
+  );
+  if (t === "teleport_dash") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 55 }}>Blinks</label>
+        {numInput(turret.teleportDashCount, 3, v => update("teleportDashCount", v), 1)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Interval (s)</label>
+        {numInput(turret.teleportDashIntervalSec, 0.4, v => update("teleportDashIntervalSec", v), 0.1)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Blink Radius</label>
+        {numInput(turret.teleportDashRadius, 200, v => update("teleportDashRadius", v), 20)}
       </div>
     </div>
   );
@@ -3866,19 +3972,26 @@ export default function TurretsTab({ config, onChange }: Props) {
 
           {/* Common sliders */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            {COMMON_FIELDS.map(({ field, label, min, max, step }) => (
-              <div key={field}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
-                  <span>{label}</span>
-                  <span style={{ color: C.text, fontFamily: "monospace" }}>{(turret as any)[field] ?? 0}</span>
+            {COMMON_FIELDS.map(({ field, label, min, max, step, pxUnit }) => {
+              const raw = (turret as any)[field] ?? min;
+              const display = pxUnit ? Math.round(raw / PX_PER_CM_BASE * 10) / 10 : raw;
+              return (
+                <div key={field}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+                    <span>{label}</span>
+                    <span style={{ color: C.text, fontFamily: "monospace" }}>{pxUnit ? display.toFixed(1) : raw}</span>
+                  </div>
+                  <input type="range"
+                    min={pxUnit ? min / PX_PER_CM_BASE : min}
+                    max={pxUnit ? max / PX_PER_CM_BASE : max}
+                    step={pxUnit ? 0.5 : step}
+                    value={display}
+                    onChange={e => update(turret.id, field, pxUnit ? Math.round(+e.target.value * PX_PER_CM_BASE) : +e.target.value)}
+                    style={{ width: "100%", accentColor: C.red }}
+                  />
                 </div>
-                <input type="range" min={min} max={max} step={step}
-                  value={(turret as any)[field] ?? min}
-                  onChange={e => update(turret.id, field, +e.target.value)}
-                  style={{ width: "100%", accentColor: C.red }}
-                />
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Behavior override */}
@@ -3919,16 +4032,27 @@ export default function TurretsTab({ config, onChange }: Props) {
             />
           </div>
 
-          {/* Controlled-by-switch */}
-          <div style={{ marginBottom: 8 }}>
-            <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Controlled By Switch ID</label>
-            <input
-              type="text"
-              value={(turret as any).controlledBySwitchId ?? ""}
-              onChange={e => update(turret.id, "controlledBySwitchId" as any, e.target.value || undefined)}
-              placeholder="e.g. sw1"
-              style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
-            />
+          {/* Controlled-by-switch + trigger state */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 8 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Controlled By Switch ID</label>
+              <input
+                type="text"
+                value={(turret as any).controlledBySwitchId ?? ""}
+                onChange={e => update(turret.id, "controlledBySwitchId" as any, e.target.value || undefined)}
+                placeholder="e.g. sw1"
+                style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Initial State</label>
+              <SearchableSelect
+                value={(turret as any).triggerState ?? "on"}
+                options={[{ value: "on", label: "On (active)" }, { value: "off", label: "Off (inactive)" }]}
+                onChange={v => update(turret.id, "triggerState" as any, v as "on" | "off")}
+                style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+              />
+            </div>
           </div>
 
           {/* Rotation + Self-rotation */}

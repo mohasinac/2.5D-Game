@@ -1,4 +1,4 @@
-# Diagram: Camera Flow
+﻿# Diagram: Camera Flow
 
 > **Stage 0C Diagram 13** — Rule 12: GameplayEvent → CameraIntent → AutoDecision → CameraBehavior → PlayerOverride → FinalCamera.
 
@@ -104,4 +104,4 @@ flowchart TD
 | `-` | Zoom out |
 
 ---
-[? Arena Interaction](diagram-arena-interaction.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Data Flow ?](diagram-data-flow.md)
+[← Arena Interaction](diagram-arena-interaction.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Data Flow →](diagram-data-flow.md)

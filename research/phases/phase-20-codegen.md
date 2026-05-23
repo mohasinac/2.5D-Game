@@ -1,4 +1,4 @@
-# Phase 20 — Code Generation
+﻿# Phase 20 — Code Generation
 
 > Stage 20 | Source: phase-19-impl-plan.md (42 tasks + Block M addendum)
 > Purpose: Exact code for every file change, in dependency order.
@@ -1931,4 +1931,4 @@ for (const idx of pocketResult.escapedIndices) {
 ```
 
 ---
-[? Phase 19: Implementation Plan](phase-19-impl-plan.md) &nbsp;�&nbsp; [? Index](../INDEX.md)
+[← Phase 19: Implementation Plan](phase-19-impl-plan.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md)

@@ -1,4 +1,4 @@
-# Phase 10 — Arena Implementations
+﻿# Phase 10 — Arena Implementations
 
 > Stage 10 | Source: phase-09-arenas.md + shared/types/arenaConfigNew.ts + ArenaFeatureProcessor.ts
 
@@ -1208,4 +1208,4 @@ The seed script must:
 Source: `research/phases/phase-09-arenas.md`
 
 ---
-[? Phase 09: Arenas](phase-09-arenas.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 11: Architecture ?](phase-11-architecture.md)
+[← Phase 09: Arenas](phase-09-arenas.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 11: Architecture →](phase-11-architecture.md)

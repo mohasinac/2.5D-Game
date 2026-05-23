@@ -175,6 +175,18 @@ const SEEDERS = [
     collections: ["bey_link_configs"],
     description: "BeyLink + ArenaLink type catalog (9 categories, 43 entries)",
   },
+  {
+    name: "geometry",
+    script: "seed-geometry.js",
+    collections: ["geometry_defs"],
+    description: "16 standard geometry primitives (circles, rings, arcs, polygons, Fourier)",
+  },
+  {
+    name: "stat-defs",
+    script: "seed-stat-defs.js",
+    collections: ["stat_defs"],
+    description: "~35 typed stat definitions across beyblade / arena / part / match / modifier categories",
+  },
 ];
 
 // ── 4. Parse CLI flags ────────────────────────────────────────────────────────

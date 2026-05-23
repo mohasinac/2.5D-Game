@@ -1,8 +1,53 @@
-# Phase 04 — Combo / Trigger Mapping
+﻿# Phase 04 — Combo / Trigger Mapping
 
 > Stage 4 | Source: server/constants/combos.ts + server/utils/comboSystem.ts + server/utils/comboTaskCompiler.ts + shared/types/comboTask.ts + client/src/constants/combos.ts
 > Date: 2026-05-23
 > Analyst: Claude Code (claude-sonnet-4-6)
+
+---
+
+## Amendment — Session 18: Combos Use Pillar 1 (BehaviorDef)
+
+> See **[Phase 21 — Unified Foundation](phase-21-unified-foundation.md)** for the full spec.
+
+Combo effects are expressed as `effectRefs: MechanicInstance[]` on the combo doc, replacing `effectId` → `combo_effects` lookup. All 8 combos mapped to `effectRefs`:
+
+| ID | effectRefs |
+|----|-----------|
+| `quick-dash-l` | `velocity_burst(dir:"left", force:0.04, ticks:5)` |
+| `quick-dash-r` | `velocity_burst(dir:"right", force:0.04, ticks:5)` |
+| `guard-tap` | `defense_stance(ticks:40, reducBoost:0.2)` |
+| `feint` | `velocity_burst(dir:"retreat") + bearing_drift(ticks:10)` |
+| `riposte` | `attack_amplifier(mult:1.2, ticks:25) + velocity_burst(force:0.03)` |
+| `pivot-strike` | `velocity_burst(force:0.05) + attack_amplifier(mult:1.15, ticks:20)` |
+| `power-thrust` | `velocity_burst(force:0.07) + attack_amplifier(mult:1.25, ticks:20)` |
+| `spin-leech-jab` | `spin_transfer(stealFactor:0.25) + orbit_movement(radius:80)` |
+
+The `effectId` field is kept for backward compat but deprecated in favor of `effectRefs`. New combo effects are authored via the Behavior Panel in CombosPage — no code changes required.
+
+---
+
+### Shared-Types Canonicalization Note (session 15)
+
+`ComboTask`, `ComboEffectDef`, `BehaviorRef`, `ComboCondition`, `ComboVisual` are all in `shared/types/`:
+
+| Type | File |
+|------|------|
+| `ComboTask`, `ComboEffectDef`, `BehaviorRef`, `ComboCondition`, `BeybladeComboSlot` | `shared/types/comboTask.ts` |
+| `ComboVisual`, `ParticlePresetDoc` | `shared/types/comboVisual.ts` |
+
+`BeybladeStats.comboSlots?: BeybladeComboSlot[]` replaces the legacy `enabledCombos?: string[]` field. The admin form still writes to legacy `comboIds` (array of registry IDs) — the migration to `comboSlots` with `effectId` references is outstanding (gap #6 in Current Work).
+
+### Arena-Level QTE Modifiers (session 13)
+
+Two new `ArenaConfig` fields (exposed in BasicsTab → Physics & Gameplay) directly gate the combo system:
+
+| Field | Combo system effect |
+|-------|-------------------|
+| `qteEnabled: false` | `comboSystem.detectCombo()` short-circuits immediately — no combo can fire regardless of bey opt-in. All 8 seeded combos are inactive. |
+| `qteWindowScaling: "flat"` | Override: victim always has 60 ticks to respond. `"by_cost"` (default) = `max(20, 60 - cost)` — more costly combos give the victim less time to react. |
+
+The `on_low_spin` multi-threshold edge-state bug (see §2 below) is unaffected by these fields.
 
 ---
 
@@ -12,21 +57,22 @@ All 8 combos are defined in `server/constants/combos.ts` and mirrored (display-o
 
 | ID | Sequence | Cost | Type | effectId | Status | Notes |
 |----|----------|------|------|----------|--------|-------|
-| `quick-dash-l` | ←←J | 0 | universal | **MISSING** | Broken — no effectId | dashDirection: left, durationMs: 300, lockMs: 0 |
-| `quick-dash-r` | →→J | 0 | universal | **MISSING** | Broken — no effectId | dashDirection: right, durationMs: 300, lockMs: 0 |
-| `guard-tap` | KKK | 0 | universal | **MISSING** | Broken — no effectId | damageMultiplier: 1.0, durationMs: 250, lockMs: 0 (pure guard, no offense) |
-| `feint` | ←→K | 0 | universal | **MISSING** | Broken — no effectId | dashDirection: back, durationMs: 200, lockMs: 0 |
-| `riposte` | KKJ | 15 | defense | **MISSING** | Broken — no effectId | damageMultiplier: 1.3, durationMs: 600, lockMs: 200 |
-| `pivot-strike` | ←→J | 15 | balanced | **MISSING** | Broken — no effectId | damageMultiplier: 1.25, durationMs: 500, lockMs: 200 |
-| `power-thrust` | JJJ | 25 | universal | **MISSING** | Broken — no effectId | damageMultiplier: 1.5, durationMs: 800, lockMs: 300 |
-| `spin-leech-jab` | ←J→ | 35 | stamina | **MISSING** | Broken — no effectId | damageMultiplier: 1.1, spinStealBonus: 0.08, microSpinBoost: 30, durationMs: 800, lockMs: 200 |
+| `quick-dash-l` | ←←J | 0 | universal | `quick-dash-l` | ✅ Wired | dashDirection: left, durationMs: 300, lockMs: 0 |
+| `quick-dash-r` | →→J | 0 | universal | `quick-dash-r` | ✅ Wired | dashDirection: right, durationMs: 300, lockMs: 0 |
+| `guard-tap` | KKK | 0 | universal | `guard-tap` | ✅ Wired | damageMultiplier: 1.0, durationMs: 250, lockMs: 0 (pure guard, no offense) |
+| `feint` | ←→K | 0 | universal | `feint` | ✅ Wired | dashDirection: back, durationMs: 200, lockMs: 0 |
+| `riposte` | KKJ | 15 | defense | `riposte` | ✅ Wired | damageMultiplier: 1.3, durationMs: 600, lockMs: 200 |
+| `pivot-strike` | ←→J | 15 | balanced | `pivot-strike` | ✅ Wired | damageMultiplier: 1.25, durationMs: 500, lockMs: 200 |
+| `power-thrust` | JJJ | 25 | universal | `power-thrust` | ✅ Wired | damageMultiplier: 1.5, durationMs: 800, lockMs: 300 |
+| `spin-leech-jab` | ←J→ | 35 | stamina | `spin-leech` | ✅ Wired | damageMultiplier: 1.1, spinStealBonus: 0.08, microSpinBoost: 30, durationMs: 800, lockMs: 200 |
 
-**Critical gap:** The `Combo` interface in `server/constants/combos.ts` (and the `ComboDisplay` mirror in the client) has NO `effectId` field. Every combo carries an inline `ComboEffect` object but is not linked to a `ComboEffectDef` document in Firestore via `effectId: string`. This means:
+**Resolution (Sessions 16–17):**
 
-1. The new `BeybladeComboSlot.effectId` path (`shared/types/comboTask.ts`) cannot reference any of the 8 seeded combos.
-2. `detectComboFromSlots()` in `comboSystem.ts` requires slots to have an `effectId` — the legacy registry provides none.
-3. `BeyComboMatchState.slotCooldownUntil` and `comboSlotsFiredSet` are keyed by `effectId`, which does not exist on legacy combos.
-4. The `combo_effects` Firestore collection (implied by `BeybladeComboSlot.effectId` referencing it) has no seed data for any of the 8 registry combos.
+- `Combo.effectId?: string` was added to `server/constants/combos.ts` (the interface already had the field; values were absent). All 8 registry entries now carry their `effectId` inline — `getComboById(id).effectId` returns a valid ID.
+- `scripts/seed-combo-effects.js` was created and seeds 14 `ComboEffectDef` documents (8 registry + 6 extended effects: `chaos-field`, `power-burst`, `chaos-gambit`, `meteor-strike`, `glacial-siege`, `shadow-shroud`).
+- `scripts/seed-combos.js` maps `effectId` via `COMBO_EFFECT_IDS` table — Firestore `combos` docs have `effectId` on save/seed.
+- `CombosPage.tsx` exposes `effectId?: string` in `ComboDoc`, EMPTY state, `openEdit`, `handleSave`, and form UI (text input with hint) — admins can set it manually.
+- The admin form on `BeybladeEditPage.tsx` still writes `comboIds: string[]` (legacy). Migration to `comboSlots: BeybladeComboSlot[]` remains as a future enhancement only — the existing `detectCombo()` path works end-to-end via the inline `ComboEffect` objects.
 
 ---
 
@@ -306,4 +352,64 @@ Applying to all 8 registry combos:
 - `spin-leech-jab` → `spin_steal` (spinStealBonus: 0.08 > 0; checked before damage_boost)
 
 ---
-[? Phase 03: Special Move ? Bey Map](phase-03-specialmove-bey-map.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 05: Parts ?](phase-05-parts.md)
+
+## Appendix C — Turret Attack System vs BehaviorRef Namespace
+
+The turret attack system (`TurretAttackType` union, ~175+ entries as of session 12) is a **parallel dispatch system** that overlaps conceptually with BehaviorRef but is architecturally distinct.
+
+### Relationship to BehaviorRef
+
+| Property | Combo BehaviorRef | Turret Attack |
+|---|---|---|
+| Dispatch key | `behaviorId` string (e.g. `"movement.dash_to"`) | `attackType` string (e.g. `"kamehameha"`) |
+| Compiled by | `comboTaskCompiler.ts` at admin-save time | Directly dispatched at runtime in `TurretProcessor.ts` |
+| Handler location | Unknown — `BehaviorRef` handlers not found | Exported functions in `TurretProcessor.ts` |
+| State tracking | `BeyComboMatchState` per-bey in room | `TurretRuntimeState` per-turret in room |
+| Triggered by | Bey input sequence (3-key window) | Arena turret attacking a bey |
+| Target | Self (primarily), sometimes opponent | Bey(s) in turret range |
+| Player agency | Player chooses when to input sequence | Automatic — turret fires on cooldown |
+
+### Turret attack taxonomy (session 11+12 — 175+ types)
+
+| Category | Count | Physics Pattern |
+|---|---|---|
+| Projectile (basic) | 10 | Physics body fired at target |
+| AoE blast | 15 | Radius check, falloff damage + knockback |
+| Beam line | 12 | Axis-projection intersection test |
+| Timed debuff | 25 | `runtimeState.*UntilMs` + tick processor restores |
+| Seeking/homing | 8 | Per-tick angle correction toward target |
+| Ghost/illusion | 12 | Schema position override (`bey.x/y` set to false coords) |
+| Buff on bey | 12 | `(bey as any)._xxx` flag, checked in collision handler |
+| AoE field (persistent) | 20 | Per-tick radius check while `*UntilMs` active |
+| Multi-target | 10 | Loop all beys, apply per-bey |
+| Contro bey (power-up) | 8 | Mark bey with `(bey as any)._xxx` buff; bey IS the weapon |
+| Summon/spawn | 8 | Create projectile or spawn child entity |
+| Transformation | 15 | Set `(bey as any)._speedScale/_collisionDamageMult/_radiusScale` |
+| Drain/leeching | 12 | Per-tick health/spin subtraction on target |
+| Environmental | 8 | Modify arena physics globally |
+
+### Ghost/Illusion pattern (key session 11-12 addition)
+
+Illusion moves exploit Colyseus schema sync: writing false coordinates to `bey.x/y` (schema fields) causes all clients to render at the wrong position. Physics continues at true Matter.js body position via the bridge. On expiry, `_realX/Y` values are restored.
+
+Four illusion variants implemented:
+- **`kyoka_suigetsu`** — random ghost offset for all beys, drifts each tick
+- **`mirror_world`** — larger random ghost offsets, drifts each tick
+- **`genjutsu_veil`** — smaller drift per tick, longer duration
+- **`mind_fracture`** — ghost position + `_mindFractureInvertInputs` flag (controls inversion)
+- **`perfect_mirage`** — sets target `isActive = false` so client renders nothing
+
+### Contra bey power-up pattern (session 12)
+
+Bey IS the weapon — turret gives the bey a buff that changes its collision/movement behavior:
+- `spread_bey` — `(bey as any)._spreadBeyCount` → on next collision fan into N vectors
+- `railbey` — `(bey as any)._railbeyActive` + runtime `railbeyUntilMs` → turbo-speed + pierce
+- `minigun_bey` — runtime pulse loop fires rapid damage from shooter to nearest bey
+- `heat_seeker_bey` — instant ram at nearest opponent with high force
+- `bomb_bey` — runtime fuse timer; on detonation AoE at bey's position
+- `shield_bey` — sets `target.invulnerable = true`, `_shieldBeyHp = 1` for 1-hit absorb
+- `turbo_bey` — `_turboSpeedMult/_turboCollisionMult` boost for duration
+- `cannon_bey` — `applyKnockback` toward furthest opponent at 3000 force units
+
+---
+[← Phase 03: Special Move → Bey Map](phase-03-specialmove-bey-map.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 05: Parts →](phase-05-parts.md)

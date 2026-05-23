@@ -1,4 +1,4 @@
-# Diagram: Tool Ecosystem — Admin → DB → Compiler → Runtime
+﻿# Diagram: Tool Ecosystem — Admin → DB → Compiler → Runtime
 
 > **Stage 0C Diagram 10** — Rule 9 audit output: how admin tools connect to the engine.
 
@@ -126,4 +126,4 @@ flowchart LR
 | Audio Profiles | audio_profiles | ❌ NOT BUILT — SoundAssetsPage is upload-only |
 
 ---
-[? Tilt Angle](diagram-tilt-angle.md) &nbsp;�&nbsp; [? Index](../INDEX.md)
+[← Tilt Angle](diagram-tilt-angle.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md)

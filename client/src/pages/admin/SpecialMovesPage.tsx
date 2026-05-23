@@ -4,6 +4,7 @@ import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGameDataStore, type SpecialMoveDoc } from "@/stores/gameDataStore";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { C } from "@/styles/theme";
+import { PX_PER_CM_BASE } from "@/constants/units";
 import toast from "react-hot-toast";
 
 const KIND_OPTIONS = [
@@ -24,8 +25,23 @@ function slugify(s: string) {
   return s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
 }
 
+interface MechanicInstance {
+  mechanicId: string;
+  params?: Record<string, unknown>;
+  condition?: string;
+  duration?: number;
+  priority?: number;
+  sourceLabel?: string;
+}
+
+function tryParseJson(s: string): unknown[] | null {
+  try { const v = JSON.parse(s); return Array.isArray(v) ? v : null; } catch { return null; }
+}
+
 const EMPTY_EFFECTS = { linearImpulse: 0, spinDelta: 0, invulnerabilityMs: 0, spinStealRadiusPx: 0, aoeRadiusPx: 0, knockbackImpulse: 0 };
-const EMPTY = { name: "", kind: "attack", iconEmoji: "⚡", cooldownSec: 15, durationMs: 1500, description: "", isDefault: false, type: "attack", flashColor: "#ffffff", effects: { ...EMPTY_EFFECTS } };
+const EMPTY = { name: "", kind: "attack", iconEmoji: "⚡", cooldownSec: 15, durationMs: 1500, description: "", isDefault: false, type: "attack", flashColor: "#ffffff", effects: { ...EMPTY_EFFECTS }, mechanicRefsJson: "[]" };
+
+type SpecialMoveDocWithMechanicRefs = SpecialMoveDoc & { mechanicRefs?: MechanicInstance[] };
 
 const inputStyle: React.CSSProperties = {
   width: "100%", padding: "8px 10px", background: C.bg0,
@@ -38,6 +54,7 @@ export function SpecialMovesPage() {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<SpecialMoveDoc | null>(null);
   const [form, setForm] = useState<typeof EMPTY>({ ...EMPTY, effects: { ...EMPTY_EFFECTS } });
+  const [mechanicRefsError, setMechanicRefsError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<SpecialMoveDoc | null>(null);
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
@@ -56,29 +73,35 @@ export function SpecialMovesPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const openCreate = () => { setEditing(null); setForm({ ...EMPTY, effects: { ...EMPTY_EFFECTS } }); setShowModal(true); };
+  const openCreate = () => { setEditing(null); setForm({ ...EMPTY, effects: { ...EMPTY_EFFECTS } }); setMechanicRefsError(""); setShowModal(true); };
   const openEdit = (item: SpecialMoveDoc) => {
     setEditing(item);
+    const ext = item as SpecialMoveDocWithMechanicRefs;
     setForm({
       name: item.name, kind: item.kind, iconEmoji: item.iconEmoji,
       cooldownSec: item.cooldownSec, durationMs: item.durationMs,
       description: item.description ?? "", isDefault: item.isDefault ?? false,
       type: item.type ?? "attack", flashColor: item.flashColor ?? "#ffffff",
       effects: { ...EMPTY_EFFECTS, ...((item as any).effects ?? {}) },
+      mechanicRefsJson: ext.mechanicRefs ? JSON.stringify(ext.mechanicRefs, null, 2) : "[]",
     });
+    setMechanicRefsError("");
     setShowModal(true);
   };
 
   const handleSave = async () => {
     if (!form.name.trim()) { toast.error("Name is required"); return; }
+    const mechanicRefs = tryParseJson(form.mechanicRefsJson);
+    if (mechanicRefs === null) { toast.error("Mechanic Refs JSON must be a valid array"); return; }
     setSaving(true);
     try {
-      const data = {
+      const data: Record<string, unknown> = {
         name: form.name.trim(), kind: form.kind, iconEmoji: form.iconEmoji,
         cooldownSec: form.cooldownSec, durationMs: form.durationMs,
         description: form.description.trim(), isDefault: form.isDefault,
         type: form.type, flashColor: form.flashColor, effects: form.effects,
       };
+      if (mechanicRefs.length > 0) data.mechanicRefs = mechanicRefs;
       const id = editing ? editing.id : slugify(form.name) || `move-${Date.now()}`;
       await setDoc(doc(db, COLLECTIONS.SPECIAL_MOVES, id), data);
       invalidate("specialMoves");
@@ -195,23 +218,41 @@ export function SpecialMovesPage() {
               <div style={{ fontSize: 12, fontWeight: 600, color: C.muted, marginBottom: 12 }}>Physics Effects</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 {([
-                  ["Linear Impulse (0–10000)", "linearImpulse", 0, 10000, 100],
-                  ["Spin Delta (−500–500)", "spinDelta", -500, 500, 10],
-                  ["Invulnerability (ms)", "invulnerabilityMs", 0, 3000, 100],
-                  ["Spin Steal Radius (px)", "spinStealRadiusPx", 0, 400, 10],
-                  ["AoE Radius (px)", "aoeRadiusPx", 0, 400, 10],
-                  ["Knockback Impulse", "knockbackImpulse", 0, 5000, 50],
-                ] as const).map(([label, field, min, max, step]) => (
-                  <label key={field} style={{ display: "block" }}>
-                    <span style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 3 }}>{label}</span>
-                    <input type="number" min={min} max={max} step={step}
-                      value={(form.effects as any)[field] ?? 0}
-                      onChange={e => setForm(f => ({ ...f, effects: { ...f.effects, [field]: Number(e.target.value) } }))}
-                      style={{ ...inputStyle, padding: "6px 8px", fontSize: 12 }} />
-                  </label>
-                ))}
+                  ["Linear Impulse (0–10000)", "linearImpulse", 0, 10000, 100, false],
+                  ["Spin Delta (−500–500)", "spinDelta", -500, 500, 10, false],
+                  ["Invulnerability (ms)", "invulnerabilityMs", 0, 3000, 100, false],
+                  ["Spin Steal Radius (cm)", "spinStealRadiusPx", 0, 16.5, 0.5, true],
+                  ["AoE Radius (cm)", "aoeRadiusPx", 0, 16.5, 0.5, true],
+                  ["Knockback Impulse", "knockbackImpulse", 0, 5000, 50, false],
+                ] as [string, string, number, number, number, boolean][]).map(([label, field, min, max, step, isPx]) => {
+                  const rawVal = (form.effects as any)[field] ?? 0;
+                  const displayVal = isPx ? Math.round(rawVal / PX_PER_CM_BASE * 10) / 10 : rawVal;
+                  return (
+                    <label key={field} style={{ display: "block" }}>
+                      <span style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 3 }}>{label}</span>
+                      <input type="number" min={min} max={max} step={step}
+                        value={displayVal}
+                        onChange={e => setForm(f => ({ ...f, effects: { ...f.effects, [field]: isPx ? Math.round(Number(e.target.value) * PX_PER_CM_BASE) : Number(e.target.value) } }))}
+                        style={{ ...inputStyle, padding: "6px 8px", fontSize: 12 }} />
+                    </label>
+                  );
+                })}
               </div>
             </div>
+
+            <label style={{ display: "block", marginBottom: 14 }}>
+              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
+                Mechanic Refs (MechanicInstance[]) — JSON array
+                {mechanicRefsError && <span style={{ color: "#e74c3c", marginLeft: 8 }}>{mechanicRefsError}</span>}
+              </span>
+              <textarea
+                value={form.mechanicRefsJson}
+                onChange={e => { setForm(f => ({ ...f, mechanicRefsJson: e.target.value })); setMechanicRefsError(tryParseJson(e.target.value) === null ? "Must be a JSON array" : ""); }}
+                rows={4}
+                style={{ ...inputStyle, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
+                placeholder={'[\n  { "mechanicId": "attack_amplifier", "params": { "multiplier": 1.3 }, "duration": 1000 }\n]'}
+              />
+            </label>
 
             <label style={{ display: "block", marginBottom: 14 }}>
               <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>

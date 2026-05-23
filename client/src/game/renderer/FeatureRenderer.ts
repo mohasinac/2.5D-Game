@@ -385,7 +385,7 @@ const TURRET_COLORS: Record<string, number> = {
   flying_thunder_god:  0xffff22,
   rasenshuriken:       0x88ccff,
   odama_rasengan:      0x3399ff,
-  sage_mode:           0x557733,
+  sage_mode_naruto:    0x557733,
   // Eight Gates
   eight_gates_release: 0xff2200,
   evening_elephant:    0xff4400,
@@ -420,6 +420,15 @@ const TURRET_COLORS: Record<string, number> = {
   shield_bey:          0x00ff88,
   turbo_bey:           0xff2244,
   cannon_bey:          0xddaa00,
+  // Contra movement power-ups
+  speed_surge:         0x44ffee,
+  gravity_flip:        0xff44cc,
+  magnet_bey:          0x4488ff,
+  bounce_storm:        0xffaa44,
+  freeze_step:         0x88ccff,
+  ghost_walk:          0xddeeff,
+  boomerang_path:      0x44cc88,
+  teleport_dash:       0xcc44ff,
 };
 
 const DIRECTIONAL_ZONE_COLORS: Record<string, number> = {
@@ -1895,6 +1904,59 @@ export class FeatureRenderer {
         const alpha = 0.8 + 0.2 * Math.sin(t2);
         g.circle(x, y, 8).fill({ color: 0xddaa00, alpha });
         g.circle(x, y, 14).stroke({ color: 0xffcc44, width: 2, alpha: alpha * 0.6 });
+      } else if (p.type === "speed_surge_trail") {
+        // Speed Surge — cyan speed lines radiating outward
+        const t2 = Date.now() / 100;
+        const alpha = 0.7 + 0.3 * Math.sin(t2);
+        for (let i = 0; i < 4; i++) {
+          const ang = (i * Math.PI / 2) + t2 * 0.3;
+          g.moveTo(x, y).lineTo(x + Math.cos(ang) * 18, y + Math.sin(ang) * 18);
+          g.stroke({ color: 0x44ffee, width: 2, alpha });
+        }
+        g.circle(x, y, 5).fill({ color: 0x44ffee, alpha: 0.9 });
+      } else if (p.type === "gravity_flip_field") {
+        // Gravity Flip — outward pink force ring
+        const t2 = Date.now() / 400;
+        const alpha = 0.4 + 0.2 * Math.sin(t2);
+        const r2 = (p.radius ?? 22) * (1 + 0.15 * Math.sin(t2 * 1.5));
+        g.circle(x, y, r2).stroke({ color: 0xff44cc, width: 2, alpha });
+        g.circle(x, y, 5).fill({ color: 0xff44cc, alpha: 0.8 });
+      } else if (p.type === "magnet_chase") {
+        // Magnet Bey — blue magnetic field lines
+        const t2 = Date.now() / 300;
+        const alpha = 0.6 + 0.2 * Math.sin(t2);
+        g.circle(x, y, p.radius ?? 18).stroke({ color: 0x4488ff, width: 2, alpha });
+        g.circle(x, y, 5).fill({ color: 0x4488ff, alpha: 0.9 });
+      } else if (p.type === "bounce_aura") {
+        // Bounce Storm — orange bouncing rings
+        const t2 = Date.now() / 200;
+        const alpha = 0.5 + 0.4 * Math.abs(Math.sin(t2));
+        const r2 = (p.radius ?? 20) * (0.7 + 0.3 * Math.abs(Math.sin(t2)));
+        g.circle(x, y, r2).stroke({ color: 0xffaa44, width: 3, alpha });
+      } else if (p.type === "freeze_block") {
+        // Freeze Step — blue ice crystal frame
+        const r2 = p.radius ?? 16;
+        g.rect(x - r2, y - r2, r2 * 2, r2 * 2).stroke({ color: 0x88ccff, width: 2, alpha: 0.85 });
+        g.rect(x - r2 + 4, y - r2 + 4, r2 * 2 - 8, r2 * 2 - 8).stroke({ color: 0xccddff, width: 1, alpha: 0.5 });
+      } else if (p.type === "ghost_walk_aura") {
+        // Ghost Walk — white wispy transparency rings
+        const t2 = Date.now() / 500;
+        const alpha = 0.1 + 0.1 * Math.sin(t2);
+        g.circle(x, y, (p.radius ?? 22) + 6).fill({ color: 0xddeeff, alpha });
+        g.circle(x, y, p.radius ?? 22).stroke({ color: 0xffffff, width: 1, alpha: 0.3 });
+      } else if (p.type === "boomerang_orbit") {
+        // Boomerang Path — green curved orbit indicator
+        const t2 = Date.now() / 300;
+        const alpha = 0.7 + 0.2 * Math.sin(t2);
+        g.arc(x, y, p.radius ?? 16, 0, Math.PI * 1.5);
+        g.stroke({ color: 0x44cc88, width: 2, alpha });
+        g.circle(x, y, 4).fill({ color: 0x44cc88, alpha: 0.9 });
+      } else if (p.type === "teleport_blink") {
+        // Teleport Dash — purple flash burst on blink
+        const t2 = Date.now() / 150;
+        const alpha = 0.9 - (t2 % 1) * 0.8;
+        g.circle(x, y, (p.radius ?? 16) * (1 + (t2 % 1))).stroke({ color: 0xcc44ff, width: 2, alpha: alpha });
+        g.circle(x, y, 5).fill({ color: 0xcc44ff, alpha: 0.95 });
       } else {
         g.circle(x, y, 5).fill({ color, alpha: 0.95 });
         g.circle(x, y, 5).stroke({ color: 0xffffff, width: 1, alpha: 0.4 });

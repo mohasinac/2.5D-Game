@@ -43,6 +43,8 @@
     "seed:bey-link-configs": "node scripts/seed-all.js --only bey-link-configs",
     "seed:mechanics": "node scripts/seed-all.js --only mechanics",
     "seed:gimmicks": "node scripts/seed-all.js --only gimmicks",
+    "seed:geometry": "node scripts/seed-all.js --only geometry",
+    "seed:stat-defs": "node scripts/seed-all.js --only stat-defs",
     "clear": "node scripts/seed-all.js --clear",
     "clear:all": "node scripts/seed-all.js --clear",
     "reseed": "node scripts/seed-all.js --reseed",

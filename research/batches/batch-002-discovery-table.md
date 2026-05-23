@@ -1,4 +1,4 @@
----
+﻿---
 batch: 002
 stage: 0B
 status: complete
@@ -150,4 +150,4 @@ Discovery Table for Stage 0B — consolidates all engine capabilities and gaps f
 | ArenaConfig.shrink admin UI | Whether shrink config (startMs, endMs, minRadiusFraction) is exposed in ArenaConfigurator | Search ArenaConfigurator for shrink | MED |
 
 ---
-[? Batch 001: Schema Catalog](batch-001-schema-catalog.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Batch 003: Engine Capability Summary ?](batch-003-engine-capability-summary.md)
+[← Batch 001: Schema Catalog](batch-001-schema-catalog.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Batch 003: Engine Capability Summary →](batch-003-engine-capability-summary.md)

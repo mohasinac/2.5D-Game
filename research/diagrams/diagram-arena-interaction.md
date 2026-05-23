@@ -1,4 +1,4 @@
-# Diagram: Arena Interaction
+﻿# Diagram: Arena Interaction
 
 > **Stage 0C Diagram 4** — Arena Config → Hazards → Mechanics → Modifiers → Beyblade.
 
@@ -121,4 +121,4 @@ flowchart TD
 | Floor hazard zones | ✅ | N/A | Complete |
 
 ---
-[? Index](../INDEX.md) &nbsp;�&nbsp; [Camera Flow ?](diagram-camera-flow.md)
+[↑ Index](../INDEX.md) &nbsp;�&nbsp; [Camera Flow →](diagram-camera-flow.md)

@@ -17,6 +17,15 @@ interface ComboEffect {
   microSpinBoost?: number;
 }
 
+interface MechanicInstance {
+  mechanicId: string;
+  params?: Record<string, unknown>;
+  condition?: string;
+  duration?: number;
+  priority?: number;
+  sourceLabel?: string;
+}
+
 interface ComboDoc {
   id: string;
   name: string;
@@ -26,7 +35,9 @@ interface ComboDoc {
   description: string;
   cooldownMs: number;
   windowMs?: number;
+  effectId?: string;
   effect?: ComboEffect;
+  effectRefs?: MechanicInstance[];
 }
 
 const KEY_OPTIONS = (Object.keys(KEY_LABEL) as ComboKey[]).map(k => ({
@@ -53,11 +64,16 @@ function slugify(s: string) {
   return s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
 }
 
+function tryParseJson(s: string): unknown[] | null {
+  try { const v = JSON.parse(s); return Array.isArray(v) ? v : null; } catch { return null; }
+}
+
 const EMPTY = {
   name: "", sequence: ["moveLeft", "moveRight", "attack"] as [string,string,string],
   cost: 0, type: "universal", description: "", cooldownMs: 1200,
-  windowMs: 400,
+  windowMs: 400, effectId: "",
   effect: { damageMultiplier: 1.0, dashDirection: "none", forceImpulse: 0, durationMs: 0, lockMs: 0, spinStealBonus: 0, microSpinBoost: 0 },
+  effectRefsJson: "[]",
 };
 
 const DASH_DIRS = [
@@ -78,6 +94,7 @@ export function CombosPage() {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<ComboDoc | null>(null);
   const [form, setForm] = useState<typeof EMPTY>({ ...EMPTY, effect: { ...EMPTY.effect } });
+  const [effectRefsError, setEffectRefsError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<ComboDoc | null>(null);
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
@@ -96,25 +113,30 @@ export function CombosPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const openCreate = () => { setEditing(null); setForm({ ...EMPTY, effect: { ...EMPTY.effect } }); setShowModal(true); };
+  const openCreate = () => { setEditing(null); setForm({ ...EMPTY, effect: { ...EMPTY.effect } }); setEffectRefsError(""); setShowModal(true); };
   const openEdit = (item: ComboDoc) => {
     setEditing(item);
     setForm({
       name: item.name,
       sequence: [item.sequence[0] ?? "moveLeft", item.sequence[1] ?? "moveRight", item.sequence[2] ?? "attack"],
       cost: item.cost, type: item.type, description: item.description ?? "", cooldownMs: item.cooldownMs,
-      windowMs: item.windowMs ?? 400,
+      windowMs: item.windowMs ?? 400, effectId: item.effectId ?? "",
       effect: { ...EMPTY.effect, ...(item.effect ?? {}) },
+      effectRefsJson: item.effectRefs ? JSON.stringify(item.effectRefs, null, 2) : "[]",
     });
+    setEffectRefsError("");
     setShowModal(true);
   };
 
   const handleSave = async () => {
     if (!form.name.trim()) { toast.error("Name is required"); return; }
     if (form.sequence.some(k => !k)) { toast.error("All 3 keys are required"); return; }
+    const effectRefs = tryParseJson(form.effectRefsJson);
+    if (effectRefs === null) { toast.error("Effect Refs JSON must be a valid array"); return; }
     setSaving(true);
     try {
-      const data = { name: form.name.trim(), sequence: form.sequence, cost: form.cost, type: form.type, description: form.description.trim(), cooldownMs: form.cooldownMs, windowMs: form.windowMs, effect: form.effect };
+      const data: Record<string, unknown> = { name: form.name.trim(), sequence: form.sequence, cost: form.cost, type: form.type, description: form.description.trim(), cooldownMs: form.cooldownMs, windowMs: form.windowMs, effectId: form.effectId.trim() || undefined, effect: form.effect };
+      if (effectRefs.length > 0) data.effectRefs = effectRefs;
       const id = editing ? editing.id : slugify(form.name) || `combo-${Date.now()}`;
       await setDoc(doc(db, COLLECTIONS.COMBOS, id), data);
       invalidate("combos");
@@ -232,6 +254,12 @@ export function CombosPage() {
               </label>
             </div>
 
+            <label style={{ display: "block", marginBottom: 14 }}>
+              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Effect ID <span style={{ color: C.faint, fontWeight: 400 }}>(optional — links to combo_effects collection)</span></span>
+              <input value={form.effectId} onChange={e => setForm(f => ({ ...f, effectId: e.target.value }))}
+                placeholder="e.g. quick-dash-l-effect" style={inputStyle} />
+            </label>
+
             <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, padding: 14, marginBottom: 14 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: C.muted, marginBottom: 12 }}>Combat Effect</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -267,6 +295,20 @@ export function CombosPage() {
                 </div>
               </div>
             </div>
+
+            <label style={{ display: "block", marginBottom: 14 }}>
+              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
+                Effect Refs (MechanicInstance[]) — JSON array
+                {effectRefsError && <span style={{ color: "#e74c3c", marginLeft: 8 }}>{effectRefsError}</span>}
+              </span>
+              <textarea
+                value={form.effectRefsJson}
+                onChange={e => { setForm(f => ({ ...f, effectRefsJson: e.target.value })); setEffectRefsError(tryParseJson(e.target.value) === null ? "Must be a JSON array" : ""); }}
+                rows={4}
+                style={{ ...inputStyle, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
+                placeholder={'[\n  { "mechanicId": "velocity_burst", "params": { "forceX": 0.12 } }\n]'}
+              />
+            </label>
 
             <label style={{ display: "block", marginBottom: 20 }}>
               <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>

@@ -1,4 +1,4 @@
-# Phase 13 — Controls / Camera / Audio
+﻿# Phase 13 — Controls / Camera / Audio
 
 > Stage 13 | Source: useGameInput.ts + CameraControls.tsx + HUD components
 
@@ -241,4 +241,4 @@ interface AudioProfile {
 | Input replay / record infrastructure | Low | High | Deterministic uint16 heartbeat design supports this; no current use case |
 
 ---
-[? Phase 12: Seed Plan](phase-12-seed-plan.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 14: Game Modes ?](phase-14-game-modes.md)
+[← Phase 12: Seed Plan](phase-12-seed-plan.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 14: Game Modes →](phase-14-game-modes.md)

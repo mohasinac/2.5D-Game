@@ -1,4 +1,4 @@
-# Diagram: Mode Flow — Trigger → Config → Stats → Mechanics → Runtime
+﻿# Diagram: Mode Flow — Trigger → Config → Stats → Mechanics → Runtime
 
 > **Stage 0C Diagram 3** — Mode change pipeline (Rule 4 Mode Change Research Rule).
 
@@ -73,4 +73,4 @@ The `modeSwitch` handler in MechanicRegistry applies `resolveTipStats()` and `ac
 | Split bey | special move | isSplit=true, splitBodyX/Y set | 2 independent physics bodies | dual Matter.js bodies |
 
 ---
-[? Mechanics](diagram-mechanics.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Presentation Flow ?](diagram-presentation-flow.md)
+[← Mechanics](diagram-mechanics.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Presentation Flow →](diagram-presentation-flow.md)

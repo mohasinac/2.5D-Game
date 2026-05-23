@@ -180,16 +180,52 @@ export default function BasicsTab({ config, onChange }: Props) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      {/* Name */}
-      <div>
-        <label style={S.label}>Arena Name</label>
-        <input
-          type="text"
-          value={config.name ?? ""}
-          onChange={e => onChange({ name: e.target.value })}
-          style={S.input}
-          placeholder="e.g. Classic Stadium"
-        />
+      {/* Name + Description */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <div>
+          <label style={S.label}>Arena Name</label>
+          <input
+            type="text"
+            value={config.name ?? ""}
+            onChange={e => onChange({ name: e.target.value })}
+            style={S.input}
+            placeholder="e.g. Classic Stadium"
+          />
+        </div>
+        <div>
+          <label style={S.label}>Description</label>
+          <textarea
+            value={config.description ?? ""}
+            onChange={e => onChange({ description: e.target.value })}
+            rows={2}
+            style={{ ...S.input, resize: "vertical" as const, fontFamily: "inherit" }}
+            placeholder="Optional arena description…"
+          />
+        </div>
+        <div>
+          <label style={S.label}>Difficulty</label>
+          <div style={{ display: "flex", gap: 6 }}>
+            {(["easy", "medium", "hard", "extreme"] as const).map(d => {
+              const active = (config.difficulty ?? "medium") === d;
+              const colors: Record<string, string> = { easy: "#22c55e", medium: "#3b82f6", hard: "#f97316", extreme: "#ef4444" };
+              return (
+                <button
+                  key={d}
+                  onClick={() => onChange({ difficulty: d })}
+                  style={{
+                    flex: 1, padding: "6px 4px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer",
+                    textTransform: "capitalize",
+                    background: active ? `${colors[d]}22` : "transparent",
+                    color: active ? colors[d] : C.muted,
+                    border: `1px solid ${active ? colors[d] : C.border}`,
+                  }}
+                >
+                  {d}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Size */}
@@ -670,6 +706,165 @@ export default function BasicsTab({ config, onChange }: Props) {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Physics / Gameplay */}
+      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 14 }}>
+          Physics &amp; Gameplay
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {/* Stamina drain */}
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+              <span>Stamina Drain Multiplier</span>
+              <span style={{ color: C.text, fontFamily: "monospace" }}>{(config.staminaDrainMultiplier ?? 1).toFixed(2)}×</span>
+            </div>
+            <input
+              type="range" min={25} max={400} step={5}
+              value={Math.round((config.staminaDrainMultiplier ?? 1) * 100)}
+              onChange={e => onChange({ staminaDrainMultiplier: +e.target.value / 100 })}
+              style={{ width: "100%", accentColor: C.blue }}
+            />
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+              <span>0.25× slow drain</span><span>1.0× normal</span><span>4.0× fast drain</span>
+            </div>
+          </div>
+
+          {/* QTE */}
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <span style={{ fontSize: 12, color: C.muted }}>QTE Enabled</span>
+              <button
+                onClick={() => onChange({ qteEnabled: !(config.qteEnabled ?? true) })}
+                style={{
+                  padding: "3px 12px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 12,
+                  background: (config.qteEnabled ?? true) ? C.green : C.bg2,
+                  color: (config.qteEnabled ?? true) ? C.white : C.muted,
+                }}
+              >
+                {(config.qteEnabled ?? true) ? "ON" : "OFF"}
+              </button>
+            </div>
+            {(config.qteEnabled ?? true) && (
+              <div>
+                <label style={S.label}>QTE Window Scaling</label>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {(["flat", "by_cost"] as const).map(mode => {
+                    const active = (config.qteWindowScaling ?? "by_cost") === mode;
+                    return (
+                      <button
+                        key={mode}
+                        onClick={() => onChange({ qteWindowScaling: mode })}
+                        style={{
+                          flex: 1, padding: "6px 8px", borderRadius: 6, fontSize: 11, cursor: "pointer",
+                          background: active ? C.blue : "transparent",
+                          color: active ? C.white : C.muted,
+                          border: `1px solid ${active ? C.blue : C.border}`,
+                        }}
+                      >
+                        {mode === "flat" ? "Flat (60t)" : "By Cost"}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div style={{ fontSize: 10, color: C.faint, marginTop: 4 }}>
+                  Flat = always 60 ticks. By Cost = window scales with combo/special cost.
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Random Modifiers */}
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+              <span style={{ fontSize: 12, color: C.muted }}>Random Match Modifiers</span>
+              <button
+                onClick={() => onChange({ randomModifiers: !config.randomModifiers })}
+                style={{
+                  padding: "3px 12px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 12,
+                  background: config.randomModifiers ? C.green : C.bg2,
+                  color: config.randomModifiers ? C.white : C.muted,
+                }}
+              >
+                {config.randomModifiers ? "ON" : "OFF"}
+              </button>
+            </div>
+            {config.randomModifiers && (
+              <div>
+                <label style={S.label}>Max Stacked Modifiers</label>
+                <input
+                  type="number" min={1} max={10} step={1}
+                  value={config.maxModifiers ?? 2}
+                  onChange={e => onChange({ maxModifiers: Math.max(1, Math.min(10, +e.target.value || 2)) })}
+                  style={{ ...S.input, width: 80 }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Visual Overrides */}
+      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>
+          Visual Overrides
+        </div>
+        <div style={{ fontSize: 11, color: C.faint, marginBottom: 14 }}>
+          Override theme defaults. Leave blank to use theme colors.
+        </div>
+        <div style={{ display: "flex", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <label style={S.label}>Background Color</label>
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <input
+                type="color"
+                value={config.backgroundColor ?? "#1a1a2e"}
+                onChange={e => onChange({ backgroundColor: e.target.value })}
+                style={{ width: 36, height: 30, padding: 2, border: `1px solid ${C.border}`, borderRadius: 6, cursor: "pointer", background: C.bg2 }}
+              />
+              <input
+                type="text"
+                value={config.backgroundColor ?? ""}
+                onChange={e => onChange({ backgroundColor: e.target.value || undefined })}
+                placeholder="e.g. #1a1a2e"
+                style={{ ...S.input, flex: 1, fontFamily: "monospace", fontSize: 11 }}
+              />
+              {config.backgroundColor && (
+                <button
+                  onClick={() => onChange({ backgroundColor: undefined })}
+                  style={{ padding: "4px 8px", fontSize: 11, borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}
+                  title="Clear override"
+                >×</button>
+              )}
+            </div>
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={S.label}>Floor Color</label>
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <input
+                type="color"
+                value={config.floorColor ?? "#374151"}
+                onChange={e => onChange({ floorColor: e.target.value })}
+                style={{ width: 36, height: 30, padding: 2, border: `1px solid ${C.border}`, borderRadius: 6, cursor: "pointer", background: C.bg2 }}
+              />
+              <input
+                type="text"
+                value={config.floorColor ?? ""}
+                onChange={e => onChange({ floorColor: e.target.value || undefined })}
+                placeholder="e.g. #374151"
+                style={{ ...S.input, flex: 1, fontFamily: "monospace", fontSize: 11 }}
+              />
+              {config.floorColor && (
+                <button
+                  onClick={() => onChange({ floorColor: undefined })}
+                  style={{ padding: "4px 8px", fontSize: 11, borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}
+                  title="Clear override"
+                >×</button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

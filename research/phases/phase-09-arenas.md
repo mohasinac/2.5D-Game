@@ -4,6 +4,29 @@
 
 ---
 
+## Amendment — Session 18: Arenas Use All Three Foundation Pillars
+
+> See **[Phase 21 — Unified Foundation](phase-21-unified-foundation.md)** for the full spec.
+
+Every arena feature (spin zones, gravity holes, bumps, directional zones, trigger zones, obstacles, turrets, water bodies) gains:
+
+| New field | Type | Purpose |
+|-----------|------|---------|
+| `mechanicRefs: MechanicInstance[]` | Pillar 1 | Behavior — replaces hardcoded ArenaFeatureProcessor logic |
+| `geometry: GeometryRef` | Pillar 2 | Shape — replaces inline `radiusCm`/`shape`/`width`/`height` fields |
+| `zoneModifiers?: StatModifier[]` | Pillar 3 | Stat deltas applied while a bey is inside the zone |
+
+Arena top-level gains:
+
+| New field | Type | Purpose |
+|-----------|------|---------|
+| `boundaryGeometryId?: string` | Pillar 2 | Non-circular arena boundary |
+| `matchModifiers: StatModifier[]` | Pillar 3 | Replaces bespoke physics fields: `staminaDrainMultiplier`, `qteEnabled`, `qteWindowScaling`, `randomModifiers`, `maxModifiers` |
+
+Old fields remain for backward compat. `matchModifiers` takes precedence when present.
+
+---
+
 ## Stadium Inventory
 
 | Stadium ID | Name | Gen | Shape | Diameter (cm) | Key Features | Special Mechanics | Source | Confidence |
@@ -259,9 +282,9 @@
   | 2 gear rails | `speedPaths[]` × 2 | One at each end, symmetrical | Infinity Dash: both rails active |
   | Infinity Dash | **NOT IN ArenaConfig** | `infinityDash` extension | Looping speed bonus for consecutive rail traversal |
   | Tornado ridge | `elevationZones[]` | center | Standard |
-  | Faster stamina drain | **NOT IN ArenaConfig** | `staminaDrainMultiplier` | Global per-arena spin drain multiplier absent from ArenaConfig |
+  | Faster stamina drain | `staminaDrainMultiplier` | `1.25` | **IMPLEMENTED** (session 13) — set `staminaDrainMultiplier: 1.25` for Infinity Stadium's 25% faster drain |
 - **Special Mechanic**: Infinity Dash — bey catches rail_a → boosts → crosses → catches rail_b → boosts → loops back. Consecutive engagements possible (up to 10). Larger footprint + repeated boosts = 25% faster stamina drain than BX-10.
-- **Engine Status**: PARTIAL GAP. `"rectangle"` shape missing from `ArenaShape` union (only square/polygon shapes available). Infinity Dash compound-loop bonus not in ArenaConfig. `staminaDrainMultiplier` not in ArenaConfig. These are new fields required.
+- **Engine Status**: PARTIAL GAP. `"rectangle"` shape missing from `ArenaShape` union (only square/polygon shapes available). Infinity Dash compound-loop bonus not in ArenaConfig. ~~`staminaDrainMultiplier` not in ArenaConfig~~ — **`staminaDrainMultiplier` added in session 13** (set to 1.25 for this stadium). Remaining gaps: rectangle shape + Infinity Dash compound-loop bonus.
 
 ---
 
@@ -670,7 +693,7 @@
 | Arena shrink | `shrink` | types defined | N/A | Partial |
 | Arena timeline | `arenaTimeline[]` | types defined | N/A | Partial |
 | Background particles | `backgroundParticles` | client-only rendering | N/A | Visual only |
-| Dynamic tilt (Zero-G) | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | CRITICAL GAP |
+| Dynamic tilt (Zero-G) | `tiltAngle`, `tiltDirection`, `tiltMode`, `tiltPivotX/Y`, `tiltOscillate*`, `autoTilt`, `tiltSpeed` | `advanceArenaTilt()` + `applyWeightTilt()` + `computeTiltForce()` | N/A | **IMPLEMENTED** (session 10) — fixed/oscillate/weight modes; ±15° weight-COM for Zero-G BB-G04 via `tiltMode:"weight"` + `tiltOscillateMax:15` |
 | Wall climb / sphere orbit | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | CRITICAL GAP |
 | Tiered rebound walls | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | GAP |
 | Stadium transforms (mid-match) | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | CRITICAL GAP |
@@ -680,8 +703,11 @@
 | Non-circular ring-out boundary | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | GAP |
 | Polygon arena boundary | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | GAP |
 | Exit zone scoring (3pt/2pt) | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | GAP (for BX scoring) |
-| Global stamina drain multiplier | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | GAP (for Infinity Stadium) |
+| Global stamina drain multiplier | `staminaDrainMultiplier` | applied in room tick per-bey | N/A | **IMPLEMENTED** (session 13) — 0.25×–4.0× multiplier on spin decay; admin UI slider in BasicsTab Physics panel |
 | Infinity Dash compound loop | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | GAP |
+| Background / floor color override | `backgroundColor`, `floorColor` | client renderer reads at load | N/A | **IMPLEMENTED** (session 13) — per-arena hex color overrides; admin UI color pickers in BasicsTab Visual Overrides panel |
+| QTE enable / window scaling | `qteEnabled`, `qteWindowScaling` | combo/special activation gate in room | N/A | **IN SCHEMA** (session 13) — admin UI toggle + flat/by_cost selector in BasicsTab Physics panel |
+| Random match modifiers | `randomModifiers`, `maxModifiers` | modifier picker at match start | N/A | **IN SCHEMA** (session 13) — admin UI toggle + max-stacked input in BasicsTab Physics panel |
 | Sun glare environmental | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | GAP (visual) |
 | Gear rail compatibility gate | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | Simplified-away |
 | Per-bey driver compatibility | NOT IN SCHEMA | NOT IMPLEMENTED | N/A | Simplified-away |
@@ -1374,7 +1400,7 @@ All position fields in ArenaConfig JSON skeletons above use **px units at 1 cm =
 - Arena diagram: `C:\Users\mohsi\Downloads\Beyblade-Game-master\research\diagrams\diagram-arena-interaction.md`
 
 ---
-[? Phase 08: Gimmicks](phase-08-gimmicks.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 10: Arena Implementation ?](phase-10-arena-implementation.md)
+[← Phase 08: Gimmicks](phase-08-gimmicks.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 10: Arena Implementation →](phase-10-arena-implementation.md)
 
 
 ---

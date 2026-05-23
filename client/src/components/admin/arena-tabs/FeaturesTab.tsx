@@ -753,6 +753,15 @@ export default function FeaturesTab({ config, onChange }: Props) {
               onChangeBehaviorId={id => updateDirectionalZone(i, { behaviorId: id })}
               onChangeBehaviorParams={params => updateDirectionalZone(i, { behaviorParams: params })}
             />
+            <Row label="Controlled By Switch">
+              <input
+                type="text"
+                value={(z as any).controlledBySwitchId ?? ""}
+                onChange={e => updateDirectionalZone(i, { controlledBySwitchId: e.target.value || undefined } as any)}
+                placeholder="e.g. sw1"
+                style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
+              />
+            </Row>
             <SelfRotationPanel
               rotation={(z as any).rotation as any}
               selfRotation={z.selfRotation as any}
@@ -896,6 +905,15 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 </Row>
               )}
 
+              <Row label="Controlled By Switch">
+                <input
+                  type="text"
+                  value={z.controlledBySwitchId ?? ""}
+                  onChange={e => updateTriggerZone(i, { controlledBySwitchId: e.target.value || undefined })}
+                  placeholder="e.g. sw1"
+                  style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
+                />
+              </Row>
               <SelfRotationPanel
                 rotation={(z as any).rotation}
                 selfRotation={z.selfRotation}

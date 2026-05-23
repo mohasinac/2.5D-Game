@@ -1,4 +1,4 @@
-# Phase 03 — Special Move → Beyblade Mapping
+﻿# Phase 03 — Special Move → Beyblade Mapping
 
 > Stage 3 | Cross-reference: phase-02-special-moves.md + linka/beys/
 > Tag key: FACT | INFERENCE | SPECULATION | UNKNOWN
@@ -495,4 +495,4 @@ Phase-02 config skeletons use `powerCost` on a 0–1500+ permille scale (e.g. `p
 | `dread-phoenix-auto-resurrect` | IMPLEMENTATION BLOCKED | Needs `autoResurrect` passive gate; noted P3 in phase-02 |
 
 ---
-[? Phase 02: Special Moves](phase-02-special-moves.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 04: Combo Mapping ?](phase-04-combo-mapping.md)
+[← Phase 02: Special Moves](phase-02-special-moves.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 04: Combo Mapping →](phase-04-combo-mapping.md)

@@ -11,16 +11,16 @@ stateDiagram-v2
   direction LR
 
   [*] --> waiting : onCreate
-  waiting --> warmup : all players joined\n(or autoConnect)
-  warmup --> launching : warmupTimer ≤ 0\n(3 s countdown done)
-  launching --> in_progress : all players launched\nOR launchTimer ≤ 0
-  in_progress --> finished : last beyblade standing\nor ring-out / spin-out
-  finished --> warmup : resetForNextGame()\n(BO3/BO5 series continues)
-  finished --> series_finished : seriesWins ≥ targetWins
+  waiting --> warmup : all players joined (or autoConnect)
+  warmup --> launching : warmupTimer <= 0, 3s countdown done
+  launching --> in_progress : all players launched OR launchTimer <= 0
+  in_progress --> finished : last beyblade standing or ring-out / spin-out
+  finished --> warmup : resetForNextGame(), BO3/BO5 series continues
+  finished --> series_finished : seriesWins >= targetWins
 
-  warmup : warmup\n3-2-1 countdown\nstate.timer counts down
-  launching : launching\n5 s launch QTE\nstate.launchTimer counts down
-  in_progress : in-progress\n180 s match timer\nphysics running at 60 Hz
+  warmup : warmup — 3-2-1 countdown, timer counts down
+  launching : launching — 5s launch QTE, launchTimer counts down
+  in_progress : in-progress — 180s match timer, physics at 60Hz
 ```
 
 ---
@@ -42,9 +42,9 @@ sequenceDiagram
 
   loop every RAF frame while !launched
     Client->>useLaunchInput: A/D → tilt ±45°, W/S → position 0–1
-    Note over useLaunchInput: Space held → chargingStarted=true\n+25% power per 200 ms (max 150%)
+    Note over useLaunchInput: Space held → chargingStarted=true<br/>+25% power per 200 ms (max 150%)
     useLaunchInput->>Room: send("launch-input", {tilt, position, power, charging, launched:false})
-    Room->>Beyblade Schema: bey.launchTilt = tilt\nbey.launchPosition = pos\nbey.launchPower = power
+    Room->>Beyblade Schema: bey.launchTilt = tilt, launchPosition = pos, launchPower = power
   end
 
   useLaunchInput->>Room: send("launch-input", {…, launched:true})
@@ -57,7 +57,7 @@ sequenceDiagram
     Room->>Room: startMatchFromLaunch()
   end
 
-  Note over Room: startMatchFromLaunch() applies params:\nbey.spin = maxSpin × (power/100)\nspawnRadius × (0.6 + position×0.8)\nbeyTiltAngle = |launchTilt|
+  Note over Room: startMatchFromLaunch() applies params:<br/>bey.spin = maxSpin × (power/100)<br/>spawnRadius × (0.6 + position×0.8)<br/>beyTiltAngle = abs(launchTilt)
   Room->>GameState: status = "in-progress", timer = 180
 ```
 
@@ -83,9 +83,9 @@ TryoutGamePage has no Colyseus connection; the QTE runs entirely in the browser:
 stateDiagram-v2
   direction LR
   [*] --> countdown : component mount
-  countdown --> launching : 3 s elapsed (local RAF)
-  launching --> playing : Space released (power > 0)\nOR timer expired (grace: 50%)
-  playing --> countdown : Try Again (reset())
+  countdown --> launching : 3s elapsed (local RAF)
+  launching --> playing : Space released OR timer expired (grace 50%)
+  playing --> countdown : Try Again (reset)
 ```
 
 `phaseRef` guards the physics loop — physics only runs in `playing` phase.  
@@ -180,7 +180,7 @@ sequenceDiagram
   useColyseus->>PixiRenderer: render loop begins
   Note over Browser: Countdown component shows 3-2-1
   Room-->>useColyseus: state.status → "launching"
-  Note over Browser: Countdown flashes "Let It Rip!"\nLaunchPhase overlay appears
+  Note over Browser: Countdown flashes "Let It Rip!" — LaunchPhase overlay appears
   Room-->>useColyseus: state.status → "in-progress"
   Note over Browser: LaunchPhase hidden — battle begins
 ```

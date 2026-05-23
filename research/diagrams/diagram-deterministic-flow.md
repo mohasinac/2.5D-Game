@@ -1,4 +1,4 @@
-# Diagram: Deterministic Simulation Flow
+﻿# Diagram: Deterministic Simulation Flow
 
 > **Stage 0C Diagram 14** — Rule 13: Input → Intent → FixedTick → Mechanic Dispatch → Deterministic Simulation → State → Presentation.
 
@@ -152,4 +152,4 @@ flowchart TD
 13. Colyseus auto-patch schema to clients
 
 ---
-[? Data Flow](diagram-data-flow.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Engine Capabilities ?](diagram-engine-capabilities.md)
+[← Data Flow](diagram-data-flow.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Engine Capabilities →](diagram-engine-capabilities.md)

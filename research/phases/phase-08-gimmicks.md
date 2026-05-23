@@ -1,4 +1,4 @@
-# Phase 08 — Gimmick Configs (Engine Mapping)
+﻿# Phase 08 — Gimmick Configs (Engine Mapping)
 
 > Stage 8 | Source: phase-06-mechanics.md + phase-07-gen234.md + linka/beys/ 
 > Purpose: Convert GIMMICK_REGISTRY (Stage 6) into seed-ready Firestore `gimmick_defs` docs.
@@ -474,7 +474,7 @@ The full list of 31 mechanics, mapped from Stage 6:
 | `spin_direction_bonus` | onCollision | `{ bonusMultiplier }` | gen2 | L-Drago left-spin research |
 | `sub_part_burst` | onActivate | `{ partIndex, projectileForce, lifetimeTicks }` | gen1 | GameState.ts DetachedBodySchema |
 | `defense_stance` | onActivate | `{ durationTicks, reductionBoost }` | universal | gyro_anchor special |
-| `revival_spin` | tick | `{ spinBoostAmount, triggerThreshold }` | gen3 | stamina recovery INFERENCE |
+| `revival_spin` | tick | `{ threshold=0.2, recoveryRate=10 }` | gen3 | **FACT** — `server/physics/mechanics/revivalSpin.ts`: per-tick gradual recovery (not a burst), adds `recoveryRate * dt` while `spin/maxSpin < threshold` |
 
 ---
 
@@ -852,7 +852,7 @@ function getDefaultParams(mechanicId: string, def: GimmickDef): Record<string, u
     zero_g_float:     { gravityFactor: 0.3, durationTicks: 120 },
     magnetic_pull:    { pullDirection: "attract", strength: 0.003, range: 100 },
     defense_stance:   { durationTicks: 90, reductionBoost: 0.3 },
-    revival_spin:     { spinBoostAmount: 200, triggerThreshold: 0.2 },
+    revival_spin:     { threshold: 0.2, recoveryRate: 10 },
   };
   return DEFAULTS[mechanicId] ?? {};
 }
@@ -901,4 +901,4 @@ Total: 27 gimmick_defs.
 Source files: `research/phases/phase-06-mechanics.md`, `research/phases/phase-07-gen234.md`, `research/phases/phase-07-gen1.md`
 
 ---
-[? Phase 07b: Generations 2-4](phase-07-gen234.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 09: Arenas ?](phase-09-arenas.md)
+[← Phase 07b: Generations 2-4](phase-07-gen234.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 09: Arenas →](phase-09-arenas.md)

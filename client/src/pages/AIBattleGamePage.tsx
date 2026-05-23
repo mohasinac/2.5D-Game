@@ -7,6 +7,7 @@ import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getBeybladeStability, mapToRecord, TYPE_COLORS } from "@/types/game";
+import { SoundManager } from "@/game/audio/SoundManager";
 import { C, alpha } from "@/styles/theme";
 import { MODIFIER_MAP } from "@/types/roundModifier";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";

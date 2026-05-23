@@ -1,4 +1,4 @@
-# Diagram: Script Authoring Flow
+﻿# Diagram: Script Authoring Flow
 
 > **Stage 0C Diagram 16** — Rule 15: ScratchEditor/NodeEditor/RawEditor → EditorGraph → ScriptDefinition → Validation → Compilation → CompositionBlocks → RuntimePackage → Engine.
 
@@ -131,4 +131,4 @@ flowchart TD
 | arena | (via arena_effect BehaviorRef) |
 
 ---
-[? Rotation Systems](diagram-rotation-systems.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Script Execution ?](diagram-script-execution.md)
+[← Rotation Systems](diagram-rotation-systems.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Script Execution →](diagram-script-execution.md)

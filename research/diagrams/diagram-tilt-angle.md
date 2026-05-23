@@ -1,4 +1,4 @@
-# Diagram: Beyblade Tilt Angle System (0°–360°)
+﻿# Diagram: Beyblade Tilt Angle System (0°–360°)
 
 > Full 3D tilt rotation model — `beyTiltAngle` in `GameState.ts` / `ClimbingPhysics.ts`.
 
@@ -12,20 +12,20 @@ stateDiagram-v2
 
   [*] --> Upright : launch (spin = maxSpin)
 
-  Upright : 0° — Upright\nspinning normally
-  OnSide  : 90° — On Side\ncoin-rolling / about to burst
-  OnBack  : 180° — On Back\nknocked down / burst candidate
-  OnHead  : 270° — On Head\nairborne / mid-flip
-  FullRot : 360° → 0° — Full Rotation\nresets to upright
+  Upright : 0° — Upright, spinning normally
+  OnSide  : 90° — On Side, coin-rolling / about to burst
+  OnBack  : 180° — On Back, knocked down / burst candidate
+  OnHead  : 270° — On Head, airborne / mid-flip
+  FullRot : 360° to 0° — Full Rotation, resets to upright
 
-  Upright --> OnSide  : impact force exceeds tiltResistance\n+ low spin stabilization
-  OnSide  --> OnBack  : gravity runaway continues\n(sin(90°)→sin(180°) peak→fall)
+  Upright --> OnSide  : impact force exceeds tiltResistance, low spin
+  OnSide  --> OnBack  : gravity runaway continues
   OnBack  --> OnHead  : airborne + continuing flip
-  OnHead  --> FullRot : gravity pulls back toward upright\n(sin(270°) = −1, self-correcting)
+  OnHead  --> FullRot : gravity pulls back toward upright
   FullRot --> Upright : wraps to 0°
 
-  OnSide  --> Upright : gyroscopic recovery\n(high spin × lateralStiffness)
-  OnBack  --> Upright : burst / ring-out elimination\ntriggers before further flip
+  OnSide  --> Upright : gyroscopic recovery (high spin)
+  OnBack  --> Upright : burst / ring-out elimination
   OnHead  --> Upright : lands upright after aerial maneuver
 ```
 
@@ -39,17 +39,17 @@ flowchart TD
 
   subgraph "1 · Gyroscopic Stabilization"
     SPINRATIO["spinRatio = spin / maxSpin"]
-    STABFORCE["stabilizingTorque = spinRatio² × lateralStiffness × 2.0\ntilt -= stabilizingTorque × dt"]
+    STABFORCE["stabilizingTorque = spinRatio^2 × lateralStiffness × 2.0<br/>tilt -= stabilizingTorque × dt"]
   end
 
   subgraph "2 · Impact Tilt"
     HIT["impactForce > 0 ?"]
-    IMPACTTILT["impactTilt = force × (1 − tiltResistance) × 0.02\ntilt += impactTilt"]
+    IMPACTTILT["impactTilt = force × (1 - tiltResistance) × 0.02<br/>tilt += impactTilt"]
     NOHIT["no change"]
   end
 
   subgraph "3 · Gravity Runaway"
-    RUNAWAY["tilt > 20° ?\ntilt += sin(tilt × π/180) × gravityMult × 0.005 × dt\n\nsin peak at 90° (falls fastest)\nsin = 0 at 180° (balanced upside-down)\nsin = −1 at 270° (self-corrects back up)"]
+    RUNAWAY["tilt > 20°?<br/>tilt += sin(tilt × pi/180) × gravityMult × 0.005 × dt<br/>sin peak at 90° (falls fastest)<br/>sin = 0 at 180° (balanced upside-down)<br/>sin = -1 at 270° (self-corrects back up)"]
   end
 
   subgraph "4 · Clamp"
@@ -149,4 +149,4 @@ beyTiltAngle = Math.abs(launchTilt)
 Direction (left vs. right) is discarded — only magnitude feeds `beyTiltAngle`.
 
 ---
-[? Simulation Architecture](diagram-simulation-arch.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Tool Ecosystem ?](diagram-tool-ecosystem.md)
+[← Simulation Architecture](diagram-simulation-arch.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Tool Ecosystem →](diagram-tool-ecosystem.md)

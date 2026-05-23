@@ -66,6 +66,7 @@ export const COMBO_REGISTRY: Combo[] = [
     effect: { dashDirection: "left", durationMs: 300, lockMs: 0 },
     cooldownMs: 800,
     description: "Short leftward dash with a contact pop. Free.",
+    effectId: "quick-dash-l",
   },
   {
     id: "quick-dash-r",
@@ -77,6 +78,7 @@ export const COMBO_REGISTRY: Combo[] = [
     effect: { dashDirection: "right", durationMs: 300, lockMs: 0 },
     cooldownMs: 800,
     description: "Short rightward dash with a contact pop. Free.",
+    effectId: "quick-dash-r",
   },
   {
     id: "guard-tap",
@@ -88,6 +90,7 @@ export const COMBO_REGISTRY: Combo[] = [
     effect: { durationMs: 250, lockMs: 0, damageMultiplier: 1.0 },
     cooldownMs: 1000,
     description: "Quick triple-tap guard. Free; no offensive bonus.",
+    effectId: "guard-tap",
   },
   {
     id: "feint",
@@ -99,6 +102,7 @@ export const COMBO_REGISTRY: Combo[] = [
     effect: { durationMs: 200, lockMs: 0, dashDirection: "back" },
     cooldownMs: 1200,
     description: "Side-step then brace. Free; opens counter-windows.",
+    effectId: "feint",
   },
 
   // ── 4 POWER-COSTING ───────────────────────────────────────────────────────
@@ -112,6 +116,7 @@ export const COMBO_REGISTRY: Combo[] = [
     effect: { damageMultiplier: 1.3, durationMs: 600, lockMs: 200 },
     cooldownMs: 2500,
     description: "Defensive parry into a 1.3x counter. Costs 15.",
+    effectId: "riposte",
   },
   {
     id: "pivot-strike",
@@ -123,6 +128,7 @@ export const COMBO_REGISTRY: Combo[] = [
     effect: { damageMultiplier: 1.25, durationMs: 500, lockMs: 200 },
     cooldownMs: 2500,
     description: "Quick pivot into a 1.25x strike. Costs 15.",
+    effectId: "pivot-strike",
   },
   {
     id: "power-thrust",
@@ -134,6 +140,7 @@ export const COMBO_REGISTRY: Combo[] = [
     effect: { damageMultiplier: 1.5, durationMs: 800, lockMs: 300 },
     cooldownMs: 3500,
     description: "Three-tap commit attack — 1.5x for 0.8s. Costs 25.",
+    effectId: "power-thrust",
   },
   {
     id: "spin-leech-jab",
@@ -145,6 +152,7 @@ export const COMBO_REGISTRY: Combo[] = [
     effect: { damageMultiplier: 1.1, durationMs: 800, lockMs: 200, spinStealBonus: 0.08, microSpinBoost: 30 },
     cooldownMs: 4500,
     description: "Stamina-only. Light hit + 8% spin steal on contact. Costs 35.",
+    effectId: "spin-leech",
   },
 ];
 

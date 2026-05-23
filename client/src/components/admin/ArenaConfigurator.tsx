@@ -35,7 +35,11 @@ const TABS: { id: TabId; label: string; icon: string; count?: (a: ArenaConfig) =
   { id: "portals",    label: "Portals",     icon: "🌀", count: a => a.portals?.length ?? 0 },
   { id: "speedpaths", label: "Speed Paths", icon: "⚡", count: a => a.speedPaths?.length ?? 0 },
   { id: "pits",       label: "Pits",        icon: "🕳️", count: a => a.pits?.length ?? 0 },
-  { id: "features",   label: "Features",    icon: "✨",  count: a => (a.floorHazardZones?.length ?? 0) + (a.elevationZones?.length ?? 0) + ((a as any).effectZones?.length ?? 0) },
+  { id: "features",   label: "Features",    icon: "✨",  count: a =>
+      (a.floorHazardZones?.length ?? 0) + (a.elevationZones?.length ?? 0) +
+      ((a as any).effectZones?.length ?? 0) + (a.spinZones?.length ?? 0) +
+      (a.gravityHoles?.length ?? 0) + (a.bumps?.length ?? 0) +
+      ((a as any).directionalZones?.length ?? 0) + ((a as any).triggerZones?.length ?? 0) },
   { id: "boundary",   label: "Boundary",    icon: "⭕",  count: a => a.shrink ? 1 : 0 },
   { id: "timeline",   label: "Timeline",    icon: "⏱",  count: a => a.arenaTimeline?.length ?? 0 },
   { id: "links",      label: "Links",       icon: "🔗",  count: a => (a as any).links?.length ?? 0 },

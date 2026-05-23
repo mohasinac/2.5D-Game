@@ -1,4 +1,4 @@
-# Diagram: Image Extraction Pipeline → Part Geometry
+﻿# Diagram: Image Extraction Pipeline → Part Geometry
 
 > **Stage 0C Diagram 9** — Rule 8: Geometry is gameplay.
 
@@ -73,4 +73,4 @@ flowchart TD
 Both coexist. `resolveCpBounds(cp)` normalises to `{arcStart, arcEnd, rInner, rOuter, lineThickness}`.
 
 ---
-[? Engine Capabilities](diagram-engine-capabilities.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Input Abstraction ?](diagram-input-abstraction.md)
+[← Engine Capabilities](diagram-engine-capabilities.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Input Abstraction →](diagram-input-abstraction.md)

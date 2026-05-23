@@ -1,5 +1,6 @@
 import { C } from "@/styles/theme";
 import type { ArenaConfig, SwitchConfig, SwitchTarget, SwitchAction } from "@/types/arenaConfigNew";
+import { PX_PER_CM_BASE } from "@/constants/units";
 import RotationBlockEditor from "./RotationBlockEditor";
 
 interface Props {
@@ -166,8 +167,8 @@ export default function SwitchesTab({ config, onChange }: Props) {
 
           {/* Position */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
-            <SliderRow label="X (px from center)" value={sw.x} min={-500} max={500} step={10} onChange={v => update(sw.id, { x: v })} />
-            <SliderRow label="Y (px from center)" value={sw.y} min={-500} max={500} step={10} onChange={v => update(sw.id, { y: v })} />
+            <SliderRow label="X (cm from center)" value={Math.round(sw.x / PX_PER_CM_BASE * 10) / 10} min={-21} max={21} step={0.5} onChange={v => update(sw.id, { x: Math.round(v * PX_PER_CM_BASE) })} />
+            <SliderRow label="Y (cm from center)" value={Math.round(sw.y / PX_PER_CM_BASE * 10) / 10} min={-21} max={21} step={0.5} onChange={v => update(sw.id, { y: Math.round(v * PX_PER_CM_BASE) })} />
           </div>
 
           {/* Switch timing */}

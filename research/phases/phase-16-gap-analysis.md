@@ -1,4 +1,4 @@
-# Phase 16 — Gap Analysis
+﻿# Phase 16 — Gap Analysis
 
 > Stage 16 | Source: all Stages 0A–14 research outputs
 > Purpose: Consolidate every gap found across 14 stages into a single prioritized table.
@@ -274,4 +274,4 @@ Sorted by priority: P0 first, then P1, P2, P3, P4.
 Source files: Stages 0D, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14
 
 ---
-[? Phase 14: Game Modes](phase-14-game-modes.md) &nbsp;�&nbsp; [? Index](../INDEX.md) &nbsp;�&nbsp; [Phase 19: Implementation Plan ?](phase-19-impl-plan.md)
+[← Phase 14: Game Modes](phase-14-game-modes.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 19: Implementation Plan →](phase-19-impl-plan.md)

@@ -35,7 +35,7 @@ const MECHANIC_DEFS = [
   { id: "spin_transfer",           name: "Spin Transfer",           category: "stamina",  description: "On collision: steal a fraction of opponent spin.", params: { stealFraction: 0.08 } },
   { id: "spin_equalization",       name: "Spin Equalization",       category: "stamina",  description: "Equalizes spin between touching beys; useful for stamina matchups.", params: { equalizeRate: 0.05 } },
   { id: "stamina_recovery",        name: "Stamina Recovery",        category: "stamina",  description: "Gradual spin recovery over time; strength set by recoveryRate.", params: { recoveryRate: 30 } },
-  { id: "revival_spin",            name: "Revival Spin",            category: "stamina",  description: "Restores a large spin burst when bey falls below a threshold.", params: { threshold: 0.15, burstAmount: 400 } },
+  { id: "revival_spin",            name: "Revival Spin",            category: "stamina",  description: "Gradually recovers spin each tick when bey falls below spin threshold (default 20%). Implemented in server/physics/mechanics/revivalSpin.ts.", params: { threshold: 0.2, recoveryRate: 10 } },
   { id: "defense_stance",          name: "Defense Stance",          category: "defense",  description: "Grants invulnerability for durationMs and zeroes linear velocity.", params: { durationMs: 1500 } },
   { id: "burst_suppress",          name: "Burst Suppression",       category: "defense",  description: "Temporarily prevents burst finishes; burstPressure drain slows.", params: { suppressMs: 2000 } },
   { id: "recoil_guard",            name: "Recoil Guard",            category: "defense",  description: "Reduces knockback distance when taking damage.", params: { knockbackReduction: 0.5 } },

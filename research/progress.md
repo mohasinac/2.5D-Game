@@ -1,7 +1,7 @@
 # Research Progress
 
 **Plan**: system-role-you-are-refactored-creek.md  
-**Last updated**: 2026-05-23 (session 11 — Turret attack system: 155+ anime/game moves; Naruto/Bleach/Tekken/Dragon Ball/Obito/Rinnegan/Eight Gates; all 4 files TypeScript-clean)
+**Last updated**: 2026-05-23 (session 19 — Source verification + parts expansion: 39 URLs fetched with visited flag; 14 linka/ cache files written; batch-008 complete)
 
 ---
 
@@ -32,10 +32,11 @@
 | 16 | Gap Analysis | complete | phases/phase-16-gap-analysis.md | — |
 | 19 | Implementation Plan | complete | phases/phase-19-impl-plan.md | — |
 | 20 | Code Generation | complete | phases/phase-20-codegen.md | — |
+| 21 | Unified Foundation Architecture | complete | phases/phase-21-unified-foundation.md | session 18 |
 
 ---
 
-## Stage 0C Diagram Files (17/17 complete)
+## Stage 0C Diagram Files (18/18 complete)
 
 | # | File | Status |
 |---|------|--------|
@@ -56,6 +57,7 @@
 | 15 | diagram-research-flow.md | ✅ |
 | 16 | diagram-script-authoring-flow.md | ✅ |
 | 17 | diagram-script-execution.md | ✅ |
+| 18 | diagram-turret-powerup-system.md | ✅ (session 12 additions) |
 
 ---
 
@@ -113,6 +115,7 @@ Source: 617 episode markdown files under `linka/episodes/` (gen1/, gen2/, gen3/,
 | N1 (inline) | 7a | phases/phase-07-gen1.md §Appendix N1 — Gen1 narrative context | complete |
 | N2 (inline) | 7b | phases/phase-07-gen234.md §Appendix N2 — Gen2/3/4 narrative context | complete |
 | 9Z (inline) | 9 | phases/phase-09-arenas.md §Appendix 9Z — episode stadium cross-reference | complete |
+| 008 | source-verification | batches/batch-008-source-verification-parts-expansion.md | complete — 39 URLs fetched with visited flag; Gen1/HMS/Burst/BX parts expansion; 173 Burst drivers; 26 BX ratchets; 47+ BX blades with weights; 10 HMS RCs; 11 HMS ARs; 15 linka/ cache files |
 
 ---
 
@@ -312,18 +315,182 @@ Tick processors check `nowMs > untilMs` and clean up state + reverse applied mod
 
 ---
 
+## Session 12 Additions (2026-05-23) — Q&A Checklist Closure + Param Fixes
+
+| Change | Files | Detail |
+|---|---|---|
+| Q&A checklist 54/54 | `research/qa-checklist.md` | All questions resolved. Q30–Q33/Q36 BX bits confirmed FACT; Q38 Impact Drake rubber confirmed; Q39–Q43 Gen1 beys resolved; Q49 revival_spin corrected to IMPLEMENTED |
+| Collision sound gap fixed | `AIBattleGamePage.tsx`, `TournamentBattleGamePage.tsx` | `SoundManager.play("collision")` added to both pages — all 3 battle pages now play collision sound |
+| BX bits confirmed FACT | `batch-006-x-parts-disambiguation.md` | Taper=flat+outer ring (Balance), Ball=hemisphere BX-03 (Stamina), Point=flat+ball center BX-15 (Balance), Kick=hexagonal flat+gap CX-05 (Balance), Elevate=flat+bump+large disc BX-36 (Balance). Facts: 38→45 |
+| Impact Drake rubber CPs | `batch-006-x-parts-disambiguation.md` | Confirmed rubber contact points on attack protrusions. `spinStealFactor` + `damageReduction` on collision |
+| revival_spin corrected | `phase-06-mechanics.md`, `phase-08-gimmicks.md`, `qa-checklist.md` | IS implemented (`server/physics/mechanics/revivalSpin.ts`). Params corrected: `{ spinBoostAmount, triggerThreshold }` → `{ threshold=0.2, recoveryRate=10 }`. Seed scripts fixed to match. |
+| Gen1 beys updated | `phase-07-gen1.md` | Tryhorn: AR=Land Attack/WD=Drag Saucer/BB=Drag Ship (Conf B). Galux: AR=War Lion/WD=Eight Wide/BB=Metal Ball Base (Conf B). Canarias: AR=Survivor/WD=Wide Attack A (mode switch UNKNOWN). Chameleon: camouflage=visual-only, contact_deflect removed. |
+| Galux gimmick corrected | `phase-07-gen1.md`, `phase-08-gimmicks.md` | `heavy_wheel` → `["orbit_movement","contact_deflect"]` — Metal Ball Base = orbit wander; War Lion AR = deflect |
+| Seed scripts fixed | `scripts/seed-mechanics.js`, `scripts/seed-gimmicks.js` | `revival_spin` params corrected from `{ threshold, burstAmount }` → `{ threshold: 0.2, recoveryRate: 10 }` to match actual implementation |
+
+---
+
+## Session 13 Additions (2026-05-23) — Admin UI completeness pass + Arena feature wiring
+
+| Change | Files | Detail |
+|---|---|---|
+| `controlledBySwitchId` to DirectionalZones + TriggerZones | `FeaturesTab.tsx` | All 7 feature types now have switch-gating UI: SpinZones, GravityHoles, Bumps (session 10), DirectionalZones, TriggerZones (this session), Turrets (session 10) |
+| BasicsTab — Description + Difficulty | `BasicsTab.tsx` | Description textarea + four-button difficulty selector (easy/medium/hard/extreme) added after arena name |
+| BasicsTab — Tilt mode selector | `BasicsTab.tsx` | Tilt mode selector (Fixed/Oscillate/Weight) added before quick presets; conditional panels per mode; oscillation min/max/period; direction slider visibility rules |
+| BasicsTab — Pivot inputs | `BasicsTab.tsx` | Tilt pivot X/Y (cm from center) in tilt panel; rotation pivot X/Y in auto-rotate panel |
+| BasicsTab — Physics & Gameplay panel | `BasicsTab.tsx` | `staminaDrainMultiplier` slider (0.25×–4×); `qteEnabled` toggle + `qteWindowScaling` (flat/by_cost); `randomModifiers` toggle + `maxModifiers` input |
+| BasicsTab — Visual Overrides panel | `BasicsTab.tsx` | `backgroundColor` + `floorColor` color picker + hex text + clear button each |
+| ArenaConfigurator features tab count | `ArenaConfigurator.tsx` | Features badge now counts all 8 sub-types (+ spinZones, gravityHoles, bumps, directionalZones, triggerZones) |
+| Docs updated | `CHANGELOG.md`, `progress.md`, `phase-09-arenas.md`, `phase-06-mechanics.md` | Full coverage of session 10–13 changes |
+
+**Fields now exposed in admin UI that were previously schema-only:**
+
+| Field | Type | Panel | Default |
+|-------|------|-------|---------|
+| `description` | `string` | Basics — Name section | `""` |
+| `difficulty` | `"easy"\|"medium"\|"hard"\|"extreme"` | Basics — Name section | `"medium"` |
+| `tiltMode` | `"fixed"\|"oscillate"\|"weight"` | Basics — Tilt | `"fixed"` |
+| `tiltPivotX/Y` | `number` (cm) | Basics — Tilt | `0` |
+| `rotationPivotX/Y` | `number` (cm) | Basics — Auto-Rotate | `0` |
+| `tiltOscillateMin/Max` | `number` (°) | Basics — Tilt (oscillate mode) | `0 / 45` |
+| `tiltOscillatePeriodMs` | `number` (ms) | Basics — Tilt (oscillate mode) | `4000` |
+| `staminaDrainMultiplier` | `number` (0.25–4.0) | Basics — Physics & Gameplay | `1.0` |
+| `qteEnabled` | `boolean` | Basics — Physics & Gameplay | `true` |
+| `qteWindowScaling` | `"flat"\|"by_cost"` | Basics — Physics & Gameplay | `"by_cost"` |
+| `randomModifiers` | `boolean` | Basics — Physics & Gameplay | `false` |
+| `maxModifiers` | `number` | Basics — Physics & Gameplay | `2` |
+| `backgroundColor` | `string` (hex) | Basics — Visual Overrides | theme default |
+| `floorColor` | `string` (hex) | Basics — Visual Overrides | theme default |
+| `controlledBySwitchId` | `string` | Features — DirectionalZones, TriggerZones | `""` |
+
+---
+
+## Session 14 Additions (2026-05-23) — mechanic_defs + gimmick_defs seed layer + admin CRUD
+
+| Change | Files | Detail |
+|---|---|---|
+| `seed-mechanics.js` registered | `scripts/seed-all.js`, `package.json` | 31 mechanic_defs, one per MechanicRegistry handler. `npm run seed:mechanics`. |
+| `seed-gimmicks.js` registered | `scripts/seed-all.js`, `package.json` | 27 gimmick_defs (22 original + 5 new). `npm run seed:gimmicks`. |
+| 5 new gimmicks | `scripts/seed-gimmicks.js` | `magnacore_repel`, `magnacore_attract`, `dual_spin_launch`, `mode_switch_tip`, `spring_launch` |
+| `MECHANIC_DEFS` + `GIMMICK_DEFS` constants | `client/src/lib/firebase.ts` | Added to COLLECTIONS object (`"mechanic_defs"`, `"gimmick_defs"`) |
+| `MechanicDefsPage.tsx` | `client/src/pages/admin/MechanicDefsPage.tsx` | CRUD page at `/admin/mechanic-defs`. List grouped by category. Create/Edit modal: name, SearchableSelect category, description, JSON params editor. |
+| `GimmickDefsPage.tsx` | `client/src/pages/admin/GimmickDefsPage.tsx` | CRUD page at `/admin/gimmick-defs`. List with behaviorRef chips. Create/Edit modal: name, description, SearchableMultiSelect beybladeTypes, behaviorRefs JSON editor with quick-add buttons. |
+| Router wiring | `client/src/router.tsx` | Routes `/admin/mechanic-defs` and `/admin/gimmick-defs` added under AdminLayout |
+| Phase 06 Section 10 | `research/phases/phase-06-mechanics.md` | Full seed layer documentation: mechanic_defs schema, gimmick_defs schema, 22 original gimmick table, 5 new gimmick table, gimmickExpander runtime wiring diagram |
+| Diagram #18 | `research/diagrams/diagram-turret-powerup-system.md` | 8 Mermaid diagrams: dispatch flow, ghost sequence, illusion taxonomy, bey-as-weapon flow, movement state machine, mechanics breakdown, 4-file pattern, attack type pie |
+
+**New admin routes:**
+
+| Route | Page | Collection |
+|-------|------|-----------|
+| `/admin/mechanic-defs` | `MechanicDefsPage` | `mechanic_defs` |
+| `/admin/gimmick-defs` | `GimmickDefsPage` | `gimmick_defs` |
+
+---
+
+## Session 15 Additions (2026-05-23) — Build fix + TSC zero-errors pass + form completeness
+
+| Change | Files | Detail |
+|---|---|---|
+| Vercel build fix | `client/src/components/admin/part-editor/PartTypeFields.tsx` | Lines 761 + 797: missing `}` after `</>` closing JSX fragment in `&&` conditional expressions for `spin_injection` and `counter_rotation` gimmick gates. |
+| `shared/types/` expansion | `shared/types/beybladeConstants.ts`, `shared/types/beybladeStats.ts`, `shared/types/comboVisual.ts` | Copied from `client/src/types/` so `shared/types/beybladeSystem.ts`, `comboTask.ts`, `specialMove.ts` can resolve their imports. These three files are now canonical in `shared/types/`. |
+| `ServerProjectile` type fix | `client/src/types/game.ts` | Added `radius?`, `length?`, `width?` optional fields — used by `FeatureRenderer.ts` for shape-specific projectile rendering (e.g. `daiguren_front`, `muken_cloud`, `sand_cage`). |
+| `PartTypeFields.tsx` unknown→ReactNode | `client/src/components/admin/part-editor/PartTypeFields.tsx` | Wrapped `detachment?.enabled` and `coreSlot?.enabled` with `!!()` — `Record<string, unknown>` values cannot be used directly as React boolean conditions. |
+| `TurretsTab.tsx` accent typo | `client/src/components/admin/arena-tabs/TurretsTab.tsx` | `"resurreccion"` → `"resurrección"` — string literal did not match the union type. |
+| `BeybladeSystemCreatePage` | `client/src/pages/admin/2d/beyblade-systems/BeybladeSystemCreatePage.tsx` | Added `gearAttachments: []` to initial object — `BeybladeSystem.gearAttachments` is required (non-optional). |
+| `SoundManager` imports | `client/src/pages/AIBattleGamePage.tsx`, `client/src/pages/TournamentBattleGamePage.tsx` | Added `import { SoundManager } from "@/game/audio/SoundManager"` — was used but never imported. |
+| Duplicate `sage_mode` key | `client/src/game/renderer/FeatureRenderer.ts` | Renamed second `sage_mode` → `sage_mode_naruto` (Minato/Advanced Naruto section, 0x557733 dark-green). First entry (Transformations, 0xff9933 orange) is canonical. |
+| Theme property fixes | `client/src/pages/admin/GimmickDefsPage.tsx`, `client/src/pages/admin/MechanicDefsPage.tsx` | `C.textMuted` → `C.muted`, `C.accent` → `C.blue` — non-existent properties on the theme `C` object. |
+| BeybladeEditPage advanced-physics | `client/src/pages/admin/BeybladeEditPage.tsx` | Added "Advanced Physics" section: `jumpForce` (N, default 0), `jumpHeight` (cm), `burstResistance` (0–100). These three `BeybladeStats` fields existed in the type but had no admin UI. |
+| CLAUDE.md policy | `CLAUDE.md` | Added "TypeScript: Zero Errors Policy" section — `cd client && npx tsc --noEmit` must pass after every `.ts`/`.tsx` edit. Documents 4 recurring patterns. |
+
+**TSC error categories fixed (all 7):**
+
+| Category | Fix |
+|----------|-----|
+| Missing `shared/types/` modules (`beybladeStats`, `comboVisual`) | Copied 3 files from `client/src/types/` |
+| `ServerProjectile` missing `radius`/`length`/`width` | Added optional fields to interface |
+| `unknown` → `ReactNode` in PartTypeFields | `!!()` cast on two conditions |
+| `"resurreccion"` literal mismatch | Corrected to `"resurrección"` |
+| `gearAttachments` missing from create-page initial object | Added `gearAttachments: []` |
+| `SoundManager` not imported | Added import in 2 pages |
+| `C.textMuted` / `C.accent` non-existent | Mapped to `C.muted` / `C.blue` |
+
+---
+
+## Session 16 Additions (2026-05-23) — Admin form px→cm + missing field audit
+
+| Change | Files | Detail |
+|---|---|---|
+| px→cm in ObstaclesTab | `client/src/components/admin/arena-tabs/ObstaclesTab.tsx` | `SLIDER_FIELDS` given `pxUnit?: true` flag. x, y, radius, recoilDistance display in cm (÷24). Render loop converts display↔px on change. |
+| px→cm in SwitchesTab | `client/src/components/admin/arena-tabs/SwitchesTab.tsx` | `SliderRow` x/y now ÷24 display, ×24 on save. Import `PX_PER_CM_BASE`. |
+| px→cm in TurretsTab (70 occurrences) | `client/src/components/admin/arena-tabs/TurretsTab.tsx` | Added `cmNumInput()` helper. `COMMON_FIELDS` x/y/radius/attackRange flagged `pxUnit`. 70 TypeSpecificParams `numInput` → `cmNumInput` and `(px)` → `(cm)` via PowerShell bulk replace. Velocity fields `(px/s)` left unchanged. |
+| `triggerState` dropdown (Obstacles) | `client/src/components/admin/arena-tabs/ObstaclesTab.tsx` | Added **Initial State** `SearchableSelect` (on/off) in element type grid — was missing from all obstacle cards. |
+| `triggerState` dropdown (Turrets) | `client/src/components/admin/arena-tabs/TurretsTab.tsx` | Added **Initial State** `SearchableSelect` (on/off) next to Controlled By Switch ID — was missing from all turret cards. |
+| Zone shape selector (WaterBodies) | `client/src/components/admin/arena-tabs/WaterBodiesTab.tsx` | Zone section now shows shape picker (circle/oval/square/rectangle), conditional dimension fields (radius for circle/oval/square; width+height for rectangle/oval), and rotation input. Previously only radius was shown regardless of shape. |
+| px→cm in SpecialMovesPage | `client/src/pages/admin/SpecialMovesPage.tsx` | `spinStealRadiusPx` and `aoeRadiusPx` physics effect inputs now display in cm (max 16.5, step 0.5). Import `PX_PER_CM_BASE`. Stored in px in Firestore. |
+| `effectId` in CombosPage | `client/src/pages/admin/CombosPage.tsx` | Added `effectId?: string` to `ComboDoc` interface, `EMPTY` state, `openEdit`, `handleSave`, and form UI. Input with hint: "links to combo_effects collection". Addresses the `detectComboFromSlots()` gap found in phase-04. |
+
+---
+
+## Session 17 Additions (2026-05-23) — Combo effectId wiring complete
+
+| Change | Files | Detail |
+|---|---|---|
+| `effectId` in COMBO_REGISTRY | `server/constants/combos.ts` | All 8 registry entries now carry `effectId` inline. `getComboById(id).effectId` returns a valid string. `spin-leech-jab` maps to `"spin-leech"` (matching the effect doc id). |
+| phase-04 table corrected | `research/phases/phase-04-combo-mapping.md` | All 8 combos changed from "MISSING / Broken" → "✅ Wired". Critical-gap note updated to reflect complete resolution. |
+
+---
+
+## Session 18 Additions (2026-05-23) — Phase 21 Unified Foundation Architecture
+
+| Addition | File | Content |
+|---|---|---|
+| Phase 21 | `research/phases/phase-21-unified-foundation.md` | Three-pillar architecture: BehaviorDef (mechanic_defs→gimmick_defs), GeometryDef (geometry_defs), StatDef (stat_defs). Full spec for applying the foundation to every entity in the game. |
+| INDEX.md | `research/INDEX.md` | Phase 21 entry added |
+| Amendment notes | `phase-06-mechanics.md`, `phase-05-parts.md` | Cross-references to phase-21 |
+
+**Key design decisions in Phase 21:**
+- `mechanic_defs` + `gimmick_defs` are the behavior source for ALL entities — not just beyblades. Special moves, combos, arena features, turret attacks, parts, and water bodies all express behavior as `MechanicInstance[]`.
+- New `geometry_defs` collection: shared geometry primitives referenced by ID from CPs, arena features, obstacles, projectiles, beyblade silhouettes.
+- New `stat_defs` collection: every numeric game attribute typed and ranged. `StatModifier[]` is the universal stat delta type used by beyblades, parts, arenas, combos, and special moves.
+- Two new seed scripts: `seed:geometry` (16 standard shapes) and `seed:stat-defs` (~35 stat definitions).
+- Two new admin routes: `/admin/geometry-defs` and `/admin/stat-defs`.
+- Three new standard control panels for all admin forms: Behavior Panel (MechanicInstance picker), Geometry Panel (GeometryDef picker + inline define), Stats Panel (StatModifier editor).
+- Migration is additive — all existing fields kept; new fields optional and coexist.
+- **"Make anything" guarantee**: new beyblade abilities, arena features, special moves, combo effects, obstacle behaviors, part bonuses require only data authoring. Code only needed for new atomic mechanic handlers.
+
+---
+
+## Session 19 Additions (2026-05-23) — Source Verification + Parts Expansion
+
+| Addition | Files | Content |
+|---|---|---|
+| batch-008 | research/batches/batch-008-source-verification-parts-expansion.md | 39 URLs fetched with visited-flag tracking; Gen1/HMS/MFB/Burst/BX parts expanded; 173 Burst drivers confirmed; 26 BX ratchets; 47+ BX blades with weights; 167+ Burst layers by sub-system; HMS AR/RC/WD weights |
+| linka cache: Gen1 | linka/parts/gen1/{attack-rings,weight-disks,blade-bases}.md | PlasticsDB-sourced: 28 AR names, 15 WD names, 19+ blade base names, 11 CEW/CWD names |
+| linka cache: HMS | linka/parts/hms/{attack-rings,running-cores,weight-disks}.md | HMSDB-sourced: 11 AR names (2 with weights), 10 RC names, 3 WD types with weights |
+| linka cache: Burst | linka/parts/burst/{drivers,layers,discs}.md | Planner-sourced: all 173 drivers, 167+ layers by sub-system (Single/Dual/God/Cho-Z/GT/DB/Remake), 71 forge discs |
+| linka cache: BX | linka/parts/bx/{blades,ratchets,bits}.md | BeyBX DB + BeyBase: 47+ blades (9 with weights), 26 ratchets, 32+ bits |
+| linka cache: MFB | linka/parts/mfb/{tips-catalog,spin-tracks}.md | Compiled from batch-004: full MFB tip reference + spin track reference |
+
+**Key source status:**
+- Cloudflare/403 blocked: beyblade.fandom.com (list pages), worldbeyblade.org (all threads)
+- Accessible Tier-1: plasticsdb.com ✓, hmsdb.com ✓, beybxdb.com ✓, burst.beybladeplanner.com ✓, beybase.com ✓ (Tier 2)
+- Down: plasticsdb.net (connection refused — .com is correct URL per user)
+- HMS weights: in Google Sheet linked from hmsdb.com — inaccessible via WebFetch
+
+---
+
 ## Current Work
 
-- **Active stage**: none — all 20 research stages complete; Q&A checklist 46/54 resolved; turret attack system expanded to 155+ move types
+- **Active stage**: none — all 20 research stages complete + Phase 21 unified foundation documented; Q&A checklist 54/54 resolved; turret attack system expanded to 179+ move types; source verification + parts expansion complete (session 19)
 - **Outstanding gaps**:
-  1. Q30–Q33/Q36/Q38 — BX bits (Taper/Ball/Point/Kick/Elevate), wiki 403-blocked
-  2. Q39–Q43 — Gen1 anime-exclusive beys, wiki 403-blocked
-  3. Gear admin CRUD page (`/admin/2d/parts/gears`) and seed entries not yet built
-  4. Collision sound missing from `AIBattleGamePage` and `TournamentBattleGamePage` (Q54 gap)
-  5. `revival_spin` formula not yet wired into physics tick (design confirmed Q49)
-  6. Room wiring for turret handler functions — `TurretProcessor.ts` exports the handlers but the room dispatch switch (in `TurretProcessor.ts` main `processTurret()` call path) needs case entries for all 155+ attack types
-  7. Dragon Ball move series incomplete — Gohan, Vegeta followup, Cell, Buu, Frieza transformation chain not yet added
-  8. One Piece, Demon Slayer, Attack on Titan — not yet started
+  1. Gear admin CRUD page (`/admin/2d/parts/gears`) and seed entries not yet built
+  2. Room wiring for turret handler functions — `TurretProcessor.ts` exports the handlers but the room dispatch switch needs case entries for all move types
+  3. Dragon Ball move series incomplete — Gohan, Vegeta followup, Cell, Buu, Frieza transformation chain not yet added
+  4. One Piece, Demon Slayer, Attack on Titan — not yet started
+  5. Dashboard links to `/admin/mechanic-defs` and `/admin/gimmick-defs` not yet added
+  6. Phase 21 implementation — `geometry_defs` and `stat_defs` collections + seed scripts + admin pages + form panels not yet built
 
 ---
 

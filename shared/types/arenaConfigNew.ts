@@ -921,6 +921,15 @@ export type TurretAttackType =
   | "shield_bey"          // Target bey gains full-body energy shield: blocks next hit + AoE retaliation burst
   | "turbo_bey"           // Target bey's spin and speed surge to max for 5s — extreme damage on contact
   | "cannon_bey"          // Turret catapults the bey at max force toward the furthest opponent
+  // ── Contra movement power-ups (bey movement state changes) ───────────────
+  | "speed_surge"         // Bey gets 3× speed for 2s — erratic high-speed movement
+  | "gravity_flip"        // Bey is repelled FROM arena center instead of attracted (inverted pull)
+  | "magnet_bey"          // Bey locks onto and chases the nearest opponent at force
+  | "bounce_storm"        // Bey bounces off arena walls with 3× recoil for 3s
+  | "freeze_step"         // Bey is completely frozen in place for 1.5s
+  | "ghost_walk"          // Bey passes through all opponents — collision disabled for 2s
+  | "boomerang_path"      // Bey enters circular orbit movement around arena center
+  | "teleport_dash"       // Bey rapidly blinks to 3 random positions at 0.4s intervals
 
 /**
  * Turret Fire Pattern (Phase Z)
@@ -2348,6 +2357,40 @@ export interface TurretConfig {
   cannonBeyForce?: number;
   /** cannon_bey: damage on impact (default 120) */
   cannonBeyDamage?: number;
+
+  // ── Contra movement power-up config ─────────────────────────────────────
+  /** speed_surge: speed multiplier (default 3.0) */
+  speedSurgeSpeedMult?: number;
+  /** speed_surge: duration seconds (default 2) */
+  speedSurgeDurationSec?: number;
+  /** gravity_flip: repulsion force from center (default 0.018) */
+  gravityFlipForce?: number;
+  /** gravity_flip: duration seconds (default 3) */
+  gravityFlipDurationSec?: number;
+  /** magnet_bey: chase force per tick (default 0.015) */
+  magnetBeyChaseForce?: number;
+  /** magnet_bey: duration seconds (default 2.5) */
+  magnetBeyDurationSec?: number;
+  /** bounce_storm: recoil multiplier on wall hit (default 3.0) */
+  bounceStormRecoilMult?: number;
+  /** bounce_storm: duration seconds (default 3) */
+  bounceStormDurationSec?: number;
+  /** freeze_step: freeze duration seconds (default 1.5) */
+  freezeStepDurationSec?: number;
+  /** ghost_walk: pass-through duration seconds (default 2) */
+  ghostWalkDurationSec?: number;
+  /** boomerang_path: orbit radius px (default 120) */
+  boomerangOrbitRadius?: number;
+  /** boomerang_path: orbit speed deg/sec (default 180) */
+  boomerangOrbitSpeed?: number;
+  /** boomerang_path: duration seconds (default 3) */
+  boomerangDurationSec?: number;
+  /** teleport_dash: number of blinks (default 3) */
+  teleportDashCount?: number;
+  /** teleport_dash: interval between blinks seconds (default 0.4) */
+  teleportDashIntervalSec?: number;
+  /** teleport_dash: max blink radius from current position px (default 200) */
+  teleportDashRadius?: number;
 
   // Phase Z — targeting
   firePattern?: TurretFirePattern;

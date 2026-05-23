@@ -1,4 +1,4 @@
----
+﻿---
 batch: 000
 stage: 0E
 status: complete
@@ -550,4 +550,4 @@ The plan requires 9 presentation layers. Current admin coverage:
 (none — all admin code was accessible and readable)
 
 ---
-[? Index](../INDEX.md) &nbsp;�&nbsp; [Batch 001: Schema Catalog ?](batch-001-schema-catalog.md)
+[↑ Index](../INDEX.md) &nbsp;�&nbsp; [Batch 001: Schema Catalog →](batch-001-schema-catalog.md)

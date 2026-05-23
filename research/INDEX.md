@@ -2,7 +2,7 @@
 
 **Project**: Beyblade Game — Part System & Engine Research
 **Maintained by**: Claude Code sessions
-**Last updated**: 2026-05-23 (session 11 — 155+ turret attack moves; Obito/Rinnegan/Dragon Ball/Eight Gates/Otsutsuki batches)
+**Last updated**: 2026-05-23 (session 19 — Source verification + parts list expansion: Gen1/HMS/MFB/Burst/BX parts cached to linka/; batch-008 written)
 
 > This index covers all research documents in the `research/` folder.
 > Every file links back here via its navigation footer.
@@ -33,6 +33,7 @@ Raw research output. Each batch is a focused investigation into a specific topic
 | 006 | [batch-006-shape-material-behavior-matrix.md](batches/batch-006-shape-material-behavior-matrix.md) | **Shape / Material / Behavior matrix** — tips and contact points, all combinations | complete |
 | 006-x | [batch-006-x-parts-disambiguation.md](batches/batch-006-x-parts-disambiguation.md) | BX Bit catalog — Flat/Rush/Needle/Gear Needle/Rubber Accel/Trans Kick; Ratchet naming; Gear Bit rack-and-pinion mechanic | complete |
 | 007 | [batch-007-extended-tips-casings-gimmicks-disambiguation.md](batches/batch-007-extended-tips-casings-gimmicks-disambiguation.md) | Extended tips (WF/XF/WB/WD/EWD/EDS/TB/BS/LF/R²F corrections), casings, mechanical gimmicks (EG clutches, Magnacore, auto-change), plastic gen disambiguation | complete |
+| 008 | [batch-008-source-verification-parts-expansion.md](batches/batch-008-source-verification-parts-expansion.md) | **Source verification + parts expansion** — URL fetch log (39 URLs, visited flag tracked); Gen1/HMS/MFB/Burst/BX parts expanded; 173 Burst drivers confirmed; 26 BX ratchets; 47+ BX blades with weights; 167+ Burst layers by sub-system; HMS AR/RC/WD weights | complete |
 
 ---
 
@@ -60,6 +61,7 @@ Compiled phase documents synthesizing research into actionable design decisions.
 | 16 | [phase-16-gap-analysis.md](phases/phase-16-gap-analysis.md) | Gap analysis | complete |
 | 19 | [phase-19-impl-plan.md](phases/phase-19-impl-plan.md) | Implementation plan | complete |
 | 20 | [phase-20-codegen.md](phases/phase-20-codegen.md) | Code generation | complete |
+| 21 | [phase-21-unified-foundation.md](phases/phase-21-unified-foundation.md) | **Unified foundation — three-pillar architecture: BehaviorDef (mechanic_defs→gimmick_defs), GeometryDef (geometry_defs), StatDef (stat_defs). Universal basis for all entities.** | complete |
 
 ---
 

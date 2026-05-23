@@ -287,6 +287,25 @@ export interface TurretRuntimeState {
   shieldBeyActive?: boolean;
   turboBeyTargetId?: string;
   turboBeyUntilMs?: number;
+  // ── Contra movement power-up runtime state ────────────────────────────────
+  speedSurgeTargetId?: string;
+  speedSurgeUntilMs?: number;
+  gravityFlipTargetId?: string;
+  gravityFlipUntilMs?: number;
+  magnetBeyTargetId?: string;
+  magnetBeyUntilMs?: number;
+  bounceStormTargetId?: string;
+  bounceStormUntilMs?: number;
+  freezeStepTargetId?: string;
+  freezeStepUntilMs?: number;
+  ghostWalkTargetId?: string;
+  ghostWalkUntilMs?: number;
+  boomerangTargetId?: string;
+  boomerangUntilMs?: number;
+  boomerangAngleDeg?: number;
+  teleportDashTargetId?: string;
+  teleportDashBlinksLeft?: number;
+  teleportDashNextBlinkMs?: number;
 }
 
 // ── Z4b: Fire pattern target selection ─────────────────────────────────────
@@ -5461,7 +5480,7 @@ export function processGenjutsuVeilTick(turretConfig: any, runtime: TurretRuntim
   }
 }
 
-/** false_flag: Swaps rendered identity (color, label) of two random beys. */
+/** false_flag: Swaps the displayed IDs of two random beys so opponents see the wrong bey. */
 export function triggerFalseFlag(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], nowMs: number): void {
   const active = beyblades.filter(b => b.isActive);
   if (active.length < 2) return;
@@ -5471,16 +5490,25 @@ export function triggerFalseFlag(turretConfig: any, runtime: TurretRuntimeState,
   runtime.falseFlagPairA = active[i].id;
   runtime.falseFlagPairB = active[j].id;
   runtime.falseFlagUntilMs = nowMs + (turretConfig.falseFlagDurationSec ?? 5) * 1000;
-  const tmp = active[i].color;
-  active[i].color = active[j].color;
-  active[j].color = tmp;
+  // Swap display name tags on schema via dynamic fields so clients render wrong labels
+  const tmpName = (active[i] as any)._displayName ?? active[i].userId;
+  (active[i] as any)._displayName = (active[j] as any)._displayName ?? active[j].userId;
+  (active[j] as any)._displayName = tmpName;
+  (active[i] as any)._falseFlagged = true;
+  (active[j] as any)._falseFlagged = true;
 }
 export function processFalseFlagTick(runtime: TurretRuntimeState, beyblades: Beyblade[], nowMs: number): void {
   if (!runtime.falseFlagUntilMs || !runtime.falseFlagPairA || !runtime.falseFlagPairB) return;
   if (nowMs > runtime.falseFlagUntilMs) {
     const a = beyblades.find(b => b.id === runtime.falseFlagPairA);
     const bx = beyblades.find(b => b.id === runtime.falseFlagPairB);
-    if (a && bx) { const tmp = a.color; a.color = bx.color; bx.color = tmp; }
+    if (a && bx) {
+      const tmpName = (a as any)._displayName;
+      (a as any)._displayName = (bx as any)._displayName;
+      (bx as any)._displayName = tmpName;
+      (a as any)._falseFlagged = undefined;
+      (bx as any)._falseFlagged = undefined;
+    }
     runtime.falseFlagPairA = undefined;
     runtime.falseFlagPairB = undefined;
     runtime.falseFlagUntilMs = undefined;
@@ -5708,4 +5736,191 @@ export function applyCannonBey(turretConfig: any, target: Beyblade, beyblades: B
     bridge.applyKnockback(target.id, { x: Math.cos(ang), y: Math.sin(ang) }, force);
   }
   target.spin = Math.min(target.maxSpin, target.spin + target.maxSpin * 0.1);
+}
+
+// ── Contra movement power-up handlers ────────────────────────────────────────
+
+/** speed_surge: Bey gets 3× speed burst for duration. */
+export function applySpeedSurge(turretConfig: any, runtime: TurretRuntimeState, target: Beyblade, bridge: TurretProcessorBridge, nowMs: number): void {
+  runtime.speedSurgeTargetId = target.id;
+  runtime.speedSurgeUntilMs = nowMs + (turretConfig.speedSurgeDurationSec ?? 2) * 1000;
+  (target as any)._speedSurgeMult = turretConfig.speedSurgeSpeedMult ?? 3.0;
+  const ang = Math.random() * Math.PI * 2;
+  const speed = ((turretConfig.speedSurgeSpeedMult ?? 3.0) - 1) * 15;
+  if (bridge.setVelocity) bridge.setVelocity(target.id, Math.cos(ang) * speed, Math.sin(ang) * speed);
+}
+export function processSpeedSurgeTick(runtime: TurretRuntimeState, beyblades: Beyblade[], nowMs: number): void {
+  if (!runtime.speedSurgeTargetId || !runtime.speedSurgeUntilMs) return;
+  if (nowMs > runtime.speedSurgeUntilMs) {
+    const bey = beyblades.find(b => b.id === runtime.speedSurgeTargetId);
+    if (bey) (bey as any)._speedSurgeMult = undefined;
+    runtime.speedSurgeTargetId = undefined;
+    runtime.speedSurgeUntilMs = undefined;
+  }
+}
+
+/** gravity_flip: Bey is repelled from arena center instead of attracted. */
+export function applyGravityFlip(turretConfig: any, runtime: TurretRuntimeState, target: Beyblade, nowMs: number): void {
+  runtime.gravityFlipTargetId = target.id;
+  runtime.gravityFlipUntilMs = nowMs + (turretConfig.gravityFlipDurationSec ?? 3) * 1000;
+  (target as any)._gravityFlipForce = turretConfig.gravityFlipForce ?? 0.018;
+}
+export function processGravityFlipTick(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], bridge: TurretProcessorBridge, nowMs: number): void {
+  if (!runtime.gravityFlipTargetId || !runtime.gravityFlipUntilMs) return;
+  if (nowMs > runtime.gravityFlipUntilMs) {
+    const bey = beyblades.find(b => b.id === runtime.gravityFlipTargetId);
+    if (bey) (bey as any)._gravityFlipForce = undefined;
+    runtime.gravityFlipTargetId = undefined;
+    runtime.gravityFlipUntilMs = undefined;
+    return;
+  }
+  const bey = beyblades.find(b => b.id === runtime.gravityFlipTargetId);
+  if (!bey || !bey.isActive) return;
+  const dist = Math.sqrt(bey.x ** 2 + bey.y ** 2) || 1;
+  const force = (bey as any)._gravityFlipForce ?? 0.018;
+  bridge.applyForce(bey.id, (bey.x / dist) * force * 1000, (bey.y / dist) * force * 1000);
+}
+
+/** magnet_bey: Bey locks onto and chases the nearest opponent. */
+export function applyMagnetBey(turretConfig: any, runtime: TurretRuntimeState, target: Beyblade, nowMs: number): void {
+  runtime.magnetBeyTargetId = target.id;
+  runtime.magnetBeyUntilMs = nowMs + (turretConfig.magnetBeyDurationSec ?? 2.5) * 1000;
+  (target as any)._magnetBeyChaseForce = turretConfig.magnetBeyChaseForce ?? 0.015;
+}
+export function processMagnetBeyTick(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], bridge: TurretProcessorBridge, nowMs: number): void {
+  if (!runtime.magnetBeyTargetId || !runtime.magnetBeyUntilMs) return;
+  if (nowMs > runtime.magnetBeyUntilMs) {
+    const bey = beyblades.find(b => b.id === runtime.magnetBeyTargetId);
+    if (bey) (bey as any)._magnetBeyChaseForce = undefined;
+    runtime.magnetBeyTargetId = undefined;
+    runtime.magnetBeyUntilMs = undefined;
+    return;
+  }
+  const bey = beyblades.find(b => b.id === runtime.magnetBeyTargetId);
+  if (!bey || !bey.isActive) return;
+  let nearest: Beyblade | null = null;
+  let nearDist = Infinity;
+  for (const b of beyblades) {
+    if (!b.isActive || b.id === bey.id) continue;
+    const d = (b.x - bey.x) ** 2 + (b.y - bey.y) ** 2;
+    if (d < nearDist) { nearDist = d; nearest = b; }
+  }
+  if (!nearest) return;
+  const dx = nearest.x - bey.x;
+  const dy = nearest.y - bey.y;
+  const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+  const force = (bey as any)._magnetBeyChaseForce ?? 0.015;
+  bridge.applyForce(bey.id, (dx / dist) * force * 1000, (dy / dist) * force * 1000);
+}
+
+/** bounce_storm: Bey recoils 3× harder from arena walls. Applied as a flag checked in collision. */
+export function applyBounceStorm(turretConfig: any, runtime: TurretRuntimeState, target: Beyblade, nowMs: number): void {
+  runtime.bounceStormTargetId = target.id;
+  runtime.bounceStormUntilMs = nowMs + (turretConfig.bounceStormDurationSec ?? 3) * 1000;
+  (target as any)._bounceStormMult = turretConfig.bounceStormRecoilMult ?? 3.0;
+}
+export function processBounceStormTick(runtime: TurretRuntimeState, beyblades: Beyblade[], nowMs: number): void {
+  if (!runtime.bounceStormTargetId || !runtime.bounceStormUntilMs) return;
+  if (nowMs > runtime.bounceStormUntilMs) {
+    const bey = beyblades.find(b => b.id === runtime.bounceStormTargetId);
+    if (bey) (bey as any)._bounceStormMult = undefined;
+    runtime.bounceStormTargetId = undefined;
+    runtime.bounceStormUntilMs = undefined;
+  }
+}
+
+/** freeze_step: Bey is locked in place — zero velocity, `isActive` kept but movement blocked. */
+export function applyFreezeStep(turretConfig: any, runtime: TurretRuntimeState, target: Beyblade, bridge: TurretProcessorBridge, nowMs: number): void {
+  runtime.freezeStepTargetId = target.id;
+  runtime.freezeStepUntilMs = nowMs + (turretConfig.freezeStepDurationSec ?? 1.5) * 1000;
+  (target as any)._freezeStepActive = true;
+  if (bridge.setVelocity) bridge.setVelocity(target.id, 0, 0);
+}
+export function processFreezeStepTick(runtime: TurretRuntimeState, beyblades: Beyblade[], bridge: TurretProcessorBridge, nowMs: number): void {
+  if (!runtime.freezeStepTargetId || !runtime.freezeStepUntilMs) return;
+  const bey = beyblades.find(b => b.id === runtime.freezeStepTargetId);
+  if (nowMs > runtime.freezeStepUntilMs) {
+    if (bey) (bey as any)._freezeStepActive = undefined;
+    runtime.freezeStepTargetId = undefined;
+    runtime.freezeStepUntilMs = undefined;
+    return;
+  }
+  if (bey && bey.isActive && bridge.setVelocity) bridge.setVelocity(bey.id, 0, 0);
+}
+
+/** ghost_walk: Bey passes through opponents — sets collision-disabled flag. */
+export function applyGhostWalk(turretConfig: any, runtime: TurretRuntimeState, target: Beyblade, nowMs: number): void {
+  runtime.ghostWalkTargetId = target.id;
+  runtime.ghostWalkUntilMs = nowMs + (turretConfig.ghostWalkDurationSec ?? 2) * 1000;
+  (target as any)._ghostWalkActive = true;
+  target.invulnerable = true;
+}
+export function processGhostWalkTick(runtime: TurretRuntimeState, beyblades: Beyblade[], nowMs: number): void {
+  if (!runtime.ghostWalkTargetId || !runtime.ghostWalkUntilMs) return;
+  if (nowMs > runtime.ghostWalkUntilMs) {
+    const bey = beyblades.find(b => b.id === runtime.ghostWalkTargetId);
+    if (bey) {
+      (bey as any)._ghostWalkActive = undefined;
+      bey.invulnerable = false;
+    }
+    runtime.ghostWalkTargetId = undefined;
+    runtime.ghostWalkUntilMs = undefined;
+  }
+}
+
+/** boomerang_path: Bey orbits arena center in a circular arc. */
+export function applyBoomerangPath(turretConfig: any, runtime: TurretRuntimeState, target: Beyblade, nowMs: number): void {
+  runtime.boomerangTargetId = target.id;
+  runtime.boomerangUntilMs = nowMs + (turretConfig.boomerangDurationSec ?? 3) * 1000;
+  const ang = Math.atan2(target.y, target.x) * (180 / Math.PI);
+  runtime.boomerangAngleDeg = ang;
+  (target as any)._boomerangOrbitRadius = turretConfig.boomerangOrbitRadius ?? 120;
+  (target as any)._boomerangOrbitSpeed = turretConfig.boomerangOrbitSpeed ?? 180;
+}
+export function processBoomerangPathTick(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], bridge: TurretProcessorBridge, dt: number, nowMs: number): void {
+  if (!runtime.boomerangTargetId || !runtime.boomerangUntilMs) return;
+  if (nowMs > runtime.boomerangUntilMs) {
+    const bey = beyblades.find(b => b.id === runtime.boomerangTargetId);
+    if (bey) {
+      (bey as any)._boomerangOrbitRadius = undefined;
+      (bey as any)._boomerangOrbitSpeed = undefined;
+    }
+    runtime.boomerangTargetId = undefined;
+    runtime.boomerangUntilMs = undefined;
+    runtime.boomerangAngleDeg = undefined;
+    return;
+  }
+  const bey = beyblades.find(b => b.id === runtime.boomerangTargetId);
+  if (!bey || !bey.isActive) return;
+  const speed = (bey as any)._boomerangOrbitSpeed ?? 180;
+  const r = (bey as any)._boomerangOrbitRadius ?? 120;
+  runtime.boomerangAngleDeg = ((runtime.boomerangAngleDeg ?? 0) + speed * (dt / 1000)) % 360;
+  const angRad = runtime.boomerangAngleDeg * (Math.PI / 180);
+  const targetX = Math.cos(angRad) * r;
+  const targetY = Math.sin(angRad) * r;
+  const dx = targetX - bey.x;
+  const dy = targetY - bey.y;
+  bridge.applyForce(bey.id, dx * 0.8, dy * 0.8);
+}
+
+/** teleport_dash: Bey blinks to N random positions at intervals. */
+export function applyTeleportDash(turretConfig: any, runtime: TurretRuntimeState, target: Beyblade, nowMs: number): void {
+  runtime.teleportDashTargetId = target.id;
+  runtime.teleportDashBlinksLeft = turretConfig.teleportDashCount ?? 3;
+  runtime.teleportDashNextBlinkMs = nowMs;
+}
+export function processTeleportDashTick(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], bridge: TurretProcessorBridge, nowMs: number): void {
+  if (!runtime.teleportDashTargetId || !runtime.teleportDashBlinksLeft) return;
+  if (nowMs < (runtime.teleportDashNextBlinkMs ?? 0)) return;
+  const bey = beyblades.find(b => b.id === runtime.teleportDashTargetId);
+  if (!bey || !bey.isActive) { runtime.teleportDashTargetId = undefined; runtime.teleportDashBlinksLeft = 0; return; }
+  const radius = turretConfig.teleportDashRadius ?? 200;
+  const ang = Math.random() * Math.PI * 2;
+  const dist = Math.random() * radius;
+  bey.x += Math.cos(ang) * dist;
+  bey.y += Math.sin(ang) * dist;
+  if (bridge.setVelocity) bridge.setVelocity(bey.id, 0, 0);
+  runtime.teleportDashBlinksLeft -= 1;
+  runtime.teleportDashNextBlinkMs = nowMs + (turretConfig.teleportDashIntervalSec ?? 0.4) * 1000;
+  if (runtime.teleportDashBlinksLeft <= 0) runtime.teleportDashTargetId = undefined;
 }
