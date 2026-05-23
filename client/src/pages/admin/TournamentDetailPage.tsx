@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   doc, onSnapshot, collection, query, where,
-  updateDoc, addDoc, serverTimestamp, Timestamp, writeBatch, getDocs,
+  updateDoc, addDoc, serverTimestamp, Timestamp, writeBatch, getDocs, deleteDoc,
 } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, pill, btn } from "@/styles/theme";
+import { C, pill, btn, alpha } from "@/styles/theme";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type { TournamentDoc, TournamentParticipantDoc, TournamentMatchDoc } from "@/types/game";
 import toast from "react-hot-toast";
 
@@ -33,6 +34,12 @@ export function TournamentDetailPage() {
   // Add AI participant form state
   const [aiUsername, setAiUsername] = useState("Bot");
   const [aiBeybladeId, setAiBeybladeId] = useState("");
+
+  // Match detail modal
+  const [selectedMatch, setSelectedMatch] = useState<TournamentMatchDoc | null>(null);
+  const [setWinnerValue, setSetWinnerValue] = useState("");
+  const [rescheduleTime, setRescheduleTime] = useState("");
+  const [resetBracketConfirm, setResetBracketConfirm] = useState(false);
 
   useEffect(() => {
     if (!tournamentId) return;
@@ -185,6 +192,93 @@ export function TournamentDetailPage() {
     } finally { setBusy(false); }
   };
 
+  const handleSetWinner = async () => {
+    if (!selectedMatch || !setWinnerValue) return;
+    setBusy(true);
+    try {
+      await updateDoc(doc(db, COLLECTIONS.TOURNAMENT_BRACKETS, selectedMatch.id), {
+        winnerId: setWinnerValue, status: "completed", updatedAt: serverTimestamp(),
+      });
+      // Advance participant status
+      const loser = setWinnerValue === selectedMatch.participant1Id ? selectedMatch.participant2Id : selectedMatch.participant1Id;
+      if (loser && loser !== "__bye__") {
+        const loserSnap = await getDocs(query(collection(db, COLLECTIONS.TOURNAMENT_PARTICIPANTS), where("id", "==", loser)));
+        if (!loserSnap.empty) {
+          await updateDoc(doc(db, COLLECTIONS.TOURNAMENT_PARTICIPANTS, loserSnap.docs[0].id), { status: "eliminated", updatedAt: serverTimestamp() });
+        }
+      }
+      toast.success("Winner set.");
+      setSelectedMatch(null);
+      setSetWinnerValue("");
+    } catch (err: any) { toast.error(err?.message ?? "Failed"); }
+    finally { setBusy(false); }
+  };
+
+  const handleReschedule = async () => {
+    if (!selectedMatch || !rescheduleTime) return;
+    setBusy(true);
+    try {
+      await updateDoc(doc(db, COLLECTIONS.TOURNAMENT_BRACKETS, selectedMatch.id), {
+        scheduledTime: Timestamp.fromDate(new Date(rescheduleTime)), updatedAt: serverTimestamp(),
+      });
+      toast.success("Match rescheduled.");
+      setSelectedMatch(null);
+      setRescheduleTime("");
+    } catch (err: any) { toast.error(err?.message ?? "Failed"); }
+    finally { setBusy(false); }
+  };
+
+  const handleResetBracket = async () => {
+    if (!tournamentId) return;
+    setBusy(true);
+    setResetBracketConfirm(false);
+    try {
+      const snap = await getDocs(query(collection(db, COLLECTIONS.TOURNAMENT_BRACKETS), where("tournamentId", "==", tournamentId)));
+      const batch = writeBatch(db);
+      snap.docs.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+      await updateDoc(doc(db, COLLECTIONS.TOURNAMENTS, tournamentId), { status: "registration", updatedAt: serverTimestamp() });
+      toast.success("Bracket reset — tournament returned to registration.");
+    } catch (err: any) { toast.error(err?.message ?? "Reset failed"); }
+    finally { setBusy(false); }
+  };
+
+  const handleForceFillAI = async () => {
+    if (!tournamentId || !tournament) return;
+    setBusy(true);
+    try {
+      const pendingSlots = matches.filter(m => m.status === "pending" && (!m.participant1Id || !m.participant2Id));
+      if (pendingSlots.length === 0) { toast.error("No pending empty slots found."); setBusy(false); return; }
+      const batch = writeBatch(db);
+      let count = 0;
+      for (const slot of pendingSlots) {
+        const updates: any = { updatedAt: serverTimestamp() };
+        if (!slot.participant1Id || slot.participant1Id === "__bye__") {
+          const aiRef = await addDoc(collection(db, COLLECTIONS.TOURNAMENT_PARTICIPANTS), {
+            tournamentId, userId: `__ai__${Date.now()}_${count}`, username: `AI Bot ${count + 1}`,
+            beybladeId: "", isAI: true, seed: participants.length + count + 1,
+            registeredAt: serverTimestamp(), status: "registered",
+          });
+          updates.participant1Id = aiRef.id;
+          count++;
+        }
+        if (!slot.participant2Id || slot.participant2Id === "__bye__") {
+          const aiRef = await addDoc(collection(db, COLLECTIONS.TOURNAMENT_PARTICIPANTS), {
+            tournamentId, userId: `__ai__${Date.now()}_${count}`, username: `AI Bot ${count + 1}`,
+            beybladeId: "", isAI: true, seed: participants.length + count + 1,
+            registeredAt: serverTimestamp(), status: "registered",
+          });
+          updates.participant2Id = aiRef.id;
+          count++;
+        }
+        batch.update(doc(db, COLLECTIONS.TOURNAMENT_BRACKETS, slot.id), updates);
+      }
+      await batch.commit();
+      toast.success(`Force-filled ${count} AI slot${count !== 1 ? "s" : ""}.`);
+    } catch (err: any) { toast.error(err?.message ?? "Failed"); }
+    finally { setBusy(false); }
+  };
+
   if (!tournament) {
     return (
       <div style={{ padding: 24, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 200 }}>
@@ -200,9 +294,15 @@ export function TournamentDetailPage() {
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <Link to="/admin/tournaments" style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Tournaments</Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8, flexWrap: "wrap" }}>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>{tournament.name}</h1>
           <span style={pill(STATUS_COLORS[tournament.status] ?? C.faint)}>{tournament.status}</span>
+          {(tournament.status === "draft" || tournament.status === "registration") && (
+            <Link to={`/admin/tournaments/${tournamentId}/edit`}
+              style={{ padding: "4px 12px", fontSize: 12, borderRadius: 6, background: alpha(C.blue, 0.1), color: C.blue, border: `1px solid ${alpha(C.blue, 0.25)}`, textDecoration: "none" }}>
+              Edit
+            </Link>
+          )}
         </div>
       </div>
 
@@ -221,6 +321,12 @@ export function TournamentDetailPage() {
               )}
               {tournament.status === "in-progress" && (
                 <button onClick={() => setStatus("completed")} disabled={busy} style={{ ...btn(C.purple), fontSize: 12 }}>Mark Completed</button>
+              )}
+              {tournament.status === "in-progress" && (
+                <button onClick={() => setResetBracketConfirm(true)} disabled={busy} style={{ ...btn(C.red), fontSize: 12 }}>Reset Bracket</button>
+              )}
+              {tournament.status === "in-progress" && (
+                <button onClick={handleForceFillAI} disabled={busy} style={{ ...btn(C.yellow), color: C.bg0, fontSize: 12 }}>Force-Fill AI</button>
               )}
               {(tournament.status === "draft" || tournament.status === "registration") && (
                 <button onClick={() => setStatus("cancelled")} disabled={busy} style={{ ...btn(C.red), fontSize: 12 }}>Cancel</button>
@@ -245,7 +351,9 @@ export function TournamentDetailPage() {
                         const p2 = participants.find((p) => p.id === m.participant2Id);
                         const statusColor = m.status === "in-progress" ? C.green : m.status === "completed" ? C.purple : m.status === "bye" ? C.faint : C.muted;
                         return (
-                          <div key={m.id} style={{ background: C.bg2, borderRadius: 8, border: `1px solid ${C.border}`, padding: 10 }}>
+                          <div key={m.id}
+                            onClick={() => { setSelectedMatch(m); setSetWinnerValue(m.winnerId ?? ""); setRescheduleTime(""); }}
+                            style={{ background: C.bg2, borderRadius: 8, border: `1px solid ${C.border}`, padding: 10, cursor: "pointer" }}>
                             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                               <span style={{ fontSize: 10, color: statusColor, fontWeight: 600, textTransform: "uppercase" }}>{m.status}</span>
                               {m.colyseusRoomId && <span style={{ fontSize: 10, color: C.faint, fontFamily: "monospace" }}>{m.colyseusRoomId.slice(0, 8)}…</span>}
@@ -343,6 +451,93 @@ export function TournamentDetailPage() {
               <Row label="Start" value={formatDate(tournament.scheduledStartTime)} />
               <Row label="Round Gap" value={`${tournament.roundIntervalMinutes}m`} />
               {tournament.winnerUsername && <Row label="Winner" value={`🏆 ${tournament.winnerUsername}`} />}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Match detail modal */}
+      {selectedMatch && (
+        <MatchDetailModal
+          match={selectedMatch}
+          participants={participants}
+          onClose={() => { setSelectedMatch(null); setSetWinnerValue(""); setRescheduleTime(""); }}
+          onSetWinner={handleSetWinner}
+          onReschedule={handleReschedule}
+          busy={busy}
+        />
+      )}
+
+      {/* Reset bracket confirmation */}
+      {resetBracketConfirm && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, maxWidth: 400, width: "90%" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 10 }}>Reset Bracket?</h3>
+            <p style={{ color: C.muted, fontSize: 13, marginBottom: 20 }}>All match documents will be deleted and the tournament will return to registration status. This cannot be undone.</p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button onClick={() => setResetBracketConfirm(false)} style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>Cancel</button>
+              <button onClick={handleResetBracket} disabled={busy} style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: "none", background: C.red, color: "#fff", cursor: "pointer" }}>Reset</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MatchDetailModal({ match, participants, onClose, onSetWinner, onReschedule, busy }: {
+  match: TournamentMatchDoc; participants: TournamentParticipantDoc[];
+  onClose: () => void;
+  onSetWinner: (winnerId: string) => void;
+  onReschedule: (time: string) => void;
+  busy: boolean;
+}) {
+  const [winnerSel, setWinnerSel] = useState(match.winnerId ?? "");
+  const [reschedSel, setReschedSel] = useState("");
+  const p1 = participants.find(p => p.id === match.participant1Id);
+  const p2 = participants.find(p => p.id === match.participant2Id);
+
+  const participantOpts = [
+    ...(p1 ? [{ value: p1.id, label: p1.username + (p1.isAI ? " (AI)" : "") }] : []),
+    ...(p2 ? [{ value: p2.id, label: p2.username + (p2.isAI ? " (AI)" : "") }] : []),
+  ];
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 16 }}>
+      <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 24, width: "100%", maxWidth: 440 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text }}>Match Detail — R{match.round} M{match.matchNumber}</h3>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: C.faint, cursor: "pointer", fontSize: 18 }}>×</button>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, fontSize: 13, marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>Status</span><span style={{ color: C.text, textTransform: "capitalize" }}>{match.status}</span></div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>Scheduled</span><span style={{ color: C.text }}>{match.scheduledTime?.toDate ? match.scheduledTime.toDate().toLocaleString() : "—"}</span></div>
+          {match.colyseusRoomId && <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>Room ID</span><span style={{ color: C.text, fontFamily: "monospace", fontSize: 11 }}>{match.colyseusRoomId}</span></div>}
+          <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>P1</span><span style={{ color: C.text }}>{p1?.username ?? match.participant1Id}</span></div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>P2</span><span style={{ color: C.text }}>{p2?.username ?? match.participant2Id}</span></div>
+          {match.winnerId && <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>Winner</span><span style={{ color: C.yellow }}>🏆 {participants.find(p => p.id === match.winnerId)?.username ?? match.winnerId}</span></div>}
+        </div>
+
+        <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 14, display: "flex", flexDirection: "column", gap: 12 }}>
+          <div>
+            <p style={{ fontSize: 11, color: C.faint, marginBottom: 6 }}>Set Winner</p>
+            <div style={{ display: "flex", gap: 6 }}>
+              <SearchableSelect value={winnerSel} options={participantOpts} onChange={setWinnerSel} placeholder="Select winner…" style={{ flex: 1 }} />
+              <button onClick={() => onSetWinner(winnerSel)} disabled={!winnerSel || busy}
+                style={{ padding: "6px 12px", background: C.yellow, color: C.bg0, border: "none", borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: "pointer", opacity: winnerSel && !busy ? 1 : 0.4 }}>
+                Set
+              </button>
+            </div>
+          </div>
+          <div>
+            <p style={{ fontSize: 11, color: C.faint, marginBottom: 6 }}>Reschedule</p>
+            <div style={{ display: "flex", gap: 6 }}>
+              <input type="datetime-local" value={reschedSel} onChange={e => setReschedSel(e.target.value)}
+                style={{ flex: 1, padding: "6px 10px", borderRadius: 7, border: `1px solid ${C.border}`, background: C.bg0, color: C.text, fontSize: 12 }} />
+              <button onClick={() => onReschedule(reschedSel)} disabled={!reschedSel || busy}
+                style={{ padding: "6px 12px", background: C.blue, color: "#fff", border: "none", borderRadius: 7, fontSize: 12, cursor: "pointer", opacity: reschedSel && !busy ? 1 : 0.4 }}>
+                Save
+              </button>
             </div>
           </div>
         </div>

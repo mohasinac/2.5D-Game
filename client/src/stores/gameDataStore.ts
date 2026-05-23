@@ -16,6 +16,7 @@ export interface ComboDoc {
   type: string;
   description: string;
   cooldownMs: number;
+  effectId?: string;
 }
 
 export interface SpecialMoveDoc {
@@ -47,6 +48,18 @@ export interface ArenaFeatureConfigDoc {
   description: string;
   icon?: string;
   color?: string;
+}
+
+export interface PartMaterialDoc {
+  id: string;
+  label: string;
+  description?: string;
+  gripFactor?: number;
+  aggressiveness?: number;
+  recoilFactor?: number;
+  surfaceFriction?: number;
+  density?: number;
+  durabilityDecay?: number;
 }
 
 export interface BeyLinkConfigDoc {
@@ -87,6 +100,8 @@ interface GameDataState {
   arenaFeatureConfigsLoaded: boolean;
   beyLinkConfigs: BeyLinkConfigDoc[];
   beyLinkConfigsLoaded: boolean;
+  partMaterials: PartMaterialDoc[];
+  partMaterialsLoaded: boolean;
   // Asset library: keyed by collectionName (optionally suffixed with ":tag")
   assets: Record<string, AssetDoc[]>;
   assetsLoaded: Record<string, boolean>;
@@ -99,10 +114,11 @@ interface GameDataState {
   fetchTurretAttackTypes: () => Promise<void>;
   fetchArenaFeatureConfigs: () => Promise<void>;
   fetchBeyLinkConfigs: () => Promise<void>;
+  fetchPartMaterials: () => Promise<void>;
   fetchAssets: (collectionName: string, tag?: string) => Promise<void>;
   /** Pre-load all catalog data — call this at game page mount. */
   fetchAll: () => Promise<void>;
-  invalidate: (slice: "combos" | "specialMoves" | "turretAttackTypes" | "arenaFeatureConfigs" | "beyLinkConfigs") => void;
+  invalidate: (slice: "combos" | "specialMoves" | "turretAttackTypes" | "arenaFeatureConfigs" | "beyLinkConfigs" | "partMaterials") => void;
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -118,6 +134,8 @@ export const useGameDataStore = create<GameDataState>()((set, get) => ({
   arenaFeatureConfigsLoaded: false,
   beyLinkConfigs: [],
   beyLinkConfigsLoaded: false,
+  partMaterials: [],
+  partMaterialsLoaded: false,
   assets: {},
   assetsLoaded: {},
   loading: {},
@@ -188,6 +206,19 @@ export const useGameDataStore = create<GameDataState>()((set, get) => ({
     }
   },
 
+  fetchPartMaterials: async () => {
+    if (get().partMaterialsLoaded) return;
+    set(s => ({ loading: { ...s.loading, partMaterials: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.PART_MATERIALS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as PartMaterialDoc));
+      docs.sort((a, b) => a.label.localeCompare(b.label));
+      set(s => ({ partMaterials: docs, partMaterialsLoaded: true, loading: { ...s.loading, partMaterials: false }, errors: { ...s.errors, partMaterials: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, partMaterials: false }, errors: { ...s.errors, partMaterials: "Failed to load tip materials" } }));
+    }
+  },
+
   fetchAssets: async (collectionName: string, tag?: string) => {
     const key = tag ? `${collectionName}:${tag}` : collectionName;
     if (get().assetsLoaded[key]) return;
@@ -211,8 +242,8 @@ export const useGameDataStore = create<GameDataState>()((set, get) => ({
   },
 
   fetchAll: async () => {
-    const { fetchCombos, fetchSpecialMoves, fetchTurretAttackTypes, fetchArenaFeatureConfigs, fetchBeyLinkConfigs } = get();
-    await Promise.all([fetchCombos(), fetchSpecialMoves(), fetchTurretAttackTypes(), fetchArenaFeatureConfigs(), fetchBeyLinkConfigs()]);
+    const { fetchCombos, fetchSpecialMoves, fetchTurretAttackTypes, fetchArenaFeatureConfigs, fetchBeyLinkConfigs, fetchPartMaterials } = get();
+    await Promise.all([fetchCombos(), fetchSpecialMoves(), fetchTurretAttackTypes(), fetchArenaFeatureConfigs(), fetchBeyLinkConfigs(), fetchPartMaterials()]);
   },
 
   invalidate: (slice) => {
@@ -221,5 +252,6 @@ export const useGameDataStore = create<GameDataState>()((set, get) => ({
     if (slice === "turretAttackTypes") set({ turretAttackTypesLoaded: false, turretAttackTypes: [] });
     if (slice === "arenaFeatureConfigs") set({ arenaFeatureConfigsLoaded: false, arenaFeatureConfigs: [] });
     if (slice === "beyLinkConfigs") set({ beyLinkConfigsLoaded: false, beyLinkConfigs: [] });
+    if (slice === "partMaterials") set({ partMaterialsLoaded: false, partMaterials: [] });
   },
 }));

@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 import { C } from "@/styles/theme";
-import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset, SpinZoneConfig, GravityHoleConfig, BumpConfig, TriggerZoneConfig, TriggerZoneKind, TriggerZoneActivation } from "@/types/arenaConfigNew";
+import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset, SpinZoneConfig, GravityHoleConfig, BumpConfig, TriggerZoneConfig, TriggerZoneKind, TriggerZoneActivation, ArenaBeySawnConfig } from "@/types/arenaConfigNew";
 import type { ElementType } from "@/types/elementTypes";
 import FeatureAnimationPanel from "./FeatureAnimationPanel";
 import SelfRotationPanel from "./SelfRotationPanel";
@@ -734,6 +734,128 @@ export default function FeaturesTab({ config, onChange }: Props) {
         <button onClick={addTriggerZone} style={{ padding: "6px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
           + Add Trigger Zone
         </button>
+      </Section>
+
+      {/* Bey Spawn */}
+      <Section title="Bey Spawn (Mid-Match Neutral Beyblades)">
+        {(() => {
+          const bs: ArenaBeySawnConfig | undefined = (config as any).beySpawn;
+          const updateBS = (patch: Partial<ArenaBeySawnConfig>) =>
+            onChange({ beySpawn: { ...(bs ?? { enabled: false, spawnIntervalSec: 15, maxSpawnedBeys: 2, despawnCondition: "knockout", beyPool: [] }), ...patch } } as any);
+
+          return (
+            <div data-testid="bey-spawn-section">
+              <Row label="Enabled">
+                <input type="checkbox" checked={bs?.enabled ?? false}
+                  onChange={e => updateBS({ enabled: e.target.checked })} />
+              </Row>
+              {bs?.enabled && (
+                <>
+                  <Row label="Spawn Interval (s)">
+                    {numInput(bs.spawnIntervalSec, 15, v => updateBS({ spawnIntervalSec: v }), 1)}
+                  </Row>
+                  <Row label="Max Active Beys">
+                    {numInput(bs.maxSpawnedBeys, 2, v => updateBS({ maxSpawnedBeys: Math.max(1, Math.round(v)) }), 1)}
+                  </Row>
+                  <Row label="Despawn Condition">
+                    <SearchableSelect
+                      value={bs.despawnCondition ?? "knockout"}
+                      options={[
+                        { value: "knockout", label: "Knockout" },
+                        { value: "timeout", label: "Timeout" },
+                        { value: "never", label: "Never" },
+                      ]}
+                      onChange={v => updateBS({ despawnCondition: v as ArenaBeySawnConfig["despawnCondition"] })}
+                      style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                    />
+                  </Row>
+                  {bs.despawnCondition === "timeout" && (
+                    <Row label="Despawn After (ticks)">
+                      {numInput(bs.despawnAfterTicks, 600, v => updateBS({ despawnAfterTicks: Math.round(v) }), 60)}
+                    </Row>
+                  )}
+                  <Row label="Spawn Condition">
+                    <SearchableSelect
+                      value={bs.spawnOnCondition?.type ?? "none"}
+                      options={[
+                        { value: "none", label: "None (always)" },
+                        { value: "time_elapsed", label: "Time Elapsed" },
+                        { value: "bey_count_below", label: "Bey Count Below" },
+                        { value: "player_spin_below", label: "Player Spin Below" },
+                      ]}
+                      onChange={v => updateBS({ spawnOnCondition: v === "none" ? undefined : { type: v as any, threshold: 60 } })}
+                      style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                    />
+                  </Row>
+                  {bs.spawnOnCondition && (
+                    <Row label="Condition Threshold">
+                      {numInput(bs.spawnOnCondition.threshold, 60, v => updateBS({ spawnOnCondition: { ...bs.spawnOnCondition!, threshold: v } }), 1)}
+                    </Row>
+                  )}
+
+                  {/* Bey Pool */}
+                  <div style={{ marginTop: 10 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: C.muted }}>Bey Pool ({bs.beyPool?.length ?? 0})</span>
+                      <button onClick={() => updateBS({ beyPool: [...(bs.beyPool ?? []), { beyId: "", aiDifficulty: "medium", controlMode: "ai", statsMultiplier: 1.0 }] })}
+                        style={{ fontSize: 11, padding: "2px 8px", background: C.purple, color: C.white, border: "none", borderRadius: 5, cursor: "pointer" }}>
+                        + Bey Entry
+                      </button>
+                    </div>
+                    {(bs.beyPool ?? []).map((entry, ei) => (
+                      <div key={ei} style={{ background: C.bg2, borderRadius: 8, padding: 10, marginBottom: 6 }}>
+                        <Row label="Bey ID">
+                          <input type="text" value={entry.beyId}
+                            onChange={e => { const p = [...(bs.beyPool ?? [])]; p[ei] = { ...entry, beyId: e.target.value }; updateBS({ beyPool: p }); }}
+                            placeholder="beyblade_stats doc ID"
+                            style={{ flex: 1, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "3px 6px", fontSize: 11 }} />
+                        </Row>
+                        <Row label="AI Difficulty">
+                          <div style={{ display: "flex", gap: 4 }}>
+                            {(["medium", "hard", "hell"] as const).map(d => (
+                              <button key={d} onClick={() => { const p = [...(bs.beyPool ?? [])]; p[ei] = { ...entry, aiDifficulty: d }; updateBS({ beyPool: p }); }}
+                                style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
+                                  background: entry.aiDifficulty === d ? C.red : "transparent",
+                                  color: entry.aiDifficulty === d ? C.white : C.muted,
+                                  border: `1px solid ${entry.aiDifficulty === d ? C.red : C.border}` }}>
+                                {d}
+                              </button>
+                            ))}
+                          </div>
+                        </Row>
+                        <Row label="Control Mode">
+                          <div style={{ display: "flex", gap: 4 }}>
+                            {(["ai", "friendly"] as const).map(m => (
+                              <button key={m} onClick={() => { const p = [...(bs.beyPool ?? [])]; p[ei] = { ...entry, controlMode: m }; updateBS({ beyPool: p }); }}
+                                style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
+                                  background: entry.controlMode === m ? C.blue : "transparent",
+                                  color: entry.controlMode === m ? C.white : C.muted,
+                                  border: `1px solid ${entry.controlMode === m ? C.blue : C.border}` }}>
+                                {m}
+                              </button>
+                            ))}
+                          </div>
+                        </Row>
+                        <Row label="Stats Multiplier">
+                          {numInput(entry.statsMultiplier, 1.0, v => { const p = [...(bs.beyPool ?? [])]; p[ei] = { ...entry, statsMultiplier: v }; updateBS({ beyPool: p }); }, 0.1)}
+                        </Row>
+                        <Row label="Max Spawns">
+                          {numInput(entry.maxFromThisEntry, 0, v => { const p = [...(bs.beyPool ?? [])]; p[ei] = { ...entry, maxFromThisEntry: v < 1 ? undefined : Math.round(v) }; updateBS({ beyPool: p }); }, 1)}
+                        </Row>
+                        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 4 }}>
+                          <button onClick={() => updateBS({ beyPool: (bs.beyPool ?? []).filter((_, j) => j !== ei) })}
+                            style={{ color: C.red, background: "none", border: "none", fontSize: 11, cursor: "pointer" }}>
+                            Remove Entry
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
       </Section>
     </div>
   );

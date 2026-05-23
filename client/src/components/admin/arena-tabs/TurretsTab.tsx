@@ -1,9 +1,12 @@
 import { C } from "@/styles/theme";
-import type { ArenaConfig, TurretConfig } from "@/types/arenaConfigNew";
+import type { ArenaConfig, TurretConfig, TurretAttackType, TurretFirePattern } from "@/types/arenaConfigNew";
 import SelfRotationPanel from "./SelfRotationPanel";
+import RotationBlockEditor from "./RotationBlockEditor";
+import FeatureAnimationPanel from "./FeatureAnimationPanel";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { useTurretAttackTypes } from "@/hooks/useTurretAttackTypes";
 import { useAssetLibrary } from "@/hooks/useAssetLibrary";
+import { useElementTypes } from "@/hooks/useElementTypes";
 import { COLLECTIONS } from "@/lib/firebase";
 
 interface Props {
@@ -29,12 +32,184 @@ const COMMON_FIELDS: { field: keyof TurretConfig; label: string; min: number; ma
   { field: "attackCooldown", label: "Cooldown (s)", min: 0.5, max: 10, step: 0.5 },
 ];
 
+const FIRE_PATTERNS: { value: TurretFirePattern; label: string }[] = [
+  { value: "nearest",     label: "Nearest" },
+  { value: "furthest",    label: "Furthest" },
+  { value: "random",      label: "Random" },
+  { value: "round_robin", label: "Round Robin" },
+  { value: "lowest_spin", label: "Lowest Spin" },
+  { value: "highest_spin",label: "Highest Spin" },
+  { value: "center",      label: "Center" },
+  { value: "sweep_cw",    label: "Sweep CW" },
+];
+
+function numInput(val: number | undefined, def: number, onChange: (n: number) => void, step = 1, width = 80) {
+  return (
+    <input
+      type="number" value={val ?? def} step={step}
+      onChange={e => onChange(Number(e.target.value))}
+      style={{ width, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+    />
+  );
+}
+
+function TypeSpecificParams({ turret, update }: { turret: TurretConfig; update: (field: keyof TurretConfig, value: any) => void }) {
+  const t = turret.attackType;
+  if (t === "periodic" || t === "random") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+          <span>Bullet Speed (px/s)</span>
+          <span style={{ color: C.text, fontFamily: "monospace" }}>{turret.bulletSpeed ?? 200}</span>
+        </div>
+        <input type="range" min={50} max={800} step={25} value={turret.bulletSpeed ?? 200}
+          onChange={e => update("bulletSpeed", +e.target.value)} style={{ width: "100%", accentColor: C.red }} />
+      </div>
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+          <span>Bullets / Shot</span>
+          <span style={{ color: C.text, fontFamily: "monospace" }}>{turret.bulletCount ?? 1}</span>
+        </div>
+        <input type="range" min={1} max={10} step={1} value={turret.bulletCount ?? 1}
+          onChange={e => update("bulletCount", +e.target.value)} style={{ width: "100%", accentColor: C.red }} />
+      </div>
+    </div>
+  );
+  if (t === "beam") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Beam Duration (s)</label>
+        {numInput(turret.beamDuration, 3, v => update("beamDuration", v), 0.5)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Charge Period (s)</label>
+        {numInput(turret.beamChargePeriod, 1.5, v => update("beamChargePeriod", v), 0.5)}
+      </div>
+    </div>
+  );
+  if (t === "aoe") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>AoE Radius (px)</label>
+        {numInput(turret.aoeRadius, 80, v => update("aoeRadius", v), 10)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Damage Radius (px)</label>
+        {numInput(turret.aoeDamageRadius, 50, v => update("aoeDamageRadius", v), 10)}
+      </div>
+    </div>
+  );
+  if (t === "boomerang") return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 110 }}>Return Time (s)</label>
+      {numInput(turret.boomerangReturnTime, 3, v => update("boomerangReturnTime", v), 0.5)}
+    </div>
+  );
+  if (t === "laser_sweep") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 75 }}>Sweep Arc (°)</label>
+        {numInput(turret.laserSweepArcDeg, 180, v => update("laserSweepArcDeg", v), 10)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Sweep Speed (°/s)</label>
+        {numInput(turret.laserSweepSpeedDeg, 90, v => update("laserSweepSpeedDeg", v), 10)}
+      </div>
+    </div>
+  );
+  if (t === "sniper") return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 110 }}>Charge Time (s)</label>
+      {numInput(turret.sniperChargeSec, 2, v => update("sniperChargeSec", v), 0.5)}
+    </div>
+  );
+  if (t === "shotgun") return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 110 }}>Cone Half-Angle (°)</label>
+      {numInput(turret.shotgunConeHalfDeg, 30, v => update("shotgunConeHalfDeg", v), 5)}
+    </div>
+  );
+  if (t === "mine_layer") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 85 }}>Trigger Radius (px)</label>
+        {numInput(turret.mineTriggerRadius, 50, v => update("mineTriggerRadius", v), 5)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 85 }}>Lifetime (s, 0=∞)</label>
+        {numInput(turret.mineLifetimeSec, 10, v => update("mineLifetimeSec", v), 1)}
+      </div>
+    </div>
+  );
+  if (t === "gravity_cannon") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Force (N)</label>
+        {numInput(turret.gravityCannonForce, 0.01, v => update("gravityCannonForce", v), 0.001)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Duration (s)</label>
+        {numInput(turret.gravityCannonDurationSec, 4, v => update("gravityCannonDurationSec", v), 0.5)}
+      </div>
+    </div>
+  );
+  if (t === "emp") return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 110 }}>Disable Ticks</label>
+      {numInput(turret.empDisableTicks, 120, v => update("empDisableTicks", Math.round(v)), 10)}
+    </div>
+  );
+  if (t === "tracking_missile") return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 110 }}>Tracking (°/s)</label>
+      {numInput(turret.missileTrackingDeg, 180, v => update("missileTrackingDeg", v), 10)}
+    </div>
+  );
+  if (t === "burst_fire") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 55 }}>Burst Count</label>
+        {numInput(turret.burstCount, 4, v => update("burstCount", Math.round(v)), 1)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Interval (s)</label>
+        {numInput(turret.burstIntervalSec, 0.15, v => update("burstIntervalSec", v), 0.05)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Reload (s)</label>
+        {numInput(turret.burstReloadSec, 2, v => update("burstReloadSec", v), 0.25)}
+      </div>
+    </div>
+  );
+  if (t === "plasma_ring") return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Expand Speed (px/s)</label>
+        {numInput(turret.plasmaRingExpandSpeed, 150, v => update("plasmaRingExpandSpeed", v), 10)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Max Radius (px)</label>
+        {numInput(turret.plasmaRingMaxRadius, 200, v => update("plasmaRingMaxRadius", v), 10)}
+      </div>
+    </div>
+  );
+  if (t === "tractor_beam") return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <label style={{ fontSize: 11, color: C.faint, minWidth: 110 }}>Pull Force (N)</label>
+      {numInput(turret.tractorBeamForce, 0.01, v => update("tractorBeamForce", v), 0.001)}
+    </div>
+  );
+  return null;
+}
+
 export default function TurretsTab({ config, onChange }: Props) {
   const items = config.turrets ?? [];
   const { types: attackTypes, loading: typesLoading } = useTurretAttackTypes();
   const { assets: turretAssets, loading: assetsLoading } = useAssetLibrary(COLLECTIONS.TURRET_ASSETS);
+  const { configs: elementTypes, loading: elemLoading } = useElementTypes();
   const assetOpts = turretAssets.map(a => ({ value: a.id, label: a.name ?? a.id, hint: a.tags?.join(", ") }));
   const attackTypeOpts = attackTypes.map(t => ({ value: t.id, label: t.label, hint: t.description }));
+  const elemOpts = elementTypes.map(e => ({ value: e.id, label: e.name ?? e.id }));
 
   const add = () => {
     if (items.length >= 8) return;
@@ -65,6 +240,7 @@ export default function TurretsTab({ config, onChange }: Props) {
 
       {items.map((turret, idx) => (
         <div key={turret.id ?? idx} style={{ background: C.bg3, borderRadius: 12, padding: 16, border: `1px solid ${C.border}` }}>
+          {/* Header */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ fontSize: 13, fontWeight: 500, color: C.text }}>🔫 Turret #{idx + 1}</span>
@@ -89,11 +265,33 @@ export default function TurretsTab({ config, onChange }: Props) {
             <SearchableSelect
               value={turret.attackType ?? "periodic"}
               options={attackTypeOpts}
-              onChange={v => update(turret.id, "attackType", v)}
+              onChange={v => update(turret.id, "attackType", v as TurretAttackType)}
               disabled={typesLoading}
               emptyLabel={typesLoading ? "Loading…" : "No attack types found"}
               style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
             />
+          </div>
+
+          {/* Type-specific config */}
+          <div style={{ background: C.bg2, borderRadius: 8, padding: 10, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: C.faint, marginBottom: 6 }}>Attack Type Config</div>
+            <TypeSpecificParams turret={turret} update={(field, val) => update(turret.id, field, val)} />
+          </div>
+
+          {/* Fire pattern */}
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Fire Pattern</label>
+            <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+              {FIRE_PATTERNS.map(p => (
+                <button key={p.value} onClick={() => update(turret.id, "firePattern", p.value)}
+                  style={{ padding: "2px 8px", borderRadius: 5, fontSize: 10, cursor: "pointer",
+                    background: (turret.firePattern ?? "nearest") === p.value ? C.red : "transparent",
+                    color: (turret.firePattern ?? "nearest") === p.value ? C.white : C.muted,
+                    border: `1px solid ${(turret.firePattern ?? "nearest") === p.value ? C.red : C.border}` }}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Sprite pickers */}
@@ -122,6 +320,20 @@ export default function TurretsTab({ config, onChange }: Props) {
             </div>
           </div>
 
+          {/* Element type */}
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Element Type</label>
+            <SearchableSelect
+              value={(turret.elementType as any) ?? ""}
+              options={elemOpts}
+              onChange={v => update(turret.id, "elementType" as any, v || undefined)}
+              disabled={elemLoading}
+              emptyLabel={elemLoading ? "Loading…" : "No element types"}
+              style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+            />
+          </div>
+
+          {/* Common sliders */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             {COMMON_FIELDS.map(({ field, label, min, max, step }) => (
               <div key={field}>
@@ -137,7 +349,8 @@ export default function TurretsTab({ config, onChange }: Props) {
               </div>
             ))}
           </div>
-          {/* I6: Behavior override */}
+
+          {/* Behavior override */}
           <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <div>
               <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior ID (optional)</label>
@@ -165,10 +378,26 @@ export default function TurretsTab({ config, onChange }: Props) {
               />
             </div>
           </div>
+
+          {/* Feature Animation */}
+          <div style={{ marginTop: 12, background: C.bg2, borderRadius: 8, padding: 10 }}>
+            <FeatureAnimationPanel
+              value={turret.featureAnimation}
+              onChange={v => update(turret.id, "featureAnimation", v)}
+              featureId={String(turret.id ?? idx)}
+            />
+          </div>
+
+          {/* Rotation + Self-rotation */}
+          <RotationBlockEditor
+            value={turret.rotation}
+            onChange={v => update(turret.id, "rotation", v)}
+            label="Base Rotation"
+          />
           <SelfRotationPanel
-            rotation={(turret as any).rotation}
-            selfRotation={(turret as any).selfRotation}
-            onChangeRotation={v => update(turret.id, "rotation" as any, v)}
+            rotation={turret.rotation?.initialAngleDeg}
+            selfRotation={turret.selfRotation}
+            onChangeRotation={v => update(turret.id, "rotation" as any, v !== undefined ? { ...(turret.rotation ?? { mode: "static" as const }), initialAngleDeg: v } : undefined)}
             onChangeSelfRotation={v => update(turret.id, "selfRotation" as any, v)}
           />
         </div>

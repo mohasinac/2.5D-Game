@@ -36,6 +36,7 @@ import {
   computeLandingDamage,
   tickDetachedBody,
   spawnDetachedBody,
+  tickPocketBalls,
   applyStatModifier,
   dispatchStatModifierEvent,
   applyBearingFrictionToSteal,
@@ -46,6 +47,8 @@ import {
 } from "../physics/PartPhysics";
 import { v4 as uuidv4 } from "uuid";
 import { computeClimbingForces, updateBeyTilt, type ArenaGeometry } from "../physics/ClimbingPhysics";
+import type { PointOfContact } from "../types/shared";
+import { type SystemContactPoint, resolveCpBounds } from "../../shared/types/beybladeSystem";
 
 // ─── Part Cache Bundle ─────────────────────────────────────────────────────────
 
@@ -468,7 +471,62 @@ export class PartSystemManager {
       }
     }
 
+    // ── 9. Pocket-ball centrifugal physics (Draciel F style) ──────────────
+    const casingParts = parts.casing;
+    if (casingParts?.pockets && casingParts.pockets.length > 0) {
+      const omega = bey.maxSpin > 0 ? bey.spin / bey.maxSpin : 0;
+      const { inertiaMod, escapedIndices } = tickPocketBalls(
+        casingParts.pockets,
+        omega,
+        bey.maxSpin,
+        (casingParts as any).innerRadiusMm ?? 10,
+        (casingParts as any).outerRadiusMm ?? 25
+      );
+      // Spin decay is scaled by inertia modifier — higher inertia = less decay
+      adjustedSpinDecayRate /= Math.max(1, inertiaMod);
+      // Escaped pocket balls reduce overall casing effectiveness
+      if (escapedIndices.length > 0) {
+        escapedIndices.forEach(idx => {
+          if (casingParts.pockets![idx]) casingParts.pockets![idx].ballCount = 0;
+        });
+      }
+    }
+
     return { adjustedSpinDecayRate };
+  }
+
+  /**
+   * Bridge ARPart.contactPoints (SystemContactPoint[]) to PointOfContact[]
+   * for PhysicsEngine.getContactPointMultiplier().
+   * Arc-segment CPs use arcStart/arcEnd midpoint as `angle` and full arc span as `width`.
+   */
+  collectContactPoints(sessionId: string): PointOfContact[] {
+    const state = this.beyStates.get(sessionId);
+    if (!state) return [];
+    const ar = state.parts.ar;
+    if (!ar?.contactPoints?.length) return [];
+
+    return ar.contactPoints.map((cp: SystemContactPoint): PointOfContact => {
+      const bounds = resolveCpBounds(cp);
+      const midAngle = (bounds.arcStart + bounds.arcEnd) / 2;
+      const arcSpan  = Math.abs(bounds.arcEnd - bounds.arcStart);
+      const midRadius = (bounds.rInner + bounds.rOuter) / 2;
+      return {
+        angle:            midAngle,
+        width:            arcSpan,
+        damageMultiplier: cp.damageMultiplier,
+        radius:           midRadius,
+        thickness:        bounds.lineThickness,
+        heightRange:      cp.heightRange,
+        material:         cp.material as string | undefined,
+        extends:          cp.extends,
+        extendThreshold:  cp.extendThreshold,
+        extendedRadius:   cp.extendedRadius,
+        extendedWidth:    cp.extendedWidth,
+        extendedThickness: cp.extendedThickness,
+        roller:           cp.roller ? { freeSpin: cp.roller.freeSpin, material: cp.roller.material as string | undefined } : undefined,
+      };
+    });
   }
 
   /**

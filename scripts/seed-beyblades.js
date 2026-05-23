@@ -92,6 +92,45 @@ const DEFAULT_COMBOS_BY_TYPE = {
   balanced: ["quick-dash-l", "pivot-strike", "guard-tap"],
 };
 
+// Default physics flags — all beys start with full collision and no invulnerability.
+const DEFAULT_PHYSICS_FLAGS = {
+  collisionWithBeys:       true,
+  collisionWithArena:      true,
+  collisionWithObstacles:  true,
+  collisionWithProjectiles: true,
+  invulnerable:            false,
+  noDamageOutput:          false,
+  noKnockback:             false,
+  noGravityWell:           false,
+  noSpinZone:              false,
+  noTriggerZone:           false,
+};
+
+// Per-bey gimmick assignments. References gimmick_def IDs seeded by seed-gimmicks.js.
+// Max 3 per bey. Empty array = no gimmicks (HUD strip hidden in client).
+const GIMMICK_IDS_BY_BEY = {
+  "storm-pegasus":       ["energy_core", "speed_boost_tip"],
+  "rock-leone":          ["heavy_metal_disc", "recoil_guard"],
+  "earth-eagle":         ["free_spin_tip", "spin_absorber"],
+  "flame-sagittario":    ["mode_change"],
+  "lightning-l-drago":   ["energy_core", "spin_absorber"],
+  "basalt-horogium":     ["heavy_metal_disc"],
+  "galaxy-pegasus":      ["energy_core", "speed_boost_tip"],
+  "meteo-l-drago":       ["free_spin_tip", "spin_absorber"],
+  "thermal-pisces":      ["free_spin_tip"],
+  "fang-leone":          ["heavy_metal_disc", "recoil_guard"],
+  "jade-jupiter":        ["free_spin_tip", "spin_absorber"],
+  "screw-capricorn":     ["speed_boost_tip"],
+  "death-quetzalcoatl":  ["free_spin_tip", "spin_absorber"],
+  "diablo-nemesis":      ["mode_change", "dual_tip"],
+  "wing-pegasis":        ["speed_boost_tip"],
+  "big-bang-pegasis":    ["energy_core", "mode_change"],
+  "valtryek-v2":         ["speed_boost_tip", "energy_core"],
+  "spryzen-s2":          ["dual_tip", "mode_change"],
+  "dranzer-spiral":      ["energy_core"],
+  "hells-hammer":        ["heavy_metal_disc", "recoil_guard"],
+};
+
 // ─── Preset definitions ───────────────────────────────────────────────────────
 
 const now = new Date().toISOString();
@@ -466,9 +505,11 @@ async function seedBeyblades() {
 
   for (const bey of BEYBLADES) {
     const derived = calcStats(bey.typeDistribution);
-    // Optional kit — special + combos. Per-bey overrides win; otherwise fall back to type defaults.
+    // Optional kit — special + combos + gimmicks. Per-bey overrides win; otherwise fall back to type defaults.
     const specialMoveId = bey.specialMoveId ?? DEFAULT_SPECIAL_BY_TYPE[bey.type] ?? "tactical_burst";
     const comboIds      = (bey.comboIds ?? DEFAULT_COMBOS_BY_TYPE[bey.type] ?? []).slice(0, 3);
+    const gimmickIds    = (bey.gimmickIds ?? GIMMICK_IDS_BY_BEY[bey.id] ?? []).slice(0, 3);
+    const physicsFlags  = { ...DEFAULT_PHYSICS_FLAGS, ...(bey.physicsFlags ?? {}) };
 
     // comboSlots — structured version of comboIds for the new slot system.
     // Keep comboIds alongside for backward compat — don't remove it.
@@ -494,6 +535,8 @@ async function seedBeyblades() {
       specialMoveId,
       comboIds,
       comboSlots,
+      gimmickIds,
+      physicsFlags,
       createdAt:            now,
       updatedAt:            now,
       createdBy:            "seed",

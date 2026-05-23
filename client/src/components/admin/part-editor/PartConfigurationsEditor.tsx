@@ -13,6 +13,7 @@ import { useState } from "react";
 import { C, alpha } from "@/styles/theme";
 import type { PartConfiguration, ConfigTrigger, ConfigResetCondition } from "@/types/beybladeSystem";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
+import { usePartMaterials } from "@/hooks/usePartMaterials";
 
 const TRIGGER_TYPES: ConfigTrigger["type"][] = [
   "spin_threshold",
@@ -33,14 +34,118 @@ function defaultConfig<T>(): PartConfiguration<T> {
   return { name: "", description: "", overrides: {} as T, autoTriggers: [], resetCondition: undefined };
 }
 
+// ── Per-type quick-fields (structured override panel) ───────────────────────
+
+const TIP_SHAPES = ["flat","sharp","semi_flat","wide","ball","spike","rubber_flat","hole_flat","rubber_ball","defense","custom"];
+const SUBPART_MODES = ["free_spin","partial_slip","fixed","ratchet"];
+const CASING_CATS = ["round","wide","flat","custom"];
+const CORE_GIMMICKS = ["none","speed_boost","weight_shift","magnetic","engine_gear","clutch_release","spin_injection","counter_rotation"];
+
+function StructuredOverridePanel({ partTypeSlug, overrides, onChange }: {
+  partTypeSlug: string;
+  overrides: Record<string, unknown>;
+  onChange: (patch: Record<string, unknown>) => void;
+}) {
+  const patch = (key: string, value: unknown) => onChange({ ...overrides, [key]: value });
+  const { materials } = usePartMaterials();
+  const fieldStyle: React.CSSProperties = {
+    padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`,
+    borderRadius: 6, color: C.text, fontSize: 11, width: "100%", boxSizing: "border-box",
+  };
+  const row: React.CSSProperties = { display: "flex", flexDirection: "column", gap: 3 };
+  const lbl: React.CSSProperties = { fontSize: 10, color: C.muted };
+
+  if (partTypeSlug === "tips") {
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+        <div style={row}>
+          <span style={lbl}>Tip Shape</span>
+          <select value={(overrides.tipShape as string) ?? ""} onChange={e => patch("tipShape", e.target.value || undefined)} style={fieldStyle}>
+            <option value="">(inherit)</option>
+            {TIP_SHAPES.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div style={row}>
+          <span style={lbl}>Material</span>
+          <SearchableSelect
+            value={(overrides.material as string) ?? ""}
+            onChange={val => patch("material", val || undefined)}
+            options={[{ value: "", label: "(inherit)" }, ...materials.map(m => ({ value: m.id, label: m.label }))]}
+            placeholder="(inherit)"
+          />
+        </div>
+        <div style={row}>
+          <span style={lbl}>Grip Factor</span>
+          <input type="number" min={0} max={1} step={0.05}
+            value={(overrides.gripFactor as number) ?? ""}
+            placeholder="(inherit)"
+            onChange={e => patch("gripFactor", e.target.value ? +e.target.value : undefined)}
+            style={fieldStyle} />
+        </div>
+        <div style={row}>
+          <span style={lbl}>Aggressiveness</span>
+          <input type="number" min={0} max={1} step={0.05}
+            value={(overrides.aggressiveness as number) ?? ""}
+            placeholder="(inherit)"
+            onChange={e => patch("aggressiveness", e.target.value ? +e.target.value : undefined)}
+            style={fieldStyle} />
+        </div>
+        <div style={{ ...row, justifyContent: "flex-end", paddingTop: 14 }}>
+          <label style={{ display: "flex", gap: 6, alignItems: "center", cursor: "pointer" }}>
+            <input type="checkbox"
+              checked={overrides.freeSpin === true}
+              onChange={e => patch("freeSpin", e.target.checked ? true : undefined)} />
+            <span style={lbl}>Free spin</span>
+          </label>
+        </div>
+      </div>
+    );
+  }
+  if (partTypeSlug === "sub-parts") {
+    return (
+      <div style={row}>
+        <span style={lbl}>Mode</span>
+        <select value={(overrides.mode as string) ?? ""} onChange={e => patch("mode", e.target.value || undefined)} style={fieldStyle}>
+          <option value="">(inherit)</option>
+          {SUBPART_MODES.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+    );
+  }
+  if (partTypeSlug === "casings") {
+    return (
+      <div style={row}>
+        <span style={lbl}>Casing Category</span>
+        <select value={(overrides.casingCategory as string) ?? ""} onChange={e => patch("casingCategory", e.target.value || undefined)} style={fieldStyle}>
+          <option value="">(inherit)</option>
+          {CASING_CATS.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+    );
+  }
+  if (partTypeSlug === "cores") {
+    return (
+      <div style={row}>
+        <span style={lbl}>Gimmick Type</span>
+        <select value={(overrides.gimmick as string) ?? ""} onChange={e => patch("gimmick", e.target.value || undefined)} style={fieldStyle}>
+          <option value="">(inherit)</option>
+          {CORE_GIMMICKS.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+    );
+  }
+  return null;
+}
+
 interface Props<T> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: PartConfiguration<any>[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (configs: PartConfiguration<any>[]) => void;
+  partTypeSlug?: string;
 }
 
-export function PartConfigurationsEditor<T>({ value, onChange }: Props<T>) {
+export function PartConfigurationsEditor<T>({ value, onChange, partTypeSlug }: Props<T>) {
   const [expanded, setExpanded] = useState<number | null>(null);
   const [overrideError, setOverrideError] = useState<Record<number, string>>({});
 
@@ -186,10 +291,24 @@ export function PartConfigurationsEditor<T>({ value, onChange }: Props<T>) {
                   </label>
                 </div>
 
-                {/* Overrides JSON */}
+                {/* Structured override fields (type-specific quick-access) */}
+                {partTypeSlug && (
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 6 }}>
+                      Override Fields
+                    </label>
+                    <StructuredOverridePanel
+                      partTypeSlug={partTypeSlug}
+                      overrides={(config.overrides ?? {}) as Record<string, unknown>}
+                      onChange={(patch) => update(idx, { overrides: patch as T })}
+                    />
+                  </div>
+                )}
+
+                {/* Overrides JSON (advanced / fallback) */}
                 <div>
                   <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>
-                    Overrides (JSON — partial part fields)
+                    Overrides (JSON — full partial field override)
                   </label>
                   <textarea
                     defaultValue={JSON.stringify(config.overrides, null, 2)}

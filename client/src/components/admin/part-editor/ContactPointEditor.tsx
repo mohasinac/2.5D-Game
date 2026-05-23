@@ -45,7 +45,7 @@ const MATERIAL_COLORS: Record<Material, string> = {
   polycarbonate: "#a855f7",
 };
 
-const ATTACK_LABELS: AttackType[] = ["smash", "upper", "absorb", "burst"];
+const ATTACK_LABELS: AttackType[] = ["smash", "upper", "absorb", "burst", "spin_steal"];
 const LAYER_LABELS: PartLayer[] = ["ar", "wd", "casing", "tip", "core", "sub_part", "bit_beast"];
 
 function defaultCP(angle: number, radius: number): SystemContactPoint {
@@ -458,6 +458,33 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
                   onChange={(v) => update(selected, { extendedWidth: v })} />
                 <SliderField label="Extended thickness (mm)" value={sel.extendedThickness} min={0.5} max={10} step={0.5}
                   onChange={(v) => update(selected, { extendedThickness: v })} />
+              </div>
+            )}
+          </Section>
+
+          {/* Roller Wheel */}
+          <Section label="Roller Wheel">
+            <label style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer", marginBottom: 8 }}>
+              <input type="checkbox" checked={!!(sel as any).roller}
+                onChange={(e) => update(selected, { roller: e.target.checked ? { radius: 3, material: "rubber", freeSpin: false } : undefined } as any)}
+                style={{ accentColor: C.blue }} />
+              <span style={{ fontSize: 12, color: C.muted }}>Has roller wheel</span>
+            </label>
+            {(sel as any).roller && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingLeft: 4 }}>
+                <SliderField label="Radius (mm)" value={(sel as any).roller.radius ?? 3} min={0.5} max={15} step={0.5}
+                  onChange={(v) => update(selected, { roller: { ...(sel as any).roller, radius: v } } as any)} />
+                <div>
+                  <div style={{ fontSize: 11, color: C.muted, marginBottom: 5, fontWeight: 600 }}>Material</div>
+                  <MaterialSelector value={(sel as any).roller.material ?? "rubber"}
+                    onChange={(m) => update(selected, { roller: { ...(sel as any).roller, material: m } } as any)} label={undefined} />
+                </div>
+                <label style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
+                  <input type="checkbox" checked={!!(sel as any).roller.freeSpin}
+                    onChange={(e) => update(selected, { roller: { ...(sel as any).roller, freeSpin: e.target.checked } } as any)}
+                    style={{ accentColor: C.blue }} />
+                  <span style={{ fontSize: 12, color: C.muted }}>Free spin roller</span>
+                </label>
               </div>
             )}
           </Section>

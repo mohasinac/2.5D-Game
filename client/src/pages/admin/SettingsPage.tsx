@@ -13,6 +13,7 @@ interface GameSettings {
   enableAI: boolean;
   enableTournament: boolean;
   maintenanceMode: boolean;
+  maintenanceMessage: string;
   serverMessage: string;
   // Game mode toggles
   enableTryout: boolean;
@@ -30,16 +31,24 @@ interface GameSettings {
   featureLoops: boolean;
   // Tournament gap
   minimumTournamentGapMinutes: number;
+  // Room limits
+  maxActiveRooms: number;
+  maxSpectatorsBattle: number;
+  maxSpectatorsTournament: number;
+  maxSpectatorsAI: number;
 }
 
 const DEFAULTS: GameSettings = {
   defaultArenaId: "", maxPlayersPerRoom: 4, matchTimeoutSeconds: 180,
-  enableAI: false, enableTournament: false, maintenanceMode: false, serverMessage: "",
+  enableAI: true, enableTournament: true, maintenanceMode: false,
+  maintenanceMessage: "", serverMessage: "",
   enableTryout: true, enablePvp: true, enableAiBattle: true,
   globalBeybladeBlacklist: "", globalArenaBlacklist: "",
   featureSpecialMoves: true, featureTurrets: true, featurePortals: true,
   featureWaterBodies: true, featurePits: true, featureLoops: true,
   minimumTournamentGapMinutes: 30,
+  maxActiveRooms: 20,
+  maxSpectatorsBattle: 8, maxSpectatorsTournament: 8, maxSpectatorsAI: 8,
 };
 
 function normalize(raw: string): string[] {
@@ -114,9 +123,14 @@ export function SettingsPage() {
           <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>Settings</h1>
           <p style={{ color: C.faint, fontSize: 13, marginTop: 4 }}>Game-wide configuration</p>
         </div>
-        <button onClick={handleSave} disabled={saving} style={{ padding: "8px 20px", background: C.blue, color: C.white, borderRadius: 8, fontSize: 13, fontWeight: 500, border: "none", cursor: "pointer", opacity: saving ? 0.5 : 1 }}>
-          {saving ? "Saving..." : "Save Settings"}
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={() => setSettings(DEFAULTS)} style={{ padding: "8px 16px", background: "transparent", color: C.muted, borderRadius: 8, fontSize: 13, fontWeight: 500, border: `1px solid ${C.border}`, cursor: "pointer" }}>
+            Reset Defaults
+          </button>
+          <button onClick={handleSave} disabled={saving} style={{ padding: "8px 20px", background: C.blue, color: C.white, borderRadius: 8, fontSize: 13, fontWeight: 500, border: "none", cursor: "pointer", opacity: saving ? 0.5 : 1 }}>
+            {saving ? "Saving..." : "Save Settings"}
+          </button>
+        </div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -155,6 +169,18 @@ export function SettingsPage() {
           ] as [keyof GameSettings, string, string][]).map(([key, label, desc], i, arr) => (
             <ToggleRow key={key} label={label} desc={desc} on={!!settings[key]} onChange={() => set(key, !settings[key])} last={i === arr.length - 1} />
           ))}
+          {settings.maintenanceMode && (
+            <div style={{ paddingTop: 8 }}>
+              <label style={S.label}>Maintenance Message (shown to blocked players)</label>
+              <textarea
+                value={settings.maintenanceMessage}
+                onChange={e => set("maintenanceMessage", e.target.value)}
+                rows={2}
+                placeholder="We'll be back soon. Maintenance in progress."
+                style={{ ...S.input, resize: "vertical", lineHeight: 1.5 }}
+              />
+            </div>
+          )}
         </Section>
 
         {/* Arena features */}
@@ -193,6 +219,32 @@ export function SettingsPage() {
               placeholder="banned_arena_id1"
               style={{ ...S.input, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
             />
+          </div>
+        </Section>
+
+        {/* Room limits */}
+        <Section title="Room Limits">
+          <div>
+            <label style={S.label}>Max Active Rooms (across all types)</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <input type="range" min={5} max={50} step={1} value={settings.maxActiveRooms} onChange={e => set("maxActiveRooms", +e.target.value)} style={{ flex: 1 }} />
+              <span style={{ fontSize: 13, color: C.text, minWidth: 28, textAlign: "right" }}>{settings.maxActiveRooms}</span>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+            {([
+              ["maxSpectatorsBattle", "Spectators / Battle Room"],
+              ["maxSpectatorsTournament", "Spectators / Tournament Room"],
+              ["maxSpectatorsAI", "Spectators / AI Battle Room"],
+            ] as [keyof GameSettings, string][]).map(([key, label]) => (
+              <div key={key}>
+                <label style={S.label}>{label}</label>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <input type="range" min={0} max={12} step={1} value={settings[key] as number} onChange={e => set(key, +e.target.value)} style={{ flex: 1 }} />
+                  <span style={{ fontSize: 13, color: C.text, minWidth: 20 }}>{settings[key] as number}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </Section>
 

@@ -31,6 +31,17 @@ async function clearCollection(name) {
   console.log(`  🗑️  Cleared ${snap.size} docs from ${name}`);
 }
 
+const COMBO_EFFECT_IDS = {
+  "quick-dash-l":   "quick-dash-l",
+  "quick-dash-r":   "quick-dash-r",
+  "guard-tap":      "guard-tap",
+  "feint":          "feint",
+  "riposte":        "riposte",
+  "pivot-strike":   "pivot-strike",
+  "power-thrust":   "power-thrust",
+  "spin-leech-jab": "spin-leech",
+};
+
 // Keep in sync with src/constants/combos.ts COMBO_REGISTRY.
 const COMBOS = [
   { id: "quick-dash-l",  name: "Quick Dash Left",  sequence: ["moveLeft","moveLeft","attack"],   cost: 0,  type: "universal", windowMs: 400, cooldownMs: 800,  description: "Short leftward dash with a contact pop. Free." },
@@ -41,7 +52,7 @@ const COMBOS = [
   { id: "pivot-strike",  name: "Pivot Strike",     sequence: ["moveLeft","moveRight","attack"],  cost: 15, type: "balanced",  windowMs: 450, cooldownMs: 2500, description: "Quick pivot into a 1.25x strike. Costs 15." },
   { id: "power-thrust",  name: "Power Thrust",     sequence: ["attack","attack","attack"],       cost: 25, type: "universal", windowMs: 450, cooldownMs: 3500, description: "Three-tap commit attack — 1.5x for 0.8s. Costs 25." },
   { id: "spin-leech-jab",name: "Spin-Leech Jab",   sequence: ["moveLeft","attack","moveRight"],  cost: 35, type: "stamina",   windowMs: 450, cooldownMs: 4500, description: "Stamina-only. Light hit + 8% spin steal. Costs 35." },
-];
+].map(c => ({ ...c, effectId: COMBO_EFFECT_IDS[c.id] ?? null }));
 
 async function seedCombos() {
   console.log("\n══════════════════════════════════════");

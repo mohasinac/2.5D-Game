@@ -5,14 +5,17 @@ import {
 } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem } from "../utils/firebase";
+import { loadGimmickDefs } from "../utils/firestoreLoaders";
+import { expandGimmicks } from "../utils/gimmickExpander";
 import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
-import { tryReserveRoom, releaseRoom } from "../shared/utils/roomCounter";
+import { tryReserveRoom, releaseRoom, setMaxActiveRooms } from "../shared/utils/roomCounter";
 import { createPRNG } from "../shared/utils/prng";
 import { hashString } from "../shared/utils/hashString";
 import { ComboTracker, detectCombo, createComboTracker } from "../shared/utils/comboSystem";
 import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
 import { resolveWallAngle, wallBowlForce } from "../shared/physics/ArenaUtils";
+import { resolvePhysicsFlags } from "../utils/physicsFlags";
 import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
 import { advanceArenaRotation } from "../shared/rooms/advanceArenaRotation";
 import {
@@ -100,6 +103,7 @@ export class AIBattleRoom extends Room<GameState> {
     this.globalSettings = await loadGlobalSettings();
     if (this.globalSettings?.maintenanceMode) throw new Error("Maintenance");
     if (this.globalSettings?.enableAiBattle === false) throw new Error("AI Battle disabled");
+    if (this.globalSettings?.maxActiveRooms) setMaxActiveRooms(this.globalSettings.maxActiveRooms);
 
     this.setState(new GameState());
     this.state.mode = "ai-battle";
@@ -220,7 +224,14 @@ export class AIBattleRoom extends Room<GameState> {
     bey.maxHealth = bey.maxStamina;
     bey.x = spawn.x;
     bey.y = spawn.y;
-    this.physics.createBeyblade(bey.id, bey.x, bey.y, bey.radius, bey.mass, data || undefined);
+    const bFlags = resolvePhysicsFlags((data as any)?.physicsFlags);
+    bey.collisionWithBeys       = bFlags.collisionWithBeys;
+    bey.collisionWithArena      = bFlags.collisionWithArena;
+    bey.collisionWithObstacles  = bFlags.collisionWithObstacles;
+    bey.invulnerable            = bFlags.invulnerable;
+    bey.noKnockback             = bFlags.noKnockback;
+
+    this.physics.createBeyblade(bey.id, bey.x, bey.y, bey.radius, bey.mass, data || undefined, bFlags);
     this.physics.setAngularVelocity(bey.id, (bey.spinDirection === "left" ? -1 : 1) * (bey.maxSpin / 200));
     this.state.beyblades.set(sessionId, bey);
     this.state.seriesWins.set(bey.userId, 0);
@@ -285,10 +296,25 @@ export class AIBattleRoom extends Room<GameState> {
     human.y = arenaHalfH;
     this.humanSpawnPos = { x: human.x, y: human.y };
 
-    this.physics.createBeyblade(human.id, human.x, human.y, human.radius, human.mass, humanData || undefined);
+    const humanFlags = resolvePhysicsFlags((humanData as any)?.physicsFlags);
+    human.collisionWithBeys       = humanFlags.collisionWithBeys;
+    human.collisionWithArena      = humanFlags.collisionWithArena;
+    human.collisionWithObstacles  = humanFlags.collisionWithObstacles;
+    human.invulnerable            = humanFlags.invulnerable;
+    human.noKnockback             = humanFlags.noKnockback;
+
+    this.physics.createBeyblade(human.id, human.x, human.y, human.radius, human.mass, humanData || undefined, humanFlags);
     this.physics.setAngularVelocity(human.id, (human.spinDirection === "left" ? -1 : 1) * (human.maxSpin / 200));
     this.state.beyblades.set(client.sessionId, human);
     this.state.seriesWins.set(human.userId, 0);
+
+    // Expand gimmicks for human bey
+    const gimmickDefsCache = await loadGimmickDefs();
+    const humanGimmickIds: string[] = (humanData as any)?.gimmickIds ?? [];
+    if (humanGimmickIds.length > 0) {
+      const instances = expandGimmicks(humanGimmickIds, gimmickDefsCache);
+      instances.forEach(inst => human.mechanics.push(inst));
+    }
 
     // ── Load and create AI beyblade ─────────────────────────────────────────
     const aiData: BeybladeStats | null = await loadBeyblade(this.aiBeybladeId);
@@ -312,10 +338,24 @@ export class AIBattleRoom extends Room<GameState> {
     ai.y = arenaHalfH;
     this.aiSpawnPos = { x: ai.x, y: ai.y };
 
-    this.physics.createBeyblade(AI_SESSION_ID, ai.x, ai.y, ai.radius, ai.mass, aiData || undefined);
+    const aiFlags = resolvePhysicsFlags((aiData as any)?.physicsFlags);
+    ai.collisionWithBeys       = aiFlags.collisionWithBeys;
+    ai.collisionWithArena      = aiFlags.collisionWithArena;
+    ai.collisionWithObstacles  = aiFlags.collisionWithObstacles;
+    ai.invulnerable            = aiFlags.invulnerable;
+    ai.noKnockback             = aiFlags.noKnockback;
+
+    this.physics.createBeyblade(AI_SESSION_ID, ai.x, ai.y, ai.radius, ai.mass, aiData || undefined, aiFlags);
     this.physics.setAngularVelocity(AI_SESSION_ID, (ai.spinDirection === "left" ? -1 : 1) * (ai.maxSpin / 200));
     this.state.beyblades.set(AI_SESSION_ID, ai);
     this.state.seriesWins.set(AI_SESSION_ID, 0);
+
+    // Expand gimmicks for AI bey (reuse same cache loaded above)
+    const aiGimmickIds: string[] = (aiData as any)?.gimmickIds ?? [];
+    if (aiGimmickIds.length > 0) {
+      const aiInstances = expandGimmicks(aiGimmickIds, gimmickDefsCache);
+      aiInstances.forEach(inst => ai.mechanics.push(inst));
+    }
 
     this.matchStarted = true;
     this.state.status = "in-progress";
@@ -373,7 +413,7 @@ export class AIBattleRoom extends Room<GameState> {
 
     const forceMagnitude = computeForceMagnitude(beyblade);
 
-    applyMovementInput(beyblade, message, forceMagnitude, this.physics);
+    applyMovementInput(beyblade, message, forceMagnitude, this.physics, !!this.arenaSystem);
 
     const events = applyActionInput(
       beyblade,
@@ -685,7 +725,7 @@ export class AIBattleRoom extends Room<GameState> {
 
     const forceMagnitude = computeForceMagnitude(beyblade);
 
-    applyMovementInput(beyblade, input, forceMagnitude, this.physics);
+    applyMovementInput(beyblade, input, forceMagnitude, this.physics, !!this.arenaSystem);
     applyActionInput(
       beyblade,
       input,

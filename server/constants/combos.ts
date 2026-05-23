@@ -49,6 +49,8 @@ export interface Combo {
   cooldownMs: number;
   /** Display description for the Combos tab + HUD. */
   description: string;
+  /** Optional: references combo_effects/{effectId} Firestore doc for BehaviorRef dispatch. */
+  effectId?: string;
 }
 
 /** All 8 seeded combos. 4 free + 4 power-costing. */

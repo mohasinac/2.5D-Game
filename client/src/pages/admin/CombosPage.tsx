@@ -7,6 +7,16 @@ import { C } from "@/styles/theme";
 import { KEY_LABEL, type ComboKey } from "@/constants/combos";
 import toast from "react-hot-toast";
 
+interface ComboEffect {
+  damageMultiplier?: number;
+  dashDirection?: string;
+  forceImpulse?: number;
+  durationMs?: number;
+  lockMs?: number;
+  spinStealBonus?: number;
+  microSpinBoost?: number;
+}
+
 interface ComboDoc {
   id: string;
   name: string;
@@ -15,6 +25,8 @@ interface ComboDoc {
   type: string;
   description: string;
   cooldownMs: number;
+  windowMs?: number;
+  effect?: ComboEffect;
 }
 
 const KEY_OPTIONS = (Object.keys(KEY_LABEL) as ComboKey[]).map(k => ({
@@ -41,9 +53,19 @@ function slugify(s: string) {
   return s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
 }
 
-const EMPTY: { name: string; sequence: [string, string, string]; cost: number; type: string; description: string; cooldownMs: number } = {
-  name: "", sequence: ["moveLeft", "moveRight", "attack"], cost: 0, type: "universal", description: "", cooldownMs: 1200,
+const EMPTY = {
+  name: "", sequence: ["moveLeft", "moveRight", "attack"] as [string,string,string],
+  cost: 0, type: "universal", description: "", cooldownMs: 1200,
+  windowMs: 400,
+  effect: { damageMultiplier: 1.0, dashDirection: "none", forceImpulse: 0, durationMs: 0, lockMs: 0, spinStealBonus: 0, microSpinBoost: 0 },
 };
+
+const DASH_DIRS = [
+  { value: "none", label: "None" },
+  { value: "left", label: "Left" },
+  { value: "right", label: "Right" },
+  { value: "back", label: "Back" },
+];
 
 const inputStyle: React.CSSProperties = {
   width: "100%", padding: "8px 10px", background: "var(--bg0, #0f172a)",
@@ -55,7 +77,7 @@ export function CombosPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<ComboDoc | null>(null);
-  const [form, setForm] = useState({ ...EMPTY });
+  const [form, setForm] = useState<typeof EMPTY>({ ...EMPTY, effect: { ...EMPTY.effect } });
   const [confirmDelete, setConfirmDelete] = useState<ComboDoc | null>(null);
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
@@ -74,13 +96,15 @@ export function CombosPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const openCreate = () => { setEditing(null); setForm({ ...EMPTY }); setShowModal(true); };
+  const openCreate = () => { setEditing(null); setForm({ ...EMPTY, effect: { ...EMPTY.effect } }); setShowModal(true); };
   const openEdit = (item: ComboDoc) => {
     setEditing(item);
     setForm({
       name: item.name,
       sequence: [item.sequence[0] ?? "moveLeft", item.sequence[1] ?? "moveRight", item.sequence[2] ?? "attack"],
       cost: item.cost, type: item.type, description: item.description ?? "", cooldownMs: item.cooldownMs,
+      windowMs: item.windowMs ?? 400,
+      effect: { ...EMPTY.effect, ...(item.effect ?? {}) },
     });
     setShowModal(true);
   };
@@ -90,7 +114,7 @@ export function CombosPage() {
     if (form.sequence.some(k => !k)) { toast.error("All 3 keys are required"); return; }
     setSaving(true);
     try {
-      const data = { name: form.name.trim(), sequence: form.sequence, cost: form.cost, type: form.type, description: form.description.trim(), cooldownMs: form.cooldownMs };
+      const data = { name: form.name.trim(), sequence: form.sequence, cost: form.cost, type: form.type, description: form.description.trim(), cooldownMs: form.cooldownMs, windowMs: form.windowMs, effect: form.effect };
       const id = editing ? editing.id : slugify(form.name) || `combo-${Date.now()}`;
       await setDoc(doc(db, COLLECTIONS.COMBOS, id), data);
       invalidate("combos");
@@ -197,10 +221,52 @@ export function CombosPage() {
               </div>
             </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Cooldown (ms)</span>
-              <input type="number" min={0} value={form.cooldownMs} onChange={e => setForm(f => ({ ...f, cooldownMs: Number(e.target.value) }))} style={inputStyle} />
-            </label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+              <label style={{ display: "block" }}>
+                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Cooldown (ms)</span>
+                <input type="number" min={0} value={form.cooldownMs} onChange={e => setForm(f => ({ ...f, cooldownMs: Number(e.target.value) }))} style={inputStyle} />
+              </label>
+              <label style={{ display: "block" }}>
+                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Window (ms) — max time between keys</span>
+                <input type="number" min={100} max={800} step={50} value={form.windowMs} onChange={e => setForm(f => ({ ...f, windowMs: Number(e.target.value) }))} style={inputStyle} />
+              </label>
+            </div>
+
+            <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, padding: 14, marginBottom: 14 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.muted, marginBottom: 12 }}>Combat Effect</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {([
+                  ["Damage Multiplier (1.0–1.5)", "damageMultiplier", 1.0, 1.5, 0.05] as const,
+                  ["Force Impulse", "forceImpulse", 0, 5000, 50] as const,
+                  ["Duration (ms)", "durationMs", 0, 1000, 50] as const,
+                  ["Lock Opponent (ms)", "lockMs", 0, 300, 10] as const,
+                  ["Spin Steal Bonus", "spinStealBonus", 0, 0.1, 0.005] as const,
+                  ["Micro Spin Boost", "microSpinBoost", 0, 50, 1] as const,
+                ] as const).map(([label, field, min, max, step]) => (
+                  <label key={field} style={{ display: "block" }}>
+                    <span style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 3 }}>{label}</span>
+                    <input type="number" min={min} max={max} step={step}
+                      value={(form.effect as any)[field] ?? min}
+                      onChange={e => setForm(f => ({ ...f, effect: { ...f.effect, [field]: Number(e.target.value) } }))}
+                      style={{ ...inputStyle, padding: "6px 8px", fontSize: 12 }} />
+                  </label>
+                ))}
+              </div>
+              <div style={{ marginTop: 10 }}>
+                <span style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 3 }}>Dash Direction</span>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {DASH_DIRS.map(d => (
+                    <button key={d.value} onClick={() => setForm(f => ({ ...f, effect: { ...f.effect, dashDirection: d.value } }))}
+                      style={{ padding: "5px 12px", fontSize: 11, borderRadius: 6, cursor: "pointer",
+                        background: form.effect.dashDirection === d.value ? C.blue + "22" : C.bg2,
+                        color: form.effect.dashDirection === d.value ? C.blue : C.muted,
+                        border: `1px solid ${form.effect.dashDirection === d.value ? C.blue + "55" : C.border}` }}>
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             <label style={{ display: "block", marginBottom: 20 }}>
               <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>

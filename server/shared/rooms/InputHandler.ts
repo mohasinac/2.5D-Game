@@ -25,42 +25,46 @@ export function isControlLocked(beyblade: Beyblade): boolean {
 
 // Apply 4-direction movement forces. Skipped when beyblade is comboExecuting or
 // inside a loss-of-control window from a special move / combo.
+//
+// is25D = true  → forces are relative to beyblade.rotation (2.5D/3D mode):
+//   W=forward along facing, S=backward, A=right-strafe, D=left-strafe
+// is25D = false → forces are absolute world-axis directions (2D flat mode):
+//   W=world-up (−Y), S=world-down (+Y), A=world-left (−X), D=world-right (+X)
 export function applyMovementInput(
   beyblade: Beyblade,
   input: PlayerInput,
   forceMagnitude: number,
   physics: InputPhysicsBridge,
+  is25D = false,
 ): void {
   if (beyblade.comboExecuting) return;
   if (isControlLocked(beyblade)) return;
 
-  if (input.moveLeft) {
-    physics.applyForce(
-      beyblade.id,
-      -Math.sin(beyblade.rotation) * forceMagnitude * 1.5,
-       Math.cos(beyblade.rotation) * forceMagnitude * 1.5,
-    );
-  }
-  if (input.moveRight) {
-    physics.applyForce(
-      beyblade.id,
-       Math.sin(beyblade.rotation) * forceMagnitude * 1.5,
-      -Math.cos(beyblade.rotation) * forceMagnitude * 1.5,
-    );
-  }
-  if (input.moveUp) {
-    physics.applyForce(
-      beyblade.id,
-      Math.cos(beyblade.rotation) * forceMagnitude * 1.5,
-      Math.sin(beyblade.rotation) * forceMagnitude * 1.5,
-    );
-  }
-  if (input.moveDown) {
-    physics.applyForce(
-      beyblade.id,
-      -Math.cos(beyblade.rotation) * forceMagnitude,
-      -Math.sin(beyblade.rotation) * forceMagnitude,
-    );
+  if (is25D) {
+    // 2.5D: forces rotate with beyblade facing direction
+    const r = beyblade.rotation;
+    if (input.moveLeft) {
+      // right strafe relative to forward (A key = strafe right when facing forward)
+      physics.applyForce(beyblade.id, -Math.sin(r) * forceMagnitude * 1.5, Math.cos(r) * forceMagnitude * 1.5);
+    }
+    if (input.moveRight) {
+      // left strafe relative to forward
+      physics.applyForce(beyblade.id, Math.sin(r) * forceMagnitude * 1.5, -Math.cos(r) * forceMagnitude * 1.5);
+    }
+    if (input.moveUp) {
+      // forward
+      physics.applyForce(beyblade.id, Math.cos(r) * forceMagnitude * 1.5, Math.sin(r) * forceMagnitude * 1.5);
+    }
+    if (input.moveDown) {
+      // backward
+      physics.applyForce(beyblade.id, -Math.cos(r) * forceMagnitude, -Math.sin(r) * forceMagnitude);
+    }
+  } else {
+    // 2D flat: absolute world-axis forces
+    if (input.moveLeft)  physics.applyForce(beyblade.id, -forceMagnitude * 1.5,  0);
+    if (input.moveRight) physics.applyForce(beyblade.id,  forceMagnitude * 1.5,  0);
+    if (input.moveUp)    physics.applyForce(beyblade.id,  0, -forceMagnitude * 1.5);
+    if (input.moveDown)  physics.applyForce(beyblade.id,  0,  forceMagnitude);
   }
 }
 

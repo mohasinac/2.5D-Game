@@ -83,6 +83,7 @@ export interface GlobalSettingsDoc {
   featurePits: boolean;
   featureLoops: boolean;
   minimumTournamentGapMinutes: number;
+  maxActiveRooms?: number;
 }
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {

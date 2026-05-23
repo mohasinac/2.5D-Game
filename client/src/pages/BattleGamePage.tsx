@@ -14,6 +14,7 @@ import { useCombos } from "@/hooks/useCombos";
 import { useSpecialMoves } from "@/hooks/useSpecialMoves";
 import { BeyLinkHijackHUD } from "@/components/game/BeyLinkHijackHUD";
 import { PartModesHUD } from "@/components/game/PartModesHUD";
+import { BXScoreHUD } from "@/components/game/BXScoreHUD";
 import FloorHUD from "@/components/game/FloorHUD";
 import FloorTransitionOverlay from "@/components/game/FloorTransitionOverlay";
 import LinkAlignmentHUD from "@/components/game/LinkAlignmentHUD";
@@ -448,6 +449,15 @@ export function BattleGamePage() {
         cooldowns={mapToRecord(myBeyblade?.comboCooldowns)}
         power={myBeyblade?.power}
         comboMap={comboMap}
+      />
+
+      {/* BXScoreHUD — only visible on scoring-mode arenas */}
+      <BXScoreHUD
+        scoringMode={(gameState as any)?.scoringMode}
+        pointsTarget={(gameState as any)?.pointsTarget}
+        playerPoints={(gameState as any)?.playerPoints}
+        beyblades={beyblades as any}
+        myUserId={userId}
       />
 
       {/* BeyLink QTE prompts: escape trap, hijack initiation, attacker block, control-loss banner */}

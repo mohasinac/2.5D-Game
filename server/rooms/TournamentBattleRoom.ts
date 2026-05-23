@@ -3,13 +3,16 @@ import { GameState, Beyblade } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats } from "../utils/firebase";
 import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
-import { tryReserveRoom, releaseRoom } from "../shared/utils/roomCounter";
+import { loadGimmickDefs } from "../utils/firestoreLoaders";
+import { expandGimmicks } from "../utils/gimmickExpander";
+import { tryReserveRoom, releaseRoom, setMaxActiveRooms } from "../shared/utils/roomCounter";
 import { createPRNG } from "../shared/utils/prng";
 import { hashString } from "../shared/utils/hashString";
 import { ComboTracker, detectCombo, createComboTracker } from "../shared/utils/comboSystem";
 import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
 import { resolveWallAngle } from "../shared/physics/ArenaUtils";
+import { resolvePhysicsFlags } from "../utils/physicsFlags";
 import { processArenaFeatures } from "../shared/rooms/ArenaFeatureProcessor";
 import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
 import { advanceArenaRotation } from "../shared/rooms/advanceArenaRotation";
@@ -88,6 +91,8 @@ export class TournamentBattleRoom extends Room<GameState> {
 
     this.globalSettings = await loadGlobalSettings();
     if (this.globalSettings?.maintenanceMode) throw new Error("Maintenance");
+    if (this.globalSettings?.enableTournament === false) throw new Error("Tournament disabled");
+    if (this.globalSettings?.maxActiveRooms) setMaxActiveRooms(this.globalSettings.maxActiveRooms);
 
     this.setState(new GameState());
     this.state.mode = "tournament";
@@ -208,10 +213,25 @@ export class TournamentBattleRoom extends Room<GameState> {
     beyblade.y = arenaHalfH + Math.sin(spawnOffset.angle) * spawnRadius;
     this.spawnPositions.set(client.sessionId, { x: beyblade.x, y: beyblade.y });
 
-    this.physics.createBeyblade(beyblade.id, beyblade.x, beyblade.y, beyblade.radius, beyblade.mass, beybladeData || undefined);
+    const pFlags = resolvePhysicsFlags((beybladeData as any)?.physicsFlags);
+    beyblade.collisionWithBeys       = pFlags.collisionWithBeys;
+    beyblade.collisionWithArena      = pFlags.collisionWithArena;
+    beyblade.collisionWithObstacles  = pFlags.collisionWithObstacles;
+    beyblade.invulnerable            = pFlags.invulnerable;
+    beyblade.noKnockback             = pFlags.noKnockback;
+
+    this.physics.createBeyblade(beyblade.id, beyblade.x, beyblade.y, beyblade.radius, beyblade.mass, beybladeData || undefined, pFlags);
     this.physics.setAngularVelocity(beyblade.id, (beyblade.spinDirection === "left" ? -1 : 1) * (beyblade.maxSpin / 200));
     this.state.beyblades.set(client.sessionId, beyblade);
     this.state.seriesWins.set(beyblade.userId, 0);
+
+    // Expand gimmicks for this bey
+    const gimmickDefsCache = await loadGimmickDefs();
+    const gimmickIds: string[] = (beybladeData as any)?.gimmickIds ?? [];
+    if (gimmickIds.length > 0) {
+      const instances = expandGimmicks(gimmickIds, gimmickDefsCache);
+      instances.forEach(inst => beyblade.mechanics.push(inst));
+    }
 
     if (this.playerSessions.size >= 2) {
       this.startMatch();
@@ -291,7 +311,14 @@ export class TournamentBattleRoom extends Room<GameState> {
     ai.y = arenaHalfH + Math.sin(spawnOffset.angle) * spawnRadius;
     this.spawnPositions.set(userId, { x: ai.x, y: ai.y });
 
-    this.physics.createBeyblade(userId, ai.x, ai.y, ai.radius, ai.mass, aiData || undefined);
+    const aiFlags = resolvePhysicsFlags((aiData as any)?.physicsFlags);
+    ai.collisionWithBeys       = aiFlags.collisionWithBeys;
+    ai.collisionWithArena      = aiFlags.collisionWithArena;
+    ai.collisionWithObstacles  = aiFlags.collisionWithObstacles;
+    ai.invulnerable            = aiFlags.invulnerable;
+    ai.noKnockback             = aiFlags.noKnockback;
+
+    this.physics.createBeyblade(userId, ai.x, ai.y, ai.radius, ai.mass, aiData || undefined, aiFlags);
     this.physics.setAngularVelocity(userId, (ai.spinDirection === "left" ? -1 : 1) * (ai.maxSpin / 200));
     this.state.beyblades.set(userId, ai);
     this.state.seriesWins.set(userId, 0);
@@ -320,7 +347,7 @@ export class TournamentBattleRoom extends Room<GameState> {
 
     const forceMagnitude = computeForceMagnitude(beyblade);
 
-    applyMovementInput(beyblade, message, forceMagnitude, this.physics);
+    applyMovementInput(beyblade, message, forceMagnitude, this.physics, !!this.arenaSystem);
 
     const events = applyActionInput(
       beyblade,

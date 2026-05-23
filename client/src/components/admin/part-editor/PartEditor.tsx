@@ -341,6 +341,7 @@ export function PartEditor({
             <PartConfigurationsEditor
               value={configurations}
               onChange={(cfgs) => update({ configurations: cfgs })}
+              partTypeSlug={partTypeSlug}
             />
           </div>
         )}

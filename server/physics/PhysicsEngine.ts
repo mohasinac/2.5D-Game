@@ -9,6 +9,7 @@ import type {
   BeybladeStats,
   PointOfContact
 } from "../types/shared";
+import { COLLISION_CATEGORIES, buildCollisionMask, type BeybladePhysicsFlags } from "../utils/physicsFlags";
 
 // [SERVER-PHYSICS] PhysicsEngine — Matter.js wrapper for server-authoritative physics.
 // Coordinates: 1 em = 16px, 1 cm = 24px. Arena center is (arenaW*16/2, arenaH*16/2).
@@ -66,15 +67,23 @@ export class PhysicsEngine {
     this.arenaRadius = Math.min(config.width, config.height) * 16 * 0.45;
   }
 
-  createBeyblade(id: string, x: number, y: number, radius: number, mass: number, stats?: BeybladeStats): Matter.Body {
+  createBeyblade(id: string, x: number, y: number, radius: number, mass: number, stats?: BeybladeStats, flags?: BeybladePhysicsFlags): Matter.Body {
     // radius in cm — convert to pixels
     const radiusPx = radius * 24;
+    const collisionMask = flags ? buildCollisionMask(flags) : (
+      COLLISION_CATEGORIES.BEYBLADE | COLLISION_CATEGORIES.ARENA_WALL |
+      COLLISION_CATEGORIES.OBSTACLE | COLLISION_CATEGORIES.PROJECTILE
+    );
     const body = Matter.Bodies.circle(x, y, radiusPx, {
       mass,
       restitution: 0.8,
       friction: 0.01,
       frictionAir: 0.01,
       label: id,
+      collisionFilter: {
+        category: COLLISION_CATEGORIES.BEYBLADE,
+        mask: collisionMask,
+      },
     });
 
     Matter.World.add(this.world, body);
@@ -82,6 +91,16 @@ export class PhysicsEngine {
     if (stats) this.beybladeStats.set(id, stats);
 
     return body;
+  }
+
+  /** Update a beyblade's collision mask at runtime (e.g. after physicsFlags change). */
+  updateCollisionFilter(id: string, flags: BeybladePhysicsFlags): void {
+    const body = this.bodies.get(id);
+    if (!body) return;
+    Matter.Body.set(body, "collisionFilter", {
+      category: COLLISION_CATEGORIES.BEYBLADE,
+      mask: buildCollisionMask(flags),
+    });
   }
 
   createObstacles(obstacles: ObstacleConfig[]): void {
@@ -95,6 +114,10 @@ export class PhysicsEngine {
         restitution: 0.9,
         friction: 0.1,
         label: `obstacle_${index}`,
+        collisionFilter: {
+          category: COLLISION_CATEGORIES.OBSTACLE,
+          mask: COLLISION_CATEGORIES.BEYBLADE,
+        },
       });
 
       Matter.World.add(this.world, body);
@@ -293,14 +316,35 @@ export class PhysicsEngine {
     if (beyblade1.isInvulnerable || beyblade1.dodgeBuffTimer > 0) damage1 = 0;
     if (beyblade2.isInvulnerable || beyblade2.dodgeBuffTimer > 0) damage2 = 0;
 
+    // Friendly fire: same non-empty teamId → skip damage/spin-steal but let physics recoil through.
+    // Matter.js has already resolved the physical impulse; we only gate the stat changes here.
+    const t1 = beyblade1.teamId ?? "";
+    const t2 = beyblade2.teamId ?? "";
+    if (t1 && t1 === t2) {
+      return { damage1: 0, damage2: 0, spinSteal1: 0, spinSteal2: 0 };
+    }
+
+    // noKnockback flag: caller must check beyblade.noKnockback to skip applyKnockback().
+    // noDamageOutput flag: zero outgoing damage from flagged bey.
+    if (beyblade1.noDamageOutput) damage2 = 0;
+    if (beyblade2.noDamageOutput) damage1 = 0;
+
     return { damage1, damage2, spinSteal1, spinSteal2 };
   }
 
   // Returns true only if the contact radius is within tolerance of the CP's defined radius.
   // Prevents a WD-rim CP from firing when the collision happens at the AR's larger radius.
   // CPs without a defined radius always match (backward compatible with old flat stats).
+  // Arc-segment CPs (from SystemContactPoint with radiusInner/radiusOuter) use the full radial
+  // range stored as radius ± thickness/2.
   checkRadialContactMatch(contactRadiusMm: number, cp: PointOfContact): boolean {
     if (cp.radius === undefined) return true;
+    // Arc-segment: use thickness as band width (rInner..rOuter stored as radius ± thickness/2)
+    if (cp.thickness !== undefined && cp.thickness > 0) {
+      const rInner = cp.radius - cp.thickness / 2;
+      const rOuter = cp.radius + cp.thickness / 2;
+      return contactRadiusMm >= rInner && contactRadiusMm <= rOuter;
+    }
     const activeCPRadius = cp.radius;
     return Math.abs(contactRadiusMm - activeCPRadius) <= RADIAL_CONTACT_TOLERANCE_MM;
   }

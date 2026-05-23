@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { C } from "@/styles/theme";
-import type { ArenaConfig, ArenaLink, BeyLink, BeyLinkType, BeyLinkAlignment, BeyLinkEffect, BeyLinkEffectType, BeyLinkMovementControl, BeyLinkGroupPattern } from "@/types/arenaConfigNew";
+import type { ArenaConfig, ArenaLink, BeyLink, BeyLinkType, BeyLinkAlignment, BeyLinkEffect, BeyLinkEffectType, BeyLinkMovementControl, BeyLinkGroupPattern, ArenaLinkAlignmentConfig } from "@/types/arenaConfigNew";
 import { BeyLinkMovementGuide } from "@/components/admin/BeyLinkMovementGuide";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { useBeyLinkConfigs } from "@/hooks/useBeyLinkConfigs";
@@ -414,6 +414,133 @@ function ArenaLinkCard({
               <span style={{ fontSize: 11, color: C.faint, width: 12 }}>y</span>
               <NumInput value={link.exitPosition.y} onChange={v => updateExit("y", v)} />
             </div>
+
+            {/* Rotation Coupling */}
+            <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Rotation Coupling</div>
+              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 6 }}>
+                {(["independent", "synchronized", "counter", "driven"] as const).map(rc => (
+                  <button key={rc} type="button" onClick={() => onUpdate({ rotationCoupling: rc })}
+                    style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
+                      background: (link.rotationCoupling ?? "independent") === rc ? "#3b82f6" : "transparent",
+                      color: (link.rotationCoupling ?? "independent") === rc ? "#fff" : C.muted,
+                      border: `1px solid ${(link.rotationCoupling ?? "independent") === rc ? "#3b82f6" : C.border}` }}>
+                    {rc}
+                  </button>
+                ))}
+              </div>
+              {link.rotationCoupling === "driven" && (
+                <FieldRow label="Driven Ratio (×)">
+                  <NumInput value={(link as any).rotationDrivenRatio ?? 1} step={0.1}
+                    onChange={v => onUpdate({ rotationDrivenRatio: v } as any)} />
+                </FieldRow>
+              )}
+            </div>
+
+            {/* Alignment config */}
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Alignment</div>
+              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 6 }}>
+                {(["none", "positional", "owner-only"] as const).map(m => (
+                  <button key={m} type="button" onClick={() => onUpdate({ alignment: { ...(link.alignment ?? { mode: "none", errorMarginDeg: 10, correctionTicks: 10, disconnectsWhenMisaligned: false, reconnectCooldownTicks: 30 }), mode: m } })}
+                    style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
+                      background: (link.alignment?.mode ?? "none") === m ? "#a855f7" : "transparent",
+                      color: (link.alignment?.mode ?? "none") === m ? "#fff" : C.muted,
+                      border: `1px solid ${(link.alignment?.mode ?? "none") === m ? "#a855f7" : C.border}` }}>
+                    {m}
+                  </button>
+                ))}
+              </div>
+              {link.alignment && link.alignment.mode !== "none" && (
+                <>
+                  <FieldRow label="Error Margin (°)">
+                    <NumInput value={link.alignment.errorMarginDeg ?? 10} step={1}
+                      onChange={v => onUpdate({ alignment: { ...link.alignment!, errorMarginDeg: v } })} />
+                  </FieldRow>
+                  <FieldRow label="Correction Ticks">
+                    <NumInput value={link.alignment.correctionTicks ?? 10}
+                      onChange={v => onUpdate({ alignment: { ...link.alignment!, correctionTicks: v } })} />
+                  </FieldRow>
+                  <FieldRow label="Disconnects When Misaligned">
+                    <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.text, cursor: "pointer" }}>
+                      <input type="checkbox" checked={link.alignment.disconnectsWhenMisaligned ?? false}
+                        onChange={e => onUpdate({ alignment: { ...link.alignment!, disconnectsWhenMisaligned: e.target.checked } })} />
+                      Gap shown when misaligned
+                    </label>
+                  </FieldRow>
+                  <FieldRow label="Reconnect Cooldown (ticks)">
+                    <NumInput value={link.alignment.reconnectCooldownTicks ?? 30}
+                      onChange={v => onUpdate({ alignment: { ...link.alignment!, reconnectCooldownTicks: v } })} />
+                  </FieldRow>
+                </>
+              )}
+            </div>
+
+            {/* Traversal config */}
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Traversal Timing</div>
+              <FieldRow label="Traversal Ticks">
+                <NumInput value={link.traversal?.traversalTicks ?? 20}
+                  onChange={v => onUpdate({ traversal: { ...(link.traversal ?? { traversalTicks: 20, perBeyReuseCooldownTicks: 30, globalGapTicks: 5 }), traversalTicks: v } })} />
+              </FieldRow>
+              <FieldRow label="Per-Bey Reuse Cooldown">
+                <NumInput value={link.traversal?.perBeyReuseCooldownTicks ?? 30}
+                  onChange={v => onUpdate({ traversal: { ...(link.traversal ?? { traversalTicks: 20, perBeyReuseCooldownTicks: 30, globalGapTicks: 5 }), perBeyReuseCooldownTicks: v } })} />
+              </FieldRow>
+              <FieldRow label="Global Gap Ticks">
+                <NumInput value={link.traversal?.globalGapTicks ?? 5}
+                  onChange={v => onUpdate({ traversal: { ...(link.traversal ?? { traversalTicks: 20, perBeyReuseCooldownTicks: 30, globalGapTicks: 5 }), globalGapTicks: v } })} />
+              </FieldRow>
+            </div>
+
+            {/* Pit config */}
+            {link.linkType === "pit" && (
+              <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#ef4444", marginBottom: 6 }}>Pit Config</div>
+                <FieldRow label="Landing Mode">
+                  <div style={{ display: "flex", gap: 4 }}>
+                    {(["fixed", "random", "current"] as const).map(m => (
+                      <button key={m} type="button" onClick={() => onUpdate({ pitConfig: { landingMode: m } })}
+                        style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
+                          background: (link.pitConfig?.landingMode ?? "random") === m ? "#ef4444" : "transparent",
+                          color: (link.pitConfig?.landingMode ?? "random") === m ? "#fff" : C.muted,
+                          border: `1px solid ${(link.pitConfig?.landingMode ?? "random") === m ? "#ef4444" : C.border}` }}>
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+                </FieldRow>
+              </div>
+            )}
+
+            {/* Trampoline config */}
+            {link.linkType === "trampoline" && (
+              <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#22c55e", marginBottom: 6 }}>Trampoline Config</div>
+                <FieldRow label="Auto-Launch from Pit">
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.text, cursor: "pointer" }}>
+                    <input type="checkbox" checked={link.trampolineConfig?.autoLaunchFromPit ?? false}
+                      onChange={e => onUpdate({ trampolineConfig: { ...(link.trampolineConfig ?? { autoLaunchFromPit: false, autoLaunchAnimTicks: 20, autoLaunchForceMult: 1, autoLaunchOptOut: false }), autoLaunchFromPit: e.target.checked } })} />
+                    Auto-launch bey back to pit above
+                  </label>
+                </FieldRow>
+                <FieldRow label="Launch Anim (ticks)">
+                  <NumInput value={link.trampolineConfig?.autoLaunchAnimTicks ?? 20}
+                    onChange={v => onUpdate({ trampolineConfig: { ...(link.trampolineConfig ?? { autoLaunchFromPit: false, autoLaunchAnimTicks: 20, autoLaunchForceMult: 1, autoLaunchOptOut: false }), autoLaunchAnimTicks: v } })} />
+                </FieldRow>
+                <FieldRow label="Launch Force Mult">
+                  <NumInput value={link.trampolineConfig?.autoLaunchForceMult ?? 1} step={0.1}
+                    onChange={v => onUpdate({ trampolineConfig: { ...(link.trampolineConfig ?? { autoLaunchFromPit: false, autoLaunchAnimTicks: 20, autoLaunchForceMult: 1, autoLaunchOptOut: false }), autoLaunchForceMult: v } })} />
+                </FieldRow>
+                <FieldRow label="Opt-Out Allowed">
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.text, cursor: "pointer" }}>
+                    <input type="checkbox" checked={link.trampolineConfig?.autoLaunchOptOut ?? false}
+                      onChange={e => onUpdate({ trampolineConfig: { ...(link.trampolineConfig ?? { autoLaunchFromPit: false, autoLaunchAnimTicks: 20, autoLaunchForceMult: 1, autoLaunchOptOut: false }), autoLaunchOptOut: e.target.checked } })} />
+                    Player can hold SPACE to cancel launch
+                  </label>
+                </FieldRow>
+              </div>
+            )}
           </div>
 
           {/* Right: mini diagram */}

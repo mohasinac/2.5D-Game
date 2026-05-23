@@ -32,7 +32,8 @@ export type ArenaShape =
   | "star5"   // 5-point star (10 edges)
   | "star6"   // 6-point star (12 edges)
   | "star7"   // 7-point star (14 edges)
-  | "star8";  // 8-point star (16 edges)
+  | "star8"   // 8-point star (16 edges)
+  | "rectangle";  // Gen1 Infinity Stadium, Robert's Olympia Coliseum
 
 export type ArenaTheme =
   | "forest"
@@ -419,7 +420,7 @@ export interface PortalConfig {
 /**
  * Pit Types - Different styles of pits
  */
-export type PitType = "edge" | "crater";
+export type PitType = "edge" | "crater" | "penalty_well" | "xtreme_zone" | "over_zone" | "spike_pit";
 
 /**
  * Pit Configuration
@@ -976,6 +977,73 @@ export interface BumpConfig {
   featureAnimation?: FeatureAnimationConfig;
   behaviorId?: string;
   behaviorParams?: Record<string, unknown>;
+}
+
+// ============================================================================
+// GEAR RAIL (Xtreme Stadium — BX)
+// ============================================================================
+
+export interface GearRailConfig {
+  id: string;
+  /** Ordered polyline of waypoints in cm relative to arena center. */
+  polylineCm: Array<{ x: number; y: number }>;
+  /** Speed boost applied while on rail, as per-mille of max speed (e.g. 350 = 35% boost). */
+  speedBoostPermille: number;
+  /** If true, only beys with gearCompatibleBit=true can use this rail. */
+  requiresGearCompatibleBit?: boolean;
+  /** Duration of the boost after exiting the rail (ms). Default 400. */
+  boostDurationMs?: number;
+  /** ScoringZone ids that this rail can feed into. */
+  exitZoneIds?: string[];
+  color?: string;
+}
+
+// ============================================================================
+// SCORING ZONES (BX point differential)
+// ============================================================================
+
+export interface ScoringZoneConfig {
+  id: string;
+  /** Kind determines point value override vs the points field. */
+  kind: "xtreme" | "over" | "pocket" | "ring_out";
+  x_cm: number;
+  y_cm: number;
+  radius_cm: number;
+  /** Points awarded when a bey exits through this zone. */
+  points: number;
+  color?: string;
+}
+
+// ============================================================================
+// TORNADO RIDGE (MFB / Tornado Stall terrain)
+// ============================================================================
+
+export interface TornadoRidgeConfig {
+  /** Radius of the ridge ring from arena center (cm). */
+  radiusCm: number;
+  /** Width of the ridge band (cm). Default 4. */
+  widthCm?: number;
+  /** Tangential orbit force applied to beys on the ridge (per-tick, px). Default 0.003. */
+  orbitIntensity?: number;
+  /** CCW or CW direction. Default "cw". */
+  direction?: "cw" | "ccw";
+  /** Spin boost percent per second for beys on the ridge. Default 2. */
+  spinBoostPercent?: number;
+}
+
+// ============================================================================
+// ZERO-G (Zero-G Stadium dynamic tilt)
+// ============================================================================
+
+export interface ZeroGConfig {
+  /** Tilt period in ms — how long one full cycle takes. Default 8000. */
+  tiltPeriodMs?: number;
+  /** Maximum tilt angle in degrees. Default 15. */
+  maxTiltDeg?: number;
+  /** Gravity scale when fully tilted (0 = weightless at peak). Default 0.2. */
+  minGravityScale?: number;
+  /** Whether the tilt axis rotates over time. Default true. */
+  rotatingAxis?: boolean;
 }
 
 /**
@@ -1619,6 +1687,14 @@ export interface ArenaConfig {
   spinZones?: SpinZoneConfig[];       // Circular zones that impart orbit or spin
   bumps?: BumpConfig[];               // Raised features that pop beys vertically
 
+  // ── BX / Gen4 features ──────────────────────────────────────────────────────
+  gearRails?: GearRailConfig[];
+  scoringZones?: ScoringZoneConfig[];
+  tornadoRidge?: TornadoRidgeConfig;
+  zeroG?: ZeroGConfig;
+  /** Per-arena stamina drain multiplier (1.0 = default). Higher = faster spin loss. */
+  staminaDrainMultiplier?: number;
+
   // ===== BEY SPAWN SYSTEM (I3) =====
   beySpawn?: ArenaBeySawnConfig;      // AI / neutral beyblades that spawn mid-match
 
@@ -1690,6 +1766,7 @@ export function getEdgeCount(shape: ArenaShape): number {
     star6: 12,  // 6 points × 2
     star7: 14,  // 7 points × 2
     star8: 16,  // 8 points × 2
+    rectangle: 4,
   };
   return edgeCounts[shape];
 }

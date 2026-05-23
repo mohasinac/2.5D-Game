@@ -1,5 +1,5 @@
 // scripts/seed-settings.js
-// Creates/updates settings/game in Firestore to enable all game modes.
+// Creates/updates settings/game in Firestore with all defaults enabled.
 // Run: node scripts/seed-settings.js
 // Idempotent — safe to re-run.
 
@@ -23,19 +23,44 @@ const db = admin.firestore();
 
 async function seedSettings() {
   const settings = {
+    // Game mode toggles
+    enableTryout: true,
+    enablePvp: true,
+    enableAiBattle: true,
     enableAI: true,
     enableTournament: true,
     maintenanceMode: false,
+    maintenanceMessage: "",
     serverMessage: "",
+    // Arena feature toggles
+    featureSpecialMoves: true,
+    featureTurrets: true,
+    featurePortals: true,
+    featureWaterBodies: true,
+    featurePits: true,
+    featureLoops: true,
+    // Room config
+    maxPlayersPerRoom: 4,
+    matchTimeoutSeconds: 180,
+    maxActiveRooms: 20,
+    maxSpectatorsBattle: 8,
+    maxSpectatorsTournament: 8,
+    maxSpectatorsAI: 8,
+    // Blacklists (arrays)
+    globalBeybladeBlacklist: [],
+    globalArenaBlacklist: [],
+    // Tournament
+    minimumTournamentGapMinutes: 30,
+    defaultArenaId: "",
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
   };
 
   await db.collection("settings").doc("game").set(settings, { merge: true });
-  console.log("✅ settings/game updated:");
-  console.log("   enableAI: true");
-  console.log("   enableTournament: true");
-  console.log("   maintenanceMode: false");
-  console.log("\n🎮 All game modes are now enabled.");
+  console.log("✅ settings/game seeded with all defaults:");
+  Object.entries(settings).forEach(([k, v]) => {
+    if (k !== "updatedAt") console.log(`   ${k}: ${JSON.stringify(v)}`);
+  });
+  console.log("\n🎮 All game modes and features are now enabled.");
 }
 
 seedSettings()

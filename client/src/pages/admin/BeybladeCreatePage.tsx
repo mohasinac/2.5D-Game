@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, getDocs, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
@@ -9,6 +9,7 @@ import WhatsAppStyleImageEditor from "@/components/admin/WhatsAppStyleImageEdito
 import ImageCropper from "@/components/admin/ImageCropper";
 import type { ImageCropperRef } from "@/components/admin/ImageCropper";
 import Step3ContactPoints from "@/components/admin/Step3ContactPoints";
+import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type { BeybladeStats, PointOfContact } from "@/types/beybladeStats";
 
 const TOTAL_POINTS = 360;
@@ -47,6 +48,22 @@ export function BeybladeCreatePage() {
   const [imagePosition, setImagePosition] = useState({ x:0, y:0, scale:1, rotation:0 });
   const [pointsOfContact, setPointsOfContact] = useState<PointOfContact[]>([]);
   const cropperRef = useRef<ImageCropperRef>(null);
+
+  // Step 4 ability fields
+  const [elementTypes, setElementTypes] = useState<string[]>([]);
+  const [specialMoveId, setSpecialMoveId] = useState("");
+  const [comboIds, setComboIds] = useState<string[]>([]);
+  const [specialMoveOptions, setSpecialMoveOptions] = useState<{ value: string; label: string }[]>([]);
+  const [comboOptions, setComboOptions] = useState<{ value: string; label: string }[]>([]);
+
+  useEffect(() => {
+    getDocs(collection(db, COLLECTIONS.SPECIAL_MOVES))
+      .then(snap => setSpecialMoveOptions(snap.docs.map(d => ({ value: d.id, label: (d.data().name ?? d.id) as string }))))
+      .catch(() => {});
+    getDocs(collection(db, COLLECTIONS.COMBOS))
+      .then(snap => setComboOptions(snap.docs.map(d => ({ value: d.id, label: (d.data().name ?? d.id) as string }))))
+      .catch(() => {});
+  }, []);
 
   const set = (key: keyof FormData, value: any) => setForm(f => ({ ...f, [key]:value }));
   const usedPoints = form.attack + form.defense + form.stamina;
@@ -141,6 +158,9 @@ export function BeybladeCreatePage() {
         invulnerabilityChance, spinDecayRate, maxSpin, spinStealFactor,
         maxStamina, speedBonus,
         pointsOfContact,
+        ...(elementTypes.length > 0 ? { elementTypes } : {}),
+        ...(specialMoveId ? { specialMoveId } : {}),
+        ...(comboIds.length > 0 ? { comboIds } : {}),
         createdAt: serverTimestamp(),
       });
       toast.success(`Created ${form.displayName}!`);
@@ -149,7 +169,7 @@ export function BeybladeCreatePage() {
     finally { setSaving(false); }
   };
 
-  const steps = ["Basic Info", "Type Distribution", "Image", "Contact Points"];
+  const steps = ["Basic Info", "Type Distribution", "Image", "Contact Points", "Abilities"];
 
   return (
     <div style={{ padding:24, maxWidth: step === 3 ? 960 : 600, margin:"0 auto", transition:"max-width 200ms" }}>
@@ -311,6 +331,71 @@ export function BeybladeCreatePage() {
             if (updated.pointsOfContact !== undefined) setPointsOfContact(updated.pointsOfContact);
           }}
         />
+      )}
+
+      {step === 4 && (
+        <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:24, display:"flex", flexDirection:"column", gap:20 }}>
+          <div>
+            <p style={{ fontSize:13, color:C.muted, marginBottom:16 }}>
+              Optional — these can also be set later from the edit page.
+            </p>
+
+            {/* Element Types */}
+            <div style={{ marginBottom:20 }}>
+              <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Element Types (max 2)</label>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                {["fire","water","wind","earth","lightning","ice","dark","light","metal","nature","psychic","void"].map(elem => {
+                  const active = elementTypes.includes(elem);
+                  return (
+                    <button key={elem} onClick={() => {
+                      if (active) setElementTypes(elementTypes.filter(e => e !== elem));
+                      else if (elementTypes.length < 2) setElementTypes([...elementTypes, elem]);
+                    }} style={{
+                      padding:"4px 12px", fontSize:11, borderRadius:20, cursor:"pointer",
+                      background: active ? C.blue + "22" : C.bg3,
+                      color: active ? C.blue : C.muted,
+                      border:`1px solid ${active ? C.blue + "55" : C.border}`,
+                    }}>{elem}</button>
+                  );
+                })}
+              </div>
+              {elementTypes.length > 0 && <div style={{ fontSize:11, color:C.faint, marginTop:6 }}>Selected: {elementTypes.join(", ")}</div>}
+            </div>
+
+            {/* Special Move */}
+            <div style={{ marginBottom:20 }}>
+              <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Special Move</label>
+              <SearchableSelect
+                value={specialMoveId}
+                onChange={setSpecialMoveId}
+                options={[{ value:"", label:"(none)" }, ...specialMoveOptions]}
+                placeholder="Select special move…"
+              />
+            </div>
+
+            {/* Combos (max 3) */}
+            <div>
+              <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Combos (max 3)</label>
+              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                {([0,1,2] as const).map(i => (
+                  <div key={i} style={{ display:"flex", gap:8, alignItems:"center" }}>
+                    <span style={{ fontSize:11, color:C.faint, width:16, flexShrink:0 }}>{i+1}</span>
+                    <SearchableSelect
+                      value={comboIds[i] ?? ""}
+                      onChange={v => {
+                        const next = [...comboIds];
+                        if (v) { next[i] = v; } else { next.splice(i, 1); }
+                        setComboIds(next.filter(Boolean).slice(0, 3));
+                      }}
+                      options={[{ value:"", label:"(none)" }, ...comboOptions.filter(o => !comboIds.includes(o.value) || comboIds[i] === o.value)]}
+                      placeholder={`Combo slot ${i+1}…`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       <div style={{ display:"flex", justifyContent:"space-between", marginTop:20 }}>

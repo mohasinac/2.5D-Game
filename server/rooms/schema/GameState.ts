@@ -181,6 +181,17 @@ export class PortalState extends Schema {
 // export class GoalObjectState extends Schema { ... }
 
 /**
+ * MechanicInstance — a single active mechanic on a beyblade.
+ * Populated by gimmickExpander at match start from the bey's gimmickIds[].
+ */
+export class MechanicInstance extends Schema {
+  @type("string") type: string = "";     // mechanic ID e.g. "free_spin"
+  @type("string") params: string = "{}"; // JSON-serialized params
+  @type("string") state: string = "{}";  // JSON-serialized runtime state
+  @type("boolean") active: boolean = true;
+}
+
+/**
  * Beyblade entity - represents a single beyblade in the game
  */
 export class Beyblade extends Schema {
@@ -394,6 +405,29 @@ export class Beyblade extends Schema {
 
   // ── Element Type System (Phase AB) ───────────────────────────────────────────
   @type(["string"]) elementTypes = new ArraySchema<string>(); // 1–2 ElementType values
+
+  // ── Gimmick / Mechanic instances (populated from gimmickIds[] at match start) ──
+  @type([MechanicInstance]) mechanics = new ArraySchema<MechanicInstance>();
+
+  // ── Gear/Rail state (BX Xtreme Dash) ────────────────────────────────────────
+  @type("boolean") gearCompatibleBit: boolean = false;
+  @type("boolean") xtremeEngaged: boolean = false;
+  @type("float32") xtremeRailProgress: number = 0;
+  @type("string")  xtremeRailId: string = "";
+
+  // ── Engine Gear boost reserve ────────────────────────────────────────────────
+  @type("float32") egBoostOmega: number = 0;
+
+  // ── Burst pressure (tracks accumulated impact before burst trigger) ──────────
+  @type("float32") burstPressure: number = 0;
+
+  // ── Physics flags (Block M) ──────────────────────────────────────────────────
+  @type("boolean") collisionWithBeys: boolean = true;
+  @type("boolean") collisionWithArena: boolean = true;
+  @type("boolean") collisionWithObstacles: boolean = true;
+  @type("boolean") invulnerable: boolean = false;
+  @type("boolean") noKnockback: boolean = false;
+  @type("string")  teamId: string = "";
 }
 
 /**
@@ -475,6 +509,11 @@ export class ArenaState extends Schema {
 
   // ── Arena Shrink (Phase V) ────────────────────────────────────────────────────
   @type("number") effectiveRadius: number = 0;    // 0 = use full arena radius; set during shrink
+
+  // ── Scoring mode (BX points / elimination) ──────────────────────────────────
+  @type("string") scoringMode: string = "elimination"; // "elimination" | "points"
+  @type("uint8")  pointsTarget: number = 0;            // 0 = no target (timed)
+  @type("boolean") hasZeroG: boolean = false;
 }
 
 /**
@@ -523,4 +562,7 @@ export class GameState extends Schema {
 
   // ── Round Modifiers (Phase X) ─────────────────────────────────────────────────
   @type(["string"]) activeModifierIds = new ArraySchema<string>();
+
+  // ── BX / Points scoring ──────────────────────────────────────────────────────
+  @type({ map: "uint8" }) playerPoints = new MapSchema<number>();
 }

@@ -1,1 +1,1 @@
-export { tryReserveRoom, releaseRoom, getActiveRoomCount } from "../../utils/roomCounter";
+export { tryReserveRoom, releaseRoom, getActiveRoomCount, setMaxActiveRooms } from "../../utils/roomCounter";

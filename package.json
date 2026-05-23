@@ -41,6 +41,8 @@
     "seed:turret-attack-types": "node scripts/seed-all.js --only turret-attack-types",
     "seed:arena-feature-configs": "node scripts/seed-all.js --only arena-feature-configs",
     "seed:bey-link-configs": "node scripts/seed-all.js --only bey-link-configs",
+    "seed:mechanics": "node scripts/seed-all.js --only mechanics",
+    "seed:gimmicks": "node scripts/seed-all.js --only gimmicks",
     "clear": "node scripts/seed-all.js --clear",
     "clear:all": "node scripts/seed-all.js --clear",
     "reseed": "node scripts/seed-all.js --reseed",

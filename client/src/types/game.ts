@@ -241,6 +241,10 @@ export interface ServerGameState {
   activeModifierIds?: string[];
   // Arena shrink (Phase V)
   effectiveRadius?: number;
+  // BX scoring (Xtreme/Over/Pocket points mode)
+  scoringMode?: string;
+  pointsTarget?: number;
+  playerPoints?: Map<string, number>;
 }
 
 // ─── Tournament types ─────────────────────────────────────────────────────────

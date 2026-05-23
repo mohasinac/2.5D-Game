@@ -54,6 +54,34 @@ const COMBO_EFFECTS = [
     ],
   },
   {
+    id: "riposte",
+    name: "Riposte",
+    cost: 15, cooldownMs: 2500, windupTicks: 5, bleedTicks: 8,
+    tasks: [
+      { action: { type: "multiplier", statDeltas: [{ stat: "damageReduction", multiplier: 1.5 }] }, target: "self", timing: { type: "timed", durationTicks: 12 } },
+      { action: { type: "multiplier", statDeltas: [{ stat: "damageMultiplier", multiplier: 1.3 }] }, target: "self", timing: { type: "timed", durationTicks: 36 } },
+    ],
+    steps: [
+      { behaviorId: "factor.boost", params: { stat: "damageReduction", mult: 1.5, dur: 12 }, delayTicks: 0, parallel: false },
+      { behaviorId: "factor.boost", params: { stat: "damageMultiplier", mult: 1.3, dur: 36 }, delayTicks: 5, parallel: false },
+    ],
+  },
+  {
+    id: "pivot-strike",
+    name: "Pivot Strike",
+    cost: 15, cooldownMs: 2500, windupTicks: 4, bleedTicks: 6,
+    tasks: [
+      { action: { type: "movement", pattern: { type: "dash", direction: "left" } }, target: "self", timing: { type: "instant" } },
+      { action: { type: "movement", pattern: { type: "dash_to", target: "opponent" } }, target: "self", timing: { type: "instant" }, condition: { maxRange: 80 } },
+      { action: { type: "multiplier", statDeltas: [{ stat: "damageMultiplier", multiplier: 1.25 }] }, target: "self", timing: { type: "timed", durationTicks: 24 } },
+    ],
+    steps: [
+      { behaviorId: "movement.dash", params: { direction: "left", magnitude: 1.5, dur: 6 }, delayTicks: 0, parallel: false },
+      { behaviorId: "movement.dash", params: { direction: "toward_opponent", magnitude: 2.5, dur: 10 }, delayTicks: 4, parallel: false },
+      { behaviorId: "factor.boost",  params: { stat: "damageMultiplier", mult: 1.25, dur: 24 }, delayTicks: 4, parallel: true },
+    ],
+  },
+  {
     id: "power-thrust",
     name: "Power Thrust",
     cost: 25, cooldownMs: 4000, windupTicks: 5, bleedTicks: 10,

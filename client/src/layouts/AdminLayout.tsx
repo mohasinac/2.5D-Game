@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { C, alpha } from "@/styles/theme";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,10 +21,12 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   "turret-attack-types": "Turret Attack Types",
   "arena-feature-configs": "Arena Feature Configs",
   "bey-link-configs": "BeyLink Configs",
+  "part-materials": "Part Materials",
   "combo-effects": "Combo Effects",
   "animation-presets": "Animation Presets",
   "round-modifiers": "Round Modifiers",
   "behavior-defs": "Behavior Defs",
+  "ai-battles": "AI Battles",
   "arena-systems": "Arena Systems",
   "arena-floor-groups": "Floor Groups",
   assets: "Assets",
@@ -84,6 +86,7 @@ const navItems = [
   { to: "/admin/users",              label: "Users",        Icon: Users },
   { to: "/admin/stats",              label: "Statistics",   Icon: BarChart3 },
   { to: "/admin/arena-test",         label: "Arena Test",   Icon: FlaskConical },
+  { to: "/admin/ai-battles",         label: "AI Battles",   Icon: Gamepad2 },
   { to: "/admin/settings",           label: "Settings",     Icon: Settings },
 ];
 
@@ -93,6 +96,7 @@ const catalogItems = [
   { to: "/admin/turret-attack-types",   label: "Turret Attack Types",  Icon: Target },
   { to: "/admin/arena-feature-configs", label: "Arena Feature Configs", Icon: Map },
   { to: "/admin/bey-link-configs",      label: "BeyLink Configs",      Icon: Link2 },
+  { to: "/admin/part-materials",        label: "Part Materials",       Icon: FlaskConical },
   { to: "/admin/combo-effects",         label: "Combo Effects",        Icon: Zap },
   { to: "/admin/animation-presets",     label: "Animation Presets",    Icon: Film },
   { to: "/admin/round-modifiers",       label: "Round Modifiers",      Icon: Sliders },
@@ -144,14 +148,25 @@ export function AdminLayout() {
   const location = useLocation();
   const [libExpanded, setLibExpanded] = useState(() => location.pathname.startsWith("/admin/2d"));
   const [catalogExpanded, setCatalogExpanded] = useState(() => {
-    const catalogPaths = ["/admin/combos", "/admin/special-moves", "/admin/turret-attack-types", "/admin/arena-feature-configs", "/admin/bey-link-configs", "/admin/combo-effects", "/admin/animation-presets", "/admin/round-modifiers", "/admin/behavior-defs"];
+    const catalogPaths = ["/admin/combos", "/admin/special-moves", "/admin/turret-attack-types", "/admin/arena-feature-configs", "/admin/bey-link-configs", "/admin/part-materials", "/admin/combo-effects", "/admin/animation-presets", "/admin/round-modifiers", "/admin/behavior-defs"];
     return catalogPaths.some(p => location.pathname.startsWith(p));
   });
-  const [collapsed, setCollapsed] = useState(() => localStorage.getItem("admin.sidebar") === "1");
+  const [collapsed, setCollapsed] = useState(() =>
+    localStorage.getItem("admin.sidebar") === "1" || window.innerWidth < 768
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches) setCollapsed(true);
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   const toggleSidebar = () => {
     setCollapsed((c) => {
-      localStorage.setItem("admin.sidebar", c ? "0" : "1");
+      if (window.innerWidth >= 768) localStorage.setItem("admin.sidebar", c ? "0" : "1");
       return !c;
     });
   };

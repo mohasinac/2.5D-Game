@@ -24,7 +24,8 @@ function slugify(s: string) {
   return s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
 }
 
-const EMPTY = { name: "", kind: "attack", iconEmoji: "⚡", cooldownSec: 15, durationMs: 1500, description: "", isDefault: false, type: "attack", flashColor: "#ffffff" };
+const EMPTY_EFFECTS = { linearImpulse: 0, spinDelta: 0, invulnerabilityMs: 0, spinStealRadiusPx: 0, aoeRadiusPx: 0, knockbackImpulse: 0 };
+const EMPTY = { name: "", kind: "attack", iconEmoji: "⚡", cooldownSec: 15, durationMs: 1500, description: "", isDefault: false, type: "attack", flashColor: "#ffffff", effects: { ...EMPTY_EFFECTS } };
 
 const inputStyle: React.CSSProperties = {
   width: "100%", padding: "8px 10px", background: C.bg0,
@@ -36,7 +37,7 @@ export function SpecialMovesPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<SpecialMoveDoc | null>(null);
-  const [form, setForm] = useState({ ...EMPTY });
+  const [form, setForm] = useState<typeof EMPTY>({ ...EMPTY, effects: { ...EMPTY_EFFECTS } });
   const [confirmDelete, setConfirmDelete] = useState<SpecialMoveDoc | null>(null);
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
@@ -55,7 +56,7 @@ export function SpecialMovesPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const openCreate = () => { setEditing(null); setForm({ ...EMPTY }); setShowModal(true); };
+  const openCreate = () => { setEditing(null); setForm({ ...EMPTY, effects: { ...EMPTY_EFFECTS } }); setShowModal(true); };
   const openEdit = (item: SpecialMoveDoc) => {
     setEditing(item);
     setForm({
@@ -63,6 +64,7 @@ export function SpecialMovesPage() {
       cooldownSec: item.cooldownSec, durationMs: item.durationMs,
       description: item.description ?? "", isDefault: item.isDefault ?? false,
       type: item.type ?? "attack", flashColor: item.flashColor ?? "#ffffff",
+      effects: { ...EMPTY_EFFECTS, ...((item as any).effects ?? {}) },
     });
     setShowModal(true);
   };
@@ -75,7 +77,7 @@ export function SpecialMovesPage() {
         name: form.name.trim(), kind: form.kind, iconEmoji: form.iconEmoji,
         cooldownSec: form.cooldownSec, durationMs: form.durationMs,
         description: form.description.trim(), isDefault: form.isDefault,
-        type: form.type, flashColor: form.flashColor,
+        type: form.type, flashColor: form.flashColor, effects: form.effects,
       };
       const id = editing ? editing.id : slugify(form.name) || `move-${Date.now()}`;
       await setDoc(doc(db, COLLECTIONS.SPECIAL_MOVES, id), data);
@@ -188,6 +190,28 @@ export function SpecialMovesPage() {
                   style={{ ...inputStyle, width: "auto", flex: 1 }} placeholder="#ffffff" />
               </div>
             </label>
+
+            <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, padding: 14, marginBottom: 14 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.muted, marginBottom: 12 }}>Physics Effects</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {([
+                  ["Linear Impulse (0–10000)", "linearImpulse", 0, 10000, 100],
+                  ["Spin Delta (−500–500)", "spinDelta", -500, 500, 10],
+                  ["Invulnerability (ms)", "invulnerabilityMs", 0, 3000, 100],
+                  ["Spin Steal Radius (px)", "spinStealRadiusPx", 0, 400, 10],
+                  ["AoE Radius (px)", "aoeRadiusPx", 0, 400, 10],
+                  ["Knockback Impulse", "knockbackImpulse", 0, 5000, 50],
+                ] as const).map(([label, field, min, max, step]) => (
+                  <label key={field} style={{ display: "block" }}>
+                    <span style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 3 }}>{label}</span>
+                    <input type="number" min={min} max={max} step={step}
+                      value={(form.effects as any)[field] ?? 0}
+                      onChange={e => setForm(f => ({ ...f, effects: { ...f.effects, [field]: Number(e.target.value) } }))}
+                      style={{ ...inputStyle, padding: "6px 8px", fontSize: 12 }} />
+                  </label>
+                ))}
+              </div>
+            </div>
 
             <label style={{ display: "block", marginBottom: 14 }}>
               <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>

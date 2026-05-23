@@ -98,7 +98,19 @@ const SEEDERS = [
     name: "combo-effects",
     script: "seed-combo-effects.js",
     collections: ["combo_effects"],
-    description: "11 ComboEffectDef presets",
+    description: "13 ComboEffectDef presets (including riposte + pivot-strike)",
+  },
+  {
+    name: "mechanics",
+    script: "seed-mechanics.js",
+    collections: ["mechanic_defs"],
+    description: "31 mechanic_defs — one per MechanicRegistry handler",
+  },
+  {
+    name: "gimmicks",
+    script: "seed-gimmicks.js",
+    collections: ["gimmick_defs"],
+    description: "27 gimmick_defs (22 original + 5 new: magnacore_repel, magnacore_attract, dual_spin_launch, mode_switch_tip, spring_launch)",
   },
   {
     name: "particle-presets",

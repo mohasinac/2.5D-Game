@@ -1,9 +1,13 @@
 // Node.js is single-threaded — no race conditions on this counter.
-const MAX_ROOMS = 20;
+let maxActiveRooms = 20;
 let activeRooms = 0;
 
+export function setMaxActiveRooms(n: number): void {
+  maxActiveRooms = Math.max(1, n);
+}
+
 export function tryReserveRoom(): boolean {
-  if (activeRooms >= MAX_ROOMS) return false;
+  if (activeRooms >= maxActiveRooms) return false;
   activeRooms++;
   return true;
 }

@@ -182,17 +182,21 @@ function drawCPArc(
   filled: boolean,
 ) {
   const color = MATERIAL_COLORS[cp.material] ?? HEX.blue;
-  const r = cp.radius * pxPerMm;
-  const thickness = cp.thickness * pxPerMm;
-  const halfAngleDeg = cp.width / 2;
-  const startRad = ((cp.angle - halfAngleDeg - 90) * Math.PI) / 180;
-  const endRad   = ((cp.angle + halfAngleDeg - 90) * Math.PI) / 180;
+
+  // Resolve arc bounds — prefer new arc-segment fields over legacy angle/width
+  const acp = cp as any;
+  const startDeg = acp.arcStart !== undefined ? acp.arcStart : (cp.angle - (cp.width ?? 30) / 2);
+  const endDeg   = acp.arcEnd   !== undefined ? acp.arcEnd   : (cp.angle + (cp.width ?? 30) / 2);
+  const rInner = (acp.radiusInner ?? cp.radius ?? 10) * pxPerMm;
+  const rOuter = (acp.radiusOuter !== undefined ? acp.radiusOuter : (acp.radiusInner ?? cp.radius ?? 10) + (acp.lineThickness ?? cp.thickness ?? 2)) * pxPerMm;
+  const startRad = ((startDeg - 90) * Math.PI) / 180;
+  const endRad   = ((endDeg   - 90) * Math.PI) / 180;
 
   if (filled) {
     // Filled annular sector
     ctx.beginPath();
-    ctx.arc(CENTER, CENTER, r + thickness / 2, startRad, endRad);
-    ctx.arc(CENTER, CENTER, Math.max(1, r - thickness / 2), endRad, startRad, true);
+    ctx.arc(CENTER, CENTER, rOuter, startRad, endRad);
+    ctx.arc(CENTER, CENTER, Math.max(1, rInner), endRad, startRad, true);
     ctx.closePath();
     ctx.fillStyle = color + "99";
     ctx.fill();
@@ -217,8 +221,9 @@ function drawCPArc(
     }
   } else {
     // Thin arc line
+    const rMid = (rInner + rOuter) / 2;
     ctx.beginPath();
-    ctx.arc(CENTER, CENTER, r, startRad, endRad);
+    ctx.arc(CENTER, CENTER, rMid, startRad, endRad);
     ctx.strokeStyle = color;
     ctx.lineWidth = 1.5;
     ctx.stroke();
@@ -497,7 +502,7 @@ export function TopDownView({ resolved, showMaterial = false, showMovementPath =
         ref={canvasRef}
         width={SIZE}
         height={SIZE}
-        style={{ borderRadius: 8, border: `1px solid ${C.border}`, display: "block" }}
+        style={{ borderRadius: 8, border: `1px solid ${C.border}`, display: "block", width: "100%", height: "auto" }}
       />
     </div>
   );

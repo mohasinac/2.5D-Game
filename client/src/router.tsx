@@ -10,6 +10,7 @@ import { RegisterPage } from "./pages/RegisterPage";
 import { HomePage } from "./pages/HomePage";
 import { RendererDemoPage } from "./pages/RendererDemoPage";
 import { GameSelectPage } from "./pages/GameSelectPage";
+import { TryoutSetupPage } from "./pages/TryoutSetupPage";
 import { TryoutGamePage } from "./pages/TryoutGamePage";
 import { BattleLobbyPage } from "./pages/BattleLobbyPage";
 import { BattleGamePage } from "./pages/BattleGamePage";
@@ -44,6 +45,8 @@ import { ArenaTestPage } from "./pages/admin/ArenaTestPage";
 import { TournamentsListPage } from "./pages/admin/TournamentsListPage";
 import { TournamentCreatePage } from "./pages/admin/TournamentCreatePage";
 import { TournamentDetailPage } from "./pages/admin/TournamentDetailPage";
+import { TournamentEditPage } from "./pages/admin/TournamentEditPage";
+import { AIBattlesPage } from "./pages/admin/AIBattlesPage";
 import { UsersPage } from "./pages/admin/UsersPage";
 import { AIVsAITestPage } from "./pages/admin/AIVsAITestPage";
 
@@ -63,6 +66,7 @@ import { SpecialMovesPage } from "./pages/admin/SpecialMovesPage";
 import { TurretAttackTypesPage } from "./pages/admin/TurretAttackTypesPage";
 import { ArenaFeatureConfigsPage } from "./pages/admin/ArenaFeatureConfigsPage";
 import { BeyLinkConfigsPage } from "./pages/admin/BeyLinkConfigsPage";
+import { PartMaterialsPage } from "./pages/admin/PartMaterialsPage";
 
 // 2.5D part system pages
 import { PartSearchPage } from "./pages/admin/2d/PartSearchPage";
@@ -101,6 +105,8 @@ export const router = createBrowserRouter([
       { path: "game", element: <ProtectedRoute><GameSelectPage /></ProtectedRoute> },
 
       // ── Classic 2D pipeline ──
+      { path: "game/2d/tryout/setup", element: <ProtectedRoute><TryoutSetupPage /></ProtectedRoute> },
+      { path: "game/2d/tryout/play", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
       { path: "game/2d/tryout", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
       { path: "game/2d/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
       { path: "game/2d/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
@@ -111,6 +117,8 @@ export const router = createBrowserRouter([
       { path: "game/2d/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
 
       // ── 2.5D parts pipeline ──
+      { path: "game/2.5d/tryout/setup", element: <ProtectedRoute><TryoutSetupPage /></ProtectedRoute> },
+      { path: "game/2.5d/tryout/play", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
       { path: "game/2.5d/tryout", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
       { path: "game/2.5d/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
       { path: "game/2.5d/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
@@ -121,7 +129,9 @@ export const router = createBrowserRouter([
       { path: "game/2.5d/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
 
       // ── Legacy routes (default to classic 2D pipeline via modeFromPath fallback) ──
-      { path: "game/tryout", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
+      { path: "game/tryout/setup", element: <ProtectedRoute><TryoutSetupPage /></ProtectedRoute> },
+      { path: "game/tryout/play", element: <ProtectedRoute><TryoutGamePage /></ProtectedRoute> },
+      { path: "game/tryout", element: <ProtectedRoute><TryoutSetupPage /></ProtectedRoute> },
       { path: "game/battle/lobby", element: <ProtectedRoute><BattleLobbyPage /></ProtectedRoute> },
       { path: "game/battle/:roomId", element: <ProtectedRoute><BattleGamePage /></ProtectedRoute> },
       { path: "game/ai-battle", element: <ProtectedRoute><AIBattleSetupPage /></ProtectedRoute> },
@@ -188,7 +198,11 @@ export const router = createBrowserRouter([
       // Tournament admin
       { path: "tournaments", element: <TournamentsListPage /> },
       { path: "tournaments/create", element: <TournamentCreatePage /> },
+      { path: "tournaments/:id/edit", element: <TournamentEditPage /> },
       { path: "tournaments/:id", element: <TournamentDetailPage /> },
+
+      // AI Battles admin
+      { path: "ai-battles", element: <AIBattlesPage /> },
 
       // User management
       { path: "users", element: <UsersPage /> },
@@ -209,6 +223,7 @@ export const router = createBrowserRouter([
       { path: "turret-attack-types",     element: <TurretAttackTypesPage /> },
       { path: "arena-feature-configs",   element: <ArenaFeatureConfigsPage /> },
       { path: "bey-link-configs",        element: <BeyLinkConfigsPage /> },
+      { path: "part-materials",          element: <PartMaterialsPage /> },
 
       // ── 2.5D Part System — canonical URL ──
       { path: "2.5d/parts", element: <PartSearchPage /> },

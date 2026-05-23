@@ -237,10 +237,14 @@ function drawLayer(
   // ── CP arcs on top face ───────────────────────────────────────────────────
   for (const cp of layer.contactPoints) {
     const cpColor = MATERIAL_COLORS[cp.material] ?? HEX.blue;
-    const cpR = cp.radius * pxPerMm;
-    const cpHalf = cp.width / 2;
-    const startRad = ((cp.angle + rot - cpHalf - 90) * Math.PI) / 180;
-    const endRad   = ((cp.angle + rot + cpHalf - 90) * Math.PI) / 180;
+    const acp = cp as any;
+    const startDeg = acp.arcStart !== undefined ? acp.arcStart : (cp.angle - (cp.width ?? 30) / 2);
+    const endDeg   = acp.arcEnd   !== undefined ? acp.arcEnd   : (cp.angle + (cp.width ?? 30) / 2);
+    const rInner = acp.radiusInner ?? cp.radius ?? 10;
+    const rOuter = acp.radiusOuter !== undefined ? acp.radiusOuter : (rInner + (acp.lineThickness ?? cp.thickness ?? 2));
+    const cpR = ((rInner + rOuter) / 2) * pxPerMm;
+    const startRad = ((startDeg + rot - 90) * Math.PI) / 180;
+    const endRad   = ((endDeg   + rot - 90) * Math.PI) / 180;
     ctx.beginPath();
     ctx.ellipse(bx, topCY, cpR, cpR * ISO_Y, 0, startRad, endRad);
     ctx.strokeStyle = cpColor;

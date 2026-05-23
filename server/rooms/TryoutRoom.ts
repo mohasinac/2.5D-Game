@@ -6,11 +6,14 @@ import {
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem } from "../utils/firebase";
 import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
-import { tryReserveRoom, releaseRoom } from "../shared/utils/roomCounter";
+import { loadGimmickDefs } from "../utils/firestoreLoaders";
+import { expandGimmicks } from "../utils/gimmickExpander";
+import { tryReserveRoom, releaseRoom, setMaxActiveRooms } from "../shared/utils/roomCounter";
 import { createPRNG } from "../shared/utils/prng";
 import { hashString } from "../shared/utils/hashString";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
 import { resolveWallAngle } from "../shared/physics/ArenaUtils";
+import { resolvePhysicsFlags } from "../utils/physicsFlags";
 import { processArenaFeatures } from "../shared/rooms/ArenaFeatureProcessor";
 import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
 import { advanceArenaRotation } from "../shared/rooms/advanceArenaRotation";
@@ -46,6 +49,7 @@ export class TryoutRoom extends Room<GameState> {
     this.globalSettings = await loadGlobalSettings();
     if (this.globalSettings?.maintenanceMode) throw new Error("Maintenance");
     if (this.globalSettings?.enableTryout === false) throw new Error("Tryout disabled");
+    if (this.globalSettings?.maxActiveRooms) setMaxActiveRooms(this.globalSettings.maxActiveRooms);
 
     this.setState(new GameState());
     this.state.mode = "tryout";
@@ -173,19 +177,36 @@ export class TryoutRoom extends Room<GameState> {
     beyblade.x = (this.state.arena.width * 16) / 2;
     beyblade.y = (this.state.arena.height * 16) / 2;
 
+    const pFlags = resolvePhysicsFlags((beybladeData as any)?.physicsFlags);
+    beyblade.collisionWithBeys       = pFlags.collisionWithBeys;
+    beyblade.collisionWithArena      = pFlags.collisionWithArena;
+    beyblade.collisionWithObstacles  = pFlags.collisionWithObstacles;
+    beyblade.invulnerable            = pFlags.invulnerable;
+    beyblade.noKnockback             = pFlags.noKnockback;
+
     this.physics.createBeyblade(
       beyblade.id,
       beyblade.x,
       beyblade.y,
       beyblade.radius,
       beyblade.mass,
-      beybladeData || undefined
+      beybladeData || undefined,
+      pFlags
     );
 
     const initialAngularVelocity = (beyblade.spinDirection === "left" ? -1 : 1) * (beyblade.maxSpin / 200);
     this.physics.setAngularVelocity(beyblade.id, initialAngularVelocity);
 
     this.state.beyblades.set(client.sessionId, beyblade);
+
+    // Expand gimmicks for this bey
+    const gimmickDefsCache = await loadGimmickDefs();
+    const gimmickIds: string[] = (beybladeData as any)?.gimmickIds ?? [];
+    if (gimmickIds.length > 0) {
+      const instances = expandGimmicks(gimmickIds, gimmickDefsCache);
+      instances.forEach(inst => beyblade.mechanics.push(inst));
+    }
+
     this.state.status = "in-progress";
     this.state.startTime = Date.now();
     this.lastInputTime = Date.now();
@@ -295,7 +316,7 @@ export class TryoutRoom extends Room<GameState> {
 
     const forceMagnitude = computeForceMagnitude(beyblade);
 
-    applyMovementInput(beyblade, message, forceMagnitude, this.physics);
+    applyMovementInput(beyblade, message, forceMagnitude, this.physics, !!this.arenaSystem);
 
     const events = applyActionInput(
       beyblade,

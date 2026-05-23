@@ -44,6 +44,14 @@ export const SHARED_COLLECTIONS = {
   TURRET_ATTACK_TYPES: "turret_attack_types",
   ARENA_FEATURE_CONFIGS: "arena_feature_configs",
   BEY_LINK_CONFIGS: "bey_link_configs",
+  MECHANIC_DEFS: "mechanic_defs",
+  GIMMICK_DEFS: "gimmick_defs",
+  COMBO_EFFECTS: "combo_effects",
+  CAMERA_PROFILES: "camera_profiles",
+  AUDIO_PROFILES: "audio_profiles",
+  SCRIPT_DEFINITIONS: "script_definitions",
+  COMPOSITION_BLOCKS: "composition_blocks",
+  AI_BATTLES: "ai_battles",
 } as const;
 
 // Flat aggregate — everything in one record (back-compat shape for existing FIREBASE_COLLECTIONS/COLLECTIONS consumers)

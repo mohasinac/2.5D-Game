@@ -9,6 +9,7 @@ import * as Matter from "matter-js";
 import type { Beyblade, GameState } from "../../rooms/schema/GameState";
 import type { ArenaConfig, FloorHazardZoneConfig } from "../../types/shared";
 import { wallBowlForce } from "../physics/ArenaUtils";
+import { dispatchBehaviorRef, type MechanicContext } from "../../physics/MechanicRegistry";
 
 export interface ArenaPhysicsBridge {
   checkLoopCollision(id: string, loops: any[]): {
@@ -51,41 +52,58 @@ const _warnedBehaviorIds = new Set<string>();
 
 /**
  * Execute a named behavior on a set of affected beyblades.
- * Known behaviorIds:
- *   "movement.orbit" — apply a circular orbit force (similar to spin-zone orbit logic).
- * Unknown ids are logged once then silently ignored.
+ * Dispatches through MechanicRegistry for all namespaced behaviorIds.
  */
 function executeBehavior(
   behaviorId: string,
   params: Record<string, unknown>,
   beys: Array<{ id: string; x: number; y: number; velocityX: number; velocityY: number }>,
   physics: ArenaPhysicsBridge,
+  beybladeSchema?: Map<string, any>,
 ): void {
-  switch (behaviorId) {
-    case "movement.orbit": {
-      // Params: centerX, centerY (px), intensity (force scale, default 0.002), direction ("cw"|"ccw")
+  switch (true) {
+    // Inline handler for the most common case (movement.orbit) — keeps zero overhead
+    case behaviorId === "movement.orbit": {
       const cx = (params.centerX as number) ?? 0;
       const cy = (params.centerY as number) ?? 0;
       const intensity = (params.intensity as number) ?? 0.002;
       const dir = (params.direction as string) === "ccw" ? -1 : 1;
-
       for (const bey of beys) {
         const dx = bey.x - cx;
         const dy = bey.y - cy;
         const d = Math.sqrt(dx * dx + dy * dy) || 1;
-        // Tangent direction (perpendicular to radius), sign controlled by dir
-        const tx = (-dy / d) * dir;
-        const ty = (dx / d) * dir;
-        physics.applyForce(bey.id, tx * intensity, ty * intensity);
+        physics.applyForce(bey.id, (-dy / d) * dir * intensity, (dx / d) * dir * intensity);
       }
       break;
     }
+
+    // All other namespaced behaviorIds → MechanicRegistry
+    case behaviorId.startsWith("movement."):
+    case behaviorId.startsWith("factor."):
+    case behaviorId.startsWith("transform."):
+    case behaviorId.startsWith("spawn."):
+    case behaviorId.startsWith("arena."): {
+      for (const bey of beys) {
+        const beySchema = beybladeSchema?.get(bey.id);
+        if (!beySchema) continue;
+        const ctx: MechanicContext = {
+          bey: beySchema,
+          dt: 1 / 60,
+          applyForce: physics.applyForce.bind(physics),
+          applyKnockback: physics.applyKnockback.bind(physics),
+          setVelocity: physics.setVelocity?.bind(physics),
+          getPosition: physics.getPosition?.bind(physics),
+        };
+        dispatchBehaviorRef({ behaviorId, params }, ctx);
+      }
+      break;
+    }
+
     default:
       if (!_warnedBehaviorIds.has(behaviorId)) {
         _warnedBehaviorIds.add(behaviorId);
         console.warn(`[ArenaFeatureProcessor] Unknown behaviorId "${behaviorId}" — skipping.`);
       }
-      break;
   }
 }
 
@@ -832,6 +850,14 @@ export function processArenaFeatures(
         beyblade.inPit = true;
         beyblade.currentPitId = `pit_${arenaData.pits?.indexOf(pitConfig as any) ?? 0}`;
         beyblade.pitDamageRate = pitConfig.damagePerSecond;
+
+        // spike_pit: instant ring-out, no escape chance
+        if ((pitConfig as any).type === "spike_pit") {
+          beyblade.isRingOut = true;
+          beyblade.eliminationType = "ring_out";
+          beyblade.inPit = false;
+          return events;
+        }
       }
       beyblade.spin = Math.max(0, beyblade.spin - beyblade.pitDamageRate * beyblade.spin * dt / 100);
       const escapeThreshold = pitConfig.escapeThreshold ?? 50;
@@ -1020,6 +1046,193 @@ export function processArenaFeatures(
   }
 
   return events;
+}
+
+// ── G1: processTriggerZones (P0 CRITICAL) ────────────────────────────────────
+
+export function processTriggerZones(
+  beyblade: Beyblade,
+  triggerZones: any[],
+  dt: number,
+  physics: ArenaPhysicsBridge,
+  physFlagsCache?: Map<string, any>,
+): ArenaEffectEvents {
+  const events: ArenaEffectEvents = {};
+  if (!triggerZones?.length) return events;
+
+  const bx = beyblade.x, by = beyblade.y;
+
+  for (const zone of triggerZones) {
+    if (zone.triggerState === "off") continue;
+    if (physFlagsCache?.get(beyblade.id)?.noTriggerZone) continue;
+
+    const zx = (zone.x_cm ?? zone.x ?? 0) * 24;
+    const zy = (zone.y_cm ?? zone.y ?? 0) * 24;
+    const zr = (zone.radius_cm ?? zone.radius ?? 2) * 24;
+    const inZone = (bx - zx) ** 2 + (by - zy) ** 2 <= zr ** 2;
+    if (!inZone) continue;
+
+    const kind = typeof zone.kind === "string" ? zone.kind : zone.kind?.type ?? "";
+
+    switch (kind) {
+      case "damage":
+        if (!beyblade.invulnerable) {
+          const dmg = (zone.kind?.perSecond ?? zone.value ?? 5) * dt * beyblade.damageTaken;
+          beyblade.health -= dmg;
+          beyblade.damageReceived += dmg;
+        }
+        break;
+      case "heal":
+        beyblade.health = Math.min(beyblade.health + (zone.kind?.perSecond ?? zone.value ?? 5) * dt, beyblade.maxHealth);
+        break;
+      case "knockout":
+        beyblade.isRingOut = true;
+        beyblade.eliminationType = "ring_out";
+        break;
+      case "spin-boost":
+        beyblade.spin = Math.min(beyblade.spin + (zone.kind?.perSecond ?? zone.value ?? 20) * dt, beyblade.maxSpin);
+        break;
+      case "expel":
+        physics.applyForce(beyblade.id, zone.kind?.impulseCm ?? 0.05, 0);
+        break;
+      case "speed-scale":
+        beyblade.velocityX *= (zone.kind?.multiplier ?? 0.7);
+        beyblade.velocityY *= (zone.kind?.multiplier ?? 0.7);
+        break;
+      case "safe":
+        beyblade.isInvulnerable = true;
+        beyblade.invulnerabilityTimer = Math.max(beyblade.invulnerabilityTimer, dt);
+        break;
+      default:
+        if (zone.behaviorId) {
+          executeBehavior(zone.behaviorId, zone.behaviorParams ?? {}, [beyblade], physics);
+        }
+    }
+  }
+  return events;
+}
+
+// ── G2: processGearRails (P1) ─────────────────────────────────────────────────
+
+export function processGearRails(
+  beyblade: Beyblade,
+  gearRails: any[],
+  dt: number,
+  physics: ArenaPhysicsBridge,
+): void {
+  if (!gearRails?.length) return;
+
+  const bx = beyblade.x, by = beyblade.y;
+  const SNAP_RADIUS_PX = 3 * 24; // 3 cm
+
+  for (const rail of gearRails) {
+    if (beyblade.xtremeEngaged && beyblade.xtremeRailId === rail.id) {
+      beyblade.xtremeRailProgress += dt * (1 + rail.speedBoostPermille / 1000);
+      if (beyblade.xtremeRailProgress >= 1) {
+        beyblade.xtremeEngaged = false;
+        beyblade.xtremeRailId = "";
+        beyblade.xtremeRailProgress = 0;
+      }
+      continue;
+    }
+
+    if (beyblade.xtremeEngaged) continue;
+    if (rail.requiresGearCompatibleBit && !beyblade.gearCompatibleBit) continue;
+
+    const pts = (rail.polylineCm ?? []).map((p: any) => ({ x: p.x * 24, y: p.y * 24 }));
+    for (let i = 0; i < pts.length - 1; i++) {
+      const ax = pts[i].x, ay = pts[i].y;
+      const bx2 = pts[i + 1].x, by2 = pts[i + 1].y;
+      const len = Math.sqrt((bx2 - ax) ** 2 + (by2 - ay) ** 2) || 1;
+      const t = Math.max(0, Math.min(1, ((bx - ax) * (bx2 - ax) + (by - ay) * (by2 - ay)) / (len ** 2)));
+      const closestX = ax + t * (bx2 - ax);
+      const closestY = ay + t * (by2 - ay);
+      const dist = Math.sqrt((bx - closestX) ** 2 + (by - closestY) ** 2);
+
+      if (dist <= SNAP_RADIUS_PX) {
+        beyblade.xtremeEngaged = true;
+        beyblade.xtremeRailId = rail.id;
+        beyblade.xtremeRailProgress = t;
+        physics.applyForce(beyblade.id,
+          ((bx2 - ax) / len) * rail.speedBoostPermille * 0.00001,
+          ((by2 - ay) / len) * rail.speedBoostPermille * 0.00001,
+        );
+        break;
+      }
+    }
+  }
+}
+
+// ── G3: processScoringZones (P1) ──────────────────────────────────────────────
+
+export function processScoringZones(
+  beyblade: Beyblade,
+  scoringZones: any[],
+  gameState: GameState,
+  userId: string,
+): void {
+  if (!scoringZones?.length) return;
+  if (!beyblade.isRingOut) return;
+
+  const bx = beyblade.x, by = beyblade.y;
+  for (const zone of scoringZones) {
+    const zx = zone.x_cm * 24, zy = zone.y_cm * 24;
+    const zr = zone.radius_cm * 24;
+    if ((bx - zx) ** 2 + (by - zy) ** 2 <= zr ** 2) {
+      const current = gameState.playerPoints.get(userId) ?? 0;
+      gameState.playerPoints.set(userId, current + (zone.points ?? 1));
+      break;
+    }
+  }
+}
+
+// ── G4: processTornadoRidge (P2) ──────────────────────────────────────────────
+
+export function processTornadoRidge(
+  beyblade: Beyblade,
+  tornadoRidge: any,
+  dt: number,
+  physics: ArenaPhysicsBridge,
+): void {
+  if (!tornadoRidge) return;
+
+  const radiusPx = tornadoRidge.radiusCm * 24;
+  const widthPx = (tornadoRidge.widthCm ?? 4) * 24;
+  const bx = beyblade.x, by = beyblade.y;
+  const distFromCenter = Math.sqrt(bx * bx + by * by);
+
+  if (Math.abs(distFromCenter - radiusPx) > widthPx / 2) return;
+
+  const dir = tornadoRidge.direction === "ccw" ? -1 : 1;
+  const d = distFromCenter || 1;
+  const tx = (-by / d) * dir;
+  const ty = (bx / d) * dir;
+  const intensity = tornadoRidge.orbitIntensity ?? 0.003;
+  physics.applyForce(beyblade.id, tx * intensity, ty * intensity);
+  beyblade.spin = Math.min(beyblade.spin + (tornadoRidge.spinBoostPercent ?? 2) * dt, beyblade.maxSpin);
+}
+
+// ── G6: processTiltMechanic / Zero-G (P3) ────────────────────────────────────
+
+export function processTiltMechanic(
+  beyblades: Map<string, Beyblade>,
+  zeroGConfig: any,
+  matchElapsedMs: number,
+): void {
+  if (!zeroGConfig) return;
+
+  const period = zeroGConfig.tiltPeriodMs ?? 8000;
+  const maxTilt = (zeroGConfig.maxTiltDeg ?? 15) * Math.PI / 180;
+  const t = matchElapsedMs % period;
+  const tiltAngle = maxTilt * Math.sin((2 * Math.PI * t) / period);
+  const gravScale = Math.max(zeroGConfig.minGravityScale ?? 0.2, 1 - Math.abs(Math.sin(tiltAngle)));
+
+  for (const [, bey] of beyblades) {
+    bey.effectiveGravity = 9.8 * gravScale;
+    if (gravScale < 0.3) {
+      bey.spinDecayRate *= 0.5;
+    }
+  }
 }
 
 // ── I5: ArenaFeatureProcessor class ─────────────────────────────────────────

@@ -96,6 +96,19 @@ export function BeybladeSystemEditor({ systemId }: Props) {
       .catch(() => {});
   }, []);
 
+  // Fetch all beyblade systems for the combinedWith partner picker
+  const [systemOptions, setSystemOptions] = useState<{ value: string; label: string }[]>([]);
+  useEffect(() => {
+    getDocs(collection(db, COLLECTIONS.BEYBLADE_SYSTEMS))
+      .then((snap) => {
+        const opts = snap.docs
+          .filter((d) => d.id !== systemId)
+          .map((d) => ({ value: d.id, label: (d.data().displayName ?? d.data().name ?? d.id) as string }));
+        setSystemOptions(opts);
+      })
+      .catch(() => {});
+  }, [systemId]);
+
   // Whenever system changes, fetch all referenced parts
   useEffect(() => {
     if (!system) return;
@@ -302,19 +315,18 @@ export function BeybladeSystemEditor({ systemId }: Props) {
                 <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 10 }}>Combined Bey (Split Gimmick)</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   <div>
-                    <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Partner System ID</label>
-                    <input
+                    <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Partner System</label>
+                    <SearchableSelect
                       value={system.combinedWith?.partnerBeySystemId ?? ""}
-                      placeholder="(none — leave blank for single bey)"
-                      onChange={(e) => {
-                        const val = e.target.value.trim();
+                      onChange={(val) => {
                         updateSystem({
                           combinedWith: val
                             ? { partnerBeySystemId: val, linkSubPartIndex: system.combinedWith?.linkSubPartIndex ?? 0, playerControlTarget: system.combinedWith?.playerControlTarget ?? "this" }
                             : undefined,
                         });
                       }}
-                      style={{ width: "100%", padding: "7px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12, boxSizing: "border-box" }}
+                      options={[{ value: "", label: "(none — single bey)" }, ...systemOptions]}
+                      placeholder="Select partner system…"
                     />
                   </div>
                   {system.combinedWith && (

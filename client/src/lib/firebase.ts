@@ -59,4 +59,6 @@ export const COLLECTIONS = {
   ANIMATION_PRESETS: "animation_presets",
   BEHAVIOR_DEFS: "behavior_defs",
   ROUND_MODIFIERS: "round_modifiers",
+  AI_BATTLES: "ai_battles",
+  PART_MATERIALS: "part_materials",
 } as const;

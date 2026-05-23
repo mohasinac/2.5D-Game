@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import * as PIXI from "pixi.js";
 import { C } from "@/styles/theme";
-import type { ArenaConfig, ArenaShape, WaterBodyConfig, ZoneWaterBodyConfig, MoatWaterBodyConfig, WallBasedWaterBodyConfig } from "@/types/arenaConfigNew";
+import type { ArenaConfig, ArenaShape, ZoneWaterBodyConfig, MoatWaterBodyConfig, WallBasedWaterBodyConfig, ObstacleShape, SpeedPathConfig } from "@/types/arenaConfigNew";
 
 // Game coordinate constants
 const ARENA_RES = 1080;       // game arena pixel dimensions
@@ -62,6 +62,222 @@ function lerp2(ax: number, ay: number, bx: number, by: number, t: number) {
   return { x: ax + (bx - ax) * t, y: ay + (by - ay) * t };
 }
 
+// ── Obstacle shape renderer ────────────────────────────────────────────────
+function drawObstacleShape(gfx: PIXI.Graphics, shape: ObstacleShape | undefined, scale: number, color: number) {
+  const S = EM_TO_PX * scale;
+  if (!shape) {
+    gfx.circle(0, 0, 8 * scale).fill({ color, alpha: 0.8 });
+    gfx.circle(0, 0, 8 * scale).stroke({ color: 0xffffff, width: 2, alpha: 0.4 });
+    return;
+  }
+  switch (shape.kind) {
+    case "circle": {
+      const r = shape.radiusCm * S;
+      gfx.circle(0, 0, r).fill({ color, alpha: 0.8 });
+      gfx.circle(0, 0, r).stroke({ color: 0xffffff, width: 2, alpha: 0.4 });
+      break;
+    }
+    case "ring": {
+      const rMid = ((shape.innerRadiusCm + shape.outerRadiusCm) / 2) * S;
+      const rW = Math.max(1, (shape.outerRadiusCm - shape.innerRadiusCm) * S);
+      gfx.circle(0, 0, rMid).stroke({ color, width: rW, alpha: 0.85 });
+      break;
+    }
+    case "arc": {
+      const r = shape.radiusCm * S;
+      const s0 = (shape.startDeg - 90) * (Math.PI / 180);
+      const s1 = (shape.endDeg - 90) * (Math.PI / 180);
+      gfx.arc(0, 0, r, s0, s1).stroke({ color, width: Math.max(1, shape.thicknessCm * S), alpha: 0.85 });
+      break;
+    }
+    case "spiral": {
+      const ir = shape.innerRadiusCm * S;
+      const or = shape.outerRadiusCm * S;
+      const steps = 120;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const theta = t * shape.turns * Math.PI * 2;
+        const rad = ir + t * (or - ir);
+        const x = rad * Math.cos(theta), y = rad * Math.sin(theta);
+        if (i === 0) gfx.moveTo(x, y); else gfx.lineTo(x, y);
+      }
+      gfx.stroke({ color, width: Math.max(1, shape.thicknessCm * S), alpha: 0.85 });
+      break;
+    }
+    case "polyline": {
+      shape.points.forEach((pt, i) => {
+        const x = pt.x_cm * S, y = pt.y_cm * S;
+        if (i === 0) gfx.moveTo(x, y); else gfx.lineTo(x, y);
+      });
+      if (shape.closed && shape.points.length > 0) gfx.lineTo(shape.points[0].x_cm * S, shape.points[0].y_cm * S);
+      gfx.stroke({ color, width: Math.max(1, shape.thicknessCm * S), alpha: 0.85 });
+      break;
+    }
+    case "bezier": {
+      const pts = shape.controlPoints;
+      if (pts.length >= 2) {
+        gfx.moveTo(pts[0].x_cm * S, pts[0].y_cm * S);
+        for (let i = 1; i + 2 < pts.length; i += 3) {
+          gfx.bezierCurveTo(pts[i].x_cm * S, pts[i].y_cm * S, pts[i+1].x_cm * S, pts[i+1].y_cm * S, pts[i+2].x_cm * S, pts[i+2].y_cm * S);
+        }
+        gfx.stroke({ color, width: Math.max(1, shape.thicknessCm * S), alpha: 0.85 });
+      }
+      break;
+    }
+    case "rectangle": {
+      const hw = (shape.widthCm / 2) * S, hh = (shape.heightCm / 2) * S;
+      gfx.rect(-hw, -hh, shape.widthCm * S, shape.heightCm * S).fill({ color, alpha: 0.8 });
+      break;
+    }
+    case "cross": {
+      const arm = shape.armLengthCm * S, aw = (shape.armWidthCm / 2) * S;
+      gfx.rect(-arm, -aw, arm * 2, aw * 2).fill({ color, alpha: 0.8 });
+      gfx.rect(-aw, -arm, aw * 2, arm * 2).fill({ color, alpha: 0.8 });
+      break;
+    }
+    case "L_shape": {
+      const long = shape.longArmCm * S, short = shape.shortArmCm * S, tk = shape.thicknessCm * S;
+      gfx.rect(0, -long / 2, tk, long).fill({ color, alpha: 0.8 });
+      gfx.rect(0, long / 2 - tk, short, tk).fill({ color, alpha: 0.8 });
+      break;
+    }
+    case "T_shape": {
+      const tw = shape.widthCm * S, th = shape.heightCm * S, tk = shape.thicknessCm * S;
+      gfx.rect(-tw / 2, -th / 2, tw, tk).fill({ color, alpha: 0.8 });
+      gfx.rect(-tk / 2, -th / 2, tk, th).fill({ color, alpha: 0.8 });
+      break;
+    }
+    case "zigzag": {
+      const segLen = shape.segmentLengthCm * S, zigW = (shape.zigWidthCm / 2) * S;
+      gfx.moveTo(0, 0);
+      for (let i = 0; i < shape.segmentCount; i++) {
+        gfx.lineTo((i + 1) * segLen, i % 2 === 0 ? zigW : -zigW);
+      }
+      gfx.stroke({ color, width: Math.max(1, shape.thicknessCm * S), alpha: 0.85 });
+      break;
+    }
+    case "star_shape": {
+      const sv = starVerts(shape.points, shape.outerRadiusCm * S, shape.innerRadiusCm * S);
+      gfx.poly(sv.flatMap(p => [p.x, p.y])).fill({ color, alpha: 0.8 });
+      break;
+    }
+    case "pinball_bumper": {
+      const r = shape.radiusCm * S;
+      gfx.circle(0, 0, r).fill({ color, alpha: 0.9 });
+      gfx.circle(0, 0, r * 0.65).fill({ color: 0xffffff, alpha: 0.2 });
+      gfx.circle(0, 0, r).stroke({ color: 0xffffff, width: 2, alpha: 0.5 });
+      break;
+    }
+    case "wrecking_ball": {
+      const r = shape.radiusCm * S;
+      const cLen = Math.min(shape.cableLength * S, 60 * scale);
+      gfx.moveTo(0, 0).lineTo(cLen, 0).stroke({ color: 0x9ca3af, width: 2, alpha: 0.7 });
+      gfx.circle(cLen, 0, r).fill({ color, alpha: 0.9 });
+      gfx.circle(cLen, 0, r).stroke({ color: 0xffffff, width: 2, alpha: 0.4 });
+      break;
+    }
+  }
+}
+
+// ── Speed path shape renderer ───────────────────────────────────────────────
+function drawSpeedPathShape(gfx: PIXI.Graphics, sp: SpeedPathConfig, scale: number) {
+  const r = sp.radius * EM_TO_PX * scale;
+  const hexColor = sp.color ? parseInt((sp.color).replace("#", "0x"), 16) : 0xeab308;
+  const color = isNaN(hexColor) ? 0xeab308 : hexColor;
+  const lw = 4;
+  const al = 0.7;
+  switch (sp.shape) {
+    case "circle":
+      gfx.circle(0, 0, r).stroke({ color, width: lw, alpha: al });
+      break;
+    case "ring": {
+      const thick = (sp.ringThickness ?? 3) * EM_TO_PX * scale;
+      gfx.circle(0, 0, r).stroke({ color, width: lw, alpha: al });
+      gfx.circle(0, 0, r + thick).stroke({ color, width: lw, alpha: al * 0.5 });
+      break;
+    }
+    case "oval": {
+      const hw = ((sp.width ?? sp.radius * 1.5) * EM_TO_PX * scale) / 2;
+      const hh = ((sp.height ?? sp.radius) * EM_TO_PX * scale) / 2;
+      gfx.ellipse(0, 0, hw, hh).stroke({ color, width: lw, alpha: al });
+      break;
+    }
+    case "rectangle": {
+      const hw = ((sp.width ?? sp.radius * 2) * EM_TO_PX * scale) / 2;
+      const hh = ((sp.height ?? sp.radius) * EM_TO_PX * scale) / 2;
+      gfx.rect(-hw, -hh, hw * 2, hh * 2).stroke({ color, width: lw, alpha: al });
+      break;
+    }
+    case "pentagon": {
+      const v = polygonVerts(5, r);
+      gfx.poly(v.flatMap(p => [p.x, p.y])).stroke({ color, width: lw, alpha: al });
+      break;
+    }
+    case "hexagon": {
+      const v = polygonVerts(6, r);
+      gfx.poly(v.flatMap(p => [p.x, p.y])).stroke({ color, width: lw, alpha: al });
+      break;
+    }
+    case "octagon": {
+      const v = polygonVerts(8, r);
+      gfx.poly(v.flatMap(p => [p.x, p.y])).stroke({ color, width: lw, alpha: al });
+      break;
+    }
+    case "star": {
+      const sv = starVerts(5, r, r * 0.5);
+      gfx.poly(sv.flatMap(p => [p.x, p.y])).stroke({ color, width: lw, alpha: al });
+      break;
+    }
+    case "spiral": {
+      const turns = sp.spiralTurns ?? 2;
+      const ir = (sp.spiralInnerRadius ?? sp.radius * 0.3) * EM_TO_PX * scale;
+      const steps = 150;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const theta = t * turns * Math.PI * 2;
+        const rad = ir + t * (r - ir);
+        const x = rad * Math.cos(theta), y = rad * Math.sin(theta);
+        if (i === 0) gfx.moveTo(x, y); else gfx.lineTo(x, y);
+      }
+      gfx.stroke({ color, width: lw, alpha: al });
+      break;
+    }
+    case "figure_8": {
+      const lw2 = (sp.figure8LobeWidth ?? sp.radius) * EM_TO_PX * scale;
+      const lh = r * 0.65;
+      gfx.ellipse(0, -lh * 0.5, lw2 / 2, lh * 0.5).stroke({ color, width: lw, alpha: al });
+      gfx.ellipse(0, lh * 0.5, lw2 / 2, lh * 0.5).stroke({ color, width: lw, alpha: al * 0.7 });
+      break;
+    }
+    case "zigzag": {
+      const segs = 8;
+      const segLen = (r * 2) / segs;
+      const zigH = r * 0.4;
+      gfx.moveTo(-r, 0);
+      for (let i = 0; i <= segs; i++) gfx.lineTo(-r + i * segLen, i % 2 === 0 ? -zigH : zigH);
+      gfx.stroke({ color, width: lw, alpha: al });
+      break;
+    }
+    case "custom_bezier": {
+      const pts = sp.bezierControlPoints ?? [];
+      if (pts.length >= 2) {
+        gfx.moveTo(pts[0].x * EM_TO_PX * scale, pts[0].y * EM_TO_PX * scale);
+        for (let i = 1; i + 2 < pts.length; i += 3) {
+          gfx.bezierCurveTo(
+            pts[i].x * EM_TO_PX * scale, pts[i].y * EM_TO_PX * scale,
+            pts[i+1].x * EM_TO_PX * scale, pts[i+1].y * EM_TO_PX * scale,
+            pts[i+2].x * EM_TO_PX * scale, pts[i+2].y * EM_TO_PX * scale,
+          );
+        }
+        gfx.stroke({ color, width: lw, alpha: al });
+      }
+      break;
+    }
+    default:
+      gfx.circle(0, 0, r).stroke({ color, width: lw, alpha: al });
+  }
+}
+
 // ── main component ────────────────────────────────────────────────────────────
 interface Props {
   arena: ArenaConfig;
@@ -120,9 +336,8 @@ export default function ArenaPreview({ arena }: Props) {
 
     // ── Speed paths ──────────────────────────────────────────────────────────
     (cur.speedPaths ?? []).forEach(sp => {
-      const r = sp.radius * EM_TO_PX * scale;
       const spGfx = new PIXI.Graphics();
-      spGfx.circle(0, 0, r).stroke({ color: 0xeab308, width: 4, alpha: 0.7 });
+      drawSpeedPathShape(spGfx, sp, scale);
       cont.addChild(spGfx);
     });
 
@@ -226,15 +441,60 @@ export default function ArenaPreview({ arena }: Props) {
       cont.addChild(pGfx);
     });
 
+    // ── Spin zones ────────────────────────────────────────────────────────────
+    ((cur as any).spinZones ?? []).forEach((sz: any) => {
+      const px = (sz.x_cm ?? 0) * EM_TO_PX * scale;
+      const py = (sz.y_cm ?? 0) * EM_TO_PX * scale;
+      const r  = (sz.radius_cm ?? 5) * EM_TO_PX * scale;
+      const szColor = sz.direction === "cw" ? 0x38bdf8 : 0xa78bfa;
+      const szGfx = new PIXI.Graphics();
+      szGfx.circle(0, 0, r).fill({ color: szColor, alpha: 0.12 });
+      szGfx.circle(0, 0, r).stroke({ color: szColor, width: 2, alpha: 0.6 });
+      const aLen = Math.min(r * 0.55, 20 * scale);
+      const ad = sz.direction === "cw" ? 1 : -1;
+      szGfx.moveTo(-aLen, ad * aLen * 0.45).lineTo(0, 0).lineTo(aLen, ad * aLen * 0.45).stroke({ color: szColor, width: 2, alpha: 0.8 });
+      const szC = new PIXI.Container(); szC.position.set(px, py); szC.addChild(szGfx); cont.addChild(szC);
+    });
+
+    // ── Bumps ─────────────────────────────────────────────────────────────────
+    ((cur as any).bumps ?? []).forEach((bump: any) => {
+      const px = (bump.x_cm ?? 0) * EM_TO_PX * scale;
+      const py = (bump.y_cm ?? 0) * EM_TO_PX * scale;
+      const r  = (bump.radius_cm ?? 2) * EM_TO_PX * scale;
+      const bGfx = new PIXI.Graphics();
+      bGfx.circle(0, 0, r).fill({ color: 0xfbbf24, alpha: 0.6 });
+      const ts = r * 0.5;
+      bGfx.poly([-ts, ts * 0.4, 0, -ts * 0.75, ts, ts * 0.4]).fill({ color: 0xffffff, alpha: 0.75 });
+      const bC = new PIXI.Container(); bC.position.set(px, py); bC.addChild(bGfx); cont.addChild(bC);
+    });
+
+    // ── Gravity holes ─────────────────────────────────────────────────────────
+    ((cur as any).gravityHoles ?? []).forEach((gh: any) => {
+      const px = (gh.x_cm ?? 0) * EM_TO_PX * scale;
+      const py = (gh.y_cm ?? 0) * EM_TO_PX * scale;
+      const r  = (gh.effectiveRadiusCm ?? 6) * EM_TO_PX * scale;
+      const ghGfx = new PIXI.Graphics();
+      for (let i = 3; i >= 1; i--) {
+        ghGfx.circle(0, 0, r * (i / 3)).stroke({ color: 0x6d28d9, width: 1.5, alpha: 0.25 + i * 0.15 });
+      }
+      ghGfx.circle(0, 0, r * 0.15).fill({ color: 0x6d28d9, alpha: 0.85 });
+      const ghC = new PIXI.Container(); ghC.position.set(px, py); ghC.addChild(ghGfx); cont.addChild(ghC);
+    });
+
     // ── Obstacles ─────────────────────────────────────────────────────────────
     (cur.obstacles ?? []).forEach(obs => {
       const px = (obs.x ?? 0) * EM_TO_PX * scale;
       const py = (obs.y ?? 0) * EM_TO_PX * scale;
-      const r  = (obs.radius ?? 15) * EM_TO_PX * scale;
       const oGfx = new PIXI.Graphics();
-      oGfx.circle(px, py, r).fill({ color: themeColor, alpha: 0.8 });
-      oGfx.circle(px, py, r).stroke({ color: 0xffffff, width: 2, alpha: 0.5 });
-      cont.addChild(oGfx);
+      if (obs.shape) {
+        drawObstacleShape(oGfx, obs.shape, scale, themeColor);
+      } else {
+        // legacy fallback: radius is stored in game pixels
+        const r = (obs.radius ?? 15) * scale;
+        oGfx.circle(0, 0, r).fill({ color: themeColor, alpha: 0.8 });
+        oGfx.circle(0, 0, r).stroke({ color: 0xffffff, width: 2, alpha: 0.5 });
+      }
+      const oC = new PIXI.Container(); oC.position.set(px, py); oC.addChild(oGfx); cont.addChild(oC);
     });
 
     // ── Turrets ───────────────────────────────────────────────────────────────
@@ -243,10 +503,21 @@ export default function ArenaPreview({ arena }: Props) {
       const py = (turret.y ?? 0) * EM_TO_PX * scale;
       const r  = (turret.radius ?? 20) * EM_TO_PX * scale;
       const tGfx = new PIXI.Graphics();
-      tGfx.circle(px, py, r).fill({ color: 0xef4444, alpha: 0.85 });
-      tGfx.moveTo(px - r * 0.7, py).lineTo(px + r * 0.7, py).stroke({ color: 0xffffff, width: 2, alpha: 0.8 });
-      tGfx.moveTo(px, py - r * 0.7).lineTo(px, py + r * 0.7).stroke({ color: 0xffffff, width: 2, alpha: 0.8 });
-      cont.addChild(tGfx);
+      tGfx.circle(0, 0, r).fill({ color: 0xef4444, alpha: 0.85 });
+      tGfx.moveTo(-r * 0.7, 0).lineTo(r * 0.7, 0).stroke({ color: 0xffffff, width: 2, alpha: 0.8 });
+      tGfx.moveTo(0, -r * 0.7).lineTo(0, r * 0.7).stroke({ color: 0xffffff, width: 2, alpha: 0.8 });
+      const tC = new PIXI.Container(); tC.position.set(px, py); tC.addChild(tGfx); cont.addChild(tC);
+    });
+
+    // ── Switches ──────────────────────────────────────────────────────────────
+    ((cur as any).switches ?? []).forEach((sw: any) => {
+      const px = (sw.x ?? 0) * EM_TO_PX * scale;
+      const py = (sw.y ?? 0) * EM_TO_PX * scale;
+      const sz = 10 * scale;
+      const swGfx = new PIXI.Graphics();
+      swGfx.poly([0, -sz, sz, 0, 0, sz, -sz, 0]).fill({ color: 0xfbbf24, alpha: 0.9 });
+      swGfx.poly([0, -sz, sz, 0, 0, sz, -sz, 0]).stroke({ color: 0xffffff, width: 1.5, alpha: 0.6 });
+      const swC = new PIXI.Container(); swC.position.set(px, py); swC.addChild(swGfx); cont.addChild(swC);
     });
 
     // ── Arena boundary (drawn on top of features) ─────────────────────────────
@@ -407,6 +678,10 @@ export default function ArenaPreview({ arena }: Props) {
           ...(arena.portals?.length ? [["Portals", String(arena.portals.length)]] : []),
           ...(arena.turrets?.length ? [["Turrets", String(arena.turrets.length)]] : []),
           ...(arena.speedPaths?.length ? [["Speed", String(arena.speedPaths.length)]] : []),
+          ...((arena as any).spinZones?.length ? [["SpinZones", String((arena as any).spinZones.length)]] : []),
+          ...((arena as any).bumps?.length ? [["Bumps", String((arena as any).bumps.length)]] : []),
+          ...((arena as any).gravityHoles?.length ? [["Gravity", String((arena as any).gravityHoles.length)]] : []),
+          ...((arena as any).switches?.length ? [["Switches", String((arena as any).switches.length)]] : []),
           ...(arena.autoRotate ? [["Rotating", `${arena.rotationSpeed}°/s`]] : []),
         ].map(([k, v]) => (
           <span key={k} style={{ background: C.bg3, borderRadius: 4, padding: "2px 6px", textTransform: "capitalize" }}>

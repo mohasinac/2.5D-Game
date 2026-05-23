@@ -11,6 +11,7 @@
 import { useState } from "react";
 import { C, alpha } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
+import { usePartMaterials } from "@/hooks/usePartMaterials";
 
 type Part = Record<string, unknown>;
 type OnChange = (patch: Part) => void;
@@ -336,6 +337,8 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
 function ARFields({ part, onChange }: { part: Part; onChange: OnChange }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+      <SectionHeader>Material</SectionHeader>
+      <MaterialField part={part} onChange={onChange} />
       <SectionHeader>Hidden Stats</SectionHeader>
       <Field label="Recoil Factor" hint="0.1 (rubber, sticks close) → 1.0 (metal, bounces far). Computed from material if blank.">
         <NumInput value={part.recoilFactor as number | undefined} onChange={(v) => onChange({ recoilFactor: v })} min={0} max={1} />
@@ -365,6 +368,8 @@ function ARFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 function WDFields({ part, onChange }: { part: Part; onChange: OnChange }) {
   return (
     <div>
+      <SectionHeader>Material</SectionHeader>
+      <MaterialField part={part} onChange={onChange} />
       <SectionHeader>Hidden Stats</SectionHeader>
       <Field label="Moment of Inertia (kg·mm²)" hint="Overrides computed I = Σ(m × r²). Leave blank to auto-compute.">
         <NumInput value={part.momentOfInertia as number | undefined} onChange={(v) => onChange({ momentOfInertia: v })} min={0} step={0.1} width={110} />
@@ -384,9 +389,128 @@ function WDFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 // SubPart (6.4)
 // ─────────────────────────────────────────────────────────────────────────────
 
+const SUB_MODES = ["free_spin", "partial_slip", "fixed", "ratchet"] as const;
+const SUB_PLACEMENTS = ["above", "below", "side"] as const;
+const DETACH_TYPES = ["projectile", "mini_bey", "fragment"] as const;
+const DETACH_TRIGGERS = ["collision", "special_move", "low_spin"] as const;
+const ALL_PART_TYPES = ["attack_ring", "weight_disk", "sub_part", "tip", "core", "casing", "bit_beast"] as const;
+
 function SubPartFields({ part, onChange }: { part: Part; onChange: OnChange }) {
+  const mode = (part.mode as string | undefined) ?? "free_spin";
+  const placement = (part.placement as string | undefined) ?? "below";
+  const detachment = part.detachment as Record<string, unknown> | undefined;
+  const compatibleParents = (part.compatibleParents as string[] | undefined) ?? [];
+  const lockPositions = (part.lockPositions as number[] | undefined) ?? [];
+  const [lpInput, setLpInput] = useState("");
+
+  const patchDetach = (p: Record<string, unknown>) =>
+    onChange({ detachment: { enabled: true, type: "projectile", triggerCondition: "collision", ...detachment, ...p } });
+
   return (
     <div>
+      <SectionHeader>Material</SectionHeader>
+      <MaterialField part={part} onChange={onChange} />
+      <SectionHeader>Sub-Part Mode</SectionHeader>
+      <Field label="Mode">
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {SUB_MODES.map(m => (
+            <ToggleBtn key={m} label={m.replace(/_/g, " ")} active={mode === m} onClick={() => onChange({ mode: m })} />
+          ))}
+        </div>
+      </Field>
+      <Field label="Placement">
+        <div style={{ display: "flex", gap: 6 }}>
+          {SUB_PLACEMENTS.map(p => (
+            <ToggleBtn key={p} label={p} active={placement === p} onClick={() => onChange({ placement: p })} />
+          ))}
+        </div>
+      </Field>
+
+      {mode === "partial_slip" && (
+        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>Partial Slip Settings</div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <Field label="Spin Threshold (°)">
+              <NumInput value={part.spinThresholdDeg as number | undefined} onChange={v => onChange({ spinThresholdDeg: v })} min={0} max={360} step={5} width={80} />
+            </Field>
+            <Field label="Lock Direction">
+              <div style={{ display: "flex", gap: 5 }}>
+                {(["cw", "ccw"] as const).map(d => (
+                  <ToggleBtn key={d} label={d} active={part.lockDirection === d} onClick={() => onChange({ lockDirection: d })} />
+                ))}
+              </div>
+            </Field>
+            <Field label="Slide Angle (°)">
+              <NumInput value={part.slideAngle as number | undefined} onChange={v => onChange({ slideAngle: v })} min={0} max={360} step={5} width={80} />
+            </Field>
+          </div>
+        </div>
+      )}
+
+      {mode === "ratchet" && (
+        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>Lock Positions (°)</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 6 }}>
+            {lockPositions.map((pos, i) => (
+              <span key={i} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 4, padding: "2px 8px", fontSize: 11, color: C.text, display: "flex", alignItems: "center", gap: 4 }}>
+                {pos}°
+                <button onClick={() => onChange({ lockPositions: lockPositions.filter((_, j) => j !== i) })} style={{ background: "none", border: "none", color: C.red, cursor: "pointer", fontSize: 10 }}>×</button>
+              </span>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            <input type="number" min={0} max={359} value={lpInput} onChange={e => setLpInput(e.target.value)} placeholder="0–359"
+              style={{ width: 80, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }} />
+            <button onClick={() => { const v = Number(lpInput); if (!isNaN(v)) { onChange({ lockPositions: [...lockPositions, v] }); setLpInput(""); } }}
+              style={{ padding: "5px 10px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, fontSize: 11, color: C.muted, cursor: "pointer" }}>+ Add</button>
+          </div>
+        </div>
+      )}
+
+      <SectionHeader>Detachment on Trigger</SectionHeader>
+      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 10 }}>
+        <input type="checkbox" checked={!!(detachment?.enabled)} onChange={e => patchDetach({ enabled: e.target.checked })} style={{ accentColor: C.blue }} />
+        Enable detachment
+      </label>
+      {detachment?.enabled && (
+        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 12 }}>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+            <Field label="Type">
+              <div style={{ display: "flex", gap: 5 }}>
+                {DETACH_TYPES.map(t => <ToggleBtn key={t} label={t.replace(/_/g, " ")} active={detachment.type === t} onClick={() => patchDetach({ type: t })} />)}
+              </div>
+            </Field>
+            <Field label="Trigger Condition">
+              <div style={{ display: "flex", gap: 5 }}>
+                {DETACH_TRIGGERS.map(t => <ToggleBtn key={t} label={t.replace(/_/g, " ")} active={detachment.triggerCondition === t} onClick={() => patchDetach({ triggerCondition: t })} />)}
+              </div>
+            </Field>
+          </div>
+          {detachment.type === "projectile" && (
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <Field label="Speed"><NumInput value={detachment.speed as number | undefined} onChange={v => patchDetach({ speed: v })} min={0} step={10} width={80} /></Field>
+              <Field label="Damage"><NumInput value={detachment.damage as number | undefined} onChange={v => patchDetach({ damage: v })} min={0} step={1} width={80} /></Field>
+              <Field label="Radius (mm)"><NumInput value={detachment.radius as number | undefined} onChange={v => patchDetach({ radius: v })} min={1} step={0.5} width={80} /></Field>
+            </div>
+          )}
+          {detachment.type === "mini_bey" && (
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <Field label="Duration (ticks)"><NumInput value={detachment.duration as number | undefined} onChange={v => patchDetach({ duration: v })} min={1} step={10} width={90} /></Field>
+            </div>
+          )}
+        </div>
+      )}
+
+      <SectionHeader>Compatible Parents</SectionHeader>
+      <Field label="Part types this sub-part can attach to">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+          {ALL_PART_TYPES.map(t => {
+            const active = compatibleParents.includes(t);
+            return <ToggleBtn key={t} label={t.replace(/_/g, " ")} active={active} onClick={() => onChange({ compatibleParents: active ? compatibleParents.filter(p => p !== t) : [...compatibleParents, t] })} />;
+          })}
+        </div>
+      </Field>
+
       <SwitchTargetsEditor part={part} onChange={onChange} />
       <div style={{ marginTop: 20 }}>
         <SectionHeader>Mechanism Wear</SectionHeader>
@@ -408,12 +532,60 @@ function SubPartFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 // Tip (6.7 + 6.8)
 // ─────────────────────────────────────────────────────────────────────────────
 
+const TIP_SHAPES = ["flat","sharp","semi_flat","wide","ball","spike","rubber_flat","hole_flat","rubber_ball","defense","custom"] as const;
+
+function MaterialField({ part, onChange }: { part: Part; onChange: OnChange }) {
+  const { materials, loading } = usePartMaterials();
+  return (
+    <Field label="Material" hint={loading ? "Loading…" : undefined}>
+      <SearchableSelect
+        value={(part.material as string) ?? ""}
+        onChange={val => onChange({ material: val || undefined })}
+        options={[
+          { value: "", label: "(none)" },
+          ...materials.map(m => ({ value: m.id, label: m.description ? `${m.label} — ${m.description}` : m.label })),
+        ]}
+        placeholder="Select material…"
+      />
+    </Field>
+  );
+}
+
 function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
   const spinBias = (part.spinBias as { rightSpin: { gripMultiplier: number }; leftSpin: { gripMultiplier: number } } | undefined);
   const leftSpinHop = (part.leftSpinHop as { enabled: boolean; hopImpulse: number; hopChance: number } | undefined);
 
   return (
     <div>
+      <SectionHeader>Tip Shape & Material</SectionHeader>
+      <Field label="Tip Shape">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+          {TIP_SHAPES.map(s => (
+            <ToggleBtn key={s} label={s.replace(/_/g, " ")} active={part.tipShape === s} onClick={() => onChange({ tipShape: part.tipShape === s ? undefined : s })} />
+          ))}
+        </div>
+      </Field>
+      <MaterialField part={part} onChange={onChange} />
+      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 14 }}>
+        <Field label="Grip Factor (0–1)" hint="0 = no grip, 1 = full grip (rubber).">
+          <NumInput value={part.gripFactor as number | undefined} onChange={v => onChange({ gripFactor: v })} min={0} max={1} step={0.05} />
+        </Field>
+        <Field label="Aggressiveness (0–1)" hint="Tendency to pursue opponents.">
+          <NumInput value={part.aggressiveness as number | undefined} onChange={v => onChange({ aggressiveness: v })} min={0} max={1} step={0.05} />
+        </Field>
+        <Field label="Suction Cap" hint="Maximum suction attraction force.">
+          <NumInput value={part.suctionCap as number | undefined} onChange={v => onChange({ suctionCap: v })} min={0} step={0.1} width={90} />
+        </Field>
+        <Field label="Climb Assist (0–1)" hint="Helps tip climb ridges (0 = none).">
+          <NumInput value={part.climbAssist as number | undefined} onChange={v => onChange({ climbAssist: v })} min={0} max={1} step={0.05} />
+        </Field>
+      </div>
+      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 16 }}>
+        <input type="checkbox" checked={!!(part.freeSpin)} onChange={e => onChange({ freeSpin: e.target.checked || undefined })} style={{ accentColor: C.blue }} />
+        freeSpin
+        <span style={{ fontSize: 10, color: C.faint }}>(B:D — tip bearing fully decouples spin from movement)</span>
+      </label>
+
       <SectionHeader>Structural Flags</SectionHeader>
       <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
         <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer" }}>
@@ -484,7 +656,10 @@ function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 // Core (6.6 + 6.8)
 // ─────────────────────────────────────────────────────────────────────────────
 
+const CORE_GIMMICKS = ["none","speed_boost","weight_shift","magnetic","engine_gear","clutch_release","spin_injection","counter_rotation"] as const;
+
 function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
+  const gimmick = (part.gimmick as string | undefined) ?? "none";
   const si = part.spinInjection as {
     enabled: boolean; rateRPM: number; reserveCapacity: number;
     activationCondition: string; spinThreshold?: number;
@@ -513,6 +688,24 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 
   return (
     <div>
+      <SectionHeader>Material</SectionHeader>
+      <MaterialField part={part} onChange={onChange} />
+      <SectionHeader>Gimmick Type</SectionHeader>
+      <Field label="Active gimmick" hint="Gates which specialized block below is visible / active.">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+          {CORE_GIMMICKS.map(g => (
+            <ToggleBtn key={g} label={g.replace(/_/g, " ")} active={gimmick === g} onClick={() => onChange({ gimmick: g })} />
+          ))}
+        </div>
+      </Field>
+      {(gimmick === "magnetic" || gimmick === "weight_shift" || gimmick === "speed_boost" || gimmick === "engine_gear" || gimmick === "clutch_release") && (
+        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 14 }}>
+          <Field label="Suction Emit (emission force)">
+            <NumInput value={part.suctionEmit as number | undefined} onChange={v => onChange({ suctionEmit: v })} min={0} step={0.01} />
+          </Field>
+        </div>
+      )}
+
       <SectionHeader>Movement Override</SectionHeader>
       <Field label="Movement type" hint="orbit = standard. fixed = hold position. jump = hop-only movement.">
         <div style={{ display: "flex", gap: 6 }}>
@@ -542,7 +735,7 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
         </div>
       )}
 
-      <SectionHeader>Spin Injection</SectionHeader>
+      {(gimmick === "spin_injection" || gimmick === "none") && <><SectionHeader>Spin Injection</SectionHeader>
       <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 10 }}>
         <input type="checkbox" checked={si?.enabled ?? false} onChange={(e) => updateSI({ enabled: e.target.checked, rateRPM: si?.rateRPM ?? 30, reserveCapacity: si?.reserveCapacity ?? 1800, activationCondition: si?.activationCondition ?? "spin_threshold" })} style={{ accentColor: C.blue }} />
         Enabled
@@ -565,7 +758,9 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
         </div>
       )}
 
-      <SectionHeader>Counter-Rotation (Dranzer GT)</SectionHeader>
+      </>{/* end spin_injection gate */}
+
+      {(gimmick === "counter_rotation" || gimmick === "none") && <><SectionHeader>Counter-Rotation (Dranzer GT)</SectionHeader>
       <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 10 }}>
         <input type="checkbox" checked={cr?.enabled ?? false} onChange={(e) => updateCR({ enabled: e.target.checked, activationCondition: cr?.activationCondition ?? "casing_trigger", directionSequence: cr?.directionSequence ?? ["right", "left", "right", "left"], stepDurationTicks: cr?.stepDurationTicks ?? 30, spinDecayCostPerStep: cr?.spinDecayCostPerStep ?? 0.03 })} style={{ accentColor: C.blue }} />
         Enabled
@@ -599,6 +794,8 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
         </div>
       )}
 
+      </>{/* end counter_rotation gate */}
+
       <SectionHeader>Hidden Stats</SectionHeader>
       <Field label="Clutch Strength" hint="0=fully free-spinning (HMS Running Core) → 1=fully locked.">
         <NumInput value={part.clutchStrength as number | undefined} onChange={(v) => onChange({ clutchStrength: v })} min={0} max={1} />
@@ -620,9 +817,53 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 // Casing (6.8)
 // ─────────────────────────────────────────────────────────────────────────────
 
+const CASING_CATEGORIES = ["round", "wide", "flat", "custom"] as const;
+
 function CasingFields({ part, onChange }: { part: Part; onChange: OnChange }) {
+  const slots = part.slots as Record<string, unknown> | undefined;
+  const tipSlot = slots?.tipSlot as Record<string, unknown> | undefined;
+  const coreSlot = slots?.coreSlot as Record<string, unknown> | undefined;
+  const patchSlots = (p: Record<string, unknown>) => onChange({ slots: { ...slots, ...p } });
+  const patchTipSlot = (p: Record<string, unknown>) => patchSlots({ tipSlot: { x: 0, y: 0, radius: 5, ...tipSlot, ...p } });
+  const patchCoreSlot = (p: Record<string, unknown>) => patchSlots({ coreSlot: { enabled: false, radius: 8, depth: 3, ...coreSlot, ...p } });
+
   return (
     <div>
+      <SectionHeader>Material</SectionHeader>
+      <MaterialField part={part} onChange={onChange} />
+      <SectionHeader>Casing Category</SectionHeader>
+      <Field label="Shape category">
+        <div style={{ display: "flex", gap: 6 }}>
+          {CASING_CATEGORIES.map(c => (
+            <ToggleBtn key={c} label={c} active={part.casingCategory === c} onClick={() => onChange({ casingCategory: part.casingCategory === c ? undefined : c })} />
+          ))}
+        </div>
+      </Field>
+
+      <SectionHeader>Slots</SectionHeader>
+      <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>Tip Slot</div>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <Field label="Position X (mm)"><NumInput value={tipSlot?.x as number | undefined} onChange={v => patchTipSlot({ x: v })} step={0.5} width={70} /></Field>
+          <Field label="Position Y (mm)"><NumInput value={tipSlot?.y as number | undefined} onChange={v => patchTipSlot({ y: v })} step={0.5} width={70} /></Field>
+          <Field label="Radius (mm)"><NumInput value={tipSlot?.radius as number | undefined} onChange={v => patchTipSlot({ radius: v })} min={1} step={0.5} width={70} /></Field>
+        </div>
+      </div>
+      <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer" }}>
+            <input type="checkbox" checked={!!(coreSlot?.enabled)} onChange={e => patchCoreSlot({ enabled: e.target.checked })} style={{ accentColor: C.blue }} />
+            Core Slot enabled
+          </label>
+        </div>
+        {coreSlot?.enabled && (
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <Field label="Radius (mm)"><NumInput value={coreSlot.radius as number | undefined} onChange={v => patchCoreSlot({ radius: v })} min={1} step={0.5} width={70} /></Field>
+            <Field label="Depth (mm)"><NumInput value={coreSlot.depth as number | undefined} onChange={v => patchCoreSlot({ depth: v })} min={0} step={0.5} width={70} /></Field>
+          </div>
+        )}
+      </div>
+
       <SectionHeader>Hidden Stats</SectionHeader>
       <Field label="Impact Absorption" hint="0–1. Fraction of hit force absorbed before reaching WD/Core.">
         <NumInput value={part.impactAbsorption as number | undefined} onChange={(v) => onChange({ impactAbsorption: v })} min={0} max={1} />
@@ -659,6 +900,8 @@ function BitBeastFields({ part, onChange }: { part: Part; onChange: OnChange }) 
 
   return (
     <div>
+      <SectionHeader>Material</SectionHeader>
+      <MaterialField part={part} onChange={onChange} />
       <SectionHeader>Special Move</SectionHeader>
       <Field label="Special Move" hint="Triggers at full power bar (Space). One per BitBeast.">
         <SearchableSelect
@@ -669,15 +912,43 @@ function BitBeastFields({ part, onChange }: { part: Part; onChange: OnChange }) 
         />
       </Field>
       {isCustom && (
-        <Field label="Custom Move Name">
-          <input
-            type="text"
-            value={(part.customMoveName as string | undefined) ?? ""}
-            onChange={(e) => onChange({ customMoveName: e.target.value.trim() || undefined })}
-            placeholder="e.g. Blazing Tornado"
-            style={{ padding: "7px 10px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13, width: "100%" }}
-          />
-        </Field>
+        <>
+          <Field label="Custom Move Name">
+            <input
+              type="text"
+              value={(part.customMoveName as string | undefined) ?? ""}
+              onChange={(e) => onChange({ customMoveName: e.target.value.trim() || undefined })}
+              placeholder="e.g. Blazing Tornado"
+              style={{ padding: "7px 10px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13, width: "100%" }}
+            />
+          </Field>
+          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>Custom Move Physics</div>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <Field label="Power Cost (0–200)">
+                <NumInput value={(part.customMovePowerCost as number | undefined)} onChange={v => onChange({ customMovePowerCost: v })} min={0} max={200} step={5} width={80} />
+              </Field>
+              <Field label="Linear Impulse">
+                <NumInput value={(part.customMoveLinearImpulse as number | undefined)} onChange={v => onChange({ customMoveLinearImpulse: v })} min={0} max={10000} step={100} width={90} />
+              </Field>
+              <Field label="Spin Delta (±)">
+                <NumInput value={(part.customMoveSpinDelta as number | undefined)} onChange={v => onChange({ customMoveSpinDelta: v })} min={-500} max={500} step={10} width={80} />
+              </Field>
+              <Field label="Invuln. (ms)">
+                <NumInput value={(part.customMoveInvulnMs as number | undefined)} onChange={v => onChange({ customMoveInvulnMs: v })} min={0} max={3000} step={100} width={80} />
+              </Field>
+              <Field label="Cancel Condition">
+                <SearchableSelect
+                  value={(part.customMoveCancelCondition as string | undefined) ?? ""}
+                  options={[{ value: "timer", label: "timer" }, { value: "hit", label: "on hit" }, { value: "low_spin", label: "low spin" }]}
+                  onChange={v => onChange({ customMoveCancelCondition: v || undefined })}
+                  emptyLabel="(none)"
+                  style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                />
+              </Field>
+            </div>
+          </div>
+        </>
       )}
 
       <SectionHeader>MFB / Energy Ring</SectionHeader>
@@ -712,6 +983,8 @@ function SpinTrackFields({ part, onChange }: { part: Part; onChange: OnChange })
 
   return (
     <div>
+      <SectionHeader>Material</SectionHeader>
+      <MaterialField part={part} onChange={onChange} />
       <SectionHeader>Track Dimensions</SectionHeader>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
         <Field label="Height (mm)" hint="Track height (e.g. 90, 100, 105, 125, 130, 145, 160, 230).">

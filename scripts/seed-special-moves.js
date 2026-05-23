@@ -138,13 +138,33 @@ const specialMoves = [
   },
 ];
 
+// New SpecialMoveConfig-format steps (parallel to legacy physics block)
+const MIGRATED_STEPS = {
+  stampede_rush: [
+    { action: "velocity_burst", params: { forceX: 0.12, forceY: 0 } },
+    { action: "attack_amplifier", params: { multiplier: 1.3 }, durationMs: 1000 },
+  ],
+  gyro_anchor: [
+    { action: "defense_stance", params: { durationMs: 1500 } },
+  ],
+  spin_recovery: [
+    { action: "orbit_movement", params: { intensity: 0.003, direction: "cw" }, durationMs: 2000 },
+    { action: "stamina_recovery", params: { recoveryRate: 30 }, durationMs: 2000 },
+  ],
+  tactical_burst: [
+    { action: "velocity_burst", params: { forceX: 0.06, forceY: 0 } },
+    { action: "stamina_recovery", params: { recoveryRate: 15 }, durationMs: 500 },
+  ],
+};
+
 async function seed() {
   try {
     console.log("Seeding special_moves collection...");
     await clearCollection("special_moves");
 
     for (const move of specialMoves) {
-      await db.collection("special_moves").doc(move.id).set(move);
+      const steps = MIGRATED_STEPS[move.id] ?? [];
+      await db.collection("special_moves").doc(move.id).set({ ...move, steps });
       console.log(`  ✅ Created move: ${move.name}`);
     }
 
