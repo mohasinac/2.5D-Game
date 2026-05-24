@@ -1,4 +1,4 @@
-[← Phase 14: Game Modes](phase-14-game-modes.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 19: Implementation Plan →](phase-19-impl-plan.md)
+﻿[← Phase 14: Game Modes](phase-14-game-modes.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 19: Implementation Plan →](phase-19-impl-plan.md)
 
 ---
 
@@ -276,6 +276,13 @@ Sorted by priority: P0 first, then P1, P2, P3, P4.
 **Second cluster**: P1 schema + seed gaps (items 10–30) must be fixed together since seeds depend on TypeScript types being valid first.
 
 Source files: Stages 0D, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Historical planning document.** Most gaps identified here have been addressed in Phases 21-28. Current open gaps tracked in `EXECUTION-PROMPT.md` Quick Reference table.
 
 ---
 

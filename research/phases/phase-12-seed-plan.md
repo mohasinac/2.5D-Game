@@ -1,4 +1,4 @@
-[← Phase 11: Architecture](phase-11-architecture.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 13: Controls →](phase-13-controls.md)
+﻿[← Phase 11: Architecture](phase-11-architecture.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 13: Controls →](phase-13-controls.md)
 
 ---
 
@@ -338,6 +338,13 @@ Add to `package.json` scripts:
 16. `seed:animation-presets` — no deps
 17. `seed:composition-blocks` — no deps
 18. `seed:tournament-ai-solo` — depends on beyblades + arenas
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — 26+ seed scripts under `scripts/`. `npm run seed:all` bootstraps all collections. New scripts needed: `seed-bitbeasts` (Phase 28); updates to `seed-mechanics` and `seed-gimmicks` for 4 Phase 24 entries.
 
 ---
 

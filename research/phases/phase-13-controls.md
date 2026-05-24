@@ -1,4 +1,4 @@
-[← Phase 12: Seed Plan](phase-12-seed-plan.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 14: Game Modes →](phase-14-game-modes.md)
+﻿[← Phase 12: Seed Plan](phase-12-seed-plan.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 14: Game Modes →](phase-14-game-modes.md)
 
 ---
 
@@ -274,6 +274,21 @@ This prevents user confusion when IJKL keys appear in the overlay but do nothing
 ### TryoutGamePage Arena Always Visible
 
 Previously the render call was gated on `phase === "playing"` — the arena floor was not drawn during the 3-2-1 countdown or launch QTE. Fixed by moving the render call outside the phase gate: arena and beyblade are rendered from the moment `arenaConfig.current` is loaded, regardless of phase. Physics computation is still gated on `phase === "playing"`.
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+| Component | Status |
+|-----------|--------|
+| uint16 bitmask bits 0-9 | Done |
+| Keyboard WASD + bits 4-9 in useGameInput.ts | Done |
+| Camera controls + spectator follow | Done |
+| Attitude bits 10-12 (J/K/L) | Missing - Phase 24 |
+| Gamepad input reader | Missing - Phase 24 |
+| Touch controls (virtual d-pad) | Missing - Phase 24 |
+| Input dedup N3 optimization | Missing - Phase 26 |
 
 ---
 

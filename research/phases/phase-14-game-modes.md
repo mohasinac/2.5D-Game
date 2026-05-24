@@ -1,4 +1,4 @@
-[← Phase 13: Controls](phase-13-controls.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 16: Gap Analysis →](phase-16-gap-analysis.md)
+﻿[← Phase 13: Controls](phase-13-controls.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 16: Gap Analysis →](phase-16-gap-analysis.md)
 
 ---
 
@@ -185,6 +185,13 @@ Based on research findings, the following new room types would complete game mod
 | `challenge_room` | Solo challenge mode (obstacle course, time trial, or damage target) extending TryoutRoom with a configurable win condition and a results-to-Firestore pipeline | Low |
 | `spectator_relay_room` | A lightweight Colyseus room that rebroadcasts a running match's state to unlimited read-only clients without those clients appearing in the source room's spectator count or maxClients limit | Low |
 | `points_battle_room` | PVP room where the win condition is accumulated damage dealt (or collision count) rather than last-bey-standing elimination. Uses schema fields `damageDealt` and `collisions` already present | Low |
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — 10 room types (TryoutRoom, BattleRoom, AIBattleRoom, TournamentBattleRoom + 2.5D variants + TeamBattle variants). BO1/BO3/BO5 via SeriesManager. Spectator support. Tournament system (scheduler, brackets, walkovers, both-ready early-start). Phase 25 Battle Royale (20-player) not yet implemented.
 
 ---
 

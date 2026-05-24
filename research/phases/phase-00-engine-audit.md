@@ -43,34 +43,39 @@ Four room types. Series format BO1/3/5 via `SeriesManager`. Spectator support ac
 
 ## What is Broken or Missing
 
-### CRITICAL (blocks gameplay correctness)
+> **Audit update 2026-05-24** — verified against actual source files. Items marked ✅ FIXED have been confirmed resolved in code.
 
-1. **BehaviorRef dispatch gap** — `ArenaFeatureProcessor.executeBehavior()` only handles `movement.orbit`. All other compiled BehaviorRef types are silently skipped. Every `ComboEffectDef` task that compiles to anything other than orbit (multiplier boosts, transformations, spawning, circle movement, arena effects) has zero effect at runtime. Fix: add dispatch cases for all `factor.*`, `transform.*`, `spawn.*`, `movement.*`, `arena.*` behaviorIds.
+### CRITICAL — Verified Current Status
 
-2. **`effectId` absent from `ComboDoc`** — The `combos` Firestore collection documents do not have an `effectId` field. `detectCombo()` returns a `ComboResult` but cannot look up what `ComboEffectDef` to execute. Fix: add `effectId?: string` to the combo document schema and the admin combo editor.
+| # | Issue | Original Status | Current Status | Evidence |
+|---|-------|----------------|----------------|----------|
+| 1 | BehaviorRef dispatch gap | ~~CRITICAL~~ | ✅ **FIXED** | `ArenaFeatureProcessor.ts` lines 80–100: dispatches all prefixes (`movement.*`, `factor.*`, `transform.*`, `spawn.*`, `arena.*`) via `dispatchBehaviorRef()` to `MechanicRegistry` |
+| 2 | `effectId` absent from `ComboDoc` | ~~CRITICAL~~ | 🔧 **PARTIAL** | Runtime: `ComboResult.effect` is a 6-value string union (works for current combos). Admin side: `effectId` picker referencing `combo_effects` collection still absent from combo editor. Not a runtime blocker. |
+| 3 | Special move schema incompatibility | ~~CRITICAL~~ | ✅ **RESOLVED** | `src/constants/specialMoves.ts` does not exist in the codebase. Rooms load from Firestore `special_moves` using `SpecialMoveConfig` (steps[]) format. |
 
-3. **Special move schema incompatibility** — `server/constants/specialMoves.ts` defines `SpecialMoveDef` (simple `effects{}` object). The new pipeline expects `SpecialMoveConfig` (steps[], windupTicks, bleedTicks, cancelableByQTE). These are not compatible. Room onCreate must be verified to load from Firestore `special_moves` collection using the new schema, not the hardcoded constant.
+### HIGH — Verified Current Status
 
-### HIGH (blocks authored content)
+| # | Issue | Original Status | Current Status | Evidence |
+|---|-------|----------------|----------------|----------|
+| 4 | No step editor for Special Moves | HIGH | ❓ **Unknown** — verify admin special moves page has step editor | Needs manual check |
+| 5 | No `ComboTask` editor for Combo Effects | HIGH | ❓ **Unknown** — verify combo-effects admin page | Needs manual check |
+| 6 | Missing COLLECTIONS entries | ~~HIGH~~ | ✅ **FIXED** | `firebase.ts` lines 65–68: `MECHANIC_DEFS`, `GIMMICK_DEFS`, `GEOMETRY_DEFS`, `STAT_DEFS` all present. Note: `camera_profiles`, `audio_profiles` still absent. |
 
-4. **No step editor for Special Moves** — The admin special moves page must be rebuilt with a `SpecialMoveStep[]` editor: each step picks a `comboEffectId`, sets timing (windupTicks, bleedTicks), and can toggle `cancelableByQTE`. The `cameraConfig` field per step also needs an authoring surface.
+### MEDIUM — Verified Current Status
 
-5. **No `ComboTask` editor for Combo Effects** — The admin combo effects page must be rebuilt with a task list editor supporting all 5 ComboTask action types (multiplier, transformation, spawning, movement, arena_effect) and all 29 StatDeltaKey values. `ComboTrigger[]` and `ComboTiming` must also be authorable.
+| # | Issue | Original Status | Current Status |
+|---|-------|----------------|----------------|
+| 7 | Trigger zone BehaviorRef gap | ~~MEDIUM~~ | ✅ **FIXED** (same fix as #1 — trigger zones use same `executeBehavior()`) |
+| 8 | `roundModifier_defs` collection status | MEDIUM | ❓ Still unknown — verify runtime loads from `round_modifiers` Firestore |
+| 9 | Arena links / BeyLinks partial | MEDIUM | ❓ Likely still partial — physics implementation needs verification |
 
-6. **Missing COLLECTIONS entries** — `mechanic_defs`, `gimmick_defs`, `camera_profiles`, `audio_profiles` are not in the `COLLECTIONS` constant in `client/src/lib/firebase.ts`. Any code referencing these will use raw string literals inconsistently.
+### LOW — Verified Current Status
 
-### MEDIUM (limits features)
-
-7. **Trigger zone BehaviorRef** — Arena trigger zones (`triggerZones[]`) dispatch BehaviorRef through the same `executeBehavior()` gap. All trigger-zone effects beyond `movement.orbit` are inoperative.
-
-8. **`roundModifier_defs` collection status** — `MODIFIER_MAP` is a hardcoded constant. It is unknown whether `round_modifiers` Firestore collection is read at runtime or ignored. If hardcoded, new modifier types cannot be authored without code changes.
-
-9. **Arena links / BeyLinks partial** — `ArenaLink` and `BeyLink` types are defined and imported in BattleRoom, but physics implementation is partial. Corridor traversal and multi-bey linking strain mechanics are incomplete.
-
-### LOW
-
-10. **Gamepad input** — Bitmask bits 0–9 are defined but no gamepad event reader is wired in `useGameInput.ts`.
-11. **Admin pages for gimmicks, mechanics, camera profiles, audio profiles** — Not built. These are P1/P2 priorities in the rebuild.
+| # | Issue | Original Status | Current Status |
+|---|-------|----------------|----------------|
+| 10 | Gamepad input | LOW | ❌ **Still missing** — `useGameInput.ts` has no gamepad event reader (Phase 24 covers this) |
+| 11 | Admin pages for gimmicks, mechanics | ~~LOW~~ | ✅ **FIXED** — `MechanicDefsPage.tsx`, `GimmickDefsPage.tsx`, `GeometryDefsPage.tsx`, `StatDefsPage.tsx` all exist |
+| — | `camera_profiles`, `audio_profiles` in COLLECTIONS | NEW | ❌ **Still missing** — these two were not in the original P0.4 list but still absent from firebase.ts |
 
 ---
 
@@ -89,10 +94,12 @@ Four room types. Series format BO1/3/5 via `SeriesManager`. Spectator support ac
 | `element_types` | ✅ | rebuild | — | ✅ | Complete |
 | `behavior_defs` | ✅ | rebuild | — | ⚠️ dispatch gap | Broken |
 | `round_modifiers` | ✅ | rebuild | — | ❓ unknown | Unknown |
-| `mechanic_defs` | ⚠️ missing constant | rebuild (not built) | — | ❌ | Missing |
-| `gimmick_defs` | ⚠️ missing constant | rebuild (not built) | — | ❌ | Missing |
-| `camera_profiles` | ⚠️ missing constant | rebuild (not built) | — | ❌ | Missing |
-| `audio_profiles` | ⚠️ missing constant | rebuild (not built) | — | ❌ | Missing |
+| `mechanic_defs` | ✅ in COLLECTIONS | ✅ MechanicDefsPage | ✅ seed:mechanics | ✅ MechanicRegistry | Complete |
+| `gimmick_defs` | ✅ in COLLECTIONS | ✅ GimmickDefsPage | ✅ seed:gimmicks | ✅ gimmickExpander | Complete |
+| `geometry_defs` | ✅ in COLLECTIONS | ✅ GeometryDefsPage | — | ❓ partial | Partial |
+| `stat_defs` | ✅ in COLLECTIONS | ✅ StatDefsPage | — | ❓ partial | Partial |
+| `camera_profiles` | ❌ not in COLLECTIONS | not built | — | ❌ | Missing |
+| `audio_profiles` | ❌ not in COLLECTIONS | not built | — | ❌ | Missing |
 | `animation_presets` | ✅ | rebuild | — | ❓ | Unknown |
 | `tournaments` | ✅ | rebuild | ✅ | ✅ | Complete |
 | `tournament_participants` | ✅ | rebuild | ✅ | ✅ | Complete |

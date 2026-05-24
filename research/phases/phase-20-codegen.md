@@ -1,4 +1,4 @@
-[← Phase 19: Implementation Plan](phase-19-impl-plan.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 21: Unified Foundation →](phase-21-unified-foundation.md)
+﻿[← Phase 19: Implementation Plan](phase-19-impl-plan.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 21: Unified Foundation →](phase-21-unified-foundation.md)
 
 ---
 
@@ -1933,6 +1933,13 @@ for (const idx of pocketResult.escapedIndices) {
 [ ] Block M: Physics flags — ghost bey phases through; friendly collision transfers recoil only
 [ ] Block N: Part gaps — ARPart CPs appear in physicsEngine.beybladeStats; detached mini-beys collide
 ```
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Historical planning document.** Code patterns described here have been applied. For current feature status see phase-specific status sections or `EXECUTION-PROMPT.md`.
 
 ---
 

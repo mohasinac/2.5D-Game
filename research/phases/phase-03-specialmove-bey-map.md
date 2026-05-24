@@ -1,4 +1,4 @@
-[← Phase 02: Special Moves](phase-02-special-moves.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 04: Combo Mapping →](phase-04-combo-mapping.md)
+﻿[← Phase 02: Special Moves](phase-02-special-moves.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 04: Combo Mapping →](phase-04-combo-mapping.md)
 
 ---
 
@@ -499,6 +499,13 @@ Phase-02 config skeletons use `powerCost` on a 0–1500+ permille scale (e.g. `p
 | `sparking` bar accumulation passive | IMPLEMENTATION BLOCKED | Needs `sparkingBarChargePerSecond` system not yet in engine |
 | `turbo-awakening` turboPowerThreshold | IMPLEMENTATION BLOCKED | Needs `turboPowerThreshold` + `permanent` flag; noted P2 in phase-02 |
 | `dread-phoenix-auto-resurrect` | IMPLEMENTATION BLOCKED | Needs `autoResurrect` passive gate; noted P3 in phase-02 |
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — Reference mapping. `BeybladeStats.specialMoveId` field exists; seed scripts set defaults per archetype.
 
 ---
 

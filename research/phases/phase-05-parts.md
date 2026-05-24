@@ -1,4 +1,4 @@
-[← Phase 04: Combo Mapping](phase-04-combo-mapping.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 06: Mechanics →](phase-06-mechanics.md)
+﻿[← Phase 04: Combo Mapping](phase-04-combo-mapping.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 06: Mechanics →](phase-06-mechanics.md)
 
 ---
 
@@ -1028,6 +1028,13 @@ This makes the physics collision damage profile match the visual shape exactly.
 | PART-03c | Detached bodies have no Matter.js physics body — no real collision | High | `Parts25DBattleRoom.ts` onDetachedBodyAdded callback |
 | PART-03d | `returnToParent` lifecycle not implemented | Low | new `tickDetachedBodyReturn()` helper |
 | GEAR-01 | GearPart CPs and statModifiers not bridged to PhysicsEngine in `registerBey()` | High | `PartSystemManager.registerBey()` — merge gear CPs into combined stats after existing sub-part loop |
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — 2.5D part system fully implemented. 9 part types (bit_beast, ar, wd, tip, core, casing, spin_track, sub_part, gear). Arc-segment + legacy contact points coexist. `PartPhysics.ts` + `PartSystemManager.ts` on server. Material wear + evolution driver (3 stages) implemented. Admin part editor at `/admin/2d/parts`.
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Project**: Beyblade Game — Part System & Engine Research
 **Maintained by**: Claude Code sessions
-**Last updated**: 2026-05-24 (session 29 — Firebase preset defs refactor: 9 new Firestore collections replace all hardcoded admin dropdowns/enums; 10 store slices + hooks; 9 admin CRUD pages; 9 seed scripts; router + nav wired; batch-000 gap table updated; progress.md session block added)
+**Last updated**: 2026-05-24 (session 34 — Phase 29 added: Collision QTE power meter + multi-phase special moves + airborne physics + aerial clash + SPECIAL_INTERACTIONS map; range-based Special Counter Window removed from design)
 
 > This index covers all research documents in the `research/` folder.
 > Every file links back here via its navigation footer.
@@ -70,6 +70,14 @@ Compiled phase documents synthesizing research into actionable design decisions.
 | 19 | [phase-19-impl-plan.md](phases/phase-19-impl-plan.md) | Implementation plan | complete |
 | 20 | [phase-20-codegen.md](phases/phase-20-codegen.md) | Code generation | complete |
 | 21 | [phase-21-unified-foundation.md](phases/phase-21-unified-foundation.md) | **Unified foundation — three-pillar architecture: BehaviorDef (mechanic_defs→gimmick_defs), GeometryDef (geometry_defs), StatDef (stat_defs). Universal basis for all entities.** | complete |
+| 22 | [phase-22-arena-builder.md](phases/phase-22-arena-builder.md) | **Modular arena builder — Hot Wheels multi-level arenas; arena size expansion (500cm); viewport cap (100cm); ModularSectionConfig + LoopTrackConfig types; elevator portals; ElevationZone physics; minimap local 100cm view + perspective tab; client state culling.** | complete |
+| 23 | [phase-23-preset-library.md](phases/phase-23-preset-library.md) | **Universal preset library — 11 new Firestore collections for all entity presets; PresetBar component; arena selection & grouping (StarCraft control-group model); ArenaEditorCanvas interactive canvas; ArenaFeatureGroupInstance/Template types; per-editor integration.** | complete |
+| 24 | [phase-22-semi-autonomous-control.md](phases/phase-22-semi-autonomous-control.md) | **Semi-autonomous control — two-layer AI; authority blend α formula; natural motion (orbit/death-spiral/stabilisation/rage-burst); velocity steering (momentum-preserving); 9-key + 4-source input; gyroscope motion library (12 motions); collision tiers 0–3 with QTE.** | complete |
+| 25 | [phase-23-battle-modes.md](phases/phase-23-battle-modes.md) | **Battle modes — Battle Royale (20-player, 5-phase shrinking zone, drain 3/6/10/15 spin/s); arena authority config (globalMultiplier, featureOverrides); longer battle config (maxDurationSeconds); admin UI.** | complete |
+| 26 | [phase-24-engine-optimizations.md](phases/phase-24-engine-optimizations.md) | **Engine optimizations — PixiJS R1–R5 (cullable, ParticleContainer, RenderTexture, dirty-flag, LOD); Colyseus N1–N4 (prediction, AoI, dedup, schema narrowing); Matter.js S1–S2; priority table.** | complete |
+| 27 | [phase-27-tiered-aoi.md](phases/phase-27-tiered-aoi.md) | **Tiered Fog of War / AoI — three-tier LOD (Ghost/Shadow/Full); BeyGhostState schema; filterBy Tier 2; ghost broadcast Tier 0–1; multi-floor building rules; elevator shaft line-of-sight bonus; delta-zone pre-loading; hysteresis; minimap ghost-only rule; spectator bypass; bandwidth estimates.** | complete |
+| 28 | [phase-28-view-modes-hud-bitbeast.md](phases/phase-28-view-modes-hud-bitbeast.md) | **View modes (2D/2.5D/3D) — renderer mode field; arena builder admin forms per mode (Basics/Tilt/3D Config tabs); move-type visual matrix (Xtreme Rail/Air Attack/Jump/Collision/Flower Pattern/Burst Finish/Beast Call); BitBeast glow overlay (GIF/PNG, `bitbeast_assets` collection, pulse CSS); HUD reference layout (top bar, SP bars, 3 ability icons 2D-only, nearest-8 opponent panel); `HUDRoot` component tree.** | complete |
+| 29 | [phase-29-collision-qte-multiphase-specials.md](phases/phase-29-collision-qte-multiphase-specials.md) | **Collision QTE power meter (0–150%, +12%/<100% +6%/>100%); multi-phase SpecialMoveDef (windUpMs/durationMs/windDownMs, targetFlags, waitForAirborne, fallback, skipCondition, peakMs); airborne physics (beyHeight/beyVerticalVel, gravity tick); aerial clash (3D distance, dual damageMultiplier, energy beam visual); SPECIAL_INTERACTIONS map (11 kind×kind outcomes); key-sequence QTE block restricted to physical collision only; no-waste policy; split-screen collision-triggered only; L-Drago vs Pegasus canonical reference.** | complete |
 
 ---
 

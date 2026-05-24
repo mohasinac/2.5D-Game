@@ -1,4 +1,4 @@
-[← Phase 05: Parts](phase-05-parts.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 07a: Generation 1 →](phase-07-gen1.md)
+﻿[← Phase 05: Parts](phase-05-parts.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 07a: Generation 1 →](phase-07-gen1.md)
 
 ---
 
@@ -673,6 +673,13 @@ MechanicInstance[] = [
         ↓ tick / onCollision
 MechanicRegistry[mechanicId].tick(bey, dt, params)
 ```
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — 31 mechanic handlers registered in `server/physics/MechanicRegistry.ts`. All existing gameplay behaviors covered. Missing: 4 Phase 24 stubs (authorityBlend, steeringForce, beyDecision, naturalMotion) not yet registered. Turret attack system (175+ moves) implemented.
 
 ---
 

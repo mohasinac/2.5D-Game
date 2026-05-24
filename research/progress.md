@@ -1,7 +1,7 @@
 # Research Progress
 
 **Plan**: system-role-you-are-refactored-creek.md  
-**Last updated**: 2026-05-24 (session 29 — Firebase preset defs refactor: 9 new collections replace all hardcoded admin dropdowns/enums; 10 Zustand store slices + hooks; 9 admin CRUD pages; 9 seed scripts; router + nav wired; TSC zero errors)
+**Last updated**: 2026-05-24 (session 34 — Phase 29 added: Collision QTE power meter + multi-phase special moves + airborne physics + aerial clash + SPECIAL_INTERACTIONS map; plan file cleaned to remove range-based Special Counter Window; key-sequence QTE block restricted to physical collision only)
 
 ---
 
@@ -11,7 +11,7 @@
 |-------|------|--------|-------------|------------|
 | 0A | Code Reading + Discovery | complete | phases/phase-00-engine-audit.md | batch-001 |
 | 0B | New Discovery Table | complete | phases/phase-00-engine-audit.md | batch-002 |
-| 0C | Mermaid Discovery Maps | complete | diagrams/ (17 files) | — |
+| 0C | Mermaid Discovery Maps | complete | diagrams/ (19 files) | — |
 | 0D | Engine Capability Summary | complete | phases/phase-00-engine-audit.md | batch-003 |
 | 0E | Admin + Forms Audit | complete | phases/phase-00-engine-audit.md | batch-000 |
 | 1  | Terminology + Concepts | complete | phases/phase-01-terminology.md | Batch 1K (session 5) |
@@ -33,10 +33,18 @@
 | 19 | Implementation Plan | complete | phases/phase-19-impl-plan.md | — |
 | 20 | Code Generation | complete | phases/phase-20-codegen.md | — |
 | 21 | Unified Foundation Architecture | complete | phases/phase-21-unified-foundation.md | session 18 |
+| 22 | Modular Arena Builder | complete | phases/phase-22-arena-builder.md | session 30 |
+| 23 | Universal Preset Library + Grouping | complete | phases/phase-23-preset-library.md | session 30 |
+| 24 | Semi-Autonomous Control: Authority Blend + Gyroscope Physics | complete | phases/phase-22-semi-autonomous-control.md | session 31 |
+| 25 | Battle Modes: Battle Royale + Arena Authority Config | complete | phases/phase-23-battle-modes.md | session 31 |
+| 26 | Engine Optimizations: PixiJS + Colyseus + Matter.js | complete | phases/phase-24-engine-optimizations.md | session 31 |
+| 27 | Tiered Fog of War / Area of Interest (AoI) | complete | phases/phase-27-tiered-aoi.md | session 32 |
+| 28 | View Modes (2D/2.5D/3D) + HUD Design + BitBeast Glow | complete | phases/phase-28-view-modes-hud-bitbeast.md | session 32 |
+| 29 | Collision QTE Power Meter + Multi-Phase Special Moves + Airborne Physics | complete | phases/phase-29-collision-qte-multiphase-specials.md | session 34 |
 
 ---
 
-## Stage 0C Diagram Files (18/18 complete)
+## Stage 0C Diagram Files (19/19 complete)
 
 | # | File | Status |
 |---|------|--------|
@@ -58,6 +66,7 @@
 | 16 | diagram-script-authoring-flow.md | ✅ |
 | 17 | diagram-script-execution.md | ✅ |
 | 18 | diagram-turret-powerup-system.md | ✅ (session 12 additions) |
+| 19 | diagram-tilt-angle.md | ✅ (added after original 18 — arena tilt Z-axis orientation) |
 
 ---
 
@@ -742,6 +751,62 @@ All 14 moves: fire dispatch cases added. Tick dispatch cases: `gear_second` (rap
   2. Dragon Ball move series incomplete — Gohan, Vegeta followup, Cell, Buu, Frieza transformation chain not yet added
   3. Dashboard links to `/admin/mechanic-defs` and `/admin/gimmick-defs` not yet added
   4. Phase 21 implementation — `geometry_defs` and `stat_defs` collections + seed scripts + admin pages + form panels not yet built
+
+---
+
+## Session 32 Additions (2026-05-24) — Tiered AoI + View Modes + HUD + BitBeast
+
+### Added
+| Addition | Files | Content |
+|---|---|---|
+| phase-27 (stage 27) | research/phases/phase-27-tiered-aoi.md | Three-tier AoI: Tier 0 ghost dot (10Hz), Tier 1 shadow (20Hz), Tier 2 full schema (60Hz); BeyGhostState schema; beyGhosts MapSchema added to GameState; Colyseus `filterBy` Tier 2; multi-floor building rules (floorDelta 0/1/≥2); elevator shaft 10cm line-of-sight bonus; delta zone pre-loading (eager promotion at 65cm); hysteresis bands (TIER2_EXIT=65cm, TIER1_EXIT=105cm); dynamic feature state culling; minimap always reads beyGhosts; spectator bypass; performance estimates (80% BW reduction 20-player royale) |
+| phase-28 (stage 28) | research/phases/phase-28-view-modes-hud-bitbeast.md | Three renderer modes (2D Top View / 2.5D Tilt / Full 3D); `rendererMode` field on ArenaConfig + ArenaState; Arena3DConfig (camera preset, lighting, floor material, model IDs); move type visual matrix (7 move types × 3 modes); BitBeast glow overlay system (`bitbeast_assets` Firestore collection, BitBeastOverlay.tsx, CSS glow-pulse, GIF support, 3D GLB mode); HUD redesign per mode (TopBar, AbilityIcons 2D-only, SPBar, OpponentPanel); nearest-8 opponent system (reads beyGhosts spin_pct/dist); HUDRoot composition; IGameRenderer interface; RendererFactory.ts; ThreeJSRenderer.ts architecture; admin routes `/admin/bitbeast-assets` + updated `/admin/arenas/:id` |
+| phase-24 N2 updated | research/phases/phase-24-engine-optimizations.md | N2 AoI entry updated: now references Phase 27 three-tier system; link to phase-27-tiered-aoi.md added; royale-only clause removed (applies to all room types) |
+
+### Key Design Decisions (session 32)
+| Decision | Basis |
+|---|---|
+| Ghost schema broadcast to ALL clients (no filter), filterBy only for Tier 2 full schema | Ensures minimap always has all-bey positions; bandwidth cost is negligible (~8KB/s for 20 beys at ghost rate) |
+| Client computes its own tier locally using same constants as server | Avoids server needing to compute per-client tiers; deterministic since constants shared |
+| Minimap NEVER reads full beyblades schema — always beyGhosts | Prevents minimap having inconsistent data with AoI tier |
+| Hysteresis bands (5cm exit vs 0cm enter) | Prevents oscillation when bey sits exactly at boundary |
+| Physics always 2D Matter.js regardless of renderer mode | No physics refactor needed for 3D mode; just visual mapping |
+| BitBeast overlay is screen-space CSS (not PixiJS) | GIF animation preserved; no canvas processing; works identically across all 3 renderer modes |
+| Nearest-8 opponent HUD reads from beyGhosts (Phase 27) | Consistent with AoI design; `spin_pct` provides SP bar data without full schema |
+
+---
+
+## Session 31 Additions (2026-05-24) — Semi-Autonomous Control System Research Docs
+
+### Added
+| Addition | Files | Content |
+|---|---|---|
+| phase-24 (stage 24) | research/phases/phase-22-semi-autonomous-control.md | Two-layer AI architecture; authority blend α formula; natural motion (orbit/momentum/death-spiral/stabilisation/rage-burst/rail); velocity steering model (momentum-preserving); 9-key + 4-source input abstraction; contextual I-key (stabilise vs jump); type-aware X (defense by archetype); inertia-arc dodge; decision system (5 decisions, probability matrix); gyroscope motion library (12 motions); collision tiers 0–3 with QTE; loss-of-control catalog; P0.1–P0.4 cross-reference; Phase 21 mechanic handler list |
+| phase-25 (stage 25) | research/phases/phase-23-battle-modes.md | Battle Royale (20-player, 5-phase shrinking zone, 60s intervals, drain 3/6/10/15 spin/s); arena authority config (globalMultiplier, curvatureMultiplier, featureOverrides); longer battle config (maxDurationSeconds); admin UI additions for BasicsTab + FeaturesTab |
+| phase-26 (stage 26) | research/phases/phase-24-engine-optimizations.md | PixiJS R1–R5 (cullable, ParticleContainer, RenderTexture, dirty-flag, LOD); Colyseus N1–N4 (prediction, AoI, dedup, schema narrowing); Matter.js S1–S2 (static sleep, narrow-phase filter); priority order |
+| Diagram updates | research/diagrams/ | diagram-input-abstraction.md (4-source pipeline + authority blend), diagram-simulation-arch.md (authority blend subgraph + 2.5D rotation note), diagram-arena-interaction.md (authority override table + safe zone), diagram-rotation-systems.md (death spiral tier + 2.5D rotation note) |
+
+### Key Design Decisions (FACT-cited from batches)
+| Decision | Fact basis |
+|---|---|
+| Petal count emergent — never hardcode `petalCount` | batch-011 §D PHYSICS-FACT |
+| Death spiral onset at spin<15% | batch-015 §D: Euler's Disk finite-time singularity Ω_P→∞ as ω→0 |
+| Nutation threshold at spin<40% | batch-015 §D (existing engine wobble model confirmed correct) |
+| Rubber CP spin steal ×1.4 vs non-rubber | batch-014 §I: gear coupling, opposite-spin v_rel additive |
+| EWD bearingFriction = 0.12 (SINGLE bearing, NOT 0.02) | batch-013 §A critical correction |
+| Momentum-preserving steering = centripetal perpendicular force | batch-015 §A: Newton 1st + angular momentum |
+| orbitStr = 0.0005 × mass × spinFrac × grip | batch-015 §A (Ω_P ∝ 1/ω) + batch-015 §C tribology µ |
+| Rubber tip: gripFactor=0.90, freeSpin=0.00 | batch-006 §1B; batch-014 §A material friction hierarchy |
+| Bearing (EDS/EWD/B:D) tip: freeSpin=0.50–0.80 | batch-006 §1B; batch-013 §A (EWD single bearing corrected) |
+| Coefficient of restitution: rubber=0.2–0.4, plastic=0.6–0.8, metal=0.7–0.9 | batch-015 §E rigid body collision |
+| Opposite-spin gear coupling: v_rel = ωA·rA + ωB·rB (additive) | batch-015 §F |
+
+### Remaining UNKNOWNs (flagged in phase-22-semi-autonomous-control.md §14)
+1. Named launch technique modifiers — no batch citation
+2. Exact tipZ values at airborne stages — Phase 02 does not specify
+3. Scraping formula at low spin — no documented formula
+4. Material wear formula — batch-009 documents 3-stage Evolution progression (FACT) but no game formula
+5. Heavy-hit stun durations (350ms/80ms) — design parameters, not from research
 
 ---
 

@@ -182,7 +182,8 @@ export function resolveTipStats(
  * incorporates spinStealFactor and spinStealResist from the universal stat table.
  */
 export function applyBearingFrictionToSteal(rawSteal: number, bearingFriction: number): number {
-  return rawSteal * bearingFriction; // B:D (0.02) → receives 2% of steal
+  // EWD (single bearing) = 0.12; B:D (ball bearings) = 0.02; normal tip = 1.0
+  return rawSteal * bearingFriction;
 }
 
 /**
@@ -670,7 +671,7 @@ export function getClashBlend(approachAngle: number): number {
  * Computes the effective spin steal amount incorporating all relevant factors:
  * - rawSteal: base steal amount from the contact point
  * - attackerSpinStealFactor: attacker's outgoing steal rate multiplier (default 1.0)
- * - defenderBearingFriction: part-level resistance (B:D = 0.02, normal = 1.0)
+ * - defenderBearingFriction: part-level resistance (EWD single-bearing = 0.12; B:D ball-bearings = 0.02; normal tip = 1.0)
  * - defenderSpinStealResist: stat-level incoming steal block (>1 = more resistance)
  * - clashType: counter_spin boosts steal, same_spin reduces it
  *

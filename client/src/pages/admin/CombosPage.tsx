@@ -98,7 +98,17 @@ export function CombosPage() {
   const [confirmDelete, setConfirmDelete] = useState<ComboDoc | null>(null);
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
+  const [comboEffectOptions, setComboEffectOptions] = useState<{ value: string; label: string }[]>([]);
   const invalidate = useGameDataStore(s => s.invalidate);
+
+  useEffect(() => {
+    getDocs(collection(db, COLLECTIONS.COMBO_EFFECTS)).then(snap => {
+      setComboEffectOptions(
+        snap.docs.map(d => ({ value: d.id, label: (d.data().name as string | undefined) ?? d.id }))
+          .sort((a, b) => a.label.localeCompare(b.label))
+      );
+    }).catch(() => {});
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -254,11 +264,17 @@ export function CombosPage() {
               </label>
             </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Effect ID <span style={{ color: C.faint, fontWeight: 400 }}>(optional — links to combo_effects collection)</span></span>
-              <input value={form.effectId} onChange={e => setForm(f => ({ ...f, effectId: e.target.value }))}
-                placeholder="e.g. quick-dash-l-effect" style={inputStyle} />
-            </label>
+            <div style={{ marginBottom: 14 }}>
+              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
+                Effect ID <span style={{ color: C.faint, fontWeight: 400 }}>(optional — links to combo_effects collection)</span>
+              </span>
+              <SearchableSelect
+                value={form.effectId}
+                onChange={v => setForm(f => ({ ...f, effectId: v }))}
+                options={[{ value: "", label: "— none —" }, ...comboEffectOptions]}
+                placeholder="Search combo effects…"
+              />
+            </div>
 
             <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, padding: 14, marginBottom: 14 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: C.muted, marginBottom: 12 }}>Combat Effect</div>

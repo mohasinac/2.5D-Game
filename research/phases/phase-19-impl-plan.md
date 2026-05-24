@@ -1,4 +1,4 @@
-[← Phase 16: Gap Analysis](phase-16-gap-analysis.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 20: Code Generation →](phase-20-codegen.md)
+﻿[← Phase 16: Gap Analysis](phase-16-gap-analysis.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 20: Code Generation →](phase-20-codegen.md)
 
 ---
 
@@ -704,6 +704,13 @@ Block M can be inserted anywhere after Block B (schema must exist first). Recomm
 **Physics flags + friendly fire**: + M.
 
 Source: phase-16-gap-analysis.md + user addendum (collision flags + trick-shot friendly fire)
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Historical planning document.** Implementation has since progressed significantly. Current authoritative plan: `research/EXECUTION-PROMPT.md`.
 
 ---
 

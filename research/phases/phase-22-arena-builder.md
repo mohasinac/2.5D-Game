@@ -19,6 +19,98 @@
 
 ---
 
+## Diagrams
+
+### Multi-Level Arena Cross-Section (Side View)
+
+```
+FLOOR 2 (Top)       [ 40cm circle ]
+                     │  elevator_shaft │
+                     ↓ (ArenaLink portal)
+FLOOR 1 (Mid)       [ 60cm square ]
+                     │   ramp_section  │
+                     ↓ (ArenaLink ramp)
+FLOOR 0 (Ground)    [ 100cm circle ]  ← base arena
+                    ════════════════════
+                          GROUND
+```
+
+### Loop Track (Top-Down View �� Camera Perspective)
+
+```
+         ╔════════���═╗     ← outer track wall
+         ║  ┌────┐  ║
+ENTRY →  ║  │    │  ║  ← banked ring (bey travels clockwise)
+    bey  ║  └────┘  ║
+enters ↘ ║          ║     Camera = top-down → loop floor visible
+         ╚══════════╝
+                    ↑
+                 EXIT (entry+180°)
+         
+         Bey: beyTiltAngle increases to bankingDeg while inside
+```
+
+### Arena Size Scale Reference
+
+```
+ ←─ 500cm ─────────────────────────────────────────────────→
+ ┌────────────────────────────────────────────────────────┐
+ │                                                        │ 500cm
+ │   ┌──────────────────────────────────────────────┐     │
+ │   │                                              │     │
+ │   │  Player viewport (100cm × 100cm max)         │     │
+ │   │   ┌─────────���──┐                             │     │
+ │   │   │            │  bey ●                     │     │
+ │   │   │  100cm     │                             │     │
+ │   │   │            │                             │     │
+ │   │   ���────────────┘                             │     │
+ │   │              100cm                           │     │
+ │   └──────────────────────────────────────────────┘     │
+ │                                                        │
+ └────────────────────────────────────────────────────────┘
+
+  ← 30cm →  Standard competitive arena
+  ←── 80cm ──→  Large single floor
+```
+
+### Minimap: Local 100cm Radar
+
+```
+┌─────────────────────┐
+│  [Top] [Side] [Persp]│  ← tabs
+├─────────────────────┤
+│                     │
+│       · ·           │  · = arena wall (partial arc)
+│     ·  .  ·         │  
+│    · · ○ · ·        │  ○ = player bey (always center)
+│     ·  .  ·         │  . = opponent bey dot
+│       · ·           │
+│                     │
+│     Floor 1 ↑       │  ← floor indicator for multi-level
+└─────────────────────┘
+100cm × 100cm window, lines + dots only, no textures
+```
+
+### Client State Culling
+
+```
+SERVER                    CLIENT
+┌───────────────┐         ┌─────────────────────┐
+│  500cm world  │         │  100cm viewport      │
+│               │         │                      │
+│  bey A (near) │ ───────▶│  bey A (synced)      │
+│  bey B (near) │ ───────▶│  bey B (synced)      │
+│  bey C (far)  │  ✗      │  (not sent)          │
+│  bey D (far)  │  ✗      │  (not sent)          │
+│               │         │                      │
+│  60cm cull    │         │  arena boundary      │
+│  radius       │ ───────▶│  (always sent)       │
+└───────────────┘         └─────────────────────┘
+   Full world                 Local tile only
+```
+
+---
+
 ## 0. Engine Constraints (Non-Negotiable)
 
 The physics engine is **2D Matter.js** (server) + **2.5D PixiJS rendering** (client). Multi-level arenas work within this:
@@ -415,19 +507,59 @@ Between each floor pair row in the floor stack visualization, add a collapsible 
 
 ---
 
-## 5. Minimap: Local 100cm View + Perspective Tab
+## 5. Client State Culling
 
-### 5.1 Constraint: No Whole-Arena Minimap
+> **Superseded by Phase 27.** This section describes the original binary culling design. Phase 27 formalises this into a three-tier Fog of War / Area of Interest (AoI) system. Use Phase 27 as the implementation specification. The constants below map directly: `CULL_RADIUS_CM = INNER_RADIUS_CM = 60cm` (Tier 2 boundary), `OUTER_RADIUS_CM = 100cm` (Tier 1 shadow boundary).
 
-The minimap (`client/src/components/game/Minimap.tsx`) must NOT render the full arena at tiny scale. A 500 cm arena would be a meaningless dot-cluster at minimap scale. Instead:
+### 5.1 Principle: Server Knows All, Client Sees Only Its Tile
 
-**The minimap always shows a 100 cm × 100 cm area centered on the player's own bey.**
+The server maintains the full world state. The client receives only what is relevant to its current viewport. This is both a performance optimization and a game mechanic (no long-range radar). See [Phase 27 — Tiered AoI](phase-27-tiered-aoi.md) for the full three-tier specification.
 
-This matches the player's maximum viewport — the minimap is a **local radar**, not a global overview. Other beys are shown as dots only if within 50 cm of the player.
+```
+SERVER:
+  Full world state (all beys, all features, all floors, 60 Hz)
+         ↓  Tier 2: filterBy INNER_RADIUS_CM (60cm), full schema, 60 Hz
+         ↓  Tier 1: beyGhosts broadcast, 20 Hz (shadow zone 60–100cm)
+         ↓  Tier 0: beyGhosts broadcast, 10 Hz (dot only, >100cm or floorDelta≥2)
+CLIENT:
+  Tier 2 (≤60cm, same floor)  — full Beyblade schema, full render
+  Tier 1 (60–100cm or floorDelta=1) — ghost schema, ghost sprite
+  Tier 0 (>100cm or floorDelta≥2)   — ghost schema, minimap dot only
+  + arena boundary / floor metadata (always sent at room join)
+```
 
-### 5.2 Fix TopView: Local 100cm ViewBox
+**Key constants** (`shared/constants/aoi.ts` — see Phase 27 § 2):
+- `INNER_RADIUS_CM = 60` — Tier 2 boundary (full sync)
+- `OUTER_RADIUS_CM = 100` — Tier 1 boundary (shadow / minimap radius)
+- Spectators bypass all culling (free camera requires full state everywhere)
 
-Current `TopView` sets `viewBox` to the full `widthCm × heightCm`. Change to:
+### 5.2 Colyseus Filter: Per-Client State Delivery
+
+Full Beyblade schema uses `filterBy` at `INNER_RADIUS_CM`. A separate `beyGhosts: MapSchema<BeyGhostState>` is broadcast to all clients (no filter) for the ghost/shadow tiers. See Phase 27 §§ 4–5 for the complete schema and filter callback implementation.
+
+### 5.3 Feature State Culling
+
+Features are static — geometry is sent at room join from Firestore ArenaConfig. Only per-tick dynamic feature state (turret health, switch on/off, wrecking ball position) is filtered by `OUTER_RADIUS_CM` proximity. For arenas >150cm, a spatial grid (cell size = OUTER_RADIUS_CM) provides O(1) feature proximity lookup. See Phase 27 § 9.
+
+---
+
+## 6. Minimap: Local 100cm Radar
+
+### 6.1 Minimap Design Constraints
+
+The minimap is a **local position radar**, not a global map:
+- Fixed display area: 100cm × 100cm centered on the player's bey
+- Renders as **lines and dots only** — no textures, no feature sprites
+- Arena boundary: thin line arc/rect showing where the wall is
+- Opponent beys: colored dots (within cull radius)
+- Player bey: center dot (always visible, always at center)
+- Floor transitions: Floor indicator label, not a visual stack
+
+The minimap shows identical information in both "2D Top" and "2.5D Perspective" modes — **no additional game information in the perspective view**. The perspective tab only changes the projection (foreshortening), not what's rendered.
+
+### 6.2 Fix TopView: Local 100cm ViewBox
+
+Current `TopView` sets `viewBox` to the full `widthCm × heightCm`. Change to local 100cm centered on player bey:
 
 ```typescript
 // In TopView component:
@@ -436,84 +568,66 @@ const selfBey = beyblades.get(selfId ?? "");
 const cx = selfBey ? cmFromPhys(selfBey.x, physCenterX) : 0;
 const cy = selfBey ? cmFromPhys(selfBey.y, physCenterY) : 0;
 
-// SVG viewBox centered on player bey
 const vbX = cx - VIEW_HALF_CM;
 const vbY = cy - VIEW_HALF_CM;
 const vbW = VIEW_HALF_CM * 2;
 const vbH = VIEW_HALF_CM * 2;
 ```
 
-- Arena boundary rendered as a partial arc/rect clipped to this 100cm window
-- Features (obstacles, turrets, pits, loops) rendered only if center within `VIEW_HALF_CM + 10 cm`
-- Player bey always at center (dot with yellow fill)
-- Other beys rendered only if within 50 cm of player
+**What is rendered:**
+- Arena boundary: clipped partial arc/polygon line (stroke only, no fill) where the wall intersects the view
+- Player bey: center dot, yellow, radius = 1.5cm in minimap space
+- Opponent beys: colored dots (blue = human, red = AI), radius = 1.5cm, only if within VIEW_HALF_CM
+- Floor label: `"Floor N"` text in corner (for multi-level arenas)
 
-When the player has no `selfId` (spectator), center on the arena center.
+**What is NOT rendered:**
+- Obstacles, turrets, pits, portals — no feature icons in minimap
+- Terrain textures — no arena theme/floor color
+- Any HUD elements from the main view
 
-### 5.3 New "Persp" Tab: 2.5D Perspective View
+### 6.3 "Persp" Tab: Same 100cm, Tilt Transform Applied
 
-Add a third tab `"persp"` showing the same 100 cm local area with the arena tilt transform applied.
-
-**New `PerspView` function in `Minimap.tsx`:**
+The Perspective tab renders the same local 100cm area but applies the three-stage tilt transform as an SVG matrix — giving the same foreshortened projection as the main game camera.
 
 ```typescript
-function PerspView({
-  arena, beyblades, selfId, sizeRem, myFloorIndex
-}: PerspViewProps) {
-  const tiltAngleDeg = (arena as any).tiltAngle ?? 0;
-  const tiltDirDeg = (arena as any).tiltDirection ?? 0;
-
-  // Same 100cm local viewBox as TopView (reuse same calculation)
-  // ...selfBey centering, VIEW_HALF_CM...
-
-  // Three-stage tilt transform (matches PixiRenderer.ts tilt stack):
-  // 1. rotate by tiltDirection
-  // 2. scaleX by cos(tiltAngle) — foreshortening
-  // 3. rotate by -tiltDirection
-  const tiltRad = tiltAngleDeg * Math.PI / 180;
-  const tiltDirRad = tiltDirDeg * Math.PI / 180;
-  const cosT = Math.cos(tiltRad);
-  const cd = Math.cos(tiltDirRad), sd = Math.sin(tiltDirRad);
-
-  // CSS matrix (a,b,c,d,e,f) for the compound transform:
-  // rotate(tiltDir) · scaleX(cosT) · rotate(-tiltDir)
-  const a = cd * cosT * cd + sd * sd;
-  const b = sd * cosT * cd - cd * sd;
-  const c = cd * cosT * sd - sd * cd;
-  const d = sd * cosT * sd + cd * cd;
-  const svgTransform = `matrix(${a},${b},${c},${d},0,0)`;
-
-  return (
-    <svg viewBox={`${vbX} ${vbY} ${vbW} ${vbH}`} width="100%" height={`${sizeRem}rem`}>
-      <g transform={svgTransform}>
-        {/* arena boundary, features, bey dots — same as TopView */}
-      </g>
-    </svg>
-  );
-}
+// Three-stage tilt: rotate(tiltDir) · scaleX(cos(tiltAngle)) · rotate(-tiltDir)
+const cosT = Math.cos(tiltAngleDeg * Math.PI / 180);
+const cd = Math.cos(tiltDirDeg * Math.PI / 180);
+const sd = Math.sin(tiltDirDeg * Math.PI / 180);
+const a = cd * cosT * cd + sd * sd;
+const b = sd * cosT * cd - cd * sd;
+const c = cd * cosT * sd - sd * cd;
+const d = sd * cosT * sd + cd * cd;
+const svgTransform = `matrix(${a},${b},${c},${d},0,0)`;
 ```
 
-Tab bar update in `Minimap.tsx`:
-```typescript
-const tabs = ["top", ...(hasFloors ? ["side"] : []), "persp"] as const;
+The Persp tab shows **the same lines and dots** as the Top tab, just foreshortened to match the camera angle. No additional information.
+
+```
+TOP view:             PERSP view (30° tilt):
+                      
+  ·  ·                 ·  ·
+· ○ · · ·           · ○ · · ·      ← arena boundary flattened
+  · ·                  · ·           by cos(tiltAngle)
+                      
+○ = player, · = wall, · · = opponents
 ```
 
-For multi-level arenas, the Persp tab shows the current floor (filtered by `myFloorIndex`). Beys on other floors are shown as dimmed dots.
-
-### 5.4 File
+### 6.4 File
 
 `client/src/components/game/Minimap.tsx`:
-- Fix `TopView` viewBox to local 100cm centered on self
-- Add `PerspView` function
-- Add `"persp"` to tab list
+- Fix `TopView` viewBox to local 100cm centered on player bey
+- Remove feature rendering from TopView (obstacles, pits, etc.)
+- Add `PerspView` function (same dots + lines, tilt transform applied)
+- Add `"persp"` tab to tab list
 
 ---
 
-## 6. Seed Examples
+## 7. Seed Examples
 
 Two new seed entries demonstrating multi-level Hot Wheels–style arenas:
 
-### 6.1 `hot-wheels-garage-starter` (FloorGroup)
+### 7.1 `hot-wheels-garage-starter` (FloorGroup)
 
 A 3-floor garage arena seeded in `arena_floor_groups`:
 
@@ -525,7 +639,7 @@ A 3-floor garage arena seeded in `arena_floor_groups`:
 
 ModularSections on each floor define the visual connectors. ArenaLinks wire the physics traversal.
 
-### 6.2 `loop-de-loop-arena` (Single floor)
+### 7.2 `loop-de-loop-arena` (Single floor)
 
 A single large (80cm) circle arena with 2 loop tracks at opposite ends:
 - Loop A: radius 12cm, entry from left, speed boost 1.8×, banking 25°
@@ -534,7 +648,7 @@ A single large (80cm) circle arena with 2 loop tracks at opposite ends:
 
 ---
 
-## 7. Integration Notes
+## 8. Integration Notes
 
 ### Backward Compatibility
 
@@ -549,3 +663,72 @@ A single large (80cm) circle arena with 2 loop tracks at opposite ends:
 - Loop tracks render as annular rings with a track texture on the arena floor
 - Elevator shafts render as vertical rectangles with animated chevrons
 - These are visual-only in the renderer — no physics bodies are created for modular sections
+
+---
+
+## 9. Admin Arena Viewer / Creator — Current State (verified 2026-05-24)
+
+All files live under `client/src/components/admin/arena-system/`.
+
+### 9.1 Arena System Creator
+
+`ArenaSystemEditor.tsx` — **full CRUD editor** (not just a preview). Props: `arenaSystem: ArenaSystem`, `onChange`, `onSave`, `isSaving`. Six tabs:
+
+| Tab | Contents |
+|-----|---------|
+| Overview | Name, shape, dimensions |
+| Elevation Map | Type (bowl / pyramid / ramp), tilt angle, tilt direction |
+| Wall Profile | `wallAngle` (bowl curvature), rim height |
+| Slope Physics | Friction, gravity multiplier, lateral force config |
+| Features | Feature list (obstacles, spin zones, etc.) |
+| Preview | Renders `<ArenaSystemPreview />` — see §9.2 |
+
+### 9.2 Admin Preview Views
+
+`ArenaSystemPreview.tsx` wraps four static views in tabs. None of these are live-physics renders — they are frozen snapshots of the arena geometry.
+
+| Component | Renderer | What it shows | Limitation |
+|-----------|----------|---------------|-----------|
+| `ArenaSystemIsometricView` | PixiJS | 9×9 elevation dot-mesh using true isometric formula `screenX = (x − y·0.5)·s`, `screenY = (x + y)·0.4·s`; bowl / pyramid / ramp elevation by type | Static; no beyblades; no live physics |
+| `ArenaSystemTopDownView` | Canvas | 12-segment polar heatmap (red = high, blue = low, green = neutral) | No tilt; purely elevation color |
+| `ArenaSystemOrbitalView` | Canvas | Top-down circle with gravity arrow showing tiltDirection + tiltAngle strength | No beyblades |
+| `ArenaSystemSideView` | SVG / Canvas | 2D cross-section curve: floor elevation vs. distance from center; shows bowl / pyramid / ramp curves | No live beyblades |
+
+`ArenaSystemStatsPanel.tsx` — read-only panel displaying computed values (radius, wall angle, effective gravity, etc.).
+
+### 9.3 The 2.5D Viewer Gap
+
+**There is no standalone live 2.5D arena viewer in the admin tools.**
+
+The real 2.5D renderer — the three-container tilt chain (`arenaTiltOuter → arenaTiltScale → arenaTiltInner`, `scaleX = cos(tiltAngle)`) — exists only inside `client/src/game/renderer/PixiRenderer.ts` and runs exclusively during active matches.
+
+The isometric admin preview (`ArenaSystemIsometricView`) uses a different, simpler projection formula and shows geometry only — no physics, no beys, no real-time tilt updates.
+
+**To close this gap** (if desired): embed a stripped-down `PixiRenderer` instance in `ArenaSystemPreview` that uses the real tilt-chain containers with mock bey positions and no server connection. Estimated effort: 1–2 days. Not required for gameplay — admin-only QoL feature.
+
+### 9.4 Isometric vs. Tilt-Chain: Formula Difference
+
+| System | Formula | Used where |
+|--------|---------|-----------|
+| Admin isometric preview | `screenX = (x − y·0.5)·scale + z·0.3` `screenY = (x + y)·0.4·scale − z·0.4` | `ArenaSystemIsometricView` only |
+| Live 2.5D game renderer | `arenaTiltOuter.rotation = tiltDir` `arenaTiltScale.scale.x = cos(tiltAngle)` `arenaTiltInner.rotation = −tiltDir` | `PixiRenderer.ts` in-match only |
+
+These two are **not equivalent** — the live renderer is physics-backed (server pushes `tiltAngle` at 60 Hz); the admin preview is a static formula over a fixed elevation grid.
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| `ModularSectionConfig` / `LoopTrackConfig` / `ElevationZoneConfig` types | ❌ Missing | Not in `arenaConfigNew.ts` |
+| `modularSections`, `loopTracks`, `elevationZones` on `ArenaConfig` | ❌ Missing | Fields absent |
+| `beyFloorIndex` on Beyblade schema | ❌ Missing | Not in `GameState.ts` |
+| Elevator portal physics | ❌ Missing | Not implemented |
+| Loop track bank tilt physics | ❌ Missing | Not implemented |
+| Arena Sections / Loop Tracks / Elevation Zones admin tabs | ❌ Missing | 14 arena tabs exist but none for these |
+| `ArenaEditorCanvas.tsx` interactive canvas | ❌ Missing | Admin uses static isometric/orbital/side/top previews only |
+| Minimap multi-tab (Top/Side/Perspective) | ❓ Verify | `Minimap.tsx` exists — check if 3-tab Phase 22 design matches |
+| Client state culling (100cm viewport cap) | ❌ Missing | No viewport culling in renderer |
+| `viewportCapCm` field on `ArenaConfig` | ❌ Missing | Not present |
+| `ArenaSystemIsometricView` / `OrbitalView` / `SideView` / `TopDownView` | ✅ Done | Admin preview components exist and updated |

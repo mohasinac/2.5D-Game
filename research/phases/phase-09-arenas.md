@@ -1,4 +1,4 @@
-[← Phase 08: Gimmicks](phase-08-gimmicks.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 10: Arena Implementation →](phase-10-arena-implementation.md)
+﻿[← Phase 08: Gimmicks](phase-08-gimmicks.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 10: Arena Implementation →](phase-10-arena-implementation.md)
 
 ---
 
@@ -1570,6 +1570,51 @@ autoTilt: false
 ---
 
 *End of Appendix 9Z*
+
+---
+
+## Amendment — Session 30: Multi-Level Modular Arena Stadium Types
+
+> See **[Phase 22 — Modular Arena Builder](phase-22-arena-builder.md)** for full implementation spec.
+
+### New Virtual Stadium Types (Phase 22)
+
+These are Hot Wheels Ultimate Garage–style arena configurations that extend the existing `ArenaFloorGroup` system with visual scaffolding and loop tracks. They are not official Beyblade products — they are original arena designs enabled by the multi-level builder.
+
+| Stadium ID | Name | Floors | Size per floor | Key Features | Notes |
+|---|---|---|---|---|---|
+| `hot-wheels-garage-starter` | Hot Wheels Starter Garage | 3 | 100/60/40 cm | Ground: ramp links; Mid: loop track (r=15cm), turrets; Top: spin zone, gravity hole | Reference arena for multi-level editing; seed in `arena_floor_groups` |
+| `loop-de-loop-arena` | Loop-de-Loop Arena | 1 | 80cm circle | 2 loop tracks (r=12/8cm), central gravity hole | Single-floor demo of loop track mechanic |
+| `tower-ascent` | Tower Ascent | 5 | 40–100cm | Elevator portals between each floor; modular section scaffolding visual | Max vertical progression demo |
+| `spiral-ramp-coliseum` | Spiral Ramp Coliseum | 3 | 80/60/40cm | Ramp ArenaLinks; scaffold_frame visual wrapping all floors | Classic multi-floor ramp arena |
+
+### Anime-sourced Multi-Level Reference
+
+| Stadium ID | Source | Notes |
+|---|---|---|
+| `anime-battle-tower` | V-Force ep21–27 | Chain of 5 distinct floors — maps directly to `ArenaFloorGroup` with 5 floors + 4 ArenaLinks |
+| `anime-roller-coaster` | ep38 | Rail network with loops and banked turns — maps to `loopTracks[]` + `gearRails[]` + `speedPaths[]` |
+| `anime-ibc-arena-complex` | Burst S2 ep44–49 | Multi-stadium parallel layout — maps to multiple `ArenaFloorGroup` entries with same `floorGroupId` |
+
+### Multi-Level Arena Size Convention
+
+| Use Case | Recommended Size |
+|---|---|
+| Standard competitive (single floor) | 30–40 cm |
+| Large single floor | 50–80 cm |
+| Multi-level ground floor | 80–120 cm |
+| Multi-level upper floors | 40–80 cm per floor |
+| Hot Wheels garage (full stack) | Ground: 100cm; each upper floor: 60/80% of floor below |
+| Absolute maximum | 500 cm per floor dimension |
+
+Player viewport cap: **100cm × 100cm maximum visible area** — larger arenas require the minimap for navigation.
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — Arena system fully implemented. 14+ feature types in `ArenaFeatureProcessor.ts`. Shape variants, bowl profiles (8), theme defs (12), tilt modes (fixed/oscillate/weight), spin zones, gravity wells, bumps, portals, turrets, water bodies, switches all functional. Admin configurator has 14+ tabs. Phase 22 multi-level/modular features not yet added.
 
 ---
 

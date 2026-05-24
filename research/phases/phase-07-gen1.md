@@ -1,4 +1,4 @@
-[← Phase 06: Mechanics](phase-06-mechanics.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 07b: Generations 2-4 →](phase-07-gen234.md)
+﻿[← Phase 06: Mechanics](phase-06-mechanics.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 07b: Generations 2-4 →](phase-07-gen234.md)
 
 ---
 
@@ -482,6 +482,13 @@ Every Dranzer blade base has a switchable tip: S→Spiral Change, F→Flame Chan
 ---
 
 *End of Phase 07 Gen1 Appendix (Narrative)*
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — Reference data document. Gen1 (Plastic era) beyblade catalog and physics constants used by `npm run seed:beyblades`. Data seeded into `beyblade_stats` collection.
 
 ---
 

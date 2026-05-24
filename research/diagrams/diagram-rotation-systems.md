@@ -75,14 +75,25 @@ flowchart TD
   CAM --> CAM_ZOOM
 ```
 
-## Spin Stability Thresholds
+## Spin Stability Thresholds (Phase 22 — updated)
 
-| Stability | Behavior |
-|-----------|---------|
-| ≥ 100% | Smooth orbit, max grip |
-| 40%–100% | Normal spin, no wobble |
-| < 40% | Nutation wobble begins (seeded PRNG forces) |
-| 0% | Spin-out elimination |
+| Stability | Behavior | Engine state |
+|-----------|---------|--------------|
+| ≥ 100% | Smooth orbit, max grip | α normal; orbitStr maximum |
+| 40%–100% | Normal spin, no wobble | Normal orbit + decision system active |
+| < 40% | Nutation wobble + stabilisation centring | PRNG wobble forces ON; stabiliseSelf centring force ON (Phase 22 §3.5) |
+| < 15% | Death spiral — orbit collapses inward rapidly | Death spiral force: toward centre × 0.001×mass×(0.15−frac)×10 (Phase 22 §3.4; batch-015 §D) |
+| 0% | Spin-out elimination | Removed from physics |
+
+## 2.5D Rotation Note (Phase 22)
+
+In 2.5D mode, `beyblade.rotation` is driven by `advanceSpinRotation()`:
+```typescript
+beyblade.rotation      += angDir * spinFrac * 6 * dt;    // rad/s scaled by spin fraction
+beyblade.angularVelocity = angDir * spinFrac * 15;
+setAngularVelocity(beyblade.id, 0);                      // zero Matter.js body angle every tick
+```
+Only `x, y` come from Matter.js in 2.5D. `body.angle` is NOT used for visual rotation.
 
 ## Counter-Spin Clash Multiplier
 

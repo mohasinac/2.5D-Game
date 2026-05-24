@@ -105,6 +105,8 @@ export class BeybladeGameRenderer {
   private prevSpinDirections: Map<string, string> = new Map();
   private prevTipStages: Map<string, number> = new Map();
   private prevWearLevels: Map<string, number> = new Map();
+  // R4: skip shape redraw when spin% bucket hasn't changed (buckets: full/half/quarter/low/critical)
+  private _lastSpins: Map<string, number> = new Map();
   private splitBodySprites: Map<string, PIXI.Graphics> = new Map(); // 6.16 partner half
 
   // 6.13 — DetachedBody sprites (projectile / mini_bey / fragment)
@@ -214,6 +216,11 @@ export class BeybladeGameRenderer {
     this.arenaTiltInner.addChild(this.detachedBodyLayer);
     this.arenaTiltInner.addChild(this.particleLayer);
     this.worldRoot.addChild(this.arenaTiltOuter);
+
+    // R1: frustum culling — PixiJS skips off-screen containers entirely.
+    this.beybladeLayer.cullable = true;
+    this.featureLayer.cullable   = true;
+    this.particleLayer.cullable  = true;
 
     this.app.stage.addChild(this.worldRoot);
     this.app.stage.addChild(this.hudLayer); // HUD stays in screen space
@@ -619,6 +626,7 @@ export class BeybladeGameRenderer {
         this.prevSpinDirections.delete(id);
         this.prevTipStages.delete(id);
         this.prevWearLevels.delete(id);
+        this._lastSpins.delete(id);
         this.flashTimers.delete(id);
         // Remove trail ghost graphics from layer
         const trailG = this.dodgeTrailGraphics.get(id);
@@ -844,15 +852,23 @@ export class BeybladeGameRenderer {
     // Spin rotation (visual — uses interpolated angle for smooth motion)
     sprite.rotation = interpAngle;
 
-    // Redraw shape when tip evolution stage or wear level changes
+    // Redraw shape when tip evolution stage, wear level, or spin bucket changes.
+    // R4: spin bucket (0–4) prevents per-frame redraws driven purely by continuous spin decay.
     {
-      const tipStage = beyblade.tipEvolutionStage ?? 0;
-      const wearPct  = beyblade.materialWearLevel  ?? 100;
-      if (this.prevTipStages.get(id) !== tipStage || this.prevWearLevels.get(id) !== wearPct) {
+      const tipStage  = beyblade.tipEvolutionStage ?? 0;
+      const wearPct   = beyblade.materialWearLevel  ?? 100;
+      const spinFrac  = beyblade.maxSpin > 0 ? beyblade.spin / beyblade.maxSpin : 0;
+      const spinBucket = spinFrac > 0.75 ? 4 : spinFrac > 0.40 ? 3 : spinFrac > 0.15 ? 2 : spinFrac > 0 ? 1 : 0;
+      if (
+        this.prevTipStages.get(id) !== tipStage ||
+        this.prevWearLevels.get(id) !== wearPct  ||
+        this._lastSpins.get(id)    !== spinBucket
+      ) {
         const typeColor = TYPE_COLORS[beyblade.type] ?? 0xffffff;
         this.drawBeybladeShape(sprite, typeColor, beyblade.actualSize || 48, tipStage, wearPct);
         this.prevTipStages.set(id, tipStage);
         this.prevWearLevels.set(id, wearPct);
+        this._lastSpins.set(id, spinBucket);
       }
     }
 

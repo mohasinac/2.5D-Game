@@ -123,6 +123,34 @@ flowchart TD
 | Arena links (corridors) | types defined | partial physics | Partial |
 | BeyLinks (multi-bey) | BeyLinkConfigsPage ✅ | physics depth via PartPhysics | Partial |
 | Floor hazard zones | ✅ | N/A | Complete |
+| Safe zone boundary | Spin drain outside zone per tick | safeZonePhase/Radius/Timer synced | Phase 23 |
+
+## Arena Authority Configuration (Phase 22–23)
+
+How `playerAuthorityConfig` (Phase 23 §1.2) modifies the authority blend scalar α:
+
+| playerAuthorityConfig field | Effect on α | Designed default |
+|---|---|---|
+| `globalMultiplier` | α_raw × mult (0.5–2.0) | 1.0 |
+| `featureOverrides.gravityWell` | ×0.30 while within radius+20px | 0.30 |
+| `featureOverrides.railTrack` | ×1.80 (anime rail-riding) | 1.80 |
+| `featureOverrides.spinZone` | ×0.70 (chaotic zone) | 0.70 |
+| `featureOverrides.pit` | ×0.50 (precarious near pit) | 0.50 |
+| `featureOverrides.bump` | ×1.10 brief spike after bounce | 1.10 |
+| `featureOverrides.obstacle` | ×0.80 near obstacle | 0.80 |
+| `curvatureMultiplier` | ×(1−cm×(1−dist/40)) near steep walls | 0.0 |
+
+## Safe Zone (Battle Royale — Phase 23)
+
+| ArenaState field | Purpose | Colyseus type |
+|---|---|---|
+| `safeZoneRadius` | Current safe zone radius (px); 0 = disabled | float32 |
+| `safeZoneX / safeZoneY` | Zone centre (usually arena centre) | float32 |
+| `safeZoneTimer` | Seconds until next shrink | float32 |
+| `safeZonePhase` | Which shrink phase (0–4) | uint8 |
+
+Beys outside the zone take spin drain per tick. Phase 1=3/s, 2=6/s, 3=10/s, 4=15/s.
+Client renders pulsing ring at `safeZoneRadius` when `safeZonePhase > 0`.
 
 ---
 

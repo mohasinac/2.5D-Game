@@ -1,4 +1,4 @@
-[← Phase 01: Terminology](phase-01-terminology.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 03: Special Move -> Bey Map →](phase-03-specialmove-bey-map.md)
+﻿[← Phase 01: Terminology](phase-01-terminology.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 03: Special Move -> Bey Map →](phase-03-specialmove-bey-map.md)
 
 ---
 
@@ -1033,6 +1033,13 @@ All 39 files in `linka/special-moves/` read and incorporated:
 | `shield_bey` | Full invuln + 1-hit absorb + AoE retaliation | `target.invulnerable = true` |
 | `turbo_bey` | Speed + collision damage surge | `_turboSpeedMult/_turboCollisionMult` |
 | `cannon_bey` | Catapult toward furthest opponent at 3000 force | `applyKnockback` max force |
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — Special move 5-phase state machine (idle->windup->executing->bleed->cooldown) implemented. Rooms load from Firestore `special_moves` (SpecialMoveConfig steps[] format). `src/constants/specialMoves.ts` does not exist (old schema removed). Admin step editor: verify SpecialMoveStep[] authoring surface exists.
 
 ---
 

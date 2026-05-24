@@ -770,4 +770,21 @@ The three-pillar system is additive. All existing fields remain. New fields (`st
 
 ---
 
+## Implementation Status (audit 2026-05-24)
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| `geometry_defs` collection in COLLECTIONS | ✅ Done | `firebase.ts` line 67 |
+| `stat_defs` collection in COLLECTIONS | ✅ Done | `firebase.ts` line 68 |
+| `mechanic_defs` + `gimmick_defs` in COLLECTIONS | ✅ Done | `firebase.ts` lines 65–66 |
+| `/admin/geometry-defs` `GeometryDefsPage.tsx` | ✅ Done | Admin page exists |
+| `/admin/stat-defs` `StatDefsPage.tsx` | ✅ Done | Admin page exists |
+| `/admin/mechanic-defs` + `/admin/gimmick-defs` | ✅ Done | Admin pages exist |
+| MechanicRegistry 31 handlers | ✅ Done | `server/physics/MechanicRegistry.ts` lines 48–79 |
+| Phase 24 mechanic stubs (`authorityBlend`, `steeringForce`, `beyDecision`, `naturalMotion`) | ❌ Missing | Need 4 stub files + MechanicRegistry imports |
+| `geometry_defs` type file `geometryDef.ts` | ❓ Verify | Admin page exists but type content needs checking vs Phase 21 spec |
+| `stat_defs` type file `statDef.ts` | ❓ Verify | Admin page exists but type content needs checking |
+
+---
+
 [← Phase 20: Code Generation](phase-20-codegen.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md)

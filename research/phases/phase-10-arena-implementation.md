@@ -1,4 +1,4 @@
-[← Phase 09: Arenas](phase-09-arenas.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 11: Architecture →](phase-11-architecture.md)
+﻿[← Phase 09: Arenas](phase-09-arenas.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 11: Architecture →](phase-11-architecture.md)
 
 ---
 
@@ -1210,6 +1210,133 @@ The seed script must:
 | New ArenaFeatureProcessor handlers | 5 (processGearRails, processScoringZones, processTornadoRidge, processTiltMechanic, processTriggerZones) |
 
 Source: `research/phases/phase-09-arenas.md`
+
+---
+
+## Amendment — Session 30: Phase 22 New Type Schemas
+
+> See **[Phase 22 — Modular Arena Builder](phase-22-arena-builder.md)** for full spec.
+
+### New interfaces for `shared/types/arenaConfigNew.ts`
+
+```typescript
+// ===== MODULAR SECTIONS (visual scaffolding, no physics) =====
+
+export type ModularSectionType =
+  | "straight_tube"   // horizontal connector
+  | "curved_tube"     // 90° curved connector
+  | "loop_tube"       // visual circular loop (linked to SpeedPath)
+  | "elevator_shaft"  // vertical shaft (linked to elevator portal)
+  | "ramp_section"    // angled slope (linked to ramp ArenaLink)
+  | "scaffold_frame"  // decorative structural frame
+  | "landing_pad";    // flat platform at floor entry/exit
+
+export interface ModularSectionConfig {
+  id: string;
+  type: ModularSectionType;
+  x_cm: number;
+  y_cm: number;
+  rotation?: number;           // degrees
+  scale?: number;              // uniform scale (default 1.0)
+  linkedArenaLinkId?: string;  // ties to ArenaLink for mechanics
+  linkedSpeedPathId?: string;  // for loop_tube → underlying SpeedPath
+  color?: string;
+  textureId?: string;
+}
+
+// ===== LOOP TRACKS =====
+
+export interface LoopTrackConfig {
+  id: string;
+  x_cm: number;
+  y_cm: number;
+  radius_cm: number;           // loop circle radius (to track centerline)
+  trackWidth_cm?: number;      // track width (default 4 cm)
+  entryAngleDeg: number;       // entry angle 0=+X, 90=+Y
+  exitAngleDeg?: number;       // exit angle (default entry + 180°)
+  speedBoost?: number;         // velocity multiplier at entry (default 1.5)
+  bankingDeg?: number;         // max beyTiltAngle while in loop (default 30°)
+  mechanicRefs?: MechanicInstance[];  // Pillar 1 behavior overrides
+  geometry?: GeometryRef;             // Pillar 2 shape override
+  controlledBySwitchId?: string;
+}
+
+// ===== ARENA FEATURE GROUPS (selection/grouping) =====
+
+export interface ArenaFeatureGroupInstance {
+  id: string;
+  name: string;
+  memberRefs: Array<{
+    featureType: string;   // "obstacle" | "turret" | "spinZone" etc.
+    featureId: string;     // matches the feature's .id field
+  }>;
+  presetId?: string;       // template this was loaded from
+}
+
+export interface ArenaFeatureGroupTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  entries: Array<{
+    featureType: string;
+    config: Record<string, unknown>;
+    offsetX_cm: number;
+    offsetY_cm: number;
+  }>;
+  tags?: string[];
+  createdBy?: string;
+  createdAt?: string;
+}
+```
+
+### New `ArenaConfig` fields (Phase 22)
+
+```typescript
+// After existing loopTracks/modularSections:
+modularSections?: ModularSectionConfig[];
+loopTracks?: LoopTrackConfig[];
+featureGroups?: ArenaFeatureGroupInstance[];
+```
+
+### New `PortalConfig` field (Phase 22)
+
+```typescript
+// Existing PortalConfig gains:
+subtype?: "standard" | "elevator";
+// "elevator" → client triggers vertical travel animation on floor transition
+```
+
+### New Size Constants (Phase 22)
+
+```typescript
+export const MAX_ARENA_DIMENSION_CM = 500;
+export const DEFAULT_ARENA_DIMENSION_CM = 30;
+export const PLAYER_VIEWPORT_MAX_CM = 100;
+```
+
+### New `ArenaFeatureProcessor` Handlers (Phase 22)
+
+| Handler | File | Notes |
+|---------|------|-------|
+| `processElevationZones(dt)` | `ArenaFeatureProcessor.ts` | Completes the existing stub; applies `spinBoostOnPlatform` per-tick + `edgeDropForce` on exit |
+| `processLoopTracks(dt)` | `ArenaFeatureProcessor.ts` | Centripetal force + `beyTiltAngle` banking; NO wall-climbing |
+
+### Updated Totals (Phase 10 + 22 combined)
+
+| Category | Count |
+|----------|-------|
+| New TypeScript interfaces | +4 (ModularSectionConfig, LoopTrackConfig, ArenaFeatureGroupInstance, ArenaFeatureGroupTemplate) |
+| New ArenaConfig fields | +3 (modularSections, loopTracks, featureGroups) |
+| New ArenaFeatureProcessor handlers | +2 (processElevationZones, processLoopTracks) |
+| New size constants | +3 (MAX_, DEFAULT_, VIEWPORT_MAX_) |
+| New Colyseus ArenaState field | +1 (loopTrackCount) |
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — All arena feature implementations match this spec. Server-side arena rotation, tilt, auto-features functional. `ArenaPhysicsBridge` interface separates feature logic from physics engine.
 
 ---
 

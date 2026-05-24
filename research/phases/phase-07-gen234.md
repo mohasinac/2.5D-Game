@@ -1,4 +1,4 @@
-[← Phase 07a: Generation 1](phase-07-gen1.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 08: Gimmicks →](phase-08-gimmicks.md)
+﻿[← Phase 07a: Generation 1](phase-07-gen1.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 08: Gimmicks →](phase-08-gimmicks.md)
 
 ---
 
@@ -784,6 +784,13 @@ Covering remaining God-layer files plus Cho-Z era's Kaiser Kerbeus (burst era la
 ---
 
 *End of Phase 07 Gen2/3/4 Appendix (Narrative)*
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — Reference data document. MFB/Burst/BX generation catalogs used by seed scripts. Gen-specific mechanics (EG clutch, Magnacore, Gear Bit rack-and-pinion) documented as gimmick configs in `gimmick_defs`.
 
 ---
 

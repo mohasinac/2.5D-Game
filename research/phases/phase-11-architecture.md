@@ -1,4 +1,4 @@
-[← Phase 10: Arena Implementation](phase-10-arena-implementation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 12: Seed Plan →](phase-12-seed-plan.md)
+﻿[← Phase 10: Arena Implementation](phase-10-arena-implementation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 12: Seed Plan →](phase-12-seed-plan.md)
 
 ---
 
@@ -438,6 +438,13 @@ Mechanic handlers call adapter methods, not physics library methods directly. Th
 | `seed-arena-systems.ts` | `arena_systems` | existing | done |
 | `seed-2d-parts.ts` | `beyblade_parts` | existing | done |
 | `seed-bey-systems.ts` | `beyblade_systems` | existing | done |
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — Shared architecture implemented as described. `server/shared/` contains types, physics utils, utils (bitmask, comboSystem, hashString, prng), constants. Colyseus schema sync at 60Hz. uint16 bitmask input. Seeded PRNG everywhere. 1cm = 24px coordinate system in use.
 
 ---
 

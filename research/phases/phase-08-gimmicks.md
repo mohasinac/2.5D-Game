@@ -1,4 +1,4 @@
-[← Phase 07b: Generations 2-4](phase-07-gen234.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 09: Arenas →](phase-09-arenas.md)
+﻿[← Phase 07b: Generations 2-4](phase-07-gen234.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 09: Arenas →](phase-09-arenas.md)
 
 ---
 
@@ -903,6 +903,13 @@ Add to `GIMMICK_IDS` array (after `"orbit_movement"`):
 Total: 27 gimmick_defs.
 
 Source files: `research/phases/phase-06-mechanics.md`, `research/phases/phase-07-gen234.md`, `research/phases/phase-07-gen1.md`
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — 27 gimmick recipes seeded in `gimmick_defs`. `gimmickExpander.ts` expands at match start. Admin `/admin/gimmick-defs` page exists. Phase 24 `naturalMotion` gimmick recipe not yet added (pending L1.4 stubs).
 
 ---
 

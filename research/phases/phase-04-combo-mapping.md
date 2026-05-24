@@ -1,4 +1,4 @@
-[← Phase 03: Special Move -> Bey Map](phase-03-specialmove-bey-map.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 05: Parts →](phase-05-parts.md)
+﻿[← Phase 03: Special Move -> Bey Map](phase-03-specialmove-bey-map.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 05: Parts →](phase-05-parts.md)
 
 ---
 
@@ -414,6 +414,13 @@ Bey IS the weapon — turret gives the bey a buff that changes its collision/mov
 - `shield_bey` — sets `target.invulnerable = true`, `_shieldBeyHp = 1` for 1-hit absorb
 - `turbo_bey` — `_turboSpeedMult/_turboCollisionMult` boost for duration
 - `cannon_bey` — `applyKnockback` toward furthest opponent at 3000 force units
+
+
+---
+
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — Combo detection via `detectCombo()` (3-key sliding window, cooldowns, type restrictions, power check). 8 combos seeded. P0.2 partial: `effect` tag works at runtime; `ComboEffectDef` effectId admin picker still pending.
 
 ---
 

@@ -28,12 +28,19 @@ flowchart TD
     SHARED_TICK[Shared Tick Logic<br/>SeriesManager, InputHandler,<br/>ComboSystem, SpecialMoveSystem<br/>GimmickExpander, TournamentScheduler]
   end
 
+  subgraph "Authority Blend Layer (Phase 22) — per tick, per bey"
+    NAT_MOT["NaturalMotion.ts\ncomputeNaturalForce\norbit + momentum + decision bias\ndeath spiral + stabilisation + rage burst\nrail adhesion"]
+    COMP_AUTH["computeAuthority\nspin/momentum penalties\nhold/SPACE/clash boosts\narena authority multiplier\nlerpSmooth 0.08"]
+    APPLY_BM["applyBlendedMovement\nfinalForce = player x alpha + natural x 1-alpha"]
+    STEER_F["applySteeringForce\ncentripetal perpendicular\nmomentum-preserving turn\nspin cost for sharp turns"]
+  end
+
   subgraph "2D Adapter ✅"
     A2D[PhysicsEngine.ts<br/>Matter.js circle bodies<br/>SAT collision<br/>contact point angle resolution<br/>wall segment polygon<br/>arena feature forces]
   end
 
   subgraph "2.5D Adapter ✅ — game's 3D layer"
-    A25D[PartPhysics.ts + PartSystemManager.ts<br/>Shape makers: Fourier profiles + arc-segment CPs<br/>Perspective warps: tilt stack (outer/scale/inner)<br/>Z-layer: beyTiltAngle + effectiveGravity<br/>ClimbingPhysics: wall/ceiling adhesion<br/>tip eccentricity (tipOffsetX/Y)<br/>subPartSpins MapSchema<br/>DetachedBodySchema lifecycle<br/>MaterialBand.wearSchedule → computeWearLevel → bey.materialWearLevel<br/>SystemContactPoint.weightFactor → getCpWeightShare → computeCpMomentOfInertia<br/>TipPart.evolutionStages → tickEvolutionDriver → bey.tipEvolutionStage]
+    A25D[PartPhysics.ts + PartSystemManager.ts<br/>Shape makers: Fourier profiles + arc-segment CPs<br/>Perspective warps: tilt stack (outer/scale/inner)<br/>Z-layer: beyTiltAngle + effectiveGravity<br/>ClimbingPhysics: wall/ceiling adhesion<br/>tip eccentricity (tipOffsetX/Y)<br/>subPartSpins MapSchema<br/>DetachedBodySchema lifecycle<br/>MaterialBand.wearSchedule → computeWearLevel → bey.materialWearLevel<br/>SystemContactPoint.weightFactor → getCpWeightShare → computeCpMomentOfInertia<br/>TipPart.evolutionStages → tickEvolutionDriver → bey.tipEvolutionStage<br/>advanceSpinRotation: bey.rotation = angDir × spinFrac × 6 × dt NOT Matter.js body.angle]
   end
 
   R --> M
@@ -44,10 +51,15 @@ flowchart TD
   SM --> SHARED_TICK
   GIMMICK --> SHARED_TICK
   MR --> SHARED_TICK
+  SHARED_TICK --> NAT_MOT
+  SHARED_TICK --> COMP_AUTH
+  NAT_MOT --> APPLY_BM
+  COMP_AUTH --> APPLY_BM
+  APPLY_BM --> STEER_F
+  STEER_F --> A2D
+  STEER_F --> A25D
   SHARED_PARAMS --> A2D
   SHARED_PARAMS --> A25D
-  SHARED_TICK --> A2D
-  SHARED_TICK --> A25D
 
   subgraph "2D Rooms"
     R2D_BATTLE[BattleRoom — max 12<br/>PVP 2–4 + spectators]

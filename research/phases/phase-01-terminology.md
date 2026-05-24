@@ -566,4 +566,10 @@ Thirty-one disambiguation entries documented. Four are CRITICAL risk (will cause
 
 ---
 
+## Implementation Status (audit 2026-05-24)
+
+> **Complete** — This phase is a reference document; the engine implements all described terminology. Type system, collision physics, attack mechanics, archetype definitions, and spin mechanics are all functional in the codebase. Terminology is used consistently across `GameState.ts`, `PhysicsEngine.ts`, and `PartPhysics.ts`.
+
+---
+
 [← Phase 00: Engine Audit](phase-00-engine-audit.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 02: Special Moves →](phase-02-special-moves.md)
