@@ -178,6 +178,12 @@ export interface ServerBeyblade {
   // movement/action inputs are ignored server-side.
   controlLockedUntilMs?: number;
   controlLockSource?: "special" | "combo" | "" | string;
+  // Material wear level (0–100). Synced from server; used for visual tinting.
+  materialWearLevel?: number;
+  // Evolution driver stage index (0 = default; 1+ = evolved). Colyseus-synced at 60 Hz.
+  tipEvolutionStage?: number;
+  // Match-elapsed ms since first tick (monotonic, never resets). Used to compute wear level client-side.
+  tipEvolutionTimer?: number;
   // Optional special move id (empty string = none).
   specialMove?: string;
   // Optional combos attached to this beyblade (max 3 ids matching COMBO_REGISTRY).

@@ -1,6 +1,10 @@
-﻿# Diagram: Simulation Architecture — Shared Layer + Adapters
+[← Sequence Launch](diagram-sequence-launch.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Tilt Angle →](diagram-tilt-angle.md)
 
-> **Stage 0C Diagram 5** — Multi-engine simulation support (Rule 2).
+---
+
+# Diagram: Simulation Architecture — Shared Layer + Adapters
+
+> **Stage 0C Diagram 5** — Two-engine simulation (2D + 2.5D). The 2.5D engine is the game's depth/3D layer — it handles perspective warps, shape makers, z-layer physics, and tilt projection. No separate 3D physics library is used or planned.
 
 ```mermaid
 flowchart TD
@@ -28,12 +32,8 @@ flowchart TD
     A2D[PhysicsEngine.ts<br/>Matter.js circle bodies<br/>SAT collision<br/>contact point angle resolution<br/>wall segment polygon<br/>arena feature forces]
   end
 
-  subgraph "2.5D Adapter ✅"
-    A25D[PartPhysics.ts + PartSystemManager.ts<br/>tip eccentricity (tipOffsetX/Y)<br/>subPartSpins MapSchema<br/>ClimbingPhysics (wall/ceiling)<br/>beyTiltAngle + effectiveGravity<br/>arc-segment contact points<br/>DetachedBodySchema lifecycle]
-  end
-
-  subgraph "3D Adapter ❌"
-    A3D[NOT BUILT<br/>Would need: Cannon.js / Rapier<br/>Mesh collision, material restitution<br/>6DOF rotation, z-axis gravity]
+  subgraph "2.5D Adapter ✅ — game's 3D layer"
+    A25D[PartPhysics.ts + PartSystemManager.ts<br/>Shape makers: Fourier profiles + arc-segment CPs<br/>Perspective warps: tilt stack (outer/scale/inner)<br/>Z-layer: beyTiltAngle + effectiveGravity<br/>ClimbingPhysics: wall/ceiling adhesion<br/>tip eccentricity (tipOffsetX/Y)<br/>subPartSpins MapSchema<br/>DetachedBodySchema lifecycle<br/>MaterialBand.wearSchedule → computeWearLevel → bey.materialWearLevel<br/>SystemContactPoint.weightFactor → getCpWeightShare → computeCpMomentOfInertia<br/>TipPart.evolutionStages → tickEvolutionDriver → bey.tipEvolutionStage]
   end
 
   R --> M
@@ -46,10 +46,8 @@ flowchart TD
   MR --> SHARED_TICK
   SHARED_PARAMS --> A2D
   SHARED_PARAMS --> A25D
-  SHARED_PARAMS --> A3D
   SHARED_TICK --> A2D
   SHARED_TICK --> A25D
-  SHARED_TICK --> A3D
 
   subgraph "2D Rooms"
     R2D_BATTLE[BattleRoom — max 12<br/>PVP 2–4 + spectators]
@@ -66,10 +64,6 @@ flowchart TD
     R25D_TRYOUT[Parts25DTryoutRoom<br/>2.5D solo]
   end
 
-  subgraph "3D Rooms"
-    R3D[❌ No 3D room yet]
-  end
-
   A2D --> R2D_BATTLE
   A2D --> R2D_TRYOUT
   A2D --> R2D_AI
@@ -79,12 +73,22 @@ flowchart TD
   A25D --> R25D_AI
   A25D --> R25D_TOURNEY
   A25D --> R25D_TRYOUT
-  A3D --> R3D
 ```
+
+## 2.5D as the Depth Layer
+
+The 2.5D engine is not a "partial 3D" — it is the complete depth system for this game. It replaces true 3D with two complementary techniques:
+
+| Technique | What it does | Where |
+|-----------|-------------|-------|
+| **Shape makers** | Fourier profiles + arc-segment contact points define the 3D silhouette of each part as a 2D cross-section. `renderRadius(θ)` warps the sprite outline at runtime. | `PartPhysics.ts`, `beybladeSystem.ts` |
+| **Perspective warps** | Three nested PixiJS containers (`arenaTiltOuter → arenaTiltScale → arenaTiltInner`) project the arena plane as if tilted in 3D space (foreshortening via `scaleX = cos(tiltAngle)`). | `PixiRenderer.ts` |
+
+Any mechanic requiring "3D" in another engine (pillar hit volumes, vertical tilt, surface adhesion, part silhouette collision) is expressed through these systems in 2.5D.
 
 ## Parity Rule
 
-All adapters must preserve **behavior identity**:
+Both adapters must preserve **behavior identity**:
 - wall_bounce: momentum preserved, velocity component reversed
 - spin_drain: same drain rate, different collision precision
 - center_pull: same attractive force formula
@@ -108,4 +112,5 @@ Differences allowed: simulation accuracy, collision precision — NOT intended b
 Max 20 rooms active at once — enforced by `roomCounter.ts` (`tryReserveRoom()` / `releaseRoom()`).
 
 ---
-[← Sequence Launch](diagram-sequence-launch.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Tilt Angle →](diagram-tilt-angle.md)
+
+[← Sequence Launch](diagram-sequence-launch.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Tilt Angle →](diagram-tilt-angle.md)

@@ -1,4 +1,8 @@
-﻿# Diagram: Input Abstraction
+[← Extraction Pipeline](diagram-extraction-pipeline.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Mechanics →](diagram-mechanics.md)
+
+---
+
+# Diagram: Input Abstraction
 
 > **Stage 0C Diagram 11** — Rule 10: Input Devices → Intent → Movement → Mechanics.
 
@@ -95,4 +99,5 @@ While `Date.now() < controlLockedUntilMs`, movement/action bits are IGNORED:
 - Source "combo" — combo executing (lockMs from ComboResult)
 
 ---
-[← Extraction Pipeline](diagram-extraction-pipeline.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Mechanics →](diagram-mechanics.md)
+
+[← Extraction Pipeline](diagram-extraction-pipeline.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Mechanics →](diagram-mechanics.md)

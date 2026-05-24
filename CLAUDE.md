@@ -58,6 +58,11 @@ Client is deployed on **Vercel** (not Firebase Hosting — `firebase.json` has n
 - **Firebase Firestore** — stores beyblade_stats, arenas, matches, player_stats, tournaments, and all asset collections.
 - **PixiJS WebGL** — client renders using PixiJS 8. 5-layer stack: arena → features → beyblades → particles → HUD.
 - **Vite + React Router v6** — client-side routing only. No SSR.
+- **2D + 2.5D engines only; 2.5D is the 3D layer** — There is no true 3D physics engine (no Cannon.js, Rapier, or three.js). The 2.5D engine (`PartPhysics.ts` + `PartSystemManager.ts`) is the game's depth layer and serves the role that 3D would in another engine:
+  - **Shape makers** — Fourier-series profiles and arc-segment contact points describe each part's 3D silhouette as a 2D cross-section; `renderRadius()` warps the sprite outline accordingly.
+  - **Perspective warps** — PixiJS renders through a three-container tilt stack (`arenaTiltOuter → arenaTiltScale → arenaTiltInner`) that projects the world onto screen as if the arena plane is tilted in 3D space.
+  - **Z-layer physics** — `beyTiltAngle`, `effectiveGravity`, `ClimbingPhysics.ts`, and wall/ceiling adhesion provide height, tilt, and vertical-surface behaviour without a true z-axis.
+  - Any mechanic that would require "3D" in another game (pillar hit volumes, vertical tilt, surface adhesion, part silhouette collision) is expressed through the 2.5D shape and warp systems.
 - **TournamentScheduler** — singleton started in `src/index.ts`, polls Firestore every 30s and opens Colyseus rooms 65s before scheduled bracket match times.
 
 ## Server Room Types
@@ -219,6 +224,15 @@ All room types (except TryoutRoom) support configurable series format via `optio
 | `beyblade_systems` | Assembled 2.5D beyblade configs (slot → partId mapping) |
 | `mechanic_defs` | 31 MechanicRegistry handler definitions (id, name, category, description, params). Seeded by `seed-mechanics.js`. Admin: `/admin/mechanic-defs`. |
 | `gimmick_defs` | 27 gimmick recipes (behaviorRefs → MechanicInstance[]). Expanded at match start by `gimmickExpander.ts`. Admin: `/admin/gimmick-defs`. |
+| `tip_shape_defs` | Tip shape presets (id, label, description). Consumed by part editor TipFields; falls back to built-ins when empty. Admin: `/admin/tip-shape-defs`. |
+| `core_gimmick_defs` | Core gimmick modes (id, label, description, hasPhysicsImpl). Consumed by CoreFields toggle buttons. Admin: `/admin/core-gimmick-defs`. |
+| `attack_type_defs` | Attack type definitions for contact points (id, label, multiplier, color). Consumed by ContactPointEditor. Admin: `/admin/attack-type-defs`. |
+| `arena_theme_defs` | Arena visual themes (id, label, color, description). Consumed by BasicsTab theme picker. Admin: `/admin/arena-theme-defs`. |
+| `arena_shape_defs` | Arena boundary shapes (id, label, vertexCount, description). Consumed by BasicsTab shape picker. Admin: `/admin/arena-shape-defs`. |
+| `bowl_profile_defs` | Bowl wall-angle presets (id, label, wallAngle 0–75°, description). Consumed by BasicsTab bowl picker. Admin: `/admin/bowl-profile-defs`. |
+| `trigger_type_defs` | Stat modifier trigger conditions (id, label, description). Consumed by StatModifiersEditor. Admin: `/admin/trigger-type-defs`. |
+| `stat_event_defs` | Stat tracking events (id, label, description). Consumed by StatModifiersEditor stat events. Admin: `/admin/stat-event-defs`. |
+| `part_layer_defs` | Part layer types for contact point assignments (id, label, description). Consumed by ContactPointEditor layer buttons. Admin: `/admin/part-layer-defs`. |
 
 All asset libraries accept **PNG / JPG / GIF / WebP**. GIF uploads bypass the destructive image editor so animation is preserved.
 
@@ -472,6 +486,15 @@ All seeders live under `scripts/` and are exposed as npm scripts. Idempotent —
 | `npm run seed:arena-systems` | `arena_systems` | Arena system configs. |
 | `npm run seed:mechanics` | `mechanic_defs` | 31 mechanic handler docs — one per MechanicRegistry entry. |
 | `npm run seed:gimmicks` | `gimmick_defs` | 27 gimmick recipes (22 original + 5 new: magnacore_repel/attract, dual_spin_launch, mode_switch_tip, spring_launch). |
+| `npm run seed:tip-shapes` | `tip_shape_defs` | 16 tip shape presets (flat, sharp, rubber, bearing, etc.). |
+| `npm run seed:core-gimmicks` | `core_gimmick_defs` | 12 core gimmick types (mode change, dual spin, spring launch, etc.). |
+| `npm run seed:attack-type-defs` | `attack_type_defs` | 8 attack types for contact points (smash, upper, burst, absorb, etc.). |
+| `npm run seed:arena-theme-defs` | `arena_theme_defs` | 12 arena visual themes (volcano, ice, space, neon, etc.). |
+| `npm run seed:arena-shape-defs` | `arena_shape_defs` | 10 arena boundary shapes (circle, hexagon, star, stadium, etc.). |
+| `npm run seed:bowl-profile-defs` | `bowl_profile_defs` | 8 bowl wall-angle profiles (flat through extreme 75°). |
+| `npm run seed:trigger-type-defs` | `trigger_type_defs` | 12 stat modifier trigger conditions (always, on_hit, low_spin, etc.). |
+| `npm run seed:stat-event-defs` | `stat_event_defs` | 15 stat tracking events (collision, burst, ring_out, etc.). |
+| `npm run seed:part-layer-defs` | `part_layer_defs` | 12 part layer types for contact point assignments (upper, blade, guard, etc.). |
 | `npm run seed:all` | All of the above | Runs in order; safe to use as a first-time bootstrap. |
 
 ## Learning Folder (Deferred)

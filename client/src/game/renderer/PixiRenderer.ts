@@ -103,6 +103,8 @@ export class BeybladeGameRenderer {
   private flashGraphics: Map<string, PIXI.Graphics> = new Map();    // 6.15 spinDir change flash
   private flashTimers: Map<string, number> = new Map();
   private prevSpinDirections: Map<string, string> = new Map();
+  private prevTipStages: Map<string, number> = new Map();
+  private prevWearLevels: Map<string, number> = new Map();
   private splitBodySprites: Map<string, PIXI.Graphics> = new Map(); // 6.16 partner half
 
   // 6.13 — DetachedBody sprites (projectile / mini_bey / fragment)
@@ -615,6 +617,8 @@ export class BeybladeGameRenderer {
         this.shieldRings.delete(id);
         this.dodgeTrails.delete(id);
         this.prevSpinDirections.delete(id);
+        this.prevTipStages.delete(id);
+        this.prevWearLevels.delete(id);
         this.flashTimers.delete(id);
         // Remove trail ghost graphics from layer
         const trailG = this.dodgeTrailGraphics.get(id);
@@ -645,7 +649,11 @@ export class BeybladeGameRenderer {
 
     // Beyblade body (spinning top shape)
     const sprite = new PIXI.Graphics();
-    this.drawBeybladeShape(sprite, typeColor, beyblade.actualSize || 48);
+    this.drawBeybladeShape(
+      sprite, typeColor, beyblade.actualSize || 48,
+      beyblade.tipEvolutionStage ?? 0,
+      beyblade.materialWearLevel ?? 100,
+    );
     container.addChild(sprite);
     this.beybladeSprites.set(id, sprite);
 
@@ -700,7 +708,16 @@ export class BeybladeGameRenderer {
     this.beybladeContainers.set(id, container);
   }
 
-  private drawBeybladeShape(g: PIXI.Graphics, color: number, radiusPx: number) {
+  // Tip core colour per evolution stage: 0=white, 1=amber, 2=orange, 3+=red
+  private static readonly TIP_STAGE_COLORS = [0xffffff, 0xfbbf24, 0xf97316, 0xef4444] as const;
+
+  private drawBeybladeShape(
+    g: PIXI.Graphics,
+    color: number,
+    radiusPx: number,
+    tipEvolutionStage = 0,
+    tipWearPct = 100, // 0–100; tip core dims as material wears
+  ) {
     g.clear();
     const r = radiusPx / 2;
 
@@ -708,9 +725,12 @@ export class BeybladeGameRenderer {
     g.circle(0, 0, r);
     g.fill({ color, alpha: 0.9 });
 
-    // Inner core (performance tip)
+    // Inner core (performance tip) — colour = stage, alpha = wear level
+    const stageColors = BeybladeGameRenderer.TIP_STAGE_COLORS;
+    const tipColor = stageColors[Math.min(tipEvolutionStage, stageColors.length - 1)];
+    const wearAlpha = 0.15 + (Math.max(0, Math.min(100, tipWearPct)) / 100) * 0.5;
     g.circle(0, 0, r * 0.45);
-    g.fill({ color: 0xffffff, alpha: 0.3 });
+    g.fill({ color: tipColor, alpha: wearAlpha });
 
     // Direction indicator
     g.moveTo(0, 0);
@@ -824,6 +844,18 @@ export class BeybladeGameRenderer {
     // Spin rotation (visual — uses interpolated angle for smooth motion)
     sprite.rotation = interpAngle;
 
+    // Redraw shape when tip evolution stage or wear level changes
+    {
+      const tipStage = beyblade.tipEvolutionStage ?? 0;
+      const wearPct  = beyblade.materialWearLevel  ?? 100;
+      if (this.prevTipStages.get(id) !== tipStage || this.prevWearLevels.get(id) !== wearPct) {
+        const typeColor = TYPE_COLORS[beyblade.type] ?? 0xffffff;
+        this.drawBeybladeShape(sprite, typeColor, beyblade.actualSize || 48, tipStage, wearPct);
+        this.prevTipStages.set(id, tipStage);
+        this.prevWearLevels.set(id, wearPct);
+      }
+    }
+
     // Motion blur: stronger at high angular velocity
     const blurAlpha = Math.min(1, Math.abs(beyblade.angularVelocity) / 5);
     sprite.alpha = beyblade.isActive ? (0.7 + blurAlpha * 0.3) : 0.3;
@@ -848,7 +880,12 @@ export class BeybladeGameRenderer {
       // N4: adhering — slight green tint to indicate adhesion state
       sprite.tint = 0x88ffaa;
     } else {
-      sprite.tint = 0xffffff;
+      // Material wear tint: new=white (0xffffff), worn=brownish-orange (0xcc7733)
+      const wearT = Math.max(0, Math.min(100, (beyblade as any).materialWearLevel ?? 100)) / 100;
+      const wR = Math.round(0xff * wearT + 0xcc * (1 - wearT));
+      const wG = Math.round(0xff * wearT + 0x77 * (1 - wearT));
+      const wB = Math.round(0xff * wearT + 0x33 * (1 - wearT));
+      sprite.tint = (wR << 16) | (wG << 8) | wB;
     }
 
     // ── Attack arc: sword sweep semicircle (visible while attackBuffTimer > 0) ──

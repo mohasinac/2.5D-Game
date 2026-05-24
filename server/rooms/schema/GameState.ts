@@ -358,6 +358,13 @@ export class Beyblade extends Schema {
   // Keyed identically to activePartConfigs. Used to enforce MODE_SWITCH_COOLDOWN_MS.
   @type({ map: "number" }) configLastSwitchAt = new MapSchema<number>();
 
+  // ── Evolution Driver ─────────────────────────────────────────────────────────
+  // Index into TipPart.evolutionStages[]; advances automatically as triggers are met.
+  @type("uint8")  tipEvolutionStage: number = 0;
+  // Match-elapsed ms since first tick — NEVER resets between stages. Used by all
+  // evolution triggers (time, wear_level, etc.) as a monotonic match clock.
+  @type("number") tipEvolutionTimer: number = 0;
+
   // ── Split / Combined Bey (Phantom Fox MS, etc.) ──────────────────────────────
   @type("boolean") isSplit: boolean = false;
   @type("number")  splitBodyX: number = 0;
@@ -420,6 +427,9 @@ export class Beyblade extends Schema {
 
   // ── Burst pressure (tracks accumulated impact before burst trigger) ──────────
   @type("float32") burstPressure: number = 0;
+
+  // ── Material Wear Level (synced — drives client tint) ────────────────────────
+  @type("float32") materialWearLevel: number = 100; // 0=fully worn, 100=new; computed from wearSchedule in PartSystemManager
 
   // ── Physics flags (Block M) ──────────────────────────────────────────────────
   @type("boolean") collisionWithBeys: boolean = true;

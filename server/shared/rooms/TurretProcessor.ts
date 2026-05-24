@@ -306,6 +306,32 @@ export interface TurretRuntimeState {
   teleportDashTargetId?: string;
   teleportDashBlinksLeft?: number;
   teleportDashNextBlinkMs?: number;
+  // ── One Piece runtime state ───────────────────────────────────────────────
+  gearSecondUntilMs?: number;
+  gearSecondNextHitMs?: number;
+  gearSecondHitsLeft?: number;
+  gearFourthImmuneUntilMs?: number;
+  hardeningUntilMs?: number;
+  foundingTitanUntilMs?: number;
+  foundingTitanNextDrainMs?: number;
+  diableJambeTargetId?: string;
+  diableJambeUntilMs?: number;
+  // ── Dragon Ball extended runtime state ───────────────────────────────────
+  gohanPowerUpUntilMs?: number;
+  perfectFormCellUntilMs?: number;
+  goldenFriezaUntilMs?: number;
+  solarKamehamehaChargeMs?: number;
+  cellJrUnits?: Array<{ x: number; y: number; targetId: string; nextHitMs: number }>;
+  buuAbsorptionUntilMs?: number;
+  buuAbsorptionStat?: "attack" | "defense" | "stamina";
+  finalExplosionDormantUntilMs?: number;
+  deathBallX?: number;
+  deathBallY?: number;
+  deathBallDetonateMs?: number;
+  novaStrikeTargetId?: string;
+  novaStrikeUntilMs?: number;
+  chocolateBeamTargetId?: string;
+  chocolateBeamUntilMs?: number;
 }
 
 // ── Z4b: Fire pattern target selection ─────────────────────────────────────
@@ -5923,4 +5949,484 @@ export function processTeleportDashTick(turretConfig: any, runtime: TurretRuntim
   runtime.teleportDashBlinksLeft -= 1;
   runtime.teleportDashNextBlinkMs = nowMs + (turretConfig.teleportDashIntervalSec ?? 0.4) * 1000;
   if (runtime.teleportDashBlinksLeft <= 0) runtime.teleportDashTargetId = undefined;
+}
+
+// ── Dragon Ball extended handlers ─────────────────────────────────────────────
+
+/** gohan_masenko: focused downward energy beam targeting a single bey. */
+export function applyGohanMasenko(turretConfig: any, target: Beyblade, bridge: TurretProcessorBridge): void {
+  const dmg = turretConfig.masenkoBeamDamage ?? 90;
+  target.health = Math.max(0, target.health - dmg);
+  target.damageReceived += dmg;
+  bridge.applyKnockback(target.id, { x: 0, y: 1 }, turretConfig.attackForce ?? 400);
+}
+
+/** gohan_power_up: unlocks hidden power — raises turret damage multiplier for duration. */
+export function triggerGohanPowerUp(turretConfig: any, runtime: TurretRuntimeState, nowMs: number): void {
+  runtime.gohanPowerUpUntilMs = nowMs + (turretConfig.gohanPowerUpDurationMs ?? 8000);
+}
+
+/** gohan_mystic_unleash: AoE energy burst; extra damage on low-health targets. */
+export function applyGohanMysticUnleash(turretConfig: any, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number): void {
+  const radius = turretConfig.mysticUnleashRadius ?? 200;
+  const baseDmg = turretConfig.mysticUnleashDamage ?? 150;
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > radius * radius) continue;
+    const hpFraction = b.health / (b.maxHealth ?? 100);
+    const dmg = baseDmg * (1 + (1 - hpFraction) * 0.8);
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, turretConfig.attackForce ?? 500);
+  }
+}
+
+/** galick_gun: wide-cone energy beam hits all beys in cone. */
+export function applyGalickGun(turretConfig: any, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number): void {
+  const coneDeg = turretConfig.galickGunConeDeg ?? 25;
+  const coneRad = coneDeg * (Math.PI / 180);
+  const dmg = turretConfig.galickGunDamage ?? 110;
+  const range = (turretConfig.attackRange ?? 30) * 24;
+  const baseAngle = Math.atan2(ty - beyblades.reduce((s, b) => s + b.y, 0) / Math.max(1, beyblades.length), 0);
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > range * range) continue;
+    const angle = Math.atan2(dy, dx);
+    if (Math.abs(angle - baseAngle) > coneRad) continue;
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, turretConfig.attackForce ?? 600);
+  }
+}
+
+/** big_bang_attack: point-blank high-damage energy sphere. */
+export function applyBigBangAttack(turretConfig: any, target: Beyblade, bridge: TurretProcessorBridge): void {
+  const dmg = turretConfig.bigBangDamage ?? 180;
+  target.health = Math.max(0, target.health - dmg);
+  target.damageReceived += dmg;
+  const dx = target.x, dy = target.y;
+  const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+  bridge.applyKnockback(target.id, { x: dx / dist, y: dy / dist }, turretConfig.bigBangKnockback ?? 1200);
+}
+
+/** final_explosion: massive sacrifice AoE; marks turret dormant. */
+export function applyFinalExplosion(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number, nowMs: number): void {
+  const radius = turretConfig.finalExplosionRadius ?? 400;
+  const dmg = turretConfig.finalExplosionDamage ?? 500;
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > radius * radius) continue;
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, turretConfig.attackForce ?? 1500);
+  }
+  runtime.finalExplosionDormantUntilMs = nowMs + (turretConfig.finalExplosionDormantMs ?? 10000);
+}
+
+/** solar_kamehameha: double-width superbeam hits all beys in a wide band. */
+export function applySolarKamehameha(turretConfig: any, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number): void {
+  const width = (turretConfig.solarKamehamehaWidth ?? 120) / 2;
+  const dmg = turretConfig.solarKamehamehaDamage ?? 200;
+  const range = (turretConfig.attackRange ?? 40) * 24;
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (Math.abs(dy) > width || Math.abs(dx) > range) continue;
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    bridge.applyKnockback(b.id, { x: dx > 0 ? 1 : -1, y: 0 }, turretConfig.attackForce ?? 800);
+  }
+}
+
+/** cell_jr_spawn: spawns 3 seeker Cell Jr. units stored in runtime. */
+export function triggerCellJrSpawn(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], tx: number, ty: number, nowMs: number): void {
+  const count = turretConfig.cellJrCount ?? 3;
+  const active = beyblades.filter(b => b.isActive && !b.isRingOut);
+  runtime.cellJrUnits = [];
+  for (let i = 0; i < count && i < active.length; i++) {
+    const offset = (i / count) * Math.PI * 2;
+    runtime.cellJrUnits.push({
+      x: tx + Math.cos(offset) * 60,
+      y: ty + Math.sin(offset) * 60,
+      targetId: active[i % active.length].id,
+      nextHitMs: nowMs + 500,
+    });
+  }
+}
+
+/** cell_jr_spawn tick: move units toward target and apply damage. */
+export function processCellJrTick(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], bridge: TurretProcessorBridge, nowMs: number, dtMs: number): void {
+  if (!runtime.cellJrUnits?.length) return;
+  const dmgPerTick = (turretConfig.cellJrDamagePerTick ?? 8) * (dtMs / 1000);
+  for (const jr of runtime.cellJrUnits) {
+    const target = beyblades.find(b => b.id === jr.targetId && b.isActive);
+    if (!target) continue;
+    const dx = target.x - jr.x, dy = target.y - jr.y;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const speed = 120 * (dtMs / 1000);
+    jr.x += (dx / dist) * speed;
+    jr.y += (dy / dist) * speed;
+    if (dist < 20 && nowMs >= jr.nextHitMs) {
+      target.health = Math.max(0, target.health - dmgPerTick);
+      target.damageReceived += dmgPerTick;
+      jr.nextHitMs = nowMs + 500;
+    }
+  }
+}
+
+/** perfect_form_cell: transformation — increases effective range and damage. */
+export function triggerPerfectFormCell(turretConfig: any, runtime: TurretRuntimeState, nowMs: number): void {
+  runtime.perfectFormCellUntilMs = nowMs + (turretConfig.perfectFormDurationMs ?? 8000);
+}
+
+/** chocolate_beam: drains target spin to 0 for duration. */
+export function applyChocolateBeam(turretConfig: any, runtime: TurretRuntimeState, target: Beyblade, nowMs: number): void {
+  runtime.chocolateBeamTargetId = target.id;
+  runtime.chocolateBeamUntilMs = nowMs + (turretConfig.chocolateBeamDurationMs ?? 2000);
+  target.spin = 0;
+}
+
+/** chocolate_beam tick: keep target spin at 0 while active. */
+export function processChocolateBeamTick(runtime: TurretRuntimeState, beyblades: Beyblade[], nowMs: number): void {
+  if (!runtime.chocolateBeamTargetId || (runtime.chocolateBeamUntilMs ?? 0) < nowMs) {
+    runtime.chocolateBeamTargetId = undefined;
+    return;
+  }
+  const t = beyblades.find(b => b.id === runtime.chocolateBeamTargetId && b.isActive);
+  if (t) t.spin = 0;
+}
+
+/** buu_absorption: temporarily copies target's dominant stat as turret buff. */
+export function triggerBuuAbsorption(turretConfig: any, runtime: TurretRuntimeState, target: Beyblade, nowMs: number): void {
+  runtime.buuAbsorptionUntilMs = nowMs + (turretConfig.buuAbsorptionDurationMs ?? 6000);
+  const dmgPts = (target as any).attackPts ?? 0;
+  const defPts = (target as any).defensePts ?? 0;
+  const stamPts = (target as any).staminaPts ?? 0;
+  if (dmgPts >= defPts && dmgPts >= stamPts) runtime.buuAbsorptionStat = "attack";
+  else if (defPts >= stamPts) runtime.buuAbsorptionStat = "defense";
+  else runtime.buuAbsorptionStat = "stamina";
+}
+
+/** kid_buu_scream: omnidirectional AoE shockwave knockback. */
+export function applyKidBuuScream(turretConfig: any, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number): void {
+  const radius = turretConfig.kidBuuScreamRadius ?? 280;
+  const force = turretConfig.kidBuuScreamKnockback ?? 600;
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > radius * radius) continue;
+    const dmg = turretConfig.attackDamage ?? 40;
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, force);
+  }
+}
+
+/** death_ball: place charged sphere that detonates after 1.5s. */
+export function triggerDeathBall(turretConfig: any, runtime: TurretRuntimeState, tx: number, ty: number, nowMs: number): void {
+  runtime.deathBallX = tx;
+  runtime.deathBallY = ty;
+  runtime.deathBallDetonateMs = nowMs + 1500;
+}
+
+/** death_ball tick: detonate when timer fires. */
+export function processDeathBallTick(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], bridge: TurretProcessorBridge, nowMs: number): void {
+  if (!runtime.deathBallDetonateMs || nowMs < runtime.deathBallDetonateMs) return;
+  const cx = runtime.deathBallX ?? 0, cy = runtime.deathBallY ?? 0;
+  const radius = turretConfig.deathBallRadius ?? 220;
+  const dmg = turretConfig.deathBallDamage ?? 320;
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - cx, dy = b.y - cy;
+    if (dx * dx + dy * dy > radius * radius) continue;
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, turretConfig.attackForce ?? 1000);
+  }
+  runtime.deathBallDetonateMs = undefined;
+  runtime.deathBallX = undefined;
+  runtime.deathBallY = undefined;
+}
+
+/** nova_strike: high-speed ram — instantly applies damage and max knockback. */
+export function applyNovaStrike(turretConfig: any, target: Beyblade, bridge: TurretProcessorBridge): void {
+  const dmg = turretConfig.novaStrikeDamage ?? 130;
+  target.health = Math.max(0, target.health - dmg);
+  target.damageReceived += dmg;
+  bridge.applyKnockback(target.id, { x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 }, turretConfig.attackForce ?? 1400);
+}
+
+/** golden_frieza: transformation — multiplies all damage dealt for duration. */
+export function triggerGoldenFrieza(turretConfig: any, runtime: TurretRuntimeState, nowMs: number): void {
+  runtime.goldenFriezaUntilMs = nowMs + (turretConfig.goldenFriezaDurationMs ?? 8000);
+}
+
+// ── One Piece handlers ────────────────────────────────────────────────────────
+
+/** gear_second: activates rapid multi-punch phase. */
+export function triggerGearSecond(turretConfig: any, runtime: TurretRuntimeState, nowMs: number): void {
+  runtime.gearSecondUntilMs = nowMs + (turretConfig.gearSecondDurationMs ?? 6000);
+  runtime.gearSecondHitsLeft = turretConfig.gearSecondHits ?? 6;
+  runtime.gearSecondNextHitMs = nowMs + 200;
+}
+
+/** gear_second tick: deliver rapid punches to nearest target. */
+export function processGearSecondTick(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], bridge: TurretProcessorBridge, nowMs: number): void {
+  if (!runtime.gearSecondUntilMs || nowMs > runtime.gearSecondUntilMs) {
+    runtime.gearSecondHitsLeft = 0;
+    return;
+  }
+  if (!runtime.gearSecondHitsLeft || (runtime.gearSecondNextHitMs ?? 0) > nowMs) return;
+  const active = beyblades.filter(b => b.isActive && !b.isRingOut);
+  if (!active.length) return;
+  const t = active[Math.floor(Math.random() * active.length)];
+  const dmg = turretConfig.gearSecondDmgPerHit ?? 20;
+  t.health = Math.max(0, t.health - dmg);
+  t.damageReceived += dmg;
+  bridge.applyKnockback(t.id, { x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 }, 300);
+  runtime.gearSecondHitsLeft -= 1;
+  runtime.gearSecondNextHitMs = nowMs + 300;
+}
+
+/** gear_fourth: massive AoE force burst + immunity window. */
+export function applyGearFourth(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number, nowMs: number): void {
+  const radius = turretConfig.gearFourthRadius ?? 180;
+  const dmg = turretConfig.gearFourthDamage ?? 200;
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > radius * radius) continue;
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, turretConfig.attackForce ?? 900);
+  }
+  runtime.gearFourthImmuneUntilMs = nowMs + (turretConfig.gearFourthImmuneMs ?? 1500);
+}
+
+/** conquerors_haki: control-locks all beys in range. */
+export function applyConquerorsHaki(turretConfig: any, beyblades: Beyblade[], tx: number, ty: number, nowMs: number): void {
+  const range = turretConfig.conquerorsHakiRange ?? 250;
+  const lockMs = turretConfig.conquerorsHakiLockMs ?? 2000;
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > range * range) continue;
+    b.controlLockedUntilMs = Math.max(b.controlLockedUntilMs, nowMs + lockMs);
+    b.controlLockSource = "conquerors_haki";
+  }
+}
+
+/** three_sword_style: triple fan-slash, each hits nearest bey in arc. */
+export function applyThreeSwordStyle(turretConfig: any, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number): void {
+  const count = turretConfig.threeSwordSlashCount ?? 3;
+  const dmg = turretConfig.threeSwordDmgPerSlash ?? 55;
+  const range = (turretConfig.attackRange ?? 20) * 24;
+  for (let i = 0; i < count; i++) {
+    const arcAngle = ((i / count) - 0.5) * Math.PI;
+    for (const b of beyblades) {
+      if (!b.isActive || b.isRingOut) continue;
+      const dx = b.x - tx, dy = b.y - ty;
+      if (dx * dx + dy * dy > range * range) continue;
+      const bAngle = Math.atan2(dy, dx);
+      if (Math.abs(bAngle - arcAngle) < Math.PI / count) {
+        b.health = Math.max(0, b.health - dmg);
+        b.damageReceived += dmg;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, turretConfig.attackForce ?? 350);
+      }
+    }
+  }
+}
+
+/** diable_jambe: spinning fire kick + DoT. */
+export function applyDiableJambe(turretConfig: any, runtime: TurretRuntimeState, target: Beyblade, bridge: TurretProcessorBridge, nowMs: number): void {
+  const dmg = turretConfig.diableJambeDamage ?? 80;
+  target.health = Math.max(0, target.health - dmg);
+  target.damageReceived += dmg;
+  bridge.applyKnockback(target.id, { x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 }, turretConfig.attackForce ?? 500);
+  runtime.diableJambeTargetId = target.id;
+  runtime.diableJambeUntilMs = nowMs + (turretConfig.diableJambeDurationMs ?? 3000);
+}
+
+/** diable_jambe tick: apply fire DoT. */
+export function processDiableJambeTick(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], nowMs: number, dtMs: number): void {
+  if (!runtime.diableJambeTargetId || (runtime.diableJambeUntilMs ?? 0) < nowMs) {
+    runtime.diableJambeTargetId = undefined;
+    return;
+  }
+  const t = beyblades.find(b => b.id === runtime.diableJambeTargetId && b.isActive);
+  if (!t) { runtime.diableJambeTargetId = undefined; return; }
+  const dps = turretConfig.diableJambeFireDps ?? 20;
+  const dmg = dps * (dtMs / 1000);
+  t.health = Math.max(0, t.health - dmg);
+  t.damageReceived += dmg;
+}
+
+// ── Demon Slayer handlers ─────────────────────────────────────────────────────
+
+/** water_breathing: multi-hit flowing wave. */
+export function applyWaterBreathing(turretConfig: any, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number): void {
+  const hits = turretConfig.waterBreathingHits ?? 5;
+  const dmg = turretConfig.waterBreathingDmgPerHit ?? 22;
+  const range = (turretConfig.attackRange ?? 25) * 24;
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > range * range) continue;
+    for (let i = 0; i < hits; i++) {
+      b.health = Math.max(0, b.health - dmg);
+      b.damageReceived += dmg;
+    }
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, turretConfig.attackForce ?? 250);
+  }
+}
+
+/** hinokami_kagura: spinning fire AoE. */
+export function applyHinokamiKagura(turretConfig: any, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number): void {
+  const radius = turretConfig.hinokamiRadius ?? 160;
+  const dmg = turretConfig.hinokamiDamage ?? 140;
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > radius * radius) continue;
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, turretConfig.attackForce ?? 600);
+  }
+}
+
+/** thunder_breathing: instant lightning single-target stun. */
+export function applyThunderBreathing(turretConfig: any, target: Beyblade, bridge: TurretProcessorBridge, nowMs: number): void {
+  const dmg = turretConfig.thunderBreathingDamage ?? 160;
+  target.health = Math.max(0, target.health - dmg);
+  target.damageReceived += dmg;
+  bridge.applyKnockback(target.id, { x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 }, turretConfig.attackForce ?? 700);
+  const stun = turretConfig.thunderBreathingStunMs ?? 800;
+  target.controlLockedUntilMs = Math.max(target.controlLockedUntilMs, nowMs + stun);
+  target.controlLockSource = "thunder_breathing";
+}
+
+/** beast_breathing: wild multi-hit scatter attack. */
+export function applyBeastBreathing(turretConfig: any, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number): void {
+  const hits = turretConfig.beastBreathingHits ?? 8;
+  const dmg = turretConfig.beastBreathingDmgPerHit ?? 18;
+  const range = (turretConfig.attackRange ?? 22) * 24;
+  const active = beyblades.filter(b => b.isActive && !b.isRingOut);
+  for (let i = 0; i < hits; i++) {
+    const b = active[Math.floor(Math.random() * active.length)];
+    if (!b) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > range * range) continue;
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    bridge.applyKnockback(b.id, { x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 }, turretConfig.attackForce ?? 200);
+  }
+}
+
+/** flame_breathing: forward cone fire burst. */
+export function applyFlameBreathing(turretConfig: any, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number): void {
+  const coneDeg = turretConfig.flameBreathingConeDeg ?? 30;
+  const coneRad = coneDeg * (Math.PI / 180);
+  const dmg = turretConfig.flameBreathingDamage ?? 120;
+  const range = (turretConfig.attackRange ?? 28) * 24;
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > range * range) continue;
+    const angle = Math.atan2(dy, dx);
+    if (Math.abs(angle) > coneRad) continue;
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, turretConfig.attackForce ?? 550);
+  }
+}
+
+// ── Attack on Titan extra handlers ────────────────────────────────────────────
+
+/** thunder_spear: explosive homing bolts — hits multiple beys. */
+export function applyThunderSpear(turretConfig: any, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number): void {
+  const bolts = turretConfig.thunderSpearBolts ?? 3;
+  const dmg = turretConfig.thunderSpearDmgPerBolt ?? 70;
+  const active = beyblades.filter(b => b.isActive && !b.isRingOut);
+  for (let i = 0; i < Math.min(bolts, active.length); i++) {
+    const b = active[i];
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    const dx = b.x - tx, dy = b.y - ty;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, turretConfig.attackForce ?? 500);
+  }
+}
+
+/** omni_directional: high-speed ODM dash slash targeting multiple beys. */
+export function applyOmniDirectional(turretConfig: any, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number): void {
+  const dashes = turretConfig.odmDashCount ?? 4;
+  const dmg = turretConfig.odmDmgPerDash ?? 35;
+  const active = beyblades.filter(b => b.isActive && !b.isRingOut);
+  const shuffled = [...active].sort(() => Math.random() - 0.5).slice(0, dashes);
+  for (const b of shuffled) {
+    b.health = Math.max(0, b.health - dmg);
+    b.damageReceived += dmg;
+    const dx = b.x - tx, dy = b.y - ty;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, turretConfig.attackForce ?? 400);
+  }
+}
+
+/** hardening: crystal hardening — temporary invulnerability + knockback burst. */
+export function applyHardening(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], bridge: TurretProcessorBridge, tx: number, ty: number, nowMs: number): void {
+  const range = (turretConfig.attackRange ?? 15) * 24;
+  const force = turretConfig.hardeningKnockback ?? 800;
+  runtime.hardeningUntilMs = nowMs + (turretConfig.hardeningDurationMs ?? 4000);
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > range * range) continue;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    bridge.applyKnockback(b.id, { x: dx / dist, y: dy / dist }, force);
+  }
+}
+
+/** founding_titan: AoE scream — control-locks all + spin drain. */
+export function applyFoundingTitan(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], tx: number, ty: number, nowMs: number): void {
+  const radius = turretConfig.foundingTitanRadius ?? 350;
+  const lockMs = turretConfig.foundingTitanLockMs ?? 3000;
+  const drainPerSec = turretConfig.foundingTitanDrainPerSec ?? 80;
+  runtime.foundingTitanUntilMs = nowMs + lockMs;
+  runtime.foundingTitanNextDrainMs = nowMs + 500;
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > radius * radius) continue;
+    b.controlLockedUntilMs = Math.max(b.controlLockedUntilMs, nowMs + lockMs);
+    b.controlLockSource = "founding_titan";
+  }
+  void drainPerSec; // used in tick
+}
+
+/** founding_titan tick: drain spin while active. */
+export function processFoundingTitanTick(turretConfig: any, runtime: TurretRuntimeState, beyblades: Beyblade[], tx: number, ty: number, nowMs: number, dtMs: number): void {
+  if (!runtime.foundingTitanUntilMs || nowMs > runtime.foundingTitanUntilMs) return;
+  if (nowMs < (runtime.foundingTitanNextDrainMs ?? 0)) return;
+  const radius = turretConfig.foundingTitanRadius ?? 350;
+  const drain = (turretConfig.foundingTitanDrainPerSec ?? 80) * (dtMs / 1000);
+  for (const b of beyblades) {
+    if (!b.isActive || b.isRingOut) continue;
+    const dx = b.x - tx, dy = b.y - ty;
+    if (dx * dx + dy * dy > radius * radius) continue;
+    b.spin = Math.max(0, b.spin - drain);
+  }
+  runtime.foundingTitanNextDrainMs = nowMs + 500;
 }

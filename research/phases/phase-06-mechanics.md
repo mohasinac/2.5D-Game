@@ -1,3 +1,7 @@
+[← Phase 05: Parts](phase-05-parts.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 07a: Generation 1 →](phase-07-gen1.md)
+
+---
+
 # Phase 06 — Mechanic Definitions
 
 > **Stage 6** — MECHANIC_REGISTRY entries derived from Stages 1–5.
@@ -74,8 +78,10 @@ The `MECHANIC_REGISTRY` is a server-side map of `mechanicId → handler`. Handle
 
 ## 2. Full Mechanic Definitions Table
 
-| Mechanic ID | Existing Fields Modified | 2D Implementation | 2.5D Extension | 3D Simulation | Handler Events | Params Schema | Evidence Sources | Confidence |
-|-------------|-------------------------|------------------|---------------|--------------|----------------|--------------|-----------------|-----------|
+> **Note**: This game uses 2D (Matter.js) and 2.5D (PartPhysics.ts) engines only. 3D simulation is not planned and the 3D column has been removed.
+
+| Mechanic ID | Existing Fields Modified | 2D Implementation | 2.5D Extension | Handler Events | Params Schema | Evidence Sources | Confidence |
+|-------------|-------------------------|------------------|----------------|----------------|--------------|-----------------|-----------|
 | `energy_reserve` | `coreReserveRemaining`, `attackBuffTimer` | Float charge → fires impulse when threshold reached | Same + airborne check prevents mid-air fire | Same as 2.5D | `tick`, `onActivate` | `{ chargeRate, dischargeThreshold, burstForce }` | `PartPhysics.ts:tickSpinInjection` | FACT |
 | `velocity_burst` | `velocityX`, `velocityY` | Direct vector impulse in facing direction | Vector + z-component clamped to arena floor | Physics body linear impulse | `onActivate` | `{ forceMagnitude, durationTicks, direction? }` | `ArenaFeatureProcessor`, `specialMoves.ts` | FACT |
 | `attack_amplifier` | `comboDamageMultiplier`, `comboDamageMultiplierTimer` | Timed multiplier on collision damage | Same; timer counts down at 60Hz | Same | `tick`, `onActivate` | `{ multiplier, durationTicks }` | `GameState.ts`, `comboTaskCompiler.ts` | FACT |
@@ -112,8 +118,10 @@ The `MECHANIC_REGISTRY` is a server-side map of `mechanicId → handler`. Handle
 
 ## 3. Mechanic Multi-Engine Support Table
 
-| Mechanic ID | 2D | 2.5D | 3D | Behavior Identity Preserved? |
-|-------------|----|----|-----|---------------------------|
+> **Note**: 3D simulation is not planned. Only 2D and 2.5D implementations are relevant.
+
+| Mechanic ID | 2D | 2.5D | Behavior Identity Preserved? |
+|-------------|----|----|---------------------------|
 | `energy_reserve` | ✅ vector impulse | ✅ + airborne check | ✅ | Yes |
 | `velocity_burst` | ✅ | ✅ | ✅ | Yes |
 | `attack_amplifier` | ✅ | ✅ | ✅ | Yes |
@@ -493,6 +501,83 @@ All turret positions in cm, multiplied ×24 in handlers. Knockback scalar ranges
 
 ---
 
+### 9.5 One Piece / Demon Slayer / Attack on Titan — Dispatch Wiring (session 28)
+
+14 new `TurretAttackType` values wired into `TurretDispatch.ts` fire and tick switch blocks. Handler functions were already implemented in `TurretProcessor.ts`; only the dispatch case entries were missing.
+
+#### One Piece (5 moves)
+
+| ID | Character | Physics pattern | Tick? |
+|----|-----------|----------------|-------|
+| `gear_second` | Luffy | 5 s burst: rapid-fire multi-hit at 0.3 s intervals (runtime loop via `_gearSecondUntilMs`) | ✅ rapid burst tick |
+| `gear_fourth` | Luffy | AoE slam at turret origin — knockback + spin drain on all beys in radius | — |
+| `conquerors_haki` | Shanks / Luffy | Willpower pulse — stun (`controlLockedUntilMs`) on all beys within range | — |
+| `three_sword_style` | Zoro | Triple-arc slash — 3 directional knockback vectors fan-spread from turret | — |
+| `diable_jambe` | Sanji | Fire-spin DoT on target bey (`_diableJambeUntilMs`, per-tick burn damage) | ✅ burn DoT tick |
+
+#### Demon Slayer (5 moves)
+
+| ID | Character | Physics pattern | Tick? |
+|----|-----------|----------------|-------|
+| `water_breathing` | Tanjiro | Spiral wave — AoE force centred on turret, water-element slow | — |
+| `hinokami_kagura` | Tanjiro | Flame dance — circular AoE + spin boost to all beys (ally-type) | — |
+| `thunder_breathing` | Zenitsu | Lightning strike on nearest bey — stun + massive knockback | — |
+| `beast_breathing` | Inosuke | Wild slash fan — high-recoil hits on all beys in frontal 120° arc | — |
+| `flame_breathing` | Rengoku | Column of fire — directional AoE along turret facing direction | — |
+
+#### Attack on Titan (4 moves)
+
+| ID | Character | Physics pattern | Tick? |
+|----|-----------|----------------|-------|
+| `thunder_spear` | Mikasa / Hange | Homing explosive — spawns projectile that tracks nearest bey, AoE on impact | — |
+| `omni_directional` | Levi | ODM gear rush — rapid multi-target hits cycling through all active beys | — |
+| `hardening` | Annie | Crystallise — target bey gains `invulnerable = true` + `_hardeningActiveUntilMs` | — |
+| `founding_titan` | Eren | Area control — ongoing rumbling force field; all beys in radius get periodic knockback for duration | ✅ area field tick |
+
+#### Dispatch entry pattern
+
+Fire block (inside `dispatchTurretFire` switch after `titan_shift`):
+```typescript
+case "gear_second":      triggerGearSecond(turretConfig, runtime, nowMs); break;
+case "gear_fourth":      applyGearFourth(turretConfig, runtime, beyblades, bridge, tx, ty, nowMs); break;
+case "conquerors_haki":  applyConquerorsHaki(turretConfig, beyblades, tx, ty, nowMs); break;
+case "three_sword_style":applyThreeSwordStyle(turretConfig, beyblades, bridge, tx, ty); break;
+case "diable_jambe":     if (target) applyDiableJambe(turretConfig, runtime, target, bridge, nowMs); break;
+// ... Demon Slayer + AoT cases follow same pattern
+```
+
+Tick block (inside `dispatchTurretTick` switch):
+```typescript
+case "gear_second":   processGearSecondTick(turretConfig, runtime, beyblades, bridge, nowMs); break;
+case "diable_jambe":  processDiableJambeTick(turretConfig, runtime, beyblades, nowMs, dtMs); break;
+case "founding_titan":processFoundingTitanTick(turretConfig, runtime, beyblades, tx, ty, nowMs, dtMs); break;
+```
+
+#### Seed entries (`scripts/seed-turret-attack-types.js`)
+
+Added after `golden_frieza`. Each entry: `{ id, label, description, icon }`.
+
+| id | label | icon |
+|----|-------|------|
+| `gear_second` | Gear Second | 💨 |
+| `gear_fourth` | Gear Fourth | 🦁 |
+| `conquerors_haki` | Conqueror's Haki | 👑 |
+| `three_sword_style` | Three Sword Style | ⚔️ |
+| `diable_jambe` | Diable Jambe | 🔥 |
+| `water_breathing` | Water Breathing | 💧 |
+| `hinokami_kagura` | Hinokami Kagura | 🌸 |
+| `thunder_breathing` | Thunder Breathing | ⚡ |
+| `beast_breathing` | Beast Breathing | 🐗 |
+| `flame_breathing` | Flame Breathing | 🔥 |
+| `thunder_spear` | Thunder Spear | 💥 |
+| `omni_directional` | Omni-Directional | 🗡️ |
+| `hardening` | Hardening | 🔶 |
+| `founding_titan` | Founding Titan | 🌍 |
+
+**Running total after session 28:** 189 `TurretAttackType` values (175 existing + 14 new).
+
+---
+
 ## 10. Firestore Seed Layer — mechanic_defs + gimmick_defs (session 14)
 
 Both collections are now seeded and have admin CRUD pages.
@@ -590,4 +675,5 @@ MechanicRegistry[mechanicId].tick(bey, dt, params)
 ```
 
 ---
+
 [← Phase 05: Parts](phase-05-parts.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 07a: Generation 1 →](phase-07-gen1.md)

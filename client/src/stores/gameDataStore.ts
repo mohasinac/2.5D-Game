@@ -54,6 +54,7 @@ export interface PartMaterialDoc {
   id: string;
   label: string;
   description?: string;
+  color?: string;
   gripFactor?: number;
   aggressiveness?: number;
   recoilFactor?: number;
@@ -61,6 +62,19 @@ export interface PartMaterialDoc {
   density?: number;
   durabilityDecay?: number;
 }
+
+// ─── Option preset doc types ──────────────────────────────────────────────────
+
+export interface TipShapeDoc { id: string; label: string; description?: string; }
+export interface CoreGimmickDoc { id: string; label: string; description?: string; hasPhysicsImpl?: boolean; }
+export interface AttackTypeDoc { id: string; label: string; description?: string; multiplier?: number; color?: string; }
+export interface ArenaThemeDoc { id: string; label: string; color?: string; description?: string; }
+export interface ArenaShapeDoc { id: string; label: string; vertexCount?: number; description?: string; }
+export interface BowlProfileDoc { id: string; label: string; wallAngle: number; description?: string; }
+export interface TriggerTypeDoc { id: string; label: string; description?: string; }
+export interface StatEventDoc { id: string; label: string; description?: string; }
+export interface PartLayerDoc { id: string; label: string; description?: string; }
+export interface StatDefDoc { id: string; name: string; category: string; type: string; description: string; min?: number; max?: number; default?: number; step?: number; unit?: string; affectsPhysics?: boolean; }
 
 export interface BeyLinkConfigDoc {
   id: string;
@@ -89,6 +103,13 @@ export interface AssetDoc {
 
 // ─── Store shape ──────────────────────────────────────────────────────────────
 
+type InvalidateSlice =
+  | "combos" | "specialMoves" | "turretAttackTypes" | "arenaFeatureConfigs"
+  | "beyLinkConfigs" | "partMaterials"
+  | "tipShapes" | "coreGimmicks" | "attackTypeDefs" | "arenaThemeDefs"
+  | "arenaShapeDefs" | "bowlProfileDefs" | "triggerTypeDefs" | "statEventDefs"
+  | "partLayerDefs" | "statDefs";
+
 interface GameDataState {
   combos: ComboDoc[];
   combosLoaded: boolean;
@@ -102,6 +123,27 @@ interface GameDataState {
   beyLinkConfigsLoaded: boolean;
   partMaterials: PartMaterialDoc[];
   partMaterialsLoaded: boolean;
+  // Option preset slices
+  tipShapes: TipShapeDoc[];
+  tipShapesLoaded: boolean;
+  coreGimmicks: CoreGimmickDoc[];
+  coreGimmicksLoaded: boolean;
+  attackTypeDefs: AttackTypeDoc[];
+  attackTypeDefsLoaded: boolean;
+  arenaThemeDefs: ArenaThemeDoc[];
+  arenaThemeDefsLoaded: boolean;
+  arenaShapeDefs: ArenaShapeDoc[];
+  arenaShapeDefsLoaded: boolean;
+  bowlProfileDefs: BowlProfileDoc[];
+  bowlProfileDefsLoaded: boolean;
+  triggerTypeDefs: TriggerTypeDoc[];
+  triggerTypeDefsLoaded: boolean;
+  statEventDefs: StatEventDoc[];
+  statEventDefsLoaded: boolean;
+  partLayerDefs: PartLayerDoc[];
+  partLayerDefsLoaded: boolean;
+  statDefs: StatDefDoc[];
+  statDefsLoaded: boolean;
   // Asset library: keyed by collectionName (optionally suffixed with ":tag")
   assets: Record<string, AssetDoc[]>;
   assetsLoaded: Record<string, boolean>;
@@ -115,10 +157,20 @@ interface GameDataState {
   fetchArenaFeatureConfigs: () => Promise<void>;
   fetchBeyLinkConfigs: () => Promise<void>;
   fetchPartMaterials: () => Promise<void>;
+  fetchTipShapes: () => Promise<void>;
+  fetchCoreGimmicks: () => Promise<void>;
+  fetchAttackTypeDefs: () => Promise<void>;
+  fetchArenaThemeDefs: () => Promise<void>;
+  fetchArenaShapeDefs: () => Promise<void>;
+  fetchBowlProfileDefs: () => Promise<void>;
+  fetchTriggerTypeDefs: () => Promise<void>;
+  fetchStatEventDefs: () => Promise<void>;
+  fetchPartLayerDefs: () => Promise<void>;
+  fetchStatDefs: () => Promise<void>;
   fetchAssets: (collectionName: string, tag?: string) => Promise<void>;
   /** Pre-load all catalog data — call this at game page mount. */
   fetchAll: () => Promise<void>;
-  invalidate: (slice: "combos" | "specialMoves" | "turretAttackTypes" | "arenaFeatureConfigs" | "beyLinkConfigs" | "partMaterials") => void;
+  invalidate: (slice: InvalidateSlice) => void;
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -136,6 +188,26 @@ export const useGameDataStore = create<GameDataState>()((set, get) => ({
   beyLinkConfigsLoaded: false,
   partMaterials: [],
   partMaterialsLoaded: false,
+  tipShapes: [],
+  tipShapesLoaded: false,
+  coreGimmicks: [],
+  coreGimmicksLoaded: false,
+  attackTypeDefs: [],
+  attackTypeDefsLoaded: false,
+  arenaThemeDefs: [],
+  arenaThemeDefsLoaded: false,
+  arenaShapeDefs: [],
+  arenaShapeDefsLoaded: false,
+  bowlProfileDefs: [],
+  bowlProfileDefsLoaded: false,
+  triggerTypeDefs: [],
+  triggerTypeDefsLoaded: false,
+  statEventDefs: [],
+  statEventDefsLoaded: false,
+  partLayerDefs: [],
+  partLayerDefsLoaded: false,
+  statDefs: [],
+  statDefsLoaded: false,
   assets: {},
   assetsLoaded: {},
   loading: {},
@@ -219,6 +291,136 @@ export const useGameDataStore = create<GameDataState>()((set, get) => ({
     }
   },
 
+  fetchTipShapes: async () => {
+    if (get().tipShapesLoaded) return;
+    set(s => ({ loading: { ...s.loading, tipShapes: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.TIP_SHAPE_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as TipShapeDoc));
+      docs.sort((a, b) => a.label.localeCompare(b.label));
+      set(s => ({ tipShapes: docs, tipShapesLoaded: true, loading: { ...s.loading, tipShapes: false }, errors: { ...s.errors, tipShapes: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, tipShapes: false }, errors: { ...s.errors, tipShapes: "Failed to load tip shapes" } }));
+    }
+  },
+
+  fetchCoreGimmicks: async () => {
+    if (get().coreGimmicksLoaded) return;
+    set(s => ({ loading: { ...s.loading, coreGimmicks: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.CORE_GIMMICK_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as CoreGimmickDoc));
+      docs.sort((a, b) => a.label.localeCompare(b.label));
+      set(s => ({ coreGimmicks: docs, coreGimmicksLoaded: true, loading: { ...s.loading, coreGimmicks: false }, errors: { ...s.errors, coreGimmicks: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, coreGimmicks: false }, errors: { ...s.errors, coreGimmicks: "Failed to load core gimmicks" } }));
+    }
+  },
+
+  fetchAttackTypeDefs: async () => {
+    if (get().attackTypeDefsLoaded) return;
+    set(s => ({ loading: { ...s.loading, attackTypeDefs: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.ATTACK_TYPE_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as AttackTypeDoc));
+      docs.sort((a, b) => a.label.localeCompare(b.label));
+      set(s => ({ attackTypeDefs: docs, attackTypeDefsLoaded: true, loading: { ...s.loading, attackTypeDefs: false }, errors: { ...s.errors, attackTypeDefs: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, attackTypeDefs: false }, errors: { ...s.errors, attackTypeDefs: "Failed to load attack type defs" } }));
+    }
+  },
+
+  fetchArenaThemeDefs: async () => {
+    if (get().arenaThemeDefsLoaded) return;
+    set(s => ({ loading: { ...s.loading, arenaThemeDefs: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.ARENA_THEME_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as ArenaThemeDoc));
+      docs.sort((a, b) => a.label.localeCompare(b.label));
+      set(s => ({ arenaThemeDefs: docs, arenaThemeDefsLoaded: true, loading: { ...s.loading, arenaThemeDefs: false }, errors: { ...s.errors, arenaThemeDefs: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, arenaThemeDefs: false }, errors: { ...s.errors, arenaThemeDefs: "Failed to load arena theme defs" } }));
+    }
+  },
+
+  fetchArenaShapeDefs: async () => {
+    if (get().arenaShapeDefsLoaded) return;
+    set(s => ({ loading: { ...s.loading, arenaShapeDefs: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.ARENA_SHAPE_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as ArenaShapeDoc));
+      docs.sort((a, b) => a.label.localeCompare(b.label));
+      set(s => ({ arenaShapeDefs: docs, arenaShapeDefsLoaded: true, loading: { ...s.loading, arenaShapeDefs: false }, errors: { ...s.errors, arenaShapeDefs: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, arenaShapeDefs: false }, errors: { ...s.errors, arenaShapeDefs: "Failed to load arena shape defs" } }));
+    }
+  },
+
+  fetchBowlProfileDefs: async () => {
+    if (get().bowlProfileDefsLoaded) return;
+    set(s => ({ loading: { ...s.loading, bowlProfileDefs: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.BOWL_PROFILE_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as BowlProfileDoc));
+      docs.sort((a, b) => (a.wallAngle ?? 0) - (b.wallAngle ?? 0));
+      set(s => ({ bowlProfileDefs: docs, bowlProfileDefsLoaded: true, loading: { ...s.loading, bowlProfileDefs: false }, errors: { ...s.errors, bowlProfileDefs: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, bowlProfileDefs: false }, errors: { ...s.errors, bowlProfileDefs: "Failed to load bowl profile defs" } }));
+    }
+  },
+
+  fetchTriggerTypeDefs: async () => {
+    if (get().triggerTypeDefsLoaded) return;
+    set(s => ({ loading: { ...s.loading, triggerTypeDefs: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.TRIGGER_TYPE_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as TriggerTypeDoc));
+      docs.sort((a, b) => a.label.localeCompare(b.label));
+      set(s => ({ triggerTypeDefs: docs, triggerTypeDefsLoaded: true, loading: { ...s.loading, triggerTypeDefs: false }, errors: { ...s.errors, triggerTypeDefs: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, triggerTypeDefs: false }, errors: { ...s.errors, triggerTypeDefs: "Failed to load trigger type defs" } }));
+    }
+  },
+
+  fetchStatEventDefs: async () => {
+    if (get().statEventDefsLoaded) return;
+    set(s => ({ loading: { ...s.loading, statEventDefs: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.STAT_EVENT_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as StatEventDoc));
+      docs.sort((a, b) => a.label.localeCompare(b.label));
+      set(s => ({ statEventDefs: docs, statEventDefsLoaded: true, loading: { ...s.loading, statEventDefs: false }, errors: { ...s.errors, statEventDefs: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, statEventDefs: false }, errors: { ...s.errors, statEventDefs: "Failed to load stat event defs" } }));
+    }
+  },
+
+  fetchPartLayerDefs: async () => {
+    if (get().partLayerDefsLoaded) return;
+    set(s => ({ loading: { ...s.loading, partLayerDefs: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.PART_LAYER_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as PartLayerDoc));
+      docs.sort((a, b) => a.label.localeCompare(b.label));
+      set(s => ({ partLayerDefs: docs, partLayerDefsLoaded: true, loading: { ...s.loading, partLayerDefs: false }, errors: { ...s.errors, partLayerDefs: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, partLayerDefs: false }, errors: { ...s.errors, partLayerDefs: "Failed to load part layer defs" } }));
+    }
+  },
+
+  fetchStatDefs: async () => {
+    if (get().statDefsLoaded) return;
+    set(s => ({ loading: { ...s.loading, statDefs: true } }));
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.STAT_DEFS));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as StatDefDoc));
+      docs.sort((a, b) => a.name.localeCompare(b.name));
+      set(s => ({ statDefs: docs, statDefsLoaded: true, loading: { ...s.loading, statDefs: false }, errors: { ...s.errors, statDefs: null } }));
+    } catch {
+      set(s => ({ loading: { ...s.loading, statDefs: false }, errors: { ...s.errors, statDefs: "Failed to load stat defs" } }));
+    }
+  },
+
   fetchAssets: async (collectionName: string, tag?: string) => {
     const key = tag ? `${collectionName}:${tag}` : collectionName;
     if (get().assetsLoaded[key]) return;
@@ -253,5 +455,15 @@ export const useGameDataStore = create<GameDataState>()((set, get) => ({
     if (slice === "arenaFeatureConfigs") set({ arenaFeatureConfigsLoaded: false, arenaFeatureConfigs: [] });
     if (slice === "beyLinkConfigs") set({ beyLinkConfigsLoaded: false, beyLinkConfigs: [] });
     if (slice === "partMaterials") set({ partMaterialsLoaded: false, partMaterials: [] });
+    if (slice === "tipShapes") set({ tipShapesLoaded: false, tipShapes: [] });
+    if (slice === "coreGimmicks") set({ coreGimmicksLoaded: false, coreGimmicks: [] });
+    if (slice === "attackTypeDefs") set({ attackTypeDefsLoaded: false, attackTypeDefs: [] });
+    if (slice === "arenaThemeDefs") set({ arenaThemeDefsLoaded: false, arenaThemeDefs: [] });
+    if (slice === "arenaShapeDefs") set({ arenaShapeDefsLoaded: false, arenaShapeDefs: [] });
+    if (slice === "bowlProfileDefs") set({ bowlProfileDefsLoaded: false, bowlProfileDefs: [] });
+    if (slice === "triggerTypeDefs") set({ triggerTypeDefsLoaded: false, triggerTypeDefs: [] });
+    if (slice === "statEventDefs") set({ statEventDefsLoaded: false, statEventDefs: [] });
+    if (slice === "partLayerDefs") set({ partLayerDefsLoaded: false, partLayerDefs: [] });
+    if (slice === "statDefs") set({ statDefsLoaded: false, statDefs: [] });
   },
 }));

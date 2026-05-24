@@ -12,6 +12,13 @@ import { useState } from "react";
 import { C, alpha } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { usePartMaterials } from "@/hooks/usePartMaterials";
+import { useSpecialMoves } from "@/hooks/useSpecialMoves";
+import { useTipShapes } from "@/hooks/useTipShapes";
+import { useCoreGimmicks } from "@/hooks/useCoreGimmicks";
+import { useStatDefs } from "@/hooks/useStatDefs";
+import { useStatEventDefs } from "@/hooks/useStatEventDefs";
+import { useTriggerTypeDefs } from "@/hooks/useTriggerTypeDefs";
+import { usePartLayerDefs } from "@/hooks/usePartLayerDefs";
 
 type Part = Record<string, unknown>;
 type OnChange = (patch: Part) => void;
@@ -93,18 +100,19 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 // StatModifiers editor — universal, shown in all part types
 // ─────────────────────────────────────────────────────────────────────────────
 
-const STAT_KEYS = [
+// Hardcoded fallbacks used when Firebase collections are empty
+const FALLBACK_STAT_KEYS = [
   "spin", "maxSpin", "spinDecayRate", "aggressiveness", "gripFactor",
   "recoilFactor", "damageMultiplier", "damageReduction",
   "surfaceFriction", "contactDamageMultiplier",
 ] as const;
 
-const STAT_EVENTS = [
+const FALLBACK_STAT_EVENTS = [
   "on_land", "on_hit_opponent", "on_hit_received",
   "on_special_move", "on_button", "on_config_change",
 ] as const;
 
-const TRIGGER_TYPES = [
+const FALLBACK_TRIGGER_TYPES = [
   "spin_threshold", "impact_any", "impact_direction", "tilt_threshold",
   "special_move", "core_activated", "timer",
 ] as const;
@@ -120,9 +128,24 @@ type StatModifier = {
 
 function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChange }) {
   const mods: StatModifier[] = (part.statModifiers as StatModifier[] | undefined) ?? [];
+  const { items: statDefs } = useStatDefs();
+  const { items: statEventDefs } = useStatEventDefs();
+  const { items: triggerTypeDefs } = useTriggerTypeDefs();
+
+  const statKeyOptions = statDefs.length > 0
+    ? statDefs.map(d => ({ value: d.id, label: d.name || d.id }))
+    : FALLBACK_STAT_KEYS.map(k => ({ value: k, label: k }));
+
+  const statEventOptions = statEventDefs.length > 0
+    ? statEventDefs.map(e => ({ value: e.id, label: e.label }))
+    : FALLBACK_STAT_EVENTS.map(e => ({ value: e, label: e }));
+
+  const triggerTypeOptions = triggerTypeDefs.length > 0
+    ? triggerTypeDefs.map(t => ({ value: t.id, label: t.label }))
+    : FALLBACK_TRIGGER_TYPES.map(t => ({ value: t, label: t }));
 
   const update = (mods: StatModifier[]) => onChange({ statModifiers: mods });
-  const add = () => update([...mods, { targetStat: "spin", operation: "add", value: 0 }]);
+  const add = () => update([...mods, { targetStat: statKeyOptions[0]?.value ?? "spin", operation: "add", value: 0 }]);
   const remove = (i: number) => update(mods.filter((_, idx) => idx !== i));
   const patch = (i: number, p: Partial<StatModifier>) => update(mods.map((m, idx) => idx === i ? { ...m, ...p } : m));
 
@@ -139,7 +162,7 @@ function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChang
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Stat</div>
               <SearchableSelect
                 value={mod.targetStat}
-                options={STAT_KEYS.map((k) => ({ value: k, label: k }))}
+                options={statKeyOptions}
                 onChange={(v) => patch(i, { targetStat: v })}
                 style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
               />
@@ -174,7 +197,7 @@ function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChang
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Event (optional)</div>
               <SearchableSelect
                 value={mod.event ?? ""}
-                options={STAT_EVENTS.map((ev) => ({ value: ev, label: ev }))}
+                options={statEventOptions}
                 onChange={(v) => patch(i, { event: v || undefined })}
                 emptyLabel="(none)"
                 style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
@@ -184,7 +207,7 @@ function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChang
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger type (optional)</div>
               <SearchableSelect
                 value={mod.trigger?.type ?? ""}
-                options={TRIGGER_TYPES.map((t) => ({ value: t, label: t }))}
+                options={triggerTypeOptions}
                 onChange={(v) => {
                   patch(i, { trigger: v ? { type: v, threshold: mod.trigger?.threshold ?? 0 } : undefined });
                 }}
@@ -219,8 +242,8 @@ function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChang
 // SwitchTarget editor (SubParts)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const PART_LAYERS = ["ar", "wd", "tip", "core", "casing", "bit_beast", "spin_track"] as const;
-const RESET_CONDITION_TYPES = ["impact", "timer", "spin_recovery"] as const;
+const FALLBACK_PART_LAYERS = ["ar", "wd", "tip", "core", "casing", "bit_beast", "spin_track"] as const;
+const FALLBACK_RESET_CONDITIONS = ["impact", "timer", "spin_recovery"] as const;
 
 type SwitchTarget = {
   targetLayer: string;
@@ -232,9 +255,24 @@ type SwitchTarget = {
 
 function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChange }) {
   const targets: SwitchTarget[] = (part.switchTargets as SwitchTarget[] | undefined) ?? [];
+  const { items: partLayerDefs } = usePartLayerDefs();
+  const { items: triggerTypeDefs } = useTriggerTypeDefs();
+
+  const layerOptions = partLayerDefs.length > 0
+    ? partLayerDefs.map(l => ({ value: l.id, label: l.label }))
+    : FALLBACK_PART_LAYERS.map(l => ({ value: l, label: l }));
+
+  const triggerOptions = triggerTypeDefs.length > 0
+    ? triggerTypeDefs.map(t => ({ value: t.id, label: t.label }))
+    : FALLBACK_TRIGGER_TYPES.map(t => ({ value: t, label: t }));
+
+  const resetOptions = FALLBACK_RESET_CONDITIONS.map(c => ({ value: c, label: c }));
+
+  const defaultLayer = layerOptions[0]?.value ?? "tip";
+  const defaultTrigger = triggerOptions.find(t => t.value === "impact_any")?.value ?? triggerOptions[0]?.value ?? "impact_any";
 
   const update = (t: SwitchTarget[]) => onChange({ switchTargets: t });
-  const add = () => update([...targets, { targetLayer: "tip", activateConfig: "", trigger: { type: "impact_any", threshold: 10 } }]);
+  const add = () => update([...targets, { targetLayer: defaultLayer, activateConfig: "", trigger: { type: defaultTrigger, threshold: 10 } }]);
   const remove = (i: number) => update(targets.filter((_, idx) => idx !== i));
   const patch = (i: number, p: Partial<SwitchTarget>) => update(targets.map((t, idx) => idx === i ? { ...t, ...p } : t));
   const patchTrigger = (i: number, p: Partial<SwitchTarget["trigger"]>) =>
@@ -255,7 +293,7 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Target layer</div>
               <SearchableSelect
                 value={sw.targetLayer}
-                options={PART_LAYERS.map((l) => ({ value: l, label: l }))}
+                options={layerOptions}
                 onChange={(v) => patch(i, { targetLayer: v })}
                 style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
               />
@@ -277,7 +315,7 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
               <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger type</div>
               <SearchableSelect
                 value={sw.trigger.type}
-                options={TRIGGER_TYPES.map((t) => ({ value: t, label: t }))}
+                options={triggerOptions}
                 onChange={(v) => patchTrigger(i, { type: v })}
                 style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
               />
@@ -310,7 +348,7 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
                 <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Reset condition type</div>
                 <SearchableSelect
                   value={sw.resetCondition?.type ?? "impact"}
-                  options={RESET_CONDITION_TYPES.map((t) => ({ value: t, label: t }))}
+                  options={resetOptions}
                   onChange={(v) => patchReset(i, { type: v })}
                   style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
                 />
@@ -532,7 +570,7 @@ function SubPartFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 // Tip (6.7 + 6.8)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const TIP_SHAPES = ["flat","sharp","semi_flat","wide","ball","spike","rubber_flat","hole_flat","rubber_ball","defense","custom"] as const;
+const FALLBACK_TIP_SHAPES = ["flat","sharp","semi_flat","wide","ball","spike","rubber_flat","hole_flat","rubber_ball","defense","custom"] as const;
 
 function MaterialField({ part, onChange }: { part: Part; onChange: OnChange }) {
   const { materials, loading } = usePartMaterials();
@@ -554,14 +592,18 @@ function MaterialField({ part, onChange }: { part: Part; onChange: OnChange }) {
 function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
   const spinBias = (part.spinBias as { rightSpin: { gripMultiplier: number }; leftSpin: { gripMultiplier: number } } | undefined);
   const leftSpinHop = (part.leftSpinHop as { enabled: boolean; hopImpulse: number; hopChance: number } | undefined);
+  const { items: tipShapeDefs } = useTipShapes();
+  const tipShapes = tipShapeDefs.length > 0
+    ? tipShapeDefs.map(s => ({ id: s.id, label: s.label }))
+    : FALLBACK_TIP_SHAPES.map(s => ({ id: s, label: s.replace(/_/g, " ") }));
 
   return (
     <div>
       <SectionHeader>Tip Shape & Material</SectionHeader>
       <Field label="Tip Shape">
         <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-          {TIP_SHAPES.map(s => (
-            <ToggleBtn key={s} label={s.replace(/_/g, " ")} active={part.tipShape === s} onClick={() => onChange({ tipShape: part.tipShape === s ? undefined : s })} />
+          {tipShapes.map(s => (
+            <ToggleBtn key={s.id} label={s.label} active={part.tipShape === s.id} onClick={() => onChange({ tipShape: part.tipShape === s.id ? undefined : s.id })} />
           ))}
         </div>
       </Field>
@@ -645,6 +687,12 @@ function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
         <NumInput value={part.durabilityDecay as number | undefined} onChange={(v) => onChange({ durabilityDecay: v })} min={0} max={1} />
       </Field>
 
+      <div style={{ marginTop: 16 }}>
+        <MaterialBandsEditor part={part} onChange={onChange} />
+      </div>
+      <div style={{ marginTop: 16 }}>
+        <EvolutionStagesEditor part={part} onChange={onChange} />
+      </div>
       <div style={{ marginTop: 4 }}>
         <StatModifiersEditor part={part} onChange={onChange} />
       </div>
@@ -653,12 +701,196 @@ function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// MaterialBands editor (TipPart.materials[])
+// ─────────────────────────────────────────────────────────────────────────────
+
+type WearStep = { atSecond: number; wearLevel: number };
+type MaterialBand = { material: string; coverage: number; wearSchedule?: WearStep[] };
+
+function MaterialBandsEditor({ part, onChange }: { part: Part; onChange: OnChange }) {
+  const { materials: matOptions, loading } = usePartMaterials();
+  const bands: MaterialBand[] = (part.materials as MaterialBand[] | undefined) ?? [];
+
+  const update = (b: MaterialBand[]) => onChange({ materials: b });
+  const add = () => update([...bands, { material: "", coverage: 1.0 }]);
+  const remove = (i: number) => update(bands.filter((_, idx) => idx !== i));
+  const patch = (i: number, p: Partial<MaterialBand>) => update(bands.map((b, idx) => idx === i ? { ...b, ...p } : b));
+
+  const patchStep = (bi: number, si: number, p: Partial<WearStep>) =>
+    patch(bi, { wearSchedule: (bands[bi].wearSchedule ?? []).map((s, idx) => idx === si ? { ...s, ...p } : s) });
+  const addStep = (bi: number) =>
+    patch(bi, { wearSchedule: [...(bands[bi].wearSchedule ?? []), { atSecond: 60, wearLevel: 50 }] });
+  const removeStep = (bi: number, si: number) =>
+    patch(bi, { wearSchedule: (bands[bi].wearSchedule ?? []).filter((_, idx) => idx !== si) });
+
+  return (
+    <div>
+      <SectionHeader>Material Bands</SectionHeader>
+      <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>
+        Each band is a material layer on the tip contact surface. Wear schedules drive the evolution driver trigger.
+      </div>
+      {bands.map((band, bi) => (
+        <div key={bi} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 8 }}>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end", marginBottom: 8 }}>
+            <div>
+              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Material</div>
+              <SearchableSelect
+                value={band.material}
+                options={loading ? [] : [{ value: "", label: "(none)" }, ...matOptions.map(m => ({ value: m.id, label: m.label }))]}
+                onChange={v => patch(bi, { material: v })}
+                placeholder="Select material…"
+                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+              />
+            </div>
+            <div>
+              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Coverage (0–1)</div>
+              <NumInput value={band.coverage} onChange={v => patch(bi, { coverage: v })} min={0} max={1} step={0.05} width={70} />
+            </div>
+            <button onClick={() => remove(bi)} style={{ padding: "5px 10px", background: alpha(C.red, 0.13), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}>Remove</button>
+          </div>
+          <div style={{ fontSize: 10, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Wear Schedule</div>
+          <div style={{ fontSize: 10, color: C.faint, marginBottom: 6 }}>atSecond = match elapsed seconds; wearLevel 100=new, 0=fully worn.</div>
+          {(band.wearSchedule ?? []).map((step, si) => (
+            <div key={si} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 5 }}>
+              <div style={{ fontSize: 10, color: C.faint, width: 60 }}>at {step.atSecond}s</div>
+              <div>
+                <div style={{ fontSize: 9, color: C.faint }}>Second</div>
+                <NumInput value={step.atSecond} onChange={v => patchStep(bi, si, { atSecond: v })} min={0} step={5} width={65} />
+              </div>
+              <div>
+                <div style={{ fontSize: 9, color: C.faint }}>Wear (0–100)</div>
+                <NumInput value={step.wearLevel} onChange={v => patchStep(bi, si, { wearLevel: v })} min={0} max={100} step={5} width={65} />
+              </div>
+              <button onClick={() => removeStep(bi, si)} style={{ padding: "3px 8px", background: "none", border: `1px solid ${alpha(C.red, 0.3)}`, borderRadius: 4, color: C.red, fontSize: 10, cursor: "pointer" }}>×</button>
+            </div>
+          ))}
+          <button onClick={() => addStep(bi)} style={{ padding: "4px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.muted, fontSize: 10, cursor: "pointer", marginTop: 2 }}>
+            + Add Wear Step
+          </button>
+        </div>
+      ))}
+      <button onClick={add} style={{ padding: "6px 14px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}>
+        + Add Material Band
+      </button>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EvolutionStages editor (TipPart.evolutionStages[])
+// ─────────────────────────────────────────────────────────────────────────────
+
+const EVOLUTION_TRIGGER_TYPES = [
+  { value: "time",            label: "time (ms elapsed)" },
+  { value: "wear_level",      label: "wear_level (material wear ≤ value)" },
+  { value: "spin_percent",    label: "spin_percent (spin ratio ≤ value)" },
+  { value: "collision_count", label: "collision_count (≥ value)" },
+  { value: "damage_taken",    label: "damage_taken (≥ value)" },
+] as const;
+
+type EvolutionStage = { label: string; configName: string; trigger?: { type: string; value: number } };
+
+function EvolutionStagesEditor({ part, onChange }: { part: Part; onChange: OnChange }) {
+  const stages: EvolutionStage[] = (part.evolutionStages as EvolutionStage[] | undefined) ?? [];
+
+  const update = (s: EvolutionStage[]) => onChange({ evolutionStages: s });
+  const add = () => update([...stages, { label: `Stage ${stages.length}`, configName: "" }]);
+  const remove = (i: number) => update(stages.filter((_, idx) => idx !== i));
+  const patch = (i: number, p: Partial<EvolutionStage>) => update(stages.map((s, idx) => idx === i ? { ...s, ...p } : s));
+  const patchTrigger = (i: number, p: Partial<NonNullable<EvolutionStage["trigger"]>>) =>
+    patch(i, { trigger: { type: "time", value: 0, ...stages[i].trigger, ...p } });
+
+  const STAGE_COLORS = ["#9ca3af", "#fbbf24", "#f97316", "#ef4444"];
+
+  return (
+    <div>
+      <SectionHeader>Evolution Stages</SectionHeader>
+      <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>
+        Stage 0 = default tip. Each subsequent stage fires when its trigger condition is met and automatically switches the active tip config.
+      </div>
+      {stages.length === 0 && (
+        <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>No stages — this tip uses a single fixed config.</div>
+      )}
+      {stages.map((stage, i) => {
+        const dotColor = STAGE_COLORS[Math.min(i, STAGE_COLORS.length - 1)];
+        return (
+          <div key={i} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 8, borderLeft: `3px solid ${dotColor}` }}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end", marginBottom: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: dotColor, minWidth: 60 }}>Stage {i}</div>
+              <div>
+                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Label</div>
+                <input
+                  value={stage.label}
+                  onChange={e => patch(i, { label: e.target.value })}
+                  placeholder="e.g. Worn"
+                  style={{ width: 110, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                />
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Config name</div>
+                <input
+                  value={stage.configName}
+                  onChange={e => patch(i, { configName: e.target.value })}
+                  placeholder="e.g. worn"
+                  style={{ width: 110, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                />
+              </div>
+              {i > 0 && (
+                <button onClick={() => remove(i)} style={{ padding: "5px 10px", background: alpha(C.red, 0.13), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}>Remove</button>
+              )}
+            </div>
+            {i === 0 ? (
+              <div style={{ fontSize: 10, color: C.faint }}>Stage 0 is the starting config — no trigger required.</div>
+            ) : (
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
+                <div>
+                  <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger type</div>
+                  <SearchableSelect
+                    value={stage.trigger?.type ?? "time"}
+                    options={EVOLUTION_TRIGGER_TYPES.map(t => ({ value: t.value, label: t.label }))}
+                    onChange={v => patchTrigger(i, { type: v })}
+                    style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                  />
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>
+                    {stage.trigger?.type === "time" ? "Value (ms)" :
+                     stage.trigger?.type === "wear_level" ? "Wear ≤ (0–100)" :
+                     stage.trigger?.type === "spin_percent" ? "Spin ratio ≤ (0–1)" :
+                     stage.trigger?.type === "collision_count" ? "Collision count ≥" :
+                     "Damage taken ≥"}
+                  </div>
+                  <NumInput
+                    value={stage.trigger?.value ?? 0}
+                    onChange={v => patchTrigger(i, { value: v })}
+                    min={0}
+                    step={stage.trigger?.type === "time" ? 1000 : stage.trigger?.type === "spin_percent" ? 0.05 : 1}
+                    width={90}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <button onClick={add} style={{ padding: "6px 14px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}>
+        + Add Stage
+      </button>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Core (6.6 + 6.8)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const CORE_GIMMICKS = ["none","speed_boost","weight_shift","magnetic","engine_gear","clutch_release","spin_injection","counter_rotation"] as const;
+const FALLBACK_CORE_GIMMICKS = ["none","speed_boost","weight_shift","magnetic","engine_gear","clutch_release","spin_injection","counter_rotation"] as const;
 
 function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
+  const { items: coreGimmickDefs } = useCoreGimmicks();
+  const coreGimmicks = coreGimmickDefs.length > 0
+    ? coreGimmickDefs.map(g => ({ id: g.id, label: g.label }))
+    : FALLBACK_CORE_GIMMICKS.map(g => ({ id: g, label: g.replace(/_/g, " ") }));
   const gimmick = (part.gimmick as string | undefined) ?? "none";
   const si = part.spinInjection as {
     enabled: boolean; rateRPM: number; reserveCapacity: number;
@@ -693,8 +925,8 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       <SectionHeader>Gimmick Type</SectionHeader>
       <Field label="Active gimmick" hint="Gates which specialized block below is visible / active.">
         <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-          {CORE_GIMMICKS.map(g => (
-            <ToggleBtn key={g} label={g.replace(/_/g, " ")} active={gimmick === g} onClick={() => onChange({ gimmick: g })} />
+          {coreGimmicks.map(g => (
+            <ToggleBtn key={g.id} label={g.label} active={gimmick === g.id} onClick={() => onChange({ gimmick: g.id })} />
           ))}
         </div>
       </Field>
@@ -885,16 +1117,15 @@ function CasingFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 // BitBeast (6.8)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SPECIAL_MOVE_OPTIONS = [
-  { value: "none",           label: "None" },
-  { value: "stampede_rush",  label: "Stampede Rush (attack)" },
-  { value: "gyro_anchor",    label: "Gyro Anchor (defense)" },
-  { value: "spin_recovery",  label: "Spin Recovery (stamina)" },
-  { value: "tactical_burst", label: "Tactical Burst (balanced)" },
-  { value: "custom",         label: "Custom…" },
-];
+// SPECIAL_MOVE_OPTIONS is now loaded from Firebase via useSpecialMoves() in BitBeastFields
 
 function BitBeastFields({ part, onChange }: { part: Part; onChange: OnChange }) {
+  const { specialMoves } = useSpecialMoves();
+  const specialMoveOptions = [
+    { value: "none", label: "None" },
+    ...specialMoves.map(m => ({ value: m.id, label: m.type ? `${m.name} (${m.type})` : m.name })),
+    { value: "custom", label: "Custom…" },
+  ];
   const specialMove = (part.specialMove as string | undefined) ?? "none";
   const isCustom = specialMove === "custom";
 
@@ -906,7 +1137,7 @@ function BitBeastFields({ part, onChange }: { part: Part; onChange: OnChange }) 
       <Field label="Special Move" hint="Triggers at full power bar (Space). One per BitBeast.">
         <SearchableSelect
           value={specialMove}
-          options={SPECIAL_MOVE_OPTIONS}
+          options={specialMoveOptions}
           onChange={(v) => onChange({ specialMove: v as any, customMoveName: v !== "custom" ? undefined : (part.customMoveName as string | undefined) })}
           style={{ background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13 }}
         />

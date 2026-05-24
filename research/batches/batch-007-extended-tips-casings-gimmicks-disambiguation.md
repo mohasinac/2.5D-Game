@@ -9,6 +9,10 @@ speculations: 0
 unknowns: 0
 ---
 
+[← Batch 006-X: BX Parts Disambiguation](batch-006-x-parts-disambiguation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 008: Source Verification + Parts Expansion →](batch-008-source-verification-parts-expansion.md)
+
+---
+
 # Batch 007 — Extended Tips / Casings / Gimmicks / Disambiguation
 
 > **Purpose**: Extends batch-006 with the full extended tip catalog (WF, XF, WB, RB, WD, BWD, BS, TB, EWD, EDS, LF), casing shape effects, all mechanical gimmick types (engine gears, clutches, magnacore, etc.), and a complete plastic-gen disambiguation table.
@@ -28,11 +32,12 @@ unknowns: 0
 
 | Property | Corrected Value | Notes |
 |----------|----------------|-------|
-| Petal count | **5 petals** | Not 6. The raised spiral has exactly 5 arms. |
+| Arm count (physical tip) | **5 raised rubber arms** | Not 6. The tip has exactly 5 molded spiral arms. This is a FACT about the tip's geometry. |
 | Structure | Raised rubber petal/spiral arms on a flat base | Not simple flat rubber. The protrusions are molded petal shapes. |
 | Spiral direction | **Right-spinning spiral** (clockwise when viewed from above) | The petal orientation creates asymmetric grip — stronger in right-spin direction. |
 | `spinBias.rightSpin.gripMultiplier` | 1.4 (corrected upward from 1.3) | Spiral structure makes right-spin stick-slip more pronounced. |
-| Flower pattern | 5-petal flower, not 6-petal | Each rubber arm = one petal contact per revolution. |
+| Movement pattern | Flower pattern confirmed [FACT] | Each arm = one stick-slip event per revolution. 5 arms set the minimum stick-slip frequency. |
+| Movement petal count | **N/A — emergent property** | **PHYSICS-FACT (domain-expert, session 22)**: The orbital winding number (apparent "petal count" of the path) varies with launch RPM, angle, position, floor friction, bowl profile, spin energy, and inner-ridge diameter. The 5-arm tip sets a minimum grip-event frequency but does NOT fix the orbital petal count. Same tip: 3–8+ apparent petals under different conditions. Engine: simulate physics; let trajectory emerge. See batch-011 Section D. |
 
 **Corrected engine entry:**
 ```typescript
@@ -790,7 +795,7 @@ This is the most commonly confused plastic gen disambiguation after Wolborg 2 vs
 
 5. **EWD vs EDS**: EWD = Eternal Wide Defense (wide outer ring, slow orbit). EDS = Eternal Defense Sharp (sharp center, near-stationary). Both have free-spin sleeves but different profiles.
 
-6. **R²F vs LF vs LRF**: R²F = 5-petal right spiral rubber. LF = 5-petal left spiral rubber (mirror). LRF = plain rubber flat, left-spin bias, no raised petals.
+6. **R²F vs LF vs LRF**: R²F = 5-arm right spiral rubber (5 raised spiral contact protrusions). LF = 5-arm left spiral rubber (mirror). LRF = plain rubber flat, left-spin bias, no raised arms. NOTE: "5-arm" = physical tip geometry. Movement petal count is emergent, not fixed (PHYSICS-FACT, batch-011 Section D).
 
 7. **Engine Gear does NOT mean "strong"**: The EG gimmick provides a burst of spin injection at a specific trigger, but the trigger timing determines whether it helps. Full Auto Clutch is non-competitive despite being EG.
 
@@ -798,4 +803,4 @@ This is the most commonly confused plastic gen disambiguation after Wolborg 2 vs
 
 ---
 
-← [Batch 006: Shape/Material/Behavior Matrix](batch-006-shape-material-behavior-matrix.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md)
+[← Batch 006-X: BX Parts Disambiguation](batch-006-x-parts-disambiguation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 008: Source Verification + Parts Expansion →](batch-008-source-verification-parts-expansion.md)

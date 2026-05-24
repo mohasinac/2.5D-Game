@@ -41,22 +41,25 @@ export function applyMovementInput(
   if (isControlLocked(beyblade)) return;
 
   if (is25D) {
-    // 2.5D: forces rotate with beyblade facing direction
+    // 2.5D: forces rotate with beyblade facing direction.
+    // Screen convention: x+ = right, y+ = down. Rotation r=0 faces +X (East).
+    // Left strafe (A) = CCW-90° from facing = (sin(r), -cos(r)).
+    // Right strafe (D) = CW-90° from facing = (-sin(r), cos(r)).
     const r = beyblade.rotation;
     if (input.moveLeft) {
-      // right strafe relative to forward (A key = strafe right when facing forward)
-      physics.applyForce(beyblade.id, -Math.sin(r) * forceMagnitude * 1.5, Math.cos(r) * forceMagnitude * 1.5);
-    }
-    if (input.moveRight) {
-      // left strafe relative to forward
+      // A = left strafe relative to forward direction
       physics.applyForce(beyblade.id, Math.sin(r) * forceMagnitude * 1.5, -Math.cos(r) * forceMagnitude * 1.5);
     }
+    if (input.moveRight) {
+      // D = right strafe relative to forward direction
+      physics.applyForce(beyblade.id, -Math.sin(r) * forceMagnitude * 1.5, Math.cos(r) * forceMagnitude * 1.5);
+    }
     if (input.moveUp) {
-      // forward
+      // W = forward
       physics.applyForce(beyblade.id, Math.cos(r) * forceMagnitude * 1.5, Math.sin(r) * forceMagnitude * 1.5);
     }
     if (input.moveDown) {
-      // backward
+      // S = backward
       physics.applyForce(beyblade.id, -Math.cos(r) * forceMagnitude, -Math.sin(r) * forceMagnitude);
     }
   } else {

@@ -9,6 +9,10 @@ speculations: 0
 unknowns: 0
 ---
 
+[← Batch 005: Burst Parts Disambiguation](batch-005-burst-parts-disambiguation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 006-X: BX Parts Disambiguation →](batch-006-x-parts-disambiguation.md)
+
+---
+
 # Batch 006 — Shape / Material / Behavior Matrix
 
 > **Purpose**: Authoritative lookup table covering all tip shapes, tip materials, contact-point shapes, contact-point angles, and contact-point materials. For each combination: the emergent behavior, key physics fields, and real Beyblade examples.
@@ -377,4 +381,4 @@ interface SystemContactPoint {
 
 ---
 
-← [Batch 005: Burst Parts Disambiguation](batch-005-burst-parts-disambiguation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 007: Extended Tips/Casings/Gimmicks/Disambiguation →](batch-007-extended-tips-casings-gimmicks-disambiguation.md)
+[← Batch 005: Burst Parts Disambiguation](batch-005-burst-parts-disambiguation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 006-X: BX Parts Disambiguation →](batch-006-x-parts-disambiguation.md)

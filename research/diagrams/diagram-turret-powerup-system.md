@@ -1,3 +1,7 @@
+[← Tool Ecosystem](diagram-tool-ecosystem.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md)
+
+---
+
 # Diagram: Turret Attack Power-Up System
 
 > Session 12 additions — Illusion, Contra bey-as-weapon, and Contra movement power-ups.
@@ -253,3 +257,7 @@ pie title "Turret Attack Types by Session Group"
   "Contra Bey Power-Ups (S12)" : 8
   "Contra Movement Power-Ups (S12)" : 8
 ```
+
+---
+
+[← Tool Ecosystem](diagram-tool-ecosystem.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md)

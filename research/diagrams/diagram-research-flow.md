@@ -1,4 +1,8 @@
-﻿# Diagram: Research Flow
+[← Presentation Flow](diagram-presentation-flow.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Rotation Systems →](diagram-rotation-systems.md)
+
+---
+
+# Diagram: Research Flow
 
 > **Stage 0C Diagram 15** — Rule 14: Research → Tagged Facts → Validation → Tables → Files → Diagrams → Mapping → Gap Analysis → Runtime Planning → Implementation → Testing.
 
@@ -128,4 +132,5 @@ flowchart TD
 | 1–20 | phase-00 + batch files | Implementation + seed scripts |
 
 ---
-[← Presentation Flow](diagram-presentation-flow.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Rotation Systems →](diagram-rotation-systems.md)
+
+[← Presentation Flow](diagram-presentation-flow.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Rotation Systems →](diagram-rotation-systems.md)

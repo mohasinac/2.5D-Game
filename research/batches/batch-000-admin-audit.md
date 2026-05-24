@@ -1,4 +1,4 @@
-﻿---
+---
 batch: 000
 stage: 0E
 status: complete
@@ -7,6 +7,10 @@ facts: 0
 inferences: 0
 speculations: 0
 unknowns: 0
+---
+
+[↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 001: Schema Catalog →](batch-001-schema-catalog.md)
+
 ---
 
 ## Research Completed
@@ -42,6 +46,7 @@ Full audit of all admin pages under `client/src/pages/admin/`. No external sourc
 | AI Battles | 1 (CRUD inline modal) | 1 | 100% | — |
 | Part Materials | 1 (CRUD inline modal) | 1 | 100% | — |
 | Test Pages (ArenaTest, AIVsAITest) | 2 | 2 | 100% | — |
+| Preset Def CRUD | 9 | 9 | 100% | tip_shape_defs, core_gimmick_defs, attack_type_defs, arena_theme_defs, arena_shape_defs, bowl_profile_defs, trigger_type_defs, stat_event_defs, part_layer_defs |
 | **MISSING pages (plan-required)** | 0 | 4 | 0% | mechanic_defs, gimmick_defs, camera_profiles, audio_profiles |
 
 ---
@@ -87,6 +92,15 @@ Full audit of all admin pages under `client/src/pages/admin/`. No external sourc
 | ROUND_MODIFIERS | round_modifiers | ✅ |
 | AI_BATTLES | ai_battles | ✅ **newly added to COLLECTIONS + page built** |
 | PART_MATERIALS | part_materials | ✅ **new collection + page built** |
+| TIP_SHAPE_DEFS | tip_shape_defs | ✅ **new — TipShapeDefsPage at `/admin/tip-shape-defs`** |
+| CORE_GIMMICK_DEFS | core_gimmick_defs | ✅ **new — CoreGimmickDefsPage at `/admin/core-gimmick-defs`** |
+| ATTACK_TYPE_DEFS | attack_type_defs | ✅ **new — AttackTypeDefsPage at `/admin/attack-type-defs`** |
+| ARENA_THEME_DEFS | arena_theme_defs | ✅ **new — ArenaThemeDefsPage at `/admin/arena-theme-defs`** |
+| ARENA_SHAPE_DEFS | arena_shape_defs | ✅ **new — ArenaShapeDefsPage at `/admin/arena-shape-defs`** |
+| BOWL_PROFILE_DEFS | bowl_profile_defs | ✅ **new — BowlProfileDefsPage at `/admin/bowl-profile-defs`** |
+| TRIGGER_TYPE_DEFS | trigger_type_defs | ✅ **new — TriggerTypeDefsPage at `/admin/trigger-type-defs`** |
+| STAT_EVENT_DEFS | stat_event_defs | ✅ **new — StatEventDefsPage at `/admin/stat-event-defs`** |
+| PART_LAYER_DEFS | part_layer_defs | ✅ **new — PartLayerDefsPage at `/admin/part-layer-defs`** |
 | — | mechanic_defs | ❌ NOT IN COLLECTIONS |
 | — | gimmick_defs | ❌ NOT IN COLLECTIONS |
 | — | camera_profiles | ❌ NOT IN COLLECTIONS |
@@ -429,7 +443,9 @@ Pure taxonomy for turret projectile types. No physics config.
 - wallProfile (baseHeight), slopePhysics (gravityStrength)
 - wall (type "circular", height)
 
-**Distinction from ArenaConfig (ARENAS)**: ArenaSystem is the 3D/physical structure (walls, elevation, slope). ArenaConfig is the feature layer (obstacles, switches, spin zones, bumps). These are separate Firestore collections and separate admin flows.
+**Distinction from ArenaConfig (ARENAS)**: ArenaSystem is the physical structure (walls, elevation, slope). ArenaConfig is the feature layer (obstacles, switches, spin zones, bumps). These are separate Firestore collections and separate admin flows.
+
+**PixiJS v8 crash (fixed session 25)**: The four visualization sub-components (`ArenaSystemOrbitalView`, `ArenaSystemTopDownView`, `ArenaSystemSideView`, `ArenaSystemIsometricView`) all used the PixiJS v6/v7 synchronous constructor API and called `app.renderer.render(app.stage)` manually with `requestAnimationFrame` loops. In v8 all of these crash silently or throw "this.renderer is undefined". All four were rewritten to `await app.init()` + `cancelled` flag + v8 Graphics chained API (`circle().fill()`, `poly().stroke()`, `moveTo/lineTo + stroke()`). CSS variable strings (`C.muted`) were also replaced with hardcoded hex numbers since PixiJS cannot parse CSS variables.
 
 ---
 
@@ -467,6 +483,17 @@ Pure taxonomy for turret projectile types. No physics config.
 | ai_battles not in COLLECTIONS, no admin page | LOW gap | ✅ FIXED — AI_BATTLES constant added, AIBattlesPage built |
 | part_materials collection missing | N/A (new) | ✅ NEW — PART_MATERIALS constant added, PartMaterialsPage built |
 | Tournament no edit page | implicit gap | ✅ FIXED — TournamentEditPage.tsx built |
+| Hardcoded tip shape options in part editor | HIGH gap | ✅ FIXED (session 29) — `tip_shape_defs` collection + `TipShapeDefsPage` + `useTipShapes` hook |
+| Hardcoded core gimmick options in part editor | HIGH gap | ✅ FIXED (session 29) — `core_gimmick_defs` collection + `CoreGimmickDefsPage` + `useCoreGimmicks` hook |
+| Hardcoded attack type labels in ContactPointEditor | MED gap | ✅ FIXED (session 29) — `attack_type_defs` collection + `AttackTypeDefsPage` + `useAttackTypeDefs` hook; color per attack type |
+| Hardcoded arena themes in BasicsTab | MED gap | ✅ FIXED (session 29) — `arena_theme_defs` collection + `ArenaThemeDefsPage` + `useArenaThemeDefs` hook |
+| Hardcoded arena shapes in BasicsTab | MED gap | ✅ FIXED (session 29) — `arena_shape_defs` collection + `ArenaShapeDefsPage` + `useArenaShapeDefs` hook |
+| Hardcoded bowl profiles in BasicsTab | MED gap | ✅ FIXED (session 29) — `bowl_profile_defs` collection + `BowlProfileDefsPage` + `useBowlProfileDefs` hook |
+| Hardcoded trigger types in StatModifiersEditor | MED gap | ✅ FIXED (session 29) — `trigger_type_defs` collection + `TriggerTypeDefsPage` + `useTriggerTypeDefs` hook |
+| Hardcoded stat events in StatModifiersEditor | MED gap | ✅ FIXED (session 29) — `stat_event_defs` collection + `StatEventDefsPage` + `useStatEventDefs` hook |
+| Hardcoded part layers in ContactPointEditor + SwitchTargetsEditor | MED gap | ✅ FIXED (session 29) — `part_layer_defs` collection + `PartLayerDefsPage` + `usePartLayerDefs` hook |
+| Hardcoded material colors in ContactPointEditor canvas | MED gap | ✅ FIXED (session 29) — material colors now read from `part_materials[].color`; merged with fallback map via `useMemo` |
+| Hardcoded special move options in BitBeastFields | MED gap | ✅ FIXED (session 29) — `useSpecialMoves()` → dynamic dropdown; "None" + "Custom…" bookend options preserved |
 | mechanic_defs page missing | CRITICAL | ❌ STILL MISSING |
 | gimmick_defs page missing | CRITICAL | ❌ STILL MISSING |
 | camera_profiles page missing | HIGH | ❌ STILL MISSING |
@@ -482,15 +509,15 @@ Pure taxonomy for turret projectile types. No physics config.
 
 ## Multi-Engine Support Audit
 
-| Admin Page | 2D Support | 2.5D Support | 3D Support | Gap |
-|-----------|------------|-------------|------------|-----|
-| BeybladeEdit | ✅ (stats drive 2D physics) | ✅ (pointsOfContact, radius) | ✅ (via ArenaSystem slope/wall) | No engine-specific param override |
-| ArenaEdit | ✅ (ArenaConfig features) | ✅ (ArenaSystem elevation) | partial | No 3D mesh config |
-| SpecialMoves | ✅ (inline effects sub-object) | ❌ no 2.5D adapter | ❌ no 3D adapter | Missing step authoring and multi-engine flags |
-| Combos | ✅ (inline effect sub-object) | ❌ | ❌ | Missing engine-adapter fields |
-| BehaviorDefs | partial (JSON params) | ❌ | ❌ | Free-form JSON, no adapter distinction |
-| RoundModifiers | ✅ | ✅ (modifierType covers physics) | ✅ | Best coverage of engine-agnostic modifiers |
-| PartMaterials | ❌ (no 2D physics use) | ✅ (physics params for 2.5D parts) | partial | New — coverage TBD |
+| Admin Page | 2D Support | 2.5D Support | Gap |
+|-----------|------------|-------------|-----|
+| BeybladeEdit | ✅ (stats drive 2D physics) | ✅ (pointsOfContact, radius) | No engine-specific param override |
+| ArenaEdit | ✅ (ArenaConfig features) | ✅ (ArenaSystem elevation) | No mesh config |
+| SpecialMoves | ✅ (inline effects sub-object) | ❌ no 2.5D adapter | Missing step authoring and multi-engine flags |
+| Combos | ✅ (inline effect sub-object) | ❌ | Missing engine-adapter fields |
+| BehaviorDefs | partial (JSON params) | ❌ | Free-form JSON, no adapter distinction |
+| RoundModifiers | ✅ | ✅ (modifierType covers physics) | Best coverage of engine-agnostic modifiers |
+| PartMaterials | ❌ (no 2D physics use) | ✅ (physics params for 2.5D parts) | New — coverage TBD |
 
 ---
 
@@ -550,4 +577,5 @@ The plan requires 9 presentation layers. Current admin coverage:
 (none — all admin code was accessible and readable)
 
 ---
-[↑ Index](../INDEX.md) &nbsp;�&nbsp; [Batch 001: Schema Catalog →](batch-001-schema-catalog.md)
+
+[↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 001: Schema Catalog →](batch-001-schema-catalog.md)

@@ -338,9 +338,26 @@ export interface PartDimensions {
   innerRadius: number; // mm
 }
 
+/**
+ * A single step in a material's wear schedule.
+ * `wearLevel` is 0–100 (100 = brand new, 0 = fully worn).
+ * Steps sorted by `atSecond` ascending; engine linearly interpolates between steps.
+ * After the last step the wear level is held constant.
+ */
+export interface WearStep {
+  atSecond: number;   // match-elapsed seconds when this wear level is reached
+  wearLevel: number;  // 0–100
+}
+
 export interface MaterialBand {
   material: Material;
   coverage: number; // 0–1; bands per part should sum to ~1
+  /**
+   * Optional wear schedule. Absent = no wear (level stays 100 all match).
+   * Example — 100→50 over 3 min then hold:
+   *   [{ atSecond: 0, wearLevel: 100 }, { atSecond: 180, wearLevel: 50 }]
+   */
+  wearSchedule?: WearStep[];
 }
 
 export interface PartPocket {
@@ -403,6 +420,13 @@ export interface SystemContactPoint {
   };
   damageMultiplier: number; // 0.8–2.5
   partLayer: PartLayer;
+  /**
+   * Relative weight share for this contact point.
+   * The part's total weight is distributed across all CPs proportionally by this value.
+   * Absent / undefined → defaults to 1.0 (equal share).
+   * Auto-computed suggestion: proportional to (radius × thickness × arcDegrees).
+   */
+  weightFactor?: number;
 
   // Optional roller wheel
   roller?: {
@@ -701,6 +725,18 @@ export interface BasePart {
   rotatable: boolean;
   /** Motor-driven or scheduled rotation independent of the bey spin axis. */
   selfRotation?: PartSelfRotation;
+  /**
+   * Which slot layer this part occupies in a BeybladeSystem.
+   * Mirrors the PartLayer enum. Set explicitly so pickers and validation
+   * can filter candidates without knowing the Firestore collection name.
+   */
+  slotsInto?: PartLayer;
+  /**
+   * 0-indexed position within the slot for beys that have multiple sockets
+   * of the same type (e.g. dual gear ports, multi-AR systems).
+   * Omit / 0 for beys with a single socket per layer.
+   */
+  slotPosition?: number;
   createdAt?: unknown;
   updatedAt?: unknown;
 }
@@ -824,7 +860,32 @@ export interface TipPart extends BasePart {
   extendsAboveCasing?: boolean; // tip body extends up into the normal casing height zone (Rock Bison)
   containsCasing?: boolean;     // tip is outermost shell; casing nests inside (Wolborg G)
   cupInnerSpline?: BezierSplineProfile; // inner bowl curve (Wolborg G)
+  /**
+   * Per-material-zone wear schedules. Bands sum to ~1 coverage.
+   * Each band has a wearSchedule[] that linearly interpolates the wear level (100→0)
+   * over match-elapsed seconds. Server reads these to:
+   *   1. Modulate gripFactor in real-time (lower wear → lower effective grip).
+   *   2. Drive "wear_level" evolution triggers (stage advances when wear ≤ threshold).
+   * Absent = single material with no wear (level stays 100 all match).
+   */
+  materials?: MaterialBand[];
   statModifiers?: StatModifier[];
+  /**
+   * Evolution stages define how the tip's behavior transforms over the course of a match.
+   * Stages are traversed in order (index 0 → 1 → 2 …). Index 0 is the default stage and
+   * requires no trigger — it maps to the tip's base stats (no active config override).
+   * Each subsequent stage has a trigger condition; when met the tip advances and sets
+   * bey.activePartConfigs["tip"] so resolveTipStats() picks up the new config next frame.
+   *
+   * bey.tipEvolutionTimer tracks total match-elapsed ms (never resets between stages).
+   * bey.tipEvolutionStage holds the current index (Colyseus-synced to clients at 60 Hz).
+   *
+   * Example — Xtreme Variable (wears from ball → flat → overdrive):
+   *   stage 0 { label: "Ball Mode", configName: "" }  ← base stats, no trigger
+   *   stage 1 { label: "Flat Mode", configName: "Flat",     trigger: { type: "wear_level",   value: 80 } }
+   *   stage 2 { label: "Overdrive", configName: "Overdrive",trigger: { type: "spin_percent", value: 0.4 } }
+   */
+  evolutionStages?: TipEvolutionStage[];
   configurations: PartConfiguration<{
     tipShape?: TipShape;
     material?: Material;
@@ -834,6 +895,43 @@ export interface TipPart extends BasePart {
     freeSpin?: boolean;
     contactPoints?: SystemContactPoint[];
   }>[];
+}
+
+/**
+ * One stage in an evolution-driver's lifecycle.
+ * Stage 0 is implicit (the tip's base stats); stages 1+ each carry a trigger.
+ *
+ * bey.tipEvolutionTimer = match-elapsed ms (never resets). All time-based and
+ * wear-based triggers read from this single monotonic clock so stages stay
+ * consistent with the existing MaterialBand wear schedule system.
+ */
+export interface TipEvolutionStage {
+  /** Human-readable name shown on the HUD (e.g., "Ball Mode", "Flat Mode", "Overdrive"). */
+  label: string;
+  /**
+   * Config name to activate when entering this stage.
+   * Must match a TipPart.configurations[].name entry.
+   * Empty string "" → use the tip's base stats (stage 0 default).
+   */
+  configName: string;
+  /**
+   * Condition that must be true to advance INTO this stage from the previous one.
+   * Stage 0 needs no trigger — it is the starting state.
+   *
+   * Trigger types (all read bey.tipEvolutionTimer as match-elapsed ms):
+   *   "time"            – tipEvolutionTimer ≥ value (ms). Use for time-gated warm-up.
+   *   "wear_level"      – computeMinWearLevel(tip, elapsedSec) ≤ value (0–100).
+   *                       Reads the dominant MaterialBand wearSchedule — the same
+   *                       wear curve that already drives gripFactor reduction. This is
+   *                       the preferred trigger for realistic rubber/plastic wear.
+   *   "spin_percent"    – spin / maxSpin ≤ value (0–1). Activates at low spin.
+   *   "collision_count" – bey.collisions ≥ value (integer count).
+   *   "damage_taken"    – bey.damageReceived ≥ value (cumulative hp).
+   */
+  trigger?: {
+    type: "time" | "wear_level" | "spin_percent" | "collision_count" | "damage_taken";
+    value: number;
+  };
 }
 
 // ─── Core ─────────────────────────────────────────────────────────────────────

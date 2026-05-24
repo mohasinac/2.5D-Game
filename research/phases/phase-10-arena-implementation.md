@@ -1,4 +1,8 @@
-﻿# Phase 10 — Arena Implementations
+[← Phase 09: Arenas](phase-09-arenas.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 11: Architecture →](phase-11-architecture.md)
+
+---
+
+# Phase 10 — Arena Implementations
 
 > Stage 10 | Source: phase-09-arenas.md + shared/types/arenaConfigNew.ts + ArenaFeatureProcessor.ts
 
@@ -1160,7 +1164,7 @@ These arenas share mechanics with already-seeded P2 arenas. Implement as separat
 | `hasbro-hypersphere-stadium` | Vertical inner wall — no `wallClimbZones[]` | `WallClimbSystem` Phase A.3 | P5 (post-ship) |
 | `anime-hyper-stadium-rise` | Same as HyperSphere | Same | P5 (post-ship) |
 | `tt-bx-46-infinity-stadium` | `"rectangle"` shape missing; Infinity Dash compound loop | Add `"rectangle"` to ArenaShape + `processInfinityDashLoop()` | P4 (after shape extension) |
-| `hasbro-destroyer-dome` | `"sphere"` shape + full 360° orbital physics | Fundamental architecture change — 3D-only | DEFERRED |
+| `hasbro-destroyer-dome` | `"sphere"` shape + full 360° orbital physics | Not implementable in 2D/2.5D; 3D not planned | DEFERRED |
 | `anime-frozen-lake-baikal-full` | Dynamic crack pits spawning from impacts | `ice_crack_generation` processor | LOW (Story Mode) |
 | `anime-wolborg-ice-prison` | Mid-match stadium transform | `stadium_transform` handler | LOW (Story Mode) |
 | `anime-roller-coaster` | Rail-network floor + loop/bank physics | `RailNetworkArena` system | DEFERRED |
@@ -1208,4 +1212,5 @@ The seed script must:
 Source: `research/phases/phase-09-arenas.md`
 
 ---
-[← Phase 09: Arenas](phase-09-arenas.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 11: Architecture →](phase-11-architecture.md)
+
+[← Phase 09: Arenas](phase-09-arenas.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 11: Architecture →](phase-11-architecture.md)

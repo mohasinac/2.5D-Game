@@ -280,8 +280,9 @@ export function TryoutGamePage() {
       const dt = Math.min((ts - lastTsRef.current) / 1000, 0.05);
       lastTsRef.current = ts;
 
+      const b = bey.current;
+
       if (phaseRef.current === "playing") {
-        const b = bey.current;
         const keys = keysRef.current;
         const ar = arenaRadius.current;
         const cx = arenaConfig.current ? arenaConfig.current.width / 2 : 540;
@@ -332,10 +333,26 @@ export function TryoutGamePage() {
         b.rotation += angDir * (b.spin / b.maxSpin) * 6 * dt;
         b.angularVelocity = angDir * (b.spin / b.maxSpin) * 15;
 
+        hudTick++;
+        if (hudTick % 12 === 0) {
+          setHud((prev) => ({
+            ...prev,
+            spin: b.spin,
+            maxSpin: b.maxSpin,
+            health: b.health,
+            timer: timerRef.current,
+          }));
+        }
+      }
+
+      // Always render every frame (arena + bey visible during countdown/launch too)
+      if (arenaConfig.current) {
         const scaledBey = { ...b, x: b.x * 16, y: b.y * 16 };
         const beyMap = new Map<string, ServerBeyblade>([[b.id, scaledBey]]);
         const gs: ServerGameState = {
-          status: b.spin > 0 ? "in-progress" : "finished",
+          status: phaseRef.current === "playing"
+            ? (b.spin > 0 ? "in-progress" : "finished")
+            : "warmup",
           mode: "tryout",
           timer: timerRef.current,
           startTime: 0,
@@ -347,19 +364,7 @@ export function TryoutGamePage() {
           seriesWins: new Map(), seriesLeader: "",
           spectatorCount: 0,
         } as ServerGameState;
-
         render(gs, beyMap);
-
-        hudTick++;
-        if (hudTick % 12 === 0) {
-          setHud((prev) => ({
-            ...prev,
-            spin: b.spin,
-            maxSpin: b.maxSpin,
-            health: b.health,
-            timer: timerRef.current,
-          }));
-        }
       }
 
       rafRef.current = requestAnimationFrame(loop);
@@ -448,7 +453,7 @@ export function TryoutGamePage() {
       {/* Camera zoom controls — top-right under Exit */}
       <CameraControls onZoomIn={cameraZoomIn} onZoomOut={cameraZoomOut} onZoomReset={cameraZoomReset} />
       {/* Controls legend — bottom-left, dismissable */}
-      <ControlsLegend />
+      <ControlsLegend isTryout />
 
       {/* HUD bottom — beyblade stats */}
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, pointerEvents: "none" }}>

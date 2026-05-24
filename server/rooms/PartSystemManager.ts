@@ -42,8 +42,10 @@ import {
   applyBearingFrictionToSteal,
   getBearingDecayMult,
   checkLeftSpinHop,
+  tickEvolutionDriver,
   OBSTACLE_RELAUNCH_THRESHOLD,
   FRAGMENT_LIFETIME_TICKS_DEFAULT,
+  computeMinWearLevel,
 } from "../physics/PartPhysics";
 import { v4 as uuidv4 } from "uuid";
 import { computeClimbingForces, updateBeyTilt, type ArenaGeometry } from "../physics/ClimbingPhysics";
@@ -297,12 +299,22 @@ export class PartSystemManager {
     gameState: GameState,
     baseSpinDecayRate: number,
     arenaGeometry?: ArenaGeometry,
-    applyForce?: (sessionId: string, forceX: number, forceY: number) => void
+    applyForce?: (sessionId: string, forceX: number, forceY: number) => void,
+    dtMs: number = 1000 / 60,
   ): { adjustedSpinDecayRate: number } {
     const state = this.beyStates.get(sessionId);
     if (!state) return { adjustedSpinDecayRate: baseSpinDecayRate };
 
     const { parts, activeModifiers } = state;
+
+    // ── 0. Material wear computation ────────────────────────────────────────
+    // Compute the minimum wear level across all material bands on all parts.
+    // This is a rough worst-case that drives the visual tint sent to clients.
+    if (typeof (gameState as any).timer === "number") {
+      const elapsedSeconds = (gameState as any).timer as number;
+      const wearLevel = computeMinWearLevel(state.parts, elapsedSeconds);
+      bey.materialWearLevel = wearLevel;
+    }
 
     // ── 1. Active StatModifier duration tick ────────────────────────────────
     for (const [key, entry] of activeModifiers) {
@@ -344,6 +356,11 @@ export class PartSystemManager {
     let adjustedSpinDecayRate = baseSpinDecayRate;
     if (parts.tip?.bearingFriction != null) {
       adjustedSpinDecayRate *= getBearingDecayMult(parts.tip.bearingFriction);
+    }
+
+    // ── 4b. Evolution driver — advance tip stage when trigger conditions are met ─
+    if (parts.tip?.evolutionStages && parts.tip.evolutionStages.length > 1) {
+      tickEvolutionDriver(parts.tip, bey, dtMs);
     }
 
     // ── 5. Jump-core movement tick ───────────────────────────────────────────

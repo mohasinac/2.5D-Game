@@ -22,6 +22,8 @@ import { normalizeInput, invertInputControls, type PlayerInput } from "../shared
 import { resolveWallAngle, computeTiltForce } from "../shared/physics/ArenaUtils";
 import { resolvePhysicsFlags } from "../utils/physicsFlags";
 import { processArenaFeatures } from "../shared/rooms/ArenaFeatureProcessor";
+import { tickTurrets, type TurretProcessorBridge } from "../shared/rooms/TurretDispatch";
+import type { TurretRuntimeState } from "../shared/rooms/TurretProcessor";
 import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
 import { advanceArenaRotation, advanceArenaTilt, applyWeightTilt } from "../shared/rooms/advanceArenaRotation";
 import {
@@ -114,6 +116,8 @@ export class BattleRoom extends Room<GameState> {
   protected comboEffectsCache = new Map<string, ComboEffectDoc>();
   /** Arena-wide effect expiry timestamps keyed by effectId (Phase AA). */
   protected arenaEffectExpiries = new Map<string, number>();
+  /** Per-turret runtime state for ongoing effects (TurretDispatch). */
+  protected turretRuntimes = new Map<string, TurretRuntimeState>();
   /** Arena timeline state (Phase T) — sorted events + elapsed time tracking. */
   private matchElapsedMs = 0;
   private timelineIndex = 0;
@@ -1235,8 +1239,8 @@ export class BattleRoom extends Room<GameState> {
     // Phase V: arena shrink
     if (this.shrinkEnabled) this.tickArenaShrink();
 
-    // Phase AA: expire arena-wide effects
-    this.tickArenaEffects(Date.now());
+    // Phase AA: expire arena-wide effects + turret dispatch
+    this.tickArenaEffects(Date.now(), deltaTime);
 
     // B3 / G1-G3: jump physics
     this.tickJumpStates(deltaTime);
@@ -1788,7 +1792,7 @@ export class BattleRoom extends Room<GameState> {
     // Pick random pool entry
     const pool: any[] = spawnCfg.beyPool;
     if (!pool || pool.length === 0) return;
-    const entry = pool[Math.floor(Math.random() * pool.length)];
+    const entry = pool[Math.floor(this.rand() * pool.length)];
 
     const spawnId = `spawned_${Date.now()}`;
     this.spawnedBeyIds.add(spawnId);
@@ -2322,14 +2326,35 @@ export class BattleRoom extends Room<GameState> {
     }
   }
 
-  /** Expire arena-wide effects and broadcast clear events (Phase AA). */
-  protected tickArenaEffects(nowMs: number): void {
+  /** Expire arena-wide effects and broadcast clear events (Phase AA). Also ticks turret dispatch. */
+  protected tickArenaEffects(nowMs: number, dtMs: number): void {
     this.arenaEffectExpiries.forEach((expiresAt, effectKey) => {
       if (nowMs >= expiresAt) {
         this.arenaEffectExpiries.delete(effectKey);
         this.broadcast("arena-effect-end", { effectKey });
       }
     });
+
+    if (this.state.turrets.size > 0) {
+      const bridge: TurretProcessorBridge = {
+        applyForce: (id: string, fx: number, fy: number) => this.physics.applyForce(id, fx, fy),
+        applyKnockback: (id: string, dir: { x: number; y: number }, dist: number) => this.physics.applyForce(id, dir.x * dist, dir.y * dist),
+        getPosition: (id: string) => {
+          const b = this.state.beyblades.get(id);
+          return b ? { x: b.x, y: b.y } : null;
+        },
+      };
+      const beyArr = Array.from(this.state.beyblades.values()) as Beyblade[];
+      tickTurrets(
+        this.state.turrets as unknown as Map<string, { attackType: string; x: number; y: number; cooldown: number; cooldownEndTime: number; lastFireTime: number; isActive: boolean; isDestroyed: boolean; firePattern?: string }>,
+        this.arenaCache?.turrets ?? [],
+        this.turretRuntimes,
+        beyArr,
+        bridge,
+        nowMs,
+        dtMs,
+      );
+    }
   }
 
   // ─── Arena Timeline (Phase T) ────────────────────────────────────────────────

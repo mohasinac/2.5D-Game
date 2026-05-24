@@ -1,4 +1,8 @@
-﻿# Phase 01 — Terminology, Definitions, Concepts
+[← Phase 00: Engine Audit](phase-00-engine-audit.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 02: Special Moves →](phase-02-special-moves.md)
+
+---
+
+# Phase 01 — Terminology, Definitions, Concepts
 
 > **Stage 1** | Source: `linka/concepts/` (120+ files read) + internet validation (3 targeted searches)
 > **Date:** 2026-05-23
@@ -560,3 +564,6 @@ Thirty-one disambiguation entries documented. Four are CRITICAL risk (will cause
 
 *End of Batch 1K*
 
+---
+
+[← Phase 00: Engine Audit](phase-00-engine-audit.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 02: Special Moves →](phase-02-special-moves.md)

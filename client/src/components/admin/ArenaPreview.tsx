@@ -287,6 +287,9 @@ interface Props {
 export default function ArenaPreview({ arena }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<PIXI.Application | null>(null);
+  // True only after await app.init() completes — guards rebuildScene from accessing
+  // app.screen before _renderer is initialized (crashes: "this.renderer is undefined").
+  const appInitializedRef = useRef(false);
   const arenaContainerRef = useRef<PIXI.Container | null>(null);
   const rotationRef = useRef(0);
   // Always-current ref — avoids stale closures in ticker and rebuildScene
@@ -296,7 +299,7 @@ export default function ArenaPreview({ arena }: Props) {
   // Stable rebuild — all dynamic values computed from refs + app.screen dimensions
   const rebuildScene = useCallback(() => {
     const app = appRef.current;
-    if (!app || app.screen.width === 0) return;
+    if (!app || !appInitializedRef.current || app.screen.width === 0) return;
 
     app.stage.removeChildren();
 
@@ -591,7 +594,9 @@ export default function ArenaPreview({ arena }: Props) {
     if (!containerRef.current) return;
     let cancelled = false;
     const app = new PIXI.Application();
-    appRef.current = app;
+    // Do NOT set appRef.current here — set it only after init() completes.
+    // Setting it before init causes rebuildScene() to access app.screen while
+    // _renderer is still undefined, crashing with "this.renderer is undefined".
 
     (async () => {
       const size = containerRef.current!.offsetWidth || 400;
@@ -615,6 +620,10 @@ export default function ArenaPreview({ arena }: Props) {
       app.canvas.style.height = "100%";
       containerRef.current.appendChild(app.canvas);
 
+      // Mark ready BEFORE exposing ref so any pending rebuildScene() calls see it.
+      appInitializedRef.current = true;
+      appRef.current = app;
+
       rebuildScene();
 
       app.ticker.add(() => {
@@ -629,6 +638,7 @@ export default function ArenaPreview({ arena }: Props) {
 
     return () => {
       cancelled = true;
+      appInitializedRef.current = false;
       try { app.destroy(true, { children: true }); } catch { /* init may still be in flight */ }
       appRef.current = null;
       arenaContainerRef.current = null;
@@ -637,7 +647,7 @@ export default function ArenaPreview({ arena }: Props) {
 
   // Rebuild when arena config changes
   useEffect(() => {
-    if (appRef.current) rebuildScene();
+    if (appRef.current && appInitializedRef.current) rebuildScene();
   }, [arena, rebuildScene]);
 
   // Respond to container resize
@@ -646,7 +656,7 @@ export default function ArenaPreview({ arena }: Props) {
     const observer = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
       const app = appRef.current;
-      if (app && width > 0 && height > 0) {
+      if (app && appInitializedRef.current && width > 0 && height > 0) {
         app.renderer.resize(width, height);
         rebuildScene();
       }

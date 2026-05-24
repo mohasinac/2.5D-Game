@@ -1,4 +1,8 @@
-﻿# Phase 07 — Gen1 Bey Systems Table
+[← Phase 06: Mechanics](phase-06-mechanics.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 07b: Generations 2-4 →](phase-07-gen234.md)
+
+---
+
+# Phase 07 — Gen1 Bey Systems Table
 
 **Scope:** All Gen1 beyblade entries — Plastic era (SGS / Magnacore / Engine Gear) + HMS era.  
 **Date built:** 2026-05-23  
@@ -479,3 +483,6 @@ Every Dranzer blade base has a switchable tip: S→Spiral Change, F→Flame Chan
 
 *End of Phase 07 Gen1 Appendix (Narrative)*
 
+---
+
+[← Phase 06: Mechanics](phase-06-mechanics.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 07b: Generations 2-4 →](phase-07-gen234.md)

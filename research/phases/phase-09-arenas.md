@@ -1,4 +1,8 @@
-﻿# Phase 09 — Arena Systems
+[← Phase 08: Gimmicks](phase-08-gimmicks.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 10: Arena Implementation →](phase-10-arena-implementation.md)
+
+---
+
+# Phase 09 — Arena Systems
 
 > Stage 9 | Source: linka/stadiums/ + arenaConfigNew.ts + ArenaFeatureProcessor.ts + diagram-arena-interaction.md
 
@@ -501,7 +505,7 @@ Old fields remain for backward compat. `matchModifiers` takes precedence when pr
 
 ### Abandoned Roller Coaster Arena
 - **Shape**: rail network (non-arena topology entirely)
-- **Dimensions**: multi-segment rail track with 3D geometry
+- **Dimensions**: multi-segment rail track
 - **Key Features**: Rails as the floor surface; loops, banked turns, junctions; off-rail = ring-out
 - **Arena Feature Mapping**:
   | Feature | ArenaConfig field | Value | Notes |
@@ -1379,7 +1383,7 @@ List of all feature types that need new `executeBehavior()` cases, or new top-le
 | P5 | **Battle Tower floors 1–4** | Triangle shape + spike floor + obstacle variants | Floors 1–4 implementable; Floor 5 needs dynamic collapse |
 | P5 | **China Towers Peak** | Wind gusts `environmentalEffect:"storm"` | Simple: `environmentalEffect:"storm"` |
 | P5 | **Enrique's Colosseum** | Tiered rebound walls; requires schema extension | BLOCKED on `tieredWalls[]` |
-| DEFERRED | **Destroyer Dome** | Sphere physics — fundamentally incompatible with 2D bowl model | BLOCKED — requires 3D orbit physics |
+| DEFERRED | **Destroyer Dome** | Sphere physics — fundamentally incompatible with 2D bowl model; 3D not planned | BLOCKED — not implementable in 2D/2.5D |
 | DEFERRED | **Abandoned Roller Coaster** | Rail network arena — completely different physics model | BLOCKED — `RailNetworkArena` schema |
 | DEFERRED | **Wolborg Ice Prison** | Mid-match stadium transform | BLOCKED — `StadiumTransform` system |
 | DEFERRED | **Dynamic crack ice (Frozen Lake Baikal full version)** | Dynamic pit spawning from impacts | BLOCKED — `dynamicPitSystem` |
@@ -1567,3 +1571,6 @@ autoTilt: false
 
 *End of Appendix 9Z*
 
+---
+
+[← Phase 08: Gimmicks](phase-08-gimmicks.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 10: Arena Implementation →](phase-10-arena-implementation.md)

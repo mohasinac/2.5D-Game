@@ -1,9 +1,15 @@
-﻿# Phase 02 — Special Move Understanding
+[← Phase 01: Terminology](phase-01-terminology.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 03: Special Move -> Bey Map →](phase-03-specialmove-bey-map.md)
+
+---
+
+# Phase 02 — Special Move Understanding
 
 > Stage 2 | Source: linka/special-moves/ (39 files read) + engine validation
 > Tag key: FACT | INFERENCE | SPECULATION | UNKNOWN
 > Date: 2026-05-23
 > Total moves documented: 119 unique special moves (per README mining stats), 91 mapped in detail below, remainder covered in batch entries
+
+> **DECISION (2026-05-24)**: 3D simulation is not planned. The "3D Method" column in the tables below is retained as historical research context but is not an implementation target. Only the "2D Method" and "2.5D Method" columns are relevant for engine work.
 
 ---
 
@@ -63,7 +69,7 @@ No special-move handler code changes were required. This is a documentation-only
 - **SPECULATION** — plausible but unverified
 - **UNKNOWN** — not yet verifiable
 
-### 3D Archetype Tags Used
+### Move Archetype Tags Used
 
 | Tag | Meaning |
 |---|---|
@@ -292,7 +298,7 @@ Mechanics not currently in the engine that multiple important moves require.
 | Dread Cannon, Revive Crush, Phantom Fire Shot | `sub_object_spawn` — detached armor/projectile as separate physics body with wall-bounce | Matter.js bodies in Colyseus are registered beys; no sub-object per-bey system | **P1 — High** |
 | Nothing Break | `hitAbsorbCounter` persistent integer field + `chargeScaledRelease` | No current mechanism to count absorbed hits across multiple ticks as a state variable | **P2 — Medium** |
 | Dark Lightning | `contactAura.triggersRingOut` — contact triggers ring-out finisher directly | Existing contact results in damage, not a ring-out forcing mechanism | **P2 — Medium** |
-| Blazing Gigs Tempest | Volumetric feather field: stadium-wide 3D bounding box (not a radius) height-limited at 400mm; barricade active while field present | Current zone systems are 2D radius circles; volumetric box with height limit requires 3D zone type | **P2 — Medium** |
+| Blazing Gigs Tempest | Volumetric feather field: stadium-wide zone (not a radius circle) height-limited at 400mm; barricade active while field present | Current zone systems are 2D radius circles; a rectangular bounding zone would require a new zone shape type | **P2 — Medium** |
 | Requiem Spin | `bidirectionalDrain` — spin-steal effective regardless of opponent spin direction | Existing `spinStealFactor` is direction-agnostic in code but semantically modeled as same-direction coupling | **P2 — Medium** |
 | King Lion 100 Fang Fury, Eight-Headed Dragon | `verticalSpreadEnabled` on `multiStrike` — some strikes come from above/below | multiStrike currently fires all hits from the same direction; vertical spread needs per-hit angle override | **P2 — Medium** |
 | Turbo Awakening | `permanent` activation flag + `turboPowerThreshold` accumulation gate | COMBO_ACTIVATION state currently uses timer; needs a "permanent rest-of-match" flag and a separate accumulator | **P2 — Medium** |
@@ -824,9 +830,9 @@ All 39 files in `linka/special-moves/` read and incorporated:
 
 1. **Dominant archetype**: The `shooting-star-dive` pattern (AirborneSystem + descent_strike) is the single most common Gen2-Gen3 battle-ending pattern — present in 15+ moves. The engine's AirborneSystem is correctly positioned as the core infrastructure for this.
 
-2. **3D engine accuracy**: All Gen4 Xtreme Dash variants are already 3D-correct (rail physics inherently 3D). Gen1 pillar moves (Phantom Hurricane, Galaxy Storm) required the most correction — from flat 2D discs to tall vertical cylinders.
+2. **Move geometry accuracy**: Gen1 pillar moves (Phantom Hurricane, Galaxy Storm) required correction from flat 2D discs to tall vertical cylinder hit volumes. Gen4 Xtreme Dash variants are inherently rail-physics-driven.
 
-3. **Highest-priority new mechanic**: `hitVolume.cylinder` (tall vertical hit zone) affects 4+ moves and fundamentally changes how vortex/pillar specials interact with the 3D arena. Without it, Phantom Hurricane and Lion Gale Force Wall collapse to flat-disc behavior.
+3. **Highest-priority new mechanic**: `hitVolume.cylinder` (tall vertical hit zone) affects 4+ moves and fundamentally changes how vortex/pillar specials interact with the arena. Without it, Phantom Hurricane and Lion Gale Force Wall collapse to flat-disc behavior.
 
 4. **Sub-object system gap**: Dread Cannon, Revive Crush, and Phantom Fire Shot all require detached armor/projectile as a separate physics body. No such system currently exists in the engine. This is P1 because it affects a canonical wiki-verified move family.
 
@@ -1028,3 +1034,6 @@ All 39 files in `linka/special-moves/` read and incorporated:
 | `turbo_bey` | Speed + collision damage surge | `_turboSpeedMult/_turboCollisionMult` |
 | `cannon_bey` | Catapult toward furthest opponent at 3000 force | `applyKnockback` max force |
 
+---
+
+[← Phase 01: Terminology](phase-01-terminology.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 03: Special Move -> Bey Map →](phase-03-specialmove-bey-map.md)

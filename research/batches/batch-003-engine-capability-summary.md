@@ -1,4 +1,4 @@
-﻿# Batch 003 — Engine Capability Summary
+# Batch 003 — Engine Capability Summary
 
 > **Stage 0D** — Synthesised from batch-000 (admin audit), batch-001 (schema catalog), batch-002 (discovery table) and all Stage-0C diagrams.
 > All claims tagged: FACT | INFERENCE | SPECULATION | UNKNOWN
@@ -23,7 +23,7 @@
 | Arena shrink system | ✅ Complete | `ArenaState.effectiveRadius`; driven by `ArenaConfig.shrink` (startMs, endMs, minRadiusFraction) | FACT |
 | Arena timeline events | ✅ Complete | `arenaTimeline[]` sorted by `triggerMs`; BattleRoom tracks `matchElapsedMs` + `timelineIndex` per tick | FACT |
 | `PhysicsStrategy` interface | ✅ Complete | Pluggable lifecycle + entity + per-tick contract; 2D and 2.5D each implement it | FACT |
-| 3D simulation | ❌ Not built | Interface defined; no Cannon.js / Rapier / three.js anywhere in `server/` | FACT |
+| 3D simulation | ✅ via 2.5D | 2.5D is the depth/3D layer: shape makers (Fourier profiles, arc-segment CPs) + perspective warps (tilt stack) + z-layer physics (beyTiltAngle, ClimbingPhysics) | DECISION |
 
 ### 1.2 Spin System
 
@@ -420,7 +420,8 @@ part_materials (new), ai_battles (new)
 | `animationPresetId` missing from all behavior docs | MEDIUM | `special_moves`, `combos`, `behavior_defs` | Animation presets remain a standalone taxonomy with no wiring |
 | `wallAngle` + `ArenaConfig.shrink` not in admin forms | LOW | Arena admin | Designers cannot configure bowl depth or shrink |
 | Gamepad support | LOW | `useGameInput.ts` | Bits reserved, not wired |
-| 3D physics adapter | LOW | `server/` (no implementation) | Would require a separate physics library |
+| ~~3D physics adapter~~ | N/A | — | Not planned; game is 2D/2.5D only |
 
 ---
-[← Batch 002: Discovery Table](batch-002-discovery-table.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Batch 004: MFB Parts Disambiguation →](batch-004-mfb-parts-disambiguation.md)
+
+[← Batch 002: Discovery Table](batch-002-discovery-table.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 004: MFB Parts Disambiguation →](batch-004-mfb-parts-disambiguation.md)

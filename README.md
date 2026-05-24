@@ -140,7 +140,7 @@ The integrated Next.js admin panel provides a comprehensive interface for managi
 - Configure obstacles, hazards, and special zones
 - Add water bodies with physics properties
 - Place and configure turrets
-- Real-time 3D preview
+- Real-time isometric/top-down preview
 - Save and load configurations
 
 ### Game Statistics

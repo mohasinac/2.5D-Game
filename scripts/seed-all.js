@@ -134,6 +134,12 @@ const SEEDERS = [
     description: "19 2.5D parts across 7 collections",
   },
   {
+    name: "gears",
+    script: "seed-gears.js",
+    collections: ["gear_parts"],
+    description: "5 gear parts (Evolution Gear L/F/S + Infinite Sword/Shield)",
+  },
+  {
     name: "bey-systems",
     script: "seed-beyblade-systems.js",
     collections: ["beyblade_systems"],
@@ -186,6 +192,60 @@ const SEEDERS = [
     script: "seed-stat-defs.js",
     collections: ["stat_defs"],
     description: "~35 typed stat definitions across beyblade / arena / part / match / modifier categories",
+  },
+  {
+    name: "tip-shapes",
+    script: "seed-tip-shapes.js",
+    collections: ["tip_shape_defs"],
+    description: "16 tip shape presets (flat, sharp, rubber, bearing, etc.)",
+  },
+  {
+    name: "core-gimmicks",
+    script: "seed-core-gimmicks.js",
+    collections: ["core_gimmick_defs"],
+    description: "12 core gimmick types (mode change, dual spin, spring launch, etc.)",
+  },
+  {
+    name: "attack-type-defs",
+    script: "seed-attack-type-defs.js",
+    collections: ["attack_type_defs"],
+    description: "8 attack types for contact points (smash, upper, burst, absorb, etc.)",
+  },
+  {
+    name: "arena-theme-defs",
+    script: "seed-arena-theme-defs.js",
+    collections: ["arena_theme_defs"],
+    description: "12 arena visual themes (volcano, ice, space, neon, etc.)",
+  },
+  {
+    name: "arena-shape-defs",
+    script: "seed-arena-shape-defs.js",
+    collections: ["arena_shape_defs"],
+    description: "10 arena boundary shapes (circle, hexagon, star, stadium, etc.)",
+  },
+  {
+    name: "bowl-profile-defs",
+    script: "seed-bowl-profile-defs.js",
+    collections: ["bowl_profile_defs"],
+    description: "8 bowl wall-angle profiles (flat through extreme 75°)",
+  },
+  {
+    name: "trigger-type-defs",
+    script: "seed-trigger-type-defs.js",
+    collections: ["trigger_type_defs"],
+    description: "12 stat modifier trigger conditions (always, on_hit, low_spin, etc.)",
+  },
+  {
+    name: "stat-event-defs",
+    script: "seed-stat-event-defs.js",
+    collections: ["stat_event_defs"],
+    description: "15 stat tracking events (collision, burst, ring_out, etc.)",
+  },
+  {
+    name: "part-layer-defs",
+    script: "seed-part-layer-defs.js",
+    collections: ["part_layer_defs"],
+    description: "12 part layer types for contact point assignments (upper, blade, guard, etc.)",
   },
 ];
 

@@ -1,4 +1,8 @@
-﻿# Phase 19 — Implementation Plan
+[← Phase 16: Gap Analysis](phase-16-gap-analysis.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 20: Code Generation →](phase-20-codegen.md)
+
+---
+
+# Phase 19 — Implementation Plan
 
 > Stage 19 | Source: phase-16-gap-analysis.md (60 gaps)
 > Purpose: Ordered task list, file-by-file, for Stage 20 code generation.
@@ -702,4 +706,5 @@ Block M can be inserted anywhere after Block B (schema must exist first). Recomm
 Source: phase-16-gap-analysis.md + user addendum (collision flags + trick-shot friendly fire)
 
 ---
-[← Phase 16: Gap Analysis](phase-16-gap-analysis.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 20: Code Generation →](phase-20-codegen.md)
+
+[← Phase 16: Gap Analysis](phase-16-gap-analysis.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 20: Code Generation →](phase-20-codegen.md)

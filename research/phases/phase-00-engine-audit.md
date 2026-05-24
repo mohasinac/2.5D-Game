@@ -1,3 +1,7 @@
+[↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 01: Terminology →](phase-01-terminology.md)
+
+---
+
 # Phase 00 — Engine Audit
 
 > Synthesised from: batch-000 (admin audit) · batch-001 (schema catalog) · batch-002 (discovery table) · batch-003 (capability summary) · Stage-0C 17 diagrams.
@@ -12,6 +16,8 @@
 The server runs a synchronous 60Hz Matter.js loop. Beyblades are circles (`radius × 24 px`). Forces are applied from player/AI input via `computeForceMagnitude()` → `Matter.Body.applyForce()`. Collisions fire `Matter.Events 'collisionStart'` → `handleCollision()`, which applies a 5-material damage table, direction-dependent spin steal (same-dir ×0.5, counter ×1.5), and element-type multipliers from `ElementTypeLoader`.
 
 The spin system is complete: `spin`, `spinDecayRate`, `maxSpin`, `spinDirection`, `spinStealFactor`. At < 40% stability, seeded PRNG wobble forces kick in. Counter-rotation sequencing (Dranzer GT) is implemented via `counterRotActive / counterRotStep / counterRotStepTick`.
+
+> **PRNG consistency fix (session 25)**: `BattleRoom.ts` spawn pool selection was using `Math.random()` — an unseeded call that breaks deterministic replay. Fixed to `this.rand()` so all random choices go through the matchId-seeded `createPRNG` instance.
 
 The 2.5D physics layer (`PartPhysics.ts`) extends the core with tip stats (`spinBias`, `bearingFriction`), material stats, and CP radial gating (±2mm). Two contact-point shapes coexist: legacy (angle/width/radius/thickness) and arc-segment (arcStart/arcEnd/rInner/rOuter). `resolveCpBounds()` normalises both.
 
@@ -64,8 +70,7 @@ Four room types. Series format BO1/3/5 via `SeriesManager`. Spectator support ac
 ### LOW
 
 10. **Gamepad input** — Bitmask bits 0–9 are defined but no gamepad event reader is wired in `useGameInput.ts`.
-11. **3D physics adapter** — Type defined but no implementation exists.
-12. **Admin pages for gimmicks, mechanics, camera profiles, audio profiles** — Not built. These are P1/P2 priorities in the rebuild.
+11. **Admin pages for gimmicks, mechanics, camera profiles, audio profiles** — Not built. These are P1/P2 priorities in the rebuild.
 
 ---
 
@@ -148,7 +153,7 @@ All 17 Stage-0C diagrams are in `research/diagrams/`:
 | diagram-engine-capabilities.md | Full engine feature map |
 | diagram-mechanics.md | Mechanic → Combo → Gimmick → SpecialMove → Part → Beyblade |
 | diagram-data-flow.md | DB → Validation → Compiler → Runtime (Rule 7) |
-| diagram-simulation-arch.md | 2D/2.5D/3D adapter architecture (Rule 2) |
+| diagram-simulation-arch.md | 2D/2.5D adapter architecture (Rule 2) |
 | diagram-presentation-flow.md | 9-layer presentation model (Rule 6) |
 | diagram-sequence-launch.md | Input → collision → state update sequence |
 | diagram-mode-flow.md | Mode trigger → config → stat changes |
@@ -162,3 +167,7 @@ All 17 Stage-0C diagrams are in `research/diagrams/`:
 | diagram-research-flow.md | Research → Tagged Facts → Implementation (Rule 14) |
 | diagram-script-authoring-flow.md | Admin editor → Compiler → RuntimePackage (Rule 15) |
 | diagram-script-execution.md | CoreSimulation → CompositionBlocks → Renderer (Rule 15) |
+
+---
+
+[↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 01: Terminology →](phase-01-terminology.md)

@@ -3,10 +3,14 @@ batch: 004
 stage: 5-addendum
 status: complete
 sources_checked: 18
-facts: 46
+facts: 52
 inferences: 12
 speculations: 0
 unknowns: 4
+---
+
+[← Batch 003: Engine Capability Summary](batch-003-engine-capability-summary.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 005: Burst Parts Disambiguation →](batch-005-burst-parts-disambiguation.md)
+
 ---
 
 # Batch 004 — MFB Parts Disambiguation (Full Reference)
@@ -59,7 +63,7 @@ unknowns: 4
 | Pattern | **Flower pattern** — bey traces a petal-shaped path from periodic stick-slip | FACT (sourced: Beyblade Wiki Xtreme page) |
 | Tip geometry | R²F and LRF are **spiral-grooved rubber discs** — the surface has a continuous helical groove, NOT discrete spike or petal protrusions. The groove direction determines spin compatibility (CW groove = right-spin, CCW groove = left-spin). | FACT (user-confirmed from physical part image) |
 | Flower pattern (movement) | The **petal-shaped path** the bey traces on the stadium floor is real — it arises from the spiral groove's periodic stick-slip grip cycle, not from literal petal shapes on the tip. | FACT |
-| Petal count (movement) | The number of "petals" in the movement path depends on the spiral pitch and floor speed, not on a discrete spike count. Exact petal count of the movement pattern for R²F, LRF, and Xtreme is UNKNOWN from Tier-1 sources. | UNKNOWN |
+| Petal count (movement) | **PHYSICS-FACT (domain-expert)** — Petal count is an emergent property, not a fixed tip attribute. Variables: launch RPM, launch angle, launch position, tip friction, floor surface, arena slope/bowl, spin energy level, inner-ridge diameter. The trajectory inscribes a rhodonea/spirograph curve inside the stadium circle; petal count = winding number of that curve. Same tip produces 3–8+ petals depending on launch conditions. Asking for a "fixed petal count" for a tip is a category error — tips have a friction profile and contact-area profile, not a petal count. Engine implication: do NOT hardcode a petal count per tip; simulate friction force + orbital radius + energy decay and let the trajectory emerge. | PHYSICS-FACT (domain-expert) |
 | Stamina cost | High drain | FACT (sourced: WBO) |
 
 > Confirmed quote (Xtreme): *"With Xtreme and its flat shape, rubber not only allows aggressive movements, it also helps maintaining the flower-pattern, making banked shots more effective."* — Beyblade Wiki
@@ -171,7 +175,8 @@ All entries marked FACT unless noted.
 | MB | **Metal Ball** | Metal | Hemisphere | Wandering defense, heavier | FACT |
 | D | **Defense** | Plastic | Wide dome / semi-circle | Slow wandering | FACT |
 | WD | **Wide Defense** | Plastic | Wide flat/conical disc (NOT a dome) | Slow orbit, long precession | FACT — ~0.7g; most used competitive stamina bottom |
-| EWD | **Eternal Wide Defense** | Plastic | Wide disc with free-spinning outer ring | Very slow, long precession | FACT |
+| EWD | **Eternal Wide Defense** | Plastic | Wide disc with **one bearing** free-spinning outer ring (NOT double-bearing) — single bearing = considerable friction remains; wears quickly, loses stamina; no balance issues due to wide shape | Very slow, long precession; best for spin-stealing last-second outspin | FACT — **Engine note**: `bearingFriction: 0.12` (single bearing, still considerable friction), NOT 0.02 (B:D's near-zero). Source: Fandom wiki (batch-013) |
+| W²D | **Wave Wide Defense** | Plastic | Flat surface with a spike in the center; spike prone to wearing quickly, making tip more aggressive over time; "upgrade of WD" but with **slightly worse balance than WD** (tradeoff: better LAD / slightly more attack, worse balance) — WD still situationally preferred | Slow orbit; improved LAD vs WD; slightly worse balance | FACT — full name confirmed batch-010; balance tradeoff confirmed batch-013. Source: Fandom wiki + WBO |
 | SWD | **Sharp Wide Defense** | Plastic | Wide outer ring (same outer profile as WD/EWD) with a sharp cone at center; hole at the bottom of the ring reveals the sharp tip protruding upward — similar to DS but outer ring is wider; appearance mirrors EWD minus the free-spinning bearing. Translucent red TT release. | Center-seeking (sharp tip) with wide outer ring for stability | FACT — name CORRECTED: "SWD" = Sharp Wide Defense NOT Spiral Wide Defense. Source: beyblade.fandom.com/wiki/Performance_Tip_-_Sharp_Wide_Defense (user-confirmed) |
 | F | **Flat** | Plastic | Flat disc | Aggressive, fast, erratic | FACT |
 | HF | **Hole Flat** | Plastic | Flat disc with central hole | Aggressive with slight center bias | FACT — hole reduces contact area; plastic only, no rubber |
@@ -193,7 +198,7 @@ All entries marked FACT unless noted.
 
 | Abbreviation | Full Name | Mechanism | Used By |
 |-------------|-----------|-----------|---------|
-| B:D | **Bearing Drive** | Ball bearings support free-spinning tip; near-zero floor friction; pure stamina zombie | Phantom Orion (BB-118) |
+| B:D | **Bearing Drive** | Multiple ball bearings (internal metal shaft + metal casing) support free-spinning tip; near-zero floor friction; pure stamina zombie. **World record: 7:35 min** (beat own previous record of 7:12). **Height = equivalent to 170 spin track.** At very low spin, base contacts stadium floor → transitions from free-spinning tip to base-contact LAD mode (two-phase behavior). | Phantom Orion (BB-118) — Source: Fandom wiki (batch-013) |
 | F:D | **Final Drive** | Auto-mode: SF tip retracts on impact as spin drops, exposing rubber hole-flat | Big Bang Pegasis (BB-105), Cosmic Pegasus |
 | D:D | **Delta Drive** | Manual 3-mode: Wide Ball / Flat / Sharp | VariAres D:D (BB-114) |
 | X:D | **X Drive** | Widest 4D Bottom (37.95mm); 3 tips: XF / S / S²D | Diablo Nemesis (BB-122) |
@@ -304,6 +309,10 @@ FACT entries are directly sourced. INFERENCE entries are known parts not individ
 | Beyblade Fandom Wiki — Spin Absorption | 1 | Rubber CP = spin steal via rotational energy |
 | WorldBeyblade.org — spin stealing guide | 1 | Spin steal = rotational energy transfer |
 | WorldBeyblade.org — MFB Bottom List | 1 | WD description; GCF = Gear Circle Flat; BSF = Ball Semi-Flat |
+| Beyblade Fandom Wiki — EWD (batch-013) | 1 | EWD = single bearing only (NOT double); considerable friction; wears quickly |
+| mfbeyblade.fandom.com/wiki/EWD (batch-013) | 1 | EWD single-bearing friction higher than B:D confirmed |
+| mfbeyblade.fandom.com/wiki/B:D (batch-013) | 1 | B:D = multiple ball bearings; world record 7:35 min; height = 170 spin track |
+| WorldBeyblade.org — W²D thread (batch-013) | 1 | W²D has worse balance than WD but better LAD; WD situationally preferred |
 | Beyblade Fandom Wiki — Spin Track - Boost Disk 145 | 1 | BD145 = Boost Disk 145 |
 | Beyblade Fandom Wiki — Spin Track - Armor Defense 145 | 1 | AD145 = Armor Defense 145 |
 | Beyblade Fandom Wiki — Performance Tip - Final Drive | 1 | F:D = Final Drive |
@@ -316,7 +325,7 @@ FACT entries are directly sourced. INFERENCE entries are known parts not individ
 
 | Item | Status | Notes |
 |------|--------|-------|
-| Flower movement petal count (R²F, LRF, Xtreme) | UNKNOWN | "Flower pattern" (movement path) confirmed; exact petal count of path is not a fixed integer — depends on spiral pitch × floor speed |
+| Flower movement petal count (R²F, LRF, Xtreme) | N/A — emergent property | PHYSICS-FACT (domain-expert, session 22): Petal count is not a fixed tip attribute. It is an emergent winding-number of the orbital trajectory, determined by launch RPM, angle, position, tip friction, floor, bowl profile, spin energy, and inner-ridge diameter. Same tip can produce 3–8+ petals. Do not hardcode per tip — let physics simulate it. See batch-011 Section D. |
 | R²F / LRF spike count (CORRECTED) | RESOLVED — was WRONG | Previously logged as "6 right spikes / 6 CCW spikes." Corrected: both are spiral-grooved rubber discs with no discrete spikes. User-confirmed from physical part image. |
 | Discrete-petal rubber tip — confirmed example | UNKNOWN | Previously R²F/LRF were wrongly cited as examples. No confirmed real part with discrete protrusions identified. |
 | Oval/ellipse tip — confirmed example | UNKNOWN | User specified shape; no specific part confirmed |
@@ -325,3 +334,7 @@ FACT entries are directly sourced. INFERENCE entries are known parts not individ
 | T125 official full name | INFERENCE | Part known; "Triple Speed Track" not verified |
 | C145 / GB145 / UW145 | INFERENCE | Parts known; not fetched individually this session |
 | Petal count determines orbit tightness | INFERENCE | Follows logically from R²F/LRF spike geometry; not directly stated in sources |
+
+---
+
+[← Batch 003: Engine Capability Summary](batch-003-engine-capability-summary.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 005: Burst Parts Disambiguation →](batch-005-burst-parts-disambiguation.md)

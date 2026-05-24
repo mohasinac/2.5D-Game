@@ -1,4 +1,8 @@
-﻿# Phase 13 — Controls / Camera / Audio
+[← Phase 12: Seed Plan](phase-12-seed-plan.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 14: Game Modes →](phase-14-game-modes.md)
+
+---
+
+# Phase 13 — Controls / Camera / Audio
 
 > Stage 13 | Source: useGameInput.ts + CameraControls.tsx + HUD components
 
@@ -132,7 +136,7 @@ The diagram defines a clean `GameplayEvent → CameraIntent → AutoDecision →
 
 | Event | SFX (synthesized fallback) | Wired? |
 |-------|---------------------------|--------|
-| `collision` | Square wave 220 Hz, 90ms | **PARTIAL** — wired in `BattleGamePage.tsx:145` only. `AIBattleGamePage.tsx` and `TournamentBattleGamePage.tsx` receive collision events but do NOT call `SoundManager.play("collision")`. Gap: add to both missing pages. [FACT: code-confirmed] |
+| `collision` | Square wave 220 Hz, 90ms | **Wired in all 3 pages** — `BattleGamePage.tsx:145`, `AIBattleGamePage.tsx`, `TournamentBattleGamePage.tsx` (gap fixed session 12). [FACT: code-confirmed] |
 | `spin-out` | Sawtooth sweep 600→80 Hz, 350ms | Wired in `BattleGamePage.tsx` (found in grep) |
 | `special-move` | Triangle sweep 880→1760 Hz, 420ms | Wired in `BattleGamePage.tsx` |
 | `combo` | Triangle 660 Hz, 220ms | Wired in `BattleGamePage.tsx` |
@@ -241,4 +245,36 @@ interface AudioProfile {
 | Input replay / record infrastructure | Low | High | Deterministic uint16 heartbeat design supports this; no current use case |
 
 ---
-[← Phase 12: Seed Plan](phase-12-seed-plan.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 14: Game Modes →](phase-14-game-modes.md)
+
+## 7. Session 25 Corrections Applied (2026-05-24)
+
+### 2.5D A/D Strafe Swap Bug — FIXED
+
+**File**: `server/shared/rooms/InputHandler.ts` → `applyMovementInput()`
+
+The `moveLeft` (A key) and `moveRight` (D key) force vectors in 2.5D mode (`is25D = true`) were exactly swapped. Coordinate convention (y increases downward, rotation r=0 faces East/+X):
+
+| Key | Correct vector | Old (wrong) vector |
+|-----|---------------|-------------------|
+| A (moveLeft) | `(sin(r), -cos(r)) × 1.5` — CCW-90° from facing = left strafe | `(-sin(r), cos(r))` — was RIGHT strafe |
+| D (moveRight) | `(-sin(r), cos(r)) × 1.5` — CW-90° from facing = right strafe | `(sin(r), -cos(r))` — was LEFT strafe |
+
+W (forward) and S (backward) were correct and not changed.
+
+### ControlsLegend isTryout Mode
+
+`client/src/components/game/ControlsLegend.tsx` now accepts `isTryout?: boolean`. In tryout/solo mode:
+- IJKL (Jump/Attack/Defense/Dodge) rows hidden
+- Space (tap) Special Move row hidden
+- Italic note shown: "Combat keys (IJKL) available in battle mode"
+- `TryoutGamePage.tsx` passes `<ControlsLegend isTryout />`.
+
+This prevents user confusion when IJKL keys appear in the overlay but do nothing in solo practice mode.
+
+### TryoutGamePage Arena Always Visible
+
+Previously the render call was gated on `phase === "playing"` — the arena floor was not drawn during the 3-2-1 countdown or launch QTE. Fixed by moving the render call outside the phase gate: arena and beyblade are rendered from the moment `arenaConfig.current` is loaded, regardless of phase. Physics computation is still gated on `phase === "playing"`.
+
+---
+
+[← Phase 12: Seed Plan](phase-12-seed-plan.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 14: Game Modes →](phase-14-game-modes.md)

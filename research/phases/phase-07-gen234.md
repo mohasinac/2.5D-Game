@@ -1,4 +1,8 @@
-﻿# Phase 07 (Gen2/3/4/Original) — Beyblade Systems
+[← Phase 07a: Generation 1](phase-07-gen1.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 08: Gimmicks →](phase-08-gimmicks.md)
+
+---
+
+# Phase 07 (Gen2/3/4/Original) — Beyblade Systems
 
 **Sources:** All bey doc files in `linka/beys/gen2/mfb/`, `linka/beys/gen2/zerog/`, `linka/beys/gen3/{burst,god,choz,gt,superking,db,bu}/`, `linka/beys/gen4/bx/`, `linka/beys/game-original/`; parts glossaries in `linka/gen2/parts-glossary.md`, `linka/gen3/parts-glossary.md`, `linka/gen4/parts-glossary.md`.
 **Stat Guidelines recap:** Attack 80–150 / Defense 40–90 / Stamina 40–90 for Attack type; Attack 40–90 / Defense 80–150 / Stamina 40–90 for Defense type; Attack 40–80 / Defense 40–80 / Stamina 90–150 for Stamina type; all moderate 80–120 for Balance type. Sum ≤ 360.
@@ -136,8 +140,8 @@
 | Alter Cognite | B-100 | gen3 | Balance | right | 90 | 90 | 90 | 34 | mode_switch | burst_god | Pre-tunable Attack/Stamina hybrid; SwitchStrike mode-lock | 2 | B |
 | Crash Roktavor | B-95 | gen3 | Stamina | right | 50 | 70 | 130 | 34 | stamina_recovery | burst_god | Mild defense stamina; Hasbro Roktavor R3 | 2 | B |
 | Dark Deathscyther FJ | B-42 | gen3 | Attack | right | 140 | 50 | 60 | 34 | attack_amplifier,velocity_burst | burst_god | Aggressive attack; early God Layer; Dark Deathscyther | 2 | A |
-| Drain Fafnir 8N | B-79 | gen3 | Stamina | left | 60 | 60 | 150 | 36 | spin_steal_coupling,free_spin,bearing_zombie | burst_god | Left-spin rubber-coupling spin-steal; Nothing driver near-zero friction; Rantaro | 1 | A |
-| Fafnir F3 | B-79 | gen3 | Stamina | left | 60 | 60 | 150 | 36 | spin_steal_coupling,bearing_zombie,free_spin | burst_god | Left-spin; rubber-coupling F3 layer; God era Fafnir apex | 1 | A |
+| Drain Fafnir 8N | B-79 | gen3 | Stamina | left | 60 | 60 | 150 | 36 | spin_steal_coupling,free_spin,bearing_zombie | burst_god | Left-spin rubber-coupling spin-steal; three dragon heads; Nothing driver near-zero friction; released April 29 2017 (B-79 Japan Starter); struggles vs Deep Chaos; Rantaro | 1 | A |
+| Fafnir F3 | B-79 | gen3 | Stamina | left | 60 | 60 | 150 | 36 | spin_steal_coupling,bearing_zombie,free_spin | burst_god | Left-spin; rubber-coupling F3 layer; God era Fafnir; same release as Drain Fafnir 8N | 1 | A |
 | Genesis Valtryek | B-66 | gen3 | Attack | right | 130 | 60 | 70 | 38 | spring_recoil,attack_amplifier | burst_god | Bound Attack spring-loaded counter; God Chip locked; Valt S2 | 1 | A |
 | God Valkyrie 6VR | B-73 | gen3 | Attack | right | 140 | 50 | 60 | 36 | spring_recoil,attack_amplifier,velocity_burst | burst_god | Bound Attack spring wings; Valt God era apex; 6 wings | 1 | A |
 | Legend Spriggan 7M | B-86 | gen3 | Balance | both | 100 | 90 | 90 | 38 | rotation_reverse,spin_equalization,mode_switch | burst_god | Dual-spin Spriggan; 7 disc; M driver; Shu S2 | 1 | A |
@@ -156,7 +160,7 @@
 - **Burst system mass range:** ~32–42g assembled (lighter than gen2 due to plastic emphasis).
 - **God Chip** adds ~2g; maps as minor mass increase; God Layer beys are slightly heavier than S1.
 - **Bound Attack gimmick** (Genesis Valtryek, God Valkyrie, Winning V3) = `spring_recoil`.
-- **Drain Fafnir** defines the `spin_steal_coupling` + `free_spin` + `bearing_zombie` combo for left-spin stamina.
+- **Drain Fafnir** defines the `spin_steal_coupling` + `free_spin` + `bearing_zombie` combo for left-spin stamina. Released April 29 2017; three dragon heads; struggles vs Deep Chaos. **Geist Fafnir** is the Cho-Z successor but is outclassed in ALL aspects by Hell Salamander (aggressive shape creates self-burst risk; poor spin time). Rubber "F"s retract at high speed; only engage at low speed.
 - **Dual-spin** (Spryzen, Storm Spriggan KU, Legend Spriggan) = `rotation_reverse` + `spin_equalization`.
 - **Burst-era burst resistance** is a Colyseus state property (burst threshold), not a separate gimmick.
 
@@ -177,7 +181,7 @@ Covering remaining God-layer files plus Cho-Z era's Kaiser Kerbeus (burst era la
 | Dead Phoenix 0A | B-131 | gen3 | Defense | right | 60 | 110 | 100 | 44 | mode_switch,contact_deflect,stamina_recovery | burst_choz | Dead Armor removable; zombie archetype; cross-bey Armor swap | 2 | A |
 | Dead Phoenix (base) | B-131 | gen3 | Defense | right | 60 | 120 | 90 | 44 | contact_deflect,mode_switch | burst_choz | Defense/Stamina; Dead Armor modular gimmick | 2 | B |
 | Dread Phoenix | B-131 | gen3 | Defense | right | 70 | 130 | 80 | 46 | contact_deflect,mode_switch,attack_amplifier | burst_choz | Villain-tier counter-attack; metal mass at rim; Hyde arc | 1 | A |
-| Geist Fafnir 8NT | B-122 | gen3 | Stamina | left | 60 | 60 | 150 | 40 | spin_steal_coupling,free_spin,bearing_zombie,mode_switch | burst_choz | Auto-modulated spin-steal; Nothing Tapered driver; Rantaro apex | 1 | A |
+| Geist Fafnir 8NT | B-122 | gen3 | Stamina | left | 60 | 60 | 150 | 40 | spin_steal_coupling,free_spin,bearing_zombie,mode_switch | burst_choz | Auto-modulated spin-steal — rubber "F"s **retract at high spin speed**, pop out only at low speed; aggressive shape creates Burst+KO risk vs right-spin; poor spin time due to weight distribution; **outclassed in ALL aspects by Hell Salamander**; Nothing Tapered driver; Rantaro apex | 2 | A |
 | Kaiser Kerbeus LP | B-Series | gen3 | Defense | right | 50 | 140 | 80 | 40 | contact_deflect,rail_lock,burst_suppress | burst_s1 | Burst era S1 Kerbeus; layer mass 17.5+12g heavy; rail lock; defense | 2 | A |
 | Revive Phoenix 10F | B-117 | gen3 | Defense | right | 70 | 110 | 90 | 44 | mode_switch,stamina_recovery,spring_recoil | burst_choz | Revive Armor shed gimmick; two-stage shedding Phoenix mythology; Hyde | 1 | A |
 | Slash Valkyrie | B-134 | gen3 | Attack | right | 140 | 50 | 60 | 36 | velocity_burst,attack_amplifier | burst_gt | GT Booster attack; Power driver; Blitz disc; transitional | 2 | A |
@@ -781,3 +785,6 @@ Covering remaining God-layer files plus Cho-Z era's Kaiser Kerbeus (burst era la
 
 *End of Phase 07 Gen2/3/4 Appendix (Narrative)*
 
+---
+
+[← Phase 07a: Generation 1](phase-07-gen1.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 08: Gimmicks →](phase-08-gimmicks.md)

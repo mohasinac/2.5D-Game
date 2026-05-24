@@ -767,6 +767,23 @@ export type TurretAttackType =
   | "bankai_release"  // Generic bankai — double damage + AoE pulse for duration
   | "susanoo_full"    // Full susanoo body — massive AoE shield + auto-counter pulses
   | "titan_shift"     // Attack titan shift — AoE damage pulses while active
+  // ── One Piece moves ──────────────────────────────────────────────────────
+  | "gear_second"     // [Luffy] Gear 2nd — speed boost + rapid multi-punch for 6s
+  | "gear_fourth"     // [Luffy] Gear 4th — massive force AoE burst + immunity window
+  | "conquerors_haki" // [Shanks/Luffy] Conqueror's Haki — control-locks all nearby beys
+  | "three_sword_style"// [Zoro] Three Sword Style — triple fan-slash cone
+  | "diable_jambe"    // [Sanji] Diable Jambe — spinning kick + fire DoT
+  // ── Demon Slayer moves ────────────────────────────────────────────────────
+  | "water_breathing" // [Tanjiro] Water Breathing — flowing multi-hit wave
+  | "hinokami_kagura" // [Tanjiro] Hinokami Kagura — spinning fire AoE
+  | "thunder_breathing"// [Zenitsu] Thunder Breathing — instant lightning burst
+  | "beast_breathing" // [Inosuke] Beast Breathing — wild multi-hit scatter
+  | "flame_breathing" // [Rengoku] Flame Breathing — forward cone fire burst
+  // ── Attack on Titan extra moves ───────────────────────────────────────────
+  | "thunder_spear"   // [Survey Corps] Thunder Spear — explosive homing bolts
+  | "omni_directional"// [Levi] ODM Gear — high-speed dash slash, multi-target
+  | "hardening"       // [Armored Titan] Crystal hardening — invulnerability + knockback
+  | "founding_titan"  // [Eren] Founding Titan scream — AoE control-lock + drain
   // ── Summon moves ─────────────────────────────────────────────────────────
   | "summon_toad"     // [Naruto] Toad boss summon — massive AoE slam at target zone
   | "summon_snake"    // [Orochimaru] Snake summon — constrict + poison + drag
@@ -903,6 +920,26 @@ export type TurretAttackType =
   | "spirit_bomb"         // [Goku] Gathered energy — long charge then massive AoE explosion
   | "final_flash"         // [Vegeta] Maximum-power beam — obliterates single target
   | "death_beam"          // [Frieza] Precision death ray — instant piercing damage
+  // Gohan chain
+  | "gohan_masenko"       // [Gohan] Masenko — focused downward energy beam
+  | "gohan_power_up"      // [Gohan] Hidden power unlock — +50% turret damage for 8s
+  | "gohan_mystic_unleash"// [Gohan] Ultimate Gohan — wide AoE energy burst
+  // Vegeta chain
+  | "galick_gun"          // [Vegeta] Galick Gun — wide-cone beam
+  | "big_bang_attack"     // [Vegeta] Big Bang Attack — point-blank sphere, high knockback
+  | "final_explosion"     // [Vegeta] Final Explosion — sacrifice AoE nuke, turret dormant 10s
+  // Cell chain
+  | "solar_kamehameha"    // [Cell] Solar Kamehameha — double-width superbeam
+  | "cell_jr_spawn"       // [Cell] Cell Jr. spawn — 3 seeker units, ticking damage
+  | "perfect_form_cell"   // [Cell] Perfect Form — range+50%, damage+30% for 8s
+  // Buu chain
+  | "chocolate_beam"      // [Buu] Chocolate Beam — drains target spin to 0 for 2s
+  | "buu_absorption"      // [Buu] Absorption — copies target's top stat as temporary buff
+  | "kid_buu_scream"      // [Kid Buu] Primal Scream — omnidirectional AoE shockwave
+  // Frieza chain
+  | "death_ball"          // [Frieza] Death Ball — massive sphere, huge AoE explosion
+  | "nova_strike"         // [Frieza] Nova Strike — high-speed ramming dash
+  | "golden_frieza"       // [Frieza] Golden Form — all damage ×2.5 for 8s
   // ── Illusion / Deception moves ────────────────────────────────────────────
   | "mirror_world"        // All beys see ghost duplicates at mirrored positions for 3.5s
   | "perfect_mirage"      // Target bey turns invisible — physics continues unseen for 2.5s
@@ -2287,6 +2324,100 @@ export interface TurretConfig {
   finalFlashKnockback?: number;
   /** death_beam: piercing damage (default 90) */
   deathBeamDamage?: number;
+  // Gohan chain
+  /** gohan_masenko: beam damage (default 90) */
+  masenkoBeamDamage?: number;
+  /** gohan_power_up: duration ms (default 8000) */
+  gohanPowerUpDurationMs?: number;
+  /** gohan_mystic_unleash: AoE radius px (default 200), damage (default 150) */
+  mysticUnleashRadius?: number;
+  mysticUnleashDamage?: number;
+  // Vegeta chain
+  /** galick_gun: cone half-angle deg (default 25), damage (default 110) */
+  galickGunConeDeg?: number;
+  galickGunDamage?: number;
+  /** big_bang_attack: damage (default 180), knockback (default 1200) */
+  bigBangDamage?: number;
+  bigBangKnockback?: number;
+  /** final_explosion: AoE radius px (default 400), damage (default 500), dormant ms (default 10000) */
+  finalExplosionRadius?: number;
+  finalExplosionDamage?: number;
+  finalExplosionDormantMs?: number;
+  // Cell chain
+  /** solar_kamehameha: beam width px (default 120), damage (default 200) */
+  solarKamehamehaWidth?: number;
+  solarKamehamehaDamage?: number;
+  /** cell_jr_spawn: unit count (default 3), damage per tick (default 8) */
+  cellJrCount?: number;
+  cellJrDamagePerTick?: number;
+  /** perfect_form_cell: duration ms (default 8000) */
+  perfectFormDurationMs?: number;
+  // Buu chain
+  /** chocolate_beam: spin-drain duration ms (default 2000) */
+  chocolateBeamDurationMs?: number;
+  /** buu_absorption: buff duration ms (default 6000) */
+  buuAbsorptionDurationMs?: number;
+  /** kid_buu_scream: AoE radius px (default 280), knockback force (default 600) */
+  kidBuuScreamRadius?: number;
+  kidBuuScreamKnockback?: number;
+  // Frieza chain
+  /** death_ball: AoE radius px (default 220), damage (default 320) */
+  deathBallRadius?: number;
+  deathBallDamage?: number;
+  /** nova_strike: damage (default 130), speed px/s (default 2000) */
+  novaStrikeDamage?: number;
+  /** golden_frieza: duration ms (default 8000), damage multiplier (default 2.5) */
+  goldenFriezaDurationMs?: number;
+  goldenFriezaDamageMult?: number;
+  // One Piece chain
+  /** gear_second: duration ms (default 6000), hits (default 6), damage per hit (default 20) */
+  gearSecondDurationMs?: number;
+  gearSecondHits?: number;
+  gearSecondDmgPerHit?: number;
+  /** gear_fourth: AoE radius px (default 180), damage (default 200), immune ms (default 1500) */
+  gearFourthRadius?: number;
+  gearFourthDamage?: number;
+  gearFourthImmuneMs?: number;
+  /** conquerors_haki: range px (default 250), lock ms (default 2000) */
+  conquerorsHakiRange?: number;
+  conquerorsHakiLockMs?: number;
+  /** three_sword_style: slash count (default 3), damage per slash (default 55) */
+  threeSwordSlashCount?: number;
+  threeSwordDmgPerSlash?: number;
+  /** diable_jambe: damage (default 80), fire DoT per sec (default 20), duration ms (default 3000) */
+  diableJambeDamage?: number;
+  diableJambeFireDps?: number;
+  diableJambeDurationMs?: number;
+  // Demon Slayer chain
+  /** water_breathing: hit count (default 5), damage per hit (default 22) */
+  waterBreathingHits?: number;
+  waterBreathingDmgPerHit?: number;
+  /** hinokami_kagura: AoE radius px (default 160), damage (default 140) */
+  hinokamiRadius?: number;
+  hinokamiDamage?: number;
+  /** thunder_breathing: damage (default 160), stun ms (default 800) */
+  thunderBreathingDamage?: number;
+  thunderBreathingStunMs?: number;
+  /** beast_breathing: hit count (default 8), damage per hit (default 18) */
+  beastBreathingHits?: number;
+  beastBreathingDmgPerHit?: number;
+  /** flame_breathing: cone angle deg (default 30), damage (default 120) */
+  flameBreathingConeDeg?: number;
+  flameBreathingDamage?: number;
+  // Attack on Titan extra chain
+  /** thunder_spear: bolt count (default 3), damage per bolt (default 70) */
+  thunderSpearBolts?: number;
+  thunderSpearDmgPerBolt?: number;
+  /** omni_directional: dash count (default 4), damage per dash (default 35) */
+  odmDashCount?: number;
+  odmDmgPerDash?: number;
+  /** hardening: duration ms (default 4000), knockback force (default 800) */
+  hardeningDurationMs?: number;
+  hardeningKnockback?: number;
+  /** founding_titan: AoE radius px (default 350), drain per sec (default 80), lock ms (default 3000) */
+  foundingTitanRadius?: number;
+  foundingTitanDrainPerSec?: number;
+  foundingTitanLockMs?: number;
 
   // ── Illusion / Deception config ──────────────────────────────────────────
   /** mirror_world: ghost offset radius in px (default 180) */

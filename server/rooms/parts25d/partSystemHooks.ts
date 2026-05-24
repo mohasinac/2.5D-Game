@@ -58,7 +58,7 @@ export function tickBeyOnManager(
   // here we apply the BEARING-FRICTION delta (bearing tips reduce decay).
   // Compute the multiplier by asking the manager and apply only the diff.
   const base = beyblade.spinDecayRate;
-  const { adjustedSpinDecayRate } = manager.tickBey(sessionIdOf(beyblade), beyblade, state, base);
+  const { adjustedSpinDecayRate } = manager.tickBey(sessionIdOf(beyblade), beyblade, state, base, undefined, undefined, dt);
   const diff = base - adjustedSpinDecayRate;
   if (diff !== 0) {
     // Refund the over-applied decay so net effective decay matches the manager's adjusted rate.

@@ -1,4 +1,8 @@
-﻿# Phase 04 — Combo / Trigger Mapping
+[← Phase 03: Special Move -> Bey Map](phase-03-specialmove-bey-map.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 05: Parts →](phase-05-parts.md)
+
+---
+
+# Phase 04 — Combo / Trigger Mapping
 
 > Stage 4 | Source: server/constants/combos.ts + server/utils/comboSystem.ts + server/utils/comboTaskCompiler.ts + shared/types/comboTask.ts + client/src/constants/combos.ts
 > Date: 2026-05-23
@@ -412,4 +416,5 @@ Bey IS the weapon — turret gives the bey a buff that changes its collision/mov
 - `cannon_bey` — `applyKnockback` toward furthest opponent at 3000 force units
 
 ---
-[← Phase 03: Special Move → Bey Map](phase-03-specialmove-bey-map.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 05: Parts →](phase-05-parts.md)
+
+[← Phase 03: Special Move -> Bey Map](phase-03-specialmove-bey-map.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 05: Parts →](phase-05-parts.md)

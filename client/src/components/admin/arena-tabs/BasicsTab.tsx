@@ -2,13 +2,16 @@ import { C, S } from "@/styles/theme";
 import type { ArenaConfig, ArenaShape, ArenaTheme, BowlProfile } from "@/types/arenaConfigNew";
 import { ARENA_PRESETS, initializeWallConfig, BOWL_PROFILE_ANGLES, BOWL_PROFILE_LABELS } from "@/types/arenaConfigNew";
 import { PX_PER_CM_BASE } from "@/constants/units";
+import { useArenaShapeDefs } from "@/hooks/useArenaShapeDefs";
+import { useArenaThemeDefs } from "@/hooks/useArenaThemeDefs";
+import { useBowlProfileDefs } from "@/hooks/useBowlProfileDefs";
 
 interface Props {
   config: ArenaConfig;
   onChange: (updated: Partial<ArenaConfig>) => void;
 }
 
-const SHAPES: { value: ArenaShape; label: string }[] = [
+const FALLBACK_SHAPES: { value: ArenaShape; label: string }[] = [
   { value: "circle", label: "Circle" },
   { value: "square", label: "Square" },
   { value: "triangle", label: "Triangle" },
@@ -22,7 +25,7 @@ const SHAPES: { value: ArenaShape; label: string }[] = [
   { value: "star6", label: "Star 6" },
 ];
 
-const THEMES: { value: ArenaTheme; label: string; color: string }[] = [
+const FALLBACK_THEMES: { value: ArenaTheme; label: string; color: string }[] = [
   { value: "metrocity", label: "Metro City", color: "#3b82f6" },
   { value: "forest", label: "Forest", color: "#10b981" },
   { value: "safari", label: "Safari", color: "#f97316" },
@@ -82,7 +85,7 @@ function BowlCrossSection({ wallAngle = 0, bowlDepth = 0.4 }: { wallAngle?: numb
   );
 }
 
-const BOWL_PROFILES: BowlProfile[] = ["flat", "shallow", "medium", "deep", "steep"];
+const FALLBACK_BOWL_PROFILES: BowlProfile[] = ["flat", "shallow", "medium", "deep", "steep"];
 
 // ─── Tilt preview (top-down ellipse) ─────────────────────────────────────────
 // Shows the arena as it would appear from above when tilted.
@@ -165,6 +168,22 @@ const TILT_PRESETS: { label: string; angle: number; description: string }[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function BasicsTab({ config, onChange }: Props) {
+  const { items: shapeDefs } = useArenaShapeDefs();
+  const { items: themeDefs } = useArenaThemeDefs();
+  const { items: bowlProfileDefs } = useBowlProfileDefs();
+
+  const shapes = shapeDefs.length > 0
+    ? shapeDefs.map(s => ({ value: s.id as ArenaShape, label: s.label }))
+    : FALLBACK_SHAPES;
+
+  const themes = themeDefs.length > 0
+    ? themeDefs.map(t => ({ value: t.id as ArenaTheme, label: t.label, color: t.color ?? "#3b82f6" }))
+    : FALLBACK_THEMES;
+
+  const bowlProfiles = bowlProfileDefs.length > 0
+    ? bowlProfileDefs.map(b => ({ id: b.id as BowlProfile, label: b.label, wallAngle: b.wallAngle }))
+    : FALLBACK_BOWL_PROFILES.map(id => ({ id, label: BOWL_PROFILE_LABELS[id] ?? id, wallAngle: BOWL_PROFILE_ANGLES[id] ?? 0 }));
+
   const handleShapeChange = (shape: ArenaShape) => {
     onChange({ shape, wall: initializeWallConfig(shape) });
   };
@@ -172,7 +191,9 @@ export default function BasicsTab({ config, onChange }: Props) {
   const effectiveWallAngle =
     config.wallAngle !== undefined
       ? config.wallAngle
-      : BOWL_PROFILE_ANGLES[config.bowlProfile ?? "medium"];
+      : (bowlProfiles.find(b => b.id === (config.bowlProfile ?? "medium"))?.wallAngle
+          ?? BOWL_PROFILE_ANGLES[config.bowlProfile ?? "medium"]
+          ?? 40);
 
   const handleBowlProfileClick = (profile: BowlProfile) => {
     onChange({ bowlProfile: profile, wallAngle: undefined });
@@ -274,7 +295,7 @@ export default function BasicsTab({ config, onChange }: Props) {
       <div>
         <label style={S.label}>Shape</label>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: 8 }}>
-          {SHAPES.map(s => (
+          {shapes.map(s => (
             <button
               key={s.value}
               onClick={() => handleShapeChange(s.value)}
@@ -295,7 +316,7 @@ export default function BasicsTab({ config, onChange }: Props) {
       <div>
         <label style={S.label}>Theme</label>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 8 }}>
-          {THEMES.map(t => (
+          {themes.map(t => (
             <button
               key={t.value}
               onClick={() => onChange({ theme: t.value })}
@@ -322,12 +343,12 @@ export default function BasicsTab({ config, onChange }: Props) {
 
         {/* Profile presets */}
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
-          {BOWL_PROFILES.map(profile => {
-            const active = (config.bowlProfile ?? "medium") === profile && config.wallAngle === undefined;
+          {bowlProfiles.map(profile => {
+            const active = (config.bowlProfile ?? "medium") === profile.id && config.wallAngle === undefined;
             return (
               <button
-                key={profile}
-                onClick={() => handleBowlProfileClick(profile)}
+                key={profile.id}
+                onClick={() => handleBowlProfileClick(profile.id)}
                 style={{
                   padding: "5px 12px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer",
                   textTransform: "capitalize",
@@ -336,7 +357,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                   border: `1px solid ${active ? C.blue : C.border}`,
                 }}
               >
-                {profile}
+                {profile.label}
               </button>
             );
           })}

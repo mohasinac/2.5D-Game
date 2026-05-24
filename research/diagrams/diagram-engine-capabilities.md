@@ -1,4 +1,8 @@
-﻿# Diagram: Engine Capabilities Map
+[← Deterministic Flow](diagram-deterministic-flow.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Extraction Pipeline →](diagram-extraction-pipeline.md)
+
+---
+
+# Diagram: Engine Capabilities Map
 
 > **Stage 0C Diagram 1** — Full engine capability map.
 
@@ -128,7 +132,6 @@ graph TD
 |--------|--------|-------|
 | 2D physics (Matter.js) | ✅ Complete | PhysicsEngine.ts |
 | 2.5D part physics | ✅ Complete | PartPhysics.ts + PartSystemManager.ts |
-| 3D physics | ❌ Not built | Needs Cannon.js / Rapier adapter |
 | Arena hazards (12+ types) | ✅ Complete | ArenaFeatureProcessor.ts |
 | BehaviorRef dispatcher | ✅ Complete | MechanicRegistry — 31 handlers (movement.*, factor.*, transform.*, spawn.*, arena.*) |
 | Special move pipeline | ✅ Complete | 5-phase state machine |
@@ -143,9 +146,13 @@ graph TD
 | Arena rotation + shrink | ✅ Complete | advanceArenaRotation.ts |
 | Sub-part detachment lifecycle | ✅ Complete | DetachedBodySchema lifecycle |
 | Team battle (2v2) | ✅ Complete | TeamBattleRoom.ts |
+| Material wear schedule | ✅ Complete | `WearStep[]` on `MaterialBand`; `computeWearLevel()` + `applyWearToMaterialStats()` in PartPhysics; `bey.materialWearLevel` synced via Colyseus; PixiRenderer tints bey brownish-orange when worn |
+| CP weight factor distribution | ✅ Complete | `weightFactor` on `SystemContactPoint`; `getCpWeightShare()` + `computeCpMomentOfInertia()` in PartPhysics; admin canvas shows weight % labels + stroke-width scaling; auto-distribute from thickness |
+| Evolution driver (tip phase transition) | ✅ Complete | `TipPart.evolutionStages[]` + `MaterialBand.wearSchedule` integration; `tickEvolutionDriver()` in PartPhysics; 5 trigger types (`time`, `wear_level`, `spin_percent`, `collision_count`, `damage_taken`); `bey.tipEvolutionStage` + `bey.tipEvolutionTimer` Colyseus-synced; PixiRenderer stage-color inner core; `EvolutionStagesEditor` + `MaterialBandsEditor` in TipFields admin UI |
 | Gimmick defs admin CRUD | ❌ Not built | No dedicated admin page; hardcoded in server/physics/mechanics/ |
 | Camera profiles | ❌ Not built | No admin page |
 | Audio profiles | ❌ Not built | No admin page |
 
 ---
-[← Deterministic Flow](diagram-deterministic-flow.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Extraction Pipeline →](diagram-extraction-pipeline.md)
+
+[← Deterministic Flow](diagram-deterministic-flow.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Extraction Pipeline →](diagram-extraction-pipeline.md)

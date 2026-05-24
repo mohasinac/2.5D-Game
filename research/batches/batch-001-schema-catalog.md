@@ -1,4 +1,4 @@
-﻿---
+---
 batch: 001
 stage: 0A
 status: complete
@@ -7,6 +7,10 @@ facts: 0
 inferences: 0
 speculations: 0
 unknowns: 0
+---
+
+[← Batch 000: Admin Audit](batch-000-admin-audit.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 002: Discovery Table →](batch-002-discovery-table.md)
+
 ---
 
 ## Research Completed
@@ -657,4 +661,5 @@ BattleRoom imports:
 (none — all server code was accessible)
 
 ---
-[← Batch 000: Admin Audit](batch-000-admin-audit.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Batch 002: Discovery Table →](batch-002-discovery-table.md)
+
+[← Batch 000: Admin Audit](batch-000-admin-audit.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 002: Discovery Table →](batch-002-discovery-table.md)

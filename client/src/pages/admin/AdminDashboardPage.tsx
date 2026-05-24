@@ -22,7 +22,9 @@ const quickLinks = [
   { label:"AI vs AI Lab", href:"/admin/ai-vs-ai", icon:"🤖", desc:"Pit two AIs against each other to validate beys & arenas" },
   { label:"AI Battles", href:"/admin/ai-battles", icon:"🤖", desc:"Manage AI battle quick-launch presets" },
   { label:"Game Monitor", href:"http://localhost:2567/colyseus", icon:"📡", desc:"Colyseus server monitor", external:true },
-  { label:"Settings", href:"/admin/settings", icon:"⚙️", desc:"Game-wide settings" },
+  { label:"Mechanic Defs", href:"/admin/mechanic-defs", icon:"⚙️", desc:"31 atomic mechanic handler definitions" },
+  { label:"Gimmick Defs", href:"/admin/gimmick-defs", icon:"🧬", desc:"27 gimmick recipes (behaviorRef bundles)" },
+  { label:"Settings", href:"/admin/settings", icon:"🔧", desc:"Game-wide settings" },
 ];
 
 export function AdminDashboardPage() {

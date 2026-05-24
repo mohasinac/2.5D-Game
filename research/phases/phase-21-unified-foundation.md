@@ -1,3 +1,7 @@
+[← Phase 20: Code Generation](phase-20-codegen.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md)
+
+---
+
 # Phase 21 — Unified Foundation: BehaviorDefs · GeometryDefs · StatDefs
 
 > **Stage 21** — Architectural concept: three universal definition layers underpin every data object in the game.
@@ -6,7 +10,7 @@
 >
 > **Research plan alignment** (system-role-you-are-refactored-creek.md):
 > - Rule 1 (Reuse Existing Stats First): `stat_defs` is a documentation/admin layer over existing runtime fields — no new server schema fields are added unless genuinely absent. The modifier stack resolves onto existing Beyblade schema fields only.
-> - Rule 2 (Multi-Engine Support): All `MechanicInstance` behaviors are engine-agnostic (WHAT, not HOW). GeometryDef shapes feed 2D/2.5D/3D adapters independently.
+> - Rule 2 (Multi-Engine Support): All `MechanicInstance` behaviors are engine-agnostic (WHAT, not HOW). GeometryDef shapes feed 2D and 2.5D adapters independently. The 2.5D adapter is the game's depth/3D layer — shape makers and perspective warps replace a true 3D physics engine.
 > - Rule 4 (Engine Capability First): This phase formalizes existing capability (`mechanic_defs`, existing `StatModifier`, existing `ContactPoint`) — it does not invent new runtime systems.
 > - Rule 6 (Presentation is Cross-Cutting): Each `MechanicInstance` can carry presentation cues (camera, audio, VFX) as part of its params schema, touching all 9 presentation layers.
 
@@ -766,4 +770,4 @@ The three-pillar system is additive. All existing fields remain. New fields (`st
 
 ---
 
-[↑ Index](../INDEX.md) &nbsp;·&nbsp; [← Phase 20: Code Generation](phase-20-codegen.md)
+[← Phase 20: Code Generation](phase-20-codegen.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md)

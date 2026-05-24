@@ -30,7 +30,7 @@ import { ContactPointEditor } from "./ContactPointEditor";
 import { PartConfigurationsEditor } from "./PartConfigurationsEditor";
 import { PocketListEditor } from "./PocketListEditor";
 import { PartLayerPreview, type PartKind } from "./PartLayerPreview";
-import { SearchableTabSelect } from "@/components/admin/SearchableSelect";
+import { SearchableTabSelect, SearchableSelect } from "@/components/admin/SearchableSelect";
 
 const SLUG_TO_KIND: Record<string, PartKind> = {
   "bit-beasts":   "bitBeast",
@@ -42,7 +42,7 @@ const SLUG_TO_KIND: Record<string, PartKind> = {
   "tips":         "tip",
   "sub-parts":    "subPart",
 };
-import type { BasePart, PartDimensions, Material, MaterialBand, SystemContactPoint, PartImages, PartSelfRotation } from "@/types/beybladeSystem";
+import type { BasePart, PartDimensions, Material, MaterialBand, SystemContactPoint, PartImages, PartSelfRotation, PartLayer } from "@/types/beybladeSystem";
 import { PartSelfRotationSection } from "./PartSelfRotationSection";
 
 // Preview is no longer a tab — it's always visible in the right panel.
@@ -139,7 +139,7 @@ export function PartEditor({
   const partKind = SLUG_TO_KIND[partTypeSlug] ?? "subPart";
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
       {/* Top bar */}
       <div style={{
         display: "flex", alignItems: "center", gap: 12, padding: "14px 24px",
@@ -276,6 +276,13 @@ export function PartEditor({
                   ))
               }
             </div>
+            {/* Slot wiring */}
+            <SlotWiringSection
+              slotsInto={(part.slotsInto as PartLayer | undefined) ?? null}
+              slotPosition={(part.slotPosition as number | undefined) ?? null}
+              onChangeSlotsInto={(v) => update({ slotsInto: v ?? undefined })}
+              onChangeSlotPosition={(v) => update({ slotPosition: v ?? undefined })}
+            />
           </div>
         )}
 
@@ -383,6 +390,61 @@ export function PartEditor({
       </div>
 
       </div>{/* end two-column body */}
+    </div>
+  );
+}
+
+// ── Slot Wiring section ────────────────────────────────────────────────────────
+
+const PART_LAYER_OPTIONS: Array<{ value: PartLayer; label: string }> = [
+  { value: "bit_beast",  label: "Bit Beast" },
+  { value: "ar",         label: "Attack Ring (AR)" },
+  { value: "wd",         label: "Weight Disk (WD)" },
+  { value: "tip",        label: "Tip" },
+  { value: "core",       label: "Core" },
+  { value: "casing",     label: "Casing" },
+  { value: "spin_track", label: "Spin Track" },
+  { value: "sub_part",   label: "Sub Part" },
+  { value: "gear",       label: "Gear" },
+];
+
+function SlotWiringSection({
+  slotsInto, slotPosition, onChangeSlotsInto, onChangeSlotPosition,
+}: {
+  slotsInto: PartLayer | null;
+  slotPosition: number | null;
+  onChangeSlotsInto: (v: PartLayer | null) => void;
+  onChangeSlotPosition: (v: number | null) => void;
+}) {
+  return (
+    <div>
+      <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Slot Wiring</label>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
+        <div style={{ flex: 1, minWidth: 160 }}>
+          <div style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>Slots Into</div>
+          <SearchableSelect
+            value={slotsInto ?? ""}
+            options={[{ value: "", label: "(not set)" }, ...PART_LAYER_OPTIONS]}
+            onChange={(v) => onChangeSlotsInto((v as PartLayer) || null)}
+            placeholder="Select slot layer…"
+          />
+        </div>
+        <div style={{ minWidth: 100 }}>
+          <div style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>Slot Position (0-indexed)</div>
+          <input
+            type="number"
+            min={0}
+            step={1}
+            value={slotPosition ?? ""}
+            placeholder="0"
+            onChange={(e) => onChangeSlotPosition(e.target.value === "" ? null : Number(e.target.value))}
+            style={{ width: 90, padding: "6px 9px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }}
+          />
+        </div>
+      </div>
+      <div style={{ fontSize: 10, color: C.faint, marginTop: 5 }}>
+        Slot position only matters for beys with multiple sockets of the same layer (e.g. dual gear ports). Leave blank for single-slot systems.
+      </div>
     </div>
   );
 }

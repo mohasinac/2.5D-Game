@@ -1,6 +1,10 @@
-﻿# Diagram: Beyblade Tilt Angle System (0°–360°)
+[← Simulation Architecture](diagram-simulation-arch.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Tool Ecosystem →](diagram-tool-ecosystem.md)
 
-> Full 3D tilt rotation model — `beyTiltAngle` in `GameState.ts` / `ClimbingPhysics.ts`.
+---
+
+# Diagram: Beyblade Tilt Angle System (0°–360°)
+
+> Beyblade tilt angle model — `beyTiltAngle` in `GameState.ts` / `ClimbingPhysics.ts` (2.5D engine).
 
 ---
 
@@ -149,4 +153,5 @@ beyTiltAngle = Math.abs(launchTilt)
 Direction (left vs. right) is discarded — only magnitude feeds `beyTiltAngle`.
 
 ---
+
 [← Simulation Architecture](diagram-simulation-arch.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Tool Ecosystem →](diagram-tool-ecosystem.md)

@@ -2,7 +2,7 @@
 
 **Project**: Beyblade Game — Part System & Engine Research
 **Maintained by**: Claude Code sessions
-**Last updated**: 2026-05-23 (session 19 — Source verification + parts list expansion: Gen1/HMS/MFB/Burst/BX parts cached to linka/; batch-008 written)
+**Last updated**: 2026-05-24 (session 29 — Firebase preset defs refactor: 9 new Firestore collections replace all hardcoded admin dropdowns/enums; 10 store slices + hooks; 9 admin CRUD pages; 9 seed scripts; router + nav wired; batch-000 gap table updated; progress.md session block added)
 
 > This index covers all research documents in the `research/` folder.
 > Every file links back here via its navigation footer.
@@ -34,6 +34,13 @@ Raw research output. Each batch is a focused investigation into a specific topic
 | 006-x | [batch-006-x-parts-disambiguation.md](batches/batch-006-x-parts-disambiguation.md) | BX Bit catalog — Flat/Rush/Needle/Gear Needle/Rubber Accel/Trans Kick; Ratchet naming; Gear Bit rack-and-pinion mechanic | complete |
 | 007 | [batch-007-extended-tips-casings-gimmicks-disambiguation.md](batches/batch-007-extended-tips-casings-gimmicks-disambiguation.md) | Extended tips (WF/XF/WB/WD/EWD/EDS/TB/BS/LF/R²F corrections), casings, mechanical gimmicks (EG clutches, Magnacore, auto-change), plastic gen disambiguation | complete |
 | 008 | [batch-008-source-verification-parts-expansion.md](batches/batch-008-source-verification-parts-expansion.md) | **Source verification + parts expansion** — URL fetch log (39 URLs, visited flag tracked); Gen1/HMS/MFB/Burst/BX parts expanded; 173 Burst drivers confirmed; 26 BX ratchets; 47+ BX blades with weights; 167+ Burst layers by sub-system; HMS AR/RC/WD weights | complete |
+| 009 | [batch-009-live-verification.md](batches/batch-009-live-verification.md) | Live source verification — 26 sources checked; corrects batch-004–007 INFERENCE/UNKNOWN claims against live Tier-1 sources | complete |
+| 010 | [batch-010-proofread-inference-resolution.md](batches/batch-010-proofread-inference-resolution.md) | Proofread + INFERENCE resolution — 22 sources; upgrades remaining INFERENCEs; LRF rubber material confirmed | complete |
+| 011 | [batch-011-wd-weights-petal-physics.md](batches/batch-011-wd-weights-petal-physics.md) | WD weights + petal physics — 38 sources; Weight Disk gram data; petal count = orbital winding number (PHYSICS-FACT) | complete |
+| 012 | [batch-012-forge-disc-chassis-sar.md](batches/batch-012-forge-disc-chassis-sar.md) | Forge Disc / Chassis / SAR — 14 sources; Burst Forge Disc weights, Dragon Saucer SAR combo verification | complete |
+| 013 | [batch-013-deep-verification-pass.md](batches/batch-013-deep-verification-pass.md) | Deep verification pass — 22 sources; Blade Base weights confirmed; Gen1 performance tip catalog finalized | complete |
+| 014 | [batch-014-archetype-physics-deep-dive.md](batches/batch-014-archetype-physics-deep-dive.md) | Archetype physics deep dive — 18 sources; attack/stamina/defense/balance archetype physics principles | complete |
+| 015 | [batch-015-real-world-physics.md](batches/batch-015-real-world-physics.md) | Real-world physics — 16 sources; RPM ranges, mass data, friction coefficients, spin-steal efficiency | complete |
 
 ---
 
@@ -43,12 +50,13 @@ Compiled phase documents synthesizing research into actionable design decisions.
 
 | Phase | File | Topic | Status |
 |-------|------|-------|--------|
+| 00 | [phase-00-engine-audit.md](phases/phase-00-engine-audit.md) | Engine audit — full server capability map synthesized from batch-000–003 + 17 diagrams | complete |
 | 01 | [phase-01-terminology.md](phases/phase-01-terminology.md) | Terminology, definitions, concepts — type system, collision physics, attack mechanics | complete |
 | 02 | [phase-02-special-moves.md](phases/phase-02-special-moves.md) | Special moves — mechanics, trigger conditions, behaviors; episode first-appearances (Appendix 2Z) | complete |
 | 03 | [phase-03-specialmove-bey-map.md](phases/phase-03-specialmove-bey-map.md) | Special move → beyblade mapping | complete |
 | 04 | [phase-04-combo-mapping.md](phases/phase-04-combo-mapping.md) | Combo / trigger mapping | complete |
-| 05 | [phase-05-parts.md](phases/phase-05-parts.md) | 2.5D part system — part catalog, contact point mechanics, pockets, seed plan, gaps; Gear Part type (session 7) | complete |
-| 06 | [phase-06-mechanics.md](phases/phase-06-mechanics.md) | Mechanic definitions | complete |
+| 05 | [phase-05-parts.md](phases/phase-05-parts.md) | 2.5D part system — part catalog, contact point mechanics, pockets, seed plan, gaps; Gear Part type (session 7); material wear schedule + CP weight factor (session 27); evolution driver (session 28) | complete |
+| 06 | [phase-06-mechanics.md](phases/phase-06-mechanics.md) | Mechanic definitions; turret attack system 175+ moves (session 11–12); One Piece/DS/AoT dispatch (session 28) | complete |
 | 07a | [phase-07-gen1.md](phases/phase-07-gen1.md) | Generation 1 (Plastic) beyblade systems; narrative context Appendix N1 | complete |
 | 07b | [phase-07-gen234.md](phases/phase-07-gen234.md) | Generations 2–4 (MFB, Burst, X) beyblade systems; narrative context Appendix N2 | complete |
 | 08 | [phase-08-gimmicks.md](phases/phase-08-gimmicks.md) | Beyblade gimmick configs | complete |
@@ -89,3 +97,4 @@ Mermaid architecture and flow diagrams for the engine.
 | [diagram-simulation-arch.md](diagrams/diagram-simulation-arch.md) | Simulation architecture (Rule 2) |
 | [diagram-tilt-angle.md](diagrams/diagram-tilt-angle.md) | Tilt / wobble angle diagram |
 | [diagram-tool-ecosystem.md](diagrams/diagram-tool-ecosystem.md) | Tool ecosystem map (Rule 9) |
+| [diagram-turret-powerup-system.md](diagrams/diagram-turret-powerup-system.md) | Turret attack power-up system — Illusion, Contra bey-as-weapon, Contra movement power-ups (Session 12) |

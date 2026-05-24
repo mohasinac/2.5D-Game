@@ -1,4 +1,8 @@
-﻿# Diagram: Image Extraction Pipeline → Part Geometry
+[← Engine Capabilities](diagram-engine-capabilities.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Input Abstraction →](diagram-input-abstraction.md)
+
+---
+
+# Diagram: Image Extraction Pipeline → Part Geometry
 
 > **Stage 0C Diagram 9** — Rule 8: Geometry is gameplay.
 
@@ -30,8 +34,7 @@ flowchart TD
 
   subgraph "Engine Mapping"
     E2D[2D Profile<br/>pointsOfContact[], spinStealPoints[]]
-    E25D[2.5D Profile<br/>ContactPoint (arc or legacy)<br/>pockets[], configurations[]<br/>PartSystemManager state machine]
-    E3D[3D Profile<br/>❌ Not built]
+    E25D[2.5D Profile — depth/3D layer<br/>ContactPoint (arc or legacy): shape makers<br/>Fourier profiles: perspective warps<br/>pockets[], configurations[]<br/>PartSystemManager state machine]
     PHYS[Physical Profile<br/>mass, radius, material<br/>abs/rubber/metal/pom/pc]
     VIS[Visual Profile<br/>sprite images, rendererData<br/>PNG/JPG/GIF/WebP — GIF = no destructive edit]
     BEH[Behavior Profile<br/>gimmickIds[] → MechanicRegistry handlers<br/>via gimmickExpander.ts → MechanicInstance[]]
@@ -73,4 +76,5 @@ flowchart TD
 Both coexist. `resolveCpBounds(cp)` normalises to `{arcStart, arcEnd, rInner, rOuter, lineThickness}`.
 
 ---
-[← Engine Capabilities](diagram-engine-capabilities.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Input Abstraction →](diagram-input-abstraction.md)
+
+[← Engine Capabilities](diagram-engine-capabilities.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Input Abstraction →](diagram-input-abstraction.md)

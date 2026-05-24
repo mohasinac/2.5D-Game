@@ -1,4 +1,8 @@
-﻿# Diagram: Mechanic → Combo → Gimmick → Special Move → Part → Beyblade
+[← Input Abstraction](diagram-input-abstraction.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Mode Flow →](diagram-mode-flow.md)
+
+---
+
+# Diagram: Mechanic → Combo → Gimmick → Special Move → Part → Beyblade
 
 > **Stage 0C Diagram 2** — Composition flow from mechanics up to beyblade.
 
@@ -81,4 +85,5 @@ Mechanics are defined in `server/physics/mechanics/` and registered in `Mechanic
 | Transform | modeSwitch, rotationReverse, subPartBurst |
 
 ---
-[← Input Abstraction](diagram-input-abstraction.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Mode Flow →](diagram-mode-flow.md)
+
+[← Input Abstraction](diagram-input-abstraction.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Mode Flow →](diagram-mode-flow.md)

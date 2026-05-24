@@ -1,13 +1,18 @@
 ---
 batch: 005
-stage: 7-corrected
+stage: 8-proofread-inference-resolution
 status: complete
 sources_checked: 16
-facts: 45
-inferences: 22
+facts: 47
+inferences: 20
 speculations: 0
 unknowns: 8
 proofread: 2026-05-23
+proofread2: 2026-05-23 (session 21 — batch-010 corrections: Zephyr=hollow plastic/Balance; Drift=octagonal/Limit Break; Absorb=spring+ring not rubber)
+---
+
+[← Batch 004: MFB Parts Disambiguation](batch-004-mfb-parts-disambiguation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 006: Shape/Material/Behavior Matrix →](batch-006-shape-material-behavior-matrix.md)
+
 ---
 
 # Batch 005 — Beyblade Burst Parts Disambiguation (Full Reference)
@@ -69,7 +74,7 @@ Drivers are organized by the sub-system of their debut. Later sub-systems reuse 
 | **Trans** | Tr | Plastic | Balance | Mode-change [INFERENCE from name] |
 | **Variable** | V | Plastic | Balance | Mode-change [INFERENCE from name] |
 | **Xtreme** | Xt | Rubber | Attack | Rubber flat with center depression [FACT]. **Flower pattern movement** [FACT: "tight flower pattern when banked"]. Best attack driver in Burst history. [FACT: beyblade.wiki] |
-| **Zephyr** | Ze | Rubber | Attack | **Spiral-grooved rubber flat tip** [FACT: user-confirmed]. Spiral groove direction confirmed. Previously recorded as "oval" — CORRECTED. Spiral groove produces similar stick-slip flower-pattern movement to R²F/LRF. |
+| **Zephyr** | Ze | Plastic | Balance | **Hollow plastic flat tip** (akin to MFB Hole Flat/HF) [FACT: beyblade.fandom.com/wiki/Performance_Tip_-_Zephyr' via WebSearch — "hollow plastic flat tip with a small diameter, akin to Hole Flat from Metal Fight Beyblade"]. Creates aggressive controllable movement. NOT rubber — prior "spiral rubber" and "oval" descriptions were incorrect. Debuted B-28 December 23 2016. |
 
 ### B2. God Layer System Additions (2017) [FACT — names and types from Beyblade Fandom Wiki, List of God Layer System parts]
 
@@ -102,7 +107,7 @@ Drivers are organized by the sub-system of their debut. Later sub-systems reuse 
 | **Merge'** (Merge Dash) | Me' | Reinforced vs Merge |
 | **Volcanic'** (Volcanic Dash) | Vo' | Dash version of Volcanic (rubber, defense type) |
 | **Xtreme'** (Xtreme Dash) | Xt' | Reinforced burst lock vs Xtreme; same rubber flat flower pattern [FACT] |
-| **Zephyr'** (Zephyr Dash) | Zp' | Reinforced vs Zephyr; same oval rubber flat |
+| **Zephyr'** (Zephyr Dash) | Zp' | Reinforced burst lock vs Zephyr; same hollow plastic flat tip (Balance type) |
 | **Zeta'** (Zeta Dash) | Zt' | Reinforced burst lock vs Zeta |
 
 > **Metal Xtreme (MXt)**: NOT a Dash driver (no prime symbol). Exact sub-system debut [INFERENCE]. Metal-reinforced rubber flat tip; flower-pattern movement confirmed [FACT: sourced from Fandom].
@@ -114,7 +119,7 @@ Drivers are organized by the sub-system of their debut. Later sub-systems reuse 
 | Driver | Abbrev. | Material | Type | Notes |
 |--------|---------|----------|------|-------|
 | **Charge** | Cha | Plastic | Attack | Shape [INFERENCE from name] |
-| **Drift** | Dr | Plastic (free-spinning) | Stamina | **Chunky apple/pear-shaped wide body sitting on a tiny free-spinning plate** [FACT: user-confirmed from physical description]. The pear-shaped main body rotates independently from the plate. NO ball bearings (that is Bearing Drift). Plate slides under lateral pressure. See Section C for full disambiguation. |
+| **Drift** | Dr | Plastic (free-spinning) | Defense | **Wide, round, octagonal body with a free-spinning low-angled conical sharp tip** [FACT: beyblade.fandom.com/wiki/Performance_Tip_-_Drift via WebSearch — "wide, round Driver with an octagonal shape and a low angled, free spinning, conical sharp tip"]. Debuted B-175 Lucifer The End Kou Drift, November 28 2020 (**Limit Break era**, NOT Gatinko 2019). Defense/Stamina type. NO ball bearings — plastic free-spin mechanism. Wide diameter provides stability and Burst Defense. Prior "chunky pear-shaped" description was incorrect. See Section C for full disambiguation. |
 | **Hold** | Hld | Plastic | Defense | Shape [INFERENCE from name] |
 
 > **High Xtreme (HXt)**: Taller body + wider rubber base than Xtreme [INFERENCE from name]. Flower-pattern movement confirmed [FACT]. Era of first release [INFERENCE — Dash version HXt' confirmed as DB era; base driver debut sub-system unconfirmed].
@@ -135,7 +140,7 @@ Drivers are organized by the sub-system of their debut. Later sub-systems reuse 
 
 | Driver | Abbrev. | Material | Type | Notes |
 |--------|---------|----------|------|-------|
-| **Absorb** | Ab | Rubber outer / Plastic inner | Defense | **Rubber outer absorber ring** [FACT: sourced]. Contacts opponent's layer → damage absorption + spin steal (rubber CP behavior). |
+| **Absorb** | Ab | Plastic (spring + free-spin ring) | Defense | **Spring-loaded sharp tip surrounded by a free-spinning plastic ring** [FACT: beyblade.fandom.com/wiki/Driver_-_Absorb via WebSearch — "spring-loaded sharp tip of a small diameter surrounded by a free-spinning ring, akin to a combination of Revolve and Nothing"]. When spring depressed, ring locks and creates aggressive hole-flat movement. Provides Spin Equalization in opposite-spin matchups. NOT a rubber outer ring — prior description was incorrect. |
 | **Volcanic** | Vo | Rubber | Defense/Stamina | Rubber dome [INFERENCE from name]. Rubber material confirmed [FACT]. |
 
 ### B6. Dynamite Battle Layer System (2021–2022) [FACT — from Beyblade Fandom Wiki, List of DB parts]
@@ -162,7 +167,7 @@ Drivers are organized by the sub-system of their debut. Later sub-systems reuse 
 | Term | Category | Definition |
 |------|----------|-----------|
 | **Drift** (physics) | General physics concept | A motion state where an object slides across a surface **maintaining its current speed and velocity vector** despite lateral forces. Momentum is conserved while sliding — the object does not decelerate to a stop. Like a car drifting. In Beyblade tip physics: a drift tip slides when pressed laterally rather than gripping and redirecting. |
-| **Drift** (Burst driver) | Official Burst part | A chunky, wide apple/pear-shaped body (the pear rotates independently) sitting on a small free-spinning plate at the bottom. NO ball bearings — free rotation via plastic pivot only. The plate slides under lateral pressure. Stamina-oriented. Shape CORRECTED from prior "conical sharp" description — confirmed by user. |
+| **Drift** (Burst driver) | Official Burst part | Wide, round, octagonal body with a free-spinning low-angled conical sharp tip. Wide diameter provides high stability and Burst Defense. NO ball bearings — plastic free-spin mechanism. Defense/Stamina type. Debuted B-175 (Limit Break era, November 2020). [FACT: beyblade.fandom.com/wiki/Performance_Tip_-_Drift] |
 | **Bearing Drift** (Burst driver) | Official Burst part | Debuted B-203 (October 2022, Ultimate Fusion DX Set). Upgraded Drift with ball bearings in the free-spinning shaft. Wide octagonal guard body. Conical sharp tip. Abbreviation: **BD** (no colon — unrelated to MFB B:D). |
 
 ### C2. Bearing Drift Physical Description [FACT — from Beyblade Fandom Wiki, official product description]
@@ -202,7 +207,7 @@ Drivers are organized by the sub-system of their debut. Later sub-systems reuse 
 | Xtreme' / Xt' | Same as Xtreme | Same flower pattern; reinforced burst lock | FACT |
 | High Xtreme / HXt | Wider rubber base, taller body | Flower pattern | FACT — flower confirmed; era INFERENCE |
 | Metal Xtreme / MXt | Rubber flat (metal-reinforced) | Flower pattern; higher durability | FACT |
-| Zephyr / Ze | Oval rubber flat | Near-flower; slightly asymmetric path | FACT shape; INFERENCE arc behavior |
+| ~~Zephyr~~ | ~~Oval rubber flat~~ | Zephyr **removed** from rubber driver table — Zephyr = hollow plastic flat (Balance type), NOT rubber. See Section B1. | CORRECTED |
 
 **Flower pattern mechanism**: rubber tip grips stadium floor → bey steers → rubber releases → bey arcs → repeats. Petal count is [UNKNOWN for all Burst drivers — exact count not confirmed from sources].
 
@@ -210,7 +215,7 @@ Drivers are organized by the sub-system of their debut. Later sub-systems reuse 
 
 | Driver | Rubber Location | Confirmed Behavior | Tag |
 |--------|----------------|-------------------|-----|
-| Absorb / Ab | Outer rubber ring | Rubber contacts opponent's layer → damage absorption + spin steal | FACT — rubber ring sourced |
+| Absorb / Ab | ~~Outer rubber ring~~ **REMOVED** | Absorb = spring-loaded sharp tip + free-spinning plastic ring. Ring locks when spring depressed → hole-flat movement + spin equalization. NO rubber component. Prior "rubber ring" description was incorrect. [FACT: beyblade.fandom.com/wiki/Driver_-_Absorb] | FACT — corrected session 21 |
 | Volcanic / Vo | Rubber dome base | Rubber contacts opponent at height → spin steal | FACT — rubber material; INFERENCE exact contact mechanism |
 | Destroy / Ds | ~~Rubber tip~~ **REMOVED** | Destroy is an 8-pointed star plastic tip under a free-spinning plate — NOT a rubber tip. Removed from this table. Prior "rubber material" tag was incorrect. [FACT: user-confirmed shape correction] | — |
 
@@ -296,7 +301,7 @@ In Burst:
 | Xtreme vs Xtreme' | Same tip. Xtreme' = Dash = reinforced burst lock spring. Same flower pattern. |
 | Xtreme vs High Xtreme | Xtreme = standard height. High Xtreme = taller body, wider rubber base [INFERENCE]. Era: HXt base unconfirmed; HXt' confirmed DB. |
 | Metal Xtreme vs Xtreme | Metal Xtreme = metal-reinforced rubber flat. NOT a Dash driver. Same flower pattern, higher durability. |
-| Absorb vs Volcanic | Absorb = rubber outer ring (opponent CP). Volcanic = rubber dome (opponent contact, defense/stamina). |
+| Absorb vs Volcanic | Absorb = spring-loaded sharp tip + free-spinning plastic ring (NO rubber). Volcanic = rubber dome (opponent contact, defense/stamina). |
 | Driver vs Performance Tip | Same slot. Earlier Burst = "Performance Tip"; later = "Driver." |
 | Forge Disc number vs weight | Number is a name/identifier, not exact grams. |
 
@@ -310,7 +315,7 @@ In Burst:
 | Beyblade Fandom Wiki — Performance Tip - Drift | 1 | Drift = free-spinning conical sharp; predecessor to BD |
 | Beyblade Fandom Wiki — Performance Tip - Xtreme' | 1 | Xtreme' = Dash; same flower pattern; reinforced burst lock |
 | Beyblade Wiki (beyblade.wiki) — Xtreme | 1 | Flower pattern confirmed; rubber flat; B-23 debut Dec 2015; best attack driver |
-| Beyblade Fandom Wiki — Driver - Absorb | 1 | Absorb = rubber outer absorber ring |
+| Beyblade Fandom Wiki — Driver - Absorb | 1 | Absorb = spring-loaded sharp tip + free-spinning plastic ring (akin to Revolve + Nothing); NO rubber component |
 | Beyblade Fandom Wiki — Category: Dash Drivers | 1 | Complete Dash driver name list confirmed |
 | Beyblade Fandom Wiki — Burst System | 1 | Sub-system architecture; Layer/Disc/Driver naming per era |
 | Beyblade Fandom Wiki — List of Burst System parts | 1 | Original Burst driver names and types |
@@ -334,3 +339,7 @@ In Burst:
 | High Xtreme base sub-system debut | MED | Flower pattern confirmed; debut sub-system unconfirmed |
 | God Layer driver shapes (Blow, Fusion, Hunter, Merge, Spiral) | LOW | Names and types confirmed; individual shapes not individually sourced |
 | Frame geometry complete catalog | LOW | Major frames listed by name; minor variants not cataloged |
+
+---
+
+[← Batch 004: MFB Parts Disambiguation](batch-004-mfb-parts-disambiguation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 006: Shape/Material/Behavior Matrix →](batch-006-shape-material-behavior-matrix.md)

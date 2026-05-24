@@ -1,4 +1,8 @@
-﻿# Phase 05 — 2.5D Part System Research
+[← Phase 04: Combo Mapping](phase-04-combo-mapping.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 06: Mechanics →](phase-06-mechanics.md)
+
+---
+
+# Phase 05 — 2.5D Part System Research
 
 ---
 
@@ -534,6 +538,214 @@ This means AR CPs with wide `width` (like Round Stamina's 80° arcs) will fire o
 
 ---
 
+### 2.5 Material Wear Schedule (`MaterialBand.wearSchedule`)
+
+Added in session 27. Each `MaterialBand` on a part (AR, WD, casing, gear) can optionally carry a `WearStep[]` wear schedule that defines how the material degrades over match time.
+
+```typescript
+interface WearStep {
+  atSecond: number;   // match-elapsed seconds when this wear level is reached
+  wearLevel: number;  // 0–100 (100 = brand new, 0 = fully worn)
+}
+
+interface MaterialBand {
+  material: Material;
+  coverage: number;       // 0–1
+  wearSchedule?: WearStep[]; // absent = no wear (stays at 100 all match)
+}
+```
+
+**Physics computation (`server/physics/PartPhysics.ts`):**
+
+| Function | Purpose |
+|----------|---------|
+| `computeWearLevel(schedule, elapsedSeconds)` | Linear-interpolates between `WearStep` entries; holds last value past the final step |
+| `applyWearToMaterialStats(stats, wearLevel)` | Scales `gripMult` and `spinStealResist` linearly to zero; increases `decayMod` by up to +50%; `frictionMult` has 0.5 floor |
+| `computeMinWearLevel(parts, elapsedSeconds)` | Finds the minimum wear level across all material bands on AR, WD, casing; used by `PartSystemManager.tickBey()` |
+
+**Runtime sync:**
+- `PartSystemManager.tickBey()` calls `computeMinWearLevel()` each tick and writes the result to `bey.materialWearLevel` (new Colyseus `@type("float32")` field).
+- `PixiRenderer.ts` reads `beyblade.materialWearLevel` and blends the sprite tint from white (new, 100) to brownish-orange `0xcc7733` (fully worn, 0).
+
+**Admin UI (`MaterialBandsEditor.tsx`):**
+- Each band has a collapsible **Wear** button showing the terminal wear level (e.g. "Wear 50%").
+- Inside: SVG sparkline preview, preset buttons (No wear / 100→50 in 3 min / 100→0 in 3 min / Stepped), and add/remove step rows with time and wear-level sliders.
+
+**Preset example — rubber tip wear "100→50 over 3 min, then stable":**
+```json
+[{ "atSecond": 0, "wearLevel": 100 }, { "atSecond": 180, "wearLevel": 50 }]
+```
+
+---
+
+### 2.6 Contact Point Weight Factor (`SystemContactPoint.weightFactor`)
+
+Added in session 27. Each contact point carries an optional `weightFactor` (default 1.0) that specifies its relative share of the part's total mass. This feeds realistic moment-of-inertia computation and expresses that thicker/wider protrusions concentrate more material mass at that arc.
+
+```typescript
+interface SystemContactPoint {
+  // ... existing fields ...
+  weightFactor?: number;  // absent = 1.0 (equal share); range typically 0.1–5.0
+}
+```
+
+**Weight share formula:**
+```
+share_i = weightFactor_i / Σ(weightFactor_j for all CPs on part)
+```
+
+**Physics utilities (`server/physics/PartPhysics.ts`):**
+
+| Function | Purpose |
+|----------|---------|
+| `getCpWeightShare(cp, allCps)` | Returns fractional weight share (0–1) for one CP |
+| `computeCpMomentOfInertia(partMassG, cps)` | Computes I = Σ(share_i × massKg × radius_i²) in kg·mm² |
+
+`computeCpMomentOfInertia()` is called when a WD's explicit `momentOfInertia` field is absent, providing a geometry-aware fallback from the CP layout rather than the single-radius approximation.
+
+**Admin UI (`ContactPointEditor.tsx`):**
+- **Canvas**: Each CP sector's border stroke width scales with weight share (heavier = thicker outline). A `XX%` label is rendered at the arc midpoint showing the actual share of total part weight.
+- **CP list**: Each row shows `XX%w` (weight share percentage) next to the material/attack info.
+- **Detail panel**: "Weight Factor" section with a 0.1–5.0 slider, live "X.X% of total" readout, and "Auto-distribute all CPs from thickness" button.
+- **Toolbar**: "Auto-weight" button computes `radius × thickness × arcDegrees` for every CP and sets `weightFactor` proportionally.
+
+**Auto-distribution formula (thickness-based):**
+```
+volumeProxy_i = radius_i × thickness_i × arcDeg_i
+weightFactor_i = (volumeProxy_i / Σ volumeProxy) × N
+```
+This normalizes so the average factor stays at 1.0, making the default evenly-distributed case self-consistent.
+
+---
+
+### 2.7 Evolution Driver (`TipPart.evolutionStages[]`)
+
+Added in session 28. Tips that evolve mid-match (Xtreme Variable, Bearing Drive worn state, rubber-worn-to-flat progression) now use a declarative stage list instead of custom logic. The driver reads from the existing `MaterialBand.wearSchedule` system (§ 2.5) so there is no separate time tracker — material wear IS the trigger data.
+
+#### Interface
+
+```typescript
+interface TipEvolutionStage {
+  label: string;       // display name shown in PartModesHUD badge (e.g. "Worn", "Overdrive")
+  configName: string;  // key in TipPart.configurations[] that becomes active on this stage
+  trigger?: {          // absent on stage 0 (starting config — no trigger required)
+    type: "time" | "wear_level" | "spin_percent" | "collision_count" | "damage_taken";
+    value: number;     // threshold; semantics per type — see table below
+  };
+}
+
+// Added to TipPart:
+interface TipPart extends BasePart {
+  // ...existing fields...
+  materials?: MaterialBand[];      // wear schedule source (§ 2.5) — now on TipPart too
+  evolutionStages?: TipEvolutionStage[];  // [stage0, stage1, stage2, ...]
+}
+```
+
+#### Trigger type semantics
+
+| `type` | `value` units | Condition met when |
+|--------|---------------|-------------------|
+| `time` | milliseconds (match-elapsed) | `bey.tipEvolutionTimer >= value` |
+| `wear_level` | wear% (0–100) | `computeMinWearLevel(tip, elapsedSec) <= value` |
+| `spin_percent` | ratio 0–1 | `bey.spin / bey.maxSpin <= value` |
+| `collision_count` | integer | `bey.collisions >= value` |
+| `damage_taken` | damage units | `bey.damageReceived >= value` |
+
+The `wear_level` trigger reads `computeMinWearLevel()` (§ 2.5) — it finds the lowest wear level across all `MaterialBand.wearSchedule` curves at the current `elapsedSec`. This means the evolution schedule is authored entirely in the wear bands: no duplication needed.
+
+#### Colyseus schema fields (`server/rooms/schema/GameState.ts`)
+
+| Field | Colyseus type | Default | Role |
+|-------|-------------|---------|------|
+| `tipEvolutionStage` | `@type("uint8")` | `0` | Current stage index. 0 = starting config. Synced at 60 Hz. |
+| `tipEvolutionTimer` | `@type("number")` | `0` | Match-elapsed ms (monotonic — never resets between stages). Drives `time` trigger and `wear_level` elapsedSec. |
+
+Both fields are optional in `ServerBeyblade` on the client (`tipEvolutionStage?: number`, `tipEvolutionTimer?: number`).
+
+#### Server-side tick (`server/physics/PartPhysics.ts`)
+
+```typescript
+export function tickEvolutionDriver(tip: TipPart, bey: Beyblade, dtMs: number): string | null {
+  const stages = tip.evolutionStages;
+  if (!stages || stages.length <= 1) return null;
+
+  bey.tipEvolutionTimer += dtMs;   // monotonic accumulator
+
+  const nextIdx = bey.tipEvolutionStage + 1;
+  if (nextIdx >= stages.length) return null;
+
+  const { type, value } = stages[nextIdx].trigger ?? {};
+  const elapsedSec = bey.tipEvolutionTimer / 1000;
+
+  const conditionMet =
+    type === "time"            ? bey.tipEvolutionTimer >= value :
+    type === "wear_level"      ? computeMinWearLevel(tip, elapsedSec) <= value :
+    type === "spin_percent"    ? bey.spin / Math.max(1, bey.maxSpin) <= value :
+    type === "collision_count" ? bey.collisions >= value :
+    type === "damage_taken"    ? bey.damageReceived >= value : false;
+
+  if (!conditionMet) return null;
+
+  bey.tipEvolutionStage = nextIdx;
+  bey.activePartConfigs.set("tip", stages[nextIdx].configName);
+  return stages[nextIdx].label;   // caller may emit a UI event
+}
+```
+
+Called from `PartSystemManager.tickBey()` step 4b (after bearing friction).  
+`resolveTipStats()` already reads `bey.activePartConfigs.get("tip")` — stage advance is automatically picked up with no extra wiring.
+
+#### Renderer (`client/src/game/renderer/PixiRenderer.ts`)
+
+`TIP_STAGE_COLORS = [0xffffff, 0xfbbf24, 0xf97316, 0xef4444]` — white / amber / orange / red for stages 0–3+.
+
+Inner core circle color = `TIP_STAGE_COLORS[tipEvolutionStage]`.  
+Inner core alpha = `0.15 + (materialWearLevel / 100) × 0.5` — dims as material wears.
+
+Shape redraws via `drawBeybladeShape()` only when stage or wear level changes (tracked in `prevTipStages` + `prevWearLevels` maps). At initial creation, current values are passed directly.
+
+#### PartModesHUD (`client/src/components/game/PartModesHUD.tsx`)
+
+When `tipEvolutionStage > 0`, the tip row shows an amber "STAGE N" badge. On a stage transition (detected via `prevStageRef`), an "EVOLVED!" flash plays with an amber border for ~1 s.
+
+#### Admin UI (`client/src/components/admin/part-editor/PartTypeFields.tsx`)
+
+Two inline components added to `TipFields`:
+
+**`MaterialBandsEditor`** — Now exposed on TipPart (was AR/WD/casing-only before). Each band:
+- Material `SearchableSelect` + coverage `NumInput` (0–1)
+- Wear schedule step list: `atSecond` + `wearLevel` per step, + Add / × remove
+
+**`EvolutionStagesEditor`** — Stage list with color-coded left border per stage:
+- Stage 0: label + configName only (hint: "no trigger required")
+- Stage 1+: label + configName + trigger type `SearchableSelect` + value `NumInput`
+- `+ Add Stage` button; stage 0 row has no Remove button
+
+Value input step size adjusts by trigger type: `time` → 1000 ms steps, `spin_percent` → 0.05 steps, others → 1 step.
+
+#### Example — Xtreme Variable rubber-to-overdrive progression
+
+```json
+{
+  "evolutionStages": [
+    { "label": "Rubber",   "configName": "rubber" },
+    { "label": "Worn",     "configName": "worn",  "trigger": { "type": "wear_level",  "value": 60 } },
+    { "label": "Overdrive","configName": "flat",  "trigger": { "type": "wear_level",  "value": 25 } }
+  ],
+  "materials": [
+    { "material": "rubber", "coverage": 0.6,
+      "wearSchedule": [{ "atSecond": 0, "wearLevel": 100 }, { "atSecond": 120, "wearLevel": 60 }, { "atSecond": 180, "wearLevel": 20 }] },
+    { "material": "plastic", "coverage": 0.4 }
+  ]
+}
+```
+
+At 120 s: rubber band hits wear 60 → `computeMinWearLevel` = 60 → stage 1 ("Worn") triggers.  
+At 180 s: rubber band hits wear 20 → stage 2 ("Overdrive") triggers — tip is now a plastic flat.
+
+---
+
 ## 3. Pocket Mechanics
 
 ### 3.1 Interface Definition
@@ -583,6 +795,59 @@ For non-radial pockets (`radialChannel = false`), the current implementation ski
 **Sub-part attachment points (pockets as mounting holes):** `BasePart.pockets` doubles as the attachment cavity for sub-part installations. In the `BeybladeSystem.subPartAttachments[]`, a `SubPartAttachment` references `parentPart` (which part slot carries the mounting pocket) and `placement` (`"above" | "below"`). The pocket's `position` and `height` define where the sub-part's center sits relative to the parent part's axis, which in turn sets the effective CP heights for that sub-part.
 
 This is currently informational — the actual CP height check uses `SubPart.contactPoints[i].heightRange` directly, not a pocket-derived offset. A more physically accurate system would add `pocket.height` to all sub-part CP `heightRange` values to reflect the attachment position.
+
+### 3.4 Slot Wiring — `BasePart.slotsInto` and `BasePart.slotPosition`
+
+**Added session 29.**
+
+Two new optional fields on `BasePart` make slot membership explicit on the document itself, rather than being inferred from which Firestore collection the part lives in:
+
+```typescript
+interface BasePart {
+  // ... existing fields ...
+
+  /**
+   * Which slot layer this part occupies in a BeybladeSystem.
+   * Mirrors PartLayer. Set explicitly so pickers and validation can filter
+   * candidates without knowing the Firestore collection name.
+   */
+  slotsInto?: PartLayer;
+
+  /**
+   * 0-indexed position within the slot for beys that have multiple sockets
+   * of the same type (e.g. dual gear ports, multi-AR systems).
+   * Omit / 0 for beys with a single socket per layer.
+   */
+  slotPosition?: number;
+}
+```
+
+**`slotsInto` valid values** (mirrors `PartLayer`):
+
+| Value | Part Type | Notes |
+|-------|-----------|-------|
+| `"bit_beast"` | `BitBeastPart` | Also covers MFB Energy Rings (`isEnergyRing: true`) |
+| `"ar"` | `ARPart` | Attack Ring; primary collision layer |
+| `"wd"` | `WDPart` | Weight Disk; rotational inertia layer |
+| `"tip"` | `TipPart` | Tip; floor contact + movement pattern |
+| `"core"` | `CorePart` | Core; gimmick and torque coupling |
+| `"casing"` | `CasingPart` | Casing; outer shell, tip bore, clearance |
+| `"spin_track"` | `SpinTrackPart` | MFB height piece between Tip and Casing |
+| `"sub_part"` | `SubPart` | Auxiliary attachment to any parent part |
+| `"gear"` | `GearPart` | DB/BU modular gear (uses `GearPart.attachesTo` for fine-grained parent slot) |
+
+**`slotPosition`** is only meaningful when a beyblade design physically exposes multiple sockets of the same type — e.g.:
+
+- Q-Gear system: 4 gear sockets → `slotPosition: 0/1/2/3`
+- Dual AR system (hypothetical): `slotPosition: 0` (outer) / `1` (inner)
+- Most beys: omit entirely (field is `undefined`), equivalent to position 0
+
+**Why not infer from collection name?** The Firestore collection name (`attack_ring_parts`, `tip_parts`, etc.) is already authoritative for part type. `slotsInto` adds a redundant but queryable field that enables:
+1. **Admin picker filtering** — the slot selector dropdown uses `slotsInto` to show only compatible parts without knowing which Firestore collection to query.
+2. **Validation** — `BeybladeSystem` composition can cross-check that a `tipId` resolves to a part with `slotsInto: "tip"`.
+3. **Multi-slot beys** — `slotPosition` narrows which of N identical sockets a given part populates.
+
+**Admin UI:** The **Overview tab** of the PartEditor (all part types) now shows a "Slot Wiring" section with a `SearchableSelect` for `slotsInto` and a number input for `slotPosition`.
 
 ---
 
@@ -765,4 +1030,5 @@ This makes the physics collision damage profile match the visual shape exactly.
 | GEAR-01 | GearPart CPs and statModifiers not bridged to PhysicsEngine in `registerBey()` | High | `PartSystemManager.registerBey()` — merge gear CPs into combined stats after existing sub-part loop |
 
 ---
-[← Phase 04: Combo Mapping](phase-04-combo-mapping.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 06: Mechanics →](phase-06-mechanics.md)
+
+[← Phase 04: Combo Mapping](phase-04-combo-mapping.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 06: Mechanics →](phase-06-mechanics.md)

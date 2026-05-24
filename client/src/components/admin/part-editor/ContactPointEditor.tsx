@@ -16,7 +16,7 @@
  *   roller (optional)
  */
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { C, HEX, alpha } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { MaterialSelector } from "./MaterialSelector";
@@ -30,12 +30,16 @@ import type {
   FourierRadialProfile,
   PartSelfRotation,
 } from "@/types/beybladeSystem";
+import { usePartMaterials } from "@/hooks/usePartMaterials";
+import { useAttackTypeDefs } from "@/hooks/useAttackTypeDefs";
+import { usePartLayerDefs } from "@/hooks/usePartLayerDefs";
 
 const CANVAS_SIZE = 280;
 const CENTER = CANVAS_SIZE / 2;
 const PIXELS_PER_MM = 3.5;
 
-const MATERIAL_COLORS: Record<Material, string> = {
+// Fallback colors used when Firebase part_materials docs don't have a color field
+const FALLBACK_MATERIAL_COLORS: Record<string, string> = {
   abs: "#3b82f6",
   rubber: "#22c55e",
   metal: "#94a3b8",
@@ -45,8 +49,8 @@ const MATERIAL_COLORS: Record<Material, string> = {
   polycarbonate: "#a855f7",
 };
 
-const ATTACK_LABELS: AttackType[] = ["smash", "upper", "absorb", "burst", "spin_steal"];
-const LAYER_LABELS: PartLayer[] = ["ar", "wd", "casing", "tip", "core", "sub_part", "bit_beast"];
+const FALLBACK_ATTACK_LABELS: AttackType[] = ["smash", "upper", "absorb", "burst", "spin_steal"];
+const FALLBACK_LAYER_LABELS: PartLayer[] = ["ar", "wd", "casing", "tip", "core", "sub_part", "bit_beast"];
 
 function defaultCP(angle: number, radius: number): SystemContactPoint {
   return {
@@ -65,7 +69,32 @@ function defaultCP(angle: number, radius: number): SystemContactPoint {
     spinBehavior: { rightPin: "smash", leftPin: "upper" },
     damageMultiplier: 1.0,
     partLayer: "ar",
+    weightFactor: 1.0,
   };
+}
+
+/** Effective volume proxy for a CP used to suggest weight distribution. */
+function cpVolumeProxy(cp: SystemContactPoint): number {
+  const arcDeg = cp.arcEnd !== undefined && cp.arcStart !== undefined
+    ? Math.abs(cp.arcEnd - cp.arcStart)
+    : cp.width;
+  const t = cp.lineThickness ?? cp.thickness;
+  const r = cp.radius;
+  return Math.max(0.01, r * t * arcDeg);
+}
+
+/** Distribute weight factors proportionally to each CP's volume proxy. */
+function autoWeightFactors(cps: SystemContactPoint[]): SystemContactPoint[] {
+  const volumes = cps.map(cpVolumeProxy);
+  const total = volumes.reduce((s, v) => s + v, 0);
+  return cps.map((cp, i) => ({ ...cp, weightFactor: parseFloat(((volumes[i] / total) * cps.length).toFixed(3)) }));
+}
+
+/** Actual weight share % for a single CP. */
+function cpWeightPct(cp: SystemContactPoint, allCps: SystemContactPoint[]): number {
+  const wf = (c: SystemContactPoint) => c.weightFactor ?? 1.0;
+  const total = allCps.reduce((s, c) => s + wf(c), 0);
+  return total === 0 ? 0 : (wf(cp) / total) * 100;
 }
 
 // ── Canvas renderer ────────────────────────────────────────────────────────────
@@ -75,7 +104,8 @@ function drawCanvas(
   cps: SystemContactPoint[],
   selected: number | null,
   placing: boolean,
-  fourierProfile?: FourierRadialProfile
+  fourierProfile?: FourierRadialProfile,
+  materialColors?: Record<string, string>
 ) {
   ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
   ctx.fillStyle = HEX.bg3;
@@ -114,13 +144,20 @@ function drawCanvas(
   }
 
   // Contact point annular sectors
+  const totalWeight = cps.reduce((s, cp) => s + (cp.weightFactor ?? 1.0), 0);
   cps.forEach((cp, i) => {
     const isSelected = selected === i;
-    const color = MATERIAL_COLORS[cp.material] ?? C.blue;
+    const color = (materialColors ?? FALLBACK_MATERIAL_COLORS)[cp.material] ?? C.blue;
     const rInner = (cp.radius - cp.thickness / 2) * PIXELS_PER_MM;
     const rOuter = (cp.radius + cp.thickness / 2) * PIXELS_PER_MM;
     const startAngle = ((cp.angle - cp.width / 2 - 90) * Math.PI) / 180;
     const endAngle   = ((cp.angle + cp.width / 2 - 90) * Math.PI) / 180;
+
+    const wf = cp.weightFactor ?? 1.0;
+    const weightShare = cps.length > 0 ? wf / totalWeight : 1 / cps.length;
+    const strokeWidth = isSelected
+      ? Math.max(1.5, 3 * weightShare * cps.length)
+      : Math.max(0.8, 2.5 * weightShare * cps.length);
 
     ctx.beginPath();
     ctx.arc(CENTER, CENTER, rOuter, startAngle, endAngle);
@@ -129,8 +166,19 @@ function drawCanvas(
     ctx.fillStyle = isSelected ? color + "cc" : color + "66";
     ctx.fill();
     ctx.strokeStyle = isSelected ? color : color + "88";
-    ctx.lineWidth = isSelected ? 1.5 : 1;
+    ctx.lineWidth = strokeWidth;
     ctx.stroke();
+
+    // Weight % label at arc midpoint
+    const midAngle = ((cp.angle - 90) * Math.PI) / 180;
+    const midR = (rInner + rOuter) / 2;
+    const lx = CENTER + midR * Math.cos(midAngle);
+    const ly = CENTER + midR * Math.sin(midAngle);
+    ctx.fillStyle = isSelected ? "#ffffff" : color;
+    ctx.font = `bold ${Math.max(7, Math.round(7 + weightShare * cps.length * 2))}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(`${Math.round(weightShare * 100)}%`, lx, ly);
 
     // Extended envelope (dashed)
     if (cp.extends) {
@@ -185,12 +233,31 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
   const [selected, setSelected] = useState<number | null>(null);
   const [placing, setPlacing] = useState(false);
 
+  // Firebase-backed option lists with hardcoded fallbacks
+  const { materials } = usePartMaterials();
+  const { items: attackTypeDefs } = useAttackTypeDefs();
+  const { items: partLayerDefs } = usePartLayerDefs();
+
+  const materialColors = useMemo<Record<string, string>>(() => {
+    const base = { ...FALLBACK_MATERIAL_COLORS };
+    for (const m of materials) { if (m.color) base[m.id] = m.color; }
+    return base;
+  }, [materials]);
+
+  const attackLabels = attackTypeDefs.length > 0
+    ? attackTypeDefs.map(a => a.id as AttackType)
+    : FALLBACK_ATTACK_LABELS;
+
+  const layerLabels = partLayerDefs.length > 0
+    ? partLayerDefs.map(l => l.id as PartLayer)
+    : FALLBACK_LAYER_LABELS;
+
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d")!;
-    drawCanvas(ctx, value, selected, placing, fourierProfile);
-  }, [value, selected, placing, fourierProfile]);
+    drawCanvas(ctx, value, selected, placing, fourierProfile, materialColors);
+  }, [value, selected, placing, fourierProfile, materialColors]);
 
   useEffect(() => { redraw(); }, [redraw]);
 
@@ -280,6 +347,15 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
             emptyLabel="Generate evenly…"
             style={{ background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11 }}
           />
+          {value.length > 1 && (
+            <button
+              onClick={() => onChange(autoWeightFactors(value))}
+              title="Set weight factors proportional to each CP's radius × thickness × arc"
+              style={{ padding: "5px 12px", fontSize: 11, borderRadius: 6, cursor: "pointer", background: C.bg3, color: C.muted, border: `1px solid ${C.border}` }}
+            >
+              Auto-weight
+            </button>
+          )}
         </div>
 
         {/* CP list */}
@@ -295,9 +371,12 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
                 display: "flex", alignItems: "center", gap: 8,
               }}
             >
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: MATERIAL_COLORS[cp.material], flexShrink: 0 }} />
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: materialColors[cp.material] ?? FALLBACK_MATERIAL_COLORS[cp.material] ?? C.blue, flexShrink: 0 }} />
               <div style={{ flex: 1, fontSize: 12, color: C.text }}>
                 #{i + 1} — {cp.angle}° @ {cp.radius}mm — {cp.material} {cp.attackType}
+                <span style={{ fontSize: 10, color: C.faint, marginLeft: 6 }}>
+                  {cpWeightPct(cp, value).toFixed(0)}%w
+                </span>
               </div>
               <button
                 onClick={(e) => { e.stopPropagation(); remove(i); }}
@@ -389,7 +468,7 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
 
           <Section label="Attack Type">
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {ATTACK_LABELS.map((at) => (
+              {attackLabels.map((at) => (
                 <button key={at} onClick={() => update(selected, { attackType: at })}
                   style={{ padding: "5px 10px", fontSize: 11, borderRadius: 6, cursor: "pointer",
                     background: sel.attackType === at ? alpha(C.orange, 0.16) : C.bg2,
@@ -404,10 +483,29 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
           <SliderField label="Damage Multiplier" value={sel.damageMultiplier} min={0.5} max={3} step={0.05}
             onChange={(v) => update(selected, { damageMultiplier: parseFloat(v.toFixed(2)) })} />
 
+          {/* Weight factor */}
+          <Section label="Weight Factor">
+            <div style={{ fontSize: 11, color: C.faint, marginBottom: 6 }}>
+              Share of part weight at this contact point.{" "}
+              <span style={{ color: C.blue }}>
+                {cpWeightPct(sel, value).toFixed(1)}% of total
+              </span>
+              {" "}({value.length} CPs, equal = {(100 / value.length).toFixed(1)}%)
+            </div>
+            <SliderField label="Weight factor" value={sel.weightFactor ?? 1.0} min={0.1} max={5} step={0.1}
+              onChange={(v) => update(selected, { weightFactor: parseFloat(v.toFixed(2)) })} />
+            <button
+              onClick={() => onChange(autoWeightFactors(value))}
+              style={{ marginTop: 6, padding: "4px 10px", fontSize: 10, borderRadius: 5, cursor: "pointer",
+                background: C.bg3, color: C.muted, border: `1px solid ${C.border}` }}>
+              Auto-distribute all CPs from thickness
+            </button>
+          </Section>
+
           {/* Part layer */}
           <Section label="Part Layer">
             <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-              {LAYER_LABELS.map((l) => (
+              {layerLabels.map((l) => (
                 <button key={l} onClick={() => update(selected, { partLayer: l })}
                   style={{ padding: "4px 9px", fontSize: 10, borderRadius: 5, cursor: "pointer",
                     background: sel.partLayer === l ? alpha(C.purple, 0.16) : C.bg2,
@@ -425,7 +523,7 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
                 <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Right-spin (↻)</div>
                 <SearchableSelect
                   value={sel.spinBehavior.rightPin}
-                  options={ATTACK_LABELS.map((a) => ({ value: a, label: a }))}
+                  options={attackLabels.map((a) => ({ value: a, label: a }))}
                   onChange={(v) => update(selected, { spinBehavior: { ...sel.spinBehavior, rightPin: v as AttackType } })}
                   style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
                 />
@@ -434,7 +532,7 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
                 <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Left-spin (↺)</div>
                 <SearchableSelect
                   value={sel.spinBehavior.leftPin}
-                  options={ATTACK_LABELS.map((a) => ({ value: a, label: a }))}
+                  options={attackLabels.map((a) => ({ value: a, label: a }))}
                   onChange={(v) => update(selected, { spinBehavior: { ...sel.spinBehavior, leftPin: v as AttackType } })}
                   style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
                 />

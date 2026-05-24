@@ -10,6 +10,10 @@ unknowns: 31
 visited_urls_flag: true
 ---
 
+[← Batch 007: Extended Tips/Casings/Gimmicks](batch-007-extended-tips-casings-gimmicks-disambiguation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 009: Live Verification →](batch-009-live-verification.md)
+
+---
+
 # Batch 008 — Source Verification + Parts List Expansion
 
 > **Date**: 2026-05-23 | **Session 19**
@@ -208,3 +212,7 @@ Prior research had no HMS part names or weights. This session adds:
 | linka/parts/bx/bits.md | 32+ BX Bits with shapes and types |
 | linka/parts/mfb/tips-catalog.md | Full MFB tip reference (compiled from batch-004) |
 | linka/parts/mfb/spin-tracks.md | Full MFB spin track reference (compiled from batch-004) |
+
+---
+
+[← Batch 007: Extended Tips/Casings/Gimmicks](batch-007-extended-tips-casings-gimmicks-disambiguation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 009: Live Verification →](batch-009-live-verification.md)

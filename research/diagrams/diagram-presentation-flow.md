@@ -1,4 +1,8 @@
-﻿# Diagram: Presentation Flow — 9 Layers
+[← Mode Flow](diagram-mode-flow.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Research Flow →](diagram-research-flow.md)
+
+---
+
+# Diagram: Presentation Flow — 9 Layers
 
 > **Stage 0C Diagram 7** — Rule 6: Presentation is a cross-cutting layer.
 
@@ -76,4 +80,5 @@ The server sends state changes. The client interprets them as presentation cues.
 This decoupling MUST be preserved.
 
 ---
-[← Mode Flow](diagram-mode-flow.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Research Flow →](diagram-research-flow.md)
+
+[← Mode Flow](diagram-mode-flow.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Research Flow →](diagram-research-flow.md)

@@ -18,6 +18,7 @@ const PART_TYPE_META: Record<string, { label: string; icon: string; desc: string
   "cores":         { label: "Cores",         icon: "⚙️", desc: "Engine gear, clutch release, spin injection gimmicks.", collection: COLLECTIONS.CORE_PARTS },
   "casings":       { label: "Casings",       icon: "🛡️", desc: "Body shell, tip slot, and core slot housing.", collection: COLLECTIONS.CASING_PARTS },
   "spin-tracks":   { label: "Spin Tracks",   icon: "📏", desc: "Height piece between tip and fusion wheel.", collection: COLLECTIONS.SPIN_TRACK_PARTS },
+  "gears":         { label: "Gears",         icon: "⚙️", desc: "Swappable gear attachments that shift beyblade archetype (attack/defense/stamina/balance).", collection: COLLECTIONS.GEAR_PARTS },
 };
 
 interface PartRow {

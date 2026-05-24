@@ -1,4 +1,8 @@
-﻿# Diagram: Script Execution
+[← Script Authoring Flow](diagram-script-authoring-flow.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Sequence Launch →](diagram-sequence-launch.md)
+
+---
+
+# Diagram: Script Execution
 
 > **Stage 0C Diagram 17** — Rule 15: CoreSimulation → CoreMechanics → CompositionBlocks → ScriptDefinitions → Presentation → Renderer.
 
@@ -144,4 +148,5 @@ flowchart TD
 | `GimmickDefs` | `onCreate` (via gimmickExpander) | `MechanicInstance[]` per beyblade |
 
 ---
-[← Script Authoring Flow](diagram-script-authoring-flow.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Sequence Launch →](diagram-sequence-launch.md)
+
+[← Script Authoring Flow](diagram-script-authoring-flow.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Sequence Launch →](diagram-sequence-launch.md)

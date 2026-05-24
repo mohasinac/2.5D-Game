@@ -1,4 +1,4 @@
-﻿---
+---
 batch: 002
 stage: 0B
 status: complete
@@ -7,6 +7,10 @@ facts: 42
 inferences: 0
 speculations: 3
 unknowns: 0
+---
+
+[← Batch 001: Schema Catalog](batch-001-schema-catalog.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 003: Engine Capability Summary →](batch-003-engine-capability-summary.md)
+
 ---
 
 ## Research Completed
@@ -26,7 +30,7 @@ Discovery Table for Stage 0B — consolidates all engine capabilities and gaps f
 | BehaviorRef handlers | 1 of ~20 | CRITICAL GAP | 19+ missing |
 | Special move pipeline | full type system | complete | admin step-authoring UI missing |
 | Round modifiers | 17 built-in, 4 categories | complete | admin page not linked to arena/bey |
-| Multi-engine support | 2D full / 2.5D partial / 3D none | assessed | 3D adapter |
+| Multi-engine support | 2D full / 2.5D partial | assessed | — |
 | Prior INFERENCEs resolved | 4 / 4 | 100% | — |
 
 ---
@@ -39,7 +43,7 @@ Discovery Table for Stage 0B — consolidates all engine capabilities and gaps f
 | 2 | **ComboTask compiler is fully implemented** — 5 action types (multiplier, transformation, spawning, movement, arena_effect) with all subtypes compile to BehaviorRef[] | ENGINE CAPABILITY | comboTaskCompiler.ts | None at compile time | FACT |
 | 3 | **SpecialMove uses ComboEffectDef pipeline** — each step references a `comboEffectId`; specials are NOT standalone but are orchestrated sequences of ComboEffectDef effects | ENGINE DESIGN | specialMove.ts SpecialMoveStep | Admin form only has a flat `effects` sub-object — no step authoring UI | FACT |
 | 4 | **Hardcoded SPECIAL_MOVES constant exists separately from Firestore pipeline** — `server/constants/specialMoves.ts` has 5 moves with their own schema (SpecialMoveDef + effects{}) that is INCOMPATIBLE with the new SpecialMoveConfig/SpecialMoveStep pipeline | ENGINE INCONSISTENCY | SPECIAL_MOVES constant used by legacy rooms | New pipeline uses SpecialMoveConfig; gap = two schemas, no migration | FACT |
-| 5 | **DetachedBodySchema enables projectile→obstacle→removed lifecycle** for sub-part detachments (mini-beys, fragments, projectiles) | ENGINE CAPABILITY | GameState.ts DetachedBodySchema | 3D adapter | FACT |
+| 5 | **DetachedBodySchema enables projectile→obstacle→removed lifecycle** for sub-part detachments (mini-beys, fragments, projectiles) | ENGINE CAPABILITY | GameState.ts DetachedBodySchema | — | FACT |
 | 6 | **Combination lock types defined on Beyblade schema** — stack / helical / tandem / cluster; linkStrain 0→1 before breaking | ENGINE CAPABILITY | GameState.ts combinationLocked + linkedBeyId + combinationType + linkStrain | Full physics for linked movement not confirmed | FACT |
 | 7 | **BeyLink system fully type-defined** — 9 config categories, ArenaLink, BeyLinkEffect types loaded in BattleRoom | ENGINE CAPABILITY | BattleRoom.ts imports ArenaLink/BeyLink types | Runtime physics for linked movement partially implemented | FACT |
 | 8 | **Round modifiers active at runtime** — `activeModifierIds` in GameState, `MODIFIER_MAP` imported in BattleRoom | ENGINE CAPABILITY | GameState + BattleRoom | Admin page exists (RoundModifiersPage) but no arena or beyblade links to specific modifier IDs | FACT |
@@ -68,14 +72,14 @@ Discovery Table for Stage 0B — consolidates all engine capabilities and gaps f
 | 31 | **AnimationPresets not linked from any mechanic/combo/special** — standalone taxonomy with no referencing link from any behavior system | DATA MODEL GAP | AnimationPresetsPage | animationPresetId reference field missing from SpecialMoves/Combos/BehaviorDefs | FACT |
 | 32 | **Arena wall has bowl profile** (wallAngle 0–75) — steeper bowl redirects beys toward center on wall contact via resolveWallAngle() | ENGINE CAPABILITY | ArenaState.wallAngle + ArenaUtils.ts | Admin ArenaConfigurator should expose this | FACT |
 | 33 | **AI_BATTLES collection added to COLLECTIONS and AIBattlesPage built** — previously had only a seeder script; now full CRUD with difficulty/defaultBeybladeId/defaultArenaId/isActive | ADMIN ✅ FIXED | AIBattlesPage.tsx + firebase.ts AI_BATTLES | — | FACT |
-| 34 | **PART_MATERIALS is a new collection** — PartMaterialsPage added with physics params: gripFactor, aggressiveness, recoilFactor, surfaceFriction, density, durabilityDecay (all optional) | ADMIN ✅ NEW | PartMaterialsPage.tsx + firebase.ts PART_MATERIALS | Used by 2.5D part system; 2D/3D adapters not defined | FACT |
+| 34 | **PART_MATERIALS is a new collection** — PartMaterialsPage added with physics params: gripFactor, aggressiveness, recoilFactor, surfaceFriction, density, durabilityDecay (all optional) | ADMIN ✅ NEW | PartMaterialsPage.tsx + firebase.ts PART_MATERIALS | Used by 2.5D part system; 2D adapter not yet wired | FACT |
 | 35 | **TournamentEditPage built** — tournaments previously had no edit flow (only create + read-only list/detail); now all fields editable including allowedBeybladeIds/allowedArenaIds | ADMIN ✅ FIXED | TournamentEditPage.tsx | — | FACT |
 | 36 | **MODIFIER_MAP contains 17 built-in modifiers across 4 categories** — physics (double_gravity, low_gravity, ice_floor, sticky_floor, super_bounce, vacuum), combat (hyper_speed, glass_cannon, stamina_mode, fragile_defense, burst_mania), rules (free_combos, mega_special, arena_shrink_fast), chaos (randomize_all, invert_controls, gravity_flip). Each modifier uses: `physicsOverrides` (gravityMult, airResistance, surfaceFriction, wallRestitution), `globalFactors` (StatDelta[]), `ruleOverrides` (burstResistanceOverride, spinDecayRateOverride, comboCostMultiplier, specialMoveCostOverride, ringOutZoneMult, friendlyFire), or `chaosParams` (randomizeStats, swapBeyblades, invertControls, gravityReverses). Admin RoundModifiersPage schema does NOT match this type — page stores name/modifierType/magnitude/condition/stackable/icon while the actual RoundModifier type uses nested override objects | ENGINE CAPABILITY + ADMIN SCHEMA MISMATCH | shared/types/roundModifier.ts MODIFIER_MAP | Admin page schema is incompatible with RoundModifier type — HIGH priority data model gap | FACT |
-| 37 | **3D engine adapter does not exist** — no 3D physics files found anywhere in server/; no Cannon.js, Rapier, or three.js imports | ENGINE GAP | No 3D files in server/ | Would require a separate physics library | FACT |
+| 37 | **3D engine adapter was never built and is not planned** — no Cannon.js, Rapier, or three.js exists in server/; the game is 2D/2.5D only | DECISION | — | — | FACT |
 | 38 | **BeyLink physics is substantially implemented** — BattleRoom maintains: beyStackState (partnerId, linkId, tickCount), beyStackCooldowns, pendingBeyLinkQTE (QTE escape with expiry + key), controlLossImmunity (expiry per sessionId), activeControlLoss (nextQTETick, recoveryKey), pendingHijackQTE (blockKey, expiry), hijackCooldowns, rigidFormationOffset (relX/relY per cluster member), lastPlayerInput per session. Full QTE-gated escape system exists. This is beyond "partial" — the linking, hijacking, and control-loss pipeline is implemented | ENGINE CAPABILITY | BattleRoom.ts BeyLink state maps | Full multi-bey force coupling in tick loop still needs reading to confirm | FACT |
 | 39 | **BattleRoom.onCreate does NOT import SPECIAL_MOVES hardcoded constant** — special moves go through `comboEffectsCache` (loaded via `loadComboEffects()` from Firestore). The hardcoded SPECIAL_MOVES constant in `server/constants/specialMoves.ts` is legacy and not used by BattleRoom. Also confirmed: BattleRoom loads `loadGimmickDefs()` + `expandGimmicks()` from Firestore at onCreate — gimmicks are runtime-active without an admin page | ENGINE DESIGN | BattleRoom.ts onCreate | Prior gap row #4 (hardcoded SPECIAL_MOVES) may be isolated to older room types (TryoutRoom?) — needs confirmation per-room | FACT |
 | 40 | **ClimbingPhysics.ts is a 2.5D-only module** — exports `computeClimbingForces()` and `updateBeyTilt()`. Surface adhesion: if `suctionForce / (mass/1000) >= effectiveGravity`, bey sticks to nearest surface (full force, linear falloff assumed). Wall climbing: if `wallClimbFactor > 0` and `isNearVerticalSurface`, friction accel = `effectiveGravity × wallClimbFactor × gripFactor`. Bey-axis tilt: 4 forces: (1) gyroscopic stabilization `spinRatio² × lateralStiffness × 2.0`; (2) impact tilt `force × (1 - tiltResistance) × 0.02`; (3) gravity runaway when tilt > 20° via `sin(tilt) × gravityMult × 0.005`; (4) clamp 0–360. `shouldBeRolling` at tilt > 45°; `shouldBeNormal` at tilt < 5°. `wobbleAmplitude = tilt × spinRatio × 0.5` links to GameState wobbleAmplitude | ENGINE CAPABILITY (2.5D only) | server/physics/ClimbingPhysics.ts | Caller must integrate adhesionAccel + wallClimbFrictionAccel via applyForce; not auto-applied | FACT |
-| 41 | **PhysicsStrategy is a pluggable interface** — `BaseRoom` holds one `PhysicsStrategy`; the 2D and 2.5D pipelines each implement it. Interface: lifecycle (init/reset/dispose), entity management (registerBeyblade/removeBeyblade), per-tick (tick returns CollisionEvent[]), direct controls (applyForce, applyLateralForce, setPosition, setLinearVelocity, setAngularVelocity), optional 2.5D hooks (onButtonPressed?, computeLandingAOE?). This is the abstraction layer that would allow a 3D strategy to be plugged in | ENGINE DESIGN | server/shared/physics/PhysicsStrategy.ts | 3D PhysicsStrategy implementation does not exist | FACT |
+| 41 | **PhysicsStrategy is a pluggable interface** — `BaseRoom` holds one `PhysicsStrategy`; the 2D and 2.5D pipelines each implement it. Interface: lifecycle (init/reset/dispose), entity management (registerBeyblade/removeBeyblade), per-tick (tick returns CollisionEvent[]), direct controls (applyForce, applyLateralForce, setPosition, setLinearVelocity, setAngularVelocity), optional 2.5D hooks (onButtonPressed?, computeLandingAOE?) | ENGINE DESIGN | server/shared/physics/PhysicsStrategy.ts | 2D and 2.5D strategies are the full set | FACT |
 | 42 | **Arena timeline system (Phase T)** — `ArenaConfig.arenaTimeline` is an array of `ArenaTimelineEvent` sorted by `triggerMs` at room onCreate; BattleRoom tracks `matchElapsedMs` and `timelineIndex` each tick to fire events at scheduled wall-clock offsets | ENGINE CAPABILITY | BattleRoom.ts timelineEvents + matchElapsedMs | Admin ArenaConfigurator has no timeline event editor | FACT |
 
 ---
@@ -99,27 +103,27 @@ Discovery Table for Stage 0B — consolidates all engine capabilities and gaps f
 
 ## Multi-Engine Support Table
 
-| Feature | 2D Implementation | 2.5D Implementation | 3D Implementation | Shared Behavior |
-|---------|------------------|--------------------|--------------------|----------------|
-| Beyblade movement | Matter.js forces + velocity | Same + tipOffsetX/Y eccentricity | ❌ Not built | applyForce / setVelocity (PhysicsStrategy) |
-| Collision detection | Matter.Collision.collides (SAT) | + CP radial gate + arc-segment CPs | ❌ | checkBeybladeCollision |
-| Spin physics | angularVelocity | + subPartSpins (MapSchema) | ❌ | setAngularVelocity (PhysicsStrategy) |
-| Wall bounce | circular wall segments | + bowl angle redirect | ❌ | resolveWallAngle |
-| Surface adhesion / wall climb | ❌ | ClimbingPhysics.ts (full) | ❌ | computeClimbingForces — 2.5D only |
-| Bey-axis tilt | PRNG wobble < 40% spin | + updateBeyTilt (gyro, impact, gravity runaway) | ❌ | ClimbingPhysics.ts — 2.5D only |
-| Special moves | SpecialMoveState machine | Same (comboSlots/pipeline) | ❌ | specialMoveSystem |
-| Combos | detectCombo + history | Same + trigger-based | ❌ | comboSystem |
-| BehaviorRef execution | movement.orbit ONLY | movement.orbit ONLY | ❌ | CRITICAL GAP |
-| Element types | elementTypeLoader matrix | Same | ❌ | computeDynamicTypeMultiplier |
-| Gyro wobble | PRNG < 40% spin | + beyTiltAngle (separate from 2D wobble) | ❌ | prng + hashString |
-| Arena hazards (all 7) | Full processing | Full processing | ❌ | ArenaFeatureProcessor |
-| Sub-part detachment | DetachedBodySchema | Same + 2.5D body shape | ❌ | tickDetachedBody |
-| Combination lock | Schema fields | Schema fields | ❌ | BeyLink system |
-| Round modifiers | MODIFIER_MAP runtime | Same | ❌ | activeModifierIds; 17 built-in |
-| Arena rotation | advanceArenaRotation | Same | ❌ | rotation state machine |
-| Arena shrink | effectiveRadius + shrink config | Same | ❌ | Phase V |
-| Arena timeline | ArenaTimelineEvent[] + trigger | Same | ❌ | Phase T |
-| PhysicsStrategy plug-in | ✅ 2D implementation | ✅ 2.5D implementation | ❌ interface only | PhysicsStrategy.ts |
+| Feature | 2D Implementation | 2.5D Implementation | Shared Behavior |
+|---------|------------------|---------------------|----------------|
+| Beyblade movement | Matter.js forces + velocity | Same + tipOffsetX/Y eccentricity | applyForce / setVelocity (PhysicsStrategy) |
+| Collision detection | Matter.Collision.collides (SAT) | + CP radial gate + arc-segment CPs | checkBeybladeCollision |
+| Spin physics | angularVelocity | + subPartSpins (MapSchema) | setAngularVelocity (PhysicsStrategy) |
+| Wall bounce | circular wall segments | + bowl angle redirect | resolveWallAngle |
+| Surface adhesion / wall climb | ❌ | ClimbingPhysics.ts (full) | computeClimbingForces — 2.5D only |
+| Bey-axis tilt | PRNG wobble < 40% spin | + updateBeyTilt (gyro, impact, gravity runaway) | ClimbingPhysics.ts — 2.5D only |
+| Special moves | SpecialMoveState machine | Same (comboSlots/pipeline) | specialMoveSystem |
+| Combos | detectCombo + history | Same + trigger-based | comboSystem |
+| BehaviorRef execution | movement.orbit ONLY | movement.orbit ONLY | CRITICAL GAP |
+| Element types | elementTypeLoader matrix | Same | computeDynamicTypeMultiplier |
+| Gyro wobble | PRNG < 40% spin | + beyTiltAngle (separate from 2D wobble) | prng + hashString |
+| Arena hazards (all 7) | Full processing | Full processing | ArenaFeatureProcessor |
+| Sub-part detachment | DetachedBodySchema | Same + 2.5D body shape | tickDetachedBody |
+| Combination lock | Schema fields | Schema fields | BeyLink system |
+| Round modifiers | MODIFIER_MAP runtime | Same | activeModifierIds; 17 built-in |
+| Arena rotation | advanceArenaRotation | Same | rotation state machine |
+| Arena shrink | effectiveRadius + shrink config | Same | Phase V |
+| Arena timeline | ArenaTimelineEvent[] + trigger | Same | Phase T |
+| PhysicsStrategy plug-in | ✅ 2D implementation | ✅ 2.5D implementation | PhysicsStrategy.ts |
 
 ---
 
@@ -128,7 +132,7 @@ Discovery Table for Stage 0B — consolidates all engine capabilities and gaps f
 | # | Was | Resolution |
 |---|-----|-----------|
 | 36 | MODIFIER_MAP contents unknown | RESOLVED: 17 built-in modifiers, 4 categories; admin page schema DOES NOT match RoundModifier type — new HIGH gap |
-| 37 | 3D adapter "inferred absent" | RESOLVED: Confirmed absent — no 3D files in server/ |
+| 37 | 3D adapter "inferred absent" | CLOSED: 3D adaptation is not planned; game is 2D/2.5D only |
 | 38 | BeyLink "partially implemented" | RESOLVED: Substantially implemented — full QTE escape + hijack + control-loss + rigid formation pipeline in BattleRoom |
 | 39 | Special moves source unknown | RESOLVED: BattleRoom uses comboEffectsCache (Firestore); hardcoded SPECIAL_MOVES not imported; gimmick_defs also loaded at onCreate |
 
@@ -150,4 +154,5 @@ Discovery Table for Stage 0B — consolidates all engine capabilities and gaps f
 | ArenaConfig.shrink admin UI | Whether shrink config (startMs, endMs, minRadiusFraction) is exposed in ArenaConfigurator | Search ArenaConfigurator for shrink | MED |
 
 ---
-[← Batch 001: Schema Catalog](batch-001-schema-catalog.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Batch 003: Engine Capability Summary →](batch-003-engine-capability-summary.md)
+
+[← Batch 001: Schema Catalog](batch-001-schema-catalog.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Batch 003: Engine Capability Summary →](batch-003-engine-capability-summary.md)

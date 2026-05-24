@@ -24,7 +24,10 @@
 import {
   MATERIAL_STATS,
   type MaterialStats,
+  type MaterialBand,
+  type WearStep,
   type TipPart,
+  type TipEvolutionStage,
   type ARPart,
   type WDPart,
   type CorePart,
@@ -817,8 +820,205 @@ export function dispatchStatModifierEvent(
   }
 }
 
+// ─── Evolution Driver ─────────────────────────────────────────────────────────
+
+/**
+ * Linearly interpolates wear level (100→0) from a single band's wearSchedule
+ * at `elapsedSec` match seconds. Returns 100 when no schedule is defined.
+ */
+function wearLevelAt(steps: WearStep[], elapsedSec: number): number {
+  if (!steps.length) return 100;
+  const sorted = [...steps].sort((a, b) => a.atSecond - b.atSecond);
+  if (elapsedSec <= sorted[0].atSecond) return sorted[0].wearLevel;
+  for (let i = 1; i < sorted.length; i++) {
+    if (elapsedSec <= sorted[i].atSecond) {
+      const t = (elapsedSec - sorted[i - 1].atSecond) / (sorted[i].atSecond - sorted[i - 1].atSecond);
+      return sorted[i - 1].wearLevel + t * (sorted[i].wearLevel - sorted[i - 1].wearLevel);
+    }
+  }
+  return sorted[sorted.length - 1].wearLevel;
+}
+
+/**
+ * Returns the lowest wear level (0–100) across all material bands at `elapsedSec`.
+ * "Minimum" because the tip's contact patch is as worn as its worst band.
+ * Used by the "wear_level" evolution trigger.
+ */
+export function computeMinWearLevel(tip: TipPart, elapsedSec: number): number {
+  if (!tip.materials?.length) return 100;
+  return Math.min(...tip.materials.map((b: MaterialBand) => wearLevelAt(b.wearSchedule ?? [], elapsedSec)));
+}
+
+/**
+ * Advances the evolution-driver stage when the next stage's trigger condition is met.
+ * Called once per server tick (60 Hz) from PartSystemManager.tickBey().
+ *
+ * bey.tipEvolutionTimer is match-elapsed ms (never resets). All trigger types
+ * read from this monotonic clock so they stay consistent with MaterialBand wearSchedules:
+ *   "time"            – tipEvolutionTimer ≥ value (ms)
+ *   "wear_level"      – computeMinWearLevel(tip, elapsedSec) ≤ value  (0–100)
+ *                       — reads the same MaterialBand.wearSchedule used by gripFactor
+ *   "spin_percent"    – spin / maxSpin ≤ value (0–1)
+ *   "collision_count" – collisions ≥ value
+ *   "damage_taken"    – damageReceived ≥ value
+ *
+ * On advance: sets activePartConfigs["tip"] to the new configName so resolveTipStats()
+ * picks up the new stat overrides next frame. Returns the new stage label, or null.
+ */
+export function tickEvolutionDriver(
+  tip: TipPart,
+  bey: Beyblade,
+  dtMs: number,
+): string | null {
+  const stages = tip.evolutionStages;
+  if (!stages || stages.length <= 1) return null;
+
+  bey.tipEvolutionTimer += dtMs; // match-elapsed accumulator — never reset
+
+  const nextIdx = bey.tipEvolutionStage + 1;
+  if (nextIdx >= stages.length) return null;
+
+  const nextStage: TipEvolutionStage = stages[nextIdx];
+  if (!nextStage.trigger) return null;
+
+  const { type, value } = nextStage.trigger;
+  const elapsedSec = bey.tipEvolutionTimer / 1000;
+
+  const conditionMet =
+    type === "time"            ? bey.tipEvolutionTimer >= value :
+    type === "wear_level"      ? computeMinWearLevel(tip, elapsedSec) <= value :
+    type === "spin_percent"    ? bey.spin / Math.max(1, bey.maxSpin) <= value :
+    type === "collision_count" ? bey.collisions >= value :
+    type === "damage_taken"    ? bey.damageReceived >= value :
+    false;
+
+  if (!conditionMet) return null;
+
+  bey.tipEvolutionStage = nextIdx as 0; // uint8 — Colyseus syncs to clients automatically
+  bey.activePartConfigs.set("tip", nextStage.configName);
+
+  return nextStage.label;
+}
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 export const OBSTACLE_RELAUNCH_THRESHOLD = 15; // impact force needed to re-launch a stationary DetachedBody
 export const FRAGMENT_LIFETIME_TICKS_DEFAULT = 180; // 3s at 60Hz for escaped pocket balls
 export const LEFT_SPIN_HOP_MIN_FORCE = 5; // minimum impact force to trigger a left-spin hop
+
+// ─── Material Wear Computation ────────────────────────────────────────────────
+
+/**
+ * Evaluates a wear schedule at a given match-elapsed seconds value.
+ * Returns wear level 0–100 (100 = new, 0 = fully worn).
+ * Steps must be sorted by atSecond ascending (or will be sorted here).
+ * After the last step the wear level is held constant.
+ */
+export function computeWearLevel(
+  wearSchedule: Array<{ atSecond: number; wearLevel: number }> | undefined,
+  elapsedSeconds: number
+): number {
+  if (!wearSchedule || wearSchedule.length === 0) return 100;
+  const sorted = [...wearSchedule].sort((a, b) => a.atSecond - b.atSecond);
+  if (elapsedSeconds <= sorted[0].atSecond) return sorted[0].wearLevel;
+  for (let i = 1; i < sorted.length; i++) {
+    if (elapsedSeconds <= sorted[i].atSecond) {
+      const t =
+        (elapsedSeconds - sorted[i - 1].atSecond) /
+        (sorted[i].atSecond - sorted[i - 1].atSecond);
+      return sorted[i - 1].wearLevel + t * (sorted[i].wearLevel - sorted[i - 1].wearLevel);
+    }
+  }
+  return sorted[sorted.length - 1].wearLevel;
+}
+
+/**
+ * Scales material stats by the current wear level (0–100).
+ * Worn material loses grip and spin-steal resist; decay rate increases.
+ * At wearLevel=100 (new): no change. At wearLevel=0 (fully worn): grip/spinStealResist → 0.
+ */
+export function applyWearToMaterialStats(
+  stats: MaterialStats,
+  wearLevel: number
+): MaterialStats {
+  const t = Math.max(0, Math.min(100, wearLevel)) / 100;
+  return {
+    ...stats,
+    gripMult:        stats.gripMult * t,
+    spinStealResist: stats.spinStealResist * t,
+    decayMod:        stats.decayMod * (1 + (1 - t) * 0.5), // wear increases decay
+    frictionMult:    stats.frictionMult * (0.5 + 0.5 * t),  // partial floor friction loss
+  };
+}
+
+/**
+ * Computes the minimum wear level across all material bands on all parts for
+ * a given BeyStateParts snapshot. Returns 100 when no wear schedules are defined.
+ * Used by PartSystemManager to sync `bey.materialWearLevel`.
+ */
+export function computeMinWearLevel(
+  parts: {
+    ar?: { materials?: Array<{ wearSchedule?: Array<{ atSecond: number; wearLevel: number }> }> };
+    wd?: { materials?: Array<{ wearSchedule?: Array<{ atSecond: number; wearLevel: number }> }> };
+    casing?: { materials?: Array<{ wearSchedule?: Array<{ atSecond: number; wearLevel: number }> }> };
+    tip?: { material?: string };
+  },
+  elapsedSeconds: number
+): number {
+  let minWear = 100;
+  const partList = [parts.ar, parts.wd, parts.casing];
+  for (const part of partList) {
+    if (!part?.materials) continue;
+    for (const band of part.materials) {
+      if (!band.wearSchedule?.length) continue;
+      const w = computeWearLevel(band.wearSchedule, elapsedSeconds);
+      if (w < minWear) minWear = w;
+    }
+  }
+  return minWear;
+}
+
+// ─── Contact Point Weight Distribution ───────────────────────────────────────
+
+/**
+ * Returns the fractional weight share (0–1) for a single contact point
+ * relative to all other CPs on the same part.
+ * Absent `weightFactor` defaults to 1.0 (equal share).
+ */
+export function getCpWeightShare(
+  cp: { weightFactor?: number },
+  allCps: Array<{ weightFactor?: number }>
+): number {
+  const wf = (c: { weightFactor?: number }) => c.weightFactor ?? 1.0;
+  const total = allCps.reduce((s, c) => s + wf(c), 0);
+  if (total === 0) return 1 / Math.max(1, allCps.length);
+  return wf(cp) / total;
+}
+
+/**
+ * Computes a moment-of-inertia contribution from a set of contact points,
+ * weighted by their `weightFactor`. Useful for realistic inertia when the
+ * WD `momentOfInertia` is absent.
+ *
+ * Formula: I = Σ(share_i × mass × radius_i²)
+ * where radius_i is in mm (converted to m for SI: ÷1000²).
+ *
+ * @param partMassG   Total part mass in grams
+ * @param cps         Contact points with optional weightFactor
+ * @returns           Moment of inertia in kg·mm²
+ */
+export function computeCpMomentOfInertia(
+  partMassG: number,
+  cps: Array<{ weightFactor?: number; radius: number }>
+): number {
+  if (cps.length === 0) return 0;
+  const massKg = partMassG / 1000;
+  let I = 0;
+  const wf = (c: { weightFactor?: number }) => c.weightFactor ?? 1.0;
+  const total = cps.reduce((s, c) => s + wf(c), 0) || 1;
+  for (const cp of cps) {
+    const share = wf(cp) / total;
+    I += share * massKg * cp.radius * cp.radius; // kg·mm²
+  }
+  return I;
+}

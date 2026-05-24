@@ -13,6 +13,7 @@ const PART_TYPE_COLLECTION: Record<string, string> = {
   "cores":        COLLECTIONS.CORE_PARTS,
   "casings":      COLLECTIONS.CASING_PARTS,
   "spin-tracks":  COLLECTIONS.SPIN_TRACK_PARTS,
+  "gears":        COLLECTIONS.GEAR_PARTS,
 };
 
 const PART_TYPE_LABEL: Record<string, string> = {
@@ -24,6 +25,7 @@ const PART_TYPE_LABEL: Record<string, string> = {
   "cores":        "Core",
   "casings":      "Casing",
   "spin-tracks":  "Spin Track",
+  "gears":        "Gear",
 };
 
 // Per-type config: some part types don't use contact points or material bands
@@ -36,6 +38,7 @@ const PART_TYPE_CONFIG: Record<string, { hasContactPoints: boolean; hasMaterialB
   "cores":        { hasContactPoints: false, hasMaterialBands: false, showInnerRadius: false },
   "casings":      { hasContactPoints: true,  hasMaterialBands: true,  showInnerRadius: true  },
   "spin-tracks":  { hasContactPoints: true,  hasMaterialBands: true,  showInnerRadius: true  },
+  "gears":        { hasContactPoints: true,  hasMaterialBands: true,  showInnerRadius: true  },
 };
 
 export function PartEditPage() {

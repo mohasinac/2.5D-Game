@@ -1,4 +1,8 @@
-﻿# Phase 11 — Shared Architecture
+[← Phase 10: Arena Implementation](phase-10-arena-implementation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 12: Seed Plan →](phase-12-seed-plan.md)
+
+---
+
+# Phase 11 — Shared Architecture
 
 > **Stage 11** — Runtime architecture for MechanicRegistry, adapters, schema extensions, and all new systems.
 > Source: confirmed engine code + Stages 0-10 research.
@@ -353,8 +357,12 @@ export const COLLECTIONS = {
   SCRIPT_DEFINITIONS:     'script_definitions',
   SCRIPT_EDITOR_METADATA: 'script_editor_metadata',
   COMPOSITION_BLOCKS:     'composition_blocks',
+  ARENA_FLOOR_GROUPS:     'arena_floor_groups',  // added session 25
+  USERS:                  'users',               // added session 25
 } as const;
 ```
+
+> **Session 25 status**: `MECHANIC_DEFS`, `GIMMICK_DEFS`, `ARENA_FLOOR_GROUPS`, and `USERS` have been added. `CAMERA_PROFILES`, `AUDIO_PROFILES`, `SCRIPT_*`, `COMPOSITION_BLOCKS` not yet added (collections not yet implemented).
 
 ---
 
@@ -387,25 +395,28 @@ All editors use `SearchableSelect` / `SearchableMultiSelect` for all `<select>` 
 
 ---
 
-## 11. Multi-Engine Adapter Pattern
+## 11. Two-Engine Adapter Pattern (2D + 2.5D)
 
-Per Rule 2, all three simulation engines (2D/2.5D/3D) share the same mechanic handlers.
-Adapters handle only the simulation-specific translation:
+Per Rule 2, both simulation engines share the same mechanic handlers.
+**The 2.5D engine is the game's depth/3D layer.** It uses shape makers and perspective warps rather than a true 3D physics library:
+
+- **Shape makers** — Fourier profiles and arc-segment contact points describe part silhouettes; `renderRadius(θ)` warps sprites at runtime.
+- **Perspective warps** — PixiJS tilt-stack (`arenaTiltOuter → arenaTiltScale → arenaTiltInner`) projects the arena as a tilted 3D plane.
+- **Z-layer physics** — `beyTiltAngle`, `effectiveGravity`, and `ClimbingPhysics.ts` provide height, tilt, and vertical-surface behaviour.
 
 ```typescript
 interface SimulationAdapter {
   applyForce(body: BodyRef, force: Vec2): void;
-  getHeight(body: BodyRef): number;        // 2D: always 0; 2.5D: z-layer; 3D: mesh height
+  getHeight(body: BodyRef): number;        // 2D: always 0; 2.5D: z-layer via beyTiltAngle
   applyAngularVelocity(body: BodyRef, omega: number): void;
   getContactNormal(a: BodyRef, b: BodyRef): Vec3;
 }
 
 class TwoDAdapter implements SimulationAdapter { /* wraps Matter.js */ }
-class TwoPointFiveDAdapter extends TwoDAdapter { /* adds z-layer */ }
-class ThreeDAdapter implements SimulationAdapter { /* future — mesh collision */ }
+class TwoPointFiveDAdapter extends TwoDAdapter { /* adds z-layer, shape makers, warp output */ }
 ```
 
-Mechanic handlers call adapter methods, not physics library methods directly. This ensures parity across engines.
+Mechanic handlers call adapter methods, not physics library methods directly. This ensures parity across both engines.
 
 ---
 
@@ -429,4 +440,5 @@ Mechanic handlers call adapter methods, not physics library methods directly. Th
 | `seed-bey-systems.ts` | `beyblade_systems` | existing | done |
 
 ---
-[← Phase 10: Arena Implementation](phase-10-arena-implementation.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 12: Seed Plan →](phase-12-seed-plan.md)
+
+[← Phase 10: Arena Implementation](phase-10-arena-implementation.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 12: Seed Plan →](phase-12-seed-plan.md)

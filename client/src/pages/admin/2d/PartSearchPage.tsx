@@ -12,6 +12,7 @@ const PART_TYPES = [
   { label: "Sub-Part", value: "sub-parts" },
   { label: "Bit Beast", value: "bit-beasts" },
   { label: "Spin Track", value: "spin-tracks" },
+  { label: "Gear", value: "gears" },
 ];
 
 const PART_LINKS = [
@@ -23,6 +24,7 @@ const PART_LINKS = [
   { slug: "cores",        label: "Cores",         icon: "⚙️", desc: "Engine gear and gimmick cores" },
   { slug: "casings",      label: "Casings",       icon: "🛡️", desc: "Body shell and tip-slot housing" },
   { slug: "spin-tracks",  label: "Spin Tracks",   icon: "📏", desc: "Height piece between tip and fusion wheel" },
+  { slug: "gears",        label: "Gears",         icon: "⚙️", desc: "Swappable archetype-shifting gear attachments" },
 ];
 
 export function PartSearchPage() {

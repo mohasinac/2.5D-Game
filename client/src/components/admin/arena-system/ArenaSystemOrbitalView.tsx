@@ -10,144 +10,118 @@ interface Props {
 export function ArenaSystemOrbitalView({ arenaSystem }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<PIXI.Application | null>(null);
-  const timeRef = useRef(0);
 
   useEffect(() => {
     if (!containerRef.current) return;
+    let cancelled = false;
+    const container = containerRef.current;
+    const width = container.clientWidth || 500;
+    const height = container.clientHeight || 500;
+    const app = new PIXI.Application();
 
-    const width = containerRef.current.clientWidth || 500;
-    const height = containerRef.current.clientHeight || 500;
+    void (async () => {
+      await app.init({ width, height, background: 0x0a1520, antialias: true });
+      if (cancelled) { app.destroy(true); return; }
+      appRef.current = app;
+      container.appendChild(app.canvas);
 
-    const app = new PIXI.Application({
-      width,
-      height,
-      backgroundColor: 0x0a1520,
-      antialias: true,
-    });
-    containerRef.current.appendChild(app.canvas);
-    appRef.current = app;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const scale = Math.min(width, height) / Math.max(arenaSystem.width, arenaSystem.height) * 0.7;
+      const radius = Math.min(arenaSystem.width, arenaSystem.height) / 2 * scale;
 
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const scale = Math.min(width, height) / Math.max(arenaSystem.width, arenaSystem.height) * 0.7;
+      // Arena floor
+      const floor = new PIXI.Graphics();
+      floor.circle(centerX, centerY, radius).fill({ color: 0x1a2540 });
+      app.stage.addChild(floor);
 
-    // Arena floor
-    const floor = new PIXI.Graphics();
-    floor.beginFill(0x1a2540);
-    const radius = Math.min(arenaSystem.width, arenaSystem.height) / 2 * scale;
-    floor.drawCircle(centerX, centerY, radius);
-    floor.endFill();
-    app.stage.addChild(floor);
+      // Elevation gradient overlay — 12 pie segments
+      const elevType = arenaSystem.elevationMap.type;
+      for (let i = 0; i < 12; i++) {
+        const angle = (Math.PI * 2 * i) / 12;
+        const nextAngle = (Math.PI * 2 * (i + 1)) / 12;
 
-    // Elevation gradient overlay
-    const gradient = new PIXI.Graphics();
-    const elevType = arenaSystem.elevationMap.type;
+        let elevation = 0;
+        if (elevType === "bowl") {
+          elevation = 0.4;
+        } else if (elevType === "pyramid") {
+          elevation = -0.5;
+        } else if (elevType === "ramp") {
+          const tiltDir = (arenaSystem.elevationMap.tiltDirection ?? 0) * Math.PI / 180;
+          elevation = Math.cos(angle - tiltDir) * 0.3;
+        }
 
-    for (let i = 0; i < 12; i++) {
-      const angle = (Math.PI * 2 * i) / 12;
-      const nextAngle = (Math.PI * 2 * (i + 1)) / 12;
+        const color = elevation > 0 ? 0xff4444 : elevation < 0 ? 0x4488ff : 0x88dd88;
+        const alpha = 0.2 + Math.abs(elevation) * 0.3;
 
-      let elevation = 0;
-      if (elevType === "bowl") {
-        elevation = 0.4; // Outward pull
-      } else if (elevType === "pyramid") {
-        elevation = -0.5; // Inward/upward
-      } else if (elevType === "ramp") {
-        const tiltDir = (arenaSystem.elevationMap.tiltDirection ?? 0) * Math.PI / 180;
-        const dotProduct = Math.cos(angle - tiltDir);
-        elevation = dotProduct * 0.3;
+        const seg = new PIXI.Graphics();
+        seg.moveTo(centerX, centerY);
+        seg.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
+        seg.lineTo(centerX + Math.cos(nextAngle) * radius, centerY + Math.sin(nextAngle) * radius);
+        seg.closePath();
+        seg.fill({ color, alpha });
+        app.stage.addChild(seg);
       }
 
-      const color = elevation > 0 ? 0xff4444 : elevation < 0 ? 0x4488ff : 0x88dd88;
-      const alpha = Math.abs(elevation);
+      // Wall ring
+      const wallGraphics = new PIXI.Graphics();
+      wallGraphics.circle(centerX, centerY, radius).stroke({ color: 0xffcc44, width: 3, alpha: 0.8 });
+      app.stage.addChild(wallGraphics);
 
-      const seg = new PIXI.Graphics();
-      seg.beginFill(color, 0.2 + alpha * 0.3);
-      seg.moveTo(centerX, centerY);
-      seg.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
-      seg.lineTo(centerX + Math.cos(nextAngle) * radius, centerY + Math.sin(nextAngle) * radius);
-      seg.closePath();
-      seg.endFill();
-      app.stage.addChild(seg);
-    }
+      // Gravity arrow (ramp only)
+      if (elevType === "ramp") {
+        const tiltDir = (arenaSystem.elevationMap.tiltDirection ?? 0) * Math.PI / 180;
+        const strength = (arenaSystem.elevationMap.tiltAngle ?? 15) / 30;
+        const ax = centerX;
+        const ay = centerY - radius * 0.5;
+        const ex = ax + Math.cos(tiltDir) * radius * 0.3 * strength;
+        const ey = ay + Math.sin(tiltDir) * radius * 0.3 * strength;
+        const headAngle = Math.atan2(ey - ay, ex - ax);
+        const headSize = 10;
 
-    // Wall
-    const wallGraphics = new PIXI.Graphics();
-    wallGraphics.lineStyle(3, 0xffcc44, 0.8);
-    wallGraphics.drawCircle(centerX, centerY, radius);
-    app.stage.addChild(wallGraphics);
+        const arrow = new PIXI.Graphics();
+        arrow.moveTo(ax, ay);
+        arrow.lineTo(ex, ey);
+        arrow.moveTo(ex, ey);
+        arrow.lineTo(ex - Math.cos(headAngle - 0.4) * headSize, ey - Math.sin(headAngle - 0.4) * headSize);
+        arrow.moveTo(ex, ey);
+        arrow.lineTo(ex - Math.cos(headAngle + 0.4) * headSize, ey - Math.sin(headAngle + 0.4) * headSize);
+        arrow.stroke({ color: 0xff6688, width: 2, alpha: 0.7 });
+        app.stage.addChild(arrow);
+      }
 
-    // Gravity direction indicator (for ramp)
-    if (elevType === "ramp") {
-      const tiltDir = (arenaSystem.elevationMap.tiltDirection ?? 0) * Math.PI / 180;
-      const strength = (arenaSystem.elevationMap.tiltAngle ?? 15) / 30;
+      // Animated beyblades orbiting the arena
+      const beybladeData = [
+        { angle: 0,              speed: 1.5, orbitRadius: radius * 0.6, color: 0xff6666 },
+        { angle: Math.PI * 0.66, speed: 1.2, orbitRadius: radius * 0.7, color: 0x66ff66 },
+        { angle: Math.PI * 1.33, speed: 1.8, orbitRadius: radius * 0.5, color: 0x6666ff },
+      ];
 
-      const arrow = new PIXI.Graphics();
-      arrow.lineStyle(2, 0xff6688, 0.7);
+      const beyContainer = new PIXI.Container();
+      app.stage.addChild(beyContainer);
 
-      const startX = centerX;
-      const startY = centerY - radius * 0.5;
-      const endX = startX + Math.cos(tiltDir) * radius * 0.3 * strength;
-      const endY = startY + Math.sin(tiltDir) * radius * 0.3 * strength;
-
-      arrow.moveTo(startX, startY);
-      arrow.lineTo(endX, endY);
-
-      // Arrowhead
-      const headSize = 10;
-      const angle = Math.atan2(endY - startY, endX - startX);
-      arrow.moveTo(endX, endY);
-      arrow.lineTo(endX - Math.cos(angle - 0.4) * headSize, endY - Math.sin(angle - 0.4) * headSize);
-      arrow.moveTo(endX, endY);
-      arrow.lineTo(endX - Math.cos(angle + 0.4) * headSize, endY - Math.sin(angle + 0.4) * headSize);
-
-      app.stage.addChild(arrow);
-    }
-
-    // Animated beyblades simulating orbital movement
-    const beyblades: Array<{
-      angle: number;
-      speed: number;
-      radius: number;
-      color: number;
-    }> = [
-      { angle: 0, speed: 1.5, radius: radius * 0.6, color: 0xff6666 },
-      { angle: Math.PI * 0.66, speed: 1.2, radius: radius * 0.7, color: 0x66ff66 },
-      { angle: Math.PI * 1.33, speed: 1.8, radius: radius * 0.5, color: 0x6666ff },
-    ];
-
-    const beyBlades = new PIXI.Container();
-    app.stage.addChild(beyBlades);
-
-    const beySprites = beyblades.map((b) => {
-      const sprite = new PIXI.Graphics();
-      sprite.beginFill(b.color);
-      sprite.drawCircle(0, 0, 6);
-      sprite.endFill();
-      beyBlades.addChild(sprite);
-      return { sprite, data: b };
-    });
-
-    // Animation loop
-    let raf: number;
-    const animate = () => {
-      timeRef.current += 0.016; // ~60fps
-
-      beySprites.forEach(({ sprite, data }) => {
-        data.angle += data.speed * 0.01;
-        sprite.x = centerX + Math.cos(data.angle) * data.radius;
-        sprite.y = centerY + Math.sin(data.angle) * data.radius;
+      const beySprites = beybladeData.map((b) => {
+        const sprite = new PIXI.Graphics();
+        sprite.circle(0, 0, 6).fill({ color: b.color });
+        beyContainer.addChild(sprite);
+        return { sprite, data: b };
       });
 
-      app.renderer.render(app.stage);
-      raf = requestAnimationFrame(animate);
-    };
-
-    raf = requestAnimationFrame(animate);
+      app.ticker.add(() => {
+        beySprites.forEach(({ sprite, data }) => {
+          data.angle += data.speed * 0.01;
+          sprite.x = centerX + Math.cos(data.angle) * data.orbitRadius;
+          sprite.y = centerY + Math.sin(data.angle) * data.orbitRadius;
+        });
+      });
+    })();
 
     return () => {
-      cancelAnimationFrame(raf);
-      app.destroy(true);
+      cancelled = true;
+      if (appRef.current) {
+        appRef.current.destroy(true);
+        appRef.current = null;
+      }
     };
   }, [arenaSystem]);
 

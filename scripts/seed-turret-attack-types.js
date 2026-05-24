@@ -46,6 +46,43 @@ const TURRET_ATTACK_TYPES = [
   { id: "burst_fire",        label: "Burst Fire",         description: "Rapid three-shot burst in quick succession.",         icon: "💫" },
   { id: "plasma_ring",       label: "Plasma Ring",        description: "Expanding ring of plasma that damages on contact.",   icon: "🔵" },
   { id: "tractor_beam",      label: "Tractor Beam",       description: "Pulls targets toward the turret continuously.",       icon: "🔮" },
+  // ── Dragon Ball ────────────────────────────────────────────────────────────
+  { id: "kamehameha",        label: "Kamehameha",         description: "[Goku] Energy wave beam — focused line, high damage.",            icon: "🌊" },
+  { id: "spirit_bomb",       label: "Spirit Bomb",        description: "[Goku] Gathered energy — long charge then massive AoE.",          icon: "💙" },
+  { id: "final_flash",       label: "Final Flash",        description: "[Vegeta] Maximum-power beam — obliterates single target.",        icon: "⚡" },
+  { id: "death_beam",        label: "Death Beam",         description: "[Frieza] Precision death ray — instant piercing damage.",         icon: "☠️" },
+  { id: "gohan_masenko",     label: "Masenko",            description: "[Gohan] Focused downward energy beam.",                           icon: "🔥" },
+  { id: "gohan_power_up",    label: "Hidden Power",       description: "[Gohan] Unlocks hidden power — +50% damage for 8s.",             icon: "💪" },
+  { id: "gohan_mystic_unleash", label: "Mystic Unleash",  description: "[Gohan] Ultimate AoE burst, scales with target HP loss.",        icon: "✨" },
+  { id: "galick_gun",        label: "Galick Gun",         description: "[Vegeta] Wide-cone energy beam.",                                icon: "💜" },
+  { id: "big_bang_attack",   label: "Big Bang Attack",    description: "[Vegeta] Point-blank sphere, high damage + knockback.",          icon: "🌟" },
+  { id: "final_explosion",   label: "Final Explosion",    description: "[Vegeta] Sacrifice AoE nuke — turret dormant 10s.",              icon: "💀" },
+  { id: "solar_kamehameha",  label: "Solar Kamehameha",   description: "[Cell] Double-width superbeam.",                                 icon: "☀️" },
+  { id: "cell_jr_spawn",     label: "Cell Jr. Spawn",     description: "[Cell] Spawns 3 seeker Cell Jr. units that deal ticking damage.", icon: "🦠" },
+  { id: "perfect_form_cell", label: "Perfect Form",       description: "[Cell] Range +50%, damage +30% for 8s.",                        icon: "💠" },
+  { id: "chocolate_beam",    label: "Chocolate Beam",     description: "[Buu] Drains target spin to 0 for 2s.",                         icon: "🍫" },
+  { id: "buu_absorption",    label: "Absorption",         description: "[Buu] Copies target's dominant stat as temporary buff.",         icon: "🫦" },
+  { id: "kid_buu_scream",    label: "Primal Scream",      description: "[Kid Buu] Omnidirectional AoE shockwave.",                      icon: "😱" },
+  { id: "death_ball",        label: "Death Ball",         description: "[Frieza] Massive sphere, huge AoE explosion after 1.5s.",       icon: "🔴" },
+  { id: "nova_strike",       label: "Nova Strike",        description: "[Frieza] High-speed ramming dash.",                              icon: "🏎️" },
+  { id: "golden_frieza",     label: "Golden Form",        description: "[Frieza] All damage ×2.5 for 8s.",                              icon: "👑" },
+  // ── One Piece ──────────────────────────────────────────────────────────────
+  { id: "gear_second",       label: "Gear Second",        description: "[Luffy] Speed burst — rapid hits every 0.3s for 5s.",            icon: "💨" },
+  { id: "gear_fourth",       label: "Gear Fourth",        description: "[Luffy] Boundman slam — AoE knockback + spin drain.",            icon: "🦁" },
+  { id: "conquerors_haki",   label: "Conqueror's Haki",   description: "[Shanks/Luffy] Fear wave — stuns + spin drains all in range.",  icon: "⚡" },
+  { id: "three_sword_style", label: "Three Sword Style",  description: "[Zoro] Triple arc slashes — 3 damage instances.",               icon: "⚔️" },
+  { id: "diable_jambe",      label: "Diable Jambe",       description: "[Sanji] Burning kick — ignites target, ticking fire damage.",   icon: "🔥" },
+  // ── Demon Slayer ──────────────────────────────────────────────────────────
+  { id: "water_breathing",   label: "Water Breathing",    description: "[Tanjiro] Ten Forms water arc — sweeps nearest beyblades.",     icon: "🌊" },
+  { id: "hinokami_kagura",   label: "Hinokami Kagura",    description: "[Tanjiro] Sun Breathing — AoE fire wave, high damage.",         icon: "☀️" },
+  { id: "thunder_breathing", label: "Thunder Breathing",  description: "[Zenitsu] Thunderclap Flash — instant dash strike.",             icon: "⚡" },
+  { id: "beast_breathing",   label: "Beast Breathing",    description: "[Inosuke] Wild boar charge — dual pierce hits.",                 icon: "🐗" },
+  { id: "flame_breathing",   label: "Flame Breathing",    description: "[Rengoku] Flame Tiger — line AoE fire burst.",                  icon: "🔥" },
+  // ── Attack on Titan ───────────────────────────────────────────────────────
+  { id: "thunder_spear",     label: "Thunder Spear",      description: "[Survey Corps] Explosive spear cluster — triple AoE detonation.", icon: "🗡️" },
+  { id: "omni_directional",  label: "ODM Gear",           description: "[Survey Corps] 360° wire sweeps — hits all in radius.",          icon: "🪢" },
+  { id: "hardening",         label: "Hardening",          description: "[Eren] Crystal armor — reflects 40% damage for 6s.",             icon: "🛡️" },
+  { id: "founding_titan",    label: "Founding Titan",     description: "[Eren] Rumbling — AoE shockwave + periodic spin drain aura.",   icon: "👁️" },
 ];
 
 const FIRE_PATTERNS = [

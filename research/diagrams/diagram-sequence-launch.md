@@ -1,3 +1,7 @@
+[← Script Execution](diagram-script-execution.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Simulation Architecture →](diagram-simulation-arch.md)
+
+---
+
 # Diagram: Sequence — Launch to State Update
 
 > **Stage 0C Diagram 6** — Full sequence from pre-match launch QTE through collision to client.
@@ -186,4 +190,5 @@ sequenceDiagram
 ```
 
 ---
+
 [← Script Execution](diagram-script-execution.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Simulation Architecture →](diagram-simulation-arch.md)

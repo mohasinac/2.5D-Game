@@ -1,4 +1,8 @@
-﻿# Phase 12 — Seed Planning
+[← Phase 11: Architecture](phase-11-architecture.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 13: Controls →](phase-13-controls.md)
+
+---
+
+# Phase 12 — Seed Planning
 
 > **Stage 12** — Complete seeding strategy for all Firestore collections.
 > Source: phase-11-architecture.md + all batch files + research phases.
@@ -336,4 +340,5 @@ Add to `package.json` scripts:
 18. `seed:tournament-ai-solo` — depends on beyblades + arenas
 
 ---
-[← Phase 11: Architecture](phase-11-architecture.md) &nbsp;�&nbsp; [↑ Index](../INDEX.md) &nbsp;�&nbsp; [Phase 13: Controls →](phase-13-controls.md)
+
+[← Phase 11: Architecture](phase-11-architecture.md) &nbsp;·&nbsp; [↑ Index](../INDEX.md) &nbsp;·&nbsp; [Phase 13: Controls →](phase-13-controls.md)

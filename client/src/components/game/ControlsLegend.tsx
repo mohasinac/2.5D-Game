@@ -13,9 +13,11 @@ interface ControlsLegendProps {
   lockSource?: string;
   /** When set, the bey is in a loss-of-control window until this Date.now() value. */
   controlLockedUntilMs?: number;
+  /** Set to true in tryout/solo mode to hide battle-only action keys. */
+  isTryout?: boolean;
 }
 
-export function ControlsLegend({ initiallyHidden, lockSource, controlLockedUntilMs }: ControlsLegendProps) {
+export function ControlsLegend({ initiallyHidden, lockSource, controlLockedUntilMs, isTryout }: ControlsLegendProps) {
   // Recompute "is locked" without rerendering on every frame — once per 100ms is enough.
   const [nowMs, setNowMs] = useState(Date.now());
   useEffect(() => {
@@ -115,12 +117,22 @@ export function ControlsLegend({ initiallyHidden, lockSource, controlLockedUntil
         >×</button>
       </div>
       {row("WASD / ←↑↓→", "Move")}
-      {row("I", "Jump")}
-      {row("J", "Attack")}
-      {row("K", "Defense")}
-      {row("L", "Dodge")}
-      {row("Space", "Special / Charge")}
+      {row("Space (hold)", "Charge spin")}
       {row("+ / − / 0", "Zoom")}
+      {!isTryout && (
+        <>
+          {row("I", "Jump")}
+          {row("J", "Attack")}
+          {row("K", "Defense")}
+          {row("L", "Dodge")}
+          {row("Space (tap)", "Special move")}
+        </>
+      )}
+      {isTryout && (
+        <div style={{ marginTop: "0.3rem", fontSize: "0.6rem", color: "#889", fontStyle: "italic" }}>
+          Combat keys (IJKL) available in battle mode
+        </div>
+      )}
     </div>
   );
 }

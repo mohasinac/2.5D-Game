@@ -26,6 +26,15 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   "animation-presets": "Animation Presets",
   "round-modifiers": "Round Modifiers",
   "behavior-defs": "Behavior Defs",
+  "tip-shape-defs": "Tip Shape Defs",
+  "core-gimmick-defs": "Core Gimmick Defs",
+  "attack-type-defs": "Attack Type Defs",
+  "arena-theme-defs": "Arena Theme Defs",
+  "arena-shape-defs": "Arena Shape Defs",
+  "bowl-profile-defs": "Bowl Profile Defs",
+  "trigger-type-defs": "Trigger Type Defs",
+  "stat-event-defs": "Stat Event Defs",
+  "part-layer-defs": "Part Layer Defs",
   "ai-battles": "AI Battles",
   "arena-systems": "Arena Systems",
   "arena-floor-groups": "Floor Groups",
@@ -103,6 +112,18 @@ const catalogItems = [
   { to: "/admin/behavior-defs",         label: "Behavior Defs",        Icon: Brain },
 ];
 
+const presetDefItems = [
+  { to: "/admin/tip-shape-defs",      label: "Tip Shapes",       Icon: Circle },
+  { to: "/admin/core-gimmick-defs",   label: "Core Gimmicks",    Icon: Cpu },
+  { to: "/admin/attack-type-defs",    label: "Attack Types",     Icon: Swords },
+  { to: "/admin/arena-theme-defs",    label: "Arena Themes",     Icon: Palette },
+  { to: "/admin/arena-shape-defs",    label: "Arena Shapes",     Icon: Box },
+  { to: "/admin/bowl-profile-defs",   label: "Bowl Profiles",    Icon: Disc },
+  { to: "/admin/trigger-type-defs",   label: "Trigger Types",    Icon: Zap },
+  { to: "/admin/stat-event-defs",     label: "Stat Events",      Icon: BarChart3 },
+  { to: "/admin/part-layer-defs",     label: "Part Layers",      Icon: Layers },
+];
+
 const partLibraryItems = [
   { to: "/admin/2d/parts/bit-beasts",   label: "Bit Beasts",   Icon: Layers },
   { to: "/admin/2d/parts/attack-rings", label: "Attack Rings", Icon: Circle },
@@ -150,6 +171,10 @@ export function AdminLayout() {
   const [catalogExpanded, setCatalogExpanded] = useState(() => {
     const catalogPaths = ["/admin/combos", "/admin/special-moves", "/admin/turret-attack-types", "/admin/arena-feature-configs", "/admin/bey-link-configs", "/admin/part-materials", "/admin/combo-effects", "/admin/animation-presets", "/admin/round-modifiers", "/admin/behavior-defs"];
     return catalogPaths.some(p => location.pathname.startsWith(p));
+  });
+  const [presetDefsExpanded, setPresetDefsExpanded] = useState(() => {
+    const presetPaths = ["/admin/tip-shape-defs", "/admin/core-gimmick-defs", "/admin/attack-type-defs", "/admin/arena-theme-defs", "/admin/arena-shape-defs", "/admin/bowl-profile-defs", "/admin/trigger-type-defs", "/admin/stat-event-defs", "/admin/part-layer-defs"];
+    return presetPaths.some(p => location.pathname.startsWith(p));
   });
   const [collapsed, setCollapsed] = useState(() =>
     localStorage.getItem("admin.sidebar") === "1" || window.innerWidth < 768
@@ -249,6 +274,39 @@ export function AdminLayout() {
             ))
           )}
 
+          {/* Preset Defs Section */}
+          {!collapsed && (
+            <div style={{ marginTop: 12, marginBottom: 2 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.faint, letterSpacing: "0.08em", padding: "4px 12px 2px", textTransform: "uppercase" }}>
+                Preset Defs
+              </div>
+            </div>
+          )}
+          {!collapsed ? (
+            <>
+              <button
+                onClick={() => setPresetDefsExpanded(e => !e)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "8px 12px", borderRadius: 8, fontSize: 13,
+                  background: "transparent", border: "none", cursor: "pointer",
+                  color: C.muted, width: "100%", textAlign: "left",
+                }}
+              >
+                <Sliders size={15} />
+                <span style={{ flex: 1 }}>Preset Defs</span>
+                <span style={{ fontSize: 10, color: C.faint }}>{presetDefsExpanded ? "▾" : "▸"}</span>
+              </button>
+              {presetDefsExpanded && presetDefItems.map(item => (
+                <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
+              ))}
+            </>
+          ) : (
+            presetDefItems.map(item => (
+              <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} collapsed />
+            ))
+          )}
+
           {/* 2.5D Section */}
           {!collapsed && (
             <div style={{ marginTop: 12, marginBottom: 2 }}>
@@ -343,11 +401,16 @@ export function AdminLayout() {
           {/* Right side */}
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <ThemeToggle compact />
-            {currentUser && (
+            {currentUser ? (
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 11, color: C.muted, maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {currentUser.email}
-                </span>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                  <span style={{ fontSize: 12, color: C.text, fontWeight: 500, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {currentUser.displayName || currentUser.email?.split("@")[0]}
+                  </span>
+                  <span style={{ fontSize: 10, color: C.muted, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {currentUser.email}
+                  </span>
+                </div>
                 <button
                   onClick={handleSignOut}
                   title="Sign out"
@@ -361,11 +424,13 @@ export function AdminLayout() {
                   <LogOut size={13} />
                 </button>
               </div>
+            ) : (
+              <span style={{ fontSize: 11, color: C.faint }}>Not signed in</span>
             )}
           </div>
         </header>
 
-        <main style={{ flex: 1, overflowY: "auto" }}>
+        <main style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", minHeight: 0 }}>
           <Outlet />
         </main>
       </div>
