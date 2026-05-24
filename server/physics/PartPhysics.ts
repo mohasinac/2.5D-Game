@@ -957,7 +957,7 @@ export function applyWearToMaterialStats(
  * a given BeyStateParts snapshot. Returns 100 when no wear schedules are defined.
  * Used by PartSystemManager to sync `bey.materialWearLevel`.
  */
-export function computeMinWearLevel(
+export function computeMinWearLevelForParts(
   parts: {
     ar?: { materials?: Array<{ wearSchedule?: Array<{ atSecond: number; wearLevel: number }> }> };
     wd?: { materials?: Array<{ wearSchedule?: Array<{ atSecond: number; wearLevel: number }> }> };

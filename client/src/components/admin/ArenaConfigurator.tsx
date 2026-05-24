@@ -16,6 +16,8 @@ import BoundaryTab from "./arena-tabs/BoundaryTab";
 import TimelineTab from "./arena-tabs/TimelineTab";
 import LinksTab from "./arena-tabs/LinksTab";
 import SwitchesTab from "./arena-tabs/SwitchesTab";
+import SectionsTab from "./arena-tabs/SectionsTab";
+import LoopTracksTab from "./arena-tabs/LoopTracksTab";
 
 interface Props {
   arena: ArenaConfig;
@@ -24,7 +26,7 @@ interface Props {
   saving?: boolean;
 }
 
-type TabId = "basics" | "walls" | "water" | "obstacles" | "turrets" | "portals" | "speedpaths" | "pits" | "features" | "boundary" | "timeline" | "links" | "switches";
+type TabId = "basics" | "walls" | "water" | "obstacles" | "turrets" | "portals" | "speedpaths" | "pits" | "features" | "boundary" | "timeline" | "links" | "switches" | "sections" | "looptracks";
 
 const TABS: { id: TabId; label: string; icon: string; count?: (a: ArenaConfig) => number }[] = [
   { id: "basics",     label: "Basics",      icon: "⚙️" },
@@ -44,6 +46,8 @@ const TABS: { id: TabId; label: string; icon: string; count?: (a: ArenaConfig) =
   { id: "timeline",   label: "Timeline",    icon: "⏱",  count: a => a.arenaTimeline?.length ?? 0 },
   { id: "links",      label: "Links",       icon: "🔗",  count: a => (a as any).links?.length ?? 0 },
   { id: "switches",   label: "Switches",    icon: "🔀",  count: a => (a as any).switches?.length ?? 0 },
+  { id: "sections",   label: "Sections",    icon: "🧩",  count: a => a.modularSections?.length ?? 0 },
+  { id: "looptracks", label: "Loop Tracks", icon: "🔄",  count: a => a.loopTracks?.length ?? 0 },
 ];
 
 export default function ArenaConfigurator({ arena, onChange, onSave, saving }: Props) {
@@ -100,6 +104,8 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
           {tab === "timeline"   && <TimelineTab config={arena} onChange={onChange} />}
           {tab === "links"      && <LinksTab config={arena} onChange={onChange} />}
           {tab === "switches"   && <SwitchesTab config={arena} onChange={onChange} />}
+          {tab === "sections"   && <SectionsTab config={arena} onChange={onChange} />}
+          {tab === "looptracks" && <LoopTracksTab config={arena} onChange={onChange} />}
         </div>
 
         {/* Save button */}

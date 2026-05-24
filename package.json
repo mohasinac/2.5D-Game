@@ -54,6 +54,8 @@
     "seed:bowl-profile-defs": "node scripts/seed-all.js --only bowl-profile-defs",
     "seed:trigger-type-defs": "node scripts/seed-all.js --only trigger-type-defs",
     "seed:stat-event-defs": "node scripts/seed-all.js --only stat-event-defs",
+    "seed:special-interaction-defs": "node scripts/seed-special-interaction-defs.js",
+    "seed:bitbeasts": "node scripts/seed-bitbeasts.js",
     "seed:part-layer-defs": "node scripts/seed-all.js --only part-layer-defs",
     "clear": "node scripts/seed-all.js --clear",
     "clear:all": "node scripts/seed-all.js --clear",

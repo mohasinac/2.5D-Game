@@ -78,6 +78,8 @@ export interface BeybladeStats {
   jumpHeight?: number;
   /** Burst resistance 0–100; higher = harder to burst */
   burstResistance?: number;
+  /** Phase 28: BitBeast asset id — triggers overlay animation on special activation */
+  bitBeastId?: string;
   createdAt?: any;
   updatedAt?: any;
 }

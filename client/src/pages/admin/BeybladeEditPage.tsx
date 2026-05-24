@@ -7,6 +7,7 @@ import type { BeybladeStats } from "@/types/beybladeStats";
 import { useElementTypes } from "@/hooks/useElementTypes";
 import { useCombos } from "@/hooks/useCombos";
 import { useSpecialMoves } from "@/hooks/useSpecialMoves";
+import { useAssetLibrary } from "@/hooks/useAssetLibrary";
 import { KEY_LABEL } from "@/constants/combos";
 import toast from "react-hot-toast";
 import { C, S } from "@/styles/theme";
@@ -50,6 +51,7 @@ export function BeybladeEditPage() {
   const { configs: elementTypeConfigs, loading: elemTypesLoading } = useElementTypes();
   const { combos, loading: combosLoading } = useCombos();
   const { specialMoves, loading: specialMovesLoading } = useSpecialMoves();
+  const { assets: bitBeastAssets, loading: bitBeastsLoading } = useAssetLibrary(COLLECTIONS.BITBEAST_ASSETS);
 
   useEffect(() => {
     if (!id) return;
@@ -387,6 +389,20 @@ export function BeybladeEditPage() {
                 style={{ width:"100%", background:C.bg1, border:`1px solid ${C.border}`, borderRadius:8, color:C.text, padding:"7px 12px", fontSize:13, cursor:"pointer" }}
               />
               <p style={{ fontSize:11, color:C.faint, marginTop:4 }}>Costs ~100 power. If blank, the Special HUD panel is hidden in-match.</p>
+            </div>
+
+            {/* BitBeast */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={S.label}>BitBeast</label>
+              <SearchableSelect
+                value={(beyblade as any).bitBeastId ?? ""}
+                disabled={bitBeastsLoading}
+                emptyLabel={bitBeastsLoading ? "Loading bit beasts…" : "(none — BitBeast overlay hidden)"}
+                options={[{ value: "", label: "— none —" }, ...bitBeastAssets.map(a => ({ value: a.id, label: a.name ?? a.id, hint: (a as any).tag ?? undefined }))]}
+                onChange={v => set("bitBeastId" as any, v || undefined)}
+                style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, padding: "7px 12px", fontSize: 13, cursor: "pointer" }}
+              />
+              <p style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>Shown as a full-screen overlay when the special move activates.</p>
             </div>
 
             {/* Combo IDs */}

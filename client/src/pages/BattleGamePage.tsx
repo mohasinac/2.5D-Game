@@ -27,7 +27,10 @@ import { Minimap } from "@/components/game/Minimap";
 import { SoundManager } from "@/game/audio/SoundManager";
 import { LoadingProgress } from "@/components/LoadingProgress";
 import { QTEOverlay } from "@/components/game/QTEOverlay";
+import { CollisionQTEOverlay } from "@/components/game/CollisionQTEOverlay";
+import { SplitScreenCinematic } from "@/components/game/SplitScreenCinematic";
 import type { QTEPromptData } from "@/game/hooks/useColyseus";
+import type { SplitScreenCinematicData } from "@/types/game";
 import { ELEMENT_ICONS, ELEMENT_COLORS, type ElementType } from "@/types/elementTypes";
 
 const TYPE_FLASH: Record<string, string> = { attack: "#ff4444", defense: "#4488ff", stamina: "#44ff88", balanced: "#ffcc44" };
@@ -52,6 +55,12 @@ export function BattleGamePage() {
   const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
   const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
   const [qtePrompt, setQTEPrompt] = useState<QTEPromptData | null>(null);
+  const [collisionQTEActive, setCollisionQTEActive] = useState(false);
+  const [collisionQTEPowerLocal, setCollisionQTEPowerLocal] = useState(0);
+  const [collisionCanFireSpecial, setCollisionCanFireSpecial] = useState(false);
+  const [collisionQTEMultiplier, setCollisionQTEMultiplier] = useState(1);
+  const [splitScreenData, setSplitScreenData] = useState<SplitScreenCinematicData | null>(null);
+  const [splitScreenEliminated, setSplitScreenEliminated] = useState<Set<string>>(new Set());
 
   const colyseusOptions = useMemo(() => ({
     beybladeId: settings.beybladeId ?? "default",
@@ -61,7 +70,9 @@ export function BattleGamePage() {
     spectate,
   }), [settings.beybladeId, settings.arenaId, settings.username, userId, spectate]);
 
-  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, beyLinkQTE, beyLinkControlLoss, sendBeyLinkQTEInput, beyLinkHijackQTE, beyLinkHijackBlockQTE, sendHijackBlock, loadingStep, loadingError, visualEventQueue, floorInfo, myFloorIndex, linkAlignments, floorTransition } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, beyLinkQTE, beyLinkControlLoss, sendBeyLinkQTEInput, beyLinkHijackQTE, beyLinkHijackBlockQTE, sendHijackBlock, loadingStep, loadingError, visualEventQueue, floorInfo, myFloorIndex, linkAlignments, floorTransition,
+    collisionQTEData, collisionQTEPower, collisionQTESpecialPrompt, sendCollisionQTEMash, sendCollisionQTEFireSpecial,
+  } =
     useColyseus({
       roomName: roomNameFor(mode, "battle"),
       options: colyseusOptions,
@@ -72,7 +83,37 @@ export function BattleGamePage() {
       onQTEPrompt: (data) => { if (!isSpectating) setQTEPrompt(data); },
       onQTESuccess: () => setQTEPrompt(null),
       onQTEExpired: () => setQTEPrompt(null),
+      onSplitScreenCinematic: (data) => { setSplitScreenData(data); setSplitScreenEliminated(new Set()); },
     });
+
+  // Sync collision QTE state from hook
+  useEffect(() => {
+    if (collisionQTEData && !isSpectating) {
+      setCollisionQTEActive(true);
+      setCollisionQTEPowerLocal(0);
+      setCollisionCanFireSpecial(false);
+    }
+  }, [collisionQTEData, isSpectating]);
+
+  useEffect(() => {
+    if (!isSpectating) setCollisionQTEPowerLocal(collisionQTEPower);
+  }, [collisionQTEPower, isSpectating]);
+
+  useEffect(() => {
+    if (collisionQTESpecialPrompt && !isSpectating) {
+      setCollisionCanFireSpecial(true);
+      setCollisionQTEMultiplier(collisionQTESpecialPrompt.qteMultiplier);
+    }
+  }, [collisionQTESpecialPrompt, isSpectating]);
+
+  // Handle split-screen participant eliminations + end
+  useEffect(() => {
+    if (!room) return;
+    room.onMessage("split-screen-participant-out", (data: { beyId: string }) => {
+      setSplitScreenEliminated(prev => new Set([...prev, data.beyId]));
+    });
+    room.onMessage("split-screen-end", () => setSplitScreenData(null));
+  }, [room]);
 
   useEffect(() => {
     if (roomId) setActiveRoom(roomId);
@@ -313,10 +354,10 @@ export function BattleGamePage() {
           isSpectating={isSpectating}
         />
       )}
-      {/* Minimap — toggle with M key; side view tab available for multi-floor arenas */}
+      {/* Minimap — toggle with M key; reads from beyGhosts (Phase 27) */}
       <Minimap
         gameState={gameState}
-        beyblades={beyblades}
+        beyGhosts={gameState?.beyGhosts}
         selfId={myBeyblade?.id ?? null}
         viewportCm={viewportCm}
         floorInfo={floorInfo}
@@ -607,6 +648,33 @@ export function BattleGamePage() {
           prompt={qtePrompt}
           onKeyPress={sendQTEInput}
           onDismiss={() => setQTEPrompt(null)}
+        />
+      )}
+
+      {/* Collision QTE Power Meter (Phase 29) */}
+      {!isSpectating && collisionQTEActive && (
+        <CollisionQTEOverlay
+          active={collisionQTEActive}
+          power={collisionQTEPowerLocal}
+          maxPower={150}
+          canFireSpecial={collisionCanFireSpecial}
+          qteMultiplier={collisionQTEMultiplier}
+          currentSP={myBeyblade?.power ?? 0}
+          onMash={sendCollisionQTEMash}
+          onFireSpecial={() => {
+            sendCollisionQTEFireSpecial();
+            setCollisionCanFireSpecial(false);
+            setCollisionQTEActive(false);
+          }}
+        />
+      )}
+
+      {/* Split-screen cinematic (Phase 29 — collision-triggered) */}
+      {splitScreenData && (
+        <SplitScreenCinematic
+          data={splitScreenData}
+          eliminatedBeyIds={splitScreenEliminated}
+          onEnd={() => setSplitScreenData(null)}
         />
       )}
 

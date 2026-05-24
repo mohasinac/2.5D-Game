@@ -1,4 +1,6 @@
-import { Schema, type, MapSchema, ArraySchema } from "@colyseus/schema";
+import { Schema, type, MapSchema, ArraySchema, filterChildren } from "@colyseus/schema";
+import { BeyGhostState } from "./BeyGhostState";
+import type { Client } from "colyseus";
 
 /**
  * Loop State - tracks which beyblades are using a loop
@@ -437,6 +439,8 @@ export class Beyblade extends Schema {
   @type("boolean") collisionWithObstacles: boolean = true;
   @type("boolean") invulnerable: boolean = false;
   @type("boolean") noKnockback: boolean = false;
+  @type("boolean") noDamageOutput: boolean = false;
+  @type("int8")    beyFloorIndex: number = 0;
   @type("string")  teamId: string = "";
 
   // ── Collision Types (Block CT) ────────────────────────────────────────────────
@@ -468,6 +472,29 @@ export class Beyblade extends Schema {
   @type("boolean") launchChargingStarted: boolean = false; // true once Space held → pos/tilt locked
   @type("boolean") launchReady: boolean = false;      // true when player releases Space (launched)
   @type("boolean") launchFailed: boolean = false;     // true if timer expired without launch → auto-loss
+
+  // ── Phase 24 semi-autonomous control ─────────────────────────────────────────
+  // 0–100: current player-authority blend (0=full AI/natural, 100=full player).
+  // Broadcast so the client ControlBlendBar HUD can read it.
+  @type("uint8")   controlAuthority: number = 100;
+  // True while a clash QTE is running (collision tier 3 close-contact lock).
+  @type("boolean") clashQTEActive: boolean = false;
+  // Seconds remaining in the active clash QTE window (0 when inactive).
+  @type("float32") clashQTETimer: number = 0;
+
+  // ── Phase 29: Collision QTE Power Meter ───────────────────────────────────
+  @type("boolean") collisionQTEActive: boolean = false;
+  @type("number")  collisionQTEPower: number = 0;   // 0–150 (integer %)
+
+  // ── Phase 29: Airborne Z-Axis (independent of jump-core isAirborne) ───────
+  @type("number")  beyHeight: number = 0;            // px above arena floor (0=grounded)
+  @type("number")  beyVerticalVel: number = 0;       // upward velocity px/ms; decays by effectiveGravity
+  @type("boolean") beyAirborne: boolean = false;     // true while beyHeight > 0
+
+  // ── Phase 29: Multi-Phase Special Move Tracking ───────────────────────────
+  @type("number")  specialPhaseIndex: number = 0;    // current phase in phases[]
+  @type("number")  specialPhaseElapsed: number = 0;  // ms elapsed in current phase
+  @type("string")  specialPhaseSubState: string = "";// "windup"|"active"|"winddown"
 }
 
 /**
@@ -580,12 +607,44 @@ export class ArenaState extends Schema {
   @type("number") arenaProjectileDamageMult: number = 1.0; // multiplier on turret projectile damage
   @type("boolean") arenaFriendlyFireEnabled: boolean = true; // false → same-team beys always use recoil-only
   @type("boolean") arenaPhaseObstacles: boolean = false;   // all beys phase obstacles (arena-wide override)
+
+  // ── Phase 28 Renderer Mode ────────────────────────────────────────────────────
+  // "2d" | "2.5d" | "3d" — drives RendererFactory on the client.
+  @type("string") rendererMode: string = "2.5d";
+
+  // ── Phase 25 Safe Zone (Battle Royale) ───────────────────────────────────────
+  @type("float32") safeZoneRadius: number = 0;
+  @type("float32") safeZoneX:      number = 0;
+  @type("float32") safeZoneY:      number = 0;
+  @type("float32") safeZoneTimer:  number = 0;
+  @type("uint8")   safeZonePhase:  number = 0;
 }
 
 /**
  * Main game state - synchronizes between server and clients
  */
+// AoI filter: 1 cm = 24 px; inner zone radius = 60 cm = 1440 px.
+const AoI_INNER_PX = 60 * 24;
+
 export class GameState extends Schema {
+  // Phase 27: only send each beyblade to clients whose own bey is ≤60cm away
+  // AND on the same floor. Spectators have no beyblade — they receive all.
+  @filterChildren(function(
+    this: GameState,
+    client: Client,
+    key: string,
+    value: Beyblade,
+    root: GameState,
+  ): boolean {
+    const myBey = root.beyblades.get(client.sessionId);
+    if (!myBey) return true; // spectator — see everything
+    const dx = value.x - myBey.x;
+    const dy = value.y - myBey.y;
+    const distSq = dx * dx + dy * dy;
+    const floor = value.beyFloorIndex;
+    const myFloor = myBey.beyFloorIndex;
+    return distSq <= AoI_INNER_PX * AoI_INNER_PX && floor === myFloor;
+  })
   @type({ map: Beyblade }) beyblades = new MapSchema<Beyblade>();
   @type(ArenaState) arena = new ArenaState();
 
@@ -632,4 +691,8 @@ export class GameState extends Schema {
 
   // ── BX / Points scoring ──────────────────────────────────────────────────────
   @type({ map: "uint8" }) playerPoints = new MapSchema<number>();
+
+  // ── Phase 27 Tiered AoI — lightweight ghost state for 60–100cm zone ─────────
+  // Populated by all battle rooms at 10Hz. Minimap reads ONLY from here.
+  @type({ map: BeyGhostState }) beyGhosts = new MapSchema<BeyGhostState>();
 }

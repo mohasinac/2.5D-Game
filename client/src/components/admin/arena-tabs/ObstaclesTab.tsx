@@ -627,6 +627,19 @@ export default function ObstaclesTab({ config, onChange }: Props) {
             </div>
           </div>
 
+          {/* Floor index */}
+          {(config.maxFloors ?? 1) > 1 && (
+            <div style={{ marginBottom: 10 }}>
+              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Floor Index (0 = ground)</label>
+              <input
+                type="number" min={0} max={(config.maxFloors ?? 1) - 1} step={1}
+                value={obs.floorIndex ?? 0}
+                onChange={e => update(obs.id, "floorIndex", Math.max(0, Math.min((config.maxFloors ?? 1) - 1, +e.target.value)))}
+                style={{ width: 80, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+              />
+            </div>
+          )}
+
           {/* Shape section */}
           <div style={{ marginBottom: 8, background: C.bg2, borderRadius: 8, padding: 10 }}>
             <SectionHeader label="Shape" open={isSectionOpen(obs.id, "shape")} toggle={() => toggleSection(obs.id, "shape")} />

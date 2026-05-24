@@ -2,16 +2,20 @@
 // Bit positions match client/src/game/hooks/useGameInput.ts.
 
 export const INPUT_BITS = {
-  moveLeft: 0,
-  moveRight: 1,
-  moveUp: 2,
-  moveDown: 3,
-  attack: 4,
-  defense: 5,
-  dodge: 6,
-  jump: 7,
-  chargeHeld: 8,
-  specialTap: 9,
+  moveLeft:            0,
+  moveRight:           1,
+  moveUp:              2,
+  moveDown:            3,
+  attack:              4,
+  defense:             5,
+  dodge:               6,
+  jump:                7,
+  chargeHeld:          8,
+  specialTap:          9,
+  // Phase 24 attitude bits — physical keys J/K/L (10-12 are new, don't conflict with 0-9)
+  attitudeAggressive: 10,  // J — bias toward nearest opponent
+  attitudeDefensive:  11,  // K — bias away from opponents
+  attitudeStamina:    12,  // L — conserve-spin mode
 } as const;
 
 export interface PlayerInput {
@@ -25,6 +29,10 @@ export interface PlayerInput {
   dodge?: boolean;
   chargeHeld?: boolean;
   specialTap?: boolean;
+  // Phase 24 attitude bits
+  attitudeAggressive?: boolean;
+  attitudeDefensive?: boolean;
+  attitudeStamina?: boolean;
   // Legacy / compat fields kept so the server still accepts pre-bitmask object inputs.
   specialMove?: boolean;
   direction?: { x: number; y: number };
@@ -41,8 +49,11 @@ export function decodeBitmask(mask: number): PlayerInput {
     defense:    (mask & (1 << INPUT_BITS.defense))    !== 0,
     dodge:      (mask & (1 << INPUT_BITS.dodge))      !== 0,
     jump:       (mask & (1 << INPUT_BITS.jump))       !== 0,
-    chargeHeld: (mask & (1 << INPUT_BITS.chargeHeld)) !== 0,
-    specialTap: (mask & (1 << INPUT_BITS.specialTap)) !== 0,
+    chargeHeld:          (mask & (1 << INPUT_BITS.chargeHeld))          !== 0,
+    specialTap:          (mask & (1 << INPUT_BITS.specialTap))          !== 0,
+    attitudeAggressive:  (mask & (1 << INPUT_BITS.attitudeAggressive))  !== 0,
+    attitudeDefensive:   (mask & (1 << INPUT_BITS.attitudeDefensive))   !== 0,
+    attitudeStamina:     (mask & (1 << INPUT_BITS.attitudeStamina))     !== 0,
   };
 }
 

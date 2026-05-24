@@ -76,3 +76,8 @@ import "./mechanics/spinDirectionBonus";
 import "./mechanics/subPartBurst";
 import "./mechanics/defenseStance";
 import "./mechanics/revivalSpin";
+// Phase 24 stubs — full implementation in Session C
+import "./mechanics/authorityBlend";
+import "./mechanics/steeringForce";
+import "./mechanics/beyDecision";
+import "./mechanics/naturalMotion";

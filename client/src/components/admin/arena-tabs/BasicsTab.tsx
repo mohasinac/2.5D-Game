@@ -489,8 +489,8 @@ export default function BasicsTab({ config, onChange }: Props) {
         )}
       </div>
 
-      {/* Tilt */}
-      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
+      {/* Tilt — hidden in 2D mode */}
+      {(config.rendererMode ?? "2.5d") !== "2d" && <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>
           Arena Tilt <span style={{ fontSize: 11, color: C.faint, fontWeight: 400 }}>— Z-axis orientation</span>
         </div>
@@ -728,7 +728,7 @@ export default function BasicsTab({ config, onChange }: Props) {
             </div>
           )}
         </div>
-      </div>
+      </div>}
 
       {/* Physics / Gameplay */}
       <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
@@ -825,6 +825,101 @@ export default function BasicsTab({ config, onChange }: Props) {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Player Authority */}
+      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>Player Authority</div>
+        <div style={{ fontSize: 11, color: C.faint, marginBottom: 12 }}>
+          Controls how much arena features override player input. 1.0 = default. &lt;1 = arena controls more.
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {/* Global multiplier */}
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+              <span>Global Multiplier</span>
+              <span style={{ fontFamily: "monospace", color: C.text }}>{((config.playerAuthorityConfig?.globalMultiplier ?? 1.0)).toFixed(2)}×</span>
+            </div>
+            <input type="range" min={50} max={200} step={5}
+              value={Math.round((config.playerAuthorityConfig?.globalMultiplier ?? 1.0) * 100)}
+              onChange={e => onChange({ playerAuthorityConfig: { ...(config.playerAuthorityConfig ?? {}), globalMultiplier: +e.target.value / 100 } })}
+              style={{ width: "100%", accentColor: C.blue }} />
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+              <span>0.5× arena dominant</span><span>1.0× balanced</span><span>2.0× player dominant</span>
+            </div>
+          </div>
+          {/* Curvature multiplier */}
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+              <span>Curvature Multiplier</span>
+              <span style={{ fontFamily: "monospace", color: C.text }}>{((config.playerAuthorityConfig?.curvatureMultiplier ?? 1.0)).toFixed(2)}×</span>
+            </div>
+            <input type="range" min={0} max={100} step={5}
+              value={Math.round((config.playerAuthorityConfig?.curvatureMultiplier ?? 1.0) * 100)}
+              onChange={e => onChange({ playerAuthorityConfig: { ...(config.playerAuthorityConfig ?? {}), curvatureMultiplier: +e.target.value / 100 } })}
+              style={{ width: "100%", accentColor: C.blue }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Max Duration */}
+      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>Max Match Duration</div>
+        <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>
+          Overrides room default. Tournament rooms always use 180s regardless.
+        </div>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <input type="number" min={30} max={600} step={15}
+            value={config.maxDurationSeconds ?? 180}
+            onChange={e => onChange({ maxDurationSeconds: +e.target.value || undefined })}
+            style={{ ...S.input, width: 80 }} />
+          <span style={{ fontSize: 12, color: C.muted }}>seconds ({Math.floor((config.maxDurationSeconds ?? 180) / 60)}m {(config.maxDurationSeconds ?? 180) % 60}s)</span>
+          <button onClick={() => onChange({ maxDurationSeconds: undefined })}
+            style={{ padding: "4px 8px", fontSize: 11, borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>
+            Reset
+          </button>
+        </div>
+      </div>
+
+      {/* Renderer Mode */}
+      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>
+          Renderer Mode
+        </div>
+        <div style={{ fontSize: 11, color: C.faint, marginBottom: 12 }}>
+          2D = flat PixiJS · 2.5D = tilt-projected PixiJS (default) · 3D = Three.js stub
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          {(["2d", "2.5d", "3d"] as const).map(m => {
+            const active = (config.rendererMode ?? "2.5d") === m;
+            const color = m === "3d" ? C.purple : m === "2.5d" ? C.blue : C.green;
+            const label = m === "2d" ? "2D — Flat" : m === "2.5d" ? "2.5D — Tilt" : "3D — Stub";
+            return (
+              <button
+                key={m}
+                onClick={() => onChange({ rendererMode: m })}
+                style={{
+                  flex: 1, padding: "8px 4px", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer",
+                  background: active ? `${color}22` : "transparent",
+                  color: active ? color : C.muted,
+                  border: `1px solid ${active ? color : C.border}`,
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+        {(config.rendererMode ?? "2.5d") === "2d" && (
+          <div style={{ fontSize: 10, color: C.faint, marginTop: 8 }}>
+            Tilt panel and auto-tilt settings have no physics effect in 2D mode.
+          </div>
+        )}
+        {(config.rendererMode ?? "2.5d") === "3d" && (
+          <div style={{ fontSize: 10, color: "#f59e0b", marginTop: 8 }}>
+            Three.js renderer is a stub — not yet implemented. Falls back to 2.5D in-game.
+          </div>
+        )}
       </div>
 
       {/* Visual Overrides */}

@@ -2,6 +2,9 @@
 // Mirrors lib/game/types/index.ts (root) and src/types/shared.ts (server).
 // Keep in sync with ServerGameState and ServerBeyblade schemas.
 
+// Phase 28 renderer mode
+export type RendererMode = "2d" | "2.5d" | "3d";
+
 export interface ServerArenaState {
   id: string;
   name: string;
@@ -15,6 +18,14 @@ export interface ServerArenaState {
   rotationDirection?: "clockwise" | "counterclockwise" | string;
   wallEnabled?: boolean;
   wallAngle?: number;       // bowl profile, 0=flat .. 75=steep
+  /** Phase 28: renderer mode driven by arena config and synced at 60Hz */
+  rendererMode?: RendererMode | string;
+  /** Phase 25: safe zone fields (Battle Royale only) */
+  safeZoneRadius?: number;
+  safeZoneX?: number;
+  safeZoneY?: number;
+  safeZoneTimer?: number;
+  safeZonePhase?: number;
 }
 
 // ─── Arena feature schemas (Phase 2) ──────────────────────────────────────
@@ -204,6 +215,72 @@ export interface ServerBeyblade {
   launchChargingStarted?: boolean;
   launchReady?: boolean;
   launchFailed?: boolean;
+  // Phase 24 semi-autonomous control
+  controlAuthority?: number;   // 0–100 uint8
+  clashQTEActive?: boolean;
+  clashQTETimer?: number;
+  // Phase 29: Collision QTE Power Meter
+  collisionQTEActive?: boolean;
+  collisionQTEPower?: number;   // 0–150
+  // Phase 29: Airborne Z-axis
+  beyHeight?: number;           // px above arena floor
+  beyVerticalVel?: number;      // upward velocity px/ms
+  beyAirborne?: boolean;        // true while beyHeight > 0
+  // Phase 29: Multi-phase special move tracking
+  specialPhaseIndex?: number;
+  specialPhaseElapsed?: number;
+  specialPhaseSubState?: "windup" | "active" | "winddown" | string;
+  // Phase 29: special move is actively executing phases (not just animation lock)
+  specialMoveActive?: boolean;
+  specialMoveEndTime?: number;
+}
+
+// ─── Phase 29: Collision QTE message payloads ──────────────────────────────
+
+export interface CollisionQTEStartData {
+  player1Id: string;
+  player2Id: string;
+  windowMs: number;
+}
+
+export interface CollisionQTESpecialPromptData {
+  qteMultiplier: number;
+  currentSP: number;
+}
+
+export interface CollisionQTEResultData {
+  player1Id: string;
+  player2Id: string;
+  player1Multiplier: number;
+  player2Multiplier: number;
+}
+
+export interface SplitScreenCinematicData {
+  participants: {
+    beyId: string;
+    specialMove: string;
+    displayName: string;
+  }[];
+}
+
+export interface AerialClashData {
+  bey1Id: string;
+  bey2Id: string;
+  contactPoint3D: { x: number; y: number; z: number };
+}
+
+export interface SpecialInteractionResultData {
+  key: string;
+  attAtPeak: boolean;
+  defAtPeak: boolean;
+  attackerScale: number;
+  defenderScale: number;
+}
+
+export interface FloorGrindData {
+  beyId: string;
+  contactPoint: { x: number; y: number };
+  force: number;
 }
 
 export interface ServerDetachedBody {
@@ -220,6 +297,23 @@ export interface ServerDetachedBody {
   mass: number;
   spin: number;
   maxSpin: number;
+}
+
+// Phase 27 Tiered AoI — lightweight ghost state for beyblades in outer zone (60–100cm).
+export interface ServerBeyGhost {
+  id: string;
+  x_cm: number;
+  y_cm: number;
+  floorIndex: number;
+  teamId: string;
+  /** 2=full (≤60cm), 1=shadow (60–100cm), 0=dot only (>100cm) */
+  tier: 0 | 1 | 2;
+  vx_cm: number;
+  vy_cm: number;
+  tiltAngle: number;
+  spin_pct: number;  // 0–100
+  beyType: string;
+  username: string;
 }
 
 export interface ServerGameState {
@@ -263,6 +357,8 @@ export interface ServerGameState {
   playerPoints?: Map<string, number>;
   // Launch phase countdown (seconds remaining during status="launching")
   launchTimer?: number;
+  // Phase 27 Tiered AoI — ghost state for outer-zone beyblades (60–100cm)
+  beyGhosts?: Map<string, ServerBeyGhost>;
 }
 
 // ─── Tournament types ─────────────────────────────────────────────────────────

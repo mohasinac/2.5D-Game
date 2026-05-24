@@ -2739,6 +2739,8 @@ export interface ObstacleConfig {
   featureAnimation?: FeatureAnimationConfig;
   /** Firebase asset doc ID from obstacle_assets collection. */
   spriteId?: string;
+  /** Floor index this obstacle belongs to (0 = ground). Only relevant in multi-floor arenas. */
+  floorIndex?: number;
 }
 
 // ─── Switch obstacle (Part 6) ──────────────────────────────────────────────
@@ -3569,6 +3571,48 @@ export interface BeyLink {
 }
 
 // ============================================================================
+// MODULAR ARENA (Phase 22)
+// ============================================================================
+
+export interface ModularSectionConfig {
+  id: string;
+  name: string;
+  type: string;
+  centerX_cm: number;
+  centerY_cm: number;
+  width_cm: number;
+  height_cm: number;
+  floorIndex: number;
+}
+
+export interface LoopTrackConfig {
+  id: string;
+  centerX_cm: number;
+  centerY_cm: number;
+  radiusCm: number;
+  bankAngle: number;
+  speedBoostMultiplier: number;
+  floorIndex: number;
+}
+
+// ============================================================================
+// PLAYER AUTHORITY (Phase 25)
+// ============================================================================
+
+export interface PlayerAuthorityConfig {
+  globalMultiplier?: number;
+  curvatureMultiplier?: number;
+  featureOverrides?: {
+    railTrack?: number;
+    gravityWell?: number;
+    spinZone?: number;
+    pit?: number;
+    bump?: number;
+    obstacle?: number;
+  };
+}
+
+// ============================================================================
 // ARENA CONFIG
 // ============================================================================
 
@@ -3712,6 +3756,23 @@ export interface ArenaConfig {
    * Must match the position of this arena's ID in ArenaFloorGroup.floorArenaIds.
    */
   floorIndex?: number;
+
+  // ===== RENDERER MODE (Phase 28) =====
+  /** Which renderer to use for this arena. "2d" = flat PixiJS, "2.5d" = tilt-projected PixiJS (default), "3d" = Three.js (stub). */
+  rendererMode?: "2d" | "2.5d" | "3d";
+
+  // ===== MODULAR ARENA (Phase 22) =====
+  modularSections?: ModularSectionConfig[];
+  loopTracks?: LoopTrackConfig[];
+  /** Maximum floors (stacked arenas) — 1 = single floor (default). */
+  maxFloors?: number;
+  /** Radius of the view viewport in cm; beyblades outside are culled client-side. Default 100. */
+  viewportCapCm?: number;
+
+  // ===== PLAYER AUTHORITY (Phase 25) =====
+  playerAuthorityConfig?: PlayerAuthorityConfig;
+  /** Max match duration in seconds. Overrides room default. Tournament rooms always use 180s. */
+  maxDurationSeconds?: number;
 
   // ===== METADATA =====
   createdAt?: string;

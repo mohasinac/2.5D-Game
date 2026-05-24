@@ -24,6 +24,9 @@
 | Special targeting | Auto-selects nearest within `moveDef.radius` at fire time; no player selection window |
 | Range field | Search distance only — not a counter alert radius |
 | No-waste policy | Every special always lands something (fallback phases, partial damage on QTE intercept) |
+| **Move grouping** | Kinds collapsed into 4 groups (`strike`, `aerial`, `guard`, `field`); interaction map is group×group (10 entries) instead of kind×kind (11+) |
+| Interaction definitions | Stored in `special_interaction_defs` Firestore collection; keyed by `"group:group"`; loaded into in-memory cache at room start |
+| Collision event persistence | Every QTE result → `collision_qte_events`; every special clash → `special_clash_events`; both fire-and-forget (no await in game loop) |
 
 ---
 
@@ -393,35 +396,98 @@ Client ends cinematic on receipt, not on a fixed timer.
 
 ## 7. Special-vs-Special Interaction Map
 
-### 7.1 When It Applies
+### 7.1 Move Groups
+
+Rather than one entry per kind×kind pair, kinds are collapsed into **4 groups**. The interaction map is group×group — **10 entries** instead of 13+ kind-pair entries.
+
+```typescript
+type SpecialMoveGroup = "strike" | "aerial" | "guard" | "field";
+```
+
+| Group | Kinds | Description |
+|-------|-------|-------------|
+| `strike` | `linear-burst`, `directional-burst`, `homerun` | Forward-charging momentum attacks |
+| `aerial` | `aerial-launch`, `knockup` | Height-based (self launches or sends target airborne) |
+| `guard` | `anchor` | Stationary absorption + spin-steal |
+| `field` | `orbital`, `shockwave` | Area-of-effect and path-deviation |
+
+Each `SpecialMoveDef` gets a `group: SpecialMoveGroup` field. `resolveSpecialVsSpecial` builds the lookup key from groups, not kinds:
+```typescript
+const key = `${SPECIAL_MOVES[attBey.specialMove].group}:${SPECIAL_MOVES[defBey.specialMove].group}`;
+```
+
+Sub-kind modifiers (§7.5) layer on top of the group outcome for specific kinds that have unique secondary effects (e.g., `homerun` tilt, `shockwave` splash to bystanders).
+
+### 7.2 Storage Architecture — Firestore-Backed, Per-Collision Lookup
+
+Interaction definitions live in the **`special_interaction_defs`** Firestore collection. Each document id is the `"group:group"` key (**10 docs total**). No static global constant exists at runtime.
+
+**At room start** (`BattleRoom.onCreate`): all docs loaded into `specialInteractionCache: Map<string, SpecialInteractionDef>`. The 60Hz game loop reads the cache only — zero Firestore calls in the tick.
+
+**Per collision** (`resolveSpecialVsSpecial`): resolved outcome written to **`special_clash_events`** as fire-and-forget (no `await`).
+
+```
+special_interaction_defs/{group:group}     ← 10 documents
+  attackerDamageScale: number
+  defenderDamageScale: number
+  attackerSpinDelta: number
+  defenderSpinDelta: number
+  attackerKnockback: "none" | "partial" | "full" | "reversed" | "enhanced"
+  defenderKnockback: "none" | "partial" | "full" | "reversed" | "enhanced"
+  timingBonus?: { peakFor: "attacker"|"defender"|"both", bonusScale: number, conditionDescription: string }
+  description: string
+
+special_clash_events/{auto-id}
+  matchId, roomId
+  attackerBeyId, defenderBeyId
+  interactionKey: string          ← "strike:guard"
+  attackerGroup, defenderGroup
+  attackerKind, defenderKind      ← logged for analytics / sub-kind modifier tracing
+  attackerScale: number
+  defenderScale: number
+  attAtPeak: boolean
+  defAtPeak: boolean
+  timingBonusApplied: boolean
+  timestamp: number
+```
+
+### 7.3 When It Applies
 
 When `applyPhaseEffectsToTarget` is called and `target.specialMoveActive = true`:
 → call `resolveSpecialVsSpecial(attBey, defBey, attPhase, defPhase)`
-→ look up `SPECIAL_INTERACTIONS[`${attKind}:${defKind}`]`
+→ look up `specialInteractionCache.get(key) ?? DEFAULT_CLASH_OUTCOME`
+→ apply sub-kind modifier if attacker kind has one (§7.5)
+→ write result to `special_clash_events` (fire-and-forget)
 
-### 7.2 Timing Bonus
+### 7.4 Timing Bonus
 
 Each phase has `peakMs` (ms offset from active start) and `peakToleranceMs` (± window).
-Contact at peak → timing bonus applies to that side's damage/spin.
+Contact at peak → timing bonus from the interaction def applies to that side.
 Broadcast `"special-interaction-result"` → client shows "PERFECT TIMING!" flash.
 
-### 7.3 Interaction Matrix
+### 7.5 Group × Group Interaction Matrix (10 entries)
 
-| Attacker | Defender | Outcome |
-|----------|----------|---------|
-| `linear-burst` | `anchor` | Attacker 0 damage (invuln); spin steal × 1.5 if contact within first 200ms of anchor active |
-| `linear-burst` | `linear-burst` | Both full `damageMultiplier`; higher-spin bey pushes other back more; +1.2× if both at peak |
-| `linear-burst` | `orbital` | Orbital knocked off path (full knockback); attacker 0.8× damage |
-| `linear-burst` | `shockwave` | Shockwave detonates at contact point; attacker takes 0.5× AoE blast |
-| `knockup` | `aerial-launch` | AERIAL CLASH (handled in §5) |
-| `knockup` | `anchor` | Knockup 0 damage (invuln); no spin steal (sweep too fast) |
-| `anchor` | `shockwave` | Anchor 0 damage; generates counter-pulse reducing shockwave radius 30% |
-| `orbital` | `orbital` | Glancing blow; 0.4× each; no knockback |
-| `anchor` | `anchor` | Both stationary; no contact; each restores spin independently |
-| `directional-burst` | `anchor` | Same as `linear-burst:anchor` |
-| `homerun` | `anchor` | Anchor slides (beyTiltAngle += 15°, partial displacement); attacker rebounds 0.6× |
-| `aerial-launch` (diving) | `linear-burst` | Dive wins (+20% upper attack); rush interrupted |
-| `linear-burst` (ground) | `aerial-launch` (ascending) | Rush 0.7× damage; spin steal 0.15× |
+| Attacker Group | Defender Group | Outcome |
+|---------------|---------------|---------|
+| `strike` | `strike` | Both at full `damageMultiplier`; higher-spin bey pushes the other back more; **timing bonus**: contact at midpoint of BOTH active windows → both get +1.2× (perfect clash) |
+| `strike` | `aerial` | Direction-dependent — ascending aerial: attacker 0.7× dmg + spin steal 0.15×. Diving aerial: aerial wins (+20% upper bonus); strike linearImpulse negated by downward impact |
+| `strike` | `guard` | Guard invuln (attacker 0 damage); defender spin steal × 1.5 if contact within first 200ms of guard active — **timing bonus**: peakFor "defender" |
+| `strike` | `field` | vs shockwave: detonates at contact; attacker takes 0.5× AoE blast. vs orbital: orbital full knockback off path; attacker 0.8× damage |
+| `aerial` | `aerial` | **AERIAL CLASH** (see §5) — each takes the other's current phase `damageMultiplier`; higher mult wins momentum; both flung in opposite vectors |
+| `aerial` | `guard` | Guard invuln applies; **no spin steal** (contact too brief — sweep/dive has no sustained ground contact); 0 damage regardless of aerial sub-kind |
+| `aerial` | `field` | vs orbital: path disrupted 500ms; aerial 0.9× damage. vs shockwave: detonates below airborne bey (AoE from below); aerial takes 0.4× blast |
+| `guard` | `guard` | Both stationary; no contact — each restores spin independently; no damage, no knockback |
+| `guard` | `field` | vs shockwave: guard invuln + counter-pulse reduces AoE radius 30%. vs orbital: glancing 0.4× on orbital; guard unmoved |
+| `field` | `field` | vs orbital×orbital: glancing 0.4× each; paths deflect ±30°; no knockback. vs shockwave×shockwave: AoEs merge at contact → combined 1.3× radius blast to all beys in range |
+
+### 7.6 Sub-Kind Modifiers (applied after group outcome)
+
+| Kind | Group | Additional effect layered on top of group outcome |
+|------|-------|--------------------------------------------------|
+| `homerun` | `strike` | On any defender contact: `beyTiltAngle += 15°` on defender regardless of outcome (even vs guard invuln) |
+| `knockup` | `aerial` | Phase 0 sweep only: if defender is guard, override to 0 damage (sweep too fast for guard timing) |
+| `shockwave` | `field` | AoE spreads from contact point — non-participant beys within `aoeRadiusPx` take 0.3× splash |
+| `orbital` | `field` | Path disruption: target velocity direction deflected ±30° on contact (applies on top of group knockback) |
 
 ---
 
@@ -718,19 +784,31 @@ All existing single-phase moves migrated to `phases: [{ ...existing effects as s
 
 | File | Change |
 |------|--------|
-| `server/constants/specialMoves.ts` | Rewrite `SpecialMoveDef` to multi-phase; add `SpecialMovePhase`, `SpecialMovePhaseEffects`, `SpecialInteraction`, `SPECIAL_INTERACTIONS`; migrate 5 existing moves; add `ascending_dragon_bite` + `storm_bringer`; add `radius` field to all |
+| `server/constants/specialMoves.ts` | Rewrite `SpecialMoveDef` to multi-phase; add `SpecialMovePhase`, `SpecialMovePhaseEffects`, `SpecialInteractionDef`; remove static `SPECIAL_INTERACTIONS` (now Firestore-backed); migrate 5 existing moves; add `ascending_dragon_bite` + `storm_bringer`; add `radius` field to all |
+| `scripts/seed-special-interaction-defs.js` | NEW: seed 10 group×group entries to `special_interaction_defs` Firestore collection |
 | `server/rooms/schema/GameState.ts` | Add 8 new Beyblade schema fields (§14) |
-| `server/rooms/BattleRoom.ts` | Add: CollisionQTE lifecycle (`startCollisionQTE`, `endCollisionQTE`, `calcQTEPower`); airborne physics tick; `tickSpecialPhase`; `detectAerialClash`; `triggerAerialClash`; `resolveSpecialVsSpecial`; `calculateSpecialContactDamage`; `applyHitRecoil`; `onBeyLanded`; modified `cancelSpecialMoveViaQTE` (collision-only gate, 40%/30%); `onMessage("collision-qte-mash")`; `onMessage("collision-qte-fire-special")` |
-| `server/rooms/AIBattleRoom.ts` | AI auto-mash (~10/s tick counter); 40% chance AI fires special during QTE |
-| `server/rooms/TryoutRoom.ts` | Collision QTE only (no split-screen in solo) |
-| `server/physics/PhysicsEngine.ts` | `applyHitRecoil()`; `calculateSpecialContactDamage()` |
+| `server/rooms/BattleRoom.ts` | Add: `loadSpecialInteractionDefs()` in `onCreate`; CollisionQTE lifecycle (`startCollisionQTE`, `endCollisionQTE`+Firestore write, `calcQTEPower`); airborne physics tick; `tickSpecialPhase`; `detectAerialClash`; `triggerAerialClash`; `resolveSpecialVsSpecial`+Firestore write; `calculateSpecialContactDamage`; `applyHitRecoil`; `onBeyLanded`; modified `cancelSpecialMoveViaQTE` (collision-only gate, 40%/30%); `onMessage("collision-qte-mash")`; `onMessage("collision-qte-fire-special")` |
+| `server/rooms/AIBattleRoom.ts` | ⚠️ AI auto-mash not yet implemented — `loadSpecialInteractionDefs()` not yet called; planned: ~10 mash/s tick counter + 40% special fire chance |
+| `server/rooms/TryoutRoom.ts` | Not modified — TryoutRoom uses local browser physics, no Colyseus QTE |
+| `server/physics/PhysicsEngine.ts` | `applyHitRecoil()` + `calculateSpecialContactDamage()` added inline to `BattleRoom.ts` |
 | `client/src/types/game.ts` | 4 new payload interfaces (§15); update `SpecialMoveDef` to multi-phase shape |
 | `client/src/game/hooks/useColyseus.ts` | 10 new message handlers; 2 new send helpers; keydown listener for mash/fire |
 | `client/src/components/game/CollisionQTEOverlay.tsx` | NEW: power meter (0–150%), mash header, GETTING HARDER indicator, special fire prompt |
 | `client/src/components/game/SplitScreenCinematic.tsx` | NEW: N-panel layout; dynamic collapse on participant-out; ends on server "split-screen-end" |
 | `client/src/pages/BattleGamePage.tsx` | Wire `CollisionQTEOverlay` + `SplitScreenCinematic` |
 | `client/src/pages/AIBattleGamePage.tsx` | Wire `CollisionQTEOverlay` + `SplitScreenCinematic` |
-| `client/src/pages/TryoutGamePage.tsx` | Wire `CollisionQTEOverlay` only |
+| `client/src/pages/admin/SpecialInteractionDefsPage.tsx` | NEW: Admin CRUD page for `special_interaction_defs` — 10 group×group entries; timing bonus section; missing-keys warning; route at `/admin/special-interaction-defs` |
+| `client/src/lib/firebase.ts` | Added `SPECIAL_INTERACTION_DEFS`, `COLLISION_QTE_EVENTS`, `SPECIAL_CLASH_EVENTS` to `COLLECTIONS` |
+| `client/src/router.tsx` | Added `{ path: "special-interaction-defs", element: <SpecialInteractionDefsPage /> }` under admin routes |
+| `client/src/pages/TryoutGamePage.tsx` | NOT wired — local physics only (no Colyseus); CollisionQTE is server-driven and not applicable |
+
+**New Firestore Collections**
+
+| Collection | Purpose |
+|-----------|---------|
+| `special_interaction_defs` | 10 group×group interaction entries (keys like `"strike:guard"`); seeded by `scripts/seed-special-interaction-defs.js`; loaded into in-memory cache at room start |
+| `collision_qte_events` | Per-collision QTE event log — written by `endCollisionQTE()` in BattleRoom (fire-and-forget) |
+| `special_clash_events` | Per-special-vs-special clash log — written by `resolveSpecialVsSpecial()` (fire-and-forget) |
 
 ---
 
@@ -756,30 +834,43 @@ All existing single-phase moves migrated to `phases: [{ ...existing effects as s
 18. Upper hit (attacker 120px below target) → +20% damage bonus in server log
 19. Both beys near floor + lateral hit → `"floor-grind"` event received by client
 20. Phase hit: upper attackType (1.4×) × guard absorb (0.8×) × phase mult (2.0×) = 2.24× effective
-21. `cd client && npx tsc --noEmit` passes with zero errors
+21. After QTE ends → Firestore `collision_qte_events` doc written with correct `matchId`, both bey IDs, mash counts, multipliers
+22. After special vs special clash → Firestore `special_clash_events` doc written with `interactionKey`, scales, `timingBonusApplied`
+23. `npm run seed:special-interaction-defs` → 10 docs in `special_interaction_defs` with correct field values
+24. `cd client && npx tsc --noEmit` passes with zero errors
 
 ---
 
-## 19. Implementation Status (as of Phase 29 authoring)
+## 19. Implementation Status — Phase 29
 
 | Component | Status |
 |-----------|--------|
-| CollisionQTE lifecycle (server) | ❌ Not created |
-| Airborne physics tick (server) | ❌ Not created |
-| Multi-phase `tickSpecialPhase` (server) | ❌ Not created |
-| `detectAerialClash` / `triggerAerialClash` (server) | ❌ Not created |
-| `resolveSpecialVsSpecial` + `SPECIAL_INTERACTIONS` (server) | ❌ Not created |
-| `calculateSpecialContactDamage` (server) | ❌ Not created |
-| `applyHitRecoil` (server) | ❌ Not created |
-| `cancelSpecialMoveViaQTE` collision-only gate (server) | ❌ Not updated |
-| Multi-phase `SpecialMoveDef` rewrite (specialMoves.ts) | ❌ Not created |
-| New Beyblade schema fields (GameState.ts) | ❌ Not created |
-| New client message types (game.ts) | ❌ Not created |
-| `useColyseus.ts` new handlers + senders | ❌ Not created |
-| `CollisionQTEOverlay.tsx` | ❌ Not created |
-| `SplitScreenCinematic.tsx` | ❌ Not created |
-| BattleGamePage + AIBattleGamePage wiring | ❌ Not created |
-| TryoutGamePage wiring | ❌ Not created |
+| `special_interaction_defs` seed script | ✅ `scripts/seed-special-interaction-defs.js` — 10 group×group docs |
+| `loadSpecialInteractionDefs()` in `BattleRoom.onCreate` | ✅ Loaded into `specialInteractionCache` before `setSimulationInterval` |
+| CollisionQTE lifecycle in `BattleRoom` | ✅ `startCollisionQTE`, `endCollisionQTE` + Firestore write in `collision_qte_events` |
+| `calcQTEPower` (diminishing returns) | ✅ +12% below 100%, +6% above 100%, ceiling 150% |
+| `onMessage("collision-qte-mash")` | ✅ Debounced, updates `collisionQTEPower`, broadcasts special prompt at ≥80% + SP≥30 |
+| `onMessage("collision-qte-fire-special")` | ✅ Validates SP≥30, computes `finalMult`, calls `handleSpecialMove` |
+| Airborne physics tick (`tickAirbornePhysics`) | ✅ Runs every tick; decays `beyVerticalVel` by gravity; calls `onBeyLanded` |
+| Multi-phase `tickSpecialPhase` | ✅ windup/active/winddown sub-state; `waitForAirborne` hold; fallback; skipCondition |
+| `detectAerialClash` / `triggerAerialClash` | ✅ 3D distance check; cross-damage; opposite-vector recoil; `"aerial-clash"` broadcast |
+| `resolveSpecialVsSpecial` + `special_clash_events` write | ✅ Group×group lookup from cache; timing bonus; fire-and-forget Firestore write |
+| `cancelSpecialMoveViaQTE` collision-only gate | ✅ Collision-only gate via `physicalContactThisTick`; 40% damage / 30% SP refund |
+| `applyHitRecoil` | ✅ Lateral + vertical component; tilt delta; floor-grind broadcast |
+| `calculateSpecialContactDamage` | ✅ attackType mult × guard absorb × phase mult |
+| Multi-phase `SpecialMoveDef` rewrite (`specialMoves.ts`) | ✅ All 5 existing moves migrated to `phases[]`; `ascending_dragon_bite` + `storm_bringer` added; `radius` + `group` fields on all |
+| New Beyblade schema fields (`GameState.ts`) | ✅ 8 fields: `collisionQTEActive`, `collisionQTEPower`, `beyHeight`, `beyVerticalVel`, `beyAirborne`, `specialPhaseIndex`, `specialPhaseElapsed`, `specialPhaseSubState` |
+| New client message types (`game.ts`) | ✅ `CollisionQTEStartData`, `CollisionQTESpecialPromptData`, `CollisionQTEResultData`, `SplitScreenCinematicData`, `AerialClashData`, `SpecialInteractionResultData`, `FloorGrindData` |
+| `useColyseus.ts` new handlers + senders | ✅ 10 message handlers; `sendCollisionQTEMash` (50ms debounce + optimistic local update); `sendCollisionQTEFireSpecial` |
+| `CollisionQTEOverlay.tsx` | ✅ Power bar (0–150%, color ramp); `onMash` global keydown listener; Space → fire special; "GETTING HARDER" pulse above 80% |
+| `SplitScreenCinematic.tsx` | ✅ N-panel layout; `eliminatedBeyIds` prop; animated shrink bar; ends on `"split-screen-end"` |
+| `BattleGamePage.tsx` wiring | ✅ `CollisionQTEOverlay` + `SplitScreenCinematic` wired; split-screen participant-out listener |
+| `AIBattleGamePage.tsx` wiring | ✅ Same as BattleGamePage |
+| `SpecialInteractionDefsPage.tsx` admin page | ✅ Full CRUD; timing bonus section; missing-key warning; route `/admin/special-interaction-defs` |
+| `firebase.ts` `COLLECTIONS` update | ✅ `SPECIAL_INTERACTION_DEFS`, `COLLISION_QTE_EVENTS`, `SPECIAL_CLASH_EVENTS` added |
+| TypeScript check | ✅ `cd client && npx tsc --noEmit` — 0 errors |
+| `server/rooms/AIBattleRoom.ts` — AI auto-mash | ❌ AI auto-respond to collision QTE not yet added |
+| `client/src/pages/TryoutGamePage.tsx` | ❌ Not applicable — local physics engine, no Colyseus connection |
 
 ---
 

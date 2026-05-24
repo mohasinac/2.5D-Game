@@ -103,6 +103,23 @@ function BehaviorBadge({ behaviorId }: { behaviorId?: string }) {
   );
 }
 
+/** L2C.7: Read-only authority badge per feature card. Shows effective player-control multiplier. */
+type AuthorityZone = "spinZone" | "gravityWell" | "bump" | "obstacle" | "pit" | "railTrack";
+function AuthorityBadge({ config, zone }: { config: ArenaConfig; zone: AuthorityZone }) {
+  const cfg = config.playerAuthorityConfig;
+  if (!cfg) return null;
+  const base = cfg.globalMultiplier ?? 1.0;
+  const override = cfg.featureOverrides?.[zone];
+  const effective = override !== undefined ? base * override : base;
+  if (Math.abs(effective - 1.0) < 0.01) return null; // hide when at default
+  const color = effective < 1.0 ? "#ff9900" : "#44dd88";
+  return (
+    <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 99, background: color + "22", color, border: `1px solid ${color}55` }}>
+      Authority ×{effective.toFixed(2)}
+    </span>
+  );
+}
+
 export default function FeaturesTab({ config, onChange }: Props) {
   // ── Firebase catalog data ─────────────────────────────────────────────────
   const { configs: elementTypeConfigs, loading: elemLoading } = useElementTypes();
@@ -462,6 +479,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
                 <BehaviorBadge behaviorId={z.behaviorId} />
+                <AuthorityBadge config={config} zone="spinZone" />
               </div>
               <button onClick={() => removeSpinZone(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
             </div>
@@ -532,6 +550,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
                 <BehaviorBadge behaviorId={z.behaviorId} />
+                <AuthorityBadge config={config} zone="gravityWell" />
               </div>
               <button onClick={() => removeGravityHole(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
             </div>
@@ -597,6 +616,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
                 <BehaviorBadge behaviorId={z.behaviorId} />
+                <AuthorityBadge config={config} zone="bump" />
               </div>
               <button onClick={() => removeBump(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
             </div>

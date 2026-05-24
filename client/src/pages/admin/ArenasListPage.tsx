@@ -15,6 +15,7 @@ export function ArenasListPage() {
   const [loading, setLoading] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [tagFilter, setTagFilter] = useState<string>("all");
 
   useEffect(() => {
     (async () => {
@@ -50,47 +51,76 @@ export function ArenasListPage() {
         </Link>
       </div>
 
-      {loading ? (
+      {/* Tag filter bar */}
+      {!loading && arenas.length > 0 && (() => {
+        const allTags = Array.from(new Set(arenas.flatMap(a => (a.tags ?? [a.theme]).filter(Boolean))));
+        const filtered = tagFilter === "all" ? arenas : arenas.filter(a => (a.tags ?? [a.theme]).includes(tagFilter));
+        return (
+          <>
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
+              {["all", ...allTags].map(tag => (
+                <button key={tag} onClick={() => setTagFilter(tag)}
+                  style={{
+                    padding:"4px 12px", borderRadius:20, fontSize:11, cursor:"pointer", fontWeight:500,
+                    background: tagFilter === tag ? C.purple : "transparent",
+                    color: tagFilter === tag ? C.white : C.muted,
+                    border: `1px solid ${tagFilter === tag ? C.purple : C.border}`,
+                    textTransform: "capitalize",
+                  }}>
+                  {tag}
+                </button>
+              ))}
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14 }}>
+              {filtered.map(arena => {
+                const accent = THEME_ACCENT[arena.theme] ?? C.border;
+                return (
+                  <div key={arena.id} style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:14, overflow:"hidden" }}>
+                    <div style={{ height:110, display:"flex", alignItems:"center", justifyContent:"center", background:accent+"11", position:"relative" }}>
+                      <div style={{
+                        width:80, height:80, border:`2px solid ${accent}66`,
+                        borderRadius: arena.shape==="circle" ? "50%" : 4,
+                        display:"flex", alignItems:"center", justifyContent:"center", fontSize:24,
+                      }}>
+                        {arena.shape==="circle" ? "⭕" : "▬"}
+                      </div>
+                      <span style={{ position:"absolute", top:8, right:8, fontSize:11, color:C.muted, background:"rgba(0,0,0,0.4)", padding:"2px 8px", borderRadius:4, textTransform:"capitalize" }}>
+                        {arena.theme}
+                      </span>
+                      {arena.tags?.length > 0 && (
+                        <span style={{ position:"absolute", bottom:8, left:8, fontSize:10, color:"#88aacc", background:"rgba(0,0,0,0.4)", padding:"2px 6px", borderRadius:4 }}>
+                          {arena.tags[0]}
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ padding:14 }}>
+                      <h3 style={{ color:C.text, fontWeight:600 }}>{arena.name}</h3>
+                      <div style={{ display:"flex", gap:12, marginTop:4, fontSize:12, color:C.muted }}>
+                        <span style={{ textTransform:"capitalize" }}>{arena.shape}</span>
+                        <span>{arena.width ?? "—"}×{arena.height ?? "—"}</span>
+                      </div>
+                    </div>
+                    <div style={{ display:"flex", borderTop:`1px solid ${C.border}` }}>
+                      <a href={`/admin/arenas/edit/${arena.id}`} style={{ flex:1, padding:"10px", textAlign:"center", fontSize:13, color:C.purple, textDecoration:"none" }}>Edit</a>
+                      <button onClick={() => setConfirmDelete(arena)} style={{ flex:1, padding:"10px", fontSize:13, color:C.red, background:"none", border:"none", borderLeft:`1px solid ${C.border}`, cursor:"pointer" }}>Delete</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        );
+      })()}
+
+      {loading && (
         <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14 }}>
           {Array.from({length:4}).map((_,i) => <div key={i} style={{ background:C.bg2, borderRadius:14, border:`1px solid ${C.border}`, height:160 }} className="pulse" />)}
         </div>
-      ) : arenas.length === 0 ? (
+      )}
+      {!loading && arenas.length === 0 && (
         <div style={{ textAlign:"center", paddingTop:80, color:C.faint }}>
           <div style={{ fontSize:40, marginBottom:12 }}>🏟️</div>
           <p>No arenas yet. Create your first arena!</p>
-        </div>
-      ) : (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14 }}>
-          {arenas.map(arena => {
-            const accent = THEME_ACCENT[arena.theme] ?? C.border;
-            return (
-              <div key={arena.id} style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:14, overflow:"hidden" }}>
-                <div style={{ height:110, display:"flex", alignItems:"center", justifyContent:"center", background:accent+"11", position:"relative" }}>
-                  <div style={{
-                    width:80, height:80, border:`2px solid ${accent}66`,
-                    borderRadius: arena.shape==="circle" ? "50%" : 4,
-                    display:"flex", alignItems:"center", justifyContent:"center", fontSize:24,
-                  }}>
-                    {arena.shape==="circle" ? "⭕" : "▬"}
-                  </div>
-                  <span style={{ position:"absolute", top:8, right:8, fontSize:11, color:C.muted, background:"rgba(0,0,0,0.4)", padding:"2px 8px", borderRadius:4, textTransform:"capitalize" }}>
-                    {arena.theme}
-                  </span>
-                </div>
-                <div style={{ padding:14 }}>
-                  <h3 style={{ color:C.text, fontWeight:600 }}>{arena.name}</h3>
-                  <div style={{ display:"flex", gap:12, marginTop:4, fontSize:12, color:C.muted }}>
-                    <span style={{ textTransform:"capitalize" }}>{arena.shape}</span>
-                    <span>{arena.width ?? "—"}×{arena.height ?? "—"}</span>
-                  </div>
-                </div>
-                <div style={{ display:"flex", borderTop:`1px solid ${C.border}` }}>
-                  <Link to={`/admin/arenas/edit/${arena.id}`} style={{ flex:1, padding:"10px", textAlign:"center", fontSize:13, color:C.purple, textDecoration:"none" }}>Edit</Link>
-                  <button onClick={() => setConfirmDelete(arena)} style={{ flex:1, padding:"10px", fontSize:13, color:C.red, background:"none", border:"none", borderLeft:`1px solid ${C.border}`, cursor:"pointer" }}>Delete</button>
-                </div>
-              </div>
-            );
-          })}
         </div>
       )}
 

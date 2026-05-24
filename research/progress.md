@@ -1,7 +1,7 @@
 # Research Progress
 
 **Plan**: system-role-you-are-refactored-creek.md  
-**Last updated**: 2026-05-24 (session 34 — Phase 29 added: Collision QTE power meter + multi-phase special moves + airborne physics + aerial clash + SPECIAL_INTERACTIONS map; plan file cleaned to remove range-based Special Counter Window; key-sequence QTE block restricted to physical collision only)
+**Last updated**: 2026-05-24 (session 36 — Phase 29 fully implemented: server BattleRoom + AIBattleRoom CollisionQTE lifecycle; multi-phase executor; airborne physics tick; aerial clash detection; resolveSpecialVsSpecial Firestore writes; CollisionQTEOverlay + SplitScreenCinematic; BattleGamePage + AIBattleGamePage wired; SpecialInteractionDefsPage admin CRUD; TSC 0 errors)
 
 ---
 

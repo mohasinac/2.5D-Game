@@ -41,7 +41,7 @@ interface ParticleData {
   life: number;
   maxLife: number;
   color: number;
-  sprite: PIXI.Graphics | PIXI.Text;
+  sprite: PIXI.Graphics | PIXI.Text | PIXI.Sprite;
 }
 
 export class BeybladeGameRenderer {
@@ -97,6 +97,12 @@ export class BeybladeGameRenderer {
   private shieldRings: Map<string, PIXI.Graphics> = new Map();
   private dodgeTrails: Map<string, { x: number; y: number; alpha: number }[]> = new Map();
   private dodgeTrailGraphics: Map<string, PIXI.Graphics[]> = new Map();
+  // Phase 24 drift trail — shown when controlAuthority < 80 (semi-autonomous blending active)
+  private driftTrails: Map<string, { x: number; y: number; alpha: number }[]> = new Map();
+  private driftTrailGraphics: Map<string, PIXI.Graphics[]> = new Map();
+  // Phase 27 Tiered AoI — per-bey tier (0/1/2) and opacity fade tracking
+  private beyTiers: Map<string, 0 | 1 | 2> = new Map();
+  private beyTierAlphas: Map<string, number> = new Map(); // current faded alpha
 
   // 2.5D Part System visual effects (6.14 / 6.15 / 6.16)
   private airborneArcs: Map<string, PIXI.Graphics> = new Map();     // 6.14 jump hop trail
@@ -117,6 +123,11 @@ export class BeybladeGameRenderer {
 
   // Particles
   private particles: ParticleData[] = [];
+
+  // Phase 25: Battle Royale safe zone ring (world-space, inside featureLayer)
+  private safeZoneRing: PIXI.Graphics | null = null;
+  private safeZoneOuterOverlay: PIXI.Graphics | null = null;
+  private safeZonePulseTimer = 0;
 
   // Phase AA: arena-wide effect overlays (screen-space, above all game layers)
   private darknessOverlay: PIXI.Graphics | null = null;
@@ -153,6 +164,15 @@ export class BeybladeGameRenderer {
   private physicsCenterX = 0;
   private physicsCenterY = 0;
   private physicsArenaRadius = 1;
+
+  // R3: Arena floor baked to RenderTexture; re-baked only when tiltAngle changes.
+  private arenaFloorRT: PIXI.RenderTexture | null = null;
+  private arenaFloorSprite: PIXI.Sprite | null = null;
+  private arenaFloorTiltAngle = -9999; // sentinel — force first bake
+
+  // R2: Shared 4×4 white-circle texture for dot particles. All dot-sprites share
+  // the same base texture so PixiJS batches them into a single draw call.
+  private _particleDotTexture: PIXI.Texture | null = null;
 
   private initialized = false;
   private contextLost = false;
@@ -239,6 +259,23 @@ export class BeybladeGameRenderer {
     // Feature layer renderer (obstacles, pits, portals, turrets, water, loops, projectiles).
     this.featureRenderer = new FeatureRenderer(this.featureLayer);
 
+    // Phase 25: safe zone ring (world-space, inside featureLayer)
+    this.safeZoneRing = new PIXI.Graphics();
+    this.safeZoneRing.visible = false;
+    this.safeZoneOuterOverlay = new PIXI.Graphics();
+    this.safeZoneOuterOverlay.visible = false;
+    this.featureLayer.addChild(this.safeZoneOuterOverlay);
+    this.featureLayer.addChild(this.safeZoneRing);
+
+    // R2: bake shared 4×4 white-circle dot texture for all particle dots.
+    const dotG = new PIXI.Graphics();
+    dotG.circle(0, 0, 2).fill({ color: 0xffffff });
+    const dotRT = PIXI.RenderTexture.create({ width: 4, height: 4 });
+    dotG.x = 2; dotG.y = 2;
+    this.app.renderer.render({ container: dotG, target: dotRT });
+    dotG.destroy();
+    this._particleDotTexture = dotRT;
+
     // Particle update + arena-effect overlay tick on ticker
     this.app.ticker.add(this.updateParticles.bind(this));
     this.app.ticker.add((ticker: PIXI.Ticker) => this.tickArenaEffectOverlays(ticker.deltaMS));
@@ -253,6 +290,14 @@ export class BeybladeGameRenderer {
 
     if (gameState?.arena && this.arenaRadius === 0) {
       this.buildArena(gameState);
+      this.bakeArenaFloor();
+    }
+
+    // R3: re-bake if tiltAngle changed
+    const currentTilt = (gameState?.arena as any)?.tiltAngle ?? 0;
+    if (this.arenaRadius > 0 && currentTilt !== this.arenaFloorTiltAngle) {
+      this.bakeArenaFloor();
+      this.arenaFloorTiltAngle = currentTilt as number;
     }
 
     this.updateCameraTarget(beyblades);
@@ -280,6 +325,7 @@ export class BeybladeGameRenderer {
     this.syncBeyblades(beyblades);
     this.syncDetachedBodies(gameState); // 6.13
     this.updateShrinkRing(gameState);
+    this.updateSafeZoneRing(gameState); // Phase 25: royale safe zone
     this.renderLinkLines(beyblades);    // F4: combination-lock link lines
     this.renderMeteorLandingZone();     // G4: meteor strike landing zone ring
     this.renderArenaEffectOverlay();    // AA8: darkness/fog/freeze/reverse overlay
@@ -327,6 +373,18 @@ export class BeybladeGameRenderer {
   setControlledBeyblade(id: string | null) {
     this.controlledBeyId = id;
     this.cameraInitialized = false; // snap to new target on next frame
+  }
+
+  /** Phase 27: apply tier values from beyGhosts so containers fade to correct opacity. */
+  applyBeyGhostTiers(beyGhosts: Map<string, { tier: number }>) {
+    beyGhosts.forEach((ghost, id) => {
+      const tier = ghost.tier as 0 | 1 | 2;
+      this.beyTiers.set(id, tier);
+    });
+    // Reset tier to 2 for any bey not in beyGhosts (owns its own bey = always full)
+    this.beybladeContainers.forEach((_, id) => {
+      if (!beyGhosts.has(id)) this.beyTiers.set(id, 2);
+    });
   }
 
   /** Public: read the current camera viewport in cm (for minimap, debug overlays). */
@@ -500,6 +558,42 @@ export class BeybladeGameRenderer {
     }
   }
 
+  // R3: Bake the static arena floor graphics to a RenderTexture.
+  // Called once after buildArena() and again when tiltAngle changes.
+  private bakeArenaFloor(): void {
+    if (!this.initialized || this.arenaRadius <= 0) return;
+
+    const size = Math.ceil(this.arenaRadius * 2 + 40);
+
+    // (Re-)create the RenderTexture at the right size
+    if (this.arenaFloorRT) {
+      this.arenaFloorRT.destroy(true);
+      this.arenaFloorRT = null;
+    }
+    this.arenaFloorRT = PIXI.RenderTexture.create({ width: size, height: size });
+
+    // Temporarily translate the arenaLayer so its center aligns with the RT origin
+    const saved = { x: this.arenaLayer.x, y: this.arenaLayer.y };
+    this.arenaLayer.x = size / 2;
+    this.arenaLayer.y = size / 2;
+
+    this.app.renderer.render({ container: this.arenaLayer, target: this.arenaFloorRT, clear: true });
+
+    this.arenaLayer.x = saved.x;
+    this.arenaLayer.y = saved.y;
+
+    // Replace or create the sprite that sits on top of arenaLayer
+    if (!this.arenaFloorSprite) {
+      this.arenaFloorSprite = new PIXI.Sprite();
+      // Insert at position 0 so it renders below dynamic content
+      this.arenaLayer.addChildAt(this.arenaFloorSprite, 0);
+    }
+    this.arenaFloorSprite.texture = this.arenaFloorRT;
+    this.arenaFloorSprite.anchor.set(0.5);
+    this.arenaFloorSprite.x = 0;
+    this.arenaFloorSprite.y = 0;
+  }
+
   // Phase V3: redraw the shrink boundary ring each frame.
   private updateShrinkRing(gameState: ServerGameState | null): void {
     if (!this.shrinkRingGraphics) return;
@@ -547,6 +641,52 @@ export class BeybladeGameRenderer {
       .stroke({ color: 0xff6600, width: 6, alpha: 0.3 });
 
     this.shrinkRingGraphics.visible = true;
+  }
+
+  // Phase 25: draw the Battle Royale safe zone ring each frame.
+  private updateSafeZoneRing(gameState: ServerGameState | null): void {
+    if (!this.safeZoneRing || !this.safeZoneOuterOverlay) return;
+
+    const arena = gameState?.arena;
+    const phase = arena?.safeZonePhase ?? 0;
+    const radiusCm = arena?.safeZoneRadius ?? 0;
+
+    if (radiusCm <= 0 || phase <= 0) {
+      this.safeZoneRing.visible = false;
+      this.safeZoneOuterOverlay.visible = false;
+      return;
+    }
+
+    // Convert safe zone center + radius from physics px → render px
+    const scale = this.arenaRadius / Math.max(1, this.physicsArenaRadius);
+    const ringR = radiusCm * scale; // radiusCm stored as physics px in schema
+    const cx = (arena?.safeZoneX ?? 0) * scale;
+    const cy = (arena?.safeZoneY ?? 0) * scale;
+
+    // 1Hz pulse: alpha oscillates between 0.4 and 0.7
+    const pulse = 0.55 + 0.15 * Math.sin(this.safeZonePulseTimer * Math.PI * 2);
+    const phaseColors = [0xffcc00, 0xff9900, 0xff6600, 0xff3300, 0xcc0000];
+    const ringColor = phaseColors[Math.min(phase, phaseColors.length - 1)];
+
+    this.safeZoneRing.clear();
+    this.safeZoneRing.circle(cx, cy, ringR).stroke({ color: ringColor, width: 4, alpha: pulse });
+    this.safeZoneRing.circle(cx, cy, ringR + 6).stroke({ color: ringColor, width: 8, alpha: pulse * 0.25 });
+    this.safeZoneRing.visible = true;
+
+    // Danger overlay outside the ring — wide annular stroke from ringR to arena edge.
+    // Use multiple concentric strokes to simulate a filled outer zone.
+    const overlayAlpha = 0.05 * phase;
+    const bandSteps = 6;
+    const bandWidth = Math.max(8, (this.arenaRadius - ringR) / bandSteps);
+    this.safeZoneOuterOverlay.clear();
+    for (let i = 0; i < bandSteps; i++) {
+      const midR = ringR + bandWidth * (i + 0.5);
+      if (midR > this.arenaRadius + bandWidth) break;
+      this.safeZoneOuterOverlay
+        .circle(cx, cy, midR)
+        .stroke({ color: 0xff2200, width: bandWidth + 1, alpha: overlayAlpha });
+    }
+    this.safeZoneOuterOverlay.visible = overlayAlpha > 0;
   }
 
   // Convert a physics-space position (server coordinates) to screen-space pixels.
@@ -623,6 +763,7 @@ export class BeybladeGameRenderer {
         this.attackArcs.delete(id);
         this.shieldRings.delete(id);
         this.dodgeTrails.delete(id);
+        this.driftTrails.delete(id);
         this.prevSpinDirections.delete(id);
         this.prevTipStages.delete(id);
         this.prevWearLevels.delete(id);
@@ -633,6 +774,11 @@ export class BeybladeGameRenderer {
         if (trailG) {
           trailG.forEach(g => this.beybladeLayer.removeChild(g));
           this.dodgeTrailGraphics.delete(id);
+        }
+        const driftG = this.driftTrailGraphics.get(id);
+        if (driftG) {
+          driftG.forEach(g => this.beybladeLayer.removeChild(g));
+          this.driftTrailGraphics.delete(id);
         }
         // Remove 2.5D per-bey graphics
         const arc = this.airborneArcs.get(id);
@@ -711,6 +857,9 @@ export class BeybladeGameRenderer {
     // Dodge trail state (positions stored, graphics managed separately)
     this.dodgeTrails.set(id, []);
     this.dodgeTrailGraphics.set(id, []);
+    // Drift trail (Phase 24 semi-autonomous mode indicator)
+    this.driftTrails.set(id, []);
+    this.driftTrailGraphics.set(id, []);
 
     this.beybladeLayer.addChild(container);
     this.beybladeContainers.set(id, container);
@@ -786,6 +935,13 @@ export class BeybladeGameRenderer {
       const posXcm = (interpX - this.physicsCenterX) * physScale / PX_PER_CM_BASE;
       const posYcm = (interpY - this.physicsCenterY) * physScale / PX_PER_CM_BASE;
       this.applyLOSCull(container, posXcm, posYcm);
+      if (!container.visible) return;
+    } else {
+      // L2B.5: 2D mode viewport cap — cull beys beyond 100cm from camera.
+      const posXcm = (interpX - this.physicsCenterX) * physScale / PX_PER_CM_BASE;
+      const posYcm = (interpY - this.physicsCenterY) * physScale / PX_PER_CM_BASE;
+      const dist = Math.hypot(posXcm - this.world.camera.x_cm, posYcm - this.world.camera.y_cm);
+      container.visible = dist <= 100;
       if (!container.visible) return;
     }
 
@@ -879,6 +1035,24 @@ export class BeybladeGameRenderer {
     // Invulnerable: flashing effect (dodge window or isInvulnerable flag)
     if (beyblade.isInvulnerable || (beyblade.dodgeBuffTimer > 0)) {
       sprite.alpha = Math.sin(Date.now() / 80) > 0 ? 1 : 0.15;
+    }
+
+    // Phase 27 Tiered AoI: fade container alpha toward target based on tier.
+    // Tier 2 (full) = 1.0; Tier 1 (shadow) = 0.3; Tier 0 = hidden (minimap only).
+    {
+      const tier = this.beyTiers.get(id) ?? 2;
+      const targetAlpha = tier === 2 ? 1.0 : tier === 1 ? 0.3 : 0.0;
+      const prev = this.beyTierAlphas.get(id) ?? 1.0;
+      // Lerp at ~12 steps per 200ms @60Hz = rate ≈ 0.30
+      const next = prev + (targetAlpha - prev) * 0.30;
+      this.beyTierAlphas.set(id, next);
+      container.alpha = next;
+      // Tier 1: tint gray to indicate shadow/out-of-range bey
+      if (tier === 1) {
+        sprite.tint = 0x888888;
+      } else if (tier === 2 && !(beyblade as any).specialMoveActive) {
+        sprite.tint = 0xffffff; // restore if not overridden by special move
+      }
     }
 
     // N4: specialMoveActive — white tint to indicate active special move
@@ -976,6 +1150,41 @@ export class BeybladeGameRenderer {
       while (trails.length > 0 && trails[0].alpha < 0.02) trails.shift();
     }
 
+    // ── Phase 24 drift trail: teal smear when controlAuthority < 80 ──────────
+    {
+      const driftPoints = this.driftTrails.get(id);
+      let driftGraphics = this.driftTrailGraphics.get(id);
+      const authority = (beyblade as any).controlAuthority as number | undefined ?? 100;
+      if (driftPoints !== undefined) {
+        if (authority < 80) {
+          driftPoints.push({ x: screenX, y: screenY, alpha: 0.35 });
+          if (driftPoints.length > 8) driftPoints.shift();
+        }
+        if (!driftGraphics) {
+          driftGraphics = [];
+          this.driftTrailGraphics.set(id, driftGraphics);
+        }
+        while (driftGraphics.length < 8) {
+          const dg = new PIXI.Graphics();
+          this.beybladeLayer.addChildAt(dg, 0);
+          driftGraphics.push(dg);
+        }
+        for (let i = 0; i < driftGraphics.length; i++) {
+          const dg = driftGraphics[i];
+          const pt = driftPoints[i];
+          if (pt) {
+            dg.clear();
+            dg.circle(pt.x, pt.y, r * (0.25 + i * 0.06));
+            dg.fill({ color: 0x00ddcc, alpha: pt.alpha * (i / 8) });
+            pt.alpha *= 0.80;
+          } else {
+            dg.clear();
+          }
+        }
+        while (driftPoints.length > 0 && driftPoints[0].alpha < 0.02) driftPoints.shift();
+      }
+    }
+
     // 6.15 — SpinDirection change flash (counter-rotation white burst)
     // Skipped when specialMoveActive is driving the flashGraphics overlay (N4).
     if (!(beyblade as any).specialMoveActive) {
@@ -1064,6 +1273,16 @@ export class BeybladeGameRenderer {
         }
       }
     }
+
+    // R5: LOD — skip detail layer (bars, label) for beys >400px from screen centre.
+    const screenCx = this.app.screen.width / 2;
+    const screenCy = this.app.screen.height / 2;
+    const screenDist = Math.hypot(screenX - screenCx, screenY - screenCy);
+    const showDetail = screenDist <= 400;
+    healthBar.visible = showDetail;
+    spinBar.visible = showDetail;
+    label.visible = showDetail;
+    if (!showDetail) return;
 
     const barWidth = 40;
     const barHeight = 4;
@@ -1410,15 +1629,22 @@ export class BeybladeGameRenderer {
 
   // ─── Particle effects ────────────────────────────────────────────────────────
 
+  // R2: Create a tinted Sprite backed by the shared dot RT (enables batch rendering).
+  private makeDotSprite(color: number, scale = 1): PIXI.Sprite {
+    const spr = new PIXI.Sprite(this._particleDotTexture ?? PIXI.Texture.WHITE);
+    spr.anchor.set(0.5);
+    spr.tint = color;
+    spr.scale.set(scale);
+    return spr;
+  }
+
   spawnCollisionParticles(x: number, y: number, color1: number = 0xffffff, color2: number = 0xffffff) {
     const count = 20;
     for (let i = 0; i < count; i++) {
       const angle = (Math.PI * 2 * i) / count + Math.random() * 0.3;
       const speed = 2 + Math.random() * 4;
-      const g = new PIXI.Graphics();
       const color = i % 2 === 0 ? color1 : color2;
-      g.circle(0, 0, 2 + Math.random() * 2);
-      g.fill({ color });
+      const g = this.makeDotSprite(color, 0.5 + Math.random() * 0.5);
       g.x = x;
       g.y = y;
       this.particleLayer.addChild(g);
@@ -1440,9 +1666,7 @@ export class BeybladeGameRenderer {
     for (let i = 0; i < count; i++) {
       const angle = (Math.PI * 2 * i) / count;
       const speed = 1 + Math.random() * 3;
-      const g = new PIXI.Graphics();
-      g.circle(0, 0, 3);
-      g.fill({ color, alpha: 0.8 });
+      const g = this.makeDotSprite(color, 0.75);
       g.x = x;
       g.y = y;
       this.particleLayer.addChild(g);
@@ -1467,9 +1691,7 @@ export class BeybladeGameRenderer {
       const speed = 2 + Math.random() * 6;
       const color = COLORS[Math.floor(Math.random() * COLORS.length)];
       const size = 2 + Math.random() * 4;
-      const g = new PIXI.Graphics();
-      g.circle(0, 0, size);
-      g.fill({ color, alpha: 0.9 });
+      const g = this.makeDotSprite(color, size / 2);
       g.x = x;
       g.y = y;
       this.particleLayer.addChild(g);
@@ -1792,6 +2014,9 @@ export class BeybladeGameRenderer {
 
   /** Called each render frame to tick transient arena-effect visuals. */
   private tickArenaEffectOverlays(dtMs: number): void {
+    // Advance safe zone pulse timer (wraps at 1.0 = one full second)
+    this.safeZonePulseTimer = (this.safeZonePulseTimer + dtMs / 1000) % 1.0;
+
     if (this.freezeFlashTimer > 0) {
       this.freezeFlashTimer = Math.max(0, this.freezeFlashTimer - dtMs);
       if (this.darknessOverlay) {

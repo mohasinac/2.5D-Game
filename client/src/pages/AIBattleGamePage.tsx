@@ -24,10 +24,13 @@ import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { LoadingProgress } from "@/components/LoadingProgress";
 import { QTEOverlay } from "@/components/game/QTEOverlay";
+import { CollisionQTEOverlay } from "@/components/game/CollisionQTEOverlay";
+import { SplitScreenCinematic } from "@/components/game/SplitScreenCinematic";
 import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
 import { useLaunchInput } from "@/game/hooks/useLaunchInput";
 import type { QTEPromptData } from "@/game/hooks/useColyseus";
+import type { SplitScreenCinematicData } from "@/types/game";
 
 interface AIBattleLocationState {
   beybladeId?: string;
@@ -69,6 +72,12 @@ export function AIBattleGamePage() {
   const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
   const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
   const [qtePrompt, setQTEPrompt] = useState<QTEPromptData | null>(null);
+  const [collisionQTEActive, setCollisionQTEActive] = useState(false);
+  const [collisionQTEPowerLocal, setCollisionQTEPowerLocal] = useState(0);
+  const [collisionCanFireSpecial, setCollisionCanFireSpecial] = useState(false);
+  const [collisionQTEMultiplier, setCollisionQTEMultiplier] = useState(1);
+  const [splitScreenData, setSplitScreenData] = useState<SplitScreenCinematicData | null>(null);
+  const [splitScreenEliminated, setSplitScreenEliminated] = useState<Set<string>>(new Set());
 
   const colyseusOptions = useMemo(() => ({
     beybladeId:   loc.beybladeId   ?? settings.beybladeId ?? "default",
@@ -88,7 +97,9 @@ export function AIBattleGamePage() {
     matchId:         loc.matchId,
   }), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, beyLinkQTE, beyLinkControlLoss, sendBeyLinkQTEInput, beyLinkHijackQTE, beyLinkHijackBlockQTE, sendHijackBlock, loadingStep, loadingError, visualEventQueue, floorInfo, myFloorIndex, linkAlignments, floorTransition } =
+  const { connectionState, gameState, beyblades, myBeyblade, isSpectating, room, connect, disconnect, sendInput, sendQTEInput, beyLinkQTE, beyLinkControlLoss, sendBeyLinkQTEInput, beyLinkHijackQTE, beyLinkHijackBlockQTE, sendHijackBlock, loadingStep, loadingError, visualEventQueue, floorInfo, myFloorIndex, linkAlignments, floorTransition,
+    collisionQTEData, collisionQTEPower, collisionQTESpecialPrompt, sendCollisionQTEMash, sendCollisionQTEFireSpecial,
+  } =
     useColyseus({
       roomName: roomNameFor(mode, "aiBattle"),
       options: colyseusOptions,
@@ -98,7 +109,35 @@ export function AIBattleGamePage() {
       onQTEPrompt: (data) => { if (!spectate) setQTEPrompt(data); },
       onQTESuccess: () => setQTEPrompt(null),
       onQTEExpired: () => setQTEPrompt(null),
+      onSplitScreenCinematic: (data) => { setSplitScreenData(data); setSplitScreenEliminated(new Set()); },
     });
+
+  useEffect(() => {
+    if (collisionQTEData && !spectate) {
+      setCollisionQTEActive(true);
+      setCollisionQTEPowerLocal(0);
+      setCollisionCanFireSpecial(false);
+    }
+  }, [collisionQTEData, spectate]);
+
+  useEffect(() => {
+    if (!spectate) setCollisionQTEPowerLocal(collisionQTEPower);
+  }, [collisionQTEPower, spectate]);
+
+  useEffect(() => {
+    if (collisionQTESpecialPrompt && !spectate) {
+      setCollisionCanFireSpecial(true);
+      setCollisionQTEMultiplier(collisionQTESpecialPrompt.qteMultiplier);
+    }
+  }, [collisionQTESpecialPrompt, spectate]);
+
+  useEffect(() => {
+    if (!room) return;
+    room.onMessage("split-screen-participant-out", (data: { beyId: string }) => {
+      setSplitScreenEliminated(prev => new Set([...prev, data.beyId]));
+    });
+    room.onMessage("split-screen-end", () => setSplitScreenData(null));
+  }, [room]);
 
   const {
     render,
@@ -489,6 +528,33 @@ export function AIBattleGamePage() {
           prompt={qtePrompt}
           onKeyPress={sendQTEInput}
           onDismiss={() => setQTEPrompt(null)}
+        />
+      )}
+
+      {/* Collision QTE Power Meter (Phase 29) */}
+      {!spectate && collisionQTEActive && (
+        <CollisionQTEOverlay
+          active={collisionQTEActive}
+          power={collisionQTEPowerLocal}
+          maxPower={150}
+          canFireSpecial={collisionCanFireSpecial}
+          qteMultiplier={collisionQTEMultiplier}
+          currentSP={myBeyblade?.power ?? 0}
+          onMash={sendCollisionQTEMash}
+          onFireSpecial={() => {
+            sendCollisionQTEFireSpecial();
+            setCollisionCanFireSpecial(false);
+            setCollisionQTEActive(false);
+          }}
+        />
+      )}
+
+      {/* Split-screen cinematic (Phase 29 — collision-triggered) */}
+      {splitScreenData && (
+        <SplitScreenCinematic
+          data={splitScreenData}
+          eliminatedBeyIds={splitScreenEliminated}
+          onEnd={() => setSplitScreenData(null)}
         />
       )}
 

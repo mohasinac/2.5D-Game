@@ -3,7 +3,11 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Client, Room } from "colyseus.js";
-import type { ConnectionState, ServerBeyblade, ServerGameState } from "@/types/game";
+import type {
+  ConnectionState, ServerBeyblade, ServerGameState,
+  CollisionQTEStartData, CollisionQTESpecialPromptData, CollisionQTEResultData,
+  SplitScreenCinematicData, AerialClashData, SpecialInteractionResultData,
+} from "@/types/game";
 import type { LoadingStep } from "@/components/LoadingProgress";
 import type { BeybladeGameRenderer } from "@/game/renderer/PixiRenderer";
 import { VisualEventQueue, VisualPriority } from "@/game/visual/VisualEventQueue";
@@ -152,6 +156,15 @@ interface UseColyseusOptions {
   onArenaEffectEnd?: (data: { effectType: string }) => void;
   // Optional renderer ref — used by D3/D5/G5/N3 handlers to push visual events
   rendererRef?: React.RefObject<BeybladeGameRenderer | null>;
+  // Phase 29: Collision QTE callbacks
+  onCollisionQTEStart?: (data: CollisionQTEStartData) => void;
+  onCollisionQTESpecialPrompt?: (data: CollisionQTESpecialPromptData) => void;
+  onCollisionQTEResult?: (data: CollisionQTEResultData) => void;
+  onSplitScreenCinematic?: (data: SplitScreenCinematicData) => void;
+  onSplitScreenParticipantOut?: (data: { beyId: string }) => void;
+  onSplitScreenEnd?: () => void;
+  onAerialClash?: (data: AerialClashData) => void;
+  onSpecialInteractionResult?: (data: SpecialInteractionResultData) => void;
 }
 
 interface UseColyseusReturn {
@@ -188,6 +201,12 @@ interface UseColyseusReturn {
   linkAlignments: LinkAlignmentInfo[];
   /** Active floor-transition animation props. Null when not traversing. */
   floorTransition: Omit<FloorTransitionProps, "visible"> | null;
+  // Phase 29: Collision QTE state
+  collisionQTEData: CollisionQTEStartData | null;
+  collisionQTEPower: number;           // 0–150, for the local player's bey
+  collisionQTESpecialPrompt: CollisionQTESpecialPromptData | null;
+  collisionQTEResult: CollisionQTEResultData | null;
+  splitScreenData: SplitScreenCinematicData | null;
   connect: () => Promise<void>;
   disconnect: () => void;
   sendQTEInput: (key: string) => void;
@@ -197,6 +216,10 @@ interface UseColyseusReturn {
   sendHijackAttempt: (stackKey: string, linkId: string) => void;
   /** Send the block key as the link attacker to deny a hijack. */
   sendHijackBlock: (stackKey: string, key: string) => void;
+  /** Phase 29: Send a collision QTE mash press. */
+  sendCollisionQTEMash: () => void;
+  /** Phase 29: Fire special during collision QTE window. */
+  sendCollisionQTEFireSpecial: () => void;
   sendInput: (input: {
     moveLeft?: boolean;
     moveRight?: boolean;
@@ -245,6 +268,14 @@ export function useColyseus({
   onArenaEffectStart,
   onArenaEffectEnd,
   rendererRef,
+  onCollisionQTEStart,
+  onCollisionQTESpecialPrompt,
+  onCollisionQTEResult,
+  onSplitScreenCinematic,
+  onSplitScreenParticipantOut,
+  onSplitScreenEnd,
+  onAerialClash,
+  onSpecialInteractionResult,
 }: UseColyseusOptions): UseColyseusReturn {
   const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
   const [room, setRoom] = useState<Room | null>(null);
@@ -269,6 +300,21 @@ export function useColyseus({
   const [myFloorIndex, setMyFloorIndex] = useState(0);
   const [linkAlignments, setLinkAlignments] = useState<LinkAlignmentInfo[]>([]);
   const [floorTransition, setFloorTransition] = useState<Omit<FloorTransitionProps, "visible"> | null>(null);
+  // Phase 29: Collision QTE state
+  const [collisionQTEData, setCollisionQTEData] = useState<CollisionQTEStartData | null>(null);
+  const [collisionQTEPower, setCollisionQTEPower] = useState(0);
+  const [collisionQTESpecialPrompt, setCollisionQTESpecialPrompt] = useState<CollisionQTESpecialPromptData | null>(null);
+  const [collisionQTEResult, setCollisionQTEResult] = useState<CollisionQTEResultData | null>(null);
+  const [splitScreenData, setSplitScreenData] = useState<SplitScreenCinematicData | null>(null);
+  const lastMashTimeRef = useRef(0); // debounce mash at 50ms
+
+  // N1: client-side prediction state for the local beyblade.
+  // Stores the current predicted position and is reconciled each server update.
+  const n1PredRef = useRef<{ x: number; y: number } | null>(null);
+  // Assumed half-RTT in server ticks (60Hz). 3 ticks ≈ 50ms.
+  const N1_AHEAD_TICKS = 3;
+  const N1_LERP_ALPHA   = 0.25; // lerp weight per server tick when error < threshold
+  const N1_SNAP_PX      = 5;    // hard-reconcile if predicted diverges >= this many pixels
 
   const visualEventQueueRef = useRef(new VisualEventQueue());
 
@@ -297,6 +343,24 @@ export function useColyseus({
   useEffect(() => { onArenaEffectStartRef.current = onArenaEffectStart; }, [onArenaEffectStart]);
   useEffect(() => { onArenaEffectEndRef.current = onArenaEffectEnd; }, [onArenaEffectEnd]);
   useEffect(() => { rendererRefInternal.current = rendererRef; }, [rendererRef]);
+
+  // Phase 29 callback refs
+  const onCollisionQTEStartRef = useRef(onCollisionQTEStart);
+  const onCollisionQTESpecialPromptRef = useRef(onCollisionQTESpecialPrompt);
+  const onCollisionQTEResultRef = useRef(onCollisionQTEResult);
+  const onSplitScreenCinematicRef = useRef(onSplitScreenCinematic);
+  const onSplitScreenParticipantOutRef = useRef(onSplitScreenParticipantOut);
+  const onSplitScreenEndRef = useRef(onSplitScreenEnd);
+  const onAerialClashRef = useRef(onAerialClash);
+  const onSpecialInteractionResultRef = useRef(onSpecialInteractionResult);
+  useEffect(() => { onCollisionQTEStartRef.current = onCollisionQTEStart; }, [onCollisionQTEStart]);
+  useEffect(() => { onCollisionQTESpecialPromptRef.current = onCollisionQTESpecialPrompt; }, [onCollisionQTESpecialPrompt]);
+  useEffect(() => { onCollisionQTEResultRef.current = onCollisionQTEResult; }, [onCollisionQTEResult]);
+  useEffect(() => { onSplitScreenCinematicRef.current = onSplitScreenCinematic; }, [onSplitScreenCinematic]);
+  useEffect(() => { onSplitScreenParticipantOutRef.current = onSplitScreenParticipantOut; }, [onSplitScreenParticipantOut]);
+  useEffect(() => { onSplitScreenEndRef.current = onSplitScreenEnd; }, [onSplitScreenEnd]);
+  useEffect(() => { onAerialClashRef.current = onAerialClash; }, [onAerialClash]);
+  useEffect(() => { onSpecialInteractionResultRef.current = onSpecialInteractionResult; }, [onSpecialInteractionResult]);
 
   const connect = useCallback(async () => {
     if (roomRef.current) return;
@@ -343,6 +407,34 @@ export function useColyseus({
 
         const myB = spectate ? null : nextBeyblades.get(connectedRoom.sessionId) ?? null;
         setMyBeyblade(myB);
+
+        // N1: apply client-side prediction to the local beyblade.
+        // Extrapolate server position by N1_AHEAD_TICKS of velocity to compensate
+        // for half-RTT latency, then reconcile the accumulated predicted position.
+        if (myB && myB.isActive) {
+          const targetX = myB.x + myB.velocityX * N1_AHEAD_TICKS;
+          const targetY = myB.y + myB.velocityY * N1_AHEAD_TICKS;
+          const pred = n1PredRef.current;
+          let px: number;
+          let py: number;
+          if (pred) {
+            const dist = Math.hypot(pred.x - targetX, pred.y - targetY);
+            if (dist < N1_SNAP_PX) {
+              px = pred.x + (targetX - pred.x) * N1_LERP_ALPHA;
+              py = pred.y + (targetY - pred.y) * N1_LERP_ALPHA;
+            } else {
+              px = targetX;
+              py = targetY;
+            }
+          } else {
+            px = targetX;
+            py = targetY;
+          }
+          n1PredRef.current = { x: px, y: py };
+          nextBeyblades.set(connectedRoom.sessionId, { ...myB, x: px, y: py });
+        } else {
+          n1PredRef.current = null;
+        }
 
         // Build seriesWins map
         const seriesWins = new Map<string, number>();
@@ -596,6 +688,68 @@ export function useColyseus({
         rendererRefInternal.current?.current?.onMovementJumpHang?.(data);
       });
 
+      // Phase 29: Collision QTE events
+      connectedRoom.onMessage("collision-qte-start", (data: CollisionQTEStartData) => {
+        setCollisionQTEData(data);
+        setCollisionQTEPower(0);
+        setCollisionQTESpecialPrompt(null);
+        setCollisionQTEResult(null);
+        onCollisionQTEStartRef.current?.(data);
+      });
+
+      connectedRoom.onMessage("collision-qte-special-prompt", (data: CollisionQTESpecialPromptData) => {
+        setCollisionQTESpecialPrompt(data);
+        onCollisionQTESpecialPromptRef.current?.(data);
+      });
+
+      connectedRoom.onMessage("collision-qte-result", (data: CollisionQTEResultData) => {
+        setCollisionQTEData(null);
+        setCollisionQTESpecialPrompt(null);
+        setCollisionQTEResult(data);
+        onCollisionQTEResultRef.current?.(data);
+        setTimeout(() => setCollisionQTEResult(null), 3000);
+      });
+
+      connectedRoom.onMessage("split-screen-cinematic", (data: SplitScreenCinematicData) => {
+        setSplitScreenData(data);
+        onSplitScreenCinematicRef.current?.(data);
+      });
+
+      connectedRoom.onMessage("split-screen-participant-out", (data: { beyId: string }) => {
+        onSplitScreenParticipantOutRef.current?.(data);
+      });
+
+      connectedRoom.onMessage("split-screen-end", () => {
+        setSplitScreenData(null);
+        onSplitScreenEndRef.current?.();
+      });
+
+      connectedRoom.onMessage("aerial-clash", (data: AerialClashData) => {
+        onAerialClashRef.current?.(data);
+        toast("AERIAL CLASH!", { icon: "⚡", duration: 2000 });
+      });
+
+      connectedRoom.onMessage("special-interaction-result", (data: SpecialInteractionResultData) => {
+        onSpecialInteractionResultRef.current?.(data);
+        if (data.attAtPeak || data.defAtPeak) {
+          toast("PERFECT TIMING!", { icon: "⭐", duration: 1500 });
+        }
+      });
+
+      connectedRoom.onMessage("special-phase-substate", (_data: { beyId: string; phaseId: string; subState: string }) => {
+        // Handled by renderer via state sync; no local React state needed
+      });
+
+      connectedRoom.onMessage("special-phase-fallback", (data: { beyId: string; phaseId: string; fallbackLabel: string }) => {
+        if (data.beyId === connectedRoom.sessionId) {
+          toast(data.fallbackLabel, { icon: "⚡", duration: 1500 });
+        }
+      });
+
+      connectedRoom.onMessage("bey-landed", (_data: { beyId: string; x: number; y: number; aoeRadius: number; dmgMult: number }) => {
+        // Renderer picks this up via state sync; can add camera shake here
+      });
+
       connectedRoom.onError((code, message) => {
         console.error(`Room error [${code}]: ${message}`);
         setConnectionState("error");
@@ -648,6 +802,23 @@ export function useColyseus({
     }
   }, []);
 
+  const sendCollisionQTEMash = useCallback(() => {
+    const now = Date.now();
+    if (now - lastMashTimeRef.current < 50) return; // 50ms debounce
+    lastMashTimeRef.current = now;
+    setCollisionQTEPower(prev => Math.min(150, prev < 100 ? prev + 12 : prev + 6));
+    if (roomRef.current && roomRef.current.connection.isOpen) {
+      roomRef.current.send("collision-qte-mash");
+    }
+  }, []);
+
+  const sendCollisionQTEFireSpecial = useCallback(() => {
+    if (roomRef.current && roomRef.current.connection.isOpen) {
+      roomRef.current.send("collision-qte-fire-special");
+      setCollisionQTESpecialPrompt(null);
+    }
+  }, []);
+
   const sendInput = useCallback((input: {
     moveLeft?: boolean; moveRight?: boolean; moveUp?: boolean; moveDown?: boolean;
     attack?: boolean; defense?: boolean; dodge?: boolean; jump?: boolean;
@@ -684,6 +855,10 @@ export function useColyseus({
     visualEventQueue: visualEventQueueRef.current,
     beyLinkQTE, beyLinkControlLoss, beyLinkHijackQTE, beyLinkHijackBlockQTE,
     floorInfo, myFloorIndex, linkAlignments, floorTransition,
-    connect, disconnect, sendQTEInput, sendBeyLinkQTEInput, sendHijackAttempt, sendHijackBlock, sendInput,
+    // Phase 29
+    collisionQTEData, collisionQTEPower, collisionQTESpecialPrompt, collisionQTEResult, splitScreenData,
+    connect, disconnect, sendQTEInput, sendBeyLinkQTEInput, sendHijackAttempt, sendHijackBlock,
+    sendCollisionQTEMash, sendCollisionQTEFireSpecial,
+    sendInput,
   };
 }

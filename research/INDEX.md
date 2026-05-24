@@ -2,7 +2,7 @@
 
 **Project**: Beyblade Game — Part System & Engine Research
 **Maintained by**: Claude Code sessions
-**Last updated**: 2026-05-24 (session 34 — Phase 29 added: Collision QTE power meter + multi-phase special moves + airborne physics + aerial clash + SPECIAL_INTERACTIONS map; range-based Special Counter Window removed from design)
+**Last updated**: 2026-05-24 (session 36 — Phase 29 complete: all server + client implementation done; CollisionQTEOverlay + SplitScreenCinematic wired into BattleGamePage + AIBattleGamePage; SpecialInteractionDefsPage admin CRUD at /admin/special-interaction-defs; COLLECTIONS updated; TSC 0 errors)
 
 > This index covers all research documents in the `research/` folder.
 > Every file links back here via its navigation footer.
@@ -77,7 +77,7 @@ Compiled phase documents synthesizing research into actionable design decisions.
 | 26 | [phase-24-engine-optimizations.md](phases/phase-24-engine-optimizations.md) | **Engine optimizations — PixiJS R1–R5 (cullable, ParticleContainer, RenderTexture, dirty-flag, LOD); Colyseus N1–N4 (prediction, AoI, dedup, schema narrowing); Matter.js S1–S2; priority table.** | complete |
 | 27 | [phase-27-tiered-aoi.md](phases/phase-27-tiered-aoi.md) | **Tiered Fog of War / AoI — three-tier LOD (Ghost/Shadow/Full); BeyGhostState schema; filterBy Tier 2; ghost broadcast Tier 0–1; multi-floor building rules; elevator shaft line-of-sight bonus; delta-zone pre-loading; hysteresis; minimap ghost-only rule; spectator bypass; bandwidth estimates.** | complete |
 | 28 | [phase-28-view-modes-hud-bitbeast.md](phases/phase-28-view-modes-hud-bitbeast.md) | **View modes (2D/2.5D/3D) — renderer mode field; arena builder admin forms per mode (Basics/Tilt/3D Config tabs); move-type visual matrix (Xtreme Rail/Air Attack/Jump/Collision/Flower Pattern/Burst Finish/Beast Call); BitBeast glow overlay (GIF/PNG, `bitbeast_assets` collection, pulse CSS); HUD reference layout (top bar, SP bars, 3 ability icons 2D-only, nearest-8 opponent panel); `HUDRoot` component tree.** | complete |
-| 29 | [phase-29-collision-qte-multiphase-specials.md](phases/phase-29-collision-qte-multiphase-specials.md) | **Collision QTE power meter (0–150%, +12%/<100% +6%/>100%); multi-phase SpecialMoveDef (windUpMs/durationMs/windDownMs, targetFlags, waitForAirborne, fallback, skipCondition, peakMs); airborne physics (beyHeight/beyVerticalVel, gravity tick); aerial clash (3D distance, dual damageMultiplier, energy beam visual); SPECIAL_INTERACTIONS map (11 kind×kind outcomes); key-sequence QTE block restricted to physical collision only; no-waste policy; split-screen collision-triggered only; L-Drago vs Pegasus canonical reference.** | complete |
+| 29 | [phase-29-collision-qte-multiphase-specials.md](phases/phase-29-collision-qte-multiphase-specials.md) | **Collision QTE power meter (0–150%, +12%/<100% +6%/>100%); multi-phase SpecialMoveDef (windUpMs/durationMs/windDownMs, targetFlags, waitForAirborne, fallback, skipCondition, peakMs); airborne physics (beyHeight/beyVerticalVel, gravity tick); aerial clash (3D distance, dual damageMultiplier, energy beam visual); group×group interaction map (10 entries, Firestore-backed `special_interaction_defs`); key-sequence QTE block restricted to physical collision only; no-waste policy; split-screen collision-triggered only; L-Drago vs Pegasus canonical reference; admin CRUD page `/admin/special-interaction-defs`.** | complete |
 
 ---
 

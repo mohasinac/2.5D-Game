@@ -6,6 +6,7 @@
 > **Last audit**: 2026-05-24 (codebase re-verified this session)
 >
 > **Engine architecture (never changes):**
+>
 > - Server: Colyseus 0.15, Matter.js 60 Hz, TypeScript (`src/`)
 > - Client: Vite + React, PixiJS 8.14, TypeScript (`client/src/`)
 > - Shared: `server/shared/` imported by both — no duplication
@@ -16,14 +17,14 @@
 
 ## Stage Number ↔ Filename Map (phases 22–28)
 
-| Stage (progress.md) | Phase File on Disk |
-|---------------------|--------------------|
-| 22 — Modular Arena Builder | `phase-22-arena-builder.md` |
-| 23 — Universal Preset Library | `phase-23-preset-library.md` |
-| 24 — Semi-Autonomous Control | `phase-22-semi-autonomous-control.md` |
-| 25 — Battle Modes | `phase-23-battle-modes.md` |
-| 26 — Engine Optimizations | `phase-24-engine-optimizations.md` |
-| 27 — Tiered AoI | `phase-27-tiered-aoi.md` |
+| Stage (progress.md)              | Phase File on Disk                    |
+| -------------------------------- | ------------------------------------- |
+| 22 — Modular Arena Builder       | `phase-22-arena-builder.md`           |
+| 23 — Universal Preset Library    | `phase-23-preset-library.md`          |
+| 24 — Semi-Autonomous Control     | `phase-22-semi-autonomous-control.md` |
+| 25 — Battle Modes                | `phase-23-battle-modes.md`            |
+| 26 — Engine Optimizations        | `phase-24-engine-optimizations.md`    |
+| 27 — Tiered AoI                  | `phase-27-tiered-aoi.md`              |
 | 28 — View Modes + HUD + BitBeast | `phase-28-view-modes-hud-bitbeast.md` |
 
 ---
@@ -32,43 +33,43 @@
 
 > **Codebase audit date: 2026-05-24 (re-verified).**
 
-| Layer | Item | Status | Notes |
-|-------|------|--------|-------|
-| **Prerequisites** | P0.1 BehaviorRef dispatch gap | ✅ FIXED | `ArenaFeatureProcessor.executeBehavior()` dispatches all prefixes |
-| **Prerequisites** | P0.2 ComboDoc effectId picker | ⚠️ PARTIAL | Field + plain text input exist; needs upgrade to `SearchableSelect` loading `COMBO_EFFECTS` |
-| **Prerequisites** | P0.3 Special move schema mismatch | ✅ COEXIST | Both `server/constants/specialMoves.ts` and Firestore `special_moves` valid |
-| **Prerequisites** | P0.4 COLLECTIONS entries | ✅ FIXED | `mechanic_defs`, `gimmick_defs`, `geometry_defs`, `stat_defs` all present |
-| **Prerequisites** | N3 input dedup + heartbeat | ✅ DONE | `useGameInput.ts` lines 213-221: `mask !== lastSentMask` + `HEARTBEAT_MS=500` |
-| **Prerequisites** | R1 cullable on PixiRenderer layers | ❌ not done | `cullable=true` not set on any container |
-| **Prerequisites** | R4 _lastSpin dirty-flag | ❌ not done | `prevTipStages`/`prevWearLevels` exist; add spin-threshold dirty check |
-| **Prerequisites** | L0.3 EWD bearingFriction | ❌ not done | B:D comment (0.02) is correct; EWD seed entry missing `bearingFriction: 0.12` |
-| **Foundation** | Phase 21 collections + admin pages | ✅ DONE | All 4 collections + 4 admin pages exist |
-| **Foundation** | MechanicRegistry Phase 24 stubs | ❌ not done | `authorityBlend`, `steeringForce`, `beyDecision`, `naturalMotion` not registered |
-| **Foundation** | Type files geometryDef/statDef/behaviorDef | ✅ assumed done | Admin pages exist; verify vs Phase 21 spec in Session B |
-| **Controls** | Phase 24 Semi-Autonomous Control | ❌ not done | `NaturalMotion.ts` absent; authority blend absent; bits 10–12 unallocated |
-| **Arena** | Phase 22 Modular Arena Builder | ❌ PARTIAL | `ElevationZoneConfig` already in shared types; `modularSections`, `loopTracks` absent |
-| **Preset Library** | Phase 23 Preset Library | ❌ not done | 11 preset collections absent from `firebase.ts` |
-| **Battle Modes** | Phase 25 Battle Royale + Arena Authority | ❌ not done | `RoyaleBattleRoom` absent; safe zone schema absent |
-| **Network** | Phase 27 Tiered AoI | ❌ not done | `BeyGhostState`, `beyGhosts` MapSchema absent |
-| **Renderer** | Phase 28 View Modes + HUD | ❌ not done | `rendererMode` absent; `IGameRenderer`/`RendererFactory` absent; HUD components absent |
-| **Renderer** | Phase 28 BitBeast system | ❌ not done | `bitbeast_assets` absent; `BitBeastOverlay` absent; `bitBeastId` absent |
-| **Minimap** | Minimap.tsx | ⚠️ PARTIAL | Exists with Top + Side tabs; reads from `beyblades` prop — must migrate to `beyGhosts` in Session D; add Perspective tab |
-| **Optimizations** | Phase 26 Phase 2 + 3 | ❌ not done | Needs Layers 2–3 stable first |
+| Layer              | Item                                       | Status          | Notes                                                                                                                    |
+| ------------------ | ------------------------------------------ | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Prerequisites**  | P0.1 BehaviorRef dispatch gap              | ✅ FIXED        | `ArenaFeatureProcessor.executeBehavior()` dispatches all prefixes                                                        |
+| **Prerequisites**  | P0.2 ComboDoc effectId picker              | ⚠️ PARTIAL      | Field + plain text input exist; needs upgrade to `SearchableSelect` loading `COMBO_EFFECTS`                              |
+| **Prerequisites**  | P0.3 Special move schema mismatch          | ✅ COEXIST      | Both `server/constants/specialMoves.ts` and Firestore `special_moves` valid                                              |
+| **Prerequisites**  | P0.4 COLLECTIONS entries                   | ✅ FIXED        | `mechanic_defs`, `gimmick_defs`, `geometry_defs`, `stat_defs` all present                                                |
+| **Prerequisites**  | N3 input dedup + heartbeat                 | ✅ DONE         | `useGameInput.ts` lines 213-221: `mask !== lastSentMask` + `HEARTBEAT_MS=500`                                            |
+| **Prerequisites**  | R1 cullable on PixiRenderer layers         | ❌ not done     | `cullable=true` not set on any container                                                                                 |
+| **Prerequisites**  | R4 \_lastSpin dirty-flag                   | ❌ not done     | `prevTipStages`/`prevWearLevels` exist; add spin-threshold dirty check                                                   |
+| **Prerequisites**  | L0.3 EWD bearingFriction                   | ❌ not done     | B:D comment (0.02) is correct; EWD seed entry missing `bearingFriction: 0.12`                                            |
+| **Foundation**     | Phase 21 collections + admin pages         | ✅ DONE         | All 4 collections + 4 admin pages exist                                                                                  |
+| **Foundation**     | MechanicRegistry Phase 24 stubs            | ❌ not done     | `authorityBlend`, `steeringForce`, `beyDecision`, `naturalMotion` not registered                                         |
+| **Foundation**     | Type files geometryDef/statDef/behaviorDef | ✅ assumed done | Admin pages exist; verify vs Phase 21 spec in Session B                                                                  |
+| **Controls**       | Phase 24 Semi-Autonomous Control           | ❌ not done     | `NaturalMotion.ts` absent; authority blend absent; bits 10–12 unallocated                                                |
+| **Arena**          | Phase 22 Modular Arena Builder             | ❌ PARTIAL      | `ElevationZoneConfig` already in shared types; `modularSections`, `loopTracks` absent                                    |
+| **Preset Library** | Phase 23 Preset Library                    | ❌ not done     | 11 preset collections absent from `firebase.ts`                                                                          |
+| **Battle Modes**   | Phase 25 Battle Royale + Arena Authority   | ❌ not done     | `RoyaleBattleRoom` absent; safe zone schema absent                                                                       |
+| **Network**        | Phase 27 Tiered AoI                        | ❌ not done     | `BeyGhostState`, `beyGhosts` MapSchema absent                                                                            |
+| **Renderer**       | Phase 28 View Modes + HUD                  | ❌ not done     | `rendererMode` absent; `IGameRenderer`/`RendererFactory` absent; HUD components absent                                   |
+| **Renderer**       | Phase 28 BitBeast system                   | ❌ not done     | `bitbeast_assets` absent; `BitBeastOverlay` absent; `bitBeastId` absent                                                  |
+| **Minimap**        | Minimap.tsx                                | ⚠️ PARTIAL      | Exists with Top + Side tabs; reads from `beyblades` prop — must migrate to `beyGhosts` in Session D; add Perspective tab |
+| **Optimizations**  | Phase 26 Phase 2 + 3                       | ❌ not done     | Needs Layers 2–3 stable first                                                                                            |
 
 ---
 
 ## Audit Corrections (applied this session)
 
-| # | Finding | Impact |
-|---|---------|--------|
-| 1 | `N3` input dedup + heartbeat already done in `useGameInput.ts` | Removed from Session A |
-| 2 | `effectId` already a text input in `CombosPage.tsx` | Session A: upgrade text input → `SearchableSelect` only |
-| 3 | `ElevationZoneConfig` type already in `shared/types/arenaConfigNew.ts` | L2B.1 is PARTIAL |
-| 4 | `Minimap.tsx` exists with Top/Side (not 3 tabs); reads from `beyblades` prop | Add Perspective tab + migrate to `beyGhosts` in Session D |
-| 5 | B:D `0.02` comment in PartPhysics.ts is CORRECT for B:D; EWD seed needs `0.12` separately | B1/B2 are clarification comments; B3 is the real fix |
-| 6 | `prevTipStages`/`prevWearLevels` pattern exists in PixiRenderer | R4 = add `_lastSpins` map using same pattern |
-| 7 | `COMBO_EFFECTS` collection key already in `COLLECTIONS` | P0.2 picker can reference it directly |
-| 8 | Phase 21 spec lists 11 additional mechanics beyond the 4 Phase-24 stubs | Session B must verify; 4 stubs only for Session A |
+| #   | Finding                                                                                   | Impact                                                    |
+| --- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| 1   | `N3` input dedup + heartbeat already done in `useGameInput.ts`                            | Removed from Session A                                    |
+| 2   | `effectId` already a text input in `CombosPage.tsx`                                       | Session A: upgrade text input → `SearchableSelect` only   |
+| 3   | `ElevationZoneConfig` type already in `shared/types/arenaConfigNew.ts`                    | L2B.1 is PARTIAL                                          |
+| 4   | `Minimap.tsx` exists with Top/Side (not 3 tabs); reads from `beyblades` prop              | Add Perspective tab + migrate to `beyGhosts` in Session D |
+| 5   | B:D `0.02` comment in PartPhysics.ts is CORRECT for B:D; EWD seed needs `0.12` separately | B1/B2 are clarification comments; B3 is the real fix      |
+| 6   | `prevTipStages`/`prevWearLevels` pattern exists in PixiRenderer                           | R4 = add `_lastSpins` map using same pattern              |
+| 7   | `COMBO_EFFECTS` collection key already in `COLLECTIONS`                                   | P0.2 picker can reference it directly                     |
+| 8   | Phase 21 spec lists 11 additional mechanics beyond the 4 Phase-24 stubs                   | Session B must verify; 4 stubs only for Session A         |
 
 ---
 
@@ -76,29 +77,29 @@
 
 ### L0.1 Bug Status (verified 2026-05-24)
 
-| Bug | Status |
-|-----|--------|
-| P0.1 BehaviorRef dispatch | ✅ FIXED |
+| Bug                           | Status                                                                       |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| P0.1 BehaviorRef dispatch     | ✅ FIXED                                                                     |
 | P0.2 ComboDoc effectId picker | ⚠️ PARTIAL — upgrade text input → `SearchableSelect` loading `COMBO_EFFECTS` |
-| P0.3 Special move schema | ✅ COEXIST (both valid) |
-| P0.4 COLLECTIONS entries | ✅ FIXED |
+| P0.3 Special move schema      | ✅ COEXIST (both valid)                                                      |
+| P0.4 COLLECTIONS entries      | ✅ FIXED                                                                     |
 
 ### L0.2 Phase 1 Optimizations
 
-| ID | File | Change | Status |
-|----|------|--------|--------|
-| R1 | `client/src/game/renderer/PixiRenderer.ts` | `cullable = true` on `beybladeLayer`, `featureLayer`, `particleLayer` | ❌ |
-| R4 | `client/src/game/renderer/PixiRenderer.ts` | Add `_lastSpins: Map<string,number>` — only re-draw shape when spin crosses bucket boundary | ❌ |
-| N3 | `client/src/game/hooks/useGameInput.ts` | Input dedup + 500ms heartbeat | ✅ DONE |
-| S1 | `server/physics/PhysicsEngine.ts` | `isStatic: true` on walls/obstacles | ✅ DONE |
+| ID  | File                                       | Change                                                                                      | Status  |
+| --- | ------------------------------------------ | ------------------------------------------------------------------------------------------- | ------- |
+| R1  | `client/src/game/renderer/PixiRenderer.ts` | `cullable = true` on `beybladeLayer`, `featureLayer`, `particleLayer`                       | ❌      |
+| R4  | `client/src/game/renderer/PixiRenderer.ts` | Add `_lastSpins: Map<string,number>` — only re-draw shape when spin crosses bucket boundary | ❌      |
+| N3  | `client/src/game/hooks/useGameInput.ts`    | Input dedup + 500ms heartbeat                                                               | ✅ DONE |
+| S1  | `server/physics/PhysicsEngine.ts`          | `isStatic: true` on walls/obstacles                                                         | ✅ DONE |
 
 ### L0.3 EWD bearingFriction
 
-| ID | File | Change |
-|----|------|--------|
-| B1 | `server/physics/PartPhysics.ts` line 185 | Append clarification: `// EWD (single bearing) = 0.12; B:D (ball bearings) = 0.02` |
-| B2 | `server/physics/PartPhysics.ts` line 674 | Same clarification near `defenderBearingFriction` comment |
-| B3 | `scripts/seed-2d-parts.js` | Find EWD tip entry; set `bearingFriction: 0.12` |
+| ID  | File                                     | Change                                                                             |
+| --- | ---------------------------------------- | ---------------------------------------------------------------------------------- |
+| B1  | `server/physics/PartPhysics.ts` line 185 | Append clarification: `// EWD (single bearing) = 0.12; B:D (ball bearings) = 0.02` |
+| B2  | `server/physics/PartPhysics.ts` line 674 | Same clarification near `defenderBearingFriction` comment                          |
+| B3  | `scripts/seed-2d-parts.js`               | Find EWD tip entry; set `bearingFriction: 0.12`                                    |
 
 ---
 
@@ -108,18 +109,19 @@
 
 ### L1 Status (2026-05-24)
 
-| Item | Status |
-|------|--------|
-| `geometry_defs` + `stat_defs` in COLLECTIONS | ✅ DONE |
-| `mechanic_defs` + `gimmick_defs` in COLLECTIONS | ✅ DONE |
-| `/admin/geometry-defs`, `/admin/stat-defs`, `/admin/mechanic-defs`, `/admin/gimmick-defs` | ✅ DONE |
-| MechanicRegistry 31 handlers | ✅ DONE |
-| MechanicRegistry Phase 24 stubs (4) | ❌ MISSING |
-| Type files `geometryDef.ts`, `statDef.ts`, `behaviorDef.ts` | ✅ assumed; verify in Session B |
+| Item                                                                                      | Status                          |
+| ----------------------------------------------------------------------------------------- | ------------------------------- |
+| `geometry_defs` + `stat_defs` in COLLECTIONS                                              | ✅ DONE                         |
+| `mechanic_defs` + `gimmick_defs` in COLLECTIONS                                           | ✅ DONE                         |
+| `/admin/geometry-defs`, `/admin/stat-defs`, `/admin/mechanic-defs`, `/admin/gimmick-defs` | ✅ DONE                         |
+| MechanicRegistry 31 handlers                                                              | ✅ DONE                         |
+| MechanicRegistry Phase 24 stubs (4)                                                       | ❌ MISSING                      |
+| Type files `geometryDef.ts`, `statDef.ts`, `behaviorDef.ts`                               | ✅ assumed; verify in Session B |
 
 ### L1.4 MechanicRegistry Extension
 
 File: `server/physics/MechanicRegistry.ts` — add four imports:
+
 ```typescript
 import "./mechanics/authorityBlend";
 import "./mechanics/steeringForce";
@@ -161,6 +163,7 @@ Update `normalizeInput()` to decode bits 10–12 into `PlayerInput`.
 File: `server/shared/physics/NaturalMotion.ts` (new)
 
 `computeNaturalForce(bey, cx, cy, attitude, opponents, isAIStunned, decisionBias, rageBurstActive)`:
+
 1. Orbit: `0.0005 × mass × spinFrac × tip.grip` tangential ⊥ radius
 2. Momentum: `0.0001 × mass × spinFrac × (speed/300)` along velocity
 3. Attitude bias: J=toward nearest ×0.0003×mass; K=away ×0.0002×mass
@@ -250,9 +253,27 @@ Classify by relSpeed. Tier 2 (Clash): `clashQTEActive=true`; broadcast `"clash-q
 File: `shared/types/arenaConfigNew.ts`
 
 Add missing:
+
 ```typescript
-interface ModularSectionConfig { id: string; name: string; type: string; centerX_cm: number; centerY_cm: number; width_cm: number; height_cm: number; floorIndex: number; }
-interface LoopTrackConfig { id: string; centerX_cm: number; centerY_cm: number; radiusCm: number; bankAngle: number; speedBoostMultiplier: number; floorIndex: number; }
+interface ModularSectionConfig {
+  id: string;
+  name: string;
+  type: string;
+  centerX_cm: number;
+  centerY_cm: number;
+  width_cm: number;
+  height_cm: number;
+  floorIndex: number;
+}
+interface LoopTrackConfig {
+  id: string;
+  centerX_cm: number;
+  centerY_cm: number;
+  radiusCm: number;
+  bankAngle: number;
+  speedBoostMultiplier: number;
+  floorIndex: number;
+}
 ```
 
 Add to `ArenaConfig`: `modularSections?`, `loopTracks?`, `maxFloors?`, `viewportCapCm?` (default 100).
@@ -328,7 +349,14 @@ Player strip sorted by spin%; zone timer; phase colors 1=yellow→4=crimson.
 interface PlayerAuthorityConfig {
   globalMultiplier?: number;
   curvatureMultiplier?: number;
-  featureOverrides?: { railTrack?: number; gravityWell?: number; spinZone?: number; pit?: number; bump?: number; obstacle?: number; }
+  featureOverrides?: {
+    railTrack?: number;
+    gravityWell?: number;
+    spinZone?: number;
+    pit?: number;
+    bump?: number;
+    obstacle?: number;
+  };
 }
 ```
 
@@ -364,9 +392,26 @@ OBSTACLE_PRESETS: "obstacle_presets", FEATURE_GROUP_PRESETS: "feature_group_pres
 File: `client/src/types/presetLibrary.ts`
 
 ```typescript
-export interface ArenaFeatureGroupInstance { featureType: string; configSnapshot: unknown; relativeX_cm: number; relativeY_cm: number; floorIndex: number; }
-export interface ArenaFeatureGroupTemplate { id: string; name: string; description: string; features: ArenaFeatureGroupInstance[]; }
-export interface PresetDoc<T> { id: string; name: string; tags: string[]; thumbnail?: string; data: T; }
+export interface ArenaFeatureGroupInstance {
+  featureType: string;
+  configSnapshot: unknown;
+  relativeX_cm: number;
+  relativeY_cm: number;
+  floorIndex: number;
+}
+export interface ArenaFeatureGroupTemplate {
+  id: string;
+  name: string;
+  description: string;
+  features: ArenaFeatureGroupInstance[];
+}
+export interface PresetDoc<T> {
+  id: string;
+  name: string;
+  tags: string[];
+  thumbnail?: string;
+  data: T;
+}
 ```
 
 ### L2D.3 PresetBar Component
@@ -377,7 +422,7 @@ Horizontal scrollable strip. Thumbnail, name, tag chips. Props: `presets: Preset
 
 ### L2D.4 Arena List Tag Grouping
 
-Arena admin list: tag-filter bar + group by preset tag.
+i think we have already passed them ,just implement it here then based on the latest code stateArena admin list: tag-filter bar + group by preset tag.
 
 ### L2D.5 ArenaEditorCanvas
 
@@ -395,10 +440,18 @@ File: `server/shared/constants/aoi.ts`
 
 ```typescript
 export const AoI = {
-  VIEWPORT_HALF_CM: 50, INNER_RADIUS_CM: 60, OUTER_RADIUS_CM: 100,
-  TIER2_EXIT_CM: 65, TIER1_EXIT_CM: 105, ELEVATOR_BONUS_CM: 10,
-  GHOST_HZ: 10, SHADOW_HZ: 20, FULL_HZ: 60,
-  TIER1_OPACITY: 0.3, TIER_FADE_MS: 200, TIER_GHOST_FADE_MS: 100,
+  VIEWPORT_HALF_CM: 50,
+  INNER_RADIUS_CM: 60,
+  OUTER_RADIUS_CM: 100,
+  TIER2_EXIT_CM: 65,
+  TIER1_EXIT_CM: 105,
+  ELEVATOR_BONUS_CM: 10,
+  GHOST_HZ: 10,
+  SHADOW_HZ: 20,
+  FULL_HZ: 60,
+  TIER1_OPACITY: 0.3,
+  TIER_FADE_MS: 200,
+  TIER_GHOST_FADE_MS: 100,
 } as const;
 ```
 
@@ -408,14 +461,22 @@ File: `src/rooms/schema/BeyGhostState.ts`
 
 ```typescript
 export class BeyGhostState extends Schema {
-  @type("string") id = ""; @type("number") x_cm = 0; @type("number") y_cm = 0;
-  @type("int8") floorIndex = 0; @type("string") teamId = ""; @type("uint8") tier = 0;
-  @type("number") vx_cm = 0; @type("number") vy_cm = 0;
-  @type("number") tiltAngle = 0; @type("uint8") spin_pct = 0; @type("string") beyType = "";
+  @type("string") id = "";
+  @type("number") x_cm = 0;
+  @type("number") y_cm = 0;
+  @type("int8") floorIndex = 0;
+  @type("string") teamId = "";
+  @type("uint8") tier = 0;
+  @type("number") vx_cm = 0;
+  @type("number") vy_cm = 0;
+  @type("number") tiltAngle = 0;
+  @type("uint8") spin_pct = 0;
+  @type("string") beyType = "";
 }
 ```
 
 Add to `GameState`:
+
 ```typescript
 @type({ map: BeyGhostState }) beyGhosts: MapSchema<BeyGhostState> = new MapSchema();
 ```
@@ -466,10 +527,14 @@ File: `client/src/game/renderer/IGameRenderer.ts`
 
 ```typescript
 export interface IGameRenderer {
-  updateBey(id: string, state: Beyblade | BeyGhostState, tier: 0|1|2): void;
+  updateBey(id: string, state: Beyblade | BeyGhostState, tier: 0 | 1 | 2): void;
   updateArena(arenaState: ArenaState): void;
   emitParticle(type: string, x: number, y: number): void;
-  setBitBeastVisible(side: "left"|"right", asset: BitBeastAssetDoc|null, visible: boolean): void;
+  setBitBeastVisible(
+    side: "left" | "right",
+    asset: BitBeastAssetDoc | null,
+    visible: boolean,
+  ): void;
   destroy(): void;
 }
 ```
@@ -481,7 +546,10 @@ Refactor `PixiRenderer.ts` to implement interface. Create `ThreeJSRenderer.ts` s
 File: `client/src/game/renderer/RendererFactory.ts`
 
 ```typescript
-export function createRenderer(mode: RendererMode, canvas: HTMLCanvasElement): IGameRenderer {
+export function createRenderer(
+  mode: RendererMode,
+  canvas: HTMLCanvasElement,
+): IGameRenderer {
   if (mode === "3d") return new ThreeJSRenderer(canvas);
   return new PixiRenderer(canvas, { tiltEnabled: mode === "2.5d" });
 }
@@ -490,6 +558,7 @@ export function createRenderer(mode: RendererMode, canvas: HTMLCanvasElement): I
 ### L4.5 HUD Components
 
 Under `client/src/components/game/hud/`:
+
 - `TopBar.tsx` — avatar, name, score, timer
 - `AbilityIcons.tsx` — 3 icons (2D only), radial cooldown sweep
 - `SPBar.tsx` — spin% bands: ≥75=green, ≥40=orange, ≥10=red, <10=rapid red
@@ -514,19 +583,19 @@ Under `client/src/components/game/hud/`:
 
 Phase 2 (after Layer 2 stable):
 
-| ID | Change |
-|----|--------|
-| R3 | Bake arena floor to `RenderTexture`; re-bake on `tiltAngle` change only |
-| R2 | Replace particle `Container` → `ParticleContainer(2000)`; Graphics → Sprite with shared 4×4 RT |
-| R5 | LOD: hide detail layer on beys >400px from camera |
-| S2 | Pre-filter collision pairs by distance before `processCollisions()` (royale only) |
+| ID  | Change                                                                                         |
+| --- | ---------------------------------------------------------------------------------------------- |
+| R3  | Bake arena floor to `RenderTexture`; re-bake on `tiltAngle` change only                        |
+| R2  | Replace particle `Container` → `ParticleContainer(2000)`; Graphics → Sprite with shared 4×4 RT |
+| R5  | LOD: hide detail layer on beys >400px from camera                                              |
+| S2  | Pre-filter collision pairs by distance before `processCollisions()` (royale only)              |
 
 Phase 3 (after Layer 3 stable):
 
-| ID | Change |
-|----|--------|
-| N1 | Client-side prediction: run `applyBlendedMovement` locally; reconcile via lerp (5px threshold) |
-| N2 | AoI culling — satisfied by Layer 3 |
+| ID  | Change                                                                                         |
+| --- | ---------------------------------------------------------------------------------------------- |
+| N1  | Client-side prediction: run `applyBlendedMovement` locally; reconcile via lerp (5px threshold) |
+| N2  | AoI culling — satisfied by Layer 3                                                             |
 
 ---
 
@@ -534,45 +603,45 @@ Phase 3 (after Layer 3 stable):
 
 ### New Admin Pages
 
-| Route | Component | Status |
-|-------|-----------|--------|
-| `/admin/bitbeast-assets` | `BitBeastAssetsPage.tsx` | ❌ |
+| Route                    | Component                | Status |
+| ------------------------ | ------------------------ | ------ |
+| `/admin/bitbeast-assets` | `BitBeastAssetsPage.tsx` | ❌     |
 
 ### Updated Admin Pages / Panels
 
-| Page / File | Change | Status |
-|-------------|--------|--------|
-| `CombosPage.tsx` | Upgrade effectId text input → `SearchableSelect` from `COMBO_EFFECTS` | ❌ |
-| Arena `BasicsTab.tsx` | Player Authority panel + maxDurationSeconds slider | ❌ |
-| Arena `FeaturesTab.tsx` | Authority badge per feature card | ❌ |
-| Arena configurator | Arena Sections, Loop Tracks, Elevation Zones tabs | ❌ |
-| Arena configurator | `floorIndex` on obstacle form | ❌ |
-| Arena configurator (top) | Renderer mode selector [2D][2.5D][3D] | ❌ |
-| Arena configurator | 3D Config tab | ❌ |
-| `/admin/beyblade-systems` bey form | `bitBeastId` picker | ❌ |
+| Page / File                        | Change                                                                | Status |
+| ---------------------------------- | --------------------------------------------------------------------- | ------ |
+| `CombosPage.tsx`                   | Upgrade effectId text input → `SearchableSelect` from `COMBO_EFFECTS` | ❌     |
+| Arena `BasicsTab.tsx`              | Player Authority panel + maxDurationSeconds slider                    | ❌     |
+| Arena `FeaturesTab.tsx`            | Authority badge per feature card                                      | ❌     |
+| Arena configurator                 | Arena Sections, Loop Tracks, Elevation Zones tabs                     | ❌     |
+| Arena configurator                 | `floorIndex` on obstacle form                                         | ❌     |
+| Arena configurator (top)           | Renderer mode selector [2D][2.5D][3D]                                 | ❌     |
+| Arena configurator                 | 3D Config tab                                                         | ❌     |
+| `/admin/beyblade-systems` bey form | `bitBeastId` picker                                                   | ❌     |
 
 ### New Game-Side Components
 
-| Component | Status |
-|-----------|--------|
-| `ControlBlendBar.tsx` | ❌ |
-| `TouchControls.tsx` | ❌ |
+| Component                                             | Status     |
+| ----------------------------------------------------- | ---------- |
+| `ControlBlendBar.tsx`                                 | ❌         |
+| `TouchControls.tsx`                                   | ❌         |
 | `Minimap.tsx` — Perspective tab + beyGhosts migration | ⚠️ PARTIAL |
-| `RoyaleHUD.tsx` | ❌ |
-| `HUDRoot.tsx` | ❌ |
-| `hud/TopBar.tsx` | ❌ |
-| `hud/AbilityIcons.tsx` | ❌ |
-| `hud/SPBar.tsx` | ❌ |
-| `hud/OpponentPanel.tsx` | ❌ |
-| `BitBeastOverlay.tsx` | ❌ |
+| `RoyaleHUD.tsx`                                       | ❌         |
+| `HUDRoot.tsx`                                         | ❌         |
+| `hud/TopBar.tsx`                                      | ❌         |
+| `hud/AbilityIcons.tsx`                                | ❌         |
+| `hud/SPBar.tsx`                                       | ❌         |
+| `hud/OpponentPanel.tsx`                               | ❌         |
+| `BitBeastOverlay.tsx`                                 | ❌         |
 
 ### Seed Scripts
 
-| Script | Status |
-|--------|--------|
-| `seed-mechanics.js` update (+4 docs) | ❌ |
-| `seed-gimmicks.js` update (+naturalMotion recipe) | ❌ |
-| `seed-bitbeasts.js` new | ❌ |
+| Script                                            | Status |
+| ------------------------------------------------- | ------ |
+| `seed-mechanics.js` update (+4 docs)              | ❌     |
+| `seed-gimmicks.js` update (+naturalMotion recipe) | ❌     |
+| `seed-bitbeasts.js` new                           | ❌     |
 
 ---
 

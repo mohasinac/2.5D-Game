@@ -45,7 +45,7 @@ import {
   tickEvolutionDriver,
   OBSTACLE_RELAUNCH_THRESHOLD,
   FRAGMENT_LIFETIME_TICKS_DEFAULT,
-  computeMinWearLevel,
+  computeMinWearLevelForParts,
 } from "../physics/PartPhysics";
 import { v4 as uuidv4 } from "uuid";
 import { computeClimbingForces, updateBeyTilt, type ArenaGeometry } from "../physics/ClimbingPhysics";
@@ -312,7 +312,7 @@ export class PartSystemManager {
     // This is a rough worst-case that drives the visual tint sent to clients.
     if (typeof (gameState as any).timer === "number") {
       const elapsedSeconds = (gameState as any).timer as number;
-      const wearLevel = computeMinWearLevel(state.parts, elapsedSeconds);
+      const wearLevel = computeMinWearLevelForParts(state.parts, elapsedSeconds);
       bey.materialWearLevel = wearLevel;
     }
 

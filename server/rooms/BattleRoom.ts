@@ -3,6 +3,8 @@ import {
   GameState,
   Beyblade,
 } from "./schema/GameState";
+import { BeyGhostState } from "./schema/BeyGhostState";
+import { AoI } from "../shared/constants/aoi";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats, loadComboEffects, getFirestoreDb, type ComboEffectDoc } from "../utils/firebase";
 import { loadGimmickDefs } from "../utils/firestoreLoaders";
@@ -31,6 +33,7 @@ import {
   applyActionInput,
   computeForceMagnitude,
 } from "../shared/rooms/InputHandler";
+import { computeNaturalForce } from "../shared/physics/NaturalMotion";
 import {
   determineGameWinner,
   recordGameWin,
@@ -38,6 +41,13 @@ import {
   isSeriesOver,
   resetStateForNextGame,
 } from "../shared/rooms/SeriesManager";
+import {
+  SPECIAL_MOVES,
+  totalMoveDurationMs,
+  DEFAULT_CLASH_OUTCOME,
+  type SpecialInteractionDef,
+  type SpecialMovePhase,
+} from "../constants/specialMoves";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
 import type { ArenaSystem } from "../types/arenaSystem";
 import { MODIFIER_MAP, type RoundModifier } from "../../shared/types/roundModifier";
@@ -167,6 +177,8 @@ export class BattleRoom extends Room<GameState> {
   private activeControlLoss: Map<string, { linkId: string; nextQTETick: number; recoveryKey: string }> = new Map();
   /** Running tick counter (incremented each server tick). */
   private tickCounter = 0;
+  /** Phase 27: ghost sync counter — beyGhosts populated every 6 ticks (10Hz at 60Hz server). */
+  private ghostTickCounter = 0;
 
   // ── Hijack state (BeyLink hijack mechanic) ───────────────────────────────────
   /** Active hijack QTEs: stackKey → { blockKey, expiresAt }. Attacker must block before expiry. */
@@ -195,6 +207,40 @@ export class BattleRoom extends Room<GameState> {
     powerCost: number;
     respondersProgress: Map<string, number>;
   } | null = null;
+
+  // ── Phase 29: Collision QTE ──────────────────────────────────────────────────
+  private activeCollisionQTEs = new Map<string, {
+    key: string;          // `${id1}:${id2}`
+    player1Id: string;
+    player2Id: string;
+    pendingDamage1: number;
+    pendingDamage2: number;
+    player1MashCount: number;
+    player2MashCount: number;
+    timerId: ReturnType<typeof setTimeout>;
+    specialFired?: boolean;
+    finalMultiplier?: number;
+    specialPromptSent1?: boolean;
+    specialPromptSent2?: boolean;
+  }>();
+  private collisionQTECooldowns = new Map<string, number>(); // pairKey → expiry ms
+  private physicalContactThisTick = new Set<string>();       // pairKey for this tick
+
+  // ── Phase 29: Per-bey special phase executor state (not in schema) ───────────
+  private specialPhaseWaitElapsed = new Map<string, number>(); // beyId → ms waited
+  private specialPhaseUsedFallback = new Map<string, boolean>();
+
+  // ── Phase 29: Special interaction defs loaded from Firestore at room start ───
+  protected specialInteractionCache = new Map<string, SpecialInteractionDef>();
+
+  // Constants
+  private static readonly COLLISION_QTE_MIN_DAMAGE    = 15;
+  private static readonly COLLISION_QTE_WINDOW_MS     = 2500;
+  private static readonly COLLISION_QTE_COOLDOWN_MS   = 5000;
+  private static readonly COLLISION_QTE_MAX_POWER     = 150;
+  private static readonly COLLISION_QTE_SPECIAL_THRESHOLD = 80;
+  private static readonly AERIAL_HIT_DAMAGE_FACTOR    = 0.7;
+  private static readonly EFFECTIVE_GRAVITY_PX_MS2    = 0.0004; // px/ms²
 
   maxClients = 12; // 4 player slots + 8 spectator slots
 
@@ -271,6 +317,8 @@ export class BattleRoom extends Room<GameState> {
     const firestoreDb = getFirestoreDb();
     if (firestoreDb) {
       this.elementTypeMatrix = await loadElementTypeMatrix(firestoreDb);
+      // Phase 29: load special interaction defs into in-memory cache (no async in game loop)
+      await this.loadSpecialInteractionDefs(firestoreDb);
     }
 
     this.onMessage("input", (client, message: number | PlayerInput) => {
@@ -342,6 +390,68 @@ export class BattleRoom extends Room<GameState> {
       } else {
         // Wrong key — reset this responder's progress
         this.pendingQTE.respondersProgress.set(client.sessionId, 0);
+      }
+    });
+
+    // ── Phase 29: Collision QTE messages ────────────────────────────────────
+    this.onMessage("collision-qte-mash", (client) => {
+      if (this.spectatorSessions.has(client.sessionId)) return;
+      const bey = this.state.beyblades.get(client.sessionId);
+      if (!bey || !bey.isActive || bey.beyAirborne) return;
+
+      // Find the active QTE this player is in
+      for (const [key, qte] of this.activeCollisionQTEs) {
+        const isP1 = qte.player1Id === client.sessionId;
+        const isP2 = qte.player2Id === client.sessionId;
+        if (!isP1 && !isP2) continue;
+
+        if (isP1) qte.player1MashCount++;
+        else qte.player2MashCount++;
+
+        const mashCount = isP1 ? qte.player1MashCount : qte.player2MashCount;
+        const power = this.calcQTEPower(mashCount);
+        bey.collisionQTEPower = power;
+
+        // Special prompt check
+        const prompted = isP1 ? qte.specialPromptSent1 : qte.specialPromptSent2;
+        if (
+          power >= BattleRoom.COLLISION_QTE_SPECIAL_THRESHOLD &&
+          bey.power >= 30 &&
+          !prompted
+        ) {
+          if (isP1) qte.specialPromptSent1 = true;
+          else qte.specialPromptSent2 = true;
+          const targetClient = this.clients.find(c => c.sessionId === client.sessionId);
+          targetClient?.send("collision-qte-special-prompt", {
+            qteMultiplier: power / 100,
+            currentSP: bey.power,
+          });
+        }
+        break;
+      }
+    });
+
+    this.onMessage("collision-qte-fire-special", (client) => {
+      if (this.spectatorSessions.has(client.sessionId)) return;
+      const bey = this.state.beyblades.get(client.sessionId);
+      if (!bey || !bey.isActive) return;
+
+      for (const [key, qte] of this.activeCollisionQTEs) {
+        const isP1 = qte.player1Id === client.sessionId;
+        const isP2 = qte.player2Id === client.sessionId;
+        if (!isP1 && !isP2) continue;
+
+        if (bey.power < 30) break;
+        const qteMultiplier = bey.collisionQTEPower / 100;
+        const spPercent = bey.power / 100;
+        const finalMultiplier = qteMultiplier * spPercent;
+
+        qte.specialFired = true;
+        qte.finalMultiplier = finalMultiplier;
+        bey.power = 0;
+
+        this.handleSpecialMoveWithMultiplier(bey, finalMultiplier);
+        break;
       }
     });
 
@@ -963,88 +1073,127 @@ export class BattleRoom extends Room<GameState> {
   // ─── Special moves ───────────────────────────────────────────────────────────
 
   private handleSpecialMove(beyblade: Beyblade) {
+    const moveDef = SPECIAL_MOVES[beyblade.specialMove];
+
+    // Phase 29: multi-phase executor path
+    if (moveDef) {
+      const durationMs = totalMoveDurationMs(moveDef);
+      beyblade.specialMoveActive = true;
+      beyblade.specialPhaseIndex = 0;
+      beyblade.specialPhaseElapsed = 0;
+      beyblade.specialPhaseSubState = "windup";
+      beyblade.specialMoveEndTime = Date.now() + durationMs;
+      beyblade.controlLockedUntilMs = Math.max(beyblade.controlLockedUntilMs, Date.now() + durationMs);
+      beyblade.controlLockSource = "special";
+
+      // Check skipCondition on phase 0 immediately
+      const phase0 = moveDef.phases[0];
+      if (phase0?.skipCondition) {
+        const target = this.findNearestInRadius(beyblade, moveDef.radius);
+        if (this.checkSkipCondition(phase0.skipCondition, target)) {
+          beyblade.specialPhaseIndex = 1; // skip phase 0
+        }
+      }
+
+      // QTE block prompt (collision-only gate — only emitted if there's physical contact)
+      const arenaQTEEnabled = (this.arenaCache as any)?.qteEnabled !== false;
+      const matchState = this.comboMatchStates.get(beyblade.id);
+      const totalSlots = Array.from(beyblade.comboSlots ?? []).length;
+      const gateMet = matchState ? isQTEGateMet(matchState, totalSlots) : false;
+      const hasContact = Array.from(this.physicalContactThisTick).some(k =>
+        k.startsWith(beyblade.id + ":") || k.endsWith(":" + beyblade.id)
+      );
+
+      if (arenaQTEEnabled && gateMet && hasContact && !this.pendingQTE) {
+        const LEGACY_SPECIAL_COST = 50;
+        const sequence = generateQTESequence(this.rand, LEGACY_SPECIAL_COST);
+        const windowTicks = Math.max(20, 60 - Math.floor(LEGACY_SPECIAL_COST / 4));
+        const expiresAt = Date.now() + Math.round(windowTicks * (1000 / 60));
+        this.pendingQTE = {
+          attackerSessionId: beyblade.id,
+          sequence,
+          expiresAt,
+          powerCost: LEGACY_SPECIAL_COST,
+          respondersProgress: new Map(),
+        };
+        this.clients.forEach(c => {
+          if (c.sessionId !== beyblade.id && !this.spectatorSessions.has(c.sessionId)) {
+            c.send("qte-prompt", {
+              attackerBeyId: beyblade.id,
+              sequence,
+              windowTicks,
+              powerCost: LEGACY_SPECIAL_COST,
+            });
+          }
+        });
+      }
+
+      this.broadcast("special-move-camera", {
+        beyId: beyblade.id,
+        cameraConfig: { followTarget: beyblade.id, zoomIn: true, durationMs },
+      });
+      this.broadcast("combo-visual", {
+        beyId: beyblade.id,
+        introAnimation: beyblade.specialMove || beyblade.type,
+        particlePresetId: beyblade.specialMove || beyblade.type,
+      });
+      this.broadcast("special-move", {
+        playerId: beyblade.id,
+        x: beyblade.x,
+        y: beyblade.y,
+        facing: beyblade.rotation,
+        type: beyblade.specialMove,
+        group: moveDef.group,
+      });
+
+      // Phase 28: emit bitbeast-show if this beyblade has a BitBeast assigned
+      const stats = this.beybladeDataCache.get(beyblade.userId);
+      if (stats?.bitBeastId) {
+        const side = this.getPlayerSide(beyblade.userId);
+        this.broadcast("bitbeast-show", {
+          beyId: beyblade.id,
+          side,
+          bitBeastId: stats.bitBeastId,
+          durationMs: durationMs + 400,
+        });
+      }
+
+      return;
+    }
+
+    // Legacy fallback (no moveDef found)
     const state = this.physics.getBodyState(beyblade.id);
     if (!state) return;
 
-    // Mark special move as active (cleared in tick loop after specialMoveEndTime)
     beyblade.specialMoveActive = true;
     beyblade.specialMoveEndTime = Date.now() + 500;
 
-    // N2: broadcast special-move-camera + combo-visual when special move activates
     this.broadcast("special-move-camera", {
       beyId: beyblade.id,
       cameraConfig: { followTarget: beyblade.id, zoomIn: true, durationMs: 500 },
     });
     this.broadcast("combo-visual", {
       beyId: beyblade.id,
-      introAnimation: beyblade.specialMove || beyblade.type,
-      particlePresetId: beyblade.specialMove || beyblade.type,
+      introAnimation: beyblade.type,
+      particlePresetId: beyblade.type,
     });
-
-    // Power cost for this special move (legacy = 50 deducted in InputHandler)
-    const LEGACY_SPECIAL_COST = 50;
-
-    // QTE gate: broadcast prompt to all other players if eligible
-    const arenaQTEEnabled = (this.arenaCache as any)?.qteEnabled !== false;
-    const matchState = this.comboMatchStates.get(beyblade.id);
-    const totalSlots = Array.from(beyblade.comboSlots ?? []).length;
-    const gatemet = matchState ? isQTEGateMet(matchState, totalSlots) : false;
-
-    if (arenaQTEEnabled && gatemet && !this.pendingQTE) {
-      const sequence = generateQTESequence(this.rand, LEGACY_SPECIAL_COST);
-      const windowTicks = Math.max(20, 60 - Math.floor(LEGACY_SPECIAL_COST / 4));
-      const expiresAt = Date.now() + Math.round(windowTicks * (1000 / 60));
-      this.pendingQTE = {
-        attackerSessionId: beyblade.id,
-        sequence,
-        expiresAt,
-        powerCost: LEGACY_SPECIAL_COST,
-        respondersProgress: new Map(),
-      };
-      // Broadcast to all non-attacker, non-spectator clients
-      this.clients.forEach(c => {
-        if (c.sessionId !== beyblade.id && !this.spectatorSessions.has(c.sessionId)) {
-          c.send("qte-prompt", {
-            attackerBeyId: beyblade.id,
-            sequence,
-            windowTicks,
-            powerCost: LEGACY_SPECIAL_COST,
-          });
-        }
-      });
-    }
-
-    const movePayload = {
-      playerId: beyblade.id,
-      x: beyblade.x,
-      y: beyblade.y,
-      facing: beyblade.rotation,
-    };
 
     switch (beyblade.type) {
       case "attack": {
         const rushForce = 0.005 * beyblade.mass * beyblade.damageMultiplier;
-        this.physics.applyForce(
-          beyblade.id,
-          Math.cos(beyblade.rotation) * rushForce,
-          Math.sin(beyblade.rotation) * rushForce
-        );
+        this.physics.applyForce(beyblade.id, Math.cos(beyblade.rotation) * rushForce, Math.sin(beyblade.rotation) * rushForce);
         const boostedSpin = Math.min(beyblade.maxSpin, Math.abs(state.angularVelocity) * 1.8);
         this.physics.setAngularVelocity(beyblade.id, beyblade.spinDirection === "left" ? -boostedSpin : boostedSpin);
-        this.broadcast("special-move", { ...movePayload, type: "stampede-rush" });
+        this.broadcast("special-move", { playerId: beyblade.id, x: beyblade.x, y: beyblade.y, facing: beyblade.rotation, type: "stampede-rush" });
         break;
       }
       case "defense": {
         const maxAngular = beyblade.maxSpin / 200;
         this.physics.setAngularVelocity(beyblade.id, beyblade.spinDirection === "left" ? -maxAngular : maxAngular);
-        this.physics.applyForce(
-          beyblade.id,
-          -state.velocityX * beyblade.mass * 0.8,
-          -state.velocityY * beyblade.mass * 0.8
-        );
+        this.physics.applyForce(beyblade.id, -state.velocityX * beyblade.mass * 0.8, -state.velocityY * beyblade.mass * 0.8);
         beyblade.isInvulnerable = true;
         beyblade.invulnerabilityTimer = 1.5;
-        this.broadcast("special-move", { ...movePayload, type: "gyro-anchor" });
+        this.broadcast("special-move", { playerId: beyblade.id, x: beyblade.x, y: beyblade.y, facing: beyblade.rotation, type: "gyro-anchor" });
         break;
       }
       case "stamina": {
@@ -1054,7 +1203,7 @@ export class BattleRoom extends Room<GameState> {
         this.physics.setAngularVelocity(beyblade.id, beyblade.spinDirection === "left" ? -(recovered / 200) : (recovered / 200));
         beyblade.spin = recovered;
         beyblade.stamina = Math.min(beyblade.maxStamina, beyblade.stamina + beyblade.maxStamina * 0.2);
-        this.broadcast("special-move", { ...movePayload, type: "spin-recovery" });
+        this.broadcast("special-move", { playerId: beyblade.id, x: beyblade.x, y: beyblade.y, facing: beyblade.rotation, type: "spin-recovery" });
         break;
       }
       case "balanced": {
@@ -1063,23 +1212,650 @@ export class BattleRoom extends Room<GameState> {
         const boosted = Math.min(beyblade.maxSpin, Math.abs(state.angularVelocity) * 1.5);
         this.physics.setAngularVelocity(beyblade.id, beyblade.spinDirection === "left" ? -boosted : boosted);
         beyblade.stamina = Math.min(beyblade.maxStamina, beyblade.stamina + beyblade.maxStamina * 0.15);
-        this.broadcast("special-move", { ...movePayload, type: "tactical-burst" });
+        this.broadcast("special-move", { playerId: beyblade.id, x: beyblade.x, y: beyblade.y, facing: beyblade.rotation, type: "tactical-burst" });
         break;
       }
     }
   }
 
   private cancelSpecialMoveViaQTE(beyblade: Beyblade, powerCost: number) {
+    // Phase 29: key-sequence QTE block is collision-only; softened to 40% + 30% refund
+    // Find any target currently in physical contact with attacker this tick
+    let partialDamageApplied = false;
+    for (const contactKey of this.physicalContactThisTick) {
+      const [a, b] = contactKey.split(":");
+      const targetId = a === beyblade.id ? b : b === beyblade.id ? a : null;
+      if (!targetId) continue;
+      const target = this.state.beyblades.get(targetId);
+      if (target && target.isActive) {
+        // 40% of special's phase damage multiplier still lands
+        const moveDef = SPECIAL_MOVES[beyblade.specialMove];
+        if (moveDef) {
+          const phase = moveDef.phases[beyblade.specialPhaseIndex] ?? moveDef.phases[0];
+          const partialDmg = (phase.effects.damageMultiplier ?? 1.0) * 0.4 * 10;
+          target.health = Math.max(0, target.health - partialDmg);
+          beyblade.damageDealt += partialDmg;
+          target.damageReceived += partialDmg;
+          partialDamageApplied = true;
+        }
+        break;
+      }
+    }
+
     beyblade.specialMoveActive = false;
     beyblade.specialMoveEndTime = 0;
     beyblade.controlLockedUntilMs = 0;
-    const refund = Math.floor(powerCost * 0.8);
+    beyblade.specialPhaseIndex = 0;
+    beyblade.specialPhaseElapsed = 0;
+    beyblade.specialPhaseSubState = "";
+    const refund = Math.floor(powerCost * 0.3);
     beyblade.power = Math.min(100, beyblade.power + refund);
     this.broadcast("qte-success", {
       attackerBeyId: beyblade.id,
       refundAmount: refund,
+      partialHit: partialDamageApplied,
     });
     this.pendingQTE = null;
+  }
+
+  // ─── Phase 29: Collision QTE lifecycle ──────────────────────────────────────
+
+  protected async loadSpecialInteractionDefs(db: ReturnType<typeof getFirestoreDb>) {
+    if (!db) return;
+    try {
+      const snap = await db.collection("special_interaction_defs").get();
+      snap.forEach((doc: any) =>
+        this.specialInteractionCache.set(doc.id, doc.data() as SpecialInteractionDef)
+      );
+      console.log(`✅ BattleRoom: loaded ${this.specialInteractionCache.size} special interaction defs`);
+    } catch (e) {
+      console.warn("⚠️ BattleRoom: failed to load special_interaction_defs, using defaults", e);
+    }
+  }
+
+  private calcQTEPower(mashCount: number): number {
+    let power = 0;
+    for (let i = 0; i < mashCount; i++) {
+      power += power < 100 ? 12 : 6;
+      if (power >= BattleRoom.COLLISION_QTE_MAX_POWER) {
+        power = BattleRoom.COLLISION_QTE_MAX_POWER;
+        break;
+      }
+    }
+    return power;
+  }
+
+  private startCollisionQTE(
+    id1: string, id2: string,
+    dmg1: number, dmg2: number,
+    ss1: number, ss2: number,
+  ) {
+    const b1 = this.state.beyblades.get(id1);
+    const b2 = this.state.beyblades.get(id2);
+    if (!b1 || !b2) return;
+
+    const key = id1 < id2 ? `${id1}:${id2}` : `${id2}:${id1}`;
+    b1.collisionQTEActive = true;
+    b1.collisionQTEPower = 0;
+    b2.collisionQTEActive = true;
+    b2.collisionQTEPower = 0;
+
+    const timerId = setTimeout(() => this.endCollisionQTE(key), BattleRoom.COLLISION_QTE_WINDOW_MS);
+
+    this.activeCollisionQTEs.set(key, {
+      key,
+      player1Id: id1,
+      player2Id: id2,
+      pendingDamage1: dmg1,
+      pendingDamage2: dmg2,
+      player1MashCount: 0,
+      player2MashCount: 0,
+      timerId,
+    });
+
+    this.broadcast("collision-qte-start", {
+      player1Id: id1,
+      player2Id: id2,
+      windowMs: BattleRoom.COLLISION_QTE_WINDOW_MS,
+    });
+  }
+
+  private endCollisionQTE(key: string) {
+    const qte = this.activeCollisionQTEs.get(key);
+    if (!qte) return;
+
+    clearTimeout(qte.timerId);
+    this.activeCollisionQTEs.delete(key);
+
+    const b1 = this.state.beyblades.get(qte.player1Id);
+    const b2 = this.state.beyblades.get(qte.player2Id);
+
+    const p1Mult = b1 ? b1.collisionQTEPower / 100 : 1.0;
+    const p2Mult = b2 ? b2.collisionQTEPower / 100 : 1.0;
+
+    // Apply held damage × QTE multiplier
+    if (b1 && b1.isActive) {
+      const applyD = qte.pendingDamage1 * p2Mult; // b1 takes dmg scaled by b2's power
+      b1.health = Math.max(0, b1.health - applyD);
+      b1.damageReceived += applyD;
+    }
+    if (b2 && b2.isActive) {
+      const applyD = qte.pendingDamage2 * p1Mult;
+      b2.health = Math.max(0, b2.health - applyD);
+      b2.damageReceived += applyD;
+    }
+
+    if (b1) { b1.collisionQTEActive = false; b1.collisionQTEPower = 0; }
+    if (b2) { b2.collisionQTEActive = false; b2.collisionQTEPower = 0; }
+
+    this.collisionQTECooldowns.set(key, Date.now() + BattleRoom.COLLISION_QTE_COOLDOWN_MS);
+
+    this.broadcast("collision-qte-result", {
+      player1Id: qte.player1Id,
+      player2Id: qte.player2Id,
+      player1Multiplier: p1Mult,
+      player2Multiplier: p2Mult,
+    });
+
+    // Fire-and-forget Firestore write (no await — does not block game loop)
+    const db = getFirestoreDb();
+    if (db) {
+      db.collection("collision_qte_events").add({
+        matchId: (this.state as any).matchId ?? this.roomId,
+        roomId: this.roomId,
+        beyId1: qte.player1Id,
+        beyId2: qte.player2Id,
+        damage1: qte.pendingDamage1,
+        damage2: qte.pendingDamage2,
+        player1MashCount: qte.player1MashCount,
+        player2MashCount: qte.player2MashCount,
+        player1Multiplier: p1Mult,
+        player2Multiplier: p2Mult,
+        specialFired: qte.specialFired ?? false,
+        finalMultiplier: qte.finalMultiplier ?? null,
+        timestamp: Date.now(),
+      }).catch((e: unknown) => console.warn("collision_qte_events write failed", e));
+    }
+  }
+
+  // ─── Phase 29: Airborne Z-axis physics ──────────────────────────────────────
+
+  private tickAirbornePhysics(deltaTime: number) {
+    this.state.beyblades.forEach(bey => {
+      if (!bey.beyAirborne) return;
+
+      bey.beyHeight += bey.beyVerticalVel * deltaTime;
+      bey.beyVerticalVel = Math.max(
+        -2.0, // max fall speed (px/ms)
+        bey.beyVerticalVel - BattleRoom.EFFECTIVE_GRAVITY_PX_MS2 * deltaTime,
+      );
+
+      if (bey.beyHeight <= 0) {
+        bey.beyHeight = 0;
+        bey.beyVerticalVel = 0;
+        bey.beyAirborne = false;
+        this.onBeyLanded(bey);
+      }
+    });
+  }
+
+  private onBeyLanded(bey: Beyblade) {
+    const moveDef = SPECIAL_MOVES[bey.specialMove];
+    if (!bey.specialMoveActive || !moveDef) return;
+    const phase = moveDef.phases[bey.specialPhaseIndex];
+    if (!phase) return;
+
+    // aerial-launch landing AoE: apply to all ground beys in range
+    if (phase.effects.landingAoePx && phase.effects.landingDmgMult) {
+      const aoeRadius = phase.effects.landingAoePx;
+      const dmgMult = phase.effects.landingDmgMult;
+      this.state.beyblades.forEach(target => {
+        if (target.id === bey.id || !target.isActive || target.beyAirborne) return;
+        const dx = target.x - bey.x;
+        const dy = target.y - bey.y;
+        if (Math.sqrt(dx * dx + dy * dy) > aoeRadius) return;
+        const dmg = 15 * dmgMult; // base AoE damage
+        target.health = Math.max(0, target.health - dmg);
+        bey.damageDealt += dmg;
+        target.damageReceived += dmg;
+      });
+      this.broadcast("bey-landed", {
+        beyId: bey.id,
+        x: bey.x,
+        y: bey.y,
+        aoeRadius,
+        dmgMult,
+      });
+    }
+  }
+
+  // ─── Phase 29: Multi-phase special move tick ─────────────────────────────────
+
+  private tickSpecialPhase(bey: Beyblade, deltaTime: number) {
+    const moveDef = SPECIAL_MOVES[bey.specialMove];
+    if (!moveDef) { bey.specialMoveActive = false; return; }
+
+    const phase = moveDef.phases[bey.specialPhaseIndex];
+    if (!phase) {
+      bey.specialMoveActive = false;
+      bey.specialPhaseSubState = "";
+      this.specialPhaseWaitElapsed.delete(bey.id);
+      this.specialPhaseUsedFallback.delete(bey.id);
+      return;
+    }
+
+    const windUpEnd  = phase.windUpMs;
+    const activeEnd  = phase.windUpMs + phase.durationMs;
+    const totalEnd   = phase.windUpMs + phase.durationMs + phase.windDownMs;
+    const elapsed    = bey.specialPhaseElapsed;
+
+    let newSubState: "windup" | "active" | "winddown";
+    if (elapsed < windUpEnd) {
+      newSubState = "windup";
+    } else if (elapsed < activeEnd) {
+      newSubState = "active";
+    } else {
+      newSubState = "winddown";
+    }
+
+    if (newSubState !== bey.specialPhaseSubState) {
+      bey.specialPhaseSubState = newSubState;
+      this.broadcast("special-phase-substate", {
+        beyId: bey.id,
+        phaseId: phase.phaseId,
+        subState: newSubState,
+      });
+    }
+
+    // Self-effects always apply in windup + active
+    if (newSubState === "windup") {
+      this.applyPhaseWindUpForce(bey, phase, deltaTime);
+    } else if (newSubState === "active") {
+      this.applyPhaseSelfEffects(bey, phase);
+      this.applyPhaseTargetEffects(bey, phase, deltaTime);
+    }
+    // winddown: no new forces — existing velocity carries
+
+    // Advance phase elapsed (no advance while waiting for airborne target)
+    const needsAirborne = phase.targetFlags.requiresAirborneTarget;
+    const waited = this.specialPhaseWaitElapsed.get(bey.id) ?? 0;
+    const isWaiting = needsAirborne && waited > 0 && waited < (phase.waitForAirborne ?? 0);
+
+    if (!isWaiting) {
+      bey.specialPhaseElapsed += deltaTime;
+    }
+
+    // Phase completion
+    if (bey.specialPhaseElapsed >= totalEnd) {
+      this.specialPhaseWaitElapsed.delete(bey.id);
+      this.specialPhaseUsedFallback.delete(bey.id);
+      bey.specialPhaseIndex++;
+      bey.specialPhaseElapsed = 0;
+
+      // Check skipCondition for NEXT phase
+      const nextPhase = moveDef.phases[bey.specialPhaseIndex];
+      if (nextPhase?.skipCondition) {
+        const target = this.findNearestInRadius(bey, moveDef.radius);
+        if (this.checkSkipCondition(nextPhase.skipCondition, target)) {
+          bey.specialPhaseIndex++;
+        }
+      }
+    }
+  }
+
+  private applyPhaseWindUpForce(bey: Beyblade, phase: SpecialMovePhase, deltaTime: number) {
+    if (!phase.effects.linearImpulse) return;
+    const rampTicks = Math.max(1, Math.ceil(phase.windUpMs / (1000 / 60)));
+    const forcePerTick = (phase.effects.linearImpulse * deltaTime) / (phase.windUpMs || 1);
+    this.physics.applyForce(
+      bey.id,
+      Math.cos(bey.rotation) * forcePerTick * 0.001,
+      Math.sin(bey.rotation) * forcePerTick * 0.001,
+    );
+    // rampTicks used above implicitly via deltaTime ratio
+    void rampTicks;
+  }
+
+  private applyPhaseSelfEffects(bey: Beyblade, phase: SpecialMovePhase) {
+    if (phase.effects.invulnerabilityMs && !bey.isInvulnerable) {
+      bey.isInvulnerable = true;
+      bey.invulnerabilityTimer = phase.effects.invulnerabilityMs / 1000;
+    }
+    if (phase.effects.spinDelta) {
+      bey.spin = Math.min(bey.maxSpin, Math.max(0, bey.spin + phase.effects.spinDelta * 0.016));
+    }
+    if (phase.effects.verticalImpulse && !phase.effects.knockupTarget) {
+      // Apply vertical impulse once at the start of active (check flag to avoid repeat)
+      if (bey.specialPhaseElapsed <= phase.windUpMs + 32) {
+        bey.beyVerticalVel += phase.effects.verticalImpulse * 0.001; // px/ms
+        bey.beyAirborne = bey.beyHeight > 0 || bey.beyVerticalVel > 0;
+      }
+    }
+  }
+
+  private applyPhaseTargetEffects(bey: Beyblade, phase: SpecialMovePhase, deltaTime: number) {
+    const moveDef = SPECIAL_MOVES[bey.specialMove];
+    if (!moveDef) return;
+
+    const target = this.findNearestInRadius(bey, moveDef.radius);
+    if (!target) return;
+
+    const needsAirborne = phase.targetFlags.requiresAirborneTarget;
+    const targetIsAirborne = target.beyAirborne;
+
+    if (needsAirborne && !targetIsAirborne) {
+      // Start/continue wait
+      const waited = (this.specialPhaseWaitElapsed.get(bey.id) ?? 0) + deltaTime;
+      this.specialPhaseWaitElapsed.set(bey.id, waited);
+
+      if (waited < (phase.waitForAirborne ?? 0)) {
+        return; // still waiting
+      }
+      // Wait expired: use fallback if defined
+      if (phase.fallback && !this.specialPhaseUsedFallback.get(bey.id)) {
+        this.specialPhaseUsedFallback.set(bey.id, true);
+        const fallbackTargetOk =
+          (phase.fallback.targetFlags.canHitGrounded && !targetIsAirborne) ||
+          (phase.fallback.targetFlags.canHitAirborne && targetIsAirborne);
+        if (fallbackTargetOk) {
+          this.applyEffectsToTarget(bey, target, phase.fallback.effects);
+          this.broadcast("special-phase-fallback", {
+            beyId: bey.id,
+            phaseId: phase.phaseId,
+            fallbackLabel: phase.fallback.label,
+          });
+        }
+      }
+      return;
+    }
+
+    // Normal target flag check
+    const canHit =
+      (phase.targetFlags.canHitGrounded && !targetIsAirborne) ||
+      (phase.targetFlags.canHitAirborne && targetIsAirborne);
+    if (!canHit) return;
+
+    // Resolve vs special interaction if target also has specialMoveActive
+    if (target.specialMoveActive) {
+      this.resolveSpecialVsSpecial(bey, target, phase);
+    } else {
+      this.applyEffectsToTarget(bey, target, phase.effects);
+    }
+  }
+
+  private applyEffectsToTarget(attacker: Beyblade, target: Beyblade, effects: import("../constants/specialMoves").SpecialMovePhaseEffects) {
+    if (effects.damageMultiplier) {
+      const dmg = 15 * effects.damageMultiplier;
+      target.health = Math.max(0, target.health - dmg);
+      attacker.damageDealt += dmg;
+      target.damageReceived += dmg;
+    }
+    if (effects.knockbackImpulse) {
+      const dx = target.x - attacker.x;
+      const dy = target.y - attacker.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      this.physics.applyForce(
+        target.id,
+        (dx / dist) * effects.knockbackImpulse * 0.00001,
+        (dy / dist) * effects.knockbackImpulse * 0.00001,
+      );
+    }
+    if (effects.knockupTarget && effects.verticalImpulse) {
+      target.beyVerticalVel += effects.verticalImpulse * 0.001;
+      target.beyAirborne = true;
+    }
+    if (effects.aoeRadiusPx) {
+      // Apply to all beys in AoE radius
+      this.state.beyblades.forEach(nearby => {
+        if (nearby.id === attacker.id) return;
+        const dx = nearby.x - attacker.x;
+        const dy = nearby.y - attacker.y;
+        if (Math.sqrt(dx * dx + dy * dy) > effects.aoeRadiusPx!) return;
+        if (effects.knockbackImpulse) {
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          this.physics.applyForce(nearby.id, (dx / dist) * effects.knockbackImpulse * 0.000008, (dy / dist) * effects.knockbackImpulse * 0.000008);
+        }
+        if (effects.damageMultiplier) {
+          const dmg = 12 * effects.damageMultiplier;
+          nearby.health = Math.max(0, nearby.health - dmg);
+          attacker.damageDealt += dmg;
+          nearby.damageReceived += dmg;
+        }
+      });
+    }
+  }
+
+  private findNearestInRadius(bey: Beyblade, radius: number): Beyblade | null {
+    let nearest: Beyblade | null = null;
+    let nearestDist = radius;
+    this.state.beyblades.forEach(other => {
+      if (other.id === bey.id || !other.isActive) return;
+      const dx = other.x - bey.x;
+      const dy = other.y - bey.y;
+      const dz = other.beyHeight - bey.beyHeight;
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      if (dist < nearestDist) {
+        nearestDist = dist;
+        nearest = other;
+      }
+    });
+    return nearest;
+  }
+
+  private checkSkipCondition(
+    cond: "target_already_airborne" | "target_grounded",
+    target: Beyblade | null,
+  ): boolean {
+    if (!target) return false;
+    if (cond === "target_already_airborne") return target.beyAirborne;
+    if (cond === "target_grounded") return !target.beyAirborne;
+    return false;
+  }
+
+  // ─── Phase 29: Aerial clash detection ───────────────────────────────────────
+
+  private detectAerialClash() {
+    const beys = Array.from(this.state.beyblades.values()).filter(
+      b => b.isActive && b.beyAirborne && b.specialMoveActive,
+    );
+    for (let i = 0; i < beys.length; i++) {
+      for (let j = i + 1; j < beys.length; j++) {
+        const b1 = beys[i];
+        const b2 = beys[j];
+        const moveDef1 = SPECIAL_MOVES[b1.specialMove];
+        const moveDef2 = SPECIAL_MOVES[b2.specialMove];
+        if (!moveDef1 || !moveDef2) continue;
+
+        const dx = b2.x - b1.x;
+        const dy = b2.y - b1.y;
+        const dz = b2.beyHeight - b1.beyHeight;
+        const dist3D = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        const clashRadius = Math.min(moveDef1.radius, moveDef2.radius);
+
+        if (dist3D <= clashRadius) {
+          this.triggerAerialClash(b1, b2);
+        }
+      }
+    }
+  }
+
+  private triggerAerialClash(b1: Beyblade, b2: Beyblade) {
+    const phase1 = SPECIAL_MOVES[b1.specialMove]?.phases[b1.specialPhaseIndex];
+    const phase2 = SPECIAL_MOVES[b2.specialMove]?.phases[b2.specialPhaseIndex];
+
+    const mult1 = phase1?.effects.damageMultiplier ?? 1.0;
+    const mult2 = phase2?.effects.damageMultiplier ?? 1.0;
+
+    // Cross-damage: each deals their phase multiplier to the other
+    const dmg1to2 = 15 * mult1;
+    const dmg2to1 = 15 * mult2;
+
+    if (!b1.isInvulnerable) {
+      b1.health = Math.max(0, b1.health - dmg2to1);
+      b1.damageReceived += dmg2to1;
+    }
+    if (!b2.isInvulnerable) {
+      b2.health = Math.max(0, b2.health - dmg1to2);
+      b2.damageReceived += dmg1to2;
+    }
+    b1.damageDealt += dmg1to2;
+    b2.damageDealt += dmg2to1;
+
+    // Fling both in opposite directions; higher mult wins momentum
+    const dx = b2.x - b1.x;
+    const dy = b2.y - b1.y;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const winner = mult1 >= mult2 ? b1 : b2;
+    const loser  = winner === b1 ? b2 : b1;
+    const winnerForce = 0.00008;
+    const loserForce  = 0.00015;
+    // Winner pushes through; loser is flung back harder
+    this.physics.applyForce(winner.id,  (dx / dist) * winnerForce, (dy / dist) * winnerForce);
+    this.physics.applyForce(loser.id,  -(dx / dist) * loserForce, -(dy / dist) * loserForce);
+
+    // Both land after the recoil arc
+    b1.beyAirborne = false;
+    b1.beyHeight = 0;
+    b1.beyVerticalVel = 0;
+    b2.beyAirborne = false;
+    b2.beyHeight = 0;
+    b2.beyVerticalVel = 0;
+
+    // End both specials
+    b1.specialMoveActive = false;
+    b1.specialPhaseIndex = 0;
+    b1.specialPhaseElapsed = 0;
+    b1.specialPhaseSubState = "";
+    b2.specialMoveActive = false;
+    b2.specialPhaseIndex = 0;
+    b2.specialPhaseElapsed = 0;
+    b2.specialPhaseSubState = "";
+
+    const contactPoint = { x: (b1.x + b2.x) / 2, y: (b1.y + b2.y) / 2 };
+    this.broadcast("aerial-clash", {
+      bey1Id: b1.id,
+      bey2Id: b2.id,
+      contactPoint3D: { x: contactPoint.x, y: contactPoint.y, z: (b1.beyHeight + b2.beyHeight) / 2 },
+    });
+    this.broadcast("split-screen-cinematic", {
+      participants: [
+        { beyId: b1.id, specialMove: b1.specialMove, displayName: b1.username },
+        { beyId: b2.id, specialMove: b2.specialMove, displayName: b2.username },
+      ],
+    });
+
+    // Short delay then end split screen (aerial clash is resolved)
+    setTimeout(() => this.broadcast("split-screen-end", {}), 1500);
+  }
+
+  private resolveSpecialVsSpecial(attBey: Beyblade, defBey: Beyblade, attPhase: SpecialMovePhase) {
+    const attMoveDef = SPECIAL_MOVES[attBey.specialMove];
+    const defMoveDef = SPECIAL_MOVES[defBey.specialMove];
+    if (!attMoveDef || !defMoveDef) return;
+
+    const attGroup = attMoveDef.group;
+    const defGroup = defMoveDef.group;
+    const lookupKey = `${attGroup}:${defGroup}`;
+
+    const interaction = this.specialInteractionCache.get(lookupKey) ?? DEFAULT_CLASH_OUTCOME;
+    const defPhase = defMoveDef.phases[defBey.specialPhaseIndex];
+
+    // Check timing bonus
+    const attPeakMs = attPhase.peakMs ?? attPhase.durationMs / 2;
+    const attElapsedInActive = attBey.specialPhaseElapsed - attPhase.windUpMs;
+    const attAtPeak = Math.abs(attElapsedInActive - attPeakMs) <= (attPhase.peakToleranceMs ?? 100);
+
+    let defAtPeak = false;
+    if (defPhase) {
+      const defPeakMs = defPhase.peakMs ?? defPhase.durationMs / 2;
+      const defElapsedInActive = defBey.specialPhaseElapsed - defPhase.windUpMs;
+      defAtPeak = Math.abs(defElapsedInActive - defPeakMs) <= (defPhase.peakToleranceMs ?? 100);
+    }
+
+    let attackerScale = interaction.attackerDamageScale;
+    let defenderScale = interaction.defenderDamageScale;
+
+    if (interaction.timingBonus) {
+      const { peakFor, bonusScale } = interaction.timingBonus;
+      if ((peakFor === "attacker" || peakFor === "both") && attAtPeak) attackerScale *= bonusScale;
+      if ((peakFor === "defender" || peakFor === "both") && defAtPeak) defenderScale *= bonusScale;
+    }
+
+    const attDmg = 15 * (attPhase.effects.damageMultiplier ?? 1.0) * attackerScale;
+    const defDmg = defPhase ? 15 * (defPhase.effects.damageMultiplier ?? 1.0) * defenderScale : 0;
+
+    if (!defBey.isInvulnerable) {
+      defBey.health = Math.max(0, defBey.health - attDmg);
+      defBey.damageReceived += attDmg;
+    }
+    attBey.damageDealt += attDmg;
+
+    if (!attBey.isInvulnerable) {
+      attBey.health = Math.max(0, attBey.health - defDmg);
+      attBey.damageReceived += defDmg;
+    }
+    defBey.damageDealt += defDmg;
+
+    this.broadcast("special-interaction-result", {
+      key: lookupKey,
+      attAtPeak,
+      defAtPeak,
+      attackerScale,
+      defenderScale,
+    });
+
+    // Trigger split-screen if ground clash
+    if (!attBey.beyAirborne && !defBey.beyAirborne) {
+      this.broadcast("split-screen-cinematic", {
+        participants: [
+          { beyId: attBey.id, specialMove: attBey.specialMove, displayName: attBey.username },
+          { beyId: defBey.id, specialMove: defBey.specialMove, displayName: defBey.username },
+        ],
+      });
+    }
+
+    // Fire-and-forget Firestore write
+    const db = getFirestoreDb();
+    if (db) {
+      db.collection("special_clash_events").add({
+        matchId: (this.state as any).matchId ?? this.roomId,
+        roomId: this.roomId,
+        attackerBeyId: attBey.id,
+        defenderBeyId: defBey.id,
+        interactionKey: lookupKey,
+        attackerGroup: attGroup,
+        defenderGroup: defGroup,
+        attackerKind: attMoveDef.kind,
+        defenderKind: defMoveDef.kind,
+        attackerScale,
+        defenderScale,
+        attAtPeak,
+        defAtPeak,
+        timingBonusApplied: !!(interaction.timingBonus && (attAtPeak || defAtPeak)),
+        timestamp: Date.now(),
+      }).catch((e: unknown) => console.warn("special_clash_events write failed", e));
+    }
+  }
+
+  // ─── Phase 29: Special move with QTE multiplier ───────────────────────────────
+
+  private handleSpecialMoveWithMultiplier(bey: Beyblade, multiplier: number) {
+    const moveDef = SPECIAL_MOVES[bey.specialMove];
+    if (!moveDef) return;
+
+    bey.specialMoveActive = true;
+    bey.specialPhaseIndex = 0;
+    bey.specialPhaseElapsed = 0;
+    bey.specialPhaseSubState = "windup";
+    bey.specialMoveEndTime = Date.now() + totalMoveDurationMs(moveDef) * multiplier;
+    bey.controlLockedUntilMs = Math.max(bey.controlLockedUntilMs, bey.specialMoveEndTime);
+    bey.controlLockSource = "special";
+
+    this.broadcast("special-move-camera", {
+      beyId: bey.id,
+      finalMultiplier: multiplier,
+      cameraConfig: { followTarget: bey.id, zoomIn: true, durationMs: totalMoveDurationMs(moveDef) },
+    });
   }
 
   // ─── Control-loss immunity ───────────────────────────────────────────────────
@@ -1181,7 +1957,7 @@ export class BattleRoom extends Room<GameState> {
 
   // ─── Game tick ───────────────────────────────────────────────────────────────
 
-  private tick(deltaTime: number) {
+  protected tick(deltaTime: number) {
     if (this.state.status === "in-progress" && Date.now() - this.lastInputTime > 60_000) {
       this.broadcast("idle-disconnect", {});
       this.disconnect();
@@ -1249,6 +2025,12 @@ export class BattleRoom extends Room<GameState> {
     this.tickArenaSpawns(deltaTime);
 
     this.tickCounter++;
+    this.ghostTickCounter++;
+    // Phase 27: populate beyGhosts at 10Hz (every 6 ticks at 60Hz)
+    if (this.ghostTickCounter >= 6) {
+      this.ghostTickCounter = 0;
+      this.populateBeyGhosts();
+    }
     // L2/L3: arena link crossing detection
     this.tickArenaLinks(deltaTime);
     this.tickBeyLinks(deltaTime);
@@ -1262,8 +2044,20 @@ export class BattleRoom extends Room<GameState> {
     const arenaData = this.arenaCache;
     const beybladeIds = Array.from(this.state.beyblades.keys());
 
+    // Phase 29: airborne Z-axis physics tick (all beys every tick)
+    this.tickAirbornePhysics(deltaTime);
+
+    // Phase 29: multi-phase special move tick (each special-active bey)
+    this.state.beyblades.forEach(bey => {
+      if (bey.specialMoveActive && bey.isActive) this.tickSpecialPhase(bey, deltaTime);
+    });
+
+    // Phase 29: aerial clash detection (after individual phase ticks)
+    this.detectAerialClash();
+
     // ── Beyblade-vs-beyblade collision detection ────────────────────────────
     // Reset per-tick trigger context sets before processing collisions/bursts
+    this.physicalContactThisTick.clear();
     this.beyHitsThisTick.clear();
     this.burstAttemptsThisTick.clear();
     for (let i = 0; i < beybladeIds.length; i++) {
@@ -1274,6 +2068,15 @@ export class BattleRoom extends Room<GameState> {
         const b2 = this.state.beyblades.get(id2);
 
         if (!b1 || !b2 || !b1.isActive || !b2.isActive) continue;
+
+        // S2 — distance pre-filter: skip pair if beys are too far apart to collide.
+        // Only applied in royale (>4 active beys) where O(n²) pairs dominate the tick budget.
+        if (beybladeIds.length > 4) {
+          const dx = b1.x - b2.x;
+          const dy = b1.y - b2.y;
+          const minContactDist = (b1.radius + b2.radius) * 24 * 2.5;
+          if (dx * dx + dy * dy > minContactDist * minContactDist) continue;
+        }
 
         const collision = this.physics.checkBeybladeCollision(id1, id2);
         if (!collision) continue;
@@ -1291,6 +2094,34 @@ export class BattleRoom extends Room<GameState> {
           b2.collisions++;
           this.broadcast("friendly-collision", { id1, id2, contactPoint: collision.contactPoint });
           continue;
+        }
+
+        // ── Phase 24 collision tiers 0–3 ────────────────────────────────────────
+        // Tier 0 (<150): graze — no QTE, reduced effects
+        // Tier 1 (150–400): normal hit
+        // Tier 2 (400–700): heavy hit — stun window 80 ms
+        // Tier 3 (>700): clash — triggers a QTE lock (clashQTEActive) for up to 1.5s
+        const relSpeed = Math.sqrt(
+          collision.relativeVelocity.x ** 2 + collision.relativeVelocity.y ** 2,
+        );
+        const collisionTier =
+          relSpeed < 150 ? 0 :
+          relSpeed < 400 ? 1 :
+          relSpeed < 700 ? 2 : 3;
+
+        if (collisionTier === 2) {
+          // 80 ms AI-stun for both beys (suppresses natural force in NaturalMotion)
+          const STUN_MS = 80;
+          b1.stunTimer = Math.max(b1.stunTimer, STUN_MS / 1000);
+          b2.stunTimer = Math.max(b2.stunTimer, STUN_MS / 1000);
+        } else if (collisionTier === 3) {
+          // Clash QTE: lock both beys' control authority for up to 1.5s
+          const CLASH_S = 1.5;
+          b1.clashQTEActive = true;
+          b1.clashQTETimer  = CLASH_S;
+          b2.clashQTEActive = true;
+          b2.clashQTETimer  = CLASH_S;
+          this.broadcast("clash-qte-start", { id1, id2, duration: CLASH_S });
         }
 
         const dmg = this.physics.calculateCollisionDamage(collision, b1, b2);
@@ -1314,25 +2145,52 @@ export class BattleRoom extends Room<GameState> {
         const effSS1  = b1DmgImmune ? 0 : dmg.spinSteal1 * typeMultB1vsB2;
         const effSS2  = b2DmgImmune ? 0 : dmg.spinSteal2 * typeMultB2vsB1;
 
-        b1.health = Math.max(0, b1.health - effDmg1);
-        b2.health = Math.max(0, b2.health - effDmg2);
-        b1.spin = Math.max(0, b1.spin - effSS2);
-        b2.spin = Math.max(0, b2.spin - effSS1);
-        // Track which beys were hit this tick for on_hit_received reactive triggers
-        if (effDmg1 > 0) this.beyHitsThisTick.add(id1);
-        if (effDmg2 > 0) this.beyHitsThisTick.add(id2);
-        b1.damageDealt += effDmg2;
-        b2.damageDealt += effDmg1;
-        b1.damageReceived += effDmg1;
-        b2.damageReceived += effDmg2;
+        // Phase 29: track physical contact for this tick (needed for QTE block gating)
+        const pairKey = id1 < id2 ? `${id1}:${id2}` : `${id2}:${id1}`;
+        this.physicalContactThisTick.add(pairKey);
+
+        // Always count collision
         b1.collisions++;
         b2.collisions++;
 
-        b1.power = Math.min(100, b1.power + (effDmg2 > 0 ? 0.5 : 0) + (effDmg1 > 0 ? 0.3 : 0));
-        b2.power = Math.min(100, b2.power + (effDmg1 > 0 ? 0.5 : 0) + (effDmg2 > 0 ? 0.3 : 0));
+        // Phase 29: Collision QTE — hold damage when both grounded + combined ≥ threshold
+        const bothGrounded = !b1.beyAirborne && !b2.beyAirborne;
+        const combinedDmg = effDmg1 + effDmg2;
+        const qteOnCooldown = (this.collisionQTECooldowns.get(pairKey) ?? 0) > Date.now();
+        const qteAlreadyActive = this.activeCollisionQTEs.has(pairKey);
 
-        if (effDmg1 > 15) b1.attackBuffTimer = 0;
-        if (effDmg2 > 15) b2.attackBuffTimer = 0;
+        if (
+          bothGrounded &&
+          combinedDmg >= BattleRoom.COLLISION_QTE_MIN_DAMAGE &&
+          !qteOnCooldown &&
+          !qteAlreadyActive &&
+          !b1.collisionQTEActive &&
+          !b2.collisionQTEActive &&
+          !b1.specialMoveActive &&
+          !b2.specialMoveActive
+        ) {
+          this.startCollisionQTE(id1, id2, effDmg1, effDmg2, effSS1, effSS2);
+        } else {
+          // Apply damage immediately (aerial hit or no-QTE path)
+          const aerialFactor = bothGrounded ? 1.0 : BattleRoom.AERIAL_HIT_DAMAGE_FACTOR;
+          const applyD1 = effDmg1 * aerialFactor;
+          const applyD2 = effDmg2 * aerialFactor;
+
+          b1.health = Math.max(0, b1.health - applyD1);
+          b2.health = Math.max(0, b2.health - applyD2);
+          b1.spin = Math.max(0, b1.spin - effSS2);
+          b2.spin = Math.max(0, b2.spin - effSS1);
+          if (applyD1 > 0) this.beyHitsThisTick.add(id1);
+          if (applyD2 > 0) this.beyHitsThisTick.add(id2);
+          b1.damageDealt += applyD2;
+          b2.damageDealt += applyD1;
+          b1.damageReceived += applyD1;
+          b2.damageReceived += applyD2;
+          b1.power = Math.min(100, b1.power + (applyD2 > 0 ? 0.5 : 0) + (applyD1 > 0 ? 0.3 : 0));
+          b2.power = Math.min(100, b2.power + (applyD1 > 0 ? 0.5 : 0) + (applyD2 > 0 ? 0.3 : 0));
+          if (applyD1 > 15) b1.attackBuffTimer = 0;
+          if (applyD2 > 15) b2.attackBuffTimer = 0;
+        }
 
         this.broadcast("collision", {
           p1: id1,
@@ -1408,10 +2266,29 @@ export class BattleRoom extends Room<GameState> {
         if (events.wallHit) this.broadcast("wall-collision", events.wallHit);
       }
 
-      const stability = Math.min(1, beyblade.spin / beyblade.maxSpin);
-      if (stability < 0.4) {
-        const wobble = (1 - stability) * 0.002 * beyblade.mass;
-        this.physics.applyForce(beyblade.id, (this.rand() - 0.5) * wobble, (this.rand() - 0.5) * wobble);
+      // Natural gyroscopic motion: orbit layer + momentum continuation + attitude bias
+      // + spin stabilisation + death spiral. Replaces the simple nutation wobble.
+      {
+        const cx = (this.state.arena.width  * 16) / 2;
+        const cy = (this.state.arena.height * 16) / 2;
+        const lastInput = this.lastPlayerInput.get(beyblade.id);
+        const attitude = lastInput?.attitudeAggressive ? "aggressive" as const
+          : lastInput?.attitudeDefensive ? "defensive" as const
+          : lastInput?.attitudeStamina   ? "stamina"   as const
+          : null;
+        const opponents: Beyblade[] = [];
+        this.state.beyblades.forEach((other) => {
+          if (other.id !== beyblade.id && other.isActive) opponents.push(other);
+        });
+        const natForce = computeNaturalForce(
+          beyblade, cx, cy,
+          attitude,
+          opponents,
+          beyblade.stunTimer > 0,
+          {}, // DecisionBias — BeyDecision mechanic applies its own forces via MechanicRegistry
+          false,
+        );
+        this.physics.applyForce(beyblade.id, natForce.fx, natForce.fy);
       }
 
       // Arena tilt: apply lateral gravity force toward the downhill side
@@ -1485,6 +2362,16 @@ export class BattleRoom extends Room<GameState> {
       if (beyblade.landingLag > 0) beyblade.landingLag = Math.max(0, beyblade.landingLag - dt);
 
       if (beyblade.stunTimer > 0) beyblade.stunTimer = Math.max(0, beyblade.stunTimer - dt);
+
+      // Phase 24: clash QTE timer countdown
+      if (beyblade.clashQTEActive) {
+        beyblade.clashQTETimer = Math.max(0, beyblade.clashQTETimer - dt);
+        if (beyblade.clashQTETimer <= 0) {
+          beyblade.clashQTEActive = false;
+          beyblade.clashQTETimer  = 0;
+        }
+      }
+
       if (beyblade.comboExecuting && beyblade.comboTimer > 0) {
         beyblade.comboTimer = Math.max(0, beyblade.comboTimer - dt);
         if (beyblade.comboTimer <= 0) beyblade.comboExecuting = false;
@@ -2726,6 +3613,72 @@ export class BattleRoom extends Room<GameState> {
 
   protected onTickedBey(_beyblade: Beyblade, _dt: number): void {
     // override in 2.5D subclass to call partSystemManager.tickBey()
+  }
+
+  // ── Phase 27: Ghost population ─────────────────────────────────────────────
+  // Returns "left" for the first player (by join order), "right" for the second.
+  protected getPlayerSide(userId: string): "left" | "right" {
+    let idx = 0;
+    for (const [, bey] of this.state.beyblades) {
+      if (bey.userId === userId) return idx === 0 ? "left" : "right";
+      idx++;
+    }
+    return "left";
+  }
+
+  // Called every 6 ticks (10Hz). Populates beyGhosts from beyblades with tier info.
+  // Tier: 2=full (≤60cm), 1=shadow (60–100cm), 0=dot only (>100cm).
+  private populateBeyGhosts(): void {
+    const PX_PER_CM = 24;
+    const innerPx = AoI.INNER_RADIUS_CM * PX_PER_CM;
+    const outerPx = AoI.OUTER_RADIUS_CM * PX_PER_CM;
+
+    this.state.beyblades.forEach((bey, id) => {
+      if (!bey.isActive) {
+        this.state.beyGhosts.delete(id);
+        return;
+      }
+      let ghost = this.state.beyGhosts.get(id);
+      if (!ghost) {
+        ghost = new BeyGhostState();
+        ghost.id = id;
+        this.state.beyGhosts.set(id, ghost);
+      }
+      ghost.x_cm     = bey.x / PX_PER_CM;
+      ghost.y_cm     = bey.y / PX_PER_CM;
+      ghost.vx_cm    = bey.velocityX / PX_PER_CM;
+      ghost.vy_cm    = bey.velocityY / PX_PER_CM;
+      ghost.floorIndex = (bey as any).beyFloorIndex ?? 0;
+      ghost.teamId   = bey.teamId;
+      ghost.tiltAngle = bey.beyTiltAngle ?? 0;
+      ghost.spin_pct = bey.maxSpin > 0 ? Math.round((bey.spin / bey.maxSpin) * 100) : 0;
+      ghost.beyType  = bey.type;
+      ghost.username = bey.username;
+
+      // Determine tier relative to each human player — store worst-case (most visible) tier
+      // so that any player who CAN see the bey gets the right tier.
+      let maxTier = 0;
+      this.clients.forEach(client => {
+        const myBey = this.state.beyblades.get(client.sessionId);
+        if (!myBey) { maxTier = 2; return; } // spectator — always full
+        const dx = bey.x - myBey.x;
+        const dy = bey.y - myBey.y;
+        const distSq = dx * dx + dy * dy;
+        let tier: 0 | 1 | 2;
+        if (distSq <= innerPx * innerPx) tier = 2;
+        else if (distSq <= outerPx * outerPx) tier = 1;
+        else tier = 0;
+        if (tier > maxTier) maxTier = tier;
+      });
+      ghost.tier = maxTier;
+    });
+
+    // Remove ghosts for eliminated beyblades
+    const activeIds = new Set<string>();
+    this.state.beyblades.forEach((_, id) => activeIds.add(id));
+    this.state.beyGhosts.forEach((_, id) => {
+      if (!activeIds.has(id)) this.state.beyGhosts.delete(id);
+    });
   }
 
   protected onBeyCollided(id1: string, id2: string, impactForce: number): void {

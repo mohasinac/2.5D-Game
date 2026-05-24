@@ -122,10 +122,11 @@ export function ControlsLegend({ initiallyHidden, lockSource, controlLockedUntil
       {!isTryout && (
         <>
           {row("I", "Jump")}
-          {row("J", "Attack")}
-          {row("K", "Defense")}
-          {row("L", "Dodge")}
+          {row("J", "Attack / Aggressive")}
+          {row("K", "Defense / Defensive")}
+          {row("L", "Dodge / Stamina")}
           {row("Space (tap)", "Special move")}
+          {row("Right-drag", "Directional nudge")}
         </>
       )}
       {isTryout && (

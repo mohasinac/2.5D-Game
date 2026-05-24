@@ -67,6 +67,8 @@ export interface BeybladeStats {
   specialMoveId?: string;
   /** Optional combo ids (max 3). Must exist in COMBO_REGISTRY. Undefined = no combos. */
   comboIds?: string[];
+  /** Phase 28: BitBeast asset id — triggers overlay animation on special activation */
+  bitBeastId?: string;
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;
@@ -371,6 +373,28 @@ export interface ArenaConfig {
   autoRotate?: boolean;
   rotationSpeed?: number; // Degrees per second
   rotationDirection?: "clockwise" | "counter-clockwise";
+  rotationPivotX?: number;
+  rotationPivotY?: number;
+
+  // Player authority (Phase 25)
+  playerAuthorityConfig?: {
+    globalMultiplier?: number;
+    curvatureMultiplier?: number;
+    featureOverrides?: Record<string, number>;
+  };
+  maxDurationSeconds?: number;
+
+  // Tilt (Z-axis)
+  tiltAngle?: number;
+  tiltDirection?: number;
+  tiltMode?: "fixed" | "oscillate" | "weight";
+  autoTilt?: boolean;
+  tiltSpeed?: number;
+  tiltPivotX?: number;
+  tiltPivotY?: number;
+  tiltOscillateMin?: number;
+  tiltOscillateMax?: number;
+  tiltOscillatePeriodMs?: number;
   
   // Arena Features - UPDATED
   speedPaths?: SpeedPathConfig[]; // New name (loops still works as alias)

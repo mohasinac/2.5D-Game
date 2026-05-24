@@ -35,6 +35,7 @@ import { AssetsLibraryPage } from "./pages/admin/AssetsLibraryPage";
 import { ArenaThemeAssetsPage } from "./pages/admin/assets/ArenaThemeAssetsPage";
 import { ObstacleAssetsPage } from "./pages/admin/assets/ObstacleAssetsPage";
 import { TurretAssetsPage } from "./pages/admin/assets/TurretAssetsPage";
+import { BitBeastAssetsPage } from "./pages/admin/assets/BitBeastAssetsPage";
 import { WaterBodyAssetsPage } from "./pages/admin/assets/WaterBodyAssetsPage";
 import { PortalAssetsPage } from "./pages/admin/assets/PortalAssetsPage";
 import { SoundAssetsPage } from "./pages/admin/assets/SoundAssetsPage";
@@ -82,6 +83,7 @@ import { BowlProfileDefsPage } from "./pages/admin/BowlProfileDefsPage";
 import { TriggerTypeDefsPage } from "./pages/admin/TriggerTypeDefsPage";
 import { StatEventDefsPage } from "./pages/admin/StatEventDefsPage";
 import { PartLayerDefsPage } from "./pages/admin/PartLayerDefsPage";
+import { SpecialInteractionDefsPage } from "./pages/admin/SpecialInteractionDefsPage";
 
 // 2.5D part system pages
 import { PartSearchPage } from "./pages/admin/2d/PartSearchPage";
@@ -204,6 +206,7 @@ export const router = createBrowserRouter([
       { path: "assets/portals", element: <PortalAssetsPage /> },
       { path: "assets/sounds", element: <SoundAssetsPage /> },
       { path: "assets/particle-presets", element: <ParticlePresetsPage /> },
+      { path: "assets/bitbeasts", element: <BitBeastAssetsPage /> },
 
       // Utilities
       { path: "stats", element: <StatsPage /> },
@@ -253,7 +256,8 @@ export const router = createBrowserRouter([
       { path: "bowl-profile-defs", element: <BowlProfileDefsPage /> },
       { path: "trigger-type-defs", element: <TriggerTypeDefsPage /> },
       { path: "stat-event-defs",   element: <StatEventDefsPage /> },
-      { path: "part-layer-defs",   element: <PartLayerDefsPage /> },
+      { path: "part-layer-defs",              element: <PartLayerDefsPage /> },
+      { path: "special-interaction-defs",    element: <SpecialInteractionDefsPage /> },
 
       // ── 2.5D Part System — canonical URL ──
       { path: "2.5d/parts", element: <PartSearchPage /> },

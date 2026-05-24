@@ -53,3 +53,29 @@ export function computeTiltForce(
     fy: Math.sin(dirRad) * magnitude,
   };
 }
+
+
+// ─── Player Authority Multiplier (Phase 25) ───────────────────────────────────
+// Returns a multiplier (0–2) for how much player input should be dampened
+// by the current arena feature zone the bey is in.
+
+export type AuthorityFeatureZone =
+  | "railTrack" | "gravityWell" | "spinZone" | "pit" | "bump" | "obstacle" | "none";
+
+export interface PlayerAuthorityConfig {
+  globalMultiplier?: number;
+  curvatureMultiplier?: number;
+  featureOverrides?: Partial<Record<Exclude<AuthorityFeatureZone, "none">, number>>;
+}
+
+export function computeArenaAuthorityMultiplier(
+  arenaConfig: ArenaConfig,
+  zone: AuthorityFeatureZone,
+): number {
+  const cfg = (arenaConfig as any).playerAuthorityConfig as PlayerAuthorityConfig | undefined;
+  if (!cfg) return 1.0;
+  const base = cfg.globalMultiplier ?? 1.0;
+  if (zone === "none") return base;
+  const override = cfg.featureOverrides?.[zone];
+  return override !== undefined ? base * override : base;
+}

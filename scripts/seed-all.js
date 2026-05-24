@@ -131,7 +131,7 @@ const SEEDERS = [
       "bit_beast_parts", "attack_ring_parts", "weight_disk_parts",
       "sub_parts", "tip_parts", "core_parts", "casing_parts", "spin_track_parts",
     ],
-    description: "19 2.5D parts across 7 collections",
+    description: "23 2.5D parts across 8 collections",
   },
   {
     name: "gears",

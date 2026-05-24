@@ -78,4 +78,22 @@ export const COLLECTIONS = {
   TRIGGER_TYPE_DEFS: "trigger_type_defs",
   STAT_EVENT_DEFS: "stat_event_defs",
   PART_LAYER_DEFS: "part_layer_defs",
+  // Phase 29: Collision QTE + Special Interaction Defs
+  SPECIAL_INTERACTION_DEFS: "special_interaction_defs",
+  COLLISION_QTE_EVENTS: "collision_qte_events",
+  SPECIAL_CLASH_EVENTS: "special_clash_events",
+  // Phase 28: BitBeast assets
+  BITBEAST_ASSETS: "bitbeast_assets",
+  // Phase 23: Universal Preset Library
+  ARENA_PRESETS: "arena_presets",
+  BEY_PRESETS: "bey_presets",
+  COMBO_PRESETS: "combo_presets",
+  MECHANIC_PRESETS: "mechanic_presets",
+  GIMMICK_PRESETS: "gimmick_presets",
+  SPECIAL_MOVE_PRESETS: "special_move_presets",
+  PART_PRESETS: "part_presets",
+  SYSTEM_PRESETS: "system_presets",
+  THEME_PRESETS: "theme_presets",
+  OBSTACLE_PRESETS: "obstacle_presets",
+  FEATURE_GROUP_PRESETS: "feature_group_presets",
 } as const;
