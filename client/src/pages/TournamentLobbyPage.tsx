@@ -223,6 +223,22 @@ export function TournamentLobbyPage() {
     }
   }, [myParticipant, myTournamentReady]);
 
+  // ── Gauntlet: calculate round progress and "reached round" for eliminated player ──
+  const isGauntlet = tournament?.type === "player-gauntlet";
+  const gauntletRoundsWon: number = isGauntlet && myParticipant
+    ? matches.filter((m) =>
+        m.winnerId === myParticipant.id &&
+        (m.participant1Id === myParticipant.id || m.participant2Id === myParticipant.id)
+      ).length
+    : 0;
+  const gauntletEliminatedAtRound: number | null = isGauntlet && myParticipant
+    ? (matches.find((m) =>
+        m.winnerId !== null &&
+        m.winnerId !== myParticipant.id &&
+        (m.participant1Id === myParticipant.id || m.participant2Id === myParticipant.id)
+      )?.round ?? null)
+    : null;
+
   // Find the next PENDING match this user is in. Used to drive Ready/Quit UI.
   const myNextMatch: TournamentMatchDoc | undefined = myParticipant
     ? matches
@@ -307,6 +323,51 @@ export function TournamentLobbyPage() {
                 />
               )}
             </div>
+
+            {/* Gauntlet: Round Progress + "You reached Round N" */}
+            {isGauntlet && isParticipant && (
+              <div style={{
+                background: gauntletEliminatedAtRound !== null
+                  ? alpha(C.red, 0.08) : alpha(C.green, 0.08),
+                border: `1px solid ${gauntletEliminatedAtRound !== null ? alpha(C.red, 0.27) : alpha(C.green, 0.27)}`,
+                borderRadius: 12, padding: "14px 18px", marginBottom: 16,
+                display: "flex", alignItems: "center", gap: 12,
+              }}>
+                <span style={{ fontSize: 28 }}>
+                  {gauntletEliminatedAtRound !== null ? "💀" : gauntletRoundsWon > 0 ? "🏅" : "⚔️"}
+                </span>
+                <div>
+                  {gauntletEliminatedAtRound !== null ? (
+                    <>
+                      <p style={{ color: C.red, fontWeight: 700, fontSize: 16 }}>
+                        Eliminated — You reached Round {gauntletEliminatedAtRound}
+                      </p>
+                      <p style={{ color: C.muted, fontSize: 12, marginTop: 2 }}>
+                        You won {gauntletRoundsWon} round{gauntletRoundsWon !== 1 ? "s" : ""} before falling. Well fought!
+                      </p>
+                    </>
+                  ) : gauntletRoundsWon > 0 ? (
+                    <>
+                      <p style={{ color: C.green, fontWeight: 700, fontSize: 16 }}>
+                        Round {gauntletRoundsWon} complete — advancing!
+                      </p>
+                      <p style={{ color: C.muted, fontSize: 12, marginTop: 2 }}>
+                        Next: Round {gauntletRoundsWon + 1}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p style={{ color: C.yellow, fontWeight: 700, fontSize: 16 }}>
+                        Gauntlet — Round 1
+                      </p>
+                      <p style={{ color: C.muted, fontSize: 12, marginTop: 2 }}>
+                        How far can you go?
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Countdown */}
             {tournament.status === "registration" && (

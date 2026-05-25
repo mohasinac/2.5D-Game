@@ -32,6 +32,7 @@
     "seed:combos": "node scripts/seed-all.js --only combos",
     "seed:ai-battles": "node scripts/seed-all.js --only ai-battles",
     "seed:tournament-ai-solo": "node scripts/seed-all.js --only tournament",
+    "seed:pva-gauntlet": "node scripts/seed-pva-gauntlet.js",
     "seed:round-modifiers": "node scripts/seed-all.js --only round-modifiers",
     "seed:behavior-defs": "node scripts/seed-all.js --only behavior-defs",
     "seed:combo-effects": "node scripts/seed-all.js --only combo-effects",
