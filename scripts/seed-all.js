@@ -61,8 +61,8 @@ const SEEDERS = [
   {
     name: "arenas",
     script: "seed-arenas.js",
-    collections: ["arenas"],
-    description: "12 arena configs",
+    collections: ["arenas", "arena_floor_groups"],
+    description: "20 arena configs + 2 Hot Wheels multi-floor layout groups",
   },
   {
     name: "special-moves",

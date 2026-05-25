@@ -1058,7 +1058,331 @@ const ARENAS = [
     difficulty: "extreme",
   },
 
-  // ── 18. Test Arena (Spawn) — E2E testing ──────────────────────────────────
+  // ── 17. Hot Wheels Turbo — Ground Floor ──────────────────────────────────────
+  // Banked outer ring loop + figure-8 inner track. Four bump peaks launch beys
+  // vertically. Orbital spin zones at the crossover nodes. Elevator trampoline
+  // links up to hw-mid-floor.
+  {
+    id: "hw-ground-floor",
+    name: "Hot Wheels Turbo — Ground Level",
+    description: "Neon-lit speed circuit at ground level. The outer ring loop rockets beys into the supercharger elevator up to the mid-floor crossing.",
+    width: 1200,
+    height: 1200,
+    shape: "circle",
+    theme: "futuristic",
+    autoRotate: false,
+    floorGroupId: "hw-turbo-stadium",
+    floorIndex: 0,
+    wall: circleWall("metal", 18, 10),
+    speedPaths: [
+      {
+        id: 1,
+        shape: "ring",
+        radius: 20,
+        width: 5,
+        speedBoost: 2.0,
+        spinBoost: 30,
+        frictionMultiplier: 0.6,
+        renderStyle: "filled",
+        color: "#f59e0b",
+        showDirectionArrows: true,
+        arrowSpeedCmPerSec: 12,
+        arrowColor: "#fcd34d",
+        bumpProfile: [
+          { angleDeg: 0,   heightCm: 3, widthCm: 6 },
+          { angleDeg: 90,  heightCm: 3, widthCm: 6 },
+          { angleDeg: 180, heightCm: 3, widthCm: 6 },
+          { angleDeg: 270, heightCm: 3, widthCm: 6 },
+        ],
+      },
+      {
+        id: 2,
+        shape: "figure_8",
+        radius: 10,
+        speedBoost: 1.8,
+        spinBoost: 20,
+        frictionMultiplier: 0.7,
+        renderStyle: "outline",
+        color: "#ef4444",
+        showDirectionArrows: true,
+        arrowColor: "#fca5a5",
+      },
+    ],
+    bumps: [
+      { id: "hw-g-bump-n", x_cm:  0,  y_cm: -20, radius_cm: 3, popHeight_cm: 8, recoil: 0.6 },
+      { id: "hw-g-bump-e", x_cm:  20, y_cm:   0, radius_cm: 3, popHeight_cm: 8, recoil: 0.6 },
+      { id: "hw-g-bump-s", x_cm:  0,  y_cm:  20, radius_cm: 3, popHeight_cm: 8, recoil: 0.6 },
+      { id: "hw-g-bump-w", x_cm: -20, y_cm:   0, radius_cm: 3, popHeight_cm: 8, recoil: 0.6 },
+    ],
+    spinZones: [
+      { id: "hw-g-sz1", x_cm:   0, y_cm:   0, radius_cm: 6, direction: "cw",  intensityRadPerSec: 3.0, applyTo: "both"   },
+      { id: "hw-g-sz2", x_cm: -14, y_cm: -14, radius_cm: 4, direction: "ccw", intensityRadPerSec: 2.0, applyTo: "linear" },
+      { id: "hw-g-sz3", x_cm:  14, y_cm:  14, radius_cm: 4, direction: "cw",  intensityRadPerSec: 2.0, applyTo: "linear" },
+    ],
+    links: [
+      {
+        id: "hw-g-elev-up",
+        pairedLinkId: "hw-m-elev-land-from-ground",
+        fromArenaId: "hw-ground-floor",
+        toArenaId: "hw-mid-floor",
+        linkType: "trampoline",
+        boundaryLine: { x1: -4, y1: -24, x2: 4, y2: -24 },
+        exitPosition: { x: 0, y: -18 },
+        momentumPreserved: true,
+        levelDelta: 80,
+        hazardDamage: 0,
+        reverseCondition: "never",
+        cooldownTicks: 90,
+        exitVelocityMult: 2.0,
+      },
+      {
+        id: "hw-g-elev-land-from-mid",
+        pairedLinkId: "hw-m-elev-down",
+        fromArenaId: "hw-mid-floor",
+        toArenaId: "hw-ground-floor",
+        linkType: "pit",
+        boundaryLine: { x1: -4, y1: 24, x2: 4, y2: 24 },
+        exitPosition: { x: 0, y: 18 },
+        momentumPreserved: false,
+        levelDelta: -80,
+        hazardDamage: 0,
+        reverseCondition: "never",
+        cooldownTicks: 90,
+        exitVelocityMult: 0.5,
+      },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.008,
+    surfaceFriction: 0.005,
+    difficulty: "hard",
+  },
+
+  // ── 18. Hot Wheels Turbo — Mid Floor ──────────────────────────────────────────
+  // Figure-8 crossing track with opposing orbital spin zones at each loop. Bump at
+  // the crossover launches beys airborne. Elevators connect ground ↔ mid ↔ top.
+  {
+    id: "hw-mid-floor",
+    name: "Hot Wheels Turbo — Mid Level",
+    description: "The banked figure-8 crossing floor. Opposing spin zones at the crossover create chaotic orbital collisions. Elevators link all three floors.",
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "futuristic",
+    autoRotate: false,
+    floorGroupId: "hw-turbo-stadium",
+    floorIndex: 1,
+    wall: circleWall("metal", 16, 9),
+    speedPaths: [
+      {
+        id: 1,
+        shape: "figure_8",
+        radius: 16,
+        speedBoost: 2.2,
+        spinBoost: 35,
+        frictionMultiplier: 0.55,
+        renderStyle: "filled",
+        color: "#3b82f6",
+        showDirectionArrows: true,
+        arrowSpeedCmPerSec: 14,
+        arrowColor: "#93c5fd",
+        bumpProfile: [
+          { angleDeg: 0,   heightCm: 4, widthCm: 5 },
+          { angleDeg: 180, heightCm: 4, widthCm: 5 },
+        ],
+      },
+      {
+        id: 2,
+        shape: "zigzag",
+        radius: 8,
+        speedBoost: 1.7,
+        spinBoost: 15,
+        frictionMultiplier: 0.75,
+        renderStyle: "outline",
+        color: "#6366f1",
+      },
+    ],
+    bumps: [
+      { id: "hw-m-bump-c",  x_cm:  0,  y_cm:  0, radius_cm: 3,   popHeight_cm: 10, recoil: 0.8 },
+      { id: "hw-m-bump-e",  x_cm:  16, y_cm:  0, radius_cm: 2.5, popHeight_cm:  6, recoil: 0.5 },
+      { id: "hw-m-bump-w",  x_cm: -16, y_cm:  0, radius_cm: 2.5, popHeight_cm:  6, recoil: 0.5 },
+    ],
+    spinZones: [
+      { id: "hw-m-sz1", x_cm:   0, y_cm:  8, radius_cm: 7, direction: "cw",  intensityRadPerSec: 3.5, applyTo: "both"   },
+      { id: "hw-m-sz2", x_cm:   0, y_cm: -8, radius_cm: 7, direction: "ccw", intensityRadPerSec: 3.5, applyTo: "both"   },
+      { id: "hw-m-sz3", x_cm: -12, y_cm: 12, radius_cm: 4, direction: "cw",  intensityRadPerSec: 2.0, applyTo: "linear" },
+    ],
+    links: [
+      {
+        id: "hw-m-elev-down",
+        pairedLinkId: "hw-g-elev-land-from-mid",
+        fromArenaId: "hw-mid-floor",
+        toArenaId: "hw-ground-floor",
+        linkType: "pit",
+        boundaryLine: { x1: -4, y1: -20, x2: 4, y2: -20 },
+        exitPosition: { x: 0, y: 18 },
+        momentumPreserved: false,
+        levelDelta: -80,
+        hazardDamage: 0,
+        reverseCondition: "never",
+        cooldownTicks: 90,
+        exitVelocityMult: 0.5,
+      },
+      {
+        id: "hw-m-elev-land-from-ground",
+        pairedLinkId: "hw-g-elev-up",
+        fromArenaId: "hw-ground-floor",
+        toArenaId: "hw-mid-floor",
+        linkType: "trampoline",
+        boundaryLine: { x1: -4, y1: -18, x2: 4, y2: -18 },
+        exitPosition: { x: 0, y: -16 },
+        momentumPreserved: true,
+        levelDelta: 80,
+        hazardDamage: 0,
+        reverseCondition: "never",
+        cooldownTicks: 90,
+        exitVelocityMult: 1.5,
+      },
+      {
+        id: "hw-m-elev-up",
+        pairedLinkId: "hw-t-elev-land-from-mid",
+        fromArenaId: "hw-mid-floor",
+        toArenaId: "hw-top-floor",
+        linkType: "trampoline",
+        boundaryLine: { x1: -4, y1: 20, x2: 4, y2: 20 },
+        exitPosition: { x: 0, y: 14 },
+        momentumPreserved: true,
+        levelDelta: 80,
+        hazardDamage: 0,
+        reverseCondition: "never",
+        cooldownTicks: 90,
+        exitVelocityMult: 2.0,
+      },
+      {
+        id: "hw-m-elev-land-from-top",
+        pairedLinkId: "hw-t-elev-down",
+        fromArenaId: "hw-top-floor",
+        toArenaId: "hw-mid-floor",
+        linkType: "pit",
+        boundaryLine: { x1: -4, y1: 18, x2: 4, y2: 18 },
+        exitPosition: { x: 0, y: 16 },
+        momentumPreserved: false,
+        levelDelta: -80,
+        hazardDamage: 0,
+        reverseCondition: "never",
+        cooldownTicks: 90,
+        exitVelocityMult: 0.5,
+      },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.01,
+    surfaceFriction: 0.006,
+    difficulty: "hard",
+  },
+
+  // ── 19. Hot Wheels Turbo — Top Floor ──────────────────────────────────────────
+  // Rooftop spiral finish. Tightest floor — auto-rotating, extreme spin zone vortex,
+  // four corner bumps launch beys into full vertical airtime. Only one way down.
+  {
+    id: "hw-top-floor",
+    name: "Hot Wheels Turbo — Top Level",
+    description: "The rooftop spiral finish — fastest floor. A central vortex spin zone flings beys outward. Only one elevator drops back to the mid-floor.",
+    width: 900,
+    height: 900,
+    shape: "circle",
+    theme: "futuristic",
+    autoRotate: true,
+    rotationSpeed: 6,
+    rotationDirection: "clockwise",
+    floorGroupId: "hw-turbo-stadium",
+    floorIndex: 2,
+    wall: circleWall("metal", 22, 12),
+    speedPaths: [
+      {
+        id: 1,
+        shape: "spiral",
+        radius: 16,
+        speedBoost: 2.5,
+        spinBoost: 45,
+        frictionMultiplier: 0.5,
+        renderStyle: "filled",
+        color: "#10b981",
+        showDirectionArrows: true,
+        arrowSpeedCmPerSec: 18,
+        arrowColor: "#6ee7b7",
+        bumpProfile: [
+          { angleDeg:  45, heightCm: 5, widthCm: 4 },
+          { angleDeg: 135, heightCm: 5, widthCm: 4 },
+          { angleDeg: 225, heightCm: 5, widthCm: 4 },
+          { angleDeg: 315, heightCm: 5, widthCm: 4 },
+        ],
+      },
+    ],
+    bumps: [
+      { id: "hw-t-bump-ne", x_cm:  12, y_cm: -12, radius_cm: 2.5, popHeight_cm: 12, recoil: 1.0 },
+      { id: "hw-t-bump-nw", x_cm: -12, y_cm: -12, radius_cm: 2.5, popHeight_cm: 12, recoil: 1.0 },
+      { id: "hw-t-bump-se", x_cm:  12, y_cm:  12, radius_cm: 2.5, popHeight_cm: 12, recoil: 1.0 },
+      { id: "hw-t-bump-sw", x_cm: -12, y_cm:  12, radius_cm: 2.5, popHeight_cm: 12, recoil: 1.0 },
+    ],
+    spinZones: [
+      { id: "hw-t-sz1", x_cm:  0,  y_cm:  0, radius_cm: 8, direction: "cw",  intensityRadPerSec: 5.0, applyTo: "both"   },
+      { id: "hw-t-sz2", x_cm: -10, y_cm:  0, radius_cm: 4, direction: "ccw", intensityRadPerSec: 3.0, applyTo: "linear" },
+      { id: "hw-t-sz3", x_cm:  10, y_cm:  0, radius_cm: 4, direction: "cw",  intensityRadPerSec: 3.0, applyTo: "linear" },
+      { id: "hw-t-sz4", x_cm:  0,  y_cm: -10, radius_cm: 4, direction: "cw",  intensityRadPerSec: 2.5, applyTo: "spin"   },
+    ],
+    links: [
+      {
+        id: "hw-t-elev-down",
+        pairedLinkId: "hw-m-elev-land-from-top",
+        fromArenaId: "hw-top-floor",
+        toArenaId: "hw-mid-floor",
+        linkType: "pit",
+        boundaryLine: { x1: -4, y1: 16, x2: 4, y2: 16 },
+        exitPosition: { x: 0, y: 16 },
+        momentumPreserved: false,
+        levelDelta: -80,
+        hazardDamage: 0,
+        reverseCondition: "never",
+        cooldownTicks: 90,
+        exitVelocityMult: 0.5,
+      },
+      {
+        id: "hw-t-elev-land-from-mid",
+        pairedLinkId: "hw-m-elev-up",
+        fromArenaId: "hw-mid-floor",
+        toArenaId: "hw-top-floor",
+        linkType: "trampoline",
+        boundaryLine: { x1: -4, y1: 14, x2: 4, y2: 14 },
+        exitPosition: { x: 0, y: 12 },
+        momentumPreserved: true,
+        levelDelta: 80,
+        hazardDamage: 0,
+        reverseCondition: "never",
+        cooldownTicks: 90,
+        exitVelocityMult: 1.5,
+      },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.012,
+    surfaceFriction: 0.004,
+    difficulty: "extreme",
+  },
+
+  // ── 20. Test Arena (Spawn) — E2E testing ──────────────────────────────────
   // Minimal circular arena designed for spawn-interval E2E tests.
   // spawnIntervalSec is intentionally very short (5 s) for fast test feedback.
   {
@@ -1093,6 +1417,38 @@ const ARENAS = [
   },
 ];
 
+// ─── Floor Group layouts (saved multi-floor configs) ──────────────────────────
+//
+// Two saved layout groups for the Hot Wheels Turbo stadium.
+//   hw-turbo-stadium  — full 3-floor experience (ground → mid → top)
+//   hw-sprint-duo     — express 2-floor layout (ground + top, no mid stop)
+
+const FLOOR_GROUPS = [
+  {
+    id: "hw-turbo-stadium",
+    name: "Hot Wheels Turbo Stadium — Full Layout",
+    description: "The complete three-floor Hot Wheels experience. Ground ring loop, mid figure-8 crossing, and rooftop spiral finale. All elevators active.",
+    floorArenaIds: ["hw-ground-floor", "hw-mid-floor", "hw-top-floor"],
+    floorPositions: [
+      { floorIndex: 0, xOffsetCm:  0, yOffsetCm:   0, zOffsetCm:   0 },
+      { floorIndex: 1, xOffsetCm:  0, yOffsetCm: -20, zOffsetCm:  80 },
+      { floorIndex: 2, xOffsetCm:  0, yOffsetCm: -40, zOffsetCm: 160 },
+    ],
+    minFloorHeightCm: 80,
+  },
+  {
+    id: "hw-sprint-duo",
+    name: "Hot Wheels Sprint Duo — Express Layout",
+    description: "Express two-floor sprint: ground loop straight to rooftop spiral. Skip the mid-floor for faster-paced knockout rounds.",
+    floorArenaIds: ["hw-ground-floor", "hw-top-floor"],
+    floorPositions: [
+      { floorIndex: 0, xOffsetCm: 0, yOffsetCm:   0, zOffsetCm:   0 },
+      { floorIndex: 1, xOffsetCm: 0, yOffsetCm: -30, zOffsetCm: 120 },
+    ],
+    minFloorHeightCm: 120,
+  },
+];
+
 // ─── Seed ─────────────────────────────────────────────────────────────────────
 
 async function seedArenas() {
@@ -1100,6 +1456,7 @@ async function seedArenas() {
   console.log("  Arena Preset Seed");
   console.log("══════════════════════════════════════\n");
   await clearCollection("arenas");
+  await clearCollection("arena_floor_groups");
 
   for (const arena of ARENAS) {
     const docData = {
@@ -1134,6 +1491,22 @@ async function seedArenas() {
   }
 
   console.log(`\n✅ Seeded ${ARENAS.length} arenas into arenas collection\n`);
+
+  // ── Floor Groups ──────────────────────────────────────────────────────────
+  console.log("  Seeding floor groups…");
+  for (const fg of FLOOR_GROUPS) {
+    try {
+      await db.collection("arena_floor_groups").doc(fg.id).set(
+        { ...fg, createdAt: now, updatedAt: now, createdBy: "seed" },
+        { merge: false },
+      );
+      const floors = fg.floorArenaIds.join(" → ");
+      console.log(`  ✔ [${fg.id.padEnd(18)}]  ${fg.name}  (${floors})`);
+    } catch (err) {
+      console.error(`  ✘ ${fg.id}: ${err.message}`);
+    }
+  }
+  console.log(`\n✅ Seeded ${FLOOR_GROUPS.length} floor groups into arena_floor_groups\n`);
 }
 
 seedArenas()
