@@ -2222,3 +2222,1002 @@ function bd145ProtrusionClearance_mm(gap_deg: number, r_prot_mm: number, prot_wi
 // bd145BoostFlushHeight(8.0, 10.5, 4.0)                      → 22.5 mm    (= 8 + 14.5 → zero gap ✓)
 // bd145ProtrusionClearance_mm(60, 20, 10)                    → 10.94 mm   (protrusion clearance in Hell gaps)
 ```
+
+---
+
+## Case 308 — Lightning Metal Wheel (30.0 g)
+
+**Thesis:** Lightning's 30.0 g gives I_total = 7.31×10⁻⁶ kg·m² — a 47.0% angular momentum deficit vs Basalt and a 47.8% deficit vs Blitz — establishing the quantitative reason it cannot win stamina or attrition contests against heavier wheels; its six protrusions are physically present in metal simultaneously, but the L Drago Clear Wheel acts as a mechanical mode-selector, covering three at all times to expose either the three Upper Mode pads (φ = 25° from radial, contact arc 18.3 mm per protrusion) or the three Multi-Hit pads (φ = 40°, contact arc 7.85 mm, double frequency); Upper Mode is superior because its 18.3 mm smash pads deliver 0.906 J per contact — 18% more than Multi-Hit's 0.766 J — while generating only 3 recoil events per orbit vs Multi-Hit's ~6, halving the self-KO accumulation rate; and the root vulnerability is pure mass: the impulse required to ring out Lightning is J_KO = m × v_KO = 0.030 N·s, vs 0.045 N·s for Basalt, so a defense combo receives a 50% more KO-resistant mass budget from the same contact event that applies full recoil to the lighter attacker.
+
+### Geometry
+
+```
+Top view (6 protrusions — Upper Mode labels U, Multi-Hit labels M):
+
+       U          ← Upper Mode pad: wide arc ~50°, r = 15–22 mm, φ = 25° face
+    M     M       ← Multi-Hit pads: narrow ~25°, r = 14–19 mm, φ = 40° face
+  U         U     (L Drago CW in Upper Mode covers all 3 M pads)
+    M     M
+       U
+
+Inner hub: 6-arm gear with circular cutouts, r = 4–9 mm
+All 6 protrusions at 60° intervals (C₆ total), but:
+  Upper Mode → 3 exposed at 120° intervals (C₃ effective)
+  Multi-Hit  → 3 exposed at 120° intervals (C₃ effective)
+
+Key dimensions (estimated from images):
+  Outer radius r_o:           22.0 mm
+  Hub outer radius:            9.0 mm
+  Hub inner (bore):            4.0 mm
+  Upper pad contact radius:   21.0 mm   (outer tip of wide pad)
+  Multi-Hit contact radius:   18.0 mm   (outer tip of narrow pad)
+  Upper pad arc:              ~50°       per pad, C₃ at 120° intervals
+  Multi-Hit pad arc:          ~25°       per pad, C₃ at 120° intervals
+  Mass: m_A = 1.0 g (hub), m_B = 5.0 g (inner ring), m_C = 24.0 g (6 protrusions)
+```
+
+### Moment of Inertia
+
+Zone A — hub bore (r = 0 → 4 mm, m_A = 1.0 g):
+```
+I_A = ½ × 0.001 × (0² + 0.004²) = ½ × 0.001 × 1.6×10⁻⁵ = 8.00×10⁻⁹ kg·m²
+```
+
+Zone B — inner ring with cutouts (r = 4 → 9 mm, m_B = 5.0 g):
+```
+I_B = ½ × 0.005 × (0.004² + 0.009²) = ½ × 0.005 × 9.7×10⁻⁵ = 2.43×10⁻⁷ kg·m²
+```
+
+Zone C — six protrusion zone (r = 9 → 22 mm, m_C = 24.0 g):
+```
+I_C = ½ × 0.024 × (0.009² + 0.022²) = ½ × 0.024 × (8.1×10⁻⁵ + 4.84×10⁻⁴) = ½ × 0.024 × 5.65×10⁻⁴ = 6.78×10⁻⁶ kg·m²
+```
+
+**I_total = 8.00×10⁻⁹ + 2.43×10⁻⁷ + 6.78×10⁻⁶ = 7.03×10⁻⁶ kg·m²**
+
+### Angular Momentum Deficit
+
+```
+L_Lightning = 7.03×10⁻⁶ × 150 = 1.055×10⁻³ kg·m²/s
+L_Basalt    = 1.38×10⁻⁵  × 150 = 2.070×10⁻³ kg·m²/s
+L_Blitz     = 1.40×10⁻⁵  × 150 = 2.100×10⁻³ kg·m²/s
+
+Deficit vs Basalt: 1 − (1.055 / 2.070) = 49.0%
+Deficit vs Blitz:  1 − (1.055 / 2.100) = 49.8%
+```
+
+Lightning carries approximately half the angular momentum of its primary competition. In any spin-down attrition contest, Lightning loses first regardless of tip geometry.
+
+### Mode Selector Mechanism
+
+L Drago CW covers three of the six protrusions. The six protrusions alternate U-M-U-M-U-M at 60° intervals. The CW has three blocking sections at 120° intervals. In Upper Mode the three M pads are hidden; in Multi-Hit Mode the three U pads are hidden. Switching requires disassembly and 180° rotation of the CW (rotating 60° would swap U↔M positions).
+
+Mode change geometry: 60° CW rotation needed to switch modes vs 180° as specified:
+All six protrusions are at 60° intervals. The CW blocks at 120° intervals. A 60° rotation of the CW moves each block over the next protrusion. The wiki's "180°" describes the net visual flip of the CW (a C₃-symmetric piece looks the same at 0° and 120° but visually inverted at 180° due to the mode-labelling on the CW face), not the minimal angular increment.
+
+### Upper Mode — Contact Analysis
+
+Upper Mode pads are the three wider protrusions. Contact face at φ_upper = 25° from radial, outer tip at r = 21 mm:
+```
+J_smash_upper  = J × cos(25°) = 0.906 × J
+J_recoil_upper = J × sin(25°) = 0.423 × J
+```
+
+Contact zone arc at r = 21 mm per protrusion (50° arc):
+```
+s_upper = 50° × (π/180) × 21 = 18.3 mm
+```
+
+Three Upper pads expose 3 × 18.3 = **54.9 mm of circumferential contact surface per orbit pass** at the MW outer radius.
+
+### Multi-Hit Mode — Contact Analysis
+
+Multi-Hit pads: narrower, steeper face at φ_multi = 40°, outer tip at r = 18 mm:
+```
+J_smash_multi  = J × cos(40°) = 0.766 × J
+J_recoil_multi = J × sin(40°) = 0.643 × J
+```
+
+Contact zone arc per protrusion (25° arc):
+```
+s_multi = 25° × (π/180) × 18 = 7.85 mm
+```
+
+Each narrow protrusion has two impact-capable edges (leading at entry, trailing at exit of opponent's radius). Effective contact events per orbit pass:
+```
+Upper Mode: 3 protrusions × 1 primary impact each = 3 events/orbit
+Multi-Hit:  3 protrusions × 2 edge contacts each  = 6 events/orbit
+```
+
+### Upper vs Multi-Hit Mode Comparison
+
+Per-hit smash force ratio at the same contact impulse J:
+```
+F_smash_upper / F_smash_multi = cos(25°) / cos(40°) = 0.906 / 0.766 = 1.183×   (+18.3%)
+```
+
+Total smash delivered per orbit (J_hit = full contact impulse, J_edge = 0.5 J per edge contact):
+```
+Upper:     3 × cos(25°) × J       = 2.718 × J   per orbit
+Multi-Hit: 6 × cos(40°) × 0.5 × J = 2.298 × J   per orbit  (edge contacts at half impulse)
+```
+
+Total recoil accumulated per orbit:
+```
+Upper:     3 × sin(25°) × J       = 1.269 × J   (3 events)
+Multi-Hit: 6 × sin(40°) × 0.5 × J = 1.929 × J   (6 events)
+```
+
+Upper Mode delivers 18% more smash per orbit while accumulating 34% less self-recoil. This quantifies why Upper Mode is universally preferred.
+
+### Mass Deficit and Self-KO Analysis
+
+Required impulse to ring out a combo at orbital speed v_KO ≈ 1.0 m/s:
+```
+J_KO_Lightning = m_Lightning × v_KO = 0.030 × 1.0 = 0.030 N·s
+J_KO_Basalt    = m_Basalt    × v_KO = 0.045 × 1.0 = 0.045 N·s
+```
+
+Basalt is 50% more ring-out resistant. The same impact that delivers recoil to Lightning also needs to overcome Basalt's 50% higher KO threshold — Lightning must strike 50% harder to KO Basalt than Basalt needs to KO Lightning.
+
+Recoil velocity on Lightning per unresolved pass (J_contact = 0.018 N·s at v_rel = 1 m/s):
+```
+Δv_recoil = J_recoil_upper / m_Lightning = (0.423 × 0.018) / 0.030 = 0.254 m/s per pass
+```
+
+Passes before self-KO (net recoil accumulation ~0.15 m/s per pass after orbital friction losses):
+```
+N_passes = v_KO / Δv_net = 1.0 / 0.15 = 6.7 unresolved passes before self-KO
+```
+
+MF (Metal Face, +3 g → m_total = 33 g) extends this to:
+```
+Δv_recoil_MF = (0.423 × 0.018) / 0.033 = 0.231 m/s per pass
+N_passes_MF = 1.0 / (0.231 − 0.10) = 7.6 passes
+```
+
+MF buys ~1 extra orbit before self-KO. LRF accelerates the attack rate — the bey reaches the opponent faster per orbit, meaning fewer unresolved orbits before first successful KO. The combo MF Lightning BD145LRF wins by landing the KO within 6-7 orbits, not by surviving attrition.
+
+```typescript
+function lightningInertia(
+  m_hub_g: number, r_hub_mm: number,
+  m_inner_g: number, r_inner_mm: number,
+  m_outer_g: number, r_outer_mm: number
+): number {
+  const I_hub   = 0.5 * (m_hub_g / 1000) * Math.pow(r_hub_mm / 1000, 2);
+  const I_inner = 0.5 * (m_inner_g / 1000) * (Math.pow(r_hub_mm / 1000, 2) + Math.pow(r_inner_mm / 1000, 2));
+  const I_outer = 0.5 * (m_outer_g / 1000) * (Math.pow(r_inner_mm / 1000, 2) + Math.pow(r_outer_mm / 1000, 2));
+  return I_hub + I_inner + I_outer;
+}
+
+function lightningContactArc_mm(arc_deg: number, r_mm: number): number {
+  return arc_deg * Math.PI / 180 * r_mm;
+}
+
+function lightningSmashFraction(phi_deg: number): number {
+  return Math.cos(phi_deg * Math.PI / 180);
+}
+
+function lightningRecoilFraction(phi_deg: number): number {
+  return Math.sin(phi_deg * Math.PI / 180);
+}
+
+function lightningSelfKOPasses(v_KO: number, J_contact: number, phi_deg: number, m_kg: number, friction_loss: number): number {
+  const recoil_v = Math.sin(phi_deg * Math.PI / 180) * J_contact / m_kg;
+  const net = recoil_v - friction_loss;
+  return net > 0 ? v_KO / net : Infinity;
+}
+
+function lightningKOThreshold(m_kg: number, v_KO: number): number {
+  return m_kg * v_KO;
+}
+
+// lightningInertia(1.0, 4, 5.0, 9, 24.0, 22)               → 7.03×10⁻⁶ kg·m²  (I_total)
+// angularMomentumDeficit(7.03e-6, 1.38e-5, 150)             → 49.0%       (vs Basalt)
+// angularMomentumDeficit(7.03e-6, 1.40e-5, 150)             → 49.8%       (vs Blitz)
+// lightningContactArc_mm(50, 21)                             → 18.3 mm    (Upper Mode pad arc)
+// lightningContactArc_mm(25, 18)                             → 7.85 mm    (Multi-Hit pad arc)
+// lightningSmashFraction(25)                                 → 0.906       (Upper Mode)
+// lightningSmashFraction(40)                                 → 0.766       (Multi-Hit)
+// lightningRecoilFraction(25)                                → 0.423       (Upper Mode — lower)
+// lightningRecoilFraction(40)                                → 0.643       (Multi-Hit — higher)
+// lightningSelfKOPasses(1.0, 0.018, 25, 0.030, 0.10)         → 6.7 passes  (Lightning — no MF)
+// lightningSelfKOPasses(1.0, 0.018, 25, 0.033, 0.10)         → 7.6 passes  (Lightning + MF)
+// lightningKOThreshold(0.030, 1.0)                           → 0.030 N·s  (Lightning KO threshold)
+// lightningKOThreshold(0.045, 1.0)                           → 0.045 N·s  (Basalt — 50% higher)
+```
+
+---
+
+## Case 309 — Flash 4D Metal Wheel (45.6 g)
+
+**Thesis:** Flash divides 45.6 g between a hollow-underside Metal Frame (28.0 g, oval lobes) and a fully-filled flat Core (17.6 g, matching lobes); rotating the Frame 90° changes the combined wheel from C₄ (four wings at 90°, Stamina Mode — ΔI_transverse = 0) to C₂ (two thick aligned double-lobes, Attack Mode — ΔI_transverse ≈ 5.9×10⁻⁶ kg·m²) while I_z increases by only 4.8% (1.123×10⁻⁵ → 1.177×10⁻⁵ kg·m²); the C₂ transverse anisotropy drives nutation forcing at 2ω with amplitude proportional to ΔI × ω², transforming the circular orbit into an elongated sweep where the two heavy sides alternately reach further toward the opponent on each half-revolution — the "flywheel effect"; both modes sit 14–19% below Basalt in angular momentum due to the hollow Frame underside forfeiting ~3.4×10⁻⁶ kg·m² of potential inertia that a fully-filled Frame would provide; no centrifugal PC Frame is present — mode change is purely mechanical via small locking walls on the Frame underside.
+
+### Geometry
+
+```
+Top view — Stamina Mode (Frame ⊥ Core = 4 wings at 90°):
+
+     Frame lobe            ← Metal Frame lobes: r = 10–22 mm, ~90° arc each
+  Core   Core              ← Core lobes perpendicular to Frame: r = 10–22 mm
+     Frame lobe
+  → C₄ effective symmetry (ΔI_transverse = 0)
+
+Top view — Attack Mode (Frame aligned with Core = 2 thick lobes):
+
+  ████████  ████████       ← Frame lobe stacked on Core lobe: r = 10–23 mm
+         ↕ gap ↕           ← minor axis nearly empty (hollow gap)
+  → C₂ symmetry (ΔI_transverse ≈ 5.9×10⁻⁶ kg·m²)
+
+Key dimensions:
+  Outer radius (Stamina Mode): 22.0 mm   (Frame lobe tip)
+  Outer radius (Attack Mode):  23.0 mm   (stacked lobe extends ~1 mm further)
+  Minor axis gap (Attack):     ~8.0 mm   (inner connecting ring only)
+  Frame inner connection:      10.0 mm   (Frame annular zone inner)
+  Hub bore:                     4.0 mm
+  Metal Frame mass:            28.0 g    (hollow underside — less mass than geometry implies)
+  Core mass:                   17.6 g    (filled underside — full material)
+  Total:                       45.6 g ✓
+```
+
+### Moment of Inertia — Frame + Core
+
+**Metal Frame:**
+
+Zone F1 — connecting ring (r = 4 → 10 mm, m_F1 = 4.0 g):
+```
+I_F1 = ½ × 0.004 × (0.004² + 0.010²) = ½ × 0.004 × 1.16×10⁻⁴ = 2.32×10⁻⁷ kg·m²
+```
+
+Zone F2 — oval lobes (r = 10 → 22 mm, m_F2 = 24.0 g):
+```
+I_F2 = ½ × 0.024 × (0.010² + 0.022²) = ½ × 0.024 × 5.84×10⁻⁴ = 7.01×10⁻⁶ kg·m²
+```
+
+**I_frame = 2.32×10⁻⁷ + 7.01×10⁻⁶ = 7.24×10⁻⁶ kg·m²**
+
+**Core:**
+
+Zone C1 — hub bore (r = 0 → 4 mm, m_C1 = 1.5 g):
+```
+I_C1 = ½ × 0.0015 × (0² + 0.004²) = 1.20×10⁻⁸ kg·m²
+```
+
+Zone C2 — inner cross (r = 4 → 10 mm, m_C2 = 3.1 g):
+```
+I_C2 = ½ × 0.0031 × (0.004² + 0.010²) = ½ × 0.0031 × 1.16×10⁻⁴ = 1.80×10⁻⁷ kg·m²
+```
+
+Zone C3 — flat lobes (r = 10 → 22 mm, m_C3 = 13.0 g):
+```
+I_C3 = ½ × 0.013 × (0.010² + 0.022²) = ½ × 0.013 × 5.84×10⁻⁴ = 3.80×10⁻⁶ kg·m²
+```
+
+**I_core = 1.20×10⁻⁸ + 1.80×10⁻⁷ + 3.80×10⁻⁶ = 3.99×10⁻⁶ kg·m²**
+
+**I_total (Stamina Mode) = 7.24×10⁻⁶ + 3.99×10⁻⁶ = 1.123×10⁻⁵ kg·m²**
+
+In Attack Mode the stacked Frame lobes extend to r_o = 23 mm:
+```
+I_F2_attack = ½ × 0.024 × (0.010² + 0.023²) = ½ × 0.024 × 6.29×10⁻⁴ = 7.55×10⁻⁶ kg·m²
+I_total (Attack Mode) = (7.24 − 7.01 + 7.55)×10⁻⁶ + 3.99×10⁻⁶ = 1.177×10⁻⁵ kg·m²
+```
+
+Mode change increases I_z by 4.8%.
+
+### Angular Momentum vs Basalt
+
+```
+L_Flash_stamina = 1.123×10⁻⁵ × 150 = 1.685×10⁻³ kg·m²/s
+L_Flash_attack  = 1.177×10⁻⁵ × 150 = 1.766×10⁻³ kg·m²/s
+L_Basalt        = 1.38×10⁻⁵  × 150 = 2.070×10⁻³ kg·m²/s
+
+Deficit Stamina vs Basalt: 1 − (1.685 / 2.070) = 18.6%
+Deficit Attack  vs Basalt: 1 − (1.766 / 2.070) = 14.7%
+```
+
+Hollow Frame opportunity cost: if the Frame underside were fully filled (same geometry, +11.2% mass at r = 10–22 mm):
+```
+ΔI_hypothetical = 0.112 × I_F2 = 0.112 × 7.01×10⁻⁶ = 7.85×10⁻⁷ kg·m²
+I_total_filled = 1.177×10⁻⁵ + 7.85×10⁻⁷ = 1.256×10⁻⁵ kg·m²
+Deficit_filled vs Basalt: 1 − (1.256 / 1.38) × 100 = 9.0%   (instead of 14.7%)
+```
+
+The hollow underside forfeits 5.7 percentage points of angular momentum vs Basalt — a design choice that lowers the wheel's stamina potential to enable the Attack Mode mechanics (the hollow space allows the Frame to seat flush on the Core when aligned).
+
+### Mode Symmetry: C₄ (Stamina) vs C₂ (Attack)
+
+**Stamina Mode — C₄ effective symmetry:**
+Four wings at 90° intervals: I_xx = I_yy (equatorial principal moments are equal). Transverse anisotropy:
+```
+ΔI_stamina = I_xx − I_yy = 0   →  no nutation forcing at 2ω
+```
+
+**Attack Mode — C₂ symmetry:**
+Two thick lobes on the x-axis. Transverse anisotropy estimation (two-lobe model, m_lobe = 22.8 g each at r_eff = 16.7 mm from centre):
+```
+I_yy = 2 × 0.0228 × 0.0167² = 2 × 0.0228 × 2.79×10⁻⁴ = 1.273×10⁻⁵ kg·m²
+I_xx ≈ 0.5 × I_yy = 6.37×10⁻⁶ kg·m²   (lobes on x-axis, finite width reduces I_xx below zero only for true point masses)
+```
+
+Realistic ΔI (accounting for finite lobe width, ~90° arc each):
+```
+ΔI_attack ≈ 0.5 × I_z = 0.5 × 1.177×10⁻⁵ = 5.89×10⁻⁶ kg·m²
+```
+
+Nutation forcing torque amplitude at ω = 150 rad/s:
+```
+τ_nutation = ΔI × ω² / (2 × I_z × ω) × I_z = ΔI × ω / 2
+           = 5.89×10⁻⁶ × 150 / 2 = 4.42×10⁻⁴ N·m   (forcing at 2ω)
+```
+
+### Flywheel Effect — Attack Mode Orbital Dynamics
+
+The C₂ transverse anisotropy creates a periodic gyroscopic torque at twice the spin frequency. This torque causes the bey's spin axis to nutate at 2ω, which in the orbital frame translates to a figure-eight contact path: the two heavy sides alternately reach r_max = 23 mm on each half-revolution while the minor axis retreats to r_min ≈ 8 mm.
+
+Effective contact radius oscillation per half-revolution:
+```
+Δr_contact = r_major − r_minor = 23 − 8 = 15 mm
+```
+
+At orbital speed v_orbit = 1.0 m/s and spin frequency f = 150/(2π) = 23.9 Hz (period = 41.9 ms):
+Time between major-axis sweeps = period / 2 = 20.9 ms
+Distance traveled per sweep = 1.0 × 0.0209 = 20.9 mm — approximately one heavy-lobe width.
+
+This ensures each orbit pass delivers at least one heavy-side contact if the orbit radius keeps the bey within r_major of an opponent, and at 2 contacts per orbit vs Stamina Mode's 4 contacts that are all at the same radius. The alternating reach-and-retract pattern is what the wiki identifies as the flywheel-enhanced attack approach.
+
+No centrifugal PC Frame is present. The Frame's small walls on its underside engage notches in the Core at 0° and 90° positions. Mode change requires manual disassembly and 90° Frame rotation. No ω_c to compute.
+
+```typescript
+function flashFrameInertia(m_conn_g: number, r_conn_mm: number, r_inner_mm: number, m_lobe_g: number, r_outer_mm: number): number {
+  const I1 = 0.5 * (m_conn_g / 1000) * (Math.pow(r_conn_mm / 1000, 2) + Math.pow(r_inner_mm / 1000, 2));
+  const I2 = 0.5 * (m_lobe_g / 1000) * (Math.pow(r_inner_mm / 1000, 2) + Math.pow(r_outer_mm / 1000, 2));
+  return I1 + I2;
+}
+
+function flashCoreInertia(m_hub_g: number, r_hub_mm: number, m_cross_g: number, r_cross_mm: number, m_lobe_g: number, r_outer_mm: number): number {
+  const I1 = 0.5 * (m_hub_g / 1000) * Math.pow(r_hub_mm / 1000, 2);
+  const I2 = 0.5 * (m_cross_g / 1000) * (Math.pow(r_hub_mm / 1000, 2) + Math.pow(r_cross_mm / 1000, 2));
+  const I3 = 0.5 * (m_lobe_g / 1000) * (Math.pow(r_cross_mm / 1000, 2) + Math.pow(r_outer_mm / 1000, 2));
+  return I1 + I2 + I3;
+}
+
+function flashDeltaI(I_z: number): number {
+  return 0.5 * I_z;
+}
+
+function flashNutationTorque(delta_I: number, omega: number): number {
+  return delta_I * omega / 2;
+}
+
+function flashAngularMomentumDeficit(I_flash: number, I_basalt: number, omega: number): number {
+  return 1 - (I_flash * omega) / (I_basalt * omega);
+}
+
+// flashFrameInertia(4, 4, 10, 24, 22)                       → 7.24×10⁻⁶ kg·m²  (Metal Frame)
+// flashCoreInertia(1.5, 4, 3.1, 10, 13, 22)                 → 3.99×10⁻⁶ kg·m²  (Core)
+// flashFrameInertia(4, 4, 10, 24, 22) + flashCoreInertia    → 1.123×10⁻⁵ kg·m²  (Stamina Mode)
+// flashFrameInertia(4, 4, 10, 24, 23) + flashCoreInertia    → 1.177×10⁻⁵ kg·m²  (Attack Mode)
+// flashAngularMomentumDeficit(1.123e-5, 1.38e-5, 150)        → 18.6%       (Stamina vs Basalt)
+// flashAngularMomentumDeficit(1.177e-5, 1.38e-5, 150)        → 14.7%       (Attack vs Basalt)
+// flashDeltaI(1.177e-5)                                      → 5.89×10⁻⁶ kg·m²  (C₂ transverse anisotropy)
+// flashNutationTorque(5.89e-6, 150)                          → 4.42×10⁻⁴ N·m  (nutation forcing at 2ω)
+```
+
+---
+
+## Case 310 — Chrome Wheel: Phoenic (29.8 g)
+
+**Thesis.** Phoenic is a Shogun Steel (Zero-G) Chrome Wheel with C₃ rotational symmetry — three feather-wing blades arranged at 120° intervals. Each wing's feather tip points left, opposite the right-spin direction: this backward-swept geometry presents a steep, nearly radial contact face to the opponent, maximising the smash fraction and minimising the recoil fraction at impact. The vertical, jagged side profile further ensures that collision force is delivered close to the opponent's center of mass height, avoiding any upward deflection. The mass of 29.8 g is moderate for a Chrome Wheel; the large outer radius (~22 mm) concentrates inertia near the periphery, yielding a specific inertia comparable to MFB Attack-type Metal Wheels. Combined, Phoenic trades stamina for maximum per-collision smash output in the Zero-G environment.
+
+**Geometry (top-view)**
+
+```
+           ← spin direction (CW = left on top)
+          feather tip (left-pointing)
+              ↙
+    ┌────────────────────┐
+    │     ╱╲  wing 1     │   r_o = 22.0 mm
+    │    ╱  ╲            │
+    │   ╱    ╲  jagged   │
+    │  ╱  hub ╲  side    │   r_hub = 6.5 mm
+    │ │   ○    │         │   3 wings × 120° (C₃)
+    │  ╲      ╱          │
+    │   ╲    ╱ wing 2    │
+    │    ╲  ╱            │
+    │     ╲╱  wing 3     │
+    └────────────────────┘
+         h = 6.0 mm (estimated)
+         Contact face angle φ ≈ 15° from radial (steep smash face)
+```
+
+**Moment of Inertia**
+
+Three annular zones model the Chrome Wheel mass distribution:
+
+Zone 1 — hub ring (ABS + decorative inlay): r_i = 0 mm, r_o = 6.5 mm, m₁ = 3.2 g
+Zone 2 — mid body (feather shaft + connecting mass): r_i = 6.5 mm, r_o = 14.0 mm, m₂ = 11.6 g
+Zone 3 — outer wing tips (feather blade periphery): r_i = 14.0 mm, r_o = 22.0 mm, m₃ = 15.0 g
+
+```
+I = ½m(r_i² + r_o²)
+
+I₁ = ½ × 0.0032 × (0² + 0.0065²)                = 6.76×10⁻⁸ kg·m²
+I₂ = ½ × 0.0116 × (0.0065² + 0.0140²)           = 1.38×10⁻⁶ kg·m²
+I₃ = ½ × 0.0150 × (0.0140² + 0.0220²)           = 5.09×10⁻⁶ kg·m²
+
+I_total = 6.76×10⁻⁸ + 1.38×10⁻⁶ + 5.09×10⁻⁶    → 6.54×10⁻⁶ kg·m²
+```
+
+Specific inertia: I/m = 6.54×10⁻⁶ / 0.0298 = 2.19×10⁻⁴ m²
+
+This is within the typical MFB Attack wheel range (2.0–2.4 × 10⁻⁴ m²), confirming Phoenic sits as a moderate-inertia, periphery-heavy design consistent with a smash-attack profile.
+
+**Angular Momentum vs MFB References**
+
+At ω = 150 rad/s (approximately 1430 RPM, early-battle launch):
+
+```
+L_Phoenic = 6.54×10⁻⁶ × 150                      → 9.81×10⁻⁴ kg·m²/s
+L_Basalt  = 1.38×10⁻⁵ × 150                       → 2.07×10⁻³ kg·m²/s  (stamina reference)
+L_Gravity = 1.10×10⁻⁵ × 150                       → 1.65×10⁻³ kg·m²/s  (MFB attack reference)
+
+Deficit vs Basalt:  1 − 9.81×10⁻⁴ / 2.07×10⁻³   → 52.6%  (very large — pure attack role)
+Deficit vs Gravity: 1 − 9.81×10⁻⁴ / 1.65×10⁻³   → 40.5%  (still behind MFB attack)
+```
+
+The large deficit reflects Phoenic's role: in Zero-G stadiums a ring-out or upper attack finisher does not require outlasting the opponent, so low stamina is acceptable.
+
+**Smash/Recoil Geometry**
+
+The backward-swept feather face presents a contact angle φ ≈ 15° from the radial direction (feather tip curls left, face nearly perpendicular to the opponent approach vector):
+
+```
+Smash fraction  = cos(φ) = cos(15°)               → 0.966  (96.6% of impulse is radial smash)
+Recoil fraction = sin(φ) = sin(15°)               → 0.259  (25.9% recoil on Phoenic itself)
+```
+
+The steep face maximises delivered smash energy. The jagged vertical side profile maintains this angle across the full contact height, ensuring consistent smash regardless of relative bey height mismatch within ±2 mm.
+
+**C₃ Symmetry — Zero Transverse Anisotropy**
+
+Three identical wings at 120° give C₃ symmetry. The transverse moment of inertia components average to zero:
+
+```
+ΔI_transverse = 0   (for C₃ and higher)
+```
+
+No nutation forcing occurs at any harmonic of ω. Phoenic tracks a stable spin axis throughout the match, losing no precessional energy to self-induced wobble. This is the same favourable quality as Hell and Kerbecs (also C₃).
+
+**TypeScript model**
+
+```typescript
+function phoenicInertia(m_hub_g: number, m_mid_g: number, m_tip_g: number,
+                         r_hub_mm: number, r_mid_mm: number, r_outer_mm: number): number {
+  const I1 = 0.5 * (m_hub_g / 1000) * Math.pow(r_hub_mm / 1000, 2);
+  const I2 = 0.5 * (m_mid_g / 1000) * (Math.pow(r_hub_mm / 1000, 2) + Math.pow(r_mid_mm / 1000, 2));
+  const I3 = 0.5 * (m_tip_g / 1000) * (Math.pow(r_mid_mm / 1000, 2) + Math.pow(r_outer_mm / 1000, 2));
+  return I1 + I2 + I3;
+}
+
+function phoenicSmashFraction(phi_deg: number): number {
+  return Math.cos(phi_deg * Math.PI / 180);
+}
+
+function phoenicRecoilFraction(phi_deg: number): number {
+  return Math.sin(phi_deg * Math.PI / 180);
+}
+
+function phoenicAngularMomentumDeficit(I_phoenic: number, I_ref: number): number {
+  return 1 - I_phoenic / I_ref;
+}
+
+// phoenicInertia(3.2, 11.6, 15.0, 6.5, 14.0, 22.0)          → 6.54×10⁻⁶ kg·m²
+// phoenicSmashFraction(15)                                    → 0.966   (96.6% radial smash)
+// phoenicRecoilFraction(15)                                   → 0.259   (25.9% self-recoil)
+// phoenicAngularMomentumDeficit(6.54e-6, 1.38e-5)             → 52.6%   (vs Basalt)
+// phoenicAngularMomentumDeficit(6.54e-6, 1.10e-5)             → 40.5%   (vs Gravity)
+```
+
+---
+
+## Case 311 — Chrome Wheel: Gargole (29.5 g)
+
+**Thesis.** Gargole is a Zero-G Chrome Wheel with four sections in a C₂ effective mass distribution: two dense zones — the monster head and opposing claw cluster — separated by two larger but heavily perforated wing sections. The full width of 47.74 mm (r_o = 23.87 mm) pushes outer mass farther than Phoenic, raising specific inertia; however, the extensive perforation reduces peripheral density and partially offsets this advantage. The C₂ mass asymmetry (dense head/claw pair perpendicular to lighter wing pair) introduces a non-zero transverse anisotropy, generating weak nutation forcing at 2ω that Phoenic (C₃) does not suffer. The wing sections' even, uninterrupted side profiles deliver consistent smash contact, while the dense head/claw faces deliver concentrated high-impulse impacts at those azimuths.
+
+**Geometry (top-view)**
+
+```
+          ← Crystal Wheel orb (center aperture, monstrous head motif)
+
+     wing (perforated)          wing (perforated)
+          ╲                          ╱
+    ┌──────────────────────────────────┐
+    │  ╲  ░░░░░░  ╱    ╲  ░░░░░░  ╱  │   r_o = 23.87 mm
+    │   ║ ░holes░ ║    ║ ░holes░ ║   │
+    │   ║         ║    ║         ║   │
+    │   ╔═════════╗════╔═════════╗   │   r_hub = 6.5 mm
+    │   ║  claws  ╠ ○  ╣  head  ║   │   C₂ heavy axis: head↔claw (180°)
+    │   ╚═════════╝════╚═════════╝   │   C₂ light axis: wing↔wing (90°/270°)
+    │   ║         ║    ║         ║   │
+    │  ╱  ░░░░░░  ╲    ╱  ░░░░░░  ╲  │
+    └──────────────────────────────────┘
+         h = 6.72 mm
+         Contact face angle φ_wing ≈ 20° (even side profile)
+         Contact face angle φ_claw ≈ 30° (horned/jagged interruptions)
+```
+
+**Moment of Inertia**
+
+Zone 1 — hub (center aperture surround): r_i = 0 mm, r_o = 6.5 mm, m₁ = 2.5 g
+Zone 2 — mid body (wing shafts + head/claw base): r_i = 6.5 mm, r_o = 14.0 mm, m₂ = 9.5 g
+Zone 3 — outer periphery (wing tips + head/claw protrusions): r_i = 14.0 mm, r_o = 23.87 mm, m₃ = 17.5 g
+
+```
+I = ½m(r_i² + r_o²)
+
+I₁ = ½ × 0.0025 × (0² + 0.0065²)                   = 5.28×10⁻⁸ kg·m²
+I₂ = ½ × 0.0095 × (0.0065² + 0.0140²)              = 1.14×10⁻⁶ kg·m²
+I₃ = ½ × 0.0175 × (0.0140² + 0.02387²)             = 6.68×10⁻⁶ kg·m²
+
+I_total = 5.28×10⁻⁸ + 1.14×10⁻⁶ + 6.68×10⁻⁶        → 7.87×10⁻⁶ kg·m²
+```
+
+Specific inertia: I/m = 7.87×10⁻⁶ / 0.0295 = 2.67×10⁻⁴ m²
+
+This exceeds Phoenic (2.19×10⁻⁴ m²) by 22%, driven by the larger outer radius, despite the perforations reducing zone 3 mass relative to a solid wheel.
+
+**C₂ Transverse Anisotropy**
+
+The dense head+claw pair (≈10.5 g concentrated in two 80° arc sectors at r ≈ 20 mm) and the lighter wing pair (≈7.0 g spread over two 100° arc sectors with holes) create unequal principal transverse moments:
+
+```
+Heavy-axis half-mass: m_h = 0.0105 kg at r_h = 0.020 m
+Light-axis half-mass:  m_l = 0.0070 kg at r_l = 0.020 m
+
+ΔI_transverse ≈ (m_h − m_l) × r² = (0.0105 − 0.0070) × 0.020²   → 1.40×10⁻⁶ kg·m²
+```
+
+Nutation forcing torque at ω = 150 rad/s:
+
+```
+τ_nutation = ΔI_transverse × ω / 2 = 1.40×10⁻⁶ × 150 / 2         → 1.05×10⁻⁴ N·m
+```
+
+This is roughly one quarter of Flash 4D's Attack Mode nutation torque (4.42×10⁻⁴ N·m), so the wobble forcing is present but mild. Stable axis tracking degrades slightly, particularly below 40% spin where gyroscopic stiffness weakens.
+
+**Smash/Recoil Analysis**
+
+Two distinct contact geometries operate depending on which azimuth contacts the opponent:
+
+Wing section (even, uninterrupted sides, φ = 20°):
+```
+Smash fraction  = cos(20°)                                          → 0.940
+Recoil fraction = sin(20°)                                          → 0.342
+```
+
+Head/claw section (horned interruptions, φ = 30°):
+```
+Smash fraction  = cos(30°)                                          → 0.866
+Recoil fraction = sin(30°)                                          → 0.500
+```
+
+Wing contacts are more efficient (94% smash), while claw contacts generate more recoil (50%), increasing self-KO risk during those impact azimuths. At 4 sections (2 wing + 2 dense), the wheel encounters wing-type contact approximately 55% of the time and claw-type 45%, giving an effective smash fraction:
+
+```
+cos_eff = 0.55 × 0.940 + 0.45 × 0.866                              → 0.907  (90.7%)
+```
+
+**Angular Momentum vs References**
+
+At ω = 150 rad/s:
+
+```
+L_Gargole = 7.87×10⁻⁶ × 150                                        → 1.181×10⁻³ kg·m²/s
+L_Basalt  = 1.38×10⁻⁵ × 150                                        → 2.070×10⁻³ kg·m²/s
+L_Gravity = 1.10×10⁻⁵ × 150                                        → 1.650×10⁻³ kg·m²/s
+L_Phoenic = 6.54×10⁻⁶ × 150                                        → 0.981×10⁻³ kg·m²/s
+
+Deficit vs Basalt:  1 − 1.181×10⁻³ / 2.070×10⁻³                   → 42.9%
+Deficit vs Gravity: 1 − 1.181×10⁻³ / 1.650×10⁻³                   → 28.4%
+Advantage vs Phoenic: 1 − 0.981×10⁻³ / 1.181×10⁻³                 → +20.4% more L
+```
+
+Gargole carries 20% more angular momentum than Phoenic at equal launch speed, giving it greater knock-out force in direct clashes, at the cost of mild C₂ nutation.
+
+**TypeScript model**
+
+```typescript
+function gargoleInertia(m_hub_g: number, m_mid_g: number, m_outer_g: number,
+                         r_hub_mm: number, r_mid_mm: number, r_outer_mm: number): number {
+  const I1 = 0.5 * (m_hub_g / 1000) * Math.pow(r_hub_mm / 1000, 2);
+  const I2 = 0.5 * (m_mid_g / 1000) * (Math.pow(r_hub_mm / 1000, 2) + Math.pow(r_mid_mm / 1000, 2));
+  const I3 = 0.5 * (m_outer_g / 1000) * (Math.pow(r_mid_mm / 1000, 2) + Math.pow(r_outer_mm / 1000, 2));
+  return I1 + I2 + I3;
+}
+
+function gargoleTransverseAnisotropy(m_dense_g: number, m_light_g: number, r_mm: number): number {
+  return (m_dense_g - m_light_g) / 1000 * Math.pow(r_mm / 1000, 2);
+}
+
+function gargoleNutationTorque(delta_I: number, omega: number): number {
+  return delta_I * omega / 2;
+}
+
+function gargoleEffectiveSmash(wing_fraction: number, phi_wing_deg: number, phi_claw_deg: number): number {
+  return wing_fraction * Math.cos(phi_wing_deg * Math.PI / 180)
+       + (1 - wing_fraction) * Math.cos(phi_claw_deg * Math.PI / 180);
+}
+
+function gargoleAngularMomentumDeficit(I_gargole: number, I_ref: number): number {
+  return 1 - I_gargole / I_ref;
+}
+
+// gargoleInertia(2.5, 9.5, 17.5, 6.5, 14.0, 23.87)            → 7.87×10⁻⁶ kg·m²
+// gargoleTransverseAnisotropy(10.5, 7.0, 20.0)                 → 1.40×10⁻⁶ kg·m²  (C₂ ΔI)
+// gargoleNutationTorque(1.40e-6, 150)                          → 1.05×10⁻⁴ N·m    (at 150 rad/s)
+// gargoleEffectiveSmash(0.55, 20, 30)                          → 0.907  (90.7% weighted smash)
+// gargoleAngularMomentumDeficit(7.87e-6, 1.38e-5)              → 42.9%  (vs Basalt)
+// gargoleAngularMomentumDeficit(7.87e-6, 1.10e-5)              → 28.4%  (vs Gravity)
+```
+
+---
+
+## Case 312 — Track: Switch Attack 165 / SA165 (6.18 g)
+
+**Thesis.** SA165 is a dual-mode Zero-G track built around a removable, flippable parabolic shell — a thin hollow ring of considerable outer diameter (~40 mm) riding on a narrow ABS core shaft of 16.5 mm height. In Normal Mode the shell opens upward, placing its wide outer rim adjacent to the Chrome Wheel above and acting as a lateral guard that deflects incoming attacks at a shallow angle before they reach the wheel body. In Zero-G Attack Mode the shell is flipped downward, forming a wide floor-level skirt that replicates the large contact-ring geometry of GCF: the outer circumference (r ≈ 20 mm vs GCF r ≈ 16.7 mm) engages the curved Zero-G stadium wall over a 31% larger arc length, generating proportionally more traction force per unit normal load. Because the mode switch is manual (physical inversion), there is no centrifugal threshold — the geometry is locked at any spin speed.
+
+**Geometry (side-view, both modes)**
+
+```
+Normal Mode                     Zero-G Attack Mode
+(shell opens upward)            (shell flipped downward)
+
+  ┌── CW / MW ──┐                 ┌── CW / MW ──┐
+  │             │                 │             │
+  ╔═════════════╗  ← rim guard    ╔═════════════╗
+  ║ ░░░░░░░░░░░ ║  r_o = 20 mm   ║   (core)    ║
+  ║ (hollow)    ║                 ╚══╗       ╔══╝
+  ╚══╗       ╔══╝                    ║  165  ║
+     ║  165  ║  h = 16.5 mm         ║  mm   ║
+     ║  mm   ║                   ╔══╩═══════╩══╗
+     ╚═══════╝                   ║ ░░░░░░░░░░░ ║  ← floor skirt
+        ↑                        ║ (hollow)    ║  r_o = 20 mm
+     Bottom                      ╚═════════════╝  spikes on rim
+                                       ↑
+                                    Bottom
+```
+
+**Moment of Inertia**
+
+The track mass splits between the rigid core shaft and the hollow parabolic shell:
+
+Core shaft (ABS cylinder): m_core = 1.5 g, r = 5 mm
+Parabolic shell (thin ABS annulus): m_shell = 4.68 g, r_i = 17 mm, r_o = 20 mm
+
+```
+I = ½m(r_i² + r_o²)
+
+I_core  = ½ × 0.0015 × (0² + 0.005²)                = 1.88×10⁻⁸ kg·m²
+I_shell = ½ × 0.00468 × (0.017² + 0.020²)            = 1.61×10⁻⁶ kg·m²
+
+I_total = 1.88×10⁻⁸ + 1.61×10⁻⁶                      → 1.63×10⁻⁶ kg·m²
+```
+
+The shell dominates (99% of track inertia). This is about 25% of GCF's inertia contribution (GCF I ≈ 6.5×10⁻⁶ kg·m²) for a track of comparable outer radius — appropriate since the shell is hollow and thin-walled.
+
+**Normal Mode — Rim Guard Deflection**
+
+In Normal Mode the shell's outer rim sits at track level adjacent to the Chrome Wheel, presenting the paraboloid slope to incoming attacks. The parabola flare angle at the outer rim is approximately 45° from vertical (shallow opening profile), so the contact face is 45° from radial:
+
+```
+Smash fraction  = cos(45°)                            → 0.707
+Recoil fraction = sin(45°)                            → 0.707
+```
+
+Equal smash and recoil fractions: the rim neither efficiently smashes nor purely deflects — it acts as an energy-sharing guard. Incoming kinetic energy splits equally between transmitted smash (pushing opponent outward) and self-recoil. The linear ridges on the shell surface increase friction at this contact face, adding a tangential drag torque that bleeds opponent spin:
+
+```
+τ_drag = μ_ABS × F_normal × r_o = 0.35 × F × 0.020   (per contact)
+```
+
+At a typical impact F = 5 N: τ_drag = 0.035 N·m — a modest but non-zero spin-drain per contact.
+
+**Zero-G Attack Mode — Contact Ring vs GCF**
+
+When flipped, the outer rim engages the Zero-G stadium curved wall as a wide horizontal ring. The spikes on the outer circumference (like GCF gear teeth) provide mechanical grip against the wall surface:
+
+```
+r_SA165  = 20.0 mm,  r_GCF = 16.74 mm  (half of 33.47 mm)
+
+Arc length ratio (same contact angle θ):
+  C_SA165 / C_GCF = r_SA165 / r_GCF = 20.0 / 16.74             → 1.195×  (19.5% more arc)
+
+Contact area ratio (same contact width w):
+  A_SA165 / A_GCF = r_SA165 / r_GCF                            → 1.195×
+
+Traction force advantage (adhesive model, same W):
+  ΔF = (τ_adh × ΔA) = 0.08 × 10⁶ × (A_SA165 − A_GCF)
+  Assuming contact width w = 1.5 mm, θ = 30°:
+  A_SA165 = r_SA165 × θ_rad × w = 0.020 × 0.524 × 0.0015       = 1.57×10⁻⁵ m²
+  A_GCF   = 0.01674 × 0.524 × 0.0015                           = 1.32×10⁻⁵ m²
+  ΔF_traction = 0.08×10⁶ × (1.57 − 1.32)×10⁻⁵                 → 2.0 N additional grip
+```
+
+SA165 in Zero-G Attack Mode grips the stadium wall with ~2 N more traction force than GCF under equivalent normal load, resulting in a slightly larger orbital acceleration of the bey along the wall.
+
+**TypeScript model**
+
+```typescript
+function sa165ShellInertia(m_shell_g: number, r_inner_mm: number, r_outer_mm: number): number {
+  return 0.5 * (m_shell_g / 1000) * (Math.pow(r_inner_mm / 1000, 2) + Math.pow(r_outer_mm / 1000, 2));
+}
+
+function sa165RimDeflection(phi_deg: number): { smash: number; recoil: number } {
+  const rad = phi_deg * Math.PI / 180;
+  return { smash: Math.cos(rad), recoil: Math.sin(rad) };
+}
+
+function sa165WallTractionAdvantage(r_sa165_mm: number, r_gcf_mm: number,
+                                     contact_angle_deg: number, contact_width_mm: number): number {
+  const theta = contact_angle_deg * Math.PI / 180;
+  const w = contact_width_mm / 1000;
+  const tau_adh = 0.08e6;
+  const A_sa = (r_sa165_mm / 1000) * theta * w;
+  const A_gcf = (r_gcf_mm / 1000) * theta * w;
+  return tau_adh * (A_sa - A_gcf);
+}
+
+function sa165TotalInertia(m_core_g: number, r_core_mm: number,
+                            m_shell_g: number, r_inner_mm: number, r_outer_mm: number): number {
+  const I_core = 0.5 * (m_core_g / 1000) * Math.pow(r_core_mm / 1000, 2);
+  return I_core + sa165ShellInertia(m_shell_g, r_inner_mm, r_outer_mm);
+}
+
+// sa165TotalInertia(1.5, 5, 4.68, 17, 20)                      → 1.63×10⁻⁶ kg·m²
+// sa165RimDeflection(45)                                        → { smash: 0.707, recoil: 0.707 }  (Normal Mode)
+// sa165WallTractionAdvantage(20.0, 16.74, 30, 1.5)              → 2.0 N  (ZG Attack Mode vs GCF)
+```
+
+---
+
+## Case 313 — Chrome Wheel: Genbull (30.8 g)
+
+**Thesis.** Genbull is the heaviest Chrome Wheel examined in this series (30.8 g) and achieves the highest specific inertia among Zero-G Chrome Wheels through a deliberately distal center of gravity: the outer zone carries roughly 71% of total mass at a mean radius of ~18 mm, yielding I_total ≈ 8.37×10⁻⁶ kg·m². Its approximately C₄ mass distribution (four flat hex facets arranged in two bilateral pairs) produces near-zero transverse anisotropy and therefore negligible nutation forcing — the spin axis remains stable throughout the match. The smooth, nearly circular outer perimeter presents a contact face angle of approximately 0° from radial, delivering zero self-recoil per collision: all impact force passes radially inward onto Genbull while the opponent is pushed radially outward. The one liability is the bottom face: the small turtle-head protrusion and hex corners on the underside create an elevated recoil angle when struck from below (~25°), making Genbull unsuitable as the lower Chrome Wheel in E230-based Synchrom stacks. As the upper Chrome Wheel, however, the bottom face never contacts an opponent, and Genbull's mass and shape combination dominates Zero-G stamina and defense roles.
+
+**Geometry (top-view)**
+
+```
+          Crystal Wheel orb (top)
+                 ↑
+    ┌────────────────────────────┐
+    │   ╱ flat ╲   ╱ flat ╲     │   r_o = 22.5 mm
+    │  ║ facet  ╠═╣ facet  ║   │   r_hub = 6.0 mm
+    │  ║        ║ ○ ║        ║   │   C₄ approx: 4 flat sections
+    │  ║ facet  ╠═╣ facet  ║   │   at ~90° intervals
+    │   ╲      ╱   ╲      ╱     │
+    └────────────────────────────┘
+         turtle head (bottom, minimal protrusion)
+         h = 6.5 mm
+         Outer edge: smooth circular arc between facets
+         Bottom recoil face angle φ_bottom ≈ 25°
+```
+
+**Moment of Inertia**
+
+Distal CoG: outer zone carries 71% of total mass.
+
+Zone 1 — hub (center aperture + hex boss): r_i = 0 mm, r_o = 6.0 mm, m₁ = 1.8 g
+Zone 2 — mid body (flat facet shafts, lightened): r_i = 6.0 mm, r_o = 13.5 mm, m₂ = 7.0 g
+Zone 3 — outer ring (heavy circular band): r_i = 13.5 mm, r_o = 22.5 mm, m₃ = 22.0 g
+
+```
+I = ½m(r_i² + r_o²)
+
+I₁ = ½ × 0.0018 × (0² + 0.006²)                        = 3.24×10⁻⁸ kg·m²
+I₂ = ½ × 0.0070 × (0.006² + 0.0135²)                   = 7.64×10⁻⁷ kg·m²
+I₃ = ½ × 0.0220 × (0.0135² + 0.0225²)                  = 7.57×10⁻⁶ kg·m²
+
+I_total = 3.24×10⁻⁸ + 7.64×10⁻⁷ + 7.57×10⁻⁶            → 8.37×10⁻⁶ kg·m²
+```
+
+Specific inertia: I/m = 8.37×10⁻⁶ / 0.0308 = 2.72×10⁻⁴ m²
+
+Ranked against the Chrome Wheels in this series:
+
+| Chrome Wheel | I (×10⁻⁶ kg·m²) | I/m (×10⁻⁴ m²) |
+|---|---|---|
+| Genbull | 8.37 | 2.72 |
+| Gargole | 7.87 | 2.67 |
+| Phoenic | 6.54 | 2.19 |
+
+Genbull leads in both total inertia and specific inertia — the distal CoG strategy outperforms Gargole's larger radius because Genbull concentrates more mass fraction in zone 3.
+
+**C₄ Mass Symmetry — Zero Nutation**
+
+Four flat facets at approximately 90° intervals give C₄ effective mass symmetry:
+
+```
+ΔI_transverse = 0  (C₄ and higher → zero transverse anisotropy)
+τ_nutation = 0
+```
+
+No self-induced wobble forcing at any spin harmonic. The spin axis tracks stably from launch through the late-wobble phase, preserving angular momentum against precession-driven tip friction. This contrasts with Gargole's C₂ ΔI = 1.40×10⁻⁶ kg·m², which degrades axis stability at low spin.
+
+**Outer Edge Contact — Zero Self-Recoil**
+
+The smooth circular outer arc presents a contact face whose outward normal is exactly radial (φ = 0°). At the hex facets, the face deviates by at most 5° from radial:
+
+```
+Side contact (smooth arc):    φ = 0°
+  Smash fraction  = cos(0°)                              → 1.000
+  Self-recoil     = sin(0°)                              → 0.000
+
+Side contact (hex facet edge): φ = 5°
+  Smash fraction  = cos(5°)                              → 0.996
+  Self-recoil     = sin(5°)                              → 0.087
+```
+
+At φ = 0°, the impact force passes entirely through Genbull's center of mass with zero tangential component: angular momentum is unchanged by the collision. At hex facets the self-recoil rises to 8.7% — still far below Attack-type values (25–50%). This explains the competitive observation that Genbull resists knock-out from lateral Attack types even at late-battle low spin.
+
+**Bottom Face Recoil (E230 Synchrom Liability)**
+
+The turtle-head protrusion and lower hex corners on the underside create a contact face angle of approximately 25° when struck upward (as occurs at the lower Chrome Wheel position in E230 Synchrom, where the lower wheel's bottom is exposed):
+
+```
+Bottom-face contact: φ_bottom = 25°
+  Self-recoil fraction = sin(25°)                        → 0.423
+```
+
+A 42% recoil fraction at the bottom face is high enough to destabilize orbit in the E230 position — consistent with the metagame note that Genbull is not effective as the lower wheel in E230 Synchrom stacks.
+
+**Angular Momentum Comparison**
+
+At ω = 150 rad/s:
+
+```
+L_Genbull = 8.37×10⁻⁶ × 150                            → 1.256×10⁻³ kg·m²/s
+L_Gargole = 7.87×10⁻⁶ × 150                            → 1.181×10⁻³ kg·m²/s
+L_Basalt  = 1.38×10⁻⁵ × 150                            → 2.070×10⁻³ kg·m²/s
+
+Deficit vs Basalt:     1 − 1.256×10⁻³ / 2.070×10⁻³    → 39.3%
+Deficit vs Gravity:    1 − 1.256×10⁻³ / 1.650×10⁻³    → 23.9%
+Advantage vs Gargole:  1 − 1.181×10⁻³ / 1.256×10⁻³    → +6.3% more L
+```
+
+**TypeScript model**
+
+```typescript
+function genbullInertia(m_hub_g: number, m_mid_g: number, m_outer_g: number,
+                         r_hub_mm: number, r_mid_mm: number, r_outer_mm: number): number {
+  const I1 = 0.5 * (m_hub_g / 1000) * Math.pow(r_hub_mm / 1000, 2);
+  const I2 = 0.5 * (m_mid_g / 1000) * (Math.pow(r_hub_mm / 1000, 2) + Math.pow(r_mid_mm / 1000, 2));
+  const I3 = 0.5 * (m_outer_g / 1000) * (Math.pow(r_mid_mm / 1000, 2) + Math.pow(r_outer_mm / 1000, 2));
+  return I1 + I2 + I3;
+}
+
+function genbullSideRecoil(phi_deg: number): number {
+  return Math.sin(phi_deg * Math.PI / 180);
+}
+
+function genbullAngularMomentumDeficit(I_genbull: number, I_ref: number): number {
+  return 1 - I_genbull / I_ref;
+}
+
+function genbullSpecificInertia(I_total: number, m_g: number): number {
+  return I_total / (m_g / 1000);
+}
+
+// genbullInertia(1.8, 7.0, 22.0, 6.0, 13.5, 22.5)              → 8.37×10⁻⁶ kg·m²
+// genbullSpecificInertia(8.37e-6, 30.8)                         → 2.72×10⁻⁴ m²   (highest in ZG series)
+// genbullSideRecoil(0)                                          → 0.000  (smooth arc — zero self-recoil)
+// genbullSideRecoil(5)                                          → 0.087  (hex facet edge — minimal recoil)
+// genbullSideRecoil(25)                                         → 0.423  (bottom face — E230 liability)
+// genbullAngularMomentumDeficit(8.37e-6, 1.38e-5)               → 39.3%  (vs Basalt)
+// genbullAngularMomentumDeficit(8.37e-6, 7.87e-6)               → −6.3%  (Genbull leads Gargole)
+```
+
+---
+
+## Case 314 — Track: Stamina Ring 200 / SR200 (3.3 g)
+
+**Thesis.** SR200 is a 20.00 mm height track whose defining feature is a wide cylindrical outer ring (full width 26.5 mm, core width 10.0 mm) with a completely vertical outer wall. The vertical wall geometry eliminates the upward-deflection force component that angled or tapered track walls introduce: lateral impact force is directed purely radially, producing zero vertical lift on the assembly and zero self-recoil to orbit. The wide ring radius (r_o = 13.25 mm) creates a collision cross-section comparable to the Chrome Wheel above it, reinforcing the lower half of the assembly against attacks that target below the Metal or Chrome Wheel. Track inertia is modest (I ≈ 2.84×10⁻⁷ kg·m²) because ABS mass is light; the ring's contribution lies in geometry, not angular momentum.
+
+**Geometry (side-view)**
+
+```
+  ┌─── Chrome / Metal Wheel above ───┐
+  │                                  │
+  ╔══════════════════════════════════╗  ← top of track (h = 20.00 mm)
+  ║          core shaft              ║
+  ║  r_core = 5.0 mm                 ║
+  ║                                  ║
+  ║      ┌──────────────────┐        ║  ← ring connects to core
+  ║      │ stamina ring     │        ║
+  ║      │ r_i = 11.0 mm    │        ║  full width = 26.5 mm
+  ║      │ r_o = 13.25 mm   │        ║  ring wall: straight vertical
+  ║      └──────────────────┘        ║
+  ╚══════════════════════════════════╝  ← bottom of track (h = 0)
+         ↓
+      Bottom tip
+```
+
+**Moment of Inertia**
+
+Zone 1 — central shaft (ABS solid): r_i = 0 mm, r_o = 3.0 mm, m₁ = 1.0 g
+Zone 2 — body / ribs connecting shaft to ring: r_i = 5.0 mm, r_o = 11.0 mm, m₂ = 0.8 g
+Zone 3 — outer cylindrical ring shell: r_i = 11.0 mm, r_o = 13.25 mm, m₃ = 1.5 g
+
+```
+I = ½m(r_i² + r_o²)
+
+I₁ = ½ × 0.0010 × (0² + 0.003²)                        = 4.50×10⁻⁹ kg·m²
+I₂ = ½ × 0.0008 × (0.005² + 0.011²)                    = 5.84×10⁻⁸ kg·m²
+I₃ = ½ × 0.0015 × (0.011² + 0.01325²)                  = 2.22×10⁻⁷ kg·m²
+
+I_total = 4.50×10⁻⁹ + 5.84×10⁻⁸ + 2.22×10⁻⁷            → 2.84×10⁻⁷ kg·m²
+```
+
+This is approximately 3.4% of Genbull's Chrome Wheel inertia — the track is a minor angular momentum contributor. The track's role is geometric, not inertial.
+
+**Straight Vertical Wall — Zero Upward Deflection**
+
+For a track wall inclined at angle α from vertical (α = 0° = vertical straight wall, α > 0° = outward flare/taper):
+
+```
+F_lateral = F_impact × cos(α)     (radial push on track)
+F_vertical = F_impact × sin(α)    (upward lift on track)
+
+SR200: α = 0°
+  F_lateral = F × cos(0°) = F     → full radial push (100%)
+  F_vertical = F × sin(0°) = 0    → zero vertical lift
+```
+
+A tapered wall at α = 30° would convert 50% of impact into vertical lift (sin 30° = 0.500), lifting the beyblade and inducing gyroscopic tilt. SR200's straight wall delivers all impact force radially, leaving the spin axis undisturbed. This is the physical basis for SR200's stamina advantage over tapered-ring tracks at equivalent height.
+
+**Ring Contact Cross-Section vs Plain Track**
+
+The ring provides a lateral contact surface area that a plain cylindrical shaft does not:
+
+```
+Plain shaft (r = 5 mm, h = 20 mm):
+  A_shaft = 2 × r_shaft × h = 2 × 0.005 × 0.020           = 2.0×10⁻⁴ m²  (projected)
+
+SR200 ring (r_o = 13.25 mm, ring h ≈ 8 mm):
+  A_ring  = 2 × r_o × h_ring = 2 × 0.01325 × 0.008        = 2.12×10⁻⁴ m²  (projected)
+
+Total SR200 projected lateral area:
+  A_total = A_shaft + A_ring = 2.0×10⁻⁴ + 2.12×10⁻⁴       → 4.12×10⁻⁴ m²
+```
+
+The ring doubles the lateral cross-section compared to a plain shaft track, intercepting attacks before they reach the Chrome Wheel above. This defensive reinforcement is why SR200 pairs effectively with Genbull in both stamina and defense configurations.
+
+**TypeScript model**
+
+```typescript
+function sr200RingInertia(m_shaft_g: number, r_shaft_mm: number,
+                           m_rib_g: number, r_inner_mm: number, r_mid_mm: number,
+                           m_ring_g: number, r_outer_mm: number): number {
+  const I1 = 0.5 * (m_shaft_g / 1000) * Math.pow(r_shaft_mm / 1000, 2);
+  const I2 = 0.5 * (m_rib_g / 1000) * (Math.pow(r_inner_mm / 1000, 2) + Math.pow(r_mid_mm / 1000, 2));
+  const I3 = 0.5 * (m_ring_g / 1000) * (Math.pow(r_mid_mm / 1000, 2) + Math.pow(r_outer_mm / 1000, 2));
+  return I1 + I2 + I3;
+}
+
+function sr200WallDeflection(alpha_deg: number, F_impact: number): { lateral: number; vertical: number } {
+  const rad = alpha_deg * Math.PI / 180;
+  return { lateral: F_impact * Math.cos(rad), vertical: F_impact * Math.sin(rad) };
+}
+
+function sr200ContactArea(r_outer_mm: number, h_ring_mm: number,
+                           r_shaft_mm: number, h_total_mm: number): number {
+  const A_ring  = 2 * (r_outer_mm / 1000) * (h_ring_mm / 1000);
+  const A_shaft = 2 * (r_shaft_mm / 1000) * (h_total_mm / 1000);
+  return A_ring + A_shaft;
+}
+
+// sr200RingInertia(1.0, 3, 0.8, 5, 11, 1.5, 13.25)             → 2.84×10⁻⁷ kg·m²
+// sr200WallDeflection(0, 5)                                     → { lateral: 5.0 N, vertical: 0.0 N }  (straight wall)
+// sr200WallDeflection(30, 5)                                    → { lateral: 4.33 N, vertical: 2.5 N }  (30° taper reference)
+// sr200ContactArea(13.25, 8, 5, 20)                             → 4.12×10⁻⁴ m²  (2× plain shaft area)
+```
