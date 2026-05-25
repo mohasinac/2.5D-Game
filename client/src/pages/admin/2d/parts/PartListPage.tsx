@@ -78,7 +78,7 @@ export function PartListPage() {
   };
 
   return (
-    <div style={{ padding: 32, maxWidth: 960 }}>
+    <div style={{ padding: 32, width: "100%", boxSizing: "border-box" as const }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
         <div>

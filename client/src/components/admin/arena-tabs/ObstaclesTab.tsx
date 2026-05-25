@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import { PX_PER_CM_BASE } from "@/constants/units";
 import type {
   ArenaConfig, ObstacleConfig, ObstacleShape, ObstaclePhysicsBlock, ObstaclePhysicsType,
@@ -520,6 +521,7 @@ export default function ObstaclesTab({ config, onChange }: Props) {
     onChange({ obstacles: items.map(o => o.id === id ? { ...o, [field]: value } : o) });
 
   return (
+    <CollapsibleSection title="Obstacles" badge={items.length} storageKey="arena-obstacles-list" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 13, color: C.muted }}>{items.length} / 10 obstacles — theme icon: {themeIcon}</span>
@@ -721,5 +723,6 @@ export default function ObstaclesTab({ config, onChange }: Props) {
         </div>
       ))}
     </div>
+    </CollapsibleSection>
   );
 }

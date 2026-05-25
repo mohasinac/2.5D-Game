@@ -1,6 +1,7 @@
 // L4: Admin arena topology editor — list and edit ArenaLink + BeyLink connections.
 
 import React, { useState } from "react";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import { C } from "@/styles/theme";
 import type { ArenaConfig, ArenaLink, BeyLink, BeyLinkType, BeyLinkAlignment, BeyLinkEffect, BeyLinkEffectType, BeyLinkMovementControl, BeyLinkGroupPattern, ArenaLinkAlignmentConfig } from "@/types/arenaConfigNew";
 import { BeyLinkMovementGuide } from "@/components/admin/BeyLinkMovementGuide";
@@ -1156,6 +1157,7 @@ export default function LinksTab({ config, onChange }: Props) {
   // ─── Render ──────────────────────────────────────────────────────────────────
 
   return (
+    <CollapsibleSection title="Links" badge={links.length + beyLinks.length} storageKey="arena-links-main" defaultOpen={true}>
     <div>
       {/* ===== Section 1: Arena Links ===== */}
       <div
@@ -1334,5 +1336,6 @@ export default function LinksTab({ config, onChange }: Props) {
         ))}
       </div>
     </div>
+    </CollapsibleSection>
   );
 }

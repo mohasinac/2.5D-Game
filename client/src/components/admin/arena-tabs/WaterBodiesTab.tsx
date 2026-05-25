@@ -1,4 +1,5 @@
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, WaterBodyConfig, LiquidType, ZoneWaterBodyConfig, MoatWaterBodyConfig } from "@/types/arenaConfigNew";
 import { LIQUID_PRESETS } from "@/types/arenaConfigNew";
 import SelfRotationPanel from "./SelfRotationPanel";
@@ -54,6 +55,7 @@ export default function WaterBodiesTab({ config, onChange }: Props) {
     });
 
   return (
+    <CollapsibleSection title="Water Bodies" badge={bodies.length} storageKey="arena-water-list" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 13, color: C.muted }}>{bodies.length} / 3 water bodies</span>
@@ -241,5 +243,6 @@ export default function WaterBodiesTab({ config, onChange }: Props) {
         );
       })}
     </div>
+    </CollapsibleSection>
   );
 }

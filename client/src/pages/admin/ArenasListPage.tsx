@@ -40,7 +40,7 @@ export function ArenasListPage() {
   };
 
   return (
-    <div style={{ padding:24, maxWidth:1200, margin:"0 auto" }}>
+    <div style={{ padding:24, width: "100%", boxSizing: "border-box" as const }}>
       <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:20 }}>
         <div>
           <h1 style={{ fontSize:22, fontWeight:700, color:C.text }}>Arenas</h1>

@@ -21,7 +21,7 @@ export function ArenaSystemSideView({ arenaSystem }: Props) {
 
     void (async () => {
       await app.init({ width, height, background: 0x0a1520, antialias: true });
-      if (cancelled) { app.destroy(true); return; }
+      if (cancelled) { try { app.destroy(true, { children: true }); } catch { /* ok */ } return; }
       appRef.current = app;
       container.appendChild(app.canvas);
 
@@ -110,7 +110,7 @@ export function ArenaSystemSideView({ arenaSystem }: Props) {
     return () => {
       cancelled = true;
       if (appRef.current) {
-        appRef.current.destroy(true);
+        try { appRef.current.destroy(true, { children: true }); } catch { /* texture pool may already be destroyed */ }
         appRef.current = null;
       }
     };

@@ -47,7 +47,7 @@ export function ArenaEditPage() {
   if (!arena) return <div style={{ padding: 24, color: C.faint }}>Arena not found</div>;
 
   return (
-    <div style={{ padding: 24, maxWidth: 1100, margin: "0 auto" }}>
+    <div style={{ padding: "20px 24px", width: "100%", boxSizing: "border-box" }}>
       <div style={{ marginBottom: 20 }}>
         <Link to="/admin/arenas" style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Arenas</Link>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, marginTop: 6 }}>{arena.name}</h1>

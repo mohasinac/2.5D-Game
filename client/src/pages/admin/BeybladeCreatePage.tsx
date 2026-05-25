@@ -184,7 +184,7 @@ export function BeybladeCreatePage() {
   const steps = ["Basic Info", "Type Distribution", "Image", "Contact Points", "Abilities"];
 
   return (
-    <div style={{ padding:24, maxWidth: step === 3 ? 960 : 600, margin:"0 auto", transition:"max-width 200ms" }}>
+    <div style={{ padding:"20px 24px", width:"100%", maxWidth: step === 3 ? "100%" : 680, boxSizing:"border-box" as const, transition:"max-width 200ms" }}>
       <div style={{ marginBottom:20 }}>
         <Link to="/admin/beyblades" style={{ color:C.faint, fontSize:13, textDecoration:"none" }}>← Beyblades</Link>
         <h1 style={{ fontSize:22, fontWeight:700, color:C.text, marginTop:8 }}>New Beyblade</h1>

@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset, SpinZoneConfig, GravityHoleConfig, BumpConfig, TriggerZoneConfig, TriggerZoneKind, TriggerZoneActivation, ArenaBeySawnConfig, DirectionalZoneConfig, DirectionalZoneType } from "@/types/arenaConfigNew";
 import type { ElementType } from "@/types/elementTypes";
 import FeatureAnimationPanel from "./FeatureAnimationPanel";
@@ -268,6 +269,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
   ];
 
   return (
+    <CollapsibleSection title="Features" storageKey="arena-features-main" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
       {/* Background Particles */}
@@ -1070,5 +1072,6 @@ export default function FeaturesTab({ config, onChange }: Props) {
         })()}
       </Section>
     </div>
+    </CollapsibleSection>
   );
 }

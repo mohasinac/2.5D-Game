@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, ModularSectionConfig } from "@/types/arenaConfigNew";
 import { ArenaEditorCanvas } from "@/components/admin/ArenaEditorCanvas";
 import type { PlacedFeature } from "@/components/admin/ArenaEditorCanvas";
@@ -68,6 +69,7 @@ export default function SectionsTab({ config, onChange }: Props) {
   const selected = selectedId ? sections.find(s => s.id === selectedId) : null;
 
   return (
+    <CollapsibleSection title="Sections" badge={sections.length} storageKey="arena-sections-list" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 13, color: C.muted }}>{sections.length} modular section{sections.length !== 1 ? "s" : ""}</span>
@@ -170,5 +172,6 @@ export default function SectionsTab({ config, onChange }: Props) {
         </div>
       )}
     </div>
+    </CollapsibleSection>
   );
 }

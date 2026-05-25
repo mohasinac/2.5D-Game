@@ -54,7 +54,7 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
   const [tab, setTab] = useTabFromUrl("basics") as [TabId, (t: TabId) => void];
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 420px", gap: 20, alignItems: "start" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) clamp(260px,28%,500px)", gap: 20, alignItems: "start" }}>
       {/* Left: tab editor */}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {/* Tab bar */}
@@ -124,9 +124,9 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
         </div>
       </div>
 
-      {/* Right: live preview */}
-      <div style={{ position: "sticky", top: 80 }}>
-        <ArenaPreview arena={arena} width={400} />
+      {/* Right: live preview — fills its column */}
+      <div style={{ position: "sticky", top: 64 }}>
+        <ArenaPreview arena={arena} />
       </div>
     </div>
   );

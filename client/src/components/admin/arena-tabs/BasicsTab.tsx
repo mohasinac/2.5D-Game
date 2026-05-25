@@ -1,4 +1,5 @@
 import { C, S } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, ArenaShape, ArenaTheme, BowlProfile } from "@/types/arenaConfigNew";
 import { ARENA_PRESETS, initializeWallConfig, BOWL_PROFILE_ANGLES, BOWL_PROFILE_LABELS } from "@/types/arenaConfigNew";
 import { PX_PER_CM_BASE } from "@/constants/units";
@@ -200,9 +201,9 @@ export default function BasicsTab({ config, onChange }: Props) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      {/* Name + Description */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {/* Name + Description — always visible, no collapse */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 4 }}>
         <div>
           <label style={S.label}>Arena Name</label>
           <input
@@ -250,6 +251,7 @@ export default function BasicsTab({ config, onChange }: Props) {
       </div>
 
       {/* Size */}
+      <CollapsibleSection title="Size &amp; Presets" storageKey="arena-basics-size" defaultOpen={true}>
       <div>
         <label style={S.label}>Size (cm) — Width × Height</label>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -290,8 +292,10 @@ export default function BasicsTab({ config, onChange }: Props) {
           ))}
         </div>
       </div>
+      </CollapsibleSection>
 
       {/* Shape */}
+      <CollapsibleSection title="Shape" storageKey="arena-basics-shape" defaultOpen={true}>
       <div>
         <label style={S.label}>Shape</label>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: 8 }}>
@@ -311,8 +315,10 @@ export default function BasicsTab({ config, onChange }: Props) {
           ))}
         </div>
       </div>
+      </CollapsibleSection>
 
       {/* Theme */}
+      <CollapsibleSection title="Theme" storageKey="arena-basics-theme" defaultOpen={true}>
       <div>
         <label style={S.label}>Theme</label>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 8 }}>
@@ -334,12 +340,11 @@ export default function BasicsTab({ config, onChange }: Props) {
           ))}
         </div>
       </div>
+      </CollapsibleSection>
 
       {/* Bowl / Cross-Section */}
-      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 12 }}>
-          Bowl Profile <span style={{ fontSize: 11, color: C.faint, fontWeight: 400 }}>— cross-section curvature</span>
-        </div>
+      <CollapsibleSection title="Bowl Profile" storageKey="arena-basics-bowl" defaultOpen={false}>
+      <div>
 
         {/* Profile presets */}
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
@@ -408,9 +413,11 @@ export default function BasicsTab({ config, onChange }: Props) {
           </span>
         </div>
       </div>
+      </CollapsibleSection>
 
       {/* Rotation */}
-      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
+      <CollapsibleSection title="Auto-Rotate" storageKey="arena-basics-rotate" defaultOpen={false}>
+      <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>Auto-Rotate</span>
           <button
@@ -488,12 +495,11 @@ export default function BasicsTab({ config, onChange }: Props) {
           </div>
         )}
       </div>
+      </CollapsibleSection>
 
       {/* Tilt — hidden in 2D mode */}
-      {(config.rendererMode ?? "2.5d") !== "2d" && <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>
-          Arena Tilt <span style={{ fontSize: 11, color: C.faint, fontWeight: 400 }}>— Z-axis orientation</span>
-        </div>
+      {(config.rendererMode ?? "2.5d") !== "2d" && <CollapsibleSection title="Arena Tilt" storageKey="arena-basics-tilt" defaultOpen={false}>
+      <div>
         <div style={{ fontSize: 11, color: C.faint, marginBottom: 14 }}>
           0° = flat · 90° = wall-ride · 180° = inverted / Zero-G · 270° = wall-ride back
         </div>
@@ -728,13 +734,12 @@ export default function BasicsTab({ config, onChange }: Props) {
             </div>
           )}
         </div>
-      </div>}
+      </div>
+      </CollapsibleSection>}
 
       {/* Physics / Gameplay */}
-      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 14 }}>
-          Physics &amp; Gameplay
-        </div>
+      <CollapsibleSection title="Physics &amp; Gameplay" storageKey="arena-basics-physics" defaultOpen={false}>
+      <div>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {/* Stamina drain */}
           <div>
@@ -826,10 +831,11 @@ export default function BasicsTab({ config, onChange }: Props) {
           </div>
         </div>
       </div>
+      </CollapsibleSection>
 
       {/* Player Authority */}
-      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>Player Authority</div>
+      <CollapsibleSection title="Player Authority" storageKey="arena-basics-authority" defaultOpen={false}>
+      <div>
         <div style={{ fontSize: 11, color: C.faint, marginBottom: 12 }}>
           Controls how much arena features override player input. 1.0 = default. &lt;1 = arena controls more.
         </div>
@@ -861,10 +867,11 @@ export default function BasicsTab({ config, onChange }: Props) {
           </div>
         </div>
       </div>
+      </CollapsibleSection>
 
       {/* Max Duration */}
-      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>Max Match Duration</div>
+      <CollapsibleSection title="Max Match Duration" storageKey="arena-basics-duration" defaultOpen={false}>
+      <div>
         <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>
           Overrides room default. Tournament rooms always use 180s regardless.
         </div>
@@ -880,12 +887,11 @@ export default function BasicsTab({ config, onChange }: Props) {
           </button>
         </div>
       </div>
+      </CollapsibleSection>
 
       {/* Renderer Mode */}
-      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>
-          Renderer Mode
-        </div>
+      <CollapsibleSection title="Renderer Mode" storageKey="arena-basics-renderer" defaultOpen={false}>
+      <div>
         <div style={{ fontSize: 11, color: C.faint, marginBottom: 12 }}>
           2D = flat PixiJS · 2.5D = tilt-projected PixiJS (default) · 3D = Three.js stub
         </div>
@@ -921,12 +927,11 @@ export default function BasicsTab({ config, onChange }: Props) {
           </div>
         )}
       </div>
+      </CollapsibleSection>
 
       {/* Visual Overrides */}
-      <div style={{ background: C.bg3, borderRadius: 12, padding: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>
-          Visual Overrides
-        </div>
+      <CollapsibleSection title="Visual Overrides" storageKey="arena-basics-visuals" defaultOpen={false}>
+      <div>
         <div style={{ fontSize: 11, color: C.faint, marginBottom: 14 }}>
           Override theme defaults. Leave blank to use theme colors.
         </div>
@@ -983,6 +988,7 @@ export default function BasicsTab({ config, onChange }: Props) {
           </div>
         </div>
       </div>
+      </CollapsibleSection>
     </div>
   );
 }

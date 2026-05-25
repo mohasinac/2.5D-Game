@@ -71,7 +71,7 @@ export function TournamentsListPage() {
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 1100, margin: "0 auto" }}>
+    <div style={{ padding: 24, width: "100%", boxSizing: "border-box" as const }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>Tournaments</h1>

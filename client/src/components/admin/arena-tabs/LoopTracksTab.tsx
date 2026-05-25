@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, LoopTrackConfig } from "@/types/arenaConfigNew";
 import { ArenaEditorCanvas } from "@/components/admin/ArenaEditorCanvas";
 import type { PlacedFeature } from "@/components/admin/ArenaEditorCanvas";
@@ -65,6 +66,7 @@ export default function LoopTracksTab({ config, onChange }: Props) {
   const selected = selectedId ? tracks.find(t => t.id === selectedId) : null;
 
   return (
+    <CollapsibleSection title="Loop Tracks" badge={tracks.length} storageKey="arena-looptracks-list" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 13, color: C.muted }}>{tracks.length} loop track{tracks.length !== 1 ? "s" : ""}</span>
@@ -159,5 +161,6 @@ export default function LoopTracksTab({ config, onChange }: Props) {
         </div>
       )}
     </div>
+    </CollapsibleSection>
   );
 }

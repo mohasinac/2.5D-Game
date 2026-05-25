@@ -1382,7 +1382,129 @@ const ARENAS = [
     difficulty: "extreme",
   },
 
-  // ── 20. Test Arena (Spawn) — E2E testing ──────────────────────────────────
+  // ── 20. Spiral Labyrinth — concentric arc walls, gravity-sink center ────────
+  // Three concentric arc walls with staggered gap openings create a spiral
+  // corridor. Pits mark the dead-end pockets. A central gravity hole pulls beys
+  // inward — the arena is effectively bowled toward the center. Players must
+  // navigate the gaps to advance rings; wrong turns send them to a pit pocket.
+  {
+    id: "spiral-labyrinth",
+    name: "Spiral Labyrinth",
+    description: "Three concentric arc walls form a tightening spiral. Navigate the staggered gaps to reach the center — or get swallowed by a pit pocket.",
+    width: 1200,
+    height: 1200,
+    shape: "circle",
+    theme: "volcano",
+    autoRotate: false,
+    bowlProfile: "steep",
+    staminaDrainMultiplier: 1.3,
+    wall: circleWall("metal", 20, 10),
+
+    // ── Arc-wall obstacles (the spiral corridors) ─────────────────────────────
+    // Each ring is a fat arc obstacle leaving a gap:
+    //   Outer ring  (r≈20 cm) — gap at 270° (top of screen / north)
+    //   Middle ring (r≈13 cm) — gap at  90° (south)
+    //   Inner ring  (r≈ 7 cm) — gap at 180° (west)
+    // The gaps are staggered so a bey must make ¾ of a loop between each ring
+    // transition — exactly the hand-drawn spiral corridor feel.
+    obstacles: [
+      // Outer arc wall — east half (0°–240°), gap 240°–360°(=0°)
+      {
+        id: "sl-arc-outer-a",
+        shape: { kind: "arc", cx_cm: 0, cy_cm: 0, radius_cm: 20, arcStart_deg: 0,   arcEnd_deg: 240, thickness_cm: 2.5 },
+        health: 9999, damage: 22, recoilDistance: 10, autoPlaced: false, indestructible: true,
+      },
+      // Outer arc wall — west sliver (300°–360° closes back but leaves 240°–300° gap)
+      {
+        id: "sl-arc-outer-b",
+        shape: { kind: "arc", cx_cm: 0, cy_cm: 0, radius_cm: 20, arcStart_deg: 300, arcEnd_deg: 360, thickness_cm: 2.5 },
+        health: 9999, damage: 22, recoilDistance: 10, autoPlaced: false, indestructible: true,
+      },
+
+      // Middle arc wall — north half (90°–330°), gap 330°–90°
+      {
+        id: "sl-arc-mid-a",
+        shape: { kind: "arc", cx_cm: 0, cy_cm: 0, radius_cm: 13, arcStart_deg: 90,  arcEnd_deg: 330, thickness_cm: 2.5 },
+        health: 9999, damage: 18, recoilDistance: 8, autoPlaced: false, indestructible: true,
+      },
+
+      // Inner arc wall — south + west (180°–420°=60°), gap 60°–180°
+      {
+        id: "sl-arc-inner-a",
+        shape: { kind: "arc", cx_cm: 0, cy_cm: 0, radius_cm: 7,  arcStart_deg: 180, arcEnd_deg: 420, thickness_cm: 2.5 },
+        health: 9999, damage: 14, recoilDistance: 6, autoPlaced: false, indestructible: true,
+      },
+    ],
+
+    // ── Pits — dead-end pockets where the arc closes ──────────────────────────
+    // Placed just inside the dead-end side of each gap (the pocket a bey rolls
+    // into if it misses the gap and hits the closing wall segment).
+    pits: [
+      // Outer ring pocket — bey misses gap at ~270°, hits east re-entry arc
+      { id: "sl-pit-outer", x_cm:  17, y_cm: -10, radius_cm: 3.5, instantKO: false, damagePerSec: 60, warningRingColor: "#ef4444" },
+      // Middle ring pocket — bey misses gap at ~90°, jams into north arc
+      { id: "sl-pit-mid",   x_cm: -10, y_cm:  11, radius_cm: 3.0, instantKO: false, damagePerSec: 60, warningRingColor: "#ef4444" },
+      // Inner ring pocket — bey misses gap at ~180°, bounces into east arc
+      { id: "sl-pit-inner", x_cm:   5, y_cm:  -3, radius_cm: 2.5, instantKO: false, damagePerSec: 80, warningRingColor: "#dc2626" },
+    ],
+
+    // ── Central gravity well — slopes the arena toward center ─────────────────
+    gravityHoles: [
+      {
+        id: "sl-gravity-center",
+        x_cm: 0, y_cm: 0,
+        forceN: 0.006,
+        effectiveRadiusCm: 22,
+        activeMs: -1,       // always on
+        intervalMs: 1,
+        warningMs: 0,
+        visibility: "always",
+        featureAnimation: { preset: "vortex", periodMs: 3000, color: "#7c3aed" },
+      },
+    ],
+
+    // ── Speed path — ideal inward spiral route ────────────────────────────────
+    speedPaths: [
+      {
+        id: 1,
+        shape: "spiral",
+        radiusStart: 21,
+        radiusEnd: 4,
+        turns: 2.5,
+        speedBoost: 1.5,
+        spinBoost: 20,
+        frictionMultiplier: 0.7,
+        renderStyle: "outline",
+        color: "#a78bfa",
+        showDirectionArrows: true,
+        arrowColor: "#c4b5fd",
+      },
+    ],
+
+    // ── Spin zone at center — reward for reaching the core ───────────────────
+    spinZones: [
+      {
+        id: "sl-sz-core",
+        x_cm: 0, y_cm: 0,
+        radius_cm: 4,
+        direction: "cw",
+        intensityRadPerSec: 5.0,
+        applyTo: "spin",
+        featureAnimation: { preset: "shockwave_ring", periodMs: 1500, color: "#7c3aed" },
+      },
+    ],
+
+    waterBodies: [],
+    turrets: [],
+    portals: [],
+    links: [],
+    gravity: 0,
+    airResistance: 0.006,
+    surfaceFriction: 0.007,
+    difficulty: "extreme",
+  },
+
+  // ── 21. Test Arena (Spawn) — E2E testing ──────────────────────────────────
   // Minimal circular arena designed for spawn-interval E2E tests.
   // spawnIntervalSec is intentionally very short (5 s) for fast test feedback.
   {

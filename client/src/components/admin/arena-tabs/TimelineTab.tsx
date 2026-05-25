@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, ArenaTimelineEvent, ArenaTimelineEventType } from "@/types/arenaConfigNew";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
@@ -80,6 +81,7 @@ export default function TimelineTab({ config, onChange }: Props) {
   const sorted = [...events].sort((a, b) => a.triggerMs - b.triggerMs);
 
   return (
+    <CollapsibleSection title="Timeline" badge={events.length} storageKey="arena-timeline-list" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -350,5 +352,6 @@ export default function TimelineTab({ config, onChange }: Props) {
         </div>
       )}
     </div>
+    </CollapsibleSection>
   );
 }

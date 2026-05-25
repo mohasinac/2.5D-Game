@@ -162,7 +162,7 @@ export function BeybladeEditPage() {
   const remaining = TOTAL_POINTS - usedPoints;
 
   return (
-    <div style={{ padding:24, maxWidth:980, margin:"0 auto" }}>
+    <div style={{ padding:24, width: "100%", boxSizing: "border-box" as const }}>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
         <div>
           <Link to="/admin/beyblades" style={{ color:C.faint, fontSize:13, textDecoration:"none" }}>← Beyblades</Link>

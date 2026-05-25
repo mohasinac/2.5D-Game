@@ -173,7 +173,7 @@ export default function GimmickDefsPage() {
   );
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 960 }}>
+    <div style={{ padding: "32px 40px", width: "100%", boxSizing: "border-box" as const }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 22, color: C.text }}>Gimmick Defs</h1>

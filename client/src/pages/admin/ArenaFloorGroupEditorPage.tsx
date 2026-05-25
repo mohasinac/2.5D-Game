@@ -405,7 +405,7 @@ export default function ArenaFloorGroupEditorPage() {
   const filledCount = floors.filter(f => f.arenaId.trim()).length;
 
   return (
-    <div style={{ padding: 24, maxWidth: 1240, margin: "0 auto" }}>
+    <div style={{ padding: 24, width: "100%", boxSizing: "border-box" as const }}>
       <style>{`
         .floor-slot { transition: opacity 0.15s, transform 0.15s; }
         .floor-slot:hover .slot-drag-handle { opacity: 1 !important; }

@@ -1,4 +1,5 @@
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, PitConfig, PitType } from "@/types/arenaConfigNew";
 import SelfRotationPanel from "./SelfRotationPanel";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -49,6 +50,7 @@ export default function PitsTab({ config, onChange }: Props) {
     onChange({ pits: pits.map(p => p.id === id ? { ...p, position: { ...p.position, [axis]: value } } : p) });
 
   return (
+    <CollapsibleSection title="Pits" badge={pits.length} storageKey="arena-pits-list" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 13, color: C.muted }}>{pits.length} / 3 pits</span>
@@ -150,5 +152,6 @@ export default function PitsTab({ config, onChange }: Props) {
         </div>
       ))}
     </div>
+    </CollapsibleSection>
   );
 }

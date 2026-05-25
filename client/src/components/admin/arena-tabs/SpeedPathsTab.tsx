@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, SpeedPathConfig, SpeedPathBreak, ChargePointConfig } from "@/types/arenaConfigNew";
 
 interface Props {
@@ -118,6 +119,7 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
   };
 
   return (
+    <CollapsibleSection title="Speed Paths" badge={paths.length} storageKey="arena-speedpaths-list" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 13, color: C.muted }}>{paths.length} / 5 speed paths</span>
@@ -364,5 +366,6 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
         </div>
       ))}
     </div>
+    </CollapsibleSection>
   );
 }

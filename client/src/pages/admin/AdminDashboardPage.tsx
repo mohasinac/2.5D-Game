@@ -55,7 +55,7 @@ export function AdminDashboardPage() {
   const statValues = [stats.beyblades, stats.arenas, stats.matches, stats.players];
 
   return (
-    <div style={{ padding:24, maxWidth:1200, margin:"0 auto" }}>
+    <div style={{ padding:24, width: "100%", boxSizing: "border-box" as const }}>
       <div style={{ marginBottom:28 }}>
         <h1 style={{ fontSize:22, fontWeight:700, color:C.text }}>Dashboard</h1>
         <p style={{ color:C.faint, fontSize:13, marginTop:4 }}>Game administration overview</p>

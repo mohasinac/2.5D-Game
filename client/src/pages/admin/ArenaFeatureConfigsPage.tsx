@@ -97,7 +97,7 @@ export function ArenaFeatureConfigsPage() {
   const countByCategory = (cat: string) => items.filter(i => i.category === cat).length;
 
   return (
-    <div style={{ padding: 24, maxWidth: 960, margin: "0 auto" }}>
+    <div style={{ padding: 24, width: "100%", boxSizing: "border-box" as const }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>Arena Feature Configs</h1>

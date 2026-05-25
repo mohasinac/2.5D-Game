@@ -208,7 +208,7 @@ export default function ArenaFloorGroupListPage() {
   const disconnectable = groups.reduce((s, g) => s + (g.links?.filter(l => l.alignment?.disconnectsWhenMisaligned).length ?? 0), 0);
 
   return (
-    <div style={{ padding: 24, maxWidth: 1200, margin: "0 auto" }}>
+    <div style={{ padding: 24, width: "100%", boxSizing: "border-box" as const }}>
       <style>{`
         @keyframes spin { from { transform-origin: center; transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>

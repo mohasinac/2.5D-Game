@@ -1,4 +1,5 @@
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, SwitchConfig, SwitchTarget, SwitchAction } from "@/types/arenaConfigNew";
 import { PX_PER_CM_BASE } from "@/constants/units";
 import RotationBlockEditor from "./RotationBlockEditor";
@@ -114,6 +115,7 @@ export default function SwitchesTab({ config, onChange }: Props) {
   };
 
   return (
+    <CollapsibleSection title="Switches" badge={items.length} storageKey="arena-switches-list" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 13, color: C.muted }}>{items.length} / 12 switches</span>
@@ -321,5 +323,6 @@ export default function SwitchesTab({ config, onChange }: Props) {
         </div>
       ))}
     </div>
+    </CollapsibleSection>
   );
 }

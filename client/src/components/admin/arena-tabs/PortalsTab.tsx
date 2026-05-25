@@ -1,4 +1,5 @@
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, PortalConfig } from "@/types/arenaConfigNew";
 import SelfRotationPanel from "./SelfRotationPanel";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -43,6 +44,7 @@ export default function PortalsTab({ config, onChange }: Props) {
     onChange({ portals: portals.map(p => p.id === id ? { ...p, position: { ...p.position, [axis]: value } } : p) });
 
   return (
+    <CollapsibleSection title="Portals" badge={portals.length} storageKey="arena-portals-list" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 13, color: C.muted }}>{portals.length} / 4 portals — all portals are interconnected</span>
@@ -134,5 +136,6 @@ export default function PortalsTab({ config, onChange }: Props) {
         </div>
       )}
     </div>
+    </CollapsibleSection>
   );
 }

@@ -20,17 +20,27 @@ const TYPE_COLORS: Record<string, number> = {
   balanced: 0xffcc44,
 };
 
+// Arena floor base colors — vivid enough to read on a dark canvas background.
+// Keep mid-range brightness (not neon) so bey sprites remain legible.
 const THEME_COLORS: Record<string, number> = {
-  metrocity: 0x1a2a4a,
-  forest: 0x0d2b1a,
-  mountains: 0x1a1a2e,
-  grasslands: 0x1a3a1a,
-  desert: 0x3a2a0d,
-  sea: 0x0d1a3a,
-  futuristic: 0x0a0a2e,
-  prehistoric: 0x2a1a0d,
-  safari: 0x2a2a0d,
-  riverbank: 0x0d2a2a,
+  metrocity:   0x1e4080,  // steel blue city
+  forest:      0x1a6b2e,  // green forest floor
+  mountains:   0x2d4a6e,  // slate-blue highland
+  grasslands:  0x2e7d32,  // vivid grass green
+  desert:      0x7a5c1e,  // sand-gold dunes
+  sea:         0x0d5080,  // deep ocean blue
+  ocean:       0x0a4070,  // dark ocean
+  futuristic:  0x2d1b6e,  // electric purple-indigo
+  prehistoric: 0x7a2e0d,  // earthy rust
+  safari:      0x6b5a0d,  // golden savannah
+  riverbank:   0x0d5858,  // teal river
+  lava_core:   0x8a2200,  // molten red
+  volcano:     0x6e2800,  // dark lava
+  quantum_realm: 0x1a0a3d, // deep violet
+  storm_citadel: 0x1e3050, // storm grey-blue
+  neon:        0x1a0a4d,  // neon night
+  space:       0x080820,  // deep space (keep dark — stars are the decoration)
+  ice:         0x1a4060,  // glacial blue
 };
 
 interface ParticleData {
@@ -523,31 +533,43 @@ export class BeybladeGameRenderer {
     // by syncBeyblades once real beys arrive.
     this.world.computeZoomLimits(2.5);
 
-    const bgColor = THEME_COLORS[theme] ?? 0x1a1a2e;
+    const bgColor  = THEME_COLORS[theme] ?? 0x1e3060;
+    // Lighter rim tint: blend bgColor toward white by ~30% for the boundary ring
+    const rimColor = (((bgColor >> 16 & 0xff) + 80) & 0xff) << 16
+                   | (((bgColor >>  8 & 0xff) + 80) & 0xff) <<  8
+                   | (( bgColor        & 0xff) + 80) & 0xff;
     const g = new PIXI.Graphics();
 
     if (shape === "circle") {
-      g.circle(0, 0, this.arenaRadius + 16);
-      g.fill({ color: 0x000000, alpha: 0.6 });
+      // Outer glow halo (visible even on dark backgrounds)
+      g.circle(0, 0, this.arenaRadius + 20);
+      g.fill({ color: bgColor, alpha: 0.35 });
+      g.circle(0, 0, this.arenaRadius + 8);
+      g.fill({ color: bgColor, alpha: 0.5 });
 
       const floorGradient = new PIXI.Graphics();
       floorGradient.circle(0, 0, this.arenaRadius);
       floorGradient.fill({ color: bgColor });
 
+      // Inner highlight ring — gives depth
+      const innerHighlight = new PIXI.Graphics();
+      innerHighlight.circle(0, 0, this.arenaRadius * 0.55);
+      innerHighlight.fill({ color: 0xffffff, alpha: 0.04 });
+
       const innerRing = new PIXI.Graphics();
       innerRing.circle(0, 0, this.arenaRadius);
-      innerRing.stroke({ color: 0x4488cc, width: 3, alpha: 0.6 });
+      innerRing.stroke({ color: rimColor, width: 4, alpha: 0.9 });
 
       const boundaryRing = new PIXI.Graphics();
       boundaryRing.circle(0, 0, this.arenaRadius * 0.90);
-      boundaryRing.stroke({ color: 0xff2222, width: 1, alpha: 0.2 });
+      boundaryRing.stroke({ color: 0xff4444, width: 1.5, alpha: 0.35 });
 
       // Phase V3: dynamic shrink ring — redrawn each frame when effectiveRadius changes
       this.shrinkRingGraphics = new PIXI.Graphics();
       this.shrinkRingGraphics.visible = false;
       this.lastShrinkRadiusPx = -1;
 
-      this.arenaLayer.addChild(g, floorGradient, innerRing, boundaryRing, this.shrinkRingGraphics);
+      this.arenaLayer.addChild(g, floorGradient, innerHighlight, innerRing, boundaryRing, this.shrinkRingGraphics);
     } else {
       const arenaW = this.arenaRadius * 2;
       const arenaH = this.arenaRadius * 2;

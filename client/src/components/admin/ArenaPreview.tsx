@@ -604,8 +604,8 @@ export default function ArenaPreview({ arena }: Props) {
         width: size,
         height: size,
         antialias: true,
-        resolution: window.devicePixelRatio || 1,
-        autoDensity: true,
+        resolution: 1,        // keep it simple for a UI preview — no HiDPI scaling
+        autoDensity: false,   // we manage canvas CSS sizing ourselves
         backgroundAlpha: 1,
         background: 0x111827,
       });
@@ -615,6 +615,7 @@ export default function ArenaPreview({ arena }: Props) {
         return;
       }
 
+      // Fill the container; ResizeObserver updates logical dimensions via renderer.resize
       app.canvas.style.display = "block";
       app.canvas.style.width = "100%";
       app.canvas.style.height = "100%";

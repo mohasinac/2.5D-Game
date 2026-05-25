@@ -2,6 +2,7 @@
 // V6: Added shrinkRateCmPerSec + minRadiusCm alternative input fields.
 
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig } from "@/types/arenaConfigNew";
 
 interface Props {
@@ -22,6 +23,7 @@ export default function BoundaryTab({ config, onChange }: Props) {
   const shrink = config.shrink;
 
   return (
+    <CollapsibleSection title="Boundary" storageKey="arena-boundary-main" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       {/* Shrink Config */}
       <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: 16 }}>
@@ -126,5 +128,6 @@ export default function BoundaryTab({ config, onChange }: Props) {
         )}
       </div>
     </div>
+    </CollapsibleSection>
   );
 }

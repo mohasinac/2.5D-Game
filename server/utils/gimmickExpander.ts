@@ -1,10 +1,18 @@
 import { MechanicInstance } from "../rooms/schema/GameState";
 import { ArraySchema } from "@colyseus/schema";
 
+export interface BehaviorRef {
+  behaviorId: string;
+  params?: Record<string, unknown>;
+}
+
 export interface GimmickDef {
   id: string;
   name: string;
-  mechanicIds: string[];
+  // Seeded format — array of { behaviorId, params }
+  behaviorRefs?: BehaviorRef[];
+  // Legacy format kept for backwards compat
+  mechanicIds?: string[];
   defaultParams?: Record<string, Record<string, unknown>>;
 }
 
@@ -27,13 +35,25 @@ export function expandGimmicks(
       continue;
     }
 
-    for (const mechanicId of def.mechanicIds) {
-      const inst = new MechanicInstance();
-      inst.type = mechanicId;
-      inst.params = JSON.stringify(def.defaultParams?.[mechanicId] ?? {});
-      inst.state = "{}";
-      inst.active = true;
-      result.push(inst);
+    // Prefer behaviorRefs (seeded format), fall back to mechanicIds (legacy)
+    if (def.behaviorRefs?.length) {
+      for (const ref of def.behaviorRefs) {
+        const inst = new MechanicInstance();
+        inst.type = ref.behaviorId;
+        inst.params = JSON.stringify(ref.params ?? {});
+        inst.state = "{}";
+        inst.active = true;
+        result.push(inst);
+      }
+    } else if (def.mechanicIds?.length) {
+      for (const mechanicId of def.mechanicIds) {
+        const inst = new MechanicInstance();
+        inst.type = mechanicId;
+        inst.params = JSON.stringify(def.defaultParams?.[mechanicId] ?? {});
+        inst.state = "{}";
+        inst.active = true;
+        result.push(inst);
+      }
     }
   }
 

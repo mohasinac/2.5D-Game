@@ -1,4 +1,5 @@
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, TurretConfig, TurretAttackType, TurretFirePattern } from "@/types/arenaConfigNew";
 import { PX_PER_CM_BASE } from "@/constants/units";
 import SelfRotationPanel from "./SelfRotationPanel";
@@ -3860,6 +3861,7 @@ export default function TurretsTab({ config, onChange }: Props) {
     onChange({ turrets: items.map(t => t.id === id ? { ...t, [field]: value } : t) });
 
   return (
+    <CollapsibleSection title="Turrets" badge={items.length} storageKey="arena-turrets-list" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 13, color: C.muted }}>{items.length} / 8 turrets</span>
@@ -4070,5 +4072,6 @@ export default function TurretsTab({ config, onChange }: Props) {
         </div>
       ))}
     </div>
+    </CollapsibleSection>
   );
 }

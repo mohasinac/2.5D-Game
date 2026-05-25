@@ -184,7 +184,9 @@ export const useGameStore = create<GameStore>()(
       // Only persist settings — _hydrated and actions are runtime-only.
       partialize: (state) => ({ settings: state.settings }),
       onRehydrateStorage: () => (_state, error) => {
-        if (!error) useGameStore.setState({ _hydrated: true });
+        if (!error && !useGameStore.getState()._hydrated) {
+          useGameStore.setState({ _hydrated: true });
+        }
       },
     },
   ),

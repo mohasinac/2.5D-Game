@@ -1,4 +1,5 @@
 import { C } from "@/styles/theme";
+import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, WallConfig, WallSegment } from "@/types/arenaConfigNew";
 import { getEdgeCount, generateRandomWalls } from "@/types/arenaConfigNew";
 
@@ -56,6 +57,7 @@ export default function WallsTab({ config, onChange }: Props) {
     onChange({ wall: setWall(wall, key, value) });
 
   return (
+    <CollapsibleSection title="Wall System" storageKey="arena-walls-main" defaultOpen={true}>
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       {/* Enable toggle */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -199,5 +201,6 @@ export default function WallsTab({ config, onChange }: Props) {
         </>
       )}
     </div>
+    </CollapsibleSection>
   );
 }
