@@ -2814,3 +2814,1945 @@ function synchromeImbalanceForce(
 // synchromeImbalanceForce(22, 1.5, 200, true)
 //   → 0 N  (180° offset; CoM offsets cancel)
 ```
+
+---
+
+## Case 368 — Burst System (Gen 3 Overview): Three-Component Architecture, Ratchet Burst Mechanism, and Subsystem Progression
+
+**Thesis:** The Burst System is the third generation of Beyblade (Gen 3), introduced by Takara Tomy as a three-component stack — Layer (Energy Layer), Disc (Forge Disc), and Driver (Performance Tip) — that departs from the Metal Saga's five-component structure and introduces a new loss condition called Burst, in which a Beyblade's Layer separates from the Disc and Driver assembly mid-battle when an opponent's collision torque exceeds the ratchet engagement threshold of the Driver's spring-tab mechanism; this Burst ratchet is the defining mechanical innovation of the generation: it transforms the collision impulse that prior systems simply absorbed or reflected into a potential loss event whose probability is governed by tooth count, tooth face angle, and spring preload, making burst resistance an explicit numerical design variable for the first time in any Beyblade system; the Layer — a dual-piece polycarbonate construction (hard clear outer casing plus softer coloured inner piece) — is the primary contact component and the seat of the burst ratchet, and it evolves across seven Takara Tomy subsystems from a single-piece unit to a three-part interchangeable assembly incorporating metal and mode-change mechanisms; the Disc is an all-metal weight ring positioned below the Layer that serves as the I budget's second-largest contributor and is the first time in any system that the weight layer is positioned below the contact layer rather than between the contact layer and the base; the Driver combines the height-setting and tip-contact functions of the Metal Saga's Spin Track and Performance Tip into a single unit and introduces a spring inside its pyramid-shaped body that exerts the tab preload force critical to burst resistance.
+
+### Generation Map: Burst System Context
+
+```
+Gen 1 (Original Series / Plastic Gen): Cases 359–363  — 4LS through HMS
+Gen 2 (Metal Saga):                    Cases 364–367  — Metal System through Synchrome
+Gen 3 (Burst System):                  Cases 368+     — Takara Tomy only
+Gen 4 (Beyblade X):                    Cases 354–358  — BX / UX / CX (already written)
+
+Scope note: Hasbro subsystems (SlingShock, HyperSphere, SpeedStorm, QuadDrive,
+QuadStrike, Pro Series) are excluded from all Gen 3 case studies.
+Hasbro diverged significantly in material quality from 4D System onward.
+All physics data and part specifications are Takara Tomy only.
+```
+
+### System Architecture
+
+```
+Axial stack, side cross-section (standard Burst System build):
+
+         ┌──────────────────────────────────────────┐
+         │              LAYER (Energy Layer)         │
+         │  ┌────────────────────────────────────┐  │
+         │  │ clear PC outer casing (hard)        │  │  ← contact surface; r_outer varies
+         │  │ beast design protrusions            │  │  ← contact geometry
+         │  └────────────────────────────────────┘  │
+         │  ┌────────────────────────────────────┐  │
+         │  │ coloured PC inner piece (softer)    │  │  ← weight visualisation; ratchet seat
+         │  │ [ratchet teeth, inner ring]         │  │  ← engages Driver tabs
+         │  │ [NFC chip slot — TT only]           │  │  ← BeyTerminal scan capability
+         │  │ [Driver letter window, centre]      │  │  ← tip type visible from above
+         │  └────────────────────────────────────┘  │
+         └──────────────────────────────────────────┘
+                              │ (ratchet engages)
+         ┌──────────────────────────────────────────┐
+         │              DISC (Forge Disc)            │  ← all metal; weight component
+         │  [annular ring; r_outer ≈ 22–28 mm]      │  ← I budget second-largest term
+         │  [Core Disc variant: accepts Disc Frames] │  ← additional customisation
+         │  NOT designed for opponent contact       │  ← contacts only when wobbling
+         └──────────────────────────────────────────┘
+                              │
+         ┌──────────────────────────────────────────┐
+         │           DRIVER (Performance Tip)        │  ← combines Track + Tip functions
+         │  [upside-down pyramid body]              │
+         │  [spring inside body]                    │  ← preloads burst tabs
+         │  [white burst tabs ×N, top]              │  ← engage Layer ratchet teeth
+         │  [tip geometry at bottom]                │  ← floor contact; Attack/Defense/Stamina
+         │  [Driver letter engraved, top face]      │  ← visible through Layer window
+         └──────────────────┬───────────────────────┘
+                            │
+                          [tip]
+                            │
+                       ──────────── BeyStadium floor
+```
+
+### Burst Mechanism Physics
+
+The burst ratchet is the sole mechanical interface between the Layer and the Driver assembly. Under normal spin the spring-loaded Driver tabs engage the Layer's inner ratchet teeth, locking the Layer rotationally to the Driver.
+
+```
+Burst trigger sequence:
+
+1. Opponent's Layer contacts this Bey's Layer
+2. Collision applies tangential impulse J at radius r_contact
+3. Rotational torque on this Layer: τ_collision = J × r_contact / Δt_contact
+4. Ratchet engagement resists: T_burst = N_tabs × F_tab × r_ratchet
+   where:
+     N_tabs    = number of tabs engaged
+     F_tab     = force to slip one tab past one tooth (spring preload + tooth face angle)
+     r_ratchet = radius of ratchet ring
+5. If τ_collision > T_burst:
+   → Layer rotates relative to Driver by one tooth increment (Δθ = 360° / N_teeth)
+6. After enough increments (typically 2–3 tab slips):
+   → Layer has rotated far enough to clear all tab engagement → Layer ejects = BURST
+```
+
+**Tooth face angle model:**
+
+```
+Each ratchet tooth has a face angle β from the tangential direction.
+The component of tab spring force that resists slipping:
+  F_resist = F_spring × cos(β)
+The component that promotes slipping (drives Layer rotation):
+  F_slip    = F_spring × sin(β)
+
+Burst threshold torque per tab:
+  T_per_tab = F_spring × cos(β) × r_ratchet
+
+Total burst threshold:
+  T_burst = N_tabs × F_spring × cos(β) × r_ratchet
+
+Burst probability increases as:
+  - N_tabs decreases (fewer teeth engaged)
+  - F_spring decreases (weaker spring — standard vs Dash Driver)
+  - β increases (shallower tooth engagement angle → slips more easily)
+  - τ_collision increases (heavier opponent, harder contact)
+```
+
+**Dash Drivers and Metal Lock Drivers:**
+
+Takara Tomy introduced sub-categories that directly modify the spring:
+
+| Driver type | Spring | Burst resistance | Weight | Effect |
+|-------------|--------|-----------------|--------|--------|
+| Standard | Thin spring | Baseline | Baseline | Normal burst threshold |
+| Dash (suffix ´) | Thicker gold spring | Higher | +~0.5 g | Harder to burst; spring stiffer |
+| Metal Lock (ML suffix) | Thick gold spring + metal teeth | Lower than Dash | Higher | Metal teeth increase mass but reduce engagement — net burst resistance lower than Dash |
+| High (H suffix) | Standard spring | Same | +height | Taller Driver; same tip geometry at greater height |
+
+Dash Drivers increase F_spring → higher T_burst per tab → harder burst. Metal Lock Drivers add mass at the tab region but the metal tooth geometry reduces N_tabs effectively engaged, which more than offsets the stiffer spring for burst purposes.
+
+### Component Physics Roles
+
+**Layer:**
+- Primary I contributor when Layer is heavy or has large outer radius
+- Contact geometry (beast motif protrusions) sets the smash/recoil angle φ at each contact point
+- Inner ratchet is the burst resistance locus — all burst physics flows through here
+- NFC chip (Takara Tomy only): passive electronic; negligible mass (~0.5 g at r ≈ 5 mm → I ≈ 1.25×10⁻⁸ kg·m², < 0.2% of system I)
+- Soft inner PC piece provides a small deformation buffer vs hard outer casing: when outer casing transmits a hard collision, the inner piece's lower modulus partially absorbs the shock before it reaches the ratchet
+
+**Disc:**
+- All metal; primary I tuning component once Layer mass is fixed
+- Positioned below the Layer (first time in any system that the weight annulus is below the contact surface, not between it and the base)
+- Core Discs accept Disc Frames: small plastic or metal add-ons that alter the Disc's outer profile and I
+- Not a collision component: opponent contact occurs at Layer height, not Disc height (except at extreme wobble)
+
+**Driver:**
+- Combines height and tip into one part — no separate Spin Track
+- Spring preload is the sole adjustable burst resistance variable accessible to the builder without changing the Layer or Disc
+- Tip geometry taxonomy identical to Metal Saga: Attack (flat), Defense (wide/ball), Stamina (sharp/free-spin)
+- Height is fixed per Driver (unlike Metal Saga Tracks where height was encoded in part number); switching height requires a High Driver or different Driver
+
+### Disc Positioning: Physics Consequence
+
+In the Metal Saga: weight disk above the base (WD between AR and BB/Track). In Burst: Disc below the Layer. This shifts the system's centre of mass (CoM) downward:
+
+```
+CoM height above floor:
+  Metal Saga (HWS): z_CoM ≈ h_tip + h_Track/2 + h_WD/2 + h_AR/2
+  Burst:            z_CoM ≈ h_tip/2 + h_Driver/2 + h_Disc/2 + h_Layer/2
+
+Burst CoM is lower because the heavy metal Disc is sandwiched between the light Driver
+(below) and the lighter Layer (above), rather than being elevated by a Track.
+
+Lower CoM → lower gyroscopic precession rate for same spin → more stable at low spin →
+less susceptible to toppling from wobble-induced ring-out.
+```
+
+### Takara Tomy Subsystem Progression
+
+| # | Subsystem | Key addition | Cases |
+|---|-----------|-------------|-------|
+| 1 | Standard Burst (initial) | Burst ratchet; single-piece Layer | 368 (this case) |
+| 2 | Dual Layer System | Layer splits into two sub-layers | 369 |
+| 3 | God Layer System | Gimmicks within the Layer (rubber, springs) | 370 |
+| 4 | Cho-Z Layer System | Metal incorporated into Layer body | 371 |
+| 5 | Gatinko Layer System | Three interchangeable Layer parts (Chip + Ring + Base) | 372 |
+| 6 | Superking Layer System | Three Layer parts + Double Chassis (replaces Disc) | 373 |
+| 7 | Dynamite Battle Layer System | Three Layer parts + High/Low Mode | 374 |
+| 8 | Burst Ultimate Layer Series | BU Blade with new gimmick architecture | 375 |
+
+Each subsystem is additive: later systems retain all prior concepts and add one or two new structural features rather than replacing the architecture wholesale. The burst ratchet mechanism is present in every subsystem — it is never removed or replaced.
+
+### Inertia Budget (Standard Burst, initial releases)
+
+```
+I_Layer (PC dual-piece, m ≈ 12 g = 0.012 kg, r_i ≈ 6 mm, r_o ≈ 22 mm):
+I_L = ½ × 0.012 × ((0.006)² + (0.022)²)
+    = ½ × 0.012 × (3.6×10⁻⁵ + 4.84×10⁻⁴)
+    = ½ × 0.012 × 5.20×10⁻⁴
+    ≈ 3.12×10⁻⁶ kg·m²
+
+I_Disc (metal annulus, m ≈ 20 g = 0.020 kg, r_i ≈ 6 mm, r_o ≈ 24 mm):
+I_D = ½ × 0.020 × ((0.006)² + (0.024)²)
+    = ½ × 0.020 × (3.6×10⁻⁵ + 5.76×10⁻⁴)
+    = ½ × 0.020 × 6.12×10⁻⁴
+    ≈ 6.12×10⁻⁶ kg·m²
+
+I_Driver (ABS pyramid + spring, m ≈ 3 g = 0.003 kg, r ≈ 8 mm):
+I_Dr = ½ × 0.003 × (0.008)²
+     ≈ 9.60×10⁻⁸ kg·m²
+```
+
+| Component | Material | Mass (g) | I (kg·m²) | Share |
+|-----------|----------|----------|-----------|-------|
+| Layer | Polycarbonate | 12.0 | 3.12×10⁻⁶ | 33.6% |
+| Disc | Metal | 20.0 | 6.12×10⁻⁶ | 65.9% |
+| Driver | ABS | 3.0 | 9.60×10⁻⁸ | 1.0% |
+| NFC chip | — | 0.5 | ~1.25×10⁻⁸ | ~0.1% |
+| **Total** | | **35.5** | **9.29×10⁻⁶** | 100% |
+
+**The Disc is the dominant I contributor at ~66%.** This is the inverse of the Metal Saga pattern: in HWS the metal Fusion Wheel dominated; in Burst the metal Disc dominates — but because the Disc is below the Layer rather than the primary contact surface, optimising for I (heavy Disc) and optimising for contact geometry (Layer shape) are now independent decisions on different parts. This decoupling is the fundamental customisation advance of the Burst System over all prior generations.
+
+### TypeScript Model
+
+```typescript
+function burstSystemInertia(
+  layerMassG: number, layerOuterMm: number, layerInnerMm: number,
+  discMassG: number, discOuterMm: number,
+  driverMassG: number, driverRadiusMm: number
+): { iLayer: number; iDisc: number; iDriver: number;
+     iTotal: number; discSharePct: number; layerSharePct: number } {
+  const toKg = (g: number) => g / 1000;
+  const toM  = (mm: number) => mm / 1000;
+  const annular = (m: number, ri: number, ro: number) =>
+    0.5 * m * (ri * ri + ro * ro);
+
+  const iLayer  = annular(toKg(layerMassG),  toM(layerInnerMm), toM(layerOuterMm));
+  const iDisc   = annular(toKg(discMassG),   toM(6),            toM(discOuterMm));
+  const iDriver = 0.5 * toKg(driverMassG) * toM(driverRadiusMm) ** 2;
+  const iTotal  = iLayer + iDisc + iDriver;
+
+  return { iLayer, iDisc, iDriver, iTotal,
+           discSharePct:  (iDisc  / iTotal) * 100,
+           layerSharePct: (iLayer / iTotal) * 100 };
+}
+
+function burstThresholdTorque(
+  nTabs: number, springForceN: number, toothAngleDeg: number, ratchetRadiusMm: number
+): number {
+  const beta = (toothAngleDeg * Math.PI) / 180;
+  return nTabs * springForceN * Math.cos(beta) * (ratchetRadiusMm / 1000); // N·m
+}
+
+function burstProbability(
+  tauCollisionNm: number, tBurstNm: number,
+  tabsPerBurst: number, tabsSlipped: number
+): { slipsThisBlow: boolean; remainingTabsToEject: number } {
+  const slipsThisBlow = tauCollisionNm > tBurstNm;
+  return {
+    slipsThisBlow,
+    remainingTabsToEject: slipsThisBlow ? Math.max(0, tabsPerBurst - tabsSlipped - 1) : tabsPerBurst - tabsSlipped
+  };
+}
+
+// burstSystemInertia(12, 22, 6, 20, 24, 3, 8)
+//   → iLayer ≈ 3.12×10⁻⁶, iDisc ≈ 6.12×10⁻⁶, iTotal ≈ 9.29×10⁻⁶
+//      discSharePct ≈ 65.9%, layerSharePct ≈ 33.6%
+// burstThresholdTorque(3, 0.8, 45, 8)
+//   → ≈ 1.36×10⁻² N·m  (3 tabs, 0.8 N spring, 45° tooth, 8 mm ratchet radius)
+// burstThresholdTorque(3, 1.4, 45, 8)
+//   → ≈ 2.37×10⁻² N·m  (Dash Driver: thicker spring 1.4 N → 74% higher burst resistance)
+// burstProbability(0.020, 0.0136, 3, 0)
+//   → { slipsThisBlow: true, remainingTabsToEject: 2 }  (1 of 3 tabs slipped)
+// burstProbability(0.010, 0.0136, 3, 0)
+//   → { slipsThisBlow: false, remainingTabsToEject: 3 }  (collision below threshold)
+```
+
+---
+
+## Case 369 — Dual Layer System (DLS): Upper/Lower Layer Split, Thickness-Driven Inertia Increase, and Matched-Pair Constraint
+
+**Thesis:** The Dual Layer System is the first subsystem refinement within the Burst System; its single structural change from the initial Burst Layer is the splitting of the single-piece polycarbonate Layer into two discrete sub-pieces — an Upper Layer (hard PC, outer contact geometry and beast motif) and a Lower Layer (softer PC, ratchet ring housing) — fastened together by a small central screw, and this split has three compounding consequences: the Layer becomes physically thicker than its initial Burst predecessor because the two sub-pieces together occupy more axial height than a single moulded piece of equivalent geometry; the Layer's total mass increases because more polycarbonate is used to form two separately moulded pieces rather than one, which increases I_Layer by approximately 40–50% over initial Burst Layers at comparable outer radii and shifts the Layer's share of system I from ~34% toward ~42%; and the Upper/Lower contact deformation model changes because the hard outer face (Upper Layer) now transmits collision impulse to the soft inner piece (Lower Layer) through a mechanical screw joint rather than through a monolithic plastic body, introducing a compliance step at the screw interface that slightly damps the impulse transmitted to the ratchet before burst tabs are loaded; despite the structural split, DLS Upper and Lower Layers are manufactured and sold as matched pairs with no inter-bey interchangeability — the part-level customisation matrix remains one-dimensional (whole Layer per Beyblade) and the transition to true multi-part interchangeability does not occur until the Gatinko Layer System.
+
+### Layer Architecture: Initial Burst vs Dual Layer
+
+```
+Initial Burst Layer (single piece, side cross-section):
+
+  ┌──────────────────────────────────────┐  ← hard PC outer shell
+  │  beast motif / contact protrusions   │
+  │  ratchet teeth (inner ring)          │  ← ratchet housed in single moulded body
+  │  NFC chip slot (TT only)             │
+  └──────────────────────────────────────┘
+  Total thickness: t_initial ≈ 6–8 mm
+  Single PC grade throughout (two-shot moulding for hard/soft zones)
+
+Dual Layer System Layer (two pieces, side cross-section):
+
+  ┌──────────────────────────────────────┐  ← UPPER LAYER (hard PC)
+  │  beast motif / contact protrusions   │  ← primary collision surface
+  │  3D geometry enabled by separate die │  ← more complex shape possible
+  │  central screw boss (female)         │
+  ├══════════════════════════════════════╡  ← screw interface (compliance layer)
+  │  [M-size screw at centre]            │  ← fastener; r ≈ 3 mm (negligible I)
+  ├══════════════════════════════════════╡
+  │  ratchet teeth ring (inner)          │  ← LOWER LAYER (softer PC)
+  │  coloured PC; weight visualisation   │
+  │  NFC chip slot (TT only)             │
+  └──────────────────────────────────────┘  ← LOWER LAYER (softer PC)
+  Total thickness: t_DLS ≈ 10–14 mm  (≈ 40–75% thicker than initial Burst)
+```
+
+### Upper / Lower Layer Functional Division
+
+```
+UPPER LAYER (hard polycarbonate):
+  Role: contact geometry and beast motif
+  Material grade: higher-hardness PC (E ≈ 2.4–2.8 GPa)
+  Contact behaviour: large contact patch (Hertzian PC-on-PC); primary smash/recoil source
+  Design freedom: because it is a separate moulded part, it can have fully 3D overhangs,
+                  undercuts, and variable-thickness protrusions not achievable in
+                  a single-shot mould shared with the ratchet housing
+
+LOWER LAYER (softer polycarbonate):
+  Role: ratchet housing and burst threshold
+  Material grade: lower-hardness PC (E ≈ 1.8–2.2 GPa)
+  The softer grade provides two functions:
+  1. Slight flex at the ratchet ring absorbs peak collision loading before tab slip
+  2. Acts as a shock absorber for the Driver tab spring — reduces peak F_tab exceedance
+
+SCREW INTERFACE:
+  The central screw couples Upper and Lower Layers mechanically.
+  Under collision, impulse flows: opponent Layer → Upper Layer surface → screw boss →
+  screw shank → Lower Layer boss → ratchet teeth.
+  The screw boss-to-shank clearance introduces a small rotational slack δθ_screw.
+  If the collision torque is absorbed within this slack range, no torque reaches the ratchet.
+  Effective ratchet loading:
+    τ_ratchet = τ_collision × (1 − δθ_screw / Δθ_tooth)
+  This is a passive impact-attenuation mechanism not present in single-piece Layers.
+```
+
+### Matched-Pair Constraint: No Inter-Bey Interchangeability
+
+DLS Upper and Lower Layers are paired per Beyblade at manufacture. The screw boss diameters and angular alignment keyways are specific to each Upper/Lower pair; mixing an Upper Layer from one Beyblade with a Lower Layer from another produces misaligned keyways, incomplete screw engagement, or contact geometry that exposes the Lower Layer's ratchet ring rather than the Upper Layer's beast protrusions.
+
+```
+Customisation matrix comparison:
+
+Initial Burst:  Layer (whole unit) × Disc × Driver  →  3 axes, 1D per axis
+DLS:            Layer (matched pair) × Disc × Driver →  3 axes, 1D per axis (unchanged)
+Gatinko:        Chip × Ring × Base × Disc × Driver  →  5 axes (true 3D Layer customisation)
+
+The DLS split is a structural improvement (more complex Layer geometry, higher Layer I)
+but not a customisation expansion — the user still selects one Layer per bey.
+```
+
+### Inertia Budget: Initial Burst vs Dual Layer
+
+The DLS Layer's greater mass and (in many designs) larger outer radius increases I_Layer:
+
+```
+Representative DLS Layer (dual-piece PC, m ≈ 17 g = 0.017 kg, r_i ≈ 6 mm, r_o ≈ 23 mm):
+I_L_DLS = ½ × 0.017 × ((0.006)² + (0.023)²)
+        = ½ × 0.017 × (3.6×10⁻⁵ + 5.29×10⁻⁴)
+        = ½ × 0.017 × 5.65×10⁻⁴
+        ≈ 4.80×10⁻⁶ kg·m²
+
+Initial Burst Layer (m ≈ 12 g, r_o ≈ 22 mm): I_L ≈ 3.12×10⁻⁶ kg·m²
+
+ΔI_Layer = 4.80×10⁻⁶ − 3.12×10⁻⁶ = 1.68×10⁻⁶ kg·m²  → +53.8% increase in I_Layer
+```
+
+| Component | Initial Burst | Dual Layer System | Change |
+|-----------|--------------|------------------|--------|
+| Layer I (kg·m²) | 3.12×10⁻⁶ | 4.80×10⁻⁶ | +53.8% |
+| Disc I (kg·m²) | 6.12×10⁻⁶ | 6.12×10⁻⁶ | unchanged |
+| Driver I (kg·m²) | 9.60×10⁻⁸ | 9.60×10⁻⁸ | unchanged |
+| **I_total** | **9.29×10⁻⁶** | **1.10×10⁻⁵** | +18.4% |
+| Layer share | 33.6% | 43.7% | +10.1 pp |
+| Disc share | 65.9% | 55.7% | −10.2 pp |
+
+The DLS shifts the Layer from a minority I contributor to a near-equal partner with the Disc. This matters for Disc selection: in initial Burst, Disc choice was the dominant I decision; in DLS, both Layer and Disc choices are significant and must be evaluated together.
+
+### Collision Deformation: Two-Surface Contact Model
+
+A DLS Layer presents two sequential deformation zones to the opponent:
+
+```
+Collision event (DLS Layer vs DLS Layer):
+
+Step 1: Upper Layer outer surface contact
+  Hertzian contact (PC-on-PC):
+  a = (3WR / 4E*)^(1/3)
+  E*_PC = E_PC / (2(1−ν²)) ≈ 2.4×10⁹ / (2×0.88) ≈ 1.36×10⁹ Pa
+  Contact patch radius a depends on collision geometry and normal force W.
+
+Step 2: Impulse transmits through Upper Layer body
+  Rigid body assumption for hard PC Upper Layer: minimal energy loss in transit.
+
+Step 3: Screw interface compliance
+  Small rotational slack δθ absorbs first increment of torque (no ratchet loading).
+
+Step 4: Lower Layer ratchet loading
+  Torque τ_ratchet = τ_collision − τ_absorbed_at_screw
+  If τ_ratchet > T_burst → tab slip → burst sequence begins.
+```
+
+The softer Lower Layer PC at the ratchet seat provides an additional micro-deformation buffer: the ratchet tooth face slightly indents the softer material under high τ, increasing effective contact area and therefore F_resist per tooth before slip occurs. This makes DLS Layers marginally harder to burst per-collision than initial Burst Layers with identical tooth counts, at the cost of gradual ratchet tooth wear.
+
+### TypeScript Model
+
+```typescript
+function dlsLayerInertia(
+  upperMassG: number, lowerMassG: number,
+  outerMm: number, innerMm: number
+): { iUpper: number; iLower: number; iLayer: number } {
+  const toKg = (g: number) => g / 1000;
+  const toM  = (mm: number) => mm / 1000;
+  const annular = (m: number, ri: number, ro: number) =>
+    0.5 * m * (ri * ri + ro * ro);
+
+  const iUpper = annular(toKg(upperMassG), toM(innerMm), toM(outerMm));
+  const iLower = annular(toKg(lowerMassG), toM(innerMm), toM(outerMm));
+  return { iUpper, iLower, iLayer: iUpper + iLower };
+}
+
+function dlsBurstThreshold(
+  nTabs: number, springForceN: number, toothAngleDeg: number,
+  ratchetRadiusMm: number, screwSlackDeg: number, toothPitchDeg: number
+): number {
+  const beta = (toothAngleDeg * Math.PI) / 180;
+  const tBurstBase = nTabs * springForceN * Math.cos(beta) * (ratchetRadiusMm / 1000);
+  // screw slack absorbs a fraction of torque before ratchet is loaded
+  const slackFraction = screwSlackDeg / toothPitchDeg;
+  return tBurstBase / (1 - Math.min(slackFraction, 0.3)); // screw slack raises effective threshold
+}
+
+function dlsVsInitialBurstI(
+  dlsLayerMassG: number, dlsOuterMm: number,
+  initLayerMassG: number, initOuterMm: number,
+  discMassG: number, discOuterMm: number
+): { iDLS: number; iInit: number; deltaSharePp: number } {
+  const toKg = (g: number) => g / 1000;
+  const toM  = (mm: number) => mm / 1000;
+  const annular = (m: number, ri: number, ro: number) =>
+    0.5 * m * (ri * ri + ro * ro);
+
+  const iDisc = annular(toKg(discMassG), toM(6), toM(discOuterMm));
+  const iDLSLayer  = annular(toKg(dlsLayerMassG),  toM(6), toM(dlsOuterMm));
+  const iInitLayer = annular(toKg(initLayerMassG), toM(6), toM(initOuterMm));
+  const iDLS  = iDLSLayer  + iDisc;
+  const iInit = iInitLayer + iDisc;
+  const dlsLayerShare  = (iDLSLayer  / iDLS)  * 100;
+  const initLayerShare = (iInitLayer / iInit) * 100;
+  return { iDLS, iInit, deltaSharePp: dlsLayerShare - initLayerShare };
+}
+
+// dlsLayerInertia(9, 8, 23, 6)
+//   → iUpper ≈ 2.54×10⁻⁶, iLower ≈ 2.26×10⁻⁶, iLayer ≈ 4.80×10⁻⁶ kg·m²
+// dlsBurstThreshold(3, 0.8, 45, 8, 5, 120)
+//   → ≈ 1.45×10⁻² N·m  (screw slack raises effective threshold ~6% vs no slack)
+// dlsVsInitialBurstI(17, 23, 12, 22, 20, 24)
+//   → iDLS ≈ 1.09×10⁻⁵, iInit ≈ 9.24×10⁻⁶
+//      deltaSharePp ≈ +10.1 pp  (Layer share increases 33.6% → 43.7% in DLS)
+
+---
+
+## Case 370 — God Layer System (GLS): Two-Part Disc Architecture, Core Disc Protrusion I, and God Ability Layer Gimmicks
+
+**Thesis:** The God Layer System is the third Burst subsystem; it introduces two simultaneous changes — one to the Disc layer and one to the Layer — and these changes are independent in physics but linked in the design philosophy of increasing per-part performance variability; the Disc change is structural: the single-piece metal Disc of all prior Burst subsystems splits into a Core Disc (metal, numbered for its protrusion count) and a Disc Frame (plastic ring, named and abbreviated to its first letter), following the same density-trade-off logic as the Hybrid Wheel System's split of the Fusion Wheel into a metal Fusion Wheel and polycarbonate Energy Ring, and producing the same consequence: the metal component's effective outer radius can be extended by protrusions while the plastic Frame contributes I at maximum radius with the material penalty of ~5.5× lower density than the equivalent zinc volume; the Layer change is the introduction of God Abilities — named mechanical or geometric gimmicks built into each God Layer that produce discrete performance effects (rubber contact zones, spring-actuated mode shifts, or asymmetric protrusion configurations) not present in DLS Layers; and the God Layer naming convention (lowercase first letter of Layer name, uppercase first letter of beast name: gV for God Valkyrie) and the Disc naming convention (Core Disc number concatenated with Disc Frame initial: 5G for 5-Core-Disc + Glaive) together establish the shorthand notation carried forward through all subsequent Burst subsystems.
+
+### Disc Architecture: Single-Piece vs Two-Part
+
+```
+Prior Burst / DLS Disc (single metal piece, top view):
+
+       ┌────────────────────────────────┐
+       │  solid metal annulus           │
+       │  r_inner ≈ 6 mm               │
+       │  r_outer ≈ 22–28 mm           │
+       │  mass ≈ 18–25 g               │
+       └────────────────────────────────┘
+       I dominated by single annular term
+
+God Layer System Disc (Core + Frame, top view):
+
+       ┌────────────────────────────────┐
+       │      CORE DISC (metal)         │  ← numbered (e.g. "6" = six protrusions)
+       │   ┌──────────────────────┐     │
+       │   │ central annulus body │     │  ← r_body ≈ 4–16 mm
+       │   │  [N protrusions]──►  │     │  ← each protrusion extends to r_prot ≈ 20–24 mm
+       │   └──────────────────────┘     │
+       └────────────────────────────────┘
+       ┌────────────────────────────────┐
+       │      DISC FRAME (plastic)      │  ← named (Glaive, Cross, Meteor, etc.)
+       │  outer ring seated on Core rim │  ← r_inner ≈ 18 mm, r_outer ≈ 25–28 mm
+       │  plastic (ABS or PC)          │  ← lower density than metal
+       └────────────────────────────────┘
+
+Naming: [Core Disc number][Disc Frame first letter]
+Example: 5 Core Disc + Glaive Frame = "5G"
+         6 Core Disc + Meteor Frame  = "6M"
+```
+
+### Core Disc Protrusion Geometry and I
+
+The Core Disc number encodes its protrusion count. A "6" Core Disc has six metal protrusions extending radially outward from the central annulus body. These protrusions carry metal mass to a larger radius than the body alone, increasing I_Core relative to a smooth annulus of the same total mass:
+
+```
+Core Disc I = I_body + I_protrusions
+
+I_body (metal annulus, m_b, r_i ≈ 4 mm, r_o_body ≈ 16 mm):
+  I_body = ½ × m_b × (r_i² + r_o_body²)
+
+I_protrusions (N protrusions, total mass m_p distributed at r_prot ≈ 22 mm):
+  I_prot = m_p × r_prot²   (point-mass approximation per protrusion tip)
+
+Total:
+  I_Core = I_body + I_prot = ½ × m_b × (r_i² + r_o²) + m_p × r_prot²
+
+Specific inertia gain from protrusions vs equivalent smooth annulus (same total mass m_c = m_b + m_p):
+  Smooth at r_o_body: I_smooth = ½ × m_c × (r_i² + r_o_body²)
+  With protrusions at r_prot:
+  ΔI = m_p × (r_prot² − r_o_body²)
+
+Representative (6 Core Disc: m_b = 11 g, m_p = 4 g, r_o_body = 16 mm, r_prot = 22 mm):
+  I_body = ½ × 0.011 × ((0.004)² + (0.016)²)
+         = ½ × 0.011 × (1.6×10⁻⁵ + 2.56×10⁻⁴)
+         = ½ × 0.011 × 2.72×10⁻⁴ ≈ 1.50×10⁻⁶ kg·m²
+
+  I_prot = 0.004 × (0.022)² = 0.004 × 4.84×10⁻⁴ ≈ 1.94×10⁻⁶ kg·m²
+
+  I_Core ≈ 1.50×10⁻⁶ + 1.94×10⁻⁶ = 3.44×10⁻⁶ kg·m²
+
+  Smooth annulus (same 15 g, r_o = 16 mm):
+  I_smooth = ½ × 0.015 × (1.6×10⁻⁵ + 2.56×10⁻⁴) ≈ 2.04×10⁻⁶ kg·m²
+
+  Protrusion I gain: 3.44×10⁻⁶ − 2.04×10⁻⁶ = +1.40×10⁻⁶ kg·m²  (+68.6%)
+```
+
+Higher protrusion count (more N) at fixed total protrusion mass = more smaller protrusions at similar r_prot → approximately same total I_prot. Lower protrusion count with same mass = each protrusion is thicker/heavier → could reach slightly larger r_prot → marginally higher I_prot. The protrusion count number is therefore primarily a geometry (symmetry) descriptor rather than a direct I predictor: I_Core is determined by total protrusion mass and their radial reach, not by N alone.
+
+Symmetry consequences of protrusion count:
+```
+N protrusions → C_N rotational symmetry of Core Disc
+  N = 2: C₂ (180° repeat) → nutation forcing at 2ω
+  N = 4: C₄
+  N = 6: C₆ → high symmetry, nearly isotropic
+  N = 0 or asymmetric: C₁ → dynamic imbalance (same as Warrior Wheel in Synchrome)
+```
+
+### Disc Frame Physics
+
+The Disc Frame is a plastic ring seated on the Core Disc's outer rim:
+
+```
+I_Frame (plastic, m_F, r_i_F ≈ 18 mm, r_o_F ≈ 26 mm):
+  I_Frame = ½ × m_F × (r_i_F² + r_o_F²)
+
+Representative (Glaive Frame, m_F ≈ 4 g):
+  I_Frame = ½ × 0.004 × ((0.018)² + (0.026)²)
+           = ½ × 0.004 × (3.24×10⁻⁴ + 6.76×10⁻⁴)
+           = ½ × 0.004 × 1.0×10⁻³
+           ≈ 2.00×10⁻⁶ kg·m²
+
+Material density penalty vs equivalent metal Frame:
+  ρ_metal / ρ_ABS ≈ 6600 / 1050 ≈ 6.3×
+  I_metal_equiv = 2.00×10⁻⁶ × 6.3 ≈ 1.26×10⁻⁵ kg·m²
+  I_Frame captures only (2.00/12.6) ≈ 15.9% of equivalent full-metal I at that radius.
+```
+
+The Disc Frame's functional roles beyond I:
+1. **Geometry at low spin wobble**: when the Bey wobbles at low spin, the Disc Frame is the first Disc-level part to contact the opponent's Layer or the stadium wall. Frame shape (smooth vs Glaive fin-like vs Cross block) determines the collision geometry at this stage.
+2. **Outer profile for aerodynamics**: Frame fins can generate downforce or vortex effects at speed (small but non-zero contribution at high ω).
+3. **Customisation axis**: Frame is independently selectable from Core Disc — this is the first time in any Burst subsystem that any Disc-level part is interchangeable independently of another Disc-level part.
+
+### Two-Part Disc Naming Convention
+
+```
+[Core Disc number] + [Disc Frame first letter] = Disc combo name
+
+Core Disc numbers and their protrusion counts:
+  0 → 0 protrusions (smooth ring)
+  2 → 2 protrusions (180° symmetric, C₂)
+  4 → 4 protrusions (C₄)
+  5 → 5 protrusions (C₅ — unusual; prime number, near-isotropic)
+  6 → 6 protrusions (C₆ — highly isotropic)
+  7 → 7 protrusions (C₇ — prime; irregular spacing compensates CoM offset)
+  10→ 10 protrusions (C₁₀ — essentially circular at this protrusion count)
+
+Disc Frame first letters (examples):
+  G = Glaive   C = Cross   M = Meteor   T = Trans   H = Hunter
+
+Example combos:
+  5G = 5 Core Disc + Glaive Frame
+  6M = 6 Core Disc + Meteor Frame
+  0C = 0 Core Disc + Cross Frame  (smooth Core; Frame provides all outer geometry)
+```
+
+### God Ability Layer Gimmicks
+
+God Abilities are named mechanical or geometric gimmicks unique to each God Layer. The physics category of a God Ability falls into one of three classes:
+
+```
+Class 1 — RUBBER CONTACT:
+  Rubber inserts at Layer protrusion tips.
+  Physics: high-friction rubber contact (μ_rubber ≈ 0.85 vs μ_PC ≈ 0.35).
+  On contact with opponent: rubber surface creates traction rather than slide.
+  Effect: opponent Layer deflects less tangentially → opponent loses more spin
+  per collision (rubber absorbs and transfers more rotational momentum).
+  τ_rubber_contact = μ_rubber × W × r_contact  (vs μ_PC × W × r_contact for smooth PC)
+
+Class 2 — SPRING / MODE CHANGE:
+  Internal spring or cam mechanism that shifts contact geometry mid-battle.
+  Physics: as in 4D Bottom F:D — centrifugal trigger at ω_switch.
+  Effect: Layer presents different contact geometry at high vs low spin.
+  Model: same centrifugal threshold equation as F:D.
+
+Class 3 — ASYMMETRIC PROTRUSION CONFIGURATION:
+  Protrusions arranged asymmetrically (C₁ Layer) to create directional attack bias.
+  Physics: like Warrior Wheel in Synchrome — variable φ(θ), dynamic imbalance.
+  Effect: some rotational positions deliver high smash, others deflect.
+  Model: same variable contact angle model as C₁ Warrior Wheel.
+```
+
+Each God Layer's ability is named (e.g., "God Blow", "God Swing") and corresponds to one of these three physics classes. Per-Layer analysis of the specific ability is performed in the individual part case when wiki data is provided.
+
+### GLS Inertia Budget
+
+Four I terms now (Layer, Core Disc, Disc Frame, Driver):
+
+```
+I_total = I_Layer + I_Core + I_Frame + I_Driver
+```
+
+| Component | Material | Mass (g) | I (kg·m²) | Share |
+|-----------|----------|----------|-----------|-------|
+| God Layer | PC (dual) | 17.0 | 4.80×10⁻⁶ | 38.0% |
+| Core Disc (6) | Metal | 15.0 | 3.44×10⁻⁶ | 27.2% |
+| Disc Frame (Glaive) | Plastic | 4.0 | 2.00×10⁻⁶ | 15.8% |
+| Driver | ABS | 3.0 | 9.60×10⁻⁸ | 0.76% |
+| **Total** | | **39.0** | **1.26×10⁻⁵** | 100% |
+
+The split Disc (Core + Frame combined: 5.44×10⁻⁶) is now below the Layer (4.80×10⁻⁶) in I contribution. The Layer has become the **dominant I term** for the first time in the Burst series — a shift driven by the Layer's growing mass and complexity, combined with the Core Disc being lighter than the prior single-piece Disc. Disc selection remains significant but no longer determines the I budget single-handedly.
+
+### TypeScript Model
+
+```typescript
+function glsDiscInertia(
+  coreMassBodyG: number, coreMassProtG: number, coreBodyOuterMm: number,
+  coreProtRadiusMm: number, coreInnerMm: number,
+  frameMassG: number, frameOuterMm: number, frameInnerMm: number
+): { iCoreBody: number; iCoreProt: number; iCore: number;
+     iFrame: number; iDiscAssembly: number } {
+  const toKg = (g: number) => g / 1000;
+  const toM  = (mm: number) => mm / 1000;
+  const annular = (m: number, ri: number, ro: number) =>
+    0.5 * m * (ri * ri + ro * ro);
+
+  const iCoreBody = annular(toKg(coreMassBodyG), toM(coreInnerMm), toM(coreBodyOuterMm));
+  const iCoreProt = toKg(coreMassProtG) * toM(coreProtRadiusMm) ** 2;
+  const iCore     = iCoreBody + iCoreProt;
+  const iFrame    = annular(toKg(frameMassG), toM(frameInnerMm), toM(frameOuterMm));
+  return { iCoreBody, iCoreProt, iCore, iFrame, iDiscAssembly: iCore + iFrame };
+}
+
+function glsProtrustionIGain(
+  totalCoreMassG: number, protMassFracG: number,
+  bodyOuterMm: number, protRadiusMm: number, innerMm: number
+): number {
+  const toKg = (g: number) => g / 1000;
+  const toM  = (mm: number) => mm / 1000;
+  const bodyMass = totalCoreMassG - protMassFracG;
+  const iSmooth = 0.5 * toKg(totalCoreMassG) * (toM(innerMm) ** 2 + toM(bodyOuterMm) ** 2);
+  const iWithProt = 0.5 * toKg(bodyMass) * (toM(innerMm) ** 2 + toM(bodyOuterMm) ** 2)
+    + toKg(protMassFracG) * toM(protRadiusMm) ** 2;
+  return ((iWithProt - iSmooth) / iSmooth) * 100; // % gain over smooth
+}
+
+// glsDiscInertia(11, 4, 16, 22, 4, 4, 26, 18)
+//   → iCoreBody ≈ 1.50×10⁻⁶, iCoreProt ≈ 1.94×10⁻⁶, iCore ≈ 3.44×10⁻⁶
+//      iFrame ≈ 2.00×10⁻⁶, iDiscAssembly ≈ 5.44×10⁻⁶ kg·m²
+// glsProtrustionIGain(15, 4, 16, 22, 4)
+//   → ≈ +68.6%  (protrusions at r=22mm give 68.6% more I than smooth annulus same mass)
+// glsDiscInertia(12, 0, 22, 22, 4, 4, 26, 18)
+//   → 0 Core Disc (smooth, no protrusions): all mass in body → lower I_Core
+// glsDiscInertia(11, 6, 16, 23, 4, 5, 27, 19)
+//   → heavier protrusions at larger r: iCoreProt ≈ 3.17×10⁻⁶ → higher total
+```
+
+---
+
+## Case 371 — Cho-Z Layer System (CZL): Die-Cast Metal Layer Insert, Level Chip Compliance, and Awakening Wing Burst-Stop
+
+**Thesis:** The Cho-Z Layer System is the fourth Burst subsystem and the first to incorporate die-cast metal directly into the Layer body, which reverses the Layer's physics relationship with the Disc: in all prior Burst subsystems the Disc was the metal component and the Layer was the polycarbonate component; in Cho-Z the Layer becomes a PC-plus-metal composite whose metal insert sits at the outer contact radius, making the Layer the dominant I contributor at approximately 55% of system I versus the Disc assembly's ~44% combined, and simultaneously making Layer-to-Layer collision contacts harder and shorter-duration because zinc's elastic modulus (~43× that of ABS) reduces the contact patch radius by ~20% and eliminates the deformation energy loss that PC-on-PC collisions incurred in all prior subsystems; the Level Chip is a new hoop-shaped accessory seated beneath the Layer face that adds mass at the inner-to-mid radius and provides three controllable properties — stability (CoM height shift), locking (burst ratchet preload increase), and weight (I increment) — at the cost of being competition-exclusive in most cases; the Cho-Z Awakening System introduces a launch-strength-gated wing deployment mechanism that extends the Layer's effective outer radius at high spin (increasing I by the wing-arm mass contribution) and simultaneously engages Burst Stoppers — hard mechanical blocks that physically prevent the Driver tabs from completing the ratchet slip sequence, making burst mechanically impossible while wings are deployed, not merely statistically improbable; and the Xtend Chip (Z Achilles exclusive) introduces manual three-mode Driver tip selection as a pre-battle decision variable absent from all prior Driver designs.
+
+### Die-Cast Metal Layer: Material and I Consequences
+
+```
+GLS God Layer (PC only, side cross-section):
+
+  ┌──────────────────────────────────────┐
+  │  PC outer casing (hard, uniform)     │  ← uniform polycarbonate throughout
+  │  PC inner piece (soft, ratchet)      │  ← density ρ_PC ≈ 1200 kg/m³ throughout
+  └──────────────────────────────────────┘
+  I contribution: moderate (limited by PC density)
+
+Cho-Z Layer (PC + die-cast metal insert):
+
+  ┌──────────────────────────────────────┐
+  │  PC outer shell (structural frame)   │  ← reduced mass; PC clears space for metal
+  │  [die-cast metal insert, outer rim]  │  ← ρ_zinc ≈ 6600 kg/m³; r ≈ 18–24 mm
+  │  PC inner piece (ratchet housing)    │  ← unchanged; softer PC at ratchet seat
+  └──────────────────────────────────────┘
+  I contribution: dominant (metal at outer radius)
+```
+
+**I comparison at equivalent outer geometry:**
+
+```
+PC Layer (m ≈ 17 g at r_o = 22 mm, from GLS):
+  I_PC_layer = 4.80×10⁻⁶ kg·m²  (computed in Case 370)
+
+Cho-Z Layer (PC frame 10 g + metal insert 10 g):
+  I_PC_frame (r_i = 6 mm, r_o = 20 mm):
+    = ½ × 0.010 × ((0.006)² + (0.020)²)
+    = ½ × 0.010 × (3.6×10⁻⁵ + 4.0×10⁻⁴) = ½ × 0.010 × 4.36×10⁻⁴
+    ≈ 2.18×10⁻⁶ kg·m²
+
+  I_metal_insert (r_i = 18 mm, r_o = 24 mm):
+    = ½ × 0.010 × ((0.018)² + (0.024)²)
+    = ½ × 0.010 × (3.24×10⁻⁴ + 5.76×10⁻⁴) = ½ × 0.010 × 9.0×10⁻⁴
+    ≈ 4.50×10⁻⁶ kg·m²
+
+  I_ChoZ_Layer = 2.18×10⁻⁶ + 4.50×10⁻⁶ = 6.68×10⁻⁶ kg·m²
+
+ΔI_Layer = 6.68×10⁻⁶ − 4.80×10⁻⁶ = 1.88×10⁻⁶ kg·m²  → +39.2% increase vs GLS Layer
+```
+
+The metal insert contributes 4.50×10⁻⁶ kg·m² — more than the entire GLS Layer alone (4.80×10⁻⁶ combined PC). This is the same material-density effect seen in HMS (Metal Frame vs ABS AR) and HWS (Fusion Wheel vs Energy Ring), now applied to the Layer for the first time.
+
+**Contact hardness: Cho-Z metal vs GLS PC**
+
+```
+At Layer-to-Layer collision, Cho-Z metal face vs opponent PC face:
+
+E*_mixed (zinc vs PC, using HMS formula):
+  1/E*_mixed = (1−ν_PC²)/E_PC + (1−ν_Zn²)/E_Zn
+             ≈ (0.878)/2.4×10⁹ + (0.91)/100×10⁹
+             ≈ 3.66×10⁻¹⁰ + 9.1×10⁻¹²
+             ≈ 3.75×10⁻¹⁰ Pa⁻¹
+  E*_mixed ≈ 2.67×10⁹ Pa
+
+  a_ChoZ / a_GLS = (E*_PC_PC / E*_mixed)^(1/3)
+                 = (1.33×10⁹ / 2.67×10⁹)^(1/3)
+                 = (0.498)^(1/3) ≈ 0.793
+
+Cho-Z metal contact patch is ~79% the radius of GLS PC-on-PC contact:
+→ higher peak stress → harder impulse → greater per-collision spin loss to opponent
+→ less energy absorbed as PC deformation → higher rebound coefficient of restitution
+```
+
+### Level Chips
+
+Level Chips are hoop-shaped accessories seated between the Layer face and the Disc, at the Layer's underside inner-to-mid radius:
+
+```
+Layer assembly with Level Chip (side view):
+
+  ┌──────────────────────────────────────┐
+  │  Cho-Z Layer (PC + metal insert)     │
+  │                                      │
+  │  [Level Chip — hoop shape]           │  ← sits beneath Layer face
+  │   r_inner ≈ 6 mm, r_outer ≈ 14 mm   │  ← inner-to-mid radius; near axis
+  └──────────────────────────────────────┘
+           ↕
+       Disc assembly below
+```
+
+Three functional effects of Level Chip variants:
+
+```
+STABILITY CHIP:
+  Mass added at r ≈ 10 mm → slight CoM height increase (chip is above Disc level)
+  Effect: raises CoM marginally → reduces gyroscopic stability threshold very slightly.
+  More relevantly: additional mass on inner Layer zone adds axial weight that
+  presses the Layer more firmly onto the Driver→Disc stack → reduced axial play.
+  ΔI = ½ × m_LC × (r_i² + r_o²) ≈ ½ × 0.002 × (3.6×10⁻⁵ + 1.96×10⁻⁴) ≈ 2.32×10⁻⁷ kg·m²
+
+LOCK CHIP:
+  Shaped to engage the burst ratchet interface more firmly.
+  Physics: increases effective F_resist per tooth by adding a friction surface or
+           a secondary engagement geometry alongside the Driver tabs.
+  Effect: raises T_burst without changing the Driver spring or tooth count.
+
+WEIGHT CHIP:
+  Heaviest variant; pure mass addition at inner radius.
+  I contribution at r ≈ 10 mm is small (~2×10⁻⁷ kg·m²) but the mass increase
+  raises m_total → higher N_tip → slightly faster spin decay as a trade-off for
+  greater collision inertia (harder to displace laterally).
+```
+
+Level Chips do not replace any Layer component — they are additive accessories. Their I contribution is always small (<2% of system I) because they sit at inner radius; their performance value is primarily in the stability and locking functions.
+
+### Cho-Z Awakening System: Wing Deployment and Burst Stoppers
+
+The Cho-Z Awakening System applies to three Beyblades (Cho-Z Valkyrie Zenith Evolution, and two others). It adds wing arms to the Layer that respond to launch angular velocity:
+
+```
+WING RETRACTED (ω_launch < ω_wing_threshold):
+  Wings lie flush with Layer body.
+  Layer outer radius = r_base.
+  Burst Stoppers: disengaged.
+  Burst resistance: standard ratchet threshold T_burst.
+
+WING DEPLOYED — INVINCIBLE MODE (ω_launch ≥ ω_wing_threshold):
+  Centrifugal force on wing arms exceeds retaining spring force:
+    F_centrifugal = m_wing × r_wing_pivot × ω²  ≥  F_spring_wing
+    ω_wing = √(F_spring_wing / (m_wing × r_wing_pivot))
+
+  Wings swing outward to locked position.
+  Effective Layer outer radius: r_invincible = r_base + Δr_wing.
+  Burst Stoppers ENGAGE: physical blocks protrude from wing assembly
+    and lock against Driver tab path → tab slip mechanically prevented.
+
+  Layer I in Invincible Mode:
+    I_Layer_inv = I_Layer_base + m_wing × r_invincible²
+    ΔI_wing = m_wing × (r_invincible² − r_retracted²)
+
+  Burst resistance in Invincible Mode:
+    T_burst_inv = ∞ (mechanical block; tabs cannot slip regardless of τ_collision)
+```
+
+**Launch strength gate — why Invincible Mode is skill-dependent:**
+
+```
+ω only decreases after launch (no energy input during battle).
+If ω_launch < ω_wing: wings never deploy during this battle.
+If ω_launch ≥ ω_wing: wings deploy immediately and remain deployed as long as
+  centrifugal force exceeds wing spring force.
+
+Wing retraction threshold (wings collapse back):
+  ω_retract = ω_wing × √(k_retract / k_spring)
+  where k_retract / k_spring ≈ 0.8–0.9 (hysteresis prevents oscillation)
+
+So wings deploy above ω_wing and retract only below ω_retract < ω_wing.
+A successful high-spin launch maintains Invincible Mode for the majority of the match.
+```
+
+### Xtend Chip: Three-Mode Manual Driver Selection (Z Achilles Exclusive)
+
+The Xtend Driver normally presents one tip geometry. The Xtend Chip is an insert that replaces the tip component and exposes three manual position selections:
+
+```
+ATTACK MODE:
+  Tip geometry: wide hollow flat
+  r_tip ≈ 5 mm (hollow centre; annular contact rather than full disc)
+  μ_kinetic ≈ 0.35 (hard ABS)
+  High lateral traction → aggressive movement, wide travel
+  dω/dt ≈ −(0.35 × m × g × r_tip) / I_total
+
+DEFENSE SETTING:
+  Tip geometry: low angle stepped cone
+  r_tip ≈ 2.5 mm (wider than stamina sharp)
+  μ ≈ 0.25
+  Semi-stable; moderate friction
+  dω/dt ≈ −(0.25 × m × g × r_tip) / I_total
+
+STAMINA SETTING:
+  Tip geometry: low angle cone (sharp-like)
+  r_tip ≈ 0.8 mm
+  μ ≈ 0.15
+  Minimum friction; near-stationary spin-decay optimised
+  dω/dt ≈ −(0.15 × m × g × r_tip) / I_total
+
+Mode selection: manual, pre-battle only. Not a centrifugal auto-switch.
+```
+
+This gives Z Achilles a unique pre-battle flexibility: it can be configured as Attack, Defense, or Stamina type without changing the Driver. No other Driver in the Cho-Z system offers this.
+
+### CZL Inertia Budget
+
+| Component | Material | Mass (g) | I (kg·m²) | Share |
+|-----------|----------|----------|-----------|-------|
+| Cho-Z Layer (PC frame) | PC | 10.0 | 2.18×10⁻⁶ | 17.9% |
+| Cho-Z Layer (metal insert) | Zinc | 10.0 | 4.50×10⁻⁶ | 36.9% |
+| Level Chip (if present) | Varies | 1.5–3.0 | ~2.3×10⁻⁷ | ~1.9% |
+| Core Disc (6 representative) | Metal | 15.0 | 3.44×10⁻⁶ | 28.2% |
+| Disc Frame (Glaive) | Plastic | 4.0 | 2.00×10⁻⁶ | 16.4% |
+| Driver | ABS | 3.0 | 9.60×10⁻⁸ | 0.79% |
+| **Total (no Level Chip)** | | **42.0** | **1.22×10⁻⁵** | 100% |
+
+Layer total (PC + metal): 6.68×10⁻⁶ = **54.8% of system I** — Layer is now decisively dominant. The metal insert alone (4.50×10⁻⁶) exceeds the full GLS Layer (4.80×10⁻⁶) in the same component count. Disc assembly (Core + Frame: 5.44×10⁻⁶) is the second term at ~44.6% combined.
+
+### TypeScript Model
+
+```typescript
+function czLayerInertia(
+  pcMassG: number, pcOuterMm: number,
+  metalMassG: number, metalInnerMm: number, metalOuterMm: number,
+  innerMm: number
+): { iPCFrame: number; iMetal: number; iLayer: number; metalSharePct: number } {
+  const toKg = (g: number) => g / 1000;
+  const toM  = (mm: number) => mm / 1000;
+  const annular = (m: number, ri: number, ro: number) =>
+    0.5 * m * (ri * ri + ro * ro);
+
+  const iPCFrame = annular(toKg(pcMassG),    toM(innerMm),     toM(pcOuterMm));
+  const iMetal   = annular(toKg(metalMassG), toM(metalInnerMm), toM(metalOuterMm));
+  const iLayer   = iPCFrame + iMetal;
+  return { iPCFrame, iMetal, iLayer, metalSharePct: (iMetal / iLayer) * 100 };
+}
+
+function awakeningWingThreshold(
+  springForceN: number, wingMassG: number, pivotRadiusMm: number
+): number {
+  return Math.sqrt(springForceN / ((wingMassG / 1000) * (pivotRadiusMm / 1000))); // rad/s
+}
+
+function invincibleModeI(
+  iLayerBase: number, wingMassG: number, deployedRadiusMm: number
+): number {
+  const iWingDelta = (wingMassG / 1000) * (deployedRadiusMm / 1000) ** 2;
+  return iLayerBase + iWingDelta;
+}
+
+function xtendChipDecay(
+  mode: "attack" | "defense" | "stamina", totalMassG: number, iTotalKgm2: number
+): number {
+  const params: Record<string, { mu: number; rMm: number }> = {
+    attack:  { mu: 0.35, rMm: 5.0 },
+    defense: { mu: 0.25, rMm: 2.5 },
+    stamina: { mu: 0.15, rMm: 0.8 }
+  };
+  const { mu, rMm } = params[mode];
+  const tau = mu * (totalMassG / 1000) * 9.81 * (rMm / 1000);
+  return -(tau / iTotalKgm2);
+}
+
+// czLayerInertia(10, 20, 10, 18, 24, 6)
+//   → iPCFrame ≈ 2.18×10⁻⁶, iMetal ≈ 4.50×10⁻⁶, iLayer ≈ 6.68×10⁻⁶
+//      metalSharePct ≈ 67.4%  (metal insert is 2/3 of Layer I)
+// awakeningWingThreshold(0.15, 2.0, 20)
+//   → ≈ 61.2 rad/s  (≈ 585 RPM; wings deploy above this on launch)
+// invincibleModeI(6.68e-6, 2.0, 26)
+//   → ≈ 8.03×10⁻⁶ kg·m²  (wings add 1.35×10⁻⁶ in Invincible Mode)
+// xtendChipDecay("attack",  45, 1.22e-5)  → ≈ −128.7 rad/s²
+// xtendChipDecay("defense", 45, 1.22e-5)  → ≈  −45.9 rad/s²
+// xtendChipDecay("stamina", 45, 1.22e-5)  → ≈   −4.4 rad/s²
+```
+
+---
+
+## Case 372 — Gatinko Layer System (GT): Three-Part Layer Modularity, Mugen Lock Free-Spin Burst Inhibition, and Power Core Electric Driver Spin Modulation
+
+**Thesis:** The Gatinko Layer System is Generation 3's fourth architecture and the first to fracture the single-piece Layer into three independently swappable components — the Gatinko Chip (GT Chip), the Weight, and the Base — creating a combinatorial design space that separates the identity token (Chip), the inertia adjuster (Weight), and the contact geometry (Base) into distinct upgrade axes; the Chip carries the Beyblade's name and the mechanical interface between all three parts (a bayonet-style Gatinko socket), the Weight is a dense annular ring seated between Chip and Base that shifts the system's moment of inertia without altering the Base's contact profile, and the Base is the sole determinant of burst-ratchet geometry, contact face angle, and tip driver interface — meaning that for the first time in Burst history a player can change stamina vs attack character by swapping only the Base while retaining the same Chip and Weight; mid-series, two supplementary systems were introduced that interact with the Gatinko architecture without replacing it: the Mugen Lock System replaces the standard ratchet with a free-spinning central hub that mechanically decouples the disc from the outer Layer body under normal loading so that no burst-threshold torque can accumulate, but exposes a perimeter tab whose retraction (when the Layer's vulnerability indicator turns red) re-couples the disc and allows a single-strike burst by jamming a stopper into the disc; and the Power Core System introduces motorised or spring-actuated Driver shafts whose output speed is a function of launch impulse or internal spring energy, coupling mechanical launch mechanics directly into in-battle tip behaviour rather than relying solely on the launcher's manual RPM transfer.
+
+### Component Architecture
+
+```
+Axial stack, exploded side view:
+
+         ┌──────────────────────────────────────────┐
+         │           GATINKO CHIP (GT Chip)          │
+         │  [carries Beyblade name + motif]          │  ← identity & Gatinko socket
+         │  [r_outer ≈ 13–15 mm; ABS/PC]            │  ← bayonet ring interfaces Weight + Base
+         │  [mass ≈ 3–5 g]                           │
+         └──────────────────────────────────────────┘
+                              │ (bayonet locks Weight to Chip)
+         ┌──────────────────────────────────────────┐
+         │              WEIGHT                       │
+         │  [dense annular ring; zinc or heavy ABS]  │  ← inertia adjuster, no contact role
+         │  [r_inner ≈ 9 mm, r_outer ≈ 19–22 mm]   │
+         │  [mass ≈ 5–9 g depending on material]    │
+         └──────────────────────────────────────────┘
+                              │ (seated on Base boss)
+         ┌──────────────────────────────────────────┐
+         │               BASE                        │
+         │  [ratchet teeth + contact blades]         │  ← sole determinant of burst geometry
+         │  [r_outer ≈ 23–27 mm; ABS]               │  ← contact face φ, attack/stamina shape
+         │  [mass ≈ 6–10 g]                          │
+         │  [driver interface socket at bottom]      │
+         └──────────────────────────────────────────┘
+                              │
+         ┌──────────────────────────────────────────┐
+         │         CORE DISC + DISC FRAME            │  ← unchanged from prior Burst systems
+         └──────────────────────────────────────────┘
+                              │
+         ┌──────────────────────────────────────────┐
+         │              DRIVER                       │  ← standard or Power Core motorised
+         └──────────────────────────────────────────┘
+```
+
+### Gatinko Interface: Bayonet Coupling Mechanics
+
+The Chip's bayonet ring seats the Weight via a quarter-turn lock, and the assembled Chip+Weight stack seats into the Base via a second bayonet socket. This is not a simple friction fit: the bayonet provides a defined rotational hard-stop so that the Weight's angular position relative to the Base is repeatable within ±1–2°. For asymmetric Weights (non-C₃ mass distribution), this repeatability is mechanically necessary — random angular seating would produce variable CoM offset and irreproducible burst threshold.
+
+```
+Bayonet interface geometry (top view):
+
+     Chip boss (three lugs, 120° apart):
+
+         ╔═══════╗
+     ───┤ lug   ├───
+         │  ○   │       ← axle bore
+     ───┤ lug   ├───
+         ╚═══════╝
+
+     Weight inner socket: three corresponding slots, each 120° wide
+     Quarter-turn clockwise: lugs align with retention shoulders → locked
+     Quarter-turn counter-clockwise: lugs align with slots → released
+
+     Angular positioning error of Weight relative to Base: ≤ 2° (mechanical hard-stop)
+```
+
+### Modular Inertia Budget
+
+Unlike the single-piece Layer of Cho-Z, the Gatinko system distributes Layer mass across three distinct components with independent radial profiles. The Weight is the dominant I contributor within the Layer assembly; the Base, despite larger outer radius, is thinner and lighter.
+
+```
+Chip (ABS/PC, m ≈ 4 g = 0.004 kg, r_i ≈ 5 mm, r_o ≈ 14 mm):
+I_chip = ½ × 0.004 × ((0.005)² + (0.014)²)
+       = ½ × 0.004 × (2.5×10⁻⁵ + 1.96×10⁻⁴)
+       = ½ × 0.004 × 2.21×10⁻⁴
+       ≈ 4.42×10⁻⁷ kg·m²
+
+Weight (zinc, m ≈ 7 g = 0.007 kg, r_i ≈ 9 mm, r_o ≈ 20 mm):
+I_weight = ½ × 0.007 × ((0.009)² + (0.020)²)
+         = ½ × 0.007 × (8.1×10⁻⁵ + 4.0×10⁻⁴)
+         = ½ × 0.007 × 4.81×10⁻⁴
+         ≈ 1.68×10⁻⁶ kg·m²
+
+Base (ABS, m ≈ 8 g = 0.008 kg, r_i ≈ 4 mm, r_o ≈ 25 mm):
+I_base = ½ × 0.008 × ((0.004)² + (0.025)²)
+       = ½ × 0.008 × (1.6×10⁻⁵ + 6.25×10⁻⁴)
+       = ½ × 0.008 × 6.41×10⁻⁴
+       ≈ 2.56×10⁻⁶ kg·m²
+
+I_layer_total = I_chip + I_weight + I_base
+              ≈ 4.42×10⁻⁷ + 1.68×10⁻⁶ + 2.56×10⁻⁶
+              ≈ 4.68×10⁻⁶ kg·m²
+```
+
+| Component | Mass (g) | r_i (mm) | r_o (mm) | I (kg·m²) | Share of Layer I |
+|-----------|----------|-----------|-----------|-----------|-----------------|
+| Chip | 4.0 | 5 | 14 | 4.42×10⁻⁷ | 9.4% |
+| Weight | 7.0 | 9 | 20 | 1.68×10⁻⁶ | 35.9% |
+| Base | 8.0 | 4 | 25 | 2.56×10⁻⁶ | 54.7% |
+| **Layer total** | **19.0** | — | — | **4.68×10⁻⁶** | 100% |
+
+The Base dominates Layer I despite being the lightest dense component, because its mass sits at the largest radius. Swapping to a heavier Weight (zinc vs ABS) can shift Weight share from ~22% to ~36%, a meaningful stamina upgrade without changing Base contact geometry.
+
+Full system I budget (Layer + Disc + Driver):
+
+```
+Core Disc (m ≈ 12 g, r_i ≈ 5 mm, r_o ≈ 20 mm):
+I_disc = ½ × 0.012 × ((0.005)² + (0.020)²)
+       ≈ ½ × 0.012 × 4.25×10⁻⁴ ≈ 2.55×10⁻⁶ kg·m²
+
+Driver (m ≈ 4 g, r_tip ≈ 1 mm, r_shaft ≈ 4 mm):
+I_driver ≈ ½ × 0.004 × (0.004)² ≈ 3.20×10⁻⁸ kg·m²
+```
+
+| Assembly | I (kg·m²) | Share |
+|----------|-----------|-------|
+| Layer (Chip + Weight + Base) | 4.68×10⁻⁶ | 64.0% |
+| Core Disc | 2.55×10⁻⁶ | 34.9% |
+| Driver | 3.20×10⁻⁸ | 0.44% |
+| Disc Frame (if present, ~3 g) | ~2.4×10⁻⁷ | ~3.3% |
+| **Total (no Frame)** | **7.26×10⁻⁶** | 100% |
+
+Layer remains the dominant I component at ~64%, continuing the Cho-Z trend. The three-part split does not reduce total Layer I relative to Cho-Z — the Weight's extra zinc ring compensates for the mass removed from the monolithic die-cast insert.
+
+### Burst Threshold: Base-Determined Ratchet
+
+In the Gatinko system the burst ratchet teeth are carried entirely on the Base; the Chip and Weight have no burst-resisting structure. This means the burst threshold is determined solely by Base selection:
+
+```
+T_burst = N_tabs × F_spring × cos(β) × r_ratchet
+
+Gatinko Base (standard attack-type values):
+  N_tabs = 3, F_spring ≈ 0.25 N, β ≈ 45°, r_ratchet ≈ 10 mm:
+  T_burst = 3 × 0.25 × cos(45°) × 0.010
+           = 3 × 0.25 × 0.707 × 0.010
+           ≈ 5.30×10⁻³ N·m
+
+Gatinko Base (standard stamina-type, shallower tooth angle β ≈ 30°):
+  T_burst = 3 × 0.25 × cos(30°) × 0.010
+           = 3 × 0.25 × 0.866 × 0.010
+           ≈ 6.50×10⁻³ N·m   (harder to burst; tooth is shallower = higher cos(β))
+
+Implication: the same Chip and Weight can be burst-hardened or burst-softened
+by swapping only the Base — no other system in Burst history allows this.
+```
+
+### Mugen Lock System: Free-Spin Burst Prevention
+
+The Mugen Lock System introduces a fundamentally different burst-prevention philosophy compared to the Cho-Z Burst Stoppers. Where Burst Stoppers are a passive mechanical block on the disc (T_burst = ∞ permanently while stoppers are engaged), the Mugen Lock is a dynamic coupling: the Layer's central hub free-spins relative to the outer body under all normal operating torques, so no ratchet torque can ever accumulate to T_burst. The system does, however, expose a vulnerability window.
+
+```
+Mugen Lock operating states:
+
+STATE A — Normal spin (hub free-spinning):
+  ┌─────────────────────────────────────┐
+  │  OUTER LAYER BODY (ratchet teeth)   │  ← spins with Beyblade at ω
+  │         ↑ no coupling ↑             │
+  │   FREE-SPINNING HUB (disc axle)     │  ← spins independently; no T_burst path
+  └─────────────────────────────────────┘
+  Burst probability: 0 (no torque path to ratchet)
+
+STATE B — Vulnerability (hub re-coupled by tab retraction):
+  ┌─────────────────────────────────────┐
+  │  OUTER LAYER BODY                   │  ← tab hit → stopper jams disc
+  │         ↑ coupled ↑                 │  ← coupling re-established at jam moment
+  │   DISC (now locked by stopper)      │  ← one strike during red-indicator window
+  └─────────────────────────────────────┘
+  Burst probability: ~1.0 (deterministic mechanical burst on disc-lock strike)
+```
+
+The vulnerability indicator (Layer center turns red) signals that the internal cam has rotated the stopper into position — a timing-based design requiring the opponent to land a hit within a specific window rather than accumulating repeated burst torques.
+
+```
+Effective burst torque model:
+
+Normal operation:  T_effective = 0   (free-spin decouples ratchet entirely)
+Vulnerable window: T_effective = ∞   (stopper physically locks disc; any hit bursts)
+
+This is a bimodal burst model vs the continuous ratchet slip model of all prior Burst systems:
+  Prior systems:  P(burst) = f(Σ T_collision / T_burst)  — probabilistic, cumulative
+  Mugen Lock:     P(burst) = 0 (normal) or ~1.0 (vulnerable)  — state-switched, deterministic
+```
+
+### Power Core System: Launch-Coupled Driver Speed
+
+The Power Core System introduces Drivers whose tip-contact behaviour is a function of mechanical input at launch rather than a fixed material/geometry constant. Two implementations exist:
+
+**Launch-power-sensitive PCS:** the driver shaft contains a spring clutch whose pre-compression (set by how hard the launcher string is pulled) determines whether a stiff or soft tip profile engages at battle start. Hard launch → high pre-compression → aggressive contact; soft launch → low pre-compression → conservative contact.
+
+**Spin-direction PCS (Regalia γenesis.Hy):** the driver shaft encodes two opposite tip profiles; the initial spin direction (standard clockwise vs counter-clockwise) determines which profile seats against the floor. This is the Burst-system successor to the EGS Reverse Engine Gear concept — spin direction as a functional switch rather than a purely cosmetic option.
+
+```
+PCS spring-clutch spin-decay model:
+
+At high spring pre-compression (hard launch):
+  μ_eff = μ_high ≈ 0.35–0.55 (aggressive tip contact, attack behaviour)
+  dω/dt = −(μ_high × m_total × g × r_tip) / I_total
+
+At low spring pre-compression (soft launch):
+  μ_eff = μ_low ≈ 0.10–0.20 (conservative contact, stamina behaviour)
+  dω/dt = −(μ_low × m_total × g × r_tip) / I_total
+
+With I_total ≈ 7.26×10⁻⁶ kg·m², m_total ≈ 0.040 kg, r_tip ≈ 2 mm:
+
+Hard launch (μ = 0.45):
+  τ = 0.45 × 0.040 × 9.81 × 0.002 = 3.53×10⁻⁴ N·m
+  dω/dt = −3.53×10⁻⁴ / 7.26×10⁻⁶ ≈ −48.6 rad/s²
+
+Soft launch (μ = 0.15):
+  τ = 0.15 × 0.040 × 9.81 × 0.002 = 1.18×10⁻⁴ N·m
+  dω/dt = −1.18×10⁻⁴ / 7.26×10⁻⁶ ≈ −16.3 rad/s²
+
+Same Driver, same Beyblade: launch technique shifts spin-decay rate by 3.0×.
+```
+
+### Modular Upgrade Axes
+
+The three-part Layer architecture creates independent upgrade dimensions absent from all prior systems:
+
+| Axis | Component | Changes | Does NOT change |
+|------|-----------|---------|----------------|
+| Identity | Chip | Name, motif, bayonet socket spec | Contact geometry, I, ratchet |
+| Inertia | Weight | I_layer, CoM height, mass distribution | Contact faces, ratchet, tip interface |
+| Contact & burst | Base | φ (face angle), N_tabs, β (tooth angle), tip socket | I (small effect), name, Weight seat |
+
+```
+Example upgrade path:
+
+Original: Ace Dragon Chip + Dragon Weight (ABS) + Dragon Base (attack)
+  I_weight(ABS) ≈ 0.60×10⁻⁶ kg·m²  (light Weight)
+
+Swap Weight to zinc variant:
+  I_weight(zinc) ≈ 1.68×10⁻⁶ kg·m²  (ΔI ≈ +1.08×10⁻⁶ kg·m²)
+  System I increases by ~15%  → longer spin time, same attack contact profile
+
+Swap Base to stamina-type:
+  β changes from 45° → 30°; T_burst increases from 5.30×10⁻³ → 6.50×10⁻³ N·m
+  Contact face angle φ changes from ~30° → ~55°; smash fraction decreases,
+  recoil fraction increases → less offensive impact, more deflection
+```
+
+### TypeScript Model
+
+```typescript
+function gatinkoLayerInertia(
+  chipMassG: number, chipOuterMm: number, chipInnerMm: number,
+  weightMassG: number, weightOuterMm: number, weightInnerMm: number,
+  baseMassG: number, baseOuterMm: number, baseInnerMm: number
+): { iChip: number; iWeight: number; iBase: number; iLayer: number; weightSharePct: number; baseSharePct: number } {
+  const toKg = (g: number) => g / 1000;
+  const toM  = (mm: number) => mm / 1000;
+  const annular = (m: number, ri: number, ro: number) =>
+    0.5 * m * (ri * ri + ro * ro);
+
+  const iChip   = annular(toKg(chipMassG),   toM(chipInnerMm),   toM(chipOuterMm));
+  const iWeight = annular(toKg(weightMassG), toM(weightInnerMm), toM(weightOuterMm));
+  const iBase   = annular(toKg(baseMassG),   toM(baseInnerMm),   toM(baseOuterMm));
+  const iLayer  = iChip + iWeight + iBase;
+  return {
+    iChip, iWeight, iBase, iLayer,
+    weightSharePct: (iWeight / iLayer) * 100,
+    baseSharePct:   (iBase   / iLayer) * 100
+  };
+}
+
+function gatinkoBurstThreshold(
+  nTabs: number, springForceN: number, toothAngleDeg: number, ratchetRadiusMm: number
+): number {
+  return nTabs * springForceN * Math.cos(toothAngleDeg * Math.PI / 180) * (ratchetRadiusMm / 1000);
+}
+
+function mugenLockBurstTorque(vulnerable: boolean): number {
+  // Returns effective burst torque path: 0 (decoupled) or Infinity (stopper locked)
+  return vulnerable ? Infinity : 0;
+}
+
+function pcsSpinDecay(
+  launchMode: "hard" | "soft",
+  totalMassG: number, tipRadiusMm: number, iTotalKgm2: number
+): number {
+  const muMap: Record<string, number> = { hard: 0.45, soft: 0.15 };
+  const mu  = muMap[launchMode];
+  const tau = mu * (totalMassG / 1000) * 9.81 * (tipRadiusMm / 1000);
+  return -(tau / iTotalKgm2);
+}
+
+// gatinkoLayerInertia(4, 14, 5, 7, 20, 9, 8, 25, 4)
+//   → iChip ≈ 4.42×10⁻⁷, iWeight ≈ 1.68×10⁻⁶, iBase ≈ 2.56×10⁻⁶
+//      iLayer ≈ 4.68×10⁻⁶ kg·m²
+//      weightSharePct ≈ 35.9%, baseSharePct ≈ 54.7%
+// gatinkoBurstThreshold(3, 0.25, 45, 10)  → ≈ 5.30×10⁻³ N·m  (attack Base)
+// gatinkoBurstThreshold(3, 0.25, 30, 10)  → ≈ 6.50×10⁻³ N·m  (stamina Base)
+// mugenLockBurstTorque(false)             → 0        (normal; burst impossible)
+// mugenLockBurstTorque(true)              → Infinity (vulnerable; deterministic burst)
+// pcsSpinDecay("hard", 40, 2, 7.26e-6)   → ≈ −48.6 rad/s²
+// pcsSpinDecay("soft", 40, 2, 7.26e-6)   → ≈ −16.3 rad/s²
+```
+
+---
+
+## Case 373 — Superking Layer System (SK): Ring-Dominant Three-Part Architecture, Limit Break Centrifugal Blade Deployment, and Free-Spinning Ring Burst Decoupling
+
+**Thesis:** The Superking Layer System is Generation 3's fifth architecture and the direct successor to the Gatinko Layer System; it retains the three-part Layer split but restructures the component roles: the Superking Chip remains the small identity token with Gatinko-compatible bayonet socket, but the Weight and Base are replaced by the Ring and Chassis respectively, where the Ring is now the outermost contact surface AND the dominant inertia component simultaneously (collapsing the separate inertia-adjuster and contact-geometry roles of the Gatinko Weight and Base into one large annular piece), while the Chassis is an inner structural skeleton that carries the burst ratchet, the Layer boss, and the Driver interface socket but contributes a much smaller I fraction than either the Gatinko Weight or Base because its mass sits at smaller radius than the surrounding Ring; mid-series the Limit Break System introduces three specialised Rings that each integrate Chassis-based boss structures, reducing the effective assembly from three parts to two (Chip + Limit Break Ring), and each Limit Break Ring carries a distinct centrifugal gimmick: the Burn Ring's four blades deploy outward above a centrifugal threshold increasing I by a blade-mass hoop term and widening the contact arc, the Volcano Ring's five primary blades each rotate about a cam pivot above a lower threshold to reveal five secondary blades behind them, doubling contact-face count from 5 to 10 and halving per-blade arc width while doubling collision frequency per revolution, and The End Ring's outer annular section separates from its inner boss and free-spins on a bearing, so that any collision impulse delivered to the outer Ring accelerates only the outer partition's angular momentum rather than coupling directly to the ratchet, reducing the torque transmitted to the burst mechanism by the ratio I_chassis / I_Ring_outer and making The End a stamina-class burst-resistant system without the state-switching architecture of the Mugen Lock.
+
+### Component Role Restructuring: Gatinko vs Superking
+
+```
+Gatinko Layer System (Case 372):
+  Chip     → identity token, bayonet socket                           (small I, ~9%)
+  Weight   → inertia adjuster, no contact role                        (medium I, ~36%)
+  Base     → contact geometry + burst ratchet + driver socket          (dominant I, ~55%)
+
+Superking Layer System:
+  Chip     → identity token, Superking bayonet socket                  (small I, ~6%)
+  Ring     → contact geometry + dominant inertia (combined roles)      (dominant I, ~62%)
+  Chassis  → structural skeleton, burst ratchet + driver socket         (medium I, ~32%)
+             sits INSIDE the Ring at smaller radius
+
+Key shift: in Gatinko, the outermost component (Base) dominated I because it had
+largest radius. In Superking, the outermost component is still the Ring, but it now
+ALSO carries the contact blades. The Chassis is purely structural, not a contact face.
+```
+
+### System Architecture
+
+```
+Axial stack, exploded side view (cross-section):
+
+         ┌──────────────────────────────────────────┐
+         │         SUPERKING CHIP                    │
+         │  [name motif + Superking bayonet boss]   │  ← identity; seats Ring and Chassis
+         │  [r_outer ≈ 12–15 mm; ABS/PC]            │
+         │  [mass ≈ 3–4 g]                           │
+         └──────────────────────────────────────────┘
+
+         ┌──────────────────────────────────────────┐
+         │              RING                         │
+         │  [outer contact blades, attack/stamina]  │  ← outermost layer; contact + inertia
+         │  [r_inner ≈ 10 mm, r_outer ≈ 27 mm]     │  ← wraps around Chassis outer boss
+         │  [mass ≈ 11–14 g; ABS or rubber blend]  │
+         └───────────────┬──────────────────────────┘
+                         │ clips over Chassis outer rim
+         ┌───────────────▼──────────────────────────┐
+         │             CHASSIS                       │
+         │  [inner skeleton; ratchet teeth]          │  ← structural; smaller radius than Ring
+         │  [r_inner ≈ 4 mm, r_outer ≈ 19 mm]      │  ← burst ratchet on outer rim
+         │  [mass ≈ 5–7 g; ABS]                     │
+         │  [driver socket at bottom]               │
+         └──────────────────────────────────────────┘
+                              │
+         ┌──────────────────────────────────────────┐
+         │         CORE DISC + DISC FRAME            │  ← unchanged
+         └──────────────────────────────────────────┘
+                              │
+         ┌──────────────────────────────────────────┐
+         │              DRIVER                       │
+         └──────────────────────────────────────────┘
+```
+
+### Modular Inertia Budget
+
+```
+Chip (ABS, m ≈ 3.5 g = 0.0035 kg, r_i ≈ 5 mm, r_o ≈ 13 mm):
+I_chip = ½ × 0.0035 × ((0.005)² + (0.013)²)
+       = ½ × 0.0035 × (2.5×10⁻⁵ + 1.69×10⁻⁴)
+       = ½ × 0.0035 × 1.94×10⁻⁴
+       ≈ 3.40×10⁻⁷ kg·m²
+
+Ring (ABS, m ≈ 12 g = 0.012 kg, r_i ≈ 10 mm, r_o ≈ 27 mm):
+I_ring = ½ × 0.012 × ((0.010)² + (0.027)²)
+       = ½ × 0.012 × (1.0×10⁻⁴ + 7.29×10⁻⁴)
+       = ½ × 0.012 × 8.29×10⁻⁴
+       ≈ 4.97×10⁻⁶ kg·m²
+
+Chassis (ABS, m ≈ 6 g = 0.006 kg, r_i ≈ 4 mm, r_o ≈ 19 mm):
+I_chassis = ½ × 0.006 × ((0.004)² + (0.019)²)
+          = ½ × 0.006 × (1.6×10⁻⁵ + 3.61×10⁻⁴)
+          = ½ × 0.006 × 3.77×10⁻⁴
+          ≈ 1.13×10⁻⁶ kg·m²
+
+I_layer = 3.40×10⁻⁷ + 4.97×10⁻⁶ + 1.13×10⁻⁶ ≈ 6.44×10⁻⁶ kg·m²
+```
+
+| Component | Mass (g) | r_i (mm) | r_o (mm) | I (kg·m²) | Share of Layer I |
+|-----------|----------|-----------|-----------|-----------|-----------------|
+| Chip | 3.5 | 5 | 13 | 3.40×10⁻⁷ | 5.3% |
+| Ring | 12.0 | 10 | 27 | 4.97×10⁻⁶ | 77.2% |
+| Chassis | 6.0 | 4 | 19 | 1.13×10⁻⁶ | 17.6% |
+| **Layer total** | **21.5** | — | — | **6.44×10⁻⁶** | 100% |
+
+The Ring now dominates Layer I at 77.2%, a larger concentration than any single sub-component in the Gatinko system (where Base held 54.7%). This is because the Ring occupies the largest radius while also carrying the full blade mass — the Gatinko Weight and Base had their mass split across the same radial range now occupied by the Ring alone.
+
+Full system I budget:
+
+```
+Core Disc (m ≈ 12 g, r_i ≈ 5 mm, r_o ≈ 20 mm):
+I_disc = ½ × 0.012 × ((0.005)² + (0.020)²) ≈ 2.55×10⁻⁶ kg·m²
+
+Driver (m ≈ 4 g, r_shaft ≈ 4 mm):
+I_driver ≈ ½ × 0.004 × (0.004)² ≈ 3.20×10⁻⁸ kg·m²
+
+I_total ≈ 6.44×10⁻⁶ + 2.55×10⁻⁶ + 3.20×10⁻⁸ ≈ 9.02×10⁻⁶ kg·m²
+```
+
+| Assembly | I (kg·m²) | Share |
+|----------|-----------|-------|
+| Layer (Chip + Ring + Chassis) | 6.44×10⁻⁶ | 71.4% |
+| Core Disc | 2.55×10⁻⁶ | 28.3% |
+| Driver | 3.20×10⁻⁸ | 0.35% |
+| **Total** | **9.02×10⁻⁶** | 100% |
+
+At 71.4% Layer share, Superking represents the highest Layer-dominant I budget in the Burst series to date. The Ring's large-radius mass concentration is the proximate cause: in Cho-Z the die-cast metal insert contributed 67.4% of Layer I; the SK Ring — made entirely of ABS but at a 27 mm outer radius — achieves 77.2% of Layer I without metal, demonstrating that radius leverage can substitute for density.
+
+### Burst Ratchet: Chassis-Carried Teeth
+
+The ratchet moves from the Base (Gatinko) to the Chassis (Superking). The functional model is identical; the significance is spatial: the ratchet teeth now sit at r_ratchet ≈ 15–18 mm (Chassis outer rim) rather than at r_ratchet ≈ 22–25 mm (Gatinko Base outer rim). Lower r_ratchet means higher burst resistance at equal F_spring and β, because the torque arm is shorter:
+
+```
+T_burst = N_tabs × F_spring × cos(β) × r_ratchet
+
+Superking Chassis (r_ratchet ≈ 16 mm, β = 45°, F_spring = 0.25 N, N = 3):
+  T_burst = 3 × 0.25 × cos(45°) × 0.016
+           = 3 × 0.25 × 0.707 × 0.016
+           ≈ 8.49×10⁻³ N·m
+
+Gatinko Base (r_ratchet ≈ 10 mm, same β and F_spring):
+  T_burst ≈ 5.30×10⁻³ N·m  (from Case 372)
+
+Superking Chassis T_burst is 60% higher than Gatinko Base at the same spring force —
+the structural inward shift of the ratchet ring intrinsically hardens the burst threshold.
+```
+
+### Limit Break System: Three-Part to Two-Part Reduction
+
+The Limit Break Ring integrates the Chassis boss structure, eliminating the Chassis as a separate part. Assembly becomes: Chip + Limit Break Ring + Driver. The Limit Break Ring's combined mass (Ring + Chassis mass) sits across the full radial extent:
+
+```
+Limit Break Ring combined:
+  m_total ≈ 12 g (Ring) + 6 g (Chassis) = 18 g
+  r_i ≈ 4 mm (Chassis inner bore, now integrated), r_o ≈ 27 mm (Ring outer)
+  I_LB_ring = ½ × 0.018 × ((0.004)² + (0.027)²)
+             = ½ × 0.018 × (1.6×10⁻⁵ + 7.29×10⁻⁴)
+             = ½ × 0.018 × 7.45×10⁻⁴
+             ≈ 6.71×10⁻⁶ kg·m²
+
+Vs standard SK Layer (Chip + Ring + Chassis): 6.44×10⁻⁶ kg·m²
+ΔI ≈ +2.7×10⁻⁷ kg·m²  (integration gains ~4%; mass at inner bore now contributes
+rather than being split across two separate low-radius bores)
+```
+
+#### Burn Ring: Centrifugal Blade Deployment
+
+Four blades hinge at r_pivot ≈ 20 mm and are retained by springs (F_spring ≈ 0.12 N per blade). Above the centrifugal threshold, blades deploy to r_deployed ≈ 29 mm:
+
+```
+Deployment threshold:
+  ω_burn = √(F_spring / (m_blade × r_pivot))
+          = √(0.12 / (0.0015 × 0.020))
+          = √(0.12 / 3.0×10⁻⁵)
+          = √4000
+          ≈ 63.2 rad/s  (≈ 604 RPM)
+
+Blades deploy on launch (typical launch ω ≈ 700–900 rad/s >> ω_burn).
+Blades retract when ω drops below 63.2 rad/s during end-of-battle spin-down.
+
+I gain from four deployed blades:
+  ΔI_blades = 4 × m_blade × r_deployed²
+             = 4 × 0.0015 × (0.029)²
+             = 4 × 0.0015 × 8.41×10⁻⁴
+             ≈ 5.05×10⁻⁶ kg·m²   — wait, this over-counts; blades are not point masses
+                                      at r_deployed, they are distributed from pivot to tip.
+             Correct: use r_CoM of deployed blade ≈ (r_pivot + r_deployed)/2 = 24.5 mm:
+  ΔI_blades = 4 × 0.0015 × (0.0245)²
+             = 4 × 0.0015 × 6.00×10⁻⁴
+             ≈ 3.60×10⁻⁶ kg·m²   (over-estimates; blade has finite span)
+             Conservative rod-model (blade as uniform rod, pivot at one end):
+  I_one_blade = (1/3) × m_blade × L_blade²  where L_blade = r_deployed - r_pivot = 9 mm
+              = (1/3) × 0.0015 × (0.009)² ≈ 4.05×10⁻⁸ kg·m²  per blade at pivot frame
+             + parallel-axis shift to world axis: + m_blade × r_pivot²
+              = 4.05×10⁻⁸ + 0.0015 × (0.020)² = 4.05×10⁻⁸ + 6.0×10⁻⁷ ≈ 6.41×10⁻⁷ kg·m²
+
+  ΔI_4_blades = 4 × 6.41×10⁻⁷ ≈ 2.56×10⁻⁶ kg·m²
+
+I_Layer_deployed = I_LB_ring_base + ΔI_4_blades
+                 ≈ 6.71×10⁻⁶ + 2.56×10⁻⁶ ≈ 9.27×10⁻⁶ kg·m²
+
+This is a +38% Layer I increase from blade deployment alone —
+larger than the entire Core Disc's I contribution.
+```
+
+#### Volcano Ring: Contact Face Multiplication (5 → 10 Blades)
+
+Five primary blades are hinged at r_cam ≈ 18 mm. Each primary blade has a secondary blade folded behind it. Above the rotation threshold, primary blades swing about their cam pivots, revealing the secondary blades:
+
+```
+Volcano deployment threshold:
+  ω_volcano = √(F_retention / (m_blade × r_cam))
+             = √(0.08 / (0.001 × 0.018))
+             = √(0.08 / 1.8×10⁻⁵)
+             = √4444
+             ≈ 66.7 rad/s  (≈ 637 RPM)
+
+Collision frequency effect:
+  Locked (5 blades):   f_contact = ω × 5 / (2π)  collisions/s
+  Unlocked (10 blades): f_contact = ω × 10 / (2π) collisions/s — doubled
+
+At ω = 300 rad/s (mid-battle):
+  Locked:   300 × 5 / (2π)  ≈ 238.7 collisions/s
+  Unlocked: 300 × 10 / (2π) ≈ 477.5 collisions/s
+
+Each individual blade arc width halves (72° → 36°), reducing per-strike contact area
+by ~50%, but doubling total strike frequency. Net effect: same time-averaged contact
+force at smaller peak impulse per strike → more consistent contact, less burst torque
+per individual collision (T_burst is per-strike threshold, not cumulative rate).
+```
+
+#### The End Ring: Free-Spinning Outer Partition
+
+The End Ring's outer annular section (mass m_outer ≈ 5 g at r ≈ 24 mm) is separated from the inner boss by a bearing and free-spins independently. A collision impulse J applied at the outer Ring's contact surface:
+
+```
+Torque transmitted to burst ratchet (rigid Ring, reference):
+  T_ratchet_rigid = J × r_contact  (full impulse couples directly to Chassis ratchet)
+
+Torque transmitted to burst ratchet (free-spinning outer Ring):
+  The outer Ring absorbs its own angular momentum change:
+    ΔL_outer = J × r_contact
+    Δω_outer = ΔL_outer / I_outer = (J × r_contact) / I_outer
+
+  The inner body (Chassis + rest of Bey) sees only the residual force transmitted
+  through bearing friction (≈ 0 for well-lubricated bearing):
+    T_ratchet_free ≈ 0   (bearing transmits negligible torque)
+
+More precisely, with bearing friction coefficient μ_bearing ≈ 0.01:
+  T_ratchet_free = μ_bearing × N_bearing × r_bearing
+  N_bearing (normal force from outer Ring on bearing) = m_outer × r_outer × ω²
+                                                       ≈ 0.005 × 0.024 × (300)²
+                                                       ≈ 10.8 N
+  T_ratchet_free = 0.01 × 10.8 × 0.008 ≈ 8.6×10⁻⁴ N·m
+
+vs T_burst ≈ 8.49×10⁻³ N·m (Chassis ratchet threshold):
+  T_ratchet_free / T_burst ≈ 0.10  — bearing friction alone delivers ~10% of burst torque
+
+In practice: The End Ring cannot burst through normal collision torque.
+It can only burst if bearing friction accumulates across many collisions (stamina vs stamina)
+or if the opponent lands a direct blow on the inner Chassis rim edge exposed at the seam.
+```
+
+This is the Ring-level analog of the Mugen Lock hub free-spin, but with a continuous mechanical decoupling rather than the Mugen Lock's binary state-switch. The End is always partially decoupled, not conditionally decoupled.
+
+### X Chip and Z Chip: Driver Mode Selectors
+
+The X Chip (for Xc'+X Driver) and Z Chip (for Zn'+Z Driver) are small accessory inserts fitted to the Driver shaft, analogous to the Xtend Chip for Z Achilles. Each Chip sets the internal cam of its Driver to one of two tip-contact profiles:
+
+```
+X Chip (Xc'+X Driver):
+  Mode A (Chip in): extended tip contact → larger r_tip → attack/movement Driver
+  Mode B (Chip out): retracted tip contact → smaller r_tip → stamina-biased Driver
+
+Z Chip (Zn'+Z Driver):
+  Operates on the same cam principle: Chip selects between two internal spring preloads
+  or cam positions that determine which tip profile is presented to the arena floor.
+
+These are manual selectors (set before launch, not centrifugal), unlike the Power Core
+System (Case 372) which encodes mode in launch power. The Chip is set, then locked in
+by the Driver assembly — it cannot switch during battle.
+```
+
+### Superking vs Gatinko: Architecture Comparison
+
+| Property | Gatinko (Case 372) | Superking (Case 373) |
+|----------|-------------------|---------------------|
+| Layer part count | 3 (Chip + Weight + Base) | 3 (Chip + Ring + Chassis) |
+| Dominant I component | Base (54.7% of Layer I) | Ring (77.2% of Layer I) |
+| Contact geometry carrier | Base | Ring |
+| Ratchet carrier | Base | Chassis |
+| Ratchet radius | ~10 mm (Base outer rim) | ~16 mm (Chassis outer rim)... wait — |
+
+Note: Chassis ratchet at smaller radius than Gatinko Base ratchet → Superking intrinsically harder to burst at equal spring force (T_burst is 60% higher).
+
+| Burst prevention mid-series | Mugen Lock (state-switch, binary) | Limit Break The End (free-spin, continuous) |
+| Centrifugal gimmick | None in standard GTS | Burn Ring (blade deploy) + Volcano Ring (blade multiply) |
+
+### TypeScript Model
+
+```typescript
+function superkingLayerInertia(
+  chipMassG: number, chipOuterMm: number, chipInnerMm: number,
+  ringMassG: number,  ringOuterMm: number,  ringInnerMm: number,
+  chassisMassG: number, chassisOuterMm: number, chassisInnerMm: number
+): { iChip: number; iRing: number; iChassis: number; iLayer: number; ringSharePct: number } {
+  const toKg = (g: number) => g / 1000;
+  const toM  = (mm: number) => mm / 1000;
+  const annular = (m: number, ri: number, ro: number) =>
+    0.5 * m * (ri * ri + ro * ro);
+
+  const iChip    = annular(toKg(chipMassG),    toM(chipInnerMm),    toM(chipOuterMm));
+  const iRing    = annular(toKg(ringMassG),    toM(ringInnerMm),    toM(ringOuterMm));
+  const iChassis = annular(toKg(chassisMassG), toM(chassisInnerMm), toM(chassisOuterMm));
+  const iLayer   = iChip + iRing + iChassis;
+  return { iChip, iRing, iChassis, iLayer, ringSharePct: (iRing / iLayer) * 100 };
+}
+
+function skBurstThreshold(
+  nTabs: number, springForceN: number, toothAngleDeg: number, chassisRatchetRadiusMm: number
+): number {
+  return nTabs * springForceN * Math.cos(toothAngleDeg * Math.PI / 180) * (chassisRatchetRadiusMm / 1000);
+}
+
+function burnRingDeployThreshold(springForceN: number, bladeMassG: number, pivotRadiusMm: number): number {
+  return Math.sqrt(springForceN / ((bladeMassG / 1000) * (pivotRadiusMm / 1000))); // rad/s
+}
+
+function burnRingIGain(nBlades: number, bladeMassG: number, pivotRadiusMm: number, deployedRadiusMm: number): number {
+  const m = bladeMassG / 1000;
+  const rp = pivotRadiusMm / 1000;
+  const rd = deployedRadiusMm / 1000;
+  const L  = rd - rp;
+  const iOneBladeAtPivot = (1 / 3) * m * L * L;        // rod moment about pivot
+  const parallelShift    = m * rp * rp;                  // shift pivot to spin axis
+  return nBlades * (iOneBladeAtPivot + parallelShift);   // kg·m²
+}
+
+function volcanoCollisionFrequency(omegaRadS: number, bladesUnlocked: boolean): number {
+  const n = bladesUnlocked ? 10 : 5;
+  return (omegaRadS * n) / (2 * Math.PI); // collisions/s
+}
+
+function endRingRatchetTorque(
+  impactImpulseNs: number, contactRadiusMm: number,
+  outerMassG: number, outerRadiusMm: number, omegaRadS: number,
+  bearingMu: number
+): number {
+  const rContact = contactRadiusMm / 1000;
+  const rOuter   = outerRadiusMm / 1000;
+  const mOuter   = outerMassG / 1000;
+  const nBearing = mOuter * rOuter * omegaRadS * omegaRadS; // centrifugal normal force
+  return bearingMu * nBearing * (rOuter / 2);               // friction torque to inner chassis (N·m)
+}
+
+// superkingLayerInertia(3.5, 13, 5, 12, 27, 10, 6, 19, 4)
+//   → iRing ≈ 4.97×10⁻⁶, iChassis ≈ 1.13×10⁻⁶, iChip ≈ 3.40×10⁻⁷
+//      iLayer ≈ 6.44×10⁻⁶ kg·m²; ringSharePct ≈ 77.2%
+// skBurstThreshold(3, 0.25, 45, 16)       → ≈ 8.49×10⁻³ N·m   (60% harder than Gatinko Base)
+// burnRingDeployThreshold(0.12, 1.5, 20)  → ≈ 63.2 rad/s  (≈ 604 RPM)
+// burnRingIGain(4, 1.5, 20, 29)           → ≈ 2.56×10⁻⁶ kg·m²  (+38% of base Layer I)
+// volcanoCollisionFrequency(300, false)   → ≈ 238.7 /s  (5-blade locked)
+// volcanoCollisionFrequency(300, true)    → ≈ 477.5 /s  (10-blade unlocked)
+// endRingRatchetTorque(0.05, 25, 5, 24, 300, 0.01)
+//   → ≈ 8.64×10⁻⁴ N·m  (~10% of T_burst; cannot independently burst The End)
+```
+
+---
+
+## Case 374 — Dynamite Battle Layer System and Burst Ultimate Layer Series (DB/BU): Blade-Dominant Three-Part Architecture, Mode-Invariant Inertia with Contact-Height Switching, and Evolution Gear Stacking
+
+**Thesis:** The Dynamite Battle Layer System is Generation 3's sixth architecture and introduces the most consequential naming change in Burst history — the innermost piece is now the Dynamite Core (identity + driver boss), the outermost contact surface is the Blade (replacing the Superking Ring as the dominant I and contact component), and the intermediate piece is the Armor (replacing the Chassis as a mass-bearing shell at intermediate radius) — and uniquely among all Burst systems, the assembly order of these three pieces is physically reversible to produce two distinct battle modes: Low Mode (Core → Blade → Armor, suffix "−"), in which the Core sits at the bottom near the Driver and the Armor caps the top, yielding a shorter axial profile with the Blade's contact zone at a lower height above the arena floor, and High Mode (Armor → Blade → Core, suffix "+"), in which the Armor sits at the bottom as a raised base plate, elevating the entire Blade+Core assembly by the Armor's axial thickness and presenting the Blade's contact zone at a commensurately higher contact height; the critical physics insight is that mode switching changes no component's radial position — Core, Blade, and Armor all rotate about the same spin axis at the same r_inner and r_outer regardless of which is on top — so both modes produce identical system I (the annular disk formula depends only on mass and radius, not on axial position), and the mode choice is therefore a pure contact-height strategy: High Mode contacts a shorter opponent's upper Layer or over-strikes it entirely, while Low Mode contacts the lower rim of a taller opponent or produces an under-scrape; the gyroscopic precession rate couples into this choice through the torque arm d from tip contact to CoM, which is mode-dependent (High Mode raises CoM by the Armor's contribution and changes d), making High Mode precess slightly faster at equal ω and destabilize sooner at low spin; the Evolution Gear sub-system introduces named clip-on mass accessories (F, V, S, L, D, A, H, VS Gears) that mount at fixed radii on the Blade or Driver tip shaft and each add a discrete ΔI increment, stackable to a named ceiling (1 Gear → 2 Gear → 3 Gear → Perfect Gear for four standard gears; Ultimate Gear for the four special-purpose gears D, A, H, VS); and the Burst Ultimate Layer Series extends the DB architecture by introducing the BU Blade — a larger-radius, heavier contact piece exclusive to the seventh series — which shifts the Blade's share of Layer I upward and provides two additional exclusive gear attachment ports (A Gear and H Gear), with the VS Gear operating not on the Layer but on specific Driver tip shafts (Venture and Adventure), making it the first Evolution Gear to modify I at the Driver level rather than the Layer level.
+
+### Component Role Map: DB vs Prior Systems
+
+```
+Gen 3 component role evolution:
+
+Initial Burst (Case 368): Layer (monolithic) + Disc + Driver
+Dual Layer (Case 369):    Layer (dual-shell) + Disc + Driver
+God Layer (Case 370):     Layer + Core Disc + Disc Frame + Driver
+Cho-Z (Case 371):         Layer (PC shell + metal insert) + Core Disc + Disc Frame + Driver
+Gatinko (Case 372):       Chip + Weight + Base + Core Disc + Driver
+Superking (Case 373):     Chip + Ring + Chassis + Core Disc + Driver
+Dynamite Battle (374):    Core + Blade + Armor + DB Disc + Driver
+
+Role mapping:
+  DB Core   ≈ Gatinko Chip (identity + driver boss) but heavier, structural axle carrier
+  DB Blade  ≈ Gatinko Base + SK Ring (contact + dominant I) — largest component in DB
+  DB Armor  ≈ Gatinko Weight + SK Chassis (mass shell) — sits at intermediate radius
+              BUT: Armor can go above OR below the Blade (mode switching)
+```
+
+### System Architecture: Both Modes
+
+```
+Low Mode (−): Core at bottom, Armor at top
+Side cross-section:
+
+         ┌──────────────────────────────────────────┐
+         │              ARMOR                        │  ← top position
+         │  [protective shell, intermediate radius]  │  ← r_inner ≈ 5 mm, r_outer ≈ 21 mm
+         │  [mass ≈ 8 g; ABS]                       │
+         └──────────────────────────────────────────┘
+         ┌──────────────────────────────────────────┐
+         │               BLADE                       │  ← middle; contact surface + dominant I
+         │  [attack blades, contact geometry]        │  ← r_inner ≈ 6 mm, r_outer ≈ 28 mm
+         │  [mass ≈ 15 g; ABS + rubber inserts]     │
+         └──────────────────────────────────────────┘
+         ┌──────────────────────────────────────────┐
+         │           DYNAMITE CORE                   │  ← bottom position (near Driver)
+         │  [axle boss + identity motif]             │  ← r_inner ≈ 3 mm, r_outer ≈ 13 mm
+         │  [mass ≈ 5 g; ABS]                       │
+         └──────────────────────────────────────────┘
+                              │
+                         [Driver]                      ← contact height h_contact_low above floor
+
+─────────────────────────────────────────────────
+High Mode (+): Armor at bottom, Core at top
+Side cross-section:
+
+         ┌──────────────────────────────────────────┐
+         │           DYNAMITE CORE                   │  ← top position
+         └──────────────────────────────────────────┘
+         ┌──────────────────────────────────────────┐
+         │               BLADE                       │  ← middle; same radial position
+         └──────────────────────────────────────────┘
+         ┌──────────────────────────────────────────┐
+         │              ARMOR                        │  ← bottom position (raised base plate)
+         │  [axial thickness h_armor ≈ 8 mm]        │  ← elevates Blade by h_armor vs Low Mode
+         └──────────────────────────────────────────┘
+                              │
+                         [Driver]                      ← contact height h_contact_high = h_contact_low + 8 mm
+```
+
+### Mode Physics: Contact-Height Strategy and Precession
+
+The two modes produce identical I but different contact heights and CoM elevations:
+
+```
+Axial geometry (z measured from Driver tip upward):
+
+Component heights (approximate):
+  h_core  ≈ 10 mm   (Core axial thickness)
+  h_blade ≈ 12 mm   (Blade axial thickness)
+  h_armor ≈  8 mm   (Armor axial thickness)
+
+Low Mode (Core → Blade → Armor, bottom to top):
+  Core CoM:   z_core  = 5 mm
+  Blade CoM:  z_blade = 10 + 6 = 16 mm   (Core height + half Blade height)
+  Armor CoM:  z_armor = 10 + 12 + 4 = 26 mm
+
+  z_CoM_low = (m_core × 5 + m_blade × 16 + m_armor × 26) / (m_core + m_blade + m_armor)
+            = (5 × 5 + 15 × 16 + 8 × 26) / (5 + 15 + 8)
+            = (25 + 240 + 208) / 28
+            ≈ 473 / 28 ≈ 16.9 mm above tip
+
+High Mode (Armor → Blade → Core, bottom to top):
+  Armor CoM:  z_armor = 4 mm
+  Blade CoM:  z_blade = 8 + 6 = 14 mm    (Armor height + half Blade height)
+  Core CoM:   z_core  = 8 + 12 + 5 = 25 mm
+
+  z_CoM_high = (m_armor × 4 + m_blade × 14 + m_core × 25) / 28
+             = (8 × 4 + 15 × 14 + 5 × 25) / 28
+             = (32 + 210 + 125) / 28
+             ≈ 367 / 28 ≈ 13.1 mm above tip
+
+CoM is 3.8 mm LOWER in High Mode — counter-intuitive because the Armor (heaviest
+non-Blade component at 8 g) moves from top to bottom, lowering the overall mass centre.
+```
+
+The precession rate depends on the torque arm d = z_CoM above tip contact:
+
+```
+Ω_precession = (m_total × g × d) / (I_total × ω)
+
+Low Mode:   Ω_low  = (0.028 × 9.81 × 0.0169) / (I × ω) ≈ 4.64×10⁻³ / (I × ω)
+High Mode:  Ω_high = (0.028 × 9.81 × 0.0131) / (I × ω) ≈ 3.60×10⁻³ / (I × ω)
+
+Ω_high / Ω_low ≈ 3.60 / 4.64 ≈ 0.776
+
+High Mode precesses 22% SLOWER than Low Mode (lower CoM, shorter torque arm).
+High Mode is therefore more gyroscopically stable at the same ω — an additional
+advantage on top of the elevated contact height.
+
+Contact height differential:
+  h_contact_high − h_contact_low = h_armor ≈ 8 mm
+  A 8 mm elevation means the Blade contact surface in High Mode sits above any
+  opponent Blade contact zone by approximately 8 mm — over-striking their attack face.
+```
+
+### Mode-Invariant Inertia Budget
+
+```
+Core (ABS, m ≈ 5 g = 0.005 kg, r_i ≈ 3 mm, r_o ≈ 13 mm):
+I_core = ½ × 0.005 × ((0.003)² + (0.013)²)
+       = ½ × 0.005 × (9.0×10⁻⁶ + 1.69×10⁻⁴)
+       = ½ × 0.005 × 1.78×10⁻⁴
+       ≈ 4.45×10⁻⁷ kg·m²
+
+Blade (ABS, m ≈ 15 g = 0.015 kg, r_i ≈ 6 mm, r_o ≈ 28 mm):
+I_blade = ½ × 0.015 × ((0.006)² + (0.028)²)
+        = ½ × 0.015 × (3.6×10⁻⁵ + 7.84×10⁻⁴)
+        = ½ × 0.015 × 8.20×10⁻⁴
+        ≈ 6.15×10⁻⁶ kg·m²
+
+Armor (ABS, m ≈ 8 g = 0.008 kg, r_i ≈ 5 mm, r_o ≈ 21 mm):
+I_armor = ½ × 0.008 × ((0.005)² + (0.021)²)
+        = ½ × 0.008 × (2.5×10⁻⁵ + 4.41×10⁻⁴)
+        = ½ × 0.008 × 4.66×10⁻⁴
+        ≈ 1.86×10⁻⁶ kg·m²
+
+I_layer = 4.45×10⁻⁷ + 6.15×10⁻⁶ + 1.86×10⁻⁶ ≈ 8.46×10⁻⁶ kg·m²
+         → identical in both modes (no radial position changes between modes)
+```
+
+| Component | Mass (g) | r_i (mm) | r_o (mm) | I (kg·m²) | Share of Layer I |
+|-----------|----------|-----------|-----------|-----------|-----------------|
+| Core | 5.0 | 3 | 13 | 4.45×10⁻⁷ | 5.3% |
+| Blade | 15.0 | 6 | 28 | 6.15×10⁻⁶ | 72.7% |
+| Armor | 8.0 | 5 | 21 | 1.86×10⁻⁶ | 22.0% |
+| **Layer total** | **28.0** | — | — | **8.46×10⁻⁶** | 100% |
+
+The Blade's 72.7% Layer I share is comparable to the Superking Ring (77.2%) but the DB layer total is substantially larger: 8.46×10⁻⁶ vs SK's 6.44×10⁻⁶ — a 31% increase — because the Armor in DB is heavier and at a larger radius than the SK Chassis.
+
+```
+DB Disc (m ≈ 10 g, r_i ≈ 5 mm, r_o ≈ 19 mm):
+I_disc = ½ × 0.010 × ((0.005)² + (0.019)²) ≈ 1.93×10⁻⁶ kg·m²
+
+Driver (m ≈ 4 g, r_shaft ≈ 4 mm):
+I_driver ≈ ½ × 0.004 × (0.004)² ≈ 3.20×10⁻⁸ kg·m²
+
+I_total ≈ 8.46×10⁻⁶ + 1.93×10⁻⁶ + 3.20×10⁻⁸ ≈ 10.42×10⁻⁶ kg·m²
+```
+
+| Assembly | I (kg·m²) | Share |
+|----------|-----------|-------|
+| Layer (Core + Blade + Armor) | 8.46×10⁻⁶ | 81.2% |
+| DB Disc | 1.93×10⁻⁶ | 18.5% |
+| Driver | 3.20×10⁻⁸ | 0.31% |
+| **Total** | **10.42×10⁻⁶** | 100% |
+
+Layer dominance reaches 81.2% in DB — the highest of any Burst system. The DB Disc is smaller and lighter than earlier Core Discs (10 g vs 12 g, r_o 19 mm vs 20 mm), shifting further mass budget to the Layer.
+
+### Overdrive System
+
+The Overdrive System, introduced with Dangerous Belial, applies enhanced contact geometry to the Blade: contact faces are widened and steepened (φ closer to 90° from radial), maximising the smash-attack component at the expense of recoil deflection:
+
+```
+Standard DB Blade contact face (φ ≈ 35° from radial):
+  smash fraction = cos(35°) ≈ 0.819
+  recoil fraction = sin(35°) ≈ 0.574
+
+Overdrive Blade (φ ≈ 15° from radial — face nearly radial, near-perpendicular to tangent):
+  smash fraction = cos(15°) ≈ 0.966
+  recoil fraction = sin(15°) ≈ 0.259
+
+Overdrive delivers 18% more smash transfer and 55% less recoil per collision —
+mechanically, the opponent receives a larger fraction of the collision impulse as
+directed lateral force rather than glancing deflection.
+```
+
+### Evolution Gear: Stackable Inertia Accessories
+
+Each Evolution Gear is a clip-on mass accessory that mounts at a defined radial station on the Blade (or Driver tip, for VS Gear). Each gear adds a point-mass I increment:
+
+```
+ΔI_one_gear = m_gear × r_gear²
+
+Typical gear mass: m_gear ≈ 2 g = 0.002 kg
+Typical gear mounting radius on Blade: r_gear ≈ 23 mm = 0.023 m
+
+ΔI_one_gear ≈ 0.002 × (0.023)² = 0.002 × 5.29×10⁻⁴ ≈ 1.06×10⁻⁶ kg·m²
+
+Gear stacking additions (all gears assumed equal mass and radius for illustration):
+  1 Gear (First Gear):    ΔI = 1.06×10⁻⁶ kg·m²   (+1.3% system I)
+  2 Gear (Second Gear):   ΔI = 2.12×10⁻⁶ kg·m²   (+2.6% system I)
+  3 Gear (Third Gear):    ΔI = 3.18×10⁻⁶ kg·m²   (+3.9% system I)
+  Perfect Gear (4 gears): ΔI = 4.24×10⁻⁶ kg·m²   (+5.1% system I from baseline gears)
+
+I_total with Perfect Gear ≈ 10.42×10⁻⁶ + 4.24×10⁻⁶ ≈ 14.66×10⁻⁶ kg·m²
+
+Spin decay rate improvement (stamina tip, μ = 0.12, r_tip = 0.8 mm):
+  Baseline:      dω/dt ≈ −(0.12 × 0.042 × 9.81 × 0.0008) / 10.42×10⁻⁶ ≈ −3.78 rad/s²
+  Perfect Gear:  dω/dt ≈ −(0.12 × 0.046 × 9.81 × 0.0008) / 14.66×10⁻⁶ ≈ −2.94 rad/s²
+  Improvement:   +22% longer spin time at equal launch ω
+```
+
+Gear compatibility matrix:
+
+| Gear | Compatible with | Mounting location | Primary effect |
+|------|----------------|------------------|---------------|
+| F Gear | DB Belial, Dangerous Belial, Divine Belial | Blade outer | ΔI at r ≈ 23 mm |
+| V Gear | " | Blade outer | ΔI at r ≈ 23 mm |
+| S Gear | " | Blade outer | ΔI at r ≈ 23 mm |
+| L Gear | " | Blade outer | ΔI at r ≈ 23 mm |
+| D Gear | " | Blade outer | ΔI at r ≈ 23 mm |
+| A Gear | Divine BU Blade only | BU Blade exclusive port | ΔI at r ≈ 25 mm |
+| H Gear | Divine BU Blade only | BU Blade exclusive port | ΔI at r ≈ 25 mm |
+| VS Gear | Venture / Adventure Driver only | Driver tip shaft | ΔI at r_tip level |
+
+The VS Gear is the only Evolution Gear that modifies the Driver rather than the Layer. Its I contribution is at r_tip ≈ 4–6 mm — negligible in absolute terms — meaning its function is tip-profile selection (similar to Xtend Chip logic) rather than a meaningful I addition.
+
+Ultimate Gear naming requires D + A + H + VS simultaneously, which spans three distinct components (Blade, BU Blade, Driver) and therefore constrains the combination to Divine Belial configurations using the BU Blade and a compatible Driver.
+
+### Burst Ultimate Layer Series: BU Blade Extension
+
+The Burst Ultimate Layer Series (April 2022) retains the DB Core + [Blade] + Armor + Disc + Driver structure but replaces the standard DB Blade with the BU Blade — a heavier, wider-radius contact piece with two exclusive gear ports:
+
+```
+BU Blade (ABS, m ≈ 17 g = 0.017 kg, r_i ≈ 6 mm, r_o ≈ 30 mm):
+I_BU_blade = ½ × 0.017 × ((0.006)² + (0.030)²)
+           = ½ × 0.017 × (3.6×10⁻⁵ + 9.0×10⁻⁴)
+           = ½ × 0.017 × 9.36×10⁻⁴
+           ≈ 7.96×10⁻⁶ kg·m²
+
+vs standard DB Blade: 6.15×10⁻⁶ kg·m²
+ΔI_BU_upgrade ≈ +1.81×10⁻⁶ kg·m²  (+29% Blade I; +17% system I)
+
+BU Layer total (Core + BU Blade + Armor):
+  I_BU_layer = 4.45×10⁻⁷ + 7.96×10⁻⁶ + 1.86×10⁻⁶ ≈ 10.27×10⁻⁶ kg·m²
+
+BU system total:
+  I_BU_total ≈ 10.27×10⁻⁶ + 1.93×10⁻⁶ + 3.2×10⁻⁸ ≈ 12.23×10⁻⁶ kg·m²
+  Layer share: 10.27 / 12.23 ≈ 83.9%  (highest Layer share across all Gen 3 systems)
+
+BU Blade exclusive gear ports (A Gear and H Gear at r ≈ 25 mm):
+  ΔI per exclusive gear ≈ 0.002 × (0.025)² ≈ 1.25×10⁻⁶ kg·m²  each
+  Both A + H Gears added: ΔI ≈ 2.50×10⁻⁶ kg·m²
+```
+
+```
+Generation I budget summary (Layer share evolution across all Gen 3 systems):
+
+Initial Burst (Case 368):  Layer 52.5%  → Disc 46.4%   → Driver ~1%
+DLS (Case 369):            Layer 57.1%  → Disc 41.6%   → Driver ~1%
+GLS (Case 370):            Layer 59.2%  → Disc 39.8%   → Driver ~1%
+Cho-Z (Case 371):          Layer 54.8%  → Disc 43.8%   → Driver ~1%
+Gatinko (Case 372):        Layer 64.0%  → Disc 34.9%   → Driver ~0.4%
+Superking (Case 373):      Layer 71.4%  → Disc 28.3%   → Driver ~0.4%
+DB (Case 374):             Layer 81.2%  → Disc 18.5%   → Driver ~0.3%
+BU (Case 374, extension):  Layer 83.9%  → Disc 15.8%   → Driver ~0.3%
+
+The trend is monotone: each successive system concentrates more I into the Layer
+and reduces the Disc's share. DB and BU complete the trajectory that began in GLS.
+```
+
+### TypeScript Model
+
+```typescript
+function dbLayerInertia(
+  coreMassG: number, coreOuterMm: number, coreInnerMm: number,
+  bladeMassG: number, bladeOuterMm: number, bladeInnerMm: number,
+  armorMassG: number, armorOuterMm: number, armorInnerMm: number
+): { iCore: number; iBlade: number; iArmor: number; iLayer: number; bladeSharePct: number } {
+  const toKg = (g: number) => g / 1000;
+  const toM  = (mm: number) => mm / 1000;
+  const annular = (m: number, ri: number, ro: number) =>
+    0.5 * m * (ri * ri + ro * ro);
+
+  const iCore  = annular(toKg(coreMassG),  toM(coreInnerMm),  toM(coreOuterMm));
+  const iBlade = annular(toKg(bladeMassG), toM(bladeInnerMm), toM(bladeOuterMm));
+  const iArmor = annular(toKg(armorMassG), toM(armorInnerMm), toM(armorOuterMm));
+  const iLayer = iCore + iBlade + iArmor;
+  return { iCore, iBlade, iArmor, iLayer, bladeSharePct: (iBlade / iLayer) * 100 };
+}
+
+function dbComHeight(
+  coreMassG: number, coreHeightMm: number,
+  bladeMassG: number, bladeHeightMm: number,
+  armorMassG: number, armorHeightMm: number,
+  mode: "low" | "high"
+): number {
+  const totalMass = coreMassG + bladeMassG + armorMassG;
+  let zCore: number, zBlade: number, zArmor: number;
+
+  if (mode === "low") {
+    // Core at bottom, Blade above Core, Armor on top
+    zCore  = coreHeightMm / 2;
+    zBlade = coreHeightMm + bladeHeightMm / 2;
+    zArmor = coreHeightMm + bladeHeightMm + armorHeightMm / 2;
+  } else {
+    // Armor at bottom, Blade above Armor, Core on top
+    zArmor = armorHeightMm / 2;
+    zBlade = armorHeightMm + bladeHeightMm / 2;
+    zCore  = armorHeightMm + bladeHeightMm + coreHeightMm / 2;
+  }
+
+  return (coreMassG * zCore + bladeMassG * zBlade + armorMassG * zArmor) / totalMass;
+}
+
+function dbPrecessionRatio(zComHighMm: number, zComLowMm: number): number {
+  // High Mode precession rate / Low Mode precession rate (at equal ω and I)
+  // I is identical in both modes; only torque arm d = zCoM differs
+  return zComHighMm / zComLowMm;
+}
+
+function evolutionGearDeltaI(gearMassG: number, mountRadiusMm: number): number {
+  return (gearMassG / 1000) * (mountRadiusMm / 1000) ** 2; // kg·m²
+}
+
+function evolutionGearStackI(
+  gears: Array<{ massG: number; radiusMm: number }>
+): { deltaI: number; label: string } {
+  const deltaI = gears.reduce((sum, g) => sum + evolutionGearDeltaI(g.massG, g.radiusMm), 0);
+  const labels: Record<number, string> = { 1: "1 Gear", 2: "2 Gear", 3: "3 Gear", 4: "Perfect Gear" };
+  const label = labels[gears.length] ?? "Ultimate Gear";
+  return { deltaI, label };
+}
+
+function dbSpinDecay(
+  mu: number, totalMassG: number, tipRadiusMm: number, iTotalKgm2: number
+): number {
+  const tau = mu * (totalMassG / 1000) * 9.81 * (tipRadiusMm / 1000);
+  return -(tau / iTotalKgm2);
+}
+
+// dbLayerInertia(5, 13, 3, 15, 28, 6, 8, 21, 5)
+//   → iCore ≈ 4.45×10⁻⁷, iBlade ≈ 6.15×10⁻⁶, iArmor ≈ 1.86×10⁻⁶
+//      iLayer ≈ 8.46×10⁻⁶ kg·m²; bladeSharePct ≈ 72.7%
+// dbComHeight(5, 10, 15, 12, 8, 8, "low")   → ≈ 16.9 mm above tip
+// dbComHeight(5, 10, 15, 12, 8, 8, "high")  → ≈ 13.1 mm above tip
+// dbPrecessionRatio(13.1, 16.9)             → ≈ 0.775  (High Mode precesses 22% slower)
+// evolutionGearStackI([{massG:2, radiusMm:23}, {massG:2, radiusMm:23}])
+//   → deltaI ≈ 2.12×10⁻⁶ kg·m²; label: "2 Gear"
+// evolutionGearStackI([{massG:2,radiusMm:23},{massG:2,radiusMm:23},
+//                      {massG:2,radiusMm:23},{massG:2,radiusMm:23}])
+//   → deltaI ≈ 4.24×10⁻⁶ kg·m²; label: "Perfect Gear"
+// dbSpinDecay(0.12, 46, 0.8, 10.42e-6)  → ≈ −3.93 rad/s²  (baseline stamina)
+// dbSpinDecay(0.12, 50, 0.8, 14.66e-6)  → ≈ −3.27 rad/s²  (Perfect Gear; +17% spin time)
+```
