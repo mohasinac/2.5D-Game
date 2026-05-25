@@ -914,7 +914,7 @@ export class TournamentBattleRoom extends Room<GameState> {
     this.state.arena.rotationPivotX      = arenaData.rotationPivotX      ?? 0;
     this.state.arena.rotationPivotY      = arenaData.rotationPivotY      ?? 0;
     this.state.arena.gravity = arenaData.gravity || 0;
-    populateArenaFeatures(this.state, arenaData as any);
+    populateArenaFeatures(this.state, arenaData as any, this.globalSettings);
     this.state.arena.airResistance = arenaData.airResistance || 0.01;
     this.state.arena.surfaceFriction = arenaData.surfaceFriction || 0.01;
     if (arenaData.wall) {

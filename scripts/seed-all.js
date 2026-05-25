@@ -247,6 +247,42 @@ const SEEDERS = [
     collections: ["part_layer_defs"],
     description: "12 part layer types for contact point assignments (upper, blade, guard, etc.)",
   },
+  {
+    name: "special-move-presets",
+    script: "seed-special-move-presets.js",
+    collections: ["special_move_presets"],
+    description: "6 special move preset cards (Attack, Defense, Stamina, Balanced + 2 variants)",
+  },
+  {
+    name: "combo-presets",
+    script: "seed-combo-presets.js",
+    collections: ["combo_presets"],
+    description: "8 combo preset cards mirroring the combo registry",
+  },
+  {
+    name: "mechanic-presets",
+    script: "seed-mechanic-presets.js",
+    collections: ["mechanic_presets"],
+    description: "11 mechanic preset configs grouped by friction/collision/deflection/gimmick",
+  },
+  {
+    name: "gimmick-presets",
+    script: "seed-gimmick-presets.js",
+    collections: ["gimmick_presets"],
+    description: "27 gimmick preset cards — one per gimmick_def with recommended part types",
+  },
+  {
+    name: "bey-presets",
+    script: "seed-bey-presets.js",
+    collections: ["bey_presets"],
+    description: "8 beyblade archetype/generation presets (4 archetypes + 4 gen variants)",
+  },
+  {
+    name: "system-presets",
+    script: "seed-system-presets.js",
+    collections: ["system_presets"],
+    description: "7 complete 2.5D beyblade system templates per generation (Plastic/MFB/Burst/X)",
+  },
 ];
 
 // ── 4. Parse CLI flags ────────────────────────────────────────────────────────

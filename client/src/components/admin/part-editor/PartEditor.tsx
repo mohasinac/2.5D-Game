@@ -17,8 +17,8 @@
 
 import { useState, useEffect } from "react";
 import { useTabFromUrl } from "@/hooks/useTabFromUrl";
-import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { doc, getDoc, updateDoc, getDocs, collection, serverTimestamp } from "firebase/firestore";
+import { db, COLLECTIONS } from "@/lib/firebase";
 import { C, alpha } from "@/styles/theme";
 import toast from "react-hot-toast";
 import { PartShapeEditor } from "./PartShapeEditor";
@@ -30,7 +30,7 @@ import { ContactPointEditor } from "./ContactPointEditor";
 import { PartConfigurationsEditor } from "./PartConfigurationsEditor";
 import { PocketListEditor } from "./PocketListEditor";
 import { PartLayerPreview, type PartKind } from "./PartLayerPreview";
-import { SearchableTabSelect, SearchableSelect } from "@/components/admin/SearchableSelect";
+import { SearchableTabSelect, SearchableSelect, SearchableMultiSelect } from "@/components/admin/SearchableSelect";
 
 const SLUG_TO_KIND: Record<string, PartKind> = {
   "bit-beasts":   "bitBeast",
@@ -89,13 +89,18 @@ export function PartEditor({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [part, setPart] = useState<Record<string, any> | null>(null);
   const [dirty, setDirty] = useState(false);
+  const [comboEffectOptions, setComboEffectOptions] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
     (async () => {
       try {
-        const snap = await getDoc(doc(db, collectionName, partId));
+        const [snap, ceSnap] = await Promise.all([
+          getDoc(doc(db, collectionName, partId)),
+          getDocs(collection(db, COLLECTIONS.COMBO_EFFECTS)),
+        ]);
         if (!snap.exists()) { toast.error("Part not found"); return; }
         setPart({ id: snap.id, ...snap.data() });
+        setComboEffectOptions(ceSnap.docs.map(d => ({ value: d.id, label: ((d.data().name ?? d.data().displayName) as string | undefined) ?? d.id })));
       } catch { toast.error("Failed to load part"); }
       finally { setLoading(false); }
     })();
@@ -269,12 +274,11 @@ export function PartEditor({
             {/* Combo Effects */}
             <div>
               <div style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Combo Effects</div>
-              {(part.comboEffects as string[] ?? []).length === 0
-                ? <div style={{ fontSize: 12, color: C.faint }}>No combo effects assigned</div>
-                : (part.comboEffects as string[] ?? []).map((id) => (
-                    <span key={id} style={{ fontSize: 11, padding: "2px 7px", borderRadius: 4, background: alpha(C.purple, 0.13), color: C.purple, marginRight: 4, display: "inline-block" }}>{id}</span>
-                  ))
-              }
+              <SearchableMultiSelect
+                values={(part.comboEffects as string[] | undefined) ?? []}
+                options={comboEffectOptions}
+                onChange={(ids) => update({ comboEffects: ids })}
+              />
             </div>
             {/* Slot wiring */}
             <SlotWiringSection

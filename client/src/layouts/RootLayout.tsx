@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { IS_LOCAL } from "@/game/hooks/useColyseus";
 import { C } from "@/styles/theme";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { Settings } from "lucide-react";
 import toast from "react-hot-toast";
 
 // Full-screen game pages — hide the global AuthChip so it doesn't overlap the in-game HUD.
@@ -27,6 +28,10 @@ function AuthChip() {
   return (
     <div style={{ display:"flex", alignItems:"center", gap:8 }}>
       <span style={{ fontSize:12, color:C.muted }}>{currentUser.email}</span>
+      <Link to="/admin/settings" title="Settings"
+        style={{ display:"flex", alignItems:"center", padding:"4px 6px", background:"none", border:`1px solid ${C.border}`, borderRadius:6, color:C.faint, textDecoration:"none" }}>
+        <Settings size={13} />
+      </Link>
       <button
         onClick={async () => { await signOutUser(); toast.success("Signed out"); navigate("/"); }}
         style={{ padding:"4px 10px", background:"none", border:`1px solid ${C.border}`, borderRadius:6, fontSize:12, color:C.faint, cursor:"pointer" }}

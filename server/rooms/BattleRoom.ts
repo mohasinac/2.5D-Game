@@ -742,7 +742,7 @@ export class BattleRoom extends Room<GameState> {
 
     // Populate runtime state maps so the client can render the features
     // (Phase 8 must-have — previously, schemas existed but maps stayed empty).
-    populateArenaFeatures(this.state, arenaData as any);
+    populateArenaFeatures(this.state, arenaData as any, this.globalSettings);
 
     // Collision config from ArenaConfig → ArenaState schema
     this.state.arena.arenaWallDamageMult       = arenaData.wallDamageMult       ?? 1.0;

@@ -53,8 +53,13 @@ export function BeybladeCreatePage() {
   const [elementTypes, setElementTypes] = useState<string[]>([]);
   const [specialMoveId, setSpecialMoveId] = useState("");
   const [comboIds, setComboIds] = useState<string[]>([]);
+  const [bitBeastId, setBitBeastId] = useState("");
+  const [jumpForce, setJumpForce] = useState(0);
+  const [jumpHeight, setJumpHeight] = useState(0);
+  const [burstResistance, setBurstResistance] = useState(50);
   const [specialMoveOptions, setSpecialMoveOptions] = useState<{ value: string; label: string }[]>([]);
   const [comboOptions, setComboOptions] = useState<{ value: string; label: string }[]>([]);
+  const [bitBeastOptions, setBitBeastOptions] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
     getDocs(collection(db, COLLECTIONS.SPECIAL_MOVES))
@@ -62,6 +67,9 @@ export function BeybladeCreatePage() {
       .catch(() => {});
     getDocs(collection(db, COLLECTIONS.COMBOS))
       .then(snap => setComboOptions(snap.docs.map(d => ({ value: d.id, label: (d.data().name ?? d.id) as string }))))
+      .catch(() => {});
+    getDocs(collection(db, COLLECTIONS.BITBEAST_ASSETS))
+      .then(snap => setBitBeastOptions(snap.docs.map(d => ({ value: d.id, label: ((d.data().displayName ?? d.data().name) as string | undefined) ?? d.id }))))
       .catch(() => {});
   }, []);
 
@@ -161,6 +169,10 @@ export function BeybladeCreatePage() {
         ...(elementTypes.length > 0 ? { elementTypes } : {}),
         ...(specialMoveId ? { specialMoveId } : {}),
         ...(comboIds.length > 0 ? { comboIds } : {}),
+        ...(bitBeastId ? { bitBeastId } : {}),
+        ...(jumpForce > 0 ? { jumpForce } : {}),
+        ...(jumpHeight > 0 ? { jumpHeight } : {}),
+        burstResistance,
         createdAt: serverTimestamp(),
       });
       toast.success(`Created ${form.displayName}!`);
@@ -392,6 +404,40 @@ export function BeybladeCreatePage() {
                     />
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Advanced Physics */}
+            <div style={{ marginTop:20, paddingTop:20, borderTop:`1px solid ${C.border}` }}>
+              <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:700, marginBottom:12, textTransform:"uppercase", letterSpacing:"0.06em" }}>Advanced Physics</label>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:12 }}>
+                <div>
+                  <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Jump Force (N, 0=off)</label>
+                  <input type="number" min={0} max={2000} step={50} value={jumpForce}
+                    onChange={e => setJumpForce(+e.target.value)} style={S.input} />
+                </div>
+                <div>
+                  <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Jump Height (px, 0=off)</label>
+                  <input type="number" min={0} max={500} step={10} value={jumpHeight}
+                    onChange={e => setJumpHeight(+e.target.value)} style={S.input} />
+                </div>
+              </div>
+              <div style={{ marginBottom:12 }}>
+                <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Burst Resistance (0–100)</label>
+                <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+                  <input type="range" min={0} max={100} value={burstResistance}
+                    onChange={e => setBurstResistance(+e.target.value)} style={{ flex:1, accentColor:C.yellow }} />
+                  <span style={{ fontSize:13, color:C.text, fontFamily:"monospace", width:32 }}>{burstResistance}</span>
+                </div>
+              </div>
+              <div>
+                <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Bit Beast (optional)</label>
+                <SearchableSelect
+                  value={bitBeastId}
+                  onChange={setBitBeastId}
+                  options={[{ value:"", label:"(none)" }, ...bitBeastOptions]}
+                  placeholder="Select bit beast…"
+                />
               </div>
             </div>
           </div>

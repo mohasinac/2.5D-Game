@@ -38,6 +38,7 @@ export function makeTypeFieldRenderer(partTypeSlug: string) {
       case "casings":       return <CasingFields part={part} onChange={onChange} />;
       case "bit-beasts":    return <BitBeastFields part={part} onChange={onChange} />;
       case "spin-tracks":   return <SpinTrackFields part={part} onChange={onChange} />;
+      case "gears":         return <GearFields part={part} onChange={onChange} />;
       default:              return <StatModifiersEditor part={part} onChange={onChange} />;
     }
   };
@@ -559,6 +560,14 @@ function SubPartFields({ part, onChange }: { part: Part; onChange: OnChange }) {
           <NumInput value={part.triggerSensitivity as number | undefined} onChange={(v) => onChange({ triggerSensitivity: v })} min={0} max={2} />
         </Field>
       </div>
+
+      <SectionHeader>Flip Behaviour</SectionHeader>
+      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 12 }}>
+        <input type="checkbox" checked={!!(part.canFlip)} onChange={e => onChange({ canFlip: e.target.checked || undefined })} style={{ accentColor: C.blue }} />
+        canFlip
+        <span style={{ fontSize: 10, color: C.faint }}>(sub-part can be flipped to reverse its contact-point orientation in the launcher)</span>
+      </label>
+
       <div style={{ marginTop: 20 }}>
         <StatModifiersEditor part={part} onChange={onChange} />
       </div>
@@ -622,11 +631,38 @@ function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
           <NumInput value={part.climbAssist as number | undefined} onChange={v => onChange({ climbAssist: v })} min={0} max={1} step={0.05} />
         </Field>
       </div>
-      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 16 }}>
+      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 8 }}>
         <input type="checkbox" checked={!!(part.freeSpin)} onChange={e => onChange({ freeSpin: e.target.checked || undefined })} style={{ accentColor: C.blue }} />
         freeSpin
         <span style={{ fontSize: 10, color: C.faint }}>(B:D — tip bearing fully decouples spin from movement)</span>
       </label>
+      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 16 }}>
+        <input type="checkbox" checked={!!(part.freeSpinOnCore)} onChange={e => onChange({ freeSpinOnCore: e.target.checked || undefined })} style={{ accentColor: C.blue }} />
+        freeSpinOnCore
+        <span style={{ fontSize: 10, color: C.faint }}>(tip spins independently from the core — EG/CEW style)</span>
+      </label>
+
+      <SectionHeader>Default Sub-Tip</SectionHeader>
+      <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 14 }}>
+        <div style={{ fontSize: 11, color: C.faint, marginBottom: 8 }}>Optional inner sub-tip (e.g. SG Flat base inside a Wide Tip shell).</div>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <Field label="Sub-tip Shape">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+              {["flat","sharp","semi_flat","ball","rubber_flat","bearing"].map(s => (
+                <ToggleBtn key={s} label={s.replace(/_/g," ")}
+                  active={(part.defaultSubTip as Record<string,unknown> | undefined)?.tipShape === s}
+                  onClick={() => onChange({ defaultSubTip: { ...((part.defaultSubTip as Record<string,unknown>) ?? {}), tipShape: s } })}
+                />
+              ))}
+            </div>
+          </Field>
+          <Field label="Sub-tip Friction" hint="0.0–1.0">
+            <NumInput value={(part.defaultSubTip as Record<string,unknown> | undefined)?.friction as number | undefined}
+              onChange={(v) => onChange({ defaultSubTip: { ...((part.defaultSubTip as Record<string,unknown>) ?? {}), friction: v } })}
+              min={0} max={1} step={0.05} />
+          </Field>
+        </div>
+      </div>
 
       <SectionHeader>Structural Flags</SectionHeader>
       <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
@@ -1247,6 +1283,70 @@ function SpinTrackFields({ part, onChange }: { part: Part; onChange: OnChange })
       <Field label="Track Rigidity" hint="0=flexible (absorbs some impact) → 1=rigid (no flex, no absorption).">
         <NumInput value={part.trackRigidity as number | undefined} onChange={(v) => onChange({ trackRigidity: v })} min={0} max={1} />
       </Field>
+      <div style={{ marginTop: 4 }}>
+        <StatModifiersEditor part={part} onChange={onChange} />
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Gear Parts
+// ─────────────────────────────────────────────────────────────────────────────
+
+const GEAR_SHAPES = ["sword","shield","hammer","wing","lance","fortress","ring","anchor","custom"] as const;
+const GEAR_ARCHETYPES = ["attack","defense","stamina","balance"] as const;
+const CLUTCH_MODES = ["none","first","final","always-on"] as const;
+
+function GearFields({ part, onChange }: { part: Part; onChange: OnChange }) {
+  return (
+    <div>
+      <SectionHeader>Material</SectionHeader>
+      <MaterialField part={part} onChange={onChange} />
+
+      <SectionHeader>Gear Shape &amp; Archetype</SectionHeader>
+      <Field label="Gear Shape">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+          {GEAR_SHAPES.map(s => (
+            <ToggleBtn key={s} label={s} active={part.gearShape === s} onClick={() => onChange({ gearShape: s })} />
+          ))}
+        </div>
+      </Field>
+      <Field label="Archetype">
+        <div style={{ display: "flex", gap: 5 }}>
+          {GEAR_ARCHETYPES.map(a => (
+            <ToggleBtn key={a} label={a} active={part.archetype === a} onClick={() => onChange({ archetype: a })} />
+          ))}
+        </div>
+      </Field>
+
+      <SectionHeader>Gear Mechanics</SectionHeader>
+      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 14 }}>
+        <Field label="Gear Teeth" hint="Number of teeth on the gear ring.">
+          <NumInput value={part.gearTeeth as number | undefined} onChange={(v) => onChange({ gearTeeth: v })} min={0} step={1} width={80} />
+        </Field>
+        <Field label="Gear Ratio" hint="Output/input speed ratio (e.g. 1.5 = 1.5× speed).">
+          <NumInput value={part.gearRatio as number | undefined} onChange={(v) => onChange({ gearRatio: v })} min={0} max={10} step={0.1} width={80} />
+        </Field>
+        <Field label="Spring Stiffness" hint="Spring force constant for spring-wound gears (N/m).">
+          <NumInput value={part.springStiffness as number | undefined} onChange={(v) => onChange({ springStiffness: v })} min={0} step={10} width={90} />
+        </Field>
+        <Field label="Lock Angle (°)" hint="Angle at which the ratchet locks.">
+          <NumInput value={part.lockAngle as number | undefined} onChange={(v) => onChange({ lockAngle: v })} min={0} max={360} step={5} width={80} />
+        </Field>
+        <Field label="Release Force" hint="Impact force threshold that releases the clutch (N).">
+          <NumInput value={part.releaseForce as number | undefined} onChange={(v) => onChange({ releaseForce: v })} min={0} step={10} width={90} />
+        </Field>
+      </div>
+
+      <Field label="Clutch Mode">
+        <div style={{ display: "flex", gap: 5 }}>
+          {CLUTCH_MODES.map(m => (
+            <ToggleBtn key={m} label={m} active={(part.clutchMode ?? "none") === m} onClick={() => onChange({ clutchMode: m })} />
+          ))}
+        </div>
+      </Field>
+
       <div style={{ marginTop: 4 }}>
         <StatModifiersEditor part={part} onChange={onChange} />
       </div>

@@ -5,6 +5,8 @@ import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGame } from "@/contexts/GameContext";
 import { C, alpha } from "@/styles/theme";
 import { BUILT_IN_MODIFIERS, MODIFIER_MAP } from "@/types/roundModifier";
+import { getDoc, doc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const TYPE_COLORS_MAP: Record<string, string> = {
   attack: C.red,
@@ -24,6 +26,13 @@ export function BattleLobbyPage() {
   const [bestOf, setBestOf] = useState<BestOf>(1);
   const [copied, setCopied] = useState(false);
   const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
+  const [modeDisabled, setModeDisabled] = useState(false);
+
+  useEffect(() => {
+    getDoc(doc(db, "settings", "game")).then((snap) => {
+      if (snap.exists() && snap.data().enablePvp === false) setModeDisabled(true);
+    }).catch(() => {});
+  }, []);
 
   const MAX_MODIFIERS = 2;
 
@@ -86,6 +95,12 @@ export function BattleLobbyPage() {
             <span style={{ fontSize: 13, color: C.muted, fontFamily: "monospace" }}>{connectionState}</span>
           </div>
         </div>
+
+        {modeDisabled && (
+          <div style={{ background: `${C.yellow}18`, border: `1px solid ${C.yellow}44`, borderRadius: 10, padding: "12px 18px", marginBottom: 20, fontSize: 13, color: C.yellow }}>
+            PVP Battle is currently disabled by the administrator.
+          </div>
+        )}
 
         {/* Room code */}
         {room && (
@@ -258,7 +273,7 @@ export function BattleLobbyPage() {
           {isHost ? (
             <button
               onClick={() => room && canStart && room.send("start-game", { bestOf })}
-              disabled={!canStart}
+              disabled={!canStart || modeDisabled}
               style={{
                 padding: "14px 40px", borderRadius: 12, fontWeight: 700, fontSize: 16,
                 cursor: canStart ? "pointer" : "not-allowed",

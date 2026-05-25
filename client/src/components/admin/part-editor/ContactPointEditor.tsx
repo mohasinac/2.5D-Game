@@ -449,6 +449,11 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
                     <SliderField label="Width (°)" value={sel.width} min={5} max={120} step={1} onChange={(v) => update(selected, { width: v })} />
                     <SliderField label="Radius (mm)" value={sel.radius} min={1} max={50} step={0.5} onChange={(v) => update(selected, { radius: v })} />
                     <SliderField label="Thickness (mm)" value={sel.thickness} min={0.5} max={10} step={0.5} onChange={(v) => update(selected, { thickness: v })} />
+                    <div>
+                      <label style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 4 }}>Set ID</label>
+                      <input type="text" value={sel.setId ?? ""} onChange={(e) => update(selected, { setId: e.target.value.trim() || undefined })}
+                        placeholder="(none)" style={{ padding: "5px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11, width: "100%" }} />
+                    </div>
                   </>
                 )}
               </Section>

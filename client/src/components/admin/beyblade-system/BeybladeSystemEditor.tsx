@@ -19,7 +19,7 @@ import { BeybladeSystemPreview } from "./BeybladeSystemPreview";
 import { PartPicker } from "./PartPicker";
 import { resolveBeybladeSystem, computeBeybladeStats } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
-import type { BeybladeSystem, SubPartAttachment, SubPartParent, BeybladeComboSlot, SpecialMoveConfig } from "@/types/beybladeSystem";
+import type { BeybladeSystem, SubPartAttachment, SubPartParent, BeybladeComboSlot, SpecialMoveConfig, GearAttachment } from "@/types/beybladeSystem";
 import type { ComboTrigger } from "@/types/comboTask";
 import { ELEMENT_COLORS, ELEMENT_ICONS } from "@/types/elementTypes";
 import type { ElementType } from "@/types/elementTypes";
@@ -34,6 +34,7 @@ type Tab =
   | "casing"
   | "spin_track"
   | "sub_parts"
+  | "gears"
   | "combos";
 
 const TABS: Array<{ key: Tab; label: string; icon?: string }> = [
@@ -46,6 +47,7 @@ const TABS: Array<{ key: Tab; label: string; icon?: string }> = [
   { key: "casing",       label: "Casing" },
   { key: "spin_track",   label: "Spin Track" },
   { key: "sub_parts",    label: "Sub-Parts" },
+  { key: "gears",        label: "Gears", icon: "⚙️" },
   { key: "combos",       label: "Combos", icon: "⚡" },
 ];
 
@@ -93,6 +95,14 @@ export function BeybladeSystemEditor({ systemId }: Props) {
   useEffect(() => {
     getDocs(collection(db, COLLECTIONS.SUB_PARTS))
       .then((snap) => setSubPartDocs(snap.docs.map((d) => ({ id: d.id, ...d.data() }))))
+      .catch(() => {});
+  }, []);
+
+  // Fetch gear parts collection for picker
+  const [gearPartDocs, setGearPartDocs] = useState<PartDoc[]>([]);
+  useEffect(() => {
+    getDocs(collection(db, COLLECTIONS.GEAR_PARTS))
+      .then((snap) => setGearPartDocs(snap.docs.map((d) => ({ id: d.id, ...d.data() }))))
       .catch(() => {});
   }, []);
 
@@ -480,6 +490,15 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             />
           )}
 
+          {/* Gears */}
+          {tab === "gears" && (
+            <GearAttachmentsEditor
+              attachments={system.gearAttachments ?? []}
+              onChange={(atts) => updateSystem({ gearAttachments: atts })}
+              gearPartDocs={gearPartDocs}
+            />
+          )}
+
           {/* Combos */}
           {tab === "combos" && (
             <BeybladeComboSlotsEditor
@@ -743,6 +762,124 @@ function BeybladeComboSlotsEditor({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// ── Gear Attachments tab ──────────────────────────────────────────────────────
+
+const GEAR_MOUNT_OPTIONS: GearAttachment["parentPart"][] = ["ar", "wd", "casing", "core"];
+
+function GearAttachmentsEditor({
+  attachments,
+  onChange,
+  gearPartDocs,
+}: {
+  attachments: GearAttachment[];
+  onChange: (atts: GearAttachment[]) => void;
+  gearPartDocs: PartDoc[];
+}) {
+  const [adding, setAdding] = useState(false);
+
+  const update = (idx: number, patch: Partial<GearAttachment>) =>
+    onChange(attachments.map((a, i) => i === idx ? { ...a, ...patch } : a));
+
+  const remove = (idx: number) =>
+    onChange(attachments.filter((_, i) => i !== idx));
+
+  const add = (partId: string) => {
+    onChange([...attachments, { gearId: partId, parentPart: "ar" }]);
+    setAdding(false);
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>
+        Gears attach to a parent part and mesh with the spin axis to provide gear-ratio speed changes, clutch releases, or spring-wound launch assist.
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ fontSize: 12, color: C.muted }}>Gear Attachments ({attachments.length})</div>
+        <button
+          onClick={() => setAdding((a) => !a)}
+          style={{
+            padding: "4px 12px", fontSize: 11, borderRadius: 6, cursor: "pointer",
+            background: adding ? C.blue : C.bg3, color: adding ? "#fff" : C.muted,
+            border: `1px solid ${adding ? C.blue : C.border}`,
+          }}
+        >
+          {adding ? "Cancel" : "+ Add Gear"}
+        </button>
+      </div>
+
+      {adding && (
+        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12 }}>
+          <PartPicker
+            collectionName={COLLECTIONS.GEAR_PARTS}
+            onSelect={(id) => add(id)}
+            label="Select Gear Part"
+          />
+        </div>
+      )}
+
+      {attachments.map((att, idx) => {
+        const partDoc = gearPartDocs.find((p) => p.id === att.gearId);
+        return (
+          <div key={idx} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 14 }}>⚙️</span>
+              <span style={{ flex: 1, fontSize: 12, color: C.text, fontWeight: 600 }}>
+                {partDoc?.displayName ?? att.gearId}
+              </span>
+              <button onClick={() => remove(idx)} style={{ background: "none", border: "none", color: C.red, fontSize: 14, cursor: "pointer" }}>×</button>
+            </div>
+
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <div>
+                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Mount Point</div>
+                <div style={{ display: "flex", gap: 3 }}>
+                  {GEAR_MOUNT_OPTIONS.map((mp) => (
+                    <button
+                      key={mp}
+                      onClick={() => update(idx, { parentPart: mp })}
+                      style={{
+                        padding: "2px 7px", fontSize: 10, borderRadius: 4, cursor: "pointer",
+                        background: att.parentPart === mp ? alpha(C.blue, 0.13) : C.bg3,
+                        color: att.parentPart === mp ? C.blue : C.faint,
+                        border: `1px solid ${att.parentPart === mp ? alpha(C.blue, 0.27) : C.border}`,
+                      }}
+                    >
+                      {mp}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Active Config</div>
+                <input
+                  value={att.activeConfig ?? ""}
+                  onChange={(e) => update(idx, { activeConfig: e.target.value.trim() || undefined })}
+                  placeholder="(default)"
+                  style={{ width: 140, padding: "4px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                />
+              </div>
+            </div>
+
+            {partDoc && (
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", fontSize: 10, color: C.faint }}>
+                {partDoc.gearRatio != null && <span>Ratio: <span style={{ color: C.text }}>{partDoc.gearRatio}</span></span>}
+                {partDoc.gearTeeth != null && <span>Teeth: <span style={{ color: C.text }}>{partDoc.gearTeeth}</span></span>}
+                {partDoc.clutchMode && <span>Clutch: <span style={{ color: C.yellow }}>{partDoc.clutchMode}</span></span>}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {attachments.length === 0 && !adding && (
+        <div style={{ fontSize: 11, color: C.faint }}>No gears attached. Add Engine Gear or CEW inserts here.</div>
+      )}
     </div>
   );
 }

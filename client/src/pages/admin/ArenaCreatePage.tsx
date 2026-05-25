@@ -7,29 +7,55 @@ import { C, S } from "@/styles/theme";
 import { DEFAULT_ARENA_CONFIG, initializeWallConfig } from "@/types/arenaConfigNew";
 import type { ArenaShape, ArenaTheme } from "@/types/arenaConfigNew";
 import { PX_PER_CM_BASE } from "@/constants/units";
+import { useArenaShapeDefs } from "@/hooks/useArenaShapeDefs";
+import { useArenaThemeDefs } from "@/hooks/useArenaThemeDefs";
 
-const THEMES = ["metrocity","forest","mountains","grasslands","desert","sea","futuristic","prehistoric","safari","riverbank"];
+// Fallback in case Firestore defs aren't loaded yet
+const FALLBACK_THEMES = [
+  "metrocity","forest","mountains","grasslands","desert","sea",
+  "futuristic","prehistoric","safari","riverbank","volcano","ice",
+  "space","neon","underwater","jungle",
+];
 
-const SHAPES: { value: ArenaShape; label: string; icon: string }[] = [
-  { value: "circle",    label: "Circle",    icon: "⭕" },
-  { value: "square",    label: "Square",    icon: "⬛" },
-  { value: "triangle",  label: "Triangle",  icon: "🔺" },
-  { value: "pentagon",  label: "Pentagon",  icon: "⬠" },
-  { value: "hexagon",   label: "Hexagon",   icon: "⬡" },
-  { value: "heptagon",  label: "Heptagon",  icon: "⬠" },
-  { value: "octagon",   label: "Octagon",   icon: "🔷" },
-  { value: "star3",     label: "Star 3",    icon: "✦" },
-  { value: "star4",     label: "Star 4",    icon: "✦" },
-  { value: "star5",     label: "Star 5",    icon: "⭐" },
-  { value: "star6",     label: "Star 6",    icon: "✡" },
+const SHAPE_ICONS: Record<string, string> = {
+  circle:"⭕", square:"⬛", triangle:"🔺", pentagon:"⬠", hexagon:"⬡",
+  heptagon:"⬠", octagon:"🔷", star3:"✦", star4:"✦", star5:"⭐",
+  star6:"✡", star7:"✦", star8:"✦", rectangle:"▬", stadium:"🏟",
+};
+
+const FALLBACK_SHAPES: { value: string; label: string }[] = [
+  { value: "circle",    label: "Circle" },
+  { value: "square",    label: "Square" },
+  { value: "triangle",  label: "Triangle" },
+  { value: "pentagon",  label: "Pentagon" },
+  { value: "hexagon",   label: "Hexagon" },
+  { value: "heptagon",  label: "Heptagon" },
+  { value: "octagon",   label: "Octagon" },
+  { value: "star3",     label: "Star 3" },
+  { value: "star4",     label: "Star 4" },
+  { value: "star5",     label: "Star 5" },
+  { value: "star6",     label: "Star 6" },
+  { value: "star7",     label: "Star 7" },
+  { value: "star8",     label: "Star 8" },
+  { value: "rectangle", label: "Rectangle" },
+  { value: "stadium",   label: "Stadium" },
 ];
 
 export function ArenaCreatePage() {
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
-  // widthCm / heightCm stored in cm; converted to px on save
   const [form, setForm] = useState({ name:"", shape:"circle" as ArenaShape, theme:"metrocity", widthCm:45, heightCm:45 });
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]:v }));
+
+  const { items: shapeDefs } = useArenaShapeDefs();
+  const { items: themeDefs } = useArenaThemeDefs();
+
+  const shapes = shapeDefs.length > 0
+    ? shapeDefs.map(s => ({ value: s.id, label: s.label }))
+    : FALLBACK_SHAPES;
+  const themes = themeDefs.length > 0
+    ? themeDefs.map(t => t.id)
+    : FALLBACK_THEMES;
 
   const handleSave = async () => {
     if (!form.name.trim()) { toast.error("Name required"); return; }
@@ -69,15 +95,15 @@ export function ArenaCreatePage() {
         <div>
           <label style={S.label}>Shape</label>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:6 }}>
-            {SHAPES.map(s => (
-              <button key={s.value} onClick={() => set("shape", s.value)} style={{
+            {shapes.map(s => (
+              <button key={s.value} onClick={() => set("shape", s.value as ArenaShape)} style={{
                 padding:"8px 4px", borderRadius:8, fontSize:11, fontWeight:500, cursor:"pointer",
                 background: form.shape===s.value ? C.purple+"22" : "transparent",
                 border: `1px solid ${form.shape===s.value ? C.purple : C.border}`,
                 color: form.shape===s.value ? C.text : C.muted,
                 display:"flex", flexDirection:"column", alignItems:"center", gap:2,
               }}>
-                <span style={{ fontSize:16 }}>{s.icon}</span>
+                <span style={{ fontSize:16 }}>{SHAPE_ICONS[s.value] ?? "⬡"}</span>
                 <span>{s.label}</span>
               </button>
             ))}
@@ -87,8 +113,8 @@ export function ArenaCreatePage() {
         <div>
           <label style={S.label}>Theme</label>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:6 }}>
-            {THEMES.map(theme => (
-              <button key={theme} onClick={() => set("theme",theme)} style={{
+            {themes.map(theme => (
+              <button key={theme} onClick={() => set("theme", theme)} style={{
                 padding:"6px 4px", borderRadius:8, fontSize:11, fontWeight:500, cursor:"pointer", textTransform:"capitalize",
                 background: form.theme===theme ? C.purple+"22" : "transparent",
                 border: `1px solid ${form.theme===theme ? C.purple : C.border}`,

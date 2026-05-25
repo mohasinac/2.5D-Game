@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState, useMemo } from "react";
+import { TouchControls } from "@/components/game/TouchControls";
 import { Link, useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
 import { useColyseus } from "@/game/hooks/useColyseus";
@@ -578,6 +579,7 @@ export function AIBattleGamePage() {
           </div>
         </div>
       )}
+      {!isSpectating && <TouchControls />}
     </div>
   );
 }

@@ -24,12 +24,24 @@ interface AnyArenaConfig {
   loops?: Array<any>;
 }
 
-export function populateArenaFeatures(state: GameState, arena: AnyArenaConfig): void {
+interface FeatureFlags {
+  featureTurrets?: boolean;
+  featurePortals?: boolean;
+  featureWaterBodies?: boolean;
+  featureSpecialMoves?: boolean;
+  featurePits?: boolean;
+  featureLoops?: boolean;
+}
+
+export function populateArenaFeatures(state: GameState, arena: AnyArenaConfig, flags?: FeatureFlags | null): void {
   if (!state) return;
+
+  const ff = flags ?? {};
 
   // Water bodies — preserve all gameplay fields the client renderer expects.
   state.waterBodies.clear();
-  (arena.waterBodies ?? []).forEach((w: any, i: number) => {
+  const waterBodiesSrc = ff.featureWaterBodies === false ? [] : (arena.waterBodies ?? []);
+  waterBodiesSrc.forEach((w: any, i: number) => {
     const ws = new WaterBodyState();
     ws.waterBodyId = w.id ?? `water_${i}`;
     ws.waterBodyIndex = i;
@@ -44,7 +56,8 @@ export function populateArenaFeatures(state: GameState, arena: AnyArenaConfig): 
 
   // Pits
   state.pits.clear();
-  (arena.pits ?? []).forEach((p: any, i: number) => {
+  const pitsSrc = ff.featurePits === false ? [] : (arena.pits ?? []);
+  pitsSrc.forEach((p: any, i: number) => {
     const ps = new PitState();
     ps.pitId = p.id ?? `pit_${i}`;
     ps.pitIndex = i;
@@ -58,7 +71,8 @@ export function populateArenaFeatures(state: GameState, arena: AnyArenaConfig): 
 
   // Portals
   state.portals.clear();
-  (arena.portals ?? []).forEach((p: any, i: number) => {
+  const portalsSrc = ff.featurePortals === false ? [] : (arena.portals ?? []);
+  portalsSrc.forEach((p: any, i: number) => {
     const ps = new PortalState();
     ps.portalId = p.id ?? `portal_${i}`;
     ps.portalIndex = i;
@@ -74,7 +88,8 @@ export function populateArenaFeatures(state: GameState, arena: AnyArenaConfig): 
 
   // Turrets
   state.turrets.clear();
-  (arena.turrets ?? []).forEach((t: any, i: number) => {
+  const turretsSrc = ff.featureTurrets === false ? [] : (arena.turrets ?? []);
+  turretsSrc.forEach((t: any, i: number) => {
     const ts = new TurretState();
     ts.turretId = t.id ?? `turret_${i}`;
     ts.turretIndex = i;
@@ -116,7 +131,7 @@ export function populateArenaFeatures(state: GameState, arena: AnyArenaConfig): 
 
   // Loops / speed paths
   state.loops.clear();
-  const paths = arena.speedPaths ?? arena.loops ?? [];
+  const paths = ff.featureLoops === false ? [] : (arena.speedPaths ?? arena.loops ?? []);
   paths.forEach((l: any, i: number) => {
     const ls = new LoopState();
     ls.loopIndex = i;

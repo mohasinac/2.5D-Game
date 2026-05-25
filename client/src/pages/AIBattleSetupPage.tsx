@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -69,13 +69,22 @@ export function AIBattleSetupPage() {
   const { currentUser } = useAuth();
   const { byId: comboById } = useCombos();
 
-  const [beyblades, setBeyblades] = useState<BeybladeOption[]>([]);
-  const [arenas, setArenas]       = useState<ArenaOption[]>([]);
-  const [loading, setLoading] = useState(true);
+  const FALLBACK_BEY_OPTION: BeybladeOption = {
+    id: "default", displayName: "Default Beyblade (built-in)",
+    type: "balanced", spinDirection: "right",
+  };
+  const FALLBACK_ARENA_OPTION: ArenaOption = {
+    id: "default", name: "Default Arena (built-in)", difficulty: "normal", shape: "circle",
+  };
 
-  const [playerBeyId, setPlayerBeyId] = useState(settings.beybladeId ?? "");
-  const [aiBeyId, setAiBeyId]         = useState("");
-  const [arenaId, setArenaId]         = useState(settings.arenaId ?? "");
+  const [beyblades, setBeyblades] = useState<BeybladeOption[]>([FALLBACK_BEY_OPTION]);
+  const [arenas, setArenas]       = useState<ArenaOption[]>([FALLBACK_ARENA_OPTION]);
+  const [loading, setLoading] = useState(true);
+  const [modeDisabled, setModeDisabled] = useState(false);
+
+  const [playerBeyId, setPlayerBeyId] = useState(settings.beybladeId ?? "default");
+  const [aiBeyId, setAiBeyId]         = useState("default");
+  const [arenaId, setArenaId]         = useState(settings.arenaId ?? "default");
   const [difficulty, setDifficulty]   = useState<Difficulty>("medium");
   const [bestOf, setBestOf]           = useState<BestOf>(1);
   const [partOverrides, setPartOverrides] = useState<Record<string, string>>({});
@@ -83,19 +92,27 @@ export function AIBattleSetupPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [bSnap, aSnap] = await Promise.all([
+        const [bSnap, aSnap, settingsSnap] = await Promise.all([
           getDocs(collection(db, COLLECTIONS.BEYBLADE_STATS)),
           getDocs(collection(db, COLLECTIONS.ARENAS)),
+          getDoc(doc(db, "settings", "game")),
         ]);
-        const beys = bSnap.docs.map(d => ({ id: d.id, ...d.data() } as BeybladeOption));
-        const arns = aSnap.docs.map(d => ({ id: d.id, ...d.data() } as ArenaOption));
+        if (settingsSnap.exists() && settingsSnap.data().enableAiBattle === false) {
+          setModeDisabled(true);
+        }
+        const beys = [FALLBACK_BEY_OPTION, ...bSnap.docs.map(d => ({ id: d.id, ...d.data() } as BeybladeOption))];
+        const arns = [FALLBACK_ARENA_OPTION, ...aSnap.docs.map(d => ({ id: d.id, ...d.data() } as ArenaOption))];
         setBeyblades(beys);
         setArenas(arns);
-        if (!playerBeyId && beys.length) setPlayerBeyId(beys[0].id);
-        if (!aiBeyId    && beys.length) setAiBeyId(beys.length > 1 ? beys[1].id : beys[0].id);
-        if (!arenaId    && arns.length) setArenaId(arns[0].id);
-      } catch (e) {
-        toast.error("Failed to load beyblades/arenas");
+        // Auto-select first real entry (index 1) if still on fallback
+        const realBeys = beys.slice(1);
+        const realArns = arns.slice(1);
+        if ((!playerBeyId || playerBeyId === "default") && realBeys.length) setPlayerBeyId(realBeys[0].id);
+        if ((!aiBeyId    || aiBeyId    === "default") && realBeys.length)
+          setAiBeyId(realBeys.length > 1 ? realBeys[1].id : realBeys[0].id);
+        if ((!arenaId    || arenaId    === "default") && realArns.length) setArenaId(realArns[0].id);
+      } catch {
+        toast.error("Failed to load beyblades/arenas — using built-in defaults");
       } finally {
         setLoading(false);
       }
@@ -152,6 +169,12 @@ export function AIBattleSetupPage() {
         <Link to="/game" style={{ color:C.faint, fontSize:13, textDecoration:"none", display:"block", marginBottom:12 }}>← Back to menu</Link>
         <h1 style={{ fontSize:32, fontWeight:900, color:C.text, letterSpacing:"-0.02em", marginBottom:4 }}>🤖 AI Battle</h1>
         <p style={{ color:C.muted, fontSize:14, marginBottom:32 }}>Choose your beyblade, your opponent, and difficulty.</p>
+
+        {modeDisabled && (
+          <div style={{ background: `${C.yellow}18`, border: `1px solid ${C.yellow}44`, borderRadius: 10, padding: "12px 18px", marginBottom: 20, fontSize: 13, color: C.yellow }}>
+            AI Battle is currently disabled by the administrator. Check back later.
+          </div>
+        )}
 
         <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
 
@@ -274,7 +297,7 @@ export function AIBattleSetupPage() {
           {/* Start */}
           <button
             onClick={handleStart}
-            disabled={!playerBeyId || !aiBeyId || !arenaId}
+            disabled={!playerBeyId || !aiBeyId || !arenaId || modeDisabled}
             style={{
               padding:"16px 0", borderRadius:14, fontWeight:700, fontSize:16,
               background: C.purple, color: C.white,
