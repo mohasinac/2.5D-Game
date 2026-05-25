@@ -48,6 +48,7 @@ export default defineConfig({
         "**/ai-vs-ai-full-battle.spec.ts",
         "**/server-load-test.spec.ts",
         "**/hud-and-qte-tests.spec.ts",
+        "**/tournament-pvai-gauntlet.spec.ts",
       ],
     },
   ],
