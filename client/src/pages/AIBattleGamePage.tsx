@@ -238,6 +238,8 @@ export function AIBattleGamePage() {
 
   const allBeyblades = Array.from(beyblades.values());
   const aiBey = allBeyblades.find((b) => b.userId === "__ai__" || b.isAI);
+  // For multi-AI battles (aiCount > 1) collect all AI opponents.
+  const allAiBeys = allBeyblades.filter((b) => b.isAI);
 
   const isSeries = gameState && (gameState.targetWins ?? 1) > 1;
   const seriesLabel = isSeries ? `Game ${gameState.currentGame}/${(gameState.targetWins ?? 1) * 2 - 1}` : "";
@@ -353,15 +355,39 @@ export function AIBattleGamePage() {
       {/* HUD bottom */}
       {myBeyblade && !isSpectating && (
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10 }}>
-          <div style={{ maxWidth: "min(480px, 90vw)", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "center" }}>
-            <StatCard beyblade={myBeyblade} label="YOU" accentColor={C.blue} stabilityColor={stabilityColor} stabilityLabel={stabilityLabel} />
-            <div style={{ fontSize: "clamp(14px, 2vw, 18px)", fontWeight: 900, color: C.faint, textAlign: "center" }}>VS</div>
-            {aiBey ? (
-              <StatCard beyblade={aiBey} label="CPU" accentColor={C.red} stabilityColor={getBeybladeStability(aiBey) > 0.4 ? C.green : C.red} stabilityLabel={aiBey.username} />
-            ) : (
-              <div />
-            )}
-          </div>
+          {allAiBeys.length <= 1 ? (
+            // Classic 1v1 layout
+            <div style={{ maxWidth: "min(480px, 90vw)", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "center" }}>
+              <StatCard beyblade={myBeyblade} label="YOU" accentColor={C.blue} stabilityColor={stabilityColor} stabilityLabel={stabilityLabel} />
+              <div style={{ fontSize: "clamp(14px, 2vw, 18px)", fontWeight: 900, color: C.faint, textAlign: "center" }}>VS</div>
+              {aiBey ? (
+                <StatCard beyblade={aiBey} label="CPU" accentColor={C.red} stabilityColor={getBeybladeStability(aiBey) > 0.4 ? C.green : C.red} stabilityLabel={aiBey.username} />
+              ) : (
+                <div />
+              )}
+            </div>
+          ) : (
+            // Multi-AI layout: YOU on left, opponents scroll on right
+            <div style={{ maxWidth: "min(720px, 96vw)", margin: "0 auto", display: "flex", gap: 10, alignItems: "flex-end" }}>
+              <StatCard beyblade={myBeyblade} label="YOU" accentColor={C.blue} stabilityColor={stabilityColor} stabilityLabel={stabilityLabel} />
+              <div style={{ fontSize: "clamp(12px, 1.8vw, 16px)", fontWeight: 900, color: C.faint, padding: "0 4px", alignSelf: "center" }}>
+                VS {allAiBeys.length}
+              </div>
+              <div style={{ display: "flex", gap: 6, overflowX: "auto", flex: 1, alignItems: "flex-end" }}>
+                {allAiBeys.map((ai, idx) => (
+                  <div key={ai.id} style={{ minWidth: 0, flex: "0 0 auto" }}>
+                    <StatCard
+                      beyblade={ai}
+                      label={`CPU${idx + 1}`}
+                      accentColor={C.red}
+                      stabilityColor={getBeybladeStability(ai) > 0.4 ? C.green : C.red}
+                      stabilityLabel={ai.username}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
