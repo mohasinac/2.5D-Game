@@ -87,6 +87,7 @@ export function AIBattleSetupPage() {
   const [arenaId, setArenaId]         = useState(settings.arenaId ?? "default");
   const [difficulty, setDifficulty]   = useState<Difficulty>("medium");
   const [bestOf, setBestOf]           = useState<BestOf>(1);
+  const [aiCount, setAiCount]         = useState<number>(1);
   const [partOverrides, setPartOverrides] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -142,7 +143,7 @@ export function AIBattleSetupPage() {
     }
     setGameConfig({ beybladeId: playerBeyId, arenaId, gameMode: "single-battle" });
     navigate(`/game/${mode}/ai-battle/play`, {
-      state: { beybladeId: playerBeyId, aiBeybladeId: aiBeyId, arenaId, aiDifficulty: difficulty, bestOf, partOverrides: Object.keys(partOverrides).length > 0 ? partOverrides : undefined },
+      state: { beybladeId: playerBeyId, aiBeybladeId: aiBeyId, arenaId, aiDifficulty: difficulty, bestOf, aiCount: aiCount > 1 ? aiCount : undefined, partOverrides: Object.keys(partOverrides).length > 0 ? partOverrides : undefined },
     });
   };
 
@@ -272,6 +273,29 @@ export function AIBattleSetupPage() {
                   </button>
                 );
               })}
+            </div>
+          </Section>
+
+          {/* AI opponent count */}
+          <Section title="Opponent Count" icon="🤖">
+            <div style={{ display:"flex", alignItems:"center", gap:16 }}>
+              <label style={{ color:C.muted, fontSize:13, minWidth:80 }}>AI Bots:</label>
+              <input
+                type="number"
+                name="ai-count"
+                min={1}
+                max={7}
+                value={aiCount}
+                onChange={e => setAiCount(Math.min(7, Math.max(1, Number(e.target.value))))}
+                style={{
+                  width:64, padding:"8px 10px", borderRadius:8, fontSize:15, fontWeight:700,
+                  background:C.bg2, border:`1px solid ${C.border}`, color:C.text,
+                  textAlign:"center",
+                }}
+              />
+              <span style={{ color:C.faint, fontSize:12 }}>
+                {aiCount === 1 ? "1v1 classic" : `1 human vs ${aiCount} AI bots`}
+              </span>
             </div>
           </Section>
 

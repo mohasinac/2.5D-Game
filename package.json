@@ -73,7 +73,9 @@
     "loadtest": "colyseus-loadtest loadtest/example.ts --room tryout_room --numClients 2",
     "test:e2e": "playwright test --project=chromium-dev",
     "test:e2e:ui": "playwright test --project=chromium-dev --ui",
-    "test:e2e:prod": "playwright test --project=chromium-prod"
+    "test:e2e:prod": "playwright test --project=chromium-prod",
+    "test:e2e:gameplay": "playwright test --project=chromium-prod-gameplay",
+    "test:e2e:all-prod": "playwright test --project=chromium-prod --project=chromium-prod-gameplay"
   },
   "author": "JustForView.in",
   "license": "MIT",

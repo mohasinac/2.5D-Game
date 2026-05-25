@@ -24,14 +24,30 @@ export default defineConfig({
     {
       name: "chromium-dev",
       use: { ...devices["Desktop Chrome"] },
+      // Excludes prod-only and advanced-gameplay specs from dev run
+      testIgnore: ["**/*.prod.spec.ts", "**/ai-vs-ai-full-battle.spec.ts", "**/server-load-test.spec.ts"],
     },
     {
       name: "chromium-prod",
       use: {
         ...devices["Desktop Chrome"],
-        baseURL: process.env.PROD_URL || "https://your-prod-domain.com",
+        baseURL: process.env.PROD_URL || "https://game.letitrip.in",
       },
       testMatch: "**/*.prod.spec.ts",
+    },
+    {
+      name: "chromium-prod-gameplay",
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: process.env.PROD_URL || "https://game.letitrip.in",
+        // Gameplay tests need longer timeouts — AI battles up to 3 min
+        actionTimeout: 15000,
+        navigationTimeout: 60000,
+      },
+      testMatch: [
+        "**/ai-vs-ai-full-battle.spec.ts",
+        "**/server-load-test.spec.ts",
+      ],
     },
   ],
 

@@ -39,6 +39,8 @@ interface AIBattleLocationState {
   arenaId?: string;
   aiDifficulty?: string;
   bestOf?: 1 | 3 | 5;
+  /** Number of AI opponents (default 1, max 7 for load testing). */
+  aiCount?: number;
   /** Admin-only AI vs AI mode — admin spectates while two AIs fight. */
   aiVsAi?: boolean;
   aiP1BeybladeId?: string;
@@ -86,6 +88,7 @@ export function AIBattleGamePage() {
     arenaId:      loc.arenaId      ?? settings.arenaId    ?? "default",
     aiDifficulty: loc.aiDifficulty ?? "medium",
     bestOf:       loc.bestOf       ?? 1,
+    aiCount:      loc.aiCount,
     username:     settings.username ?? "Player",
     userId,
     spectate,

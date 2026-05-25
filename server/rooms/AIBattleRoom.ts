@@ -53,7 +53,7 @@ interface JoinOptions {
   aiP2BeybladeId?: string;
   aiP1Difficulty?: AIDifficulty;
   aiP2Difficulty?: AIDifficulty;
-  /** Number of AI opponents to spawn alongside the human player (default 1, max 3). */
+  /** Number of AI opponents to spawn alongside the human player (default 1, max 7). */
   aiCount?: number;
 }
 
@@ -322,8 +322,8 @@ export class AIBattleRoom extends Room<GameState> {
     }
 
     // ── Load and create AI beyblade(s) ─────────────────────────────────────
-    // aiCount defaults to 1; max 3 so total beyblades stay within room capacity.
-    const aiCount = Math.min(3, Math.max(1, options.aiCount ?? 1));
+    // aiCount defaults to 1; max 7 so total beyblades stay within room capacity (max 8).
+    const aiCount = Math.min(7, Math.max(1, options.aiCount ?? 1));
 
     if (aiCount === 1) {
       // Original 1v1 layout: human left, AI right.
