@@ -185,6 +185,15 @@ const SVG = {
     <path d="M44 58Q50 64 56 58" fill="none" stroke="#111827" stroke-width="2"/>
     <rect x="46" y="62" width="8" height="3" rx="1.5" fill="#fef3c7"/>
   `),
+  // ── Bearing Drive (ball tip) ─────────────────────────────────────────────
+  bd: svgUri(`
+    <circle cx="50" cy="50" r="48" fill="#111827" stroke="#60a5fa" stroke-width="1.5"/>
+    <ellipse cx="50" cy="68" rx="20" ry="20" fill="#1e3a5f" stroke="#60a5fa" stroke-width="2"/>
+    <ellipse cx="50" cy="68" rx="12" ry="12" fill="#60a5fa" opacity="0.8"/>
+    <ellipse cx="50" cy="68" rx="5" ry="5" fill="#bfdbfe"/>
+    <rect x="42" y="24" width="16" height="46" rx="4" fill="#1e293b" stroke="#60a5fa" stroke-width="1.5"/>
+    <ellipse cx="50" cy="24" rx="8" ry="4" fill="#60a5fa"/>
+  `),
   // ── Spin Tracks ──────────────────────────────────────────────────────────
   st90: svgUri(`
     <circle cx="50" cy="50" r="48" fill="#111827" stroke="#94a3b8" stroke-width="1.5"/>

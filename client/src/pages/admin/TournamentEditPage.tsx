@@ -70,7 +70,7 @@ export function TournamentEditPage() {
         disabledBeybladeIds: t.disabledBeybladeIds ?? [],
         allowedArenaIds: t.allowedArenaIds ?? [],
       });
-      setBeyOptions(beySnap.docs.map(d => ({ value: d.id, label: (d.data().name as string) ?? d.id })));
+      setBeyOptions(beySnap.docs.map(d => ({ value: d.id, label: (d.data().displayName as string) ?? (d.data().name as string) ?? d.id })));
       setArenaOptions(arenaSnap.docs.map(d => ({ value: d.id, label: (d.data().name as string) ?? d.id })));
       setLoading(false);
     }).catch(() => { setError("Failed to load tournament."); setLoading(false); });

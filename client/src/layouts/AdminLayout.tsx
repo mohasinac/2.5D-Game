@@ -26,6 +26,11 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   "animation-presets": "Animation Presets",
   "round-modifiers": "Round Modifiers",
   "behavior-defs": "Behavior Defs",
+  "mechanic-defs": "Mechanic Defs",
+  "gimmick-defs": "Gimmick Defs",
+  "geometry-defs": "Geometry Defs",
+  "stat-defs": "Stat Defs",
+  "special-interaction-defs": "Special Interactions",
   "tip-shape-defs": "Tip Shape Defs",
   "core-gimmick-defs": "Core Gimmick Defs",
   "attack-type-defs": "Attack Type Defs",
@@ -110,6 +115,10 @@ const catalogItems = [
   { to: "/admin/animation-presets",     label: "Animation Presets",    Icon: Film },
   { to: "/admin/round-modifiers",       label: "Round Modifiers",      Icon: Sliders },
   { to: "/admin/behavior-defs",         label: "Behavior Defs",        Icon: Brain },
+  { to: "/admin/mechanic-defs",         label: "Mechanic Defs",        Icon: Wrench },
+  { to: "/admin/gimmick-defs",          label: "Gimmick Defs",         Icon: Sparkles },
+  { to: "/admin/geometry-defs",         label: "Geometry Defs",        Icon: Circle },
+  { to: "/admin/stat-defs",             label: "Stat Defs",            Icon: BarChart3 },
 ];
 
 const presetDefItems = [
@@ -121,7 +130,8 @@ const presetDefItems = [
   { to: "/admin/bowl-profile-defs",   label: "Bowl Profiles",    Icon: Disc },
   { to: "/admin/trigger-type-defs",   label: "Trigger Types",    Icon: Zap },
   { to: "/admin/stat-event-defs",     label: "Stat Events",      Icon: BarChart3 },
-  { to: "/admin/part-layer-defs",     label: "Part Layers",      Icon: Layers },
+  { to: "/admin/part-layer-defs",           label: "Part Layers",        Icon: Layers },
+  { to: "/admin/special-interaction-defs", label: "Special Interactions", Icon: Link2 },
 ];
 
 const partLibraryItems = [

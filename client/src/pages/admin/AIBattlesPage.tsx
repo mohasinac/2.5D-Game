@@ -65,7 +65,7 @@ export function AIBattlesPage() {
           const order = ["medium", "hard", "hell"];
           return order.indexOf(a.difficulty) - order.indexOf(b.difficulty) || a.displayName.localeCompare(b.displayName);
         }));
-      setBeyOptions(beySnap.docs.map(d => ({ value: d.id, label: (d.data().name as string) ?? d.id })));
+      setBeyOptions(beySnap.docs.map(d => ({ value: d.id, label: (d.data().displayName as string) ?? (d.data().name as string) ?? d.id })));
       setArenaOptions(arenaSnap.docs.map(d => ({ value: d.id, label: (d.data().name as string) ?? d.id })));
     } catch { toast.error("Failed to load AI battles"); }
     finally { setLoading(false); }

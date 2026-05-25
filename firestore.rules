@@ -192,6 +192,47 @@ service cloud.firestore {
     match /combo_effects/{id} { allow read; allow write: if isAdmin(); }
     match /round_modifiers/{id} { allow read; allow write: if isAdmin(); }
     match /element_types/{id} { allow read; allow write: if isAdmin(); }
+    match /element_type_configs/{id} { allow read; allow write: if isAdmin(); }
+
+    // ── Def / config collections (admin write, authenticated read) ─────────────
+    match /mechanic_defs/{id}          { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /gimmick_defs/{id}           { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /geometry_defs/{id}          { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /stat_defs/{id}              { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /tip_shape_defs/{id}         { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /core_gimmick_defs/{id}      { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /attack_type_defs/{id}       { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /arena_theme_defs/{id}       { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /arena_shape_defs/{id}       { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /bowl_profile_defs/{id}      { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /trigger_type_defs/{id}      { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /stat_event_defs/{id}        { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /part_layer_defs/{id}        { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /special_interaction_defs/{id} { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /collision_qte_events/{id}   { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /special_clash_events/{id}   { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+
+    // ── Config / asset collections (admin write, authenticated read) ───────────
+    match /turret_attack_types/{id}    { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /arena_feature_configs/{id}  { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /bey_link_configs/{id}       { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /part_materials/{id}         { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /arena_floor_groups/{id}     { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /gear_parts/{id}             { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /bitbeast_assets/{id}        { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+
+    // ── Preset library (admin write, authenticated read) ──────────────────────
+    match /arena_presets/{id}          { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /bey_presets/{id}            { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /combo_presets/{id}          { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /mechanic_presets/{id}       { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /gimmick_presets/{id}        { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /special_move_presets/{id}   { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /part_presets/{id}           { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /system_presets/{id}         { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /theme_presets/{id}          { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /obstacle_presets/{id}       { allow read: if isAuthenticated(); allow write: if isAdmin(); }
+    match /feature_group_presets/{id}  { allow read: if isAuthenticated(); allow write: if isAdmin(); }
 
     // ── Catch-all: deny unauthenticated and unlisted paths ────────────────────
     match /{document=**} {
