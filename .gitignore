@@ -2,14 +2,40 @@ node_modules/
 /lib/
 dist/
 *.log
+
+# Environment files (contain secrets)
 .env
 .env.local
 .env.*.local
+.env.production
+
+# Firebase / Google credentials
 serviceAccountKey.json
-.DS_Store
+firebase-adminsdk*.json
+google-credentials.json
+
+# Playwright test artifacts
+/test-results/
+/playwright-report/
+/blob-report/
+playwright/.cache/
+
+# Build artifacts
 *.tsbuildinfo
-.claude/settings.json
-.firebase/hosting.*
 .next/
+.vercel/
+.firebase/hosting.*
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+*.suo
+*.user
+
+# Secrets / admin scripts
+.claude/settings.json
 scripts/seed-admin.js
+
+# Local directories
 /linka/*

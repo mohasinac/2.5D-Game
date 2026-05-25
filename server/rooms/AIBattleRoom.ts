@@ -53,6 +53,8 @@ interface JoinOptions {
   aiP2BeybladeId?: string;
   aiP1Difficulty?: AIDifficulty;
   aiP2Difficulty?: AIDifficulty;
+  /** Number of AI opponents to spawn alongside the human player (default 1, max 3). */
+  aiCount?: number;
 }
 
 const AI_SESSION_ID = "__ai__";
@@ -319,45 +321,41 @@ export class AIBattleRoom extends Room<GameState> {
       instances.forEach(inst => human.mechanics.push(inst));
     }
 
-    // ── Load and create AI beyblade ─────────────────────────────────────────
-    const aiData: BeybladeStats | null = await loadBeyblade(this.aiBeybladeId);
-    this.aiBeybladeData = aiData;
-    const ai = new Beyblade();
-    ai.id = AI_SESSION_ID;
-    ai.userId = AI_SESSION_ID;
-    ai.username = `Computer (${difficulty})`;
-    ai.beybladeId = this.aiBeybladeId;
-    ai.isAI = true;
+    // ── Load and create AI beyblade(s) ─────────────────────────────────────
+    // aiCount defaults to 1; max 3 so total beyblades stay within room capacity.
+    const aiCount = Math.min(3, Math.max(1, options.aiCount ?? 1));
 
-    if (aiData) {
-      this.applyBeybladeStats(ai, aiData);
+    if (aiCount === 1) {
+      // Original 1v1 layout: human left, AI right.
+      await this.addAiContestant(AI_SESSION_ID, this.aiBeybladeId, difficulty, {
+        x: arenaHalfW + spawnRadius,
+        y: arenaHalfH,
+      });
+      this.aiBeybladeData = this.aiBeybladeDataMap.get(AI_SESSION_ID) ?? null;
+      const aiState = this.state.beyblades.get(AI_SESSION_ID);
+      if (aiState) {
+        this.aiSpawnPos = { x: aiState.x, y: aiState.y, angle: 0 };
+      }
     } else {
-      this.applyDefaultStats(ai);
-    }
+      // Multi-AI layout: evenly distribute all contestants on a circle.
+      const totalSlots = aiCount + 1;
+      const slotAngle = (i: number) => (Math.PI * 2 * i) / totalSlots - Math.PI / 2;
 
-    ai.health = ai.maxStamina;
-    ai.maxHealth = ai.maxStamina;
-    ai.x = arenaHalfW + spawnRadius;
-    ai.y = arenaHalfH;
-    this.aiSpawnPos = { x: ai.x, y: ai.y, angle: 0 };
+      // Reposition human to slot 0 on the circle.
+      this.physics.removeBeyblade(client.sessionId);
+      human.x = arenaHalfW + Math.cos(slotAngle(0)) * spawnRadius;
+      human.y = arenaHalfH + Math.sin(slotAngle(0)) * spawnRadius;
+      this.humanSpawnPos = { x: human.x, y: human.y, angle: slotAngle(0) + Math.PI };
+      this.physics.createBeyblade(client.sessionId, human.x, human.y, human.radius, human.mass, humanData || undefined, humanFlags);
+      this.physics.setAngularVelocity(client.sessionId, (human.spinDirection === "left" ? -1 : 1) * (human.maxSpin / 200));
 
-    const aiFlags = resolvePhysicsFlags((aiData as any)?.physicsFlags);
-    ai.collisionWithBeys       = aiFlags.collisionWithBeys;
-    ai.collisionWithArena      = aiFlags.collisionWithArena;
-    ai.collisionWithObstacles  = aiFlags.collisionWithObstacles;
-    ai.invulnerable            = aiFlags.invulnerable;
-    ai.noKnockback             = aiFlags.noKnockback;
-
-    this.physics.createBeyblade(AI_SESSION_ID, ai.x, ai.y, ai.radius, ai.mass, aiData || undefined, aiFlags);
-    this.physics.setAngularVelocity(AI_SESSION_ID, (ai.spinDirection === "left" ? -1 : 1) * (ai.maxSpin / 200));
-    this.state.beyblades.set(AI_SESSION_ID, ai);
-    this.state.seriesWins.set(AI_SESSION_ID, 0);
-
-    // Expand gimmicks for AI bey (reuse same cache loaded above)
-    const aiGimmickIds: string[] = (aiData as any)?.gimmickIds ?? [];
-    if (aiGimmickIds.length > 0) {
-      const aiInstances = expandGimmicks(aiGimmickIds, gimmickDefsCache);
-      aiInstances.forEach(inst => ai.mechanics.push(inst));
+      for (let idx = 0; idx < aiCount; idx++) {
+        const aiSessionId = `${AI_SESSION_ID}_${idx}`;
+        await this.addAiContestant(aiSessionId, this.aiBeybladeId, difficulty, {
+          x: arenaHalfW + Math.cos(slotAngle(idx + 1)) * spawnRadius,
+          y: arenaHalfH + Math.sin(slotAngle(idx + 1)) * spawnRadius,
+        });
+      }
     }
 
     this.matchStarted = true;
@@ -384,7 +382,11 @@ export class AIBattleRoom extends Room<GameState> {
       if (data.launched && bey.launchPower > 0) bey.launchReady = true;
     });
 
-    console.log(`✅ AIBattleRoom ready: ${human.username} vs ${ai.username} (${difficulty})`);
+    const aiNames = Array.from({ length: aiCount }, (_, i) => {
+      const sid = aiCount === 1 ? AI_SESSION_ID : `${AI_SESSION_ID}_${i}`;
+      return this.state.beyblades.get(sid)?.username ?? "Computer";
+    }).join(", ");
+    console.log(`✅ AIBattleRoom ready: ${human.username} vs ${aiNames} (${difficulty}, ${aiCount} AI)`);
   }
 
   onLeave(client: Client, _consented: boolean) {

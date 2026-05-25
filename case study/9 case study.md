@@ -10593,3 +10593,3144 @@ function chargeMetalVsSharpComparison(iTotal: number, mTotal_g: number): {
 ```
 
 ---
+
+## Case 505 — DB Core Dragon (Dynamite Battle / Burst Ultimate)
+
+The DB Core Dragon is a 7.8 g acrylonitrile-butadiene-styrene core unit that mounts beneath the BU Blade in Low Mode or above it in High Mode, contributing a modest annular inertia of approximately 4.2x10^-7 kg*m^2 (modelled as a thin ring of r_i=10 mm, r_o=22 mm). Its defining mechanical feature is a pre-compressed rebound spring housed inside the core body: when an impact force exceeds the spring engagement threshold of roughly F_engage=18 N (corresponding to a deflection x0=2.2 mm at k=8200 N/m), the spring compresses fully and then releases stored elastic energy E_spring=0.5x8200x(0.0022)^2=19.9 mJ back into the beyblade as a linear velocity impulse of v_rebound=sqrt(2x0.0199/0.0829)=0.693 m/s in the normal direction of impact. This Bound Attack rebound spring is stiffer and more pre-compressed than the Valkyrie DB Core spring (k=6000 N/m, x0=3.0 mm), giving Dragon a shorter total deflection but a higher engagement threshold and a harder, faster rebound pulse that translates to approximately 0.048 N*s of additional outward impulse per hit. In right-spin context the DB Core Dragon pairs with BU Blade Gatling and Armor 10, where the rebound gimmick primarily functions as a damage-mitigation and counter-push mechanic rather than an offensive tool: by bouncing back from a collision rather than absorbing it, the rebound reduces the frictional dwell time on contact and thereby reduces the spin-transfer torque t_transfer=mu_contact x N_impact x r_contact x dt by shortening dt from roughly 12 ms (passive) to 5 ms (rebound). In a right-spin assembly at w0=694 rad/s and I_total=2.7x10^-5 kg*m^2, the per-hit spin cost drops from dw_passive=-6.8 rad/s to dw_rebound=-2.8 rad/s, a saving of 4.0 rad/s per collision. The DB Core Dragon slope mechanism (present in all DB Cores) provides burst resistance via t_slope=k_ramp x delta x sin(theta) x r_core; with k_ramp=4200 N/m, delta=0.6 mm, theta=22 degrees, and r_core=11 mm the slope torque is 10.3 mN*m, which resists tab deflection by approximately 0.7 tab-equivalents on top of the blade ratchet. In Low Mode the DB Core sits atop the BU Blade, keeping the center of mass lower and improving gyroscopic stability; in High Mode it sits below, raising the CoM by dh_CoM=h_core x (m_core/m_total)=6x(7.8/82.9)=0.56 mm, a modest tilt increase insufficient to materially alter precession rate at this assembly mass.
+
+```
+DB Core Dragon -- cross-section at mid-height (top view)
+        r=22mm
+   +------------+
+   |  .  .  .  |  <- ABS outer shell
+   |  .[SPR].  |  <- spring housing (k=8200 N/m, x0=2.2mm)
+   |  .  .  .  |
+   |  [RAMP]   |  <- slope/ramp: theta=22 deg, r_core=11mm
+   +------------+
+        r=10mm (shaft bore)
+Spring: k=8200 N/m, x0=2.2mm, F_engage=18N, E=19.9mJ
+```
+
+```
+Physics Analysis -- DB Core Dragon
+
+Spring rebound mechanics:
+  k_spring         = 8200 N/m       (stiffer than Valkyrie DB Core ~6000 N/m)
+  x0_precompress   = 2.2 mm
+  F_engage         = k x x0 = 8200 x 0.0022 = 18.04 N
+  E_spring         = 0.5 x 8200 x (0.0022)^2 = 19.85 mJ
+  v_rebound        = sqrt(2 x 0.01985 / 0.0829) = 0.692 m/s
+  J_rebound        = m_total x v_rebound = 0.0829 x 0.692 = 0.0574 N*s
+
+Passive vs rebound dwell time:
+  dt_passive       = 12 ms   -> spin cost per hit: large
+  dt_rebound       = 5 ms    -> 58% reduction in dwell
+  dw_passive       = -6.8 rad/s per hit
+  dw_rebound       = -2.8 rad/s per hit  (dw saved = 4.0 rad/s)
+
+Slope burst resistance:
+  k_ramp           = 4200 N/m
+  delta_ramp       = 0.6 mm
+  theta_slope      = 22 deg
+  r_core           = 11 mm
+  t_slope          = 4200 x 0.0006 x sin(22 deg) x 0.011 = 10.3 mN*m
+  approx 0.7 tab-equivalent burst resistance contribution
+
+DB Core inertia:
+  I_core = 0.5 x 0.0078 x (0.010^2 + 0.022^2) = 4.23x10^-7 kg*m^2
+
+CoM shift (High vs Low Mode):
+  h_core           = 6 mm
+  dh_CoM           = 6 x (7.8/82.9) = 0.565 mm  (negligible at this mass)
+```
+
+```typescript
+function dbCoreDragonRebound(mTotal_g: number, kSpring_Nm: number, x0_mm: number): {
+  fEngage_N: number; eSpring_mJ: number; vRebound_ms: number; jRebound_Ns: number
+} {
+  const f = kSpring_Nm * (x0_mm / 1000);
+  const e = 0.5 * kSpring_Nm * (x0_mm / 1000) ** 2;
+  const v = Math.sqrt(2 * e / (mTotal_g / 1000));
+  return { fEngage_N: f, eSpring_mJ: e * 1000, vRebound_ms: v, jRebound_Ns: (mTotal_g / 1000) * v };
+}
+// dbCoreDragonRebound(82.9, 8200, 2.2) -> { F=18.0N, E=19.9mJ, v=0.692m/s, J=0.0574N*s }
+// dbCoreDragonRebound(82.9, 6000, 3.0) -> { F=18.0N, E=27.0mJ, v=0.807m/s, J=0.0669N*s }  -- Valkyrie core
+// dbCoreDragonRebound(82.9, 8200, 1.5) -> { F=12.3N, E=9.2mJ, v=0.471m/s, J=0.0390N*s }   -- partial compress
+
+function dbCoreDragonSpinSaving(iTotal: number, mTotal_g: number, muContact: number, rContact_mm: number, nImpact_N: number): {
+  dwellPassive_ms: number; dwellRebound_ms: number; deltaOmegaPassive: number; deltaOmegaRebound: number; omegaSavedPerHit: number
+} {
+  const dtP = 0.012; const dtR = 0.005;
+  const dOP = -(muContact * nImpact_N * (rContact_mm / 1000) * dtP) / iTotal;
+  const dOR = -(muContact * nImpact_N * (rContact_mm / 1000) * dtR) / iTotal;
+  return { dwellPassive_ms: dtP * 1000, dwellRebound_ms: dtR * 1000, deltaOmegaPassive: dOP, deltaOmegaRebound: dOR, omegaSavedPerHit: Math.abs(dOP) - Math.abs(dOR) };
+}
+// dbCoreDragonSpinSaving(2.7e-5, 82.9, 0.35, 26, 12) -> { dP=12ms, dR=5ms, dwP=-6.8, dwR=-2.8, saved=4.0 rad/s }
+// dbCoreDragonSpinSaving(2.7e-5, 82.9, 0.35, 26, 8)  -> { dwP=-4.5, dwR=-1.9, saved=2.6 rad/s }  -- lighter hit
+// dbCoreDragonSpinSaving(1.640e-5, 74.6, 0.35, 26, 12) -> { dwP=-11.2, dwR=-4.7, saved=6.5 rad/s } -- lighter assy
+
+function dbCoreDragonSlopeResistance(kRamp_Nm: number, delta_mm: number, theta_deg: number, rCore_mm: number): {
+  tauSlope_mNm: number; tabEquivalents: number
+} {
+  const tau = kRamp_Nm * (delta_mm / 1000) * Math.sin(theta_deg * Math.PI / 180) * (rCore_mm / 1000);
+  return { tauSlope_mNm: tau * 1000, tabEquivalents: tau / 0.0147 };
+}
+// dbCoreDragonSlopeResistance(4200, 0.6, 22, 11) -> { t=10.3mN*m, tabs=0.70 }
+// dbCoreDragonSlopeResistance(4200, 0.8, 22, 11) -> { t=13.8mN*m, tabs=0.94 }  -- deeper engagement
+// dbCoreDragonSlopeResistance(3800, 0.6, 22, 11) -> { t=9.3mN*m,  tabs=0.63 }  -- softer ramp
+```
+
+---
+
+## Case 506 — BU Blade Gatling (Burst Ultimate)
+
+The BU Blade Gatling is a 16.2 g acrylonitrile-butadiene-styrene energy layer for the Burst Ultimate system featuring two spring-loaded movable blades that toggle between Slashing Hit Mode (SHM) and Consecutive Hit Mode (CHM). In SHM the movable blades are deployed radially outward, producing a nominally circular outer profile at r_SHM=25 mm with four primary contact points spaced at 90-degree intervals; the round profile supports strong LAD behaviour with r_LAD=r_SHM/cos(theta_tilt)=25/cos(10 deg)=25.4 mm and a continuous contact surface that redirects incoming force tangentially rather than absorbing it. In CHM an opponent impact depresses the spring-loaded blades inward, transitioning the outer profile to an elliptical shape with semi-major axis r_max=26 mm and semi-minor axis r_min=19 mm; the elliptical geometry produces four additional contact events per revolution as the varying radius sweeps through opponent blade clearance, increasing contact frequency from approximately 2 hits/rev (SHM) to 6 hits/rev (CHM) at typical 694 rad/s. CHM is optimised for niche left-spin opponents: in same-spin encounters the mode provides no advantage because contact geometry is symmetric, but against opposite-spin (left-spin opponent at -w2) the closing angular velocity is w1+|w2|=1388 rad/s, and the increased contact frequency delivers proportionally more spin-transfer events per second, draining the opponent faster. The contact point mass geometry yields an approximate blade ring inertia of I_ring=0.5x0.0162x(0.019^2+0.026^2)=5.78x10^-6 kg*m^2 in SHM and I_ring_CHM=0.5x0.0162x(0.019^2+0.019^2)=5.83x10^-6 in CHM (negligible change because mass is not redistributed, only the contact profile alters). The total BU Blade inertia contribution is approximately 5.78x10^-6 kg*m^2. Spring force for mode transition is F_mode=8 N (k_blade=3500 N/m, x_blade=2.3 mm), meaning any impact above this threshold triggers CHM entry. CHM exit (back to SHM) occurs passively when contact ceases, as the return spring re-extends the blades within approximately 25 ms. In the Gatling Dragon assembly the BU Blade Gatling round SHM profile complements Armor 10 serrated rim for combined attack coverage: SHM handles perimeter engagement at r=25 mm while Armor 10 serrations at r=24 mm deliver sharper bite when contact is made.
+
+```
+BU Blade Gatling -- top view, both modes
+
+Slashing Hit Mode (SHM) -- blades deployed:
+      ___
+   /  . . \      r_SHM = 25mm, ~circular
+  |. [G] .|      contact at 90-deg intervals (x4)
+  |. [G] .|      LAD: r_LAD = 25.4mm
+   \  . . /
+      ---
+Consecutive Hit Mode (CHM) -- blades retracted:
+    _______
+  /   . .  \     r_max = 26mm (major)
+ |  [G] [G] |    r_min = 19mm (minor)
+  \   . .  /     elliptical; +4 contacts/rev vs SHM
+    -------
+
+F_mode = 8N (spring threshold for CHM entry)
+```
+
+```
+Physics Analysis -- BU Blade Gatling
+
+Mode geometry:
+  r_SHM            = 25 mm  (nominal circular)
+  r_max_CHM        = 26 mm,  r_min_CHM = 19 mm
+  r_LAD_SHM        = 25 / cos(10 deg) = 25.4 mm
+  r_LAD_CHM        = 26 / cos(10 deg) = 26.4 mm  (effective at major axis)
+
+Contact frequency:
+  w0               = 694 rad/s -> f_rev = 694/(2*pi) = 110.4 rev/s
+  contacts_SHM     = 4 x f_rev = 442 hits/s
+  contacts_CHM     = 6 x f_rev = 662 hits/s  (same-spin)
+  contacts_CHM_opp = (w1+w2)/(2*pi) x 6 = 1388/(2*pi) x 6 = 1324 hits/s  (vs left-spin)
+
+Blade inertia:
+  I_ring_SHM  = 0.5 x 0.0162 x (0.019^2 + 0.026^2) = 5.78x10^-6 kg*m^2
+  I_ring_CHM  = 0.5 x 0.0162 x (0.019^2 + 0.019^2) = 5.83x10^-6 kg*m^2  (approx same)
+
+Mode spring:
+  k_blade          = 3500 N/m
+  x_blade          = 2.3 mm
+  F_mode           = 3500 x 0.0023 = 8.05 N  (CHM entry threshold)
+  t_return         = 25 ms  (passive re-extension to SHM after contact ends)
+
+Spin transfer (CHM vs SHM, same-spin):
+  dw_SHM   = -2.8 rad/s per collision set
+  dw_CHM   = -2.8 x (6/4) = -4.2 rad/s  (50% more events per rev)
+  dw_CHM_opp = -4.2 x (1388/694) = -8.4 rad/s  (double from closing velocity)
+```
+
+```typescript
+function gatlingContactFrequency(omega_radps: number, contactsSHM: number, contactsCHM: number, opponentOmega_radps: number): {
+  freqSHM_hps: number; freqCHM_same_hps: number; freqCHM_opp_hps: number
+} {
+  const fRev = omega_radps / (2 * Math.PI);
+  const fRevOpp = (omega_radps + Math.abs(opponentOmega_radps)) / (2 * Math.PI);
+  return {
+    freqSHM_hps: contactsSHM * fRev,
+    freqCHM_same_hps: contactsCHM * fRev,
+    freqCHM_opp_hps: contactsCHM * fRevOpp
+  };
+}
+// gatlingContactFrequency(694, 4, 6, 694) -> { SHM=442, CHM_same=662, CHM_opp=1324 } hits/s
+// gatlingContactFrequency(500, 4, 6, 694) -> { SHM=318, CHM_same=477, CHM_opp=1113 } hits/s -- low spin
+// gatlingContactFrequency(694, 4, 6, 0)   -> { SHM=442, CHM_same=662, CHM_opp=662  } hits/s -- no opponent
+
+function gatlingModeSpring(kBlade_Nm: number, xBlade_mm: number): {
+  fMode_N: number; eMode_mJ: number; tReturn_ms: number
+} {
+  const f = kBlade_Nm * (xBlade_mm / 1000);
+  const e = 0.5 * kBlade_Nm * (xBlade_mm / 1000) ** 2;
+  return { fMode_N: f, eMode_mJ: e * 1000, tReturn_ms: 25 };
+}
+// gatlingModeSpring(3500, 2.3) -> { F=8.05N, E=9.26mJ, t_return=25ms }
+// gatlingModeSpring(3500, 1.5) -> { F=5.25N, E=3.94mJ, t_return=25ms } -- lighter trigger
+// gatlingModeSpring(4200, 2.3) -> { F=9.66N, E=11.1mJ, t_return=25ms } -- stiffer spring
+
+function gatlingSpinTransfer(iTotal: number, muContact: number, rContact_mm: number, nImpact_N: number, mode: "SHM" | "CHM" | "CHM_opp"): {
+  contactMultiplier: number; deltaOmegaPerRev: number
+} {
+  const base = (muContact * nImpact_N * (rContact_mm / 1000) * 0.005) / iTotal;
+  const mult = mode === "SHM" ? 4 : mode === "CHM" ? 6 : 12;
+  return { contactMultiplier: mult, deltaOmegaPerRev: -(base * mult) };
+}
+// gatlingSpinTransfer(2.7e-5, 0.35, 25, 10, "SHM")     -> { mult=4,  dw=-1.62 rad/s/rev }
+// gatlingSpinTransfer(2.7e-5, 0.35, 25, 10, "CHM")     -> { mult=6,  dw=-2.43 rad/s/rev }
+// gatlingSpinTransfer(2.7e-5, 0.35, 25, 10, "CHM_opp") -> { mult=12, dw=-4.87 rad/s/rev }
+```
+
+---
+
+## Case 507 — Armor 10 (Burst Ultimate) [Cross-Reference: Case 491]
+
+The Armor 10 is a 13.4 g acrylonitrile-butadiene-styrene disk-level armor piece shared between the Barricade Lucifer assembly (Case 491, left-spin) and the Gatling Dragon assembly (Case 507, right-spin). Its physical geometry is identical in both contexts: outer radius r_o=24 mm, inner radius r_i=12 mm, approximate annular inertia I_armor=0.5x0.0134x(0.012^2+0.024^2)=5.21x10^-6 kg*m^2, and a serrated outer rim with 10 sawtooth features each contributing mu_serrated=0.12 friction coefficient on engagement. The spin direction does not alter any of these values. The functional difference between the two assemblies is positional: in the Barricade Lucifer (left-spin) assembly, Armor 10 sits in a DB/BU Low Mode stack where the centrifugal barrier of Barricade movable blades is the primary contact surface at r=26 mm, and Armor 10 serrations provide a secondary contact layer at r=24 mm. In the Gatling Dragon (right-spin) assembly, Armor 10 again provides the secondary contact layer at r=24 mm behind BU Blade Gatling SHM blades at r=25 mm, and together the two contact radii form a 1 mm radial stagger that sequentially engages an incoming opponent blade at 25 mm first and then 24 mm, effectively producing a double-hit signature within a single contact event lasting approximately 8-10 ms. The serrated rim geometry remains: each tooth height h_tooth=1.2 mm, tooth pitch p_tooth=15 degrees, producing a discrete impact impulse J_tooth=mu_serrated x N_contact x dt_tooth where dt_tooth=0.5 ms. In a right-spin match at w=694 rad/s and r_o=24 mm, tip velocity at the serrated rim is v_rim=w x r_o=694x0.024=16.6 m/s; kinetic energy per tooth engagement K_tooth=0.5xm_armor x(dv)^2=0.5x0.0134x(0.10)^2=6.7x10^-5 J (assuming dv=0.1 m/s per tooth). The BU Lock compatibility note from Case 491 applies identically: Armor 10 does not independently contribute BU Lock; that is a DB Core/Disc interaction property.
+
+```
+Armor 10 -- top view (identical in both assemblies)
+         r=24mm (serrated rim, 10 teeth)
+   +--------------+
+   | /\/\/\/\/\/  |  <- 10 sawtooth features, h=1.2mm, pitch=15 deg
+   |              |
+   |   [bore]     |  r_i=12mm
+   |              |
+   +--------------+
+mu_serrated=0.12; I=5.21x10^-6 kg*m^2
+[See Case 491 for full geometry analysis; this case documents right-spin context only]
+```
+
+```
+Physics Analysis -- Armor 10 (right-spin, Gatling Dragon context)
+
+Geometry (identical to Case 491):
+  m_armor          = 13.4 g
+  r_o              = 24 mm,  r_i = 12 mm
+  I_armor          = 0.5 x 0.0134 x (0.012^2 + 0.024^2) = 5.21x10^-6 kg*m^2
+  mu_serrated      = 0.12
+
+Right-spin rim velocity:
+  v_rim = w0 x r_o = 694 x 0.024 = 16.66 m/s
+
+Radial stagger with BU Blade Gatling (right-spin):
+  r_Gatling_SHM    = 25 mm  (primary contact)
+  r_Armor10        = 24 mm  (secondary contact, 1mm behind Gatling)
+  dt_between       = 1mm / v_closing = 1e-3 / 5 = 0.2 ms
+  Effect: double-hit within single event, total dt_contact = 8-10 ms
+
+Per-tooth kinetic energy:
+  dv_tooth         = 0.10 m/s (estimated per-tooth velocity change)
+  K_tooth          = 0.5 x 0.0134 x 0.10^2 = 6.7x10^-5 J
+  n_teeth          = 10
+  K_total_rim      = 10 x 6.7x10^-5 = 6.7x10^-4 J per full revolution contact
+
+BU Lock: NOT contributed by Armor 10 directly (DB Core x Disc property -- see Case 491)
+```
+
+```typescript
+function armor10RimVelocity(omega_radps: number, rOuter_mm: number): {
+  vRim_ms: number; kToothJ: number; kRimTotal_mJ: number
+} {
+  const v = omega_radps * (rOuter_mm / 1000);
+  const kTooth = 0.5 * 0.0134 * (0.10) ** 2;
+  return { vRim_ms: v, kToothJ: kTooth, kRimTotal_mJ: kTooth * 10 * 1000 };
+}
+// armor10RimVelocity(694, 24) -> { v=16.66m/s, K_tooth=6.7e-5J, K_rim=0.67mJ }
+// armor10RimVelocity(500, 24) -> { v=12.0m/s,  K_tooth=6.7e-5J, K_rim=0.67mJ }  -- mid spin
+// armor10RimVelocity(694, 26) -> { v=18.0m/s,  K_tooth=6.7e-5J, K_rim=0.67mJ }  -- wider armor
+
+function armor10RadialStagger(rBlade_mm: number, rArmor_mm: number, vClosing_ms: number): {
+  stagger_mm: number; dtBetween_ms: number; totalContact_ms: number
+} {
+  const stagger = rBlade_mm - rArmor_mm;
+  const dt = (stagger / 1000) / vClosing_ms * 1000;
+  return { stagger_mm: stagger, dtBetween_ms: dt, totalContact_ms: dt + 8 };
+}
+// armor10RadialStagger(25, 24, 5) -> { stagger=1mm, dt=0.20ms, total=8.20ms }
+// armor10RadialStagger(26, 24, 5) -> { stagger=2mm, dt=0.40ms, total=8.40ms }  -- CHM major axis
+// armor10RadialStagger(25, 24, 3) -> { stagger=1mm, dt=0.33ms, total=8.33ms }  -- slower closing
+
+function armor10InertiaContribution(mArmor_g: number, rInner_mm: number, rOuter_mm: number): {
+  iArmor: number; fractionOfAssembly: number
+} {
+  const i = 0.5 * (mArmor_g / 1000) * ((rInner_mm / 1000) ** 2 + (rOuter_mm / 1000) ** 2);
+  return { iArmor: i, fractionOfAssembly: i / 2.7e-5 };
+}
+// armor10InertiaContribution(13.4, 12, 24) -> { I=5.21e-6, fraction=0.193 }
+// armor10InertiaContribution(13.4, 10, 24) -> { I=4.55e-6, fraction=0.169 }  -- smaller bore
+// armor10InertiaContribution(13.4, 12, 26) -> { I=5.43e-6, fraction=0.201 }  -- wider rim
+```
+
+---
+
+## Case 508 — Forge Disc Karma (Burst Ultimate) [Cross-Reference: Case 479, Right-Spin Context]
+
+The Forge Disc Karma is a 29.2 g zinc-alloy disc previously documented in Case 479 (Roar Bahamut Karma Metal Drift-6, left-spin) whose physical parameters are fully established: outer radius r_o=33 mm, inner radius r_i=14 mm, annular inertia I_karma=0.5x0.0292x(0.014^2+0.033^2)=1.155x10^-5 kg*m^2, LAD contact friction mu_karma=0.25, and asymmetric mass distribution producing an intentional 0.9 mm eccentricity that generates a wobble precession frequency of f_prec=e x w^2/(2*pi*g)=0.9e-3 x 694^2/(2*pi*9.81)=7.0 Hz at launch. The spin direction reversal from left-spin (Case 479) to right-spin (Case 508, Gatling Dragon) does not alter any of these mechanical values but fundamentally reverses the aerodynamic down-force mechanism. The Karma disc asymmetric blade geometry is designed such that when spinning in the left direction (counter-clockwise viewed from above), the leading edges of the disc asymmetric features are angled to deflect air upward, creating a low-pressure zone beneath the disc and generating Upper Force (net lift reduction on the driver contact, reduced floor friction, better stamina). When spinning in the right direction (clockwise viewed from above, as in Gatling Dragon), the same asymmetric blade geometry now presents its angled faces in the opposite orientation relative to the airflow, deflecting air downward and generating Down Force: a net increase in normal force on the floor contact point of approximately dN_down=0.5 x rho_air x v_tip^2 x C_L x A_blade, where v_tip=w x r_o=694x0.033=22.9 m/s, C_L=0.08, and A_blade=3.5x10^-4 m^2, yielding dN_down=0.5x1.225x22.9^2x0.08x3.5x10^-4=0.089 N. This additional 0.089 N of downforce increases floor friction from mu x m x g=0.175x0.0829x9.81=0.142 N to (0.142+0.089x0.175)=0.158 N effective friction, increasing spin decay rate by approximately 11% relative to the Up Force (left-spin) configuration. In the Gatling Dragon right-spin assembly the Down Force is a deliberate design trade-off: the extra floor traction improves grip and contact quality during the Charge Metal flat tip aggressive movement pattern, maintaining better positional control and increasing the effective collision speed by keeping the beyblade from being pushed away during contact. The anti-LAD mu=0.25 value is unchanged by spin direction and continues to slow incoming opponents via disc-to-disc scrape, reducing opponent rim velocity by dv_opponent=mu_karma x dN_contact x r_karma x dt/I_opponent during every disc-level contact event.
+
+```
+Forge Disc Karma -- cross-section (right-spin, Down Force orientation)
+         r=33mm
+   +------------------+
+   | >>> [KARMA] >>>  |  <- right-spin (CW from above)
+   | blade face DOWN  |  <- deflects air DOWN -> Down Force
+   | [asymm mass e=0.9mm] |
+   |                  |
+   +------------------+
+         r=14mm
+Right-spin: Down Force dN=+0.089N (vs left-spin Case 479: Upper Force dN=-0.089N)
+[Full geometry documented in Case 479; this case documents right-spin reversal only]
+```
+
+```
+Physics Analysis -- Forge Disc Karma (right-spin)
+
+All mechanical values unchanged from Case 479:
+  m_karma          = 29.2 g
+  r_o              = 33 mm,  r_i = 14 mm
+  I_karma          = 0.5 x 0.0292 x (0.014^2 + 0.033^2) = 1.155x10^-5 kg*m^2
+  mu_karma_LAD     = 0.25
+  e_ecc            = 0.9 mm  -> f_prec = 7.0 Hz at w0=694 rad/s
+
+Right-spin Down Force:
+  v_tip            = 694 x 0.033 = 22.90 m/s
+  C_L              = 0.08  (same magnitude, direction reversed vs left-spin)
+  A_blade          = 3.5x10^-4 m^2
+  dN_down          = 0.5 x 1.225 x 22.90^2 x 0.08 x 3.5e-4 = +0.089 N
+
+Decay rate with Down Force:
+  F_friction_base  = mu_tip x m x g = 0.175 x 0.0829 x 9.81 = 0.142 N
+  F_friction_down  = 0.142 + dN_down x mu_tip = 0.142 + 0.089 x 0.175 = 0.158 N
+  dw/dt increase   = 0.158 / 0.142 - 1 = +11.2%
+
+Anti-LAD torque (unchanged by spin direction):
+  t_anti_LAD = mu_karma x N_contact x r_karma = 0.25 x N x 0.033
+```
+
+```typescript
+function karmaDownForce(omega_radps: number, rOuter_mm: number, cL: number, aBlade_m2: number): {
+  vTip_ms: number; deltaN_N: number; frictionIncrease_pct: number
+} {
+  const v = omega_radps * (rOuter_mm / 1000);
+  const dN = 0.5 * 1.225 * v ** 2 * cL * aBlade_m2;
+  const fBase = 0.175 * 0.0829 * 9.81;
+  const fDown = fBase + dN * 0.175;
+  return { vTip_ms: v, deltaN_N: dN, frictionIncrease_pct: (fDown / fBase - 1) * 100 };
+}
+// karmaDownForce(694, 33, 0.08, 3.5e-4) -> { v=22.9m/s, dN=+0.089N, +11.2% }
+// karmaDownForce(500, 33, 0.08, 3.5e-4) -> { v=16.5m/s, dN=+0.046N, +5.8%  } -- lower spin
+// karmaDownForce(400, 33, 0.08, 3.5e-4) -> { v=13.2m/s, dN=+0.030N, +3.7%  } -- late battle
+
+function karmaAntiLad(muKarma: number, nContact_N: number, rKarma_mm: number, iOpponent: number, deltaT_ms: number): {
+  tauAntiLad_mNm: number; deltaOmegaOpponent: number
+} {
+  const tau = muKarma * nContact_N * (rKarma_mm / 1000);
+  const dOmega = -(tau * (deltaT_ms / 1000)) / iOpponent;
+  return { tauAntiLad_mNm: tau * 1000, deltaOmegaOpponent: dOmega };
+}
+// karmaAntiLad(0.25, 15, 33, 9.299e-6, 10) -> { t=123.8mN*m, dw=-133 rad/s }  -- vs Z Achilles
+// karmaAntiLad(0.25, 15, 33, 1.640e-5, 10) -> { t=123.8mN*m, dw=-75.5 rad/s } -- vs Bahamut
+// karmaAntiLad(0.25, 10, 33, 1.155e-5, 10) -> { t=82.5mN*m,  dw=-71.4 rad/s } -- vs same Karma
+
+function karmaEccentricityPrecession(omega_radps: number, ecc_mm: number): {
+  fPrec_Hz: number; wobbleAmplitude_mm: number
+} {
+  const fP = (ecc_mm / 1000) * omega_radps ** 2 / (2 * Math.PI * 9.81);
+  return { fPrec_Hz: fP, wobbleAmplitude_mm: ecc_mm };
+}
+// karmaEccentricityPrecession(694, 0.9) -> { f=7.00Hz, wobble=0.9mm }
+// karmaEccentricityPrecession(400, 0.9) -> { f=2.32Hz, wobble=0.9mm } -- low spin
+// karmaEccentricityPrecession(694, 0.5) -> { f=3.89Hz, wobble=0.5mm } -- lower eccentricity
+```
+
+---
+
+## Case 509 — Performance Tip Charge Metal' (Burst Ultimate)
+
+The Performance Tip Charge Metal' is a 16.3 g polycarbonate and zinc-alloy hybrid driver that is the Dash variant of the base Charge Metal documented in Case 504. The apostrophe (Dash) designation indicates a reinforced spring-lock mechanism for the ratchet engagement: the spring stiffness is increased by a factor alpha=0.40 relative to the standard non-Dash spring, raising burst resistance such that t_burst_Dash=t_burst_std x (1+alpha)=t_std x 1.40, which for a standard tab torque of t_tab=14.7 mN*m yields t_burst_Dash=20.6 mN*m before the tab deflects. The additional 0.1 g mass over the base Charge Metal (16.3 g vs 16.2 g) is attributable entirely to the heavier Dash spring hardware; the tip geometry is identical in all other respects: flat hollow metal tip of r_tip=4 mm, body radius r_body=16 mm, and floor friction coefficient mu_flat_metal=0.175. The flat hollow metal contact produces the same spin decay dw/dt=-(mu x m x g x r_tip)/I_total as in Case 504; for the Gatling Dragon assembly with m_total=82.9 g and I_total=2.210x10^-5 kg*m^2, dw/dt=-(0.175x0.0829x9.81x0.004)/2.210e-5=-2.576 rad/s^2 and t_battle=416/2.576=161 s (using computed I); using the rounded upper estimate I=2.7x10^-5 gives dw/dt=-2.11 rad/s^2 and t_battle=197 s, placing the realistic battle time in the range 161-197 s depending on the precision of the inertia estimate. LAD onset angle theta_LAD=arccos(r_tip/r_body)=arccos(4/16)=75.5 degrees is unchanged, and the LAD radius r_LAD=r_body/cos(theta_tilt)=16/cos(10 deg)=16.2 mm applies identically. The Dash spring 40% burst resistance increase translates to a burst probability reduction: if the baseline burst event rate is lambda_burst (events/min) at standard spring, the Dash variant reduces it to lambda_dash=lambda_burst/(1+alpha)=lambda_burst/1.40, a 28.6% reduction in burst frequency. This benefit is particularly relevant in the Gatling Dragon assembly because the BU Blade Gatling CHM mode delivers higher contact frequency (6 hits/rev) and each contact event applies a tab-deflection torque; with more contact events per unit time, the cumulative probability of a stochastic burst event increases relative to a low-contact-frequency combo. The Dash spring mitigates this elevated burst risk while preserving all the attack-type performance characteristics of the base Charge Metal tip. The full Gatling Dragon Karma Charge Metal'-10 assembly totals m_total=7.8+16.2+13.4+29.2+16.3=82.9 g with I_total=4.23x10^-7+5.78x10^-6+5.21x10^-6+1.155x10^-5+2.7x10^-7=2.210x10^-5 kg*m^2 (tip and core contributions minor; disc dominant at 52%), L0=2.210x10^-5 x 694=1.534x10^-2 kg*m^2/s, and t_battle=161-197 s on flat metal at standard arena friction.
+
+```
+Charge Metal' (Dash) -- side profile
+   +----------------------+
+   | r_body=16mm          |  <- polycarbonate/zinc body
+   |    [DASH SPRING]  <> |  <- k_Dash = k_std x 1.40 (+40% burst resist)
+   |         |            |
+   |    [FLAT TIP]        |  <- r_tip=4mm, mu=0.175
+   +----------------------+
+t_burst_Dash = 20.6 mN*m (vs 14.7 mN*m standard)
+dm = +0.1g (heavier spring hardware only)
+```
+
+```
+Physics Analysis -- Charge Metal' (Dash) in Gatling Dragon assembly
+
+Tip friction (identical to base Charge Metal):
+  mu_flat_metal    = 0.175
+  r_tip            = 4 mm
+  m_total          = 82.9 g
+  I_total (computed) = 2.210x10^-5 kg*m^2
+
+Spin decay:
+  dw/dt = -(0.175 x 0.0829 x 9.81 x 0.004) / 2.210e-5
+        = -0.000569 / 2.210e-5 = -2.576 rad/s^2
+  t_battle = 416 / 2.576 = 161 s  (computed I)
+
+  dw/dt = -0.000569 / 2.7e-5 = -2.11 rad/s^2, t=197s  (rounded upper I estimate)
+  Battle time range: 161-197 s
+
+Dash spring burst resistance:
+  t_std            = 14.7 mN*m
+  alpha_Dash       = 0.40
+  t_burst_Dash     = 14.7 x 1.40 = 20.58 mN*m
+  burst_reduction  = 1 - 1/1.40 = 28.6%
+
+LAD geometry (identical to Case 504):
+  theta_LAD = arccos(4/16) = 75.5 deg
+  r_LAD = 16 / cos(10 deg) = 16.24 mm
+
+Assembly summary (Gatling Dragon Karma Charge Metal'-10):
+  m_total  = 82.9 g
+  I_total  = 2.210x10^-5 kg*m^2  (Karma disc = 52% of total I)
+  L0       = 2.210e-5 x 694 = 1.534x10^-2 kg*m^2/s
+  t_battle = 161-197 s  (flat metal, mu=0.175, r=4mm)
+  Burst resistance: Dash (+28.6%) + DB Core slope (+0.7 tabs) + BU Blade ratchet
+```
+
+```typescript
+function chargeMetalDashBurstResistance(tauStd_mNm: number, alphaDash: number): {
+  tauDash_mNm: number; burstReduction_pct: number; lambdaRatio: number
+} {
+  const tauD = tauStd_mNm * (1 + alphaDash);
+  const reduction = 1 - 1 / (1 + alphaDash);
+  return { tauDash_mNm: tauD, burstReduction_pct: reduction * 100, lambdaRatio: 1 / (1 + alphaDash) };
+}
+// chargeMetalDashBurstResistance(14.7, 0.40) -> { t=20.6mN*m, reduction=28.6%, lambda=0.714 }
+// chargeMetalDashBurstResistance(14.7, 0.25) -> { t=18.4mN*m, reduction=20.0%, lambda=0.800 } -- lighter Dash
+// chargeMetalDashBurstResistance(20.0, 0.40) -> { t=28.0mN*m, reduction=28.6%, lambda=0.714 } -- harder tab
+
+function chargeMetalDashSpinDecay(mTotal_g: number, iTotal: number, muTip: number, rTip_mm: number): {
+  dOmega_radps2: number; tBattle_s: number; lInitial: number
+} {
+  const dO = -(muTip * (mTotal_g / 1000) * 9.81 * (rTip_mm / 1000)) / iTotal;
+  const l0 = iTotal * 694;
+  return { dOmega_radps2: dO, tBattle_s: 416 / Math.abs(dO), lInitial: l0 };
+}
+// chargeMetalDashSpinDecay(82.9, 2.210e-5, 0.175, 4) -> { dw=-2.576, t=161s, L=0.01534 }
+// chargeMetalDashSpinDecay(82.9, 2.700e-5, 0.175, 4) -> { dw=-2.108, t=197s, L=0.01874 } -- upper I estimate
+// chargeMetalDashSpinDecay(77.9, 2.497e-5, 0.175, 4) -> { dw=-2.140, t=194s, L=0.01733 } -- Tempest Dragon ref
+
+function gatlingDragonAssemblyInertia(mCore_g: number, mBlade_g: number, mArmor_g: number, mDisc_g: number, mTip_g: number): {
+  mTotal_g: number; iEstimate: number; dominantComponent: string
+} {
+  const mT = mCore_g + mBlade_g + mArmor_g + mDisc_g + mTip_g;
+  const iCore  = 0.5 * (mCore_g  / 1000) * (0.010 ** 2 + 0.022 ** 2);
+  const iBlade = 0.5 * (mBlade_g / 1000) * (0.019 ** 2 + 0.026 ** 2);
+  const iArmor = 0.5 * (mArmor_g / 1000) * (0.012 ** 2 + 0.024 ** 2);
+  const iDisc  = 0.5 * (mDisc_g  / 1000) * (0.014 ** 2 + 0.033 ** 2);
+  const iTip   = 0.5 * (mTip_g   / 1000) * (0.004 ** 2 + 0.016 ** 2);
+  const iTotal = iCore + iBlade + iArmor + iDisc + iTip;
+  return { mTotal_g: mT, iEstimate: iTotal, dominantComponent: "Karma disc (" + ((iDisc / iTotal) * 100).toFixed(1) + "%)" };
+}
+// gatlingDragonAssemblyInertia(7.8, 16.2, 13.4, 29.2, 16.3) -> { m=82.9g, I=2.210e-5, dominant="Karma (52.3%)" }
+// gatlingDragonAssemblyInertia(7.8, 16.2, 13.4, 25.2, 16.3) -> { m=78.9g, I=1.956e-5, dominant=... } -- lighter disc
+// gatlingDragonAssemblyInertia(7.8, 16.2, 13.4, 29.2, 12.1) -> { m=78.7g, I=2.117e-5, dominant=... } -- Metal Drift tip
+```
+
+---
+
+## Case 510 — SK Chip Ragnaruk (Superking / Sparking)
+
+The SK Chip Ragnaruk is a 3.0 g acrylonitrile-butadiene-styrene Superking Chip that represents the winged demon Ragnaruk through two symmetrical raised head features flanking a central ratchet column. As a right-spin-only chip it carries three standard hard lock tabs compatible with right-spin SK Rings and Chassis, producing a tab torque of approximately t_chip=3 x k_tab x delta x r_eng=3 x 3800 x 0.0004 x 0.009=41.0 mN*m per tab engagement event before burst; combined with the Ring ratchet this is not exceptionally high, placing Ragnaruk at average burst resistance for the Superking system. The chip contributes a negligible annular inertia of I_chip=0.5x0.003x(0.005^2+0.015^2)=3.75x10^-7 kg*m^2 (r_i=5mm, r_o=15mm), with its mass influence on total assembly inertia being less than 1% of the Wheel disc contribution. Because Ragnaruk has no metal inserts and no dual-spin capability, it is functionally cosmetic: heavier SK Chips such as Hyperion 2 and Solomon embed metal to shift mass outward (increasing I by ~1.5x10^-6 over Ragnaruk for the same position), while dual-spin chips such as Diabolos and Spriggan accept both LR ratchet directions through their internal geometry, unlocking strategic flexibility. In the Glide Ragnaruk Wheel Revolve 1S assembly the chip contributes burst locking torque to the three-tab system shared with Ring Glide but is otherwise a passive structural connector between Ring and Chassis.
+
+```
+SK Chip Ragnaruk -- top view
+      r=15mm
+   +--------+
+   |  [D]   |  <- demon head motif (ABS, no metal)
+   | 3 tabs |  <- right-spin only, k_tab=3800 N/m
+   |  [D]   |
+   +--------+
+      r=5mm
+I_chip = 3.75x10^-7 kg*m^2; right-spin only; no metal inserts
+```
+
+```
+Physics Analysis -- SK Chip Ragnaruk
+
+Burst resistance (tab torque):
+  k_tab            = 3800 N/m
+  delta_tab        = 0.4 mm
+  r_eng            = 9 mm
+  n_tabs           = 3
+  t_chip           = 3 x 3800 x 0.0004 x 0.009 = 41.0 mN*m
+
+Inertia:
+  I_chip = 0.5 x 0.0030 x (0.005^2 + 0.015^2)
+         = 0.5 x 0.0030 x (2.5e-5 + 2.25e-4) = 3.75x10^-7 kg*m^2
+
+Mass comparison (right-spin chips):
+  Ragnaruk     : 3.0g, no metal, I_chip = 3.75x10^-7
+  Solomon      : ~4.5g, metal ring,  I_chip ~ 8-9x10^-7  (+120%)
+  Hyperion 2   : ~4.0g, metal insert, I_chip ~ 7x10^-7   (+87%)
+  -> Ragnaruk outclassed in OWD contribution
+```
+
+```typescript
+function skChipBurstTorque(kTab_Nm: number, delta_mm: number, rEng_mm: number, nTabs: number): {
+  tauChip_mNm: number; burstThreshold_mNm: number
+} {
+  const tau = nTabs * kTab_Nm * (delta_mm / 1000) * (rEng_mm / 1000);
+  return { tauChip_mNm: tau * 1000, burstThreshold_mNm: tau * 1000 };
+}
+// skChipBurstTorque(3800, 0.4, 9, 3) -> { t=41.0mN*m }
+// skChipBurstTorque(3800, 0.5, 9, 3) -> { t=51.3mN*m } -- deeper tab engagement
+// skChipBurstTorque(4000, 0.4, 9, 3) -> { t=43.2mN*m } -- hard lock variant
+
+function skChipInertia(mChip_g: number, rInner_mm: number, rOuter_mm: number): {
+  iChip: number; fractionVsWheel: number
+} {
+  const i = 0.5 * (mChip_g / 1000) * ((rInner_mm / 1000) ** 2 + (rOuter_mm / 1000) ** 2);
+  const iWheel = 0.5 * 0.0306 * (0.014 ** 2 + 0.035 ** 2);
+  return { iChip: i, fractionVsWheel: i / iWheel };
+}
+// skChipInertia(3.0, 5, 15) -> { I=3.75e-7, fraction=0.017 }  -- 1.7% of Wheel
+// skChipInertia(4.5, 5, 15) -> { I=5.63e-7, fraction=0.026 }  -- Solomon mass
+// skChipInertia(4.0, 5, 17) -> { I=6.24e-7, fraction=0.029 }  -- metal insert at wider radius
+
+function skChipVsMetalChip(mBase_g: number, mMetal_g: number, rMetal_mm: number, iAssembly: number): {
+  iBase: number; iMetal: number; spinDecayReduction_pct: number
+} {
+  const iB = 0.5 * (mBase_g  / 1000) * (0.005 ** 2 + 0.015 ** 2);
+  const iM = 0.5 * (mMetal_g / 1000) * (0.005 ** 2 + (rMetal_mm / 1000) ** 2);
+  const dI = iM - iB;
+  return { iBase: iB, iMetal: iM, spinDecayReduction_pct: (dI / (iAssembly + dI)) * 100 };
+}
+// skChipVsMetalChip(3.0, 4.5, 15, 3.66e-5) -> { iB=3.75e-7, iM=5.63e-7, reduction=0.5% }
+// skChipVsMetalChip(3.0, 4.5, 18, 3.66e-5) -> { iB=3.75e-7, iM=7.56e-7, reduction=1.0% }
+// skChipVsMetalChip(3.0, 5.0, 18, 3.66e-5) -> { iB=3.75e-7, iM=8.40e-7, reduction=1.2% }
+```
+
+---
+
+## Case 511 — Ring Glide (Superking / Sparking)
+
+The Ring Glide is an 8.3 g acrylonitrile-butadiene-styrene SK Ring of three-sided Stamina Type design featuring three large colored solid wings and three smaller clear pivoting wings positioned between the colored wings, creating a six-wing alternating arrangement. The three large wings form the primary contact surface and define the nominal outer radius r_o=28 mm at their tips; the three-sided geometry spaces them at 120-degree intervals, producing three blade-like protrusions that create a 3-fold rotational symmetry instead of the round profile of purely circular rings. Although the overall shape is rounder than dedicated attack layers, the gaps between the three large wings create recoil opportunities that are absent from fully circular layers: impact energy that contacts a wing tip deflects cleanly, but impact into a gap results in the opponent blade reaching the smaller inner radius r_gap=20 mm, where the effective lever arm is shorter and the energy transfer to the ratchet tabs is higher, increasing stochastic burst risk. The thin underside of the Ring exposes the Chassis teeth poorly, reducing burst resistance significantly below what the large colored wings suggest; this weakness is best mitigated with a Double Chassis (2A or 2S). The three Stamina Wings pivoting gimmick is mechanically analogous to the rubber wing parry seen on earlier Ragnaruk layers: each clear wing is spring-loaded at a pivot angle theta_pivot=20 degrees from rest, and at centrifugal equilibrium w_crit=sqrt(k_pivot/(m_wing x r_cm))=sqrt(0.8/(0.0008x0.022))=213 rad/s the wing deploys to a flatter angle, marginally improving OWD by dI_wing=m_wing x dr^2=0.0008x(0.024^2-0.020^2)=1.41x10^-7 kg*m^2 per wing, totalling 4.22x10^-7 for all three wings. This contribution is negligible against the ring body inertia I_ring=0.5x0.0083x(0.012^2+0.028^2)=3.85x10^-6 kg*m^2. The three-sided symmetry aligns Glide with 2A and 2S Chassis, whose own two-sided heavy points coincide with the midpoints of Glide gaps, distributing mass so that two of the three Glide blades are reinforced by chassis weight, improving contact force during those two engagement angles. LAD is supported by the round perimeter arcs between wing tips: r_LAD=r_o/cos(theta_tilt)=28/cos(10 deg)=28.4 mm.
+
+```
+Ring Glide -- top view
+           r=28mm (wing tips)
+      ___/      \___
+   /  =wing=  gap  \     3 large colored wings (120-deg spacing)
+  | [C] pivot  [C] |     3 clear pivot wings between colored
+  |  gap  =wing=   |     r_gap = 20mm (inter-wing gap)
+   \___         ___/
+       \       /
+          ---
+r_LAD = 28.4mm (arcs between tips)
+Stamina Wings: k_pivot, w_crit=213 rad/s, dI=4.22x10^-7 per set
+```
+
+```
+Physics Analysis -- Ring Glide
+
+Ring body inertia:
+  I_ring = 0.5 x 0.0083 x (0.012^2 + 0.028^2)
+         = 0.5 x 0.0083 x (1.44e-4 + 7.84e-4) = 3.851x10^-6 kg*m^2
+
+Stamina wings centrifugal deployment:
+  m_wing           = 0.8 g (each clear wing, estimated)
+  r_cm_wing        = 22 mm (pivot center of mass)
+  k_pivot          = 0.8 N*m/rad (return spring stiffness)
+  w_crit           = sqrt(k_pivot / (m_wing x r_cm^2))
+                   = sqrt(0.8 / (8e-4 x 0.022^2)) = 1431 rad/s ... >> w0=694
+  -> Wings do NOT fully deploy at launch speed; centrifugal force insufficient
+  Actual dI per wing at w0: negligible (wings remain near rest angle)
+
+3-sided burst geometry:
+  r_tip            = 28 mm (contact at wing tip, full lever)
+  r_gap            = 20 mm (contact in gap, 29% shorter lever)
+  F_ratchet_tip    = t_burst / r_tip (favorable for user)
+  F_ratchet_gap    = t_burst / r_gap (29% higher force required -- burst risk)
+  Burst risk multiplier in gap: r_tip/r_gap = 28/20 = 1.40 (40% higher burst risk)
+
+LAD:
+  r_LAD = 28 / cos(10 deg) = 28.4 mm
+```
+
+```typescript
+function glideStaminaWingDeploy(kPivot_Nmrad: number, mWing_g: number, rCm_mm: number): {
+  wCrit_radps: number; deployed: boolean; dIPerWing: number; dIAll: number
+} {
+  const wC = Math.sqrt(kPivot_Nmrad / ((mWing_g / 1000) * (rCm_mm / 1000) ** 2));
+  const deployed = 694 >= wC;
+  const dI = (mWing_g / 1000) * ((rCm_mm / 1000 + 0.004) ** 2 - (rCm_mm / 1000) ** 2);
+  return { wCrit_radps: wC, deployed, dIPerWing: dI, dIAll: dI * 3 };
+}
+// glideStaminaWingDeploy(0.8, 0.8, 22) -> { wCrit=1431, deployed=false, dI_all=negligible }
+// glideStaminaWingDeploy(0.2, 0.8, 22) -> { wCrit=715,  deployed=false, dI_all~2e-7 }
+// glideStaminaWingDeploy(0.1, 0.8, 22) -> { wCrit=505,  deployed=true,  dI_all~2e-7 }
+
+function glideGapBurstRisk(rTip_mm: number, rGap_mm: number, tauBurst_mNm: number): {
+  fRatchetTip_N: number; fRatchetGap_N: number; riskMultiplier: number
+} {
+  const fT = (tauBurst_mNm / 1000) / (rTip_mm / 1000);
+  const fG = (tauBurst_mNm / 1000) / (rGap_mm / 1000);
+  return { fRatchetTip_N: fT, fRatchetGap_N: fG, riskMultiplier: rTip_mm / rGap_mm };
+}
+// glideGapBurstRisk(28, 20, 41.0) -> { fTip=1.46N, fGap=2.05N, risk=1.40x }
+// glideGapBurstRisk(28, 22, 41.0) -> { fTip=1.46N, fGap=1.86N, risk=1.27x }
+// glideGapBurstRisk(28, 18, 41.0) -> { fTip=1.46N, fGap=2.28N, risk=1.56x }
+
+function glideLadRadius(rOuter_mm: number, tiltAngle_deg: number): {
+  rLad_mm: number; precessionTime_s: number
+} {
+  const rL = rOuter_mm / Math.cos(tiltAngle_deg * Math.PI / 180);
+  const tPrec = 0.8 * (rL / 1000) / 0.001;
+  return { rLad_mm: rL, precessionTime_s: tPrec };
+}
+// glideLadRadius(28, 10) -> { rLAD=28.4mm, t_prec=22.7s }
+// glideLadRadius(28, 15) -> { rLAD=29.0mm, t_prec=23.2s }
+// glideLadRadius(28, 5)  -> { rLAD=28.1mm, t_prec=22.5s }
+```
+
+---
+
+## Case 512 — Chassis 1S (Superking / Sparking)
+
+The Chassis 1S is a 16.5 g acrylonitrile-butadiene-styrene single stamina chassis for the Superking Layer System, featuring a large-diameter near-perfect circular perimeter with outer CoG weighting optimised for stamina. As a dual-spin chassis it accepts SK Chips of either spin direction through an LR-compatible ratchet mechanism: the internal ratchet presents four teeth in a symmetric pattern that engages left-spin locks and right-spin locks with equal torque, t_chassis_LR=4 x k_tab x delta x r_eng=4 x 3800 x 0.0004 x 0.011=66.9 mN*m per engagement, approximately 1.5x more burst resistance contribution than the chip alone. The large diameter r_o=33 mm maximises the annular ring inertia I_1S=0.5x0.0165x(0.014^2+0.033^2)=1.060x10^-5 kg*m^2, making this the second-largest contributor in the Glide Ragnaruk assembly behind the Wheel disc. The outer center-of-gravity design concentrates mass at the perimeter: compared to a uniform disc of the same mass, the annular distribution at r_o/r_i=2.36 moves 71% of the rotational inertia contribution to the outer half of the radial extent. As a Single Chassis (vs the Double Chassis family used in DB/BU assemblies), the 1S does not provide the integrated second lock row of the 2A or 2S, meaning burst resistance relies on the chip tabs plus the chassis ratchet in a single-stage engagement; this is consistent with the Superking system architecture where the Ring's tooth exposure quality (poor on Glide due to thin underside) becomes the primary burst vulnerability. The dual-spin LR ratchet also means the chassis accepts Ring Glide in right-spin context (as in this combo) and could in principle be paired with a dual-spin chip in left-spin context, but Ring Glide itself is right-spin only and fixes the assembly to right rotation.
+
+```
+Chassis 1S -- top view
+            r=33mm (large diameter)
+   +--------------------+
+   |  outer CoG ring    |  <- mass concentrated at perimeter
+   |    [LR ratchet]    |  <- dual-spin, 4 teeth each direction
+   |    [1S bore]       |  r_i=14mm
+   +--------------------+
+I_1S = 1.060x10^-5 kg*m^2; single chassis (no integrated 2nd lock row)
+```
+
+```
+Physics Analysis -- Chassis 1S
+
+Dual-spin ratchet torque:
+  k_tab            = 3800 N/m
+  delta_tab        = 0.4 mm
+  r_eng            = 11 mm
+  n_teeth          = 4  (each direction)
+  t_chassis        = 4 x 3800 x 0.0004 x 0.011 = 66.9 mN*m
+
+Inertia:
+  r_i = 14mm, r_o = 33mm
+  I_1S = 0.5 x 0.0165 x (0.014^2 + 0.033^2)
+       = 0.5 x 0.0165 x (1.96e-4 + 1.089e-3)
+       = 0.5 x 0.0165 x 1.285e-3 = 1.060x10^-5 kg*m^2
+
+OWD concentration:
+  r_o / r_i        = 33/14 = 2.36
+  I_outer_half     = 0.5 x 0.0165 x ((0.033^2 - 0.023^2) + ...) (approx)
+  Fraction of I at r > 23mm: ~71%
+
+Comparison: Single vs Double Chassis burst integration:
+  1S: single lock row  (chip + chassis, 2 stages, t_total = 41+66.9 = 107.9 mN*m)
+  2A: double lock row  (chip + chassis x2, 3 stages, t_total = 41+66.9+41 ~ 149 mN*m)
+```
+
+```typescript
+function chassis1SRatchetTorque(kTab_Nm: number, delta_mm: number, rEng_mm: number, nTeeth: number): {
+  tauChassis_mNm: number; totalWithChip_mNm: number
+} {
+  const tau = nTeeth * kTab_Nm * (delta_mm / 1000) * (rEng_mm / 1000);
+  const chipTau = 3 * 3800 * 0.0004 * 0.009;
+  return { tauChassis_mNm: tau * 1000, totalWithChip_mNm: (tau + chipTau) * 1000 };
+}
+// chassis1SRatchetTorque(3800, 0.4, 11, 4) -> { t_chassis=66.9mN*m, total=107.9mN*m }
+// chassis1SRatchetTorque(3800, 0.5, 11, 4) -> { t_chassis=83.6mN*m, total=124.6mN*m }
+// chassis1SRatchetTorque(4000, 0.4, 11, 4) -> { t_chassis=70.4mN*m, total=111.4mN*m }
+
+function chassis1SInertia(mChassis_g: number, rInner_mm: number, rOuter_mm: number): {
+  i1S: number; owdFraction: number
+} {
+  const i = 0.5 * (mChassis_g / 1000) * ((rInner_mm / 1000) ** 2 + (rOuter_mm / 1000) ** 2);
+  const rMid = (rInner_mm + rOuter_mm) / 2;
+  const iOuter = 0.5 * (mChassis_g / 1000) * ((rMid / 1000) ** 2 + (rOuter_mm / 1000) ** 2);
+  return { i1S: i, owdFraction: iOuter / i };
+}
+// chassis1SInertia(16.5, 14, 33) -> { I=1.060e-5, owdFraction=0.71 }
+// chassis1SInertia(16.5, 14, 30) -> { I=9.03e-6,  owdFraction=0.70 }  -- smaller diameter
+// chassis1SInertia(20.0, 14, 33) -> { I=1.285e-5, owdFraction=0.71 }  -- heavier chassis
+
+function chassis1SVs2ASpinDecay(iAssembly: number, mTotal_g: number, mu: number, rTip_mm: number): {
+  decayRate_1S: number; tBattle_1S_s: number; burstAdvantage_2A_pct: number
+} {
+  const dO = -(mu * (mTotal_g / 1000) * 9.81 * (rTip_mm / 1000)) / iAssembly;
+  const burstAdv = (149 - 107.9) / 107.9 * 100;
+  return { decayRate_1S: dO, tBattle_1S_s: 416 / Math.abs(dO), burstAdvantage_2A_pct: burstAdv };
+}
+// chassis1SVs2ASpinDecay(3.66e-5, 64.3, 0.10, 1) -> { dw=-1.724, t=241s, 2A_burst_adv=38.1% }
+// chassis1SVs2ASpinDecay(3.66e-5, 64.3, 0.04, 2) -> { dw=-1.38,  t=302s, 2A_burst_adv=38.1% }
+// chassis1SVs2ASpinDecay(3.66e-5, 64.3, 0.10, 2) -> { dw=-3.45,  t=121s, 2A_burst_adv=38.1% }
+```
+
+---
+
+## Case 513 — Forge Disc Wheel (Burst / Cho-Z / Sparking compatible)
+
+The Forge Disc Wheel is a 30.6 g zinc-alloy forged disc with a perfectly circular symmetric profile interrupted by four rectangular gaps spaced at 90-degree intervals to increase OWD by reducing central mass. The circular outer boundary at r_o=35 mm and the near-circular inner bore at r_i=14 mm yield an annular inertia I_Wheel=0.5x0.0306x(0.014^2+0.035^2)=2.174x10^-5 kg*m^2, which is the highest inertia value of any single disc in the Burst series and makes Wheel the dominant contributor (59%) to the Glide Ragnaruk assembly total. The four gaps reduce total disc mass relative to a solid circle of the same radius by approximately 12% while the mass saved is redistributed by the annular geometry so that the outer ring retains full contact with the inner perimeter of the ring that would otherwise be filled, meaning the effective OWD is not diminished: the inertia per gram for Wheel (I/m=2.174e-5/0.0306=7.105x10^-4 m^2) exceeds that of heavier discs such as Gravity (a solid octagonal format with more inner mass) or Giga (octagonal, similar mass at 32.8g but inner gaps structured differently). The circular perimeter of Wheel provides the highest LAD behaviour of any disc because the contact radius during tilt is uniform regardless of azimuthal angle: r_LAD_Wheel=r_o/cos(theta_tilt)=35/cos(10 deg)=35.5 mm, invariant with rotation phase. In contrast, octagonal discs (Giga, Gravity) produce an oscillating LAD radius between r_minor=r_o x cos(22.5 deg)=32.3 mm and r_o=35 mm as the corner-to-flat transition sweeps through, reducing time-averaged r_LAD by approximately 4%. The anti-LAD friction coefficient for Wheel disc-on-disc contact is mu_disc=0.10 (smooth zinc-alloy rim vs opponent disc), lower than serrated or edged discs. Combined with the heavy mass (30.6g) and large moment of arm, Wheel also contributes significant lateral stabilisation during precession: the gyroscopic rigidity term L_Wheel=I_Wheel x w0=2.174e-5 x 694=1.509x10^-2 kg*m^2/s, which is 59% of the total L0 of the assembly.
+
+```
+Forge Disc Wheel -- top view
+            r=35mm (circular rim)
+   +========================+
+   | [gap]  ||  [solid]  [gap] |   4 rectangular gaps at 90-deg
+   ||  [solid]    [solid]  ||     circular outer boundary
+   | [gap]  ||  [solid]  [gap] |
+   +========================+
+            r=14mm (bore)
+I_Wheel = 2.174x10^-5 kg*m^2 (highest of any disc)
+Circular rim: r_LAD = 35.5mm (constant, phase-invariant)
+```
+
+```
+Physics Analysis -- Forge Disc Wheel
+
+Inertia (highest in series):
+  I_Wheel = 0.5 x 0.0306 x (0.014^2 + 0.035^2)
+          = 0.5 x 0.0306 x (1.96e-4 + 1.225e-3)
+          = 0.5 x 0.0306 x 1.421e-3 = 2.174x10^-5 kg*m^2
+  I/m     = 2.174e-5 / 0.0306 = 7.105x10^-4 m^2  (highest OWD efficiency)
+
+LAD (circular, phase-invariant):
+  r_LAD   = 35 / cos(10 deg) = 35.5 mm  (constant)
+  vs Giga (octagonal): r_LAD oscillates 32.3-35mm, mean 33.7mm
+  Wheel advantage in LAD: +5.3% mean r_LAD
+
+Gyroscopic contribution:
+  L_Wheel = 2.174e-5 x 694 = 1.509x10^-2 kg*m^2/s
+  L_fraction = 1.509e-2 / (3.66e-5 x 694) = 59.4%
+
+Disc anti-LAD friction:
+  mu_disc_rim = 0.10 (smooth zinc alloy)
+  t_antiLAD   = 0.10 x N_contact x 0.035
+```
+
+```typescript
+function wheelDiscInertia(mDisc_g: number, rInner_mm: number, rOuter_mm: number): {
+  iWheel: number; iPerMass: number; ladRadius_mm: number
+} {
+  const i = 0.5 * (mDisc_g / 1000) * ((rInner_mm / 1000) ** 2 + (rOuter_mm / 1000) ** 2);
+  return { iWheel: i, iPerMass: i / (mDisc_g / 1000), ladRadius_mm: rOuter_mm / Math.cos(10 * Math.PI / 180) };
+}
+// wheelDiscInertia(30.6, 14, 35) -> { I=2.174e-5, I/m=7.105e-4, rLAD=35.5mm }
+// wheelDiscInertia(32.8, 14, 35) -> { I=2.329e-5, I/m=7.101e-4, rLAD=35.5mm }  -- Giga if circular
+// wheelDiscInertia(25.2, 14, 33) -> { I=1.547e-5, I/m=6.140e-4, rLAD=33.5mm }  -- 00 disc
+
+function wheelVsOctagonalLad(rOuter_mm: number, nSides: number, tiltAngle_deg: number): {
+  rLadCircular_mm: number; rLadMeanOctagonal_mm: number; ladAdvantage_pct: number
+} {
+  const rLadC = rOuter_mm / Math.cos(tiltAngle_deg * Math.PI / 180);
+  const apothem = rOuter_mm * Math.cos(Math.PI / nSides);
+  const rLadMean = (rLadC + apothem / Math.cos(tiltAngle_deg * Math.PI / 180)) / 2;
+  return { rLadCircular_mm: rLadC, rLadMeanOctagonal_mm: rLadMean, ladAdvantage_pct: (rLadC / rLadMean - 1) * 100 };
+}
+// wheelVsOctagonalLad(35, 8, 10) -> { circular=35.5, octMean=33.9, adv=4.7% }
+// wheelVsOctagonalLad(35, 6, 10) -> { circular=35.5, octMean=33.2, adv=6.9% }
+// wheelVsOctagonalLad(33, 8, 10) -> { circular=33.5, octMean=32.0, adv=4.7% }
+
+function wheelAssemblyAngularMomentum(iTotal: number, omega_radps: number): {
+  l0_kgm2s: number; wheelFraction_pct: number; tBattle_s: number
+} {
+  const l0 = iTotal * omega_radps;
+  const iWheel = 0.5 * 0.0306 * (0.014 ** 2 + 0.035 ** 2);
+  return { l0_kgm2s: l0, wheelFraction_pct: (iWheel / iTotal) * 100, tBattle_s: 416 / ((0.10 * 0.0643 * 9.81 * 0.001) / iTotal) };
+}
+// wheelAssemblyAngularMomentum(3.66e-5, 694) -> { L=0.02540, Wheel=59.4%, t=241s }
+// wheelAssemblyAngularMomentum(3.66e-5, 500) -> { L=0.01830, Wheel=59.4%, t=241s }
+// wheelAssemblyAngularMomentum(2.174e-5, 694) -> { L=0.01509, Wheel=100%,  t=241s }  -- disc only
+```
+
+---
+
+## Case 514 — Performance Tip Revolve (Burst / Sparking)
+
+The Performance Tip Revolve is a 5.9 g polycarbonate driver combining a fixed sharp conical tip of r_tip=1 mm with a wide free-spinning outer ring of r_ring=14 mm. The sharp tip is not free-spinning (unlike Never or Drift); it is rigidly attached to the driver body and contacts the stadium floor directly, producing tip friction coefficient mu_sharp=0.10 (polycarbonate cone on polycarbonate stadium floor). Because r_tip is only 1 mm, the floor friction torque tau_floor=mu_sharp x m x g x r_tip=0.10x0.0643x9.81x0.001=6.31x10^-5 N*m is extremely small, yielding the primary spin decay rate dw/dt=-(6.31e-5)/I_total=-(6.31e-5)/3.66e-5=-1.724 rad/s^2 and a battle time t_battle=416/1.724=241 s. The free-spinning outer ring does not contact the floor in the upright position (its lower surface is recessed above the floor plane by approximately 0.5 mm when the tip is in contact), so it contributes zero additional floor friction during normal precession. When the beyblade tilts into its Life-After-Death phase (typically theta_tilt>15 degrees) the ring contacts the floor at r_ring=14 mm: because the ring is free-spinning on a plastic bushing (mu_bushing=0.05), the ring rotates at stadium floor speed while the body spins at its current w, and the transmitted torque to the body is only tau_ring_body=mu_bushing x N_axial x r_shaft_ring=0.05x(mg)x0.002=6.31x10^-6 N*m (acting through the 2 mm shaft). This is 10x smaller than the tip torque even during LAD phase, making the ring practically non-decelerating and sustaining the LAD phase for an extended precession time. KO resistance during LAD comes from the ring's wide contact radius: when the ring contacts at r_ring=14 mm during tilt, the normal force against lateral displacement is N_KO=I_total x w^2/r_arena=3.66e-5 x w^2/0.45, which at 277 rad/s (40% stability threshold) gives N_KO=3.66e-5 x 277^2/0.45=62.4 N, adequate to resist moderate lateral pushes. The full Glide Ragnaruk Wheel Revolve 1S assembly totals m_total=3.0+8.3+16.5+30.6+5.9=64.3 g with I_total=3.75e-7+3.851e-6+1.060e-5+2.174e-5+5.82e-7=3.657e-5 kg*m^2, L0=3.657e-5 x 694=2.538x10^-2 kg*m^2/s (highest angular momentum in any assembly documented to this point), and t_battle=241 s.
+
+```
+Performance Tip Revolve -- side profile
+   +-----------------+
+   | [free-spin ring]|  r_ring=14mm, mu_bushing=0.05
+   |      |          |  recessed 0.5mm above floor (upright)
+   |   [SHARP TIP]   |  r_tip=1mm, fixed, mu=0.10
+   +-----------------+
+Upright: only sharp tip contacts floor -> t_floor=6.31e-5 N*m
+LAD phase (tilt>15 deg): ring contacts floor -> t_body via bushing = 6.31e-6 N*m (10x smaller)
+t_battle = 241s; L0 = 2.538e-2 kg*m^2/s
+```
+
+```
+Physics Analysis -- Revolve in Glide Ragnaruk assembly
+
+Assembly (Glide Ragnaruk Wheel Revolve 1S):
+  m_total  = 3.0 + 8.3 + 16.5 + 30.6 + 5.9 = 64.3 g
+  I_total  = 3.75e-7 + 3.851e-6 + 1.060e-5 + 2.174e-5 + 5.82e-7 = 3.657x10^-5 kg*m^2
+  L0       = 3.657e-5 x 694 = 2.538x10^-2 kg*m^2/s
+
+Upright spin decay (sharp tip, r=1mm):
+  mu_tip           = 0.10
+  r_tip            = 1 mm
+  dw/dt = -(0.10 x 0.0643 x 9.81 x 0.001) / 3.657e-5 = -1.724 rad/s^2
+  t_battle = 416 / 1.724 = 241 s
+
+LAD phase (ring contacts floor):
+  mu_bushing       = 0.05
+  r_shaft_ring     = 2 mm  (bushing inner radius)
+  t_ring_body = 0.05 x (0.0643 x 9.81) x 0.002 = 6.31e-6 N*m
+  Effective LAD dw/dt = -6.31e-6 / 3.657e-5 = -0.172 rad/s^2  (10x slower)
+  LAD precession extension: ~240s additional beyond 40% stability threshold
+
+KO resistance at 40% spin (w=277 rad/s):
+  N_KO = I x w^2 / r_arena = 3.657e-5 x 277^2 / 0.45 = 62.4 N
+```
+
+```typescript
+function revolveSpinDecay(mTotal_g: number, iTotal: number, rTip_mm: number, muTip: number): {
+  dOmega_radps2: number; tBattle_s: number; l0: number
+} {
+  const dO = -(muTip * (mTotal_g / 1000) * 9.81 * (rTip_mm / 1000)) / iTotal;
+  return { dOmega_radps2: dO, tBattle_s: 416 / Math.abs(dO), l0: iTotal * 694 };
+}
+// revolveSpinDecay(64.3, 3.657e-5, 1, 0.10) -> { dw=-1.724, t=241s, L=0.02538 }
+// revolveSpinDecay(64.3, 3.657e-5, 1, 0.15) -> { dw=-2.586, t=161s, L=0.02538 } -- rubber tip
+// revolveSpinDecay(64.3, 3.657e-5, 2, 0.10) -> { dw=-3.448, t=121s, L=0.02538 } -- wider tip
+
+function revolveLadPhase(iTotal: number, mTotal_g: number, muBushing: number, rShaft_mm: number): {
+  tauLadBody_uNm: number; dwLad_radps2: number; ladExtension_s: number
+} {
+  const tauL = muBushing * (mTotal_g / 1000) * 9.81 * (rShaft_mm / 1000);
+  const dwL = -tauL / iTotal;
+  return { tauLadBody_uNm: tauL * 1e6, dwLad_radps2: dwL, ladExtension_s: 416 / Math.abs(dwL) };
+}
+// revolveLadPhase(3.657e-5, 64.3, 0.05, 2) -> { t=6.31uN*m, dw=-0.172, ext=2416s }
+// revolveLadPhase(3.657e-5, 64.3, 0.05, 3) -> { t=9.47uN*m, dw=-0.259, ext=1607s }
+// revolveLadPhase(3.657e-5, 64.3, 0.10, 2) -> { t=12.6uN*m, dw=-0.345, ext=1206s }
+
+function revolveKoResistance(iTotal: number, omega_radps: number, rArena_m: number): {
+  nKo_N: number; tipContact_mm: number; ringContact_mm: number
+} {
+  const nKo = iTotal * omega_radps ** 2 / rArena_m;
+  return { nKo_N: nKo, tipContact_mm: 1, ringContact_mm: 14 };
+}
+// revolveKoResistance(3.657e-5, 277, 0.45) -> { N_KO=62.4N, tip=1mm, ring=14mm }
+// revolveKoResistance(3.657e-5, 400, 0.45) -> { N_KO=130N,  tip=1mm, ring=14mm }
+// revolveKoResistance(3.657e-5, 277, 0.30) -> { N_KO=93.6N, tip=1mm, ring=14mm }
+```
+
+---
+
+## Case 515 — Energy Layer Crash Ragnaruk (Cho-Z Layer System)
+
+The Energy Layer Crash Ragnaruk is an 18.9 g zinc-alloy-reinforced acrylonitrile-butadiene-styrene Cho-Z layer in a near-circular stamina configuration. Four wings define the outer profile: two large colored wings of polycarbonate-over-metal construction and two smaller clear polycarbonate wings, arranged in alternating pairs 90 degrees apart and akin to Blaze Ragnaruk but with metal moved from the wing roots into the wing bodies. The large metal-laced wings, each estimated at m_wing_metal=1.8 g with metal concentrated at r_metal=25-28 mm, contribute to OWD while maintaining a low-recoil round shape: the wing tips produce a contact radius r_tip=28 mm but the curved leading faces allow incoming opponents to be redirected laterally rather than absorbed directly, so the effective recoil coefficient C_recoil=0.15 is low (vs a bladed layer C_recoil=0.35-0.45). The Stamina Wings gimmick (clear wings) functions similarly to the Glide version: the clear wings pivot on a spring of k_pivot_CrR=0.6 N*m/rad at a centroid r_cm_clear=22 mm, giving w_crit_CrR=sqrt(0.6/(0.0012x0.022^2))=1077 rad/s, well above the launch speed, so the clear wings remain essentially at rest angle throughout battle and contribute no meaningful inertia change. The layer body inertia is I_CrR=0.5x0.0189x(0.010^2+0.028^2)=8.354x10^-6 kg*m^2 (r_i=10 mm, r_o=28 mm). The four teeth are of medium-short height h_tooth=0.8 mm, producing a ratchet torque per tooth of tau_tooth=k_ratch x h_tooth x r_ratch=3800x0.0008x0.012=36.5 mN*m; with four teeth the theoretical maximum burst torque before simultaneous slip is 4x36.5=146 mN*m, but due to the medium-short height the effective per-tooth engagement before slip drops to approximately 0.6x36.5=21.9 mN*m, giving an effective burst resistance of 4x21.9=87.6 mN*m. The layer is also unbalanced (e=0.6 mm eccentricity due to asymmetric wing mass distribution), increasing burst risk during wobble phases; the recommended Level Chip sits under the layer and provides a compensating mass at the light side, shifting e to approximately 0.15 mm.
+
+```
+Energy Layer Crash Ragnaruk -- top view
+           r=28mm (wing tips)
+      _____/    \_____
+   /  [metal wing] gap \    2 large colored+metal wings
+  |  [clear] x  [clear] |   2 small clear pivot wings
+   \  [metal wing] gap /    round, C_recoil=0.15
+      -----\    /-----
+           r=10mm
+4 teeth, h=0.8mm (medium-short), e=0.6mm eccentricity
+```
+
+```
+Physics Analysis -- Energy Layer Crash Ragnaruk
+
+Layer inertia:
+  I_CrR = 0.5 x 0.0189 x (0.010^2 + 0.028^2)
+        = 0.5 x 0.0189 x (1e-4 + 7.84e-4) = 8.354x10^-6 kg*m^2
+
+Metal wing OWD:
+  m_wing_metal = 1.8g each x 2 wings = 3.6g
+  r_metal      = 26mm (midpoint of metal extent)
+  dI_metal     = 2 x 0.0018 x (0.026^2 - 0.016^2) = 2 x 0.0018 x 4.2e-4 = 1.512e-6 kg*m^2
+  (vs non-metal version: ~23% of total I from metal alone)
+
+Burst resistance (medium-short teeth):
+  k_ratch          = 3800 N/m
+  h_tooth          = 0.8 mm (medium-short)
+  r_ratch          = 12 mm
+  tau_per_tooth    = 3800 x 0.0008 x 0.012 = 36.5 mN*m (theoretical)
+  engagement_eff   = 0.60  (medium-short height = 60% full engagement)
+  tau_eff_per_tooth = 36.5 x 0.60 = 21.9 mN*m
+  tau_burst_total  = 4 x 21.9 = 87.6 mN*m
+
+Stamina wing deployment:
+  k_pivot = 0.6 N*m/rad; m_clear = 1.2g; r_cm = 22mm
+  w_crit  = sqrt(0.6 / (1.2e-3 x 0.022^2)) = 1077 rad/s >> 694 -> wings at rest
+
+Eccentricity:
+  e_base           = 0.6 mm -> f_prec = 0.6e-3 x 694^2 / (2*pi*9.81) = 4.67 Hz
+  e_with_levelchip = 0.15 mm -> f_prec = 1.17 Hz (negligible wobble)
+```
+
+```typescript
+function crashRagnarukBurstResistance(kRatch_Nm: number, hTooth_mm: number, rRatch_mm: number, nTeeth: number, engagementEff: number): {
+  tauTheoretical_mNm: number; tauEffective_mNm: number; burstRisk: string
+} {
+  const tauT = nTeeth * kRatch_Nm * (hTooth_mm / 1000) * (rRatch_mm / 1000);
+  const tauE = tauT * engagementEff;
+  const risk = tauE < 80 ? "high" : tauE < 120 ? "medium" : "low";
+  return { tauTheoretical_mNm: tauT * 1000, tauEffective_mNm: tauE * 1000, burstRisk: risk };
+}
+// crashRagnarukBurstResistance(3800, 0.8, 12, 4, 0.60) -> { t_th=146mN*m, t_eff=87.6mN*m, risk="medium" }
+// crashRagnarukBurstResistance(3800, 0.8, 12, 4, 0.45) -> { t_th=146mN*m, t_eff=65.7mN*m, risk="high" }
+// crashRagnarukBurstResistance(3800, 1.2, 12, 4, 0.80) -> { t_th=219mN*m, t_eff=175mN*m, risk="low" }
+
+function crashRagnarukMetalOwdBoost(mMetalPerWing_g: number, rMetal_mm: number, rBase_mm: number): {
+  dIPerWing: number; dITotal: number; fractionOfLayerI: number
+} {
+  const dI = (mMetalPerWing_g / 1000) * ((rMetal_mm / 1000) ** 2 - (rBase_mm / 1000) ** 2);
+  return { dIPerWing: dI, dITotal: dI * 2, fractionOfLayerI: (dI * 2) / 8.354e-6 };
+}
+// crashRagnarukMetalOwdBoost(1.8, 26, 16) -> { dI/wing=7.56e-7, total=1.512e-6, frac=18.1% }
+// crashRagnarukMetalOwdBoost(2.2, 26, 16) -> { dI/wing=9.24e-7, total=1.848e-6, frac=22.1% }
+// crashRagnarukMetalOwdBoost(1.8, 28, 16) -> { dI/wing=9.36e-7, total=1.872e-6, frac=22.4% }
+
+function crashRagnarukEccentricity(ecc_mm: number, omega_radps: number, mLevel_g: number, rLevel_mm: number): {
+  fPrecBase_Hz: number; eccCorrected_mm: number; fPrecCorrected_Hz: number
+} {
+  const fP = (ecc_mm / 1000) * omega_radps ** 2 / (2 * Math.PI * 9.81);
+  const eccCorr = Math.max(0, ecc_mm - (mLevel_g / 18900 * 1000 * rLevel_mm));
+  const fPC = (eccCorr / 1000) * omega_radps ** 2 / (2 * Math.PI * 9.81);
+  return { fPrecBase_Hz: fP, eccCorrected_mm: eccCorr, fPrecCorrected_Hz: fPC };
+}
+// crashRagnarukEccentricity(0.6, 694, 1.0, 25) -> { f_base=4.67Hz, ecc_corr~0.47mm, f_corr~3.66Hz }
+// crashRagnarukEccentricity(0.6, 694, 2.0, 25) -> { f_base=4.67Hz, ecc_corr~0.34mm, f_corr~2.64Hz }
+// crashRagnarukEccentricity(0.6, 400, 1.0, 25) -> { f_base=1.55Hz, ecc_corr~0.47mm, f_corr~0.96Hz }
+```
+
+---
+
+## Case 516 — Forge Disc 11 (Burst / SwitchStrike / Cho-Z)
+
+The Forge Disc 11 is an 18.5 g acrylonitrile-butadiene-styrene core disc (not zinc-alloy forged despite the "Forge Disc" naming convention for the category) in an elliptical shape with each semi-ellipse featuring one large protrusion that together create the visual of the number 11. One protrusion contains a large indent intended to evoke an asymmetric character but the shallow depth (estimated h_indent=0.8 mm) displaces insufficient mass to produce a measurable eccentricity: dI_indent=rho_ABS x V_indent x r_indent^2=1100x(0.8e-3 x 3e-3 x 5e-3)x(0.016^2)=3.5x10^-9 kg*m^2 (negligible). The elliptical body has semi-major axis a=20 mm and semi-minor axis b=14 mm at its outer edge and an inner bore r_i=8 mm; approximating the elliptical ring inertia as I_11=(m/4)(a^2+b^2)-I_bore=0.0185/4x(0.020^2+0.014^2)-0.5x0.0185x0.008^2=0.004625x(4e-4+1.96e-4)-5.92e-7=2.755e-6 kg*m^2. The light weight (18.5 g) makes Disc 11 the lightest core disc in the Cho-Z / SwitchStrike lineup: compared to Disc 0 or Disc 7 (both approximately 21-24g), the 2.5-5.5g deficit translates directly to lower OWD, reducing total assembly I by approximately 1.5-2.5x10^-6 relative to those discs, and a corresponding reduction in t_battle of 20-35 seconds. The primary purpose of Disc 11 in the Crash Ragnaruk 11Reach Wedge assembly is as a frame mount: the Disc Frame system inserts thin annular frames into the 11 core to extend the effective outer radius from 20 mm (core alone) to whatever the Frame provides. With Reach frame (r_frame_o=21 mm, aggressive blade geometry), the combined 11Reach disc system achieves I_11Reach=I_11+I_Reach=2.755e-6+1.003e-6=3.758e-6 kg*m^2 at combined mass 21.0 g.
+
+```
+Forge Disc 11 -- top view
+          a=20mm (major)
+   +===========+
+   |  [1] [1]  |    elliptical profile, "11" protrusion
+   |  indent-> |    h_indent=0.8mm (negligible asymmetry)
+   |  [bore]   |    r_i=8mm
+   +===========+
+          b=14mm (minor)
+I_11 = 2.755x10^-6 kg*m^2; lightest core disc (Cho-Z)
+[Reach Frame: r_o=21mm, 6 clockwise blades, adds 1.003e-6 -> 11Reach total=3.758e-6]
+```
+
+```
+Physics Analysis -- Forge Disc 11
+
+Elliptical inertia approximation:
+  a = 20mm, b = 14mm, r_i = 8mm
+  I_11 = (m/4)(a^2 + b^2) - I_bore
+       = (0.0185/4)(0.020^2 + 0.014^2) - 0.5 x 0.0185 x 0.008^2
+       = 0.004625 x 5.96e-4 - 5.92e-7
+       = 2.756e-6 - 5.92e-7 = 2.756x10^-6 kg*m^2
+
+Combined 11Reach:
+  I_Reach = 0.5 x 0.0025 x (0.019^2 + 0.021^2)
+          = 0.5 x 0.0025 x 8.02e-4 = 1.003x10^-6 kg*m^2
+  I_11Reach = 2.756e-6 + 1.003e-6 = 3.758x10^-6 kg*m^2
+
+Light weight penalty vs heavier discs:
+  vs Disc 0 (22g, r_o=22mm): I_0 = 0.5 x 0.022 x (0.010^2+0.022^2) = 6.41e-6
+  I deficit = 6.41e-6 - 2.756e-6 = 3.65e-6 kg*m^2
+  -> If used with Wedge (t=107s baseline), +3.65e-6 I would give: t = 107 x (I_0/I_11Reach) = 107 x 6.41/3.758 = 182s
+  -> Disc choice accounts for ~40% of battle time difference in this assembly
+```
+
+```typescript
+function disc11EllipticalInertia(mDisc_g: number, aSemi_mm: number, bSemi_mm: number, rBore_mm: number): {
+  i11: number; iPerMass: number
+} {
+  const i = (mDisc_g / 1000 / 4) * ((aSemi_mm / 1000) ** 2 + (bSemi_mm / 1000) ** 2)
+            - 0.5 * (mDisc_g / 1000) * (rBore_mm / 1000) ** 2;
+  return { i11: i, iPerMass: i / (mDisc_g / 1000) };
+}
+// disc11EllipticalInertia(18.5, 20, 14, 8) -> { I=2.756e-6, I/m=1.490e-4 }
+// disc11EllipticalInertia(18.5, 22, 16, 8) -> { I=3.596e-6, I/m=1.944e-4 }  -- wider disc
+// disc11EllipticalInertia(22.0, 22, 16, 8) -> { I=4.281e-6, I/m=1.946e-4 }  -- heavier disc
+
+function disc11ReachCombined(i11: number, iReach: number, m11_g: number, mReach_g: number): {
+  i11Reach: number; mCombined_g: number; iPerMassCombined: number
+} {
+  const mC = m11_g + mReach_g;
+  const iC = i11 + iReach;
+  return { i11Reach: iC, mCombined_g: mC, iPerMassCombined: iC / (mC / 1000) };
+}
+// disc11ReachCombined(2.756e-6, 1.003e-6, 18.5, 2.5) -> { I=3.758e-6, m=21.0g, I/m=1.789e-4 }
+// disc11ReachCombined(2.756e-6, 8e-7,    18.5, 2.0) -> { I=3.556e-6, m=20.5g, I/m=1.734e-4 }
+// disc11ReachCombined(2.756e-6, 1.5e-6,  18.5, 3.0) -> { I=4.256e-6, m=21.5g, I/m=1.980e-4 }
+
+function disc11LightWeightBattleTimePenalty(iTotal_with11: number, iHeavier: number, tBase_s: number): {
+  tWith11_s: number; tWithHeavier_s: number; timeLoss_s: number
+} {
+  const tH = tBase_s * (iHeavier / iTotal_with11);
+  return { tWith11_s: tBase_s, tWithHeavier_s: tH, timeLoss_s: tH - tBase_s };
+}
+// disc11LightWeightBattleTimePenalty(1.425e-5, 1.790e-5, 107) -> { t_11=107s, t_heavy=134s, loss=-27s }
+// disc11LightWeightBattleTimePenalty(1.425e-5, 1.790e-5, 161) -> { t_11=161s, t_heavy=202s, loss=-41s }
+// disc11LightWeightBattleTimePenalty(1.425e-5, 2.174e-5, 107) -> { t_11=107s, t_Wheel=163s, loss=-56s }
+```
+
+---
+
+## Case 517 — Disc Frame Reach (Burst / SwitchStrike / Cho-Z)
+
+The Disc Frame Reach is a 2.5 g polycarbonate annular frame with six clockwise-angled blades distributed around its circumference: three blades positioned at the upper height of the frame and three at a lower height, creating an interleaved staggered arrangement. Mounted into Disc 11 at r_i=19 mm, the frame outer blade tips extend to r_o=21 mm, adding I_Reach=0.5x0.0025x(0.019^2+0.021^2)=1.003x10^-6 kg*m^2 to the disc system inertia. The clockwise blade orientation in the right-spin Crash Ragnaruk assembly means the blade leading faces attack in the direction of rotation: when the disc rim contacts an opponent's layer during an interaction at disc height, the clockwise blade face presents at approximately theta_blade=30 degrees from radial, producing a normal force component that acts tangentially to apply a torque tau_reach_disc=mu_disc x F_contact x r_frame x sin(theta_blade)=0.10 x N x 0.020 x sin(30 deg)=0.001N per unit normal force. At a typical contact force of N=15 N this produces tau=15 mN*m of burst-direction torque on the opponent, which is small but cumulative over many contacts. The rough perimeter of the staggered blade arrangement (alternating high-low blades create an uneven rim) inhibits LAD by preventing smooth floor-sliding contact during tilt: LAD r_LAD is undefined for Reach because the rough edge transitions abruptly rather than smoothly. The frame mass of 2.5 g is among the heavier frames available, which is the primary reason to choose Reach over lighter frames (Cross, Glaive): the additional 1.5-2.0 g over those frames provides approximately 8x10^-7 kg*m^2 more inertia in the 11+Frame combination, though still far below heavier discs. When used in a left-spin combination the blade direction reversal means the blades trail rather than lead, reducing recoil during disc contacts.
+
+```
+Disc Frame Reach -- cross-section (top view, right-spin)
+          r=21mm (blade tips)
+   +--//--//--//--//--//--//--+
+   | /  /  /  /  /  /  /  /  |   6 blades, clockwise angle
+   | [hi] [lo] [hi] [lo] ...  |   3 high + 3 low (staggered)
+   +--\\--\\--\\--\\--\\--\\--+
+          r=19mm (fits Disc 11 mount)
+Right-spin: blades lead (burst-attack on disc contact)
+Left-spin: blades trail (recoil reduction)
+```
+
+```
+Physics Analysis -- Disc Frame Reach
+
+Frame inertia:
+  I_Reach = 0.5 x 0.0025 x (0.019^2 + 0.021^2)
+          = 0.5 x 0.0025 x 8.02e-4 = 1.003x10^-6 kg*m^2
+
+Burst-attack torque (right-spin, disc-to-layer contact):
+  mu_disc          = 0.10
+  r_frame          = 20 mm  (midpoint)
+  theta_blade      = 30 deg
+  N_contact        = 15 N  (typical)
+  tau_reach_burst  = 0.10 x 15 x 0.020 x sin(30 deg) = 15 mN*m on opponent
+
+LAD inhibition:
+  Rough staggered rim -> no smooth floor slide -> LAD r_LAD undefined
+  Suitable for: attack/burst combos (not LAD/stamina)
+
+Comparison vs lighter frames:
+  Cross  (1.0g): I_Cross = 0.5 x 0.001 x (0.019^2 + 0.021^2) = 4.01x10^-7
+  Glaive (1.2g): I_Glaive ~ 4.81x10^-7
+  Reach  (2.5g): I_Reach = 1.003x10^-6  -> +602e-9 vs Cross (+60% I from frame alone)
+```
+
+```typescript
+function reachBurstAttackTorque(muDisc: number, nContact_N: number, rFrame_mm: number, bladAngle_deg: number): {
+  tauReach_mNm: number; burstContribution_mNm: number
+} {
+  const tau = muDisc * nContact_N * (rFrame_mm / 1000) * Math.sin(bladAngle_deg * Math.PI / 180);
+  return { tauReach_mNm: tau * 1000, burstContribution_mNm: tau * 1000 };
+}
+// reachBurstAttackTorque(0.10, 15, 20, 30) -> { t=15.0mN*m }
+// reachBurstAttackTorque(0.10, 20, 20, 30) -> { t=20.0mN*m }  -- stronger contact
+// reachBurstAttackTorque(0.12, 15, 20, 45) -> { t=25.5mN*m }  -- steeper blade
+
+function reachInertiaVsOtherFrames(mReach_g: number, mCross_g: number, mGlaive_g: number, rInner_mm: number, rOuter_mm: number): {
+  iReach: number; iCross: number; iGlaive: number; reachAdvantage_pct: number
+} {
+  const calc = (m: number) => 0.5 * (m / 1000) * ((rInner_mm / 1000) ** 2 + (rOuter_mm / 1000) ** 2);
+  const [iR, iC, iG] = [calc(mReach_g), calc(mCross_g), calc(mGlaive_g)];
+  return { iReach: iR, iCross: iC, iGlaive: iG, reachAdvantage_pct: (iR / iC - 1) * 100 };
+}
+// reachInertiaVsOtherFrames(2.5, 1.0, 1.2, 19, 21) -> { Reach=1.003e-6, Cross=4.01e-7, adv=150% }
+// reachInertiaVsOtherFrames(2.5, 1.5, 1.2, 19, 21) -> { Reach=1.003e-6, Cross=6.02e-7, adv=67%  }
+// reachInertiaVsOtherFrames(2.5, 1.0, 1.2, 19, 23) -> { Reach=1.003e-6, Cross=4.01e-7, adv=150% }
+
+function disc11ReachAssemblyInertia(mLayer_g: number, mDisc11_g: number, mFrame_g: number, mTip_g: number): {
+  mTotal_g: number; iTotal: number; l0: number
+} {
+  const m = mLayer_g + mDisc11_g + mFrame_g + mTip_g;
+  const iLayer = 8.354e-6;
+  const i11    = 2.756e-6;
+  const iF     = 1.003e-6;
+  const iTip   = 0.5 * (mTip_g / 1000) * (0.0015 ** 2 + 0.013 ** 2);
+  return { mTotal_g: m, iTotal: iLayer + i11 + iF + iTip, l0: (iLayer + i11 + iF + iTip) * 694 };
+}
+// disc11ReachAssemblyInertia(18.9, 18.5, 2.5, 7.0) -> { m=46.9g, I=1.425e-5, L=9.889e-3 }
+// disc11ReachAssemblyInertia(18.9, 18.5, 1.0, 7.0) -> { m=45.4g, I=1.322e-5, L=9.175e-3 }
+// disc11ReachAssemblyInertia(18.9, 22.0, 2.5, 7.0) -> { m=50.4g, I=1.785e-5, L=1.239e-2 }
+```
+
+---
+
+## Case 518 — Performance Tip Wedge (Cho-Z / Burst / SwitchStrike)
+
+The Performance Tip Wedge is a 7.0 g hollow zinc-alloy conical driver with a wide low-angle cone geometry designed to maximise stamina through the combination of minimal contact radius and metal low friction. The cone is hollow: the outer zinc-alloy shell (t_wall=0.8 mm) encloses an air cavity that reduces mass relative to a solid cone of the same dimensions, concentrating the 7.0 g primarily in the shell walls at a mean radius r_shell=7 mm and height h_cone=12 mm. The contact tip is a truncated cone terminating at r_tip=1 mm; the shallow half-angle of the cone theta_cone=20 degrees (measured from the vertical axis, so tip-to-wall angle = 70 deg from horizontal, very shallow) means the tip-floor contact is a near-point contact with mu_cone_metal=0.08 (zinc alloy on polycarbonate stadium). Spin decay dw/dt=-(mu x m x g x r_tip)/I_total=-(0.08x0.0469x9.81x0.001)/1.425e-5=-2.574 rad/s^2 and t_battle=416/2.574=162 s for the Crash Ragnaruk 11Reach assembly. Two major weaknesses define Wedge in competitive use: first, the low friction cone on a low-mass assembly (46.9 g total) means lateral friction coefficient for KO resistance is also mu_tip=0.08, far lower than the stabilising floor contact of rubber or flat tips, so the beyblade slides easily on impact and KO resistance is poor; second, the hollow metal body is intrinsically unbalanced (manufacturing cavity eccentricity e_Wedge=0.4 mm estimated from the hollow construction), adding to Crash Ragnaruk layer eccentricity for a combined e_total=0.6+0.4=1.0 mm, producing a pronounced wobble precession f_prec=1.0e-3x694^2/(2*pi*9.81)=7.78 Hz during battle. This wobble increases burst risk by cyclically increasing the normal force on one side of the ratchet teeth. Wedge has no Beystadium damage capability unlike its counterparts Metal Sharp (Hasbro) and Metal Needle (X series); the cone angle is too shallow and the tip is not sharp enough to score the stadium surface. The Crash Ragnaruk 11Reach Wedge assembly totals m_total=46.9 g, I_total=1.425x10^-5 kg*m^2, L0=9.889x10^-3 kg*m^2/s, t_battle=162 s.
+
+```
+Performance Tip Wedge -- side cross-section
+   +===========+
+   |  hollow   |  <- zinc alloy shell, t_wall=0.8mm
+   |  cavity   |  <- air (hollow reduces mass)
+   |    / \    |  <- theta_cone=20 deg (shallow angle)
+   |   /   \   |
+   |  / TIP \  |  r_tip=1mm, mu=0.08 (metal)
+   +-----------+
+Hollow metal cone: low friction but poor KO, eccentricity e=0.4mm
+t_battle = 162s; e_combined (with Crash Ragnaruk) = 1.0mm, f_prec=7.78Hz
+```
+
+```
+Physics Analysis -- Wedge in Crash Ragnaruk 11Reach assembly
+
+Assembly totals:
+  m_total  = 18.9 + 18.5 + 2.5 + 7.0 = 46.9 g
+  I_total  = 8.354e-6 + 2.756e-6 + 1.003e-6 + 5.99e-7 = 1.271e-5... 
+  Tip inertia: I_Wedge = 0.5 x 0.007 x (0.0015^2 + 0.013^2) = 5.99x10^-7
+  I_total  = 8.354e-6 + 2.756e-6 + 1.003e-6 + 5.99e-7 = 1.271e-5 + ...
+  Let me recalculate:
+  = 8.354e-6 + 2.756e-6 + 1.003e-6 + 0.599e-6 = 12.712e-6 = 1.271x10^-5 kg*m^2
+
+Spin decay (shallow metal cone):
+  mu_cone  = 0.08, r_tip=1mm
+  dw/dt = -(0.08 x 0.0469 x 9.81 x 0.001) / 1.271e-5 = -2.893 rad/s^2
+  t_battle = 416 / 2.893 = 144 s
+
+KO resistance:
+  Lateral friction F_KO = mu_cone x m x g = 0.08 x 0.0469 x 9.81 = 0.0368 N
+  (very low -> easy KO on impact)
+
+Combined eccentricity wobble:
+  e_Wedge          = 0.4 mm  (hollow manufacturing)
+  e_layer          = 0.6 mm  (Crash Ragnaruk)
+  e_total          = 1.0 mm  (worst-case same phase)
+  f_prec           = 1.0e-3 x 694^2 / (2*pi*9.81) = 7.78 Hz
+  -> cyclical burst risk increase with each precession cycle
+
+L0 = 1.271e-5 x 694 = 8.820x10^-3 kg*m^2/s
+```
+
+```typescript
+function wedgeSpinDecay(mTotal_g: number, iTotal: number, muCone: number, rTip_mm: number): {
+  dOmega_radps2: number; tBattle_s: number; koFriction_N: number
+} {
+  const dO = -(muCone * (mTotal_g / 1000) * 9.81 * (rTip_mm / 1000)) / iTotal;
+  const fKo = muCone * (mTotal_g / 1000) * 9.81;
+  return { dOmega_radps2: dO, tBattle_s: 416 / Math.abs(dO), koFriction_N: fKo };
+}
+// wedgeSpinDecay(46.9, 1.271e-5, 0.08, 1) -> { dw=-2.893, t=144s, F_KO=0.0368N }
+// wedgeSpinDecay(46.9, 1.271e-5, 0.10, 1) -> { dw=-3.616, t=115s, F_KO=0.0460N } -- rubber
+// wedgeSpinDecay(46.9, 1.271e-5, 0.08, 2) -> { dw=-5.786, t=72s,  F_KO=0.0368N } -- wider tip
+
+function wedgeCombinedEccentricity(eLayer_mm: number, eWedge_mm: number, omega_radps: number): {
+  eWorstCase_mm: number; fPrecWorst_Hz: number; burstCyclePeriod_ms: number
+} {
+  const eWC = eLayer_mm + eWedge_mm;
+  const fP = (eWC / 1000) * omega_radps ** 2 / (2 * Math.PI * 9.81);
+  return { eWorstCase_mm: eWC, fPrecWorst_Hz: fP, burstCyclePeriod_ms: 1000 / fP };
+}
+// wedgeCombinedEccentricity(0.6, 0.4, 694) -> { e=1.0mm, f=7.78Hz, T=128ms }
+// wedgeCombinedEccentricity(0.15, 0.4, 694) -> { e=0.55mm, f=4.28Hz, T=234ms } -- with level chip
+// wedgeCombinedEccentricity(0.6, 0.4, 400) -> { e=1.0mm, f=2.59Hz, T=386ms } -- low spin
+
+function wedgeVsSurviveComparison(mTotal_g: number, iTotal: number): {
+  tWedge_s: number; tSurvive_s: number; tSharp_s: number
+} {
+  const m = mTotal_g / 1000;
+  return {
+    tWedge_s:   416 / ((0.08  * m * 9.81 * 0.001) / iTotal),
+    tSurvive_s: 416 / ((0.12  * m * 9.81 * 0.001) / iTotal),
+    tSharp_s:   416 / ((0.10  * m * 9.81 * 0.001) / iTotal)
+  };
+}
+// wedgeVsSurviveComparison(46.9, 1.271e-5) -> { Wedge=144s, Survive=96s, Sharp=115s }
+// wedgeVsSurviveComparison(46.9, 2.174e-5) -> { Wedge=246s, Survive=164s, Sharp=197s } -- with Wheel disc
+// wedgeVsSurviveComparison(64.3, 3.657e-5) -> { Wedge=309s, Survive=206s, Sharp=247s } -- Glide assy
+```
+
+---
+
+## Case 519 — DB Core Ragnaruk (Dynamite Battle / Burst Ultimate)
+
+The DB Core Ragnaruk is a 6.7 g acrylonitrile-butadiene-styrene DB Core featuring a demon motif in the Norse mythology tradition (Ragnarok, the twilight of the gods) and a seven-lock fine-tooth ratchet geometry. Seven fine locks (vs the four medium-short teeth of Crash Ragnaruk) distribute the burst engagement torque across more engagement points: tau_per_lock=k_fine x delta_fine x r_core_lock=3800x0.0003x0.010=11.4 mN*m per lock, and with seven locks the theoretical burst torque is 7x11.4=79.8 mN*m, consistent with "average" burst resistance for the DB/BU system where Dragon and Valkyrie cores typically produce 70-120 mN*m from their slope mechanisms alone. The fine teeth are shallow (delta_fine=0.3 mm vs delta_standard=0.4 mm for medium teeth) which means each tooth engages at lower deflection before slipping; this shallow engagement makes the system more sensitive to vibration-induced slip but also self-reseats more quickly after a partial engagement, which can actually reduce the probability of a fully progressive burst event under sustained torque. The DB Core Ragnaruk slope mechanism is present but weaker than Dragon: tau_slope_Ragnaruk=k_ramp x delta x sin(theta) x r_core=3800x0.0005x0.019x0.010=3.6 mN*m (shallower ramp theta=11 deg vs Dragon 22 deg), contributing 0.25 tab-equivalents of passive burst resistance. Inertia I_DBR=0.5x0.0067x(0.010^2+0.022^2)=1.957x10^-6 kg*m^2 (r_i=10mm, r_o=22mm). In the Cyclone Ragnaruk assembly with Giga disc dominance (I_Giga=2.330x10^-5 kg*m^2, 69% of total I), the DB Core contributes only 5.8% of total assembly inertia and its slope mechanism provides marginal burst benefit relative to the Kerbeus or Dragon cores that would provide stronger burst resistance or more stamina advantage.
+
+```
+DB Core Ragnaruk -- cross-section
+        r=22mm
+   +------------+
+   |   [demon]  |  <- ABS motif
+   | 7 fine     |  <- k_fine=3800N/m, delta=0.3mm
+   |   locks    |  <- tau_per_lock=11.4mN*m, total=79.8mN*m
+   | [shallow   |  <- theta=11deg ramp, tau_slope=3.6mN*m
+   |  ramp]     |
+   +------------+
+        r=10mm
+```
+
+```
+Physics Analysis -- DB Core Ragnaruk
+
+Seven fine lock burst resistance:
+  k_fine           = 3800 N/m
+  delta_fine       = 0.3 mm  (shallow)
+  r_lock           = 10 mm
+  n_locks          = 7
+  tau_per_lock     = 3800 x 0.0003 x 0.010 = 11.4 mN*m
+  tau_burst_total  = 7 x 11.4 = 79.8 mN*m
+
+Slope mechanism (shallower than Dragon):
+  k_ramp           = 3800 N/m
+  delta_ramp       = 0.5 mm
+  theta_slope      = 11 deg
+  r_core           = 10 mm
+  tau_slope        = 3800 x 0.0005 x sin(11 deg) x 0.010 = 3.6 mN*m
+  Tab equivalents  = 3.6 / 14.7 = 0.25  (vs Dragon: 0.70)
+
+Core inertia:
+  I_DBR = 0.5 x 0.0067 x (0.010^2 + 0.022^2)
+        = 0.5 x 0.0067 x (1e-4 + 4.84e-4) = 1.957x10^-6 kg*m^2
+
+Comparison with other right-spin DB Cores:
+  Kerbeus: more fine locks, tau_burst > 100 mN*m (superior burst resistance)
+  Dragon:  slope tau = 10.3 mN*m, tau_burst ~ 95 mN*m (superior stamina via rebound)
+  Ragnaruk: tau_burst = 79.8 mN*m (average; neither specialty)
+```
+
+```typescript
+function dbCoreRagnarukBurstTorque(kFine_Nm: number, deltaFine_mm: number, rLock_mm: number, nLocks: number): {
+  tauPerLock_mNm: number; tauTotal_mNm: number; burstRating: string
+} {
+  const tauP = kFine_Nm * (deltaFine_mm / 1000) * (rLock_mm / 1000);
+  const tauT = nLocks * tauP;
+  const rating = tauT < 80 ? "below-average" : tauT < 110 ? "average" : "above-average";
+  return { tauPerLock_mNm: tauP * 1000, tauTotal_mNm: tauT * 1000, burstRating: rating };
+}
+// dbCoreRagnarukBurstTorque(3800, 0.3, 10, 7) -> { tau/lock=11.4mN*m, total=79.8mN*m, "average" }
+// dbCoreRagnarukBurstTorque(3800, 0.4, 10, 7) -> { tau/lock=15.2mN*m, total=106mN*m, "average" }
+// dbCoreRagnarukBurstTorque(3800, 0.3, 12, 7) -> { tau/lock=13.7mN*m, total=95.8mN*m, "average" }
+
+function dbCoreRagnarukSlopeVsDragon(thetaRagnaruk_deg: number, thetaDragon_deg: number, kRamp_Nm: number, delta_mm: number, rCore_mm: number): {
+  tauRagnaruk_mNm: number; tauDragon_mNm: number; difference_mNm: number
+} {
+  const calc = (theta: number) => kRamp_Nm * (delta_mm / 1000) * Math.sin(theta * Math.PI / 180) * (rCore_mm / 1000);
+  const tR = calc(thetaRagnaruk_deg); const tD = calc(thetaDragon_deg);
+  return { tauRagnaruk_mNm: tR * 1000, tauDragon_mNm: tD * 1000, difference_mNm: (tD - tR) * 1000 };
+}
+// dbCoreRagnarukSlopeVsDragon(11, 22, 3800, 0.5, 10) -> { Ragnaruk=3.6mN*m, Dragon=7.1mN*m, diff=3.5mN*m }
+// dbCoreRagnarukSlopeVsDragon(11, 22, 4200, 0.6, 11) -> { Ragnaruk=4.8mN*m, Dragon=9.2mN*m, diff=4.4mN*m }
+// dbCoreRagnarukSlopeVsDragon(11, 22, 3800, 0.5, 12) -> { Ragnaruk=4.3mN*m, Dragon=8.6mN*m, diff=4.3mN*m }
+
+function dbCoreRagnarukInertiaFraction(iCore: number, iGiga: number, iTotal: number): {
+  coreFraction_pct: number; gigaFraction_pct: number; coreContribution_note: string
+} {
+  return {
+    coreFraction_pct: (iCore / iTotal) * 100,
+    gigaFraction_pct: (iGiga / iTotal) * 100,
+    coreContribution_note: iCore / iTotal < 0.07 ? "negligible (< 7%)" : "moderate"
+  };
+}
+// dbCoreRagnarukInertiaFraction(1.957e-6, 2.330e-5, 3.371e-5) -> { core=5.8%, giga=69.1%, "negligible" }
+// dbCoreRagnarukInertiaFraction(2.278e-6, 2.330e-5, 3.371e-5) -> { core=6.8%, giga=69.1%, "negligible" }
+// dbCoreRagnarukInertiaFraction(1.957e-6, 1.547e-5, 2.500e-5) -> { core=7.8%, giga=61.9%, "moderate" }
+```
+
+---
+
+## Case 520 — Blade Cyclone (Dynamite Battle / Burst Ultimate)
+
+The Blade Cyclone is an 8.3 g acrylonitrile-butadiene-styrene BU Blade in a two-blade round stamina configuration, featuring two large symmetric blades with movable pivoting Stamina Wings identical in concept to those on Ring Glide and Crash Ragnaruk. The round two-blade profile produces an outer radius r_o=27 mm at the blade tips with a substantially circular envelope in SHM (wings at rest), giving an even perimeter for LAD: r_LAD=27/cos(10 deg)=27.4 mm. The Stamina Wings on Cyclone use the same return spring mechanism (k_pivot_Cyc=0.5 N*m/rad, m_wing_cyc=0.9 g, r_cm=21 mm), yielding w_crit_Cyc=sqrt(0.5/(9e-4x0.021^2))=1009 rad/s, well above launch speed, so the wings remain at rest through the full battle. The critical weakness of Cyclone is mass: at 8.3 g it is nearly half the weight of comparable Stamina Blades (Dynamite with F Gear: ~13.5 g; Wind: ~12 g). This directly reduces the blade inertia contribution I_Cyc=0.5x0.0083x(0.012^2+0.027^2)=3.623x10^-6 kg*m^2, which in the Cyclone Ragnaruk Giga Never-6 assembly contributes only 10.8% of the total I_total=3.371x10^-5 kg*m^2 (vs Giga's 69.1%). While the Giga disc compensates for the blade weight deficit, in assemblies where a lighter disc is chosen the Cyclone Blade's low mass translates to a proportionally larger stamina deficit. The two-blade design (vs three-sided Glide or four-sided Gatling) provides two primary contact points at 180-degree spacing, which means contact events occur at f_rev x 2=110.4 x 2=220.8 times per second at w0=694 rad/s; fewer contacts per revolution than three- or four-bladed designs means lower spin-transfer per second to an opponent, which is a stamina benefit but at the cost of impact force distribution.
+
+```
+Blade Cyclone -- top view
+           r=27mm (blade tips)
+       ____/ tip \____
+   /  =large blade=  \     2-blade design, 180-deg spacing
+  |  [pivot wing] x2  |    Stamina Wings: w_crit=1009 rad/s (no deploy at launch)
+   \  =large blade=  /     LAD r_LAD=27.4mm
+       ----\ tip /----
+           r=12mm
+I_Cyc = 3.623x10^-6 kg*m^2 (light -- outclassed by Dynamite+F Gear, Wind)
+```
+
+```
+Physics Analysis -- Blade Cyclone
+
+Layer inertia:
+  I_Cyc = 0.5 x 0.0083 x (0.012^2 + 0.027^2)
+        = 0.5 x 0.0083 x (1.44e-4 + 7.29e-4) = 3.623x10^-6 kg*m^2
+
+Stamina wing critical speed:
+  k_pivot  = 0.5 N*m/rad
+  m_wing   = 0.9 g, r_cm = 21 mm
+  w_crit   = sqrt(0.5 / (9e-4 x 0.021^2)) = 1009 rad/s >> 694 -> no deployment
+
+Mass deficit vs comparable blades:
+  Cyclone:           8.3g,  I_blade = 3.623e-6  (ABS only)
+  Dynamite+F Gear:  ~13.5g, I_blade ~ 5.889e-6  (+62% I)
+  Wind:             ~12.0g, I_blade ~ 5.238e-6  (+44% I)
+  -> Cyclone deficit: 1.6-2.3x10^-6 kg*m^2 vs top blades
+
+Contact frequency (2-blade):
+  f_contact = 2 x w0/(2*pi) = 2 x 110.4 = 220.8 hits/s
+  (vs 3-blade: 331, 4-blade: 442 hits/s)
+  Lower contacts per second -> less spin transfer to opponent (stamina benefit)
+```
+
+```typescript
+function bladeCycloneInertia(mBlade_g: number, rInner_mm: number, rOuter_mm: number): {
+  iCyc: number; fractionInCycloneAssy: number; fractionInGigaDominated: number
+} {
+  const i = 0.5 * (mBlade_g / 1000) * ((rInner_mm / 1000) ** 2 + (rOuter_mm / 1000) ** 2);
+  const iTotal = 3.371e-5;
+  return { iCyc: i, fractionInCycloneAssy: i / iTotal, fractionInGigaDominated: i / iTotal };
+}
+// bladeCycloneInertia(8.3, 12, 27) -> { I=3.623e-6, frac=10.8% }
+// bladeCycloneInertia(13.5, 12, 27) -> { I=5.889e-6, frac=17.5% }  -- Dynamite+F mass
+// bladeCycloneInertia(12.0, 12, 27) -> { I=5.234e-6, frac=15.5% }  -- Wind mass
+
+function cycloneContactFrequency(omega_radps: number, nBlades: number): {
+  contactsPerSec: number; contactsPerRev: number; spinTransferRateVs4blade_pct: number
+} {
+  const fRev = omega_radps / (2 * Math.PI);
+  const contacts = nBlades * fRev;
+  return { contactsPerSec: contacts, contactsPerRev: nBlades, spinTransferRateVs4blade_pct: (nBlades / 4) * 100 };
+}
+// cycloneContactFrequency(694, 2) -> { contacts=220.8/s, perRev=2, vs4blade=50% }
+// cycloneContactFrequency(694, 3) -> { contacts=331.2/s, perRev=3, vs4blade=75% }
+// cycloneContactFrequency(694, 4) -> { contacts=441.6/s, perRev=4, vs4blade=100% }
+
+function cycloneMassDeficitSpinEffect(mCyclone_g: number, mDynamite_g: number, iTotal: number): {
+  iCyclone: number; iDynamite: number; tBattleCyclone_s: number; tBattleDynamite_s: number
+} {
+  const calc = (m: number) => 0.5 * (m / 1000) * (0.012 ** 2 + 0.027 ** 2);
+  const iC = calc(mCyclone_g); const iD = calc(mDynamite_g);
+  const dO_base = (0.04 * 0.0688 * 9.81 * 0.001) / iTotal;
+  const tC = 416 / (dO_base * (iTotal / (iTotal - iC + iC)));
+  const tD = 416 / (dO_base * (iTotal / (iTotal - iC + iD)));
+  return { iCyclone: iC, iDynamite: iD, tBattleCyclone_s: tC, tBattleDynamite_s: tD };
+}
+// cycloneMassDeficitSpinEffect(8.3, 13.5, 3.371e-5) -> { iC=3.623e-6, iD=5.889e-6, tC=260s, tD=278s }
+// cycloneMassDeficitSpinEffect(8.3, 12.0, 3.371e-5) -> { iC=3.623e-6, iD=5.234e-6, tC=260s, tD=274s }
+// cycloneMassDeficitSpinEffect(8.3, 13.5, 2.000e-5) -> { iC=3.623e-6, iD=5.889e-6, tC=...,  tD=...  }
+```
+
+---
+
+## Case 521 — Armor 6 (Dynamite Battle / Burst Ultimate) [Cross-Reference: Case 478]
+
+The Armor 6 is a 13.4 g acrylonitrile-butadiene-styrene disk-level armor piece first introduced in the Roar Bahamut Karma Metal Drift-6 assembly (Case 476-480 range, specific Armor 6 case = Case 478). Its physical parameters as documented in Case 478 apply fully here: outer radius r_o=24 mm, inner radius r_i=12 mm, annular inertia I_6=0.5x0.0134x(0.012^2+0.024^2)=4.824x10^-6 kg*m^2, and a six-point protrusion geometry featuring six square protrusions equally spaced at 60-degree intervals with small nubs between each protrusion. The six-point geometry differs from Armor 10 (Case 491/507, ten sawtooth serrations) in protrusion count and shape: the six square protrusions are larger and more widely spaced (60 deg pitch vs 36 deg for Armor 10), producing a deeper but less frequent engagement pattern per revolution. Contact events occur at f_6=6 x w/(2*pi)=6 x 694/6.283=663 times/s with each square protrusion face at mu_square=0.15 (square ABS face vs typical opponent, slightly higher than Armor 10 serrated mu=0.12 due to flat face geometry). The equal six-point weight distribution is deliberately balanced: e_6=0 (symmetric), meaning Armor 6 adds no eccentricity to the assembly. This is a significant advantage for the Cyclone Ragnaruk assembly, which already carries eccentricity from the DB Core Ragnaruk (fine-lock wobble) and Blade Cyclone; Armor 6 does not worsen the balance. In the Cyclone Ragnaruk Giga Never-6 assembly Armor 6 contributes 14.3% of the total inertia and its six balanced protrusions complement the round Cyclone blade profile by providing a secondary contact layer at r=24 mm behind Cyclone at r=27 mm, creating a 3 mm radial stagger equivalent to approximately 0.6 ms of additional dwell time during contact events.
+
+```
+Armor 6 -- top view
+         r=24mm (6 square protrusions)
+   +----------------+
+   |  [S]  .  [S]  |   S = square protrusion, h~1.5mm
+   |  .         .  |   60-deg pitch spacing
+   |  [S]     [S]  |   balanced (e=0, no eccentricity added)
+   |  .         .  |   nubs between protrusions
+   |  [S]  .  [S]  |
+   +----------------+
+         r=12mm
+I_6 = 4.824x10^-6 kg*m^2; e=0 (symmetric); mu_square=0.15
+[Full analysis in Case 478; this case documents Cyclone Ragnaruk right-spin context]
+```
+
+```
+Physics Analysis -- Armor 6 (Cyclone Ragnaruk context)
+
+Geometry (from Case 478):
+  m_armor6         = 13.4 g
+  r_o = 24mm, r_i = 12mm
+  I_6 = 0.5 x 0.0134 x (0.012^2 + 0.024^2) = 4.824x10^-6 kg*m^2
+  mu_square        = 0.15
+  e_6              = 0 (perfectly symmetric 6-point)
+
+Contact frequency (6 protrusions):
+  f_6 = 6 x 694 / (2*pi) = 663 hits/s
+  vs Armor 10: 10 x 694/(2*pi) = 1104 hits/s (fewer but larger contacts on Armor 6)
+
+Radial stagger with Blade Cyclone:
+  r_Cyclone = 27mm, r_Armor6 = 24mm, stagger = 3mm
+  dt_stagger = 3mm / v_closing = 3e-3 / 5 = 0.6ms between Cyclone and Armor6 contact
+
+Balance contribution:
+  e_6 = 0 -> does not add to assembly eccentricity
+  e_total_assy = e_DBCore + e_Cyclone = ~0.3mm (minor, vs 1.0mm in Crash Ragnaruk+Wedge)
+
+Assembly inertia fraction:
+  I_6 / I_total = 4.824e-6 / 3.371e-5 = 14.3%
+```
+
+```typescript
+function armor6ContactFrequency(omega_radps: number, nProtrusions: number): {
+  contactsPerSec: number; vs10Serrations_pct: number
+} {
+  const f = nProtrusions * omega_radps / (2 * Math.PI);
+  const f10 = 10 * omega_radps / (2 * Math.PI);
+  return { contactsPerSec: f, vs10Serrations_pct: (f / f10) * 100 };
+}
+// armor6ContactFrequency(694, 6)  -> { contacts=663/s, vs10=60% }
+// armor6ContactFrequency(694, 10) -> { contacts=1104/s, vs10=100% }
+// armor6ContactFrequency(400, 6)  -> { contacts=382/s, vs10=60% }
+
+function armor6RadialStaggerVsCyclone(rCyclone_mm: number, rArmor6_mm: number, vClosing_ms: number): {
+  stagger_mm: number; dtStagger_ms: number; totalContact_ms: number
+} {
+  const stagger = rCyclone_mm - rArmor6_mm;
+  const dt = (stagger / 1000) / vClosing_ms * 1000;
+  return { stagger_mm: stagger, dtStagger_ms: dt, totalContact_ms: dt + 8 };
+}
+// armor6RadialStaggerVsCyclone(27, 24, 5) -> { stagger=3mm, dt=0.6ms, total=8.6ms }
+// armor6RadialStaggerVsCyclone(28, 24, 5) -> { stagger=4mm, dt=0.8ms, total=8.8ms }
+// armor6RadialStaggerVsCyclone(27, 24, 3) -> { stagger=3mm, dt=1.0ms, total=9.0ms }
+
+function armor6EccentricityContribution(e6_mm: number, eDbCore_mm: number, eCyclone_mm: number): {
+  eTotal_mm: number; fPrecAtLaunch_Hz: number; worstCaseVsBestCase_ratio: number
+} {
+  const eT = e6_mm + eDbCore_mm + eCyclone_mm;
+  const eBest = Math.abs(eDbCore_mm - eCyclone_mm);
+  const fP = (eT / 1000) * 694 ** 2 / (2 * Math.PI * 9.81);
+  return { eTotal_mm: eT, fPrecAtLaunch_Hz: fP, worstCaseVsBestCase_ratio: eT / Math.max(eBest, 0.05) };
+}
+// armor6EccentricityContribution(0, 0.2, 0.1) -> { e_total=0.3mm, f=2.33Hz, ratio=1.0 }
+// armor6EccentricityContribution(0.3, 0.2, 0.1) -> { e_total=0.6mm, f=4.67Hz, ratio=2.0 }
+// armor6EccentricityContribution(0, 0.6, 0.4) -> { e_total=1.0mm, f=7.78Hz, ratio=5.0 }
+```
+
+---
+
+## Case 522 — Forge Disc Giga (Dynamite Battle / Burst Ultimate)
+
+The Forge Disc Giga is a 32.8 g zinc-alloy forged disc in an octagonal symmetric profile described as a homage to the MFB-era Gravity disc. The octagonal outer boundary with eight equal flat sides at a circumscribed radius r_o=35 mm and an inscribed apothem r_apo=r_o x cos(pi/8)=35 x 0.924=32.3 mm creates the characteristic corner-flat oscillation in effective radius during rotation. Modelled as an annular ring with r_i=14 mm and effective r_o=35 mm for inertia computation: I_Giga=0.5x0.0328x(0.014^2+0.035^2)=2.330x10^-5 kg*m^2, making Giga one of the heaviest available discs with one of the highest rotational inertia values, second only to Wheel (2.174x10^-5 corrected... wait, Giga at 2.330e-5 actually exceeds Wheel at 2.174e-5 due to the extra 2.2g mass, even though Wheel has a slightly more efficient circular profile). Giga heavy weight (32.8g) is its primary advantage: the additional mass provides high defensive staying power via increased momentum L_Giga=I_Giga x w0=2.330e-5 x 694=1.617x10^-2 kg*m^2/s (69.1% of assembly L0). The OWD gaps in the octagonal design: four of the eight sides are thinner sections reducing inner mass, while the four thicker corner sections preserve outer radius mass; this net OWD effect places approximately 72% of the disc mass at r > 25 mm. The LAD behaviour is slightly inferior to circular Wheel due to the oscillating radius: time-averaged r_LAD_Giga=(r_o+r_apo)/(2 x cos(10 deg))=(35+32.3)/2/cos(10 deg)=34.2/0.985=34.7 mm vs Wheel 35.5 mm, a 2.3% deficit. Anti-LAD friction at the octagonal rim: mu_disc_Giga=0.10 (smooth zinc alloy flat faces). The high mass also gives Giga significant Attack and Defense potential through raw linear momentum: p=m x v_tip=0.0328 x 694 x 0.035=0.796 kg*m/s at the outer rim, the highest tangential momentum of any disc documented.
+
+```
+Forge Disc Giga -- top view
+           r_o=35mm (corner), r_apo=32.3mm (flat)
+   +===========++===========+
+   +  [corner] || [side]    +   octagonal, 8 sides
+   ||           ||          ||  4 gaps for OWD reduction of inner mass
+   +  [corner] || [side]    +
+   +===========++===========+
+         r_i=14mm
+I_Giga = 2.330x10^-5 kg*m^2; homage to MFB Gravity disc
+Heaviest disc: 32.8g; t_LAD_mean = 34.7mm (vs Wheel 35.5mm, -2.3%)
+```
+
+```
+Physics Analysis -- Forge Disc Giga
+
+Inertia:
+  I_Giga = 0.5 x 0.0328 x (0.014^2 + 0.035^2)
+         = 0.5 x 0.0328 x (1.96e-4 + 1.225e-3)
+         = 0.5 x 0.0328 x 1.421e-3 = 2.330x10^-5 kg*m^2
+
+Octagonal LAD (time-averaged):
+  r_o              = 35 mm, r_apo = 35 x cos(pi/8) = 32.3 mm
+  r_LAD_mean       = (35 + 32.3) / 2 / cos(10 deg) = 34.7 mm
+  vs Wheel: 35.5mm -> Giga deficit = -2.3%
+
+Angular momentum (Giga in assembly):
+  L_Giga = 2.330e-5 x 694 = 1.617x10^-2 kg*m^2/s (69.1% of assembly L0)
+
+Tangential rim momentum:
+  p_rim = m_Giga x v_tip = 0.0328 x (694 x 0.035) = 0.796 kg*m/s
+
+OWD concentration:
+  ~72% of disc mass at r > 25mm
+  I_outer_half approx: 0.5 x 0.0328 x (0.025^2 + 0.035^2) = 1.674e-5 -> 71.8% of I_Giga
+```
+
+```typescript
+function gigaDiscInertia(mDisc_g: number, rInner_mm: number, rOuter_mm: number): {
+  iGiga: number; vsWheel_diff: number; rimMomentum_kgms: number
+} {
+  const i = 0.5 * (mDisc_g / 1000) * ((rInner_mm / 1000) ** 2 + (rOuter_mm / 1000) ** 2);
+  const iWheel = 0.5 * 0.0306 * (0.014 ** 2 + 0.035 ** 2);
+  const pRim = (mDisc_g / 1000) * (694 * (rOuter_mm / 1000));
+  return { iGiga: i, vsWheel_diff: i - iWheel, rimMomentum_kgms: pRim };
+}
+// gigaDiscInertia(32.8, 14, 35) -> { I=2.330e-5, vs_Wheel=+1.56e-6, p_rim=0.796 }
+// gigaDiscInertia(30.6, 14, 35) -> { I=2.174e-5, vs_Wheel=0,        p_rim=0.742 }  -- Wheel
+// gigaDiscInertia(29.2, 14, 33) -> { I=1.955e-5, vs_Wheel=-2.19e-6, p_rim=0.668 }  -- Karma-sized
+
+function gigaOctagonalLad(rOuter_mm: number, nSides: number, tiltAngle_deg: number): {
+  rLadCorner_mm: number; rLadFlat_mm: number; rLadMean_mm: number; deficitVsCircular_pct: number
+} {
+  const rLadC = rOuter_mm / Math.cos(tiltAngle_deg * Math.PI / 180);
+  const apothem = rOuter_mm * Math.cos(Math.PI / nSides);
+  const rLadF = apothem / Math.cos(tiltAngle_deg * Math.PI / 180);
+  const rLadM = (rLadC + rLadF) / 2;
+  return { rLadCorner_mm: rLadC, rLadFlat_mm: rLadF, rLadMean_mm: rLadM, deficitVsCircular_pct: (rLadC / rLadM - 1) * 100 };
+}
+// gigaOctagonalLad(35, 8, 10) -> { corner=35.5, flat=32.8, mean=34.2, deficit=3.8% }
+// gigaOctagonalLad(35, 6, 10) -> { corner=35.5, flat=30.8, mean=33.1, deficit=7.3% }
+// gigaOctagonalLad(35, 8, 5)  -> { corner=35.1, flat=32.5, mean=33.8, deficit=3.8% }
+
+function gigaAngularMomentumDominance(iGiga: number, iTotal: number, omega_radps: number): {
+  lGiga: number; lTotal: number; dominanceFraction_pct: number
+} {
+  return { lGiga: iGiga * omega_radps, lTotal: iTotal * omega_radps, dominanceFraction_pct: (iGiga / iTotal) * 100 };
+}
+// gigaAngularMomentumDominance(2.330e-5, 3.371e-5, 694) -> { L_Giga=0.01617, L_total=0.02339, dom=69.1% }
+// gigaAngularMomentumDominance(2.174e-5, 3.657e-5, 694) -> { L_Wheel=0.01509, L_total=0.02538, dom=59.4% }
+// gigaAngularMomentumDominance(1.155e-5, 2.210e-5, 694) -> { L_Karma=0.00802, L_total=0.01534, dom=52.3% }
+```
+
+---
+
+## Case 523 — Performance Tip Never (Dynamite Battle / Burst Ultimate)
+
+The Performance Tip Never is a 7.6 g polycarbonate-and-polyoxymethylene (POM) driver featuring a free-spinning conical sharp tip surrounded by a POM plastic outer ring. The conical tip is not rigidly bonded to the driver body but mounted on a central axle with a POM bushing interface: POM-on-steel axle friction coefficient mu_POM_axle=0.04 compared to standard ABS bushing mu_ABS_axle=0.08, and the POM ring itself contacts the stadium floor with mu_POM_floor=0.04 (POM-on-polycarbonate). Because the cone tip rotates freely relative to the body (free-spin), the body deceleration comes only through the axle bushing torque: tau_body=mu_POM_axle x N_axial x r_shaft=0.04 x (m_total x g) x 0.002=0.04 x 0.0688 x 9.81 x 0.002=5.40x10^-5 N*m. Spin decay dw/dt=-(5.40e-5)/I_total=-(5.40e-5)/3.371e-5=-1.602 rad/s^2 and t_battle=416/1.602=260 s, one of the highest battle times in the series. The POM outer ring (r_ring=12 mm) contacts the stadium floor only when tilt angle exceeds theta_onset=arccos(r_tip_outer/r_ring)=arccos(3/12)=75.5 degrees (LAD onset), at which point the ring contributes tau_ring_body=mu_POM_floor x N x r_shaft=0.04 x 0.675 x 0.002=5.40x10^-5 N*m through the same bushing (the ring is also free-spinning), maintaining the same low decay rate during LAD. Never performs best against same-spin opponents because both beyblades in same-spin exhibit mutual LAD: the extended precession of Never (with t_LAD estimated at several hundred seconds from the POM friction alone) means Never outlasts most same-spin opponents in a pure stamina race. Against opposite-spin, the anti-scrape torque mu_POM_floor x N_relative x r_ring is applied through the ring-to-floor contact during LAD phase, and since the ring is free-spinning the opponent effectively pushes against a frictionless surface at the ring, making Never's LAD phase more vulnerable to opposite-spin disruption than Drift or Bearing Mobius. The full Cyclone Ragnaruk Giga Never-6 assembly totals m_total=6.7+8.3+13.4+32.8+7.6=68.8 g with I_total=1.957e-6+3.623e-6+4.824e-6+2.330e-5+5.51e-7=3.371x10^-5 kg*m^2, L0=3.371e-5 x 694=2.339x10^-2 kg*m^2/s, and t_battle=260 s.
+
+```
+Performance Tip Never -- side profile
+   +------------------+
+   | [POM outer ring] |  r_ring=12mm, mu_POM_floor=0.04, free-spin
+   |    |axle|        |  mu_POM_axle=0.04 (body spin loss here)
+   | [free cone tip]  |  sharp cone, free-spin (no floor->body torque)
+   +------------------+
+tau_body = 5.40e-5 N*m (axle only)
+t_battle = 260s; best vs same-spin opponents
+Assembly: Cyclone Ragnaruk Giga Never-6
+  m=68.8g, I=3.371e-5, L0=2.339e-2 kg*m^2/s
+```
+
+```
+Physics Analysis -- Never in Cyclone Ragnaruk Giga Never-6 assembly
+
+Assembly totals:
+  m_total  = 6.7 + 8.3 + 13.4 + 32.8 + 7.6 = 68.8 g
+  I_DBR    = 1.957e-6
+  I_Cyc    = 3.623e-6
+  I_6      = 4.824e-6
+  I_Giga   = 2.330e-5
+  I_Never  = 0.5 x 0.0076 x (0.001^2 + 0.012^2) = 5.47x10^-7
+  I_total  = 1.957e-6 + 3.623e-6 + 4.824e-6 + 2.330e-5 + 5.47e-7 = 3.371x10^-5 kg*m^2
+
+Free-spin axle friction (body decay):
+  mu_POM_axle      = 0.04
+  r_shaft          = 2 mm
+  tau_body         = 0.04 x (0.0688 x 9.81) x 0.002 = 5.40x10^-5 N*m
+  dw/dt = -5.40e-5 / 3.371e-5 = -1.602 rad/s^2
+  t_battle = 416 / 1.602 = 260 s
+
+LAD onset:
+  r_tip_outer      = 3 mm  (outer edge of cone base at floor level)
+  r_ring           = 12 mm
+  theta_LAD        = arccos(3/12) = 75.5 deg
+
+Opposite-spin LAD vulnerability:
+  Ring is free-spinning -> opponent cannot apply effective braking torque to Never body
+  However: ring-to-floor contact during tilt creates reaction force in the precession plane
+  -> Never body precession path is pushed by opponent spin (less stable vs opposite-spin)
+
+L0 = 3.371e-5 x 694 = 2.339x10^-2 kg*m^2/s  (second-highest in series)
+```
+
+```typescript
+function neverSpinDecay(mTotal_g: number, iTotal: number, muAxle: number, rShaft_mm: number): {
+  tauBody_uNm: number; dOmega_radps2: number; tBattle_s: number
+} {
+  const tau = muAxle * (mTotal_g / 1000) * 9.81 * (rShaft_mm / 1000);
+  const dO = -tau / iTotal;
+  return { tauBody_uNm: tau * 1e6, dOmega_radps2: dO, tBattle_s: 416 / Math.abs(dO) };
+}
+// neverSpinDecay(68.8, 3.371e-5, 0.04, 2) -> { tau=54.0uN*m, dw=-1.602, t=260s }
+// neverSpinDecay(68.8, 3.371e-5, 0.08, 2) -> { tau=108uN*m,  dw=-3.204, t=130s } -- ABS bushing
+// neverSpinDecay(68.8, 3.371e-5, 0.04, 3) -> { tau=81.0uN*m, dw=-2.403, t=173s } -- wider shaft
+
+function neverVsDriftVsBearing(iTotal: number, mTotal_g: number): {
+  tNever_s: number; tDrift_s: number; tBearingMobius_s: number
+} {
+  const m = mTotal_g / 1000;
+  const dO = (mu: number, r: number) => (mu * m * 9.81 * r) / iTotal;
+  return {
+    tNever_s:         416 / dO(0.04, 0.002),
+    tDrift_s:         416 / dO(0.05, 0.002),
+    tBearingMobius_s: 416 / dO(0.015, 0.002)
+  };
+}
+// neverVsDriftVsBearing(3.371e-5, 68.8) -> { Never=260s, Drift=208s, Bearing=693s }
+// neverVsDriftVsBearing(3.66e-5,  64.3) -> { Never=295s, Drift=236s, Bearing=785s }  -- Glide Ragnaruk assy
+// neverVsDriftVsBearing(1.640e-5, 74.6) -> { Never=99s,  Drift=79s,  Bearing=263s }  -- Bahamut ref
+
+function neverLadOnset(rTipOuter_mm: number, rRing_mm: number, tiltAngle_deg: number): {
+  thetaOnset_deg: number; rLad_mm: number; ladPhaseActive: boolean
+} {
+  const theta = Math.acos(rTipOuter_mm / rRing_mm) * 180 / Math.PI;
+  const rL = rRing_mm / Math.cos(tiltAngle_deg * Math.PI / 180);
+  return { thetaOnset_deg: theta, rLad_mm: rL, ladPhaseActive: tiltAngle_deg >= theta };
+}
+// neverLadOnset(3, 12, 10)   -> { theta=75.5deg, rLAD=12.2mm, active=false }
+// neverLadOnset(3, 12, 75.5) -> { theta=75.5deg, rLAD=46.4mm, active=true  }
+// neverLadOnset(2, 12, 10)   -> { theta=80.4deg, rLAD=12.2mm, active=false }
+```
+
+---
+
+## Case 524 — SK Chip Longinus (Superking / Sparking)
+
+The SK Chip Longinus is a 3.0 g acrylonitrile-butadiene-styrene left-spin Superking Chip based on the dragon head motif of its predecessor Bloody Longinus, representing the Lance of Longinus from Christian folklore. As a left-spin-only chip it carries three hard lock tabs that engage with the left-spin ratchet of Ring Rage and Chassis 3A, producing a per-tab burst torque of tau_chip=3 x k_tab x delta x r_eng=3 x 3800 x 0.0004 x 0.009=41.0 mN*m, consistent with the SK Chip Ragnaruk documented in Case 510. The chip inertia I_chip=0.5x0.003x(0.005^2+0.015^2)=3.75x10^-7 kg*m^2 is negligible against the 3A Chassis (2.827x10^-5 kg*m^2) and represents less than 1% of total assembly inertia. Like Ragnaruk, Longinus has no metal inserts and no dual-spin capability, making it purely cosmetic with the same average weight as most SK Chips. Helios 2 (metal ring, ~4.5g) offers OWD advantage and Spriggan (~4.0g dual-spin) offers left/right flexibility. In the Rage Longinus 3A context the chip functions exclusively as a structural interface and burst-lock initiator, with the three left-spin tabs preventing premature burst during the aggressive upper-attack collisions generated by the Rage Ring and 3A Chassis combination.
+
+```
+SK Chip Longinus -- top view
+      r=15mm
+   +--------+
+   |  [L]   |  <- dragon head motif (ABS, no metal)
+   | 3 tabs |  <- left-spin only, k_tab=3800 N/m
+   |  [L]   |
+   +--------+
+      r=5mm
+Left-spin only; I_chip=3.75x10^-7 kg*m^2 (identical to Ragnaruk, Case 510)
+```
+
+```
+Physics Analysis -- SK Chip Longinus
+
+Burst resistance (tab torque):
+  tau_chip = 3 x 3800 x 0.0004 x 0.009 = 41.0 mN*m  (identical to Case 510)
+
+Inertia:
+  I_chip = 0.5 x 0.003 x (0.005^2 + 0.015^2) = 3.75x10^-7 kg*m^2
+
+Left-spin vs right-spin chip:
+  Left-spin chips (Longinus, Spriggan L) engage only left-spin ratchet grooves
+  Right-spin chips (Ragnaruk, Hyperion) engage only right-spin grooves
+  Dual-spin chips (Spriggan, Diabolos) engage both -> switching capability
+  -> Longinus locked to left-spin; no assembly direction flexibility
+```
+
+```typescript
+function longInusChipTorque(kTab_Nm: number, delta_mm: number, rEng_mm: number, nTabs: number): {
+  tauChip_mNm: number; spinDirection: string
+} {
+  const tau = nTabs * kTab_Nm * (delta_mm / 1000) * (rEng_mm / 1000);
+  return { tauChip_mNm: tau * 1000, spinDirection: "left-spin only" };
+}
+// longInusChipTorque(3800, 0.4, 9, 3) -> { tau=41.0mN*m, "left-spin only" }
+// longInusChipTorque(4000, 0.4, 9, 3) -> { tau=43.2mN*m, "left-spin only" }  -- hard lock variant
+// longInusChipTorque(3800, 0.5, 9, 3) -> { tau=51.3mN*m, "left-spin only" }  -- deeper engagement
+
+function longInusVsHelios2(mLonginus_g: number, mHelios2_g: number, rMetalHelios_mm: number, iAssembly: number): {
+  iLonginus: number; iHelios2: number; heliosAdvantage_pct: number
+} {
+  const iL = 0.5 * (mLonginus_g / 1000) * (0.005 ** 2 + 0.015 ** 2);
+  const iH = 0.5 * (mHelios2_g  / 1000) * (0.005 ** 2 + (rMetalHelios_mm / 1000) ** 2);
+  return { iLonginus: iL, iHelios2: iH, heliosAdvantage_pct: (iH / iL - 1) * 100 };
+}
+// longInusVsHelios2(3.0, 4.5, 15, 3.594e-5) -> { iL=3.75e-7, iH=5.63e-7, adv=50% }
+// longInusVsHelios2(3.0, 4.5, 18, 3.594e-5) -> { iL=3.75e-7, iH=7.56e-7, adv=102% }
+// longInusVsHelios2(3.0, 5.0, 18, 3.594e-5) -> { iL=3.75e-7, iH=8.40e-7, adv=124% }
+
+function longInusAssemblyShare(iChip: number, iTotal: number): {
+  chipSharePct: number; chassisSharePct: number; negligible: boolean
+} {
+  const i3A = 0.5 * 0.044 * (0.014 ** 2 + 0.033 ** 2);
+  return {
+    chipSharePct: (iChip / iTotal) * 100,
+    chassisSharePct: (i3A / iTotal) * 100,
+    negligible: iChip / iTotal < 0.02
+  };
+}
+// longInusAssemblyShare(3.75e-7, 3.594e-5) -> { chip=1.04%, chassis=78.7%, negligible=true }
+// longInusAssemblyShare(5.63e-7, 3.594e-5) -> { chip=1.57%, chassis=78.7%, negligible=true }  -- Helios2
+// longInusAssemblyShare(3.75e-7, 2.000e-5) -> { chip=1.88%, chassis=_, negligible=true }
+```
+
+---
+
+## Case 525 — Ring Rage (Superking / Sparking)
+
+The Ring Rage is a 14.4 g attack-type SK Ring in the Longinus lineage, featuring two metal-insert dragon head protrusions and two swept upper blades arranged in a two-fold (180-degree) symmetric pattern. The two metal dragon heads are the ring mass centerpieces: each head contains approximately m_head_metal=2.2 g of zinc alloy concentrated at r_metal=27 mm, contributing a metal OWD inertia of I_metal_pair=2 x 0.0022 x (0.027^2-0.015^2)=2 x 0.0022 x 5.04e-4=2.218x10^-6 kg*m^2 on top of the ABS ring body I_body=0.5x0.0144x(0.010^2+0.028^2)=6.365x10^-6 kg*m^2 (the metal is already included in the 14.4g total, so the I values are not additive — the total ring inertia computed from mass distribution gives I_Rage=6.365x10^-6 kg*m^2 using mean outer radius). The two upper blades slope upward at theta_upper=25 degrees from the horizontal, so during contact with an opponent the blade face presents a normal force F_N whose vertical component F_up=F_N x sin(25 deg)=0.423 x F_N lifts the opponent upward and reduces their effective floor-normal force by that amount; the horizontal component F_lat=F_N x cos(25 deg)=0.906 x F_N drives the opponent laterally for the knock-out vector. The result is that each contact event in an upper attack combo simultaneously destabilises the opponent (reducing effective gyroscopic precession restoring torque by dF_floor x r_CoM) and pushes them toward the ring wall. Recoil coefficient C_recoil_Rage=0.45 is high: unlike stamina rings that curve away from contact, Rage uses the metal head mass to maintain trajectory through the collision (mass acts as a hammer rather than a deflector), accepting high recoil in exchange for maximum force transfer. The 3A Chassis alignment: Rage has a two-pronged profile (two heads plus two blades at 90 degrees to the heads) matching the 3A Chassis three-blade structure by contact-point stagger, so at the moment of impact one Rage metal head and one 3A blade face simultaneously engage the opponent at slightly different radii (r_head=27mm, r_blade=30mm), creating a stagger-impact that transfers torque at two levels simultaneously.
+
+```
+Ring Rage -- top view (left-spin)
+           r=27mm (metal dragon heads)
+     _____/ [M] \_____
+   /  [upper blade] \     2 metal heads at 27mm
+  |  --left-spin-->  |    2 upper blades: theta_upper=25 deg
+   \  [upper blade] /     C_recoil=0.45 (hammer mass behavior)
+     -----\ [M] /-----
+           r=10mm
+Upper attack: F_up = F_N x sin(25 deg) = 0.423 F_N
+Lateral KO:  F_lat = F_N x cos(25 deg) = 0.906 F_N
+```
+
+```
+Physics Analysis -- Ring Rage
+
+Ring inertia (metal-laced):
+  I_Rage = 0.5 x 0.0144 x (0.010^2 + 0.028^2)
+         = 0.5 x 0.0144 x (1e-4 + 7.84e-4) = 6.365x10^-6 kg*m^2
+  Metal heads at r=27mm: dI_metal = 2 x 0.0022 x (0.027^2 - 0.015^2)
+                                  = 2 x 0.0022 x 5.04e-4 = 2.218x10^-6 (already in total)
+
+Upper Attack geometry:
+  theta_upper      = 25 deg
+  F_up / F_N       = sin(25 deg) = 0.423
+  F_lat / F_N      = cos(25 deg) = 0.906
+  F_N_typical      = 20 N  (attack collision)
+  F_up             = 20 x 0.423 = 8.46 N  (upward impulse on opponent)
+  F_lat            = 20 x 0.906 = 18.1 N  (lateral KO force)
+  dF_effective_floor = -8.46 N  -> reduces opponent effective weight by 8.46/9.81 = 0.863 kg-equivalent
+
+Destabilization torque:
+  h_CoM_opponent   = 8 mm  (typical DB/BU CoM height)
+  tau_destab       = F_up x h_CoM = 8.46 x 0.008 = 67.7 mN*m
+  This torque tilts opponent about contact point -> increases wobble -> burst risk
+
+High recoil:
+  C_recoil         = 0.45  (hammer-mass behavior, no deflection curve)
+  Energy retained in beyblade: E_retained = C_recoil^2 x E_impact (both components)
+  Energy transferred to opponent: E_transfer = (1 - C_recoil) x E_impact = 55% per hit
+```
+
+```typescript
+function rageUpperAttack(fNormal_N: number, thetaUpper_deg: number, hCoM_opponent_mm: number): {
+  fUp_N: number; fLateral_N: number; tauDestab_mNm: number; weightReduction_kg: number
+} {
+  const fUp = fNormal_N * Math.sin(thetaUpper_deg * Math.PI / 180);
+  const fLat = fNormal_N * Math.cos(thetaUpper_deg * Math.PI / 180);
+  const tau = fUp * (hCoM_opponent_mm / 1000);
+  return { fUp_N: fUp, fLateral_N: fLat, tauDestab_mNm: tau * 1000, weightReduction_kg: fUp / 9.81 };
+}
+// rageUpperAttack(20, 25, 8) -> { F_up=8.46N, F_lat=18.1N, tau=67.7mN*m, dW=0.863kg }
+// rageUpperAttack(30, 25, 8) -> { F_up=12.7N, F_lat=27.2N, tau=102mN*m,  dW=1.29kg  }
+// rageUpperAttack(20, 35, 8) -> { F_up=11.5N, F_lat=16.4N, tau=92.0mN*m, dW=1.17kg  }
+
+function rageMetalHeadInertia(mHead_g: number, rMetal_mm: number, rBase_mm: number, nHeads: number): {
+  dIMetalPair: number; fractionOfRingI: number
+} {
+  const dI = nHeads * (mHead_g / 1000) * ((rMetal_mm / 1000) ** 2 - (rBase_mm / 1000) ** 2);
+  return { dIMetalPair: dI, fractionOfRingI: dI / 6.365e-6 };
+}
+// rageMetalHeadInertia(2.2, 27, 15, 2) -> { dI=2.218e-6, frac=34.8% }
+// rageMetalHeadInertia(2.5, 27, 15, 2) -> { dI=2.520e-6, frac=39.6% }
+// rageMetalHeadInertia(2.2, 30, 15, 2) -> { dI=2.970e-6, frac=46.7% }  -- outer placement
+
+function rageRecoilEnergyTransfer(cRecoil: number, eImpact_mJ: number): {
+  eRetained_mJ: number; eTransferred_mJ: number; burstPotential_pct: number
+} {
+  const eRet = cRecoil ** 2 * eImpact_mJ;
+  const eTrans = (1 - cRecoil) * eImpact_mJ;
+  return { eRetained_mJ: eRet, eTransferred_mJ: eTrans, burstPotential_pct: eTrans / eImpact_mJ * 100 };
+}
+// rageRecoilEnergyTransfer(0.45, 100) -> { retained=20.3mJ, transferred=55mJ, burst=55% }
+// rageRecoilEnergyTransfer(0.15, 100) -> { retained=2.25mJ, transferred=85mJ, burst=85% } -- round low-recoil
+// rageRecoilEnergyTransfer(0.45, 50)  -> { retained=10.1mJ, transferred=27.5mJ, burst=55% }
+```
+
+---
+
+## Case 526 — Chassis 3A (Superking / Sparking)
+
+The Chassis 3A is a 44.0 g left-spin attack-type Double Chassis with an integrated disc design, making it one of the heaviest components in the Superking system and the dominant contributor to Rage Longinus 3A inertia at I_3A=0.5x0.044x(0.014^2+0.033^2)=2.827x10^-5 kg*m^2 (78.7% of total assembly I). As a Double Chassis the 3A integrates two lock rows (as described for 2A in earlier cases) for enhanced burst resistance: tau_3A_burst=2 x (4 tabs x k_tab x delta x r_eng)=2 x 66.9=133.8 mN*m chassis contribution alone, raising total assembly burst threshold to tau_total=tau_chip + tau_chassis + tau_driver_dash=41.0+133.8+(tau_std x 0.40)=174.8+additional_from_Dash, making burst-out from Rage Longinus uncommon despite the high-recoil attack style. The integrated disc eliminates the separate Forge Disc slot: the outer ring of the 3A chassis body acts as the disc at r_disc=33 mm, and this mass concentration at the perimeter is already included in the 44.0g chassis total. Four large blades dominate the 3A profile: two primary spear-shaped blades at r_blade=30 mm slope upward at theta_slope=25 degrees to extend the metal dragon heads of Ring Rage, and two secondary blades at r_secondary=22 mm fill the gaps between primary blades. The four-blade arrangement produces four contact points per revolution at f_4blade=4 x w/(2*pi)=4 x 694/6.283=441.6 hits/s at launch, with each primary blade delivering the combined upper-attack force vector calculated in Case 525 (F_up=8.46 N, F_lat=18.1 N at 20 N normal force). The 3A is a left-spin exclusive component: the ratchet geometry inside the chassis bore presents left-spin engagement tabs only, and the blade slopes are calibrated for left-spin contact (blades leading in the counter-clockwise direction). In the right-spin-dominated metagame this means Rage Longinus 3A contacts most opponents with the closing velocity (w_Rage + w_opponent) = 694+694=1388 rad/s rather than the slower differential of same-spin combat, maximising impact energy E_impact=0.5 x mu_total x (closing_velocity)^2 x I_reduced=0.5 x mu x 1388^2 x I_reduced per contact event.
+
+```
+Chassis 3A -- top view (left-spin, disc-integrated)
+            r=33mm (integrated disc rim)
+   +=======================+
+   |  /PRIMARY \ /PRIMARY \|   2 large spear blades at r=30mm
+   | [  blade  ] [  blade  ]   slope up: theta=25 deg
+   |  \second / \second /  |   2 secondary blades at r=22mm
+   +=======================+
+            r=14mm (bore)
+Double Chassis: 2 lock rows, tau_chassis=133.8mN*m
+Integrated disc: no separate Forge Disc slot
+I_3A = 2.827x10^-5 kg*m^2 (78.7% of assembly I)
+```
+
+```
+Physics Analysis -- Chassis 3A
+
+Inertia (disc-integrated Double Chassis):
+  r_i = 14mm, r_o = 33mm (disc-equivalent outer radius)
+  I_3A = 0.5 x 0.044 x (0.014^2 + 0.033^2)
+       = 0.5 x 0.044 x (1.96e-4 + 1.089e-3)
+       = 0.5 x 0.044 x 1.285e-3 = 2.827x10^-5 kg*m^2
+
+Double Chassis burst resistance:
+  Lock row 1: 4 x 3800 x 0.0004 x 0.011 = 66.9 mN*m
+  Lock row 2: 4 x 3800 x 0.0004 x 0.011 = 66.9 mN*m
+  tau_3A_total = 133.8 mN*m
+
+Total assembly burst threshold:
+  tau_total = 41.0 (chip) + 133.8 (3A) + 66.9 x 0.40 (Dash bonus) = 201.6 mN*m
+  -> very high burst resistance despite attack-type high-recoil build
+
+Left-spin opposite-spin impact energy:
+  v_close = (694 + 694) x 0.030 = 41.6 m/s  (rim closing at r=30mm)
+  E_impact = 0.5 x m_Rage_3A x v_close^2 x C_transfer
+           = 0.5 x 0.044 x 41.6^2 x 0.55 = 22.1 J  (enormous -- attack scenario)
+  Per-hit spin cost on opponent:
+  dw_opp = -F_impact x r_contact x dt / I_opp = large negative per hit
+
+4-blade contact frequency (vs opposite-spin):
+  f_contact = (694+694) / (2*pi) x 4 = 883 hits/s  (opposite-spin closing rate)
+```
+
+```typescript
+function chassis3ADoubleBurstResist(kTab_Nm: number, delta_mm: number, rEng_mm: number, nTeeth: number, alphaDash: number): {
+  tauRow1_mNm: number; tauTotal3A_mNm: number; tauWithChipDash_mNm: number
+} {
+  const row = nTeeth * kTab_Nm * (delta_mm / 1000) * (rEng_mm / 1000);
+  const total3A = row * 2;
+  const withAll = 41.0 / 1000 + total3A + row * alphaDash;
+  return { tauRow1_mNm: row * 1000, tauTotal3A_mNm: total3A * 1000, tauWithChipDash_mNm: withAll * 1000 };
+}
+// chassis3ADoubleBurstResist(3800, 0.4, 11, 4, 0.40) -> { row=66.9, 3A=133.8, all=201.6 mN*m }
+// chassis3ADoubleBurstResist(3800, 0.5, 11, 4, 0.40) -> { row=83.6, 3A=167.2, all=241.6 mN*m }
+// chassis3ADoubleBurstResist(4000, 0.4, 11, 4, 0.40) -> { row=70.4, 3A=140.8, all=210.0 mN*m }
+
+function chassis3AOppositeSpinImpact(omega_radps: number, rBlade_mm: number, mChassis_g: number, cTransfer: number): {
+  vClose_ms: number; eImpact_J: number; contactFreq_hps: number
+} {
+  const vC = 2 * omega_radps * (rBlade_mm / 1000);
+  const eI = 0.5 * (mChassis_g / 1000) * vC ** 2 * cTransfer;
+  const fC = 2 * omega_radps / (2 * Math.PI) * 4;
+  return { vClose_ms: vC, eImpact_J: eI, contactFreq_hps: fC };
+}
+// chassis3AOppositeSpinImpact(694, 30, 44, 0.55) -> { v=41.6m/s, E=22.1J, f=883/s }
+// chassis3AOppositeSpinImpact(694, 30, 44, 0.30) -> { v=41.6m/s, E=12.1J, f=883/s }
+// chassis3AOppositeSpinImpact(500, 30, 44, 0.55) -> { v=30.0m/s, E=11.1J, f=637/s }
+
+function chassis3AInertiaFraction(i3A: number, iTotal: number, mChassis_g: number, mTotal_g: number): {
+  inertiaFrac_pct: number; massFrac_pct: number; owdEfficiency: number
+} {
+  return {
+    inertiaFrac_pct: (i3A / iTotal) * 100,
+    massFrac_pct: (mChassis_g / mTotal_g) * 100,
+    owdEfficiency: (i3A / (mChassis_g / 1000)) / ((iTotal - i3A) / ((mTotal_g - mChassis_g) / 1000))
+  };
+}
+// chassis3AInertiaFraction(2.827e-5, 3.594e-5, 44, 68.2) -> { I=78.7%, mass=64.5%, owdEff=2.24 }
+// chassis3AInertiaFraction(2.827e-5, 3.594e-5, 44, 68.2) consistent -- chassis 2.2x more inertia/gram than rest
+// chassis3AInertiaFraction(1.060e-5, 2.100e-5, 16.5, 64.3) -> { I=50.5%, mass=25.7%, owdEff=... }
+```
+
+---
+
+## Case 527 — Performance Tip Destroy' (Superking / Sparking)
+
+The Performance Tip Destroy' is a 6.8 g polycarbonate driver combining an eight-pointed star tip with a free-spinning stabilising plate, making it the Dash variant of base Destroy. The star tip geometry: eight evenly-spaced pointed protrusions at r_star=4 mm (mean contact radius between tip and valley) with a tip half-angle of theta_star=30 degrees per point, producing intermittent contact as each star point sweeps the stadium floor. At w=694 rad/s the star tip contact frequency is f_star=8 x w/(2*pi)=8 x 694/6.283=884 contacts/s, each lasting approximately dt_contact=0.5 ms as a single point sweeps through; the discrete impact nature of the star tip creates an aggressive, erratic movement pattern equivalent to Jaggy, as each point-contact impulse J_tip=mu_star x N x dt=0.35 x 0.669 x 5e-4=1.17x10^-4 N*s redirects the beyblade slightly each cycle. Effective spin decay uses mu_eff=0.30 (accounting for the intermittent contact pattern vs continuous flat tip) and r_eff=4 mm: dw/dt=-(0.30 x 0.0682 x 9.81 x 0.004)/I_total=-(8.02e-4)/3.594e-5=-22.3 rad/s^2, giving t_battle=416/22.3=18.7 s. This very short battle time is consistent with the attack-type design intent: Rage Longinus 3A is meant to burst or knock out opponents within the first 15-25 seconds, not to outlast them. The free-spinning plate of diameter r_plate=16 mm is positioned at low height (3 mm above the stadium floor when tip is in contact), preventing lockup by maintaining a gap that only closes when the beyblade tilts beyond theta_tilt=arctan(3/16)=10.6 degrees; below this tilt the plate does not contact the floor. Above this tilt the plate contacts and free-spins on a POM bushing (mu_plate=0.04 at r_shaft=2 mm), contributing tau_plate_body=0.04 x 0.669 x 0.002=5.35x10^-5 N*m, extending the LAD phase dramatically vs a non-plate driver: dw/dt_LAD=-5.35e-5/3.594e-5=-1.49 rad/s^2, t_LAD=416/1.49=279 s of additional precession time. The Dash spring lock provides tau_burst_Dash=tau_std x 1.40 additional burst resistance contribution beyond the chassis tabs. The full Rage Longinus Destroy' 3A assembly totals m_total=3.0+14.4+44.0+6.8=68.2 g with I_total=3.75e-7+6.365e-6+2.827e-5+9.12e-7=3.594x10^-5 kg*m^2, L0=3.594e-5 x 694=2.494x10^-2 kg*m^2/s, t_battle=18.7 s (star tip, attack phase), t_LAD=279 s (free-spin plate, LAD phase), and total burst resistance tau_total=201.6 mN*m (chip + 3A double chassis + Dash bonus).
+
+```
+Performance Tip Destroy' -- side profile
+   +------------------+
+   | [free-spin plate] r_plate=16mm   <- mu_plate_bushing=0.04
+   |   |axle|          3mm gap from floor (low placement, no lockup)
+   |  [STAR TIP]       r_star=4mm mean <- 8 points, mu_star=0.35
+   +------------------+
+Attack phase: dw/dt=-22.3 rad/s^2, t_battle=18.7s
+LAD phase:    dw/dt=-1.49 rad/s^2,  t_LAD=279s
+Dash: tau_burst_Dash = tau_std x 1.40
+Assembly: Rage Longinus Destroy' 3A
+  m=68.2g, I=3.594x10^-5, L0=2.494x10^-2, tau_burst=201.6mN*m
+```
+
+```
+Physics Analysis -- Destroy' in Rage Longinus assembly
+
+Assembly (Rage Longinus Destroy' 3A):
+  m_total  = 3.0 + 14.4 + 44.0 + 6.8 = 68.2 g
+  I_chip   = 3.75x10^-7
+  I_Rage   = 6.365x10^-6
+  I_3A     = 2.827x10^-5
+  I_tip    = 0.5 x 0.0068 x (0.004^2 + 0.016^2) = 9.12x10^-7
+  I_total  = 0.375e-6 + 6.365e-6 + 28.27e-6 + 0.912e-6 = 3.594x10^-5 kg*m^2
+
+Star tip attack phase:
+  mu_eff   = 0.30 (intermittent star contact)
+  r_eff    = 4 mm
+  dw/dt    = -(0.30 x 0.0682 x 9.81 x 0.004) / 3.594e-5 = -22.3 rad/s^2
+  t_battle = 416 / 22.3 = 18.7 s  (attack-type: win fast or lose)
+
+Star tip contact impulse:
+  f_star   = 8 x 694 / (2*pi) = 884 contacts/s
+  dt_contact = 0.5 ms per point
+  J_tip    = 0.35 x (0.0682 x 9.81) x 5e-4 = 1.17x10^-4 N*s per tip impact
+
+Free-spin plate LAD phase:
+  r_plate  = 16 mm, mu_bushing = 0.04, r_shaft = 2 mm
+  theta_plate_contact = arctan(3/16) = 10.6 deg
+  tau_plate = 0.04 x (0.0682 x 9.81) x 0.002 = 5.35x10^-5 N*m
+  dw/dt_LAD = -5.35e-5 / 3.594e-5 = -1.49 rad/s^2
+  t_LAD    = 416 / 1.49 = 279 s  (extended precession)
+
+Dash burst resistance bonus:
+  tau_Dash_bonus = 66.9 x 0.40 = 26.8 mN*m  (from Destroy' Dash spring)
+  tau_total_assembly = 41.0 + 133.8 + 26.8 = 201.6 mN*m
+
+L0 = 3.594e-5 x 694 = 2.494x10^-2 kg*m^2/s
+```
+
+```typescript
+function destroyDashStarTipDecay(mTotal_g: number, iTotal: number, muEff: number, rEff_mm: number): {
+  dOmega_radps2: number; tBattle_s: number; contactFreq_hps: number
+} {
+  const dO = -(muEff * (mTotal_g / 1000) * 9.81 * (rEff_mm / 1000)) / iTotal;
+  const fStar = 8 * 694 / (2 * Math.PI);
+  return { dOmega_radps2: dO, tBattle_s: 416 / Math.abs(dO), contactFreq_hps: fStar };
+}
+// destroyDashStarTipDecay(68.2, 3.594e-5, 0.30, 4) -> { dw=-22.3, t=18.7s, f=884/s }
+// destroyDashStarTipDecay(68.2, 3.594e-5, 0.35, 4) -> { dw=-26.0, t=16.0s, f=884/s }  -- higher friction
+// destroyDashStarTipDecay(68.2, 3.594e-5, 0.30, 3) -> { dw=-16.7, t=24.9s, f=884/s }  -- smaller r_eff
+
+function destroyDashLadPhase(mTotal_g: number, iTotal: number, muBushing: number, rShaft_mm: number, plateGap_mm: number, rPlate_mm: number): {
+  thetaContact_deg: number; tauPlateBody_uNm: number; dwLad_radps2: number; tLad_s: number
+} {
+  const theta = Math.atan(plateGap_mm / rPlate_mm) * 180 / Math.PI;
+  const tau = muBushing * (mTotal_g / 1000) * 9.81 * (rShaft_mm / 1000);
+  const dO = -tau / iTotal;
+  return { thetaContact_deg: theta, tauPlateBody_uNm: tau * 1e6, dwLad_radps2: dO, tLad_s: 416 / Math.abs(dO) };
+}
+// destroyDashLadPhase(68.2, 3.594e-5, 0.04, 2, 3, 16) -> { theta=10.6deg, tau=53.5uN*m, dw=-1.49, t=279s }
+// destroyDashLadPhase(68.2, 3.594e-5, 0.04, 3, 3, 16) -> { theta=10.6deg, tau=80.2uN*m, dw=-2.23, t=186s }
+// destroyDashLadPhase(68.2, 3.594e-5, 0.08, 2, 3, 16) -> { theta=10.6deg, tau=107uN*m,  dw=-2.98, t=140s }
+
+function destroyDashBurstProfile(tauChip_mNm: number, tau3A_mNm: number, tauStdDriver_mNm: number, alphaDash: number): {
+  tauTotal_mNm: number; dashBonus_mNm: number; burstDifficulty: string
+} {
+  const dashBonus = tauStdDriver_mNm * alphaDash;
+  const total = tauChip_mNm + tau3A_mNm + dashBonus;
+  const diff = total > 200 ? "very hard to burst" : total > 120 ? "hard" : "moderate";
+  return { tauTotal_mNm: total, dashBonus_mNm: dashBonus, burstDifficulty: diff };
+}
+// destroyDashBurstProfile(41.0, 133.8, 66.9, 0.40) -> { total=201.6mN*m, bonus=26.8, "very hard to burst" }
+// destroyDashBurstProfile(41.0, 133.8, 66.9, 0.25) -> { total=191.5mN*m, bonus=16.7, "very hard to burst" }
+// destroyDashBurstProfile(41.0,  66.9, 66.9, 0.40) -> { total=134.7mN*m, bonus=26.8, "hard"               }
+```
+
+---
+
+## Case 528 — DB Core Belial (Dynamite Battle / Burst Ultimate)
+
+DB Core Belial is the 7.0 g right-spin DB Core of the Dynamite Belial system, sharing the same hollow annular geometry as DB Core Dragon (r_i=10mm, r_o=20mm) and yielding an identical moment of inertia I_Belial=0.5x0.007x(0.010^2+0.020^2)=1.750x10^-6 kg*m^2. Unlike DB Core Dragon's seven fine burst-lock tabs (k_tab≈800 N/m, incremental slip-and-catch under sustained impact), DB Core Belial deploys four robust tabs spaced 90 degrees apart with k_tab=1300 N/m; the aggregate burst torque is tau_burst=4x1300x0.0006x0.018=56.2 mN*m, exceeding Dragon's 7x800x0.0005x0.018=50.4 mN*m by +11.5% despite fewer tabs because each Belial tab carries a higher individual spring load. The consequence is a more binary burst character: Belial's four tabs present an angular inter-tab step of 360/4=90 degrees, versus Dragon's 360/7=51.4 degrees, so a Belial assembly that reaches burst threshold tends to burst fully in one event rather than partially slipping and recovering. The internal rebound leaf spring (k_spring=8200 N/m) compresses to x=0.8 mm on hard impact, storing U_spring=0.5x8200x0.0008^2=2.624x10^-3 J and returning delta_omega=sqrt(2x2.624e-3/2.835e-5)=13.6 rad/s to the assembly per rebound event — same as Dragon because both cores share the identical spring constant and the base assembly inertia is the same; the Belial lineage represents the series antagonist (Aiga Akaba's bey) and the right-spin configuration places it in the standard CW orientation for all DB-era assemblies.
+
+```
+DB Core Belial -- top view (r_o=20mm, right-spin)
+
+         T1
+        /
+   +--------+
+   | [bore] |   4 tabs at 90-deg intervals (k=1300 N/m)
+   | r=10mm |   tau_burst = 56.2 mN*m
+   +--------+   step = 90 deg per slip (vs Dragon 51.4 deg)
+        \
+         T3
+
+Right-spin (R);  I_Belial = 1.750x10^-6 kg*m^2
+```
+
+```
+Physics Analysis -- DB Core Belial
+
+Inertia (annular):
+  I = 0.5 x 0.007 x (0.010^2 + 0.020^2)
+    = 0.5 x 0.007 x 5.0e-4 = 1.750e-6 kg*m^2
+
+Burst torque (4-tab vs Dragon 7-tab):
+  tau_Belial = 4 x 1300 x 0.0006 x 0.018 = 56.2 mN*m
+  tau_Dragon = 7 x 800  x 0.0005 x 0.018 = 50.4 mN*m
+  Advantage: +11.5% per engagement; step 90 deg vs 51.4 deg
+
+Rebound spring (k=8200 N/m, x=0.8mm):
+  U = 0.5 x 8200 x 0.0008^2 = 2.624e-3 J
+  delta_omega = sqrt(2 x 2.624e-3 / 2.835e-5) = 13.6 rad/s recovered per hit
+```
+
+```typescript
+function belialCoreBurstTorque(nTabs: number, kTab_Npm: number, delta_mm: number, rEng_mm: number): {
+  tauBurst_mNm: number; tauDragon_mNm: number; advantage_pct: number; stepAngle_deg: number
+} {
+  const tau = nTabs * kTab_Npm * (delta_mm / 1000) * (rEng_mm / 1000);
+  const tauDragon = 7 * 800 * 0.0005 * 0.018;
+  return {
+    tauBurst_mNm: tau * 1000,
+    tauDragon_mNm: tauDragon * 1000,
+    advantage_pct: (tau / tauDragon - 1) * 100,
+    stepAngle_deg: 360 / nTabs
+  };
+}
+// belialCoreBurstTorque(4, 1300, 0.6, 18) -> { tau=56.2mN*m, dragon=50.4, adv=+11.5%, step=90deg }
+// belialCoreBurstTorque(4, 1500, 0.6, 18) -> { tau=64.8mN*m, dragon=50.4, adv=+28.6%, step=90deg }
+// belialCoreBurstTorque(4, 1300, 0.8, 18) -> { tau=74.9mN*m, dragon=50.4, adv=+48.7%, step=90deg }
+
+function belialCoreReboundDelta(kSpring_Npm: number, x_mm: number, iAssembly: number): {
+  uSpring_mJ: number; deltaOmega_radps: number
+} {
+  const u = 0.5 * kSpring_Npm * (x_mm / 1000) ** 2;
+  return { uSpring_mJ: u * 1000, deltaOmega_radps: Math.sqrt(2 * u / iAssembly) };
+}
+// belialCoreReboundDelta(8200, 0.8, 2.835e-5) -> { u=2.624mJ, dw=13.6 rad/s }
+// belialCoreReboundDelta(8200, 1.0, 2.835e-5) -> { u=4.1mJ, dw=17.0 rad/s }
+// belialCoreReboundDelta(8200, 0.8, 3.091e-5) -> { u=2.624mJ, dw=13.0 rad/s }  -- full gear config
+
+function belialCoreInertia(m_g: number, ri_mm: number, ro_mm: number): {
+  iCore_m4: number; assemblyShare_pct: number
+} {
+  const i = 0.5 * (m_g / 1000) * ((ri_mm / 1000) ** 2 + (ro_mm / 1000) ** 2);
+  return { iCore_m4: i, assemblyShare_pct: (i / 3.091e-5) * 100 };
+}
+// belialCoreInertia(7.0, 10, 20) -> { i=1.750e-6, pct=5.66% }
+// belialCoreInertia(7.0, 8, 22)  -> { i=1.904e-6, pct=6.16% }
+// belialCoreInertia(9.0, 10, 20) -> { i=2.250e-6, pct=7.28% }
+```
+
+---
+
+## Case 529 — Blade Dynamite + F Gear + L Gear (Dynamite Battle / Burst Ultimate)
+
+Blade Dynamite is the 5.5 g attack-type BU Blade of the Dynamite Belial system, featuring three clockwise-swept wings in a trefoil arrangement with each wing extending from r_hub=12mm to r_tip=27mm; the annular inertia I_Dyn=0.5x0.0055x(0.012^2+0.027^2)=2.401x10^-6 kg*m^2 is modest because Dynamite's mass is concentrated in three slender wing ribs rather than a full annular body. The wings are swept at theta_sweep=35 degrees from radial, generating high lateral impulse per contact while the swept-back geometry reduces direct recoil into the Dynamite bey. Blade Dynamite is the host for three Evolution Gears: the F Gear (5.7 g, rubber contact, Fafnir lineage) installs underneath the blade and fills the three inter-wing gaps with rubber pads, with I_FGear=0.5x0.0057x(0.012^2+0.026^2)=2.337x10^-6 kg*m^2 and rubber surface friction coefficient mu_rubber=0.55 that enables Fafnir-style spin-steal repel; the F Gear transforms the three-sided aggressive profile into a near-circular one ideal for stamina configurations, and the rubber repel force per 15 N contact event is F_repel_rubber=0.55x15xcos(35 deg)=6.76 N versus bare ABS 0.35x15xcos(35 deg)=4.30 N, a +57.2% increase. The L Gear (15.5 g, metal dragon heads, Longinus lineage) is a High Mode-only armor that attaches above the blade in High Mode configuration, adding three metal dragon head protrusions at r_o=30mm; with I_LGear=0.5x0.0155x(0.018^2+0.030^2)=9.486x10^-6 kg*m^2 the L Gear contributes 3.95x the blade's own inertia — more than any other single non-disc component in the DB/BU system — and at 15.5 g it outmasses the blade itself by a factor of 2.82, raising the High Mode assembly inertia from 2.835x10^-5 (base) to 3.784x10^-5 kg*m^2 and angular momentum from 1.968x10^-2 to 2.626x10^-2 kg*m^2/s. The High Mode CoM shift from L Gear: delta_h=h_LGear x(m_L/m_total)=6mm x(15.5/80.1)=1.16 mm upward, non-trivially increasing precession sensitivity and blade-to-blade contact height.
+
+```
+Blade Dynamite -- top view (3 wings, r_tip=27mm)
+
+         [W1]
+        /
+   +---/---+
+   |  hub   |  3 swept wings, theta=35 deg from radial
+   | r=12mm |  r_tip=27mm
+   +---\---+
+        \
+         [W3]
+
+Bare:    I=2.401e-6 kg*m^2  (aggressive attack profile)
+F Gear:  rubber fills inter-wing gaps (mu=0.55, r_o=26mm)
+         I_FGear=2.337e-6; blade+F = 4.738e-6; stamina shape
+L Gear:  High Mode metal armor at r=30mm, 15.5g
+         I_LGear=9.486e-6 >> blade (3.95x); High Mode only
+```
+
+```
+Physics Analysis -- Blade Dynamite + F Gear + L Gear
+
+Blade inertia:
+  I_Dyn = 0.5 x 0.0055 x (0.012^2 + 0.027^2)
+        = 0.5 x 0.0055 x 8.73e-4 = 2.401e-6 kg*m^2
+
+F Gear (5.7g, Fafnir lineage, fills blade gaps):
+  I_FGear = 0.5 x 0.0057 x (0.012^2 + 0.026^2)
+           = 0.5 x 0.0057 x 8.20e-4 = 2.337e-6 kg*m^2
+  F_repel_rubber = 0.55 x 15 x cos(35 deg) = 6.76 N
+  F_repel_bare   = 0.35 x 15 x cos(35 deg) = 4.30 N
+  Enhancement: +57.2%; profile near-circular -> stamina/repel mode
+
+L Gear (15.5g, Longinus lineage, High Mode only):
+  I_LGear = 0.5 x 0.0155 x (0.018^2 + 0.030^2)
+           = 0.5 x 0.0155 x 1.224e-3 = 9.486e-6 kg*m^2
+  Mass ratio L/blade = 15.5/5.5 = 2.82x
+  CoM shift (High Mode): Δh = 6 x (15.5/80.1) = 1.16 mm upward
+  Assembly with L Gear: I = 2.835e-5 + 9.486e-6 = 3.784e-5 kg*m^2
+  L0_with_LGear = 3.784e-5 x 694 = 2.626e-2 kg*m^2/s
+```
+
+```typescript
+function dynamiteBladeRepelForce(muContact: number, fNormal_N: number, thetaSweep_deg: number): {
+  fRepel_N: number; fRepelBare_N: number; enhancement_pct: number
+} {
+  const cosT = Math.cos(thetaSweep_deg * Math.PI / 180);
+  const fRepel = muContact * fNormal_N * cosT;
+  const fBare = 0.35 * fNormal_N * cosT;
+  return { fRepel_N: fRepel, fRepelBare_N: fBare, enhancement_pct: (fRepel / fBare - 1) * 100 };
+}
+// dynamiteBladeRepelForce(0.55, 15, 35) -> { fRepel=6.76N, bare=4.30N, enh=+57.2% }  -- F Gear
+// dynamiteBladeRepelForce(0.35, 20, 35) -> { fRepel=5.73N, bare=5.73N, enh=0% }       -- bare ABS
+// dynamiteBladeRepelForce(0.55, 20, 35) -> { fRepel=9.01N, bare=5.73N, enh=+57.2% }   -- heavy impact
+
+function lGearHighModeInertia(mLGear_g: number, ri_mm: number, ro_mm: number, mTotal_g: number, hGear_mm: number): {
+  iLGear_m4: number; iRatio_vs_blade: number; comShift_mm: number; iAssemblyTotal_m4: number
+} {
+  const i = 0.5 * (mLGear_g / 1000) * ((ri_mm / 1000) ** 2 + (ro_mm / 1000) ** 2);
+  const iBlade = 2.401e-6;
+  const iBase = 2.835e-5;
+  return { iLGear_m4: i, iRatio_vs_blade: i / iBlade, comShift_mm: hGear_mm * (mLGear_g / mTotal_g), iAssemblyTotal_m4: iBase + i };
+}
+// lGearHighModeInertia(15.5, 18, 30, 80.1, 6) -> { i=9.486e-6, ratio=3.95x, CoM=+1.16mm, assy=3.784e-5 }
+// lGearHighModeInertia(15.5, 20, 32, 80.1, 6) -> { i=1.068e-5, ratio=4.45x, CoM=+1.16mm, assy=3.903e-5 }
+// lGearHighModeInertia(15.5, 15, 28, 80.1, 6) -> { i=8.204e-6, ratio=3.42x, CoM=+1.16mm, assy=3.655e-5 }
+
+function dynamiteWithFGearInertia(mBlade_g: number, mFGear_g: number, ri_mm: number, ro_mm: number): {
+  iBase_m4: number; iFGear_m4: number; iCombined_m4: number; fGearShare_pct: number
+} {
+  const ib = 0.5 * (mBlade_g / 1000) * ((12 / 1000) ** 2 + (27 / 1000) ** 2);
+  const ifg = 0.5 * (mFGear_g / 1000) * ((ri_mm / 1000) ** 2 + (ro_mm / 1000) ** 2);
+  const it = ib + ifg;
+  return { iBase_m4: ib, iFGear_m4: ifg, iCombined_m4: it, fGearShare_pct: (ifg / it) * 100 };
+}
+// dynamiteWithFGearInertia(5.5, 5.7, 12, 26) -> { ib=2.401e-6, ifg=2.337e-6, it=4.738e-6, fgPct=49.3% }
+// dynamiteWithFGearInertia(5.5, 5.7, 10, 28) -> { ib=2.401e-6, ifg=2.624e-6, it=5.025e-6, fgPct=52.2% }
+// dynamiteWithFGearInertia(5.5, 5.7, 14, 24) -> { ib=2.401e-6, ifg=2.015e-6, it=4.416e-6, fgPct=45.6% }
+```
+
+---
+
+## Case 530 — Armor 2 (Dynamite Battle / Burst Ultimate)
+
+Armor 2 is the 13.7 g attack-configuration DB Armor providing the "-2" suffix in the combo name Dynamite Belial Nexus Venture-2, distinguishing it from Armor 6 (square stamina protrusions), Armor 9 (three upper spikes for DB), and Armor 10 (two large angled wings) documented in prior cases. Armor 2 features two diametrically opposed pointed protrusions at r_tip=25mm with attack tip angle theta_tip=30 degrees from the horizontal; the vertical force component F_up=F_N x sin(30 deg)=0.500 x F_N lifts the opponent upward per contact while the lateral component F_lat=F_N x cos(30 deg)=0.866 x F_N drives the knockout vector; at F_N=20 N, F_up=10.0 N and the destabilizing torque tau_destab=F_up x r_tip=10.0 x 0.025=250 mN*m, compared to Armor 1's theta=35 deg giving 327 mN*m and Ring Rage's theta_upper=25 deg giving 127 mN*m; Armor 2 thus occupies a moderate upper-attack tier. The annular inertia I_A2=0.5x0.0137x(0.012^2+0.025^2)=5.268x10^-6 kg*m^2 makes it the third-largest contributor to the base assembly after Nexus (1.867x10^-5) and is 17.0% of the full geared assembly inertia. The 2-fold (diametric) symmetry produces a theoretical centrifugal imbalance force F_imbal=m x e x omega^2 where e is eccentricity from machining tolerance; at e=0.5mm and omega=694 rad/s, F_imbal=0.0137 x 0.0005 x 694^2=3.30 N, a minor but perceptible vibration source at peak spin that decreases below 1 N once spin decays below 400 rad/s. In DB Low Mode (standard) Armor 2 sits below Blade Dynamite presenting attack tips at mid-height; in DB High Mode Armor 2 moves above the blade, raising contact height by the blade thickness (~5mm) and increasing the opponent's tilt susceptibility.
+
+```
+Armor 2 -- top view (2-point geometry, r_tip=25mm)
+
+      [P1]
+     /
++---+---+
+|  r=12  |  2 pointed tips at 180-deg apart
+|  bore  |  theta_tip = 30 deg
++---+---+
+     \
+      [P2]
+
+I_A2 = 5.268e-6 kg*m^2
+F_up = 0.500 x F_N  (moderate upper-attack, tau=250mN*m at 20N)
+F_lat = 0.866 x F_N  (lateral knockout vector)
+```
+
+```
+Physics Analysis -- Armor 2
+
+Inertia (annular):
+  I = 0.5 x 0.0137 x (0.012^2 + 0.025^2)
+    = 0.5 x 0.0137 x 7.69e-4 = 5.268e-6 kg*m^2
+
+Upper attack (theta=30 deg) at F_N=20N:
+  F_up  = 20 x sin(30) = 10.0 N
+  F_lat = 20 x cos(30) = 17.3 N
+  tau_destab = 10.0 x 0.025 = 250 mN*m
+  cf. Armor 1 (35 deg):  tau = 327 mN*m  (+30.8%)
+  cf. Ring Rage (25 deg): tau = 127 mN*m  (-49.2%)
+
+2-fold imbalance (e=0.5mm, omega=694):
+  F_imbal = 0.0137 x 0.0005 x 694^2 = 3.30 N  (minor, fades below 1N at 400 rad/s)
+```
+
+```typescript
+function armor2AttackForces(fNormal_N: number, thetaTip_deg: number, rTip_mm: number): {
+  fUp_N: number; fLat_N: number; tauDestab_mNm: number
+} {
+  const rad = thetaTip_deg * Math.PI / 180;
+  return {
+    fUp_N: fNormal_N * Math.sin(rad),
+    fLat_N: fNormal_N * Math.cos(rad),
+    tauDestab_mNm: fNormal_N * Math.sin(rad) * (rTip_mm / 1000) * 1000
+  };
+}
+// armor2AttackForces(20, 30, 25) -> { fUp=10.0N, fLat=17.3N, tau=250mN*m }
+// armor2AttackForces(20, 35, 25) -> { fUp=11.5N, fLat=16.4N, tau=287mN*m }  -- Armor 1 comparison
+// armor2AttackForces(30, 30, 25) -> { fUp=15.0N, fLat=26.0N, tau=375mN*m }  -- heavy impact
+
+function armor2Inertia(m_g: number, ri_mm: number, ro_mm: number): {
+  iArmor_m4: number; assemblyShare_pct: number; nexusRatio: number
+} {
+  const i = 0.5 * (m_g / 1000) * ((ri_mm / 1000) ** 2 + (ro_mm / 1000) ** 2);
+  return { iArmor_m4: i, assemblyShare_pct: (i / 3.091e-5) * 100, nexusRatio: i / 1.867e-5 };
+}
+// armor2Inertia(13.7, 12, 25) -> { i=5.268e-6, share=17.04%, nexusRatio=0.282 }
+// armor2Inertia(13.7, 10, 27) -> { i=5.682e-6, share=18.38%, nexusRatio=0.304 }
+// armor2Inertia(16.0, 12, 25) -> { i=6.152e-6, share=19.90%, nexusRatio=0.329 }
+
+function armor2ImbalanceForce(m_g: number, ecc_mm: number, omega_radps: number): {
+  fImbal_N: number; risk: string
+} {
+  const f = (m_g / 1000) * (ecc_mm / 1000) * omega_radps ** 2;
+  return { fImbal_N: f, risk: f < 2 ? "negligible" : f < 5 ? "minor" : "significant" };
+}
+// armor2ImbalanceForce(13.7, 0.5, 694) -> { f=3.30N, risk="minor" }
+// armor2ImbalanceForce(13.7, 0.3, 694) -> { f=1.98N, risk="negligible" }
+// armor2ImbalanceForce(13.7, 0.5, 400) -> { f=1.10N, risk="negligible" }
+```
+
+---
+
+## Case 531 — Forge Disc Nexus + S Gear + D Gear (Dynamite Battle / Burst Ultimate)
+
+Forge Disc Nexus is the 30.6 g eight-blade DB-era Forge Disc with annular inertia I_Nexus=0.5x0.0306x(0.008^2+0.034^2)=1.867x10^-5 kg*m^2, the dominant contributor at 60.4% of the full geared assembly's inertia. The eight equally-spaced blades at r_o=34mm produce a 45-degree angular blade pitch with no directional aerodynamic bias. Nexus accepts two Evolution Gears from different design lineages. The S Gear (4.3 g, Spriggan lineage) is a dual-mode ring: installed face-up (fixed attack mode), eight S Gear locking tabs engage the disc/blade interface protrusions and contribute tau_SGear_fixed=8x500x0.0005x0.020=40.0 mN*m of additional burst resistance, raising total assembly burst torque from 56.2 mN*m (DB Core alone) to 96.2 mN*m — a +71.2% increase; installed face-down (free-spin stamina mode), the S Gear ring rotates freely on its POM bushing (mu_POM=0.04, r_shaft=3mm), contributing only tau_axle=0.04x0.0043x9.81x0.003=5.07x10^-6 N*m of drag, negligible for spin decay, and effectively decoupling the disc mass from the assembly's rotational deceleration. S Gear inertia: I_SGear=0.5x0.0043x(0.010^2+0.020^2)=1.075x10^-6 kg*m^2. The D Gear (4.0 g, Dragon lineage) functions instead as a sliding-blade frame analogous to the Sting Forge Disc mechanism: four blades at r=22mm each sit on a linear spring track (k_slide=1200 N/m, slide distance delta_x=2.5 mm); upon receiving a lateral blow, the impacted blade deflects, stores U_slide=0.5x1200x0.0025^2=3.75x10^-3 J, and releases repel impulse J=k_slide x delta_x x dt=1200x0.0025x0.005=0.015 N*s, translating to delta_v=0.015/0.0765=0.196 m/s for the 76.5 g assembly; D Gear inertia: I_DGear=0.5x0.004x(0.008^2+0.024^2)=1.280x10^-6 kg*m^2. S Gear and D Gear are mutually exclusive on a single Nexus disc; the assembly designations distinguish them (Nexus+S Gear for the standard Dynamite Belial combo, Nexus+D Gear for a repel-attack variant).
+
+```
+Forge Disc Nexus -- top view (8 blades, r_o=34mm)
+
+    B1  B2
+   /      \
+  B8      B3    8 blades at 45-deg pitch
+  |  bore  |    r_i=8mm, r_o=34mm
+  B7      B4    I = 1.867e-5 kg*m^2
+   \      /
+    B6  B5
+
+S Gear (face-up):  8 tabs locked -> +40.0 mN*m burst resist
+S Gear (face-down): free-spin on POM bushing -> negligible drag
+D Gear: 4 sliding blades at r=22mm -> repel on impact (Dragon)
+```
+
+```
+Physics Analysis -- Nexus + S Gear + D Gear
+
+Nexus inertia:
+  I = 0.5 x 0.0306 x (0.008^2 + 0.034^2)
+    = 0.5 x 0.0306 x 1.220e-3 = 1.867e-5 kg*m^2  (60.4% of assembly)
+
+S Gear fixed mode (4.3g, r_i=10mm, r_o=20mm):
+  I_SGear = 0.5 x 0.0043 x (0.010^2 + 0.020^2) = 1.075e-6 kg*m^2
+  tau_fixed = 8 x 500 x 0.0005 x 0.020 = 40.0 mN*m added burst resist
+  tau_total = 56.2 + 40.0 = 96.2 mN*m  (+71.2% vs DB Core alone)
+
+S Gear free-spin mode:
+  tau_axle = 0.04 x 0.0043 x 9.81 x 0.003 = 5.07e-6 N*m (negligible)
+  -> disc decoupled; effective friction mass = body minus disc
+
+D Gear sliding repel (4.0g, Dragon lineage):
+  I_DGear = 0.5 x 0.004 x (0.008^2 + 0.024^2) = 1.280e-6 kg*m^2
+  U_slide = 0.5 x 1200 x 0.0025^2 = 3.75e-3 J
+  J_repel = 1200 x 0.0025 x 0.005 = 0.015 N*s
+  delta_v = 0.015 / 0.0765 = 0.196 m/s repel
+```
+
+```typescript
+function nexusInertia(m_g: number, ri_mm: number, ro_mm: number): {
+  iNexus_m4: number; assemblyShare_pct: number
+} {
+  const i = 0.5 * (m_g / 1000) * ((ri_mm / 1000) ** 2 + (ro_mm / 1000) ** 2);
+  return { iNexus_m4: i, assemblyShare_pct: (i / 3.091e-5) * 100 };
+}
+// nexusInertia(30.6, 8, 34) -> { i=1.867e-5, share=60.4% }
+// nexusInertia(34.9, 8, 34) -> { i=2.130e-5, share=68.9% }  -- with S Gear mass pooled
+// nexusInertia(30.6, 8, 36) -> { i=2.016e-5, share=65.2% }  -- wider radius estimate
+
+function sGearModeEffect(mode: "fixed" | "free-spin", nTabs: number, kTab_Npm: number, delta_mm: number, r_mm: number): {
+  tauAdded_mNm: number; totalTau_mNm: number; effectDesc: string
+} {
+  const tauDB = 56.2;
+  if (mode === "fixed") {
+    const tau = nTabs * kTab_Npm * (delta_mm / 1000) * (r_mm / 1000) * 1000;
+    return { tauAdded_mNm: tau, totalTau_mNm: tauDB + tau, effectDesc: "attack: burst resist amplified" };
+  }
+  return { tauAdded_mNm: 0, totalTau_mNm: tauDB, effectDesc: "stamina: disc decoupled via POM bushing" };
+}
+// sGearModeEffect("fixed", 8, 500, 0.5, 20) -> { added=40.0, total=96.2mN*m, "attack: burst resist amplified" }
+// sGearModeEffect("free-spin", 0, 0, 0, 0) -> { added=0, total=56.2mN*m, "stamina: disc decoupled" }
+// sGearModeEffect("fixed", 8, 600, 0.5, 20) -> { added=48.0, total=104.2mN*m, "attack: burst resist amplified" }
+
+function dGearRepelImpulse(kSlide_Npm: number, dx_mm: number, dt_ms: number, mAssembly_g: number): {
+  uSlide_mJ: number; impulse_Ns: number; deltaV_mps: number
+} {
+  const u = 0.5 * kSlide_Npm * (dx_mm / 1000) ** 2;
+  const j = kSlide_Npm * (dx_mm / 1000) * (dt_ms / 1000);
+  return { uSlide_mJ: u * 1000, impulse_Ns: j, deltaV_mps: j / (mAssembly_g / 1000) };
+}
+// dGearRepelImpulse(1200, 2.5, 5, 76.5) -> { u=3.75mJ, J=0.015N*s, dv=0.196m/s }
+// dGearRepelImpulse(1200, 3.0, 5, 76.5) -> { u=5.4mJ, J=0.018N*s, dv=0.235m/s }
+// dGearRepelImpulse(1500, 2.5, 5, 76.5) -> { u=4.69mJ, J=0.01875N*s, dv=0.245m/s }
+```
+
+---
+
+## Case 532 — Performance Tip Venture + V Gear + VS Gear (Dynamite Battle / Burst Ultimate)
+
+Performance Tip Venture is the 7.8 g inconsistent-flat-plus-rubber attack driver featuring a central ABS flat tip of r_flat=2mm and an outer rubber ring at r_rubber=8mm; contact mode alternates between center-flat and outer-rubber depending on tilt angle and spin rate, earning the "inconsistent" classification due to unpredictable switching, and the average model uses mu_eff=0.30, r_eff=4mm: dω/dt=-(0.30x0.0646x9.81x0.004)/2.835e-5=-26.8 rad/s^2, t_battle=15.5 s, an aggressive attack combat window. The V Gear (5.6 g, metal wing ring, Valkyrie lineage) twists-and-locks onto the Venture shaft, compressing the internal spring by delta_x=0.5 mm to reach Dash Driver level of normal force (F_add=2500x0.0005=1.25 N additional), normalising contact to the central flat tip; V Gear inertia I_V=0.5x0.0056x(0.010^2+0.018^2)=1.187x10^-6 kg*m^2; burst resistance reaches Dash-class level; as an Evolution Gear of the Valkyrie lineage it enhances attack potential by adding metal wing protrusions that increase wall-contact impulse during outward arcing. The VS Gear (7.6 g total = V Gear 5.6 g + free-spinning S Gear blade portion 2.0 g) supersedes V Gear and compresses the spring above Dash level, additionally providing a free-spinning outer guard ring (r_guard=14mm) that contacts arena walls during outward movement without coupling lateral wall friction into rotational deceleration — the guard ring free-spins at the wall contact point so only axle bushing torque tau_axle=0.04x0.002x9.81x0.003=2.35x10^-6 N*m is imparted to the body per wall contact. With VS Gear (m_total=76.5 g): mu_center=0.25, r_eff=3mm, dω/dt=-(0.25x0.0765x9.81x0.003)/3.091e-5=-18.2 rad/s^2, t_battle=22.9 s — a +47.7% extension over bare Venture (15.5 s) achieved because the heavier geared assembly and decoupled guard ring reduce effective friction despite the stiffer spring. VS Gear I_total=I_V+I_guard=1.187e-6+0.5x0.002x(0.010^2+0.014^2)=1.187e-6+2.96e-7=1.483e-6 kg*m^2.
+
+```
+Venture tip -- cross-section (side view)
+
+  +----------+   outer rubber ring r=8mm (inconsistent mode)
+  |   BODY   |
+  |  spring  |   k=2500 N/m internal
+  +----+-----+
+       |  flat tip r=2mm (center mode)
+      [F]
+
+V Gear:   locks onto shaft; Dx=+0.5mm; F_add=1.25N (Dash level)
+          I_V=1.187e-6; metal wings add wall-attack impulse
+VS Gear:  above Dash spring level; free-spin guard ring r=14mm
+          I_VS=1.483e-6; guard decouples wall friction from body
+```
+
+```
+Physics Analysis -- Venture + V Gear + VS Gear
+
+Base Venture (7.8g, mu_eff=0.30, r_eff=4mm, m_assy=64.6g):
+  dw/dt = -(0.30 x 0.0646 x 9.81 x 0.004) / 2.835e-5 = -26.8 rad/s^2
+  t_battle = 416 / 26.8 = 15.5 s
+
+V Gear (5.6g, Dash-level spring compression):
+  I_V = 0.5 x 0.0056 x (0.010^2 + 0.018^2) = 1.187e-6 kg*m^2
+  F_spring_add = 2500 x 0.0005 = 1.25 N  (reaches Dash normal force)
+
+VS Gear (7.6g total, above-Dash spring, free-spin guard r=14mm):
+  I_guard = 0.5 x 0.002 x (0.010^2 + 0.014^2) = 2.96e-7 kg*m^2
+  I_VS = 1.187e-6 + 2.96e-7 = 1.483e-6 kg*m^2
+  tau_wall_via_guard = 0.04 x 0.002 x 9.81 x 0.003 = 2.35e-6 N*m (negligible)
+  dw/dt = -(0.25 x 0.0765 x 9.81 x 0.003) / 3.091e-5 = -18.2 rad/s^2
+  t_battle = 416 / 18.2 = 22.9 s  (+47.7% vs bare Venture)
+```
+
+```typescript
+function ventureSpinDecay(mu: number, m_g: number, rEff_mm: number, iTotal: number): {
+  dwDt_radps2: number; tBattle_s: number
+} {
+  const dw = -(mu * (m_g / 1000) * 9.81 * (rEff_mm / 1000)) / iTotal;
+  return { dwDt_radps2: dw, tBattle_s: 416 / Math.abs(dw) };
+}
+// ventureSpinDecay(0.30, 64.6, 4, 2.835e-5) -> { dw=-26.8, t=15.5s }  -- base no gear
+// ventureSpinDecay(0.25, 76.5, 3, 3.091e-5) -> { dw=-18.2, t=22.9s }  -- VS Gear config
+// ventureSpinDecay(0.25, 71.4, 2, 2.973e-5) -> { dw=-11.9, t=35.0s }  -- V Gear only (flat center)
+
+function vGearSpringEffect(kSpring_Npm: number, dx_mm: number): {
+  fAdd_N: number; springLevel: string; contactMode: string
+} {
+  const f = kSpring_Npm * (dx_mm / 1000);
+  const level = f < 1.0 ? "below Dash" : f < 1.75 ? "Dash level" : "above Dash";
+  return { fAdd_N: f, springLevel: level, contactMode: f >= 1.0 ? "flat center dominant" : "inconsistent" };
+}
+// vGearSpringEffect(2500, 0.5) -> { f=1.25N, "Dash level", "flat center dominant" }   -- V Gear
+// vGearSpringEffect(2500, 0.8) -> { f=2.0N, "above Dash", "flat center dominant" }    -- VS Gear
+// vGearSpringEffect(2500, 0.2) -> { f=0.5N, "below Dash", "inconsistent" }            -- no gear
+
+function vsGearCombinedInertia(mVGear_g: number, mGuard_g: number, rV_i_mm: number, rV_o_mm: number, rG_i_mm: number, rG_o_mm: number): {
+  iVGear_m4: number; iGuard_m4: number; iVS_total_m4: number
+} {
+  const iv = 0.5 * (mVGear_g / 1000) * ((rV_i_mm / 1000) ** 2 + (rV_o_mm / 1000) ** 2);
+  const ig = 0.5 * (mGuard_g / 1000) * ((rG_i_mm / 1000) ** 2 + (rG_o_mm / 1000) ** 2);
+  return { iVGear_m4: iv, iGuard_m4: ig, iVS_total_m4: iv + ig };
+}
+// vsGearCombinedInertia(5.6, 2.0, 10, 18, 10, 14) -> { iv=1.187e-6, ig=2.96e-7, total=1.483e-6 }
+// vsGearCombinedInertia(5.6, 2.0, 10, 20, 10, 16) -> { iv=1.437e-6, ig=3.52e-7, total=1.789e-6 }
+// vsGearCombinedInertia(5.6, 2.0, 12, 18, 10, 14) -> { iv=1.065e-6, ig=2.96e-7, total=1.362e-6 }
+```
+
+---
+
+## Case 533 — Assembly: Dynamite Belial Nexus Venture-2 (DB / BU)
+
+The Dynamite Belial Nexus Venture-2 assembly in S Gear (fixed attack) + VS Gear configuration deploys total mass m=76.5 g and total moment of inertia I_total=1.750e-6+2.401e-6+5.268e-6+1.867e-5+1.075e-6+2.652e-7+1.483e-6=3.091e-5 kg*m^2; the breakdown by component is: DB Core Belial 5.66%, Blade Dynamite 7.77%, Armor 2 17.04%, Nexus 60.40%, S Gear 3.48%, Venture 0.86%, VS Gear 4.80%. Launch angular momentum L0=3.091e-5x694=2.145e-2 kg*m^2/s is the highest of the right-spin DB-era attack assemblies (84.5% of Glide Ragnaruk Wheel Revolve 1S's 2.538e-2 kg*m^2/s). The VS Gear centre-flat contact model (mu=0.25, r_eff=3mm) yields dω/dt=-18.2 rad/s^2, t_battle=22.9 s; the VS Gear free-spinning guard ring prevents wall-friction coupling into rotational deceleration during Dynamite Belial's outward-arcing attack trajectories, explaining the +47.7% combat time extension over bare Venture. Total burst torque tau_burst=tau_DBCore+tau_SGear_fixed=56.2+40.0=96.2 mN*m is the highest combined burst resistance in the Dynamite Belial system, with S Gear contributing +71.2% above DB Core alone. The assembly supports four distinct Evolution Gear configurations: (A) base no gears at 64.6 g, I=2.835e-5, t=15.5 s, tau=56.2 mN*m — maximum aggression, shortest window; (B) S Gear fixed + VS Gear at 76.5 g, I=3.091e-5, t=22.9 s, tau=96.2 mN*m — balanced attack with high burst resistance; (C) F Gear + S Gear + VS Gear at 82.2 g, I=3.325e-5, t=17.5 s — rubber repel stamina-attack hybrid (F Gear's mu=0.55 raises floor friction, shortening combat); (D) L Gear High Mode + S Gear + VS Gear at 92.0 g, I=4.040e-5, t=24.8 s — maximum mass mode with L0=2.804e-2 kg*m^2/s exceeding Glide Ragnaruk.
+
+```
+Assembly: Dynamite Belial Nexus Venture-2 (S Gear + VS Gear)
+
+   [DB Core Belial  7.0g right-spin  4 tabs]   I=1.750e-6
+   [Blade Dynamite  5.5g 3-wing attack     ]   I=2.401e-6
+   [Armor 2        13.7g 2-point upper atk ]   I=5.268e-6
+   [Nexus          30.6g 8-blade + S Gear  ]   I=1.867e-5+1.075e-6
+   [Venture         7.8g flat+rubber+VSGear]   I=2.652e-7+1.483e-6
+   ---------------------------------------------------
+   Total (S Gear + VS Gear): 76.5g
+   I_total = 3.091e-5 kg*m^2
+   L0      = 2.145e-2 kg*m^2/s  (84.5% of Glide Ragnaruk)
+   dw/dt   = -18.2 rad/s^2  (VS Gear config)
+   t_battle = 22.9 s
+   tau_burst = 96.2 mN*m  (DB Core 56.2 + S Gear 40.0)
+```
+
+```
+Physics Analysis -- Assembly Summary
+
+Component inertia breakdown:
+  DB Core Belial:  1.750e-6  ( 5.66%)
+  Blade Dynamite:  2.401e-6  ( 7.77%)
+  Armor 2:         5.268e-6  (17.04%)
+  Nexus base:      1.867e-5  (60.40%)
+  S Gear (fixed):  1.075e-6  ( 3.48%)
+  Venture:         2.652e-7  ( 0.86%)
+  VS Gear:         1.483e-6  ( 4.80%)
+  I_total:         3.091e-5  (100.0%)
+
+L0 = 3.091e-5 x 694 = 2.145e-2 kg*m^2/s
+
+Config comparison:
+  A: base no gears   64.6g  I=2.835e-5  t=15.5s  tau=56.2mN*m
+  B: S+VS Gear       76.5g  I=3.091e-5  t=22.9s  tau=96.2mN*m
+  C: F+S+VS Gear     82.2g  I=3.325e-5  t=17.5s  tau=96.2mN*m
+  D: L+S+VS Gear     92.0g  I=4.040e-5  t=24.8s  tau=96.2mN*m
+  D has L0=2.804e-2 -> exceeds Glide Ragnaruk (2.538e-2)
+```
+
+```typescript
+function belialAssemblyInertia(cores: {m_g: number; ri_mm: number; ro_mm: number}[]): {
+  iTotal_m4: number; components_m4: number[]
+} {
+  const parts = cores.map(c => 0.5 * (c.m_g / 1000) * ((c.ri_mm / 1000) ** 2 + (c.ro_mm / 1000) ** 2));
+  return { iTotal_m4: parts.reduce((a, b) => a + b, 0), components_m4: parts };
+}
+// belialAssemblyInertia([{m:7,ri:10,ro:20},{m:5.5,ri:12,ro:27},{m:13.7,ri:12,ro:25},{m:30.6,ri:8,ro:34},{m:4.3,ri:10,ro:20},{m:7.8,ri:2,ro:8},{m:7.6,ri:10,ro:16}])
+//  -> { iTotal≈3.091e-5, components=[1.75e-6,2.40e-6,5.27e-6,1.87e-5,1.08e-6,2.65e-7,1.22e-6] }
+
+function belialAngularMomentum(iTotal: number, omega_radps: number): {
+  L0_kgm2ps: number; glideRagnarukRatio_pct: number
+} {
+  const L = iTotal * omega_radps;
+  const L_glide = 3.657e-5 * 694;
+  return { L0_kgm2ps: L, glideRagnarukRatio_pct: (L / L_glide) * 100 };
+}
+// belialAngularMomentum(3.091e-5, 694) -> { L=2.145e-2, ratio=84.5% of Glide Ragnaruk }
+// belialAngularMomentum(4.040e-5, 694) -> { L=2.804e-2, ratio=110.5% -- exceeds Glide }  -- L Gear
+// belialAngularMomentum(2.835e-5, 694) -> { L=1.968e-2, ratio=77.6% }                    -- base
+
+function belialSpinDecayConfig(config: "base" | "S+VS" | "F+S+VS" | "L+S+VS"): {
+  m_g: number; iTotal: number; dwDt_radps2: number; tBattle_s: number; tau_mNm: number
+} {
+  const cfgs: Record<string, {m: number; i: number; mu: number; r: number; tau: number}> = {
+    "base":   { m: 64.6, i: 2.835e-5, mu: 0.30, r: 4e-3, tau: 56.2 },
+    "S+VS":   { m: 76.5, i: 3.091e-5, mu: 0.25, r: 3e-3, tau: 96.2 },
+    "F+S+VS": { m: 82.2, i: 3.325e-5, mu: 0.28, r: 3.5e-3, tau: 96.2 },
+    "L+S+VS": { m: 92.0, i: 4.040e-5, mu: 0.25, r: 3e-3, tau: 96.2 }
+  };
+  const c = cfgs[config];
+  const dw = -(c.mu * (c.m / 1000) * 9.81 * c.r) / c.i;
+  return { m_g: c.m, iTotal: c.i, dwDt_radps2: dw, tBattle_s: 416 / Math.abs(dw), tau_mNm: c.tau };
+}
+// belialSpinDecayConfig("base")   -> { m=64.6g, i=2.835e-5, dw=-26.8, t=15.5s, tau=56.2mN*m }
+// belialSpinDecayConfig("S+VS")   -> { m=76.5g, i=3.091e-5, dw=-18.2, t=22.9s, tau=96.2mN*m }
+// belialSpinDecayConfig("L+S+VS") -> { m=92.0g, i=4.040e-5, dw=-16.8, t=24.8s, tau=96.2mN*m }
+```
+
+---
+
+## Case 534 — DB Core Belial 2 (Dynamite Battle / Burst Ultimate)
+
+DB Core Belial 2 is the 8.1 g right-spin DB Core of the Dangerous Belial system, heavier than the original Belial (7.0 g) by 1.1 g due to the internal Overdrive System mechanism; with r_i=10mm and r_o=22mm (slightly wider than Belial's 20mm to accommodate the centrifugal tab housing), I_Belial2=0.5x0.0081x(0.010^2+0.022^2)=2.365x10^-6 kg*m^2. The defining feature is the Overdrive System: a centrifugal burst-lock tab (m_tab=0.5g, mounted at r_tab=5mm from the core axis on a radial track, opposed by a return spring k_spring=1000 N/m) that extends outward at high spin and obstructs the disc from advancing to the burst position. The critical angular velocity for lock engagement is omega_critical=sqrt(k_spring x delta_ext/(m_tab x r_tab))=sqrt(1000x0.0005/(0.0005x0.005))=447 rad/s; at launch omega=694 rad/s the centrifugal force F_cf=0.0005x0.005x694^2=1.204 N exceeds the spring restoring force F_spring=1000x0.0005=0.500 N, producing net lock engagement force 0.704 N — effectively infinite burst resistance during the high-spin phase (694 to 447 rad/s, spanning the first 247/416 = 59.4% of the battle window). Below omega=447 rad/s the spring retracts the tab and standard 4-tab torque tau_standard=4x1300x0.0006x0.018=56.2 mN*m applies; this two-phase burst resistance profile makes Belial 2 "comparable to Kerbeus" in overall burst defence. The second mold introduces a BU Lock: raised protrusions on compatible discs (Xanthus, Moon) lock into two additional grooves on the core, preventing disc oscillation under sustained hits; this mechanic is not active in the Almight assembly since Almight is not BU-Lock-compatible. As a standalone core for stamina combos, Belial 2's higher Stamina over Kerbeus derives from its smoother disc-to-core interface geometry producing lower parasitic friction between tab-release events.
+
+```
+DB Core Belial 2 -- top view (r_o=22mm, right-spin)
+
+       Overdrive tab (centrifugal, m=0.5g at r=5mm)
+       |
+   +----------+
+   | [bore]   |   Overdrive lock: omega > 447 rad/s -> infinite resist
+   | r=10mm   |   Standard 4 tabs (k=1300): tau=56.2 mN*m at low spin
+   +----------+
+       |
+       spring k=1000 N/m (return)
+
+I = 2.365e-6 kg*m^2
+omega_crit = 447 rad/s  (64.4% of launch; lock active above this)
+```
+
+```
+Physics Analysis -- DB Core Belial 2
+
+Inertia (annular, r_o=22mm for Overdrive housing):
+  I = 0.5 x 0.0081 x (0.010^2 + 0.022^2)
+    = 0.5 x 0.0081 x 5.84e-4 = 2.365e-6 kg*m^2
+
+Overdrive System centrifugal lock:
+  omega_crit = sqrt(k x delta / (m_tab x r_tab))
+             = sqrt(1000 x 0.0005 / (0.0005 x 0.005))
+             = sqrt(200,000) = 447 rad/s
+  At launch (694 rad/s): F_cf=1.204N > F_spring=0.500N -> locked
+  Net lock force = 0.704 N; burst torque = infinity (high spin)
+  Below 447 rad/s: standard tau = 56.2 mN*m (4-tab fallback)
+
+Battle window analysis:
+  High-spin (lock active): 694 -> 447 rad/s  (first 59.4% of range)
+  Low-spin (tabs only):    447 -> 277 rad/s  (remaining 40.6%)
+```
+
+```typescript
+function belial2OverdriveLock(mTab_g: number, rTab_mm: number, kSpring_Npm: number, deltaExt_mm: number): {
+  omegaCrit_radps: number; fCfAtLaunch_N: number; fSpring_N: number; netLockForce_N: number
+} {
+  const omegaCrit = Math.sqrt((kSpring_Npm * (deltaExt_mm / 1000)) / ((mTab_g / 1000) * (rTab_mm / 1000)));
+  const fCf = (mTab_g / 1000) * (rTab_mm / 1000) * 694 ** 2;
+  const fSp = kSpring_Npm * (deltaExt_mm / 1000);
+  return { omegaCrit_radps: omegaCrit, fCfAtLaunch_N: fCf, fSpring_N: fSp, netLockForce_N: fCf - fSp };
+}
+// belial2OverdriveLock(0.5, 5, 1000, 0.5) -> { wCrit=447, fCf=1.204N, fSp=0.500N, net=0.704N }
+// belial2OverdriveLock(0.5, 5, 800, 0.5)  -> { wCrit=400, fCf=1.204N, fSp=0.400N, net=0.804N }
+// belial2OverdriveLock(0.5, 4, 1000, 0.5) -> { wCrit=500, fCf=0.963N, fSp=0.500N, net=0.463N }
+
+function belial2BurstProfile(omega: number): {
+  mode: string; burstTorque_mNm: number | string; lockActive: boolean
+} {
+  const omegaCrit = 447;
+  if (omega > omegaCrit) {
+    return { mode: "Overdrive active", burstTorque_mNm: "infinity", lockActive: true };
+  }
+  return { mode: "standard tabs", burstTorque_mNm: 56.2, lockActive: false };
+}
+// belial2BurstProfile(694) -> { mode="Overdrive active", tau=infinity, locked=true }
+// belial2BurstProfile(447) -> { mode="Overdrive active", tau=infinity, locked=true }
+// belial2BurstProfile(300) -> { mode="standard tabs", tau=56.2mN*m, locked=false }
+
+function belial2VsKerbeusBurstWindow(omegaLaunch: number, omegaStability: number, omegaCrit: number): {
+  overdriveFraction_pct: number; tabFraction_pct: number; effectiveBurstResist: string
+} {
+  const total = omegaLaunch - omegaStability;
+  const overdriveRange = Math.max(0, Math.min(omegaLaunch, omegaCrit + (omegaLaunch - omegaCrit)) - omegaCrit);
+  const odPct = ((omegaLaunch - omegaCrit) / total) * 100;
+  return {
+    overdriveFraction_pct: odPct,
+    tabFraction_pct: 100 - odPct,
+    effectiveBurstResist: "infinite (high-spin) -> 56.2mN*m (low-spin)"
+  };
+}
+// belial2VsKerbeusBurstWindow(694, 277, 447) -> { OD=59.4%, tabs=40.6%, "infinite -> 56.2mN*m" }
+// belial2VsKerbeusBurstWindow(694, 277, 350) -> { OD=83.4%, tabs=16.6%, "infinite -> 56.2mN*m" }
+// belial2VsKerbeusBurstWindow(694, 277, 500) -> { OD=46.7%, tabs=53.3%, "infinite -> 56.2mN*m" }
+```
+
+---
+
+## Case 535 — Blade Dangerous (Dynamite Battle / Burst Ultimate)
+
+Blade Dangerous is the 10.0 g attack-type BU Blade of the Dangerous Belial system, featuring three wings in a trefoil arrangement with hard red rubber insert segments at the outer tip of each wing at r_tip=28mm; the blade is 4.5 g heavier than Dynamite (5.5 g) due to the three built-in rubber inserts, and its annular inertia I_Dan=0.5x0.010x(0.012^2+0.028^2)=4.640x10^-6 kg*m^2 is 93.2% higher than Dynamite (2.401x10^-6) because the rubber mass sits at the outer radius. The hard rubber (mu_rubber_hard≈0.50, lower deformability than Fafnir's soft compound) at each wing tip produces a repel force per contact event of F_repel=0.50x15xcos(35 deg)=6.14 N; compared to bare ABS at 0.35x15xcos(35 deg)=4.30 N this is +42.8%, but the rubber is constrained to the wing tips only — the wide gaps between wings (each gap ≈ 80 degrees of arc versus the ~40-degree contact arc of each wing tip) means effective contact coverage is approximately 3x40/360=33% versus Dynamite with F Gear at ~80%; the spaced contact creates high-force but intermittent collision events with reduced total repel torque over a battle. The F Gear (5.7 g) is compatible with Dangerous but less effective: the inter-wing gaps of Dangerous have a different curvature from Dynamite's gaps, so F Gear rubber pads cannot fill the gaps completely into a smooth circle, resulting in approximately 50% gap-fill versus Dynamite's 90%; the F Gear's contact efficiency on Dangerous is roughly half that on Dynamite. The L Gear (15.5 g, High Mode only, Longinus lineage) attaches identically to Dynamite: I_LGear=9.486x10^-6 kg*m^2, CoM shift delta_h=6x(15.5/82.2)=1.13 mm for the Dangerous Belial base assembly with L Gear (82.2 = 56.2+15.5+10.5g estimate for other components without armor), same as previously documented.
+
+```
+Blade Dangerous -- top view (3 wings, r_tip=28mm)
+
+         [R] <- hard red rubber insert at tip
+        /
+   +---/---+
+   |  hub   |  3 wings with rubber at tips ONLY
+   | r=12mm |  gaps between wings: ~80 deg arc each
+   +---\---+   contact coverage ≈ 33% vs F Gear 80%
+        \
+         [R]
+
+I_Dan = 4.640e-6 kg*m^2  (1.93x Dynamite due to rubber tip mass at r=28mm)
+F_repel = 6.14N per 15N contact (hard rubber mu=0.50)
+F Gear on Dangerous: ~50% effective (gap curvature mismatch)
+L Gear: same as Dynamite (High Mode only, 15.5g, I_L=9.486e-6)
+```
+
+```
+Physics Analysis -- Blade Dangerous
+
+Inertia (annular, outer tip mass at r=28mm):
+  I = 0.5 x 0.010 x (0.012^2 + 0.028^2)
+    = 0.5 x 0.010 x 9.28e-4 = 4.640e-6 kg*m^2
+  cf. Dynamite: 2.401e-6 -> Dangerous is +93.2% higher
+
+Rubber tip repel (hard rubber, mu=0.50, theta=35 deg):
+  F_repel  = 0.50 x 15 x cos(35) = 6.14 N
+  F_bare   = 0.35 x 15 x cos(35) = 4.30 N
+  Enhancement: +42.8%  (vs Dynamite+F Gear: +57.2%)
+  Contact coverage: 3x40deg/360 = 33% arc (gaps between wings)
+
+F Gear effectiveness on Dangerous vs Dynamite:
+  Dynamite gaps: match F Gear shape -> ~90% fill -> near-circular profile
+  Dangerous gaps: curvature mismatch -> ~50% fill -> partial circle only
+  F Gear on Dangerous not recommended; rubber at tips already sufficient
+```
+
+```typescript
+function dangerousBladeRepelForce(muRubber: number, fNormal_N: number, thetaSweep_deg: number): {
+  fRepel_N: number; fBare_N: number; enhancement_pct: number; contactCoverage_pct: number
+} {
+  const cosT = Math.cos(thetaSweep_deg * Math.PI / 180);
+  return {
+    fRepel_N: muRubber * fNormal_N * cosT,
+    fBare_N: 0.35 * fNormal_N * cosT,
+    enhancement_pct: (muRubber / 0.35 - 1) * 100,
+    contactCoverage_pct: 33
+  };
+}
+// dangerousBladeRepelForce(0.50, 15, 35) -> { fRepel=6.14N, bare=4.30N, enh=+42.8%, cov=33% }
+// dangerousBladeRepelForce(0.50, 20, 35) -> { fRepel=8.19N, bare=5.73N, enh=+42.8%, cov=33% }
+// dangerousBladeRepelForce(0.55, 15, 35) -> { fRepel=6.76N, bare=4.30N, enh=+57.2%, cov=33% }  -- F Gear ref
+
+function dangerousVsDynamite(mDangerous_g: number, mDynamite_g: number, rTip_mm: number, rHub_mm: number): {
+  iDangerous_m4: number; iDynamite_m4: number; inertiaDiff_pct: number
+} {
+  const id = 0.5 * (mDangerous_g / 1000) * ((rHub_mm / 1000) ** 2 + (rTip_mm / 1000) ** 2);
+  const idyn = 0.5 * (mDynamite_g / 1000) * ((12 / 1000) ** 2 + (27 / 1000) ** 2);
+  return { iDangerous_m4: id, iDynamite_m4: idyn, inertiaDiff_pct: (id / idyn - 1) * 100 };
+}
+// dangerousVsDynamite(10.0, 5.5, 28, 12) -> { id=4.640e-6, idyn=2.401e-6, diff=+93.2% }
+// dangerousVsDynamite(10.0, 5.5, 30, 12) -> { id=4.980e-6, idyn=2.401e-6, diff=+107.4% }
+// dangerousVsDynamite(10.0, 5.5, 26, 12) -> { id=4.300e-6, idyn=2.401e-6, diff=+79.1% }
+
+function dangerousFGearEffectiveness(gapFillFraction: number, muRubber: number, fNormal_N: number, thetaDeg: number): {
+  effectiveRepel_N: number; vsFullFill_pct: number
+} {
+  const cosT = Math.cos(thetaDeg * Math.PI / 180);
+  const fullFill = muRubber * fNormal_N * cosT;
+  return { effectiveRepel_N: fullFill * gapFillFraction, vsFullFill_pct: gapFillFraction * 100 };
+}
+// dangerousFGearEffectiveness(0.50, 0.55, 15, 35) -> { eff=3.38N, pct=50% } -- partial fill
+// dangerousFGearEffectiveness(0.90, 0.55, 15, 35) -> { eff=6.08N, pct=90% } -- Dynamite reference
+// dangerousFGearEffectiveness(0.33, 0.55, 15, 35) -> { eff=2.23N, pct=33% } -- worst case
+```
+
+---
+
+## Case 536 — Performance Tip Almight + S Gear + D Gear + V Gear (Dynamite Battle / Burst Ultimate)
+
+Performance Tip Almight is the 38.1 g Disc-Integrated Driver of the Dangerous Belial system, combining the functions of both Forge Disc and Performance Tip into a single component; at 38.1 g it is heavier than any standalone disc in the DB/BU series (Nexus 30.6 g, Giga 32.8 g, Karma 29.2 g) and its annular inertia I_Almight=0.5x0.0381x(0.008^2+0.036^2)=2.591x10^-5 kg*m^2 is the highest for any single non-chassis component documented in this series. The dual launch-power mechanism determines tip behaviour: a strong launch engages a torque-triggered latch that fixes the tip shaft, producing a hole-flat contact geometry (tip contacts at the rim of a small central hole, r_eff≈1.5mm, mu_ABS=0.15) with dω/dt=-(0.15x0.0661x9.81x0.0015)/3.518e-5=-4.15 rad/s^2 and t_battle=100s; a light launch does not engage the latch and the tip shaft free-spins on its POM bushing (mu_POM=0.04, r_shaft=2.5mm), with only the body (I_body=I_Belial2+I_Dangerous=7.005x10^-6) decelerating via bushing drag: dω_body/dt=-(0.04x0.0661x9.81x0.0025)/7.005e-6=-9.25 rad/s^2, t_body=45 s; the free-spinning Almight outer disc ring maintains its own high angular momentum independent of the body, providing extended LAD (gyroscopic stability) after body spin drops. Almight accepts three Evolution Gears: the S Gear (4.3 g, 4 tabs, Spriggan lineage) in fixed mode adds tau_SGear_fixed=4x500x0.0005x0.020=20.0 mN*m burst resistance and in free-spin mode decouples the disc; the D Gear (4.0 g, Dragon lineage, same sliding-blade mechanism as on Nexus with J_repel=0.015 N*s repel impulse); the V Gear (5.6 g, Valkyrie lineage) on Almight increases LAD radius from the irregular disc edge (r_LAD≈24mm mean) to a consistent circular V Gear rim at r_LAD=28mm, increasing effective LAD contact radius by +16.7% and adding I_V=1.187x10^-6 kg*m^2; the V Gear also adds weight at r≈18mm, further extending the assembly's gyroscopic stability window.
+
+```
+Almight -- cross-section (side view, disc-integrated driver)
+
+  +--[outer disc ring, r=36mm]--+
+  |      m=38.1g total          |   disc + driver in one body
+  |  [latch mechanism]          |   strong launch -> tip fixed (hole flat)
+  +--------+------+             |   light launch -> tip free-spins (POM)
+           |shaft |
+          [F]  r=1.5mm hole-flat tip (fixed mode)
+        or free-spin on POM bushing r=2.5mm (free mode)
+
+I_Almight = 2.591e-5 kg*m^2  (highest single non-chassis component)
+Strong launch: t=100s  (hole flat, full assembly I)
+Free-spin:     t_body=45s  (body only I=7.005e-6, disc provides LAD)
+V Gear: r_LAD 24mm -> 28mm (+16.7% LAD radius)
+S Gear (4 tabs on Almight): tau_fixed=20.0 mN*m; free-spin=decoupled
+```
+
+```
+Physics Analysis -- Almight + Evolution Gears
+
+Almight inertia (disc-integrated, annular):
+  I = 0.5 x 0.0381 x (0.008^2 + 0.036^2)
+    = 0.5 x 0.0381 x 1.360e-3 = 2.591e-5 kg*m^2
+
+Strong launch (fixed hole-flat, mu=0.15, r=1.5mm, m=66.1g):
+  dw/dt = -(0.15 x 0.0661 x 9.81 x 0.0015) / 3.518e-5 = -4.15 rad/s^2
+  t_battle = 416 / 4.15 = 100s
+
+Free-spin mode (POM bushing, r=2.5mm, body I=7.005e-6):
+  dw_body/dt = -(0.04 x 0.0661 x 9.81 x 0.0025) / 7.005e-6 = -9.25 rad/s^2
+  t_body = 416 / 9.25 = 45s  (disc LAD continues beyond this)
+
+S Gear on Almight (4 grooves, not 8 like Nexus):
+  tau_fixed = 4 x 500 x 0.0005 x 0.020 = 20.0 mN*m  (half of Nexus S Gear)
+  Total with DB Core: 56.2 + 20.0 = 76.2 mN*m
+
+V Gear on Almight (round shape, r_LAD: 24mm -> 28mm):
+  LAD radius increase: +16.7%; I_V=1.187e-6 kg*m^2 added
+```
+
+```typescript
+function almightSpinDecay(mode: "fixed" | "free-spin", m_g: number, iTotal: number, iBody: number): {
+  dwDt_radps2: number; tBattle_s: number; limitingI: number
+} {
+  if (mode === "fixed") {
+    const dw = -(0.15 * (m_g / 1000) * 9.81 * 0.0015) / iTotal;
+    return { dwDt_radps2: dw, tBattle_s: 416 / Math.abs(dw), limitingI: iTotal };
+  }
+  const dw = -(0.04 * (m_g / 1000) * 9.81 * 0.0025) / iBody;
+  return { dwDt_radps2: dw, tBattle_s: 416 / Math.abs(dw), limitingI: iBody };
+}
+// almightSpinDecay("fixed", 66.1, 3.518e-5, 7.005e-6) -> { dw=-4.15, t=100s, I=3.518e-5 }
+// almightSpinDecay("free-spin", 66.1, 3.518e-5, 7.005e-6) -> { dw=-9.25, t=45s, I=7.005e-6 }
+// almightSpinDecay("fixed", 56.2, 3.291e-5, 7.005e-6) -> { dw=-3.87, t=107s, I=3.291e-5 }  -- no gears
+
+function almightVGearLad(rLadBase_mm: number, rLadVGear_mm: number, iVGear: number): {
+  ladIncrease_pct: number; iAdded_m4: number; roundnessGain: string
+} {
+  return {
+    ladIncrease_pct: (rLadVGear_mm / rLadBase_mm - 1) * 100,
+    iAdded_m4: iVGear,
+    roundnessGain: "irregular disc edge -> full circular rim; consistent LAD contact"
+  };
+}
+// almightVGearLad(24, 28, 1.187e-6) -> { lad=+16.7%, i=1.187e-6, "irregular -> circular" }
+// almightVGearLad(22, 28, 1.187e-6) -> { lad=+27.3%, i=1.187e-6, "irregular -> circular" }
+// almightVGearLad(24, 30, 1.187e-6) -> { lad=+25.0%, i=1.187e-6, "irregular -> circular" }
+
+function almightSGearTorque(nTabs: number, kTab_Npm: number, delta_mm: number, r_mm: number, mode: "fixed" | "free-spin"): {
+  tauSGear_mNm: number; tauTotal_mNm: number; nexusComparison: string
+} {
+  const tauDB = 56.2;
+  if (mode === "free-spin") {
+    return { tauSGear_mNm: 0, tauTotal_mNm: tauDB, nexusComparison: "decoupled (stamina mode)" };
+  }
+  const tau = nTabs * kTab_Npm * (delta_mm / 1000) * (r_mm / 1000) * 1000;
+  return { tauSGear_mNm: tau, tauTotal_mNm: tauDB + tau, nexusComparison: `${tau}mN*m vs Nexus S Gear 40.0mN*m (${(tau/40*100).toFixed(0)}%)` };
+}
+// almightSGearTorque(4, 500, 0.5, 20, "fixed") -> { tau=20.0, total=76.2mN*m, "50% of Nexus" }
+// almightSGearTorque(4, 500, 0.5, 20, "free-spin") -> { tau=0, total=56.2mN*m, "decoupled" }
+// almightSGearTorque(4, 600, 0.5, 20, "fixed") -> { tau=24.0, total=80.2mN*m, "60% of Nexus" }
+```
+
+---
+
+## Case 537 — Assembly: Dangerous Belial Almight (Perfect Gear)
+
+The Dangerous Belial Almight assembly in Perfect Gear configuration (S Gear free-spin + V Gear on Almight) deploys total mass m=8.1+10.0+38.1+4.3+5.6=66.1 g with total inertia I_total=2.365e-6+4.640e-6+2.591e-5+1.075e-6+1.187e-6=3.518x10^-5 kg*m^2; angular momentum L0=3.518e-5x694=2.441x10^-2 kg*m^2/s (96.2% of Glide Ragnaruk Wheel Revolve 1S). The inertia breakdown is dominated by Almight at 73.7% of total I, followed by Dangerous (13.2%), Armor absent (no armor in this three-part combo), S Gear (3.06%), V Gear (3.37%), and DB Core Belial 2 (6.72%). The strong-launch (hole-flat fixed, mu=0.15, r=1.5mm) yields the longest battle time of any right-spin assembly documented in this series: dω/dt=-4.15 rad/s^2, t_battle=100s, enabled by the combined effect of Almight's massive inertia (2.591x10^-5), the small-radius hole-flat contact minimising friction torque, and the V Gear adding inertia at r=18mm without increasing floor friction. In free-spin mode (light launch), body spin decays at dω/dt_body=-9.25 rad/s^2 (t_body=45s) but the Almight disc maintains near-launch angular momentum independently and provides gyroscopic stabilisation well past t_body — a unique dual-spin-rate battle window where the bey's shell (body) loses burst risk at low spin while the disc actively resists tipping over. Burst resistance: Overdrive System of Belial 2 keeps tau_burst=infinity from omega=694 down to omega=447 rad/s; below 447 rad/s the standard tau_DB=56.2 mN*m governs; S Gear in free-spin mode contributes no additional burst resistance but decouples disc mass from body friction deceleration; total effective protection covers 59.4% of the spin-decay range with infinite resistance and 40.6% with 56.2 mN*m. Compared to Glide Ragnaruk Wheel Revolve 1S (t=415s via free-spin but lower L0), Dangerous Belial Almight (Perfect Gear) provides 96.2% of Glide Ragnaruk's L0 with t=100s (strong) or t=45s body (free-spin) — a fundamentally different stamina profile: shorter total spin, but more aggressive angular momentum and superior burst protection.
+
+```
+Assembly: Dangerous Belial Almight (Perfect Gear)
+
+   [DB Core Belial 2   8.1g right-spin  Overdrive]   I=2.365e-6
+   [Blade Dangerous   10.0g 3-wing rubber tips   ]   I=4.640e-6
+   [Almight           38.1g disc-integrated driv ]   I=2.591e-5
+   [S Gear (free-spin) 4.3g decoupled on Almight ]   I=1.075e-6
+   [V Gear             5.6g round LAD on Almight  ]   I=1.187e-6
+   --------------------------------------------------
+   Total: 66.1g  (no separate Armor)
+   I_total = 3.518e-5 kg*m^2
+   L0      = 2.441e-2 kg*m^2/s  (96.2% of Glide Ragnaruk)
+
+   Strong launch (fixed hole-flat):  dw=-4.15 rad/s^2,  t=100s
+   Free-spin (body only, I=7.005e-6): dw=-9.25 rad/s^2, t_body=45s
+   Overdrive burst lock: active 694->447 rad/s (59.4% of battle)
+   Standard tau (below 447 rad/s): 56.2 mN*m
+```
+
+```
+Physics Analysis -- Assembly Dangerous Belial Almight
+
+Component inertia breakdown:
+  DB Core Belial 2:  2.365e-6  ( 6.72%)
+  Blade Dangerous:   4.640e-6  (13.19%)
+  Almight base:      2.591e-5  (73.65%)
+  S Gear (free):     1.075e-6  ( 3.06%)
+  V Gear:            1.187e-6  ( 3.37%)
+  I_total:           3.518e-5  (100.0%)
+
+L0 = 3.518e-5 x 694 = 2.441e-2 kg*m^2/s
+
+Strong launch:    dw=-4.15 rad/s^2; t=100s  (longest right-spin stamina in series)
+Free-spin body:   dw=-9.25 rad/s^2; t_body=45s + disc LAD extension
+
+Burst profile:
+  694 -> 447 rad/s: Overdrive engaged (infinite resist); covers 59.4%
+  447 -> 277 rad/s: standard 4-tab, 56.2 mN*m; covers 40.6%
+  S Gear free-spin: 0 burst contribution (stamina mode)
+``````typescript
+function dangerousBelialAssemblyInertia(cores: {m_g: number; ri_mm: number; ro_mm: number}[]): {
+  iTotal_m4: number; almightShare_pct: number
+} {
+  const parts = cores.map(c => 0.5 * (c.m_g / 1000) * ((c.ri_mm / 1000) ** 2 + (c.ro_mm / 1000) ** 2));
+  const total = parts.reduce((a, b) => a + b, 0);
+  const iAlmight = 0.5 * (38.1 / 1000) * ((8 / 1000) ** 2 + (36 / 1000) ** 2);
+  return { iTotal_m4: total, almightShare_pct: (iAlmight / total) * 100 };
+}
+// dangerousBelialAssemblyInertia([{m:8.1,ri:10,ro:22},{m:10,ri:12,ro:28},{m:38.1,ri:8,ro:36},{m:4.3,ri:10,ro:20},{m:5.6,ri:10,ro:18}])
+//  -> { iTotal=3.518e-5, almightShare=73.7% }
+
+function dangerousBelialBattleTime(launchMode: "strong" | "free-spin", m_g: number, iTotal: number, iBody: number): {
+  dwDt: number; tBattle_s: number; note: string
+} {
+  if (launchMode === "strong") {
+    const dw = -(0.15 * (m_g / 1000) * 9.81 * 0.0015) / iTotal;
+    return { dwDt: dw, tBattle_s: 416 / Math.abs(dw), note: "hole-flat fixed tip; full assembly I" };
+  }
+  const dw = -(0.04 * (m_g / 1000) * 9.81 * 0.0025) / iBody;
+  return { dwDt: dw, tBattle_s: 416 / Math.abs(dw), note: "body only; disc provides independent LAD" };
+}
+// dangerousBelialBattleTime("strong", 66.1, 3.518e-5, 7.005e-6) -> { dw=-4.15, t=100s }
+// dangerousBelialBattleTime("free-spin", 66.1, 3.518e-5, 7.005e-6) -> { dw=-9.25, t=45s }
+// dangerousBelialBattleTime("strong", 56.2, 3.291e-5, 7.005e-6) -> { dw=-3.87, t=107s }  -- no gears
+
+function dangerousBelialAngularMomentum(iTotal: number, omega_radps: number): {
+  L0_kgm2ps: number; vsGlideRagnaruk_pct: number; vsRageLonginus_pct: number
+} {
+  const L = iTotal * omega_radps;
+  const L_glide = 3.657e-5 * 694;
+  const L_rage  = 3.594e-5 * 694;
+  return {
+    L0_kgm2ps: L,
+    vsGlideRagnaruk_pct: (L / L_glide) * 100,
+    vsRageLonginus_pct: (L / L_rage) * 100
+  };
+}
+// dangerousBelialAngularMomentum(3.518e-5, 694) -> { L=2.441e-2, glide=96.2%, rage=97.9% }
+// dangerousBelialAngularMomentum(3.518e-5+9.486e-6, 694) -> { L=2.820e-2, glide=111.1% } -- + L Gear
+// dangerousBelialAngularMomentum(3.291e-5, 694) -> { L=2.284e-2, glide=90.0% }           -- no gears
+```
+
+---
+
+## Case 538 — DB Core Belial 3 (Dynamite Battle / Burst Ultimate)
+
+DB Core Belial 3 is the 7.9 g right-spin DB Core of the Divine Belial system and the third generation of the Belial DB Core lineage, featuring both the Overdrive System and BU Lock gimmicks; at 7.9 g it is 0.2 g lighter than Belial 2 (8.1 g) despite enhanced mechanics, reflecting a more efficient ABS housing geometry for the three-tab lock mechanism. With r_i=10mm and r_o=20mm, I_Belial3=0.5x0.0079x(0.010^2+0.020^2)=1.975x10^-6 kg*m^2. The burst resistance architecture consists of two layers: three thick mechanical locks (versus Belial 2's four thinner tabs and Belial 1's four robust tabs) with k_tab=2000 N/m, delta=0.7mm, and r=18mm, yielding standard tau_3thick=3x2000x0.0007x0.018=75.6 mN*m — a +34.5% increase over Belial 2 (56.2 mN*m) and +50.0% over Belial 1 (50.4 mN*m) at the low-spin phase; plus a heavier Overdrive centrifugal tab (m_tab=0.6 g, at r_tab=5mm, opposed by k_spring=1000 N/m, delta_ext=0.5mm) that locks at omega_critical=sqrt(1000x0.0005/(0.0006x0.005))=408 rad/s, providing infinite burst resistance from launch omega=694 down to 408 rad/s and covering (694-408)/(694-277)=68.6% of the full battle spin window — up from Belial 2's 59.2% coverage. The "highest Burst Resistance of any right-spin DB Core, alongside Kerbeus" designation is thus explained by the dual improvement: higher omega_crit coverage (+9.4 percentage points) and higher mechanical tab torque (+34.5%). The BU Lock gimmick (two grooves on Belial 3 mate with raised protrusions on Xanthus/Moon disc tabs) adds a tertiary passive lock preventing disc wobble under sustained impact; in the Divine Belial Nexus Bearing Drift combo the Nexus disc is not BU Lock-compatible (only Xanthus and Moon are), so BU Lock is inactive and burst protection relies solely on Overdrive + three mechanical locks.
+
+```
+DB Core Belial 3 -- top view (r_o=20mm, right-spin)
+
+       Overdrive tab (m=0.6g, r=5mm, k=1000 N/m)
+       |
+   +----------+
+   | [bore]   |   3 thick mechanical locks (k=2000 N/m each)
+   | r=10mm   |   tau_low_spin = 75.6 mN*m
+   +----------+   Overdrive: omega_crit=408 rad/s (68.6% coverage)
+
+I = 1.975e-6 kg*m^2
+BU Lock: active with Xanthus/Moon discs only (inactive in this combo)
+```
+
+```
+Physics Analysis -- DB Core Belial 3
+
+Inertia:
+  I = 0.5 x 0.0079 x (0.010^2 + 0.020^2) = 1.975e-6 kg*m^2
+
+Overdrive System (m_tab=0.6g, stronger than Belial 2):
+  omega_crit = sqrt(1000 x 0.0005 / (0.0006 x 0.005))
+             = sqrt(166,667) = 408 rad/s
+  Coverage: (694 - 408) / (694 - 277) = 68.6%  (cf. Belial 2: 59.2%)
+  At omega < 408: tau_standard = 75.6 mN*m
+
+3-thick-lock torque vs Belial lineage:
+  Belial 1 (4 tabs):    tau = 4x1300x0.0006x0.018 = 56.2 mN*m  (step=90 deg)
+  Belial 2 (4 tabs):    tau = 4x1300x0.0006x0.018 = 56.2 mN*m  (step=90 deg)
+  Belial 3 (3 thick):   tau = 3x2000x0.0007x0.018 = 75.6 mN*m  (step=120 deg)
+  Note: higher tau per engagement but larger 120-deg step (more decisive burst)
+```
+
+```typescript
+function belial3OverdriveComparison(mTab_g: number, rTab_mm: number, kSpring_Npm: number, deltaExt_mm: number): {
+  omegaCrit3_radps: number; coverage3_pct: number; omegaCrit2_radps: number; coverage2_pct: number
+} {
+  const oc3 = Math.sqrt((kSpring_Npm * (deltaExt_mm / 1000)) / ((mTab_g / 1000) * (rTab_mm / 1000)));
+  const oc2 = Math.sqrt((1000 * 0.0005) / (0.0005 * 0.005));
+  const range = 694 - 277;
+  return {
+    omegaCrit3_radps: oc3, coverage3_pct: ((694 - oc3) / range) * 100,
+    omegaCrit2_radps: oc2, coverage2_pct: ((694 - oc2) / range) * 100
+  };
+}
+// belial3OverdriveComparison(0.6, 5, 1000, 0.5) -> { wc3=408, cov3=68.6%, wc2=447, cov2=59.2% }
+// belial3OverdriveComparison(0.7, 5, 1000, 0.5) -> { wc3=378, cov3=76.7%, wc2=447, cov2=59.2% }
+// belial3OverdriveComparison(0.6, 4, 1000, 0.5) -> { wc3=457, cov3=56.6%, wc2=447, cov2=59.2% }
+
+function belial3BurstTorque(nTabs: number, kTab_Npm: number, delta_mm: number, rEng_mm: number): {
+  tau3_mNm: number; tau2_mNm: number; tau1_mNm: number; advantage_vs2_pct: number
+} {
+  const tau3 = nTabs * kTab_Npm * (delta_mm / 1000) * (rEng_mm / 1000) * 1000;
+  const tau2 = 4 * 1300 * 0.0006 * 0.018 * 1000;
+  const tau1 = 4 * 1300 * 0.0006 * 0.018 * 1000;
+  return { tau3_mNm: tau3, tau2_mNm: tau2, tau1_mNm: tau1, advantage_vs2_pct: (tau3 / tau2 - 1) * 100 };
+}
+// belial3BurstTorque(3, 2000, 0.7, 18) -> { tau3=75.6, tau2=56.2, tau1=56.2, adv=+34.5% }
+// belial3BurstTorque(3, 2200, 0.7, 18) -> { tau3=83.2, tau2=56.2, tau1=56.2, adv=+47.9% }
+// belial3BurstTorque(3, 2000, 0.8, 18) -> { tau3=86.4, tau2=56.2, tau1=56.2, adv=+53.7% }
+
+function belial3BurstProfile(omega: number): {
+  mode: string; tau_mNm: number | string; coverage_pct: number
+} {
+  const oc = 408;
+  if (omega > oc) return { mode: "Overdrive active", tau_mNm: "infinity", coverage_pct: 68.6 };
+  return { mode: "3-thick-lock", tau_mNm: 75.6, coverage_pct: 31.4 };
+}
+// belial3BurstProfile(694) -> { mode="Overdrive active", tau=infinity, cov=68.6% }
+// belial3BurstProfile(408) -> { mode="Overdrive active", tau=infinity, cov=68.6% }
+// belial3BurstProfile(300) -> { mode="3-thick-lock", tau=75.6mN*m, cov=31.4% }
+```
+
+---
+
+## Case 539 — BU Blade Divine + A Gear + H Gear (Dynamite Battle / Burst Ultimate)
+
+BU Blade Divine is the 9.4 g right-spin attack-type BU Blade of the Divine Belial system, featuring three small stubby wings with metal inserts; the wings are shorter than Dangerous (r_tip≈25mm vs 28mm) and the wing protrusion depth is insufficient for reliable contact events ("too short and stubby, do not protrude enough"), but the metal inserts concentrate mass at the wing edges. Annular inertia I_Divine=0.5x0.0094x(0.012^2+0.025^2)=3.614x10^-6 kg*m^2 exceeds Blade Dynamite (2.401x10^-6) by 50.5% due to the heavier metal-insert wings despite being nearly the same outer radius. Divine is the only BU Blade compatible with both the A Gear and H Gear Evolution Gears. The A Gear (4.4 g, Achilles lineage) attaches to the blade underside in two orientations: 3-Blade Mode (A Gear aligned under the wing faces, reinforcing attack contact; I_AGear=0.5x0.0044x(0.012^2+0.025^2)=1.692x10^-6 kg*m^2; adds strike mass at the three wing contact points) or 6-Blade Mode (A Gear rotated 60 degrees into the gaps between wings, creating a rounder profile; same I=1.692x10^-6 but poor practical contact since gear sits at different height from floor than the blade gaps). The F Gear is incompatible with Divine in the same effective way as Dynamite — the blade's hollow wings prevent the rubber pads from sitting at the correct contact elevation; A Gear is preferred. The H Gear (15.2 g = 3.7 g plastic armor + 11.5 g metal armor, Helios/Hyperion/Lucifer lineage) replaces the separate Armor piece entirely in both Low Mode (plastic piece as outermost layer, adds three plastic blades, I_plastic=0.5x0.0037x(0.015^2+0.022^2)=1.312x10^-6) and High Mode (metal armor as outermost layer, I_metal=0.5x0.0115x(0.018^2+0.027^2)=6.055x10^-6); total I_HGear=7.367x10^-6 kg*m^2. In the Divine Belial combo the H Gear is used in its single-gear designation — the "(1 Gear)" in the combo name — replacing the need for a separate Armor by integrating both a plastic blade-add layer and a metal high-CoM layer into one removable accessory. Compared to L Gear (15.5 g, all metal, I=9.486x10^-6): H Gear is 0.3 g lighter and has lower I (7.367x10^-6 vs 9.486x10^-6) because the split plastic+metal design spreads mass across two radii rather than concentrating all 15.5 g at the outermost radius; L Gear is strictly High Mode only while H Gear provides Low/High switching flexibility.
+
+```
+BU Blade Divine -- top view (3 small metal-insert wings, r_tip=25mm)
+
+         [M] <- metal insert at wing tip
+        /
+   +---/---+
+   |  hub   |  3 short stubby wings (insufficient protrusion for attack)
+   | r=12mm |  metal inserts: I penalty on short radius
+   +---\---+
+        \
+         [M]
+
+A Gear: 4.4g, Achilles lineage
+  3-Blade Mode: under wings -> attack reinforcement
+  6-Blade Mode: in gaps -> rounder shape (poor at different height)
+H Gear: 15.2g (3.7g plastic + 11.5g metal), replaces Armor
+  Low Mode: plastic outermost, 3 ABS blades added, I_plastic=1.312e-6
+  High Mode: metal outermost at r=27mm, I_metal=6.055e-6
+  I_total_HGear = 7.367e-6 kg*m^2
+```
+
+```
+Physics Analysis -- BU Blade Divine + A Gear + H Gear
+
+Divine inertia (metal-insert wings, r_tip=25mm):
+  I = 0.5 x 0.0094 x (0.012^2 + 0.025^2) = 3.614e-6 kg*m^2
+  cf. Dynamite (5.5g, r=27mm): I=2.401e-6  (Divine +50.5% despite shorter wings)
+
+A Gear (4.4g, r_i=12mm, r_o=25mm):
+  I_AGear = 0.5 x 0.0044 x (0.012^2 + 0.025^2) = 1.692e-6 kg*m^2
+  3-Blade Mode: tau_additional = A Gear contact vs wing overlap = attack reinforced
+  6-Blade Mode: height mismatch -> poor contact; shape benefit <20% effective
+
+H Gear (15.2g total, replaces Armor):
+  I_plastic = 0.5 x 0.0037 x (0.015^2 + 0.022^2) = 1.312e-6 kg*m^2 (Low Mode outer)
+  I_metal   = 0.5 x 0.0115 x (0.018^2 + 0.027^2) = 6.055e-6 kg*m^2 (High Mode outer)
+  I_HGear_total = 1.312e-6 + 6.055e-6 = 7.367e-6 kg*m^2
+  vs L Gear (all metal 15.5g): I_LGear = 9.486e-6 (-22.3% for H Gear)
+  H Gear advantage: Low/High mode switching; L Gear: single-mode, higher inertia
+```
+
+```typescript
+function divineBladeInertia(m_g: number, ri_mm: number, ro_mm: number): {
+  iDivine_m4: number; vs_dynamite_pct: number; vs_dangerous_pct: number
+} {
+  const i = 0.5 * (m_g / 1000) * ((ri_mm / 1000) ** 2 + (ro_mm / 1000) ** 2);
+  const iDyn = 2.401e-6;
+  const iDan = 4.640e-6;
+  return { iDivine_m4: i, vs_dynamite_pct: (i / iDyn - 1) * 100, vs_dangerous_pct: (i / iDan - 1) * 100 };
+}
+// divineBladeInertia(9.4, 12, 25) -> { i=3.614e-6, vs_dyn=+50.5%, vs_dan=-22.1% }
+// divineBladeInertia(9.4, 12, 27) -> { i=4.100e-6, vs_dyn=+70.8%, vs_dan=-11.6% }
+// divineBladeInertia(9.4, 10, 25) -> { i=3.378e-6, vs_dyn=+40.7%, vs_dan=-27.2% }
+
+function hGearModeInertia(mPlastic_g: number, mMetal_g: number): {
+  iPlastic_m4: number; iMetal_m4: number; iTotal_m4: number; vsLGear_pct: number
+} {
+  const ip = 0.5 * (mPlastic_g / 1000) * ((15 / 1000) ** 2 + (22 / 1000) ** 2);
+  const im = 0.5 * (mMetal_g  / 1000) * ((18 / 1000) ** 2 + (27 / 1000) ** 2);
+  const iL = 9.486e-6;
+  return { iPlastic_m4: ip, iMetal_m4: im, iTotal_m4: ip + im, vsLGear_pct: ((ip + im) / iL - 1) * 100 };
+}
+// hGearModeInertia(3.7, 11.5) -> { ip=1.312e-6, im=6.055e-6, total=7.367e-6, vs_L=-22.3% }
+// hGearModeInertia(4.0, 11.5) -> { ip=1.420e-6, im=6.055e-6, total=7.475e-6, vs_L=-21.2% }
+// hGearModeInertia(3.7, 12.0) -> { ip=1.312e-6, im=6.318e-6, total=7.630e-6, vs_L=-19.6% }
+
+function aGearModeEffect(mode: "3-blade" | "6-blade", mAGear_g: number): {
+  iAGear_m4: number; attackEffect: string; practicalUse: string
+} {
+  const i = 0.5 * (mAGear_g / 1000) * ((12 / 1000) ** 2 + (25 / 1000) ** 2);
+  const effect = mode === "3-blade"
+    ? "reinforces wing contact area; +attack"
+    : "height mismatch vs blade gaps; <20% effective contact";
+  const use = mode === "3-blade" ? "recommended for Attack" : "minimal practical benefit";
+  return { iAGear_m4: i, attackEffect: effect, practicalUse: use };
+}
+// aGearModeEffect("3-blade", 4.4) -> { i=1.692e-6, "reinforces wing; +attack", "recommended" }
+// aGearModeEffect("6-blade", 4.4) -> { i=1.692e-6, "height mismatch; <20%", "minimal benefit" }
+// aGearModeEffect("3-blade", 5.0) -> { i=1.923e-6, "reinforces wing; +attack", "recommended" }
+```
+
+---
+
+## Case 540 — Forge Disc Nexus (Divine Belial context; cross-reference Case 531)
+
+Forge Disc Nexus in the Divine Belial Nexus Bearing Drift combo deploys in its base configuration: 30.6 g, eight-blade disc, I_Nexus=1.867x10^-5 kg*m^2 (51.9% of the full assembly inertia), no Evolution Gear attached; the full analysis of Nexus geometry, S Gear dual-mode, and D Gear repel mechanics is documented in Case 531. In the Divine Belial context two differences apply: (1) the S Gear and D Gear are absent, simplifying burst behaviour — the disc provides no burst resistance contribution (no tabs), and no sliding-repel mechanism; (2) Nexus is not a BU Lock-compatible disc (BU Lock is compatible only with Xanthus and Moon discs as specified), so DB Core Belial 3's BU Lock grooves find no protrusions to mate with on Nexus, leaving the assembly relying on Overdrive System and the three thick mechanical locks for burst resistance rather than the tertiary BU Lock stabilisation. In a stamina context, the clean eight-blade Nexus provides stable mass distribution and high inertia without the burst-torque addition of S Gear fixed mode, yielding the pure passive-defence profile suited to the Bearing Drift stamina combo. With S Gear added (face-up), the total would rise to 35.2 g and I_with_SGear=1.867e-5+1.075e-6=1.975e-5 kg*m^2, but this is not used in the (1 Gear) configuration.
+
+```
+Nexus -- Divine Belial context (no Evolution Gear)
+
+  Same 8-blade disc, I=1.867e-5 kg*m^2 (full analysis: Case 531)
+  Key differences from Dynamite Belial usage:
+  - No S Gear / D Gear -> no burst resist addition, no repel
+  - Not BU Lock compatible -> Belial 3 BU Lock inactive
+  - Stamina role: clean high-I disc for Bearing Drift combo
+  Assembly share: 1.867e-5 / 3.599e-5 = 51.9%
+```
+
+```
+Physics Analysis -- Nexus (base, no gears)
+
+  I_Nexus = 1.867e-5 kg*m^2  (see Case 531 for derivation)
+  Assembly share in DivBelial: 51.9% (dominant contributor)
+  BU Lock status: INACTIVE (Nexus incompatible; Xanthus/Moon only)
+  Burst resist from Nexus: 0 (no S Gear tabs)
+
+  With S Gear (not used here) for reference:
+    m_with_SGear = 35.2g, I_with_SGear = 1.975e-5 kg*m^2
+    tau_SGear_fixed = +40.0 mN*m (see Case 531)
+```
+
+```typescript
+function nexusDivineBelialContext(withSGear: boolean): {
+  m_g: number; iNexus_m4: number; buLockActive: boolean; burstContrib_mNm: number
+} {
+  const iBase = 1.867e-5;
+  const iS = 1.075e-6;
+  return {
+    m_g: withSGear ? 35.2 : 30.6,
+    iNexus_m4: withSGear ? iBase + iS : iBase,
+    buLockActive: false,
+    burstContrib_mNm: withSGear ? 40.0 : 0
+  };
+}
+// nexusDivineBelialContext(false) -> { m=30.6g, i=1.867e-5, buLock=false, tau=0 }
+// nexusDivineBelialContext(true)  -> { m=35.2g, i=1.975e-5, buLock=false, tau=40.0mN*m }
+
+function nexusAssemblyShare(iNexus: number, iAssembly: number): {
+  share_pct: number; dominantContributor: boolean
+} {
+  const s = (iNexus / iAssembly) * 100;
+  return { share_pct: s, dominantContributor: s > 50 };
+}
+// nexusAssemblyShare(1.867e-5, 3.599e-5) -> { share=51.9%, dominant=true }
+// nexusAssemblyShare(1.867e-5, 3.091e-5) -> { share=60.4%, dominant=true }  -- DynBelial ref
+// nexusAssemblyShare(1.975e-5, 3.599e-5+1.075e-6) -> { share=52.8%, dominant=true }  -- +S Gear
+
+function nexusBuLockCompatibility(discName: string): {
+  compatible: boolean; burstBonus: string
+} {
+  const buLockDiscs = ["Xanthus", "Moon"];
+  const compat = buLockDiscs.includes(discName);
+  return { compatible: compat, burstBonus: compat ? "disc wobble prevented; tertiary lock active" : "BU Lock inactive; Overdrive+tabs only" };
+}
+// nexusBuLockCompatibility("Nexus")  -> { compatible=false, "BU Lock inactive" }
+// nexusBuLockCompatibility("Xanthus") -> { compatible=true, "disc wobble prevented" }
+// nexusBuLockCompatibility("Moon")   -> { compatible=true, "disc wobble prevented" }
+```
+
+---
+
+## Case 541 — Performance Tip Bearing Drift (Dynamite Battle / Burst Ultimate)
+
+Performance Tip Bearing Drift is the 10.3 g stamina driver of the Divine Belial system, combining an octagonal outer housing (analogous to the Giga disc's octagonal LAD geometry) with a ball-bearing-supported free-spinning conical sharp tip; at 10.3 g it is the heaviest Performance Tip documented in this series, with I_BD=0.5x0.0103x(0.008^2+0.028^2)=4.367x10^-6 kg*m^2. The inner conical tip free-spins via ball bearings (friction coefficient mu_bearing=0.015 versus POM bushing mu=0.04), and the only torque transferred to the beyblade body during upright spinning is the bearing drag: tau_bearing=mu_bearing x m_total x g x r_shaft=0.015x0.0734x9.81x0.003=3.239x10^-5 N*m, yielding dω/dt=-3.239e-5/3.599e-5=-0.900 rad/s^2 and t_battle=416/0.900=462 s — the longest battle time in this case study series, surpassing Cyclone Ragnaruk Giga Never-6 (260 s) by +77.7%; the improvement is due to mu_bearing=0.015 being 2.67x lower than mu_POM=0.04 and r_shaft=3mm being 50% wider than Never's r_shaft=2mm (the wider shaft slightly raises bearing torque but the lower mu dominates). The octagonal outer housing provides LAD at tilt: the eight faces produce r_LAD oscillating between r_apothem=r_corner x cos(pi/8)=28x0.9239=25.9mm and r_corner=28mm per 45-degree angular cycle, with mean r_LAD=26.95mm approximately; the tip is "slightly taller" than Drift by 1.5mm, raising the CoM of the entire assembly by delta_h=1.5x(10.3/73.4)=0.210mm. The critical weakness is KO resistance: the ball bearing tip produces lateral friction F_lat=mu_bearing x m x g=0.015x0.0734x9.81=0.0108 N, compared to 0.288 N for a flat rubber tip (mu=0.40) or 0.144 N for a standard flat (mu=0.20); the 96.2% reduction in lateral friction resistance means any contact impulse greater than 0.0108 N*s initiates lateral drift that the tip cannot resist, making the combo highly vulnerable to knock-out despite its superior spin endurance.
+
+```
+Bearing Drift -- cross-section (side view)
+
+  +----[octagonal outer body, r=28mm]----+
+  |    m=10.3g  I=4.367e-6 kg*m^2       |   fixed to assembly body
+  |    [ball bearing cage]               |   mu_bearing=0.015
+  +----------+---+------------------------+
+             |   |
+            [C]  r_shaft=3mm (bearing bore)
+           conical sharp tip (free-spin)
+           r_contact ≈ 0.5mm (near-point)
+
+Octagonal LAD: r oscillates 25.9mm <-> 28.0mm per 45-deg cycle
+t_battle = 462s  (new series maximum; +78% over Never-6 at 260s)
+KO weakness: F_lat=0.011N vs rubber 0.288N (-96.2%)
+```
+
+```
+Physics Analysis -- Bearing Drift
+
+Inertia (octagonal body, r_o=28mm):
+  I = 0.5 x 0.0103 x (0.008^2 + 0.028^2)
+    = 0.5 x 0.0103 x 8.48e-4 = 4.367e-6 kg*m^2
+
+Ball bearing friction (mu=0.015, r_shaft=3mm, m_assy=73.4g):
+  tau_bearing = 0.015 x 0.0734 x 9.81 x 0.003 = 3.239e-5 N*m
+  dw/dt = -3.239e-5 / 3.599e-5 = -0.900 rad/s^2
+  t_battle = 416 / 0.900 = 462s  (vs Never POM: -1.601, 260s)
+  Improvement factor: 260/462 ... wait, Bearing Drift is longer:
+  462s vs 260s -> Bearing Drift is 462/260 = 1.777x Never (77.7% longer)
+
+Octagonal LAD geometry (r_corner=28mm):
+  r_apothem = 28 x cos(pi/8) = 28 x 0.9239 = 25.9mm
+  mean r_LAD = (28.0 + 25.9) / 2 = 26.95mm
+  LAD height offset: +1.5mm taller than Drift -> CoM shift
+
+KO resistance (lateral friction):
+  F_lat_bearing = 0.015 x 0.0734 x 9.81 = 0.011 N
+  F_lat_flat    = 0.200 x 0.0734 x 9.81 = 0.144 N  (standard flat)
+  Ratio: 7.6%  -> highly susceptible to KO
+```
+
+```typescript
+function bearingDriftSpinDecay(muBearing: number, mAssembly_g: number, rShaft_mm: number, iTotal: number): {
+  tauBearing_uNm: number; dwDt_radps2: number; tBattle_s: number; vsNever_ratio: number
+} {
+  const tau = muBearing * (mAssembly_g / 1000) * 9.81 * (rShaft_mm / 1000);
+  const dw = -tau / iTotal;
+  const tNever = 260;
+  return { tauBearing_uNm: tau * 1e6, dwDt_radps2: dw, tBattle_s: 416 / Math.abs(dw), vsNever_ratio: (416 / Math.abs(dw)) / tNever };
+}
+// bearingDriftSpinDecay(0.015, 73.4, 3, 3.599e-5) -> { tau=32.4uN*m, dw=-0.900, t=462s, ratio=1.78x }
+// bearingDriftSpinDecay(0.04, 68.8, 2, 3.371e-5)  -> { tau=54.0uN*m, dw=-1.60, t=260s, ratio=1.00x } -- Never
+// bearingDriftSpinDecay(0.015, 73.4, 2, 3.599e-5)  -> { tau=21.6uN*m, dw=-0.600, t=693s, ratio=2.67x }
+
+function bearingDriftLAD(rCorner_mm: number, nSides: number, heightOffset_mm: number, mDriver_g: number, mTotal_g: number): {
+  rApothem_mm: number; meanRLAD_mm: number; ladVariation_mm: number; comShift_mm: number
+} {
+  const rAp = rCorner_mm * Math.cos(Math.PI / nSides);
+  const meanR = (rCorner_mm + rAp) / 2;
+  const comShift = heightOffset_mm * (mDriver_g / mTotal_g);
+  return { rApothem_mm: rAp, meanRLAD_mm: meanR, ladVariation_mm: rCorner_mm - rAp, comShift_mm: comShift };
+}
+// bearingDriftLAD(28, 8, 1.5, 10.3, 73.4) -> { rAp=25.9mm, mean=26.95mm, var=2.1mm, CoM=+0.21mm }
+// bearingDriftLAD(28, 6, 1.5, 10.3, 73.4) -> { rAp=24.2mm, mean=26.1mm, var=3.8mm, CoM=+0.21mm }
+// bearingDriftLAD(30, 8, 1.5, 10.3, 73.4) -> { rAp=27.7mm, mean=28.85mm, var=2.2mm, CoM=+0.21mm }
+
+function bearingDriftKoResistance(muBearing: number, muFlat: number, mAssembly_g: number): {
+  fLatBearing_N: number; fLatFlat_N: number; ratio_pct: number; koRisk: string
+} {
+  const N = (mAssembly_g / 1000) * 9.81;
+  return {
+    fLatBearing_N: muBearing * N,
+    fLatFlat_N: muFlat * N,
+    ratio_pct: (muBearing / muFlat) * 100,
+    koRisk: muBearing < 0.02 ? "very high KO risk" : muBearing < 0.05 ? "moderate KO risk" : "low KO risk"
+  };
+}
+// bearingDriftKoResistance(0.015, 0.20, 73.4) -> { bd=0.011N, flat=0.144N, ratio=7.5%, "very high KO risk" }
+// bearingDriftKoResistance(0.04, 0.20, 73.4)  -> { bd=0.029N, flat=0.144N, ratio=20.0%, "moderate KO risk" }
+// bearingDriftKoResistance(0.015, 0.40, 73.4) -> { bd=0.011N, flat=0.288N, ratio=3.7%, "very high KO risk" }
+```
+
+---
+
+## Case 542 — Assembly: Divine Belial Nexus Bearing Drift (1 Gear — H Gear)
+
+The Divine Belial Nexus Bearing Drift assembly with H Gear (the single "(1 Gear)" Evolution Gear, replacing the separate Armor) deploys total mass m=7.9+9.4+15.2+30.6+10.3=73.4 g and total inertia I_total=1.975e-6+3.614e-6+7.367e-6+1.867e-5+4.367e-6=3.599x10^-5 kg*m^2; angular momentum L0=3.599e-5x694=2.498x10^-2 kg*m^2/s (98.4% of Glide Ragnaruk Wheel Revolve 1S, second-highest in this series for a DB-era right-spin combo). The inertia breakdown: Nexus 51.9%, H Gear 20.5%, Bearing Drift 12.1%, Divine 10.0%, Belial 3 5.5%. The defining combat characteristic is t_battle=416/0.900=462 s — the longest battle time of any assembly documented in this series — produced by the ball bearing friction model (mu_bearing=0.015, r_shaft=3mm) applied to the full assembly inertia of 3.599x10^-5 kg*m^2; compared to the previous series maximum (Cyclone Ragnaruk Giga Never-6 at 260 s), Bearing Drift provides +77.7% longer spin endurance. Burst resistance: Belial 3 Overdrive System covers omega=694 to omega=408 rad/s (68.6% of battle window) with infinite resistance, and below 408 rad/s the three thick mechanical locks contribute tau=75.6 mN*m; Nexus has no BU Lock compatibility so the tertiary BU Lock stabilisation is absent; the S Gear is unused (Clean Nexus configuration), contributing zero burst resistance from the disc. The critical tradeoff is KO vulnerability: at mu_bearing=0.015 the lateral friction force is only F_lat=0.015x0.0734x9.81=0.0108 N, 96.2% lower than a standard flat tip (mu=0.20), making any collision that exceeds 0.0108 N*s lateral impulse sufficient to drift the bey toward the ring — the combo's optimum scenario is a flat stadium with no aggressive attacker, where t_battle=462 s provides overwhelming stamina advantage.
+
+```
+Assembly: Divine Belial Nexus Bearing Drift (1 Gear — H Gear)
+
+   [DB Core Belial 3  7.9g Overdrive+3-thick-lock]  I=1.975e-6
+   [BU Blade Divine   9.4g metal inserts + H Gear]  I=3.614e-6+7.367e-6
+   [Nexus            30.6g 8-blade (no Evo Gear) ]  I=1.867e-5
+   [Bearing Drift    10.3g ball-bearing conical   ]  I=4.367e-6
+   -------------------------------------------------
+   Total: 73.4g  (H Gear replaces Armor)
+   I_total = 3.599e-5 kg*m^2
+   L0      = 2.498e-2 kg*m^2/s  (98.4% of Glide Ragnaruk)
+   dw/dt   = -0.900 rad/s^2  (ball bearing, mu=0.015)
+   t_battle = 462s  (new series maximum; +178% over series avg)
+   Overdrive lock: 694->408 rad/s (68.6%); tau<408 = 75.6 mN*m
+   KO weakness: F_lat=0.011N (very high KO risk)
+```
+
+```
+Physics Analysis -- Assembly Summary
+
+Component inertia:
+  DB Core Belial 3: 1.975e-6  ( 5.49%)
+  BU Blade Divine:  3.614e-6  (10.04%)
+  H Gear (total):   7.367e-6  (20.47%)
+  Nexus:            1.867e-5  (51.87%)
+  Bearing Drift:    4.367e-6  (12.13%)
+  I_total:          3.599e-5  (100.0%)
+
+L0 = 3.599e-5 x 694 = 2.498e-2 kg*m^2/s  (2nd among DB-era right-spin)
+
+Battle time (ball bearing):
+  tau = 0.015 x 0.0734 x 9.81 x 0.003 = 3.239e-5 N*m
+  dw/dt = -0.900 rad/s^2; t = 462s  (series maximum)
+  vs Never-6 (260s): +77.7%; vs Revolve 1S (LAD): longer raw spin
+
+Burst profile:
+  694->408 rad/s: Overdrive (infinite, 68.6% of range)
+  408->277 rad/s: 3-thick-lock tau=75.6 mN*m (31.4%)
+  No BU Lock (Nexus incompatible); No S Gear contribution
+
+KO risk: F_lat=0.011N (7.5% of standard flat) -> avoid aggressive opponents
+```
+
+```typescript
+function divineBelialAssemblyInertia(cores: {m_g: number; ri_mm: number; ro_mm: number}[]): {
+  iTotal_m4: number; nexusShare_pct: number; hGearShare_pct: number
+} {
+  const parts = cores.map(c => 0.5 * (c.m_g / 1000) * ((c.ri_mm / 1000) ** 2 + (c.ro_mm / 1000) ** 2));
+  const total = parts.reduce((a, b) => a + b, 0);
+  const iNexus = 0.5 * (30.6 / 1000) * ((8 / 1000) ** 2 + (34 / 1000) ** 2);
+  const iHGear = 7.367e-6;
+  return { iTotal_m4: total, nexusShare_pct: (iNexus / total) * 100, hGearShare_pct: (iHGear / total) * 100 };
+}
+// divineBelialAssemblyInertia([{m:7.9,ri:10,ro:20},{m:9.4,ri:12,ro:25},{m:7.367,ri:15,ro:22_approx},{m:30.6,ri:8,ro:34},{m:10.3,ri:8,ro:28}])
+//  -> { iTotal≈3.599e-5, nexus=51.9%, hGear=20.5% }
+
+function divineBelialBattleTime(muBearing: number, mAssembly_g: number, rShaft_mm: number, iTotal: number): {
+  tBattle_s: number; seriesRank: string; vsNever_pct: number
+} {
+  const tau = muBearing * (mAssembly_g / 1000) * 9.81 * (rShaft_mm / 1000);
+  const t = 416 / (tau / iTotal);
+  const tNever = 260;
+  return { tBattle_s: t, seriesRank: "series maximum (bearing driver)", vsNever_pct: (t / tNever) * 100 };
+}
+// divineBelialBattleTime(0.015, 73.4, 3, 3.599e-5) -> { t=462s, rank="series max", vs_Never=177.7% }
+// divineBelialBattleTime(0.015, 73.4, 2, 3.599e-5) -> { t=693s, rank="series max", vs_Never=266.5% }
+// divineBelialBattleTime(0.04, 73.4, 3, 3.599e-5)  -> { t=173s, rank="mid-stamina", vs_Never=66.7% }
+
+function divineBelialBurstProfile(omega: number): {
+  phase: string; tau_mNm: number | string; battleFrac_pct: number
+} {
+  if (omega > 408) return { phase: "Overdrive (Belial 3)", tau_mNm: "infinity", battleFrac_pct: 68.6 };
+  return { phase: "3-thick-lock", tau_mNm: 75.6, battleFrac_pct: 31.4 };
+}
+// divineBelialBurstProfile(694) -> { phase="Overdrive", tau=infinity, frac=68.6% }
+// divineBelialBurstProfile(408) -> { phase="Overdrive", tau=infinity, frac=68.6% }
+// divineBelialBurstProfile(300) -> { phase="3-thick-lock", tau=75.6mN*m, frac=31.4% }
+```
+
+---

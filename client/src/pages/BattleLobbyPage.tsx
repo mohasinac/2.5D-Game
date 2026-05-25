@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
 import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGame } from "@/contexts/GameContext";
@@ -20,13 +20,18 @@ type BestOf = 1 | 3 | 5;
 export function BattleLobbyPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const mode = modeFromPath(location.pathname);
   const { settings } = useGame();
   const [countdown, setCountdown] = useState<number | null>(null);
   const [bestOf, setBestOf] = useState<BestOf>(1);
   const [copied, setCopied] = useState(false);
+  const [copiedJoin, setCopiedJoin] = useState(false);
   const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
   const [modeDisabled, setModeDisabled] = useState(false);
+
+  // If ?join=ROOM_ID is present, attempt to join that specific room (private match invite).
+  const inviteRoomId = searchParams.get("join") ?? undefined;
 
   useEffect(() => {
     getDoc(doc(db, "settings", "game")).then((snap) => {
@@ -45,6 +50,7 @@ export function BattleLobbyPage() {
   const { connectionState, gameState, beyblades, myBeyblade, room, connect, disconnect } =
     useColyseus({
       roomName: roomNameFor(mode, "battle"),
+      roomId: inviteRoomId,
       options: {
         beybladeId: settings.beybladeId ?? "default",
         arenaId: settings.arenaId ?? "default",
@@ -102,11 +108,35 @@ export function BattleLobbyPage() {
           </div>
         )}
 
-        {/* Room code */}
+        {/* Room code + private match invite */}
         {room && (
           <div style={{ marginBottom: 20, background: alpha(C.bg2, 0.53), borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
             <p style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>Room ID (share with friends)</p>
-            <p style={{ fontSize: 16, fontFamily: "monospace", color: C.text, letterSpacing: "0.1em" }}>{room.roomId}</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <p style={{ fontSize: 16, fontFamily: "monospace", color: C.text, letterSpacing: "0.1em", flex: 1, margin: 0 }}>{room.roomId}</p>
+              <button
+                data-testid="copy-join-link"
+                onClick={() => {
+                  const joinUrl = `${window.location.origin}/game/${mode}/battle/lobby?join=${room.roomId}`;
+                  navigator.clipboard.writeText(joinUrl).then(() => {
+                    setCopiedJoin(true);
+                    setTimeout(() => setCopiedJoin(false), 2000);
+                  });
+                }}
+                style={{
+                  padding: "5px 12px", borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: "pointer",
+                  background: copiedJoin ? alpha(C.green, 0.13) : C.bg3,
+                  color: copiedJoin ? C.green : C.muted,
+                  border: `1px solid ${copiedJoin ? C.green : C.border}`,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {copiedJoin ? "Copied!" : "Copy Invite Link"}
+              </button>
+            </div>
+            {inviteRoomId && (
+              <p style={{ fontSize: 11, color: C.blue, marginTop: 6 }}>Joining private room {inviteRoomId}</p>
+            )}
           </div>
         )}
 

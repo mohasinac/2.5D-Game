@@ -1,4 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
+import { config as dotenvConfig } from "dotenv";
+dotenvConfig(); // loads PROD_URL and other vars from root .env
 
 export default defineConfig({
   testDir: "./tests/e2e",

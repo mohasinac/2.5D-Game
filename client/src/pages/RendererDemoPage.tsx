@@ -28,17 +28,26 @@ export function RendererDemoPage() {
 
   const [theme, setTheme] = useState("futuristic");
   const [spinLoss, setSpinLoss] = useState(0);
+  // Gate: don't start the render loop until PixiJS has fully initialised.
+  const [rendererReady, setRendererReady] = useState(false);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const r = new BeybladeGameRenderer(el);
     rendererRef.current = r;
-    r.init().catch(console.error);
-    return () => { cancelAnimationFrame(animRef.current); r.destroy(); rendererRef.current = null; };
+    r.init()
+      .then(() => setRendererReady(true))
+      .catch(err => console.error("RendererDemo init failed:", err));
+    return () => {
+      cancelAnimationFrame(animRef.current);
+      try { r.destroy(); } catch { /* already destroyed */ }
+      rendererRef.current = null;
+    };
   }, []);
 
   useEffect(() => {
+    if (!rendererReady) return; // wait for PixiJS init before first render
     const loop = () => {
       const r = rendererRef.current;
       if (!r) { animRef.current = requestAnimationFrame(loop); return; }
@@ -70,7 +79,7 @@ export function RendererDemoPage() {
     };
     animRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animRef.current);
-  }, [spinLoss]);
+  }, [spinLoss, rendererReady]);
 
   const changeTheme = (t: string) => {
     setTheme(t);
