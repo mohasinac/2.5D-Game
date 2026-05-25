@@ -26,7 +26,7 @@ import { tryLogin, gotoProtected, ss } from "./helpers/auth";
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function waitForWinner(page: Page, timeoutMs = 180_000): Promise<string | null> {
-  const winnerEl = page.locator("text=/wins!/i, text=/Victory!/i, text=/Defeated!/i").first();
+  const winnerEl = page.getByText(/wins!/i).or(page.getByText(/Victory!/i)).or(page.getByText(/Defeated!/i)).first();
   try {
     await winnerEl.waitFor({ state: "visible", timeout: timeoutMs });
     return await winnerEl.textContent().catch(() => null);

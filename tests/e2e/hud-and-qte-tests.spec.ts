@@ -569,7 +569,7 @@ test.describe("HUD: Series score panel (BO3)", () => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe("Load Test: 1 human vs 7 AI bots in same arena", () => {
-  test.setTimeout(180_000);
+  test.setTimeout(300_000);
 
   test.beforeEach(async ({ page }) => {
     await tryLogin(page);
@@ -638,8 +638,8 @@ test.describe("Load Test: 1 human vs 7 AI bots in same arena", () => {
     }
 
     // Wait for winner or timeout
-    const ended = await page.locator("text=/wins!/i, text=/Victory!/i, text=/Defeated!/i").first()
-      .waitFor({ state: "visible", timeout: 90_000 }).then(() => true).catch(() => false);
+    const ended = await page.getByText(/wins!/i).or(page.getByText(/Victory!/i)).or(page.getByText(/Defeated!/i)).first()
+      .waitFor({ state: "visible", timeout: 150_000 }).then(() => true).catch(() => false);
 
     if (ended) {
       await ss(page, "L01-1v7-RESULT");

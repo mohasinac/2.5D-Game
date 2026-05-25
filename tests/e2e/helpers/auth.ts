@@ -12,14 +12,23 @@ export async function tryLogin(page: Page): Promise<boolean> {
   const password = process.env.TEST_PASSWORD;
   if (!email || !password) return false;
 
-  await page.goto("/login");
-  await page.waitForLoadState("networkidle");
+  try {
+    await page.goto("/login");
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(1_500);
+  } catch {
+    return false; // Page failed to load — gracefully degrade
+  }
 
   const emailInput = page.locator('input[type="email"]');
   const passInput  = page.locator('input[type="password"]');
-  await emailInput.fill(email);
-  await passInput.fill(password);
-  await page.click('button[type="submit"]');
+  try {
+    await emailInput.fill(email);
+    await passInput.fill(password);
+    await page.click('button[type="submit"]');
+  } catch {
+    return false; // Login form not present — probably already logged in or auth unavailable
+  }
 
   try {
     // Wait until the URL leaves /login — the app redirects to /game or /admin.

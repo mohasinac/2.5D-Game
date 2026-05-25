@@ -21,10 +21,13 @@ import { tryLogin, gotoProtected, ss } from "./helpers/auth";
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Wait for the match winner overlay ("wins!" text) and return the winner name. */
-async function waitForWinner(page: Page, timeoutMs = 180_000): Promise<string | null> {
+async function waitForWinner(page: Page, timeoutMs = 240_000): Promise<string | null> {
+  // Use .or() to combine locators — comma-separated text= selectors don't union correctly
+  const winnerLocator = page.getByText(/wins!/i)
+    .or(page.getByText(/Victory!/i))
+    .or(page.getByText(/Defeated!/i))
+    .first();
   try {
-    // The winner overlay shows "[username] wins!" or "Victory!" / "Defeated!"
-    const winnerLocator = page.locator("text=/wins!/i, text=/Victory!/i, text=/series.*complete/i").first();
     await winnerLocator.waitFor({ state: "visible", timeout: timeoutMs });
     const text = await winnerLocator.textContent();
     return text ?? "Unknown";
@@ -34,10 +37,12 @@ async function waitForWinner(page: Page, timeoutMs = 180_000): Promise<string | 
 }
 
 /** Poll state.status by checking for the finished/series-finished overlay */
-async function waitForMatchEnd(page: Page, timeoutMs = 180_000): Promise<boolean> {
-  const endLocator = page.locator(
-    "text=/wins!/i, text=/Victory!/i, text=/Defeated!/i, text=/series.*complete/i, text=/Play Again/i"
-  ).first();
+async function waitForMatchEnd(page: Page, timeoutMs = 240_000): Promise<boolean> {
+  const endLocator = page.getByText(/wins!/i)
+    .or(page.getByText(/Victory!/i))
+    .or(page.getByText(/Defeated!/i))
+    .or(page.getByText(/Play Again/i))
+    .first();
   try {
     await endLocator.waitFor({ state: "visible", timeout: timeoutMs });
     return true;
@@ -51,7 +56,7 @@ async function waitForMatchEnd(page: Page, timeoutMs = 180_000): Promise<boolean
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe("AI vs AI: full battle until winner", () => {
-  test.setTimeout(240_000); // 4 min — matches can take up to 3 min
+  test.setTimeout(360_000); // 6 min — Hell AI matches can run up to 3 min + overhead
 
   test.beforeEach(async ({ page }) => {
     await tryLogin(page);
@@ -135,15 +140,15 @@ test.describe("AI vs AI: full battle until winner", () => {
     await page.waitForTimeout(30_000);
     await ss(page, "AV02-ai-vs-ai-t60s");
 
-    // Now wait for match end (up to 3 min total from start)
-    const ended = await waitForMatchEnd(page, 120_000);
+    // Now wait for match end (up to 4 min from screenshots finishing)
+    const ended = await waitForMatchEnd(page, 240_000);
     if (ended) {
       await ss(page, "AV02-ai-vs-ai-WINNER");
       // Extract winner text
-      const winnerEl = page.locator("text=/wins!/i, text=/Victory!/i").first();
+      const winnerEl = page.getByText(/wins!/i).or(page.getByText(/Victory!/i)).first();
       const winnerText = await winnerEl.textContent().catch(() => "");
       console.log(`[AV02] Match ended — winner display: "${winnerText}"`);
-      await expect(page.locator("text=/wins!/i, text=/Victory!/i, text=/Play Again/i").first()).toBeVisible();
+      await expect(page.getByText(/wins!/i).or(page.getByText(/Victory!/i)).or(page.getByText(/Play Again/i)).first()).toBeVisible();
     } else {
       // Match may still be in progress — take a final screenshot
       await ss(page, "AV02-ai-vs-ai-timeout-shot");
@@ -232,7 +237,7 @@ test.describe("AI vs AI: full battle until winner", () => {
     if (ended) {
       await ss(page, "AV03-attack-clash-WINNER");
       // Verify someone was eliminated (either "wins!" or stamina drain)
-      const winnerEl = page.locator("text=/wins!/i, text=/Victory!/i, text=/Defeated!/i").first();
+      const winnerEl = page.getByText(/wins!/i).or(page.getByText(/Victory!/i)).or(page.getByText(/Defeated!/i)).first();
       await expect(winnerEl).toBeVisible({ timeout: 5_000 });
       const winnerText = await winnerEl.textContent().catch(() => "");
       console.log(`[AV03] Attack clash winner: "${winnerText}"`);

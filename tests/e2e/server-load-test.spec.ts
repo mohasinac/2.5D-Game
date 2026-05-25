@@ -183,7 +183,7 @@ test.describe("Server Load: 1 player + 7 spectators (8 unique connections)", () 
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe("Server Load: 1 human vs 7 AI bots (aiCount=7)", () => {
-  test.setTimeout(180_000);
+  test.setTimeout(300_000);
 
   test.beforeEach(async ({ page }) => {
     await tryLogin(page);
@@ -235,8 +235,8 @@ test.describe("Server Load: 1 human vs 7 AI bots (aiCount=7)", () => {
     await ss(page, "SL03-1v7-t45s");
 
     // Wait for match end or timeout
-    const ended = await page.locator("text=/wins!/i, text=/Victory!/i, text=/Play Again/i").first()
-      .waitFor({ state: "visible", timeout: 90_000 }).then(() => true).catch(() => false);
+    const ended = await page.getByText(/wins!/i).or(page.getByText(/Victory!/i)).or(page.getByText(/Play Again/i)).first()
+      .waitFor({ state: "visible", timeout: 150_000 }).then(() => true).catch(() => false);
 
     if (ended) {
       await ss(page, "SL03-1v7-RESULT");

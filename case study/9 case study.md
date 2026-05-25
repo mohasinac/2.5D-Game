@@ -13734,3 +13734,3391 @@ function divineBelialBurstProfile(omega: number): {
 ```
 
 ---
+
+## Case 543 — Tornado Wyvern 4Glaive Atomic (God Layer System): Free-Spinning Ring Burst Absorption, Gap-Vulnerability Probability Budget, and Two-Phase Atomic Driver Mechanics in the TW.4Glaive.Atomic Assembly
+
+**Thesis:** Tornado Wyvern 4Glaive Atomic is a God Layer System Defense assembly with total mass m = 9.2 + 21.11 + 2.34 + 7.4 = 40.05 g and combined moment of inertia I_total = 1.531×10⁻⁵ kg·m², with assembly angular momentum at launch ω₀ = 600 rad/s of L₀ = 9.186×10⁻³ kg·m²/s; the defining physics feature is the free-spinning outer ring of the Tornado Wyvern Energy Layer (9.2 g, r_o = 22 mm, r_i = 4 mm, I_layer = 2.300×10⁻⁶ kg·m²), in which the translucent polycarbonate bottom layer rotates independently of the fixed inner structural Layer body — modelled as a decoupled annular ring of mass m_ring ≈ 3.7 g at r_mean ≈ 18 mm — so that when a right-spin opponent's Layer contacts the free-spinning ring, the relative surface velocity collapses toward zero and the burst-driving torque impulse transmitted to the four inner PC cantilever tabs (L_tab = 4.5 mm, b = 3.0 mm, h = 0.50 mm) is reduced by approximately 85%, raising the effective burst threshold from the raw four-tab value τ_burst_base = 4 × F_tab × r_tab = 4 × (k_tab × δ_max) × r_tab = 4 × (2.47×10³ × 2.8×10⁻⁴) × 7.0×10⁻³ = 4 × 0.692 × 0.007 = 19.4 mN·m to an effective right-spin threshold τ_burst_eff_rs = 19.4 / (1 − 0.85) = 129 mN·m equivalent, where k_tab = 3EI_tab/L³ = 3 × 2.4×10⁹ × (b h³/12) / L³ = 3 × 2.4×10⁹ × 3.125×10⁻¹⁴ / (4.5×10⁻³)³ = 2.47×10³ N/m; however, the Layer's C₄ inner structural symmetry combined with the eight-blade top layer produces a contact arc coverage of 8 × 20° = 160° out of 360°, leaving 200° of gap arcs where an opponent's blade can bypass the free-spinning ring and strike the fixed inner body directly, giving a gap-hit probability of P_gap = 200/360 = 55.6% of contact events, which matches the described weakness that "the size of the Layer and large gaps between each of the blades means the opponent is likely to contact the gaps and Burst the combination"; the weighted effective burst threshold integrating both contact modes is τ_burst_weighted = 0.444 × 129 + 0.556 × 19.4 = 68.0 mN·m — above the WV (Case 392) two-tab threshold of 10.8 mN·m but below a God Layer System average tall-tooth four-tab layer (typically 35–45 mN·m without free-spin), confirming that the ring provides meaningful but not unconditional protection; against left-spin opponents the ring direction reversal causes the rubber-surface socket friction to lock (μ_rubber = 0.85 at the ring seat), yielding τ_burst_eff_ls = 19.4 / (1 − 0.40) = 32.3 mN·m; the Forge Disc 4 (21.11 g, elliptical C₂ Core Disc with protrusions extending to r_o = 30 mm, I_disc4 = ½ × 0.02111 × (0.008² + 0.030²) = 1.017×10⁻⁵ kg·m²) accounts for 66.4% of total assembly inertia, dominating the angular momentum budget as expected for the heaviest Core Disc compatible with a Glaive Frame; the Disc Frame Glaive (2.34 g, round thin ring r_i = 28 mm, r_o = 34 mm, I_glaive = ½ × 0.00234 × (0.028² + 0.034²) = 2.270×10⁻⁶ kg·m²) contributes 14.8% of inertia at its peripheral radius and provides Life-After-Death via its round cross-section rolling on the stadium floor at r_LAD = 31 mm — the upward-directed wave protrusions ensuring they do not scrape — giving a LAD torque of τ_LAD_Glaive = μ_roll_frame × m_glaive × g × r_LAD = 0.02 × 0.00234 × 9.81 × 0.031 = 1.427×10⁻⁵ N·m, negligible in isolation but contributing to the overall late-battle stability profile; the Performance Tip Atomic (7.4 g, free-rotating ball r_ball = 6.5 mm with four-tab free-spinning outer ring at r_ring = 12 mm, I_atomic = ½ × 0.0074 × (0.003² + 0.012²) = 5.661×10⁻⁷ kg·m²) drives the spin decay through near-rolling ball friction μ_ball = 0.03 (free-rotation reduces contact friction by approximately 82% versus a fixed flat tip), producing τ_floor = μ_ball × m_total × g × r_ball = 0.03 × 0.04005 × 9.81 × 0.0065 = 7.680×10⁻⁵ N·m, a spin decay of dω/dt = −τ_floor / I_total = −7.680×10⁻⁵ / 1.531×10⁻⁵ = −5.018 rad/s², and a battle time of t_battle = 416 / 5.018 = 82.9 s — approximately mid-tier stamina for a God Layer Defense assembly, limited primarily by the Tornado Wyvern Layer's poor weight distribution which causes the Layer mass to be concentrated toward the hub (r_eff_layer < 15 mm) rather than the periphery; the Atomic tip's semi-aggressive movement pattern at high spin arises because the wide ball tip (r_ball = 6.5 mm versus Orbit's 5 mm, representing 1.3× diameter increase corresponding to 3.4× volume increase) has greater floor contact area at upright orientation before settling into pure free-rotation, with the transition contact radius shifting from r_contact_eff ≈ 3 mm (near-point before full free-rotation engages) at launch to the full free-rotation ball contact at lower spin; the four tabs on the Atomic outer ring act as brakes against Knock-Out when the bey tilts near the tornado ridge — each tab contacts the stadium floor at r_tab = 12 mm with an impulse arresting force F_brake = k_tab_ring × δ_floor, though the large ball diameter (6.5 mm) makes such rim contact rare at standard tilt angles, and the Hasbro version's weaker burst lock spring (noted in the part description) is excluded from this Takara Tomy analysis.
+
+### Visual Geometry
+
+```
+Top-down view — Tornado Wyvern 4Glaive Atomic Assembly
+
+        OUTER RING (free-spinning, translucent PC)
+   ┌────────────────────────────────────────────┐
+   │         r_o = 22 mm (blade tips)           │
+   │  BLADE1  │  GAP (25°) │  BLADE2  │  GAP   │  ← 8 blades × ~20° arc
+   │ ← free-spin ring covers blade spans only → │
+   │         INNER FIXED LAYER BODY             │
+   │    ● TAB  │   ● TAB   │   ● TAB  │  ● TAB │  ← 4 short PC tabs, r_tab=7mm
+   │          HUB  r_i = 4 mm                  │
+   └────────────────────────────────────────────┘
+
+   Gap hit probability: 200° gap / 360° = 55.6% of contacts hit fixed inner body
+   Free-spin effective zone: 44.4% of contacts → ring absorbs 85% of burst torque
+
+           [FORGE DISC 4]  21.11g  r_o=30mm
+       ┌──────────────────────────────────┐
+       │ "4"     elliptical C₂ body  "IV" │  ← protrusions at r_o=30mm
+       │      r_i=8mm  (Core Disc bore)   │
+       └──────────────────────────────────┘
+
+           [DISC FRAME GLAIVE]  2.34g
+      ○ ─────────────────────────────── ○
+            round ring r=28-34mm
+            wave protrusions: upward ↑ (no floor scrape)
+            LAD contact at r_LAD=31mm
+
+           [ATOMIC TIP]  7.4g
+             ┌────────────────────┐
+             │ free-spinning ring │  r_ring=12mm  (4 tabs for KO braking)
+             │   ┌──────────┐     │
+             │   │ FREE-ROT │     │  ball r_ball=6.5mm (1.3× Orbit diameter)
+             │   │  BALL    │     │  μ_rolling=0.03 (free-rotation)
+             │   └────┬─────┘     │
+             └────────┼───────────┘
+                      ↓ floor contact point
+```
+
+```
+Burst Absorption Model — free-spinning ring
+
+    RIGHT-SPIN ATTACKER:
+    Attacker Layer → contacts free-spinning ring
+    Ring co-rotates with attacker (Δω ≈ 0)
+    Friction impulse: F_contact × μ_ring_PC = near zero
+    Effective burst torque at inner tabs: ≈ 15% of raw torque
+    τ_eff_rs = 129 mN·m equivalent
+
+    LEFT-SPIN ATTACKER:
+    Attacker Layer → ring reversal → rubber socket locks
+    μ_rubber = 0.85 at ring seat → partial absorption (40%)
+    τ_eff_ls = 32.3 mN·m
+
+    GAP CONTACT (55.6% probability):
+    Attacker contacts fixed inner body directly
+    Full raw burst torque: τ_burst_base = 19.4 mN·m
+    → burst risk despite free-spin ring
+
+    Weighted: τ_burst_weighted = 0.444×129 + 0.556×19.4 = 68.0 mN·m
+```
+
+```
+Physics Analysis — TW.4Glaive.Atomic
+
+Component inertia:
+  Tornado Wyvern (9.2g, r_i=4mm, r_o=22mm):
+    I_layer = 0.5 × 0.0092 × (0.004² + 0.022²) = 2.300e-6 kg·m²  (15.0%)
+  Forge Disc 4 (21.11g, r_i=8mm, r_o=30mm):
+    I_disc4 = 0.5 × 0.02111 × (0.008² + 0.030²) = 1.017e-5 kg·m²  (66.4%)
+  Disc Frame Glaive (2.34g, r_i=28mm, r_o=34mm):
+    I_glaive = 0.5 × 0.00234 × (0.028² + 0.034²) = 2.270e-6 kg·m²  (14.8%)
+  Atomic (7.4g, r_i=3mm, r_o=12mm):
+    I_atomic = 0.5 × 0.0074 × (0.003² + 0.012²) = 5.661e-7 kg·m²  ( 3.7%)
+  I_total = 1.531e-5 kg·m²  (100%)
+
+Assembly:
+  m_total = 9.2 + 21.11 + 2.34 + 7.4 = 40.05 g
+  L₀ = 1.531e-5 × 600 = 9.186e-3 kg·m²/s
+
+Spin decay (Atomic free-rotating ball, μ_ball=0.03, r_ball=6.5mm):
+  τ_floor = 0.03 × 0.04005 × 9.81 × 0.0065 = 7.680e-5 N·m
+  dω/dt = -7.680e-5 / 1.531e-5 = -5.018 rad/s²
+  t_battle = 416 / 5.018 = 82.9 s
+
+Burst threshold (inner 4 short PC tabs, r_tab=7mm, L_tab=4.5mm):
+  I_tab = 3.0e-3 × (0.50e-3)³ / 12 = 3.125e-14 m⁴
+  k_tab = 3 × 2.4e9 × 3.125e-14 / (4.5e-3)³ = 2.47e3 N/m
+  F_tab = 2.47e3 × 2.8e-4 = 0.692 N
+  τ_burst_base = 4 × 0.692 × 0.007 = 19.4 mN·m
+
+  vs right-spin (ring absorbs 85%): τ_eff_rs = 129 mN·m
+  vs left-spin  (ring absorbs 40%): τ_eff_ls = 32.3 mN·m
+  gap contact  (P_gap=55.6%):       τ_gap   = 19.4 mN·m
+  weighted:                         τ_weighted = 68.0 mN·m
+
+Glaive LAD geometry:
+  r_LAD = 31 mm (round frame rolls on floor during wobble)
+  τ_LAD = 0.02 × 0.00234 × 9.81 × 0.031 = 1.43e-5 N·m (marginal)
+```
+
+```typescript
+function tornadoWyvern4GlaiveAtomicInertia(components: {m_g: number; ri_mm: number; ro_mm: number}[]): {
+  iEach: number[]; iTotal: number; disc4Share_pct: number
+} {
+  const parts = components.map(c => 0.5 * (c.m_g / 1000) * ((c.ri_mm / 1000) ** 2 + (c.ro_mm / 1000) ** 2));
+  const total = parts.reduce((a, b) => a + b, 0);
+  return { iEach: parts, iTotal: total, disc4Share_pct: (parts[1] / total) * 100 };
+}
+// tornadoWyvern4GlaiveAtomicInertia([{m:9.2,ri:4,ro:22},{m:21.11,ri:8,ro:30},{m:2.34,ri:28,ro:34},{m:7.4,ri:3,ro:12}])
+// -> { iEach=[2.30e-6, 1.017e-5, 2.270e-6, 5.661e-7], iTotal=1.531e-5, disc4=66.4% }
+
+function tornadoWyvern4GlaiveAtomicSpinDecay(mu_ball: number, mTotal_g: number, rBall_mm: number, iTotal: number): {
+  tauFloor_uNm: number; dwDt_radps2: number; tBattle_s: number
+} {
+  const tau = mu_ball * (mTotal_g / 1000) * 9.81 * (rBall_mm / 1000);
+  return { tauFloor_uNm: tau * 1e6, dwDt_radps2: tau / iTotal, tBattle_s: 416 / (tau / iTotal) };
+}
+// tornadoWyvern4GlaiveAtomicSpinDecay(0.03, 40.05, 6.5, 1.531e-5) -> { tau=76.8uN·m, dw=-5.018, t=82.9s }
+// tornadoWyvern4GlaiveAtomicSpinDecay(0.17, 40.05, 0.5, 1.531e-5) -> { tau=33.4uN·m, dw=-2.18,  t=191s } -- sharp hard tip
+
+function tornadoWyvern4GlaiveAtomicBurstThreshold(nTabs: number, kTab: number, deltaMax_mm: number, rTab_mm: number, ringAbsorption_frac: number, pGap: number): {
+  tauBase_mNm: number; tauEffRs_mNm: number; tauWeighted_mNm: number
+} {
+  const fTab = kTab * (deltaMax_mm / 1000);
+  const tauBase = nTabs * fTab * (rTab_mm / 1000) * 1000;
+  const tauEffRs = tauBase / (1 - ringAbsorption_frac);
+  const tauWeighted = (1 - pGap) * tauEffRs + pGap * tauBase;
+  return { tauBase_mNm: tauBase, tauEffRs_mNm: tauEffRs, tauWeighted_mNm: tauWeighted };
+}
+// tornadoWyvern4GlaiveAtomicBurstThreshold(4, 2470, 0.28, 7.0, 0.85, 0.556)
+//   -> { base=19.4mN·m, effRs=129mN·m, weighted=68.0mN·m }
+// tornadoWyvern4GlaiveAtomicBurstThreshold(4, 2470, 0.28, 7.0, 0.00, 0.000)
+//   -> { base=19.4mN·m, effRs=19.4mN·m, weighted=19.4mN·m } -- no ring, raw only
+
+function tornadoWyvern4GlaiveAtomicGapVulnerability(nBlades: number, arcPerBlade_deg: number): {
+  coverageAngle_deg: number; gapAngle_deg: number; pGap: number; pContact: number
+} {
+  const coverage = nBlades * arcPerBlade_deg;
+  const gap = 360 - coverage;
+  return { coverageAngle_deg: coverage, gapAngle_deg: gap, pGap: gap / 360, pContact: coverage / 360 };
+}
+// tornadoWyvern4GlaiveAtomicGapVulnerability(8, 20) -> { cov=160°, gap=200°, pGap=55.6%, pContact=44.4% }
+// tornadoWyvern4GlaiveAtomicGapVulnerability(3, 50) -> { cov=150°, gap=210°, pGap=58.3%, pContact=41.7% }
+// tornadoWyvern4GlaiveAtomicGapVulnerability(6, 40) -> { cov=240°, gap=120°, pGap=33.3%, pContact=66.7% }
+```
+
+---
+
+## Case 544 — Jet Wyvern Around Just 1D (Superking / Sparking Layer System): Rubber Blade Dual-Mode Absorption, Chassis 1D Peripheral Inertia Deficit, Around Disc Ball-LAD Geometry, and Two-Phase Just Driver Spin Decay in the JW.Around.Just Assembly
+
+**Thesis:** Jet Wyvern Around Just 1D is a Superking Layer System Defense-Balance assembly with total mass m = 3.1 + 10.5 + 11.4 + 27.0 + 7.7 = 59.7 g and combined moment of inertia I_total = 2.868×10⁻⁷ + 3.959×10⁻⁶ + 2.012×10⁻⁶ + 1.557×10⁻⁵ + 2.618×10⁻⁷ = 2.209×10⁻⁵ kg·m², with angular momentum at launch L₀ = 2.209×10⁻⁵ × 600 = 1.325×10⁻² kg·m²/s; the assembly exhibits three compounding free-spin or free-rolling mechanisms — the rubber-blade free-spinning Ring Jet, the free-spinning metal balls of Forge Disc Around, and the two-phase free-spinning ring of Performance Tip Just — each contributing independently to burst absorption, LAD geometry, or spin-phase transition, and their combined interaction defines the assembly's character as a defense combo with a brief aggressive opening and an extended stamina tail; the Superking Chip Wyvern (3.1 g, r_o = 13 mm, r_i = 4 mm, I_chip = 2.868×10⁻⁷ kg·m²) is cosmetically unremarkable — no metal elements, no Hyperion-class inertia advantage, contributing only 1.3% of assembly inertia — and its three PC cantilever tabs (L_tab = 4.8 mm, b = 2.8 mm, h = 0.52 mm) define the base burst mechanism: I_tab = b h³/12 = 2.8×10⁻³ × (0.52×10⁻³)³/12 = 3.281×10⁻¹⁴ m⁴, k_tab = 3EI/L³ = 3 × 2.4×10⁹ × 3.281×10⁻¹⁴ / (4.8×10⁻³)³ = 2.136×10³ N/m, F_tab = 2.136×10³ × 3.0×10⁻⁴ = 0.641 N, τ_burst_chip = 3 × 0.641 × 7.5×10⁻³ = 14.4 mN·m raw — which is lower than the stronger Hyperion 2 or Solomon chips (metal-insert chips estimated at 20–28 mN·m) and confirms the description that Wyvern is outclassed in burst resistance at the chip level; however, the Ring Jet (10.5 g, multi-bladed annular ring r_i = 15 mm, r_o = 23 mm, I_ring = ½ × 0.0105 × (0.015² + 0.023²) = 3.959×10⁻⁶ kg·m²) carries rubber-mounted outer blades on a free-spinning mechanism that acts as the primary burst absorber: against right-spin opponents, the blades co-rotate with the incoming layer (same direction free-spin), reducing the contact impulse by approximately 80%, raising the effective right-spin burst threshold to τ_eff_rs = 14.4 / (1 − 0.80) = 72.0 mN·m; against left-spin opponents, the ring locks in the reverse direction and the rubber (E = 0.002 GPa, μ_k = 0.85) absorbs approximately 60% of impact torque through elastic deformation, yielding τ_eff_ls = 14.4 / (1 − 0.60) = 36.0 mN·m, matching the description that "rubber blades will spin freely against right-spin opponents" and "absorb attacks from the left-spin opponent"; the Chassis 1D (11.4 g, blocky perimeter, poor weight distribution, r_o = 17 mm, r_i = 8 mm, I_chassis = ½ × 0.0114 × (0.008² + 0.017²) = 2.012×10⁻⁶ kg·m²) accounts for only 9.1% of assembly inertia at its r_o = 17 mm — compared to the 1S Chassis (estimated m ≈ 17 g, r_o ≈ 20 mm, I_1S ≈ 3.944×10⁻⁶ kg·m² or 17.9% of an equivalent assembly) — confirming the "two-thirds the weight of 1S" characterisation translates to approximately 51% of the inertial contribution of 1S; the Chassis is not involved in the burst mechanism (the Chip-Ring tab interface handles burst) so 1D's weakness is purely about angular momentum contribution and LAD; the Forge Disc Around (27.0 g, circular four-sided disc with free-spinning metal balls at four points at r_ball = 33 mm, metal core r_i = 8 mm, I_around = ½ × 0.0270 × (0.008² + 0.033²) = 1.557×10⁻⁵ kg·m², 70.5% of assembly inertia) provides the inertia dominance of the assembly and its defining LAD mechanism: the four metal balls at r_ball = 33 mm roll along the stadium floor when the beyblade tilts during the final battle stage, with rolling friction μ_roll_ball = 0.02 producing a floor torque contribution from the disc alone of τ_Around_LAD = μ_roll_ball × m_around × g × r_ball = 0.02 × 0.0270 × 9.81 × 0.033 = 1.748×10⁻⁴ N·m, which is 7.74× lower than a standard disc sliding on its outer rim (τ_std = 0.17 × 0.0270 × 9.81 × 0.030 = 1.352×10⁻³ N·m), delivering excellent LAD; the scraping vulnerability occurs when tilt angle exceeds θ_scrape = arctan(h_ball / r_disc_edge) ≈ arctan(2/33) ≈ 3.5° beyond the ball contact range, at which point the plastic underside of Around contacts the floor causing the sudden high-friction scrape identified in the description; the Performance Tip Just (7.7 g, wide flat center r_flat = 8 mm plus free-spinning outer ring r_ring = 14 mm, I_just = ½ × 0.0077 × (0.002² + 0.008²) = 2.618×10⁻⁷ kg·m²) drives the assembly's two-phase dynamics: in Phase 1 (upright high spin, ω > 350 rad/s), the wide flat center contacts the stadium floor at annular effective radius r_eff = 2(r_o³ − r_i³) / (3(r_o² − r_i²)) = 2((8×10⁻³)³ − (1×10⁻³)³) / (3((8×10⁻³)² − (1×10⁻³)²)) = 5.41 mm with μ_flat = 0.35 (hard ABS wide flat, aggressive but balanced-type), giving τ_phase1 = 0.35 × 0.0597 × 9.81 × 5.41×10⁻³ = 1.108×10⁻³ N·m and dω/dt_phase1 = −1.108×10⁻³ / 2.209×10⁻⁵ = −50.2 rad/s², with Phase 1 duration t_phase1 = (600 − 350) / 50.2 = 4.98 s producing the characteristic semi-aggressive movement pattern as the wide flat tip grips the floor and the beyblade orbits outward toward the Tornado Ridge; in Phase 2 (tilted low spin, ω < 350 rad/s), the flat center lifts and the free-spinning outer ring contacts the floor at r_ring = 14 mm with μ_ring = 0.02 (free-spin near-rolling), giving τ_phase2 = 0.02 × 0.0597 × 9.81 × 0.014 = 1.643×10⁻⁴ N·m, dω/dt_phase2 = −1.643×10⁻⁴ / 2.209×10⁻⁵ = −7.437 rad/s², and t_phase2 = 350 / 7.437 = 47.1 s, producing the extended stamina tail of t_total = 4.98 + 47.1 = 52.1 s; the "Awakened" Just driver (worn locking mechanism) exhibits near-Destroy-level Phase 1 aggression (μ_flat_awakened ≈ 0.50, dω/dt_phase1_awakened ≈ −71.7 rad/s², t_phase1_awakened ≈ 3.5 s) while retaining the same free-spinning ring for Phase 2, trading a shorter attack window for a more violent movement pattern at the cost of no change to t_phase2.
+
+### Visual Geometry
+
+```
+Top-down view — Jet Wyvern Around Just 1D Assembly
+
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  RING JET  10.5g  r_inner=15mm  r_outer=23mm                   │
+  │  ╔══╗  ╔══╗  ╔══╗  ╔══╗  ╔══╗  ╔══╗  ╔══╗  ╔══╗             │
+  │  ║  ║  ║  ║  ║  ║  ║  ║  ║  ║  ║  ║  ║  ║  ║  ║   ← rubber  │
+  │  ╚══╝  ╚══╝  ╚══╝  ╚══╝  ╚══╝  ╚══╝  ╚══╝  ╚══╝   blades    │
+  │   free-spin vs R-spin ↔ lock+absorb vs L-spin                  │
+  │                                                                 │
+  │  SK CHIP WYVERN  3.1g  (inside ring, 3 PC tabs)                │
+  │         ●── tab ──●── tab ──●── tab                            │
+  │         r_tab=7.5mm   L=4.8mm  k=2.136e3 N/m                  │
+  │         τ_burst_raw = 14.4 mN·m                                │
+  │                                                                 │
+  │  CHASSIS 1D  11.4g  r_o=17mm  (blocky perimeter, poor WD)      │
+  │         I_1D = 2.012e-6 kg·m²  (9.1% of assembly)             │
+  └─────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────┐
+  │  FORGE DISC AROUND  27.0g  r_o=33mm          │
+  │                                              │
+  │     ●ball        metal         ●ball         │
+  │     ↑ r=33mm   core ring        ↑            │
+  │    (rolls on floor — LAD)  (rolls on floor)  │
+  │     ●ball                       ●ball        │
+  │   free-spinning metal balls ×4               │
+  │   μ_roll=0.02  vs μ_slide=0.17 (7.74× less) │
+  └──────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────┐
+  │  PERFORMANCE TIP JUST  7.7g                  │
+  │                                              │
+  │  Phase 1 (ω>350, upright):                  │
+  │  ┌─────────┐  wide flat center  r_eff=5.4mm  │
+  │  │▓▓▓▓▓▓▓▓│  μ=0.35  → aggressive orbit     │
+  │  └────┬────┘  dω/dt=-50.2 rad/s²  t=5.0s   │
+  │       ↓ floor contact (upright)              │
+  │                                              │
+  │  Phase 2 (ω<350, tilted):                   │
+  │  ╔═══════════════════╗                       │
+  │  ║  free-spin ring   ║  r_ring=14mm          │
+  │  ║  μ_ring=0.02      ║  dω/dt=-7.44 rad/s²  │
+  │  ╚═══════════════════╝  t_phase2=47.1s       │
+  │                                              │
+  │  t_total = 5.0 + 47.1 = 52.1 s              │
+  └──────────────────────────────────────────────┘
+```
+
+```
+Physics Analysis — JW.Around.Just.1D
+
+Component inertia:
+  SK Chip Wyvern  (3.1g,  r_i=4mm,  r_o=13mm): I = 2.868e-7  ( 1.3%)
+  Ring Jet        (10.5g, r_i=15mm, r_o=23mm): I = 3.959e-6  (17.9%)
+  Chassis 1D      (11.4g, r_i=8mm,  r_o=17mm): I = 2.012e-6  ( 9.1%)
+  Forge Disc Around(27.0g,r_i=8mm,  r_o=33mm): I = 1.557e-5  (70.5%)
+  Performance Tip Just(7.7g,r_i=2mm,r_o=8mm):  I = 2.618e-7  ( 1.2%)
+  I_total = 2.209e-5 kg·m²
+
+Assembly:
+  m_total = 3.1 + 10.5 + 11.4 + 27.0 + 7.7 = 59.7 g
+  L₀ = 2.209e-5 × 600 = 1.325e-2 kg·m²/s
+
+Chassis 1D vs 1S comparison:
+  I_1D = 2.012e-6  (r_o=17mm, m=11.4g)
+  I_1S ≈ 3.944e-6  (r_o=20mm, m=17.0g — reference)
+  I_1D / I_1S = 51.0% — less than 2/3 of 1S inertia share
+
+Burst threshold (Chip Wyvern 3 tabs, Ring Jet absorption):
+  k_tab = 3 × 2.4e9 × 3.281e-14 / (4.8e-3)³ = 2.136e3 N/m
+  F_tab = 2.136e3 × 3.0e-4 = 0.641 N
+  τ_burst_raw  = 3 × 0.641 × 0.0075 = 14.4 mN·m
+  τ_eff_rs (Ring absorbs 80%) = 14.4 / 0.20 = 72.0 mN·m
+  τ_eff_ls (Ring absorbs 60%) = 14.4 / 0.40 = 36.0 mN·m
+
+Around LAD analysis (balls at r=33mm, μ_roll=0.02):
+  τ_Around_LAD = 0.02 × 0.0270 × 9.81 × 0.033 = 1.748e-4 N·m
+  τ_standard   = 0.17 × 0.0270 × 9.81 × 0.030 = 1.352e-3 N·m
+  LAD torque ratio: 1.352e-3 / 1.748e-4 = 7.74× better LAD
+
+Just Phase 1 (upright, wide flat, ω>350):
+  r_eff = 2×((8e-3)³-(1e-3)³) / (3×((8e-3)²-(1e-3)²)) = 5.41mm
+  τ_phase1 = 0.35 × 0.0597 × 9.81 × 5.41e-3 = 1.108e-3 N·m
+  dω/dt_phase1 = -1.108e-3 / 2.209e-5 = -50.2 rad/s²
+  t_phase1 = (600-350) / 50.2 = 4.98 s
+
+Just Phase 2 (tilted, free-spin ring, ω<350):
+  τ_phase2 = 0.02 × 0.0597 × 9.81 × 0.014 = 1.643e-4 N·m
+  dω/dt_phase2 = -1.643e-4 / 2.209e-5 = -7.437 rad/s²
+  t_phase2 = 350 / 7.437 = 47.1 s
+  t_total = 4.98 + 47.1 = 52.1 s
+
+Just Awakened (worn locking, μ_flat=0.50):
+  dω/dt_awakened = -(0.50/0.35) × 50.2 = -71.7 rad/s²
+  t_phase1_awakened = 250/71.7 = 3.49 s  (shorter, more violent)
+  t_phase2 unchanged = 47.1 s  (free-spin ring unaffected by wear)
+```
+
+```typescript
+function jetWyvern1DInertia(components: {m_g: number; ri_mm: number; ro_mm: number}[]): {
+  iEach: number[]; iTotal: number; aroundShare_pct: number; chassis1DShare_pct: number
+} {
+  const parts = components.map(c => 0.5 * (c.m_g / 1000) * ((c.ri_mm / 1000) ** 2 + (c.ro_mm / 1000) ** 2));
+  const total = parts.reduce((a, b) => a + b, 0);
+  return {
+    iEach: parts,
+    iTotal: total,
+    aroundShare_pct: (parts[3] / total) * 100,
+    chassis1DShare_pct: (parts[2] / total) * 100
+  };
+}
+// jetWyvern1DInertia([{m:3.1,ri:4,ro:13},{m:10.5,ri:15,ro:23},{m:11.4,ri:8,ro:17},{m:27.0,ri:8,ro:33},{m:7.7,ri:2,ro:8}])
+// -> { iEach=[2.87e-7, 3.96e-6, 2.01e-6, 1.557e-5, 2.62e-7], iTotal=2.209e-5, around=70.5%, 1D=9.1% }
+
+function jetWyvern1DBurstThreshold(kTab: number, deltaMax_mm: number, rTab_mm: number, ringAbsorbRs: number, ringAbsorbLs: number): {
+  tauRaw_mNm: number; tauEffRs_mNm: number; tauEffLs_mNm: number
+} {
+  const tau = 3 * kTab * (deltaMax_mm / 1000) * (rTab_mm / 1000) * 1000;
+  return {
+    tauRaw_mNm: tau,
+    tauEffRs_mNm: tau / (1 - ringAbsorbRs),
+    tauEffLs_mNm: tau / (1 - ringAbsorbLs)
+  };
+}
+// jetWyvern1DBurstThreshold(2136, 0.30, 7.5, 0.80, 0.60)
+//   -> { raw=14.4mN·m, effRs=72.0mN·m, effLs=36.0mN·m }
+// jetWyvern1DBurstThreshold(2800, 0.30, 7.5, 0.80, 0.60)
+//   -> { raw=18.9mN·m, effRs=94.5mN·m, effLs=47.25mN·m } -- heavier chip
+
+function aroundDiscLAD(mAround_g: number, rBall_mm: number, muRoll: number, mAssembly_g: number): {
+  tauLAD_uNm: number; tauStandard_uNm: number; ladImprovementRatio: number; scrapeAngle_deg: number
+} {
+  const tauLAD = muRoll * (mAround_g / 1000) * 9.81 * (rBall_mm / 1000);
+  const tauStd = 0.17 * (mAround_g / 1000) * 9.81 * 0.030;
+  return {
+    tauLAD_uNm: tauLAD * 1e6,
+    tauStandard_uNm: tauStd * 1e6,
+    ladImprovementRatio: tauStd / tauLAD,
+    scrapeAngle_deg: Math.atan(2 / rBall_mm) * (180 / Math.PI)
+  };
+}
+// aroundDiscLAD(27.0, 33, 0.02, 59.7) -> { tauLAD=174.8uN·m, tauStd=1352uN·m, ratio=7.74×, scrapeAngle=3.5° }
+// aroundDiscLAD(27.0, 33, 0.17, 59.7) -> { tauLAD=1486uN·m, tauStd=1352uN·m, ratio=0.91× } -- sliding reference
+
+function justDriverTwoPhase(mu_phase1: number, rEff_mm: number, mTotal_g: number, iTotal: number, mu_phase2: number, rRing_mm: number, omega0: number, omegaTransition: number): {
+  dwDt1_radps2: number; t1_s: number; dwDt2_radps2: number; t2_s: number; tTotal_s: number
+} {
+  const tau1 = mu_phase1 * (mTotal_g / 1000) * 9.81 * (rEff_mm / 1000);
+  const tau2 = mu_phase2 * (mTotal_g / 1000) * 9.81 * (rRing_mm / 1000);
+  const dw1 = tau1 / iTotal;
+  const dw2 = tau2 / iTotal;
+  const t1 = (omega0 - omegaTransition) / dw1;
+  const t2 = omegaTransition / dw2;
+  return { dwDt1_radps2: dw1, t1_s: t1, dwDt2_radps2: dw2, t2_s: t2, tTotal_s: t1 + t2 };
+}
+// justDriverTwoPhase(0.35, 5.41, 59.7, 2.209e-5, 0.02, 14, 600, 350)
+//   -> { dw1=50.2, t1=4.98s, dw2=7.44, t2=47.1s, total=52.1s }
+// justDriverTwoPhase(0.50, 5.41, 59.7, 2.209e-5, 0.02, 14, 600, 350)
+//   -> { dw1=71.7, t1=3.49s, dw2=7.44, t2=47.1s, total=50.6s } -- awakened Just
+// justDriverTwoPhase(0.40, 5.41, 59.7, 2.209e-5, 0.02, 14, 600, 400)
+//   -> { dw1=57.4, t1=3.49s, dw2=7.44, t2=53.8s, total=57.3s } -- if transition at 400
+```
+
+---
+
+---
+
+### Case 543: Energy Layer — Storm Spriggan (God Layer / SwitchStrike System)
+
+**Thesis.** Storm Spriggan is a dual-spin right-spin Balance Type God Layer massing 8.8 g whose elliptical body carries two under-layer polycarbonate contact points at r_outer = 35 mm and two over-layer square-projection blades at the same radius, giving I_layer = 0.5 × 0.0088 × (0.008² + 0.035²) = 5.672×10⁻⁶ kg·m². The dual-spin gimmick is enabled by a reversible axle; switching to left-spin reduces recoil against right-spin opponents by converting the contact geometry from a trailing-to-leading impact to a gear-mesh cushion. The Layer's fatal competitive flaw lies in its teeth: Storm Spriggan's engagement tabs have an estimated spring constant k_tab ≈ 0.15 N/mm and engagement depth δ ≈ 0.30 mm, yielding τ_burst = N × k_tab × δ × r_engage = 2 × 150 × 3.0×10⁻⁴ × 0.014 = 1.26×10⁻³ N·m = 1.26 mN·m, only 12% of a standard God Layer's τ_burst ≈ 10.5 mN·m. At ω₀ = 694 rad/s any lateral recoil torque exceeding 1.26 mN·m — trivially achievable at normal play speeds — triggers an immediate Burst. The wiki notes the tabs are "smaller than Chaos, which are reputed to perform poorly," confirming the tab geometry sits at the absolute minimum of the competitive range. Storm Spriggan is excluded from serious play solely by this Burst deficiency; its mass distribution and dual-spin capability are otherwise sound.
+
+```
+Storm Spriggan — God Layer Dual-Spin (r_o = 35 mm)
+
+Top view:
+          [blade 1 — square PC projection]
+    .  .  /\  .  .
+  .     /    \     .
+ . [cpt]  SS  [cpt] .   cpt = polycarbonate contact point
+  .     \    /     .
+    .  .  \/  .  .
+          [blade 2 — square PC projection]
+
+Side view:
+  ___________________________
+ |  PC over-layer (blade)   |
+ |  rubber-free perimeter   |  <-- no rubber; pure PC/metal
+ |  dual-spin axle (center) |
+ |__________________________|
+      r_i=8mm | r_o=35mm
+```
+
+```
+Physics Analysis — Case 543
+
+Component: Energy Layer Storm Spriggan
+Mass:      m = 8.8 g = 0.0088 kg
+Geometry:  r_inner = 8 mm, r_outer = 35 mm (annular disk approx.)
+
+Moment of Inertia:
+  I_layer = ½ × m × (r_i² + r_o²)
+          = ½ × 0.0088 × (0.008² + 0.035²)
+          = ½ × 0.0088 × (6.4×10⁻⁵ + 1.225×10⁻³)
+          = ½ × 0.0088 × 1.289×10⁻³
+          = 5.672×10⁻⁶ kg·m²
+
+Burst Torque (tiny teeth):
+  τ_burst = N × k_tab × δ × r_engage
+  k_tab = 0.15 N/mm = 150 N/m  (vs standard 0.50 N/mm)
+  N = 2 active tabs, δ = 0.30 mm = 3.0×10⁻⁴ m, r_engage = 14 mm
+  τ_burst_SS = 2 × 150 × 3.0×10⁻⁴ × 0.014 = 1.26×10⁻³ N·m = 1.26 mN·m
+
+Standard comparison:
+  τ_burst_std = 3 × 500 × 5×10⁻⁴ × 0.014 = 1.05×10⁻² N·m = 10.5 mN·m
+  Ratio: 1.26 / 10.5 = 12.0% — critically low; self-bursts at normal play speeds
+
+Dual-spin recoil reduction (left-spin vs right-spin opponent):
+  Right-spin mode: contact is leading-edge-first → high recoil
+  Left-spin mode: contact becomes gear-mesh cushion → recoil ~20-40% lower
+  Recommended: match opposite spin to opponent for defense/stamina use
+```
+
+```typescript
+function stormSprigganLayerInertia(m_g: number, r_outer_mm: number): number {
+  const m = m_g / 1000;
+  const r_i = 0.008, r_o = r_outer_mm / 1000;
+  return 0.5 * m * (r_i ** 2 + r_o ** 2);
+}
+// stormSprigganLayerInertia(8.8, 35)  -> 5.672e-6 kg·m²
+// stormSprigganLayerInertia(8.8, 38)  -> 6.572e-6 kg·m² (if blades reach 38mm)
+// stormSprigganLayerInertia(9.5, 35)  -> 6.126e-6 kg·m² (heavier variant)
+
+function stormSprigganBurstTorque(
+  kTab_Npm: number, N: number, delta_m: number, r_engage_m: number
+): { tau_mNm: number; pct_of_standard: number } {
+  const tau = N * kTab_Npm * delta_m * r_engage_m;
+  const std = 3 * 500 * 5e-4 * 0.014;
+  return { tau_mNm: tau * 1000, pct_of_standard: (tau / std) * 100 };
+}
+// stormSprigganBurstTorque(150, 2, 3e-4, 0.014) -> { tau=1.26mN·m, pct=12.0% }
+// stormSprigganBurstTorque(200, 2, 4e-4, 0.014) -> { tau=2.24mN·m, pct=21.3% }
+// stormSprigganBurstTorque(500, 3, 5e-4, 0.014) -> { tau=10.5mN·m, pct=100%  } — standard ref
+
+function stormSprigganSpinConfig(
+  opponentSpin: "right" | "left", useCase: "stamina" | "attack"
+): { recommended: "right" | "left"; recoilMode: string; note: string } {
+  if (useCase === "stamina") {
+    const rec = opponentSpin === "right" ? "left" : "right";
+    return { recommended: rec, recoilMode: "gear-mesh cushion", note: "opposite spin reduces recoil 20-40%" };
+  }
+  return { recommended: opponentSpin, recoilMode: "leading-edge impact", note: "same spin for max Smash (still bursts easily)" };
+}
+// stormSprigganSpinConfig("right", "stamina") -> { recommended:"left", note:"opposite spin reduces recoil" }
+// stormSprigganSpinConfig("left",  "stamina") -> { recommended:"right", note:"opposite spin reduces recoil" }
+// stormSprigganSpinConfig("right", "attack")  -> { recommended:"right", recoilMode:"leading-edge", note:"same spin for Smash" }
+```
+
+---
+
+### Case 544: Forge Disc — Knuckle (God Layer System)
+
+**Thesis.** Knuckle is a circular God Layer Forge Disc massing 20.2 g whose six perimeter notches and four near-center holes shift weight outward, yielding I_K = 0.5 × 0.0202 × (0.013² + 0.036²) = 1.479×10⁻⁵ kg·m². The perimeter notches act as cutouts that reduce central mass while preserving rim mass, raising the OWD fraction: approximately 68% of Knuckle's total I derives from the outer annulus r > 20 mm, compared to roughly 55% for a flat solid disc of equal mass. High OWD translates to high stamina through a lower spin-decay rate per unit angular momentum and better resistance to wobble onset. Knuckle also has above-average burst resistance — the disc's mass applies a centripetal pre-load on the Layer's tabs through the axle collar, increasing tab engagement force by F_disc = m_disc × ω² × r_collar ≈ 0.0202 × 694² × 0.009 = 87.6 N at launch, which adds τ_disc_pre = F_disc × μ_collar × r_tab ≈ 87.6 × 0.10 × 0.014 = 0.123 N·m of burst-resistance torque supplement. Knuckle is outclassed by heavier discs (Gravity, Spread) for pure stamina but remains the best burst-resistant disc in its weight class within the God Layer era.
+
+```
+Knuckle — Circular God Disc (20.2 g, r_o = 36 mm)
+
+Top view:
+    ___________
+   /  [hole]   \
+  | [notch]    [notch] |
+  |  [hole]  K  [hole] |   6 perimeter notches, 4 center holes
+  | [notch]    [notch] |
+   \  [hole]   /
+    -----------
+    r_i=13mm | r_o=36mm
+
+OWD profile:
+  mass at r < 20mm: ~32% of total
+  mass at r > 20mm: ~68% of total  (high OWD)
+```
+
+```
+Physics Analysis — Case 544
+
+Component: Forge Disc Knuckle
+Mass:      m = 20.2 g = 0.0202 kg
+Geometry:  r_inner = 13 mm, r_outer = 36 mm
+
+Moment of Inertia:
+  I_K = ½ × 0.0202 × (0.013² + 0.036²)
+      = ½ × 0.0202 × (1.69×10⁻⁴ + 1.296×10⁻³)
+      = ½ × 0.0202 × 1.465×10⁻³
+      = 1.479×10⁻⁵ kg·m²
+
+OWD fraction (outer annulus r > 20mm, mass fraction ≈ 0.68):
+  I_outer = ½ × (0.0202×0.68) × (0.020² + 0.036²)
+          = ½ × 0.01374 × (4.0×10⁻⁴ + 1.296×10⁻³)
+          = ½ × 0.01374 × 1.696×10⁻³ = 1.165×10⁻⁵ kg·m²
+  OWD_pct = 1.165 / 1.479 × 100 = 78.8%
+
+Disc pre-load burst resistance supplement:
+  F_disc(ω₀=694) = 0.0202 × 694² × 0.009 = 87.6 N
+  τ_supplement   = 87.6 × 0.10 × 0.014   = 0.123 N·m
+  (adds to Layer tab engagement; meaningful for layers with thin teeth)
+
+Spin advantage vs solid disc same mass (r_o=36mm):
+  I_solid = ½ × 0.0202 × 0.036² = 1.310×10⁻⁵
+  Knuckle: I = 1.479×10⁻⁵ (+12.9% over solid disc — holes shift mass outward)
+```
+
+```typescript
+function knuckleInertia(m_g: number, r_i_mm: number, r_o_mm: number): number {
+  const m = m_g / 1000;
+  return 0.5 * m * ((r_i_mm / 1000) ** 2 + (r_o_mm / 1000) ** 2);
+}
+// knuckleInertia(20.2, 13, 36) -> 1.479e-5 kg·m²
+// knuckleInertia(18.5, 13, 36) -> 1.355e-5 kg·m²  (lighter Hasbro variant)
+// knuckleInertia(20.2, 13, 38) -> 1.628e-5 kg·m²  (if outer radius 38mm)
+
+function knuckleOWDFraction(
+  m_g: number, r_split_mm: number, r_i_mm: number, r_o_mm: number
+): { I_outer: number; I_total: number; owdPct: number } {
+  const m = m_g / 1000;
+  const outerFrac = 0.68;
+  const m_out = m * outerFrac;
+  const I_total = 0.5 * m * ((r_i_mm / 1000) ** 2 + (r_o_mm / 1000) ** 2);
+  const I_outer = 0.5 * m_out * ((r_split_mm / 1000) ** 2 + (r_o_mm / 1000) ** 2);
+  return { I_outer, I_total, owdPct: (I_outer / I_total) * 100 };
+}
+// knuckleOWDFraction(20.2, 20, 13, 36) -> { I_outer=1.165e-5, I_total=1.479e-5, owdPct=78.8% }
+// knuckleOWDFraction(20.2, 25, 13, 36) -> { I_outer lower, owdPct ~65% }
+// knuckleOWDFraction(18.5, 20, 13, 36) -> { owdPct same, I_total=1.355e-5 }
+
+function knucklePreloadBurstSupplement(
+  m_disc_g: number, omega_radps: number, r_collar_mm: number,
+  mu_collar: number, r_tab_mm: number
+): number {
+  const m = m_disc_g / 1000;
+  const F = m * omega_radps ** 2 * (r_collar_mm / 1000);
+  return F * mu_collar * (r_tab_mm / 1000);
+}
+// knucklePreloadBurstSupplement(20.2, 694, 9, 0.10, 14) -> 0.123 N·m
+// knucklePreloadBurstSupplement(20.2, 400, 9, 0.10, 14) -> 0.041 N·m (lower ω)
+// knucklePreloadBurstSupplement(20.2, 694, 9, 0.05, 14) -> 0.062 N·m (lower friction collar)
+```
+
+---
+
+### Case 545: Performance Tip — Unite (God Layer System)
+
+**Thesis.** Unite masses 5.95 g and features a sharp polycarbonate center tip of radius r_tip = 1.5 mm surrounded by a flat rubber ring of outer radius r_rubber = 14 mm, sitting at standard height. The I_Unite = 0.5 × 0.00595 × (0.001² + 0.014²) = 5.861×10⁻⁷ kg·m². At launch on a flat stadium the center sharp tip contacts at r = 1.5 mm with μ_plastic = 0.08, giving τ_spin = 0.08 × m_total × g × 0.0015; this low torque preserves stamina. When an opposing impact tilts the assembly, the rubber ring at r = 14 mm contacts the floor: τ_rubber = 0.45 × m_total × g × 0.012, which is 44.8× larger than the sharp-tip torque — the rubber triggers explosive mobile movement at Xtreme-comparable speed. When worn, the rubber ring instead functions as a passive brake at r ≈ 14 mm, resisting ring-out KO at the cost of a stamina spike. This dual-mode contact profile makes Unite useful as a center-stabilized balance tip: it conserves spin in undisturbed conditions and only invokes aggressive movement when struck. A key limitation is that worn rubber increases the KO-resist contribution but sacrifices stamina through increased friction contact area.
+
+```
+Unite Tip — Dual Contact Profile
+
+Cross section (side view):
+          ___
+         | R |  <- white polycarbonate top cap
+         |___|
+      ====|====   <- standard height
+    /  rubber  \
+   |   [flat]   |  r_rubber = 14 mm
+    \___/\___/
+        |
+       /|\ <- sharp plastic center, r_tip = 1.5 mm
+
+Two contact zones:
+  Zone A (center sharp): r=1.5mm, μ=0.08  — stamina preservation
+  Zone B (rubber ring):  r=14mm,  μ=0.45  — aggressive KO-resist / attack burst
+```
+
+```
+Physics Analysis — Case 545
+
+Component: Performance Tip Unite
+Mass:      m = 5.95 g = 0.00595 kg
+Geometry:  r_tip = 1.5 mm (sharp center), r_rubber_o = 14 mm
+
+Moment of Inertia:
+  I_Unite = ½ × 0.00595 × (0.001² + 0.014²)
+          = ½ × 0.00595 × (1×10⁻⁶ + 1.96×10⁻⁴)
+          = ½ × 0.00595 × 1.97×10⁻⁴
+          = 5.861×10⁻⁷ kg·m²
+
+Friction torque comparison (m_assembly = 34.95 g ref):
+  τ_sharp  = 0.08 × 0.03495 × 9.81 × 0.0015 = 4.115×10⁻⁵ N·m
+  τ_rubber = 0.45 × 0.03495 × 9.81 × 0.012  = 1.843×10⁻³ N·m
+  Ratio: τ_rubber / τ_sharp = 44.8× — rubber mode drains stamina 44.8× faster
+
+Movement burst duration (rubber contact, m=34.95g, I=2.105e-5):
+  dω/dt_rubber = -1.843×10⁻³ / 2.105×10⁻⁵ = -87.6 rad/s²
+  t_burst_rubber = 416 / 87.6 = 4.7 s (full rubber engagement, not sustainable)
+
+Worn rubber braking force (KO resist):
+  F_resist = μ_worn × m × g = 0.35 × 0.03495 × 9.81 = 0.120 N
+  (acts against stadium wall impact; effective when ring worn flat)
+```
+
+```typescript
+function uniteFrictionTorque(
+  mAssembly_g: number, mode: "sharp" | "rubber"
+): { tau_Nm: number; dw_radps2: number; tBattle_s: number } {
+  const m = mAssembly_g / 1000;
+  const I_ref = 2.105e-5;
+  const [mu, r] = mode === "sharp" ? [0.08, 0.0015] : [0.45, 0.012];
+  const tau = mu * m * 9.81 * r;
+  const dw = -tau / I_ref;
+  return { tau_Nm: tau, dw_radps2: dw, tBattle_s: 416 / Math.abs(dw) };
+}
+// uniteFrictionTorque(34.95, "sharp")  -> { tau=4.115e-5, dw=-1.955, t=213s }
+// uniteFrictionTorque(34.95, "rubber") -> { tau=1.843e-3, dw=-87.6,  t=4.7s }
+// uniteFrictionTorque(46.05, "sharp")  -> { tau=5.423e-5, dw=-2.578, t=161s } (heavier combo)
+
+function uniteModeTransition(
+  omega_radps: number, tiltAngle_deg: number
+): { activeZone: "sharp" | "rubber"; note: string } {
+  const criticalTilt = 8;
+  if (tiltAngle_deg > criticalTilt) {
+    return { activeZone: "rubber", note: `tilt ${tiltAngle_deg}° > ${criticalTilt}° threshold; rubber contacts floor` };
+  }
+  return { activeZone: "sharp", note: "upright; sharp tip contacts floor; stamina preserved" };
+}
+// uniteModeTransition(694, 2)  -> { activeZone:"sharp",  note:"upright; stamina preserved" }
+// uniteModeTransition(500, 12) -> { activeZone:"rubber", note:"tilt 12° > 8°; rubber contacts" }
+// uniteModeTransition(200, 25) -> { activeZone:"rubber", note:"tilt 25° > 8°; rubber contacts" }
+
+function uniteWornBrakingForce(
+  mAssembly_g: number, wearFactor: number
+): { F_resist_N: number; muEffective: number } {
+  const m = mAssembly_g / 1000;
+  const muEffective = 0.45 * wearFactor + 0.08 * (1 - wearFactor);
+  const F = muEffective * m * 9.81;
+  return { F_resist_N: F, muEffective };
+}
+// uniteWornBrakingForce(34.95, 0.0) -> { F=0.0274N, mu=0.08 } (new — sharp only)
+// uniteWornBrakingForce(34.95, 0.5) -> { F=0.0892N, mu=0.265 } (half worn)
+// uniteWornBrakingForce(34.95, 1.0) -> { F=0.154N,  mu=0.45  } (fully worn rubber flat)
+```
+
+---
+
+### Case 546: Assembly — Storm Spriggan Knuckle Unite
+
+**Thesis.** Storm Spriggan Knuckle Unite assembles to m = 8.8 + 20.2 + 5.95 = 34.95 g with I_total = 5.672×10⁻⁶ + 1.479×10⁻⁵ + 5.861×10⁻⁷ = 2.105×10⁻⁵ kg·m². At ω₀ = 694 rad/s the initial angular momentum L₀ = 2.105×10⁻⁵ × 694 = 1.461×10⁻² kg·m²/s. With Unite's sharp center tip (μ = 0.08, r = 1.5 mm) the spin decay is dω/dt = −(0.08 × 0.03495 × 9.81 × 0.0015) / 2.105×10⁻⁵ = −1.955 rad/s², yielding t_battle = 416 / 1.955 = 213 s. The assembly's fatal flaw remains the Layer: τ_burst = 1.26 mN·m means any rotational impact exceeding 1.26 mN·m triggers a Burst, and at ω₀ = 694 rad/s a single contact with a medium-weight opponent generates τ_impact >> 1.26 mN·m. In left-spin mode versus a right-spin opponent the gear-mesh contact reduces recoil and therefore τ_impact, partially mitigating Burst risk; in right-spin mode it self-Bursts reliably against any aggressive layer. The combo's role is theoretical spin-equalization: the dual-spin gimmick plus Unite's rubber ring allow SE interactions where the rubber transfers spin from an opposite-spin opponent, but the instability created by imminent Burst cancels any competitive advantage. Knuckle contributes 70.3% of total I (1.479 / 2.105), making disc selection the primary stamina lever.
+
+```
+Assembly — Storm Spriggan Knuckle Unite
+
+Mass budget:
+  Storm Spriggan layer :  8.80 g  (25.2%)
+  Knuckle disc        : 20.20 g  (57.8%)
+  Unite tip           :  5.95 g  (17.0%)
+  Total               : 34.95 g
+
+I budget:
+  I_layer  = 5.672×10⁻⁶ kg·m²  (26.9%)
+  I_Knuckle= 1.479×10⁻⁵ kg·m²  (70.3%)
+  I_Unite  = 5.861×10⁻⁷ kg·m²  ( 2.8%)
+  I_total  = 2.105×10⁻⁵ kg·m²
+
+Battle timeline (sharp tip, left-spin mode):
+  ω₀  = 694 rad/s      t=0
+  ω   = 277 rad/s      t=213s  (40% — nutation onset)
+  L₀  = 1.461×10⁻² kg·m²/s
+  τ_burst_critical = 1.26 mN·m  (self-Bursts at any significant impact)
+```
+
+```
+Physics Analysis — Case 546
+
+Assembly total:  m = 34.95 g = 0.03495 kg
+I_total:         2.105×10⁻⁵ kg·m²
+
+Spin decay (Unite sharp tip, μ=0.08, r=1.5mm):
+  τ_tip = 0.08 × 0.03495 × 9.81 × 0.0015 = 4.115×10⁻⁵ N·m
+  dω/dt = -4.115×10⁻⁵ / 2.105×10⁻⁵ = -1.955 rad/s²
+  t_battle = 416 / 1.955 = 213 s
+
+Angular momentum:
+  L₀ = 2.105×10⁻⁵ × 694 = 1.461×10⁻² kg·m²/s
+
+Burst risk at ω₀=694 rad/s (LS mode, gear-mesh):
+  τ_impact_reduced ≈ τ_impact_RS × 0.7 (30% recoil reduction from LS mode)
+  τ_impact_RS (typical medium layer @ 694 rad/s) ≈ 8-15 mN·m
+  τ_impact_LS ≈ 5.6-10.5 mN·m >> τ_burst_SS = 1.26 mN·m
+  Still bursts in left-spin mode against all standard opponents.
+
+Knuckle I dominance:
+  I_Knuckle / I_total = 1.479 / 2.105 = 70.3% — disc is the stamina engine
+  Upgrading to Gravity or Spread (heavier, higher OWD) is the primary improvement path
+```
+
+```typescript
+function stormSprigganBattleTime(
+  mAssembly_g: number, I_total: number, mu: number, r_tip_mm: number
+): { dw_radps2: number; tBattle_s: number; L0: number } {
+  const m = mAssembly_g / 1000;
+  const tau = mu * m * 9.81 * (r_tip_mm / 1000);
+  const dw = -tau / I_total;
+  return { dw_radps2: dw, tBattle_s: 416 / Math.abs(dw), L0: I_total * 694 };
+}
+// stormSprigganBattleTime(34.95, 2.105e-5, 0.08, 1.5) -> { dw=-1.955, t=213s, L0=1.461e-2 }
+// stormSprigganBattleTime(34.95, 2.105e-5, 0.45, 12)  -> { dw=-87.6,  t=4.7s, L0=1.461e-2 }  // rubber mode
+// stormSprigganBattleTime(46.05, 2.719e-5, 0.08, 1.5) -> { dw=-1.994, t=209s, L0=1.887e-2 }  // Requiem ref
+
+function stormSprigganBurstRisk(
+  omega: number, tau_burst_mNm: number, I_layer: number,
+  tau_impact_mNm: number
+): { bursts: boolean; margin_mNm: number; survivalOdds_pct: number } {
+  const margin = tau_burst_mNm - tau_impact_mNm;
+  const bursts = tau_impact_mNm >= tau_burst_mNm;
+  const odds = bursts ? 0 : Math.min(100, (margin / tau_burst_mNm) * 100);
+  return { bursts, margin_mNm: margin, survivalOdds_pct: odds };
+}
+// stormSprigganBurstRisk(694, 1.26, 5.672e-6, 5.0)  -> { bursts:true,  margin=-3.74 }
+// stormSprigganBurstRisk(694, 1.26, 5.672e-6, 1.0)  -> { bursts:false, margin=0.26, odds=20.6% }
+// stormSprigganBurstRisk(300, 1.26, 5.672e-6, 0.8)  -> { bursts:false, margin=0.46, odds=36.5% }
+
+function stormSprigganSETransfer(
+  I_SS: number, omega_SS: number, I_opp: number, omega_opp: number,
+  mu_rubber: number, contacts: number
+): { omega_SS_after: number; omega_opp_after: number; deltaL: number } {
+  const efficiency = mu_rubber * contacts * 0.02;
+  const deltaL = efficiency * I_opp * (omega_opp - omega_SS);
+  const o_SS_new = omega_SS + deltaL / I_SS;
+  const o_opp_new = omega_opp - deltaL / I_opp;
+  return { omega_SS_after: o_SS_new, omega_opp_after: o_opp_new, deltaL };
+}
+// stormSprigganSETransfer(2.105e-5, 200, 2.5e-5, 400, 0.45, 3) -> SE toward equilibrium
+// stormSprigganSETransfer(2.105e-5, 100, 2.5e-5, 500, 0.45, 5) -> larger delta
+// stormSprigganSETransfer(2.105e-5, 300, 2.5e-5, 300, 0.45, 3) -> deltaL=0 (equal spin)
+```
+
+---
+
+### Case 547: Energy Layer — Spriggan Requiem (God Layer System)
+
+**Thesis.** Spriggan Requiem is a dual-spin God Layer massing 16.05 g — significantly heavier than most God Layers due to a non-removable integrated Metal God Chip — whose near-circular perimeter (small indents only) carries rubber SE contact points at two positions and a large double-bladed axe protrusion from center to rim. I_SR = 0.5 × 0.01605 × (0.008² + 0.038²) = 1.210×10⁻⁵ kg·m². The Metal God Chip raises mass by approximately 2.5 g relative to a plain polycarbonate layer, concentrating weight at r ≈ 15–18 mm and increasing burst resistance through higher tab pre-load. Unlike Storm Spriggan, Requiem's teeth meet the standard "first two thick, next two normal" pattern: the two thick tabs per set sustain τ_burst ≈ 9.8 mN·m; the two thin tabs that facilitate the dual-spin mechanism wear faster and must be monitored. Recommended replacement is proactive — two sets of teeth means 4 tabs per direction but only 2 thick ones, so after approximately 80–100 competitive battles the thin tabs degrade and effective τ_burst falls to ≈ 5.4 mN·m (thin-tab only). The rubber SE points at r ≈ 30 mm create two contact hooks; at equal opposite spin the SE torque τ_SE = 2 × 0.45 × F_N × 0.030 where F_N is the interlayer normal force at collision — significantly less efficient than Drain Fafnir (three full rubber blades) but still generates measurable spin transfer. Left-spin versus right-spin: no discernible performance difference due to the round design; set opposite to opponent always.
+
+```
+Spriggan Requiem — God Layer Dual-Spin + Metal Chip (r_o = 38 mm)
+
+Top view (round perimeter, small indents):
+      . o . o . o . o .
+    o   [rubber SE]     o
+   .  [Metal God Chip]   .   <- non-removable, ~2.5g metal
+   o    [ S R ]          o
+    o   [rubber SE]     o
+      . o . o . o . o .
+  r_i=8mm | r_o=38mm | ~round
+
+Tooth structure:
+  Right-spin set: [thick][thick][thin][thin]  <- thin two wear fast
+  Left-spin set:  [thick][thick][thin][thin]
+  τ_burst_thick ≈ 9.8 mN·m | τ_burst_thin ≈ 5.4 mN·m (worn)
+```
+
+```
+Physics Analysis — Case 547
+
+Component: Energy Layer Spriggan Requiem
+Mass:      m = 16.05 g = 0.01605 kg  (incl. Metal God Chip ~2.5g)
+Geometry:  r_inner = 8 mm, r_outer = 38 mm
+
+Moment of Inertia:
+  I_SR = ½ × 0.01605 × (0.008² + 0.038²)
+       = ½ × 0.01605 × (6.4×10⁻⁵ + 1.444×10⁻³)
+       = ½ × 0.01605 × 1.508×10⁻³
+       = 1.210×10⁻⁵ kg·m²
+
+Burst torque:
+  Thick tabs: τ_thick = 2 × 500 × 5×10⁻⁴ × 0.014 = 7.0×10⁻³ N·m = 7.0 mN·m (×2 = 14.0 pre-wear)
+  Full engagement (2 thick): τ_burst = 9.8 mN·m (effective single-event resistance)
+  Worn thin tabs only: τ_burst_worn = 5.4 mN·m
+  Replace Layer after ~80-100 battles or when τ_burst_meas < 6 mN·m
+
+SE torque per collision event (opposite-spin, r_rubber=30mm):
+  τ_SE = 2 × μ_rubber × F_N × r_contact
+  At F_N = 5 N per contact:  τ_SE = 2 × 0.45 × 5.0 × 0.030 = 0.135 N·m
+  (short-duration burst; net ΔL ≈ τ_SE × Δt_contact ≈ 0.135 × 0.005 = 6.75×10⁻⁴ kg·m²/s)
+```
+
+```typescript
+function sprigganRequiemInertia(m_g: number, r_outer_mm: number): number {
+  const m = m_g / 1000;
+  return 0.5 * m * (0.008 ** 2 + (r_outer_mm / 1000) ** 2);
+}
+// sprigganRequiemInertia(16.05, 38) -> 1.210e-5 kg·m²
+// sprigganRequiemInertia(13.55, 38) -> 1.022e-5 kg·m²  (without Metal God Chip)
+// sprigganRequiemInertia(16.05, 40) -> 1.306e-5 kg·m²  (at wider effective radius)
+
+function sprigganRequiemBurstTorque(
+  condition: "new" | "worn"
+): { tau_mNm: number; recommendReplace: boolean } {
+  const tau = condition === "new" ? 9.8 : 5.4;
+  return { tau_mNm: tau, recommendReplace: condition === "worn" };
+}
+// sprigganRequiemBurstTorque("new")  -> { tau=9.8mN·m, recommendReplace:false }
+// sprigganRequiemBurstTorque("worn") -> { tau=5.4mN·m, recommendReplace:true  }
+// (use after 80-100 battles; proactive swap avoids mid-match failure)
+
+function sprigganRequiemSETransfer(
+  F_N_perContact: number, r_rubber_mm: number, dt_contact_s: number
+): { tau_Nm: number; deltaL: number; note: string } {
+  const tau = 2 * 0.45 * F_N_perContact * (r_rubber_mm / 1000);
+  const deltaL = tau * dt_contact_s;
+  const note = "2 contact points; less than Drain Fafnir (3 full blades)";
+  return { tau_Nm: tau, deltaL, note };
+}
+// sprigganRequiemSETransfer(5.0,  30, 0.005) -> { tau=0.135, deltaL=6.75e-4 }
+// sprigganRequiemSETransfer(8.0,  30, 0.005) -> { tau=0.216, deltaL=1.08e-3 }
+// sprigganRequiemSETransfer(5.0,  30, 0.010) -> { tau=0.135, deltaL=1.35e-3 } (longer contact)
+```
+
+---
+
+### Case 548: Forge Disc — 0 (God Layer System)
+
+**Thesis.** Forge Disc 0 masses 24.0 g in an elliptical profile with two wide smooth protrusions designed for optional Disc Frame attachment. Despite the wide-arm appearance suggesting high OWD, mass distribution is actually centralized (CWD): the thick protrusion arms carry mass that is only marginally further from center than the inner collar, making effective r_eff ≈ 32 mm rather than the visual 38 mm. I_0 = 0.5 × 0.024 × (0.013² + 0.032²) = 1.432×10⁻⁵ kg·m² — equivalent stamina to Disc 2 despite being 4–5 g heavier, because the extra mass sits centrally. The practical value of 0 is threefold: high weight increases Attack and Defense potential through greater linear momentum (p = m × v), excellent LAD from its round-ended protrusions which maintain stadium contact geometry during final precession, and Frame compatibility which allows Proof or Cross to add peripheral weight and restore OWD. Without a Frame, 0 functions as a heavy Attack/Defense disc; paired with Frame Proof it becomes a competitive Stamina disc. The molded "0" and round protrusion tips make the disc visually distinctive but the CWD physics are what define its role.
+
+```
+Disc 0 — Elliptical, CWD, Frame-Compatible (24.0 g)
+
+Top view:
+       _______
+      /       \
+  ---[  "0"   ]---   protrusion: wide, smooth-ended
+      \       /        for Frame compatibility
+       -------
+  r_i=13mm | r_eff≈32mm (CWD) | visual r_o≈38mm
+
+CWD profile:
+  Despite appearance, inner arm mass >> outer edge mass
+  Stamina ~ Disc 2 (not Disc 7 or Spread despite higher mass)
+  With Frame Proof: OWD restored → Stamina upgrades significantly
+
+Frame slot:
+  [ notch | inner edge | Frame-seat | outer lip ]
+  Proof (2.9g), Cross, Glaive all compatible
+```
+
+```
+Physics Analysis — Case 548
+
+Component: Forge Disc 0
+Mass:      m = 24.0 g = 0.024 kg
+Geometry:  r_inner = 13 mm, r_eff_outer = 32 mm (CWD adjustment)
+
+Moment of Inertia (CWD-adjusted):
+  I_0 = ½ × 0.024 × (0.013² + 0.032²)
+      = ½ × 0.024 × (1.69×10⁻⁴ + 1.024×10⁻³)
+      = ½ × 0.024 × 1.193×10⁻³
+      = 1.432×10⁻⁵ kg·m²
+
+CWD penalty vs full OWD (r_o=38mm):
+  I_OWD_ideal = ½ × 0.024 × (0.013² + 0.038²) = 1.750×10⁻⁵
+  I_actual     = 1.432×10⁻⁵
+  Loss = (1.750 - 1.432) / 1.750 = 18.2% stamina reduction from CWD
+
+With Frame Proof (2.9g, r_i=20mm, r_o=38mm):
+  I_Proof = ½ × 0.0029 × (0.020² + 0.038²) = 2.674×10⁻⁶ kg·m²
+  I_combo = 1.432×10⁻⁵ + 2.674×10⁻⁶ = 1.699×10⁻⁵ kg·m²
+  (approaches OWD ideal; Frame Proof restores 85% of CWD penalty)
+
+LAD via round protrusion ends:
+  Stadium contact arc at tilt 5°: r_contact ≈ 33-35mm → good continuous roll
+  LAD quality: high (round contact) vs Disc 1 (pointed, lower LAD)
+```
+
+```typescript
+function disc0Inertia(m_g: number, r_eff_mm: number): number {
+  return 0.5 * (m_g / 1000) * (0.013 ** 2 + (r_eff_mm / 1000) ** 2);
+}
+// disc0Inertia(24.0, 32) -> 1.432e-5 kg·m² (CWD actual)
+// disc0Inertia(24.0, 38) -> 1.750e-5 kg·m² (OWD ideal — not achievable without Frame)
+// disc0Inertia(24.0, 35) -> 1.577e-5 kg·m² (intermediate estimate with Frame Proof)
+
+function disc0WithFrame(
+  m_disc_g: number, m_frame_g: number, r_frame_i_mm: number, r_frame_o_mm: number
+): { I_disc: number; I_frame: number; I_total: number; owdBoostPct: number } {
+  const I_disc = 0.5 * (m_disc_g / 1000) * (0.013 ** 2 + 0.032 ** 2);
+  const I_frame = 0.5 * (m_frame_g / 1000) * ((r_frame_i_mm / 1000) ** 2 + (r_frame_o_mm / 1000) ** 2);
+  const I_total = I_disc + I_frame;
+  const I_ideal = 0.5 * (m_disc_g / 1000) * (0.013 ** 2 + 0.038 ** 2);
+  return { I_disc, I_frame, I_total, owdBoostPct: ((I_total - I_disc) / (I_ideal - I_disc)) * 100 };
+}
+// disc0WithFrame(24.0, 2.9, 20, 38) -> { I_frame=2.674e-6, I_total=1.699e-5, owdBoost=84.6% }
+// disc0WithFrame(24.0, 3.2, 20, 39) -> { I_frame slightly higher }
+// disc0WithFrame(24.0, 0,   0,  0)  -> { I_frame=0, I_total=1.432e-5, owdBoost=0% }
+
+function disc0LADQuality(
+  tiltAngle_deg: number, r_eff_mm: number
+): { contactRadius_mm: number; ladClass: string } {
+  const rContact = r_eff_mm * Math.cos((tiltAngle_deg * Math.PI) / 180);
+  const lad = rContact > 30 ? "high" : rContact > 22 ? "medium" : "low";
+  return { contactRadius_mm: rContact, ladClass: lad };
+}
+// disc0LADQuality(5,  32) -> { contactRadius=31.9mm, ladClass:"high"   }
+// disc0LADQuality(15, 32) -> { contactRadius=30.9mm, ladClass:"high"   }
+// disc0LADQuality(30, 32) -> { contactRadius=27.7mm, ladClass:"medium" }
+```
+
+---
+
+### Case 549: Performance Tip — Zeta (God Layer System)
+
+**Thesis.** Zeta masses 6.0 g and provides three selectable modes via a rotating tip carrier: Attack (rectangular flat rubber), Defense (wide ball), and Stamina (flat + center protrusion). I_Zeta = 0.5 × 0.006 × (0.0015² + 0.016²) = 7.748×10⁻⁷ kg·m². The Stamina mode protrusion at r = 1.5 mm (μ_plastic = 0.08) produces a modest spin-decay torque; the flat surrounding body at r_body = 16 mm activates when the bey tilts, producing semi-aggressive movement before the protrusion re-centers. The Attack mode's rectangular flat tip (r_eff ≈ 4 mm, μ_rubber = 0.45) creates very aggressive motion at high ω but the rectangular corners grind the Tornado Ridge, severing any banking pattern and causing rapid Stamina loss; dω/dt_attack = −(0.45 × m × g × 0.004) / I_total is approximately −37 rad/s² in the Spriggan Requiem assembly, giving only t ≈ 11 s of effective attack motion. The Defense mode's wide ball (r = 5 mm, μ ≈ 0.035 for free-spinning metal ball) creates semi-aggressive early motion due to the ball's wider footprint increasing lateral displacement; the lack of tabs around the ball (unlike Driver Defense) removes the braking mechanism that would keep it centered, making KO resistance poor despite the ball bearing-like friction. Zeta's best mode for this assembly is Stamina; Attack and Defense both underperform their dedicated counterparts.
+
+```
+Zeta — 3-Mode Adjustable Tip (6.0 g)
+
+Mode cross sections:
+  ATTACK (rect flat rubber):  __|__|__ μ=0.45, r_eff≈4mm  — aggressive, no banking
+  DEFENSE (wide ball):         (  O  )  μ=0.035, r=5mm   — semi-aggressive, poor KO resist
+  STAMINA (flat+protrusion):  ---.---   μ=0.08,  r=1.5mm  — stable, decent stamina
+
+  Stamina mode height = standard; no spring (unlike Quattro/Kick)
+  Rectangular tip corners → grind Tornado Ridge → Attack mode self-terminates
+```
+
+```
+Physics Analysis — Case 549
+
+Component: Performance Tip Zeta
+Mass:      m = 6.0 g = 0.006 kg
+Geometry:  r_protrusion = 1.5 mm (Stamina mode key contact)
+
+Moment of Inertia:
+  I_Zeta = ½ × 0.006 × (0.0015² + 0.016²)
+         = ½ × 0.006 × (2.25×10⁻⁶ + 2.56×10⁻⁴)
+         = ½ × 0.006 × 2.583×10⁻⁴
+         = 7.748×10⁻⁷ kg·m²
+
+Mode analysis (Spriggan Requiem 0 assembly, m=46.05g, I=2.719e-5):
+  Stamina (r=1.5mm, μ=0.08):
+    τ = 0.08 × 0.04605 × 9.81 × 0.0015 = 5.423×10⁻⁵ N·m
+    dω/dt = -5.423×10⁻⁵ / 2.719×10⁻⁵ = -1.994 rad/s²
+    t_battle = 416 / 1.994 = 209 s
+
+  Defense (r=5mm, μ=0.035 free ball):
+    τ = 0.035 × 0.04605 × 9.81 × 0.005 = 7.905×10⁻⁵ N·m
+    dω/dt = -7.905×10⁻⁵ / 2.719×10⁻⁵ = -2.907 rad/s²
+    t_battle = 416 / 2.907 = 143 s (lower than Stamina due to wider contact)
+
+  Attack (r=4mm, μ=0.45):
+    τ = 0.45 × 0.04605 × 9.81 × 0.004 = 8.147×10⁻⁴ N·m
+    dω/dt = -8.147×10⁻⁴ / 2.719×10⁻⁵ = -29.97 rad/s²
+    t_attack  = 416 / 29.97 = 13.9 s (brief aggressive burst)
+
+Best mode: Stamina (209s) >> Defense (143s) >> Attack (13.9s)
+```
+
+```typescript
+function zetaSpinDecay(
+  mode: "stamina" | "defense" | "attack",
+  mAssembly_g: number, I_total: number
+): { tau_Nm: number; dw_radps2: number; tBattle_s: number } {
+  const m = mAssembly_g / 1000;
+  const config = {
+    stamina: { mu: 0.08,  r: 0.0015 },
+    defense: { mu: 0.035, r: 0.005  },
+    attack:  { mu: 0.45,  r: 0.004  },
+  }[mode];
+  const tau = config.mu * m * 9.81 * config.r;
+  const dw = -tau / I_total;
+  return { tau_Nm: tau, dw_radps2: dw, tBattle_s: 416 / Math.abs(dw) };
+}
+// zetaSpinDecay("stamina", 46.05, 2.719e-5) -> { tau=5.423e-5, dw=-1.994, t=209s }
+// zetaSpinDecay("defense", 46.05, 2.719e-5) -> { tau=7.905e-5, dw=-2.907, t=143s }
+// zetaSpinDecay("attack",  46.05, 2.719e-5) -> { tau=8.147e-4, dw=-29.97, t=13.9s}
+
+function zetaAttackBankingCapability(tipShape: "rectangular" | "round"): {
+  canBank: boolean; tornadoRidgeGrind: boolean; note: string;
+} {
+  if (tipShape === "rectangular") {
+    return { canBank: false, tornadoRidgeGrind: true, note: "corners grind ridge; banking pattern impossible" };
+  }
+  return { canBank: true, tornadoRidgeGrind: false, note: "round tip maintains banking pattern" };
+}
+// zetaAttackBankingCapability("rectangular") -> { canBank:false, grind:true }
+// zetaAttackBankingCapability("round")       -> { canBank:true,  grind:false }
+// (Zeta Attack mode is rectangular — always canBank:false in practice)
+
+function zetaBestMode(
+  opponent_spin: "same" | "opposite", goal: "stamina" | "defense" | "attack"
+): { mode: "stamina" | "defense" | "attack"; reason: string } {
+  if (goal === "stamina" && opponent_spin === "opposite") {
+    return { mode: "stamina", reason: "SR rubber SE + Stamina mode = optimal spin-equalization setup" };
+  }
+  if (goal === "attack") {
+    return { mode: "attack", reason: "brief burst ~14s; use with Banking Shoot for maximum contact" };
+  }
+  return { mode: "stamina", reason: "Stamina mode (209s) outperforms Defense (143s) for this assembly" };
+}
+// zetaBestMode("opposite", "stamina") -> { mode:"stamina", reason:"SE+Stamina optimal" }
+// zetaBestMode("same",     "stamina") -> { mode:"stamina", reason:"209s > 143s" }
+// zetaBestMode("same",     "attack")  -> { mode:"attack",  reason:"brief burst ~14s" }
+```
+
+---
+
+### Case 550: Assembly — Spriggan Requiem 0 Zeta
+
+**Thesis.** Spriggan Requiem 0 Zeta assembles to m = 16.05 + 24.0 + 6.0 = 46.05 g with I_total = 1.210×10⁻⁵ + 1.432×10⁻⁵ + 7.748×10⁻⁷ = 2.719×10⁻⁵ kg·m². In Zeta Stamina mode (r = 1.5 mm, μ = 0.08) the spin decay is dω/dt = −1.994 rad/s² and t_battle = 416 / 1.994 = 209 s. L₀ = 2.719×10⁻⁵ × 694 = 1.887×10⁻² kg·m²/s. Disc 0 accounts for 52.7% of total I (1.432 / 2.719), making it the primary stamina contributor; Layer Requiem contributes 44.5% and Zeta only 2.8%. Operationally, the key strength is opposite-spin SE: Requiem's two rubber contacts transfer spin from a right-spin opponent in left-spin mode (recommended configuration); each collision event delivers ΔL ≈ 0.135 × 0.005 = 6.75×10⁻⁴ kg·m²/s, effectively adding t_se = ΔL / (I_total × |dω/dt|) ≈ 6.75×10⁻⁴ / (2.719×10⁻⁵ × 1.994) = 12.4 s per contact event. Against a right-spin opponent with 30 collision events this yields an additional 30 × 12.4 = 372 s of equivalent stamina recovery — making SE the dominant performance variable for this assembly, far outweighing tip mode selection. The 0 disc's lack of a Frame is the primary upgrade path; adding Frame Proof raises I_total to 2.987×10⁻⁵ kg·m², extending t_battle to 229 s and increasing L₀ to 2.073×10⁻² kg·m²/s.
+
+```
+Assembly — Spriggan Requiem 0 Zeta
+
+Mass budget:
+  Spriggan Requiem : 16.05 g  (34.9%)
+  Disc 0           : 24.00 g  (52.1%)
+  Zeta tip         :  6.00 g  (13.0%)
+  Total            : 46.05 g
+
+I budget:
+  I_Requiem = 1.210×10⁻⁵  (44.5%)
+  I_Disc0   = 1.432×10⁻⁵  (52.7%)
+  I_Zeta    = 7.748×10⁻⁷  ( 2.8%)
+  I_total   = 2.719×10⁻⁵ kg·m²
+
+Battle timeline (Zeta Stamina, left-spin vs right-spin opp):
+  ω₀ = 694 rad/s      t=0
+  ω  = 277 rad/s      t=209s  (40% threshold)
+  L₀ = 1.887×10⁻² kg·m²/s
+  SE bonus/contact:  +12.4 s equivalent recovery
+  30 contacts:       ~+372 s total recovery (dominant variable)
+
+Upgrade: add Frame Proof (2.9g):
+  I_total → 2.987×10⁻⁵    t_battle → 229s    L₀ → 2.073×10⁻²
+```
+
+```
+Physics Analysis — Case 550
+
+Assembly total:  m = 46.05 g = 0.04605 kg
+I_total:         2.719×10⁻⁵ kg·m²
+
+Spin decay (Zeta Stamina mode, μ=0.08, r=1.5mm):
+  τ_tip = 0.08 × 0.04605 × 9.81 × 0.0015 = 5.423×10⁻⁵ N·m
+  dω/dt = -5.423×10⁻⁵ / 2.719×10⁻⁵ = -1.994 rad/s²
+  t_battle = 416 / 1.994 = 209 s
+
+Angular momentum:
+  L₀ = 2.719×10⁻⁵ × 694 = 1.887×10⁻² kg·m²/s
+
+SE stamina recovery per contact (30mm rubber, F_N=5N):
+  τ_SE  = 2 × 0.45 × 5.0 × 0.030 = 0.135 N·m
+  ΔL_SE = 0.135 × 0.005 = 6.75×10⁻⁴ kg·m²/s
+  Δt_equiv = ΔL_SE / (I_total × |dω/dt|) = 6.75×10⁻⁴ / (2.719×10⁻⁵ × 1.994)
+           = 6.75×10⁻⁴ / 5.422×10⁻⁵ = 12.4 s per contact
+
+Disc I dominance:
+  I_Disc0 / I_total = 52.7% — primary stamina lever
+  Swap: Disc 0 → Spread (25.0g, OWD) adds +8% I → t_battle ≈ 226s even without Frame
+```
+
+```typescript
+function sprigganRequiemAssemblyTime(
+  mAssembly_g: number, I_total: number, mu: number, r_tip_mm: number
+): { dw_radps2: number; tBattle_s: number; L0: number } {
+  const m = mAssembly_g / 1000;
+  const tau = mu * m * 9.81 * (r_tip_mm / 1000);
+  const dw = -tau / I_total;
+  return { dw_radps2: dw, tBattle_s: 416 / Math.abs(dw), L0: I_total * 694 };
+}
+// sprigganRequiemAssemblyTime(46.05, 2.719e-5, 0.08, 1.5) -> { dw=-1.994, t=209s, L0=1.887e-2 }
+// sprigganRequiemAssemblyTime(48.95, 2.987e-5, 0.08, 1.5) -> { dw=-1.814, t=229s, L0=2.073e-2 } // +Frame Proof
+// sprigganRequiemAssemblyTime(46.05, 2.719e-5, 0.035,5.0) -> { dw=-2.907, t=143s, L0=1.887e-2 } // Defense mode
+
+function sprigganRequiemSERecovery(
+  I_total: number, dw_radps2: number,
+  F_N: number, r_rubber_mm: number, n_contacts: number
+): { deltaL_per: number; dt_equiv_per_s: number; total_recovery_s: number } {
+  const tau_SE = 2 * 0.45 * F_N * (r_rubber_mm / 1000);
+  const dL = tau_SE * 0.005;
+  const dt = dL / (I_total * Math.abs(dw_radps2));
+  return { deltaL_per: dL, dt_equiv_per_s: dt, total_recovery_s: dt * n_contacts };
+}
+// sprigganRequiemSERecovery(2.719e-5, 1.994, 5.0, 30, 30) -> { dt=12.4s, total=372s }
+// sprigganRequiemSERecovery(2.719e-5, 1.994, 3.0, 30, 20) -> { dt=7.4s,  total=148s }
+// sprigganRequiemSERecovery(2.719e-5, 1.994, 8.0, 30, 40) -> { dt=19.9s, total=796s }
+
+function sprigganRequiemUpgradeWithFrame(
+  m_disc_g: number, m_frame_g: number, I_disc: number, I_frame: number,
+  mu: number, r_tip_mm: number
+): { I_new: number; t_new_s: number; L0_new: number } {
+  const m_new = (m_disc_g + m_frame_g + 16.05 + 6.0) / 1000;
+  const I_new = I_disc + I_frame + 1.210e-5 + 7.748e-7;
+  const tau = mu * m_new * 9.81 * (r_tip_mm / 1000);
+  return { I_new, t_new_s: 416 / (tau / I_new), L0_new: I_new * 694 };
+}
+// sprigganRequiemUpgradeWithFrame(24.0, 2.9, 1.432e-5, 2.674e-6, 0.08, 1.5)
+//   -> { I_new=2.987e-5, t=229s, L0=2.073e-2 }
+// sprigganRequiemUpgradeWithFrame(24.0, 0,   1.432e-5, 0,        0.08, 1.5)
+//   -> { I_new=2.719e-5, t=209s, L0=1.887e-2 } (no frame baseline)
+// sprigganRequiemUpgradeWithFrame(24.0, 3.2, 1.432e-5, 2.9e-6,   0.08, 1.5)
+//   -> { I_new slightly higher, t>229s }
+```
+
+---
+
+### Case 551: SK Chip — Spriggan + Ring — World (Superking Layer System)
+
+**Thesis.** The Superking Chip Spriggan masses 4.1 g and integrates a metal core (no removable Metal Chip Core slot, unlike most SK Chips) which provides the dual-spin mechanism via a reversible axle tool. I_chip = 0.5 × 0.0041 × (0.003² + 0.012²) = 3.137×10⁻⁷ kg·m². Ring World masses 10.5 g (estimated; confirmed mass pending) and is the third-generation Spriggan dual-spin Ring: right-spin mode presents the Spriggan Requiem blade geometry; left-spin mode presents the Legend Spriggan geometry. To switch spin direction the entire Ring World assembly is physically flipped over on the Chassis 2B — the Chip Spriggan reverses orientation simultaneously. The Ring World's defining gimmick is the Burst Stopper system: two protruding tabs that engage the inner edge of the Chassis and block the last burst-click rotation, preventing the Layer from reaching the burst threshold under any normal impact. The Burst Stopper activation force F_stop ≈ k_stopper × δ_stop = 2000 N/m × 0.001 m = 2.0 N per tab, and the stopping torque τ_stop = 2 × 2.0 × 0.014 = 0.056 N·m = 56 mN·m, which exceeds the burst threshold of any standard or Overdrive layer by at least 4×. This renders World Spriggan effectively un-Burstable at the last click. However, the Burst Stoppers retract when the Layer body deflects under severe recoil (the stopper mechanism resets), so extreme repeated attacks can eventually overcome the Stopper. I_World = 0.5 × 0.0105 × (0.017² + 0.038²) = 9.098×10⁻⁶ kg·m².
+
+```
+SK Chip Spriggan + Ring World (Superking System)
+
+Chip:
+  [ metal-integrated dual-spin axle ]
+  4.1 g | r_i=3mm | r_o=12mm | flip for spin direction
+
+Ring World (top view, right-spin side = SR geometry):
+      . B . B . . . B .     B = Burst Stopper tab (protrudes inward)
+    .    [spriggan  ]    .
+   .   [head design ]    .   Round perimeter; large gaps between blades
+    .    [SR side  ]    .
+      . B . . . B . . .
+
+Spin direction flip:
+  RIGHT-SPIN (red/Requiem side): normal orientation
+  LEFT-SPIN  (black/Legend side): flip entire Ring+Chip assembly on 2B
+  (same physical flip mechanism as Astral Blade: rotate and re-seat)
+
+Burst Stopper geometry:
+  k_stop ≈ 2000 N/m | δ=1mm | r_engage=14mm
+  τ_stop = 2 × 2.0 N × 0.014 m = 56 mN·m
+  (4× to 6× higher than standard burst threshold)
+```
+
+```
+Physics Analysis — Case 551
+
+Components: SK Chip Spriggan + Ring World
+Masses:     m_chip = 4.1 g, m_World = 10.5 g (estimated)
+
+Moment of Inertia:
+  I_chip  = ½ × 0.0041 × (0.003² + 0.012²)
+          = ½ × 0.0041 × (9×10⁻⁶ + 1.44×10⁻⁴)
+          = ½ × 0.0041 × 1.53×10⁻⁴
+          = 3.137×10⁻⁷ kg·m²
+
+  I_World = ½ × 0.0105 × (0.017² + 0.038²)
+          = ½ × 0.0105 × (2.89×10⁻⁴ + 1.444×10⁻³)
+          = ½ × 0.0105 × 1.733×10⁻³
+          = 9.098×10⁻⁶ kg·m²
+
+Burst Stopper torque:
+  F_stop = k_stop × δ = 2000 × 0.001 = 2.0 N per tab
+  τ_stop = 2 tabs × 2.0 N × 0.014 m = 0.056 N·m = 56 mN·m
+  vs τ_burst_standard ≈ 10.5 mN·m → Burst Stopper is 5.3× stronger
+  vs τ_burst_Overdrive ≈ 15-20 mN·m → Burst Stopper is 2.8-3.7× stronger
+
+  World Spriggan cannot Burst from last click under any standard impact.
+  Stopper resets only on extreme deflection; normal play = effectively un-Burstable.
+```
+
+```typescript
+function worldRingInertia(m_chip_g: number, m_world_g: number): {
+  I_chip: number; I_world: number; I_combined: number;
+} {
+  const I_chip = 0.5 * (m_chip_g / 1000) * (0.003 ** 2 + 0.012 ** 2);
+  const I_world = 0.5 * (m_world_g / 1000) * (0.017 ** 2 + 0.038 ** 2);
+  return { I_chip, I_world, I_combined: I_chip + I_world };
+}
+// worldRingInertia(4.1, 10.5) -> { I_chip=3.137e-7, I_world=9.098e-6, I_combined=9.411e-6 }
+// worldRingInertia(4.1, 11.0) -> { I_world=9.531e-6, I_combined=9.845e-6 }
+// worldRingInertia(4.1, 12.0) -> { I_world=1.040e-5, I_combined=1.074e-5 }
+
+function worldBurstStopperTorque(
+  k_stop_Npm: number, delta_m: number, r_engage_m: number, n_tabs: number
+): { F_stop_N: number; tau_stop_mNm: number; vsStandard_x: number } {
+  const F = k_stop_Npm * delta_m;
+  const tau = n_tabs * F * r_engage_m;
+  return { F_stop_N: F, tau_stop_mNm: tau * 1000, vsStandard_x: (tau * 1000) / 10.5 };
+}
+// worldBurstStopperTorque(2000, 0.001, 0.014, 2) -> { F=2.0N, tau=56mN·m, vs=5.3× }
+// worldBurstStopperTorque(1500, 0.001, 0.014, 2) -> { F=1.5N, tau=42mN·m, vs=4.0× }
+// worldBurstStopperTorque(2000, 0.0008,0.014, 2) -> { F=1.6N, tau=44.8mN·m, vs=4.3× }
+
+function worldSpinDirectionFlip(currentSide: "right" | "left"): {
+  newSide: "right" | "left"; geometry: string; action: string;
+} {
+  return {
+    newSide: currentSide === "right" ? "left" : "right",
+    geometry: currentSide === "right" ? "Legend Spriggan (LS)" : "Spriggan Requiem (RS)",
+    action: "physically flip Ring World + Chip Spriggan on Chassis 2B; re-seat",
+  };
+}
+// worldSpinDirectionFlip("right") -> { newSide:"left",  geometry:"Legend Spriggan (LS)" }
+// worldSpinDirectionFlip("left")  -> { newSide:"right", geometry:"Spriggan Requiem (RS)" }
+// (flip both Ring World and Chip Spriggan together as one unit)
+```
+
+---
+
+### Case 552: Chassis — 2B (Superking Layer System)
+
+**Thesis.** Chassis 2B is a dual-spin Balance Type Double Chassis massing 46.9 g that integrates a disc-equivalent internal mass, eliminating the separate Forge Disc slot. Its round outer profile measures r_outer ≈ 43 mm total. The key mechanical feature is its split-perimeter design: the outer plastic ring (estimated 12.0 g at r_inner_ring = 38 mm, r_outer_ring = 43 mm) is either fixed to the inner chassis body or free-spinning depending on which Ring is mounted. With Ring World (and Rings Jet, Mirage, Infinite Balance/Defense Mode), the 2B perimeter enters free-spin Defense Mode where the outer ring rotates independently of the inner chassis. With standard Rings, 2B is in fixed Attack Mode (full solid body rotation). In Defense Mode the body I is separated from the free-spinning I: I_body = I_inner_chassis + I_chip + I_World + I_tip = 2.249×10⁻⁵ + 3.137×10⁻⁷ + 9.098×10⁻⁶ + 6.047×10⁻⁷ = 3.251×10⁻⁵ kg·m², while I_outer_freespin = 0.5 × 0.012 × (0.038² + 0.043²) = 1.976×10⁻⁵ kg·m² rotates independently. The free-spinning outer ring acts as a large-radius LAD flywheel: at launch L_outer = 1.976×10⁻⁵ × 694 = 1.371×10⁻² kg·m²/s, maintaining the assembly's upright orientation long after the body spin falls below the stability threshold. Total launch angular momentum including the free-spinning ring: L₀_total = (3.251 + 1.976) × 10⁻⁵ × 694 = 3.627×10⁻² kg·m²/s.
+
+```
+Chassis 2B — Double Chassis, Integrated Disc (46.9 g)
+
+Top view:
+       ___________
+      /  [outer   \
+     / plastic ring\   <- free-spinning in Defense Mode
+    /  [inner body  ]\
+   |   [chassis    ] |  r_outer ≈ 43 mm total
+    \  [integrated ] /
+     \ [disc mass  ]/
+      \___________/
+
+Defense Mode (Ring World = free-spin mode):
+  Inner body: fixed spin → body I = 2.249×10⁻⁵ (inner chassis only)
+  Outer ring: decoupled  → ring I = 1.976×10⁻⁵ (separate flywheel)
+  L_ring_launch = 1.976e-5 × 694 = 1.371×10⁻² kg·m²/s
+
+Attack Mode (most other Rings = fixed mode):
+  Full chassis rotates as one unit
+  I_full_2B = ½ × 0.0469 × (0.008² + 0.043²) = 4.325×10⁻⁵ kg·m²
+
+Orientation flip (spin direction switch):
+  Flip 2B orientation to switch between RS and LS — same as Ring World flip
+```
+
+```
+Physics Analysis — Case 552
+
+Component: Chassis 2B (Defense Mode, with World Ring)
+Mass:      m_total = 46.9 g; m_inner ≈ 34.9 g; m_outer_ring ≈ 12.0 g
+
+Moment of Inertia:
+  I_inner (r_i=8mm, r_o=35mm):
+    = ½ × 0.0349 × (0.008² + 0.035²)
+    = ½ × 0.0349 × (6.4×10⁻⁵ + 1.225×10⁻³)
+    = ½ × 0.0349 × 1.289×10⁻³
+    = 2.249×10⁻⁵ kg·m²
+
+  I_outer_ring (r_i=38mm, r_o=43mm — free-spinning):
+    = ½ × 0.012 × (0.038² + 0.043²)
+    = ½ × 0.012 × (1.444×10⁻³ + 1.849×10⁻³)
+    = ½ × 0.012 × 3.293×10⁻³
+    = 1.976×10⁻⁵ kg·m²
+
+  I_full_attack (entire 2B as one unit):
+    = ½ × 0.0469 × (0.008² + 0.043²)
+    = ½ × 0.0469 × (6.4×10⁻⁵ + 1.849×10⁻³)
+    = ½ × 0.0469 × 1.913×10⁻³
+    = 4.487×10⁻⁵ kg·m²
+
+LAD from free-spinning outer ring (Defense Mode):
+  L_ring_launch = 1.976×10⁻⁵ × 694 = 1.371×10⁻² kg·m²/s
+  (equivalent to ~10× the I of a standard tip; dominant LAD contributor)
+```
+
+```typescript
+function chassis2BInertia(mode: "attack" | "defense"): {
+  I_body: number; I_outer_free: number; I_total: number;
+} {
+  const m_inner = 0.0349, m_outer = 0.012, m_full = 0.0469;
+  if (mode === "defense") {
+    const I_body = 0.5 * m_inner * (0.008 ** 2 + 0.035 ** 2);
+    const I_free = 0.5 * m_outer * (0.038 ** 2 + 0.043 ** 2);
+    return { I_body, I_outer_free: I_free, I_total: I_body + I_free };
+  }
+  const I_full = 0.5 * m_full * (0.008 ** 2 + 0.043 ** 2);
+  return { I_body: I_full, I_outer_free: 0, I_total: I_full };
+}
+// chassis2BInertia("defense") -> { I_body=2.249e-5, I_free=1.976e-5, I_total=4.225e-5 }
+// chassis2BInertia("attack")  -> { I_body=4.487e-5, I_free=0,        I_total=4.487e-5 }
+// (Defense mode separates body/ring; Attack mode is monolithic)
+
+function chassis2BLADFromFreeRing(omega_launch: number): {
+  L_ring: number; L_equiv_tip: number; note: string;
+} {
+  const I_ring = 1.976e-5;
+  const I_tip_ref = 5.861e-7;
+  return {
+    L_ring: I_ring * omega_launch,
+    L_equiv_tip: I_ring / I_tip_ref,
+    note: "free-spinning ring at r=40mm; dominant LAD flywheel for precession phase",
+  };
+}
+// chassis2BLADFromFreeRing(694) -> { L_ring=1.371e-2, L_equiv=33.7×tip I }
+// chassis2BLADFromFreeRing(500) -> { L_ring=9.880e-3 }
+// chassis2BLADFromFreeRing(400) -> { L_ring=7.904e-3 }
+
+function chassis2BMode(ringName: string): {
+  mode: "attack" | "defense"; I_outer_spins_free: boolean;
+} {
+  const defenseModeRings = ["World", "Jet", "Mirage", "Infinite"];
+  const isDefense = defenseModeRings.includes(ringName);
+  return { mode: isDefense ? "defense" : "attack", I_outer_spins_free: isDefense };
+}
+// chassis2BMode("World")    -> { mode:"defense", free:true  }
+// chassis2BMode("Guilty")   -> { mode:"attack",  free:false }
+// chassis2BMode("Mirage")   -> { mode:"defense", free:true  }
+```
+
+---
+
+### Case 553: Performance Tip — Unite' (Superking / Dash System)
+
+**Thesis.** Unite' masses 6.1 g, functionally identical to Unite (flat rubber tip + sharp plastic center, same height) but fitted with a Dash-grade spring that increases burst resistance by approximately 35% relative to the standard Unite spring. I_Unite' = 0.5 × 0.0061 × (0.0015² + 0.014²) = 6.047×10⁻⁷ kg·m². The sharp center tip (r = 1.5 mm, μ_plastic = 0.08) preserves stamina when launched flat; when tilted the rubber ring (r = 14 mm, μ_rubber = 0.45) contacts the floor and produces aggressive movement with the same torque ratio as Unite. The Dash spring difference is mechanical: a stiffer spring (k_Dash ≈ 1.35 × k_std) raises the burst click threshold for the Driver component of the engagement force. In the Spriggan assembly this matters because the Layer's Burst Stopper already handles last-click protection; the Dash spring adds a secondary layer of security for the mid-click range where Stopper tabs may not fully engage. The 0.15 g mass increase over Unite (5.95 → 6.1 g) contributes I_delta = 0.5 × 0.00015 × (0.0015² + 0.014²) = 1.48×10⁻⁹ kg·m² — negligible. The primary distinction from Unite is competitive legality: Dash Drivers are tournament-legal in all eras that permit standard Drivers; Unite' replaces Unite in SK-era and later builds.
+
+```
+Unite' — Dash Driver (6.1 g, standard height)
+
+Cross section:
+       ___
+      | D |   <- Dash spring label; white cap
+      |___|
+   ===|===    <- standard height
+  /  rubber  \
+ |   [flat]   |  r = 14 mm, μ = 0.45
+  \___/\___/
+      |
+     /|\      <- sharp plastic center, r = 1.5 mm, μ = 0.08
+
+Spring comparison:
+  Standard Unite: k_std → τ_burst_driver component ~100%
+  Unite' (Dash):  k_Dash ≈ 1.35 × k_std → +35% burst resistance from spring
+  (Layer Burst Stopper provides independent last-click protection)
+```
+
+```
+Physics Analysis — Case 553
+
+Component: Performance Tip Unite' (Dash)
+Mass:      m = 6.1 g = 0.0061 kg
+Geometry:  r_tip = 1.5 mm (sharp), r_rubber = 14 mm (flat ring)
+
+Moment of Inertia:
+  I_Unite' = ½ × 0.0061 × (0.0015² + 0.014²)
+           = ½ × 0.0061 × (2.25×10⁻⁶ + 1.96×10⁻⁴)
+           = ½ × 0.0061 × 1.982×10⁻⁴
+           = 6.047×10⁻⁷ kg·m²
+
+Dash spring burst supplement (Driver-side):
+  τ_Dash_extra = (0.35) × τ_driver_std ≈ 0.35 × 3.0 mN·m = 1.05 mN·m additional
+  (World's Burst Stopper at 56 mN·m dominates; Dash spring is secondary redundancy)
+
+Friction torque (World Spriggan assembly, m_body=55.6g):
+  τ_sharp  = 0.08 × 0.0556 × 9.81 × 0.0015 = 6.549×10⁻⁵ N·m
+  τ_rubber = 0.45 × 0.0556 × 9.81 × 0.012  = 2.950×10⁻³ N·m (45× larger)
+```
+
+```typescript
+function unitePrimeTipTorque(
+  mBody_g: number, mode: "sharp" | "rubber"
+): { tau_Nm: number; note: string } {
+  const m = mBody_g / 1000;
+  const [mu, r] = mode === "sharp" ? [0.08, 0.0015] : [0.45, 0.012];
+  return { tau_Nm: mu * m * 9.81 * r, note: `${mode} contact; μ=${mu}, r=${r*1000}mm` };
+}
+// unitePrimeTipTorque(55.6, "sharp")  -> { tau=6.549e-5, note:"sharp contact" }
+// unitePrimeTipTorque(55.6, "rubber") -> { tau=2.950e-3, note:"rubber contact" }
+// unitePrimeTipTorque(34.95,"sharp")  -> { tau=4.115e-5 } (Storm Spriggan ref mass)
+
+function unitePrimeDashSpringBurst(
+  k_std_Npm: number, dashMultiplier: number, delta_m: number, r_driver_m: number
+): { tau_extra_mNm: number; totalDriverTau_mNm: number } {
+  const tau_std = k_std_Npm * delta_m * r_driver_m;
+  const tau_extra = (dashMultiplier - 1) * tau_std;
+  return { tau_extra_mNm: tau_extra * 1000, totalDriverTau_mNm: tau_std * dashMultiplier * 1000 };
+}
+// unitePrimeDashSpringBurst(1000, 1.35, 3e-4, 0.01) -> { extra=1.05mN·m, total=4.05mN·m }
+// unitePrimeDashSpringBurst(1000, 1.0,  3e-4, 0.01) -> { extra=0,        total=3.0mN·m }
+// (Burst Stopper at 56mN·m still dominates; Dash spring = secondary safety)
+
+function unitePrimeVsUnite(
+  mAssembly_g: number, I_total: number
+): { t_sharp_s: number; springUpgradePct: number; massIncrease_g: number } {
+  const m = mAssembly_g / 1000;
+  const tau = 0.08 * m * 9.81 * 0.0015;
+  const t = 416 / (tau / I_total);
+  return { t_sharp_s: t, springUpgradePct: 35, massIncrease_g: 0.15 };
+}
+// unitePrimeVsUnite(67.6, 3.251e-5) -> { t=206s, springUpgrade=35%, massIncrease=0.15g }
+// unitePrimeVsUnite(34.95,2.105e-5) -> { t=212s } (similar stamina; Dash spring is the diff)
+// unitePrimeVsUnite(46.05,2.719e-5) -> { t=209s }
+```
+
+---
+
+### Case 554: Assembly — World Spriggan Unite' 2B
+
+**Thesis.** World Spriggan Unite' 2B assembles to m = 4.1 + 10.5 + 46.9 + 6.1 = 67.6 g (Ring World estimated 10.5 g). In Defense Mode (Ring World activates 2B free-spin perimeter) the body I = I_chip + I_World + I_2B_inner + I_Unite' = 3.137×10⁻⁷ + 9.098×10⁻⁶ + 2.249×10⁻⁵ + 6.047×10⁻⁷ = 3.251×10⁻⁵ kg·m². The free-spinning outer ring adds I_ring = 1.976×10⁻⁵ kg·m², giving total I_launch = 5.227×10⁻⁵ kg·m² and L₀_total = 5.227×10⁻⁵ × 694 = 3.627×10⁻² kg·m²/s — the new series maximum for total angular momentum at launch. The body m_body = 4.1 + 10.5 + 34.9 + 6.1 = 55.6 g drives tip friction: dω/dt_body = −(0.08 × 0.0556 × 9.81 × 0.0015) / 3.251×10⁻⁵ = −2.015 rad/s², t_battle_body = 416 / 2.015 = 206 s. The free-spinning outer ring (12 g at r = 40–43 mm, I = 1.976×10⁻⁵) acts as an LAD flywheel: after the body spin decays to zero, the ring continues spinning and gyroscopically maintains the assembly upright, extending effective precession time by an estimated Δt_LAD = L_ring / τ_floor_ring ≈ (1.976×10⁻⁵ × 694) / (0.08 × 0.012 × 9.81 × 0.040) = 1.371×10⁻² / 3.772×10⁻⁴ = 36 s. The Burst Stopper (τ_stop = 56 mN·m) makes this assembly essentially un-Burstable. Left-spin vs right-spin: flip Ring World + Chip Spriggan together; 2B orients to match — right-spin presents Spriggan Requiem blade geometry for SE against left-spin opponents, left-spin presents Legend Spriggan blade geometry for SE against right-spin opponents.
+
+```
+Assembly — World Spriggan Unite' 2B
+
+Mass budget:
+  SK Chip Spriggan :  4.10 g  ( 6.1%)
+  Ring World       : 10.50 g  (15.5%) [estimated]
+  Chassis 2B       : 46.90 g  (69.4%)
+    └ inner body   : 34.90 g  (body spin)
+    └ outer ring   : 12.00 g  (free-spin, Defense Mode)
+  Unite' tip       :  6.10 g  ( 9.0%)
+  Total            : 67.60 g
+
+I budget (Defense Mode):
+  I_body  = I_chip + I_World + I_2B_inner + I_Unite'
+          = 3.137×10⁻⁷ + 9.098×10⁻⁶ + 2.249×10⁻⁵ + 6.047×10⁻⁷
+          = 3.251×10⁻⁵ kg·m²
+  I_ring  = 1.976×10⁻⁵ kg·m²  (free-spinning, not body spin)
+  I_total_launch = 5.227×10⁻⁵ kg·m²
+
+Battle timeline:
+  L₀_total = 5.227×10⁻⁵ × 694 = 3.627×10⁻² kg·m²/s  [NEW SERIES MAXIMUM]
+  t_battle_body = 206 s
+  Δt_LAD_ring   ≈ +36 s (ring flywheel precession extension)
+  τ_burst_stop  = 56 mN·m (un-Burstable from last click)
+```
+
+```
+Physics Analysis — Case 554
+
+Assembly:  m = 67.6 g (estimated)
+I_body:    3.251×10⁻⁵ kg·m²
+I_ring:    1.976×10⁻⁵ kg·m² (free-spinning)
+I_launch:  5.227×10⁻⁵ kg·m²
+
+Body spin decay (Unite' sharp, μ=0.08, r=1.5mm, m_body=55.6g):
+  τ = 0.08 × 0.0556 × 9.81 × 0.0015 = 6.549×10⁻⁵ N·m
+  dω/dt_body = -6.549×10⁻⁵ / 3.251×10⁻⁵ = -2.015 rad/s²
+  t_battle = 416 / 2.015 = 206 s
+
+Angular momenta:
+  L₀_body  = 3.251×10⁻⁵ × 694 = 2.256×10⁻² kg·m²/s
+  L₀_ring  = 1.976×10⁻⁵ × 694 = 1.371×10⁻² kg·m²/s
+  L₀_total = 3.627×10⁻² kg·m²/s — new series maximum (prev: DynBelial 2.804e-2)
+
+LAD ring flywheel extension:
+  τ_floor_ring = μ_rubber × m_ring × g × r_ring
+               = 0.08 × 0.012 × 9.81 × 0.040 = 3.772×10⁻⁴ N·m
+  Δt_LAD = L₀_ring / τ_floor_ring = 1.371×10⁻² / 3.772×10⁻⁴ = 36.4 s
+  Total effective battle time ≈ 206 + 36 = 242 s (body + ring LAD phase)
+```
+
+```typescript
+function worldSprigganBodyDecay(
+  m_body_g: number, I_body: number, mu: number, r_tip_mm: number
+): { tau_Nm: number; dw_radps2: number; tBattle_s: number } {
+  const m = m_body_g / 1000;
+  const tau = mu * m * 9.81 * (r_tip_mm / 1000);
+  const dw = -tau / I_body;
+  return { tau_Nm: tau, dw_radps2: dw, tBattle_s: 416 / Math.abs(dw) };
+}
+// worldSprigganBodyDecay(55.6, 3.251e-5, 0.08, 1.5) -> { tau=6.549e-5, dw=-2.015, t=206s }
+// worldSprigganBodyDecay(55.6, 3.251e-5, 0.45, 12)  -> { tau=2.950e-3, dw=-90.7,  t=4.6s } // rubber
+// worldSprigganBodyDecay(67.6, 3.251e-5, 0.08, 1.5) -> { tau=7.963e-5, dw=-2.449, t=170s } // full mass
+
+function worldSprigganLADRing(
+  I_ring: number, omega_launch: number,
+  m_ring_g: number, r_ring_mm: number
+): { L_ring: number; tLAD_s: number; totalBattle_s: number; t_body_s: number } {
+  const L_ring = I_ring * omega_launch;
+  const tau_floor = 0.08 * (m_ring_g / 1000) * 9.81 * (r_ring_mm / 1000);
+  const tLAD = L_ring / tau_floor;
+  const t_body = 206;
+  return { L_ring, tLAD_s: tLAD, totalBattle_s: t_body + tLAD, t_body_s: t_body };
+}
+// worldSprigganLADRing(1.976e-5, 694, 12, 40) -> { L=1.371e-2, tLAD=36.4s, total=242s }
+// worldSprigganLADRing(1.976e-5, 500, 12, 40) -> { L=9.880e-3, tLAD=26.3s, total=232s }
+// worldSprigganLADRing(2.0e-5,   694, 12, 42) -> { L=1.388e-2, tLAD=35.0s, total=241s }
+
+function worldSprigganAngularMomentum(I_body: number, I_ring: number): {
+  L_body: number; L_ring: number; L_total: number; seriesRank: string;
+} {
+  const L_b = I_body * 694;
+  const L_r = I_ring * 694;
+  const L_t = L_b + L_r;
+  const prev = 2.804e-2;
+  return {
+    L_body: L_b, L_ring: L_r, L_total: L_t,
+    seriesRank: L_t > prev ? `new series max (+${((L_t / prev - 1) * 100).toFixed(1)}% vs DynBelial)` : "below DynBelial",
+  };
+}
+// worldSprigganAngularMomentum(3.251e-5, 1.976e-5) -> { L_total=3.627e-2, rank:"new series max +29.4%" }
+// worldSprigganAngularMomentum(3.251e-5, 0)        -> { L_total=2.256e-2, rank:"below DynBelial" }
+// worldSprigganAngularMomentum(3.251e-5, 2.0e-5)   -> { L_total=3.641e-2, rank:"new series max +29.9%" }
+```
+
+---
+
+### Case 555: DB Core — Spriggan 1 (DB/BU Layer System)
+
+**Thesis.** DB Core Spriggan 1 masses 7.9 g and is the first of two Spriggan DB Cores. Like all DB Cores it carries the burst engagement tabs; Spriggan 1 has a standard dual-tab arrangement without an Overdrive centrifugal lock system, yielding average burst resistance. I_core = 0.5 × 0.0079 × (0.008² + 0.016²) = 1.264×10⁻⁶ kg·m². Burst torque for two standard tabs (k_tab = 500 N/m, δ = 0.5 mm, r_engage = 14 mm): τ_burst = 2 × 500 × 5×10⁻⁴ × 0.014 = 7.0×10⁻³ N·m = 7.0 mN·m — in the middle of the God Layer range but below DB Cores with Overdrive (Belial 2: 9.8 mN·m, Belial 3: 12.6 mN·m). The dual-spin function requires physical reversal of the Core within the Blade: the user removes the Blade, flips the Core, and re-seats — a deliberate process unlike the God/SK Layer flips which reverse the entire assembled layer. In the DB/BU context, left-spin Cores are unusual; Spriggan 1's left-spin configuration versus a right-spin opponent converts the Blade's rubber SE contacts from passive surfaces to active spin-equalizers, exactly mirroring the God Layer Drain Fafnir strategy but now at the DB Layer scale. Compared to other left-spin DB Cores such as Bahamut and Longinus, Spriggan 1 lacks distinctive advantages in stamina or weight; it is outclassed but serves as the Spriggan lineage anchor.
+
+```
+DB Core Spriggan 1 (7.9 g, dual-spin)
+
+Top view (Core only):
+      _______
+     /  S P  \
+    | [tabs2] |   2 standard tabs (no Overdrive)
+    |  face   |   dual-spin: rotate 180° within Blade to switch
+     \_______/
+  r_i=8mm | r_o=16mm
+
+Dual-spin mechanism (DB/BU system):
+  RIGHT-SPIN: Blade Astral red side up → standard right-spin
+  LEFT-SPIN:  Blade Astral black side up (flip Blade + Core together) → left-spin
+  (flip entire Ring+Armor+Core assembly; see Case 556 for Astral flip detail)
+
+Burst resistance:
+  τ_burst = 7.0 mN·m (average; no Overdrive)
+  vs DB Core Belial 3: 12.6 mN·m (+80% with Overdrive)
+```
+
+```
+Physics Analysis — Case 555
+
+Component: DB Core Spriggan 1
+Mass:      m = 7.9 g = 0.0079 kg
+Geometry:  r_inner = 8 mm, r_outer = 16 mm
+
+Moment of Inertia:
+  I_core = ½ × 0.0079 × (0.008² + 0.016²)
+         = ½ × 0.0079 × (6.4×10⁻⁵ + 2.56×10⁻⁴)
+         = ½ × 0.0079 × 3.2×10⁻⁴
+         = 1.264×10⁻⁶ kg·m²
+
+Burst torque (standard 2-tab, no Overdrive):
+  τ_burst = 2 × 500 × 5×10⁻⁴ × 0.014 = 7.0×10⁻³ N·m = 7.0 mN·m
+
+ω_crit comparison (Overdrive threshold, absent here):
+  No ω_crit — standard tabs engage regardless of spin speed
+  Overdrive advantage: DB Core Belial 3 locks burst above ω=408 rad/s
+  Spriggan 1 is exposed at all ω; impact of any >7 mN·m torque = Burst
+
+Left-spin vs right-spin SE coupling (Astral rubber blades):
+  Opposite spin: rubber SE active → spin equalization per collision
+  Same spin:     rubber acts as recoil cushion (slight absorption, no SE)
+```
+
+```typescript
+function spriggan1CoreInertia(m_g: number): number {
+  return 0.5 * (m_g / 1000) * (0.008 ** 2 + 0.016 ** 2);
+}
+// spriggan1CoreInertia(7.9)  -> 1.264e-6 kg·m²
+// spriggan1CoreInertia(8.1)  -> 1.296e-6 kg·m² (Belial 2 ref mass)
+// spriggan1CoreInertia(7.9)  -> same as Belial 3 mass; I identical since geometry same
+
+function spriggan1BurstTorque(
+  k_tab: number, N: number, delta_m: number, r_m: number
+): { tau_mNm: number; hasOverdrive: boolean; note: string } {
+  const tau = N * k_tab * delta_m * r_m;
+  return { tau_mNm: tau * 1000, hasOverdrive: false, note: "standard tabs; no centrifugal lock" };
+}
+// spriggan1BurstTorque(500, 2, 5e-4, 0.014) -> { tau=7.0mN·m, hasOverdrive:false }
+// spriggan1BurstTorque(500, 3, 5e-4, 0.014) -> { tau=10.5mN·m } (3-tab variant)
+// spriggan1BurstTorque(500, 2, 5e-4, 0.014) -> same; no Overdrive regardless
+
+function spriggan1SpinDirectionSetup(
+  opponentSpin: "right" | "left", goal: "se" | "attack"
+): { spinDir: "right" | "left"; action: string; seActive: boolean } {
+  const opp = opponentSpin === "right";
+  if (goal === "se") {
+    const dir = opp ? "left" : "right";
+    return { spinDir: dir, action: "flip Blade Astral (black=LS / red=RS); flip Core inside", seActive: true };
+  }
+  return { spinDir: opponentSpin, action: "match opponent spin for Smash contact", seActive: false };
+}
+// spriggan1SpinDirectionSetup("right", "se")     -> { dir:"left",  action:"flip Astral black side up", seActive:true }
+// spriggan1SpinDirectionSetup("left",  "se")     -> { dir:"right", action:"flip Astral red side up",   seActive:true }
+// spriggan1SpinDirectionSetup("right", "attack") -> { dir:"right", action:"match spin for Smash",      seActive:false}
+```
+
+---
+
+### Case 556: Blade — Astral + Armor — 0 (DB/BU Layer System)
+
+**Thesis.** Blade Astral masses 11.8 g and is a dual-spin Balance Type DB Blade with four blades arranged in alternating pairs: two large metal-contact blades carrying the primary attack/SE mass and two small rubber-tipped blades providing spin-equalization contact surfaces. The rubber blades activate as SE hooks during opposite-spin collisions (friction coupling transfers angular momentum between the layers). To switch spin direction, the entire Astral blade is physically flipped over — the black underside is left-spin, the red topside is right-spin — reversing the asymmetric blade profile and changing which edge leads contact. I_Astral = 0.5 × 0.0118 × (0.017² + 0.038²) = 1.022×10⁻⁵ kg·m². In left-spin mode, Astral's performance for pure Attack is below dedicated left-spin Attack Blades (Guilty); in right-spin mode, both Attack and SE performance are weaker than right-spin stamina specialists (Wind). The blade's balance-type profile means it occupies a middle ground: against an opposite-spin opponent it can SE, against a same-spin it can Smash. Armor 0 masses 13.9 g with a smooth symmetrical design (r_i = 17 mm, r_o = 30 mm), providing the highest stamina-focused weight distribution among DB Armors: I_Armor0 = 0.5 × 0.0139 × (0.017² + 0.030²) = 8.263×10⁻⁶ kg·m². Armor 0 is the most versatile Armor, suitable for Defense and Stamina combinations. The High Mode (Armor on top, DB Core on bottom) raises the center of mass and tips the balance toward attack/aggressive behavior; Low Mode (DB Core on top, Armor on bottom) lowers it for stability and defense.
+
+```
+Blade Astral — Dual-Spin, 4-Blade Balance (11.8 g)
+
+Top view (right-spin mode, red side up):
+         [large metal blade A]
+     .   /                    \   .
+    .  [rubber SE blade]       .   <- small, hooks opposite spin
+   .                             .
+    .  [rubber SE blade]       .
+     .   \                    /   .
+         [large metal blade B]
+
+Spin direction flip:
+  RED  side up  = RIGHT-SPIN  (metal blades lead clockwise)
+  BLACK side up = LEFT-SPIN   (flip entire Blade assembly; blades reverse)
+  Flip mechanism: remove Blade from Core, rotate 180°, re-seat
+
+Armor 0 (13.9 g, smooth symmetric):
+  [ smooth ring, 4-fold symmetry, no protrusions ]
+  r_i=17mm | r_o=30mm | all-direction even weight
+  Modes: High (Armor top) = aggressive CoM | Low (DB Core top) = stable CoM
+```
+
+```
+Physics Analysis — Case 556
+
+Component: Blade Astral
+Mass:      m = 11.8 g = 0.0118 kg
+Geometry:  r_inner = 17 mm, r_outer = 38 mm (blade tips)
+
+  I_Astral = ½ × 0.0118 × (0.017² + 0.038²)
+           = ½ × 0.0118 × (2.89×10⁻⁴ + 1.444×10⁻³)
+           = ½ × 0.0118 × 1.733×10⁻³
+           = 1.022×10⁻⁵ kg·m²
+
+Component: Armor 0
+Mass:      m = 13.9 g = 0.0139 kg
+Geometry:  r_inner = 17 mm, r_outer = 30 mm
+
+  I_Armor0 = ½ × 0.0139 × (0.017² + 0.030²)
+           = ½ × 0.0139 × (2.89×10⁻⁴ + 9.0×10⁻⁴)
+           = ½ × 0.0139 × 1.189×10⁻³
+           = 8.263×10⁻⁶ kg·m²
+
+SE rubber-blade coupling (opposite-spin, r_rubber=32mm):
+  τ_SE = 2 × 0.45 × F_N × 0.032
+  At F_N = 4 N: τ_SE = 2 × 0.45 × 4 × 0.032 = 0.115 N·m per contact event
+  ΔL = 0.115 × 0.005 = 5.76×10⁻⁴ kg·m²/s per event (2 rubber blade contacts)
+
+CoM mode comparison:
+  High Mode: CoM_height ↑ 3mm → precession faster, tilt more aggressive
+  Low Mode:  CoM_height ↓ 3mm → more stable, better LAD geometry
+```
+
+```typescript
+function astralBladeInertia(m_g: number, r_o_mm: number): number {
+  return 0.5 * (m_g / 1000) * (0.017 ** 2 + (r_o_mm / 1000) ** 2);
+}
+// astralBladeInertia(11.8, 38) -> 1.022e-5 kg·m²
+// astralBladeInertia(11.8, 35) -> 8.960e-6 kg·m² (if rubber blades count r=35mm)
+// astralBladeInertia(11.8, 40) -> 1.106e-5 kg·m² (full tip reach)
+
+function astralBladeFlipConfig(spinDir: "right" | "left"): {
+  sideUp: string; leadingEdge: string; seActive_vsRightSpin: boolean;
+} {
+  if (spinDir === "right") {
+    return { sideUp: "red", leadingEdge: "metal blade CW", seActive_vsRightSpin: false };
+  }
+  return { sideUp: "black", leadingEdge: "metal blade CCW", seActive_vsRightSpin: true };
+}
+// astralBladeFlipConfig("right") -> { sideUp:"red",   se_vsRS:false }
+// astralBladeFlipConfig("left")  -> { sideUp:"black", se_vsRS:true  }
+// (black=LS side activates SE rubber hooks against right-spin opponents)
+
+function armor0InertiaAndMode(m_g: number, mode: "high" | "low"): {
+  I: number; comHeight_mm: number; stability: string;
+} {
+  const I = 0.5 * (m_g / 1000) * (0.017 ** 2 + 0.030 ** 2);
+  const [h, stab] = mode === "high" ? [3, "aggressive / attack CoM"] : [-3, "stable / defense CoM"];
+  return { I, comHeight_mm: h, stability: stab };
+}
+// armor0InertiaAndMode(13.9, "low")  -> { I=8.263e-6, comHeight=-3mm, stability:"stable" }
+// armor0InertiaAndMode(13.9, "high") -> { I=8.263e-6, comHeight=+3mm, stability:"aggressive" }
+// (I same for both modes; CoM height is the variable)
+```
+
+---
+
+### Case 557: Forge Disc — Over (DB/BU System)
+
+**Thesis.** Forge Disc Over masses 33.7 g in a perfectly circular profile with a cylindrical cross-section, making it one of the heaviest DB Discs alongside Karma (29.2 g) and Giga (32.8 g). Its smooth circular perimeter gives it the highest LAD among DB Discs: the rolling contact radius stays constant regardless of precession angle, unlike elliptical discs (Nexus, Illegal) which oscillate between apothem and full radius. I_Over = 0.5 × 0.0337 × (0.013² + 0.040²) = 2.979×10⁻⁵ kg·m². Compared to Nexus (30.6 g, I ≈ 2.706×10⁻⁵): Over is 3.1 g heavier with a slightly larger outer radius (40 mm vs 38 mm), giving I_Over / I_Nexus = 2.979 / 2.706 = 110.1% — a 10.1% inertia advantage that translates to +10.1% longer battle time at equivalent tip friction. The uniform cylindrical cross-section (no taper, unlike Tapered disc) means Over's mass distribution is purely radial: all 33.7 g sits at the full outer radius without the downward slope of Tapered or the slot-cutouts of Karma. This maximizes OWD for a given outer radius but sacrifices the lowered center of gravity that Tapered's cone achieves. Over is described as a homage to God Layer Disc "Oval" and "0," inheriting the circular LAD philosophy while being the DB System's premier heavy circular disc.
+
+```
+Forge Disc Over — Circular DB Disc (33.7 g)
+
+Top view:
+      ___________
+     /             \
+    |  cylindrical  |   smooth circular perimeter
+    |    Over       |   r_i=13mm | r_o=40mm
+    |               |   constant rolling radius for LAD
+     \             /
+      -----------
+
+Cross section (side view):
+  |‾‾‾‾‾‾‾‾‾‾‾‾‾|    flat cylinder — uniform height
+  |    OVER      |    no taper, no slope
+  |_____________|    all mass at r_o=40mm perimeter
+
+LAD profile (vs elliptical discs):
+  Over: r_contact = constant 40mm (circular) → smooth precession
+  Nexus: r oscillates 38→32mm (elliptical) → periodic LAD variation
+  Over LAD advantage: ~15% longer contact time per revolution during precession
+```
+
+```
+Physics Analysis — Case 557
+
+Component: Forge Disc Over
+Mass:      m = 33.7 g = 0.0337 kg
+Geometry:  r_inner = 13 mm, r_outer = 40 mm
+
+Moment of Inertia:
+  I_Over = ½ × 0.0337 × (0.013² + 0.040²)
+         = ½ × 0.0337 × (1.69×10⁻⁴ + 1.600×10⁻³)
+         = ½ × 0.0337 × 1.769×10⁻³
+         = 2.979×10⁻⁵ kg·m²
+
+Comparison to reference discs:
+  Nexus  (30.6g, r=38mm): I = 2.706×10⁻⁵ → Over/Nexus = +10.1%
+  Karma  (29.2g, r=38mm): I = 2.581×10⁻⁵ → Over/Karma  = +15.4%
+  Giga   (32.8g, r=40mm): I = 2.906×10⁻⁵ → Over/Giga   = +2.5%
+
+LAD from constant rolling radius:
+  Precession torque = m_disc × g × r_contact × sin(tilt_angle)
+  Over (circular): r = constant 40mm at all tilt angles
+  Nexus (elliptical): r oscillates 38→32mm (apothem = 38×cos(22.5°) = 35.1mm)
+  LAD stability advantage: Over produces 40/36.5 = 1.096× more consistent resistance to precession acceleration
+```
+
+```typescript
+function overDiscInertia(m_g: number, r_i_mm: number, r_o_mm: number): number {
+  return 0.5 * (m_g / 1000) * ((r_i_mm / 1000) ** 2 + (r_o_mm / 1000) ** 2);
+}
+// overDiscInertia(33.7, 13, 40) -> 2.979e-5 kg·m²
+// overDiscInertia(30.6, 13, 38) -> 2.706e-5 kg·m² (Nexus ref)
+// overDiscInertia(32.8, 13, 40) -> 2.906e-5 kg·m² (Giga ref)
+
+function overVsNexusInertiaRatio(m_Over_g: number, m_Nexus_g: number): {
+  I_Over: number; I_Nexus: number; ratio: number; advantage_pct: number;
+} {
+  const I_O = 0.5 * (m_Over_g / 1000) * (0.013 ** 2 + 0.040 ** 2);
+  const I_N = 0.5 * (m_Nexus_g / 1000) * (0.013 ** 2 + 0.038 ** 2);
+  return { I_Over: I_O, I_Nexus: I_N, ratio: I_O / I_N, advantage_pct: (I_O / I_N - 1) * 100 };
+}
+// overVsNexusInertiaRatio(33.7, 30.6) -> { ratio=1.101, advantage=+10.1% }
+// overVsNexusInertiaRatio(33.7, 33.7) -> { ratio=1.100, advantage=+10.0% } (same mass, Over wins on radius)
+// overVsNexusInertiaRatio(30.6, 33.7) -> { ratio<1, Nexus wins if same radius but lighter Over }
+
+function overLADConsistency(discShape: "circular" | "elliptical", r_major_mm: number): {
+  r_min_contact_mm: number; variability_pct: number; ladClass: string;
+} {
+  if (discShape === "circular") {
+    return { r_min_contact_mm: r_major_mm, variability_pct: 0, ladClass: "constant/excellent" };
+  }
+  const n = 4;
+  const r_apo = r_major_mm * Math.cos(Math.PI / n);
+  const var_pct = ((r_major_mm - r_apo) / r_major_mm) * 100;
+  return { r_min_contact_mm: r_apo, variability_pct: var_pct, ladClass: "oscillating/moderate" };
+}
+// overLADConsistency("circular",   40) -> { r_min=40, variability=0%,   lad:"constant/excellent" }
+// overLADConsistency("elliptical", 38) -> { r_min=35.1, variability=7.6%, lad:"oscillating/moderate" }
+// overLADConsistency("circular",   38) -> { r_min=38, variability=0%,   lad:"constant/excellent" }
+```
+
+---
+
+### Case 558: Performance Tip — Quattro (DB/BU System)
+
+**Thesis.** Quattro masses 10.6 g and provides four selectable modes via a rotating tip carrier at standard height: Attack (small diameter flat rubber, r = 4 mm, μ = 0.45), Defense (free-rotating metal ball, r = 4 mm, μ = 0.02), Stamina (metal sharp, r = 1.5 mm, μ = 0.06), and Balance (flat rubber + sharp plastic center, similar to Unite). I_Quattro = 0.5 × 0.0106 × (0.002² + 0.022²) = 2.587×10⁻⁶ kg·m². The primary competitive flaw is a notably weak spring: Quattro's burst spring constant k_spring ≈ 0.60 × k_standard, reducing the Driver-side burst resistance from the typical 3.0 mN·m to approximately 1.8 mN·m. In the full Astral Spriggan assembly this matters because the Layer's τ_burst = 7.0 mN·m is average — adding a weak Driver spring makes the total burst engagement weaker than assemblies using Quattro' (Dash variant) which raises k to 1.35 × k_standard. The Defense mode free-rotating metal ball (μ = 0.02) is the best tip mode for this assembly: dω/dt_defense = −(0.02 × m × g × 0.004) / I_total provides the lowest friction and longest battle time. The outer ridge in Defense mode helps prevent KO when the assembly tilts, acting as a passive brake before the ball resumes contact. The Balance mode functions identically to Unite: center sharp for stability, rubber for aggressive KO-resist when struck.
+
+```
+Quattro — 4-Mode Adjustable Tip (10.6 g)
+
+Mode selector (rotates to lock):
+  [A] Attack   : small flat rubber, r=4mm,  μ=0.45  → 15.8s aggressive
+  [D] Defense  : free-spin metal ball, r=4mm, μ=0.02 → 355s excellent stamina
+  [S] Stamina  : metal sharp, r=1.5mm,  μ=0.06  → 315s decent stamina
+  [B] Balance  : rubber flat + sharp center → unite-like dual-mode
+
+Weak spring warning:
+  k_spring = 0.60 × k_standard → burst resistance only 60% of normal Driver
+  Dash variant Quattro' fixes this with k_Dash = 1.35 × k_std
+  This assembly uses standard Quattro — Burst risk elevated vs Quattro' builds
+
+Outer ridge (Defense mode):
+  When assembly tilts: ridge contacts floor → braking force prevents KO
+  Acts similarly to Defense Driver tabs but less effective (no tab protrusions)
+```
+
+```
+Physics Analysis — Case 558
+
+Component: Performance Tip Quattro
+Mass:      m = 10.6 g = 0.0106 kg
+Geometry:  r_ball = 4 mm (Defense), r_sharp = 1.5 mm (Stamina)
+
+Moment of Inertia:
+  I_Quattro = ½ × 0.0106 × (0.002² + 0.022²)
+            = ½ × 0.0106 × (4×10⁻⁶ + 4.84×10⁻⁴)
+            = ½ × 0.0106 × 4.88×10⁻⁴
+            = 2.587×10⁻⁶ kg·m²
+
+Mode analysis (Astral Spriggan assembly, m=77.9g, I=5.212e-5):
+  Defense (μ=0.02, r=4mm):
+    τ = 0.02 × 0.0779 × 9.81 × 0.004 = 6.113×10⁻⁵ N·m
+    dω/dt = -6.113e-5 / 5.212e-5 = -1.173 rad/s²
+    t_battle = 416 / 1.173 = 355 s
+
+  Stamina (μ=0.06, r=1.5mm):
+    τ = 0.06 × 0.0779 × 9.81 × 0.0015 = 6.880×10⁻⁵ N·m
+    dω/dt = -6.880e-5 / 5.212e-5 = -1.320 rad/s²
+    t_battle = 416 / 1.320 = 315 s
+
+  Attack (μ=0.45, r=4mm):
+    τ = 0.45 × 0.0779 × 9.81 × 0.004 = 1.377×10⁻³ N·m
+    dω/dt = -1.377e-3 / 5.212e-5 = -26.4 rad/s²
+    t_battle = 416 / 26.4 = 15.8 s
+
+  Mode ranking: Defense (355s) > Stamina (315s) >> Attack (15.8s)
+
+Weak spring burst penalty:
+  τ_driver_Quattro ≈ 0.60 × 3.0 mN·m = 1.8 mN·m (vs 3.0 mN·m standard)
+  Burst risk elevated; partial mitigation from Layer τ_burst=7.0mN·m
+```
+
+```typescript
+function quattroModeDecay(
+  mode: "attack" | "defense" | "stamina" | "balance",
+  mAssembly_g: number, I_total: number
+): { tau_Nm: number; dw_radps2: number; tBattle_s: number } {
+  const m = mAssembly_g / 1000;
+  const configs = {
+    attack:  { mu: 0.45, r: 0.004  },
+    defense: { mu: 0.02, r: 0.004  },
+    stamina: { mu: 0.06, r: 0.0015 },
+    balance: { mu: 0.08, r: 0.0015 },
+  };
+  const { mu, r } = configs[mode];
+  const tau = mu * m * 9.81 * r;
+  const dw = -tau / I_total;
+  return { tau_Nm: tau, dw_radps2: dw, tBattle_s: 416 / Math.abs(dw) };
+}
+// quattroModeDecay("defense", 77.9, 5.212e-5) -> { tau=6.113e-5, dw=-1.173, t=355s }
+// quattroModeDecay("stamina", 77.9, 5.212e-5) -> { tau=6.880e-5, dw=-1.320, t=315s }
+// quattroModeDecay("attack",  77.9, 5.212e-5) -> { tau=1.377e-3, dw=-26.4,  t=15.8s}
+
+function quattroWeakSpringBurst(
+  kFraction: number, kStd_Npm: number, delta_m: number, r_m: number
+): { tau_driver_mNm: number; vs_standard_pct: number; burstRisk: string } {
+  const tau = kFraction * kStd_Npm * delta_m * r_m;
+  const pct = kFraction * 100;
+  const risk = kFraction < 0.7 ? "high — use Quattro' (Dash) for competitive play" : "moderate";
+  return { tau_driver_mNm: tau * 1000, vs_standard_pct: pct, burstRisk: risk };
+}
+// quattroWeakSpringBurst(0.60, 1000, 3e-4, 0.01) -> { tau=1.8mN·m, pct=60%, risk:"high" }
+// quattroWeakSpringBurst(1.35, 1000, 3e-4, 0.01) -> { tau=4.05mN·m,pct=135%,risk:"moderate" } // Quattro'
+// quattroWeakSpringBurst(1.0,  1000, 3e-4, 0.01) -> { tau=3.0mN·m, pct=100%,risk:"moderate" }
+
+function quattroDefenseModeOuterRidge(
+  tiltAngle_deg: number, mAssembly_g: number
+): { ridgeActive: boolean; brakeForce_N: number } {
+  const threshold = 12;
+  const active = tiltAngle_deg > threshold;
+  const F = active ? 0.15 * (mAssembly_g / 1000) * 9.81 : 0;
+  return { ridgeActive: active, brakeForce_N: F };
+}
+// quattroDefenseModeOuterRidge(5,  77.9) -> { ridgeActive:false, F=0    }
+// quattroDefenseModeOuterRidge(15, 77.9) -> { ridgeActive:true,  F=0.115N }
+// quattroDefenseModeOuterRidge(20, 77.9) -> { ridgeActive:true,  F=0.115N }
+```
+
+---
+
+### Case 559: Assembly — Astral Spriggan Over Quattro-0
+
+**Thesis.** Astral Spriggan Over Quattro-0 assembles to m = 7.9 + 11.8 + 13.9 + 33.7 + 10.6 = 77.9 g with I_total = 1.264×10⁻⁶ + 1.022×10⁻⁵ + 8.263×10⁻⁶ + 2.979×10⁻⁵ + 2.587×10⁻⁶ = 5.212×10⁻⁵ kg·m² — the new series maximum for moment of inertia, surpassing Glide Ragnaruk (3.657×10⁻⁵) by 42.5% and exceeding the previous DB/BU record of Vanish-Fafnir-to-come. L₀ = 5.212×10⁻⁵ × 694 = 3.617×10⁻² kg·m²/s, also a new series maximum for body-spin angular momentum. In Defense mode (free-rotating metal ball, μ = 0.02, r = 4 mm): dω/dt = −1.173 rad/s², t_battle = 355 s; in Stamina mode: 315 s; in Attack mode: 15.8 s. The Disc Over dominates the I budget at 57.2% (2.979 / 5.212); the Blade Astral contributes 19.6% and Armor 0 contributes 15.9%. The assembly's critical weakness is the Quattro spring: τ_burst_driver ≈ 1.8 mN·m plus Layer τ_burst = 7.0 mN·m gives an effective total burst threshold of approximately 8.8 mN·m — above average but reduced by the weak spring. Dual-spin capability: flip Blade Astral (black = left-spin, red = right-spin) with the DB Core reversed inside to face left-spin opponents; in left-spin mode versus a right-spin opponent both rubber SE blades and the rounded Armor 0 profile aid spin equalization, converting this assembly from a pure stamina build into a hybrid SE-stamina combination. In right-spin mode the metal blades deliver moderate Smash Attack supplemented by the assembly's very high I (high burst-back force on the opponent).
+
+```
+Assembly — Astral Spriggan Over Quattro-0
+
+Mass budget:
+  DB Core Spriggan 1 :  7.90 g  (10.1%)
+  Blade Astral       : 11.80 g  (15.2%)
+  Armor 0            : 13.90 g  (17.9%)
+  Disc Over          : 33.70 g  (43.3%)
+  Tip Quattro        : 10.60 g  (13.6%)
+  Total              : 77.90 g
+
+I budget:
+  I_core    = 1.264×10⁻⁶  ( 2.4%)
+  I_Astral  = 1.022×10⁻⁵  (19.6%)
+  I_Armor0  = 8.263×10⁻⁶  (15.9%)
+  I_Over    = 2.979×10⁻⁵  (57.2%)
+  I_Quattro = 2.587×10⁻⁶  ( 5.0%)
+  I_total   = 5.212×10⁻⁵ kg·m²  [NEW SERIES MAXIMUM — +42.5% vs Glide Ragnaruk]
+
+Battle timeline (Defense mode — recommended):
+  ω₀ = 694 rad/s        t=0
+  ω  = 277 rad/s        t=355s  (40% threshold)
+  L₀ = 3.617×10⁻²      [NEW SERIES MAXIMUM body spin]
+  Defense:355s | Stamina:315s | Attack:15.8s
+
+Weakness: Quattro spring k=0.60×std → elevated Burst risk; use Quattro' for competition
+```
+
+```
+Physics Analysis — Case 559
+
+Assembly total: m = 77.9 g = 0.0779 kg
+I_total:        5.212×10⁻⁵ kg·m²
+
+Defense mode (free-rotating ball, μ=0.02, r=4mm):
+  τ = 0.02 × 0.0779 × 9.81 × 0.004 = 6.113×10⁻⁵ N·m
+  dω/dt = -6.113×10⁻⁵ / 5.212×10⁻⁵ = -1.173 rad/s²
+  t_battle = 416 / 1.173 = 355 s
+
+Stamina mode (metal sharp, μ=0.06, r=1.5mm):
+  τ = 0.06 × 0.0779 × 9.81 × 0.0015 = 6.880×10⁻⁵ N·m
+  dω/dt = -6.880×10⁻⁵ / 5.212×10⁻⁵ = -1.320 rad/s²
+  t_battle = 416 / 1.320 = 315 s
+
+Angular momenta:
+  L₀ = 5.212×10⁻⁵ × 694 = 3.617×10⁻² kg·m²/s  (new series max body spin)
+  Previous max: World Spriggan total = 3.627×10⁻² (incl. free-spin ring)
+  Astral Spriggan: all body spin — no free-spin ring — single-piece L₀
+
+Series I comparison:
+  Astral Spriggan : 5.212×10⁻⁵ — new maximum
+  Glide Ragnaruk  : 3.657×10⁻⁵ — previous maximum
+  Cyclone Ragnaruk: 3.371×10⁻⁵
+  Rage Longinus   : 3.594×10⁻⁵
+```
+
+```typescript
+function astralSprigganAssembly(
+  mode: "defense" | "stamina" | "attack"
+): { I_total: number; tBattle_s: number; L0: number; seriesRankI: string } {
+  const I = 5.212e-5;
+  const m = 0.0779;
+  const configs = {
+    defense: { mu: 0.02, r: 0.004  },
+    stamina: { mu: 0.06, r: 0.0015 },
+    attack:  { mu: 0.45, r: 0.004  },
+  };
+  const { mu, r } = configs[mode];
+  const tau = mu * m * 9.81 * r;
+  const t = 416 / (tau / I);
+  return { I_total: I, tBattle_s: t, L0: I * 694, seriesRankI: "new series maximum (+42.5% vs Glide Ragnaruk)" };
+}
+// astralSprigganAssembly("defense") -> { I=5.212e-5, t=355s, L0=3.617e-2, rank:"new max" }
+// astralSprigganAssembly("stamina") -> { I=5.212e-5, t=315s, L0=3.617e-2, rank:"new max" }
+// astralSprigganAssembly("attack")  -> { I=5.212e-5, t=15.8s,L0=3.617e-2, rank:"new max" }
+
+function astralSprigganSEMode(
+  spinDir: "right" | "left", opponentSpin: "right" | "left"
+): { seActive: boolean; configuration: string; expectedBenefit: string } {
+  const opposite = spinDir !== opponentSpin;
+  if (opposite) {
+    return {
+      seActive: true,
+      configuration: `Astral ${spinDir === "left" ? "black side up" : "red side up"}; Core reversed inside`,
+      expectedBenefit: "rubber SE blades + Armor 0 smooth perimeter assist spin equalization",
+    };
+  }
+  return { seActive: false, configuration: "same spin", expectedBenefit: "high I → strong burst-back force on opponent" };
+}
+// astralSprigganSEMode("left",  "right") -> { seActive:true,  config:"black side up", benefit:"SE active" }
+// astralSprigganSEMode("right", "right") -> { seActive:false, config:"same spin",     benefit:"burst-back" }
+// astralSprigganSEMode("right", "left")  -> { seActive:true,  config:"red side up",   benefit:"SE active" }
+
+function astralSprigganIBudget(): {
+  components: Record<string, number>; dominantComponent: string; dominantPct: number;
+} {
+  const parts = { core: 1.264e-6, astral: 1.022e-5, armor0: 8.263e-6, over: 2.979e-5, quattro: 2.587e-6 };
+  const total = Object.values(parts).reduce((a, b) => a + b, 0);
+  const dominant = Object.entries(parts).sort((a, b) => b[1] - a[1])[0];
+  return { components: parts, dominantComponent: dominant[0], dominantPct: (dominant[1] / total) * 100 };
+}
+// astralSprigganIBudget() -> { dominant:"over", dominantPct=57.2% }
+// (Over disc controls 57.2% of total I; primary stamina lever for this combo)
+// (upgrade: Over → heavier circular disc; but Over is already heaviest standard DB disc)
+```
+
+---
+
+### Case 560: Energy Layer — Geist Fafnir (Cho-Z Layer System)
+
+**Thesis.** Geist Fafnir is a left-spin Stamina Type Cho-Z Layer massing 20.54 g — one of the heaviest God-era layers — due to metal inserts distributed among the three dragon-head profiles at r ≈ 25–32 mm. I_GF = 0.5 × 0.02054 × (0.008² + 0.038²) = 1.549×10⁻⁵ kg·m². The layer carries three rubber "F" blade elements and an automatic mode-change gimmick: at high spin speed centrifugal force holds the rubber blades retracted inward (round profile, less SE exposure, akin to Drain Fafnir), while at low spin speed the spring extends the blades outward (aggressive profile, more rubber surface exposed, enhanced SE). The centrifugal retention threshold ω_trans is computed as: m_blade × ω_trans² × r_cm = k_spring × δ_retract; with m_blade ≈ 0.7 g, r_cm = 25 mm, k_spring ≈ 300 N/m, δ = 2 mm: ω_trans = √(300 × 0.002 / (0.0007 × 0.025)) = √34286 = 185 rad/s ≈ 1767 RPM. Since ω₀ = 694 rad/s and the 40% stability threshold ω = 277 rad/s both exceed ω_trans = 185 rad/s, the rubber blades are fully retracted throughout the competitive battle window. The auto mode-change only activates during the post-battle precession phase at ω < 185 rad/s — making the gimmick largely ineffective in competitive play, consistent with the wiki noting "the large amount of rubber makes the gimmick ineffective." The high metal mass provides excellent Burst Resistance (τ_burst ≈ 10.2 mN·m via Cho-Z metal pre-load supplement) and high OWD inertia for stamina/defense, while the rubber enables SE against right-spin opponents regardless of the retraction state, since the exposed rubber surface at even partial extension provides friction coupling.
+
+```
+Geist Fafnir — Left-Spin Cho-Z Layer (20.54 g)
+
+Top view (blades extended, low-spin mode):
+      [rubber F — extended]
+    .   /‾‾‾‾\   .
+   .  [metal ] .    <- metal insert ~6.8g total distributed
+  .  [insert ] .       at r ≈ 25-32mm
+   .  [       ] .
+    .   \____/   .
+      [rubber F — extended]
+      [rubber F — extended]  <- 3 rubber F elements
+
+Auto mode-change (retract at ω > 185 rad/s):
+  HIGH SPIN  (ω > 185): blades retracted → round profile (like Drain Fafnir)
+  LOW SPIN   (ω < 185): blades extended  → exposed rubber (more SE surface)
+  Battle window: ω₀=694 to ω_threshold=277 rad/s — ALL above 185 rad/s
+  → blades retracted THROUGHOUT competitive battle; gimmick is post-battle only
+```
+
+```
+Physics Analysis — Case 560
+
+Component: Energy Layer Geist Fafnir (Cho-Z)
+Mass:      m = 20.54 g = 0.02054 kg
+Geometry:  r_inner = 8 mm, r_outer = 38 mm (metal-reinforced perimeter)
+
+Moment of Inertia:
+  I_GF = ½ × 0.02054 × (0.008² + 0.038²)
+       = ½ × 0.02054 × (6.4×10⁻⁵ + 1.444×10⁻³)
+       = ½ × 0.02054 × 1.508×10⁻³
+       = 1.549×10⁻⁵ kg·m²
+
+Auto mode-change ω_transition:
+  m_blade × ω_trans² × r_cm = k_spring × δ
+  0.0007 × ω_trans² × 0.025 = 300 × 0.002
+  ω_trans² = 0.6 / (1.75×10⁻⁵) = 34286
+  ω_trans = 185 rad/s
+
+  Battle window (ω=694 to ω=277 rad/s): BOTH above 185 → blades retracted
+  Gimmick activates at: t_trans = (694-185) / |dω/dt| — post-battle only
+
+Burst resistance (Cho-Z metal mass pre-load):
+  Additional tab pre-load from 3 metal inserts at r≈25mm, ω=694:
+  F_metal = 3 × 0.00228 × 694² × 0.025 = 3 × 27.4 = 82.2 N centripetal
+  τ_supplement ≈ 82.2 × 0.10 × 0.014 = 0.115 N·m = 115 mN·m — very high
+  Effective τ_burst ≈ 10.2 mN·m (standard tabs) + Cho-Z metal supplement
+  → Above-average burst resistance for a God-era layer
+```
+
+```typescript
+function geistFafnirInertia(m_g: number, r_outer_mm: number): number {
+  return 0.5 * (m_g / 1000) * (0.008 ** 2 + (r_outer_mm / 1000) ** 2);
+}
+// geistFafnirInertia(20.54, 38) -> 1.549e-5 kg·m²
+// geistFafnirInertia(18.0,  38) -> 1.357e-5 kg·m² (without metal inserts ~2.54g less)
+// geistFafnirInertia(20.54, 36) -> 1.398e-5 kg·m² (slightly smaller effective radius)
+
+function geistFafnirModeChangeThreshold(
+  m_blade_g: number, r_cm_mm: number, k_spring_Npm: number, delta_mm: number
+): { omega_trans_radps: number; rpm_trans: number; inBattleWindow: boolean } {
+  const m = m_blade_g / 1000;
+  const r = r_cm_mm / 1000;
+  const delta = delta_mm / 1000;
+  const w2 = (k_spring_Npm * delta) / (m * r);
+  const w = Math.sqrt(w2);
+  const inWindow = w < 277;
+  return { omega_trans_radps: w, rpm_trans: w * 60 / (2 * Math.PI), inBattleWindow: inWindow };
+}
+// geistFafnirModeChangeThreshold(0.7, 25, 300, 2) -> { w=185 rad/s, rpm=1767, inWindow:false }
+// geistFafnirModeChangeThreshold(0.7, 25, 200, 2) -> { w=151 rad/s, rpm=1442, inWindow:false }
+// geistFafnirModeChangeThreshold(0.7, 25, 100, 2) -> { w=107 rad/s, rpm=1021, inWindow:false }
+// (all cases below the 277 rad/s battle threshold → gimmick never fires during battle)
+
+function geistFafnirSEEffect(
+  F_N: number, r_rubber_mm: number, n_contacts: number
+): { tau_SE: number; deltaL: number; gimmickActiveInBattle: boolean } {
+  const tau = 3 * 0.45 * F_N * (r_rubber_mm / 1000);
+  const dL = tau * 0.005 * n_contacts;
+  return {
+    tau_SE: tau,
+    deltaL: dL,
+    gimmickActiveInBattle: false,
+  };
+}
+// geistFafnirSEEffect(5, 28, 30) -> { tau=0.189N·m, deltaL=2.84e-2, gimmickActive:false }
+// geistFafnirSEEffect(3, 28, 20) -> { tau=0.113N·m, deltaL=1.13e-2, gimmickActive:false }
+// geistFafnirSEEffect(8, 28, 40) -> { tau=0.302N·m, deltaL=6.05e-2, gimmickActive:false }
+// (rubber SE active regardless of retraction state; more surface exposed at low ω)
+```
+
+---
+
+### Case 561: Forge Disc — 8' + Frame — Proof (Cho-Z System)
+
+**Thesis.** Forge Disc 8' masses 20.65 g in an elliptical profile with four protrusions per side (wider and lighter than Disc 8), designed to maximize OWD relative to mass by spacing the protrusion material toward the perimeter. I_8' = 0.5 × 0.02065 × (0.013² + 0.038²) = 1.664×10⁻⁵ kg·m². Frame Proof masses 2.9 g in a circular ring shape (akin to Spread) with r_inner = 20 mm and r_outer = 38 mm; I_Proof = 0.5 × 0.0029 × (0.020² + 0.038²) = 2.674×10⁻⁶ kg·m². Proof is the highest LAD Frame in the God-era metagame due to its circular profile: unlike glaive or cross frames with pointed features, Proof's round edge maintains continuous rolling contact during precession, identical to the LAD advantage of circular discs. Combined disc+frame: I_combined = 1.664×10⁻⁵ + 2.674×10⁻⁶ = 1.931×10⁻⁵ kg·m². Frame Proof contributes 13.9% of combined disc I — a significant stamina upgrade relative to its 2.9 g mass cost, because all that mass sits at the maximum radius (38 mm). The gap geometry of Disc 8' (protrusion cutouts taking weight from the center) means 8' outperforms a solid 20.65 g disc of the same outer radius: I_solid_eq = 0.5 × 0.02065 × (0.013² + 0.038²) = same formula but solid 8' effectively approximates this already due to its OWD design. 8' lowers Burst Resistance versus 8 because greater OWD increases the kinetic energy delivered to engagement tabs per collision; the Geist Fafnir Layer's metal mass and Cho-Z supplement partially compensates.
+
+```
+Disc 8' + Frame Proof (20.65 g + 2.9 g)
+
+8' disc top view:
+       ________
+      /  ||||  \
+  ---[ |||||||| ]---   4 protrusions per side, wider than Disc 8
+      \  ||||  /       gaps between protrusions for OWD
+       --------
+  r_i=13mm | r_o=38mm | elliptical profile
+
+Frame Proof (on disc perimeter):
+  [ round ring ]  r_i=20mm, r_o=38mm
+  Highest LAD of all Frames (circular = constant rolling radius)
+  No protrusions, no points → smooth precession contact
+
+Combined I profile:
+  I_8'   = 1.664×10⁻⁵  (86.1%)
+  I_Proof= 2.674×10⁻⁶  (13.9%)
+  Total  = 1.931×10⁻⁵ kg·m²
+
+Proof LAD advantage vs other Frames:
+  Cross (pointed): rolling contact interrupted → reduced LAD
+  Glaive (pointed): similar interruption
+  Proof (circular): constant 38mm contact radius → maximum LAD
+```
+
+```
+Physics Analysis — Case 561
+
+Components: Forge Disc 8' + Frame Proof
+Masses:     m_8' = 20.65 g, m_Proof = 2.9 g
+
+I_8':
+  = ½ × 0.02065 × (0.013² + 0.038²)
+  = ½ × 0.02065 × (1.69×10⁻⁴ + 1.444×10⁻³)
+  = ½ × 0.02065 × 1.613×10⁻³
+  = 1.664×10⁻⁵ kg·m²
+
+I_Proof:
+  = ½ × 0.0029 × (0.020² + 0.038²)
+  = ½ × 0.0029 × (4.0×10⁻⁴ + 1.444×10⁻³)
+  = ½ × 0.0029 × 1.844×10⁻³
+  = 2.674×10⁻⁶ kg·m²
+
+Combined:
+  I_8'Proof = 1.664×10⁻⁵ + 2.674×10⁻⁶ = 1.931×10⁻⁵ kg·m²
+
+Proof I efficiency (I/g):
+  Proof:  2.674×10⁻⁶ / 2.9 = 9.22×10⁻⁷ kg·m²/g
+  8' disc: 1.664×10⁻⁵ / 20.65 = 8.06×10⁻⁷ kg·m²/g
+  Proof is 14.4% more I-efficient per gram → best marginal value frame
+```
+
+```typescript
+function disc8PrimeAndProofInertia(
+  m_8prime_g: number, m_proof_g: number
+): { I_8prime: number; I_proof: number; I_combined: number; proofContrib_pct: number } {
+  const I_8p = 0.5 * (m_8prime_g / 1000) * (0.013 ** 2 + 0.038 ** 2);
+  const I_pr = 0.5 * (m_proof_g / 1000) * (0.020 ** 2 + 0.038 ** 2);
+  const I_c = I_8p + I_pr;
+  return { I_8prime: I_8p, I_proof: I_pr, I_combined: I_c, proofContrib_pct: (I_pr / I_c) * 100 };
+}
+// disc8PrimeAndProofInertia(20.65, 2.9) -> { I_8p=1.664e-5, I_pr=2.674e-6, total=1.931e-5, pct=13.9% }
+// disc8PrimeAndProofInertia(20.65, 0)   -> { I_8p=1.664e-5, I_pr=0,        total=1.664e-5, pct=0%    }
+// disc8PrimeAndProofInertia(20.65, 3.2) -> { I_pr slightly higher, pct~15% }
+
+function proofFrameLADAdvantage(frameShape: "proof" | "cross" | "glaive"): {
+  rollingRadius_mm: number; continuity: string; ladRank: string;
+} {
+  const configs = {
+    proof:  { r: 38, cont: "constant", rank: "1st (highest LAD)" },
+    cross:  { r: 30, cont: "interrupted at 4 points", rank: "3rd" },
+    glaive: { r: 32, cont: "interrupted at 3 points", rank: "2nd" },
+  };
+  const c = configs[frameShape];
+  return { rollingRadius_mm: c.r, continuity: c.cont, ladRank: c.rank };
+}
+// proofFrameLADAdvantage("proof")  -> { r=38, cont:"constant",      rank:"1st" }
+// proofFrameLADAdvantage("cross")  -> { r=30, cont:"interrupted×4", rank:"3rd" }
+// proofFrameLADAdvantage("glaive") -> { r=32, cont:"interrupted×3", rank:"2nd" }
+
+function disc8PrimeOWDProfile(
+  m_g: number, r_i_mm: number, r_o_mm: number
+): { I: number; I_per_g: number; OWD_fraction_pct: number } {
+  const m = m_g / 1000;
+  const I = 0.5 * m * ((r_i_mm / 1000) ** 2 + (r_o_mm / 1000) ** 2);
+  const I_outer = 0.5 * (m * 0.72) * ((r_i_mm * 0.5 / 1000) ** 2 + (r_o_mm / 1000) ** 2);
+  return { I, I_per_g: I / m_g, OWD_fraction_pct: (I_outer / I) * 100 };
+}
+// disc8PrimeOWDProfile(20.65, 13, 38) -> { I=1.664e-5, I_per_g=8.06e-7, owdPct~74% }
+// disc8PrimeOWDProfile(20.65, 16, 38) -> { I slightly lower at r_i=16mm }
+// disc8PrimeOWDProfile(23.0,  13, 38) -> { I=1.853e-5 for heavier variant }
+```
+
+---
+
+### Case 562: Performance Tip — Absorb (Cho-Z System)
+
+**Thesis.** Absorb masses 6.8 g and combines a spring-loaded metal sharp tip (r = 2 mm, μ_metal = 0.06) with a free-spinning outer ring (outer radius r = 18 mm) akin to a combined Revolve + Nothing design. I_Absorb = 0.5 × 0.0068 × (0.002² + 0.018²) = 1.115×10⁻⁶ kg·m². The spring-loaded sharp tip serves two roles: (1) at launch it compresses momentarily and then extends, preventing the sharp tip from hammering the stadium floor and causing a Self-KO bounce; (2) when fully compressed by a direct downward impact, it retracts below the outer ring edge, converting the contact profile to a hollow flat that generates brief aggressive movement akin to Zephyr — however this compression state is transient since there is no lock mechanism. The free-spinning outer ring at r = 18 mm enables two performance functions: precession (LAD) similar to Revolve — the ring continues spinning after the body stalls, maintaining upright orientation through gyroscopic inertia — and SE coupling at r = 18 mm in opposite-spin matchups, where the wide ring provides a large contact radius for friction-based spin transfer. The ring's I_ring = 0.5 × (5.5/1000) × (0.012² + 0.018²) = 0.5 × 0.0055 × (1.44×10⁻⁴ + 3.24×10⁻⁴) = 1.287×10⁻⁶ kg·m², carrying angular momentum L_ring = 1.287×10⁻⁶ × 694 = 8.932×10⁻⁴ kg·m²/s at launch that sustains LAD after body spin cessation.
+
+```
+Absorb Tip — Spring-Loaded Sharp + Free-Spinning Ring (6.8 g)
+
+Cross section:
+       ___
+      |ABS|  <- spring housing
+      |___|
+  ====|====
+ /   ring   \  r_ring = 18 mm, free-spinning (ball bearing or low-friction fit)
+|   [    ]   |
+ \___/^^\___ /
+      ||
+     /||\   <- spring-loaded metal sharp tip, r = 2 mm
+      (spring)
+
+Function:
+  Sharp tip   : μ=0.06, r=2mm  → 249s battle time
+  Ring (LAD)  : I_ring=1.287e-6, L_ring=8.932e-4 → ~23s LAD extension
+  Ring (SE)   : r=18mm, μ_rubber ≈ 0.30 at ring surface → SE coupling
+
+Spring states:
+  Normal: tip extended, sharp contact only
+  Impact: tip compressed → hollow flat briefly (~0.1s) → reverts to sharp
+```
+
+```
+Physics Analysis — Case 562
+
+Component: Performance Tip Absorb
+Mass:      m = 6.8 g = 0.0068 kg
+Key sub-masses: m_ring ≈ 5.5 g (outer ring), m_tip ≈ 1.3 g (spring+tip)
+
+Moment of Inertia:
+  I_Absorb = ½ × 0.0068 × (0.002² + 0.018²)
+           = ½ × 0.0068 × (4×10⁻⁶ + 3.24×10⁻⁴)
+           = ½ × 0.0068 × 3.28×10⁻⁴
+           = 1.115×10⁻⁶ kg·m²
+
+Ring-only I (free-spinning):
+  I_ring = ½ × 0.0055 × (0.012² + 0.018²)
+         = ½ × 0.0055 × (1.44×10⁻⁴ + 3.24×10⁻⁴)
+         = ½ × 0.0055 × 4.68×10⁻⁴
+         = 1.287×10⁻⁶ kg·m²
+
+LAD from free-spinning ring:
+  L_ring = 1.287×10⁻⁶ × 694 = 8.932×10⁻⁴ kg·m²/s
+  τ_floor_ring = μ_ring × m_ring × g × r_ring
+               = 0.04 × 0.0055 × 9.81 × 0.018 = 3.886×10⁻⁵ N·m
+  t_LAD_ring = L_ring / τ_floor = 8.932×10⁻⁴ / 3.886×10⁻⁵ = 23.0 s
+
+Spring compression state (launch impact):
+  Duration of hollow-flat: ~0.1 s (spring rebound time)
+  Effect: brief Zephyr-like movement burst (self-KO prevention on landing)
+```
+
+```typescript
+function absorbTipInertia(m_g: number, r_ring_mm: number): {
+  I_tip: number; I_ring: number;
+} {
+  const I_tip = 0.5 * (m_g / 1000) * (0.002 ** 2 + (r_ring_mm / 1000) ** 2);
+  const m_ring = (m_g * 0.81) / 1000;
+  const I_ring = 0.5 * m_ring * (0.012 ** 2 + (r_ring_mm / 1000) ** 2);
+  return { I_tip, I_ring };
+}
+// absorbTipInertia(6.8, 18) -> { I_tip=1.115e-6, I_ring=1.287e-6 }
+// absorbTipInertia(6.8, 16) -> { I_tip smaller, I_ring smaller }
+// absorbTipInertia(7.5, 18) -> { I_tip=1.230e-6, I_ring=1.419e-6 }
+
+function absorbLADExtension(
+  I_ring: number, omega_launch: number,
+  m_ring_g: number, r_ring_mm: number
+): { L_ring: number; tLAD_s: number; note: string } {
+  const L = I_ring * omega_launch;
+  const tau = 0.04 * (m_ring_g / 1000) * 9.81 * (r_ring_mm / 1000);
+  return { L_ring: L, tLAD_s: L / tau, note: "ring spins freely after body stalls; ~Revolve LAD" };
+}
+// absorbLADExtension(1.287e-6, 694, 5.5, 18) -> { L=8.932e-4, tLAD=23.0s }
+// absorbLADExtension(1.287e-6, 500, 5.5, 18) -> { L=6.435e-4, tLAD=16.6s }
+// absorbLADExtension(1.287e-6, 694, 5.5, 20) -> { L=8.932e-4, tLAD=20.7s } (wider ring)
+
+function absorbSpringImpact(
+  event: "launch" | "opponent_hit" | "normal_spin"
+): { tipState: "extended" | "compressed"; contact: string; duration_s: number } {
+  if (event === "launch") {
+    return { tipState: "compressed", contact: "hollow flat briefly", duration_s: 0.1 };
+  }
+  if (event === "opponent_hit") {
+    return { tipState: "compressed", contact: "hollow flat — brief Zephyr burst", duration_s: 0.05 };
+  }
+  return { tipState: "extended", contact: "sharp metal r=2mm", duration_s: Infinity };
+}
+// absorbSpringImpact("launch")       -> { state:"compressed", contact:"hollow flat", duration:0.1s }
+// absorbSpringImpact("opponent_hit") -> { state:"compressed", contact:"hollow flat", duration:0.05s }
+// absorbSpringImpact("normal_spin")  -> { state:"extended",   contact:"sharp r=2mm", duration:Inf }
+```
+
+---
+
+### Case 563: Assembly — Geist Fafnir 8'Proof Absorb
+
+**Thesis.** Geist Fafnir 8'Proof Absorb assembles to m = 20.54 + 20.65 + 2.9 + 6.8 = 50.89 g with I_total = 1.549×10⁻⁵ + 1.664×10⁻⁵ + 2.674×10⁻⁶ + 1.115×10⁻⁶ = 3.602×10⁻⁵ kg·m². At the Absorb tip's sharp mode (μ = 0.06, r = 2 mm): dω/dt = −(0.06 × 0.05089 × 9.81 × 0.002) / 3.602×10⁻⁵ = −1.663 rad/s², t_battle = 416 / 1.663 = 250 s. L₀ = 3.602×10⁻⁵ × 694 = 2.499×10⁻² kg·m²/s, with an additional L_ring = 8.932×10⁻⁴ from the Absorb free-spinning ring extending LAD by 23 s. Total effective battle time including LAD extension ≈ 250 + 23 = 273 s. The Fafnir auto mode-change at ω_trans = 185 rad/s occurs at t_trans = (694 − 185) / 1.663 = 306 s — past the t_battle endpoint, so blades remain retracted in the competitive window and only extend during the final precession phase where they may incidentally assist SE with any surviving opponent. The I budget is dominated by 8'Proof at 53.6% (1.931 / 3.602), followed by the Geist Fafnir Layer at 43.0%. This is the best Cho-Z Fafnir competitive configuration: maximum I through the heavy layer + OWD disc + Proof LAD frame, with Absorb providing both battle stamina via the sharp tip and LAD via the free-spinning ring.
+
+```
+Assembly — Geist Fafnir 8'Proof Absorb
+
+Mass budget:
+  Geist Fafnir Layer : 20.54 g  (40.4%)
+  Disc 8'            : 20.65 g  (40.6%)
+  Frame Proof        :  2.90 g  ( 5.7%)
+  Absorb tip         :  6.80 g  (13.4%)
+  Total              : 50.89 g
+
+I budget:
+  I_GF    = 1.549×10⁻⁵  (43.0%)
+  I_8'    = 1.664×10⁻⁵  (46.2%)
+  I_Proof = 2.674×10⁻⁶  ( 7.4%)
+  I_Absorb= 1.115×10⁻⁶  ( 3.1%)
+  I_8'Proof combined: 1.931×10⁻⁵ (53.6% combined)
+  I_total = 3.602×10⁻⁵ kg·m²
+
+Battle timeline (Absorb sharp tip):
+  ω₀ = 694 rad/s        t=0
+  ω  = 277 rad/s        t=250s  (40% threshold, body spin)
+  LAD ring extension:   +23s    (Absorb free-spin ring)
+  Effective total:      ~273s
+  L₀ = 2.499×10⁻² kg·m²/s
+
+Mode-change timing:
+  ω_trans = 185 rad/s   t_trans = (694-185)/1.663 = 306s  > t_battle
+  → blades retracted throughout battle; gimmick post-battle only
+```
+
+```
+Physics Analysis — Case 563
+
+Assembly: m = 50.89 g = 0.05089 kg
+I_total:  3.602×10⁻⁵ kg·m²
+
+Spin decay (Absorb sharp tip, μ=0.06, r=2mm):
+  τ_tip = 0.06 × 0.05089 × 9.81 × 0.002 = 5.990×10⁻⁵ N·m
+  dω/dt = -5.990×10⁻⁵ / 3.602×10⁻⁵ = -1.663 rad/s²
+  t_battle = 416 / 1.663 = 250 s
+
+Angular momentum:
+  L₀ = 3.602×10⁻⁵ × 694 = 2.499×10⁻² kg·m²/s
+
+LAD ring contribution:
+  L_ring = 8.932×10⁻⁴ → +23 s precession extension
+  Total effective: 250 + 23 = 273 s
+
+I budget dominance:
+  8'Proof / I_total = 1.931 / 3.602 = 53.6% — disc+frame combination drives stamina
+  GF Layer / I_total = 43.0% — heavy Cho-Z layer is strong secondary contributor
+  Absorb tip / I_total = 3.1% — negligible direct I; value is via spring + ring LAD
+```
+
+```typescript
+function geistFafnirBattleTime(
+  mAssembly_g: number, I_total: number, mu: number, r_tip_mm: number
+): { tau_Nm: number; dw_radps2: number; tBattle_s: number; L0: number } {
+  const m = mAssembly_g / 1000;
+  const tau = mu * m * 9.81 * (r_tip_mm / 1000);
+  const dw = -tau / I_total;
+  return { tau_Nm: tau, dw_radps2: dw, tBattle_s: 416 / Math.abs(dw), L0: I_total * 694 };
+}
+// geistFafnirBattleTime(50.89, 3.602e-5, 0.06, 2) -> { tau=5.990e-5, dw=-1.663, t=250s, L0=2.499e-2 }
+// geistFafnirBattleTime(50.89, 3.602e-5, 0.04, 2) -> { tau=3.993e-5, dw=-1.109, t=375s } (if μ=0.04)
+// geistFafnirBattleTime(47.99, 3.342e-5, 0.06, 2) -> (without Frame Proof)
+
+function geistFafnirModeChangeTime(dw_radps2: number): {
+  omega_trans: number; t_trans_s: number; inBattleWindow: boolean;
+} {
+  const w_trans = 185;
+  const t_trans = (694 - w_trans) / Math.abs(dw_radps2);
+  return { omega_trans: w_trans, t_trans_s: t_trans, inBattleWindow: t_trans < 250 };
+}
+// geistFafnirModeChangeTime(1.663) -> { w=185, t_trans=306s, inBattle:false }
+// geistFafnirModeChangeTime(3.0)   -> { w=185, t_trans=170s, inBattle:true  } (if decay faster)
+// (standard config: t_trans=306s > 250s → gimmick never fires in battle)
+
+function geistFafnirTotalEffective(
+  t_battle_s: number, t_LAD_ring_s: number, omega_trans: number, dw: number
+): { t_body_s: number; t_lad_s: number; t_total_s: number; modeChangeInBattle: boolean } {
+  const t_trans = (694 - omega_trans) / Math.abs(dw);
+  return {
+    t_body_s: t_battle_s,
+    t_lad_s: t_LAD_ring_s,
+    t_total_s: t_battle_s + t_LAD_ring_s,
+    modeChangeInBattle: t_trans < t_battle_s,
+  };
+}
+// geistFafnirTotalEffective(250, 23, 185, 1.663) -> { t_body=250, t_lad=23, total=273, inBattle:false }
+// geistFafnirTotalEffective(375, 23, 185, 1.109) -> { t_body=375, t_lad=23, total=398, inBattle:false }
+// geistFafnirTotalEffective(170, 23, 185, 3.0)   -> { t_body=170, t_lad=23, total=193, inBattle:true }
+```
+
+---
+
+### Case 564 — SK Chip Fafnir + Ring Mirage (Superking Layer, Stamina / Spin-Equalization)
+
+The Superking chip-and-ring layer for Mirage Fafnir pairs SK Chip Fafnir (3.1 g, r_i = 7 mm, r_o = 10 mm, I_chip = 2.372e-7 kg·m²) with Ring Mirage (8.3 g, r_i = 16 mm, r_o = 35.5 mm, I_Mirage = 6.283e-6 kg·m²), yielding a combined layer I_layer = 6.520e-6 kg·m² that accounts for 13.5% of the full-assembly I_total = 4.842e-5 kg·m². Ring Mirage carries four asymmetrically placed rubber Spin-Equalization pads on its outer face at a contact radius r_rubber = 32 mm; when Mirage Fafnir (left-spin) sweeps an opposite-spin right-spin opponent with a closing-velocity normal force F_N = 0.30 N, the rubber coupling (mu_rubber = 0.70) delivers a contact torque tau_SE = mu_rubber × F_N × r_rubber = 0.70 × 0.30 × 0.032 = 6.72 mN·m per engagement, which over a typical arc contact of dt = 30 ms transfers an angular impulse DeltaL = 6.72e-3 × 0.030 = 2.016e-4 kg·m²/s, corresponding to a spin-speed recovery of Delta_omega = 2.016e-4 / 4.842e-5 = 4.16 rad/s for the full assembly; expressed as an equivalent time extension, each rubber contact event recovers approximately 2.7 s of battle endurance at the standard cone-contact decay rate of 1.531 rad/s². The four Fafnir-style prongs are raked to maximise forward-facing rubber coverage against a RS opponent rotating clockwise into the LS Mirage ring, analogous to the SE geometry of Geist Fafnir (Cho-Z) and Vanish Fafnir (DB/BU) across the lineage. SK Chip Fafnir provides a single burst-tab node (k_tab = 500 N/m, delta = 0.5 mm, r_engage = 14 mm), yielding tau_burst = 1 × 500 × 5.0e-4 × 0.014 = 3.50 mN·m — only 33.3% of the three-tab standard 10.5 mN·m — so Mirage Fafnir carries elevated burst risk inherent to all single-node SK chips, and relies on deflection geometry rather than resistance to survive contact with attack types.
+
+```
+CASE 564 — SK CHIP FAFNIR + RING MIRAGE  (Superking Layer, Stamina / SE)
+─────────────────────────────────────────────────────────────────────────
+
+SK CHIP FAFNIR (top view)
+                    ┌─────────────┐
+                    │ SK Chip     │
+        ┌───────────┤ Fafnir 3.1g ├───────────┐
+        │           │ r:7→10 mm   │           │
+        │  [ tab ]  │ I=2.372e-7  │ [ tab ]   │
+        │           │ k=500 N/m   │           │
+        └───────────┤ τ=3.50 mN·m ├───────────┘
+                    └─────────────┘
+                      33.3% of std 3-tab
+
+RING MIRAGE (top view, schematic)
+─────────────────────────────────────────────────────────────────────────
+
+    r=16mm (inner hub)          r=35.5mm (outer perimeter)
+         │                             │
+  ───────┼─────────────────────────────┼─────────
+         │    ▓ rubber SE pad ▓        │  ← r_rubber = 32 mm
+         │  ▓                   ▓      │    (×4, asymmetric)
+         │    prong ──────►           │
+         │  ▓  (forward-rake toward   ▓│
+         │    RS opponent rotation)   │
+  ───────┼─────────────────────────────┼─────────
+         │   8.3 g   I = 6.283e-6     │
+         │   mu_rubber = 0.70         │
+
+COMBINED LAYER MOMENT OF INERTIA:
+  I_chip    =  2.372e-7  kg·m²   (7→10 mm)
+  I_Mirage  =  6.283e-6  kg·m²   (16→35.5 mm)
+  ─────────────────────────────────────────────
+  I_layer   =  6.520e-6  kg·m²   (13.5% of I_total = 4.842e-5)
+
+SE RECOVERY PER CONTACT EVENT:
+  τ_SE      =  μ × F_N × r        =  0.70 × 0.30 × 0.032  =  6.72 mN·m
+  ΔL        =  τ_SE × Δt          =  6.72e-3 × 0.030       =  2.016e-4 kg·m²/s
+  Δω_recov  =  ΔL / I_total       =  2.016e-4 / 4.842e-5   =  4.16 rad/s
+  Δt_equiv  =  Δω / |dω/dt|_cone  =  4.16 / 1.531          =  2.7 s per event
+```
+
+```
+CASE 564 PHYSICS — SK CHIP FAFNIR + RING MIRAGE
+
+Component inertia (annular disk, I = ½m(r_i² + r_o²)):
+  Chip Fafnir: m=0.0031 kg, r_i=0.007 m, r_o=0.010 m
+    I_chip   = 0.5 × 0.0031 × (4.90e-5 + 1.00e-4) = 2.372e-7 kg·m²
+
+  Ring Mirage: m=0.0083 kg, r_i=0.016 m, r_o=0.0355 m
+    I_Mirage = 0.5 × 0.0083 × (2.56e-4 + 1.261e-3) = 6.283e-6 kg·m²
+
+  Layer total: I_layer = 6.520e-6 kg·m²
+
+Burst resistance (SK single-tab chip):
+  τ_burst = N × k_tab × δ × r_engage
+          = 1 × 500 × 5.0e-4 × 0.014
+          = 3.50 mN·m   (33.3% of 3-tab standard 10.5 mN·m → high burst risk)
+
+Spin-Equalization torque transfer per event:
+  τ_SE    = μ_rubber × F_N × r_rubber = 0.70 × 0.30 × 0.032 = 6.72 mN·m
+  ΔL      = τ_SE × Δt_contact         = 6.72e-3 × 0.030     = 2.016e-4 kg·m²/s
+  Δω_self = ΔL / I_total              = 2.016e-4 / 4.842e-5  = 4.16 rad/s recovered
+  Δω_opp  = ΔL / I_opp (≈4.0e-5)    = 2.016e-4 / 4.0e-5    = 5.04 rad/s drained from opponent
+  Δt_equiv = Δω_self / (dω/dt)_cone  = 4.16 / 1.531         = 2.7 s per contact
+
+  Cumulative SE benefit (10 contact events over battle):
+    Δt_total_SE = 10 × 2.7 = +27 s effective battle-time extension
+    Effective t_battle ≈ 271 + 27 = 298 s vs contact-free baseline 271 s
+```
+
+```typescript
+// Case 564 — SK Chip Fafnir + Ring Mirage layer analysis
+
+function mirageFafnirLayerInertia(
+  mChip_g: number, rChipInner_mm: number, rChipOuter_mm: number,
+  mRing_g: number, rRingInner_mm: number, rRingOuter_mm: number
+): { I_chip: number; I_ring: number; I_layer: number } {
+  const ann = (m: number, ri: number, ro: number) =>
+    0.5 * (m / 1000) * ((ri / 1000) ** 2 + (ro / 1000) ** 2);
+  const I_chip = ann(mChip_g, rChipInner_mm, rChipOuter_mm);
+  const I_ring = ann(mRing_g, rRingInner_mm, rRingOuter_mm);
+  return { I_chip, I_ring, I_layer: I_chip + I_ring };
+}
+// mirageFafnirLayerInertia(3.1, 7, 10, 8.3, 16, 35.5)
+//   → { I_chip: 2.372e-7, I_ring: 6.283e-6, I_layer: 6.520e-6 }
+// mirageFafnirLayerInertia(3.1, 7, 10, 9.0, 16, 35.5)
+//   → { I_chip: 2.372e-7, I_ring: 6.819e-6, I_layer: 7.056e-6 }  [+8.2% heavier ring variant]
+// mirageFafnirLayerInertia(3.1, 7, 10, 8.3, 18, 38)
+//   → { I_chip: 2.372e-7, I_ring: 7.423e-6, I_layer: 7.660e-6 }  [larger-radius ring]
+
+function mirageSESpinRecovery(
+  muRubber: number, FN_N: number, rRubber_mm: number,
+  dtContact_ms: number, I_total: number, spinDecayRate_radps2: number
+): { tau_mNm: number; deltaL: number; deltaOmega_rps: number; timeEquiv_s: number } {
+  const tau = muRubber * FN_N * (rRubber_mm / 1000);
+  const deltaL = tau * (dtContact_ms / 1000);
+  const dOmega = deltaL / I_total;
+  return { tau_mNm: tau * 1000, deltaL, deltaOmega_rps: dOmega,
+    timeEquiv_s: dOmega / spinDecayRate_radps2 };
+}
+// mirageSESpinRecovery(0.70, 0.30, 32, 30, 4.842e-5, 1.531)
+//   → { tau_mNm: 6.72, deltaL: 2.016e-4, deltaOmega_rps: 4.16, timeEquiv_s: 2.72 }
+// mirageSESpinRecovery(0.70, 0.50, 32, 30, 4.842e-5, 1.531)
+//   → { tau_mNm: 11.2, deltaL: 3.36e-4, deltaOmega_rps: 6.94, timeEquiv_s: 4.53 }  [harder contact]
+// mirageSESpinRecovery(0.65, 0.30, 35, 25, 4.842e-5, 1.531)
+//   → { tau_mNm: 6.825, deltaL: 1.706e-4, deltaOmega_rps: 3.52, timeEquiv_s: 2.30 }
+
+function mirageFafnirBurstRisk(
+  N_tabs: number, kTab_Npm: number, delta_mm: number, rEngage_mm: number
+): { tau_mNm: number; pctOfStandard: number; burstRisk: string } {
+  const tau = N_tabs * kTab_Npm * (delta_mm / 1000) * (rEngage_mm / 1000);
+  const std = 3 * 500 * 5e-4 * 0.014;
+  const pct = (tau / std) * 100;
+  return { tau_mNm: tau * 1000, pctOfStandard: pct,
+    burstRisk: pct < 40 ? "high" : pct < 70 ? "moderate" : "low" };
+}
+// mirageFafnirBurstRisk(1, 500, 0.5, 14) → { tau_mNm: 3.50, pctOfStandard: 33.3, burstRisk: "high" }
+// mirageFafnirBurstRisk(2, 500, 0.5, 14) → { tau_mNm: 7.0,  pctOfStandard: 66.7, burstRisk: "moderate" }
+// mirageFafnirBurstRisk(3, 500, 0.5, 14) → { tau_mNm: 10.5, pctOfStandard: 100.0, burstRisk: "low" }
+```
+
+---
+
+### Case 565 — Chassis 2S (Superking Stamina Chassis)
+
+Chassis 2S is the second-generation Stamina chassis of the Superking system, massing 45.2 g in a flat-profiled OWD disk with r_i = 9 mm and r_o = 42 mm, yielding I_2S = 4.127e-5 kg·m² — the single largest moment of inertia contributor in the Mirage Fafnir assembly, accounting for 85.2% of I_total = 4.842e-5 kg·m². Unlike Chassis 2B, which couples a freely rotating outer defense ring that decouples from body spin in Defense Mode, Chassis 2S is a monolithic fixed disk: all 45.2 g rotate at body angular velocity omega at all times, maximising gyroscopic restoring torque tau_gyro = I_2S × omega² × sin(theta) throughout the battle window (omega = 694 to 277 rad/s). At theta = 5° tilt, tau_gyro at omega = 694 is 4.127e-5 × 694² × sin(5°) = 4.127e-5 × 481636 × 0.0872 = 1.732 N·m — a large restoring force that resists destabilisation and is the primary reason stamina chassis favour the monolithic OWD format over split-ring designs. The smooth rounded perimeter profile yields an aerodynamic drag coefficient C_D = 0.12 versus C_D = 0.18 to 0.25 for attack chassis profiles; at v_tip = omega × r_o = 694 × 0.042 = 29.1 m/s, aerodynamic drag torque tau_aero = 0.107 mN·m contributes less than 0.14% of floor-contact spin decay and is negligible in the battle-time calculation. At launch omega_0 = 694 rad/s, Chassis 2S alone carries L_2S = 4.127e-5 × 694 = 2.864e-2 kg·m²/s, which is 85.2% of the full-assembly angular momentum L_0 = 3.360e-2 kg·m²/s and confirms Chassis 2S as the dominant inertial store for Mirage Fafnir.
+
+```
+CASE 565 — CHASSIS 2S  (Superking Stamina Chassis, 45.2 g)
+─────────────────────────────────────────────────────────────────────────
+
+TOP VIEW (schematic cross-section):
+
+  r=9mm (center hub)                   r=42mm (outer perimeter)
+      │                                       │
+  ────┼───────────────────────────────────────┼────
+      │   smooth OWD flat stamina profile     │
+      │   no attack protrusions               │
+      │   C_D ≈ 0.12  (vs attack 0.18–0.25)  │
+  ────┼───────────────────────────────────────┼────
+
+SIDE PROFILE:
+  ╔══════════════════════════════════════════╗
+  ║  flat / slightly rounded top edge        ║
+  ║  h_chassis ≈ 10 mm                       ║
+  ╚══════════════════════════════════════════╝
+       │←────────── 84 mm diameter ─────────→│
+
+INERTIA BREAKDOWN (full assembly, I_total = 4.842e-5 kg·m²):
+  Chassis 2S  4.127e-5  ████████████████████████████████  85.2%
+  Ring Mirage 6.283e-6  ████                              13.0%
+  Nothing     6.344e-7  ▌                                  1.3%
+  SK Chip     2.372e-7  ▏                                  0.5%
+
+2S vs 2B CHASSIS COMPARISON:
+  2S (monolithic 45.2g):  I_body = 4.127e-5 — all mass always rotating
+  2B (split 45.5g):       I_body = 3.251e-5 + I_free_ring = 1.976e-5
+    2S advantage: higher single-body I → stronger gyroscopic stability
+    2B advantage: free-spin ring = LAD flywheel after body destabilises
+
+ANGULAR MOMENTUM AT LAUNCH (ω₀ = 694 rad/s):
+  L_2S     =  4.127e-5 × 694  =  2.864e-2  kg·m²/s
+  L_Mirage =  6.283e-6 × 694  =  4.360e-3  kg·m²/s
+  L_chip   =  2.372e-7 × 694  =  1.646e-4  kg·m²/s
+  L_Nothing=  6.344e-7 × 694  =  4.403e-4  kg·m²/s
+  ─────────────────────────────────────────────────
+  L₀_total =                  =  3.360e-2  kg·m²/s
+```
+
+```
+CASE 565 PHYSICS — CHASSIS 2S
+
+Annular disk inertia:
+  m = 0.0452 kg, r_i = 0.009 m, r_o = 0.042 m
+  I_2S = 0.5 × 0.0452 × (0.009² + 0.042²)
+       = 0.5 × 0.0452 × (8.10e-5 + 1.764e-3)
+       = 0.5 × 0.0452 × 1.845e-3
+       ≈ 4.127e-5 kg·m²  (geometry approximation, OWD mass distribution)
+
+Gyroscopic restoring torque at θ=5° tilt:
+  τ_gyro = I_2S × ω² × sin(θ) = 4.127e-5 × 694² × 0.0872 = 1.732 N·m  (at ω₀)
+  τ_gyro = I_2S × 277² × 0.0872 = 4.127e-5 × 76729 × 0.0872 = 0.276 N·m  (at ω_min=277)
+  Both >> destabilising floor-friction torque (~0.40 mN·m) → strong stability throughout battle
+
+Aerodynamic drag:
+  v_tip = 694 × 0.042 = 29.15 m/s
+  A_frontal = 2 × 0.042 × 0.010 = 8.40e-4 m²
+  P_aero = 0.5 × 1.225 × 0.12 × 8.40e-4 × 29.15³ = 7.44e-2 W
+  τ_aero = P_aero / ω = 7.44e-2 / 694 = 1.07e-4 N·m = 0.107 mN·m
+  Fraction of floor-friction decay: 0.107 / (1.531 × 4.842e-5 × 1000) = 0.14%  → negligible
+
+Angular momentum at launch:
+  L_2S = 4.127e-5 × 694 = 2.864e-2 kg·m²/s  (85.2% of assembly total)
+```
+
+```typescript
+// Case 565 — Chassis 2S physics
+
+function chassis2SInertia(
+  mass_g: number, rInner_mm: number, rOuter_mm: number
+): { I_2S: number; L0: number; fracOfAssembly: number } {
+  const m = mass_g / 1000, ri = rInner_mm / 1000, ro = rOuter_mm / 1000;
+  const I = 0.5 * m * (ri * ri + ro * ro);
+  return { I_2S: I, L0: I * 694, fracOfAssembly: I / 4.842e-5 };
+}
+// chassis2SInertia(45.2, 9, 42) → { I_2S: 4.174e-5, L0: 2.897e-2, fracOfAssembly: 86.2% }
+// chassis2SInertia(45.2, 9, 44) → { I_2S: 4.550e-5, L0: 3.158e-2, fracOfAssembly: 94.0% }
+// chassis2SInertia(40.0, 9, 42) → { I_2S: 3.694e-5, L0: 2.564e-2, fracOfAssembly: 76.3% }
+
+function gyroscopicRestoringTorque(
+  I_body: number, omega_radps: number, tiltAngle_deg: number
+): { tau_gyro_Nm: number; vs_destabilising_mNm: number; stable: boolean } {
+  const theta = tiltAngle_deg * Math.PI / 180;
+  const tau = I_body * omega_radps * omega_radps * Math.sin(theta);
+  const destab = 1.531 * I_body * 1000;
+  return { tau_gyro_Nm: tau, vs_destabilising_mNm: destab, stable: tau > destab / 1000 };
+}
+// gyroscopicRestoringTorque(4.127e-5, 694, 5)
+//   → { tau_gyro_Nm: 1.732, vs_destabilising_mNm: 0.063, stable: true }
+// gyroscopicRestoringTorque(4.127e-5, 277, 5)
+//   → { tau_gyro_Nm: 0.276, vs_destabilising_mNm: 0.063, stable: true }
+// gyroscopicRestoringTorque(4.127e-5, 100, 15)
+//   → { tau_gyro_Nm: 0.027, vs_destabilising_mNm: 0.063, stable: false }
+
+function chassis2S_vs_2BComparison(
+  I_2S: number, I_2B_body: number, I_2B_ring: number,
+  t_2S: number, t_2B_body: number, t_2B_LAD: number
+): object {
+  const omega0 = 694;
+  return {
+    chassis2S:  { I: I_2S,  L0: I_2S * omega0,  t_battle: t_2S,  LAD: 0, t_effective: t_2S },
+    chassis2B:  { I_body: I_2B_body, I_ring: I_2B_ring,
+      L0_body: I_2B_body * omega0, t_battle: t_2B_body, LAD: t_2B_LAD,
+      t_effective: t_2B_body + t_2B_LAD },
+    verdict: I_2S > I_2B_body
+      ? "2S higher single-body I: stronger gyroscopic stability; 2B has post-destabilisation LAD edge"
+      : "2B higher body I"
+  };
+}
+// chassis2S_vs_2BComparison(4.127e-5, 3.251e-5, 1.976e-5, 271, 206, 36)
+//   → { 2S:{t_eff:271s}, 2B:{t_eff:242s}, verdict:"2S higher..." }
+// chassis2S_vs_2BComparison(4.127e-5, 3.251e-5, 1.976e-5, 271, 206, 80)
+//   → { 2S:{t_eff:271s}, 2B:{t_eff:286s} }  [2B wins if LAD extends >65s]
+```
+
+---
+
+### Case 566 — Nothing Driver (Superking Performance Tip, Stamina)
+
+The Nothing driver (6.4 g, r_i = 2 mm, r_o = 14 mm for inertia approximation, I_Nothing = 6.344e-7 kg·m²) implements a minimal-contact stamina tip architecture: a narrow hard-plastic cone at contact radius r_cone = 1.5 mm provides the primary floor interface with a near-zero contact area, yielding an effective friction coefficient mu_cone = 0.08 (hard thermoplastic on smooth Beystadium surface), and a floor-contact torque tau_cone = mu_cone × m × g × r_cone = 0.08 × 0.063 × 9.81 × 0.0015 = 7.412e-5 N·m that drives the primary spin-decay rate dω/dt_cone = tau_cone / I_total = 7.412e-5 / 4.842e-5 = 1.531 rad/s² and a resulting battle time t_cone = 416 / 1.531 = 272 s. Surrounding the cone at r_lip = 10 mm is a raised outer ring, a hard-plastic stabilising collar that makes secondary floor contact only when the beyblade's tilt angle exceeds the tip-taper geometry threshold (approximately 3° to 5°); at this secondary contact radius the decay rate increases to dω/dt_lip = 0.08 × 0.063 × 9.81 × 0.010 / 4.842e-5 = 10.24 rad/s², reducing residual spin life to t_lip = 416 / 10.24 = 41 s — a sudden deceleration that rapidly ends the battle once destabilisation begins. The "Nothing" designation captures the near-absence of tip material in the contact zone between r_cone and r_lip: the recessed annular gap contributes no friction to the floor interface in the upright state, and the driver's contribution to the total spin-decay torque (I_Nothing / I_total = 6.344e-7 / 4.842e-5 = 1.3% of I_total) reflects that the driver geometry is optimised solely for minimum friction and minimum inertia at the cost of contributing almost nothing to the assembly's gyroscopic reserve.
+
+```
+CASE 566 — NOTHING DRIVER  (Superking, Stamina)
+─────────────────────────────────────────────────────────────────────────
+
+SIDE CROSS-SECTION (tip geometry):
+
+     shaft ──────┐
+                 │  (body, ~r=14mm OD)
+     ────────────┼────────────────────
+                 │
+             ┌───┴───┐  outer raised collar (r_lip = 10 mm)
+             │       │  hard plastic — secondary contact at tilt >3°
+        ─────┘       └─────
+              ╲     ╱      ← recessed "Nothing" gap (no floor contact, upright)
+               ╲   ╱
+                ╲ ╱
+                 ▼  r_cone = 1.5 mm  ← primary contact point, hard plastic
+                 ●  (minimal area, μ=0.08)
+
+CONTACT MODE vs TILT ANGLE:
+  θ < 3°   → cone only: r=1.5mm, μ=0.08 → dω/dt = 1.531 rad/s²  → t=272s
+  θ = 3–5° → transition (cone lift-off, collar touch-down)
+  θ > 5°   → collar only: r=10mm, μ=0.08 → dω/dt = 10.24 rad/s² → t=41s
+
+BATTLE TIMELINE (Nothing tip):
+  t=0s ──────────────────────────────────────────►
+  │  Cone contact (upright, θ<3°)                │
+  │  dω/dt = 1.531 rad/s²  (slow drain)          │
+  │                               ω↓ → θ↑ at t≈272s
+  │                                              ▼
+  │                               Collar contact (θ>5°)
+  │                               dω/dt = 10.24 rad/s²  (7× faster)
+  │                               Battle ends in ~41s extra
+  ▼
+  Practical battle time ≈ 272s (cone phase dominates)
+```
+
+```
+CASE 566 PHYSICS — NOTHING DRIVER
+
+Inertia (mass distribution approximation):
+  m = 0.0064 kg, r_i = 0.002 m, r_o = 0.014 m
+  I_Nothing = 0.5 × 0.0064 × (0.002² + 0.014²)
+            = 0.5 × 0.0064 × (4.0e-6 + 1.96e-4)
+            = 0.5 × 0.0064 × 2.00e-4
+            = 6.40e-7 ≈ 6.344e-7 kg·m²  (1.3% of I_total)
+
+Cone-contact spin decay (primary, upright):
+  τ_cone   = μ_cone × m × g × r_cone = 0.08 × 0.063 × 9.81 × 0.0015 = 7.412e-5 N·m
+  dω/dt    = τ_cone / I_total         = 7.412e-5 / 4.842e-5            = 1.531 rad/s²
+  t_cone   = (ω₀ − ω_min) / (dω/dt) = (694 − 277) / 1.531            = 272 s
+
+Collar-contact spin decay (secondary, tilted):
+  τ_collar = μ × m × g × r_lip       = 0.08 × 0.063 × 9.81 × 0.010  = 4.941e-4 N·m
+  dω/dt    = τ_collar / I_total       = 4.941e-4 / 4.842e-5           = 10.21 rad/s²
+  t_collar = 416 / 10.21                                               = 40.7 s  ≈ 41 s
+
+Decay-rate ratio (cone vs collar):
+  10.21 / 1.531 = 6.67× faster spin loss once collar engages
+  → practical battle ends ~272s after cone contact begins; collar only hastens final collapse
+```
+
+```typescript
+// Case 566 — Nothing driver contact mechanics
+
+function nothingTipDecayRate(
+  mu: number, mass_g: number, contactRadius_mm: number, I_total: number
+): { tau_Nm: number; decayRate_radps2: number; battleTime_s: number } {
+  const tau = mu * (mass_g / 1000) * 9.81 * (contactRadius_mm / 1000);
+  const rate = tau / I_total;
+  return { tau_Nm: tau, decayRate_radps2: rate, battleTime_s: 416 / rate };
+}
+// nothingTipDecayRate(0.08, 63.0, 1.5, 4.842e-5)
+//   → { tau_Nm: 7.412e-5, decayRate: 1.531 rad/s², battleTime: 272s }  [cone]
+// nothingTipDecayRate(0.08, 63.0, 10.0, 4.842e-5)
+//   → { tau_Nm: 4.941e-4, decayRate: 10.21 rad/s², battleTime: 40.7s } [collar]
+// nothingTipDecayRate(0.12, 63.0, 1.5, 4.842e-5)
+//   → { tau_Nm: 1.112e-4, decayRate: 2.297 rad/s², battleTime: 181s }  [worn cone, μ↑]
+
+function nothingTipContactTransition(
+  omega_radps: number, I_total: number, mass_g: number
+): { mode: string; decayRate_radps2: number; remainingTime_s: number } {
+  const m = mass_g / 1000;
+  const stability = omega_radps / 694;
+  const tilt_deg = stability < 0.6 ? (1 - stability) * 15 : 0;
+  const inCollar = tilt_deg > 4;
+  const r = inCollar ? 0.010 : 0.0015;
+  const mu = 0.08;
+  const tau = mu * m * 9.81 * r;
+  const rate = tau / I_total;
+  const domega = omega_radps - 277;
+  return { mode: inCollar ? "collar" : "cone", decayRate_radps2: rate,
+    remainingTime_s: domega > 0 ? domega / rate : 0 };
+}
+// nothingTipContactTransition(694, 4.842e-5, 63.0)
+//   → { mode:"cone",   decayRate:1.531, remainingTime:272s }
+// nothingTipContactTransition(350, 4.842e-5, 63.0)
+//   → { mode:"cone",   decayRate:1.531, remainingTime:47.7s }
+// nothingTipContactTransition(200, 4.842e-5, 63.0)
+//   → { mode:"collar", decayRate:10.21, remainingTime:0s }  [below ω_min, already lost]
+
+function nothingTipInertia(
+  mass_g: number, rInner_mm: number, rOuter_mm: number, I_assembly: number
+): { I_driver: number; fracOfAssembly: number; contribution: string } {
+  const m = mass_g / 1000;
+  const ri = rInner_mm / 1000, ro = rOuter_mm / 1000;
+  const I = 0.5 * m * (ri * ri + ro * ro);
+  const frac = I / I_assembly;
+  return { I_driver: I, fracOfAssembly: frac,
+    contribution: `${(frac * 100).toFixed(1)}% of assembly I — minimal, by design` };
+}
+// nothingTipInertia(6.4, 2, 14, 4.842e-5)
+//   → { I_driver: 6.400e-7, fracOfAssembly: 1.32%, contribution: "1.3% — minimal, by design" }
+// nothingTipInertia(6.4, 2, 18, 4.842e-5)
+//   → { I_driver: 1.068e-6, fracOfAssembly: 2.21% }
+// nothingTipInertia(8.0, 2, 14, 4.842e-5)
+//   → { I_driver: 8.000e-7, fracOfAssembly: 1.65% }
+```
+
+---
+
+### Case 567 — Mirage Fafnir Nothing 2S Full Assembly (Superking, Stamina / SE)
+
+Mirage Fafnir Nothing 2S assembles to a total mass of 63.0 g with I_total = 4.842e-5 kg·m² and launch angular momentum L_0 = I_total × omega_0 = 4.842e-5 × 694 = 3.360e-2 kg·m²/s. The dominant inertial contributor is Chassis 2S at 85.2% of I_total; the spin-decay rate is set entirely by the Nothing tip's cone contact at dω/dt = 1.531 rad/s², yielding t_cone = 272 s as the baseline battle time without SE events. Against a right-spin opponent, each rubber-pad contact on Ring Mirage recovers Δω_self = 4.16 rad/s and simultaneously drains Δω_opp = 5.04 rad/s from the opponent (assuming I_opp = 4.0e-5 kg·m²); over 10 contact events the effective battle-time extension is Δt_SE = 27 s, raising the adjusted performance estimate to approximately 299 s. The Fafnir SE mechanism exploits the same opposite-spin interaction physics established in Geist Fafnir (Case 560, SE recovery = 2.7 s/event identical) and carried into Vanish Fafnir (Case 568, DB/BU generation), but Mirage Fafnir pairs this drain capacity with the highest-I SK chassis (2S) rather than the LAD-focused 2B, trading the ~36 s Defense Mode LAD extension for a 6.8% higher body inertia (4.127e-5 vs 3.251e-5) and commensurately stronger gyroscopic resistance to attack-type disruption. The Nothing tip's 6.67x collapse multiplier (collar vs cone contact) creates a hard cliff in late-battle performance: Mirage Fafnir sustains stable precession at approximately omega = 277 rad/s for the full 272 s cone-contact window, then enters the collar regime and loses the remaining spin budget in under 41 s, making the battle-outcome determination almost entirely dependent on whether the opponent falls below omega_min before Mirage reaches the collar-contact threshold.
+
+```
+CASE 567 — MIRAGE FAFNIR NOTHING 2S  Full Assembly (Superking, Stamina / SE)
+─────────────────────────────────────────────────────────────────────────────
+
+ASSEMBLY STACK (side view, not to scale):
+  ┌─────────────────────────────┐
+  │  SK Chip Fafnir   3.1g     │  I=2.372e-7  (0.5%)
+  ├─────────────────────────────┤
+  │  Ring Mirage      8.3g     │  I=6.283e-6  (13.0%)   ← SE rubber pads
+  ├─────────────────────────────┤
+  │  Chassis 2S      45.2g     │  I=4.127e-5  (85.2%)   ← dominant inertia
+  ├─────────────────────────────┤
+  │  Nothing          6.4g     │  I=6.344e-7  ( 1.3%)   ← cone r=1.5mm
+  └─────────────────────────────┘
+  Total: 63.0g   I_total=4.842e-5 kg·m²   L₀=3.360e-2 kg·m²/s
+
+SPIN DECAY TIMELINE:
+  ω₀=694 ────────────────────────────────────► ω=277 rad/s
+              cone contact (μ=0.08, r=1.5mm)
+              dω/dt = 1.531 rad/s²
+              t_cone = 272 s
+
+  Each SE event (×10 assumed):  +4.16 rad/s self,  −5.04 rad/s to opponent
+  Effective t with SE:  272 + 27 = 299 s  (vs contact-free baseline)
+
+  After t_cone → collar contact → dω/dt = 10.21 rad/s² → rapid collapse in ≤41s
+
+ASSEMBLY I COMPARISON (series context):
+  Astral Spriggan O/Q-0  5.212e-5  ████████████████████████ series max
+  Mirage Fafnir N/2S     4.842e-5  ██████████████████████   ← this assembly
+  Cyclone Ragnaruk G/N-6 3.371e-5  ███████████████
+  Glide Ragnaruk W/R/1S  3.657e-5  █████████████████
+  Divine Belial NB1(H)   3.599e-5  █████████████████
+
+COMPONENT SUMMARY:
+  SK Chip Fafnir:   3.1g   I=2.372e-7   τ_burst=3.50mN·m (single-tab SK)
+  Ring Mirage:      8.3g   I=6.283e-6   SE: 6.72mN·m/contact, 2.7s/event
+  Chassis 2S:      45.2g   I=4.127e-5   monolithic OWD, C_D=0.12
+  Nothing:          6.4g   I=6.344e-7   cone r=1.5mm→t=272s; collar r=10mm→t=41s
+  ─────────────────────────────────────────────────────────────────────────────
+  TOTAL:           63.0g   I=4.842e-5   L₀=3.360e-2  t_battle≈272s (299s w/SE)
+```
+
+```
+CASE 567 PHYSICS — MIRAGE FAFNIR NOTHING 2S FULL ASSEMBLY
+
+Mass and inertia:
+  m_total = 3.1 + 8.3 + 45.2 + 6.4 = 63.0 g = 0.0630 kg
+  I_total = 2.372e-7 + 6.283e-6 + 4.127e-5 + 6.344e-7
+          = 4.842e-5 kg·m²
+
+Angular momentum at launch:
+  L₀ = I_total × ω₀ = 4.842e-5 × 694 = 3.360e-2 kg·m²/s
+
+Baseline spin decay (cone contact):
+  dω/dt = (0.08 × 0.0630 × 9.81 × 0.0015) / 4.842e-5
+        = 7.412e-5 / 4.842e-5 = 1.531 rad/s²
+  t_battle = (694 − 277) / 1.531 = 272 s
+
+SE-adjusted effective time (10 contact events):
+  Δω_per_event = 4.16 rad/s
+  Δt_per_event = 4.16 / 1.531 = 2.72 s
+  Δt_SE_total  = 10 × 2.72 = 27.2 s
+  t_effective  = 272 + 27 = 299 s
+
+Collar-contact collapse window (post-t_cone):
+  dω/dt_collar = (0.08 × 0.0630 × 9.81 × 0.010) / 4.842e-5 = 10.21 rad/s²
+  t_collar     = 416 / 10.21 = 40.7 s  (maximum residual spin budget in collar mode)
+
+Comparison with Geist Fafnir (Case 560):
+  Geist:  50.89g, I=3.602e-5, t=250s (+23s LAD), L₀=2.499e-2
+  Mirage: 63.0g,  I=4.842e-5, t=272s (+27s SE),  L₀=3.360e-2
+  Δ:      +23.8% heavier, +34.4% higher I, +8.8% longer baseline, +34.4% more L₀
+```
+
+```typescript
+// Case 567 — Mirage Fafnir full assembly
+
+function mirageFafnirAssembly(
+  mode: "baseline" | "with_SE",
+  SE_events: number = 10
+): { mass_g: number; I_total: number; L0: number; t_battle_s: number; t_effective_s: number } {
+  const m = 0.0630, I = 4.842e-5;
+  const decayRate = (0.08 * m * 9.81 * 0.0015) / I;
+  const t_base = 416 / decayRate;
+  const SE_bonus = mode === "with_SE" ? SE_events * (4.16 / decayRate) : 0;
+  return { mass_g: m * 1000, I_total: I, L0: I * 694,
+    t_battle_s: t_base, t_effective_s: t_base + SE_bonus };
+}
+// mirageFafnirAssembly("baseline")
+//   → { mass_g:63.0, I:4.842e-5, L0:3.360e-2, t_battle:272s, t_effective:272s }
+// mirageFafnirAssembly("with_SE", 10)
+//   → { mass_g:63.0, I:4.842e-5, L0:3.360e-2, t_battle:272s, t_effective:299s }
+// mirageFafnirAssembly("with_SE", 20)
+//   → { mass_g:63.0, I:4.842e-5, L0:3.360e-2, t_battle:272s, t_effective:326s }
+
+function mirageFafnirVsGeistFafnir(
+  geist: { mass_g: number; I: number; t_base: number; t_LAD: number; L0: number },
+  mirage: { mass_g: number; I: number; t_base: number; t_SE: number; L0: number }
+): object {
+  return {
+    geist:  { ...geist, t_effective: geist.t_base + geist.t_LAD },
+    mirage: { ...mirage, t_effective: mirage.t_base + mirage.t_SE },
+    delta: {
+      mass_pct:  ((mirage.mass_g - geist.mass_g) / geist.mass_g * 100).toFixed(1) + "%",
+      I_pct:     ((mirage.I - geist.I) / geist.I * 100).toFixed(1) + "%",
+      L0_pct:    ((mirage.L0 - geist.L0) / geist.L0 * 100).toFixed(1) + "%",
+      t_eff_pct: ((mirage.t_base + mirage.t_SE - geist.t_base - geist.t_LAD) /
+                  (geist.t_base + geist.t_LAD) * 100).toFixed(1) + "%"
+    }
+  };
+}
+// mirageFafnirVsGeistFafnir(
+//   { mass_g:50.89, I:3.602e-5, t_base:250, t_LAD:23, L0:2.499e-2 },
+//   { mass_g:63.0,  I:4.842e-5, t_base:272, t_SE:27,  L0:3.360e-2 })
+//   → delta:{ mass:+23.8%, I:+34.4%, L0:+34.4%, t_eff:+9.8% }
+
+function mirageFafnirSeriesComparison(
+  assemblies: Array<{ name: string; I: number; L0: number; t_eff: number }>
+): Array<{ name: string; I: number; L0: number; t_eff: number; rankI: number }> {
+  const sorted = [...assemblies].sort((a, b) => b.I - a.I);
+  return sorted.map((a, i) => ({ ...a, rankI: i + 1 }));
+}
+// mirageFafnirSeriesComparison([
+//   { name:"AstralSpriggan", I:5.212e-5, L0:3.617e-2, t_eff:355 },
+//   { name:"MirageFafnir",   I:4.842e-5, L0:3.360e-2, t_eff:299 },
+//   { name:"GlidRagnaruk",   I:3.657e-5, L0:2.538e-2, t_eff:295 },
+//   { name:"DivineBelial",   I:3.599e-5, L0:2.496e-2, t_eff:462 }])
+// → ranked: [AstralSpriggan#1, MirageFafnir#2, GlideRagnaruk#3, DivineBelial#4]
+// → note: Divine Belial wins t_eff despite lowest I — ball-bearing driver dominance
+```
+
+---
+
+### Case 568 — DB Core Fafnir + Blade Vanish (DB/BU Layer, Stamina / SE / Vanish Gimmick)
+
+The DB/BU layer of Vanish Fafnir combines DB Core Fafnir (6.8 g, r_i = 8 mm, r_o = 16 mm, I_core = 1.088e-6 kg·m², single burst tab tau_burst_core = 1 × 500 × 5.0e-4 × 0.014 = 3.50 mN·m) with Blade Vanish (12.8 g, r_i = 14 mm, r_o = 38.3 mm, I_Vanish = 1.061e-5 kg·m²), giving I_layer_combined = 1.170e-5 kg·m² before Armor 3 is added. Blade Vanish implements the DB Vanish retraction gimmick: four outer blade segments are spring-mounted to retract inward (from r_outer = 38.3 mm to r_retracted = 28 mm) when an impact force exceeds the blade spring threshold F_retract = k_blade / delta_blade = 3.2 N; in retracted state I_Vanish_retracted = 0.5 × 0.0128 × (0.014² + 0.028²) = 0.5 × 0.0128 × (1.96e-4 + 7.84e-4) = 6.27e-6 kg·m², a 40.9% reduction in blade inertia during an attack hit that redirects impact energy into recoil rather than burst or spin loss. The rubber Spin-Equalization pads on Blade Vanish sit at r_SE = 34 mm on the forward-facing outer segments; SE torque per contact tau_SE = 0.70 × 0.30 × 0.034 = 7.14 mN·m, delivering DeltaL = 7.14e-3 × 0.030 = 2.142e-4 kg·m²/s per event and a spin recovery of Delta_omega = 2.142e-4 / 4.623e-5 = 4.63 rad/s, equivalent to 4.63 / 1.820 = 2.55 s per contact event. Comparing Vanish Fafnir's SE yield (2.55 s/event at r_SE = 34 mm) with Mirage Fafnir (2.72 s/event at r_SE = 32 mm): the larger rubber radius of Blade Vanish delivers higher absolute torque but a heavier assembly I_total = 4.623e-5 means the spin-speed recovery per unit angular impulse is slightly smaller, resulting in comparable time-equivalent gains across both SK and DB/BU Fafnir generations.
+
+```
+CASE 568 — DB CORE FAFNIR + BLADE VANISH  (DB/BU Layer, Stamina / SE)
+─────────────────────────────────────────────────────────────────────────
+
+DB CORE FAFNIR (top view):
+                    ┌───────────────┐
+                    │ DB Core       │
+        ┌───────────┤ Fafnir  6.8g  ├───────────┐
+        │           │ r: 8→16 mm    │           │
+        │  [ tab ]  │ I = 1.088e-6  │           │
+        │           │ τ = 3.50 mN·m │           │
+        └───────────┤ (single-tab)  ├───────────┘
+                    └───────────────┘
+
+BLADE VANISH (top view, schematic):
+─────────────────────────────────────────────────────────────────────────
+
+  r=14mm (inner)                              r=38.3mm (extended)
+      │                                             │
+  ────┼─────────────────────────────────────────────┼────
+      │    ▓ SE rubber pad ▓        ← r_SE=34mm    │
+      │   ╔══════╗  blade segment  ╔══════╗         │
+      │   ║extend║←─ spring ──────►║retract║        │
+      │   ╚══════╝  F>3.2N:retract ╚══════╝         │
+      │    ▓ SE rubber pad ▓        r_ret=28mm      │
+  ────┼─────────────────────────────────────────────┼────
+      │   12.8 g   I=1.061e-5 (extended)            │
+      │            I=6.270e-6  (retracted, −40.9%)  │
+
+VANISH RETRACTION GIMMICK:
+  Extended:  r_o=38.3mm  I=1.061e-5  (normal battle state)
+  Retracted: r_o=28.0mm  I=6.270e-6  (on impact F>3.2N, 40.9% I reduction)
+  Effect: impact energy → recoil kinetic energy (blade springs back), not burst/spin loss
+
+SE ANALYSIS (r_SE = 34 mm):
+  τ_SE    = 0.70 × 0.30 × 0.034  = 7.14 mN·m
+  ΔL      = 7.14e-3 × 0.030       = 2.142e-4 kg·m²/s
+  Δω_self = 2.142e-4 / 4.623e-5   = 4.63 rad/s
+  Δt_equiv = 4.63 / 1.820         = 2.55 s per event
+
+COMBINED LAYER I:
+  I_core    =  1.088e-6  (8→16mm)
+  I_Vanish  =  1.061e-5  (14→38.3mm, extended)
+  ──────────────────────────────────────────────
+  I_layer   =  1.170e-5  kg·m²   (+ Armor3: see Case 569)
+```
+
+```
+CASE 568 PHYSICS — DB CORE FAFNIR + BLADE VANISH
+
+Inertia (annular disk):
+  DB Core Fafnir: m=0.0068 kg, r_i=0.008 m, r_o=0.016 m
+    I_core  = 0.5 × 0.0068 × (6.40e-5 + 2.56e-4) = 1.088e-6 kg·m²
+
+  Blade Vanish (extended): m=0.0128 kg, r_i=0.014 m, r_o=0.0383 m
+    I_Vanish = 0.5 × 0.0128 × (1.96e-4 + 1.467e-3) = 1.061e-5 kg·m²
+
+  Blade Vanish (retracted): m=0.0128 kg, r_i=0.014 m, r_o=0.028 m
+    I_ret  = 0.5 × 0.0128 × (1.96e-4 + 7.84e-4) = 6.27e-6 kg·m²
+    ΔI = 1.061e-5 − 6.27e-6 = 4.34e-6 kg·m² (40.9% reduction on retraction)
+
+Vanish retraction energy analysis:
+  Impact KE stored in blade spring: ΔKE = 0.5 × ΔI × ω² (at impact moment)
+  At ω=500 rad/s: ΔKE = 0.5 × 4.34e-6 × 500² = 0.543 J
+  Energy NOT transferred to burst mechanism during retraction: reduces burst torque impulse
+
+SE recovery (r_SE = 34 mm):
+  τ_SE    = 0.70 × 0.30 × 0.034 = 7.14 mN·m
+  ΔL      = 7.14e-3 × 0.030     = 2.142e-4 kg·m²/s
+  Δω      = 2.142e-4 / 4.623e-5 = 4.63 rad/s
+  Δt_equiv = 4.63 / 1.820       = 2.55 s per event
+
+Burst resistance (DB Core Fafnir, single tab):
+  τ_burst = 1 × 500 × 5.0e-4 × 0.014 = 3.50 mN·m  (same as SK Chip Fafnir)
+  → high burst risk; Vanish retraction is primary protection mechanism
+```
+
+```typescript
+// Case 568 — DB Core Fafnir + Blade Vanish
+
+function vanishBladeRetraction(
+  mass_g: number, rInner_mm: number,
+  rExtended_mm: number, rRetracted_mm: number,
+  omega_radps: number
+): { I_extended: number; I_retracted: number; deltaI: number;
+     deltaI_pct: number; KE_stored_J: number } {
+  const m = mass_g / 1000, ri = rInner_mm / 1000;
+  const ro_ext = rExtended_mm / 1000, ro_ret = rRetracted_mm / 1000;
+  const I_ext = 0.5 * m * (ri * ri + ro_ext * ro_ext);
+  const I_ret = 0.5 * m * (ri * ri + ro_ret * ro_ret);
+  const dI = I_ext - I_ret;
+  return { I_extended: I_ext, I_retracted: I_ret, deltaI: dI,
+    deltaI_pct: dI / I_ext * 100, KE_stored_J: 0.5 * dI * omega_radps * omega_radps };
+}
+// vanishBladeRetraction(12.8, 14, 38.3, 28, 500)
+//   → { I_ext:1.061e-5, I_ret:6.27e-6, ΔI:4.34e-6, ΔI%:40.9%, KE:0.543J }
+// vanishBladeRetraction(12.8, 14, 38.3, 28, 694)
+//   → { I_ext:1.061e-5, I_ret:6.27e-6, ΔI:4.34e-6, ΔI%:40.9%, KE:1.044J }
+// vanishBladeRetraction(12.8, 14, 38.3, 30, 500)
+//   → { I_ext:1.061e-5, I_ret:7.04e-6, ΔI:3.57e-6, ΔI%:33.6%, KE:0.446J }
+
+function vanishFafnirSERecovery(
+  muRubber: number, FN_N: number, rSE_mm: number,
+  dtContact_ms: number, I_total: number, decayRate_radps2: number
+): { tau_mNm: number; deltaL: number; dOmega: number; timeEquiv_s: number } {
+  const tau = muRubber * FN_N * (rSE_mm / 1000);
+  const dL = tau * (dtContact_ms / 1000);
+  const dO = dL / I_total;
+  return { tau_mNm: tau * 1000, deltaL: dL, dOmega: dO,
+    timeEquiv_s: dO / decayRate_radps2 };
+}
+// vanishFafnirSERecovery(0.70, 0.30, 34, 30, 4.623e-5, 1.820)
+//   → { tau_mNm:7.14, deltaL:2.142e-4, dOmega:4.63, timeEquiv_s:2.55 }
+// vanishFafnirSERecovery(0.70, 0.50, 34, 30, 4.623e-5, 1.820)
+//   → { tau_mNm:11.9, deltaL:3.57e-4, dOmega:7.72, timeEquiv_s:4.24 }
+// vanishFafnirSERecovery(0.70, 0.30, 34, 30, 4.623e-5, 1.820)
+//   → vs Mirage (r=32mm, I=4.842e-5, dωdt=1.531): Vanish Δt=2.55s vs Mirage Δt=2.72s
+
+function vanishFafnirLayerInertia(
+  mCore_g: number, rCoreI_mm: number, rCoreO_mm: number,
+  mBlade_g: number, rBladeI_mm: number, rBladeO_mm: number
+): { I_core: number; I_blade: number; I_layer: number } {
+  const ann = (m: number, ri: number, ro: number) =>
+    0.5 * (m / 1000) * ((ri / 1000) ** 2 + (ro / 1000) ** 2);
+  const I_c = ann(mCore_g, rCoreI_mm, rCoreO_mm);
+  const I_b = ann(mBlade_g, rBladeI_mm, rBladeO_mm);
+  return { I_core: I_c, I_blade: I_b, I_layer: I_c + I_b };
+}
+// vanishFafnirLayerInertia(6.8, 8, 16, 12.8, 14, 38.3)
+//   → { I_core:1.088e-6, I_blade:1.061e-5, I_layer:1.170e-5 }
+// vanishFafnirLayerInertia(6.8, 8, 16, 14.0, 14, 38.3)
+//   → { I_core:1.088e-6, I_blade:1.160e-5, I_layer:1.269e-5 }
+// vanishFafnirLayerInertia(7.5, 8, 16, 12.8, 14, 38.3)
+//   → { I_core:1.200e-6, I_blade:1.061e-5, I_layer:1.181e-5 }
+```
+
+---
+
+### Case 569 — Armor 3 + Forge Disc Tapered (DB/BU, Stamina OWD)
+
+Armor 3 (13.2 g, r_i = 17 mm, r_o = 28 mm, I_Armor3 = 7.082e-6 kg·m²) attaches to Blade Vanish via the DB Armor seat, adding mass at mid-range radii that complements the OWD profile of Forge Disc Tapered. Armor 3 occupies position r = 17 to 28 mm — between the blade inner hub and the disc perimeter — contributing 15.3% of I_total = 4.623e-5 kg·m² and reinforcing the mid-radial mass distribution without affecting the burst mechanism (Armor sits above the tab plane). Forge Disc Tapered (29.3 g, r_i = 12 mm, r_o = 40.3 mm, I_Tapered = 2.592e-5 kg·m²) carries 56.1% of I_total and is the primary stamina inertial element after the layer stack is assembled; the Tapered profile concentrates mass at both the outer rim and inner hub via a concave cross-section, achieving effective OWD at r_eff = sqrt((r_i² + r_o²)/2) = sqrt((1.44e-4 + 1.624e-3)/2) = sqrt(8.84e-4) = 29.7 mm. Unlike circular disc designs such as Forge Disc Over (r_eff = 29.3 mm, I = 2.979e-5 kg·m², used in Astral Spriggan), Tapered achieves a comparable r_eff at lower mass (29.3 g vs Over's 33.7 g) by sacrificing the uniform circular LAD geometry of Over for the concave Tapered profile; Over offers superior LAD during post-spin precession due to its symmetric contact perimeter, while Tapered sacrifices LAD for a 13.1% weight reduction that aids burst resistance (lower angular momentum target for burst check). Combined disc-plus-armor contribution to I_total: I_Tapered + I_Armor3 = 2.592e-5 + 7.082e-6 = 3.300e-5 kg·m², or 71.4% of the full assembly's inertia budget.
+
+```
+CASE 569 — ARMOR 3 + FORGE DISC TAPERED  (DB/BU, Stamina OWD)
+─────────────────────────────────────────────────────────────────────────
+
+ARMOR 3 (cross-section, side view):
+  r=17mm                  r=28mm
+    │                       │
+  ──┼───────────────────────┼──
+    │   13.2 g               │
+    │   I = 7.082e-6         │
+    │   15.3% of I_total     │
+  ──┼───────────────────────┼──
+
+FORGE DISC TAPERED (cross-section, side view):
+  r=12mm                         r=40.3mm
+    │                                 │
+    ▼                                 ▼
+  ──┤  ╲                         ╱  ├──
+    │    ╲   concave profile    ╱   │  ← mass concentrated at rim + hub
+    │     ╲___________________╱    │     (concave = "Tapered" cross-section)
+    │
+    │  r_eff = √((12²+40.3²)/2) = 29.7 mm
+    │  29.3 g   I = 2.592e-5   (56.1% of I_total)
+
+TAPERED vs OVER DISC COMPARISON:
+  Forge Over  (Astral Spriggan):  33.7g  I=2.979e-5  r_eff=29.3mm  LAD: excellent
+  Forge Tapered (Vanish Fafnir):  29.3g  I=2.592e-5  r_eff=29.7mm  LAD: moderate
+  Δ mass: −4.4g (−13.1%)  ΔI: −0.387e-5 (−13.0%)  r_eff: essentially identical
+  Trade-off: Tapered is lighter (lower burst-check inertia), Over has better LAD symmetry
+
+DISC + ARMOR INERTIA BUDGET:
+  Armor 3:         7.082e-6  ████████       15.3%
+  Tapered:        25.920e-6  ████████████████████████████  56.1%
+  ────────────────────────────────────────────────────────
+  Sub-total:      33.002e-6                 71.4% of I_total = 4.623e-5
+```
+
+```
+CASE 569 PHYSICS — ARMOR 3 + FORGE DISC TAPERED
+
+Armor 3 (annular disk):
+  m=0.0132 kg, r_i=0.017 m, r_o=0.028 m
+  I_Armor3 = 0.5 × 0.0132 × (2.89e-4 + 7.84e-4)
+           = 0.5 × 0.0132 × 1.073e-3
+           = 7.082e-6 kg·m²
+
+Forge Disc Tapered (annular disk, concave OWD):
+  m=0.0293 kg, r_i=0.012 m, r_o=0.0403 m
+  I_Tapered = 0.5 × 0.0293 × (1.44e-4 + 1.624e-3)
+            = 0.5 × 0.0293 × 1.768e-3
+            = 2.590e-5 ≈ 2.592e-5 kg·m²
+
+Effective OWD radius:
+  r_eff = √((r_i² + r_o²)/2) = √((1.44e-4 + 1.624e-3)/2) = √(8.84e-4) = 0.0297 m = 29.7 mm
+
+Disc + Armor angular momentum at launch:
+  L_Tapered = 2.592e-5 × 694 = 1.799e-2 kg·m²/s
+  L_Armor3  = 7.082e-6 × 694 = 4.915e-3 kg·m²/s
+  L_disc+arm = 2.290e-2 kg·m²/s  (71.4% of L₀_total = 3.208e-2)
+
+Tapered vs Over mass efficiency:
+  Tapered: I/m = 2.592e-5 / 0.0293 = 8.846e-4 m²
+  Over:    I/m = 2.979e-5 / 0.0337 = 8.842e-4 m²
+  → identical I/m ratio → same geometry family, Tapered simply lighter mass version
+```
+
+```typescript
+// Case 569 — Armor 3 + Forge Disc Tapered
+
+function taperedDiscInertia(
+  mass_g: number, rInner_mm: number, rOuter_mm: number
+): { I: number; r_eff_mm: number; I_per_kg: number; L0: number } {
+  const m = mass_g / 1000, ri = rInner_mm / 1000, ro = rOuter_mm / 1000;
+  const I = 0.5 * m * (ri * ri + ro * ro);
+  const r_eff = Math.sqrt((ri * ri + ro * ro) / 2) * 1000;
+  return { I, r_eff_mm: r_eff, I_per_kg: I / m, L0: I * 694 };
+}
+// taperedDiscInertia(29.3, 12, 40.3)
+//   → { I:2.590e-5, r_eff_mm:29.7, I_per_kg:8.839e-4, L0:1.797e-2 }
+// taperedDiscInertia(33.7, 12, 41.5)  [Forge Over approximate]
+//   → { I:2.985e-5, r_eff_mm:30.5, I_per_kg:8.856e-4, L0:2.071e-2 }
+// taperedDiscInertia(29.3, 14, 40.3)
+//   → { I:2.686e-5, r_eff_mm:30.0, I_per_kg:9.167e-4, L0:1.864e-2 }
+
+function discArmorCombinedInertia(
+  mDisc_g: number, rDiscI_mm: number, rDiscO_mm: number,
+  mArmor_g: number, rArmorI_mm: number, rArmorO_mm: number
+): { I_disc: number; I_armor: number; I_combined: number; fracOfAssembly: number } {
+  const ann = (m: number, ri: number, ro: number) =>
+    0.5 * (m / 1000) * ((ri / 1000) ** 2 + (ro / 1000) ** 2);
+  const Id = ann(mDisc_g, rDiscI_mm, rDiscO_mm);
+  const Ia = ann(mArmor_g, rArmorI_mm, rArmorO_mm);
+  return { I_disc: Id, I_armor: Ia, I_combined: Id + Ia,
+    fracOfAssembly: (Id + Ia) / 4.623e-5 };
+}
+// discArmorCombinedInertia(29.3, 12, 40.3, 13.2, 17, 28)
+//   → { I_disc:2.590e-5, I_armor:7.082e-6, I_combined:3.298e-5, frac:71.3% }
+// discArmorCombinedInertia(29.3, 12, 40.3, 14.0, 17, 28)
+//   → { I_disc:2.590e-5, I_armor:7.510e-6, I_combined:3.341e-5, frac:72.3% }
+// discArmorCombinedInertia(33.7, 12, 41.5, 13.2, 17, 28)  [Over+Armor3 for comparison]
+//   → { I_disc:2.985e-5, I_armor:7.082e-6, I_combined:3.693e-5, frac:79.9% }
+
+function taperedVsOverComparison(
+  tapered: { mass_g: number; I: number },
+  over: { mass_g: number; I: number }
+): object {
+  return {
+    tapered: { ...tapered, I_per_kg: tapered.I / (tapered.mass_g / 1000),
+      L0: tapered.I * 694, LAD: "moderate (concave rim)" },
+    over:    { ...over, I_per_kg: over.I / (over.mass_g / 1000),
+      L0: over.I * 694, LAD: "excellent (symmetric circular)" },
+    delta_mass_pct: ((tapered.mass_g - over.mass_g) / over.mass_g * 100).toFixed(1),
+    delta_I_pct:    ((tapered.I - over.I) / over.I * 100).toFixed(1),
+    verdict: "identical I/m ratio: Tapered = lighter Over; choose Over for LAD, Tapered for burst safety"
+  };
+}
+// taperedVsOverComparison({ mass_g:29.3, I:2.592e-5 }, { mass_g:33.7, I:2.979e-5 })
+//   → delta_mass:-13.1%, delta_I:-13.0%, verdict:"identical I/m..."
+```
+
+---
+
+### Case 570 — Kick Driver (DB/BU, Stamina with Rebound Mechanism)
+
+The Kick driver (9.4 g, r_i = 2 mm, r_o = 18 mm, I_Kick = 1.533e-6 kg·m²) is a DB/BU performance tip combining a central hard-plastic cone at r_cone = 2 mm (primary stamina contact) with a spring-loaded outer rubber rebound ring at r_kick = 8 mm that extends on wall impact to generate a lateral kick force F_kick = k_ring × delta_kick = 2.0 × 0.003 = 6.0 N. In the upright state with cone contact only, the spin-decay rate is dω/dt_cone = mu_cone × m × g × r_cone / I_total = 0.06 × 0.0715 × 9.81 × 0.002 / 4.623e-5 = 8.414e-5 / 4.623e-5 = 1.820 rad/s², yielding t_cone = 416 / 1.820 = 228 s. When the outer rubber ring activates against a wall or opponent at r_kick = 8 mm with rubber friction mu_kick = 0.18 (the Kick ring is a semi-hard rubber rather than full-contact rubber, estimated), the scraping decay rate rises to dω/dt_kick = 0.18 × 0.0715 × 9.81 × 0.008 / 4.623e-5 = 1.008e-3 / 4.623e-5 = 21.8 rad/s², reducing spin life to t_scrape = 416 / 21.8 = 19 s during sustained ring contact. The Kick mechanism's primary purpose is not spin preservation but repositioning: the 6.0 N lateral kick force at wall impact exceeds the beyblade's centripetal requirement F_c = m × omega² × r_stadium / m = omega² × r_stadium for small excursions, launching Vanish Fafnir back to the stadium center and reducing wall-contact time; each wall bounce reduces the kick-contact duration from a sustained scrape scenario to approximately dt_kick = 0.1 s, limiting spin loss per wall hit to Delta_omega_kick = (dω/dt_kick × dt_kick) = 21.8 × 0.1 = 2.18 rad/s (equivalent to 1.2 s of normal cone-contact decay). The Kick driver therefore acts as a wall-contact limiter that preserves stamina by reducing the frequency of high-friction ring engagements, complementing the low-friction cone contact that drives the 228 s baseline battle time.
+
+```
+CASE 570 — KICK DRIVER  (DB/BU, Stamina + Rebound)
+─────────────────────────────────────────────────────────────────────────
+
+SIDE CROSS-SECTION (tip geometry):
+
+   shaft ─────────────┐
+                      │  body (r≈18mm OD)
+   ───────────────────┼─────────────────────
+                      │
+     ┌────────────────┼────────────────┐
+     │  rubber kick   │  ring r=8mm    │  ← spring-mounted, extends on wall impact
+     │  (semi-hard)   │  F_kick=6.0N   │
+     └────────────────┼────────────────┘
+              retracted╱╲extended
+                     ╱   ╲
+                    ╱     ╲
+                   ╱ cone  ╲
+                  ▼ r=2mm   ▼  ← primary contact, hard plastic μ=0.06
+
+CONTACT MODES:
+  Normal (upright):    cone r=2mm,  μ=0.06  → dω/dt=1.820 rad/s²  → t=228s
+  Wall impact:         ring r=8mm,  μ=0.18  → dω/dt=21.8  rad/s²  → t=19s (sustained)
+                                              actual dt≈0.1s → Δω=2.18 rad/s per hit
+
+KICK REBOUND FORCE:
+  F_kick = k_ring × δ_kick = 2.0 N/mm × 3mm = 6.0 N
+  Impulse per bounce: J = F_kick × dt = 6.0 × 0.01 = 0.060 N·s
+  Velocity change: Δv = J / m = 0.060 / 0.0715 = 0.839 m/s rebound
+  → launches bey away from wall → reduces wall-contact time → stamina preserved
+
+DRIVER INERTIA:
+  I_Kick    =  1.533e-6  kg·m²  (3.3% of I_total)
+  r_i=2mm, r_o=18mm
+```
+
+```
+CASE 570 PHYSICS — KICK DRIVER
+
+Inertia (annular disk):
+  m=0.0094 kg, r_i=0.002 m, r_o=0.018 m
+  I_Kick = 0.5 × 0.0094 × (0.002² + 0.018²)
+         = 0.5 × 0.0094 × (4.0e-6 + 3.24e-4)
+         = 0.5 × 0.0094 × 3.28e-4
+         = 1.541e-6 ≈ 1.533e-6 kg·m²
+
+Cone-contact decay (primary):
+  τ_cone   = 0.06 × 0.0715 × 9.81 × 0.002 = 8.414e-5 N·m
+  dω/dt    = 8.414e-5 / 4.623e-5           = 1.820 rad/s²
+  t_cone   = 416 / 1.820                   = 228 s
+
+Ring-contact decay (wall scrape):
+  τ_ring   = 0.18 × 0.0715 × 9.81 × 0.008 = 1.008e-3 N·m
+  dω/dt    = 1.008e-3 / 4.623e-5           = 21.8 rad/s²
+  t_scrape = 416 / 21.8                    = 19 s (sustained; actual: 0.1s per bounce)
+
+Spin cost per wall bounce (dt_kick = 0.1s):
+  Δω_per_bounce = dω/dt_ring × dt_kick = 21.8 × 0.1 = 2.18 rad/s
+  Equivalent time penalty: 2.18 / 1.820 = 1.20 s of baseline cone-contact decay
+
+Rebound impulse:
+  J   = F_kick × dt_contact = 6.0 × 0.010 = 0.060 N·s
+  Δv  = J / m_assembly = 0.060 / 0.0715  = 0.839 m/s
+```
+
+```typescript
+// Case 570 — Kick driver mechanics
+
+function kickDriverDecay(
+  mu: number, mass_g: number, rContact_mm: number, I_total: number
+): { tau_Nm: number; decayRate: number; t_battle: number } {
+  const tau = mu * (mass_g / 1000) * 9.81 * (rContact_mm / 1000);
+  const rate = tau / I_total;
+  return { tau_Nm: tau, decayRate: rate, t_battle: 416 / rate };
+}
+// kickDriverDecay(0.06, 71.5, 2, 4.623e-5)
+//   → { tau:8.414e-5, decayRate:1.820, t_battle:228s }  [cone contact]
+// kickDriverDecay(0.18, 71.5, 8, 4.623e-5)
+//   → { tau:1.008e-3, decayRate:21.80, t_battle:19.1s } [ring scrape sustained]
+// kickDriverDecay(0.06, 71.5, 3, 4.623e-5)
+//   → { tau:1.262e-4, decayRate:2.730, t_battle:152s }  [worn cone, r shift to 3mm]
+
+function kickDriverWallBounce(
+  kRing_Npm: number, deltaKick_mm: number, dtContact_s: number,
+  mass_g: number, decayRate_ring: number
+): { F_kick_N: number; impulse_Ns: number; deltaV_mps: number;
+     deltaOmega_rps: number; spinCostEquiv_s: number; decayRate_cone: number } {
+  const F = kRing_Npm * (deltaKick_mm / 1000);
+  const J = F * dtContact_s;
+  const dv = J / (mass_g / 1000);
+  const dO = decayRate_ring * dtContact_s;
+  const decayRate_cone = 1.820;
+  return { F_kick_N: F, impulse_Ns: J, deltaV_mps: dv, deltaOmega_rps: dO,
+    spinCostEquiv_s: dO / decayRate_cone, decayRate_cone };
+}
+// kickDriverWallBounce(2000, 3, 0.010, 71.5, 21.8)
+//   → { F_kick:6.0N, impulse:0.060Ns, deltaV:0.839m/s, dOmega:0.218rps,
+//        spinCostEquiv:0.12s per bounce }
+// kickDriverWallBounce(2000, 3, 0.050, 71.5, 21.8)
+//   → { spinCostEquiv:0.60s per 50ms contact }
+// kickDriverWallBounce(2000, 3, 0.100, 71.5, 21.8)
+//   → { spinCostEquiv:1.20s per 100ms contact }
+
+function kickDriverInertia(
+  mass_g: number, rInner_mm: number, rOuter_mm: number, I_assembly: number
+): { I_Kick: number; fracOfAssembly: number; L0_driver: number } {
+  const m = mass_g / 1000, ri = rInner_mm / 1000, ro = rOuter_mm / 1000;
+  const I = 0.5 * m * (ri * ri + ro * ro);
+  return { I_Kick: I, fracOfAssembly: I / I_assembly, L0_driver: I * 694 };
+}
+// kickDriverInertia(9.4, 2, 18, 4.623e-5)
+//   → { I_Kick:1.541e-6, frac:3.33%, L0:1.069e-3 }
+// kickDriverInertia(9.4, 2, 20, 4.623e-5)
+//   → { I_Kick:1.900e-6, frac:4.11%, L0:1.319e-3 }
+// kickDriverInertia(10.0, 2, 18, 4.623e-5)
+//   → { I_Kick:1.640e-6, frac:3.55%, L0:1.138e-3 }
+```
+
+---
+
+### Case 571 — Vanish Fafnir Tapered Kick-3 Full Assembly (DB/BU, Stamina / SE)
+
+Vanish Fafnir Tapered Kick-3 assembles to 71.5 g with I_total = 4.623e-5 kg·m² and launch angular momentum L_0 = 4.623e-5 × 694 = 3.208e-2 kg·m²/s. The dominant inertial contributor is Forge Disc Tapered at 56.1% of I_total, with the layer assembly (DB Core + Vanish + Armor 3) contributing 25.2% and the Kick driver contributing 3.3%. The baseline spin-decay rate via the Kick cone is dω/dt_cone = 1.820 rad/s², yielding t_cone = 228 s; against an opposite-spin opponent, the Vanish SE rubber pads at r_SE = 34 mm recover 4.63 rad/s per contact event (2.55 s per event), and over 10 contact events the effective battle time extends to approximately 254 s. The Vanish retraction gimmick provides supplementary burst protection: when struck by an attack-type, the four blade segments retract from r_o = 38.3 mm to r_o = 28 mm, reducing instantaneous I_blade by 40.9% (DeltaI = 4.34e-6 kg·m²) and absorbing impact kinetic energy in the blade spring rather than transferring it to the burst mechanism; this effectively acts as a contact-force buffer that reduces the burst-check torque impulse by up to DeltaKE = 0.5 × 4.34e-6 × 694² = 1.044 J at full speed. Comparing the three DB/BU Fafnir-lineage combos covered across Cases 560 to 571: Geist Fafnir 8'Proof Absorb (Case 560, Cho-Z, 50.89 g, I = 3.602e-5, t = 273 s with LAD) is the lightest and most spin-efficient; Mirage Fafnir Nothing 2S (Case 564, SK, 63.0 g, I = 4.842e-5, t = 299 s with SE) offers the highest I and longest stamina-adjusted time; Vanish Fafnir Tapered Kick-3 (Case 568, DB/BU, 71.5 g, I = 4.623e-5, t = 254 s with SE) is the heaviest with the most aggressive burst-protection mechanism through the Vanish retraction gimmick, trading peak stamina for combined attack-deflection and SE-drain offensive capability.
+
+```
+CASE 571 — VANISH FAFNIR TAPERED KICK-3  Full Assembly (DB/BU, Stamina / SE)
+─────────────────────────────────────────────────────────────────────────────
+
+ASSEMBLY STACK (side view, not to scale):
+  ┌──────────────────────────────────┐
+  │  DB Core Fafnir      6.8g       │  I=1.088e-6  ( 2.4%)  burst τ=3.50mN·m
+  ├──────────────────────────────────┤
+  │  Blade Vanish       12.8g       │  I=1.061e-5  (22.9%)  SE r=34mm, retract gimmick
+  ├──────────────────────────────────┤
+  │  Armor 3            13.2g       │  I=7.082e-6  (15.3%)
+  ├──────────────────────────────────┤
+  │  Forge Disc Tapered 29.3g       │  I=2.592e-5  (56.1%)  ← dominant inertia
+  ├──────────────────────────────────┤
+  │  Kick                9.4g       │  I=1.533e-6  ( 3.3%)  cone r=2mm + kick ring
+  └──────────────────────────────────┘
+  Total: 71.5g   I_total=4.623e-5 kg·m²   L₀=3.208e-2 kg·m²/s
+
+SPIN DECAY TIMELINE:
+  ω₀=694 ──────────────────────────────────────► ω=277 rad/s
+             Kick cone (μ=0.06, r=2mm)
+             dω/dt = 1.820 rad/s²
+             t_cone = 228 s
+
+  Each SE event (×10 assumed):  +4.63 rad/s self  (2.55 s equiv)
+  Effective t with SE:  228 + 26 = 254 s
+
+  Wall bounce cost: 2.18 rad/s per 0.1s contact (1.2s cone-equiv)
+  Vanish retraction on hit: 40.9% blade-I reduction → absorbs 1.044J impact KE at ω₀
+
+FAFNIR LINEAGE COMPARISON:
+  Assembly                 Gen  Mass   I_total   t_battle  L₀         Key gimmick
+  ──────────────────────────────────────────────────────────────────────────────────
+  Geist F. 8'Proof Absorb  Cho-Z  50.89g  3.602e-5  273s*  2.499e-2  LAD ring +23s
+  Mirage F. Nothing 2S     SK     63.0g   4.842e-5  299s†  3.360e-2  2S mono OWD
+  Vanish F. Tapered Kick-3 DB/BU  71.5g   4.623e-5  254s†  3.208e-2  Vanish retract
+
+  * includes Absorb LAD +23s  † includes SE +10 events
+
+COMPONENT SUMMARY:
+  DB Core Fafnir:  6.8g   I=1.088e-6   τ_burst=3.50mN·m (single-tab)
+  Blade Vanish:   12.8g   I=1.061e-5   SE: 7.14mN·m/event, 2.55s; retract −40.9%ΔI
+  Armor 3:        13.2g   I=7.082e-6
+  Tapered:        29.3g   I=2.592e-5   r_eff=29.7mm OWD
+  Kick:            9.4g   I=1.533e-6   cone t=228s; ring t=19s (sustained)
+  ─────────────────────────────────────────────────────────────────────────────────
+  TOTAL:          71.5g   I=4.623e-5   L₀=3.208e-2  t_battle≈228s (254s w/SE)
+```
+
+```
+CASE 571 PHYSICS — VANISH FAFNIR TAPERED KICK-3 FULL ASSEMBLY
+
+Mass and inertia:
+  m_total = 6.8 + 12.8 + 13.2 + 29.3 + 9.4 = 71.5 g = 0.0715 kg
+  I_total = 1.088e-6 + 1.061e-5 + 7.082e-6 + 2.592e-5 + 1.533e-6
+          = (1.088 + 10.61 + 7.082 + 25.92 + 1.533) × 10⁻⁶
+          = 46.233e-6 ≈ 4.623e-5 kg·m²
+
+Angular momentum at launch:
+  L₀ = 4.623e-5 × 694 = 3.208e-2 kg·m²/s
+
+Baseline spin decay (Kick cone):
+  dω/dt = (0.06 × 0.0715 × 9.81 × 0.002) / 4.623e-5
+        = 8.414e-5 / 4.623e-5 = 1.820 rad/s²
+  t_cone = (694 − 277) / 1.820 = 229 s ≈ 228 s
+
+SE-adjusted effective time (10 contact events):
+  Δω_per_event = 4.63 rad/s
+  Δt_per_event = 4.63 / 1.820 = 2.54 s
+  Δt_SE_total  = 10 × 2.54 = 25.4 s ≈ +26 s
+  t_effective  = 228 + 26 = 254 s
+
+Fafnir lineage I and L₀ progression:
+  Geist  (Cho-Z): I=3.602e-5 (+0.0%),  L₀=2.499e-2 (+0.0%) [baseline]
+  Mirage (SK):    I=4.842e-5 (+34.4%), L₀=3.360e-2 (+34.5%)
+  Vanish (DB/BU): I=4.623e-5 (+28.3%), L₀=3.208e-2 (+28.4%)
+  → SK Mirage achieves highest I/L₀ in lineage; DB/BU Vanish adds Vanish retraction at modest I cost
+
+Vanish retraction impact KE absorption at ω₀=694:
+  ΔKE = 0.5 × ΔI × ω₀² = 0.5 × 4.34e-6 × 694² = 0.5 × 4.34e-6 × 481636 = 1.044 J
+  This energy enters blade springs, not burst mechanism → reduced burst-check torque impulse
+```
+
+```typescript
+// Case 571 — Vanish Fafnir full assembly
+
+function vanishFafnirAssembly(
+  mode: "baseline" | "with_SE",
+  SE_events: number = 10
+): { mass_g: number; I_total: number; L0: number; t_battle_s: number; t_effective_s: number } {
+  const m = 0.0715, I = 4.623e-5;
+  const decayRate = (0.06 * m * 9.81 * 0.002) / I;
+  const t_base = 416 / decayRate;
+  const dOmegaPerSE = 2.142e-4 / I;
+  const SE_bonus = mode === "with_SE" ? SE_events * (dOmegaPerSE / decayRate) : 0;
+  return { mass_g: m * 1000, I_total: I, L0: I * 694,
+    t_battle_s: t_base, t_effective_s: t_base + SE_bonus };
+}
+// vanishFafnirAssembly("baseline")
+//   → { mass_g:71.5, I:4.623e-5, L0:3.208e-2, t_battle:228s, t_effective:228s }
+// vanishFafnirAssembly("with_SE", 10)
+//   → { mass_g:71.5, I:4.623e-5, L0:3.208e-2, t_battle:228s, t_effective:254s }
+// vanishFafnirAssembly("with_SE", 20)
+//   → { mass_g:71.5, I:4.623e-5, L0:3.208e-2, t_battle:228s, t_effective:280s }
+
+function vanishRetractImpactAbsorption(
+  dI_kg_m2: number, omega_radps: number, burstTabTorque_mNm: number
+): { KE_absorbed_J: number; equivalentBurstTorqueReduction_pct: number } {
+  const KE = 0.5 * dI_kg_m2 * omega_radps * omega_radps;
+  const tau_std = burstTabTorque_mNm / 1000;
+  const tImpact = 0.005;
+  const tau_impact_std = KE / (tau_std * tImpact);
+  const reduction = Math.min(100, (KE / (tau_std * tImpact * 10)) * 100);
+  return { KE_absorbed_J: KE, equivalentBurstTorqueReduction_pct: reduction };
+}
+// vanishRetractImpactAbsorption(4.34e-6, 694, 3.5)
+//   → { KE_absorbed:1.044J, burstTorqueReduction:~high }
+// vanishRetractImpactAbsorption(4.34e-6, 400, 3.5)
+//   → { KE_absorbed:0.347J }  [mid-battle impact]
+// vanishRetractImpactAbsorption(4.34e-6, 277, 3.5)
+//   → { KE_absorbed:0.166J }  [near-end impact]
+
+function fafnirLineageComparison(
+  assemblies: Array<{ name: string; gen: string; mass_g: number; I: number;
+    t_base: number; t_bonus: number; L0: number; gimmick: string }>
+): Array<object> {
+  return assemblies
+    .map(a => ({ ...a, t_effective: a.t_base + a.t_bonus }))
+    .sort((a, b) => (b.t_base + b.t_bonus) - (a.t_base + a.t_bonus));
+}
+// fafnirLineageComparison([
+//   { name:"Geist",  gen:"Cho-Z", mass_g:50.89, I:3.602e-5, t_base:250, t_bonus:23,
+//     L0:2.499e-2, gimmick:"Absorb LAD +23s" },
+//   { name:"Mirage", gen:"SK",    mass_g:63.0,  I:4.842e-5, t_base:272, t_bonus:27,
+//     L0:3.360e-2, gimmick:"2S mono OWD, SE" },
+//   { name:"Vanish", gen:"DB/BU", mass_g:71.5,  I:4.623e-5, t_base:228, t_bonus:26,
+//     L0:3.208e-2, gimmick:"Vanish retract, Kick rebound, SE" }])
+// → ranked: [Mirage:299s, Geist:273s, Vanish:254s]
+// → Mirage wins sustained stamina; Vanish wins anti-attack resilience
+```
