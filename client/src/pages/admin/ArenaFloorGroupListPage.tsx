@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { cn } from "@/lib/cn";
 import { Link } from "react-router-dom";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -60,14 +61,14 @@ function CouplingDiagram({ mode, size = 44 }: { mode: string; size?: number }) {
         d={`M${cx1-r+2} ${cy-3} A${r-2} ${r-2} 0 0 1 ${cx1+r-2} ${cy-3}`}
         fill="none" stroke={m.color} strokeWidth={1.5} strokeLinecap="round"
         markerEnd={`url(#arr-${mode})`}
-        style={{ animation: mode === "independent" ? "none" : `spin 2s linear infinite` }}
+        className={mode === "independent" ? "" : "animate-spin"}
       />
       {/* Rotation arrow on right circle — reversed if counter */}
       <path
         d={`M${cx2-r+2} ${cy-3} A${r-2} ${r-2} 0 0 ${isCounter ? 0 : 1} ${cx2+r-2} ${cy-3}`}
         fill="none" stroke={m.color} strokeWidth={1.5} strokeLinecap="round"
         strokeOpacity={mode === "independent" ? 0.3 : 1}
-        style={{ animation: mode === "independent" ? "none" : `spin ${isCounter ? "2s" : "2s"} linear infinite` }}
+        className={cn(mode === "independent" ? "opacity-30" : "animate-spin")}
       />
 
       {/* Gear connector for driven */}
@@ -133,8 +134,8 @@ function CouplingModeCell({ links }: { links?: ArenaLink[] }) {
         {sorted.map(([mode, count]) => {
           const m = COUPLING_META[mode] ?? COUPLING_META.independent;
           return (
-            <span key={mode} className="text-[9px] px-1 py-0.5 rounded-lg font-bold"
-              style={{ background: alpha(m.color, 0.12), border: `1px solid ${alpha(m.color, 0.3)}`, color: m.color }}>
+            <span key={mode} className="text-[9px] px-1 py-0.5 rounded-lg font-bold hud-type-bg hud-type-border hud-type-text border"
+              style={{ "--tc": m.color } as React.CSSProperties}>
               {m.symbol} {count}
             </span>
           );
@@ -239,8 +240,8 @@ export default function ArenaFloorGroupListPage() {
         <span className="text-[11px] text-faint font-semibold mr-1">ROTATION COUPLING:</span>
         {Object.entries(COUPLING_META).map(([key, m]) => (
           <span key={key} className="flex items-center gap-1 text-[11px]">
-            <span className="rounded-full px-2 py-0.5 font-bold"
-              style={{ background: alpha(m.color, 0.12), border: `1px solid ${alpha(m.color, 0.3)}`, color: m.color }}>
+            <span className="rounded-full px-2 py-0.5 font-bold hud-type-bg hud-type-border hud-type-text border"
+              style={{ "--tc": m.color } as React.CSSProperties}>
               {m.symbol} {m.label}
             </span>
             <span className="text-faint">{m.desc}</span>

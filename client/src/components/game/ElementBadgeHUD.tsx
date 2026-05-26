@@ -16,24 +16,13 @@ export function ElementBadges({ elementTypes, size = "md" }: ElementBadgesProps)
   const font = size === "sm" ? 10 : 12;
 
   return (
-    <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
+    <div className="flex gap-[3px] items-center">
       {elementTypes.map(elem => (
         <span
           key={elem}
           title={elem}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: px,
-            height: px,
-            borderRadius: "50%",
-            background: ELEMENT_COLORS[elem] + "33",
-            border: `1px solid ${ELEMENT_COLORS[elem]}88`,
-            fontSize: font,
-            lineHeight: 1,
-            userSelect: "none",
-          }}
+          className="inline-flex items-center justify-center rounded-full leading-none select-none border"
+          style={{ width: px, height: px, background: `${ELEMENT_COLORS[elem]}33`, borderColor: `${ELEMENT_COLORS[elem]}88`, fontSize: font }}
         >
           {ELEMENT_ICONS[elem]}
         </span>
@@ -66,21 +55,8 @@ export function TypeEffectivenessFlash({ label }: TypeEffectivenessFlashProps) {
   const isSuper = current === "super";
   return (
     <div
-      style={{
-        position: "absolute",
-        top: "35%",
-        left: "50%",
-        transform: "translateX(-50%)",
-        fontWeight: 800,
-        fontSize: 22,
-        letterSpacing: 1,
-        color: isSuper ? "#facc15" : "#94a3b8",
-        textShadow: isSuper ? "0 0 12px #f59e0b" : "none",
-        animation: "fadeSlideUp 1.4s ease-out forwards",
-        pointerEvents: "none",
-        zIndex: 200,
-        whiteSpace: "nowrap",
-      }}
+      style={{ position: "absolute", top: "35%", left: "50%", transform: "translateX(-50%)", zIndex: 200 }}
+      className={`font-extrabold text-[22px] tracking-[1px] pointer-events-none whitespace-nowrap [animation:fadeSlideUp_1.4s_ease-out_forwards] ${isSuper ? "text-[#facc15] [text-shadow:0_0_12px_#f59e0b]" : "text-[#94a3b8]"}`}
     >
       {isSuper ? "SUPER EFFECTIVE!" : "NOT VERY EFFECTIVE"}
     </div>

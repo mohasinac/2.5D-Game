@@ -1,4 +1,3 @@
-import { C } from "@/styles/theme";
 import type { PartDimensions } from "@/types/beybladeSystem";
 
 interface Props {
@@ -16,8 +15,8 @@ function NumberField({
 }) {
   return (
     <div>
-      <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>{label}</label>
-      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <label className="block text-[12px] text-theme-muted mb-1">{label}</label>
+      <div className="flex items-center gap-[6px]">
         <input
           type="number"
           min={min}
@@ -25,15 +24,11 @@ function NumberField({
           step={step}
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-          style={{
-            width: 80, padding: "7px 10px", background: C.bg3,
-            border: `1px solid ${C.border}`, borderRadius: 7,
-            color: C.text, fontSize: 13, textAlign: "right",
-          }}
+          className="w-20 px-[10px] py-[7px] bg-bg3 border border-border-c rounded-[7px] text-theme-text text-[13px] text-right"
         />
-        <span style={{ fontSize: 12, color: C.faint }}>{unit}</span>
+        <span className="text-[12px] text-theme-faint">{unit}</span>
       </div>
-      {hint && <div style={{ fontSize: 11, color: C.faint, marginTop: 3 }}>{hint}</div>}
+      {hint && <div className="text-[11px] text-theme-faint mt-[3px]">{hint}</div>}
     </div>
   );
 }
@@ -47,8 +42,8 @@ export function PartDimensionFields({ value, onChange, showInnerRadius = true }:
 
   return (
     <div>
-      <div style={{ fontSize: 12, color: C.muted, marginBottom: 8 }}>Dimensions</div>
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+      <div className="text-[12px] text-theme-muted mb-2">Dimensions</div>
+      <div className="flex gap-4 flex-wrap">
         <NumberField
           label="Height"
           value={value.height}
@@ -70,7 +65,7 @@ export function PartDimensionFields({ value, onChange, showInnerRadius = true }:
           />
         )}
       </div>
-      <div style={{ marginTop: 8, fontSize: 11, color: C.faint }}>
+      <div className="mt-2 text-[11px] text-theme-faint">
         Outer ⌀ {outerDiameter} mm
         {showInnerRadius && ` · Inner ⌀ ${innerDiameter} mm`}
         {` · H ${value.height} mm`}

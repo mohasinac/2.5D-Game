@@ -52,7 +52,7 @@ export default function FeatureAnimationPanel({ value, onChange, featureId }: Pr
               value={value.preset}
               options={PRESETS.map(p => ({ value: p, label: PRESET_LABELS[p] }))}
               onChange={v => onChange({ ...value, preset: v as FeatureAnimationPreset })}
-              style={{ flex: 1 }}
+              className="flex-1"
             />
           </div>
 

@@ -361,7 +361,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
 
         {/* ── Link type selector ── */}
         <Section label="Link Type">
-          <div className="grid gap-2 mb-[10px]" style={{ gridTemplateColumns: "repeat(5,1fr)" }}>
+          <div className="grid gap-2 mb-[10px] [grid-template-columns:repeat(5,1fr)]">
             {LINK_TYPES.map(t => (
               <button key={t.value} onClick={() => handleLinkTypeChange(t.value)}
                 className={cn(
@@ -385,7 +385,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
 
         {/* ── Basic settings ── */}
         <Section label="Basic">
-          <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
+          <div className="grid gap-3 [grid-template-columns:1fr_1fr]">
             <Field label="Level delta (cm)" hint="Height difference between floors">
               <NumberInput value={levelDelta} onChange={setLevelDelta} min={0} max={2000} />
             </Field>
@@ -413,7 +413,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
 
         {/* ── Rotation coupling ── */}
         <Section label="Rotation Coupling — how these two arenas rotate relative to each other">
-          <div className="grid gap-2 mb-[10px]" style={{ gridTemplateColumns: "repeat(2,1fr)" }}>
+          <div className="grid gap-2 mb-[10px] [grid-template-columns:repeat(2,1fr)]">
             {COUPLING_TYPES.map(ct => (
               <button key={ct.value} onClick={() => setCoupling(ct.value)}
                 className={cn(
@@ -474,7 +474,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
 
           {alignment.mode !== "none" && (
             <>
-              <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
+              <div className="grid gap-3 [grid-template-columns:1fr_1fr]">
                 <Field label="Error margin (°)" hint="Degrees of rotation tolerance (green zone in diagram)">
                   <div>
                     <input type="range" min={1} max={45} value={alignment.errorMarginDeg}
@@ -520,7 +520,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
 
         {/* ── Traversal timing ── */}
         <Section label="Traversal Timing">
-          <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+          <div className="grid gap-3 [grid-template-columns:1fr_1fr_1fr]">
             <Field label="Transit ticks" hint="Ticks spent in transit animation">
               <NumberInput value={traversal.traversalTicks} onChange={v => patchTraversal({ traversalTicks: v })} min={1} max={120} />
             </Field>
@@ -574,7 +574,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
             />
             {trampolineConfig.autoLaunchFromPit && (
               <>
-                <div className="grid gap-3 mt-[10px]" style={{ gridTemplateColumns: "1fr 1fr" }}>
+                <div className="grid gap-3 mt-[10px] [grid-template-columns:1fr_1fr]">
                   <Field label="Launch animation ticks" hint="Visual bounce plays before bey re-enters pit opening">
                     <NumberInput value={trampolineConfig.autoLaunchAnimTicks} onChange={v => patchTrampo({ autoLaunchAnimTicks: v })} min={5} max={60} />
                   </Field>

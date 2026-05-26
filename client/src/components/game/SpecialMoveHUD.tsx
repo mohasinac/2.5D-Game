@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { C } from "@/styles/theme";
 
 interface SpecialMoveData {
   id: string;
@@ -43,98 +42,55 @@ export function SpecialMoveHUD({ myBeyblade, specialMoveData, lastSpecialMoveFir
 
   return (
     <div
-      style={{
-        position: "absolute",
-        bottom: 16,
-        left: 16,
-        pointerEvents: "none",
-        zIndex: 10,
-        background: flashColor ? flashColor : undefined,
-        opacity: flashColor ? 0.3 : undefined,
-        transition: flashColor ? "opacity 200ms" : undefined,
-        borderRadius: 12,
-        padding: flashColor ? 12 : 0,
-      }}
+      className="absolute pointer-events-none z-10 rounded-xl"
+      style={{ bottom: 16, left: 16, background: flashColor ?? undefined, opacity: flashColor ? 0.3 : undefined, transition: flashColor ? "opacity 200ms" : undefined, padding: flashColor ? 12 : undefined }}
     >
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 8,
-        background: "rgba(15, 23, 42, 0.9)",
-        borderRadius: 12,
-        border: `1px solid ${C.border}`,
-        padding: 12,
-        minWidth: 140,
-      }}>
+      <div className="flex flex-col items-center gap-2 bg-[rgba(15,23,42,0.9)] rounded-xl border border-border-c p-3 min-w-[140px]">
         {/* Icon and Name */}
-        <div style={{ fontSize: 28 }}>{specialMoveData.iconEmoji}</div>
-        <div style={{ fontSize: 11, color: C.muted, textAlign: "center", fontFamily: "monospace", maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div className="text-[28px]">{specialMoveData.iconEmoji}</div>
+        <div className="text-[11px] text-theme-muted text-center font-mono max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
           {specialMoveData.name}
         </div>
 
         {/* Power Bar */}
-        <div style={{ width: "100%", minWidth: 120 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, marginBottom: 4, color: C.muted }}>
+        <div className="w-full min-w-[120px]">
+          <div className="flex justify-between text-[10px] mb-1 text-theme-muted">
             <span>Power</span>
-            <span style={{ fontFamily: "monospace", color: powerBarColor }}>{Math.round(powerPercent)}%</span>
+            <span className="font-mono" style={{ color: powerBarColor }}>{Math.round(powerPercent)}%</span>
           </div>
-          <div style={{ width: "100%", height: 6, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
+          <div className="w-full h-[6px] bg-bg3 rounded-[3px] overflow-hidden">
             <div
-              style={{
-                height: "100%",
-                background: powerBarColor,
-                borderRadius: 3,
-                transition: "width 100ms",
-                width: `${powerPercent}%`,
-              }}
+              className="h-full rounded-[3px] [transition:width_100ms]"
+              style={{ width: `${powerPercent}%`, background: powerBarColor }}
             />
           </div>
         </div>
 
         {/* Cooldown Ring with text */}
-        <div data-testid="special-move-power-ring" style={{ position: "relative", width: 70, height: 70, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg width={70} height={70} style={{ position: "absolute", transform: "rotate(-90deg)" }}>
+        <div data-testid="special-move-power-ring" className="relative w-[70px] h-[70px] flex items-center justify-center">
+          <svg width={70} height={70} className="absolute -rotate-90">
             {/* Background ring */}
-            <circle
-              cx={35}
-              cy={35}
-              r={radius}
-              fill="none"
-              stroke={C.bg3}
-              strokeWidth={3}
-            />
+            <circle cx={35} cy={35} r={radius} fill="none" stroke="var(--bg3)" strokeWidth={3} />
             {/* Progress ring */}
             {cooldownProgress > 0 && (
               <circle
-                cx={35}
-                cy={35}
-                r={radius}
-                fill="none"
-                stroke={C.yellow}
-                strokeWidth={3}
+                cx={35} cy={35} r={radius}
+                fill="none" stroke="var(--yellow)" strokeWidth={3}
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
-                style={{ transition: "stroke-dashoffset 100ms linear" }}
+                className="[transition:stroke-dashoffset_100ms_linear]"
               />
             )}
           </svg>
           {/* Center text */}
-          <div style={{ textAlign: "center", fontSize: 10, color: C.text, fontFamily: "monospace", fontWeight: 700, zIndex: 1 }}>
+          <div className="text-center text-[10px] text-theme-text font-mono font-bold z-[1]">
             {cooldownProgress > 0 ? `${Math.round(100 - cooldownProgress)}%` : isReady ? "READY" : "—"}
           </div>
         </div>
 
         {/* Ready indicator */}
         {isReady && (
-          <div data-testid="special-move-active" style={{
-            fontSize: 10,
-            fontWeight: 700,
-            color: C.green,
-            textTransform: "uppercase",
-            animation: "pulse 1s infinite",
-            textAlign: "center",
-          }}>
+          <div data-testid="special-move-active" className="text-[10px] font-bold text-theme-green uppercase text-center [animation:pulse_1s_infinite]">
             Ready to Use
           </div>
         )}

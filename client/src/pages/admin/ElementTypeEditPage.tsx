@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
@@ -204,8 +204,8 @@ export function ElementTypeEditPage() {
           <div className="mt-4 flex items-center gap-2">
             <span className="text-[11px] text-faint">Preview:</span>
             <span
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] text-text border"
-              style={{ background: form.color + "33", borderColor: form.color }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] text-text border [background:color-mix(in_srgb,var(--el-color)_20%,transparent)] [border-color:var(--el-color)]"
+              style={{ "--el-color": form.color } as React.CSSProperties}
             >
               {form.icon} {form.name || "My Type"}
             </span>
@@ -262,7 +262,7 @@ export function ElementTypeEditPage() {
               <div className="text-faint text-xs">No zone bonuses configured.</div>
             )}
             {form.zoneBonuses.map((bonus, i) => (
-              <div key={i} className="grid gap-2 items-end" style={{ gridTemplateColumns: "1fr 1fr 90px 90px 36px" }}>
+              <div key={i} className="grid gap-2 items-end grid-cols-[1fr_1fr_90px_90px_36px]">
                 <div>
                   <Label className="text-[11px] mb-0.5">Hazard Type</Label>
                   <input className="w-full bg-bg2 border border-border rounded-lg px-3 py-2 text-text text-[13px] focus:outline-none focus:border-blue"
@@ -333,7 +333,7 @@ export function ElementTypeEditPage() {
                   <tr className="bg-bg2">
                     <td className="px-2.5 py-2 text-xs text-text font-semibold whitespace-nowrap">
                       <span className="inline-flex items-center gap-1">
-                        <span className="px-2 py-0.5 rounded-xl text-[11px] border" style={{ background: form.color + "33", borderColor: form.color }}>
+                        <span className="px-2 py-0.5 rounded-xl text-[11px] border [background:color-mix(in_srgb,var(--el-color)_20%,transparent)] [border-color:var(--el-color)]" style={{ "--el-color": form.color } as React.CSSProperties}>
                           {form.icon} {form.name || "this type"}
                         </span>
                         <span className="text-faint text-[10px]">attacks →</span>
@@ -348,8 +348,8 @@ export function ElementTypeEditPage() {
                             min={0} max={4} step={0.25}
                             value={val}
                             onChange={e => set("attackAdvantages", { ...form.attackAdvantages, [cfg.id]: parseFloat(e.target.value) || 0 })}
-                            className="w-[52px] text-center py-[5px] px-1 bg-bg3 rounded-[6px] text-[13px] font-semibold font-mono"
-                            style={{ border: `1px solid ${multiplierColor(val)}44`, color: multiplierColor(val) }}
+                            className="w-[52px] text-center py-[5px] px-1 bg-bg3 rounded-[6px] text-[13px] font-semibold font-mono hud-type-text hud-type-border border"
+                            style={{ "--tc": multiplierColor(val) } as React.CSSProperties}
                           />
                         </td>
                       );
@@ -381,12 +381,12 @@ export function ElementTypeEditPage() {
                         <tr key={cfg.id} className="border-t border-border">
                           <td className="px-2.5 py-1.5">
                             <span className="inline-flex items-center gap-1.5 text-xs">
-                              <span className="px-2 py-px rounded-xl text-[11px] border" style={{ background: cfg.color + "33", borderColor: cfg.color }}>
+                              <span className="px-2 py-px rounded-xl text-[11px] border [background:color-mix(in_srgb,var(--el-color)_20%,transparent)] [border-color:var(--el-color)]" style={{ "--el-color": cfg.color } as React.CSSProperties}>
                                 {cfg.icon} {cfg.name}
                               </span>
                             </span>
                           </td>
-                          <td className="px-2.5 py-1.5 text-center font-mono font-bold text-[13px]" style={{ color: multiplierColor(val) }}>
+                          <td className="px-2.5 py-1.5 text-center font-mono font-bold text-[13px] hud-type-text" style={{ "--tc": multiplierColor(val) } as React.CSSProperties}>
                             {val.toFixed(2)}×
                           </td>
                         </tr>

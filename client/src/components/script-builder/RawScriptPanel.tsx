@@ -1,7 +1,7 @@
 // JSON editor + horizontal swimlane timeline for BehaviorRef[] steps.
 
 import { useState, useEffect } from "react";
-import { C } from "@/styles/theme";
+import React from "react";
 import type { BehaviorRef } from "@/types/comboTask";
 
 const ACTION_COLORS: Record<string, string> = {
@@ -15,7 +15,7 @@ const ACTION_COLORS: Record<string, string> = {
 
 function colorFor(behaviorId: string): string {
   const prefix = behaviorId.split(".")[0];
-  return ACTION_COLORS[prefix] ?? C.muted;
+  return ACTION_COLORS[prefix] ?? "var(--muted)";
 }
 
 interface Props {
@@ -55,12 +55,11 @@ export function RawScriptPanel({ steps, onChange }: Props) {
             type="button"
             onClick={() => setTab(t)}
             className={[
-              "px-4 py-2 text-[12px] bg-transparent border-none border-b-2 cursor-pointer uppercase tracking-[0.04em]",
+              "px-4 py-2 text-[12px] bg-transparent border-none cursor-pointer uppercase tracking-[0.04em]",
               tab === t
-                ? "font-bold border-b-theme-blue text-theme-text"
-                : "font-normal border-b-transparent text-theme-faint",
+                ? "font-bold text-theme-text border-b-2 border-b-[var(--blue)]"
+                : "font-normal text-theme-faint border-b-2 border-b-transparent",
             ].join(" ")}
-            style={{ borderBottom: tab === t ? "2px solid var(--blue)" : "2px solid transparent" }}
           >
             {t === "json" ? "Raw JSON" : "Timeline"}
           </button>
@@ -96,16 +95,8 @@ export function RawScriptPanel({ steps, onChange }: Props) {
                 <div key={i} className="flex items-center gap-2">
                   <span className="w-6 text-[11px] text-theme-faint text-right">{i + 1}</span>
                   <div
-                    style={{
-                      width: widthPx,
-                      background: color + "33",
-                      border: `1px solid ${color}66`,
-                      borderRadius: 6,
-                      padding: "4px 8px",
-                      fontSize: 11,
-                      color,
-                    }}
-                    className="font-mono whitespace-nowrap overflow-hidden text-ellipsis"
+                    className="rounded-[6px] px-2 py-1 text-[11px] font-mono whitespace-nowrap overflow-hidden text-ellipsis border"
+                    style={{ "--tc": color, width: widthPx, background: `${color}33`, borderColor: `${color}66`, color } as React.CSSProperties}
                     title={step.behaviorId}
                   >
                     {step.parallel && <span className="mr-1 opacity-70">∥</span>}

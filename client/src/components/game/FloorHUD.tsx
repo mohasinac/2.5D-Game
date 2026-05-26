@@ -8,7 +8,6 @@
  */
 
 import React from "react";
-import { alpha } from "@/styles/theme";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -82,15 +81,15 @@ function AlignmentArc({ fraction, color, size = 22 }: { fraction: number; color:
   const circ = 2 * Math.PI * r;
   const fill = (1 - Math.min(fraction, 1)) * circ;
   return (
-    <svg width={size} height={size} style={{ transform: "rotate(-90deg)", flexShrink: 0 }}>
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={alpha(color, 0.18)} strokeWidth={2.5} />
+    <svg width={size} height={size} className="-rotate-90 shrink-0">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={`color-mix(in srgb, ${color} 18%, transparent)`} strokeWidth={2.5} />
       <circle
         cx={size / 2} cy={size / 2} r={r}
         fill="none" stroke={color} strokeWidth={2.5}
         strokeDasharray={circ}
         strokeDashoffset={circ - fill}
         strokeLinecap="round"
-        style={{ transition: "stroke-dashoffset 180ms linear" }}
+        className="[transition:stroke-dashoffset_180ms_linear]"
       />
     </svg>
   );
@@ -101,17 +100,17 @@ function AlignmentArc({ fraction, color, size = 22 }: { fraction: number; color:
 /** Animated spinning ring showing CW or CCW rotation + speed */
 function RotationBadge({ direction, speedDegPerSec }: { direction?: "cw" | "ccw"; speedDegPerSec?: number }) {
   if (!direction || !speedDegPerSec) {
-    return <span style={{ color: alpha("#64748b", 0.4) }} className="text-[9px] font-mono">—</span>;
+    return <span className="text-[9px] font-mono text-[rgba(100,116,139,0.4)]">—</span>;
   }
   const secPerRev = (360 / speedDegPerSec).toFixed(1);
   const color = direction === "cw" ? "#3b82f6" : "#eab308";
   return (
     <div className="flex flex-col items-center gap-[1px] flex-shrink-0">
       <svg width={14} height={14} style={{ animation: `${direction === "cw" ? "rotCW" : "rotCCW"} ${secPerRev}s linear infinite` }}>
-        <circle cx={7} cy={7} r={5} fill="none" stroke={alpha(color, 0.6)} strokeWidth={1.5} strokeDasharray="8 4" />
+        <circle cx={7} cy={7} r={5} fill="none" stroke={`color-mix(in srgb, ${color} 60%, transparent)`} strokeWidth={1.5} strokeDasharray="8 4" />
         <circle cx={7} cy={2} r={1.5} fill={color} />
       </svg>
-      <span style={{ color }} className="text-[7px] font-mono font-bold">
+      <span className="text-[7px] font-mono font-bold" style={{ color }}>
         {direction === "cw" ? "CW" : "CCW"}
       </span>
     </div>
@@ -138,10 +137,7 @@ function LinkRow({ link }: { link: FloorLinkInfo }) {
       {/* Arc or dot */}
       {isAlwaysOpen || isDisconnected ? (
         <div className="w-[22px] h-[22px] flex items-center justify-center">
-          <div style={{
-            width: 8, height: 8, borderRadius: "50%", background: color,
-            boxShadow: isAlwaysOpen ? `0 0 6px ${color}` : "none",
-          }} />
+          <div className="w-2 h-2 rounded-full" style={{ background: color, boxShadow: isAlwaysOpen ? `0 0 6px ${color}` : "none" }} />
         </div>
       ) : (
         <AlignmentArc fraction={link.alignmentFraction} color={color} />
@@ -152,7 +148,7 @@ function LinkRow({ link }: { link: FloorLinkInfo }) {
 
       {/* Status + alignment detail */}
       <div className="flex-1 min-w-0">
-        <div style={{ color }} className="text-[9px] font-bold font-mono tracking-[0.4px]">
+        <div className="text-[9px] font-bold font-mono tracking-[0.4px]" style={{ color }}>
           {isCooldown && link.cooldownTicks != null
             ? `WAIT ${link.cooldownTicks}t`
             : STATUS_LABEL[link.status]}
@@ -172,11 +168,7 @@ function LinkRow({ link }: { link: FloorLinkInfo }) {
       </div>
 
       {/* Enter / blocked indicator */}
-      <span style={{
-        color: link.status === "aligned" || link.status === "always_open" ? "#22c55e"
-             : link.status === "near" ? "#eab308"
-             : "#64748b",
-      }} className="text-[10px] font-bold flex-shrink-0">
+      <span className={`text-[10px] font-bold flex-shrink-0 ${link.status === "aligned" || link.status === "always_open" ? "text-theme-green" : link.status === "near" ? "text-theme-yellow" : "text-[#64748b]"}`}>
         {link.status === "aligned" || link.status === "always_open"
           ? link.direction === "up" ? "↑" : "↓"
           : link.status === "near"
@@ -191,10 +183,6 @@ function LinkRow({ link }: { link: FloorLinkInfo }) {
 
 export default function FloorHUD({ totalFloors, currentFloorIndex, floors }: Props) {
   if (totalFloors <= 1) return null;
-
-  const cardBorderColor = "#334155";
-  const cardBg = "rgba(15,23,42,0.88)";
-  const cardPadding = "5px 9px";
 
   const anyRotating = floors.some(f => f.rotationDirection && f.rotationSpeedDegPerSec);
 
@@ -215,9 +203,8 @@ export default function FloorHUD({ totalFloors, currentFloorIndex, floors }: Pro
         top: "50%",
         transform: "translateY(-50%)",
         zIndex: 15,
-        width: 136,
       }}
-        className="pointer-events-none flex flex-col items-stretch select-none gap-0"
+        className="pointer-events-none flex flex-col items-stretch select-none gap-0 w-[136px]"
       >
 
         {/* Render top → bottom = highest floor index → F0 */}
@@ -232,45 +219,30 @@ export default function FloorHUD({ totalFloors, currentFloorIndex, floors }: Pro
             <div key={fi}>
               {/* ── Up-links connector strip ── */}
               {upLinks.length > 0 && (
-                <div style={{
-                  background: cardBg,
-                  border: `1px solid ${cardBorderColor}`,
-                  padding: cardPadding,
-                  borderRadius: "8px 8px 0 0",
-                  borderBottom: "none",
-                }}>
+                <div className="bg-[rgba(15,23,42,0.88)] border border-[#334155] border-b-0 rounded-t-lg px-[9px] py-[5px]">
                   {upLinks.map((l, i) => <LinkRow key={i} link={l} />)}
                 </div>
               )}
 
               {/* ── Floor tile ── */}
-              <div style={{
-                background: isCur ? alpha("#3b82f6", 0.18) : cardBg,
-                border: `1px solid ${isCur ? "#3b82f6" : cardBorderColor}`,
-                padding: cardPadding,
-                borderRadius:
-                  upLinks.length > 0 && dnLinks.length > 0 ? 0
-                  : upLinks.length > 0 ? "0 0 8px 8px"
-                  : dnLinks.length > 0 ? "8px 8px 0 0"
-                  : 8,
-                animation: isCur ? "floorGlow 2.4s ease-in-out infinite" : "none",
-              }}
-                className="flex items-center gap-[6px]"
+              <div
+                className={`flex items-center gap-[6px] border px-[9px] py-[5px] ${isCur ? "bg-[rgba(59,130,246,0.18)] border-[#3b82f6] [animation:floorGlow_2.4s_ease-in-out_infinite]" : "bg-[rgba(15,23,42,0.88)] border-[#334155]"}`}
+                style={{
+                  borderRadius:
+                    upLinks.length > 0 && dnLinks.length > 0 ? 0
+                    : upLinks.length > 0 ? "0 0 8px 8px"
+                    : dnLinks.length > 0 ? "8px 8px 0 0"
+                    : 8,
+                }}
               >
                 {/* Floor index badge */}
-                <div style={{
-                  background: isCur ? "#3b82f6" : "#1e293b",
-                  color: isCur ? "#fff" : "#64748b",
-                }} className="w-[22px] h-[22px] rounded-[6px] flex-shrink-0 flex items-center justify-center text-[10px] font-bold">
+                <div className={`w-[22px] h-[22px] rounded-[6px] flex-shrink-0 flex items-center justify-center text-[10px] font-bold ${isCur ? "bg-[#3b82f6] text-white" : "bg-[#1e293b] text-[#64748b]"}`}>
                   F{fi}
                 </div>
 
                 {/* Name + status */}
                 <div className="flex-1 min-w-0">
-                  <div style={{
-                    fontWeight: isCur ? 700 : 500,
-                    color: isCur ? "#f1f5f9" : "#94a3b8",
-                  }} className="text-[11px] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <div className={`text-[11px] overflow-hidden text-ellipsis whitespace-nowrap ${isCur ? "font-bold text-[#f1f5f9]" : "font-medium text-[#94a3b8]"}`}>
                     {info?.arenaName ?? `Floor ${fi}`}
                   </div>
                   {isCur && (
@@ -289,13 +261,7 @@ export default function FloorHUD({ totalFloors, currentFloorIndex, floors }: Pro
 
               {/* ── Down-links connector strip ── */}
               {dnLinks.length > 0 && (
-                <div style={{
-                  background: cardBg,
-                  border: `1px solid ${cardBorderColor}`,
-                  padding: cardPadding,
-                  borderRadius: "0 0 8px 8px",
-                  borderTop: "none",
-                }}>
+                <div className="bg-[rgba(15,23,42,0.88)] border border-[#334155] border-t-0 rounded-b-lg px-[9px] py-[5px]">
                   {dnLinks.map((l, i) => <LinkRow key={i} link={l} />)}
                 </div>
               )}

@@ -3,7 +3,6 @@ import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "fi
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { alpha } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import WhatsAppStyleImageEditor from "./WhatsAppStyleImageEditor";
 import type { WhatsAppStyleImageEditorRef } from "./WhatsAppStyleImageEditor";
@@ -247,8 +246,7 @@ export function AssetCrudPage({
                 <img src={asset.url} alt={asset.name} className="w-full h-full object-contain p-2" loading="lazy" />
                 <button
                   onClick={() => handleDelete(asset)} disabled={deletingId===asset.id}
-                  className={`absolute top-1.5 right-1.5 w-6 h-6 border-none rounded text-xs cursor-pointer flex items-center justify-center text-white ${deletingId===asset.id ? "opacity-50" : "opacity-100"}`}
-                  style={{ background: alpha("#ef4444", 0.87) }}
+                  className={`absolute top-1.5 right-1.5 w-6 h-6 border-none rounded text-xs cursor-pointer flex items-center justify-center text-white bg-[color-mix(in_srgb,#ef4444_87%,transparent)] ${deletingId===asset.id ? "opacity-50" : "opacity-100"}`}
                 >{deletingId===asset.id?"...":"×"}</button>
               </div>
               <div className="p-2">

@@ -1,12 +1,12 @@
-import { C } from "@/styles/theme";
+import React from "react";
 import type { Material } from "@/types/beybladeSystem";
 
 const MATERIALS: Array<{ value: Material; label: string; color: string; desc: string }> = [
-  { value: "abs",           label: "ABS",    color: C.blue,   desc: "Standard plastic — balanced damage/recoil" },
-  { value: "rubber",        label: "Rubber", color: C.green,  desc: "High spin-steal, low damage, low recoil" },
-  { value: "metal",         label: "Metal",  color: C.muted,  desc: "High damage & recoil, moderate spin-steal" },
-  { value: "pom",           label: "POM",    color: C.yellow, desc: "Smooth acetal — slight damage bonus, low recoil" },
-  { value: "polycarbonate", label: "PC",     color: C.purple, desc: "Light polycarbonate — moderate stats" },
+  { value: "abs",           label: "ABS",    color: "var(--blue)",   desc: "Standard plastic — balanced damage/recoil" },
+  { value: "rubber",        label: "Rubber", color: "var(--green)",  desc: "High spin-steal, low damage, low recoil" },
+  { value: "metal",         label: "Metal",  color: "var(--muted)",  desc: "High damage & recoil, moderate spin-steal" },
+  { value: "pom",           label: "POM",    color: "var(--yellow)", desc: "Smooth acetal — slight damage bonus, low recoil" },
+  { value: "polycarbonate", label: "PC",     color: "var(--purple)", desc: "Light polycarbonate — moderate stats" },
 ];
 
 interface Props {
@@ -19,9 +19,9 @@ export function MaterialSelector({ value, onChange, label = "Material" }: Props)
   return (
     <div>
       {label && (
-        <div style={{ fontSize: 12, color: C.muted, marginBottom: 6 }}>{label}</div>
+        <div className="text-[12px] text-theme-muted mb-[6px]">{label}</div>
       )}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+      <div className="flex flex-wrap gap-[6px]">
         {MATERIALS.map((m) => {
           const active = value === m.value;
           return (
@@ -29,13 +29,8 @@ export function MaterialSelector({ value, onChange, label = "Material" }: Props)
               key={m.value}
               title={m.desc}
               onClick={() => onChange(m.value)}
-              style={{
-                padding: "6px 12px", borderRadius: 7, fontSize: 12, fontWeight: 600,
-                cursor: "pointer", transition: "all 120ms",
-                background: active ? m.color + "28" : C.bg2,
-                color: active ? m.color : C.muted,
-                border: `1px solid ${active ? m.color + "88" : C.border}`,
-              }}
+              className="py-[6px] px-3 rounded-[7px] text-[12px] font-semibold cursor-pointer transition-all duration-[120ms] border"
+              style={active ? { "--tc": m.color, background: `color-mix(in srgb, ${m.color} 16%, transparent)`, color: m.color, borderColor: `color-mix(in srgb, ${m.color} 53%, transparent)` } as React.CSSProperties : { background: "var(--bg2)", color: "var(--muted)", borderColor: "var(--border)" }}
             >
               {m.label}
             </button>

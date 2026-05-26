@@ -1,7 +1,6 @@
 // Phase T: Timeline tab — arena scripted events editor + swimlane preview.
 
 import { useState } from "react";
-import { C } from "@/styles/theme";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, ArenaTimelineEvent, ArenaTimelineEventType } from "@/types/arenaConfigNew";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -88,8 +87,7 @@ export default function TimelineTab({ config, onChange }: Props) {
         </h3>
         <button
           onClick={addEvent}
-          className="py-[5px] px-3 text-white border-none rounded-md text-xs cursor-pointer"
-          style={{ background: C.purple }}
+          className="py-[5px] px-3 text-white border-none rounded-md text-xs cursor-pointer bg-[var(--purple)]"
         >
           + Add Event
         </button>
@@ -114,7 +112,7 @@ export default function TimelineTab({ config, onChange }: Props) {
                   className="flex items-center gap-2 py-2 px-3 cursor-pointer"
                   onClick={() => setExpandedIdx(isOpen ? null : idx)}
                 >
-                  <span className="text-[13px] font-bold min-w-[40px]" style={{ color: C.purple }}>
+                  <span className="text-[13px] font-bold min-w-[40px] text-theme-purple">
                     {msToLabel(ev.triggerMs)}
                   </span>
                   <span className="text-[13px]">{TYPE_ICONS[ev.type] ?? "?"}</span>
@@ -157,7 +155,7 @@ export default function TimelineTab({ config, onChange }: Props) {
                           value={ev.type}
                           options={EVENT_TYPES.map(t => ({ value: t, label: `${TYPE_ICONS[t]} ${t.replace(/_/g, " ")}` }))}
                           onChange={v => update(idx, { type: v as ArenaTimelineEventType })}
-                          style={{ width: 180 }}
+                          className="w-[180px]"
                         />
                       </Row>
 
@@ -239,7 +237,7 @@ export default function TimelineTab({ config, onChange }: Props) {
                                 { value: "danger", label: "danger" },
                               ]}
                               onChange={v => update(idx, { announcement: { text: ev.announcement?.text ?? "", ...ev.announcement, style: v as "warning" | "info" | "danger" } })}
-                              style={{ width: 100 }}
+                              className="w-[100px]"
                             />
                           </Row>
                         </>
@@ -295,11 +293,8 @@ export default function TimelineTab({ config, onChange }: Props) {
             {[0, 60, 120].map(s => (
               <div
                 key={s}
-                className="absolute top-0 bottom-0"
-                style={{
-                  left: `${(s / 180) * 100}%`,
-                  borderLeft: `1px solid ${C.border}`,
-                }}
+                className="absolute top-0 bottom-0 border-l border-border-c"
+                style={{ left: `${(s / 180) * 100}%` }}
               >
                 <span className="absolute top-0.5 left-[3px] text-[9px] text-muted">
                   {s === 0 ? "0:00" : `${s / 60}:00`}
@@ -321,11 +316,10 @@ export default function TimelineTab({ config, onChange }: Props) {
                 <div
                   key={i}
                   title={`${msToLabel(ev.triggerMs)}: ${ev.type}`}
-                  className="absolute top-1 bottom-1 w-1 rounded-[2px]"
+                  className="absolute top-1 bottom-1 w-1 rounded-[2px] -translate-x-[2px]"
                   style={{
                     left: `${pct}%`,
-                    background: colors[ev.type] ?? C.purple,
-                    transform: "translateX(-2px)",
+                    background: colors[ev.type] ?? "var(--purple)",
                   }}
                 />
               );

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGameDataStore, type ArenaFeatureConfigDoc } from "@/stores/gameDataStore";
@@ -114,7 +114,7 @@ export function ArenaFeatureConfigsPage() {
         <Button variant="primary" size="sm" onClick={openCreate}>+ New Config</Button>
       </div>
 
-      <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: "1fr 200px" }}>
+      <div className="grid gap-2 mb-3 grid-cols-[1fr_200px]">
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Filter by label or ID…"
           className="w-full bg-bg0 border border-border rounded-lg px-2.5 py-2 text-text text-sm box-border" />
         <SearchableSelect value={categoryFilter} onChange={setCategoryFilter} options={catFilterOpts} placeholder="Category…" />
@@ -128,11 +128,10 @@ export function ArenaFeatureConfigsPage() {
             return (
               <div key={item.id} className="flex items-center gap-3.5 bg-bg1 border border-border rounded-xl px-4 py-3">
                 {(item.icon || item.color) && (
-                  <div style={{
-                    width: 36, height: 36, borderRadius: 8, flexShrink: 0,
-                    background: (item.color ?? cc) + "33", border: `2px solid ${item.color ?? cc}`,
-                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
-                  }}>
+                  <div
+                    className="w-9 h-9 rounded-[8px] shrink-0 flex items-center justify-center text-[18px] hud-type-bg border-2 hud-type-border"
+                    style={{ "--tc": item.color ?? cc } as React.CSSProperties}
+                  >
                     {item.icon ?? ""}
                   </div>
                 )}
@@ -165,7 +164,7 @@ export function ArenaFeatureConfigsPage() {
                 placeholder="e.g. lava_floor" />
             </label>
 
-            <div className="grid gap-3 mb-3.5" style={{ gridTemplateColumns: "1fr auto" }}>
+            <div className="grid gap-3 mb-3.5 grid-cols-[1fr_auto]">
               <Input label="Label" value={form.label} onChange={e => setForm(f => ({ ...f, label: e.target.value }))} />
               <div>
                 <label className="text-xs text-muted block mb-1.5">Icon</label>

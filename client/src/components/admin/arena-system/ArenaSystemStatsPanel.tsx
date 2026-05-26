@@ -55,7 +55,7 @@ export function ArenaSystemStatsPanel({ arenaSystem }: Props) {
       <h3 className="text-theme-text text-[14px] font-semibold mb-3 mt-0">
         Arena Properties
       </h3>
-      <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
+      <div className="grid gap-3 [grid-template-columns:1fr_1fr]">
         {stats.map((stat) => (
           <div key={stat.label} className="pb-2 border-b border-border-c">
             <div className="text-[11px] text-theme-muted mb-0.5">{stat.label}</div>
@@ -75,14 +75,13 @@ export function ArenaSystemStatsPanel({ arenaSystem }: Props) {
             {slopePhysics.frictionMap.map((zone, idx) => (
               <div
                 key={idx}
-                className="grid gap-2 pb-1.5 border-b border-border-c"
-                style={{ gridTemplateColumns: "auto 1fr" }}
+                className="grid gap-2 pb-1.5 border-b border-border-c [grid-template-columns:auto_1fr]"
               >
                 <span className="text-theme-muted">Zone {idx + 1}</span>
                 <div>
                   <div>Pos: ({zone.x.toFixed(0)}, {zone.y.toFixed(0)})</div>
                   <div>Radius: {zone.radius.toFixed(0)}px</div>
-                  <div style={{ color: zone.frictionMultiplier > 1 ? "#ff8844" : "#44ff88" }}>
+                  <div className={zone.frictionMultiplier > 1 ? "text-[#ff8844]" : "text-[#44ff88]"}>
                     Friction: ×{zone.frictionMultiplier.toFixed(2)}
                   </div>
                 </div>

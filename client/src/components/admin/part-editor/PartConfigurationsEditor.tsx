@@ -53,7 +53,7 @@ function StructuredOverridePanel({ partTypeSlug, overrides, onChange }: {
 
   if (partTypeSlug === "tips") {
     return (
-      <div className="grid gap-2" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+      <div className="grid gap-2 [grid-template-columns:1fr_1fr_1fr]">
         <div className="flex flex-col gap-[3px]">
           <span className="text-[10px] text-theme-muted">Tip Shape</span>
           <select value={(overrides.tipShape as string) ?? ""} onChange={e => patch("tipShape", e.target.value || undefined)} className={FIELD_INPUT}>
@@ -208,17 +208,11 @@ export function PartConfigurationsEditor<T>({ value, onChange, partTypeSlug }: P
         {value.map((config, idx) => (
           <div
             key={idx}
-            className="rounded-[9px] overflow-hidden"
-            style={{
-              border: `1px solid ${expanded === idx ? "rgba(59,130,246,0.33)" : "var(--border)"}`,
-            }}
+            className={`rounded-[9px] overflow-hidden border ${expanded === idx ? "border-[rgba(59,130,246,0.33)]" : "border-border-c"}`}
           >
             {/* Header */}
             <div
-              className="flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer"
-              style={{
-                background: expanded === idx ? "rgba(59,130,246,0.06)" : "var(--bg2)",
-              }}
+              className={`flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer ${expanded === idx ? "bg-[rgba(59,130,246,0.06)]" : "bg-bg2"}`}
               onClick={() => setExpanded(expanded === idx ? null : idx)}
             >
               <span className={`flex-1 text-[13px] font-semibold ${config.name ? "text-theme-text" : "text-theme-faint"}`}>
@@ -262,7 +256,7 @@ export function PartConfigurationsEditor<T>({ value, onChange, partTypeSlug }: P
                 </div>
 
                 {/* Display Name (HUD label) + Player Switchable toggle */}
-                <div className="grid gap-2.5 items-end" style={{ gridTemplateColumns: "1fr auto" }}>
+                <div className="grid gap-2.5 items-end [grid-template-columns:1fr_auto]">
                   <div>
                     <label className="block text-[11px] text-theme-muted mb-1">
                       Display Name (shown in in-game PartModesHUD)
@@ -307,10 +301,7 @@ export function PartConfigurationsEditor<T>({ value, onChange, partTypeSlug }: P
                     defaultValue={JSON.stringify(config.overrides, null, 2)}
                     onBlur={(e) => updateOverridesJSON(idx, e.target.value)}
                     rows={5}
-                    className="w-full py-2 px-2.5 bg-bg2 rounded-md text-theme-text text-[11px] font-mono resize-y box-border"
-                    style={{
-                      border: `1px solid ${overrideError[idx] ? "var(--red)" : "var(--border)"}`,
-                    }}
+                    className={`w-full py-2 px-2.5 bg-bg2 rounded-md text-theme-text text-[11px] font-mono resize-y box-border border ${overrideError[idx] ? "border-theme-red" : "border-border-c"}`}
                   />
                   {overrideError[idx] && (
                     <div className="text-[11px] text-theme-red mt-[3px]">{overrideError[idx]}</div>
@@ -337,7 +328,6 @@ export function PartConfigurationsEditor<T>({ value, onChange, partTypeSlug }: P
                         value={trig.type}
                         options={TRIGGER_TYPES.map((t) => ({ value: t, label: t }))}
                         onChange={(v) => updateTrigger(idx, ti, { type: v as ConfigTrigger["type"] })}
-                        style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: 5, color: "var(--text)", fontSize: 11 }}
                       />
                       <div className="flex items-center gap-1">
                         <span className="text-[10px] text-theme-muted">threshold</span>
@@ -370,7 +360,6 @@ export function PartConfigurationsEditor<T>({ value, onChange, partTypeSlug }: P
                         update(idx, { resetCondition: { type: v as ConfigResetCondition["type"], threshold: 0.5 } });
                       }}
                       emptyLabel="— none —"
-                      style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text)", fontSize: 11 }}
                     />
                     {config.resetCondition && (
                       <input

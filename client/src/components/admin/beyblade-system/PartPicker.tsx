@@ -8,7 +8,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { C, alpha } from "@/styles/theme";
 import { isCompatible } from "./partCompatibility";
 
 interface PartCard {
@@ -91,8 +90,8 @@ export function PartPicker({
       {selectedPart ? (
         <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-[7px] bg-blue/[0.09] border border-blue/30">
           <div
-            style={{ background: selectedPart.color ?? C.faint }}
             className="w-3 h-3 rounded-full shrink-0"
+            style={{ background: selectedPart.color ?? "var(--faint)" }}
           />
           <span className="flex-1 text-[12px] text-text overflow-hidden text-ellipsis whitespace-nowrap">
             {selectedPart.displayName || "(unnamed)"}
@@ -142,12 +141,11 @@ export function PartPicker({
                   key={part.id}
                   title={!compat.ok ? compat.reason : undefined}
                   onMouseDown={() => compat.ok && handleSelect(part)}
-                  style={{ background: isHighlighted ? alpha(C.blue, 0.13) : "transparent" }}
-                  className={`flex items-center gap-2 px-3 py-[7px] border-b border-border/[0.13] ${compat.ok ? "cursor-pointer" : "cursor-default opacity-45"}`}
+                  className={`flex items-center gap-2 px-3 py-[7px] border-b border-border/[0.13] ${compat.ok ? "cursor-pointer" : "cursor-default opacity-45"} ${isHighlighted ? "bg-blue-13" : "bg-transparent"}`}
                 >
                   <div
-                    style={{ background: part.color ?? C.faint }}
                     className="w-3 h-3 rounded-full shrink-0"
+                    style={{ background: part.color ?? "var(--faint)" }}
                   />
                   <span className={`flex-1 text-[12px] overflow-hidden text-ellipsis whitespace-nowrap ${compat.ok ? "text-text" : "text-faint"}`}>
                     {part.displayName || "(unnamed)"}

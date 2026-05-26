@@ -6,7 +6,7 @@
 
 import React, { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { cn } from "@/lib/cn";
-import { C, HEX } from "../../styles/theme";
+import { HEX } from "../../styles/theme";
 
 interface WhatsAppStyleImageEditorProps {
   imageUrl: string;
@@ -225,10 +225,8 @@ const WhatsAppStyleImageEditor = forwardRef<WhatsAppStyleImageEditorRef, WhatsAp
       {/* Canvas */}
       <div
         ref={containerRef}
-        className="relative"
+        className="relative touch-none select-none"
         style={{
-          touchAction: "none",
-          userSelect: "none",
           width: circleSize,
           height: circleSize,
           cursor: isDragging ? "grabbing" : "grab",

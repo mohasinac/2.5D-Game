@@ -2,7 +2,6 @@
 // Manages LoopTrackConfig[] — circular speed tracks with bank angle + boost.
 
 import { useState } from "react";
-import { C } from "@/styles/theme";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, LoopTrackConfig } from "@/types/arenaConfigNew";
 import { ArenaEditorCanvas } from "@/components/admin/ArenaEditorCanvas";
@@ -72,8 +71,7 @@ export default function LoopTracksTab({ config, onChange }: Props) {
         <span className="text-[13px] text-muted">{tracks.length} loop track{tracks.length !== 1 ? "s" : ""}</span>
         <button
           onClick={addTrack}
-          className="py-[5px] px-[14px] text-white border-none rounded-md text-xs font-medium cursor-pointer"
-          style={{ background: "#ff9944" }}
+          className="py-[5px] px-[14px] text-white border-none rounded-md text-xs font-medium cursor-pointer bg-[#ff9944]"
         >
           + Add Loop Track
         </button>
@@ -101,15 +99,11 @@ export default function LoopTracksTab({ config, onChange }: Props) {
             <div
               key={t.id}
               onClick={() => setSelectedId(t.id === selectedId ? null : t.id)}
-              className="rounded-[10px] py-[10px] px-[14px] cursor-pointer border"
-              style={{
-                background: t.id === selectedId ? "rgba(255,153,68,0.1)" : C.bg3,
-                borderColor: t.id === selectedId ? "#ff994455" : C.border,
-              }}
+              className={`rounded-[10px] py-[10px] px-[14px] cursor-pointer border ${t.id === selectedId ? "bg-[rgba(255,153,68,0.1)] border-[#ff994455]" : "bg-bg3 border-border-c"}`}
             >
               <div className="flex justify-between items-center">
                 <span className="text-[13px] font-medium text-text">
-                  Loop Track <span className="text-[10px] ml-1" style={{ color: "#ff9944" }}>×{t.speedBoostMultiplier.toFixed(1)} boost</span>
+                  Loop Track <span className="text-[10px] ml-1 text-[#ff9944]">×{t.speedBoostMultiplier.toFixed(1)} boost</span>
                   <span className="text-[10px] text-muted ml-1.5">floor {t.floorIndex}</span>
                 </span>
                 <div className="flex gap-2 text-[11px] text-muted">
@@ -137,8 +131,7 @@ export default function LoopTracksTab({ config, onChange }: Props) {
                           type="range" min={min} max={max} step={step}
                           value={t[field] as number}
                           onChange={e => updateTrack(t.id, { [field]: +e.target.value })}
-                          className="flex-1"
-                          style={{ accentColor: "#ff9944" }}
+                          className="flex-1 accent-[#ff9944]"
                         />
                         <span className="text-[11px] text-text font-mono min-w-[36px] text-right">
                           {typeof t[field] === "number" ? (t[field] as number).toFixed(step < 1 ? 1 : 0) : t[field]}

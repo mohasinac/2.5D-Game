@@ -67,7 +67,7 @@ export function ArenaSystemListPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
+        <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
           {systems.map((system) => (
             <div
               key={system.id}

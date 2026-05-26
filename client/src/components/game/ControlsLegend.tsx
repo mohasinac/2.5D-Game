@@ -38,9 +38,9 @@ export function ControlsLegend({ initiallyHidden, lockSource, controlLockedUntil
   }, [hidden]);
 
   const row = (k: string, v: string) => (
-    <div style={{ display: "flex", justifyContent: "space-between", gap: "1.2rem" }}>
-      <span style={{ color: "#9bb", fontFamily: "monospace" }}>{k}</span>
-      <span style={{ color: "#dde" }}>{v}</span>
+    <div className="flex justify-between gap-[1.2rem]">
+      <span className="text-[#9bb] font-mono">{k}</span>
+      <span className="text-[#dde]">{v}</span>
     </div>
   );
 
@@ -55,17 +55,9 @@ export function ControlsLegend({ initiallyHidden, lockSource, controlLockedUntil
           position: "absolute",
           bottom: "1rem",
           left: "1rem",
-          padding: "0.35rem 0.7rem",
-          fontSize: "0.7rem",
-          fontFamily: "monospace",
-          background: "rgba(20,25,40,0.75)",
-          color: "#9bb",
-          border: "1px solid rgba(120,160,200,0.3)",
-          borderRadius: "0.4rem",
-          cursor: "pointer",
-          pointerEvents: "auto",
           zIndex: 40,
         }}
+        className="px-[0.7rem] py-[0.35rem] text-[0.7rem] font-mono bg-[rgba(20,25,40,0.75)] text-[#9bb] border border-[rgba(120,160,200,0.3)] rounded-[0.4rem] cursor-pointer pointer-events-auto"
       >
         Controls ▸
       </button>
@@ -78,34 +70,16 @@ export function ControlsLegend({ initiallyHidden, lockSource, controlLockedUntil
         position: "absolute",
         bottom: "1rem",
         left: "1rem",
-        padding: "0.6rem 0.8rem",
-        fontSize: "0.7rem",
-        fontFamily: "monospace",
-        background: "rgba(20,25,40,0.8)",
-        color: "#dde",
-        border: "1px solid rgba(120,160,200,0.3)",
-        borderRadius: "0.5rem",
-        backdropFilter: "blur(4px)",
         zIndex: 40,
-        minWidth: "11rem",
-        pointerEvents: "auto",
       }}
+      className="px-[0.8rem] py-[0.6rem] text-[0.7rem] font-mono bg-[rgba(20,25,40,0.8)] text-[#dde] border border-[rgba(120,160,200,0.3)] rounded-[0.5rem] backdrop-blur-sm min-w-[11rem] pointer-events-auto"
     >
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.35rem", alignItems: "center" }}>
-        <strong style={{ fontSize: "0.7rem", color: "#cfe" }}>CONTROLS</strong>
+      <div className="flex justify-between mb-[0.35rem] items-center">
+        <strong className="text-[0.7rem] text-[#cfe]">CONTROLS</strong>
         {locked && (
           <span
             title={lockSource === "combo" ? "Combo executing" : "Special move executing"}
-            style={{
-              fontSize: "0.6rem",
-              fontWeight: 700,
-              color: "#ffcc44",
-              background: "rgba(255, 80, 40, 0.25)",
-              border: "1px solid rgba(255, 80, 40, 0.6)",
-              borderRadius: "0.25rem",
-              padding: "0.1rem 0.35rem",
-              letterSpacing: "0.05em",
-            }}
+            className="text-[0.6rem] font-bold text-[#ffcc44] bg-[rgba(255,80,40,0.25)] border border-[rgba(255,80,40,0.6)] rounded-[0.25rem] px-[0.35rem] py-[0.1rem] tracking-[0.05em]"
           >LOCKED</span>
         )}
         <button
@@ -113,7 +87,7 @@ export function ControlsLegend({ initiallyHidden, lockSource, controlLockedUntil
           onClick={() => setHidden(true)}
           aria-label="Hide controls"
           title="Hide controls"
-          style={{ background: "transparent", color: "#9bb", border: "none", cursor: "pointer", fontSize: "0.75rem" }}
+          className="bg-transparent text-[#9bb] border-none cursor-pointer text-[0.75rem]"
         >×</button>
       </div>
       {row("WASD / ←↑↓→", "Move")}
@@ -130,7 +104,7 @@ export function ControlsLegend({ initiallyHidden, lockSource, controlLockedUntil
         </>
       )}
       {isTryout && (
-        <div style={{ marginTop: "0.3rem", fontSize: "0.6rem", color: "#889", fontStyle: "italic" }}>
+        <div className="mt-[0.3rem] text-[0.6rem] text-[#889] italic">
           Combat keys (IJKL) available in battle mode
         </div>
       )}

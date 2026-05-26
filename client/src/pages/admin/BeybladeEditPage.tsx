@@ -199,7 +199,7 @@ export function BeybladeEditPage() {
       </div>
 
       {/* Two-column: editors left, preview right */}
-      <div className="grid gap-5 mb-5" style={{ gridTemplateColumns: "1fr 390px" }}>
+      <div className="grid gap-5 mb-5 grid-cols-[1fr_390px]">
         {/* Left column */}
         <div className="flex flex-col gap-4">
           {/* Basic Info */}
@@ -343,12 +343,8 @@ export function BeybladeEditPage() {
                 return (
                   <span
                     key={slug}
-                    className="inline-flex items-center gap-[5px] px-2.5 py-1 rounded-[20px] text-[12px] text-theme-text border"
-                    style={{
-                      "--el-color": cfg?.color ?? "transparent",
-                      background: cfg ? "color-mix(in srgb, var(--el-color) 20%, transparent)" : undefined,
-                      borderColor: cfg ? "var(--el-color)" : undefined,
-                    } as React.CSSProperties}
+                    className="inline-flex items-center gap-[5px] px-2.5 py-1 rounded-[20px] text-[12px] text-theme-text border [background:color-mix(in_srgb,var(--el-color)_20%,transparent)] [border-color:var(--el-color)]"
+                    style={{ "--el-color": cfg?.color ?? "transparent" } as React.CSSProperties}
                   >
                     {cfg?.icon ?? "?"} {cfg?.name ?? slug}
                     <button

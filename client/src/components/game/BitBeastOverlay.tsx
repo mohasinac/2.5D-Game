@@ -46,43 +46,22 @@ export function BitBeastOverlay({ side, asset, visible, durationMs = 2400 }: Bit
       justifyContent: isLeft ? "flex-start" : "flex-end",
       padding: "0 1rem",
     }}>
-      <div style={{
-        position: "relative",
-        maxWidth: 220,
-        maxHeight: 300,
-      }}>
+      <div className="relative max-w-[220px] max-h-[300px]">
         {/* Glow backdrop */}
-        <div style={{
-          position: "absolute",
-          inset: -20,
-          borderRadius: "50%",
-          background: "radial-gradient(ellipse, rgba(120,80,255,0.35) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }} />
+        <div className="absolute pointer-events-none -inset-5 rounded-[50%] bg-[radial-gradient(ellipse,rgba(120,80,255,0.35)_0%,transparent_70%)]" />
         <img
           src={asset.imageUrl}
           alt={asset.name}
-          style={{
-            width: "100%",
-            height: "auto",
-            objectFit: "contain",
-            filter: "drop-shadow(0 0 12px rgba(150,100,255,0.7))",
-            imageRendering: "auto",
-          }}
+          className="w-full h-auto object-contain [filter:drop-shadow(0_0_12px_rgba(150,100,255,0.7))]"
         />
-        <div style={{
-          position: "absolute",
-          bottom: -22,
-          left: "50%",
-          transform: "translateX(-50%)",
-          whiteSpace: "nowrap",
-          fontFamily: "monospace",
-          fontSize: "0.7rem",
-          fontWeight: 700,
-          color: "#ccaaff",
-          textShadow: "0 0 8px #8844ff",
-          letterSpacing: "0.08em",
-        }}>
+        <div
+          className="absolute whitespace-nowrap font-mono text-[0.7rem] font-bold text-[#ccaaff] [text-shadow:0_0_8px_#8844ff] tracking-[0.08em]"
+          style={{
+            bottom: -22,
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
+        >
           {asset.name.toUpperCase()}
         </div>
       </div>

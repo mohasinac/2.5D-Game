@@ -2,7 +2,6 @@
 // Renders a compact points board and fires a full-screen flash when a ring-out scores.
 
 import { useEffect, useState } from "react";
-import { C } from "@/styles/theme";
 
 export interface BXScoreEntry {
   userId: string;
@@ -75,48 +74,32 @@ export function BXScoreHUD({ scoringMode, pointsTarget, playerPoints, beyblades,
         top: 8,
         left: "50%",
         transform: "translateX(-50%)",
-        pointerEvents: "none",
         zIndex: 20,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 4,
-      }}>
-        <div style={{ fontSize: 10, color: C.muted, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+      }}
+        className="flex flex-col items-center gap-1 pointer-events-none"
+      >
+        <div className="text-[10px] text-theme-muted tracking-[0.08em] uppercase">
           {scoringMode === "points" ? "Xtreme Points" : scoringMode} — first to {target}
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="flex gap-2">
           {entries.map(e => {
             const isMe = e.userId === myUserId;
             const color = TYPE_COLORS[e.type] ?? "#aaaaaa";
             return (
-              <div key={e.userId} style={{
-                background: isMe ? `${color}22` : "rgba(15,23,42,0.85)",
-                border: `1px solid ${isMe ? color : C.border}`,
-                borderRadius: 8,
-                padding: "4px 10px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                minWidth: 54,
-              }}>
-                <span style={{ fontSize: 11, color: C.muted, overflow: "hidden", maxWidth: 64, textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <div key={e.userId}
+                className="rounded-lg py-1 px-[10px] flex flex-col items-center min-w-[54px] border"
+                style={{ background: isMe ? `${color}22` : "rgba(15,23,42,0.85)", borderColor: isMe ? color : "var(--border)" }}
+              >
+                <span className="text-[11px] text-theme-muted overflow-hidden max-w-[64px] text-ellipsis whitespace-nowrap">
                   {isMe ? "You" : e.username}
                 </span>
                 {/* Pip row */}
-                <div style={{ display: "flex", gap: 3, marginTop: 3 }}>
+                <div className="flex gap-[3px] mt-[3px]">
                   {Array.from({ length: target }).map((_, i) => (
-                    <div key={i} style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      background: i < e.points ? color : C.bg3,
-                      border: `1px solid ${color}55`,
-                      transition: "background 150ms",
-                    }} />
+                    <div key={i} className="w-[10px] h-[10px] rounded-full transition-[background] duration-150 border" style={{ background: i < e.points ? color : "var(--bg3)", borderColor: `${color}55` }} />
                   ))}
                 </div>
-                <span style={{ fontSize: 16, fontWeight: 700, color, marginTop: 2 }}>{e.points}</span>
+                <span className="text-[16px] font-bold mt-[2px]" style={{ color }}>{e.points}</span>
               </div>
             );
           })}
@@ -125,15 +108,7 @@ export function BXScoreHUD({ scoringMode, pointsTarget, playerPoints, beyblades,
 
       {/* Full-screen flash on score */}
       {flashColor && (
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          background: flashColor,
-          opacity: 0.18,
-          pointerEvents: "none",
-          zIndex: 50,
-          animation: "bxFlash 0.18s ease-out forwards",
-        }} />
+        <div className="absolute inset-0 opacity-[0.18] pointer-events-none z-[50] [animation:bxFlash_0.18s_ease-out_forwards]" style={{ background: flashColor }} />
       )}
     </>
   );

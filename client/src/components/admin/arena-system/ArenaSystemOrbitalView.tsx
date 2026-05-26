@@ -1,6 +1,5 @@
 import { useRef, useEffect } from "react";
 import { ArenaSystem } from "@/types/arenaSystem";
-import { C } from "@/styles/theme";
 import * as PIXI from "pixi.js";
 
 interface Props {
@@ -128,14 +127,7 @@ export function ArenaSystemOrbitalView({ arenaSystem }: Props) {
   return (
     <div
       ref={containerRef}
-      style={{
-        width: "100%",
-        height: 400,
-        background: C.bg1,
-        borderRadius: 8,
-        border: `1px solid ${C.border}`,
-        overflow: "hidden",
-      }}
+      className="w-full h-[400px] bg-bg1 rounded-lg border border-border-c overflow-hidden"
     />
   );
 }

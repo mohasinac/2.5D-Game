@@ -17,7 +17,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { C, HEX, alpha } from "@/styles/theme";
+import { HEX } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { MaterialSelector } from "./MaterialSelector";
 import { PartSelfRotationSection } from "./PartSelfRotationSection";
@@ -147,7 +147,7 @@ function drawCanvas(
   const totalWeight = cps.reduce((s, cp) => s + (cp.weightFactor ?? 1.0), 0);
   cps.forEach((cp, i) => {
     const isSelected = selected === i;
-    const color = (materialColors ?? FALLBACK_MATERIAL_COLORS)[cp.material] ?? C.blue;
+    const color = (materialColors ?? FALLBACK_MATERIAL_COLORS)[cp.material] ?? "var(--blue)";
     const rInner = (cp.radius - cp.thickness / 2) * PIXELS_PER_MM;
     const rOuter = (cp.radius + cp.thickness / 2) * PIXELS_PER_MM;
     const startAngle = ((cp.angle - cp.width / 2 - 90) * Math.PI) / 180;
@@ -364,7 +364,7 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
             >
               <div
                 className="w-2.5 h-2.5 rounded-full shrink-0"
-                style={{ background: materialColors[cp.material] ?? FALLBACK_MATERIAL_COLORS[cp.material] ?? C.blue }}
+                style={{ background: materialColors[cp.material] ?? FALLBACK_MATERIAL_COLORS[cp.material] ?? "var(--blue)" }}
               />
               <div className="flex-1 text-xs text-text">
                 #{i + 1} — {cp.angle}° @ {cp.radius}mm — {cp.material} {cp.attackType}

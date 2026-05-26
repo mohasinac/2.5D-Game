@@ -63,41 +63,20 @@ export function CollisionQTEOverlay({
 
   return (
     <div
-      style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        zIndex: 1000,
-        background: "rgba(0,0,0,0.82)",
-        border: `2px solid ${barColor}`,
-        borderRadius: 12,
-        padding: "18px 28px",
-        minWidth: 360,
-        textAlign: "center",
-        color: "#fff",
-        fontFamily: "monospace",
-        boxShadow: `0 0 24px ${barColor}44`,
-        userSelect: "none",
-      }}
+      style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 1000, border: `2px solid ${barColor}`, boxShadow: `0 0 24px ${barColor}44` }}
+      className="bg-black/[.82] rounded-xl py-[18px] px-[28px] min-w-[360px] text-center text-white font-mono select-none"
     >
-      <div style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10, letterSpacing: 2 }}>
+      <div className="text-[18px] font-bold mb-[10px] tracking-[2px]">
         ⚡ COLLISION! MASH BUTTONS! ⚡
       </div>
 
       {/* Power bar */}
-      <div style={{ background: "#222", borderRadius: 6, height: 22, position: "relative", marginBottom: 6, overflow: "hidden" }}>
+      <div className="bg-[#222] rounded-[6px] h-[22px] relative mb-[6px] overflow-hidden">
         <div
-          style={{
-            height: "100%",
-            width: `${fillPct}%`,
-            background: barColor,
-            borderRadius: 6,
-            transition: "width 0.05s linear, background 0.1s",
-            boxShadow: isOvercharged ? `0 0 12px ${barColor}` : undefined,
-          }}
+          className="h-full rounded-[6px] [transition:width_0.05s_linear,background_0.1s]"
+          style={{ width: `${fillPct}%`, background: barColor, boxShadow: isOvercharged ? `0 0 12px ${barColor}` : undefined }}
         />
-        <div style={{ position: "absolute", right: 6, top: 2, fontSize: 13, fontWeight: "bold", color: "#fff", textShadow: "1px 1px 2px #000" }}>
+        <div className="absolute right-[6px] top-[2px] text-[13px] font-bold text-white [text-shadow:1px_1px_2px_#000]">
           {power}%
         </div>
       </div>
@@ -105,44 +84,26 @@ export function CollisionQTEOverlay({
       {/* Hard zone indicator */}
       {isHard && (
         <div
-          style={{
-            fontSize: 11,
-            color: "#ff9900",
-            marginBottom: 6,
-            animation: "pulse 0.6s infinite alternate",
-            opacity: 0.9,
-          }}
+          className="text-[11px] text-[#ff9900] mb-[6px] opacity-90 [animation:pulse_0.6s_infinite_alternate]"
         >
           ── GETTING HARDER ──
         </div>
       )}
 
       {/* Multiplier display */}
-      <div style={{ fontSize: 13, color: "#aaa", marginBottom: 10 }}>
-        QTE: <span style={{ color: barColor }}>{qteMultiplier.toFixed(2)}x</span>
+      <div className="text-[13px] text-[#aaa] mb-[10px]">
+        QTE: <span style={{ "--tc": barColor, color: barColor } as React.CSSProperties}>{qteMultiplier.toFixed(2)}x</span>
         &nbsp;×&nbsp;
-        SP: <span style={{ color: "#88aaff" }}>{currentSP}%</span>
+        SP: <span className="text-[#88aaff]">{currentSP}%</span>
         &nbsp;=&nbsp;
-        <span style={{ color: "#fff", fontWeight: "bold" }}>{finalMult.toFixed(2)}x</span> damage
+        <span className="text-white font-bold">{finalMult.toFixed(2)}x</span> damage
       </div>
 
       {/* Special fire prompt */}
       {canFireSpecial && (
         <button
           onClick={onFireSpecial}
-          style={{
-            background: "linear-gradient(135deg,#ff4400,#ff8800)",
-            border: "2px solid #ffa500",
-            borderRadius: 8,
-            color: "#fff",
-            fontWeight: "bold",
-            fontSize: 14,
-            padding: "8px 18px",
-            cursor: "pointer",
-            animation: "blink 0.5s infinite alternate",
-            letterSpacing: 1,
-            boxShadow: "0 0 12px #ff6600",
-          }}
+          className="rounded-lg text-white font-bold text-[14px] px-[18px] py-2 cursor-pointer tracking-[1px] bg-[linear-gradient(135deg,#ff4400,#ff8800)] border-2 border-[#ffa500] shadow-[0_0_12px_#ff6600] [animation:blink_0.5s_infinite_alternate]"
         >
           🔥 PRESS [SPACE] TO FIRE SPECIAL! 🔥
         </button>

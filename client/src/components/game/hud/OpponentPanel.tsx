@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { ServerBeyGhost } from "@/types/game";
+import { TYPE_HEX, TYPE_LABEL, SpinWheel } from "./PlayerPanel";
+import { SPBar } from "./SPBar";
 
 interface OpponentPanelProps {
   myId: string;
@@ -18,17 +20,6 @@ interface OpponentEntry {
   isAlly: boolean;
 }
 
-const TYPE_HEX: Record<string, string> = {
-  attack:   "#ff5544",
-  defense:  "#3388ff",
-  stamina:  "#33cc77",
-  balanced: "#ffcc33",
-};
-
-const TYPE_LABEL: Record<string, string> = {
-  attack: "ATK", defense: "DEF", stamina: "STA", balanced: "BAL",
-};
-
 function spinBarClass(pct: number): string {
   if (pct >= 75) return "bg-theme-green";
   if (pct >= 40) return "bg-theme-yellow";
@@ -41,50 +32,109 @@ function spinTextClass(pct: number): string {
   return "text-theme-red";
 }
 
-function tierDot(tier: number) {
-  if (tier === 2) return "●";
-  if (tier === 1) return "◐";
-  return "·";
-}
-
-function OpponentRow({ op }: { op: OpponentEntry }) {
+// ── Full corner card (mirror of player — for 1v1 opponent) ───────────────────
+function FeaturedOpponentCard({ op }: { op: OpponentEntry }) {
   const hex = TYPE_HEX[op.beyType] ?? "#aabbcc";
   const label = TYPE_LABEL[op.beyType] ?? "—";
 
   return (
     <div
-      className="hud-type-border rounded-md px-2 py-[5px] backdrop-blur-md flex items-center gap-2 border"
-      style={{ "--tc": hex, background: op.isAlly ? "rgba(8,28,20,0.82)" : "rgba(8,12,26,0.82)" } as React.CSSProperties}
+      className="hud-type-border border-l border-b rounded-bl-2xl backdrop-blur-md bg-[rgba(5,8,20,0.90)] flex flex-col items-end gap-1.5 pt-2 pb-3 pr-2 pl-4"
+      style={{ "--tc": hex } as React.CSSProperties}
     >
-      {/* Type dot + tier */}
-      <span
-        className="hud-type-text text-[0.5rem] shrink-0 w-2 text-center"
-        style={{ "--tc": hex } as React.CSSProperties}
-      >{tierDot(op.tier)}</span>
+      {/* Arc wheel — mirrored for right side */}
+      <SpinWheel spinPct={op.spinPct} side="right" />
 
-      {/* Name */}
-      <span className="text-white/80 text-[0.6rem] font-mono truncate flex-1 min-w-0 max-w-[80px]">
-        {op.username}
-      </span>
+      {/* Name + type badge */}
+      <div className="flex items-center gap-2 w-full px-1 flex-row-reverse">
+        <span className="text-white font-bold text-[0.72rem] font-mono tracking-wider truncate flex-1 uppercase text-right">
+          {op.username}
+        </span>
+        <span
+          className="hud-type-text text-[0.5rem] font-black tracking-[0.15em] shrink-0 border hud-type-border rounded px-1 py-px"
+        >
+          {label}
+        </span>
+      </div>
 
+      {/* Stamina bar — reversed fill direction */}
+      <div className="w-full px-1">
+        <div className="flex flex-col gap-[3px] w-full font-mono">
+          <div className="flex justify-between items-center flex-row-reverse">
+            <span className="text-[0.5rem] tracking-widest text-white/40 uppercase">STAMINA</span>
+            <span className={`text-[0.55rem] font-bold ${spinTextClass(op.spinPct)}`}>
+              {op.spinPct}%
+            </span>
+          </div>
+          {/* Bar fills from right to left */}
+          <div className="h-[8px] rounded-full bg-white/10 overflow-hidden flex flex-row-reverse">
+            <div
+              className={`w-pct h-full rounded-full transition-[width] duration-150 ${spinBarClass(op.spinPct)}`}
+              style={{ "--pct": `${op.spinPct}%` } as React.CSSProperties}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Compact card (2-3 opponents) ─────────────────────────────────────────────
+function CompactOpponentCard({ op }: { op: OpponentEntry }) {
+  const hex = TYPE_HEX[op.beyType] ?? "#aabbcc";
+  const label = TYPE_LABEL[op.beyType] ?? "—";
+
+  return (
+    <div
+      className={`hud-type-border rounded-lg px-2.5 py-2 backdrop-blur-md flex items-center gap-2 border ${op.isAlly ? "bg-[rgba(8,28,20,0.82)]" : "bg-[rgba(8,12,26,0.85)]"}`}
+      style={{ "--tc": hex } as React.CSSProperties}
+    >
       {/* Type badge */}
-      <span
-        className="hud-type-text text-[0.45rem] font-bold tracking-wide shrink-0"
-        style={{ "--tc": hex } as React.CSSProperties}
-      >{label}</span>
+      <span className="hud-type-text text-[0.46rem] font-black tracking-wide shrink-0">{label}</span>
 
       {/* Spin bar */}
-      <div className="flex flex-col gap-[2px] w-14 shrink-0">
-        <div className="h-[4px] rounded-full bg-white/10 overflow-hidden">
+      <div className="flex-1 min-w-0">
+        <div className="h-[5px] rounded-full bg-white/10 overflow-hidden">
           <div
             className={`w-pct h-full rounded-full ${spinBarClass(op.spinPct)}`}
             style={{ "--pct": `${op.spinPct}%` } as React.CSSProperties}
           />
         </div>
-        <span className={`text-[0.48rem] font-mono font-bold text-right ${spinTextClass(op.spinPct)}`}>
-          {op.spinPct}%
-        </span>
       </div>
+
+      {/* Name */}
+      <span className="text-white/80 text-[0.6rem] font-mono truncate max-w-[72px] shrink-0">
+        {op.username}
+      </span>
+
+      {/* Pct */}
+      <span className={`text-[0.5rem] font-bold font-mono shrink-0 ${spinTextClass(op.spinPct)}`}>
+        {op.spinPct}%
+      </span>
+    </div>
+  );
+}
+
+// ── Ultra-compact single-line row (4+ opponents / royale) ────────────────────
+function UltraCompactRow({ op }: { op: OpponentEntry }) {
+  const hex = TYPE_HEX[op.beyType] ?? "#aabbcc";
+
+  return (
+    <div
+      className="flex items-center gap-1.5 px-2 py-1 bg-[rgba(5,8,20,0.78)] rounded-md border hud-type-border"
+      style={{ "--tc": hex } as React.CSSProperties}
+    >
+      <span className="hud-type-dot w-1.5 h-1.5 rounded-full shrink-0" />
+      <span className="text-white/70 text-[0.55rem] font-mono truncate flex-1 min-w-0">{op.username}</span>
+      <div className="w-10 h-[3px] rounded-full bg-white/10 overflow-hidden shrink-0">
+        <div
+          className={`w-pct h-full rounded-full ${spinBarClass(op.spinPct)}`}
+          style={{ "--pct": `${op.spinPct}%` } as React.CSSProperties}
+        />
+      </div>
+      <span className={`text-[0.48rem] font-mono font-bold shrink-0 ${spinTextClass(op.spinPct)}`}>
+        {op.spinPct}%
+      </span>
     </div>
   );
 }
@@ -130,20 +180,42 @@ export function OpponentPanel({ myId, myTeamId = "", beyGhosts, maxVisible = 8 }
   const allies = entries.filter(e => e.isAlly);
   const enemies = entries.filter(e => !e.isAlly);
   const hasTeams = allies.length > 0;
+  const totalCount = entries.length;
+
+  // Render strategy based on count
+  const renderEnemy = (op: OpponentEntry) => {
+    if (totalCount === 1) return <FeaturedOpponentCard key={op.id} op={op} />;
+    if (totalCount <= 3) return <CompactOpponentCard key={op.id} op={op} />;
+    return <UltraCompactRow key={op.id} op={op} />;
+  };
+
+  const renderAlly = (op: OpponentEntry) => {
+    if (totalCount <= 3) return <CompactOpponentCard key={op.id} op={op} />;
+    return <UltraCompactRow key={op.id} op={op} />;
+  };
+
+  // For 1v1: the featured card fills the top-right corner (no padding/gap wrapper)
+  if (totalCount === 1 && enemies.length === 1) {
+    return (
+      <div className="absolute top-0 right-0 z-50 pointer-events-none">
+        <FeaturedOpponentCard op={enemies[0]} />
+      </div>
+    );
+  }
 
   return (
     <div
       className="absolute top-3 right-3 z-50 pointer-events-none flex flex-col gap-1 min-w-[170px] max-w-[220px]"
     >
       {hasTeams && enemies.length > 0 && (
-        <span className="text-[0.45rem] tracking-[0.18em] text-white/30 uppercase px-0.5">Enemies</span>
+        <span className="text-[0.44rem] tracking-[0.18em] text-white/30 uppercase px-0.5">Enemies</span>
       )}
-      {enemies.map(op => <OpponentRow key={op.id} op={op} />)}
+      {enemies.map(renderEnemy)}
 
       {hasTeams && allies.length > 0 && (
         <>
-          <span className="text-[0.45rem] tracking-[0.18em] text-white/30 uppercase px-0.5 mt-1">Allies</span>
-          {allies.map(op => <OpponentRow key={op.id} op={op} />)}
+          <span className="text-[0.44rem] tracking-[0.18em] text-white/30 uppercase px-0.5 mt-1">Allies</span>
+          {allies.map(renderAlly)}
         </>
       )}
     </div>

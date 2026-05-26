@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/cn";
-import { C } from "@/styles/theme";
 import { ScriptBuilder } from "@/components/script-builder/ScriptBuilder";
 import { ComboVisualEditor } from "./ComboVisualEditor";
 import type { ComboEffectDef } from "@/types/comboTask";
@@ -58,7 +57,7 @@ export function ComboEffectBuilder({ value, onChange }: Props) {
       {/* Meta tab */}
       {tab === "meta" && (
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3.5">
-          <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
+          <div className="grid gap-3 [grid-template-columns:1fr_1fr]">
             <div>
               <label className="text-[11px] text-theme-muted font-semibold uppercase block mb-1">Name</label>
               <input className={inputCls} value={value.name} onChange={e => set("name", e.target.value)} />

@@ -209,12 +209,7 @@ export function ArenaEditorCanvas({
             <button
               key={i}
               onClick={() => onFloorChange?.(i)}
-              className="px-[10px] py-[3px] rounded-md text-[11px] cursor-pointer border"
-              style={{
-                background: selectedFloor === i ? "#4488ff" : "transparent",
-                color: selectedFloor === i ? "#fff" : "#8899aa",
-                borderColor: selectedFloor === i ? "#4488ff" : "rgba(255,255,255,0.12)",
-              }}
+              className={`px-[10px] py-[3px] rounded-md text-[11px] cursor-pointer border ${selectedFloor === i ? "bg-[#4488ff] text-white border-[#4488ff]" : "bg-transparent text-[#8899aa] border-[rgba(255,255,255,0.12)]"}`}
             >
               {i === 0 ? "G" : i}
             </button>

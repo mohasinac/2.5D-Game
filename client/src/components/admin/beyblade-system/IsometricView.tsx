@@ -7,7 +7,7 @@
  */
 
 import { useRef, useEffect, useCallback } from "react";
-import { C, HEX } from "@/styles/theme";
+import { HEX } from "@/styles/theme";
 import { renderRadius, synthesizeRadialCache } from "@/types/beybladeSystem";
 import { computeEffectiveRadius } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
@@ -331,12 +331,12 @@ export function IsometricView({ resolved }: { resolved?: ResolvedBeybladeSystem 
 
   return (
     <div>
-      <div style={{ fontSize: 10, color: C.faint, marginBottom: 6 }}>Isometric View</div>
+      <div className="text-[10px] text-theme-faint mb-[6px]">Isometric View</div>
       <canvas
         ref={canvasRef}
         width={W}
         height={H}
-        style={{ borderRadius: 8, border: `1px solid ${C.border}`, display: "block" }}
+        className="block rounded-lg border border-border-c"
       />
     </div>
   );

@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { doc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
@@ -54,8 +55,8 @@ export function ElementTypesListPage() {
             >
               {/* Color badge + icon */}
               <div
-                className="w-9 h-9 rounded-lg shrink-0 flex items-center justify-center text-lg border-2"
-                style={{ background: cfg.color + "33", borderColor: cfg.color }}
+                className="w-9 h-9 rounded-lg shrink-0 flex items-center justify-center text-lg border-2 [background:color-mix(in_srgb,var(--el-color)_20%,transparent)] [border-color:var(--el-color)]"
+                style={{ "--el-color": cfg.color } as React.CSSProperties}
               >
                 {cfg.icon}
               </div>
@@ -78,7 +79,7 @@ export function ElementTypesListPage() {
               </div>
 
               {/* Color swatch */}
-              <div className="w-5 h-5 rounded shrink-0 border border-border" style={{ background: cfg.color }} />
+              <div className="w-5 h-5 rounded shrink-0 border border-border [background:var(--swatch-color)]" style={{ "--swatch-color": cfg.color } as React.CSSProperties} />
 
               {/* Actions */}
               <Button variant="outline" size="sm" onClick={() => navigate(`/admin/element-types/${cfg.id}`)}>

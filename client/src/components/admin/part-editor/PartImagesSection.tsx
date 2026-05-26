@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from "@/lib/firebase";
-import { C, alpha } from "@/styles/theme";
 import type { PartImages } from "@/types/beybladeSystem";
 
 type ViewKey = "topView" | "sideView" | "bottomView";
@@ -25,18 +24,18 @@ function workflowLabel(images: PartImages): { tier: string; color: string; desc:
   const hasBottom = !!images.bottomView;
 
   if (hasTop && hasSide && hasBottom) {
-    return { tier: "Full Geometry", color: C.green, desc: "Top silhouette + side profile spline + bottom contact surface" };
+    return { tier: "Full Geometry", color: "var(--green)", desc: "Top silhouette + side profile spline + bottom contact surface" };
   }
   if (hasTop && hasSide) {
-    return { tier: "Revolution Profile", color: C.blue, desc: "Top footprint extruded along a lathe/vase side-profile spline" };
+    return { tier: "Revolution Profile", color: "var(--blue)", desc: "Top footprint extruded along a lathe/vase side-profile spline" };
   }
   if (hasTop) {
-    return { tier: "Uniform Extrusion", color: C.yellow, desc: "Top silhouette extruded to uniform height" };
+    return { tier: "Uniform Extrusion", color: "var(--yellow)", desc: "Top silhouette extruded to uniform height" };
   }
   if (hasSide) {
-    return { tier: "Profile Only", color: C.orange, desc: "Side-profile spline with circular top plan" };
+    return { tier: "Profile Only", color: "var(--orange)", desc: "Side-profile spline with circular top plan" };
   }
-  return { tier: "Preset Shape", color: C.faint, desc: "No images — uses preset circle/star/ring geometry" };
+  return { tier: "Preset Shape", color: "var(--faint)", desc: "No images — uses preset circle/star/ring geometry" };
 }
 
 interface Props {
@@ -84,11 +83,7 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
         <div className="text-[12px] text-theme-muted">Part Images (no-background PNG)</div>
         <div
           className="text-[11px] px-[9px] py-[3px] rounded-full font-semibold"
-          style={{
-            background: alpha(wf.color, 0.09),
-            color: wf.color,
-            border: `1px solid ${alpha(wf.color, 0.27)}`,
-          }}
+          style={{ color: wf.color, background: `color-mix(in srgb, ${wf.color} 9%, transparent)`, border: `1px solid color-mix(in srgb, ${wf.color} 27%, transparent)` }}
         >
           {wf.tier}
         </div>
@@ -115,16 +110,12 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
                 }}
               />
               <div
-                className="rounded-[9px] overflow-hidden transition-[border-color] duration-150"
-                style={{
-                  border: `1px solid ${url ? alpha(C.blue, 0.33) : C.border}`,
-                  background: url ? C.bg1 : C.bg2,
-                }}
+                className={`rounded-[9px] overflow-hidden transition-[border-color] duration-150 border ${url ? "border-[rgba(59,130,246,0.33)] bg-bg1" : "border-border-c bg-bg2"}`}
               >
                 {/* Slot header */}
                 <div className="px-2.5 py-[7px] flex items-center gap-1.5 border-b border-border-c">
                   <span className="text-[13px]">{slot.icon}</span>
-                  <span className="text-[12px] font-semibold" style={{ color: url ? C.text : C.muted }}>{slot.label}</span>
+                  <span className={`text-[12px] font-semibold ${url ? "text-theme-text" : "text-theme-muted"}`}>{slot.label}</span>
                 </div>
 
                 {/* Preview / empty state */}
@@ -138,19 +129,14 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
                     <button
                       onClick={() => handleRemove(slot.key)}
                       title="Remove image"
-                      className="absolute top-1 right-1 rounded-full w-[22px] h-[22px] flex items-center justify-center text-[11px] text-theme-red cursor-pointer"
-                      style={{
-                        background: alpha(C.bg0, 0.80),
-                        border: `1px solid ${C.border}`,
-                      }}
+                      className="absolute top-1 right-1 rounded-full w-[22px] h-[22px] flex items-center justify-center text-[11px] text-theme-red cursor-pointer bg-[rgba(5,12,24,0.80)] border border-border-c"
                     >
                       ×
                     </button>
                   </div>
                 ) : (
                   <div
-                    className="aspect-square flex flex-col items-center justify-center gap-1"
-                    style={{ cursor: busy ? "default" : "pointer" }}
+                    className={`aspect-square flex flex-col items-center justify-center gap-1 ${busy ? "cursor-default" : "cursor-pointer"}`}
                     onClick={() => !busy && inputRefs[slot.key].current?.click()}
                   >
                     {busy ? (
@@ -169,13 +155,7 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
                   <button
                     onClick={() => !busy && inputRefs[slot.key].current?.click()}
                     disabled={busy}
-                    className="w-full py-[5px] text-[11px] rounded-[5px]"
-                    style={{
-                      background: url ? C.bg3 : alpha(C.blue, 0.13),
-                      color: url ? C.muted : C.blue,
-                      border: `1px solid ${url ? C.border : alpha(C.blue, 0.27)}`,
-                      cursor: busy ? "default" : "pointer",
-                    }}
+                    className={`w-full py-[5px] text-[11px] rounded-[5px] border ${busy ? "cursor-default" : "cursor-pointer"} ${url ? "bg-bg3 text-theme-muted border-border-c" : "bg-blue-13 text-theme-blue border-[rgba(59,130,246,0.27)]"}`}
                   >
                     {busy ? "…" : url ? "Replace" : "Upload"}
                   </button>

@@ -251,8 +251,7 @@ export function SplineProfileEditor({ value, onChange, imageUrl, maxHeight = 60,
           <button
             onClick={handleTrace}
             disabled={tracing}
-            className="px-3 py-1.5 bg-theme-blue text-white border-none rounded-[7px] text-[11px] font-semibold"
-            style={{ cursor: tracing ? "default" : "pointer", opacity: tracing ? 0.6 : 1 }}
+            className={`px-3 py-1.5 bg-theme-blue text-white border-none rounded-[7px] text-[11px] font-semibold ${tracing ? "cursor-default opacity-60" : "cursor-pointer opacity-100"}`}
           >
             {tracing ? "Tracing…" : "Trace Side Profile"}
           </button>

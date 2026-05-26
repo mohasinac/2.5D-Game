@@ -2,7 +2,6 @@
  * ComputedStatsPanel — displays live output of computeBeybladeStats().
  */
 
-import { C } from "@/styles/theme";
 import { computeBeybladeStats } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
 
@@ -10,7 +9,7 @@ const TYPE_COLORS: Record<string, string> = {
   attack:   "#ef4444",
   defense:  "#3b82f6",
   stamina:  "#22c55e",
-  balanced: C.muted,
+  balanced: "var(--muted)",
 };
 
 function StatRow({ label, value, unit = "", highlight = false }: { label: string; value: string | number; unit?: string; highlight?: boolean }) {
@@ -33,7 +32,7 @@ function DistBar({ label, value, max = 150, color }: { label: string; value: num
         <span className="text-[10px] text-muted font-mono">{value}/{max}</span>
       </div>
       <div className="h-[5px] bg-bg3 rounded-[3px] overflow-hidden">
-        <div style={{ width: `${pct}%`, background: color, transition: "width 0.3s" }} className="h-full rounded-[3px]" />
+        <div className="h-full rounded-[3px] [transition:width_0.3s]" style={{ width: `${pct}%`, background: color }} />
       </div>
     </div>
   );
@@ -69,7 +68,7 @@ export function ComputedStatsPanel({ resolved }: Props) {
   }
 
   const s = stats;
-  const typeColor = TYPE_COLORS[s.type] ?? C.muted;
+  const typeColor = TYPE_COLORS[s.type] ?? "var(--muted)";
 
   return (
     <div className="px-3.5 py-3 flex flex-col gap-3.5">

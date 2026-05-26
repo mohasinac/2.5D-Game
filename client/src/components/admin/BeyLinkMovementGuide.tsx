@@ -3,7 +3,6 @@
 // panel triggered by the "?" button in LinksTab.
 
 import React, { useState } from "react";
-import { C } from "@/styles/theme";
 
 // ─── Shared SVG primitives ────────────────────────────────────────────────────
 
@@ -62,7 +61,7 @@ function OrbitCircle({ cx, cy, r, color = "#ffffff11" }: { cx:number; cy:number;
   return <circle cx={cx} cy={cy} r={r} stroke={color} strokeWidth={1} fill="none" strokeDasharray="4 4" />;
 }
 
-function Label({ x, y, text, color = C.muted }: { x:number; y:number; text:string; color?:string }) {
+function Label({ x, y, text, color = "var(--muted)" }: { x:number; y:number; text:string; color?:string }) {
   return <text x={x} y={y} textAnchor="middle" fill={color} fontSize={9} fontFamily="system-ui">{text}</text>;
 }
 
@@ -73,7 +72,7 @@ const DG_W = 220, DG_H = 150;
 function DiagramWrapper({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
   return (
     <div className="bg-bg3 border border-border-c rounded-[10px] overflow-hidden flex flex-col">
-      <svg viewBox={`0 0 ${DG_W} ${DG_H}`} width="100%" className="block" style={{ background: "#08080f" }}>
+      <svg viewBox={`0 0 ${DG_W} ${DG_H}`} width="100%" className="block bg-[#08080f]">
         <defs>
           <marker id="ah" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
             <polygon points="0 0, 6 3, 0 6" fill="#ffffff88" />
@@ -457,7 +456,7 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
                 These patterns run every tick for <strong className="text-theme-text">any 2-bey stack</strong> regardless of control mode.
                 They maintain contact geometry while effects fire independently.
               </div>
-              <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))" }}>
+              <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(200px,1fr))]">
                 <DiagTipStack />
                 <DiagTopMountFriendly />
                 <DiagTopMountHostile />
@@ -474,7 +473,7 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
                 <code className="text-[#818cf8] bg-[#818cf811] px-1 rounded-[3px]"> groupPattern</code> on the link.
                 The 2-body orbit still runs for each pair; group forces are applied on top.
               </div>
-              <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))" }}>
+              <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(200px,1fr))]">
                 <DiagChain />
                 <DiagStar />
                 <DiagWedge />
@@ -519,7 +518,7 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
                 {" "}who steers the formation's velocity vector. The orbit pattern for the link type still applies; control adds a
                 <strong className="text-theme-text"> 0.6-force directional nudge</strong> on top.
               </div>
-              <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))" }}>
+              <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(200px,1fr))]">
                 <DiagControlAuto />
                 <DiagControlInitiator />
                 <DiagControlPlayer />
@@ -561,11 +560,11 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
                 The former victim becomes the new initiator. Enable per-link with
                 <code className="text-[#f43f5e] bg-[#f43f5e11] px-1 rounded-[3px]"> hijackable: true</code>.
               </div>
-              <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))" }}>
+              <div className="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(200px,1fr))]">
                 <DiagHijackFlow />
               </div>
 
-              <div className="mt-4 grid gap-3 text-[11px]" style={{ gridTemplateColumns: "1fr 1fr" }}>
+              <div className="mt-4 grid gap-3 text-[11px] [grid-template-columns:1fr_1fr]">
                 {/* Victim panel mock */}
                 <div className="border border-[#818cf8] rounded-[10px] p-3 bg-[#818cf808]">
                   <div className="text-[10px] font-bold text-[#818cf8] mb-2 tracking-[1px]">VICTIM HUD (in-game)</div>

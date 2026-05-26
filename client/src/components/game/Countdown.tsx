@@ -44,23 +44,10 @@ export function Countdown({ status, timer, show }: CountdownProps) {
   return (
     <div
       aria-live="polite"
-      style={{
-        position: "absolute",
-        inset: 0,
-        background: flash ? "rgba(255,200,60,0.18)" : "rgba(0,0,0,0)",
-        transition: "background 200ms",
-      }}
-      className="flex items-center justify-center pointer-events-none z-[60]"
+      className={`absolute inset-0 flex items-center justify-center pointer-events-none z-[60] [transition:background_200ms] ${flash ? "bg-[rgba(255,200,60,0.18)]" : "bg-transparent"}`}
     >
       <div
-        style={{
-          fontSize: flash ? "10rem" : "8rem",
-          color: flash ? "#ffcc44" : "#f1f5f9",
-          textShadow: "0 0 24px rgba(0,0,0,0.7), 0 0 6px rgba(255,255,255,0.4)",
-          transform: flash ? "scale(1.12)" : "scale(1)",
-          transition: "transform 200ms ease-out, font-size 200ms",
-        }}
-        className="font-mono font-black tracking-[0.08em]"
+        className={`font-mono font-black tracking-[0.08em] [text-shadow:0_0_24px_rgba(0,0,0,0.7),0_0_6px_rgba(255,255,255,0.4)] [transition:transform_200ms_ease-out,font-size_200ms] ${flash ? "text-[10rem] text-[#ffcc44] scale-[1.12]" : "text-[8rem] text-[#f1f5f9] scale-100"}`}
       >
         {flash ? "Let It Rip!" : seconds}
       </div>

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { C, alpha } from "@/styles/theme";
 
 export type LoadingStep =
   | "connecting-ws"
@@ -129,7 +128,7 @@ function BeybladeSpinner({ color, spinning }: { color: string; spinning: boolean
       ref={canvasRef}
       width={96}
       height={96}
-      style={{ display: "block" }}
+      className="block"
     />
   );
 }
@@ -144,14 +143,7 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error }: Loadin
   const barColor = error ? "#ef4444" : isDone ? "#22c55e" : activeColor;
 
   return (
-    <div data-testid="loading-progress" style={{
-      position: "absolute", inset: 0,
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center",
-      background: "radial-gradient(ellipse at center, #0a1428 0%, #050c18 100%)",
-      color: C.text, padding: 32, zIndex: 50,
-      overflow: "hidden",
-    }}>
+    <div data-testid="loading-progress" className="absolute inset-0 z-[50] flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,#0a1428_0%,#050c18_100%)] text-theme-text p-8 overflow-hidden">
       {/* Background particle dots (pure CSS, no JS) */}
       {[...Array(12)].map((_, i) => (
         <div key={i} style={{
@@ -173,64 +165,49 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error }: Loadin
       `}</style>
 
       {/* Spinning beyblade */}
-      <div style={{ marginBottom: 20, filter: error ? "grayscale(0.8)" : "none" }}>
+      <div className={`mb-5 ${error ? "[filter:grayscale(0.8)]" : ""}`}>
         <BeybladeSpinner color={activeColor} spinning={!error && !isDone} />
       </div>
 
       {/* Status */}
       <div style={{
-        fontSize: 13, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
-        color: barColor, marginBottom: 4,
+        color: barColor,
         animation: !error && !isDone ? "glow 1.4s ease-in-out infinite alternate" : "none",
-      }}>
+      }} className="text-[13px] font-bold tracking-[0.1em] uppercase mb-1">
         {error ? "Connection Error" : STEP_LABEL[currentStep]}
       </div>
-      <div style={{ fontSize: 11, color: C.faint, marginBottom: 20, fontFamily: "monospace" }}>
+      <div className="text-[11px] text-theme-faint mb-5 font-mono">
         Step {idx + 1} / {totalSteps} · {pct}%
       </div>
 
       {/* Progress bar */}
-      <div style={{
-        width: 320, height: 6,
-        background: "rgba(255,255,255,0.06)",
-        borderRadius: 3, overflow: "hidden",
-        border: `1px solid rgba(255,255,255,0.08)`,
-        marginBottom: 14,
-      }}>
-        <div style={{
-          width: `${pct}%`, height: "100%",
-          background: `linear-gradient(90deg, ${barColor}bb, ${barColor})`,
-          borderRadius: 3,
-          transition: "width 300ms ease-out",
-          boxShadow: `0 0 8px ${barColor}88`,
-        }} />
+      <div className="w-[320px] h-[6px] bg-white/[.06] rounded-[3px] overflow-hidden border border-white/[.08] mb-[14px]">
+        <div
+          className="h-full rounded-[3px] [transition:width_300ms_ease-out]"
+          style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${barColor}bb, ${barColor})`, boxShadow: `0 0 8px ${barColor}88` }}
+        />
       </div>
 
       {/* Step dots */}
-      <div style={{ display: "flex", gap: 10 }}>
+      <div className="flex gap-[10px]">
         {STEP_ORDER.map((step, i) => {
           const done   = i < idx;
           const active = i === idx;
           const c      = done ? "#22c55e" : active ? barColor : "rgba(255,255,255,0.12)";
           return (
-            <div key={step} data-testid={`loading-step-${step}`} title={STEP_LABEL[step]} style={{
-              width: active ? 24 : 8, height: 8, borderRadius: 4,
-              background: c,
-              transition: "all 300ms ease",
-              boxShadow: active ? `0 0 8px ${c}` : "none",
-            }} />
+            <div
+              key={step}
+              data-testid={`loading-step-${step}`}
+              title={STEP_LABEL[step]}
+              className="h-2 rounded-[4px] [transition:all_300ms_ease]"
+              style={{ width: active ? 24 : 8, background: c, boxShadow: active ? `0 0 8px ${c}` : "none" }}
+            />
           );
         })}
       </div>
 
       {error && (
-        <div style={{
-          marginTop: 20, padding: "10px 16px",
-          background: "rgba(239,68,68,0.12)",
-          border: "1px solid rgba(239,68,68,0.35)",
-          borderRadius: 8, color: "#ef4444", fontSize: 12,
-          maxWidth: 360, textAlign: "center", lineHeight: 1.5,
-        }}>
+        <div className="mt-5 px-4 py-[10px] bg-red-10 border border-[rgba(239,68,68,0.35)] rounded-lg text-theme-red text-[12px] max-w-[360px] text-center leading-[1.5]">
           {error}
         </div>
       )}

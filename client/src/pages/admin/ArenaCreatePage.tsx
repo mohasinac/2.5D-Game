@@ -135,7 +135,7 @@ export function ArenaCreatePage() {
 
         <div>
           <label className="block text-xs text-muted mb-1.5">Size (cm) — Width × Height</label>
-          <div className="grid gap-2 items-center" style={{ gridTemplateColumns: "1fr auto 1fr" }}>
+          <div className="grid gap-2 items-center grid-cols-[1fr_auto_1fr]">
             <input type="number" min={10} max={100} step={1} value={form.widthCm}
               onChange={e => set("widthCm", Math.max(10, +e.target.value))}
               className="w-full bg-bg3 border border-border rounded-md px-3 py-2 text-sm text-text text-right" />

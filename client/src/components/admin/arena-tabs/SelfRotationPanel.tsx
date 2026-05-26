@@ -1,7 +1,6 @@
 // Reusable self-rotation config editor for positioned arena features.
 // Used in ObstaclesTab, TurretsTab, FeaturesTab, PortalsTab, WaterBodiesTab.
 
-import { C } from "@/styles/theme";
 import type { SelfRotationConfig, SelfRotationType } from "@/types/arenaConfigNew";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
@@ -49,7 +48,7 @@ export default function SelfRotationPanel({ rotation, selfRotation, onChangeRota
       </div>
 
       {/* Self-rotation toggle */}
-      <div className="flex items-center gap-2" style={{ marginBottom: enabled ? 8 : 0 }}>
+      <div className={`flex items-center gap-2 ${enabled ? "mb-2" : "mb-0"}`}>
         <label className="text-xs text-muted min-w-[100px]">Continuous spin</label>
         <input
           type="checkbox"
@@ -74,8 +73,7 @@ export default function SelfRotationPanel({ rotation, selfRotation, onChangeRota
                 type="range" min={1} max={360} step={1}
                 value={selfRotation.speedDegPerSec}
                 onChange={e => patch({ speedDegPerSec: +e.target.value })}
-                className="w-full"
-                style={{ accentColor: C.blue }}
+                className="w-full accent-[var(--blue)]"
               />
             </div>
 
@@ -88,12 +86,7 @@ export default function SelfRotationPanel({ rotation, selfRotation, onChangeRota
                     key={dir}
                     type="button"
                     onClick={() => patch({ direction: dir })}
-                    className="flex-1 py-1 rounded-md text-[11px] cursor-pointer border"
-                    style={{
-                      background: selfRotation.direction === dir ? C.blue : C.bg2,
-                      color: selfRotation.direction === dir ? "#fff" : C.muted,
-                      borderColor: selfRotation.direction === dir ? C.blue : C.border,
-                    }}
+                    className={`flex-1 py-1 rounded-md text-[11px] cursor-pointer border ${selfRotation.direction === dir ? "bg-[var(--blue)] text-white border-[var(--blue)]" : "bg-bg2 text-theme-muted border-border-c"}`}
                   >
                     {dir === "cw" ? "↻ CW" : "↺ CCW"}
                   </button>
@@ -111,7 +104,7 @@ export default function SelfRotationPanel({ rotation, selfRotation, onChangeRota
                   { value: "world", label: "World (fixed in space)" },
                 ]}
                 onChange={v => patch({ space: v as "local" | "world" })}
-                style={{ width: "100%" }}
+                className="w-full"
               />
             </div>
           </div>
@@ -126,12 +119,7 @@ export default function SelfRotationPanel({ rotation, selfRotation, onChangeRota
                   type="button"
                   onClick={() => patch({ type: rt.value })}
                   title={rt.desc}
-                  className="py-1 px-2.5 rounded-md text-[11px] cursor-pointer border"
-                  style={{
-                    background: rotType === rt.value ? C.blue : C.bg2,
-                    color: rotType === rt.value ? "#fff" : C.muted,
-                    borderColor: rotType === rt.value ? C.blue : C.border,
-                  }}
+                  className={`py-1 px-2.5 rounded-md text-[11px] cursor-pointer border ${rotType === rt.value ? "bg-[var(--blue)] text-white border-[var(--blue)]" : "bg-bg2 text-theme-muted border-border-c"}`}
                 >
                   {rt.label}
                 </button>
@@ -226,7 +214,7 @@ export default function SelfRotationPanel({ rotation, selfRotation, onChangeRota
                   type="checkbox"
                   checked={selfRotation.oscillateReturn !== false}
                   onChange={e => patch({ oscillateReturn: e.target.checked })}
-                  style={{ accentColor: C.blue }}
+                  className="accent-[var(--blue)]"
                 />
                 Return to origin (pendulum) — uncheck to snap back instantly
               </label>

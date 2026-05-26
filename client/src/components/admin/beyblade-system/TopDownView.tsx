@@ -7,7 +7,7 @@
  */
 
 import { useRef, useEffect, useState } from "react";
-import { C, HEX, alpha } from "@/styles/theme";
+import { HEX } from "@/styles/theme";
 import { renderRadius, synthesizeRadialCache } from "@/types/beybladeSystem";
 import { computeEffectiveRadius } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
@@ -477,22 +477,17 @@ export function TopDownView({ resolved, showMaterial = false, showMovementPath =
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-        <span style={{ fontSize: 10, color: C.faint }}>Top-Down View</span>
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+      <div className="flex items-center justify-between mb-[6px]">
+        <span className="text-[10px] text-theme-faint">Top-Down View</span>
+        <div className="flex gap-[6px] items-center">
           {showMovementPath && resolved && (
-            <span style={{ fontSize: 10, color: C.muted, background: C.bg2, padding: "2px 7px", borderRadius: 4, border: `1px solid ${C.border}` }}>
+            <span className="text-[10px] text-theme-muted bg-bg2 py-[2px] px-[7px] rounded-[4px] border border-border-c">
               {tipShape} pattern
             </span>
           )}
           <button
             onClick={() => setMaterialMode((m) => !m)}
-            style={{
-              padding: "3px 8px", fontSize: 10, borderRadius: 5, cursor: "pointer",
-              background: materialMode ? alpha(C.blue, 0.13) : C.bg2,
-              color: materialMode ? C.blue : C.muted,
-              border: `1px solid ${materialMode ? alpha(C.blue, 0.33) : C.border}`,
-            }}
+            className={`py-[3px] px-2 text-[10px] rounded-[5px] cursor-pointer border ${materialMode ? "bg-blue-13 text-theme-blue border-[rgba(59,130,246,0.33)]" : "bg-bg2 text-theme-muted border-border-c"}`}
           >
             {materialMode ? "Image" : "Material"}
           </button>
@@ -502,7 +497,7 @@ export function TopDownView({ resolved, showMaterial = false, showMovementPath =
         ref={canvasRef}
         width={SIZE}
         height={SIZE}
-        style={{ borderRadius: 8, border: `1px solid ${C.border}`, display: "block", width: "100%", height: "auto" }}
+        className="rounded-lg border border-border-c block w-full h-auto"
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import { C, alpha } from "@/styles/theme";
+import React from "react";
 
 interface Props {
   label: string;
@@ -10,44 +10,30 @@ interface Props {
 
 export function SubComponentToggle({ label, description, enabled, onToggle, children }: Props) {
   return (
-    <div style={{ border: `1px solid ${enabled ? alpha(C.blue, 0.27) : C.border}`, borderRadius: 10, overflow: "hidden", transition: "border-color 150ms" }}>
+    <div className={`rounded-[10px] overflow-hidden transition-[border-color] duration-150 border ${enabled ? "border-[rgba(59,130,246,0.27)]" : "border-border-c"}`}>
       {/* Header row */}
       <label
-        style={{
-          display: "flex", alignItems: "center", gap: 12, padding: "12px 16px",
-          background: enabled ? alpha(C.blue, 0.06) : C.bg2, cursor: "pointer",
-          userSelect: "none",
-        }}
+        className={`flex items-center gap-3 px-4 py-3 cursor-pointer select-none ${enabled ? "bg-[rgba(59,130,246,0.06)]" : "bg-bg2"}`}
       >
         <div
           onClick={() => onToggle(!enabled)}
-          style={{
-            width: 36, height: 20, borderRadius: 10, flexShrink: 0,
-            background: enabled ? C.blue : C.bg3,
-            border: `1px solid ${enabled ? C.blue : C.border}`,
-            position: "relative", transition: "background 150ms",
-          }}
+          className={`w-9 h-5 rounded-[10px] shrink-0 relative transition-[background] duration-150 border ${enabled ? "bg-theme-blue border-theme-blue" : "bg-bg3 border-border-c"}`}
         >
           <div
-            style={{
-              position: "absolute", top: 2, left: enabled ? 18 : 2,
-              width: 14, height: 14, borderRadius: "50%",
-              background: enabled ? "#fff" : C.muted,
-              transition: "left 150ms, background 150ms",
-            }}
+            className={`absolute top-[2px] w-[14px] h-[14px] rounded-full transition-[left,background] duration-150 ${enabled ? "left-[18px] bg-white" : "left-[2px] bg-theme-muted"}`}
           />
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: enabled ? C.text : C.muted }}>{label}</div>
+        <div className="flex-1">
+          <div className={`text-[13px] font-semibold ${enabled ? "text-theme-text" : "text-theme-muted"}`}>{label}</div>
           {description && (
-            <div style={{ fontSize: 11, color: C.faint, marginTop: 1 }}>{description}</div>
+            <div className="text-[11px] text-theme-faint mt-[1px]">{description}</div>
           )}
         </div>
       </label>
 
       {/* Expandable body */}
       {enabled && (
-        <div style={{ padding: "14px 16px", borderTop: `1px solid ${C.border}`, background: C.bg1 }}>
+        <div className="px-4 py-[14px] border-t border-border-c bg-bg1">
           {children}
         </div>
       )}

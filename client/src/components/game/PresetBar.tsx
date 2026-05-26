@@ -26,11 +26,7 @@ export function PresetBar<T = unknown>({ presets, onSelect, selectedId, label }:
             <button
               key={p.id}
               onClick={() => onSelect(p)}
-              style={{
-                border: `1px solid ${active ? "#4488ff" : "rgba(255,255,255,0.12)"}`,
-                background: active ? "rgba(68,136,255,0.15)" : "rgba(10,14,28,0.7)",
-              }}
-              className="shrink-0 w-20 px-1 py-1.5 rounded-lg cursor-pointer flex flex-col items-center gap-1"
+              className={`shrink-0 w-20 px-1 py-1.5 rounded-lg cursor-pointer flex flex-col items-center gap-1 border ${active ? "border-[#4488ff] bg-[rgba(68,136,255,0.15)]" : "border-[rgba(255,255,255,0.12)] bg-[rgba(10,14,28,0.7)]"}`}
             >
               {p.thumbnail ? (
                 <img src={p.thumbnail} alt={p.name}
@@ -39,11 +35,7 @@ export function PresetBar<T = unknown>({ presets, onSelect, selectedId, label }:
                 <div className="w-12 h-12 rounded-md bg-white/[0.06] flex items-center justify-center text-[1.4rem]">📦</div>
               )}
               <span
-                style={{ color: active ? "#88aaff" : "#aabbcc" }}
-                className={
-                  "text-[0.55rem] text-center leading-[1.2] max-w-[72px] overflow-hidden text-ellipsis whitespace-nowrap block " +
-                  (active ? "font-bold" : "font-normal")
-                }
+                className={`text-[0.55rem] text-center leading-[1.2] max-w-[72px] overflow-hidden text-ellipsis whitespace-nowrap block ${active ? "font-bold text-[#88aaff]" : "font-normal text-[#aabbcc]"}`}
               >
                 {p.name}
               </span>

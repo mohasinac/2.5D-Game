@@ -12,7 +12,6 @@
  */
 
 import { useState } from "react";
-import { C, alpha } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type { PartShape, FourierRadialProfile, BezierPath, BezierSplineProfile, PartImages } from "@/types/beybladeSystem";
 import { synthesizeRadialCache } from "@/types/beybladeSystem";
@@ -199,11 +198,11 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
 
   // ── Workflow badge ────────────────────────────────────────────────────────
   const TIER_META: Record<ReturnType<typeof workflowTier>, { label: string; color: string; desc: string }> = {
-    full:    { label: "Full Geometry",        color: C.green,  desc: "Top + Side + Bottom — complete 3-view geometry" },
-    lathe:   { label: "Revolution Profile",   color: C.blue,   desc: "Top footprint + side-profile spline" },
-    extrude: { label: "Uniform Extrusion",    color: C.yellow, desc: "Top silhouette extruded to height" },
-    profile: { label: "Profile Only",         color: C.orange, desc: "Side-profile spline with circular plan" },
-    preset:  { label: "Preset",               color: C.faint,  desc: "No images — uses preset geometry" },
+    full:    { label: "Full Geometry",        color: "var(--green)",  desc: "Top + Side + Bottom — complete 3-view geometry" },
+    lathe:   { label: "Revolution Profile",   color: "var(--blue)",   desc: "Top footprint + side-profile spline" },
+    extrude: { label: "Uniform Extrusion",    color: "var(--yellow)", desc: "Top silhouette extruded to height" },
+    profile: { label: "Profile Only",         color: "var(--orange)", desc: "Side-profile spline with circular plan" },
+    preset:  { label: "Preset",               color: "var(--faint)",  desc: "No images — uses preset geometry" },
   };
   const tierMeta = TIER_META[tier];
   const hasAnyImage = !!(images.topView || images.sideView || images.bottomView);
@@ -262,7 +261,7 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
       <div className="flex items-center gap-2">
         <span className="text-[12px] text-muted">Shape workflow:</span>
         <span
-          style={{ background: alpha(tierMeta.color, 0.09), color: tierMeta.color, border: `1px solid ${alpha(tierMeta.color, 0.27)}` }}
+          style={{ background: `color-mix(in srgb, ${tierMeta.color} 9%, transparent)`, color: tierMeta.color, border: `1px solid color-mix(in srgb, ${tierMeta.color} 27%, transparent)` }}
           className="text-[11px] px-[9px] py-0.5 rounded-full font-semibold"
         >
           {tierMeta.label}

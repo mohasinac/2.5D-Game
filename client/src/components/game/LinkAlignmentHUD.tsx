@@ -9,7 +9,6 @@
  *   - For severed links: "Ndeg until reconnect" with a countdown arc.
  *   - Status summary bar at the bottom showing the nearest actionable link.
  */
-import { alpha } from "@/styles/theme";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -103,32 +102,32 @@ function DualCompass({ link }: { link: LinkAlignmentInfo }) {
     : "#ef4444";
 
   return (
-    <svg width={W} height={H} style={{ overflow: "visible", display: "block" }}>
+    <svg width={W} height={H} className="overflow-visible block">
       {/* ── Error margin tolerance arc on arena A ── */}
       {!isAlways && !isSevered && (
         <path
           d={`M${cx1} ${cy} L${arcS} ${arcT} A${r} ${r} 0 ${marginRad * 2 > Math.PI ? 1 : 0} 1 ${arcE} ${arcU} Z`}
-          fill={alpha("#22c55e", 0.18)} stroke={alpha("#22c55e", 0.4)} strokeWidth={0.5}
+          fill="color-mix(in srgb, #22c55e 18%, transparent)" stroke="color-mix(in srgb, #22c55e 40%, transparent)" strokeWidth={0.5}
         />
       )}
 
       {/* ── Arena A circle ── */}
       {isAlways ? (
         <>
-          <circle cx={cx1} cy={cy} r={r} fill={alpha("#a855f7", 0.08)} stroke={alpha("#a855f7", 0.5)} strokeWidth={2} strokeDasharray="6 3" />
-          <circle cx={cx1} cy={cy} r={r - 6} fill="none" stroke={alpha("#a855f7", 0.25)} strokeWidth={1} strokeDasharray="3 3" />
+          <circle cx={cx1} cy={cy} r={r} fill="color-mix(in srgb, #a855f7 8%, transparent)" stroke="color-mix(in srgb, #a855f7 50%, transparent)" strokeWidth={2} strokeDasharray="6 3" />
+          <circle cx={cx1} cy={cy} r={r - 6} fill="none" stroke="color-mix(in srgb, #a855f7 25%, transparent)" strokeWidth={1} strokeDasharray="3 3" />
         </>
       ) : isSevered ? (
-        <circle cx={cx1} cy={cy} r={r} fill="none" stroke={alpha("#475569", 0.6)} strokeWidth={2} strokeDasharray="5 5" />
+        <circle cx={cx1} cy={cy} r={r} fill="none" stroke="color-mix(in srgb, #475569 60%, transparent)" strokeWidth={2} strokeDasharray="5 5" />
       ) : (
-        <circle cx={cx1} cy={cy} r={r} fill={alpha(color, 0.06)} stroke={alpha(color, 0.45)} strokeWidth={2} />
+        <circle cx={cx1} cy={cy} r={r} fill={`color-mix(in srgb, ${color} 6%, transparent)`} stroke={`color-mix(in srgb, ${color} 45%, transparent)`} strokeWidth={2} />
       )}
 
       {/* ── Arena B circle ── */}
       {isAlways ? (
-        <circle cx={cx2} cy={cy} r={r} fill={alpha("#a855f7", 0.08)} stroke={alpha("#a855f7", 0.5)} strokeWidth={2} strokeDasharray="6 3" />
+        <circle cx={cx2} cy={cy} r={r} fill="color-mix(in srgb, #a855f7 8%, transparent)" stroke="color-mix(in srgb, #a855f7 50%, transparent)" strokeWidth={2} strokeDasharray="6 3" />
       ) : (
-        <circle cx={cx2} cy={cy} r={r} fill={alpha(color, 0.04)} stroke={alpha("#334155", 0.6)} strokeWidth={1.5} />
+        <circle cx={cx2} cy={cy} r={r} fill={`color-mix(in srgb, ${color} 4%, transparent)`} stroke="color-mix(in srgb, #334155 60%, transparent)" strokeWidth={1.5} />
       )}
 
       {/* ── Opening notch on arena A (rotates with degreesOff) ── */}
@@ -140,7 +139,7 @@ function DualCompass({ link }: { link: LinkAlignmentInfo }) {
 
       {/* ── Opening notch on arena B (fixed, points left) ── */}
       {!isAlways && (
-        <circle cx={ox2} cy={oy2} r={3.5} fill={alpha("#3b82f6", 0.8)} />
+        <circle cx={ox2} cy={oy2} r={3.5} fill="color-mix(in srgb, #3b82f6 80%, transparent)" />
       )}
 
       {/* ── Connection line between openings ── */}
@@ -179,7 +178,7 @@ function DualCompass({ link }: { link: LinkAlignmentInfo }) {
           <text x={cx1} y={cy + 4} textAnchor="middle" fontSize={9} fill="#475569" fontWeight="bold">
             {degUntilAligned.toFixed(0)}°
           </text>
-          <text x={cx1} y={cy + 15} textAnchor="middle" fontSize={7} fill={alpha("#475569", 0.7)}>
+          <text x={cx1} y={cy + 15} textAnchor="middle" fontSize={7} fill="color-mix(in srgb, #475569 70%, transparent)">
             to reconnect
           </text>
         </>
@@ -214,23 +213,20 @@ function LinkCard({ link }: { link: LinkAlignmentInfo }) {
       `}</style>
 
       {/* Dual compass */}
-      <div style={{
-        animation: isAligned ? "lhudGlow 1.5s ease-in-out infinite" : "none",
-        background: "rgba(15,23,42,0.8)",
-        border: `1px solid ${alpha(color, isSevered ? 0.2 : 0.35)}`,
-        borderRadius: 10, padding: "6px 8px",
-      }}>
+      <div
+        className={`bg-[rgba(15,23,42,0.8)] rounded-[10px] px-2 py-[6px] ${isAligned ? "[animation:lhudGlow_1.5s_ease-in-out_infinite]" : ""}`}
+        style={{ border: `1px solid ${`color-mix(in srgb, ${color} ${isSevered ? "20%" : "35%"}, transparent)`}` }}
+      >
         <DualCompass link={link} />
       </div>
 
       {/* Angular readout */}
-      <div style={{
-        background: isAligned ? alpha(color, 0.12) : alpha("#0f172a", 0.8),
-        border: `1px solid ${alpha(color, 0.3)}`,
-        animation: isAligned ? "lhudFlash 1.2s ease-in-out infinite" : "none",
-      }} className="flex items-center gap-[5px] px-[10px] py-[3px] rounded-[20px]">
+      <div
+        className={`flex items-center gap-[5px] px-[10px] py-[3px] rounded-[20px] ${isAligned ? "[animation:lhudFlash_1.2s_ease-in-out_infinite]" : ""}`}
+        style={{ background: `color-mix(in srgb, ${isAligned ? color : "#0f172a"} ${isAligned ? "12%" : "80%"}, transparent)`, border: `1px solid color-mix(in srgb, ${color} 30%, transparent)` }}
+      >
         <span className="text-[13px] leading-none">{LINK_ICONS[link.linkType]}</span>
-        <span style={{ color, fontFamily: "monospace" }} className="text-[10px] font-bold">
+        <span className="text-[10px] font-bold font-mono" style={{ color }}>
           {link.alignmentStatus === "always_open"
             ? "OPEN"
             : link.alignmentStatus === "aligned"
@@ -256,25 +252,17 @@ function LinkCard({ link }: { link: LinkAlignmentInfo }) {
 
       {/* Trampoline opt-out hint */}
       {link.linkType === "trampoline" && link.optOutTicksLeft != null && (
-        <div style={{
-          color: "#eab308",
-          background: alpha("#eab308", 0.1),
-          border: `1px solid ${alpha("#eab308", 0.3)}`,
-          animation: "lhudFlash 0.8s ease-in-out infinite",
-        }} className="text-[9px] font-bold rounded-[6px] px-[6px] py-[2px]">
+        <div className="text-[9px] font-bold rounded-[6px] px-[6px] py-[2px] text-theme-yellow bg-[rgba(234,179,8,0.1)] border border-[rgba(234,179,8,0.3)] [animation:lhudFlash_0.8s_ease-in-out_infinite]">
           SPACE/↓ to stay · {link.optOutTicksLeft}t
         </div>
       )}
 
       {/* Aligned flash outer ring */}
       {isAligned && (
-        <div style={{
-          position: "absolute", inset: -4,
-          borderRadius: 14,
-          border: `2px solid ${alpha(color, 0.35)}`,
-          animation: "lhudFlash 1.2s ease-in-out infinite",
-          pointerEvents: "none",
-        }} />
+        <div
+          className="absolute pointer-events-none rounded-[14px] border-2 [animation:lhudFlash_1.2s_ease-in-out_infinite]"
+          style={{ inset: -4, borderColor: `color-mix(in srgb, ${color} 35%, transparent)` }}
+        />
       )}
     </div>
   );
@@ -289,13 +277,13 @@ function SummaryBar({ links }: { links: LinkAlignmentInfo[] }) {
   const color = STATUS_COLORS[nearest.alignmentStatus];
 
   return (
-    <div style={{
-      background: "rgba(15,23,42,0.92)",
-      border: `1px solid ${alpha(color, 0.35)}`,
-    }} className="flex items-center gap-2 px-[14px] py-[5px] rounded-[10px] text-[11px]">
+    <div
+      className="flex items-center gap-2 px-[14px] py-[5px] rounded-[10px] text-[11px] bg-[rgba(15,23,42,0.92)]"
+      style={{ border: `1px solid color-mix(in srgb, ${color} 35%, transparent)` }}
+    >
       <span className="text-[14px]">{LINK_ICONS[nearest.linkType]}</span>
       <span className="text-theme-muted">{nearest.linkType.toUpperCase()}</span>
-      <span style={{ color }} className="font-bold">
+      <span className="font-bold" style={{ color }}>
         {nearest.alignmentStatus === "always_open"
           ? "ALWAYS OPEN — ENTER"
           : nearest.alignmentStatus === "aligned"

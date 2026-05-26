@@ -5,7 +5,6 @@
 // exploded stack, so part authors can sanity-check how their upload will look
 // in context before saving.
 
-import { C } from "@/styles/theme";
 import type { PartImages, PartDimensions } from "@/types/beybladeSystem";
 
 interface Props {
@@ -45,8 +44,7 @@ export function PartLayerPreview({ images, partKind, displayName, color, dimensi
 
   return (
     <div
-      className="flex flex-col gap-4 px-4 py-5 border border-border-c rounded-xl min-h-[520px]"
-      style={{ background: `linear-gradient(180deg, ${C.bg1} 0%, ${C.bg0} 100%)` }}
+      className="flex flex-col gap-4 px-4 py-5 border border-border-c rounded-xl min-h-[520px] bg-[linear-gradient(180deg,var(--bg1)_0%,var(--bg0)_100%)]"
     >
       <div className="text-center">
         <div className="text-[12px] text-theme-text font-semibold">{displayName}</div>
@@ -83,7 +81,7 @@ function SlotRow({
   return (
     <div className="flex items-center gap-3.5">
       {/* Label gutter */}
-      <div className="w-20 shrink-0 text-[10px] text-theme-muted text-right" style={{ fontVariant: "small-caps", letterSpacing: 0.5 }}>
+      <div className="w-20 shrink-0 text-[10px] text-theme-muted text-right [font-variant:small-caps] tracking-[0.5px]">
         <div className={`font-semibold ${hasImage ? "text-theme-text" : "text-theme-muted"}`}>{slot.label}</div>
         <div className="text-[9px] mt-0.5 opacity-70">{slot.hint}</div>
         {!hasImage && (
@@ -99,8 +97,7 @@ function SlotRow({
           <img
             src={url}
             alt={slot.label}
-            className="max-w-[240px] max-h-[140px] w-auto h-auto object-contain"
-            style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.45))" }}
+            className="max-w-[240px] max-h-[140px] w-auto h-auto object-contain [filter:drop-shadow(0_4px_8px_rgba(0,0,0,0.45))]"
           />
         ) : (
           <ProxyShape partKind={partKind} slot={slot.key} color={color} />
@@ -131,14 +128,13 @@ function ProxyShape({
   partKind, slot, color,
 }: { partKind: PartKind; slot: keyof PartImages; color: string }) {
   const stroke = "rgba(255,255,255,0.18)";
-  const dropShadow = "drop-shadow(0 4px 8px rgba(0,0,0,0.45))";
   const w = 200;
   const h = 110;
 
   // Bit-beast chip — same in all 3 slots.
   if (partKind === "bitBeast") {
     return (
-      <svg width={w} height={h} viewBox="0 0 200 110" style={{ filter: dropShadow }}>
+      <svg width={w} height={h} viewBox="0 0 200 110" className="[filter:drop-shadow(0_4px_8px_rgba(0,0,0,0.45))]">
         <rect x="60" y="20" width="80" height="70" rx="10" fill={color} stroke={stroke} strokeWidth="2" />
         <circle cx="100" cy="55" r="20" fill="rgba(255,255,255,0.12)" />
       </svg>
@@ -149,13 +145,13 @@ function ProxyShape({
   if (partKind === "tip") {
     if (slot === "sideView") {
       return (
-        <svg width={w} height={h} viewBox="0 0 200 110" style={{ filter: dropShadow }}>
+        <svg width={w} height={h} viewBox="0 0 200 110" className="[filter:drop-shadow(0_4px_8px_rgba(0,0,0,0.45))]">
           <polygon points="100,15 130,90 70,90" fill={color} stroke={stroke} strokeWidth="2" />
         </svg>
       );
     }
     return (
-      <svg width={w} height={h} viewBox="0 0 200 110" style={{ filter: dropShadow }}>
+      <svg width={w} height={h} viewBox="0 0 200 110" className="[filter:drop-shadow(0_4px_8px_rgba(0,0,0,0.45))]">
         <circle cx="100" cy="55" r="14" fill={color} stroke={stroke} strokeWidth="2" />
         <circle cx="100" cy="55" r="5" fill="rgba(255,255,255,0.4)" />
       </svg>
@@ -165,7 +161,7 @@ function ProxyShape({
   // Sub-part — small generic blob.
   if (partKind === "subPart") {
     return (
-      <svg width={w} height={h} viewBox="0 0 200 110" style={{ filter: dropShadow }}>
+      <svg width={w} height={h} viewBox="0 0 200 110" className="[filter:drop-shadow(0_4px_8px_rgba(0,0,0,0.45))]">
         <rect x="70" y="35" width="60" height="40" rx="14" fill={color} stroke={stroke} strokeWidth="2" />
       </svg>
     );
@@ -174,7 +170,7 @@ function ProxyShape({
   // Rings / disks / casings — top view is a torus, side view is an edge-on ellipse.
   if (slot === "sideView") {
     return (
-      <svg width={w} height={h} viewBox="0 0 200 110" style={{ filter: dropShadow }}>
+      <svg width={w} height={h} viewBox="0 0 200 110" className="[filter:drop-shadow(0_4px_8px_rgba(0,0,0,0.45))]">
         <ellipse cx="100" cy="55" rx="92" ry="20" fill={color} stroke={stroke} strokeWidth="2" />
         <ellipse cx="100" cy="48" rx="92" ry="6" fill="rgba(255,255,255,0.08)" />
       </svg>
@@ -182,9 +178,9 @@ function ProxyShape({
   }
   // top or bottom view — concentric ring
   return (
-    <svg width={w} height={h} viewBox="0 0 200 110" style={{ filter: dropShadow }}>
+    <svg width={w} height={h} viewBox="0 0 200 110" className="[filter:drop-shadow(0_4px_8px_rgba(0,0,0,0.45))]">
       <circle cx="100" cy="55" r="48" fill={color} stroke={stroke} strokeWidth="2" />
-      <circle cx="100" cy="55" r="22" fill={C.bg0} />
+      <circle cx="100" cy="55" r="22" fill="var(--bg0)" />
     </svg>
   );
 }

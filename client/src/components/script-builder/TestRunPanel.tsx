@@ -2,7 +2,6 @@
 // Spins a mock beyblade and applies BehaviorRef steps when "Test" is clicked.
 
 import { useEffect, useRef, useState } from "react";
-import { C } from "@/styles/theme";
 import type { BehaviorRef } from "@/types/comboTask";
 
 interface MockBey {
@@ -139,19 +138,13 @@ export function TestRunPanel({ steps }: Props) {
         ref={canvasRef}
         width={W}
         height={H}
-        className="bg-[#0f172a] rounded-xl border border-border-c"
-        style={{ width: W, height: H }}
+        className="bg-[#0f172a] rounded-xl border border-border-c w-[300px] h-[300px]"
       />
       <div className="flex gap-[6px]">
         <button
           type="button"
           onClick={() => setRunning(r => !r)}
-          style={{
-            background: running ? C.red + "22" : C.green + "22",
-            border: `1px solid ${running ? C.red : C.green}44`,
-            color: running ? C.red : C.green,
-          }}
-          className="flex-1 py-[5px] px-3 rounded-lg text-[12px] cursor-pointer font-semibold"
+          className={`flex-1 py-[5px] px-3 rounded-lg text-[12px] cursor-pointer font-semibold border ${running ? "bg-red-10 border-[rgba(239,68,68,0.27)] text-theme-red" : "bg-green-10 border-[rgba(34,197,94,0.27)] text-theme-green"}`}
         >
           {running ? "■ Stop" : "▶ Play"}
         </button>
@@ -159,13 +152,7 @@ export function TestRunPanel({ steps }: Props) {
           type="button"
           onClick={applySteps}
           disabled={steps.length === 0}
-          style={{
-            background: fired ? C.yellow + "44" : C.blue + "22",
-            border: `1px solid ${fired ? C.yellow : C.blue}44`,
-            color: fired ? C.yellow : C.blue,
-            opacity: steps.length === 0 ? 0.4 : 1,
-          }}
-          className="flex-1 py-[5px] px-3 rounded-lg text-[12px] font-semibold"
+          className={`flex-1 py-[5px] px-3 rounded-lg text-[12px] font-semibold border ${steps.length === 0 ? "opacity-40" : "opacity-100"} ${fired ? "bg-yellow-10 border-[rgba(234,179,8,0.27)] text-theme-yellow" : "bg-blue-13 border-[rgba(59,130,246,0.27)] text-theme-blue"}`}
           // cursor is conditional on steps presence
         >
           {fired ? "✓ Fired!" : "⚡ Fire Steps"}

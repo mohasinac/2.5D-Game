@@ -6,7 +6,7 @@
  */
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { C, HEX, alpha } from "@/styles/theme";
+import { HEX } from "@/styles/theme";
 import type { PartPocket } from "@/types/beybladeSystem";
 
 const CANVAS_SIZE = 200;
@@ -164,12 +164,7 @@ export function PocketListEditor({ value, onChange, outerRadius = 35 }: Props) {
         <div className="text-[12px] text-theme-muted">Pockets ({value.length})</div>
         <button
           onClick={() => setPlacing((p) => !p)}
-          className="px-3 py-1 text-[11px] rounded-[6px] cursor-pointer border"
-          style={{
-            background: placing ? C.blue : C.bg3,
-            color: placing ? "#fff" : C.muted,
-            border: `1px solid ${placing ? C.blue : C.border}`,
-          }}
+          className={`px-3 py-1 text-[11px] rounded-[6px] cursor-pointer border ${placing ? "bg-[var(--blue)] text-white border-[var(--blue)]" : "bg-bg3 text-theme-muted border-border-c"}`}
         >
           {placing ? "Click canvas to place…" : "+ Place Pocket"}
         </button>
@@ -201,13 +196,9 @@ export function PocketListEditor({ value, onChange, outerRadius = 35 }: Props) {
               <div
                 key={i}
                 onClick={() => setSelected(selected === i ? null : i)}
-                className="rounded-[6px] px-2.5 py-[5px] cursor-pointer flex items-center gap-2 text-[11px]"
-                style={{
-                  background: selected === i ? alpha(C.blue, 0.09) : C.bg2,
-                  border: `1px solid ${selected === i ? alpha(C.blue, 0.33) : C.border}`,
-                }}
+                className={`rounded-[6px] px-2.5 py-[5px] cursor-pointer flex items-center gap-2 text-[11px] border ${selected === i ? "bg-blue-10 border-[rgba(59,130,246,0.33)]" : "bg-bg2 border-border-c"}`}
               >
-                <div className="w-2 h-2 rounded-full shrink-0" style={{ background: p.ballMaterial === "metal" ? C.muted : C.yellow }} />
+                <div className={`w-2 h-2 rounded-full shrink-0 ${p.ballMaterial === "metal" ? "bg-[var(--muted)]" : "bg-[var(--yellow)]"}`} />
                 <span className="flex-1 text-theme-text">
                   #{i + 1} — {p.ballMaterial} {p.size} @ ({p.position.x},{p.position.y}) h={p.height}mm
                 </span>
@@ -279,12 +270,10 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 
 function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
-    <button onClick={onClick} style={{
-      padding: "2px 8px", fontSize: 10, borderRadius: 4, cursor: "pointer",
-      background: active ? alpha(C.blue, 0.13) : C.bg2,
-      color: active ? C.blue : C.faint,
-      border: `1px solid ${active ? alpha(C.blue, 0.27) : C.border}`,
-    }}>
+    <button
+      onClick={onClick}
+      className={`py-[2px] px-2 text-[10px] rounded-[4px] cursor-pointer border ${active ? "bg-blue-13 text-theme-blue border-[rgba(59,130,246,0.27)]" : "bg-bg2 text-theme-faint border-border-c"}`}
+    >
       {children}
     </button>
   );

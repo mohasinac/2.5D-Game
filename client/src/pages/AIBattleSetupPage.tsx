@@ -260,11 +260,8 @@ export function AIBattleSetupPage() {
                 const active = difficulty === d;
                 return (
                   <button key={d} onClick={() => setDifficulty(d)}
-                    className={`px-3 py-[14px] rounded-[10px] cursor-pointer text-left text-theme-text border ${active ? "border-[var(--dc)]" : "bg-bg2 border-border-c"}`}
-                    style={{
-                      "--dc": info.color,
-                      background: active ? `color-mix(in srgb, var(--dc) 13%, transparent)` : undefined,
-                    } as React.CSSProperties}>
+                    className={`px-3 py-[14px] rounded-[10px] cursor-pointer text-left text-theme-text border ${active ? "border-[var(--dc)] [background:color-mix(in_srgb,var(--dc)_13%,transparent)]" : "bg-bg2 border-border-c"}`}
+                    style={{ "--dc": info.color } as React.CSSProperties}>
                     <div className={`font-bold text-[14px] ${active ? "text-[color:var(--dc)]" : "text-theme-text"}`}>{info.label}</div>
                     <div className="text-[11px] text-theme-faint mt-1 leading-[1.4]">{info.desc}</div>
                   </button>

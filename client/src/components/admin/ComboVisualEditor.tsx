@@ -33,7 +33,7 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
         {label}
       </div>
 
-      <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
+      <div className="grid gap-3 [grid-template-columns:1fr_1fr]">
 
         <Field label="Sprite URL">
           <input
@@ -132,11 +132,11 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
           />
         </Field>
 
-        <div style={{ gridColumn: "1 / -1" }}>
+        <div className="[grid-column:1_/_-1]">
           <div className="text-[11px] text-theme-muted font-semibold uppercase tracking-[0.05em] mb-2">
             Camera Shake
           </div>
-          <div className="grid gap-2" style={{ gridTemplateColumns: "1fr 1fr" }}>
+          <div className="grid gap-2 [grid-template-columns:1fr_1fr]">
             <Field label="Intensity">
               <input
                 className={inputCls}

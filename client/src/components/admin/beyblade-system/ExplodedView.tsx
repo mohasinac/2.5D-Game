@@ -3,7 +3,6 @@
 //   bitBeast → attackRing → weightDisk → spinTrack? → casing → core? → tip
 // SubParts float beside their parent layer.
 
-import { C } from "@/styles/theme";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
 import type {
   ARPart, WDPart, TipPart, CorePart, CasingPart, BitBeastPart, SpinTrackPart, SubPart,
@@ -103,11 +102,8 @@ export function ExplodedView({ resolved, width = 320 }: Props) {
 
   return (
     <div
-      className="flex flex-col items-center gap-[18px] py-5 px-3 border border-border-c rounded-xl min-h-[600px]"
-      style={{
-        background: `linear-gradient(180deg, ${C.bg1} 0%, ${C.bg0} 100%)`,
-        width,
-      }}
+      className="flex flex-col items-center gap-[18px] py-5 px-3 border border-border-c rounded-xl min-h-[600px] bg-[linear-gradient(180deg,var(--bg1)_0%,var(--bg0)_100%)]"
+      style={{ width }}
     >
       <div className="text-[11px] text-theme-faint mb-1 text-center">
         {resolved.system.displayName}
@@ -137,8 +133,7 @@ function LayerCell({ layer, canvasWidth }: { layer: Layer; canvasWidth: number }
     <div className="flex items-center gap-4" style={{ width: canvasWidth }}>
       {/* Label gutter (left) */}
       <div
-        className="w-[72px] text-[10px] text-theme-faint text-right"
-        style={{ fontVariant: "small-caps", letterSpacing: 0.5 }}
+        className="w-[72px] text-[10px] text-theme-faint text-right [font-variant:small-caps] tracking-[0.5px]"
       >
         <div className="font-semibold text-theme-muted">{layer.label}</div>
         <div className="text-[9px] mt-px opacity-70">{part.displayName}</div>
@@ -150,10 +145,8 @@ function LayerCell({ layer, canvasWidth }: { layer: Layer; canvasWidth: number }
           <img
             src={sideImg}
             alt={part.displayName}
-            style={{
-              width: w, height: layer.height, objectFit: "contain",
-              filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.35))",
-            }}
+            className="object-contain [filter:drop-shadow(0_4px_6px_rgba(0,0,0,0.35))]"
+            style={{ width: w, height: layer.height }}
           />
         ) : (
           <ProxyShape
@@ -188,12 +181,11 @@ function ProxyShape({
   width, height, color, layerKey,
 }: { width: number; height: number; color: string; layerKey: string }) {
   const stroke = "rgba(255,255,255,0.18)";
-  const dropShadow = "drop-shadow(0 4px 6px rgba(0,0,0,0.35))";
 
   // Bit beast → small square chip
   if (layerKey === "bitBeast") {
     return (
-      <svg width={width} height={height} viewBox="0 0 100 100" style={{ filter: dropShadow }}>
+      <svg width={width} height={height} viewBox="0 0 100 100" className="[filter:drop-shadow(0_4px_6px_rgba(0,0,0,0.35))]">
         <rect x="20" y="20" width="60" height="60" rx="8" fill={color} stroke={stroke} strokeWidth="2" />
         <circle cx="50" cy="50" r="14" fill="rgba(255,255,255,0.12)" />
       </svg>
@@ -202,14 +194,14 @@ function ProxyShape({
   // Tip → triangle / spike
   if (layerKey === "tip") {
     return (
-      <svg width={width} height={height} viewBox="0 0 100 100" style={{ filter: dropShadow }}>
+      <svg width={width} height={height} viewBox="0 0 100 100" className="[filter:drop-shadow(0_4px_6px_rgba(0,0,0,0.35))]">
         <polygon points="50,15 80,75 20,75" fill={color} stroke={stroke} strokeWidth="2" />
       </svg>
     );
   }
   // Default → flat disc seen edge-on (ellipse)
   return (
-    <svg width={width} height={height} viewBox="0 0 200 60" style={{ filter: dropShadow }}>
+    <svg width={width} height={height} viewBox="0 0 200 60" className="[filter:drop-shadow(0_4px_6px_rgba(0,0,0,0.35))]">
       <ellipse cx="100" cy="30" rx="92" ry="22" fill={color} stroke={stroke} strokeWidth="2" />
       <ellipse cx="100" cy="22" rx="92" ry="6" fill="rgba(255,255,255,0.08)" />
     </svg>

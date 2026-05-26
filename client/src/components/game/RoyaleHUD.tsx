@@ -44,28 +44,19 @@ export function RoyaleHUD({ gameState, myId }: RoyaleHUDProps) {
         transform: "translateX(-50%)",
         zIndex: 55,
         pointerEvents: "none",
-        fontFamily: "monospace",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "3px",
-      }}>
-        <div style={{ fontSize: "0.65rem", color, fontWeight: 700, letterSpacing: "0.05em" }}>
+      }}
+        className="flex flex-col items-center gap-[3px] font-mono"
+      >
+        <div className="text-[0.65rem] font-bold tracking-[0.05em]" style={{ color }}>
           {label}{drain > 0 ? ` — ${drain} spin/s outside` : ""}
         </div>
-        <div style={{
-          fontSize: "1rem", fontWeight: 700, color,
-          textShadow: `0 0 8px ${color}88`,
-        }}>
+        <div className="text-base font-bold" style={{ color, textShadow: `0 0 8px ${color}88` }}>
           {mm}:{ss}
         </div>
         {/* Progress strip */}
-        <div style={{ display: "flex", gap: 3 }}>
+        <div className="flex gap-[3px]">
           {PHASE_COLORS.map((c, i) => (
-            <div key={i} style={{
-              width: 14, height: 4, borderRadius: 2,
-              background: i <= phase ? c : "rgba(255,255,255,0.12)",
-            }} />
+            <div key={i} className="w-[14px] h-[4px] rounded-[2px]" style={{ background: i <= phase ? c : "rgba(255,255,255,0.12)" }} />
           ))}
         </div>
       </div>
@@ -76,39 +67,26 @@ export function RoyaleHUD({ gameState, myId }: RoyaleHUDProps) {
         left: "0.6rem",
         top: "50%",
         transform: "translateY(-50%)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "3px",
         zIndex: 55,
         pointerEvents: "none",
         maxHeight: "60vh",
         overflowY: "hidden",
-      }}>
+      }}
+        className="flex flex-col gap-[3px]"
+      >
         {beyblades.map(bey => {
           const pct = spinPct(bey);
           const isMe = bey.userId === myId || bey.id === myId;
           const barColor = pct >= 40 ? "#44dd88" : pct >= 10 ? "#ff8833" : "#ff3322";
           return (
-            <div key={bey.id} style={{
-              background: isMe ? "rgba(255,200,50,0.15)" : "rgba(10,14,28,0.80)",
-              border: `1px solid ${isMe ? "#ffcc00" : "rgba(255,255,255,0.1)"}`,
-              borderRadius: "0.35rem",
-              padding: "2px 6px",
-              fontFamily: "monospace",
-              fontSize: "0.6rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
-              minWidth: 90,
-              backdropFilter: "blur(2px)",
-            }}>
-              <span style={{ color: isMe ? "#ffcc00" : "#aabbcc", maxWidth: 60, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <div key={bey.id} className={`flex items-center gap-[5px] min-w-[90px] font-mono rounded-[0.35rem] px-[6px] py-[2px] text-[0.6rem] backdrop-blur-sm border ${isMe ? "bg-[rgba(255,200,50,0.15)] border-[#ffcc00]" : "bg-[rgba(10,14,28,0.80)] border-[rgba(255,255,255,0.1)]"}`}>
+              <span className={`max-w-[60px] overflow-hidden text-ellipsis whitespace-nowrap ${isMe ? "text-[#ffcc00]" : "text-[#aabbcc]"}`}>
                 {(bey as any).username ?? bey.userId?.slice(0, 8) ?? "?"}
               </span>
-              <div style={{ flex: 1, height: 3, background: "rgba(255,255,255,0.1)", borderRadius: 2, overflow: "hidden" }}>
-                <div style={{ width: `${pct}%`, height: "100%", background: barColor, borderRadius: 2 }} />
+              <div className="flex-1 h-[3px] rounded-[2px] overflow-hidden bg-white/10">
+                <div className="h-full rounded-[2px]" style={{ width: `${pct}%`, background: barColor }} />
               </div>
-              <span style={{ color: barColor, fontWeight: 700 }}>{pct}%</span>
+              <span className="font-bold" style={{ color: barColor }}>{pct}%</span>
             </div>
           );
         })}

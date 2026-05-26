@@ -1,6 +1,6 @@
 const LBL = "block text-xs text-theme-muted mb-1.5";
 const INP = "w-full bg-bg3 border border-border-c rounded-lg px-3 py-2 text-theme-text text-sm";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, ArenaShape, ArenaTheme, BowlProfile } from "@/types/arenaConfigNew";
 import { ARENA_PRESETS, initializeWallConfig, BOWL_PROFILE_ANGLES, BOWL_PROFILE_LABELS } from "@/types/arenaConfigNew";
@@ -263,12 +263,8 @@ export default function BasicsTab({ config, onChange }: Props) {
                 <button
                   key={d}
                   onClick={() => onChange({ difficulty: d })}
-                  className="flex-1 py-1.5 px-1 rounded-md text-[11px] font-medium cursor-pointer capitalize"
-                  style={{
-                    background: active ? `${color}22` : "transparent",
-                    color: active ? color : "var(--muted)",
-                    border: `1px solid ${active ? color : "var(--border)"}`,
-                  }}
+                  style={active ? { "--tc": color, background: `${color}22`, color, border: `1px solid ${color}` } as React.CSSProperties : undefined}
+                  className={`flex-1 py-1.5 px-1 rounded-md text-[11px] font-medium cursor-pointer capitalize border ${active ? "" : "bg-transparent text-theme-muted border-border-c"}`}
                 >
                   {d}
                 </button>
@@ -326,21 +322,19 @@ export default function BasicsTab({ config, onChange }: Props) {
       <CollapsibleSection title="Shape" storageKey="arena-basics-shape" defaultOpen={true}>
       <div>
         <label className={LBL}>Shape</label>
-        <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))" }}>
-          {shapes.map(s => (
-            <button
-              key={s.value}
-              onClick={() => handleShapeChange(s.value)}
-              className="py-2 px-1.5 rounded-lg text-xs font-medium cursor-pointer"
-              style={{
-                background: config.shape === s.value ? "var(--purple)" : "var(--bg3)",
-                color: config.shape === s.value ? "#ffffff" : "var(--muted)",
-                border: `1px solid ${config.shape === s.value ? "var(--purple)" : "var(--border)"}`,
-              }}
-            >
-              {s.label}
-            </button>
-          ))}
+        <div className="grid gap-2 [grid-template-columns:repeat(auto-fill,minmax(100px,1fr))]">
+          {shapes.map(s => {
+            const active = config.shape === s.value;
+            return (
+              <button
+                key={s.value}
+                onClick={() => handleShapeChange(s.value)}
+                className={`py-2 px-1.5 rounded-lg text-xs font-medium cursor-pointer border ${active ? "bg-[var(--purple)] text-white border-[var(--purple)]" : "bg-bg3 text-theme-muted border-border-c"}`}
+              >
+                {s.label}
+              </button>
+            );
+          })}
         </div>
       </div>
       </CollapsibleSection>
@@ -349,25 +343,24 @@ export default function BasicsTab({ config, onChange }: Props) {
       <CollapsibleSection title="Theme" storageKey="arena-basics-theme" defaultOpen={true}>
       <div>
         <label className={LBL}>Theme</label>
-        <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))" }}>
-          {themes.map(t => (
-            <button
-              key={t.value}
-              onClick={() => onChange({ theme: t.value })}
-              className="py-2 px-2.5 rounded-lg text-xs font-medium cursor-pointer flex items-center gap-2"
-              style={{
-                background: config.theme === t.value ? `${t.color}22` : "var(--bg3)",
-                color: config.theme === t.value ? t.color : "var(--muted)",
-                border: `1px solid ${config.theme === t.value ? t.color : "var(--border)"}`,
-              }}
-            >
-              <span
-                className="w-2.5 h-2.5 rounded-full shrink-0"
-                style={{ background: t.color }}
-              />
-              {t.label}
-            </button>
-          ))}
+        <div className="grid gap-2 [grid-template-columns:repeat(auto-fill,minmax(120px,1fr))]">
+          {themes.map(t => {
+            const active = config.theme === t.value;
+            return (
+              <button
+                key={t.value}
+                onClick={() => onChange({ theme: t.value })}
+                style={active ? { "--tc": t.color, background: `${t.color}22`, color: t.color, border: `1px solid ${t.color}` } as React.CSSProperties : undefined}
+                className={`py-2 px-2.5 rounded-lg text-xs font-medium cursor-pointer flex items-center gap-2 border ${active ? "" : "bg-bg3 text-theme-muted border-border-c"}`}
+              >
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ background: t.color }}
+                />
+                {t.label}
+              </button>
+            );
+          })}
         </div>
       </div>
       </CollapsibleSection>
@@ -384,12 +377,7 @@ export default function BasicsTab({ config, onChange }: Props) {
               <button
                 key={profile.id}
                 onClick={() => handleBowlProfileClick(profile.id)}
-                className="py-[5px] px-3 rounded-md text-[11px] font-medium cursor-pointer capitalize"
-                style={{
-                  background: active ? "var(--blue)" : "transparent",
-                  color: active ? "#ffffff" : "var(--muted)",
-                  border: `1px solid ${active ? "var(--blue)" : "var(--border)"}`,
-                }}
+                className={`py-[5px] px-3 rounded-md text-[11px] font-medium cursor-pointer capitalize border ${active ? "bg-[var(--blue)] text-white border-[var(--blue)]" : "bg-transparent text-theme-muted border-border-c"}`}
               >
                 {profile.label}
               </button>
@@ -451,11 +439,7 @@ export default function BasicsTab({ config, onChange }: Props) {
           <span className="text-[13px] font-semibold text-theme-text">Auto-Rotate</span>
           <button
             onClick={() => onChange({ autoRotate: !config.autoRotate })}
-            className="py-1 px-3.5 rounded-md border-none cursor-pointer font-semibold text-xs"
-            style={{
-              background: config.autoRotate ? "var(--green)" : "var(--bg2)",
-              color: config.autoRotate ? "#ffffff" : "var(--muted)",
-            }}
+            className={`py-1 px-3.5 rounded-md border-none cursor-pointer font-semibold text-xs ${config.autoRotate ? "bg-[var(--green)] text-white" : "bg-bg2 text-theme-muted"}`}
           >
             {config.autoRotate ? "ON" : "OFF"}
           </button>
@@ -481,12 +465,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                   <button
                     key={dir}
                     onClick={() => onChange({ rotationDirection: dir })}
-                    className="flex-1 py-1.5 rounded-md text-xs cursor-pointer capitalize"
-                    style={{
-                      background: config.rotationDirection === dir ? "var(--purple)" : "transparent",
-                      color: config.rotationDirection === dir ? "#ffffff" : "var(--muted)",
-                      border: `1px solid ${config.rotationDirection === dir ? "var(--purple)" : "var(--border)"}`,
-                    }}
+                    className={`flex-1 py-1.5 rounded-md text-xs cursor-pointer capitalize border ${config.rotationDirection === dir ? "bg-[var(--purple)] text-white border-[var(--purple)]" : "bg-transparent text-theme-muted border-border-c"}`}
                   >
                     {dir === "clockwise" ? "↻ Clockwise" : "↺ Counter"}
                   </button>
@@ -544,12 +523,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                 <button
                   key={mode}
                   onClick={() => onChange({ tiltMode: mode })}
-                  className="flex-1 py-1.5 px-1 rounded-md text-[11px] font-medium cursor-pointer"
-                  style={{
-                    background: active ? "var(--blue)" : "transparent",
-                    color: active ? "#ffffff" : "var(--muted)",
-                    border: `1px solid ${active ? "var(--blue)" : "var(--border)"}`,
-                  }}
+                  className={`flex-1 py-1.5 px-1 rounded-md text-[11px] font-medium cursor-pointer border ${active ? "bg-[var(--blue)] text-white border-[var(--blue)]" : "bg-transparent text-theme-muted border-border-c"}`}
                 >
                   {labels[mode]}
                 </button>
@@ -572,12 +546,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                 key={p.label}
                 title={p.description}
                 onClick={() => onChange({ tiltAngle: p.angle })}
-                className="py-[5px] px-3 rounded-md text-[11px] font-medium cursor-pointer"
-                style={{
-                  background: active ? "var(--blue)" : "transparent",
-                  color: active ? "#ffffff" : "var(--muted)",
-                  border: `1px solid ${active ? "var(--blue)" : "var(--border)"}`,
-                }}
+                className={`py-[5px] px-3 rounded-md text-[11px] font-medium cursor-pointer border ${active ? "bg-[var(--blue)] text-white border-[var(--blue)]" : "bg-transparent text-theme-muted border-border-c"}`}
               >
                 {p.label}
               </button>
@@ -736,11 +705,7 @@ export default function BasicsTab({ config, onChange }: Props) {
             </span>
             <button
               onClick={() => onChange({ autoTilt: !config.autoTilt })}
-              className="py-[3px] px-3 rounded-md border-none cursor-pointer font-semibold text-xs"
-              style={{
-                background: config.autoTilt ? "var(--green)" : "var(--bg2)",
-                color: config.autoTilt ? "#ffffff" : "var(--muted)",
-              }}
+              className={`py-[3px] px-3 rounded-md border-none cursor-pointer font-semibold text-xs ${config.autoTilt ? "bg-[var(--green)] text-white" : "bg-bg2 text-theme-muted"}`}
             >
               {config.autoTilt ? "ON" : "OFF"}
             </button>
@@ -793,11 +758,7 @@ export default function BasicsTab({ config, onChange }: Props) {
               <span className="text-xs text-theme-muted">QTE Enabled</span>
               <button
                 onClick={() => onChange({ qteEnabled: !(config.qteEnabled ?? true) })}
-                className="py-[3px] px-3 rounded-md border-none cursor-pointer font-semibold text-xs"
-                style={{
-                  background: (config.qteEnabled ?? true) ? "var(--green)" : "var(--bg2)",
-                  color: (config.qteEnabled ?? true) ? "#ffffff" : "var(--muted)",
-                }}
+                className={`py-[3px] px-3 rounded-md border-none cursor-pointer font-semibold text-xs ${(config.qteEnabled ?? true) ? "bg-[var(--green)] text-white" : "bg-bg2 text-theme-muted"}`}
               >
                 {(config.qteEnabled ?? true) ? "ON" : "OFF"}
               </button>
@@ -812,12 +773,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                       <button
                         key={mode}
                         onClick={() => onChange({ qteWindowScaling: mode })}
-                        className="flex-1 py-1.5 px-2 rounded-md text-[11px] cursor-pointer"
-                        style={{
-                          background: active ? "var(--blue)" : "transparent",
-                          color: active ? "#ffffff" : "var(--muted)",
-                          border: `1px solid ${active ? "var(--blue)" : "var(--border)"}`,
-                        }}
+                        className={`flex-1 py-1.5 px-2 rounded-md text-[11px] cursor-pointer border ${active ? "bg-[var(--blue)] text-white border-[var(--blue)]" : "bg-transparent text-theme-muted border-border-c"}`}
                       >
                         {mode === "flat" ? "Flat (60t)" : "By Cost"}
                       </button>
@@ -837,11 +793,7 @@ export default function BasicsTab({ config, onChange }: Props) {
               <span className="text-xs text-theme-muted">Random Match Modifiers</span>
               <button
                 onClick={() => onChange({ randomModifiers: !config.randomModifiers })}
-                className="py-[3px] px-3 rounded-md border-none cursor-pointer font-semibold text-xs"
-                style={{
-                  background: config.randomModifiers ? "var(--green)" : "var(--bg2)",
-                  color: config.randomModifiers ? "#ffffff" : "var(--muted)",
-                }}
+                className={`py-[3px] px-3 rounded-md border-none cursor-pointer font-semibold text-xs ${config.randomModifiers ? "bg-[var(--green)] text-white" : "bg-bg2 text-theme-muted"}`}
               >
                 {config.randomModifiers ? "ON" : "OFF"}
               </button>
@@ -933,12 +885,8 @@ export default function BasicsTab({ config, onChange }: Props) {
               <button
                 key={m}
                 onClick={() => onChange({ rendererMode: m })}
-                className="flex-1 py-2 px-1 rounded-lg text-xs font-semibold cursor-pointer"
-                style={{
-                  background: active ? `color-mix(in srgb, ${color} 13%, transparent)` : "transparent",
-                  color: active ? color : "var(--muted)",
-                  border: `1px solid ${active ? color : "var(--border)"}`,
-                }}
+                style={active ? { background: `color-mix(in srgb, ${color} 13%, transparent)`, color, border: `1px solid ${color}` } : undefined}
+                className={`flex-1 py-2 px-1 rounded-lg text-xs font-semibold cursor-pointer border ${active ? "" : "bg-transparent text-theme-muted border-border-c"}`}
               >
                 {label}
               </button>
@@ -1033,12 +981,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                 <button
                   key={t}
                   onClick={() => onChange({ worldBackground: { ...(config.worldBackground ?? {}), type: t } as typeof config.worldBackground & NonNullable<unknown> })}
-                  className="flex-1 py-1.5 text-[12px] rounded-lg border cursor-pointer capitalize transition-colors"
-                  style={{
-                    borderColor: (config.worldBackground?.type ?? "none") === t ? "#3b82f6" : "var(--border-c)",
-                    background:  (config.worldBackground?.type ?? "none") === t ? "rgba(59,130,246,0.15)" : "var(--bg3)",
-                    color:       (config.worldBackground?.type ?? "none") === t ? "#3b82f6" : "var(--text-muted)",
-                  }}
+                  className={`flex-1 py-1.5 text-[12px] rounded-lg border cursor-pointer capitalize transition-colors ${(config.worldBackground?.type ?? "none") === t ? "border-[#3b82f6] bg-[rgba(59,130,246,0.15)] text-[#3b82f6]" : "border-border-c bg-bg3 text-theme-muted"}`}
                 >{t}</button>
               ))}
             </div>

@@ -71,15 +71,12 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
             const insufficient = c.cost > 0 && power < c.cost;
             const dim = onCooldown || insufficient;
             return (
-              <div key={c.id} style={{
-                border: `1px solid ${dim ? "#334155" : "#22c55e"}`,
-                opacity: dim ? 0.55 : 1,
-              }} className="bg-[rgba(15,23,42,0.88)] rounded-[10px] px-[10px] py-2 min-w-[200px] relative overflow-hidden">
+              <div key={c.id} className={`bg-[rgba(15,23,42,0.88)] rounded-[10px] px-[10px] py-2 min-w-[200px] relative overflow-hidden border ${dim ? "border-[#334155] opacity-[0.55]" : "border-[#22c55e] opacity-100"}`}>
                 <div className="flex justify-between items-center mb-1">
-                  <span style={{ color: dim ? "#94a3b8" : "#22c55e" }} className="text-[12px] font-bold">
+                  <span className={`text-[12px] font-bold ${dim ? "text-[#94a3b8]" : "text-[#22c55e]"}`}>
                     {c.name}
                   </span>
-                  <span style={{ color: c.cost === 0 ? "#eab308" : "#64748b" }} className="text-[10px] font-mono">
+                  <span className={`text-[10px] font-mono ${c.cost === 0 ? "text-[#eab308]" : "text-[#64748b]"}`}>
                     {costIcon(c.cost)}
                   </span>
                 </div>
@@ -89,10 +86,8 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
                   ))}
                 </div>
                 {onCooldown && (
-                  <div style={{
-                    position: "absolute", left: 0, bottom: 0, height: 2,
-                    width: `${(1 - cdPct) * 100}%`, background: "#22c55e",
-                    transition: "width 100ms linear",
+                  <div className="absolute left-0 bottom-0 h-[2px] bg-[#22c55e] [transition:width_100ms_linear]" style={{
+                    width: `${(1 - cdPct) * 100}%`,
                   }} />
                 )}
                 {insufficient && !onCooldown && (
@@ -119,13 +114,11 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
             {comboChargeScale >= 1 ? "CHARGED!" : "Charging…"}
           </div>
           <div className="w-[140px] h-[6px] bg-white/[.12] rounded-[3px] overflow-hidden">
-            <div style={{
-              height: "100%",
+            <div className="rounded-[3px] h-full [transition:width_100ms_linear,background_200ms]" style={{
               width: `${comboChargeScale * 100}%`,
               background: comboChargeScale >= 1 ? "#22c55e" : "#eab308",
-              transition: "width 100ms linear, background 200ms",
               boxShadow: comboChargeScale >= 1 ? "0 0 8px #22c55e" : undefined,
-            }} className="rounded-[3px]" />
+            }} />
           </div>
         </div>
       )}
@@ -141,10 +134,9 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
           const comboId = combo.id.split("-")[0];
           const display = comboMap[comboId] ?? comboMap[combo.name];
           return (
-            <div key={combo.id} data-testid={`combo-fired-${combo.id}`} style={{
-              border: `1px solid #334155`,
+            <div key={combo.id} data-testid={`combo-fired-${combo.id}`} className="bg-[rgba(15,23,42,0.85)] rounded-lg px-3 py-2 min-w-[160px] border border-[#334155]" style={{
               animation: combo === comboHistory[0] ? "slideIn 0.3s ease-out" : undefined,
-            }} className="bg-[rgba(15,23,42,0.85)] rounded-lg px-3 py-2 min-w-[160px]">
+            }}>
               <div className="text-theme-muted text-[11px] mb-1">
                 <span className="text-theme-green uppercase font-mono font-bold">
                   {display?.name ?? combo.name}
@@ -166,11 +158,10 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
           position: "absolute", bottom: "50%", left: "50%",
           transform: "translateX(-50%)",
           zIndex: 15,
-          animation: "comboFloat 1.2s ease-out forwards",
         }}
-          className="pointer-events-none"
+          className="pointer-events-none [animation:comboFloat_1.2s_ease-out_forwards]"
         >
-          <div className="text-theme-green text-[56px] font-black uppercase tracking-[0.1em] font-mono" style={{ textShadow: "0 0 20px #22c55e" }}>COMBO!</div>
+          <div className="text-theme-green text-[56px] font-black uppercase tracking-[0.1em] font-mono [text-shadow:0_0_20px_#22c55e]">COMBO!</div>
         </div>
       )}
 

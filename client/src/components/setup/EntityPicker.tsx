@@ -92,7 +92,7 @@ export function EntityPicker({
         </div>
       )}
 
-      <div className="grid min-h-[320px]" style={{ gridTemplateColumns: "minmax(220px, 1fr) minmax(280px, 2fr)" }}>
+      <div className="grid min-h-[320px] [grid-template-columns:minmax(220px,1fr)_minmax(280px,2fr)]">
         {/* Left — searchable name list */}
         <div className="border-r border-border-c flex flex-col">
           <div className="p-2.5 border-b border-border-c">

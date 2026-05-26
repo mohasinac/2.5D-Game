@@ -314,7 +314,7 @@ export function TournamentDetailPage() {
         </div>
       </div>
 
-      <div className="grid gap-5" style={{ gridTemplateColumns: "1fr 300px" }}>
+      <div className="grid gap-5 grid-cols-[1fr_300px]">
         {/* Left */}
         <div className="flex flex-col gap-4">
           {/* Actions */}

@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { C } from "@/styles/theme";
 
@@ -23,10 +24,10 @@ export function AssetsLibraryPage() {
         {ASSET_CATEGORIES.map(cat => (
           <Link
             key={cat.href} to={cat.href}
-            className="bg-bg2 rounded-2xl p-5 no-underline block transition-colors"
-            style={{ border: `1px solid ${cat.accent}33` }}
+            className="bg-bg2 rounded-2xl p-5 no-underline block transition-colors border [border-color:color-mix(in_srgb,var(--accent-color)_20%,transparent)]"
+            style={{ "--accent-color": cat.accent } as React.CSSProperties}
             onMouseEnter={e => (e.currentTarget.style.borderColor = cat.accent + "88")}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = cat.accent + "33")}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = "")}
           >
             <div className="text-3xl mb-3">{cat.icon}</div>
             <h3 className="text-text font-semibold mb-1">{cat.title}</h3>

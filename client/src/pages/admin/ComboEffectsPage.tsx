@@ -136,7 +136,7 @@ export default function ComboEffectsPage() {
           <div className="bg-bg1 border border-border-c rounded-2xl p-7 w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
             <h3 className="text-[17px] font-bold text-theme-text mb-5">{editing ? "Edit Combo Effect" : "New Combo Effect"}</h3>
 
-            <div className="grid gap-3 mb-[14px]" style={{ gridTemplateColumns: "1fr auto" }}>
+            <div className="grid gap-3 mb-[14px] grid-cols-[1fr_auto]">
               <label>
                 <span className="text-[12px] text-theme-muted block mb-1">Name</span>
                 <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={inputCls} />

@@ -2,7 +2,6 @@
 // Manages ModularSectionConfig[] on the arena — visual drag-place + data form.
 
 import { useState } from "react";
-import { C } from "@/styles/theme";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, ModularSectionConfig } from "@/types/arenaConfigNew";
 import { ArenaEditorCanvas } from "@/components/admin/ArenaEditorCanvas";
@@ -103,11 +102,7 @@ export default function SectionsTab({ config, onChange }: Props) {
             <div
               key={s.id}
               onClick={() => setSelectedId(s.id === selectedId ? null : s.id)}
-              className="rounded-[10px] py-[10px] px-[14px] cursor-pointer border"
-              style={{
-                background: s.id === selectedId ? "rgba(68,170,255,0.12)" : C.bg3,
-                borderColor: s.id === selectedId ? "#44aaff55" : C.border,
-              }}
+              className={`rounded-[10px] py-[10px] px-[14px] cursor-pointer border ${s.id === selectedId ? "bg-[rgba(68,170,255,0.12)] border-[#44aaff55]" : "bg-bg3 border-border-c"}`}
             >
               <div className="flex justify-between items-center">
                 <span className="text-[13px] font-medium text-text">

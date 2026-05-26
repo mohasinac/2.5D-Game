@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { C } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { ComboVisualEditor } from "./ComboVisualEditor";
 import type { SpecialMoveConfig, SpecialMoveStep } from "@/types/specialMove";
@@ -84,14 +83,8 @@ export function SpecialMoveBuilder({ value, onChange }: Props) {
                   />
                 )}
                 <div
-                  className="flex items-center justify-center text-[11px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis rounded-lg px-1.5"
-                  style={{
-                    width: blockW,
-                    height: isParallel ? 50 : 40,
-                    background: isParallel ? C.purple + "33" : C.blue + "33",
-                    border: `1px solid ${isParallel ? C.purple : C.blue}66`,
-                    color: isParallel ? C.purple : C.blue,
-                  }}
+                  className={`flex items-center justify-center text-[11px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis rounded-lg px-1.5 ${isParallel ? "bg-purple-10 border border-[rgba(168,85,247,0.4)] text-theme-purple" : "bg-blue-10 border border-[rgba(59,130,246,0.4)] text-theme-blue"}`}
+                  style={{ width: blockW, height: isParallel ? 50 : 40 }}
                   title={`${effectName} (${step.executionMode})`}
                 >
                   {isParallel && <span className="mr-[3px] opacity-70">∥</span>}
@@ -117,7 +110,7 @@ export function SpecialMoveBuilder({ value, onChange }: Props) {
             className="px-3.5 py-2 text-xs cursor-pointer bg-transparent border-none uppercase tracking-[0.04em]"
             style={{
               fontWeight: tab === t ? 700 : 400,
-              borderBottom: tab === t ? `2px solid ${C.blue}` : "2px solid transparent",
+              borderBottom: tab === t ? "2px solid var(--blue)" : "2px solid transparent",
               color: tab === t ? "var(--text)" : "var(--faint)",
             }}
           >
@@ -144,7 +137,7 @@ export function SpecialMoveBuilder({ value, onChange }: Props) {
                   options={effects.map(e => ({ value: e.id, label: `${e.name} (cost ${e.cost})` }))}
                   onChange={v => updateStep(idx, { comboEffectId: v })}
                   emptyLabel="— choose effect —"
-                  style={{ flex: 1 }}
+                  className="flex-1"
                 />
                 <div className="flex gap-1">
                   <button type="button" onClick={() => moveStep(idx, -1)} className="bg-transparent border-none text-theme-muted cursor-pointer text-[13px] py-0.5 px-[5px]">↑</button>
@@ -153,7 +146,7 @@ export function SpecialMoveBuilder({ value, onChange }: Props) {
                 </div>
               </div>
 
-              <div className="grid gap-2" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+              <div className="grid gap-2 [grid-template-columns:1fr_1fr_1fr]">
                 <div>
                   <label className="text-[10px] text-theme-faint block mb-[3px]">Mode</label>
                   <SearchableSelect
@@ -183,8 +176,7 @@ export function SpecialMoveBuilder({ value, onChange }: Props) {
             <button
               type="button"
               onClick={addStep}
-              className="p-2 rounded-xl text-theme-green text-xs cursor-pointer font-semibold"
-              style={{ background: C.green + "11", border: `1px dashed ${C.green}44` }}
+              className="p-2 rounded-xl text-theme-green text-xs cursor-pointer font-semibold bg-green-10 border border-dashed border-[rgba(34,197,94,0.27)]"
             >
               + Add Step ({value.steps.length}/10)
             </button>
@@ -195,7 +187,7 @@ export function SpecialMoveBuilder({ value, onChange }: Props) {
       {/* Config tab */}
       {tab === "config" && (
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
-          <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
+          <div className="grid gap-3 [grid-template-columns:1fr_1fr]">
             <div>
               <label className="text-[11px] text-theme-muted font-semibold uppercase block mb-1">Name</label>
               <input className={INPUT_CLS} value={value.name} onChange={e => setField("name", e.target.value)} />
@@ -231,7 +223,7 @@ export function SpecialMoveBuilder({ value, onChange }: Props) {
 
           <div>
             <div className="text-[11px] text-theme-muted font-semibold uppercase mb-2">Camera Config</div>
-            <div className="grid gap-2" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+            <div className="grid gap-2 [grid-template-columns:1fr_1fr_1fr]">
               <div>
                 <label className="text-[10px] text-theme-faint block mb-[3px]">Zoom Factor</label>
                 <input className={INPUT_CLS} type="number" min={1} max={3} step={0.1} placeholder="1.0" value={value.cameraConfig?.zoomFactor ?? ""} onChange={e => setField("cameraConfig", { ...value.cameraConfig, zoomFactor: e.target.value ? parseFloat(e.target.value) : undefined })} />

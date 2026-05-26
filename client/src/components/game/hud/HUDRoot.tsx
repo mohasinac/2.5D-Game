@@ -3,6 +3,7 @@ import { TopBar } from "./TopBar";
 import { AbilityIcons } from "./AbilityIcons";
 import { PlayerPanel } from "./PlayerPanel";
 import { OpponentPanel } from "./OpponentPanel";
+import { BottomStaminaBars } from "./BottomStaminaBars";
 
 interface HUDRootProps {
   gameState: ServerGameState;
@@ -41,6 +42,20 @@ export function HUDRoot({ gameState, myId, myBey }: HUDRootProps) {
     });
   }
 
+  // Resolve opponents from beyGhosts (not self, not ally)
+  const opponentList: { spinPct: number; beyType: string; username: string }[] = [];
+  if (beyGhosts) {
+    beyGhosts.forEach((ghost, id) => {
+      if (id === myId) return;
+      if (myTeamId && ghost.teamId === myTeamId) return; // skip allies
+      opponentList.push({
+        spinPct: ghost.spin_pct,
+        beyType: ghost.beyType,
+        username: ghost.username,
+      });
+    });
+  }
+
   const seriesWins = gameState.seriesWins?.get(myId);
   const targetWins = gameState.targetWins;
 
@@ -67,7 +82,7 @@ export function HUDRoot({ gameState, myId, myBey }: HUDRootProps) {
         spectatorCount={gameState.spectatorCount}
       />
 
-      {/* Top-left — player name + stamina + allies */}
+      {/* Top-left — player corner card + allies */}
       <PlayerPanel
         username={username}
         beyType={beyType}
@@ -77,12 +92,19 @@ export function HUDRoot({ gameState, myId, myBey }: HUDRootProps) {
         targetWins={targetWins}
       />
 
-      {/* Top-right — opponent list (enemies first, then allies if team mode) */}
+      {/* Top-right — opponent panel (1v1 full card, multi = compact rows) */}
       <OpponentPanel
         myId={myId}
         myTeamId={myTeamId}
         beyGhosts={beyGhosts}
         maxVisible={8}
+      />
+
+      {/* Bottom — GBA-style horizontal stamina bars */}
+      <BottomStaminaBars
+        mySpinPct={spinPct}
+        myType={beyType}
+        opponents={opponentList}
       />
 
       {/* Bottom-center — ability slots (2D / 2.5D mode only) */}

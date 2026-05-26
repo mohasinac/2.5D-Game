@@ -93,7 +93,7 @@ function RotationDial({
         <span className="text-[9px] text-theme-faint">{speed}°/s</span>
       )}
       {speed > 0 && secPerRev > 0 && (
-        <span className="text-[9px] font-semibold" style={{ color }}>{secPerRev.toFixed(1)}s/rev</span>
+        <span className="text-[9px] font-semibold hud-type-text" style={{ "--tc": color } as React.CSSProperties}>{secPerRev.toFixed(1)}s/rev</span>
       )}
     </div>
   );
@@ -111,42 +111,32 @@ function CouplingStrip({ link }: { link: ArenaLink }) {
 
   return (
     <div
-      className="flex items-center gap-2 px-2.5 py-[7px] rounded-lg mb-1 relative link-row"
-      style={{
-        border: `1px solid ${alpha(meta.color, 0.22)}`,
-        background: alpha(meta.color, 0.05),
-      }}
+      className="flex items-center gap-2 px-2.5 py-[7px] rounded-lg mb-1 relative link-row hud-type-border hud-type-bg border"
+      style={{ "--tc": meta.color } as React.CSSProperties}
     >
       {/* Link type */}
       <span className="text-[15px]">{meta.icon}</span>
-      <span className="text-[12px] font-semibold min-w-[64px]" style={{ color: meta.color }}>{meta.label}</span>
+      <span className="text-[12px] font-semibold min-w-[64px] hud-type-text" style={{ "--tc": meta.color } as React.CSSProperties}>{meta.label}</span>
 
       {/* Coupling arrows diagram */}
       <div className="flex items-center gap-1">
-        <span className="text-[14px]" style={{ color: alpha(m.color, 0.7) }}>{m.arrows[0]}</span>
+        <span className="text-[14px] opacity-70 hud-type-text" style={{ "--tc": m.color } as React.CSSProperties}>{m.arrows[0]}</span>
         <div className="flex flex-col items-center gap-px">
           {coupling === "driven" && link.rotationDrivenRatio != null && (
-            <span className="text-[9px] font-bold" style={{ color: m.color }}>×{link.rotationDrivenRatio.toFixed(1)}</span>
+            <span className="text-[9px] font-bold hud-type-text" style={{ "--tc": m.color } as React.CSSProperties}>×{link.rotationDrivenRatio.toFixed(1)}</span>
           )}
           <div
-            className="w-5 h-0.5 rounded-[1px]"
-            style={{
-              background: coupling === "independent" ? alpha(m.color, 0.2) : m.color,
-              backgroundImage: coupling === "independent" ? `repeating-linear-gradient(90deg,${m.color} 0 3px,transparent 3px 6px)` : "none",
-            }}
+            className={`w-5 h-0.5 rounded-[1px] ${coupling === "independent" ? "hud-type-bg" : "hud-type-dot"}`}
+            style={{ "--tc": m.color } as React.CSSProperties}
           />
         </div>
-        <span className="text-[14px]" style={{ color: alpha(m.color, 0.7) }}>{m.arrows[1]}</span>
+        <span className="text-[14px] opacity-70 hud-type-text" style={{ "--tc": m.color } as React.CSSProperties}>{m.arrows[1]}</span>
       </div>
 
       {/* Coupling pill */}
       <span
-        className="text-[10px] px-[7px] py-px rounded-[20px] font-bold"
-        style={{
-          background: alpha(m.color, 0.12),
-          border: `1px solid ${alpha(m.color, 0.3)}`,
-          color: m.color,
-        }}
+        className="text-[10px] px-[7px] py-px rounded-[20px] font-bold hud-type-bg hud-type-border hud-type-text border"
+        style={{ "--tc": m.color } as React.CSSProperties}
       >{m.label}</span>
 
       {/* Alignment mode */}
@@ -441,7 +431,7 @@ export default function ArenaFloorGroupEditorPage() {
         </div>
       </div>
 
-      <div className="grid gap-5 items-start" style={{ gridTemplateColumns: "1fr 310px" }}>
+      <div className="grid gap-5 items-start grid-cols-[1fr_310px]">
 
         {/* ── Left: Visual floor stack ── */}
         <div>
@@ -476,7 +466,7 @@ export default function ArenaFloorGroupEditorPage() {
                   onDragOver={e => e.preventDefault()}
                   onDrop={() => handleDrop(idx)}
                 >
-                  <div className="grid gap-2.5 items-center" style={{ gridTemplateColumns: "28px 1fr auto auto auto" }}>
+                  <div className="grid gap-2.5 items-center grid-cols-[28px_1fr_auto_auto_auto]">
                     {/* Floor badge */}
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[12px] font-bold bg-blue-15 border border-blue-30 text-theme-blue">
                       F{idx}
@@ -622,8 +612,8 @@ export default function ArenaFloorGroupEditorPage() {
                         <div key={link.id} className="mb-1.5">
                           {/* Link dot on connector */}
                           <div
-                            className="absolute w-3 h-3 rounded-full mt-2 border-2 border-bg1 -left-[31px]"
-                            style={{ background: meta.color }}
+                            className="absolute w-3 h-3 rounded-full mt-2 border-2 border-bg1 -left-[31px] hud-type-dot"
+                            style={{ "--tc": meta.color } as React.CSSProperties}
                           />
 
                           {/* Motion diagram + link row */}
@@ -631,25 +621,22 @@ export default function ArenaFloorGroupEditorPage() {
                             <LinkMotionDiagram linkType={link.linkType} size={80} />
                             <div className="flex-1">
                               <div
-                                className="flex items-center gap-1.5 px-2 py-[5px] rounded-lg link-row"
-                                style={{
-                                  border: `1px solid ${alpha(meta.color, 0.2)}`,
-                                  background: alpha(meta.color, 0.04),
-                                }}
+                                className="flex items-center gap-1.5 px-2 py-[5px] rounded-lg link-row hud-type-border hud-type-bg border"
+                                style={{ "--tc": meta.color } as React.CSSProperties}
                               >
                                 <span className="text-[14px]">{meta.icon}</span>
-                                <span className="text-[12px] font-semibold" style={{ color: meta.color }}>{meta.label}</span>
+                                <span className="text-[12px] font-semibold hud-type-text" style={{ "--tc": meta.color } as React.CSSProperties}>{meta.label}</span>
                                 {/* Coupling arrows */}
-                                <span className="text-[12px]" style={{ color: alpha(couplingMeta.color, 0.8) }}>
+                                <span className="text-[12px] opacity-80 hud-type-text" style={{ "--tc": couplingMeta.color } as React.CSSProperties}>
                                   {couplingMeta.arrows[0]}
                                   {coupling === "driven" && link.rotationDrivenRatio != null
-                                    ? <span className="text-[9px]" style={{ color: couplingMeta.color }}>×{link.rotationDrivenRatio.toFixed(1)}</span>
+                                    ? <span className="text-[9px] hud-type-text" style={{ "--tc": couplingMeta.color } as React.CSSProperties}>×{link.rotationDrivenRatio.toFixed(1)}</span>
                                     : null}
                                   →{couplingMeta.arrows[1]}
                                 </span>
                                 <span
-                                  className="text-[10px] px-1.5 py-px rounded-[10px]"
-                                  style={{ background: alpha(couplingMeta.color, 0.12), color: couplingMeta.color, border: `1px solid ${alpha(couplingMeta.color, 0.3)}` }}
+                                  className="text-[10px] px-1.5 py-px rounded-[10px] hud-type-bg hud-type-border hud-type-text border"
+                                  style={{ "--tc": couplingMeta.color } as React.CSSProperties}
                                 >
                                   {couplingMeta.label}
                                 </span>
@@ -766,12 +753,8 @@ export default function ArenaFloorGroupEditorPage() {
               <div key={key} className="flex gap-2 items-center mb-2">
                 <span className="text-[14px] min-w-[32px]">{m.arrows[0]}{m.arrows[1]}</span>
                 <span
-                  className="text-[10px] px-[7px] py-px rounded-[10px] font-bold min-w-[64px] text-center"
-                  style={{
-                    background: alpha(m.color, 0.12),
-                    border: `1px solid ${alpha(m.color, 0.3)}`,
-                    color: m.color,
-                  }}
+                  className="text-[10px] px-[7px] py-px rounded-[10px] font-bold min-w-[64px] text-center hud-type-bg hud-type-border hud-type-text border"
+                  style={{ "--tc": m.color } as React.CSSProperties}
                 >{m.label}</span>
                 <span className="text-[11px] text-theme-muted leading-[1.4]">{m.desc}</span>
               </div>

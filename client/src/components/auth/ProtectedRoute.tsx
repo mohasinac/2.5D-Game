@@ -1,6 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { C } from "@/styles/theme";
 import type { ReactNode } from "react";
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -9,8 +8,8 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
   if (loading) {
     return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", background: C.bg0 }}>
-        <div className="spin" style={{ width: 32, height: 32, border: `2px solid ${C.purple}`, borderTopColor: "transparent", borderRadius: "50%" }} />
+      <div className="flex justify-center items-center h-screen bg-bg0">
+        <div className="spin w-8 h-8 border-2 border-[var(--purple)] border-t-transparent rounded-full" />
       </div>
     );
   }

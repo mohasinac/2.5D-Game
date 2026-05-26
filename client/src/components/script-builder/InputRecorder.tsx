@@ -2,7 +2,6 @@
 // Records input sequences and converts them to movement BehaviorRef steps.
 
 import { useState, useEffect, useRef } from "react";
-import { C } from "@/styles/theme";
 import type { BehaviorRef } from "@/types/comboTask";
 
 const KEY_MAP: Record<string, string> = {
@@ -101,12 +100,7 @@ export function InputRecorder({ onCapture }: Props) {
           <button
             type="button"
             onClick={startRecording}
-            style={{
-              background: C.red + "22",
-              border: `1px solid ${C.red}44`,
-              color: C.red,
-            }}
-            className="py-[5px] px-3 rounded-lg text-[12px] cursor-pointer font-semibold"
+            className="py-[5px] px-3 rounded-lg text-[12px] cursor-pointer font-semibold bg-red-10 border border-[rgba(239,68,68,0.27)] text-theme-red"
           >
             ● Record
           </button>
@@ -114,13 +108,7 @@ export function InputRecorder({ onCapture }: Props) {
           <button
             type="button"
             onClick={stopRecording}
-            style={{
-              background: C.red + "44",
-              border: `1px solid ${C.red}88`,
-              color: C.red,
-              animation: "pulse 1s infinite",
-            }}
-            className="py-[5px] px-3 rounded-lg text-[12px] cursor-pointer font-semibold"
+            className="py-[5px] px-3 rounded-lg text-[12px] cursor-pointer font-semibold bg-red-13 border border-[rgba(239,68,68,0.53)] text-theme-red [animation:pulse_1s_infinite]"
           >
             ■ Stop
           </button>
@@ -129,13 +117,7 @@ export function InputRecorder({ onCapture }: Props) {
           type="button"
           onClick={generateScript}
           disabled={keys.length === 0}
-          style={{
-            background: C.green + "22",
-            border: `1px solid ${C.green}44`,
-            color: C.green,
-            opacity: keys.length === 0 ? 0.4 : 1,
-          }}
-          className="py-[5px] px-3 rounded-lg text-[12px] font-semibold"
+          className={`py-[5px] px-3 rounded-lg text-[12px] font-semibold bg-green-10 border border-[rgba(34,197,94,0.27)] text-theme-green ${keys.length === 0 ? "opacity-40" : ""}`}
         >
           → Add to Canvas
         </button>
@@ -164,10 +146,7 @@ export function InputRecorder({ onCapture }: Props) {
 
       {recording && (
         <div className="text-[11px] text-theme-red flex items-center gap-1">
-          <span
-            className="inline-block w-[6px] h-[6px] rounded-full"
-            style={{ background: C.red }}
-          />
+          <span className="inline-block w-[6px] h-[6px] rounded-full bg-theme-red" />
           Recording… {keys.length} keys captured
         </div>
       )}

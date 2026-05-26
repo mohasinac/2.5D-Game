@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { C, alpha } from "@/styles/theme";
 import { MaterialSelector } from "./MaterialSelector";
 import type { Material, MaterialBand, WearStep } from "@/types/beybladeSystem";
 
@@ -70,16 +69,16 @@ function WearScheduleEditor({
         {/* Grid lines at 25/50/75% */}
         {[25, 50, 75].map((y) => (
           <line key={y} x1={0} y1={H - (y / 100) * H} x2={W} y2={H - (y / 100) * H}
-            stroke={C.border} strokeWidth={0.5} strokeDasharray="3,3" />
+            stroke="var(--border)" strokeWidth={0.5} strokeDasharray="3,3" />
         ))}
-        <path d={pathD} fill="none" stroke={C.blue} strokeWidth={1.5} />
+        <path d={pathD} fill="none" stroke="var(--blue)" strokeWidth={1.5} />
         {/* Step dot markers */}
         {sorted.map((s, i) => (
           <circle key={i} cx={(s.atSecond / maxT) * W} cy={H - (s.wearLevel / 100) * H}
-            r={3} fill={C.blue} />
+            r={3} fill="var(--blue)" />
         ))}
-        <text x={0} y={H + 7} fontSize={8} fill={C.faint}>0s</text>
-        <text x={W - 20} y={H + 7} fontSize={8} fill={C.faint}>{maxT}s</text>
+        <text x={0} y={H + 7} fontSize={8} fill="var(--faint)">0s</text>
+        <text x={W - 20} y={H + 7} fontSize={8} fill="var(--faint)">{maxT}s</text>
       </svg>
 
       {/* Preset buttons */}
@@ -102,8 +101,7 @@ function WearScheduleEditor({
               </div>
               <input type="range" min={0} max={300} step={5} value={step.atSecond}
                 onChange={(e) => updateStep(i, { atSecond: +e.target.value })}
-                className="w-full"
-                style={{ accentColor: C.blue }} />
+                className="w-full accent-[var(--blue)]" />
             </div>
             <div className="flex flex-col gap-0.5 flex-1">
               <div className="flex justify-between text-[10px] text-theme-faint">
@@ -112,8 +110,7 @@ function WearScheduleEditor({
               </div>
               <input type="range" min={0} max={100} step={5} value={step.wearLevel}
                 onChange={(e) => updateStep(i, { wearLevel: +e.target.value })}
-                className="w-full"
-                style={{ accentColor: step.wearLevel < 40 ? C.red : C.blue }} />
+                className={`w-full ${step.wearLevel < 40 ? "accent-[var(--red)]" : "accent-[var(--blue)]"}`} />
             </div>
             <button onClick={() => removeStep(i)}
               className="bg-transparent border-none text-theme-red text-[13px] cursor-pointer pt-3.5">×</button>
@@ -198,12 +195,7 @@ export function MaterialBandsEditor({ value, onChange }: Props) {
                   <button
                     onClick={() => setExpandedWear(wearOpen ? null : idx)}
                     title="Wear schedule"
-                    className="py-[2px] px-2 text-[10px] rounded cursor-pointer border"
-                    style={{
-                      background: wearOpen ? alpha(C.orange, 0.15) : hasWear ? alpha(C.orange, 0.08) : C.bg2,
-                      color: hasWear ? C.orange : C.faint,
-                      borderColor: hasWear ? alpha(C.orange, 0.35) : C.border,
-                    }}>
+                    className={`py-[2px] px-2 text-[10px] rounded cursor-pointer border ${wearOpen ? "bg-orange-10 text-theme-orange border-[rgba(249,115,22,0.35)]" : hasWear ? "bg-[rgba(249,115,22,0.08)] text-theme-orange border-[rgba(249,115,22,0.35)]" : "bg-bg2 text-theme-faint border-border-c"}`}>
                     {hasWear ? `Wear ${endWear}%` : "No wear"}
                   </button>
                   <button onClick={() => removeBand(idx)}
@@ -220,8 +212,7 @@ export function MaterialBandsEditor({ value, onChange }: Props) {
                 </div>
                 <input type="range" min={0.01} max={1} step={0.01} value={band.coverage}
                   onChange={(e) => updateBand(idx, { coverage: +e.target.value })}
-                  className="w-full"
-                  style={{ accentColor: C.blue }} />
+                  className="w-full accent-[var(--blue)]" />
               </div>
 
               {wearOpen && (

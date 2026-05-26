@@ -41,21 +41,16 @@ export function ControlBlendBar({ authority, clashQTEActive, clashQTETimer }: Co
 
   return (
     <div
-      style={{ position: "absolute", top: "1rem", right: "1rem", minWidth: `${BAR_WIDTH + 12}px` }}
-      className="px-[0.6rem] py-[0.35rem] bg-[rgba(10,15,30,0.75)] border border-[rgba(100,160,220,0.3)] rounded-lg flex flex-col items-start gap-[0.2rem] z-50 backdrop-blur"
+      style={{ position: "absolute", top: "1rem", right: "1rem" }}
+      className="min-w-[132px] px-[0.6rem] py-[0.35rem] bg-[rgba(10,15,30,0.75)] border border-[rgba(100,160,220,0.3)] rounded-lg flex flex-col items-start gap-[0.2rem] z-50 backdrop-blur"
     >
       <span className="text-[#9bb] font-mono text-[0.6rem] tracking-[0.05em]">
         CONTROL {Math.round(authority)}%
       </span>
-      <div style={{ width: BAR_WIDTH, height: BAR_HEIGHT }} className="bg-white/10 rounded overflow-hidden">
+      <div className="w-[120px] h-2 bg-white/10 rounded overflow-hidden">
         <div
-          style={{
-            width: `${pct * 100}%`,
-            height: "100%",
-            background: barColor,
-            borderRadius: 4,
-            transition: "width 0.12s ease-out",
-          }}
+          className="h-full rounded-[4px] [transition:width_0.12s_ease-out]"
+          style={{ width: `${pct * 100}%`, background: barColor }}
         />
       </div>
     </div>

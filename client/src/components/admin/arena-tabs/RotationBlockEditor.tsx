@@ -1,7 +1,6 @@
 // Shared RotationBlock editor — used by ObstaclesTab, TurretsTab, SwitchesTab.
 // RotationBlock controls how a placed feature's base orientation behaves (not self-spin).
 
-import { C } from "@/styles/theme";
 import type { RotationBlock } from "@/types/arenaConfigNew";
 
 interface Props {
@@ -69,12 +68,7 @@ export default function RotationBlockEditor({ value, onChange, label = "Rotation
                 <button
                   key={m.value}
                   onClick={() => patch({ mode: m.value })}
-                  className="py-[3px] px-[9px] rounded text-[11px] cursor-pointer border"
-                  style={{
-                    background: mode === m.value ? C.blue : "transparent",
-                    color: mode === m.value ? C.white : C.muted,
-                    borderColor: mode === m.value ? C.blue : C.border,
-                  }}
+                  className={`py-[3px] px-[9px] rounded text-[11px] cursor-pointer border ${mode === m.value ? "bg-[var(--blue)] text-white border-[var(--blue)]" : "bg-transparent text-theme-muted border-border-c"}`}
                 >
                   {m.label}
                 </button>
@@ -100,8 +94,7 @@ export default function RotationBlockEditor({ value, onChange, label = "Rotation
                   <input type="range" min={1} max={720} step={5}
                     value={value.speedDegPerSec ?? 45}
                     onChange={e => patch({ speedDegPerSec: +e.target.value })}
-                    className="w-full"
-                    style={{ accentColor: C.blue }}
+                    className="w-full accent-[var(--blue)]"
                   />
                 </div>
                 <div>
@@ -109,12 +102,7 @@ export default function RotationBlockEditor({ value, onChange, label = "Rotation
                   <div className="flex gap-1">
                     {(["cw", "ccw", "alternating"] as const).map(d => (
                       <button key={d} onClick={() => patch({ direction: d })}
-                        className="py-[2px] px-[7px] rounded text-[11px] cursor-pointer border"
-                        style={{
-                          background: (value.direction ?? "cw") === d ? C.blue : "transparent",
-                          color: (value.direction ?? "cw") === d ? C.white : C.muted,
-                          borderColor: (value.direction ?? "cw") === d ? C.blue : C.border,
-                        }}>
+                        className={`py-[2px] px-[7px] rounded text-[11px] cursor-pointer border ${(value.direction ?? "cw") === d ? "bg-[var(--blue)] text-white border-[var(--blue)]" : "bg-transparent text-theme-muted border-border-c"}`}>
                         {d}
                       </button>
                     ))}
@@ -125,12 +113,7 @@ export default function RotationBlockEditor({ value, onChange, label = "Rotation
                 <label className="text-[11px] text-faint min-w-[50px]">Space</label>
                 {(["local", "world"] as const).map(s => (
                   <button key={s} onClick={() => patch({ space: s })}
-                    className="py-[2px] px-2 rounded text-[11px] cursor-pointer border"
-                    style={{
-                      background: (value.space ?? "local") === s ? C.blue : "transparent",
-                      color: (value.space ?? "local") === s ? C.white : C.muted,
-                      borderColor: (value.space ?? "local") === s ? C.blue : C.border,
-                    }}>
+                    className={`py-[2px] px-2 rounded text-[11px] cursor-pointer border ${(value.space ?? "local") === s ? "bg-[var(--blue)] text-white border-[var(--blue)]" : "bg-transparent text-theme-muted border-border-c"}`}>
                     {s}
                   </button>
                 ))}

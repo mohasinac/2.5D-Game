@@ -22,8 +22,8 @@ function CooldownRing({ slot }: { slot: AbilitySlot }) {
   const color = slot.color ?? "#4488ff";
 
   return (
-    <div style={{ width: SIZE, height: SIZE }} className="relative flex items-center justify-center">
-      <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, transform: "rotate(-90deg)" }}>
+    <div className="relative flex items-center justify-center w-11 h-11">
+      <svg width={SIZE} height={SIZE} className="absolute top-0 left-0 -rotate-90">
         {/* Track */}
         <circle cx={SIZE/2} cy={SIZE/2} r={R} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={3} />
         {/* Cooldown sweep */}
@@ -42,8 +42,7 @@ function CooldownRing({ slot }: { slot: AbilitySlot }) {
       </svg>
       {/* Label */}
       <span
-        style={{ color: ready ? "#fff" : "rgba(180,200,220,0.5)" }}
-        className="font-mono text-[0.65rem] font-bold z-[1]"
+        className={`font-mono text-[0.65rem] font-bold z-[1] ${ready ? "text-white" : "text-[rgba(180,200,220,0.5)]"}`}
       >
         {slot.label}
       </span>

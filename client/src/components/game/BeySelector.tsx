@@ -3,7 +3,6 @@
 // Press 1/2/3/4 to signal possession request to server.
 
 import { useEffect } from "react";
-import { C } from "@/styles/theme";
 
 interface BeySlot {
   index: number;
@@ -51,16 +50,9 @@ export function BeySelector({ slots, onSelect }: Props) {
             key={slot.beyId}
             type="button"
             onClick={() => onSelect(i)}
-            style={{
-              background: slot.isControlled
-                ? "#3b82f633"
-                : slot.isActive ? "#1e293b88" : "#1e293b44",
-              border: `2px solid ${slot.isControlled ? "#3b82f6" : slot.isActive ? "#334155" : "#1e293b"}`,
-              opacity: slot.isActive ? 1 : 0.4,
-            }}
-            className="w-14 rounded-lg py-1 cursor-pointer flex flex-col items-center gap-[3px]"
+            className={`w-14 rounded-lg py-1 cursor-pointer flex flex-col items-center gap-[3px] border-2 ${slot.isControlled ? "bg-[#3b82f633] border-[#3b82f6]" : slot.isActive ? "bg-[#1e293b88] border-[#334155]" : "bg-[#1e293b44] border-[#1e293b]"} ${slot.isActive ? "opacity-100" : "opacity-40"}`}
           >
-            <span style={{ color: slot.isControlled ? "#3b82f6" : "#94a3b8" }} className="text-[10px] font-bold">
+            <span className={`text-[10px] font-bold ${slot.isControlled ? "text-[#3b82f6]" : "text-[#94a3b8]"}`}>
               [{i + 1}]
             </span>
             <span className="text-[9px] text-[#f1f5f9] max-w-12 overflow-hidden text-ellipsis whitespace-nowrap">
@@ -68,11 +60,11 @@ export function BeySelector({ slots, onSelect }: Props) {
             </span>
             {/* Health bar */}
             <div className="w-10 h-[3px] bg-[#334155] rounded-sm">
-              <div style={{ width: `${healthPct * 100}%`, background: healthColor }} className="h-full rounded-sm transition-[width] duration-200" />
+              <div className="h-full rounded-sm transition-[width] duration-200" style={{ width: `${healthPct * 100}%`, background: healthColor }} />
             </div>
             {/* Spin bar */}
             <div className="w-10 h-[3px] bg-[#334155] rounded-sm">
-              <div style={{ width: `${spinPct * 100}%` }} className="h-full bg-[#3b82f6] rounded-sm transition-[width] duration-200" />
+              <div className="h-full bg-[#3b82f6] rounded-sm transition-[width] duration-200" style={{ width: `${spinPct * 100}%` }} />
             </div>
           </button>
         );

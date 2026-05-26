@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { C } from "@/styles/theme";
+import React from "react";
 
 export interface BehaviorDefDoc {
   id: string;
@@ -91,7 +91,7 @@ export function ToolboxPanel({ onDragStart }: Props) {
 
       <div className="flex-1 overflow-y-auto py-2">
         {sortedGroups.map(([group, blocks]) => {
-          const color = ACTION_COLORS[group] ?? C.muted;
+          const color = ACTION_COLORS[group] ?? "var(--muted)";
           const isCollapsed = collapsed[group];
           return (
             <div key={group}>
@@ -100,7 +100,7 @@ export function ToolboxPanel({ onDragStart }: Props) {
                 className="flex w-full items-center px-3 py-1 bg-transparent border-none cursor-pointer text-theme-muted text-[11px] font-bold uppercase tracking-[0.04em] gap-[6px]"
                 onClick={() => setCollapsed(c => ({ ...c, [group]: !c[group] }))}
               >
-                <span style={{ width: 8, height: 8, borderRadius: 2, background: color, flexShrink: 0 }} />
+                <span className="inline-block w-2 h-2 rounded-[2px] shrink-0" style={{ background: color }} />
                 {group.replace("_", " ")}
                 <span className="ml-auto">{isCollapsed ? "▶" : "▼"}</span>
               </button>
@@ -110,13 +110,10 @@ export function ToolboxPanel({ onDragStart }: Props) {
                   draggable
                   onDragStart={() => onDragStart(block)}
                   title={block.description}
-                  style={{
-                    background: color + "22",
-                    border: `1px solid ${color}44`,
-                  }}
-                  className="mx-2 my-[2px] px-[10px] py-[5px] rounded-lg cursor-grab flex items-center gap-[6px] select-none"
+                  className="mx-2 my-[2px] px-[10px] py-[5px] rounded-lg cursor-grab flex items-center gap-[6px] select-none border"
+                  style={{ "--tc": color, background: `${color}22`, borderColor: `${color}44` } as React.CSSProperties}
                 >
-                  {block.icon && <span style={{ fontSize: 13, color }}>{block.icon}</span>}
+                  {block.icon && <span className="text-[13px] text-[var(--tc)]">{block.icon}</span>}
                   <span className="text-[12px] text-theme-text font-medium">{block.name}</span>
                   <span className="ml-auto text-[10px] text-theme-faint font-mono">{block.id.split(".").pop()}</span>
                 </div>

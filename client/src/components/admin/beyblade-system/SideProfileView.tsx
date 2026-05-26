@@ -8,7 +8,7 @@
  */
 
 import { useRef, useEffect } from "react";
-import { C, HEX } from "@/styles/theme";
+import { HEX } from "@/styles/theme";
 import { computeEffectiveRadius } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
 import type { SystemContactPoint, PartShape } from "@/types/beybladeSystem";
@@ -352,7 +352,7 @@ export function SideProfileView({ resolved, width = W, height = H }: Props) {
       ref={canvasRef}
       width={width}
       height={height}
-      style={{ borderRadius: 8, border: `1px solid ${C.border}`, display: "block" }}
+      className="block rounded-lg border border-border-c"
     />
   );
 }

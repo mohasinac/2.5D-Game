@@ -3,7 +3,6 @@
 // Tab strips should also include a SearchableTabSelect companion.
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { C } from "@/styles/theme";
 
 export interface SelectOption {
   value: string;
@@ -72,7 +71,7 @@ function SearchInput({ inputRef, value, onChange, onKeyDown }: {
 }
 
 function OptionRow({ opt, selected, onClick }: { opt: SelectOption; selected: boolean; onClick: () => void }) {
-  const accent = opt.color ?? C.blue;
+  const accent = opt.color ?? "var(--blue)";
   return (
     <div
       role="option"
@@ -84,7 +83,7 @@ function OptionRow({ opt, selected, onClick }: { opt: SelectOption; selected: bo
         background: selected ? `${accent}20` : "transparent",
         borderLeftColor: selected ? accent : "transparent",
       } as React.CSSProperties}
-      onMouseEnter={e => { if (!opt.disabled) (e.currentTarget as HTMLDivElement).style.background = selected ? `${accent}20` : `${C.blue}0d`; }}
+      onMouseEnter={e => { if (!opt.disabled) (e.currentTarget as HTMLDivElement).style.background = selected ? `${accent}20` : "color-mix(in srgb, var(--blue) 5%, transparent)"; }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = selected ? `${accent}20` : "transparent"; }}
     >
       <div>{opt.label}</div>
@@ -202,7 +201,7 @@ export function SearchableMultiSelect({
         <div className="flex flex-wrap gap-1.5 mb-1.5">
           {values.map(v => {
             const opt = options.find(o => o.value === v);
-            const color = opt?.color ?? C.blue;
+            const color = opt?.color ?? "var(--blue)";
             return (
               <span key={v}
                 className="inline-flex items-center gap-1 py-[3px] pl-2.5 pr-2 rounded-[20px] text-xs text-theme-text"

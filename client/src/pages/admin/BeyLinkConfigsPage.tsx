@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGameDataStore, type BeyLinkConfigDoc } from "@/stores/gameDataStore";
@@ -105,7 +105,7 @@ export function BeyLinkConfigsPage() {
         </button>
       </div>
 
-      <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: "1fr 220px" }}>
+      <div className="grid gap-2 mb-3 grid-cols-[1fr_220px]">
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Filter by label or ID…" className={inputCls} />
         <SearchableSelect value={categoryFilter} onChange={setCategoryFilter} options={catFilterOpts} placeholder="Category…" />
       </div>
@@ -120,16 +120,9 @@ export function BeyLinkConfigsPage() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-theme-text text-[14px]">{item.label}</span>
                     <span className="font-mono text-[11px] text-theme-faint bg-bg2 px-[6px] py-[1px] rounded">{item.id}</span>
-                    <span className="text-[11px] px-[7px] py-[2px] rounded" style={{"--lc": cc} as React.CSSProperties & Record<string, string>}
-                      // category badge — finite set of runtime hex values from CAT_COLOR, use CSS custom prop
-                      // eslint-disable-next-line react/no-unknown-property
-                      // The color comes from item.color or CAT_COLOR (arbitrary hex), so CSS custom prop is appropriate
-                    >
-                      {/* We inline the badge with a data-driven hex via CSS custom property */}
-                      <span style={{ background: cc + "22", color: cc, fontSize: 11, padding: "2px 7px", borderRadius: 4 }}>{item.category}</span>
-                    </span>
+                    <span className="text-[11px] px-[7px] py-[2px] rounded-[4px] hud-type-bg hud-type-text" style={{ "--tc": cc } as React.CSSProperties}>{item.category}</span>
                     {item.color && (
-                      <span className="inline-block w-4 h-4 rounded-[3px] border border-border-c shrink-0" style={{ background: item.color }} />
+                      <span className="inline-block w-4 h-4 rounded-[3px] border border-border-c shrink-0 [background:var(--swatch-color)]" style={{ "--swatch-color": item.color } as React.CSSProperties} />
                     )}
                   </div>
                   {item.description && <div className="text-[12px] text-theme-muted mt-[3px]">{item.description}</div>}

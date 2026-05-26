@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { C } from "@/styles/theme";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, SpeedPathConfig, SpeedPathBreak, ChargePointConfig } from "@/types/arenaConfigNew";
 
@@ -125,8 +124,7 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
       <div className="flex justify-between items-center">
         <span className="text-[13px] text-muted">{paths.length} / 5 speed paths</span>
         <button onClick={add} disabled={paths.length >= 5}
-          className="py-[5px] px-[14px] bg-yellow text-bg0 border-none rounded-md text-xs font-medium cursor-pointer"
-          style={{ opacity: paths.length >= 5 ? 0.4 : 1 }}>
+          className={`py-[5px] px-[14px] bg-yellow text-bg0 border-none rounded-md text-xs font-medium cursor-pointer ${paths.length >= 5 ? "opacity-40" : ""}`}>
           + Add Path
         </button>
       </div>
@@ -151,12 +149,7 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
             <div className="flex gap-1 flex-wrap">
               {ALL_SHAPES.map(s => (
                 <button key={s} onClick={() => update(path.id, "shape", s)}
-                  className="py-[3px] px-2 rounded text-[11px] cursor-pointer border"
-                  style={{
-                    background: path.shape === s ? C.yellow : C.bg2,
-                    color: path.shape === s ? "#000" : C.muted,
-                    borderColor: path.shape === s ? C.yellow : C.border,
-                  }}>
+                  className={`py-[3px] px-2 rounded text-[11px] cursor-pointer border ${path.shape === s ? "bg-[var(--yellow)] text-black border-[var(--yellow)]" : "bg-bg2 text-theme-muted border-border-c"}`}>
                   {s}
                 </button>
               ))}
@@ -212,8 +205,7 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
                 <input type="range" min={min} max={max} step={step}
                   value={(path as any)[field] ?? min}
                   onChange={e => update(path.id, field, +e.target.value)}
-                  className="w-full"
-                  style={{ accentColor: C.yellow }}
+                  className="w-full accent-[var(--yellow)]"
                 />
               </div>
             ))}
@@ -225,12 +217,7 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
             <div className="flex gap-1 flex-wrap">
               {RENDER_STYLES.map(rs => (
                 <button key={rs} onClick={() => update(path.id, "renderStyle", rs)}
-                  className="py-[2px] px-[7px] rounded text-[10px] cursor-pointer border"
-                  style={{
-                    background: (path.renderStyle ?? "outline") === rs ? C.yellow : "transparent",
-                    color: (path.renderStyle ?? "outline") === rs ? "#000" : C.muted,
-                    borderColor: (path.renderStyle ?? "outline") === rs ? C.yellow : C.border,
-                  }}>
+                  className={`py-[2px] px-[7px] rounded text-[10px] cursor-pointer border ${(path.renderStyle ?? "outline") === rs ? "bg-[var(--yellow)] text-black border-[var(--yellow)]" : "bg-transparent text-theme-muted border-border-c"}`}>
                   {rs}
                 </button>
               ))}
@@ -299,12 +286,7 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
                           <label className="text-[10px] text-faint">Target</label>
                           {(["center", "opponent"] as const).map(t => (
                             <button key={t} onClick={() => patchCP(path, i, { target: t })}
-                              className="py-[1px] px-1.5 rounded text-[10px] cursor-pointer border"
-                              style={{
-                                background: cp.target === t ? C.yellow : "transparent",
-                                color: cp.target === t ? "#000" : C.muted,
-                                borderColor: cp.target === t ? C.yellow : C.border,
-                              }}>
+                              className={`py-[1px] px-1.5 rounded text-[10px] cursor-pointer border ${cp.target === t ? "bg-[var(--yellow)] text-black border-[var(--yellow)]" : "bg-transparent text-theme-muted border-border-c"}`}>
                               {t}
                             </button>
                           ))}

@@ -5,6 +5,7 @@ interface SPBarProps {
   spinPct: number;
   label?: string;
   compact?: boolean;
+  size?: "sm" | "md" | "lg";
 }
 
 function barClass(pct: number, flashing: boolean): string {
@@ -20,7 +21,13 @@ function labelClass(pct: number): string {
   return "text-theme-red";
 }
 
-export function SPBar({ spinPct, label = "SPIN", compact = false }: SPBarProps) {
+const HEIGHT_CLASS: Record<"sm" | "md" | "lg", string> = {
+  sm: "h-[3px]",
+  md: "h-[5px]",
+  lg: "h-[8px]",
+};
+
+export function SPBar({ spinPct, label = "SPIN", compact = false, size = "md" }: SPBarProps) {
   const clamped = Math.max(0, Math.min(100, spinPct));
   const critical = clamped < 10;
   const [visible, setVisible] = useState(true);
@@ -44,7 +51,7 @@ export function SPBar({ spinPct, label = "SPIN", compact = false }: SPBarProps) 
           {clamped}%
         </span>
       </div>
-      <div className="h-[5px] rounded-full bg-white/10 overflow-hidden">
+      <div className={`${HEIGHT_CLASS[size]} rounded-full bg-white/10 overflow-hidden`}>
         <div
           className={`w-pct h-full rounded-full transition-[width] duration-150 ${barClass(clamped, critical && !visible)}`}
           style={{ "--pct": `${clamped}%` } as React.CSSProperties}

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useTabFromUrl } from "@/hooks/useTabFromUrl";
-import { C } from "@/styles/theme";
 import type { ArenaConfig } from "@/types/arenaConfigNew";
 import ArenaPreview from "./ArenaPreview";
 import BasicsTab from "./arena-tabs/BasicsTab";
@@ -55,8 +54,7 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
 
   return (
     <div
-      className="grid gap-5 items-start"
-      style={{ gridTemplateColumns: "minmax(0,1fr) clamp(260px,28%,500px)" }}
+      className="grid gap-5 items-start [grid-template-columns:minmax(0,1fr)_clamp(260px,28%,500px)]"
     >
       {/* Left: tab editor */}
       <div className="flex flex-col gap-3">
@@ -69,20 +67,13 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
-                className="flex items-center gap-[5px] px-3 py-[7px] rounded-lg text-[12px] font-medium cursor-pointer whitespace-nowrap border-none relative"
-                style={{
-                  background: isActive ? C.purple : "transparent",
-                  color: isActive ? C.white : C.muted,
-                }}
+                className={`flex items-center gap-[5px] px-3 py-[7px] rounded-lg text-[12px] font-medium cursor-pointer whitespace-nowrap border-none relative ${isActive ? "bg-[var(--purple)] text-white" : "bg-transparent text-theme-muted"}`}
               >
                 <span>{t.icon}</span>
                 <span>{t.label}</span>
                 {count != null && count > 0 && (
                   <span
-                    className="text-white rounded-lg text-[10px] font-bold px-[5px] leading-4"
-                    style={{
-                      background: isActive ? "rgba(255,255,255,0.3)" : C.purple,
-                    }}
+                    className={`rounded-lg text-[10px] font-bold px-[5px] leading-4 ${isActive ? "text-white bg-white/30" : "text-white bg-[var(--purple)]"}`}
                   >
                     {count}
                   </span>
@@ -116,12 +107,7 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
           <button
             onClick={onSave}
             disabled={saving}
-            className="px-6 py-[9px] rounded-lg text-[13px] font-semibold border-none cursor-pointer"
-            style={{
-              background: C.purple,
-              color: C.white,
-              opacity: saving ? 0.5 : 1,
-            }}
+            className={`px-6 py-[9px] rounded-lg text-[13px] font-semibold border-none cursor-pointer bg-[var(--purple)] text-white ${saving ? "opacity-50" : "opacity-100"}`}
           >
             {saving ? "Saving…" : "Save Arena"}
           </button>

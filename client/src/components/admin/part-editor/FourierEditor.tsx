@@ -178,8 +178,7 @@ export function FourierEditor({ value, onChange, imageUrl, mmPerPx = 0.1 }: Prop
           <button
             onClick={() => generate(imageUrl, numHarmonics)}
             disabled={generating}
-            className="px-3.5 py-[7px] bg-theme-blue text-white border-none rounded-[7px] text-[12px] font-semibold"
-            style={{ cursor: generating ? "default" : "pointer", opacity: generating ? 0.6 : 1 }}
+            className={`px-3.5 py-[7px] bg-theme-blue text-white border-none rounded-[7px] text-[12px] font-semibold ${generating ? "cursor-default opacity-60" : "cursor-pointer opacity-100"}`}
           >
             {generating ? "Generating…" : "Generate Fourier Profile from Image"}
           </button>
