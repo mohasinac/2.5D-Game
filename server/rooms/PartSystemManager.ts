@@ -25,6 +25,7 @@ import type {
   StatModifierEvent,
   BasePart,
   PartConfiguration,
+  ConfigTrigger,
 } from "../../shared/types/beybladeSystem";
 import { type Beyblade, type GameState, DetachedBodySchema } from "./schema/GameState";
 import {
@@ -361,6 +362,51 @@ export class PartSystemManager {
     // ── 4b. Evolution driver — advance tip stage when trigger conditions are met ─
     if (parts.tip?.evolutionStages && parts.tip.evolutionStages.length > 1) {
       tickEvolutionDriver(parts.tip, bey, dtMs);
+    }
+
+    // ── 4c. Per-tick auto-trigger config switching (spin_threshold, tilt_threshold) ─
+    {
+      const layerParts: [string, BasePart | undefined][] = [
+        ["tip", parts.tip], ["ar", parts.ar], ["wd", parts.wd],
+        ["core", parts.core], ["casing", parts.casing],
+      ];
+      for (const [layerKey, part] of layerParts) {
+        if (!part) continue;
+        const cfgs = partConfigurations(part);
+        if (cfgs.length < 2) continue;
+        const currentName = bey.activePartConfigs.get(layerKey) ?? "";
+        // Find the most specific matching config (lowest threshold that's satisfied)
+        let bestMatch: PartConfiguration<any> | undefined;
+        let bestThreshold = Infinity;
+        for (const cfg of cfgs) {
+          if (!cfg.autoTriggers?.length) continue;
+          const allMet = cfg.autoTriggers.every((t: ConfigTrigger) => isTriggerMet(t, bey, 0));
+          if (!allMet) continue;
+          // Prefer the config whose spin_threshold is lowest (most specific)
+          const spinTrig = cfg.autoTriggers.find((t: ConfigTrigger) => t.type === "spin_threshold");
+          const th = spinTrig ? spinTrig.threshold : 1;
+          if (th < bestThreshold) {
+            bestThreshold = th;
+            bestMatch = cfg;
+          }
+        }
+        if (bestMatch && bestMatch.name !== currentName) {
+          // Hysteresis: require 5% deadband before switching back
+          const prevCfg = cfgs.find((c) => c.name === currentName);
+          const prevSpinTrig = prevCfg?.autoTriggers?.find((t: ConfigTrigger) => t.type === "spin_threshold");
+          const spinRatio = bey.maxSpin > 0 ? bey.spin / bey.maxSpin : 0;
+          let blocked = false;
+          if (prevSpinTrig) {
+            const deadband = 0.05;
+            if (spinRatio > prevSpinTrig.threshold - deadband && spinRatio < prevSpinTrig.threshold + deadband) {
+              blocked = true;
+            }
+          }
+          if (!blocked) {
+            bey.activePartConfigs.set(layerKey, bestMatch.name);
+          }
+        }
+      }
     }
 
     // ── 5. Jump-core movement tick ───────────────────────────────────────────

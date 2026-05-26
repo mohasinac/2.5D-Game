@@ -66,6 +66,7 @@ export interface ResolvedTipStats {
   airbornePercent: number;   // fraction of revolution tip is airborne (cam tips)
   camDeltaHeightMm: number;  // vertical cam rise per revolution (cam tips)
   slantRimMm: number;        // peak-to-peak rim height difference (slant tips)
+  splineKnots?: Array<{ radius: number; height: number; tangent?: number }>;
 }
 
 export interface ResolvedBeyStats {
@@ -206,6 +207,7 @@ export function resolveTipStats(
     airbornePercent,
     camDeltaHeightMm,
     slantRimMm,
+    splineKnots: (hpType === 'spline' && hp?.splineKnots?.length) ? hp.splineKnots : undefined,
   };
 }
 
@@ -237,7 +239,40 @@ export function adjustGripForFloorAngle(
   if (resolved.heightProfileType === 'cam') {
     return resolved.effectiveGrip;
   }
+  if (resolved.heightProfileType === 'spline' && resolved.splineKnots?.length) {
+    let inContact = 0;
+    for (const knot of resolved.splineKnots) {
+      const cutoffHeight = knot.radius * Math.tan(floorAngleRad);
+      if (knot.height <= cutoffHeight) inContact++;
+    }
+    const contactFraction = inContact / resolved.splineKnots.length;
+    const slopeBoost = contactFraction * 0.4;
+    return Math.min(1.0, resolved.effectiveGrip * (1 + slopeBoost));
+  }
   return resolved.effectiveGrip;
+}
+
+// ─── Cross-Gen Contact Height Overlap ─────────────────────────────────────────
+
+export function computeHeightOverlapFraction(
+  range1: { min: number; max: number },
+  range2: { min: number; max: number },
+): number {
+  const overlapMin = Math.max(range1.min, range2.min);
+  const overlapMax = Math.min(range1.max, range2.max);
+  if (overlapMax <= overlapMin) return 0;
+  const overlap = overlapMax - overlapMin;
+  const smallerSpan = Math.min(range1.max - range1.min, range2.max - range2.min);
+  return smallerSpan > 0 ? Math.min(1, overlap / smallerSpan) : 0;
+}
+
+export function normalizeContactHeight(
+  heightRange: { min: number; max: number },
+  sourceAvgMm: number,
+  targetAvgMm: number,
+): { min: number; max: number } {
+  const shift = targetAvgMm - sourceAvgMm;
+  return { min: heightRange.min + shift, max: heightRange.max + shift };
 }
 
 /**

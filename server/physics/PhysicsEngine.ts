@@ -10,6 +10,8 @@ import type {
   PointOfContact
 } from "../types/shared";
 import { COLLISION_CATEGORIES, buildCollisionMask, type BeybladePhysicsFlags } from "../utils/physicsFlags";
+import { computeHeightOverlapFraction, normalizeContactHeight } from "./PartPhysics";
+import { GENERATION_RANGES, type BeybladeGeneration } from "../../shared/types/beybladeConstants";
 
 // [SERVER-PHYSICS] PhysicsEngine — Matter.js wrapper for server-authoritative physics.
 // Coordinates: 1 em = 16px, 1 cm = 24px. Arena center is (arenaW*16/2, arenaH*16/2).
@@ -288,14 +290,31 @@ export class PhysicsEngine {
       ? this.getContactPointMultiplier(stats2.pointsOfContact, collision.contactAngle2, contactRadiusMm2, spinFrac2)
       : 1.0;
 
+    // Cross-gen contact height gate — scale damage by vertical overlap fraction
+    let heightOverlap = 1.0;
+    if (beyblade1.effectiveHeightMax > 0 && beyblade2.effectiveHeightMax > 0) {
+      const hr1 = { min: beyblade1.effectiveHeightMin, max: beyblade1.effectiveHeightMax };
+      const hr2 = { min: beyblade2.effectiveHeightMin, max: beyblade2.effectiveHeightMax };
+      const gen1 = beyblade1.generation as BeybladeGeneration;
+      const gen2 = beyblade2.generation as BeybladeGeneration;
+      if (gen1 !== gen2 && GENERATION_RANGES[gen1] && GENERATION_RANGES[gen2]) {
+        const avgTarget = (GENERATION_RANGES[gen1].avgContactHeightMm + GENERATION_RANGES[gen2].avgContactHeightMm) / 2;
+        const nhr1 = normalizeContactHeight(hr1, GENERATION_RANGES[gen1].avgContactHeightMm, avgTarget);
+        const nhr2 = normalizeContactHeight(hr2, GENERATION_RANGES[gen2].avgContactHeightMm, avgTarget);
+        heightOverlap = computeHeightOverlapFraction(nhr1, nhr2);
+      } else {
+        heightOverlap = computeHeightOverlapFraction(hr1, hr2);
+      }
+    }
+
     // Attack buff (J key active): +40% outgoing damage multiplier
     const attackBuff1 = beyblade1.attackBuffTimer > 0 ? 1.4 : 1.0;
     const attackBuff2 = beyblade2.attackBuffTimer > 0 ? 1.4 : 1.0;
 
     // Outgoing damage: raw × contact multiplier × attacker's damage multiplier × attack buff
     // (Element type effectiveness is applied in BattleRoom after this call, at the collision loop)
-    let outDamageFrom1 = rawDamage * contactMult1 * beyblade1.damageMultiplier * attackBuff1;
-    let outDamageFrom2 = rawDamage * contactMult2 * beyblade2.damageMultiplier * attackBuff2;
+    let outDamageFrom1 = rawDamage * contactMult1 * beyblade1.damageMultiplier * attackBuff1 * heightOverlap;
+    let outDamageFrom2 = rawDamage * contactMult2 * beyblade2.damageMultiplier * attackBuff2 * heightOverlap;
 
     // Spin steal uses RAW damage (pre-defense) for a fair stamina calculation
     const oppositeSpin = beyblade1.spinDirection !== beyblade2.spinDirection;

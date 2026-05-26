@@ -433,6 +433,11 @@ export class Beyblade extends Schema {
   // ── Material Wear Level (synced — drives client tint) ────────────────────────
   @type("float32") materialWearLevel: number = 100; // 0=fully worn, 100=new; computed from wearSchedule in PartSystemManager
 
+  // ── Generation + Contact Height (cross-gen collision gating) ─────────────────
+  @type("string") generation: string = "plastic";
+  @type("uint8")  effectiveHeightMin: number = 0;
+  @type("uint8")  effectiveHeightMax: number = 25;
+
   // ── Physics flags (Block M) ──────────────────────────────────────────────────
   @type("boolean") collisionWithBeys: boolean = true;
   @type("boolean") collisionWithArena: boolean = true;

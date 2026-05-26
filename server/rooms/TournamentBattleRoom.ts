@@ -12,7 +12,7 @@ import { hashString } from "../shared/utils/hashString";
 import { ComboTracker, detectCombo, createComboTracker } from "../shared/utils/comboSystem";
 import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, type PlayerInput } from "../shared/utils/bitmask";
-import { resolveWallAngle, computeTiltForce } from "../shared/physics/ArenaUtils";
+import { resolveWallAngle, computeTiltForce, getFloorAngleAtRadius } from "../shared/physics/ArenaUtils";
 import { resolvePhysicsFlags } from "../utils/physicsFlags";
 import { processArenaFeatures } from "../shared/rooms/ArenaFeatureProcessor";
 import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
@@ -648,7 +648,13 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
 
       {
         const spinRatio = beyblade.maxSpin > 0 ? beyblade.spin / beyblade.maxSpin : 0;
-        const decayThisTick = beyblade.spinDecayRate * dt * (1 + (1 - spinRatio) * 0.5);
+        const slopeCx = (this.state.arena.width * 16) / 2;
+        const slopeCy = (this.state.arena.height * 16) / 2;
+        const slopeR  = Math.min(this.state.arena.width, this.state.arena.height) * 16 * 0.45;
+        const radialDist = Math.hypot(beyblade.x - slopeCx, beyblade.y - slopeCy);
+        const floorAngle = getFloorAngleAtRadius(radialDist, slopeR, this.state.arena.wallAngle);
+        const slopeFactor = Math.max(0.5, Math.cos(floorAngle));
+        const decayThisTick = beyblade.spinDecayRate * dt * (1 + (1 - spinRatio) * 0.5) * slopeFactor;
         beyblade.spin = Math.max(0, beyblade.spin - decayThisTick);
       }
       beyblade.stamina = Math.max(0, beyblade.stamina - Math.abs(physicsState.angularVelocity) * 0.01);

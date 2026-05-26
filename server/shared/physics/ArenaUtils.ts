@@ -26,6 +26,19 @@ export function wallBowlForce(baseForce: number, wallAngle: number): number {
   return baseForce * (1.0 + Math.sin(rad) * 0.8);
 }
 
+// ── Bowl floor angle at a given radial distance ─────────────────────────────
+// Linear interpolation: flat at center (0°), wallAngle at rim.
+// Used to scale spin decay by cos(α) — reduced normal force on slopes.
+export function getFloorAngleAtRadius(
+  radialDistance: number,
+  arenaRadius: number,
+  wallAngleDeg: number,
+): number {
+  if (wallAngleDeg <= 0 || arenaRadius <= 0) return 0;
+  const t = Math.min(1, Math.max(0, radialDistance / arenaRadius));
+  return (wallAngleDeg * Math.PI) / 180 * t;
+}
+
 // ── Arena Tilt lateral gravity ───────────────────────────────────────────────
 // Tuned so 90° tilt ≈ 15× the max wobble force — noticeable drift without being
 // overwhelming at shallow angles (≤30°).

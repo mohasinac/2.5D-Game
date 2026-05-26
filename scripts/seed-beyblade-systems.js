@@ -30,6 +30,7 @@ const beybladeySystems = [
     displayName: "Storm Aggressor (2.5D)",
     description: "Aggressive attack-focused assembled system",
     archetype: "attack",
+    generation: "plastic",
     parts: {
       attackRing: "tornado-wing",
       weightDisk: "ten-heavy",
@@ -51,6 +52,7 @@ const beybladeySystems = [
     displayName: "Fortress Leone (2.5D)",
     description: "Defensive fortress with strong protection",
     archetype: "defense",
+    generation: "plastic",
     parts: {
       attackRing: "spike-defense",
       weightDisk: "ten-heavy",
@@ -67,6 +69,7 @@ const beybladeySystems = [
     displayName: "Endurance Eagle (2.5D)",
     description: "Balanced stamina and endurance system",
     archetype: "stamina",
+    generation: "plastic",
     parts: {
       attackRing: "round-stamina",
       weightDisk: "eight-balance",
@@ -83,6 +86,7 @@ const beybladeySystems = [
     displayName: "Upper Attacker (2.5D)",
     description: "Balanced attack and versatility",
     archetype: "balanced",
+    generation: "plastic",
     parts: {
       attackRing: "scissor-attacker",
       weightDisk: "eight-balance",

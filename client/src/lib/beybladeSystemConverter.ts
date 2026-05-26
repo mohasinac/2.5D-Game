@@ -24,6 +24,7 @@ import type {
   PartShape,
 } from "../types/beybladeSystem";
 import { synthesizeRadialCache, MATERIAL_MULTIPLIERS } from "../types/beybladeSystem";
+import { GENERATION_RANGES, type BeybladeGeneration } from "../types/beybladeConstants";
 import type { BeybladeStats, PointOfContact, SpinStealPoint } from "../types/beybladeStats";
 
 // ─── computeEffectiveRadius ───────────────────────────────────────────────────
@@ -226,7 +227,12 @@ export function computeBeybladeStats(
   const rubberCPCount = allCPs.filter((c) => c.material === "rubber").length;
   const totalCPs = allCPs.length || 1;
   const attackScore = Math.min(150, Math.round((metalCPCount / totalCPs) * 150));
-  const defenseScore = Math.min(150, Math.round((weightDisk.weight / 20) * 150));
+  const gen = (system.generation ?? "plastic") as BeybladeGeneration;
+  const genRange = GENERATION_RANGES[gen] ?? GENERATION_RANGES.plastic;
+  const normalizedWeight = Math.max(0, Math.min(1,
+    (totalMass - genRange.massMin) / (genRange.massMax - genRange.massMin)
+  ));
+  const defenseScore = Math.min(150, Math.round(normalizedWeight * 150));
   const staminaScore = Math.min(150, Math.round(tip.gripFactor * 150));
   const total = attackScore + defenseScore + staminaScore;
 
