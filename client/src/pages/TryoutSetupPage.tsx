@@ -4,7 +4,6 @@ import { collection, getDocs, getDoc, doc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
-import { C } from "@/styles/theme";
 
 interface BeyOption { value: string; label: string; hint?: string; }
 interface ArenaOption { value: string; label: string; hint?: string; }
@@ -92,7 +91,7 @@ export function TryoutSetupPage() {
             onChange={setSelectedBey}
             placeholder={loading ? "Loading…" : "Select a beyblade…"}
             disabled={loading}
-            style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13 }}
+            className="w-full"
           />
         </div>
 
@@ -106,7 +105,7 @@ export function TryoutSetupPage() {
             onChange={setSelectedArena}
             placeholder={loading ? "Loading…" : "Select an arena…"}
             disabled={loading}
-            style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13 }}
+            className="w-full"
           />
         </div>
 
@@ -116,12 +115,7 @@ export function TryoutSetupPage() {
             Back
           </button>
           <button onClick={handleStart} disabled={!canStart}
-            className="px-6 py-2.5 rounded-lg text-[13px] font-semibold border-none"
-            style={{
-              background: canStart ? C.blue : C.bg3,
-              color: canStart ? "#fff" : C.faint,
-              cursor: canStart ? "pointer" : "not-allowed",
-            }}>
+            className={`px-6 py-2.5 rounded-lg text-[13px] font-semibold border-none ${canStart ? "bg-theme-blue text-white cursor-pointer" : "bg-bg3 text-theme-faint cursor-not-allowed"}`}>
             Start Tryout
           </button>
         </div>

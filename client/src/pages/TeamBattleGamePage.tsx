@@ -170,12 +170,8 @@ export function TeamBattleGamePage() {
 
       {/* Team indicator */}
       <div
-        className={`absolute py-1 px-3 rounded-lg text-[12px] font-bold ${myTeam === "blue" ? "text-[#93c5fd]" : "text-[#fca5a5]"}`}
-        style={{
-          top: 10, left: 10,
-          background: myTeam === "blue" ? "#3b82f644" : "#ef444444",
-          border: `1px solid ${myTeam === "blue" ? "#3b82f6" : "#ef4444"}`,
-        }}
+        className={`absolute py-1 px-3 rounded-lg text-[12px] font-bold ${myTeam === "blue" ? "text-[#93c5fd] bg-blue-27 border border-[#3b82f6]" : "text-[#fca5a5] bg-red-20 border border-[#ef4444]"}`}
+        style={{ top: 10, left: 10 }}
       >
         {myTeam === "blue" ? "Blue" : "Red"}
       </div>

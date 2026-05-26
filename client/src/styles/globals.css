@@ -131,6 +131,12 @@ input[type=range] { cursor: pointer; width: 100%; }
     border-color: var(--lc);
   }
 
+  /* ─── Game HUD type-color utilities — uses --tc CSS var (beyblade type hex) ─ */
+  .hud-type-border { border-color: color-mix(in srgb, var(--tc, #4488ff) 35%, transparent); }
+  .hud-type-text   { color: var(--tc, #4488ff); }
+  .hud-type-bg     { background-color: color-mix(in srgb, var(--tc, #4488ff) 15%, transparent); }
+  .hud-type-dot    { background-color: var(--tc, #4488ff); box-shadow: 0 0 5px var(--tc, #4488ff); }
+
   /* ─── Page & layout shells ───────────────────────────────────────────── */
   .page-shell {
     @apply w-full min-w-[400px] max-w-[1920px] mx-auto;

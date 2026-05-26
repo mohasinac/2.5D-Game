@@ -1,9 +1,7 @@
-// Phase 28 HUD — HUDRoot: composes TopBar, AbilityIcons, SPBar, OpponentPanel per rendererMode.
-
 import type { ServerGameState, ServerBeyblade, ServerBeyGhost, RendererMode } from "@/types/game";
 import { TopBar } from "./TopBar";
 import { AbilityIcons } from "./AbilityIcons";
-import { SPBar } from "./SPBar";
+import { PlayerPanel } from "./PlayerPanel";
 import { OpponentPanel } from "./OpponentPanel";
 
 interface HUDRootProps {
@@ -28,12 +26,25 @@ export function HUDRoot({ gameState, myId, myBey }: HUDRootProps) {
 
   const username = myBey?.username ?? "—";
   const beyType = myBey?.type ?? "balanced";
+  const myTeamId = (myBey as any)?.teamId ?? "";
 
-  const beyGhosts: Map<string, ServerBeyGhost> | undefined = gameState.beyGhosts as
-    | Map<string, ServerBeyGhost>
-    | undefined;
+  const beyGhosts = gameState.beyGhosts as Map<string, ServerBeyGhost> | undefined;
 
-  // 3-slot ability placeholder — real bindings wired from comboIds/specialMoveId in a later pass
+  // Resolve allies from beyGhosts (same teamId, not self)
+  const allies: { id: string; username: string; beyType: string; spinPct: number }[] = [];
+  if (myTeamId && beyGhosts) {
+    beyGhosts.forEach((ghost, id) => {
+      if (id === myId) return;
+      if (ghost.teamId === myTeamId) {
+        allies.push({ id, username: ghost.username, beyType: ghost.beyType, spinPct: ghost.spin_pct });
+      }
+    });
+  }
+
+  const seriesWins = gameState.seriesWins?.get(myId);
+  const targetWins = gameState.targetWins;
+
+  // 3-slot ability placeholder
   const abilitySlots: [
     { label: string; cooldownMs: number; maxCooldownMs: number; color?: string },
     { label: string; cooldownMs: number; maxCooldownMs: number; color?: string },
@@ -46,31 +57,38 @@ export function HUDRoot({ gameState, myId, myBey }: HUDRootProps) {
 
   return (
     <>
-      {/* TopBar — always visible */}
+      {/* Centered top bar — timer, tournament info, modifiers */}
       <TopBar
-        username={username}
         timerSec={timerSec}
-        beyType={beyType}
-        spinPct={spinPct}
+        status={gameState.status}
+        tournamentName={gameState.tournamentName}
+        roundLabel={gameState.roundNumber ? `Round ${gameState.roundNumber}` : undefined}
+        modifiers={gameState.activeModifierIds}
+        spectatorCount={gameState.spectatorCount}
       />
 
-      {/* SPBar — bottom-left in 2D/2.5D */}
-      {mode !== "3d" && (
-        <div
-          style={{ position: "absolute", bottom: "1.5rem", left: "1rem" }}
-          className="z-50 pointer-events-none"
-        >
-          <SPBar spinPct={spinPct} />
-        </div>
-      )}
+      {/* Top-left — player name + stamina + allies */}
+      <PlayerPanel
+        username={username}
+        beyType={beyType}
+        spinPct={spinPct}
+        allies={allies}
+        seriesWins={seriesWins}
+        targetWins={targetWins}
+      />
 
-      {/* AbilityIcons — bottom-center in 2D/2.5D */}
+      {/* Top-right — opponent list (enemies first, then allies if team mode) */}
+      <OpponentPanel
+        myId={myId}
+        myTeamId={myTeamId}
+        beyGhosts={beyGhosts}
+        maxVisible={8}
+      />
+
+      {/* Bottom-center — ability slots (2D / 2.5D mode only) */}
       {mode !== "3d" && (
         <AbilityIcons slots={abilitySlots} />
       )}
-
-      {/* OpponentPanel — right side; uses beyGhosts */}
-      <OpponentPanel myId={myId} beyGhosts={beyGhosts} />
     </>
   );
 }

@@ -6,7 +6,6 @@ import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
 import { EntityPicker, type EntityOption } from "@/components/setup/EntityPicker";
 import { PX_PER_CM_BASE } from "@/constants/units";
 import { costIcon, KEY_LABEL } from "@/constants/combos";
@@ -56,8 +55,8 @@ function generationFor(id: string): string {
 }
 
 const DIFFICULTY_INFO: Record<Difficulty, { label: string; color: string; desc: string }> = {
-  medium: { label: "Medium", color: C.yellow, desc: "Chases you down, uses defense when weakened" },
-  hard:   { label: "Hard",   color: C.red,    desc: "Predicts your movement, dodges and combos" },
+  medium: { label: "Medium", color: "#f59e0b", desc: "Chases you down, uses defense when weakened" },
+  hard:   { label: "Hard",   color: "#ef4444", desc: "Predicts your movement, dodges and combos" },
   hell:   { label: "Hell",   color: "#ff2a4d", desc: "Frame-perfect dodges, ring-out plays, predictive specials" },
 };
 
@@ -261,13 +260,12 @@ export function AIBattleSetupPage() {
                 const active = difficulty === d;
                 return (
                   <button key={d} onClick={() => setDifficulty(d)}
-                    className="px-3 py-[14px] rounded-[10px] cursor-pointer text-left text-theme-text"
+                    className={`px-3 py-[14px] rounded-[10px] cursor-pointer text-left text-theme-text border ${active ? "border-[var(--dc)]" : "bg-bg2 border-border-c"}`}
                     style={{
                       "--dc": info.color,
-                      background: active ? `color-mix(in srgb, var(--dc) 13%, transparent)` : C.bg2,
-                      border: `1px solid ${active ? "var(--dc)" : C.border}`,
+                      background: active ? `color-mix(in srgb, var(--dc) 13%, transparent)` : undefined,
                     } as React.CSSProperties}>
-                    <div className="font-bold text-[14px]" style={{ color: active ? "var(--dc)" : C.text } as React.CSSProperties}>{info.label}</div>
+                    <div className={`font-bold text-[14px] ${active ? "text-[color:var(--dc)]" : "text-theme-text"}`}>{info.label}</div>
                     <div className="text-[11px] text-theme-faint mt-1 leading-[1.4]">{info.desc}</div>
                   </button>
                 );
@@ -337,8 +335,7 @@ function buildBeybladeTabs(TypeBadge: (p: { type: string }) => React.ReactElemen
         return (
           <div className="flex flex-col gap-3">
             <div
-              className="w-full max-w-[280px] mx-auto rounded-full border border-dashed border-border-c flex items-center justify-center text-theme-faint text-[12px] aspect-square"
-              style={{ background: `radial-gradient(circle at center, var(--bg2) 0%, var(--bg0) 70%)` }}
+              className="w-full max-w-[280px] mx-auto rounded-full border border-dashed border-border-c flex items-center justify-center text-theme-faint text-[12px] aspect-square [background:radial-gradient(circle_at_center,var(--bg2)_0%,var(--bg0)_70%)]"
             >
               {b.imageUrl ? (
                 <img src={b.imageUrl} alt={b.displayName} className="max-w-[80%] max-h-[80%] object-contain" />
@@ -363,9 +360,9 @@ function buildBeybladeTabs(TypeBadge: (p: { type: string }) => React.ReactElemen
         const td = b.typeDistribution ?? { attack: 120, defense: 120, stamina: 120 };
         return (
           <div className="flex flex-col gap-2.5">
-            <StatBar label="Attack"  value={td.attack}  max={200} color={C.red} />
-            <StatBar label="Defense" value={td.defense} max={200} color={C.blue} />
-            <StatBar label="Stamina" value={td.stamina} max={200} color={C.green} />
+            <StatBar label="Attack"  value={td.attack}  max={200} colorClass="bg-theme-red" />
+            <StatBar label="Defense" value={td.defense} max={200} colorClass="bg-theme-blue" />
+            <StatBar label="Stamina" value={td.stamina} max={200} colorClass="bg-theme-green" />
             <div className="flex gap-4 mt-2 text-[12px] text-theme-muted">
               <span>mass: <b className="text-theme-text">{b.mass ?? "—"}g</b></span>
               <span>radius: <b className="text-theme-text">{b.radius ?? "—"}cm</b></span>
@@ -433,11 +430,7 @@ function buildArenaTabs() {
         return (
           <div className="flex flex-col gap-3">
             <div
-              className="w-full max-w-[280px] mx-auto border border-border-c flex items-center justify-center text-theme-faint text-[12px] aspect-square"
-              style={{
-                background: `radial-gradient(circle at center, var(--bg2) 0%, var(--bg0) 75%)`,
-                borderRadius: a.shape === "rectangle" ? 16 : "50%",
-              }}
+              className={`w-full max-w-[280px] mx-auto border border-border-c flex items-center justify-center text-theme-faint text-[12px] aspect-square [background:radial-gradient(circle_at_center,var(--bg2)_0%,var(--bg0)_75%)] ${a.shape === "rectangle" ? "rounded-2xl" : "rounded-full"}`}
             >
               <span>{a.shape ?? "circle"} · {a.theme ?? "default"}</span>
             </div>
@@ -499,7 +492,7 @@ function EmptyHint({ children }: { children: React.ReactNode }) {
   return <div className="text-theme-faint text-[12px] text-center p-6">{children}</div>;
 }
 
-function StatBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+function StatBar({ label, value, max, colorClass }: { label: string; value: number; max: number; colorClass: string }) {
   const pct = Math.min(1, value / max);
   return (
     <div>
@@ -507,7 +500,7 @@ function StatBar({ label, value, max, color }: { label: string; value: number; m
         <span>{label}</span><span className="font-mono">{value}</span>
       </div>
       <div className="w-full h-1.5 bg-bg2 rounded-full overflow-hidden">
-        <div className="h-full w-pct" style={{ "--pct": `${pct * 100}%`, background: color } as React.CSSProperties} />
+        <div className={`h-full w-pct ${colorClass}`} style={{ "--pct": `${pct * 100}%` } as React.CSSProperties} />
       </div>
     </div>
   );
@@ -531,8 +524,7 @@ function BeyCard({ bey, selected, onSelect, TypeBadge, dim = false }: {
 }) {
   return (
     <button onClick={onSelect}
-      className={`px-3 py-2.5 rounded-[10px] text-left cursor-pointer text-theme-text border ${selected ? "bg-blue-13 border-theme-blue" : "bg-bg2 border-border-c"}`}
-      style={{ opacity: dim ? 0.45 : 1 }}
+      className={`px-3 py-2.5 rounded-[10px] text-left cursor-pointer text-theme-text border ${selected ? "bg-blue-13 border-theme-blue" : "bg-bg2 border-border-c"} ${dim ? "opacity-[0.45]" : ""}`}
     >
       <div className="font-semibold text-[13px] mb-1">{bey.displayName}</div>
       <div className="flex gap-1.5 items-center">

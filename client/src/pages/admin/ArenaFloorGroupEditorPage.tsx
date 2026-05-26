@@ -163,7 +163,6 @@ function CouplingStrip({ link }: { link: ArenaLink }) {
       {/* Disconnect badge */}
       {link.alignment?.disconnectsWhenMisaligned && (
         <span
-          className="text-[10px] px-1.5 py-px rounded-[20px]"
           className="text-[10px] px-1.5 py-px rounded-[20px] bg-red-13 text-theme-red border border-red-30"
         >
           ⚡ severs
@@ -623,8 +622,8 @@ export default function ArenaFloorGroupEditorPage() {
                         <div key={link.id} className="mb-1.5">
                           {/* Link dot on connector */}
                           <div
-                            className="absolute w-3 h-3 rounded-full mt-2 border-2 border-bg1"
-                            style={{ left: -31, background: meta.color }}
+                            className="absolute w-3 h-3 rounded-full mt-2 border-2 border-bg1 -left-[31px]"
+                            style={{ background: meta.color }}
                           />
 
                           {/* Motion diagram + link row */}
@@ -821,7 +820,7 @@ function Row({ label, value, color }: { label: string; value: React.ReactNode; c
   return (
     <div className="flex justify-between text-[13px]">
       <span className="text-theme-muted">{label}</span>
-      <span className="font-semibold" style={{ color: color ?? C.text }}>{value}</span>
+      <span className={`font-semibold ${!color ? "text-theme-text" : ""}`} style={color ? { color } : undefined}>{value}</span>
     </div>
   );
 }

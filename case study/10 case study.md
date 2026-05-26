@@ -2402,3 +2402,458 @@ function blackSeaBowlOuterWallClearSpeed(H_wall_m: number, arAngleDeg: number): 
 ```
 
 ---
+
+## Case 563 — BBA V-Force Tower Arena (Biovolt Cylinder): 2 m Hemispherical Outer Bowl on 1 m Column, Raised 30 cm Inner Victory Platform, Spherical-Arc Wall-Riding Centripetal Physics, and 10-Second Solo-Platform Alternate Win Condition
+
+**Thesis:** The Tower Arena (BBA V-Force era, Biovolt research facility, referred to here as the Biovolt Cylinder) is a two-tier structural assembly: a 1000 mm tall cylindrical support column with a 2000 mm diameter (2 m × 2 m plan footprint) forms the pedestal, and mounted on its top face is a near-hemispherical battle bowl of outer rim radius R_outer = 1000 mm, bowl curvature radius R_sphere = 1025 mm, and central floor depth H_floor = R_sphere − √(R_sphere² − R_outer²) = 1025 − √(1025² − 1000²) = 1025 − √(50625) = 1025 − 225 = 800 mm below the rim, making the bowl 800 mm deep and the combined structure 1000 + 800 = 1800 mm total height from ground to bowl floor and 1000 mm from ground to the bowl rim; the bowl is surfaced in smooth white ABS (μ_wall = 0.13, ε_wall = 0.80) and has no Tornado Ridge, no secondary incline, and no bump features — it is a pure spherical arc from the rim down to the flat central floor over the entire 1000 mm radial span; at the centre of the floor sits a raised inner victory platform of diameter 300 mm (R_inner = 150 mm) and raised lip height h_raise = 30 mm above the bowl floor, with a shallow concave dish on its top surface (dish depth h_dish = 10 mm, inner floor at h_floor_inner = 20 mm above the outer bowl floor); the outer housing is a five-petal rose-shaped ABS frame at the bowl rim with five pocket exits each approximately 90 mm chord, giving total exit arc = 5 × 90 = 450 mm on a rim circumference of π × 2000 = 6283 mm and P(ring-out | reach rim at random azimuth) = 450/6283 = 0.0716, a low 7.2% ejection probability that makes ring-out unusual and requires deliberately aimed high-energy impacts; the primary win conditions are standard spin-out and ring-out, applicable throughout the outer bowl; the alternate win condition unique to this arena is the Solo Platform Hold: a beyblade whose tip is in contact with the inner platform floor or the raised lip rim for 10 continuous seconds while no other beyblade simultaneously contacts the platform wins the bout, with the timer resetting to zero any time a second beyblade touches the platform floor or rim; the wall-riding physics are entirely centripetal: for circular orbital motion at spherical-arc angle φ from the bowl bottom (φ = 0° at floor centre, φ = 77.6° at the outer rim), the normal force supplies both centripetal and weight-support components giving N(φ) = mg/cos(φ) — at the rim cos(77.6°) = 0.219 so the wall presses the beyblade with 4.56 × mg, enormously amplifying spin decay to α_wall(φ) = α_flat/cos(φ); the required orbital speed v_orbit(φ) = √(g × R_sphere × sin²φ/cosφ) reaches 6.60 m/s at the rim (beyond plastic-gen launchers), 3.87 m/s at φ = 60°, and 1.70 m/s at φ = 30°, meaning launched beys spiral downward from their entry angle as speed decays; a bey descending to the outer bowl floor from any orbit height above 41 mm carries enough speed to mount the 30 mm inner platform lip (v_floor ≥ 0.784 m/s), and once on the dish floor, friction traps the bey below the 0.443 m/s escape threshold within 0.02–0.58 seconds depending on entry speed; the three interaction zones — high wall (φ > 45°, primary combat zone), lower bowl (φ < 45°, decay and approach zone), and inner platform (victory zone) — create a bout structure where fast beys fight actively in the outer bowl while slow or deliberate beys compete for the 10-second platform hold, and the timer is calibrated to the spin life of a near-exhausted plastic-gen stamina bey (approximately 9 s at ω₀ = 100 rad/s on the dish floor), making the alternate win condition a genuine race between platform time and remaining spin.
+
+### Visual Geometry — Tower Arena Plan View and Bowl Cross-Section
+
+```
+PLAN VIEW (top-down, outer housing 2000 mm × 2000 mm footprint):
+
+            ╔════════════╦══════════════════════════╦════════════════╗
+         ╔══╝  [EXIT A]  ╚══╗                    ╔══╝  [EXIT B]     ╚══╗
+        ║   90 mm chord      ║                  ║   90 mm chord         ║
+       ╔╝                    ╚╗                ╔╝                       ╚╗
+      ║  [EXIT E]              ╲  OUTER BOWL  ╱              [EXIT C]    ║
+      ║  90 mm                  ╲  WALL       ╱               90 mm      ║
+      ║                          ╲  μ=0.13   ╱                            ║
+      ║                           ╲  ABS    ╱                             ║
+      ║                            ╲       ╱                              ║
+      ║                             ╲     ╱  ← bowl rim at R = 1000 mm    ║
+      ║                              ╲   ╱   P(ring-out) = 7.2%           ║
+      ╚╗                              ╲ ╱                              ╔═╝
+       ╚═╗  [EXIT D] 90mm              V                          ╔═══╝
+         ╚══════════════════════════════╲══════════════════════════╝
+                               ┌─────────────────────────────────┐
+                               │       OUTER BOWL FLOOR           │
+                               │  (Zone 1/2: wall orbit, combat)  │
+                               │   R_outer = 1000 mm              │
+                               │       ┌────────────────┐         │
+                               │       │ Zone 2: lower  │         │
+                               │       │ bowl / descent │         │
+                               │      ┌┴──────────────┬┘         │
+                               │      │ Zone 3:        │          │
+                               │      │ INNER PLATFORM │          │
+                               │      │ R = 150 mm     │          │
+                               │      │ h_raise = 30 mm│          │
+                               │      │ Dish depth 10mm│          │
+                               │      └────────────────┘          │
+                               └─────────────────────────────────┘
+
+  Five petal exits at rim, each 90 mm chord; total 450 mm / 6283 mm circumference = 7.2 % of rim
+  Inner platform: ⌀ 300 mm raised 30 mm above bowl floor; dish 10 mm deep (inner floor at 20 mm)
+  Both the dish FLOOR (h = 20 mm) and the platform LIP RIM (h = 30 mm) count for the 10-second timer
+```
+
+```
+RADIAL CROSS-SECTION (centre on left, petal exit side on right):
+
+  Height
+  above    800 ─┐                              ╔══ outer bowl rim / petal housing
+  floor        │                           ╔══╝   φ_rim = 77.6°  (nearly vertical)
+  (mm)     700 ─┤                        ╔══╝
+               │                      ╔══╝
+           600 ─┤                   ╔══╝     Zone 1 — HIGH-ENERGY WALL ORBIT
+               │                 ╔══╝        φ > 45°,  v_orbit > 2.67 m/s
+           500 ─┤              ╔══╝           N up to 4.56 mg at rim
+               │           ╔══╝
+           400 ─┤        ╔══╝
+               │      ╔══╝
+           300 ─┤   ╔══╝ ─────────────────── φ = 45° boundary (z = 300 mm)
+               │╔══╝
+           200 ─┤╗  Zone 2 — DECAY / APPROACH ORBIT
+               ││  φ = 0–45°,  v_orbit = 0–2.67 m/s
+           100 ─┤│
+               ││
+            30 ─╪══╗  ← inner platform lip rim (h = 30 mm)         ← Zone 3
+               ║   ║
+            20 ─╪   ╘═════════════════╗  ← inner dish floor (h = 20 mm)
+               ║                     ║
+             0 ─╩═════════════════════╩══════════════════════════════════════
+               │                     │                                       │
+               0                  150 mm                               1000 mm
+                                     ↑                                       ↑
+                                platform edge                           bowl rim
+                                R_inner = 150 mm                    R_outer = 1000 mm
+
+  R_sphere = 1025 mm  (radius of curvature of bowl wall)
+  H_floor  = 800 mm   (bowl depth from rim to floor)
+  Wall angle at rim: φ = arcsin(1000/1025) = 77.6° from horizontal
+```
+
+```
+STRUCTURAL SIDE ELEVATION:
+
+  ┌──────────────────────────────────────────────────────────────────────────────┐
+  │  OUTER BATTLE BOWL  (800 mm deep, R = 1000 mm rim)                          │ ← 800 mm
+  │  Spherical-arc ABS wall, μ = 0.13, ε = 0.80                                  │
+  │  Inner victory platform at centre floor (⌀ 300 mm, raised 30 mm)            │
+  └──────────────────────────────────────────────────────────────────────────────┘
+  ╔════════════════════════════════════════════════════════════════════════════════╗
+  ║   SUPPORT COLUMN  (tapered cylinder, base ≈ 500 mm dia)                       ║ ← 1000 mm
+  ║   Height: 1000 mm  from ground to bottom of bowl                              ║
+  ╚════════════════════════════════════════════════════════════════════════════════╝
+  ┌──────────────────────────────────────────────────────────────────────────────┐
+  │  GROUND BASE (2000 mm × 2000 mm footprint)                                   │
+  └──────────────────────────────────────────────────────────────────────────────┘
+  Total height: ground → bowl rim = 1000 mm.
+  Bowl rim is 1000 mm above ground; bowl floor is 800 mm below rim (1800 mm above ground is wrong —
+  the bowl floor is 1000 − 800 = 200 mm above ground, i.e. the column raises the bowl floor to 200 mm
+  and the rim to 1000 mm; beyond this only the structural base sits below).
+```
+
+### Spherical-Arc Wall-Riding Centripetal Analysis
+
+```
+COORDINATE SYSTEM:
+  φ = angle measured along sphere surface from bowl bottom (φ=0° at lowest floor point)
+  r(φ)  = R_sphere × sin(φ)           horizontal radius from bowl axis
+  z(φ)  = R_sphere × (1 − cos(φ))     height above bowl floor
+  R_sphere = 1025 mm = 1.025 m,  g = 9.81 m/s²
+
+CIRCULAR ORBIT EQUATIONS (bey in horizontal circle at angle φ):
+  Normal force from wall (perpendicular to spherical surface, directed inward/upward toward sphere centre):
+    Vertical:    N × cos(φ) = mg            →  N = mg / cos(φ)
+    Horizontal:  N × sin(φ) = mv² / r(φ)   →  v²  = g × R_sphere × sin²(φ) / cos(φ)
+
+  v_orbit(φ) = √( g × R_sphere × sin²(φ) / cos(φ) )   [m/s]
+  N(φ) / mg  = 1 / cos(φ)                               [dimensionless amplification]
+  T_orbit(φ) = 2π × √(R_sphere / g) × √cos(φ) = 2.030 × √cos(φ)  [seconds]
+
+ORBIT SPEED, NORMAL FORCE, AND PERIOD TABLE:
+
+  φ (°)  r (mm)  z (mm)  v_orbit (m/s)  N/mg    T_orbit (s)  Orbits/s
+  ──────────────────────────────────────────────────────────────────────
+   20      351      66      1.12          1.06    1.89          0.53
+   30      513     137      1.70          1.15    1.76          0.57
+   40      659     215      2.24          1.31    1.60          0.62
+   45      725     300      2.67          1.41    1.52          0.66
+   50      785     391      3.15          1.56    1.43          0.70
+   60      888     513      3.87          2.00    1.28          0.78
+   70      963     674      5.06          2.92    1.11          0.90
+  77.6    1000     800      6.60          4.56    0.96          1.04  ← rim
+
+PLASTIC-GENERATION LAUNCHER WINDOW (v_launch ≈ 2.5–3.5 m/s):
+  v_orbit = 2.50 m/s → φ ≈ 46°, z ≈ 314 mm  (entry orbit height for standard launch)
+  v_orbit = 3.50 m/s → φ ≈ 62°, z ≈ 570 mm  (high-power entry)
+  Rim orbit (6.60 m/s) exceeds plastic-gen capability; MFB or Burst launchers (4–5 m/s) reach φ ≈ 73–75°.
+  Entry: beys are launched from the rim level and immediately begin spiral descent as spin decays.
+
+ORBIT STABILITY: the spherical bowl is self-correcting below the rim.
+  A bey hit upward (δφ > 0) gains height but lacks speed for that orbit → gravity pulls it back.
+  A bey hit downward (δφ < 0) descends and gains speed relative to orbit need → centripetal restores contact.
+  Orbits are stable at any height where N > 0, i.e. for all φ < 90° — the full bowl below the rim.
+```
+
+### Spin Decay Amplification on Curved Wall
+
+```
+SPIN DECAY ON CURVED WALL vs FLAT FLOOR:
+  α_flat = μ × m × g × r_tip / I   (standard flat-floor rate)
+  α_wall(φ) = α_flat / cos(φ)       (amplified by N/mg = 1/cos(φ))
+
+REFERENCE ASSEMBLY: Dranzer S (m = 0.022 kg, I = 3.8×10⁻⁶ kg·m², r_tip = 1.5 mm ball, μ = 0.13):
+  α_flat = 0.13 × 0.022 × 9.81 × 0.0015 / 3.8×10⁻⁶ = 11.1 rad/s²
+  Spin life (ω₀ = 300 rad/s, plastic-gen): t_flat = 300 / 11.1 = 27.0 s
+
+  φ (°)   z (mm)  cos(φ)  α_wall (rad/s²)  t_spin from ω₀=300 (s)  vs flat
+  ──────────────────────────────────────────────────────────────────────────────
+   20       66     0.940        11.8              25.4               −6%
+   30      137     0.866        12.8              23.4               −13%
+   45      300     0.707        15.7              19.1               −29%
+   60      513     0.500        22.2              13.5               −50%
+   70      674     0.342        32.5               9.2               −66%
+  77.6     800     0.219        50.7               5.9               −78%
+
+ATTACK TYPE EXAMPLE (wide tip, μ = 0.30, r_tip = 3.0 mm, m = 0.026 kg, I = 4.2×10⁻⁶ kg·m²):
+  α_flat = 0.30 × 0.026 × 9.81 × 0.003 / 4.2×10⁻⁶ = 54.8 rad/s²
+  At rim (φ=77.6°): α_rim = 54.8 / 0.219 = 250 rad/s²
+  Spin life at rim (ω₀=300): 300 / 250 = 1.2 s — attack types cannot orbit the rim; they transit rapidly.
+  Attack types are most effective using brief high-speed passes through Zone 1, not sustained orbits.
+
+SPIN DECAY DRIVING STRATEGIC ORBIT CHOICE:
+  A stamina type (sharp tip) survives 19 s at φ=45° then descends to lower bowl.
+  A defense type (ball tip, μ≈0.18, r_tip=2mm): α_flat=20.4 → α_rim=93.2 rad/s², t_rim=3.2 s.
+  Any type that sustains high-wall orbit burns spin fast; the arena penalises passive high-orbit camping.
+  The natural strategy for stamina: enter at moderate height, allow decay, enter inner platform early.
+```
+
+### Outer Bowl Ring-Out Analysis
+
+```
+PETAL EXIT GEOMETRY (at outer bowl rim, R_outer = 1000 mm):
+  Five exits, each 90 mm chord;  total exit arc = 450 mm
+  Rim circumference: C = 2π × 1000 = 6283 mm
+  P(ring-out | bey reaches rim at random azimuth) = 450 / 6283 = 0.0716  (7.2%)
+  P(wall bounce) = 92.8%  — most rim contacts deflect beys back into the bowl.
+
+SPEED NEEDED TO REACH RIM FROM MID-BOWL (ignoring friction, energy conservation):
+  Bey at height z_orbit ascending to rim (z = 800 mm):
+  v_rim = √( v_orbit² − 2g × (0.800 − z_orbit/1000) )
+
+  From φ=45° (z=300mm, v=2.67 m/s): v_rim = √(7.13 − 2×9.81×0.500) = √(7.13−9.81) < 0  → cannot reach rim.
+  From φ=60° (z=513mm, v=3.87 m/s): v_rim = √(14.98 − 2×9.81×0.287) = √(14.98−5.63) = √9.35 = 3.06 m/s.
+  → Ring-out requires a bey already orbiting above φ ≈ 58° to be redirected radially outward.
+
+COLLISION-INDUCED RING-OUT:
+  A radial impulse at φ=60° imparts outward component; combined with orbital tangential speed:
+  v_impact = 2.5 m/s radially, v_tang = 3.87 m/s; v_total = √(2.5² + 3.87²) = 4.61 m/s.
+  Max height: z_max = z_orbit + v_total²/(2g) = 0.513 + 4.61²/19.62 = 0.513 + 1.083 = 1.596 m > 0.800 m.
+  Ring-out if azimuth aligns with exit: P = 7.2%.
+  Summary: ring-out is possible via energetic collisions in Zone 1 but unlikely by chance (7.2%).
+```
+
+### Inner Platform Entry and Trapping Analysis
+
+```
+INNER PLATFORM GEOMETRY:
+  Outer lip radius:  R_inner = 150 mm
+  Lip height:        h_raise = 30 mm above outer bowl floor
+  Dish depth:        h_dish = 10 mm below lip rim
+  Inner floor height: h_floor_inner = 20 mm above outer bowl floor
+  Dish floor radius: R_dish ≈ 120 mm (lip width ~30 mm, inferred from image proportions)
+  Lip wall angle:    α_lip ≈ 70° from horizontal (steep ABS wall)
+
+MINIMUM APPROACH SPEED TO MOUNT LIP FROM OUTER FLOOR:
+  Energy to climb h_raise = 30 mm (plus friction on lip wall):
+    v_min_energy = √(2g × 0.030) = √(0.589) = 0.767 m/s
+  Friction correction (climb length ≈ h_raise/sin(70°) = 31.9 mm, μ = 0.13, N = mg×cos(70°)):
+    ΔKE_friction = 0.13 × 0.022 × 9.81 × cos(70°) × 0.0319 = 3.07×10⁻⁴ J
+    Δv_friction  = √(2×3.07×10⁻⁴ / 0.022) = 0.167 m/s
+  Corrected minimum: v_approach_min = √(0.767² + 0.167²) ≈ 0.784 m/s
+
+MINIMUM ORBIT HEIGHT TO GENERATE v_floor ≥ 0.784 m/s:
+  Descending to bowl floor (height h_orbit → 0), η = 0.88 for smooth-ABS descent:
+    v_floor = √(2g × h_orbit) × 0.88 ≥ 0.784
+    h_orbit ≥ (0.784/0.88)² / (2×9.81) = 0.794/19.62 = 0.0405 m = 40.5 mm
+  → Any bey orbiting above h = 41 mm on the outer bowl (essentially all active beys) can
+    reach v_floor ≥ 0.784 m/s and mount the inner platform.
+
+DISH ENTRY SPEED (after clearing 30 mm lip, descending 10 mm into dish):
+  v_dish = √( v_approach² − 2g×(h_raise − h_dish) ) = √( v_approach² − 2×9.81×0.020 )
+         = √( v_approach² − 0.392 )
+
+  v_approach (m/s)  v_dish (m/s)   Notes
+  ────────────────────────────────────────────────────────────────────────
+  0.784             0.472          minimum-speed entry
+  1.00              0.780          typical low-orbit entry
+  1.40              1.18           mid-orbit entry (φ ≈ 30°)
+  2.30              2.19           high-orbit entry (φ ≈ 45°)
+
+ESCAPE CONDITION AND TRAPPING TIME:
+  Escape speed from dish (climb 10 mm from dish floor to lip rim):
+    v_escape = √(2g × 0.010) = 0.443 m/s
+  Linear deceleration on dish floor: a_trap = μ × g = 0.13 × 9.81 = 1.275 m/s²
+  Trapping time (from v_dish to v_escape):
+    t_trap = (v_dish − v_escape) / a_trap
+
+  v_dish  →  t_trap
+  0.472 m/s   0.023 s  (minimum entry: trapped in 23 ms)
+  0.780 m/s   0.263 s
+  1.18 m/s    0.577 s
+  2.19 m/s    1.37 s   (high-speed entry: 1.4 s of bouncing before trap)
+
+  A fast bey entering at 2.19 m/s oscillates in the dish 1.4 s before being trapped.
+  During this time it may bounce off the dish's inner wall and escape if directed toward the lip.
+  Beys entering below 1.0 m/s are reliably trapped within 0.26 s.
+```
+
+### 10-Second Solo Platform Hold — Victory Condition Dynamics
+
+```
+TIMER RULES (as specified):
+  Starts:  one and only one beyblade contacts platform floor or lip rim.
+  Resets:  second beyblade contacts platform floor or lip rim.
+  Resets:  sole occupant's tip leaves platform entirely.
+  Win:     sole occupant holds 10 s continuously.
+
+SCENARIO A — Standard fight ends before platform becomes relevant:
+  One bey knocked out (ring-out) or spun out in outer bowl while other survives → standard win.
+  Platform condition is irrelevant; most bouts at high spin end this way.
+
+SCENARIO B — Both beys decay to low orbit, one enters platform first:
+  Bey A enters platform, gets trapped. Timer starts.
+  Bey B still in outer bowl at h_orbit. If h_orbit > 41 mm: Bey B can mount lip → timer resets.
+  Critical juncture: Bey B must reach the platform before 10 s elapses.
+  With Bey B at φ = 20° (z = 66 mm, v_orbit = 1.12 m/s):
+    Time for Bey B to complete one orbit at φ=20°: T = 1.89 s.
+    Bey B needs ~3–5 orbits to descend to floor (φ=20° → 0): approximately 8–12 s.
+    If Bey A entered platform just as Bey B reached φ=20°: Bey B likely cannot intervene in time.
+    Timer runs to 10 s → Bey A wins.
+  Counter-strategy: Bey B player must attempt to descend to the platform quickly (accepting
+  spin loss) rather than trying to knock Bey A out from orbit.
+
+SCENARIO C — Simultaneous platform occupation:
+  Both beys trapped in dish. Timer stays at 0.
+  Now a spin-out race: whichever bey spins out first leaves the platform.
+  Surviving bey: timer starts. Opposing player has no remaining bey to reset it.
+  Stamina matchup inside dish — μ and r_tip determine survival time.
+  Stamina type (α_dish = 11.1 rad/s², ω₀ = 80 rad/s remaining): t_spin = 80/11.1 = 7.2 s.
+  Attack type (α_dish = 76.8/cos0°= 76.8 rad/s², ω₀ = 80): t_spin = 80/76.8 = 1.04 s.
+  Attack type spins out 7× faster in dish → stamina types dominate inside the platform.
+
+SCENARIO D — Ejecting the platform occupant:
+  Bey in dish floor (h = 20 mm) must be hit to clear lip (climb Δh = 10 mm dish floor → rim = 30 mm total):
+    v_vert_needed = √(2g × 0.040) = 0.885 m/s (vertical component to clear 40 mm from dish floor to outer)
+  At AR contact angle β: v_impact = v_vert / sin(β)
+    β = 30°: v_impact_min = 0.885/0.500 = 1.77 m/s
+    β = 45°: v_impact_min = 0.885/0.707 = 1.25 m/s
+    β = 60°: v_impact_min = 0.885/0.866 = 1.02 m/s
+  Attack types with wide, high-angle AR contact (β ≈ 45–60°) can eject at 1.0–1.25 m/s approach speed.
+  Once a bey is in the outer bowl at v_orbit = 1.7 m/s (φ=30°), it has sufficient kinetic energy to eject.
+  Ejection requires directional accuracy: attacker must hit radially inward-to-outward, not tangentially.
+
+10-SECOND TIMER CALIBRATION AGAINST SPIN LIFE:
+  Stamina bey trapped in dish at ω_remaining = 100 rad/s:
+    α_dish = 11.1 rad/s² (flat floor, N ≈ mg since z/R << 1 inside dish)
+    t_spin_remain = 100 / 11.1 = 9.0 s  < 10 s  → bey spins out before winning!
+  Stamina bey at ω_remaining = 120 rad/s:
+    t_spin_remain = 120 / 11.1 = 10.8 s  > 10 s  → holds 10 s and wins.
+  Critical spin threshold for solo-platform win: ω_crit = 10 × α_dish = 10 × 11.1 = 111 rad/s.
+  A bey entering the platform with spin above 111 rad/s (≈ 38% of launch spin) wins by platform hold.
+  Below 111 rad/s, it spins out in the dish before the timer expires — win condition fails.
+  This ω_crit creates a tight entry window: bey must enter early enough to have >111 rad/s remaining,
+  but not so early that the opponent also has enough energy to mount the platform and reset the timer.
+```
+
+### Zone Combat Summary and Strategic Geometry
+
+```
+ZONE DEFINITIONS:
+
+  Zone 1 — HIGH WALL  (φ = 45°–77.6°,  z = 300–800 mm,  r = 725–1000 mm)
+    v_orbit:   2.67–6.60 m/s     N:   1.41–4.56 mg
+    α_decay:   15.7–50.7 rad/s²  T:   0.96–1.52 s/orbit
+    Role: primary combat. Both beys fight here after launch. Collision forces amplified
+    by N(φ) factor — AR hits at φ=60° deliver 2× force vs flat floor. Spin burns fast.
+    Ring-out most viable (beys near rim, high kinetic energy available).
+    Attack strategy: repeatedly hit opponent while both are in Zone 1 to force spin loss.
+    Stamina strategy: orbit efficiently at lower φ (45–50°), minimise wall-contact time.
+
+  Zone 2 — LOWER BOWL  (φ = 0°–45°,  z = 0–300 mm,  r = 0–725 mm)
+    v_orbit:   0–2.67 m/s        N:   1.00–1.41 mg
+    α_decay:   11.1–15.7 rad/s²  T:   1.52–2.03 s/orbit
+    Role: decay and transition. Beys completing 3–8 orbits before floor contact.
+    Ejection of platform occupant still viable from here (v = 1.7 m/s at φ=30°).
+    Platform monitoring: actively track opponent's orbit height.
+
+  Zone 3 — INNER PLATFORM  (h = 0–30 mm,  r = 0–150 mm)
+    Trapping speed threshold: 0.443 m/s
+    α_dish:    11.1 rad/s² (stamina) to 76.8 rad/s² (attack type)
+    Role: alternate win zone. Stamina types dominate; attack types spin out in < 2 s.
+    Timer races opponent's intervention and own spin life.
+    ω_crit = 111 rad/s for solo-platform win.
+
+ORBIT DECAY PATH (stamina type, φ_entry = 50°, v_entry = 3.15 m/s, ω₀ = 300 rad/s):
+  Entry: φ=50°, z=391mm. α_wall = 17.3 rad/s². Speed decays, φ drops.
+  After ~8 orbits (11 s): ω ≈ 162 rad/s, orbit drops to φ ≈ 40° (z=215mm).
+  After ~14 orbits (20 s): ω ≈ 74 rad/s, orbit drops to φ ≈ 25°, approaching floor.
+  Floor arrival: v_floor ≈ √(2g×0.215)×0.88 = 1.93 m/s.
+  Platform entry: v_dish ≈ 1.90 m/s — trapped in ~1.2 s.
+  Remaining ω at platform entry: ~60 rad/s < ω_crit = 111 → cannot win by platform hold.
+  Implication: stamina types that spend too long orbiting Zone 1/2 arrive at platform with
+  insufficient spin. Optimal platform strategy requires earlier entry (ω > 111 rad/s at entry time).
+  Entry at orbit time ≈ 13–15 s (ω ≈ 120 rad/s, φ ≈ 35°): v_floor ≈ 1.60 m/s, trapped in 0.9 s.
+  Spin remaining after trap: ω_rem = 120 − 11.1×0.9 = 110 rad/s ≈ ω_crit → borderline win.
+  Optimal entry: orbit φ ≈ 35–40° with ω ≈ 125–130 rad/s, then descend and mount platform immediately.
+```
+
+### TypeScript Reference Functions
+
+```typescript
+function towerBowlOrbitSpeed(phiDeg: number, rSphere_m = 1.025): number {
+  const phi = (phiDeg * Math.PI) / 180;
+  return Math.sqrt(9.81 * rSphere_m * (Math.sin(phi) ** 2) / Math.cos(phi));
+}
+// towerBowlOrbitSpeed(30)   →  1.70 m/s
+// towerBowlOrbitSpeed(45)   →  2.67 m/s
+// towerBowlOrbitSpeed(60)   →  3.87 m/s
+// towerBowlOrbitSpeed(77.6) →  6.60 m/s  (rim, requires anime-scale launcher)
+
+function towerBowlHeight(phiDeg: number, rSphere_m = 1.025): number {
+  const phi = (phiDeg * Math.PI) / 180;
+  return rSphere_m * (1 - Math.cos(phi));
+}
+// towerBowlHeight(30)   →  0.137 m  (137 mm above bowl floor)
+// towerBowlHeight(45)   →  0.300 m
+// towerBowlHeight(77.6) →  0.800 m  (rim level)
+
+function towerBowlNormalForce(phiDeg: number, mass_kg: number): number {
+  const phi = (phiDeg * Math.PI) / 180;
+  return (mass_kg * 9.81) / Math.cos(phi);
+}
+// towerBowlNormalForce(45, 0.022)  →  0.305 N  (1.41 × weight)
+// towerBowlNormalForce(60, 0.022)  →  0.431 N  (2.00 × weight)
+// towerBowlNormalForce(77.6, 0.022) → 0.984 N  (4.56 × weight)
+
+function towerBowlSpinDecayWall(
+  phiDeg: number, mu: number, mass_kg: number, rTip_m: number, I_kgm2: number
+): number {
+  const cosP = Math.cos((phiDeg * Math.PI) / 180);
+  const alphaFlat = (mu * mass_kg * 9.81 * rTip_m) / I_kgm2;
+  return alphaFlat / cosP;
+}
+// towerBowlSpinDecayWall(45,  0.13, 0.022, 0.0015, 3.8e-6) →  15.7 rad/s²
+// towerBowlSpinDecayWall(60,  0.13, 0.022, 0.0015, 3.8e-6) →  22.2 rad/s²
+// towerBowlSpinDecayWall(77.6,0.13, 0.022, 0.0015, 3.8e-6) →  50.7 rad/s²  (rim)
+
+function towerBowlOrbitPeriod(phiDeg: number, rSphere_m = 1.025): number {
+  const phi = (phiDeg * Math.PI) / 180;
+  return 2 * Math.PI * Math.sqrt(rSphere_m / 9.81) * Math.sqrt(Math.cos(phi));
+}
+// towerBowlOrbitPeriod(30)   →  1.76 s  (0.57 orbits/s)
+// towerBowlOrbitPeriod(45)   →  1.52 s  (0.66 orbits/s)
+// towerBowlOrbitPeriod(77.6) →  0.96 s  (1.04 orbits/s, fastest orbiting rate at rim)
+
+function towerInnerPlatformMinApproachSpeed(h_raise_m = 0.030, mu_lip = 0.13, lipAngleDeg = 70): number {
+  const energy = 2 * 9.81 * h_raise_m;
+  const climbLen = h_raise_m / Math.sin((lipAngleDeg * Math.PI) / 180);
+  const frictionDv2 = 2 * (mu_lip * 9.81 * Math.cos((lipAngleDeg * Math.PI) / 180) * climbLen);
+  return Math.sqrt(energy + frictionDv2);
+}
+// towerInnerPlatformMinApproachSpeed()  →  0.784 m/s
+
+function towerInnerDishEscapeSpeed(h_dish_m = 0.010): number {
+  return Math.sqrt(2 * 9.81 * h_dish_m);
+}
+// towerInnerDishEscapeSpeed()  →  0.443 m/s
+
+function towerInnerTrappingTime(
+  vApproach_ms: number, h_raise_m = 0.030, h_dish_m = 0.010, mu_dish = 0.13
+): number {
+  const vDish = Math.sqrt(Math.max(0, vApproach_ms ** 2 - 2 * 9.81 * (h_raise_m - h_dish_m)));
+  const vEscape = Math.sqrt(2 * 9.81 * h_dish_m);
+  if (vDish <= vEscape) return 0;
+  return (vDish - vEscape) / (mu_dish * 9.81);
+}
+// towerInnerTrappingTime(0.784) →  0.023 s  (minimum-speed entry: trapped almost instantly)
+// towerInnerTrappingTime(1.00)  →  0.263 s
+// towerInnerTrappingTime(1.40)  →  0.577 s
+// towerInnerTrappingTime(2.19)  →  1.37 s   (high-speed entry)
+
+function towerEjectionImpactThreshold(h_dish_m = 0.010, h_raise_m = 0.030, contactAngleDeg = 30): number {
+  const totalClimb = h_raise_m + h_dish_m;
+  const vVert = Math.sqrt(2 * 9.81 * totalClimb);
+  return vVert / Math.sin((contactAngleDeg * Math.PI) / 180);
+}
+// towerEjectionImpactThreshold(0.010, 0.030, 30) →  1.77 m/s  (β=30° AR contact)
+// towerEjectionImpactThreshold(0.010, 0.030, 45) →  1.25 m/s  (β=45°, attack-type AR)
+// towerEjectionImpactThreshold(0.010, 0.030, 60) →  1.02 m/s  (β=60°, steep attack AR)
+
+function towerCriticalSpinForPlatformWin(
+  alpha_dish_rads2: number, holdTime_s = 10
+): number {
+  return alpha_dish_rads2 * holdTime_s;
+}
+// towerCriticalSpinForPlatformWin(11.1)  →  111 rad/s  (stamina — min spin at trap to win)
+// towerCriticalSpinForPlatformWin(76.8)  →  768 rad/s  (attack — effectively unreachable: attack types never win by platform hold)
+
+function towerRingOutProbability(exitCount = 5, exitChord_mm = 90, rimRadius_mm = 1000): number {
+  return (exitCount * exitChord_mm) / (2 * Math.PI * rimRadius_mm);
+}
+// towerRingOutProbability()  →  0.0716  (7.2%)
+```
+
+---

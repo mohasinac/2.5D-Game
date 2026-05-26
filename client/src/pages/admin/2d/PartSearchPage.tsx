@@ -72,9 +72,7 @@ export function PartSearchPage() {
             className="no-underline"
           >
             <div
-              className="bg-bg1 border border-border-c rounded-[10px] px-[18px] py-4 cursor-pointer transition-[border-color_150ms]"
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = alpha(C.blue, 0.53))}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = C.border)}
+              className="bg-bg1 border border-border-c rounded-[10px] px-[18px] py-4 cursor-pointer transition-[border-color] duration-150 hover:border-blue-40"
             >
               <div className="text-[24px] mb-2">{pt.icon}</div>
               <div className="font-semibold text-theme-text text-[14px] mb-1">{pt.label}</div>

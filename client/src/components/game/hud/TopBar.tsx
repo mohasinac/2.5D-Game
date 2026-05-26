@@ -1,55 +1,57 @@
-// Phase 28 HUD — TopBar: avatar, name, score, match timer.
+import React from "react";
 
 interface TopBarProps {
-  username: string;
-  score?: number;
   timerSec: number;
-  beyType?: string;
-  spinPct?: number;
+  status?: string;
+  tournamentName?: string;
+  roundLabel?: string;
+  modifiers?: string[];
+  spectatorCount?: number;
 }
 
-const TYPE_COLORS: Record<string, string> = {
-  attack: "#ff6655",
-  defense: "#4488ff",
-  stamina: "#44dd88",
-  balanced: "#ffcc44",
-};
-
-export function TopBar({ username, score, timerSec, beyType = "balanced", spinPct }: TopBarProps) {
+export function TopBar({ timerSec, status, tournamentName, roundLabel, modifiers = [], spectatorCount }: TopBarProps) {
   const mm = Math.floor(timerSec / 60).toString().padStart(2, "0");
   const ss = Math.floor(timerSec % 60).toString().padStart(2, "0");
-  const typeColor = TYPE_COLORS[beyType] ?? "#aabbcc";
+  const low = timerSec > 0 && timerSec <= 30;
 
   return (
     <div
-      style={{
-        position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
-        border: `1px solid ${typeColor}55`,
-      }}
-      className="px-4 py-[0.35rem] bg-[rgba(10,14,28,0.85)] border-t-0 rounded-b-[0.6rem] backdrop-blur flex items-center gap-4 z-50 pointer-events-none font-mono"
+      className="absolute top-0 left-1/2 -translate-x-1/2 z-50 pointer-events-none font-mono"
     >
-      {/* Type indicator dot */}
-      <div style={{ background: typeColor }} className="w-2 h-2 rounded-full shrink-0" />
+      <div className="bg-[rgba(8,12,26,0.85)] backdrop-blur-md border-x border-b border-white/10 rounded-b-xl px-4 pt-1.5 pb-2 flex flex-col items-center gap-0.5 min-w-[120px]">
+        {/* Tournament label */}
+        {tournamentName && (
+          <span className="text-theme-yellow text-[0.5rem] tracking-widest uppercase font-bold truncate max-w-[160px] drop-shadow-sm">
+            {tournamentName}{roundLabel ? ` · ${roundLabel}` : ""}
+          </span>
+        )}
 
-      {/* Username + spin pct */}
-      <div className="flex flex-col items-start">
-        <span className="text-[0.7rem] text-[#dde] font-semibold">{username}</span>
-        {spinPct !== undefined && (
-          <span style={{ color: typeColor }} className="text-[0.6rem]">{spinPct}% spin</span>
+        {/* Timer */}
+        <div className={`text-[1.1rem] font-black tracking-[0.06em] tabular-nums ${low ? "text-theme-red animate-pulse" : "text-white"}`}>
+          {mm}:{ss}
+        </div>
+
+        {/* Status badge */}
+        {status && status !== "in-progress" && (
+          <span className="text-[0.5rem] tracking-[0.15em] uppercase text-white/40">{status}</span>
+        )}
+
+        {/* Modifier chips */}
+        {modifiers.length > 0 && (
+          <div className="flex gap-1 flex-wrap justify-center mt-0.5">
+            {modifiers.slice(0, 4).map(m => (
+              <span key={m} className="text-[0.45rem] px-1 py-px rounded bg-white/10 text-white/60 tracking-wide uppercase">
+                {m}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Spectator count */}
+        {spectatorCount !== undefined && spectatorCount > 0 && (
+          <span className="text-[0.45rem] text-white/30 tracking-wide">{spectatorCount} watching</span>
         )}
       </div>
-
-      {/* Timer */}
-      <div className="text-[0.9rem] text-white font-bold tracking-[0.06em]">
-        {mm}:{ss}
-      </div>
-
-      {/* Score */}
-      {score !== undefined && (
-        <div className="text-[0.7rem] text-[#cce] font-semibold">
-          {score}pt
-        </div>
-      )}
     </div>
   );
 }

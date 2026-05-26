@@ -9,7 +9,6 @@ import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getBeybladeStability, mapToRecord, TYPE_COLORS } from "@/types/game";
 import { SoundManager } from "@/game/audio/SoundManager";
-import { C, alpha } from "@/styles/theme";
 import { MODIFIER_MAP } from "@/types/roundModifier";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
@@ -234,7 +233,7 @@ export function AIBattleGamePage() {
   const launchState = useLaunchInput(room ?? null, gameState?.status ?? "");
 
   const myStability    = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
-  const stabilityColor = myStability > 0.6 ? C.green : myStability > 0.3 ? C.yellow : C.red;
+  const stabilityColorClass = myStability > 0.6 ? "text-theme-green" : myStability > 0.3 ? "text-theme-yellow" : "text-theme-red";
   const stabilityLabel = myStability > 0.6 ? "Stable" : myStability > 0.3 ? "Wobbling" : "Critical!";
 
   const allBeyblades = Array.from(beyblades.values());
@@ -355,19 +354,19 @@ export function AIBattleGamePage() {
         <div className="absolute bottom-0 left-0 right-0 pointer-events-none z-10 p-[clamp(8px,2vw,16px)]">
           {allAiBeys.length <= 1 ? (
             // Classic 1v1 layout
-            <div className="mx-auto grid gap-3 items-center" style={{ maxWidth: "min(480px, 90vw)", gridTemplateColumns: "1fr auto 1fr" }}>
-              <StatCard beyblade={myBeyblade} label="YOU" accentColor={C.blue} stabilityColor={stabilityColor} stabilityLabel={stabilityLabel} />
+            <div className="mx-auto grid gap-3 items-center [max-width:min(480px,90vw)] grid-cols-[1fr_auto_1fr]">
+              <StatCard beyblade={myBeyblade} label="YOU" accentColorClass="text-theme-blue" accentBorderClass="border-theme-blue/30" stabilityColorClass={stabilityColorClass} stabilityLabel={stabilityLabel} />
               <div className="font-black text-theme-faint text-center text-[clamp(14px,2vw,18px)]">VS</div>
               {aiBey ? (
-                <StatCard beyblade={aiBey} label="CPU" accentColor={C.red} stabilityColor={getBeybladeStability(aiBey) > 0.4 ? C.green : C.red} stabilityLabel={aiBey.username} />
+                <StatCard beyblade={aiBey} label="CPU" accentColorClass="text-theme-red" accentBorderClass="border-theme-red/30" stabilityColorClass={getBeybladeStability(aiBey) > 0.4 ? "text-theme-green" : "text-theme-red"} stabilityLabel={aiBey.username} />
               ) : (
                 <div />
               )}
             </div>
           ) : (
             // Multi-AI layout: YOU on left, opponents scroll on right
-            <div className="mx-auto flex gap-2.5 items-end" style={{ maxWidth: "min(720px, 96vw)" }}>
-              <StatCard beyblade={myBeyblade} label="YOU" accentColor={C.blue} stabilityColor={stabilityColor} stabilityLabel={stabilityLabel} />
+            <div className="mx-auto flex gap-2.5 items-end [max-width:min(720px,96vw)]">
+              <StatCard beyblade={myBeyblade} label="YOU" accentColorClass="text-theme-blue" accentBorderClass="border-theme-blue/30" stabilityColorClass={stabilityColorClass} stabilityLabel={stabilityLabel} />
               <div className="font-black text-theme-faint self-center px-1 text-[clamp(12px,1.8vw,16px)]">
                 VS {allAiBeys.length}
               </div>
@@ -377,8 +376,9 @@ export function AIBattleGamePage() {
                     <StatCard
                       beyblade={ai}
                       label={`CPU${idx + 1}`}
-                      accentColor={C.red}
-                      stabilityColor={getBeybladeStability(ai) > 0.4 ? C.green : C.red}
+                      accentColorClass="text-theme-red"
+                      accentBorderClass="border-theme-red/30"
+                      stabilityColorClass={getBeybladeStability(ai) > 0.4 ? "text-theme-green" : "text-theme-red"}
                       stabilityLabel={ai.username}
                     />
                   </div>
@@ -392,14 +392,14 @@ export function AIBattleGamePage() {
       {/* Spectator view */}
       {isSpectating && allBeyblades.length > 0 && (
         <div className="absolute bottom-4 left-0 right-0 pointer-events-auto z-10 px-[clamp(8px,2vw,16px)]">
-          <div className="mx-auto grid gap-3 items-center" style={{ maxWidth: "min(480px, 90vw)", gridTemplateColumns: "1fr auto 1fr" }}>
+          <div className="mx-auto grid gap-3 items-center [max-width:min(480px,90vw)] grid-cols-[1fr_auto_1fr]">
             {allBeyblades.filter((b) => !b.isAI).slice(0, 1).map((b) => (
               <div
                 key={b.id}
                 onClick={() => setSpectatorFollowId(b.id)}
                 className={`cursor-pointer rounded-lg ${spectatorFollowId === b.id ? "outline outline-2 outline-theme-green" : ""}`}
               >
-                <StatCard beyblade={b} label="PLAYER" accentColor={C.blue} stabilityColor={getBeybladeStability(b) > 0.4 ? C.green : C.red} stabilityLabel={b.username} />
+                <StatCard beyblade={b} label="PLAYER" accentColorClass="text-theme-blue" accentBorderClass="border-theme-blue/30" stabilityColorClass={getBeybladeStability(b) > 0.4 ? "text-theme-green" : "text-theme-red"} stabilityLabel={b.username} />
               </div>
             ))}
             <div className="font-black text-theme-faint text-center text-[clamp(14px,2vw,18px)]">VS</div>
@@ -408,7 +408,7 @@ export function AIBattleGamePage() {
                 onClick={() => setSpectatorFollowId(aiBey.id)}
                 className={`cursor-pointer rounded-lg ${spectatorFollowId === aiBey.id ? "outline outline-2 outline-theme-green" : ""}`}
               >
-                <StatCard beyblade={aiBey} label="CPU" accentColor={C.red} stabilityColor={getBeybladeStability(aiBey) > 0.4 ? C.green : C.red} stabilityLabel={aiBey.username} />
+                <StatCard beyblade={aiBey} label="CPU" accentColorClass="text-theme-red" accentBorderClass="border-theme-red/30" stabilityColorClass={getBeybladeStability(aiBey) > 0.4 ? "text-theme-green" : "text-theme-red"} stabilityLabel={aiBey.username} />
               </div>
             ) : <div />}
           </div>
@@ -628,8 +628,8 @@ export function AIBattleGamePage() {
   );
 }
 
-function StatCard({ beyblade, label, accentColor, stabilityColor, stabilityLabel }: {
-  beyblade: any; label: string; accentColor: string; stabilityColor: string; stabilityLabel: string;
+function StatCard({ beyblade, label, accentColorClass, accentBorderClass, stabilityColorClass, stabilityLabel }: {
+  beyblade: any; label: string; accentColorClass: string; accentBorderClass: string; stabilityColorClass: string; stabilityLabel: string;
 }) {
   const hp   = Math.round(beyblade.health ?? 0);
   const maxHp = Math.max(1, beyblade.maxHealth ?? beyblade.maxStamina ?? 100);
@@ -638,8 +638,8 @@ function StatCard({ beyblade, label, accentColor, stabilityColor, stabilityLabel
   const hpPct = Math.min(100, (hp / maxHp) * 100);
   const hpBarClass = hp / maxHp > 0.5 ? "bg-theme-green" : hp / maxHp > 0.25 ? "bg-theme-yellow" : "bg-theme-red";
   return (
-    <div className="rounded-xl p-2.5" style={{ background: "rgba(15,23,42,0.85)", border: `1px solid ${accentColor}44` }}>
-      <div className="text-[10px] font-bold tracking-[0.1em] mb-1.5" style={{ color: accentColor }}>{label}</div>
+    <div className={`rounded-xl p-2.5 bg-[rgba(15,23,42,0.85)] border ${accentBorderClass}`}>
+      <div className={`text-[10px] font-bold tracking-[0.1em] mb-1.5 ${accentColorClass}`}>{label}</div>
       <div className="mb-1">
         <div className="flex justify-between text-[10px] mb-0.5">
           <span className="text-theme-red">HP</span>
@@ -664,7 +664,7 @@ function StatCard({ beyblade, label, accentColor, stabilityColor, stabilityLabel
           />
         </div>
       </div>
-      <div className="text-[9px] font-mono mt-1.5" style={{ color: stabilityColor }}>{stabilityLabel}</div>
+      <div className={`text-[9px] font-mono mt-1.5 ${stabilityColorClass}`}>{stabilityLabel}</div>
     </div>
   );
 }

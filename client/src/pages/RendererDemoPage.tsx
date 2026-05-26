@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { BeybladeGameRenderer } from "@/game/renderer/PixiRenderer";
 import type { ServerGameState, ServerBeyblade } from "@/types/game";
-import { C } from "@/styles/theme";
 
 const W = 1080, H = 1080;
 
@@ -106,63 +105,65 @@ export function RendererDemoPage() {
   const sideW = 260;
 
   return (
-    <div style={{ minHeight:"100vh", background:C.bg0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:24 }}>
-      <div style={{ width:"100%", maxWidth:960 }}>
-        <div style={{ textAlign:"center", marginBottom:24 }}>
-          <h1 style={{ fontSize:28, fontWeight:900, color:C.text, letterSpacing:"-0.02em" }}>2.5D Renderer Demo</h1>
-          <p style={{ color:C.muted, fontSize:13, marginTop:4 }}>PixiJS WebGL · 3 beyblades · Live stability effects</p>
+    <div className="min-h-screen bg-bg0 flex flex-col items-center justify-center p-6">
+      <div className="w-full max-w-[960px]">
+        <div className="text-center mb-6">
+          <h1 className="text-[28px] font-black text-theme-text tracking-[-0.02em]">2.5D Renderer Demo</h1>
+          <p className="text-theme-muted text-[13px] mt-1">PixiJS WebGL · 3 beyblades · Live stability effects</p>
         </div>
 
-        <div style={{ display:"grid", gridTemplateColumns:`1fr ${sideW}px`, gap:20 }}>
+        <div className="grid gap-5" style={{ gridTemplateColumns: `1fr ${sideW}px` }}>
           {/* Canvas */}
-          <div ref={containerRef} style={{ background:"#000", borderRadius:16, border:`1px solid ${C.border}`, overflow:"hidden", aspectRatio:"16/10", minHeight:340 }} />
+          <div ref={containerRef} className="bg-black rounded-2xl border border-border-c overflow-hidden aspect-[16/10] min-h-[340px]" />
 
           {/* Controls */}
-          <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+          <div className="flex flex-col gap-3">
             {/* Theme */}
-            <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:16 }}>
-              <div style={{ fontSize:11, fontWeight:600, color:C.muted, textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>Arena Theme</div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
+            <div className="bg-bg2 border border-border-c rounded-2xl p-4">
+              <div className="text-[11px] font-semibold text-theme-muted uppercase tracking-[0.08em] mb-2.5">Arena Theme</div>
+              <div className="grid grid-cols-2 gap-1.5">
                 {THEMES.map(t => (
-                  <button key={t} onClick={() => changeTheme(t)} style={{
-                    padding:"6px 8px", borderRadius:8, fontSize:11, fontWeight:500, cursor:"pointer", textTransform:"capitalize",
-                    background: theme===t ? C.blue+"33" : "transparent",
-                    border: `1px solid ${theme===t ? C.blue : C.border}`,
-                    color: theme===t ? C.text : C.muted,
-                  }}>{t}</button>
+                  <button key={t} onClick={() => changeTheme(t)}
+                    className={`py-1.5 px-2 rounded-lg text-[11px] font-medium cursor-pointer capitalize border ${theme === t ? "bg-blue-13 border-theme-blue text-theme-text" : "bg-transparent border-border-c text-theme-muted"}`}
+                  >{t}</button>
                 ))}
               </div>
             </div>
 
             {/* Spin decay */}
-            <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:16 }}>
-              <div style={{ fontSize:11, fontWeight:600, color:C.muted, textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>Spin Decay Speed</div>
-              <input type="range" min={0} max={20} step={1} value={spinLoss} onChange={e => setSpinLoss(+e.target.value)} style={{ accentColor:C.blue }} />
-              <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:C.faint, marginTop:4 }}>
-                <span>None</span><span style={{ color:C.text, fontFamily:"monospace" }}>{spinLoss}/s</span><span>Fast</span>
+            <div className="bg-bg2 border border-border-c rounded-2xl p-4">
+              <div className="text-[11px] font-semibold text-theme-muted uppercase tracking-[0.08em] mb-2.5">Spin Decay Speed</div>
+              <input type="range" min={0} max={20} step={1} value={spinLoss} onChange={e => setSpinLoss(+e.target.value)} className="accent-theme-blue w-full" />
+              <div className="flex justify-between text-[11px] text-theme-faint mt-1">
+                <span>None</span><span className="text-theme-text font-mono">{spinLoss}/s</span><span>Fast</span>
               </div>
-              <p style={{ fontSize:11, color:C.faint, marginTop:8 }}>Watch beyblades tilt as spin drops below 40%</p>
+              <p className="text-[11px] text-theme-faint mt-2">Watch beyblades tilt as spin drops below 40%</p>
             </div>
 
             {/* Effects */}
-            <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:16 }}>
-              <div style={{ fontSize:11, fontWeight:600, color:C.muted, textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>Effects</div>
-              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-                <button onClick={burst} style={{ padding:"10px", borderRadius:10, background:C.red, color:C.white, fontWeight:600, fontSize:13 }}>💥 Collision Burst</button>
-                <button onClick={spinOut} style={{ padding:"10px", borderRadius:10, background:C.orange, color:C.white, fontWeight:600, fontSize:13 }}>🌀 Spin-Out Effect</button>
-                <button onClick={reset} style={{ padding:"10px", borderRadius:10, background:"transparent", color:C.muted, border:`1px solid ${C.border}`, fontWeight:600, fontSize:13 }}>↺ Reset Spins</button>
+            <div className="bg-bg2 border border-border-c rounded-2xl p-4">
+              <div className="text-[11px] font-semibold text-theme-muted uppercase tracking-[0.08em] mb-2.5">Effects</div>
+              <div className="flex flex-col gap-2">
+                <button onClick={burst} className="p-2.5 rounded-[10px] bg-theme-red text-white font-semibold text-[13px] border-none cursor-pointer">💥 Collision Burst</button>
+                <button onClick={spinOut} className="p-2.5 rounded-[10px] bg-theme-orange text-white font-semibold text-[13px] border-none cursor-pointer">🌀 Spin-Out Effect</button>
+                <button onClick={reset} className="p-2.5 rounded-[10px] bg-transparent text-theme-muted border border-border-c font-semibold text-[13px] cursor-pointer">↺ Reset Spins</button>
               </div>
             </div>
 
             {/* Legend */}
-            <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:16 }}>
-              <div style={{ fontSize:11, fontWeight:600, color:C.muted, textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>2.5D Effects Active</div>
+            <div className="bg-bg2 border border-border-c rounded-2xl p-4">
+              <div className="text-[11px] font-semibold text-theme-muted uppercase tracking-[0.08em] mb-2.5">2.5D Effects Active</div>
               {[
                 ["#ef4444","Attack — fastest spin streak"],
                 ["#4488ff","Defense — solid gyro lock feel"],
                 ["#44ff88","Stamina — slowest, longest spin"],
-              ].map(([c,l]) => <div key={l} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, fontSize:12, color:C.muted }}><span style={{ color:c, fontSize:8 }}>●</span>{l}</div>)}
-              <div style={{ borderTop:`1px solid ${C.border}`, marginTop:8, paddingTop:8, fontSize:11, color:C.faint, display:"flex", flexDirection:"column", gap:4 }}>
+              ].map(([c,l]) => (
+                <div key={l} className="flex items-center gap-2 mb-1.5 text-[12px] text-theme-muted">
+                  {/* Dynamic runtime hex color — rule 4 exception */}
+                  <span style={{ color: c, fontSize: 8 }}>●</span>{l}
+                </div>
+              ))}
+              <div className="border-t border-border-c mt-2 pt-2 text-[11px] text-theme-faint flex flex-col gap-1">
                 <span>↕ Y-scale: 0.85 dying → 1.0 full spin</span>
                 <span>↗ Skew tilt when spin &lt; 40%</span>
                 <span>◐ Alpha motion blur on fast spin</span>

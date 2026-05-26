@@ -340,8 +340,7 @@ export function CompatibilityTagsPage() {
                 {/* Expanded: usage detail */}
                 {isExpanded && (
                   <div
-                    className="border-t border-border overflow-y-auto"
-                    className="max-h-[260px]"
+                    className="border-t border-border overflow-y-auto max-h-[260px]"
                   >
                     <table className="w-full border-collapse text-xs">
                       <thead>

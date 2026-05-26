@@ -1,25 +1,28 @@
-// Phase 28 HUD — SPBar: spin-percent bar with color bands.
-// ≥75% = green, ≥40% = orange, ≥10% = red, <10% = rapid red flash.
-
 import { useEffect, useRef, useState } from "react";
+import React from "react";
 
 interface SPBarProps {
-  spinPct: number;  // 0–100
+  spinPct: number;
   label?: string;
+  compact?: boolean;
 }
 
-function bandColor(pct: number): string {
-  if (pct >= 75) return "#44dd88";
-  if (pct >= 40) return "#ffaa22";
-  if (pct >= 10) return "#ff4433";
-  return "#ff2200";
+function barClass(pct: number, flashing: boolean): string {
+  if (flashing) return "bg-white/20";
+  if (pct >= 75) return "bg-theme-green";
+  if (pct >= 40) return "bg-theme-yellow";
+  return "bg-theme-red";
 }
 
-export function SPBar({ spinPct, label = "SPIN" }: SPBarProps) {
+function labelClass(pct: number): string {
+  if (pct >= 75) return "text-theme-green";
+  if (pct >= 40) return "text-theme-yellow";
+  return "text-theme-red";
+}
+
+export function SPBar({ spinPct, label = "SPIN", compact = false }: SPBarProps) {
   const clamped = Math.max(0, Math.min(100, spinPct));
-  const color = bandColor(clamped);
   const critical = clamped < 10;
-
   const [visible, setVisible] = useState(true);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -33,21 +36,19 @@ export function SPBar({ spinPct, label = "SPIN" }: SPBarProps) {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [critical]);
 
-  const fillStyle: React.CSSProperties = {
-    "--pct": `${clamped}%`,
-    background: visible ? color : "rgba(255,255,255,0.05)",
-    boxShadow: visible && clamped > 0 ? `0 0 4px ${color}88` : "none",
-    transition: critical ? "none" : "width 0.15s ease, background 0.3s ease",
-  } as React.CSSProperties;
-
   return (
-    <div className="flex flex-col items-stretch gap-[2px] w-[90px] font-mono">
-      <div className="flex justify-between text-[0.55rem] text-[#aabbcc]">
-        <span>{label}</span>
-        <span style={{ color: visible ? color : "transparent" }} className="font-bold">{clamped}%</span>
+    <div className={`flex flex-col gap-[3px] ${compact ? "w-20" : "w-full"} font-mono`}>
+      <div className="flex justify-between items-center">
+        <span className="text-[0.5rem] tracking-widest text-white/40 uppercase">{label}</span>
+        <span className={`text-[0.55rem] font-bold ${visible ? labelClass(clamped) : "text-transparent"}`}>
+          {clamped}%
+        </span>
       </div>
-      <div className="h-[6px] rounded-[3px] bg-white/10 overflow-hidden">
-        <div style={fillStyle} className="w-pct h-full rounded-[3px]" />
+      <div className="h-[5px] rounded-full bg-white/10 overflow-hidden">
+        <div
+          className={`w-pct h-full rounded-full transition-[width] duration-150 ${barClass(clamped, critical && !visible)}`}
+          style={{ "--pct": `${clamped}%` } as React.CSSProperties}
+        />
       </div>
     </div>
   );

@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
 import { useGame } from "@/contexts/GameContext";
-import { C } from "@/styles/theme";
 
 const TEAM_BATTLE_ROOM = "team_battle_room";
 
@@ -68,12 +67,11 @@ export function TeamBattleLobbyPage() {
               key={t}
               type="button"
               onClick={() => setTeam(t)}
-              className="flex-1 py-3.5 rounded-xl text-[16px] font-bold cursor-pointer"
-              style={{
-                border: `2px solid ${team === t ? (t === "blue" ? C.blue : C.red) : C.border}`,
-                background: team === t ? (t === "blue" ? C.blue + "22" : C.red + "22") : "var(--bg2)",
-                color: t === "blue" ? C.blue : C.red,
-              }}
+              className={`flex-1 py-3.5 rounded-xl text-[16px] font-bold cursor-pointer border-2 ${
+                t === "blue"
+                  ? `text-theme-blue ${team === t ? "border-theme-blue bg-blue-10" : "border-border-c bg-bg2"}`
+                  : `text-theme-red ${team === t ? "border-theme-red bg-red-10" : "border-border-c bg-bg2"}`
+              }`}
             >
               {t === "blue" ? "🔵 Blue Team" : "🔴 Red Team"}
             </button>
@@ -84,11 +82,9 @@ export function TeamBattleLobbyPage() {
         <div className="grid grid-cols-2 gap-3">
           {(["blue", "red"] as const).map(t => {
             const list = t === "blue" ? bluePlayers : redPlayers;
-            const color = t === "blue" ? C.blue : C.red;
             return (
-              <div key={t} className="bg-bg2 rounded-xl p-3.5"
-                style={{ border: `1px solid ${color}33` }}>
-                <div className="text-[12px] font-bold mb-2 uppercase" style={{ color }}>
+              <div key={t} className={`bg-bg2 rounded-xl p-3.5 border ${t === "blue" ? "border-blue-20" : "border-red-20"}`}>
+                <div className={`text-[12px] font-bold mb-2 uppercase ${t === "blue" ? "text-theme-blue" : "text-theme-red"}`}>
                   {t} team ({list.length}/2)
                 </div>
                 {list.length === 0
@@ -121,12 +117,7 @@ export function TeamBattleLobbyPage() {
           type="button"
           onClick={handleJoin}
           disabled={!!roomId}
-          className="py-3.5 rounded-xl border-none text-white text-[16px] font-bold"
-          style={{
-            background: roomId ? C.border : C.blue,
-            cursor: roomId ? "default" : "pointer",
-            opacity: roomId ? 0.5 : 1,
-          }}
+          className={`py-3.5 rounded-xl border-none text-white text-[16px] font-bold ${roomId ? "bg-border-c cursor-default opacity-50" : "bg-theme-blue cursor-pointer"}`}
         >
           {roomId ? "Waiting for match…" : "Join Team Battle"}
         </button>
