@@ -67,13 +67,13 @@ test.describe("AI vs AI: full battle until winner", () => {
     if (!landed) { await ss(page, "AV01-ai-vs-ai-lab-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_000);
+    const selectors = page.locator('select, [role="combobox"], input[type="text"]');
+    await selectors.first().waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     await ss(page, "AV01-ai-vs-ai-lab");
 
     await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
 
     // Both beyblade pickers should be present
-    const selectors = page.locator('select, [role="combobox"], input[type="text"]');
     const count = await selectors.count();
     expect(count).toBeGreaterThan(0);
     await ss(page, "AV01-ai-vs-ai-selectors");
@@ -84,7 +84,8 @@ test.describe("AI vs AI: full battle until winner", () => {
     if (!landed) { await ss(page, "AV02-ai-vs-ai-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_500);
+    const launchBtnAV02 = page.locator("button").filter({ hasText: /launch|start|go|fight|begin/i }).first();
+    await launchBtnAV02.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     await ss(page, "AV02-ai-vs-ai-lab-configured");
 
     // Select Hell difficulty for both to make the match fast (aggressive, uses combos)
@@ -161,7 +162,7 @@ test.describe("AI vs AI: full battle until winner", () => {
     if (!landed) { await ss(page, "AV03-attack-clash-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_500);
+    await page.locator('[role="combobox"], select').first().waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
 
     // Try to select Attack-type beyblades for both P1 and P2
     // The beyblade pickers are likely SearchableSelect components
@@ -263,7 +264,7 @@ test.describe("AI battle: new aiCount feature (1 human vs N bots)", () => {
     if (!landed) { await ss(page, "AV04-ai-count-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_000);
+    await page.locator("h1, h2").first().waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     await ss(page, "AV04-ai-battle-setup");
 
     // Look for a count selector / slider / input for number of AI opponents

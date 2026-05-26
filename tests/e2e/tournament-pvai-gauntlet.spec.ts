@@ -51,10 +51,8 @@ test.describe("PvAI Gauntlet: admin creates tournament", () => {
     if (!landed) { await ss(page, "G01-create-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_500);
-    await ss(page, "G01-create-form");
-
     await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
+    await ss(page, "G01-create-form");
 
     // Set tournament name
     const nameInput = page.locator('input[name="name"], input[placeholder*="name" i], input[id*="name"]').first();
@@ -121,11 +119,11 @@ test.describe("PvAI Gauntlet: player lobby + round display", () => {
     if (!landed) { await ss(page, "G02-tournament-list-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(3_000);
+    const gauntletEntry = page.locator("text=/gauntlet|⚔/i").first();
+    await gauntletEntry.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     await ss(page, "G02-tournament-list");
 
     // Any gauntlet tournament should show ⚔️ icon or "Gauntlet" text
-    const gauntletEntry = page.locator("text=/gauntlet|⚔/i").first();
     const gauntletVisible = await gauntletEntry.isVisible({ timeout: 5_000 }).catch(() => false);
 
     if (gauntletVisible) {
@@ -137,7 +135,7 @@ test.describe("PvAI Gauntlet: player lobby + round display", () => {
       if (await gauntletLink.isVisible().catch(() => false)) {
         await gauntletLink.click();
         await page.waitForLoadState("domcontentloaded");
-        await page.waitForTimeout(2_500);
+        await page.locator("h1, h2, [class*='lobby'], [class*='tournament']").first().waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
         await ss(page, "G02-gauntlet-lobby");
       }
     } else {
@@ -150,16 +148,16 @@ test.describe("PvAI Gauntlet: player lobby + round display", () => {
     if (!landed) { await ss(page, "G03-lobby-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_500);
 
     // Look for any gauntlet tournament and navigate to it
     const gauntletLink = page.locator("a[href*='/game/2d/tournament/'], a[href*='/game/tournament/']")
       .filter({ hasText: /gauntlet/i }).first();
+    await gauntletLink.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
 
     if (await gauntletLink.isVisible().catch(() => false)) {
       await gauntletLink.click();
       await page.waitForLoadState("domcontentloaded");
-      await page.waitForTimeout(3_000);
+      await page.locator("h1, h2, [class*='lobby'], [class*='tournament']").first().waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
       await ss(page, "G03-gauntlet-lobby");
 
       // Check for gauntlet-specific UI
@@ -202,7 +200,7 @@ test.describe("Tournament: immediate match when both players ready", () => {
     if (!landed) { await ss(page, "G04-ready-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_500);
+    await page.locator("a[href*='/tournament/'], button, h1, h2").first().waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
 
     // Find an active tournament with a pending match for this user
     const myMatchLink = page.locator("text=/your match|ready to fight|battle ready/i").first();
@@ -277,7 +275,7 @@ test.describe("PvAI Gauntlet: full battle flow", () => {
     if (!landed) { await ss(page, "G05-gauntlet-sim-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_500);
+    await page.locator("button, [role='combobox']").first().waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     await ss(page, "G05-gauntlet-sim-lab");
 
     // Configure: Hell vs Hell for fast resolution
