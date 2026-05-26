@@ -16,6 +16,26 @@ const defaultColyseusState = {
   connect: vi.fn(),
   disconnect: vi.fn(),
   sendInput: vi.fn(),
+  isSpectating: false,
+  sendQTEInput: vi.fn(),
+  beyLinkQTE: null,
+  beyLinkControlLoss: null,
+  sendBeyLinkQTEInput: vi.fn(),
+  beyLinkHijackQTE: null,
+  beyLinkHijackBlockQTE: null,
+  sendHijackBlock: vi.fn(),
+  loadingStep: null as string | null,
+  loadingError: null as string | null,
+  visualEventQueue: [] as any[],
+  floorInfo: null,
+  myFloorIndex: 0,
+  linkAlignments: null,
+  floorTransition: null,
+  collisionQTEData: null,
+  collisionQTEPower: 0,
+  collisionQTESpecialPrompt: false,
+  sendCollisionQTEMash: vi.fn(),
+  sendCollisionQTEFireSpecial: vi.fn(),
 };
 
 let colyseusState = { ...defaultColyseusState };
@@ -157,7 +177,7 @@ function makeGameState(overrides: Partial<ServerGameState> = {}): ServerGameStat
 describe("BattleGamePage — layout", () => {
   it("renders canvas container", () => {
     renderPage();
-    const container = document.querySelector('div[style*="100vh"]');
+    const container = document.querySelector('div.h-screen');
     expect(container).toBeInTheDocument();
   });
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { useShallow } from "zustand/react/shallow";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -196,28 +197,25 @@ export const useGameStore = create<GameStore>()(
 // Drop-in replacement for the old useGame() context hook.
 
 export function useGame() {
-  const store = useGameStore();
-  return {
-    settings: store.settings,
-    isHydrated: store._hydrated,
-    isReady: Boolean(
-      store.settings.beybladeId &&
-        store.settings.arenaId &&
-        store.settings.gameMode,
-    ),
-    setBeyblade: store.setBeyblade,
-    setArena: store.setArena,
-    setGameMode: store.setGameMode,
-    setDifficulty: store.setDifficulty,
-    setOpponent: store.setOpponent,
-    setGameConfig: store.setGameConfig,
-    startGame: store.startGame,
-    resetGame: store.resetGame,
-    setActiveRoom: store.setActiveRoom,
-    activeTournamentId: store.activeTournamentId,
-    activeTournamentMatchId: store.activeTournamentMatchId,
-    setActiveTournament: store.setActiveTournament,
-  };
+  return useGameStore(
+    useShallow((s) => ({
+      settings: s.settings,
+      isHydrated: s._hydrated,
+      isReady: Boolean(s.settings.beybladeId && s.settings.arenaId && s.settings.gameMode),
+      setBeyblade: s.setBeyblade,
+      setArena: s.setArena,
+      setGameMode: s.setGameMode,
+      setDifficulty: s.setDifficulty,
+      setOpponent: s.setOpponent,
+      setGameConfig: s.setGameConfig,
+      startGame: s.startGame,
+      resetGame: s.resetGame,
+      setActiveRoom: s.setActiveRoom,
+      activeTournamentId: s.activeTournamentId,
+      activeTournamentMatchId: s.activeTournamentMatchId,
+      setActiveTournament: s.setActiveTournament,
+    })),
+  );
 }
 
 // ─── Provider ────────────────────────────────────────────────────────────────

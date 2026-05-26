@@ -640,7 +640,13 @@ export default function ArenaPreview({ arena }: Props) {
     return () => {
       cancelled = true;
       appInitializedRef.current = false;
-      try { app.destroy(true, { children: true }); } catch { /* init may still be in flight */ }
+      // Explicitly remove canvas from DOM — PIXI v8 destroy() does not do this, so a
+      // Strict Mode double-mount would append a second canvas on top of the first.
+      try {
+        const canvas = app.canvas;
+        if (canvas?.parentNode) canvas.parentNode.removeChild(canvas);
+        app.destroy(true, { children: true });
+      } catch { /* init may still be in flight */ }
       appRef.current = null;
       arenaContainerRef.current = null;
     };

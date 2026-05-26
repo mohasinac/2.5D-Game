@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useMemo, useCallback } from "react";
 import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { Link, useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
@@ -63,6 +63,17 @@ export function BattleGamePage() {
   const [splitScreenData, setSplitScreenData] = useState<SplitScreenCinematicData | null>(null);
   const [splitScreenEliminated, setSplitScreenEliminated] = useState<Set<string>>(new Set());
 
+  const isSpectatingRef = useRef(false);
+  const handleQTEPrompt = useCallback((data: QTEPromptData) => {
+    if (!isSpectatingRef.current) setQTEPrompt(data);
+  }, []);
+  const handleQTESuccess = useCallback(() => setQTEPrompt(null), []);
+  const handleQTEExpired = useCallback(() => setQTEPrompt(null), []);
+  const handleSplitScreenCinematic = useCallback((data: SplitScreenCinematicData) => {
+    setSplitScreenData(data);
+    setSplitScreenEliminated(new Set());
+  }, []);
+
   const colyseusOptions = useMemo(() => ({
     beybladeId: settings.beybladeId ?? "default",
     arenaId: settings.arenaId ?? "default",
@@ -81,11 +92,13 @@ export function BattleGamePage() {
       autoConnect: false,
       onGameEnd: setGameEndData,
       onSeriesEnd: setSeriesEndData,
-      onQTEPrompt: (data) => { if (!isSpectating) setQTEPrompt(data); },
-      onQTESuccess: () => setQTEPrompt(null),
-      onQTEExpired: () => setQTEPrompt(null),
-      onSplitScreenCinematic: (data) => { setSplitScreenData(data); setSplitScreenEliminated(new Set()); },
+      onQTEPrompt: handleQTEPrompt,
+      onQTESuccess: handleQTESuccess,
+      onQTEExpired: handleQTEExpired,
+      onSplitScreenCinematic: handleSplitScreenCinematic,
     });
+
+  isSpectatingRef.current = isSpectating;
 
   // Sync collision QTE state from hook
   useEffect(() => {
@@ -170,12 +183,19 @@ export function BattleGamePage() {
     }
   }, [myBeyblade?.id, isSpectating, spectatorFollowId, setControlledBeyblade, room]);
 
+  const gameStateRef = useRef(gameState);
+  const beybladesRef = useRef(beyblades);
+  const visualEventQueueRef = useRef(visualEventQueue);
+  gameStateRef.current = gameState;
+  beybladesRef.current = beyblades;
+  visualEventQueueRef.current = visualEventQueue;
+
   useEffect(() => {
     let raf: number;
-    const loop = () => { render(gameState, beyblades, visualEventQueue); raf = requestAnimationFrame(loop); };
+    const loop = () => { render(gameStateRef.current, beybladesRef.current, visualEventQueueRef.current); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [render, gameState, beyblades]);
+  }, [render]);
 
   useEffect(() => {
     if (!room) return;
@@ -194,7 +214,7 @@ export function BattleGamePage() {
     room.onMessage("burst", (data: any) => {
       const { x, y } = physicsToScreen(data.x, data.y);
       spawnBurstParticles(x, y);
-      SoundManager.play("spin-out"); // reuse spin-out SFX until burst_sfx is available
+      SoundManager.play("spin-out");
     });
     room.onMessage("special-move", (data: any) => {
       playSpecialMoveEffect(data.playerId, data.type, data.x, data.y, data.facing);
@@ -210,7 +230,8 @@ export function BattleGamePage() {
         setLastCombo({ name: data.comboName, timestamp: Date.now() });
       }
     });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnBurstParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [room]);
 
   // Auto-dismiss game-end overlay + play victory/defeat sound.
   useEffect(() => {

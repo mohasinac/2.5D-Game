@@ -126,12 +126,19 @@ export function TournamentBattleGamePage() {
     }
   }, [myBeyblade?.id, isSpectating, beyblades, setControlledBeyblade]);
 
+  const gameStateRef = useRef(gameState);
+  const beybladesRef = useRef(beyblades);
+  const visualEventQueueRef = useRef(visualEventQueue);
+  gameStateRef.current = gameState;
+  beybladesRef.current = beyblades;
+  visualEventQueueRef.current = visualEventQueue;
+
   useEffect(() => {
     let raf: number;
-    const loop = () => { render(gameState, beyblades, visualEventQueue); raf = requestAnimationFrame(loop); };
+    const loop = () => { render(gameStateRef.current, beybladesRef.current, visualEventQueueRef.current); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [render, gameState, beyblades]);
+  }, [render]);
 
   useEffect(() => {
     if (!room) return;
@@ -162,7 +169,8 @@ export function TournamentBattleGamePage() {
         setLastCombo({ name: data.comboName, timestamp: Date.now() });
       }
     });
-  }, [room, spawnCollisionParticles, spawnSpinOutParticles, spawnBurstParticles, spawnDamageNumber, physicsToScreen, playSpecialMoveEffect, playComboEffect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [room]);
 
   // Dismiss game-end overlay after 4 seconds
   useEffect(() => {

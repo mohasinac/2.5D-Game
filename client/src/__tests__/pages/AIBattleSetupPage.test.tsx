@@ -22,6 +22,16 @@ vi.mock("react-router-dom", async (importOriginal) => {
   };
 });
 
+// ─── Hook mocks ──────────────────────────────────────────────────────────────
+
+vi.mock("@/hooks/useCombos", () => ({
+  useCombos: () => ({ combos: [], loaded: true, loading: false, error: null, byId: {} }),
+}));
+
+vi.mock("@/hooks/useSpecialMoves", () => ({
+  useSpecialMoves: () => ({ specialMoves: [], loaded: true, loading: false, error: null, byId: {} }),
+}));
+
 // ─── Context mocks ────────────────────────────────────────────────────────────
 
 vi.mock("@/contexts/GameContext", () => ({

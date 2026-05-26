@@ -368,9 +368,11 @@ describe("useGameInput — duplicate suppression", () => {
   afterEach(() => restoreRaf());
 
   it("sends every frame (heartbeat) even when nothing changes", () => {
-    // Change-detection was removed — see useGameInput.ts. Each frame sends the
-    // current bitmask so the server can self-heal from dropped packets within
-    // ~16ms and never get a "stuck input" state.
+    // The hook deduplicates by bitmask + HEARTBEAT_MS (500ms). To verify the
+    // heartbeat re-send, we advance performance.now() past the threshold.
+    const nowMock = vi.spyOn(performance, "now");
+    nowMock.mockReturnValue(1000);
+
     const sendInput = vi.fn();
     renderHook(() => useGameInput(sendInput, true));
 
@@ -378,8 +380,12 @@ describe("useGameInput — duplicate suppression", () => {
     const firstCount = sendInput.mock.calls.length;
     expect(firstCount).toBeGreaterThan(0);
 
+    // Advance time past HEARTBEAT_MS (500ms)
+    nowMock.mockReturnValue(1600);
     act(() => { runFrame(); });
     expect(sendInput.mock.calls.length).toBeGreaterThan(firstCount);
+
+    nowMock.mockRestore();
   });
 
   it("sends again only when input actually changes", () => {

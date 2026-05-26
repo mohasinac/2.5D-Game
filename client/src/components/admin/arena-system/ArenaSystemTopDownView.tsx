@@ -22,6 +22,9 @@ export function ArenaSystemTopDownView({ arenaSystem }: Props) {
       await app.init({ width, height, background: 0x0a1520, antialias: true });
       if (cancelled) { app.destroy(true); return; }
       appRef.current = app;
+      app.canvas.style.display = "block";
+      app.canvas.style.width = "100%";
+      app.canvas.style.height = "100%";
       container.appendChild(app.canvas);
 
       const centerX = width / 2;
@@ -83,8 +86,8 @@ export function ArenaSystemTopDownView({ arenaSystem }: Props) {
       // Friction zones
       if (arenaSystem.slopePhysics.frictionMap) {
         for (const zone of arenaSystem.slopePhysics.frictionMap) {
-          const zx = centerX + zone.x * scale;
-          const zy = centerY + zone.y * scale;
+          const zx = centerX + (zone.x - arenaSystem.width / 2) * scale;
+          const zy = centerY + (zone.y - arenaSystem.height / 2) * scale;
           const zr = zone.radius * scale;
           const zoneColor = zone.frictionMultiplier > 1 ? 0xff8844 : 0x44ff88;
 

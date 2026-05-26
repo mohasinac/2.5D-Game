@@ -475,7 +475,7 @@ describe("useColyseus — game-end message callback", () => {
 
     if (gameEndHandler) {
       act(() => { gameEndHandler({ gameNumber: 1, winnerId: "u1" }); });
-      expect(onGameEnd).toHaveBeenCalledWith({ gameNumber: 1, winnerId: "u1" });
+      expect(onGameEnd).toHaveBeenCalledWith({ gameNumber: 1, winnerId: "u1", winner: "" });
     }
     // If not registered, the hook may handle it differently — just verify no crash
   });
@@ -495,7 +495,7 @@ describe("useColyseus — game-end message callback", () => {
 
     if (seriesEndHandler) {
       act(() => { seriesEndHandler({ winnerId: "u1", seriesScore: { u1: 2, u2: 0 } }); });
-      expect(onSeriesEnd).toHaveBeenCalledWith({ winnerId: "u1", seriesScore: { u1: 2, u2: 0 } });
+      expect(onSeriesEnd).toHaveBeenCalledWith({ winnerId: "u1", seriesScore: { u1: 2, u2: 0 }, winner: "" });
     }
   });
 });

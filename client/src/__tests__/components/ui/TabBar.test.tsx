@@ -70,8 +70,8 @@ describe("TabBar", () => {
     const { container } = render(
       <TabBar tabs={tabs} activeKey="overview" onSelect={() => {}} />
     );
-    // line variant has borderBottom on the wrapper div
+    // line variant has border-b Tailwind class on the wrapper div
     const wrapper = container.firstChild as HTMLElement;
-    expect(wrapper.style.borderBottom).toBeTruthy();
+    expect(wrapper.className).toContain("border-b");
   });
 });

@@ -16,10 +16,61 @@
 - Hertzian contact patch: `a = (3WR/4E*)^(1/3)`; `1/E* = (1−ν₁²)/E₁ + (1−ν₂²)/E₂`
 - Spin decay: `dω/dt = −(μ × m × g × r_tip) / I_total`
 - Annular contact effective radius: `r_eff = 2(r_o³ − r_i³) / (3(r_o² − r_i²))`
-- Material constants: ABS / PC (E = 2.3–2.4 GPa, ρ = 1050–1200 kg/m³), rubber (E = 0.002 GPa, ρ = 1200 kg/m³, μ_k = 0.85), hard tip (μ_k = 0.17)
+- Material constants: ABS / PC (E = 2.3–2.4 GPa, ρ = 1050–1200 kg/m³), rubber (E = 0.002 GPa, ρ = 1200 kg/m³, μ_k = 0.50 [CS10 CONFIRMED; earlier CS1/CS9 used 0.85 illustrative]), hard tip (μ_k = 0.17)
 - Burst tab cantilever: `k_tab = 3EI/L³`; `I_tab = b·h³/12`
 - Floor friction torque for annular contact: `τ_floor = μ × W × r_eff`
 - Symmetry labels: C₁, C₂, C₃, C₄, C₆
+
+---
+
+## Authoritative Physics Constants (Cross-Verified CS1–CS10)
+
+All case studies share these confirmed values. When writing new cases or adding parts, use these values exclusively. Do NOT substitute values from research batch files, linka files, or other pre-case-study sources.
+
+### Tip Friction (μ_k on ABS stadium floor)
+
+| Tip Material | μ_k | Source | Tag |
+|-------------|-----|--------|-----|
+| Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball) | **0.17** | CS10 Case 551 | [CONFIRMED] |
+| Rubber (RF, RB, rubber flat) | **0.50** | CS10 Case 545 | [CONFIRMED] |
+| Metal (MS, metal sharp, metal change) | **0.12** | CS3 Case 119 | [CONFIRMED] |
+| Plastic (gen-1 old plastic) | **0.10** | CS1 | [CONFIRMED] |
+| B:D ball bearing | **0.05** | CS10 Case 551 | [CONFIRMED] |
+| EWD / CEW plastic sleeve bearing | **0.12** | CS1 line 2298 | [CONFIRMED] |
+| ABS on ABS (material-to-material, not tip) | **0.15** | CS10 style rules | [CONFIRMED] |
+
+### Other Confirmed Constants
+
+| Parameter | Value | Source | Tag |
+|-----------|-------|--------|-----|
+| EG spring constant | k = 1500 N/m | CS10 Case 555 | [CONFIRMED] |
+| EG spring energy | E = 48 mJ | CS10 Case 556 | [CONFIRMED] |
+| F:D mode-switch threshold | ω = 94.3 rad/s | CS10 Case 557 | [CONFIRMED] |
+| Magnacore chip force at 3 mm | F = 0.40 N | CS10 Case 554 | [ESTIMATED — pull-test] |
+| Rubber restitution (COR) | e = 0.25 | CS10 | [CONFIRMED] |
+| ABS restitution (COR) | e ≈ 0.65–0.70 | CS10 | [CONFIRMED] |
+| Metal restitution (COR) | e ≈ 0.80 | CS10 | [CONFIRMED] |
+
+### Value Tagging Convention
+
+Every numeric value in new cases must carry one of these tags:
+
+- `[CONFIRMED]` — directly measured or confirmed by cross-verified case study physics
+- `[FACT]` — sourced from wiki spec, confirmed part weight, or official product data
+- `[INFERRED]` — derived from formula using confirmed inputs; show the derivation
+- `[ESTIMATED]` — image-based measurement or approximation; no primary source
+- `[ILLUSTRATIVE]` — model value, not measured; use confirmed data for real analyses
+- `[CUSTOM BUILD]` — aftermarket or non-standard combo, not a factory part
+
+### Common Errors to Avoid
+
+- CS1 used μ = 0.8 (sharp) and 0.5 (flat) — these were illustrative model values, NOT measured friction. The real value is 0.17 for all hard ABS tips.
+- CS1 table values 0.85, 0.70, 0.30 for contact point materials are restitution coefficients (e), NOT kinetic friction (μ). Do not conflate.
+- B:D bearing μ = 0.005 (CS1) is theoretical ideal; real B:D = 0.05 (CS10 confirmed).
+- Rubber μ = 0.85 or 0.9 (CS1/CS9) were illustrative; real rubber μ = 0.50 (CS10 confirmed).
+- Do NOT hardcode petal counts for orbital tips — petal count is emergent from RPM × bowl depth × grip.
+- AR contact height ≠ AR centroid height. Contact faces project down from the centroid. Gen 1 AR contact: 12–24 mm; centroid: 28–36 mm.
+- frictionMult in engine = μ_material / μ_ABS = μ_material / 0.17
 
 ---
 

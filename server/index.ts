@@ -16,6 +16,7 @@ import { Parts25DTournamentBattleRoom } from "./rooms/Parts25DTournamentBattleRo
 import { TeamBattleRoom } from "./rooms/TeamBattleRoom";
 import { Parts25DTeamBattleRoom } from "./rooms/Parts25DTeamBattleRoom";
 import { RoyaleBattleRoom } from "./rooms/RoyaleBattleRoom";
+import { StoryBattleRoom } from "./rooms/StoryBattleRoom";
 import { ROOM_NAMES } from "./shared/utils/gameMode";
 import { TournamentScheduler } from "./tournament/TournamentScheduler";
 
@@ -56,6 +57,9 @@ gameServer.define("parts25d_team_battle_room", Parts25DTeamBattleRoom);
 
 // Royale Battle room (Phase 25)
 gameServer.define("royale_battle_room", RoyaleBattleRoom);
+
+// RPG Story Battle room — extends AIBattleRoom with RPG narrative context
+gameServer.define("story_battle_room", StoryBattleRoom);
 
 // Legacy room names — kept as aliases for one release cycle so existing
 // clients continue to connect. They route to the classic 2D pipeline.

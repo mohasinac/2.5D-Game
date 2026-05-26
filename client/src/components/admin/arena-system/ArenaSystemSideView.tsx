@@ -22,6 +22,9 @@ export function ArenaSystemSideView({ arenaSystem }: Props) {
       await app.init({ width, height, background: 0x0a1520, antialias: true });
       if (cancelled) { try { app.destroy(true, { children: true }); } catch { /* ok */ } return; }
       appRef.current = app;
+      app.canvas.style.display = "block";
+      app.canvas.style.width = "100%";
+      app.canvas.style.height = "100%";
       container.appendChild(app.canvas);
 
       const padding = 60;
@@ -53,7 +56,7 @@ export function ArenaSystemSideView({ arenaSystem }: Props) {
           points.push({ x: dist, y: -h });
         }
       } else if (elevType === "pyramid") {
-        points.push({ x: 0, y: 50 }, { x: maxDist, y: 0 });
+        points.push({ x: 0, y: -50 }, { x: maxDist, y: 0 });
       } else if (elevType === "ramp") {
         const tiltAngle = arenaSystem.elevationMap.tiltAngle ?? 15;
         const slope = Math.tan(tiltAngle * Math.PI / 180);

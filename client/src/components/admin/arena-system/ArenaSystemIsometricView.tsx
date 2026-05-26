@@ -22,6 +22,9 @@ export function ArenaSystemIsometricView({ arenaSystem }: Props) {
       await app.init({ width, height, background: 0x0a1520, antialias: true });
       if (cancelled) { app.destroy(true); return; }
       appRef.current = app;
+      app.canvas.style.display = "block";
+      app.canvas.style.width = "100%";
+      app.canvas.style.height = "100%";
       container.appendChild(app.canvas);
 
       const centerX = width / 2;

@@ -22,9 +22,6 @@ export default defineConfig({
       },
     },
   },
-  css: {
-    postcss: { plugins: [] },
-  },
   build: {
     outDir: "dist",
     sourcemap: true,

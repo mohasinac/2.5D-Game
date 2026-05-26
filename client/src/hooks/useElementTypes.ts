@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import type { ElementTypeConfig } from "@/types/elementTypeConfig";
@@ -64,13 +64,9 @@ export function useElementTypes(): UseElementTypesResult {
     load(true);
   }, [load]);
 
-  return {
-    configs,
-    loading,
-    error,
-    matrixBySlug: buildMatrixFromConfigs(configs),
-    refresh,
-  };
+  const matrixBySlug = useMemo(() => buildMatrixFromConfigs(configs), [configs]);
+
+  return { configs, loading, error, matrixBySlug, refresh };
 }
 
 export function invalidateElementTypesCache() {

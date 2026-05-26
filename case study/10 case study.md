@@ -23,6 +23,57 @@
 
 ---
 
+## Authoritative Physics Constants (Cross-Verified CS1–CS10)
+
+All case studies share these confirmed values. When writing new cases or adding parts, use these values exclusively. Do NOT substitute values from research batch files, linka files, or other pre-case-study sources.
+
+### Tip Friction (μ_k on ABS stadium floor)
+
+| Tip Material | μ_k | Source | Tag |
+|-------------|-----|--------|-----|
+| Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball) | **0.17** | CS10 Case 551 | [CONFIRMED] |
+| Rubber (RF, RB, rubber flat) | **0.50** | CS10 Case 545 | [CONFIRMED] |
+| Metal (MS, metal sharp, metal change) | **0.12** | CS3 Case 119 | [CONFIRMED] |
+| Plastic (gen-1 old plastic) | **0.10** | CS1 | [CONFIRMED] |
+| B:D ball bearing | **0.05** | CS10 Case 551 | [CONFIRMED] |
+| EWD / CEW plastic sleeve bearing | **0.12** | CS1 line 2298 | [CONFIRMED] |
+| ABS on ABS (material-to-material, not tip) | **0.15** | CS10 style rules | [CONFIRMED] |
+
+### Other Confirmed Constants
+
+| Parameter | Value | Source | Tag |
+|-----------|-------|--------|-----|
+| EG spring constant | k = 1500 N/m | CS10 Case 555 | [CONFIRMED] |
+| EG spring energy | E = 48 mJ | CS10 Case 556 | [CONFIRMED] |
+| F:D mode-switch threshold | ω = 94.3 rad/s | CS10 Case 557 | [CONFIRMED] |
+| Magnacore chip force at 3 mm | F = 0.40 N | CS10 Case 554 | [ESTIMATED — pull-test] |
+| Rubber restitution (COR) | e = 0.25 | CS10 | [CONFIRMED] |
+| ABS restitution (COR) | e ≈ 0.65–0.70 | CS10 | [CONFIRMED] |
+| Metal restitution (COR) | e ≈ 0.80 | CS10 | [CONFIRMED] |
+
+### Value Tagging Convention
+
+Every numeric value in new cases must carry one of these tags:
+
+- `[CONFIRMED]` — directly measured or confirmed by cross-verified case study physics
+- `[FACT]` — sourced from wiki spec, confirmed part weight, or official product data
+- `[INFERRED]` — derived from formula using confirmed inputs; show the derivation
+- `[ESTIMATED]` — image-based measurement or approximation; no primary source
+- `[ILLUSTRATIVE]` — model value, not measured; use confirmed data for real analyses
+- `[CUSTOM BUILD]` — aftermarket or non-standard combo, not a factory part
+
+### Common Errors to Avoid
+
+- CS1 used μ = 0.8 (sharp) and 0.5 (flat) — these were illustrative model values, NOT measured friction. The real value is 0.17 for all hard ABS tips.
+- CS1 table values 0.85, 0.70, 0.30 for contact point materials are restitution coefficients (e), NOT kinetic friction (μ). Do not conflate.
+- B:D bearing μ = 0.005 (CS1) is theoretical ideal; real B:D = 0.05 (CS10 confirmed).
+- Rubber μ = 0.85 or 0.9 (CS1/CS9) were illustrative; real rubber μ = 0.50 (CS10 confirmed).
+- Do NOT hardcode petal counts for orbital tips — petal count is emergent from RPM × bowl depth × grip.
+- AR contact height ≠ AR centroid height. Contact faces project down from the centroid. Gen 1 AR contact: 12–24 mm; centroid: 28–36 mm.
+- frictionMult in engine = μ_material / μ_ABS = μ_material / 0.17
+
+---
+
 ## Case 545 — BeyStadium Attack Type (MFB): Five-Zone Bowl Cross-Section, Confirmed Dimensional Geometry, and Gravity-Component Analysis [REAL-WORLD CONFIRMED]
 
 **Thesis:** The BeyStadium Attack Type (Takara Tomy MFB era, used without cardboard shield panels in competitive play) is the tournament-standard Class A passive arena for Metal Fight Beyblade, measuring 340 mm outer diameter and 30 mm maximum depth at the centre, with the Tornado Ridge at R_TR = 125 mm diameter placing the ridge peak midway between the arena centre and the outer wall (R_outer = 170 mm); the bowl floor divides into five radial zones on a radial cut: Zone 1 (flat centre, r = 0–40 mm) has zero slope and therefore zero lateral gravity component, making it the natural resting position of stamina-type tops as well as the collision convergence zone due to gravity-funnel geometry in Zones 2–4; Zone 2 (main slope, r = 40–125 mm, slope angle α₁ ≈ 30°) exerts a constant inward gravity component g_lat = 9.81 × sin(30°) = 4.905 m/s² on every top, converting slope height h₂ = (125 − 40) × tan(30°) = 85 × 0.5774 = 49.1 mm of potential energy into kinetic energy for descending tops and extracting the same energy from ascending tops; Zone 3 (Tornado Ridge, r = 125–145 mm, feature height h_TR ≈ 3 mm above slope line) is a raised circumferential bump whose engagement with a top's lowest structural feature depends on the feature height z_rim relative to h_TR, producing reliable engagement only when z_rim ≤ 3 mm; Zone 4 (second inclination, r = 145–155 mm, steeper slope α₂ ≈ 50°) rises Δh₄ = (155 − 145) × tan(50°) = 10 × 1.192 = 11.9 mm above the Tornado Ridge base, setting the minimum escape speed to the outer wall as v_escape = √(2 × 9.81 × 0.0119) = 0.483 m/s; Zone 5 (outer wall, r = 155–170 mm, wall height H = 30 mm) carries the exit pockets at 3 × 150 mm chord (total exit coverage 450 mm) and 3 × 155 mm wall chord (total wall coverage 465 mm) on a circumference of π × 340 = 1068 mm, yielding P(ejection at random azimuth) = 450 / (450 + 465) = 0.492 — a nearly neutral 49.2% ejection probability that makes this stadium the fairest cross-type testing environment of any generation.

@@ -28,6 +28,57 @@ Each case in this file examines a single Beyblade **part** (a specific Attack Ri
 
 ---
 
+## Authoritative Physics Constants (Cross-Verified CS1–CS10)
+
+All case studies share these confirmed values. When writing new cases or adding parts, use these values exclusively. Do NOT substitute values from research batch files, linka files, or other pre-case-study sources.
+
+### Tip Friction (μ_k on ABS stadium floor)
+
+| Tip Material | μ_k | Source | Tag |
+|-------------|-----|--------|-----|
+| Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball) | **0.17** | CS10 Case 551 | [CONFIRMED] |
+| Rubber (RF, RB, rubber flat) | **0.50** | CS10 Case 545 | [CONFIRMED] |
+| Metal (MS, metal sharp, metal change) | **0.12** | CS3 Case 119 | [CONFIRMED] |
+| Plastic (gen-1 old plastic) | **0.10** | CS1 | [CONFIRMED] |
+| B:D ball bearing | **0.05** | CS10 Case 551 | [CONFIRMED] |
+| EWD / CEW plastic sleeve bearing | **0.12** | CS1 line 2298 | [CONFIRMED] |
+| ABS on ABS (material-to-material, not tip) | **0.15** | CS10 style rules | [CONFIRMED] |
+
+### Other Confirmed Constants
+
+| Parameter | Value | Source | Tag |
+|-----------|-------|--------|-----|
+| EG spring constant | k = 1500 N/m | CS10 Case 555 | [CONFIRMED] |
+| EG spring energy | E = 48 mJ | CS10 Case 556 | [CONFIRMED] |
+| F:D mode-switch threshold | ω = 94.3 rad/s | CS10 Case 557 | [CONFIRMED] |
+| Magnacore chip force at 3 mm | F = 0.40 N | CS10 Case 554 | [ESTIMATED — pull-test] |
+| Rubber restitution (COR) | e = 0.25 | CS10 | [CONFIRMED] |
+| ABS restitution (COR) | e ≈ 0.65–0.70 | CS10 | [CONFIRMED] |
+| Metal restitution (COR) | e ≈ 0.80 | CS10 | [CONFIRMED] |
+
+### Value Tagging Convention
+
+Every numeric value in new cases must carry one of these tags:
+
+- `[CONFIRMED]` — directly measured or confirmed by cross-verified case study physics
+- `[FACT]` — sourced from wiki spec, confirmed part weight, or official product data
+- `[INFERRED]` — derived from formula using confirmed inputs; show the derivation
+- `[ESTIMATED]` — image-based measurement or approximation; no primary source
+- `[ILLUSTRATIVE]` — model value, not measured; use confirmed data for real analyses
+- `[CUSTOM BUILD]` — aftermarket or non-standard combo, not a factory part
+
+### Common Errors to Avoid
+
+- CS1 used μ = 0.8 (sharp) and 0.5 (flat) — these were illustrative model values, NOT measured friction. The real value is 0.17 for all hard ABS tips.
+- CS1 table values 0.85, 0.70, 0.30 for contact point materials are restitution coefficients (e), NOT kinetic friction (μ). Do not conflate.
+- B:D bearing μ = 0.005 (CS1) is theoretical ideal; real B:D = 0.05 (CS10 confirmed).
+- Rubber μ = 0.85 or 0.9 (CS1/CS9) were illustrative; real rubber μ = 0.50 (CS10 confirmed).
+- Do NOT hardcode petal counts for orbital tips — petal count is emergent from RPM × bowl depth × grip.
+- AR contact height ≠ AR centroid height. Contact faces project down from the centroid. Gen 1 AR contact: 12–24 mm; centroid: 28–36 mm.
+- frictionMult in engine = μ_material / μ_ABS = μ_material / 0.17
+
+---
+
 ## Case 375 — Shark Edge (BX Blade): C₃ Dual-Face Attack Geometry, Upper Attack Force Decomposition, and Recoil-Driven Spin Depletion
 
 **Thesis:** Shark Edge is a Beyblade X generation zinc-alloy Blade with C₃ rotational symmetry, a total mass of 34–35 g, and a dual contact architecture that simultaneously presents two geometrically distinct strike faces per fin: a steeply upward-sloped upper face (angle α ≈ 35° from the horizontal plane) that redirects collision impulse into a vertical lifting vector capable of tilting the opponent backward and engaging their ratchet off-axis, and a near-radial flat smash face (contact angle φ ≈ 20° from the radial direction) that delivers the maximum possible horizontal smash fraction of cos(20°) ≈ 0.940 into the opponent's lateral surface; the three fins at C₃ symmetry generate three contact events per revolution, and at a typical battle speed of ω = 600 rad/s this yields a contact frequency of f ≈ 286 Hz — but each fin subtends approximately 40° of arc while leaving an 80° inter-fin gap, meaning 67% of each revolution presents no contact geometry, and an opponent whose own blade protrusion is angularly aligned with these gaps passes without impact; the upper attack mechanism is a three-dimensional force decomposition absent from the flat-face smash models used in all prior generations: the upward-sloped fin face forces the opponent blade to tilt at the moment of contact, temporarily rotating their Layer about a horizontal axis and altering the axial alignment between their Layer and Ratchet — this off-axis loading increases burst vulnerability by applying torque along the burst-unlock axis rather than purely tangentially — and the mechanism is effective whether the opponent is in High or Low mode because the fin height (extending upward from the Blade plane) reaches the Layer contact zone regardless of mode height offset; the recoil weakness is intrinsic to the near-radial smash face: at φ = 20° the recoil fraction is sin(20°) ≈ 0.342, meaning 34.2% of each collision impulse reverses back into Shark Edge's own spin axis as a decelerating torque, and with three contacts per revolution at battle spin rates this cumulative self-deceleration is large enough to deplete spin faster than a stamina-type Bit can recover, making Shark Edge a glass cannon whose optimal strategy is an early-match ring-out or burst before spin deficit becomes decisive.

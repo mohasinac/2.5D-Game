@@ -99,10 +99,7 @@ export function GameSelectPage() {
           </div>
         )}
 
-        <div
-          className="grid gap-4"
-          style={{ "--gcols": `repeat(${colCount}, 1fr)`, gridTemplateColumns: "var(--gcols)" } as React.CSSProperties}
-        >
+        <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(220px,1fr))]">
           {modes.map((m) => {
             const inner = (
               <div className={cn(

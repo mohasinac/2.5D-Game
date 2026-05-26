@@ -33,8 +33,8 @@ export interface MaterialStats {
 
 export const MATERIAL_STATS: Record<string, MaterialStats> = {
   abs:          { gripMult: 1.0, recoilMult: 1.0,  frictionMult: 1.0, spinStealResist: 1.0,  decayMod: 1.0, density: 1.0  },
-  rubber:       { gripMult: 2.8, recoilMult: 0.35, frictionMult: 2.5, spinStealResist: 0.5,  decayMod: 1.3, density: 1.3  },
-  metal:        { gripMult: 0.3, recoilMult: 0.7,  frictionMult: 0.4, spinStealResist: 0.85, decayMod: 0.9, density: 3.8  },
+  rubber:       { gripMult: 2.8, recoilMult: 0.35, frictionMult: 2.94, spinStealResist: 0.5,  decayMod: 1.3, density: 1.3  },
+  metal:        { gripMult: 0.3, recoilMult: 0.7,  frictionMult: 0.71, spinStealResist: 0.85, decayMod: 0.9, density: 3.8  },
   nylon:        { gripMult: 1.2, recoilMult: 0.9,  frictionMult: 1.1, spinStealResist: 1.0,  decayMod: 1.0, density: 0.85 },
   pc:           { gripMult: 1.1, recoilMult: 1.1,  frictionMult: 1.0, spinStealResist: 1.0,  decayMod: 1.0, density: 0.8  },
   pom:          { gripMult: 1.2, recoilMult: 0.9,  frictionMult: 1.1, spinStealResist: 1.0,  decayMod: 1.0, density: 0.85 },

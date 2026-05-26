@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
 import { useColyseus } from "@/game/hooks/useColyseus";
@@ -47,17 +47,19 @@ export function BattleLobbyPage() {
     );
   };
 
+  const colyseusOptions = useMemo(() => ({
+    beybladeId: settings.beybladeId ?? "default",
+    arenaId: settings.arenaId ?? "default",
+    username: settings.username ?? "Player",
+    userId: settings.userId,
+    modifierIds: selectedModifierIds,
+  }), [settings.beybladeId, settings.arenaId, settings.username, settings.userId, selectedModifierIds]);
+
   const { connectionState, gameState, beyblades, myBeyblade, room, connect, disconnect } =
     useColyseus({
       roomName: roomNameFor(mode, "battle"),
       roomId: inviteRoomId,
-      options: {
-        beybladeId: settings.beybladeId ?? "default",
-        arenaId: settings.arenaId ?? "default",
-        username: settings.username ?? "Player",
-        userId: settings.userId,
-        modifierIds: selectedModifierIds,
-      },
+      options: colyseusOptions,
       autoConnect: true,
     });
 

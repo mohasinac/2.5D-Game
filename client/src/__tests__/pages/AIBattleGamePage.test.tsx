@@ -16,6 +16,26 @@ const defaultColyseusState = {
   connect: vi.fn(),
   disconnect: vi.fn(),
   sendInput: vi.fn(),
+  isSpectating: false,
+  sendQTEInput: vi.fn(),
+  beyLinkQTE: null,
+  beyLinkControlLoss: null,
+  sendBeyLinkQTEInput: vi.fn(),
+  beyLinkHijackQTE: null,
+  beyLinkHijackBlockQTE: null,
+  sendHijackBlock: vi.fn(),
+  loadingStep: null as string | null,
+  loadingError: null as string | null,
+  visualEventQueue: [] as any[],
+  floorInfo: null,
+  myFloorIndex: 0,
+  linkAlignments: null,
+  floorTransition: null,
+  collisionQTEData: null,
+  collisionQTEPower: 0,
+  collisionQTESpecialPrompt: false,
+  sendCollisionQTEMash: vi.fn(),
+  sendCollisionQTEFireSpecial: vi.fn(),
 };
 
 let colyseusState = { ...defaultColyseusState };
@@ -42,6 +62,8 @@ vi.mock("@/contexts/GameContext", () => ({
     startGame: vi.fn(),
     resetGame: vi.fn(),
     isReady: true,
+    isHydrated: true,
+    setActiveRoom: vi.fn(),
   }),
   GameProvider: ({ children }: any) => children,
 }));
@@ -140,6 +162,11 @@ function makeGameState(overrides: Partial<ServerGameState> = {}): ServerGameStat
     matchId: "match-ai-1",
     arena: null,
     beyblades: new Map(),
+    targetWins: 1,
+    currentGame: 1,
+    seriesWins: new Map(),
+    seriesLeader: "",
+    spectatorCount: 0,
     ...overrides,
   };
 }
@@ -149,7 +176,7 @@ function makeGameState(overrides: Partial<ServerGameState> = {}): ServerGameStat
 describe("AIBattleGamePage", () => {
   it("renders canvas container", () => {
     renderPage();
-    const container = document.querySelector('div[style*="100vh"]');
+    const container = document.querySelector('div.h-screen');
     expect(container).toBeInTheDocument();
   });
 

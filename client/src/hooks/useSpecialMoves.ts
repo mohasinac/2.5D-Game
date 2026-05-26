@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useGameDataStore, type SpecialMoveDoc } from "@/stores/gameDataStore";
 
 export type { SpecialMoveDoc };
@@ -12,20 +12,25 @@ export function useSpecialMoves() {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  const byId = (id: string): SpecialMoveDoc | undefined => specialMoves.find(m => m.id === id);
+  const byId = useCallback(
+    (id: string): SpecialMoveDoc | undefined => specialMoves.find(m => m.id === id),
+    [specialMoves],
+  );
 
-  /** Resolve a move by specialMoveId, falling back to the default for beyblade type. */
-  const resolve = (specialMoveId?: string | null, beybladeType?: string): SpecialMoveDoc | undefined => {
-    if (specialMoveId) {
-      const hit = byId(specialMoveId);
-      if (hit) return hit;
-    }
-    if (beybladeType) {
-      const defaultMove = specialMoves.find(m => m.isDefault && m.type === beybladeType);
-      if (defaultMove) return defaultMove;
-    }
-    return specialMoves[0];
-  };
+  const resolve = useCallback(
+    (specialMoveId?: string | null, beybladeType?: string): SpecialMoveDoc | undefined => {
+      if (specialMoveId) {
+        const hit = specialMoves.find(m => m.id === specialMoveId);
+        if (hit) return hit;
+      }
+      if (beybladeType) {
+        const defaultMove = specialMoves.find(m => m.isDefault && m.type === beybladeType);
+        if (defaultMove) return defaultMove;
+      }
+      return specialMoves[0];
+    },
+    [specialMoves],
+  );
 
   return { specialMoves, loaded, loading, error, byId, resolve };
 }

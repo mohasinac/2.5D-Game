@@ -62,13 +62,20 @@ export function TeamBattleGamePage() {
     cameraZoomReset,
   } = usePixiRenderer(containerRef, mode);
 
-  // Render loop
+  // Render loop — use refs for rapidly-updating state to avoid recreating rAF every tick
+  const gameStateRef = useRef(gameState);
+  const beybladesRef = useRef(beyblades);
+  const visualEventQueueRef = useRef(visualEventQueue);
+  gameStateRef.current = gameState;
+  beybladesRef.current = beyblades;
+  visualEventQueueRef.current = visualEventQueue;
+
   useEffect(() => {
     let raf: number;
-    const loop = () => { render(gameState, beyblades, visualEventQueue); raf = requestAnimationFrame(loop); };
+    const loop = () => { render(gameStateRef.current, beybladesRef.current, visualEventQueueRef.current); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [render, gameState, beyblades]);
+  }, [render]);
 
   // Camera focus
   useEffect(() => {
@@ -91,7 +98,8 @@ export function TeamBattleGamePage() {
       }
     });
     room.onMessage("game-end", () => navigate(`/game/${mode}/team-battle/lobby`));
-  }, [room, navigate, mode, beyblades]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [room, navigate, mode]);
 
   useGameInput(sendInput, !spectate && connectionState === "connected");
 

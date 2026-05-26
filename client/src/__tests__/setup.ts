@@ -71,6 +71,10 @@ vi.mock("firebase/auth", () => ({
   signInWithEmailAndPassword: vi.fn().mockResolvedValue({
     user: { uid: "test-uid", email: "test@example.com" },
   }),
+  GoogleAuthProvider: vi.fn().mockImplementation(() => ({})),
+  signInWithPopup: vi.fn().mockResolvedValue({
+    user: { uid: "test-uid", email: "test@example.com" },
+  }),
 }));
 
 vi.mock("firebase/storage", () => ({
@@ -149,12 +153,14 @@ vi.mock("pixi.js", () => ({
     },
     stage: makeContainer(),
     canvas: {
+      style: { display: "", width: "", height: "" },
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
       remove: vi.fn(),
+      parentNode: null,
     },
     screen: { width: 800, height: 600 },
-    renderer: { context: { gl: { getExtension: vi.fn(() => null) } } },
+    renderer: { render: vi.fn(), resize: vi.fn(), context: { gl: { getExtension: vi.fn(() => null) } } },
   })),
   Container: vi.fn().mockImplementation(makeContainer),
   Graphics: vi.fn().mockImplementation(makeGraphics),
@@ -179,6 +185,9 @@ vi.mock("pixi.js", () => ({
     from: vi.fn(() => ({ destroy: vi.fn(), valid: true })),
     WHITE: { destroy: vi.fn(), valid: true },
     EMPTY: { destroy: vi.fn(), valid: false },
+  },
+  RenderTexture: {
+    create: vi.fn().mockReturnValue({ destroy: vi.fn(), width: 4, height: 4 }),
   },
   Ticker: vi.fn(),
   Filter: vi.fn(),
@@ -207,6 +216,22 @@ Object.defineProperty(import.meta, "env", {
     VITE_FIREBASE_APP_ID: "1:123:web:abc",
   },
   writable: true,
+});
+
+// ─── window.matchMedia stub ──────────────────────────────────────────────────
+
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
 });
 
 // ─── RAF / cancelAnimationFrame stubs ────────────────────────────────────────

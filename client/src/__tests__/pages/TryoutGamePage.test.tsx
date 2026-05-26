@@ -71,7 +71,7 @@ function renderPage() {
 describe("TryoutGamePage — layout", () => {
   it("renders the canvas container div", () => {
     renderPage();
-    const container = document.querySelector('div[style*="100vh"]');
+    const container = document.querySelector('div.h-screen');
     expect(container).toBeInTheDocument();
   });
 
