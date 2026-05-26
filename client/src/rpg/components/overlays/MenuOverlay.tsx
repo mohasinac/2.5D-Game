@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ticksToSeconds, TICKS_MENU_FADE } from "../../constants/rpgConstants";
 import { InventoryPanel } from "./InventoryPanel";
 import { QuestLogPanel } from "./QuestLogPanel";
 import { BadgeCasePanel } from "./BadgeCasePanel";
@@ -48,7 +49,7 @@ export function MenuOverlay({ open, onClose, onSave, badgeDefs = [] }: MenuOverl
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: ticksToSeconds(TICKS_MENU_FADE) }}
           className="absolute inset-0 z-50 flex items-center justify-center"
         >
           <div className="absolute inset-0 bg-black/60" onClick={onClose} />
@@ -56,7 +57,7 @@ export function MenuOverlay({ open, onClose, onSave, badgeDefs = [] }: MenuOverl
             initial={{ scale: 0.95 }}
             animate={{ scale: 1 }}
             exit={{ scale: 0.95 }}
-            className="relative bg-gray-900 border-2 border-amber-400 rounded-xl w-[90%] max-w-[600px] h-[70%] max-h-[500px] flex flex-col overflow-hidden"
+            className="relative bg-gray-900 border-2 border-amber-400 rounded-xl w-[95%] sm:w-[90%] max-w-[600px] h-[80%] sm:h-[70%] max-h-[500px] lg:max-h-[600px] flex flex-col overflow-hidden"
           >
             {/* Tab bar */}
             <div className="flex border-b border-gray-700">
@@ -64,7 +65,7 @@ export function MenuOverlay({ open, onClose, onSave, badgeDefs = [] }: MenuOverl
                 <button
                   key={t.id}
                   onClick={() => setTab(t.id)}
-                  className={`flex-1 px-4 py-3 text-sm font-bold uppercase tracking-wider transition-colors ${
+                  className={`flex-1 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors ${
                     tab === t.id
                       ? "text-amber-400 border-b-2 border-amber-400 bg-gray-800/50"
                       : "text-gray-500 hover:text-gray-300"

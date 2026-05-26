@@ -94,15 +94,10 @@ export default function RPGGamePage() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-gray-950 flex items-center justify-center">
-      {/* GBA/GBC bezel frame */}
       <div
-        className={`relative overflow-hidden bg-black rounded-lg border-2 border-gray-700 shadow-2xl ${aspectClass} w-full`}
-        style={{
-          imageRendering: "pixelated",
-        }}
+        className={`relative overflow-hidden bg-black rounded-lg border-2 border-gray-700 shadow-2xl ${aspectClass} w-full [image-rendering:pixelated]`}
       >
-        {/* PixiJS canvas container */}
-        <div ref={canvasRef} className="absolute inset-0" style={{ imageRendering: "pixelated" }} />
+        <div ref={canvasRef} className="absolute inset-0 [image-rendering:pixelated]" />
 
         {/* Loading screen */}
         {!isReady && (

@@ -80,6 +80,19 @@ export const COLLECTIONS = {
   PART_LAYER_DEFS: "part_layer_defs",
   // Phase 29: Collision QTE + Special Interaction Defs
   SPECIAL_INTERACTION_DEFS: "special_interaction_defs",
+  TILT_PRESET_DEFS: "tilt_preset_defs",
+  DIFFICULTY_DEFS: "difficulty_defs",
+  FEATURE_ANIMATION_DEFS: "feature_animation_defs",
+  PORTAL_COLOR_DEFS: "portal_color_defs",
+  PART_SHAPE_DEFS: "part_shape_defs",
+  WEAR_PRESET_DEFS: "wear_preset_defs",
+  OBSTACLE_TAG_DEFS: "obstacle_tag_defs",
+  BEY_TYPE_DEFS: "bey_type_defs",
+  RESET_CONDITION_DEFS: "reset_condition_defs",
+  LIQUID_TYPE_DEFS: "liquid_type_defs",
+  HAZARD_TYPE_DEFS: "hazard_type_defs",
+  ELEMENT_STAT_DEFS: "element_stat_defs",
+  ARENA_TEMPLATE_DEFS: "arena_template_defs",
   COLLISION_QTE_EVENTS: "collision_qte_events",
   SPECIAL_CLASH_EVENTS: "special_clash_events",
   // Phase 28: BitBeast assets
@@ -118,6 +131,8 @@ export const COLLECTIONS = {
   RPG_QUEST_CATEGORY_DEFS: "rpg_quest_category_defs",
   RPG_EVENT_CATEGORY_DEFS: "rpg_event_category_defs",
   RPG_TRAVEL_MODE_DEFS: "rpg_travel_mode_defs",
+  RPG_TRIGGER_MODE_DEFS: "rpg_trigger_mode_defs",
+  RPG_FACING_DEFS: "rpg_facing_defs",
   // AI preset collections (client-side AI system)
   AI_CHARACTER_PROFILES: "ai_character_profiles",
   AI_BEY_PERSONALITIES: "ai_bey_personalities",

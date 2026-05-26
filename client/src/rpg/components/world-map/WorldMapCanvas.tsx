@@ -42,9 +42,8 @@ export function WorldMapCanvas({
         )}
       </svg>
 
-      {/* Title */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10">
-        <h2 className="text-amber-400 text-xl font-bold tracking-wider">WORLD MAP</h2>
+      <div className="absolute top-4 sm:top-6 left-1/2 -translate-x-1/2 z-10">
+        <h2 className="text-amber-400 text-base sm:text-xl font-bold tracking-wider">WORLD MAP</h2>
       </div>
 
       {/* Region nodes */}
@@ -63,10 +62,9 @@ export function WorldMapCanvas({
         />
       ))}
 
-      {/* Back button */}
       <button
         onClick={() => window.history.back()}
-        className="absolute bottom-6 left-6 z-10 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white text-sm rounded-lg transition-colors"
+        className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-10 px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white text-xs sm:text-sm rounded-lg transition-colors"
       >
         ← Back
       </button>

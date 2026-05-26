@@ -71,7 +71,7 @@ export function LeaderboardPage() {
         </p>
 
         {/* Tab bar */}
-        <div className="flex gap-1.5 mb-5 overflow-x-auto pb-1">
+        <div className="flex flex-wrap gap-1.5 mb-5">
           {TABS.map((t) => (
             <button
               key={t.key}

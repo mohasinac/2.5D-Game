@@ -14,10 +14,10 @@ export function ReputationBadge() {
   const tier = getReputationTier(reputation);
 
   return (
-    <div className="absolute top-3 right-3 z-30 pointer-events-none select-none">
-      <div className="bg-gray-900/80 border border-gray-700 rounded-lg px-3 py-1.5 flex items-center gap-2">
-        <span className={`text-xs font-bold ${tier.color}`}>{tier.label}</span>
-        <span className="text-gray-500 text-xs">Rep: {reputation}</span>
+    <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-30 pointer-events-none select-none">
+      <div className="bg-gray-900/80 border border-gray-700 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5 flex items-center gap-1.5 sm:gap-2">
+        <span className={`text-[10px] sm:text-xs font-bold ${tier.color}`}>{tier.label}</span>
+        <span className="text-gray-500 text-[10px] sm:text-xs">Rep: {reputation}</span>
       </div>
     </div>
   );

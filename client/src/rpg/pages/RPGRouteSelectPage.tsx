@@ -63,11 +63,11 @@ export default function RPGRouteSelectPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 flex flex-col items-center justify-center p-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 flex flex-col items-center justify-center p-4 sm:p-8">
       <motion.h1
         initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="text-amber-400 text-3xl font-bold mb-2 tracking-wider"
+        className="text-amber-400 text-2xl sm:text-3xl font-bold mb-2 tracking-wider"
       >
         Choose Your Route
       </motion.h1>
@@ -75,12 +75,12 @@ export default function RPGRouteSelectPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="text-gray-400 text-sm mb-8"
+        className="text-gray-400 text-xs sm:text-sm mb-6 sm:mb-8"
       >
         Your journey begins here. Select a protagonist.
       </motion.p>
 
-      <div className="flex gap-8 mb-8 flex-wrap justify-center">
+      <div className="flex gap-4 sm:gap-8 mb-6 sm:mb-8 flex-wrap justify-center">
         {routes.map((route) => (
           <RouteCard
             key={route.id}

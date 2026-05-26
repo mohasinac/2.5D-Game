@@ -22,8 +22,8 @@ function labelClass(pct: number): string {
 }
 
 const HEIGHT_CLASS: Record<"sm" | "md" | "lg", string> = {
-  sm: "h-[3px]",
-  md: "h-[5px]",
+  sm: "h-1",
+  md: "h-1.5",
   lg: "h-[8px]",
 };
 
@@ -44,7 +44,7 @@ export function SPBar({ spinPct, label = "SPIN", compact = false, size = "md" }:
   }, [critical]);
 
   return (
-    <div className={`flex flex-col gap-[3px] ${compact ? "w-20" : "w-full"} font-mono`}>
+    <div className={`flex flex-col gap-1 ${compact ? "w-20" : "w-full"} font-mono`}>
       <div className="flex justify-between items-center">
         <span className="text-[0.5rem] tracking-widest text-white/40 uppercase">{label}</span>
         <span className={`text-[0.55rem] font-bold ${visible ? labelClass(clamped) : "text-transparent"}`}>

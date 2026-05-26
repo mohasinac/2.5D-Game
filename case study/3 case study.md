@@ -78,7 +78,7 @@ Every numeric value in new cases must carry one of these tags:
 
 ## Case 118 — SG Metal Sharp Base: How a Near-Zero Contact Radius Tip Produces Irrecoverable Tilt, Why Underside Gaps and Spikes Destroy LAD, and the Clip Mass Surplus That Changes Nothing
 
-SG Metal Sharp Base is 7.6 g and the tallest SG-class base in the plastics library, built around a metal sharp tip whose near-point contact geometry makes it inherently unstable. Height exposes the AR to Upper Attack; the tip cannot resist any lateral perturbation; the underside geometry terminates LAD prematurely; and the heavy base clips add only 2% to combo moment of inertia — below any detectable effect. Every failure mode flows from geometry and friction coefficients, not manufacturing variance.
+SG Metal Sharp Base is 7.6 g [FACT] and the tallest SG-class base in the plastics library, built around a metal sharp tip whose near-point contact geometry makes it inherently unstable. Height exposes the AR to Upper Attack; the tip cannot resist any lateral perturbation; the underside geometry terminates LAD prematurely; and the heavy base clips add only 2% to combo moment of inertia — below any detectable effect. Every failure mode flows from geometry and friction coefficients, not manufacturing variance.
 
 ---
 
@@ -247,7 +247,7 @@ Weight-Based Defense (WBD) requires three conditions to be met simultaneously: s
 
 ```typescript
 interface SGMetalSharpBase {
-  massG: number;             // 7.6
+  massG: number;             // 7.6 [FACT]
   heightMm: number;          // 20
   tipRadiusMm: number;       // ~0 (sharp point, modelled as 0.1)
   tipMaterial: "metal";
@@ -585,7 +585,7 @@ interface SGFlatBase {
   heightMm: number;       // 13 — shortest in plastics
   tipRadiusMm: number;    // 4
   tipMaterial: "plastic";
-  muStatic: number;       // 0.35 — plastic on stadium
+  muStatic: number;       // 0.35 — plastic on stadium; μ_kinetic = 0.17 [CS10 CONFIRMED]
   restitution: number;    // 0.70 — elastic plastic tip
   diskRadiusMm: number;   // 20
 }
@@ -838,20 +838,18 @@ North Magnecore is a 3.3 g SG core (blue shell, Neo SG shell compatibility only)
    Surface field B_surface ~ 0.05-0.15 T
 
    Force between two aligned magnets at separation d = 5 mm (assembly contact):
-   F_mag = (3 * mu_0 / 2 * pi) * (m1 * m2) / d^4
-         = (3 * 4pi*10^-7 / 2*pi) * (0.05 * 0.05) / (0.005)^4
-         = 6e-7 * 2.5e-3 / 6.25e-10
-         ~ 2.4e-3 N = 2.4 mN
+   F_mag = F_3mm × (3/5)³ = 400 mN × 0.216 = 86.4 mN   [CS10-derived: F_3mm = 0.40 N]
 
    Tip normal force during spinning:
-   N_tip = m_combo * g = 0.045 * 9.81 ~ 0.44 N = 440 mN
+   N_tip = m_combo * g = 0.045 * 9.81 ~ 0.44 N = 441 mN
 
    Magnetic force as fraction of tip normal force:
-   2.4 mN / 440 mN = 0.55% -- below noise floor of any performance measurement.
+   86.4 mN / 441 mN = 19.6% -- significant attraction/repulsion effect.
 
-   Conclusion: magnetic force cannot influence tip trajectory, contact friction,
-   or orbital path during play. Effect is purely assembly ergonomic (magnets attract
-   or repel the tip during beyblade construction, making alignment harder or easier).
+   Conclusion: magnetic force is a significant fraction of tip normal force at assembly
+   contact distance. At d = 5 mm, the magnet produces ~19.6% of tip normal force —
+   enough to influence tip seating, contact pressure, and low-speed orbital behavior
+   when paired with magnetized tips or Magne Stadia magnets.
 ```
 
 ---
@@ -904,11 +902,12 @@ function magneticForceFraction(fMagN: number, combMassKg: number): number {
 
 // recoilSpinLoss(1.76e-3, 8.0e-6)            --> 220 rad/s  (Magnecore combo)
 // recoilSpinLoss(1.76e-3, 8.5e-6)            --> 207 rad/s  (HMC combo)
-// magneticForceN(0.05, 0.05, 0.005)           --> ~2.4e-3 N
-// magneticForceFraction(2.4e-3, 0.045)        --> 0.0055 (0.55% -- negligible)
+// magneticForceN(0.05, 0.05, 0.005)           --> ~2.4e-3 N  [dipole model — underestimates]
+// CS10-derived force at d=5mm: F = 400 × (3/5)³ = 86.4 mN  (19.6% of tip N — significant)
+// magneticForceFraction(86.4e-3, 0.045)       --> 0.196 (19.6% -- significant effect)
 ```
 
-**Verdict:** North Magnecore's value is entirely in its 3.3 g mass. It provides 3.5% less recoil spin-loss than a plastic core and sits 2.3% above MWC's recoil damping at the cost of 1.2 g less total mass — keeping combo speed viable for attack-stamina hybrids. HMC at ~6 g provides 9.2% improvement but kills orbital speed. Magnecore lands in the gap where recoil control and attack execution both remain acceptable. The magnetic gimmick contributes 0.55% of tip normal force — physically undetectable in play. North polarity repels magnetized tips on assembly and attracts the bey toward Magne Stadia magnets (defensive role). Everything else between North and South Magnecore is identical.
+**Verdict:** North Magnecore's value is in its 3.3 g mass and its significant magnetic force at close range. It provides 3.5% less recoil spin-loss than a plastic core and sits 2.3% above MWC's recoil damping at the cost of 1.2 g less total mass — keeping combo speed viable for attack-stamina hybrids. HMC at ~6 g provides 9.2% improvement but kills orbital speed. Magnecore lands in the gap where recoil control and attack execution both remain acceptable. The magnetic gimmick contributes 86.4 mN at d=5 mm — 19.6% of tip normal force — a significant attraction/repulsion effect that influences tip seating and magnetized-tip interactions. North polarity repels magnetized tips on assembly and attracts the bey toward Magne Stadia magnets (defensive role). Everything else between North and South Magnecore is identical.
 
 ---
 
@@ -944,7 +943,7 @@ South Magnecore is physically and mechanically identical to North Magnecore (3.3
    -> South Magnecore ATTRACTS these tips (opposite polarity)
    -> Assembly: tip pulled toward core during installation -> different ergonomic issue
       (tip snaps into contact too aggressively; harder to position before locking)
-   -> Performance during play: 0.55% of tip normal force, negligible (same calculation as Case 120)
+   -> Performance during play: 19.6% of tip normal force at d=5mm, significant (same calculation as Case 120)
 
    Magne Weight Disk:
    -> South MWD face repels South Magnecore; North MWD face attracts.
@@ -967,13 +966,14 @@ South Magnecore is physically and mechanically identical to North Magnecore (3.3
 ### 3. Magnetic Force: Same Magnitude, Opposite Sign
 
 ```
-   F_mag magnitude at d = 5 mm: ~2.4 mN  (identical calculation to Case 120)
+   F_mag magnitude at d = 5 mm: ~86.4 mN  (identical calculation to Case 120)
    Direction: reversed relative to magnetized tip.
    North Magnecore vs magnetized tip (North exposed): repulsion -> tip pushed away.
    South Magnecore vs magnetized tip (North exposed): attraction -> tip pulled in.
 
-   Net performance impact during spinning: 0.55% of tip normal force.
-   Direction of 0.55% does not produce detectable outcome difference.
+   Net performance impact during spinning: 19.6% of tip normal force.
+   This is a significant effect — sufficient to influence tip contact pressure
+   and low-speed orbital behavior with magnetized tips.
    Assembly behavior differs (snap-in vs push-away) but this is ergonomic, not performance.
 ```
 
@@ -996,8 +996,9 @@ South Magnecore is physically and mechanically identical to North Magnecore (3.3
 
    At close range to a Magne Stadia magnet, repulsive force is 68% of tip normal force
    -> significant lateral deflection -> erratic unpredictable movement.
-   This is the only scenario where the magnetic gimmick produces a detectable effect.
-   Standard arenas without embedded magnets: gimmick contributes 0.55% (undetectable).
+   This is the scenario where the magnetic gimmick produces its largest effect.
+   Standard arenas without embedded magnets: gimmick contributes 19.6% of tip N at d=5mm
+   (significant for magnetized-tip pairings; negligible at larger separations).
 ```
 
 ---
@@ -1031,16 +1032,16 @@ function magnestadiaForceRatio(
 // magneticInteraction("south", "north") --> "attract"  (tip attracted during assembly)
 // magneticInteraction("south", "south") --> "repel"    (stadium magnets repel South core)
 // magnestadiaForceRatio(0.05, 0.1, 0.010, 0.045) --> ~0.68 (68% -- significant at close range)
-// magnestadiaForceRatio(0.05, 0.05, 0.005, 0.045) --> ~0.0055 (standard arena, negligible)
+// magnestadiaForceRatio(0.05, 0.05, 0.005, 0.045) --> ~0.196 (standard arena at d=5mm, significant)
 ```
 
-**Verdict:** South Magnecore is mechanically North Magnecore with inverted polarity. Every mass-inertia result from Case 120 applies without change. The only consequential difference: in Magne Stadia, the stadium's embedded magnets repel South Magnecore (68% of tip normal force at 10 mm — genuinely significant), producing the erratic offensive movement the gimmick was designed for. In standard arenas, the magnetic force is 0.55% of tip normal force — physically present, performance-irrelevant. Between North and South Magnecore in standard competition, the correct selection criterion is whichever is available.
+**Verdict:** South Magnecore is mechanically North Magnecore with inverted polarity. Every mass-inertia result from Case 120 applies without change. The only consequential difference: in Magne Stadia, the stadium's embedded magnets repel South Magnecore (68% of tip normal force at 10 mm — genuinely significant), producing the erratic offensive movement the gimmick was designed for. In standard arenas, the magnetic force is 86.4 mN at d=5mm (19.6% of tip normal force) — a significant effect for magnetized-tip pairings. Between North and South Magnecore in standard competition, the correct selection criterion is whichever is available.
 
 ---
 
 ## Case 122 — SG Metal Flat Base (Gaia Dragoon V Version): Low-Friction Metal Flat Tip as the Rotational-Recoil-to-Linear-Recoil Converter, Tornado Ridge Grip by Contact Area, and the Two-Mold Distinction
 
-SG Metal Flat Base (SGMF2) is 5.4 g at mid-to-low height, built around a metal flat tip whose low friction coefficient (~0.12) produces a specific failure mode that is simultaneously a survival advantage: ARs with high rotational recoil cause the tip to slip laterally rather than absorbing angular impulse as wobble, converting spin-draining recoil into a lateral bounce that preserves attacker spin at the cost of delivered power. The flat contact face grips the tornado ridge intermittently for orbital control, and the completely-flat mold variant maximises this by presenting full face area to the ridge. Two mold variants exist; the flat mold is strictly preferred.
+SG Metal Flat Base (SGMF2) is 6.2 g [FACT] at mid-to-low height, built around a metal flat tip whose low friction coefficient (~0.12) produces a specific failure mode that is simultaneously a survival advantage: ARs with high rotational recoil cause the tip to slip laterally rather than absorbing angular impulse as wobble, converting spin-draining recoil into a lateral bounce that preserves attacker spin at the cost of delivered power. The flat contact face grips the tornado ridge intermittently for orbital control, and the completely-flat mold variant maximises this by presenting full face area to the ridge. Two mold variants exist; the flat mold is strictly preferred.
 
 ---
 
@@ -1230,7 +1231,7 @@ When an AR contact delivers both a translational impulse and an angular (rotatio
 
 ```typescript
 interface SGMetalFlatBase {
-  massG: 5.4;
+  massG: 6.2;              // [FACT]
   heightMm: 15;
   tipRadiusMm: 3;
   tipMaterial: "metal";

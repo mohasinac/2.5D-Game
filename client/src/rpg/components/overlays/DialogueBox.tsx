@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRPGStore } from "../../stores/rpgStore";
 import { motion, AnimatePresence } from "framer-motion";
+import { ticksToMs, ticksToSeconds, TICKS_DIALOGUE_CHAR, TICKS_DIALOGUE_SLIDE } from "../../constants/rpgConstants";
 
 interface DialogueBoxProps {
   speakerName: string;
@@ -24,7 +25,6 @@ export function DialogueBox({
 }: DialogueBoxProps) {
   const [displayedText, setDisplayedText] = useState("");
   const [isComplete, setIsComplete] = useState(false);
-  const CHAR_DELAY = 30;
 
   useEffect(() => {
     setDisplayedText("");
@@ -39,7 +39,7 @@ export function DialogueBox({
       } else {
         setDisplayedText(text.slice(0, i));
       }
-    }, CHAR_DELAY);
+    }, ticksToMs(TICKS_DIALOGUE_CHAR));
     return () => clearInterval(timer);
   }, [text]);
 
@@ -67,16 +67,16 @@ export function DialogueBox({
       initial={{ y: 40, opacity: 0 }}
       animate={{ y: 0, opacity: 1, x: shake ? [0, -4, 4, -2, 0] : 0 }}
       exit={{ y: 40, opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="absolute bottom-4 left-4 right-4 z-50"
+      transition={{ duration: ticksToSeconds(TICKS_DIALOGUE_SLIDE) }}
+      className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 z-50"
     >
       <div
-        className="bg-gray-900/95 border-2 border-amber-400 rounded-lg p-4 cursor-pointer select-none"
+        className="bg-gray-900/95 border-2 border-amber-400 rounded-lg p-3 sm:p-4 cursor-pointer select-none"
         onClick={handleClick}
       >
-        <div className="flex gap-4">
+        <div className="flex gap-2 sm:gap-4">
           {portraitUrl && (
-            <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border border-amber-500/50">
+            <div className="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-md overflow-hidden border border-amber-500/50">
               <img
                 src={portraitUrl}
                 alt={speakerName}

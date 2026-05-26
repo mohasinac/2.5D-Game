@@ -84,6 +84,21 @@ import { TriggerTypeDefsPage } from "./pages/admin/TriggerTypeDefsPage";
 import { StatEventDefsPage } from "./pages/admin/StatEventDefsPage";
 import { PartLayerDefsPage } from "./pages/admin/PartLayerDefsPage";
 import { SpecialInteractionDefsPage } from "./pages/admin/SpecialInteractionDefsPage";
+import { TiltPresetDefsPage } from "./pages/admin/TiltPresetDefsPage";
+import { DifficultyDefsPage } from "./pages/admin/DifficultyDefsPage";
+import { FeatureAnimationDefsPage } from "./pages/admin/FeatureAnimationDefsPage";
+import { PortalColorDefsPage } from "./pages/admin/PortalColorDefsPage";
+import { PartShapeDefsPage } from "./pages/admin/PartShapeDefsPage";
+import { WearPresetDefsPage } from "./pages/admin/WearPresetDefsPage";
+import { ObstacleTagDefsPage } from "./pages/admin/ObstacleTagDefsPage";
+import { BeyTypeDefsPage } from "./pages/admin/BeyTypeDefsPage";
+import { ResetConditionDefsPage } from "./pages/admin/ResetConditionDefsPage";
+import { LiquidTypeDefsPage } from "./pages/admin/LiquidTypeDefsPage";
+import { HazardTypeDefsPage } from "./pages/admin/HazardTypeDefsPage";
+import { ElementStatDefsPage } from "./pages/admin/ElementStatDefsPage";
+import { ArenaTemplateDefsPage } from "./pages/admin/ArenaTemplateDefsPage";
+import { RPGTriggerModeDefsPage } from "./pages/admin/RPGTriggerModeDefsPage";
+import { RPGFacingDefsPage } from "./pages/admin/RPGFacingDefsPage";
 
 // 2.5D part system pages
 import { PartSearchPage } from "./pages/admin/2d/PartSearchPage";
@@ -317,6 +332,21 @@ export const router = createBrowserRouter([
       { path: "stat-event-defs",   element: <StatEventDefsPage /> },
       { path: "part-layer-defs",              element: <PartLayerDefsPage /> },
       { path: "special-interaction-defs",    element: <SpecialInteractionDefsPage /> },
+      { path: "tilt-preset-defs",            element: <TiltPresetDefsPage /> },
+      { path: "difficulty-defs",             element: <DifficultyDefsPage /> },
+      { path: "feature-animation-defs",      element: <FeatureAnimationDefsPage /> },
+      { path: "portal-color-defs",           element: <PortalColorDefsPage /> },
+      { path: "part-shape-defs",             element: <PartShapeDefsPage /> },
+      { path: "wear-preset-defs",            element: <WearPresetDefsPage /> },
+      { path: "obstacle-tag-defs",           element: <ObstacleTagDefsPage /> },
+      { path: "bey-type-defs",               element: <BeyTypeDefsPage /> },
+      { path: "reset-condition-defs",        element: <ResetConditionDefsPage /> },
+      { path: "liquid-type-defs",            element: <LiquidTypeDefsPage /> },
+      { path: "hazard-type-defs",            element: <HazardTypeDefsPage /> },
+      { path: "element-stat-defs",           element: <ElementStatDefsPage /> },
+      { path: "arena-template-defs",         element: <ArenaTemplateDefsPage /> },
+      { path: "rpg-trigger-mode-defs",       element: <RPGTriggerModeDefsPage /> },
+      { path: "rpg-facing-defs",             element: <RPGFacingDefsPage /> },
 
       // ── 2.5D Part System — canonical URL ──
       { path: "2.5d/parts", element: <PartSearchPage /> },

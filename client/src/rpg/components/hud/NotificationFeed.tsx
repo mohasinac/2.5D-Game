@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRPGStore, type RPGNotification } from "../../stores/rpgStore";
-
-const AUTO_DISMISS_MS = 4000;
+import { ticksToMs, TICKS_NOTIFICATION_DISMISS } from "../../constants/rpgConstants";
 
 const NOTIFICATION_STYLES: Record<
   RPGNotification["type"],
@@ -25,13 +24,13 @@ export function NotificationFeed() {
   useEffect(() => {
     if (notifications.length === 0) return;
     const timers = notifications.map((n) =>
-      setTimeout(() => dismiss(n.id), AUTO_DISMISS_MS)
+      setTimeout(() => dismiss(n.id), ticksToMs(TICKS_NOTIFICATION_DISMISS))
     );
     return () => timers.forEach(clearTimeout);
   }, [notifications, dismiss]);
 
   return (
-    <div className="absolute top-16 right-3 z-40 flex flex-col gap-2 pointer-events-none max-w-[280px]">
+    <div className="absolute top-12 right-2 sm:top-16 sm:right-3 z-40 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[240px] sm:max-w-[280px]">
       <AnimatePresence mode="popLayout">
         {notifications.slice(0, 4).map((n) => {
           const style = NOTIFICATION_STYLES[n.type] ?? { icon: "📢", border: "border-gray-500" };

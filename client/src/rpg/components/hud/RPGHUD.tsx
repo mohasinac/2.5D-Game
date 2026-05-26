@@ -1,4 +1,5 @@
 import { useRPGStore } from "../../stores/rpgStore";
+import { ticksToMs, TICKS_TRANSITION_FLASH } from "../../constants/rpgConstants";
 
 const TIME_SLOT_ICONS: Record<string, string> = {
   morning: "☀️",
@@ -23,28 +24,26 @@ export function RPGHUD() {
     : 1;
 
   return (
-    <div className="absolute top-3 left-3 z-30 flex flex-col gap-2 pointer-events-none select-none">
-      {/* Location chip */}
-      <div className="bg-gray-900/80 border border-gray-700 rounded-lg px-3 py-1.5 flex items-center gap-2">
-        <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">
+    <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-30 flex flex-col gap-1.5 sm:gap-2 pointer-events-none select-none">
+      <div className="bg-gray-900/80 border border-gray-700 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5 flex items-center gap-1.5 sm:gap-2">
+        <span className="text-amber-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
           {currentRegionId ?? "???"}
         </span>
-        <span className="text-gray-500 text-xs">·</span>
-        <span className="text-white text-xs">{currentMapId ?? "???"}</span>
+        <span className="text-gray-500 text-[10px] sm:text-xs">·</span>
+        <span className="text-white text-[10px] sm:text-xs">{currentMapId ?? "???"}</span>
       </div>
 
-      {/* Time + Level */}
-      <div className="flex gap-2">
-        <div className="bg-gray-900/80 border border-gray-700 rounded-lg px-3 py-1.5 flex items-center gap-1.5">
-          <span className="text-sm">{TIME_SLOT_ICONS[timeSlot] ?? "⏳"}</span>
-          <span className="text-gray-300 text-xs capitalize">{timeSlot}</span>
+      <div className="flex gap-1.5 sm:gap-2">
+        <div className="bg-gray-900/80 border border-gray-700 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5 flex items-center gap-1 sm:gap-1.5">
+          <span className="text-xs sm:text-sm">{TIME_SLOT_ICONS[timeSlot] ?? "⏳"}</span>
+          <span className="text-gray-300 text-[10px] sm:text-xs capitalize">{timeSlot}</span>
         </div>
-        <div className="bg-gray-900/80 border border-gray-700 rounded-lg px-3 py-1.5 flex items-center gap-2">
-          <span className="text-amber-400 text-xs font-bold">Lv.{level}</span>
-          <div className="w-16 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+        <div className="bg-gray-900/80 border border-gray-700 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5 flex items-center gap-1.5 sm:gap-2">
+          <span className="text-amber-400 text-[10px] sm:text-xs font-bold">Lv.{level}</span>
+          <div className="w-12 sm:w-16 h-1 sm:h-1.5 bg-gray-700 rounded-full overflow-hidden">
             <div
-              className="h-full bg-amber-400 rounded-full transition-all duration-300"
-              style={{ width: `${xpProgress * 100}%` }}
+              className="h-full bg-amber-400 rounded-full"
+              style={{ width: `${xpProgress * 100}%`, transition: `width ${ticksToMs(TICKS_TRANSITION_FLASH)}ms ease` }}
             />
           </div>
         </div>

@@ -16,7 +16,7 @@ export function ElementBadges({ elementTypes, size = "md" }: ElementBadgesProps)
   const font = size === "sm" ? 10 : 12;
 
   return (
-    <div className="flex gap-[3px] items-center">
+    <div className="flex gap-1 items-center">
       {elementTypes.map(elem => (
         <span
           key={elem}

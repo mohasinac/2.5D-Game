@@ -130,13 +130,13 @@ function PhaseBadge({ state, linkType }: { state: TransitionState; linkType: str
       ];
 
   return (
-    <div className="flex items-center gap-[3px] justify-center mb-[10px]">
+    <div className="flex items-center gap-1 justify-center mb-2.5">
       {phases.map((ph, i) => {
         const active = (ph.match as string[]).includes(state);
         return (
-          <div key={ph.key} className="flex items-center gap-[3px]">
+          <div key={ph.key} className="flex items-center gap-1">
             <div
-              className={`px-2 py-[2px] rounded-[10px] text-[9px] font-bold transition-all duration-150 border [background:var(--tb-bg)] [color:var(--tb-c)] ${active ? "border-[var(--tc)]" : "border-[#334155]"}`}
+              className={`px-2 py-0.5 rounded-[10px] text-[9px] font-bold transition-all duration-150 border [background:var(--tb-bg)] [color:var(--tb-c)] ${active ? "border-[var(--tc)]" : "border-[#334155]"}`}
               style={{
                 "--tc": color,
                 "--tb-bg": active ? `color-mix(in srgb, ${color} 20%, transparent)` : "rgba(30,41,59,0.6)",
@@ -253,7 +253,7 @@ export default function FloorTransitionOverlay({
 
         {/* Verb */}
         <div
-          className={`text-[13px] font-bold tracking-[2px] uppercase mb-[10px] text-[#94a3b8] ${state === "arrived" ? "[animation:tFlash_0.4s_ease-in-out_3]" : ""}`}
+          className={`text-[13px] font-bold tracking-[2px] uppercase mb-2.5 text-[#94a3b8] ${state === "arrived" ? "[animation:tFlash_0.4s_ease-in-out_3]" : ""}`}
         >
           {state === "arrived"   ? "ARRIVED"
            : state === "cancelled" ? "STAYING"
@@ -261,9 +261,9 @@ export default function FloorTransitionOverlay({
         </div>
 
         {/* Floor F2 → arrow → F1 */}
-        <div className="flex items-center justify-center gap-[14px] mb-3">
+        <div className="flex items-center justify-center gap-3.5 mb-3">
           <FloorBadge index={fromFloor} label={fromLabel} dim />
-          <div className="flex flex-col items-center gap-[2px]">
+          <div className="flex flex-col items-center gap-0.5">
             <span className="text-[22px] leading-none text-[color:var(--mc)]" style={{ "--mc": meta.color } as React.CSSProperties}>{arrow}</span>
             <span className="text-theme-faint text-[9px]">
               {Math.abs(toFloor - fromFloor)} floor{Math.abs(toFloor - fromFloor) > 1 ? "s" : ""}
@@ -274,7 +274,7 @@ export default function FloorTransitionOverlay({
 
         {/* Trajectory SVG */}
         {(state === "transit" || state === "arrived") && (
-          <div className="mb-[10px]">
+          <div className="mb-2.5">
             <TrajectoryPath linkType={linkType} progress={state === "arrived" ? 1 : progress} color={meta.color} />
           </div>
         )}

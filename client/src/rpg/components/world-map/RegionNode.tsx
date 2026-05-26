@@ -43,7 +43,7 @@ export function RegionNode({
         title={lockedReason ?? undefined}
       >
         <div
-          className={`w-12 h-12 rounded-full flex items-center justify-center text-lg border-2 ${
+          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg border-2 ${
             current
               ? "bg-amber-500 border-amber-300 shadow-lg shadow-amber-500/50 animate-pulse"
               : unlocked
@@ -54,7 +54,7 @@ export function RegionNode({
           {unlocked ? "🌍" : "🔒"}
         </div>
         <span
-          className={`text-xs font-bold whitespace-nowrap ${
+          className={`text-[10px] sm:text-xs font-bold whitespace-nowrap ${
             current ? "text-amber-400" : unlocked ? "text-white" : "text-gray-600"
           }`}
         >

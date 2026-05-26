@@ -29,7 +29,7 @@ interface PlayerProgress {
 
 export default function StorySelectPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { currentUser: user } = useAuth();
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [progress, setProgress] = useState<PlayerProgress>({ completedEpisodeIds: [], bondLevels: {} });

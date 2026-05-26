@@ -8,6 +8,8 @@ import { PX_PER_CM_BASE } from "@/constants/units";
 import { useArenaShapeDefs } from "@/hooks/useArenaShapeDefs";
 import { useArenaThemeDefs } from "@/hooks/useArenaThemeDefs";
 import { useBowlProfileDefs } from "@/hooks/useBowlProfileDefs";
+import { useDefsDocs } from "@/hooks/useDefsDocs";
+import { COLLECTIONS } from "@/lib/firebase";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebase";
 
@@ -161,7 +163,7 @@ function TiltPreview({ tiltAngle = 0, tiltDirection = 0 }: { tiltAngle?: number;
   );
 }
 
-const TILT_PRESETS: { label: string; angle: number; description: string }[] = [
+const FALLBACK_TILT_PRESETS: { label: string; angle: number; description: string }[] = [
   { label: "Flat",       angle: 0,   description: "Normal arena" },
   { label: "Tilted",     angle: 30,  description: "Slight slope" },
   { label: "Steep",      angle: 60,  description: "Strong pull" },
@@ -169,8 +171,7 @@ const TILT_PRESETS: { label: string; angle: number; description: string }[] = [
   { label: "Inverted",   angle: 180, description: "Upside-down / Zero-G" },
 ];
 
-// Difficulty button colors keyed by difficulty level
-const DIFF_COLORS: Record<string, string> = {
+const FALLBACK_DIFF_COLORS: Record<string, string> = {
   easy: "#22c55e",
   medium: "#3b82f6",
   hard: "#f97316",
@@ -183,6 +184,8 @@ export default function BasicsTab({ config, onChange }: Props) {
   const { items: shapeDefs } = useArenaShapeDefs();
   const { items: themeDefs } = useArenaThemeDefs();
   const { items: bowlProfileDefs } = useBowlProfileDefs();
+  const tiltPresetDocs = useDefsDocs(COLLECTIONS.TILT_PRESET_DEFS);
+  const difficultyDocs = useDefsDocs(COLLECTIONS.DIFFICULTY_DEFS);
   const bgImageInputRef = useRef<HTMLInputElement>(null);
   const [bgUploading, setBgUploading] = useState(false);
 
@@ -256,9 +259,8 @@ export default function BasicsTab({ config, onChange }: Props) {
         <div>
           <label className={LBL}>Difficulty</label>
           <div className="flex gap-1.5">
-            {(["easy", "medium", "hard", "extreme"] as const).map(d => {
+            {(difficultyDocs.length > 0 ? difficultyDocs.map(d => ({ id: d.id, color: String(d.color ?? "#888") })) : Object.entries(FALLBACK_DIFF_COLORS).map(([id, color]) => ({ id, color }))).map(({ id: d, color }) => {
               const active = (config.difficulty ?? "medium") === d;
-              const color = DIFF_COLORS[d];
               return (
                 <button
                   key={d}
@@ -539,7 +541,7 @@ export default function BasicsTab({ config, onChange }: Props) {
 
         {/* Quick presets */}
         <div className="flex gap-1.5 flex-wrap mb-3.5">
-          {TILT_PRESETS.map(p => {
+          {(tiltPresetDocs.length > 0 ? tiltPresetDocs.map(d => ({ label: d.label, angle: Number(d.angle ?? 0), description: String(d.description ?? "") })) : FALLBACK_TILT_PRESETS).map(p => {
             const active = (config.tiltAngle ?? 0) === p.angle;
             return (
               <button

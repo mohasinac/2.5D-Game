@@ -74,7 +74,7 @@ export function BottomStaminaBars({ mySpinPct, myType, opponents }: BottomStamin
   if (royale) {
     // Royale mode: stack all bars vertically in bottom-left area
     return (
-      <div className="absolute bottom-0 left-0 right-0 z-50 pointer-events-none flex flex-col-reverse gap-[3px] pb-2 px-3">
+      <div className="absolute bottom-0 left-0 right-0 z-50 pointer-events-none flex flex-col-reverse gap-1 pb-2 px-3">
         {/* Player bar */}
         <div className="flex items-center gap-2 w-[45vw] max-w-[400px]">
           <span className="text-[0.5rem] font-mono text-white/50 shrink-0 w-12 truncate uppercase">YOU</span>
@@ -104,7 +104,7 @@ export function BottomStaminaBars({ mySpinPct, myType, opponents }: BottomStamin
   return (
     <div className="absolute bottom-0 left-0 right-0 z-50 pointer-events-none flex items-end justify-between pb-2 px-2 gap-2">
       {/* Player bar — anchored left */}
-      <div className="w-[45vw] max-w-[400px] flex flex-col gap-[3px]">
+      <div className="w-[45vw] max-w-[400px] flex flex-col gap-1">
         <StaminaBar spinPct={mySpinPct} beyType={myType} username="You" side="left" />
         {/* Extra opponent bars stacked above if 2 opponents */}
         {extras.map((op, i) => (

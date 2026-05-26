@@ -61,7 +61,7 @@ function VictimPanel({ data }: { data: BeyLinkHijackQTEData }) {
         <div className="text-[#9ca3af] text-[10px]">
           Waiting for attacker to respond…
         </div>
-        <div className="mt-1 h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
+        <div className="mt-1 h-0.5 bg-[rgba(255,255,255,0.067)] rounded-[1px]">
           <div className="h-full bg-[#818cf8] rounded-[1px] [transition:width_100ms_linear] w-[--pct]" style={{ "--pct": `${fraction * 100}%` } as React.CSSProperties} />
         </div>
       </div>
@@ -108,7 +108,7 @@ function AttackerPanel({ data, onBlock }: AttackerPanelProps) {
     >
       <CountdownRing fraction={fraction} color={pressed ? "#14b8a6" : "#ef4444"} />
       <div className="flex-1">
-        <div className="flex items-center gap-1.5 mb-[5px]">
+        <div className="flex items-center gap-1.5 mb-1">
           <div
             className={`w-[7px] h-[7px] rounded-full ${pressed ? "bg-[#14b8a6] shadow-[0_0_6px_#14b8a6]" : "bg-[#ef4444] shadow-[0_0_6px_#ef4444]"}`}
           />
@@ -130,7 +130,7 @@ function AttackerPanel({ data, onBlock }: AttackerPanelProps) {
           </div>
         )}
         {!pressed && (
-          <div className="mt-1 h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
+          <div className="mt-1 h-0.5 bg-[rgba(255,255,255,0.067)] rounded-[1px]">
             <div className="h-full bg-[#ef4444] rounded-[1px] [transition:width_100ms_linear] w-[--pct]" style={{ "--pct": `${fraction * 100}%` } as React.CSSProperties} />
           </div>
         )}
@@ -180,7 +180,7 @@ function EscapePanel({ data, onEscape }: { data: BeyLinkQTEData; onEscape: (key:
       `}</style>
       <CountdownRing fraction={fraction} color={pressed ? "#14b8a6" : "#f59e0b"} />
       <div className="flex-1">
-        <div className="flex items-center gap-1.5 mb-[5px]">
+        <div className="flex items-center gap-1.5 mb-1">
           <div
             className={`w-[7px] h-[7px] rounded-full ${pressed ? "bg-[#14b8a6] shadow-[0_0_6px_#14b8a6]" : "bg-[#f59e0b] shadow-[0_0_6px_#f59e0b]"}`}
           />
@@ -198,7 +198,7 @@ function EscapePanel({ data, onEscape }: { data: BeyLinkQTEData; onEscape: (key:
           <div className="text-[#14b8a6] text-[10px] font-semibold">Escape key registered!</div>
         )}
         {!pressed && (
-          <div className="mt-1 h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
+          <div className="mt-1 h-0.5 bg-[rgba(255,255,255,0.067)] rounded-[1px]">
             <div className="h-full bg-[#f59e0b] rounded-[1px] [transition:width_100ms_linear] w-[--pct]" style={{ "--pct": `${fraction * 100}%` } as React.CSSProperties} />
           </div>
         )}

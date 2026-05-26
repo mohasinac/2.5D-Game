@@ -236,7 +236,7 @@ export function BattleLobbyPage() {
               return (
                 <div key={category} className="mb-2.5">
                   <p className="text-[10px] text-theme-faint uppercase tracking-[0.08em] mb-1">{category}</p>
-                  <div className="flex flex-wrap gap-[5px]">
+                  <div className="flex flex-wrap gap-1">
                     {group.map(mod => {
                       const selected = selectedModifierIds.includes(mod.id);
                       const disabled = !selected && selectedModifierIds.length >= MAX_MODIFIERS;
@@ -266,7 +266,7 @@ export function BattleLobbyPage() {
               );
             })}
             {selectedModifierIds.length > 0 && (
-              <div className="flex flex-wrap gap-[5px] mb-2.5 p-2 bg-yellow-10 rounded-lg border border-yellow-20">
+              <div className="flex flex-wrap gap-1 mb-2.5 p-2 bg-yellow-10 rounded-lg border border-yellow-20">
                 <span className="text-[11px] text-theme-faint w-full mb-1">Active:</span>
                 {selectedModifierIds.map(id => {
                   const mod = MODIFIER_MAP.get(id);

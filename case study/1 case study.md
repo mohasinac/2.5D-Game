@@ -61,6 +61,8 @@ Every numeric value in new cases must carry one of these tags:
 
 ---
 
+> **Note:** Values in Cases 1-6 are illustrative model values, not measured physics. See the Authoritative Physics Constants header for confirmed values.
+
 ## Case 1 — Hit to a Freely Suspended Body (at rest, in free space)
 
 A body floating in space with no gravity, no constraints. Mass m, moment of inertia I.
@@ -431,7 +433,7 @@ Now combine all cases into the actual game context.
    ├──────────┼───────┼──────────────┼──────────────────────────────┤
    │ smash    │ 0.85  │ low          │ high linear rebound          │
    │ upper    │ 0.70  │ low          │ +upward force component      │
-   │ rubber   │ 0.30  │ HIGH         │ spin-steal via friction      │
+   │ rubber   │ 0.30  │ HIGH         │ spin-steal via friction      │  ← NOTE: 0.30 is restitution (e), NOT μ. Rubber μ_k = 0.50 [CS10 CONFIRMED], e = 0.25 (low bounce/energy absorber)
    │ absorb   │ 0.20  │ medium       │ low rebound, stabilises self │
    │ burst    │ 0.95  │ low          │ spike burst damage           │
    │ blade    │ 0.75  │ medium       │ high torque (thin r_cp)      │
@@ -984,9 +986,9 @@ A free gyro and a floor-constrained gyro behave completely differently when hit.
    Tip slides if: F_lateral > μ_tip × m × g
    Tip pivots if: F_lateral ≤ μ_tip × m × g
 
-   Sharp tip (flat/sharp type): HIGH μ → pivots → full torque transfer
-   Bearing tip: VERY LOW μ → slides → bey translates, torque dissipated
-   Rubber tip:  HIGH μ → pivots AND absorbs impulse (damping)
+   Sharp tip (flat/sharp type): LOW μ = 0.17 [CS10] → pivots due to POINT CONTACT geometry (tiny contact area), not high friction
+   Bearing tip: VERY LOW μ = 0.05 [CS10] → slides → bey translates, torque dissipated
+   Rubber tip:  HIGH μ = 0.50 [CS10] → pivots AND absorbs impulse (damping)
 
    This is why tip type changes the collision character completely.
 ```
@@ -1840,7 +1842,7 @@ interface BeyState {
   // Q tip slant model:
   tipDeltaH: number;      // Δh = height diff frustum-point to cylinder-edge contact
                           // Q mode1 ≈ 0.8mm, Q mode2 ≈ 1.6mm, WF/F = 0, S ≈ 0.2mm
-  tipFriction: number;    // μ_tip (Q=0.5, sharp=0.8, flat=0.5, rubber=0.9, bearing=0.05)
+  tipFriction: number;    // μ_tip (sharp=0.17 [CS10], flat=0.17 [CS10], Q=0.17, rubber=0.50 [CS10], bearing=0.05 [CS10])
 }
 
 function tickVertical(bey: BeyState, dt: number) {
@@ -2032,11 +2034,11 @@ interface TipProfile {
    → flat disc but SLANTED (not horizontal) due to mount offset + slant
 
    RUBBER FLAT (RF):
-   layers = [{ r: 0→10mm, z: 0→0, chamfer: 90°, friction: 0.9, material: 'rubber' }]
+   layers = [{ r: 0→10mm, z: 0→0, chamfer: 90°, friction: 0.50, material: 'rubber' }]  // [CS10 confirmed — rubber μ]
    → wide flat rubber disc, high friction kills oscillation
 
    BEARING (B):
-   layers = [{ r: 0→3mm, z: 0→0, chamfer: 90°, friction: 0.02, material: 'metal' }]
+   layers = [{ r: 0→3mm, z: 0→0, chamfer: 90°, friction: 0.05, material: 'metal' }]  // [CS10 confirmed — B:D steel ball bearing μ]
    → tiny metal ball bearing, near-zero friction, decoupled spin
 ```
 
@@ -2347,7 +2349,7 @@ EWD inverts AS: the **outer disc is fixed** (WD shape, wide stability), but the 
 ### Bearing Friction — Why EWD ≠ Ideal Free-Spin
 
 ```
-   Ideal bearing (B tip): friction ≈ 0.005 (effectively zero)
+   Ideal bearing (B tip): friction ≈ 0.005 (CS1 theoretical ideal; real B:D ≈ 0.05 [CS10 CONFIRMED])
    EWD single bearing:    friction ≈ 0.04–0.12 (non-negligible, wear-dependent)
 
    The bearing couples the tip shaft to the bey body.
@@ -2634,8 +2636,8 @@ Diablo in Ultimate Balance Mode is a **three-part automatic state machine**: Met
 
    SNAP 2 (S²D → S):
    ├── Contact reduces to sharp point: r_S²D → r_S (~0.5mm)
-   ├── Friction drops further: μ_S²D (0.5) → μ_S (0.8 but tiny area)
-   │   Note: sharp tip has high μ per unit area but tiny area → low total friction
+   ├── Friction drops further: μ_S²D (0.17) → μ_S (0.17, same material but tiny area)
+   │   Note: sharp tip has LOW μ = 0.17 [CS10]; pivots due to point contact geometry, not high friction
    ├── Bey transitions to stamina mode: slow wobble circle, minimal drift
    └── If bey is wobbling when snap happens: spike tip pivot amplifies wobble
        (Case 9 — floor constraint from spike = maximum torque arm)

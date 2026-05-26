@@ -222,11 +222,11 @@ export function PlayerPanel({ username, beyType, spinPct, allies = [], seriesWin
 
         {/* Series score pips */}
         {seriesWins !== undefined && targetWins !== undefined && targetWins > 1 && (
-          <div className="flex gap-[3px] px-1 w-full mt-0.5">
+          <div className="flex gap-1 px-1 w-full mt-0.5">
             {Array.from({ length: targetWins }).map((_, i) => (
               <div
                 key={i}
-                className={`flex-1 h-[3px] rounded-full ${i < seriesWins ? "hud-type-bg" : "bg-white/10"}`}
+                className={`flex-1 h-1 rounded-full ${i < seriesWins ? "hud-type-bg" : "bg-white/10"}`}
               />
             ))}
           </div>

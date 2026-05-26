@@ -23,12 +23,37 @@ import type { GlobalSettingsDoc } from "../utils/tournamentFirebase";
 // Subclasses keep all room-specific logic and may override the no-op hooks
 // onTickedBey / onBeyCollided if they also subclass a 2.5D extension.
 
+export interface ReplayInputFrame {
+  tick: number;
+  bitmasks: Record<string, number>;
+}
+
 export abstract class BaseRoom<T extends GameState = GameState> extends Room<T> {
   protected physics!: PhysicsEngine;
   protected arenaCache: ArenaConfig | null = null;
   protected arenaSystem: ArenaSystem | null = null;
   protected globalSettings: GlobalSettingsDoc | null = null;
   protected rand!: () => number;
+
+  // ─── Replay input log ──────────────────────────────────────────────────
+  protected replayLog: ReplayInputFrame[] = [];
+  protected replayTick: number = 0;
+
+  protected recordInput(userId: string, bitmask: number): void {
+    if (this.replayLog.length > 0 && this.replayLog[this.replayLog.length - 1].tick === this.replayTick) {
+      this.replayLog[this.replayLog.length - 1].bitmasks[userId] = bitmask;
+    } else {
+      this.replayLog.push({ tick: this.replayTick, bitmasks: { [userId]: bitmask } });
+    }
+  }
+
+  protected advanceReplayTick(): void {
+    this.replayTick++;
+  }
+
+  protected getReplayData(): { frames: ReplayInputFrame[]; totalTicks: number } {
+    return { frames: this.replayLog, totalTicks: this.replayTick };
+  }
 
   // ─── Stat helpers ─────────────────────────────────────────────────────────
 

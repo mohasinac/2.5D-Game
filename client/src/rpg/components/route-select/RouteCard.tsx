@@ -13,14 +13,14 @@ export function RouteCard({ route, selected, onSelect }: RouteCardProps) {
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.98 }}
       onClick={onSelect}
-      className={`relative flex flex-col rounded-xl overflow-hidden border-2 transition-all w-full max-w-[280px] ${
+      className={`relative flex flex-col rounded-xl overflow-hidden border-2 transition-all w-full max-w-[240px] sm:max-w-[280px] lg:max-w-[320px] ${
         selected
           ? "border-amber-400 shadow-lg shadow-amber-500/30"
           : "border-gray-700 hover:border-gray-500"
       }`}
     >
       {/* Card image / gradient placeholder */}
-      <div className="h-48 bg-gradient-to-b from-gray-700 to-gray-900 flex items-center justify-center">
+      <div className="h-36 sm:h-48 bg-gradient-to-b from-gray-700 to-gray-900 flex items-center justify-center">
         <span className="text-5xl">⚡</span>
       </div>
 

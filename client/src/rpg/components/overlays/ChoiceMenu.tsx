@@ -45,7 +45,7 @@ export function ChoiceMenu({ choices, onSelect }: ChoiceMenuProps) {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className="absolute bottom-36 right-8 z-50 bg-gray-900/95 border-2 border-amber-400 rounded-lg p-2 min-w-[200px]"
+      className="absolute bottom-28 right-4 sm:bottom-36 sm:right-8 z-50 bg-gray-900/95 border-2 border-amber-400 rounded-lg p-2 min-w-[180px] sm:min-w-[200px]"
     >
       {choices.map((choice, i) => {
         const enabledIdx = enabledChoices.indexOf(choice);

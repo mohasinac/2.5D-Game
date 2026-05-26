@@ -32,6 +32,21 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   "geometry-defs": "Geometry Defs",
   "stat-defs": "Stat Defs",
   "special-interaction-defs": "Special Interactions",
+  "tilt-preset-defs": "Tilt Presets",
+  "difficulty-defs": "Difficulties",
+  "feature-animation-defs": "Feature Animations",
+  "portal-color-defs": "Portal Colors",
+  "part-shape-defs": "Part Shapes",
+  "wear-preset-defs": "Wear Presets",
+  "obstacle-tag-defs": "Obstacle Tags",
+  "bey-type-defs": "Bey Types",
+  "reset-condition-defs": "Reset Conditions",
+  "liquid-type-defs": "Liquid Types",
+  "hazard-type-defs": "Hazard Types",
+  "element-stat-defs": "Element Stats",
+  "arena-template-defs": "Arena Templates",
+  "rpg-trigger-mode-defs": "RPG Trigger Modes",
+  "rpg-facing-defs": "RPG Facings",
   "tip-shape-defs": "Tip Shape Defs",
   "core-gimmick-defs": "Core Gimmick Defs",
   "attack-type-defs": "Attack Type Defs",
@@ -147,6 +162,21 @@ const presetDefItems = [
   { to: "/admin/stat-event-defs",     label: "Stat Events",      Icon: BarChart3 },
   { to: "/admin/part-layer-defs",     label: "Part Layers",      Icon: Layers },
   { to: "/admin/special-interaction-defs", label: "Special Interactions", Icon: Link2 },
+  { to: "/admin/tilt-preset-defs",        label: "Tilt Presets",        Icon: Sliders },
+  { to: "/admin/difficulty-defs",          label: "Difficulties",        Icon: BarChart3 },
+  { to: "/admin/feature-animation-defs",   label: "Feature Anims",       Icon: Film },
+  { to: "/admin/portal-color-defs",        label: "Portal Colors",       Icon: Palette },
+  { to: "/admin/part-shape-defs",          label: "Part Shapes",         Icon: Circle },
+  { to: "/admin/wear-preset-defs",         label: "Wear Presets",        Icon: Sliders },
+  { to: "/admin/obstacle-tag-defs",        label: "Obstacle Tags",       Icon: Tag },
+  { to: "/admin/bey-type-defs",            label: "Bey Types",           Icon: Swords },
+  { to: "/admin/reset-condition-defs",     label: "Reset Conditions",    Icon: Zap },
+  { to: "/admin/liquid-type-defs",         label: "Liquid Types",        Icon: Palette },
+  { to: "/admin/hazard-type-defs",         label: "Hazard Types",        Icon: Zap },
+  { to: "/admin/element-stat-defs",        label: "Element Stats",       Icon: BarChart3 },
+  { to: "/admin/arena-template-defs",      label: "Arena Templates",     Icon: Box },
+  { to: "/admin/rpg-trigger-mode-defs",    label: "RPG Triggers",        Icon: Radio },
+  { to: "/admin/rpg-facing-defs",          label: "RPG Facings",         Icon: Gamepad2 },
 ];
 
 const partLibraryItems = [
@@ -222,7 +252,7 @@ export function AdminLayout() {
     return catalogPaths.some(p => location.pathname.startsWith(p));
   });
   const [presetDefsExpanded, setPresetDefsExpanded] = useState(() => {
-    const presetPaths = ["/admin/tip-shape-defs", "/admin/core-gimmick-defs", "/admin/attack-type-defs", "/admin/arena-theme-defs", "/admin/arena-shape-defs", "/admin/bowl-profile-defs", "/admin/trigger-type-defs", "/admin/stat-event-defs", "/admin/part-layer-defs"];
+    const presetPaths = ["/admin/tip-shape-defs", "/admin/core-gimmick-defs", "/admin/attack-type-defs", "/admin/arena-theme-defs", "/admin/arena-shape-defs", "/admin/bowl-profile-defs", "/admin/trigger-type-defs", "/admin/stat-event-defs", "/admin/part-layer-defs", "/admin/tilt-preset-defs", "/admin/difficulty-defs", "/admin/feature-animation-defs", "/admin/portal-color-defs", "/admin/part-shape-defs", "/admin/wear-preset-defs", "/admin/obstacle-tag-defs", "/admin/bey-type-defs", "/admin/reset-condition-defs", "/admin/liquid-type-defs", "/admin/hazard-type-defs", "/admin/element-stat-defs", "/admin/arena-template-defs", "/admin/rpg-trigger-mode-defs", "/admin/rpg-facing-defs"];
     return presetPaths.some(p => location.pathname.startsWith(p));
   });
   const [collapsed, setCollapsed] = useState(() =>

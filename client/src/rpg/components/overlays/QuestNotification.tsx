@@ -30,7 +30,7 @@ export function QuestNotification({ type, title, subtitle, visible }: QuestNotif
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 300, opacity: 0 }}
           transition={{ type: "spring", stiffness: 200, damping: 25 }}
-          className="absolute top-20 right-4 z-50 bg-gray-900/95 border border-amber-400 rounded-lg p-3 min-w-[240px] max-w-[320px]"
+          className="absolute top-14 right-2 sm:top-20 sm:right-4 z-50 bg-gray-900/95 border border-amber-400 rounded-lg p-2 sm:p-3 min-w-[200px] sm:min-w-[240px] max-w-[280px] sm:max-w-[320px]"
         >
           <div className="flex items-start gap-3">
             <span className="text-xl">{ICONS[type]}</span>

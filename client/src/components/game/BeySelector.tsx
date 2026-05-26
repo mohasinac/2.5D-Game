@@ -50,7 +50,7 @@ export function BeySelector({ slots, onSelect }: Props) {
             key={slot.beyId}
             type="button"
             onClick={() => onSelect(i)}
-            className={`w-14 rounded-lg py-1 cursor-pointer flex flex-col items-center gap-[3px] border-2 ${slot.isControlled ? "bg-[#3b82f633] border-[#3b82f6]" : slot.isActive ? "bg-[#1e293b88] border-[#334155]" : "bg-[#1e293b44] border-[#1e293b]"} ${slot.isActive ? "opacity-100" : "opacity-40"}`}
+            className={`w-14 rounded-lg py-1 cursor-pointer flex flex-col items-center gap-1 border-2 ${slot.isControlled ? "bg-[#3b82f633] border-[#3b82f6]" : slot.isActive ? "bg-[#1e293b88] border-[#334155]" : "bg-[#1e293b44] border-[#1e293b]"} ${slot.isActive ? "opacity-100" : "opacity-40"}`}
           >
             <span className={`text-[10px] font-bold ${slot.isControlled ? "text-[#3b82f6]" : "text-[#94a3b8]"}`}>
               [{i + 1}]
@@ -59,11 +59,11 @@ export function BeySelector({ slots, onSelect }: Props) {
               {slot.username}
             </span>
             {/* Health bar */}
-            <div className="w-10 h-[3px] bg-[#334155] rounded-sm">
+            <div className="w-10 h-1 bg-[#334155] rounded-sm">
               <div className="h-full rounded-sm transition-[width] duration-200 bg-[color:var(--hc)] w-[--hp]" style={{ "--hc": healthColor, "--hp": `${healthPct * 100}%` } as React.CSSProperties} />
             </div>
             {/* Spin bar */}
-            <div className="w-10 h-[3px] bg-[#334155] rounded-sm">
+            <div className="w-10 h-1 bg-[#334155] rounded-sm">
               <div className="h-full bg-[#3b82f6] rounded-sm transition-[width] duration-200 w-[--sp]" style={{ "--sp": `${spinPct * 100}%` } as React.CSSProperties} />
             </div>
           </button>

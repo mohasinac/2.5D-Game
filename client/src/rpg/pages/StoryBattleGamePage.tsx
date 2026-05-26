@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useRPGStore } from "../stores/rpgStore";
+import { ticksToMs, TICKS_BATTLE_RETURN_DELAY } from "../constants/rpgConstants";
 import type { BattleResult } from "../data/schemas";
 
 export default function StoryBattleGamePage() {
@@ -54,7 +55,7 @@ export default function StoryBattleGamePage() {
 
           setTimeout(() => {
             navigate("/rpg/game");
-          }, 1500);
+          }, ticksToMs(TICKS_BATTLE_RETURN_DELAY));
         });
 
         room.onMessage("series-end", () => {

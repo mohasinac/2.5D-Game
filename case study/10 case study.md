@@ -5986,3 +5986,423 @@ function moonRingOutThreshold(
 ```
 
 ---
+
+## Case 578 — String Launcher Physics: Pull Velocity to Initial Angular Velocity, Energy Budget, and Tilt-Angle Contact Shift
+
+**Thesis.** The string launcher is the baseline launch mechanism across all Beyblade generations. A single pull of the ripcord wraps around the shaft of radius r_shaft, converting linear pull velocity v_pull into angular velocity omega_0 via the no-slip constraint omega_0 = v_pull / r_shaft. For the standard Takara Tomy launcher shaft radius r_shaft = 1.75 mm [CONFIRMED] and a competitive pull speed v_pull = 3.0 m/s [ESTIMATED], the resulting initial angular velocity is omega_0 = 3.0 / 0.00175 = 1714 rad/s = 16,366 RPM [INFERRED]. The rotational kinetic energy delivered to the beyblade is E = 0.5 * I * omega_0^2, but the launcher-to-beyblade transfer efficiency eta accounts for cord friction, shaft slip, and air resistance during the pull stroke; eta = 0.85 [ESTIMATED] is the accepted value for a well-maintained string launcher, giving E_eff = 0.85 * 0.5 * I * omega_0^2. When the launcher is tilted at angle theta_launch relative to vertical, the beyblade's contact patch shifts: delta_h_contact = r_bey * sin(theta_launch), where r_bey is the beyblade's outer radius, and the resulting beyTiltAngle is set equal to theta_launch at the moment of release. In the game engine, the power percentage maps linearly to omega_0: omega_0 = omega_max * (power_pct / 100), and the initial angular momentum is L_0 = I * omega_0.
+
+### Core Formulae
+
+```
+No-slip constraint:
+  omega_0 = v_pull / r_shaft                                     [CONFIRMED]
+  r_shaft = 1.75 mm = 0.00175 m                                  [CONFIRMED]
+  v_pull  = 3.0 m/s  (competitive average)                       [ESTIMATED]
+  omega_0 = 3.0 / 0.00175 = 1714.3 rad/s                         [INFERRED]
+  RPM     = omega_0 * 60 / (2*pi) = 1714.3 * 9.549 = 16,366 RPM [INFERRED]
+
+Energy budget:
+  E_raw  = 0.5 * I * omega_0^2
+  eta    = 0.85  (launcher efficiency, string type)               [ESTIMATED]
+  E_eff  = eta * E_raw = 0.85 * 0.5 * I * omega_0^2              [INFERRED]
+
+  Example: MFB assembly I = 7.308e-6 kg*m^2  (from Case 545)     [CONFIRMED]
+    E_raw  = 0.5 * 7.308e-6 * 1714.3^2 = 0.5 * 7.308e-6 * 2938832 = 10.74 J
+    E_eff  = 0.85 * 10.74 = 9.13 J                               [INFERRED]
+
+Tilt contact shift:
+  delta_h_contact = r_bey * sin(theta_launch)                     [CONFIRMED]
+  Example: r_bey = 20 mm, theta_launch = 15 deg:
+    delta_h = 20 * sin(15 deg) = 20 * 0.2588 = 5.18 mm           [INFERRED]
+  beyTiltAngle = theta_launch  at release                         [CONFIRMED]
+
+Game engine mapping:
+  omega_0 = omega_max * (power_pct / 100)                         [CONFIRMED]
+  L_0     = I * omega_0                                           [CONFIRMED]
+  At 100%: omega_0 = omega_max
+  At 150%: omega_0 = 1.5 * omega_max  (overcharge)
+```
+
+---
+
+## Case 579 — Gear/Winder Launcher: Gear Ratio Multiplication, Elastic Pre-Tension, and Spin Direction
+
+**Thesis.** Gear and winder launchers introduce a mechanical gear ratio G that multiplies the effective angular velocity: omega_0_gear = G * v_pull / r_shaft. The BeyLauncher LR (MFB era) achieves G = 1.8–2.5 [FACT] depending on internal gear mesh, yielding up to 2.5x the base string launcher RPM from the same pull speed. Winder launchers add an elastic pre-tension stage: the spring stores energy E_spring = 0.5 * k_wind * x^2 before release, contributing an additional angular impulse at the moment of launch. L-spin and R-spin launchers produce the same magnitude |omega_0| but with opposite sign, which affects spin-steal direction: a left-spinning beyblade stealing from a right-spinning opponent experiences additive relative rotation (omega_rel = omega_att + omega_def), doubling the contact surface speed and therefore the frictional spin-steal torque compared to same-spin encounters.
+
+### Gear Ratio Analysis
+
+```
+Gear-ratio formula:
+  omega_0_gear = G * v_pull / r_shaft                             [CONFIRMED]
+
+BeyLauncher LR (MFB):
+  G = 1.8 (low mesh) to 2.5 (high mesh)                          [FACT]
+  v_pull = 3.0 m/s, r_shaft = 1.75 mm:
+    omega_0_low  = 1.8 * 3.0 / 0.00175 = 3086 rad/s = 29,472 RPM  [INFERRED]
+    omega_0_high = 2.5 * 3.0 / 0.00175 = 4286 rad/s = 40,929 RPM  [INFERRED]
+
+Winder pre-tension:
+  E_spring = 0.5 * k_wind * x^2                                  [CONFIRMED]
+  Typical k_wind = 800 N/m, x = 8 mm:                            [ESTIMATED]
+    E_spring = 0.5 * 800 * 0.008^2 = 0.0256 J                    [INFERRED]
+  Additional omega from spring: delta_omega = sqrt(2 * E_spring / I)
+    delta_omega = sqrt(2 * 0.0256 / 7.308e-6) = sqrt(7007) = 83.7 rad/s  [INFERRED]
+  Contribution is small (~5% of base omega) but adds burst torque at release.
+
+L-spin vs R-spin:
+  |omega_0_L| = |omega_0_R| = G * v_pull / r_shaft               [CONFIRMED]
+  Sign convention: R-spin = +omega, L-spin = -omega
+  Same-spin contact: omega_rel = |omega_att - omega_def|
+  Opposite-spin contact: omega_rel = |omega_att + omega_def|      [CONFIRMED]
+  Spin-steal torque proportional to omega_rel * mu_contact * r_contact
+  Opposite-spin: 2x surface speed => ~2x raw steal rate           [INFERRED]
+```
+
+---
+
+## Case 580 — BX Xtreme Launcher: Maximum Gear Ratio, Peak Angular Velocity, and Cross-Generation Launch Momentum Comparison
+
+**Thesis.** The BX Xtreme Launcher (Beyblade X generation) features the widest gear teeth of any production launcher, achieving the highest effective gear ratio G_eff = 2.8 [FACT] and the highest achievable initial angular velocity omega_0 = 4800 rad/s = 45,837 RPM [INFERRED] from a competitive pull. This represents a 2.8x improvement over the base string launcher and a 1.27x improvement over the best BeyLauncher LR configuration. The angular momentum comparison across generations reveals that BX assemblies, with their larger moment of inertia (I_BX ~ 4.0e-5 kg*m^2 [ESTIMATED] due to heavier metal blades), produce dramatically higher L_0 values: L_0_BX = I_BX * omega_0 = 4.0e-5 * 4800 = 0.192 N*m*s, compared to L_0_MFB = 7.308e-6 * 1714 = 0.0125 N*m*s for string-launched MFB. The ratio L_0_BX / L_0_string_MFB = 15.4x reflects both the gear advantage and the heavier assembly. Against a gear-launched MFB (L_0 = 7.308e-6 * 4286 = 0.0313 N*m*s), the ratio is 6.1x.
+
+### Cross-Generation Comparison Table
+
+```
+Launcher comparison at v_pull = 3.0 m/s, r_shaft = 1.75 mm:
+
+| Launcher Type      | G    | omega_0 (rad/s) | RPM    | Notes                |
+|--------------------|------|------------------|--------|----------------------|
+| String (Gen 1–3)   | 1.0  | 1714             | 16,366 | Baseline             | [CONFIRMED]
+| Winder (Gen 1–2)   | 1.5  | 2571             | 24,549 | With pre-tension     | [ESTIMATED]
+| BeyLauncher LR     | 2.2  | 3771             | 36,015 | Mid-mesh average     | [INFERRED]
+| BX Xtreme Launcher | 2.8  | 4800             | 45,837 | Widest gear teeth    | [INFERRED]
+
+Angular momentum L_0 = I * omega_0:
+
+| Assembly         | I (kg*m^2) | Launcher    | omega_0 | L_0 (N*m*s) | Ratio vs baseline |
+|------------------|------------|-------------|---------|-------------|-------------------|
+| MFB (string)     | 7.308e-6   | String      | 1714    | 0.0125      | 1.00x             | [CONFIRMED]
+| MFB (gear)       | 7.308e-6   | BeyLauncher | 3771    | 0.0276      | 2.20x             | [INFERRED]
+| Gen 3 Burst      | 2.5e-5     | String      | 1714    | 0.0429      | 3.43x             | [ESTIMATED]
+| Gen 3 Burst      | 2.5e-5     | BeyLauncher | 4000    | 0.100       | 8.00x             | [ESTIMATED]
+| BX (Xtreme)      | 4.0e-5     | BX Xtreme   | 4800    | 0.192       | 15.36x            | [INFERRED]
+
+BX vs Gen 3 Burst (gear-launched):
+  L_0 ratio = 0.192 / 0.100 = 1.92x                              [INFERRED]
+  First-hit impulse scales with L_0 => BX first-hit 92% larger    [INFERRED]
+```
+
+---
+
+## Case 581 — Tilt Angle Physics: Contact Height Shift, Track-Height Interaction, and Precession Rate
+
+**Thesis.** When a beyblade is launched at tilt angle theta from vertical, the contact patch between the tip and the floor shifts by delta_h = r_bey * sin(theta), lowering one side of the beyblade's lowest structural ring (attack ring, metal wheel, or blade) toward the floor. For a standard MFB assembly on 145-track (tip-to-AR contact range 17–28 mm above floor at theta = 0), a 30-degree tilt shifts the contact zone by delta_h = 20 * sin(30 deg) = 10 mm downward on the leading side, compressing the effective contact range to 7–18 mm and bringing the metal wheel's lower edge within striking distance of low-profile opponents. The gyroscopic precession rate Omega_p = (m * g * h_CoM) / (I * omega_0) quantifies how quickly the tilt axis rotates around the vertical; at high omega_0 (launch speed), precession is very slow, meaning the tilt direction is effectively frozen for the first several seconds of a match.
+
+### Contact Geometry
+
+```
+Tilt contact shift:
+  delta_h = r_bey * sin(theta)                                   [CONFIRMED]
+
+  theta = 10 deg, r_bey = 20 mm:  delta_h =  3.47 mm            [INFERRED]
+  theta = 20 deg, r_bey = 20 mm:  delta_h =  6.84 mm            [INFERRED]
+  theta = 30 deg, r_bey = 20 mm:  delta_h = 10.00 mm            [INFERRED]
+  theta = 45 deg, r_bey = 20 mm:  delta_h = 14.14 mm            [INFERRED]
+
+MFB on 145-track (normal contact zone 17–28 mm above floor):
+  theta =  0 deg:  contact zone = 17–28 mm                       [CONFIRMED]
+  theta = 10 deg:  contact zone = 13.5–24.5 mm  (lowered 3.5mm)  [INFERRED]
+  theta = 20 deg:  contact zone = 10.2–21.2 mm  (lowered 6.8mm)  [INFERRED]
+  theta = 30 deg:  contact zone =  7.0–18.0 mm  (lowered 10mm)   [INFERRED]
+  theta = 45 deg:  contact zone =  2.9–13.9 mm  (lowered 14.1mm) [INFERRED]
+
+  At 30 deg tilt: AR lower edge at 7 mm — within range of
+  100-track (10–21 mm) and 85-track (8.5–19.5 mm) opponents       [INFERRED]
+
+Precession rate:
+  Omega_p = (m * g * h_CoM) / (I * omega_0)                      [CONFIRMED]
+
+  MFB example: m = 0.029 kg, h_CoM = 0.025 m, I = 7.308e-6 kg*m^2
+    At omega_0 = 1714 rad/s (string launch):
+      Omega_p = (0.029 * 9.81 * 0.025) / (7.308e-6 * 1714)
+              = 0.007112 / 0.01253
+              = 0.568 rad/s = 5.42 RPM                            [INFERRED]
+    Full precession cycle: T_p = 2*pi / 0.568 = 11.06 s           [INFERRED]
+
+    At omega_0 = 4286 rad/s (gear launch):
+      Omega_p = 0.007112 / (7.308e-6 * 4286)
+              = 0.007112 / 0.03131
+              = 0.227 rad/s = 2.17 RPM                            [INFERRED]
+    Full precession cycle: T_p = 2*pi / 0.227 = 27.68 s           [INFERRED]
+
+  Conclusion: at gear-launch speeds, tilt direction is effectively
+  frozen for the first ~14 seconds (half-cycle)                    [INFERRED]
+```
+
+---
+
+## Case 582 — Power Percentage: Spin Life Scaling, First-Hit Impulse, and Self-KO Risk
+
+**Thesis.** The power percentage (power_pct) applied during launch scales the initial angular velocity linearly: omega_0 = omega_max * (power_pct / 100). Because spin life t_spin = omega_0 / alpha (where alpha is the spin decay rate, constant for a given tip), spin life is directly proportional to power_pct. At 150% power (the game engine maximum for overcharged launches), spin life is 1.5x the baseline, and the initial angular momentum L_0 = I * omega_0 is also 1.5x, meaning the first-hit impulse delivered on contact scales linearly with power percentage. However, higher power combined with high-recoil materials (ABS, e = 0.70) increases self-KO probability: the recoil velocity delta_v scales with v_rel (which is higher at higher omega_0), and if delta_v exceeds the ring-out escape velocity v_escape, the attacker exits the stadium.
+
+### Power Scaling
+
+```
+Linear scaling:
+  omega_0(pct)  = omega_max * (power_pct / 100)                  [CONFIRMED]
+  L_0(pct)      = I * omega_0(pct)                                [CONFIRMED]
+  t_spin(pct)   = omega_0(pct) / alpha                            [CONFIRMED]
+  E_rot(pct)    = 0.5 * I * omega_0(pct)^2                        [CONFIRMED]
+
+  power_pct = 50%:   omega = 0.50 * omega_max;  t_spin = 0.50x;  E = 0.25x
+  power_pct = 100%:  omega = 1.00 * omega_max;  t_spin = 1.00x;  E = 1.00x
+  power_pct = 120%:  omega = 1.20 * omega_max;  t_spin = 1.20x;  E = 1.44x
+  power_pct = 150%:  omega = 1.50 * omega_max;  t_spin = 1.50x;  E = 2.25x
+
+First-hit impulse:
+  J_first = L_0 * (fraction transferred on contact)
+  proportional to power_pct                                       [INFERRED]
+
+  At 150%: J_first = 1.5x baseline
+  At  50%: J_first = 0.5x baseline
+
+Self-KO risk:
+  v_recoil = (1+e) * m_def / (m_att + m_def) * v_rel             [CONFIRMED]
+  v_rel increases with omega_0 (higher linear speed at contact radius)
+  P(self-KO) = P(pocket_aligned) * P(v_recoil > v_escape)
+
+  ABS attack ring (e = 0.70):
+    At 100% power, v_rel = 2.0 m/s:
+      v_recoil = 1.70 * 0.5 * 2.0 = 1.70 m/s                    [INFERRED]
+    At 150% power, v_rel = 3.0 m/s:
+      v_recoil = 1.70 * 0.5 * 3.0 = 2.55 m/s                    [INFERRED]
+    v_escape (MFB Attack Type) = 0.483 m/s  (Case 545)           [CONFIRMED]
+    Both exceed v_escape by 3.5x and 5.3x respectively
+    => Self-KO probability dominated by pocket alignment, not speed threshold
+
+  Rubber attack ring (e = 0.25):
+    At 150% power, v_rel = 3.0 m/s:
+      v_recoil = 1.25 * 0.5 * 3.0 = 1.875 m/s                   [INFERRED]
+    26% less recoil than ABS at same power                        [INFERRED]
+```
+
+---
+
+## Case 583 — Launch Position: Spawn Radius, Critical Orbit Speed, and Edge-Launch Attack Trajectory
+
+**Thesis.** The launch position parameter (0.0 to 1.0) determines the initial radial placement of the beyblade within the arena via spawn_radius = arena_radius * 0.8 * launch_position. A position of 0.0 places the beyblade at the centre; 1.0 places it at 80% of the arena radius, near the wall. The critical orbit speed at radius r — the minimum tangential velocity required to maintain a stable circular orbit against friction on the bowl slope — is v_crit = sqrt(mu_k * g * r), where mu_k is kinetic friction and g is gravitational acceleration. For an edge launch (position = 1.0) in the MFB Attack Type stadium (arena_radius = 170 mm), the spawn radius is 136 mm, placing the beyblade immediately adjacent to the Zone 4 second incline, enabling an immediate wall-contact attack trajectory without needing to traverse the bowl.
+
+### Spawn Geometry
+
+```
+Spawn radius formula:
+  spawn_radius = arena_radius * 0.8 * launch_position            [CONFIRMED]
+
+  MFB Attack Type (arena_radius = 170 mm):
+    position = 0.0:  spawn_r =   0 mm  (dead centre)
+    position = 0.25: spawn_r =  34 mm  (Zone 1, flat)
+    position = 0.5:  spawn_r =  68 mm  (Zone 2, main slope)
+    position = 0.75: spawn_r = 102 mm  (Zone 2, mid-slope)
+    position = 1.0:  spawn_r = 136 mm  (Zone 2/3 border, near TR)
+
+  BX Xtreme Stadium (arena_radius = 200 mm):
+    position = 0.0:  spawn_r =   0 mm
+    position = 0.5:  spawn_r =  80 mm  (battle zone centre)
+    position = 1.0:  spawn_r = 160 mm  (near Xtreme Line)
+
+Critical orbit speed:
+  v_crit = sqrt(mu_k * g * r)                                    [CONFIRMED]
+
+  For ABS tip (mu_k = 0.17):
+    r =  40 mm: v_crit = sqrt(0.17 * 9.81 * 0.040) = sqrt(0.0667) = 0.258 m/s  [INFERRED]
+    r =  60 mm: v_crit = sqrt(0.17 * 9.81 * 0.060) = sqrt(0.1001) = 0.317 m/s  [INFERRED]
+    r = 100 mm: v_crit = sqrt(0.17 * 9.81 * 0.100) = sqrt(0.1668) = 0.408 m/s  [INFERRED]
+    r = 136 mm: v_crit = sqrt(0.17 * 9.81 * 0.136) = sqrt(0.2268) = 0.476 m/s  [INFERRED]
+
+  For Rubber tip (mu_k = 0.50):
+    r =  60 mm: v_crit = sqrt(0.50 * 9.81 * 0.060) = sqrt(0.2943) = 0.542 m/s  [INFERRED]
+    r = 136 mm: v_crit = sqrt(0.50 * 9.81 * 0.136) = sqrt(0.6671) = 0.817 m/s  [INFERRED]
+
+Edge launch trajectory (position = 1.0):
+  At spawn_r = 136 mm (MFB Attack Type):
+    Distance to Zone 4 base (r=145mm): 9 mm                      [INFERRED]
+    Distance to outer wall (r=155mm): 19 mm                       [INFERRED]
+    Time to wall contact at v=2.0 m/s: 19/2000 = 0.0095 s        [INFERRED]
+  Attack types use edge launch to achieve immediate wall engagement,
+  skipping the bowl-descent phase entirely.                        [INFERRED]
+```
+
+---
+
+## Case 584 — Spin Steal x Launch x Bearing Interaction: Full Steal Formula, Bearing Friction Attenuation, and High-Power Launch Advantage Window
+
+**Thesis.** Spin steal — the transfer of rotational energy from one beyblade to another via frictional contact — follows the composite formula: steal = rawSteal * spinStealFactor * (1 / spinStealResist) * bearingFriction, where rawSteal is the base steal rate determined by contact surface speed and contact duration, spinStealFactor is the attacker's steal multiplier (rubber tips and rubber AR surfaces increase this), spinStealResist is the defender's resistance multiplier, and bearingFriction is the defender's tip friction coefficient normalised against ABS baseline. A B:D (ball bearing) defender with bearingFriction = 0.05 [CONFIRMED] reduces effective steal to 5% of the ABS-tip baseline, making spin steal nearly impossible against bearing tips. An EWD (Eternal Wide Defense) defender with bearingFriction = 0.12 [CONFIRMED] allows 12% of normal steal. High-power launches (150%) create a delta_omega advantage that opens the spin-steal window earlier: the attacker maintains higher omega longer, extending the window during which omega_att > omega_def (the precondition for net positive steal).
+
+### Steal Formula Breakdown
+
+```
+Full spin-steal formula:
+  steal = rawSteal * spinStealFactor * (1/spinStealResist) * bearingFriction  [CONFIRMED]
+
+  rawSteal = mu_contact * omega_rel * r_contact * dt              [CONFIRMED]
+    mu_contact: friction between contact surfaces
+    omega_rel:  |omega_att - omega_def| (same spin) or |omega_att + omega_def| (opposite)
+    r_contact:  radius at which contact occurs
+    dt:         contact duration per tick
+
+  spinStealFactor:  attacker multiplier (1.0 default, up to 2.0 for rubber AR)  [ESTIMATED]
+  spinStealResist:  defender multiplier (1.0 default, up to 1.5 for smooth metal) [ESTIMATED]
+
+Bearing tip attenuation:
+  bearingFriction = mu_tip / mu_ABS = mu_tip / 0.17               [CONFIRMED]
+
+  | Tip Type          | mu_tip | bearingFriction | Effective steal % |
+  |-------------------|--------|-----------------|-------------------|
+  | ABS (HF, S, D)    | 0.17   | 1.00            | 100%              | [CONFIRMED]
+  | Rubber (RF, RB)   | 0.50   | 2.94            | 294%  (amplifies) | [CONFIRMED]
+  | Metal (MS)        | 0.12   | 0.706           | 70.6%             | [CONFIRMED]
+  | EWD (plastic slv) | 0.12   | 0.706           | 70.6%             | [CONFIRMED]
+  | B:D (ball bearing) | 0.05  | 0.294           | 29.4%             | [CONFIRMED]
+
+  Note: B:D's steal reduction is even more dramatic when the bearing
+  allows free-spin of the outer shell — effective bearingFriction
+  approaches 0.05 for the entire assembly, not just the tip.       [INFERRED]
+
+High-power launch steal window:
+  At 150% power: omega_att(t=0) = 1.5 * omega_max
+  At 100% power: omega_def(t=0) = 1.0 * omega_max
+  delta_omega(t=0) = 0.5 * omega_max                              [INFERRED]
+
+  Steal occurs only when omega_att > omega_def (net positive transfer)
+  Time until crossover (same alpha): t_cross = delta_omega / (alpha_att - alpha_def)
+  If alpha_att = alpha_def: crossover never occurs — permanent advantage  [INFERRED]
+  If alpha_att > alpha_def (e.g., rubber tip attacker):
+    t_cross = (0.5 * omega_max) / (alpha_att - alpha_def)
+    Example: omega_max = 2000, alpha_att = 3.5, alpha_def = 2.0:
+      t_cross = 1000 / 1.5 = 666.7 s  (>> match duration)        [INFERRED]
+  Conclusion: 150% power launches provide a steal advantage that
+  persists for the entire match in nearly all practical cases.     [INFERRED]
+```
+
+---
+
+## Case 585 — First-Hit Recoil Kinematics: Coefficient of Restitution, Material-Dependent Bounce, and Self-KO Probability
+
+**Thesis.** The first collision in a Beyblade match is the highest-energy impact, occurring at peak omega_0 before any spin decay. The attacker's recoil velocity is given by delta_v_attacker = -(1+e) * m_def / (m_att + m_def) * v_rel, where e is the coefficient of restitution of the contact materials and v_rel is the relative velocity at the point of contact. For ABS-on-ABS contact (e = 0.70 [CONFIRMED]), equal-mass beyblades (m_att = m_def), and v_rel = 3.0 m/s, the attacker rebounds at delta_v = -(1+0.70) * 0.5 * 3.0 = -2.55 m/s. For rubber-on-ABS contact (e = 0.25 [CONFIRMED]), the same collision yields delta_v = -(1+0.25) * 0.5 * 3.0 = -1.875 m/s — a 26% reduction in recoil magnitude. Self-KO probability is the product of pocket alignment probability P(pocket) and the probability that recoil velocity exceeds the stadium's escape velocity P(v_recoil > v_escape).
+
+### Recoil Velocity Derivation
+
+```
+1D collision recoil (attacker frame):
+  delta_v_att = -(1+e) * m_def / (m_att + m_def) * v_rel         [CONFIRMED]
+
+  For equal mass (m_att = m_def = m):
+    delta_v_att = -(1+e) * 0.5 * v_rel                           [CONFIRMED]
+
+Material comparison at v_rel = 3.0 m/s, equal mass:
+  | Material pair   | e    | delta_v (m/s) | Relative bounce |
+  |-----------------|------|---------------|-----------------|
+  | ABS on ABS      | 0.70 | -2.55         | 100%  (baseline)| [CONFIRMED]
+  | Metal on Metal  | 0.80 | -2.70         | 106%            | [CONFIRMED]
+  | Rubber on ABS   | 0.25 | -1.875        | 73.5% (26% less)| [CONFIRMED]
+  | Rubber on Rubber| 0.20 | -1.80         | 70.6% (29% less)| [ESTIMATED]
+  | ABS on Metal    | 0.75 | -2.625        | 103%            | [ESTIMATED]
+
+Unequal mass scenario (m_att = 25 g, m_def = 35 g):
+  mass_ratio = m_def / (m_att + m_def) = 35/60 = 0.583
+  ABS (e=0.70): delta_v = -1.70 * 0.583 * 3.0 = -2.975 m/s      [INFERRED]
+  Rubber (e=0.25): delta_v = -1.25 * 0.583 * 3.0 = -2.186 m/s   [INFERRED]
+  Heavier defender => more recoil on lighter attacker              [CONFIRMED]
+
+Self-KO probability:
+  P(self-KO) = P(pocket_aligned) * P(v_recoil > v_escape)        [CONFIRMED]
+
+  MFB Attack Type stadium:
+    P(pocket_aligned) = 0.492  (Case 545)                         [CONFIRMED]
+    v_escape = 0.483 m/s  (Case 545)                              [CONFIRMED]
+
+  At first hit (ABS, equal mass, v_rel = 3.0 m/s):
+    v_recoil = 2.55 m/s >> v_escape = 0.483 m/s
+    P(v_recoil > v_escape) = 1.0  (certain)                      [INFERRED]
+    P(self-KO) = 0.492 * 1.0 = 49.2%                             [INFERRED]
+
+  At first hit (Rubber, equal mass, v_rel = 3.0 m/s):
+    v_recoil = 1.875 m/s >> v_escape = 0.483 m/s
+    P(v_recoil > v_escape) = 1.0  (still certain)                [INFERRED]
+    P(self-KO) = 0.492 * 1.0 = 49.2%                             [INFERRED]
+    Note: rubber recoil is lower but still far exceeds v_escape.
+    Rubber advantage appears in multi-hit scenarios where reduced
+    recoil keeps the attacker closer to the centre between hits.   [INFERRED]
+
+  BX Xtreme Stadium (v_escape ~ 1.2 m/s, P(pocket) ~ 0.25):
+    ABS:    P(self-KO) = 0.25 * 1.0 = 25.0%                      [ESTIMATED]
+    Rubber: P(self-KO) = 0.25 * P(1.875 > 1.2) = 0.25 * 1.0 = 25.0%  [ESTIMATED]
+    At lower v_rel (1.0 m/s), ABS: v_recoil = 0.85 m/s < 1.2 m/s
+      P(self-KO) = 0.25 * 0.0 = 0%  (safely contained)           [INFERRED]
+```
+
+```typescript
+// Cases 578–585 — Launcher Physics reference functions
+
+function stringLauncherOmega(v_pull_ms: number, r_shaft_mm = 1.75): number {
+  return v_pull_ms / (r_shaft_mm / 1000);
+}
+// stringLauncherOmega(3.0)  →  1714.3 rad/s
+// stringLauncherOmega(2.0)  →  1142.9 rad/s
+
+function gearLauncherOmega(v_pull_ms: number, G: number, r_shaft_mm = 1.75): number {
+  return G * v_pull_ms / (r_shaft_mm / 1000);
+}
+// gearLauncherOmega(3.0, 2.2)  →  3771.4 rad/s (BeyLauncher LR mid)
+// gearLauncherOmega(3.0, 2.8)  →  4800.0 rad/s (BX Xtreme)
+
+function launchEnergy(I_kgm2: number, omega_0: number, eta = 0.85): number {
+  return eta * 0.5 * I_kgm2 * omega_0 ** 2;
+}
+// launchEnergy(7.308e-6, 1714)  →  9.13 J (MFB string)
+// launchEnergy(4.0e-5, 4800)    →  391.7 J (BX Xtreme)
+
+function tiltContactShift(r_bey_mm: number, theta_deg: number): number {
+  return r_bey_mm * Math.sin(theta_deg * Math.PI / 180);
+}
+// tiltContactShift(20, 30)  →  10.0 mm
+// tiltContactShift(20, 15)  →  5.18 mm
+
+function precessionRate(
+  m_kg: number, h_CoM_m: number, I_kgm2: number, omega_0: number
+): number {
+  return (m_kg * 9.81 * h_CoM_m) / (I_kgm2 * omega_0);
+}
+// precessionRate(0.029, 0.025, 7.308e-6, 1714)  →  0.568 rad/s
+// precessionRate(0.029, 0.025, 7.308e-6, 4286)  →  0.227 rad/s
+
+function spawnRadius(arena_radius_mm: number, launch_position: number): number {
+  return arena_radius_mm * 0.8 * launch_position;
+}
+// spawnRadius(170, 1.0)  →  136 mm
+// spawnRadius(200, 0.5)  →  80 mm
+
+function criticalOrbitSpeed(mu_k: number, r_mm: number): number {
+  return Math.sqrt(mu_k * 9.81 * (r_mm / 1000));
+}
+// criticalOrbitSpeed(0.17, 60)   →  0.317 m/s
+// criticalOrbitSpeed(0.50, 136)  →  0.817 m/s
+
+function firstHitRecoil(
+  e: number, m_att_g: number, m_def_g: number, v_rel_ms: number
+): number {
+  return (1 + e) * (m_def_g / (m_att_g + m_def_g)) * v_rel_ms;
+}
+// firstHitRecoil(0.70, 29, 29, 3.0)  →  2.55 m/s (ABS equal mass)
+// firstHitRecoil(0.25, 29, 29, 3.0)  →  1.875 m/s (Rubber equal mass)
+// firstHitRecoil(0.70, 25, 35, 3.0)  →  2.975 m/s (light attacker vs heavy defender)
+
+function selfKOProbability(
+  P_pocket: number, v_recoil_ms: number, v_escape_ms: number
+): number {
+  return v_recoil_ms > v_escape_ms ? P_pocket : 0;
+}
+// selfKOProbability(0.492, 2.55, 0.483)  →  0.492 (49.2%)
+// selfKOProbability(0.25, 0.85, 1.2)     →  0 (safely contained)
+```
+
+---

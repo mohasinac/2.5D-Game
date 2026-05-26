@@ -59,7 +59,7 @@ function FeaturedOpponentCard({ op }: { op: OpponentEntry }) {
 
       {/* Stamina bar — reversed fill direction */}
       <div className="w-full px-1">
-        <div className="flex flex-col gap-[3px] w-full font-mono">
+        <div className="flex flex-col gap-1 w-full font-mono">
           <div className="flex justify-between items-center flex-row-reverse">
             <span className="text-[0.5rem] tracking-widest text-white/40 uppercase">STAMINA</span>
             <span className={`text-[0.55rem] font-bold ${spinTextClass(op.spinPct)}`}>
@@ -94,7 +94,7 @@ function CompactOpponentCard({ op }: { op: OpponentEntry }) {
 
       {/* Spin bar */}
       <div className="flex-1 min-w-0">
-        <div className="h-[5px] rounded-full bg-white/10 overflow-hidden">
+        <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
           <div
             className={`w-pct h-full rounded-full ${spinBarClass(op.spinPct)}`}
             style={{ "--pct": `${op.spinPct}%` } as React.CSSProperties}
@@ -126,7 +126,7 @@ function UltraCompactRow({ op }: { op: OpponentEntry }) {
     >
       <span className="hud-type-dot w-1.5 h-1.5 rounded-full shrink-0" />
       <span className="text-white/70 text-[0.55rem] font-mono truncate flex-1 min-w-0">{op.username}</span>
-      <div className="w-10 h-[3px] rounded-full bg-white/10 overflow-hidden shrink-0">
+      <div className="w-10 h-1 rounded-full bg-white/10 overflow-hidden shrink-0">
         <div
           className={`w-pct h-full rounded-full ${spinBarClass(op.spinPct)}`}
           style={{ "--pct": `${op.spinPct}%` } as React.CSSProperties}

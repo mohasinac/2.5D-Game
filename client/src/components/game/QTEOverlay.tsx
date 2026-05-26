@@ -120,12 +120,12 @@ export function QTEOverlay({ prompt, onKeyPress, onDismiss }: QTEOverlayProps) {
       <div className="text-[11px] text-theme-yellow font-bold uppercase tracking-[0.12em] mb-[6px]">
         ⚡ Counter Chance!
       </div>
-      <div className="text-[12px] text-theme-muted mb-[14px]">
+      <div className="text-[12px] text-theme-muted mb-3.5">
         Press the sequence to block their special move
       </div>
 
       {/* Key sequence */}
-      <div className="flex justify-center gap-[10px] mb-[18px]">
+      <div className="flex justify-center gap-2.5 mb-4">
         {prompt.sequence.map((key, i) => (
           <div
             key={i}
