@@ -33,7 +33,7 @@ export class TryoutRoom extends BaseRoom<GameState> {
   private simulationStarted = false;
   private lastInputTime = 0;
   private warmupTimer = 3;
-  private launchPhaseTimer = 5;
+  private launchPhaseTimer = 10;
   private spawnAngle = 0; // angle used for position-offset calculation
 
   maxClients = 1;
@@ -121,7 +121,7 @@ export class TryoutRoom extends BaseRoom<GameState> {
       this.state.arena.width = 50;
       this.state.arena.height = 50;
       this.state.arena.shape = "circle";
-      this.state.arena.theme = "metrocity";
+      this.state.arena.theme = "default";
       this.state.arena.gravity = 0;
       this.state.arena.airResistance = 0.01;
       this.state.arena.surfaceFriction = 0.01;

@@ -28,6 +28,7 @@ import { CollisionQTEOverlay } from "@/components/game/CollisionQTEOverlay";
 import { SplitScreenCinematic } from "@/components/game/SplitScreenCinematic";
 import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
+import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { useLaunchInput } from "@/game/hooks/useLaunchInput";
 import type { QTEPromptData } from "@/game/hooks/useColyseus";
 import type { SplitScreenCinematicData } from "@/types/game";
@@ -583,7 +584,7 @@ export function AIBattleGamePage() {
       {/* Launch phase overlay */}
       {gameState?.status === "launching" && !gameEndData && (
         <LaunchPhase
-          launchTimer={gameState.launchTimer ?? 5}
+          launchTimer={gameState.launchTimer ?? 10}
           launchTilt={isSpectating ? 0 : launchState.tilt}
           launchPosition={isSpectating ? 0.5 : launchState.position}
           launchPower={isSpectating ? 0 : launchState.power}
@@ -669,6 +670,7 @@ export function AIBattleGamePage() {
           </div>
         </div>
       )}
+      <TouchControlsGBLayout />
     </div>
   );
 }

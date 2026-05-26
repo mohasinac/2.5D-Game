@@ -64,7 +64,7 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
   private aiControllers = new Map<string, AIController>();
   private beybladeDataCache = new Map<string, BeybladeStats | null>();
   protected spawnPositions = new Map<string, { x: number; y: number; angle: number }>();
-  private launchPhaseTimer = 5;
+  private launchPhaseTimer = 10;
   private aiLaunchTimer = 1.5;
   protected comboTrackers = new Map<string, ComboTracker>();
   /** Per-session camera-follow target id (purely informational). */

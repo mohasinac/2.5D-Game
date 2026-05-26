@@ -176,7 +176,7 @@ function StringLauncherUI({
         <div className="h-[4px] rounded-[2px] mt-2 overflow-hidden bg-white/10 w-full">
           <div
             className="h-full rounded-[2px] [transition:width_100ms_linear,background_300ms] bg-[color:var(--tc)]"
-            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / 5) * 100)}%` } as React.CSSProperties}
+            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / 10) * 100)}%` } as React.CSSProperties}
           />
         </div>
       </div>
@@ -304,27 +304,32 @@ function StringLauncherUI({
 // ─── Ripcord launcher UI ──────────────────────────────────────────────────────
 function RipcordLauncherUI({
   launchTimer,
+  launchTilt,
+  launchPosition,
   launchPower,
+  chargingStarted,
   isSpectating,
   ripcordPressResult,
 }: {
   launchTimer: number;
+  launchTilt: number;
+  launchPosition: number;
   launchPower: number;
+  chargingStarted: boolean;
   isSpectating: boolean;
   ripcordPressResult: "perfect" | "good" | "miss" | null;
 }) {
-  // The oscillating fill level — driven by launchPower from server OR a local sine if spectating
-  const pct = Math.min(100, Math.max(0, launchPower));
-  const isPeak = pct >= 90;
+  // Power mapped to 0-100 for display (max 150 from oscillation)
+  const pct = Math.min(100, Math.max(0, (launchPower / 150) * 100));
+  const isPeak = launchPower >= 130;
 
-  // Zone bar color: red at edges, yellow mid, green at peak
   const fillColor =
-    pct >= 90 ? "#44ff88" :
-    pct >= 60 ? "#ffcc44" :
-    pct >= 30 ? "#ff8844" :
+    launchPower >= 130 ? "#44ff88" :
+    launchPower >= 90  ? "#ffcc44" :
+    launchPower >= 45  ? "#ff8844" :
     "#ff4444";
 
-  const timerColor = launchTimer <= 2 ? "#ff4444" : launchTimer <= 3 ? "#ffcc44" : "#4488ff";
+  const timerColor = launchTimer <= 2 ? "#ff4444" : launchTimer <= 4 ? "#ffcc44" : "#4488ff";
 
   const resultColors: Record<string, string> = {
     perfect: "#44ff88",
@@ -333,7 +338,7 @@ function RipcordLauncherUI({
   };
 
   return (
-    <div className="relative w-full flex flex-col items-center gap-4">
+    <div className="relative w-full flex flex-col items-center gap-3">
       {/* Countdown */}
       <div className="w-full text-center">
         <div
@@ -345,22 +350,24 @@ function RipcordLauncherUI({
         <div className="h-[4px] rounded-[2px] mt-2 overflow-hidden bg-white/10 w-full">
           <div
             className="h-full rounded-[2px] [transition:width_100ms_linear,background_300ms] bg-[color:var(--tc)]"
-            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / 5) * 100)}%` } as React.CSSProperties}
+            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / 10) * 100)}%` } as React.CSSProperties}
           />
         </div>
       </div>
 
-      {/* Oscillating zone bar */}
+      {/* Ripcord visual — oscillating bar with needle */}
       <div className="w-full flex flex-col items-center gap-2">
-        <div className="relative w-full h-[32px] rounded-full overflow-hidden bg-white/10">
-          {/* Sweet spot band — center 10% */}
+        <span className="text-[10px] text-theme-faint uppercase tracking-wider">Ripcord Power</span>
+        <div className="relative w-full h-[36px] rounded-full overflow-hidden bg-white/10">
+          {/* Sweet spot band — top 15% region */}
           <div
-            className="absolute top-0 bottom-0 opacity-30 rounded-full bg-[#44ff88] left-[45%] w-[10%]"
+            className="absolute top-0 bottom-0 opacity-25 rounded-r-full bg-[#44ff88]"
+            style={{ left: "86%", right: 0 }}
             aria-hidden
           />
           {/* Oscillating fill */}
           <div
-            className="absolute top-0 left-0 bottom-0 rounded-full [transition:width_60ms_linear,background_100ms] w-[--opw] bg-[--opbg] shadow-[--opshadow]"
+            className="absolute top-0 left-0 bottom-0 rounded-full [transition:width_50ms_linear,background_80ms] w-[--opw] bg-[--opbg] shadow-[--opshadow]"
             style={{
               "--opw": `${pct}%`,
               "--opbg": `linear-gradient(90deg, #ff444444, ${fillColor})`,
@@ -369,22 +376,53 @@ function RipcordLauncherUI({
           />
           {/* Peak marker line */}
           <div
-            className="absolute top-0 bottom-0 w-[3px] bg-[#44ff88]/70 z-[2] left-[90%]"
+            className="absolute top-0 bottom-0 w-[3px] bg-[#44ff88]/70 z-[2]"
+            style={{ left: "86%" }}
             aria-hidden
           />
-          {/* Current indicator needle */}
+          {/* Needle */}
           <div
-            className="absolute top-1 bottom-1 w-[4px] bg-white rounded-full z-[3] [transition:left_60ms_linear]"
+            className="absolute top-1 bottom-1 w-[4px] bg-white rounded-full z-[3] [transition:left_50ms_linear]"
             style={{ left: `calc(${pct}% - 2px)` }}
             aria-hidden
           />
         </div>
-
-        {/* Labels */}
         <div className="flex justify-between w-full text-[10px] text-theme-faint px-1">
           <span>LOW</span>
-          <span className="text-[#44ff88]">◀ SWEET SPOT ▶</span>
-          <span>PEAK</span>
+          <span className="text-[#44ff88] font-bold">{launchPower.toFixed(0)}%</span>
+          <span>MAX</span>
+        </div>
+      </div>
+
+      {/* Tilt + Position gauges */}
+      <div className="w-full flex flex-col gap-2">
+        <div className={`w-full transition-opacity duration-200 ${chargingStarted ? "opacity-45" : "opacity-100"}`}>
+          <div className="flex justify-between text-[11px] mb-1 text-theme-muted">
+            <span>Tilt (A/D)</span>
+            <span className="text-theme-text font-bold">{launchTilt > 0 ? "+" : ""}{launchTilt.toFixed(0)}°</span>
+          </div>
+          <div className="relative h-3 rounded-[6px] overflow-hidden bg-bg3">
+            <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-[#334155] -translate-x-1/2" />
+            <div
+              className={`absolute top-[2px] bottom-[2px] w-2 rounded-[4px] [transition:left_50ms,background_200ms] ${Math.abs(launchTilt) > 30 ? "bg-[#ff4444]" : "bg-[#4488ff]"}`}
+              style={{ left: `calc(50% + ${(launchTilt / 45) * 42}% - 4px)` }}
+            />
+          </div>
+        </div>
+
+        <div className={`w-full transition-opacity duration-200 ${chargingStarted ? "opacity-45" : "opacity-100"}`}>
+          <div className="flex justify-between text-[11px] mb-1 text-theme-muted">
+            <span>Position (W/S)</span>
+            <span className="text-theme-text font-bold">
+              {launchPosition < 0.33 ? "Forward" : launchPosition > 0.66 ? "Backward" : "Center"}
+            </span>
+          </div>
+          <div className="relative h-3 rounded-[6px] overflow-hidden bg-bg3">
+            <div
+              className={`absolute top-[2px] bottom-[2px] w-2 rounded-[4px] [transition:left_50ms,background_200ms] ${launchPosition > 0.66 ? "bg-[#ff8844]" : launchPosition < 0.33 ? "bg-[#44aaff]" : "bg-[#44ff88]"}`}
+              style={{ left: `calc(${launchPosition * 100}% - 4px)` }}
+            />
+          </div>
         </div>
       </div>
 
@@ -394,7 +432,7 @@ function RipcordLauncherUI({
           className="text-[clamp(1.5rem,4vw,2.5rem)] font-black tracking-[0.2em] [animation:scaleUp_0.25s_cubic-bezier(0.16,1,0.3,1)_forwards] text-[color:var(--rc)]"
           style={{ "--rc": resultColors[ripcordPressResult] ?? "#fff" } as React.CSSProperties}
         >
-          {ripcordPressResult === "perfect" && "✦ PERFECT!"}
+          {ripcordPressResult === "perfect" && "PERFECT!"}
           {ripcordPressResult === "good"    && "GOOD!"}
           {ripcordPressResult === "miss"    && "MISS!"}
         </div>
@@ -402,10 +440,13 @@ function RipcordLauncherUI({
 
       {/* Prompt */}
       {!ripcordPressResult && !isSpectating && (
-        <div
-          className={`text-[15px] font-black tracking-[0.15em] ${isPeak ? "text-[#44ff88] [animation:pulse_0.3s_ease-in-out_infinite]" : "text-theme-muted"}`}
-        >
-          {isPeak ? "▶ PRESS A NOW! ◀" : "PRESS A AT PEAK!"}
+        <div className="text-theme-muted text-[12px] text-center leading-[1.5]">
+          <div className="text-theme-text font-semibold mb-1">Set your launch</div>
+          <span className="text-[#4488ff]">A / D</span> tilt ·
+          <span className="text-[#44ff88]"> W / S</span> position<br />
+          <span className={`font-black tracking-[0.1em] ${isPeak ? "text-[#44ff88] [animation:pulse_0.3s_ease-in-out_infinite]" : "text-[#ffcc44]"}`}>
+            {isPeak ? "PRESS SPACE NOW!" : "PRESS SPACE AT PEAK!"}
+          </span>
         </div>
       )}
       {isSpectating && (
@@ -494,31 +535,23 @@ export function LaunchPhase({
     };
   }, [launchPower, launcherType, isSpectating]);
 
-  // Detect ripcord key press (A key) — only active in ripcord mode and not spectating
+  // Detect launch result for both launcher types
   useEffect(() => {
-    if (launcherType !== "ripcord" || isSpectating || ripcordPressResult) return;
+    if (!launched || isSpectating) return;
 
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.code !== "KeyA" && e.key !== "a" && e.key !== "A") return;
-      const pct = Math.min(100, Math.max(0, launchPower));
+    if (launcherType === "ripcord" && !ripcordPressResult) {
       const result: "perfect" | "good" | "miss" =
-        pct >= 90 ? "perfect" :
-        pct >= 60 ? "good" :
+        launchPower >= 130 ? "perfect" :
+        launchPower >= 90  ? "good" :
         "miss";
       setRipcordPressResult(result);
       if (result === "perfect") setShowPerfect(true);
     }
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [launcherType, isSpectating, ripcordPressResult, launchPower]);
-
-  // Show perfect badge when launched at high power (string launcher)
-  useEffect(() => {
-    if (launched && launchPower >= 95 && launcherType === "string") {
+    if (launcherType === "string" && launchPower >= 95) {
       setShowPerfect(true);
     }
-  }, [launched, launchPower, launcherType]);
+  }, [launched, launchPower, launcherType, isSpectating, ripcordPressResult]);
 
   // Keep showing the banner+perfect even after launched (parent may unmount us shortly)
   if (failed && !launched) return null;
@@ -584,7 +617,10 @@ export function LaunchPhase({
           ) : (
             <RipcordLauncherUI
               launchTimer={launchTimer}
+              launchTilt={launchTilt}
+              launchPosition={launchPosition}
               launchPower={launchPower}
+              chargingStarted={chargingStarted}
               isSpectating={isSpectating}
               ripcordPressResult={ripcordPressResult}
             />

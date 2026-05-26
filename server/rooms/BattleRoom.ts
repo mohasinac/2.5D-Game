@@ -108,7 +108,7 @@ export class BattleRoom extends BaseRoom<GameState> {
   protected spectatorSessions = new Set<string>();
   protected beybladeDataCache = new Map<string, BeybladeStats | null>();
   protected spawnPositions = new Map<string, { x: number; y: number; angle: number }>();
-  private launchPhaseTimer = 5;
+  private launchPhaseTimer = 10;
   protected comboTrackers = new Map<string, ComboTracker>();
   protected comboMatchStates = new Map<string, BeyComboMatchState>();
   protected triggerStates = new Map<string, TriggerState>();

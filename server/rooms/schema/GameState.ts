@@ -547,7 +547,7 @@ export class ArenaState extends Schema {
   @type("number") width: number = 800;
   @type("number") height: number = 600;
   @type("string") shape: string = "circle";
-  @type("string") theme: string = "metrocity";
+  @type("string") theme: string = "default";
   @type("number") rotation: number = 0;
 
   // Rotation control (Part 4 of camera/feature overhaul)
@@ -681,7 +681,7 @@ export class GameState extends Schema {
   @type("string") status: string = "waiting"; // waiting, warmup, launching, in-progress, finished, series-finished
   @type("string") winner: string = ""; // userId of winner
   @type("number") timer: number = 180; // seconds (warmup countdown during warmup; match timer during in-progress)
-  @type("float32") launchTimer: number = 5; // seconds remaining in launch phase
+  @type("float32") launchTimer: number = 10; // seconds remaining in launch phase
   @type("number") startTime: number = 0;
 
   // Match metadata

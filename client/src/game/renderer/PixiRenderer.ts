@@ -688,6 +688,8 @@ export class BeybladeGameRenderer {
       innerHighlight.fill({ color: 0xffffff, alpha: 0.04 });
 
       const innerRing = new PIXI.Graphics();
+      innerRing.circle(0, 0, this.arenaRadius + 3);
+      innerRing.stroke({ color: BeybladeGameRenderer.complementaryColor(bgColor), width: 3, alpha: 0.8 });
       innerRing.circle(0, 0, this.arenaRadius);
       innerRing.stroke({ color: rimColor, width: 4, alpha: 0.9 });
 
@@ -1036,6 +1038,13 @@ export class BeybladeGameRenderer {
   // Tip core colour per evolution stage: 0=white, 1=amber, 2=orange, 3+=red
   private static readonly TIP_STAGE_COLORS = [0xffffff, 0xfbbf24, 0xf97316, 0xef4444] as const;
 
+  private static complementaryColor(c: number): number {
+    const r = (c >> 16) & 0xff;
+    const g = (c >> 8) & 0xff;
+    const b = c & 0xff;
+    return ((255 - r) << 16) | ((255 - g) << 8) | (255 - b);
+  }
+
   private drawBeybladeShape(
     g: PIXI.Graphics,
     color: number,
@@ -1045,6 +1054,11 @@ export class BeybladeGameRenderer {
   ) {
     g.clear();
     const r = radiusPx / 2;
+
+    // Contrasting outline border (complementary color) so the bey is always visible
+    const outlineColor = BeybladeGameRenderer.complementaryColor(color);
+    g.circle(0, 0, r + 2);
+    g.stroke({ color: outlineColor, width: 3, alpha: 1.0 });
 
     // Outer ring (attack layer)
     g.circle(0, 0, r);

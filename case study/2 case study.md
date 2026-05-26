@@ -76,6 +76,8 @@ Every numeric value in new cases must carry one of these tags:
 
 ## Case 74 — Nexus (Nx): Eight-Blade Two-Tier Disc as Attack-Biased Mass Distribution
 
+> **Stock combo (Einstein MS):** AR: Metal Spring · WD/CWD: Circle Heavy · RC: Spring Core
+
 Nexus is a DB (Dynamite Battle) Disc with eight blades arranged across two tiers — four on an upper ring and four on a lower ring, offset so the blades alternate when viewed from above. The mass sits at a large outer radius, giving high moment of inertia, while the blade geometry biases contact energy toward the opponent rather than absorbing it.
 
 ### Two-Tier Blade Geometry
@@ -299,6 +301,8 @@ function tickDGearReturn(dg: DGearState, dt: number): void {
 
 ## Case 76 — Metal Attacker AR: How Low AR Mass Kills Follow-Through and Why Spin Direction Rescues It
 
+> **Stock combo (Dragoon MS):** AR: Metal Attacker · WD/CWD: Circle Wide · RC: Grip Flat Core
+
 Metal Attacker is an Attack Ring (AR) from the Metal System at ~14 g — the lightest competitive-era AR, 5+ g below the viable threshold. It has real attack geometry (wedge contact points, metal inserts) but the geometry is irrelevant because the mass is too low to sustain momentum through contact. This case traces exactly why mass is the bottleneck, and why left-spin partially rescues it.
 
 ### Why AR Mass Governs Attack Follow-Through
@@ -455,6 +459,8 @@ function metalAttackerContactImpulse(
 ---
 
 ## Case 77 — Grip Flat Core (HMS RC): Rubber Tip Grip on a Low-Profile Body as the Attack Speed/Traction Trade-off
+
+> **Stock combo (Dragoon MS):** AR: Metal Attacker · WD/CWD: Circle Wide · RC: Grip Flat Core
 
 Grip Flat Core is the Running Core (RC) of the HMS (Heavy Metal System) series — the equivalent of a MFB Performance Tip. At ~1 g it is extremely light, but its defining feature is a small rubber flat tip: the first rubber contact surface in the HMS line. Its low body height relative to other RCs positions the AR closer to the floor, enabling ramp-geometry ARs (like Circle Upper) to sweep under opponents rather than glancing off them.
 
@@ -702,6 +708,13 @@ function metalSpikerVsAttacker(
 
 ## Case 79 — Circle Wide WD (HMS): Spoke-and-Rim Architecture as Maximum Moment-of-Inertia per Gram
 
+> **Stock combo (Draciel MS):** AR: Metal Shield · WD/CWD: Circle Wide · RC: Sharp Core
+> **Stock combo (Dragoon MS):** AR: Metal Attacker · WD/CWD: Circle Wide · RC: Grip Flat Core
+> **Stock combo (Dragoon MS UV):** AR: Ultimate Attacker · WD/CWD: Circle Wide · RC: Grip Flat Core UV
+> **Stock combo (Wolborg MS):** AR: Wolf Crusher · WD/CWD: Circle Wide · RC: Bearing Core
+> **Stock combo (Advance Eterner):** AR: Advance Survivor · WD/CWD: Circle Wide · RC: Metal Sharp Core
+> **Stock combo (Aero Knight MS):** AR: Knight Crusher · WD/CWD: Circle Wide · RC: Aero Core · SP: Aero Ring
+
 Circle Wide is an HMS Weight Disk (WD) built from die-cast metal. Its structure — visible clearly in the image — is a large outer ring connected to a small inner hub by three thin diagonal spokes, with almost no material between them. This geometry is the most efficient possible arrangement for maximising moment of inertia (I) at a given total mass.
 
 ### Spoke-and-Rim Mass Distribution
@@ -836,6 +849,8 @@ function spinDecayRate(
 
 ## Case 80 — Grip Flat Core (Ultimate Mode): Softer Rubber Compound as the Dominant Variable in Attack Circuit Speed
 
+> **Stock combo (Dragoon MS UV):** AR: Ultimate Attacker · WD/CWD: Circle Wide · RC: Grip Flat Core UV
+
 Grip Flat Core Ultimate Mode shares the identical body geometry with standard Grip Flat Core (Case 77) — same low-profile height, same tip diameter. The sole difference is the rubber compound: the Ultimate Mode tip is noticeably softer and stickier, producing an estimated 120–150% speed increase. This case explains why compound hardness has a nonlinear, amplifying effect on attack circuit velocity.
 
 ### Rubber Hardness and Dynamic Friction
@@ -952,6 +967,8 @@ const GFC_ultimate = { shoreA: 40, nominalRadius: 2 }; // same geometry, softer 
 
 ## Case 81 — Metal Spring AR: All-Metal Perimeter and Why Zero Plastic Contact Points Is Self-Defeating
 
+> **Stock combo (Einstein MS):** AR: Metal Spring · WD/CWD: Circle Heavy · RC: Spring Core
+
 Metal Spring (~16 g) is the only HMS AR with a completely metal perimeter — no plastic faces anywhere on the contact surface. The visible spring-coil texture on the metal edges (visible in image) adds surface detail but the physics consequence of removing all plastic is twofold and both effects are negative: maximum self-rebound on attack, and metal-on-metal spin drain on passive contact.
 
 ### All-Metal Restitution: Maximum Rebound on Both Parties
@@ -1064,6 +1081,14 @@ function coilTextureSpinSteal(
 
 ## Case 82 — Circle Heavy WD (HMS): Solid-Ring Architecture as the Mass-vs-Inertia Trade-off Against Circle Wide
 
+> **Stock combo (Gaia Dragoon MS):** AR: Metal Saucer · WD/CWD: Circle Heavy · RC: Flat Core
+> **Stock combo (Einstein MS):** AR: Metal Spring · WD/CWD: Circle Heavy · RC: Spring Core
+> **Stock combo (Death Gargoyle MS):** AR: Circle Upper · WD/CWD: Circle Heavy · RC: Metal Change Core
+> **Stock combo (Advance Guardian):** AR: Advance Defenser · WD/CWD: Circle Heavy · RC: Grip Sharp Core
+> **Stock combo (Advance Striker):** AR: Advance Attacker · WD/CWD: Circle Heavy · RC: Metal Flat Core
+> **Stock combo (Magical Ape MS):** AR: Metal Ape · WD/CWD: Circle Heavy · RC: Flat Core
+> **Stock combo (Samurai Changer MS):** AR: Samurai Upper · WD/CWD: Circle Heavy · RC: Battle Change Core
+
 Circle Heavy is the counterpart to Circle Wide (Case 79). Where Circle Wide uses spoke-and-rim architecture to maximise I at a given mass, Circle Heavy is a solid, thick, compact ring — smaller outer radius, no voids, uniform dense cross-section. The image confirms this: no spokes, no open space, just solid knurled metal. The trade-off is deliberate: less I per gram in exchange for more absolute mass in a smaller footprint.
 
 ### Geometry Contrast: Solid Ring vs Spoke-and-Rim
@@ -1171,6 +1196,8 @@ function wideVsHeavyComparison(
 ---
 
 ## Case 83 — Wolf Crusher AR: Symmetric Recoil Profile and High-Mass Stamina Geometry
+
+> **Stock combo (Wolborg MS):** AR: Wolf Crusher · WD/CWD: Circle Wide · RC: Bearing Core
 
 Wolf Crusher (~20 g) is a three-arm HMS AR from the Bearing series. The image shows three large curved C-shaped metal arms arranged at 120° intervals, each with a small inward-pointing attack tab at the tip. It is primarily used for Stamina but has underrated smash attack. Its defining mechanical property is spin-direction-symmetric recoil — a rare characteristic that makes it equally safe in both spin directions.
 
@@ -1289,6 +1316,8 @@ function wolfCrusherInertia(m_total: number, r_arm: number): number {
 ---
 
 ## Case 84 — Bearing Core RC (HMS): Ball-Bearing Tip Decoupling as Near-Zero Floor Friction
+
+> **Stock combo (Wolborg MS):** AR: Wolf Crusher · WD/CWD: Circle Wide · RC: Bearing Core
 
 Bearing Core (~5 g) is the dominant HMS stamina RC. The image makes the mechanism unmistakable: a heavy die-cast metal cylinder body with a wide free-spinning disc cap at the bottom, separated from the shaft by a ball bearing (the red circle marks the bearing gap). The body rotates with the bey at ω_bey. The disc cap contacts the floor and rotates at ω_disc — nearly zero or determined purely by rolling. The bearing decouples them so the floor barely sees ω_bey at all.
 
@@ -1450,6 +1479,8 @@ function bearingCoreLAD(
 
 ## Case 85 — Advance Balancer AR: Serrated Metal Rim and Two-Layer Construction as Spin-Steal Geometry
 
+> **Stock combo (Advance Averazer):** AR: Advance Balancer · WD/CWD: Circle Balance · RC: Metal Semi-Flat Core
+
 Advance Balancer (~15 g) is an HMS AR built as two concentric layers: a serrated die-cast metal outer ring and a white ABS inner guard with three swept blades. The image shows this clearly — the gear-toothed grey ring sits behind and around the white plastic section. It is a revision of Dragon Saucer that fixes a rattling-induced instability. Despite the fix it performs identically poorly on attack, and its only viable role is opposite-spin RPM equalisation via weak launch.
 
 ### Two-Layer Mass Distribution
@@ -1594,6 +1625,11 @@ function advanceBalancerSpinSteal(
 
 ## Case 86 — Circle Balance WD (HMS): Thick Radial Bridge Architecture as the Deliberate Mid-Point Between Circle Wide and Circle Heavy
 
+> **Stock combo (Driger MS):** AR: Metal Upper · WD/CWD: Circle Balance · RC: Semi-Flat Core
+> **Stock combo (Dranzer MS):** AR: Spiral Upper · WD/CWD: Circle Balance · RC: Manual Change Core
+> **Stock combo (Wyvern DJ):** AR: DJ Spiker · WD/CWD: Circle Balance / CWD Free Saucer · RC: Metal Sharp Core
+> **Stock combo (Advance Averazer):** AR: Advance Balancer · WD/CWD: Circle Balance · RC: Metal Semi-Flat Core
+
 Circle Balance sits between Circle Wide (Case 79) and Circle Heavy (Case 82) in the HMS WD family. The image shows a clear outer ring — solid and substantial like Circle Heavy's rim — but with three or four thick radial bridges connecting to the inner hub, leaving small open voids between them. This is not spoke-and-rim (Circle Wide) and not completely solid (Circle Heavy). It is a deliberate engineering compromise: more mid-radius mass than Circle Wide, larger outer radius than Circle Heavy.
 
 ### Architecture Comparison Across the Three Circle WDs
@@ -1673,6 +1709,8 @@ function circleBalanceInertia(
 ---
 
 ## Case 87 — Metal Semi-Flat Core (MSF) RC: Why a Wider Metal Tip Produces Docile Rather Than Aggressive Movement
+
+> **Stock combo (Advance Averazer):** AR: Advance Balancer · WD/CWD: Circle Balance · RC: Metal Semi-Flat Core
 
 Metal Semi-Flat Core (~3 g) has a white ABS body taller than Grip Flat Core and a die-cast metal semi-flat tip wider than the original ABS SF Core. The image shows the body profile — similar height and tab arrangement to GFC but the tip is clearly metal (grey, wider dome). It has no mode-change mechanism. The result is a consistently slow, centred movement pattern suitable only for Compact combos.
 
@@ -1786,6 +1824,8 @@ function metalSFMovement(
 ---
 
 ## Case 88 — Seagon Attacker AR: Curved Hook Upper Attack and Symmetric High Recoil as a Single-Window Bet
+
+> **Stock combo (Slash Riger MS):** AR: Slash Upper · WD/CWD: CWD Free Crusher · RC: Free Wing Core
 
 Seagon Attacker is an HMS AR at ~21 g — the heaviest in the line — built as a die-cast metal outer frame carrying six curved hook contact points, mounted over two large yellow plastic inner tabs. The hooks sweep forward in right-spin and present an upward-angled face that acts like Driger MS' Metal Upper: it catches the opponent's WD underside and drives lift + ring-out impulse in one stroke. The same hook curvature that produces this clean upper contact also makes contact deflections catastrophic — recoil is extremely high in both spin directions, not just left-to-right. The match is decided in the first two hits. After that the attacker will either be self-KO'd or RPM-drained beyond recovery.
 
@@ -1994,6 +2034,8 @@ function seagonFollowThrough(mass: number, v_rel: number): number {
 
 ## Case 89 — Upper Fox AR: Shared-Frame Mid-Tier Upper Attack and the Cost of Second-Mould Geometry
 
+> **Stock combo (Phantom Fox MS):** AR: Upper Fox · WD/CWD: CWD Circle Attacker · RC: Bunshin Core
+
 Upper Fox (~19 g) is an HMS AR sharing its structural frame with Upper Dragon and Devil Crusher. The shared frame is a three-arm layout with upper-attack contact ridges that sweep upward in right-spin, identical in profile to Upper Dragon. The practical distinction is mould tolerance: Upper Fox was a later production run in which the die-cast tolerances widened by ~0.1–0.2 mm, slightly rounding the ridge tips and reducing effective contact depth. It is a mid-tier upper attack AR — better than flat-blade ARs on GFC/GFCUV but notably weaker than Seagon Attacker or a clean Upper Dragon, and demonstrably worse than both when the rubber RC is substituted for ABS.
 
 ### Shared-Frame Architecture: Where the Geometry Is Identical
@@ -2166,6 +2208,8 @@ function upperFoxFollowThrough(v_rel: number): number {
 ---
 
 ## Case 90 — Smash Leopard AR: Shared Metal Frame Geometry, Height-Matched Pseudo-CWD Interaction, and Why One AR Fits Where All Others Fail
+
+> **Stock combo (Dark Leopard MS):** AR: Smash Leopard · WD/CWD: CWD Needle Attacker · RC: Tornado Change Core
 
 Smash Leopard (~18 g) is a two-layer HMS AR: a die-cast metal outer frame of three wide rectangular tabs is shared verbatim with Dranzer MF's Smash Phoenix and Shining God MS' God Smasher; the inner ABS ring with its angular, jagged contact geometry is unique to Smash Leopard. This shared-frame lineage places it in the same mass bracket and outer-radius envelope as its siblings, yet it performs noticeably more aggressively than both. The defining event in Smash Leopard's record is an illegal combo involving Battle Change Core's detached pseudo-CWD — the only AR in HMS whose contact point height allows the ramp to function rather than destroy the RC. This case derives why that height window is so narrow and why Smash Leopard fits inside it while every other AR does not.
 
@@ -2382,6 +2426,8 @@ function pseudoCwdCompatible(
 ---
 
 ## Case 91 — CWD Needle Attacker: Why Free-Spinning Protrusions Deliver Near-Zero Impulse
+
+> **Stock combo (Dark Leopard MS):** AR: Smash Leopard · WD/CWD: CWD Needle Attacker · RC: Tornado Change Core
 
 CWD Needle Attacker is a Customize Weight Disk (CWD) consisting of the standard die-cast metal CWD base (~15 g) plus a free-spinning black ABS outer ring (~2 g) studded with twelve small triangular spike protrusions around its perimeter. The total assembly is ~17 g. The CWD base is the static inertial component; the plastic ring rotates independently around it on a low-friction axle. This decoupling is the fundamental problem: when an opponent contacts a protrusion, the ring simply rotates away rather than transmitting the bey's angular momentum as a smash impulse. The result is a contact element with effectively zero attack output, and a mass contribution of only 2 g beyond the bare CWD.
 
@@ -2664,6 +2710,8 @@ function cwdHiddenMassAdvantage(plasticFrameGrams: number): {
 
 ## Case 93 — Tornado Change Core (TCC) RC: Centrifugal Mode-Change, Height Premium, and the Two-Phase Attack Window
 
+> **Stock combo (Dark Leopard MS):** AR: Smash Leopard · WD/CWD: CWD Needle Attacker · RC: Tornado Change Core
+
 Tornado Change Core (~3 g) is an HMS Running Core that automatically switches between Sharp Mode (high RPM) and Hole Flat Mode (low RPM) via a centrifugal spring mechanism — no player input required. The mechanic descends conceptually from Plastics-era Dranzer V2's spring-loaded tip but is fully automated: centrifugal force on an internal weighted slider drives the sharp tip outward at launch, and the spring retracts it once RPM falls below threshold. The result is a bey that opens docile and becomes more erratic later — the reverse of every conventional attack type. Despite this, TCC is viable because its unusual body height keeps the AR in the opponent's AR contact band, and its mode sequence can produce a hit-then-shadow two-phase KO window.
 
 ### Centrifugal Spring Mechanism
@@ -2936,6 +2984,8 @@ function tccOrbitRadius(
 
 ## Case 94 — Turtle Crusher AR: Gap-Catch Geometry as a Hidden Impulse Amplifier
 
+> **Stock combo (Round Shell MS):** AR: Turtle Crusher · RC: Rubber Weight Core
+
 Turtle Crusher (~20 g) is a three-arm HMS AR combining a die-cast Metal Frame (shared with Aero Knight) and a green ABS inner ring. The image makes the mechanism visible: three wide metal tabs extend radially beyond the ABS arm trailing edges, leaving a crevice of ~2–3 mm between the ABS surface and the inward face of each metal tab. This gap is the attack mechanism. When an opponent AR enters the crevice during a contact event it is wedged between two surfaces and receives a second sub-impulse from the ABS wall before exiting. Total output exceeds a smooth-faced AR of equal mass by ~30%. The part is the HMS structural equivalent of Plastics-era Bearing Gyro AR: wide tabs, gap catch, 20 g, right-spin preferred.
 
 ### Gap Geometry: Two-Surface Catch Mechanics
@@ -3087,6 +3137,8 @@ function turtleCrusherImpulse(
 ---
 
 ## Case 95 — Aero Core & Aero Wing RC: Why a Spinning Propeller Cannot Fly, and How Maximum Width Becomes Maximum Vulnerability
+
+> **Stock combo (Aero Knight MS):** AR: Knight Crusher · WD/CWD: Circle Wide · RC: Aero Core · SP: Aero Ring
 
 Aero Core & Aero Wing is a two-piece HMS RC (~5 g combined) comprising a tall stepped ABS body (Aero Core) and a massive three-blade propeller disc (Aero Wing) that clips around it. The image confirms the scale: the Aero Wing spans ~100 mm across — the widest component in the HMS line. The Aero Core body is the tallest RC in HMS, a stacked-cylinder profile adding ~28 mm of height above the stadium floor. Both dimensions work against the bey. The propeller cannot generate meaningful lift at beyblade RPM, the height destabilises precession, the width creates an enormous lever arm for any contact force, and the ABS flat tip provides no directional grip. The part is a complete case study in how maximising two dimensions simultaneously produces zero competitive benefit.
 
@@ -3264,6 +3316,8 @@ function precessionRate(
 ---
 
 ## Case 96 — Rubber Weight Core (RWC): Combined WD+RC, Height Penalty, Tip-Limited Stamina, and the Same-Spin Niche
+
+> **Stock combo (Round Shell MS):** AR: Turtle Crusher · RC: Rubber Weight Core
 
 Rubber Weight Core (~20 g) is the Running Core of Round Shell MS. It replaces both the WD and RC slots — no separate weight disk is used. The part is a rubber torus (blue) press-fitted onto a tall green ABS inner skeleton; the skeleton's bottom terminates in a small fixed-plastic tip that contacts the stadium. The rubber torus sits at AR-contact height and is the primary lateral contact surface. Despite 20 g of rubber mass and a geometry well-suited to spin transfer in theory, RWC is a poor spin-stealer in practice: the fixed plastic tip drains angular momentum into the stadium floor faster than the rubber ring can recover it from opponents. Bearing Core renders the stamina role obsolete. The only surviving niche is same-spin harassment of stamina types whose tip efficiency is comparably bad.
 
@@ -3491,6 +3545,8 @@ function samespinContactDrain(
 
 ## Case 97 — Samurai Upper AR: Shared Metal Frame, Spin-Direction Attack Bifurcation, and Late-Game KO Persistence
 
+> **Stock combo (Samurai Changer MS):** AR: Samurai Upper · WD/CWD: Circle Heavy · RC: Battle Change Core
+
 Samurai Upper (~22 g) is an HMS AR sharing its die-cast metal frame with Death Gargoyle MS' AR. The frame is a three-arm ring with forward-sweeping curved hooks; a thin ABS outer plastic layer adds 1–2 g over Circle Upper depending on mold. The plastic addition is not the operative variable — the Metal Frame itself is the definitive HMS AR, with the widest attack-type portfolio of any part in the line. The critical mechanical fact is spin-direction bifurcation: right-spin presents three geometrically distinct contact modes (Upper Attack, Upper Smash, Smash Attack), while left-spin collapses to pure Smash. Late-game KO persistence — the "refuses to lose" quality — follows directly from peripheral mass, large contact radius, and the opponent's declining gyroscopic stiffness.
 
 ### Metal Frame Geometry and the Three Right-Spin Contact Modes
@@ -3654,6 +3710,8 @@ function lateBattleTiltRate(
 ---
 
 ## Case 98 — Battle Change Core (BCC) RC: Impact-Cam Mode Change, Worst-of-Both-Worlds Tip Duality, and Illegal CWD Mass Stacking
+
+> **Stock combo (Samurai Changer MS):** AR: Samurai Upper · WD/CWD: Circle Heavy · RC: Battle Change Core
 
 Battle Change Core (~11 g) is the Running Core of Samurai Changer MS. It is an impact-triggered mode-change RC: a cam surface on the CWD ring shifts position when struck, mechanically extending or retracting the tip between Semi-Flat and Hole-Flat. The trigger is force, not RPM and not manual input — any sufficiently sharp hit that loads the CWD ramps can flip the mode. In stock configuration, neither mode provides a competitive performance floor: Semi-Flat is too erratic to land clean attack hits reliably, and Hole-Flat lacks the stillness of a sharp or bearing tip. The gimmick activates unpredictably mid-battle, removing the one thing both modes need: consistency.
 
@@ -3850,6 +3908,8 @@ function bccPrecessionRate(
 ---
 
 ## Case 99 — Jumping Base (Plastics BB): Spring-Launched Vertical Impulse, Tip Compliance Instability, and the Hasbro Tip-on-Bearing Exception
+
+> **Stock combo (Jumping Base (set)):** AR: Tiger Defenser · WD: Eight Wide · BB: Jumping Base
 
 Jumping Base (~9.8 g body, plus 0.18–0.23 g tip) is a Plastics-era Blade Base whose primary gimmick is a large internal spring that launches the beyblade vertically when compressed by a hit or stadium contact. A secondary gimmick provides three interchangeable tips — Sharp (0.18 g), Ball (0.22 g), Flat (0.23 g) — each with different friction profiles. The spring is not merely cosmetic: it introduces a compliance layer between tip and body that dramatically reduces tilt-restoration stiffness and makes all three tip configurations less stable than their rigid-base equivalents. The one genuine finding is that Hasbro tips fit the Neo SG Double Bearing shaft, where the Ball tip produces near-bearing-level stamina — competitive with Customize Grip Base in same-spin for a fundamentally different reason.
 
@@ -4066,6 +4126,9 @@ function bearingTipOrbit(
 ---
 
 ## Case 100 — Left Spin Gear Shells (Regular): Mass Budget Minimisation, Wobble Suppression Without Gear Action, and the Neo Incompatibility Cost
+
+> **Stock combo (Dragoon S (Storm)):** AR: Reverse Dragon · WD: Eight Wide · SG: Left SG · BB: Storm Grip Base
+> **Stock combo (Dragoon F (Fantom)):** AR: Dual Dragon · WD: Eight Wide · SG: Left SG · BB: Fantom Grip Base
 
 Left Spin Gear Shells (~1.12 g each, 2.24 g pair) are the original two-piece plastic housing that routes launcher-cord energy into counterclockwise (left) spin in the Plastics-generation Spin Gear system. The sticker label — "LEFT REVERSE SPIN GEAR" with a downward-pointing blue arrow — identifies the shell as a chirality reversal device: it mirrors the ratchet engagement direction of the default right-spin shells, producing left-hand rotation from the same right-pulling launcher cord. A Metal Weight Gear (MWG, 1.12 g) is optionally seated inside; it damps wobble but provides zero gear-ratio transformation. The critical architectural fact is what this shell cannot do: it is geometrically incompatible with Four Layer System (FLS) Attack Rings and with Neo Cores, which closes off access to Double Bearing Core — the dominant stamina RC for left spin. Neo Left Spin Gear Shells exist precisely to remedy this, and that single compatibility difference defines the entire use-case boundary of the regular shells.
 
@@ -5043,6 +5106,8 @@ function hasWedgeVulnerability(isOnePiece: boolean): boolean {
 
 ## Case 103 — Reverse Dragon AR: Outward Contact Angle as a Recoil Amplifier, Left-Spin Geometry Lock, and Mold-Series Breakage Threshold
 
+> **Stock combo (Dragoon S (Storm)):** AR: Reverse Dragon · WD: Eight Wide · SG: Left SG · BB: Storm Grip Base
+
 Reverse Dragon (3.5 g Takara / 4.0 g Hasbro) is a Left-Spin Smash AR whose three wing contact faces are angled α ≈ 22° more radially outward than the ideal tangential geometry — the direct source of high recoil. In right-spin the blunt rear face leads, worsening the recoil-to-power ratio 3.5-fold. Three mold generations address structural fragility at the spike roots: the Takara version operates at 4.7× ABS yield stress per impact, the Hasbro standard at 2.6×, and the 2005 BBA Championship at 1.7× — approaching the dynamic fracture limit rather than exceeding it catastrophically.
 
 ### Contact Angle and Recoil Fraction
@@ -5103,6 +5168,16 @@ function rdSpikeStress(J: number, L: number, b: number, t: number): number {
 
 ## Case 104 — Eight Wide WD: Octagonal Low-Mass Wide Distribution, Rim-Edge Mold Variance, and the AR Contact-Point Exposure Niche
 
+> **Stock combo (Jumping Base (set)):** AR: Tiger Defenser · WD: Eight Wide · BB: Jumping Base
+> **Stock combo (Dragoon S (Storm)):** AR: Reverse Dragon · WD: Eight Wide · SG: Left SG · BB: Storm Grip Base
+> **Stock combo (Kids Dragoon):** AR: Upper Dragoon · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
+> **Stock combo (Galzzly):** AR: War Bear · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
+> **Stock combo (Seaborg):** AR: Whale Attacker · WD: Eight Wide · SG: Right SG · BB: Defense Grip Base
+> **Stock combo (Trygle):** AR: Triple Wing · WD: Eight Wide · SG: Right SG Spring · BB: Jumping Base Trygle
+> **Stock combo (Dragoon F (Fantom)):** AR: Dual Dragon · WD: Eight Wide · SG: Left SG · BB: Fantom Grip Base
+> **Stock combo (Master Draciel):** AR: Smash Turtle · WD: Eight Wide · SG: Right SG · BB: SG Sharp Base
+> *(+4 more stock combos — see INDEX.md)*
+
 Eight Wide (12.2 g soft-edge / 12.7 g hard-edge) achieves wide outer-radius mass distribution but carries less total mass than Ten Wide, Wide Defense, or Wide Survivor — the three WDs it ranks below on moment of inertia. Its one niche: an AR whose contact radius equals or exceeds the WD outer radius can reach the opponent's AR directly; a wider WD shields those contacts. Eight Wide's smaller outer radius restores AR-to-AR contact in such cases.
 
 ### Moment of Inertia Comparison
@@ -5155,6 +5230,8 @@ const wdExposes = (r_wd: number, r_ar: number) => r_wd <= r_ar;
 ---
 
 ## Case 105 — Storm Grip Base: Hertzian Small-Dome Standard Mode and Inverted-Tip Speed as the Definitive Low-Height Attack Platform
+
+> **Stock combo (Dragoon S (Storm)):** AR: Reverse Dragon · WD: Eight Wide · SG: Left SG · BB: Storm Grip Base
 
 Storm Grip Base (4.4 g, body height h = 10 mm) carries a small rubber dome tip (r_dome ≈ 4 mm). Two compounds: Takara hard (μ ≈ 0.90) and Hasbro/SonoKong soft (μ ≈ 1.15–1.20). Standard Mode is slower than Grip Base — the contact patch is Hertzian at ~0.51 mm radius, barely above a semi-flat tip. Tip Inversion (compatible tips reseated upside-down) expands the contact radius to ~4.5 mm (area ≈ 78× larger), placing SGB inverted in the same speed class as Defense Grip Base inverted. At 10 mm body height, SGB's AR sits below most opponent ARs, enabling Traditional Upper Attack geometry that taller bases cannot access.
 
@@ -7560,6 +7637,8 @@ function tipSpinDecay(mu: number, F_N: number, rTipM: number, I: number): number
 
 ## Case 114 — Screw Zeus SAR: Rectangular Mass Distribution, Speed-Threshold Smash, SAR-Companion Contact Geometry, and the Circle Survivor Overhang Failure Mode
 
+> **Stock combo (Zeus):** AR: Holy Despell + SAR Screw Zeus · WD: Ten Wide · SG/EG: Right CG Free Shaft · BB: First Clutch Base Zeus · CEW: Light Sharp
+
 **A dumbbell-shaped attack ring delivers elite smash only when rotation speed is high enough to overcome its own recoil, and only when the SAR companion exposes the correct face.**
 
 Screw Zeus separates its Sub Attack Ring (SAR) from the Main Attack Ring (MAR) at the AR level. The MAR provides the structural mount; the SAR carries nearly all the contact mass. At 4.4 g, the SAR is mid-tier by HMS standards, but its geometry is unusual: virtually all mass sits in two rectangular heads at opposite ends of a short crossbar, with almost nothing at intermediate radii. This is a dumbbell or barbell mass distribution.
@@ -9198,6 +9277,8 @@ function ladSpinDecay(bb: JumpingBase2, comboMassKg: number, comboIKgM2: number)
 
 ## Case 116 — Square Edge AR: Multi-Point Jagged Smash Geometry, Rotational Sliding Impulse from Non-Circular Profile, Dual-Vector Smash-Plus-Upper Attack, and Circle Survivor Defense Defeat via Reach-Matched Contact
 
+> **Stock combo (Seaborg 2):** AR: Whale Crusher · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
+
 **A near-rectangular perimeter, dense serrated teeth, and matched outer radius combine to deliver the highest raw impulse output of any plastics AR while maintaining recoil within manageable bounds — not by accident but because each geometric parameter is optimised toward the same objective.**
 
 Square Edge's top-view silhouette is approximately a rounded square with chamfered corners, approximately 60 × 60 mm, carrying a continuous ring of serrated teeth around the full perimeter. The side profile reveals a sloped upper face on each lobe and a nearly-flat contact plane at mid-height. At 6.1 g it sits in the upper tier of plastics AR mass. Critically, it is two-fold rotationally symmetric, guaranteeing identical contact geometry in both spin directions.
@@ -9480,6 +9561,8 @@ Square Edge delivers the highest raw impulse output in the plastics era through 
 ---
 
 ## Case 114 — Ten Heavy WD (16.1 g / 17.0 g Spike Lizard): Heaviest Legal Weight Disk
+
+> **Stock combo (Zeus):** AR: Holy Despell + SAR Screw Zeus · WD: Ten Wide · SG/EG: Right CG Free Shaft · BB: First Clutch Base Zeus · CEW: Light Sharp
 
 Ten Heavy is the heaviest Weight Disk legal under WBO Plastics-generation rules and the standard by which all other WDs in the format are measured. Its name is technically a misnomer — it shares the ten-spoke bolt-hole layout of the Ten-family WDs but concentrates mass in a compact octagonal ring rather than spreading it across a wide disc. This geometry is the core of its competitive character: a smaller radius than Wide Defense or Ten Wide means lower raw moment of inertia, but the extra mass more than compensates in defensive and grinding roles where gyroscopic resistance to impact force matters more than peak spin retention. The result is a WD that dominates compact defensive and upper-attack archetypes, remains competitive in Force Smash and Weight Defense, and functions acceptably even in fast-attack setups — a versatility profile no other single WD matches. The Spike Lizard Green-Plated variant adds plating mass to push the weight to approximately 17 g, and at that weight it is strictly preferred over standard copies in virtually every role.
 
@@ -9791,6 +9874,16 @@ function isPreferredOverWideDefense(role: string): boolean {
 ---
 
 ## Case 117 — SG (Full Auto Clutch Version) Shaft: Bearing-Decoupled Metal Flat Tip, Free-vs-Fixed Dual-Mode Operation, Spin-Stealing Attack Mechanics, and Customize Grip Base Rim LAD as a Top-Tier Zombie Core
+
+> **Stock combo (Kids Dragoon):** AR: Upper Dragoon · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
+> **Stock combo (Galzzly):** AR: War Bear · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
+> **Stock combo (Master Dragoon):** AR: Upper Dragoon · WD: Eight Heavy · SG: Right SG · BB: SG Flat Base
+> **Stock combo (Seaborg 2):** AR: Whale Crusher · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
+> **Stock combo (Metal Dranzer):** AR: Scissor Attacker · WD: Ten Balance · SG: Neo Right SG South · BB: SG Flat Base
+> **Stock combo (Guardian Driger):** AR: Great Tiger · WD: Eight Heavy · SG: Neo Right SG South · BB: SG Flat Base
+> **Stock combo (Orca Diver):** AR: Delta Wave · SG: Neo Right SG MW · BB: SG Flat Base
+> **Stock combo (Death Gargoyle):** AR: Genocide Circle · SG: Neo Right SG MW · BB: SG Flat Base
+> *(+2 more stock combos — see INDEX.md)*
 
 **A bearing-supported shaft carrying a flat metal tip produces two physically distinct operating modes depending on whether the shaft is locked or free, with each mode occupying a different point in the attack-stamina space — and the transition between them is controlled entirely by casing and base choice.**
 
@@ -10419,6 +10512,8 @@ function isUsableWithoutShield(ar: FlameWingAR, spinDir: "RS" | "LS"): boolean {
 
 ## Case 118 — Full Auto Clutch Base: Spring-Loaded Centrifugal Clutch Engagement, Spin-Threshold Mode Transition, Tornado Ridge Catch Geometry Failure, and Wide Survivor LAD Ranking
 
+> **Stock combo (Flash Leopard 2):** AR: Panther Head · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Metal Sharp Base
+
 **A centrifugal clutch locks the shaft at launch-speed spin, producing metal-flat aggression automatically, then releases it as spin decays past a mechanically-fixed threshold, transitioning to bearing-decoupled free spin — the intended attack-then-stamina sequence is real but the tornado ridge failure undermines the early phase the sequence depends on.**
 
 The Full Auto Clutch Base (FACB) contains the most mechanically complex gimmick of the plastics era: two spring-loaded weighted arms that translate centrifugal force into a clamping action on the SG shaft. The internal mechanism photo shows the two coil springs clearly in their tracks, the metal clutch collar at center, and the four mass pads at the arm ends. Externally, three outward fins stabilize the SG casings (preventing fin dislodgment), a stepped conical hub rises to the shaft exit, and a smooth outer rim optimized for LAD circles the base perimeter.
@@ -10682,6 +10777,8 @@ The Full Auto Clutch Base operates as a spring-calibrated spin-threshold switch:
 ---
 
 ## Case 116 — SG (Triple Change Version) Core (1.7 g): Three-Tip Friction Indexer
+
+> **Stock combo (Seaborg 2):** AR: Whale Crusher · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
 
 SG (Triple Change Version) is a Neo-format SG core whose sole distinguishing feature is a rotating tip-carrier that presents one of three tips — Sharp, Semi-Flat, or Flat — to the stadium at a time. The selector is held in each of three indexed positions by two ABS friction protrusions that press against mating detents on the tip body. This friction-indexing mechanism is the heart of the part and the source of its two most important failure modes: protrusion wear that allows the tip to shift mid-battle and rest on the boundary between two positions, and a mould-line ridge running through the centre of each tip face that causes hopping at match start until it wears flat. The core is further constrained to Flame Change Base only — incompatible with any other shell — and that base cannot accept a Heavy Metal Core, eliminating the weight-addition path available to every competitive SG-using build. The result is a part whose educational value (three distinct tip behaviours in one unit) exceeds its competitive relevance, which collapsed to near-zero once the format matured.
 
@@ -11120,6 +11217,8 @@ function staminaDeficit(
 
 ## Case 119 — SG Auto Change Base: Impact-Triggered Tip Retraction, Left-Spin Self-KO Hop Mechanics, Mass-Without-Density Penalty, and the Base Clip Mass Irrelevance
 
+> **Stock combo (Flash Leopard 2):** AR: Panther Head · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Metal Sharp Base
+
 **The heaviest plastics blade base achieves that status through large-diameter all-plastic construction rather than dense material; the impact-triggered tip gimmick is bidirectionally disruptive — in right-spin it converts the only useful mode into the worst mode, and in left-spin it ejects the beyblade from the stadium.**
 
 The SG Auto Change Base (SGACB) is visually distinctive: a large-diameter all-plastic disk (r_outer ≈ 0.037 m) with a dense bead texture around the perimeter, a stepped conical upper body, and an internal four-arm rocker mechanism connecting the tip assembly to the impact-sensitive trigger zone. At 10.8 g it is nominally the heaviest plastics base. The base clips at ~0.47 g each are the heaviest of any beyblade.
@@ -11273,6 +11372,13 @@ SGACB fails on every competitive axis simultaneously. The sharp tip produces agg
 
 ## Case 120 — Double Snake AR: Steep Contact Angle Recoil Dominance in Right-Spin, Obstructed Low-Reach Left-Spin Contact, and the Whale Attacker Comparison
 
+> **Stock combo (Flash Leopard):** AR: Panther Claw · WD: Ten Heavy · SG: Neo Right SG MW/North · BB: SG Semi-Flat Base
+> **Stock combo (Flash Leopard 2):** AR: Panther Head · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Metal Sharp Base
+> **Stock combo (Draciel V (Viper)):** AR: Ten Spike · WD: Ten Balance · SG: Neo Right SG North · BB: Viper Metal Ball Base
+> **Stock combo (Spike Lizard):** AR: Lizard Blocker · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Roller Base
+> **Stock combo (Voltaic Ape):** AR: Mountain Hammer · WD: Magne WD · SG: Neo Right SG North · SP: Defense Ring · BB: Customize Metal Sharp Base
+> **Stock combo (Draciel V2):** AR: Strike Turtle · WD: Ten Heavy · SG: Neo Right SG North · SP: Fin Tector · BB: Switch Metal Ball Base
+
 **Two swept protrusions present their leading faces at contact angles too steep to deliver meaningful smash efficiency in right-spin, and their trailing faces are geometrically obstructed or under-reach in left-spin — both failure modes trace to the same design choice of aggressive backward sweep without the reach compensation that separates functional from non-functional ARs in this geometry class.**
 
 Double Snake is a two-fold symmetric AR at 4.1 g. Each arm sweeps backward from the hub in a curved "S" profile, narrowing toward the outer tip. The top-view photo shows both protrusions curving in the same rotational direction, with multiple step features along each arm. Side profile reveals the arms are relatively thin but wide-chord, with a stepped inner edge and a smooth outer edge.
@@ -11414,6 +11520,8 @@ Double Snake fails in both spin directions through distinct but root-common fail
 ---
 
 ## Case 118 — Metal Balls (1/4" and 3/16" Steel): Rolling Contact and Point-Mass Ballast
+
+> **Stock combo (Flash Leopard 2):** AR: Panther Head · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Metal Sharp Base
 
 Metal balls appear in the Plastics generation in two functionally distinct roles: as rolling contact tips (Draciel Metal Ball Defenser) and as concentrated point-mass ballast inserts (Draciel S, Draciel F, Gaia Dragoon). The two sizes differ by the cube of their radius ratio in mass, and their physics divide cleanly between these two roles. As rolling tips, the 1/4" ball exploits Hertz contact mechanics to produce a coefficient of rolling resistance two orders of magnitude below any ABS sliding tip — an extreme stamina mechanism. As ballast, both sizes contribute moment of inertia and gyroscopic mass proportional to m·r² at their cavity radius, a simple but meaningful addition when placed at the outer zone of a base or WD. The 1/4" ball's mass is verified to five significant figures against steel density; the 3/16" mass implies a slight density elevation consistent with chrome plating on the surface.
 
@@ -11676,6 +11784,12 @@ function hertzkContactPressure(
 
 ## Case 121 — Eight Balance WD: Octagonal Polygon Mass Distribution, Perimeter-Radius Deficit vs Ten Balance, and the Plated-Weight Edge Case
 
+> **Stock combo (Metal Dranzer):** AR: Scissor Attacker · WD: Ten Balance · SG: Neo Right SG South · BB: SG Flat Base
+> **Stock combo (Driger V (Vulcan)):** AR: Sonic Tiger · WD: Ten Balance · SG: Neo Right SG South · BB: SG Metal Flat Base
+> **Stock combo (Wolborg 03 (Uriel)):** AR: Cross Horn · WD: Revolver Attack · SG: Neo Right SG South · BB: SG Grip Base
+> **Stock combo (Guardian Driger):** AR: Great Tiger · WD: Eight Heavy · SG: Neo Right SG South · BB: SG Flat Base
+> **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right SG South · BB: SG Metal Flat Base GDV
+
 **An octagonal perimeter distributes mass less uniformly around the circumference than a decagonal or higher-polygon WD at equal outer radius, and the resulting moment-of-inertia deficit compounds with the mass shortfall relative to Ten Balance — making Eight Balance redundant in every context where Ten Balance is available.**
 
 Eight Balance is a zinc die-cast WD with eight flat facets and four mounting holes arranged through a central hub ring. At 14.1 g it sits mid-tier for plastics-era WDs. The name "Balance" denotes the intended distribution type (intermediate between Wide and Heavy), and "Eight" denotes the side count.
@@ -11778,6 +11892,8 @@ Eight Balance's octagonal geometry places its mass at r_eff = 0.9745×r vs. Ten 
 ---
 
 ## Case 122 — SG (Auto Change Version) Core: Height-Reduced SGACB-Only Core, Minimum-Mass SG Assembly Theory, and the 0.05 g Observability Threshold
+
+> **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right SG South · BB: SG Metal Flat Base GDV
 
 **The lightest SG core by a 0.05 g margin enables the theoretically minimum-mass SG assembly for Spiral Change Base zombie optimization, but the mass difference is positioned at the spin axis — where its moment-of-inertia contribution is indistinguishable from zero.**
 
@@ -11906,6 +12022,8 @@ The SG (Auto Change Version) Core's 4.2 mm height (vs. ~5.5 mm for regular cores
 ---
 
 ## Case 123 — Upper Wolf AR: Steeper Slope Angle vs Triple Wing, Three-Fold Symmetric Recoil Penalty, Left-Spin Wolf-Head Trailing Contact, and Gold Plastic Syndrome Fracture Threshold
+
+> **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right SG South · BB: SG Metal Flat Base GDV
 
 **A three-wing design with contact faces at steeper angles than Triple Wing delivers 56% of its smash efficiency per unit self-recoil in right-spin, and the left-spin trailing face geometry presents similar recoil-heavy characteristics — in both directions the AR is usable but consistently outperformed by the reference it resembles.**
 

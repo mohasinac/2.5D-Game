@@ -333,17 +333,51 @@ export function TouchControlsGBLayout({ children }: TouchControlsGBLayoutProps) 
   return <TouchControlsGBLayoutInner>{children}</TouchControlsGBLayoutInner>;
 }
 
+function ToggleButton({ hidden, onClick }: { hidden: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "fixed left-1/2 -translate-x-1/2 z-[70] h-6 px-3 rounded-full bg-[rgba(20,30,50,0.85)] border border-white/20 text-white/60 text-[10px] font-bold flex items-center justify-center select-none cursor-pointer hover:bg-[rgba(40,60,100,0.9)] active:scale-95 transition-all",
+        hidden ? "bottom-3" : "bottom-[200px]",
+      )}
+      title={hidden ? "Show controls" : "Hide controls"}
+      aria-label={hidden ? "Show controls" : "Hide controls"}
+    >
+      {hidden ? "Show Controls" : "Hide Controls"}
+    </button>
+  );
+}
+
 function TouchControlsGBLayoutInner({ children }: { children?: React.ReactNode }) {
   const width = useWindowWidth();
   const isPortrait = width < 600;
+  const [hidden, setHidden] = useState(false);
 
   if (!children) {
-    // Standalone overlay mode (backwards-compat drop-in for old TouchControls usage)
-    return isPortrait ? <PortraitOverlay /> : <LandscapeOverlay />;
+    return (
+      <>
+        <ToggleButton hidden={hidden} onClick={() => setHidden(h => !h)} />
+        {!hidden && (isPortrait ? <PortraitOverlay /> : <LandscapeOverlay />)}
+      </>
+    );
   }
 
-  // Canvas-wrapping mode
-  return isPortrait
-    ? <PortraitWithChildren>{children}</PortraitWithChildren>
-    : <LandscapeWithChildren>{children}</LandscapeWithChildren>;
+  if (hidden) {
+    return (
+      <>
+        <ToggleButton hidden={hidden} onClick={() => setHidden(h => !h)} />
+        {children}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <ToggleButton hidden={hidden} onClick={() => setHidden(h => !h)} />
+      {isPortrait
+        ? <PortraitWithChildren>{children}</PortraitWithChildren>
+        : <LandscapeWithChildren>{children}</LandscapeWithChildren>}
+    </>
+  );
 }

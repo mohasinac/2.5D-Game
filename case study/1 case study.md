@@ -2513,6 +2513,8 @@ EWD inverts AS: the **outer disc is fixed** (WD shape, wide stability), but the 
 
 ## Case 17 — Cross-Component Coupled Mechanics: Diablo + X Drive
 
+> **Stock combo (Diablo Nemesis X:D):** 4D Clear Wheel: Nemesis · 4D Metal Wheel: Diablo · Bottom: X Drive
+
 Diablo in Ultimate Balance Mode is a **three-part automatic state machine**: Metal Frame rotation → pin actuation → tip selection. No player input. No manual trigger. The system advances on its own as spin decays.
 
 ### The Full Coupling Chain
@@ -3072,6 +3074,8 @@ B:D is architecturally different from EWD's single bearing. EWD has one bearing 
 
 ## Case 19 — Active I Modulation (Jade), Track Disc Geometry (S130), Spherical Contact (RB)
 
+> **Stock combo (Jade Jupiter S130RB):** 4D Clear Wheel: Jupiter · 4D Metal Wheel: Jade · Track: S130 · Bottom: Rubber Ball
+
 ### Jade — Gravity Ball Gimmick: Spin-Dependent I + Angular Momentum Spin-Up
 
 Jade's gravity balls are a **variable moment of inertia system**. The balls shift radial position based on spin speed, and when they move inward at low spin, angular momentum conservation causes the bey to **spin up**.
@@ -3356,6 +3360,8 @@ RB's sphere shape creates a **tilt-dependent contact point shift** — as the be
 
 ## Case 20 — Wing Alignment Geometry: Impact Frequency vs Magnitude (Blitz)
 
+> **Stock combo (Blitz Unicorno 100RSF):** 4D Clear Wheel: Unicorno II · 4D Metal Wheel: Blitz · Track: 100 · Bottom: Rubber Semi-Flat
+
 Blitz establishes a principle that applies to every multi-wing Metal Wheel: **the number of contact points per revolution determines whether each hit is concentrated (few, large) or dispersed (many, small)**. The same total attack energy per second produces very different physics depending on how it is distributed.
 
 ### Wing Geometry From the Image
@@ -3530,6 +3536,8 @@ Blitz establishes a principle that applies to every multi-wing Metal Wheel: **th
 ---
 
 ## Case 21 — Three-Component Composite Wheel: Viscoelastic Damping + Staged Contact (Fusion)
+
+> **Stock combo (Fusion Hades AD145SWD):** 4D Clear Wheel: Hades · 4D Metal Wheel: Fusion · Track: AD145 · Bottom: Sharp Wide Defense
 
 Fusion is the first wheel with three separate components, one of which is rubber interdigitated with the metal bumps. The rubber layer introduces a qualitatively different energy mechanism: **viscoelastic absorption** — energy does not bounce back, it is stored and slowly released as heat. This creates a staged contact where the first contact is soft and the second (if the hit is large enough) is hard.
 
@@ -3816,6 +3824,8 @@ All tip behaviours reduce to combinations of these primitives:
 
 ## Case 16 — Metal Wheel Compliance: Partial Rotational Free-Spin (Kreis)
 
+> **Stock combo (Kreis Cygnus 145WD):** 4D Clear Wheel: Cygnus · 4D Metal Wheel: Kreis · Track: 145 · Bottom: Wide Defense
+
 All Metal Wheels / attack rings modelled so far are **rigidly coupled** to the bey's Core — they spin at exactly the same ω as the Core, and every contact point impulse goes directly into the Core. Kreis breaks this: in Defense Mode its Metal Frame can **slide ±60° relative to the Core** before hitting a hard stop.
 
 ### The Two Modes
@@ -4019,6 +4029,8 @@ function applyHitToMetalWheel(
 ---
 
 ## Case 22 — Fixed Inner-Outer Stack: SWD (Sharp Wide Defense) and the No-Bearing Contrast
+
+> **Stock combo (Fusion Hades AD145SWD):** 4D Clear Wheel: Hades · 4D Metal Wheel: Fusion · Track: AD145 · Bottom: Sharp Wide Defense
 
 SWD is the reference design for a **fixed two-layer tip** — an inner Sharp center plus a wide outer WD ring, mechanically coupled to the bey body with no free-spinning element. Comparing SWD against EWD (free-spin inner) and AS (free-spin outer) isolates the single variable of **bearing decoupling** and shows exactly what a bearing does and does not buy.
 
@@ -4269,6 +4281,8 @@ SWD is the reference design for a **fixed two-layer tip** — an inner Sharp cen
 ---
 
 ## Case 23 — Track Height as a Physics Variable: Prototype Nemesis 4D Bottom (Height 170 / 195)
+
+> **Stock combo (Beat Lynx TH170WD):** 4D Clear Wheel: Lynx · 4D Metal Wheel: Beat · Track: TH170 · Bottom: Wide Defense
 
 All previous tip cases changed the **contact surface geometry** — which layer touches the floor, how stiff or sticky it is. Prototype Nemesis introduces a different primitive: **the height of the entire tip body changes**, which is functionally equivalent to changing the spin track length. Every physics quantity that contains h_com or h_track is affected simultaneously.
 
@@ -4560,6 +4574,8 @@ h_com (height of center of mass above floor) appears in every tilt-dependent cal
 
 ## Case 24 — Energy Ring as Contact-Point Override: Gravity Destroyer (Counter / Defense Mode)
 
+> **Stock combo (Gravity Perseus AD145WD):** Clear Wheel: Perseus · Metal Wheel: Gravity · Track: AD145 · Bottom: Wide Defense
+
 All previous cases treated the Energy Ring as a **mass contribution only** — it sits above the Fusion Wheel and adds rotational inertia at its radius. Gravity Destroyer breaks this: the Energy Ring physically **covers or exposes** the Fusion Wheel's attack protrusions, making it the effective contact surface in Defense Mode. This is a new relationship: `EnergyRing mode → FusionWheelCP override`.
 
 ### What "Covering the Eyes" Means Geometrically
@@ -4826,6 +4842,8 @@ All previous cases treated the Energy Ring as a **mass contribution only** — i
 
 ## Case 25 — Energy Ring Coverage Spectrum: Destroyer Attack / Defense / Stamina
 
+> **Stock combo (Gravity Perseus AD145WD):** Clear Wheel: Perseus · Metal Wheel: Gravity · Track: AD145 · Bottom: Wide Defense
+
 The three Destroyer variants form a **continuous coverage spectrum** over the Gravity Fusion Wheel's jagged protrusions. Coverage percentage is the master variable: it determines the effective contact material (plastic or metal), the effective restitution coefficient μ, and the I contribution from the Energy Ring. This generalises the binary mode-switch of Case 24 into a design variable with three discrete points.
 
 ### The Coverage Spectrum — Top View
@@ -5032,6 +5050,8 @@ The three Destroyer variants form a **continuous coverage spectrum** over the Gr
 ---
 
 ## Case 26 — Spin Track as Active Contact Surface: Rubber 145 (R145) Wing Scraping and Sandwich Geometry
+
+> **Stock combo (Rock Giraffe R145WB):** Clear Wheel: Giraffe · Metal Wheel: Rock · Track: R145 · Bottom: Wide Ball
 
 In every prior case, the Spin Track is a **passive height spacer** — a hollow cylinder that sets how high the bey's body sits above the floor, contributing inertia but no contact geometry. R145 breaks this: its three rubber wings extend outward at track height and interact with both the stadium floor (when tilted) and attacking opponents (from below). This introduces two new collision geometries: **floor scraping** and **the sandwich**.
 
@@ -5623,6 +5643,8 @@ Twisted introduces two physics concepts at opposite ends of the design intention
 
 ## Case 29 — Jade Fusion Wheel: Dual-Element Ball Channel (Steel + Rubber)
 
+> **Stock combo (Jade Jupiter S130RB):** 4D Clear Wheel: Jupiter · 4D Metal Wheel: Jade · Track: S130 · Bottom: Rubber Ball
+
 Case 19 described the Jade gravity ball system using simple balls migrating radially. The images of the actual Jade Fusion Wheel reveal that each channel contains TWO elements, not one: a **steel ball** and a **red rubber cushion**. This changes the migration dynamics at both endpoints and the spin-up response timing.
 
 ### Dual-Element Channel Geometry
@@ -5733,6 +5755,9 @@ Case 19 described the Jade gravity ball system using simple balls migrating radi
 ---
 
 ## Case 30 — Rubber Energy Ring as Spin-Steal Interface: L-Drago II and Opposite-Spin Amplification
+
+> **Stock combo (Lightning L Drago 100HF):** Clear Wheel: L Drago · Metal Wheel: Lightning · Track: 100 · Bottom: Hole Flat
+> **Stock combo (Meteo L Drago LW105LF):** Clear Wheel: L Drago II · Metal Wheel: Meteo · Track: LW105 · Bottom: Left Flat
 
 All previous rubber cases (Fusion Case 21, RF/RB tips) placed rubber at the **tip** or **outer wheel body**. L-Drago II places rubber directly on the **Energy Ring contact surface** at attack-ring height. The physical mechanism is the same — viscoelastic friction — but the contact geometry is at the AR level, not the floor. The key new physics: the **spin-direction of the two beys multiplies the relative contact velocity**, making opposite-spin matchups qualitatively more effective than same-spin by a factor that grows with spin speed.
 
@@ -5939,6 +5964,8 @@ All previous rubber cases (Fusion Case 21, RF/RB tips) placed rubber at the **ti
 
 ## Case 31 — L-Drago Energy Ring Variants: Rubber as the Entire Mechanism (Rush + Assault Falsification)
 
+> **Stock combo (Lightning L Drago 100HF):** Clear Wheel: L Drago · Metal Wheel: Lightning · Track: 100 · Bottom: Hole Flat
+
 L-Drago Rush (red/gold, plastic) and L-Drago Assault (blue, plastic) are both mode-change Energy Rings for the Meteo Fusion Wheel that lack rubber entirely. They establish a **control condition** that proves rubber is the whole mechanism, not the mode geometry.
 
 ### The Three-Variant Comparison
@@ -6032,6 +6059,8 @@ L-Drago Rush (red/gold, plastic) and L-Drago Assault (blue, plastic) are both mo
 ---
 
 ## Case 32 — Fusion Wheel + Energy Ring as a Composite Contact System: Meteo
+
+> **Stock combo (Meteo L Drago LW105LF):** Clear Wheel: L Drago II · Metal Wheel: Meteo · Track: LW105 · Bottom: Left Flat
 
 Every previous Fusion Wheel was self-contained — the wheel body alone defined the contact geometry, and the Energy Ring sat on top as a mass contribution. Meteo breaks this: it is a **small wheel whose contact zone is incomplete without the Energy Ring**. The jaw/claw protrusions of Meteo and the dragon-head protrusions of L-Drago II interleave to form the full contact profile. Mode change selects which Meteo protrusion type is covered by which Energy Ring element.
 
@@ -6653,6 +6682,9 @@ Metal Flat introduces the **metal friction paradox**: a metal tip that has *more
 
 ## Case 35 — Claw 145 (C145): Centrifugal Wing Extension and Impact-Buffered Defense
 
+> **Stock combo (Flame Sagittario C145S):** Clear Wheel: Sagittario · Metal Wheel: Flame · Track: C145 · Bottom: Sharp
+> **Stock combo (Archer Gryph C145S):** Chrome Wheel(s): Gryph · Crystal Wheel: Archer · Track: C145 · Bottom: Sharp
+
 Claw 145 introduces a third free-moving track element after C145 (Case 29 gravity balls) and Kreis (Case 16 partial free-spin frame): **centrifugal wing extension**. The wings are not spring-loaded or rubber-cushioned — they extend purely because spin provides centrifugal force, and they fold back when spin drops or they absorb an impact. This is a one-way centrifugal latch with an impact-release mechanism.
 
 ### Wing Geometry — Three Free-Pivoting Arms
@@ -7077,6 +7109,8 @@ Spike (S) is the anti-stamina tip: a single sharp point with the smallest possib
 
 ## Case 37 — Wing 105 (W105): Aerodynamic Fin Track and Why Airflow Effects Are Negligible at Beyblade Scale
 
+> **Stock combo (Galaxy Pegasis W105R²F):** Clear Wheel: Pegasis II · Metal Wheel: Galaxy · Track: W105 · Bottom: R²F
+
 Wing 105 attempts to use **aerodynamic lift** (upward airflow deflection from angled fins) to supplement stamina. The images confirm its geometry: a square hub body with two swept horizontal fins (resembling delta wings) replacing the standard 105's handle-bar nubs. This case demonstrates why aerodynamic effects are negligible in Beyblade physics and reduces W105 to a **mass-distribution-only track** whose only real advantage over standard 105 is slightly higher I from the fins.
 
 ### Fin Geometry — Two Swept Delta Fins at Track Level
@@ -7275,6 +7309,8 @@ Wing 105 attempts to use **aerodynamic lift** (upward airflow deflection from an
 
 ## Case 38 — R²F (Right Rubber Flat): Directional Star Contact Geometry and Wear-In Profile Shift
 
+> **Stock combo (Galaxy Pegasis W105R²F):** Clear Wheel: Pegasis II · Metal Wheel: Galaxy · Track: W105 · Bottom: R²F
+
 R²F is visually identical to RF but its six rubber curves face **rightward** rather than leftward, giving the tip a star shape. This directional bias creates a **contact regime asymmetry**: when the bey spins CCW (left, standard), the rightward-facing curve edges present their convex face to the floor and act as edge contacts rather than face contacts. This raises effective friction per unit area and produces more aggressive movement — at the cost of stamina and controllability. Wearing the tip down shifts the star geometry toward a flat disc, changing the contact regime entirely.
 
 ### Star Geometry vs Flat Disc — Two Contact Regimes
@@ -7435,6 +7471,8 @@ R²F is visually identical to RF but its six rubber curves face **rightward** ra
 ---
 
 ## Case 39 — L-Drago Destructor: Rubber Core in a 4D Metal Wheel — Spin Absorption at the Core Level
+
+> **Stock combo (L Drago Destroy F:S):** 4D Metal Wheel: L Drago Destroy · Bottom: Final Survive
 
 All previous rubber cases placed rubber at: the tip (RF/RB), the Energy Ring (L-Drago II), the Fusion Wheel frame (Fusion Case 21), or the Spin Track wings (R145). L-Drago Destructor places rubber at the **Core** — the innermost component beneath the Metal Frame. This is a fundamentally different geometry: the rubber is NOT the contact surface. It is an **internal damping layer** that absorbs impulses AFTER they have passed through the metal contact surface and Metal Frame, before reaching the bey's spin axis.
 
@@ -8185,6 +8223,8 @@ Cases 1–42 described physics mechanics that degrade performance gradually — 
 
 ## Case 44 — Fang 4D Metal Wheel: Alternating Protrusion Width and Hollow-Face Mode Reversal
 
+> **Stock combo (Fang Leone 130W²D):** 4D Clear Wheel: Leone II · 4D Metal Wheel: Fang · Track: 130 · Bottom: Wave Wide Defense
+
 Fang has six protrusions around its circumference but they are not equal — they alternate **wide** and **narrow**, at 60° intervals. The hollow/solid face of the Metal Frame reverses between Defense and Counter Mode, which simultaneously changes the effective contact radius of EVERY protrusion and the angle of the contact normal.
 
 ### Six Alternating Protrusions — Two Distinct Impulse Magnitudes Per Revolution
@@ -8320,6 +8360,8 @@ Fang has six protrusions around its circumference but they are not equal — the
 
 ## Case 45 — Aero Core & Aero Wing (HMS): Small-Diameter Gravitational Torque and Helicopter Vortex Drag
 
+> **Stock combo (Aero Knight MS):** AR: Knight Crusher · WD/CWD: Circle Wide · RC: Aero Core · SP: Aero Ring
+
 HMS beyblades have a diameter of ~3.5 cm vs MFB's ~5.5 cm. This size reduction, combined with typically lighter overall mass, fundamentally changes the gyroscopic stability equation. Aero Core is the HMS equivalent of a tall track (like 230 from Case 23), and Aero Wing is a helicopter-blade gimmick whose drag penalty and floor scraping risk make it non-competitive.
 
 ### HMS Small-Diameter Physics — Why Gravitational Torque Dominates
@@ -8452,6 +8494,8 @@ HMS beyblades have a diameter of ~3.5 cm vs MFB's ~5.5 cm. This size reduction, 
 
 ## Case 46 — CWD Chain Attacker: Free-Spinning Weight Disk and the Self-Damage Paradox
 
+> **Stock combo (Dragoon MF):** AR: Upper Dragon · WD/CWD: CWD Chain Attacker · RC: Metal Weight Grip Core
+
 CWD Chain Attacker is a 17g weight disk with 9 large plastic spikes that spins freely on a bearing, sitting at the WD position. The free-spin is meant to allow the spikes to strike opponents continuously, but instead creates a paradox: the CPs can never deliver a full smash impulse because they are never locked to the spin axis, and the bearing coupling means the bey body loses energy to drag the free-spinning mass — more than the opponent loses from being struck.
 
 ### Why Free-Spin CPs Cannot Deliver Full Smash
@@ -8549,6 +8593,8 @@ CWD Chain Attacker is a 17g weight disk with 9 large plastic spikes that spins f
 ---
 
 ## Case 47 — Rubber Weight Core (HMS): Combined WD+RC Position, Force Smash Geometry, and Same-Spin Dependency
+
+> **Stock combo (Round Shell MS):** AR: Turtle Crusher · RC: Rubber Weight Core
 
 Rubber Weight Core occupies BOTH the WD and RC positions simultaneously — it is a weighted cylinder with a rubber outer shell and a plastic semi-flat tip. This creates three distinct physics concepts: a cylindrical rubber contact surface (different from all prior flat/spherical rubber cases), Force Smash via a diagonally-angled lower rim, and spin-direction-dependent friction (the rubber deflects hits cooperatively in same-spin but destructively in opposite-spin).
 
@@ -8703,6 +8749,8 @@ Rubber Weight Core occupies BOTH the WD and RC positions simultaneously — it i
 
 ## Case 48 — Advance Defenser (HMS): Metal Roller Contact Points and Rolling Friction
 
+> **Stock combo (Advance Guardian):** AR: Advance Defenser · WD/CWD: Circle Heavy · RC: Grip Sharp Core
+
 Advance Defenser introduces a physics primitive absent from all prior cases: **metal rollers** embedded in the AR as contact points. A roller is a cylindrical bearing that can rotate around its own axle when struck. This means the CP surface at impact can roll rather than slide — replacing sliding kinetic friction (μ_kinetic) with rolling resistance (C_rr), which is dramatically lower.
 
 ### Metal Roller Geometry
@@ -8806,6 +8854,8 @@ Advance Defenser introduces a physics primitive absent from all prior cases: **m
 ---
 
 ## Case 49 — Upper Fox (AR) + CWD Circle Attacker (WD) + Bunshin Core (RC): ABS Caul Ramp Blocking, Eccentric-Mass Wobble, and Spring-Actuated Two-Body Splitting
+
+> **Stock combo (Phantom Fox MS):** AR: Upper Fox · WD/CWD: CWD Circle Attacker · RC: Bunshin Core
 
 Three parts from Phantom Fox MS, each introducing a distinct new concept: Upper Fox's ABS Caul physically covers part of its upper-attack ramp, reducing effective slope length; CWD Circle Attacker's mass is off-center (two heavy sides), producing a static imbalance that contributes to intentional wobbling; Bunshin Core separates into two independent physics bodies under impact, each obeying its own spin and floor-contact rules.
 
@@ -9026,6 +9076,8 @@ Three parts from Phantom Fox MS, each introducing a distinct new concept: Upper 
 
 ## Case 50 — Circle Upper (HMS AR): Near-Circular Metal Frame, Full-Perimeter Upper Attack, and Mould-Dependent I
 
+> **Stock combo (Death Gargoyle MS):** AR: Circle Upper · WD/CWD: Circle Heavy · RC: Metal Change Core
+
 Circle Upper's Metal Frame is nearly a perfect circle — the outermost boundary of the AR is an unbroken ring with two large deep slopes cut into it. This near-circular shape creates a **tangential deflection dominance** property (similar to Twisted, Case 28, but for attack rather than defense), while the mould difference demonstrates that reinforcing the slope changes I, balance, and upper attack effectiveness simultaneously.
 
 ### Near-Circular Metal Frame — Tangential Deflection Dominance
@@ -9148,6 +9200,8 @@ Circle Upper's Metal Frame is nearly a perfect circle — the outermost boundary
 ---
 
 ## Case 51 — Spring Core (HMS RC): Spring-Actuated Launch Bounce, Gyroscopic Axis Discontinuity, and Tip Wander
+
+> **Stock combo (Einstein MS):** AR: Metal Spring · WD/CWD: Circle Heavy · RC: Spring Core
 
 Spring Core is a very tall RC with an internal spring that actuates once at launch, producing a single upward bounce as the bey touches the stadium floor. After the bounce, the spring has no further effect. The tall two-piece construction then introduces a **gyroscopic axis discontinuity**: the gap between the two halves of the RC causes the tip to wander off the spin axis during the match, creating a persistent low-amplitude static imbalance that grows as the joint loosens.
 
@@ -9478,6 +9532,8 @@ Hades has three wide wings with deep gaps between them. BD145 has three protrusi
 
 ## Case 54 — Defense Spike (DS): Convex Outer Ring Always-Glancing Geometry and Compound S+D Tip
 
+> **Stock combo (Hell Kerbecs BD145DS):** Clear Wheel: Kerbecs · Metal Wheel: Hell · Track: BD145 · Bottom: Defense Sharp
+
 Defense Spike is a circular tip with an outer rubber-like ring surrounding a central sharp spike. The outer ring is **convex** — it curves upward and outward from the flat base, so the contact normal at ANY impact point on the ring has a component that deflects the attacker TANGENTIALLY rather than pushing radially inward. This is the "convex ring geometry" deflection mechanism.
 
 ### Convex Ring — Always-Glancing Contact Normal
@@ -9644,6 +9700,8 @@ HFS beyblades (like Metal Driger) require physical disassembly between battles t
 
 ## Case 57 — H145 (Horn 145): Hyper-Extended Contact Point Radius Beyond Wheel Perimeter
 
+> **Stock combo (Dark Bull H145SD):** Clear Wheel: Bull · Metal Wheel: Dark · Track: H145 · Bottom: Semi Defense
+
 H145 has two horn protrusions that extend outward beyond the radius of the Fusion Wheel sitting above it. This means r_horn > r_wheel — the contact radius for hits at horn height EXCEEDS the attack ring radius. The torque arm for hits at horn height is therefore LARGER than any Fusion Wheel CP can provide.
 
 ### Hyper-Extension — r_horn > r_wheel
@@ -9712,6 +9770,9 @@ H145 has two horn protrusions that extend outward beyond the radius of the Fusio
 
 ## Case 58 — GB145 (Gyro Ball 145): Ball Migration at Track Height and Height-Denial Contact Surface
 
+> **Stock combo (Earth Virgo GB145BS):** Clear Wheel: Virgo · Metal Wheel: Earth · Track: GB145 · Bottom: Ball Sharp
+> **Stock combo (Infinity Libra GB145S):** Clear Wheel: Libra · Metal Wheel: Infinity · Track: GB145 · Bottom: Sharp
+
 GB145 places two steel balls in channels at the TRACK level (not the wheel level like Jade Case 19). The angular momentum conservation spin-up is identical (Case 19 equations apply), but the balls are heavier steel and mounted at track height — creating a **height-denial** contact surface that stops opponents from reaching the Fusion Wheel from below.
 
 ### Ball Migration at Track Height — Same Physics, Different Mass and Location
@@ -9779,6 +9840,12 @@ GB145 places two steel balls in channels at the TRACK level (not the wheel level
 
 ## Case 59 — D125 (Defense 125): Aerodynamic Ring as I-Modifier, Negligible Drag Claim
 
+> **Stock combo (Wolf D125B):** Wheel: Wolf · Track: D125 · Bottom: Ball
+> **Stock combo (Pisces D125BS):** Wheel: Pisces · Track: D125 · Bottom: Ball Sharp
+> **Stock combo (Rock Orso D125B):** Clear Wheel: Orso · Metal Wheel: Rock · Track: D125 · Bottom: Ball
+> **Stock combo (Counter Leone D125B):** Clear Wheel: Leone · Metal Wheel: Counter · Track: D125 · Bottom: Ball
+> **Stock combo (Ray Unicorno D125CS):** Clear Wheel: Unicorno · Metal Wheel: Ray · Track: D125 · Bottom: Coat Sharp
+
 D125 has a wide circular disc with an upward-angled outer lip ("Defense" ring) that was marketed as providing aerodynamic downforce. The same calculation as Case 37 (W105) applies: the aerodynamic force is negligible at Beyblade scale. D125's actual advantage is the mass of the disc ring increasing I at mid-height.
 
 ### Aerodynamic Claim — Same Calculation, Same Conclusion as Case 37
@@ -9817,6 +9884,8 @@ D125 has a wide circular disc with an upward-angled outer lip ("Defense" ring) t
 ---
 
 ## Case 60 — Coating Spike (CS): Binary Tilt-Threshold Tip Regime Switch
+
+> **Stock combo (Ray Unicorno D125CS):** Clear Wheel: Unicorno · Metal Wheel: Ray · Track: D125 · Bottom: Coat Sharp
 
 Coating Spike (CS) has a rubber flat outer ring surrounding a sharp center spike. The spike protrudes below the rubber ring base by Δh_spike, creating a **binary regime switch** at a specific tilt angle θ_switch. Unlike SF (Case 15) which has a gradual frustum-to-flat transition, CS switches from pure spike contact to pure rubber-ring contact in a step function when the tilt angle crosses the threshold.
 
@@ -9892,6 +9961,8 @@ Coating Spike (CS) has a rubber flat outer ring surrounding a sharp center spike
 
 ## Case 61 — Flash Fusion Wheel: Oval I Anisotropy and 2-Node vs 4-Node Weight Distribution
 
+> **Stock combo (Flash Sagittario 230WD):** 4D Clear Wheel: Sagittario II · 4D Metal Wheel: Flash · Track: 230 · Bottom: Wide Defense
+
 Flash has two oval protruding heads. The oval shape, unlike circular protrusions, creates **anisotropic moment of inertia** — I is higher along the oval's major axis and lower perpendicular. Mode change rotates the Metal Frame 90°, switching from a 2-node weight distribution (both ovals on the same diameter = bilateral symmetry) to a 4-node distribution (ovals offset 90°, equivalent to quadrilateral symmetry).
 
 ### Oval I Anisotropy — Major vs Minor Axis
@@ -9960,6 +10031,10 @@ Flash has two oval protruding heads. The oval shape, unlike circular protrusions
 ---
 
 ## Case 62 — 230 Track: Extreme h/r Ratio, Structural Ribs, Height Denial, and Tall-Attack Weakness
+
+> **Stock combo (Flame Byxis 230WD):** Clear Wheel: Byxis · Metal Wheel: Flame · Track: 230 · Bottom: Wide Defense
+> **Stock combo (Duo Uranus 230WD):** 4D Clear Wheel: Uranus · 4D Metal Wheel: Duo · Track: 230 · Bottom: Wide Defense
+> **Stock combo (Flash Sagittario 230WD):** 4D Clear Wheel: Sagittario II · 4D Metal Wheel: Flash · Track: 230 · Bottom: Wide Defense
 
 230 is the tallest Spin Track in MFB at 23mm, with six structural ribs that prevent flex under impact. Its round smooth profile generates only glancing contact normals. At h/r ≈ 0.836, it approaches the instability threshold for HMS-scale beys (Case 45). Its primary function is height denial — most attackers cannot reach the Fusion Wheel above — but tall opposite-spin Attack types exploit the lower-hit geometry (Case 10) to produce an unavoidable counter-strike setup.
 
@@ -10186,6 +10261,9 @@ Wide Defense has a wide flat disc surrounding a central sharp-tip protrusion —
 
 ## Case 64 — Triple Roller 145 (TR145): Life After Death via Rolling Resistance
 
+> **Stock combo (Divine Chimera TR145FB):** Clear Wheel: Chimera · Metal Wheel: Divine · Track: TR145 · Bottom: Flat Ball
+> **Stock combo (Divine/Hell Crown TR145D / 130FB):** 4D Clear Wheel: Crown · 4D Metal Wheel: Divine/Hell · Track: TR145 / 130 · Bottom: Defense / Flat Ball
+
 TR145 has three roller balls embedded in its wing tips. When a bey has spun out (θ = 90°, lying on its side), the rollers contact the floor and provide rolling resistance instead of sliding friction — allowing the bey to **translate along the floor** before exiting the arena. This is the Life After Death (LAD) mechanic.
 
 ### LAD Physics — Rolling vs Sliding When Toppled
@@ -10265,6 +10343,8 @@ TR145 has three roller balls embedded in its wing tips. When a bey has spun out 
 
 ## Case 65 — Wave Wide Defense (W²D): CS-Analog Flat+Spike Compound Tip, Spike Wear Transition, and LAD Improvement
 
+> **Stock combo (Fang Leone 130W²D):** 4D Clear Wheel: Leone II · 4D Metal Wheel: Fang · Track: 130 · Bottom: Wave Wide Defense
+
 W²D is a flat plastic disc with a center spike — the same binary regime switch as CS (Case 60) but with a plastic disc instead of a rubber ring. θ_switch = arctan(h_spike / r_disc_inner). As the spike wears, θ_switch decreases, making the disc activate at smaller tilts → the tip progressively becomes more aggressive. The flat disc also improves LAD by providing continuous floor contact when toppled.
 
 ### W²D vs WD — Spike Protrusion Replaces Sharp Inner Tip
@@ -10328,6 +10408,8 @@ W²D is a flat plastic disc with a center spike — the same binary regime switc
 ---
 
 ## Case 66 — Rubber Defense Flat (RDF): Three-Regime Tip with Center Protuberance, Rubber Body, and Plastic Encasing Rim
+
+> **Stock combo (Death Quetzalcoatl 125RDF):** 4D Clear Wheel: Quetzalcoatl · 4D Metal Wheel: Death · Track: 125 · Bottom: Rubber Defense Flat
 
 RDF has three distinct tilt-dependent contact regimes: (1) center protuberance like a spike → near-stationary at upright; (2) rubber flat main body → CS-style balanced behavior; (3) outer plastic encasing rim → banking/aggressive behavior at high tilt. The rubber sits flush inside the plastic at a defined height, so the regime boundaries are defined by tilt geometry exactly like CS (Case 60) but with three layers instead of two.
 
@@ -10433,6 +10515,8 @@ RDF has three distinct tilt-dependent contact regimes: (1) center protuberance l
 ---
 
 ## Case 67 — Duo Fusion Wheel: Deliberate Static Imbalance as Attack Mechanism (Inverse of Twisted)
+
+> **Stock combo (Duo Uranus 230WD):** 4D Clear Wheel: Uranus · 4D Metal Wheel: Duo · Track: 230 · Bottom: Wide Defense
 
 Duo has a Metal Frame that can be rotated 90° relative to the Core, switching between Stamina Mode (4-fold symmetric → isotropic I, zero imbalance) and Attack Mode (large static imbalance → F_imb = m×d×ω² → eccentric orbital attack coverage). Unlike Twisted (Case 28) where static imbalance is an unintended defect, Duo deliberately CREATES imbalance in Attack Mode as its attack strategy. Mode change requires disassembly (Category 4 from Case 56).
 
@@ -10599,6 +10683,8 @@ Duo has a Metal Frame that can be rotated 90° relative to the Core, switching b
 
 ## Case 74 — Spring Core RC (HMS): Tall CoM Height as Precession-Rate Advantage in Same-Spin Stamina
 
+> **Stock combo (Einstein MS):** AR: Metal Spring · WD/CWD: Circle Heavy · RC: Spring Core
+
 Spring Core is a tall (~20 mm body) HMS Running Core weighing ~2 g. It has a semi-flat ABS tip, a visible coil spring inside the body that compresses on launch contact, and is otherwise mechanically simple. Its competitive niche — best same-spin stamina RC in HMS — comes entirely from its height, not the spring. This case traces why body height directly governs late-battle precession rate and thus determines who wins a spin-out race.
 
 ### Spring Gimmick: Launch-Only, Irrelevant After
@@ -10731,6 +10817,13 @@ In opposite spin, the contact geometry reverses — instead of grazing under the
 
 ## Case 68 — Hole Flat (HF): Annular Contact Reduces Pivot Friction, Increases Stamina vs Full Flat
 
+> **Stock combo (Capricorne 100HF):** Wheel: Capricorne · Track: 100 · Bottom: Hole Flat
+> **Stock combo (Wind Aquario 100HF/S):** Clear Wheel: Aquario · Metal Wheel: Wind (Light) · Track: 100 · Bottom: Hole Flat / Sharp
+> **Stock combo (Lightning L Drago 100HF):** Clear Wheel: L Drago · Metal Wheel: Lightning · Track: 100 · Bottom: Hole Flat
+> **Stock combo (Cyber Pegasis 100HF):** Clear Wheel: Pegasis · Metal Wheel: Cyber · Track: 100 · Bottom: Hole Flat
+> **Stock combo (Thermal Lacerta WA130HF):** Clear Wheel: Lacerta · Metal Wheel: Thermal · Track: WA130 · Bottom: Hole Flat
+> **Stock combo (Gryph Girago WA130HF):** Chrome Wheel(s): Girago + Gryph · Track: WA130 · Bottom: Hole Flat
+
 Hole Flat is identical to Flat except the centre of the tip is hollow. The contact patch is a ring, not a solid disc. This changes the friction geometry and gyroscopic stability in two ways.
 
 ### Contact Patch Geometry
@@ -10808,6 +10901,9 @@ The hole widens as the plastic wears, eventually causing the inner radius to gro
 ---
 
 ## Case 69 — Wing Attack 130 (WA130): Free-Spinning Wing Scrape as Spin-Loss Mechanic
+
+> **Stock combo (Thermal Lacerta WA130HF):** Clear Wheel: Lacerta · Metal Wheel: Thermal · Track: WA130 · Bottom: Hole Flat
+> **Stock combo (Gryph Girago WA130HF):** Chrome Wheel(s): Girago + Gryph · Track: WA130 · Bottom: Hole Flat
 
 WA130 is a 130 mm-height spin track with two aerofoil-shaped wing panels that rotate freely around the track axle. The wings themselves are not physics bodies — they don't transmit force to the main beyblade body. The hazard is geometric: at low tilt angles or when the bey dips, the wing tips scrape the stadium floor.
 

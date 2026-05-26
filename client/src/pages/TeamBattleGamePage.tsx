@@ -14,6 +14,7 @@ import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
 import { BeyLinkHijackHUD } from "@/components/game/BeyLinkHijackHUD";
 import { CameraControls } from "@/components/game/CameraControls";
+import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { LoadingProgress } from "@/components/LoadingProgress";
 import type { ServerBeyblade } from "@/types/game";
 
@@ -190,6 +191,7 @@ export function TeamBattleGamePage() {
           Switched to {possessionMsg}
         </div>
       )}
+      <TouchControlsGBLayout />
     </div>
   );
 }

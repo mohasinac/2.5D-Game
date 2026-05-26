@@ -16,6 +16,7 @@ import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
+import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 
 // ─── Physics constants ────────────────────────────────────────────────────────
 
@@ -74,7 +75,7 @@ export function TryoutGamePage() {
   type Phase = "countdown" | "launching" | "playing";
   const [phase, setPhase] = useState<Phase>("countdown");
   const [countdownSecs, setCountdownSecs] = useState(3);
-  const [launchTimer, setLaunchTimer] = useState(5);
+  const [launchTimer, setLaunchTimer] = useState(10);
   const [localLaunch, setLocalLaunch] = useState({ tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false });
   const phaseRef = useRef<Phase>("countdown");
   const launchRef = useRef({ tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false, chargeStartMs: 0, chargeTick: 0 });
@@ -279,7 +280,7 @@ export function TryoutGamePage() {
       prevTs = ts;
       const lr = launchRef.current;
       const elapsed = (ts - startMs) / 1000;
-      const remaining = Math.max(0, 5 - elapsed);
+      const remaining = Math.max(0, 10 - elapsed);
       setLaunchTimer(remaining);
 
       if (!lr.launched) {
@@ -444,7 +445,7 @@ export function TryoutGamePage() {
     launchRef.current = { tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false, chargeStartMs: 0, chargeTick: 0 };
     setLocalLaunch({ tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false });
     setCountdownSecs(3);
-    setLaunchTimer(5);
+    setLaunchTimer(10);
     phaseRef.current = "countdown";
     setPhase("countdown");
   }, []);
@@ -553,6 +554,7 @@ export function TryoutGamePage() {
           </div>
         </div>
       )}
+      <TouchControlsGBLayout />
     </div>
   );
 }

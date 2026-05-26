@@ -78,6 +78,8 @@ Every numeric value in new cases must carry one of these tags:
 
 ## Case 189 — Eight Spiker Attack Ring: Eight-Contact Symmetry as a Dead-Zone Eliminator, Why Low Recoil Defines the LS Benchmark Despite Lower Peak Power, and the RS Failure Mode
 
+> **Stock combo (Dragoon G (Galaxy)):** AR: Eight Spiker · WD: Ten Wide · SG/EG: Left EG MSF · BB: First Clutch Base DG
+
 Eight Spiker is 4.3 g [FACT] with 8-fold rotational symmetry — the highest contact-point count of any competitive LS smash AR in the library. Each contact point is an angled smash face with serrated spike lines along its leading edge. The serrations add Spike Attack (concentrated normal force at ridge tips) to a base smash face geometry. Contact frequency is the highest achievable at any given spin rate. Power per contact is lower than the best LS smash ARs because the 8-fold division forces each contact face to occupy a smaller arc and extend to a shorter radius than a 3- or 4-fold design. The combination of near-zero dead zones and low recoil per contact produces the consistency that makes Eight Spiker the LS smash benchmark — consistent, reliable, and safe on SG Metal Flat Base (Gaia Dragoon V Version). RS provides only recoil — the contact geometry mirrors to the wrong direction.
 
 ---
@@ -255,6 +257,8 @@ function eightSpikerTotalImpulsePerSecond(J_per_contact: number, omega: number):
 ---
 
 ## Case 190 — Left Engine Gear (Metal Semi-Flat): Why a Non-Bevelled Flat Tip Fails the Aggressive Attack Role, Why the Engine Gear Burst Produces Net-Negative Value at This Friction Level, and Why Left Spin Removes Every Compensating Strategy
+
+> **Stock combo (Dragoon G (Galaxy)):** AR: Eight Spiker · WD: Ten Wide · SG/EG: Left EG MSF · BB: First Clutch Base DG
 
 Left Engine Gear (Metal Semi-Flat) is 10.9 g — a heavy integrated EG unit. The tip is metal with a flat contact face and no bevel — functionally a small flat tip rather than a true semi-flat. The EG spring fires at some point during the match depending on trigger conditions. At this tip geometry and friction level, the burst adds speed the tip cannot convert to aggressive directional movement, typically breaking a flower pattern or inducing self-KO. Unwound, the tip produces moderate movement but no meaningful attack aggression. Left Spin is the compounding factor: the library of LS ARs capable of effective attack at EG base height is thin, there are no LS overhanging ARs to cover height vulnerability, and there is no Final Clutch base in LS that can deliver a reliable contact at this height. Every structural liability reinforces every other.
 
@@ -571,6 +575,8 @@ function ladRadiusAdvantage(r_normal_mm: number, r_eg_mm: number): number {
 ---
 
 ## Case 192 — Triple Tiger Attack Ring · 6.3 g
+
+> **Stock combo (Driger G (Gatling)):** AR: Triple Tiger · WD: Ten Balance · SG/EG: Right EG MSF · BB: First Clutch Base Driger G
 **Thesis:** Contact faces that follow the rotational arc eliminate recoil in RS by aligning the contact normal radially outward, while LS inverts the same geometry into high-φ pointed edges producing Hyper Aggressive output.
 
 Triple Tiger is a 3-fold AR at 6.3 g with pronounced overhanging heads that extend below the plane of the WD. The RS faces are swept backward along the direction of rotation so that each face is nearly tangential to the circular path — a configuration that concentrates impulse radially while minimising the axial bounce component called recoil. The LS side presents the thick rearward edges of those same heads as leading contact points: these are high-angle, concentrated features that produce the opposite behaviour — maximum recoil per hit with high smash potential once the recoil is managed. The overhang depth creates a separate functional axis: it lowers the effective contact height relative to the WD plane, compensating for tall bases without changing any other physics.
@@ -770,6 +776,10 @@ function wdLaunchSpeedRatio(I_wd: number, I_ws: number): number {
 ---
 
 ## Case 193 — Right Engine Gear (Metal Semi-Flat) · 11.0 g
+
+> **Stock combo (Driger G (Gatling)):** AR: Triple Tiger · WD: Ten Balance · SG/EG: Right EG MSF · BB: First Clutch Base Driger G
+> **Stock combo (Metal Driger):** AR: Cross Spiker · WD: Ten Heavy · SG/EG: Right SG HMC / Right EG MSF · BB: First Clutch Base Metal Driger
+> **Stock combo (Dranzer G (Gigus)):** AR: Wing Survivor · WD: Ten Balance · SG/EG: Right EG MSF · BB: Final Clutch Base Dranzer G
 **Thesis:** An unbevelled flat tip mislabelled semi-flat, inside a Final Clutch chassis too tall to exploit it offensively — saved only by RS access to overhanging ARs and best used unwound.
 
 Right Engine Gear (Metal Semi-Flat) is the RS counterpart to Case 190's LS variant. It weighs 11.0 g (vs 10.9 g LS), shares the same EG housing height liability, and contains a Final Clutch mechanism rather than the First Clutch found in most dedicated EG blade bases. The tip is a small flat metal disk with no bevelled outer edge — a geometry that behaves as a constant-radius flat rather than the variable-radius contact that defines a true semi-flat. Moderate movement results but the combination never achieves the aggression of Metal Flat or the stability of a ball/sharp tip. The RS spin direction is the unit's single differentiating advantage: it unlocks overhanging RS ARs (most notably Triple Tiger) that compensate for the EG height penalty better than anything available to the LS variant.
@@ -961,6 +971,8 @@ function burstSpinRecoveryFraction(
 ---
 
 ## Case 194 — Auto Change Base · 8.5 g
+
+> **Stock combo (Dranzer Auto Change Balancer):** AR: Wing Cutter · WD: Balance · BB: Auto Change Base
 **Thesis:** A spring-latched tip mechanism that spends its one attack-mode window on the very hit that triggers the change — converting a tolerable flat-tip attack base into a limited LAD chassis at the worst possible moment.
 
 Auto Change Base (8.5 g) contains a dual-tip assembly: a wide flat disk mounted on a spring-loaded plunger, seated above a fixed sharp tip. At rest the plunger holds the flat tip down as the contact surface. When the AR receives a lateral impact above a force threshold the plunger compresses, the flat tip retracts into the housing, and the sharp tip beneath engages the stadium floor. The transition is mechanically latched — the base does not return to flat mode during the same battle. The consequence is that the first meaningful attack event both delivers the flat-tip smash and permanently removes the flat tip from play. Every subsequent contact happens in sharp mode. The base is 8.5 g, heavier than most dedicated attack bases (~5.5–6.5 g), and the tip geometry in each mode is not exceptional — the attack window is narrow by design, not compensated by mass distribution or LAD quality.
@@ -1313,6 +1325,8 @@ function maxOrbitTilt(h_clearance_mm: number, r_disk_mm: number): number {
 ---
 
 ## Case 196 — Double Horn Attack Ring · 5.5 g
+
+> **Stock combo (Rock Bison):** AR: Double Horn · WD: Ten Heavy · SG/EG: Right EG Circle Defenser · BB: Normal Base Rock Bison
 **Thesis:** Geometrically symmetric RS/LS performance locks both directions into the same blunt-corner contact mode — heavy recoil with minor inconsistent upper attack, outclassed by any AR that achieves comparable smash with better face geometry.
 
 Double Horn is a 5.5 g AR with a 3-fold geometry described as Cross Dranzer mirrored: where Cross Dranzer presents its sloped faces toward the leading contact direction, Double Horn reverses those slopes so the leading geometry is an obstructed, steep-sided horn corner rather than a ramp. The consequence is that the intended secondary contact geometry (the slope — which would provide destabilisation and upper attack) is behind the primary geometry and rarely engaged directly. The thick horn corners become the de facto contact points in both spin directions because the slopes are shielded by the horn mass in front of them. Symmetry between RS and LS is near-perfect: neither direction has meaningful geometric advantage, which also means neither direction has a configuration that escapes the heavy recoil inherent to the thick-corner contact mode.
@@ -1468,6 +1482,9 @@ function smashRecoilComparison(
 ---
 
 ## Case 197 — Right Engine Gear (Circle Defenser / Mystery Cutter) · 6.9 g
+
+> **Stock combo (Rock Bison):** AR: Double Horn · WD: Ten Heavy · SG/EG: Right EG Circle Defenser · BB: Normal Base Rock Bison
+> **Stock combo (Desert Sphinxer):** AR: Ark Pyramid · WD: Ten Wide · SG/EG: Right EG Mystery Cutter · BB: Final Clutch Base Desert Sphinxer
 **Thesis:** The tall-slot EG body's primary value is elevation [CONFIRMED] — raising the WD and AR plane away from the attacker contact window — not the CEW gimmick, which delivers one useful tip (Circle Survivor) and two that serve no purpose.
 
 Right Engine Gear (Circle Defenser) and Right Engine Gear (Mystery Cutter) are the same 6.9 g unit, named by the CEW part included at retail. The EG body uses a tall CEW slot — deeper than the normal-slot EGs — requiring a lock clip to retain the CEW on the shaft during battle. The three compatible CEW tips are Circle Defenser (Case 195), Circle Survivor, and Mystery Cutter. Of these, Circle Survivor is the only competitively relevant choice; the other two carry recoil liabilities detailed in their own cases. The EG body itself confers two stackable benefits: it elevates the entire assembly by the slot height differential (~4–5 mm above a normal-slot or standard SG base), and it unlocks base pairings beyond the dedicated Normal Base (Wolborg 4) and Normal Base (Rock Bison) platforms.
@@ -1946,6 +1963,8 @@ function wb4VsRBRecoilAdvantage(J_contact: number): number {
 ---
 
 ## Case 200 — Right Engine Gear (Circle Survivor) · 6.8 g
+
+> **Stock combo (Wolborg 4):** AR: Star Wolf · WD: Ten Wide · SG/EG: Right EG Circle Survivor · BB: Normal Base Wolborg 4
 **Thesis:** A normal-slot EG body with prong-keyed Circle Survivor exclusivity — 0.1 g lighter and 4–5 mm lower than Rock Bison's tall-slot variant, trading the WD-elevation defense benefit for a lower centre of mass and marginally better gyroscopic stability.
 
 Right Engine Gear (Circle Survivor) is 6.8 g, 0.1 g lighter than Rock Bison's Right EG (Circle Defenser/Mystery Cutter) from Case 197. The CEW slot uses a prong geometry keyed specifically to Circle Survivor's mating slots — no other CEW part seats correctly, so there is no substitution decision to make. A lock clip is still present in the assembly, serving the same axial retention function as on the tall-slot unit. The slot itself is normal depth rather than tall, which means the entire EG body sits 4–5 mm lower in the assembly stack than Rock Bison's variant. This single dimensional difference drives the trade-off: the normal-slot unit has a lower centre of mass (better gyroscopic stability baseline) but places the WD and AR 4–5 mm closer to the contact height of typical attack combinations, partially re-exposing the vulnerability that the tall-slot unit's elevation removes.
@@ -2323,6 +2342,8 @@ function csLadDurationRatio(r_rim_mm: number, r_reference_mm: number): number {
 ---
 
 ## Case 202 — Star Wolf Attack Ring · 4.3 g
+
+> **Stock combo (Wolborg 4):** AR: Star Wolf · WD: Ten Wide · SG/EG: Right EG Circle Survivor · BB: Normal Base Wolborg 4
 **Thesis:** A 6-pointed star geometry delivers productive RS nose smash at acceptable φ angles, then immediately fires a recoil-only triangular protrusion on the same revolution — the paired-contact pattern dilutes net impulse and prevents competitive viability despite the nose's genuine smash capability.
 
 Star Wolf is a large 6-fold AR at 4.3 g. The star points alternate between two geometry types: "nose" protrusions (the primary RS smash contacts) and triangular wedge protrusions (which contribute only recoil in RS). Because the star has 6 points and the two types alternate, each half-revolution in RS delivers one nose contact followed immediately by one triangular contact. The nose geometry is acceptably angled — φ ≈ 30–35°, producing real smash impulse — but the triangular protrusion that fires ~60° of rotation later carries a steep face that delivers J_recoil > J_smash. The combination destabilises the orbital path after every productive contact event. In LS the geometry reverses and the triangular faces become the primary leading contacts while the noses trail uselessly — producing maximum recoil with near-zero smash.
@@ -2659,6 +2680,8 @@ function edgeInertiaVsCentral(mass_g: number, r_edge_mm: number, r_central_mm: n
 ---
 
 ## Case 204 — Wing Survivor Attack Ring · 4.7 g
+
+> **Stock combo (Dranzer G (Gigus)):** AR: Wing Survivor · WD: Ten Balance · SG/EG: Right EG MSF · BB: Final Clutch Base Dranzer G
 **Thesis:** Poorly angled RS main contacts waste most of the smash impulse as recoil, leaving Force Smash slopes as the only productive RS geometry — and even there Smash Turtle's cleaner slope design produces the same downward force with less recoil cost.
 
 Wing Survivor (4.7 g) is from Dranzer G and carries two distinct contact geometries on the RS leading side: steep-faced main contact points that produce high recoil, and recessed slope sections angled for Force Smash and Upper Attack. The main contacts dominate first contact in a typical RS exchange — their steep faces engage before the slopes are reached. Because those contacts are poorly angled (φ ≈ 55–60°), the majority of every impact is returned as recoil rather than delivered as outward smash force. The slopes behind them are better-designed but inconsistently reached; Force Smash output from the slopes is genuine but the recoil from the preceding main contact has already destabilised the orbital path before the slope can engage cleanly. LS flips the geometry and puts a shallower face forward, lowering recoil at the cost of reduced protrusion and reach — less punishment in both directions.
@@ -2828,6 +2851,8 @@ function expectedSmashRecoil(contacts: WingSurvivorContact[]): { smash: number; 
 ---
 
 ## Case 205 — Shield Hammer Attack Ring · 6.3 g
+
+> **Stock combo (Draciel G (Gravity)):** AR: Shield Hammer · WD: Ten Wide · SG/EG: Right EG Metal Ball · BB: Final Clutch Base Draciel G
 **Thesis:** A large, heavy AR caught between roles — too recoil-prone for the defensive stability that Weight Based Defense demands, yet producing too little net smash for attack — making it the best Draciel WBD option only because all competing Draciel ARs are worse.
 
 Shield Hammer (6.3 g) sits at the high end of AR mass for the plastics library and has a large outer footprint. Both properties are exactly what Weight Based Defense needs on paper: high peripheral mass adds rotational inertia and translational resistance, large diameter maximises the moment arm of that mass. In practice the contact faces are steeply angled, producing a recoil fraction that exceeds the smash fraction at every contact event. This is the defining failure: WBD depends on absorbing hits through mass without destabilising, and high-recoil geometry inverts that requirement by bouncing the combination away from each contact rather than standing firm through it. The AR hits hard enough to pose smash threat but not consistently enough to be a competitive attacker, placing it in no-man's-land between the two roles it is large and heavy enough to have occupied.
@@ -2952,6 +2977,8 @@ function wbdRecoilComparison(phi_sh: number, phi_st: number): number {
 ---
 
 ## Case 206 — Right Engine Gear (Metal Ball) · 11.5 g
+
+> **Stock combo (Draciel G (Gravity)):** AR: Shield Hammer · WD: Ten Wide · SG/EG: Right EG Metal Ball · BB: Final Clutch Base Draciel G
 **Thesis:** The heaviest EG unit in the library is undermined by a spherical tip that bypasses the tornado ridge, central-bottom mass distribution that offers no spin retention benefit, and a spring burst that actively worsens movement at both the high-RPM and low-RPM stages it fires in.
 
 Right Engine Gear (Metal Ball) is 11.5 g — heavier than a Heavy Metal Core in Neo Casings (6.2 g) and heavier than any other EG unit. The CEW is a large metal ball seated in a die-cast housing, pressed down to the stadium surface as the tip. The weight is substantial but positioned poorly: the metal ball's mass sits at the very centre-bottom of the assembly, contributing almost nothing to the moment of inertia around the spin axis. The EG spring, when it fires, delivers its burst torque at a moment that is either too early (high RPM → unwanted aggression) or too late (low RPM → instability) — the only scenario where it would help is the narrow window where the combination needs exactly the burst's spin increment to stay stable, and the release timing is not controllable with the available base options.
@@ -3682,6 +3709,8 @@ function heightTiltTorqueRatio(h_EG_mm: number, h_std_mm: number): number {
 
 ## Case 209 — Right Customize Gear (Full Auto Clutch Version) · 5.1 g: Why Replicating the Full Auto Clutch Mechanism Without Shielded Metal Ball Bearings Destroys the Free-Spin Phase, and Why Every Blade Base Pairing Either Negates the Gimmick Immediately or Produces a Worse Result Than Existing Alternatives
 
+> **Stock combo (Gigars):** AR: Gigantic Claw · WD: Ten Balance · SG/EG: Right CG FAC · BB: Final Clutch Base Gigars · CEW: Metal Change
+
 Right Customize Gear (Full Auto Clutch Version) is a standalone CG that incorporates the centrifugal lock-release mechanism of the Full Auto Clutch Base (Driger F): a clutch weight holds the tip locked during high-spin attack, then releases it to free-spin as the combination slows. The mechanism is physically closer to Full Auto Clutch Base than to any EG clutch — it uses the same centrifugal-weight trigger principle operating inside the SG body rather than via the EG release switch. At 5.1 g it sits at a typical CG weight. The critical failing is the absence of shielded metal ball bearings: Full Auto Clutch Base's competitive value derives almost entirely from its bearing quality in free-spin mode. Without them, the free-spin phase has substantially higher friction than a dedicated free-spin SG and the LAD advantage is largely eliminated. Blade base pairings compound this: First Clutch and Normal Bases release the clutch at or near launch, making the part functionally identical to Right CG (Free Shaft Version) from the first moments — which achieves the same outcome with a simpler, proven mechanism.
 
 ---
@@ -3896,6 +3925,8 @@ function bearingQualityRatio(mu_bushing: number, mu_metal_bearing: number): numb
 ---
 
 ## Case 210 — SG (MG Spring Version) · 3.8 g: Why the Jumping Gimmick Worsens Its Own Stability, Why the Shaft Geometry Is the Only Competitive Justification for the Part, and Why Spring Strength Variation Compounds Every Other Failure Mode
+
+> **Stock combo (Cyber Dragoon):** AR: Cybernetic Dragon · WD: Ten Wide · SG: Right SG MG Spring · BB: Jumping Base 2
 
 SG (MG Spring Version) is a spring-loaded jumping spin gear from Cyber Dragoon, weighing 3.8 g. Its shaft extends on floor contact, launching the combination upward — the same gimmick category as SG (Spring Version), but with a narrower, rounder tip and a longer shaft casing. The magnet embedded in the tip has no effect on standard play. As a standalone part it is outclassed by SG (Spring Version) in balance and tip profile. Its one genuine claim to competitive relevance is shaft geometry: Jumping Base 2 requires a shaft that can physically extend inside it, and only the MG Spring shaft — not the Spring Version shaft — satisfies this requirement. Outside Jumping Base 2 the part has no advantage and multiple liabilities.
 
@@ -4314,6 +4345,8 @@ function fcbLateBurstRingOutFeasibility(
 
 ## Case 212 — Dragon Saucer Attack Ring · 6.5 g total (Core AR 4.5 g): Why the Default Gear Sub-AR Cancels Its Own Core, Why Screw Zeus Unlocks One of the Most Powerful RS and LS Smash Setups, and Why Full Weight Requires a Fast, High-Traction Tip to Convert Mass Into Ring-Outs
 
+> **Stock combo (Gaia Dragoon G (Great)):** AR: Dragon Saucer · WD: Ten Heavy · SG/EG: Right EG Metal Flat · BB: Final Clutch Base GDG
+
 Dragon Saucer is a composite AR: a 4.5 g core AR with large, outward-projecting contact points, paired with a full-circle gear-shaped Sub-AR (approximately 2.0 g). In default assembly the gear Sub-AR wraps completely around the core, blocking access to the core AR's contact points and producing a combination of mutual cancellation — the core AR is too aggressive to avoid recoil when tilted, and the Sub-AR covers the faces that would otherwise deliver smash. With War Lion SAR (or any SAR that exposes the core contacts) the AR becomes a usable but recoil-heavy left-spin smash option. With Screw Zeus SAR, the geometry aligns specifically: in RS the rear heads, flat protrusions, and corner contacts combine into one of the library's best Smash Attack configurations; in LS the foreheads and spike contacts stack on Screw Zeus' second section for severe impact power — but the weight demands a very fast, high-traction tip to translate mass into ring-outs.
 
 ---
@@ -4510,6 +4543,8 @@ function minOrbitalSpeedForRingOut(
 ---
 
 ## Case 213 — Dragon Saucer Sub-AR · 1.9 g: Why a Free-Spinning Gear Ring Is the Only SAR That Meaningfully Disperses Smash Force, Why Height Dynamics Govern Every Application, and Why Gap-Resonance with Holy Despell Creates a Catastrophic Recoil Failure Mode
+
+> **Stock combo (Gaia Dragoon G (Great)):** AR: Dragon Saucer · WD: Ten Heavy · SG/EG: Right EG Metal Flat · BB: Final Clutch Base GDG
 
 Dragon Saucer SAR is a 1.9 g free-spinning gear ring with approximately 16 uniform teeth. It is the default Sub-AR on Dragon Saucer (Case 212) but functions as an independent competitive component. Its near-circular geometry means that when free-spinning it presents a consistently low effective contact angle to the core AR — incoming smash forces accelerate the SAR rotationally rather than translating to the core AR. This is the one SAR that fulfils the free-spinning sub-ring concept: most SARs are passively attached and transmit force almost fully; Dragon Saucer SAR actively absorbs it by rotation. Its competitive value is in Spin Stealing / Defensive Zombie combinations where it reduces smash susceptibility. Its failure modes are height-dependent (fails when caught under shorter opponents), tilt-promoting (problematic with already-unstable Bearing V2 shaft), and geometry-resonant (catastrophic with Holy Despell).
 
@@ -4779,6 +4814,12 @@ function gcd(a: number, b: number): number {
 
 ## Case 214 — Survivor Ring Support Part · 2.9 g: Why a Near-Complete Ring at Maximum Radius Produces the Highest I-Per-Gram of Any SP, Why Three-Fold Fin Symmetry Unlocks Perfect Alignment With Triple Tiger, and Why Defense Ring Still Wins the Left-Spin Survival Role
 
+> **Stock combo (Dark Dragoon):** AR: Dark Wing · WD: Ten Wide · SG: Neo Right SG MW · SP: Survivor Ring · BB: Customize Sharp Base
+> **Stock combo (Dark Driger):** AR: Dark Wing · WD: Ten Balance · SG: Neo Right SG MW · SP: Survivor Ring · BB: Customize Sharp Base
+> **Stock combo (Dark Draciel):** AR: Dark Wing · WD: Ten Heavy · SG: Neo Right SG MW · SP: Survivor Ring · BB: Customize Sharp Base
+> **Stock combo (Dark Dranzer):** AR: Dark Wing · WD: Ten Wide · SG: Neo Right SG MW · SP: Survivor Ring · BB: Customize Sharp Base
+> **Stock combo (Dark Gaia Dragoon):** AR: Dark Wing · WD: Ten Wide · SG: Neo Right SG MW · SP: Survivor Ring · BB: Customize Sharp Base
+
 Survivor Ring is a 2.9 g near-complete circular ring SP with three small fins at 120° spacing. The ring profile sits at the outermost practical SP radius — approximately 39 mm — placing nearly all mass at maximum distance from the axis. This produces rotational inertia that exceeds Heavy Metal Core's I contribution despite weighing less than half as much. The three fins produce a modicum of smash in right spin without the severe recoil of aggressive SPs, and productive contact points in left spin. The 120° fin spacing matches Triple Tiger AR's three-fold contact symmetry exactly, allowing the fins to extend and reinforce each Tiger contact position. For left-spin survival, Defense Ring is superior due to better LAD geometry and lower recoil; Survivor Ring's proper role is as a peripheral mass + attack SP.
 
 ---
@@ -4929,6 +4970,8 @@ function finContactWindowExpansion(
 ---
 
 ## Case 215 — Right Engine Gear (Metal Flat) · 10.9 g: Why the Wide Metal Tip Uniquely Enables the V8 Combo, How Final Clutch Burst into a Toppling Combination Creates a Post-Topple Spin-Stealing LAD Mode, and Why This Is the Only EG That Makes Competitive Use of the Gimmick
+
+> **Stock combo (Gaia Dragoon G (Great)):** AR: Dragon Saucer · WD: Ten Heavy · SG/EG: Right EG Metal Flat · BB: Final Clutch Base GDG
 
 Right Engine Gear (Metal Flat) is 10.9 g — comparable to Right EG (Metal Ball) at 11.5 g (Case 206) but with a wide, flat metal disc tip instead of a sphere. The tip approximates SG Metal Flat Base (Gaia Dragoon V Version) in contact width. Used unwound, it is effectively a top-tier Metal Flat tip on an EG body — competitive but outclassed by SG Metal Flat Base due to taller profile and inferior base options. The discovery that changed its evaluation: pairing with Final Clutch Base (Gaia Dragoon G or Dranzer G) fires the EG spring as the combination enters its toppling orbit, producing a late-game spin-stealing attack mode ("V8 Combo") that can out-spin Defensive Zombies in opposite spin — something no other RS SSA setup achieves reliably. It is the best standard Engine Gear by a wide margin and the only EG whose gimmick translates to competitive output.
 
@@ -5307,6 +5350,8 @@ function spikeContactHeightAtTilt(
 
 ## Case 217 — Wing Upper Attack Ring · 5.3 g: Why Rounded Wing Edges Only Partially Compensate for Being Wider Than Wide Survivor, How Slope and Contact Geometry Serve Different Roles in RS and LS, and Why Recoil Costs Exceed Every Offensive Gain Across All Intended Roles
 
+> **Stock combo (Flame Pegasus):** AR: Wing Upper · SG/EG: Gyro EG · BB: Engine Stopper Base · CEW: Metal Sharp
+
 Wing Upper is 5.3 g with 2-fold rotational symmetry. Two large swept wings form the outer profile; each wing has a sloped upper face for Upper Attack, rounded outer edges for reduced recoil on glancing contacts, and a stepped/serrated leading-edge contact zone for direct smash. The AR is slightly wider than Wide Survivor (~40 mm), which is a liability: the extra radius provides marginal Force Smash reach but also increases the rotational recoil torque on every contact. The rounded edges reduce the effective contact angle on glancing passes and provide the "slight compensation" for this width. In RS the slope delivers moderate Upper Attack and the contact steps deliver moderate smash, but the combined contact geometry produces enough recoil to undercut both compact and survival roles relative to Tiger Defenser. In LS the leading contact points shift to the front spikes — higher φ, higher recoil, less stability — making LS uniformly worse than RS for all use cases.
 
 ---
@@ -5523,6 +5568,8 @@ function forcesmashCoverage(
 ---
 
 ## Case 218 — Gyro Engine Gear · 21.2g
+
+> **Stock combo (Flame Pegasus):** AR: Wing Upper · SG/EG: Gyro EG · BB: Engine Stopper Base · CEW: Metal Sharp
 **Thesis:** The Gyro Engine Gear's two-bearing isolation architecture stores the system's rotational energy almost entirely in the inner metal gyro disc, decoupling it from AR-transmitted impulses; shielded bearing replacement extends spin equalization time from ~34 s (stock) to ~335 s (shielded), converting a partially-isolated platform into one that outlasts any practical battle.
 
 The Gyro Engine Gear (GEG) is the heaviest Plastic-era part at 21.2g and the first Beyblade component to implement true mechanical dual-spin. Unlike conventional Engine Gears, the GEG carries no spring mechanism; the name refers to gyroscopic precession. A large steel annular disc is mounted on two ball bearings inside the blue outer shell. The disc and shell are rotationally independent: contacts transmitted through the AR affect only the shell, while the disc continues spinning at its own rate. Thread the ripcord through the normal slot for RS launch; thread it from the opposite side via the Engine Stopper Base for LS launch. This made Dragoon G the first Beyblade with a legal LS option for conventionally RS Attack Ring combinations.
@@ -5871,6 +5918,8 @@ function perContactIsolation(
 ---
 
 ## Case 219 — Engine Stopper Base · 5.5g
+
+> **Stock combo (Flame Pegasus):** AR: Wing Upper · SG/EG: Gyro EG · BB: Engine Stopper Base · CEW: Metal Sharp
 **Thesis:** The Engine Stopper Base is a minimal two-directional ripcord housing with no Weight Disk slot; its "engine stop" gimmick is implemented entirely inside the Gyro Engine Gear, not this base, and its two protrusions deliver negligible net impulse to the gyro disc due to the GEG's bearing isolation.
 
 The Engine Stopper Base (ESB) ships exclusively with Dragoon G as the mandatory housing for the Gyro Engine Gear. It is the lightest Plastic-era Blade Base at 5.5g. The base performs three functions: it accepts the GEG shaft, it provides a second ripcord entry channel for the LS reverse-spin launch, and it positions the CEW tip at the correct height above the arena floor. Beyond these mechanical duties the ESB has no independent physics contribution — its mass at typical r_eff adds almost no rotational inertia to the system, and the two moulded protrusions produce contact forces that are almost entirely filtered by the GEG's bearing architecture.
@@ -6081,6 +6130,8 @@ function noWDInertiaDeficit(I_WD_equivalent: number, I_ESB: number): number {
 ---
 
 ## Case 220 — CEW Metal Sharp · 3.3g
+
+> **Stock combo (Flame Pegasus):** AR: Wing Upper · SG/EG: Gyro EG · BB: Engine Stopper Base · CEW: Metal Sharp
 **Thesis:** CEW Metal Sharp's ball-dome geometry with a central metal point creates a self-centering contact patch that migrates outward with tilt angle, and a bevelled surround that acts as a tilt limiter at ~23°; these properties make it the optimal GEG pairing for CoM stability, while the higher metal-on-metal friction coefficient makes it inferior to Light Sharp for Right CG (Free Shaft Version) Zombie combinations.
 
 CEW Metal Sharp ships with Orthros G and fills the standard-height CEW slot. The tip is architecturally a metal sphere cap with a small hardened point at its apex — not a tapered cone like a true "sharp" tip, and not a flat disc. The ball-dome body is surrounded by a bevelled ring that intersects the floor only at significant tilt angles, providing a secondary contact surface that arrests toppling before it becomes irrecoverable. The four cutout wings are the mounting tabs for the CEW slot and contribute negligible rotational inertia.
@@ -6354,6 +6405,8 @@ function tipFrictionTorque(
 
 ## Case 221 — G Upper Attack Ring · 5.5 g: Why Focused Smash Geometry Doubles as Effective Traditional Upper in LS, How Recoil Compares to the LS Benchmark ARs, and Why RS Provides Nothing Useful
 
+> **Stock combo (Dragoon GT):** AR: G Upper · WD: Ten Wide · SG/EG: Left EG Turbo · BB: First Clutch Base DGT · CEW: Metal Grip
+
 G Upper is a 5.5 g Attack Ring with four contact points arranged for Left Spin. Each contact face combines a forward-angled smash surface with an upward-sloping ramp, producing both lateral impulse (Smash Attack) and vertical impulse (Upper Attack) in a single contact event. In LS the geometry is well-focused — contact angles are steep enough to deliver competitive Smash, shallow enough on the slope to convert momentum into vertical destabilisation without shedding the lateral component. The result is a dual-mode LS AR that directly echoes what Triple Wing achieves for RS: a Smash AR that is simultaneously a credible Traditional Upper AR. Recoil is marginally higher than Eight Spiker and Panther Head, which slightly reduces the destabilisation benefit of the slopes but does not meaningfully harm LS smash performance. In RS the geometry mirrors to present recoil-dominant faces with no productive offensive angle.
 
 ---
@@ -6564,6 +6617,8 @@ function contactFrequency(nContacts: number, omega_rad_s: number): number {
 ---
 
 ## Case 222 — Left Engine Gear (Turbo) · 7.0 g: Why Turbo Activation Produces Attack-Class Spin Burst, How Height and LS AR Geometry Jointly Prevent Effective Contact, and Why the Base and CEW Constraints Leave Only First Clutch as a Viable Host
+
+> **Stock combo (Dragoon GT):** AR: G Upper · WD: Ten Wide · SG/EG: Left EG Turbo · BB: First Clutch Base DGT · CEW: Metal Grip
 
 Left Engine Gear (Turbo) is a 7.0 g CEW-compatible Left Spin Engine Gear whose Turbo gimmick releases a spring-wound internal mechanism to deliver a single burst of additional angular momentum at activation. The Turbo variant stores more energy than the standard EG and releases it faster, producing a qualitatively different output — a short, violent spin surge rather than a sustained engagement window. This makes it the only Engine Gear variant with any plausible Attack use case. Two structural problems prevent competitive viability: the height penalty of any EG setup places the AR above most opponent ARs, and no Left Spin AR in the library overhangs enough to bridge that height gap during the activation window. The result is a part that possesses raw attack energy it cannot reliably deliver, constrained to First Clutch Base as its only viable host and Metal Grip as its only CEW with enough surface traction to convert the burst into useful lateral velocity.
 
@@ -6961,6 +7016,8 @@ function firstVsFinalClutchSelfKORisk(
 
 ## Case 224 — CEW Metal Semi-Flat · 3.6 g: Why Bevelled Semi-Flat Geometry Falls Between Every Useful Role, How EG Height Compounds the Tip's Limited Attack Output, and Why No Archetype Benefits from This CEW
 
+> **Stock combo (Dranzer GT):** AR: Triangle Wing · WD: Ten Balance · SG/EG: Right EG Reverse · BB: Final Clutch Base Dranzer GT · CEW: Metal Semi-Flat
+
 CEW Metal Semi-Flat is a 3.6 g Customize Engine Weight with a metal semi-flat tip modified by bevelled outer edges. The bevel distinguishes it from the standard EG semi-flat tip — the chamfered rim creates a contact surface that transitions between a central flat and a rounded outer edge rather than ending abruptly. This produces slightly more directional movement than a pure flat tip but substantially less than a rubber grip. The practical result is a CEW that occupies dead space between every viable role: too aggressive and inconsistent for survival and zombie archetypes that need low friction, not aggressive enough and too smooth for attack archetypes that need high friction, and too high (via EG height penalty) for defensive archetypes that need low CoM. Every archetype that could theoretically benefit from semi-flat characteristics has a better option available that does not require accepting the EG height and mechanism mass penalty.
 
 ---
@@ -7116,6 +7173,8 @@ function orbitRadiusProxy(mu: number, r_contact_m: number): number {
 ---
 
 ## Case 225 — Triangle Wing Attack Ring · 6.1 g: Why Symmetric Slope Geometry Produces Identical Upper Attack in Both Spin Directions, How Smash Component Compares Across the Upper Attack AR Family, and Why Recoil Cost Disqualifies Defense and Survival While Preserving Attack Viability
+
+> **Stock combo (Dranzer GT):** AR: Triangle Wing · WD: Ten Balance · SG/EG: Right EG Reverse · BB: Final Clutch Base Dranzer GT · CEW: Metal Semi-Flat
 
 Triangle Wing is a 6.1 g Attack Ring with three contact points, each built around an upper-attack slope of equal length and angle in both spin directions. The bilateral symmetry of each wing — the same slope geometry on the leading and trailing edge — means LS and RS performance is mechanically identical, not merely similar. This is the defining characteristic that separates Triangle Wing from asymmetric Upper ARs like Upper Dragoon. The slopes are accompanied by a smash component from the wing fronts and heads, placing Triangle Wing above Upper Dragoon in peak lateral impulse while remaining below Triple Tiger and Upper Claw in RS smash. In LS, no competitive AR combines comparable lifting power with more smash than Triangle Wing — G Upper has substantially more smash but shallower slopes that reduce vertical impulse. Recoil is higher than Upper Dragoon due to wider inter-wing gaps, under-wing geometry, and angular profile, which eliminates defensive and survival roles but does not meaningfully harm attack viability given the increased smash component compensates for contact losses.
 
@@ -7946,6 +8005,8 @@ function protrusionSelfRecoil(J_contact: number, faceAngle_deg: number): number 
 
 ## Case 228 — CEW Metal Change · 3.6 g: Why a Well-Executed Subtle Point Produces Balanced Movement But Cannot Overcome EG System Penalties, How It Sits in the CEW Offensive Hierarchy, and Why Circle Survivor Defeats It for the One Role Where It Has Real Stamina
 
+> **Stock combo (Gigars):** AR: Gigantic Claw · WD: Ten Balance · SG/EG: Right CG FAC · BB: Final Clutch Base Gigars · CEW: Metal Change
+
 CEW Metal Change is a 3.6 g Customize Engine Weight with a metal change-tip — a metal body with a subtly pointed contact geometry that produces a narrow initial contact surface transitioning to broader support at tilt. The tip is well-executed: the point is subtle enough to provide moderate friction and active movement without the instability of a flat contact, and the surrounding metal body adds tilt-limiting support. The result is genuinely balanced behaviour — not optimally aggressive nor optimally stable, but competent across both axes. This makes it a reasonable experimental CEW for testing EG setups without the CEW being the variable. Competitively, the balance works against it: Metal Semi-Flat and Right EG Metal Flat both exceed it for offensive output; Circle Survivor provides superior defense and stamina via plastic-sharp geometry with a heavier protective body; and the EG system's LAD deficit and height penalty apply regardless of how well the tip itself is designed.
 
 ---
@@ -8133,6 +8194,8 @@ function contactRadiusAtTilt(
 ---
 
 ## Case 229 — Gigantic Claw Attack Ring · 6.6 g: Why Slope Obstruction and Dead-Area Side Faces Limit RS Smash While the Upward Smash Component Elevates Traditional Upper Attack, How Storm Grip Base Tip Inversion Unlocks Top-Tier Status, and Why LS Force Smash Intent Produces Only Upward Recoil
+
+> **Stock combo (Gigars):** AR: Gigantic Claw · WD: Ten Balance · SG/EG: Right CG FAC · BB: Final Clutch Base Gigars · CEW: Metal Change
 
 Gigantic Claw is a 6.6 g Attack Ring with an aggressive profile featuring upper slopes on the top face (RS Upper Attack geometry), underside slopes (LS Force Smash intent), multiple surface protrusions, and claw-tooth contact points. The aggressive design creates a part that overshoots its intended Smash Attack role in RS — the protrusions and slope side-faces generate significant recoil and dead zones that undermine pure Smash — but the same geometry produces a strong Traditional Upper Attack output when combined with its inherent upward smash component. Storm Grip Base Tip Inversion (the technique of flipping the Storm Grip Base to expose its aggressive tip from below) enables the full force delivery of Gigantic Claw's upward smash slope at correct stadium height, converting a competitive part into a top-tier Traditional Upper Attack AR. In LS the Force Smash geometry fails entirely: the aggressive underside slope angles produce upward recoil rather than downward force smash, and dead-area side faces create inconsistency throughout.
 
@@ -8477,6 +8540,8 @@ function lateActivationEnergyFraction(
 
 ## Case 231 — CEW Light Sharp · 0.85 g: Why POM Material and Change-Shaped Tip Produce the Only Competitive CEW Configuration, How Right CG Free Shaft Bearing Support Enables Genuine LAD, and Why Right Spin Lock and Inferior LAD Ceiling Keep It Niche
 
+> **Stock combo (Zeus):** AR: Holy Despell + SAR Screw Zeus · WD: Ten Wide · SG/EG: Right CG Free Shaft · BB: First Clutch Base Zeus · CEW: Light Sharp
+
 CEW Light Sharp is a 0.85 g Customize Engine Weight made from POM (polyoxymethylene) — the same low-friction engineering plastic used in PD tips in MFB and in Neo SG (Double Bearing Version) shaft and Bearing Base Shaft. The tip profile is shallower than Metal Sharp and closer to a change-shape geometry, combining narrow initial contact with a broader outer shoulder that provides stability not available in shaft-only sharp tips. Paired with Right Customize Gear (Free Shaft Version), the POM tip and bearing-isolated shell create the only CEW combination that achieves functional LAD in competitive play — the free-spinning outer shell decouples shell friction from tip friction, and the POM point provides low-drag precession contact. The result is the only "true CEW" with competitive stamina relevance: marginally viable against certain zombie matchups, capable of occasionally KO'ing Spiral Change Base zombies that would otherwise outlast it, and constrained to a niche by Right Spin lock and by Customize Grip Base + Defense Ring Neo SG (Double Bearing Version) providing substantially superior LAD on the same zombie archetype.
 
 ---
@@ -8711,6 +8776,8 @@ function rightingTorqueAtTilt(
 
 ## Case 232 — Core Attack Ring: Holy Despell · 2.8 g: Why Triangle Protrusions Are a Structural Recoil Liability Across All Roles, How SAR Underside Gaps Create Dragon Saucer Jamming, and Why War Lion SAR Cannot Fully Shield the Protrusion Exposure
 
+> **Stock combo (Zeus):** AR: Holy Despell + SAR Screw Zeus · WD: Ten Wide · SG/EG: Right CG Free Shaft · BB: First Clutch Base Zeus · CEW: Light Sharp
+
 Holy Despell is a 2.8 g Core Attack Ring (CAR) from Zeus, featuring two triangular protrusions at ~180° spacing and a Sub-Attack Ring (SAR) slot. Its compact, near-circular body profile gives it an initially promising appearance for zombie and survival roles — low profile, symmetric, minimal sharp geometry. Two structural problems prevent competitive use in any primary role: the triangular protrusions present near-radial contact faces that produce severe recoil on any direct hit, and the SAR interface has underside gaps that allow Dragon Saucer SAR to jam rather than rotate freely. SAR selection narrows to War Lion and Twin Horn (Hasbro), which address the jamming problem but cannot cover the protrusion contact zones that tilt-state opponents inevitably hit. Holy Despell is usable in CSD configurations where the protrusions are partially shielded by the Roller Defense Ring's coverage, and marginally usable in zombie and compact builds, but outclassed in each by parts without the protrusion recoil liability.
 
 ---
@@ -8890,6 +8957,8 @@ function deadZoneFraction(protrusion_arc_deg: number, nProtrusions: number): num
 ---
 
 ## Case 233 — Sub Attack Ring: Screw Zeus · 4.4 g: Why Speed-Dependent Contact Geometry Makes It the Highest-Ceiling Smash SAR When Fixed, How SAR Pairing Determines Contact Point Exposure and Weight Distribution, and Why Inverted Slopes Create Asymmetric Self-Destabilisation in Left Spin
+
+> **Stock combo (Zeus):** AR: Holy Despell + SAR Screw Zeus · WD: Ten Wide · SG/EG: Right CG Free Shaft · BB: First Clutch Base Zeus · CEW: Light Sharp
 
 Screw Zeus is a 4.4 g Sub Attack Ring (SAR) with a near-rectangular mass distribution — weight concentrated at two opposing far ends — and aggressive mixed geometry: forehead contact points, sloped sections with corners, rear head contact points, an inverted slope designed for Force Smash in LS, and overhanging protrusions. Free-spinning, the aggressive face geometry produces severe recoil with no usable offensive output — fixing in place is mandatory. Fixed, the rectangular mass distribution combined with high contact-point density makes it the highest-ceiling Smash Attack SAR of its generation, but only with sufficient tip speed: the combination requires fast tips (SG Grip Change Base Tip, Defense Grip Base inverted) to deliver its mass into contacts hard enough to overcome the self-recoil. SAR choice determines which contact points are exposed and how evenly mass is distributed; Dragon Breaker adds the most mass and evens distribution for maximum power; Great Dragon exposes contact points well with lower mass for greater setup flexibility; Dragon Saucer is a middle-weight option with excellent contact point alignment. War Lion and War Monkey serve a separate role — locking Screw Zeus to expose its RS slopes for Traditional Upper Attack, adding nothing to pure Smash. LS setups carry an inverted-slope self-destabilisation liability that is manageable on fast bases but becomes a problem against low, heavy opponents.
 
@@ -9140,6 +9209,8 @@ function invertedSlopeVerticalRecoil(
 
 ## Case 234 — Right Customize Gear (Free Shaft Version) · 4.0 g (shells) + 2 Bearings: Why Bearing Isolation Is the Only EG Component That Achieves Competitive LAD, How CEW Choice Determines the Viable Configuration Space, and Why Alternative Shafts Produce Distinct Attack Applications
 
+> **Stock combo (Zeus):** AR: Holy Despell + SAR Screw Zeus · WD: Ten Wide · SG/EG: Right CG Free Shaft · BB: First Clutch Base Zeus · CEW: Light Sharp
+
 Right Customize Gear (Free Shaft Version) is a Right Spin EG shell assembly consisting of two casing halves (2.0 g each, 4.0 g total) housing two shielded ball bearings. The bearings mount on a free-rotating inner shaft: the inner shaft couples to the Spin Gear and rotates with the beyblade; the outer shell and mounted CEW are bearing-isolated and spin independently. This is the mechanical basis for the only competitive LAD available within the EG system — the CEW tip's friction does not oppose the beyblade's precession because the outer shell carrying the tip is decoupled. The casings are disassemblable, and external shafts can be substituted: SG (Full Auto Clutch Version) Shaft (fixed in place, aggressive metal flat) and SG (Bearing Version 2) Shaft (rubber contact against casing, intermittent high-speed burst) are the two notable non-stock applications. Both shaft substitutions are Tier 2 attack configurations. CEW Light Sharp + Normal Base (Wolborg 4 Version or Rock Bison Version) + Wide Survivor is the only competitive first-tier use. Right Spin lock and EG base LAD deficit constrain every other configuration to niche or outclassed status.
 
 ---
@@ -9350,6 +9421,8 @@ function burstAttackVelocity(
 ---
 
 ## Case 235 — Right Customize Gear (Free Shaft Version) Shaft · 0.87 g: Why Casing Compatibility Determines the Height Penalty in Each Configuration, How CEW Mounting on Non-EG Casings Creates Unavoidable Tallness, and Why the Primary Use Remains the Stock Right CG Shell
+
+> **Stock combo (Zeus):** AR: Holy Despell + SAR Screw Zeus · WD: Ten Wide · SG/EG: Right CG Free Shaft · BB: First Clutch Base Zeus · CEW: Light Sharp
 
 Right CG (Free Shaft Version) Shaft is a 0.87 g metal shaft with a plastic CEW-mounting base. It is interchangeable with SG (Bearing Version) and SG (Free Shaft Version) casings, enabling CEW mounting in non-EG base setups. In each non-stock casing configuration, the CEW must be attached after the SG is seated in the blade base — a procedural constraint that follows from the casing geometry not being designed for CEW mounting. All non-stock configurations produce a taller assembly than standard SG setups, and this height penalty is the dominant failure mode: tall combos are more easily destabilised and KO'd, negating whatever tip or LAD benefit the CEW was supposed to provide. The only competitive use is the stock pairing with Right CG Free Shaft casings and CEW Light Sharp (documented in Cases 231 and 234), which is designed to work and avoids the height problem by using the EG base height that the casings were built for.
 

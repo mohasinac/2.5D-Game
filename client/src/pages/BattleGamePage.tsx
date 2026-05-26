@@ -23,6 +23,7 @@ import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
 import { useLaunchInput } from "@/game/hooks/useLaunchInput";
+import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { Minimap } from "@/components/game/Minimap";
 import { SoundManager } from "@/game/audio/SoundManager";
 import { LoadingProgress } from "@/components/LoadingProgress";
@@ -376,7 +377,7 @@ export function BattleGamePage() {
       {/* Launch phase overlay */}
       {gameState?.status === "launching" && !gameEndData && (
         <LaunchPhase
-          launchTimer={gameState.launchTimer ?? 5}
+          launchTimer={gameState.launchTimer ?? 10}
           launchTilt={isSpectating ? 0 : launchState.tilt}
           launchPosition={isSpectating ? 0.5 : launchState.position}
           launchPower={isSpectating ? 0 : launchState.power}
@@ -758,6 +759,7 @@ export function BattleGamePage() {
           </div>
         </div>
       )}
+      <TouchControlsGBLayout />
     </div>
   );
 }

@@ -890,14 +890,32 @@ Total: **585 cases** across 10 files + 1 master reference.
 | **System Architecture** | 236–245, 354–374 |
 | **Arena/Stadium** | 545–577 |
 | **Launcher** | 578–580 |
+| **Face Bolt / Stone Face** | 42–43 |
 | **Mechanic** | 1–13, 15, 547, 555–557, 581–585 |
 | **Assembly** | 17–19, 49, 126, 237, 246–248, 533, 537, 542–544 |
+
+---
+
+### Cosmetic / Negligible-Physics Parts
+
+The following part types are **physics-negligible** — they share near-identical geometry and mass across all beyblades in their generation. The only meaningful difference is the printed motif (beast/logo artwork). In-game, a single base preset per type is sufficient; new variants are created by swapping the image asset only.
+
+| Part Type | Generation | Typical Mass | Why Negligible |
+|-----------|-----------|-------------|----------------|
+| **Face Bolt** | Gen 2 MFB (HWS, 4D) | ~1.0 g | Screw fastener + printed sticker. Identical threading and cap geometry across all HWS/4D beyblades. Only the sticker art differs. See Cases 42–43 for the minor CoM elevation effect. |
+| **Stone Face / Metal Stone Face** | Gen 2 Zero-G | ~1.0–1.5 g | Same screw-cap as Face Bolt with beast motif. Metal Stone Face adds ~0.5 g of zinc surround — still negligible vs Chrome Wheel mass. |
+| **Clear Wheel** (most) | Gen 2 MFB (HWS, 4D) | ~1–3 g | Polycarbonate ring sitting atop the Metal Wheel (25–45 g). Same basic ring geometry across nearly all CWs; only the moulded motif shape differs. Exception: a few CWs with functional geometry (iron-powder Unicorno II Case 284, asymmetric Horogium Case 278) warrant individual analysis. |
+| **Crystal Wheel** | Gen 2 Zero-G | ~1–2 g | Translucent polycarbonate ring equivalent to HWS Clear Wheel. Same negligible contribution. |
+| **Bit Chip** | Gen 1 Plastics | ~0.5 g | Decorative insert in Blade Base. No physics contribution. |
+
+> **Game preset rule:** Use one shared base preset per type. To create a new Clear Wheel / Face Bolt / Stone Face / Crystal Wheel, duplicate the base preset and change only the `motifImage` / `name` fields.
 
 ---
 
 ## Quick Search by Beyblade Name — Stock Combos
 
 > Case numbers in parentheses where that part is covered. **[M]** = part not yet analysed in any case study.
+> **[C]** = cosmetic part (see table above) — omitted from combo columns since all variants share the same physics preset.
 > For Burst lineages (Gen 3), see Part 9 above — each lineage section already documents full assemblies.
 > For BX/UX/CX (Gen 4), see Parts 7–8 above.
 
@@ -1099,6 +1117,8 @@ Total: **585 cases** across 10 files + 1 master reference.
 
 ### Gen 2 — Metal System (MFS, 4-Layer MFB)
 
+> MFS beyblades have no Face Bolt or Clear Wheel — the single Wheel serves both roles.
+
 | Beyblade | Wheel | Track | Bottom |
 |----------|-------|-------|--------|
 | Pegasis 105F | Pegasis (270) | 105 | Flat (339) |
@@ -1118,6 +1138,9 @@ Total: **585 cases** across 10 files + 1 master reference.
 | Capricorne 100HF | Capricorne [M] | 100 (286) | Hole Flat (68) |
 
 ### Gen 2 — Hybrid Wheel System (HWS, 5-Layer MFB)
+
+> **Face Bolt** [C] omitted — identical screw-cap across all HWS beyblades, motif-only difference (Cases 42–43).
+> **Clear Wheel** — most are cosmetic presets [C]; exceptions with unique physics are noted with case numbers.
 
 | Beyblade | Clear Wheel | Metal Wheel | Track | Bottom |
 |----------|------------|-------------|-------|--------|
@@ -1168,6 +1191,9 @@ Total: **585 cases** across 10 files + 1 master reference.
 
 ### Gen 2 — 4D System
 
+> **Face Bolt** [C] omitted — same cosmetic screw-cap as HWS.
+> **4D Clear Wheel** — mostly cosmetic [C]; Unicorno II (284, iron-powder) and a few others have unique physics.
+
 | Beyblade | 4D Clear Wheel | 4D Metal Wheel | Track | Bottom |
 |----------|---------------|----------------|-------|--------|
 | Big Bang Pegasis F:D | Pegasis III [M] | Big Bang (343) | — | Final Drive (344/557) |
@@ -1194,6 +1220,9 @@ Total: **585 cases** across 10 files + 1 master reference.
 | Flash Sagittario 230WD | Sagittario II [M] | Flash (61/309) | 230 (62) | Wide Defense (332) |
 
 ### Gen 2 — Zero-G / Synchrome
+
+> **Stone Face / Metal Stone Face** [C] omitted — screw-cap fastener with beast motif, same as HWS Face Bolt. Metal Stone Face adds ~0.5 g zinc surround — still cosmetic.
+> **Crystal Wheel** — cosmetic preset [C], same role as HWS Clear Wheel.
 
 | Beyblade | Chrome Wheel(s) | Crystal Wheel | Track | Bottom |
 |----------|----------------|---------------|-------|--------|

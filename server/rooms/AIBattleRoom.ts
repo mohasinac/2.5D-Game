@@ -76,7 +76,7 @@ export class AIBattleRoom extends BaseRoom<GameState> {
   private humanSpawnPos = { x: 0, y: 0, angle: Math.PI };
   private aiSpawnPos = { x: 0, y: 0, angle: 0 };
   private warmupTimer = 3;
-  private launchPhaseTimer = 5;
+  private launchPhaseTimer = 10;
   private aiLaunchTimer = 1.5; // AI auto-launches ~1.5s into the launch phase
   private aiDifficulty: AIDifficulty = "medium";
   private aiBeybladeId = "default";

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet, NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
+// TouchControlsGBLayout removed — only shown on game pages
 import { cn } from "@/lib/cn";
 import toast from "react-hot-toast";
 import {
@@ -542,7 +542,6 @@ export function AdminLayout() {
 
         <main className="flex-1 flex flex-col overflow-y-auto min-h-0">
           <Outlet />
-          <TouchControlsGBLayout />
         </main>
       </div>
     </div>

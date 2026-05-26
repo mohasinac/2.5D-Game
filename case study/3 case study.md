@@ -78,6 +78,8 @@ Every numeric value in new cases must carry one of these tags:
 
 ## Case 118 — SG Metal Sharp Base: How a Near-Zero Contact Radius Tip Produces Irrecoverable Tilt, Why Underside Gaps and Spikes Destroy LAD, and the Clip Mass Surplus That Changes Nothing
 
+> **Stock combo (Flash Leopard 2):** AR: Panther Head · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Metal Sharp Base
+
 SG Metal Sharp Base is 7.6 g [FACT] and the tallest SG-class base in the plastics library, built around a metal sharp tip whose near-point contact geometry makes it inherently unstable. Height exposes the AR to Upper Attack; the tip cannot resist any lateral perturbation; the underside geometry terminates LAD prematurely; and the heavy base clips add only 2% to combo moment of inertia — below any detectable effect. Every failure mode flows from geometry and friction coefficients, not manufacturing variance.
 
 ---
@@ -293,6 +295,8 @@ function upperAttackBonusVsMinHeight(base: SGMetalSharpBase, minHeightMm: number
 
 ## Case 116 — Whale Crusher AR: Width as a Substitute for WD Overhang in Traditional Upper Attack, and Why Spike Geometry Collapses Left-Spin Effectiveness Through Recoil
 
+> **Stock combo (Seaborg 2):** AR: Whale Crusher · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
+
 Whale Crusher is a three-pronged plastics-era AR weighing 7.3 g with a wide swept-wing profile that reaches opponent ARs without needing to overhang the Weight Disk. In right spin its slopes deliver competitive Upper Attack through geometry alone; in left spin the same protrusions become high-recoil spike contacts that bleed energy back into the attacker rather than through the opponent. Both outcomes follow directly from contact-angle geometry.
 
 ---
@@ -469,6 +473,16 @@ function forcesmashEfficiency(ar: WhaleCrusherAR): number {
 
 ## Case 117 — SG Flat Base: Plastic Flat Tip Height Advantage for Upper Attack Offset by Friction Deficit, and Why LAD Cannot Rescue the Compact Role
 
+> **Stock combo (Kids Dragoon):** AR: Upper Dragoon · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
+> **Stock combo (Galzzly):** AR: War Bear · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
+> **Stock combo (Master Dragoon):** AR: Upper Dragoon · WD: Eight Heavy · SG: Right SG · BB: SG Flat Base
+> **Stock combo (Seaborg 2):** AR: Whale Crusher · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
+> **Stock combo (Metal Dranzer):** AR: Scissor Attacker · WD: Ten Balance · SG: Neo Right SG South · BB: SG Flat Base
+> **Stock combo (Guardian Driger):** AR: Great Tiger · WD: Eight Heavy · SG: Neo Right SG South · BB: SG Flat Base
+> **Stock combo (Orca Diver):** AR: Delta Wave · SG: Neo Right SG MW · BB: SG Flat Base
+> **Stock combo (Death Gargoyle):** AR: Genocide Circle · SG: Neo Right SG MW · BB: SG Flat Base
+> *(+2 more stock combos — see INDEX.md)*
+
 SG Flat Base is the shortest blade base in the plastics era at 4.4 g, using a plastic flat tip inside the Semi-Gear (SG) shell. The height advantage lowers the overall combo's AR contact plane, giving a geometric benefit for Traditional Upper Attack, but the plastic tip's friction coefficient is too low to execute flower pattern reliably and too low for Compact centring. LAD is acceptable — the wide flat body provides reasonable gyroscopic stability — but rubber and metal tips dominate every niche this base occupies.
 
 ---
@@ -623,6 +637,8 @@ function collisionRetention(base: SGFlatBase, impulseNs: number, massKg: number)
 
 ## Case 119 — Panther Head AR: Directional Blade Asymmetry as the Sole Determinant of Left-Spin Smash Viability, and Why the Range Ceiling Inverts the WD Choice
 
+> **Stock combo (Flash Leopard 2):** AR: Panther Head · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Metal Sharp Base
+
 Panther Head is a three-pronged plastics AR at 5.5 g from Flash Leopard 2 whose blade geometry is entirely directional: in right spin the convex backs of the blades lead and produce near-radial recoil, while in left spin the thick flat blade faces lead at an oblique contact angle that converts most of each collision into smash push. The range ceiling at ~22 mm means Wide Defense protrudes beyond the AR's effective contact zone and leads with its own rim, inverting its advantage; Ten Wide sits inside that zone and preserves AR contact priority.
 
 ---
@@ -776,6 +792,13 @@ function wdContactPriority(arMm: number, wdMm: number): "AR-first" | "WD-first" 
 
 ## Case 120 — Spin Gear Core: North Magnecore — Mid-Weight Core as Recoil Buffer, Magnetic Polarity as an Assembly Variable, and Why the Gimmick Force Is Irrelevant in Play
 
+> **Stock combo (Flash Leopard):** AR: Panther Claw · WD: Ten Heavy · SG: Neo Right SG MW/North · BB: SG Semi-Flat Base
+> **Stock combo (Flash Leopard 2):** AR: Panther Head · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Metal Sharp Base
+> **Stock combo (Draciel V (Viper)):** AR: Ten Spike · WD: Ten Balance · SG: Neo Right SG North · BB: Viper Metal Ball Base
+> **Stock combo (Spike Lizard):** AR: Lizard Blocker · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Roller Base
+> **Stock combo (Voltaic Ape):** AR: Mountain Hammer · WD: Magne WD · SG: Neo Right SG North · SP: Defense Ring · BB: Customize Metal Sharp Base
+> **Stock combo (Draciel V2):** AR: Strike Turtle · WD: Ten Heavy · SG: Neo Right SG North · SP: Fin Tector · BB: Switch Metal Ball Base
+
 North Magnecore is a 3.3 g SG core (blue shell, Neo SG shell compatibility only) housing a permanent magnet of north polarity. Its practical value is entirely mass-mechanical: 3.3 g sits between Metal Weight Core and Heavy Metal Core, providing enough rotational inertia contribution to damp recoil on attack-stamina hybrids without the speed penalty of HMC's full mass. The magnetic gimmick produces forces three orders of magnitude below the tip's stadium normal force and affects only assembly ergonomics.
 
 ---
@@ -912,6 +935,12 @@ function magneticForceFraction(fMagN: number, combMassKg: number): number {
 ---
 
 ## Case 121 — Spin Gear Core: South Magnecore — Identical Mass Physics to North, Inverted Polarity Interactions, and Magne Stadia Offensive Role
+
+> **Stock combo (Metal Dranzer):** AR: Scissor Attacker · WD: Ten Balance · SG: Neo Right SG South · BB: SG Flat Base
+> **Stock combo (Driger V (Vulcan)):** AR: Sonic Tiger · WD: Ten Balance · SG: Neo Right SG South · BB: SG Metal Flat Base
+> **Stock combo (Wolborg 03 (Uriel)):** AR: Cross Horn · WD: Revolver Attack · SG: Neo Right SG South · BB: SG Grip Base
+> **Stock combo (Guardian Driger):** AR: Great Tiger · WD: Eight Heavy · SG: Neo Right SG South · BB: SG Flat Base
+> **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right SG South · BB: SG Metal Flat Base GDV
 
 South Magnecore is physically and mechanically identical to North Magnecore (3.3 g, same geometry, same Neo SG shell compatibility) with a single variable changed: magnet polarity is south. All mass-mechanical analysis from Case 120 applies without modification. This case documents only the polarity differences and their consequences for assembly ergonomics and Magne Stadia behavior.
 
@@ -1286,6 +1315,8 @@ function spinLossPerHit(
 
 ## Case 123 — Dragon Breaker Core AR: Heaviest Core AR as a Direction-Dependent Contact System, SAR-Conditional Performance Across Five Setups, and Weight as a WBD Counter Variable
 
+> **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right SG South · BB: SG Metal Flat Base GDV
+
 Dragon Breaker Core AR is 5.3 g — the heaviest core AR in the plastics library — with an asymmetric design that favours left-spin attack. Its contact geometry in right spin produces high recoil from sub-optimal blade backs; in left spin the serrations and exposed contact faces deliver competitive smash at the cost of significant rotational recoil, which is partially remedied by SGMF2's slip-conversion mechanism (Case 122). SAR choice is the primary performance variable: War Lion fills the slot without interfering; Screw Zeus adds the heaviest AR configuration in the generation; War Bear fixes in left spin under wide WD pressure, enabling its outer contact points.
 
 ---
@@ -1509,6 +1540,8 @@ function totalARMassG(sar: DragonBreakerCoreSetup["sar"]): number {
 
 ## Case 124 — Dragon Breaker Sub AR: Large-Radius Free-Spinning Ring as Impulse Fractioner, Vertical Recoil from Long Moment Arms, and Why Gyro Engine Gear Is the One Context Where Size Helps
 
+> **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right SG South · BB: SG Metal Flat Base GDV
+
 Dragon Breaker Sub AR is 2.2 g forming a four-pronged thin ring at large outer radius (~31 mm). It cannot be fixed in place by any Core AR, meaning every collision is subject to SAR spin-absorption: the ring rotates on contact rather than transmitting the full impulse to the opponent. Large outer radius creates long moment arms that convert off-horizontal force components into tilt torque. Recoil angles on the prongs are unfavourable regardless. The one exception is Gyro Engine Gear combinations, where the geometry exposes the SAR underside and the large ring makes contact in that zone acceptably.
 
 ---
@@ -1685,6 +1718,8 @@ function verticalTiltTorque(fVert: number, radiusMm: number): number {
 ---
 
 ## Case 125 — Volcano Change Base: Magnetic Tip Retention as a Structural Substitute, Height Minimisation Through Bracket-Only Design, and SG Grip Base Tip as the Performance Unlock
+
+> **Stock combo (Dranzer V (Volcano)):** AR: Cross Attacker · WD: Ten Balance · SG: Neo Right SG South · BB: Volcano Change Base
 
 Volcano Change Base is 3.5 g — essentially a bracket ring with clips and an open bottom that exposes the SG entirely. Tip retention is delegated to the Magnecore via magnetic force rather than mechanical constraint, which is structurally viable because the tip's gravitational load at 10 mN is far below the magnetic retention force at close insertion range (~94 mN at 2 mm pole separation). The base itself contributes almost nothing to performance; its value is the height it does not add. With SG Grip Base Tip, the resulting height is shorter than SG Grip Base or Magne Flat Base, enabling a low-profile rubber attack combo that executes upper-angle contact on typical defensive combos.
 
@@ -2546,6 +2581,8 @@ function wideSurvivorRetentionGain(iWS: number, iWD: number): number {
 ---
 ## Case 129 — Fantom Grip Base: Narrow Hard-Rubber Tip Trades Peak Grip for Flower-Pattern Accessibility
 
+> **Stock combo (Dragoon F (Fantom)):** AR: Dual Dragon · WD: Eight Wide · SG: Left SG · BB: Fantom Grip Base
+
 Fantom Grip Base is a mid-height SG-socket attack base whose defining characteristic is a flat rubber tip of unusually narrow diameter — approximately 2.5 mm radius versus the ~4 mm of Defense Grip Base and Customize Grip Base Tip. Hard rubber (μ ≈ 0.60) further reduces friction force relative to soft-rubber competitors. The result is a tip that flowers reliably at moderate spin and survives longer than a typical attack base, while trading away the peak recoil absorption and orbital aggression of the top-tier rubber tips.
 
 ### 1. Tip Contact Geometry
@@ -2672,6 +2709,8 @@ Against Defense Grip Base defense combos (WD-heavy, wide SG Flat Base contact), 
 The gap between Fantom Grip and Tier 1 is not a rounding difference — τ_threshold is 44 % of the leaders, meaning Fantom Grip absorbs less than half the recoil per contact. Against matchups where recoil absorption determines the outcome (top-tier Zombies, WBD, Circle Survivor Defense), this deficit is decisive. Against mid-tier targets and DGB-Defense, the base's survival edge compensates, maintaining competitive viability.
 
 ## Case 130 — Eight Attacker: Flat Contacts Generate Uncontrolled Recoil with No Spin-Direction Asymmetry
+
+> **Stock combo (Dragoon V (Victory)):** AR: Eight Attacker · WD: Ten Wide · SG: Neo Left SG MW · BB: Magne Flat Base
 
 Eight Attacker is a four-wing plastic AR with eight declared contact points — four primary leading-edge faces on the large wings and four secondary tab faces between them. Every contact face presents a near-radial flat surface to incoming opponents in left spin, producing almost pure recoil with negligible smash. The ring's geometry also fails to concentrate mass behind any single impact zone, so even the modest smash component it does produce is diluted across a wide arc.
 
@@ -2811,6 +2850,8 @@ Eight Attacker delivers 36 % of Reverse Dragon's smash per contact. Even with 2�
 Reverse Dragon's better contact angle produces more than twice the net smash impulse at comparable impact speed. Eight Attacker's additional contacts do not compensate for the fundamental α ≈ 78° geometry.
 
 ## Case 131 — Magne Flat Base: Removable-Tip SG Base Trades SP Mass for Magnetic Shaft Compatibility
+
+> **Stock combo (Dragoon V (Victory)):** AR: Eight Attacker · WD: Ten Wide · SG: Neo Left SG MW · BB: Magne Flat Base
 
 Magne Flat Base is a wide, flat-disc SG base with four swept wings and a removable tip socket that accepts standard SG shafts and tips. At 4.7g it is lighter than Customize Grip Base (which carries SP-slot mass), and it foregoes SP support entirely — the four wings provide the only contact geometry beyond the tip. The base is primarily useful as an attack platform for rubber tips, with a unique height-offset interaction when paired with Dranzer V's Magnecore.
 
@@ -3032,6 +3073,8 @@ const magneFlatTip: TipProfile = {
 
 ## Case 133 — SG Grip Base Tip: Lighter Rubber Tip Matches CGB Tip on Grip while Enabling Force Smash and Volcano Change Base Combos
 
+> **Stock combo (Wolborg 03 (Uriel)):** AR: Cross Horn · WD: Revolver Attack · SG: Neo Right SG South · BB: SG Grip Base
+
 SG Grip Base Tip is a hard rubber tip with a non-magnetic metal pole through its centre, designed to be magnetised by a Magnecore-equipped SG. Its contact face is slightly narrower than Customize Grip Base Tip but made of rubber of equivalent consistency, placing its grip torque threshold close enough to CGB Tip to be functionally interchangeable. Its 0.9g weight advantage over CGB Tip is mechanically significant for Force Smash weight-class targeting, and its unique mechanical fit into Volcano Change Base opens a lower-height rubber-tip configuration with Dranzer V's Magnecore.
 
 ### 1. Tip Geometry and Material
@@ -3175,6 +3218,8 @@ const sgGripBaseTip: SGGripBaseTipConfig = {
 
 ## Case 134 — Sonic Tiger: Separated Three-Segment Wing Geometry Multiplies Recoil Without Compensating Smash
 
+> **Stock combo (Driger V (Vulcan)):** AR: Sonic Tiger · WD: Ten Balance · SG: Neo Right SG South · BB: SG Metal Flat Base
+
 Sonic Tiger is a two-wing AR arranged as three anatomically distinct segments per wing — a compact head, a thick mid-block, and a swept rear tab — separated by open gaps rather than continuous surface. The separation is the key structural failure: Tiger Defenser's defensive value comes from a continuous ring surface that redirects contact smoothly; Sonic Tiger's gaps convert those deflection events into recoil impacts. Neither spin direction produces a useful contact angle, leaving the ring without a competitive role.
 
 ### 1. Wing Segment Anatomy
@@ -3307,6 +3352,8 @@ const seg1Head: WingSegment = {
 ""`
 
 ## Case 135 — SG Metal Flat Base: Truncated Cone Tip Sits One Flat-Diameter Away from Competitive Compact Stability
+
+> **Stock combo (Driger V (Vulcan)):** AR: Sonic Tiger · WD: Ten Balance · SG: Neo Right SG South · BB: SG Metal Flat Base
 
 SG Metal Flat Base is a wide-body heavy SG base (6.2g) housing an integrated metal truncated-cone tip — a cone with its apex removed to produce a small circular flat contact. The flat's diameter is sub-millimetre enough that the tip behaves like a sharp tip for stability purposes while offering only modest movement restriction. The base body's mass and radius give it good rotational inertia and adequate LAD, but the tip's insufficient restoring torque causes premature destabilisation at low spin, consigning it to Tier 2 for compacts despite strong structural fundamentals.
 
@@ -3455,6 +3502,8 @@ const protoMetalFlat = { rFlat: 0.004 };
 ""`
 
 ## Case 136 — Griffolyon Base (Hasbro): Four Pole Bases Destroy LAD While Shaft Friction Negates the Free-Spin Gimmick
+
+> **Stock combo (Griffolyon):** AR: Cross Griffon · WD: Eight Balance · BB: Griffolyon Base
 
 Griffolyon Base is a wide-disc ABS base at 7.2g built around two compounding failures: an oversized cylindrical shaft housing that negates its own free-spinning tip gimmick, and four round pole-base protrusions at the outer rim that cap the LAD angle at roughly 5°. The Hasbro version improves on Takara's by removing the full poles (replacing them with their stump bases) and eliminating a seam line through the tip that degraded Takara's already-poor tip further. Neither change makes the base functional.
 
@@ -3609,6 +3658,9 @@ const griffolyon: GriffoloyonBaseParams = {
 
 ## Case 137 — Cybernetic Dragon: Maximum-Area Flat Contact Faces Produce Near-Total Recoil and Structural Threading Failure
 
+> **Stock combo (Cyber Dragoon):** AR: Cybernetic Dragon · WD: Ten Wide · SG: Right SG MG Spring · BB: Jumping Base 2
+> **Stock combo (Cyber Dragoon Battle Spec.):** AR: Cybernetic Dragon · WD: Eight Wide · SG: Neo Right SG MW · BB: SG Wing Base
+
 Cybernetic Dragon is one of the largest-diameter plastic-generation ARs, with broad flat contact faces oriented nearly tangentially to the ring. The face area is high, the contact angle is high, and the result is near-total recoil per collision — the highest recoil-to-smash ratio of any competitive-adjacent AR. At sufficient mass (Heavy Metal Core), the rotational inertia increase absorbs enough of the recoil to keep the ring from self-defeating, which is the only context in which it approaches viability. In standard configurations the collision torque exceeds the SG thread's frictional resistance, causing the AR to physically rotate backward over the shaft.
 
 ### 1. Contact Face Geometry
@@ -3762,6 +3814,8 @@ const cyberneticDragon: ARContactProfile = {
 
 ## Case 138 — Spike Dragon: Vertical-Line Flat Faces Generate High Smash-Area Contact but Cannot Reduce Rotational Recoil
 
+> **Stock combo (Dragoon V2):** AR: Spike Dragon · WD: Magne WD · SG: Neo Left SG · SP: Reverse Attack · BB: Customize Grip Base
+
 Spike Dragon is a three-wing AR with large flat contact faces textured by vertical ridges, intended to concentrate force at line edges for "Spike Attack." The vertical lines change contact pressure distribution but not contact angle, so α remains near-radial and rotational recoil is severe in both spin directions. In left spin the large face area captures more of each collision (higher J_impact), but only 22% converts to smash and 73% loads the SG thread as rotational deceleration. In right spin the smaller rearmost protrusions reduce both smash and recoil but cannot fix the fundamental geometry.
 
 ### 1. Contact Geometry and Vertical-Line Mechanism
@@ -3872,6 +3926,10 @@ const spikeDragon: SpikeDragonFace = {
 ---
 
 ## Case 139 — Magne Weight Disk: Even Mass Distribution and Magnetic Gimmick Combine to Underperform Specialised WDs
+
+> **Stock combo (Ultimate Dragoon V):** AR: Cross Dragon · WD: Magne WD · BB: Flat Base
+> **Stock combo (Dragoon V2):** AR: Spike Dragon · WD: Magne WD · SG: Neo Left SG · SP: Reverse Attack · BB: Customize Grip Base
+> **Stock combo (Voltaic Ape):** AR: Mountain Hammer · WD: Magne WD · SG: Neo Right SG North · SP: Defense Ring · BB: Customize Metal Sharp Base
 
 Magne Weight Disk is a 14.3/14.8g WD encasing four permanent magnets (South poles on one face, North on the other) in a zinc-alloy body wrapped with soft ABS outer shells. Despite its large outer radius, the mass is spread evenly rather than concentrated at the rim, limiting rotational inertia below Wide Survivor. The magnetic gimmick provides repulsion or attraction between MGWD-equipped combos but is mechanically insignificant in competitive play; it also applies a faint axial field to bearing SG tips, slightly increasing bearing drag. The soft plastic outer shell gives minimal collision benefit — less than Wide Survivor or Wide Defense — because the underlying octagonal body geometry still presents near-flat faces to opponents.
 
@@ -4016,6 +4074,8 @@ const mgwdMold1: MagneWDConfig = {
 
 ## Case 140 — Reverse Attack SP: Moderate Fin Angle Makes It the Least-Recoil-Prone Two-Part SP While Two-Part Design Limits Competitive Ceiling
 
+> **Stock combo (Dragoon V2):** AR: Spike Dragon · WD: Magne WD · SG: Neo Left SG · SP: Reverse Attack · BB: Customize Grip Base
+
 Reverse Attack is a two-part Support Part (one orange/red, one blue, installed 180° apart) each carrying two fins — a large primary wedge fin and a smaller secondary tab — at each arm terminus. The part name refers to the fin orientation: the primary fins are angled to strike opponents that enter from behind the bey's direction of travel, functioning as reactive smash contacts. Among two-part SPs, the fin angle is the closest to optimal, producing less recoil than alternatives while still delivering usable smash. The two-part split coverage and low total mass (0.88g for both halves) prevent it from matching one-part SP designs in either attack efficiency or defense geometry.
 
 ### 1. SP Architecture and Mass Distribution
@@ -4148,6 +4208,8 @@ const reverseAttackSP: SupportPart = {
 ""`
 
 ## Case 141 — Customize Grip Base: SP-Compatible Wide Rim Provides Exceptional LAD Across Every Shaft and Tip Configuration
+
+> **Stock combo (Dragoon V2):** AR: Spike Dragon · WD: Magne WD · SG: Neo Left SG · SP: Reverse Attack · BB: Customize Grip Base
 
 Customize Grip Base (CGB) is a 5.1g SP-compatible blade base whose defining mechanical property is a wide, smooth outer disc rim that acts as a secondary precession surface when any installed tip shorter than the rim height is used. This rim-riding LAD mechanism — analogous to MFB's RDF disc precession — makes CGB the premier blade base for zombie and defensive zombie configurations regardless of what shaft is installed. Its versatility across rubber attack tips, bearing zombie shafts, and auto-clutch configurations, combined with good body weight and SP slot access, makes it the most contextually important base of the generation.
 
@@ -4533,6 +4595,8 @@ const cgbTip: CGBTipConfig = {
 
 ## Case 143 — Upper Claw: Multi-Mode Contact Geometry Combines Upper Attack, Upward Smash, and Smash Attack in Right Spin While Left Spin Inverted Slopes Self-Destabilise
 
+> **Stock combo (Driger V2):** AR: Upper Claw · WD: Ten Balance · SG: Neo Right SG MW · SP: Upper Attack · BB: Customize Metal Change Base
+
 Upper Claw is a 5.0g (Mold 1) / 5.5g (Mold 2) three-wing AR whose defining geometry is a rising slope face that transitions mid-way to a steeper angle, combined with overhanging claw tips and inter-wing mane spikes. In right spin the slope's normal force redirects half the contact impulse vertically (upper attack), the slope transition edge adds an upward smash component, the claw tips deliver conventional smash, and the round slope sides enable spin-steal passes — all in one ring. In left spin the slope normals reverse, directing vertical force downward into the base and destabilising the user, making left spin useless.
 
 ### 1. Slope and Wing Geometry
@@ -4729,6 +4793,16 @@ const upperClaw: UpperClawConfig = {
 
 ## Case 144 — Ten Balance Weight Disk: Compact Edge-Focus vs Wide-Annular Trade-off
 
+> **Stock combo (Metal Dranzer):** AR: Scissor Attacker · WD: Ten Balance · SG: Neo Right SG South · BB: SG Flat Base
+> **Stock combo (Driger V (Vulcan)):** AR: Sonic Tiger · WD: Ten Balance · SG: Neo Right SG South · BB: SG Metal Flat Base
+> **Stock combo (Dranzer V (Volcano)):** AR: Cross Attacker · WD: Ten Balance · SG: Neo Right SG South · BB: Volcano Change Base
+> **Stock combo (Draciel V (Viper)):** AR: Ten Spike · WD: Ten Balance · SG: Neo Right SG North · BB: Viper Metal Ball Base
+> **Stock combo (Driger V2):** AR: Upper Claw · WD: Ten Balance · SG: Neo Right SG MW · SP: Upper Attack · BB: Customize Metal Change Base
+> **Stock combo (Dranzer V2):** AR: Cross Dranzer · WD: Ten Balance · SG: Neo Right SG MW · SP: Cross Survivor · BB: Customize Clutch Change
+> **Stock combo (Dark Driger):** AR: Dark Wing · WD: Ten Balance · SG: Neo Right SG MW · SP: Survivor Ring · BB: Customize Sharp Base
+> **Stock combo (Driger G (Gatling)):** AR: Triple Tiger · WD: Ten Balance · SG/EG: Right EG MSF · BB: First Clutch Base Driger G
+> *(+3 more stock combos — see INDEX.md)*
+
 Ten Balance (15.0 g) concentrates mass in ten equidistant rim tabs at outer radius r_o ≈ 19 mm — narrower than Wide Defense (r_o ≈ 22 mm) yet heavier than most compact disks. This case derives its moment of inertia, ranks it against Wide Defense and Ten Heavy, and proves the exact bowl-geometry condition under which compact outer radius makes Ten Balance the correct choice.
 
 ### Geometry
@@ -4832,6 +4906,8 @@ Ten Balance is a correct stamina disk only when compact or semi-flat tip geometr
 ---
 
 ## Case 145 — Upper Attack Support Parts: Slope Extension, Orientation Alignment, and Mass Contribution
+
+> **Stock combo (Driger V2):** AR: Upper Claw · WD: Ten Balance · SG: Neo Right SG MW · SP: Upper Attack · BB: Customize Metal Change Base
 
 Upper Attack SP (1.78 g each Mold 1 / 1.86 g each Mold 2) are the heaviest support parts in the MFB line — each piece outweighs the next-heaviest SP by more than 0.5 g. When mounted on Upper Claw, their angled faces extend the AR's lower slope (θ = 25°) downward to stadium-floor level, closing the gap between the beyblade's lowest natural contact height and the ground. This case derives the contact-height range, the inertia added, the orientation-dependent slope alignment, and the Mold 2 structural fix.
 
@@ -4955,6 +5031,8 @@ Upper Attack SP in blue-up orientation is a strict mechanical extension of Upper
 
 ## Case 146 — Customize Metal Change Base: Phase-Switching Tip Enables Multi-Role Use at Superior Mass
 
+> **Stock combo (Driger V2):** AR: Upper Claw · WD: Ten Balance · SG: Neo Right SG MW · SP: Upper Attack · BB: Customize Metal Change Base
+
 Customize Metal Change Base (CMCB, 6.4 g) is an SP-compatible blade base fitted with a Metal Change Tip that is marginally sharper than the equivalent tip on Metal Change Base. The sharper point reduces idle contact friction, while SP compatibility and high base mass push the sub-assembly toward SG Metal Ball Base territory for Weight-Based Defense. This case derives the phase-transition contact mechanics, quantifies idle power dissipation against SG Metal Ball Base, and analyses the stability collapse of the rumoured fully-sharp mold.
 
 ### Tip Phase Geometry
@@ -5063,6 +5141,8 @@ CMCB is the preferred Driger V2 base because it combines the lowest idle drag of
 
 ## Case 147 — Customize Metal Sharp Base: Fixed Tip with Plastic Collar Achieves Best Same-Spin Stamina at Cost of Early Nutation
 
+> **Stock combo (Voltaic Ape):** AR: Mountain Hammer · WD: Magne WD · SG: Neo Right SG North · SP: Defense Ring · BB: Customize Metal Sharp Base
+
 Customize Metal Sharp Base (CMSB, 5.8 g) carries a fixed sharp metal tip enclosed by a plastic cylindrical collar. The collar does not change contact area with spin rate — it remains passive until the bey tilts past a critical angle. This produces extremely low idle drag (best same-spin stamina in Plastics), decent LAD when precessing deeply, and chronic instability against Force Smash at low spin.
 
 ### Tip Geometry
@@ -5167,6 +5247,8 @@ const cmsb: SharpCollarTip = {
 CMSB occupies a narrow but genuine niche: lowest idle drag of any non-bearing base in Plastics, making it the correct choice for same-spin stamina matchups where the opponent cannot deliver Force Smash at low spin. Against heavy Force Smash attackers it loses before the collar ever engages.
 
 ## Case 148 — Mountain Hammer Attack Ring: High-Mass Smash, Rotational Recoil, and Elevated Contact Point Geometry
+
+> **Stock combo (Voltaic Ape):** AR: Mountain Hammer · WD: Magne WD · SG: Neo Right SG North · SP: Defense Ring · BB: Customize Metal Sharp Base
 
 Mountain Hammer (6.0 g) is one of the heavier plastic-era ARs. Its broad, moderately flat contact faces produce strong smash in right spin, but their orientation converts a significant impulse fraction into rotational recoil rather than opponent translation. This case derives the directional power asymmetry, the mass-weighted equivalence with Triple Wing, the rotational recoil decomposition, the Circle Survivor clearance geometry, and the Ten Heavy synergy for Rotational Smash.
 
@@ -5316,6 +5398,8 @@ Mountain Hammer's 6.0 g mass compensates for a moderately open contact angle, pr
 
 ## Case 149 — Defense Ring Support Part: Widest LAD Onset, Maximum Peripheral Inertia, and Passive Low-Recoil Surface
 
+> **Stock combo (Voltaic Ape):** AR: Mountain Hammer · WD: Magne WD · SG: Neo Right SG North · SP: Defense Ring · BB: Customize Metal Sharp Base
+
 Defense Ring (2.91 g) is a single-piece annular SP that mounts around the blade base at the lowest possible position. Its wide outer radius and nearly horizontal bottom face give it the smallest LAD onset angle and the lowest critical spin rate of any SP, making it the dominant choice for Zombie survival, Defense, and any setup where prolonged precession matters more than SP mass placement.
 
 ### Geometry and LAD Onset
@@ -5464,6 +5548,8 @@ Defense Ring is the rational first choice for any build where LAD or survive-to-
 
 ## Case 150 — Customize Clutch Change Base: Centrifugal Clutch Inverts the Useful Mode Order
 
+> **Stock combo (Dranzer V2):** AR: Cross Dranzer · WD: Ten Balance · SG: Neo Right SG MW · SP: Cross Survivor · BB: Customize Clutch Change
+
 Customize Clutch Change Base (CCCB, 5.8 g) uses a centrifugal clutch to switch between a low-friction survival tip and an attack-mode tip. Centrifugal mechanics guarantee the transition occurs in the direction opposite to competitive utility: survival at high spin (when attack opponents are most dangerous) and attack at low spin (when attack output is ~9 % of launch-phase force). This case derives the clutch engagement condition, the attack-force deficit at transition, the spin-drain penalty of attack mode, and the spring-tension variation that explains inter-unit timing differences without resolving the fundamental inversion.
 
 ### Centrifugal Clutch Engagement
@@ -5606,6 +5692,8 @@ The centrifugal clutch cannot be retuned to solve the fundamental problem: any s
 
 ## Case 151 — Cross Dranzer Attack Ring: Four-Fold Symmetry Produces Spin-Neutral Performance with Incomplete Spin-Steal Aggression
 
+> **Stock combo (Dranzer V2):** AR: Cross Dranzer · WD: Ten Balance · SG: Neo Right SG MW · SP: Cross Survivor · BB: Customize Clutch Change
+
 Cross Dranzer (5.0 g) achieves identical left- and right-spin performance through 4-fold rotational symmetry: rotating the AR 90° produces the same profile, and therefore 180° rotation — equivalent to reversing spin direction — presents the same face geometry to opponents in both directions. This case derives the symmetry condition, the mixed contact-angle profile that produces recoil alongside smash and upper attack, and the LAD benefit of avoiding stadium overhang in spin-steal builds.
 
 ### Spin-Direction Symmetry
@@ -5697,6 +5785,8 @@ Cross Dranzer's spin neutrality, moderate I, and non-overhanging geometry are va
 ---
 
 ## Case 152 — Cross Survivor Support Parts: Wide Defensive Buffer, 4-Tab Geometry, and Bidirectional Mounting Behaviour
+
+> **Stock combo (Dranzer V2):** AR: Cross Dranzer · WD: Ten Balance · SG: Neo Right SG MW · SP: Cross Survivor · BB: Customize Clutch Change
 
 Cross Survivor (2.56 g) is a wide, flat annular SP with four equidistant rectangular tabs. Its outer radius matches Defense Ring's, but a steeper bottom-face angle reduces effective LAD relative to Defense Ring. The four tabs create rotational-alignment preference for 2/4/8-fold ARs, a minor attack contribution in one mounting direction, and a near-continuous circular barrier for defensive use. The user's observation that all SPs mount from both directions with different behaviour in each is central to understanding this part's utility.
 
@@ -5820,6 +5910,8 @@ const crossSurvivor: CrossSurvivorConfig = {
 Cross Survivor is the correct SP when a defensive circular buffer is the priority and Defense Ring cannot be used. For any use case where LAD endurance is the deciding factor — spin-steal, zombie survival, defense against stamina — Defense Ring wins by 2.14 rad/s of critical spin advantage. Cross Survivor's tab geometry also makes it the preferred peripheral I SP for 2/4/8-fold ARs when no obstruction exists at the SP height.
 
 ## Case 153 — Triple Attacker Attack Ring: Three Distinct Attack Vectors, Outer-Diagonal Contact Penalty, and Left-Spin Viability
+
+> **Stock combo (Burning Kerberous):** AR: Triple Attacker · WD: Ten Wide · SG: Neo Right SG DB · SP: Cross Attack · BB: Customize Bearing Base
 
 Triple Attacker (5.8 g) carries three wings each modelled on a different beyblade: Flash Leopard 2 (Force Smash slope), Wolborg 2 (Upper Attack), and Voltaic Ape (Spike Attack). Each wing type operates by a different impulse mechanism. In right spin the sharpened contact points shift effective contact to the outer diagonal of each face, raising the contact angle and producing excess recoil relative to Triple Wing at equal face angles. In left spin, the wing heads reverse to present small but well-angled smash faces that are surprisingly competitive.
 
@@ -5976,6 +6068,16 @@ Triple Attacker's conceptual appeal — three specialised attack types in one AR
 
 ## Case 154 — Ten Wide Weight Disk: Wide Outer Radius with Reduced Rim Concentration and Tab Recoil
 
+> **Stock combo (Dragoon V (Victory)):** AR: Eight Attacker · WD: Ten Wide · SG: Neo Left SG MW · BB: Magne Flat Base
+> **Stock combo (Cyber Dragoon):** AR: Cybernetic Dragon · WD: Ten Wide · SG: Right SG MG Spring · BB: Jumping Base 2
+> **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right SG South · BB: SG Metal Flat Base GDV
+> **Stock combo (Burning Kerberous):** AR: Triple Attacker · WD: Ten Wide · SG: Neo Right SG DB · SP: Cross Attack · BB: Customize Bearing Base
+> **Stock combo (Dark Dragoon):** AR: Dark Wing · WD: Ten Wide · SG: Neo Right SG MW · SP: Survivor Ring · BB: Customize Sharp Base
+> **Stock combo (Dark Dranzer):** AR: Dark Wing · WD: Ten Wide · SG: Neo Right SG MW · SP: Survivor Ring · BB: Customize Sharp Base
+> **Stock combo (Dark Gaia Dragoon):** AR: Dark Wing · WD: Ten Wide · SG: Neo Right SG MW · SP: Survivor Ring · BB: Customize Sharp Base
+> **Stock combo (Dragoon G (Galaxy)):** AR: Eight Spiker · WD: Ten Wide · SG/EG: Left EG MSF · BB: First Clutch Base DG
+> *(+5 more stock combos — see INDEX.md)*
+
 Ten Wide (14.0 g Takara/Hasbro, 14.3 g SonoKong) has an outer radius comparable to Wide Defense but spreads mass across a wider radial band via ten tabs, reducing rim concentration. The reduced I relative to Wide Defense and the recoil from angular tab edges together account for its inferiority in spin-steal and survival, while its similar outer radius retains attack-phase momentum and avoids the AR-obstruction penalty Wide Defense imposes on certain contact geometries.
 
 ### Moment of Inertia vs Wide Defense
@@ -6068,6 +6170,8 @@ Ten Wide's spin-steal deficit has two independent causes: lower effective I than
 
 ## Case 155 — Double Bearing Core: Two-Stage Coupling Attenuation and Multi-Shaft Compatibility
 
+> **Stock combo (Burning Kerberous):** AR: Triple Attacker · WD: Ten Wide · SG: Neo Right SG DB · SP: Cross Attack · BB: Customize Bearing Base
+
 Double Bearing Core (0.79 g each / 1.58 g total for the two casings, plus two bearings) is the only SG casing compatible with Neo SG Shells and designed to hold two stacked bearings. Two bearings in the spin-steal chain reduce rotational coupling torque between the bey's spinning shell and the stationary-ish tip beyond what a single bearing achieves. This case derives the two-stage torque attenuation, the stability-cost mechanism, and the Full Auto Clutch shaft fix.
 
 ### Two-Bearing Torque Attenuation
@@ -6151,6 +6255,8 @@ Double Bearing Core is the enabling hardware for both primary zombie configurati
 ---
 
 ## Case 156 — Neo SG (Double Bearing Version) Shaft: Three-Point Decoupling, Wide-Plastic Tip Stability, and CGB Precession Assist
+
+> **Stock combo (Burning Kerberous):** AR: Triple Attacker · WD: Ten Wide · SG: Neo Right SG DB · SP: Cross Attack · BB: Customize Bearing Base
 
 Neo SG (Double Bearing Version) Shaft (1.1 g) carries three separate free-spin points: two from Double Bearing Core (the only compatible casing) and a third bearing welded into the shaft at the tip junction. The tip itself is a wide, shallow plastic dome — analogous to MFB's Defense Tip but lower-profile — that provides better stability and slight aggression at the cost of reduced idle spin retention compared to lower-friction zombie shafts.
 
@@ -6278,6 +6384,8 @@ Neo SG (DBV) Shaft's superiority as the standard zombie shaft rests on three sep
 
 ## Case 157 — Cross Attack Support Parts: Radially Oriented Triangular Protrusions Produce Near-Zero Smash, Maximum Recoil, and No Viable LAD
 
+> **Stock combo (Burning Kerberous):** AR: Triple Attacker · WD: Ten Wide · SG: Neo Right SG DB · SP: Cross Attack · BB: Customize Bearing Base
+
 Cross Attack (0.79 g each, 1.58 g total) consists of two arc-shaped pieces each carrying a large triangular protrusion at both ends. Together the four tips form a square outline at 90° spacing. The triangular tips point radially outward, which produces the worst possible contact angle for smash, the maximum possible recoil fraction, no viable precession surface for LAD, and negligible added inertia. Flipping the SP upside down changes only which sticker is visible — the geometry is mid-plane symmetric, so the "Smash Attack" and "Spike Attack" labels are cosmetic and imply no functional distinction.
 
 ### Orientation Invariance
@@ -6373,6 +6481,8 @@ const crossAttack: CrossAttackSP = {
 Cross Attack fails all three criteria by which SPs are evaluated: it adds negligible I, cannot form a LAD precession disc, and delivers 0.174J smash against a near-unity recoil. The orientation-invariance failure eliminates the bidirectional utility that makes other asymmetric SPs useful in one specific direction. It is the only known SP where neither mounting orientation provides any competitive function.
 
 ## Case 158 — Customize Bearing Base: Smooth-Shell Stamina Platform With Three Distinct Shaft Regimes
+
+> **Stock combo (Burning Kerberous):** AR: Triple Attacker · WD: Ten Wide · SG: Neo Right SG DB · SP: Cross Attack · BB: Customize Bearing Base
 
 Customize Bearing Base (CBB, 4.2g) is the lightest SP-compatible Blade Base in the Metal Fight Beyblade Plastic-era range, sitting below CGB (5.1g) and DGB2 (~4.5g). Its outer shell is continuously curved with no flat faces or raised tabs, making it the only base in its class that is genuinely resistant to Upper Attack by geometry. Three mechanically distinct shaft configurations exploit different physical effects — free-spin torque isolation (Setup 1), tornado-ridge tip exposure (Setup 2), and grip-tip retention (Setup 3).
 
@@ -6566,6 +6676,8 @@ CBB occupies a genuine physical niche: the smooth-shell upper-attack resistance 
 
 ## Case 159 — Strike Turtle: Rounded Segment Ends as a Dual Penalty on Smash Efficiency and Recoil
 
+> **Stock combo (Draciel V2):** AR: Strike Turtle · WD: Ten Heavy · SG: Neo Right SG North · SP: Fin Tector · BB: Switch Metal Ball Base
+
 Strike Turtle (4.8g) is a multi-segment AR whose outer profile consists of curved, tab-like lobes radiating from a central hub. In Right Spin the leading faces of these lobes produce moderate Smash; however, the rounded curvature of each lobe and the poor attack angle of the outermost contact points simultaneously reduce smash output and elevate recoil. Left Spin exposes one geometrically sharper edge but fewer total contact points, making it strictly inferior to Right Spin while retaining the same recoil liability. Neither spin direction is useful for Defense or Stamina.
 
 ### Geometry: Segment Profile and Contact Angle Distribution
@@ -6712,6 +6824,8 @@ The Draciel line is predominantly designed for Defense and Stamina, producing AR
 
 ## Case 160 — SG Bolt Base: Why Screw Ballast at Mid-Radius Fails to Compensate for Tip and LAD Deficits
 
+> **Stock combo (Orthrus):** AR: Double Attacker · WD: Revolver Attack · SG: Neo Right SG MW · SP: Twin Guard · BB: SG Bolt Base
+
 SG Bolt Base (6.2g) inserts four metal screws into the top face to increase total mass, but the screws sit at mid-radius rather than the periphery, and the 0.2g mass shortfall versus CMCB (6.4g) is the least of the base's problems. The flat plastic tip occupies a dead zone between the low friction of metal-sharp and the controlled grip of rubber, delivering worse stamina than the former and worse attack control than the latter. No SP compatibility and a flat-disc profile eliminate LAD as a defensive mechanism. The result is a base outclassed in every competitive role.
 
 ### Screw Ballast: Placement Determines Moment, Not Mass Alone
@@ -6840,6 +6954,8 @@ const cmcb: CompactDefenseComparison = {
 The screw gimmick adds manufacturing complexity and mid-radius mass without closing the gap to CMCB on any axis that matters. SG Bolt Base is dominated on every dimension by the part it was evidently designed to rival.
 
 ## Case 161 — Double Attacker: Maximum Flat-Face Smash With Structural Recoil Liability
+
+> **Stock combo (Orthrus):** AR: Double Attacker · WD: Revolver Attack · SG: Neo Right SG MW · SP: Twin Guard · BB: SG Bolt Base
 
 Double Attacker (4.3g) carries two large primary contact faces in a 2-fold symmetric layout, with serrated spike features along the leading edge of each wing. In Right Spin the face geometry is close to ideal for Smash — low contact angle, high exposed area, spike sub-contacts ensuring consistent engagement. The absence of an overhang gives it an edge over Dragon Breaker against Circle Survivor Defense by eliminating the upward deflection penalty. The same geometry that maximises forward impulse also maximises returned recoil, producing a non-trivial self-ring-out rate. Left Spin inverts the wing geometry and exposes only shallow trailing profiles with no spike alignment, making it non-functional.
 
@@ -6998,6 +7114,11 @@ The spike features on the wing are aligned for RS leading-face engagement; they 
 
 ## Case 162 — Revolver Attack: Compact Distribution Undermined by Tab Recoil and Mass Deficit
 
+> **Stock combo (Bakuten Henkei Gaia Dragoon):** AR: Fire Cracker · WD: Revolver Attack · BB: Salamalyon Base
+> **Stock combo (Wolborg 03 (Uriel)):** AR: Cross Horn · WD: Revolver Attack · SG: Neo Right SG South · BB: SG Grip Base
+> **Stock combo (Gabriel):** AR: Twin Horn · WD: Revolver Attack · SG: Neo Right SG MW · BB: SG Wing Base
+> **Stock combo (Orthrus):** AR: Double Attacker · WD: Revolver Attack · SG: Neo Right SG MW · SP: Twin Guard · BB: SG Bolt Base
+
 Revolver Attack (15.0g) is a metal WD with a compact annular profile and eight equally-spaced holes reducing its mass below the Heavy family. Outward tabs at each corner of the octagonal outer edge act as contact points. The profile places it in the same radial bracket as Eight Heavy and Heavy, but at 1.4–2.4g less mass. The tabs generate recoil on every incoming hit, a property that is neutral to useless for Defense and strictly negative compared to a smooth WD. Heavy Attack, despite also having tabs, is preferred on recoil-capable builds because its tab geometry is better aligned and its radial placement is more consistent. Revolver Attack is outclassed in every role where its distribution would otherwise be relevant.
 
 ### Mass and Moment of Inertia vs. Heavy Family
@@ -7099,6 +7220,8 @@ The mass deficit alone (15.0g vs. 16.4g for Heavy) costs ~8.5% of spin-steal cap
 The compact radial profile (r_outer ≈ 21mm) would be an asset if the goal were minimising total system width to avoid AR-to-AR catching — relevant for Compact Defense builds. But Compact Defense requires high mass at that radius. Revolver Attack's holes remove precisely the mass at r = 18–21mm that Compact Defense needs. A smooth non-holed 15g WD at the same radius would outperform it for Compact Defense. The holes were introduced to create the tab structure; the tab structure creates recoil; the recoil removes the last scenario where compact distribution was useful.
 
 ## Case 163 — Twin Guard: Thin-Profile Bidirectionality Trades LAD Quality for Orientation Flexibility
+
+> **Stock combo (Orthrus):** AR: Double Attacker · WD: Revolver Attack · SG: Neo Right SG MW · SP: Twin Guard · BB: SG Bolt Base
 
 Twin Guard (1.71g) is the lightest single-part SP and the only one whose cross-section is thin enough to mount in either orientation, making it the only SP that can be mechanically inverted for Left Spin use. Its four rectangular wings produce smash in the leading direction and interrupt LAD in the trailing direction. The thin profile that enables inversion also reduces the mass contribution and plastic buffer depth that make Cross Survivor and Defense Ring preferred for their respective roles. The result is a part that is situationally usable but never optimal: always slightly outclassed by whichever SP fits the build better.
 
@@ -7251,6 +7374,8 @@ const ratings: Record<string, RoleRating> = {
 Twin Guard achieves "mediocre" at best across every role. Its unique mechanical property — bidirectional mounting — does not translate into a scenario where it outperforms the available alternatives. It is an effective choice only when the preferred SP is unavailable or when the AR's contact point geometry specifically benefits from a short-reach SP in attack, and even then the improvement over Defense Ring is minimal.
 
 ## Case 164 — Corona Saber: Large-Reach Upper Attack With Smash Penalty From Rotational Recoil
+
+> **Stock combo (Appollon):** AR: Corona Saber · SG: Neo Right SG MW · BB: SG Flat Base
 
 Corona Saber (7.4g) is one of the heaviest competitive attack ARs in the generation. Its roughly square four-wing profile combines sloped upper surfaces for Traditional Upper Attack with outward wing tips for Smash Attack, producing an AR that is effective in both categories in Right Spin and remains a competitive Upper Attack option in Left Spin despite losing most of its Smash. The large outer radius amplifies both smash output and recoil torque; the net result is an AR that hits hard but requires a recoil-tolerant base. The slope geometry is the less spin-direction-dependent of the two attack types and survives the LS inversion better than the smash contacts do.
 
@@ -7422,6 +7547,8 @@ Whale Crusher is the established Traditional Upper Attack benchmark: strong slop
 
 ## Case 165 — Triple Beak: Bevelled Triangle Edges as an Omni-Directional Smash Mechanism
 
+> **Stock combo (Trygle 2):** AR: Triple Beak · SG: Neo Right SG MW · BB: SG Sharp Base
+
 Triple Beak (Big Bird, 3.9g) has a 3-fold symmetric profile with three large triangular protrusions and three smaller intermediate contacts. The triangular faces appear to present unfavourable smash geometry — wide, obtuse leading faces with shallow angles — but the operative contact mechanism is the bevelled edge running along each triangle's periphery, not the face itself. Because the bevel is symmetric about the triangle's apex, both the leading and trailing bevel edges present identical contact geometry in their respective spin directions. This produces true omni-directionality at top-tier smash power, placing Triple Beak alongside Square Edge and Great Dragon as the strongest AR options in the generation.
 
 ### Why the Face Angle is a Distraction
@@ -7516,6 +7643,8 @@ All three are cited as top-tier omni-directional or near-omni-directional Smash 
 ---
 
 ## Case 166 — Reverse Wolf (Hasbro): Inverted Contact Orientation Converts a Defense AR Into the Only Viable Left-Spin Compact
+
+> **Stock combo (Wolborg):** AR: Reverse Wolf · WD: Eight Balance · SG: Right SG Bearing · BB: SG Bearing Base
 
 Reverse Wolf (Hasbro, 3.8g) is a 4-sided AR with a compact, near-circular perimeter and four wolf-head contact points oriented counter-clockwise — opposite to standard right-spin ARs. In Left Spin these contact points present their leading faces; in Right Spin they present their trailing backs. The result is an AR that performs like Tiger Defenser in its non-native direction in each spin: LS delivers low-recoil stamina and compact defense utility; RS delivers moderate smash with higher recoil but remains competitively viable. The Hasbro mould includes metal inserts in each wolf-head tip, making this a unique hybrid material part. It is the only AR with useful contact geometry for Left Spin Compact builds.
 
@@ -8000,6 +8129,8 @@ A 5.2% increase in I_WS — a real but small stamina improvement that cannot com
 
 ## Case 170 — Star Attack: 5-Fold Symmetry Produces Severe Recoil From Star-Tip Contact Geometry, Redeemed Only By Penta Wing Alignment
 
+> **Stock combo (Uriel 2):** AR: Neo Cross Horn · WD: Star Attack · SG: Neo Right SG MW · SP: Over Attack · BB: SG Grip Change Base
+
 Star Attack (15.6g) is the heaviest WD covered in this series, but its 5-pointed star profile distributes mass in a star geometry rather than an annulus, producing a moment of inertia far below what its mass suggests. Each star arm tip acts as a sharp protrusion presenting a steep contact angle — near-total recoil per contact. The tip holes remove the only mass at maximum radius while creating fragility at the cross-section with the highest stress concentration. Five-fold symmetry restricts useful AR alignment to 5-contact ARs; of the compatible ARs, only Penta Wing is competitive, and through that single synergy Star Attack earns a specific niche in Traditional Upper Attack. No other role survives the recoil liability.
 
 ### Mass Distribution: Star vs Annulus Moment Penalty
@@ -8200,6 +8331,8 @@ const tenBalance: WDCompetitivePosition = {
 
 ## Case 172 — Penta Wing: Left-Spin Long-Slope Upper Attack on a 5-Fold Body With RS Contact Obstruction
 
+> **Stock combo (Killer Eagle):** AR: Penta Wing · SG: Neo Right SG MW · BB: SG Semi-Flat Base
+
 Penta Wing (Rapid Eagle G, 5.1g) has five wings with bi-directional slopes — one slope set per wing for each spin direction. In Right Spin the leading faces are the trailing backs of the LS wings: they sit at inward angles (short reach, obstructed contacts) and produce poor Smash with high recoil; the RS slope geometry creates only destabilisation rather than usable Upper Attack. In Left Spin, the five long LS-facing slopes produce solid Upper Attack, moderate recoil, and usable spin-steal properties. Penta Wing's primary competitive value is as a LS Traditional Upper Attack AR, and this role also makes Star Attack (Case 170) competitively viable through 5-fold alignment.
 
 ### RS Contact Geometry: Inward Face and Obstruction
@@ -8305,6 +8438,9 @@ With any other AR (different N-fold symmetry), Star Attack's tips arrive at rand
 ---
 
 ## Case 173 — Smash Turtle Attack Ring: Force Smash Slope Geometry as a Stamina Drain Mechanism, Width-Driven Defense Tradeoffs, and Why Weight-Based Defense Is the Only Role That Fully Exploits the Part
+
+> **Stock combo (Kids Draciel):** AR: Smash Turtle · WD: Eight Heavy · SG: Right SG · BB: SG Sharp Base
+> **Stock combo (Master Draciel):** AR: Smash Turtle · WD: Eight Wide · SG: Right SG · BB: SG Sharp Base
 
 Smash Turtle is 6.0 g and distinguished by two properties that coexist unusually in the plastics library: three protrusions per wing (6 total contacts arranged across a wide annular body) and a set of underside slopes angled upward to produce Force Smash interactions. The AR's width provides above-average KO leverage but also creates a destabilisation surface against Upper Attack and flat opponents unless RPM is maintained. Its competitive identity resolves entirely as a Weight-Based Defense platform: the width aids KO launches, the Force Smash slopes erode opponent spin, and the weight augments the mass advantage that WBD combinations already prioritise.
 
@@ -8485,6 +8621,9 @@ function spinDrainFromContacts(
 ---
 
 ## Case 174 — Upper Dragoon Attack Ring: Slope Geometry Differences Between Right and Left Spin, Why Low Recoil Enables the Spin-Stealing Attack Role, and How Mold Mass Reduction Leaves Performance Unchanged
+
+> **Stock combo (Kids Dragoon):** AR: Upper Dragoon · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
+> **Stock combo (Master Dragoon):** AR: Upper Dragoon · WD: Eight Heavy · SG: Right SG · BB: SG Flat Base
 
 Upper Dragoon is 6.2 g (Mold 1) / 6.0 g (Mold 2) and the canonical Upper Attack AR in the plastics library. Its defining property is not maximum slope length or contact mass but the combination of long gradual RS slopes, shorter steeper LS slopes, and a perimeter profile smooth enough to keep recoil below the threshold where self-destabilisation would offset the lifting gain. The two molds differ structurally (Mold 2 adds joint reinforcement, removes mass elsewhere) but are geometrically identical at every contact surface — the 0.2 g difference is absorbed in non-contact structure and produces no measurable performance delta.
 
@@ -8705,6 +8844,8 @@ function spinStealNet(
 
 ## Case 175 — SG Roller Base: Why Free-Spinning Rollers Increase Net Recoil, and Why Every Competitive Role Belongs to SG Semi-Flat Base
 
+> **Stock combo (Spike Lizard):** AR: Lizard Blocker · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Roller Base
+
 SG Roller Base is 6.3 g and shares the same SG-compatible shaft and semi-flat tip as SG Semi-Flat Base. The two bases are functionally identical at the tip, identical in SG compatibility, and approximately equal in mass. The only structural difference is the addition of circumferential protrusions and two free-spinning cylindrical rollers on the outer perimeter. Both additions increase net recoil per contact event. No property of the roller design compensates for this increase. The base is outclassed in every role by SG Semi-Flat Base.
 
 ---
@@ -8851,6 +8992,8 @@ const rollerContact: BaseWallContact = { normalAngleDeg: 80, recoilFraction: 0.9
 ---
 
 ## Case 176 — Lizard Blocker Attack Ring: Why Four Outer Rollers Fail the Defense Role, How Frill Geometry Produces Left-Spin Smash, and Why Roller Defense Ring Dominates Both Intended Functions
+
+> **Stock combo (Spike Lizard):** AR: Lizard Blocker · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Roller Base
 
 Lizard Blocker is 6.7 g — the heaviest AR examined in this library to date — with a large annular body and four rubber rollers mounted at the outermost radius. The design intent is defensive: rollers were expected to absorb contact energy rather than recoil it back. This fails for the same mechanical reason established in Case 175 (SG Roller Base): a roller contact normal is radial regardless of roller rotation, and a radial contact normal maximises recoil. The AR's secondary geometry — raised frill details on each wing — produces genuine Smash Attack in left spin, but the rollers partially obstruct clean frill contacts, capping the LS ceiling. Right spin provides neither offense (no exposed smash contacts) nor defense (rollers recoil). Roller Defense Ring provides better roller-based defense because its rollers are smaller and set back from the true outer radius — making them less likely to be the first contact surface — which is the correct engineering approach that Lizard Blocker does not take.
 
@@ -9206,6 +9349,8 @@ function rollerDefenseRingContact(J: number, contactAngleDeg: number): RDRContac
 
 ## Case 178 — Twin Horn Attack Ring: Why Rounded Leading Edges Maximise Spin-Steal in Left Spin, Why the Same Geometry Caps Right-Spin Attack Effectiveness, and the Compact Role Tradeoff Against Tiger Defenser
 
+> **Stock combo (Gabriel):** AR: Twin Horn · WD: Revolver Attack · SG: Neo Right SG MW · BB: SG Wing Base
+
 Twin Horn is 3.9 g, one of the lightest attack rings in the plastics library, and only slightly wider than Wide Survivor. Its defining property is spin-direction asymmetry by contact orientation: in RS, small angled protrusions reach outward past Wide Defense radius creating modest smash contacts; in LS, the leading edges are rounded with near-zero contact normal angle, minimising recoil and maximising the spin-steal friction coefficient. Very small body gaps add marginal spin-steal enhancement in both directions without generating recoil. The geometry makes Twin Horn the canonical Zombie AR for LS combinations and an acceptable RS Compact AR, but not a competitive RS Defense or RS Stamina choice.
 
 ---
@@ -9414,6 +9559,8 @@ function twinHornContact(
 
 ## Case 179 — Fin Tector Support Parts: Why Fin-Shaped Attack SP Adds Net-Negative Value in Attack Mode, Why Defense Mode Is Recoil Without Benefit, and Why Peripheral Mass Is the Correct SP Metric
 
+> **Stock combo (Draciel V2):** AR: Strike Turtle · WD: Ten Heavy · SG: Neo Right SG North · SP: Fin Tector · BB: Switch Metal Ball Base
+
 Fin Tector is a two-part SP at 1.05 g each (2.10 g pair). Each piece is shaped like an arrow fin with a flat leading face in attack orientation and a smooth trailing face in defense orientation. Four mounting orientations exist from the cover/uncover-clip combination, but the performance axis is binary: fin face forward (attack mode) or fin face rearward (defense mode). Attack mode introduces a high-recoil flat smash contact at a radius that largely duplicates what the AR already does. Defense mode removes the flat contact but leaves a rounded trailing surface that generates recoil without contributing smash, defense capability, LAD, or meaningful peripheral inertia. Neither mode is useful. The correct SP metric — peripheral inertia contribution or LAD extension — is better served by Cross Survivor, Twin Guard, Survivor Ring, or Defense Ring SP.
 
 ---
@@ -9582,6 +9729,8 @@ function finTectorInertia(piecesUsed: 1 | 2): number {
 ---
 
 ## Case 180 — Switch Metal Ball Base: Why a Wide-Radius Ball Tip Fails All Three Base Roles, How Hinge Drift Eliminates the Gimmick, and the Low-Attack Vulnerability from Flat-Platform Geometry
+
+> **Stock combo (Draciel V2):** AR: Strike Turtle · WD: Ten Heavy · SG: Neo Right SG North · SP: Fin Tector · BB: Switch Metal Ball Base
 
 Switch Metal Ball Base is 6.3 g and built around a central pole terminating in a large-radius plastic ball tip, with two small metal balls on hinged arms that can be repositioned between an inward (centre-biased) and outward (peripheral) configuration. The gimmick premise is that outward-positioned metal balls raise moment of inertia for balance/stamina and inward position raises effective spin rate for velocity-dependent attacks. Both configurations fail: the ball tip geometry defeats defense (skips the tornado ridge), defeats stamina (poor dynamic balance), and defeats attack (insufficient aggression). The hinges loosen with use, locking the balls in whichever position they settle and eliminating the gimmick. The flat platform above the tip creates a low-attack vulnerability surface that does not exist on standard bases.
 
@@ -10091,6 +10240,8 @@ function sparkGimmickDegradation(battlesUsed: number): SparkARState {
 
 ## Case 183 — Cross Spiker Attack Ring: Why Triangular Protrusion Interference Degrades Right-Spin Spike Attack, How LS Contact Orientation Achieves Competitive Smash, and the Ten Wide WD Dependency for Contact Exposure
 
+> **Stock combo (Metal Driger):** AR: Cross Spiker · WD: Ten Heavy · SG/EG: Right SG HMC / Right EG MSF · BB: First Clutch Base Metal Driger
+
 Cross Spiker is 4.7 g with 4-fold rotational symmetry. Each section has a primary flat-face contact zone with vertical spike lines for RS spike attack, plus a triangular protrusion on the leading approach arc. In RS the triangular protrusions intercept opponents before the flat faces, adding a preliminary recoil event that destabilises the contact geometry before the intended smash face engages. In LS the geometry mirrors to present angled contact faces as the leading surface — similar in profile to Cross Attacker but with contact points oriented marginally further outward, which is the decisive difference that makes LS viable. Contact point reach is limited; Ten Wide WD is required to push opponents into range of the contact faces rather than letting them stay at a radius where the AR cannot reach.
 
 ---
@@ -10250,6 +10401,9 @@ function contactFacesExposed(attackerWD_r_mm: number, contactFace_r_mm: number =
 
 ## Case 184 — Fire Cracker Attack Ring: Why Oval Geometry and Rounded Sides Produce Inconsistent Smash, How Raised Head Protrusions Create a Height-Selective Contact System, and Why Mold 2 Is Unambiguously Preferable
 
+> **Stock combo (Salamalyon):** AR: Fire Cracker · WD: Eight Wide · BB: Salamalyon Base
+> **Stock combo (Bakuten Henkei Gaia Dragoon):** AR: Fire Cracker · WD: Revolver Attack · BB: Salamalyon Base
+
 Fire Cracker is 4.7 g (Mold 1) / 5.1 g (Mold 2) with an approximately oval 2-fold body. Rounded sides span most of the perimeter; large head protrusions extend at each pole of the oval. The rounded sides produce inconsistent smash because a curved surface offers a variable contact normal angle depending on where along the arc the opponent strikes. The head protrusions are raised above the standard AR body plane, making them effective against tall targets (Circle Survivor Defense) while being too high to engage compact opponents. The 0.4 g Mold 2 mass increase from a bottom plastic layer improves both mass and durability without changing any contact geometry — it is strictly better than Mold 1.
 
 ---
@@ -10401,6 +10555,8 @@ function fireCrackerInertia(mold: 1 | 2): number {
 ---
 
 ## Case 185 — Spin Gear Core: Heavy Metal Core — Maximum Neo Core Mass as a Rotational Inertia Buffer, RPM Maintenance Across All Power Roles, and Why Rotational Smash Attack Is the One Context Where Its Weight Is Decisive
+
+> **Stock combo (Metal Driger):** AR: Cross Spiker · WD: Ten Heavy · SG/EG: Right SG HMC / Right EG MSF · BB: First Clutch Base Metal Driger
 
 Heavy Metal Core (HMC) is 6.2 g — the heaviest Neo SG core in the plastics library — and Takara-exclusive. Its mass is concentrated in a solid zinc-alloy die-cast body at r_core ≈ 4–8 mm, a narrow radius, meaning most of the mass contributes to translational inertia (total combo mass) rather than rotational inertia (moment of inertia about the spin axis). Nevertheless, the mass addition to total combo weight is the primary performance lever: higher total mass means a larger effective mass in collision calculations, slower spin decay per recoil event, and better match endurance at equivalent launch energy. For Compact, Weight-Based Defense, Force Smash, and Traditional Upper Attack builds the mass surplus is universally beneficial. For standard smash attack the weight may slow base tip travel if the base motor is too light; for rotational smash (Square Edge-type ARs) the increased mass specifically controls the rotational recoil that would otherwise spin-drain the attacker.
 

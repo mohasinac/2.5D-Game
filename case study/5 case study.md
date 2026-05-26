@@ -76,6 +76,8 @@ Every numeric value in new cases must carry one of these tags:
 
 ## Case 236 — 4 Layer System: Why Four-Component Homogeneity Is the Physics Prerequisite for All Original Series Customisation, How Each Layer's Position in the Stack Determines Its Mechanical Role, and Why the Absence of a Spin Gear Constrains Tip and Weight Distribution to Single-Body Solutions
 
+> **Stock combo (Zeus):** AR: Holy Despell + SAR Screw Zeus · WD: Ten Wide · SG/EG: Right CG Free Shaft · BB: First Clutch Base Zeus · CEW: Light Sharp
+
 The 4 Layer System is the founding architecture of competitive Beyblade physics. Every Original Series beyblade — from the earliest Dragoon to the last pre-Spin Gear release — is built from exactly four components in a fixed vertical stack: Bit Chip at the apex, Attack Ring below it, Weight Disk below that, Blade Base at the base. There is no fifth layer, no inner gear, no split-shaft. This structural simplicity is not a limitation but a constraint that forces each layer to carry its full functional load without redundancy. The physics consequence is that changing one layer changes the entire combo's moment of inertia, contact geometry, and weight distribution simultaneously — there are no isolatable sub-systems to tune independently, as the Spin Gear System later introduces.
 
 ---
@@ -3258,6 +3260,9 @@ function ratchetDeadZone_deg(protrusions: number): number {
 
 ## Case 249 — Track 85 · 0.86 g: Why the Minimum-Height Track Enables Wheel-Underside Contact Against Taller Opponents, How the 8.5 mm Shaft Cuts the Floor-Scrape Threshold Below the Sliding Shoot Tilt Envelope, and Why Boost Disk 145 and 230 Close the Low-Track Attack Window Structurally
 
+> **Stock combo (Mercury Anubius 85XF):** Clear Wheel: Anubis · Metal Wheel: Mercury · Track: 85 · Bottom: Extreme Flat
+> **Stock combo (Omega Dragonis 85XF):** 4D Clear Wheel: Dragonis · 4D Metal Wheel: Omega · Track: 85 · Bottom: Extreme Flat
+
 Track 85 is the shortest MFB Track at 8.5 mm shaft height and 0.86 g. The physics argument for a low Track has two components: attack undercut (the Wheel sits lower, contacting the underside of a taller opponent's Wheel or impacting the opponent's Track and Bottom directly) and defensive CoM lowering (less toppling torque from the same lateral contact impulse). Both are real and derivable. The problem is equally derivable: a shorter shaft reduces floor clearance under tilt, placing the lower Wheel rim closer to the stadium surface. At the tilt angles produced by Sliding Shoot or aggressive banking, the 8.5 mm clearance margin is not large enough to avoid scraping reliably. Competitively, two Track changes neutralise the low-attack advantage: Boost Disk 145 in Normal Mode presents a profile that the low attack angle cannot reach effectively, and 230 (plastic, circular, wide) deflects low-height contacts rather than transmitting them.
 
 ---
@@ -3425,6 +3430,9 @@ Track | Scrape θ | Wheel h   | Undercut vs 145 | CoM lowering
 
 ## Case 253 — AD145 (Armor Defense 145) · 2.8 g: Why a Funnel-Shaped Track at 145 Height With Outward Weight Distribution Becomes Top-Tier for Stamina Despite Failing at Its Named Defensive Role, and Why BD145 Structurally Supersedes It for Defense While AD145 Retains the Stamina Niche
 
+> **Stock combo (Gravity Perseus AD145WD):** Clear Wheel: Perseus · Metal Wheel: Gravity · Track: AD145 · Bottom: Wide Defense
+> **Stock combo (Fusion Hades AD145SWD):** 4D Clear Wheel: Hades · 4D Metal Wheel: Fusion · Track: AD145 · Bottom: Sharp Wide Defense
+
 AD145 is the heaviest among standard 145-height Tracks at 2.8 g — more than double the 1.0 g of a plain 145. It is shaped as a downward-tapered funnel with ridged sides, giving it a wide flared circumference (28 mm full width) at the top that tapers inward toward the Bottom. This shape places the bulk of its 2.8 g mass at the outer radius of the Track — outward weight distribution (OWD). Despite the "Defense" in its name, it is outperformed in defense by GB145 (heavier, better contact absorption), BD145 (ball-bearing deflection), and 230 (height). AD145's actual competitive role is Stamina: the OWD at Track height adds meaningful I_total to the combo, and the funnel profile's ridged sides produce aerodynamic drag-shedding rather than drag-generating geometry. It is the Track of choice for comparative Stamina testing precisely because its OWD effect is consistent and measurable.
 
 ---
@@ -3528,6 +3536,14 @@ function funnelDragReduction(alpha_deg: number): number {
 
 ## Case 254 — DF145 (Down Force 145) · 1.5 g: Why Four Upward-Facing Wings Cannot Generate Meaningful Downforce at Beyblade Spin Rates, and Why the Track Is Outclassed in Stamina and Irrelevant in Defense or Attack
 
+> **Stock combo (Libra DF145BS):** Wheel: Libra · Track: DF145 · Bottom: Ball Sharp
+> **Stock combo (Virgo DF145BS):** Wheel: Virgo · Track: DF145 · Bottom: Ball Sharp
+> **Stock combo (Gemios DF145FS):** Wheel: Gemios · Track: DF145 · Bottom: Flat Sharp
+> **Stock combo (Dark Wolf DF145FS):** Clear Wheel: Wolf · Metal Wheel: Dark · Track: DF145 · Bottom: Flat Sharp
+> **Stock combo (Killer Gemios DF145FS):** Clear Wheel: Gemios · Metal Wheel: Killer · Track: DF145 · Bottom: Flat Sharp
+> **Stock combo (Bandid Goreim DF145BS):** Chrome Wheel(s): Goreim · Crystal Wheel: Bandid · Track: DF145 · Bottom: Ball Sharp
+> **Stock combo (Saramanda Balro DF145SWD):** Chrome Wheel(s): Balro + Saramanda · Track: DF145 · Bottom: Sharp Wide Defense
+
 DF145 has four wings protruding upward from the top of the Track, at the same 14.5 mm height as AD145. The wings are intended to push air downwards, increasing normal force on the tip (downforce). At Beyblade spin rates, this mechanism fails to deliver its intended effect because the wings are too small and the spin rate too low relative to what aerodynamic downforce generation requires.
 
 ---
@@ -3595,6 +3611,10 @@ function dfTrackMoI(m_g: number, r_shaft_mm: number, r_wing_mm: number, m_wing_f
 ---
 
 ## Case 255 — SW145 (Switch 145) · 4.2 g: Why Reversing Three Wings Changes the Contact Face Angle From Smash-Initiating to Deflection-Optimised, How 4.2 g of Mass at 38 mm Maximum Width Produces the Highest Track-Level I_total in the 145-Height Class, and Why Rigid Wing Attachment Produces Irremovable Recoil That Structurally Caps Its Defensive Ceiling
+
+> **Stock combo (Poison Serpent SW145SD):** Clear Wheel: Serpent · Metal Wheel: Poison · Track: SW145 · Bottom: Semi Defense
+> **Stock combo (Nightmare Rex SW145SD):** Clear Wheel: Rex · Metal Wheel: Nightmare · Track: SW145 · Bottom: Semi Defense
+> **Stock combo (Shinobi Saramanda SW145SD):** Chrome Wheel(s): Saramanda · Crystal Wheel: Shinobi · Track: SW145 · Bottom: Semi-Defense
 
 SW145 is a 145-height Track (14.5 mm shaft) with three removable wings that can be remounted reversed to switch between Attack and Defense contact geometry. At 4.2 g and 38 mm maximum width it is the heaviest and widest 145-class Track, placing substantial mass at maximum radius and producing the highest I_total contribution of any Track at this height. The wing reversal changes the contact face presented at r ≈ 15–19 mm: in Attack mode the pointed ends face forward (in the rotational direction), concentrating contact impulse at a small tip area for smash; in Defense mode the rounded backs face forward, distributing the same contact impulse over a larger curved surface that deflects rather than bites. The fundamental limit of both modes is that the wings are rigidly fixed to the Track shaft — they transmit the full reaction impulse back to the combo body regardless of contact geometry, producing recoil. GB145 and BD145 absorb contact energy through free-spinning balls; SW145 cannot replicate this regardless of wing orientation. "Outclassed for Defense purposes by GB145, BD145, and 230 due to the recoil it produces."
 
@@ -3753,6 +3773,9 @@ function iComboFraction(I_SW145: number, I_wheel: number): number {
 
 ## Case 256 — WD145 (Wide Defense 145) · 3.6 g: Why Fixed Wings That Cannot Free-Spin Transmit Full Contact Impulse Unlike ED145, How the Radial Gap Between Wheel Outer Edge and Wing Outer Edge Creates a Mechanical Trap for Attacker Protrusions, and Why the Trap-Coupling Event Produces Anomalously Large Mutual Spin Drain
 
+> **Stock combo (Escolpio WD145B):** Wheel: Escolpio · Track: WD145 · Bottom: Ball
+> **Stock combo (Grand Ketos T125/WD145 RS):** Clear Wheel: Ketos · Metal Wheel: Grand · Track: T125/WD145 · Bottom: Rubber Sharp
+
 WD145 is a 145-height Track (14.5 mm) with three fixed wings extending to 38 mm full width. Its wings are geometrically similar to ED145's but lack the free-spin bearing — they are rigidly coupled to the Track shaft. This single difference — fixed vs. free-spinning — is the entire reason WD145 fails at defense where ED145 succeeds: a free-spinning wing absorbs contact impulse by rotating with the hit; a fixed wing transmits 100% back to the combo. The more damaging failure mode is geometric: the radial gap between the underside of the Fusion Wheel (at its outer radius) and the top surface of the WD145 wings creates a slot approximately equal to (r_Wheel_outer − r_wing_inner) radially. An attacker's Wheel protrusion that enters this slot becomes mechanically coupled to the defender — the two combos briefly rotate as one body, dissipating the differential spin kinetic energy as heat and sound. This coupling event produces spin losses proportional to (ω_A − ω_D)², far larger than any normal contact impulse exchange.
 
 ---
@@ -3910,6 +3933,8 @@ function trapGapWidth_mm(r_wheel_outer: number, r_wing_outer = 19): number {
 ---
 
 ## Case 257 — E230 (Elevator 230) · 7.4 g: Why a Gravity-Driven Free-Sliding Disk That Cannot Rotate Independently Acts as a Passive Speed Governor on Zero-G Stadium Walls, How the Disk's Inertial Lag Produces a Restoring Torque That Stabilises the Combo During Wall Climbs, and Why Normal-Mode and Boost-Mode Disk Positions Change the Contact Geometry by 2 mm With Measurable Wall-Grip Consequences
+
+> **Stock combo (Thief Phoenic E230GCF):** Chrome Wheel(s): Phoenic · Crystal Wheel: Thief · Track: E230 · Bottom: Gear Circle Flat
 
 E230 is a 23 mm tall Track with a free-sliding disk that moves vertically along the shaft under gravity. At 7.4 g it is the heaviest Track in the MFB system — more than double the regular 230 (≈2 g) — because the disk and shaft mechanism add ~5 g of mass at large radius (48 mm full width). The disk cannot rotate independently around the shaft (unlike ED145's free-spinning wings) and its vertical position cannot be locked. The mechanism is passive and purely gravitational: as the beyblade climbs the angled walls of a Zero-G stadium, the disk's inertia resists the upward displacement — it lags behind the Track body — and this relative displacement places the disk in contact with the stadium wall, generating a friction force that opposes the climb and stabilises the combo's tilt angle. The design diagram confirms: "as [the beyblade] runs up the slope, the disk also moves upward [in the lab frame — stays at near-constant height while the Track body rises around it]. It always acts to suppress speed." Boost Mode (disk at 8 mm from bottom vs. normal 6 mm) occurs when the disk rides at its upper travel limit on a steeper wall segment, changing the wall contact radius and consequently the friction-moment arm by 2 mm.
 
@@ -4126,6 +4151,8 @@ function topplingLeverReduction(h_wheel_mm: number, h_disk_mm: number): number {
 
 ## Case 258 — SP230 (Spike 230) · weight unrecorded (est. ≈ 4.8 g)
 
+> **Stock combo (Gladiator Bahamdia SP230GF):** Chrome Wheel(s): Bahamdia · Crystal Wheel: Gladiator · Track: SP230 · Bottom: Giga Flat
+
 **Thesis: SP230's four fixed downward-facing spike protrusions extend the effective contact radius to r_spike ≈ 27 mm at mid-track height, creating a tilt-activated floor/wall contact that triggers at ~17° tilt angle regardless of spin rate; unlike BD145's centrifugal-extension mechanism the spike radius is spin-rate-independent and the contact geometry is always active.**
 
 SP230 is structurally analogous to BD145 in intent — both add outward protrusions to a tall disk body to extend the contact envelope beyond the Track shaft. BD145 uses centrifugal force to extend ball-bearing arms at high ω, retracting when spin drops. SP230 replaces the centrifugal mechanism with four rigid downward-facing diamond-tipped spikes at the disk perimeter: contact radius is fixed at all spin rates. The wiki claim of "speed control" is not aerodynamic — spike vane cross-section is negligible at beyblade spin rates (Case 257 established F_aero < 0.01% of gravitational force for thin sections at 10 000 RPM). The spikes are mechanical tilt-contact elements.
@@ -4298,6 +4325,8 @@ function orbitalBrakingEnergyPerRev(F_normal_N: number, alpha_wall_deg: number,
 ---
 
 ## Case 259 — F230 (Free 230) · 4.6 g
+
+> **Stock combo (Bandid Genbull F230TB):** Chrome Wheel(s): Genbull · Crystal Wheel: Bandid · Track: F230 · Bottom: Twin Ball
 
 **Thesis: A ball-bearing that decouples the lower disk from the upper shaft eliminates the forced-coupling torque that otherwise transmits from CF/GCF floor-rolling contact through the Track to the Wheel during LAD; the Wheel's only spin-loss mechanism during the LAD phase becomes air drag, reducing the effective spin-decay rate by approximately 2000–2500× compared to a rigid-Track LAD setup.**
 
@@ -4480,6 +4509,8 @@ function spinShieldDelta(J_contact_Ns: number, r_cf_m: number, I_disk_free: numb
 ---
 
 ## Case 260 — TB (Twin Ball) · weight unrecorded
+
+> **Stock combo (Bandid Genbull F230TB):** Chrome Wheel(s): Genbull · Crystal Wheel: Bandid · Track: F230 · Bottom: Twin Ball
 
 **Thesis: TB's hemispherical dome body extends the stable-precession tilt range to ~80° by providing a spherical contact surface whose effective friction radius scales as r_dome × sin(θ), causing the stabilising friction torque and the destabilising gravity torque to share the same sin(θ) factor — their ratio becomes θ-independent, whereas flat-rim Bottoms (WB, D) have a fixed friction radius that causes the ratio to decrease as tilt grows, progressively losing stability at high precession angles.**
 
@@ -4710,6 +4741,9 @@ function hertzContactArea_mm2(F_N: number, R_dome_mm: number, E_star_GPa: number
 
 ## Case 261 — Storm Metal Wheel · ≈ 28.5 g
 
+> **Stock combo (Storm Pegasis 105RF):** Clear Wheel: Pegasis · Metal Wheel: Storm · Track: 105 · Bottom: Rubber Flat
+> **Stock combo (Storm Capricorne M145Q):** Clear Wheel: Capricorne · Metal Wheel: Storm · Track: M145 · Bottom: Quake
+
 **Thesis: Storm's four swept-back wings concentrate effective contact mass at r ≈ 22 mm with a wing-face contact angle of ~40° from radial, producing a smash/recoil split of cos(40°)/sin(40°) ≈ 0.77/0.64 — a high smash coefficient paired with significant self-recoil that makes the wheel dependent on high ω to land net-positive impulse exchanges.**
 
 Storm is the archetypal Metal Fusion attack Wheel. Four swept-back wings extend from a central hub, each wing presenting a flat face to oncoming opponents. At high spin, the combination of four contact points (one per 90°) and the wing-face geometry delivers powerful smash impulses. The swept-back angle introduces a design tradeoff that defines the early Metal Fusion meta: maximum smash at the cost of self-recoil that penalises the attacker's own spin budget.
@@ -4870,6 +4904,11 @@ function netAttackAdvantage(phi_deg: number): number {
 ---
 
 ## Case 262 — Rock Metal Wheel · ≈ 28.0 g
+
+> **Stock combo (Rock Leone 145WB):** Clear Wheel: Leone · Metal Wheel: Rock · Track: 145 · Bottom: Wide Ball
+> **Stock combo (Rock Orso D125B):** Clear Wheel: Orso · Metal Wheel: Rock · Track: D125 · Bottom: Ball
+> **Stock combo (Rock Escolpio T125JB):** Clear Wheel: Escolpio · Metal Wheel: Rock · Track: T125 · Bottom: Jog Ball
+> **Stock combo (Rock Giraffe R145WB):** Clear Wheel: Giraffe · Metal Wheel: Rock · Track: R145 · Bottom: Wide Ball
 
 **Thesis: Rock's six rounded protrusions create a contact geometry where the contact normal is directed nearly radially at every impact angle, reducing the tangential (recoil-inducing) component of contact impulse to near zero and yielding a wheel that loses minimal spin on contact — the physical definition of a defense-type Metal Wheel.**
 
@@ -5157,6 +5196,10 @@ function upperAttackVertical(J: number, upper_angle_deg: number): number {
 
 ## Case 264 — Flame Metal Wheel · ≈ 29.0 g
 
+> **Stock combo (Flame Sagittario C145S):** Clear Wheel: Sagittario · Metal Wheel: Flame · Track: C145 · Bottom: Sharp
+> **Stock combo (Flame Libra T125ES):** Clear Wheel: Libra · Metal Wheel: Flame · Track: T125 · Bottom: Eternal Sharp
+> **Stock combo (Flame Byxis 230WD):** Clear Wheel: Byxis · Metal Wheel: Flame · Track: 230 · Bottom: Wide Defense
+
 **Thesis: Flame's smooth flame-shaped perimeter maintains a near-zero effective contact angle across most of its circumference, producing minimal recoil on any contact and near-zero aerodynamic disturbance — the profile that defines first-generation stamina-type Metal Wheel geometry.**
 
 Flame introduces the circular/smooth-perimeter design philosophy to Metal Fusion. Unlike Storm (4 sharp wings) or Rock (6 discrete bumps), Flame's profile follows gentle undulating curves that simulate the silhouette of a flame. The peaks and troughs of the profile never deviate more than ~2–3 mm radially from the average radius — the effective contact geometry is nearly circular everywhere.
@@ -5277,6 +5320,8 @@ function recoilReductionVsStorm_factor(phi_flame_deg: number, phi_storm_deg = 40
 ---
 
 ## Case 265 — Burn Metal Wheel · ≈ 29.5 g
+
+> **Stock combo (Burn Phoenix 135MS):** Clear Wheel: Phoenix · Metal Wheel: Burn · Track: 135 · Bottom: Metal Sharp
 
 **Thesis: Burn achieves the most circular perimeter profile of any Metal Fusion Wheel by distributing mass as a smooth ring with minimal radial deviation, reducing the effective contact angle to below 3° at all azimuths — making it the lowest-recoil and lowest-air-drag Metal Wheel of the first series and the stamina benchmark it became.**
 
@@ -5418,6 +5463,9 @@ function momentOfInertia(m_g: number, r_inner_mm: number, r_outer_mm: number): n
 ---
 
 ## Case 266 — Earth Metal Wheel · ≈ 30.0 g
+
+> **Stock combo (Earth Aquila 145WD):** Clear Wheel: Aquila · Metal Wheel: Earth · Track: 145 · Bottom: Wide Defense
+> **Stock combo (Earth Virgo GB145BS):** Clear Wheel: Virgo · Metal Wheel: Earth · Track: GB145 · Bottom: Ball Sharp
 
 **Thesis: Earth is the heaviest Metal Wheel of the first series with the most uniform mass distribution, combining the highest I_total with a near-circular contact profile — the combination that makes it the first-series stamina and defense crossover, edging Burn in spin endurance through I superiority and edging Rock in defense through heavier impact mass.**
 
@@ -5580,6 +5628,8 @@ function spinDecayRateRatio(I_earth: number, I_other: number): number {
 
 ## Case 267 — L Drago Metal Wheel · 32 g
 
+> **Stock combo (L Drago 105F):** Wheel: L Drago · Track: 105 · Bottom: Flat
+
 **Thesis: L Drago's three large dragon-head slopes have no defined sharp contact edge, so contact events produce no discrete impulse — instead the slope geometry converts prolonged surface engagement into a vertical-component force that applies an off-axis destabilising torque to the opponent, and the left-spin direction is mechanically necessary for this slope-ram geometry to have the correct directionality.**
 
 L Drago is the first left-spin Metal Wheel. Its three dragon-head units are shaped as asymmetric ramps: the "snout and teeth" region is flat and low, tapering upward across the body to the thick "horn and neck" peak. There are no sharp wing tips like Storm, no rounded discrete bumps like Rock. The contact surface is a continuous inclined face — a wedge geometry that functions differently from all other Metal Fusion Wheels.
@@ -5731,6 +5781,8 @@ function leftSpinRelativeVelocity(omega_LDrago: number, omega_opponent: number,
 
 ## Case 268 — Leone Metal Wheel · 38.0 g · r_outer = 21.79 mm · h = 8.97 mm
 
+> **Stock combo (Leone 145D):** Wheel: Leone · Track: 145 · Bottom: Defense
+
 **Thesis: Leone's perimeter consists of approximately eighteen small rectangular block segments grouped in three clusters; each block face presents a contact angle of ~20° from radial, producing higher self-recoil per contact than Rock (7°) but exploitable as a directed recoil attacker where the post-contact rebound velocity becomes the ring-out mechanism — Leone is a recoil attacker dressed in a defensive silhouette.**
 
 Leone is classified as a defense Wheel by appearance — many small segments arranged in an approximate circle — but its competitive use is as a recoil attacker. The distinction hinges on the block segment contact geometry. Rock's protrusions are rounded (low contact angle, minimal recoil). Leone's blocks are rectangular with sharp outer edges, creating a contact angle around 20° from radial. This is not high enough for powerful smash, but high enough to generate significant recoil velocity that propels both combos apart on impact.
@@ -5864,6 +5916,8 @@ function recoilVsRock(phi_leone_deg: number, phi_rock_deg = 7): number {
 ---
 
 ## Case 269 — Libra Metal Wheel · 40.5 g (three molds)
+
+> **Stock combo (Libra DF145BS):** Wheel: Libra · Track: DF145 · Bottom: Ball Sharp
 
 **Thesis: Libra's wide outer ring at maximum radius gives it the highest I of any Metal Fusion Wheel before Basalt, while the micro-notch perimeter maintains a near-zero average contact angle — the combination of maximum flywheel I and minimum recoil defines the defense ceiling of the first era; the three mold evolution is a fatigue-failure case study in spoke–ring junction stress concentration under repeated impact loading.**
 
@@ -6048,6 +6102,8 @@ function libraI(m_outer_g: number, r_out_mm: number, r_in_mm: number,
 ---
 
 ## Case 270 — Pegasis Metal Wheel · 36.0 g · r_outer ≈ 22.20 mm · h = 12.16 mm
+
+> **Stock combo (Pegasis 105F):** Wheel: Pegasis · Track: 105 · Bottom: Flat
 
 **Thesis: Pegasis's three swept protrusions carry two pointed ridges near each tip, concentrating contact impulse into a small Hertzian contact patch that maximises peak normal force per unit impulse — the tall 12.16 mm height allows the upward-curving protrusion faces to engage opponent Wheels at a range of heights with an upper-attack vertical component; the design-change history is a breakage case driven by stress concentration at the thin protrusion root under combined centrifugal and smash loading.**
 
@@ -6238,6 +6294,8 @@ function smashRecoilRatio(phi_deg: number): number {
 
 ## Case 271 — Pisces Metal Wheel · 35.4 g
 
+> **Stock combo (Pisces D125BS):** Wheel: Pisces · Track: D125 · Bottom: Ball Sharp
+
 **Thesis: Pisces is a hybrid stamina/defense Wheel that fails at both because its two shark-head tips introduce a contact angle of ~15–18° at the head termination points — enough to produce 2.5× the self-recoil of Earth per contact event despite carrying 5.4 g more mass — and the 2-fold open arm structure distributes mass at a lower effective radius than a closed annular ring, yielding less I per gram than Libra while still generating recoil that Earth avoids entirely.**
 
 Pisces carries two curved shark-body arms aligned clockwise, each tapering from a thick head at the leading edge to a thin tail at the trailing edge. The body between the two arms is open — there is no metal in the inter-arm gaps. The sharks' heads are pointed but, per the wiki, "not exposed prominently enough to provide any significant Smash Attack." The effective contact geometry sits between pure stamina (Earth: φ ≈ 1.3°) and dedicated attack (Storm: φ ≈ 40°), in a mid-range that serves neither role well.
@@ -6377,6 +6435,8 @@ function spinRetentionAfterNContacts(phi_deg: number, I: number, J: number,
 
 ## Case 272 — Sagittario Metal Wheel · weight unrecorded (est. ≈ 31 g)
 
+> **Stock combo (Sagittario 145S):** Wheel: Sagittario · Track: 145 · Bottom: Sharp
+
 **Thesis: Sagittario's two large crescents produce a 2-fold geometry where the crescent termination edges function as smash contact faces at ~25–30° from radial, while the crescent body arcs are smooth; the two small inter-crescent gaps create secondary contact discontinuities — together these give the Wheel a smash attack capability that its round gross silhouette does not predict, at the cost of recoil that eliminates it from stamina competition.**
 
 Sagittario appears nearly circular from a distance — two large crescent arcs sweep around most of the Wheel's circumference, leaving only two small gaps between them. The overall form is more enclosed than Pisces or L Drago, which initially suggests stamina or defense. However, the crescent ends (where each arc terminates into a gap) are the critical geometry: each end presents an abrupt face that has a significant contact angle, creating smash attack at those specific azimuthal positions.
@@ -6509,6 +6569,8 @@ function spinLossVariance(J: number, phi_end_deg: number, phi_body_deg: number,
 ---
 
 ## Case 273 — Virgo Metal Wheel · 37.0 g
+
+> **Stock combo (Virgo DF145BS):** Wheel: Virgo · Track: DF145 · Bottom: Ball Sharp
 
 **Thesis: Virgo's two long spiral slopes form the most geometrically circular profile of any first-series Metal Wheel at near-zero average contact angle, but the 2-fold symmetry makes the Wheel acutely sensitive to manufacturing imbalance — a CoM displacement of as little as 0.2–0.3 mm from the spin axis produces a dynamic imbalance resonance that more than doubles the spin decay rate, explaining the documented mold-to-mold performance disparity of 3 minutes vs. 5 minutes solo spin time.**
 
@@ -6706,6 +6768,9 @@ Clear Wheels are always lighter than the Metal Wheel below them. Their physics c
 
 ## Case 274 — Leone Clear Wheel · 3.0 g
 
+> **Stock combo (Rock Leone 145WB):** Clear Wheel: Leone · Metal Wheel: Rock · Track: 145 · Bottom: Wide Ball
+> **Stock combo (Counter Leone D125B):** Clear Wheel: Leone · Metal Wheel: Counter · Track: D125 · Bottom: Ball
+
 **Thesis: The Leone Clear Wheel's circular outer profile with sub-millimetre ridge details contributes a contact angle near zero at the upper contact height — it acts as a zero-recoil deflection cap above the Fusion Wheel and its 3 g at h ≈ 26 mm raises the combo CoM by ~0.4 mm, marginally reducing the critical tilt angle at which precession begins; the I contribution (5.79×10⁻⁷ kg·m²) is negligible relative to the Leone Metal Wheel below it.**
 
 The Leone Clear Wheel is a translucent teal ABS ring with small ridge details on its upper face and outer perimeter. Its outer profile is circular — matching the defensive, smooth-perimeter philosophy of the Leone Metal Wheel it pairs with. The ridge details are structural ribs on the top face that interlock with the Face Bolt and provide launcher-prong clearance slots; they do not protrude at the outer edge and do not create contact-face irregularities in the lateral direction.
@@ -6837,6 +6902,8 @@ function precessonOnsetShift(delta_h_com: number, h_com: number): number {
 ---
 
 ## Case 275 — Nemesis 4D Clear Wheel · 3.23 g
+
+> **Stock combo (Diablo Nemesis X:D):** 4D Clear Wheel: Nemesis · 4D Metal Wheel: Diablo · Bottom: X Drive
 
 **Thesis: The Nemesis 4D Clear Wheel is 0.23 g heavier than a standard 3 g Clear Wheel — a mass difference traceable to the high surface-detail density of its two-half composite design and confirmed as a 4D variant by the visible metallic sparkle in the smoke-tinted ABS; its two-half design asymmetry produces a small but calculable CoM offset that dilutes to ~0.034 mm effective combo imbalance when combined with a ~40 g Fusion Wheel, falling within the safe balance envelope.**
 
@@ -7001,6 +7068,8 @@ function cwContactRecoil(J: number, phi_deg: number): number {
 ---
 
 ## Case 276 — VariAres 4D Metal Wheel: Centrifugal PC Frame Retraction and Three-Wing Smash Geometry
+
+> **Stock combo (VariAres D:D):** 4D Metal Wheel: VariAres · Bottom: Delta Drive
 
 VariAres is a 43.6 g zinc-alloy 4D Metal Wheel spanning 50 mm full diameter. Its defining mechanism is a centrifugal mode-switch: three yellow PC Frame segments fill the inter-wing gaps at rest (Defense Mode, plastic-buffered contact) and retract inward above a critical angular velocity ω_c (Attack Mode, bare metal wing tips exposed). Unlike BD145 whose centrifugal cam modulates track height along the spin axis, VariAres' mechanism operates in the equatorial plane — internal weighted cam arms expand radially under centrifugal loading, and via a three-point linkage housed behind a rigid polycarbonate underside cover, convert that outward motion into inward translation of the PC Frame pivots. The three-wing acute-tip design with six spike indents per wing provides high smash impulse at tip contact but incurs severe recoil when glancing contacts strike the wing flanks. Both left and right spin are effective because the wing tips are geometrically abrupt (not swept), keeping the radial-normal contact angle near-equal for both approach azimuths.
 
@@ -7179,6 +7248,8 @@ function defenseModePCAttenuation(
 
 ## Case 277 — D:D (Delta Drive) Bottom: Three-Tip Manual Mode Selector and CoM Height Gradient
 
+> **Stock combo (VariAres D:D):** 4D Metal Wheel: VariAres · Bottom: Delta Drive
+
 D:D is a 5.5 g bottom housing three distinct tip geometries on a single axis, selectable between battles by axially pulling the tip, rotating 120° to the next detent, and pressing back in. The three modes are Sharp (S, 40° half-angle), Wide Ball (WB, hemispherical dome), and Flat (F, broad disc). Each tip carries a different friction torque and gyroscopic stability characteristic; the 0.94 mm height span across modes produces a measurable shift in combo center-of-mass height above the floor contact. Despite its versatility, none of the three encased tips outperforms dedicated alternatives: S is inferior to WD, WB is inferior to CS, and F is inferior to RF.
 
 ```
@@ -7303,6 +7374,8 @@ function ddRFMultiple(tau_F: number, mu_RF: number, m_combo_g: number, r_RF_mm: 
 
 ## Case 278 — Horogium Clear Wheel: Clock-Motif Asymmetry and Gear-Tooth Perimeter Air Drag
 
+> **Stock combo (Basalt Horogium 145WD):** Clear Wheel: Horogium · Metal Wheel: Basalt · Track: 145 · Bottom: Wide Defense
+
 The Horogium Clear Wheel (2.71 g, 38 mm full width) is a translucent gray-blue annular ring whose outer circumference is formed as a continuous gear-tooth track carrying white Roman numerals I–XII. The clock motif introduces two sources of angular asymmetry: a rectangular material gap where the numeral "III" is omitted from the outer ring, and two raised clock-hand protrusions at fixed angular positions. The combined CoM displacement from these features renders Horogium unsuitable for stamina or defense combos, where even sub-millimetre imbalance at the CW radius accelerates spin decay. The gear teeth themselves contribute a measurable increase in aerodynamic drag torque at the outer radius.
 
 ```
@@ -7379,6 +7452,8 @@ function toothDragFractionIncrease(N_teeth: number, h_tooth_mm: number, w_tooth_
 ---
 
 ## Case 279 — Basalt Metal Wheel: Maximum-Weight Annular Defense and Spiral Staircase of Death Imbalance
+
+> **Stock combo (Basalt Horogium 145WD):** Clear Wheel: Horogium · Metal Wheel: Basalt · Track: 145 · Bottom: Wide Defense
 
 Basalt (47.52 g) was the heaviest Metal Wheel at time of release, surpassing even Libra by approximately 7 g. Its geometry is near-cylindrical: a continuous outer ring of radius 21.5–22.0 mm spanning 11.0 mm in height with a 2.0 mm overhang protruding outward at the top, connected to a central hub via five internal spokes. The outer perimeter carries approximately 64 fine vertical serrations (knurling) that suppress spin transfer during contact. The interior contains a deliberate design asymmetry — the "Spiral Staircase of Death" — a helical material removal on the inner face spanning the full 10 mm of the lower wheel height, intended to partially neuter the wheel's dominance by introducing dynamic imbalance. Despite this, Basalt achieves the highest moment of inertia of any single-layer Metal Wheel.
 
@@ -7564,6 +7639,16 @@ function knurledSpinTransferFraction(tooth_width_mm: number, tooth_pitch_mm: num
 ---
 
 ## Case 280 — 145 Track: Height-Limited Tilt Angle and Precession Amplitude
+
+> **Stock combo (Sagittario 145S):** Wheel: Sagittario · Track: 145 · Bottom: Sharp
+> **Stock combo (Leone 145D):** Wheel: Leone · Track: 145 · Bottom: Defense
+> **Stock combo (Rock Leone 145WB):** Clear Wheel: Leone · Metal Wheel: Rock · Track: 145 · Bottom: Wide Ball
+> **Stock combo (Earth Aquila 145WD):** Clear Wheel: Aquila · Metal Wheel: Earth · Track: 145 · Bottom: Wide Defense
+> **Stock combo (Vulcan Horuseus 145D):** Clear Wheel: Horuseus · Metal Wheel: Vulcan · Track: 145 · Bottom: Defense
+> **Stock combo (Basalt Horogium 145WD):** Clear Wheel: Horogium · Metal Wheel: Basalt · Track: 145 · Bottom: Wide Defense
+> **Stock combo (Kreis Cygnus 145WD):** 4D Clear Wheel: Cygnus · 4D Metal Wheel: Kreis · Track: 145 · Bottom: Wide Defense
+> **Stock combo (Pirates Orojya 145D):** Chrome Wheel(s): Orojya · Crystal Wheel: Pirates · Track: 145 · Bottom: Defense
+> *(+1 more stock combos — see INDEX.md)*
 
 The 145 Track (1.47 g, 14.5 mm height) was the tallest standard Track until the 230 arrived with Flame Byxis. Its primary physics contribution is not to spin decay or contact mechanics directly, but to the maximum tilt angle a combo can sustain before the Metal Wheel rim contacts the stadium floor. A larger maximum tilt enables longer precession at the end of spin, which translates to extended match survival time for stamina combos. The track's full width of 20 mm and minimum width of 18 mm indicate a slightly tapered profile that also creates a narrow air-gap clearance above the wheel that reduces aerodynamic turbulence compared to fully overhanging track geometries.
 
@@ -7775,6 +7860,8 @@ function wdWeakShotPrecessionEntry_s(omega_weak: number, omega_precess_threshold
 
 ## Case 282 — Aquila Clear Wheel: Two-Fold Wing Symmetry, Principal Moment Anisotropy, and Earth-Fit Geometry
 
+> **Stock combo (Earth Aquila 145WD):** Clear Wheel: Aquila · Metal Wheel: Earth · Track: 145 · Bottom: Wide Defense
+
 The Aquila Clear Wheel (2.9 g) is a translucent ABS ring with two-fold (C₂) rotational symmetry: two large horseshoe arc wings dominate the 0°–180° axis, and two small spike protrusions ("eagle head" notches) sit at 90° and 270°. This bilateral arrangement differs from the three-lobe or four-lobe symmetry of most Clear Wheels; two-fold symmetry guarantees zero static imbalance (CoM on axis) but produces a measurable principal moment anisotropy where the in-plane moment of inertia is significantly higher along the axis perpendicular to the wings than along the axis through the wing tips. The spike protrusions are geometrically keyed to fit Earth Metal Wheel's inner notches, reducing micro-play at the CW/MW interface that would otherwise introduce a periodic wobble at ω.
 
 ```
@@ -7880,6 +7967,9 @@ function cwAngularCoverage(arc_deg: number, n_arcs: number, spike_deg: number, n
 ---
 
 ## Case 283 — Earth Metal Wheel: Minimal-Gap Near-Circular Defense and Two-Mold Structural Evolution
+
+> **Stock combo (Earth Aquila 145WD):** Clear Wheel: Aquila · Metal Wheel: Earth · Track: 145 · Bottom: Wide Defense
+> **Stock combo (Earth Virgo GB145BS):** Clear Wheel: Virgo · Metal Wheel: Earth · Track: GB145 · Bottom: Ball Sharp
 
 Earth (30.8 g original / 33 g second mold, 45 mm full width) is a four-winged Metal Wheel whose defining characteristic is the near-elimination of inter-wing gaps: only 2.0–2.5 mm separate each wing pair, covering over 93% of the outer circumference with solid metal. This near-circular profile reduces the contact angle φ from the spin axis to approximately 4°, yielding a recoil ratio of tan(4°) ≈ 0.07 — the lowest among the standard single-layer Metal Wheel catalog. Each wing pair is inclined at ~12° from horizontal (side declination), which routes a fraction of every impact force downward into the stadium floor, creating an in-battle grounding effect. The original mold suffered fatigue fractures at the wing roots under repeated high-speed impacts; the second mold adds 2–3 g of material concentrated at the wing root cross-sections, lowering local stress below the zinc endurance limit and simultaneously increasing I by ~8%.
 
@@ -8074,6 +8164,8 @@ function angularMomentumRatio(I1: number, I2: number): number {
 
 ## Case 284 — Unicorno II 4D Clear Wheel: Iron-Powder Density Augmentation and Three-Fold Inertial Isotropy
 
+> **Stock combo (Blitz Unicorno 100RSF):** 4D Clear Wheel: Unicorno II · 4D Metal Wheel: Blitz · Track: 100 · Bottom: Rubber Semi-Flat
+
 The Unicorno II 4D Clear Wheel (3.27 g) is a translucent teal-blue ABS ring with three-fold (C₃) rotational symmetry, featuring three unicorn-horn protrusions at 120° intervals. It is physically wider and more elevated than the original Unicorno Clear Wheel and incorporates iron powder dispersed throughout the ABS matrix — the same composite technique used in Nemesis 4D (Case 275). Three-fold symmetry makes the in-plane inertia tensor isotropic (I_xx = I_yy for all axes through center), eliminating the principal moment anisotropy that drives nutation in two-fold designs like Aquila. This makes Unicorno II the superior choice among three-sided Clear Wheels where rotational stability matters.
 
 ```
@@ -8162,6 +8254,8 @@ function cwCoMHeightShift_mm(m_CW_g: number, delta_h_CW_mm: number, m_combo_g: n
 ---
 
 ## Case 285 — Blitz 4D Metal Wheel: Two-Piece Composite Inertia, Mode-Dependent Wing Geometry, and Slope-Bump Contact Profile
+
+> **Stock combo (Blitz Unicorno 100RSF):** 4D Clear Wheel: Unicorno II · 4D Metal Wheel: Blitz · Track: 100 · Bottom: Rubber Semi-Flat
 
 Blitz (43.72 g total = Core 31.07 g + Metal Frame 12.65 g) is a two-piece 4D Metal Wheel in which the Metal Frame's three protrusions interlock with the Core's six contact zones in two distinct angular configurations. Assault Attack Mode aligns frame protrusions with Core contacts to form three wide swept wings; Barrage Attack Mode shifts the frame by one position to create six shorter, more separated protrusions. The Core's contact surfaces feature a specific slope-then-bump geometry: a rising ramp leads to a peak "bump" at the leading edge of each primary contact, then a falling slope exits. This produces a concentrated peak-force impulse profile that enables decisive smash even at low spin rates. The wheel carries the highest recoil of any analyzed wheel in this series — a direct consequence of the deeply swept wing geometry — while Assault Mode recoil is measurably lower than Barrage Mode.
 
@@ -8333,6 +8427,13 @@ function gyroResistanceForce(I_opponent: number, omega: number, r_contact_m: num
 
 ## Case 286 — 100 Track: Attack-Bracket Height Positioning and Vertical Impulse Geometry
 
+> **Stock combo (Capricorne 100HF):** Wheel: Capricorne · Track: 100 · Bottom: Hole Flat
+> **Stock combo (Wind Aquario 100HF/S):** Clear Wheel: Aquario · Metal Wheel: Wind (Light) · Track: 100 · Bottom: Hole Flat / Sharp
+> **Stock combo (Lightning L Drago 100HF):** Clear Wheel: L Drago · Metal Wheel: Lightning · Track: 100 · Bottom: Hole Flat
+> **Stock combo (Cyber Pegasis 100HF):** Clear Wheel: Pegasis · Metal Wheel: Cyber · Track: 100 · Bottom: Hole Flat
+> **Stock combo (Ray Gill 100RSF):** Clear Wheel: Gill · Metal Wheel: Ray · Track: 100 · Bottom: Rubber Semi Flat
+> **Stock combo (Blitz Unicorno 100RSF):** 4D Clear Wheel: Unicorno II · 4D Metal Wheel: Blitz · Track: 100 · Bottom: Rubber Semi-Flat
+
 The 100 Track (1.0 g, 10.0 mm height) sits at the third-lowest standard height available in MFB, behind 90 (9 mm) and 85 (8.5 mm). Its physics relevance for attack combos is primarily geometric: the track height determines the vertical offset between the attacker's wheel strike plane and the opponent's wheel center of mass, which governs the ratio of ring-out impulse (horizontal) to tipping impulse (vertical torque about opponent's tip). At 10 mm, the attacker's wheel engages the opponent's wheel at a height where most standard-height defenders (145, BD145, CH120) present their wheel center to the attack, maximising direct ring-out transfer rather than riding under or over the opponent.
 
 ```
@@ -8411,6 +8512,9 @@ function vertImpulseDecomposition(J: number, delta_h_mm: number, r_impact_mm: nu
 ---
 
 ## Case 287 — RSF (Rubber Semi-Flat) Bottom: Rubber Friction Geometry, Mold-Hardness Contact Area, and L-Spin Torque Reversal
+
+> **Stock combo (Ray Gill 100RSF):** Clear Wheel: Gill · Metal Wheel: Ray · Track: 100 · Bottom: Rubber Semi Flat
+> **Stock combo (Blitz Unicorno 100RSF):** 4D Clear Wheel: Unicorno II · 4D Metal Wheel: Blitz · Track: 100 · Bottom: Rubber Semi-Flat
 
 RSF (0.7 g) is an all-rubber bottom with a partially flat contact face — narrower than RF (r ≈ 8 mm vs RF's ~12 mm) but with the same high-friction rubber compound (μ ≈ 0.75). The smaller flat radius provides a balance between RF's aggressive full-grip motion and RS's precise pivot point: the reduced contact area allows more controlled directional movement while retaining rubber-grip energy coupling for burst attack combinations. Two mold variants exist: a harder rubber (included with Blitz Unicorno) and a softer rubber (Random Booster Vol. 7). The softer mold increases effective contact area through greater elastic deformation, producing more aggressive motion — quantified via Hertzian contact mechanics.
 
@@ -8535,6 +8639,8 @@ function lSpinAmplificationFactor(mu_rubber: number, mu_ABS: number): number {
 ---
 
 ## Case 288 — Vulcan Metal Wheel: Two-Mold Mass Redistribution, Pseudo-Upper-Attack Slope Analysis, and Rubber-Tip Impulse Threshold
+
+> **Stock combo (Vulcan Horuseus 145D):** Clear Wheel: Horuseus · Metal Wheel: Vulcan · Track: 145 · Bottom: Defense
 
 Vulcan (32.1 g mold 1 / 33.2 g mold 2) has two large semi-circular prominences at 0° and 180° and two smaller wings at 90° and 270° — a C₂ symmetric layout. Each prominence carries a slight outward-upward slope on its leading face that the design implies for upper attack; quantitative analysis shows the slope angle (~6–8°) is too shallow to generate a meaningful vertical impulse fraction, so all competitive contact is smash. Mold 2 adds 1.1 g to the "tail end" of each prominence's outer wall — at large radius (r ≈ 20–22 mm) — increasing both inertia and angular momentum, which reduces the spin velocity change per collision and thereby reduces experienced recoil. The same additional material marginally narrows the gap adjacent to the smaller wings, slightly restricting their contact arc at equal-height matchups. Vulcan's hard-zinc surface is structurally unsuited against rubber-tipped defense bottoms: the rubber's 5× higher friction coefficient requires proportionally more impulse for ring-out — a threshold Vulcan cannot reliably exceed.
 
@@ -8705,6 +8811,9 @@ function vulcanRingOutProbability(J_initial: number, epsilon: number, J_required
 
 ## Case 289 — Flame Metal Wheel: Crown-Profile Track Exposure, Floor-Scrape Clearance Angle, and Stamina Decay Mechanics
 
+> **Stock combo (Flame Libra T125ES):** Clear Wheel: Libra · Metal Wheel: Flame · Track: T125 · Bottom: Eternal Sharp
+> **Stock combo (Flame Byxis 230WD):** Clear Wheel: Byxis · Metal Wheel: Flame · Track: 230 · Bottom: Wide Defense
+
 Flame (32.5 g) is a predominantly circular Metal Wheel with two small spike protrusions and two minor gap recesses distributed around its near-uniform outer ring. Its defining structural feature is a crown profile: the outer rim is raised slightly above the flat inner section, creating a bowl-like inward curve across the wheel face. This has two opposing consequences — it elevates the effective floor-clearance angle during precession (increasing wobble time, historically useful for stamina) while simultaneously exposing the track's upper face to incoming attackers (reducing defense). Flame was top-tier stamina in the early MFB era because its thin, flat geometry generated low aerodynamic drag and its raised rim allowed large-angle precession; it fell out of use when heavier wheels (Basalt, Earth) provided angular momentum that stamina mechanics can sustain, overriding Flame's marginal drag advantage.
 
 ```
@@ -8871,6 +8980,8 @@ function angularMomentumDeficit(I_challenger: number, I_target: number, omega: n
 
 ## Case 290 — Pegasis II Clear Wheel (3.1 g)
 
+> **Stock combo (Galaxy Pegasis W105R²F):** Clear Wheel: Pegasis II · Metal Wheel: Galaxy · Track: W105 · Bottom: R²F
+
 **Thesis:** Three-wing C₃ symmetry with raised letter-relief features concentrates mass at intermediate radii; iron-powder loading (if present in the 4D-era mold) shifts principal moment outward, but at 3.1 g the CW contributes negligibly to total system inertia — its physics role is purely contact-angle delivery.
 
 ### Geometry
@@ -8990,6 +9101,8 @@ function contactSmashFraction(phi_deg: number): number {
 ---
 
 ## Case 291 — Galaxy Metal Wheel (29.4 g)
+
+> **Stock combo (Galaxy Pegasis W105R²F):** Clear Wheel: Pegasis II · Metal Wheel: Galaxy · Track: W105 · Bottom: R²F
 
 **Thesis:** Galaxy's three rounded hollow-underside wings create an aggressive upper-attack silhouette but the hollow undersides shift mass centroid inward, reducing effective outer-radius inertia below what the 29.4 g total mass implies; combined with a relatively shallow floor clearance, Galaxy is a low-smash, moderate-stamina wheel that lost top-tier status when heavier molds became the standard.
 
@@ -9161,6 +9274,9 @@ function angularMomentum(I: number, omega: number): number {
 
 ## Case 292 — Wing 105 Track / W105 (1.2 g)
 
+> **Stock combo (Galaxy Pegasis W105R²F):** Clear Wheel: Pegasis II · Metal Wheel: Galaxy · Track: W105 · Bottom: R²F
+> **Stock combo (Samurai Pegasis W105R²F):** Chrome Wheel(s): Pegasis · Crystal Wheel: Samurai · Track: W105 · Bottom: R²F
+
 **Thesis:** Wing 105's two curved downward fins add ~0.2 g above a plain 105 Track but generate negligible aerodynamic lift at competitive spin rates — the fins are too small, too close to the spin axis, and mounted at too gentle an angle to produce measurable normal force. For physics purposes W105 ≡ 105 with a marginal drag penalty.
 
 ### Geometry
@@ -9304,6 +9420,9 @@ function spinDecayFromDrag(tau_drag: number, I_system: number, t_s: number): num
 ---
 
 ## Case 293 — R²F Bottom / Right Rubber Flat (0.8 g)
+
+> **Stock combo (Galaxy Pegasis W105R²F):** Clear Wheel: Pegasis II · Metal Wheel: Galaxy · Track: W105 · Bottom: R²F
+> **Stock combo (Samurai Pegasis W105R²F):** Chrome Wheel(s): Pegasis · Crystal Wheel: Samurai · Track: W105 · Bottom: R²F
 
 **Thesis:** R²F places six curved rubber spike-pads in a configuration optimised for R-spin (clockwise from above), delivering higher static traction than RF through increased pad-count and altered contact geometry; three mold variants (bar/no-bar/quasi-bar) differ in internal spoke architecture but share identical external contact surface; new R²F outperforms worn RF but requires ~1–2 hours of wear-in before spike tips conform to the arena floor and deliver peak grip.
 
@@ -9486,6 +9605,8 @@ function rubberRingOutThreshold(m_kg: number, mu_eff: number, g: number, dt_sett
 
 ## Case 294 — Ketos Clear Wheel (2.5 g)
 
+> **Stock combo (Grand Ketos T125/WD145 RS):** Clear Wheel: Ketos · Metal Wheel: Grand · Track: T125/WD145 · Bottom: Rubber Sharp
+
 **Thesis:** Ketos is a C₂-symmetric oval CW (37.5 mm × 31.5 mm) whose opposing-direction wave panels create contact-angle asymmetry around the circumference — R-spin contacts present a different surface curvature to attackers than L-spin contacts at the same angular position, introducing a small spin-direction-dependent recoil variation; at 2.5 g the inertia contribution remains negligible but the geometry-driven recoil difference is measurable.
 
 ### Geometry
@@ -9627,6 +9748,8 @@ function waveRecoilRatio(phi_concave_deg: number, phi_convex_deg: number): numbe
 ---
 
 ## Case 295 — Grand Metal Wheel (29.3 g)
+
+> **Stock combo (Grand Ketos T125/WD145 RS):** Clear Wheel: Ketos · Metal Wheel: Grand · Track: T125/WD145 · Bottom: Rubber Sharp
 
 **Thesis:** Grand's large outer radius (r_o = 22.5 mm) and thick 9.5 mm profile give it a competitive moment of inertia close to Earth mold 2, but six textured-indent wall faces introduce a systematic recoil fraction on every contact — each hit bleeds angular momentum back to the attacker rather than absorbing it, making Grand fundamentally unsuited for defense despite its mass and geometry.
 
@@ -9813,6 +9936,8 @@ function gapWobbleForce(m_kg: number, omega: number, r_wall_mm: number, r_gap_mm
 ---
 
 ## Case 296 — Rubber Sharp / RS (0.8 g)
+
+> **Stock combo (Grand Ketos T125/WD145 RS):** Clear Wheel: Ketos · Metal Wheel: Grand · Track: T125/WD145 · Bottom: Rubber Sharp
 
 **Thesis:** RS combines rubber's high friction coefficient with a sharp conical tip geometry (80° included angle) to create a stationary anti-KO pivot — the rubber deforms under load to a contact patch ~65× larger than a hard sharp tip, multiplying friction force by 5× and making lateral displacement extremely resistant; the same deformation-driven contact area causes ~324× greater spin-decay torque than hard SP, explaining RS's poor stamina; the L-spin susceptibility arises because rubber's high μ amplifies the counter-spin friction torque delivered by L-spin contact rims.
 

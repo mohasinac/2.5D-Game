@@ -31,6 +31,10 @@ const LIQUID_COLORS: Record<string, number> = {
   poison: 0xbb44ff,
 };
 
+function complementary(c: number): number {
+  return ((255 - ((c >> 16) & 0xff)) << 16) | ((255 - ((c >> 8) & 0xff)) << 8) | (255 - (c & 0xff));
+}
+
 const OBSTACLE_COLORS: Record<string, number> = {
   rock:     0x88837a,
   pillar:   0x9aa1ab,
@@ -541,6 +545,8 @@ export class FeatureRenderer {
     const r = cmToWorldPx(o.radius);
     const color = OBSTACLE_COLORS[o.type] ?? 0x808080;
 
+    // Complementary outline for visibility against any background.
+    g.circle(x, y, r + 2).stroke({ color: complementary(color), width: 2, alpha: 0.9 });
     // Drop shadow (height illusion).
     g.circle(x + 2, y + 3, r).fill({ color: 0x000000, alpha: 0.4 });
     // Body.
@@ -563,6 +569,8 @@ export class FeatureRenderer {
       const x = cmToWorldPx(p.x);
       const y = cmToWorldPx(p.y);
       const r = cmToWorldPx(p.radius);
+      // Complementary outline for visibility.
+      g.circle(x, y, r * 1.1).stroke({ color: complementary(0x0a0d18), width: 2, alpha: 0.9 });
       // Outer rim.
       g.circle(x, y, r * 1.05).fill({ color: 0x000000, alpha: 0.5 });
       // Inner dark gradient (faked w/ two stacked circles).
@@ -587,6 +595,7 @@ export class FeatureRenderer {
       g.clear();
       if (!g.visible) return;
       const color = LIQUID_COLORS[w.liquidType] ?? 0x4488ff;
+      const outlineColor = complementary(color);
       const fillAlpha = w.liquidType === "ice" ? 0.4 : 0.55;
       const x = cmToWorldPx(w.x ?? 0);
       const y = cmToWorldPx(w.y ?? 0);
@@ -596,12 +605,10 @@ export class FeatureRenderer {
       if (shape === "annulus" && w.innerRadius != null && w.outerRadius != null) {
         const ri = cmToWorldPx(w.innerRadius);
         const ro = cmToWorldPx(w.outerRadius);
-        // Approximate annulus with two filled circles via even-odd-ish trick:
-        // draw outer ring then knock out interior using black-alpha overlay.
+        g.circle(x, y, ro + 2).stroke({ color: outlineColor, width: 2, alpha: 0.9 });
         g.circle(x, y, ro).fill({ color, alpha: fillAlpha });
         g.circle(x, y, ri).cut?.();
         if (!(g as any).cut) {
-          // PIXI 8 has no native hole; emulate with a same-color-as-floor disk.
           g.circle(x, y, ri).fill({ color: 0x000000, alpha: 0 });
         }
         g.circle(x, y, ro).stroke({ color, width: 2, alpha: 0.85 });
@@ -609,15 +616,18 @@ export class FeatureRenderer {
       } else if (shape === "rectangle" || shape === "square") {
         const ww = cmToWorldPx(w.width ?? (w.radius ?? 4) * 2);
         const hh = cmToWorldPx(w.height ?? (w.radius ?? 4) * 2);
+        g.rect(x - ww / 2 - 2, y - hh / 2 - 2, ww + 4, hh + 4).stroke({ color: outlineColor, width: 2, alpha: 0.9 });
         g.rect(x - ww / 2, y - hh / 2, ww, hh).fill({ color, alpha: fillAlpha });
         g.rect(x - ww / 2, y - hh / 2, ww, hh).stroke({ color, width: 2, alpha: 0.85 });
       } else if (shape === "oval") {
         const rx = cmToWorldPx(w.width ?? (w.radius ?? 4));
         const ry = cmToWorldPx(w.height ?? (w.radius ?? 4));
+        g.ellipse(x, y, rx + 2, ry + 2).stroke({ color: outlineColor, width: 2, alpha: 0.9 });
         g.ellipse(x, y, rx, ry).fill({ color, alpha: fillAlpha });
         g.ellipse(x, y, rx, ry).stroke({ color, width: 2, alpha: 0.85 });
       } else {
         const r = cmToWorldPx(w.radius ?? 4);
+        g.circle(x, y, r + 2).stroke({ color: outlineColor, width: 2, alpha: 0.9 });
         g.circle(x, y, r).fill({ color, alpha: fillAlpha });
         g.circle(x, y, r).stroke({ color, width: 2, alpha: 0.85 });
       }
@@ -635,6 +645,7 @@ export class FeatureRenderer {
       const y = cmToWorldPx(l.y ?? 0);
       const r = cmToWorldPx(l.radius);
       const color = l.speedBoost > 1 ? 0xffcc44 : 0x88aaff;
+      g.circle(x, y, r + 2).stroke({ color: complementary(color), width: 2, alpha: 0.9 });
       g.circle(x, y, r).stroke({ color, width: 3, alpha: 0.7 });
       // Direction arrows (cosmetic).
       const arrowCount = 6;
@@ -682,6 +693,7 @@ export class FeatureRenderer {
     const color = p.isOnCooldown ? 0x666666 : 0x9944ff;
     const drawRing = (g: PIXI.Graphics, x: number, y: number) => {
       g.clear();
+      g.circle(x, y, r + 2).stroke({ color: complementary(color), width: 2, alpha: 0.9 });
       g.circle(x, y, r).stroke({ color, width: 3, alpha: 0.85 });
       g.circle(x, y, r * 1.2).stroke({ color, width: 1, alpha: 0.45 * pulse });
     };
@@ -731,6 +743,7 @@ export class FeatureRenderer {
     const barrelL = cmToWorldPx(1.6);
 
     base.clear();
+    base.circle(x, y, baseR + 2).stroke({ color: complementary(color), width: 2, alpha: 0.9 });
     base.circle(x + 1, y + 2, baseR).fill({ color: 0x000000, alpha: 0.35 });
     base.circle(x, y, baseR).fill({ color: t.isDestroyed ? 0x444444 : 0x1f2a3a });
     base.circle(x, y, baseR).stroke({ color, width: 2, alpha: 0.9 });

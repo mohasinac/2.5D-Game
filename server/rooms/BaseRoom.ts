@@ -134,6 +134,7 @@ export abstract class BaseRoom<T extends GameState = GameState> extends Room<T> 
   /** Fallback stats when Firestore has no record for a beyblade. */
   protected applyDefaultStats(beyblade: Beyblade): void {
     beyblade.type              = "balanced";
+    beyblade.color             = "#2288ff";
     beyblade.spinDirection     = "right";
     beyblade.mass              = 50;
     beyblade.radius            = 4;
@@ -242,7 +243,7 @@ export abstract class BaseRoom<T extends GameState = GameState> extends Room<T> 
     this.state.arena.width           = 50;
     this.state.arena.height          = 50;
     this.state.arena.shape           = "circle";
-    this.state.arena.theme           = "metrocity";
+    this.state.arena.theme           = "default";
     this.state.arena.gravity         = 0;
     this.state.arena.airResistance   = 0.01;
     this.state.arena.surfaceFriction = 0.01;

@@ -79,7 +79,7 @@ const ARENAS = [
     width: 1080,
     height: 1080,
     shape: "circle",
-    theme: "metrocity",
+    theme: "default",
     autoRotate: false,
     wall: circleWall("metal", 15, 8),
     obstacles: [],

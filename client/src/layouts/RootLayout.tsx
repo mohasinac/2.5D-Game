@@ -3,7 +3,7 @@ import { GameProvider } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { IS_LOCAL } from "@/game/hooks/useColyseus";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
+
 import { Settings } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -60,7 +60,6 @@ export function RootLayout() {
           </div>
         )}
         <Outlet />
-        <TouchControlsGBLayout />
       </div>
     </GameProvider>
   );
