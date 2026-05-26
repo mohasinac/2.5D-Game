@@ -101,7 +101,7 @@ Radial cross-section of BeyStadium Attack Type (centre on left, wall on right):
   Zone 2: MAIN SLOPE        r = 40–125 mm     slope ≈ 30°     g_lat = 4.905 m/s²  (inward)
   Zone 3: TORNADO RIDGE     r = 125–145 mm    feature h = 3 mm above slope line
   Zone 4: SECOND INCLINE    r = 145–155 mm    slope ≈ 50°     g_lat = 7.508 m/s²  (inward)
-  Zone 5: OUTER WALL        r = 155–170 mm    H_wall = 30 mm  vertical (pockets cut through)
+  Zone 5: OUTER WALL        r = 155–170 mm    H_wall = 30 mm  vertical (pockets cut through)  [CONFIRMED]
 ```
 
 ### Zone Geometry Analysis
@@ -135,11 +135,11 @@ Zone 4 — Second Inclination:
 
 Exit Geometry:
   Outer circumference: C = π × 340 = 1068 mm
-  3 × wall chord 155 mm: total wall = 465 mm  →  wall coverage = 465/1068 = 43.5%
-  3 × exit chord 150 mm: total exit = 450 mm  →  exit coverage = 450/1068 = 42.1%
+  3 × wall chord 155 mm: total wall = 465 mm  →  wall coverage = 465/1068 = 43.5%  [CONFIRMED]
+  3 × exit chord 150 mm: total exit = 450 mm  →  exit coverage = 450/1068 = 42.1%  [CONFIRMED] (3 pockets)
   Transition zones: 1068 − 465 − 450 = 153 mm  →  14.3%
-  P(ejection | top reaches outer wall) = 450 / (450 + 465) = 0.492
-  P(deflection | top reaches outer wall) = 0.508
+  P(ejection | top reaches outer wall) = 450 / (450 + 465) = 0.492  [CONFIRMED]
+  P(deflection | top reaches outer wall) = 0.508  [CONFIRMED]
 ```
 
 ### Spin Decay in BeyStadium Attack Type
@@ -171,11 +171,11 @@ For Rubber Flat tip (μ = 0.50, r_tip = 8 mm):
 
 ```typescript
 interface BeyStadiumAttackType {
-  outerRadiusMm: 170;
+  outerRadiusMm: 170;                // [CONFIRMED]
   flatZoneEndMm: 40;
   mainSlopeEndMm: 125;
   slopeAngleDeg: 30;
-  tornadoRidgeRadiusMm: 125;
+  tornadoRidgeRadiusMm: 125;        // [CONFIRMED]
   tornadoRidgeHeightMm: 3;
   secondInclineEndMm: 155;
   secondInclineAngleDeg: 50;
@@ -220,14 +220,14 @@ function ejectionProbability(numPockets: number, pocketChordMm: number, wallChor
 ```
 Radial cross-section of Tornado Ridge (approach from left = inbound radially outward top):
 
-  MFB Attack Type (h = 3 mm, w_half = 10 mm):
+  MFB Attack Type (h = 3 mm [CONFIRMED], w_half = 10 mm):
 
             ↑ J_vert (up)
             │
   ──────────┬──┬──────────────────────  floor level
-            │  │  ← h_TR = 3 mm
+            │  │  ← h_TR = 3 mm  [CONFIRMED]
             └──┘   ← half-width w = 10 mm each side
-            ↑β = 16.7° face angle
+            ↑β = 16.7° face angle  [CONFIRMED]
   →  v_r (outward approach)
 
   Inward impulse fraction:  cos(16.7°) = 0.957  ← high inward component
@@ -235,15 +235,15 @@ Radial cross-section of Tornado Ridge (approach from left = inbound radially out
 
   ─────────────────────────────────────────────────
 
-  Plastic Tornado Attack (h = 10 mm, w_half = 10 mm):
+  Plastic Tornado Attack (h = 10 mm [INFERRED], w_half = 10 mm):
 
             ↑ J_vert (up)
             │
   ─────────────────────────────────  floor level
-              /\  ← h_TR = 10 mm
+              /\  ← h_TR = 10 mm  [INFERRED]
              /  \     ← half-width w = 10 mm
             /    \
-           β = 45° face angle
+           β = 45° face angle  [INFERRED]
   →  v_r (outward approach)
 
   Inward impulse fraction:  cos(45°) = 0.707   ← moderate inward
@@ -457,10 +457,10 @@ Battle Zone circumference: C = π × 365 = 1147 mm
 Front face arc (the exits subtend):
   Combined exit chord = 430 mm (≈ full front face).
   Subtended angle at R_battle = 182.5 mm:
-    For Xtreme Zone (chord 190 mm):
+    For Xtreme Zone (chord 190 mm [CONFIRMED]):
       θ_XZ = 2 × arcsin(190 / (2 × 182.5)) = 2 × arcsin(0.521) = 2 × 31.4° = 62.7°
-    For each Over Zone (chord 120 mm):
-      θ_OZ = 2 × arcsin(120 / (2 × 182.5)) = 2 × arcsin(0.329) = 2 × 19.2° = 38.4°
+    For each Over Zone (chord 120 mm [CONFIRMED]):
+      θ_OZ = 2 × arcsin(120 / (2 × 182.5 [CONFIRMED])) = 2 × arcsin(0.329) = 2 × 19.2° = 38.4°
     Total front exit arc = 62.7° + 2 × 38.4° = 139.5° of the 360° circumference
     Front exit arc coverage = 139.5° / 360° = 38.8%
     Back + side wall coverage (360° − 139.5°) / 360° = 61.2%
@@ -489,12 +489,12 @@ Wall/exit coverage       49.2% / 49.2%     61.2% wall / 38.8% exit —
 ```typescript
 const BX10_XTREME_STADIUM = {
   arenaClass: "gear-rail" as const,
-  battleZoneRadiusMm: 182.5,
+  battleZoneRadiusMm: 182.5,        // [CONFIRMED]
   xtremeLineRadiusMm: 105,
   totalLengthMm: 430,
   totalWidthMm: 440,
-  overZoneChordMm: 120,
-  xtremeZoneChordMm: 190,
+  overZoneChordMm: 120,             // [CONFIRMED]
+  xtremeZoneChordMm: 190,           // [CONFIRMED]
   numOverZones: 2,
   numXtremeZones: 1,
   exitSide: "front-only" as const,  // all exits on front face, back is solid
@@ -1375,7 +1375,7 @@ function egMagnaWdTriggerShift(
 ```
 GEN 1 — Engine Gear (EG):
   Type: wound clock-spring, Gen 1 Plastic era (Takara Tomy)
-  k_EG = 1500 N/m,  x_EG = 8 mm,  E_EG = 48 mJ
+  k_EG = 1500 N/m [FACT],  x_EG = 8 mm,  E_EG = 48 mJ [FACT]
   Trigger: Final Clutch at ω = 141 rad/s (1350 RPM) [fires once]
            First Clutch at battle start [fires once]
            Normal Base: gradual release
@@ -1398,7 +1398,7 @@ GEN 3 — Shot Driver:
   On wall contact at v = 1.0 m/s: ΔE_wall = ½mv² = 18.0 mJ
   E_total = 22.0 mJ,  v_rebound = 1.106 m/s,  ε_eff = 1.106  (+10.6% vs impact)
 
-MSS Zone Augmentation (Gen 3 drivers, F_attract_spring = 0.040 N at h = 5 mm):
+MSS Zone Augmentation (Gen 3 drivers, F_attract_spring = 0.040 N [ESTIMATED (pull-test)] at h = 5 mm):
   N_augment = 0.353 + 0.040 = 0.393 N  (+11.3% normal force)
   Shot driver rebound and Ignition' grip-transfer: proportionally +11.3% near MSS
 ```
@@ -1472,7 +1472,7 @@ HIGH-SPIN STATE (ω > 94.3 rad/s):            LOW-SPIN STATE (ω ≤ 94.3 rad/s)
             ●                                           ●
   ── FLOOR ───────────────────────────────── ── FLOOR ─────────────────
 
-ω_switch = √(F_spring / (m_arm × r_cam)) = √(0.12 / 1.35×10⁻⁵) = 94.3 rad/s = 900 RPM
+ω_switch = √(F_spring / (m_arm × r_cam)) = √(0.12 / 1.35×10⁻⁵) = 94.3 rad/s = 900 RPM  [FACT]
 
 SPIN PROFILE (ω vs time):
 
@@ -1496,7 +1496,7 @@ MSS steel-only +0.016        0.408       36.1 (+4.0%)      5.70        4.17     
 Magne Stadium attr. +0.267   0.659       58.2 (+67.7%)     3.54        6.73 (+68%)      14.0       17.5
 D tip comparison             0.392       26.4              11.4 s total (no phase switch)
 
-ω_switch = 94.3 rad/s in all conditions (mechanical constant, independent of N_eff).
+ω_switch = 94.3 rad/s in all conditions (mechanical constant, independent of N_eff).  [FACT]
 
 B:D bearing tip (μ=0.05, r=3mm, same bey): α_BD = 5.0 rad/s²  →  t_BD ≈ 60 s
   F:D (29.5 s) is not a stamina solution; B:D outperforms it by 2× in total spin life.

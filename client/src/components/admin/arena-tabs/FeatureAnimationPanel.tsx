@@ -4,13 +4,15 @@
 import { C } from "@/styles/theme";
 import type { FeatureAnimationConfig, FeatureAnimationPreset } from "@/types/arenaConfigNew";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
+import { useDefsDocs } from "@/hooks/useDefsDocs";
+import { COLLECTIONS } from "@/lib/firebase";
 
-const PRESETS: FeatureAnimationPreset[] = [
+const FALLBACK_PRESETS: FeatureAnimationPreset[] = [
   "pulse", "scale_pulse", "color_cycle", "flicker", "alert",
   "shimmer", "lightning", "charged", "ghost", "shockwave_ring",
 ];
 
-const PRESET_LABELS: Record<FeatureAnimationPreset, string> = {
+const FALLBACK_LABELS: Record<string, string> = {
   pulse: "Pulse (alpha wave)",
   scale_pulse: "Scale Pulse",
   color_cycle: "Color Cycle",
@@ -30,6 +32,10 @@ interface Props {
 }
 
 export default function FeatureAnimationPanel({ value, onChange, featureId }: Props) {
+  const animDocs = useDefsDocs(COLLECTIONS.FEATURE_ANIMATION_DEFS);
+  const presetOptions = animDocs.length > 0
+    ? animDocs.map(d => ({ value: d.id, label: d.label }))
+    : FALLBACK_PRESETS.map(p => ({ value: p, label: FALLBACK_LABELS[p] ?? p }));
   const enabled = !!value;
 
   return (
@@ -50,7 +56,7 @@ export default function FeatureAnimationPanel({ value, onChange, featureId }: Pr
             <label className="text-xs text-muted min-w-[100px]">Preset</label>
             <SearchableSelect
               value={value.preset}
-              options={PRESETS.map(p => ({ value: p, label: PRESET_LABELS[p] }))}
+              options={presetOptions}
               onChange={v => onChange({ ...value, preset: v as FeatureAnimationPreset })}
               className="flex-1"
             />

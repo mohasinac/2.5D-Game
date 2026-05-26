@@ -200,39 +200,165 @@ All room types (except TryoutRoom) support configurable series format via `optio
 
 ## Firebase Collections
 
+### Core Game Data
+
 | Collection | Purpose |
 |-----------|---------|
 | `beyblade_stats` | Beyblade configurations. Optional `specialMoveId` and `comboIds[]` (max 3). |
 | `arenas` | Arena configurations (shape, theme, obstacles, spin zones, bumps, gravity wells, switches). |
-| `stadiums` | Stadium metadata and images |
-| `matches` | Match results (includes `seriesFormat`, `seriesScore`, `gameResults[]`) |
-| `player_stats` | Per-player win/loss/damage stats + `tournamentPoints` — **public read** for leaderboard |
-| `users` | User profiles and roles (`user` / `admin`) |
+| `matches` | Match results (includes `seriesFormat`, `seriesScore`, `gameResults[]`). |
+| `player_stats` | Per-player win/loss/damage stats + `tournamentPoints` — **public read** for leaderboard. |
+| `users` | User profiles and roles (`user` / `admin`). |
+| `settings` | Game-wide config (single doc: `settings/game`). |
+| `combos` | Combo registry — id, sequence (3 keys), cost (0/15/25/35), type, windowMs, cooldownMs. |
+| `special_moves` | Special move registry (4 physics-based moves). |
+| `ai_battles` | Preset AI battle configs (medium/hard/hell quick-launch entries). |
+
+### Tournament System
+
+| Collection | Purpose |
+|-----------|---------|
 | `tournaments` | Tournament docs. `aiDifficulty` is `"medium" \| "hard" \| "hell"`. |
 | `tournament_participants` | Participant docs. `status` includes `"quit"`. |
 | `tournament_brackets` | Bracket match docs. `readyState` drives both-ready early-start; `isDraw` set on tied room-cap finish. |
-| `combos` | New combo registry — id, sequence (3 keys), cost (0/15/25/35), type, windowMs, cooldownMs. Seeded from `src/constants/combos.ts`. |
-| `ai_battles` | Preset AI battle configs (medium/hard/hell quick-launch entries). |
+
+### Asset Libraries
+
+| Collection | Purpose |
+|-----------|---------|
 | `arena_theme_assets` | Background textures per theme. Tags include `switch`. |
-| `obstacle_assets` | Obstacle sprites. Tags include `switch`, `bump`, `spin-zone`, `gravity-well` (shared sprite library for the new feature family). |
+| `obstacle_assets` | Obstacle sprites. Tags include `switch`, `bump`, `spin-zone`, `gravity-well`. |
 | `turret_assets` | Turret and projectile sprites. Tags include `switch`. |
 | `water_body_assets` | Water surface textures. Tags include `switch`. |
 | `portal_assets` | Portal sprites. Tags include `switch`. |
-| `sound_assets` | Sound effects and music |
-| `settings` | Game-wide config (single doc: `settings/game`) |
-| `beyblade_parts` | 2.5D part library (bit_beast, attack_ring, weight_disk, sub_part, tip, core, casing) |
-| `beyblade_systems` | Assembled 2.5D beyblade configs (slot → partId mapping) |
-| `mechanic_defs` | 31 MechanicRegistry handler definitions (id, name, category, description, params). Seeded by `seed-mechanics.js`. Admin: `/admin/mechanic-defs`. |
-| `gimmick_defs` | 27 gimmick recipes (behaviorRefs → MechanicInstance[]). Expanded at match start by `gimmickExpander.ts`. Admin: `/admin/gimmick-defs`. |
-| `tip_shape_defs` | Tip shape presets (id, label, description). Consumed by part editor TipFields; falls back to built-ins when empty. Admin: `/admin/tip-shape-defs`. |
-| `core_gimmick_defs` | Core gimmick modes (id, label, description, hasPhysicsImpl). Consumed by CoreFields toggle buttons. Admin: `/admin/core-gimmick-defs`. |
-| `attack_type_defs` | Attack type definitions for contact points (id, label, multiplier, color). Consumed by ContactPointEditor. Admin: `/admin/attack-type-defs`. |
-| `arena_theme_defs` | Arena visual themes (id, label, color, description). Consumed by BasicsTab theme picker. Admin: `/admin/arena-theme-defs`. |
-| `arena_shape_defs` | Arena boundary shapes (id, label, vertexCount, description). Consumed by BasicsTab shape picker. Admin: `/admin/arena-shape-defs`. |
-| `bowl_profile_defs` | Bowl wall-angle presets (id, label, wallAngle 0–75°, description). Consumed by BasicsTab bowl picker. Admin: `/admin/bowl-profile-defs`. |
-| `trigger_type_defs` | Stat modifier trigger conditions (id, label, description). Consumed by StatModifiersEditor. Admin: `/admin/trigger-type-defs`. |
-| `stat_event_defs` | Stat tracking events (id, label, description). Consumed by StatModifiersEditor stat events. Admin: `/admin/stat-event-defs`. |
-| `part_layer_defs` | Part layer types for contact point assignments (id, label, description). Consumed by ContactPointEditor layer buttons. Admin: `/admin/part-layer-defs`. |
+| `sound_assets` | Sound effects and music. |
+| `bitbeast_assets` | BitBeast sprite assets. |
+| `particle_presets` | 7 PixiJS particle emitter presets. |
+| `animation_presets` | 7 animation presets with keyframes. |
+
+### 2.5D Part System
+
+| Collection | Purpose |
+|-----------|---------|
+| `bit_beast_parts` | Bit Beast part definitions. |
+| `attack_ring_parts` | Attack Ring part definitions. |
+| `weight_disk_parts` | Weight Disk part definitions. |
+| `sub_parts` | Sub-part definitions. |
+| `tip_parts` | Tip part definitions. |
+| `core_parts` | Core part definitions. |
+| `casing_parts` | Casing part definitions. |
+| `spin_track_parts` | Spin Track part definitions. |
+| `gear_parts` | Gear part definitions (5 gears). |
+| `beyblade_systems` | Assembled 2.5D beyblade configs (slot → partId mapping). |
+| `arena_systems` | Assembled 2.5D arena system configs. |
+| `arena_floor_groups` | Multi-floor arena layout groups. |
+| `part_materials` | Part material definitions (ABS, rubber, metal, etc.). |
+
+### Catalog / Config Collections
+
+| Collection | Purpose |
+|-----------|---------|
+| `element_type_configs` | 12 element types with type interaction matrix. Admin: `/admin/element-types`. |
+| `turret_attack_types` | 15 turret attack types + 8 fire patterns. Admin: `/admin/turret-attack-types`. |
+| `arena_feature_configs` | 13 hazard types + 7 effect zones + 10 particles + 6 env presets. Admin: `/admin/arena-feature-configs`. |
+| `bey_link_configs` | BeyLink + ArenaLink type catalog (9 categories, 43 entries). Admin: `/admin/bey-link-configs`. |
+| `combo_effects` | 13 ComboEffectDef presets. Admin: `/admin/combo-effects`. |
+| `round_modifiers` | 17 round modifiers (physics, combat, rules, chaos). Admin: `/admin/round-modifiers`. |
+| `behavior_defs` | 50+ BehaviorDef keyword library entries. Admin: `/admin/behavior-defs`. |
+| `mechanic_defs` | 31 MechanicRegistry handler definitions. Admin: `/admin/mechanic-defs`. |
+| `gimmick_defs` | 27 gimmick recipes (behaviorRefs → MechanicInstance[]). Admin: `/admin/gimmick-defs`. |
+| `geometry_defs` | 16 standard geometry primitives. Admin: `/admin/geometry-defs`. |
+| `stat_defs` | ~35 typed stat definitions (beyblade/arena/part/match/modifier). Admin: `/admin/stat-defs`. |
+| `special_interaction_defs` | Special interaction/collision QTE definitions. Admin: `/admin/special-interaction-defs`. |
+| `collision_qte_events` | Collision QTE event configs. |
+| `special_clash_events` | Special clash event configs. |
+
+### Preset Definition Collections (admin-editable dropdowns)
+
+| Collection | Purpose | Admin Route |
+|-----------|---------|------------|
+| `tip_shape_defs` | 16 tip shape presets (flat, sharp, rubber, bearing, etc.). | `/admin/tip-shape-defs` |
+| `core_gimmick_defs` | 12 core gimmick modes (mode change, dual spin, spring launch, etc.). | `/admin/core-gimmick-defs` |
+| `attack_type_defs` | 8 attack types for contact points (smash, upper, burst, absorb, etc.). | `/admin/attack-type-defs` |
+| `arena_theme_defs` | 12 arena visual themes (volcano, ice, space, neon, etc.). | `/admin/arena-theme-defs` |
+| `arena_shape_defs` | 10 arena boundary shapes (circle, hexagon, star, stadium, etc.). | `/admin/arena-shape-defs` |
+| `bowl_profile_defs` | 8 bowl wall-angle profiles (flat through extreme 75°). | `/admin/bowl-profile-defs` |
+| `trigger_type_defs` | 12 stat modifier trigger conditions (always, on_hit, low_spin, etc.). | `/admin/trigger-type-defs` |
+| `stat_event_defs` | 15 stat tracking events (collision, burst, ring_out, etc.). | `/admin/stat-event-defs` |
+| `part_layer_defs` | 12 part layer types for contact points (upper, blade, guard, etc.). | `/admin/part-layer-defs` |
+| `tilt_preset_defs` | 5 arena tilt angle presets (flat, tilted, steep, wall-ride, inverted). | `/admin/tilt-preset-defs` |
+| `difficulty_defs` | 4 difficulty levels with colors (easy, medium, hard, extreme). | `/admin/difficulty-defs` |
+| `feature_animation_defs` | 10 feature animation presets (pulse, shimmer, lightning, etc.). | `/admin/feature-animation-defs` |
+| `portal_color_defs` | 4 portal color presets (purple, cyan, green, orange). | `/admin/portal-color-defs` |
+| `part_shape_defs` | 8 part outline shape presets (circle, ring, star, polygon, etc.). | `/admin/part-shape-defs` |
+| `wear_preset_defs` | 4 material wear curve presets (no wear, gradual, full decay, stepped). | `/admin/wear-preset-defs` |
+| `obstacle_tag_defs` | 11 obstacle asset type tags (rock, pillar, barrier, switch, etc.). | `/admin/obstacle-tag-defs` |
+| `bey_type_defs` | 5 beyblade type classifications (attack, defense, stamina, balanced, universal). | `/admin/bey-type-defs` |
+| `reset_condition_defs` | 3 stat modifier reset conditions (impact, timer, spin_recovery). | `/admin/reset-condition-defs` |
+| `liquid_type_defs` | 8 liquid/water body types with effects (water, lava, ice, etc.). | `/admin/liquid-type-defs` |
+| `hazard_type_defs` | 20 element hazard type suggestions (lava, ice, electric, void, etc.). | `/admin/hazard-type-defs` |
+| `element_stat_defs` | 10 element stat modifier suggestions (spinDecayRate, damageMultiplier, etc.). | `/admin/element-stat-defs` |
+| `arena_template_defs` | 5 full arena configuration templates (classic, square, hexagon, etc.). | `/admin/arena-template-defs` |
+
+### Universal Preset Library
+
+| Collection | Purpose |
+|-----------|---------|
+| `arena_presets` | Full arena preset cards. |
+| `bey_presets` | 8 beyblade archetype/generation presets. |
+| `combo_presets` | 8 combo preset cards mirroring the combo registry. |
+| `mechanic_presets` | 11 mechanic preset configs (friction/collision/deflection/gimmick). |
+| `gimmick_presets` | 27 gimmick preset cards — one per gimmick_def. |
+| `special_move_presets` | 6 special move preset cards. |
+| `part_presets` | Part configuration presets. |
+| `system_presets` | 7 complete 2.5D beyblade system templates. |
+| `theme_presets` | Arena theme presets. |
+| `obstacle_presets` | Obstacle configuration presets. |
+| `feature_group_presets` | Feature group presets. |
+
+### RPG Story Mode
+
+| Collection | Purpose |
+|-----------|---------|
+| `rpg_regions` | World regions. Admin: `/admin/rpg/regions`. |
+| `rpg_maps` | Map definitions. Admin: `/admin/rpg/maps`. |
+| `rpg_npcs` | NPC definitions. Admin: `/admin/rpg/npcs`. |
+| `rpg_dialogues` | Dialogue trees. Admin: `/admin/rpg/dialogues`. |
+| `rpg_quests` | Quest definitions. Admin: `/admin/rpg/quests`. |
+| `rpg_story_events` | Story event triggers. Admin: `/admin/rpg/story-events`. |
+| `rpg_cutscenes` | Cutscene sequences. Admin: `/admin/rpg/cutscenes`. |
+| `rpg_items` | Item definitions. Admin: `/admin/rpg/items`. |
+| `rpg_badges` | Badge/achievement definitions. Admin: `/admin/rpg/badges`. |
+| `rpg_arcs` | Story arc definitions. Admin: `/admin/rpg/arcs`. |
+| `rpg_routes` | Route definitions. Admin: `/admin/rpg/routes`. |
+| `rpg_config` | RPG system configuration. Admin: `/admin/rpg`. |
+| `rpg_saves` | Player save data. |
+| `rpg_map_type_defs` | Map type definitions. Admin: `/admin/rpg/definitions/rpg_map_type_defs`. |
+| `rpg_npc_type_defs` | NPC type definitions. Admin: `/admin/rpg/definitions/rpg_npc_type_defs`. |
+| `rpg_badge_category_defs` | Badge category definitions. |
+| `rpg_item_category_defs` | Item category definitions. |
+| `rpg_quest_category_defs` | Quest category definitions. |
+| `rpg_event_category_defs` | Event category definitions. |
+| `rpg_travel_mode_defs` | Travel mode definitions. |
+| `rpg_trigger_mode_defs` | 3 RPG event trigger modes (enter, interact, step). Admin: `/admin/rpg-trigger-mode-defs`. |
+| `rpg_facing_defs` | 4 RPG character facing directions (up, down, left, right). Admin: `/admin/rpg-facing-defs`. |
+
+### AI System
+
+| Collection | Purpose |
+|-----------|---------|
+| `ai_character_profiles` | 12 blader character AI profiles (Tyson, Kai, Gingka, Valt, etc.). |
+| `ai_bey_personalities` | 13 bey personality profiles (Dragoon, Dranzer, Pegasus, Valtryek, etc.). |
+| `ai_difficulty_profiles` | 4 AI difficulty tiers (easy/medium/hard/hell). |
+
+### Story Mode
+
+| Collection | Purpose |
+|-----------|---------|
+| `seasons` | Season progression data. |
+| `episodes` | Episode definitions (8 episodes across 2 seasons). |
+| `player_progress` | Player story progression tracking. |
+| `match_replays` | Replay system data. |
 
 All asset libraries accept **PNG / JPG / GIF / WebP**. GIF uploads bypass the destructive image editor so animation is preserved.
 
@@ -471,21 +597,35 @@ client/src/
 
 ## Seed Scripts
 
-All seeders live under `scripts/` and are exposed as npm scripts. Idempotent — safe to re-run.
+All seeders live under `scripts/` and are registered in `seed-all.js`. Idempotent — safe to re-run. 59 seeders total.
 
 | Script | Writes to | Notes |
 |--------|-----------|-------|
+| `npm run seed:admin` | `users` | Admin user + Firebase Auth custom claim. |
+| `npm run seed:settings` | `settings` | `settings/game` — enables AI, tournaments, clears maintenance flag. |
 | `npm run seed:beyblades` | `beyblade_stats` | ~20 beys grouped by generation (Bakuten/Plastic, MFB, Burst, X). Defaults `specialMoveId` + `comboIds` per type unless overridden per-bey. |
-| `npm run seed:arenas` | `arenas` | Stadium presets. |
+| `npm run seed:arenas` | `arenas`, `arena_floor_groups` | 20 arena configs + 2 multi-floor layout groups. |
+| `npm run seed:special-moves` | `special_moves` | 4 special moves (Stampede Rush, Gyro Anchor, Spin Recovery, Tactical Burst). |
 | `npm run seed:combos` | `combos` | 8 combos (4 free + 4 cost-tiered). Mirrors `src/constants/combos.ts`. |
-| `npm run seed:ai-battles` | `ai_battles` | Three quick-launch presets: medium / hard / hell. |
-| `npm run seed:tournament-ai-solo` | `tournaments` + `tournament_participants` + `tournament_brackets` | 4-bracket solo-vs-AI tournament (1 human placeholder + 3 AI). |
-| `npm run seed:special-moves` | `special_moves` | Special move registry. |
-| `npm run seed:2d-parts` | `beyblade_parts` | 2.5D part library. |
-| `npm run seed:bey-systems` | `beyblade_systems` | Assembled 2.5D configs. |
-| `npm run seed:arena-systems` | `arena_systems` | Arena system configs. |
+| `npm run seed:ai-battles` | `ai_battles` | 3 AI battle quick-launch presets (medium / hard / hell). |
+| `npm run seed:round-modifiers` | `round_modifiers` | 17 round modifiers (physics, combat, rules, chaos). |
+| `npm run seed:behavior-defs` | `behavior_defs` | 50+ BehaviorDef keyword library entries. |
+| `npm run seed:combo-effects` | `combo_effects` | 13 ComboEffectDef presets (including riposte + pivot-strike). |
 | `npm run seed:mechanics` | `mechanic_defs` | 31 mechanic handler docs — one per MechanicRegistry entry. |
 | `npm run seed:gimmicks` | `gimmick_defs` | 27 gimmick recipes (22 original + 5 new: magnacore_repel/attract, dual_spin_launch, mode_switch_tip, spring_launch). |
+| `npm run seed:particle-presets` | `particle_presets` | 7 PixiJS particle emitter presets. |
+| `npm run seed:anim-presets` | `animation_presets` | 7 animation presets with keyframes. |
+| `npm run seed:2d-parts` | 8 part collections | 23 2.5D parts across all part types. |
+| `npm run seed:gears` | `gear_parts` | 5 gear parts (Evolution Gear L/F/S + Infinite Sword/Shield). |
+| `npm run seed:bey-systems` | `beyblade_systems` | 4 assembled 2.5D beyblade configs. |
+| `npm run seed:arena-systems` | `arena_systems` | 4 2.5D arena system configs. |
+| `npm run seed:tournament-ai-solo` | `tournaments` + `tournament_participants` + `tournament_brackets` | 4-bracket solo-vs-AI tournament (1 human placeholder + 3 AI). |
+| `npm run seed:element-types` | `element_type_configs` | 12 default element types with type matrix. |
+| `npm run seed:turret-attack-types` | `turret_attack_types` | 15 turret attack types + 8 fire patterns. |
+| `npm run seed:arena-feature-configs` | `arena_feature_configs` | 13 hazard types + 7 effect zones + 10 particle types + 6 env presets. |
+| `npm run seed:bey-link-configs` | `bey_link_configs` | BeyLink + ArenaLink type catalog (9 categories, 43 entries). |
+| `npm run seed:geometry` | `geometry_defs` | 16 standard geometry primitives (circles, rings, arcs, polygons, Fourier). |
+| `npm run seed:stat-defs` | `stat_defs` | ~35 typed stat definitions across beyblade / arena / part / match / modifier categories. |
 | `npm run seed:tip-shapes` | `tip_shape_defs` | 16 tip shape presets (flat, sharp, rubber, bearing, etc.). |
 | `npm run seed:core-gimmicks` | `core_gimmick_defs` | 12 core gimmick types (mode change, dual spin, spring launch, etc.). |
 | `npm run seed:attack-type-defs` | `attack_type_defs` | 8 attack types for contact points (smash, upper, burst, absorb, etc.). |
@@ -495,7 +635,32 @@ All seeders live under `scripts/` and are exposed as npm scripts. Idempotent —
 | `npm run seed:trigger-type-defs` | `trigger_type_defs` | 12 stat modifier trigger conditions (always, on_hit, low_spin, etc.). |
 | `npm run seed:stat-event-defs` | `stat_event_defs` | 15 stat tracking events (collision, burst, ring_out, etc.). |
 | `npm run seed:part-layer-defs` | `part_layer_defs` | 12 part layer types for contact point assignments (upper, blade, guard, etc.). |
-| `npm run seed:all` | All of the above | Runs in order; safe to use as a first-time bootstrap. |
+| `npm run seed:tilt-presets` | `tilt_preset_defs` | 5 arena tilt angle presets (flat, tilted, steep, wall-ride, inverted). |
+| `npm run seed:difficulty-defs` | `difficulty_defs` | 4 difficulty levels with colors (easy, medium, hard, extreme). |
+| `npm run seed:feature-animation-defs` | `feature_animation_defs` | 10 feature animation presets (pulse, shimmer, lightning, etc.). |
+| `npm run seed:portal-color-defs` | `portal_color_defs` | 4 portal color presets (purple, cyan, green, orange). |
+| `npm run seed:part-shape-defs` | `part_shape_defs` | 8 part outline shape presets (circle, ring, star, polygon, etc.). |
+| `npm run seed:wear-preset-defs` | `wear_preset_defs` | 4 material wear curve presets (no wear, gradual, full decay, stepped). |
+| `npm run seed:obstacle-tag-defs` | `obstacle_tag_defs` | 11 obstacle asset type tags (rock, pillar, barrier, switch, etc.). |
+| `npm run seed:bey-type-defs` | `bey_type_defs` | 5 beyblade type classifications (attack, defense, stamina, balanced, universal). |
+| `npm run seed:reset-condition-defs` | `reset_condition_defs` | 3 stat modifier reset conditions (impact, timer, spin_recovery). |
+| `npm run seed:liquid-type-defs` | `liquid_type_defs` | 8 liquid/water body type presets with effects (water, lava, ice, etc.). |
+| `npm run seed:hazard-type-defs` | `hazard_type_defs` | 20 element hazard type suggestions (lava, ice, electric, void, etc.). |
+| `npm run seed:element-stat-defs` | `element_stat_defs` | 10 element stat modifier suggestions (spinDecayRate, damageMultiplier, etc.). |
+| `npm run seed:arena-template-defs` | `arena_template_defs` | 5 full arena configuration templates (classic, square, hexagon, etc.). |
+| `npm run seed:rpg-trigger-mode-defs` | `rpg_trigger_mode_defs` | 3 RPG event trigger modes (enter, interact, step). |
+| `npm run seed:rpg-facing-defs` | `rpg_facing_defs` | 4 RPG character facing directions (up, down, left, right). |
+| `npm run seed:special-move-presets` | `special_move_presets` | 6 special move preset cards (Attack, Defense, Stamina, Balanced + 2 variants). |
+| `npm run seed:combo-presets` | `combo_presets` | 8 combo preset cards mirroring the combo registry. |
+| `npm run seed:mechanic-presets` | `mechanic_presets` | 11 mechanic preset configs (friction/collision/deflection/gimmick). |
+| `npm run seed:gimmick-presets` | `gimmick_presets` | 27 gimmick preset cards — one per gimmick_def with recommended part types. |
+| `npm run seed:bey-presets` | `bey_presets` | 8 beyblade archetype/generation presets (4 archetypes + 4 gen variants). |
+| `npm run seed:system-presets` | `system_presets` | 7 complete 2.5D beyblade system templates per generation (Plastic/MFB/Burst/X). |
+| `npm run seed:ai-character-profiles` | `ai_character_profiles` | 12 blader character AI profiles (Tyson, Kai, Gingka, Valt, etc.). |
+| `npm run seed:ai-bey-personalities` | `ai_bey_personalities` | 13 bey personality profiles (Dragoon, Dranzer, Pegasus, Valtryek, etc.). |
+| `npm run seed:ai-difficulty-profiles` | `ai_difficulty_profiles` | 4 AI difficulty tiers (easy/medium/hard/hell). |
+| `npm run seed:story-mode` | `seasons`, `episodes` | 2 seasons + 8 episodes for story mode progression. |
+| `npm run seed:all` | All of the above | Runs all 59 in order; safe to use as a first-time bootstrap. |
 
 ## Learning Folder (Deferred)
 

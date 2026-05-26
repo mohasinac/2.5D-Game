@@ -6,6 +6,7 @@
 // backward compatibility — existing imports from this module continue to work.
 
 import type { BeybladeStats } from "./beybladeStats";
+import type { BeybladeGeneration } from "./beybladeConstants";
 import type { ComboCondition } from "./comboTask";
 export type { BeybladeStats };
 
@@ -259,10 +260,11 @@ export type DetachedBodyState = "projectile" | "obstacle" | "removed";
 // Constants live in beybladeConstants.ts (no circular imports).
 // Re-exported here so existing importers continue to work without changes.
 
-export type { MaterialStats } from "./beybladeConstants";
+export type { MaterialStats, GenerationRange, BeybladeGeneration } from "./beybladeConstants";
 export {
   MATERIAL_MULTIPLIERS,
   MATERIAL_STATS,
+  GENERATION_RANGES,
   PART_TYPE_COLLECTION,
   PART_TYPE_SLUG,
   SLUG_TO_PART_TYPE,
@@ -1132,6 +1134,7 @@ export interface BeybladeSystem {
   id: string;
   displayName: string;
   spinDirection: "left" | "right";
+  generation?: BeybladeGeneration;
 
   bitBeastId?: string;
   attackRingId: string;

@@ -3,13 +3,17 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
 import { db, COLLECTIONS } from "@/lib/firebase";
+import { useDefsDocs } from "@/hooks/useDefsDocs";
 import type { CutsceneActorPlacement, CutsceneStep, FacingDirection } from "@/rpg/data/schemas";
 import RPGStepBuilder from "@/components/admin/rpg/RPGStepBuilder";
 import { LBL, INP, BTN_PRIMARY, BTN_DANGER, CARD } from "../rpgAdminShared";
 
-const FACINGS: FacingDirection[] = ["up", "down", "left", "right"];
+const FALLBACK_FACINGS: FacingDirection[] = ["up", "down", "left", "right"];
 
 function ActorsEditor({ actors, onChange }: { actors: CutsceneActorPlacement[]; onChange: (a: CutsceneActorPlacement[]) => void }) {
+  const facingDocs = useDefsDocs(COLLECTIONS.RPG_FACING_DEFS);
+  const facings = facingDocs.length > 0 ? facingDocs.map(d => d.id) as FacingDirection[] : FALLBACK_FACINGS;
+
   const update = (i: number, a: CutsceneActorPlacement) => { const next = [...actors]; next[i] = a; onChange(next); };
   const remove = (i: number) => onChange(actors.filter((_, j) => j !== i));
   const add = () => onChange([...actors, { npcId: "", tile: { x: 0, y: 0 }, facing: "down" }]);
@@ -26,7 +30,7 @@ function ActorsEditor({ actors, onChange }: { actors: CutsceneActorPlacement[]; 
             className="w-16 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-white" placeholder="Y" />
           <select value={a.facing} onChange={e => update(i, { ...a, facing: e.target.value as FacingDirection })}
             className="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-white">
-            {FACINGS.map(f => <option key={f} value={f}>{f}</option>)}
+            {facings.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
           <button type="button" onClick={() => remove(i)} className="text-red-400 hover:text-red-300 text-sm">x</button>
         </div>

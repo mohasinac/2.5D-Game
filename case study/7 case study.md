@@ -148,6 +148,7 @@ Every numeric value in new cases must carry one of these tags:
 - Rubber μ = 0.85 or 0.9 (CS1/CS9) were illustrative; real rubber μ = 0.50 (CS10 confirmed).
 - Do NOT hardcode petal counts for orbital tips — petal count is emergent from RPM × bowl depth × grip.
 - AR contact height ≠ AR centroid height. Contact faces project down from the centroid. Gen 1 AR contact: 12–24 mm; centroid: 28–36 mm.
+- BX contact zone (5–14 mm) is LOWER than MFB FW zone (17–28 mm on 145-track). The BX generation's shorter ratchet heights and lack of a separate track part compress the entire contact envelope closer to the stadium floor.
 - frictionMult in engine = μ_material / μ_ABS = μ_material / 0.17
 
 ---
@@ -351,7 +352,7 @@ Each term is computed as an annular disk `I = ½m(r_i² + r_o²)` for its radial
 
 ```
 X  -  YY
-│      └── height in Beyblade X units → YY × 0.1 mm
+│      └── height in Beyblade X units → YY × 0.1 mm  [CONFIRMED]
 └───────── number of outer protrusion sides
 ```
 

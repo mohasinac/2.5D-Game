@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 import SelfRotationPanel from "./SelfRotationPanel";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { useAssetLibrary } from "@/hooks/useAssetLibrary";
+import { useDefsDocs } from "@/hooks/useDefsDocs";
 import { COLLECTIONS } from "@/lib/firebase";
 
 interface Props {
@@ -27,6 +28,10 @@ const DEFAULT_MOAT: MoatWaterBodyConfig = {
 export default function WaterBodiesTab({ config, onChange }: Props) {
   const bodies = config.waterBodies ?? [];
   const { assets: waterAssets, loading: assetsLoading } = useAssetLibrary(COLLECTIONS.WATER_BODY_ASSETS);
+  const liquidTypeDocs = useDefsDocs(COLLECTIONS.LIQUID_TYPE_DEFS);
+  const liquidEntries = liquidTypeDocs.length > 0
+    ? liquidTypeDocs.map(d => ({ key: d.id, name: String(d.label ?? d.id), color: String(d.color ?? "#3b82f6"), description: String(d.description ?? "") }))
+    : (Object.entries(LIQUID_PRESETS) as [string, typeof LIQUID_PRESETS[keyof typeof LIQUID_PRESETS]][]).map(([key, v]) => ({ key, name: v.name, color: v.color, description: v.description ?? "" }));
   const assetOpts = waterAssets.map(a => ({ value: a.id, label: a.name ?? a.id, hint: a.tags?.join(", ") }));
 
   const add = (type: "zone" | "moat") => {
@@ -66,27 +71,27 @@ export default function WaterBodiesTab({ config, onChange }: Props) {
         <>Water Body #{idx + 1} — <span className="text-theme-muted capitalize">{wb.type}</span></>
       )}
       renderItemBody={(wb) => {
-        const preset = LIQUID_PRESETS[wb.liquidType as LiquidType];
+        const activeEntry = liquidEntries.find(e => e.key === wb.liquidType);
         return (
           <div className="flex flex-col gap-2.5">
             {/* Liquid type */}
             <div>
               <label className="block text-[11px] text-theme-faint mb-1.5">Liquid Type</label>
               <div className="grid grid-cols-4 gap-1.5">
-                {(Object.keys(LIQUID_PRESETS) as LiquidType[]).map(lt => (
+                {liquidEntries.map(entry => (
                   <button
-                    key={lt}
-                    onClick={() => update(wb.id, "liquidType", lt)}
-                    title={LIQUID_PRESETS[lt].description}
+                    key={entry.key}
+                    onClick={() => update(wb.id, "liquidType", entry.key)}
+                    title={entry.description}
                     className={cn("py-1 px-0.5 rounded-md text-[10px] font-medium cursor-pointer border transition-colors",
-                      wb.liquidType === lt ? "liquid-btn-active" : "text-theme-muted border-border-c")}
-                    style={wb.liquidType === lt ? { "--lc": LIQUID_PRESETS[lt].color } as React.CSSProperties : undefined}
+                      wb.liquidType === entry.key ? "liquid-btn-active" : "text-theme-muted border-border-c")}
+                    style={wb.liquidType === entry.key ? { "--lc": entry.color } as React.CSSProperties : undefined}
                   >
-                    {LIQUID_PRESETS[lt].name}
+                    {entry.name}
                   </button>
                 ))}
               </div>
-              {preset && <p className="text-[11px] text-theme-faint mt-1.5">{preset.description}</p>}
+              {activeEntry && <p className="text-[11px] text-theme-faint mt-1.5">{activeEntry.description}</p>}
             </div>
 
             {/* Zone-specific fields */}

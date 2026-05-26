@@ -104,15 +104,17 @@ Every numeric value in new cases must carry one of these tags:
 - Do NOT hardcode petal counts for orbital tips — petal count is emergent from RPM × bowl depth × grip.
 - AR contact height ≠ AR centroid height. Contact faces project down from the centroid. Gen 1 AR contact: 12–24 mm; centroid: 28–36 mm.
 - frictionMult in engine = μ_material / μ_ABS = μ_material / 0.17
+  - rubber frictionMult = 0.50 / 0.17 = **2.94** [CONFIRMED]
+  - metal frictionMult = 0.12 / 0.17 = **0.71** [CONFIRMED]
 | Indent recoil angle | `φ = arctan(d / pitch)` |
 | Iron-powder volume fraction | `φ_p = Δm / (V_total × (ρ_powder − ρ_ABS))` |
 
 ### Material Constants (use consistently)
 | Material | E (GPa) | ρ (kg/m³) | μ_kinetic |
 |----------|---------|-----------|-----------|
-| Zinc alloy (MFB MW) | 100 | 6600 | — |
-| ABS plastic | 2.3 | 1050 | 0.35 |
-| Rubber tip | 0.002 | 1200 | 0.85 |
+| Zinc alloy (MFB MW) | 100 [CONFIRMED] | 6600 | — |
+| ABS plastic | 2.3 [CONFIRMED] | 1050 | 0.35 |
+| Rubber tip | 0.002 [CONFIRMED] | 1200 | 0.85 |
 | Hard tip (SP/S/D) | 2.3 | 1050 | 0.17 |
 | Soft rubber flat (RF) | 0.002 | 1200 | 0.85 |
 | Combined E* (rubber-ABS) | 0.0006 | — | — |
@@ -149,7 +151,7 @@ Every numeric value in new cases must carry one of these tags:
 
 ---
 
-## Case 297 — Rubber Flat / RF (0.8 g)
+## Case 297 — Rubber Flat / RF (0.8 g [CONFIRMED])
 
 **Thesis:** RF's flat rubber tip contacts the floor over an annular ring when new (central indentation lifts the core off the surface) and over its full circular face when worn — the transition from ring-contact to full-disk contact reduces peak local pressure and smooths the friction-force distribution, converting erratic self-KO-prone movement into a controllable attack pattern; the locked-tip molds (SonoKong, Hasbro) transfer full beyblade angular velocity to the rubber, maximising lateral force, while the free-spinning TT mold decouples tip rotation and reduces effective traction by roughly half.
 
@@ -168,7 +170,7 @@ Side profile:
         ╚══════════════╝
          15.82 mm wide
 
-Tip outer radius r_tip:       2.775 mm
+Tip outer radius r_tip:       2.775 mm [CONFIRMED]
 Indentation inner radius r_i: ~2.0 mm  (from image — concave recess at centre)
 Housing outer radius:          7.91 mm
 Full height:                  11.09 mm
@@ -349,7 +351,7 @@ function rfTipLockRatio(omega_tip_fraction: number): number {
 
 ---
 
-## Case 298 — Move 145 / M145 (4.2 g)
+## Case 298 — Move 145 / M145 (4.2 g [CONFIRMED], 14.5 mm height [CONFIRMED])
 
 **Thesis:** M145 displaces the bottom's contact point from the beyblade's center of mass by a mode-selectable eccentricity Δr; in Large Jump mode the resulting centrifugal force exceeds the system weight at competitive spin rates, causing genuine liftoff (~1.5 mm) once per revolution; in Small Jump mode the centrifugal force stays below weight, producing floor vibration only; the TT mold's soft snap-fit connectors slip above a threshold centrifugal load near launch speed, explaining spontaneous mode-switching under impact; and the off-center contact point increases spin-decay torque by approximately 250× compared to the same tip on a centred track.
 

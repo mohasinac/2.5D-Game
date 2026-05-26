@@ -157,6 +157,156 @@ stamina_stat = normalize(stamina_raw, gen_min, gen_max, 0, 150)
 
 ---
 
+### Section 2b: Attack Types and Beyblade Terminology Physics
+
+This section defines every official attack type, tip type, part role, and beyblade terminology.
+
+#### Attack Types (ContactPoint.attackType)
+
+| Attack Type | Real-World Physics | Force Direction | Primary Stat | Engine Mechanic | Notes |
+|------------|-------------------|----------------|-------------|-----------------|-------|
+| **Smash** | Lateral impact — horizontal momentum transfer at contact height. AR blade hits opponent's blade tangentially. | Lateral (outward from contact point) | Attack | `smashImpact` | Dominant Gen 1, Gen 4. High recoil on attacker. `[REAL-WORLD]` |
+| **Upper** | Vertical lift — contact point strikes BELOW opponent's CoM, creating upward lever force. Destabilizes opponent by forcing tilt. | Upward + lateral | Attack + destabilize | `upperLaunch` | Requires CP `heightRange.max < h_CoM_opponent`. `[REAL-WORLD]` |
+| **Absorb** | Low-recoil energy transfer — rubberized or angled surface deflects hit without bouncing. Attacker retains spin. | Deflected (tangential) | Defense / Stamina | `contactDeflect` | Rubber CPs, e=0.25 (low bounce). `[REAL-WORLD]` |
+| **Burst** | Tab contact — hit on burst tab generates torque that overcounts ratchet teeth → burst. NOT a force type — it is a threshold-checking event. | Rotational torque | — | `subPartBurst` | Gen 3/4 only. `[REAL-WORLD]` |
+| **Spin Steal** | Friction-driven angular momentum transfer. Rubber CP contacts defender in same-spin direction — friction decelerates defender, accelerates attacker. | Tangential friction | Stamina | `spinStealCoupling` | Countered by bearing tip (μ_effective ≈ 0). `[REAL-WORLD]` |
+
+#### Part Role Terminology
+
+| Term | Generation | Part Role in Engine | Mass Contribution | Contact Height |
+|------|-----------|---------------------|-----------------|---------------|
+| **AR (Attack Ring)** | Gen 1 Plastic | `attack_ring` — primary contact surface | 4–8 g | Face edges 12–24 mm `[CONFIRMED]` |
+| **SAR (Sub Attack Ring)** | Gen 1 Plastic | `sub_part` on AR — secondary CP set | 2–5 g | Same as AR CPs |
+| **WD (Weight Disk)** | Gen 1 Plastic | `weight_disk` — dominant inertia (52%+) | 10–18 g | Passive (no CPs on most) |
+| **BB (Blade Base)** | Gen 1 Plastic | `tip` — tip + shaft height determines h_CoM | 3–8 g | Tip at floor h=0mm |
+| **SG (Spin Gear)** | Gen 1 Plastic | `core` — spin direction + EG spring | 3–5 g | h≈14mm above floor |
+| **Bit Chip** | Gen 1 Plastic | `bit_beast` — purely cosmetic | ~1 g | n/a |
+| **HMS AR** | Gen 1 HMS | `attack_ring` — metal; highest contact mass | 12–16 g | 12–20 mm `[ESTIMATED]` |
+| **RC (Running Core)** | Gen 1 HMS | `tip` — bottom of HMS stack | 1–3 g | h=0mm |
+| **FW (Fusion Wheel)** | Gen 2 MFB | `attack_ring` equivalent — dominant mass (70% I) | 22–35 g | Depends on track height |
+| **Spin Track** | Gen 2 MFB | `sub_part` — sets FW height (T125=12.5mm, 145=14.5mm) | 2–6 g | FW contact = track height + 3–13mm |
+| **Layer** | Gen 3 Burst | `attack_ring` equivalent — blades project DOWN | 12–18 g | Blade contact 5–15mm `[ESTIMATED]` |
+| **Forge Disc** | Gen 3 Burst | `weight_disk` — centroid 15–25mm | 15–22 g | Passive; burst engagement height |
+| **Driver** | Gen 3 Burst | `tip` — same tip physics | 3–6 g | h=0mm |
+| **DB Core / Armor** | Gen 3 DB | `core` or `sub_part` — High/Low mode swap (±7mm CoM) | varies | Config `heightRange` shifts |
+| **Blade** | Gen 4 BX | `attack_ring` equivalent — largest mass (55%) | 33–60 g | 5–14mm `[CONFIRMED]` |
+| **Ratchet** | Gen 4 BX | `sub_part` — height = last_two_digits / 10 `[CONFIRMED]` | 3.5–4.5 g `[INFERRED]` | Sets Blade height |
+| **Bit** | Gen 4 BX | `tip` — Flat 2.3g, Ball 2.1g `[CONFIRMED]` | 2.1–2.3 g | h=0mm |
+
+#### Contact Attack Terminology
+
+| Term | Physics Meaning | When It Happens | Engine Implementation |
+|------|----------------|-----------------|----------------------|
+| **Ring Out (RO)** | Bey exits arena boundary | `v_radial > v_escape` at rim | Arena boundary detection `[REAL-WORLD]` |
+| **Burst (BST)** | Layer separates from ratchet/base | Burst tab torque > ratchet resistance | `subPartBurst` mechanic `[REAL-WORLD]` |
+| **OS (Outspin)** | Win by bey spinning longer | Opponent spin decays to zero first | `t_spin` comparison `[REAL-WORLD]` |
+| **LAD (Life After Death)** | Bey continues spinning while fallen/tilted | Bearing tip decouples body from floor | `bearingFriction: 0.05`, `freeSpin: true` `[REAL-WORLD]` |
+| **Self-KO** | Attacker launches itself out | High recoil + low CoM stability | `smashImpact` + recoil `[REAL-WORLD]` |
+| **Tornado Stall** | Bey rides bowl wall at high orbit radius | Centripetal force from wall > gravity component | `orbitMovement` mechanic `[REAL-WORLD]` |
+| **Sliding Shoot** | Launch technique — bey slides across floor to center | v_centre ~2.7 m/s vs ~1.4 m/s radial (CS10 Case 547) | Launcher `launchPosition` `[CONFIRMED]` |
+| **Zombie** | Stamina bey wins via OS at very low spin | `bearingFriction = 0.05` → α ≈ 0 at low spin | `bearingFriction: 0.05` `[REAL-WORLD]` |
+| **Same-Spin** | Both beys spin same direction | Spin steal maximized; friction acts strongly | `spinStealCoupling` enhanced `[REAL-WORLD]` |
+| **Opposite-Spin** | Beys spin opposite directions | Collision physics dominate; spin steal near-zero | Collision physics `[REAL-WORLD]` |
+
+#### Layer / Wheel Shape Terminology (Radial Profile → FourierRadialProfile)
+
+| Shape Type | Harmonic Description | Examples | Best Attack Type |
+|------------|---------------------|---------|-----------------|
+| **Round** | a₀ dominant, all harmonics ≈ 0 | Libra FW, Circle WD | Stamina (no recoil points) |
+| **3-Wing** | 3rd harmonic dominant | Pegasus AR, Lightning FW | Smash attack |
+| **4-Wing / Cross** | 4th harmonic dominant | Meteo L-Drago, Draciel AR | Balanced smash |
+| **Asymmetric** | 1st + 3rd harmonics | Upper Dragoon AR | Upper attack (one heavy side) |
+| **Star / Multi-point** | High-n harmonics (n=6,8) | Star AR, Eight Spiker | Barrage / multi-hit |
+
+---
+
+### Section 2c: Per-Generation Part Implementation Guide
+
+#### Gen 1 Plastic AR (Attack Ring)
+
+**Physics:** Contact at h = 12–24mm (face edges, NOT centroid at 28–36mm). Multi-contact-point geometry. `[CONFIRMED]`
+
+**Engine implementation:**
+- Multiple `ContactPoint`s on the AR, each with `heightRange: { min: 12, max: 24 }`
+- `FourierRadialProfile` for radial shape (3-wing AR → dominant 3rd harmonic)
+- For Upper Attack AR: `attackType: "upper"`, `heightRange.min ≈ 18–24`
+- For Smash AR: `attackType: "smash"`, `heightRange: { min: 12, max: 16 }`
+- SAR (Sub Attack Ring): SubPart with `mode: "fixed"` or `mode: "partial_slip"`
+
+#### Gen 1 Weight Disk
+
+**Physics:** Dominant inertia contributor (52%+). Wide WD (r=25mm) > Heavy WD for stamina despite lower mass. `[CONFIRMED]`
+
+**Engine implementation:**
+- `PartLayer: "wd"`, radial geometry via `FourierRadialProfile`
+- For magnetic WD: add `magneticPull` mechanic with `attractMode: true`
+- No ContactPoints needed on most WDs (passive mass)
+
+#### Gen 1 Blade Base / Tip
+
+**Physics:** Tip position sets h_CoM via SG height. SG Metal Sharp Base raises stack by +6mm. `[CONFIRMED]`
+
+**Engine implementation:**
+- Sharp: `tipShape: "sharp"`, `material: "abs"`, `gripFactor: 0.06` (μ=0.17, point contact)
+- Metal Sharp: `tipShape: "sharp"`, `material: "metal"`, `gripFactor: 0.04` (μ=0.12)
+- Flat: `tipShape: "flat"`, `material: "abs"`, `gripFactor: 0.25`
+- CEW/EWD: `bearingFriction: 0.12` `[CONFIRMED]`
+- B:D/Bearing: `bearingFriction: 0.05` `[CONFIRMED CS10]`
+
+#### Gen 2 MFB Fusion Wheel
+
+**Physics:** Dominant mass (70% of I). Track height encodes contact height. 145 track → FW contact at 17–28mm. `[CONFIRMED]`
+
+**Engine implementation:**
+- `PartLayer: "ar"` (Fusion Wheel = attack ring equivalent)
+- CPs with `heightRange: { min: h_track + 3, max: h_track + 13 }`
+- Spin Track modeled as SubPart shifting height stack
+- Metal material: `material: "metal"`, high damage, low spinSteal
+
+#### Gen 3 Burst Layer
+
+**Physics:** Blades project DOWNWARD. Contact at 5–15mm (not Layer centroid 25–35mm). Burst tabs at Layer centroid. `[ESTIMATED]`
+
+**Engine implementation:**
+- Layer CPs: `heightRange: { min: 5, max: 15 }`, `attackType` varies
+- Burst tab CPs: `attackType: "burst"` at height 20–30mm (ratchet engagement)
+- DB System High/Low: `configurations` with two modes, auto-triggered
+  - High Mode: `heightRange` shifts +7mm on Layer CPs
+  - Low Mode: default
+
+#### Gen 4 BX Blade
+
+**Physics:** Near-floor contact (5–14mm). Xtreme Line engagement at h=0mm. `[CONFIRMED]`
+
+**Engine implementation:**
+- Blade CPs: `heightRange: { min: 5, max: 14 }`, `attackType: "smash"` dominant
+- Xtreme Line CP: `heightRange: { min: 0, max: 3 }`, `material: "metal"`
+- Ratchet: height = `last_two_digits / 10` `[CONFIRMED]`
+- Flat Bit 2.3g, Ball Bit 2.1g `[CONFIRMED]`
+
+---
+
+### Section 2d: Launcher Mechanics Summary
+
+Based on Cases 578–585 (appended to CS10).
+
+| Launcher Type | ω₀ (rad/s) | Key Formula | Source |
+|--------------|-----------|-------------|--------|
+| String | 1714 | `ω₀ = v_pull / r_shaft` (r_shaft ≈ 1.75mm, v_pull = 3.0 m/s) | `[CONFIRMED]` |
+| Gear/Winder | 2571 | `ω₀_gear = G × v_pull / r_shaft` (G ≈ 1.8–2.5) | `[INFERRED]` |
+| BeyLauncher LR | 3771 | G ≈ 2.2 typical | `[INFERRED]` |
+| BX Xtreme | 4800 | G_eff ≈ 2.8, highest achievable ω₀ | `[CONFIRMED CS10]` |
+
+**Launch tilt:** h_contact shift = r_bey × sin(θ). At θ=30°, r=20mm → Δh = 10mm downward. `[REAL-WORLD]`
+
+**Power percentage:** t_spin ∝ power_pct (linear). 150% power = 1.5× spin life. `[REAL-WORLD]`
+
+**Spin steal × launch × bearing:** Full formula: steal = rawSteal × spinStealFactor × (1/spinStealResist) × bearingFriction. B:D defender: steal ≈ 0. `[REAL-WORLD]`
+
+**First-hit recoil:** Δv_attacker = −(1+e) × m_def/(m_att+m_def) × v_rel. ABS e=0.70: Δv = −2.55 m/s. Rubber e=0.25: Δv = −1.875 m/s (26% less bounce). `[REAL-WORLD]`
+
+---
+
 ## Section 3: Material Profile Table
 
 All values cross-verified across CS1--CS10. The `frictionMult` column is the engine multiplier relative to ABS baseline.

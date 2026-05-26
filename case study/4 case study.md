@@ -78,7 +78,7 @@ Every numeric value in new cases must carry one of these tags:
 
 ## Case 189 — Eight Spiker Attack Ring: Eight-Contact Symmetry as a Dead-Zone Eliminator, Why Low Recoil Defines the LS Benchmark Despite Lower Peak Power, and the RS Failure Mode
 
-Eight Spiker is 4.3 g with 8-fold rotational symmetry — the highest contact-point count of any competitive LS smash AR in the library. Each contact point is an angled smash face with serrated spike lines along its leading edge. The serrations add Spike Attack (concentrated normal force at ridge tips) to a base smash face geometry. Contact frequency is the highest achievable at any given spin rate. Power per contact is lower than the best LS smash ARs because the 8-fold division forces each contact face to occupy a smaller arc and extend to a shorter radius than a 3- or 4-fold design. The combination of near-zero dead zones and low recoil per contact produces the consistency that makes Eight Spiker the LS smash benchmark — consistent, reliable, and safe on SG Metal Flat Base (Gaia Dragoon V Version). RS provides only recoil — the contact geometry mirrors to the wrong direction.
+Eight Spiker is 4.3 g [FACT] with 8-fold rotational symmetry — the highest contact-point count of any competitive LS smash AR in the library. Each contact point is an angled smash face with serrated spike lines along its leading edge. The serrations add Spike Attack (concentrated normal force at ridge tips) to a base smash face geometry. Contact frequency is the highest achievable at any given spin rate. Power per contact is lower than the best LS smash ARs because the 8-fold division forces each contact face to occupy a smaller arc and extend to a shorter radius than a 3- or 4-fold design. The combination of near-zero dead zones and low recoil per contact produces the consistency that makes Eight Spiker the LS smash benchmark — consistent, reliable, and safe on SG Metal Flat Base (Gaia Dragoon V Version). RS provides only recoil — the contact geometry mirrors to the wrong direction.
 
 ---
 
@@ -396,7 +396,7 @@ function egBurstUseful(
 
 ---
 
-## Case 191 — First Clutch Base (Driger G Version) · 7.3 g
+## Case 191 — First Clutch Base (Driger G Version) · 7.3 g [FACT]
 **Thesis:** The cleanest First Clutch base geometry — no protrusions eliminates recoil at the cost of all offensive upside, leaving acceptable LAD that still trails every clutch-free alternative.
 
 The First Clutch Base (Driger G Version) strips the EG blade base back to its functional minimum: a smooth outer skirt, a standard First Clutch mechanism, and a tip recess sized for the stock Light Sharp. Where Metal Driger's version (6.9 g) and Dragoon G's (7.6 g) carry protruding geometry that raises contact normals into attack angles, Driger G's rim is essentially cylindrical. The consequence is bidirectional — incoming smash finds nothing to grip, so recoil per hit is near zero, but the base also projects no geometry outward to compensate for the EG height penalty (h_tip ≈ 20 mm) that already disadvantages every engine-gear chassis in stamina match-ups. The 7.3 g figure sits between those two siblings, adding more rotational inertia than Metal Driger but slightly less than Dragoon G, a secondary consideration since all three share the same spring-burst timing and the same LAD ceiling set by the lack of a true skirt orbit surface.
@@ -460,7 +460,7 @@ The mechanism is shared across all First Clutch bases: the spring releases immed
 ```
 τ_burst = k_spring × θ_wind
 
-Typical EG spring:  k = 0.003 N·m/rad,  θ_wind ≈ 20 rad (≈ 3.2 turns)
+Typical EG spring:  k = 0.003 N·m/rad,  θ_wind ≈ 20 rad (≈ 3.2 turns)  [linear k = 1500 N/m [CS10 CONFIRMED]; angular k_θ = k_linear × r_coil² ≈ 0.003 N·m/rad]
 τ_burst = 0.003 × 20 = 0.060 N·m  (burst torque)
 
 Tip friction torque (Light Sharp, r_tip = 0.5 mm):
@@ -1466,7 +1466,7 @@ function smashRecoilComparison(
 ---
 
 ## Case 197 — Right Engine Gear (Circle Defenser / Mystery Cutter) · 6.9 g
-**Thesis:** The tall-slot EG body's primary value is elevation — raising the WD and AR plane away from the attacker contact window — not the CEW gimmick, which delivers one useful tip (Circle Survivor) and two that serve no purpose.
+**Thesis:** The tall-slot EG body's primary value is elevation [CONFIRMED] — raising the WD and AR plane away from the attacker contact window — not the CEW gimmick, which delivers one useful tip (Circle Survivor) and two that serve no purpose.
 
 Right Engine Gear (Circle Defenser) and Right Engine Gear (Mystery Cutter) are the same 6.9 g unit, named by the CEW part included at retail. The EG body uses a tall CEW slot — deeper than the normal-slot EGs — requiring a lock clip to retain the CEW on the shaft during battle. The three compatible CEW tips are Circle Defenser (Case 195), Circle Survivor, and Mystery Cutter. Of these, Circle Survivor is the only competitively relevant choice; the other two carry recoil liabilities detailed in their own cases. The EG body itself confers two stackable benefits: it elevates the entire assembly by the slot height differential (~4–5 mm above a normal-slot or standard SG base), and it unlocks base pairings beyond the dedicated Normal Base (Wolborg 4) and Normal Base (Rock Bison) platforms.
 

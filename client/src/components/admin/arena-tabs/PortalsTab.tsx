@@ -3,6 +3,7 @@ import type { ArenaConfig, PortalConfig } from "@/types/arenaConfigNew";
 import SelfRotationPanel from "./SelfRotationPanel";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { useAssetLibrary } from "@/hooks/useAssetLibrary";
+import { useDefsDocs } from "@/hooks/useDefsDocs";
 import { COLLECTIONS } from "@/lib/firebase";
 
 interface Props {
@@ -10,24 +11,31 @@ interface Props {
   onChange: (updated: Partial<ArenaConfig>) => void;
 }
 
-const PORTAL_COLORS = ["#a855f7", "#06b6d4", "#10b981", "#f97316"];
-const PORTAL_LABELS = ["Purple", "Cyan", "Green", "Orange"];
-const PORTAL_TEXT_CLASSES = ["text-purple-400", "text-cyan-400", "text-green-400", "text-orange-400"];
-const PORTAL_ACCENT_CLASSES = ["accent-[#a855f7]", "accent-[#06b6d4]", "accent-[#10b981]", "accent-[#f97316]"];
+const FALLBACK_PORTAL_COLORS = ["#a855f7", "#06b6d4", "#10b981", "#f97316"];
+const FALLBACK_PORTAL_LABELS = ["Purple", "Cyan", "Green", "Orange"];
+// Fallback Tailwind classes — only used when DB colors are not available.
+// When DB colors are loaded, inline style={{ color/accentColor }} is used instead.
+const FALLBACK_PORTAL_TEXT_CLASSES = ["text-purple-400", "text-cyan-400", "text-green-400", "text-orange-400"];
+const FALLBACK_PORTAL_ACCENT_CLASSES = ["accent-[#a855f7]", "accent-[#06b6d4]", "accent-[#10b981]", "accent-[#f97316]"];
 
 function makeId() { return `portal_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`; }
 
 const DEFAULTS: Omit<PortalConfig, "id">[] = [
-  { position: { x: -10, y: 0 }, radius: 3, cooldown: 2, color: PORTAL_COLORS[0] },
-  { position: { x: 10,  y: 0 }, radius: 3, cooldown: 2, color: PORTAL_COLORS[1] },
-  { position: { x: 0, y: -10 }, radius: 3, cooldown: 2, color: PORTAL_COLORS[2] },
-  { position: { x: 0,  y: 10 }, radius: 3, cooldown: 2, color: PORTAL_COLORS[3] },
+  { position: { x: -10, y: 0 }, radius: 3, cooldown: 2, color: FALLBACK_PORTAL_COLORS[0] },
+  { position: { x: 10,  y: 0 }, radius: 3, cooldown: 2, color: FALLBACK_PORTAL_COLORS[1] },
+  { position: { x: 0, y: -10 }, radius: 3, cooldown: 2, color: FALLBACK_PORTAL_COLORS[2] },
+  { position: { x: 0,  y: 10 }, radius: 3, cooldown: 2, color: FALLBACK_PORTAL_COLORS[3] },
 ];
 
 export default function PortalsTab({ config, onChange }: Props) {
   const portals = config.portals ?? [];
   const { assets: portalAssets, loading: assetsLoading } = useAssetLibrary(COLLECTIONS.PORTAL_ASSETS);
   const assetOpts = portalAssets.map(a => ({ value: a.id, label: a.name ?? a.id, hint: a.tags?.join(", ") }));
+
+  const portalColorDocs = useDefsDocs(COLLECTIONS.PORTAL_COLOR_DEFS);
+  const usingDb = portalColorDocs.length > 0;
+  const portalColors = usingDb ? portalColorDocs.map(d => String(d.color ?? "#888")) : FALLBACK_PORTAL_COLORS;
+  const portalLabels = usingDb ? portalColorDocs.map(d => String(d.label ?? "Color")) : FALLBACK_PORTAL_LABELS;
 
   const add = () => {
     if (portals.length >= 4) return;
@@ -56,12 +64,16 @@ export default function PortalsTab({ config, onChange }: Props) {
         emptyIcon="🌀"
         emptyText="No portals yet. Portals teleport beyblades to linked portals."
         renderItemHeader={(portal, idx) => (
-          <span className={PORTAL_TEXT_CLASSES[idx % 4]}>
-            🌀 Portal #{idx + 1} ({PORTAL_LABELS[idx % 4]})
+          <span
+            className={!usingDb ? FALLBACK_PORTAL_TEXT_CLASSES[idx % FALLBACK_PORTAL_TEXT_CLASSES.length] : undefined}
+            style={usingDb ? { color: portalColors[idx % portalColors.length] } : undefined}
+          >
+            🌀 Portal #{idx + 1} ({portalLabels[idx % portalLabels.length]})
           </span>
         )}
         renderItemBody={(portal, idx) => {
-          const accentClass = PORTAL_ACCENT_CLASSES[idx % 4];
+          const accentClass = !usingDb ? FALLBACK_PORTAL_ACCENT_CLASSES[idx % FALLBACK_PORTAL_ACCENT_CLASSES.length] : "";
+          const accentStyle = usingDb ? { accentColor: portalColors[idx % portalColors.length] } : undefined;
           return (
             <div className="flex flex-col gap-2.5">
               <div className="grid grid-cols-3 gap-2.5">
@@ -75,6 +87,7 @@ export default function PortalsTab({ config, onChange }: Props) {
                       value={portal.position?.[axis] ?? 0}
                       onChange={e => updatePos(portal.id, axis, +e.target.value)}
                       className={`w-full ${accentClass}`}
+                      style={accentStyle}
                     />
                   </div>
                 ))}
@@ -87,6 +100,7 @@ export default function PortalsTab({ config, onChange }: Props) {
                     value={portal.radius ?? 3}
                     onChange={e => update(portal.id, "radius", +e.target.value)}
                     className={`w-full ${accentClass}`}
+                    style={accentStyle}
                   />
                 </div>
                 <div>
@@ -98,6 +112,7 @@ export default function PortalsTab({ config, onChange }: Props) {
                     value={portal.cooldown ?? 2}
                     onChange={e => update(portal.id, "cooldown", +e.target.value)}
                     className={`w-full ${accentClass}`}
+                    style={accentStyle}
                   />
                 </div>
               </div>

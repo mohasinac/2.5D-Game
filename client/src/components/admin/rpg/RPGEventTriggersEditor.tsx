@@ -1,5 +1,7 @@
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import RPGFlagConditionEditor from "./RPGFlagConditionEditor";
+import { useDefsDocs } from "@/hooks/useDefsDocs";
+import { COLLECTIONS } from "@/lib/firebase";
 import type { MapEventTrigger } from "@/rpg/data/schemas";
 
 interface Props {
@@ -7,13 +9,18 @@ interface Props {
   onChange: (triggers: MapEventTrigger[]) => void;
 }
 
-const TRIGGER_MODE_OPTIONS = [
+const FALLBACK_TRIGGER_MODE_OPTIONS = [
   { value: "enter", label: "Enter" },
   { value: "interact", label: "Interact" },
   { value: "step", label: "Step" },
 ];
 
 export default function RPGEventTriggersEditor({ triggers, onChange }: Props) {
+  const triggerModeDocs = useDefsDocs(COLLECTIONS.RPG_TRIGGER_MODE_DEFS);
+  const triggerModeOptions = triggerModeDocs.length > 0
+    ? triggerModeDocs.map(d => ({ value: d.id, label: d.label }))
+    : FALLBACK_TRIGGER_MODE_OPTIONS;
+
   const update = (i: number, t: MapEventTrigger) => {
     const next = [...triggers]; next[i] = t; onChange(next);
   };
@@ -72,7 +79,7 @@ export default function RPGEventTriggersEditor({ triggers, onChange }: Props) {
             </div>
             <div className="space-y-0.5">
               <label className="text-xs text-gray-500">Trigger Mode</label>
-              <SearchableSelect value={t.triggerMode} options={TRIGGER_MODE_OPTIONS}
+              <SearchableSelect value={t.triggerMode} options={triggerModeOptions}
                 onChange={v => update(i, { ...t, triggerMode: v as MapEventTrigger["triggerMode"] })} />
             </div>
           </div>

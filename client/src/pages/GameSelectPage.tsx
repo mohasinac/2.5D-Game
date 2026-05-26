@@ -135,6 +135,23 @@ export function GameSelectPage() {
             );
           })}
         </div>
+
+        <div className="mt-8 grid gap-3 grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
+          {[
+            { to: "/game/story", icon: "📖", title: "Story Mode", desc: "Season-based campaign" },
+            { to: "/game/my-beys", icon: "🔧", title: "My Beyblades", desc: "View your collection" },
+            { to: "/game/tutorial", icon: "📚", title: "Tutorial", desc: "Learn the basics" },
+            { to: "/game/settings", icon: "⚙️", title: "Settings", desc: "Audio, visuals, controls" },
+          ].map((item) => (
+            <Link key={item.to} to={item.to} className="no-underline block">
+              <div className="p-4 bg-bg2 rounded-[14px] border border-border-c hover:border-theme-blue/40 transition-colors">
+                <span className="text-[24px]">{item.icon}</span>
+                <h3 className="text-[14px] font-bold text-theme-text mt-2">{item.title}</h3>
+                <p className="text-theme-muted text-[11px]">{item.desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -15,6 +15,8 @@ import React, { useState } from "react";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type { PartShape, FourierRadialProfile, BezierPath, BezierSplineProfile, PartImages } from "@/types/beybladeSystem";
 import { synthesizeRadialCache } from "@/types/beybladeSystem";
+import { useDefsDocs } from "@/hooks/useDefsDocs";
+import { COLLECTIONS } from "@/lib/firebase";
 import { BezierEditor } from "./BezierEditor";
 import { FourierEditor } from "./FourierEditor";
 import { SplineProfileEditor } from "./SplineProfileEditor";
@@ -22,10 +24,10 @@ import { traceSilhouette } from "./SilhouetteTracer";
 
 type ShapeTab = "preset" | "bezier" | "fourier" | "side" | "bottom";
 
-const PRESET_SHAPES = ["circle", "ring", "star3", "star4", "star6", "triangle", "square", "hexagon"] as const;
-type PresetShape = typeof PRESET_SHAPES[number];
+const FALLBACK_PRESET_SHAPES = ["circle", "ring", "star3", "star4", "star6", "triangle", "square", "hexagon"] as const;
+type PresetShape = typeof FALLBACK_PRESET_SHAPES[number];
 
-const PRESET_ICONS: Record<string, string> = {
+const FALLBACK_PRESET_ICONS: Record<string, string> = {
   circle: "⬤",
   ring: "◎",
   star3: "🔺",
@@ -104,6 +106,12 @@ interface Props {
 }
 
 export function PartShapeEditor({ value, onChange, images }: Props) {
+  const shapeDocs = useDefsDocs(COLLECTIONS.PART_SHAPE_DEFS);
+  const presetShapes = shapeDocs.length > 0 ? shapeDocs.map(d => d.id) : [...FALLBACK_PRESET_SHAPES];
+  const presetIcons: Record<string, string> = shapeDocs.length > 0
+    ? Object.fromEntries(shapeDocs.map(d => [d.id, String(d.icon ?? "")]))
+    : FALLBACK_PRESET_ICONS;
+
   const [tab, setTab] = useState<ShapeTab>("preset");
   const [tracing, setTracing] = useState(false);
 
@@ -373,19 +381,19 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
           <div>
             <div className="text-[12px] text-muted mb-2">Preset shape</div>
             <div className="flex flex-wrap gap-2">
-              {PRESET_SHAPES.map((p) => {
+              {presetShapes.map((p) => {
                 const active = value.preset === p && value.type === "preset";
                 return (
                   <button
                     key={p}
-                    onClick={() => applyPreset(p)}
+                    onClick={() => applyPreset(p as PresetShape)}
                     className={`px-3 py-2 rounded-[8px] text-[13px] cursor-pointer flex items-center gap-1.5 border ${
                       active
                         ? "bg-blue/10 text-blue border-blue/50"
                         : "bg-bg2 text-muted border-border"
                     }`}
                   >
-                    <span className="text-[16px]">{PRESET_ICONS[p]}</span>
+                    <span className="text-[16px]">{presetIcons[p]}</span>
                     <span className="capitalize">{p}</span>
                   </button>
                 );

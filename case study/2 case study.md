@@ -113,7 +113,7 @@ Nexus is a DB (Dynamite Battle) Disc with eight blades arranged across two tiers
 ### Mass Distribution and Moment of Inertia
 
 ```
-   Nexus weight: 30.6 g, outer radius ~36 mm, inner radius ~10 mm.
+   Nexus weight: 30.6 g [FACT], outer radius ~36 mm, inner radius ~10 mm.
 
    Approximating as a thick annular disc:
    I_Nexus = ½ × m × (r_outer² + r_inner²)
@@ -417,6 +417,7 @@ The recommended combo inverts the problem: instead of Metal Attacker attacking, 
    m_total ≈ 0.048 kg
 
    Typical competitive combo m_total ≈ 0.045–0.055 kg
+   [Note: representative HMS combo = ~29.5g, NOT 45g. See Metal Attacker AR 14g + Circle Wide WD 14g + Flat Core RC 1.5g = 29.5g. The 0.045 kg figure above includes CWD God Ring + metal components, which is a heavier custom build.]
    → Metal Attacker combo is within range for KO resistance despite light AR.
 
    Bearing Core 2 adds the critical piece: near-zero tip friction → any lateral push
@@ -737,15 +738,15 @@ Circle Wide is an HMS Weight Disk (WD) built from die-cast metal. Its structure 
    I_hub    = 0.10 × m_WD × r_inner²
 
    Example values (typical HMS Circle Wide):
-   m_WD ≈ 0.016 kg,  r_outer ≈ 22 mm = 0.022 m,  r_inner ≈ 7 mm = 0.007 m
+   m_WD ≈ 0.014 kg [FACT],  r_outer ≈ 22 mm = 0.022 m,  r_inner ≈ 7 mm = 0.007 m
 
-   I_rim    = 0.70 × 0.016 × 0.022²  = 5.41 × 10⁻⁶ kg·m²
-   I_spokes = 0.20 × 0.016 × 0.0145² = 6.73 × 10⁻⁷ kg·m²
-   I_hub    = 0.10 × 0.016 × 0.007²  = 7.84 × 10⁻⁹ kg·m²
-   I_total  ≈ 6.09 × 10⁻⁶ kg·m²
+   I_rim    = 0.70 × 0.014 × 0.022²  = 4.74 × 10⁻⁶ kg·m²
+   I_spokes = 0.20 × 0.014 × 0.0145² = 5.89 × 10⁻⁷ kg·m²
+   I_hub    = 0.10 × 0.014 × 0.007²  = 6.86 × 10⁻⁹ kg·m²
+   I_total  ≈ 5.33 × 10⁻⁶ kg·m²
 
    Compare to a solid disc of same mass and outer radius:
-   I_solid_disc = ½ × m_WD × r_outer² = ½ × 0.016 × 0.022² = 3.87 × 10⁻⁶ kg·m²
+   I_solid_disc = ½ × m_WD × r_outer² = ½ × 0.014 × 0.022² = 3.39 × 10⁻⁶ kg·m²
 
    Circle Wide I_total / I_solid_disc ≈ 1.57 → 57% MORE inertia than a solid disc.
    The open spoke architecture is dramatically more efficient than filling in the material.
@@ -761,9 +762,9 @@ Circle Wide is an HMS Weight Disk (WD) built from die-cast metal. Its structure 
 
    Same friction torque, two different WDs:
    Solid disc:    dω/dt = −τ / 3.87×10⁻⁶  →  fast decay
-   Circle Wide:   dω/dt = −τ / 6.09×10⁻⁶  →  slow decay
+   Circle Wide:   dω/dt = −τ / 5.33×10⁻⁶  →  slow decay
 
-   Ratio: Circle Wide decays at 3.87/6.09 ≈ 0.636× the rate of a solid disc.
+   Ratio: Circle Wide decays at 3.39/5.33 ≈ 0.636× the rate of a solid disc.
    → Circle Wide lasts ~57% longer at the same spin level.
 ```
 
@@ -781,9 +782,9 @@ High I also stiffens gyroscopic precession — a tilting bey precesses rather th
 
    At the same spin ω:
    Solid disc:   Ω_precess ∝ 1 / 3.87×10⁻⁶  (fast precession → wobbly)
-   Circle Wide:  Ω_precess ∝ 1 / 6.09×10⁻⁶  (slow precession → stable)
+   Circle Wide:  Ω_precess ∝ 1 / 5.33×10⁻⁶  (slow precession → stable)
 
-   Circle Wide resists tilt-induced ring-out: lateral hits must overcome
+   Circle Wide (14g [FACT]) resists tilt-induced ring-out: lateral hits must overcome
    a stronger gyroscopic restoring tendency before the bey tips enough to exit.
 ```
 
@@ -825,10 +826,10 @@ function spinDecayRate(
   return tau / I; // rad/s² — lower is better stamina
 }
 
-// Circle Wide vs hypothetical solid disc, same mass 16g, r_outer 22mm:
-// circleWideInertia(0.016, 0.022, 0.007) ≈ 6.09e-6 kg·m²
-// solidDisc I = 0.5 × 0.016 × 0.022² ≈ 3.87e-6 kg·m²
-// Circle Wide decays at 3.87/6.09 = 63.5% of the solid disc rate.
+// Circle Wide vs hypothetical solid disc, same mass 14g [FACT], r_outer 22mm:
+// circleWideInertia(0.014, 0.022, 0.007) ≈ 5.33e-6 kg·m²
+// solidDisc I = 0.5 × 0.014 × 0.022² ≈ 3.39e-6 kg·m²
+// Circle Wide decays at 3.39/5.33 = 63.6% of the solid disc rate.
 ```
 
 ---
@@ -1088,21 +1089,21 @@ Circle Heavy is the counterpart to Circle Wide (Case 79). Where Circle Wide uses
 ### Moment of Inertia Comparison
 
 ```
-   Circle Wide (Case 79, m=16g, r_outer=22mm, r_inner=7mm):
-   I_wide ≈ 6.09 × 10⁻⁶ kg·m²
+   Circle Wide (Case 79, m=14g [FACT], r_outer=22mm, r_inner=7mm):
+   I_wide ≈ 5.33 × 10⁻⁶ kg·m²
 
-   Circle Heavy (m=18g assumed, r_outer=16mm, r_inner=6mm, solid ring):
+   Circle Heavy (m=16g [FACT], r_outer=16mm, r_inner=6mm, solid ring):
    I_solid_ring = ½ × m × (r_outer² + r_inner²)
-                = ½ × 0.018 × (0.016² + 0.006²)
-                = ½ × 0.018 × (0.000256 + 0.000036)
-                = ½ × 0.018 × 0.000292
-                ≈ 2.63 × 10⁻⁶ kg·m²
+                = ½ × 0.016 × (0.016² + 0.006²)
+                = ½ × 0.016 × (0.000256 + 0.000036)
+                = ½ × 0.016 × 0.000292
+                ≈ 2.34 × 10⁻⁶ kg·m²
 
-   Ratio: I_wide / I_heavy ≈ 6.09 / 2.63 ≈ 2.32×
-   Circle Wide has 2.32× more inertia despite only being slightly lighter.
+   Ratio: I_wide / I_heavy ≈ 5.33 / 2.34 ≈ 2.28×
+   Circle Wide has 2.28× more inertia despite being lighter.
 
    Spin decay rate: dω/dt = τ / I
-   Circle Heavy decays 2.32× faster than Circle Wide for same friction torque.
+   Circle Heavy decays 2.28× faster than Circle Wide for same friction torque.
    → Circle Heavy is NOT a stamina WD.
 ```
 
@@ -1116,10 +1117,10 @@ The solid ring is denser and heavier in absolute terms (more kg packed into a sm
 
    Higher m_combo → higher v_ko threshold → attacker must hit harder to ring out.
 
-   Typical HMS combo with Circle Wide (16g WD):  m_combo ≈ 44g
-   Typical HMS combo with Circle Heavy (18g WD):  m_combo ≈ 46g
+   Typical HMS combo with Circle Wide (14g [FACT] WD):  m_combo ≈ 42g
+   Typical HMS combo with Circle Heavy (16g [FACT] WD):  m_combo ≈ 44g
 
-   v_ko ratio: sqrt(46/44) ≈ 1.022 → 2.2% harder to ring out.
+   v_ko ratio: sqrt(44/42) ≈ 1.024 → 2.4% harder to ring out.
    This is modest but in close matches determines wall saves.
 ```
 
@@ -1132,8 +1133,8 @@ The smaller outer radius (16mm vs 22mm) means the WD edge sits closer to the spi
    WD edge height above floor: h_WD = RC_body_height + WD_thickness/2
 
    WD radius determines lateral exposure:
-   Circle Wide r_outer=22mm: exposed across 44mm diameter → easy to contact from side
-   Circle Heavy r_outer=16mm: exposed across 32mm diameter → 27% smaller lateral target
+   Circle Wide (14g [FACT]) r_outer=22mm: exposed across 44mm diameter → easy to contact from side
+   Circle Heavy (16g [FACT]) r_outer=16mm: exposed across 32mm diameter → 27% smaller lateral target
 
    Probability of AR tip intercepting WD edge:
    P_contact ∝ r_outer / r_orbit_AR
@@ -1148,8 +1149,8 @@ function solidRingInertia(m: number, r_outer: number, r_inner: number): number {
 }
 
 function wideVsHeavyComparison(
-  m_wide = 0.016,
-  m_heavy = 0.018,
+  m_wide = 0.014,   // Circle Wide 14g [FACT]
+  m_heavy = 0.016,  // Circle Heavy 16g [FACT]
 ): {
   I_ratio: number;
   decayRateRatio: number;
@@ -1158,8 +1159,8 @@ function wideVsHeavyComparison(
   const I_wide = solidRingInertia(m_wide, 0.022, 0.007) * 2.32; // spoke-rim correction
   const I_heavy = solidRingInertia(m_heavy, 0.016, 0.006);
   return {
-    I_ratio: I_wide / I_heavy, // ~2.32 — Wide has far more I
-    decayRateRatio: I_heavy / I_wide, // ~0.43 — Heavy decays 2.3× faster
+    I_ratio: I_wide / I_heavy, // ~2.28 — Wide has far more I
+    decayRateRatio: I_heavy / I_wide, // ~0.44 — Heavy decays 2.28× faster
     massAdvantage: m_heavy - m_wide, // +2g absolute mass on Heavy
   };
 }
@@ -1627,23 +1628,23 @@ Circle Balance sits between Circle Wide (Case 79) and Circle Heavy (Case 82) in 
    I_balance ≈ 3.5–4.0 × 10⁻⁶ kg·m²
 
    Ranking:
-   Circle Wide:    ~6.09 × 10⁻⁶ kg·m²  (best stamina)
+   Circle Wide (14g [FACT]):    ~5.33 × 10⁻⁶ kg·m²  (best stamina)
    Circle Balance: ~3.8  × 10⁻⁶ kg·m²  (intermediate)
-   Circle Heavy:   ~2.63 × 10⁻⁶ kg·m²  (worst stamina, best mass density)
+   Circle Heavy (16g [FACT]):   ~2.34 × 10⁻⁶ kg·m²  (worst stamina, best mass density)
 ```
 
 ### What "Balance" Actually Delivers
 
 ```
    Spin decay rate (dω/dt = τ/I):
-   Circle Wide decay rate:    τ / 6.09×10⁻⁶   (reference 1.0×)
-   Circle Balance decay rate: τ / 3.80×10⁻⁶   (1.60× faster than Wide)
-   Circle Heavy decay rate:   τ / 2.63×10⁻⁶   (2.32× faster than Wide)
+   Circle Wide decay rate:    τ / 5.33×10⁻⁶   (reference 1.0×)
+   Circle Balance decay rate: τ / 3.80×10⁻⁶   (1.40× faster than Wide)
+   Circle Heavy decay rate:   τ / 2.34×10⁻⁶   (2.28× faster than Wide)
 
    KO resistance (proportional to m_total):
-   Wide (16g):    combo mass baseline
-   Balance (17g): +1g → marginal improvement
-   Heavy (18g):   +2g → modest improvement
+   Wide (14g [FACT]):    combo mass baseline
+   Balance (17g): +3g → modest improvement
+   Heavy (16g [FACT]):   +2g → modest improvement
 
    Circle Balance is the correct choice when:
    - Circle Wide provides too little mass for the desired KO resistance

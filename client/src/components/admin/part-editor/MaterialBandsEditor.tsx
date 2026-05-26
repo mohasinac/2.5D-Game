@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { MaterialSelector } from "./MaterialSelector";
+import { useDefsDocs } from "@/hooks/useDefsDocs";
+import { COLLECTIONS } from "@/lib/firebase";
 import type { Material, MaterialBand, WearStep } from "@/types/beybladeSystem";
 
 interface Props {
@@ -9,7 +11,7 @@ interface Props {
 
 // ── Wear schedule helpers ──────────────────────────────────────────────────────
 
-const WEAR_PRESETS: Array<{ label: string; steps: WearStep[] }> = [
+const FALLBACK_WEAR_PRESETS: Array<{ label: string; steps: WearStep[] }> = [
   { label: "No wear",        steps: [] },
   { label: "100→50 / 3 min", steps: [{ atSecond: 0, wearLevel: 100 }, { atSecond: 180, wearLevel: 50 }] },
   { label: "100→0 / 3 min",  steps: [{ atSecond: 0, wearLevel: 100 }, { atSecond: 180, wearLevel: 0 }] },
@@ -36,6 +38,11 @@ function WearScheduleEditor({
   steps: WearStep[];
   onChange: (steps: WearStep[]) => void;
 }) {
+  const wearDocs = useDefsDocs(COLLECTIONS.WEAR_PRESET_DEFS);
+  const wearPresets = wearDocs.length > 0
+    ? wearDocs.map(d => ({ label: d.label, steps: (Array.isArray(d.steps) ? d.steps : JSON.parse(String(d.steps || "[]"))) as WearStep[] }))
+    : FALLBACK_WEAR_PRESETS;
+
   const sorted = [...steps].sort((a, b) => a.atSecond - b.atSecond);
 
   const updateStep = (idx: number, patch: Partial<WearStep>) => {
@@ -83,7 +90,7 @@ function WearScheduleEditor({
 
       {/* Preset buttons */}
       <div className="flex flex-wrap gap-1 mb-2">
-        {WEAR_PRESETS.map((p) => (
+        {wearPresets.map((p) => (
           <button key={p.label} onClick={() => onChange(p.steps)}
             className="py-[3px] px-2 text-[10px] rounded cursor-pointer bg-bg2 text-theme-muted border border-border-c">
             {p.label}

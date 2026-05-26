@@ -32,6 +32,10 @@ import { useLaunchInput } from "@/game/hooks/useLaunchInput";
 import type { QTEPromptData } from "@/game/hooks/useColyseus";
 import type { SplitScreenCinematicData } from "@/types/game";
 import { cn } from "@/lib/cn";
+import BurstOverlay from "@/components/game/BurstOverlay";
+import LaunchCinematic from "@/components/game/LaunchCinematic";
+import VictoryOverlay from "@/components/game/VictoryOverlay";
+import KOOverlay from "@/components/game/KOOverlay";
 
 interface AIBattleLocationState {
   beybladeId?: string;
@@ -81,6 +85,9 @@ export function AIBattleGamePage() {
   const [collisionQTEMultiplier, setCollisionQTEMultiplier] = useState(1);
   const [splitScreenData, setSplitScreenData] = useState<SplitScreenCinematicData | null>(null);
   const [splitScreenEliminated, setSplitScreenEliminated] = useState<Set<string>>(new Set());
+  const [burstVisible, setBurstVisible] = useState(false);
+  const [koVisible, setKoVisible] = useState<{ visible: boolean; type: "ko" | "ring_out" | "outspin" }>({ visible: false, type: "ko" });
+  const [victoryVisible, setVictoryVisible] = useState(false);
 
   const isSpectatingRef = useRef(spectate);
   const handleQTEPrompt = useCallback((data: QTEPromptData) => {
@@ -221,10 +228,12 @@ export function AIBattleGamePage() {
     room.onMessage("spin-out", (data: any) => {
       const { x, y } = physicsToScreen(data.x, data.y);
       spawnSpinOutParticles(x, y, TYPE_COLORS[data.type] ?? 0xffffff);
+      setKoVisible({ visible: true, type: data.reason === "ring_out" ? "ring_out" : data.reason === "outspin" ? "outspin" : "ko" });
     });
     room.onMessage("burst", (data: any) => {
       const { x, y } = physicsToScreen(data.x, data.y);
       spawnBurstParticles(x, y);
+      setBurstVisible(true);
     });
     room.onMessage("special-move", (data: any) => {
       playSpecialMoveEffect(data.playerId, data.type, data.x, data.y, data.facing);
@@ -267,6 +276,12 @@ export function AIBattleGamePage() {
   const timerSeconds = (gameState?.timer != null && isFinite(gameState.timer))
     ? Math.ceil(Math.max(0, gameState.timer))
     : null;
+
+  useEffect(() => {
+    if (gameState?.status === "series-finished" || (gameState?.status === "finished" && !gameEndData)) {
+      setVictoryVisible(true);
+    }
+  }, [gameState?.status, gameEndData]);
 
   const showLoading = !gameState || (gameState.status !== "in-progress" && gameState.status !== "warmup" && gameState.status !== "launching" && gameState.status !== "finished" && gameState.status !== "series-finished");
 
@@ -617,6 +632,17 @@ export function AIBattleGamePage() {
           onEnd={() => setSplitScreenData(null)}
         />
       )}
+
+      {/* Anime overlays */}
+      <BurstOverlay visible={burstVisible} onComplete={() => setBurstVisible(false)} />
+      <KOOverlay visible={koVisible.visible} type={koVisible.type} onComplete={() => setKoVisible({ visible: false, type: "ko" })} />
+      <LaunchCinematic active={gameState?.status === "launching" && !gameEndData} power={myBeyblade?.launchPower ?? 0} />
+      <VictoryOverlay
+        visible={victoryVisible}
+        winnerName={allBeyblades.find((b) => b.userId === (seriesEndData?.winner ?? gameState?.winner))?.username ?? ""}
+        winnerType={allBeyblades.find((b) => b.userId === (seriesEndData?.winner ?? gameState?.winner))?.type ?? "balanced"}
+        onDismiss={() => setVictoryVisible(false)}
+      />
 
       {/* Connecting overlay */}
       {connectionState !== "connected" && gameState === null && (

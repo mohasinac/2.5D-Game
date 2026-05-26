@@ -85,13 +85,13 @@ The 4 Layer System is the founding architecture of competitive Beyblade physics.
 The four layers occupy distinct height bands above the stadium floor. Approximate centroids with a typical Blade Base (SG-class height not applicable here — all 4L bases are self-contained):
 
 ```
-Layer              Approx. centroid height    Mass range
-──────────────────────────────────────────────────────────
-Bit Chip           h ≈ 38–44 mm               1–2 g
-Attack Ring        h ≈ 28–36 mm               3–7 g
-Weight Disk        h ≈ 18–24 mm               8–15 g
-Blade Base         h ≈  4–14 mm               4–9 g
-──────────────────────────────────────────────────────────
+Layer              Approx. centroid height              Mass range
+──────────────────────────────────────────────────────────────────────
+Bit Chip           h ≈ 38–44 mm [CONFIRMED-APPROXIMATE]  1–2 g
+Attack Ring        h ≈ 28–36 mm [CONFIRMED-APPROXIMATE]  3–7 g
+Weight Disk        h ≈ 18–24 mm [CONFIRMED-APPROXIMATE]  8–15 g
+Blade Base         h ≈  4–14 mm [CONFIRMED-APPROXIMATE]  4–9 g
+──────────────────────────────────────────────────────────────────────
 Total combo mass:  ~18–35 g
 ```
 
@@ -106,6 +106,8 @@ h_CoM = (m_BC × h_BC + m_AR × h_AR + m_WD × h_WD + m_BB × h_BB)
 ```
 
 For a representative combat combo (m_AR = 5 g at h=32, m_WD = 12 g at h=21, m_BB = 6 g at h=9, m_BC = 1.5 g at h=41):
+
+[Note: Real example — Upper Dragoon AR 6.2g + Wide Defense WD 14.5g + SG 3.5g + SG Semi-Flat BB 4.7g → m_total = 28.9g, h_CoM = 20.8mm [FACT-derived]. The generic values above are illustrative; real combos vary.]
 
 ```
 h_CoM = (5×32 + 12×21 + 6×9 + 1.5×41) / (5+12+6+1.5)
@@ -186,7 +188,7 @@ The Chip Protector (clear cover) adds a friction-reducing surface between the Bi
 
 ### 4. Attack Ring: Contact Geometry at the Optimal Collision Height
 
-The AR sits at h ≈ 28–36 mm — the highest mass-bearing layer with meaningful r_outer. This height places the AR contact faces at approximately the same height as an opponent's AR contact faces when two standard 4L combos meet. The contact height match:
+The AR sits at h ≈ 28–36 mm (centroid height) — the highest mass-bearing layer with meaningful r_outer. NOTE: 28–36 mm is the AR CENTROID height. The actual contact FACE height where collisions occur is 12–24 mm (blades project downward from centroid). This centroid height places the AR contact faces at approximately the same height as an opponent's AR contact faces when two standard 4L combos meet. The contact height match:
 
 ```
 h_contact_self   ≈ 30–34 mm (AR lower face to upper face range)
@@ -370,14 +372,14 @@ The SG inserts between WD and BB. It is held in place by base clips on the BB's 
 Layer centroids with a standard SG-height BB:
 
 ```
-Layer          Approx. centroid height    Mass range
-──────────────────────────────────────────────────────
-Bit Chip       h ≈ 38–44 mm              1–2 g
-Attack Ring    h ≈ 28–36 mm              3–7 g
-Weight Disk    h ≈ 18–24 mm              8–15 g
-Spin Gear      h ≈ 12–18 mm              3–8 g
-Blade Base     h ≈  4–12 mm              4–8 g
-──────────────────────────────────────────────────────
+Layer          Approx. centroid height              Mass range
+─────────────────────────────────────────────────────────────────
+Bit Chip       h ≈ 38–44 mm [CONFIRMED-APPROXIMATE]  1–2 g
+Attack Ring    h ≈ 28–36 mm [CONFIRMED-APPROXIMATE]  3–7 g
+Weight Disk    h ≈ 18–24 mm [CONFIRMED-APPROXIMATE]  8–15 g
+Spin Gear      h ≈ 12–18 mm [CONFIRMED-APPROXIMATE]  3–8 g
+Blade Base     h ≈  4–12 mm [CONFIRMED-APPROXIMATE]  4–8 g
+─────────────────────────────────────────────────────────────────
 Total combo mass:  ~22–42 g (heavier than 4L due to SG mass)
 ```
 
@@ -1176,13 +1178,13 @@ In prior systems, the effective AR contact height was fixed by the Blade Base or
 h_contact = h_Track + h_Wheel_offset
 ```
 
-where h_Track is the Track length (e.g., 145 → 14.5 mm shaft height) and h_Wheel_offset is the Wheel's lower-face position above the Track top (~fixed per Wheel design).
+where h_Track is the Track length (e.g., 145 → 14.5 mm shaft height [CONFIRMED]) and h_Wheel_offset is the Wheel's lower-face position above the Track top (~fixed per Wheel design).
 
 Two beyblades with the same Wheel but different Tracks:
 
 ```
-Wheel X on T145: h_contact ≈ 14.5 + offset = 20.5 mm
-Wheel X on  85:  h_contact ≈  8.5 + offset = 14.5 mm
+Wheel X on T145: h_contact ≈ 14.5 [CONFIRMED] + offset = 20.5 mm
+Wheel X on  85:  h_contact ≈  8.5 [CONFIRMED] + offset = 14.5 mm
 ```
 
 The same contact geometry (Wheel X) engages at 6 mm lower with the 85 Track. This matters for inter-combo engagement:
@@ -3308,11 +3310,11 @@ Sliding Shoot launch angles: 15–35°. The 19.0° threshold is squarely inside 
 
 ```typescript
 interface Track { height_mm: number; mass_g: number; width_mm: number; }
-const T85: Track  = { height_mm: 8.5,  mass_g: 0.86, width_mm: 21.0 };
-const T90: Track  = { height_mm: 9.0,  mass_g: 0.90, width_mm: 21.0 };
-const T100: Track = { height_mm: 10.0, mass_g: 1.0,  width_mm: 21.0 };
-const T105: Track = { height_mm: 10.5, mass_g: 1.0,  width_mm: 21.0 };
-const T145: Track = { height_mm: 14.5, mass_g: 1.0,  width_mm: 21.0 };
+const T85: Track  = { height_mm: 8.5,  mass_g: 0.86, width_mm: 21.0 };  // [CONFIRMED]
+const T90: Track  = { height_mm: 9.0,  mass_g: 0.90, width_mm: 21.0 };  // [CONFIRMED]
+const T100: Track = { height_mm: 10.0, mass_g: 1.0,  width_mm: 21.0 };  // [CONFIRMED]
+const T105: Track = { height_mm: 10.5, mass_g: 1.0,  width_mm: 21.0 };  // [CONFIRMED]
+const T145: Track = { height_mm: 14.5, mass_g: 1.0,  width_mm: 21.0 };  // [CONFIRMED]
 
 function wheelCentroid_mm(t: Track, tipSeat = 3.0, wheelHalf = 4.0): number {
   return t.height_mm + tipSeat + wheelHalf;

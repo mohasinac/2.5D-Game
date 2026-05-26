@@ -4,16 +4,17 @@ import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGameDataStore, type SpecialMoveDoc } from "@/stores/gameDataStore";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { PX_PER_CM_BASE } from "@/constants/units";
+import { useDefsDocs } from "@/hooks/useDefsDocs";
 import toast from "react-hot-toast";
 
-const KIND_OPTIONS = [
+const FALLBACK_KIND_OPTIONS = [
   { value: "attack", label: "Attack" },
   { value: "defense", label: "Defense" },
   { value: "stamina", label: "Stamina" },
   { value: "balanced", label: "Balanced" },
 ];
 
-const TYPE_OPTIONS = [
+const FALLBACK_TYPE_OPTIONS = [
   { value: "attack", label: "Attack" },
   { value: "defense", label: "Defense" },
   { value: "stamina", label: "Stamina" },
@@ -51,6 +52,14 @@ const KIND_BADGE_CLS: Record<string, string> = {
 };
 
 export function SpecialMovesPage() {
+  const beyTypeDocs = useDefsDocs(COLLECTIONS.BEY_TYPE_DEFS);
+  const typeOptions = beyTypeDocs.length > 0
+    ? beyTypeDocs.map(d => ({ value: d.id, label: d.label }))
+    : FALLBACK_TYPE_OPTIONS;
+  const kindOptions = beyTypeDocs.length > 0
+    ? beyTypeDocs.map(d => ({ value: d.id, label: d.label }))
+    : FALLBACK_KIND_OPTIONS;
+
   const [items, setItems] = useState<SpecialMoveDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -223,11 +232,11 @@ export function SpecialMovesPage() {
             <div className="grid grid-cols-2 gap-3 mb-3.5">
               <div>
                 <span className="text-[12px] text-theme-muted block mb-1">Kind</span>
-                <SearchableSelect value={form.kind} onChange={v => setForm(f => ({ ...f, kind: v }))} options={KIND_OPTIONS} placeholder="Kind…" />
+                <SearchableSelect value={form.kind} onChange={v => setForm(f => ({ ...f, kind: v }))} options={kindOptions} placeholder="Kind…" />
               </div>
               <div>
                 <span className="text-[12px] text-theme-muted block mb-1">Type affinity</span>
-                <SearchableSelect value={form.type} onChange={v => setForm(f => ({ ...f, type: v }))} options={TYPE_OPTIONS} placeholder="Type…" />
+                <SearchableSelect value={form.type} onChange={v => setForm(f => ({ ...f, type: v }))} options={typeOptions} placeholder="Type…" />
               </div>
             </div>
 

@@ -264,7 +264,7 @@ export default function BasicsTab({ config, onChange }: Props) {
               return (
                 <button
                   key={d}
-                  onClick={() => onChange({ difficulty: d })}
+                  onClick={() => onChange({ difficulty: d as "easy" | "medium" | "hard" | "extreme" | "custom" })}
                   style={active ? { "--tc": color, background: `${color}22`, color, border: `1px solid ${color}` } as React.CSSProperties : undefined}
                   className={`flex-1 py-1.5 px-1 rounded-md text-[11px] font-medium cursor-pointer capitalize border ${active ? "" : "bg-transparent text-theme-muted border-border-c"}`}
                 >

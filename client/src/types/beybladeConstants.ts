@@ -33,12 +33,33 @@ export interface MaterialStats {
 
 export const MATERIAL_STATS: Record<string, MaterialStats> = {
   abs:          { gripMult: 1.0, recoilMult: 1.0,  frictionMult: 1.0, spinStealResist: 1.0,  decayMod: 1.0, density: 1.0  },
-  rubber:       { gripMult: 2.8, recoilMult: 0.35, frictionMult: 2.5, spinStealResist: 0.5,  decayMod: 1.3, density: 1.3  },
-  metal:        { gripMult: 0.3, recoilMult: 0.7,  frictionMult: 0.4, spinStealResist: 0.85, decayMod: 0.9, density: 3.8  },
+  rubber:       { gripMult: 2.8, recoilMult: 0.35, frictionMult: 2.94, spinStealResist: 0.5,  decayMod: 1.3, density: 1.3  },
+  metal:        { gripMult: 0.3, recoilMult: 0.7,  frictionMult: 0.71, spinStealResist: 0.85, decayMod: 0.9, density: 3.8  },
   nylon:        { gripMult: 1.2, recoilMult: 0.9,  frictionMult: 1.1, spinStealResist: 1.0,  decayMod: 1.0, density: 0.85 },
   pc:           { gripMult: 1.1, recoilMult: 1.1,  frictionMult: 1.0, spinStealResist: 1.0,  decayMod: 1.0, density: 0.8  },
   pom:          { gripMult: 1.2, recoilMult: 0.9,  frictionMult: 1.1, spinStealResist: 1.0,  decayMod: 1.0, density: 0.85 },
   polycarbonate:{ gripMult: 1.1, recoilMult: 1.1,  frictionMult: 1.0, spinStealResist: 1.0,  decayMod: 1.0, density: 0.8  },
+};
+
+// ─── Generation Normalization Ranges ──────────────────────────────────────────
+// Physical parameter ranges per generation, used for stat normalization and
+// cross-gen contact height gating.
+
+export type BeybladeGeneration = "plastic" | "hms" | "metal_fight" | "burst" | "x_gen";
+
+export interface GenerationRange {
+  massMin: number;
+  massMax: number;
+  avgContactHeightMm: number;
+  contactHeightRange: { min: number; max: number };
+}
+
+export const GENERATION_RANGES: Record<BeybladeGeneration, GenerationRange> = {
+  plastic:     { massMin: 18, massMax: 35, avgContactHeightMm: 18, contactHeightRange: { min: 12, max: 24 } },
+  hms:         { massMin: 28, massMax: 42, avgContactHeightMm: 16, contactHeightRange: { min: 12, max: 20 } },
+  metal_fight: { massMin: 35, massMax: 48, avgContactHeightMm: 22, contactHeightRange: { min: 17, max: 28 } },
+  burst:       { massMin: 32, massMax: 45, avgContactHeightMm: 10, contactHeightRange: { min: 5,  max: 15 } },
+  x_gen:       { massMin: 45, massMax: 75, avgContactHeightMm: 10, contactHeightRange: { min: 5,  max: 14 } },
 };
 
 // ─── Part Type → Firestore Collection Map ─────────────────────────────────────

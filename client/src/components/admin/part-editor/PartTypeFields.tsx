@@ -19,6 +19,8 @@ import { useStatDefs } from "@/hooks/useStatDefs";
 import { useStatEventDefs } from "@/hooks/useStatEventDefs";
 import { useTriggerTypeDefs } from "@/hooks/useTriggerTypeDefs";
 import { usePartLayerDefs } from "@/hooks/usePartLayerDefs";
+import { useDefsDocs } from "@/hooks/useDefsDocs";
+import { COLLECTIONS } from "@/lib/firebase";
 
 type Part = Record<string, unknown>;
 type OnChange = (patch: Part) => void;
@@ -259,6 +261,8 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
   const targets: SwitchTarget[] = (part.switchTargets as SwitchTarget[] | undefined) ?? [];
   const { items: partLayerDefs } = usePartLayerDefs();
   const { items: triggerTypeDefs } = useTriggerTypeDefs();
+  const resetCondDocs = useDefsDocs(COLLECTIONS.RESET_CONDITION_DEFS);
+  const resetConditions = resetCondDocs.length > 0 ? resetCondDocs.map(d => d.id) : FALLBACK_RESET_CONDITIONS;
 
   const layerOptions = partLayerDefs.length > 0
     ? partLayerDefs.map(l => ({ value: l.id, label: l.label }))
@@ -268,7 +272,7 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
     ? triggerTypeDefs.map(t => ({ value: t.id, label: t.label }))
     : FALLBACK_TRIGGER_TYPES.map(t => ({ value: t, label: t }));
 
-  const resetOptions = FALLBACK_RESET_CONDITIONS.map(c => ({ value: c, label: c }));
+  const resetOptions = resetConditions.map(c => ({ value: c, label: c }));
 
   const defaultLayer = layerOptions[0]?.value ?? "tip";
   const defaultTrigger = triggerOptions.find(t => t.value === "impact_any")?.value ?? triggerOptions[0]?.value ?? "impact_any";

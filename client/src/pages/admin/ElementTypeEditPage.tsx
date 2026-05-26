@@ -9,15 +9,16 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import toast from "react-hot-toast";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
+import { useDefsDocs } from "@/hooks/useDefsDocs";
 
-const HAZARD_SUGGESTIONS = [
+const FALLBACK_HAZARD_SUGGESTIONS = [
   "lava", "ice", "mud", "electric", "emp", "fire", "water", "void",
   "time_slow", "repulsion", "size_shrink", "size_grow",
   "trampoline", "combo_boost", "drain", "healing", "magnet", "antigravity",
   "sticky", "elevation",
 ];
 
-const STAT_SUGGESTIONS = [
+const FALLBACK_STAT_SUGGESTIONS = [
   "spinDecayRate", "damageMultiplier", "speed", "surfaceFriction",
   "powerGainRate", "spinBoost", "damageReduction", "recoilFactor",
   "spinStealFactor", "maxSpin",
@@ -46,6 +47,11 @@ export function ElementTypeEditPage() {
   const navigate = useNavigate();
 
   const { configs, loading: typesLoading } = useElementTypes();
+
+  const hazardDocs = useDefsDocs(COLLECTIONS.HAZARD_TYPE_DEFS);
+  const statSugDocs = useDefsDocs(COLLECTIONS.ELEMENT_STAT_DEFS);
+  const hazardSuggestions = hazardDocs.length > 0 ? hazardDocs.map(d => d.id) : FALLBACK_HAZARD_SUGGESTIONS;
+  const statSuggestions = statSugDocs.length > 0 ? statSugDocs.map(d => d.id) : FALLBACK_STAT_SUGGESTIONS;
 
   const [slug, setSlug] = useState("");
   const [form, setForm] = useState<Omit<ElementTypeConfig, "id">>(EMPTY_CONFIG);
@@ -244,7 +250,7 @@ export function ElementTypeEditPage() {
               list="hazard-suggestions"
             />
             <datalist id="hazard-suggestions">
-              {HAZARD_SUGGESTIONS.map(h => <option key={h} value={h} />)}
+              {hazardSuggestions.map(h => <option key={h} value={h} />)}
             </datalist>
             <Button variant="outline" size="sm" onClick={addImmunity}>+ Add</Button>
           </div>
@@ -269,7 +275,7 @@ export function ElementTypeEditPage() {
                     value={bonus.hazardType} onChange={e => updateBonus(i, { hazardType: e.target.value })}
                     placeholder="e.g. fire" list="hazard-suggestions-bonus" />
                   <datalist id="hazard-suggestions-bonus">
-                    {HAZARD_SUGGESTIONS.map(h => <option key={h} value={h} />)}
+                    {hazardSuggestions.map(h => <option key={h} value={h} />)}
                   </datalist>
                 </div>
                 <div>
@@ -278,7 +284,7 @@ export function ElementTypeEditPage() {
                     value={bonus.stat} onChange={e => updateBonus(i, { stat: e.target.value })}
                     placeholder="spinDecayRate" list="stat-suggestions" />
                   <datalist id="stat-suggestions">
-                    {STAT_SUGGESTIONS.map(s => <option key={s} value={s} />)}
+                    {statSuggestions.map(s => <option key={s} value={s} />)}
                   </datalist>
                 </div>
                 <div>
