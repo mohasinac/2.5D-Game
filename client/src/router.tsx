@@ -23,6 +23,15 @@ import { LeaderboardPage } from "./pages/LeaderboardPage";
 import { TeamBattleLobbyPage } from "./pages/TeamBattleLobbyPage";
 import { TeamBattleGamePage } from "./pages/TeamBattleGamePage";
 
+// New player-facing pages
+import MyBeysPage from "./pages/MyBeysPage";
+import PlayerSettingsPage from "./pages/SettingsPage";
+import TutorialPage from "./pages/TutorialPage";
+import StorySelectPage from "./pages/StorySelectPage";
+import EpisodeIntroPage from "./pages/EpisodeIntroPage";
+import EpisodeOutroPage from "./pages/EpisodeOutroPage";
+import ReplayViewerPage from "./pages/ReplayViewerPage";
+
 // Admin pages
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
 import { BeybladesListPage } from "./pages/admin/BeybladesListPage";
@@ -163,6 +172,7 @@ const RPGRouteListPage = lazy(() => import("./pages/admin/rpg/routes/RPGRouteLis
 const RPGRouteCreatePage = lazy(() => import("./pages/admin/rpg/routes/RPGRouteCreatePage"));
 const RPGRouteEditPage = lazy(() => import("./pages/admin/rpg/routes/RPGRouteEditPage"));
 const RPGDefListPage = lazy(() => import("./pages/admin/rpg/definitions/RPGDefListPage"));
+const RPGScenarioGeneratorPage = lazy(() => import("./pages/admin/rpg/scenario-generator/RPGScenarioGeneratorPage"));
 
 function SuspenseWrap({ children }: { children: React.ReactNode }) {
   return (
@@ -224,6 +234,15 @@ export const router = createBrowserRouter([
       { path: "game/tournament", element: <ProtectedRoute><TournamentListPage /></ProtectedRoute> },
       { path: "game/tournament/:id", element: <ProtectedRoute><TournamentLobbyPage /></ProtectedRoute> },
       { path: "game/tournament/battle/:tournamentId/:matchId", element: <ProtectedRoute><TournamentBattleGamePage /></ProtectedRoute> },
+      // ── Player-facing pages ──
+      { path: "game/my-beys", element: <ProtectedRoute><MyBeysPage /></ProtectedRoute> },
+      { path: "game/settings", element: <ProtectedRoute><PlayerSettingsPage /></ProtectedRoute> },
+      { path: "game/tutorial", element: <ProtectedRoute><TutorialPage /></ProtectedRoute> },
+      { path: "game/story", element: <ProtectedRoute><StorySelectPage /></ProtectedRoute> },
+      { path: "game/story/episode/:episodeId/intro", element: <ProtectedRoute><EpisodeIntroPage /></ProtectedRoute> },
+      { path: "game/story/episode/:episodeId/outro", element: <ProtectedRoute><EpisodeOutroPage /></ProtectedRoute> },
+      { path: "game/replay/:matchId", element: <ProtectedRoute><ReplayViewerPage /></ProtectedRoute> },
+
       // ── Team Battle (Phase K) ──
       { path: "game/2d/team-battle/lobby", element: <ProtectedRoute><TeamBattleLobbyPage /></ProtectedRoute> },
       { path: "game/2d/team-battle/:roomId", element: <ProtectedRoute><TeamBattleGamePage /></ProtectedRoute> },
@@ -398,6 +417,7 @@ export const router = createBrowserRouter([
       { path: "rpg/routes/create", element: <SuspenseWrap><RPGRouteCreatePage /></SuspenseWrap> },
       { path: "rpg/routes/:id", element: <SuspenseWrap><RPGRouteEditPage /></SuspenseWrap> },
       { path: "rpg/definitions/:collection", element: <SuspenseWrap><RPGDefListPage /></SuspenseWrap> },
+      { path: "rpg/scenario-generator", element: <SuspenseWrap><RPGScenarioGeneratorPage /></SuspenseWrap> },
 
       // ── Legacy /admin/2d/ routes (kept for back-compat; these manage 2.5D content) ──
       { path: "2d/parts", element: <PartSearchPage /> },

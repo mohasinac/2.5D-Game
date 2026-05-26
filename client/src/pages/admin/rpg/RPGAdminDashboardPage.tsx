@@ -32,6 +32,7 @@ const SECTIONS = [
 ] as const;
 
 const EXTRA_LINKS = [
+  { label: "Scenario Generator", href: "/admin/rpg/scenario-generator", icon: "✨", desc: "Generate RPG content from JSON scripts" },
   { label: "Leveling Config", href: "/admin/rpg/leveling", icon: "📈", desc: "XP curve and level caps" },
   { label: "Map Types",         href: "/admin/rpg/definitions/map-types",         icon: "🏷️", desc: "city, route, school, park, etc." },
   { label: "NPC Types",         href: "/admin/rpg/definitions/npc-types",         icon: "🏷️", desc: "blader, rival, shopkeeper, etc." },

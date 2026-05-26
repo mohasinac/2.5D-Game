@@ -217,6 +217,10 @@ const rpgGenerationItems = [
   { to: "/admin/rpg/routes",       label: "Routes",        Icon: Route },
 ];
 
+const rpgToolItems = [
+  { to: "/admin/rpg/scenario-generator", label: "Scenario Generator", Icon: Sparkles },
+];
+
 function NavItem({
   to, label, Icon, end, indent = false, collapsed = false,
 }: {
@@ -356,12 +360,16 @@ export function AdminLayout() {
                   {rpgGenerationItems.map(item => (
                     <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
                   ))}
+                  <div className="text-[10px] text-theme-faint px-3 pl-7 pt-1 pb-0.5">Tools</div>
+                  {rpgToolItems.map(item => (
+                    <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
+                  ))}
                 </>
               )}
             </>
           ) : (
             <>
-              {[...rpgWorldItems, ...rpgCharacterItems, ...rpgStoryItems, ...rpgProgressionItems, ...rpgGenerationItems].map(item => (
+              {[...rpgWorldItems, ...rpgCharacterItems, ...rpgStoryItems, ...rpgProgressionItems, ...rpgGenerationItems, ...rpgToolItems].map(item => (
                 <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} collapsed />
               ))}
             </>
