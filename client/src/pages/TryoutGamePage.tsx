@@ -3,7 +3,7 @@
 // Firestore directly. No Colyseus connection is opened.
 
 import React, { useRef, useEffect, useState, useCallback, useMemo } from "react";
-import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
+
 import { Link, useLocation } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
 import { doc, getDoc } from "firebase/firestore";
@@ -31,12 +31,12 @@ function makeDefaultBeyblade(id: string, username: string): ServerBeyblade {
     id, userId: id, username,
     x: 540, y: 540, rotation: 0,
     velocityX: 0, velocityY: 0, angularVelocity: 15,
-    health: 100, maxHealth: 100,
-    stamina: 1000, maxStamina: 1000,
-    spin: 2000, maxSpin: 2000,
+    health: 1600, maxHealth: 1600,
+    stamina: 1600, maxStamina: 1600,
+    spin: 2192, maxSpin: 2192,
     isActive: true, isAI: false,
     type: "balanced",
-    radius: 5, actualSize: 120,
+    radius: 4, actualSize: 96,
     isInvulnerable: false,
     damageDealt: 0, damageReceived: 0, collisions: 0,
     spinDirection: "right",
@@ -59,7 +59,7 @@ export function TryoutGamePage() {
     settings.userId ?? "local",
     settings.username ?? "Player"
   ));
-  const arenaRadius = useRef(486); // default for 1080px arena
+  const arenaRadius = useRef(1080 * 0.45); // default for 1080px arena = 486
   const arenaConfig = useRef<ServerGameState["arena"] | null>(null);
   const keysRef = useRef<Set<string>>(new Set());
   const timerRef = useRef(0);     // elapsed seconds
@@ -67,7 +67,7 @@ export function TryoutGamePage() {
   const rafRef = useRef<number>(0);
 
   // HUD state — updated at lower frequency
-  const [hud, setHud] = useState({ spin: 2000, maxSpin: 2000, health: 100, timer: 0, loaded: false });
+  const [hud, setHud] = useState({ spin: 2192, maxSpin: 2192, health: 1600, timer: 0, loaded: false });
 
   // Local launch phase state
   type Phase = "countdown" | "launching" | "playing";
@@ -93,22 +93,31 @@ export function TryoutGamePage() {
       const beybladeId = settings.beybladeId ?? "default";
       const arenaId = settings.arenaId ?? "default";
 
-      // Load beyblade stats
+      // Load beyblade stats — mirror BaseRoom.applyDefaultStats / applyBeybladeStats
       try {
         const snap = await getDoc(doc(db, COLLECTIONS.BEYBLADE_STATS, beybladeId));
         if (snap.exists()) {
           const d = snap.data() as any;
-          const radiusCm = d.radius ?? 5;
-          const radiusPx = radiusCm * 24;
-          const stamina = d.stamina ?? 100;
-          const maxSpin = 2000 * (1 + stamina * 0.0008);
+          const radiusCm = d.radius ?? 4;
+          const staminaPts = d.typeDistribution?.stamina ?? d.staminaPoints ?? 120;
+          const maxSpin = d.maxSpin ?? 2000 * (1 + staminaPts * 0.0008);
+          const maxStamina = d.maxStamina ?? 1600;
           bey.current = {
             ...bey.current,
             type: d.type ?? "balanced",
+            spinDirection: d.spinDirection ?? "right",
             radius: radiusCm,
-            actualSize: radiusPx * 2,
+            actualSize: d.actualSize ?? radiusCm * 24,
             maxSpin,
             spin: maxSpin,
+            maxStamina,
+            stamina: maxStamina,
+            health: maxStamina,
+            maxHealth: maxStamina,
+            color: d.color,
+            specialMove: d.specialMoveId ?? d.specialMove ?? "",
+            comboIds: d.comboIds ?? [],
+            beybladeId,
           };
         }
       } catch { /* use defaults */ }
@@ -121,6 +130,7 @@ export function TryoutGamePage() {
           const w = d.width ?? 1080;
           const h = d.height ?? 1080;
           arenaRadius.current = Math.min(w, h) * 0.45;
+          const wb = d.worldBackground;
           arenaConfig.current = {
             id: arenaId,
             name: d.name ?? "Arena",
@@ -128,6 +138,19 @@ export function TryoutGamePage() {
             height: h,
             shape: d.shape ?? "circle",
             theme: d.theme ?? "default",
+            rotation: 0,
+            autoRotate: !!d.autoRotate,
+            rotationSpeed: d.rotationSpeed ?? 0,
+            rotationDirection: d.rotationDirection === "counter-clockwise"
+              ? "counterclockwise" : (d.rotationDirection ?? "clockwise"),
+            wallEnabled: d.wall?.enabled ?? true,
+            wallAngle: d.wallAngle ?? d.bowlProfile?.wallAngle ?? 0,
+            worldBgType: wb?.type ?? "none",
+            worldBgColor: wb?.color ?? "",
+            worldBgImageUrl: wb?.imageUrl ?? "",
+            worldBgOpacity: wb?.opacity ?? 1.0,
+            worldBgFit: wb?.fit ?? "cover",
+            worldBgBlurPx: wb?.blurPx ?? 0,
           };
           bey.current.x = w / 2;
           bey.current.y = h / 2;
@@ -138,11 +161,23 @@ export function TryoutGamePage() {
       if (!arenaConfig.current) {
         arenaConfig.current = {
           id: "default",
-          name: "Arena",
+          name: "Standard Arena",
           width: 1080,
           height: 1080,
           shape: "circle",
-          theme: "default",
+          theme: "metrocity",
+          rotation: 0,
+          autoRotate: false,
+          rotationSpeed: 0,
+          rotationDirection: "clockwise",
+          wallEnabled: true,
+          wallAngle: 0,
+          worldBgType: "none",
+          worldBgColor: "",
+          worldBgImageUrl: "",
+          worldBgOpacity: 1.0,
+          worldBgFit: "cover",
+          worldBgBlurPx: 0,
         };
         arenaRadius.current = 1080 * 0.45;
         bey.current.x = 540;
@@ -517,7 +552,6 @@ export function TryoutGamePage() {
           </div>
         </div>
       )}
-      <TouchControlsGBLayout />
     </div>
   );
 }

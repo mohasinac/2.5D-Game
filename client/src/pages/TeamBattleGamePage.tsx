@@ -2,7 +2,7 @@
 // Extends the standard battle view with BeySelector HUD + possession message overlay.
 
 import { useRef, useEffect, useState, useMemo, useCallback } from "react";
-import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
+
 import { useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
 import { useColyseus } from "@/game/hooks/useColyseus";
@@ -190,7 +190,6 @@ export function TeamBattleGamePage() {
           Switched to {possessionMsg}
         </div>
       )}
-      {!isSpectating && <TouchControlsGBLayout />}
     </div>
   );
 }

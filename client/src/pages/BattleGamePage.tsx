@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useMemo, useCallback } from "react";
-import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
+
 import { Link, useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
 import { useColyseus } from "@/game/hooks/useColyseus";
@@ -758,7 +758,6 @@ export function BattleGamePage() {
           </div>
         </div>
       )}
-      {!isSpectating && <TouchControlsGBLayout />}
     </div>
   );
 }
