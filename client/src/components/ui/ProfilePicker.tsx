@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { cn } from "@/lib/cn";
@@ -122,7 +122,7 @@ export function ProfilePicker<T extends AdminEnumProfile = AdminEnumProfile>({
               >
                 {opt.icon && <span className="text-base shrink-0">{opt.icon}</span>}
                 {opt.color && (
-                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: opt.color }} />
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[color:var(--oc)]" style={{ "--oc": opt.color } as React.CSSProperties} />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className={cn("truncate", opt.id === value ? "font-semibold" : "font-normal")}>

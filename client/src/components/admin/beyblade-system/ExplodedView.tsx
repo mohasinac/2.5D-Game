@@ -3,6 +3,7 @@
 //   bitBeast → attackRing → weightDisk → spinTrack? → casing → core? → tip
 // SubParts float beside their parent layer.
 
+import React from "react";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
 import type {
   ARPart, WDPart, TipPart, CorePart, CasingPart, BitBeastPart, SpinTrackPart, SubPart,
@@ -102,8 +103,8 @@ export function ExplodedView({ resolved, width = 320 }: Props) {
 
   return (
     <div
-      className="flex flex-col items-center gap-[18px] py-5 px-3 border border-border-c rounded-xl min-h-[600px] bg-[linear-gradient(180deg,var(--bg1)_0%,var(--bg0)_100%)]"
-      style={{ width }}
+      className="flex flex-col items-center gap-[18px] py-5 px-3 border border-border-c rounded-xl min-h-[600px] bg-[linear-gradient(180deg,var(--bg1)_0%,var(--bg0)_100%)] w-[--ew]"
+      style={{ "--ew": `${width}px` } as React.CSSProperties}
     >
       <div className="text-[11px] text-theme-faint mb-1 text-center">
         {resolved.system.displayName}
@@ -130,7 +131,7 @@ function LayerCell({ layer, canvasWidth }: { layer: Layer; canvasWidth: number }
   const hasSubs = layer.subs && layer.subs.length > 0;
 
   return (
-    <div className="flex items-center gap-4" style={{ width: canvasWidth }}>
+    <div className="flex items-center gap-4 w-[--cw]" style={{ "--cw": `${canvasWidth}px` } as React.CSSProperties}>
       {/* Label gutter (left) */}
       <div
         className="w-[72px] text-[10px] text-theme-faint text-right [font-variant:small-caps] tracking-[0.5px]"
@@ -145,8 +146,8 @@ function LayerCell({ layer, canvasWidth }: { layer: Layer; canvasWidth: number }
           <img
             src={sideImg}
             alt={part.displayName}
-            className="object-contain [filter:drop-shadow(0_4px_6px_rgba(0,0,0,0.35))]"
-            style={{ width: w, height: layer.height }}
+            className="object-contain [filter:drop-shadow(0_4px_6px_rgba(0,0,0,0.35))] w-[--lw] h-[--lh]"
+            style={{ "--lw": `${w}px`, "--lh": `${layer.height}px` } as React.CSSProperties}
           />
         ) : (
           <ProxyShape

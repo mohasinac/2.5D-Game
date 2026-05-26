@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, SpeedPathConfig, SpeedPathBreak, ChargePointConfig } from "@/types/arenaConfigNew";
 
@@ -36,8 +36,8 @@ function numInput(val: number | undefined, def: number, onChange: (n: number) =>
   return (
     <input type="number" value={val ?? def} step={step}
       onChange={e => onChange(Number(e.target.value))}
-      className="bg-bg1 border border-border text-text rounded-md py-[3px] px-1.5 text-[11px]"
-      style={{ width }}
+      className="bg-bg1 border border-border text-text rounded-md py-[3px] px-1.5 text-[11px] w-[--iw]"
+      style={{ "--iw": `${width}px` } as React.CSSProperties}
     />
   );
 }

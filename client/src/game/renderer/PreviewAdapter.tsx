@@ -17,7 +17,7 @@
 // it here. The component reuses Parts25DRenderer (or Classic2DRenderer
 // for classic 2D arenas) so the preview is pixel-identical to gameplay.
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { usePixiRenderer, type GameRenderMode } from "@/game/hooks/usePixiRenderer";
 import type { ServerGameState, ServerBeyblade } from "@/types/game";
 
@@ -49,12 +49,8 @@ export function PreviewAdapter({
   return (
     <div
       ref={containerRef}
-      className={className}
-      style={{
-        width: width ?? "100%",
-        height: height ?? "100%",
-        overflow: "hidden",
-      }}
+      className={`${className ?? ""} overflow-hidden w-[--pw] h-[--ph]`}
+      style={{ "--pw": width != null ? `${width}px` : "100%", "--ph": height != null ? `${height}px` : "100%" } as React.CSSProperties}
     />
   );
 }

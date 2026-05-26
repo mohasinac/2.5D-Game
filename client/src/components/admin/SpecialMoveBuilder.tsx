@@ -1,6 +1,6 @@
 // Special Move pipeline builder — up to 10 steps, each referencing a ComboEffectDef.
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -77,14 +77,14 @@ export function SpecialMoveBuilder({ value, onChange }: Props) {
               <div key={i} className="flex items-end h-full">
                 {delay > 0 && (
                   <div
-                    className="h-1 rounded-sm mb-5 bg-border-c"
-                    style={{ width: delayW }}
+                    className="h-1 rounded-sm mb-5 bg-border-c w-[--dw]"
+                    style={{ "--dw": `${delayW}px` } as React.CSSProperties}
                     title={`delay ${delay}t`}
                   />
                 )}
                 <div
-                  className={`flex items-center justify-center text-[11px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis rounded-lg px-1.5 ${isParallel ? "bg-purple-10 border border-[rgba(168,85,247,0.4)] text-theme-purple" : "bg-blue-10 border border-[rgba(59,130,246,0.4)] text-theme-blue"}`}
-                  style={{ width: blockW, height: isParallel ? 50 : 40 }}
+                  className={`w-[--bw] h-[--bh] flex items-center justify-center text-[11px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis rounded-lg px-1.5 ${isParallel ? "bg-purple-10 border border-[rgba(168,85,247,0.4)] text-theme-purple" : "bg-blue-10 border border-[rgba(59,130,246,0.4)] text-theme-blue"}`}
+                  style={{ "--bw": `${blockW}px`, "--bh": `${isParallel ? 50 : 40}px` } as React.CSSProperties}
                   title={`${effectName} (${step.executionMode})`}
                 >
                   {isParallel && <span className="mr-[3px] opacity-70">∥</span>}
@@ -107,12 +107,7 @@ export function SpecialMoveBuilder({ value, onChange }: Props) {
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            className="px-3.5 py-2 text-xs cursor-pointer bg-transparent border-none uppercase tracking-[0.04em]"
-            style={{
-              fontWeight: tab === t ? 700 : 400,
-              borderBottom: tab === t ? "2px solid var(--blue)" : "2px solid transparent",
-              color: tab === t ? "var(--text)" : "var(--faint)",
-            }}
+            className={`px-3.5 py-2 text-xs cursor-pointer bg-transparent border-none uppercase tracking-[0.04em] border-b-2 ${tab === t ? "font-bold text-text border-b-theme-blue" : "font-normal text-faint border-b-transparent"}`}
           >
             {t === "steps" ? "Pipeline" : t === "config" ? "Config" : "Animations"}
           </button>

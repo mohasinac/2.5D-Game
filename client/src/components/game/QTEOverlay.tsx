@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { QTEPromptData } from "@/game/hooks/useColyseus";
 
 const KEY_DISPLAY: Record<string, string> = {
@@ -148,7 +148,7 @@ export function QTEOverlay({ prompt, onKeyPress, onDismiss }: QTEOverlayProps) {
         data-testid="qte-timer"
         className="h-[6px] rounded-[3px] bg-bg3 overflow-hidden mb-[10px]"
       >
-        <div className="h-full rounded-[3px] [transition:width_0.05s_linear,background_0.3s]" style={{ width: `${timeLeft * 100}%`, background: timerColor }} />
+        <div className="h-full rounded-[3px] [transition:width_0.05s_linear,background_0.3s] w-[--tw] bg-[color:var(--tc)]" style={{ "--tw": `${timeLeft * 100}%`, "--tc": timerColor } as React.CSSProperties} />
       </div>
 
       <div className="text-[11px] text-theme-faint">

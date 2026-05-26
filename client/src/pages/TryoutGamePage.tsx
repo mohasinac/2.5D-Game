@@ -3,7 +3,7 @@
 // Firestore directly. No Colyseus connection is opened.
 
 import React, { useRef, useEffect, useState, useCallback, useMemo } from "react";
-import { TouchControls } from "@/components/game/TouchControls";
+import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { Link, useLocation } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
 import { doc, getDoc } from "firebase/firestore";
@@ -503,7 +503,7 @@ export function TryoutGamePage() {
           </div>
         </div>
       )}
-      <TouchControls />
+      <TouchControlsGBLayout />
     </div>
   );
 }

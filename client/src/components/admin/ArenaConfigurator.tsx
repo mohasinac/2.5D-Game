@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTabFromUrl } from "@/hooks/useTabFromUrl";
 import type { ArenaConfig } from "@/types/arenaConfigNew";
 import ArenaPreview from "./ArenaPreview";
+import { PreviewModal } from "@/components/ui/PreviewModal";
 import BasicsTab from "./arena-tabs/BasicsTab";
 import WaterBodiesTab from "./arena-tabs/WaterBodiesTab";
 import ObstaclesTab from "./arena-tabs/ObstaclesTab";
@@ -53,13 +54,10 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
   const [tab, setTab] = useTabFromUrl("basics") as [TabId, (t: TabId) => void];
 
   return (
-    <div
-      className="grid gap-5 items-start [grid-template-columns:minmax(0,1fr)_clamp(260px,28%,500px)]"
-    >
-      {/* Left: tab editor */}
-      <div className="flex flex-col gap-3">
-        {/* Tab bar */}
-        <div className="flex gap-1 bg-bg2 rounded-xl p-1 border border-border-c overflow-x-auto">
+    <div className="flex flex-col gap-3">
+      {/* Tab bar + Preview button */}
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex gap-1 bg-bg2 rounded-xl p-1 border border-border-c overflow-x-auto">
           {TABS.map(t => {
             const count = t.count?.(arena);
             const isActive = tab === t.id;
@@ -82,41 +80,39 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
             );
           })}
         </div>
-
-        {/* Tab content */}
-        <div className="bg-bg2 border border-border-c rounded-2xl p-5 min-h-[300px]">
-          {tab === "basics"     && <BasicsTab config={arena} onChange={onChange} />}
-          {tab === "walls"      && <WallsTab config={arena} onChange={onChange} />}
-          {tab === "water"      && <WaterBodiesTab config={arena} onChange={onChange} />}
-          {tab === "obstacles"  && <ObstaclesTab config={arena} onChange={onChange} />}
-          {tab === "turrets"    && <TurretsTab config={arena} onChange={onChange} />}
-          {tab === "portals"    && <PortalsTab config={arena} onChange={onChange} />}
-          {tab === "speedpaths" && <SpeedPathsTab config={arena} onChange={onChange} />}
-          {tab === "pits"       && <PitsTab config={arena} onChange={onChange} />}
-          {tab === "features"   && <FeaturesTab config={arena} onChange={onChange} />}
-          {tab === "boundary"   && <BoundaryTab config={arena} onChange={onChange} />}
-          {tab === "timeline"   && <TimelineTab config={arena} onChange={onChange} />}
-          {tab === "links"      && <LinksTab config={arena} onChange={onChange} />}
-          {tab === "switches"   && <SwitchesTab config={arena} onChange={onChange} />}
-          {tab === "sections"   && <SectionsTab config={arena} onChange={onChange} />}
-          {tab === "looptracks" && <LoopTracksTab config={arena} onChange={onChange} />}
-        </div>
-
-        {/* Save button */}
-        <div className="flex justify-end">
-          <button
-            onClick={onSave}
-            disabled={saving}
-            className={`px-6 py-[9px] rounded-lg text-[13px] font-semibold border-none cursor-pointer bg-[var(--purple)] text-white ${saving ? "opacity-50" : "opacity-100"}`}
-          >
-            {saving ? "Saving…" : "Save Arena"}
-          </button>
-        </div>
+        <PreviewModal title="Arena Preview" size="xl" label="Preview">
+          <ArenaPreview arena={arena} />
+        </PreviewModal>
       </div>
 
-      {/* Right: live preview — fills its column */}
-      <div className="sticky top-16">
-        <ArenaPreview arena={arena} />
+      {/* Tab content */}
+      <div className="bg-bg2 border border-border-c rounded-2xl p-5 min-h-[300px]">
+        {tab === "basics"     && <BasicsTab config={arena} onChange={onChange} />}
+        {tab === "walls"      && <WallsTab config={arena} onChange={onChange} />}
+        {tab === "water"      && <WaterBodiesTab config={arena} onChange={onChange} />}
+        {tab === "obstacles"  && <ObstaclesTab config={arena} onChange={onChange} />}
+        {tab === "turrets"    && <TurretsTab config={arena} onChange={onChange} />}
+        {tab === "portals"    && <PortalsTab config={arena} onChange={onChange} />}
+        {tab === "speedpaths" && <SpeedPathsTab config={arena} onChange={onChange} />}
+        {tab === "pits"       && <PitsTab config={arena} onChange={onChange} />}
+        {tab === "features"   && <FeaturesTab config={arena} onChange={onChange} />}
+        {tab === "boundary"   && <BoundaryTab config={arena} onChange={onChange} />}
+        {tab === "timeline"   && <TimelineTab config={arena} onChange={onChange} />}
+        {tab === "links"      && <LinksTab config={arena} onChange={onChange} />}
+        {tab === "switches"   && <SwitchesTab config={arena} onChange={onChange} />}
+        {tab === "sections"   && <SectionsTab config={arena} onChange={onChange} />}
+        {tab === "looptracks" && <LoopTracksTab config={arena} onChange={onChange} />}
+      </div>
+
+      {/* Save button */}
+      <div className="flex justify-end">
+        <button
+          onClick={onSave}
+          disabled={saving}
+          className={`px-6 py-[9px] rounded-lg text-[13px] font-semibold border-none cursor-pointer bg-[var(--purple)] text-white ${saving ? "opacity-50" : "opacity-100"}`}
+        >
+          {saving ? "Saving…" : "Save Arena"}
+        </button>
       </div>
     </div>
   );

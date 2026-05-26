@@ -10,6 +10,8 @@
  *   - Status summary bar at the bottom showing the nearest actionable link.
  */
 
+import React from "react";
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type LinkAlignmentStatus = "aligned" | "near" | "misaligned" | "severed" | "cooldown" | "always_open";
@@ -214,19 +216,19 @@ function LinkCard({ link }: { link: LinkAlignmentInfo }) {
 
       {/* Dual compass */}
       <div
-        className={`bg-[rgba(15,23,42,0.8)] rounded-[10px] px-2 py-[6px] ${isAligned ? "[animation:lhudGlow_1.5s_ease-in-out_infinite]" : ""}`}
-        style={{ border: `1px solid ${`color-mix(in srgb, ${color} ${isSevered ? "20%" : "35%"}, transparent)`}` }}
+        className={`bg-[rgba(15,23,42,0.8)] rounded-[10px] px-2 py-[6px] border border-[--lbc] ${isAligned ? "[animation:lhudGlow_1.5s_ease-in-out_infinite]" : ""}`}
+        style={{ "--lbc": `color-mix(in srgb, ${color} ${isSevered ? "20%" : "35%"}, transparent)` } as React.CSSProperties}
       >
         <DualCompass link={link} />
       </div>
 
       {/* Angular readout */}
       <div
-        className={`flex items-center gap-[5px] px-[10px] py-[3px] rounded-[20px] ${isAligned ? "[animation:lhudFlash_1.2s_ease-in-out_infinite]" : ""}`}
-        style={{ background: `color-mix(in srgb, ${isAligned ? color : "#0f172a"} ${isAligned ? "12%" : "80%"}, transparent)`, border: `1px solid color-mix(in srgb, ${color} 30%, transparent)` }}
+        className={`flex items-center gap-[5px] px-[10px] py-[3px] rounded-[20px] border border-[--lbc2] bg-[--lbg] ${isAligned ? "[animation:lhudFlash_1.2s_ease-in-out_infinite]" : ""}`}
+        style={{ "--lbc2": `color-mix(in srgb, ${color} 30%, transparent)`, "--lbg": `color-mix(in srgb, ${isAligned ? color : "#0f172a"} ${isAligned ? "12%" : "80%"}, transparent)` } as React.CSSProperties}
       >
         <span className="text-[13px] leading-none">{LINK_ICONS[link.linkType]}</span>
-        <span className="text-[10px] font-bold font-mono" style={{ color }}>
+        <span className="text-[10px] font-bold font-mono text-[color:var(--lc)]" style={{ "--lc": color } as React.CSSProperties}>
           {link.alignmentStatus === "always_open"
             ? "OPEN"
             : link.alignmentStatus === "aligned"
@@ -260,8 +262,8 @@ function LinkCard({ link }: { link: LinkAlignmentInfo }) {
       {/* Aligned flash outer ring */}
       {isAligned && (
         <div
-          className="absolute pointer-events-none rounded-[14px] border-2 [animation:lhudFlash_1.2s_ease-in-out_infinite]"
-          style={{ inset: -4, borderColor: `color-mix(in srgb, ${color} 35%, transparent)` }}
+          className="absolute pointer-events-none rounded-[14px] border-2 border-[--arc] [animation:lhudFlash_1.2s_ease-in-out_infinite]"
+          style={{ "--arc": `color-mix(in srgb, ${color} 35%, transparent)`, inset: -4 } as React.CSSProperties}
         />
       )}
     </div>
@@ -278,12 +280,12 @@ function SummaryBar({ links }: { links: LinkAlignmentInfo[] }) {
 
   return (
     <div
-      className="flex items-center gap-2 px-[14px] py-[5px] rounded-[10px] text-[11px] bg-[rgba(15,23,42,0.92)]"
-      style={{ border: `1px solid color-mix(in srgb, ${color} 35%, transparent)` }}
+      className="flex items-center gap-2 px-[14px] py-[5px] rounded-[10px] text-[11px] bg-[rgba(15,23,42,0.92)] border border-[--sbc]"
+      style={{ "--sbc": `color-mix(in srgb, ${color} 35%, transparent)` } as React.CSSProperties}
     >
       <span className="text-[14px]">{LINK_ICONS[nearest.linkType]}</span>
       <span className="text-theme-muted">{nearest.linkType.toUpperCase()}</span>
-      <span className="font-bold" style={{ color }}>
+      <span className="font-bold text-[color:var(--sc)]" style={{ "--sc": color } as React.CSSProperties}>
         {nearest.alignmentStatus === "always_open"
           ? "ALWAYS OPEN — ENTER"
           : nearest.alignmentStatus === "aligned"
@@ -313,14 +315,9 @@ export default function LinkAlignmentHUD({ links }: Props) {
   if (links.length === 0) return null;
 
   return (
-    <div style={{
-      position: "absolute",
-      bottom: 16,
-      left: "50%",
-      transform: "translateX(-50%)",
-      zIndex: 10,
-    }}
-      className="flex flex-col items-center gap-2 pointer-events-none"
+    <div
+      className="absolute flex flex-col items-center gap-2 pointer-events-none z-[10]"
+      style={{ bottom: 16, left: "50%", transform: "translateX(-50%)" }}
     >
       {/* ── Per-link cards ── */}
       <div className="flex gap-3 items-end">

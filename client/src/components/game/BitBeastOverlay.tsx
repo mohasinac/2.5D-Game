@@ -31,21 +31,10 @@ export function BitBeastOverlay({ side, asset, visible, durationMs = 2400 }: Bit
   const isLeft = side === "left";
 
   return (
-    <div style={{
-      position: "absolute",
-      top: 0,
-      [isLeft ? "left" : "right"]: 0,
-      width: "40%",
-      height: "100%",
-      zIndex: 60,
-      pointerEvents: "none",
-      opacity,
-      transition: "opacity 0.4s ease",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: isLeft ? "flex-start" : "flex-end",
-      padding: "0 1rem",
-    }}>
+    <div
+      className={`absolute top-0 ${isLeft ? "left-0" : "right-0"} w-[40%] h-full z-[60] pointer-events-none flex items-center ${isLeft ? "justify-start" : "justify-end"} px-4 [transition:opacity_0.4s_ease] [opacity:var(--bit-op)]`}
+      style={{"--bit-op": opacity} as React.CSSProperties}
+    >
       <div className="relative max-w-[220px] max-h-[300px]">
         {/* Glow backdrop */}
         <div className="absolute pointer-events-none -inset-5 rounded-[50%] bg-[radial-gradient(ellipse,rgba(120,80,255,0.35)_0%,transparent_70%)]" />
@@ -55,12 +44,7 @@ export function BitBeastOverlay({ side, asset, visible, durationMs = 2400 }: Bit
           className="w-full h-auto object-contain [filter:drop-shadow(0_0_12px_rgba(150,100,255,0.7))]"
         />
         <div
-          className="absolute whitespace-nowrap font-mono text-[0.7rem] font-bold text-[#ccaaff] [text-shadow:0_0_8px_#8844ff] tracking-[0.08em]"
-          style={{
-            bottom: -22,
-            left: "50%",
-            transform: "translateX(-50%)",
-          }}
+          className="absolute left-1/2 -translate-x-1/2 -bottom-[22px] whitespace-nowrap font-mono text-[0.7rem] font-bold text-[#ccaaff] [text-shadow:0_0_8px_#8844ff] tracking-[0.08em]"
         >
           {asset.name.toUpperCase()}
         </div>

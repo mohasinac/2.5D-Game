@@ -16,7 +16,7 @@
  *   roller (optional)
  */
 
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { HEX } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { MaterialSelector } from "./MaterialSelector";
@@ -364,7 +364,7 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
             >
               <div
                 className="w-2.5 h-2.5 rounded-full shrink-0"
-                style={{ background: materialColors[cp.material] ?? FALLBACK_MATERIAL_COLORS[cp.material] ?? "var(--blue)" }}
+                style={{ "--mc": materialColors[cp.material] ?? FALLBACK_MATERIAL_COLORS[cp.material] ?? "var(--blue)", background: "var(--mc)" } as React.CSSProperties}
               />
               <div className="flex-1 text-xs text-text">
                 #{i + 1} — {cp.angle}° @ {cp.radius}mm — {cp.material} {cp.attackType}

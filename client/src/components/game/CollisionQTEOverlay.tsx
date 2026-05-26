@@ -63,8 +63,8 @@ export function CollisionQTEOverlay({
 
   return (
     <div
-      style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 1000, border: `2px solid ${barColor}`, boxShadow: `0 0 24px ${barColor}44` }}
-      className="bg-black/[.82] rounded-xl py-[18px] px-[28px] min-w-[360px] text-center text-white font-mono select-none"
+      className="fixed bg-black/[.82] rounded-xl py-[18px] px-[28px] min-w-[360px] text-center text-white font-mono select-none border-2 border-[--bc] shadow-[0_0_24px_var(--bs)] z-[1000]"
+      style={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)", "--bc": barColor, "--bs": `${barColor}44` } as React.CSSProperties}
     >
       <div className="text-[18px] font-bold mb-[10px] tracking-[2px]">
         ⚡ COLLISION! MASH BUTTONS! ⚡
@@ -73,8 +73,8 @@ export function CollisionQTEOverlay({
       {/* Power bar */}
       <div className="bg-[#222] rounded-[6px] h-[22px] relative mb-[6px] overflow-hidden">
         <div
-          className="h-full rounded-[6px] [transition:width_0.05s_linear,background_0.1s]"
-          style={{ width: `${fillPct}%`, background: barColor, boxShadow: isOvercharged ? `0 0 12px ${barColor}` : undefined }}
+          className={`h-full rounded-[6px] [transition:width_0.05s_linear,background_0.1s] w-[--fw] bg-[color:var(--bc)] ${isOvercharged ? "shadow-[0_0_12px_var(--bc)]" : ""}`}
+          style={{ "--fw": `${fillPct}%`, "--bc": barColor } as React.CSSProperties}
         />
         <div className="absolute right-[6px] top-[2px] text-[13px] font-bold text-white [text-shadow:1px_1px_2px_#000]">
           {power}%
@@ -92,7 +92,7 @@ export function CollisionQTEOverlay({
 
       {/* Multiplier display */}
       <div className="text-[13px] text-[#aaa] mb-[10px]">
-        QTE: <span style={{ "--tc": barColor, color: barColor } as React.CSSProperties}>{qteMultiplier.toFixed(2)}x</span>
+        QTE: <span className="text-[color:var(--tc)]" style={{ "--tc": barColor } as React.CSSProperties}>{qteMultiplier.toFixed(2)}x</span>
         &nbsp;×&nbsp;
         SP: <span className="text-[#88aaff]">{currentSP}%</span>
         &nbsp;=&nbsp;

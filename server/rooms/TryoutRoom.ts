@@ -1,11 +1,11 @@
-import { Room, Client } from "colyseus";
+import { Client } from "colyseus";
 import {
   GameState,
   Beyblade,
 } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem } from "../utils/firebase";
-import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
+import { loadGlobalSettings } from "../utils/tournamentFirebase";
 import { loadGimmickDefs } from "../utils/firestoreLoaders";
 import { expandGimmicks } from "../utils/gimmickExpander";
 import { tryReserveRoom, releaseRoom, setMaxActiveRooms } from "../shared/utils/roomCounter";
@@ -17,26 +17,21 @@ import { resolvePhysicsFlags } from "../utils/physicsFlags";
 import { processArenaFeatures } from "../shared/rooms/ArenaFeatureProcessor";
 import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
 import { advanceArenaRotation, advanceArenaTilt, applyWeightTilt } from "../shared/rooms/advanceArenaRotation";
+import type { BeybladeStats } from "../types/shared";
 import {
   applyMovementInput,
   applyActionInput,
   computeForceMagnitude,
 } from "../shared/rooms/InputHandler";
-import type { BeybladeStats, ArenaConfig } from "../types/shared";
-import type { ArenaSystem } from "../types/arenaSystem";
+import { BaseRoom } from "./BaseRoom";
 
 // [SERVER-ROOM] TryoutRoom — solo practice mode (maxClients=1)
 // Player vs arena only; no opponent beyblade collision.
 // Arena config is loaded ONCE in onCreate() and cached — never inside the tick.
 
-export class TryoutRoom extends Room<GameState> {
-  protected physics!: PhysicsEngine;
-  protected arenaCache: ArenaConfig | null = null;
-  protected arenaSystem: ArenaSystem | null = null;
+export class TryoutRoom extends BaseRoom<GameState> {
   private simulationStarted = false;
   private lastInputTime = 0;
-  private globalSettings: GlobalSettingsDoc | null = null;
-  protected rand!: () => number;
   private warmupTimer = 3;
   private launchPhaseTimer = 5;
   private spawnAngle = 0; // angle used for position-offset calculation
@@ -268,83 +263,6 @@ export class TryoutRoom extends Room<GameState> {
   }
 
   // ─── Stat helpers ────────────────────────────────────────────────────────────
-
-  private applyBeybladeStats(beyblade: Beyblade, data: BeybladeStats) {
-    beyblade.type = data.type;
-    beyblade.color = data.color ?? "";
-    beyblade.spinDirection = data.spinDirection;
-    beyblade.mass = data.mass;
-    beyblade.radius = data.radius;
-
-    const PIXELS_PER_CM = 24;
-    beyblade.actualSize = data.radius * PIXELS_PER_CM;
-
-    // Optional special move + combos. Both may be undefined on legacy beyblades.
-    if (data.specialMoveId !== undefined) beyblade.specialMove = data.specialMoveId;
-    beyblade.comboIds.clear();
-    if (data.comboIds) {
-      for (const id of data.comboIds.slice(0, 3)) beyblade.comboIds.push(id);
-    }
-
-    const attack = data.typeDistribution.attack;
-    const defense = data.typeDistribution.defense;
-    const stamina = data.typeDistribution.stamina;
-
-    beyblade.attackPoints = attack;
-    beyblade.defensePoints = defense;
-    beyblade.staminaPoints = stamina;
-
-    beyblade.damageMultiplier = 1.0 + attack * 0.007;
-    beyblade.speedBonus = 1.0 + attack * 0.007;
-    beyblade.damageTaken = Math.max(0.45, 1 - defense * 0.003);
-    beyblade.knockbackDistance = 10 * (1 - defense * 0.00167);
-    beyblade.invulnerabilityChance = 0.1 + defense * 0.000667;
-    beyblade.maxStamina = Math.ceil(1000 * (1 + stamina * 0.01333));
-    beyblade.stamina = beyblade.maxStamina;
-    beyblade.spinStealFactor = 0.1 * (1 + stamina * 0.02667);
-    beyblade.spinDecayRate = 8 * (1 - stamina * 0.001);
-    beyblade.maxSpin = Math.ceil(2000 * (1 + stamina * 0.008));
-    beyblade.spin = beyblade.maxSpin;
-
-    switch (beyblade.type) {
-      case "attack":
-        beyblade.damageMultiplier *= 1.2;
-        beyblade.maxStamina = 2500;
-        beyblade.stamina = 2500;
-        break;
-      case "defense":
-        beyblade.damageTaken *= 0.8;
-        beyblade.maxStamina = 2500;
-        beyblade.stamina = 2500;
-        break;
-      case "balanced":
-        beyblade.maxStamina = Math.min(beyblade.maxStamina, 2500);
-        beyblade.stamina = beyblade.maxStamina;
-        break;
-    }
-  }
-
-  private applyDefaultStats(beyblade: Beyblade) {
-    beyblade.type = "balanced";
-    beyblade.spinDirection = "right";
-    beyblade.mass = 50;
-    beyblade.radius = 4;
-    beyblade.actualSize = 96;
-    beyblade.attackPoints = 120;
-    beyblade.defensePoints = 120;
-    beyblade.staminaPoints = 120;
-    beyblade.damageMultiplier = 1.84;
-    beyblade.damageTaken = 0.64;
-    beyblade.knockbackDistance = 7.99;
-    beyblade.invulnerabilityChance = 0.18;
-    beyblade.spinStealFactor = 0.42;
-    beyblade.spinDecayRate = 7.88;
-    beyblade.maxStamina = 1600;
-    beyblade.stamina = 1600;
-    beyblade.maxSpin = 2192;
-    beyblade.spin = 2192;
-    beyblade.speedBonus = 1.84;
-  }
 
   // ─── Input handling — delegates to shared/rooms/InputHandler ────────────────
 
@@ -689,36 +607,7 @@ export class TryoutRoom extends Room<GameState> {
 
   // ─── 2.5D extension hooks — overridden by Parts25DTryoutRoom ─────────────
 
-  protected onTickedBey(_beyblade: Beyblade, _dt: number): void {
+  protected override onTickedBey(_beyblade: Beyblade, _dt: number): void {
     // override in 2.5D subclass to call partSystemManager.tickBey()
-  }
-
-  // ─── 2.5D arena slope — applied when arenaSystem is loaded ──────────────
-
-  private applyArenaSystemSlope(beyblade: Beyblade): void {
-    if (!this.arenaSystem?.elevationMap || !this.arenaSystem.slopePhysics) return;
-
-    const { tiltAngle = 0, tiltDirection = 0 } = this.arenaSystem.elevationMap;
-    if (!tiltAngle) return;
-
-    const strength = (tiltAngle / 30) * (this.arenaSystem.slopePhysics.gravityStrength ?? 0.5);
-    const rad = (tiltDirection * Math.PI) / 180;
-
-    const forceX = Math.cos(rad) * strength * 0.002 * beyblade.mass;
-    const forceY = Math.sin(rad) * strength * 0.002 * beyblade.mass;
-    this.physics.applyForce(beyblade.id, forceX, forceY);
-
-    if (this.arenaSystem.slopePhysics.frictionMap) {
-      for (const zone of this.arenaSystem.slopePhysics.frictionMap) {
-        const dx = beyblade.x - zone.x * 24;
-        const dy = beyblade.y - zone.y * 24;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist <= zone.radius * 24) {
-          this.physics.setFrictionMultiplier(beyblade.id, zone.frictionMultiplier);
-          break;
-        }
-      }
-    }
   }
 }

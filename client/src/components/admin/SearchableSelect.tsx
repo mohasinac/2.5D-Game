@@ -77,11 +77,11 @@ function OptionRow({ opt, selected, onClick }: { opt: SelectOption; selected: bo
       role="option"
       aria-selected={selected}
       onClick={() => { if (!opt.disabled) onClick(); }}
-      className={`px-3 py-[7px] text-[13px] transition-[background] duration-[80ms] ${opt.disabled ? "cursor-default opacity-50 text-theme-faint" : "cursor-pointer text-theme-text"} ${selected ? "border-l-[3px]" : "border-l-[3px] border-l-transparent"}`}
+      className={`px-3 py-[7px] text-[13px] transition-[background] duration-[80ms] [background:var(--opt-bg)] [border-left-color:var(--opt-border)] ${opt.disabled ? "cursor-default opacity-50 text-theme-faint" : "cursor-pointer text-theme-text"} ${selected ? "border-l-[3px]" : "border-l-[3px] border-l-transparent"}`}
       style={{
         "--opt-accent": accent,
-        background: selected ? `${accent}20` : "transparent",
-        borderLeftColor: selected ? accent : "transparent",
+        "--opt-bg": selected ? `${accent}20` : "transparent",
+        "--opt-border": selected ? accent : "transparent",
       } as React.CSSProperties}
       onMouseEnter={e => { if (!opt.disabled) (e.currentTarget as HTMLDivElement).style.background = selected ? `${accent}20` : "color-mix(in srgb, var(--blue) 5%, transparent)"; }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = selected ? `${accent}20` : "transparent"; }}
@@ -204,8 +204,8 @@ export function SearchableMultiSelect({
             const color = opt?.color ?? "var(--blue)";
             return (
               <span key={v}
-                className="inline-flex items-center gap-1 py-[3px] pl-2.5 pr-2 rounded-[20px] text-xs text-theme-text"
-                style={{ "--badge-color": color, background: `${color}18`, border: `1px solid ${color}44` } as React.CSSProperties}>
+                className="inline-flex items-center gap-1 py-[3px] pl-2.5 pr-2 rounded-[20px] text-xs text-theme-text [background:var(--badge-bg)] [border:1px_solid_var(--badge-border)]"
+                style={{ "--badge-color": color, "--badge-bg": `${color}18`, "--badge-border": `${color}44` } as React.CSSProperties}>
                 {opt?.label ?? v}
                 <button type="button" onClick={() => onChange(values.filter(x => x !== v))}
                   className="bg-transparent border-none text-theme-faint cursor-pointer text-sm leading-none p-0 ml-0.5">
@@ -280,7 +280,8 @@ export function SearchableTabSelect({ tabs, activeTab, onSelect, style }: Search
       options={opts}
       onChange={onSelect}
       placeholder="Jump to tab…"
-      style={{ minWidth: 160, ...style }}
+      className="min-w-[160px]"
+      style={style}
     />
   );
 }

@@ -51,13 +51,7 @@ export function ControlsLegend({ initiallyHidden, lockSource, controlLockedUntil
         onClick={() => setHidden(false)}
         aria-label="Show controls"
         title="Show controls"
-        style={{
-          position: "absolute",
-          bottom: "1rem",
-          left: "1rem",
-          zIndex: 40,
-        }}
-        className="px-[0.7rem] py-[0.35rem] text-[0.7rem] font-mono bg-[rgba(20,25,40,0.75)] text-[#9bb] border border-[rgba(120,160,200,0.3)] rounded-[0.4rem] cursor-pointer pointer-events-auto"
+        className="absolute bottom-4 left-4 z-40 px-[0.7rem] py-[0.35rem] text-[0.7rem] font-mono bg-[rgba(20,25,40,0.75)] text-[#9bb] border border-[rgba(120,160,200,0.3)] rounded-[0.4rem] cursor-pointer pointer-events-auto"
       >
         Controls ▸
       </button>
@@ -66,13 +60,7 @@ export function ControlsLegend({ initiallyHidden, lockSource, controlLockedUntil
 
   return (
     <div
-      style={{
-        position: "absolute",
-        bottom: "1rem",
-        left: "1rem",
-        zIndex: 40,
-      }}
-      className="px-[0.8rem] py-[0.6rem] text-[0.7rem] font-mono bg-[rgba(20,25,40,0.8)] text-[#dde] border border-[rgba(120,160,200,0.3)] rounded-[0.5rem] backdrop-blur-sm min-w-[11rem] pointer-events-auto"
+      className="absolute bottom-4 left-4 z-40 px-[0.8rem] py-[0.6rem] text-[0.7rem] font-mono bg-[rgba(20,25,40,0.8)] text-[#dde] border border-[rgba(120,160,200,0.3)] rounded-[0.5rem] backdrop-blur-sm min-w-[11rem] pointer-events-auto"
     >
       <div className="flex justify-between mb-[0.35rem] items-center">
         <strong className="text-[0.7rem] text-[#cfe]">CONTROLS</strong>

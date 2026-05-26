@@ -69,14 +69,9 @@ export function BXScoreHUD({ scoringMode, pointsTarget, playerPoints, beyblades,
   return (
     <>
       {/* Score board — top-center */}
-      <div style={{
-        position: "absolute",
-        top: 8,
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 20,
-      }}
-        className="flex flex-col items-center gap-1 pointer-events-none"
+      <div
+        className="absolute flex flex-col items-center gap-1 pointer-events-none z-[20]"
+        style={{ top: 8, left: "50%", transform: "translateX(-50%)" }}
       >
         <div className="text-[10px] text-theme-muted tracking-[0.08em] uppercase">
           {scoringMode === "points" ? "Xtreme Points" : scoringMode} — first to {target}
@@ -88,7 +83,7 @@ export function BXScoreHUD({ scoringMode, pointsTarget, playerPoints, beyblades,
             return (
               <div key={e.userId}
                 className="rounded-lg py-1 px-[10px] flex flex-col items-center min-w-[54px] border"
-                style={{ background: isMe ? `${color}22` : "rgba(15,23,42,0.85)", borderColor: isMe ? color : "var(--border)" }}
+                style={{ "--cc": color, background: isMe ? `${color}22` : "rgba(15,23,42,0.85)", borderColor: isMe ? color : "var(--border)" } as React.CSSProperties}
               >
                 <span className="text-[11px] text-theme-muted overflow-hidden max-w-[64px] text-ellipsis whitespace-nowrap">
                   {isMe ? "You" : e.username}
@@ -96,10 +91,10 @@ export function BXScoreHUD({ scoringMode, pointsTarget, playerPoints, beyblades,
                 {/* Pip row */}
                 <div className="flex gap-[3px] mt-[3px]">
                   {Array.from({ length: target }).map((_, i) => (
-                    <div key={i} className="w-[10px] h-[10px] rounded-full transition-[background] duration-150 border" style={{ background: i < e.points ? color : "var(--bg3)", borderColor: `${color}55` }} />
+                    <div key={i} className="w-[10px] h-[10px] rounded-full transition-[background] duration-150 border" style={{ "--cc": color, background: i < e.points ? color : "var(--bg3)", borderColor: `${color}55` } as React.CSSProperties} />
                   ))}
                 </div>
-                <span className="text-[16px] font-bold mt-[2px]" style={{ color }}>{e.points}</span>
+                <span className="text-[16px] font-bold mt-[2px] text-[color:var(--cc)]">{e.points}</span>
               </div>
             );
           })}
@@ -108,7 +103,7 @@ export function BXScoreHUD({ scoringMode, pointsTarget, playerPoints, beyblades,
 
       {/* Full-screen flash on score */}
       {flashColor && (
-        <div className="absolute inset-0 opacity-[0.18] pointer-events-none z-[50] [animation:bxFlash_0.18s_ease-out_forwards]" style={{ background: flashColor }} />
+        <div className="absolute inset-0 opacity-[0.18] pointer-events-none z-[50] [animation:bxFlash_0.18s_ease-out_forwards] bg-[color:var(--fc)]" style={{ "--fc": flashColor } as React.CSSProperties} />
       )}
     </>
   );

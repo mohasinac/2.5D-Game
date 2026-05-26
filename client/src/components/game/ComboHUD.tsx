@@ -55,11 +55,9 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
     <>
       {/* Attached-combos strip (bottom-right above history) — shown only when bey has combos */}
       {attached.length > 0 && (
-        <div style={{
-          position: "absolute", bottom: 88, right: 16,
-          zIndex: 11,
-        }}
-          className="flex flex-col gap-[6px] pointer-events-none"
+        <div
+          className="absolute flex flex-col gap-[6px] pointer-events-none z-[11]"
+          style={{ bottom: 88, right: 16 }}
         >
           <div className="text-theme-muted text-[10px] uppercase tracking-[0.06em]">Combos</div>
           {attached.map((c) => {
@@ -86,9 +84,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
                   ))}
                 </div>
                 {onCooldown && (
-                  <div className="absolute left-0 bottom-0 h-[2px] bg-[#22c55e] [transition:width_100ms_linear]" style={{
-                    width: `${(1 - cdPct) * 100}%`,
-                  }} />
+                  <div className="absolute left-0 bottom-0 h-[2px] bg-[#22c55e] [transition:width_100ms_linear] w-[--cdw]" style={{ "--cdw": `${(1 - cdPct) * 100}%` } as React.CSSProperties} />
                 )}
                 {insufficient && !onCooldown && (
                   <div className="text-theme-red text-[9px] mt-1">
@@ -103,40 +99,32 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
 
       {/* Charge bar — shown while player holds the last key of a charged combo */}
       {comboChargeScale > 0 && (
-        <div data-testid="combo-charge-bar" style={{
-          position: "absolute", bottom: 72, left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 12,
-        }}
-          className="pointer-events-none flex flex-col items-center gap-1"
+        <div data-testid="combo-charge-bar"
+          className="absolute pointer-events-none flex flex-col items-center gap-1 z-[12]"
+          style={{ bottom: 72, left: "50%", transform: "translateX(-50%)" }}
         >
           <div className="text-theme-yellow text-[10px] font-mono tracking-[0.1em] uppercase">
             {comboChargeScale >= 1 ? "CHARGED!" : "Charging…"}
           </div>
           <div className="w-[140px] h-[6px] bg-white/[.12] rounded-[3px] overflow-hidden">
-            <div className="rounded-[3px] h-full [transition:width_100ms_linear,background_200ms]" style={{
-              width: `${comboChargeScale * 100}%`,
-              background: comboChargeScale >= 1 ? "#22c55e" : "#eab308",
-              boxShadow: comboChargeScale >= 1 ? "0 0 8px #22c55e" : undefined,
-            }} />
+            <div
+              className={`rounded-[3px] h-full [transition:width_100ms_linear,background_200ms] w-[--ccw] ${comboChargeScale >= 1 ? "bg-[#22c55e] shadow-[0_0_8px_#22c55e]" : "bg-[#eab308]"}`}
+              style={{ "--ccw": `${comboChargeScale * 100}%` } as React.CSSProperties}
+            />
           </div>
         </div>
       )}
 
       {/* Fired-combo history (bottom-right) */}
-      <div style={{
-        position: "absolute", bottom: 16, right: 16,
-        zIndex: 10,
-      }}
-        className="flex flex-col gap-1 pointer-events-none"
+      <div
+        className="absolute flex flex-col gap-1 pointer-events-none z-[10]"
+        style={{ bottom: 16, right: 16 }}
       >
         {comboHistory.map((combo) => {
           const comboId = combo.id.split("-")[0];
           const display = comboMap[comboId] ?? comboMap[combo.name];
           return (
-            <div key={combo.id} data-testid={`combo-fired-${combo.id}`} className="bg-[rgba(15,23,42,0.85)] rounded-lg px-3 py-2 min-w-[160px] border border-[#334155]" style={{
-              animation: combo === comboHistory[0] ? "slideIn 0.3s ease-out" : undefined,
-            }}>
+            <div key={combo.id} data-testid={`combo-fired-${combo.id}`} className={`bg-[rgba(15,23,42,0.85)] rounded-lg px-3 py-2 min-w-[160px] border border-[#334155] ${combo === comboHistory[0] ? "[animation:slideIn_0.3s_ease-out]" : ""}`}>
               <div className="text-theme-muted text-[11px] mb-1">
                 <span className="text-theme-green uppercase font-mono font-bold">
                   {display?.name ?? combo.name}
@@ -154,12 +142,9 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
 
       {/* COMBO! popup */}
       {comboPopup && (
-        <div style={{
-          position: "absolute", bottom: "50%", left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 15,
-        }}
-          className="pointer-events-none [animation:comboFloat_1.2s_ease-out_forwards]"
+        <div
+          className="absolute pointer-events-none [animation:comboFloat_1.2s_ease-out_forwards] z-[15]"
+          style={{ bottom: "50%", left: "50%", transform: "translateX(-50%)" }}
         >
           <div className="text-theme-green text-[56px] font-black uppercase tracking-[0.1em] font-mono [text-shadow:0_0_20px_#22c55e]">COMBO!</div>
         </div>

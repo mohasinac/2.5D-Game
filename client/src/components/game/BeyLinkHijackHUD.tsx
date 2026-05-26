@@ -62,7 +62,7 @@ function VictimPanel({ data }: { data: BeyLinkHijackQTEData }) {
           Waiting for attacker to respond…
         </div>
         <div className="mt-[5px] h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
-          <div className="h-full bg-[#818cf8] rounded-[1px] [transition:width_100ms_linear]" style={{ width: `${fraction * 100}%` }} />
+          <div className="h-full bg-[#818cf8] rounded-[1px] [transition:width_100ms_linear] w-[--pct]" style={{ "--pct": `${fraction * 100}%` } as React.CSSProperties} />
         </div>
       </div>
     </div>
@@ -131,7 +131,7 @@ function AttackerPanel({ data, onBlock }: AttackerPanelProps) {
         )}
         {!pressed && (
           <div className="mt-[5px] h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
-            <div className="h-full bg-[#ef4444] rounded-[1px] [transition:width_100ms_linear]" style={{ width: `${fraction * 100}%` }} />
+            <div className="h-full bg-[#ef4444] rounded-[1px] [transition:width_100ms_linear] w-[--pct]" style={{ "--pct": `${fraction * 100}%` } as React.CSSProperties} />
           </div>
         )}
       </div>
@@ -199,7 +199,7 @@ function EscapePanel({ data, onEscape }: { data: BeyLinkQTEData; onEscape: (key:
         )}
         {!pressed && (
           <div className="mt-[5px] h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
-            <div className="h-full bg-[#f59e0b] rounded-[1px] [transition:width_100ms_linear]" style={{ width: `${fraction * 100}%` }} />
+            <div className="h-full bg-[#f59e0b] rounded-[1px] [transition:width_100ms_linear] w-[--pct]" style={{ "--pct": `${fraction * 100}%` } as React.CSSProperties} />
           </div>
         )}
       </div>
@@ -226,7 +226,7 @@ function ControlLossBanner({ data }: { data: BeyLinkControlLossData }) {
   return (
     <div
       className="flex items-center gap-[10px] bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-[14px] py-2 border [animation:beylink-pulse-cl_0.6s_ease-in-out_infinite]"
-      style={{ borderColor: `${meta.color}88` }}
+      style={{ "--mc": meta.color, borderColor: `${meta.color}88` } as React.CSSProperties}
     >
       <style>{`
         @keyframes beylink-pulse-cl {
@@ -236,7 +236,7 @@ function ControlLossBanner({ data }: { data: BeyLinkControlLossData }) {
       `}</style>
       <span className="text-[18px]">⚠️</span>
       <div>
-        <div className="font-extrabold text-[11px] tracking-[0.8px]" style={{ color: meta.color }}>{meta.label}</div>
+        <div className="font-extrabold text-[11px] tracking-[0.8px] text-[color:var(--mc)]">{meta.label}</div>
         <div className="text-[#9ca3af] text-[10px] mt-[2px]">{meta.desc}</div>
       </div>
     </div>
@@ -274,14 +274,9 @@ export function BeyLinkHijackHUD({ hijackQTE, hijackBlockQTE, onBlock, escapeQTE
         }
       `}</style>
 
-      <div style={{
-        position: "absolute",
-        bottom: 110,             // above ComboHUD
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 30,
-      }}
-        className="flex flex-col items-center gap-2 pointer-events-none"
+      <div
+        className="absolute flex flex-col items-center gap-2 pointer-events-none z-[30]"
+        style={{ bottom: 110, left: "50%", transform: "translateX(-50%)" }}
       >
         {controlLoss && <ControlLossBanner data={controlLoss} />}
         {escapeQTE && onEscape && (

@@ -2,7 +2,7 @@
 //        Background Particles, Environmental Effect sections.
 // I6: Added SpinZone, GravityHole, Bump sections with behaviorId/behaviorParams editors.
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { C } from "@/styles/theme";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, FloorHazardType, EffectZoneType, BackgroundParticleType, ArenaEnvironmentalEffectPreset, SpinZoneConfig, GravityHoleConfig, BumpConfig, TriggerZoneConfig, TriggerZoneKind, TriggerZoneActivation, ArenaBeySawnConfig, DirectionalZoneConfig, DirectionalZoneType } from "@/types/arenaConfigNew";
@@ -117,7 +117,7 @@ function AuthorityBadge({ config, zone }: { config: ArenaConfig; zone: Authority
   return (
     <span
       className="text-[10px] font-semibold py-[2px] px-[7px] rounded-full"
-      style={{ background: color + "22", color, border: `1px solid ${color}55` }}
+      style={{ "--fc": color, background: `${color}22`, color, border: `1px solid ${color}55` } as React.CSSProperties}
     >
       Authority ×{effective.toFixed(2)}
     </span>

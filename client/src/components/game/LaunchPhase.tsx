@@ -63,8 +63,8 @@ function TeammateBar({ bey, isMe }: { bey: ServerBeyblade; isMe: boolean }) {
       className={`flex items-center gap-2 px-3 py-1.5 rounded-lg min-w-0 border ${failed ? "opacity-40" : ""} ${isMe ? "border-[#ff6b35] bg-[rgba(255,107,53,0.08)]" : "border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)]"}`}
     >
       <div
-        style={{ background: typeColor }}
-        className="w-2 h-2 rounded-full shrink-0"
+        style={{ "--tc": typeColor } as React.CSSProperties}
+        className="w-2 h-2 rounded-full shrink-0 bg-[color:var(--tc)]"
       />
       <span
         className={`text-[11px] font-semibold truncate max-w-[80px] ${isMe ? "text-[#ff6b35]" : "text-theme-text"}`}
@@ -79,9 +79,9 @@ function TeammateBar({ bey, isMe }: { bey: ServerBeyblade; isMe: boolean }) {
       ) : (
         <>
           <div className="flex-1 h-[6px] rounded-[3px] overflow-hidden mx-1 min-w-[40px] bg-white/10">
-            <div className="h-full rounded-[3px] [transition:width_80ms_linear]" style={{ width: `${Math.min(100, (power / 150) * 100)}%`, background: powerColor }} />
+            <div className="h-full rounded-[3px] [transition:width_80ms_linear] bg-[color:var(--pc)]" style={{ "--pct": `${Math.min(100, (power / 150) * 100)}%`, "--pc": powerColor, width: `var(--pct)` } as React.CSSProperties} />
           </div>
-          <span style={{ color: powerColor }} className="text-[10px] font-mono w-[32px] text-right shrink-0">
+          <span style={{ "--pc": powerColor } as React.CSSProperties} className="text-[10px] font-mono w-[32px] text-right shrink-0 text-[color:var(--pc)]">
             {power.toFixed(0)}%
           </span>
         </>
@@ -101,11 +101,7 @@ function LetItRipBanner() {
       <div className="relative w-full py-5 bg-gradient-to-r from-red-700 via-red-500 to-orange-500">
         {/* Speed lines overlay */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-60"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(90deg,transparent 0%,transparent 45%,rgba(255,255,255,0.12) 46%,rgba(255,255,255,0.12) 54%,transparent 55%)",
-          }}
+          className="absolute inset-0 pointer-events-none opacity-60 [background-image:repeating-linear-gradient(90deg,transparent_0%,transparent_45%,rgba(255,255,255,0.12)_46%,rgba(255,255,255,0.12)_54%,transparent_55%)]"
         />
         <div className="relative flex items-center justify-center gap-3">
           <span className="lir-word text-white font-black italic text-[clamp(2rem,6vw,4rem)] tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] [animation:lirWord_0.15s_ease-out_0s_both]">
@@ -172,25 +168,21 @@ function StringLauncherUI({
       {/* ── Countdown timer (top centre) ── */}
       <div className="w-full text-center mb-4">
         <div
-          className="font-black font-mono tracking-[0.05em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-          style={{
-            fontSize: "clamp(2rem, 6vw, 4rem)",
-            color: timerColor,
-            textShadow: `0 0 20px ${timerColor}88`,
-          }}
+          className="font-black font-mono tracking-[0.05em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] text-[clamp(2rem,6vw,4rem)] text-[color:var(--tc)] [text-shadow:0_0_20px_var(--tc88)]"
+          style={{ "--tc": timerColor, "--tc88": `${timerColor}88` } as React.CSSProperties}
         >
           {Math.ceil(Math.max(0, launchTimer))}s
         </div>
         <div className="h-[4px] rounded-[2px] mt-2 overflow-hidden bg-white/10 w-full">
           <div
-            className="h-full rounded-[2px] [transition:width_100ms_linear,background_300ms]"
-            style={{ width: `${Math.max(0, (launchTimer / 5) * 100)}%`, background: timerColor }}
+            className="h-full rounded-[2px] [transition:width_100ms_linear,background_300ms] bg-[color:var(--tc)]"
+            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / 5) * 100)}%` } as React.CSSProperties}
           />
         </div>
       </div>
 
       {/* ── String rail + sliding beyblade ── */}
-      <div className="relative w-full flex items-center justify-center my-3" style={{ height: "80px" }}>
+      <div className="relative w-full flex items-center justify-center my-3 h-20">
         {/* String rail — spans 70% of container width */}
         <div
           className="absolute h-[4px] bg-gradient-to-r from-white/30 via-white/60 to-white/30 rounded-full"
@@ -220,8 +212,7 @@ function StringLauncherUI({
         <div className="flex flex-col items-center gap-1 shrink-0">
           <span className="text-[10px] text-theme-faint uppercase tracking-wider">Power</span>
           <div
-            className="relative w-8 rounded-[6px] overflow-hidden bg-white/10"
-            style={{ height: "120px" }}
+            className="relative w-8 rounded-[6px] overflow-hidden bg-white/10 h-[120px]"
           >
             {/* 100% marker */}
             <div
@@ -230,26 +221,25 @@ function StringLauncherUI({
             />
             {/* Fill — grows from bottom */}
             <div
-              className="absolute bottom-0 left-0 right-0 rounded-[6px] [transition:height_80ms_linear,background_200ms]"
+              className="absolute bottom-0 left-0 right-0 rounded-[6px] [transition:height_80ms_linear,background_200ms] h-[--lph] bg-[--lpbg] shadow-[--lpshadow]"
               style={{
-                height: `${pct}%`,
-                background: `linear-gradient(0deg, ${barColor}, ${barColor}99)`,
-                boxShadow: isPerfectZone ? `0 0 12px ${barColor}` : "none",
-              }}
+                "--lph": `${pct}%`,
+                "--lpbg": `linear-gradient(0deg, ${barColor}, ${barColor}99)`,
+                "--lpshadow": isPerfectZone ? `0 0 12px ${barColor}` : "none",
+              } as React.CSSProperties}
             />
             {/* Perfect zone highlight band */}
             <div
-              className="absolute left-0 right-0 opacity-30"
+              className="absolute left-0 right-0 opacity-30 bg-[#44ff88] bottom-[--lbbot] h-[--lbh]"
               style={{
-                bottom: `${(95 / 150) * 100}%`,
-                height: `${(5 / 150) * 100}%`,
-                background: "#44ff88",
-              }}
+                "--lbbot": `${(95 / 150) * 100}%`,
+                "--lbh": `${(5 / 150) * 100}%`,
+              } as React.CSSProperties}
             />
           </div>
           <span
-            className="text-[11px] font-mono font-bold"
-            style={{ color: barColor }}
+            className="text-[11px] font-mono font-bold text-[color:var(--bc)]"
+            style={{ "--bc": barColor } as React.CSSProperties}
           >
             {launchPower.toFixed(0)}%
           </span>
@@ -347,19 +337,15 @@ function RipcordLauncherUI({
       {/* Countdown */}
       <div className="w-full text-center">
         <div
-          className="font-black font-mono tracking-[0.05em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-          style={{
-            fontSize: "clamp(2rem, 6vw, 4rem)",
-            color: timerColor,
-            textShadow: `0 0 20px ${timerColor}88`,
-          }}
+          className="font-black font-mono tracking-[0.05em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] text-[clamp(2rem,6vw,4rem)] text-[color:var(--tc)] [text-shadow:0_0_20px_var(--tc88)]"
+          style={{ "--tc": timerColor, "--tc88": `${timerColor}88` } as React.CSSProperties}
         >
           {Math.ceil(Math.max(0, launchTimer))}s
         </div>
         <div className="h-[4px] rounded-[2px] mt-2 overflow-hidden bg-white/10 w-full">
           <div
-            className="h-full rounded-[2px] [transition:width_100ms_linear,background_300ms]"
-            style={{ width: `${Math.max(0, (launchTimer / 5) * 100)}%`, background: timerColor }}
+            className="h-full rounded-[2px] [transition:width_100ms_linear,background_300ms] bg-[color:var(--tc)]"
+            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / 5) * 100)}%` } as React.CSSProperties}
           />
         </div>
       </div>
@@ -369,27 +355,21 @@ function RipcordLauncherUI({
         <div className="relative w-full h-[32px] rounded-full overflow-hidden bg-white/10">
           {/* Sweet spot band — center 10% */}
           <div
-            className="absolute top-0 bottom-0 opacity-30 rounded-full"
-            style={{
-              left: "45%",
-              width: "10%",
-              background: "#44ff88",
-            }}
+            className="absolute top-0 bottom-0 opacity-30 rounded-full bg-[#44ff88] left-[45%] w-[10%]"
             aria-hidden
           />
           {/* Oscillating fill */}
           <div
-            className="absolute top-0 left-0 bottom-0 rounded-full [transition:width_60ms_linear,background_100ms]"
+            className="absolute top-0 left-0 bottom-0 rounded-full [transition:width_60ms_linear,background_100ms] w-[--opw] bg-[--opbg] shadow-[--opshadow]"
             style={{
-              width: `${pct}%`,
-              background: `linear-gradient(90deg, #ff444444, ${fillColor})`,
-              boxShadow: isPeak ? `0 0 16px ${fillColor}` : "none",
-            }}
+              "--opw": `${pct}%`,
+              "--opbg": `linear-gradient(90deg, #ff444444, ${fillColor})`,
+              "--opshadow": isPeak ? `0 0 16px ${fillColor}` : "none",
+            } as React.CSSProperties}
           />
           {/* Peak marker line */}
           <div
-            className="absolute top-0 bottom-0 w-[3px] bg-[#44ff88]/70 z-[2]"
-            style={{ left: "90%" }}
+            className="absolute top-0 bottom-0 w-[3px] bg-[#44ff88]/70 z-[2] left-[90%]"
             aria-hidden
           />
           {/* Current indicator needle */}
@@ -411,8 +391,8 @@ function RipcordLauncherUI({
       {/* Press result overlay */}
       {ripcordPressResult && (
         <div
-          className="text-[clamp(1.5rem,4vw,2.5rem)] font-black tracking-[0.2em] [animation:scaleUp_0.25s_cubic-bezier(0.16,1,0.3,1)_forwards]"
-          style={{ color: resultColors[ripcordPressResult] ?? "#fff" }}
+          className="text-[clamp(1.5rem,4vw,2.5rem)] font-black tracking-[0.2em] [animation:scaleUp_0.25s_cubic-bezier(0.16,1,0.3,1)_forwards] text-[color:var(--rc)]"
+          style={{ "--rc": resultColors[ripcordPressResult] ?? "#fff" } as React.CSSProperties}
         >
           {ripcordPressResult === "perfect" && "✦ PERFECT!"}
           {ripcordPressResult === "good"    && "GOOD!"}
@@ -440,8 +420,7 @@ function PerfectBadge() {
   return (
     <div className="flex flex-col items-center gap-1 mt-3">
       <div
-        className="text-[clamp(1rem,3vw,1.5rem)] font-black tracking-[0.25em] [animation:scaleUp_0.3s_cubic-bezier(0.16,1,0.3,1)_forwards]"
-        style={{ color: "#ffd700", textShadow: "0 0 20px #ffd700aa" }}
+        className="text-[clamp(1rem,3vw,1.5rem)] font-black tracking-[0.25em] [animation:scaleUp_0.3s_cubic-bezier(0.16,1,0.3,1)_forwards] text-[#ffd700] [text-shadow:0_0_20px_#ffd700aa]"
       >
         BOOST 100% ✦ PERFECT
       </div>
@@ -566,12 +545,13 @@ export function LaunchPhase({
       {hasWorldBg && (
         <div
           aria-hidden
+          className="absolute inset-0 z-0"
           style={{
-            position: "absolute", inset: 0, zIndex: 0,
+            "--wbbf": bgBlur > 0 ? `blur(${bgBlur}px)` : undefined,
             opacity: bgOpacity,
-            filter: bgBlur > 0 ? `blur(${bgBlur}px)` : undefined,
+            filter: "var(--wbbf)",
             ...wbStyle,
-          }}
+          } as React.CSSProperties}
         />
       )}
 

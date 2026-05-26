@@ -225,12 +225,8 @@ const WhatsAppStyleImageEditor = forwardRef<WhatsAppStyleImageEditorRef, WhatsAp
       {/* Canvas */}
       <div
         ref={containerRef}
-        className="relative touch-none select-none"
-        style={{
-          width: circleSize,
-          height: circleSize,
-          cursor: isDragging ? "grabbing" : "grab",
-        }}
+        className={`relative touch-none select-none [width:var(--cs)] [height:var(--cs)] ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+        style={{"--cs": `${circleSize}px`} as React.CSSProperties}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}

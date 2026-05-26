@@ -136,12 +136,11 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
           {/* Canvas */}
           <div className="flex justify-center">
             <div
-              className="relative border-2 border-theme-blue rounded-lg overflow-hidden touch-none"
+              className={`relative border-2 border-theme-blue rounded-lg overflow-hidden touch-none [width:var(--iw)] [height:var(--ih)] ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
               style={{
-                width: `min(${targetWidth}px, 90vw)`,
-                height: `min(${targetHeight}px, 90vw)`,
-                cursor: isDragging ? "grabbing" : "grab",
-              }}
+                "--iw": `min(${targetWidth}px, 90vw)`,
+                "--ih": `min(${targetHeight}px, 90vw)`,
+              } as React.CSSProperties}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}

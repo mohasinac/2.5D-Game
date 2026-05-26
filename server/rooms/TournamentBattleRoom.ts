@@ -1,4 +1,5 @@
-import { Room, Client } from "colyseus";
+import { Client } from "colyseus";
+import { BaseRoom } from "./BaseRoom";
 import { GameState, Beyblade } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats } from "../utils/firebase";
@@ -52,16 +53,11 @@ const SPAWN_OFFSETS = [
   { angle: Math.PI },
 ];
 
-export class TournamentBattleRoom extends Room<GameState> {
+export class TournamentBattleRoom extends BaseRoom<GameState> {
   static pendingMatchCallbacks = new Map<string, (winnerId: string, matchFirestoreId: string) => void>();
 
-  protected physics!: PhysicsEngine;
-  protected arenaCache: ArenaConfig | null = null;
-  protected arenaSystem: ArenaSystem | null = null;
   private warmupTimer = 3;
   private lastInputTime = 0;
-  private globalSettings: GlobalSettingsDoc | null = null;
-  protected rand!: () => number;
   protected playerSessions = new Set<string>();
   protected spectatorSessions = new Set<string>();
   protected aiSessions = new Set<string>();
@@ -887,162 +883,5 @@ export class TournamentBattleRoom extends Room<GameState> {
     }
   }
 
-  // ─── Arena helpers ────────────────────────────────────────────────────────────
-
-  private applyArenaToState(arenaData: ArenaConfig, arenaId: string) {
-    this.state.arena.id = arenaData.id || arenaId;
-    this.state.arena.name = arenaData.name;
-    this.state.arena.width = arenaData.width;
-    this.state.arena.height = arenaData.height;
-    this.state.arena.shape = arenaData.shape;
-    this.state.arena.theme = arenaData.theme;
-    this.state.arena.rotation = 0; // angle (radians), advanced each tick
-    this.state.arena.autoRotate = !!arenaData.autoRotate;
-    this.state.arena.rotationSpeed = arenaData.rotationSpeed || 0;
-    this.state.arena.rotationDirection = arenaData.rotationDirection === "counter-clockwise" ? "counterclockwise" : "clockwise";
-    this.state.arena.tiltAngle           = arenaData.tiltAngle           ?? 0;
-    this.state.arena.tiltDirection       = arenaData.tiltDirection       ?? 0;
-    this.state.arena.tiltMode            = arenaData.tiltMode            ?? "fixed";
-    this.state.arena.autoTilt            = !!arenaData.autoTilt;
-    this.state.arena.tiltSpeed           = arenaData.tiltSpeed           ?? 0;
-    this.state.arena.tiltPivotX          = arenaData.tiltPivotX          ?? 0;
-    this.state.arena.tiltPivotY          = arenaData.tiltPivotY          ?? 0;
-    this.state.arena.tiltOscillateMin    = arenaData.tiltOscillateMin    ?? 0;
-    this.state.arena.tiltOscillateMax    = arenaData.tiltOscillateMax    ?? arenaData.tiltAngle ?? 0;
-    this.state.arena.tiltOscillatePeriodMs = arenaData.tiltOscillatePeriodMs ?? 4000;
-    this.state.arena.tiltPhaseMs         = 0;
-    this.state.arena.rotationPivotX      = arenaData.rotationPivotX      ?? 0;
-    this.state.arena.rotationPivotY      = arenaData.rotationPivotY      ?? 0;
-    this.state.arena.gravity = arenaData.gravity || 0;
-    populateArenaFeatures(this.state, arenaData as any, this.globalSettings);
-    this.state.arena.airResistance = arenaData.airResistance || 0.01;
-    this.state.arena.surfaceFriction = arenaData.surfaceFriction || 0.01;
-    if (arenaData.wall) {
-      this.state.arena.wallEnabled = arenaData.wall.enabled;
-      this.state.arena.wallBaseDamage = arenaData.wall.baseDamage;
-      this.state.arena.wallRecoilDistance = arenaData.wall.recoilDistance;
-      this.state.arena.wallHasSpikes = arenaData.wall.hasSpikes;
-      this.state.arena.wallSpikeDamageMultiplier = arenaData.wall.spikeDamageMultiplier;
-      this.state.arena.wallHasSprings = false;
-      this.state.arena.wallSpringRecoilMultiplier = 1.0;
-    }
-    this.state.arena.wallAngle = resolveWallAngle(arenaData);
-    this.state.arena.loopCount = arenaData.loops?.length ?? 0;
-    this.state.arena.obstacleCount = arenaData.obstacles?.length ?? 0;
-    this.state.arena.pitCount = arenaData.pits?.length ?? 0;
-    this.state.arena.turretCount = arenaData.turrets?.length ?? 0;
-    this.state.arena.waterBodyCount = arenaData.waterBodies?.length ?? 0;
-    const wb = (arenaData as any).worldBackground;
-    this.state.arena.worldBgType     = wb?.type     ?? "none";
-    this.state.arena.worldBgColor    = wb?.color    ?? "";
-    this.state.arena.worldBgImageUrl = wb?.imageUrl ?? "";
-    this.state.arena.worldBgOpacity  = wb?.opacity  ?? 1.0;
-    this.state.arena.worldBgFit      = wb?.fit      ?? "cover";
-    this.state.arena.worldBgBlurPx   = wb?.blurPx   ?? 0;
-  }
-
-  private applyDefaultArena(arenaId: string) {
-    this.state.arena.id = arenaId;
-    this.state.arena.name = "Tournament Arena";
-    this.state.arena.width = 50;
-    this.state.arena.height = 50;
-    this.state.arena.shape = "circle";
-    this.state.arena.theme = "metrocity";
-    this.state.arena.gravity = 0;
-    this.state.arena.airResistance = 0.01;
-    this.state.arena.surfaceFriction = 0.01;
-    this.state.arena.wallEnabled = true;
-    this.state.arena.wallBaseDamage = 5;
-    this.state.arena.wallRecoilDistance = 2;
-    this.state.arena.wallAngle = 0;
-  }
-
-  private buildArenaWalls() {
-    if (this.state.arena.shape === "circle") {
-      const radius = Math.min(this.state.arena.width, this.state.arena.height) * 16 / 2;
-      this.physics.createCircularArena((this.state.arena.width * 16) / 2, (this.state.arena.height * 16) / 2, radius);
-    } else {
-      this.physics.createRectangularArena(this.state.arena.width * 16, this.state.arena.height * 16);
-    }
-  }
-
-  private applyBeybladeStats(beyblade: Beyblade, data: BeybladeStats) {
-    beyblade.type = data.type;
-    beyblade.color = data.color ?? "";
-    beyblade.spinDirection = data.spinDirection;
-    beyblade.mass = data.mass;
-    beyblade.radius = data.radius;
-    beyblade.actualSize = data.radius * 24;
-    // Optional special move + combos. Both may be undefined on legacy beyblades.
-    if (data.specialMoveId !== undefined) beyblade.specialMove = data.specialMoveId;
-    beyblade.comboIds.clear();
-    if (data.comboIds) {
-      for (const id of data.comboIds.slice(0, 3)) beyblade.comboIds.push(id);
-    }
-    const attack = data.typeDistribution.attack;
-    const defense = data.typeDistribution.defense;
-    const stamina = data.typeDistribution.stamina;
-    beyblade.attackPoints = attack; beyblade.defensePoints = defense; beyblade.staminaPoints = stamina;
-    beyblade.damageMultiplier = 1.0 + attack * 0.007;
-    beyblade.speedBonus = 1.0 + attack * 0.007;
-    beyblade.damageTaken = Math.max(0.45, 1 - defense * 0.003);
-    beyblade.knockbackDistance = 10 * (1 - defense * 0.00167);
-    beyblade.invulnerabilityChance = 0.1 + defense * 0.000667;
-    beyblade.maxStamina = Math.ceil(1000 * (1 + stamina * 0.01333));
-    beyblade.stamina = beyblade.maxStamina;
-    beyblade.spinStealFactor = 0.1 * (1 + stamina * 0.02667);
-    beyblade.spinDecayRate = 8 * (1 - stamina * 0.001);
-    beyblade.maxSpin = Math.ceil(2000 * (1 + stamina * 0.008));
-    beyblade.spin = beyblade.maxSpin;
-    switch (beyblade.type) {
-      case "attack": beyblade.damageMultiplier *= 1.2; beyblade.maxStamina = 2500; beyblade.stamina = 2500; break;
-      case "defense": beyblade.damageTaken *= 0.8; beyblade.maxStamina = 2500; beyblade.stamina = 2500; break;
-      case "balanced": beyblade.maxStamina = Math.min(beyblade.maxStamina, 2500); beyblade.stamina = beyblade.maxStamina; break;
-    }
-  }
-
-  private applyDefaultStats(beyblade: Beyblade) {
-    beyblade.type = "balanced"; beyblade.spinDirection = "right"; beyblade.mass = 50; beyblade.radius = 4;
-    beyblade.actualSize = 96; beyblade.attackPoints = 120; beyblade.defensePoints = 120; beyblade.staminaPoints = 120;
-    beyblade.damageMultiplier = 1.84; beyblade.damageTaken = 0.64; beyblade.knockbackDistance = 7.99;
-    beyblade.invulnerabilityChance = 0.18; beyblade.spinStealFactor = 0.42; beyblade.spinDecayRate = 7.88;
-    beyblade.maxStamina = 1600; beyblade.stamina = 1600; beyblade.maxSpin = 2192; beyblade.spin = 2192; beyblade.speedBonus = 1.84;
-  }
-
-  // ─── 2.5D extension hooks — overridden by Parts25DTournamentBattleRoom ──────
-
-  protected onTickedBey(_beyblade: Beyblade, _dt: number): void {
-    // override in 2.5D subclass to call partSystemManager.tickBey()
-  }
-
-  protected onBeyCollided(_id1: string, _id2: string, _impactForce: number): void {
-    // override in 2.5D subclass to call partSystemManager.onBeyCollision()
-  }
-
-  private applyArenaSystemSlope(beyblade: Beyblade): void {
-    if (!this.arenaSystem?.elevationMap || !this.arenaSystem.slopePhysics) return;
-
-    const { tiltAngle = 0, tiltDirection = 0 } = this.arenaSystem.elevationMap;
-    if (!tiltAngle) return;
-
-    const strength = (tiltAngle / 30) * (this.arenaSystem.slopePhysics.gravityStrength ?? 0.5);
-    const rad = (tiltDirection * Math.PI) / 180;
-
-    const forceX = Math.cos(rad) * strength * 0.002 * beyblade.mass;
-    const forceY = Math.sin(rad) * strength * 0.002 * beyblade.mass;
-    this.physics.applyForce(beyblade.id, forceX, forceY);
-
-    if (this.arenaSystem.slopePhysics.frictionMap) {
-      for (const zone of this.arenaSystem.slopePhysics.frictionMap) {
-        const dx = beyblade.x - zone.x * 24;
-        const dy = beyblade.y - zone.y * 24;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist <= zone.radius * 24) {
-          this.physics.setFrictionMultiplier(beyblade.id, zone.frictionMultiplier);
-          break;
-        }
-      }
-    }
-  }
+  protected override get defaultArenaName(): string { return "Tournament Arena"; }
 }

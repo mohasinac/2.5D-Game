@@ -2,6 +2,7 @@
  * ComputedStatsPanel — displays live output of computeBeybladeStats().
  */
 
+import React from "react";
 import { computeBeybladeStats } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
 
@@ -32,7 +33,7 @@ function DistBar({ label, value, max = 150, color }: { label: string; value: num
         <span className="text-[10px] text-muted font-mono">{value}/{max}</span>
       </div>
       <div className="h-[5px] bg-bg3 rounded-[3px] overflow-hidden">
-        <div className="h-full rounded-[3px] [transition:width_0.3s]" style={{ width: `${pct}%`, background: color }} />
+        <div className="h-full rounded-[3px] [transition:width_0.3s] bg-[color:var(--bc)] w-[--pct]" style={{ "--bc": color, "--pct": `${pct}%` } as React.CSSProperties} />
       </div>
     </div>
   );
@@ -75,7 +76,7 @@ export function ComputedStatsPanel({ resolved }: Props) {
       {/* Header */}
       <div className="flex items-center gap-2">
         <span
-          style={{ background: `${typeColor}22`, color: typeColor, border: `1px solid ${typeColor}45` }}
+          style={{ "--tc": typeColor, background: `${typeColor}22`, color: typeColor, border: `1px solid ${typeColor}45` } as React.CSSProperties}
           className="text-[11px] px-2 py-0.5 rounded-full font-semibold capitalize"
         >
           {s.type}

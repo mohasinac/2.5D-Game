@@ -194,6 +194,17 @@ export abstract class BaseRoom<T extends GameState = GameState> extends Room<T> 
     this.state.arena.arenaProjectileDamageMult = arenaData.projectileDamageMult ?? 1.0;
     this.state.arena.arenaFriendlyFireEnabled  = arenaData.friendlyFireEnabled  ?? true;
     this.state.arena.arenaPhaseObstacles       = arenaData.phaseObstacles       ?? false;
+
+    // World background (Phase BG)
+    const wb = (arenaData as any).worldBackground;
+    if (wb !== undefined) {
+      this.state.arena.worldBgType     = wb?.type     ?? "none";
+      this.state.arena.worldBgColor    = wb?.color    ?? "";
+      this.state.arena.worldBgImageUrl = wb?.imageUrl ?? "";
+      this.state.arena.worldBgOpacity  = wb?.opacity  ?? 1.0;
+      this.state.arena.worldBgFit      = wb?.fit      ?? "cover";
+      this.state.arena.worldBgBlurPx   = wb?.blurPx   ?? 0;
+    }
   }
 
   /**

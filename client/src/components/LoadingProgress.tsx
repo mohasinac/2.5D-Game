@@ -146,17 +146,17 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error }: Loadin
     <div data-testid="loading-progress" className="absolute inset-0 z-[50] flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,#0a1428_0%,#050c18_100%)] text-theme-text p-8 overflow-hidden">
       {/* Background particle dots (pure CSS, no JS) */}
       {[...Array(12)].map((_, i) => (
-        <div key={i} style={{
-          position: "absolute",
-          width: 3, height: 3,
-          borderRadius: "50%",
-          background: activeColor,
-          opacity: 0.15 + (i % 4) * 0.05,
-          left: `${8 + (i * 7.5) % 90}%`,
-          top:  `${5 + (i * 11) % 88}%`,
-          animation: `pulse ${1.5 + (i % 3) * 0.5}s ease-in-out infinite alternate`,
-          animationDelay: `${(i * 0.2) % 1.4}s`,
-        }} />
+        <div key={i}
+          className="absolute w-[3px] h-[3px] rounded-full bg-[color:var(--ac)] [animation:pulse_var(--adur)_ease-in-out_infinite_alternate] [animation-delay:var(--adel)]"
+          style={{
+            "--ac": activeColor,
+            "--adur": `${1.5 + (i % 3) * 0.5}s`,
+            "--adel": `${(i * 0.2) % 1.4}s`,
+            opacity: 0.15 + (i % 4) * 0.05,
+            left: `${8 + (i * 7.5) % 90}%`,
+            top: `${5 + (i * 11) % 88}%`,
+          } as React.CSSProperties}
+        />
       ))}
 
       <style>{`
@@ -170,10 +170,10 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error }: Loadin
       </div>
 
       {/* Status */}
-      <div style={{
-        color: barColor,
-        animation: !error && !isDone ? "glow 1.4s ease-in-out infinite alternate" : "none",
-      }} className="text-[13px] font-bold tracking-[0.1em] uppercase mb-1">
+      <div
+        className={`text-[13px] font-bold tracking-[0.1em] uppercase mb-1 text-[color:var(--bc)] ${!error && !isDone ? "[animation:glow_1.4s_ease-in-out_infinite_alternate]" : ""}`}
+        style={{ "--bc": barColor } as React.CSSProperties}
+      >
         {error ? "Connection Error" : STEP_LABEL[currentStep]}
       </div>
       <div className="text-[11px] text-theme-faint mb-5 font-mono">
@@ -183,8 +183,8 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error }: Loadin
       {/* Progress bar */}
       <div className="w-[320px] h-[6px] bg-white/[.06] rounded-[3px] overflow-hidden border border-white/[.08] mb-[14px]">
         <div
-          className="h-full rounded-[3px] [transition:width_300ms_ease-out]"
-          style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${barColor}bb, ${barColor})`, boxShadow: `0 0 8px ${barColor}88` }}
+          className="h-full rounded-[3px] [transition:width_300ms_ease-out] w-[--pct] bg-[--pbg] shadow-[--pshadow]"
+          style={{ "--bc": barColor, "--pct": `${pct}%`, "--pbg": `linear-gradient(90deg, ${barColor}bb, ${barColor})`, "--pshadow": `0 0 8px ${barColor}88` } as React.CSSProperties}
         />
       </div>
 
@@ -199,8 +199,8 @@ export function LoadingProgress({ currentStep, stepProgress = 0, error }: Loadin
               key={step}
               data-testid={`loading-step-${step}`}
               title={STEP_LABEL[step]}
-              className="h-2 rounded-[4px] [transition:all_300ms_ease]"
-              style={{ width: active ? 24 : 8, background: c, boxShadow: active ? `0 0 8px ${c}` : "none" }}
+              className="h-2 rounded-[4px] [transition:all_300ms_ease] w-[--dw] bg-[--dc] shadow-[--dshadow]"
+              style={{ "--dc": c, "--dshadow": active ? `0 0 8px ${c}` : "none", "--dw": active ? "24px" : "8px" } as React.CSSProperties}
             />
           );
         })}

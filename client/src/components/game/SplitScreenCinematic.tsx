@@ -55,7 +55,7 @@ export function SplitScreenCinematic({ data, eliminatedBeyIds, onEnd }: SplitScr
   return (
     <div
       className="fixed inset-0 grid pointer-events-none z-[900] [transition:opacity_0.3s_ease-in]"
-      style={{ gridTemplateColumns: `repeat(${cols}, 1fr)`, gridTemplateRows: `repeat(${rows}, 1fr)`, opacity: visible ? 1 : 0 }}
+      style={{ "--gcols": `repeat(${cols}, 1fr)`, "--grows": `repeat(${rows}, 1fr)`, gridTemplateColumns: "var(--gcols)", gridTemplateRows: "var(--grows)", opacity: visible ? 1 : 0 } as React.CSSProperties}
     >
       {participants.map(p => {
         const isActive = active.has(p.beyId);
@@ -70,7 +70,7 @@ export function SplitScreenCinematic({ data, eliminatedBeyIds, onEnd }: SplitScr
             {/* Glow border effect */}
             <div
               className="absolute inset-0 border-[3px] pointer-events-none"
-              style={{ borderColor: color, boxShadow: `inset 0 0 30px ${color}44` }}
+              style={{ "--sc": color, borderColor: color, boxShadow: `inset 0 0 30px ${color}44` } as React.CSSProperties}
             />
 
             {/* Content */}
@@ -78,7 +78,7 @@ export function SplitScreenCinematic({ data, eliminatedBeyIds, onEnd }: SplitScr
             <div className="text-[22px] font-bold text-white font-mono tracking-[2px]">
               {p.displayName}
             </div>
-            <div className="text-[13px] mt-1 uppercase tracking-[3px]" style={{ color }}>
+            <div className="text-[13px] mt-1 uppercase tracking-[3px] text-[color:var(--sc)]">
               {p.specialMove.replace(/_/g, " ")}
             </div>
 
@@ -91,8 +91,7 @@ export function SplitScreenCinematic({ data, eliminatedBeyIds, onEnd }: SplitScr
             {/* Animated edge line */}
             {isActive && (
               <div
-                className="absolute bottom-0 left-0 h-[3px] w-full [animation:shrink_2.5s_linear_forwards]"
-                style={{ background: color, boxShadow: `0 0 8px ${color}` }}
+                className="absolute bottom-0 left-0 h-[3px] w-full [animation:shrink_2.5s_linear_forwards] bg-[color:var(--sc)] shadow-[0_0_8px_var(--sc)]"
               />
             )}
           </div>

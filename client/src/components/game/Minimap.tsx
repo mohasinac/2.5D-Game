@@ -2,7 +2,7 @@
 // Phase 27: ALL beyblade rendering reads ONLY from beyGhosts (never state.beyblades).
 // Toggle visibility with the M key.
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import type { ServerBeyGhost, ServerGameState } from "@/types/game";
 import { PX_PER_CM_BASE } from "@/constants/units";
 import type { FloorInfo } from "@/components/game/FloorHUD";
@@ -60,8 +60,7 @@ export function Minimap({ gameState, beyGhosts, selfId, sizeRem = 12, viewportCm
       <div
         aria-label="Press M to open minimap"
         title="Press M — minimap"
-        style={{ position: "absolute", top: "1rem", left: "1rem" }}
-        className="text-[10px] text-[rgba(180,200,220,0.5)] pointer-events-none z-40 select-none"
+        className="absolute top-4 left-4 text-[10px] text-[rgba(180,200,220,0.5)] pointer-events-none z-40 select-none"
       >
         M — minimap
       </div>
@@ -79,8 +78,8 @@ export function Minimap({ gameState, beyGhosts, selfId, sizeRem = 12, viewportCm
   return (
     <div
       aria-label="Arena minimap"
-      style={{ position: "absolute", top: "1rem", left: "1rem", width: px }}
-      className="bg-[rgba(10,14,28,0.92)] border border-[rgba(120,160,200,0.4)] rounded-lg backdrop-blur z-40 overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
+      className="absolute top-4 left-4 bg-[rgba(10,14,28,0.92)] border border-[rgba(120,160,200,0.4)] rounded-lg backdrop-blur z-40 overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5)] w-[--mpx]"
+      style={{ "--mpx": `${px}px` } as React.CSSProperties}
     >
       {/* Tab bar */}
       <div className="flex border-b border-[rgba(120,160,200,0.2)]">
@@ -266,34 +265,28 @@ function PerspectiveView({ arena, ghosts, selfId, sizeRem }: {
   const containerH = sizeRem * 16;
 
   return (
-    <div style={{ width: containerW, height: containerH }} className="overflow-hidden relative bg-[rgba(10,15,25,0.6)]">
-      <div style={{ position: "absolute", top: "50%", left: "50%", transform: `translate(-50%,-50%) ${ISO_SKEW}` }}>
+    <div className="overflow-hidden relative bg-[rgba(10,15,25,0.6)] w-[--pcw] h-[--pch]" style={{ "--pcw": `${containerW}px`, "--pch": `${containerH}px` } as React.CSSProperties}>
+      <div className="absolute" style={{ top: "50%", left: "50%", transform: `translate(-50%,-50%) ${ISO_SKEW}` }}>
         {/* Arena floor */}
-        <div style={{
-          width: widthCm * SCALE, height: heightCm * SCALE,
-          background: arena.shape === "circle"
-            ? "radial-gradient(circle, rgba(30,50,80,0.85) 70%, transparent 100%)"
-            : "rgba(30,50,80,0.85)",
-          border: "1px solid rgba(68,136,204,0.5)",
-          borderRadius: arena.shape === "circle" ? "50%" : 4,
-          position: "relative",
-        }}>
+        <div
+          className={`border border-[rgba(68,136,204,0.5)] relative w-[--afw] h-[--afh] ${arena.shape === "circle" ? "rounded-full bg-[radial-gradient(circle,rgba(30,50,80,0.85)_70%,transparent_100%)]" : "rounded bg-[rgba(30,50,80,0.85)]"}`}
+          style={{ "--afw": `${widthCm * SCALE}px`, "--afh": `${heightCm * SCALE}px` } as React.CSSProperties}
+        >
           {Array.from(ghosts.values()).map(g => {
             const cx = (g.x_cm + widthCm / 2) * SCALE;
             const cy = (g.y_cm + heightCm / 2) * SCALE;
             const dotR = g.tier === 0 ? 3 : 5;
             return (
-              <div key={g.id} style={{
-                position: "absolute",
-                left: cx - dotR,
-                top: cy - dotR,
-                width: dotR * 2,
-                height: dotR * 2,
-                borderRadius: "50%",
-                background: tierColor(g, selfId),
-                opacity: g.tier === 0 ? 0.4 : 1,
-                boxShadow: g.id === selfId ? "0 0 6px 2px rgba(255,200,50,0.7)" : "none",
-              }} />
+              <div key={g.id}
+                className={`absolute rounded-full bg-[color:var(--gc)] w-[--dsize] h-[--dsize] ${g.id === selfId ? "shadow-[0_0_6px_2px_rgba(255,200,50,0.7)]" : ""}`}
+                style={{
+                  "--gc": tierColor(g, selfId),
+                  "--dsize": `${dotR * 2}px`,
+                  left: cx - dotR,
+                  top: cy - dotR,
+                  opacity: g.tier === 0 ? 0.4 : 1,
+                } as React.CSSProperties}
+              />
             );
           })}
         </div>

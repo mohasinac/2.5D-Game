@@ -1,5 +1,7 @@
 // Phase 28 HUD — AbilityIcons: 3 ability slots with radial cooldown sweeps (2D mode only).
 
+import React from "react";
+
 interface AbilitySlot {
   label: string;
   cooldownMs: number;
@@ -48,8 +50,8 @@ function CooldownRing({ slot }: { slot: AbilitySlot }) {
       </span>
       {ready && (
         <div
-          style={{ boxShadow: `0 0 6px 2px ${color}66` }}
-          className="absolute inset-0 rounded-full pointer-events-none"
+          className="absolute inset-0 rounded-full pointer-events-none shadow-[0_0_6px_2px_var(--gc)]"
+          style={{ "--gc": `${color}66` } as React.CSSProperties}
         />
       )}
     </div>
@@ -59,8 +61,8 @@ function CooldownRing({ slot }: { slot: AbilitySlot }) {
 export function AbilityIcons({ slots }: AbilityIconsProps) {
   return (
     <div
-      style={{ position: "absolute", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)" }}
-      className="flex gap-2 z-50 pointer-events-none"
+      className="absolute flex gap-2 z-50 pointer-events-none"
+      style={{ bottom: "1.5rem", left: "50%", transform: "translateX(-50%)" }}
     >
       {slots.map((slot, i) => <CooldownRing key={i} slot={slot} />)}
     </div>

@@ -1,7 +1,7 @@
 // Phase AB: Element type badge chips shown on the in-match HUD next to the bey name.
 // Also renders a "SUPER EFFECTIVE!" / "NOT VERY EFFECTIVE" flash for type matchup contacts.
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ELEMENT_ICONS, ELEMENT_COLORS } from "@/types/elementTypes";
 import type { ElementType } from "@/types/elementTypes";
 
@@ -21,8 +21,8 @@ export function ElementBadges({ elementTypes, size = "md" }: ElementBadgesProps)
         <span
           key={elem}
           title={elem}
-          className="inline-flex items-center justify-center rounded-full leading-none select-none border"
-          style={{ width: px, height: px, background: `${ELEMENT_COLORS[elem]}33`, borderColor: `${ELEMENT_COLORS[elem]}88`, fontSize: font }}
+          className="inline-flex items-center justify-center rounded-full leading-none select-none border border-[--ebc] bg-[--ebg] w-[--epx] h-[--epx] text-[length:var(--efont)]"
+          style={{ "--ebc": `${ELEMENT_COLORS[elem]}88`, "--ebg": `${ELEMENT_COLORS[elem]}33`, "--epx": `${px}px`, "--efont": `${font}px` } as React.CSSProperties}
         >
           {ELEMENT_ICONS[elem]}
         </span>

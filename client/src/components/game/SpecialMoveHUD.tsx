@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface SpecialMoveData {
   id: string;
@@ -43,7 +43,7 @@ export function SpecialMoveHUD({ myBeyblade, specialMoveData, lastSpecialMoveFir
   return (
     <div
       className="absolute pointer-events-none z-10 rounded-xl"
-      style={{ bottom: 16, left: 16, background: flashColor ?? undefined, opacity: flashColor ? 0.3 : undefined, transition: flashColor ? "opacity 200ms" : undefined, padding: flashColor ? 12 : undefined }}
+      style={{ bottom: 16, left: 16, "--fc": flashColor ?? "transparent", background: flashColor ? "var(--fc)" : undefined, opacity: flashColor ? 0.3 : undefined, transition: flashColor ? "opacity 200ms" : undefined, padding: flashColor ? 12 : undefined } as React.CSSProperties}
     >
       <div className="flex flex-col items-center gap-2 bg-[rgba(15,23,42,0.9)] rounded-xl border border-border-c p-3 min-w-[140px]">
         {/* Icon and Name */}
@@ -56,12 +56,12 @@ export function SpecialMoveHUD({ myBeyblade, specialMoveData, lastSpecialMoveFir
         <div className="w-full min-w-[120px]">
           <div className="flex justify-between text-[10px] mb-1 text-theme-muted">
             <span>Power</span>
-            <span className="font-mono" style={{ color: powerBarColor }}>{Math.round(powerPercent)}%</span>
+            <span className="font-mono text-[color:var(--pbc)]" style={{ "--pbc": powerBarColor } as React.CSSProperties}>{Math.round(powerPercent)}%</span>
           </div>
           <div className="w-full h-[6px] bg-bg3 rounded-[3px] overflow-hidden">
             <div
-              className="h-full rounded-[3px] [transition:width_100ms]"
-              style={{ width: `${powerPercent}%`, background: powerBarColor }}
+              className="h-full rounded-[3px] [transition:width_100ms] bg-[color:var(--pbc)] w-[--pbw]"
+              style={{ "--pbc": powerBarColor, "--pbw": `${powerPercent}%` } as React.CSSProperties}
             />
           </div>
         </div>

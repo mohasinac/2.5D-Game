@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { BeybladeGameRenderer } from "@/game/renderer/PixiRenderer";
 import type { ServerGameState, ServerBeyblade } from "@/types/game";
 
@@ -112,7 +112,7 @@ export function RendererDemoPage() {
           <p className="text-theme-muted text-[13px] mt-1">PixiJS WebGL · 3 beyblades · Live stability effects</p>
         </div>
 
-        <div className="grid gap-5" style={{ gridTemplateColumns: `1fr ${sideW}px` }}>
+        <div className="grid gap-5" style={{ "--gcols": `1fr ${sideW}px`, gridTemplateColumns: "var(--gcols)" } as React.CSSProperties}>
           {/* Canvas */}
           <div ref={containerRef} className="bg-black rounded-2xl border border-border-c overflow-hidden aspect-[16/10] min-h-[340px]" />
 

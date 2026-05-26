@@ -5,7 +5,7 @@
  * - Incompatible parts greyed out with admin Override button
  */
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { isCompatible } from "./partCompatibility";
@@ -90,8 +90,8 @@ export function PartPicker({
       {selectedPart ? (
         <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-[7px] bg-blue/[0.09] border border-blue/30">
           <div
-            className="w-3 h-3 rounded-full shrink-0"
-            style={{ background: selectedPart.color ?? "var(--faint)" }}
+            className="w-3 h-3 rounded-full shrink-0 bg-[color:var(--pc)]"
+            style={{ "--pc": selectedPart.color ?? "var(--faint)" } as React.CSSProperties}
           />
           <span className="flex-1 text-[12px] text-text overflow-hidden text-ellipsis whitespace-nowrap">
             {selectedPart.displayName || "(unnamed)"}
@@ -144,8 +144,8 @@ export function PartPicker({
                   className={`flex items-center gap-2 px-3 py-[7px] border-b border-border/[0.13] ${compat.ok ? "cursor-pointer" : "cursor-default opacity-45"} ${isHighlighted ? "bg-blue-13" : "bg-transparent"}`}
                 >
                   <div
-                    className="w-3 h-3 rounded-full shrink-0"
-                    style={{ background: part.color ?? "var(--faint)" }}
+                    className="w-3 h-3 rounded-full shrink-0 bg-[color:var(--pc)]"
+                    style={{ "--pc": part.color ?? "var(--faint)" } as React.CSSProperties}
                   />
                   <span className={`flex-1 text-[12px] overflow-hidden text-ellipsis whitespace-nowrap ${compat.ok ? "text-text" : "text-faint"}`}>
                     {part.displayName || "(unnamed)"}

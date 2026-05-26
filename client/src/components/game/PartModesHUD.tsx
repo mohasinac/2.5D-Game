@@ -5,7 +5,7 @@
 // Also shows the evolution-driver stage badge on the "tip" row when the bey has
 // an evolving driver equipped (tipEvolutionStage > 0 = the tip has evolved at least once).
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { Room } from "colyseus.js";
 
 const PART_LABELS: Record<string, string> = {
@@ -97,8 +97,8 @@ export function PartModesHUD({ myBeyblade, room }: PartModesHUDProps) {
 
   return (
     <div
-      style={{ position: "absolute", top: 80, right: 16, zIndex: 11 }}
-      className="flex flex-col gap-[6px] pointer-events-auto"
+      className="absolute flex flex-col gap-[6px] pointer-events-auto z-[11]"
+      style={{ top: 80, right: 16 }}
     >
       <div className="text-[10px] text-theme-muted uppercase tracking-[0.06em]">
         Modes
@@ -140,8 +140,8 @@ export function PartModesHUD({ myBeyblade, room }: PartModesHUDProps) {
             </div>
             {onCooldown && (
               <div
-                className="absolute left-0 bottom-0 h-[2px] bg-[var(--purple)] [transition:width_100ms_linear]"
-                style={{ width: `${cdPct * 100}%` }}
+                className="absolute left-0 bottom-0 h-[2px] bg-[var(--purple)] [transition:width_100ms_linear] w-[--cdw]"
+                style={{ "--cdw": `${cdPct * 100}%` } as React.CSSProperties}
               />
             )}
           </div>

@@ -106,11 +106,11 @@ function RotationBadge({ direction, speedDegPerSec }: { direction?: "cw" | "ccw"
   const color = direction === "cw" ? "#3b82f6" : "#eab308";
   return (
     <div className="flex flex-col items-center gap-[1px] flex-shrink-0">
-      <svg width={14} height={14} style={{ animation: `${direction === "cw" ? "rotCW" : "rotCCW"} ${secPerRev}s linear infinite` }}>
+      <svg width={14} height={14} style={{ "--anim": `${direction === "cw" ? "rotCW" : "rotCCW"} ${secPerRev}s linear infinite` } as React.CSSProperties} className="[animation:var(--anim)]">
         <circle cx={7} cy={7} r={5} fill="none" stroke={`color-mix(in srgb, ${color} 60%, transparent)`} strokeWidth={1.5} strokeDasharray="8 4" />
         <circle cx={7} cy={2} r={1.5} fill={color} />
       </svg>
-      <span className="text-[7px] font-mono font-bold" style={{ color }}>
+      <span className="text-[7px] font-mono font-bold text-[color:var(--rc)]" style={{ "--rc": color } as React.CSSProperties}>
         {direction === "cw" ? "CW" : "CCW"}
       </span>
     </div>
@@ -137,7 +137,7 @@ function LinkRow({ link }: { link: FloorLinkInfo }) {
       {/* Arc or dot */}
       {isAlwaysOpen || isDisconnected ? (
         <div className="w-[22px] h-[22px] flex items-center justify-center">
-          <div className="w-2 h-2 rounded-full" style={{ background: color, boxShadow: isAlwaysOpen ? `0 0 6px ${color}` : "none" }} />
+          <div className="w-2 h-2 rounded-full bg-[color:var(--lc)] shadow-[var(--lshadow)]" style={{ "--lc": color, "--lshadow": isAlwaysOpen ? `0 0 6px ${color}` : "none" } as React.CSSProperties} />
         </div>
       ) : (
         <AlignmentArc fraction={link.alignmentFraction} color={color} />
@@ -148,7 +148,7 @@ function LinkRow({ link }: { link: FloorLinkInfo }) {
 
       {/* Status + alignment detail */}
       <div className="flex-1 min-w-0">
-        <div className="text-[9px] font-bold font-mono tracking-[0.4px]" style={{ color }}>
+        <div className="text-[9px] font-bold font-mono tracking-[0.4px] text-[color:var(--lc)]" style={{ "--lc": color } as React.CSSProperties}>
           {isCooldown && link.cooldownTicks != null
             ? `WAIT ${link.cooldownTicks}t`
             : STATUS_LABEL[link.status]}
@@ -197,14 +197,9 @@ export default function FloorHUD({ totalFloors, currentFloorIndex, floors }: Pro
         @keyframes rotCCW { from { transform: rotate(0deg);   } to { transform: rotate(-360deg); } }
       `}</style>
 
-      <div style={{
-        position: "absolute",
-        right: 14,
-        top: "50%",
-        transform: "translateY(-50%)",
-        zIndex: 15,
-      }}
-        className="pointer-events-none flex flex-col items-stretch select-none gap-0 w-[136px]"
+      <div
+        className="absolute pointer-events-none flex flex-col items-stretch select-none gap-0 w-[136px] z-[15]"
+        style={{ right: 14, top: "50%", transform: "translateY(-50%)" }}
       >
 
         {/* Render top → bottom = highest floor index → F0 */}
@@ -226,14 +221,7 @@ export default function FloorHUD({ totalFloors, currentFloorIndex, floors }: Pro
 
               {/* ── Floor tile ── */}
               <div
-                className={`flex items-center gap-[6px] border px-[9px] py-[5px] ${isCur ? "bg-[rgba(59,130,246,0.18)] border-[#3b82f6] [animation:floorGlow_2.4s_ease-in-out_infinite]" : "bg-[rgba(15,23,42,0.88)] border-[#334155]"}`}
-                style={{
-                  borderRadius:
-                    upLinks.length > 0 && dnLinks.length > 0 ? 0
-                    : upLinks.length > 0 ? "0 0 8px 8px"
-                    : dnLinks.length > 0 ? "8px 8px 0 0"
-                    : 8,
-                }}
+                className={`flex items-center gap-[6px] border px-[9px] py-[5px] ${isCur ? "bg-[rgba(59,130,246,0.18)] border-[#3b82f6] [animation:floorGlow_2.4s_ease-in-out_infinite]" : "bg-[rgba(15,23,42,0.88)] border-[#334155]"} ${upLinks.length > 0 && dnLinks.length > 0 ? "rounded-none" : upLinks.length > 0 ? "rounded-b-lg" : dnLinks.length > 0 ? "rounded-t-lg" : "rounded-lg"}`}
               >
                 {/* Floor index badge */}
                 <div className={`w-[22px] h-[22px] rounded-[6px] flex-shrink-0 flex items-center justify-center text-[10px] font-bold ${isCur ? "bg-[#3b82f6] text-white" : "bg-[#1e293b] text-[#64748b]"}`}>

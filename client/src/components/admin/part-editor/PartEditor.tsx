@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useTabFromUrl } from "@/hooks/useTabFromUrl";
 import { doc, getDoc, updateDoc, getDocs, collection, serverTimestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
@@ -136,7 +136,7 @@ export function PartEditor({
       <div className="flex items-center gap-3 px-6 py-3.5 border-b border-border bg-bg1 shrink-0">
         <div
           className="w-7 h-7 rounded-full shrink-0 border-2 border-border"
-          style={{ background: part.color ?? "var(--faint)" }}
+          style={{ "--pc": part.color ?? "var(--faint)", background: "var(--pc)" } as React.CSSProperties}
         />
         <div className="flex-1 min-w-0">
           <div className="text-base font-bold text-text truncate">

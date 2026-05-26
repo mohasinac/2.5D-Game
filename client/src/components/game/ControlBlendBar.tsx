@@ -1,3 +1,5 @@
+import React from "react";
+
 // Phase 24 — ControlBlendBar: shows the current player-authority blend (0–100).
 // Reads `controlAuthority` from the local beyblade schema (synced at 60Hz).
 // 100 = full player control; 0 = full natural/AI motion.
@@ -26,8 +28,7 @@ export function ControlBlendBar({ authority, clashQTEActive, clashQTETimer }: Co
   if (clashQTEActive) {
     return (
       <div
-        style={{ position: "absolute", top: "1rem", right: "1rem" }}
-        className="px-3 py-[0.4rem] bg-[rgba(20,15,0,0.85)] border-2 border-[#ffcc00] rounded-lg flex flex-col items-center gap-[0.2rem] z-50 backdrop-blur"
+        className="absolute top-4 right-4 px-3 py-[0.4rem] bg-[rgba(20,15,0,0.85)] border-2 border-[#ffcc00] rounded-lg flex flex-col items-center gap-[0.2rem] z-50 backdrop-blur"
       >
         <span className="text-[#ffcc00] font-mono text-[0.65rem] font-bold tracking-[0.08em]">
           ⚡ CLASH QTE
@@ -41,16 +42,15 @@ export function ControlBlendBar({ authority, clashQTEActive, clashQTETimer }: Co
 
   return (
     <div
-      style={{ position: "absolute", top: "1rem", right: "1rem" }}
-      className="min-w-[132px] px-[0.6rem] py-[0.35rem] bg-[rgba(10,15,30,0.75)] border border-[rgba(100,160,220,0.3)] rounded-lg flex flex-col items-start gap-[0.2rem] z-50 backdrop-blur"
+      className="absolute top-4 right-4 min-w-[132px] px-[0.6rem] py-[0.35rem] bg-[rgba(10,15,30,0.75)] border border-[rgba(100,160,220,0.3)] rounded-lg flex flex-col items-start gap-[0.2rem] z-50 backdrop-blur"
     >
       <span className="text-[#9bb] font-mono text-[0.6rem] tracking-[0.05em]">
         CONTROL {Math.round(authority)}%
       </span>
       <div className="w-[120px] h-2 bg-white/10 rounded overflow-hidden">
         <div
-          className="h-full rounded-[4px] [transition:width_0.12s_ease-out]"
-          style={{ width: `${pct * 100}%`, background: barColor }}
+          className="h-full rounded-[4px] [transition:width_0.12s_ease-out] bg-[color:var(--bc)] w-[--bw]"
+          style={{ "--bc": barColor, "--bw": `${pct * 100}%` } as React.CSSProperties}
         />
       </div>
     </div>

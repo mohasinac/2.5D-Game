@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useMemo } from "react";
-import { TouchControls } from "@/components/game/TouchControls";
+import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { Link, useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
 import { doc, getDoc } from "firebase/firestore";
@@ -532,7 +532,7 @@ export function TournamentBattleGamePage() {
           </div>
         </div>
       )}
-      {!isSpectating && <TouchControls />}
+      {!isSpectating && <TouchControlsGBLayout />}
     </div>
   );
 }

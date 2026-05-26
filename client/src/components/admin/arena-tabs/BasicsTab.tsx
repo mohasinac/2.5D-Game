@@ -354,8 +354,8 @@ export default function BasicsTab({ config, onChange }: Props) {
                 className={`py-2 px-2.5 rounded-lg text-xs font-medium cursor-pointer flex items-center gap-2 border ${active ? "" : "bg-bg3 text-theme-muted border-border-c"}`}
               >
                 <span
-                  className="w-2.5 h-2.5 rounded-full shrink-0"
-                  style={{ background: t.color }}
+                  className="w-2.5 h-2.5 rounded-full shrink-0 bg-[color:var(--tc)]"
+                  style={{ "--tc": t.color } as React.CSSProperties}
                 />
                 {t.label}
               </button>

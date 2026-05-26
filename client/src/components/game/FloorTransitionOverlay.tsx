@@ -136,8 +136,12 @@ function PhaseBadge({ state, linkType }: { state: TransitionState; linkType: str
         return (
           <div key={ph.key} className="flex items-center gap-[3px]">
             <div
-              className={`px-2 py-[2px] rounded-[10px] text-[9px] font-bold transition-all duration-150 border ${active ? "border-[var(--tc)]" : "border-[#334155]"}`}
-              style={{ "--tc": color, background: active ? `color-mix(in srgb, ${color} 20%, transparent)` : "rgba(30,41,59,0.6)", color: active ? color : "#64748b" } as React.CSSProperties}
+              className={`px-2 py-[2px] rounded-[10px] text-[9px] font-bold transition-all duration-150 border [background:var(--tb-bg)] [color:var(--tb-c)] ${active ? "border-[var(--tc)]" : "border-[#334155]"}`}
+              style={{
+                "--tc": color,
+                "--tb-bg": active ? `color-mix(in srgb, ${color} 20%, transparent)` : "rgba(30,41,59,0.6)",
+                "--tb-c": active ? color : "#64748b",
+              } as React.CSSProperties}
             >
               {ph.label}
             </div>
@@ -155,13 +159,14 @@ function Particles({ char, color, count = 8 }: { char: string; color: string; co
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="absolute text-[13px] pointer-events-none" style={{
-          color: `color-mix(in srgb, ${color} 50%, transparent)`,
-          left: `${8 + (i / count) * 84}%`,
-          top: `${18 + Math.sin(i * 1.3) * 28}%`,
-          animation: `floatP${i % 3} ${1.2 + (i % 3) * 0.4}s ease-in-out infinite`,
-          animationDelay: `${i * 0.15}s`,
-        }}>
+        <div key={i} className="absolute text-[13px] pointer-events-none text-[color:var(--pc)]"
+          style={{
+            "--pc": `color-mix(in srgb, ${color} 50%, transparent)`,
+            left: `${8 + (i / count) * 84}%`,
+            top: `${18 + Math.sin(i * 1.3) * 28}%`,
+            animation: `floatP${i % 3} ${1.2 + (i % 3) * 0.4}s ease-in-out infinite`,
+            animationDelay: `${i * 0.15}s`,
+          } as React.CSSProperties}>
           {char}
         </div>
       ))}
@@ -228,16 +233,16 @@ export default function FloorTransitionOverlay({
 
       {/* Main card */}
       <div
-        className="relative bg-[rgba(15,23,42,0.96)] rounded-[20px] px-[30px] py-5 min-w-[300px] max-w-[380px] text-center overflow-hidden border-2 [animation:tSlideIn_0.18s_ease-out]"
-        style={{ "--tc": meta.color, borderColor: `color-mix(in srgb, ${meta.color} 50%, transparent)`, boxShadow: `0 0 48px color-mix(in srgb, ${meta.color} 18%, transparent)` } as React.CSSProperties}
+        className="relative bg-[rgba(15,23,42,0.96)] rounded-[20px] px-[30px] py-5 min-w-[300px] max-w-[380px] text-center overflow-hidden border-2 [animation:tSlideIn_0.18s_ease-out] [border-color:var(--tc-50)] [box-shadow:0_0_48px_var(--tc-18)]"
+        style={{ "--tc": meta.color, "--tc-50": `color-mix(in srgb, ${meta.color} 50%, transparent)`, "--tc-18": `color-mix(in srgb, ${meta.color} 18%, transparent)` } as React.CSSProperties}
       >
         <Particles char={meta.particleChar} color={meta.color} />
 
         {/* Link type badge */}
         <div className="mb-2 relative">
           <span
-            className="text-[11px] font-bold uppercase tracking-[1.5px] rounded-[20px] px-3 py-[3px] border"
-            style={{ "--tc": meta.color, color: meta.color, background: `color-mix(in srgb, ${meta.color} 12%, transparent)`, borderColor: `color-mix(in srgb, ${meta.color} 30%, transparent)` } as React.CSSProperties}
+            className="text-[11px] font-bold uppercase tracking-[1.5px] rounded-[20px] px-3 py-[3px] border [color:var(--tc)] [background:var(--tc-12)] [border-color:var(--tc-30)]"
+            style={{ "--tc": meta.color, "--tc-12": `color-mix(in srgb, ${meta.color} 12%, transparent)`, "--tc-30": `color-mix(in srgb, ${meta.color} 30%, transparent)` } as React.CSSProperties}
           >
             {meta.icon} {meta.label}
           </span>
@@ -259,7 +264,7 @@ export default function FloorTransitionOverlay({
         <div className="flex items-center justify-center gap-[14px] mb-3">
           <FloorBadge index={fromFloor} label={fromLabel} dim />
           <div className="flex flex-col items-center gap-[2px]">
-            <span className="text-[22px] leading-none" style={{ color: meta.color }}>{arrow}</span>
+            <span className="text-[22px] leading-none text-[color:var(--mc)]" style={{ "--mc": meta.color } as React.CSSProperties}>{arrow}</span>
             <span className="text-theme-faint text-[9px]">
               {Math.abs(toFloor - fromFloor)} floor{Math.abs(toFloor - fromFloor) > 1 ? "s" : ""}
             </span>
@@ -277,14 +282,14 @@ export default function FloorTransitionOverlay({
         {/* Transit progress bar */}
         {state === "transit" && (
           <div className="w-full h-[4px] rounded-[2px] overflow-hidden bg-[rgba(51,65,85,0.5)]">
-            <div className="rounded-[2px] transition-[width] duration-[50ms] linear h-full" style={{ width: `${progress * 100}%`, background: meta.color, boxShadow: `0 0 6px ${meta.color}` }} />
+            <div className="rounded-[2px] transition-[width] duration-[50ms] linear h-full bg-[color:var(--mc)] shadow-[0_0_6px_var(--mc)]" style={{ "--mc": meta.color, width: `${progress * 100}%` } as React.CSSProperties} />
           </div>
         )}
 
         {/* Opt-out transit bar */}
         {state === "opt_out_window" && (
           <div className="w-full h-[3px] rounded-[2px] overflow-hidden mb-1 bg-[rgba(51,65,85,0.4)]">
-            <div className="rounded-[2px] transition-[width] duration-[50ms] linear h-full" style={{ width: `${progress * 100}%`, background: meta.color }} />
+            <div className="rounded-[2px] transition-[width] duration-[50ms] linear h-full bg-[color:var(--mc)]" style={{ "--mc": meta.color, width: `${progress * 100}%` } as React.CSSProperties} />
           </div>
         )}
 
@@ -304,7 +309,8 @@ export default function FloorTransitionOverlay({
             </div>
             {optOutWindowTicks != null && (
               <div className="mt-[6px] w-full h-[3px] rounded-[2px] overflow-hidden bg-[rgba(234,179,8,0.2)]">
-                <div className="rounded-[2px] transition-[width] duration-[50ms] linear h-full bg-[#eab308]" style={{ width: `${optOutPct}%` }} />
+                <div className="rounded-[2px] transition-[width] duration-[50ms] linear h-full bg-[#eab308] w-[--oow]" style={{ "--oow": `${optOutPct}%` } as React.CSSProperties} />
+
               </div>
             )}
             <div className="text-theme-faint text-[10px] mt-[6px] leading-[1.4]">
@@ -326,8 +332,8 @@ export default function FloorTransitionOverlay({
         {/* Arrived */}
         {state === "arrived" && (
           <div
-            className="mt-[10px] text-[12px] font-bold [animation:tFlash_0.4s_ease-in-out_2]"
-            style={{ color: meta.color }}
+            className="mt-[10px] text-[12px] font-bold [animation:tFlash_0.4s_ease-in-out_2] text-[color:var(--mc)]"
+            style={{ "--mc": meta.color } as React.CSSProperties}
           >
             ✓ Floor {toFloor}{toLabel ? ` — ${toLabel}` : ""}
           </div>

@@ -2,7 +2,7 @@
 // Shows up to 4 team beys; highlights the currently possessed one.
 // Press 1/2/3/4 to signal possession request to server.
 
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 interface BeySlot {
   index: number;
@@ -60,11 +60,11 @@ export function BeySelector({ slots, onSelect }: Props) {
             </span>
             {/* Health bar */}
             <div className="w-10 h-[3px] bg-[#334155] rounded-sm">
-              <div className="h-full rounded-sm transition-[width] duration-200" style={{ width: `${healthPct * 100}%`, background: healthColor }} />
+              <div className="h-full rounded-sm transition-[width] duration-200 bg-[color:var(--hc)] w-[--hp]" style={{ "--hc": healthColor, "--hp": `${healthPct * 100}%` } as React.CSSProperties} />
             </div>
             {/* Spin bar */}
             <div className="w-10 h-[3px] bg-[#334155] rounded-sm">
-              <div className="h-full bg-[#3b82f6] rounded-sm transition-[width] duration-200" style={{ width: `${spinPct * 100}%` }} />
+              <div className="h-full bg-[#3b82f6] rounded-sm transition-[width] duration-200 w-[--sp]" style={{ "--sp": `${spinPct * 100}%` } as React.CSSProperties} />
             </div>
           </button>
         );

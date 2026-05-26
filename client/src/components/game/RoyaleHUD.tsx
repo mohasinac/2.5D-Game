@@ -1,5 +1,6 @@
 // Phase 25 — RoyaleHUD: player strip sorted by spin%, zone timer, phase color ring.
 
+import React from "react";
 import type { ServerGameState, ServerBeyblade } from "@/types/game";
 
 interface RoyaleHUDProps {
@@ -37,42 +38,28 @@ export function RoyaleHUD({ gameState, myId }: RoyaleHUDProps) {
   return (
     <>
       {/* Zone timer bar */}
-      <div style={{
-        position: "absolute",
-        top: "2.8rem",
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 55,
-        pointerEvents: "none",
-      }}
-        className="flex flex-col items-center gap-[3px] font-mono"
+      <div
+        className="absolute flex flex-col items-center gap-[3px] font-mono pointer-events-none z-[55]"
+        style={{ top: "2.8rem", left: "50%", transform: "translateX(-50%)" }}
       >
-        <div className="text-[0.65rem] font-bold tracking-[0.05em]" style={{ color }}>
+        <div className="text-[0.65rem] font-bold tracking-[0.05em] text-[color:var(--zc)]" style={{ "--zc": color } as React.CSSProperties}>
           {label}{drain > 0 ? ` — ${drain} spin/s outside` : ""}
         </div>
-        <div className="text-base font-bold" style={{ color, textShadow: `0 0 8px ${color}88` }}>
+        <div className="text-base font-bold text-[color:var(--zc)] [text-shadow:0_0_8px_var(--zc88)]" style={{ "--zc": color, "--zc88": `${color}88` } as React.CSSProperties}>
           {mm}:{ss}
         </div>
         {/* Progress strip */}
         <div className="flex gap-[3px]">
           {PHASE_COLORS.map((c, i) => (
-            <div key={i} className="w-[14px] h-[4px] rounded-[2px]" style={{ background: i <= phase ? c : "rgba(255,255,255,0.12)" }} />
+            <div key={i} className="w-[14px] h-[4px] rounded-[2px] bg-[--pbg]" style={{ "--pbg": i <= phase ? c : "rgba(255,255,255,0.12)" } as React.CSSProperties} />
           ))}
         </div>
       </div>
 
       {/* Player strip */}
-      <div style={{
-        position: "absolute",
-        left: "0.6rem",
-        top: "50%",
-        transform: "translateY(-50%)",
-        zIndex: 55,
-        pointerEvents: "none",
-        maxHeight: "60vh",
-        overflowY: "hidden",
-      }}
-        className="flex flex-col gap-[3px]"
+      <div
+        className="absolute flex flex-col gap-[3px] pointer-events-none z-[55] max-h-[60vh] overflow-y-hidden"
+        style={{ left: "0.6rem", top: "50%", transform: "translateY(-50%)" }}
       >
         {beyblades.map(bey => {
           const pct = spinPct(bey);
@@ -84,9 +71,9 @@ export function RoyaleHUD({ gameState, myId }: RoyaleHUDProps) {
                 {(bey as any).username ?? bey.userId?.slice(0, 8) ?? "?"}
               </span>
               <div className="flex-1 h-[3px] rounded-[2px] overflow-hidden bg-white/10">
-                <div className="h-full rounded-[2px]" style={{ width: `${pct}%`, background: barColor }} />
+                <div className="h-full rounded-[2px] bg-[color:var(--bc)] w-[--bw]" style={{ "--bc": barColor, "--bw": `${pct}%` } as React.CSSProperties} />
               </div>
-              <span className="font-bold" style={{ color: barColor }}>{pct}%</span>
+              <span className="font-bold text-[color:var(--bc)]" style={{ "--bc": barColor } as React.CSSProperties}>{pct}%</span>
             </div>
           );
         })}

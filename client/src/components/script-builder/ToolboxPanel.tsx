@@ -100,7 +100,7 @@ export function ToolboxPanel({ onDragStart }: Props) {
                 className="flex w-full items-center px-3 py-1 bg-transparent border-none cursor-pointer text-theme-muted text-[11px] font-bold uppercase tracking-[0.04em] gap-[6px]"
                 onClick={() => setCollapsed(c => ({ ...c, [group]: !c[group] }))}
               >
-                <span className="inline-block w-2 h-2 rounded-[2px] shrink-0" style={{ background: color }} />
+                <span className="inline-block w-2 h-2 rounded-[2px] shrink-0 bg-[color:var(--tc)]" style={{ "--tc": color } as React.CSSProperties} />
                 {group.replace("_", " ")}
                 <span className="ml-auto">{isCollapsed ? "▶" : "▼"}</span>
               </button>

@@ -6,8 +6,8 @@ interface Pos { x: number; y: number; }
 interface DraggableZoneProps {
   storageKey: string;
   children: React.ReactNode;
+  /** Applied to the wrapper div when docked (normal in-flow positioning). */
   className?: string;
-  dockClassName?: string;
 }
 
 function loadPos(key: string): Pos | null {
@@ -21,7 +21,7 @@ function savePos(key: string, pos: Pos) {
   try { localStorage.setItem(key, JSON.stringify(pos)); } catch { /* ignore */ }
 }
 
-export function DraggableZone({ storageKey, children, className, dockClassName }: DraggableZoneProps) {
+export function DraggableZone({ storageKey, children, className }: DraggableZoneProps) {
   const [floating, setFloating] = useState<Pos | null>(() => loadPos(storageKey));
   const dragRef = useRef<{ startPointer: Pos; startEl: Pos } | null>(null);
   const elRef = useRef<HTMLDivElement>(null);
@@ -81,7 +81,7 @@ export function DraggableZone({ storageKey, children, className, dockClassName }
 
   if (isDocked) {
     return (
-      <div ref={elRef} className={cn("relative", dockClassName)}>
+      <div ref={elRef} className={cn("relative", className)}>
         <button
           className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-bg3 border border-border-c text-theme-faint hover:text-theme-text text-[10px] flex items-center justify-center z-10 cursor-grab active:cursor-grabbing"
           title="Drag to move"
@@ -99,11 +99,7 @@ export function DraggableZone({ storageKey, children, className, dockClassName }
   return (
     <div
       ref={elRef}
-      className={cn(
-        "fixed z-[200] touch-none select-none",
-        "bg-bg0/80 backdrop-blur-sm rounded-2xl border border-border-c p-3",
-        className,
-      )}
+      className="fixed z-[200] touch-none select-none bg-bg0/80 backdrop-blur-sm rounded-2xl border border-border-c p-3"
       style={{ left: floating.x, top: floating.y }}
     >
       <div className="flex items-center justify-between mb-2 gap-2">

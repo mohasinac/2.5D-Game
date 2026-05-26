@@ -18,6 +18,7 @@ import WhatsAppStyleImageEditor from "@/components/admin/WhatsAppStyleImageEdito
 import ImageCropper from "@/components/admin/ImageCropper";
 import type { ImageCropperRef } from "@/components/admin/ImageCropper";
 import BeybladePreview from "@/components/admin/BeybladePreview";
+import { PreviewModal } from "@/components/ui/PreviewModal";
 import Step3ContactPoints from "@/components/admin/Step3ContactPoints";
 import { SearchableSelect, type SelectOption } from "@/components/admin/SearchableSelect";
 
@@ -189,19 +190,22 @@ export function BeybladeEditPage() {
           <Link to="/admin/beyblades" className="text-theme-faint text-[13px] no-underline">← Beyblades</Link>
           <h1 className="text-[22px] font-bold text-theme-text mt-1.5">Edit: {beyblade.displayName}</h1>
         </div>
-        <button
-          onClick={handleSave}
-          disabled={saving || usedPoints !== TOTAL_POINTS}
-          className="px-5 py-2 bg-theme-blue text-white rounded-lg text-[13px] font-medium border-none cursor-pointer disabled:opacity-50"
-        >
-          {saving ? "Saving..." : "Save Changes"}
-        </button>
+        <div className="flex items-center gap-2">
+          <PreviewModal title="Beyblade Preview" size="md" label="Preview">
+            <BeybladePreview beyblade={beyblade} />
+          </PreviewModal>
+          <button
+            onClick={handleSave}
+            disabled={saving || usedPoints !== TOTAL_POINTS}
+            className="px-5 py-2 bg-theme-blue text-white rounded-lg text-[13px] font-medium border-none cursor-pointer disabled:opacity-50"
+          >
+            {saving ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
       </div>
 
-      {/* Two-column: editors left, preview right */}
-      <div className="grid gap-5 mb-5 grid-cols-[1fr_390px]">
-        {/* Left column */}
-        <div className="flex flex-col gap-4">
+      {/* Editors */}
+      <div className="flex flex-col gap-4 mb-5">
           {/* Basic Info */}
           <div className="bg-bg2 border border-border-c rounded-2xl p-5">
             <div className={SEC_TITLE}>Basic Info</div>
@@ -481,12 +485,6 @@ export function BeybladeEditPage() {
               )}
             </div>
           </div>
-        </div>
-
-        {/* Right column: sticky preview */}
-        <div className="sticky top-20">
-          <BeybladePreview beyblade={beyblade} />
-        </div>
       </div>
 
       {/* Full-width contact points section */}

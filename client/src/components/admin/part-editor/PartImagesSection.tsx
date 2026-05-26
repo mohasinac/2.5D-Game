@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from "@/lib/firebase";
 import type { PartImages } from "@/types/beybladeSystem";
@@ -83,7 +83,7 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
         <div className="text-[12px] text-theme-muted">Part Images (no-background PNG)</div>
         <div
           className="text-[11px] px-[9px] py-[3px] rounded-full font-semibold"
-          style={{ color: wf.color, background: `color-mix(in srgb, ${wf.color} 9%, transparent)`, border: `1px solid color-mix(in srgb, ${wf.color} 27%, transparent)` }}
+          style={{ "--wc": wf.color, color: wf.color, background: `color-mix(in srgb, ${wf.color} 9%, transparent)`, border: `1px solid color-mix(in srgb, ${wf.color} 27%, transparent)` } as React.CSSProperties}
         >
           {wf.tier}
         </div>

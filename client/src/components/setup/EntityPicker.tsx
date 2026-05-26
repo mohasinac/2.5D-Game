@@ -1,9 +1,10 @@
-// EntityPicker — searchable name dropdown on the left + tabbed preview pane on the right.
+// EntityPicker — searchable name dropdown on the left + tabbed preview pane (in modal).
 // Used to select a beyblade or an arena. Generic over the entity shape; tabs
 // are provided by the caller.
 
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/cn";
+import { PreviewModal } from "@/components/ui/PreviewModal";
 
 export interface EntityOption {
   id: string;
@@ -85,88 +86,87 @@ export function EntityPicker({
           {icon && <span>{icon}</span>}
           {title && <span className="font-semibold text-[14px] text-theme-text">{title}</span>}
           {selected && (
-            <span className="ml-auto text-[12px] text-theme-faint">
-              «{selected.name}»
-            </span>
+            <>
+              <span className="ml-auto text-[12px] text-theme-faint">
+                «{selected.name}»
+              </span>
+              <PreviewModal title={`Preview — ${selected.name}`} size="xl" label="Preview">
+                <div className="flex flex-col h-full">
+                  {/* Tab bar */}
+                  <div className="flex border-b border-border-c overflow-x-auto shrink-0">
+                    {tabs.map((t) => (
+                      <button
+                        key={t.id}
+                        onClick={() => setActiveTabId(t.id)}
+                        className={cn(
+                          "px-3.5 py-2.5 text-[12px] font-semibold cursor-pointer border-none whitespace-nowrap border-b-2",
+                          activeTabId === t.id
+                            ? "bg-bg2 text-theme-text border-b-theme-blue"
+                            : "bg-transparent text-theme-muted border-b-transparent",
+                        )}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Active tab content */}
+                  <div className="p-4 flex-1 overflow-y-auto text-theme-text">
+                    {activeTab ? activeTab.render(selected) : null}
+                  </div>
+                </div>
+              </PreviewModal>
+            </>
           )}
         </div>
       )}
 
-      <div className="grid min-h-[320px] [grid-template-columns:minmax(220px,1fr)_minmax(280px,2fr)]">
-        {/* Left — searchable name list */}
-        <div className="border-r border-border-c flex flex-col">
-          <div className="p-2.5 border-b border-border-c">
-            <input
-              type="search"
-              placeholder="🔎 Search name or era"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="w-full px-2.5 py-2 rounded-lg border border-border-c bg-bg2 text-theme-text text-[13px] outline-none"
-            />
-          </div>
-          <div className="flex-1 overflow-y-auto max-h-[360px]">
-            {options.length === 0 ? (
-              <div className="p-4 text-theme-faint text-[12px] text-center">{emptyMessage}</div>
-            ) : grouped.length === 0 ? (
-              <div className="p-4 text-theme-faint text-[12px] text-center">No matches for "{query}".</div>
-            ) : (
-              grouped.map(([groupName, list]) => (
-                <div key={groupName || "_default"}>
-                  {groupName && (
-                    <div className="px-3 py-1.5 text-[10px] text-theme-faint uppercase tracking-[0.07em] bg-bg2 border-b border-border-c">
-                      {groupName}
-                    </div>
-                  )}
-                  {list.map((o) => {
-                    const isSel = o.id === selectedId;
-                    const isDim = dimIds?.has(o.id);
-                    return (
-                      <button
-                        key={o.id}
-                        onClick={() => onSelect(o.id)}
-                        className={cn(
-                          "w-full text-left px-3 py-2.5 border-none block cursor-pointer",
-                          isSel ? "bg-blue-13 text-theme-blue border-l-[3px] border-l-theme-blue" : "bg-transparent text-theme-text border-l-[3px] border-l-transparent",
-                          isDim && "opacity-45",
-                        )}
-                      >
-                        <div className={cn("text-[13px]", isSel ? "font-bold" : "font-medium")}>{o.name}</div>
-                        {o.subtitle && (
-                          <div className="text-[11px] text-theme-faint mt-0.5">{o.subtitle}</div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              ))
-            )}
-          </div>
+      {/* Searchable name list */}
+      <div className="flex flex-col min-h-[320px]">
+        <div className="p-2.5 border-b border-border-c">
+          <input
+            type="search"
+            placeholder="🔎 Search name or era"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full px-2.5 py-2 rounded-lg border border-border-c bg-bg2 text-theme-text text-[13px] outline-none"
+          />
         </div>
-
-        {/* Right — tabbed preview pane */}
-        <div className="flex flex-col">
-          {/* Tab bar */}
-          <div className="flex border-b border-border-c overflow-x-auto">
-            {tabs.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => setActiveTabId(t.id)}
-                className={cn(
-                  "px-3.5 py-2.5 text-[12px] font-semibold cursor-pointer border-none whitespace-nowrap border-b-2",
-                  activeTabId === t.id
-                    ? "bg-bg2 text-theme-text border-b-theme-blue"
-                    : "bg-transparent text-theme-muted border-b-transparent",
+        <div className="flex-1 overflow-y-auto max-h-[360px]">
+          {options.length === 0 ? (
+            <div className="p-4 text-theme-faint text-[12px] text-center">{emptyMessage}</div>
+          ) : grouped.length === 0 ? (
+            <div className="p-4 text-theme-faint text-[12px] text-center">No matches for "{query}".</div>
+          ) : (
+            grouped.map(([groupName, list]) => (
+              <div key={groupName || "_default"}>
+                {groupName && (
+                  <div className="px-3 py-1.5 text-[10px] text-theme-faint uppercase tracking-[0.07em] bg-bg2 border-b border-border-c">
+                    {groupName}
+                  </div>
                 )}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Active tab content */}
-          <div className="p-4 flex-1 overflow-y-auto text-theme-text">
-            {activeTab ? activeTab.render(selected) : null}
-          </div>
+                {list.map((o) => {
+                  const isSel = o.id === selectedId;
+                  const isDim = dimIds?.has(o.id);
+                  return (
+                    <button
+                      key={o.id}
+                      onClick={() => onSelect(o.id)}
+                      className={cn(
+                        "w-full text-left px-3 py-2.5 border-none block cursor-pointer",
+                        isSel ? "bg-blue-13 text-theme-blue border-l-[3px] border-l-theme-blue" : "bg-transparent text-theme-text border-l-[3px] border-l-transparent",
+                        isDim && "opacity-45",
+                      )}
+                    >
+                      <div className={cn("text-[13px]", isSel ? "font-bold" : "font-medium")}>{o.name}</div>
+                      {o.subtitle && (
+                        <div className="text-[11px] text-theme-faint mt-0.5">{o.subtitle}</div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

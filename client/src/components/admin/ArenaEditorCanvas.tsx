@@ -223,10 +223,9 @@ export function ArenaEditorCanvas({
           ref={canvasRef}
           width={canvasPx}
           height={canvasPx}
+          className="block origin-top-left"
           style={{
-            display: "block",
             transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
-            transformOrigin: "top left",
             cursor: dragging ? "grabbing" : isPanning ? "grab" : "crosshair",
           }}
           onMouseDown={onMouseDown}

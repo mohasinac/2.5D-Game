@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useGameDataStore } from "@/stores/gameDataStore";
@@ -145,7 +145,7 @@ export function SimpleDefsCrudPage({
             {filtered.map(item => (
               <div key={item.id} className="flex flex-wrap items-center gap-3 bg-bg1 border border-border-c rounded-xl px-4 py-3">
                 {typeof item.color === "string" && item.color && (
-                  <span className="w-4 h-4 rounded-full shrink-0 border border-border-c" style={{ background: item.color as string }} />
+                  <span className="w-4 h-4 rounded-full shrink-0 border border-border-c bg-[color:var(--ic)]" style={{ "--ic": item.color as string } as React.CSSProperties} />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-semibold text-theme-text flex flex-wrap items-center gap-2">

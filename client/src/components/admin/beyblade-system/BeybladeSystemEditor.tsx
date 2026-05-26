@@ -8,6 +8,7 @@ import { doc, getDoc, getDocs, updateDoc, serverTimestamp, collection, setDoc } 
 import { db, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
 import { TabDropdown } from "@/components/ui/TabDropdown";
+import { PreviewModal } from "@/components/ui/PreviewModal";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { SlotTab } from "./SlotTab";
 import { BeybladeSystemPreview } from "./BeybladeSystemPreview";
@@ -175,8 +176,8 @@ export function BeybladeSystemEditor({ systemId }: Props) {
 
   return (
     <div className="flex h-full overflow-hidden">
-      {/* LEFT: Tab editor */}
-      <div className="flex-1 flex flex-col min-w-0 border-r border-border">
+      {/* Tab editor */}
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <div className="flex items-center gap-2.5 px-5 py-3 border-b border-border bg-bg1 shrink-0">
           <div className="flex-1">
@@ -186,6 +187,9 @@ export function BeybladeSystemEditor({ systemId }: Props) {
           {dirty && (
             <span className="text-[11px] text-yellow bg-yellow/10 px-2 py-0.5 rounded">Unsaved</span>
           )}
+          <PreviewModal title="System Preview" size="lg" label="Preview">
+            <BeybladeSystemPreview resolved={resolved} />
+          </PreviewModal>
           {resolved && (
             <button
               onClick={publishToStats}
@@ -265,13 +269,13 @@ export function BeybladeSystemEditor({ systemId }: Props) {
                             : current.length < 2 ? [...current, elem] : current;
                           updateSystem({ elementTypes: next });
                         }}
-                        style={{
-                          background: active ? `${color}22` : undefined,
-                          color: active ? color : undefined,
-                          borderColor: active ? `${color}55` : undefined,
-                          fontWeight: active ? 700 : 400,
-                        }}
-                        className={`px-2.5 py-1 text-[11px] rounded-full cursor-pointer border ${active ? "" : "bg-bg2 text-faint border-border"}`}
+                        style={active ? {
+                          "--ec": color,
+                          background: `${color}22`,
+                          color,
+                          borderColor: `${color}55`,
+                        } as React.CSSProperties : undefined}
+                        className={`px-2.5 py-1 text-[11px] rounded-full cursor-pointer border ${active ? "font-bold" : "font-normal bg-bg2 text-faint border-border"}`}
                       >
                         {ELEMENT_ICONS[elem]} {elem}
                       </button>
@@ -469,16 +473,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
         </div>
       </div>
 
-      {/* RIGHT: Live preview sidebar */}
-      <div className="w-80 shrink-0 flex flex-col bg-bg1">
-        <div className="px-3.5 py-2.5 border-b border-border text-[11px] text-faint">
-          Live Preview
-          {!resolved && <span className="ml-2 text-yellow">· incomplete (select all parts)</span>}
-        </div>
-        <div className="flex-1 overflow-y-auto">
-          <BeybladeSystemPreview resolved={resolved} />
-        </div>
-      </div>
     </div>
   );
 }

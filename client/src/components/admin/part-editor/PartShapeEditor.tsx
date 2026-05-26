@@ -11,7 +11,7 @@
  * Any part type can use any workflow — the tiers are not enforced per type.
  */
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type { PartShape, FourierRadialProfile, BezierPath, BezierSplineProfile, PartImages } from "@/types/beybladeSystem";
 import { synthesizeRadialCache } from "@/types/beybladeSystem";
@@ -261,7 +261,7 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
       <div className="flex items-center gap-2">
         <span className="text-[12px] text-muted">Shape workflow:</span>
         <span
-          style={{ background: `color-mix(in srgb, ${tierMeta.color} 9%, transparent)`, color: tierMeta.color, border: `1px solid color-mix(in srgb, ${tierMeta.color} 27%, transparent)` }}
+          style={{ "--tc": tierMeta.color, background: `color-mix(in srgb, ${tierMeta.color} 9%, transparent)`, color: tierMeta.color, border: `1px solid color-mix(in srgb, ${tierMeta.color} 27%, transparent)` } as React.CSSProperties}
           className="text-[11px] px-[9px] py-0.5 rounded-full font-semibold"
         >
           {tierMeta.label}

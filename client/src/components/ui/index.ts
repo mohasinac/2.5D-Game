@@ -13,3 +13,5 @@ export { PageWrapper, AdminPageShell } from "./PageWrapper";
 export { Select } from "./Select";
 export { Divider } from "./Divider";
 export { Row, Col } from "./Row";
+export { Modal } from "./Modal";
+export { PreviewModal } from "./PreviewModal";

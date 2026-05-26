@@ -1,6 +1,6 @@
 // Phase T: Timeline tab — arena scripted events editor + swimlane preview.
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, ArenaTimelineEvent, ArenaTimelineEventType } from "@/types/arenaConfigNew";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -316,11 +316,11 @@ export default function TimelineTab({ config, onChange }: Props) {
                 <div
                   key={i}
                   title={`${msToLabel(ev.triggerMs)}: ${ev.type}`}
-                  className="absolute top-1 bottom-1 w-1 rounded-[2px] -translate-x-[2px]"
+                  className="absolute top-1 bottom-1 w-1 rounded-[2px] -translate-x-[2px] [background:var(--ec)]"
                   style={{
                     left: `${pct}%`,
-                    background: colors[ev.type] ?? "var(--purple)",
-                  }}
+                    "--ec": colors[ev.type] ?? "var(--purple)",
+                  } as React.CSSProperties}
                 />
               );
             })}
