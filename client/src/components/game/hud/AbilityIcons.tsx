@@ -22,10 +22,7 @@ function CooldownRing({ slot }: { slot: AbilitySlot }) {
   const color = slot.color ?? "#4488ff";
 
   return (
-    <div style={{
-      width: SIZE, height: SIZE, position: "relative",
-      display: "flex", alignItems: "center", justifyContent: "center",
-    }}>
+    <div style={{ width: SIZE, height: SIZE }} className="relative flex items-center justify-center">
       <svg width={SIZE} height={SIZE} style={{ position: "absolute", top: 0, left: 0, transform: "rotate(-90deg)" }}>
         {/* Track */}
         <circle cx={SIZE/2} cy={SIZE/2} r={R} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={3} />
@@ -44,21 +41,17 @@ function CooldownRing({ slot }: { slot: AbilitySlot }) {
         )}
       </svg>
       {/* Label */}
-      <span style={{
-        fontFamily: "monospace",
-        fontSize: "0.65rem",
-        fontWeight: 700,
-        color: ready ? "#fff" : "rgba(180,200,220,0.5)",
-        zIndex: 1,
-      }}>
+      <span
+        style={{ color: ready ? "#fff" : "rgba(180,200,220,0.5)" }}
+        className="font-mono text-[0.65rem] font-bold z-[1]"
+      >
         {slot.label}
       </span>
       {ready && (
-        <div style={{
-          position: "absolute", inset: 0, borderRadius: "50%",
-          boxShadow: `0 0 6px 2px ${color}66`,
-          pointerEvents: "none",
-        }} />
+        <div
+          style={{ boxShadow: `0 0 6px 2px ${color}66` }}
+          className="absolute inset-0 rounded-full pointer-events-none"
+        />
       )}
     </div>
   );
@@ -66,16 +59,10 @@ function CooldownRing({ slot }: { slot: AbilitySlot }) {
 
 export function AbilityIcons({ slots }: AbilityIconsProps) {
   return (
-    <div style={{
-      position: "absolute",
-      bottom: "1.5rem",
-      left: "50%",
-      transform: "translateX(-50%)",
-      display: "flex",
-      gap: "0.5rem",
-      zIndex: 50,
-      pointerEvents: "none",
-    }}>
+    <div
+      style={{ position: "absolute", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)" }}
+      className="flex gap-2 z-50 pointer-events-none"
+    >
       {slots.map((slot, i) => <CooldownRing key={i} slot={slot} />)}
     </div>
   );

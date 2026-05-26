@@ -21,37 +21,32 @@ export function TopBar({ username, score, timerSec, beyType = "balanced", spinPc
   const typeColor = TYPE_COLORS[beyType] ?? "#aabbcc";
 
   return (
-    <div style={{
-      position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
-      padding: "0.35rem 1rem",
-      background: "rgba(10,14,28,0.85)",
-      border: `1px solid ${typeColor}55`,
-      borderTop: "none",
-      borderRadius: "0 0 0.6rem 0.6rem",
-      backdropFilter: "blur(4px)",
-      display: "flex", alignItems: "center", gap: "1rem",
-      zIndex: 50, pointerEvents: "none",
-      fontFamily: "monospace",
-    }}>
+    <div
+      style={{
+        position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+        border: `1px solid ${typeColor}55`,
+      }}
+      className="px-4 py-[0.35rem] bg-[rgba(10,14,28,0.85)] border-t-0 rounded-b-[0.6rem] backdrop-blur flex items-center gap-4 z-50 pointer-events-none font-mono"
+    >
       {/* Type indicator dot */}
-      <div style={{ width: 8, height: 8, borderRadius: "50%", background: typeColor, flexShrink: 0 }} />
+      <div style={{ background: typeColor }} className="w-2 h-2 rounded-full shrink-0" />
 
       {/* Username + spin pct */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-        <span style={{ fontSize: "0.7rem", color: "#dde", fontWeight: 600 }}>{username}</span>
+      <div className="flex flex-col items-start">
+        <span className="text-[0.7rem] text-[#dde] font-semibold">{username}</span>
         {spinPct !== undefined && (
-          <span style={{ fontSize: "0.6rem", color: typeColor }}>{spinPct}% spin</span>
+          <span style={{ color: typeColor }} className="text-[0.6rem]">{spinPct}% spin</span>
         )}
       </div>
 
       {/* Timer */}
-      <div style={{ fontSize: "0.9rem", color: "#fff", fontWeight: 700, letterSpacing: "0.06em" }}>
+      <div className="text-[0.9rem] text-white font-bold tracking-[0.06em]">
         {mm}:{ss}
       </div>
 
       {/* Score */}
       {score !== undefined && (
-        <div style={{ fontSize: "0.7rem", color: "#cce", fontWeight: 600 }}>
+        <div className="text-[0.7rem] text-[#cce] font-semibold">
           {score}pt
         </div>
       )}

@@ -56,13 +56,10 @@ export function HUDRoot({ gameState, myId, myBey }: HUDRootProps) {
 
       {/* SPBar — bottom-left in 2D/2.5D */}
       {mode !== "3d" && (
-        <div style={{
-          position: "absolute",
-          bottom: "1.5rem",
-          left: "1rem",
-          zIndex: 50,
-          pointerEvents: "none",
-        }}>
+        <div
+          style={{ position: "absolute", bottom: "1.5rem", left: "1rem" }}
+          className="z-50 pointer-events-none"
+        >
           <SPBar spinPct={spinPct} />
         </div>
       )}

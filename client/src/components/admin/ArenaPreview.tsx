@@ -667,19 +667,13 @@ export default function ArenaPreview({ arena }: Props) {
   }, [rebuildScene]);
 
   return (
-    <div style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 12, padding: 16 }}>
-      <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 12 }}>Live Preview</div>
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
-        <div ref={containerRef} style={{
-          borderRadius: 8,
-          border: `2px solid ${C.border}`,
-          overflow: "hidden",
-          width: "100%",
-          aspectRatio: "1 / 1",
-        }} />
+    <div className="bg-bg2 border border-border-c rounded-xl p-4">
+      <div className="text-sm font-semibold text-theme-text mb-3">Live Preview</div>
+      <div className="flex justify-center mb-3">
+        <div ref={containerRef} className="rounded-lg border-2 border-border-c overflow-hidden w-full aspect-square" />
       </div>
       {/* Feature badges */}
-      <div style={{ fontSize: 11, color: C.faint, display: "flex", flexWrap: "wrap", gap: 8 }}>
+      <div className="text-[11px] text-theme-faint flex flex-wrap gap-2">
         {[
           ["Shape", arena.shape],
           ["Theme", arena.theme],
@@ -695,8 +689,8 @@ export default function ArenaPreview({ arena }: Props) {
           ...((arena as any).switches?.length ? [["Switches", String((arena as any).switches.length)]] : []),
           ...(arena.autoRotate ? [["Rotating", `${arena.rotationSpeed}°/s`]] : []),
         ].map(([k, v]) => (
-          <span key={k} style={{ background: C.bg3, borderRadius: 4, padding: "2px 6px", textTransform: "capitalize" }}>
-            {k}: <span style={{ color: C.text }}>{v}</span>
+          <span key={k} className="bg-bg3 rounded px-[6px] py-[2px] capitalize">
+            {k}: <span className="text-theme-text">{v}</span>
           </span>
         ))}
       </div>

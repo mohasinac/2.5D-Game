@@ -7,7 +7,7 @@ import {
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { C, alpha } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 
 const PILL_BASE = "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border";
 const STATUS_PILL: Record<string, string> = {
@@ -128,8 +128,8 @@ export function TournamentLobbyPage() {
 
   if (!tournament) {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div className="spin" style={{ width: 40, height: 40, border: `2px solid ${C.border}`, borderTopColor: C.yellow, borderRadius: "50%" }} />
+      <div className="min-h-screen bg-bg0 flex items-center justify-center">
+        <div className="spin w-10 h-10 border-2 border-border-c border-t-theme-yellow rounded-full" />
       </div>
     );
   }
@@ -141,6 +141,7 @@ export function TournamentLobbyPage() {
   // Lazy-load beyblade options the first time we display the registration card.
   // Filters out beyblades the tournament has explicitly disabled or that aren't
   // in its allowed list. Falls back to the full collection when no allow-list set.
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (!tournament) return;
     if (isParticipant) return;
@@ -172,6 +173,7 @@ export function TournamentLobbyPage() {
     return () => { cancelled = true; };
   }, [tournament, isParticipant, beyOptions.length, pickedBeyId]);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const deadlineMs = useMemo(
     () => tournament?.registrationDeadline?.toDate?.()?.getTime() ?? Infinity,
     [tournament?.registrationDeadline]
@@ -185,6 +187,7 @@ export function TournamentLobbyPage() {
   const tournamentReadyCount = participants.filter((p) => p.ready === true || p.isAI).length;
   const myTournamentReady = Boolean(myParticipant?.ready);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const onRegister = useCallback(async () => {
     if (!tournamentId || !tournament || !currentUser || !pickedBeyId) {
       toast.error("Pick a beyblade first");
@@ -216,6 +219,7 @@ export function TournamentLobbyPage() {
     }
   }, [tournamentId, tournament, currentUser, pickedBeyId, canRegister, participants]);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const onToggleTournamentReady = useCallback(async () => {
     if (!myParticipant) return;
     setReadyBusy(true);
@@ -266,6 +270,7 @@ export function TournamentLobbyPage() {
   const myReady = Boolean(myParticipant && myNextMatch?.readyState?.[myParticipant.id]);
   const oppReady = Boolean(opponent && (myNextMatch?.readyState?.[opponent.id] || opponent.isAI));
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const onToggleReady = useCallback(async () => {
     if (!myNextMatch || !myParticipant) return;
     try {
@@ -282,6 +287,7 @@ export function TournamentLobbyPage() {
     }
   }, [myNextMatch, myParticipant, myReady]);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const onQuitTournament = useCallback(async () => {
     if (!myParticipant) return;
     if (!confirm("Quit the tournament? Your opponent will advance by walkover. This cannot be undone.")) return;
@@ -298,13 +304,13 @@ export function TournamentLobbyPage() {
   }, [myParticipant]);
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg0, padding: 32 }}>
-      <div style={{ maxWidth: 860, margin: "0 auto" }}>
+    <div className="min-h-screen bg-bg0 p-8">
+      <div className="max-w-[860px] mx-auto">
         {/* Header */}
-        <div style={{ marginBottom: 28 }}>
-          <Link to="/game/tournament" style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Tournaments</Link>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
-            <h1 style={{ fontSize: 28, fontWeight: 900, color: C.text, letterSpacing: "-0.02em" }}>
+        <div className="mb-7">
+          <Link to="/game/tournament" className="text-theme-faint text-[13px] no-underline">← Tournaments</Link>
+          <div className="flex items-center gap-3 mt-2">
+            <h1 className="text-[28px] font-black text-theme-text tracking-[-0.02em]">
               {tournament.name}
             </h1>
             <span className={`${PILL_BASE} ${STATUS_PILL[tournament.status] ?? STATUS_PILL.draft}`}>
@@ -312,15 +318,15 @@ export function TournamentLobbyPage() {
             </span>
           </div>
           {tournament.description && (
-            <p style={{ color: C.muted, fontSize: 13, marginTop: 4 }}>{tournament.description}</p>
+            <p className="text-theme-muted text-[13px] mt-1">{tournament.description}</p>
           )}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 20 }}>
+        <div className="grid gap-5" style={{ gridTemplateColumns: "1fr 320px" }}>
           {/* Left: bracket */}
           <div>
             {/* Info bar */}
-            <div style={{ background: C.bg2, borderRadius: 12, border: `1px solid ${C.border}`, padding: 16, marginBottom: 16, display: "flex", gap: 24, flexWrap: "wrap" }}>
+            <div className="bg-bg2 rounded-xl border border-border-c p-4 mb-4 flex gap-6 flex-wrap">
               <Stat label="Type" value={tournament.type.replace("-", " ")} />
               <Stat label="Format" value={`Best of ${tournament.bestOf}`} />
               <Stat label="Max Players" value={`${tournament.maxParticipants}`} />
@@ -335,41 +341,40 @@ export function TournamentLobbyPage() {
 
             {/* Gauntlet: Round Progress + "You reached Round N" */}
             {isGauntlet && isParticipant && (
-              <div style={{
-                background: gauntletEliminatedAtRound !== null
-                  ? alpha(C.red, 0.08) : alpha(C.green, 0.08),
-                border: `1px solid ${gauntletEliminatedAtRound !== null ? alpha(C.red, 0.27) : alpha(C.green, 0.27)}`,
-                borderRadius: 12, padding: "14px 18px", marginBottom: 16,
-                display: "flex", alignItems: "center", gap: 12,
-              }}>
-                <span style={{ fontSize: 28 }}>
+              <div className={cn(
+                "rounded-xl border p-[14px_18px] mb-4 flex items-center gap-3",
+                gauntletEliminatedAtRound !== null
+                  ? "bg-red-10 border-red-30"
+                  : "bg-green-10 border-green-30"
+              )}>
+                <span className="text-[28px]">
                   {gauntletEliminatedAtRound !== null ? "💀" : gauntletRoundsWon > 0 ? "🏅" : "⚔️"}
                 </span>
                 <div>
                   {gauntletEliminatedAtRound !== null ? (
                     <>
-                      <p style={{ color: C.red, fontWeight: 700, fontSize: 16 }}>
+                      <p className="text-theme-red font-bold text-[16px]">
                         Eliminated — You reached Round {gauntletEliminatedAtRound}
                       </p>
-                      <p style={{ color: C.muted, fontSize: 12, marginTop: 2 }}>
+                      <p className="text-theme-muted text-[12px] mt-0.5">
                         You won {gauntletRoundsWon} round{gauntletRoundsWon !== 1 ? "s" : ""} before falling. Well fought!
                       </p>
                     </>
                   ) : gauntletRoundsWon > 0 ? (
                     <>
-                      <p style={{ color: C.green, fontWeight: 700, fontSize: 16 }}>
+                      <p className="text-theme-green font-bold text-[16px]">
                         Round {gauntletRoundsWon} complete — advancing!
                       </p>
-                      <p style={{ color: C.muted, fontSize: 12, marginTop: 2 }}>
+                      <p className="text-theme-muted text-[12px] mt-0.5">
                         Next: Round {gauntletRoundsWon + 1}
                       </p>
                     </>
                   ) : (
                     <>
-                      <p style={{ color: C.yellow, fontWeight: 700, fontSize: 16 }}>
+                      <p className="text-theme-yellow font-bold text-[16px]">
                         Gauntlet — Round 1
                       </p>
-                      <p style={{ color: C.muted, fontSize: 12, marginTop: 2 }}>
+                      <p className="text-theme-muted text-[12px] mt-0.5">
                         How far can you go?
                       </p>
                     </>
@@ -380,29 +385,22 @@ export function TournamentLobbyPage() {
 
             {/* Countdown */}
             {tournament.status === "registration" && (
-              <div style={{
-                background: alpha(C.yellow, 0.08), border: `1px solid ${alpha(C.yellow, 0.27)}`,
-                borderRadius: 12, padding: "16px 20px", marginBottom: 16,
-                display: "flex", alignItems: "center", gap: 12,
-              }}>
-                <span style={{ fontSize: 28 }}>⏱</span>
+              <div className="bg-yellow-10 border border-yellow-20 rounded-xl p-[16px_20px] mb-4 flex items-center gap-3">
+                <span className="text-[28px]">⏱</span>
                 <div>
-                  <p style={{ color: C.yellow, fontWeight: 700, fontSize: 20 }}>{countdown}</p>
-                  <p style={{ color: C.muted, fontSize: 12 }}>until tournament starts</p>
+                  <p className="text-theme-yellow font-bold text-[20px]">{countdown}</p>
+                  <p className="text-theme-muted text-[12px]">until tournament starts</p>
                 </div>
               </div>
             )}
 
             {/* My match indicator */}
             {myMatch && (
-              <div style={{
-                background: alpha(C.green, 0.08), border: `1px solid ${alpha(C.green, 0.27)}`,
-                borderRadius: 12, padding: "14px 18px", marginBottom: 16,
-              }}>
-                <p style={{ color: C.green, fontWeight: 700, fontSize: 14 }}>
+              <div className="bg-green-10 border border-green-30 rounded-xl p-[14px_18px] mb-4">
+                <p className="text-theme-green font-bold text-[14px]">
                   Your match is ready!
                 </p>
-                <p style={{ color: C.muted, fontSize: 12, marginTop: 4 }}>
+                <p className="text-theme-muted text-[12px] mt-1">
                   {myMatch.status === "in-progress"
                     ? "The battle is live — navigating you now..."
                     : "Room is opening, hold tight..."}
@@ -412,16 +410,12 @@ export function TournamentLobbyPage() {
 
             {/* Next-match Ready / Quit panel (only shown when a pending match exists for me) */}
             {!myMatch && myNextMatch && myParticipant && myParticipant.status !== "quit" && (
-              <div style={{
-                background: C.bg1, border: `1px solid ${C.border}`,
-                borderRadius: 12, padding: "14px 18px", marginBottom: 16,
-                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap",
-              }}>
-                <div style={{ minWidth: 0 }}>
-                  <p style={{ fontSize: 13, color: C.text, fontWeight: 700 }}>
+              <div className="bg-bg1 border border-border-c rounded-xl p-[14px_18px] mb-4 flex items-center justify-between gap-3 flex-wrap">
+                <div className="min-w-0">
+                  <p className="text-[13px] text-theme-text font-bold">
                     Next match — vs {opponent?.username ?? "TBD"} {opponent?.isAI && "(AI)"}
                   </p>
-                  <p style={{ color: C.muted, fontSize: 12, marginTop: 2 }}>
+                  <p className="text-theme-muted text-[12px] mt-0.5">
                     {myReady && oppReady
                       ? "Both ready — match will start in the next poll cycle."
                       : myReady
@@ -430,29 +424,25 @@ export function TournamentLobbyPage() {
                       ? "Opponent is ready — tap Ready to start now."
                       : "5-min gap between matches; tap Ready to start sooner."}
                   </p>
-                  <p style={{ color: C.faint, fontSize: 11, marginTop: 2 }}>
+                  <p className="text-theme-faint text-[11px] mt-0.5">
                     Match cap: 3 min. Score 2 pts for win, 1 for draw, 0 for loss.
                   </p>
                 </div>
-                <div style={{ display: "flex", gap: 8 }}>
+                <div className="flex gap-2">
                   <button
                     onClick={onToggleReady}
-                    style={{
-                      padding: "8px 14px", borderRadius: 8, cursor: "pointer", fontWeight: 700, fontSize: 13,
-                      background: myReady ? C.green : C.bg2,
-                      color: myReady ? C.bg0 : C.text,
-                      border: `1px solid ${myReady ? C.green : C.border}`,
-                    }}
+                    className={cn(
+                      "py-2 px-3.5 rounded-lg cursor-pointer font-bold text-[13px] border",
+                      myReady
+                        ? "bg-theme-green text-bg0 border-theme-green"
+                        : "bg-bg2 text-theme-text border-border-c"
+                    )}
                   >
                     {myReady ? "✓ Ready" : "Ready up"}
                   </button>
                   <button
                     onClick={onQuitTournament}
-                    style={{
-                      padding: "8px 14px", borderRadius: 8, cursor: "pointer", fontWeight: 700, fontSize: 13,
-                      background: "transparent", color: C.red,
-                      border: `1px solid ${alpha(C.red, 0.40)}`,
-                    }}
+                    className="py-2 px-3.5 rounded-lg cursor-pointer font-bold text-[13px] bg-transparent text-theme-red border border-red-30"
                   >
                     Quit tournament
                   </button>
@@ -462,17 +452,17 @@ export function TournamentLobbyPage() {
 
             {/* Bracket */}
             {rounds.length > 0 && (
-              <div style={{ background: C.bg1, borderRadius: 14, border: `1px solid ${C.border}`, padding: 16 }}>
-                <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>
+              <div className="bg-bg1 rounded-[14px] border border-border-c p-4">
+                <p className="text-[11px] text-theme-faint font-semibold uppercase tracking-[0.08em] mb-3">
                   Bracket
                 </p>
-                <div style={{ display: "flex", gap: 16, overflowX: "auto" }}>
+                <div className="flex gap-4 overflow-x-auto">
                   {rounds.map((round) => (
-                    <div key={round} style={{ minWidth: 200 }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, marginBottom: 8, textTransform: "uppercase" }}>
+                    <div key={round} className="min-w-[200px]">
+                      <p className="text-[11px] font-bold text-theme-muted mb-2 uppercase">
                         {ROUND_NAMES[round] ?? `Round ${round}`}
                       </p>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      <div className="flex flex-col gap-2">
                         {matches
                           .filter((m) => m.round === round)
                           .sort((a, b) => a.matchNumber - b.matchNumber)
@@ -495,37 +485,33 @@ export function TournamentLobbyPage() {
 
           {/* Right: participants */}
           <div>
-            <div style={{ background: C.bg1, borderRadius: 14, border: `1px solid ${C.border}`, overflow: "hidden" }}>
-              <div style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}` }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: C.muted }}>
+            <div className="bg-bg1 rounded-[14px] border border-border-c overflow-hidden">
+              <div className="px-3.5 py-[10px] border-b border-border-c">
+                <span className="text-[12px] font-semibold text-theme-muted">
                   Participants ({participants.length}/{tournament.maxParticipants})
                 </span>
               </div>
               {participants.length === 0 ? (
-                <div style={{ padding: 24, textAlign: "center", color: C.faint, fontSize: 13 }}>
+                <div className="p-6 text-center text-theme-faint text-[13px]">
                   No participants yet.
                 </div>
               ) : (
                 participants.map((p, i) => (
-                  <div key={p.id} style={{
-                    display: "flex", alignItems: "center", gap: 10, padding: "10px 14px",
-                    borderBottom: i < participants.length - 1 ? `1px solid ${C.border}` : "none",
-                    background: p.userId === settings.userId ? alpha(C.blue, 0.06) : "transparent",
-                  }}>
-                    <div style={{
-                      width: 28, height: 28, borderRadius: "50%", background: C.bg3,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 11, fontWeight: 700, color: C.muted, flexShrink: 0,
-                    }}>
+                  <div key={p.id} className={cn(
+                    "flex items-center gap-2.5 px-3.5 py-[10px]",
+                    i < participants.length - 1 ? "border-b border-border-c" : "",
+                    p.userId === settings.userId ? "bg-blue-10" : "bg-transparent"
+                  )}>
+                    <div className="w-7 h-7 rounded-full bg-bg3 flex items-center justify-center text-[11px] font-bold text-theme-muted shrink-0">
                       {i + 1}
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <span style={{ fontSize: 13, color: C.text, fontWeight: 500 }}>{p.username}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[13px] text-theme-text font-medium">{p.username}</span>
                         {p.isAI && <span className={`${PILL_BASE} bg-purple/[.13] text-purple border-purple/[.27]`}>AI</span>}
-                        {p.userId === settings.userId && <span style={{ fontSize: 11, color: C.faint }}>(you)</span>}
+                        {p.userId === settings.userId && <span className="text-[11px] text-theme-faint">(you)</span>}
                       </div>
-                      <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
+                      <div className="flex gap-1 mt-0.5">
                         <span className={`${PILL_BASE} ${
                           p.status === "winner"     ? "bg-yellow/[.13] text-yellow border-yellow/[.27]"
                           : p.status === "eliminated" ? "bg-red/[.13] text-red border-red/[.27]"
@@ -543,12 +529,9 @@ export function TournamentLobbyPage() {
 
             {/* Winner banner */}
             {tournament.winnerUsername && (
-              <div style={{
-                marginTop: 12, background: alpha(C.yellow, 0.08), border: `1px solid ${alpha(C.yellow, 0.27)}`,
-                borderRadius: 12, padding: "14px 16px", textAlign: "center",
-              }}>
-                <p style={{ fontSize: 11, color: C.yellow, fontWeight: 600 }}>TOURNAMENT WINNER</p>
-                <p style={{ fontSize: 18, fontWeight: 900, color: C.text, marginTop: 4 }}>
+              <div className="mt-3 bg-yellow-10 border border-yellow-20 rounded-xl p-[14px_16px] text-center">
+                <p className="text-[11px] text-theme-yellow font-semibold">TOURNAMENT WINNER</p>
+                <p className="text-[18px] font-black text-theme-text mt-1">
                   🏆 {tournament.winnerUsername}
                 </p>
               </div>
@@ -556,27 +539,23 @@ export function TournamentLobbyPage() {
 
             {/* Tournament-level Ready toggle (only for registered humans during registration). */}
             {isParticipant && tournament.status === "registration" && myParticipant?.status !== "quit" && (
-              <div style={{
-                marginTop: 12, background: C.bg1, border: `1px solid ${C.border}`,
-                borderRadius: 12, padding: 14,
-              }}>
-                <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 6 }}>
+              <div className="mt-3 bg-bg1 border border-border-c rounded-xl p-3.5">
+                <p className="text-[11px] text-theme-faint font-semibold uppercase mb-1.5">
                   Tournament Ready
                 </p>
-                <p style={{ fontSize: 12, color: C.muted, marginBottom: 10 }}>
+                <p className="text-[12px] text-theme-muted mb-2.5">
                   When every player flips Ready, the bracket starts immediately — no need to wait for the deadline.
                 </p>
                 <button
                   onClick={onToggleTournamentReady}
                   disabled={readyBusy}
-                  style={{
-                    width: "100%", padding: "9px 14px", borderRadius: 8, cursor: "pointer",
-                    fontWeight: 700, fontSize: 13,
-                    background: myTournamentReady ? C.green : C.bg2,
-                    color: myTournamentReady ? C.bg0 : C.text,
-                    border: `1px solid ${myTournamentReady ? C.green : C.border}`,
-                    opacity: readyBusy ? 0.6 : 1,
-                  }}
+                  className={cn(
+                    "w-full py-[9px] px-3.5 rounded-lg cursor-pointer font-bold text-[13px] border",
+                    myTournamentReady
+                      ? "bg-theme-green text-bg0 border-theme-green"
+                      : "bg-bg2 text-theme-text border-border-c",
+                    readyBusy && "opacity-60"
+                  )}
                 >
                   {myTournamentReady ? `✓ Ready (${tournamentReadyCount}/${participants.length})` : `Ready up (${tournamentReadyCount}/${participants.length})`}
                 </button>
@@ -585,38 +564,31 @@ export function TournamentLobbyPage() {
 
             {/* Self-serve registration card (visible when not yet registered). */}
             {!isParticipant && tournament.status === "registration" && (
-              <div style={{
-                marginTop: 12, background: C.bg1, border: `1px solid ${C.border}`,
-                borderRadius: 12, padding: 14,
-              }}>
-                <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 6 }}>
+              <div className="mt-3 bg-bg1 border border-border-c rounded-xl p-3.5">
+                <p className="text-[11px] text-theme-faint font-semibold uppercase mb-1.5">
                   Register to Play
                 </p>
                 {!currentUser ? (
-                  <p style={{ fontSize: 12, color: C.muted }}>
-                    <Link to="/login" style={{ color: C.blue }}>Sign in</Link> to register for this tournament.
+                  <p className="text-[12px] text-theme-muted">
+                    <Link to="/login" className="text-theme-blue">Sign in</Link> to register for this tournament.
                   </p>
                 ) : deadlinePassed ? (
-                  <p style={{ fontSize: 12, color: C.muted }}>
+                  <p className="text-[12px] text-theme-muted">
                     Registration closed at the deadline.
                   </p>
                 ) : isFull ? (
-                  <p style={{ fontSize: 12, color: C.muted }}>
+                  <p className="text-[12px] text-theme-muted">
                     Tournament is full ({participants.length}/{tournament.maxParticipants}).
                   </p>
                 ) : (
                   <>
-                    <label style={{ fontSize: 11, color: C.faint, display: "block", marginBottom: 4 }}>
+                    <label className="text-[11px] text-theme-faint block mb-1">
                       Pick your beyblade
                     </label>
                     <select
                       value={pickedBeyId}
                       onChange={(e) => setPickedBeyId(e.target.value)}
-                      style={{
-                        width: "100%", padding: "6px 10px", borderRadius: 8,
-                        background: C.bg3, color: C.text, border: `1px solid ${C.border}`,
-                        fontSize: 13, marginBottom: 10, boxSizing: "border-box",
-                      }}
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-bg3 text-theme-text border border-border-c text-[13px] mb-2.5 box-border"
                     >
                       {beyOptions.length === 0 && <option value="">Loading…</option>}
                       {beyOptions.map((b) => (
@@ -628,13 +600,10 @@ export function TournamentLobbyPage() {
                     <button
                       onClick={onRegister}
                       disabled={registering || !pickedBeyId || !canRegister}
-                      style={{
-                        width: "100%", padding: "9px 14px", borderRadius: 8, cursor: "pointer",
-                        fontWeight: 700, fontSize: 13,
-                        background: C.blue, color: C.bg0,
-                        border: `1px solid ${C.blue}`,
-                        opacity: registering || !pickedBeyId ? 0.6 : 1,
-                      }}
+                      className={cn(
+                        "w-full py-[9px] px-3.5 rounded-lg cursor-pointer font-bold text-[13px] bg-theme-blue text-bg0 border border-theme-blue",
+                        (registering || !pickedBeyId) && "opacity-60"
+                      )}
                     >
                       {registering ? "Registering…" : "Register"}
                     </button>
@@ -652,8 +621,8 @@ export function TournamentLobbyPage() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p style={{ fontSize: 10, color: C.faint, textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 600 }}>{label}</p>
-      <p style={{ fontSize: 14, color: C.text, fontWeight: 700, textTransform: "capitalize" }}>{value}</p>
+      <p className="text-[10px] text-theme-faint uppercase tracking-[0.07em] font-semibold">{label}</p>
+      <p className="text-[14px] text-theme-text font-bold capitalize">{value}</p>
     </div>
   );
 }
@@ -673,40 +642,37 @@ function BracketMatch({
   const p2 = participants.find((p) => p.id === m.participant2Id);
   const isMine = myParticipantId && (m.participant1Id === myParticipantId || m.participant2Id === myParticipantId);
 
-  const statusColor =
-    m.status === "in-progress" ? C.green :
-    m.status === "completed" ? C.purple :
-    m.status === "bye" ? C.faint : C.muted;
+  const statusColorClass =
+    m.status === "in-progress" ? "text-theme-green" :
+    m.status === "completed" ? "text-theme-purple" :
+    m.status === "bye" ? "text-theme-faint" : "text-theme-muted";
 
   return (
-    <div style={{
-      background: C.bg2, borderRadius: 10, border: `1px solid ${isMine ? alpha(C.yellow, 0.33) : C.border}`,
-      padding: 10, position: "relative",
-    }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-        <span style={{ fontSize: 10, color: statusColor, fontWeight: 600, textTransform: "uppercase" }}>
+    <div className={cn(
+      "bg-bg2 rounded-[10px] border p-2.5 relative",
+      isMine ? "border-yellow-40" : "border-border-c"
+    )}>
+      <div className="flex justify-between items-center mb-1.5">
+        <span className={cn("text-[10px] font-semibold uppercase", statusColorClass)}>
           {m.status}
         </span>
         {m.status === "in-progress" && (
           <button
             onClick={onSpectate}
-            style={{
-              fontSize: 10, color: C.green, background: alpha(C.green, 0.13),
-              border: `1px solid ${alpha(C.green, 0.27)}`, borderRadius: 4, padding: "1px 6px", cursor: "pointer", fontWeight: 600,
-            }}
+            className="text-[10px] text-theme-green bg-green-13 border border-green-30 rounded px-1.5 py-px cursor-pointer font-semibold"
           >
             Watch
           </button>
         )}
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <div className="flex flex-col gap-1">
         <PlayerRow
           label={p1?.username ?? (m.participant1Id === "__bye__" ? "BYE" : "TBD")}
           isAI={p1?.isAI}
           isWinner={m.winnerId === m.participant1Id || (m.status === "bye" && m.participant2Id === "__bye__")}
         />
-        <div style={{ height: 1, background: C.border }} />
+        <div className="h-px bg-border-c" />
         <PlayerRow
           label={p2?.username ?? (m.participant2Id === "__bye__" ? "BYE" : "TBD")}
           isAI={p2?.isAI}
@@ -719,12 +685,12 @@ function BracketMatch({
 
 function PlayerRow({ label, isAI, isWinner }: { label: string; isAI?: boolean; isWinner?: boolean }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-      <span style={{ fontSize: 12, color: isWinner ? C.yellow : C.text, fontWeight: isWinner ? 700 : 400, flex: 1 }}>
+    <div className="flex items-center gap-1.5">
+      <span className={cn("text-[12px] flex-1", isWinner ? "text-theme-yellow font-bold" : "text-theme-text font-normal")}>
         {label}
       </span>
-      {isAI && <span style={{ fontSize: 9, color: C.purple }}>AI</span>}
-      {isWinner && <span style={{ fontSize: 12 }}>🏆</span>}
+      {isAI && <span className="text-[9px] text-theme-purple">AI</span>}
+      {isWinner && <span className="text-[12px]">🏆</span>}
     </div>
   );
 }

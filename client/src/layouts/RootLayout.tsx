@@ -2,12 +2,10 @@ import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { GameProvider } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { IS_LOCAL } from "@/game/hooks/useColyseus";
-import { C } from "@/styles/theme";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Settings } from "lucide-react";
 import toast from "react-hot-toast";
 
-// Full-screen game pages — hide the global AuthChip so it doesn't overlap the in-game HUD.
 const FULLSCREEN_GAME_PATHS = ["/game/tryout", "/game/battle/", "/game/ai-battle/play"];
 function isFullScreenGame(pathname: string) {
   return FULLSCREEN_GAME_PATHS.some(p => pathname.startsWith(p));
@@ -19,22 +17,22 @@ function AuthChip() {
 
   if (!currentUser) {
     return (
-      <Link to="/login" style={{ padding:"4px 12px", background:C.purple, color:C.white, borderRadius:6, fontSize:12, textDecoration:"none", fontWeight:500 }}>
+      <Link to="/login" className="px-3 py-1 bg-theme-purple text-white rounded-md text-xs no-underline font-medium">
         Sign In
       </Link>
     );
   }
 
   return (
-    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-      <span style={{ fontSize:12, color:C.muted }}>{currentUser.email}</span>
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-theme-muted">{currentUser.email}</span>
       <Link to="/admin/settings" title="Settings"
-        style={{ display:"flex", alignItems:"center", padding:"4px 6px", background:"none", border:`1px solid ${C.border}`, borderRadius:6, color:C.faint, textDecoration:"none" }}>
+        className="flex items-center px-1.5 py-1 bg-transparent border border-border-c rounded-md text-theme-faint no-underline hover:text-theme-text transition-colors">
         <Settings size={13} />
       </Link>
       <button
         onClick={async () => { await signOutUser(); toast.success("Signed out"); navigate("/"); }}
-        style={{ padding:"4px 10px", background:"none", border:`1px solid ${C.border}`, borderRadius:6, fontSize:12, color:C.faint, cursor:"pointer" }}
+        className="px-2.5 py-1 bg-transparent border border-border-c rounded-md text-xs text-theme-faint cursor-pointer hover:text-theme-text transition-colors"
       >
         Sign out
       </button>
@@ -48,19 +46,14 @@ export function RootLayout() {
 
   return (
     <GameProvider>
-      <div style={{ minHeight:"100vh", background:C.bg0, color:C.text }}>
+      <div className="min-h-screen bg-bg0 text-theme-text min-w-[400px]">
         {IS_LOCAL && (
-          <div style={{
-            position:"fixed", top:8, left:"50%", transform:"translateX(-50%)",
-            zIndex:200, background:"#f59e0b", color:"#000",
-            padding:"2px 10px", borderRadius:4, fontSize:11, fontWeight:700,
-            letterSpacing:"0.05em", pointerEvents:"none",
-          }}>
+          <div className="fixed top-2 left-1/2 -translate-x-1/2 z-[200] bg-yellow-400 text-black px-2.5 py-0.5 rounded text-[11px] font-bold tracking-[0.05em] pointer-events-none">
             LOCAL · ws://localhost:2567
           </div>
         )}
         {!hideAuth && (
-          <div style={{ position:"fixed", top:12, right:16, zIndex:100, display:"flex", alignItems:"center", gap:8 }}>
+          <div className="fixed top-3 right-4 z-[100] flex items-center gap-2">
             <ThemeToggle compact />
             <AuthChip />
           </div>

@@ -1,10 +1,7 @@
-// Searchable Firestore enum dropdown — replaces all hardcoded <select><option> lists
-// for admin-managed profile collections (attack_types, element_types, etc.)
-
 import { useState, useEffect, useRef } from "react";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { C } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 
 export interface AdminEnumProfile {
   id: string;
@@ -16,14 +13,12 @@ export interface AdminEnumProfile {
 }
 
 interface ProfilePickerProps<T extends AdminEnumProfile> {
-  collection: string;          // Firestore collection to fetch from
-  value: string | undefined;   // Currently selected id
+  collection: string;
+  value: string | undefined;
   onChange: (id: string, profile: T) => void;
   placeholder?: string;
   disabled?: boolean;
-  /** Extra filter — only show profiles matching this predicate */
   filter?: (profile: T) => boolean;
-  /** Optional render fn for selected item label */
   renderLabel?: (profile: T) => string;
 }
 
@@ -60,7 +55,6 @@ export function ProfilePicker<T extends AdminEnumProfile = AdminEnumProfile>({
       .finally(() => setLoading(false));
   }, [collectionName]);
 
-  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -78,71 +72,41 @@ export function ProfilePicker<T extends AdminEnumProfile = AdminEnumProfile>({
   const selected = options.find(o => o.id === value);
 
   return (
-    <div
-      ref={containerRef}
-      data-picker={collectionName}
-      style={{ position: "relative", display: "inline-block", width: "100%" }}
-    >
+    <div ref={containerRef} data-picker={collectionName} className="relative inline-block w-full">
       <button
         type="button"
         disabled={disabled}
         onClick={() => !disabled && setOpen(v => !v)}
-        style={{
-          width: "100%",
-          background: "var(--bg3)",
-          border: `1px solid ${open ? C.blue : C.border}`,
-          borderRadius: 8,
-          padding: "6px 10px",
-          color: selected ? C.text : C.faint,
-          fontSize: 13,
-          cursor: disabled ? "default" : "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          textAlign: "left",
-        }}
+        className={cn(
+          "w-full bg-bg3 border rounded-lg px-2.5 py-1.5 text-sm flex items-center gap-1.5 text-left transition-colors",
+          open ? "border-theme-blue" : "border-border-c",
+          selected ? "text-theme-text" : "text-theme-faint",
+          disabled ? "opacity-50 cursor-default" : "cursor-pointer hover:border-theme-blue",
+        )}
       >
         {selected?.icon && <span>{selected.icon}</span>}
-        {selected
-          ? (renderLabel ? renderLabel(selected as T) : selected.name)
-          : (loading ? "Loading…" : placeholder)}
-        <span style={{ marginLeft: "auto", color: C.faint, fontSize: 10 }}>{open ? "▲" : "▼"}</span>
+        <span className="flex-1 truncate">
+          {selected
+            ? (renderLabel ? renderLabel(selected as T) : selected.name)
+            : (loading ? "Loading…" : placeholder)}
+        </span>
+        <span className="text-theme-faint text-[10px] shrink-0">{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
-        <div style={{
-          position: "absolute",
-          top: "calc(100% + 4px)",
-          left: 0,
-          right: 0,
-          background: "var(--bg2)",
-          border: `1px solid ${C.border}`,
-          borderRadius: 10,
-          boxShadow: "0 8px 32px #0008",
-          zIndex: 500,
-          overflow: "hidden",
-        }}>
-          <div style={{ padding: "8px 10px", borderBottom: `1px solid ${C.border}` }}>
+        <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-bg2 border border-border-c rounded-xl shadow-xl z-[500] overflow-hidden">
+          <div className="px-2.5 py-2 border-b border-border-c">
             <input
               autoFocus
-              style={{
-                width: "100%",
-                background: "var(--bg3)",
-                border: `1px solid ${C.border}`,
-                borderRadius: 6,
-                padding: "4px 8px",
-                color: C.text,
-                fontSize: 12,
-                boxSizing: "border-box",
-              }}
+              className="w-full bg-bg3 border border-border-c rounded-md px-2 py-1 text-xs text-theme-text placeholder:text-theme-faint focus:outline-none focus:border-theme-blue"
               placeholder="Search…"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
           </div>
-          <div style={{ maxHeight: 220, overflowY: "auto" }}>
+          <div className="max-h-[220px] overflow-y-auto">
             {filtered.length === 0 && (
-              <div style={{ padding: "12px 10px", color: C.faint, fontSize: 12 }}>
+              <div className="px-2.5 py-3 text-xs text-theme-faint">
                 {loading ? "Loading…" : "No matches"}
               </div>
             )}
@@ -151,31 +115,24 @@ export function ProfilePicker<T extends AdminEnumProfile = AdminEnumProfile>({
                 key={opt.id}
                 type="button"
                 onClick={() => { onChange(opt.id, opt as T); setOpen(false); setSearch(""); }}
-                style={{
-                  display: "flex",
-                  width: "100%",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "8px 10px",
-                  background: opt.id === value ? C.blue + "22" : "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  color: C.text,
-                  fontSize: 13,
-                  textAlign: "left",
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = C.blue + "11")}
-                onMouseLeave={e => (e.currentTarget.style.background = opt.id === value ? C.blue + "22" : "transparent")}
-              >
-                {opt.icon && <span style={{ fontSize: 16 }}>{opt.icon}</span>}
-                {opt.color && (
-                  <span style={{ width: 10, height: 10, borderRadius: "50%", background: opt.color, flexShrink: 0 }} />
+                className={cn(
+                  "flex w-full items-center gap-2 px-2.5 py-2 text-sm text-theme-text text-left transition-colors hover:bg-bg3",
+                  opt.id === value ? "bg-blue-10" : "bg-transparent",
                 )}
-                <div>
-                  <div style={{ fontWeight: opt.id === value ? 600 : 400 }}>{renderLabel ? renderLabel(opt as T) : opt.name}</div>
-                  {opt.description && <div style={{ fontSize: 11, color: C.faint, marginTop: 1 }}>{opt.description}</div>}
+              >
+                {opt.icon && <span className="text-base shrink-0">{opt.icon}</span>}
+                {opt.color && (
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: opt.color }} />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className={cn("truncate", opt.id === value ? "font-semibold" : "font-normal")}>
+                    {renderLabel ? renderLabel(opt as T) : opt.name}
+                  </div>
+                  {opt.description && (
+                    <div className="text-[11px] text-theme-faint mt-px truncate">{opt.description as string}</div>
+                  )}
                 </div>
-                {opt.id === value && <span style={{ marginLeft: "auto", color: C.blue, fontSize: 14 }}>✓</span>}
+                {opt.id === value && <span className="text-theme-blue text-sm shrink-0">✓</span>}
               </button>
             ))}
           </div>

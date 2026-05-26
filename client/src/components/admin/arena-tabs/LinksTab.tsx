@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
-import { C } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 import type { ArenaConfig, ArenaLink, BeyLink, BeyLinkType, BeyLinkAlignment, BeyLinkEffect, BeyLinkEffectType, BeyLinkMovementControl, BeyLinkGroupPattern, ArenaLinkAlignmentConfig } from "@/types/arenaConfigNew";
 import { BeyLinkMovementGuide } from "@/components/admin/BeyLinkMovementGuide";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -44,6 +44,43 @@ const ALIGNMENT_COLORS: Record<BeyLinkAlignment, string> = {
   neutral: "#6b7280",
 };
 
+const TYPE_CARD_CLASSES: Record<ArenaLink["linkType"], string> = {
+  corridor: "border-blue-500/25",
+  portal: "border-purple-500/25",
+  ramp: "border-orange-500/25",
+  pit: "border-red-500/25",
+  trampoline: "border-green-500/25",
+};
+const TYPE_HEADER_CLASSES: Record<ArenaLink["linkType"], string> = {
+  corridor: "bg-blue-500/[.07]",
+  portal: "bg-purple-500/[.07]",
+  ramp: "bg-orange-500/[.07]",
+  pit: "bg-red-500/[.07]",
+  trampoline: "bg-green-500/[.07]",
+};
+const TYPE_BADGE_CLASSES: Record<ArenaLink["linkType"], string> = {
+  corridor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  portal: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+  ramp: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+  pit: "bg-red-500/20 text-red-400 border-red-500/30",
+  trampoline: "bg-green-500/20 text-green-400 border-green-500/30",
+};
+const ALIGN_CARD_CLASSES: Record<BeyLinkAlignment, string> = {
+  friendly: "border-teal-400/25",
+  hostile: "border-red-500/25",
+  neutral: "border-gray-500/25",
+};
+const ALIGN_HEADER_CLASSES: Record<BeyLinkAlignment, string> = {
+  friendly: "bg-teal-400/[.07]",
+  hostile: "bg-red-500/[.07]",
+  neutral: "bg-gray-500/[.07]",
+};
+const ALIGN_BADGE_CLASSES: Record<BeyLinkAlignment, string> = {
+  friendly: "bg-teal-400/20 text-teal-400 border-teal-400/30",
+  hostile: "bg-red-500/20 text-red-400 border-red-500/30",
+  neutral: "bg-gray-500/20 text-gray-400 border-gray-500/30",
+};
+
 // ─── Shared form primitives ───────────────────────────────────────────────────
 
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
@@ -59,12 +96,12 @@ function NumInput({
   value,
   onChange,
   step = 1,
-  style,
+  wClass = "w-[70px]",
 }: {
   value: number;
   onChange: (v: number) => void;
   step?: number;
-  style?: React.CSSProperties;
+  wClass?: string;
 }) {
   return (
     <input
@@ -72,8 +109,7 @@ function NumInput({
       value={value}
       step={step}
       onChange={e => onChange(Number(e.target.value))}
-      className="bg-bg3 border border-border rounded-md text-text text-[11px]"
-      style={{ width: 70, padding: "3px 6px", ...style }}
+      className={`bg-bg3 border border-border-c rounded-md text-theme-text text-[11px] py-[3px] px-1.5 ${wClass}`}
     />
   );
 }
@@ -83,13 +119,11 @@ function TextInput({
   onChange,
   placeholder,
   readOnly,
-  style,
 }: {
   value: string;
   onChange?: (v: string) => void;
   placeholder?: string;
   readOnly?: boolean;
-  style?: React.CSSProperties;
 }) {
   return (
     <input
@@ -98,13 +132,10 @@ function TextInput({
       placeholder={placeholder}
       readOnly={readOnly}
       onChange={e => onChange?.(e.target.value)}
-      className="flex-1 border border-border rounded-md text-[11px]"
-      style={{
-        background: readOnly ? "var(--bg2)" : "var(--bg3)",
-        color: readOnly ? C.muted : C.text,
-        padding: "3px 6px",
-        ...style,
-      }}
+      className={cn(
+        "flex-1 border border-border-c rounded-md text-[11px] py-[3px] px-1.5",
+        readOnly ? "bg-bg2 text-theme-muted" : "bg-bg3 text-theme-text",
+      )}
     />
   );
 }
@@ -133,7 +164,7 @@ function LinkDiagram({ link }: { link: ArenaLink }) {
     <svg
       width={w}
       height={h}
-      style={{ background: "#111827", borderRadius: 8, display: "block" }}
+      className="bg-bg0 rounded-lg block"
     >
       <line
         x1={lx1}
@@ -189,30 +220,14 @@ function ArenaLinkCard({
   return (
     <div
       data-testid={`link-${link.id}`}
-      style={{ border: `1px solid ${typeColor}44`, borderRadius: 10, overflow: "hidden" }}
+      className={cn("rounded-[10px] overflow-hidden border", TYPE_CARD_CLASSES[link.linkType] ?? "border-border-c")}
     >
       {/* Header */}
       <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "8px 12px",
-          background: typeColor + "11",
-          cursor: "pointer",
-        }}
+        className={cn("flex items-center gap-2.5 px-3 py-2 cursor-pointer", TYPE_HEADER_CLASSES[link.linkType] ?? "bg-bg2")}
         onClick={onToggle}
       >
-        <span
-          style={{
-            fontSize: 10,
-            fontWeight: 700,
-            background: typeColor + "33",
-            color: typeColor,
-            borderRadius: 4,
-            padding: "1px 6px",
-          }}
-        >
+        <span className={cn("text-[10px] font-bold rounded px-1.5 py-[1px] border", TYPE_BADGE_CLASSES[link.linkType] ?? "bg-bg3 text-theme-muted border-border-c")}>
           {link.linkType.toUpperCase()}
         </span>
         <span className="text-xs text-text flex-1">
@@ -221,16 +236,7 @@ function ArenaLinkCard({
           {link.toArenaId || <span className="text-faint">to?</span>}
         </span>
         {hasPair && (
-          <span
-            style={{
-              fontSize: 10,
-              fontWeight: 600,
-              background: "#14b8a622",
-              color: "#14b8a6",
-              borderRadius: 4,
-              padding: "1px 6px",
-            }}
-          >
+          <span className="text-[10px] font-semibold bg-teal-400/[.13] text-teal-400 rounded px-1.5 py-[1px] border border-teal-400/30">
             ↔ Paired
           </span>
         )}
@@ -276,7 +282,6 @@ function ArenaLinkCard({
                 onChange={v => onUpdate({ linkType: v as ArenaLink["linkType"] })}
                 disabled={configsLoading}
                 emptyLabel={configsLoading ? "Loading…" : "No types found"}
-                style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
             </FieldRow>
             <FieldRow label="Reverse Condition">
@@ -286,7 +291,6 @@ function ArenaLinkCard({
                 onChange={v => onUpdate({ reverseCondition: v as NonNullable<ArenaLink["reverseCondition"]> })}
                 disabled={configsLoading}
                 emptyLabel={configsLoading ? "Loading…" : "No conditions found"}
-                style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
             </FieldRow>
             <FieldRow label="Momentum Preserved">
@@ -372,10 +376,7 @@ function ArenaLinkCard({
               <div className="flex gap-1 flex-wrap mb-1.5">
                 {(["independent", "synchronized", "counter", "driven"] as const).map(rc => (
                   <button key={rc} type="button" onClick={() => onUpdate({ rotationCoupling: rc })}
-                    style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
-                      background: (link.rotationCoupling ?? "independent") === rc ? "#3b82f6" : "transparent",
-                      color: (link.rotationCoupling ?? "independent") === rc ? "#fff" : C.muted,
-                      border: `1px solid ${(link.rotationCoupling ?? "independent") === rc ? "#3b82f6" : C.border}` }}>
+                    className={cn("py-[2px] px-[7px] rounded-[5px] text-[10px] cursor-pointer border transition-colors", (link.rotationCoupling ?? "independent") === rc ? "bg-theme-blue text-white border-theme-blue" : "bg-transparent text-theme-muted border-border-c hover:border-theme-blue")}>
                     {rc}
                   </button>
                 ))}
@@ -394,10 +395,7 @@ function ArenaLinkCard({
               <div className="flex gap-1 flex-wrap mb-1.5">
                 {(["none", "positional", "owner-only"] as const).map(m => (
                   <button key={m} type="button" onClick={() => onUpdate({ alignment: { ...(link.alignment ?? { mode: "none", errorMarginDeg: 10, correctionTicks: 10, disconnectsWhenMisaligned: false, reconnectCooldownTicks: 30 }), mode: m } })}
-                    style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
-                      background: (link.alignment?.mode ?? "none") === m ? "#a855f7" : "transparent",
-                      color: (link.alignment?.mode ?? "none") === m ? "#fff" : C.muted,
-                      border: `1px solid ${(link.alignment?.mode ?? "none") === m ? "#a855f7" : C.border}` }}>
+                    className={cn("py-[2px] px-[7px] rounded-[5px] text-[10px] cursor-pointer border transition-colors", (link.alignment?.mode ?? "none") === m ? "bg-theme-purple text-white border-theme-purple" : "bg-transparent text-theme-muted border-border-c hover:border-theme-purple")}>
                     {m}
                   </button>
                 ))}
@@ -447,15 +445,12 @@ function ArenaLinkCard({
             {/* Pit config */}
             {link.linkType === "pit" && (
               <div className="mt-2 pt-2 border-t border-border">
-                <div className="text-[11px] font-semibold mb-1.5" style={{ color: "#ef4444" }}>Pit Config</div>
+                <div className="text-[11px] font-semibold mb-1.5 text-theme-red">Pit Config</div>
                 <FieldRow label="Landing Mode">
                   <div className="flex gap-1">
                     {(["fixed", "random", "current"] as const).map(m => (
                       <button key={m} type="button" onClick={() => onUpdate({ pitConfig: { landingMode: m } })}
-                        style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
-                          background: (link.pitConfig?.landingMode ?? "random") === m ? "#ef4444" : "transparent",
-                          color: (link.pitConfig?.landingMode ?? "random") === m ? "#fff" : C.muted,
-                          border: `1px solid ${(link.pitConfig?.landingMode ?? "random") === m ? "#ef4444" : C.border}` }}>
+                        className={cn("py-[2px] px-[7px] rounded-[5px] text-[10px] cursor-pointer border transition-colors", (link.pitConfig?.landingMode ?? "random") === m ? "bg-theme-red text-white border-theme-red" : "bg-transparent text-theme-muted border-border-c hover:border-theme-red")}>
                         {m}
                       </button>
                     ))}
@@ -467,7 +462,7 @@ function ArenaLinkCard({
             {/* Trampoline config */}
             {link.linkType === "trampoline" && (
               <div className="mt-2 pt-2 border-t border-border">
-                <div className="text-[11px] font-semibold mb-1.5" style={{ color: "#22c55e" }}>Trampoline Config</div>
+                <div className="text-[11px] font-semibold mb-1.5 text-theme-green">Trampoline Config</div>
                 <FieldRow label="Auto-Launch from Pit">
                   <label className="flex items-center gap-1.5 text-[11px] text-text cursor-pointer">
                     <input type="checkbox" checked={link.trampolineConfig?.autoLaunchFromPit ?? false}
@@ -545,42 +540,17 @@ function BeyLinkCard({
   return (
     <div
       data-testid={`bey-link-${link.id}`}
-      style={{ border: `1px solid ${alignColor}44`, borderRadius: 10, overflow: "hidden" }}
+      className={cn("rounded-[10px] overflow-hidden border", ALIGN_CARD_CLASSES[link.alignment] ?? "border-border-c")}
     >
       {/* Header */}
       <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "8px 12px",
-          background: alignColor + "11",
-          cursor: "pointer",
-        }}
+        className={cn("flex items-center gap-2.5 px-3 py-2 cursor-pointer", ALIGN_HEADER_CLASSES[link.alignment] ?? "bg-bg2")}
         onClick={onToggle}
       >
-        <span
-          style={{
-            fontSize: 10,
-            fontWeight: 700,
-            background: "#6366f133",
-            color: "#818cf8",
-            borderRadius: 4,
-            padding: "1px 6px",
-          }}
-        >
+        <span className="text-[10px] font-bold bg-indigo-500/20 text-indigo-400 rounded px-1.5 py-[1px] border border-indigo-500/30">
           {link.linkType.replace("_", " ").toUpperCase()}
         </span>
-        <span
-          style={{
-            fontSize: 10,
-            fontWeight: 700,
-            background: alignColor + "33",
-            color: alignColor,
-            borderRadius: 4,
-            padding: "1px 6px",
-          }}
-        >
+        <span className={cn("text-[10px] font-bold rounded px-1.5 py-[1px] border", ALIGN_BADGE_CLASSES[link.alignment] ?? "bg-bg3 text-theme-muted border-border-c")}>
           {link.alignment.toUpperCase()}
         </span>
         <span className="text-xs text-text flex-1">
@@ -609,7 +579,6 @@ function BeyLinkCard({
               onChange={v => onUpdate({ linkType: v as BeyLinkType })}
               disabled={configsLoading}
               emptyLabel={configsLoading ? "Loading…" : "No types found"}
-              style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
             />
           </FieldRow>
           <FieldRow label="Alignment">
@@ -619,7 +588,6 @@ function BeyLinkCard({
               onChange={v => onUpdate({ alignment: v as BeyLinkAlignment })}
               disabled={configsLoading}
               emptyLabel={configsLoading ? "Loading…" : "No alignments found"}
-              style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
             />
           </FieldRow>
           <FieldRow label="Entry Radius (cm)">
@@ -636,7 +604,6 @@ function BeyLinkCard({
               onChange={v => onUpdate({ triggerCondition: v as BeyLink["triggerCondition"] })}
               disabled={configsLoading}
               emptyLabel={configsLoading ? "Loading…" : "No conditions found"}
-              style={{ flex: 1, background: "var(--bg3,#1a1a2e)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
             />
           </FieldRow>
           <FieldRow label="Cooldown (ticks)">
@@ -669,7 +636,7 @@ function BeyLinkCard({
           {/* Friendly boost fields */}
           {link.alignment === "friendly" && (
             <div className="mt-2.5">
-              <div className="text-[11px] font-semibold mb-1.5" style={{ color: "#14b8a6" }}>
+              <div className="text-[11px] font-semibold mb-1.5 text-teal-400">
                 Friendly Boost
               </div>
               <FieldRow label="Damage Mult Bonus">
@@ -744,7 +711,7 @@ function BeyLinkCard({
           {/* Hostile effect fields */}
           {link.alignment === "hostile" && (
             <div className="mt-2.5">
-              <div className="text-[11px] font-semibold mb-1.5" style={{ color: "#ef4444" }}>
+              <div className="text-[11px] font-semibold mb-1.5 text-theme-red">
                 Hostile Effect
               </div>
               <FieldRow label="Bit-Chip Dmg/Tick">
@@ -819,7 +786,7 @@ function BeyLinkCard({
           {/* ── QTE Escape (hostile only) ─────────────────────────────────── */}
           {link.alignment === "hostile" && (
             <div className="mt-2.5 pt-2 border-t border-border">
-              <div className="text-[11px] font-semibold mb-1.5" style={{ color: "#f59e0b" }}>QTE Escape</div>
+              <div className="text-[11px] font-semibold mb-1.5 text-theme-yellow">QTE Escape</div>
               <FieldRow label="QTE Escapable">
                 <label className="flex items-center gap-1.5 text-[11px] text-text cursor-pointer">
                   <input type="checkbox" checked={link.qteEscapable ?? false}
@@ -845,7 +812,6 @@ function BeyLinkCard({
                 onChange={v => onUpdate({ movementControl: v as BeyLinkMovementControl })}
                 disabled={configsLoading}
                 emptyLabel={configsLoading ? "Loading…" : "No modes found"}
-                style={{ flex: 1, background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
             </FieldRow>
             <FieldRow label="Group Pattern">
@@ -855,12 +821,11 @@ function BeyLinkCard({
                 onChange={v => onUpdate({ groupPattern: v ? v as BeyLinkGroupPattern : undefined })}
                 disabled={configsLoading}
                 emptyLabel="— (pairwise only)"
-                style={{ flex: 1, background: "var(--bg2)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
               <span className="text-[10px] text-faint ml-1">applies when 3+ beys share this link</span>
             </FieldRow>
             {(link.movementControl && link.movementControl !== "auto") && (
-              <div className="text-[10px] mt-1 py-1 px-1.5 rounded" style={{ color: "#a78bfa", background: "#a78bfa11" }}>
+              <div className="text-[10px] mt-1 py-1 px-1.5 rounded bg-violet-400/[.07] text-violet-400">
                 {link.movementControl === "initiator"
                   ? "sidA (link initiator) steers the entire formation via WASD."
                   : "Any human-controlled bey in the group steers the formation."}
@@ -888,7 +853,7 @@ function BeyLinkCard({
                   <NumInput value={link.hijackCooldownTicks ?? 180} onChange={v => onUpdate({ hijackCooldownTicks: v })} />
                   <span className="text-[10px] text-faint ml-1">applied to both beys after attempt</span>
                 </FieldRow>
-                <div className="text-[10px] mt-1 py-1 px-1.5 rounded" style={{ color: "#f97316", background: "#f9731611" }}>
+                <div className="text-[10px] mt-1 py-1 px-1.5 rounded bg-orange-500/[.07] text-theme-orange">
                   On hijack success: roles reverse. Former victim becomes sidA (initiator). Former attacker suffers effects instead.
                 </div>
               </>
@@ -904,8 +869,7 @@ function BeyLinkCard({
                   const next: BeyLinkEffect = { type: "spin_drain", intensityPerTick: 1 };
                   onUpdate({ linkEffects: [...(link.linkEffects ?? []), next] });
                 }}
-                className="text-[10px] py-[2px] px-2 rounded cursor-pointer"
-                style={{ background: C.purple + "22", border: `1px solid ${C.purple}44`, color: C.purple }}>
+                className="text-[10px] py-[2px] px-2 rounded cursor-pointer text-theme-purple bg-theme-purple/[.13] border border-theme-purple/25">
                 + Add Effect
               </button>
             </div>
@@ -922,7 +886,6 @@ function BeyLinkCard({
                     }}
                     disabled={configsLoading}
                     emptyLabel={configsLoading ? "Loading…" : "No effect types found"}
-                    style={{ flex: 1, background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
                   />
                   <button type="button"
                     onClick={() => {
@@ -935,17 +898,17 @@ function BeyLinkCard({
                   <label className="text-[10px] text-muted flex items-center gap-1">
                     intensity/tick
                     <NumInput value={eff.intensityPerTick ?? 1} step={0.5}
-                      onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, intensityPerTick: v }; onUpdate({ linkEffects: u }); }} style={{ width: 55 }} />
+                      onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, intensityPerTick: v }; onUpdate({ linkEffects: u }); }} wClass="w-[55px]" />
                   </label>
                   <label className="text-[10px] text-muted flex items-center gap-1">
                     interval ticks
                     <NumInput value={eff.intervalTicks ?? 10}
-                      onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, intervalTicks: v }; onUpdate({ linkEffects: u }); }} style={{ width: 55 }} />
+                      onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, intervalTicks: v }; onUpdate({ linkEffects: u }); }} wClass="w-[55px]" />
                   </label>
                   <label className="text-[10px] text-muted flex items-center gap-1">
                     impact mult
                     <NumInput value={eff.impactMult ?? 1} step={0.1}
-                      onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, impactMult: v }; onUpdate({ linkEffects: u }); }} style={{ width: 55 }} />
+                      onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, impactMult: v }; onUpdate({ linkEffects: u }); }} wClass="w-[55px]" />
                   </label>
                   {eff.type === "control_loss" && (
                     <>
@@ -956,13 +919,13 @@ function BeyLinkCard({
                           options={controlModeOpts}
                           onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, controlMode: v as BeyLinkEffect["controlMode"] }; onUpdate({ linkEffects: u }); }}
                           disabled={configsLoading}
-                          style={{ background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 4, color: C.text, fontSize: 10 }}
+                          className="bg-bg2 border border-border-c rounded text-theme-text text-[10px] w-full py-0.5 px-1.5"
                         />
                       </label>
                       <label className="text-[10px] text-muted flex items-center gap-1">
                         duration ticks
                         <NumInput value={eff.controlDurationTicks ?? 60}
-                          onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, controlDurationTicks: v }; onUpdate({ linkEffects: u }); }} style={{ width: 55 }} />
+                          onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, controlDurationTicks: v }; onUpdate({ linkEffects: u }); }} wClass="w-[55px]" />
                       </label>
                     </>
                   )}
@@ -1092,8 +1055,7 @@ export default function LinksTab({ config, onChange }: Props) {
             type="button"
             onClick={addLinkPair}
             data-testid="add-pair-btn"
-            className="text-xs py-[5px] px-3.5 rounded-lg cursor-pointer"
-            style={{ background: "#14b8a622", border: "1px solid #14b8a655", color: "#14b8a6" }}
+            className="text-xs py-[5px] px-3.5 rounded-lg cursor-pointer bg-teal-400/[.13] border border-teal-400/[.33] text-teal-400"
           >
             + Add Pair
           </button>
@@ -1101,8 +1063,7 @@ export default function LinksTab({ config, onChange }: Props) {
             type="button"
             onClick={addLink}
             data-testid="add-link-btn"
-            className="text-xs py-[5px] px-3.5 rounded-lg cursor-pointer"
-            style={{ background: C.purple + "22", border: `1px solid ${C.purple}55`, color: C.purple }}
+            className="text-xs py-[5px] px-3.5 rounded-lg cursor-pointer bg-theme-purple/[.13] border border-theme-purple/[.33] text-theme-purple"
           >
             + Add Link
           </button>
@@ -1146,15 +1107,13 @@ export default function LinksTab({ config, onChange }: Props) {
             type="button"
             onClick={() => setShowMovementGuide(true)}
             title="View movement pattern guide"
-            className="text-xs py-[5px] px-2.5 rounded-lg cursor-pointer"
-            style={{ background: "#818cf822", border: "1px solid #818cf855", color: "#818cf8" }}
+            className="text-xs py-[5px] px-2.5 rounded-lg cursor-pointer bg-indigo-400/[.13] border border-indigo-400/[.33] text-indigo-400"
           >? Guide</button>
           <button
             type="button"
             onClick={addBeyLink}
             data-testid="add-bey-link-btn"
-            className="text-xs py-[5px] px-3.5 rounded-lg cursor-pointer"
-            style={{ background: "#ef444422", border: "1px solid #ef444455", color: "#ef4444" }}
+            className="text-xs py-[5px] px-3.5 rounded-lg cursor-pointer bg-theme-red/[.13] border border-theme-red/[.33] text-theme-red"
           >
             + Add Bey Link
           </button>

@@ -932,6 +932,13 @@ export class TournamentBattleRoom extends Room<GameState> {
     this.state.arena.pitCount = arenaData.pits?.length ?? 0;
     this.state.arena.turretCount = arenaData.turrets?.length ?? 0;
     this.state.arena.waterBodyCount = arenaData.waterBodies?.length ?? 0;
+    const wb = (arenaData as any).worldBackground;
+    this.state.arena.worldBgType     = wb?.type     ?? "none";
+    this.state.arena.worldBgColor    = wb?.color    ?? "";
+    this.state.arena.worldBgImageUrl = wb?.imageUrl ?? "";
+    this.state.arena.worldBgOpacity  = wb?.opacity  ?? 1.0;
+    this.state.arena.worldBgFit      = wb?.fit      ?? "cover";
+    this.state.arena.worldBgBlurPx   = wb?.blurPx   ?? 0;
   }
 
   private applyDefaultArena(arenaId: string) {

@@ -26,26 +26,13 @@ export function ControlBlendBar({ authority, clashQTEActive, clashQTETimer }: Co
   if (clashQTEActive) {
     return (
       <div
-        style={{
-          position: "absolute",
-          top: "1rem",
-          right: "1rem",
-          padding: "0.4rem 0.8rem",
-          background: "rgba(20,15,0,0.85)",
-          border: "2px solid #ffcc00",
-          borderRadius: "0.5rem",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "0.2rem",
-          zIndex: 50,
-          backdropFilter: "blur(4px)",
-        }}
+        style={{ position: "absolute", top: "1rem", right: "1rem" }}
+        className="px-3 py-[0.4rem] bg-[rgba(20,15,0,0.85)] border-2 border-[#ffcc00] rounded-lg flex flex-col items-center gap-[0.2rem] z-50 backdrop-blur"
       >
-        <span style={{ color: "#ffcc00", fontFamily: "monospace", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.08em" }}>
+        <span className="text-[#ffcc00] font-mono text-[0.65rem] font-bold tracking-[0.08em]">
           ⚡ CLASH QTE
         </span>
-        <span style={{ color: "#fff9cc", fontFamily: "monospace", fontSize: "0.75rem" }}>
+        <span className="text-[#fff9cc] font-mono text-[0.75rem]">
           {typeof clashQTETimer === "number" ? clashQTETimer.toFixed(1) : ""}s
         </span>
       </div>
@@ -54,27 +41,13 @@ export function ControlBlendBar({ authority, clashQTEActive, clashQTETimer }: Co
 
   return (
     <div
-      style={{
-        position: "absolute",
-        top: "1rem",
-        right: "1rem",
-        padding: "0.35rem 0.6rem",
-        background: "rgba(10,15,30,0.75)",
-        border: "1px solid rgba(100,160,220,0.3)",
-        borderRadius: "0.5rem",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: "0.2rem",
-        zIndex: 50,
-        backdropFilter: "blur(4px)",
-        minWidth: `${BAR_WIDTH + 12}px`,
-      }}
+      style={{ position: "absolute", top: "1rem", right: "1rem", minWidth: `${BAR_WIDTH + 12}px` }}
+      className="px-[0.6rem] py-[0.35rem] bg-[rgba(10,15,30,0.75)] border border-[rgba(100,160,220,0.3)] rounded-lg flex flex-col items-start gap-[0.2rem] z-50 backdrop-blur"
     >
-      <span style={{ color: "#9bb", fontFamily: "monospace", fontSize: "0.6rem", letterSpacing: "0.05em" }}>
+      <span className="text-[#9bb] font-mono text-[0.6rem] tracking-[0.05em]">
         CONTROL {Math.round(authority)}%
       </span>
-      <div style={{ width: BAR_WIDTH, height: BAR_HEIGHT, background: "rgba(255,255,255,0.1)", borderRadius: 4, overflow: "hidden" }}>
+      <div style={{ width: BAR_WIDTH, height: BAR_HEIGHT }} className="bg-white/10 rounded overflow-hidden">
         <div
           style={{
             width: `${pct * 100}%`,

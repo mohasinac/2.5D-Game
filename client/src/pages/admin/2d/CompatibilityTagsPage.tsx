@@ -256,13 +256,7 @@ export function CompatibilityTagsPage() {
                   onClick={() => !isRenaming && toggleExpand(entry.name)}
                 >
                   {/* Tag chip */}
-                  <span
-                    style={{
-                      fontSize: 12, padding: "3px 9px", borderRadius: 5,
-                      background: alpha(C.blue, 0.10), color: C.blue,
-                      border: `1px solid ${alpha(C.blue, 0.20)}`, fontFamily: "monospace",
-                    }}
-                  >
+                  <span className="text-[12px] py-[3px] px-[9px] rounded-[5px] bg-blue-10 text-theme-blue border border-blue-20 font-mono">
                     {entry.name}
                   </span>
 
@@ -330,8 +324,7 @@ export function CompatibilityTagsPage() {
                     <button
                       onClick={confirmRename}
                       disabled={saving || !renaming.newName.trim() || renaming.newName === entry.name}
-                      className="px-3 py-1.5 text-xs font-semibold bg-blue text-white rounded-lg border-none cursor-pointer"
-                      style={{ opacity: saving ? 0.6 : 1 }}
+                      className={`px-3 py-1.5 text-xs font-semibold bg-blue text-white rounded-lg border-none cursor-pointer ${saving ? "opacity-60" : ""}`}
                     >
                       {saving ? "Saving…" : "Save"}
                     </button>
@@ -348,7 +341,7 @@ export function CompatibilityTagsPage() {
                 {isExpanded && (
                   <div
                     className="border-t border-border overflow-y-auto"
-                    style={{ maxHeight: 260 }}
+                    className="max-h-[260px]"
                   >
                     <table className="w-full border-collapse text-xs">
                       <thead>
@@ -362,7 +355,7 @@ export function CompatibilityTagsPage() {
                         {entry.usages.map((u, i) => (
                           <tr
                             key={i}
-                            style={{ borderTop: `1px solid ${C.border}`, background: i % 2 === 0 ? "transparent" : alpha(C.bg2, 0.53) }}
+                            className={`border-t border-border-c ${i % 2 === 0 ? "" : "bg-bg2/[.53]"}`}
                           >
                             <td className="px-3.5 py-1.5 text-text">{u.partName}</td>
                             <td className="px-3.5 py-1.5 text-muted">

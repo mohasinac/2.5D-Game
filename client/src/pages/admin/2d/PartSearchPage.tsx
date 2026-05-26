@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { C, alpha } from "@/styles/theme";
 
 const PART_TYPES = [
   { label: "All", value: "all" },
@@ -37,35 +36,27 @@ export function PartSearchPage() {
       : PART_LINKS.filter((p) => p.slug === typeFilter);
 
   return (
-    <div style={{ padding: 32, maxWidth: 900 }}>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, margin: 0 }}>Part Search</h1>
-        <p style={{ color: C.muted, fontSize: 13, marginTop: 4 }}>
+    <div className="p-8 max-w-[900px]">
+      <div className="mb-6">
+        <h1 className="text-[22px] font-bold text-theme-text m-0">Part Search</h1>
+        <p className="text-theme-muted text-[13px] mt-1">
           Browse and search the modular 2.5D part library.
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+      <div className="flex gap-2.5 mb-5 flex-wrap">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search parts by name..."
-          style={{
-            flex: 1, minWidth: 200, padding: "8px 12px", background: C.bg2,
-            border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13,
-          }}
+          className="flex-1 min-w-[200px] px-3 py-2 bg-bg2 border border-border-c rounded-[7px] text-theme-text text-[13px]"
         />
-        <div style={{ display: "flex", gap: 4 }}>
+        <div className="flex gap-1">
           {PART_TYPES.map((t) => (
             <button
               key={t.value}
               onClick={() => setTypeFilter(t.value)}
-              style={{
-                padding: "7px 12px", borderRadius: 7, fontSize: 12, cursor: "pointer",
-                background: typeFilter === t.value ? C.blue : C.bg2,
-                color: typeFilter === t.value ? "#fff" : C.muted,
-                border: `1px solid ${typeFilter === t.value ? C.blue : C.border}`,
-              }}
+              className={`px-3 py-[7px] rounded-[7px] text-[12px] cursor-pointer border ${typeFilter === t.value ? "bg-theme-blue text-white border-theme-blue" : "bg-bg2 text-theme-muted border-border-c"}`}
             >
               {t.label}
             </button>
@@ -73,31 +64,28 @@ export function PartSearchPage() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 12 }}>
+      <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
         {visibleLinks.map((pt) => (
           <Link
             key={pt.slug}
             to={`/admin/2d/parts/${pt.slug}`}
-            style={{ textDecoration: "none" }}
+            className="no-underline"
           >
             <div
-              style={{
-                background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10,
-                padding: "16px 18px", cursor: "pointer", transition: "border-color 150ms",
-              }}
+              className="bg-bg1 border border-border-c rounded-[10px] px-[18px] py-4 cursor-pointer transition-[border-color_150ms]"
               onMouseEnter={(e) => (e.currentTarget.style.borderColor = alpha(C.blue, 0.53))}
               onMouseLeave={(e) => (e.currentTarget.style.borderColor = C.border)}
             >
-              <div style={{ fontSize: 24, marginBottom: 8 }}>{pt.icon}</div>
-              <div style={{ fontWeight: 600, color: C.text, fontSize: 14, marginBottom: 4 }}>{pt.label}</div>
-              <div style={{ color: C.muted, fontSize: 12 }}>{pt.desc}</div>
+              <div className="text-[24px] mb-2">{pt.icon}</div>
+              <div className="font-semibold text-theme-text text-[14px] mb-1">{pt.label}</div>
+              <div className="text-theme-muted text-[12px]">{pt.desc}</div>
             </div>
           </Link>
         ))}
       </div>
 
       {query && (
-        <div style={{ marginTop: 24, color: C.muted, fontSize: 13 }}>
+        <div className="mt-6 text-theme-muted text-[13px]">
           Full-text search across all part collections will be implemented in Sprint 4.
         </div>
       )}

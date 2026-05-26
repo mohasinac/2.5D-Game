@@ -72,8 +72,8 @@ const DG_W = 220, DG_H = 150;
 
 function DiagramWrapper({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
   return (
-    <div style={{ background: "var(--bg3,#13131f)", border: `1px solid ${C.border}`, borderRadius: 10, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-      <svg viewBox={`0 0 ${DG_W} ${DG_H}`} width="100%" style={{ display: "block", background: "#08080f" }}>
+    <div className="bg-bg3 border border-border-c rounded-[10px] overflow-hidden flex flex-col">
+      <svg viewBox={`0 0 ${DG_W} ${DG_H}`} width="100%" className="block" style={{ background: "#08080f" }}>
         <defs>
           <marker id="ah" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
             <polygon points="0 0, 6 3, 0 6" fill="#ffffff88" />
@@ -81,9 +81,9 @@ function DiagramWrapper({ title, desc, children }: { title: string; desc: string
         </defs>
         {children}
       </svg>
-      <div style={{ padding: "8px 10px" }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: C.text, marginBottom: 2 }}>{title}</div>
-        <div style={{ fontSize: 10, color: C.muted, lineHeight: 1.5 }}>{desc}</div>
+      <div className="px-[10px] py-2">
+        <div className="text-[11px] font-bold text-theme-text mb-[2px]">{title}</div>
+        <div className="text-[10px] text-theme-muted leading-[1.5]">{desc}</div>
       </div>
     </div>
   );
@@ -413,49 +413,51 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
   const [tab, setTab] = useState<Tab>("2body");
 
   return (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 200,
-      background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center",
-    }} onClick={onClose}>
+    <div
+      className="fixed inset-0 z-[200] bg-black/75 flex items-center justify-center"
+      onClick={onClose}
+    >
       <div
-        style={{
-          background: "var(--bg1,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 14,
-          width: "min(96vw, 840px)", maxHeight: "90vh", overflow: "hidden",
-          display: "flex", flexDirection: "column",
-        }}
-        onClick={e => e.stopPropagation()}>
-
+        className="bg-bg1 border border-border-c rounded-[14px] w-[min(96vw,840px)] max-h-[90vh] overflow-hidden flex flex-col"
+        onClick={e => e.stopPropagation()}
+      >
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", borderBottom: `1px solid ${C.border}` }}>
+        <div className="flex items-center justify-between px-[18px] py-[14px] border-b border-border-c">
           <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>BeyLink Movement Guide</div>
-            <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>Visual reference for all movement patterns, control modes, and hijack flow</div>
+            <div className="text-sm font-bold text-theme-text">BeyLink Movement Guide</div>
+            <div className="text-[11px] text-theme-muted mt-[2px]">Visual reference for all movement patterns, control modes, and hijack flow</div>
           </div>
-          <button onClick={onClose} style={{ background: "transparent", border: "none", color: C.muted, fontSize: 18, cursor: "pointer", lineHeight: 1 }}>✕</button>
+          <button
+            onClick={onClose}
+            className="bg-transparent border-none text-theme-muted text-[18px] cursor-pointer leading-none"
+          >✕</button>
         </div>
 
         {/* Tabs */}
-        <div style={{ display: "flex", gap: 2, padding: "8px 18px", background: "var(--bg2,#0a0a14)", borderBottom: `1px solid ${C.border}` }}>
+        <div className="flex gap-[2px] px-[18px] py-2 bg-bg2 border-b border-border-c">
           {TAB_LABELS.map(({ key, label }) => (
-            <button key={key} onClick={() => setTab(key)} style={{
-              padding: "4px 12px", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer",
-              background: tab === key ? "#818cf8" : "transparent",
-              border: `1px solid ${tab === key ? "#818cf8" : C.border}`,
-              color: tab === key ? "#fff" : C.muted,
-            }}>{label}</button>
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={
+                tab === key
+                  ? "px-3 py-1 rounded-md text-[11px] font-semibold cursor-pointer bg-[#818cf8] border border-[#818cf8] text-white"
+                  : "px-3 py-1 rounded-md text-[11px] font-semibold cursor-pointer bg-transparent border border-border-c text-theme-muted"
+              }
+            >{label}</button>
           ))}
         </div>
 
         {/* Content */}
-        <div style={{ overflowY: "auto", padding: "16px 18px", flex: 1 }}>
+        <div className="overflow-y-auto px-[18px] py-4 flex-1">
 
           {tab === "2body" && (
             <>
-              <div style={{ fontSize: 11, color: C.muted, marginBottom: 12 }}>
-                These patterns run every tick for <strong style={{ color: C.text }}>any 2-bey stack</strong> regardless of control mode.
+              <div className="text-[11px] text-theme-muted mb-3">
+                These patterns run every tick for <strong className="text-theme-text">any 2-bey stack</strong> regardless of control mode.
                 They maintain contact geometry while effects fire independently.
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))", gap: 12 }}>
+              <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))" }}>
                 <DiagTipStack />
                 <DiagTopMountFriendly />
                 <DiagTopMountHostile />
@@ -467,12 +469,12 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
 
           {tab === "group" && (
             <>
-              <div style={{ fontSize: 11, color: C.muted, marginBottom: 12 }}>
-                Group patterns activate when <strong style={{ color: C.text }}>3 or more beys share the same linkId</strong>. Set via
-                <code style={{ color: "#818cf8", background: "#818cf811", padding: "0 4px", borderRadius: 3 }}> groupPattern</code> on the link.
+              <div className="text-[11px] text-theme-muted mb-3">
+                Group patterns activate when <strong className="text-theme-text">3 or more beys share the same linkId</strong>. Set via
+                <code className="text-[#818cf8] bg-[#818cf811] px-1 rounded-[3px]"> groupPattern</code> on the link.
                 The 2-body orbit still runs for each pair; group forces are applied on top.
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))", gap: 12 }}>
+              <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))" }}>
                 <DiagChain />
                 <DiagStar />
                 <DiagWedge />
@@ -480,13 +482,13 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
               </div>
 
               {/* Formation comparison table */}
-              <div style={{ marginTop: 16, fontSize: 11, color: C.muted, borderTop: `1px solid ${C.border}`, paddingTop: 12 }}>
-                <div style={{ fontWeight: 700, color: C.text, marginBottom: 8 }}>Pattern comparison</div>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10 }}>
+              <div className="mt-4 text-[11px] text-theme-muted border-t border-border-c pt-3">
+                <div className="font-bold text-theme-text mb-2">Pattern comparison</div>
+                <table className="w-full border-collapse text-[10px]">
                   <thead>
-                    <tr style={{ color: C.muted }}>
+                    <tr className="text-theme-muted">
                       {["Pattern", "Leader", "Followers", "Predicted path", "Collision footprint"].map(h => (
-                        <td key={h} style={{ padding: "4px 8px", borderBottom: `1px solid ${C.border}`, fontWeight: 600 }}>{h}</td>
+                        <td key={h} className="px-2 py-1 border-b border-border-c font-semibold">{h}</td>
                       ))}
                     </tr>
                   </thead>
@@ -497,10 +499,10 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
                       ["wedge", "sidA (initiator)", "Hold ±45° offset per row", "V advances in leader direction", "Wide front, narrow rear"],
                       ["rigid", "—", "Maintain centroid offsets", "Drifts by inertia", "Fixed bounding box"],
                     ].map(([pat, ...rest]) => (
-                      <tr key={pat} style={{ color: C.text }}>
-                        <td style={{ padding: "4px 8px", borderBottom: `1px solid ${C.border}11`, fontFamily: "monospace", color: "#818cf8" }}>{pat}</td>
+                      <tr key={pat} className="text-theme-text">
+                        <td className="px-2 py-1 border-b border-border-c/[0.07] font-mono text-[#818cf8]">{pat}</td>
                         {rest.map((v, i) => (
-                          <td key={i} style={{ padding: "4px 8px", borderBottom: `1px solid ${C.border}11` }}>{v}</td>
+                          <td key={i} className="px-2 py-1 border-b border-border-c/[0.07]">{v}</td>
                         ))}
                       </tr>
                     ))}
@@ -512,24 +514,24 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
 
           {tab === "control" && (
             <>
-              <div style={{ fontSize: 11, color: C.muted, marginBottom: 12 }}>
-                <code style={{ color: "#818cf8", background: "#818cf811", padding: "0 4px", borderRadius: 3 }}>movementControl</code> determines
+              <div className="text-[11px] text-theme-muted mb-3">
+                <code className="text-[#818cf8] bg-[#818cf811] px-1 rounded-[3px]">movementControl</code> determines
                 {" "}who steers the formation's velocity vector. The orbit pattern for the link type still applies; control adds a
-                <strong style={{ color: C.text }}> 0.6-force directional nudge</strong> on top.
+                <strong className="text-theme-text"> 0.6-force directional nudge</strong> on top.
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))", gap: 12 }}>
+              <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))" }}>
                 <DiagControlAuto />
                 <DiagControlInitiator />
                 <DiagControlPlayer />
               </div>
 
-              <div style={{ marginTop: 16, fontSize: 11, color: C.muted, borderTop: `1px solid ${C.border}`, paddingTop: 12 }}>
-                <div style={{ fontWeight: 700, color: C.text, marginBottom: 8 }}>Control mode × group pattern matrix</div>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10 }}>
+              <div className="mt-4 text-[11px] text-theme-muted border-t border-border-c pt-3">
+                <div className="font-bold text-theme-text mb-2">Control mode × group pattern matrix</div>
+                <table className="w-full border-collapse text-[10px]">
                   <thead>
-                    <tr style={{ color: C.muted }}>
+                    <tr className="text-theme-muted">
                       {["Mode \\ Pattern", "chain", "star", "wedge", "rigid"].map(h => (
-                        <td key={h} style={{ padding: "4px 8px", borderBottom: `1px solid ${C.border}`, fontWeight: 600, fontFamily: "monospace" }}>{h}</td>
+                        <td key={h} className="px-2 py-1 border-b border-border-c font-semibold font-mono">{h}</td>
                       ))}
                     </tr>
                   </thead>
@@ -539,10 +541,10 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
                       ["initiator", "sidA WASD steers leader → chain follows", "sidA WASD steers hub → orbit shifts", "sidA WASD steers leader → wings track", "sidA WASD steers whole mass"],
                       ["player", "Any human steers leader", "Any human steers hub", "Any human steers leader", "Any human steers mass"],
                     ].map(([mode, ...cells]) => (
-                      <tr key={mode} style={{ color: C.text }}>
-                        <td style={{ padding: "4px 8px", borderBottom: `1px solid ${C.border}11`, fontFamily: "monospace", color: "#818cf8" }}>{mode}</td>
+                      <tr key={mode} className="text-theme-text">
+                        <td className="px-2 py-1 border-b border-border-c/[0.07] font-mono text-[#818cf8]">{mode}</td>
                         {cells.map((v, i) => (
-                          <td key={i} style={{ padding: "4px 8px", borderBottom: `1px solid ${C.border}11`, color: C.muted }}>{v}</td>
+                          <td key={i} className="px-2 py-1 border-b border-border-c/[0.07] text-theme-muted">{v}</td>
                         ))}
                       </tr>
                     ))}
@@ -554,59 +556,55 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
 
           {tab === "hijack" && (
             <>
-              <div style={{ fontSize: 11, color: C.muted, marginBottom: 12 }}>
-                Hijack reverses the <strong style={{ color: C.text }}>sidA / sidB roles</strong> in an active hostile or neutral stack.
+              <div className="text-[11px] text-theme-muted mb-3">
+                Hijack reverses the <strong className="text-theme-text">sidA / sidB roles</strong> in an active hostile or neutral stack.
                 The former victim becomes the new initiator. Enable per-link with
-                <code style={{ color: "#f43f5e", background: "#f43f5e11", padding: "0 4px", borderRadius: 3 }}> hijackable: true</code>.
+                <code className="text-[#f43f5e] bg-[#f43f5e11] px-1 rounded-[3px]"> hijackable: true</code>.
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))", gap: 12 }}>
+              <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))" }}>
                 <DiagHijackFlow />
               </div>
 
-              <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, fontSize: 11 }}>
+              <div className="mt-4 grid gap-3 text-[11px]" style={{ gridTemplateColumns: "1fr 1fr" }}>
                 {/* Victim panel mock */}
-                <div style={{ border: `1px solid #818cf8`, borderRadius: 10, padding: 12, background: "#818cf808" }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#818cf8", marginBottom: 8, letterSpacing: 1 }}>VICTIM HUD (in-game)</div>
-                  <div style={{ background: "#0a0a14", borderRadius: 8, padding: 10, border: "1px solid #818cf844" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#818cf8", boxShadow: "0 0 6px #818cf8" }} />
-                      <span style={{ color: "#818cf8", fontWeight: 700, fontSize: 11 }}>HIJACK INITIATED</span>
+                <div className="border border-[#818cf8] rounded-[10px] p-3 bg-[#818cf808]">
+                  <div className="text-[10px] font-bold text-[#818cf8] mb-2 tracking-[1px]">VICTIM HUD (in-game)</div>
+                  <div className="bg-[#0a0a14] rounded-lg p-[10px] border border-[#818cf844]">
+                    <div className="flex items-center gap-2 mb-[6px]">
+                      <div className="w-2 h-2 rounded-full bg-[#818cf8] shadow-[0_0_6px_#818cf8]" />
+                      <span className="text-[#818cf8] font-bold text-[11px]">HIJACK INITIATED</span>
                     </div>
-                    <div style={{ color: C.muted, fontSize: 10, marginBottom: 6 }}>Waiting for attacker response...</div>
-                    <div style={{ height: 3, background: "#ffffff11", borderRadius: 2 }}>
-                      <div style={{ width: "60%", height: "100%", background: "#818cf8", borderRadius: 2 }} />
+                    <div className="text-theme-muted text-[10px] mb-[6px]">Waiting for attacker response...</div>
+                    <div className="h-[3px] bg-white/[0.07] rounded-[2px]">
+                      <div className="w-[60%] h-full bg-[#818cf8] rounded-[2px]" />
                     </div>
-                    <div style={{ color: C.faint, fontSize: 9, marginTop: 4 }}>Window closes in ~1.5s</div>
+                    <div className="text-theme-faint text-[9px] mt-1">Window closes in ~1.5s</div>
                   </div>
                 </div>
 
                 {/* Attacker panel mock */}
-                <div style={{ border: `1px solid #ef4444`, borderRadius: 10, padding: 12, background: "#ef444408" }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#ef4444", marginBottom: 8, letterSpacing: 1 }}>ATTACKER HUD (in-game)</div>
-                  <div style={{ background: "#0a0a14", borderRadius: 8, padding: 10, border: "1px solid #ef444444" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ef4444", boxShadow: "0 0 6px #ef4444" }} />
-                      <span style={{ color: "#ef4444", fontWeight: 700, fontSize: 11 }}>HIJACK INCOMING!</span>
+                <div className="border border-[#ef4444] rounded-[10px] p-3 bg-[#ef444408]">
+                  <div className="text-[10px] font-bold text-[#ef4444] mb-2 tracking-[1px]">ATTACKER HUD (in-game)</div>
+                  <div className="bg-[#0a0a14] rounded-lg p-[10px] border border-[#ef444444]">
+                    <div className="flex items-center gap-2 mb-[6px]">
+                      <div className="w-2 h-2 rounded-full bg-[#ef4444] shadow-[0_0_6px_#ef4444]" />
+                      <span className="text-[#ef4444] font-bold text-[11px]">HIJACK INCOMING!</span>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                      <div style={{
-                        width: 28, height: 28, borderRadius: 6, background: "#ef444422", border: "2px solid #ef4444",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        color: "#ef4444", fontWeight: 900, fontSize: 14, fontFamily: "monospace",
-                      }}>K</div>
-                      <span style={{ color: C.text, fontSize: 10 }}>Press to block takeover</span>
+                    <div className="flex items-center gap-2 mb-[6px]">
+                      <div className="w-7 h-7 rounded-md bg-[#ef444422] border-2 border-[#ef4444] flex items-center justify-center text-[#ef4444] font-black text-sm font-mono">K</div>
+                      <span className="text-theme-text text-[10px]">Press to block takeover</span>
                     </div>
-                    <div style={{ height: 3, background: "#ffffff11", borderRadius: 2 }}>
-                      <div style={{ width: "60%", height: "100%", background: "#ef4444", borderRadius: 2 }} />
+                    <div className="h-[3px] bg-white/[0.07] rounded-[2px]">
+                      <div className="w-[60%] h-full bg-[#ef4444] rounded-[2px]" />
                     </div>
-                    <div style={{ color: C.faint, fontSize: 9, marginTop: 4 }}>Miss the window → roles reverse</div>
+                    <div className="text-theme-faint text-[9px] mt-1">Miss the window → roles reverse</div>
                   </div>
                 </div>
               </div>
 
               {/* Hijack rules summary */}
-              <div style={{ marginTop: 14, fontSize: 10, color: C.muted, background: "var(--bg3,#13131f)", borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontWeight: 700, color: C.text, marginBottom: 6 }}>Rules</div>
+              <div className="mt-[14px] text-[10px] text-theme-muted bg-bg3 rounded-lg px-3 py-[10px]">
+                <div className="font-bold text-theme-text mb-[6px]">Rules</div>
                 {[
                   ["Only active on", "hostile or neutral links with hijackable: true"],
                   ["Trigger", "Victim sends bey-link-hijack-attempt while stack is active and no cooldown"],
@@ -616,8 +614,8 @@ export function BeyLinkMovementGuide({ onClose }: { onClose: () => void }) {
                   ["Expiry", "Window expiry auto-executes hijack (attacker failed to respond)."],
                   ["Duration", "Hijacked stack runs until normal break conditions (maxDuration / ringOut / collision threshold)."],
                 ].map(([key, val]) => (
-                  <div key={key as string} style={{ display: "flex", gap: 8, marginBottom: 4 }}>
-                    <span style={{ color: "#818cf8", fontFamily: "monospace", minWidth: 110 }}>{key}</span>
+                  <div key={key as string} className="flex gap-2 mb-1">
+                    <span className="text-[#818cf8] font-mono min-w-[110px]">{key}</span>
                     <span>{val}</span>
                   </div>
                 ))}

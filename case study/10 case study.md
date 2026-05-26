@@ -1104,184 +1104,180 @@ Cross-generational ridge effect:
 
 ---
 
-## Case 554 — Gen 1 Magnacore System: Magnetic Bit Chip Levitation Geometry, Attraction-Mode Spin Drain, Repulsion-Mode Float Physics, WD Rim Field Coupling, and Metal Change Core Shaft Magnetization
+## Case 554 — Gen 1 Magnacore System: SG-Core Polarity Modes in Magne Stadia, Magne Flat Base Tip Levitation, Volcano Change Base Magnetic Retention, and Metal-Shaft Tip Magnetisation
 
-**Thesis:** The Magnacore System is a dedicated sub-class within the Gen 1 Plastic Beyblade product line (Takara Tomy, circa 2001–2003) that incorporates permanent magnet elements into either the Weight Disk (Magnacore WD configuration: N_WD = 4 neodymium disc magnets embedded at r_WD = 28–32 mm from the beyblade axis, height h_WD ≈ 10 mm above the arena floor when the tip is in contact) or the Bit Chip base (Base Magnacore configuration: a single vertically polarised neodymium disc of diameter D_chip = 8 mm and thickness t_chip = 3 mm seated at the bottom layer of the Bit Chip assembly at h_chip ≈ 3 mm above the floor); the stadium magnetic zone interacts with these elements in two modes set by pole orientation at assembly: Attraction Mode (chip and stadium poles face opposite) augments floor normal force by F_attract ≈ 0.40 N at h = 3 mm (N35 neodymium pull-test estimate), raising N_eff_attract = m × g + F_attract = 0.030 × 9.81 + 0.40 = 0.694 N and scaling spin decay from α_normal = μ × m × g × r_tip / I = 0.10 × 0.294 × 0.005 / 6.375 × 10⁻⁶ = 23.1 rad/s² to α_attract = 23.1 × (0.694 / 0.294) = 54.5 rad/s², cutting spin life from 13.0 s to 5.50 s; Repulsion Mode (same poles face) produces upward F_repel ≈ 0.40 N exceeding m × g = 0.294 N, placing the beyblade in levitation equilibrium; using the inverse-fourth-power dipole model F(h) = F_0 × (h_0 / h)^4, the equilibrium height where F_repel = m × g is h_float = h_0 × (F_0 / (m × g))^(1/4) = 3.0 × (0.40 / 0.294)^0.25 = 3.0 × 1.080 = 3.24 mm — the beyblade levitates 0.24 mm above its contact reference with N_eff_repel = 0, reducing floor-friction spin decay to zero and leaving only air drag (α_air ≈ 0.02 rad/s²) and bearing friction (α_bearing ≈ 0.50 rad/s²), extending spin life to 300 / 0.52 = 577 s — a 44× stamina extension; a Magnacore beyblade in Repulsion Mode approaching the Ultimate Beyta MSS (Case 553) is immune to the 1.010 m/s capture threshold because N_eff → 0 eliminates the friction-based trap: it glides through the MSS zone at constant speed, and the Beyta Stadium's inward ridges instead deliver it to the MSS at v_arrival = 0.289 m/s — still sub-threshold but the beyblade's magnet now REPELS the MSS magnet (same poles), actively pushing the beyblade away from the centre and creating a novel dynamic where the stadium's funnel geometry and the beyblade's repulsion fight each other; for the WD configuration, the rotating rim magnets at r_WD = 30 mm and h_WD = 10 mm pass over a static arena magnet zone at frequency f_pass = N_WD × ω / (2π) = 4 × 300 / (2π) = 190.8 Hz at ω = 300 rad/s, peak force per magnet F_WD ≈ 0.05 N at 10 mm height, mean braking torque τ_WD = N_WD × F_WD × r_WD × (2/π) = 4 × 0.05 × 0.030 × 0.637 = 3.82 × 10⁻³ N·m, effective mean deceleration α_WD_mean = (3.82 × 10⁻³ / 6.375 × 10⁻⁶) × D_zone = 599 × 0.145 = 86.9 rad/s² during the 14.5% duty-cycle zone passage (r_zone = 35 mm, R_orbit = 80 mm) — making WD-magnet Attraction Mode 3.76× more damaging per orbit than normal floor friction; the Metal Change Core (MC Base) configuration used on beyblades such as customised Driger V2 adds a fourth magnetic effect: the MC base has a steel shaft running axially from the Magnacore Bit Chip magnet down to the metal tip; this shaft acts as a magnetically permeable waveguide with μ_r ≈ 100–200 for hardened spring steel, channelling and concentrating the Magnacore's magnetic field from the chip (B_0 ≈ 0.10 T at shaft base) along the length h_shaft = 15 mm = 0.015 m to the metal tip contact point; the induced pole strength at the shaft tip is p_tip = M_sat × A_shaft where M_sat = (μ_r − 1) × B_0 / μ₀ is the induced magnetisation and A_shaft = π × r_shaft² = π × (1.5 × 10⁻³)² = 7.07 × 10⁻⁶ m², giving M_sat = 99 × (0.10 / 1.257 × 10⁻⁶) = 99 × 79,577 = 7.878 × 10⁶ A/m and p_tip = 7.878 × 10⁶ × 7.07 × 10⁻⁶ = 55.7 A·m; the sticking force at the metal tip contact on a ferromagnetic floor surface is F_tip_stick = B_sat² × A_tip / (2μ₀) where B_sat = 1.5 T (steel saturation) and A_tip = π × r_contact² = π × (2 × 10⁻⁴)² = 1.257 × 10⁻⁷ m² (metal tip contact radius r_contact ≈ 0.2 mm), giving F_tip_stick = (1.5)² × 1.257 × 10⁻⁷ / (2 × 1.257 × 10⁻⁶) = 2.25 × 1.257 × 10⁻⁷ / 2.514 × 10⁻⁶ = 2.828 × 10⁻⁷ / 2.514 × 10⁻⁶ = 0.1125 N theoretical maximum; in practice demagnetisation, field leakage, and incomplete shaft-to-surface coupling reduce this to approximately 10–20% of theoretical: F_tip_practical ≈ 0.011–0.023 N = 11–23 mN; this small "sticking" normal force (ΔN/N_floor = 0.015 / 0.294 = 5.1%) increases spin decay by 5.1% and — more perceptibly — provides a capillary-like pinning force that arrests drift when the beyblade is nearly stationary: the minimum speed at which translational inertia overcomes the tip adhesion is v_stick_threshold = F_tip × Δt_escape / m ≈ 0.015 × 0.03 / 0.030 = 0.015 m/s, so any beyblade moving slower than 15 mm/s on the magnetic floor is held in the "stick-and-spin" position; the user-described behaviour of Driger V2 MC staying fixed over the magnetic zone and spinning in place is precisely this regime: the tip sticking force locks translation, the magnetic normal force augments floor friction, and the beyblade spins at its decaying ω until torque drops below the combined magnetic and floor friction threshold simultaneously.
+**Thesis:** The Magnacore System (Takara Tomy, Gen 1 Plastic era, 2001–2003) positions permanent magnets at three discrete heights within the assembled beyblade and pairs them with dedicated Magne Stadia — stadiums whose floor carries permanent magnets at fixed positions with South pole facing upward — so that each magnetic component produces a distinct interaction depending on its height, polarity, and proximity to a floor magnet; the system's central element is the **Magnecore Spin Gear Core** (North or South variant, m_MC = 3.3 g), a neodymium disc that occupies the SG core slot inside the Spin Gear shell at the beyblade's central axis, sitting at height h_MC ≈ 14 mm above the arena floor when a standard Blade Base and flat tip are assembled; in standard (non-magnetic) steel arenas the Magnecore at h_MC = 14 mm attracts only the ferromagnetically soft steel floor, producing F_std = 0.0055 × m × g = 0.0055 × 0.030 × 9.81 = 1.6 mN — 0.55% of the 294 mN floor normal, entirely negligible — so the beyblade performs identically to a configuration without Magnecore; in a Magne Stadium, the dedicated floor magnet (South pole up) directly beneath the Magnecore delivers F_magne = 68% of floor normal force at the peak-overlap position: F_magne = 0.68 × m × g = 0.68 × 0.294 = 0.200 N; in Attraction Mode (North Magnecore over South-up floor magnet, opposite poles attract), the floor magnet pulls the SG Core downward, augmenting the floor normal: N_eff_attr = 0.294 + 0.200 = 0.494 N, raising spin decay from α_norm = μ × m × g × r_tip / I = 0.10 × 0.294 × 0.005 / 6.375 × 10⁻⁶ = 23.1 rad/s² to α_attr = 0.10 × 0.494 × 0.005 / 6.375 × 10⁻⁶ = 38.7 rad/s², cutting spin life from t_norm = 300 / 23.1 = 13.0 s to t_attr = 300 / 38.7 = 7.75 s (−40.4%); in Repulsion Mode (South Magnecore over South-up floor magnet, same poles repel), the floor magnet pushes the SG Core upward, reducing floor normal: N_eff_rep = 0.294 − 0.200 = 0.094 N — floor contact is maintained (0.094 N > 0) but weakened, giving α_rep = 0.10 × 0.094 × 0.005 / 6.375 × 10⁻⁶ = 7.37 rad/s² and t_rep = 300 / 7.37 = 40.7 s, a 3.13× stamina extension; full levitation from the SG Core alone does not occur because F_magne = 0.200 N < m × g = 0.294 N — the SG Core cannot lift the beyblade off the floor; levitation is instead provided by the **Magne Flat Base Tip**, which embeds a South-pole disc magnet at the contact point (h_tip ≈ 1–2 mm above the floor magnet face); at this short separation the same-pole repulsion from the South-up floor magnet far exceeds that of the SG Core at 14 mm, so estimating F_tip_ref = 0.35 N at h_ref = 2.0 mm and applying the inverse-fourth-power dipole scaling, levitation equilibrium F_rep(h_float) = m × g requires 0.35 × (2.0 / h_float)^4 = 0.294, giving h_float = 2.0 × (0.35 / 0.294)^(1/4) = 2.0 × 1.046 = 2.09 mm — the Magne Flat Base tip levitates 0.09 mm above h_ref when directly over the floor magnet, zeroing floor contact friction and producing momentary pure-air-drag coasting (α_lev = α_air + α_bearing ≈ 0.52 rad/s²); between floor magnets the tip contacts the arena surface normally; the **CGB (Customize Grip Base) Tip** and **SG Grip Base Tip** carry a North-pole face at the contact point, producing the opposite effect over the South-up floor magnet — attraction of F_attr_tip ≈ 0.35 N at h = 2.0 mm raises N_eff_tip_attr = 0.294 + 0.350 = 0.644 N and α_tip_attr = 0.10 × 0.644 × 0.005 / 6.375 × 10⁻⁶ = 50.5 rad/s², cutting spin life to 300 / 50.5 = 5.94 s (−54.3% vs baseline) per floor-magnet contact event; the **Volcano Change Base (VCB)** exploits the Magnecore's near-field to retain the tip without a mechanical clip: the VCB positions the steel tip's top face at h_sep = 2 mm below the Magnecore bottom face, where F_ret = 94 mN — 9.4 times the gravity load on the tip (F_grav_tip = m_tip × g ≈ 0.001 × 9.81 = 9.8 mN) — holds the tip by magnetic attraction; on an impact exceeding 94 mN the tip ejects and re-engages the magnet on rebound; the customised Driger V2 Metal Change Base places a steel shaft (μ_r ≈ 100–200) running axially from the Magnecore face to the metal tip contact point, conducting the field (B_0 ≈ 0.10 T at shaft entry) down 15 mm to the floor: the induced pole at the 0.2 mm radius contact (A_tip = π × (2 × 10⁻⁴)² = 1.26 × 10⁻⁷ m²) produces practical sticking force F_stick ≈ 11–23 mN on a ferromagnetic or magnetic arena floor, with velocity threshold v_stick = F_stick × Δt_esc / m = 0.015 × 0.030 / 0.030 = 0.015 m/s = 15 mm/s — below 15 mm/s translation is magnetically pinned and the beyblade enters stick-and-spin.
 
-### Visual Geometry — Magnacore Configurations and Metal Change Core Shaft
-
-```
-BASE MAGNACORE CHIP (cross-section, Gen 1 Plastic):
-
-  ─────────────────────────────── ARENA FLOOR ────────────────────────────────
-                h_chip = 3 mm ↕
-  ╔══════════════════════════════════════════╗   ← Bit Chip (lowest layer)
-  ║  ╔══════════╗      ← Neodymium disc      ║
-  ║  ║  N  ↑  S ║        D=8mm, t=3mm        ║
-  ║  ╚══════════╝      Pole axis = vertical  ║
-  ╚══════════════════════════════════════════╝
-             │
-   ┌─────────┴─────────┐  ← Metal tip (MC Base only — see right panel)
-   │       TIP         │
-   └─────────┬─────────┘
-          ● ← contact point
-
-MAGNACORE WD (top-down view, r_WD = 30 mm):
-
-      ●────────────────────────● ← WD rim
-     ╱  N₁(+)    WD DISK   N₃(+) ╲
-    │                               │  r_WD = 30 mm
-    │       N₂(+)         N₄(+)    │  N_WD = 4 magnets
-     ╲                             ╱
-      ●────────────────────────●
-
-METAL CHANGE CORE SHAFT (cross-section, e.g. Driger V2 MC):
-
-  Magnacore Chip:   ╔══╗  B_0 ≈ 0.10 T at shaft base
-                    ╚══╝
-  Steel shaft:     ║    ║  μ_r ≈ 100–200, h_shaft = 15 mm
-  (μ_r ≈ 150)      ║    ║  Channels field to tip
-                   ║    ║
-  Metal tip:        ╲  ╱  r_contact ≈ 0.2 mm
-                     \/   F_tip_stick ≈ 11–23 mN on magnetic floor
-  ─────────── ARENA FLOOR (ferromagnetic or magnetic) ───────────────────
-```
-
-### Magnacore Mode Force Analysis and Levitation Equilibrium
+### Visual Geometry — Magnacore Stack, Magne Stadium, and Tip Interactions
 
 ```
-Parameters (Gen 1 Plastic):
-  m = 0.030 kg,  r_tip = 5 mm,  μ_tip = 0.10,  I = 6.375 × 10⁻⁶ kg·m²
-  N_floor = m·g = 0.030 × 9.81 = 0.294 N
-  F_mag_chip = 0.40 N at h_chip = 3 mm  (8 mm N35 neodymium, pull-test estimate)
+GEN 1 BEYBLADE CROSS-SECTION (Magnacore System assembled, Magne Stadium floor):
 
-Attraction Mode:
-  N_eff_attract = 0.294 + 0.40 = 0.694 N
-  α_attract = μ × N_eff × r_tip / I = 0.10 × 0.694 × 0.005 / 6.375×10⁻⁶ = 54.5 rad/s²
-  α_normal  = 0.10 × 0.294 × 0.005 / 6.375×10⁻⁶ = 23.1 rad/s²
-  Spin decay multiplier: 54.5 / 23.1 = 2.36×
-  t_life_attract = 300 / 54.5 = 5.50 s   (vs t_life_normal = 13.0 s)
+  ┌──────────────────────────┐  ← Bit Chip / AR                h ≈ 38–42 mm
+  ╔══════════════════════════╗
+  ║  [S₁]  MAGNE WD  [S₂]  ║  r_WD = 30 mm, h_WD ≈ 22–28 mm
+  ║  [S₃]           [S₄]   ║  (separate from Magnecore; South face down)
+  ╚══════════════════════════╝
+  ╔═══╦══════════════════════╗
+  ║SG ║  [■ MAGNECORE ■]   ║  SG Core slot, h_MC ≈ 14 mm
+  ║   ║  North or South     ║  m_MC = 3.3 g
+  ║   ║  F_magne = 68% N_fl ║  (at direct overhead of floor magnet in Magne Stadium)
+  ╚═══╩══════════════════════╝
+  ╔══════════════════════════╗
+  ║       BLADE BASE (BB)    ║  h ≈ 0–12 mm
+  ╚═══════════╦══════════════╝
+              ║ TIP CONTACT (h = 0)
+  ─── MAGNE STADIUM FLOOR (South ↑) ─── [S↑ magnet] ─── [S↑ magnet] ───
 
-Repulsion Mode — Levitation Height:
-  F(h) = F_0 × (h_0 / h)^4   (inverse-fourth-power dipole approximation)
-  At h_float: F(h_float) = m·g = 0.294 N
-    0.40 × (3.0 / h_float)^4 = 0.294
-    (3.0 / h_float)^4 = 0.735
-    h_float = 3.0 / (0.735)^(1/4) = 3.0 / 0.9261 = 3.24 mm
+MAGNE FLAT BASE TIP LEVITATION (South tip over South floor magnet, repulsion):
+  h_tip_ref = 2.0 mm:  F_rep = 0.35 N > m·g = 0.294 N → LEVITATION
+  h_float = 2.09 mm (equilibrium: F_rep = m·g at this height)
+  Between floor magnets: normal contact resumes.
 
-  N_eff_repel = 0   (levitation: no floor contact)
-  α_levitation = α_air + α_bearing ≈ 0.02 + 0.50 = 0.52 rad/s²
-  t_life_repel = 300 / 0.52 = 577 s    (44× longer than normal floor)
+CGB / SG-GRIP BASE TIP (North tip over South floor magnet, attraction):
+  F_attr = 0.35 N at h = 2.0 mm → strong floor-pin
+  N_eff_tip = 0.644 N → α = 50.5 rad/s² (2.18× normal decay rate)
 
-Metal Change Core sticking threshold:
-  F_tip_practical ≈ 15 mN   (12% of B_sat² Maxwell stress)
-  v_stick_threshold = F_tip × Δt / m = 0.015 × 0.030 / 0.030 = 0.015 m/s = 15 mm/s
-  Below 15 mm/s translation: beyblade is pinned (stick-and-spin condition).
-  Above 15 mm/s: tip adhesion overcome, normal orbit/drift resumes.
+VOLCANO CHANGE BASE TIP RETENTION:
+  Magnecore face ──── h_sep = 2 mm ──── steel tip top face
+  F_ret = 94 mN >> F_grav_tip = 9.8 mN  (9.4× safety factor)
 
-WD Rim Braking (ω = 300 rad/s, N_WD = 4, r_WD = 30 mm, h_WD = 10 mm):
-  F per WD magnet at 10 mm: F_WD = 0.05 N
-  τ_WD = 4 × 0.05 × 0.030 × (2/π) = 3.82 × 10⁻³ N·m
-  α_WD_peak = 3.82×10⁻³ / 6.375×10⁻⁶ = 599 rad/s²
-  D_zone = 14.5%  (r_zone=35 mm, R_orbit=80 mm)
-  α_WD_mean = 599 × 0.145 = 86.9 rad/s²   ← 3.76× normal decay while over zone
+DRIGER V2 METAL-SHAFT TIP (custom configuration):
+  Magnecore → ║ steel shaft ║ → metal tip ●  on magnetic floor
+  F_stick ≈ 15 mN; v_stick_threshold = 15 mm/s
+```
+
+### Magnacore SG-Core and Tip Force Analysis
+
+```
+Parameters (Gen 1 Plastic, flat tip):
+  m = 0.030 kg, r_tip = 5 mm, μ_tip = 0.10, I = 6.375×10⁻⁶ kg·m²
+  N_floor = m·g = 0.294 N
+  α_norm = 0.10 × 0.294 × 0.005 / 6.375×10⁻⁶ = 23.1 rad/s²
+  t_norm = 300 / 23.1 = 13.0 s
+
+Standard arena (steel floor, no magnets):
+  F_std = 0.0055 × 0.294 = 1.6 mN    Δα/α = 0.55%  (negligible)
+
+Magne Stadium — SG Core at h_MC = 14 mm, directly over floor magnet:
+  F_magne = 0.68 × m·g = 0.68 × 0.294 = 0.200 N
+
+North Magnecore (Attraction Mode):
+  N_eff_attr = 0.294 + 0.200 = 0.494 N
+  α_attr = 0.10 × 0.494 × 0.005 / 6.375×10⁻⁶ = 38.7 rad/s²
+  t_attr = 300 / 38.7 = 7.75 s  (−40.4% vs baseline)
+
+South Magnecore (Repulsion Mode):
+  N_eff_rep = 0.294 − 0.200 = 0.094 N   [F_magne < m·g → no levitation from SG Core alone]
+  α_rep = 0.10 × 0.094 × 0.005 / 6.375×10⁻⁶ = 7.37 rad/s²
+  t_rep = 300 / 7.37 = 40.7 s  (+3.13× vs baseline)
+
+Magne Flat Base Tip Levitation (South tip over South floor, dipole model):
+  F_rep(h) = 0.35 × (2.0/h)^4  (h in mm)
+  Levitation: F_rep(h_float) = m·g = 0.294 N
+    0.35 × (2.0/h_float)^4 = 0.294  →  h_float = 2.0 × (0.35/0.294)^0.25 = 2.09 mm
+  Between floor magnets: normal contact, α = α_norm = 23.1 rad/s²
+
+CGB Tip Attraction (North tip over South floor):
+  F_attr_tip = 0.35 N at h = 2.0 mm
+  N_eff_tip_attr = 0.294 + 0.350 = 0.644 N
+  α_tip_attr = 0.10 × 0.644 × 0.005 / 6.375×10⁻⁶ = 50.5 rad/s²
+  t_tip_attr = 300 / 50.5 = 5.94 s  (−54.3% vs baseline)
+
+Volcano Change Base retention:
+  F_ret = 94 mN,  F_grav_tip = m_tip × g ≈ 9.8 mN  →  factor = 9.4×
+
+Metal Change Core (Driger V2 custom shaft):
+  F_stick_practical ≈ 15 mN  (≈12% of B_sat² Maxwell stress, accounting for field leakage)
+  v_stick = F_stick × Δt_esc / m = 0.015 × 0.030 / 0.030 = 0.015 m/s = 15 mm/s
 ```
 
 ```typescript
-function magnacoreNormalForce(
-  mass_kg: number, fMagChip_N: number, mode: "attraction" | "repulsion"
+function magnacoreSGCoreSpinLife(
+  mass_kg: number, muTip: number, rTip_m: number, I_kgm2: number,
+  omegaStart_rads: number,
+  arenaType: "standard" | "magne_stadium",
+  coreMode: "attraction" | "repulsion"
 ): number {
   const fg = mass_kg * 9.81;
-  return mode === "attraction" ? fg + fMagChip_N : Math.max(0, fg - fMagChip_N);
+  const fMag = arenaType === "magne_stadium" ? 0.68 * fg : 0.0055 * fg;
+  const nEff = coreMode === "attraction" ? fg + fMag : Math.max(0, fg - fMag);
+  const alpha = nEff === 0 ? 0.52 : (muTip * nEff * rTip_m) / I_kgm2;
+  return omegaStart_rads / alpha;
 }
-// magnacoreNormalForce(0.030, 0.40, "attraction") → 0.694 N
-// magnacoreNormalForce(0.030, 0.40, "repulsion")  → 0.000 N  (levitation)
-// magnacoreNormalForce(0.030, 0.20, "repulsion")  → 0.094 N  (partial reduction, no levitation)
+// magnacoreSGCoreSpinLife(0.030, 0.10, 0.005, 6.375e-6, 300, "standard",      "attraction") → 12.9 s
+// magnacoreSGCoreSpinLife(0.030, 0.10, 0.005, 6.375e-6, 300, "magne_stadium", "attraction") →  7.75 s
+// magnacoreSGCoreSpinLife(0.030, 0.10, 0.005, 6.375e-6, 300, "magne_stadium", "repulsion")  → 40.7 s
 
-function magnacoreLevitationHeight(
-  f0_N: number, h0_mm: number, mass_kg: number
-): { hFloat_mm: number; isLevitating: boolean } {
+function magneFlatBaseLevitation(
+  fTipRef_N: number, hRef_mm: number, mass_kg: number
+): { hFloat_mm: number; isLevitating: boolean; alphaLev_rads2: number } {
   const fg = mass_kg * 9.81;
-  if (f0_N <= fg) return { hFloat_mm: h0_mm, isLevitating: false };
-  const hFloat = h0_mm / Math.pow(fg / f0_N, 0.25);
-  return { hFloat_mm: hFloat, isLevitating: true };
+  const isLev = fTipRef_N > fg;
+  const hFloat = isLev ? hRef_mm / Math.pow(fg / fTipRef_N, 0.25) : hRef_mm;
+  return { hFloat_mm: hFloat, isLevitating: isLev, alphaLev_rads2: 0.52 };
 }
-// magnacoreLevitationHeight(0.40, 3.0, 0.030) → { hFloat_mm: 3.24, isLevitating: true }
-// magnacoreLevitationHeight(0.20, 3.0, 0.030) → { hFloat_mm: 3.0,  isLevitating: false }
-// magnacoreLevitationHeight(0.40, 3.0, 0.050) → { hFloat_mm: 3.0,  isLevitating: false }
-//   ↑ heavier top (m=50g, fg=0.491 N) not lifted by same 0.40 N magnet
+// magneFlatBaseLevitation(0.35, 2.0, 0.030)  → { hFloat_mm: 2.09, isLevitating: true,  alphaLev_rads2: 0.52 }
+// magneFlatBaseLevitation(0.25, 2.0, 0.030)  → { hFloat_mm: 2.0,  isLevitating: false, alphaLev_rads2: 0.52 }
+// magneFlatBaseLevitation(0.35, 2.0, 0.050)  → { hFloat_mm: 2.0,  isLevitating: false, alphaLev_rads2: 0.52 }
+//   ↑ heavier top (m=50 g): fg = 0.491 N > fTipRef = 0.35 N → no levitation
 
-function magnacoreSpinLife(
-  omega0_rads: number, mass_kg: number, I_kgm2: number,
-  muTip: number, rTip_mm: number,
-  mode: "attraction" | "repulsion", fMagChip_N: number
-): number {
-  const nEff = magnacoreNormalForce(mass_kg, fMagChip_N, mode);
-  const alpha = (nEff === 0)
-    ? 0.52  // levitation: air drag + bearing only
-    : (muTip * nEff * (rTip_mm / 1000)) / I_kgm2;
-  return omega0_rads / alpha;
+function volcanoChangeRetention(
+  fRetention_mN: number, massTip_kg: number
+): { fGravTip_mN: number; retentionFactor: number; isRetained: boolean } {
+  const fg = massTip_kg * 9.81 * 1000;
+  return { fGravTip_mN: fg, retentionFactor: fRetention_mN / fg, isRetained: fRetention_mN > fg };
 }
-// magnacoreSpinLife(300, 0.030, 6.375e-6, 0.10, 5, "attraction", 0.40) →   5.50 s
-// magnacoreSpinLife(300, 0.030, 6.375e-6, 0.10, 5, "repulsion",  0.40) → 577.0 s
-// magnacoreSpinLife(300, 0.030, 6.375e-6, 0.10, 5, "attraction", 0.00) →  13.0 s  (no magnet)
+// volcanoChangeRetention(94, 0.001)  → { fGravTip_mN: 9.81, retentionFactor: 9.58, isRetained: true }
+// volcanoChangeRetention(94, 0.010)  → { fGravTip_mN: 98.1, retentionFactor: 0.96, isRetained: false }
 
 function metalChangeCoreStickThreshold(
-  fTipStick_N: number, mass_kg: number, contactTime_s: number
+  fTipStick_N: number, mass_kg: number, escapeTime_s: number
 ): number {
-  return (fTipStick_N * contactTime_s) / mass_kg;  // m/s threshold
+  return (fTipStick_N * escapeTime_s) / mass_kg;
 }
 // metalChangeCoreStickThreshold(0.015, 0.030, 0.030) → 0.015 m/s = 15 mm/s
 // metalChangeCoreStickThreshold(0.023, 0.030, 0.030) → 0.023 m/s = 23 mm/s  (upper estimate)
-// metalChangeCoreStickThreshold(0.015, 0.050, 0.030) → 0.009 m/s = 9 mm/s   (heavier top)
 ```
 
 ---
 
-## Case 555 — Ferromagnetic Spring Coils in Permanent Magnetic Fields: EG Internal Spring Force, Magna WD Compound Interaction, and Delayed EG Boost-Release Mechanics
+## Case 555 — Ferromagnetic Steel Spring Coils in Permanent Magnetic Fields: Gen 1 Engine Gear Clock-Spring Force from Magna WD Assembly, Trigger-Release Delay, and Gen 3 Driver-Spring Augmentation near MSS
 
-**Thesis:** All steel coil springs used in Gen 1–Gen 3 Beyblade mechanisms are fabricated from hardened carbon steel with relative magnetic permeability μ_r = 50–200, making them weakly but measurably ferromagnetic and therefore susceptible to gradient forces from any nearby permanent magnet — the attractive force on a ferromagnetic body in a non-uniform field is F_mag = μ₀ × (μ_r − 1) × V_spring × H × (∂H/∂r), where V_spring is the spring wire volume, H the local field intensity, and ∂H/∂r the field gradient; the Gen 2 Engine Gear (EG) clock-spring has estimated geometry: wire diameter d_w = 0.5 mm, mean coil radius r_mean = 10.5 mm, N_coils = 18, giving V_spring = π × d_w² / 4 × 2π × r_mean × N_coils = 1.963 × 10⁻⁷ × 1.188 = 2.33 × 10⁻⁷ m³; when the Magna Weight Disk (magnets at r_WD = 30 mm, h above EG spring ≈ 5 mm vertical offset) is assembled above the EG, the nearest Magna WD neodymium insert sits at horizontal separation Δr = r_WD − r_spring_outer = 30 − 8 = 22 mm from the spring's outer coil, vertical offset Δh = 5 mm, total distance d_sep = √(22² + 5²) = 22.6 mm; the dipole field from one Magna WD magnet at d = 22.6 mm, scaling from B_0 = 0.05 T at d_0 = 10 mm as B ∝ d^(−3), gives B_spring = 0.05 × (10 / 22.6)³ = 0.05 × 0.0868 = 4.34 × 10⁻³ T, hence H_spring = B / μ₀ = 4.34 × 10⁻³ / 1.257 × 10⁻⁶ = 3452 A/m; the field gradient estimate ∂H/∂r ≈ 3H / d = 3 × 3452 / 0.0226 = 4.58 × 10⁵ A/m²; the magnetic force on the EG spring from one WD magnet: F_mag = 1.257 × 10⁻⁶ × 99 × 2.33 × 10⁻⁷ × 3452 × 4.58 × 10⁵ = 1.244 × 10⁻⁴ × 2.33 × 10⁻⁷ × 1.581 × 10⁹ = 1.244 × 10⁻⁴ × 368.4 = 4.58 × 10⁻² N ≈ 0.046 N; with four Magna WD magnets, the total vector sum (accounting for geometry and partial cancellation from opposing sides) is approximately F_total ≈ 0.046 × 2.5 = 0.115 N (the two nearest magnets contribute most, the opposite pair partially cancel); decomposing at the approach angle θ_approach = arctan(Δh / Δr) = arctan(5 / 22) = 12.8°: the axial component F_axial = 0.046 × sin(12.8°) = 0.046 × 0.221 = 10.2 mN pulls the spring toward the WD (upward and outward), and the radial component F_radial = 0.046 × cos(12.8°) = 0.046 × 0.975 = 44.9 mN per magnet acts as a radial force on the spring coil; the radial force on the EG mechanism acts as an additional resistance to the spring unwinding: the spring must overcome F_radial in addition to the normal mechanical trigger force; if the normal EG centrifugal release trigger requires F_trigger_norm = 0.30 N at ω_trigger_normal, the magnetic resistance raises the effective threshold to F_trigger_mag = 0.30 + 0.045 = 0.345 N (using the dominant single-nearest-magnet radial force for a conservative estimate of the additional resistance at one azimuthal position), and since the centrifugal lock force is F_c = m_lock × ω² × r_lock, the ratio ω_trigger_mag / ω_trigger_normal = √(F_trigger_mag / F_trigger_norm) = √(0.345 / 0.300) = √1.150 = 1.072 — the EG fires at 7.2% higher spin speed than it would without the Magna WD, meaning the beyblade is spinning faster at release time and the boost is delivered with more effective spin remaining; this corresponds to a more tactically favourable timing: the standard EG fires when the beyblade is approaching "end-of-useful-life" spin, but the Magna WD version fires slightly earlier when there is still 7.2% more spin in reserve, roughly Δω_early = 0.072 × ω_trigger_normal; for a Gen 3 Shot driver spring (k_sh = 2000 N/m, x_sh = 2 mm, much closer to the floor at h_spring ≈ 5 mm when tip is in contact) near the Ultimate Beyta MSS, the magnet beneath the MSS exerts F_attract_sh ≈ 0.04 N on the steel spring (at 5 mm height over the MSS centre magnet), compressing it by an additional δ_mag = F_attract_sh / k_sh = 0.040 / 2000 = 2 × 10⁻⁵ m = 0.020 mm, storing ΔE_mag = F_attract_sh × δ_mag / 2 = 0.040 × 2 × 10⁻⁵ / 2 = 4 × 10⁻⁷ J = 0.4 μJ — negligible as stored energy — but the normal force augmentation of 0.04 N during the spring's active engagement phase provides 11.3% more traction grip (N_augment / N_normal = (m×g + 0.04) / m×g = 0.353 + 0.04) / 0.353 = 1.113 for m = 0.036 kg), directly enhancing the effective burst force during any spring-powered rebound near the MSS zone by +11.3%.
+**Thesis:** All steel coil springs used in Gen 1–Gen 3 Beyblade drive mechanisms are fabricated from hardened carbon steel (μ_r = 50–200 relative permeability), making them ferromagnetic and susceptible to field-gradient forces whenever a permanent magnet is assembled nearby; the force on a ferromagnetic body in a non-uniform field is F_mag = μ₀ × (μ_r − 1) × V_spring × H × (∂H/∂r), where V_spring is the spring wire volume, H the local field intensity, and ∂H/∂r the field gradient; the **Gen 1 Engine Gear (EG)** — the wound clock-spring drive unit of the Gen 1 Plastic era (Takara Tomy, see Cases 186–195 for full EG mechanics) — houses a clock-spring of estimated geometry: wire diameter d_w = 0.5 mm, mean coil radius r_mean = 10.5 mm, N_coils = 18 turns, V_spring = π × d_w²/4 × 2π × r_mean × N_coils = 1.963 × 10⁻⁷ × 1.188 = 2.33 × 10⁻⁷ m³; the Gen 1 EG unit is taller than a standard Spin Gear base (h_EG_total ≈ 18–22 mm from tip contact to EG top) and sits directly below the Weight Disk; when a Magna WD (four neodymium inserts at r_WD = 30 mm, South face down toward the EG) is assembled above the Gen 1 EG, the Magna WD bottom face rests at h_WD_bot ≈ 22 mm above the floor while the EG clock-spring centre occupies h_spring ≈ 10 mm (midpoint of the 0–22 mm EG span); the separation from one WD magnet (r = 30 mm, h = 22 mm) to the EG spring outer coil (r = 8 mm, h = 10 mm) is: Δr = 22 mm, Δh = 12 mm, d_sep = √(22² + 12²) = √628 = 25.1 mm; scaling a reference field B_0 = 0.05 T at d_0 = 10 mm by the dipole law B ∝ d⁻³ gives B_spring = 0.05 × (10/25.1)³ = 0.05 × 0.0631 = 3.15 × 10⁻³ T, H = 3.15 × 10⁻³ / 1.257 × 10⁻⁶ = 2506 A/m, ∂H/∂r = 3H/d = 3 × 2506 / 0.0251 = 3.00 × 10⁵ A/m²; the force from one WD magnet on the EG spring: F_mag = 1.257 × 10⁻⁶ × 99 × 2.33 × 10⁻⁷ × 2506 × 3.00 × 10⁵ = 1.244 × 10⁻⁴ × 175.2 = 0.0218 N ≈ 0.022 N; with four WD magnets the total vector sum (two nearest contribute most, opposite pair partially cancels) is approximately F_total ≈ 0.022 × 2.3 = 0.050 N; decomposing the single-magnet force at approach angle θ = arctan(12/22) = 28.6°: radial component F_radial = 0.022 × cos(28.6°) = 0.022 × 0.877 = 0.019 N acts as resistance to EG spring unwinding, and axial component F_axial = 0.022 × sin(28.6°) = 0.022 × 0.479 = 0.011 N adds upward pre-compression; the radial resistance raises the centrifugal lock threshold from F_trigger_norm = 0.30 N to F_trigger_mag = 0.30 + 0.019 = 0.319 N, and since F_c = m_lock × ω² × r_lock the ratio ω_trigger_mag / ω_trigger_norm = √(0.319/0.300) = 1.031 — the Magna WD causes the Gen 1 EG to fire at 3.1% higher spin speed than without the Magna WD; separately, Gen 3 drivers with steel compression springs at h_spring ≈ 5 mm above the arena floor experience attraction from the Ultimate Beyta MSS floor magnet (Case 553): F_attract_spring ≈ 0.040 N at 5 mm height, augmenting floor normal: N_augment = m × g + 0.040 = 0.036 × 9.81 + 0.040 = 0.353 + 0.040 = 0.393 N (+11.3% over baseline), proportionally increasing any rubber-contact burst output near the MSS zone.
 
-### EG Spring — Magna WD Geometry and Force Decomposition
+### EG Spring — Magna WD Geometry (Gen 1)
 
 ```
-Cross-section (EG beyblade with Magna WD):
+Cross-section (Gen 1 EG beyblade with Magna WD assembled):
 
-  ─────────────────────── TOP SURFACE ─────────────────────────────────────
-  │          Face       │
-  │   Attack Ring       │
-  ╔══════════════════════════════════╗  ← Magna WD (magnets at r=30mm)
-  ║  [N₁]            [N₂]           ║     h_WD_top ≈ 20 mm from floor
-  ║  [N₃]            [N₄]           ║     Bottom face at h_WD_bot ≈ 17 mm
+  ─────────────────── TOP ────────────────────────────────────────────
+  │   Attack Ring   │
+  ╔══════════════════════════════════╗
+  ║  [S₁]  MAGNA WD  [S₂]          ║  h_WD_bot = 22 mm (top of Gen 1 EG)
+  ║  [S₃]            [S₄]          ║  r_WD = 30 mm, South face down
   ╚══════════════════════════════════╝
-  ╔════════════════╗  ← EG Housing
-  ║  ⊙  clock    ⊙ ║  ← EG spring (outer coil at r=8mm)
-  ║  ⊙  spring   ⊙ ║     h_spring ≈ 8–12 mm from floor
-  ╚════════════════╝
-  ────── TIP ──────
-  ● (contact)       ← h = 0
+  ╔══════════════════════════════════╗
+  ║  GEN 1 ENGINE GEAR (h=18–22 mm) ║
+  ║  ⊙ ← clock-spring outer coil   ║  h_spring_centre ≈ 10 mm
+  ║    (r_outer=8mm, V=2.33×10⁻⁷m³) ║  (midpoint of 0–22 mm EG span)
+  ╚══════════════════════════════════╝
+  ── TIP ── ●  h = 0
 
-  Separation from one WD magnet (r=30mm, h_bot=17mm) to spring outer coil (r=8mm, h=10mm):
-    Δr = 30 - 8 = 22 mm,  Δh = 17 - 10 = 7 mm (revised estimate)
-    d_sep = √(22² + 7²) = √(484 + 49) = √533 = 23.1 mm
+  WD magnet (r=30mm, h=22mm) → spring outer coil (r=8mm, h=10mm):
+    Δr = 22 mm,  Δh = 12 mm,  d_sep = 25.1 mm,  θ = 28.6°
 
-F_mag per WD magnet on EG spring at d = 23.1 mm:
-  B_spring = 0.05 × (10/23.1)^3 = 0.05 × 0.0812 = 4.06 × 10⁻³ T
-  H_spring = 4.06e-3 / 1.257e-6 = 3231 A/m
-  ∂H/∂r = 3 × 3231 / 0.0231 = 4.19 × 10⁵ A/m²
-  F_mag = 1.257e-6 × 99 × 2.33e-7 × 3231 × 4.19×10⁵
-        = 1.244e-4 × 2.33e-7 × 1.354×10⁹
-        = 1.244e-4 × 315.4
-        = 0.0392 N ≈ 0.039 N per magnet
+Force from one WD magnet at d = 25.1 mm:
+  B_spring = 0.05 × (10/25.1)^3 = 3.15×10⁻³ T
+  H = 2506 A/m,  ∂H/∂r = 3.00×10⁵ A/m²
+  F_mag = μ₀(μ_r-1) V H ∂H/∂r = 0.022 N
+  F_radial = 0.022 × cos(28.6°) = 0.019 N  ← opposes EG spring unwinding
+  F_axial  = 0.022 × sin(28.6°) = 0.011 N  ← slight upward pre-load
 
-Radial component at θ = arctan(7/22) = 17.6°:
-  F_radial = 0.039 × cos(17.6°) = 0.039 × 0.953 = 0.0372 N  ← triggers EG delay
-  F_axial  = 0.039 × sin(17.6°) = 0.039 × 0.302 = 0.0118 N  ← spring pre-load addition
-
-Trigger force threshold with and without Magna WD:
-  F_trigger_norm = 0.30 N  (baseline EG release)
-  F_trigger_mag  = 0.30 + 0.037 = 0.337 N   (+12.3% increase)
-  ω_trigger ratio: √(0.337/0.300) = √1.123 = 1.060 → fires at 6.0% higher spin
+EG Trigger Shift:
+  F_trigger_norm = 0.300 N
+  F_trigger_mag  = 0.300 + 0.019 = 0.319 N  (+6.3% threshold increase)
+  ω ratio = √(0.319/0.300) = 1.031  → fires at +3.1% higher spin speed
 ```
 
 ```typescript
@@ -1294,12 +1290,12 @@ function ferromagneticSpringForce(
   const gradH = 3 * H / d_m;
   return mu0 * (muR - 1) * volume_m3 * H * gradH;
 }
-// ferromagneticSpringForce(2.33e-7, 100, 0.05, 0.010, 0.023)
-//   → 0.040 N  (EG spring, Magna WD magnet at 23mm)
+// ferromagneticSpringForce(2.33e-7, 100, 0.05, 0.010, 0.0251)
+//   → 0.022 N  (Gen 1 EG spring at 25.1 mm from Magna WD magnet — corrected Gen 1 geometry)
 // ferromagneticSpringForce(2.33e-7, 100, 0.05, 0.010, 0.050)
-//   → 0.0019 N  (50mm away: essentially negligible)
-// ferromagneticSpringForce(5e-8, 100, 0.08, 0.005, 0.005)
-//   → shot driver spring right at MSS zone — 0.062 N  (closer, stronger magnet)
+//   → 0.0019 N  (50 mm away: essentially negligible)
+// ferromagneticSpringForce(5.0e-8, 100, 0.08, 0.005, 0.005)
+//   → 0.062 N   (small driver spring at 5 mm from MSS magnet)
 
 function egMagnaWdTriggerShift(
   fTriggerNorm_N: number, fMagRadial_N: number
@@ -1308,70 +1304,80 @@ function egMagnaWdTriggerShift(
   const omegaRatio = Math.sqrt(fTriggerMag / fTriggerNorm_N);
   return { fTriggerMag, omegaRatio, percentHigher: (omegaRatio - 1) * 100 };
 }
-// egMagnaWdTriggerShift(0.30, 0.037)
-//   → { fTriggerMag: 0.337, omegaRatio: 1.060, percentHigher: 6.0% }
-//   EG fires 6% earlier (at higher spin) than without Magna WD
+// egMagnaWdTriggerShift(0.30, 0.019)
+//   → { fTriggerMag: 0.319, omegaRatio: 1.031, percentHigher: 3.1% }
+//   Gen 1 EG with Magna WD: fires 3.1% earlier at higher spin (corrected Gen 1 geometry)
 // egMagnaWdTriggerShift(0.30, 0.000)
-//   → { fTriggerMag: 0.300, omegaRatio: 1.000, percentHigher: 0.0% }  (no magnetic effect)
-// egMagnaWdTriggerShift(0.20, 0.037)   (lighter EG trigger spring)
-//   → { fTriggerMag: 0.237, omegaRatio: 1.088, percentHigher: 8.8% }
+//   → { fTriggerMag: 0.300, omegaRatio: 1.000, percentHigher: 0.0% }
+// egMagnaWdTriggerShift(0.20, 0.019)
+//   → { fTriggerMag: 0.219, omegaRatio: 1.046, percentHigher: 4.6% }  (lighter trigger spring)
 ```
 
 ---
 
-## Case 556 — Gen 2 and Gen 3 Spring-Actuated Active Driver Mechanisms: Engine Gear Energy Budget, Ignition Driver Burst Physics, Shot Driver Plunger Recoil, and Magnetic Arena Augmentation
+## Case 556 — Gen 1 Engine Gear Energy Budget, Ignition' LR44-Motor Disc-Driver Burst Physics, Gen 3 Shot Driver Passive-Spring Rebound, and Magnetic Arena Augmentation of Active Driver Systems
 
-**Thesis:** The active spring-motor driver family spans Gen 2 MFB and Gen 3 Burst, each storing mechanical energy in a pre-tensioned steel spring and releasing it at a trigger condition to deliver a kinetic boost to the beyblade; the Gen 2 Engine Gear (EG), covered in detail through Cases 541–555, is the archetype: a wound clock-spring stores E_EG = ½ × k_EG × x_EG² = ½ × 1500 × (0.008)² = 0.048 J = 48 mJ at full wind (k_EG ≈ 1500 N/m, x = 8 mm = 0.008 m), releasing as a rotational torque burst τ_EG = k_EG × x / r_gear = 1500 × 0.008 / 0.010 = 12.0 N·m / 0 ... actually applying the gear: τ_EG_at_tip = F_spring / r_gear_ratio × r_tip, but the key output is spin boost Δω_EG ≈ E_EG / (I_bey × ω_before) which at ω_before = 100 rad/s and I = 8.5 × 10⁻⁶ kg·m² gives Δω_EG = 0.048 / (8.5 × 10⁻⁶ × 100) = 0.048 / 8.5 × 10⁻⁴ = 56.5 rad/s — the EG restores 56.5 rad/s of spin, a 56.5% boost from the trigger point; the Gen 3 Burst Ignition driver (Ign.) uses a compression spring (k_ign ≈ 3000 N/m, pre-compression x_ign = 3 mm = 0.003 m) that stores E_ign = ½ × 3000 × (0.003)² = 13.5 × 10⁻³ J = 13.5 mJ; the trigger fires when spin drops below ω_trigger_ign ≈ 80 rad/s via centrifugal release — the spring then drives the rubber tip downward, creating a grip impulse with the floor: peak spring force F_peak = k × x = 3000 × 0.003 = 9.0 N over contact time Δt_ign = 10 ms produces tangential impulse J_t = μ_rubber × F_peak × Δt = 0.55 × 9.0 × 0.010 = 0.0495 N·s; spin recovery: Δω_ign = J_t × r_tip / I = 0.0495 × 0.005 / 7.65 × 10⁻⁶ = 32.4 rad/s, bringing the beyblade from 80 to 112.4 rad/s (+40.5%); translational burst: Δv_ign = J_t / m = 0.0495 / 0.036 = 1.375 m/s (a sudden aggressive sprint across the arena); the Shot driver (Sh.) operates on a passive-compression principle: its spring (k_sh = 2000 N/m, baseline x_sh = 2 mm) stores E_sh_baseline = 4.0 mJ, and on each wall or obstacle contact the impact additionally compresses the spring by δ_wall = m × v_impact² / (2 × k_sh × δ_wall) ... solving for δ: at v_wall = 1.0 m/s the kinetic energy ½ × m × v² = ½ × 0.036 × 1.0 = 0.018 J is absorbed into spring compression ΔE_wall = 18 mJ; total spring energy after contact: E_sh_total = E_sh_baseline + ΔE_wall = 4 + 18 = 22 mJ; rebound velocity: v_rebound = √(2 × E_sh_total / m) = √(2 × 0.022 / 0.036) = √1.222 = 1.106 m/s, giving a coefficient of effective restitution ε_eff = v_rebound / v_impact = 1.106 / 1.0 = 1.106 — the Shot driver actually rebounds 10.6% faster than it hit, actively contributing kinetic energy from the spring; in the Ultimate Beyta Stadium, all three mechanisms are affected by the MSS floor magnet through two channels: first, their steel spring coils experience F_attract_spring ≈ 0.03–0.05 N when passing over the magnetic zone (from Case 555 analysis), modestly pre-compressing or pre-loading the spring by δ_mag ≈ 0.01–0.025 mm; second, any rubber or hard tip in contact with the floor near the MSS experiences augmented normal force from the floor magnet attracting the steel spring component at h ≈ 5 mm, N_augment = m × g + F_attract_spring = 0.353 + 0.040 = 0.393 N (for Gen 3 m = 0.036 kg), providing 11.3% more grip force during the active burst phase — meaning the Ignition driver delivers 11.3% more tangential impulse near the MSS: J_t_MSS = μ × N_augment × Δt = 0.55 × 0.393 × 0.010 = 0.0216 N·s vs 0.0198 N·s baseline (Δω increase from 32.4 to 35.3 rad/s: +8.9% more spin recovery); for Gen 2 EG with Magna WD, Case 555 establishes the additional F_radial ≈ 0.037 N magnetic resistance that delays EG trigger by +6.0%, meaning the boost fires at ω_trigger_mag = 1.060 × ω_trigger_norm — and when it fires, the stronger spin state means the 56.5 rad/s boost is applied atop a higher-ω base, giving a more competitive post-boost speed.
+**Thesis:** Active driver systems across Gen 1 Plastic (Engine Gear), Gen 3 Burst Ignition', and Gen 3 Burst Shot driver store or generate mechanical energy and release it in controlled bursts, but the three mechanisms are architecturally distinct and span different generations; the **Gen 1 Engine Gear (EG)** — the wound clock-spring unit at the Spin Gear position in a Gen 1 Plastic beyblade stack (Takara Tomy, see Cases 186–195) — stores E_EG = ½ × k_EG × x_EG² = ½ × 1500 × (0.008)² = 0.048 J = 48 mJ at full wind (k_EG = 1500 N/m, winding stroke x_EG = 8 mm); using Gen 1 inertia I = 6.375 × 10⁻⁶ kg·m² and the Final Clutch trigger ω_trigger = 141 rad/s (1350 RPM), the spin boost at release is Δω_EG = E_EG / (I × ω_trigger) = 0.048 / (6.375 × 10⁻⁶ × 141) = 0.048 / 8.99 × 10⁻⁴ = 53.4 rad/s, carrying the beyblade from 141 rad/s to 194 rad/s (+37.9%); the EG fires once per match for Final Clutch, once at battle-start for First Clutch, or gradually for Normal Base; the **Gen 3 Burst Ignition' driver** (disc-driver combined unit, Case 72) is categorically different: it integrates an LR44-powered electric motor of torque τ_motor = 0.002 N·m into the disc-driver body; the motor is impact-activated — an internal spring-contact circuit closes when the beyblade sustains a collision delivering sufficient impact force (F_impact > F_trigger_Ign ≈ 5 N at the spring-contact switch), starting the motor for a run time t_run ≈ 1.5 s; the angular impulse delivered by the motor is L_motor = τ_motor × t_run = 0.002 × 1.5 = 3.0 × 10⁻³ N·m·s, and for a Gen 3 beyblade (I = 7.65 × 10⁻⁶ kg·m²) the spin boost is Δω_Ign = L_motor / I = 3.0 × 10⁻³ / 7.65 × 10⁻⁶ = 392 rad/s ≈ 400 rad/s (consistent with Case 72), with motor angular acceleration α_motor = τ_motor / I = 0.002 / 7.65 × 10⁻⁶ = 261 rad/s² ramping spin up over the 1.5 s activation; the Ignition' circuit is re-triggerable on each qualifying impact — the LR44 battery (≈ 1.5 V × 110 mAh = 594 J total, motor power P ≈ 0.75 W) provides roughly 594 / (0.75 × 1.5) ≈ 528 activations per charge, effectively unlimited for match purposes; the **Gen 3 Shot driver** stores energy in a pre-compressed steel spring (k_sh = 2000 N/m, baseline compression x_sh = 2 mm, E_sh_base = ½ × 2000 × (0.002)² = 4.0 mJ) and supplements this with energy absorbed from wall contacts: at v_impact = 1.0 m/s and m = 0.036 kg, the kinetic energy ΔE_wall = ½ × m × v² = 18.0 mJ is absorbed into additional spring compression, giving E_sh_total = 4.0 + 18.0 = 22.0 mJ and rebound speed v_rebound = √(2 × 22.0 × 10⁻³ / 0.036) = √1.222 = 1.106 m/s, an effective coefficient of restitution ε_eff = 1.106 — the Shot driver rebounds 10.6% faster than impact speed; in the Ultimate Beyta Stadium, the MSS floor magnet (Case 553) attracts the steel spring coils of Gen 3 drivers at h_spring ≈ 5 mm above the MSS zone, providing F_attract_spring ≈ 0.040 N (from Case 555 analysis), augmenting normal force to N_augment = 0.393 N (+11.3%); for the Shot driver, the increased floor-normal force during contact compresses the spring more, raising the stored energy and the rebound speed proportionally near the MSS zone; for Ignition', the motor angular impulse (L = τ × t) is independent of floor-normal force, but the increased grip during the motor's run transfers torque more efficiently: grip force scales by N_augment / N_floor = 1.113 (+11.3%); the Gen 1 EG's clock-spring operates at h_spring ≈ 10 mm within the EG body and interacts with Magna WD as analysed in Case 555, but does not interact with the Beyta MSS floor magnet at the arena floor level.
 
-### Spring Driver Energy Comparison
+### Active Driver Energy Comparison
 
 ```
-Gen 2 EG:
+GEN 1 — Engine Gear (EG):
+  Type: wound clock-spring, Gen 1 Plastic era (Takara Tomy)
   k_EG = 1500 N/m,  x_EG = 8 mm,  E_EG = 48 mJ
-  Trigger: First/Final Clutch or Normal Base per Case 541–542
-  Spin boost at ω_trigger=100: Δω = E_EG / (I × ω) = 48e-3 / (8.5e-6 × 100) = 56.5 rad/s
-  Post-boost: 100 + 56.5 = 156.5 rad/s  (+56.5%)
+  Trigger: Final Clutch at ω = 141 rad/s (1350 RPM) [fires once]
+           First Clutch at battle start [fires once]
+           Normal Base: gradual release
+  Spin boost (Final Clutch): Δω = E_EG / (I × ω_trigger)
+    = 48e-3 / (6.375e-6 × 141) = 53.4 rad/s
+  Post-boost ω: 141 + 53.4 = 194 rad/s  (+37.9%)
 
-Gen 3 Ignition Driver:
-  k_ign = 3000 N/m,  x_ign = 3 mm,  E_ign = 13.5 mJ
-  Trigger: centrifugal at ω ≈ 80 rad/s
-  Peak spring force: F_peak = k × x = 9.0 N
-  Tangential impulse: J_t = μ × F × Δt = 0.55 × 9.0 × 0.010 = 0.0495 N·s
-  Spin boost: Δω = J_t × r_tip / I = 0.0495 × 0.005 / 7.65e-6 = 32.4 rad/s
-  Velocity burst: Δv = J_t / m = 0.0495 / 0.036 = 1.375 m/s
+GEN 3 — Ignition' Driver:
+  Type: LR44-motor disc-driver combined unit, Gen 3 Burst era (Case 72)
+  τ_motor = 0.002 N·m,  t_run ≈ 1.5 s per activation
+  Trigger: impact force F_impact > 5 N (spring-contact circuit closes)
+  L_motor = 0.002 × 1.5 = 3.0×10⁻³ N·m·s
+  Δω_Ign = 3.0×10⁻³ / 7.65×10⁻⁶ = 392 rad/s  (≈ 400 rad/s per Case 72)
+  α_motor = 0.002 / 7.65×10⁻⁶ = 261 rad/s²  (during activation)
+  Battery: ~528 activations per LR44 charge
 
-Gen 3 Shot Driver:
-  k_sh = 2000 N/m,  x_sh_base = 2 mm,  E_sh_base = 4.0 mJ
-  On wall contact at 1.0 m/s: ΔE_wall = ½mv² = 18 mJ
-  E_sh_total = 22 mJ,  v_rebound = 1.106 m/s (ε_eff = 1.106)
-  Effective energy injection per wall: +18 mJ from spring action
+GEN 3 — Shot Driver:
+  Type: passive-compression spring, Gen 3 Burst era
+  k_sh = 2000 N/m,  x_base = 2 mm,  E_base = 4.0 mJ
+  On wall contact at v = 1.0 m/s: ΔE_wall = ½mv² = 18.0 mJ
+  E_total = 22.0 mJ,  v_rebound = 1.106 m/s,  ε_eff = 1.106  (+10.6% vs impact)
 
-MSS Zone Augmentation (steel spring attracted to MSS floor magnet):
-  F_attract_spring ≈ 0.040 N (at h=5mm, from Case 555 analysis)
-  N_augment = m·g + F_attract = 0.353 + 0.040 = 0.393 N  (Gen 3 beyblade)
-  Ignition grip boost: J_t_MSS = 0.55 × 0.393 × 0.010 = 0.02161 N·s  (vs 0.01980 baseline)
-  Δω_MSS  = 0.02161 × 0.005 / 7.65e-6 = 35.3 rad/s   (+2.9 rad/s vs non-MSS)
-  Δv_MSS  = 0.02161 / 0.036 = 0.600 m/s burst speed   (+0.075 m/s vs non-MSS)
+MSS Zone Augmentation (Gen 3 drivers, F_attract_spring = 0.040 N at h = 5 mm):
+  N_augment = 0.353 + 0.040 = 0.393 N  (+11.3% normal force)
+  Shot driver rebound and Ignition' grip-transfer: proportionally +11.3% near MSS
 ```
 
 ```typescript
-function springDriverBurst(
+function egSpinBoost(
   kSpring_Nm: number, compression_m: number,
-  muRubber: number, contactTime_s: number, rTip_m: number,
-  mass_kg: number, I_kgm2: number, omegaBefore_rads: number
-): { fPeak: number; impulseNs: number; deltaOmega: number; deltaV_ms: number; omegaAfter: number } {
+  I_kgm2: number, omegaTrigger_rads: number
+): { ePot_J: number; deltaOmega: number; omegaAfter: number } {
   const ePot = 0.5 * kSpring_Nm * compression_m ** 2;
-  const fPeak = kSpring_Nm * compression_m;
-  const impulse = muRubber * fPeak * contactTime_s;
-  const dOmega = impulse * rTip_m / I_kgm2;
-  const dV = impulse / mass_kg;
-  return { fPeak, impulseNs: impulse, deltaOmega: dOmega, deltaV_ms: dV, omegaAfter: omegaBefore_rads + dOmega };
+  const dOmega = ePot / (I_kgm2 * omegaTrigger_rads);
+  return { ePot_J: ePot, deltaOmega: dOmega, omegaAfter: omegaTrigger_rads + dOmega };
 }
-// springDriverBurst(3000, 0.003, 0.55, 0.010, 0.005, 0.036, 7.65e-6, 80)  → Ignition
-//   → { fPeak: 9.0 N, impulseNs: 0.0495 N·s, deltaOmega: 32.4 rad/s, deltaV_ms: 1.375, omegaAfter: 112.4 }
-// springDriverBurst(3000, 0.003, 0.55, 0.010, 0.005, 0.036, 7.65e-6, 80)  → Ignition near MSS
-//   (substitute N_augmented into impulse manually: 0.55 × 9.0 × 0.010 × 1.113 ≈ 0.0551 N·s)
-//   → deltaOmega = 35.3 rad/s  (+8.9% vs no MSS)
+// egSpinBoost(1500, 0.008, 6.375e-6, 141)   → Gen 1 EG Final Clutch
+//   → { ePot_J: 0.048, deltaOmega: 53.4 rad/s, omegaAfter: 194.4 rad/s }
+// egSpinBoost(1500, 0.008, 6.375e-6, 100)   → lighter clutch trigger
+//   → { ePot_J: 0.048, deltaOmega: 75.3 rad/s, omegaAfter: 175.3 rad/s }
+
+function ignitionMotorBurst(
+  tauMotor_Nm: number, tRun_s: number, I_kgm2: number
+): { angularImpulse_Nms: number; deltaOmega: number; alphaMotor_rads2: number } {
+  const L = tauMotor_Nm * tRun_s;
+  const dOmega = L / I_kgm2;
+  const alpha = tauMotor_Nm / I_kgm2;
+  return { angularImpulse_Nms: L, deltaOmega: dOmega, alphaMotor_rads2: alpha };
+}
+// ignitionMotorBurst(0.002, 1.5, 7.65e-6)   → Ignition' LR44 motor (Case 72)
+//   → { angularImpulse_Nms: 3.0e-3, deltaOmega: 392 rad/s, alphaMotor_rads2: 261.4 }
+// ignitionMotorBurst(0.002, 0.5, 7.65e-6)   → short activation (light impact)
+//   → { angularImpulse_Nms: 1.0e-3, deltaOmega: 130.7 rad/s, alphaMotor_rads2: 261.4 }
 
 function shotDriverRebound(
   kSpring_Nm: number, baseCompression_m: number,
@@ -1386,81 +1392,75 @@ function shotDriverRebound(
 // shotDriverRebound(2000, 0.002, 0.036, 1.0)
 //   → { eTotal_J: 0.022, vRebound_ms: 1.106, epsilonEff: 1.106 }
 // shotDriverRebound(2000, 0.002, 0.036, 0.5)
-//   → { eTotal_J: 0.009, vRebound_ms: 0.707, epsilonEff: 1.414 }  (slower impact → higher ratio)
+//   → { eTotal_J: 0.009, vRebound_ms: 0.707, epsilonEff: 1.414 }
 // shotDriverRebound(2000, 0.002, 0.036, 2.0)
-//   → { eTotal_J: 0.076, vRebound_ms: 2.055, epsilonEff: 1.027 }  (fast impact: spring fraction smaller)
+//   → { eTotal_J: 0.076, vRebound_ms: 2.055, epsilonEff: 1.028 }
 ```
 
 ---
 
-## Case 557 — F:D (Final Drive) Bottom in MFB: Centrifugal Mode-Switch Threshold, Dual-Phase Spin Economy, and Magnetic Arena Effect on Phase Transition
+## Case 557 — F:D (Final Drive) Bottom in MFB 4D System: High-Spin Defence Phase, Centrifugal Cam Mode-Switch at ω_switch = 94.3 rad/s, Low-Spin Sharp-Stamina Phase, and Magnetic Arena Phase-Transition Effects
 
-**Thesis:** The F:D (Final Drive) bottom is a centrifugally governed dual-mode driver from the MFB 4D System era that presents a freely rolling ball-contact tip at high spin and transitions to a locked rubber-flat tip at low spin, implementing an automatic end-game aggression switch that separates the spin life into two radically different friction regimes; the free-rolling ball (high-spin mode) achieves rolling without sliding — the ball's surface velocity matches the beyblade's translational velocity in the contact direction, yielding rolling friction coefficient μ_roll ≈ 0.02 (10–27× lower than a sliding rubber tip); at r_tip_high = 2 mm in rolling mode: α_high = μ_roll × m × g × r_tip_high / I = 0.02 × 0.040 × 9.81 × 0.002 / 8.5 × 10⁻⁶ = 1.570 × 10⁻⁵ / 8.5 × 10⁻⁶ = 1.847 rad/s²; the mode-switch mechanism is a weighted collar of mass m_c = 5.0 × 10⁻⁴ kg at orbit radius r_c = 5.0 mm held radially inward by return spring F_spring = 0.025 N; at high spin centrifugal force F_c = m_c × ω² × r_c > F_spring holds the collar out, keeping the ball in the elevated rolling position; as ω decreases F_c = m_c × ω² × r_c drops until at ω_switch = √(F_spring / (m_c × r_c)) = √(0.025 / (5.0 × 10⁻⁴ × 0.005)) = √10000 = 100.0 rad/s = 955 RPM the spring force overcomes centrifugal retention, the collar snaps inward, the ball seat lowers onto the rubber pad, and the tip becomes a locked rubber-flat of μ_slide = 0.55 and r_tip_low = 6 mm; spin decay in low-spin mode: α_low = 0.55 × 0.040 × 9.81 × 0.006 / 8.5 × 10⁻⁶ = 1.295 × 10⁻³ / 8.5 × 10⁻⁶ = 152.4 rad/s²; high-spin stamina phase from ω₀ = 300 rad/s to ω_switch = 100 rad/s at α_high = 1.847 rad/s²: t_high = 200 / 1.847 = 108.3 s; low-spin aggressive phase from 100 to 0 rad/s at α_low = 152.4 rad/s²: t_low = 100 / 152.4 = 0.656 s; total spin life: t_FD = 108.3 + 0.656 = 109.0 s, versus standard D tip (μ = 0.20, r = 4 mm): α_D = 0.20 × 0.040 × 9.81 × 0.004 / 8.5 × 10⁻⁶ = 36.9 rad/s², t_D = 300 / 36.9 = 8.13 s — F:D is 109.0 / 8.13 = 13.4× longer in total, and 108.3 / 8.13 = 13.3× longer in the stamina phase alone; the low-spin "Final Drive" burst covers the arena diagonal at a_burst = μ_slide × g = 0.55 × 9.81 = 5.40 m/s², reaching burst velocity v_burst = √(2 × a_burst × d_arena) = √(2 × 5.40 × 0.170) = √1.836 = 1.355 m/s across the 170 mm BeyStadium Attack Type battle zone radius in t_cross = √(2 × 0.170 / 5.40) = 0.251 s — well within the 0.656 s aggressive window; in the Ultimate Beyta Stadium with its 175 mm battle zone radius (scaled from 170 mm) and inward ridges, the Final Drive aggressive phase produces v_burst = √(2 × 5.40 × 0.175) = 1.374 m/s, but the longer transit d = 140 mm (from mid-arena to wall) takes t_cross = 0.228 s, still within the 0.656 s window; in the Magnacore Attraction Mode magnetic arena zone (F_attract = 0.40 N additional normal force), both friction phases scale with N_eff: α_high_attract = 1.847 × (0.694 / 0.294) = 4.36 rad/s², shortening the stamina phase to t_high_attract = 200 / 4.36 = 45.9 s, while α_low_attract = 152.4 × 2.36 = 359.7 rad/s² shortens the burst phase to t_low_attract = 100 / 359.7 = 0.278 s — the total life drops to 46.1 s (vs 109.0 s, a 57.7% reduction); in Magnacore Repulsion Mode levitation (from Case 554), N_eff → 0 sets α_high → α_air + α_bearing ≈ 0.52 rad/s², extending the stamina phase to 200 / 0.52 = 385 s; crucially, in levitation the beyblade never reaches ω_switch = 100 rad/s within any 180 s tournament match, so the centrifugal collar remains extended and the rubber-flat phase is never activated — the F:D beyblade in Repulsion levitation is a pure extreme-stamina top with no aggressive terminal phase; conversely, a non-Magnacore MFB F:D top passing over the Ultimate Beyta MSS experiences only the mild steel-component attraction F_attract_steel ≈ 0.005–0.020 N (from normal steel spindle and WD insert components at 10 mm height over the MSS), giving N_eff augmentation of (0.392 + 0.012) / 0.392 = 1.031 and α_high_augment = 1.847 × 1.031 = 1.904 rad/s², reducing t_high to 200 / 1.904 = 105.0 s — only a 3.1% reduction from the steel-component interaction alone, confirming that the F:D tip is nearly immune to mild magnetic perturbation in its critical stamina phase.
+**Thesis:** The F:D (Final Drive) bottom is a combined Track-and-Tip unit from the MFB 4D System era (used on beyblades such as Big Bang Pegasis F:D) that governs floor contact through a centrifugally released cam mechanism: it presents a **wide/defence contact tip** (μ_wide = 0.35, r_wide = 3 mm) at high spin and transitions to a **sharp/stamina tip** (μ_sharp = 0.15, r_sharp = 0.8 mm) at low spin, implementing an automatic phase transition from defensive engagement to stamina conservation; the mechanism uses a weighted cam arm (m_arm = 1.5 × 10⁻³ kg at cam radius r_cam = 9 mm) biased inward by a return spring (F_spring = 0.12 N); at high spin the centrifugal force F_c = m_arm × ω² × r_cam exceeds F_spring, holding the wide defence tip in floor contact; as spin decays, F_c drops until at ω_switch = √(F_spring / (m_arm × r_cam)) = √(0.12 / (1.5 × 10⁻³ × 9 × 10⁻³)) = √(0.12 / 1.35 × 10⁻⁵) = √8889 = 94.3 rad/s the spring force overcomes centrifugal retention, the cam arm retracts, the wide tip withdraws, and the sharp stamina tip engages the floor; using the beyblade parameters established for F:D in Case 366 (m = 0.040 kg, I = 1.187 × 10⁻⁵ kg·m²), spin decay in the **high-spin defence phase** (ω₀ = 300 rad/s to ω_switch = 94.3 rad/s): α_high = μ_wide × m × g × r_wide / I = 0.35 × 0.040 × 9.81 × 0.003 / 1.187 × 10⁻⁵ = 4.12 × 10⁻⁴ / 1.187 × 10⁻⁵ = 34.7 rad/s² (consistent with Case 366), giving t_high = (300 − 94.3) / 34.7 = 5.93 s; spin decay in the **low-spin stamina phase** (94.3 rad/s to 0): α_low = 0.15 × 0.040 × 9.81 × 0.0008 / 1.187 × 10⁻⁵ = 4.71 × 10⁻⁵ / 1.187 × 10⁻⁵ = 3.97 ≈ 4.0 rad/s², giving t_low = 94.3 / 4.0 = 23.6 s; total F:D spin life: t_FD = 5.93 + 23.6 = 29.5 s; for comparison a standard D tip (μ_D = 0.20, r_D = 4 mm, same beyblade) gives α_D = 0.20 × 0.040 × 9.81 × 0.004 / 1.187 × 10⁻⁵ = 26.4 rad/s² and t_D = 300 / 26.4 = 11.4 s — F:D is 29.5 / 11.4 = 2.59× longer in total spin life; the tactical value of F:D is the phase architecture rather than raw stamina (a B:D bearing tip at μ = 0.05, r = 3 mm gives α_BD = 5.0 rad/s² and t_BD ≈ 60 s, more than twice F:D's total): the wide defence phase (μ_wide = 0.35, larger contact area) resists lateral burst forces and maintains stable floor contact during competitive collisions, while the sharp stamina phase efficiently conserves the remaining spin energy once the engagement window has passed; in the Ultimate Beyta Stadium, the MSS floor magnet (Case 553) attracts any steel spindle or driver-insert component of the F:D assembly at h ≈ 10 mm above the floor, providing N_eff augmentation of approximately +3–5% through steel-component attraction (F_attract_steel ≈ 0.012–0.020 N at 10 mm for small MFB steel components); this augments α_high by 3–5%: α_high_MSS = 34.7 × 1.04 = 36.1 rad/s², reducing t_high by 0.23 s, while α_low changes by less than 1%; a Magnecore-equipped MFB beyblade with North Magnecore SG Core assembled in a Magne Stadium (Case 554) using an F:D bottom experiences the full 68% normal-force augmentation: N_eff_attr = 0.040 × 9.81 + 0.68 × 0.040 × 9.81 = 0.392 + 0.267 = 0.659 N, scaling α_high to 34.7 × (0.659/0.392) = 58.2 rad/s² and compressing the defence phase to (300−94.3)/58.2 = 3.54 s, then scaling α_low to 4.0 × 1.682 = 6.73 rad/s² and cutting the stamina phase to 94.3/6.73 = 14.0 s, for a total reduced life of 17.5 s — a 40.7% reduction vs the non-magnetic baseline; the cam switch threshold ω_switch = 94.3 rad/s remains constant under all arena conditions as it is a mechanical constant of the cam-spring geometry.
 
-### F:D Mode-Switch Mechanism and Spin Profile
+### F:D Centrifugal Cam Mechanism and Spin Profile
 
 ```
-CENTRIFUGAL MODE-SWITCH (cross-section schematic):
+CENTRIFUGAL CAM MODE-SWITCH (cross-section):
 
-  HIGH-SPIN STATE (ω > 100 rad/s):               LOW-SPIN STATE (ω ≤ 100 rad/s):
+HIGH-SPIN STATE (ω > 94.3 rad/s):            LOW-SPIN STATE (ω ≤ 94.3 rad/s):
+  F_c = m_arm × ω² × r_cam > F_spring          F_spring > F_c → cam retracts
 
-     ← F_spring = 0.025 N inward                    collar snapped in by F_spring
-     → F_centrifugal = m_c × ω² × r_c              ball seat descends to rubber pad
-                                                     
-  ┌──────────────────────┐                       ┌──────────────────────┐
-  │  collar OUT ←→       │  F_c > F_spring       │  collar IN ←         │  F_spring > F_c
-  │   [●] ball elevated  │  rolling mode         │   [●] ball on rubber │  locked slide mode
-  └──────┬───────────────┘                       └──────┬───────────────┘
-         │  r_tip = 2 mm (ball)                         │  r_tip = 6 mm (rubber flat)
-         │  μ = 0.02 (rolling)                          │  μ = 0.55 (sliding)
-         ●                                               ●
-  ─── FLOOR ──────────────────────────────────── ─── FLOOR ─────────────────────────
+ ┌────────────────────────┐                ┌────────────────────────┐
+ │ cam arm OUT →→         │                │ ←← cam arm IN          │
+ │ (1.5 g at r_cam=9 mm)  │                │ F_spring = 0.12 N      │
+ │ wide tip EXTENDED       │                │ wide tip RETRACTED     │
+ └──────────┬──────────────┘                └──────────┬─────────────┘
+            │ r_wide = 3 mm, μ = 0.35                  │ r_sharp = 0.8 mm, μ = 0.15
+            │ DEFENCE / wide contact                    │ SHARP / stamina contact
+            ●                                           ●
+  ── FLOOR ───────────────────────────────── ── FLOOR ─────────────────
 
-SPIN PROFILE (time vs omega):
+ω_switch = √(F_spring / (m_arm × r_cam)) = √(0.12 / 1.35×10⁻⁵) = 94.3 rad/s = 900 RPM
+
+SPIN PROFILE (ω vs time):
 
   ω (rad/s)
   300 ─┐
-       │ ← HIGH-SPIN PHASE (t = 0 to 108.3 s)
-       │   α = 1.847 rad/s²   (gentle slope)
-       │   Mode: rolling ball  μ=0.02
-  100 ─┼───────────────────────────────────┐
-       │  ← LOW-SPIN PHASE (t = 108.3–109.0 s)
-       │    α = 152.4 rad/s²   (very steep)
-     0 └────────────────────────────────────┘
-       0                                 109.0 s
-
-  KEY COMPARISON:
-    F:D  total spin life: 109.0 s
-    D    tip spin life:     8.13 s  (36.9 rad/s² continuous)
-    B:D  bearing tip:      14.2 s  (μ=0.05, r=3mm: α=21.1 rad/s²)
-    F:D is 13.4× standard D and 7.7× B:D in total spin life.
+       │  DEFENCE PHASE    α_high = 34.7 rad/s²   (5.93 s)
+       │  wide tip: μ=0.35, r=3 mm
+  94.3─┼──────────────────────────────────┐  ← CAM SWITCH
+       │  STAMINA PHASE    α_low = 4.0 rad/s²     (23.6 s)
+       │  sharp tip: μ=0.15, r=0.8 mm
+     0 └──────────────────────────────────────────────────┘
+       0             5.93                              29.5 s
 ```
 
-### Dual-Phase Spin Decay under Magnetic Arena Conditions
+### Dual-Phase Spin Decay under Arena Conditions
 
 ```
-ω_switch = √(F_spring / (m_c × r_c)) = √(0.025 / 2.5×10⁻⁶) = 100.0 rad/s  (constant)
+Arena condition              N_eff (N)   α_high (rad/s²)  t_high (s)  α_low (rad/s²)  t_low (s)  t_total (s)
+Normal floor                 0.392       34.7              5.93        4.0              23.6       29.5
+MSS steel-only +0.016        0.408       36.1 (+4.0%)      5.70        4.17             22.6       28.3
+Magne Stadium attr. +0.267   0.659       58.2 (+67.7%)     3.54        6.73 (+68%)      14.0       17.5
+D tip comparison             0.392       26.4              11.4 s total (no phase switch)
 
-Condition         N_eff (N)   α_high (rad/s²)  t_high (s)  α_low (rad/s²)  t_low (s)  t_total (s)
-Normal floor      0.392       1.847             108.3       152.4            0.656      109.0
-Attraction +0.40  0.792       3.731              53.6       307.8            0.325       53.9
-Steel only +0.012 0.404       1.904             105.0       156.3            0.640      105.6
-Repulsion (lev.)  0.000       0.520             385.0       N/A (no switch)  N/A        385+ s
+ω_switch = 94.3 rad/s in all conditions (mechanical constant, independent of N_eff).
 
-In Repulsion levitation: ω never drops to ω_switch=100 in a 180 s match.
-  After 180 s at α=0.52: ω_remaining = 300 - 0.52×180 = 300 - 93.6 = 206.4 rad/s >> 100
-  Final Drive aggressive phase never activates. Pure stamina configuration.
+B:D bearing tip (μ=0.05, r=3mm, same bey): α_BD = 5.0 rad/s²  →  t_BD ≈ 60 s
+  F:D (29.5 s) is not a stamina solution; B:D outperforms it by 2× in total spin life.
+  F:D value: defence phase (ω > 94.3 rad/s) resists burst; sharp phase conserves spin.
 ```
 
 ```typescript
 function finalDriveSwitchOmega(
-  mCollar_kg: number, rCollar_m: number, fSpring_N: number
+  mArm_kg: number, rCam_m: number, fSpring_N: number
 ): number {
-  return Math.sqrt(fSpring_N / (mCollar_kg * rCollar_m));
+  return Math.sqrt(fSpring_N / (mArm_kg * rCam_m));
 }
-// finalDriveSwitchOmega(5e-4, 0.005, 0.025) → 100.0 rad/s = 955 RPM
-// finalDriveSwitchOmega(5e-4, 0.005, 0.100) → 200.0 rad/s  (stiffer spring: earlier switch)
-// finalDriveSwitchOmega(1e-3, 0.005, 0.025) →  70.7 rad/s  (heavier collar: later switch)
+// finalDriveSwitchOmega(1.5e-3, 9e-3, 0.12)   → 94.3 rad/s = 900 RPM  (Case 366 values)
+// finalDriveSwitchOmega(1.5e-3, 9e-3, 0.20)   → 121.7 rad/s  (stiffer spring: earlier switch)
+// finalDriveSwitchOmega(3.0e-3, 9e-3, 0.12)   →  66.7 rad/s  (heavier arm: later switch)
 
 function finalDriveSpinLifeProfile(
   omega0_rads: number,
@@ -1468,38 +1468,937 @@ function finalDriveSpinLifeProfile(
   alphaHigh_rads2: number,
   alphaLow_rads2: number
 ): { tHighPhase_s: number; tLowPhase_s: number; tTotal_s: number; switchTriggered: boolean } {
-  const switchTriggered = omega0_rads > omegaSwitch_rads;
-  if (!switchTriggered) {
-    return { tHighPhase_s: 0, tLowPhase_s: omega0_rads / alphaLow_rads2, tTotal_s: omega0_rads / alphaLow_rads2, switchTriggered: false };
+  if (omega0_rads <= omegaSwitch_rads) {
+    const tLow = omega0_rads / alphaLow_rads2;
+    return { tHighPhase_s: 0, tLowPhase_s: tLow, tTotal_s: tLow, switchTriggered: false };
   }
   const tHigh = (omega0_rads - omegaSwitch_rads) / alphaHigh_rads2;
-  const tLow = omegaSwitch_rads / alphaLow_rads2;
+  const tLow  = omegaSwitch_rads / alphaLow_rads2;
   return { tHighPhase_s: tHigh, tLowPhase_s: tLow, tTotal_s: tHigh + tLow, switchTriggered: true };
 }
-// finalDriveSpinLifeProfile(300, 100, 1.847, 152.4)   → normal floor
-//   → { tHighPhase_s: 108.3, tLowPhase_s: 0.656, tTotal_s: 109.0, switchTriggered: true }
-// finalDriveSpinLifeProfile(300, 100, 3.731, 307.8)   → attraction mode (+0.40 N)
-//   → { tHighPhase_s: 53.6, tLowPhase_s: 0.325, tTotal_s: 53.9, switchTriggered: true }
-// finalDriveSpinLifeProfile(300, 100, 0.520, 152.4)   → repulsion levitation
-//   → { tHighPhase_s: 385.0, tLowPhase_s: 0.656, tTotal_s: 385.7, switchTriggered: true }
-//   NOTE: at α=0.52, takes 385s to reach ω_switch — far beyond any match cap.
-//   In a 180s match: ω_remaining = 300 - 0.52×180 = 206.4 rad/s; switch never fires.
+// finalDriveSpinLifeProfile(300, 94.3, 34.7, 4.0)   → normal floor
+//   → { tHighPhase_s: 5.93, tLowPhase_s: 23.6, tTotal_s: 29.5, switchTriggered: true }
+// finalDriveSpinLifeProfile(300, 94.3, 58.2, 6.73)  → Magne Stadium attraction
+//   → { tHighPhase_s: 3.54, tLowPhase_s: 14.0, tTotal_s: 17.5, switchTriggered: true }
+// finalDriveSpinLifeProfile(150, 94.3, 34.7, 4.0)   → low-power launch
+//   → { tHighPhase_s: 1.60, tLowPhase_s: 23.6, tTotal_s: 25.2, switchTriggered: true }
 
-function finalDriveBurstRange(
-  omegaSwitch_rads: number, muSlide: number, g: number,
-  arenaRadius_m: number, mass_kg: number
-): { aBurst_ms2: number; vBurst_ms: number; tCross_s: number } {
-  const aBurst = muSlide * g;
-  const vBurst = Math.sqrt(2 * aBurst * arenaRadius_m);
-  const tCross = Math.sqrt(2 * arenaRadius_m / aBurst);
-  return { aBurst_ms2: aBurst, vBurst_ms: vBurst, tCross_s: tCross };
+function finalDriveAlphaFromNeff(
+  muTip: number, mass_kg: number, rTip_m: number, I_kgm2: number,
+  nEff_N: number
+): number {
+  return (muTip * nEff_N * rTip_m) / I_kgm2;
 }
-// finalDriveBurstRange(100, 0.55, 9.81, 0.170, 0.040)   → Attack Type arena
-//   → { aBurst_ms2: 5.40, vBurst_ms: 1.355, tCross_s: 0.251 s }
-// finalDriveBurstRange(100, 0.55, 9.81, 0.175, 0.040)   → Ultimate Beyta arena
-//   → { aBurst_ms2: 5.40, vBurst_ms: 1.374, tCross_s: 0.255 s }
-// finalDriveBurstRange(100, 0.55, 9.81, 0.182, 0.040)   → BX-10 battle zone
-//   → { aBurst_ms2: 5.40, vBurst_ms: 1.401, tCross_s: 0.259 s }
+// finalDriveAlphaFromNeff(0.35, 0.040, 0.003, 1.187e-5, 0.392)  → 34.7 rad/s² (defence, normal floor)
+// finalDriveAlphaFromNeff(0.15, 0.040, 0.0008, 1.187e-5, 0.392) →  4.0 rad/s² (sharp, normal floor)
+// finalDriveAlphaFromNeff(0.35, 0.040, 0.003, 1.187e-5, 0.659)  → 58.2 rad/s² (defence, Magne attr.)
+```
+
+---
+
+## Case 558 — Original Plastic Generation BBA Stadium (White Stadium): Square Housing with Round Sloped Bowl, Flat Centre Floor, Four-Pocket Corner Geometry, and Gravity-Funnel Analysis
+
+**Thesis:** The original BBA Stadium (Plastic Generation, 2001–2003, also sold as the "White Stadium" and bundled with starter sets in the V-Force era) is the foundational arena form for all subsequent Beyblade stadium design: its square outer housing (approximately 290 mm × 290 mm × 70 mm tall) contains a circular inner bowl of inner rim radius R_bowl = 125 mm (250 mm inner diameter), with a continuous inward-sloping wall from the rim down to a flat central floor of radius R_flat = 55 mm; unlike the MFB BeyStadium Attack Type (Case 545) there is no Tornado Ridge — the cross-section is a two-zone profile only: Zone 1 (flat centre, r = 0–55 mm, α = 0°, g_lat = 0 m/s²) and Zone 2 (continuous sloped wall, r = 55–125 mm, Δr = 70 mm, vertical rise H = 55 mm, slope angle α = atan(55/70) = atan(0.786) = 38.1°, g_lat = 9.81 × sin(38.1°) = 6.07 m/s² directed radially inward toward the centre); the absence of a ridge means every beyblade that has sufficient radial speed to reach the bowl rim will encounter wall ABS directly (ε_wall ≈ 0.75 for ABS-on-ABS) with no intermediate momentum-bleeding feature between the centre and the exit pockets; four corner pockets cut through the outer wall, each with an opening chord of approximately 65 mm measured at the bowl rim, giving total pocket coverage of 4 × 65 = 260 mm on an inner circumference of π × 250 = 785 mm, yielding P(ejection | top reaches outer rim) = 260 / 785 = 0.331 — a 33.1% ejection probability at random azimuth, substantially lower than the MFB Attack Type's 49.2% (Case 545), which explains why plastic-gen bouts have a higher ring-out rate only when direct attack impacts drive the opponent radially outward into a pocket arc and not when random wall bounces suffice; the full-slope two-zone geometry also means a beyblade launched tangentially from the rim reaches a floor orbit on the flat zone without any ridge-bounce redirection, making circular orbital paths possible in the flat zone for all tip types (including sharp plastic tips at μ = 0.10, r_tip = 0.8 mm where floor friction is low enough that orbital decay takes many revolutions); representative spin decay for a Dranzer G assembly (m = 0.022 kg, I_total = 3.8 × 10⁻⁶ kg·m², hard plastic tip μ = 0.10, r_tip = 0.8 mm): N = m × g = 0.022 × 9.81 = 0.216 N, α = μ × N × r_tip / I = 0.10 × 0.216 × 0.0008 / 3.8 × 10⁻⁶ = 4.55 rad/s²; at launch ω₀ = 250 rad/s (plastic-gen lower RPM cap from ripcord launcher), total flat-floor spin life t = ω₀ / α = 250 / 4.55 = 54.9 s; on the sloped wall the effective normal force reduces to N_slope = m × g × cos(38.1°) = 0.022 × 9.81 × 0.788 = 0.170 N, giving α_slope = 0.10 × 0.170 × 0.0008 / 3.8 × 10⁻⁶ = 3.58 rad/s² — 21% lower than the flat floor, so spin decays more slowly while traversing the wall than while resting in the centre; the gravity funnel delivers any top from the rim to the flat zone in t_return = √(2 × 0.070 / (6.04 − 0.10 × 9.81 × cos(38.1°))) = √(2 × 0.070 / 5.27) = 0.163 s, making the flat zone the dominant interaction surface for essentially the entire bout.
+
+### Visual Geometry — BBA Stadium Plan View and Cross-Section
+
+```
+PLAN VIEW (top-down, 290 mm × 290 mm outer housing):
+
+  ┌──────────────────────────────────────────────────────┐
+  │   corner                               corner        │
+  │  [POCKET]                             [POCKET]       │
+  │     ╲                                   ╱           │
+  │      ╲      ┌─────────────────────┐    ╱           │
+  │       ╲    ╱   SLOPED WALL        ╲  ╱            │
+  │        ╲  ╱    (Zone 2)            ╲╱             │
+  │         ╲╱    r = 55–125 mm        ╱╲             │
+  │         ╱╲                        ╱  ╲            │
+  │        ╱  ┌──────────────────────┐    ╲           │
+  │       ╱   │   FLAT FLOOR         │     ╲          │
+  │      ╱    │   (Zone 1)           │      ╲         │
+  │     ╱     │   r = 0–55 mm   ●   │       ╲        │
+  │     ╲     │      (centre)        │       ╱        │
+  │      ╲    └──────────────────────┘      ╱         │
+  │       ╲   outer rim R = 125 mm         ╱          │
+  │        ╲╱                             ╲╱          │
+  │  [POCKET]                           [POCKET]       │
+  │  corner                               corner        │
+  └──────────────────────────────────────────────────────┘
+
+  Inner bowl:  ⌀ 250 mm (R_bowl = 125 mm)
+  Flat floor:  ⌀ 110 mm (R_flat = 55 mm)
+  4 corner pockets, each ~65 mm chord opening at rim
+  Pocket arc total:    4 × 65 = 260 mm
+  Wall arc total:      785 − 260 = 525 mm
+  Circumference:       π × 250 = 785 mm
+  P(ring-out | hit rim at random azimuth) = 260 / 785 = 33.1 %
+```
+
+```
+RADIAL CROSS-SECTION (centre on left, pocket side on right):
+
+  Height
+  above     55 ─┐                                              ╔══ outer housing lip
+  floor        │                                           ╔══╝   H_total = 55 mm
+  (mm)      40 ─┤                                      ╔══╝
+               │                                   ╔══╝
+           25 ─┤                               ╔══╝   ← Zone 2: single slope  α = 38.1°
+               │                           ╔══╝         g_lat = 6.07 m/s²  inward ←
+           10 ─┤                       ╔══╝
+               │                   ╔══╝
+            0 ─┴───────────────────╝──────────────────────────────────────────────
+               │                   │                                               │
+               0                55 mm                                          125 mm
+                                   ↑                                               ↑
+                              slope begins                                  bowl rim / pocket
+                              (flat zone ends)                              (ABS wall / exit)
+
+  Zone 1:  FLAT CENTRE    r = 0–55 mm      α = 0°      g_lat = 0         N = m·g (full)
+  Zone 2:  SLOPED WALL    r = 55–125 mm    α = 38.1°   g_lat = 6.07 m/s² N_slope = m·g·cos(38.1°)
+           Δr = 70 mm,  H_rise = 55 mm
+           No Tornado Ridge, no secondary incline — just one clean slope to the rim.
+```
+
+```
+CROSS-SECTION COMPARISON: BBA Stadium (Plastic Gen) vs MFB Attack Type (Case 545)
+
+  Height
+  (mm)
+   55 ─┐                                                   ← BBA outer wall (H = 55 mm)
+   50 ─┤                                              ╔══
+   40 ─┤                                         ╔══╝
+   30 ─┤                                    ╔══╝            ╔══ MFB outer wall (H = 30 mm)
+   20 ─┤                               ╔══╝      ╔══╗    ╔╝
+   10 ─┤                          ╔══╝      ╔══╝  ╚══╚══╝       ← MFB Tornado Ridge peak
+    0 ─┴──────────────────────────╝─────────╝ ────────────────────
+        │                         │          │   │   │   │    │
+        0                      55 mm         40  125 135 145  170 mm
+                                  ↑          ↑   ↑
+                             BBA slope   MFB slope  MFB TR peak
+                             starts       starts
+
+  BBA (Plastic):  flat 0–55 mm → single slope 38.1° to 125 mm → rim (pocket or bounce)
+  MFB (Attack):   flat 0–40 mm → slope 30° to 125 mm → Tornado Ridge → 2nd slope 50° → wall
+  Key difference: BBA has NO ridge. Tops reach the outer wall without any redirection event.
+  BBA slope is steeper (38.1° vs 30°) but shorter span; MFB has more zone complexity.
+```
+
+### Zone Physics Summary
+
+```
+ZONE 1 — Flat Centre (r = 0–55 mm)
+  α_slope = 0°,  g_lat = 0 m/s²
+  N_floor = m × g  (full vertical weight)
+  Spin decay (Dranzer G, plastic tip μ = 0.10, r_tip = 0.8 mm):
+    α_flat = μ × m × g × r_tip / I = 0.10 × 0.022 × 9.81 × 0.0008 / 3.8×10⁻⁶ = 4.55 rad/s²
+    Spin life (ω₀ = 250 rad/s): t = 250 / 4.55 = 54.9 s
+
+ZONE 2 — Sloped Wall (r = 55–125 mm)
+  α_slope = 38.1°,  H_rise = 55 mm,  Δr = 70 mm
+  g_lat = 9.81 × sin(38.1°) = 6.04 m/s²  (inward, toward centre)
+  N_slope = m × g × cos(38.1°) = 0.022 × 9.81 × 0.788 = 0.170 N
+  Spin decay on slope (reduced N):
+    α_slope = μ × 0.170 × 0.0008 / 3.8×10⁻⁶ = 3.58 rad/s²  (21% slower than flat floor)
+
+  Net inward acceleration (slope gravity minus slope friction):
+    a_net = g_lat − μ × g × cos(38.1°) = 6.04 − 0.10 × 9.81 × 0.788 = 6.04 − 0.773 = 5.27 m/s²
+
+  Wall-return time (top placed at rim, v_radial,0 = 0):
+    t_return = √(2 × Δr / a_net) = √(2 × 0.070 / 5.27) = √(0.02657) = 0.163 s
+    v_at_flat = a_net × t_return = 5.27 × 0.163 = 0.859 m/s  (radially inward on arrival)
+
+  Rim wall bounce (no pocket, ε_wall = 0.75):
+    J = m × v_radial × (1 + ε) = 0.022 × v_radial × 1.75
+    v_reflected = 0.75 × v_radial  (directed back down the slope)
+```
+
+### Pocket Ejection and Surface Comparison
+
+```
+POCKET GEOMETRY:
+  Bowl circumference:        C = π × 250 = 785 mm
+  Pockets:                   4 corners, ~65 mm chord each
+  Total pocket arc:          4 × 65 = 260 mm   →  33.1 % of rim
+  Total wall arc:            785 − 260 = 525 mm →  66.9 % of rim
+  P(ring-out | reach rim):   260 / 785 = 0.331
+
+  MFB Attack Type (Case 545): P(ring-out) = 0.492
+  BBA difference:             0.492 − 0.331 = 0.161  (16.1 percentage points lower)
+  → Plastic-gen tops must be aimed at a pocket to ring out reliably;
+    random wall contact is twice as likely to bounce as to eject.
+
+SPIN DECAY TABLE (flat floor, ω₀ = 250 rad/s):
+  Assembly                    m (kg)  I (kg·m²)  μ     r_tip (mm)  α (rad/s²)  t_spin (s)
+  Dranzer G — sharp plastic   0.022   3.8×10⁻⁶   0.10  0.8         4.55        54.9
+  Dranzer G — flat plastic    0.022   3.8×10⁻⁶   0.15  3.0         25.6         9.8
+  Driger S — ball tip         0.021   3.6×10⁻⁶   0.13  2.0         15.2        16.4
+  Wolborg 2 — bearing tip     0.023   3.9×10⁻⁶   0.04  1.5          3.56       70.2
+  Dranzer G — slope (Zone 2)  0.022   3.8×10⁻⁶   0.10  0.8          3.58       69.8 (on slope)
+
+  Slope reduces α by 21% (lower N_slope) — spin decays more slowly in Zone 2 than Zone 1.
+  Bearing tip (Wolborg 2): longest spin life ~70 s; dominant stamina tip of plastic gen.
+```
+
+### TypeScript Reference Functions
+
+```typescript
+function bbaSlopeAngleDeg(H_rise_mm: number, deltaR_mm: number): number {
+  return (Math.atan(H_rise_mm / deltaR_mm) * 180) / Math.PI;
+}
+// bbaSlopeAngleDeg(55, 70)  →  38.1°
+
+function bbaGlat(slopeAngleDeg: number): number {
+  return 9.81 * Math.sin((slopeAngleDeg * Math.PI) / 180);
+}
+// bbaGlat(38.1)  →  6.04 m/s²
+
+function bbaWallReturnTime(
+  deltaR_m: number, mu: number, slopeAngleDeg: number
+): number {
+  const rad = (slopeAngleDeg * Math.PI) / 180;
+  const aNet = 9.81 * Math.sin(rad) - mu * 9.81 * Math.cos(rad);
+  return Math.sqrt((2 * deltaR_m) / aNet);
+}
+// bbaWallReturnTime(0.070, 0.10, 38.1)  →  0.163 s
+
+function bbaPocketEjectionProbability(
+  pocketCount: number, pocketChord_mm: number, bowlDiameter_mm: number
+): number {
+  const circ = Math.PI * bowlDiameter_mm;
+  return (pocketCount * pocketChord_mm) / circ;
+}
+// bbaPocketEjectionProbability(4, 65, 250)  →  0.331  (33.1%)
+
+function bbaSpinAlpha(
+  mu: number, mass_kg: number, rTip_m: number, I_kgm2: number,
+  onSlope: boolean, slopeAngleDeg: number
+): number {
+  const cosA = onSlope ? Math.cos((slopeAngleDeg * Math.PI) / 180) : 1.0;
+  const N = mass_kg * 9.81 * cosA;
+  return (mu * N * rTip_m) / I_kgm2;
+}
+// bbaSpinAlpha(0.10, 0.022, 0.0008, 3.8e-6, false, 38.1)  →  4.55 rad/s²  (flat floor)
+// bbaSpinAlpha(0.10, 0.022, 0.0008, 3.8e-6, true,  38.1)  →  3.58 rad/s²  (Zone 2 slope)
+// bbaSpinAlpha(0.04, 0.023, 0.0015, 3.9e-6, false, 38.1)  →  3.56 rad/s²  (bearing tip)
+```
+
+---
+
+## Case 559 — Field of Doom (BBA V-Force Era, Baseball Stadium Arena): Asymmetric High/Low Outfield Wall, Dual-Surface Grass/Mud Playing Field, Chain-Link Net Backstop, and Multi-Zone Friction and Bounce Analysis
+
+**Thesis:** The Field of Doom (named explicitly in the V-Force era Beyblade game and anime, BBA-sanctioned battle arena built inside a regulation baseball stadium) is the most asymmetrically configured official Beyblade arena of the plastic generation: it is built on the playing surface of a baseball diamond and inherits the sport's deliberate asymmetry — a triangular outfield grass zone (the roughly equilateral wedge from home plate outward, surface μ_grass ≈ 0.35–0.40, high-pile short grass provides more resistance than flat ABS) transitions into a triangular infield dirt/mud zone (the arc from the three bases and the mound region, μ_mud ≈ 0.55–0.70 depending on moisture level, loose granular surface produces the highest friction coefficient of any standard Beyblade arena surface); the outer boundary of the playable area (analogous to a stadium's outer wall) is asymmetric in wall height: the left-side outfield wall (the tall barrier, H_tall ≈ 4.0–5.0 m in the anime representation, scaling down to a scaled arena wall of approximately H_tall = 90 mm at the 1:30 beyblade scale) forms a rigid near-vertical ABS surface with ε_tall ≈ 0.72, delivering high-energy elastic bounces that redirect incoming tops back toward the interior; the right-side wall (the short barrier, H_short ≈ 30–40 mm at scale, ε_short ≈ 0.72 same material) provides a significantly lower bounce height and a greater risk of the top clearing the wall on a high-trajectory collision, making the right side the ring-out danger zone; the most distinctive feature is the chain-link net backstop behind home plate on the right/back side of the field — a steel chain-link fence (mesh opening ~25 mm × 25 mm, wire diameter ~2 mm, ABS frame) that acts as a partial energy absorber rather than a solid wall: a beyblade striking the net at v_impact contacts 2–4 wire strands simultaneously, each wire deflects and returns approximately 40% of radial kinetic energy per strand (ε_net ≈ 0.40–0.55 per interaction, chain-link wire is spring-wire steel with high restitution but partial engagement geometry reduces effective ε to 0.40–0.55 system level), so a top hitting the net at v = 1.5 m/s exits at v_out = 0.40 × 1.5 = 0.60 m/s in a partially randomised reflection angle (mesh geometry deflects up to ±20° from pure specular reflection), potentially trapping or deflecting beyblades into the dirt zone; the dual-surface friction system creates a persistent spin-drain asymmetry: a beyblade orbiting on grass (α_grass = μ_grass × m × g × r_tip / I) decays significantly faster than one on ABS, so a stamina-type orbiting the grass outfield loses spin at α_grass ≈ 2.5–3.5 × α_ABS while an attack-type chasing across the muddy infield experiences α_mud ≈ 3.5–5.0 × α_ABS; the net tactical consequence is that the Field of Doom heavily punishes stamina strategies (high friction kills spin life) and rewards quick-kill attack strategies that either ring out the opponent over the low right-side wall or trap them against the chain-link net.
+
+### Visual Geometry — Field of Doom Plan View
+
+```
+PLAN VIEW (top-down, 2000 mm × 1000 mm rectangular outer boundary — confirmed anime Field of Doom dimensions):
+
+  ┌──────────────────────────────────────────────────────────────────────┐
+  │  STADIUM SEATING UPPER TIER (above tall outfield wall)               │
+  │                                                                      │
+  │    TALL OUTFIELD WALL (left side)   H_tall ≈ 90 mm                  │
+  │  ╔══════════════════════════════════╗                                │
+  │  ║  STADIUM SEATING (lower tier)   ║  SHORT OUTFIELD WALL           │
+  │  ╚══════╗                          ║  H_short ≈ 35 mm               │
+  │  TALL   ║                          ╚═══════════════════╗            │
+  │  WALL   ║                                              ║            │
+  │  (left) ║      GRASS — OUTFIELD                       ║  CHAIN-    │
+  │         ║      (Zone 1, μ = 0.35–0.40)                ║  LINK      │
+  │         ║                                              ║  NET       │
+  │         ║                 ╱‾‾‾‾‾‾‾‾‾‾‾‾╲              ║  (back-    │
+  │         ║                ╱  INFIELD ARC  ╲             ║  stop)     │
+  │         ║               │   DIRT / MUD   │             ║            │
+  │         ║               │  (Zone 2)      │             ║            │
+  │         ║               │  μ = 0.55–0.70 │             ║            │
+  │         ║    3B ●       │       ● MOUND  │   ● 1B      ║            │
+  │         ║               │                │             ║            │
+  │         ║                ╲              ╱              ║            │
+  │  TALL   ║                 ╲  ● 2B      ╱               ║  SHORT    │
+  │  WALL   ╚══════════════════╲          ╱════════════════╝  WALL     │
+  │  (lower left corner)        ╲        ╱                    (right)   │
+  │                              ● HOME                                  │
+  │                              PLATE                                   │
+  │                              (launch zone)                           │
+  └──────────────────────────────────────────────────────────────────────┘
+
+  Zone 1: OUTFIELD GRASS    Outer triangular wedge    μ_grass = 0.35–0.40
+  Zone 2: INFIELD DIRT/MUD  Inner arc and diamond     μ_mud   = 0.55–0.70
+  Left boundary:  TALL WALL    H ≈ 90 mm   ε ≈ 0.72  (hard ABS panel)
+  Right boundary: SHORT WALL   H ≈ 35 mm   ε ≈ 0.72  (ring-out risk for high-arc tops)
+  Back boundary:  CHAIN NET    H ≈ 60 mm   ε ≈ 0.45  (partial energy absorber, ±20° scatter)
+```
+
+```
+SIDE ELEVATION — LEFT vs RIGHT WALL HEIGHT ASYMMETRY:
+
+  Left side (tall wall):               Right side (short wall + net):
+
+     ─┐  ← upper seating               ─┐  ← net top (~60 mm)
+ 90mm │  TALL WALL                  60mm │╬╬╬╬╬╬╬╬╬╬╬  CHAIN-LINK NET
+      │  (rigid ABS panel)              │╬╬╬╬╬╬╬╬╬╬╬  ε_net ≈ 0.45
+      │  ε_wall ≈ 0.72                  │╬╬╬╬╬╬╬╬╬╬╬  ±20° scatter
+      │  High elastic bounce            │╬╬╬╬╬╬╬╬╬╬╬
+ 35mm │                             35mm─┤  SHORT WALL (rigid ABS)
+      │                                 │  ε_wall ≈ 0.72
+      │                                 │  Top clears if v_vertical > √(2g×0.035) = 0.83 m/s
+    0 ┴─── PLAYING SURFACE ──────────── ┴──── PLAYING SURFACE ───────
+      GRASS (μ=0.35–0.40)               DIRT/MUD (μ=0.55–0.70)
+```
+
+```
+SURFACE ZONE CROSS-SECTION (schematic, centre-to-edge cut):
+
+  ← outfield wall (tall)                               right/net side →
+
+  [GRASS zone]         [INFIELD DIRT zone]           [NET zone]
+  μ = 0.35–0.40        μ = 0.55–0.70                 ε_net ≈ 0.45
+
+  ─────────────────────────────────────────────────────────────────────
+  GRASS █████████████  DIRT/MUD ▓▓▓▓▓▓▓▓▓▓▓▓▓▓  DIRT ▓▓▓│╬╬╬╬╬╬╬NET
+  ─────────────────────────────────────────────────────────────────────
+  ↑ low friction       ↑ high friction                    ↑ net absorb
+  α × 2.5–3.5         α × 3.5–5.0 (vs ABS)              partial trap
+  (vs ABS baseline)
+
+  Grass boundary ≈ r_grass from home plate (curved arc, Zone 1/Zone 2 edge)
+  Grass zone covers ~55% of total play area; dirt covers ~45%.
+```
+
+### Surface Friction and Spin Decay Analysis
+
+```
+REFERENCE: ABS floor baseline (μ_ABS = 0.15, MFB Attack Type flat centre)
+  α_ABS = μ × m × g × r_tip / I
+
+GRASS (outfield, μ_grass = 0.38, representative midpoint):
+  α_grass = (0.38 / 0.15) × α_ABS = 2.53 × α_ABS
+  For Plastic-gen stamina top (m=0.022 kg, I=3.8×10⁻⁶, r_tip=0.8 mm):
+    α_grass = 0.38 × 0.022 × 9.81 × 0.0008 / 3.8×10⁻⁶ = 17.3 rad/s²
+    Spin life (ω₀ = 250 rad/s): t = 250 / 17.3 = 14.5 s
+    (compare: 54.9 s on ABS flat floor — grass kills stamina by 73%)
+
+DIRT / MUD (infield, dry μ = 0.55, wet/muddy μ = 0.70):
+  Dry dirt:  α_dirt = 0.55 × 0.022 × 9.81 × 0.0008 / 3.8×10⁻⁶ = 25.0 rad/s²
+    Spin life: t = 250 / 25.0 = 10.0 s
+  Muddy:     α_mud  = 0.70 × 0.022 × 9.81 × 0.0008 / 3.8×10⁻⁶ = 31.8 rad/s²
+    Spin life: t = 250 / 31.8 = 7.9 s
+  Mud reduces stamina spin life to 14% of ABS baseline — catastrophic for stamina types.
+
+COMPARISON TABLE (same beyblade: m=0.022, I=3.8×10⁻⁶, r_tip=0.8 mm, ω₀=250 rad/s):
+  Surface          μ       α (rad/s²)   t_spin (s)   vs ABS (%)
+  ABS flat         0.15    6.82         36.7          100%
+  Grass (field)    0.38    17.3         14.5           40%
+  Dry dirt         0.55    25.0         10.0           27%
+  Wet mud          0.70    31.8          7.9           22%
+  Note: above uses r_tip=0.8 mm (sharp tip). Flat/wide tips have higher α on all surfaces.
+
+ATTACK-TYPE TIP (wide, μ_tip = 0.30, r_tip = 3.0 mm, m=0.026 kg, I=4.2×10⁻⁶):
+  On ABS:   α = 0.30 × 0.026 × 9.81 × 0.003 / 4.2×10⁻⁶ = 54.8 rad/s²   t = 4.6 s
+  On grass: α = (0.38/0.15) × 54.8 = 138.9 rad/s²                         t = 1.8 s
+  On mud:   α = (0.70/0.15) × 54.8 = 255.7 rad/s²                         t = 1.0 s
+  Attack types survive under 2 s on this arena — must win by ring-out quickly.
+```
+
+### Chain-Link Net Backstop Physics
+
+```
+NET GEOMETRY:
+  Mesh opening:    ~25 mm × 25 mm
+  Wire diameter:   ~2 mm (steel)
+  Net height:      H_net ≈ 60 mm (above right-short wall top)
+  Frame material:  ABS post and rail
+  Contact model:   2–4 wires per impact (beyblade AR width ≈ 25–40 mm)
+
+NET ENERGY ABSORPTION (per impact):
+  ε_net (effective system) ≈ 0.40–0.55
+  At v_impact = 1.5 m/s:
+    v_out = ε_net × v_impact = 0.45 × 1.5 = 0.675 m/s  (representative midpoint)
+    KE_absorbed = ½ × m × (v_impact² − v_out²) = ½ × 0.022 × (2.25 − 0.455) = 0.0197 J
+    KE_absorbed fraction = (2.25 − 0.455) / 2.25 = 79.8% of kinetic energy lost
+  At v_impact = 0.5 m/s (slow approach):
+    v_out = 0.45 × 0.5 = 0.225 m/s  (barely rebounds)
+    Below v_stall = μ_mud × g × r_bey / I_bey × Δt_net contact: top may not clear net.
+
+NET REFLECTION ANGLE SCATTER:
+  Diamond mesh at 45° orientation introduces up to ±20° azimuthal deflection from specular:
+  v_out_x = v_out × cos(θ_reflect ± Δθ),  Δθ ∈ [−20°, +20°]  (uniform distribution)
+  Result: tops bouncing off net cannot be predicted to land in a specific zone —
+          the net acts as a "chaos boundary" that scatters beyblades into the dirt.
+
+NET TRAP CONDITION (top too slow to bounce back):
+  A top hitting the net at v < v_trap where v_trap = √(2 × μ_mud × g × L_net_contact)
+  L_net_contact ≈ 0.01 m (wire contact length per strand)
+  v_trap ≈ √(2 × 0.60 × 9.81 × 0.01) = √(0.1177) = 0.343 m/s
+  Tops arriving at the net below 0.343 m/s may wedge against the wire frame and stop,
+  resulting in a Stadium-Out if the top falls through the mesh or stays against the net.
+```
+
+### Wall Height Ring-Out Analysis
+
+```
+TALL LEFT WALL (H_tall = 90 mm):
+  Minimum vertical speed to clear wall (from wall-strike):
+    v_clear = √(2 × g × H_tall) = √(2 × 9.81 × 0.090) = √(1.765) = 1.33 m/s
+  A top hitting the left wall at v_radial = 2.0 m/s:
+    Horizontal bounce: v_radial_out = ε × v_radial = 0.72 × 2.0 = 1.44 m/s (inward)
+    Vertical component from AR geometry (β_AR ≈ 30° tilt contact):
+      v_vertical = v_radial × sin(30°) = 2.0 × 0.5 = 1.0 m/s  (upward)
+      v_vertical < v_clear (1.0 < 1.33): top does NOT clear tall wall → bounces back.
+    At v_radial = 2.7 m/s: v_vertical = 1.35 m/s > 1.33 m/s → clears tall wall (ring-out).
+  The tall wall requires exceptional launch power to ring-out over; effective as a bounce wall.
+
+SHORT RIGHT WALL (H_short = 35 mm):
+  v_clear = √(2 × 9.81 × 0.035) = √(0.686) = 0.829 m/s  (vertical component needed)
+  At v_radial = 1.66 m/s with β_AR = 30°: v_vertical = 1.66 × 0.5 = 0.83 m/s ≥ v_clear.
+  The short wall is cleared at moderate attack speeds (~1.7 m/s radial) — easy ring-out zone.
+  Any attack directed at the right-side boundary at speed > 1.7 m/s is a viable ring-out attempt.
+
+ASYMMETRY SUMMARY:
+  Left tall wall:    ring-out requires v_radial > 2.7 m/s  (high-power attack only)
+  Right short wall:  ring-out requires v_radial > 1.7 m/s  (moderate attack sufficient)
+  Net backstop:      ring-out via trapping if v_arrival < 0.34 m/s (slow tops wedge in net)
+  Strategic consequence: Attack types should aim right-of-centre for ring-out;
+                         the tall wall on the left is best used as a bounce weapon to
+                         redirect one's own beyblade into the opponent.
+```
+
+### TypeScript Reference Functions
+
+```typescript
+function fieldOfDoomSpinAlpha(
+  mu_surface: number, mass_kg: number, rTip_m: number, I_kgm2: number
+): number {
+  return (mu_surface * mass_kg * 9.81 * rTip_m) / I_kgm2;
+}
+// fieldOfDoomSpinAlpha(0.15, 0.022, 0.0008, 3.8e-6)  →  6.82 rad/s²  (ABS baseline)
+// fieldOfDoomSpinAlpha(0.38, 0.022, 0.0008, 3.8e-6)  → 17.3  rad/s²  (grass)
+// fieldOfDoomSpinAlpha(0.55, 0.022, 0.0008, 3.8e-6)  → 25.0  rad/s²  (dry dirt)
+// fieldOfDoomSpinAlpha(0.70, 0.022, 0.0008, 3.8e-6)  → 31.8  rad/s²  (wet mud)
+
+function netBounceSpeed(vImpact_ms: number, epsilonNet: number): number {
+  return epsilonNet * vImpact_ms;
+}
+// netBounceSpeed(1.5, 0.45)  →  0.675 m/s  (representative mid-ε)
+// netBounceSpeed(0.5, 0.45)  →  0.225 m/s  (slow approach, barely rebounds)
+
+function wallClearSpeed(wallHeight_m: number, arContactAngleDeg: number): number {
+  const vVertical = Math.sqrt(2 * 9.81 * wallHeight_m);
+  const sinA = Math.sin((arContactAngleDeg * Math.PI) / 180);
+  return vVertical / sinA;  // required radial impact speed to generate enough vertical component
+}
+// wallClearSpeed(0.090, 30)  →  2.66 m/s  (tall left wall at β=30° AR contact)
+// wallClearSpeed(0.035, 30)  →  1.66 m/s  (short right wall at β=30° AR contact)
+
+function netTrapSpeed(mu_surface: number, contactLength_m: number): number {
+  return Math.sqrt(2 * mu_surface * 9.81 * contactLength_m);
+}
+// netTrapSpeed(0.60, 0.01)  →  0.343 m/s  (tops below this may wedge in net)
+
+function fieldSpinLifeSeconds(omega0_rads: number, mu: number, m: number, r: number, I: number): number {
+  const alpha = fieldOfDoomSpinAlpha(mu, m, r, I);
+  return omega0_rads / alpha;
+}
+// fieldSpinLifeSeconds(250, 0.38, 0.022, 0.0008, 3.8e-6)  → 14.5 s  (grass)
+// fieldSpinLifeSeconds(250, 0.55, 0.022, 0.0008, 3.8e-6)  → 10.0 s  (dry dirt)
+// fieldSpinLifeSeconds(250, 0.70, 0.022, 0.0008, 3.8e-6)  →  7.9 s  (wet mud)
+```
+
+---
+
+## Case 560 — Blizzard Bowl (BBA V-Force Era, Biovolt Stadium): 2 m × 2 m Circular Ice-Surface Bowl, Perimeter Pine-Tree Boundary with Variable-Gap Ring-Out Probability, Scattered Rock Obstacles, and Ultra-Low Ice Friction Analysis
+
+**Thesis:** The Blizzard Bowl (V-Force era, BBA-sanctioned arena built inside a circular outdoor basin at the Biovolt Stadium complex) is a 2000 mm outer diameter circular arena with a roughly flat ice surface (μ_ice ≈ 0.03–0.05, polished natural-ice surface formed over a concrete bowl base), making it the lowest-friction standard Beyblade arena surface of any generation; the outer boundary is a ring of mature snow-covered pine trees spaced approximately 120 mm centre-to-centre along a perimeter circumference of π × 2000 = 6283 mm, giving approximately 52 trees total; individual tree trunk diameter at contact height is approximately 50 mm, leaving inter-tree gaps of 120 − 50 = 70 mm — since a plastic-gen beyblade AR diameter is approximately 42–50 mm, a gap of 70 mm means tops can pass through a single inter-tree gap if their radial trajectory is aligned within ±(70 − 42)/2 = ±14 mm of the gap centreline; the probability that a top reaching the perimeter at a random azimuth finds a passable gap (treating trees as periodic obstacles): gap fraction = 70/120 = 0.583, but because the top must also be aimed within ±14 mm of the gap centre relative to its trajectory width, effective P(pass-through) ≈ 0.583 × (70 − 42) / 70 = 0.583 × 0.40 = 0.233; tree trunk impacts (ε_trunk ≈ 0.50, green pine wood) absorb approximately 50% of radial kinetic energy, making tree bounces less elastic than ABS wall bounces (ε_ABS ≈ 0.75), and the irregular trunk surface introduces azimuthal scatter of ±15–25°; eight to twelve rocks are scattered across the ice surface, each approximately 40–70 mm in longest dimension and 15–25 mm proud of the ice surface; a beyblade whose AR height at the equator is less than 15 mm will clear low rocks (AR rides above), while a top with AR at 8–12 mm height risks AR contact with rocks over 12 mm tall, producing an impulse J = m × v_radial × (1 + ε_rock) = m × v × (1 + 0.55) = 1.55 × m × v directed away from the rock face at the rock contact angle β_rock ∈ [30°, 90°] depending on approach geometry; the ice floor physics dominate the entire bout: spin decay α_ice = μ_ice × m × g × r_tip / I is dramatically reduced compared to any other surface — for a Dranzer G plastic-tip top (m = 0.022 kg, I = 3.8 × 10⁻⁶ kg·m², r_tip = 0.8 mm, μ_ice = 0.04): α_ice = 0.04 × 0.022 × 9.81 × 0.0008 / 3.8 × 10⁻⁶ = 1.82 rad/s², giving spin life t = 250 / 1.82 = 137 s — more than 2.3 times longer than the same top on the BBA Stadium flat ABS floor (54.9 s, Case 558); simultaneously, lateral friction is so low that tops slide rather than roll on the ice: a beyblade with initial lateral velocity v = 1.0 m/s decelerates at a_slide = μ_ice × g = 0.04 × 9.81 = 0.392 m/s², requiring t_stop = v / a_slide = 1.0 / 0.392 = 2.55 s to halt from 1 m/s lateral speed — on any other surface this would be under 0.5 s; the tactical consequence is an extremely mobile, low-decay arena where tops glide freely, rocks create random deflection events, and ring-out requires threading a precise tree gap or striking a tree at sufficient energy to snap the trunk (unrealistic at beyblade scales), making the Blizzard Bowl fundamentally a spin-and-survive endurance arena rather than a ring-out arena.
+
+### Visual Geometry — Blizzard Bowl Plan View and Cross-Section
+
+```
+PLAN VIEW (top-down, 2000 mm diameter circular bowl):
+
+                    PINE TREES (ring, ~52 trees, 120 mm spacing)
+         ╔══════════▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲══════════╗
+       ╔═╝  ▲▲▲ gaps ▲   ▲   ▲   ▲   ▲   ▲ ▲▲▲       ╚═╗
+      ╔╝  ▲                                         ▲    ╚╗
+     ╔╝ ▲                  ICE SURFACE               ▲    ╚╗
+    ╔╝▲              (μ_ice = 0.03–0.05)              ▲    ╚╗
+    ║▲          ◆ rock                                 ▲    ║
+    ║▲     ◆ rock     ◆ rock                           ▲    ║
+    ║▲                       ◆ rock   ◆ rock           ▲    ║
+    ║▲  ◆ rock                                         ▲    ║
+    ║▲          ◆ rock   ◆ rock                        ▲    ║
+    ║▲                              ◆ rock             ▲    ║
+    ╚╗▲                                               ▲   ╔╝
+     ╚╗  ▲                                         ▲  ╔╝
+      ╚═╗  ▲▲▲ ▲   ▲   ▲   ▲   ▲   ▲   ▲   ▲▲▲  ╔═╝
+         ╚══════════▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼══════════╝
+
+  ▲ = Pine tree trunk (⌀ 50 mm, ε_trunk = 0.50, scatter ±15–25°)
+  ◆ = Rock obstacle (40–70 mm dia, 15–25 mm proud, ε_rock = 0.55)
+  Outer bowl: R = 1000 mm (diameter 2000 mm)
+  Tree gap: 70 mm between trunks; P(ring-out through gap) ≈ 23.3%
+  Ice floor: flat to within ±5 mm; no slope, no gravity funnel
+```
+
+```
+CROSS-SECTION (centre on left, tree boundary on right):
+
+  Height
+  above     25 ─┤        ◆◆ rock (15–25 mm proud)
+  ice (mm)     │
+            10 ─┤                                          ▲▲ tree trunk base
+               │                                         ▲▲▲  (50 mm dia)
+             0 ─┴────────────────────────────────────────╱────────────────
+                │                                       ╱ │
+                0                                  900 mm  1000 mm
+                                                       ↑        ↑
+                                                  tree ring   outer edge
+                                                  begins      of bowl
+
+  ICE FLOOR:  μ_ice = 0.04 (typical), perfectly flat
+  ROCK:       height 15–25 mm; AR clears if AR_height > rock_height
+              AR contact: β_rock ∈ [30°–90°], ε = 0.55
+  TREE TRUNK: vertical cylinder, ⌀ 50 mm, ε = 0.50, ±20° azimuthal scatter
+  GAP:        70 mm opening; passable if bey ⌀ ≤ 70 mm AND trajectory aligned ±14 mm
+```
+
+```
+TREE BOUNDARY — GAP GEOMETRY (arc segment, linearised):
+
+  ←── 120 mm centre-to-centre spacing ──→
+  ┌───────────────────────────────────────┐
+  │  ████  ←gap→  ████  ←gap→  ████      │  (cross-section of tree ring)
+  │  50mm    70mm  50mm    70mm  50mm     │
+  │  trunk   open  trunk   open  trunk   │
+  └───────────────────────────────────────┘
+  Gap fraction:              70 / 120 = 58.3 %  (of perimeter is open space)
+  Beyblade AR width:         ~42 mm
+  Usable pass-through width: 70 − 42 = 28 mm  (14 mm either side of gap centre)
+  Alignment probability:     28 / 70 = 40.0 %
+  P(ring-out | bey reaches tree ring) = 0.583 × 0.400 = 0.233  (23.3 %)
+  P(trunk bounce | bey reaches tree ring) = 1 − 0.233 = 0.767  (76.7 %)
+```
+
+### Ice Floor Physics and Rock Obstacle Analysis
+
+```
+ICE FRICTION (μ_ice = 0.04, representative mid-range):
+  Spin decay α_ice = μ_ice × m × g × r_tip / I
+
+  Assembly                          α_ice (rad/s²)  t_spin (s, ω₀=250)  vs ABS flat
+  Dranzer G — sharp tip (μ_tip=0.10) 1.82           137 s               2.50×
+  Dranzer G — flat tip  (μ_tip=0.15) 2.73            91 s               1.67×
+  Wolborg 2 — bearing   (μ_tip=0.04) 0.73           342 s               4.87×  (benchmark)
+  Attack-type wide tip  (μ_tip=0.30) 10.9            22.9 s              1.65×
+
+  Ice suppresses spin decay across all tip types by ~1.5–5× vs ABS.
+  Bearing tip (Wolborg 2) reaches 342 s theoretical spin life — effectively unlimited
+  in any bout under 3 minutes; battle outcome determined purely by collision dynamics.
+
+LATERAL SLIDE PHYSICS:
+  Deceleration from lateral speed v: a_slide = μ_ice × g = 0.04 × 9.81 = 0.392 m/s²
+  Stop time from v = 1.0 m/s: t_stop = 1.0 / 0.392 = 2.55 s
+  Slide distance: d = v² / (2 × a_slide) = 1.0 / 0.784 = 1.27 m  (covers more than half the arena!)
+  Compare ABS (μ=0.15): d = 1.0² / (2 × 0.15 × 9.81) = 0.340 m
+  → On ice, tops travel 3.7× further after each impact before stopping.
+
+ROCK OBSTACLE (representative: 55 mm dia, 20 mm proud):
+  Contact condition: AR_equator_height < 20 mm  (common for plastic-gen sharp tips)
+  Impact at v_approach = 1.5 m/s, contact angle β = 60°:
+    Normal component: v_n = v × cos(60°) = 0.75 m/s
+    Impulse: J = m × v_n × (1 + ε_rock) = 0.022 × 0.75 × 1.55 = 0.0256 N·s
+    Deflected normal speed: v_n_out = ε_rock × v_n = 0.55 × 0.75 = 0.41 m/s
+    Tangential speed preserved: v_t = v × sin(60°) = 1.30 m/s
+    Resultant speed: v_out = √(0.41² + 1.30²) = √(0.168 + 1.690) = 1.36 m/s
+    Deflection angle from original path: θ = atan(0.41 / 1.30) = 17.5°
+  On ice (μ=0.04), v_out = 1.36 m/s slides 1.36² / (2 × 0.392) = 2.36 m before stopping
+    → Bey likely travels full arena width after a rock hit at moderate speed.
+```
+
+### TypeScript Reference Functions
+
+```typescript
+function blizzardBowlSpinAlpha(
+  mu_ice: number, mass_kg: number, rTip_m: number, I_kgm2: number
+): number {
+  return (mu_ice * mass_kg * 9.81 * rTip_m) / I_kgm2;
+}
+// blizzardBowlSpinAlpha(0.04, 0.022, 0.0008, 3.8e-6)  →  1.82 rad/s²
+// blizzardBowlSpinAlpha(0.04, 0.023, 0.0015, 3.9e-6)  →  0.73 rad/s² (bearing tip)
+
+function iceSlideDistance(vLateral_ms: number, mu_ice: number): number {
+  return (vLateral_ms * vLateral_ms) / (2 * mu_ice * 9.81);
+}
+// iceSlideDistance(1.0, 0.04)  →  1.27 m
+// iceSlideDistance(0.5, 0.04)  →  0.319 m
+
+function treeBoundaryRingOutProbability(
+  treeDia_mm: number, spacing_mm: number, beyDia_mm: number
+): number {
+  const gap_mm = spacing_mm - treeDia_mm;
+  const gapFraction = gap_mm / spacing_mm;
+  const alignFraction = Math.max(0, (gap_mm - beyDia_mm)) / gap_mm;
+  return gapFraction * alignFraction;
+}
+// treeBoundaryRingOutProbability(50, 120, 42)  →  0.233  (23.3%)
+
+function rockDeflectionSpeed(
+  vApproach_ms: number, contactAngleDeg: number, epsilonRock: number
+): { vOut_ms: number; deflAngleDeg: number } {
+  const beta = (contactAngleDeg * Math.PI) / 180;
+  const vN = vApproach_ms * Math.cos(beta);
+  const vT = vApproach_ms * Math.sin(beta);
+  const vNout = epsilonRock * vN;
+  const vOut = Math.sqrt(vNout * vNout + vT * vT);
+  const deflAngle = (Math.atan(vNout / vT) * 180) / Math.PI;
+  return { vOut_ms: vOut, deflAngleDeg: deflAngle };
+}
+// rockDeflectionSpeed(1.5, 60, 0.55)  →  { vOut_ms: 1.36, deflAngleDeg: 17.5° }
+```
+
+---
+
+## Case 561 — R.P.M. Dish (BBA V-Force Era, Biovolt Stadium): 600 mm × 600 mm Circular Bowl with Central Rotating Disc (r = 100 mm), Exponential Spin-Up Mechanism, Centrifugal Ejection Threshold, and Petal-Walled Outer Bowl Analysis
+
+**Thesis:** The R.P.M. Dish (R.P.M. = Rotations Per Minute, V-Force era, Biovolt Stadium location) is a 600 mm outer-diameter circular bowl whose defining feature is a motorised central disc of radius R_disc = 100 mm (200 mm diameter) recessed flush with the flat bowl floor at the arena centre; the outer bowl has five curved petal-shaped wall segments inclined at approximately α_wall = 45° from the floor and separated by five narrow channel exits (each channel approximately 30 mm wide at the floor, widening to 50 mm at the rim) through which beyblades can be ejected; the central disc begins stationary and activates via a pressure-sensitive trigger (activation threshold F_trigger ≈ 0.12 N, approximately 60% of a standard beyblade's weight) when a beyblade comes to rest or orbits on the disc surface; once activated, the disc accelerates exponentially: ω_disc(t) = ω₀ × e^(λ × t) where ω₀ = 8 rad/s (initial activation speed) and λ = 0.18 s⁻¹ (growth rate constant), giving ω_disc(5 s) = 8 × e^(0.9) = 19.7 rad/s, ω_disc(10 s) = 8 × e^(1.8) = 48.3 rad/s, ω_disc(15 s) = 8 × e^(2.7) = 118 rad/s, ω_disc(20 s) = 8 × e^(3.6) = 290 rad/s; the disc surface has four shallow spiral grooves (visible as the X-pattern in the images) that engage the beyblade tip to transfer torque more reliably than a smooth disc surface: groove contact μ_groove ≈ 0.35–0.50 (compared to smooth ABS μ ≈ 0.15); torque transfer to beyblade spin: the relative surface speed of the disc at r = r_contact (distance from disc centre to beyblade tip contact point, r_contact ≈ 50 mm = 0.05 m) is v_rel = (ω_disc − ω_bey × r_tip / r_contact) × r_contact — if ω_disc × r_contact > ω_bey × r_tip (disc surface moves faster than bey tip perimeter), friction drives bey spin up; spin-up torque: τ = μ_groove × N × r_tip = 0.40 × 0.022 × 9.81 × 0.0008 = 6.91 × 10⁻⁵ N·m, giving spin-up rate dω_bey/dt = τ / I = 6.91 × 10⁻⁵ / 3.8 × 10⁻⁶ = 18.2 rad/s² — the disc can drive a beyblade from 250 rad/s to a maximum governed by the slip condition ω_bey_max × r_tip = ω_disc × r_contact, i.e. ω_bey_max = ω_disc × r_contact / r_tip = ω_disc × 0.05 / 0.0008 = 62.5 × ω_disc — the disc can theoretically drive beyblade spin far above the ripcord-launch maximum; the ejection mechanism is centrifugal: a beyblade sitting at radial position r_orbit on the disc surface needs centripetal force F_c = m × Ω_orbit² × r_orbit to maintain position, supplied only by disc surface friction F_f = μ_groove × m × g = 0.40 × 0.022 × 9.81 = 0.0863 N; ejection occurs when F_c > F_f, i.e. Ω_orbit² × r_orbit > μ_groove × g = 3.92 m/s²; at r_orbit = 0.05 m: Ω_orbit_eject = √(3.92 / 0.05) = √78.4 = 8.85 rad/s — very low orbit speed needed for ejection; the disc itself, by dragging the beyblade tangentially, drives Ω_orbit to this threshold rapidly; ejected beyblades travel radially outward at v_eject = Ω_orbit × r_orbit = 8.85 × 0.05 = 0.443 m/s at minimum (from disc edge), accelerating toward the petal walls; at the wall (R_wall = 280 mm from centre), kinetic energy at impact: v_wall = √(v_eject² + 2 × g_lat_petal × Δr_petal) where g_lat_petal = g × sin(45°) = 6.94 m/s² and Δr_petal = 0.28 − 0.10 = 0.18 m: v_wall = √(0.196 + 2 × 6.94 × 0.18) = √(0.196 + 2.498) = √2.694 = 1.64 m/s, with wall bounce ε = 0.72: v_bounce = 0.72 × 1.64 = 1.18 m/s back toward centre; if a channel exit is aligned: the top exits the stadium as a ring-out; five channels at 30 mm width on a wall circumference of π × 560 = 1759 mm give P(channel exit | reach wall) = 5 × 30 / 1759 = 0.085 — 8.5% per wall approach.
+
+### Visual Geometry — R.P.M. Dish Plan View and Cross-Section
+
+```
+PLAN VIEW (top-down, 600 mm outer diameter):
+
+                    ╔═════╗  ← channel exit (30 mm wide)
+               ╔════╝     ╚════╗
+           ╔═══╝  PETAL WALL    ╚═══╗
+         ╔═╝    (α = 45° slope)      ╚═╗
+        ╔╝ ← petal wall segment        ╚╗
+       ╔╝                               ╚╗ ← channel exit
+      ║                                   ║
+      ║   OUTER BOWL FLOOR                ║
+      ║   (r = 100–280 mm)     ╔════╗     ║
+      ║   ABS, μ = 0.15        ║DISC║     ║
+      ║                        ║ X  ║     ║
+      ║   r_disc = 100 mm      ╚════╝     ║
+      ║   (groove pattern)                ║
+      ╚╗                               ╔╝
+       ╚╗  channel exits (×5)         ╔╝
+        ╚═╗                         ╔═╝
+           ╚═══╗               ╔═══╝
+               ╚════╗     ╔════╝
+                    ╚═════╝
+
+  Central disc:   r = 100 mm,  flat,  4 spiral grooves (X-pattern)
+  Outer bowl:     r = 100–280 mm, ABS floor
+  Petal walls:    5 segments, α = 45°,  ε = 0.72
+  Channel exits:  5 gaps, 30 mm wide at floor
+  P(ring-out | wall hit) = 5 × 30 / (π × 560) = 8.5%
+```
+
+```
+RADIAL CROSS-SECTION (centre on left, channel wall on right):
+
+  Height
+  above    80 ─┐                                    ╔══ petal wall top / channel opening
+  floor       │                                ╔═══╝   H_wall = 80 mm
+  (mm)     60 ─┤                          ╔═══╝
+               │                     ╔═══╝   petal wall slope  α = 45°
+          40 ─┤                 ╔═══╝        g_lat = 6.94 m/s²  (inward ←)
+               │            ╔══╝
+          20 ─┤        ╔═══╝
+               │  ╔════╝ ← bowl floor begins at r = 100 mm
+           0 ─┴══╝─────────────────────────────────────────────
+               │   │              │                           │
+               0  100 mm       180 mm                     280 mm
+               ↑    ↑                                       ↑
+            disc  disc       bowl floor mid                petal
+            centre edge                                   base
+
+  ROTATING DISC:  r = 0–100 mm,   flat,  ω(t) = 8 × e^(0.18t) rad/s
+  BOWL FLOOR:     r = 100–280 mm, ABS,   μ = 0.15
+  PETAL WALL:     r = 280 mm → top, α = 45°,  H = 80 mm
+  CHANNEL EXIT:   5 × 30 mm gaps at petal junctions
+```
+
+### Disc Spin-Up and Ejection Physics
+
+```
+DISC SPEED OVER TIME:
+  ω_disc(t) = ω₀ × e^(λt)  where ω₀ = 8 rad/s, λ = 0.18 s⁻¹
+
+  t (s)   ω_disc (rad/s)   RPM      Disc surface speed at r=100mm (m/s)
+   0        8.0            76.4      0.80
+   5       19.7           188        1.97
+  10       48.3           461        4.83
+  15      118             1127      11.8
+  20      290             2770      29.0
+  25      711             6790      71.1
+  30     1743            16640     174
+
+  Disc reaches beyblade max spin (250 rad/s) at: t = ln(250/8) / 0.18 = ln(31.25) / 0.18 = 19.4 s
+
+SPIN TRANSFER TO BEYBLADE (on disc, r_contact = 50 mm from disc centre):
+  Condition for disc to drive bey spin UP:  ω_disc × r_contact > ω_bey × r_tip
+    i.e.  ω_disc > ω_bey × r_tip / r_contact = ω_bey × 0.0008 / 0.05 = 0.016 × ω_bey
+    → Disc drives bey spin up when ω_disc > 0.016 × ω_bey
+    → At ω_bey = 250 rad/s: disc must exceed 0.016 × 250 = 4.0 rad/s (already true at t=0)
+    → Disc always drives spin from activation onward.
+
+  Spin-up torque (groove contact):
+    τ_drive = μ_groove × m × g × r_tip = 0.40 × 0.022 × 9.81 × 0.0008 = 6.91 × 10⁻⁵ N·m
+    dω_bey/dt = τ_drive / I = 6.91×10⁻⁵ / 3.8×10⁻⁶ = 18.2 rad/s²
+    From ω₀=250 to ω_max (disc-governed): adds 18.2 × t_contact rad/s additional spin.
+
+EJECTION CONDITION (centrifugal):
+  Centripetal needed: F_c = m × Ω_orbit² × r_orbit
+  Available from friction: F_f = μ_groove × m × g = 0.40 × 0.022 × 9.81 = 0.0863 N
+  Ejection: Ω_orbit² > μ_groove × g / r_orbit
+
+  r_orbit (mm)   Ω_orbit_eject (rad/s)   v_eject (m/s)
+    20 mm           √(3.92/0.02) = 14.0     0.28 m/s
+    50 mm           √(3.92/0.05) = 8.85     0.44 m/s
+   100 mm (edge)    √(3.92/0.10) = 6.26     0.63 m/s
+
+  Wall impact speed (from disc edge r=100 mm, wall at r=280 mm):
+    g_lat = 9.81 × sin(45°) = 6.94 m/s²  (petal wall pulls bey back inward)
+    Hmm — petal wall is PAST disc; bey travels from bowl floor (flat, r=100–280 mm) to wall.
+    On bowl floor: no slope gravity, only friction decelerates.
+    v_at_wall² = v_eject² − 2 × μ_floor × g × Δr = 0.63² − 2 × 0.15 × 9.81 × 0.18
+               = 0.397 − 0.530 = −0.133  →  bey does NOT reach wall at v_eject = 0.63 m/s
+    Minimum ejection speed to reach wall: v_min = √(2 × 0.15 × 9.81 × 0.18) = 0.728 m/s
+    → Bey must be ejected from disc at v > 0.728 m/s to reach the petal wall.
+    → This requires ω_disc at r_orbit to produce v_eject ≥ 0.73 m/s:
+         v_eject = Ω_orbit × r_orbit; Ω_orbit ≥ 0.73 / 0.05 = 14.6 rad/s at r=50 mm
+    → Wall-reaching ejections begin when Ω_orbit ≥ 14.6 rad/s — disc reaches this state
+       by driving the bey orbit to ≈ 14.6 rad/s, which occurs ≈ 3–5 s after activation.
+
+  Wall bounce (ε = 0.72) vs channel exit (30 mm gap):
+    P(channel | wall hit) = 5 × 30 / (π × 560) = 150 / 1759 = 8.5 %
+    P(petal bounce | wall hit) = 91.5 %  →  most wall contacts return bey to bowl.
+```
+
+### TypeScript Reference Functions
+
+```typescript
+function rpmDishDiscSpeed(t_s: number, omega0 = 8, lambda = 0.18): number {
+  return omega0 * Math.exp(lambda * t_s);
+}
+// rpmDishDiscSpeed(10)  →  48.3 rad/s
+// rpmDishDiscSpeed(20)  →  290 rad/s
+// rpmDishDiscSpeed(0, 8, 0.18)  →  8 rad/s  (initial)
+
+function rpmDishEjectionOmega(rOrbit_m: number, mu_groove: number): number {
+  return Math.sqrt((mu_groove * 9.81) / rOrbit_m);
+}
+// rpmDishEjectionOmega(0.05, 0.40)  →  8.85 rad/s
+
+function rpmDishSpinUpRate(mu_groove: number, mass_kg: number, rTip_m: number, I_kgm2: number): number {
+  return (mu_groove * mass_kg * 9.81 * rTip_m) / I_kgm2;
+}
+// rpmDishSpinUpRate(0.40, 0.022, 0.0008, 3.8e-6)  →  18.2 rad/s²
+
+function rpmDishChannelExitProb(channelCount: number, channelWidth_mm: number, wallRadius_mm: number): number {
+  return (channelCount * channelWidth_mm) / (Math.PI * 2 * wallRadius_mm);
+}
+// rpmDishChannelExitProb(5, 30, 280)  →  0.0853  (8.5%)
+
+function rpmDishMinEjectSpeed(mu_floor: number, deltaR_m: number): number {
+  return Math.sqrt(2 * mu_floor * 9.81 * deltaR_m);
+}
+// rpmDishMinEjectSpeed(0.15, 0.18)  →  0.728 m/s  (minimum to reach petal wall from disc edge)
+```
+
+---
+
+## Case 562 — Black Sea Bowl (BBA V-Force Era, Biovolt Stadium): 2 m × 2 m Circular Harbour Arena, Moving Boat Platforms, Growing Whirlpool with Random Wave Ejection, Sloped Bank and Ring Road, and Pier Approach Geometry
+
+**Thesis:** The Black Sea Bowl (BBA V-Force era, Biovolt Stadium location, set in a harbour environment inspired by Eastern European port cities) is a 2000 mm outer-diameter circular arena consisting of four distinct radial zones from the centre outward: Zone 1 (harbour water, r = 0–700 mm, surface = open water with μ_water ≈ 0.80–1.20 for a spinning beyblade tip ploughing water, extremely high drag that depletes spin rapidly); Zone 2 (the bank or quay, r = 700–800 mm, sloped concrete ramp from water level up to road level, slope angle α_bank ≈ 25°, μ_bank ≈ 0.35, width 100 mm); Zone 3 (ring road, r = 800–900 mm, flat grey concrete, width 100 mm — sufficient for approximately 4 beyblades abreast at ~25 mm beyblade diameter, μ_road ≈ 0.20); Zone 4 (outer city wall, r = 900–1000 mm, vertical ABS retaining wall H ≈ 80 mm, ε ≈ 0.72, functions as the ring-out boundary); ten to twelve motorised boats move slowly across the harbour surface (Zone 1), each boat approximately 120 mm long × 55 mm wide with a flat deck surface 12 mm above the water line; a boat deck accommodates exactly 2 beyblades sitting side by side (2 × 25 mm = 50 mm, within 55 mm beam) and has wooden-plank surface (μ_deck ≈ 0.22, similar to smooth ABS, slightly higher); boats traverse the harbour on randomised circular/arc paths at v_boat ≈ 0.03–0.05 m/s (30–50 mm/s), slow enough that a beyblade can transition onto the boat from a pier if timing is correct; the whirlpool is a time-varying feature centred at the harbour centre (r = 0–200 mm): it begins as gentle circular currents (Ω_whirl ≈ 0.5 rad/s at t=0) and grows via the function Ω_whirl(t) = 0.5 × e^(0.08t) rad/s, where t is seconds since whirlpool activation; the whirlpool imparts a tangential force on any beyblade within r < 200 mm proportional to water drag: F_whirl = ½ × ρ_water × C_D × A_tip × (Ω_whirl × r_bey − ω_bey × r_tip)² where ρ_water = 1000 kg/m³, C_D ≈ 1.2 (bluff body), A_tip ≈ π × r_tip² = π × (3 mm)² = 2.83 × 10⁻⁵ m²; at high whirlpool intensity, random wave events are generated: waves propagate radially outward from the whirlpool at 0.5–1.0 m/s, have amplitude H_wave ≈ 15–30 mm above water line, and upon reaching the bank (Zone 2) climb the slope and can reach the ring road (Zone 3) if H_wave > 15 mm (bank crest); a wave sweeping the ring road pushes any beyblade on the road with force F_wave = ρ_water × g × H_wave × w_road × sin(α_wave) ≈ 1000 × 9.81 × 0.020 × 0.10 × sin(30°) = 9.81 N — a massive impulse relative to a 0.022–0.040 kg beyblade — instantly pushing it into the outer wall or over it (ring-out); piers are narrow (35 mm wide) concrete extensions from the bank into the water zone at approximately r = 700–780 mm, extending radially inward to r ≈ 600 mm; a beyblade can ride a pier inward toward the water, jump from the pier tip onto a passing boat, or fall into the water (stadium-out); the bank slope (α_bank = 25°) allows beys to climb from road level to bank crest and slide back: g_lat,bank = 9.81 × sin(25°) = 4.14 m/s² inward (toward water), making it a dangerous zone for slow-moving tops that lose momentum mid-climb and slide back into water.
+
+### Visual Geometry — Black Sea Bowl Plan View
+
+```
+PLAN VIEW (top-down, 2000 mm outer diameter):
+
+  ╔═════════════════════════════════════════════════════════════════════════╗
+  ║  OUTER CITY WALL (Zone 4, r=900–1000mm, H=80mm, ABS, ε=0.72)          ║
+  ╠══════════════════════════════════════════════════════════════════════════╣
+  ║  RING ROAD (Zone 3, r=800–900mm, w=100mm, concrete, μ=0.20)            ║
+  ╠══════════════╦════════╦════════════════════════════╦════════════════════╣
+  ║              ║ PIER   ║                            ║ PIER               ║
+  ╠══════════════╬════════╬════════════════════════════╬════════════════════╣
+  ║  BANK SLOPE  ║        ║  HARBOUR WATER (Zone 1)   ║                    ║
+  ║  (Zone 2,   ╱          r = 0–700 mm               ╲  α=25°, μ=0.35   ║
+  ║  α=25°)   ╱    ┌──┐ ┌──┐  ┌──┐  BOATS            ╲                  ║
+  ║          ╱   ┌──┐ └──┘ └──┘ └──┘  moving slowly     ╲                 ║
+  ║         ╱  ┌──┐                         ┌──┐   ┌──┐   ╲               ║
+  ║              │      ~~~WHIRLPOOL~~~      │       │                      ║
+  ║       ┌──┐  │    r=0–200mm, growing     │  ┌──┐                       ║
+  ║              │    Ω(t) = 0.5·e^0.08t    │                              ║
+  ║          ╲  └──┘                       └──┘   ┌──┐  ╱                 ║
+  ║           ╲         ┌──┐  ┌──┐  ┌──┐         ╱                       ║
+  ║            ╲                                  ╱                        ║
+  ╠═════════════╬════════╬════════════════════════╬══════════════════════╣
+  ║             ║ PIER   ║                        ║ PIER                  ║
+  ╠═════════════╩════════╩════════════════════════╩══════════════════════╣
+  ║  RING ROAD (Zone 3)                                                     ║
+  ╚═════════════════════════════════════════════════════════════════════════╝
+
+  Zone 1: HARBOUR WATER    r = 0–700 mm    μ_water ≈ 0.80–1.20 (ploughing drag)
+  Zone 2: BANK SLOPE       r = 700–800 mm  α = 25°, μ = 0.35, w = 100 mm
+  Zone 3: RING ROAD        r = 800–900 mm  μ = 0.20, w = 100 mm (fits 4 beys)
+  Zone 4: OUTER CITY WALL  r = 900–1000 mm H = 80 mm, ε = 0.72
+  BOATS:  ┌──┐ = 120×55 mm, deck μ = 0.22, carry 2 beys, v_boat = 40 mm/s
+  PIERS:  4× radial planks 35 mm wide, extend from r=800 mm inward to r=600 mm
+  WHIRLPOOL: r = 0–200 mm, Ω(t) = 0.5·e^(0.08t) rad/s, random wave events
+```
+
+```
+RADIAL CROSS-SECTION (centre on left, outer wall on right):
+
+  Height
+  above     30 ─┤  ← wave amplitude (H_wave 15–30 mm when whirlpool intense)
+  water        │
+  level     20 ─┤  boat deck (+12 mm)   pier surface (+8 mm)
+  (mm)         │   ┌─────────┐          ┌──────┐
+            10 ─┤   │ BOAT   │          │ PIER │   road surface → wall top (80mm)
+               │   │  deck  │          └──────┘                ╔═══╗
+             0 ─┼═══════════════════════════════════════╱──────╱   ║ outer wall
+    water       │  HARBOUR WATER (Zone 1)               ╱  road    ║ H = 80 mm
+    surface     │  μ_water = 0.80–1.20                 ╱ μ = 0.20  ║ ε = 0.72
+               │                              BANK SLOPE           ╚═══╗
+           −10 ─┤                              α = 25°, μ = 0.35        ║ (base)
+               │                              g_lat = 4.14 m/s² inward
+               │                              ← toward water
+           −30 ─┤  (bowl base, concrete)
+               │
+                │         │                   │           │         │
+                0       300 mm             700 mm       800 mm    900 mm
+                            ↑                  ↑           ↑
+                       whirlpool zone       bank edge    road edge
+                       (r < 200 mm)         starts       starts
+```
+
+```
+ZONE-BY-ZONE DETAIL:
+
+  Zone 1 — HARBOUR WATER (r = 0–700 mm):
+    Floor: open water; bey tip ploughs through water
+    Effective drag: F_drag = ½ × ρ_w × C_D × A_tip × v_tip²
+    Spin decay from water drag: α_water = F_drag × r_tip / I (much faster than any floor surface)
+    Approximate μ_effective ≈ 0.80–1.20 (depends on tip geometry and penetration depth)
+    A beyblade on the water surface without a boat: sinks if tip contact area insufficient;
+    most plastic-gen sharp tips (r_tip = 0.8 mm) will cause the bey to oscillate on the surface
+    for 1–3 s before tipping over (stadium-out via water immersion).
+    Boat deck:  μ = 0.22, surface 12 mm above water, bey transitions from bank/pier to boat
+                by lateral momentum; boat moves at ~40 mm/s relative to arena.
+
+  Zone 2 — BANK SLOPE (r = 700–800 mm, α = 25°):
+    g_lat = 9.81 × sin(25°) = 4.14 m/s²  (inward toward water = downhill toward Zone 1)
+    N_slope = m × g × cos(25°) = m × g × 0.906
+    Spin decay on bank: α_bank = 0.35 × m × g × 0.906 × r_tip / I
+    Min speed to crest bank from water level (Δh = 100 × tan(25°) = 46.6 mm):
+      v_min = √(2 × g × 0.0466 / η) ≈ √(2 × 9.81 × 0.0466 / 0.8) = 1.07 m/s  (η = 0.80)
+    Wave climb condition: H_wave > H_bank = 46.6 mm  →  any wave >47 mm tall floods the road.
+    Typical wave H = 15–30 mm: reaches mid-bank; H > 47 mm: floods road and wall.
+
+  Zone 3 — RING ROAD (r = 800–900 mm, w = 100 mm):
+    μ_road = 0.20, flat concrete
+    Capacity: 4 beyblades side-by-side (4 × 25 mm = 100 mm = road width)
+    Spin decay: α_road = 0.20 × m × g × r_tip / I (between ABS and MFB floor)
+    Wave impact force on road: F_wave = ρ_w × g × H_wave × w_road × sin(θ_wave)
+      At H_wave = 20 mm, θ_wave = 30°: F = 1000 × 9.81 × 0.020 × 0.10 × 0.5 = 9.81 N
+      Impulse (wave passes in ~0.3 s): J = 9.81 × 0.3 = 2.94 N·s
+      Velocity kick: Δv = J / m = 2.94 / 0.025 = 117 m/s  (extreme — simplified model)
+      Realistic: wave knocks beyblade off road at moderate speed into outer wall or over it.
+
+  PIERS (4 radial planks):
+    Width: 35 mm, length: 200 mm (r = 600–800 mm)
+    Surface: wood, μ_pier ≈ 0.25
+    Height: 8 mm above water surface
+    A bey can ride pier inward, reach tip (r = 600 mm), jump onto passing boat
+      (boat must be within 40 mm of pier tip for transition).
+    Fall-off-pier: bey enters water → rapidly loses spin (stadium-out in 1–3 s).
+
+  OUTER CITY WALL (Zone 4, r = 900–1000 mm):
+    H = 80 mm ABS panel, ε = 0.72
+    v_clear = √(2 × g × 0.080) = √(1.57) = 1.25 m/s (vertical component to clear)
+    At AR contact angle β = 30°: v_radial_needed = 1.25 / sin(30°) = 2.50 m/s
+    Wave-assisted ring-out: wave pushes bey at v >> 2.5 m/s → most wave impacts = ring-out.
+```
+
+### Whirlpool Physics and Wave Event Analysis
+
+```
+WHIRLPOOL GROWTH:
+  Ω_whirl(t) = 0.5 × e^(0.08t)  rad/s  (CCW rotation, t in seconds from activation)
+  t = 0:   Ω = 0.5 rad/s    (gentle current, barely affects bey)
+  t = 10:  Ω = 1.11 rad/s   (noticeable tangential pull)
+  t = 20:  Ω = 2.46 rad/s   (strong whirlpool, wave events begin)
+  t = 30:  Ω = 5.46 rad/s   (violent, waves reach road level)
+  t = 40:  Ω = 12.1 rad/s   (extreme, frequent large waves)
+
+TANGENTIAL FORCE ON BEYBLADE IN WHIRLPOOL ZONE (r_bey < 200 mm):
+  v_water_at_bey = Ω_whirl × r_bey  (tangential water speed)
+  v_relative = v_water_at_bey − v_bey_tangential
+  F_drag = ½ × 1000 × 1.2 × 2.83×10⁻⁵ × v_relative² = 0.01698 × v_relative²
+  At Ω_whirl = 2 rad/s, r_bey = 0.10 m: v_water = 0.20 m/s, bey at rest:
+    F_drag = 0.01698 × 0.04 = 6.79 × 10⁻⁴ N → pushes bey tangentially (minor)
+  At Ω_whirl = 5 rad/s, r_bey = 0.10 m: v_water = 0.50 m/s:
+    F_drag = 0.01698 × 0.25 = 4.25 × 10⁻³ N → significant tangential push toward wall
+
+WAVE EVENT (random generation when Ω_whirl > 2 rad/s):
+  Wave amplitude:    H_wave ~ U[15, 30] mm  (uniform random)
+  Wave propagation:  v_prop = 0.5–1.0 m/s  (radially outward)
+  Wave period:       one event per 5–15 s  (random, frequency increases with Ω)
+  Bank flood:        H_wave > 47 mm → road flood (extreme event, Ω_whirl > 10 rad/s)
+  Typical event:     H_wave ≈ 20 mm → reaches mid-bank, pushes beys on pier tips into water.
+
+BOAT DYNAMICS:
+  10 boats, each 120 mm × 55 mm, deck 12 mm above water, mass ≈ 0.5 kg (model boat)
+  Boat speed: v_boat = 40 mm/s on a circular arc of r_boat ∈ [200, 600] mm
+  Boat orbit period: T = 2π × r_boat / v_boat
+    r_boat = 400 mm: T = 2π × 0.40 / 0.04 = 62.8 s per full circuit
+  Bey-on-boat transition: bey must approach boat at <60 mm/s relative speed to land stably;
+    at approach speed >200 mm/s, bey bounces off boat hull (ε_hull ≈ 0.50).
+  Boat-on-boat collision (wave-driven): boats may collide, creating momentary obstacles.
+  Bey falls off boat: if wave lifts water >12 mm at boat location, bey swept off deck.
+```
+
+### TypeScript Reference Functions
+
+```typescript
+function blackSeaBowlWhirlpoolOmega(t_s: number, omega0 = 0.5, lambda = 0.08): number {
+  return omega0 * Math.exp(lambda * t_s);
+}
+// blackSeaBowlWhirlpoolOmega(20)  →  2.46 rad/s
+// blackSeaBowlWhirlpoolOmega(30)  →  5.46 rad/s
+
+function blackSeaBowlWaveForcePeak(H_wave_m: number, road_width_m: number): number {
+  return 1000 * 9.81 * H_wave_m * road_width_m * Math.sin(30 * Math.PI / 180);
+}
+// blackSeaBowlWaveForcePeak(0.020, 0.10)  →  9.81 N
+
+function blackSeaBowlBankClimbSpeed(H_bank_m: number, eta = 0.80): number {
+  return Math.sqrt((2 * 9.81 * H_bank_m) / eta);
+}
+// blackSeaBowlBankClimbSpeed(0.0466, 0.80)  →  1.07 m/s  (min to crest bank)
+
+function blackSeaBowlWaterSpinDecay(
+  mu_eff: number, mass_kg: number, rTip_m: number, I_kgm2: number
+): number {
+  return (mu_eff * mass_kg * 9.81 * rTip_m) / I_kgm2;
+}
+// blackSeaBowlWaterSpinDecay(1.0, 0.022, 0.0008, 3.8e-6)  →  45.5 rad/s² (water immersion)
+// blackSeaBowlWaterSpinDecay(0.20, 0.022, 0.0008, 3.8e-6)  →  9.10 rad/s² (road)
+
+function blackSeaBowlBoatOrbitPeriod(rBoat_m: number, vBoat_ms: number): number {
+  return (2 * Math.PI * rBoat_m) / vBoat_ms;
+}
+// blackSeaBowlBoatOrbitPeriod(0.40, 0.04)  →  62.8 s per circuit
+
+function blackSeaBowlOuterWallClearSpeed(H_wall_m: number, arAngleDeg: number): number {
+  const vVert = Math.sqrt(2 * 9.81 * H_wall_m);
+  return vVert / Math.sin((arAngleDeg * Math.PI) / 180);
+}
+// blackSeaBowlOuterWallClearSpeed(0.080, 30)  →  2.50 m/s  (radial speed needed to ring-out)
 ```
 
 ---

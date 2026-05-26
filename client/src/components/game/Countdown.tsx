@@ -47,26 +47,20 @@ export function Countdown({ status, timer, show }: CountdownProps) {
       style={{
         position: "absolute",
         inset: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        pointerEvents: "none",
-        zIndex: 60,
         background: flash ? "rgba(255,200,60,0.18)" : "rgba(0,0,0,0)",
         transition: "background 200ms",
       }}
+      className="flex items-center justify-center pointer-events-none z-[60]"
     >
       <div
         style={{
-          fontFamily: "monospace",
-          fontWeight: 900,
           fontSize: flash ? "10rem" : "8rem",
           color: flash ? "#ffcc44" : "#f1f5f9",
           textShadow: "0 0 24px rgba(0,0,0,0.7), 0 0 6px rgba(255,255,255,0.4)",
           transform: flash ? "scale(1.12)" : "scale(1)",
           transition: "transform 200ms ease-out, font-size 200ms",
-          letterSpacing: "0.08em",
         }}
+        className="font-mono font-black tracking-[0.08em]"
       >
         {flash ? "Let It Rip!" : seconds}
       </div>

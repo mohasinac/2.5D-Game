@@ -31,7 +31,7 @@ interface Layer {
 export function ExplodedView({ resolved, width = 320 }: Props) {
   if (!resolved) {
     return (
-      <div style={{ color: C.faint, fontSize: 12, padding: 24 }}>
+      <div className="text-theme-faint text-[12px] p-6">
         Select all required parts to see the exploded preview.
       </div>
     );
@@ -103,17 +103,15 @@ export function ExplodedView({ resolved, width = 320 }: Props) {
 
   return (
     <div
+      className="flex flex-col items-center gap-[18px] py-5 px-3 border border-border-c rounded-xl min-h-[600px]"
       style={{
-        display: "flex", flexDirection: "column", alignItems: "center",
-        gap: 18, padding: "20px 12px",
         background: `linear-gradient(180deg, ${C.bg1} 0%, ${C.bg0} 100%)`,
-        border: `1px solid ${C.border}`, borderRadius: 12,
-        width, minHeight: 600,
+        width,
       }}
     >
-      <div style={{ fontSize: 11, color: C.faint, marginBottom: 4, textAlign: "center" }}>
+      <div className="text-[11px] text-theme-faint mb-1 text-center">
         {resolved.system.displayName}
-        <div style={{ fontSize: 9, marginTop: 2, opacity: 0.6 }}>
+        <div className="text-[9px] mt-0.5 opacity-60">
           Exploded view — {layers.length} layer{layers.length === 1 ? "" : "s"}
         </div>
       </div>
@@ -136,20 +134,18 @@ function LayerCell({ layer, canvasWidth }: { layer: Layer; canvasWidth: number }
   const hasSubs = layer.subs && layer.subs.length > 0;
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 16, width: canvasWidth }}>
+    <div className="flex items-center gap-4" style={{ width: canvasWidth }}>
       {/* Label gutter (left) */}
       <div
-        style={{
-          width: 72, fontSize: 10, color: C.faint, textAlign: "right",
-          fontVariant: "small-caps", letterSpacing: 0.5,
-        }}
+        className="w-[72px] text-[10px] text-theme-faint text-right"
+        style={{ fontVariant: "small-caps", letterSpacing: 0.5 }}
       >
-        <div style={{ fontWeight: 600, color: C.muted }}>{layer.label}</div>
-        <div style={{ fontSize: 9, marginTop: 1, opacity: 0.7 }}>{part.displayName}</div>
+        <div className="font-semibold text-theme-muted">{layer.label}</div>
+        <div className="text-[9px] mt-px opacity-70">{part.displayName}</div>
       </div>
 
       {/* Layer art */}
-      <div style={{ flex: 1, display: "flex", justifyContent: "center", position: "relative" }}>
+      <div className="flex-1 flex justify-center relative">
         {sideImg ? (
           <img
             src={sideImg}
@@ -169,16 +165,12 @@ function LayerCell({ layer, canvasWidth }: { layer: Layer; canvasWidth: number }
       </div>
 
       {/* Sub-parts (right) */}
-      <div style={{ width: 72, display: "flex", flexDirection: "column", gap: 4 }}>
+      <div className="w-[72px] flex flex-col gap-1">
         {hasSubs ? layer.subs!.map((s, i) => (
           <div
             key={i}
             title={s.part.displayName}
-            style={{
-              fontSize: 9, color: C.faint, padding: "2px 6px",
-              background: C.bg2, border: `1px solid ${C.border}`,
-              borderRadius: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-            }}
+            className="text-[9px] text-theme-faint px-1.5 py-0.5 bg-bg2 border border-border-c rounded-[4px] whitespace-nowrap overflow-hidden text-ellipsis"
           >
             ⊕ {s.part.displayName}
           </div>

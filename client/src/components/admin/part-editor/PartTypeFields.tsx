@@ -9,7 +9,7 @@
  */
 
 import { useState } from "react";
-import { C, alpha } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { usePartMaterials } from "@/hooks/usePartMaterials";
 import { useSpecialMoves } from "@/hooks/useSpecialMoves";
@@ -50,9 +50,9 @@ export function makeTypeFieldRenderer(partTypeSlug: string) {
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 14 }}>
-      <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4, fontWeight: 600 }}>{label}</label>
-      {hint && <div style={{ fontSize: 10, color: C.faint, marginBottom: 5 }}>{hint}</div>}
+    <div className="mb-[14px]">
+      <label className="block text-[11px] text-theme-muted mb-1 font-semibold">{label}</label>
+      {hint && <div className="text-[10px] text-theme-faint mb-[5px]">{hint}</div>}
       {children}
     </div>
   );
@@ -68,7 +68,8 @@ function NumInput({ value, onChange, min, max, step, width = 100 }: {
       value={value ?? ""}
       onChange={(e) => onChange(Number(e.target.value))}
       min={min} max={max} step={step ?? 0.01}
-      style={{ width, padding: "6px 9px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }}
+      className="px-[9px] py-[6px] bg-bg2 border border-border-c rounded-md text-theme-text text-xs [width:var(--ni-w)]"
+      style={{ "--ni-w": `${width}px` } as React.CSSProperties}
     />
   );
 }
@@ -77,12 +78,12 @@ function ToggleBtn({ label, active, onClick }: { label: string; active: boolean;
   return (
     <button
       onClick={onClick}
-      style={{
-        padding: "4px 10px", fontSize: 11, borderRadius: 5, cursor: "pointer",
-        background: active ? alpha(C.blue, 0.13) : C.bg2,
-        color: active ? C.blue : C.muted,
-        border: `1px solid ${active ? alpha(C.blue, 0.33) : C.border}`,
-      }}
+      className={cn(
+        "px-[10px] py-1 text-[11px] rounded-[5px] cursor-pointer border",
+        active
+          ? "bg-theme-blue/[.13] text-theme-blue border-theme-blue/[.33]"
+          : "bg-bg2 text-theme-muted border-border-c"
+      )}
     >
       {label}
     </button>
@@ -91,7 +92,7 @@ function ToggleBtn({ label, active, onClick }: { label: string; active: boolean;
 
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontSize: 12, fontWeight: 700, color: C.text, borderBottom: `1px solid ${C.border}`, paddingBottom: 6, marginBottom: 12, marginTop: 6 }}>
+    <div className="text-xs font-bold text-theme-text border-b border-border-c pb-[6px] mb-3 mt-[6px]">
       {children}
     </div>
   );
@@ -153,59 +154,59 @@ function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChang
   return (
     <div>
       <SectionHeader>Stat Modifiers</SectionHeader>
-      <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>
+      <div className="text-[11px] text-theme-faint mb-[10px]">
         Modifiers fire on events or triggers and temporarily or permanently adjust bey stats.
       </div>
       {mods.map((mod, i) => (
-        <div key={i} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 8, display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
+        <div key={i} className="bg-bg1 border border-border-c rounded-lg p-3 mb-2 flex flex-col gap-2">
+          <div className="flex gap-2 flex-wrap items-end">
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Stat</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Stat</div>
               <SearchableSelect
                 value={mod.targetStat}
                 options={statKeyOptions}
                 onChange={(v) => patch(i, { targetStat: v })}
-                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
               />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Op</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Op</div>
               <SearchableSelect
                 value={mod.operation}
                 options={[{ value: "add", label: "add" }, { value: "multiply", label: "multiply" }, { value: "set", label: "set" }]}
                 onChange={(v) => patch(i, { operation: v as StatModifier["operation"] })}
-                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
               />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Value</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Value</div>
               <NumInput value={mod.value} onChange={(v) => patch(i, { value: v })} width={80} />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Duration (ticks, blank=permanent)</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Duration (ticks, blank=permanent)</div>
               <input
                 type="number" min={0}
                 value={mod.duration ?? ""}
                 placeholder="∞"
                 onChange={(e) => patch(i, { duration: e.target.value === "" ? undefined : Number(e.target.value) })}
-                style={{ width: 70, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                className="w-[70px] px-2 py-[5px] bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
               />
             </div>
-            <button onClick={() => remove(i)} style={{ padding: "5px 10px", background: alpha(C.red, 0.13), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}>Remove</button>
+            <button onClick={() => remove(i)} className="px-[10px] py-[5px] bg-theme-red/[.13] border border-theme-red/[.27] rounded-[5px] text-theme-red text-[11px] cursor-pointer">Remove</button>
           </div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div className="flex gap-2 flex-wrap">
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Event (optional)</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Event (optional)</div>
               <SearchableSelect
                 value={mod.event ?? ""}
                 options={statEventOptions}
                 onChange={(v) => patch(i, { event: v || undefined })}
                 emptyLabel="(none)"
-                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
               />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger type (optional)</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Trigger type (optional)</div>
               <SearchableSelect
                 value={mod.trigger?.type ?? ""}
                 options={triggerTypeOptions}
@@ -213,12 +214,12 @@ function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChang
                   patch(i, { trigger: v ? { type: v, threshold: mod.trigger?.threshold ?? 0 } : undefined });
                 }}
                 emptyLabel="(none)"
-                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
               />
             </div>
             {mod.trigger?.type && (
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger threshold</div>
+                <div className="text-[10px] text-theme-faint mb-[3px]">Trigger threshold</div>
                 <NumInput
                   value={mod.trigger.threshold}
                   onChange={(v) => patch(i, { trigger: { type: mod.trigger!.type, threshold: v } })}
@@ -231,7 +232,7 @@ function StatModifiersEditor({ part, onChange }: { part: Part; onChange: OnChang
       ))}
       <button
         onClick={add}
-        style={{ padding: "6px 14px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}
+        className="px-[14px] py-[6px] bg-bg2 border border-border-c rounded-md text-theme-muted text-[11px] cursor-pointer"
       >
         + Add Modifier
       </button>
@@ -284,85 +285,85 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
   return (
     <div>
       <SectionHeader>Switch Targets</SectionHeader>
-      <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>
+      <div className="text-[11px] text-theme-faint mb-[10px]">
         When this SubPart's trigger fires, it switches the target layer to the specified config.
       </div>
       {targets.map((sw, i) => (
-        <div key={i} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 8 }}>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8, alignItems: "flex-end" }}>
+        <div key={i} className="bg-bg1 border border-border-c rounded-lg p-3 mb-2">
+          <div className="flex gap-2 flex-wrap mb-2 items-end">
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Target layer</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Target layer</div>
               <SearchableSelect
                 value={sw.targetLayer}
                 options={layerOptions}
                 onChange={(v) => patch(i, { targetLayer: v })}
-                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
               />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Activate config name</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Activate config name</div>
               <input value={sw.activateConfig} onChange={(e) => patch(i, { activateConfig: e.target.value })} placeholder="e.g. HoleFlat"
-                style={{ width: 120, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }} />
+                className="w-[120px] px-2 py-[5px] bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]" />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Reset to config</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Reset to config</div>
               <input value={sw.resetToConfig ?? ""} onChange={(e) => patch(i, { resetToConfig: e.target.value || undefined })} placeholder="(none)"
-                style={{ width: 120, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }} />
+                className="w-[120px] px-2 py-[5px] bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]" />
             </div>
-            <button onClick={() => remove(i)} style={{ padding: "5px 10px", background: alpha(C.red, 0.13), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}>Remove</button>
+            <button onClick={() => remove(i)} className="px-[10px] py-[5px] bg-theme-red/[.13] border border-theme-red/[.27] rounded-[5px] text-theme-red text-[11px] cursor-pointer">Remove</button>
           </div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
+          <div className="flex gap-2 flex-wrap mb-[6px]">
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger type</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Trigger type</div>
               <SearchableSelect
                 value={sw.trigger.type}
                 options={triggerOptions}
                 onChange={(v) => patchTrigger(i, { type: v })}
-                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
               />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Threshold</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Threshold</div>
               <NumInput value={sw.trigger.threshold} onChange={(v) => patchTrigger(i, { threshold: v })} width={70} min={0} />
             </div>
             {sw.trigger.type === "impact_direction" && (
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Direction</div>
+                <div className="text-[10px] text-theme-faint mb-[3px]">Direction</div>
                 <SearchableSelect
                   value={sw.trigger.direction ?? "any"}
                   options={[{ value: "any", label: "any" }, { value: "clockwise", label: "clockwise" }, { value: "counterclockwise", label: "counterclockwise" }]}
                   onChange={(v) => patchTrigger(i, { direction: v })}
-                  style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                  className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
                 />
               </div>
             )}
-            <label style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: C.faint, cursor: "pointer" }}>
+            <label className="flex items-center gap-[5px] text-[10px] text-theme-faint cursor-pointer">
               <input type="checkbox" checked={sw.trigger.togglePrevious ?? false}
                 onChange={(e) => patchTrigger(i, { togglePrevious: e.target.checked })}
-                style={{ accentColor: C.blue }} />
+                className="accent-theme-blue" />
               togglePrevious (flip-flop)
             </label>
           </div>
           {sw.resetToConfig && (
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div className="flex gap-2 flex-wrap">
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Reset condition type</div>
+                <div className="text-[10px] text-theme-faint mb-[3px]">Reset condition type</div>
                 <SearchableSelect
                   value={sw.resetCondition?.type ?? "impact"}
                   options={resetOptions}
                   onChange={(v) => patchReset(i, { type: v })}
-                  style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                  className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
                 />
               </div>
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Reset threshold</div>
+                <div className="text-[10px] text-theme-faint mb-[3px]">Reset threshold</div>
                 <NumInput value={sw.resetCondition?.threshold} onChange={(v) => patchReset(i, { threshold: v })} width={70} min={0} />
               </div>
             </div>
           )}
         </div>
       ))}
-      <button onClick={add} style={{ padding: "6px 14px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}>
+      <button onClick={add} className="px-[14px] py-[6px] bg-bg2 border border-border-c rounded-md text-theme-muted text-[11px] cursor-pointer">
         + Add Switch Target
       </button>
     </div>
@@ -375,7 +376,7 @@ function SwitchTargetsEditor({ part, onChange }: { part: Part; onChange: OnChang
 
 function ARFields({ part, onChange }: { part: Part; onChange: OnChange }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+    <div className="flex flex-col gap-0">
       <SectionHeader>Material</SectionHeader>
       <MaterialField part={part} onChange={onChange} />
       <SectionHeader>Hidden Stats</SectionHeader>
@@ -389,7 +390,7 @@ function ARFields({ part, onChange }: { part: Part; onChange: OnChange }) {
         <NumInput value={part.upperAttackBonus as number | undefined} onChange={(v) => onChange({ upperAttackBonus: v })} min={0} max={5} />
       </Field>
       <Field label="Aerodynamic Profile">
-        <div style={{ display: "flex", gap: 6 }}>
+        <div className="flex gap-[6px]">
           {(["compact", "winged", "spherical"] as const).map((v) => (
             <ToggleBtn key={v} label={v} active={part.aerodynamicProfile === v} onClick={() => onChange({ aerodynamicProfile: part.aerodynamicProfile === v ? undefined : v })} />
           ))}
@@ -451,14 +452,14 @@ function SubPartFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       <MaterialField part={part} onChange={onChange} />
       <SectionHeader>Sub-Part Mode</SectionHeader>
       <Field label="Mode">
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        <div className="flex gap-[6px] flex-wrap">
           {SUB_MODES.map(m => (
             <ToggleBtn key={m} label={m.replace(/_/g, " ")} active={mode === m} onClick={() => onChange({ mode: m })} />
           ))}
         </div>
       </Field>
       <Field label="Placement">
-        <div style={{ display: "flex", gap: 6 }}>
+        <div className="flex gap-[6px]">
           {SUB_PLACEMENTS.map(p => (
             <ToggleBtn key={p} label={p} active={placement === p} onClick={() => onChange({ placement: p })} />
           ))}
@@ -466,14 +467,14 @@ function SubPartFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       </Field>
 
       {mode === "partial_slip" && (
-        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>Partial Slip Settings</div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <div className="bg-bg1 border border-border-c rounded-lg p-3 mb-3">
+          <div className="text-[11px] font-semibold text-theme-muted mb-2">Partial Slip Settings</div>
+          <div className="flex gap-[10px] flex-wrap">
             <Field label="Spin Threshold (°)">
               <NumInput value={part.spinThresholdDeg as number | undefined} onChange={v => onChange({ spinThresholdDeg: v })} min={0} max={360} step={5} width={80} />
             </Field>
             <Field label="Lock Direction">
-              <div style={{ display: "flex", gap: 5 }}>
+              <div className="flex gap-[5px]">
                 {(["cw", "ccw"] as const).map(d => (
                   <ToggleBtn key={d} label={d} active={part.lockDirection === d} onClick={() => onChange({ lockDirection: d })} />
                 ))}
@@ -487,53 +488,53 @@ function SubPartFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       )}
 
       {mode === "ratchet" && (
-        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>Lock Positions (°)</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 6 }}>
+        <div className="bg-bg1 border border-border-c rounded-lg p-3 mb-3">
+          <div className="text-[11px] font-semibold text-theme-muted mb-2">Lock Positions (°)</div>
+          <div className="flex flex-wrap gap-[5px] mb-[6px]">
             {lockPositions.map((pos, i) => (
-              <span key={i} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 4, padding: "2px 8px", fontSize: 11, color: C.text, display: "flex", alignItems: "center", gap: 4 }}>
+              <span key={i} className="bg-bg2 border border-border-c rounded text-[11px] text-theme-text flex items-center gap-1 px-2 py-[2px]">
                 {pos}°
-                <button onClick={() => onChange({ lockPositions: lockPositions.filter((_, j) => j !== i) })} style={{ background: "none", border: "none", color: C.red, cursor: "pointer", fontSize: 10 }}>×</button>
+                <button onClick={() => onChange({ lockPositions: lockPositions.filter((_, j) => j !== i) })} className="bg-transparent border-none text-theme-red cursor-pointer text-[10px]">×</button>
               </span>
             ))}
           </div>
-          <div style={{ display: "flex", gap: 6 }}>
+          <div className="flex gap-[6px]">
             <input type="number" min={0} max={359} value={lpInput} onChange={e => setLpInput(e.target.value)} placeholder="0–359"
-              style={{ width: 80, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }} />
+              className="w-[80px] px-2 py-[5px] bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]" />
             <button onClick={() => { const v = Number(lpInput); if (!isNaN(v)) { onChange({ lockPositions: [...lockPositions, v] }); setLpInput(""); } }}
-              style={{ padding: "5px 10px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, fontSize: 11, color: C.muted, cursor: "pointer" }}>+ Add</button>
+              className="px-[10px] py-[5px] bg-bg3 border border-border-c rounded-[5px] text-[11px] text-theme-muted cursor-pointer">+ Add</button>
           </div>
         </div>
       )}
 
       <SectionHeader>Detachment on Trigger</SectionHeader>
-      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 10 }}>
-        <input type="checkbox" checked={!!(detachment?.enabled)} onChange={e => patchDetach({ enabled: e.target.checked })} style={{ accentColor: C.blue }} />
+      <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer mb-[10px]">
+        <input type="checkbox" checked={!!(detachment?.enabled)} onChange={e => patchDetach({ enabled: e.target.checked })} className="accent-theme-blue" />
         Enable detachment
       </label>
       {!!(detachment?.enabled) && (
-        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 12 }}>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+        <div className="bg-bg1 border border-border-c rounded-lg p-3 mb-3">
+          <div className="flex gap-[10px] flex-wrap mb-2">
             <Field label="Type">
-              <div style={{ display: "flex", gap: 5 }}>
+              <div className="flex gap-[5px]">
                 {DETACH_TYPES.map(t => <ToggleBtn key={t} label={t.replace(/_/g, " ")} active={detachment.type === t} onClick={() => patchDetach({ type: t })} />)}
               </div>
             </Field>
             <Field label="Trigger Condition">
-              <div style={{ display: "flex", gap: 5 }}>
+              <div className="flex gap-[5px]">
                 {DETACH_TRIGGERS.map(t => <ToggleBtn key={t} label={t.replace(/_/g, " ")} active={detachment.triggerCondition === t} onClick={() => patchDetach({ triggerCondition: t })} />)}
               </div>
             </Field>
           </div>
           {detachment.type === "projectile" && (
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <div className="flex gap-[10px] flex-wrap">
               <Field label="Speed"><NumInput value={detachment.speed as number | undefined} onChange={v => patchDetach({ speed: v })} min={0} step={10} width={80} /></Field>
               <Field label="Damage"><NumInput value={detachment.damage as number | undefined} onChange={v => patchDetach({ damage: v })} min={0} step={1} width={80} /></Field>
               <Field label="Radius (mm)"><NumInput value={detachment.radius as number | undefined} onChange={v => patchDetach({ radius: v })} min={1} step={0.5} width={80} /></Field>
             </div>
           )}
           {detachment.type === "mini_bey" && (
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <div className="flex gap-[10px] flex-wrap">
               <Field label="Duration (ticks)"><NumInput value={detachment.duration as number | undefined} onChange={v => patchDetach({ duration: v })} min={1} step={10} width={90} /></Field>
             </div>
           )}
@@ -542,7 +543,7 @@ function SubPartFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 
       <SectionHeader>Compatible Parents</SectionHeader>
       <Field label="Part types this sub-part can attach to">
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+        <div className="flex flex-wrap gap-[5px]">
           {ALL_PART_TYPES.map(t => {
             const active = compatibleParents.includes(t);
             return <ToggleBtn key={t} label={t.replace(/_/g, " ")} active={active} onClick={() => onChange({ compatibleParents: active ? compatibleParents.filter(p => p !== t) : [...compatibleParents, t] })} />;
@@ -551,7 +552,7 @@ function SubPartFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       </Field>
 
       <SwitchTargetsEditor part={part} onChange={onChange} />
-      <div style={{ marginTop: 20 }}>
+      <div className="mt-5">
         <SectionHeader>Mechanism Wear</SectionHeader>
         <Field label="Mechanism Durability" hint="Max trigger fires before mechanism wears (0 = infinite, never wears out).">
           <NumInput value={part.mechanismDurability as number | undefined} onChange={(v) => onChange({ mechanismDurability: v })} min={0} step={1} width={90} />
@@ -562,13 +563,13 @@ function SubPartFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       </div>
 
       <SectionHeader>Flip Behaviour</SectionHeader>
-      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 12 }}>
-        <input type="checkbox" checked={!!(part.canFlip)} onChange={e => onChange({ canFlip: e.target.checked || undefined })} style={{ accentColor: C.blue }} />
+      <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer mb-3">
+        <input type="checkbox" checked={!!(part.canFlip)} onChange={e => onChange({ canFlip: e.target.checked || undefined })} className="accent-theme-blue" />
         canFlip
-        <span style={{ fontSize: 10, color: C.faint }}>(sub-part can be flipped to reverse its contact-point orientation in the launcher)</span>
+        <span className="text-[10px] text-theme-faint">(sub-part can be flipped to reverse its contact-point orientation in the launcher)</span>
       </label>
 
-      <div style={{ marginTop: 20 }}>
+      <div className="mt-5">
         <StatModifiersEditor part={part} onChange={onChange} />
       </div>
     </div>
@@ -610,14 +611,14 @@ function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
     <div>
       <SectionHeader>Tip Shape & Material</SectionHeader>
       <Field label="Tip Shape">
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+        <div className="flex flex-wrap gap-[5px]">
           {tipShapes.map(s => (
             <ToggleBtn key={s.id} label={s.label} active={part.tipShape === s.id} onClick={() => onChange({ tipShape: part.tipShape === s.id ? undefined : s.id })} />
           ))}
         </div>
       </Field>
       <MaterialField part={part} onChange={onChange} />
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 14 }}>
+      <div className="flex gap-[14px] flex-wrap mb-[14px]">
         <Field label="Grip Factor (0–1)" hint="0 = no grip, 1 = full grip (rubber).">
           <NumInput value={part.gripFactor as number | undefined} onChange={v => onChange({ gripFactor: v })} min={0} max={1} step={0.05} />
         </Field>
@@ -631,23 +632,23 @@ function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
           <NumInput value={part.climbAssist as number | undefined} onChange={v => onChange({ climbAssist: v })} min={0} max={1} step={0.05} />
         </Field>
       </div>
-      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 8 }}>
-        <input type="checkbox" checked={!!(part.freeSpin)} onChange={e => onChange({ freeSpin: e.target.checked || undefined })} style={{ accentColor: C.blue }} />
+      <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer mb-2">
+        <input type="checkbox" checked={!!(part.freeSpin)} onChange={e => onChange({ freeSpin: e.target.checked || undefined })} className="accent-theme-blue" />
         freeSpin
-        <span style={{ fontSize: 10, color: C.faint }}>(B:D — tip bearing fully decouples spin from movement)</span>
+        <span className="text-[10px] text-theme-faint">(B:D — tip bearing fully decouples spin from movement)</span>
       </label>
-      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 16 }}>
-        <input type="checkbox" checked={!!(part.freeSpinOnCore)} onChange={e => onChange({ freeSpinOnCore: e.target.checked || undefined })} style={{ accentColor: C.blue }} />
+      <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer mb-4">
+        <input type="checkbox" checked={!!(part.freeSpinOnCore)} onChange={e => onChange({ freeSpinOnCore: e.target.checked || undefined })} className="accent-theme-blue" />
         freeSpinOnCore
-        <span style={{ fontSize: 10, color: C.faint }}>(tip spins independently from the core — EG/CEW style)</span>
+        <span className="text-[10px] text-theme-faint">(tip spins independently from the core — EG/CEW style)</span>
       </label>
 
       <SectionHeader>Default Sub-Tip</SectionHeader>
-      <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 14 }}>
-        <div style={{ fontSize: 11, color: C.faint, marginBottom: 8 }}>Optional inner sub-tip (e.g. SG Flat base inside a Wide Tip shell).</div>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <div className="bg-bg1 border border-border-c rounded-lg p-3 mb-[14px]">
+        <div className="text-[11px] text-theme-faint mb-2">Optional inner sub-tip (e.g. SG Flat base inside a Wide Tip shell).</div>
+        <div className="flex gap-[10px] flex-wrap">
           <Field label="Sub-tip Shape">
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+            <div className="flex flex-wrap gap-1">
               {["flat","sharp","semi_flat","ball","rubber_flat","bearing"].map(s => (
                 <ToggleBtn key={s} label={s.replace(/_/g," ")}
                   active={(part.defaultSubTip as Record<string,unknown> | undefined)?.tipShape === s}
@@ -665,16 +666,16 @@ function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       </div>
 
       <SectionHeader>Structural Flags</SectionHeader>
-      <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer" }}>
-          <input type="checkbox" checked={!!(part.extendsAboveCasing)} onChange={(e) => onChange({ extendsAboveCasing: e.target.checked || undefined })} style={{ accentColor: C.blue }} />
+      <div className="flex gap-[10px] mb-4">
+        <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer">
+          <input type="checkbox" checked={!!(part.extendsAboveCasing)} onChange={(e) => onChange({ extendsAboveCasing: e.target.checked || undefined })} className="accent-theme-blue" />
           extendsAboveCasing
-          <span style={{ fontSize: 10, color: C.faint }}>(Rock Bison — tip body reaches casing height zone)</span>
+          <span className="text-[10px] text-theme-faint">(Rock Bison — tip body reaches casing height zone)</span>
         </label>
-        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer" }}>
-          <input type="checkbox" checked={!!(part.containsCasing)} onChange={(e) => onChange({ containsCasing: e.target.checked || undefined })} style={{ accentColor: C.blue }} />
+        <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer">
+          <input type="checkbox" checked={!!(part.containsCasing)} onChange={(e) => onChange({ containsCasing: e.target.checked || undefined })} className="accent-theme-blue" />
           containsCasing
-          <span style={{ fontSize: 10, color: C.faint }}>(Wolborg G — tip cup is outermost shell)</span>
+          <span className="text-[10px] text-theme-faint">(Wolborg G — tip cup is outermost shell)</span>
         </label>
       </div>
 
@@ -684,7 +685,7 @@ function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       </Field>
 
       <SectionHeader>Spin Bias (R2F)</SectionHeader>
-      <div style={{ display: "flex", gap: 12, marginBottom: 14 }}>
+      <div className="flex gap-3 mb-[14px]">
         <Field label="Right-spin grip mult">
           <NumInput value={spinBias?.rightSpin.gripMultiplier} onChange={(v) => onChange({ spinBias: { ...spinBias, rightSpin: { gripMultiplier: v }, leftSpin: spinBias?.leftSpin ?? { gripMultiplier: 1.0 } } })} min={0} max={3} />
         </Field>
@@ -694,11 +695,11 @@ function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       </div>
 
       <SectionHeader>Left-Spin Hop (Wyborg)</SectionHeader>
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
-        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer" }}>
+      <div className="flex gap-[10px] flex-wrap mb-[14px]">
+        <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer">
           <input type="checkbox" checked={leftSpinHop?.enabled ?? false}
             onChange={(e) => onChange({ leftSpinHop: { ...leftSpinHop, enabled: e.target.checked, hopImpulse: leftSpinHop?.hopImpulse ?? 12, hopChance: leftSpinHop?.hopChance ?? 0.75 } })}
-            style={{ accentColor: C.blue }} />
+            className="accent-theme-blue" />
           Enabled
         </label>
         <Field label="Hop Impulse">
@@ -723,13 +724,13 @@ function TipFields({ part, onChange }: { part: Part; onChange: OnChange }) {
         <NumInput value={part.durabilityDecay as number | undefined} onChange={(v) => onChange({ durabilityDecay: v })} min={0} max={1} />
       </Field>
 
-      <div style={{ marginTop: 16 }}>
+      <div className="mt-4">
         <MaterialBandsEditor part={part} onChange={onChange} />
       </div>
-      <div style={{ marginTop: 16 }}>
+      <div className="mt-4">
         <EvolutionStagesEditor part={part} onChange={onChange} />
       </div>
-      <div style={{ marginTop: 4 }}>
+      <div className="mt-1">
         <StatModifiersEditor part={part} onChange={onChange} />
       </div>
     </div>
@@ -762,50 +763,50 @@ function MaterialBandsEditor({ part, onChange }: { part: Part; onChange: OnChang
   return (
     <div>
       <SectionHeader>Material Bands</SectionHeader>
-      <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>
+      <div className="text-[11px] text-theme-faint mb-[10px]">
         Each band is a material layer on the tip contact surface. Wear schedules drive the evolution driver trigger.
       </div>
       {bands.map((band, bi) => (
-        <div key={bi} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 8 }}>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end", marginBottom: 8 }}>
+        <div key={bi} className="bg-bg1 border border-border-c rounded-lg p-3 mb-2">
+          <div className="flex gap-[10px] flex-wrap items-end mb-2">
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Material</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Material</div>
               <SearchableSelect
                 value={band.material}
                 options={loading ? [] : [{ value: "", label: "(none)" }, ...matOptions.map(m => ({ value: m.id, label: m.label }))]}
                 onChange={v => patch(bi, { material: v })}
                 placeholder="Select material…"
-                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
               />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Coverage (0–1)</div>
+              <div className="text-[10px] text-theme-faint mb-[3px]">Coverage (0–1)</div>
               <NumInput value={band.coverage} onChange={v => patch(bi, { coverage: v })} min={0} max={1} step={0.05} width={70} />
             </div>
-            <button onClick={() => remove(bi)} style={{ padding: "5px 10px", background: alpha(C.red, 0.13), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}>Remove</button>
+            <button onClick={() => remove(bi)} className="px-[10px] py-[5px] bg-theme-red/[.13] border border-theme-red/[.27] rounded-[5px] text-theme-red text-[11px] cursor-pointer">Remove</button>
           </div>
-          <div style={{ fontSize: 10, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Wear Schedule</div>
-          <div style={{ fontSize: 10, color: C.faint, marginBottom: 6 }}>atSecond = match elapsed seconds; wearLevel 100=new, 0=fully worn.</div>
+          <div className="text-[10px] font-semibold text-theme-muted mb-[6px]">Wear Schedule</div>
+          <div className="text-[10px] text-theme-faint mb-[6px]">atSecond = match elapsed seconds; wearLevel 100=new, 0=fully worn.</div>
           {(band.wearSchedule ?? []).map((step, si) => (
-            <div key={si} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 5 }}>
-              <div style={{ fontSize: 10, color: C.faint, width: 60 }}>at {step.atSecond}s</div>
+            <div key={si} className="flex gap-2 items-center mb-[5px]">
+              <div className="text-[10px] text-theme-faint w-[60px]">at {step.atSecond}s</div>
               <div>
-                <div style={{ fontSize: 9, color: C.faint }}>Second</div>
+                <div className="text-[9px] text-theme-faint">Second</div>
                 <NumInput value={step.atSecond} onChange={v => patchStep(bi, si, { atSecond: v })} min={0} step={5} width={65} />
               </div>
               <div>
-                <div style={{ fontSize: 9, color: C.faint }}>Wear (0–100)</div>
+                <div className="text-[9px] text-theme-faint">Wear (0–100)</div>
                 <NumInput value={step.wearLevel} onChange={v => patchStep(bi, si, { wearLevel: v })} min={0} max={100} step={5} width={65} />
               </div>
-              <button onClick={() => removeStep(bi, si)} style={{ padding: "3px 8px", background: "none", border: `1px solid ${alpha(C.red, 0.3)}`, borderRadius: 4, color: C.red, fontSize: 10, cursor: "pointer" }}>×</button>
+              <button onClick={() => removeStep(bi, si)} className="px-2 py-[3px] bg-transparent border border-theme-red/30 rounded text-theme-red text-[10px] cursor-pointer">×</button>
             </div>
           ))}
-          <button onClick={() => addStep(bi)} style={{ padding: "4px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.muted, fontSize: 10, cursor: "pointer", marginTop: 2 }}>
+          <button onClick={() => addStep(bi)} className="px-[10px] py-1 bg-bg2 border border-border-c rounded-[5px] text-theme-muted text-[10px] cursor-pointer mt-[2px]">
             + Add Wear Step
           </button>
         </div>
       ))}
-      <button onClick={add} style={{ padding: "6px 14px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}>
+      <button onClick={add} className="px-[14px] py-[6px] bg-bg2 border border-border-c rounded-md text-theme-muted text-[11px] cursor-pointer">
         + Add Material Band
       </button>
     </div>
@@ -826,6 +827,14 @@ const EVOLUTION_TRIGGER_TYPES = [
 
 type EvolutionStage = { label: string; configName: string; trigger?: { type: string; value: number } };
 
+// Static lookup for data-driven stage dot colors
+const STAGE_COLOR_CLASSES: Record<number, { text: string; border: string }> = {
+  0: { text: "text-[#9ca3af]", border: "border-l-[#9ca3af]" },
+  1: { text: "text-[#fbbf24]", border: "border-l-[#fbbf24]" },
+  2: { text: "text-[#f97316]", border: "border-l-[#f97316]" },
+  3: { text: "text-[#ef4444]", border: "border-l-[#ef4444]" },
+};
+
 function EvolutionStagesEditor({ part, onChange }: { part: Part; onChange: OnChange }) {
   const stages: EvolutionStage[] = (part.evolutionStages as EvolutionStage[] | undefined) ?? [];
 
@@ -836,60 +845,59 @@ function EvolutionStagesEditor({ part, onChange }: { part: Part; onChange: OnCha
   const patchTrigger = (i: number, p: Partial<NonNullable<EvolutionStage["trigger"]>>) =>
     patch(i, { trigger: { type: "time", value: 0, ...stages[i].trigger, ...p } });
 
-  const STAGE_COLORS = ["#9ca3af", "#fbbf24", "#f97316", "#ef4444"];
-
   return (
     <div>
       <SectionHeader>Evolution Stages</SectionHeader>
-      <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>
+      <div className="text-[11px] text-theme-faint mb-[10px]">
         Stage 0 = default tip. Each subsequent stage fires when its trigger condition is met and automatically switches the active tip config.
       </div>
       {stages.length === 0 && (
-        <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>No stages — this tip uses a single fixed config.</div>
+        <div className="text-[11px] text-theme-faint mb-[10px]">No stages — this tip uses a single fixed config.</div>
       )}
       {stages.map((stage, i) => {
-        const dotColor = STAGE_COLORS[Math.min(i, STAGE_COLORS.length - 1)];
+        const colorIdx = Math.min(i, 3);
+        const colorCls = STAGE_COLOR_CLASSES[colorIdx];
         return (
-          <div key={i} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 8, borderLeft: `3px solid ${dotColor}` }}>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end", marginBottom: 8 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: dotColor, minWidth: 60 }}>Stage {i}</div>
+          <div key={i} className={cn("bg-bg1 border border-border-c rounded-lg p-3 mb-2 border-l-[3px]", colorCls.border)}>
+            <div className="flex gap-2 flex-wrap items-end mb-2">
+              <div className={cn("text-[11px] font-bold min-w-[60px]", colorCls.text)}>Stage {i}</div>
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Label</div>
+                <div className="text-[10px] text-theme-faint mb-[3px]">Label</div>
                 <input
                   value={stage.label}
                   onChange={e => patch(i, { label: e.target.value })}
                   placeholder="e.g. Worn"
-                  style={{ width: 110, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                  className="w-[110px] px-2 py-[5px] bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
                 />
               </div>
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Config name</div>
+                <div className="text-[10px] text-theme-faint mb-[3px]">Config name</div>
                 <input
                   value={stage.configName}
                   onChange={e => patch(i, { configName: e.target.value })}
                   placeholder="e.g. worn"
-                  style={{ width: 110, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                  className="w-[110px] px-2 py-[5px] bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
                 />
               </div>
               {i > 0 && (
-                <button onClick={() => remove(i)} style={{ padding: "5px 10px", background: alpha(C.red, 0.13), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}>Remove</button>
+                <button onClick={() => remove(i)} className="px-[10px] py-[5px] bg-theme-red/[.13] border border-theme-red/[.27] rounded-[5px] text-theme-red text-[11px] cursor-pointer">Remove</button>
               )}
             </div>
             {i === 0 ? (
-              <div style={{ fontSize: 10, color: C.faint }}>Stage 0 is the starting config — no trigger required.</div>
+              <div className="text-[10px] text-theme-faint">Stage 0 is the starting config — no trigger required.</div>
             ) : (
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
+              <div className="flex gap-2 flex-wrap items-end">
                 <div>
-                  <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger type</div>
+                  <div className="text-[10px] text-theme-faint mb-[3px]">Trigger type</div>
                   <SearchableSelect
                     value={stage.trigger?.type ?? "time"}
                     options={EVOLUTION_TRIGGER_TYPES.map(t => ({ value: t.value, label: t.label }))}
                     onChange={v => patchTrigger(i, { type: v })}
-                    style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                    className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
                   />
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>
+                  <div className="text-[10px] text-theme-faint mb-[3px]">
                     {stage.trigger?.type === "time" ? "Value (ms)" :
                      stage.trigger?.type === "wear_level" ? "Wear ≤ (0–100)" :
                      stage.trigger?.type === "spin_percent" ? "Spin ratio ≤ (0–1)" :
@@ -909,7 +917,7 @@ function EvolutionStagesEditor({ part, onChange }: { part: Part; onChange: OnCha
           </div>
         );
       })}
-      <button onClick={add} style={{ padding: "6px 14px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}>
+      <button onClick={add} className="px-[14px] py-[6px] bg-bg2 border border-border-c rounded-md text-theme-muted text-[11px] cursor-pointer">
         + Add Stage
       </button>
     </div>
@@ -960,14 +968,14 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       <MaterialField part={part} onChange={onChange} />
       <SectionHeader>Gimmick Type</SectionHeader>
       <Field label="Active gimmick" hint="Gates which specialized block below is visible / active.">
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+        <div className="flex flex-wrap gap-[5px]">
           {coreGimmicks.map(g => (
             <ToggleBtn key={g.id} label={g.label} active={gimmick === g.id} onClick={() => onChange({ gimmick: g.id })} />
           ))}
         </div>
       </Field>
       {(gimmick === "magnetic" || gimmick === "weight_shift" || gimmick === "speed_boost" || gimmick === "engine_gear" || gimmick === "clutch_release") && (
-        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 14 }}>
+        <div className="bg-bg1 border border-border-c rounded-lg p-3 mb-[14px]">
           <Field label="Suction Emit (emission force)">
             <NumInput value={part.suctionEmit as number | undefined} onChange={v => onChange({ suctionEmit: v })} min={0} step={0.01} />
           </Field>
@@ -976,24 +984,24 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 
       <SectionHeader>Movement Override</SectionHeader>
       <Field label="Movement type" hint="orbit = standard. fixed = hold position. jump = hop-only movement.">
-        <div style={{ display: "flex", gap: 6 }}>
+        <div className="flex gap-[6px]">
           {(["orbit", "jump", "fixed"] as const).map((t) => (
             <ToggleBtn key={t} label={t} active={(mo?.type ?? "orbit") === t} onClick={() => updateMO({ type: t })} />
           ))}
         </div>
       </Field>
       {mo?.type === "jump" && (
-        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 14 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>Jump Config</div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <div className="bg-bg1 border border-border-c rounded-lg p-3 mb-[14px]">
+          <div className="text-[11px] font-semibold text-theme-muted mb-2">Jump Config</div>
+          <div className="flex gap-[10px] flex-wrap">
             <Field label="Jump Force"><NumInput value={mo.jumpConfig?.jumpForce} onChange={(v) => updateJump({ jumpForce: v })} min={0} step={0.5} width={80} /></Field>
             <Field label="Period (ticks)"><NumInput value={mo.jumpConfig?.jumpPeriodTicks} onChange={(v) => updateJump({ jumpPeriodTicks: v })} min={1} step={1} width={80} /></Field>
             <Field label="Airborne (ticks)"><NumInput value={mo.jumpConfig?.airborneTickDuration} onChange={(v) => updateJump({ airborneTickDuration: v })} min={1} step={1} width={80} /></Field>
           </div>
-          <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, margin: "8px 0" }}>Landing Damage</div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: C.text, cursor: "pointer" }}>
-              <input type="checkbox" checked={mo.jumpConfig?.landingDamage?.enabled ?? false} onChange={(e) => updateLD({ enabled: e.target.checked })} style={{ accentColor: C.blue }} />
+          <div className="text-[11px] font-semibold text-theme-muted my-2">Landing Damage</div>
+          <div className="flex gap-[10px] flex-wrap">
+            <label className="flex items-center gap-[5px] text-[11px] text-theme-text cursor-pointer">
+              <input type="checkbox" checked={mo.jumpConfig?.landingDamage?.enabled ?? false} onChange={(e) => updateLD({ enabled: e.target.checked })} className="accent-theme-blue" />
               Enabled
             </label>
             <Field label="Damage mult"><NumInput value={mo.jumpConfig?.landingDamage?.damageMultiplier} onChange={(v) => updateLD({ damageMultiplier: v })} min={0} step={0.1} width={70} /></Field>
@@ -1004,12 +1012,12 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       )}
 
       {(gimmick === "spin_injection" || gimmick === "none") && <><SectionHeader>Spin Injection</SectionHeader>
-      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 10 }}>
-        <input type="checkbox" checked={si?.enabled ?? false} onChange={(e) => updateSI({ enabled: e.target.checked, rateRPM: si?.rateRPM ?? 30, reserveCapacity: si?.reserveCapacity ?? 1800, activationCondition: si?.activationCondition ?? "spin_threshold" })} style={{ accentColor: C.blue }} />
+      <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer mb-[10px]">
+        <input type="checkbox" checked={si?.enabled ?? false} onChange={(e) => updateSI({ enabled: e.target.checked, rateRPM: si?.rateRPM ?? 30, reserveCapacity: si?.reserveCapacity ?? 1800, activationCondition: si?.activationCondition ?? "spin_threshold" })} className="accent-theme-blue" />
         Enabled
       </label>
       {si?.enabled && (
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
+        <div className="flex gap-[10px] flex-wrap mb-[14px]">
           <Field label="Rate (RPM/s)"><NumInput value={si.rateRPM} onChange={(v) => updateSI({ rateRPM: v })} min={0} step={1} width={80} /></Field>
           <Field label="Reserve capacity (0=unlimited)"><NumInput value={si.reserveCapacity} onChange={(v) => updateSI({ reserveCapacity: v })} min={0} step={100} width={90} /></Field>
           <Field label="Activation condition">
@@ -1017,7 +1025,7 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
               value={si.activationCondition}
               options={[{ value: "always", label: "always" }, { value: "casing_trigger", label: "casing_trigger" }, { value: "spin_threshold", label: "spin_threshold" }]}
               onChange={(v) => updateSI({ activationCondition: v })}
-              style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+              className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
             />
           </Field>
           {si.activationCondition === "spin_threshold" && (
@@ -1029,35 +1037,35 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       </>}{/* end spin_injection gate */}
 
       {(gimmick === "counter_rotation" || gimmick === "none") && <><SectionHeader>Counter-Rotation (Dranzer GT)</SectionHeader>
-      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 10 }}>
-        <input type="checkbox" checked={cr?.enabled ?? false} onChange={(e) => updateCR({ enabled: e.target.checked, activationCondition: cr?.activationCondition ?? "casing_trigger", directionSequence: cr?.directionSequence ?? ["right", "left", "right", "left"], stepDurationTicks: cr?.stepDurationTicks ?? 30, spinDecayCostPerStep: cr?.spinDecayCostPerStep ?? 0.03 })} style={{ accentColor: C.blue }} />
+      <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer mb-[10px]">
+        <input type="checkbox" checked={cr?.enabled ?? false} onChange={(e) => updateCR({ enabled: e.target.checked, activationCondition: cr?.activationCondition ?? "casing_trigger", directionSequence: cr?.directionSequence ?? ["right", "left", "right", "left"], stepDurationTicks: cr?.stepDurationTicks ?? 30, spinDecayCostPerStep: cr?.spinDecayCostPerStep ?? 0.03 })} className="accent-theme-blue" />
         Enabled
       </label>
       {cr?.enabled && (
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <div className="mb-[14px]">
+          <div className="flex gap-[10px] flex-wrap">
             <Field label="Activation">
               <SearchableSelect
                 value={cr.activationCondition}
                 options={[{ value: "casing_trigger", label: "casing_trigger" }, { value: "player_input", label: "player_input" }]}
                 onChange={(v) => updateCR({ activationCondition: v })}
-                style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
               />
             </Field>
             <Field label="Step duration (ticks)"><NumInput value={cr.stepDurationTicks} onChange={(v) => updateCR({ stepDurationTicks: v })} min={1} step={1} width={80} /></Field>
             <Field label="Spin cost per step"><NumInput value={cr.spinDecayCostPerStep} onChange={(v) => updateCR({ spinDecayCostPerStep: v })} min={0} max={1} /></Field>
           </div>
           <Field label="Direction sequence (right/left, comma-separated)">
-            <div style={{ display: "flex", gap: 6 }}>
+            <div className="flex gap-[6px]">
               <input value={seqInput || (cr.directionSequence ?? []).join(",")} onChange={(e) => setSeqInput(e.target.value)}
                 placeholder="right,left,right,left"
-                style={{ flex: 1, padding: "6px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }} />
+                className="flex-1 px-[10px] py-[6px] bg-bg2 border border-border-c rounded-md text-theme-text text-[11px]" />
               <button onClick={() => {
                 const seq = seqInput.split(",").map((s) => s.trim()).filter((s) => s === "right" || s === "left");
                 if (seq.length) { updateCR({ directionSequence: seq }); setSeqInput(""); }
-              }} style={{ padding: "6px 12px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, fontSize: 11, color: C.muted, cursor: "pointer" }}>Set</button>
+              }} className="px-3 py-[6px] bg-bg3 border border-border-c rounded-md text-[11px] text-theme-muted cursor-pointer">Set</button>
             </div>
-            <div style={{ fontSize: 10, color: C.faint, marginTop: 4 }}>Current: [{(cr.directionSequence ?? []).join(", ")}]</div>
+            <div className="text-[10px] text-theme-faint mt-1">Current: [{(cr.directionSequence ?? []).join(", ")}]</div>
           </Field>
         </div>
       )}
@@ -1074,7 +1082,7 @@ function CoreFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       <Field label="Internal Friction" hint="Energy lost inside mechanism housing per tick.">
         <NumInput value={part.internalFriction as number | undefined} onChange={(v) => onChange({ internalFriction: v })} min={0} max={1} />
       </Field>
-      <div style={{ marginTop: 4 }}>
+      <div className="mt-1">
         <StatModifiersEditor part={part} onChange={onChange} />
       </div>
     </div>
@@ -1101,7 +1109,7 @@ function CasingFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       <MaterialField part={part} onChange={onChange} />
       <SectionHeader>Casing Category</SectionHeader>
       <Field label="Shape category">
-        <div style={{ display: "flex", gap: 6 }}>
+        <div className="flex gap-[6px]">
           {CASING_CATEGORIES.map(c => (
             <ToggleBtn key={c} label={c} active={part.casingCategory === c} onClick={() => onChange({ casingCategory: part.casingCategory === c ? undefined : c })} />
           ))}
@@ -1109,23 +1117,23 @@ function CasingFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       </Field>
 
       <SectionHeader>Slots</SectionHeader>
-      <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 10 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>Tip Slot</div>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <div className="bg-bg1 border border-border-c rounded-lg p-3 mb-[10px]">
+        <div className="text-[11px] font-semibold text-theme-muted mb-2">Tip Slot</div>
+        <div className="flex gap-[10px] flex-wrap">
           <Field label="Position X (mm)"><NumInput value={tipSlot?.x as number | undefined} onChange={v => patchTipSlot({ x: v })} step={0.5} width={70} /></Field>
           <Field label="Position Y (mm)"><NumInput value={tipSlot?.y as number | undefined} onChange={v => patchTipSlot({ y: v })} step={0.5} width={70} /></Field>
           <Field label="Radius (mm)"><NumInput value={tipSlot?.radius as number | undefined} onChange={v => patchTipSlot({ radius: v })} min={1} step={0.5} width={70} /></Field>
         </div>
       </div>
-      <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 14 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer" }}>
-            <input type="checkbox" checked={!!(coreSlot?.enabled)} onChange={e => patchCoreSlot({ enabled: e.target.checked })} style={{ accentColor: C.blue }} />
+      <div className="bg-bg1 border border-border-c rounded-lg p-3 mb-[14px]">
+        <div className="flex items-center gap-2 mb-2">
+          <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer">
+            <input type="checkbox" checked={!!(coreSlot?.enabled)} onChange={e => patchCoreSlot({ enabled: e.target.checked })} className="accent-theme-blue" />
             Core Slot enabled
           </label>
         </div>
         {!!(coreSlot?.enabled) && (
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div className="flex gap-[10px] flex-wrap">
             <Field label="Radius (mm)"><NumInput value={coreSlot.radius as number | undefined} onChange={v => patchCoreSlot({ radius: v })} min={1} step={0.5} width={70} /></Field>
             <Field label="Depth (mm)"><NumInput value={coreSlot.depth as number | undefined} onChange={v => patchCoreSlot({ depth: v })} min={0} step={0.5} width={70} /></Field>
           </div>
@@ -1142,7 +1150,7 @@ function CasingFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       <Field label="Clearance Height (mm)" hint="Floor-to-bottom gap. Affects which opponent CPs can reach under.">
         <NumInput value={part.clearanceHeight as number | undefined} onChange={(v) => onChange({ clearanceHeight: v })} min={0} step={0.5} width={80} />
       </Field>
-      <div style={{ marginTop: 4 }}>
+      <div className="mt-1">
         <StatModifiersEditor part={part} onChange={onChange} />
       </div>
     </div>
@@ -1175,7 +1183,7 @@ function BitBeastFields({ part, onChange }: { part: Part; onChange: OnChange }) 
           value={specialMove}
           options={specialMoveOptions}
           onChange={(v) => onChange({ specialMove: v as any, customMoveName: v !== "custom" ? undefined : (part.customMoveName as string | undefined) })}
-          style={{ background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13 }}
+          className="bg-bg3 border border-border-c rounded-[7px] text-theme-text text-[13px]"
         />
       </Field>
       {isCustom && (
@@ -1186,12 +1194,12 @@ function BitBeastFields({ part, onChange }: { part: Part; onChange: OnChange }) 
               value={(part.customMoveName as string | undefined) ?? ""}
               onChange={(e) => onChange({ customMoveName: e.target.value.trim() || undefined })}
               placeholder="e.g. Blazing Tornado"
-              style={{ padding: "7px 10px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13, width: "100%" }}
+              className="px-[10px] py-[7px] bg-bg3 border border-border-c rounded-[7px] text-theme-text text-[13px] w-full"
             />
           </Field>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12, marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 8 }}>Custom Move Physics</div>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div className="bg-bg1 border border-border-c rounded-lg p-3 mb-[14px]">
+            <div className="text-[11px] font-semibold text-theme-muted mb-2">Custom Move Physics</div>
+            <div className="flex gap-[10px] flex-wrap">
               <Field label="Power Cost (0–200)">
                 <NumInput value={(part.customMovePowerCost as number | undefined)} onChange={v => onChange({ customMovePowerCost: v })} min={0} max={200} step={5} width={80} />
               </Field>
@@ -1210,7 +1218,7 @@ function BitBeastFields({ part, onChange }: { part: Part; onChange: OnChange }) 
                   options={[{ value: "timer", label: "timer" }, { value: "hit", label: "on hit" }, { value: "low_spin", label: "low spin" }]}
                   onChange={v => onChange({ customMoveCancelCondition: v || undefined })}
                   emptyLabel="(none)"
-                  style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                  className="bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
                 />
               </Field>
             </div>
@@ -1219,10 +1227,10 @@ function BitBeastFields({ part, onChange }: { part: Part; onChange: OnChange }) 
       )}
 
       <SectionHeader>MFB / Energy Ring</SectionHeader>
-      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 14 }}>
-        <input type="checkbox" checked={!!(part.isEnergyRing)} onChange={(e) => onChange({ isEnergyRing: e.target.checked || undefined })} style={{ accentColor: C.blue }} />
+      <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer mb-[14px]">
+        <input type="checkbox" checked={!!(part.isEnergyRing)} onChange={(e) => onChange({ isEnergyRing: e.target.checked || undefined })} className="accent-theme-blue" />
         Is Energy Ring
-        <span style={{ fontSize: 10, color: C.faint }}>(MFB — purely cosmetic + minor weight; no special move)</span>
+        <span className="text-[10px] text-theme-faint">(MFB — purely cosmetic + minor weight; no special move)</span>
       </label>
 
       <SectionHeader>Hidden Stats</SectionHeader>
@@ -1232,7 +1240,7 @@ function BitBeastFields({ part, onChange }: { part: Part; onChange: OnChange }) 
       <Field label="Resonance Bonus" hint="Additive speed bonus when two beys from the same series face each other.">
         <NumInput value={part.resonanceBonus as number | undefined} onChange={(v) => onChange({ resonanceBonus: v })} min={0} max={1} />
       </Field>
-      <div style={{ marginTop: 4 }}>
+      <div className="mt-1">
         <StatModifiersEditor part={part} onChange={onChange} />
       </div>
     </div>
@@ -1253,7 +1261,7 @@ function SpinTrackFields({ part, onChange }: { part: Part; onChange: OnChange })
       <SectionHeader>Material</SectionHeader>
       <MaterialField part={part} onChange={onChange} />
       <SectionHeader>Track Dimensions</SectionHeader>
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
+      <div className="flex gap-3 flex-wrap mb-[14px]">
         <Field label="Height (mm)" hint="Track height (e.g. 90, 100, 105, 125, 130, 145, 160, 230).">
           <NumInput value={part.height as number | undefined} onChange={(v) => onChange({ height: v })} min={0} step={5} width={80} />
         </Field>
@@ -1263,12 +1271,12 @@ function SpinTrackFields({ part, onChange }: { part: Part; onChange: OnChange })
       </div>
 
       <SectionHeader>Shield Disk (e.g. S130)</SectionHeader>
-      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer", marginBottom: 10 }}>
-        <input type="checkbox" checked={sd?.enabled ?? false} onChange={(e) => updateSD({ enabled: e.target.checked })} style={{ accentColor: C.blue }} />
+      <label className="flex items-center gap-[6px] text-xs text-theme-text cursor-pointer mb-[10px]">
+        <input type="checkbox" checked={sd?.enabled ?? false} onChange={(e) => updateSD({ enabled: e.target.checked })} className="accent-theme-blue" />
         Shield disk enabled
       </label>
       {sd?.enabled && (
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
+        <div className="flex gap-[10px] flex-wrap mb-[14px]">
           <Field label="Disk radius (mm)"><NumInput value={sd.diskRadius} onChange={(v) => updateSD({ diskRadius: v })} min={0} step={0.5} width={80} /></Field>
           <Field label="Disk height from floor (mm)"><NumInput value={sd.diskHeight} onChange={(v) => updateSD({ diskHeight: v })} min={0} step={1} width={80} /></Field>
         </div>
@@ -1283,7 +1291,7 @@ function SpinTrackFields({ part, onChange }: { part: Part; onChange: OnChange })
       <Field label="Track Rigidity" hint="0=flexible (absorbs some impact) → 1=rigid (no flex, no absorption).">
         <NumInput value={part.trackRigidity as number | undefined} onChange={(v) => onChange({ trackRigidity: v })} min={0} max={1} />
       </Field>
-      <div style={{ marginTop: 4 }}>
+      <div className="mt-1">
         <StatModifiersEditor part={part} onChange={onChange} />
       </div>
     </div>
@@ -1306,14 +1314,14 @@ function GearFields({ part, onChange }: { part: Part; onChange: OnChange }) {
 
       <SectionHeader>Gear Shape &amp; Archetype</SectionHeader>
       <Field label="Gear Shape">
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+        <div className="flex flex-wrap gap-[5px]">
           {GEAR_SHAPES.map(s => (
             <ToggleBtn key={s} label={s} active={part.gearShape === s} onClick={() => onChange({ gearShape: s })} />
           ))}
         </div>
       </Field>
       <Field label="Archetype">
-        <div style={{ display: "flex", gap: 5 }}>
+        <div className="flex gap-[5px]">
           {GEAR_ARCHETYPES.map(a => (
             <ToggleBtn key={a} label={a} active={part.archetype === a} onClick={() => onChange({ archetype: a })} />
           ))}
@@ -1321,7 +1329,7 @@ function GearFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       </Field>
 
       <SectionHeader>Gear Mechanics</SectionHeader>
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 14 }}>
+      <div className="flex gap-[14px] flex-wrap mb-[14px]">
         <Field label="Gear Teeth" hint="Number of teeth on the gear ring.">
           <NumInput value={part.gearTeeth as number | undefined} onChange={(v) => onChange({ gearTeeth: v })} min={0} step={1} width={80} />
         </Field>
@@ -1340,14 +1348,14 @@ function GearFields({ part, onChange }: { part: Part; onChange: OnChange }) {
       </div>
 
       <Field label="Clutch Mode">
-        <div style={{ display: "flex", gap: 5 }}>
+        <div className="flex gap-[5px]">
           {CLUTCH_MODES.map(m => (
             <ToggleBtn key={m} label={m} active={(part.clutchMode ?? "none") === m} onClick={() => onChange({ clutchMode: m })} />
           ))}
         </div>
       </Field>
 
-      <div style={{ marginTop: 4 }}>
+      <div className="mt-1">
         <StatModifiersEditor part={part} onChange={onChange} />
       </div>
     </div>

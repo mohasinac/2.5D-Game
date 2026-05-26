@@ -58,13 +58,12 @@ export function SplitScreenCinematic({ data, eliminatedBeyIds, onEnd }: SplitScr
         position: "fixed",
         inset: 0,
         zIndex: 900,
-        display: "grid",
         gridTemplateColumns: `repeat(${cols}, 1fr)`,
         gridTemplateRows: `repeat(${rows}, 1fr)`,
         opacity: visible ? 1 : 0,
         transition: "opacity 0.3s ease-in",
-        pointerEvents: "none",
       }}
+      className="grid pointer-events-none"
     >
       {participants.map(p => {
         const isActive = active.has(p.beyId);
@@ -78,17 +77,11 @@ export function SplitScreenCinematic({ data, eliminatedBeyIds, onEnd }: SplitScr
               background: isActive
                 ? `linear-gradient(135deg, rgba(0,0,0,0.75), rgba(0,0,0,0.6))`
                 : "rgba(0,0,0,0.85)",
-              borderRight: "2px solid rgba(255,255,255,0.15)",
-              borderBottom: "2px solid rgba(255,255,255,0.15)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
+              border: `2px solid rgba(255,255,255,0.15)`,
               transition: "opacity 0.4s",
               opacity: isActive ? 1 : 0.45,
-              position: "relative",
-              overflow: "hidden",
             }}
+            className="flex flex-col items-center justify-center relative overflow-hidden"
           >
             {/* Glow border effect */}
             <div
@@ -103,16 +96,16 @@ export function SplitScreenCinematic({ data, eliminatedBeyIds, onEnd }: SplitScr
             />
 
             {/* Content */}
-            <div style={{ fontSize: 40, marginBottom: 8 }}>{emoji}</div>
-            <div style={{ fontSize: 22, fontWeight: "bold", color: "#fff", fontFamily: "monospace", letterSpacing: 2 }}>
+            <div className="text-[40px] mb-2">{emoji}</div>
+            <div className="text-[22px] font-bold text-white font-mono tracking-[2px]">
               {p.displayName}
             </div>
-            <div style={{ fontSize: 13, color, marginTop: 4, textTransform: "uppercase", letterSpacing: 3 }}>
+            <div style={{ color }} className="text-[13px] mt-1 uppercase tracking-[3px]">
               {p.specialMove.replace(/_/g, " ")}
             </div>
 
             {!isActive && (
-              <div style={{ fontSize: 14, color: "#aaa", marginTop: 10, fontStyle: "italic" }}>
+              <div className="text-[14px] text-[#aaa] mt-2.5 italic">
                 FINISHED
               </div>
             )}

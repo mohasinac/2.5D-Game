@@ -2,32 +2,30 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C } from "@/styles/theme";
 import type { TournamentDoc } from "@/types/game";
 import toast from "react-hot-toast";
 
-const STATUS_COLORS: Record<string, string> = {
-  draft: C.faint,
-  registration: C.blue,
-  "in-progress": C.green,
-  completed: C.purple,
-  cancelled: C.red,
+const STATUS_PILL: Record<string, string> = {
+  draft:         "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-bg3 text-muted border border-border",
+  registration:  "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue/[.13] text-blue border border-blue/[.27]",
+  "in-progress": "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green/[.13] text-green border border-green/[.27]",
+  completed:     "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple/[.13] text-purple border border-purple/[.27]",
+  cancelled:     "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red/[.13] text-red border border-red/[.27]",
+};
+
+const STATUS_ACTIVE_CLS: Record<string, string> = {
+  all:           "bg-bg3 text-theme-muted border-border-c",
+  draft:         "bg-bg3 text-theme-muted border-border-c",
+  registration:  "bg-blue-13 text-theme-blue border-blue-30",
+  "in-progress": "bg-green-13 text-theme-green border-green-30",
+  completed:     "bg-purple-10 text-theme-purple border-purple-33",
+  cancelled:     "bg-red-13 text-theme-red border-red-30",
 };
 
 function formatDate(ts: any): string {
   if (!ts) return "—";
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   return d.toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" });
-}
-
-const STATUS_ORDER = ["draft", "registration", "in-progress", "completed", "cancelled"];
-
-function statusPillClass(color: string): string {
-  if (color === C.blue) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue/[.13] text-blue border border-blue/[.27]";
-  if (color === C.green) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green/[.13] text-green border border-green/[.27]";
-  if (color === C.purple) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple/[.13] text-purple border border-purple/[.27]";
-  if (color === C.red) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red/[.13] text-red border border-red/[.27]";
-  return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-bg3 text-muted border border-border";
 }
 
 export function TournamentsListPage() {
@@ -100,13 +98,7 @@ export function TournamentsListPage() {
         <div className="flex gap-1">
           {(["all", "draft", "registration", "in-progress", "completed", "cancelled"] as const).map(s => (
             <button key={s} onClick={() => setStatusFilter(s)}
-              style={{
-                padding: "5px 10px", borderRadius: 6, fontSize: 12, fontWeight: 500,
-                border: `1px solid ${statusFilter === s ? (STATUS_COLORS[s] ?? C.border) : C.border}`,
-                background: statusFilter === s ? (STATUS_COLORS[s] ?? C.blue) + "22" : "transparent",
-                color: statusFilter === s ? (STATUS_COLORS[s] ?? C.text) : C.muted,
-                cursor: "pointer"
-              }}>
+              className={`py-[5px] px-[10px] rounded-[6px] text-[12px] font-medium cursor-pointer border ${statusFilter === s ? STATUS_ACTIVE_CLS[s] : "bg-transparent text-theme-muted border-border-c"}`}>
               {s === "all" ? "All" : s}
             </button>
           ))}
@@ -143,7 +135,7 @@ export function TournamentsListPage() {
             </thead>
             <tbody>
               {filtered.map((t, i) => (
-                <tr key={t.id} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : "none" }}>
+                <tr key={t.id} className={i < filtered.length - 1 ? "border-b border-border-c" : ""}>
                   <td className="px-3.5 py-3 text-text font-medium">
                     <Link to={`/admin/tournaments/${t.id}`} className="text-text no-underline">{t.name}</Link>
                     {t.description && <p className="text-faint text-[11px] mt-0.5">{t.description.slice(0, 50)}{t.description.length > 50 ? "..." : ""}</p>}
@@ -152,7 +144,7 @@ export function TournamentsListPage() {
                     <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-bg3 text-muted border border-border">{t.type}</span>
                   </td>
                   <td className="px-3.5 py-3">
-                    <span className={statusPillClass(STATUS_COLORS[t.status] ?? C.faint)}>{t.status}</span>
+                    <span className={STATUS_PILL[t.status] ?? STATUS_PILL.draft}>{t.status}</span>
                   </td>
                   <td className="px-3.5 py-3 text-muted">Max {t.maxParticipants}</td>
                   <td className="px-3.5 py-3 text-muted text-xs">{formatDate(t.scheduledStartTime)}</td>

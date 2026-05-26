@@ -621,6 +621,15 @@ export class ArenaState extends Schema {
   @type("float32") safeZoneY:      number = 0;
   @type("float32") safeZoneTimer:  number = 0;
   @type("uint8")   safeZonePhase:  number = 0;
+
+  // ── World Background (visual-only, synced once on join) ─────────────────────
+  // Rendered behind the arena/stadium — independent of the arena floor/theme.
+  @type("string")  worldBgType:     string = "none";   // "none" | "color" | "image"
+  @type("string")  worldBgColor:    string = "";        // hex color e.g. "#1a2a3a"
+  @type("string")  worldBgImageUrl: string = "";        // Firebase Storage URL
+  @type("float32") worldBgOpacity:  number = 1.0;       // 0–1
+  @type("string")  worldBgFit:      string = "cover";   // "cover" | "contain" | "stretch"
+  @type("float32") worldBgBlurPx:   number = 0;         // Gaussian blur radius in px
 }
 
 /**

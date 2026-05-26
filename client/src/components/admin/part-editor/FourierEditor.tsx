@@ -112,7 +112,7 @@ function PolarPreview({ profile, size = 160 }: { profile: FourierRadialProfile; 
     ctx.stroke();
   }, [profile, size]);
 
-  return <canvas ref={canvasRef} width={size} height={size} style={{ borderRadius: 6, background: C.bg3 }} />;
+  return <canvas ref={canvasRef} width={size} height={size} className="rounded-[6px] bg-bg3" />;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -171,77 +171,74 @@ export function FourierEditor({ value, onChange, imageUrl, mmPerPx = 0.1 }: Prop
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+    <div className="flex flex-col gap-3.5">
       {/* Generate button */}
       {imageUrl && (
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div className="flex gap-2 items-center">
           <button
             onClick={() => generate(imageUrl, numHarmonics)}
             disabled={generating}
-            style={{
-              padding: "7px 14px", background: C.blue, color: "#fff",
-              border: "none", borderRadius: 7, fontSize: 12, fontWeight: 600,
-              cursor: generating ? "default" : "pointer", opacity: generating ? 0.6 : 1,
-            }}
+            className="px-3.5 py-[7px] bg-theme-blue text-white border-none rounded-[7px] text-[12px] font-semibold"
+            style={{ cursor: generating ? "default" : "pointer", opacity: generating ? 0.6 : 1 }}
           >
             {generating ? "Generating…" : "Generate Fourier Profile from Image"}
           </button>
-          <span style={{ fontSize: 11, color: C.faint }}>ray-cast → DFT</span>
+          <span className="text-[11px] text-theme-faint">ray-cast → DFT</span>
         </div>
       )}
 
       {value && (
-        <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+        <div className="flex gap-4 items-start">
           {/* Left: controls */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
+          <div className="flex-1 flex flex-col gap-2.5">
             {/* Harmonic order slider */}
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.muted, marginBottom: 4 }}>
+              <div className="flex justify-between text-[11px] text-theme-muted mb-1">
                 <span>Harmonic Order</span>
-                <span style={{ fontFamily: "monospace", color: C.text }}>{numHarmonics}</span>
+                <span className="font-mono text-theme-text">{numHarmonics}</span>
               </div>
               <input
                 type="range" min={1} max={32} step={1} value={numHarmonics}
                 onChange={(e) => handleHarmonicsChange(+e.target.value)}
-                style={{ width: "100%", accentColor: C.blue }}
+                className="w-full accent-theme-blue"
               />
-              <div style={{ fontSize: 10, color: C.faint }}>Higher = more detail, fewer = smoother approximation</div>
+              <div className="text-[10px] text-theme-faint">Higher = more detail, fewer = smoother approximation</div>
             </div>
 
             {/* a0 — base radius */}
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.muted, marginBottom: 3 }}>
+              <div className="flex justify-between text-[11px] text-theme-muted mb-[3px]">
                 <span>Base Radius (a₀, mm)</span>
-                <span style={{ fontFamily: "monospace", color: C.text }}>{value.a0.toFixed(2)}</span>
+                <span className="font-mono text-theme-text">{value.a0.toFixed(2)}</span>
               </div>
               <input
                 type="range" min={0} max={50} step={0.1} value={value.a0}
                 onChange={(e) => updateA0(+e.target.value)}
-                style={{ width: "100%", accentColor: C.yellow }}
+                className="w-full accent-theme-yellow"
               />
             </div>
 
             {/* Per-harmonic amplitude bars */}
-            <div style={{ maxHeight: 180, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6 }}>
+            <div className="max-h-[180px] overflow-y-auto flex flex-col gap-1.5">
               {value.harmonics.map((h, idx) => {
                 const amp = Math.sqrt(h.a * h.a + h.b * h.b);
                 return (
-                  <div key={idx} style={{ background: C.bg3, borderRadius: 6, padding: "6px 8px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.muted, marginBottom: 3 }}>
+                  <div key={idx} className="bg-bg3 rounded-[6px] px-2 py-1.5">
+                    <div className="flex justify-between text-[10px] text-theme-muted mb-[3px]">
                       <span>n={h.n}  amp={amp.toFixed(2)}mm</span>
-                      <span style={{ color: C.faint }}>a={h.a.toFixed(2)} b={h.b.toFixed(2)}</span>
+                      <span className="text-theme-faint">a={h.a.toFixed(2)} b={h.b.toFixed(2)}</span>
                     </div>
-                    <div style={{ display: "flex", gap: 6 }}>
+                    <div className="flex gap-1.5">
                       <input
                         type="range" min={-30} max={30} step={0.1} value={h.a}
                         onChange={(e) => updateHarmonic(idx, "a", +e.target.value)}
-                        style={{ flex: 1, accentColor: C.blue }}
+                        className="flex-1 accent-theme-blue"
                         title={`n=${h.n} cosine (a)`}
                       />
                       <input
                         type="range" min={-30} max={30} step={0.1} value={h.b}
                         onChange={(e) => updateHarmonic(idx, "b", +e.target.value)}
-                        style={{ flex: 1, accentColor: C.green }}
+                        className="flex-1 accent-theme-green"
                         title={`n=${h.n} sine (b)`}
                       />
                     </div>
@@ -252,9 +249,9 @@ export function FourierEditor({ value, onChange, imageUrl, mmPerPx = 0.1 }: Prop
           </div>
 
           {/* Right: polar preview */}
-          <div style={{ flexShrink: 0 }}>
+          <div className="shrink-0">
             <PolarPreview profile={value} />
-            <div style={{ fontSize: 10, color: C.faint, textAlign: "center", marginTop: 4 }}>
+            <div className="text-[10px] text-theme-faint text-center mt-1">
               Polar preview
             </div>
           </div>
@@ -262,13 +259,13 @@ export function FourierEditor({ value, onChange, imageUrl, mmPerPx = 0.1 }: Prop
       )}
 
       {!value && !imageUrl && (
-        <div style={{ fontSize: 12, color: C.faint }}>
+        <div className="text-[12px] text-theme-faint">
           Upload a top-view image to generate, or set dimensions to create a base circle profile.
         </div>
       )}
 
       {!value && imageUrl && !generating && (
-        <div style={{ fontSize: 12, color: C.faint }}>
+        <div className="text-[12px] text-theme-faint">
           Click "Generate" to extract the radial profile from the uploaded image.
         </div>
       )}

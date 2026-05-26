@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, alpha } from "@/styles/theme";
 
 type SortKey = "tournamentPoints" | "wins" | "winRate" | "totalDamageDealt" | "matchesPlayed";
 
@@ -59,31 +58,25 @@ export function LeaderboardPage() {
   const activeTab = TABS.find((t) => t.key === tab)!;
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg0, padding: "32px 24px" }}>
-      <div style={{ maxWidth: 720, margin: "0 auto" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-          <Link to="/game" style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Back</Link>
+    <div className="min-h-screen bg-bg0 py-8 px-6">
+      <div className="max-w-[720px] mx-auto">
+        <div className="flex items-center gap-3 mb-2">
+          <Link to="/game" className="text-theme-faint text-[13px] no-underline">← Back</Link>
         </div>
-        <h1 style={{ fontSize: 32, fontWeight: 900, color: C.text, letterSpacing: "-0.02em", marginBottom: 4 }}>
+        <h1 className="text-[32px] font-black text-theme-text tracking-[-0.02em] mb-1">
           Leaderboard
         </h1>
-        <p style={{ color: C.muted, fontSize: 14, marginBottom: 28 }}>
+        <p className="text-theme-muted text-[14px] mb-7">
           Top {players.length} players — all time
         </p>
 
         {/* Tab bar */}
-        <div style={{ display: "flex", gap: 6, marginBottom: 20, overflowX: "auto", paddingBottom: 4 }}>
+        <div className="flex gap-1.5 mb-5 overflow-x-auto pb-1">
           {TABS.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              style={{
-                padding: "7px 16px", borderRadius: 99, fontSize: 13, fontWeight: 600, cursor: "pointer",
-                background: tab === t.key ? C.blue : C.bg2,
-                color: tab === t.key ? C.white : C.muted,
-                border: `1px solid ${tab === t.key ? C.blue : C.border}`,
-                whiteSpace: "nowrap", flexShrink: 0,
-              }}
+              className={`px-4 py-[7px] rounded-full text-[13px] font-semibold cursor-pointer whitespace-nowrap shrink-0 border ${tab === t.key ? "bg-theme-blue text-white border-theme-blue" : "bg-bg2 text-theme-muted border-border-c"}`}
             >
               {t.icon} {t.label}
             </button>
@@ -91,57 +84,48 @@ export function LeaderboardPage() {
         </div>
 
         {/* Table */}
-        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, overflow: "hidden" }}>
+        <div className="bg-bg1 border border-border-c rounded-2xl overflow-hidden">
           {loading ? (
-            <div style={{ padding: 64, display: "flex", justifyContent: "center" }}>
-              <div className="spin" style={{ width: 32, height: 32, border: `2px solid ${C.blue}`, borderTopColor: "transparent", borderRadius: "50%" }} />
+            <div className="p-16 flex justify-center">
+              <div className="spin w-8 h-8 border-2 border-theme-blue border-t-transparent rounded-full" />
             </div>
           ) : sorted.length === 0 ? (
-            <div style={{ padding: 64, textAlign: "center", color: C.faint, fontSize: 14 }}>
+            <div className="p-16 text-center text-theme-faint text-[14px]">
               No match data yet — play some games!
             </div>
           ) : (
             sorted.map((player, i) => (
               <div
                 key={player.id}
-                style={{
-                  display: "flex", alignItems: "center", gap: 14,
-                  padding: "13px 20px",
-                  borderBottom: i < sorted.length - 1 ? `1px solid ${C.border}` : "none",
-                  background: i < 3 ? alpha(C.yellow, 0.04) : "transparent",
-                }}
+                className={`flex items-center gap-3.5 px-5 py-[13px] ${i < sorted.length - 1 ? "border-b border-border-c" : ""} ${i < 3 ? "bg-yellow-10" : ""}`}
               >
                 {/* Rank */}
-                <span style={{ width: 32, textAlign: "center", fontSize: i < 3 ? 20 : 14, color: i < 3 ? C.yellow : C.faint, fontFamily: "monospace", flexShrink: 0 }}>
+                <span className={`w-8 text-center shrink-0 font-mono ${i < 3 ? "text-[20px] text-theme-yellow" : "text-[14px] text-theme-faint"}`}>
                   {i < 3 ? MEDALS[i] : `${i + 1}`}
                 </span>
 
                 {/* Avatar */}
-                <div style={{
-                  width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
-                  background: alpha(C.blue, 0.13), display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 16, fontWeight: 700, color: C.blue,
-                }}>
+                <div className="w-[38px] h-[38px] rounded-full shrink-0 flex items-center justify-center text-[16px] font-bold bg-blue-13 text-theme-blue">
                   {(player.username ?? player.id)[0]?.toUpperCase()}
                 </div>
 
                 {/* Name + secondary stats */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: C.text, fontSize: 14, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <div className="flex-1 min-w-0">
+                  <div className="text-theme-text text-[14px] font-semibold overflow-hidden text-ellipsis whitespace-nowrap">
                     {player.username ?? player.id.slice(0, 12)}
                   </div>
-                  <div style={{ color: C.faint, fontSize: 11, marginTop: 2 }}>
+                  <div className="text-theme-faint text-[11px] mt-0.5">
                     {player.matchesPlayed ?? 0} matches · {player.wins ?? 0}W / {player.losses ?? 0}L
                   </div>
                 </div>
 
                 {/* Primary stat */}
-                <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <div style={{ color: i < 3 ? C.yellow : C.text, fontFamily: "monospace", fontWeight: 700, fontSize: 15 }}>
+                <div className="text-right shrink-0">
+                  <div className={`font-mono font-bold text-[15px] ${i < 3 ? "text-theme-yellow" : "text-theme-text"}`}>
                     {activeTab.format(player)}
                   </div>
                   {tab !== "winRate" && (
-                    <div style={{ fontSize: 11, color: C.faint, marginTop: 2 }}>
+                    <div className="text-[11px] text-theme-faint mt-0.5">
                       {((player.winRate ?? 0) * 100).toFixed(0)}% win rate
                     </div>
                   )}
@@ -151,7 +135,7 @@ export function LeaderboardPage() {
           )}
         </div>
 
-        <p style={{ color: C.faint, fontSize: 11, textAlign: "center", marginTop: 20 }}>
+        <p className="text-theme-faint text-[11px] text-center mt-5">
           Updates after each completed match
         </p>
       </div>

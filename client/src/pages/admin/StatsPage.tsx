@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs, query, orderBy, limit, getCountFromServer } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C } from "@/styles/theme";
 
 interface PlayerStat {
   id: string; username?: string; wins?: number; losses?: number;
@@ -73,12 +72,7 @@ export function StatsPage() {
                 <button
                   key={k}
                   onClick={() => setSortKey(k)}
-                  style={{
-                    padding:"3px 8px", fontSize:11, borderRadius:6, cursor:"pointer",
-                    background: sortKey === k ? C.blue+"22" : "transparent",
-                    color: sortKey === k ? C.blue : C.faint,
-                    border: `1px solid ${sortKey === k ? C.blue+"55" : C.border}`,
-                  }}
+                  className={`py-[3px] px-2 text-[11px] rounded-[6px] cursor-pointer border ${sortKey === k ? "bg-blue-13 text-theme-blue border-blue-30" : "bg-transparent text-theme-faint border-border-c"}`}
                 >
                   {k === "wins" ? "Wins" : k === "winRate" ? "Win %" : "Damage"}
                 </button>
@@ -89,8 +83,8 @@ export function StatsPage() {
             {loading ? <Spinner /> : sorted.length === 0 ? (
               <div className="py-8 text-center text-faint text-[13px]">No player data yet</div>
             ) : sorted.map((p, i) => (
-              <div key={p.id} className="flex items-center gap-3 px-4 py-2.5" style={{ borderBottom: i < sorted.length-1 ? `1px solid ${C.border}` : "none" }}>
-                <span style={{ fontSize:i<3?18:13, width:32, textAlign:"center", color:i<3?C.yellow:C.faint }}>
+              <div key={p.id} className={`flex items-center gap-3 px-4 py-2.5 ${i < sorted.length-1 ? "border-b border-border-c" : ""}`}>
+                <span className={`w-8 text-center ${i<3 ? "text-[18px] text-theme-yellow" : "text-[13px] text-theme-faint"}`}>
                   {i<3 ? MEDALS[i] : `${i+1}.`}
                 </span>
                 <div className="flex-1">
@@ -127,7 +121,7 @@ export function StatsPage() {
             {loading ? <Spinner /> : matches.length === 0 ? (
               <div className="py-8 text-center text-faint text-[13px]">No matches recorded yet</div>
             ) : matches.map((m, i) => (
-              <div key={m.id} className="flex justify-between items-center px-4 py-2.5" style={{ borderBottom: i<matches.length-1 ? `1px solid ${C.border}` : "none" }}>
+              <div key={m.id} className={`flex justify-between items-center px-4 py-2.5 ${i < matches.length-1 ? "border-b border-border-c" : ""}`}>
                 <div>
                   <p className="text-text text-[11px] font-mono">{m.id.slice(0,16)}…</p>
                   <p className="text-faint text-[11px] capitalize">

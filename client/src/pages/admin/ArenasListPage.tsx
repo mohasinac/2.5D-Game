@@ -2,12 +2,27 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { collection, getDocs, deleteDoc, doc, orderBy, query } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
+import { cn } from "@/lib/cn";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
 
-const THEME_ACCENT: Record<string, string> = {
-  metrocity: C.blue, forest: C.green, mountains: C.purple, desert: C.yellow,
-  sea: "#06b6d4", futuristic: C.purple, prehistoric: C.orange,
+const THEME_ACCENT_CLS: Record<string, string> = {
+  metrocity: "border-theme-blue",
+  forest: "border-theme-green",
+  mountains: "border-theme-purple",
+  desert: "border-theme-yellow",
+  sea: "border-[#06b6d4]",
+  futuristic: "border-theme-purple",
+  prehistoric: "border-theme-orange",
+};
+
+const THEME_BG_CLS: Record<string, string> = {
+  metrocity: "bg-theme-blue/[.07]",
+  forest: "bg-theme-green/[.07]",
+  mountains: "bg-theme-purple/[.07]",
+  desert: "bg-theme-yellow/[.07]",
+  sea: "bg-[#06b6d4]/[.07]",
+  futuristic: "bg-theme-purple/[.07]",
+  prehistoric: "bg-theme-orange/[.07]",
 };
 
 export function ArenasListPage() {
@@ -21,7 +36,7 @@ export function ArenasListPage() {
     (async () => {
       try {
         const snap = await getDocs(query(collection(db, COLLECTIONS.ARENAS), orderBy("name")));
-        setArenas(snap.docs.map(d => ({ id:d.id, ...d.data() })));
+        setArenas(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       } catch { toast.error("Failed to load arenas"); }
       finally { setLoading(false); }
     })();
@@ -40,13 +55,13 @@ export function ArenasListPage() {
   };
 
   return (
-    <div style={{ padding:24, width: "100%", boxSizing: "border-box" as const }}>
-      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:20 }}>
+    <div className="page-shell p-6">
+      <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 style={{ fontSize:22, fontWeight:700, color:C.text }}>Arenas</h1>
-          <p style={{ color:C.faint, fontSize:13, marginTop:4 }}>{arenas.length} configured</p>
+          <h1 className="text-[22px] font-bold text-theme-text">Arenas</h1>
+          <p className="text-theme-faint text-[13px] mt-1">{arenas.length} configured</p>
         </div>
-        <Link to="/admin/arenas/create" style={{ padding:"8px 16px", background:C.purple, color:C.white, borderRadius:8, fontSize:13, fontWeight:500, textDecoration:"none" }}>
+        <Link to="/admin/arenas/create" className="px-4 py-2 bg-theme-purple text-white rounded-lg text-[13px] font-medium no-underline">
           + New Arena
         </Link>
       </div>
@@ -57,52 +72,52 @@ export function ArenasListPage() {
         const filtered = tagFilter === "all" ? arenas : arenas.filter(a => (a.tags ?? [a.theme]).includes(tagFilter));
         return (
           <>
-            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
+            <div className="flex gap-1.5 flex-wrap mb-3.5">
               {["all", ...allTags].map(tag => (
                 <button key={tag} onClick={() => setTagFilter(tag)}
-                  style={{
-                    padding:"4px 12px", borderRadius:20, fontSize:11, cursor:"pointer", fontWeight:500,
-                    background: tagFilter === tag ? C.purple : "transparent",
-                    color: tagFilter === tag ? C.white : C.muted,
-                    border: `1px solid ${tagFilter === tag ? C.purple : C.border}`,
-                    textTransform: "capitalize",
-                  }}>
+                  className={cn(
+                    "px-3 py-1 rounded-[20px] text-[11px] cursor-pointer font-medium capitalize border",
+                    tagFilter === tag
+                      ? "bg-theme-purple text-white border-theme-purple"
+                      : "bg-transparent text-theme-muted border-border-c"
+                  )}>
                   {tag}
                 </button>
               ))}
             </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14 }}>
+            <div className="grid grid-cols-3 gap-3.5">
               {filtered.map(arena => {
-                const accent = THEME_ACCENT[arena.theme] ?? C.border;
+                const accentBorder = THEME_ACCENT_CLS[arena.theme] ?? "border-border-c";
+                const accentBg = THEME_BG_CLS[arena.theme] ?? "bg-bg2";
                 return (
-                  <div key={arena.id} style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:14, overflow:"hidden" }}>
-                    <div style={{ height:110, display:"flex", alignItems:"center", justifyContent:"center", background:accent+"11", position:"relative" }}>
-                      <div style={{
-                        width:80, height:80, border:`2px solid ${accent}66`,
-                        borderRadius: arena.shape==="circle" ? "50%" : 4,
-                        display:"flex", alignItems:"center", justifyContent:"center", fontSize:24,
-                      }}>
-                        {arena.shape==="circle" ? "⭕" : "▬"}
+                  <div key={arena.id} className="bg-bg2 border border-border-c rounded-[14px] overflow-hidden">
+                    <div className={cn("h-[110px] flex items-center justify-center relative", accentBg)}>
+                      <div className={cn(
+                        "w-20 h-20 border-2 flex items-center justify-center text-2xl",
+                        accentBorder,
+                        arena.shape === "circle" ? "rounded-full" : "rounded"
+                      )}>
+                        {arena.shape === "circle" ? "⭕" : "▬"}
                       </div>
-                      <span style={{ position:"absolute", top:8, right:8, fontSize:11, color:C.muted, background:"rgba(0,0,0,0.4)", padding:"2px 8px", borderRadius:4, textTransform:"capitalize" }}>
+                      <span className="absolute top-2 right-2 text-[11px] text-theme-muted bg-black/40 px-2 py-0.5 rounded capitalize">
                         {arena.theme}
                       </span>
                       {arena.tags?.length > 0 && (
-                        <span style={{ position:"absolute", bottom:8, left:8, fontSize:10, color:"#88aacc", background:"rgba(0,0,0,0.4)", padding:"2px 6px", borderRadius:4 }}>
+                        <span className="absolute bottom-2 left-2 text-[10px] text-[#88aacc] bg-black/40 px-1.5 py-0.5 rounded">
                           {arena.tags[0]}
                         </span>
                       )}
                     </div>
-                    <div style={{ padding:14 }}>
-                      <h3 style={{ color:C.text, fontWeight:600 }}>{arena.name}</h3>
-                      <div style={{ display:"flex", gap:12, marginTop:4, fontSize:12, color:C.muted }}>
-                        <span style={{ textTransform:"capitalize" }}>{arena.shape}</span>
+                    <div className="p-3.5">
+                      <h3 className="text-theme-text font-semibold">{arena.name}</h3>
+                      <div className="flex gap-3 mt-1 text-xs text-theme-muted">
+                        <span className="capitalize">{arena.shape}</span>
                         <span>{arena.width ?? "—"}×{arena.height ?? "—"}</span>
                       </div>
                     </div>
-                    <div style={{ display:"flex", borderTop:`1px solid ${C.border}` }}>
-                      <a href={`/admin/arenas/edit/${arena.id}`} style={{ flex:1, padding:"10px", textAlign:"center", fontSize:13, color:C.purple, textDecoration:"none" }}>Edit</a>
-                      <button onClick={() => setConfirmDelete(arena)} style={{ flex:1, padding:"10px", fontSize:13, color:C.red, background:"none", border:"none", borderLeft:`1px solid ${C.border}`, cursor:"pointer" }}>Delete</button>
+                    <div className="flex border-t border-border-c">
+                      <a href={`/admin/arenas/edit/${arena.id}`} className="flex-1 py-2.5 text-center text-[13px] text-theme-purple no-underline">Edit</a>
+                      <button onClick={() => setConfirmDelete(arena)} className="flex-1 py-2.5 text-[13px] text-theme-red bg-transparent border-none border-l border-border-c cursor-pointer">Delete</button>
                     </div>
                   </div>
                 );
@@ -113,25 +128,25 @@ export function ArenasListPage() {
       })()}
 
       {loading && (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14 }}>
-          {Array.from({length:4}).map((_,i) => <div key={i} style={{ background:C.bg2, borderRadius:14, border:`1px solid ${C.border}`, height:160 }} className="pulse" />)}
+        <div className="grid grid-cols-3 gap-3.5">
+          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="bg-bg2 rounded-[14px] border border-border-c h-40 pulse" />)}
         </div>
       )}
       {!loading && arenas.length === 0 && (
-        <div style={{ textAlign:"center", paddingTop:80, color:C.faint }}>
-          <div style={{ fontSize:40, marginBottom:12 }}>🏟️</div>
+        <div className="text-center pt-20 text-theme-faint">
+          <div className="text-[40px] mb-3">🏟️</div>
           <p>No arenas yet. Create your first arena!</p>
         </div>
       )}
 
       {confirmDelete && (
-        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:50, padding:16 }}>
-          <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:20, padding:24, maxWidth:360, width:"100%" }}>
-            <h3 style={{ fontSize:18, fontWeight:700, color:C.text, marginBottom:8 }}>Delete Arena</h3>
-            <p style={{ color:C.muted, fontSize:14, marginBottom:24 }}>Delete <strong style={{ color:C.text }}>{confirmDelete.name}</strong>? This cannot be undone.</p>
-            <div style={{ display:"flex", gap:10 }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ flex:1, padding:"8px", border:`1px solid ${C.border}`, color:C.muted, background:"transparent", borderRadius:8, cursor:"pointer" }}>Cancel</button>
-              <button onClick={handleDelete} disabled={deleting} style={{ flex:1, padding:"8px", background:C.red, color:C.white, borderRadius:8, border:"none", cursor:"pointer", opacity: deleting ? 0.5 : 1 }}>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-bg2 border border-border-c rounded-[20px] p-6 max-w-[360px] w-full">
+            <h3 className="text-[18px] font-bold text-theme-text mb-2">Delete Arena</h3>
+            <p className="text-theme-muted text-sm mb-6">Delete <strong className="text-theme-text">{confirmDelete.name}</strong>? This cannot be undone.</p>
+            <div className="flex gap-2.5">
+              <button onClick={() => setConfirmDelete(null)} className="flex-1 py-2 border border-border-c text-theme-muted bg-transparent rounded-lg cursor-pointer">Cancel</button>
+              <button onClick={handleDelete} disabled={deleting} className={cn("flex-1 py-2 bg-theme-red text-white rounded-lg border-none cursor-pointer", deleting && "opacity-50")}>
                 {deleting ? "Deleting..." : "Delete"}
               </button>
             </div>

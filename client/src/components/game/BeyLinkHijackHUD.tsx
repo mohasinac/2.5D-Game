@@ -24,15 +24,15 @@ function CountdownRing({ fraction, color, size = 36 }: { fraction: number; color
 
 function KeyCap({ k, color }: { k: string; color: string }) {
   return (
-    <div style={{
-      display: "inline-flex", alignItems: "center", justifyContent: "center",
-      width: 34, height: 34, borderRadius: 7,
-      background: color + "22",
-      border: `2px solid ${color}`,
-      boxShadow: `0 3px 0 ${color}88, 0 0 10px ${color}55`,
-      color, fontWeight: 900, fontSize: 16, fontFamily: "monospace",
-      userSelect: "none",
-    }}>{k}</div>
+    <div
+      style={{
+        border: `2px solid ${color}`,
+        boxShadow: `0 3px 0 ${color}88, 0 0 10px ${color}55`,
+        color,
+        background: color + "22",
+      }}
+      className="inline-flex items-center justify-center w-[34px] h-[34px] rounded-[7px] font-black text-[16px] font-mono select-none"
+    >{k}</div>
   );
 }
 
@@ -54,25 +54,25 @@ function VictimPanel({ data }: { data: BeyLinkHijackQTEData }) {
   }, [data]);
 
   return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 10,
-      background: "rgba(10,10,20,0.92)", backdropFilter: "blur(8px)",
-      border: "1px solid #818cf888", borderRadius: 12,
-      padding: "10px 16px", minWidth: 220,
-      boxShadow: "0 0 24px #818cf822",
-      animation: "beylink-pulse-blue 1.2s ease-in-out infinite",
-    }}>
+    <div
+      style={{
+        border: "1px solid #818cf888",
+        boxShadow: "0 0 24px #818cf822",
+        animation: "beylink-pulse-blue 1.2s ease-in-out infinite",
+      }}
+      className="flex items-center gap-[10px] bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-4 py-[10px] min-w-[220px]"
+    >
       <CountdownRing fraction={fraction} color="#818cf8" />
-      <div style={{ flex: 1 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-          <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#818cf8", boxShadow: "0 0 6px #818cf8" }} />
-          <span style={{ color: "#818cf8", fontWeight: 800, fontSize: 11, letterSpacing: 0.8 }}>HIJACK INITIATED</span>
+      <div className="flex-1">
+        <div className="flex items-center gap-[6px] mb-[3px]">
+          <div style={{ boxShadow: "0 0 6px #818cf8" }} className="w-[7px] h-[7px] rounded-full bg-[#818cf8]" />
+          <span className="text-[#818cf8] font-extrabold text-[11px] tracking-[0.8px]">HIJACK INITIATED</span>
         </div>
-        <div style={{ color: "#9ca3af", fontSize: 10 }}>
+        <div className="text-[#9ca3af] text-[10px]">
           Waiting for attacker to respond…
         </div>
-        <div style={{ marginTop: 5, height: 2, background: "#ffffff11", borderRadius: 1 }}>
-          <div style={{ width: `${fraction * 100}%`, height: "100%", background: "#818cf8", borderRadius: 1, transition: "width 100ms linear" }} />
+        <div className="mt-[5px] h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
+          <div style={{ width: `${fraction * 100}%`, transition: "width 100ms linear" }} className="h-full bg-[#818cf8] rounded-[1px]" />
         </div>
       </div>
     </div>
@@ -113,39 +113,42 @@ function AttackerPanel({ data, onBlock }: AttackerPanelProps) {
   }, [data, onBlock, pressed]);
 
   return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 10,
-      background: "rgba(10,10,20,0.92)", backdropFilter: "blur(8px)",
-      border: `1px solid ${pressed ? "#14b8a888" : "#ef444488"}`, borderRadius: 12,
-      padding: "10px 16px", minWidth: 240,
-      boxShadow: `0 0 24px ${pressed ? "#14b8a822" : "#ef444422"}`,
-      animation: pressed ? "none" : "beylink-pulse-red 0.7s ease-in-out infinite",
-      transition: "border-color 0.2s, box-shadow 0.2s",
-    }}>
+    <div
+      style={{
+        border: `1px solid ${pressed ? "#14b8a888" : "#ef444488"}`,
+        boxShadow: `0 0 24px ${pressed ? "#14b8a822" : "#ef444422"}`,
+        animation: pressed ? "none" : "beylink-pulse-red 0.7s ease-in-out infinite",
+        transition: "border-color 0.2s, box-shadow 0.2s",
+      }}
+      className="flex items-center gap-[10px] bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-4 py-[10px] min-w-[240px]"
+    >
       <CountdownRing fraction={fraction} color={pressed ? "#14b8a6" : "#ef4444"} />
-      <div style={{ flex: 1 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
-          <div style={{ width: 7, height: 7, borderRadius: "50%", background: pressed ? "#14b8a6" : "#ef4444", boxShadow: `0 0 6px ${pressed ? "#14b8a6" : "#ef4444"}` }} />
-          <span style={{ color: pressed ? "#14b8a6" : "#ef4444", fontWeight: 800, fontSize: 11, letterSpacing: 0.8 }}>
+      <div className="flex-1">
+        <div className="flex items-center gap-[6px] mb-[5px]">
+          <div
+            style={{ background: pressed ? "#14b8a6" : "#ef4444", boxShadow: `0 0 6px ${pressed ? "#14b8a6" : "#ef4444"}` }}
+            className="w-[7px] h-[7px] rounded-full"
+          />
+          <span style={{ color: pressed ? "#14b8a6" : "#ef4444" }} className="font-extrabold text-[11px] tracking-[0.8px]">
             {pressed ? "BLOCKED!" : "HIJACK INCOMING!"}
           </span>
         </div>
         {!pressed && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="flex items-center gap-2">
             <KeyCap k={data.key} color="#ef4444" />
-            <span style={{ color: "#d1d5db", fontSize: 10 }}>
+            <span className="text-[#d1d5db] text-[10px]">
               Block the takeover
             </span>
           </div>
         )}
         {pressed && (
-          <div style={{ color: "#14b8a6", fontSize: 10, fontWeight: 600 }}>
+          <div className="text-[#14b8a6] text-[10px] font-semibold">
             You denied the hijack attempt
           </div>
         )}
         {!pressed && (
-          <div style={{ marginTop: 5, height: 2, background: "#ffffff11", borderRadius: 1 }}>
-            <div style={{ width: `${fraction * 100}%`, height: "100%", background: "#ef4444", borderRadius: 1, transition: "width 100ms linear" }} />
+          <div className="mt-[5px] h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
+            <div style={{ width: `${fraction * 100}%`, transition: "width 100ms linear" }} className="h-full bg-[#ef4444] rounded-[1px]" />
           </div>
         )}
       </div>
@@ -183,15 +186,15 @@ function EscapePanel({ data, onEscape }: { data: BeyLinkQTEData; onEscape: (key:
   }, [data, onEscape, pressed]);
 
   return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 10,
-      background: "rgba(10,10,20,0.92)", backdropFilter: "blur(8px)",
-      border: `1px solid ${pressed ? "#14b8a888" : "#f59e0b88"}`, borderRadius: 12,
-      padding: "10px 16px", minWidth: 230,
-      boxShadow: `0 0 24px ${pressed ? "#14b8a822" : "#f59e0b22"}`,
-      animation: pressed ? "none" : "beylink-pulse-orange 0.8s ease-in-out infinite",
-      transition: "border-color 0.2s, box-shadow 0.2s",
-    }}>
+    <div
+      style={{
+        border: `1px solid ${pressed ? "#14b8a888" : "#f59e0b88"}`,
+        boxShadow: `0 0 24px ${pressed ? "#14b8a822" : "#f59e0b22"}`,
+        animation: pressed ? "none" : "beylink-pulse-orange 0.8s ease-in-out infinite",
+        transition: "border-color 0.2s, box-shadow 0.2s",
+      }}
+      className="flex items-center gap-[10px] bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-4 py-[10px] min-w-[230px]"
+    >
       <style>{`
         @keyframes beylink-pulse-orange {
           0%,100% { box-shadow: 0 0 10px #f59e0b22; }
@@ -199,25 +202,28 @@ function EscapePanel({ data, onEscape }: { data: BeyLinkQTEData; onEscape: (key:
         }
       `}</style>
       <CountdownRing fraction={fraction} color={pressed ? "#14b8a6" : "#f59e0b"} />
-      <div style={{ flex: 1 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
-          <div style={{ width: 7, height: 7, borderRadius: "50%", background: pressed ? "#14b8a6" : "#f59e0b", boxShadow: `0 0 6px ${pressed ? "#14b8a6" : "#f59e0b"}` }} />
-          <span style={{ color: pressed ? "#14b8a6" : "#f59e0b", fontWeight: 800, fontSize: 11, letterSpacing: 0.8 }}>
+      <div className="flex-1">
+        <div className="flex items-center gap-[6px] mb-[5px]">
+          <div
+            style={{ background: pressed ? "#14b8a6" : "#f59e0b", boxShadow: `0 0 6px ${pressed ? "#14b8a6" : "#f59e0b"}` }}
+            className="w-[7px] h-[7px] rounded-full"
+          />
+          <span style={{ color: pressed ? "#14b8a6" : "#f59e0b" }} className="font-extrabold text-[11px] tracking-[0.8px]">
             {pressed ? "BREAKING FREE!" : "LINK TRAP!"}
           </span>
         </div>
         {!pressed && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="flex items-center gap-2">
             <KeyCap k={data.key} color="#f59e0b" />
-            <span style={{ color: "#d1d5db", fontSize: 10 }}>Press to escape the link</span>
+            <span className="text-[#d1d5db] text-[10px]">Press to escape the link</span>
           </div>
         )}
         {pressed && (
-          <div style={{ color: "#14b8a6", fontSize: 10, fontWeight: 600 }}>Escape key registered!</div>
+          <div className="text-[#14b8a6] text-[10px] font-semibold">Escape key registered!</div>
         )}
         {!pressed && (
-          <div style={{ marginTop: 5, height: 2, background: "#ffffff11", borderRadius: 1 }}>
-            <div style={{ width: `${fraction * 100}%`, height: "100%", background: "#f59e0b", borderRadius: 1, transition: "width 100ms linear" }} />
+          <div className="mt-[5px] h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
+            <div style={{ width: `${fraction * 100}%`, transition: "width 100ms linear" }} className="h-full bg-[#f59e0b] rounded-[1px]" />
           </div>
         )}
       </div>
@@ -242,23 +248,23 @@ function ControlLossBanner({ data }: { data: BeyLinkControlLossData }) {
   }, [data]);
   if (!visible) return null;
   return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 10,
-      background: "rgba(10,10,20,0.92)", backdropFilter: "blur(8px)",
-      border: `1px solid ${meta.color}88`, borderRadius: 12,
-      padding: "8px 14px",
-      animation: "beylink-pulse-cl 0.6s ease-in-out infinite",
-    }}>
+    <div
+      style={{
+        border: `1px solid ${meta.color}88`,
+        animation: "beylink-pulse-cl 0.6s ease-in-out infinite",
+      }}
+      className="flex items-center gap-[10px] bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-[14px] py-2"
+    >
       <style>{`
         @keyframes beylink-pulse-cl {
           0%,100% { opacity: 1; }
           50%      { opacity: 0.7; }
         }
       `}</style>
-      <span style={{ fontSize: 18 }}>⚠️</span>
+      <span className="text-[18px]">⚠️</span>
       <div>
-        <div style={{ color: meta.color, fontWeight: 800, fontSize: 11, letterSpacing: 0.8 }}>{meta.label}</div>
-        <div style={{ color: "#9ca3af", fontSize: 10, marginTop: 2 }}>{meta.desc}</div>
+        <div style={{ color: meta.color }} className="font-extrabold text-[11px] tracking-[0.8px]">{meta.label}</div>
+        <div className="text-[#9ca3af] text-[10px] mt-[2px]">{meta.desc}</div>
       </div>
     </div>
   );
@@ -301,21 +307,18 @@ export function BeyLinkHijackHUD({ hijackQTE, hijackBlockQTE, onBlock, escapeQTE
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 30,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 8,
-        pointerEvents: "none",
-      }}>
+      }}
+        className="flex flex-col items-center gap-2 pointer-events-none"
+      >
         {controlLoss && <ControlLossBanner data={controlLoss} />}
         {escapeQTE && onEscape && (
-          <div style={{ pointerEvents: "auto" }}>
+          <div className="pointer-events-auto">
             <EscapePanel data={escapeQTE} onEscape={onEscape} />
           </div>
         )}
         {hijackQTE && <VictimPanel data={hijackQTE} />}
         {hijackBlockQTE && (
-          <div style={{ pointerEvents: "auto" }}>
+          <div className="pointer-events-auto">
             <AttackerPanel data={hijackBlockQTE} onBlock={onBlock} />
           </div>
         )}

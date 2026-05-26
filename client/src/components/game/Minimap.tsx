@@ -60,11 +60,8 @@ export function Minimap({ gameState, beyGhosts, selfId, sizeRem = 12, viewportCm
       <div
         aria-label="Press M to open minimap"
         title="Press M — minimap"
-        style={{
-          position: "absolute", top: "1rem", left: "1rem",
-          fontSize: 10, color: "rgba(180,200,220,0.5)",
-          pointerEvents: "none", zIndex: 40, userSelect: "none",
-        }}
+        style={{ position: "absolute", top: "1rem", left: "1rem" }}
+        className="text-[10px] text-[rgba(180,200,220,0.5)] pointer-events-none z-40 select-none"
       >
         M — minimap
       </div>
@@ -82,34 +79,28 @@ export function Minimap({ gameState, beyGhosts, selfId, sizeRem = 12, viewportCm
   return (
     <div
       aria-label="Arena minimap"
-      style={{
-        position: "absolute", top: "1rem", left: "1rem",
-        width: px, background: "rgba(10,14,28,0.92)",
-        border: "1px solid rgba(120,160,200,0.4)",
-        borderRadius: 8, backdropFilter: "blur(4px)",
-        zIndex: 40, overflow: "hidden",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
-      }}
+      style={{ position: "absolute", top: "1rem", left: "1rem", width: px }}
+      className="bg-[rgba(10,14,28,0.92)] border border-[rgba(120,160,200,0.4)] rounded-lg backdrop-blur z-40 overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
     >
       {/* Tab bar */}
-      <div style={{ display: "flex", borderBottom: "1px solid rgba(120,160,200,0.2)" }}>
+      <div className="flex border-b border-[rgba(120,160,200,0.2)]">
         {tabs.map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            style={{
-              flex: 1, padding: "4px 0", fontSize: 10, fontWeight: 600,
-              background: tab === t ? "rgba(68,136,204,0.25)" : "transparent",
-              color: tab === t ? "#7ab8f5" : "rgba(120,160,200,0.6)",
-              border: "none", cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.04em",
-            }}
+            className={
+              "flex-1 py-1 text-[10px] font-semibold border-none cursor-pointer uppercase tracking-[0.04em] " +
+              (tab === t
+                ? "bg-[rgba(68,136,204,0.25)] text-[#7ab8f5]"
+                : "bg-transparent text-[rgba(120,160,200,0.6)]")
+            }
           >
             {t === "top" ? "Top" : t === "side" ? "Side" : "3D"}
           </button>
         ))}
         <button
           onClick={() => setVisible(false)}
-          style={{ padding: "4px 8px", background: "transparent", border: "none", color: "rgba(120,160,200,0.5)", cursor: "pointer", fontSize: 11 }}
+          className="px-2 py-1 bg-transparent border-none text-[rgba(120,160,200,0.5)] cursor-pointer text-[11px]"
           title="Close minimap (M)"
         >×</button>
       </div>
@@ -144,7 +135,7 @@ function TopView({ arena, ghosts, selfId, viewportCm, sizeRem, myFloorIndex, flo
   const rotSpeed = myFloor?.rotationSpeedDegPerSec ?? 0;
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="w-full">
       <svg viewBox={`${vbX} ${vbY} ${widthCm} ${heightCm}`} width="100%" height={`${sizeRem}rem`} preserveAspectRatio="xMidYMid meet">
         {arena.shape === "circle" ? (
           <circle cx={0} cy={0} r={Math.min(widthCm, heightCm) / 2 - 1} fill="rgba(40,55,80,0.5)" stroke="#4488cc" strokeWidth={Math.max(0.5, widthCm / 200)} />
@@ -170,7 +161,7 @@ function TopView({ arena, ghosts, selfId, viewportCm, sizeRem, myFloorIndex, flo
         )}
       </svg>
       {rotDir && rotSpeed > 0 && (
-        <div style={{ textAlign: "center", fontSize: 10, color: "rgba(120,160,200,0.7)", paddingBottom: 4 }}>
+        <div className="text-center text-[10px] text-[rgba(120,160,200,0.7)] pb-1">
           {rotDir === "cw" ? "↻" : "↺"} {rotSpeed}°/s
         </div>
       )}
@@ -275,7 +266,7 @@ function PerspectiveView({ arena, ghosts, selfId, sizeRem }: {
   const containerH = sizeRem * 16;
 
   return (
-    <div style={{ width: containerW, height: containerH, overflow: "hidden", position: "relative", background: "rgba(10,15,25,0.6)" }}>
+    <div style={{ width: containerW, height: containerH }} className="overflow-hidden relative bg-[rgba(10,15,25,0.6)]">
       <div style={{ position: "absolute", top: "50%", left: "50%", transform: `translate(-50%,-50%) ${ISO_SKEW}` }}>
         {/* Arena floor */}
         <div style={{

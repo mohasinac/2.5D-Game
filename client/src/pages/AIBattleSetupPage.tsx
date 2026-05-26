@@ -148,36 +148,34 @@ export function AIBattleSetupPage() {
   };
 
   const TypeBadge = ({ type }: { type: string }) => {
-    const colors: Record<string, string> = { attack: C.red, defense: C.blue, stamina: C.green, balanced: C.yellow };
+    const colorMap: Record<string, string> = { attack: "text-theme-red bg-red-10", defense: "text-theme-blue bg-blue-10", stamina: "text-theme-green bg-green-10", balanced: "text-theme-yellow bg-yellow-10" };
     return (
-      <span style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em",
-        color: colors[type] ?? C.muted, background: (colors[type] ?? C.muted) + "20",
-        padding: "2px 6px", borderRadius: 4 }}>
+      <span className={`text-[10px] font-bold uppercase tracking-[0.05em] px-1.5 py-0.5 rounded ${colorMap[type] ?? "text-theme-muted bg-bg3"}`}>
         {type}
       </span>
     );
   };
 
   if (loading) return (
-    <div style={{ minHeight:"100vh", background:C.bg0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-      <div className="spin" style={{ width:40, height:40, border:`3px solid ${C.border}`, borderTopColor:C.purple, borderRadius:"50%" }} />
+    <div className="min-h-screen bg-bg0 flex items-center justify-center">
+      <div className="spin w-10 h-10 border-[3px] border-border-c border-t-purple rounded-full" />
     </div>
   );
 
   return (
-    <div style={{ minHeight:"100vh", background:C.bg0, padding:32 }}>
-      <div style={{ maxWidth:860, margin:"0 auto" }}>
-        <Link to="/game" style={{ color:C.faint, fontSize:13, textDecoration:"none", display:"block", marginBottom:12 }}>← Back to menu</Link>
-        <h1 style={{ fontSize:32, fontWeight:900, color:C.text, letterSpacing:"-0.02em", marginBottom:4 }}>🤖 AI Battle</h1>
-        <p style={{ color:C.muted, fontSize:14, marginBottom:32 }}>Choose your beyblade, your opponent, and difficulty.</p>
+    <div className="min-h-screen bg-bg0 p-8">
+      <div className="max-w-[860px] mx-auto">
+        <Link to="/game" className="text-theme-faint text-[13px] no-underline block mb-3">← Back to menu</Link>
+        <h1 className="text-[32px] font-black text-theme-text tracking-[-0.02em] mb-1">🤖 AI Battle</h1>
+        <p className="text-theme-muted text-[14px] mb-8">Choose your beyblade, your opponent, and difficulty.</p>
 
         {modeDisabled && (
-          <div style={{ background: `${C.yellow}18`, border: `1px solid ${C.yellow}44`, borderRadius: 10, padding: "12px 18px", marginBottom: 20, fontSize: 13, color: C.yellow }}>
+          <div className="bg-yellow-10 border border-yellow-40 rounded-[10px] px-[18px] py-3 mb-5 text-[13px] text-theme-yellow">
             AI Battle is currently disabled by the administrator. Check back later.
           </div>
         )}
 
-        <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
+        <div className="flex flex-col gap-5">
 
           {/* Player beyblade */}
           <EntityPicker
@@ -192,11 +190,11 @@ export function AIBattleSetupPage() {
           {(() => {
             const selectedBey = beyblades.find(b => b.id === playerBeyId);
             return selectedBey?.linkedBeySystemId ? (
-              <details style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 12, padding: "12px 16px" }}>
-                <summary style={{ cursor: "pointer", fontSize: 13, fontWeight: 600, color: C.text, userSelect: "none" as const }}>
+              <details className="bg-bg2 border border-border-c rounded-xl px-4 py-3">
+                <summary className="cursor-pointer text-[13px] font-semibold text-theme-text select-none">
                   ⚙️ Customize Parts
                 </summary>
-                <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+                <div className="mt-3 flex flex-col gap-2">
                   {[
                     { slot: "attackRingId", label: "Attack Ring", collection: "beyblade_parts/attack_ring/items" },
                     { slot: "weightDiskId", label: "Weight Disk", collection: "beyblade_parts/weight_disk/items" },
@@ -205,14 +203,14 @@ export function AIBattleSetupPage() {
                     { slot: "casingId",     label: "Casing",      collection: "beyblade_parts/casing/items" },
                     { slot: "bitBeastId",   label: "Bit Beast",   collection: "beyblade_parts/bit_beast/items" },
                   ].map(({ slot, label, collection: col }) => (
-                    <div key={slot} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 11, color: C.muted, width: 80, flexShrink: 0 }}>{label}</span>
-                      <div style={{ flex: 1, fontSize: 12, color: partOverrides[slot] ? C.text : C.faint }}>
+                    <div key={slot} className="flex items-center gap-2">
+                      <span className="text-[11px] text-theme-muted w-20 shrink-0">{label}</span>
+                      <div className={`flex-1 text-[12px] ${partOverrides[slot] ? "text-theme-text" : "text-theme-faint"}`}>
                         {partOverrides[slot] ? partOverrides[slot] : "(default)"}
                       </div>
                       {partOverrides[slot] && (
                         <button onClick={() => setPartOverrides(p => { const n = { ...p }; delete n[slot]; return n; })}
-                          style={{ fontSize: 11, color: C.red, background: "none", border: "none", cursor: "pointer" }}>
+                          className="text-[11px] text-theme-red bg-transparent border-none cursor-pointer">
                           Reset
                         </button>
                       )}
@@ -222,13 +220,13 @@ export function AIBattleSetupPage() {
                           const v = e.target.value;
                           setPartOverrides(p => v ? { ...p, [slot]: v } : (({ [slot]: _, ...rest }) => rest)(p));
                         }}
-                        style={{ padding: "4px 6px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                        className="px-1.5 py-1 bg-bg3 border border-border-c rounded-[5px] text-theme-text text-[11px]"
                       >
                         <option value="">-- swap --</option>
                       </select>
                     </div>
                   ))}
-                  <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>
+                  <div className="text-[11px] text-theme-faint mt-1">
                     Part swap is visual preview only — full part list loads when game starts.
                   </div>
                 </div>
@@ -257,19 +255,20 @@ export function AIBattleSetupPage() {
 
           {/* Difficulty */}
           <Section title="Difficulty" icon="⚡">
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:8 }}>
+            <div className="grid grid-cols-3 gap-2">
               {(["medium","hard","hell"] as Difficulty[]).map(d => {
                 const info = DIFFICULTY_INFO[d];
                 const active = difficulty === d;
                 return (
-                  <button key={d} onClick={() => setDifficulty(d)} style={{
-                    padding:"14px 12px", borderRadius:10, cursor:"pointer", textAlign:"left",
-                    background: active ? info.color+"22" : C.bg2,
-                    border: `1px solid ${active ? info.color : C.border}`,
-                    color: C.text,
-                  }}>
-                    <div style={{ fontWeight:700, fontSize:14, color: active ? info.color : C.text }}>{info.label}</div>
-                    <div style={{ fontSize:11, color:C.faint, marginTop:4, lineHeight:1.4 }}>{info.desc}</div>
+                  <button key={d} onClick={() => setDifficulty(d)}
+                    className="px-3 py-[14px] rounded-[10px] cursor-pointer text-left text-theme-text"
+                    style={{
+                      "--dc": info.color,
+                      background: active ? `color-mix(in srgb, var(--dc) 13%, transparent)` : C.bg2,
+                      border: `1px solid ${active ? "var(--dc)" : C.border}`,
+                    } as React.CSSProperties}>
+                    <div className="font-bold text-[14px]" style={{ color: active ? "var(--dc)" : C.text } as React.CSSProperties}>{info.label}</div>
+                    <div className="text-[11px] text-theme-faint mt-1 leading-[1.4]">{info.desc}</div>
                   </button>
                 );
               })}
@@ -278,8 +277,8 @@ export function AIBattleSetupPage() {
 
           {/* AI opponent count */}
           <Section title="Opponent Count" icon="🤖">
-            <div style={{ display:"flex", alignItems:"center", gap:16 }}>
-              <label style={{ color:C.muted, fontSize:13, minWidth:80 }}>AI Bots:</label>
+            <div className="flex items-center gap-4">
+              <label className="text-theme-muted text-[13px] min-w-[80px]">AI Bots:</label>
               <input
                 type="number"
                 name="ai-count"
@@ -287,13 +286,9 @@ export function AIBattleSetupPage() {
                 max={7}
                 value={aiCount}
                 onChange={e => setAiCount(Math.min(7, Math.max(1, Number(e.target.value))))}
-                style={{
-                  width:64, padding:"8px 10px", borderRadius:8, fontSize:15, fontWeight:700,
-                  background:C.bg2, border:`1px solid ${C.border}`, color:C.text,
-                  textAlign:"center",
-                }}
+                className="w-16 px-2.5 py-2 rounded-lg text-[15px] font-bold bg-bg2 border border-border-c text-theme-text text-center"
               />
-              <span style={{ color:C.faint, fontSize:12 }}>
+              <span className="text-theme-faint text-[12px]">
                 {aiCount === 1 ? "1v1 classic" : `1 human vs ${aiCount} AI bots`}
               </span>
             </div>
@@ -301,16 +296,13 @@ export function AIBattleSetupPage() {
 
           {/* Series format */}
           <Section title="Series Format" icon="🏅">
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:8 }}>
+            <div className="grid grid-cols-3 gap-2">
               {([1,3,5] as BestOf[]).map(n => (
-                <button key={n} onClick={() => setBestOf(n)} style={{
-                  padding:"14px 12px", borderRadius:10, cursor:"pointer", textAlign:"center",
-                  background: bestOf === n ? C.blue+"22" : C.bg2,
-                  border: `1px solid ${bestOf === n ? C.blue : C.border}`,
-                  color: bestOf === n ? C.blue : C.text, fontWeight: 700, fontSize: 14,
-                }}>
+                <button key={n} onClick={() => setBestOf(n)}
+                  className={`px-3 py-[14px] rounded-[10px] cursor-pointer text-center font-bold text-[14px] border ${bestOf === n ? "bg-blue-13 border-theme-blue text-theme-blue" : "bg-bg2 border-border-c text-theme-text"}`}
+                >
                   BO{n}
-                  <div style={{ fontSize:11, color:C.faint, fontWeight:400, marginTop:4 }}>
+                  <div className="text-[11px] text-theme-faint font-normal mt-1">
                     {n === 1 ? "Single match" : `First to ${Math.ceil(n / 2)} wins`}
                   </div>
                 </button>
@@ -322,12 +314,7 @@ export function AIBattleSetupPage() {
           <button
             onClick={handleStart}
             disabled={!playerBeyId || !aiBeyId || !arenaId || modeDisabled}
-            style={{
-              padding:"16px 0", borderRadius:14, fontWeight:700, fontSize:16,
-              background: C.purple, color: C.white,
-              border:"none", cursor: "pointer",
-              transition:"background 150ms",
-            }}
+            className="py-4 rounded-[14px] font-bold text-[16px] bg-theme-purple text-white border-none cursor-pointer transition-[background_150ms] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Start Battle
           </button>
@@ -348,23 +335,20 @@ function buildBeybladeTabs(TypeBadge: (p: { type: string }) => React.ReactElemen
         if (!sel) return <EmptyHint>Pick a beyblade.</EmptyHint>;
         const b = sel.data as BeybladeOption;
         return (
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={{
-              width: "100%", aspectRatio: "1 / 1", maxWidth: 280, margin: "0 auto",
-              background: `radial-gradient(circle at center, ${C.bg2} 0%, ${C.bg0} 70%)`,
-              borderRadius: "50%", border: `1px dashed ${C.border}`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: C.faint, fontSize: 12,
-            }}>
+          <div className="flex flex-col gap-3">
+            <div
+              className="w-full max-w-[280px] mx-auto rounded-full border border-dashed border-border-c flex items-center justify-center text-theme-faint text-[12px] aspect-square"
+              style={{ background: `radial-gradient(circle at center, var(--bg2) 0%, var(--bg0) 70%)` }}
+            >
               {b.imageUrl ? (
-                <img src={b.imageUrl} alt={b.displayName} style={{ maxWidth: "80%", maxHeight: "80%", objectFit: "contain" }} />
+                <img src={b.imageUrl} alt={b.displayName} className="max-w-[80%] max-h-[80%] object-contain" />
               ) : (
                 <span>(static preview)</span>
               )}
             </div>
-            <div style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "center" }}>
+            <div className="flex gap-1.5 items-center justify-center">
               <TypeBadge type={b.type} />
-              <span style={{ fontSize: 11, color: C.faint }}>↻ {b.spinDirection} spin</span>
+              <span className="text-[11px] text-theme-faint">↻ {b.spinDirection} spin</span>
             </div>
           </div>
         );
@@ -378,13 +362,13 @@ function buildBeybladeTabs(TypeBadge: (p: { type: string }) => React.ReactElemen
         const b = sel.data as BeybladeOption;
         const td = b.typeDistribution ?? { attack: 120, defense: 120, stamina: 120 };
         return (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div className="flex flex-col gap-2.5">
             <StatBar label="Attack"  value={td.attack}  max={200} color={C.red} />
             <StatBar label="Defense" value={td.defense} max={200} color={C.blue} />
             <StatBar label="Stamina" value={td.stamina} max={200} color={C.green} />
-            <div style={{ display: "flex", gap: 16, marginTop: 8, fontSize: 12, color: C.muted }}>
-              <span>mass: <b style={{ color: C.text }}>{b.mass ?? "—"}g</b></span>
-              <span>radius: <b style={{ color: C.text }}>{b.radius ?? "—"}cm</b></span>
+            <div className="flex gap-4 mt-2 text-[12px] text-theme-muted">
+              <span>mass: <b className="text-theme-text">{b.mass ?? "—"}g</b></span>
+              <span>radius: <b className="text-theme-text">{b.radius ?? "—"}cm</b></span>
             </div>
           </div>
         );
@@ -399,8 +383,8 @@ function buildBeybladeTabs(TypeBadge: (p: { type: string }) => React.ReactElemen
         if (!b.specialMoveId) return <EmptyHint>This beyblade has no special move.</EmptyHint>;
         return (
           <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{b.specialMoveId}</div>
-            <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>
+            <div className="text-[14px] font-bold text-theme-text">{b.specialMoveId}</div>
+            <div className="text-[12px] text-theme-muted mt-1">
               Tap your special key when power ≥ 100. Effect depends on move id.
             </div>
           </div>
@@ -416,17 +400,17 @@ function buildBeybladeTabs(TypeBadge: (p: { type: string }) => React.ReactElemen
         const combos = (b.comboIds ?? []).map((id) => comboById[id]).filter(Boolean) as ComboDoc[];
         if (combos.length === 0) return <EmptyHint>This beyblade has no combos.</EmptyHint>;
         return (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div className="flex flex-col gap-2">
             {combos.map((c) => (
-              <div key={c.id} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 10px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{c.name}</span>
-                  <span style={{ fontSize: 11, color: c.cost === 0 ? C.yellow : C.faint, fontFamily: "monospace" }}>{costIcon(c.cost)}</span>
+              <div key={c.id} className="bg-bg2 border border-border-c rounded-lg px-2.5 py-2">
+                <div className="flex justify-between">
+                  <span className="text-[13px] font-bold text-theme-text">{c.name}</span>
+                  <span className={`text-[11px] font-mono ${c.cost === 0 ? "text-theme-yellow" : "text-theme-faint"}`}>{costIcon(c.cost)}</span>
                 </div>
-                <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>{c.description}</div>
-                <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
+                <div className="text-[11px] text-theme-muted mt-1">{c.description}</div>
+                <div className="flex gap-1 mt-1.5">
                   {c.sequence.map((k, i) => (
-                    <span key={i} style={{ background: C.bg3, padding: "2px 6px", borderRadius: 4, fontFamily: "monospace", fontSize: 10 }}>{KEY_LABEL[k as keyof typeof KEY_LABEL]}</span>
+                    <span key={i} className="bg-bg3 px-1.5 py-0.5 rounded font-mono text-[10px]">{KEY_LABEL[k as keyof typeof KEY_LABEL]}</span>
                   ))}
                 </div>
               </div>
@@ -447,18 +431,17 @@ function buildArenaTabs() {
         if (!sel) return <EmptyHint>Pick an arena.</EmptyHint>;
         const a = sel.data as ArenaOption;
         return (
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={{
-              width: "100%", aspectRatio: "1 / 1", maxWidth: 280, margin: "0 auto",
-              background: `radial-gradient(circle at center, ${C.bg2} 0%, ${C.bg0} 75%)`,
-              borderRadius: a.shape === "rectangle" ? 16 : "50%",
-              border: `1px solid ${C.border}`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: C.faint, fontSize: 12,
-            }}>
+          <div className="flex flex-col gap-3">
+            <div
+              className="w-full max-w-[280px] mx-auto border border-border-c flex items-center justify-center text-theme-faint text-[12px] aspect-square"
+              style={{
+                background: `radial-gradient(circle at center, var(--bg2) 0%, var(--bg0) 75%)`,
+                borderRadius: a.shape === "rectangle" ? 16 : "50%",
+              }}
+            >
               <span>{a.shape ?? "circle"} · {a.theme ?? "default"}</span>
             </div>
-            <div style={{ textAlign: "center", color: C.muted, fontSize: 12 }}>
+            <div className="text-center text-theme-muted text-[12px]">
               {a.width && a.height
   ? `${Math.round(a.width / PX_PER_CM_BASE)} × ${Math.round(a.height / PX_PER_CM_BASE)} cm`
   : "size unknown"}
@@ -474,10 +457,10 @@ function buildArenaTabs() {
         if (!sel) return <EmptyHint>Pick an arena.</EmptyHint>;
         const a = sel.data as ArenaOption;
         return (
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, color: C.muted, fontSize: 13 }}>
-            <div>shape: <b style={{ color: C.text }}>{a.shape ?? "circle"}</b></div>
-            <div>theme: <b style={{ color: C.text }}>{a.theme ?? "default"}</b></div>
-            <div>difficulty: <b style={{ color: C.text, textTransform: "capitalize" }}>{a.difficulty}</b></div>
+          <div className="flex flex-col gap-1.5 text-theme-muted text-[13px]">
+            <div>shape: <b className="text-theme-text">{a.shape ?? "circle"}</b></div>
+            <div>theme: <b className="text-theme-text">{a.theme ?? "default"}</b></div>
+            <div>difficulty: <b className="text-theme-text capitalize">{a.difficulty}</b></div>
           </div>
         );
       },
@@ -498,11 +481,11 @@ function buildArenaTabs() {
         const any = items.some((i) => i.count > 0);
         if (!any) return <EmptyHint>No features configured.</EmptyHint>;
         return (
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 13 }}>
+          <div className="flex flex-col gap-1 text-[13px]">
             {items.map((i) => i.count > 0 && (
-              <div key={i.label} style={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ color: C.muted }}>{i.label}</span>
-                <span style={{ color: C.text, fontFamily: "monospace" }}>{i.count}</span>
+              <div key={i.label} className="flex justify-between">
+                <span className="text-theme-muted">{i.label}</span>
+                <span className="text-theme-text font-mono">{i.count}</span>
               </div>
             ))}
           </div>
@@ -513,18 +496,18 @@ function buildArenaTabs() {
 }
 
 function EmptyHint({ children }: { children: React.ReactNode }) {
-  return <div style={{ color: C.faint, fontSize: 12, textAlign: "center", padding: 24 }}>{children}</div>;
+  return <div className="text-theme-faint text-[12px] text-center p-6">{children}</div>;
 }
 
 function StatBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
   const pct = Math.min(1, value / max);
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.muted, marginBottom: 4 }}>
-        <span>{label}</span><span style={{ fontFamily: "monospace" }}>{value}</span>
+      <div className="flex justify-between text-[11px] text-theme-muted mb-1">
+        <span>{label}</span><span className="font-mono">{value}</span>
       </div>
-      <div style={{ width: "100%", height: 6, background: C.bg2, borderRadius: 3, overflow: "hidden" }}>
-        <div style={{ width: `${pct * 100}%`, height: "100%", background: color, transition: "width 200ms" }} />
+      <div className="w-full h-1.5 bg-bg2 rounded-full overflow-hidden">
+        <div className="h-full w-pct" style={{ "--pct": `${pct * 100}%`, background: color } as React.CSSProperties} />
       </div>
     </div>
   );
@@ -532,12 +515,12 @@ function StatBar({ label, value, max, color }: { label: string; value: number; m
 
 function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
   return (
-    <div style={{ background:C.bg1, borderRadius:16, border:`1px solid ${C.border}`, overflow:"hidden" }}>
-      <div style={{ padding:"12px 16px", borderBottom:`1px solid ${C.border}`, display:"flex", alignItems:"center", gap:8 }}>
+    <div className="bg-bg1 rounded-2xl border border-border-c overflow-hidden">
+      <div className="px-4 py-3 border-b border-border-c flex items-center gap-2">
         <span>{icon}</span>
-        <span style={{ fontWeight:600, fontSize:14, color:C.text }}>{title}</span>
+        <span className="font-semibold text-[14px] text-theme-text">{title}</span>
       </div>
-      <div style={{ padding:16 }}>{children}</div>
+      <div className="p-4">{children}</div>
     </div>
   );
 }
@@ -547,17 +530,14 @@ function BeyCard({ bey, selected, onSelect, TypeBadge, dim = false }: {
   TypeBadge: (p: { type: string }) => React.ReactElement; dim?: boolean;
 }) {
   return (
-    <button onClick={onSelect} style={{
-      padding:"10px 12px", borderRadius:10, textAlign:"left", cursor:"pointer",
-      background: selected ? C.blue+"22" : C.bg2,
-      border: `1px solid ${selected ? C.blue : C.border}`,
-      opacity: dim ? 0.45 : 1,
-      color: C.text,
-    }}>
-      <div style={{ fontWeight:600, fontSize:13, marginBottom:4 }}>{bey.displayName}</div>
-      <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+    <button onClick={onSelect}
+      className={`px-3 py-2.5 rounded-[10px] text-left cursor-pointer text-theme-text border ${selected ? "bg-blue-13 border-theme-blue" : "bg-bg2 border-border-c"}`}
+      style={{ opacity: dim ? 0.45 : 1 }}
+    >
+      <div className="font-semibold text-[13px] mb-1">{bey.displayName}</div>
+      <div className="flex gap-1.5 items-center">
         <TypeBadge type={bey.type} />
-        <span style={{ fontSize:10, color:C.faint }}>{bey.spinDirection}</span>
+        <span className="text-[10px] text-theme-faint">{bey.spinDirection}</span>
       </div>
     </button>
   );

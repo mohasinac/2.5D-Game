@@ -26,6 +26,13 @@ export interface ServerArenaState {
   safeZoneY?: number;
   safeZoneTimer?: number;
   safeZonePhase?: number;
+  /** World background — rendered behind the arena, synced once on join */
+  worldBgType?: "none" | "color" | "image";
+  worldBgColor?: string;
+  worldBgImageUrl?: string;
+  worldBgOpacity?: number;
+  worldBgFit?: "cover" | "contain" | "stretch";
+  worldBgBlurPx?: number;
 }
 
 // ─── Arena feature schemas (Phase 2) ──────────────────────────────────────

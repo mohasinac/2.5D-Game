@@ -50,7 +50,7 @@ function CouplingDiagram({ mode, size = 44 }: { mode: string; size?: number }) {
   const isDriven = mode === "driven";
 
   return (
-    <svg width={size} height={size} style={{ flexShrink: 0, overflow: "visible" }}>
+    <svg width={size} height={size} className="shrink-0 overflow-visible">
       {/* Floor circles */}
       <circle cx={cx1} cy={cy} r={r} fill={alpha(m.color, 0.08)} stroke={alpha(m.color, 0.45)} strokeWidth={1.5} />
       <circle cx={cx2} cy={cy} r={r} fill={alpha(m.color, 0.08)} stroke={alpha(m.color, 0.45)} strokeWidth={1.5} />
@@ -106,8 +106,7 @@ function LinkTypePills({ links }: { links?: ArenaLink[] }) {
   return (
     <div className="flex gap-1 flex-wrap">
       {Object.entries(byType).map(([type, count]) => (
-        <span key={type} className="text-xs px-1.5 py-0.5 rounded-full border border-border text-muted flex items-center gap-1"
-          style={{ background: alpha(C.bg3, 0.8) }}>
+        <span key={type} className="text-xs px-1.5 py-0.5 rounded-full border border-border text-muted flex items-center gap-1 bg-bg3/80">
           {LINK_TYPE_ICONS[type]} {count > 1 ? count : ""}
         </span>
       ))}
@@ -357,8 +356,7 @@ export default function ArenaFloorGroupListPage() {
                     <div className="flex gap-1.5">
                       <Link
                         to={`/admin/arena-floor-groups/${g.id}`}
-                        className="px-2.5 py-1 rounded-md text-xs font-semibold no-underline text-blue"
-                        style={{ background: alpha(C.blue, 0.13), border: `1px solid ${alpha(C.blue, 0.27)}` }}
+                        className="px-2.5 py-1 rounded-md text-xs font-semibold no-underline text-theme-blue bg-blue-13 border border-blue-30"
                       >
                         Edit
                       </Link>

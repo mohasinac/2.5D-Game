@@ -185,7 +185,7 @@ export function AIVsAITestPage() {
         <Link to="/admin" className="px-4 py-2 bg-bg3 text-text rounded-lg text-sm font-semibold border border-border no-underline inline-block">
           Cancel
         </Link>
-        <button onClick={onStart} disabled={!canStart} className="px-4 py-2 bg-yellow text-bg0 rounded-lg text-sm font-semibold" style={{ opacity: canStart ? 1 : 0.6 }}>
+        <button onClick={onStart} disabled={!canStart} className={`px-4 py-2 bg-yellow text-bg0 rounded-lg text-sm font-semibold ${canStart ? "" : "opacity-60"}`}>
           Start AI vs AI
         </button>
       </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { C, alpha } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 import type { BeybladeStats, PointOfContact } from "@/types/beybladeStats";
 
 interface Step3ContactPointsProps {
@@ -37,42 +37,33 @@ export default function Step3ContactPoints({ beyblade, onChange }: Step3ContactP
 
   const resetCPDamage = () => onChange({ pointsOfContact: points.map(p => ({ ...p, damageMultiplier: 1.0 })) });
 
-  const card = (selected: boolean): React.CSSProperties => ({
-    background: selected ? alpha(C.blue, 0.13) : C.bg3,
-    border: `1px solid ${selected ? C.blue : C.border}`,
-    borderRadius: 8,
-    padding: "10px 12px",
-    cursor: "pointer",
-    marginBottom: 6,
-  });
-
   return (
-    <div style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 12, padding: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>
+    <div className="bg-bg2 border border-border-c rounded-xl p-4">
+      <div className="flex justify-between items-center mb-3">
+        <span className="text-[14px] font-semibold text-theme-text">
           Contact Points ({points.length})
         </span>
         <button
           onClick={resetCPDamage}
           disabled={points.length === 0}
-          style={{ fontSize: 11, padding: "3px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, color: C.muted, cursor: "pointer" }}
+          className="text-[11px] px-2 py-[3px] bg-bg3 border border-border-c rounded-[5px] text-theme-muted cursor-pointer"
         >
           Reset 1.0x
         </button>
       </div>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+      <div className="flex gap-2 mb-3">
         <input
           type="number"
           min={1}
           max={20}
           value={cpCount}
           onChange={e => setCpCount(+e.target.value)}
-          style={{ width: 60, padding: "4px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 13 }}
+          className="w-[60px] px-2 py-1 bg-bg3 border border-border-c rounded-md text-theme-text text-[13px]"
         />
         <button
           onClick={() => generateCP(cpCount)}
-          style={{ padding: "4px 14px", background: C.blue, border: "none", borderRadius: 6, color: C.white, fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+          className="px-3.5 py-1 bg-theme-blue border-none rounded-md text-white text-[12px] font-semibold cursor-pointer"
         >
           Generate evenly
         </button>
@@ -81,32 +72,41 @@ export default function Step3ContactPoints({ beyblade, onChange }: Step3ContactP
             const angle = Math.round(Math.random() * 360);
             onChange({ pointsOfContact: [...points, { angle, damageMultiplier: 1.0, width: 45 }] });
           }}
-          style={{ padding: "4px 14px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 12, cursor: "pointer" }}
+          className="px-3.5 py-1 bg-bg3 border border-border-c rounded-md text-theme-muted text-[12px] cursor-pointer"
         >
           + Add
         </button>
       </div>
 
       {points.length === 0 && (
-        <p style={{ fontSize: 12, color: C.faint, textAlign: "center", padding: "12px 0" }}>
+        <p className="text-[12px] text-theme-faint text-center py-3">
           No contact points. Click "Generate evenly" to add them.
         </p>
       )}
 
-      <div style={{ maxHeight: 320, overflowY: "auto" }}>
+      <div className="max-h-[320px] overflow-y-auto">
         {points.map((p, i) => (
-          <div key={i} style={card(selectedCP === i)} onClick={() => setSelectedCP(selectedCP === i ? null : i)}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 12, color: C.text, fontWeight: 500 }}>
+          <div
+            key={i}
+            className={cn(
+              "rounded-lg px-3 py-2.5 cursor-pointer mb-1.5 border",
+              selectedCP === i
+                ? "bg-blue-13 border-theme-blue"
+                : "bg-bg3 border-border-c",
+            )}
+            onClick={() => setSelectedCP(selectedCP === i ? null : i)}
+          >
+            <div className="flex justify-between items-center">
+              <span className="text-[12px] text-theme-text font-medium">
                 #{i + 1} — {p.angle}° — {p.damageMultiplier.toFixed(2)}x
               </span>
               <button
                 onClick={e => { e.stopPropagation(); removeCP(i); }}
-                style={{ fontSize: 11, color: C.red, background: "none", border: "none", cursor: "pointer" }}
+                className="text-[11px] text-theme-red bg-transparent border-none cursor-pointer"
               >×</button>
             </div>
             {selectedCP === i && (
-              <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+              <div className="mt-2.5 flex flex-col gap-2">
                 {(["angle", "damageMultiplier", "width"] as const).map(field => {
                   const cfg: Record<string, { min: number; max: number; step: number; label: string }> = {
                     angle:             { min: 0,   max: 360, step: 1,    label: "Angle (°)" },
@@ -116,9 +116,9 @@ export default function Step3ContactPoints({ beyblade, onChange }: Step3ContactP
                   const c = cfg[field];
                   return (
                     <div key={field}>
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 2 }}>
-                        <span style={{ color: C.muted }}>{c.label}</span>
-                        <span style={{ color: C.text, fontFamily: "monospace" }}>
+                      <div className="flex justify-between text-[12px] mb-0.5">
+                        <span className="text-theme-muted">{c.label}</span>
+                        <span className="text-theme-text font-mono">
                           {typeof p[field] === "number"
                             ? (p[field] as number).toFixed(field === "damageMultiplier" ? 2 : 0)
                             : p[field]}
@@ -129,7 +129,7 @@ export default function Step3ContactPoints({ beyblade, onChange }: Step3ContactP
                         min={c.min} max={c.max} step={c.step}
                         value={p[field] as number}
                         onChange={e => updateCP(i, field, +e.target.value)}
-                        style={{ width: "100%", accentColor: C.blue }}
+                        className="w-full accent-theme-blue"
                       />
                     </div>
                   );

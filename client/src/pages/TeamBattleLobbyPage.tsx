@@ -54,30 +54,25 @@ export function TeamBattleLobbyPage() {
   const bluePlayers = players.filter(p => p.team === "blue");
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--bg0)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-      <div style={{ width: "100%", maxWidth: 560, display: "flex", flexDirection: "column", gap: 20 }}>
+    <div className="min-h-screen bg-bg0 flex items-center justify-center p-6">
+      <div className="w-full max-w-[560px] flex flex-col gap-5">
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: C.text }}>Team Battle</h1>
-          <p style={{ color: C.faint, fontSize: 13 }}>2v2 — pick your team, then join the room</p>
+          <h1 className="text-[24px] font-bold text-theme-text">Team Battle</h1>
+          <p className="text-theme-faint text-[13px]">2v2 — pick your team, then join the room</p>
         </div>
 
         {/* Team picker */}
-        <div style={{ display: "flex", gap: 10 }}>
+        <div className="flex gap-2.5">
           {(["blue", "red"] as const).map(t => (
             <button
               key={t}
               type="button"
               onClick={() => setTeam(t)}
+              className="flex-1 py-3.5 rounded-xl text-[16px] font-bold cursor-pointer"
               style={{
-                flex: 1,
-                padding: "14px 0",
-                borderRadius: 12,
                 border: `2px solid ${team === t ? (t === "blue" ? C.blue : C.red) : C.border}`,
                 background: team === t ? (t === "blue" ? C.blue + "22" : C.red + "22") : "var(--bg2)",
                 color: t === "blue" ? C.blue : C.red,
-                fontSize: 16,
-                fontWeight: 700,
-                cursor: "pointer",
               }}
             >
               {t === "blue" ? "🔵 Blue Team" : "🔴 Red Team"}
@@ -86,19 +81,20 @@ export function TeamBattleLobbyPage() {
         </div>
 
         {/* Player lists */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div className="grid grid-cols-2 gap-3">
           {(["blue", "red"] as const).map(t => {
             const list = t === "blue" ? bluePlayers : redPlayers;
             const color = t === "blue" ? C.blue : C.red;
             return (
-              <div key={t} style={{ background: "var(--bg2)", border: `1px solid ${color}33`, borderRadius: 12, padding: 14 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color, marginBottom: 8, textTransform: "uppercase" }}>
+              <div key={t} className="bg-bg2 rounded-xl p-3.5"
+                style={{ border: `1px solid ${color}33` }}>
+                <div className="text-[12px] font-bold mb-2 uppercase" style={{ color }}>
                   {t} team ({list.length}/2)
                 </div>
                 {list.length === 0
-                  ? <p style={{ color: C.faint, fontSize: 12 }}>Waiting for players…</p>
+                  ? <p className="text-theme-faint text-[12px]">Waiting for players…</p>
                   : list.map(p => (
-                    <div key={p.username} style={{ color: C.text, fontSize: 13, padding: "4px 0" }}>{p.username}</div>
+                    <div key={p.username} className="text-theme-text text-[13px] py-1">{p.username}</div>
                   ))
                 }
               </div>
@@ -108,13 +104,13 @@ export function TeamBattleLobbyPage() {
 
         {/* Room ID share */}
         {roomId && (
-          <div style={{ display: "flex", gap: 8, alignItems: "center", background: "var(--bg2)", borderRadius: 10, padding: "8px 12px" }}>
-            <span style={{ fontSize: 12, color: C.faint }}>Room ID:</span>
-            <span style={{ fontFamily: "monospace", fontSize: 12, color: C.text, flex: 1 }}>{roomId}</span>
+          <div className="flex gap-2 items-center bg-bg2 rounded-[10px] px-3 py-2">
+            <span className="text-[12px] text-theme-faint">Room ID:</span>
+            <span className="font-mono text-[12px] text-theme-text flex-1">{roomId}</span>
             <button
               type="button"
               onClick={() => { navigator.clipboard?.writeText(roomId); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
-              style={{ padding: "4px 10px", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}
+              className="px-2.5 py-1 bg-transparent border border-border-c rounded-md text-theme-muted text-[11px] cursor-pointer"
             >
               {copied ? "Copied!" : "Copy"}
             </button>
@@ -125,7 +121,12 @@ export function TeamBattleLobbyPage() {
           type="button"
           onClick={handleJoin}
           disabled={!!roomId}
-          style={{ padding: "14px 0", borderRadius: 12, background: roomId ? C.border : C.blue, border: "none", color: "#fff", fontSize: 16, fontWeight: 700, cursor: roomId ? "default" : "pointer", opacity: roomId ? 0.5 : 1 }}
+          className="py-3.5 rounded-xl border-none text-white text-[16px] font-bold"
+          style={{
+            background: roomId ? C.border : C.blue,
+            cursor: roomId ? "default" : "pointer",
+            opacity: roomId ? 0.5 : 1,
+          }}
         >
           {roomId ? "Waiting for match…" : "Join Team Battle"}
         </button>

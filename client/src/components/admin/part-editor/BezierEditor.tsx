@@ -234,14 +234,14 @@ export function BezierEditor({ value, onChange, onSyncFourier, imageUrl, scale =
   const totalSegs = value.segments.length;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+    <div className="flex flex-col gap-2.5">
       {/* Canvas */}
       <canvas
         ref={canvasRef}
         width={CANVAS_SIZE}
         height={CANVAS_SIZE}
         tabIndex={0}
-        style={{ borderRadius: 8, cursor: "crosshair", outline: "none", border: `1px solid ${C.border}` }}
+        className="rounded-lg cursor-crosshair outline-none border border-border-c"
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
@@ -249,31 +249,28 @@ export function BezierEditor({ value, onChange, onSyncFourier, imageUrl, scale =
       />
 
       {/* Controls */}
-      <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-        <div style={{ fontSize: 11, color: C.muted }}>{totalSegs} segments</div>
-        <div style={{ flex: 1 }} />
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 11, color: C.muted }}>Tolerance</span>
+      <div className="flex gap-2 items-center flex-wrap">
+        <div className="text-[11px] text-theme-muted">{totalSegs} segments</div>
+        <div className="flex-1" />
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] text-theme-muted">Tolerance</span>
           <input
             type="range" min={0.1} max={5} step={0.1} value={tolerance}
             onChange={(e) => handleToleranceChange(+e.target.value)}
-            style={{ width: 80, accentColor: C.blue }}
+            className="w-20 accent-theme-blue"
           />
-          <span style={{ fontSize: 11, color: C.text, fontFamily: "monospace", minWidth: 28 }}>{tolerance.toFixed(1)}</span>
+          <span className="text-[11px] text-theme-text font-mono min-w-[28px]">{tolerance.toFixed(1)}</span>
         </div>
         {onSyncFourier && (
           <button
             onClick={syncFourier}
-            style={{
-              padding: "5px 12px", background: C.bg3, border: `1px solid ${C.border}`,
-              borderRadius: 6, fontSize: 11, color: C.yellow, cursor: "pointer",
-            }}
+            className="px-3 py-[5px] bg-bg3 border border-border-c rounded-md text-[11px] text-theme-yellow cursor-pointer"
           >
             Sync Fourier
           </button>
         )}
       </div>
-      <div style={{ fontSize: 10, color: C.faint }}>
+      <div className="text-[10px] text-theme-faint">
         Drag endpoints to reshape · Delete key removes selected · Double-click edge to insert (coming soon)
       </div>
     </div>

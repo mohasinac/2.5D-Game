@@ -90,3 +90,69 @@ input[type=range] { cursor: pointer; width: 100%; }
 .stat-flash   { animation: statFlash 0.4s ease-in-out; }
 .slide-in     { animation: slideIn 0.2s ease-out forwards; }
 .fade-in      { animation: fadeIn 0.15s ease-out forwards; }
+
+/* ─── Alpha overlay utilities ───────────────────────────────────────────────
+   Replaces alpha(C.color, n) inline style calls in JSX.
+   Usage: className="bg-blue-10"  (10% blue overlay, theme-aware)            */
+@layer utilities {
+  .bg-blue-05  { background-color: color-mix(in srgb, var(--blue)    5%, transparent); }
+  .bg-blue-10  { background-color: color-mix(in srgb, var(--blue)   10%, transparent); }
+  .bg-blue-13  { background-color: color-mix(in srgb, var(--blue)   13%, transparent); }
+  .bg-blue-15  { background-color: color-mix(in srgb, var(--blue)   15%, transparent); }
+  .bg-blue-20  { background-color: color-mix(in srgb, var(--blue)   20%, transparent); }
+  .bg-blue-27  { background-color: color-mix(in srgb, var(--blue)   27%, transparent); }
+  .bg-green-10 { background-color: color-mix(in srgb, var(--green)  10%, transparent); }
+  .bg-green-13 { background-color: color-mix(in srgb, var(--green)  13%, transparent); }
+  .bg-green-20 { background-color: color-mix(in srgb, var(--green)  20%, transparent); }
+  .bg-red-10   { background-color: color-mix(in srgb, var(--red)    10%, transparent); }
+  .bg-red-13   { background-color: color-mix(in srgb, var(--red)    13%, transparent); }
+  .bg-red-20   { background-color: color-mix(in srgb, var(--red)    20%, transparent); }
+  .bg-yellow-10{ background-color: color-mix(in srgb, var(--yellow) 10%, transparent); }
+  .bg-yellow-20{ background-color: color-mix(in srgb, var(--yellow) 20%, transparent); }
+  .bg-purple-10{ background-color: color-mix(in srgb, var(--purple) 10%, transparent); }
+  .bg-purple-27{ background-color: color-mix(in srgb, var(--purple) 27%, transparent); }
+  .bg-orange-10{ background-color: color-mix(in srgb, var(--orange) 10%, transparent); }
+
+  /* Alpha borders */
+  .border-blue-30  { border-color: color-mix(in srgb, var(--blue)   30%, transparent); }
+  .border-blue-40  { border-color: color-mix(in srgb, var(--blue)   40%, transparent); }
+  .border-green-30 { border-color: color-mix(in srgb, var(--green)  30%, transparent); }
+  .border-red-30   { border-color: color-mix(in srgb, var(--red)    30%, transparent); }
+  .border-yellow-40{ border-color: color-mix(in srgb, var(--yellow) 40%, transparent); }
+  .border-purple-33{ border-color: color-mix(in srgb, var(--purple) 33%, transparent); }
+
+  /* Dynamic width via CSS custom property */
+  .w-pct { width: var(--pct, 0%); }
+
+  /* Liquid-type button active state — uses --lc CSS var for runtime hex color */
+  .liquid-btn-active {
+    background-color: color-mix(in srgb, var(--lc) 20%, transparent);
+    color: var(--lc);
+    border-color: var(--lc);
+  }
+
+  /* ─── Page & layout shells ───────────────────────────────────────────── */
+  .page-shell {
+    @apply w-full min-w-[400px] max-w-[1920px] mx-auto;
+  }
+  .form-shell {
+    @apply w-full min-w-[320px] max-w-lg mx-auto;
+  }
+
+  /* ─── Responsive card grids ──────────────────────────────────────────── */
+  .card-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+  .card-grid-lg {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+  .card-grid-sm {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}

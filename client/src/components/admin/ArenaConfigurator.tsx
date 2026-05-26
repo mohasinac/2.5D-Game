@@ -54,33 +54,36 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
   const [tab, setTab] = useTabFromUrl("basics") as [TabId, (t: TabId) => void];
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) clamp(260px,28%,500px)", gap: 20, alignItems: "start" }}>
+    <div
+      className="grid gap-5 items-start"
+      style={{ gridTemplateColumns: "minmax(0,1fr) clamp(260px,28%,500px)" }}
+    >
       {/* Left: tab editor */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div className="flex flex-col gap-3">
         {/* Tab bar */}
-        <div style={{ display: "flex", gap: 4, background: C.bg2, borderRadius: 12, padding: 4, border: `1px solid ${C.border}`, overflowX: "auto" }}>
+        <div className="flex gap-1 bg-bg2 rounded-xl p-1 border border-border-c overflow-x-auto">
           {TABS.map(t => {
             const count = t.count?.(arena);
+            const isActive = tab === t.id;
             return (
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
+                className="flex items-center gap-[5px] px-3 py-[7px] rounded-lg text-[12px] font-medium cursor-pointer whitespace-nowrap border-none relative"
                 style={{
-                  display: "flex", alignItems: "center", gap: 5, padding: "7px 12px",
-                  borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap", border: "none",
-                  background: tab === t.id ? C.purple : "transparent",
-                  color: tab === t.id ? C.white : C.muted,
-                  position: "relative",
+                  background: isActive ? C.purple : "transparent",
+                  color: isActive ? C.white : C.muted,
                 }}
               >
                 <span>{t.icon}</span>
                 <span>{t.label}</span>
                 {count != null && count > 0 && (
-                  <span style={{
-                    background: tab === t.id ? "rgba(255,255,255,0.3)" : C.purple,
-                    color: C.white, borderRadius: 8, fontSize: 10, fontWeight: 700,
-                    padding: "0 5px", lineHeight: "16px",
-                  }}>
+                  <span
+                    className="text-white rounded-lg text-[10px] font-bold px-[5px] leading-4"
+                    style={{
+                      background: isActive ? "rgba(255,255,255,0.3)" : C.purple,
+                    }}
+                  >
                     {count}
                   </span>
                 )}
@@ -90,7 +93,7 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
         </div>
 
         {/* Tab content */}
-        <div style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 16, padding: 20, minHeight: 300 }}>
+        <div className="bg-bg2 border border-border-c rounded-2xl p-5 min-h-[300px]">
           {tab === "basics"     && <BasicsTab config={arena} onChange={onChange} />}
           {tab === "walls"      && <WallsTab config={arena} onChange={onChange} />}
           {tab === "water"      && <WaterBodiesTab config={arena} onChange={onChange} />}
@@ -109,13 +112,14 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
         </div>
 
         {/* Save button */}
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div className="flex justify-end">
           <button
             onClick={onSave}
             disabled={saving}
+            className="px-6 py-[9px] rounded-lg text-[13px] font-semibold border-none cursor-pointer"
             style={{
-              padding: "9px 24px", background: C.purple, color: C.white, borderRadius: 8,
-              fontSize: 13, fontWeight: 600, border: "none", cursor: "pointer",
+              background: C.purple,
+              color: C.white,
               opacity: saving ? 0.5 : 1,
             }}
           >
@@ -125,7 +129,7 @@ export default function ArenaConfigurator({ arena, onChange, onSave, saving }: P
       </div>
 
       {/* Right: live preview — fills its column */}
-      <div style={{ position: "sticky", top: 64 }}>
+      <div className="sticky top-16">
         <ArenaPreview arena={arena} />
       </div>
     </div>

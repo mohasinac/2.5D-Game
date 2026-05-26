@@ -1,8 +1,6 @@
-import type React from "react";
-import { C } from "@/styles/theme";
-
-const LBL = "block text-xs text-muted mb-1.5";
-const INP: React.CSSProperties = { width: "100%", background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 12px", color: "var(--text)", fontSize: 13 };
+const LBL = "block text-xs text-theme-muted mb-1.5";
+const INP = "w-full bg-bg3 border border-border-c rounded-lg px-3 py-2 text-theme-text text-sm";
+import { useRef, useState } from "react";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, ArenaShape, ArenaTheme, BowlProfile } from "@/types/arenaConfigNew";
 import { ARENA_PRESETS, initializeWallConfig, BOWL_PROFILE_ANGLES, BOWL_PROFILE_LABELS } from "@/types/arenaConfigNew";
@@ -10,6 +8,8 @@ import { PX_PER_CM_BASE } from "@/constants/units";
 import { useArenaShapeDefs } from "@/hooks/useArenaShapeDefs";
 import { useArenaThemeDefs } from "@/hooks/useArenaThemeDefs";
 import { useBowlProfileDefs } from "@/hooks/useBowlProfileDefs";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "@/lib/firebase";
 
 interface Props {
   config: ArenaConfig;
@@ -67,7 +67,7 @@ function BowlCrossSection({ wallAngle = 0, bowlDepth = 0.4 }: { wallAngle?: numb
   const outline = [leftWallTop, leftWallBot, floorLeft, floorRight, rightWallBot, rightWallTop].join(" ");
 
   return (
-    <svg width={W} height={H + 8} viewBox={`0 0 ${W} ${H + 8}`} style={{ display: "block" }}>
+    <svg width={W} height={H + 8} viewBox={`0 0 ${W} ${H + 8}`} className="block">
       {/* Shadow fill */}
       <polygon points={`${outline} ${W},0 0,0`} fill="#0f172a" />
       {/* Bowl inner surface */}
@@ -115,7 +115,6 @@ function TiltPreview({ tiltAngle = 0, tiltDirection = 0 }: { tiltAngle?: number;
   const dirDeg = tiltDirection % 360;
 
   // Downhill arrow direction
-  const arrowLen = 18;
   const ax = cx + Math.cos(dirRad) * (minorR + 6);
   const ay = cy + Math.sin(dirRad) * (minorR + 6);
 
@@ -124,7 +123,7 @@ function TiltPreview({ tiltAngle = 0, tiltDirection = 0 }: { tiltAngle?: number;
   const isInverted = Math.abs(k) < 0.05 ? false : k < 0;
 
   return (
-    <svg width={W} height={H + 14} viewBox={`0 0 ${W} ${H + 14}`} style={{ display: "block" }}>
+    <svg width={W} height={H + 14} viewBox={`0 0 ${W} ${H + 14}`} className="block">
       {/* Shadow */}
       <ellipse cx={cx} cy={cy} rx={majorR + 2} ry={minorR + 2}
         fill="#0a0a14" transform={`rotate(${dirDeg} ${cx} ${cy})`} />
@@ -170,12 +169,38 @@ const TILT_PRESETS: { label: string; angle: number; description: string }[] = [
   { label: "Inverted",   angle: 180, description: "Upside-down / Zero-G" },
 ];
 
+// Difficulty button colors keyed by difficulty level
+const DIFF_COLORS: Record<string, string> = {
+  easy: "#22c55e",
+  medium: "#3b82f6",
+  hard: "#f97316",
+  extreme: "#ef4444",
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function BasicsTab({ config, onChange }: Props) {
   const { items: shapeDefs } = useArenaShapeDefs();
   const { items: themeDefs } = useArenaThemeDefs();
   const { items: bowlProfileDefs } = useBowlProfileDefs();
+  const bgImageInputRef = useRef<HTMLInputElement>(null);
+  const [bgUploading, setBgUploading] = useState(false);
+
+  const handleBgImageUpload = async (file: File) => {
+    if (!file) return;
+    setBgUploading(true);
+    try {
+      const path = `arena_world_backgrounds/${Date.now()}_${file.name}`;
+      const sRef = storageRef(storage, path);
+      await uploadBytes(sRef, file);
+      const url = await getDownloadURL(sRef);
+      onChange({ worldBackground: { ...(config.worldBackground ?? { type: "image" }), type: "image", imageUrl: url } });
+    } catch (e) {
+      console.error("World background upload failed", e);
+    } finally {
+      setBgUploading(false);
+    }
+  };
 
   const shapes = shapeDefs.length > 0
     ? shapeDefs.map(s => ({ value: s.id as ArenaShape, label: s.label }))
@@ -214,7 +239,7 @@ export default function BasicsTab({ config, onChange }: Props) {
             type="text"
             value={config.name ?? ""}
             onChange={e => onChange({ name: e.target.value })}
-            style={INP}
+            className={INP}
             placeholder="e.g. Classic Stadium"
           />
         </div>
@@ -224,7 +249,7 @@ export default function BasicsTab({ config, onChange }: Props) {
             value={config.description ?? ""}
             onChange={e => onChange({ description: e.target.value })}
             rows={2}
-            style={{ ...INP, resize: "vertical" as const, fontFamily: "inherit" }}
+            className={`${INP} resize-y font-[inherit]`}
             placeholder="Optional arena description…"
           />
         </div>
@@ -233,17 +258,16 @@ export default function BasicsTab({ config, onChange }: Props) {
           <div className="flex gap-1.5">
             {(["easy", "medium", "hard", "extreme"] as const).map(d => {
               const active = (config.difficulty ?? "medium") === d;
-              const colors: Record<string, string> = { easy: "#22c55e", medium: "#3b82f6", hard: "#f97316", extreme: "#ef4444" };
+              const color = DIFF_COLORS[d];
               return (
                 <button
                   key={d}
                   onClick={() => onChange({ difficulty: d })}
+                  className="flex-1 py-1.5 px-1 rounded-md text-[11px] font-medium cursor-pointer capitalize"
                   style={{
-                    flex: 1, padding: "6px 4px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer",
-                    textTransform: "capitalize",
-                    background: active ? `${colors[d]}22` : "transparent",
-                    color: active ? colors[d] : C.muted,
-                    border: `1px solid ${active ? colors[d] : C.border}`,
+                    background: active ? `${color}22` : "transparent",
+                    color: active ? color : "var(--muted)",
+                    border: `1px solid ${active ? color : "var(--border)"}`,
                   }}
                 >
                   {d}
@@ -263,18 +287,18 @@ export default function BasicsTab({ config, onChange }: Props) {
             type="number" min={20} max={100} step={1}
             value={config.width ? Math.round(config.width / PX_PER_CM_BASE) : 50}
             onChange={e => onChange({ width: Math.round(parseFloat(e.target.value) || 50) * PX_PER_CM_BASE })}
-            style={{ ...INP, width: 80, textAlign: "right" as const }}
+            className="bg-bg3 border border-border-c rounded-lg px-3 py-2 text-theme-text text-sm w-20 text-right"
           />
-          <span className="text-faint text-xs">×</span>
+          <span className="text-theme-faint text-xs">×</span>
           <input
             type="number" min={20} max={100} step={1}
             value={config.height ? Math.round(config.height / PX_PER_CM_BASE) : 50}
             onChange={e => onChange({ height: Math.round(parseFloat(e.target.value) || 50) * PX_PER_CM_BASE })}
-            style={{ ...INP, width: 80, textAlign: "right" as const }}
+            className="bg-bg3 border border-border-c rounded-lg px-3 py-2 text-theme-text text-sm w-20 text-right"
           />
-          <span className="text-faint text-xs">cm</span>
+          <span className="text-theme-faint text-xs">cm</span>
         </div>
-        <div className="text-[11px] text-faint mt-1">
+        <div className="text-[11px] text-theme-faint mt-1">
           {config.width && config.height
             ? `${config.width} × ${config.height} px stored — displayed as ${Math.round(config.width / PX_PER_CM_BASE)} × ${Math.round(config.height / PX_PER_CM_BASE)} cm`
             : "Default: 50 × 50 cm (1200 × 1200 px)"}
@@ -302,16 +326,16 @@ export default function BasicsTab({ config, onChange }: Props) {
       <CollapsibleSection title="Shape" storageKey="arena-basics-shape" defaultOpen={true}>
       <div>
         <label className={LBL}>Shape</label>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: 8 }}>
+        <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))" }}>
           {shapes.map(s => (
             <button
               key={s.value}
               onClick={() => handleShapeChange(s.value)}
+              className="py-2 px-1.5 rounded-lg text-xs font-medium cursor-pointer"
               style={{
-                padding: "8px 6px", borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: "pointer",
-                background: config.shape === s.value ? C.purple : C.bg3,
-                color: config.shape === s.value ? C.white : C.muted,
-                border: `1px solid ${config.shape === s.value ? C.purple : C.border}`,
+                background: config.shape === s.value ? "var(--purple)" : "var(--bg3)",
+                color: config.shape === s.value ? "#ffffff" : "var(--muted)",
+                border: `1px solid ${config.shape === s.value ? "var(--purple)" : "var(--border)"}`,
               }}
             >
               {s.label}
@@ -325,20 +349,22 @@ export default function BasicsTab({ config, onChange }: Props) {
       <CollapsibleSection title="Theme" storageKey="arena-basics-theme" defaultOpen={true}>
       <div>
         <label className={LBL}>Theme</label>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 8 }}>
+        <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))" }}>
           {themes.map(t => (
             <button
               key={t.value}
               onClick={() => onChange({ theme: t.value })}
+              className="py-2 px-2.5 rounded-lg text-xs font-medium cursor-pointer flex items-center gap-2"
               style={{
-                padding: "8px 10px", borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: "pointer",
-                display: "flex", alignItems: "center", gap: 8,
-                background: config.theme === t.value ? `${t.color}22` : C.bg3,
-                color: config.theme === t.value ? t.color : C.muted,
-                border: `1px solid ${config.theme === t.value ? t.color : C.border}`,
+                background: config.theme === t.value ? `${t.color}22` : "var(--bg3)",
+                color: config.theme === t.value ? t.color : "var(--muted)",
+                border: `1px solid ${config.theme === t.value ? t.color : "var(--border)"}`,
               }}
             >
-              <span style={{ width: 10, height: 10, borderRadius: "50%", background: t.color, flexShrink: 0 }} />
+              <span
+                className="w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ background: t.color }}
+              />
               {t.label}
             </button>
           ))}
@@ -358,12 +384,11 @@ export default function BasicsTab({ config, onChange }: Props) {
               <button
                 key={profile.id}
                 onClick={() => handleBowlProfileClick(profile.id)}
+                className="py-[5px] px-3 rounded-md text-[11px] font-medium cursor-pointer capitalize"
                 style={{
-                  padding: "5px 12px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer",
-                  textTransform: "capitalize",
-                  background: active ? C.blue : "transparent",
-                  color: active ? C.white : C.muted,
-                  border: `1px solid ${active ? C.blue : C.border}`,
+                  background: active ? "var(--blue)" : "transparent",
+                  color: active ? "#ffffff" : "var(--muted)",
+                  border: `1px solid ${active ? "var(--blue)" : "var(--border)"}`,
                 }}
               >
                 {profile.label}
@@ -374,17 +399,17 @@ export default function BasicsTab({ config, onChange }: Props) {
 
         {/* Custom angle slider */}
         <div className="mb-3.5">
-          <div className="flex justify-between text-xs text-muted mb-1">
+          <div className="flex justify-between text-xs text-theme-muted mb-1">
             <span>Wall Angle (custom)</span>
-            <span className="text-text font-mono">{effectiveWallAngle}°</span>
+            <span className="text-theme-text font-mono">{effectiveWallAngle}°</span>
           </div>
           <input
             type="range" min={0} max={75} step={1}
             value={effectiveWallAngle}
             onChange={e => onChange({ wallAngle: +e.target.value, bowlProfile: undefined })}
-            style={{ width: "100%", accentColor: C.blue }}
+            className="w-full accent-theme-blue"
           />
-          <div className="flex justify-between text-[10px] text-faint mt-0.5">
+          <div className="flex justify-between text-[10px] text-theme-faint mt-0.5">
             <span>0° — flat / vertical</span>
             <span>75° — cup shape</span>
           </div>
@@ -392,25 +417,25 @@ export default function BasicsTab({ config, onChange }: Props) {
 
         {/* Bowl depth */}
         <div className="mb-4">
-          <div className="flex justify-between text-xs text-muted mb-1">
+          <div className="flex justify-between text-xs text-theme-muted mb-1">
             <span>Bowl Depth</span>
-            <span className="text-text font-mono">{Math.round((config.bowlDepth ?? 0.4) * 100)}%</span>
+            <span className="text-theme-text font-mono">{Math.round((config.bowlDepth ?? 0.4) * 100)}%</span>
           </div>
           <input
             type="range" min={0} max={100} step={5}
             value={Math.round((config.bowlDepth ?? 0.4) * 100)}
             onChange={e => onChange({ bowlDepth: +e.target.value / 100 })}
-            style={{ width: "100%", accentColor: C.blue }}
+            className="w-full accent-theme-blue"
           />
         </div>
 
         {/* Cross-section preview */}
         <div className="flex flex-col items-center gap-2">
-          <span className="text-[11px] text-faint">Cross-section preview</span>
-          <div className="border border-border rounded-lg px-4 py-2.5" style={{ background: "#0f172a" }}>
+          <span className="text-[11px] text-theme-faint">Cross-section preview</span>
+          <div className="border border-border-c rounded-lg px-4 py-2.5 bg-[#0f172a]">
             <BowlCrossSection wallAngle={effectiveWallAngle} bowlDepth={config.bowlDepth ?? 0.4} />
           </div>
-          <span className="text-[10px] text-faint text-center">
+          <span className="text-[10px] text-theme-faint text-center">
             {config.wallAngle !== undefined
               ? `Custom angle: ${config.wallAngle}°`
               : BOWL_PROFILE_LABELS[config.bowlProfile ?? "medium"]}
@@ -423,13 +448,13 @@ export default function BasicsTab({ config, onChange }: Props) {
       <CollapsibleSection title="Auto-Rotate" storageKey="arena-basics-rotate" defaultOpen={false}>
       <div>
         <div className="flex justify-between items-center mb-3.5">
-          <span className="text-[13px] font-semibold text-text">Auto-Rotate</span>
+          <span className="text-[13px] font-semibold text-theme-text">Auto-Rotate</span>
           <button
             onClick={() => onChange({ autoRotate: !config.autoRotate })}
+            className="py-1 px-3.5 rounded-md border-none cursor-pointer font-semibold text-xs"
             style={{
-              padding: "4px 14px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 12,
-              background: config.autoRotate ? C.green : C.bg2,
-              color: config.autoRotate ? C.white : C.muted,
+              background: config.autoRotate ? "var(--green)" : "var(--bg2)",
+              color: config.autoRotate ? "#ffffff" : "var(--muted)",
             }}
           >
             {config.autoRotate ? "ON" : "OFF"}
@@ -438,15 +463,15 @@ export default function BasicsTab({ config, onChange }: Props) {
         {config.autoRotate && (
           <div className="flex flex-col gap-3">
             <div>
-              <div className="flex justify-between text-xs text-muted mb-1">
+              <div className="flex justify-between text-xs text-theme-muted mb-1">
                 <span>Speed (°/s)</span>
-                <span className="text-text font-mono">{config.rotationSpeed ?? 6}°/s</span>
+                <span className="text-theme-text font-mono">{config.rotationSpeed ?? 6}°/s</span>
               </div>
               <input
                 type="range" min={1} max={60} step={1}
                 value={config.rotationSpeed ?? 6}
                 onChange={e => onChange({ rotationSpeed: +e.target.value })}
-                style={{ width: "100%", accentColor: C.purple }}
+                className="w-full accent-theme-purple"
               />
             </div>
             <div>
@@ -456,11 +481,11 @@ export default function BasicsTab({ config, onChange }: Props) {
                   <button
                     key={dir}
                     onClick={() => onChange({ rotationDirection: dir })}
+                    className="flex-1 py-1.5 rounded-md text-xs cursor-pointer capitalize"
                     style={{
-                      flex: 1, padding: "6px", borderRadius: 6, fontSize: 12, cursor: "pointer", textTransform: "capitalize",
-                      background: config.rotationDirection === dir ? C.purple : "transparent",
-                      color: config.rotationDirection === dir ? C.white : C.muted,
-                      border: `1px solid ${config.rotationDirection === dir ? C.purple : C.border}`,
+                      background: config.rotationDirection === dir ? "var(--purple)" : "transparent",
+                      color: config.rotationDirection === dir ? "#ffffff" : "var(--muted)",
+                      border: `1px solid ${config.rotationDirection === dir ? "var(--purple)" : "var(--border)"}`,
                     }}
                   >
                     {dir === "clockwise" ? "↻ Clockwise" : "↺ Counter"}
@@ -474,25 +499,25 @@ export default function BasicsTab({ config, onChange }: Props) {
               <label className={LBL}>Pivot Offset (cm from center)</label>
               <div className="flex gap-2">
                 <div className="flex-1">
-                  <div className="text-[10px] text-faint mb-0.5">X</div>
+                  <div className="text-[10px] text-theme-faint mb-0.5">X</div>
                   <input
                     type="number" step={1} min={-200} max={200}
                     value={config.rotationPivotX ?? 0}
                     onChange={e => onChange({ rotationPivotX: +e.target.value })}
-                    style={{ ...INP, width: "100%" }}
+                    className={INP}
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="text-[10px] text-faint mb-0.5">Y</div>
+                  <div className="text-[10px] text-theme-faint mb-0.5">Y</div>
                   <input
                     type="number" step={1} min={-200} max={200}
                     value={config.rotationPivotY ?? 0}
                     onChange={e => onChange({ rotationPivotY: +e.target.value })}
-                    style={{ ...INP, width: "100%" }}
+                    className={INP}
                   />
                 </div>
               </div>
-              <div className="text-[10px] text-faint mt-[3px]">
+              <div className="text-[10px] text-theme-faint mt-[3px]">
                 (0, 0) = arena center. Offset rotates around an eccentric point.
               </div>
             </div>
@@ -504,7 +529,7 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Tilt — hidden in 2D mode */}
       {(config.rendererMode ?? "2.5d") !== "2d" && <CollapsibleSection title="Arena Tilt" storageKey="arena-basics-tilt" defaultOpen={false}>
       <div>
-        <div className="text-[11px] text-faint mb-3.5">
+        <div className="text-[11px] text-theme-faint mb-3.5">
           0° = flat · 90° = wall-ride · 180° = inverted / Zero-G · 270° = wall-ride back
         </div>
 
@@ -519,11 +544,11 @@ export default function BasicsTab({ config, onChange }: Props) {
                 <button
                   key={mode}
                   onClick={() => onChange({ tiltMode: mode })}
+                  className="flex-1 py-1.5 px-1 rounded-md text-[11px] font-medium cursor-pointer"
                   style={{
-                    flex: 1, padding: "6px 4px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer",
-                    background: active ? C.blue : "transparent",
-                    color: active ? C.white : C.muted,
-                    border: `1px solid ${active ? C.blue : C.border}`,
+                    background: active ? "var(--blue)" : "transparent",
+                    color: active ? "#ffffff" : "var(--muted)",
+                    border: `1px solid ${active ? "var(--blue)" : "var(--border)"}`,
                   }}
                 >
                   {labels[mode]}
@@ -531,7 +556,7 @@ export default function BasicsTab({ config, onChange }: Props) {
               );
             })}
           </div>
-          <div className="text-[10px] text-faint mt-1">
+          <div className="text-[10px] text-theme-faint mt-1">
             {(config.tiltMode ?? "fixed") === "fixed" && "Static tilt at the configured angle."}
             {(config.tiltMode ?? "fixed") === "oscillate" && "Angle rocks between min–max on a cosine wave."}
             {(config.tiltMode ?? "fixed") === "weight" && "Arena tilts toward where beyblades are massed."}
@@ -547,11 +572,11 @@ export default function BasicsTab({ config, onChange }: Props) {
                 key={p.label}
                 title={p.description}
                 onClick={() => onChange({ tiltAngle: p.angle })}
+                className="py-[5px] px-3 rounded-md text-[11px] font-medium cursor-pointer"
                 style={{
-                  padding: "5px 12px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer",
-                  background: active ? C.blue : "transparent",
-                  color: active ? C.white : C.muted,
-                  border: `1px solid ${active ? C.blue : C.border}`,
+                  background: active ? "var(--blue)" : "transparent",
+                  color: active ? "#ffffff" : "var(--muted)",
+                  border: `1px solid ${active ? "var(--blue)" : "var(--border)"}`,
                 }}
               >
                 {p.label}
@@ -565,17 +590,17 @@ export default function BasicsTab({ config, onChange }: Props) {
           <>
             {/* Tilt angle slider */}
             <div className="mb-3.5">
-              <div className="flex justify-between text-xs text-muted mb-1">
+              <div className="flex justify-between text-xs text-theme-muted mb-1">
                 <span>{(config.tiltMode ?? "fixed") === "weight" ? "Max Tilt Angle" : "Tilt Angle"}</span>
-                <span className="text-text font-mono">{config.tiltAngle ?? 0}°</span>
+                <span className="text-theme-text font-mono">{config.tiltAngle ?? 0}°</span>
               </div>
               <input
                 type="range" min={0} max={360} step={1}
                 value={config.tiltAngle ?? 0}
                 onChange={e => onChange({ tiltAngle: +e.target.value })}
-                style={{ width: "100%", accentColor: C.blue }}
+                className="w-full accent-theme-blue"
               />
-              <div className="flex justify-between text-[10px] text-faint mt-0.5">
+              <div className="flex justify-between text-[10px] text-theme-faint mt-0.5">
                 <span>0° flat</span><span>90° wall</span><span>180° inverted</span><span>270° wall</span><span>360° flat</span>
               </div>
             </div>
@@ -583,17 +608,17 @@ export default function BasicsTab({ config, onChange }: Props) {
             {/* Tilt direction slider (hidden for weight mode — direction is auto) */}
             {(config.tiltMode ?? "fixed") !== "weight" && (
               <div className="mb-3.5">
-                <div className="flex justify-between text-xs text-muted mb-1">
-                  <span>Tilt Direction <span className="text-[10px] text-faint">(downhill azimuth)</span></span>
-                  <span className="text-text font-mono">{config.tiltDirection ?? 0}°</span>
+                <div className="flex justify-between text-xs text-theme-muted mb-1">
+                  <span>Tilt Direction <span className="text-[10px] text-theme-faint">(downhill azimuth)</span></span>
+                  <span className="text-theme-text font-mono">{config.tiltDirection ?? 0}°</span>
                 </div>
                 <input
                   type="range" min={0} max={359} step={1}
                   value={config.tiltDirection ?? 0}
                   onChange={e => onChange({ tiltDirection: +e.target.value })}
-                  style={{ width: "100%", accentColor: C.blue }}
+                  className="w-full accent-theme-blue"
                 />
-                <div className="flex justify-between text-[10px] text-faint mt-0.5">
+                <div className="flex justify-between text-[10px] text-theme-faint mt-0.5">
                   <span>0° → right</span><span>90° ↓ down</span><span>180° ← left</span><span>270° ↑ up</span>
                 </div>
               </div>
@@ -606,57 +631,57 @@ export default function BasicsTab({ config, onChange }: Props) {
           <div className="mb-3.5 flex flex-col gap-2.5">
             <div className="flex gap-2">
               <div className="flex-1">
-                <div className="flex justify-between text-xs text-muted mb-1">
+                <div className="flex justify-between text-xs text-theme-muted mb-1">
                   <span>Min Angle</span>
-                  <span className="text-text font-mono">{config.tiltOscillateMin ?? 0}°</span>
+                  <span className="text-theme-text font-mono">{config.tiltOscillateMin ?? 0}°</span>
                 </div>
                 <input
                   type="range" min={0} max={180} step={1}
                   value={config.tiltOscillateMin ?? 0}
                   onChange={e => onChange({ tiltOscillateMin: +e.target.value })}
-                  style={{ width: "100%", accentColor: C.blue }}
+                  className="w-full accent-theme-blue"
                 />
               </div>
               <div className="flex-1">
-                <div className="flex justify-between text-xs text-muted mb-1">
+                <div className="flex justify-between text-xs text-theme-muted mb-1">
                   <span>Max Angle</span>
-                  <span className="text-text font-mono">{config.tiltOscillateMax ?? 45}°</span>
+                  <span className="text-theme-text font-mono">{config.tiltOscillateMax ?? 45}°</span>
                 </div>
                 <input
                   type="range" min={0} max={360} step={1}
                   value={config.tiltOscillateMax ?? 45}
                   onChange={e => onChange({ tiltOscillateMax: +e.target.value })}
-                  style={{ width: "100%", accentColor: C.blue }}
+                  className="w-full accent-theme-blue"
                 />
               </div>
             </div>
             <div>
-              <div className="flex justify-between text-xs text-muted mb-1">
+              <div className="flex justify-between text-xs text-theme-muted mb-1">
                 <span>Period</span>
-                <span className="text-text font-mono">{((config.tiltOscillatePeriodMs ?? 4000) / 1000).toFixed(1)}s</span>
+                <span className="text-theme-text font-mono">{((config.tiltOscillatePeriodMs ?? 4000) / 1000).toFixed(1)}s</span>
               </div>
               <input
                 type="range" min={500} max={20000} step={500}
                 value={config.tiltOscillatePeriodMs ?? 4000}
                 onChange={e => onChange({ tiltOscillatePeriodMs: +e.target.value })}
-                style={{ width: "100%", accentColor: C.blue }}
+                className="w-full accent-theme-blue"
               />
-              <div className="flex justify-between text-[10px] text-faint mt-0.5">
+              <div className="flex justify-between text-[10px] text-theme-faint mt-0.5">
                 <span>0.5s fast</span><span>4s default</span><span>20s slow</span>
               </div>
             </div>
             <div className="mb-1">
-              <div className="flex justify-between text-xs text-muted mb-1">
-                <span>Tilt Direction <span className="text-[10px] text-faint">(downhill azimuth)</span></span>
-                <span className="text-text font-mono">{config.tiltDirection ?? 0}°</span>
+              <div className="flex justify-between text-xs text-theme-muted mb-1">
+                <span>Tilt Direction <span className="text-[10px] text-theme-faint">(downhill azimuth)</span></span>
+                <span className="text-theme-text font-mono">{config.tiltDirection ?? 0}°</span>
               </div>
               <input
                 type="range" min={0} max={359} step={1}
                 value={config.tiltDirection ?? 0}
                 onChange={e => onChange({ tiltDirection: +e.target.value })}
-                style={{ width: "100%", accentColor: C.blue }}
+                className="w-full accent-theme-blue"
               />
-              <div className="flex justify-between text-[10px] text-faint mt-0.5">
+              <div className="flex justify-between text-[10px] text-theme-faint mt-0.5">
                 <span>0° → right</span><span>90° ↓ down</span><span>180° ← left</span><span>270° ↑ up</span>
               </div>
             </div>
@@ -665,10 +690,10 @@ export default function BasicsTab({ config, onChange }: Props) {
 
         {/* Preview */}
         <div className="flex gap-5 items-center mb-3.5">
-          <div className="border border-border rounded-lg py-2 px-3" style={{ background: "#0f172a" }}>
+          <div className="border border-border-c rounded-lg py-2 px-3 bg-[#0f172a]">
             <TiltPreview tiltAngle={config.tiltAngle ?? 0} tiltDirection={config.tiltDirection ?? 0} />
           </div>
-          <div className="text-[11px] text-faint leading-relaxed">
+          <div className="text-[11px] text-theme-faint leading-relaxed">
             <div>Yellow arrow = downhill</div>
             <div>Purple ⊗ = inverted</div>
             <div>Line = edge-on (wall-ride)</div>
@@ -680,41 +705,41 @@ export default function BasicsTab({ config, onChange }: Props) {
           <label className={LBL}>Tilt Pivot Offset (cm from center)</label>
           <div className="flex gap-2">
             <div className="flex-1">
-              <div className="text-[10px] text-faint mb-0.5">X</div>
+              <div className="text-[10px] text-theme-faint mb-0.5">X</div>
               <input
                 type="number" step={1} min={-200} max={200}
                 value={config.tiltPivotX ?? 0}
                 onChange={e => onChange({ tiltPivotX: +e.target.value })}
-                style={{ ...INP, width: "100%" }}
+                className={INP}
               />
             </div>
             <div className="flex-1">
-              <div className="text-[10px] text-faint mb-0.5">Y</div>
+              <div className="text-[10px] text-theme-faint mb-0.5">Y</div>
               <input
                 type="number" step={1} min={-200} max={200}
                 value={config.tiltPivotY ?? 0}
                 onChange={e => onChange({ tiltPivotY: +e.target.value })}
-                style={{ ...INP, width: "100%" }}
+                className={INP}
               />
             </div>
           </div>
-          <div className="text-[10px] text-faint mt-[3px]">
+          <div className="text-[10px] text-theme-faint mt-[3px]">
             (0, 0) = arena center. Offset tilts around an eccentric point.
           </div>
         </div>
 
         {/* Auto-Tilt (spinning tilt direction) */}
-        <div className="border-t border-border pt-3">
+        <div className="border-t border-border-c pt-3">
           <div className="flex justify-between items-center mb-2.5">
-            <span className="text-xs font-semibold text-text">
-              Auto-Tilt <span className="text-[10px] text-faint font-normal">(direction rotates)</span>
+            <span className="text-xs font-semibold text-theme-text">
+              Auto-Tilt <span className="text-[10px] text-theme-faint font-normal">(direction rotates)</span>
             </span>
             <button
               onClick={() => onChange({ autoTilt: !config.autoTilt })}
+              className="py-[3px] px-3 rounded-md border-none cursor-pointer font-semibold text-xs"
               style={{
-                padding: "3px 12px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 12,
-                background: config.autoTilt ? C.green : C.bg2,
-                color: config.autoTilt ? C.white : C.muted,
+                background: config.autoTilt ? "var(--green)" : "var(--bg2)",
+                color: config.autoTilt ? "#ffffff" : "var(--muted)",
               }}
             >
               {config.autoTilt ? "ON" : "OFF"}
@@ -722,17 +747,17 @@ export default function BasicsTab({ config, onChange }: Props) {
           </div>
           {config.autoTilt && (
             <div>
-              <div className="flex justify-between text-xs text-muted mb-1">
+              <div className="flex justify-between text-xs text-theme-muted mb-1">
                 <span>Tilt-Direction Speed (°/s)</span>
-                <span className="text-text font-mono">{config.tiltSpeed ?? 10}°/s</span>
+                <span className="text-theme-text font-mono">{config.tiltSpeed ?? 10}°/s</span>
               </div>
               <input
                 type="range" min={1} max={90} step={1}
                 value={config.tiltSpeed ?? 10}
                 onChange={e => onChange({ tiltSpeed: +e.target.value })}
-                style={{ width: "100%", accentColor: C.green }}
+                className="w-full accent-theme-green"
               />
-              <div className="text-[10px] text-faint mt-1">
+              <div className="text-[10px] text-theme-faint mt-1">
                 The downhill direction spins — creates a tilted spinning-bowl effect.
               </div>
             </div>
@@ -747,17 +772,17 @@ export default function BasicsTab({ config, onChange }: Props) {
         <div className="flex flex-col gap-3.5">
           {/* Stamina drain */}
           <div>
-            <div className="flex justify-between text-xs text-muted mb-1">
+            <div className="flex justify-between text-xs text-theme-muted mb-1">
               <span>Stamina Drain Multiplier</span>
-              <span className="text-text font-mono">{(config.staminaDrainMultiplier ?? 1).toFixed(2)}×</span>
+              <span className="text-theme-text font-mono">{(config.staminaDrainMultiplier ?? 1).toFixed(2)}×</span>
             </div>
             <input
               type="range" min={25} max={400} step={5}
               value={Math.round((config.staminaDrainMultiplier ?? 1) * 100)}
               onChange={e => onChange({ staminaDrainMultiplier: +e.target.value / 100 })}
-              style={{ width: "100%", accentColor: C.blue }}
+              className="w-full accent-theme-blue"
             />
-            <div className="flex justify-between text-[10px] text-faint mt-0.5">
+            <div className="flex justify-between text-[10px] text-theme-faint mt-0.5">
               <span>0.25× slow drain</span><span>1.0× normal</span><span>4.0× fast drain</span>
             </div>
           </div>
@@ -765,13 +790,13 @@ export default function BasicsTab({ config, onChange }: Props) {
           {/* QTE */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs text-muted">QTE Enabled</span>
+              <span className="text-xs text-theme-muted">QTE Enabled</span>
               <button
                 onClick={() => onChange({ qteEnabled: !(config.qteEnabled ?? true) })}
+                className="py-[3px] px-3 rounded-md border-none cursor-pointer font-semibold text-xs"
                 style={{
-                  padding: "3px 12px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 12,
-                  background: (config.qteEnabled ?? true) ? C.green : C.bg2,
-                  color: (config.qteEnabled ?? true) ? C.white : C.muted,
+                  background: (config.qteEnabled ?? true) ? "var(--green)" : "var(--bg2)",
+                  color: (config.qteEnabled ?? true) ? "#ffffff" : "var(--muted)",
                 }}
               >
                 {(config.qteEnabled ?? true) ? "ON" : "OFF"}
@@ -787,11 +812,11 @@ export default function BasicsTab({ config, onChange }: Props) {
                       <button
                         key={mode}
                         onClick={() => onChange({ qteWindowScaling: mode })}
+                        className="flex-1 py-1.5 px-2 rounded-md text-[11px] cursor-pointer"
                         style={{
-                          flex: 1, padding: "6px 8px", borderRadius: 6, fontSize: 11, cursor: "pointer",
-                          background: active ? C.blue : "transparent",
-                          color: active ? C.white : C.muted,
-                          border: `1px solid ${active ? C.blue : C.border}`,
+                          background: active ? "var(--blue)" : "transparent",
+                          color: active ? "#ffffff" : "var(--muted)",
+                          border: `1px solid ${active ? "var(--blue)" : "var(--border)"}`,
                         }}
                       >
                         {mode === "flat" ? "Flat (60t)" : "By Cost"}
@@ -799,7 +824,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                     );
                   })}
                 </div>
-                <div className="text-[10px] text-faint mt-1">
+                <div className="text-[10px] text-theme-faint mt-1">
                   Flat = always 60 ticks. By Cost = window scales with combo/special cost.
                 </div>
               </div>
@@ -809,13 +834,13 @@ export default function BasicsTab({ config, onChange }: Props) {
           {/* Random Modifiers */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-muted">Random Match Modifiers</span>
+              <span className="text-xs text-theme-muted">Random Match Modifiers</span>
               <button
                 onClick={() => onChange({ randomModifiers: !config.randomModifiers })}
+                className="py-[3px] px-3 rounded-md border-none cursor-pointer font-semibold text-xs"
                 style={{
-                  padding: "3px 12px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 12,
-                  background: config.randomModifiers ? C.green : C.bg2,
-                  color: config.randomModifiers ? C.white : C.muted,
+                  background: config.randomModifiers ? "var(--green)" : "var(--bg2)",
+                  color: config.randomModifiers ? "#ffffff" : "var(--muted)",
                 }}
               >
                 {config.randomModifiers ? "ON" : "OFF"}
@@ -828,7 +853,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                   type="number" min={1} max={10} step={1}
                   value={config.maxModifiers ?? 2}
                   onChange={e => onChange({ maxModifiers: Math.max(1, Math.min(10, +e.target.value || 2)) })}
-                  style={{ ...INP, width: 80 }}
+                  className="bg-bg3 border border-border-c rounded-lg px-3 py-2 text-theme-text text-sm w-20"
                 />
               </div>
             )}
@@ -840,34 +865,34 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Player Authority */}
       <CollapsibleSection title="Player Authority" storageKey="arena-basics-authority" defaultOpen={false}>
       <div>
-        <div className="text-[11px] text-faint mb-3">
+        <div className="text-[11px] text-theme-faint mb-3">
           Controls how much arena features override player input. 1.0 = default. &lt;1 = arena controls more.
         </div>
         <div className="flex flex-col gap-3">
           {/* Global multiplier */}
           <div>
-            <div className="flex justify-between text-xs text-muted mb-1">
+            <div className="flex justify-between text-xs text-theme-muted mb-1">
               <span>Global Multiplier</span>
-              <span className="font-mono text-text">{((config.playerAuthorityConfig?.globalMultiplier ?? 1.0)).toFixed(2)}×</span>
+              <span className="font-mono text-theme-text">{((config.playerAuthorityConfig?.globalMultiplier ?? 1.0)).toFixed(2)}×</span>
             </div>
             <input type="range" min={50} max={200} step={5}
               value={Math.round((config.playerAuthorityConfig?.globalMultiplier ?? 1.0) * 100)}
               onChange={e => onChange({ playerAuthorityConfig: { ...(config.playerAuthorityConfig ?? {}), globalMultiplier: +e.target.value / 100 } })}
-              style={{ width: "100%", accentColor: C.blue }} />
-            <div className="flex justify-between text-[10px] text-faint mt-0.5">
+              className="w-full accent-theme-blue" />
+            <div className="flex justify-between text-[10px] text-theme-faint mt-0.5">
               <span>0.5× arena dominant</span><span>1.0× balanced</span><span>2.0× player dominant</span>
             </div>
           </div>
           {/* Curvature multiplier */}
           <div>
-            <div className="flex justify-between text-xs text-muted mb-1">
+            <div className="flex justify-between text-xs text-theme-muted mb-1">
               <span>Curvature Multiplier</span>
-              <span className="font-mono text-text">{((config.playerAuthorityConfig?.curvatureMultiplier ?? 1.0)).toFixed(2)}×</span>
+              <span className="font-mono text-theme-text">{((config.playerAuthorityConfig?.curvatureMultiplier ?? 1.0)).toFixed(2)}×</span>
             </div>
             <input type="range" min={0} max={100} step={5}
               value={Math.round((config.playerAuthorityConfig?.curvatureMultiplier ?? 1.0) * 100)}
               onChange={e => onChange({ playerAuthorityConfig: { ...(config.playerAuthorityConfig ?? {}), curvatureMultiplier: +e.target.value / 100 } })}
-              style={{ width: "100%", accentColor: C.blue }} />
+              className="w-full accent-theme-blue" />
           </div>
         </div>
       </div>
@@ -876,17 +901,17 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Max Duration */}
       <CollapsibleSection title="Max Match Duration" storageKey="arena-basics-duration" defaultOpen={false}>
       <div>
-        <div className="text-[11px] text-faint mb-2.5">
+        <div className="text-[11px] text-theme-faint mb-2.5">
           Overrides room default. Tournament rooms always use 180s regardless.
         </div>
         <div className="flex gap-2 items-center">
           <input type="number" min={30} max={600} step={15}
             value={config.maxDurationSeconds ?? 180}
             onChange={e => onChange({ maxDurationSeconds: +e.target.value || undefined })}
-            style={{ ...INP, width: 80 }} />
-          <span className="text-xs text-muted">seconds ({Math.floor((config.maxDurationSeconds ?? 180) / 60)}m {(config.maxDurationSeconds ?? 180) % 60}s)</span>
+            className="bg-bg3 border border-border-c rounded-lg px-3 py-2 text-theme-text text-sm w-20" />
+          <span className="text-xs text-theme-muted">seconds ({Math.floor((config.maxDurationSeconds ?? 180) / 60)}m {(config.maxDurationSeconds ?? 180) % 60}s)</span>
           <button onClick={() => onChange({ maxDurationSeconds: undefined })}
-            className="py-1 px-2 text-[11px] rounded-md border border-border bg-transparent text-muted cursor-pointer">
+            className="py-1 px-2 text-[11px] rounded-md border border-border-c bg-transparent text-theme-muted cursor-pointer">
             Reset
           </button>
         </div>
@@ -896,23 +921,23 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Renderer Mode */}
       <CollapsibleSection title="Renderer Mode" storageKey="arena-basics-renderer" defaultOpen={false}>
       <div>
-        <div className="text-[11px] text-faint mb-3">
+        <div className="text-[11px] text-theme-faint mb-3">
           2D = flat PixiJS · 2.5D = tilt-projected PixiJS (default) · 3D = Three.js stub
         </div>
         <div className="flex gap-2">
           {(["2d", "2.5d", "3d"] as const).map(m => {
             const active = (config.rendererMode ?? "2.5d") === m;
-            const color = m === "3d" ? C.purple : m === "2.5d" ? C.blue : C.green;
+            const color = m === "3d" ? "var(--purple)" : m === "2.5d" ? "var(--blue)" : "var(--green)";
             const label = m === "2d" ? "2D — Flat" : m === "2.5d" ? "2.5D — Tilt" : "3D — Stub";
             return (
               <button
                 key={m}
                 onClick={() => onChange({ rendererMode: m })}
+                className="flex-1 py-2 px-1 rounded-lg text-xs font-semibold cursor-pointer"
                 style={{
-                  flex: 1, padding: "8px 4px", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer",
-                  background: active ? `${color}22` : "transparent",
-                  color: active ? color : C.muted,
-                  border: `1px solid ${active ? color : C.border}`,
+                  background: active ? `color-mix(in srgb, ${color} 13%, transparent)` : "transparent",
+                  color: active ? color : "var(--muted)",
+                  border: `1px solid ${active ? color : "var(--border)"}`,
                 }}
               >
                 {label}
@@ -921,12 +946,12 @@ export default function BasicsTab({ config, onChange }: Props) {
           })}
         </div>
         {(config.rendererMode ?? "2.5d") === "2d" && (
-          <div className="text-[10px] text-faint mt-2">
+          <div className="text-[10px] text-theme-faint mt-2">
             Tilt panel and auto-tilt settings have no physics effect in 2D mode.
           </div>
         )}
         {(config.rendererMode ?? "2.5d") === "3d" && (
-          <div className="text-[10px] mt-2" style={{ color: "#f59e0b" }}>
+          <div className="text-[10px] mt-2 text-[#f59e0b]">
             Three.js renderer is a stub — not yet implemented. Falls back to 2.5D in-game.
           </div>
         )}
@@ -936,7 +961,7 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Visual Overrides */}
       <CollapsibleSection title="Visual Overrides" storageKey="arena-basics-visuals" defaultOpen={false}>
       <div>
-        <div className="text-[11px] text-faint mb-3.5">
+        <div className="text-[11px] text-theme-faint mb-3.5">
           Override theme defaults. Leave blank to use theme colors.
         </div>
         <div className="flex gap-3">
@@ -947,19 +972,19 @@ export default function BasicsTab({ config, onChange }: Props) {
                 type="color"
                 value={config.backgroundColor ?? "#1a1a2e"}
                 onChange={e => onChange({ backgroundColor: e.target.value })}
-                className="w-9 h-[30px] p-0.5 border border-border rounded-md cursor-pointer bg-bg2"
+                className="w-9 h-[30px] p-0.5 border border-border-c rounded-md cursor-pointer bg-bg2"
               />
               <input
                 type="text"
                 value={config.backgroundColor ?? ""}
                 onChange={e => onChange({ backgroundColor: e.target.value || undefined })}
                 placeholder="e.g. #1a1a2e"
-                style={{ ...INP, flex: 1, fontFamily: "monospace", fontSize: 11 }}
+                className="bg-bg3 border border-border-c rounded-lg px-3 py-2 text-theme-text text-[11px] font-mono flex-1"
               />
               {config.backgroundColor && (
                 <button
                   onClick={() => onChange({ backgroundColor: undefined })}
-                  className="py-1 px-2 text-[11px] rounded-md border border-border bg-transparent text-muted cursor-pointer"
+                  className="py-1 px-2 text-[11px] rounded-md border border-border-c bg-transparent text-theme-muted cursor-pointer"
                   title="Clear override"
                 >×</button>
               )}
@@ -972,19 +997,19 @@ export default function BasicsTab({ config, onChange }: Props) {
                 type="color"
                 value={config.floorColor ?? "#374151"}
                 onChange={e => onChange({ floorColor: e.target.value })}
-                className="w-9 h-[30px] p-0.5 border border-border rounded-md cursor-pointer bg-bg2"
+                className="w-9 h-[30px] p-0.5 border border-border-c rounded-md cursor-pointer bg-bg2"
               />
               <input
                 type="text"
                 value={config.floorColor ?? ""}
                 onChange={e => onChange({ floorColor: e.target.value || undefined })}
                 placeholder="e.g. #374151"
-                style={{ ...INP, flex: 1, fontFamily: "monospace", fontSize: 11 }}
+                className="bg-bg3 border border-border-c rounded-lg px-3 py-2 text-theme-text text-[11px] font-mono flex-1"
               />
               {config.floorColor && (
                 <button
                   onClick={() => onChange({ floorColor: undefined })}
-                  className="py-1 px-2 text-[11px] rounded-md border border-border bg-transparent text-muted cursor-pointer"
+                  className="py-1 px-2 text-[11px] rounded-md border border-border-c bg-transparent text-theme-muted cursor-pointer"
                   title="Clear override"
                 >×</button>
               )}
@@ -992,6 +1017,130 @@ export default function BasicsTab({ config, onChange }: Props) {
           </div>
         </div>
       </div>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="World Background" storageKey="arena-basics-worldbg" defaultOpen={false}>
+        <div className="flex flex-col gap-4">
+          <div className="text-[11px] text-theme-faint">
+            What appears behind the arena/stadium — sky, trees, city, clip art, etc. Independent of the arena floor theme.
+          </div>
+
+          {/* Type selector */}
+          <div>
+            <label className={LBL}>Background Type</label>
+            <div className="flex gap-2">
+              {(["none", "color", "image"] as const).map(t => (
+                <button
+                  key={t}
+                  onClick={() => onChange({ worldBackground: { ...(config.worldBackground ?? {}), type: t } as typeof config.worldBackground & NonNullable<unknown> })}
+                  className="flex-1 py-1.5 text-[12px] rounded-lg border cursor-pointer capitalize transition-colors"
+                  style={{
+                    borderColor: (config.worldBackground?.type ?? "none") === t ? "#3b82f6" : "var(--border-c)",
+                    background:  (config.worldBackground?.type ?? "none") === t ? "rgba(59,130,246,0.15)" : "var(--bg3)",
+                    color:       (config.worldBackground?.type ?? "none") === t ? "#3b82f6" : "var(--text-muted)",
+                  }}
+                >{t}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Color picker */}
+          {(config.worldBackground?.type === "color") && (
+            <div>
+              <label className={LBL}>Background Color</label>
+              <div className="flex gap-1.5 items-center">
+                <input
+                  type="color"
+                  value={config.worldBackground?.color ?? "#0a0a1a"}
+                  onChange={e => onChange({ worldBackground: { ...(config.worldBackground ?? { type: "color" }), color: e.target.value } })}
+                  className="w-9 h-[30px] p-0.5 border border-border-c rounded-md cursor-pointer bg-bg2"
+                />
+                <input
+                  type="text"
+                  value={config.worldBackground?.color ?? ""}
+                  onChange={e => onChange({ worldBackground: { ...(config.worldBackground ?? { type: "color" }), color: e.target.value || undefined } })}
+                  placeholder="#0a0a1a"
+                  className="bg-bg3 border border-border-c rounded-lg px-3 py-2 text-theme-text text-[11px] font-mono flex-1"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Image upload */}
+          {(config.worldBackground?.type === "image") && (
+            <div className="flex flex-col gap-2">
+              <label className={LBL}>Background Image</label>
+              {config.worldBackground?.imageUrl && (
+                <div className="relative w-full h-24 rounded-lg overflow-hidden border border-border-c">
+                  <img
+                    src={config.worldBackground.imageUrl}
+                    alt="World background preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    onClick={() => onChange({ worldBackground: { ...(config.worldBackground ?? { type: "image" }), imageUrl: undefined } })}
+                    className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-[12px] flex items-center justify-center cursor-pointer hover:bg-black/80"
+                  >×</button>
+                </div>
+              )}
+              <input
+                ref={bgImageInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) handleBgImageUpload(f); e.target.value = ""; }}
+              />
+              <button
+                onClick={() => bgImageInputRef.current?.click()}
+                disabled={bgUploading}
+                className="w-full py-2 text-[12px] rounded-lg border border-border-c bg-bg3 text-theme-muted cursor-pointer hover:text-theme-text hover:border-[#3b82f6] transition-colors disabled:opacity-50"
+              >
+                {bgUploading ? "Uploading…" : config.worldBackground?.imageUrl ? "Replace Image" : "Upload Image"}
+              </button>
+              <div className="text-[10px] text-theme-faint">PNG, JPG, WebP, GIF — landscape images work best (e.g. 1920×1080)</div>
+
+              {/* Fit */}
+              <div>
+                <label className={LBL}>Image Fit</label>
+                <select
+                  value={config.worldBackground?.fit ?? "cover"}
+                  onChange={e => onChange({ worldBackground: { ...(config.worldBackground ?? { type: "image" }), fit: e.target.value as "cover" | "contain" | "stretch" } })}
+                  className={INP}
+                >
+                  <option value="cover">Cover (fill canvas, crop edges)</option>
+                  <option value="contain">Contain (letterbox, no crop)</option>
+                  <option value="stretch">Stretch (fill exactly, may distort)</option>
+                </select>
+              </div>
+
+              {/* Blur */}
+              <div>
+                <label className={LBL}>Blur — {(config.worldBackground?.blurPx ?? 0).toFixed(0)} px</label>
+                <input
+                  type="range" min={0} max={20} step={1}
+                  value={config.worldBackground?.blurPx ?? 0}
+                  onChange={e => onChange({ worldBackground: { ...(config.worldBackground ?? { type: "image" }), blurPx: Number(e.target.value) } })}
+                  className="w-full accent-[#3b82f6]"
+                />
+                <div className="flex justify-between text-[10px] text-theme-faint mt-0.5"><span>Sharp</span><span>Blurred</span></div>
+              </div>
+            </div>
+          )}
+
+          {/* Opacity — shown for color + image */}
+          {(config.worldBackground?.type === "color" || config.worldBackground?.type === "image") && (
+            <div>
+              <label className={LBL}>Opacity — {Math.round((config.worldBackground?.opacity ?? 1) * 100)}%</label>
+              <input
+                type="range" min={0} max={1} step={0.01}
+                value={config.worldBackground?.opacity ?? 1}
+                onChange={e => onChange({ worldBackground: { ...(config.worldBackground ?? { type: "color" }), opacity: Number(e.target.value) } })}
+                className="w-full accent-[#3b82f6]"
+              />
+              <div className="flex justify-between text-[10px] text-theme-faint mt-0.5"><span>0% (transparent)</span><span>100% (solid)</span></div>
+            </div>
+          )}
+        </div>
       </CollapsibleSection>
     </div>
   );

@@ -10,8 +10,8 @@ export function Card({ inner, padding = false, className, children, ...props }: 
   return (
     <div
       className={cn(
-        "border border-border rounded-2xl",
-        inner ? "bg-bg2" : "bg-bg2",
+        "border border-border-c rounded-2xl min-w-[260px]",
+        inner ? "bg-bg2" : "bg-bg1",
         padding && "p-4",
         className,
       )}
@@ -24,7 +24,7 @@ export function Card({ inner, padding = false, className, children, ...props }: 
 
 export function CardHeader({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("flex items-center gap-3 px-5 py-3 border-b border-border", className)} {...props}>
+    <div className={cn("flex items-center gap-3 px-5 py-3 border-b border-border-c", className)} {...props}>
       {children}
     </div>
   );

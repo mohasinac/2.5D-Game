@@ -58,18 +58,14 @@ function SearchInput({ inputRef, value, onChange, onKeyDown }: {
   onKeyDown?: (e: React.KeyboardEvent) => void;
 }) {
   return (
-    <div style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}` }}>
+    <div className="px-2 py-1.5 border-b border-border-c">
       <input
         ref={inputRef}
         value={value}
         onChange={e => onChange(e.target.value)}
         onKeyDown={onKeyDown}
         placeholder="Type to filter…"
-        style={{
-          width: "100%", background: C.bg1, border: `1px solid ${C.border}`,
-          borderRadius: 6, padding: "5px 8px", fontSize: 12, color: C.text,
-          outline: "none", boxSizing: "border-box",
-        }}
+        className="w-full bg-bg1 border border-border-c rounded px-2 py-[5px] text-xs text-theme-text outline-none box-border"
       />
     </div>
   );
@@ -82,19 +78,17 @@ function OptionRow({ opt, selected, onClick }: { opt: SelectOption; selected: bo
       role="option"
       aria-selected={selected}
       onClick={() => { if (!opt.disabled) onClick(); }}
+      className={`px-3 py-[7px] text-[13px] transition-[background] duration-[80ms] ${opt.disabled ? "cursor-default opacity-50 text-theme-faint" : "cursor-pointer text-theme-text"} ${selected ? "border-l-[3px]" : "border-l-[3px] border-l-transparent"}`}
       style={{
-        padding: "7px 12px", cursor: opt.disabled ? "default" : "pointer",
+        "--opt-accent": accent,
         background: selected ? `${accent}20` : "transparent",
-        color: opt.disabled ? C.faint : C.text,
-        borderLeft: selected ? `3px solid ${accent}` : "3px solid transparent",
-        transition: "background 80ms",
-        opacity: opt.disabled ? 0.5 : 1,
-      }}
+        borderLeftColor: selected ? accent : "transparent",
+      } as React.CSSProperties}
       onMouseEnter={e => { if (!opt.disabled) (e.currentTarget as HTMLDivElement).style.background = selected ? `${accent}20` : `${C.blue}0d`; }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = selected ? `${accent}20` : "transparent"; }}
     >
-      <div style={{ fontSize: 13 }}>{opt.label}</div>
-      {opt.hint && <div style={{ fontSize: 11, color: C.faint, marginTop: 1 }}>{opt.hint}</div>}
+      <div>{opt.label}</div>
+      {opt.hint && <div className="text-[11px] text-theme-faint mt-[1px]">{opt.hint}</div>}
     </div>
   );
 }
@@ -103,12 +97,7 @@ function DropdownPanel({ containerRef, children }: { containerRef: React.RefObje
   return (
     <div
       role="listbox"
-      style={{
-        position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 300,
-        background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.45)", maxHeight: 280,
-        display: "flex", flexDirection: "column", overflow: "hidden",
-      }}
+      className="absolute top-[calc(100%+4px)] left-0 right-0 z-[300] bg-bg2 border border-border-c rounded-lg flex flex-col overflow-hidden max-h-[280px] shadow-[0_8px_32px_rgba(0,0,0,0.45)]"
     >
       {children}
     </div>
@@ -154,32 +143,26 @@ export function SearchableSelect({
   }, [filtered, onChange, setOpen]);
 
   return (
-    <div ref={containerRef} className={className} data-testid={dataTestId} style={{ position: "relative", ...style }}>
+    <div ref={containerRef} className={`relative ${className ?? ""}`} data-testid={dataTestId} style={style}>
       <div
         role="combobox"
         aria-expanded={open}
         aria-haspopup="listbox"
         onClick={() => { if (!disabled) setOpen(o => !o); }}
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "7px 10px", background: C.bg2, border: `1px solid ${open ? C.blue : C.border}`,
-          borderRadius: 7, cursor: disabled ? "default" : "pointer",
-          color: C.text, opacity: disabled ? 0.5 : 1, fontSize: 13,
-          userSelect: "none", transition: "border-color 120ms",
-        }}
+        className={`flex items-center justify-between px-[10px] py-[7px] bg-bg2 rounded-[7px] select-none text-theme-text text-[13px] border transition-[border-color] duration-[120ms] ${open ? "border-theme-blue" : "border-border-c"} ${disabled ? "cursor-default opacity-50" : "cursor-pointer opacity-100"}`}
       >
-        <span style={{ color: selected?.value !== undefined && selected.value !== "" ? C.text : C.faint, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+        <span className={`overflow-hidden text-ellipsis whitespace-nowrap flex-1 ${selected?.value !== undefined && selected.value !== "" ? "text-theme-text" : "text-theme-faint"}`}>
           {selected && (selected.value !== "" || emptyLabel) ? selected.label : placeholder}
         </span>
-        <span style={{ fontSize: 9, color: C.faint, marginLeft: 8, flexShrink: 0 }}>{open ? "▲" : "▼"}</span>
+        <span className="text-[9px] text-theme-faint ml-2 shrink-0">{open ? "▲" : "▼"}</span>
       </div>
 
       {open && (
         <DropdownPanel containerRef={containerRef}>
           <SearchInput inputRef={inputRef} value={query} onChange={setQuery} onKeyDown={handleKeyDown} />
-          <div style={{ overflowY: "auto", flex: 1 }}>
+          <div className="overflow-y-auto flex-1">
             {filtered.length === 0
-              ? <div style={{ padding: "10px 12px", fontSize: 12, color: C.faint }}>No results for "{query}"</div>
+              ? <div className="px-3 py-2.5 text-xs text-theme-faint">No results for "{query}"</div>
               : filtered.map(opt => (
                   <OptionRow key={opt.value} opt={opt} selected={opt.value === value}
                     onClick={() => { onChange(opt.value); setOpen(false); }} />
@@ -213,22 +196,20 @@ export function SearchableMultiSelect({
   const atMax = max !== undefined && values.length >= max;
 
   return (
-    <div ref={containerRef} style={{ position: "relative", ...style }}>
+    <div ref={containerRef} className="relative" style={style}>
       {/* Selected badges */}
       {values.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 6 }}>
+        <div className="flex flex-wrap gap-1.5 mb-1.5">
           {values.map(v => {
             const opt = options.find(o => o.value === v);
             const color = opt?.color ?? C.blue;
             return (
-              <span key={v} style={{
-                display: "inline-flex", alignItems: "center", gap: 4,
-                padding: "3px 8px 3px 10px", borderRadius: 20, fontSize: 12,
-                background: `${color}18`, border: `1px solid ${color}44`, color: C.text,
-              }}>
+              <span key={v}
+                className="inline-flex items-center gap-1 py-[3px] pl-2.5 pr-2 rounded-[20px] text-xs text-theme-text"
+                style={{ "--badge-color": color, background: `${color}18`, border: `1px solid ${color}44` } as React.CSSProperties}>
                 {opt?.label ?? v}
                 <button type="button" onClick={() => onChange(values.filter(x => x !== v))}
-                  style={{ background: "none", border: "none", color: C.faint, cursor: "pointer", fontSize: 14, lineHeight: 1, padding: 0, marginLeft: 2 }}>
+                  className="bg-transparent border-none text-theme-faint cursor-pointer text-sm leading-none p-0 ml-0.5">
                   ×
                 </button>
               </span>
@@ -241,15 +222,10 @@ export function SearchableMultiSelect({
       {!atMax && (
         <div
           onClick={() => setOpen(o => !o)}
-          style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: "6px 10px", background: C.bg2, border: `1px solid ${open ? C.blue : C.border}`,
-            borderRadius: 7, cursor: "pointer", fontSize: 13, color: C.faint,
-            userSelect: "none", transition: "border-color 120ms",
-          }}
+          className={`flex items-center justify-between px-2.5 py-1.5 bg-bg2 rounded-[7px] cursor-pointer text-[13px] text-theme-faint select-none border transition-[border-color] duration-[120ms] ${open ? "border-theme-blue" : "border-border-c"}`}
         >
           <span>{placeholder}{max ? ` (${values.length}/${max})` : ""}</span>
-          <span style={{ fontSize: 9, marginLeft: 8 }}>{open ? "▲" : "▼"}</span>
+          <span className="text-[9px] ml-2">{open ? "▲" : "▼"}</span>
         </div>
       )}
 
@@ -265,9 +241,9 @@ export function SearchableMultiSelect({
               }
             }}
           />
-          <div style={{ overflowY: "auto", flex: 1 }}>
+          <div className="overflow-y-auto flex-1">
             {filtered.length === 0
-              ? <div style={{ padding: "10px 12px", fontSize: 12, color: C.faint }}>
+              ? <div className="px-3 py-2.5 text-xs text-theme-faint">
                   {available.length === 0 ? "All options selected" : `No results for "${query}"`}
                 </div>
               : filtered.map(opt => (

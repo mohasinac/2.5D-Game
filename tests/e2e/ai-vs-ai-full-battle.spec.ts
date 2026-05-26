@@ -14,7 +14,7 @@
  */
 
 import { test, expect, type Page } from "@playwright/test";
-import { tryLogin, gotoProtected, ss } from "./helpers/auth";
+import { tryLogin, gotoProtected, ss, diagnose } from "./helpers/auth";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -80,6 +80,9 @@ test.describe("AI vs AI: full battle until winner", () => {
   });
 
   test("runs full AI vs AI battle — BO1 — captures winner", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", e => errors.push(e.message));
+
     const landed = await gotoProtected(page, "/admin/ai-vs-ai");
     if (!landed) { await ss(page, "AV02-ai-vs-ai-unauth"); return; }
 
@@ -151,13 +154,15 @@ test.describe("AI vs AI: full battle until winner", () => {
       console.log(`[AV02] Match ended — winner display: "${winnerText}"`);
       await expect(page.getByText(/wins!/i).or(page.getByText(/Victory!/i)).or(page.getByText(/Play Again/i)).first()).toBeVisible();
     } else {
-      // Match may still be in progress — take a final screenshot
-      await ss(page, "AV02-ai-vs-ai-timeout-shot");
+      await diagnose(page, "AV02-timeout", errors);
       console.log("[AV02] Match did not end within timeout — server may be unreachable or beyblades deadlocked");
     }
   });
 
   test("AI vs AI — attack vs attack beyblade clash (one loses)", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", e => errors.push(e.message));
+
     const landed = await gotoProtected(page, "/admin/ai-vs-ai");
     if (!landed) { await ss(page, "AV03-attack-clash-unauth"); return; }
 
@@ -243,7 +248,8 @@ test.describe("AI vs AI: full battle until winner", () => {
       const winnerText = await winnerEl.textContent().catch(() => "");
       console.log(`[AV03] Attack clash winner: "${winnerText}"`);
     } else {
-      await ss(page, "AV03-attack-clash-timeout");
+      await diagnose(page, "AV03-timeout", errors);
+      console.log("[AV03] Attack clash did not end within timeout");
     }
   });
 });
@@ -280,6 +286,7 @@ test.describe("AI battle: new aiCount feature (1 human vs N bots)", () => {
       await page.waitForTimeout(300);
       await ss(page, "AV04-ai-count-set-to-2");
     } else {
+      await diagnose(page, "AV04-no-count-selector", []);
       console.log("[AV04] No AI count selector found on setup page — aiCount may be server-only option");
     }
 

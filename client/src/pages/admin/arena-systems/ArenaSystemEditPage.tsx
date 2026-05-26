@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { ArenaSystem } from "@/types/arenaSystem";
-import { C, alpha } from "@/styles/theme";
 import { ArenaSystemEditor } from "@/components/admin/arena-system/ArenaSystemEditor";
 
 export function ArenaSystemEditPage() {
@@ -51,7 +50,7 @@ export function ArenaSystemEditPage() {
 
   if (loading) {
     return (
-      <div style={{ padding: "40px 20px", textAlign: "center", color: C.muted }}>
+      <div className="py-10 px-5 text-center text-theme-muted">
         Loading arena system...
       </div>
     );
@@ -59,7 +58,7 @@ export function ArenaSystemEditPage() {
 
   if (!arena) {
     return (
-      <div style={{ padding: "40px 20px", textAlign: "center", color: C.red }}>
+      <div className="py-10 px-5 text-center text-theme-red">
         {error || "Arena system not found"}
       </div>
     );
@@ -67,38 +66,20 @@ export function ArenaSystemEditPage() {
 
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
+      <div className="mb-5">
         <button
           onClick={() => navigate("/admin/arena-systems")}
-          style={{
-            padding: "8px 12px",
-            background: C.border,
-            color: C.text,
-            border: "none",
-            borderRadius: 4,
-            fontSize: 12,
-            cursor: "pointer",
-            marginBottom: 16,
-          }}
+          className="py-2 px-3 bg-border-c text-theme-text border-none rounded text-[12px] cursor-pointer mb-4"
         >
           ← Back to Arena Systems
         </button>
-        <h1 style={{ color: C.text, fontSize: 24, fontWeight: 900, margin: 0 }}>
+        <h1 className="text-theme-text text-[24px] font-black m-0">
           Edit {arena.displayName}
         </h1>
       </div>
 
       {error && (
-        <div
-          style={{
-            background: alpha(C.red, 0.13),
-            color: C.red,
-            padding: 12,
-            borderRadius: 6,
-            marginBottom: 16,
-            fontSize: 12,
-          }}
-        >
+        <div className="bg-red-13 text-theme-red py-3 px-3 rounded-[6px] mb-4 text-[12px]">
           {error}
         </div>
       )}

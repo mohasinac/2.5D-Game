@@ -2,16 +2,14 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, alpha } from "@/styles/theme";
-
 interface DashboardStats { beyblades: number; arenas: number; matches: number; players: number; }
 interface TournamentStats { active: number; upcoming: number; }
 
 const statCards = [
-  { label:"Beyblades", icon:"🌀", href:"/admin/beyblades", accent:C.blue },
-  { label:"Arenas", icon:"⭕", href:"/admin/arenas", accent:C.purple },
-  { label:"Matches Played", icon:"⚔️", href:"/admin/stats", accent:C.red },
-  { label:"Players", icon:"👥", href:"/admin/stats", accent:C.green },
+  { label:"Beyblades", icon:"🌀", href:"/admin/beyblades", bgClass:"bg-blue-10", borderClass:"border-blue-30" },
+  { label:"Arenas", icon:"⭕", href:"/admin/arenas", bgClass:"bg-purple-10", borderClass:"border-purple-33" },
+  { label:"Matches Played", icon:"⚔️", href:"/admin/stats", bgClass:"bg-red-10", borderClass:"border-red-30" },
+  { label:"Players", icon:"👥", href:"/admin/stats", bgClass:"bg-green-10", borderClass:"border-green-30" },
 ] as const;
 
 const quickLinks = [
@@ -64,7 +62,7 @@ export function AdminDashboardPage() {
       {/* Stat cards */}
       <div className="grid grid-cols-4 gap-3.5 mb-7">
         {statCards.map((card, i) => (
-          <Link key={card.label} to={card.href} style={{ display:"block", background:alpha(card.accent, 0.06), border:`1px solid ${alpha(card.accent, 0.13)}`, borderRadius:14, padding:16, textDecoration:"none" }}>
+          <Link key={card.label} to={card.href} className={`block ${card.bgClass} border ${card.borderClass} rounded-[14px] p-4 no-underline`}>
             <div className="text-[22px] mb-2">{card.icon}</div>
             {loading ? (
               <div className="h-7 w-12 bg-bg3 rounded-md mb-1 pulse" />
@@ -77,7 +75,7 @@ export function AdminDashboardPage() {
       </div>
 
       {/* Tournament stats */}
-      <div style={{ background:alpha(C.yellow, 0.06), border:`1px solid ${alpha(C.yellow, 0.13)}`, borderRadius:14, padding:16, marginBottom:28, display:"flex", alignItems:"center", gap:24 }}>
+      <div className="bg-yellow-10 border border-yellow-20 rounded-[14px] p-4 mb-7 flex items-center gap-6">
         <span className="text-[28px]">🏆</span>
         <div className="flex-1">
           <div className="text-[13px] font-semibold text-text mb-1">Tournaments</div>
@@ -92,7 +90,7 @@ export function AdminDashboardPage() {
             </div>
           </div>
         </div>
-        <Link to="/admin/tournaments" style={{ padding:"8px 16px", background:alpha(C.yellow, 0.13), border:`1px solid ${alpha(C.yellow, 0.33)}`, borderRadius:8, color:C.yellow, fontSize:12, fontWeight:600, textDecoration:"none" }}>
+        <Link to="/admin/tournaments" className="py-2 px-4 bg-yellow-13 border border-yellow-40 rounded-lg text-theme-yellow text-[12px] font-semibold no-underline">
           Manage →
         </Link>
       </div>
@@ -131,7 +129,7 @@ export function AdminDashboardPage() {
               <div className="p-8 text-center text-faint text-[13px]">No matches played yet</div>
             ) : (
               recentMatches.map((match, i) => (
-                <div key={match.id} className="flex justify-between items-center px-4 py-2.5" style={{ borderBottom: i < recentMatches.length-1 ? `1px solid ${C.border}` : "none" }}>
+                <div key={match.id} className={`flex justify-between items-center px-4 py-2.5 ${i < recentMatches.length-1 ? "border-b border-border-c" : ""}`}>
                   <div>
                     <div className="text-text font-mono text-[11px]">{match.id.slice(0,12)}...</div>
                     <div className="text-faint text-[11px] capitalize">{match.mode ?? "pvp"}</div>

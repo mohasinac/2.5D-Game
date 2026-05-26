@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc, serverTimestamp, Timestamp, collection, getDocs } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type { TournamentDoc } from "@/types/game";
 import toast from "react-hot-toast";
@@ -142,7 +141,7 @@ export function TournamentEditPage() {
         </div>
       )}
 
-      <div className="flex flex-col gap-5" style={{ opacity: canEdit ? 1 : 0.65, pointerEvents: canEdit ? "auto" : "none" }}>
+      <div className={`flex flex-col gap-5 ${canEdit ? "" : "opacity-[0.65] pointer-events-none"}`}>
         <Section title="Basic Info">
           <Field label="Name *">
             <input className={inputCls} value={form.name} onChange={e => set("name", e.target.value)} />
@@ -278,7 +277,7 @@ function MultiIdSelect({
           className="flex-1"
         />
         <button onClick={() => add(addValue)} disabled={!addValue}
-          style={{ padding: "8px 14px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, fontSize: 13, cursor: "pointer", opacity: addValue ? 1 : 0.4 }}>
+          className={`py-2 px-3.5 bg-theme-blue text-white border-none rounded-lg text-[13px] cursor-pointer ${addValue ? "" : "opacity-40"}`}>
           Add
         </button>
       </div>

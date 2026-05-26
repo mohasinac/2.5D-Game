@@ -3,9 +3,9 @@
 // Visible only when `window.matchMedia("(pointer: coarse)")` is true.
 
 import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/cn";
 import { touchInputState } from "@/game/hooks/useGameInput";
 
-const BTN_SIZE = 56;
 const DPAD_SIZE = 120;
 const DPAD_DEAD = 18; // px from centre before registering a direction
 
@@ -21,6 +21,10 @@ function resolveDirs(dx: number, dy: number): Dir[] {
   }
   return dirs;
 }
+
+// Action button base classes — color background applied per-button
+const actionBtnBase =
+  "w-14 h-14 flex items-center justify-center rounded-full border-2 border-white/25 text-white font-bold font-mono text-[0.65rem] tracking-[0.05em] select-none touch-none cursor-pointer";
 
 export function TouchControls() {
   const [visible, setVisible] = useState(false);
@@ -98,103 +102,61 @@ export function TouchControls() {
 
   if (!visible) return null;
 
-  const actionBtnStyle = (color: string): React.CSSProperties => ({
-    width: BTN_SIZE,
-    height: BTN_SIZE,
-    borderRadius: "50%",
-    background: color,
-    border: "2px solid rgba(255,255,255,0.25)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#fff",
-    fontSize: "0.65rem",
-    fontFamily: "monospace",
-    fontWeight: 700,
-    userSelect: "none",
-    touchAction: "none",
-    cursor: "pointer",
-    letterSpacing: "0.05em",
-  });
-
   return (
-    <div
-      style={{
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: "220px",
-        pointerEvents: "none",
-        zIndex: 60,
-        display: "flex",
-        alignItems: "flex-end",
-        justifyContent: "space-between",
-        padding: "0 1.5rem 1.5rem",
-      }}
-    >
+    <div className="absolute bottom-0 left-0 right-0 h-[220px] pointer-events-none z-[60] flex items-end justify-between px-6 pb-6">
       {/* Left: D-pad */}
       <div
-        style={{
-          width: DPAD_SIZE,
-          height: DPAD_SIZE,
-          background: "rgba(20,30,50,0.6)",
-          borderRadius: "50%",
-          border: "2px solid rgba(120,160,220,0.4)",
-          position: "relative",
-          pointerEvents: "auto",
-          touchAction: "none",
-        }}
+        className="w-[120px] h-[120px] bg-[rgba(20,30,50,0.6)] rounded-full border-2 border-[rgba(120,160,220,0.4)] relative pointer-events-auto touch-none"
         onTouchStart={handleDpadStart}
         onTouchMove={handleDpadMove}
         onTouchEnd={handleDpadEnd}
         onTouchCancel={handleDpadEnd}
       >
-        {/* Knob */}
+        {/* Knob — left/top are runtime pixel positions and must stay as inline styles */}
         <div
-          style={{
-            position: "absolute",
-            width: 36,
-            height: 36,
-            borderRadius: "50%",
-            background: "rgba(100,160,240,0.7)",
-            border: "2px solid rgba(180,210,255,0.6)",
-            transform: "translate(-50%, -50%)",
-            left: knobPos.x,
-            top: knobPos.y,
-            pointerEvents: "none",
-          }}
+          style={{ left: knobPos.x, top: knobPos.y }}
+          className="absolute w-9 h-9 rounded-full bg-[rgba(100,160,240,0.7)] border-2 border-[rgba(180,210,255,0.6)] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
         />
       </div>
 
       {/* Right: Action buttons in diamond layout */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.4rem", pointerEvents: "auto" }}>
+      <div className="flex flex-col items-center gap-[0.4rem] pointer-events-auto">
         {/* Top row: Jump */}
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <div style={actionBtnStyle("rgba(60,80,200,0.8)")}
-            onTouchStart={btnDown("jump")} onTouchEnd={btnUp("jump")} onTouchCancel={btnUp("jump")}>
-            I<br/><span style={{ fontSize: "0.5rem" }}>JUMP</span>
+        <div className="flex justify-center">
+          <div
+            className={cn(actionBtnBase, "bg-[rgba(60,80,200,0.8)]")}
+            onTouchStart={btnDown("jump")} onTouchEnd={btnUp("jump")} onTouchCancel={btnUp("jump")}
+          >
+            I<br/><span className="text-[0.5rem]">JUMP</span>
           </div>
         </div>
         {/* Middle row: Attack + Defense */}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <div style={actionBtnStyle("rgba(200,50,50,0.8)")}
-            onTouchStart={btnDown("attack")} onTouchEnd={btnUp("attack")} onTouchCancel={btnUp("attack")}>
-            J<br/><span style={{ fontSize: "0.5rem" }}>ATK</span>
+        <div className="flex gap-2">
+          <div
+            className={cn(actionBtnBase, "bg-[rgba(200,50,50,0.8)]")}
+            onTouchStart={btnDown("attack")} onTouchEnd={btnUp("attack")} onTouchCancel={btnUp("attack")}
+          >
+            J<br/><span className="text-[0.5rem]">ATK</span>
           </div>
-          <div style={actionBtnStyle("rgba(50,80,200,0.8)")}
-            onTouchStart={btnDown("defense")} onTouchEnd={btnUp("defense")} onTouchCancel={btnUp("defense")}>
-            K<br/><span style={{ fontSize: "0.5rem" }}>DEF</span>
+          <div
+            className={cn(actionBtnBase, "bg-[rgba(50,80,200,0.8)]")}
+            onTouchStart={btnDown("defense")} onTouchEnd={btnUp("defense")} onTouchCancel={btnUp("defense")}
+          >
+            K<br/><span className="text-[0.5rem]">DEF</span>
           </div>
         </div>
         {/* Bottom row: Dodge + Special */}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <div style={actionBtnStyle("rgba(50,160,100,0.8)")}
-            onTouchStart={btnDown("dodge")} onTouchEnd={btnUp("dodge")} onTouchCancel={btnUp("dodge")}>
-            L<br/><span style={{ fontSize: "0.5rem" }}>DODGE</span>
+        <div className="flex gap-2">
+          <div
+            className={cn(actionBtnBase, "bg-[rgba(50,160,100,0.8)]")}
+            onTouchStart={btnDown("dodge")} onTouchEnd={btnUp("dodge")} onTouchCancel={btnUp("dodge")}
+          >
+            L<br/><span className="text-[0.5rem]">DODGE</span>
           </div>
-          <div style={actionBtnStyle("rgba(180,130,0,0.8)")}
-            onTouchStart={btnDown("specialTap")} onTouchEnd={btnUp("specialTap")} onTouchCancel={btnUp("specialTap")}>
+          <div
+            className={cn(actionBtnBase, "bg-[rgba(180,130,0,0.8)]")}
+            onTouchStart={btnDown("specialTap")} onTouchEnd={btnUp("specialTap")} onTouchCancel={btnUp("specialTap")}
+          >
             SPC
           </div>
         </div>

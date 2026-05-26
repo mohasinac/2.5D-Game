@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { C, alpha } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type {
   ArenaLink,
@@ -26,6 +27,19 @@ const LINK_TYPES = [
   { value: "pit",        icon: "⬇️",  label: "Pit",        desc: "Gravity fall to floor below. Stays open at any rotation. Bey lands anywhere on lower floor." },
   { value: "trampoline", icon: "⬆️",  label: "Trampoline", desc: "Launch upward. Auto-bounces beys that fall from pit above. Player can hold SPACE/↓ to cancel." },
 ] as const;
+
+// Finite color lookup for coupling/alignment — maps C.xxx CSS var to Tailwind token
+const COLOR_TEXT: Record<string, string> = {
+  [C.faint]:  "text-theme-faint",
+  [C.green]:  "text-theme-green",
+  [C.yellow]: "text-theme-yellow",
+  [C.blue]:   "text-theme-blue",
+  [C.purple]: "text-theme-purple",
+  [C.red]:    "text-theme-red",
+  [C.orange]: "text-theme-orange",
+  [C.text]:   "text-theme-text",
+  [C.muted]:  "text-theme-muted",
+};
 
 const COUPLING_TYPES = [
   { value: "independent",  label: "Independent",  color: C.faint,  desc: "Each arena rotates freely at its own speed",                               symbol: "~ | ~" },
@@ -140,10 +154,7 @@ function LinkCrossSectionDiagram({ linkType }: { linkType: string }) {
   };
 
   return (
-    <div style={{
-      background: C.bg0, borderRadius: 10, border: `1px solid ${C.border}`,
-      padding: "8px 10px", marginBottom: 10, overflow: "hidden",
-    }}>
+    <div className="bg-bg0 rounded-[10px] border border-border-c px-[10px] py-2 mb-[10px] overflow-hidden">
       {diagrams[linkType] ?? diagrams.corridor}
     </div>
   );
@@ -156,13 +167,10 @@ function LinkCrossSectionDiagram({ linkType }: { linkType: string }) {
 function AlignmentCompassDiagram({ mode, errorMarginDeg }: { mode: string; errorMarginDeg: number }) {
   if (mode === "none") {
     return (
-      <div style={{
-        background: alpha(C.purple, 0.08), border: `1px solid ${alpha(C.purple, 0.3)}`,
-        borderRadius: 10, padding: "12px 16px", marginBottom: 10, textAlign: "center",
-      }}>
-        <div style={{ fontSize: 22 }}>🌀</div>
-        <div style={{ fontSize: 12, color: C.purple, fontWeight: 700, marginTop: 4 }}>Always Open</div>
-        <div style={{ fontSize: 11, color: C.muted, marginTop: 4, lineHeight: 1.5 }}>
+      <div className="bg-theme-purple/[0.08] border border-theme-purple/30 rounded-[10px] px-4 py-3 mb-[10px] text-center">
+        <div className="text-[22px]">🌀</div>
+        <div className="text-xs text-theme-purple font-bold mt-1">Always Open</div>
+        <div className="text-[11px] text-theme-muted mt-1 leading-[1.5]">
           Portal ignores rotation entirely. No alignment check required.<br />
           Beys can traverse at any time regardless of both arenas' angles.
         </div>
@@ -183,8 +191,8 @@ function AlignmentCompassDiagram({ mode, errorMarginDeg }: { mode: string; error
   const gu = cy  + r * Math.sin(openAngle + marginRad);
 
   return (
-    <div style={{ background: C.bg0, borderRadius: 10, border: `1px solid ${C.border}`, padding: "8px 10px", marginBottom: 10 }}>
-      <svg width={W} height={H} style={{ display: "block", margin: "0 auto" }}>
+    <div className="bg-bg0 rounded-[10px] border border-border-c px-[10px] py-2 mb-[10px]">
+      <svg width={W} height={H} className="block mx-auto">
         {/* Arena circles */}
         <circle cx={cx1} cy={cy} r={r} fill={alpha(C.blue, 0.06)} stroke={alpha(C.blue, 0.35)} strokeWidth={1.5} />
         <circle cx={cx2} cy={cy} r={r} fill={alpha(C.blue, 0.06)} stroke={alpha(C.blue, 0.35)} strokeWidth={1.5} />
@@ -236,11 +244,11 @@ function TraversalTimeline({ traversalTicks, perBeyReuseCooldownTicks, globalGap
   const rW = (perBeyReuseCooldownTicks / total) * W;
 
   return (
-    <div style={{ marginTop: 10 }}>
-      <div style={{ fontSize: 10, color: C.faint, marginBottom: 4, fontWeight: 600, textTransform: "uppercase" }}>
+    <div className="mt-[10px]">
+      <div className="text-[10px] text-theme-faint mb-1 font-semibold uppercase">
         Timing diagram (one traversal cycle)
       </div>
-      <svg width={W} height={34} style={{ display: "block" }}>
+      <svg width={W} height={34} className="block">
         <rect x={0} y={2} width={tW} height={14} rx={3} fill={alpha(C.blue, 0.55)} />
         {tW > 24 && <text x={tW / 2} y={12} textAnchor="middle" fontSize={8} fill="#fff">transit</text>}
         <rect x={tW} y={2} width={gW} height={14} rx={3} fill={alpha(C.yellow, 0.5)} />
@@ -248,10 +256,10 @@ function TraversalTimeline({ traversalTicks, perBeyReuseCooldownTicks, globalGap
         <rect x={tW} y={18} width={rW} height={10} rx={2} fill={alpha(C.purple, 0.5)} />
         {rW > 36 && <text x={tW + rW / 2} y={25} textAnchor="middle" fontSize={7} fill={C.purple}>per-bey reuse</text>}
       </svg>
-      <div style={{ display: "flex", gap: 12, fontSize: 10, color: C.faint, marginTop: 2 }}>
-        <span><span style={{ color: C.blue }}>■</span> Transit: {(traversalTicks / 60).toFixed(2)}s</span>
-        <span><span style={{ color: C.yellow }}>■</span> Global gap: {(globalGapTicks / 60).toFixed(2)}s</span>
-        <span><span style={{ color: C.purple }}>■</span> Per-bey reuse: {(perBeyReuseCooldownTicks / 60).toFixed(2)}s</span>
+      <div className="flex gap-3 text-[10px] text-theme-faint mt-[2px]">
+        <span><span className="text-theme-blue">■</span> Transit: {(traversalTicks / 60).toFixed(2)}s</span>
+        <span><span className="text-theme-yellow">■</span> Global gap: {(globalGapTicks / 60).toFixed(2)}s</span>
+        <span><span className="text-theme-purple">■</span> Per-bey reuse: {(perBeyReuseCooldownTicks / 60).toFixed(2)}s</span>
       </div>
     </div>
   );
@@ -336,43 +344,40 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
   const selectedTypeMeta = LINK_TYPES.find(t => t.value === linkType);
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 60 }}>
-      <div style={{
-        background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 20,
-        width: 660, maxHeight: "92vh", overflowY: "auto", padding: 24,
-      }}>
+    <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[60]">
+      <div className="bg-bg1 border border-border-c rounded-[20px] w-[660px] max-h-[92vh] overflow-y-auto p-6">
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+        <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: 0 }}>
+            <h2 className="text-lg font-bold text-theme-text m-0">
               {isNew ? "New Link" : "Edit Link"}
             </h2>
-            <div style={{ fontSize: 12, color: C.faint, marginTop: 4, fontFamily: "monospace" }}>
+            <div className="text-xs text-theme-faint mt-1 font-mono">
               {fromArenaId} → {toArenaId}
             </div>
           </div>
-          <button onClick={onClose} style={{ width: 30, height: 30, borderRadius: 8, fontSize: 16, cursor: "pointer", background: C.bg3, color: C.muted, border: "none" }}>×</button>
+          <button onClick={onClose} className="w-[30px] h-[30px] rounded-lg text-base cursor-pointer bg-bg3 text-theme-muted border-none">×</button>
         </div>
 
         {/* ── Link type selector ── */}
         <Section label="Link Type">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8, marginBottom: 10 }}>
+          <div className="grid gap-2 mb-[10px]" style={{ gridTemplateColumns: "repeat(5,1fr)" }}>
             {LINK_TYPES.map(t => (
               <button key={t.value} onClick={() => handleLinkTypeChange(t.value)}
-                style={{
-                  padding: "10px 6px", borderRadius: 10, cursor: "pointer", textAlign: "center",
-                  background: linkType === t.value ? alpha(C.blue, 0.15) : C.bg2,
-                  border: `1px solid ${linkType === t.value ? C.blue : C.border}`,
-                  color: linkType === t.value ? C.blue : C.muted,
-                }}>
-                <div style={{ fontSize: 20 }}>{t.icon}</div>
-                <div style={{ fontSize: 11, fontWeight: 600, marginTop: 4 }}>{t.label}</div>
+                className={cn(
+                  "py-[10px] px-[6px] rounded-[10px] cursor-pointer text-center border",
+                  linkType === t.value
+                    ? "bg-theme-blue/15 border-theme-blue text-theme-blue"
+                    : "bg-bg2 border-border-c text-theme-muted"
+                )}>
+                <div className="text-[20px]">{t.icon}</div>
+                <div className="text-[11px] font-semibold mt-1">{t.label}</div>
               </button>
             ))}
           </div>
           <LinkCrossSectionDiagram linkType={linkType} />
           {selectedTypeMeta && (
-            <div style={{ fontSize: 12, color: C.muted, padding: "8px 10px", background: C.bg2, borderRadius: 8 }}>
+            <div className="text-xs text-theme-muted px-[10px] py-2 bg-bg2 rounded-lg">
               {selectedTypeMeta.icon} {selectedTypeMeta.desc}
             </div>
           )}
@@ -380,7 +385,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
 
         {/* ── Basic settings ── */}
         <Section label="Basic">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
             <Field label="Level delta (cm)" hint="Height difference between floors">
               <NumberInput value={levelDelta} onChange={setLevelDelta} min={0} max={2000} />
             </Field>
@@ -399,7 +404,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
                   { value: "spin_above_50", label: "↕ Two-way if spin > 50%" },
                 ]}
                 onChange={v => setReverseCondition(v as "always" | "never" | "spin_above_50")}
-                style={selectStyle}
+                className="w-full bg-bg3 border border-border-c rounded-lg px-[10px] py-[6px] text-theme-text text-[13px] box-border"
               />
             </Field>
           </div>
@@ -408,19 +413,22 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
 
         {/* ── Rotation coupling ── */}
         <Section label="Rotation Coupling — how these two arenas rotate relative to each other">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 8, marginBottom: 10 }}>
+          <div className="grid gap-2 mb-[10px]" style={{ gridTemplateColumns: "repeat(2,1fr)" }}>
             {COUPLING_TYPES.map(ct => (
               <button key={ct.value} onClick={() => setCoupling(ct.value)}
-                style={{
-                  padding: "8px 10px", borderRadius: 8, cursor: "pointer", textAlign: "left",
-                  background: coupling === ct.value ? alpha(ct.color, 0.15) : C.bg2,
-                  border: `1px solid ${coupling === ct.value ? ct.color : C.border}`,
-                }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                  <span style={{ fontSize: 14, color: coupling === ct.value ? ct.color : C.muted, fontFamily: "monospace" }}>{ct.symbol}</span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: coupling === ct.value ? ct.color : C.text }}>{ct.label}</span>
+                className={cn(
+                  "px-[10px] py-2 rounded-lg cursor-pointer text-left border",
+                  coupling === ct.value ? "border-current" : "bg-bg2 border-border-c"
+                )}
+                style={coupling === ct.value
+                  ? { background: `color-mix(in srgb, ${ct.color} 15%, transparent)`, borderColor: ct.color }
+                  : undefined
+                }>
+                <div className="flex items-center gap-[6px] mb-[2px]">
+                  <span className={cn("text-sm font-mono", coupling === ct.value ? COLOR_TEXT[ct.color] : "text-theme-muted")}>{ct.symbol}</span>
+                  <span className={cn("text-xs font-semibold", coupling === ct.value ? COLOR_TEXT[ct.color] : "text-theme-text")}>{ct.label}</span>
                 </div>
-                <div style={{ fontSize: 11, color: C.muted }}>{ct.desc}</div>
+                <div className="text-[11px] text-theme-muted">{ct.desc}</div>
               </button>
             ))}
           </div>
@@ -429,25 +437,26 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
               <NumberInput value={drivenRatio} onChange={setDrivenRatio} min={0.1} max={5} step={0.1} />
             </Field>
           )}
-          <div style={{ fontSize: 11, color: C.faint, marginTop: 8, padding: "6px 8px", background: C.bg0, borderRadius: 6 }}>
-            <strong style={{ color: C.muted }}>Alignment impact:</strong> Synchronized/counter arenas have predictable alignment windows.
+          <div className="text-[11px] text-theme-faint mt-2 px-2 py-[6px] bg-bg0 rounded-md">
+            <strong className="text-theme-muted">Alignment impact:</strong> Synchronized/counter arenas have predictable alignment windows.
             Independent arenas may rarely align — use wider error margins for those.
           </div>
         </Section>
 
         {/* ── Alignment ── */}
         <Section label="Alignment & Rotation Gating">
-          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+          <div className="flex gap-2 mb-[10px]">
             {ALIGNMENT_MODES.map(m => (
               <button key={m.value}
                 onClick={() => patchAlignment({ mode: m.value as ArenaLinkAlignmentConfig["mode"] })}
-                style={{
-                  flex: 1, padding: "7px 6px", borderRadius: 8, cursor: "pointer",
-                  background: alignment.mode === m.value ? alpha(m.color, 0.15) : C.bg2,
-                  border: `1px solid ${alignment.mode === m.value ? m.color : C.border}`,
-                  color: alignment.mode === m.value ? m.color : C.muted,
-                  fontSize: 11, fontWeight: 600, textAlign: "center",
-                }}>
+                className={cn(
+                  "flex-1 py-[7px] px-[6px] rounded-lg cursor-pointer text-[11px] font-semibold text-center border",
+                  alignment.mode === m.value ? COLOR_TEXT[m.color] : "text-theme-muted bg-bg2 border-border-c"
+                )}
+                style={alignment.mode === m.value
+                  ? { background: `color-mix(in srgb, ${m.color} 15%, transparent)`, borderColor: m.color }
+                  : undefined
+                }>
                 {m.label}
               </button>
             ))}
@@ -455,7 +464,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
           {(() => {
             const m = ALIGNMENT_MODES.find(x => x.value === alignment.mode);
             return m ? (
-              <div style={{ fontSize: 11, color: C.muted, marginBottom: 10, padding: "6px 10px", background: C.bg0, borderRadius: 6 }}>
+              <div className="text-[11px] text-theme-muted mb-[10px] px-[10px] py-[6px] bg-bg0 rounded-md">
                 {m.desc}
               </div>
             ) : null;
@@ -465,15 +474,15 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
 
           {alignment.mode !== "none" && (
             <>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
                 <Field label="Error margin (°)" hint="Degrees of rotation tolerance (green zone in diagram)">
                   <div>
                     <input type="range" min={1} max={45} value={alignment.errorMarginDeg}
                       onChange={e => patchAlignment({ errorMarginDeg: +e.target.value })}
-                      style={{ width: "100%", accentColor: C.green }} />
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint }}>
+                      className="w-full accent-theme-green" />
+                    <div className="flex justify-between text-[11px] text-theme-faint">
                       <span>1° tight</span>
-                      <span style={{ color: C.green, fontWeight: 600 }}>±{alignment.errorMarginDeg}°</span>
+                      <span className="text-theme-green font-semibold">±{alignment.errorMarginDeg}°</span>
                       <span>45° loose</span>
                     </div>
                   </div>
@@ -485,7 +494,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
                   <Field label="Owner arena ID" hint="Ramp physically belongs to this arena — only its angle is checked">
                     <input value={alignment.ownerArenaId ?? fromArenaId}
                       onChange={e => patchAlignment({ ownerArenaId: e.target.value })}
-                      style={inputStyle} />
+                      className="w-full bg-bg3 border border-border-c rounded-lg px-[10px] py-[6px] text-theme-text text-[13px] box-border" />
                   </Field>
                 )}
               </div>
@@ -495,12 +504,12 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
                 onChange={v => patchAlignment({ disconnectsWhenMisaligned: v })}
               />
               {alignment.disconnectsWhenMisaligned && (
-                <div style={{ marginTop: 8 }}>
+                <div className="mt-2">
                   <Field label="Reconnect cooldown (ticks)" hint="Min ticks after re-aligning before link becomes active again">
                     <NumberInput value={alignment.reconnectCooldownTicks}
                       onChange={v => patchAlignment({ reconnectCooldownTicks: v })} min={0} max={300} />
                   </Field>
-                  <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>
+                  <div className="text-[11px] text-theme-faint mt-1">
                     = {(alignment.reconnectCooldownTicks / 60).toFixed(2)}s cooldown after re-aligning @ 60 Hz
                   </div>
                 </div>
@@ -511,7 +520,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
 
         {/* ── Traversal timing ── */}
         <Section label="Traversal Timing">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+          <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
             <Field label="Transit ticks" hint="Ticks spent in transit animation">
               <NumberInput value={traversal.traversalTicks} onChange={v => patchTraversal({ traversalTicks: v })} min={1} max={120} />
             </Field>
@@ -533,22 +542,22 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
         {linkType === "pit" && (
           <Section label="Pit Settings — gravity fall to floor below">
             <Field label="Landing mode" hint="Where the bey appears on the floor below">
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div className="flex flex-col gap-[6px]">
                 {LANDING_MODES.map(m => (
-                  <label key={m.value} style={{ display: "flex", gap: 10, alignItems: "flex-start", cursor: "pointer" }}>
+                  <label key={m.value} className="flex gap-[10px] items-start cursor-pointer">
                     <input type="radio" name="landingMode" value={m.value}
                       checked={pitConfig.landingMode === m.value}
                       onChange={() => setPitConfig({ landingMode: m.value })}
-                      style={{ marginTop: 2, accentColor: C.red }} />
+                      className="mt-[2px] accent-theme-red" />
                     <div>
-                      <span style={{ fontSize: 13, color: C.text, fontWeight: 600 }}>{m.label}</span>
-                      <div style={{ fontSize: 11, color: C.muted }}>{m.desc}</div>
+                      <span className="text-[13px] text-theme-text font-semibold">{m.label}</span>
+                      <div className="text-[11px] text-theme-muted">{m.desc}</div>
                     </div>
                   </label>
                 ))}
               </div>
             </Field>
-            <div style={{ marginTop: 8, fontSize: 11, color: C.faint, padding: "6px 10px", background: C.bg0, borderRadius: 6 }}>
+            <div className="mt-2 text-[11px] text-theme-faint px-[10px] py-[6px] bg-bg0 rounded-md">
               Pits stay open regardless of rotation. The opening is wide so beys fall through at any angle.
               "Random" landing eliminates any need for tight alignment.
             </div>
@@ -565,7 +574,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
             />
             {trampolineConfig.autoLaunchFromPit && (
               <>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 10 }}>
+                <div className="grid gap-3 mt-[10px]" style={{ gridTemplateColumns: "1fr 1fr" }}>
                   <Field label="Launch animation ticks" hint="Visual bounce plays before bey re-enters pit opening">
                     <NumberInput value={trampolineConfig.autoLaunchAnimTicks} onChange={v => patchTrampo({ autoLaunchAnimTicks: v })} min={5} max={60} />
                   </Field>
@@ -573,7 +582,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
                     <NumberInput value={trampolineConfig.autoLaunchForceMult} onChange={v => patchTrampo({ autoLaunchForceMult: v })} min={0.5} max={3} step={0.1} />
                   </Field>
                 </div>
-                <div style={{ marginTop: 12, padding: "12px 14px", background: C.bg0, borderRadius: 10, border: `1px solid ${C.border}` }}>
+                <div className="mt-3 px-[14px] py-3 bg-bg0 rounded-[10px] border border-border-c">
                   <Toggle
                     label="Allow player to cancel auto-launch (strategic floor-camping)"
                     value={trampolineConfig.autoLaunchOptOut}
@@ -581,11 +590,11 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
                   />
                   {trampolineConfig.autoLaunchOptOut && (
                     <>
-                      <div style={{ fontSize: 12, color: C.muted, margin: "10px 0", lineHeight: 1.6, padding: "8px 10px", background: C.bg2, borderRadius: 8 }}>
+                      <div className="text-xs text-theme-muted my-[10px] leading-[1.6] px-[10px] py-2 bg-bg2 rounded-lg">
                         During the bounce animation, the player can hold{" "}
-                        <kbd style={{ background: C.bg3, borderRadius: 4, padding: "1px 6px", fontSize: 11, color: C.text, border: `1px solid ${C.border}` }}>SPACE</kbd>
+                        <kbd className="bg-bg3 rounded px-[6px] py-[1px] text-[11px] text-theme-text border border-border-c">SPACE</kbd>
                         {" "}or{" "}
-                        <kbd style={{ background: C.bg3, borderRadius: 4, padding: "1px 6px", fontSize: 11, color: C.text, border: `1px solid ${C.border}` }}>↓</kbd>
+                        <kbd className="bg-bg3 rounded px-[6px] py-[1px] text-[11px] text-theme-text border border-border-c">↓</kbd>
                         {" "}to stay on this floor. This lets skilled players camp the lower floor strategically
                         instead of being forced back up.
                       </div>
@@ -596,7 +605,7 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
                           min={5} max={trampolineConfig.autoLaunchAnimTicks}
                         />
                       </Field>
-                      <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>
+                      <div className="text-[11px] text-theme-faint mt-1">
                         = {((trampolineConfig.autoLaunchOptOutWindowTicks ?? trampolineConfig.autoLaunchAnimTicks) / 60).toFixed(2)}s window to press the key
                       </div>
                     </>
@@ -608,9 +617,9 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
         )}
 
         {/* ── Footer ── */}
-        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
-          <button onClick={onClose} className="px-4 py-2 bg-bg3 text-text rounded-lg text-sm font-semibold border border-border">Cancel</button>
-          <button onClick={handleSave} className="px-4 py-2 bg-blue text-white rounded-lg text-sm font-semibold">
+        <div className="flex gap-[10px] justify-end mt-5 pt-4 border-t border-border-c">
+          <button onClick={onClose} className="px-4 py-2 bg-bg3 text-theme-text rounded-lg text-sm font-semibold border border-border-c">Cancel</button>
+          <button onClick={handleSave} className="px-4 py-2 bg-theme-blue text-white rounded-lg text-sm font-semibold">
             {isNew ? "Add Link" : "Save Changes"}
           </button>
         </div>
@@ -623,9 +632,9 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
 
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 20 }}>
-      <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 10 }}>{label}</p>
-      <div style={{ background: C.bg2, borderRadius: 10, border: `1px solid ${C.border}`, padding: 14 }}>
+    <div className="mb-5">
+      <p className="text-[11px] text-theme-faint font-semibold uppercase mb-[10px]">{label}</p>
+      <div className="bg-bg2 rounded-[10px] border border-border-c p-[14px]">
         {children}
       </div>
     </div>
@@ -635,9 +644,9 @@ function Section({ label, children }: { label: string; children: React.ReactNode
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
+      <label className="text-xs text-theme-muted block mb-1">
         {label}
-        {hint && <span style={{ color: C.faint, fontWeight: 400, marginLeft: 4 }}>— {hint}</span>}
+        {hint && <span className="text-theme-faint font-normal ml-1">— {hint}</span>}
       </label>
       {children}
     </div>
@@ -649,33 +658,25 @@ function NumberInput({ value, onChange, min, max, step = 1 }: {
 }) {
   return (
     <input type="number" value={value} min={min} max={max} step={step}
-      onChange={e => onChange(+e.target.value)} style={inputStyle} />
+      onChange={e => onChange(+e.target.value)}
+      className="w-full bg-bg3 border border-border-c rounded-lg px-[10px] py-[6px] text-theme-text text-[13px] box-border" />
   );
 }
 
 function Toggle({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
   return (
-    <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", marginTop: 8 }}>
+    <label className="flex items-center gap-[10px] cursor-pointer mt-2">
       <div onClick={() => onChange(!value)}
-        style={{
-          width: 36, height: 20, borderRadius: 10, position: "relative", flexShrink: 0,
-          background: value ? C.blue : C.bg3, transition: "background 0.2s",
-          border: `1px solid ${value ? C.blue : C.border}`,
-        }}>
-        <div style={{
-          position: "absolute", top: 2, left: value ? 16 : 2,
-          width: 14, height: 14, borderRadius: "50%",
-          background: "#fff", transition: "left 0.2s",
-        }} />
+        className={cn(
+          "w-9 h-5 rounded-[10px] relative flex-shrink-0 border transition-colors duration-200",
+          value ? "bg-theme-blue border-theme-blue" : "bg-bg3 border-border-c"
+        )}>
+        <div className={cn(
+          "absolute top-[2px] w-[14px] h-[14px] rounded-full bg-white transition-[left] duration-200",
+          value ? "left-4" : "left-[2px]"
+        )} />
       </div>
-      <span style={{ fontSize: 13, color: C.text }}>{label}</span>
+      <span className="text-[13px] text-theme-text">{label}</span>
     </label>
   );
 }
-
-const inputStyle: React.CSSProperties = {
-  width: "100%", background: C.bg3, border: `1px solid ${C.border}`,
-  borderRadius: 8, padding: "6px 10px", color: C.text, fontSize: 13, boxSizing: "border-box",
-};
-
-const selectStyle: React.CSSProperties = { ...inputStyle };

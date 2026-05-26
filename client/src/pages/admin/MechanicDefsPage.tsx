@@ -1,8 +1,8 @@
-﻿import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
-import { C } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 import toast from "react-hot-toast";
 
 interface MechanicDefDoc {
@@ -29,10 +29,7 @@ function tryParseJson(s: string): Record<string, unknown> | null {
   try { return JSON.parse(s); } catch { return null; }
 }
 
-const inputStyle: React.CSSProperties = {
-  width: "100%", padding: "8px 10px", background: C.bg0,
-  border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13, boxSizing: "border-box",
-};
+const inputCls = "w-full px-[10px] py-2 bg-bg0 border border-border-c rounded-lg text-theme-text text-[13px] box-border";
 
 const EMPTY = { name: "", category: "stamina", description: "", paramsJson: "{}" };
 
@@ -128,54 +125,54 @@ export default function MechanicDefsPage() {
   })).filter(g => g.items.length > 0);
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 900 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+    <div className="py-8 px-10 max-w-[900px]">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, color: C.text }}>Mechanic Defs</h1>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: C.muted }}>
-            {items.length} mechanic handler{items.length !== 1 ? "s" : ""} â€” one per MechanicRegistry entry
+          <h1 className="m-0 text-[22px] text-theme-text">Mechanic Defs</h1>
+          <p className="mt-1 mb-0 text-[13px] text-theme-muted">
+            {items.length} mechanic handler{items.length !== 1 ? "s" : ""} — one per MechanicRegistry entry
           </p>
         </div>
-        <button onClick={openCreate} style={{ padding: "8px 18px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13 }}>
+        <button onClick={openCreate} className="px-[18px] py-2 bg-theme-blue text-white border-none rounded-lg cursor-pointer text-[13px]">
           + New Mechanic
         </button>
       </div>
 
       <input
-        placeholder="Search by name, id, or categoryâ€¦"
+        placeholder="Search by name, id, or category…"
         value={query}
         onChange={e => setQuery(e.target.value)}
-        style={{ ...inputStyle, marginBottom: 20 }}
+        className={cn(inputCls, "mb-5")}
       />
 
       {loading ? (
-        <p style={{ color: C.muted }}>Loadingâ€¦</p>
+        <p className="text-theme-muted">Loading…</p>
       ) : byCategory.length === 0 ? (
-        <p style={{ color: C.muted }}>No mechanic defs found.</p>
+        <p className="text-theme-muted">No mechanic defs found.</p>
       ) : (
         byCategory.map(group => (
-          <div key={group.value} style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: C.blue, marginBottom: 8 }}>
+          <div key={group.value} className="mb-7">
+            <div className="text-[11px] font-bold uppercase tracking-[1px] text-theme-blue mb-2">
               {group.label}
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div className="flex flex-col gap-[6px]">
               {group.items.map(item => (
-                <div key={item.id} style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 14px", gap: 12 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                      <span style={{ fontWeight: 600, fontSize: 14, color: C.text }}>{item.name}</span>
-                      <span style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>{item.id}</span>
+                <div key={item.id} className="flex items-start justify-between bg-bg1 border border-border-c rounded-[10px] px-[14px] py-[10px] gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-[2px]">
+                      <span className="font-semibold text-[14px] text-theme-text">{item.name}</span>
+                      <span className="text-[11px] text-theme-muted font-mono">{item.id}</span>
                     </div>
-                    <p style={{ margin: 0, fontSize: 12, color: C.muted, lineHeight: 1.5 }}>{item.description}</p>
+                    <p className="m-0 text-[12px] text-theme-muted leading-[1.5]">{item.description}</p>
                     {item.params && Object.keys(item.params).length > 0 && (
-                      <div style={{ marginTop: 4, fontSize: 11, color: C.muted, fontFamily: "monospace" }}>
-                        {Object.entries(item.params).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join(" Â· ")}
+                      <div className="mt-1 text-[11px] text-theme-muted font-mono">
+                        {Object.entries(item.params).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join(" · ")}
                       </div>
                     )}
                   </div>
-                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                    <button onClick={() => openEdit(item)} style={{ padding: "5px 12px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12, cursor: "pointer" }}>Edit</button>
-                    <button onClick={() => setConfirmDelete(item)} style={{ padding: "5px 12px", background: C.bg0, border: `1px solid #c0392b`, borderRadius: 6, color: "#e74c3c", fontSize: 12, cursor: "pointer" }}>Delete</button>
+                  <div className="flex gap-[6px] shrink-0">
+                    <button onClick={() => openEdit(item)} className="px-3 py-[5px] bg-bg0 border border-border-c rounded-md text-theme-text text-[12px] cursor-pointer">Edit</button>
+                    <button onClick={() => setConfirmDelete(item)} className="px-3 py-[5px] bg-bg0 border border-[#c0392b] rounded-md text-[#e74c3c] text-[12px] cursor-pointer">Delete</button>
                   </div>
                 </div>
               ))}
@@ -186,20 +183,20 @@ export default function MechanicDefsPage() {
 
       {/* Create / Edit Modal */}
       {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: 28, width: 520, maxWidth: "95vw", maxHeight: "90vh", overflowY: "auto" }}>
-            <h2 style={{ margin: "0 0 20px", fontSize: 17, color: C.text }}>{editing ? "Edit Mechanic" : "New Mechanic"}</h2>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000]">
+          <div className="bg-bg1 border border-border-c rounded-xl p-7 w-[520px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
+            <h2 className="m-0 mb-5 text-[17px] text-theme-text">{editing ? "Edit Mechanic" : "New Mechanic"}</h2>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Name *</span>
-              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} placeholder="e.g. Velocity Burst" />
+            <label className="block mb-[14px]">
+              <span className="text-[12px] text-theme-muted block mb-1">Name *</span>
+              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={inputCls} placeholder="e.g. Velocity Burst" />
               {!editing && form.name && (
-                <span style={{ fontSize: 11, color: C.muted, marginTop: 2, display: "block" }}>ID: {slugify(form.name)}</span>
+                <span className="text-[11px] text-theme-muted mt-[2px] block">ID: {slugify(form.name)}</span>
               )}
             </label>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Category *</span>
+            <label className="block mb-[14px]">
+              <span className="text-[12px] text-theme-muted block mb-1">Category *</span>
               <SearchableSelect
                 options={CATEGORY_OPTIONS}
                 value={form.category}
@@ -208,34 +205,34 @@ export default function MechanicDefsPage() {
               />
             </label>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>
+            <label className="block mb-[14px]">
+              <span className="text-[12px] text-theme-muted block mb-1">Description</span>
               <textarea
                 value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 rows={3}
-                style={{ ...inputStyle, resize: "vertical" }}
-                placeholder="What this mechanic does and which fields it modifiesâ€¦"
+                className={cn(inputCls, "resize-y")}
+                placeholder="What this mechanic does and which fields it modifies…"
               />
             </label>
 
-            <label style={{ display: "block", marginBottom: 20 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
+            <label className="block mb-5">
+              <span className="text-[12px] text-theme-muted block mb-1">
                 Default Params (JSON)
-                {jsonError && <span style={{ color: "#e74c3c", marginLeft: 8 }}>{jsonError}</span>}
+                {jsonError && <span className="text-[#e74c3c] ml-2">{jsonError}</span>}
               </span>
               <textarea
                 value={form.paramsJson}
                 onChange={e => handleParamsChange(e.target.value)}
                 rows={4}
-                style={{ ...inputStyle, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
+                className={cn(inputCls, "resize-y font-mono text-[12px]")}
               />
             </label>
 
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setShowModal(false)} style={{ padding: "8px 16px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleSave} disabled={saving || !!jsonError} style={{ padding: "8px 18px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}>
-                {saving ? "Savingâ€¦" : editing ? "Update" : "Create"}
+            <div className="flex gap-[10px] justify-end">
+              <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-bg0 border border-border-c rounded-lg text-theme-text cursor-pointer">Cancel</button>
+              <button onClick={handleSave} disabled={saving || !!jsonError} className={cn("px-[18px] py-2 bg-theme-blue text-white border-none rounded-lg", saving ? "cursor-not-allowed opacity-70" : "cursor-pointer")}>
+                {saving ? "Saving…" : editing ? "Update" : "Create"}
               </button>
             </div>
           </div>
@@ -244,15 +241,15 @@ export default function MechanicDefsPage() {
 
       {/* Delete confirm */}
       {confirmDelete && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: 28, width: 380, maxWidth: "95vw" }}>
-            <h3 style={{ margin: "0 0 12px", color: C.text }}>Delete Mechanic?</h3>
-            <p style={{ margin: "0 0 20px", color: C.muted, fontSize: 13 }}>
-              Delete <strong style={{ color: C.text }}>{confirmDelete.name}</strong>? Any gimmick_defs referencing <code style={{ fontFamily: "monospace" }}>{confirmDelete.id}</code> will break at runtime.
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100]">
+          <div className="bg-bg1 border border-border-c rounded-xl p-7 w-[380px] max-w-[95vw]">
+            <h3 className="m-0 mb-3 text-theme-text">Delete Mechanic?</h3>
+            <p className="m-0 mb-5 text-theme-muted text-[13px]">
+              Delete <strong className="text-theme-text">{confirmDelete.name}</strong>? Any gimmick_defs referencing <code className="font-mono">{confirmDelete.id}</code> will break at runtime.
             </p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ padding: "8px 16px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleDelete} style={{ padding: "8px 18px", background: "#c0392b", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>Delete</button>
+            <div className="flex gap-[10px] justify-end">
+              <button onClick={() => setConfirmDelete(null)} className="px-4 py-2 bg-bg0 border border-border-c rounded-lg text-theme-text cursor-pointer">Cancel</button>
+              <button onClick={handleDelete} className="px-[18px] py-2 bg-[#c0392b] text-white border-none rounded-lg cursor-pointer">Delete</button>
             </div>
           </div>
         </div>

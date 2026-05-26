@@ -200,18 +200,22 @@ export function ArenaEditorCanvas({
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+    <div className="flex flex-col gap-2">
       {/* Floor selector */}
       {maxFloors > 1 && (
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <span style={{ fontSize: 11, color: "#8899aa", fontFamily: "monospace" }}>Floor:</span>
+        <div className="flex gap-[6px] items-center">
+          <span className="text-[11px] text-[#8899aa] font-mono">Floor:</span>
           {Array.from({ length: maxFloors }, (_, i) => (
-            <button key={i} onClick={() => onFloorChange?.(i)} style={{
-              padding: "3px 10px", borderRadius: 6, fontSize: 11, cursor: "pointer",
-              background: selectedFloor === i ? "#4488ff" : "transparent",
-              color: selectedFloor === i ? "#fff" : "#8899aa",
-              border: `1px solid ${selectedFloor === i ? "#4488ff" : "rgba(255,255,255,0.12)"}`,
-            }}>
+            <button
+              key={i}
+              onClick={() => onFloorChange?.(i)}
+              className="px-[10px] py-[3px] rounded-md text-[11px] cursor-pointer border"
+              style={{
+                background: selectedFloor === i ? "#4488ff" : "transparent",
+                color: selectedFloor === i ? "#fff" : "#8899aa",
+                borderColor: selectedFloor === i ? "#4488ff" : "rgba(255,255,255,0.12)",
+              }}
+            >
               {i === 0 ? "G" : i}
             </button>
           ))}
@@ -219,7 +223,7 @@ export function ArenaEditorCanvas({
       )}
 
       {/* Canvas */}
-      <div style={{ overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, position: "relative" }}>
+      <div className="overflow-hidden border border-white/10 rounded-lg relative">
         <canvas
           ref={canvasRef}
           width={canvasPx}
@@ -239,13 +243,19 @@ export function ArenaEditorCanvas({
       </div>
 
       {/* Controls */}
-      <div style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 11, color: "#8899aa", fontFamily: "monospace" }}>
+      <div className="flex gap-2 items-center text-[11px] text-[#8899aa] font-mono">
         <span>Zoom {Math.round(zoom * 100)}%</span>
-        <button onClick={() => setZoom(1)} style={{ padding: "2px 8px", borderRadius: 4, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#8899aa", cursor: "pointer", fontSize: 10 }}>Reset</button>
+        <button
+          onClick={() => setZoom(1)}
+          className="px-2 py-[2px] rounded bg-white/5 border border-white/10 text-[#8899aa] cursor-pointer text-[10px]"
+        >Reset</button>
         {selectedId && (
-          <button onClick={deleteSelected} style={{ padding: "2px 8px", borderRadius: 4, background: "rgba(255,50,50,0.15)", border: "1px solid rgba(255,50,50,0.4)", color: "#ff6666", cursor: "pointer", fontSize: 10 }}>Delete Selected</button>
+          <button
+            onClick={deleteSelected}
+            className="px-2 py-[2px] rounded bg-[rgba(255,50,50,0.15)] border border-[rgba(255,50,50,0.4)] text-[#ff6666] cursor-pointer text-[10px]"
+          >Delete Selected</button>
         )}
-        <span style={{ marginLeft: "auto" }}>Alt+drag = pan · Scroll = zoom · Click feature to select · Drag to move</span>
+        <span className="ml-auto">Alt+drag = pan · Scroll = zoom · Click feature to select · Drag to move</span>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import {
 import { auth } from "@/lib/firebase";
 import { createUserDoc } from "@/lib/userDoc";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const googleProvider = new GoogleAuthProvider();
@@ -66,16 +66,16 @@ export function RegisterPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg0, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div style={{ position: "fixed", top: 12, right: 16, zIndex: 100 }}>
+    <div className="min-h-screen bg-bg0 flex items-center justify-center p-5">
+      <div className="fixed top-3 right-4 z-[100]">
         <ThemeToggle compact />
       </div>
 
-      <div style={{ width: "100%", maxWidth: 420 }}>
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ fontSize: 48, marginBottom: 8 }}>🌀</div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, margin: 0 }}>Create Account</h1>
-          <p style={{ color: C.muted, fontSize: 13, marginTop: 4 }}>Join the arena and start battling</p>
+      <div className="w-full max-w-[420px]">
+        <div className="text-center mb-8">
+          <div className="text-5xl mb-2">🌀</div>
+          <h1 className="text-[22px] font-bold text-theme-text m-0">Create Account</h1>
+          <p className="text-theme-muted text-[13px] mt-1">Join the arena and start battling</p>
         </div>
 
         {/* Google sign-in */}
@@ -83,13 +83,12 @@ export function RegisterPage() {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={googleLoading || loading}
-          style={{
-            width: "100%", display: "flex", alignItems: "center", justifyContent: "center",
-            gap: 10, padding: "11px 20px", marginBottom: 20,
-            background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 10,
-            fontSize: 14, fontWeight: 600, color: C.text, cursor: "pointer",
-            opacity: googleLoading || loading ? 0.5 : 1,
-          }}
+          className={cn(
+            "w-full flex items-center justify-center gap-2.5 py-[11px] px-5 mb-5",
+            "bg-bg2 border border-border-c rounded-[10px]",
+            "text-[14px] font-semibold text-theme-text cursor-pointer",
+            (googleLoading || loading) && "opacity-50"
+          )}
         >
           <svg width="18" height="18" viewBox="0 0 48 48">
             <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.8 2.5 30.2 0 24 0 14.7 0 6.7 5.4 2.7 13.3l7.8 6.1C12.4 13.2 17.7 9.5 24 9.5z"/>
@@ -100,13 +99,16 @@ export function RegisterPage() {
           {googleLoading ? "Signing in…" : "Continue with Google"}
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <div style={{ flex: 1, height: 1, background: C.border }} />
-          <span style={{ color: C.faint, fontSize: 12 }}>or register with email</span>
-          <div style={{ flex: 1, height: 1, background: C.border }} />
+        <div className="flex items-center gap-3 mb-5">
+          <div className="flex-1 h-px bg-border-c" />
+          <span className="text-theme-faint text-[12px]">or register with email</span>
+          <div className="flex-1 h-px bg-border-c" />
         </div>
 
-        <form onSubmit={handleEmailRegister} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, display: "flex", flexDirection: "column", gap: 16 }}>
+        <form
+          onSubmit={handleEmailRegister}
+          className="bg-bg2 border border-border-c rounded-2xl p-7 flex flex-col gap-4"
+        >
           <div>
             <label className="block text-xs text-muted mb-1.5">Display Name <span className="text-faint">(optional)</span></label>
             <input
@@ -161,24 +163,22 @@ export function RegisterPage() {
           <button
             type="submit"
             disabled={loading || googleLoading || !email.trim() || !password || !confirm}
-            style={{
-              padding: "10px 20px", background: C.purple, color: C.white,
-              borderRadius: 8, fontSize: 14, fontWeight: 600, border: "none",
-              cursor: "pointer", opacity: loading || googleLoading || !email.trim() || !password || !confirm ? 0.5 : 1,
-              marginTop: 4,
-            }}
+            className={cn(
+              "py-[10px] px-5 bg-theme-purple text-white rounded-lg text-[14px] font-semibold border-none cursor-pointer mt-1",
+              (loading || googleLoading || !email.trim() || !password || !confirm) && "opacity-50"
+            )}
           >
             {loading ? "Creating account…" : "Create Account"}
           </button>
         </form>
 
-        <div style={{ textAlign: "center", marginTop: 20, display: "flex", justifyContent: "center", gap: 20 }}>
-          <Link to="/login" style={{ color: C.muted, fontSize: 13, textDecoration: "none" }}>
-            Already have an account? <span style={{ color: C.purple }}>Sign in</span>
+        <div className="text-center mt-5 flex justify-center gap-5">
+          <Link to="/login" className="text-theme-muted text-[13px] no-underline">
+            Already have an account? <span className="text-theme-purple">Sign in</span>
           </Link>
         </div>
-        <div style={{ textAlign: "center", marginTop: 12 }}>
-          <Link to="/" style={{ color: C.faint, fontSize: 12, textDecoration: "none" }}>← Back to home</Link>
+        <div className="text-center mt-3">
+          <Link to="/" className="text-theme-faint text-[12px] no-underline">← Back to home</Link>
         </div>
       </div>
     </div>

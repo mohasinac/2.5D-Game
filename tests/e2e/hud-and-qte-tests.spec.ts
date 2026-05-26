@@ -18,7 +18,7 @@
  */
 
 import { test, expect, type Page } from "@playwright/test";
-import { tryLogin, gotoProtected, ss } from "./helpers/auth";
+import { tryLogin, gotoProtected, ss, diagnose } from "./helpers/auth";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers

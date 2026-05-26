@@ -7,7 +7,7 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
-import { C } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 import type { ParticlePresetDoc } from "@/types/comboVisual";
 
 const COLLECTION = "particle_presets";
@@ -33,27 +33,7 @@ const DEFAULT_EMITTER: Record<string, unknown> = {
   spawnCircle: { x: 0, y: 0, r: 10 },
 };
 
-const inputStyle = {
-  background: "var(--bg3)",
-  border: `1px solid ${C.border}`,
-  borderRadius: 8,
-  padding: "6px 10px",
-  color: C.text,
-  fontSize: 13,
-  width: "100%",
-  boxSizing: "border-box" as const,
-};
-
-const btnStyle = (color: string) => ({
-  background: color + "22",
-  border: `1px solid ${color}44`,
-  borderRadius: 8,
-  padding: "6px 14px",
-  color,
-  fontSize: 13,
-  cursor: "pointer",
-  fontWeight: 600,
-} as const);
+const INP = "w-full px-2.5 py-[6px] bg-[var(--bg3)] border border-border-c rounded-lg text-theme-text text-[13px] box-border";
 
 interface EditState {
   id?: string;
@@ -143,73 +123,89 @@ export function ParticlePresetsPage() {
   }
 
   return (
-    <div style={{ padding: 24, width: "100%", boxSizing: "border-box" as const }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+    <div className="page-shell p-6">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>Particle Presets</h1>
-          <p style={{ color: C.faint, fontSize: 13, marginTop: 4 }}>
-            PixiJS particle emitter configs for combo visual effects. Reference by <code style={{ color: C.blue }}>particlePresetId</code>.
+          <h1 className="text-[22px] font-bold text-theme-text">Particle Presets</h1>
+          <p className="text-theme-faint text-[13px] mt-1">
+            PixiJS particle emitter configs for combo visual effects. Reference by <code className="text-theme-blue">particlePresetId</code>.
           </p>
         </div>
-        <button style={btnStyle(C.green)} onClick={() => setEditing(emptyEdit())}>+ New Preset</button>
+        <button
+          className="px-3.5 py-1.5 bg-theme-green/[.13] border border-theme-green/25 rounded-lg text-[13px] font-semibold text-theme-green cursor-pointer"
+          onClick={() => setEditing(emptyEdit())}
+        >
+          + New Preset
+        </button>
       </div>
 
       {loading ? (
-        <p style={{ color: C.faint }}>Loading…</p>
+        <p className="text-theme-faint">Loading…</p>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
+        <div className="card-grid">
           {presets.map(p => (
-            <div key={p.id} style={{ background: "var(--bg2)", border: `1px solid ${C.border}`, borderRadius: 14, padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+            <div key={p.id} className="bg-[var(--bg2)] border border-border-c rounded-[14px] p-4 flex flex-col gap-2.5">
               {p.previewGifUrl && (
-                <img src={p.previewGifUrl} alt="preview" style={{ width: "100%", height: 120, objectFit: "contain", borderRadius: 8, background: "#000" }} />
+                <img src={p.previewGifUrl} alt="preview" className="w-full h-[120px] object-contain rounded-lg bg-black" />
               )}
-              <div style={{ fontWeight: 600, color: C.text, fontSize: 14 }}>{p.name}</div>
-              <div style={{ fontFamily: "monospace", fontSize: 11, color: C.faint }}>{p.id}</div>
-              <div style={{ fontSize: 11, color: C.muted }}>
+              <div className="font-semibold text-theme-text text-sm">{p.name}</div>
+              <div className="font-mono text-[11px] text-theme-faint">{p.id}</div>
+              <div className="text-[11px] text-theme-muted">
                 {Object.keys(p.emitterConfig ?? {}).length} config keys
               </div>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button style={{ ...btnStyle(C.blue), flex: 1 }} onClick={() => setEditing({
-                  id: p.id,
-                  name: p.name,
-                  emitterConfig: JSON.stringify(p.emitterConfig, null, 2),
-                  previewGifUrl: p.previewGifUrl ?? "",
-                })}>Edit</button>
-                <button style={{ ...btnStyle(C.red), flex: 1 }} onClick={() => handleDelete(p)}>Delete</button>
+              <div className="flex gap-2">
+                <button
+                  className="flex-1 px-3.5 py-1.5 bg-theme-blue/[.13] border border-theme-blue/25 rounded-lg text-[13px] font-semibold text-theme-blue cursor-pointer"
+                  onClick={() => setEditing({
+                    id: p.id,
+                    name: p.name,
+                    emitterConfig: JSON.stringify(p.emitterConfig, null, 2),
+                    previewGifUrl: p.previewGifUrl ?? "",
+                  })}
+                >
+                  Edit
+                </button>
+                <button
+                  className="flex-1 px-3.5 py-1.5 bg-theme-red/[.13] border border-theme-red/25 rounded-lg text-[13px] font-semibold text-theme-red cursor-pointer"
+                  onClick={() => handleDelete(p)}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
           {presets.length === 0 && (
-            <p style={{ color: C.faint, gridColumn: "1/-1" }}>No presets yet. Create your first one.</p>
+            <p className="text-theme-faint col-span-full">No presets yet. Create your first one.</p>
           )}
         </div>
       )}
 
       {/* ── Edit drawer ───────────────────────────────────────────────────────── */}
       {editing && (
-        <div style={{
-          position: "fixed", inset: 0, background: "#000a", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000,
-        }} onClick={e => { if (e.target === e.currentTarget) setEditing(null); }}>
-          <div style={{ background: "var(--bg1)", border: `1px solid ${C.border}`, borderRadius: 18, padding: 28, width: 640, maxHeight: "90vh", overflowY: "auto", display: "flex", flexDirection: "column", gap: 18 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text }}>{editing.id ? "Edit Preset" : "New Preset"}</h2>
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000]"
+          onClick={e => { if (e.target === e.currentTarget) setEditing(null); }}
+        >
+          <div className="bg-[var(--bg1)] border border-border-c rounded-[18px] p-7 w-[640px] max-h-[90vh] overflow-y-auto flex flex-col gap-[18px]">
+            <h2 className="text-[18px] font-bold text-theme-text">{editing.id ? "Edit Preset" : "New Preset"}</h2>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: 11, color: C.muted, fontWeight: 600, textTransform: "uppercase" }}>Name</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] text-theme-muted font-semibold uppercase">Name</label>
               <input
-                style={inputStyle}
+                className={INP}
                 placeholder="e.g. Fire Burst"
                 value={editing.name}
                 onChange={e => setEditing(v => v ? { ...v, name: e.target.value } : v)}
               />
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <label style={{ fontSize: 11, color: C.muted, fontWeight: 600, textTransform: "uppercase" }}>Emitter Config (JSON)</label>
-                {jsonError && <span style={{ fontSize: 11, color: C.red }}>{jsonError}</span>}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] text-theme-muted font-semibold uppercase">Emitter Config (JSON)</label>
+                {jsonError && <span className="text-[11px] text-theme-red">{jsonError}</span>}
               </div>
               <textarea
-                style={{ ...inputStyle, fontFamily: "monospace", fontSize: 12, height: 300, resize: "vertical" }}
+                className={cn(INP, "font-mono text-[12px] h-[300px] resize-y")}
                 value={editing.emitterConfig}
                 onChange={e => {
                   setEditing(v => v ? { ...v, emitterConfig: e.target.value } : v);
@@ -219,34 +215,46 @@ export function ParticlePresetsPage() {
               />
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: 11, color: C.muted, fontWeight: 600, textTransform: "uppercase" }}>Preview GIF</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] text-theme-muted font-semibold uppercase">Preview GIF</label>
               {editing.previewGifUrl && (
-                <img src={editing.previewGifUrl} alt="preview" style={{ width: 160, height: 120, objectFit: "contain", borderRadius: 8, background: "#000", marginBottom: 6 }} />
+                <img src={editing.previewGifUrl} alt="preview" className="w-40 h-[120px] object-contain rounded-lg bg-black mb-1.5" />
               )}
-              <div style={{ display: "flex", gap: 8 }}>
+              <div className="flex gap-2">
                 <button
-                  style={btnStyle(C.purple)}
+                  className="px-3.5 py-1.5 bg-theme-purple/[.13] border border-theme-purple/25 rounded-lg text-[13px] font-semibold text-theme-purple cursor-pointer disabled:opacity-50"
                   onClick={() => fileRef.current?.click()}
                   disabled={uploading}
                 >
                   {uploading ? "Uploading…" : "Upload GIF"}
                 </button>
                 {editing.previewGifUrl && (
-                  <button style={btnStyle(C.muted)} onClick={() => setEditing(v => v ? { ...v, previewGifUrl: "" } : v)}>
+                  <button
+                    className="px-3.5 py-1.5 bg-theme-muted/10 border border-theme-muted/25 rounded-lg text-[13px] font-semibold text-theme-muted cursor-pointer"
+                    onClick={() => setEditing(v => v ? { ...v, previewGifUrl: "" } : v)}
+                  >
                     Remove
                   </button>
                 )}
               </div>
-              <input ref={fileRef} type="file" accept="image/gif,image/png,image/webp" style={{ display: "none" }}
+              <input ref={fileRef} type="file" accept="image/gif,image/png,image/webp" className="hidden"
                 onChange={e => { const f = e.target.files?.[0]; if (f) handleGifUpload(f); }} />
             </div>
 
-            <div style={{ display: "flex", gap: 10 }}>
-              <button style={{ ...btnStyle(C.green), flex: 1 }} onClick={handleSave} disabled={saving || !editing.name.trim()}>
+            <div className="flex gap-2.5">
+              <button
+                className="flex-1 px-3.5 py-1.5 bg-theme-green/[.13] border border-theme-green/25 rounded-lg text-[13px] font-semibold text-theme-green cursor-pointer disabled:opacity-50"
+                onClick={handleSave}
+                disabled={saving || !editing.name.trim()}
+              >
                 {saving ? "Saving…" : "Save"}
               </button>
-              <button style={{ ...btnStyle(C.muted), flex: 1 }} onClick={() => setEditing(null)}>Cancel</button>
+              <button
+                className="flex-1 px-3.5 py-1.5 bg-theme-muted/10 border border-theme-muted/25 rounded-lg text-[13px] font-semibold text-theme-muted cursor-pointer"
+                onClick={() => setEditing(null)}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>

@@ -3,7 +3,6 @@ import { useParams, Link } from "react-router-dom";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
 import ArenaConfigurator from "@/components/admin/ArenaConfigurator";
 import type { ArenaConfig } from "@/types/arenaConfigNew";
 import { DEFAULT_ARENA_CONFIG } from "@/types/arenaConfigNew";
@@ -40,17 +39,17 @@ export function ArenaEditPage() {
   };
 
   if (loading) return (
-    <div style={{ padding: 24, display: "flex", justifyContent: "center" }}>
-      <div className="spin" style={{ width: 32, height: 32, border: `2px solid ${C.purple}`, borderTopColor: "transparent", borderRadius: "50%" }} />
+    <div className="p-6 flex justify-center">
+      <div className="spin w-8 h-8 border-2 border-theme-purple border-t-transparent rounded-full" />
     </div>
   );
-  if (!arena) return <div style={{ padding: 24, color: C.faint }}>Arena not found</div>;
+  if (!arena) return <div className="p-6 text-theme-faint">Arena not found</div>;
 
   return (
-    <div style={{ padding: "20px 24px", width: "100%", boxSizing: "border-box" }}>
-      <div style={{ marginBottom: 20 }}>
-        <Link to="/admin/arenas" style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Arenas</Link>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, marginTop: 6 }}>{arena.name}</h1>
+    <div className="px-6 py-5 w-full box-border">
+      <div className="mb-5">
+        <Link to="/admin/arenas" className="text-theme-faint text-[13px] no-underline">← Arenas</Link>
+        <h1 className="text-[22px] font-bold text-theme-text mt-1.5">{arena.name}</h1>
       </div>
       <ArenaConfigurator
         arena={arena}

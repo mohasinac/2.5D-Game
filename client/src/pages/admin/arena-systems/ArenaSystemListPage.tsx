@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { ArenaSystem } from "@/types/arenaSystem";
-import { C, alpha } from "@/styles/theme";
 
 export function ArenaSystemListPage() {
   const navigate = useNavigate();
@@ -29,7 +28,7 @@ export function ArenaSystemListPage() {
 
   if (loading) {
     return (
-      <div style={{ padding: "40px 20px", textAlign: "center", color: C.muted }}>
+      <div className="py-10 px-5 text-center text-theme-muted">
         Loading arena systems...
       </div>
     );
@@ -37,7 +36,7 @@ export function ArenaSystemListPage() {
 
   if (error) {
     return (
-      <div style={{ padding: "40px 20px", textAlign: "center", color: C.red }}>
+      <div className="py-10 px-5 text-center text-theme-red">
         Error: {error}
       </div>
     );
@@ -45,85 +44,51 @@ export function ArenaSystemListPage() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <h2 style={{ color: C.text, fontSize: 20, fontWeight: 700, margin: 0 }}>
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="text-theme-text text-[20px] font-bold m-0">
           Arena Systems (2.5D)
         </h2>
         <button
           onClick={() => navigate("/admin/arena-systems/create")}
-          style={{
-            padding: "8px 16px",
-            background: C.blue,
-            color: C.white,
-            border: "none",
-            borderRadius: 6,
-            fontSize: 12,
-            fontWeight: 700,
-            cursor: "pointer",
-          }}
+          className="px-4 py-2 bg-theme-blue text-white border-none rounded-md text-[12px] font-bold cursor-pointer"
         >
           + Create Arena System
         </button>
       </div>
 
       {systems.length === 0 ? (
-        <div style={{ padding: "60px 20px", textAlign: "center", color: C.muted }}>
+        <div className="py-[60px] px-5 text-center text-theme-muted">
           <p>No arena systems yet.</p>
           <Link
             to="/admin/arena-systems/create"
-            style={{ color: C.blue, textDecoration: "none", fontSize: 12 }}
+            className="text-theme-blue no-underline text-[12px]"
           >
             Create one
           </Link>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
+        <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
           {systems.map((system) => (
             <div
               key={system.id}
-              style={{
-                background: C.bg1,
-                borderRadius: 8,
-                border: `1px solid ${C.border}`,
-                padding: 16,
-                cursor: "pointer",
-                transition: "all 150ms",
-              }}
+              className="bg-bg1 rounded-lg border border-border-c p-4 cursor-pointer transition-all duration-150"
               onClick={() => navigate(`/admin/arena-systems/${system.id}`)}
             >
-              <h3 style={{ color: C.text, fontSize: 14, fontWeight: 700, marginBottom: 4, marginTop: 0 }}>
+              <h3 className="text-theme-text text-[14px] font-bold mb-1 mt-0">
                 {system.displayName}
               </h3>
-              <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-                <span
-                  style={{
-                    fontSize: 10,
-                    background: alpha(C.blue, 0.13),
-                    color: C.blue,
-                    padding: "2px 8px",
-                    borderRadius: 4,
-                    textTransform: "capitalize",
-                  }}
-                >
+              <div className="flex gap-2 mb-2">
+                <span className="text-[10px] px-2 py-0.5 rounded capitalize bg-blue-13 text-theme-blue">
                   {system.elevationMap.type}
                 </span>
-                <span
-                  style={{
-                    fontSize: 10,
-                    background: alpha(C.purple, 0.13),
-                    color: C.purple,
-                    padding: "2px 8px",
-                    borderRadius: 4,
-                    textTransform: "capitalize",
-                  }}
-                >
+                <span className="text-[10px] px-2 py-0.5 rounded capitalize bg-purple-10 text-theme-purple">
                   {system.difficulty || "medium"}
                 </span>
               </div>
-              <p style={{ color: C.muted, fontSize: 11, marginBottom: 8, marginTop: 0, lineHeight: 1.4 }}>
+              <p className="text-theme-muted text-[11px] mb-2 mt-0 leading-[1.4]">
                 {system.description || "No description"}
               </p>
-              <div style={{ fontSize: 10, color: C.muted, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
+              <div className="text-[10px] text-theme-muted grid grid-cols-2 gap-1">
                 <div>Shape: {system.shape}</div>
                 <div>Theme: {system.theme}</div>
                 <div>Wall: {system.wallProfile.baseHeight}mm</div>

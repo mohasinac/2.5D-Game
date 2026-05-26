@@ -32,7 +32,7 @@ function DistBar({ label, value, colorCls, remaining, onChange }: { label:string
       </div>
       <input type="range" min={0} max={Math.min(MAX_PER_TYPE, value+remaining)} value={value} onChange={e => onChange(+e.target.value)} className="w-full accent-blue" />
       <div className="w-full h-1.5 bg-bg3 rounded-full overflow-hidden mt-1">
-        <div className={`h-full rounded-full transition-[width] duration-150 ${colorCls.replace("text-", "bg-")}`} style={{ width:`${(value/MAX_PER_TYPE)*100}%` }} />
+        <div className={`h-full rounded-full transition-[width] duration-150 w-pct ${colorCls.replace("text-", "bg-")}`} style={{ "--pct": `${(value/MAX_PER_TYPE)*100}%` } as React.CSSProperties} />
       </div>
     </div>
   );
@@ -187,7 +187,7 @@ export function BeybladeCreatePage() {
   const steps = ["Basic Info", "Type Distribution", "Image", "Contact Points", "Abilities"];
 
   return (
-    <div className="py-5 px-6 w-full box-border transition-[max-width] duration-200" style={{ maxWidth: step === 3 ? "100%" : 680 }}>
+    <div className={`py-5 px-6 w-full box-border transition-[max-width] duration-200 ${step === 3 ? "max-w-full" : "max-w-[680px]"}`}>
       <div className="mb-5">
         <Link to="/admin/beyblades" className="text-faint text-xs no-underline hover:text-muted">← Beyblades</Link>
         <h1 className="text-2xl font-bold text-text mt-2">New Beyblade</h1>
@@ -295,7 +295,7 @@ export function BeybladeCreatePage() {
 
               {imageEditorMode && rawImageUrl && (
                 <div className="fixed inset-0 bg-black/85 flex items-start justify-center z-[1000] overflow-y-auto py-5 px-4">
-                  <div className="w-full" style={{ maxWidth: imageEditorMode === "whatsapp" ? "fit-content" : 420 }}>
+                  <div className={`w-full ${imageEditorMode === "whatsapp" ? "max-w-fit" : "max-w-[420px]"}`}>
                     {imageEditorMode === "whatsapp" && (
                       <WhatsAppStyleImageEditor
                         imageUrl={rawImageUrl}

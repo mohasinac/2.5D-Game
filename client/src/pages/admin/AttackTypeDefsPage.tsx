@@ -1,166 +1,25 @@
-import { useState, useEffect, useCallback } from "react";
-import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
-import { db, COLLECTIONS } from "@/lib/firebase";
-import { useGameDataStore } from "@/stores/gameDataStore";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import toast from "react-hot-toast";
-
-interface AttackTypeDoc { id: string; label: string; description?: string; multiplier?: number; color?: string; }
-
-const EMPTY: AttackTypeDoc = { id: "", label: "", description: "", multiplier: 1.0, color: "#3b82f6" };
+import { COLLECTIONS } from "@/lib/firebase";
+import { SimpleDefsCrudPage } from "@/components/admin/SimpleDefsCrudPage";
 
 export function AttackTypeDefsPage() {
-  const [items, setItems] = useState<AttackTypeDoc[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing] = useState<AttackTypeDoc | null>(null);
-  const [form, setForm] = useState<AttackTypeDoc>({ ...EMPTY });
-  const [confirmDelete, setConfirmDelete] = useState<AttackTypeDoc | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [query, setQuery] = useState("");
-  const invalidate = useGameDataStore(s => s.invalidate);
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const snap = await getDocs(collection(db, COLLECTIONS.ATTACK_TYPE_DEFS));
-      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as AttackTypeDoc));
-      docs.sort((a, b) => a.label.localeCompare(b.label));
-      setItems(docs);
-    } catch { toast.error("Failed to load attack types"); }
-    finally { setLoading(false); }
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const openCreate = () => { setEditing(null); setForm({ ...EMPTY }); setShowModal(true); };
-  const openEdit = (item: AttackTypeDoc) => { setEditing(item); setForm({ ...item }); setShowModal(true); };
-
-  const handleSave = async () => {
-    if (!form.id.trim()) { toast.error("ID is required"); return; }
-    if (!form.label.trim()) { toast.error("Label is required"); return; }
-    setSaving(true);
-    try {
-      const { id, ...data } = form;
-      await setDoc(doc(db, COLLECTIONS.ATTACK_TYPE_DEFS, id.trim()), { ...data, updatedAt: new Date().toISOString() }, { merge: true });
-      toast.success(editing ? "Updated" : "Created");
-      invalidate("attackTypeDefs");
-      setShowModal(false);
-      load();
-    } catch { toast.error("Save failed"); }
-    finally { setSaving(false); }
-  };
-
-  const handleDelete = async () => {
-    if (!confirmDelete) return;
-    try {
-      await deleteDoc(doc(db, COLLECTIONS.ATTACK_TYPE_DEFS, confirmDelete.id));
-      toast.success("Deleted");
-      invalidate("attackTypeDefs");
-      setConfirmDelete(null);
-      load();
-    } catch { toast.error("Delete failed"); }
-  };
-
-  const filtered = items.filter(i =>
-    i.label.toLowerCase().includes(query.toLowerCase()) ||
-    i.id.toLowerCase().includes(query.toLowerCase())
-  );
-
   return (
-    <div className="p-6 max-w-[800px]">
-      <div className="flex items-start justify-between mb-5">
-        <div>
-          <h1 className="text-[22px] font-bold text-text m-0">Attack Type Defs</h1>
-          <p className="text-[13px] text-muted mt-1">
-            Defines attack types for contact points. Falls back to built-ins when empty.
-          </p>
-        </div>
-        <Button variant="primary" size="sm" onClick={openCreate}>+ Add Attack Type</Button>
-      </div>
-
-      <Input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search…" className="mb-4 max-w-xs" />
-
-      {loading ? (
-        <div className="text-muted text-[13px]">Loading…</div>
-      ) : filtered.length === 0 ? (
-        <div className="text-muted text-[13px]">No attack types found. Add one above.</div>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {filtered.map(item => (
-            <div key={item.id} className="flex items-center gap-3 bg-bg1 border border-border rounded-xl px-4 py-3">
-              {item.color && (
-                <div className="w-3.5 h-3.5 rounded-full shrink-0" style={{ background: item.color }} />
-              )}
-              <div className="flex-1">
-                <div className="text-sm font-semibold text-text">
-                  {item.label}
-                  {item.multiplier != null && (
-                    <span className="text-[11px] text-muted font-normal ml-2">×{item.multiplier.toFixed(2)}</span>
-                  )}
-                </div>
-                <div className="text-[11px] text-faint mt-0.5">ID: {item.id}{item.description ? ` — ${item.description}` : ""}</div>
-              </div>
-              <Button variant="outline" size="sm" onClick={() => openEdit(item)}>Edit</Button>
-              <Button variant="danger" size="sm" onClick={() => setConfirmDelete(item)}>Delete</Button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {showModal && (
-        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000]">
-          <div className="bg-bg0 border border-border rounded-2xl p-7 w-[420px] max-w-[90vw]">
-            <h2 className="text-[17px] font-bold text-text m-0 mb-5">{editing ? "Edit" : "Add"} Attack Type</h2>
-            <div className="mb-3">
-              <Label>ID (slug) *</Label>
-              <Input value={form.id} onChange={e => setForm(f => ({ ...f, id: e.target.value }))} disabled={!!editing} className={editing ? "opacity-50" : ""} placeholder="smash" />
-            </div>
-            <div className="mb-3">
-              <Label>Label *</Label>
-              <Input value={form.label} onChange={e => setForm(f => ({ ...f, label: e.target.value }))} placeholder="Smash Attack" />
-            </div>
-            <div className="mb-3">
-              <Label>Description</Label>
-              <Input value={form.description ?? ""} onChange={e => setForm(f => ({ ...f, description: e.target.value || undefined }))} placeholder="Optional description…" />
-            </div>
-            <div className="flex gap-3 mb-5">
-              <div className="flex-1">
-                <Label>Damage Multiplier</Label>
-                <Input type="number" min={0} max={5} step={0.05} value={form.multiplier ?? 1.0}
-                  onChange={e => setForm(f => ({ ...f, multiplier: parseFloat(e.target.value) || 1.0 }))} />
-              </div>
-              <div className="w-20">
-                <Label>Color</Label>
-                <input type="color" value={form.color ?? "#3b82f6"}
-                  onChange={e => setForm(f => ({ ...f, color: e.target.value }))}
-                  className="w-full h-9 border border-border rounded-lg bg-bg0 cursor-pointer p-0.5" />
-              </div>
-            </div>
-            <div className="flex gap-2.5 justify-end">
-              <Button variant="outline" size="sm" onClick={() => setShowModal(false)}>Cancel</Button>
-              <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
-                {saving ? "Saving…" : "Save"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {confirmDelete && (
-        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000]">
-          <div className="bg-bg0 border border-border rounded-2xl p-7 w-[360px] text-center">
-            <div className="text-base font-semibold text-text mb-2.5">Delete "{confirmDelete.label}"?</div>
-            <div className="text-[13px] text-muted mb-5">This cannot be undone. Parts using this attack type ID will fall back to displaying the raw ID.</div>
-            <div className="flex gap-2.5 justify-center">
-              <Button variant="outline" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
-              <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    <SimpleDefsCrudPage
+      collectionId={COLLECTIONS.ATTACK_TYPE_DEFS}
+      storeKey="attackTypeDefs"
+      title="Attack Type Defs"
+      subtitle="Defines attack types for contact points. Falls back to built-ins when empty."
+      addLabel="Add Attack Type"
+      fields={[
+        { key: "label", type: "text", label: "Label", required: true, placeholder: "Smash Attack" },
+        { key: "description", type: "textarea", label: "Description", placeholder: "Optional description…" },
+        { key: "multiplier", type: "number", label: "Damage Multiplier", min: 0, max: 5, step: 0.05, placeholder: "1.0" },
+        { key: "color", type: "color", label: "Color" },
+      ]}
+      defaultValues={{ label: "", description: "", multiplier: 1.0, color: "#3b82f6" }}
+      deleteWarning="This cannot be undone. Parts using this attack type ID will fall back to displaying the raw ID."
+      renderItemMeta={(item) => item.multiplier != null ? (
+        <span className="text-[11px] text-theme-muted font-normal">×{Number(item.multiplier).toFixed(2)}</span>
+      ) : null}
+    />
   );
 }

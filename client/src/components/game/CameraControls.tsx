@@ -28,55 +28,32 @@ export function CameraControls({ onZoomIn, onZoomOut, onZoomReset, topRem = 4 }:
     return () => window.removeEventListener("keydown", onKey);
   }, [onZoomIn, onZoomOut, onZoomReset]);
 
-  const btnStyle: React.CSSProperties = {
-    width: "2.5rem",
-    height: "2.5rem",
-    borderRadius: "0.5rem",
-    background: "rgba(20, 25, 40, 0.85)",
-    border: "1px solid rgba(120, 160, 200, 0.4)",
-    color: "#ddeeff",
-    fontSize: "1.25rem",
-    fontWeight: 600,
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backdropFilter: "blur(4px)",
-    transition: "background 0.15s, transform 0.1s",
-  };
+  const btnClass = "w-10 h-10 rounded-lg bg-[rgba(20,25,40,0.85)] border border-[rgba(120,160,200,0.4)] text-[#ddeeff] text-[1.25rem] font-semibold cursor-pointer flex items-center justify-center backdrop-blur transition-[background,transform] duration-150";
 
   return (
     <div
-      style={{
-        position: "absolute",
-        top: `${topRem}rem`,
-        right: "1rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.4rem",
-        zIndex: 50,
-        pointerEvents: "auto",
-      }}
+      style={{ position: "absolute", top: `${topRem}rem`, right: "1rem" }}
+      className="flex flex-col gap-[0.4rem] z-50 pointer-events-auto"
     >
       <button
         type="button"
         aria-label="Zoom in"
         title="Zoom in (+)"
-        style={btnStyle}
+        className={btnClass}
         onClick={onZoomIn}
       >+</button>
       <button
         type="button"
         aria-label="Reset zoom"
         title="Reset zoom (0)"
-        style={{ ...btnStyle, fontSize: "0.85rem" }}
+        className={btnClass + " text-[0.85rem]"}
         onClick={onZoomReset}
       >0</button>
       <button
         type="button"
         aria-label="Zoom out"
         title="Zoom out (−)"
-        style={btnStyle}
+        className={btnClass}
         onClick={onZoomOut}
       >&minus;</button>
     </div>

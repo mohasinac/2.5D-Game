@@ -1,5 +1,4 @@
 import { type ReactNode } from "react";
-import { C } from "@/styles/theme";
 
 interface EmptyStateProps {
   icon?: ReactNode;
@@ -10,26 +9,15 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 12,
-        padding: "64px 24px",
-        color: C.faint,
-        textAlign: "center",
-      }}
-    >
+    <div className="flex flex-col items-center justify-center gap-3 py-16 px-6 text-center">
       {icon && (
-        <div style={{ color: C.faint, opacity: 0.6 }}>{icon}</div>
+        <div className="text-theme-faint opacity-60 text-4xl">{icon}</div>
       )}
-      <div style={{ fontSize: 15, fontWeight: 600, color: C.muted }}>{title}</div>
+      <div className="text-sm font-semibold text-theme-muted">{title}</div>
       {description && (
-        <div style={{ fontSize: 12, color: C.faint, maxWidth: 320 }}>{description}</div>
+        <div className="text-xs text-theme-faint max-w-[320px]">{description}</div>
       )}
-      {action && <div style={{ marginTop: 4 }}>{action}</div>}
+      {action && <div className="mt-1">{action}</div>}
     </div>
   );
 }

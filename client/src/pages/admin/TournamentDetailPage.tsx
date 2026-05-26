@@ -5,14 +5,13 @@ import {
   updateDoc, addDoc, serverTimestamp, Timestamp, writeBatch, getDocs, deleteDoc,
 } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type { TournamentDoc, TournamentParticipantDoc, TournamentMatchDoc } from "@/types/game";
 import toast from "react-hot-toast";
 
-const STATUS_COLORS: Record<string, string> = {
-  draft: C.faint, registration: C.blue,
-  "in-progress": C.green, completed: C.purple, cancelled: C.red,
+const STATUS_TEXT_CLASS: Record<string, string> = {
+  draft: "text-theme-faint", registration: "text-theme-blue",
+  "in-progress": "text-theme-green", completed: "text-theme-purple", cancelled: "text-theme-red",
 };
 
 function formatDate(ts: any): string {
@@ -23,13 +22,19 @@ function formatDate(ts: any): string {
 
 const ROUND_NAMES: Record<number, string> = { 1: "Round 1", 2: "Semifinals", 3: "Final" };
 
-function statusPillClass(color: string): string {
-  if (color === C.blue) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue/[.13] text-blue border border-blue/[.27]";
-  if (color === C.green) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green/[.13] text-green border border-green/[.27]";
-  if (color === C.purple) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple/[.13] text-purple border border-purple/[.27]";
-  if (color === C.red) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red/[.13] text-red border border-red/[.27]";
-  if (color === C.yellow) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-yellow/[.13] text-yellow border border-yellow/[.27]";
-  return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-bg3 text-muted border border-border";
+const STATUS_PILL_CLASS: Record<string, string> = {
+  draft: "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-bg3 text-theme-faint border border-border-c",
+  registration: "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-13 text-theme-blue border border-blue-30",
+  "in-progress": "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-13 text-theme-green border border-green-30",
+  completed: "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-10 text-theme-purple border border-purple-33",
+  cancelled: "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-13 text-theme-red border border-red-30",
+  winner: "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-yellow-10 text-theme-yellow border border-yellow-40",
+  eliminated: "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-13 text-theme-red border border-red-30",
+};
+const DEFAULT_PILL_CLASS = "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-13 text-theme-green border border-green-30";
+
+function statusPillClass(status: string): string {
+  return STATUS_PILL_CLASS[status] ?? DEFAULT_PILL_CLASS;
 }
 
 export function TournamentDetailPage() {
@@ -299,7 +304,7 @@ export function TournamentDetailPage() {
         <Link to="/admin/tournaments" className="text-faint text-[13px] no-underline">← Tournaments</Link>
         <div className="flex items-center gap-3 mt-2 flex-wrap">
           <h1 className="text-[22px] font-bold text-text">{tournament.name}</h1>
-          <span className={statusPillClass(STATUS_COLORS[tournament.status] ?? C.faint)}>{tournament.status}</span>
+          <span className={statusPillClass(tournament.status)}>{tournament.status}</span>
           {(tournament.status === "draft" || tournament.status === "registration") && (
             <Link to={`/admin/tournaments/${tournamentId}/edit`}
               className="px-3 py-1 text-xs rounded-md no-underline bg-blue/[.10] text-blue border border-blue/[.25]">
@@ -352,21 +357,21 @@ export function TournamentDetailPage() {
                       {matches.filter((m) => m.round === round).sort((a, b) => a.matchNumber - b.matchNumber).map((m) => {
                         const p1 = participants.find((p) => p.id === m.participant1Id);
                         const p2 = participants.find((p) => p.id === m.participant2Id);
-                        const statusColor = m.status === "in-progress" ? C.green : m.status === "completed" ? C.purple : m.status === "bye" ? C.faint : C.muted;
+                        const statusTextClass = STATUS_TEXT_CLASS[m.status] ?? "text-theme-muted";
                         return (
                           <div key={m.id}
                             onClick={() => { setSelectedMatch(m); setSetWinnerValue(m.winnerId ?? ""); setRescheduleTime(""); }}
                             className="bg-bg2 rounded-lg border border-border p-2.5 cursor-pointer">
                             <div className="flex justify-between mb-1.5">
-                              <span style={{ fontSize: 10, color: statusColor, fontWeight: 600, textTransform: "uppercase" }}>{m.status}</span>
+                              <span className={`text-[10px] font-semibold uppercase ${statusTextClass}`}>{m.status}</span>
                               {m.colyseusRoomId && <span className="text-[10px] text-faint font-mono">{m.colyseusRoomId.slice(0, 8)}…</span>}
                             </div>
-                            <div style={{ fontSize: 12, color: m.winnerId === m.participant1Id ? C.yellow : C.text }}>
+                            <div className={`text-[12px] ${m.winnerId === m.participant1Id ? "text-theme-yellow" : "text-theme-text"}`}>
                               {p1?.username ?? (m.participant1Id === "__bye__" ? "BYE" : "TBD")}
                               {p1?.isAI && " (AI)"}{m.winnerId === m.participant1Id && " 🏆"}
                             </div>
                             <div className="h-px bg-border my-1" />
-                            <div style={{ fontSize: 12, color: m.winnerId === m.participant2Id ? C.yellow : C.text }}>
+                            <div className={`text-[12px] ${m.winnerId === m.participant2Id ? "text-theme-yellow" : "text-theme-text"}`}>
                               {p2?.username ?? (m.participant2Id === "__bye__" ? "BYE" : "TBD")}
                               {p2?.isAI && " (AI)"}{m.winnerId === m.participant2Id && " 🏆"}
                             </div>
@@ -396,14 +401,14 @@ export function TournamentDetailPage() {
               <div className="p-5 text-center text-faint text-xs">No participants yet.</div>
             ) : (
               participants.map((p, i) => (
-                <div key={p.id} className="flex items-center gap-2 px-3.5 py-2.5" style={{ borderBottom: i < participants.length - 1 ? `1px solid ${C.border}` : "none" }}>
+                <div key={p.id} className={`flex items-center gap-2 px-3.5 py-2.5${i < participants.length - 1 ? " border-b border-border" : ""}`}>
                   <span className="text-[11px] text-faint w-[18px]">{p.seed}</span>
                   <div className="flex-1">
                     <div className="flex gap-1.5 items-center">
                       <span className="text-[13px] text-text">{p.username}</span>
                       {p.isAI && <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple/[.13] text-purple border border-purple/[.27]">AI</span>}
                     </div>
-                    <span className={statusPillClass(p.status === "winner" ? C.yellow : p.status === "eliminated" ? C.red : C.green)}>{p.status}</span>
+                    <span className={statusPillClass(p.status)}>{p.status}</span>
                   </div>
                   {tournament.status === "registration" && (
                     <button
@@ -525,9 +530,9 @@ function MatchDetailModal({ match, participants, onClose, onSetWinner, onResched
           <div>
             <p className="text-[11px] text-faint mb-1.5">Set Winner</p>
             <div className="flex gap-1.5">
-              <SearchableSelect value={winnerSel} options={participantOpts} onChange={setWinnerSel} placeholder="Select winner…" style={{ flex: 1 }} />
+              <SearchableSelect value={winnerSel} options={participantOpts} onChange={setWinnerSel} placeholder="Select winner…" className="flex-1" />
               <button onClick={() => onSetWinner(winnerSel)} disabled={!winnerSel || busy}
-                style={{ padding: "6px 12px", background: C.yellow, color: C.bg0, border: "none", borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: "pointer", opacity: winnerSel && !busy ? 1 : 0.4 }}>
+                className={`px-3 py-1.5 bg-theme-yellow text-bg0 border-none rounded-[7px] text-[12px] font-semibold cursor-pointer ${winnerSel && !busy ? "" : "opacity-40"}`}>
                 Set
               </button>
             </div>
@@ -538,7 +543,7 @@ function MatchDetailModal({ match, participants, onClose, onSetWinner, onResched
               <input type="datetime-local" value={reschedSel} onChange={e => setReschedSel(e.target.value)}
                 className="flex-1 px-2.5 py-1.5 rounded-lg border border-border bg-bg0 text-text text-xs" />
               <button onClick={() => onReschedule(reschedSel)} disabled={!reschedSel || busy}
-                style={{ padding: "6px 12px", background: C.blue, color: "#fff", border: "none", borderRadius: 7, fontSize: 12, cursor: "pointer", opacity: reschedSel && !busy ? 1 : 0.4 }}>
+                className={`px-3 py-1.5 bg-theme-blue text-white border-none rounded-[7px] text-[12px] cursor-pointer ${reschedSel && !busy ? "" : "opacity-40"}`}>
                 Save
               </button>
             </div>

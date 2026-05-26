@@ -3195,6 +3195,21 @@ export interface ArenaEnvironmentalEffect {
 }
 
 // ============================================================================
+// WORLD BACKGROUND
+// ============================================================================
+
+export type ArenaWorldBackgroundFit = "cover" | "contain" | "stretch";
+
+export interface ArenaWorldBackground {
+  type: "none" | "color" | "image";
+  color?: string;                    // hex color, e.g. "#1a2a3a", when type="color"
+  imageUrl?: string;                 // direct URL (Firebase Storage), when type="image"
+  opacity?: number;                  // 0–1, default 1.0
+  fit?: ArenaWorldBackgroundFit;     // how image fills canvas: cover/contain/stretch, default "cover"
+  blurPx?: number;                   // optional Gaussian blur in pixels (0 = sharp), default 0
+}
+
+// ============================================================================
 // ARENA BEY SPAWN CONFIG (I3)
 // ============================================================================
 
@@ -3725,6 +3740,11 @@ export interface ArenaConfig {
   // ===== BACKGROUND + ENVIRONMENT (Phase Z) =====
   backgroundParticles?: ArenaBackgroundParticles;
   environmentalEffect?: ArenaEnvironmentalEffect;
+
+  // ===== WORLD BACKGROUND =====
+  // What's visible behind the arena/stadium — distinct from the arena floor/theme.
+  // "none" = transparent (reveals page background); "color" = solid fill; "image" = photo/art.
+  worldBackground?: ArenaWorldBackground;
 
   // ===== ROUND MODIFIERS =====
   defaultModifiers?: string[];      // modifier ids always active in this arena

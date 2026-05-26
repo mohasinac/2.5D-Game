@@ -45,20 +45,15 @@ export function PartLayerPreview({ images, partKind, displayName, color, dimensi
 
   return (
     <div
-      style={{
-        display: "flex", flexDirection: "column", gap: 16,
-        padding: "20px 16px",
-        background: `linear-gradient(180deg, ${C.bg1} 0%, ${C.bg0} 100%)`,
-        border: `1px solid ${C.border}`, borderRadius: 12,
-        minHeight: 520,
-      }}
+      className="flex flex-col gap-4 px-4 py-5 border border-border-c rounded-xl min-h-[520px]"
+      style={{ background: `linear-gradient(180deg, ${C.bg1} 0%, ${C.bg0} 100%)` }}
     >
-      <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: 12, color: C.text, fontWeight: 600 }}>{displayName}</div>
-        <div style={{ fontSize: 10, color: C.faint, marginTop: 2, textTransform: "uppercase", letterSpacing: 0.6 }}>
+      <div className="text-center">
+        <div className="text-[12px] text-theme-text font-semibold">{displayName}</div>
+        <div className="text-[10px] text-theme-faint mt-0.5 uppercase tracking-[0.6px]">
           {labelForKind(partKind)}
           {dimensions ? (
-            <span style={{ marginLeft: 8 }}>
+            <span className="ml-2">
               · ⌀ {(dimensions.outerRadius * 2).toFixed(0)}mm · ↕ {dimensions.height.toFixed(0)}mm
             </span>
           ) : null}
@@ -86,33 +81,26 @@ function SlotRow({
   const hasImage = !!url;
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+    <div className="flex items-center gap-3.5">
       {/* Label gutter */}
-      <div
-        style={{
-          width: 80, flexShrink: 0, fontSize: 10, color: C.muted, textAlign: "right",
-          fontVariant: "small-caps", letterSpacing: 0.5,
-        }}
-      >
-        <div style={{ fontWeight: 600, color: hasImage ? C.text : C.muted }}>{slot.label}</div>
-        <div style={{ fontSize: 9, marginTop: 2, opacity: 0.7 }}>{slot.hint}</div>
+      <div className="w-20 shrink-0 text-[10px] text-theme-muted text-right" style={{ fontVariant: "small-caps", letterSpacing: 0.5 }}>
+        <div className={`font-semibold ${hasImage ? "text-theme-text" : "text-theme-muted"}`}>{slot.label}</div>
+        <div className="text-[9px] mt-0.5 opacity-70">{slot.hint}</div>
         {!hasImage && (
-          <div style={{ fontSize: 8, marginTop: 4, color: C.yellow, opacity: 0.8 }}>
+          <div className="text-[8px] mt-1 text-theme-yellow opacity-80">
             no image · using proxy
           </div>
         )}
       </div>
 
       {/* Image / proxy */}
-      <div style={{ flex: 1, display: "flex", justifyContent: "center", minHeight: 80 }}>
+      <div className="flex-1 flex justify-center min-h-[80px]">
         {hasImage ? (
           <img
             src={url}
             alt={slot.label}
-            style={{
-              maxWidth: 240, maxHeight: 140, width: "auto", height: "auto", objectFit: "contain",
-              filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.45))",
-            }}
+            className="max-w-[240px] max-h-[140px] w-auto h-auto object-contain"
+            style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.45))" }}
           />
         ) : (
           <ProxyShape partKind={partKind} slot={slot.key} color={color} />

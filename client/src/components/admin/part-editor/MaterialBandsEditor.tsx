@@ -64,9 +64,9 @@ function WearScheduleEditor({
   const pathD = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
 
   return (
-    <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border}` }}>
+    <div className="mt-2.5 pt-2.5 border-t border-border-c">
       {/* Preview sparkline */}
-      <svg width={W} height={H + 8} style={{ display: "block", marginBottom: 8 }}>
+      <svg width={W} height={H + 8} className="block mb-2">
         {/* Grid lines at 25/50/75% */}
         {[25, 50, 75].map((y) => (
           <line key={y} x1={0} y1={H - (y / 100) * H} x2={W} y2={H - (y / 100) * H}
@@ -83,50 +83,51 @@ function WearScheduleEditor({
       </svg>
 
       {/* Preset buttons */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 8 }}>
+      <div className="flex flex-wrap gap-1 mb-2">
         {WEAR_PRESETS.map((p) => (
           <button key={p.label} onClick={() => onChange(p.steps)}
-            style={{ padding: "3px 8px", fontSize: 10, borderRadius: 5, cursor: "pointer",
-              background: C.bg2, color: C.muted, border: `1px solid ${C.border}` }}>
+            className="py-[3px] px-2 text-[10px] rounded cursor-pointer bg-bg2 text-theme-muted border border-border-c">
             {p.label}
           </button>
         ))}
       </div>
 
       {/* Step rows */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div className="flex flex-col gap-1.5">
         {sorted.map((step, i) => (
-          <div key={i} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint }}>
+          <div key={i} className="flex gap-2 items-center">
+            <div className="flex flex-col gap-0.5 flex-1">
+              <div className="flex justify-between text-[10px] text-theme-faint">
                 <span>At (s)</span><span>{step.atSecond}s</span>
               </div>
               <input type="range" min={0} max={300} step={5} value={step.atSecond}
                 onChange={(e) => updateStep(i, { atSecond: +e.target.value })}
-                style={{ width: "100%", accentColor: C.blue }} />
+                className="w-full"
+                style={{ accentColor: C.blue }} />
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint }}>
-                <span>Wear</span><span style={{ color: step.wearLevel < 40 ? C.red : step.wearLevel < 70 ? C.orange : C.green }}>{step.wearLevel}%</span>
+            <div className="flex flex-col gap-0.5 flex-1">
+              <div className="flex justify-between text-[10px] text-theme-faint">
+                <span>Wear</span>
+                <span className={step.wearLevel < 40 ? "text-theme-red" : step.wearLevel < 70 ? "text-theme-orange" : "text-theme-green"}>{step.wearLevel}%</span>
               </div>
               <input type="range" min={0} max={100} step={5} value={step.wearLevel}
                 onChange={(e) => updateStep(i, { wearLevel: +e.target.value })}
-                style={{ width: "100%", accentColor: step.wearLevel < 40 ? C.red : C.blue }} />
+                className="w-full"
+                style={{ accentColor: step.wearLevel < 40 ? C.red : C.blue }} />
             </div>
             <button onClick={() => removeStep(i)}
-              style={{ background: "none", border: "none", color: C.red, fontSize: 13, cursor: "pointer", paddingTop: 14 }}>×</button>
+              className="bg-transparent border-none text-theme-red text-[13px] cursor-pointer pt-3.5">×</button>
           </div>
         ))}
       </div>
 
       <button onClick={addStep}
-        style={{ marginTop: 8, padding: "4px 10px", fontSize: 10, borderRadius: 5, cursor: "pointer",
-          background: C.bg3, color: C.muted, border: `1px solid ${C.border}` }}>
+        className="mt-2 py-1 px-2.5 text-[10px] rounded cursor-pointer bg-bg3 text-theme-muted border border-border-c">
         + Add step
       </button>
 
       {sorted.length === 0 && (
-        <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>No schedule — wear stays at 100% all match.</div>
+        <div className="text-[11px] text-theme-faint mt-1">No schedule — wear stays at 100% all match.</div>
       )}
     </div>
   );
@@ -163,61 +164,64 @@ export function MaterialBandsEditor({ value, onChange }: Props) {
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-        <div style={{ fontSize: 12, color: C.muted }}>Material Bands</div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 11, color: overBudget ? C.red : total > 0.98 ? C.green : C.muted, fontFamily: "monospace" }}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-xs text-theme-muted">Material Bands</div>
+        <div className="flex items-center gap-2">
+          <span className={`text-[11px] font-mono ${overBudget ? "text-theme-red" : total > 0.98 ? "text-theme-green" : "text-theme-muted"}`}>
             {(total * 100).toFixed(0)}% / 100%
           </span>
           <button onClick={addBand}
-            style={{ padding: "3px 10px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, fontSize: 11, color: C.muted, cursor: "pointer" }}>
+            className="py-[3px] px-2.5 bg-bg3 border border-border-c rounded cursor-pointer text-[11px] text-theme-muted">
             + Band
           </button>
         </div>
       </div>
 
       {value.length === 0 && (
-        <div style={{ fontSize: 12, color: C.faint, padding: "8px 0" }}>
+        <div className="text-xs text-theme-faint py-2">
           No material bands. Add one or leave empty for a single-material part.
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div className="flex flex-col gap-2">
         {value.map((band, idx) => {
           const wearOpen = expandedWear === idx;
           const hasWear = !!(band.wearSchedule?.length);
           const endWear = finalWearLevel(band);
 
           return (
-            <div key={idx} style={{ background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                <span style={{ fontSize: 12, color: C.text, fontWeight: 500 }}>Band {idx + 1}</span>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div key={idx} className="bg-bg3 border border-border-c rounded-lg py-2.5 px-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-theme-text font-medium">Band {idx + 1}</span>
+                <div className="flex items-center gap-2">
                   {/* Wear badge */}
                   <button
                     onClick={() => setExpandedWear(wearOpen ? null : idx)}
                     title="Wear schedule"
-                    style={{ padding: "2px 8px", fontSize: 10, borderRadius: 5, cursor: "pointer",
+                    className="py-[2px] px-2 text-[10px] rounded cursor-pointer border"
+                    style={{
                       background: wearOpen ? alpha(C.orange, 0.15) : hasWear ? alpha(C.orange, 0.08) : C.bg2,
                       color: hasWear ? C.orange : C.faint,
-                      border: `1px solid ${hasWear ? alpha(C.orange, 0.35) : C.border}` }}>
+                      borderColor: hasWear ? alpha(C.orange, 0.35) : C.border,
+                    }}>
                     {hasWear ? `Wear ${endWear}%` : "No wear"}
                   </button>
                   <button onClick={() => removeBand(idx)}
-                    style={{ fontSize: 12, color: C.red, background: "none", border: "none", cursor: "pointer" }}>×</button>
+                    className="text-xs text-theme-red bg-transparent border-none cursor-pointer">×</button>
                 </div>
               </div>
 
               <MaterialSelector value={band.material} onChange={(m) => updateBand(idx, { material: m })} label={undefined} />
 
-              <div style={{ marginTop: 10 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.muted, marginBottom: 3 }}>
+              <div className="mt-2.5">
+                <div className="flex justify-between text-[11px] text-theme-muted mb-[3px]">
                   <span>Coverage</span>
-                  <span style={{ fontFamily: "monospace" }}>{(band.coverage * 100).toFixed(0)}%</span>
+                  <span className="font-mono">{(band.coverage * 100).toFixed(0)}%</span>
                 </div>
                 <input type="range" min={0.01} max={1} step={0.01} value={band.coverage}
                   onChange={(e) => updateBand(idx, { coverage: +e.target.value })}
-                  style={{ width: "100%", accentColor: C.blue }} />
+                  className="w-full"
+                  style={{ accentColor: C.blue }} />
               </div>
 
               {wearOpen && (
@@ -232,7 +236,7 @@ export function MaterialBandsEditor({ value, onChange }: Props) {
       </div>
 
       {overBudget && (
-        <div style={{ marginTop: 6, fontSize: 11, color: C.red }}>
+        <div className="mt-1.5 text-[11px] text-theme-red">
           Total coverage exceeds 100% — adjust band values.
         </div>
       )}

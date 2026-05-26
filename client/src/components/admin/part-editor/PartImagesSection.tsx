@@ -80,12 +80,14 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-        <div style={{ fontSize: 12, color: C.muted }}>Part Images (no-background PNG)</div>
+      <div className="flex items-center justify-between mb-2.5">
+        <div className="text-[12px] text-theme-muted">Part Images (no-background PNG)</div>
         <div
+          className="text-[11px] px-[9px] py-[3px] rounded-full font-semibold"
           style={{
-            fontSize: 11, padding: "3px 9px", borderRadius: 99, fontWeight: 600,
-            background: alpha(wf.color, 0.09), color: wf.color, border: `1px solid ${alpha(wf.color, 0.27)}`,
+            background: alpha(wf.color, 0.09),
+            color: wf.color,
+            border: `1px solid ${alpha(wf.color, 0.27)}`,
           }}
         >
           {wf.tier}
@@ -93,9 +95,9 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
       </div>
 
       {/* Workflow hint */}
-      <div style={{ fontSize: 11, color: C.faint, marginBottom: 12 }}>{wf.desc}</div>
+      <div className="text-[11px] text-theme-faint mb-3">{wf.desc}</div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+      <div className="grid grid-cols-3 gap-2.5">
         {SLOTS.map((slot) => {
           const url = images[slot.key];
           const busy = uploading[slot.key];
@@ -105,7 +107,7 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
                 ref={inputRefs[slot.key]}
                 type="file"
                 accept="image/png,image/webp,image/jpeg"
-                style={{ display: "none" }}
+                className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
                   if (f) handleFile(slot.key, f);
@@ -113,39 +115,33 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
                 }}
               />
               <div
+                className="rounded-[9px] overflow-hidden transition-[border-color] duration-150"
                 style={{
                   border: `1px solid ${url ? alpha(C.blue, 0.33) : C.border}`,
-                  borderRadius: 9, overflow: "hidden",
                   background: url ? C.bg1 : C.bg2,
-                  transition: "border-color 150ms",
                 }}
               >
                 {/* Slot header */}
-                <div style={{ padding: "7px 10px", display: "flex", alignItems: "center", gap: 6, borderBottom: `1px solid ${C.border}` }}>
-                  <span style={{ fontSize: 13 }}>{slot.icon}</span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: url ? C.text : C.muted }}>{slot.label}</span>
+                <div className="px-2.5 py-[7px] flex items-center gap-1.5 border-b border-border-c">
+                  <span className="text-[13px]">{slot.icon}</span>
+                  <span className="text-[12px] font-semibold" style={{ color: url ? C.text : C.muted }}>{slot.label}</span>
                 </div>
 
                 {/* Preview / empty state */}
                 {url ? (
-                  <div style={{ position: "relative" }}>
+                  <div className="relative">
                     <img
                       src={url}
                       alt={slot.label}
-                      style={{
-                        width: "100%", aspectRatio: "1", objectFit: "contain",
-                        display: "block", background: "#111",
-                      }}
+                      className="w-full aspect-square object-contain block bg-[#111]"
                     />
                     <button
                       onClick={() => handleRemove(slot.key)}
                       title="Remove image"
+                      className="absolute top-1 right-1 rounded-full w-[22px] h-[22px] flex items-center justify-center text-[11px] text-theme-red cursor-pointer"
                       style={{
-                        position: "absolute", top: 4, right: 4,
-                        background: alpha(C.bg0, 0.80), border: `1px solid ${C.border}`,
-                        borderRadius: "50%", width: 22, height: 22,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 11, color: C.red, cursor: "pointer",
+                        background: alpha(C.bg0, 0.80),
+                        border: `1px solid ${C.border}`,
                       }}
                     >
                       ×
@@ -153,35 +149,32 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
                   </div>
                 ) : (
                   <div
-                    style={{
-                      aspectRatio: "1", display: "flex", flexDirection: "column",
-                      alignItems: "center", justifyContent: "center", gap: 4,
-                      cursor: busy ? "default" : "pointer",
-                    }}
+                    className="aspect-square flex flex-col items-center justify-center gap-1"
+                    style={{ cursor: busy ? "default" : "pointer" }}
                     onClick={() => !busy && inputRefs[slot.key].current?.click()}
                   >
                     {busy ? (
-                      <div style={{ fontSize: 11, color: C.muted }}>Uploading…</div>
+                      <div className="text-[11px] text-theme-muted">Uploading…</div>
                     ) : (
                       <>
-                        <div style={{ fontSize: 22, opacity: 0.4 }}>+</div>
-                        <div style={{ fontSize: 10, color: C.faint }}>PNG, no bg</div>
+                        <div className="text-[22px] opacity-40">+</div>
+                        <div className="text-[10px] text-theme-faint">PNG, no bg</div>
                       </>
                     )}
                   </div>
                 )}
 
                 {/* Replace / upload button */}
-                <div style={{ padding: "6px 8px" }}>
+                <div className="px-2 py-1.5">
                   <button
                     onClick={() => !busy && inputRefs[slot.key].current?.click()}
                     disabled={busy}
+                    className="w-full py-[5px] text-[11px] rounded-[5px]"
                     style={{
-                      width: "100%", padding: "5px 0", fontSize: 11,
                       background: url ? C.bg3 : alpha(C.blue, 0.13),
                       color: url ? C.muted : C.blue,
                       border: `1px solid ${url ? C.border : alpha(C.blue, 0.27)}`,
-                      borderRadius: 5, cursor: busy ? "default" : "pointer",
+                      cursor: busy ? "default" : "pointer",
                     }}
                   >
                     {busy ? "…" : url ? "Replace" : "Upload"}
@@ -189,7 +182,7 @@ export function PartImagesSection({ images, onChange, storagePath }: Props) {
                 </div>
               </div>
 
-              <div style={{ fontSize: 10, color: C.faint, marginTop: 4 }}>{slot.desc}</div>
+              <div className="text-[10px] text-theme-faint mt-1">{slot.desc}</div>
             </div>
           );
         })}

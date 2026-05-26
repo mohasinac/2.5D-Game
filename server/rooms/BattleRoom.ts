@@ -1,8 +1,9 @@
-import { Room, Client } from "colyseus";
+import { Client } from "colyseus";
 import {
   GameState,
   Beyblade,
 } from "./schema/GameState";
+import { BaseRoom } from "./BaseRoom";
 import { BeyGhostState } from "./schema/BeyGhostState";
 import { AoI } from "../shared/constants/aoi";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
@@ -751,6 +752,13 @@ export class BattleRoom extends Room<GameState> {
     this.state.arena.arenaProjectileDamageMult = arenaData.projectileDamageMult ?? 1.0;
     this.state.arena.arenaFriendlyFireEnabled  = arenaData.friendlyFireEnabled  ?? true;
     this.state.arena.arenaPhaseObstacles       = arenaData.phaseObstacles       ?? false;
+    const wb = (arenaData as any).worldBackground;
+    this.state.arena.worldBgType     = wb?.type     ?? "none";
+    this.state.arena.worldBgColor    = wb?.color    ?? "";
+    this.state.arena.worldBgImageUrl = wb?.imageUrl ?? "";
+    this.state.arena.worldBgOpacity  = wb?.opacity  ?? 1.0;
+    this.state.arena.worldBgFit      = wb?.fit      ?? "cover";
+    this.state.arena.worldBgBlurPx   = wb?.blurPx   ?? 0;
   }
 
   private applyDefaultArena(arenaId: string) {

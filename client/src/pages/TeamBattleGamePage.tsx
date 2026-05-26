@@ -9,7 +9,6 @@ import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGameInput } from "@/game/hooks/useGameInput";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
-import { C } from "@/styles/theme";
 import { BeySelector } from "@/components/game/BeySelector";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
@@ -132,8 +131,8 @@ export function TeamBattleGamePage() {
   );
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden", background: "#000" }}>
-      <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
+    <div className="relative w-full h-screen overflow-hidden bg-black">
+      <div ref={containerRef} className="absolute inset-0" />
 
       {showLoading && (
         <LoadingProgress
@@ -146,7 +145,7 @@ export function TeamBattleGamePage() {
       {/* HUDs */}
       {!isSpectating && myBeyblade && (
         <>
-          <div style={{ position: "absolute", bottom: 80, left: "50%", transform: "translateX(-50%)" }}>
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2">
             <BeySelector slots={teamSlots} onSelect={handleBeySelectorSelect} />
           </div>
           <SpecialMoveHUD
@@ -165,29 +164,25 @@ export function TeamBattleGamePage() {
         </>
       )}
 
-      <div style={{ position: "absolute", top: 10, right: 10 }}>
+      <div className="absolute" style={{ top: 10, right: 10 }}>
         <CameraControls onZoomIn={cameraZoomIn} onZoomOut={cameraZoomOut} onZoomReset={cameraZoomReset} />
       </div>
 
       {/* Team indicator */}
-      <div style={{
-        position: "absolute", top: 10, left: 10,
-        padding: "4px 12px", borderRadius: 8,
-        background: myTeam === "blue" ? "#3b82f644" : "#ef444444",
-        border: `1px solid ${myTeam === "blue" ? "#3b82f6" : "#ef4444"}`,
-        color: myTeam === "blue" ? "#93c5fd" : "#fca5a5",
-        fontSize: 12, fontWeight: 700,
-      }}>
+      <div
+        className={`absolute py-1 px-3 rounded-lg text-[12px] font-bold ${myTeam === "blue" ? "text-[#93c5fd]" : "text-[#fca5a5]"}`}
+        style={{
+          top: 10, left: 10,
+          background: myTeam === "blue" ? "#3b82f644" : "#ef444444",
+          border: `1px solid ${myTeam === "blue" ? "#3b82f6" : "#ef4444"}`,
+        }}
+      >
         {myTeam === "blue" ? "Blue" : "Red"}
       </div>
 
       {/* Possession notification */}
       {possessionMsg && (
-        <div style={{
-          position: "absolute", top: "40%", left: "50%", transform: "translate(-50%,-50%)",
-          background: "#00000088", borderRadius: 10, padding: "10px 20px",
-          color: "#f1f5f9", fontSize: 14, fontWeight: 600, pointerEvents: "none",
-        }}>
+        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/[0.53] rounded-[10px] py-[10px] px-5 text-[#f1f5f9] text-[14px] font-semibold pointer-events-none">
           Switched to {possessionMsg}
         </div>
       )}

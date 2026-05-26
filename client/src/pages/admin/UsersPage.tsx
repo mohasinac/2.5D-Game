@@ -3,8 +3,6 @@ import { collection, getDocs, doc, updateDoc, query, orderBy } from "firebase/fi
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
-import { C, alpha } from "@/styles/theme";
-
 interface UserDoc {
   id: string;
   email?: string;
@@ -14,7 +12,10 @@ interface UserDoc {
   lastLoginAt?: any;
 }
 
-const ROLE_COLORS = { admin: C.yellow, player: C.blue };
+const ROLE_CLASSES = {
+  admin: { bg: "bg-yellow-13", text: "text-theme-yellow", avatarBg: "bg-yellow-13" },
+  player: { bg: "bg-blue-13", text: "text-theme-blue", avatarBg: "bg-blue-13" },
+};
 
 export function UsersPage() {
   const { currentUser } = useAuth();
@@ -91,18 +92,14 @@ export function UsersPage() {
             const role = user.role ?? "player";
             const isMe = user.id === currentUser?.uid;
             const isUpdating = updatingId === user.id;
+            const roleClasses = ROLE_CLASSES[role as keyof typeof ROLE_CLASSES] ?? ROLE_CLASSES.player;
             return (
               <div
                 key={user.id}
-                className="flex items-center gap-3 px-4 py-3"
-                style={{
-                  borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : "none",
-                  background: isMe ? alpha(C.blue, 0.05) : "transparent",
-                }}
+                className={`flex items-center gap-3 px-4 py-3 ${i < filtered.length - 1 ? "border-b border-border-c" : ""} ${isMe ? "bg-blue-10" : ""}`}
               >
                 <div
-                  className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-base"
-                  style={{ background: alpha(ROLE_COLORS[role as keyof typeof ROLE_COLORS] ?? C.muted, 0.13) }}
+                  className={`w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-base ${roleClasses.avatarBg}`}
                 >
                   {role === "admin" ? "👑" : "🎮"}
                 </div>
@@ -112,7 +109,7 @@ export function UsersPage() {
                     <span className="text-text text-[13px] font-medium overflow-hidden text-ellipsis whitespace-nowrap">
                       {user.displayName ?? user.email ?? user.id.slice(0, 12) + "…"}
                     </span>
-                    {isMe && <span className="text-[10px] text-blue px-1.5 py-px rounded" style={{ background: alpha(C.blue, 0.13) }}>you</span>}
+                    {isMe && <span className="text-[10px] text-blue px-1.5 py-px rounded bg-blue-13">you</span>}
                   </div>
                   <div className="flex gap-2 mt-0.5">
                     <span className="text-[11px] text-faint overflow-hidden text-ellipsis whitespace-nowrap">{user.email ?? "—"}</span>
@@ -122,20 +119,14 @@ export function UsersPage() {
                 </div>
 
                 <div className="flex items-center gap-2.5 flex-shrink-0">
-                  <span style={{
-                    fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em",
-                    color: ROLE_COLORS[role as keyof typeof ROLE_COLORS] ?? C.muted,
-                    background: alpha(ROLE_COLORS[role as keyof typeof ROLE_COLORS] ?? C.muted, 0.13),
-                    padding: "3px 8px", borderRadius: 6,
-                  }}>
+                  <span className={`text-[11px] font-bold uppercase tracking-[0.05em] ${roleClasses.text} ${roleClasses.bg} py-[3px] px-2 rounded-[6px]`}>
                     {role}
                   </span>
                   <button
                     onClick={() => handleRoleToggle(user)}
                     disabled={isUpdating}
                     title={role === "admin" ? "Demote to player" : "Promote to admin"}
-                    className="px-2.5 py-1 text-[11px] rounded-md bg-transparent text-muted border border-border cursor-pointer"
-                    style={{ opacity: isUpdating ? 0.5 : 1 }}
+                    className={`px-2.5 py-1 text-[11px] rounded-md bg-transparent text-muted border border-border cursor-pointer ${isUpdating ? "opacity-50" : ""}`}
                   >
                     {isUpdating ? "…" : role === "admin" ? "Demote" : "Promote"}
                   </button>

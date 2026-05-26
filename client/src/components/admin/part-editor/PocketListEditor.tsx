@@ -160,12 +160,12 @@ export function PocketListEditor({ value, onChange, outerRadius = 35 }: Props) {
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-        <div style={{ fontSize: 12, color: C.muted }}>Pockets ({value.length})</div>
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-[12px] text-theme-muted">Pockets ({value.length})</div>
         <button
           onClick={() => setPlacing((p) => !p)}
+          className="px-3 py-1 text-[11px] rounded-[6px] cursor-pointer border"
           style={{
-            padding: "4px 12px", fontSize: 11, borderRadius: 6, cursor: "pointer",
             background: placing ? C.blue : C.bg3,
             color: placing ? "#fff" : C.muted,
             border: `1px solid ${placing ? C.blue : C.border}`,
@@ -175,60 +175,59 @@ export function PocketListEditor({ value, onChange, outerRadius = 35 }: Props) {
         </button>
       </div>
 
-      <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+      <div className="flex gap-3.5 items-start">
         {/* Canvas */}
         <div>
           <canvas
             ref={canvasRef}
             width={CANVAS_SIZE}
             height={CANVAS_SIZE}
-            style={{ borderRadius: 8, border: `1px solid ${C.border}`, cursor: placing ? "crosshair" : "pointer" }}
+            className={`rounded-[8px] border border-border-c ${placing ? "cursor-crosshair" : "cursor-pointer"}`}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUp}
             onMouseLeave={onMouseUp}
           />
-          <div style={{ fontSize: 10, color: C.faint, marginTop: 4, textAlign: "center" }}>
+          <div className="text-[10px] text-theme-faint mt-1 text-center">
             Click to place · Drag to reposition
           </div>
         </div>
 
         {/* List + selected editor */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8, minWidth: 180 }}>
+        <div className="flex-1 flex flex-col gap-2 min-w-[180px]">
           {/* List */}
-          <div style={{ maxHeight: 120, overflowY: "auto", display: "flex", flexDirection: "column", gap: 4 }}>
+          <div className="max-h-[120px] overflow-y-auto flex flex-col gap-1">
             {value.map((p, i) => (
               <div
                 key={i}
                 onClick={() => setSelected(selected === i ? null : i)}
+                className="rounded-[6px] px-2.5 py-[5px] cursor-pointer flex items-center gap-2 text-[11px]"
                 style={{
                   background: selected === i ? alpha(C.blue, 0.09) : C.bg2,
                   border: `1px solid ${selected === i ? alpha(C.blue, 0.33) : C.border}`,
-                  borderRadius: 6, padding: "5px 10px", cursor: "pointer",
-                  display: "flex", alignItems: "center", gap: 8, fontSize: 11,
                 }}
               >
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: p.ballMaterial === "metal" ? C.muted : C.yellow, flexShrink: 0 }} />
-                <span style={{ flex: 1, color: C.text }}>
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ background: p.ballMaterial === "metal" ? C.muted : C.yellow }} />
+                <span className="flex-1 text-theme-text">
                   #{i + 1} — {p.ballMaterial} {p.size} @ ({p.position.x},{p.position.y}) h={p.height}mm
                 </span>
-                <button onClick={(e) => { e.stopPropagation(); remove(i); }} style={{ background: "none", border: "none", color: C.red, fontSize: 13, cursor: "pointer" }}>×</button>
+                <button onClick={(e) => { e.stopPropagation(); remove(i); }} className="bg-transparent border-none text-theme-red text-[13px] cursor-pointer">×</button>
               </div>
             ))}
             {value.length === 0 && (
-              <div style={{ fontSize: 11, color: C.faint }}>No pockets. Add balls to shift the center of mass.</div>
+              <div className="text-[11px] text-theme-faint">No pockets. Add balls to shift the center of mass.</div>
             )}
           </div>
 
           {/* Selected pocket editor */}
           {sel !== null && selected !== null && (
-            <div style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: C.text }}>Pocket #{selected + 1}</div>
+            <div className="bg-bg2 border border-border-c rounded-[8px] px-3 py-2.5 flex flex-col gap-2">
+              <div className="text-[11px] font-semibold text-theme-text">Pocket #{selected + 1}</div>
 
               <Row label="Height (mm)">
                 <input type="number" min={0} max={80} step={1} value={sel.height}
                   onChange={(e) => update(selected, { height: +e.target.value })}
-                  style={numStyle} />
+                  className="w-16 px-1.5 py-[3px] bg-[#1e293b] border border-[#334155] rounded-[5px] text-[#f1f5f9] text-[11px]" />
               </Row>
 
               <Row label="Size">
@@ -252,14 +251,14 @@ export function PocketListEditor({ value, onChange, outerRadius = 35 }: Props) {
               <Row label="Ball count">
                 <input type="number" min={1} max={20} value={sel.ballCount}
                   onChange={(e) => update(selected, { ballCount: +e.target.value })}
-                  style={numStyle} />
+                  className="w-16 px-1.5 py-[3px] bg-[#1e293b] border border-[#334155] rounded-[5px] text-[#f1f5f9] text-[11px]" />
               </Row>
 
               <Row label="Fixed">
                 <input type="checkbox" checked={sel.fixed}
                   onChange={(e) => update(selected, { fixed: e.target.checked })}
-                  style={{ accentColor: C.blue }} />
-                <span style={{ fontSize: 11, color: C.faint }}>fixed (unchecked = moves with centrifugal force)</span>
+                  className="accent-theme-blue" />
+                <span className="text-[11px] text-theme-faint">fixed (unchecked = moves with centrifugal force)</span>
               </Row>
             </div>
           )}
@@ -269,17 +268,11 @@ export function PocketListEditor({ value, onChange, outerRadius = 35 }: Props) {
   );
 }
 
-const numStyle: React.CSSProperties = {
-  width: 64, padding: "3px 6px", background: "#1e293b",
-  border: "1px solid #334155", borderRadius: 5,
-  color: "#f1f5f9", fontSize: 11,
-};
-
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <span style={{ fontSize: 10, color: "#64748b", width: 72, flexShrink: 0 }}>{label}</span>
-      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", alignItems: "center" }}>{children}</div>
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] text-[#64748b] w-[72px] shrink-0">{label}</span>
+      <div className="flex gap-1 flex-wrap items-center">{children}</div>
     </div>
   );
 }

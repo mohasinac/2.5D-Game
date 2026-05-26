@@ -7,7 +7,6 @@ import React, {
   useImperativeHandle,
 } from "react";
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
-import { C } from "../../styles/theme";
 
 interface ImageCropperProps {
   imageUrl: string;
@@ -127,36 +126,20 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
 
     useImperativeHandle(ref, () => ({ getCroppedImage }));
 
-    const iconBtn: React.CSSProperties = {
-      padding: 8,
-      borderRadius: 6,
-      border: "none",
-      background: "transparent",
-      cursor: "pointer",
-      color: C.muted,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    };
-
     return (
-      <div style={{ background: C.bg2, borderRadius: 12, padding: 16 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>
+      <div className="bg-bg2 rounded-xl p-4">
+        <div className="flex flex-col gap-4">
+          <div className="text-[13px] font-semibold text-theme-text">
             Adjust Image (Drag to move, scroll to zoom)
           </div>
 
           {/* Canvas */}
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div className="flex justify-center">
             <div
+              className="relative border-2 border-theme-blue rounded-lg overflow-hidden touch-none"
               style={{
-                position: "relative",
-                border: `2px solid ${C.blue}`,
-                borderRadius: 8,
-                overflow: "hidden",
                 width: `min(${targetWidth}px, 90vw)`,
                 height: `min(${targetHeight}px, 90vw)`,
-                touchAction: "none",
                 cursor: isDragging ? "grabbing" : "grab",
               }}
               onMouseDown={handleMouseDown}
@@ -171,26 +154,25 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
                 ref={canvasRef}
                 width={targetWidth}
                 height={targetHeight}
-                style={{ display: "block", width: "100%", height: "100%" }}
+                className="block w-full h-full"
               />
-              <div style={{
-                position: "absolute", bottom: 8, right: 8,
-                background: "rgba(0,0,0,0.7)", color: C.white,
-                padding: "2px 8px", borderRadius: 4, fontSize: 11,
-              }}>
+              <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-[2px] rounded text-[11px]">
                 {targetWidth} × {targetHeight}
               </div>
             </div>
           </div>
 
           {/* Zoom Controls */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={handleZoomOut}
                 disabled={zoom <= 0.1}
-                style={{ ...iconBtn, opacity: zoom <= 0.1 ? 0.4 : 1 }}
+                className={[
+                  "p-2 rounded-md border-none bg-transparent cursor-pointer text-theme-muted flex items-center justify-center",
+                  zoom <= 0.1 ? "opacity-40" : "opacity-100",
+                ].join(" ")}
                 title="Zoom out"
               >
                 <ZoomOut size={18} />
@@ -203,7 +185,7 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
                 step="0.1"
                 value={zoom}
                 onChange={(e) => setZoom(parseFloat(e.target.value))}
-                style={{ flex: 1, accentColor: C.blue }}
+                className="flex-1 accent-theme-blue"
                 title={`Zoom: ${Math.round(zoom * 100)}%`}
               />
 
@@ -211,7 +193,10 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
                 type="button"
                 onClick={handleZoomIn}
                 disabled={zoom >= 3}
-                style={{ ...iconBtn, opacity: zoom >= 3 ? 0.4 : 1 }}
+                className={[
+                  "p-2 rounded-md border-none bg-transparent cursor-pointer text-theme-muted flex items-center justify-center",
+                  zoom >= 3 ? "opacity-40" : "opacity-100",
+                ].join(" ")}
                 title="Zoom in"
               >
                 <ZoomIn size={18} />
@@ -220,14 +205,14 @@ const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
               <button
                 type="button"
                 onClick={handleReset}
-                style={iconBtn}
+                className="p-2 rounded-md border-none bg-transparent cursor-pointer text-theme-muted flex items-center justify-center"
                 title="Reset"
               >
                 <RotateCcw size={18} />
               </button>
             </div>
 
-            <div style={{ fontSize: 11, textAlign: "center", color: C.faint }}>
+            <div className="text-[11px] text-center text-theme-faint">
               Drag to reposition • Scroll or use slider to zoom • Click reset to center
             </div>
           </div>

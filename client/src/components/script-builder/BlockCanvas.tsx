@@ -160,13 +160,13 @@ export function BlockCanvas({ steps, onChange, draggedBlock, onDragEnd, tasks }:
     <div
       ref={dropZoneRef}
       data-canvas="task-0"
-      style={{ flex: 1, overflowY: "auto", padding: 12, display: "flex", flexDirection: "column", gap: 0, minHeight: 200 }}
+      className="flex-1 overflow-y-auto p-3 flex flex-col gap-0 min-h-[200px]"
       onDragOver={e => { e.preventDefault(); }}
       onDrop={e => handleDrop(e, steps.length)}
     >
       {blocks.length === 0 && (
         <div
-          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: C.faint, fontSize: 13, border: `2px dashed ${C.border}`, borderRadius: 12, minHeight: 120 }}
+          className="flex-1 flex items-center justify-center text-theme-faint text-[13px] border-2 border-dashed border-border-c rounded-xl min-h-[120px]"
           onDragOver={e => { e.preventDefault(); setDragOverIdx(0); }}
           onDrop={e => handleDrop(e, 0)}
         >
@@ -190,7 +190,13 @@ export function BlockCanvas({ steps, onChange, draggedBlock, onDragEnd, tasks }:
             <div key={block.id}>
               {/* Drop zone above block */}
               <div
-                style={{ height: dragOverIdx === idx ? 8 : 4, background: dragOverIdx === idx ? C.blue + "88" : "transparent", borderRadius: 4, transition: "all 0.1s", margin: "1px 0" }}
+                style={{
+                  height: dragOverIdx === idx ? 8 : 4,
+                  background: dragOverIdx === idx ? C.blue + "88" : "transparent",
+                  borderRadius: 4,
+                  transition: "all 0.1s",
+                  margin: "1px 0",
+                }}
                 onDragOver={e => { e.preventDefault(); e.stopPropagation(); setDragOverIdx(idx); }}
                 onDragLeave={() => setDragOverIdx(null)}
                 onDrop={e => handleDrop(e, idx)}
@@ -211,7 +217,13 @@ export function BlockCanvas({ steps, onChange, draggedBlock, onDragEnd, tasks }:
             <div key={block.id}>
               {/* Drop zone above block */}
               <div
-                style={{ height: dragOverIdx === idx ? 8 : 4, background: dragOverIdx === idx ? C.blue + "88" : "transparent", borderRadius: 4, transition: "all 0.1s", margin: "1px 0" }}
+                style={{
+                  height: dragOverIdx === idx ? 8 : 4,
+                  background: dragOverIdx === idx ? C.blue + "88" : "transparent",
+                  borderRadius: 4,
+                  transition: "all 0.1s",
+                  margin: "1px 0",
+                }}
                 onDragOver={e => { e.preventDefault(); e.stopPropagation(); setDragOverIdx(idx); }}
                 onDragLeave={() => setDragOverIdx(null)}
                 onDrop={e => handleDrop(e, idx)}
@@ -225,7 +237,13 @@ export function BlockCanvas({ steps, onChange, draggedBlock, onDragEnd, tasks }:
           <div key={block.id}>
             {/* Drop zone above block */}
             <div
-              style={{ height: dragOverIdx === idx ? 8 : 4, background: dragOverIdx === idx ? C.blue + "88" : "transparent", borderRadius: 4, transition: "all 0.1s", margin: "1px 0" }}
+              style={{
+                height: dragOverIdx === idx ? 8 : 4,
+                background: dragOverIdx === idx ? C.blue + "88" : "transparent",
+                borderRadius: 4,
+                transition: "all 0.1s",
+                margin: "1px 0",
+              }}
               onDragOver={e => { e.preventDefault(); e.stopPropagation(); setDragOverIdx(idx); }}
               onDragLeave={() => setDragOverIdx(null)}
               onDrop={e => handleDrop(e, idx)}
@@ -245,36 +263,62 @@ export function BlockCanvas({ steps, onChange, draggedBlock, onDragEnd, tasks }:
             >
               {/* Parallel badge */}
               {block.parallel && (
-                <span style={{ position: "absolute", top: 4, left: 4, fontSize: 9, background: C.blue + "33", color: C.blue, borderRadius: 4, padding: "1px 4px", fontWeight: 700 }}>∥</span>
+                <span
+                  style={{
+                    position: "absolute",
+                    top: 4,
+                    left: 4,
+                    fontSize: 9,
+                    background: C.blue + "33",
+                    color: C.blue,
+                    borderRadius: 4,
+                    padding: "1px 4px",
+                    fontWeight: 700,
+                  }}
+                >∥</span>
               )}
 
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div className="flex items-center gap-[6px]">
                 <span style={{ fontSize: 14, color }}>{block.label}</span>
-                <span style={{ fontFamily: "monospace", fontSize: 10, color: C.faint, flex: 1 }}>
+                <span className="font-mono text-[10px] text-theme-faint flex-1">
                   {Object.entries(block.params).slice(0, 2).map(([k, v]) => renderParam(k, v)).join("  ")}
                 </span>
 
-                <div style={{ display: "flex", gap: 3 }} onClick={e => e.stopPropagation()}>
-                  <button type="button" onClick={() => handleMoveUp(idx)} style={{ background: "transparent", border: "none", color: C.muted, cursor: "pointer", fontSize: 11, padding: "2px 4px" }}>↑</button>
-                  <button type="button" onClick={() => handleMoveDown(idx)} style={{ background: "transparent", border: "none", color: C.muted, cursor: "pointer", fontSize: 11, padding: "2px 4px" }}>↓</button>
-                  <button type="button" onClick={() => toggleParallel(idx)} style={{ background: "transparent", border: "none", color: block.parallel ? C.blue : C.muted, cursor: "pointer", fontSize: 11, padding: "2px 4px" }}>∥</button>
-                  <button type="button" onClick={() => startEdit(idx)} style={{ background: "transparent", border: "none", color: C.muted, cursor: "pointer", fontSize: 11, padding: "2px 4px" }}>⚙</button>
-                  <button type="button" onClick={() => handleRemove(idx)} style={{ background: "transparent", border: "none", color: C.red, cursor: "pointer", fontSize: 11, padding: "2px 4px" }}>✕</button>
+                <div className="flex gap-[3px]" onClick={e => e.stopPropagation()}>
+                  <button type="button" onClick={() => handleMoveUp(idx)} className="bg-transparent border-none text-theme-muted cursor-pointer text-[11px] px-1 py-[2px]">↑</button>
+                  <button type="button" onClick={() => handleMoveDown(idx)} className="bg-transparent border-none text-theme-muted cursor-pointer text-[11px] px-1 py-[2px]">↓</button>
+                  <button
+                    type="button"
+                    onClick={() => toggleParallel(idx)}
+                    className="bg-transparent border-none cursor-pointer text-[11px] px-1 py-[2px]"
+                    style={{ color: block.parallel ? C.blue : C.muted }}
+                  >∥</button>
+                  <button type="button" onClick={() => startEdit(idx)} className="bg-transparent border-none text-theme-muted cursor-pointer text-[11px] px-1 py-[2px]">⚙</button>
+                  <button type="button" onClick={() => handleRemove(idx)} className="bg-transparent border-none text-theme-red cursor-pointer text-[11px] px-1 py-[2px]">✕</button>
                 </div>
               </div>
 
               {/* Inline param editor */}
               {isEditingThis && (
-                <div style={{ marginTop: 8 }} onClick={e => e.stopPropagation()}>
+                <div className="mt-2" onClick={e => e.stopPropagation()}>
                   <textarea
                     autoFocus
-                    style={{ width: "100%", background: "var(--bg3)", border: `1px solid ${C.border}`, borderRadius: 6, padding: "4px 6px", color: C.text, fontSize: 11, fontFamily: "monospace", resize: "vertical", minHeight: 80, boxSizing: "border-box" }}
+                    className="w-full bg-bg3 border border-border-c rounded-md px-[6px] py-1 text-theme-text text-[11px] font-mono resize-y min-h-[80px] box-border"
                     value={editParams}
                     onChange={e => setEditParams(e.target.value)}
                   />
-                  <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
-                    <button type="button" onClick={commitEdit} style={{ fontSize: 11, padding: "3px 8px", background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 6, color: C.green, cursor: "pointer" }}>Save</button>
-                    <button type="button" onClick={() => setEditingIdx(null)} style={{ fontSize: 11, padding: "3px 8px", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, cursor: "pointer" }}>Cancel</button>
+                  <div className="flex gap-[6px] mt-1">
+                    <button
+                      type="button"
+                      onClick={commitEdit}
+                      style={{ background: C.green + "22", border: `1px solid ${C.green}44`, color: C.green }}
+                      className="text-[11px] px-2 py-[3px] rounded-md cursor-pointer"
+                    >Save</button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingIdx(null)}
+                      className="text-[11px] px-2 py-[3px] bg-transparent border border-border-c rounded-md text-theme-muted cursor-pointer"
+                    >Cancel</button>
                   </div>
                 </div>
               )}
@@ -286,7 +330,13 @@ export function BlockCanvas({ steps, onChange, draggedBlock, onDragEnd, tasks }:
       {/* Drop zone at the end */}
       {blocks.length > 0 && (
         <div
-          style={{ height: dragOverIdx === steps.length ? 8 : 4, background: dragOverIdx === steps.length ? C.blue + "88" : "transparent", borderRadius: 4, transition: "all 0.1s", margin: "1px 0" }}
+          style={{
+            height: dragOverIdx === steps.length ? 8 : 4,
+            background: dragOverIdx === steps.length ? C.blue + "88" : "transparent",
+            borderRadius: 4,
+            transition: "all 0.1s",
+            margin: "1px 0",
+          }}
           onDragOver={e => { e.preventDefault(); setDragOverIdx(steps.length); }}
           onDragLeave={() => setDragOverIdx(null)}
           onDrop={e => handleDrop(e, steps.length)}

@@ -12,7 +12,6 @@ import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
 import { getBeybladeStability, TYPE_COLORS } from "@/types/game";
 import type { ServerBeyblade, ServerGameState } from "@/types/game";
-import { C } from "@/styles/theme";
 import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { Countdown } from "@/components/game/Countdown";
@@ -403,13 +402,13 @@ export function TryoutGamePage() {
   // ─── Derived HUD values ───────────────────────────────────────────────────────
   const spinPct = hud.maxSpin > 0 ? hud.spin / hud.maxSpin : 0;
   const stability = spinPct;
-  const stabilityColor = stability > 0.6 ? C.green : stability > 0.3 ? C.yellow : C.red;
+  const stabilityColor = stability > 0.6 ? "text-theme-green" : stability > 0.3 ? "text-theme-yellow" : "text-theme-red";
   const stabilityLabel = stability > 0.6 ? "Stable" : stability > 0.3 ? "Wobbling" : "Critical!";
   const spinOut = hud.spin <= 0;
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100vh", background: "#000", overflow: "hidden" }}>
-      <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
+    <div className="relative w-full h-screen bg-black overflow-hidden">
+      <div ref={containerRef} className="absolute inset-0" />
 
       {/* 3-2-1 countdown + "Let It Rip!" flash */}
       <Countdown
@@ -431,21 +430,21 @@ export function TryoutGamePage() {
       )}
 
       {/* HUD top bar */}
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: 16, pointerEvents: "none" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: hud.loaded ? C.green : C.yellow }} className={hud.loaded ? "pulse" : ""} />
-          <span style={{ fontSize: 11, color: C.muted, fontFamily: "monospace", textTransform: "uppercase" }}>
+      <div className="absolute top-0 left-0 right-0 flex items-start justify-between p-4 pointer-events-none">
+        <div className="flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${hud.loaded ? "bg-theme-green" : "bg-theme-yellow"} ${hud.loaded ? "pulse" : ""}`} />
+          <span className="text-[11px] text-theme-muted font-mono uppercase">
             {hud.loaded ? "LOCAL" : "loading..."}
           </span>
         </div>
 
-        <div style={{ color: C.text, fontFamily: "monospace", fontSize: 24, fontWeight: 700 }}>
+        <div className="text-theme-text font-mono text-[24px] font-bold">
           {Math.floor(hud.timer)}s
         </div>
 
         <Link
           to="/game"
-          style={{ pointerEvents: "auto", padding: "4px 12px", fontSize: 12, background: "rgba(0,0,0,0.6)", color: C.muted, borderRadius: 6, border: `1px solid ${C.border}`, textDecoration: "none" }}
+          className="pointer-events-auto py-1 px-3 text-[12px] bg-black/60 text-theme-muted rounded-[6px] border border-border-c no-underline"
         >
           Exit
         </Link>
@@ -457,47 +456,47 @@ export function TryoutGamePage() {
       <ControlsLegend isTryout />
 
       {/* HUD bottom — beyblade stats */}
-      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, pointerEvents: "none" }}>
-        <div style={{ maxWidth: 320, margin: "0 auto", background: "rgba(15,23,42,0.85)", borderRadius: 12, border: `1px solid ${C.border}`, padding: 12 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 8 }}>
-            <span style={{ fontFamily: "monospace" }}>{settings.username ?? "Player"}</span>
-            <span style={{ textTransform: "capitalize", color: `#${(TYPE_COLORS[bey.current.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>
+      <div className="absolute bottom-0 left-0 right-0 p-4 pointer-events-none">
+        <div className="max-w-[320px] mx-auto bg-[rgba(15,23,42,0.85)] rounded-[12px] border border-border-c p-3">
+          <div className="flex justify-between text-[12px] text-theme-muted mb-2">
+            <span className="font-mono">{settings.username ?? "Player"}</span>
+            <span className="capitalize" style={{ color: `#${(TYPE_COLORS[bey.current.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>
               {bey.current.type}
             </span>
           </div>
 
           {/* Spin bar */}
-          <div style={{ marginBottom: 6 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 4 }}>
-              <span style={{ color: C.blue }}>Spin</span>
-              <span style={{ color: C.text, fontFamily: "monospace" }}>{Math.round(spinPct * 100)}%</span>
+          <div className="mb-[6px]">
+            <div className="flex justify-between text-[11px] mb-1">
+              <span className="text-theme-blue">Spin</span>
+              <span className="text-theme-text font-mono">{Math.round(spinPct * 100)}%</span>
             </div>
-            <div style={{ width: "100%", height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
-              <div style={{ height: "100%", background: C.blue, borderRadius: 3, transition: "width 200ms", width: `${spinPct * 100}%` }} />
+            <div className="w-full h-[5px] bg-bg3 rounded-[3px] overflow-hidden">
+              <div className="h-full bg-theme-blue rounded-[3px] transition-[width] duration-200 w-pct" style={{ "--pct": `${spinPct * 100}%` } as React.CSSProperties} />
             </div>
           </div>
 
-          <div style={{ fontSize: 11, textAlign: "center", fontFamily: "monospace", color: stabilityColor }}>{stabilityLabel}</div>
+          <div className={`text-[11px] text-center font-mono ${stabilityColor}`}>{stabilityLabel}</div>
         </div>
       </div>
 
       {/* Spin-out overlay */}
       {spinOut && (
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.80)" }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 60, marginBottom: 16 }}>🌀</div>
-            <h2 style={{ fontSize: 28, fontWeight: 900, color: C.text, marginBottom: 8 }}>Spin Out!</h2>
-            <p style={{ color: C.muted, marginBottom: 24 }}>
+        <div className="absolute inset-0 flex items-center justify-center bg-black/80">
+          <div className="text-center">
+            <div className="text-[60px] mb-4">🌀</div>
+            <h2 className="text-[28px] font-black text-theme-text mb-2">Spin Out!</h2>
+            <p className="text-theme-muted mb-6">
               Survived {Math.floor(hud.timer)}s
             </p>
-            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+            <div className="flex gap-3 justify-center">
               <button
                 onClick={reset}
-                style={{ padding: "12px 24px", background: C.blue, color: C.white, borderRadius: 10, fontWeight: 700, fontSize: 14, cursor: "pointer", border: "none" }}
+                className="py-3 px-6 bg-theme-blue text-white rounded-[10px] font-bold text-[14px] cursor-pointer border-none"
               >
                 Try Again
               </button>
-              <Link to="/game" style={{ padding: "12px 24px", background: C.bg3, color: C.text, borderRadius: 10, fontWeight: 700, fontSize: 14, textDecoration: "none" }}>
+              <Link to="/game" className="py-3 px-6 bg-bg3 text-theme-text rounded-[10px] font-bold text-[14px] no-underline">
                 Menu
               </Link>
             </div>

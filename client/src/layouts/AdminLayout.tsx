@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Outlet, NavLink, Link, useNavigate, useLocation } from "react-router-dom";
-import { C, alpha } from "@/styles/theme";
 import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { cn } from "@/lib/cn";
 import toast from "react-hot-toast";
 import {
   LayoutDashboard, Swords, Shield, Palette, Trophy, Users, BarChart3, FlaskConical,
@@ -77,11 +77,11 @@ function AdminBreadcrumb() {
     crumbs.push({ label, path });
   }
   return (
-    <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+    <span className="flex items-center gap-1">
       {crumbs.map((c, i) => (
-        <span key={c.path} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          {i > 0 && <span style={{ color: C.faint, fontSize: 10 }}>›</span>}
-          <span style={{ color: i === crumbs.length - 1 ? C.text : C.faint }}>{c.label}</span>
+        <span key={c.path} className="flex items-center gap-1">
+          {i > 0 && <span className="text-theme-faint text-[10px]">›</span>}
+          <span className={i === crumbs.length - 1 ? "text-theme-text" : "text-theme-faint"}>{c.label}</span>
         </span>
       ))}
     </span>
@@ -130,7 +130,7 @@ const presetDefItems = [
   { to: "/admin/bowl-profile-defs",   label: "Bowl Profiles",    Icon: Disc },
   { to: "/admin/trigger-type-defs",   label: "Trigger Types",    Icon: Zap },
   { to: "/admin/stat-event-defs",     label: "Stat Events",      Icon: BarChart3 },
-  { to: "/admin/part-layer-defs",           label: "Part Layers",        Icon: Layers },
+  { to: "/admin/part-layer-defs",     label: "Part Layers",      Icon: Layers },
   { to: "/admin/special-interaction-defs", label: "Special Interactions", Icon: Link2 },
 ];
 
@@ -155,17 +155,13 @@ function NavItem({
       to={to}
       end={end}
       title={collapsed ? label : undefined}
-      style={({ isActive }) => ({
-        display: "flex", alignItems: "center",
-        gap: collapsed ? 0 : 10,
-        padding: collapsed ? "8px 0" : indent ? "6px 12px 6px 28px" : "8px 12px",
-        justifyContent: collapsed ? "center" : "flex-start",
-        borderRadius: 8, fontSize: indent ? 12 : 13,
-        textDecoration: "none", transition: "background 150ms",
-        background: isActive ? alpha(C.blue, 0.13) : "transparent",
-        color: isActive ? C.text : C.muted,
-        border: `1px solid ${isActive ? alpha(C.blue, 0.27) : "transparent"}`,
-      })}
+      className={({ isActive }) => cn(
+        "flex items-center rounded-lg text-[13px] no-underline transition-colors border",
+        collapsed ? "justify-center py-2 px-0 gap-0" : indent ? "py-1.5 px-3 pl-7 gap-2.5 text-[12px]" : "py-2 px-3 gap-2.5",
+        isActive
+          ? "bg-blue-13 text-theme-text border-blue-27"
+          : "bg-transparent text-theme-muted border-transparent hover:bg-bg2",
+      )}
     >
       <Icon size={indent ? 13 : 15} />
       {!collapsed && <span>{label}</span>}
@@ -215,46 +211,41 @@ export function AdminLayout() {
   const is2dSection = location.pathname.startsWith("/admin/2d");
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: C.bg0, color: C.text, overflow: "hidden" }}>
+    <div className="flex h-screen bg-bg0 text-theme-text overflow-hidden">
       {/* Sidebar */}
-      <aside style={{
-        width: collapsed ? 56 : 240,
-        background: C.bg1,
-        borderRight: `1px solid ${C.border}`,
-        display: "flex", flexDirection: "column", flexShrink: 0,
-        transition: "width 200ms ease",
-        overflow: "hidden",
-      }}>
+      <aside className={cn(
+        "flex flex-col shrink-0 bg-bg1 border-r border-border-c overflow-hidden transition-[width] duration-200",
+        collapsed ? "w-14" : "w-60",
+      )}>
         {/* Logo */}
-        <div style={{
-          padding: collapsed ? "20px 0" : "20px 24px",
-          borderBottom: `1px solid ${C.border}`,
-          display: "flex", justifyContent: collapsed ? "center" : "flex-start",
-        }}>
-          <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
-            <span style={{ fontSize: 24, flexShrink: 0 }}>🌀</span>
+        <div className={cn(
+          "border-b border-border-c flex",
+          collapsed ? "justify-center py-5 px-0" : "justify-start py-5 px-6",
+        )}>
+          <Link to="/" className="flex items-center gap-3 no-underline">
+            <span className="text-2xl shrink-0">🌀</span>
             {!collapsed && (
               <div>
-                <div style={{ fontWeight: 700, color: C.text, fontSize: 13 }}>Beyblade Game</div>
-                <div style={{ color: C.muted, fontSize: 11 }}>Admin Panel</div>
+                <div className="font-bold text-theme-text text-[13px]">Beyblade Game</div>
+                <div className="text-theme-muted text-[11px]">Admin Panel</div>
               </div>
             )}
           </Link>
         </div>
 
         {/* Nav */}
-        <nav style={{
-          flex: 1, padding: collapsed ? "8px 4px" : 12, overflowY: "auto",
-          display: "flex", flexDirection: "column", gap: 2,
-        }}>
+        <nav className={cn(
+          "flex-1 overflow-y-auto flex flex-col gap-0.5",
+          collapsed ? "py-2 px-1" : "p-3",
+        )}>
           {navItems.map((item) => (
             <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} end={item.end} collapsed={collapsed} />
           ))}
 
           {/* Catalog Section */}
           {!collapsed && (
-            <div style={{ marginTop: 12, marginBottom: 2 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: C.faint, letterSpacing: "0.08em", padding: "4px 12px 2px", textTransform: "uppercase" }}>
+            <div className="mt-3 mb-0.5">
+              <div className="text-[10px] font-bold text-theme-faint tracking-[0.08em] px-3 pt-1 pb-0.5 uppercase">
                 Catalog
               </div>
             </div>
@@ -263,16 +254,11 @@ export function AdminLayout() {
             <>
               <button
                 onClick={() => setCatalogExpanded(e => !e)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 10,
-                  padding: "8px 12px", borderRadius: 8, fontSize: 13,
-                  background: "transparent", border: "none", cursor: "pointer",
-                  color: C.muted, width: "100%", textAlign: "left",
-                }}
+                className="flex items-center gap-2.5 py-2 px-3 rounded-lg text-[13px] bg-transparent border-none cursor-pointer text-theme-muted w-full text-left hover:bg-bg2 transition-colors"
               >
                 <List size={15} />
-                <span style={{ flex: 1 }}>Catalog Items</span>
-                <span style={{ fontSize: 10, color: C.faint }}>{catalogExpanded ? "▾" : "▸"}</span>
+                <span className="flex-1">Catalog Items</span>
+                <span className="text-[10px] text-theme-faint">{catalogExpanded ? "▾" : "▸"}</span>
               </button>
               {catalogExpanded && catalogItems.map(item => (
                 <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
@@ -286,8 +272,8 @@ export function AdminLayout() {
 
           {/* Preset Defs Section */}
           {!collapsed && (
-            <div style={{ marginTop: 12, marginBottom: 2 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: C.faint, letterSpacing: "0.08em", padding: "4px 12px 2px", textTransform: "uppercase" }}>
+            <div className="mt-3 mb-0.5">
+              <div className="text-[10px] font-bold text-theme-faint tracking-[0.08em] px-3 pt-1 pb-0.5 uppercase">
                 Preset Defs
               </div>
             </div>
@@ -296,16 +282,11 @@ export function AdminLayout() {
             <>
               <button
                 onClick={() => setPresetDefsExpanded(e => !e)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 10,
-                  padding: "8px 12px", borderRadius: 8, fontSize: 13,
-                  background: "transparent", border: "none", cursor: "pointer",
-                  color: C.muted, width: "100%", textAlign: "left",
-                }}
+                className="flex items-center gap-2.5 py-2 px-3 rounded-lg text-[13px] bg-transparent border-none cursor-pointer text-theme-muted w-full text-left hover:bg-bg2 transition-colors"
               >
                 <Sliders size={15} />
-                <span style={{ flex: 1 }}>Preset Defs</span>
-                <span style={{ fontSize: 10, color: C.faint }}>{presetDefsExpanded ? "▾" : "▸"}</span>
+                <span className="flex-1">Preset Defs</span>
+                <span className="text-[10px] text-theme-faint">{presetDefsExpanded ? "▾" : "▸"}</span>
               </button>
               {presetDefsExpanded && presetDefItems.map(item => (
                 <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
@@ -319,8 +300,8 @@ export function AdminLayout() {
 
           {/* 2.5D Section */}
           {!collapsed && (
-            <div style={{ marginTop: 12, marginBottom: 2 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: C.faint, letterSpacing: "0.08em", padding: "4px 12px 2px", textTransform: "uppercase" }}>
+            <div className="mt-3 mb-0.5">
+              <div className="text-[10px] font-bold text-theme-faint tracking-[0.08em] px-3 pt-1 pb-0.5 uppercase">
                 2.5D Part System
               </div>
             </div>
@@ -328,21 +309,19 @@ export function AdminLayout() {
 
           <NavItem to="/admin/2d/parts" label="Part Search" Icon={Search} collapsed={collapsed} />
 
-          {/* Part Libraries — collapsible sub-section (hidden when sidebar collapsed) */}
+          {/* Part Libraries — collapsible sub-section */}
           {!collapsed && (
             <>
               <button
                 onClick={() => setLibExpanded((e) => !e)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 10,
-                  padding: "8px 12px", borderRadius: 8, fontSize: 13,
-                  background: "transparent", border: "none", cursor: "pointer",
-                  color: is2dSection ? C.text : C.muted, width: "100%", textAlign: "left",
-                }}
+                className={cn(
+                  "flex items-center gap-2.5 py-2 px-3 rounded-lg text-[13px] bg-transparent border-none cursor-pointer w-full text-left hover:bg-bg2 transition-colors",
+                  is2dSection ? "text-theme-text" : "text-theme-muted",
+                )}
               >
                 <BookOpen size={15} />
-                <span style={{ flex: 1 }}>Part Libraries</span>
-                <span style={{ fontSize: 10, color: C.faint }}>{libExpanded ? "▾" : "▸"}</span>
+                <span className="flex-1">Part Libraries</span>
+                <span className="text-[10px] text-theme-faint">{libExpanded ? "▾" : "▸"}</span>
               </button>
               {libExpanded && partLibraryItems.map((item) => (
                 <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
@@ -355,21 +334,24 @@ export function AdminLayout() {
         </nav>
 
         {/* Footer */}
-        <div style={{ padding: collapsed ? "8px 4px" : 12, borderTop: `1px solid ${C.border}`, display: "flex", flexDirection: "column", gap: 2 }}>
+        <div className={cn(
+          "border-t border-border-c flex flex-col gap-0.5",
+          collapsed ? "py-2 px-1" : "p-3",
+        )}>
           {!collapsed && (
             <>
               <a
                 href="http://localhost:2567/colyseus"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 8, fontSize: 13, color: C.muted, textDecoration: "none" }}
+                className="flex items-center gap-2.5 py-2 px-3 rounded-lg text-[13px] text-theme-muted no-underline hover:bg-bg2 transition-colors"
               >
                 <Radio size={15} />
                 <span>Server Monitor</span>
               </a>
               <Link
                 to="/game"
-                style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 8, fontSize: 13, color: C.muted, textDecoration: "none" }}
+                className="flex items-center gap-2.5 py-2 px-3 rounded-lg text-[13px] text-theme-muted no-underline hover:bg-bg2 transition-colors"
               >
                 <Gamepad2 size={15} />
                 <span>Play Game</span>
@@ -381,13 +363,10 @@ export function AdminLayout() {
           <button
             onClick={toggleSidebar}
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "center",
-              padding: "8px", borderRadius: 8, fontSize: 14,
-              background: "transparent", border: `1px solid ${C.border}`,
-              color: C.muted, cursor: "pointer", width: "100%",
-              marginTop: collapsed ? 0 : 4,
-            }}
+            className={cn(
+              "flex items-center justify-center p-2 rounded-lg text-sm bg-transparent border border-border-c text-theme-muted cursor-pointer w-full hover:bg-bg2 transition-colors",
+              !collapsed && "mt-1",
+            )}
           >
             {collapsed ? "›" : "‹"}
           </button>
@@ -395,52 +374,39 @@ export function AdminLayout() {
       </aside>
 
       {/* Main content */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top header bar */}
-        <header style={{
-          height: 48, flexShrink: 0,
-          borderBottom: `1px solid ${C.border}`,
-          background: C.bg1,
-          display: "flex", alignItems: "center",
-          padding: "0 20px", gap: 12,
-        }}>
-          {/* Breadcrumb placeholder — filled by page-level context or location */}
-          <div style={{ flex: 1, fontSize: 12, color: C.faint }}>
+        <header className="h-12 shrink-0 border-b border-border-c bg-bg1 flex items-center px-5 gap-3 flex-wrap">
+          <div className="flex-1 text-xs text-theme-faint">
             <AdminBreadcrumb />
           </div>
-          {/* Right side */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div className="flex items-center gap-2.5">
             <ThemeToggle compact />
             {currentUser ? (
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                  <span style={{ fontSize: 12, color: C.text, fontWeight: 500, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <div className="flex items-center gap-2">
+                <div className="flex flex-col items-end">
+                  <span className="text-xs text-theme-text font-medium max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
                     {currentUser.displayName || currentUser.email?.split("@")[0]}
                   </span>
-                  <span style={{ fontSize: 10, color: C.muted, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span className="text-[10px] text-theme-muted max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
                     {currentUser.email}
                   </span>
                 </div>
                 <button
                   onClick={handleSignOut}
                   title="Sign out"
-                  style={{
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    padding: 6, background: "none",
-                    border: `1px solid ${C.border}`, borderRadius: 6,
-                    color: C.muted, cursor: "pointer",
-                  }}
+                  className="flex items-center justify-center p-1.5 bg-transparent border border-border-c rounded-md text-theme-muted cursor-pointer hover:text-theme-text hover:bg-bg2 transition-colors"
                 >
                   <LogOut size={13} />
                 </button>
               </div>
             ) : (
-              <span style={{ fontSize: 11, color: C.faint }}>Not signed in</span>
+              <span className="text-[11px] text-theme-faint">Not signed in</span>
             )}
           </div>
         </header>
 
-        <main style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", minHeight: 0 }}>
+        <main className="flex-1 flex flex-col overflow-y-auto min-h-0">
           <Outlet />
         </main>
       </div>

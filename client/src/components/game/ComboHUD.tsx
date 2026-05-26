@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { C } from "@/styles/theme";
 import { costIcon, KEY_LABEL } from "@/constants/combos";
 const KL = KEY_LABEL as Record<string, string>;
 import type { ComboDoc } from "@/stores/gameDataStore";
@@ -58,10 +57,11 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
       {attached.length > 0 && (
         <div style={{
           position: "absolute", bottom: 88, right: 16,
-          display: "flex", flexDirection: "column", gap: 6,
-          pointerEvents: "none", zIndex: 11,
-        }}>
-          <div style={{ fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Combos</div>
+          zIndex: 11,
+        }}
+          className="flex flex-col gap-[6px] pointer-events-none"
+        >
+          <div className="text-theme-muted text-[10px] uppercase tracking-[0.06em]">Combos</div>
           {attached.map((c) => {
             if (!c) return null;
             const cdEnd = cooldowns?.[c.id] ?? 0;
@@ -72,38 +72,31 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
             const dim = onCooldown || insufficient;
             return (
               <div key={c.id} style={{
-                background: "rgba(15, 23, 42, 0.88)",
-                borderRadius: 10,
-                border: `1px solid ${dim ? C.border : C.green}`,
-                padding: "8px 10px", minWidth: 200,
+                border: `1px solid ${dim ? "#334155" : "#22c55e"}`,
                 opacity: dim ? 0.55 : 1,
-                position: "relative", overflow: "hidden",
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: dim ? C.muted : C.green }}>
+              }} className="bg-[rgba(15,23,42,0.88)] rounded-[10px] px-[10px] py-2 min-w-[200px] relative overflow-hidden">
+                <div className="flex justify-between items-center mb-1">
+                  <span style={{ color: dim ? "#94a3b8" : "#22c55e" }} className="text-[12px] font-bold">
                     {c.name}
                   </span>
-                  <span style={{ fontSize: 10, color: c.cost === 0 ? C.yellow : C.faint, fontFamily: "monospace" }}>
+                  <span style={{ color: c.cost === 0 ? "#eab308" : "#64748b" }} className="text-[10px] font-mono">
                     {costIcon(c.cost)}
                   </span>
                 </div>
-                <div style={{ fontSize: 10, color: C.text, display: "flex", gap: 4 }}>
+                <div className="text-theme-text text-[10px] flex gap-1">
                   {c.sequence.map((k, i) => (
-                    <span key={i} style={{
-                      background: C.bg3, padding: "2px 6px", borderRadius: 4,
-                      fontFamily: "monospace", fontSize: 10,
-                    }}>{KL[k] ?? k}</span>
+                    <span key={i} className="bg-bg3 px-[6px] py-[2px] rounded font-mono text-[10px]">{KL[k] ?? k}</span>
                   ))}
                 </div>
                 {onCooldown && (
                   <div style={{
                     position: "absolute", left: 0, bottom: 0, height: 2,
-                    width: `${(1 - cdPct) * 100}%`, background: C.green,
+                    width: `${(1 - cdPct) * 100}%`, background: "#22c55e",
                     transition: "width 100ms linear",
                   }} />
                 )}
                 {insufficient && !onCooldown && (
-                  <div style={{ fontSize: 9, color: C.red, marginTop: 4 }}>
+                  <div className="text-theme-red text-[9px] mt-1">
                     Needs {c.cost} power
                   </div>
                 )}
@@ -118,24 +111,21 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
         <div data-testid="combo-charge-bar" style={{
           position: "absolute", bottom: 72, left: "50%",
           transform: "translateX(-50%)",
-          pointerEvents: "none", zIndex: 12,
-          display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-        }}>
-          <div style={{ fontSize: 10, color: C.yellow, fontFamily: "monospace", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          zIndex: 12,
+        }}
+          className="pointer-events-none flex flex-col items-center gap-1"
+        >
+          <div className="text-theme-yellow text-[10px] font-mono tracking-[0.1em] uppercase">
             {comboChargeScale >= 1 ? "CHARGED!" : "Charging…"}
           </div>
-          <div style={{
-            width: 140, height: 6, background: "rgba(255,255,255,0.12)", borderRadius: 3,
-            overflow: "hidden",
-          }}>
+          <div className="w-[140px] h-[6px] bg-white/[.12] rounded-[3px] overflow-hidden">
             <div style={{
               height: "100%",
               width: `${comboChargeScale * 100}%`,
-              background: comboChargeScale >= 1 ? C.green : C.yellow,
-              borderRadius: 3,
+              background: comboChargeScale >= 1 ? "#22c55e" : "#eab308",
               transition: "width 100ms linear, background 200ms",
-              boxShadow: comboChargeScale >= 1 ? `0 0 8px ${C.green}` : undefined,
-            }} />
+              boxShadow: comboChargeScale >= 1 ? "0 0 8px #22c55e" : undefined,
+            }} className="rounded-[3px]" />
           </div>
         </div>
       )}
@@ -143,31 +133,26 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
       {/* Fired-combo history (bottom-right) */}
       <div style={{
         position: "absolute", bottom: 16, right: 16,
-        display: "flex", flexDirection: "column", gap: 4,
-        pointerEvents: "none", zIndex: 10,
-      }}>
+        zIndex: 10,
+      }}
+        className="flex flex-col gap-1 pointer-events-none"
+      >
         {comboHistory.map((combo) => {
           const comboId = combo.id.split("-")[0];
           const display = comboMap[comboId] ?? comboMap[combo.name];
           return (
             <div key={combo.id} data-testid={`combo-fired-${combo.id}`} style={{
-              background: "rgba(15, 23, 42, 0.85)",
-              borderRadius: 8,
-              border: `1px solid ${C.border}`,
-              padding: "8px 12px", minWidth: 160,
+              border: `1px solid #334155`,
               animation: combo === comboHistory[0] ? "slideIn 0.3s ease-out" : undefined,
-            }}>
-              <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>
-                <span style={{ textTransform: "uppercase", fontFamily: "monospace", color: C.green, fontWeight: 700 }}>
+            }} className="bg-[rgba(15,23,42,0.85)] rounded-lg px-3 py-2 min-w-[160px]">
+              <div className="text-theme-muted text-[11px] mb-1">
+                <span className="text-theme-green uppercase font-mono font-bold">
                   {display?.name ?? combo.name}
                 </span>
               </div>
-              <div style={{ fontSize: 10, color: C.text, display: "flex", gap: 4, flexWrap: "wrap" }}>
+              <div className="text-theme-text text-[10px] flex gap-1 flex-wrap">
                 {display?.sequence.map((k, idx) => (
-                  <span key={idx} style={{
-                    background: C.bg3, padding: "2px 6px", borderRadius: 4,
-                    fontFamily: "monospace", fontSize: 9,
-                  }}>{KL[k] ?? k}</span>
+                  <span key={idx} className="bg-bg3 px-[6px] py-[2px] rounded font-mono text-[9px]">{KL[k] ?? k}</span>
                 ))}
               </div>
             </div>
@@ -180,15 +165,12 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
         <div style={{
           position: "absolute", bottom: "50%", left: "50%",
           transform: "translateX(-50%)",
-          pointerEvents: "none", zIndex: 15,
+          zIndex: 15,
           animation: "comboFloat 1.2s ease-out forwards",
-        }}>
-          <div style={{
-            fontSize: 56, fontWeight: 900, color: C.green,
-            textTransform: "uppercase",
-            textShadow: `0 0 20px ${C.green}`,
-            letterSpacing: "0.1em", fontFamily: "monospace",
-          }}>COMBO!</div>
+        }}
+          className="pointer-events-none"
+        >
+          <div className="text-theme-green text-[56px] font-black uppercase tracking-[0.1em] font-mono" style={{ textShadow: "0 0 20px #22c55e" }}>COMBO!</div>
         </div>
       )}
 

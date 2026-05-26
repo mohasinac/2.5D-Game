@@ -4,7 +4,7 @@ import { modeFromPath } from "@/shared/utils/gameMode";
 import { collection, onSnapshot, query, orderBy, where } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
-import { C, alpha } from "@/styles/theme";
+import { C } from "@/styles/theme";
 import type { TournamentDoc } from "@/types/game";
 
 const STATUS_PILL: Record<string, string> = {
@@ -71,33 +71,28 @@ export function TournamentListPage() {
   }, [filter]);
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg0, padding: 32 }}>
-      <div style={{ maxWidth: 860, margin: "0 auto" }}>
+    <div className="min-h-screen bg-bg0 p-8">
+      <div className="max-w-[860px] mx-auto">
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28 }}>
+        <div className="flex items-start justify-between mb-7">
           <div>
-            <Link to="/game" style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Back</Link>
-            <h1 style={{ fontSize: 32, fontWeight: 900, color: C.text, marginTop: 8, letterSpacing: "-0.02em" }}>
+            <Link to="/game" className="text-theme-faint text-[13px] no-underline">← Back</Link>
+            <h1 className="text-[32px] font-black text-theme-text mt-2 tracking-[-0.02em]">
               Tournaments
             </h1>
-            <p style={{ color: C.muted, fontSize: 13, marginTop: 4 }}>
+            <p className="text-theme-muted text-[13px] mt-1">
               Join bracket-style competitions against other players and AI opponents.
             </p>
           </div>
         </div>
 
         {/* Filter tabs */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+        <div className="flex gap-2 mb-5">
           {(["active", "all"] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              style={{
-                padding: "6px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600,
-                cursor: "pointer", border: `1px solid ${filter === f ? C.blue : C.border}`,
-                background: filter === f ? alpha(C.blue, 0.13) : "transparent",
-                color: filter === f ? C.blue : C.muted,
-              }}
+              className={`px-4 py-1.5 rounded-lg text-[13px] font-semibold cursor-pointer border ${filter === f ? "border-theme-blue bg-blue-13 text-theme-blue" : "border-border-c bg-transparent text-theme-muted"}`}
             >
               {f === "active" ? "Active" : "All"}
             </button>
@@ -106,18 +101,18 @@ export function TournamentListPage() {
 
         {/* List */}
         {loading ? (
-          <div style={{ textAlign: "center", padding: 60, color: C.faint }}>
-            <div className="spin" style={{ width: 36, height: 36, border: `2px solid ${C.border}`, borderTopColor: C.yellow, borderRadius: "50%", margin: "0 auto 16px" }} />
+          <div className="text-center py-[60px] text-theme-faint">
+            <div className="spin w-9 h-9 border-2 border-border-c border-t-yellow rounded-full mx-auto mb-4" />
             Loading tournaments...
           </div>
         ) : tournaments.length === 0 ? (
-          <div style={{ textAlign: "center", padding: 60, color: C.faint }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🏆</div>
+          <div className="text-center py-[60px] text-theme-faint">
+            <div className="text-[48px] mb-3">🏆</div>
             <p>No {filter === "active" ? "active" : ""} tournaments found.</p>
-            <p style={{ fontSize: 13, marginTop: 4 }}>Check back soon!</p>
+            <p className="text-[13px] mt-1">Check back soon!</p>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="flex flex-col gap-3">
             {tournaments.map((t) => (
               <TournamentCard
                 key={t.id}
@@ -152,63 +147,50 @@ function TournamentCard({
   }, [t.scheduledStartTime, t.status]);
 
   return (
-    <div style={{
-      background: C.bg1, borderRadius: 16, border: `1px solid ${C.border}`,
-      padding: 20, display: "flex", gap: 16, alignItems: "flex-start",
-    }}>
+    <div className="bg-bg1 rounded-2xl border border-border-c p-5 flex gap-4 items-start">
       {/* Icon */}
-      <div style={{
-        width: 48, height: 48, borderRadius: 12, background: C.bg3,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 22, flexShrink: 0,
-      }}>
+      <div className="w-12 h-12 rounded-xl bg-bg3 flex items-center justify-center text-[22px] shrink-0">
         {t.type === "ai-exhibition" ? "🤖" : t.type === "player-gauntlet" ? "⚔️" : "🏆"}
       </div>
 
       {/* Info */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 16, fontWeight: 700, color: C.text }}>{t.name}</span>
+      <div className="flex-1 min-w-0">
+        <div className="flex gap-2 items-center mb-1 flex-wrap">
+          <span className="text-[16px] font-bold text-theme-text">{t.name}</span>
           <span className={`${PILL_BASE} ${STATUS_PILL[t.status] ?? STATUS_PILL.draft}`}>{t.status}</span>
           <span className={`${PILL_BASE} bg-bg3 text-muted border-border`}>{TYPE_LABELS[t.type] ?? t.type}</span>
           <span className={`${PILL_BASE} bg-yellow/[.13] text-yellow border-yellow/[.27]`}>BO{t.bestOf}</span>
         </div>
 
         {t.description && (
-          <p style={{ fontSize: 12, color: C.muted, marginBottom: 6 }}>{t.description}</p>
+          <p className="text-[12px] text-theme-muted mb-1.5">{t.description}</p>
         )}
 
-        <div style={{ display: "flex", gap: 16, fontSize: 12, color: C.faint, flexWrap: "wrap" }}>
+        <div className="flex gap-4 text-[12px] text-theme-faint flex-wrap">
           <span>👥 Max {t.maxParticipants}</span>
           <span>📅 {formatDate(t.scheduledStartTime)}</span>
           {t.status === "registration" && countdown && (
-            <span style={{ color: C.yellow }}>⏱ {countdown}</span>
+            <span className="text-theme-yellow">⏱ {countdown}</span>
           )}
           {t.winnerUsername && (
-            <span style={{ color: C.yellow }}>🏆 {t.winnerUsername}</span>
+            <span className="text-theme-yellow">🏆 {t.winnerUsername}</span>
           )}
         </div>
       </div>
 
       {/* Action */}
-      <div style={{ flexShrink: 0 }}>
+      <div className="shrink-0">
         {canJoin ? (
           <Link
             to={href}
-            style={{
-              display: "inline-block", padding: "8px 20px", borderRadius: 10, fontSize: 13, fontWeight: 700,
-              background: C.yellow, color: C.bg0, textDecoration: "none",
-            }}
+            className="inline-block px-5 py-2 rounded-[10px] text-[13px] font-bold bg-theme-yellow text-bg0 no-underline"
           >
             {t.status === "in-progress" ? "Watch / Join" : "View Lobby"}
           </Link>
         ) : (
           <Link
             to={href}
-            style={{
-              display: "inline-block", padding: "8px 20px", borderRadius: 10, fontSize: 13, fontWeight: 600,
-              background: "transparent", color: C.muted, border: `1px solid ${C.border}`, textDecoration: "none",
-            }}
+            className="inline-block px-5 py-2 rounded-[10px] text-[13px] font-semibold bg-transparent text-theme-muted border border-border-c no-underline"
           >
             View
           </Link>

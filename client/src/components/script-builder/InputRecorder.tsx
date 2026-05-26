@@ -87,21 +87,26 @@ export function InputRecorder({ onCapture }: Props) {
   }
 
   return (
-    <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 10 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+    <div className="p-3 flex flex-col gap-[10px]">
+      <div className="text-[11px] font-bold text-theme-muted uppercase tracking-[0.05em]">
         Input Recorder
       </div>
-      <p style={{ fontSize: 11, color: C.faint, margin: 0, lineHeight: 1.5 }}>
+      <p className="text-[11px] text-theme-faint m-0 leading-[1.5]">
         Record a key sequence and convert it to BehaviorRef steps.
         Use Arrow keys or WASD / SPACE.
       </p>
 
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+      <div className="flex gap-[6px] flex-wrap">
         {!recording ? (
           <button
             type="button"
             onClick={startRecording}
-            style={{ padding: "5px 12px", background: C.red + "22", border: `1px solid ${C.red}44`, borderRadius: 8, color: C.red, fontSize: 12, cursor: "pointer", fontWeight: 600 }}
+            style={{
+              background: C.red + "22",
+              border: `1px solid ${C.red}44`,
+              color: C.red,
+            }}
+            className="py-[5px] px-3 rounded-lg text-[12px] cursor-pointer font-semibold"
           >
             ● Record
           </button>
@@ -109,7 +114,13 @@ export function InputRecorder({ onCapture }: Props) {
           <button
             type="button"
             onClick={stopRecording}
-            style={{ padding: "5px 12px", background: C.red + "44", border: `1px solid ${C.red}88`, borderRadius: 8, color: C.red, fontSize: 12, cursor: "pointer", fontWeight: 600, animation: "pulse 1s infinite" }}
+            style={{
+              background: C.red + "44",
+              border: `1px solid ${C.red}88`,
+              color: C.red,
+              animation: "pulse 1s infinite",
+            }}
+            className="py-[5px] px-3 rounded-lg text-[12px] cursor-pointer font-semibold"
           >
             ■ Stop
           </button>
@@ -118,37 +129,33 @@ export function InputRecorder({ onCapture }: Props) {
           type="button"
           onClick={generateScript}
           disabled={keys.length === 0}
-          style={{ padding: "5px 12px", background: C.green + "22", border: `1px solid ${C.green}44`, borderRadius: 8, color: C.green, fontSize: 12, cursor: keys.length === 0 ? "default" : "pointer", fontWeight: 600, opacity: keys.length === 0 ? 0.4 : 1 }}
+          style={{
+            background: C.green + "22",
+            border: `1px solid ${C.green}44`,
+            color: C.green,
+            opacity: keys.length === 0 ? 0.4 : 1,
+          }}
+          className="py-[5px] px-3 rounded-lg text-[12px] font-semibold"
         >
           → Add to Canvas
         </button>
         <button
           type="button"
           onClick={clear}
-          style={{ padding: "5px 12px", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 8, color: C.muted, fontSize: 12, cursor: "pointer" }}
+          className="py-[5px] px-3 bg-transparent border border-border-c rounded-lg text-theme-muted text-[12px] cursor-pointer"
         >
           Clear
         </button>
       </div>
 
-      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", minHeight: 28 }}>
+      <div className="flex gap-1 flex-wrap min-h-[28px]">
         {recording && keys.length === 0 && (
-          <span style={{ fontSize: 11, color: C.faint, fontStyle: "italic" }}>Press keys…</span>
+          <span className="text-[11px] text-theme-faint italic">Press keys…</span>
         )}
         {keys.map((k, i) => (
           <span
             key={i}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              padding: "2px 7px",
-              background: "var(--bg3)",
-              border: `1px solid ${C.border}`,
-              borderRadius: 6,
-              fontSize: 12,
-              color: C.text,
-              fontFamily: "monospace",
-            }}
+            className="inline-flex items-center px-[7px] py-[2px] bg-bg3 border border-border-c rounded-md text-[12px] text-theme-text font-mono"
           >
             {KEY_LABEL[k.key] ?? k.key}
           </span>
@@ -156,8 +163,11 @@ export function InputRecorder({ onCapture }: Props) {
       </div>
 
       {recording && (
-        <div style={{ fontSize: 11, color: C.red, display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: C.red }} />
+        <div className="text-[11px] text-theme-red flex items-center gap-1">
+          <span
+            className="inline-block w-[6px] h-[6px] rounded-full"
+            style={{ background: C.red }}
+          />
           Recording… {keys.length} keys captured
         </div>
       )}

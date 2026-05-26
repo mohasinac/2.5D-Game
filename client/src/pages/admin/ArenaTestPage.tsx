@@ -3,7 +3,6 @@ import { collection, getDocs } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { BeybladeGameRenderer } from "@/game/renderer/PixiRenderer";
 import type { ServerGameState, ServerBeyblade } from "@/types/game";
-import { C } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 const MOCK_BEYBLADE = (id: string, x: number, y: number): ServerBeyblade => ({
@@ -83,7 +82,7 @@ export function ArenaTestPage() {
           value={selectedArenaId}
           options={arenas.map(a => ({ value: a.id, label: a.name }))}
           onChange={v => setSelectedArenaId(v)}
-          style={{ background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 12px", color: C.text, fontSize: 13, maxWidth: 280, cursor: "pointer" }}
+          className="max-w-[280px]"
         />
         {arenas.length === 0 && <span className="text-faint text-sm">No arenas found — create one first</span>}
       </div>

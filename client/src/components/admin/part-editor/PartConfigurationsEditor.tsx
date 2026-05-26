@@ -10,7 +10,6 @@
  */
 
 import { useState } from "react";
-import { C, alpha } from "@/styles/theme";
 import type { PartConfiguration, ConfigTrigger, ConfigResetCondition } from "@/types/beybladeSystem";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { usePartMaterials } from "@/hooks/usePartMaterials";
@@ -41,6 +40,9 @@ const SUBPART_MODES = ["free_spin","partial_slip","fixed","ratchet"];
 const CASING_CATS = ["round","wide","flat","custom"];
 const CORE_GIMMICKS = ["none","speed_boost","weight_shift","magnetic","engine_gear","clutch_release","spin_injection","counter_rotation"];
 
+// Shared classes for structured field inputs
+const FIELD_INPUT = "w-full py-[5px] px-2 bg-bg2 border border-border-c rounded-md text-theme-text text-[11px] box-border";
+
 function StructuredOverridePanel({ partTypeSlug, overrides, onChange }: {
   partTypeSlug: string;
   overrides: Record<string, unknown>;
@@ -48,25 +50,19 @@ function StructuredOverridePanel({ partTypeSlug, overrides, onChange }: {
 }) {
   const patch = (key: string, value: unknown) => onChange({ ...overrides, [key]: value });
   const { materials } = usePartMaterials();
-  const fieldStyle: React.CSSProperties = {
-    padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`,
-    borderRadius: 6, color: C.text, fontSize: 11, width: "100%", boxSizing: "border-box",
-  };
-  const row: React.CSSProperties = { display: "flex", flexDirection: "column", gap: 3 };
-  const lbl: React.CSSProperties = { fontSize: 10, color: C.muted };
 
   if (partTypeSlug === "tips") {
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-        <div style={row}>
-          <span style={lbl}>Tip Shape</span>
-          <select value={(overrides.tipShape as string) ?? ""} onChange={e => patch("tipShape", e.target.value || undefined)} style={fieldStyle}>
+      <div className="grid gap-2" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+        <div className="flex flex-col gap-[3px]">
+          <span className="text-[10px] text-theme-muted">Tip Shape</span>
+          <select value={(overrides.tipShape as string) ?? ""} onChange={e => patch("tipShape", e.target.value || undefined)} className={FIELD_INPUT}>
             <option value="">(inherit)</option>
             {TIP_SHAPES.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-        <div style={row}>
-          <span style={lbl}>Material</span>
+        <div className="flex flex-col gap-[3px]">
+          <span className="text-[10px] text-theme-muted">Material</span>
           <SearchableSelect
             value={(overrides.material as string) ?? ""}
             onChange={val => patch("material", val || undefined)}
@@ -74,28 +70,28 @@ function StructuredOverridePanel({ partTypeSlug, overrides, onChange }: {
             placeholder="(inherit)"
           />
         </div>
-        <div style={row}>
-          <span style={lbl}>Grip Factor</span>
+        <div className="flex flex-col gap-[3px]">
+          <span className="text-[10px] text-theme-muted">Grip Factor</span>
           <input type="number" min={0} max={1} step={0.05}
             value={(overrides.gripFactor as number) ?? ""}
             placeholder="(inherit)"
             onChange={e => patch("gripFactor", e.target.value ? +e.target.value : undefined)}
-            style={fieldStyle} />
+            className={FIELD_INPUT} />
         </div>
-        <div style={row}>
-          <span style={lbl}>Aggressiveness</span>
+        <div className="flex flex-col gap-[3px]">
+          <span className="text-[10px] text-theme-muted">Aggressiveness</span>
           <input type="number" min={0} max={1} step={0.05}
             value={(overrides.aggressiveness as number) ?? ""}
             placeholder="(inherit)"
             onChange={e => patch("aggressiveness", e.target.value ? +e.target.value : undefined)}
-            style={fieldStyle} />
+            className={FIELD_INPUT} />
         </div>
-        <div style={{ ...row, justifyContent: "flex-end", paddingTop: 14 }}>
-          <label style={{ display: "flex", gap: 6, alignItems: "center", cursor: "pointer" }}>
+        <div className="flex flex-col gap-[3px] justify-end pt-3.5">
+          <label className="flex gap-1.5 items-center cursor-pointer">
             <input type="checkbox"
               checked={overrides.freeSpin === true}
               onChange={e => patch("freeSpin", e.target.checked ? true : undefined)} />
-            <span style={lbl}>Free spin</span>
+            <span className="text-[10px] text-theme-muted">Free spin</span>
           </label>
         </div>
       </div>
@@ -103,9 +99,9 @@ function StructuredOverridePanel({ partTypeSlug, overrides, onChange }: {
   }
   if (partTypeSlug === "sub-parts") {
     return (
-      <div style={row}>
-        <span style={lbl}>Mode</span>
-        <select value={(overrides.mode as string) ?? ""} onChange={e => patch("mode", e.target.value || undefined)} style={fieldStyle}>
+      <div className="flex flex-col gap-[3px]">
+        <span className="text-[10px] text-theme-muted">Mode</span>
+        <select value={(overrides.mode as string) ?? ""} onChange={e => patch("mode", e.target.value || undefined)} className={FIELD_INPUT}>
           <option value="">(inherit)</option>
           {SUBPART_MODES.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
@@ -114,9 +110,9 @@ function StructuredOverridePanel({ partTypeSlug, overrides, onChange }: {
   }
   if (partTypeSlug === "casings") {
     return (
-      <div style={row}>
-        <span style={lbl}>Casing Category</span>
-        <select value={(overrides.casingCategory as string) ?? ""} onChange={e => patch("casingCategory", e.target.value || undefined)} style={fieldStyle}>
+      <div className="flex flex-col gap-[3px]">
+        <span className="text-[10px] text-theme-muted">Casing Category</span>
+        <select value={(overrides.casingCategory as string) ?? ""} onChange={e => patch("casingCategory", e.target.value || undefined)} className={FIELD_INPUT}>
           <option value="">(inherit)</option>
           {CASING_CATS.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
@@ -125,9 +121,9 @@ function StructuredOverridePanel({ partTypeSlug, overrides, onChange }: {
   }
   if (partTypeSlug === "cores") {
     return (
-      <div style={row}>
-        <span style={lbl}>Gimmick Type</span>
-        <select value={(overrides.gimmick as string) ?? ""} onChange={e => patch("gimmick", e.target.value || undefined)} style={fieldStyle}>
+      <div className="flex flex-col gap-[3px]">
+        <span className="text-[10px] text-theme-muted">Gimmick Type</span>
+        <select value={(overrides.gimmick as string) ?? ""} onChange={e => patch("gimmick", e.target.value || undefined)} className={FIELD_INPUT}>
           <option value="">(inherit)</option>
           {CORE_GIMMICKS.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
@@ -191,97 +187,94 @@ export function PartConfigurationsEditor<T>({ value, onChange, partTypeSlug }: P
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-        <div style={{ fontSize: 12, color: C.muted }}>Configurations ({value.length})</div>
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-xs text-theme-muted">Configurations ({value.length})</div>
         <button
           onClick={addConfig}
-          style={{
-            padding: "4px 12px", background: C.bg3, border: `1px solid ${C.border}`,
-            borderRadius: 6, fontSize: 11, color: C.muted, cursor: "pointer",
-          }}
+          className="py-1 px-3 bg-bg3 border border-border-c rounded-md text-[11px] text-theme-muted cursor-pointer"
         >
           + Add Config
         </button>
       </div>
 
       {value.length === 0 && (
-        <div style={{ fontSize: 12, color: C.faint, padding: "8px 0" }}>
+        <div className="text-xs text-theme-faint py-2">
           No configurations. Parts with only one mode don't need configs.
           Add configs for swappable modes like "Flat / Sharp / Semi-Flat" on tip parts.
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div className="flex flex-col gap-2">
         {value.map((config, idx) => (
           <div
             key={idx}
+            className="rounded-[9px] overflow-hidden"
             style={{
-              border: `1px solid ${expanded === idx ? alpha(C.blue, 0.33) : C.border}`,
-              borderRadius: 9, overflow: "hidden",
+              border: `1px solid ${expanded === idx ? "rgba(59,130,246,0.33)" : "var(--border)"}`,
             }}
           >
             {/* Header */}
             <div
+              className="flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer"
               style={{
-                display: "flex", alignItems: "center", gap: 10, padding: "10px 14px",
-                background: expanded === idx ? alpha(C.blue, 0.06) : C.bg2, cursor: "pointer",
+                background: expanded === idx ? "rgba(59,130,246,0.06)" : "var(--bg2)",
               }}
               onClick={() => setExpanded(expanded === idx ? null : idx)}
             >
-              <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: config.name ? C.text : C.faint }}>
+              <span className={`flex-1 text-[13px] font-semibold ${config.name ? "text-theme-text" : "text-theme-faint"}`}>
                 {config.name || `Config ${idx + 1} (unnamed)`}
               </span>
               {config.autoTriggers?.length ? (
-                <span style={{ fontSize: 10, color: C.yellow, background: alpha(C.yellow, 0.09), padding: "2px 6px", borderRadius: 4 }}>
+                <span className="text-[10px] text-theme-yellow bg-yellow-500/10 py-[2px] px-1.5 rounded">
                   {config.autoTriggers.length} trigger{config.autoTriggers.length > 1 ? "s" : ""}
                 </span>
               ) : null}
-              <span style={{ fontSize: 11, color: C.faint }}>{expanded === idx ? "▾" : "▸"}</span>
+              <span className="text-[11px] text-theme-faint">{expanded === idx ? "▾" : "▸"}</span>
               <button
                 onClick={(e) => { e.stopPropagation(); remove(idx); }}
-                style={{ background: "none", border: "none", color: C.red, fontSize: 14, cursor: "pointer" }}
+                className="bg-transparent border-none text-theme-red text-sm cursor-pointer"
               >×</button>
             </div>
 
             {/* Body */}
             {expanded === idx && (
-              <div style={{ padding: "14px 16px", background: C.bg1, display: "flex", flexDirection: "column", gap: 14 }}>
+              <div className="px-4 py-3.5 bg-bg1 flex flex-col gap-3.5">
                 {/* Name */}
                 <div>
-                  <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Config Name *</label>
+                  <label className="block text-[11px] text-theme-muted mb-1">Config Name *</label>
                   <input
                     value={config.name}
                     onChange={(e) => update(idx, { name: e.target.value })}
                     placeholder='e.g. "Sharp", "Flat", "Locked"'
-                    style={{ width: "100%", padding: "7px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 13, boxSizing: "border-box" }}
+                    className="w-full py-[7px] px-2.5 bg-bg2 border border-border-c rounded-md text-theme-text text-[13px] box-border"
                   />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Description</label>
+                  <label className="block text-[11px] text-theme-muted mb-1">Description</label>
                   <input
                     value={config.description}
                     onChange={(e) => update(idx, { description: e.target.value })}
                     placeholder="Short description of this mode"
-                    style={{ width: "100%", padding: "7px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 13, boxSizing: "border-box" }}
+                    className="w-full py-[7px] px-2.5 bg-bg2 border border-border-c rounded-md text-theme-text text-[13px] box-border"
                   />
                 </div>
 
                 {/* Display Name (HUD label) + Player Switchable toggle */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 10, alignItems: "end" }}>
+                <div className="grid gap-2.5 items-end" style={{ gridTemplateColumns: "1fr auto" }}>
                   <div>
-                    <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>
+                    <label className="block text-[11px] text-theme-muted mb-1">
                       Display Name (shown in in-game PartModesHUD)
                     </label>
                     <input
                       value={config.displayName ?? ""}
                       onChange={(e) => update(idx, { displayName: e.target.value || undefined })}
                       placeholder={config.name || "Defaults to Config Name"}
-                      style={{ width: "100%", padding: "7px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 13, boxSizing: "border-box" }}
+                      className="w-full py-[7px] px-2.5 bg-bg2 border border-border-c rounded-md text-theme-text text-[13px] box-border"
                     />
                   </div>
-                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.muted, paddingBottom: 8 }}>
+                  <label className="flex items-center gap-1.5 text-xs text-theme-muted pb-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={config.playerSwitchable === true}
@@ -294,7 +287,7 @@ export function PartConfigurationsEditor<T>({ value, onChange, partTypeSlug }: P
                 {/* Structured override fields (type-specific quick-access) */}
                 {partTypeSlug && (
                   <div>
-                    <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 6 }}>
+                    <label className="block text-[11px] text-theme-muted mb-1.5">
                       Override Fields
                     </label>
                     <StructuredOverridePanel
@@ -307,70 +300,68 @@ export function PartConfigurationsEditor<T>({ value, onChange, partTypeSlug }: P
 
                 {/* Overrides JSON (advanced / fallback) */}
                 <div>
-                  <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>
+                  <label className="block text-[11px] text-theme-muted mb-1">
                     Overrides (JSON — full partial field override)
                   </label>
                   <textarea
                     defaultValue={JSON.stringify(config.overrides, null, 2)}
                     onBlur={(e) => updateOverridesJSON(idx, e.target.value)}
                     rows={5}
+                    className="w-full py-2 px-2.5 bg-bg2 rounded-md text-theme-text text-[11px] font-mono resize-y box-border"
                     style={{
-                      width: "100%", padding: "8px 10px", background: C.bg2,
-                      border: `1px solid ${overrideError[idx] ? C.red : C.border}`,
-                      borderRadius: 6, color: C.text, fontSize: 11,
-                      fontFamily: "monospace", resize: "vertical", boxSizing: "border-box",
+                      border: `1px solid ${overrideError[idx] ? "var(--red)" : "var(--border)"}`,
                     }}
                   />
                   {overrideError[idx] && (
-                    <div style={{ fontSize: 11, color: C.red, marginTop: 3 }}>{overrideError[idx]}</div>
+                    <div className="text-[11px] text-theme-red mt-[3px]">{overrideError[idx]}</div>
                   )}
-                  <div style={{ fontSize: 10, color: C.faint, marginTop: 3 }}>
+                  <div className="text-[10px] text-theme-faint mt-[3px]">
                     Only changed fields are needed. E.g. for a tip: {`{"tipShape":"sharp","gripFactor":0.1}`}
                   </div>
                 </div>
 
                 {/* Auto Triggers */}
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                    <label style={{ fontSize: 11, color: C.muted }}>Auto Triggers</label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-[11px] text-theme-muted">Auto Triggers</label>
                     <button
                       onClick={() => addTrigger(idx)}
-                      style={{ padding: "3px 10px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, fontSize: 10, color: C.muted, cursor: "pointer" }}
+                      className="py-[3px] px-2.5 bg-bg3 border border-border-c rounded-[5px] text-[10px] text-theme-muted cursor-pointer"
                     >
                       + Trigger
                     </button>
                   </div>
                   {(config.autoTriggers ?? []).map((trig, ti) => (
-                    <div key={ti} style={{ background: C.bg3, borderRadius: 7, padding: "8px 10px", marginBottom: 6, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <div key={ti} className="bg-bg3 rounded-[7px] py-2 px-2.5 mb-1.5 flex gap-2 items-center flex-wrap">
                       <SearchableSelect
                         value={trig.type}
                         options={TRIGGER_TYPES.map((t) => ({ value: t, label: t }))}
                         onChange={(v) => updateTrigger(idx, ti, { type: v as ConfigTrigger["type"] })}
-                        style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                        style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: 5, color: "var(--text)", fontSize: 11 }}
                       />
-                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                        <span style={{ fontSize: 10, color: C.muted }}>threshold</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] text-theme-muted">threshold</span>
                         <input
                           type="number" step={0.05} min={0} max={100} value={trig.threshold}
                           onChange={(e) => updateTrigger(idx, ti, { threshold: +e.target.value })}
-                          style={{ width: 60, padding: "4px 6px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                          className="w-[60px] py-1 px-1.5 bg-bg2 border border-border-c rounded-[5px] text-theme-text text-[11px]"
                         />
                       </div>
                       <button
                         onClick={() => removeTrigger(idx, ti)}
-                        style={{ background: "none", border: "none", color: C.red, fontSize: 13, cursor: "pointer", marginLeft: "auto" }}
+                        className="bg-transparent border-none text-theme-red text-[13px] cursor-pointer ml-auto"
                       >×</button>
                     </div>
                   ))}
                   {!(config.autoTriggers?.length) && (
-                    <div style={{ fontSize: 11, color: C.faint }}>No triggers — manual selection only (pre-match config choice).</div>
+                    <div className="text-[11px] text-theme-faint">No triggers — manual selection only (pre-match config choice).</div>
                   )}
                 </div>
 
                 {/* Reset Condition */}
                 <div>
-                  <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 6 }}>Reset Condition (optional)</label>
-                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <label className="block text-[11px] text-theme-muted mb-1.5">Reset Condition (optional)</label>
+                  <div className="flex gap-2 items-center">
                     <SearchableSelect
                       value={config.resetCondition?.type ?? ""}
                       options={RESET_TYPES.map((t) => ({ value: t, label: t }))}
@@ -379,13 +370,13 @@ export function PartConfigurationsEditor<T>({ value, onChange, partTypeSlug }: P
                         update(idx, { resetCondition: { type: v as ConfigResetCondition["type"], threshold: 0.5 } });
                       }}
                       emptyLabel="— none —"
-                      style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+                      style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text)", fontSize: 11 }}
                     />
                     {config.resetCondition && (
                       <input
                         type="number" step={0.05} min={0} value={config.resetCondition.threshold}
                         onChange={(e) => update(idx, { resetCondition: { ...config.resetCondition!, threshold: +e.target.value } })}
-                        style={{ width: 70, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+                        className="w-[70px] py-[5px] px-2 bg-bg2 border border-border-c rounded-md text-theme-text text-[11px]"
                         placeholder="threshold"
                       />
                     )}

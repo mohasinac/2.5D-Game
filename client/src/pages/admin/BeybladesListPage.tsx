@@ -4,19 +4,30 @@ import { collection, getDocs, deleteDoc, doc, query, where, orderBy } from "fire
 import { db, COLLECTIONS } from "@/lib/firebase";
 import type { BeybladeStats } from "@/types/beybladeStats";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
 
-const TYPE_ACCENT: Record<string, string> = {
-  attack: C.red, defense: C.blue, stamina: C.green, balanced: C.yellow,
+const TYPE_ACCENT_CLS: Record<string, string> = {
+  attack: "text-theme-red",
+  defense: "text-theme-blue",
+  stamina: "text-theme-green",
+  balanced: "text-theme-yellow",
 };
 
-function StatBar({ value, max = 150, color }: { value:number; max?:number; color:string }) {
+function StatBar({ value, max = 150, colorClass }: { value: number; max?: number; colorClass: string }) {
   return (
-    <div style={{ width:"100%", height:4, background:C.bg3, borderRadius:2, overflow:"hidden" }}>
-      <div style={{ height:"100%", background:color, width:`${(value/max)*100}%`, borderRadius:2 }} />
+    <div className="w-full h-1 bg-bg3 rounded-sm overflow-hidden">
+      <div
+        className={`h-full rounded-sm ${colorClass}`}
+        style={{ "--pct": `${(value / max) * 100}%` } as React.CSSProperties}
+      />
     </div>
   );
 }
+
+const STAT_ROWS = [
+  { key: "attack",  label: "Attack",  colorClass: "bg-theme-red",   textClass: "text-theme-red" },
+  { key: "defense", label: "Defense", colorClass: "bg-theme-blue",  textClass: "text-theme-blue" },
+  { key: "stamina", label: "Stamina", colorClass: "bg-theme-green", textClass: "text-theme-green" },
+] as const;
 
 export function BeybladesListPage() {
   const [beyblades, setBeyblades] = useState<BeybladeStats[]>([]);
@@ -31,9 +42,9 @@ export function BeybladesListPage() {
       const ref = collection(db, COLLECTIONS.BEYBLADE_STATS);
       const q = filter === "all"
         ? query(ref, orderBy("displayName"))
-        : query(ref, where("type","==",filter), orderBy("displayName"));
+        : query(ref, where("type", "==", filter), orderBy("displayName"));
       const snap = await getDocs(q);
-      setBeyblades(snap.docs.map(d => ({ id:d.id, ...d.data() } as BeybladeStats)));
+      setBeyblades(snap.docs.map(d => ({ id: d.id, ...d.data() } as BeybladeStats)));
     } catch { toast.error("Failed to load beyblades"); }
     finally { setLoading(false); }
   };
@@ -53,89 +64,100 @@ export function BeybladesListPage() {
   };
 
   return (
-    <div style={{ padding:24, width: "100%", boxSizing: "border-box" as const }}>
-      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:20 }}>
+    <div className="page-shell p-6">
+      <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 style={{ fontSize:22, fontWeight:700, color:C.text }}>Beyblades</h1>
-          <p style={{ color:C.faint, fontSize:13, marginTop:4 }}>{beyblades.length} configured</p>
+          <h1 className="text-[22px] font-bold text-theme-text">Beyblades</h1>
+          <p className="text-theme-faint text-[13px] mt-1">{beyblades.length} configured</p>
         </div>
-        <Link to="/admin/beyblades/create" style={{ padding:"8px 16px", background:C.blue, color:C.white, borderRadius:8, fontSize:13, fontWeight:500, textDecoration:"none" }}>
+        <Link
+          to="/admin/beyblades/create"
+          className="px-4 py-2 bg-theme-blue text-white rounded-lg text-[13px] font-medium no-underline"
+        >
           + New Beyblade
         </Link>
       </div>
 
       {/* Filter tabs */}
-      <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap" }}>
-        {["all","attack","defense","stamina","balanced"].map(t => (
+      <div className="flex gap-2 mb-5 flex-wrap">
+        {["all", "attack", "defense", "stamina", "balanced"].map(t => (
           <button
             key={t}
             onClick={() => setFilter(t)}
-            style={{
-              padding:"6px 14px", borderRadius:8, fontSize:13, fontWeight:500, cursor:"pointer",
-              textTransform:"capitalize",
-              background: filter===t ? C.text : "transparent",
-              color: filter===t ? C.bg0 : C.muted,
-              border: `1px solid ${filter===t ? C.text : C.border}`,
-            }}
+            className={`px-3.5 py-1.5 rounded-lg text-[13px] font-medium cursor-pointer capitalize border transition-colors
+              ${filter === t
+                ? "bg-theme-text text-bg0 border-theme-text"
+                : "bg-transparent text-theme-muted border-border-c"
+              }`}
           >{t}</button>
         ))}
       </div>
 
       {loading ? (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14 }}>
-          {Array.from({length:6}).map((_,i) => (
-            <div key={i} style={{ background:C.bg2, borderRadius:14, border:`1px solid ${C.border}`, height:200 }} className="pulse" />
+        <div className="grid grid-cols-3 gap-3.5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-bg2 rounded-2xl border border-border-c h-[200px] pulse" />
           ))}
         </div>
       ) : beyblades.length === 0 ? (
-        <div style={{ textAlign:"center", paddingTop:80, color:C.faint }}>
-          <div style={{ fontSize:40, marginBottom:12 }}>🌀</div>
+        <div className="text-center pt-20 text-theme-faint">
+          <div className="text-[40px] mb-3">🌀</div>
           <p>No beyblades found. Create your first one!</p>
         </div>
       ) : (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14 }}>
+        <div className="grid grid-cols-3 gap-3.5">
           {beyblades.map(b => (
-            <div key={b.id} style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:14, overflow:"hidden" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:12, padding:14, borderBottom:`1px solid ${C.border}` }}>
+            <div key={b.id} className="bg-bg2 border border-border-c rounded-2xl overflow-hidden">
+              <div className="flex items-center gap-3 p-3.5 border-b border-border-c">
                 {b.imageUrl ? (
-                  <img src={b.imageUrl} alt={b.displayName} style={{ width:48, height:48, borderRadius:"50%", objectFit:"contain", background:C.bg1 }} />
+                  <img
+                    src={b.imageUrl}
+                    alt={b.displayName}
+                    className="w-12 h-12 rounded-full object-contain bg-bg1"
+                  />
                 ) : (
-                  <div style={{ width:48, height:48, borderRadius:"50%", background:C.bg3, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, fontWeight:700, color:C.muted }}>
+                  <div className="w-12 h-12 rounded-full bg-bg3 flex items-center justify-center text-[20px] font-bold text-theme-muted">
                     {b.displayName[0]}
                   </div>
                 )}
-                <div style={{ flex:1, minWidth:0 }}>
-                  <h3 style={{ color:C.text, fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{b.displayName}</h3>
-                  <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:4 }}>
-                    <span style={{ fontSize:11, fontWeight:600, textTransform:"capitalize", color: TYPE_ACCENT[b.type] ?? C.muted }}>{b.type}</span>
-                    <span style={{ color:C.faint, fontSize:11 }}>{b.spinDirection} spin</span>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-theme-text font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{b.displayName}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={`text-[11px] font-semibold capitalize ${TYPE_ACCENT_CLS[b.type] ?? "text-theme-muted"}`}>{b.type}</span>
+                    <span className="text-theme-faint text-[11px]">{b.spinDirection} spin</span>
                   </div>
                 </div>
               </div>
 
-              <div style={{ padding:14 }}>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, fontSize:12, color:C.muted, marginBottom:10 }}>
-                  <span>Mass: <span style={{ color:C.text }}>{b.mass}g</span></span>
-                  <span>Radius: <span style={{ color:C.text }}>{b.radius}cm</span></span>
+              <div className="p-3.5">
+                <div className="grid grid-cols-2 gap-1.5 text-[12px] text-theme-muted mb-2.5">
+                  <span>Mass: <span className="text-theme-text">{b.mass}g</span></span>
+                  <span>Radius: <span className="text-theme-text">{b.radius}cm</span></span>
                 </div>
-                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-                  {[["Attack",b.typeDistribution.attack,C.red],["Defense",b.typeDistribution.defense,C.blue],["Stamina",b.typeDistribution.stamina,C.green]].map(([lbl,val,col]) => (
-                    <div key={lbl as string}>
-                      <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, marginBottom:3 }}>
-                        <span style={{ color: col as string }}>{lbl}</span>
-                        <span style={{ color:C.muted }}>{val}</span>
+                <div className="flex flex-col gap-1.5">
+                  {STAT_ROWS.map(({ key, label, colorClass, textClass }) => (
+                    <div key={key}>
+                      <div className="flex justify-between text-[11px] mb-[3px]">
+                        <span className={textClass}>{label}</span>
+                        <span className="text-theme-muted">{b.typeDistribution[key]}</span>
                       </div>
-                      <StatBar value={val as number} color={col as string} />
+                      <StatBar value={b.typeDistribution[key]} colorClass={colorClass} />
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div style={{ display:"flex", borderTop:`1px solid ${C.border}` }}>
-                <Link to={`/admin/beyblades/edit/${b.id}`} style={{ flex:1, padding:"10px", textAlign:"center", fontSize:13, color:C.blue, textDecoration:"none" }}>
+              <div className="flex border-t border-border-c">
+                <Link
+                  to={`/admin/beyblades/edit/${b.id}`}
+                  className="flex-1 py-2.5 text-center text-[13px] text-theme-blue no-underline"
+                >
                   Edit
                 </Link>
-                <button onClick={() => setConfirmDelete(b)} style={{ flex:1, padding:"10px", textAlign:"center", fontSize:13, color:C.red, background:"none", border:"none", borderLeft:`1px solid ${C.border}`, cursor:"pointer" }}>
+                <button
+                  onClick={() => setConfirmDelete(b)}
+                  className="flex-1 py-2.5 text-center text-[13px] text-theme-red bg-transparent border-none border-l border-border-c cursor-pointer"
+                >
                   Delete
                 </button>
               </div>
@@ -146,17 +168,24 @@ export function BeybladesListPage() {
 
       {/* Delete modal */}
       {confirmDelete && (
-        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:50, padding:16 }}>
-          <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:20, padding:24, maxWidth:360, width:"100%" }}>
-            <h3 style={{ fontSize:18, fontWeight:700, color:C.text, marginBottom:8 }}>Delete Beyblade</h3>
-            <p style={{ color:C.muted, fontSize:14, marginBottom:24 }}>
-              Delete <strong style={{ color:C.text }}>{confirmDelete.displayName}</strong>? This cannot be undone.
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-bg2 border border-border-c rounded-[20px] p-6 max-w-[360px] w-full">
+            <h3 className="text-[18px] font-bold text-theme-text mb-2">Delete Beyblade</h3>
+            <p className="text-theme-muted text-[14px] mb-6">
+              Delete <strong className="text-theme-text">{confirmDelete.displayName}</strong>? This cannot be undone.
             </p>
-            <div style={{ display:"flex", gap:10 }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ flex:1, padding:"8px", fontSize:13, border:`1px solid ${C.border}`, color:C.muted, background:"transparent", borderRadius:8, cursor:"pointer" }}>
+            <div className="flex gap-2.5">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 py-2 text-[13px] border border-border-c text-theme-muted bg-transparent rounded-lg cursor-pointer"
+              >
                 Cancel
               </button>
-              <button onClick={handleDelete} disabled={deletingId !== null} style={{ flex:1, padding:"8px", fontSize:13, background:C.red, color:C.white, borderRadius:8, border:"none", cursor:"pointer", opacity: deletingId ? 0.5 : 1 }}>
+              <button
+                onClick={handleDelete}
+                disabled={deletingId !== null}
+                className="flex-1 py-2 text-[13px] bg-theme-red text-white rounded-lg border-none cursor-pointer disabled:opacity-50"
+              >
                 {deletingId ? "Deleting..." : "Delete"}
               </button>
             </div>

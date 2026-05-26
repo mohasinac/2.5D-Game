@@ -9612,4 +9612,441 @@ function wbdMassResistanceRatio(m_heavy_kg: number, m_light_kg: number): number 
 // roundEdgeContactAngle(0)   → 30°  (tangent-aligned section: J_recoil/J = sin(30°) = 0.500)
 // roundEdgeContactAngle(90)  → 50°  (radial-aligned section:  J_recoil/J = sin(50°) = 0.766)
 // roundEdgeContactAngle(45)  → 44°  (diagonal section: J_recoil/J = sin(44°) = 0.695)
+
+---
+
+## Case 237 — Andre's Yak (Anime-Only) · Estimated ~38–42 g Full Combo: Why the Pagoda-Inspired Dome AR With Yin-Yang Ball-Bearing Pocket Produces a Reversible-Axis Stamina Blader, How the Height-Doubling Mode Change Trades Axial Stability for Upper Attack Deflection, and Why Axis Inversion Becomes Unavailable After Mode Change
+
+Andre's Yak is an anime-exclusive beyblade from the original G-Revolution series. It does not correspond to a retail release. Visually and mechanically it draws from Chinese pagoda architecture rather than the yak animal — the stacked, swept-flange dome is a pagoda silhouette. The yak association is likely a localisation or character-flavour label. The beyblade carries three interlocking gimmicks: (1) a yin-yang dual-ball bearing pocket in the base that provides passive free-spin isolation, (2) an axis-inversion launch option that allows the combo to spin top-down or reversed (point-up), and (3) an AR height-doubling mode change that unlocks an extended pagoda stack during the ultimate move — at the cost of the inversion capability.
+
+---
+
+### 1. Part Identification (Anime Reconstruction)
+
+```
+Attack Ring (AR):   Pagoda Dome — yellow, multi-tier stacked flanges, pagoda silhouette
+                    Normal height: single-tier wide bell flange with downturned outer edge
+                    Mode-changed height: full stacked pagoda (~2× AR height)
+Weight Disk (WD):   8 Heavy — standard 8-sided heavy disk, ~14.0 g
+Spin Gear (SG):     SG Sharp — fixed sharp tip, standard geometry
+                    Modified with yin-yang dual-ball bearing pocket in base cavity
+Tip:                Sharp — narrow point contact, low friction, high stamina
+Axis:               Dual-point — both top and bottom are pointed, enabling axis inversion
+```
+
+No retail equivalent exists. Mass estimates are derived from visual scale against confirmed parts.
+
+```
+FULL COMBO — VERTICAL CROSS-SECTION (NORMAL MODE, not to scale)
+
+                     ╷  ← top shaft point (inversion pivot)
+                     │
+              ╭──────┴──────╮
+             ╱    dome top   ╲        ← AR upper dome (pagoda crown)
+            ╱                 ╲
+           │                   │
+          ╱                     ╲
+         │       AR dome body    │
+        ╱                         ╲
+       ╱                           ╲  ← dome widens toward flange
+      │                             │
+      │─────────────────────────────│  ← flange shoulder (horizontal)
+       ╲                           ╱
+        ╲─────────────────────────╱   ← outer flange underside (downturned ~30°)
+               │           │
+         ┌─────┴───────────┴─────┐
+         │      8 Heavy WD       │    ~14.0 g  |  ~38 mm diameter
+         │  ████████████████████ │
+         └─────┬───────────┬─────┘
+         ┌─────┴───────────┴─────┐
+         │   ╔═════════════════╗ │
+         │   ║  ●   shaft  ●   ║ │    ← yin-yang ball pocket
+         │   ║      axis       ║ │       (● = balls, 180° apart in race)
+         │   ╚═════════════════╝ │
+         │       SG Sharp        │
+         └───────────┬───────────┘
+                     │
+                     ╿  ← sharp tip  (floor contact, normal mode)
+                     ·  FLOOR
+```
+
+---
+
+### 2. Yin-Yang Dual-Ball Bearing Pocket: Function and Physics
+
+The base cavity holds two balls arranged in a yin-yang (taijitu) configuration — 180° apart in a circular race rather than a standard central bearing. This is a passive mechanical isolator:
+
+```
+Standard SG Sharp:        shaft rotates with the combo — friction couples tip velocity to spin decay
+Yin-yang ball pocket:     two balls in a circular race allow partial decoupling between the shaft
+                          and the AR/WD mass — the balls redistribute contact load across 360°
+```
+
+The two-ball arrangement is mechanically equivalent to a 2-point radial bearing. At high spin the balls orbit the race at near-zero relative velocity (centrifugal seating). As spin decays the balls begin to slip and redistribute torque:
+
+```
+Contact load per ball:  F_c = m_ball × ω² × r_race   (centrifugal seating force)
+At high ω: both balls fully seated → near-rigid coupling → behaves like standard SG
+At low ω:  balls lose centrifugal seat → slip → partial free-shaft behaviour → reduced tip friction
+```
+
+Net effect: the combo gains a mild LAD (Life-After-Death) contribution at the spin-down phase — similar in principle to a free-shaft SG but with lower ceiling because the balls add rotational mass at radius rather than providing full bearing isolation.
+
+```
+I_balls = 2 × m_ball × r_race²   (added rotational inertia from the two orbiting masses)
+```
+
+```
+YIN-YANG DUAL-BALL POCKET — TOP-DOWN VIEW (looking down through SG cavity)
+
+              ┌─────────────────────────┐
+             ╱     circular ball race    ╲
+            │  ┌───────────────────────┐  │
+            │  │                       │  │
+            │  │   Ball A  ●           │  │  ← Ball A (0°)
+            │  │                       │  │
+            │  │         × shaft       │  │  ← center shaft axis
+            │  │           axis        │  │
+            │  │                       │  │
+            │  │           ●  Ball B   │  │  ← Ball B (180°, diametrically opposite)
+            │  │                       │  │
+            │  └───────────────────────┘  │
+             ╲                           ╱
+              └─────────────────────────┘
+
+  High ω (launch spin):   centrifugal force F_c = m·ω²·r seats both balls firmly
+                          → balls locked in race → behaves like rigid SG shaft
+
+  Low ω (spin-down):      F_c drops below seating threshold
+                          → balls slip along race → partial decoupling
+                          → tip friction partially isolated → LAD contribution
+
+  180° spacing ensures:   rotational mass is balanced at all times
+                          → no unbalanced orbiting mass → no induced wobble
+```
+
+The yin-yang aesthetic doubles as a functional weight balance — 180° separation ensures the pocket does not create an unbalanced rotating mass that would introduce wobble at high spin.
+
+---
+
+### 3. Axis Inversion: Pre-Launch Geometry
+
+The sharp tip is mirrored by an equally sharp protrusion at the top of the shaft. This gives the combo a true dual-point axis — either end can contact the stadium floor:
+
+```
+Normal orientation:  sharp tip down  → standard point contact, high stamina, clockwise stadium spin
+Inverted orientation: sharp top down → same tip geometry, same friction coefficient, same stamina profile
+                       AR flanges now face upward → downturned outer flanges become upward-facing deflectors
+```
+
+Inversion is set at launch — the ripcord seats into whichever end is up. Once launched the axis is fixed by gyroscopic rigidity; the combo cannot flip mid-spin under normal conditions.
+
+Functional consequence of inversion:
+- The pagoda flanges that normally deflect incoming attacks downward now face upward
+- Incoming lower attacks (SG Sharp opponents hitting low) strike the now-upward-facing underside of flanges, which have a different contact angle geometry
+- Inversion is primarily a launch-mechanic and strategic choice, not a spin-direction reversal
+
+```
+The combo's spin direction is still determined by the ripcord pull direction, not axis orientation.
+Axis inversion ≠ spin reversal. Both orientations can be either clockwise or counter-clockwise.
+```
+
+```
+AXIS INVERSION — SIDE VIEW COMPARISON
+
+  NORMAL (tip-down, launched standard)    INVERTED (tipped >90° mid-battle)
+
+       ╷ top shaft point                       · ← (former tip, now at top)
+       │                                       │
+  ╭────┴────╮                             ╭────┴────╮
+ ╱   dome   ╲                            ╱  dome    ╲   (dome now faces DOWN)
+│   (faces    │                          │  (faces    │
+│    UP)      │                          │   DOWN)    │
+╲             ╱                          ╲             ╱
+ ╲ flanges   ╱  ← flanges swept           ╲ flanges   ╱  ← flanges now
+  ╲  DOWN   ╱     downward ~30°            ╲  UP      ╱    sweep UPWARD ~30°
+   ╲───────╱                               ╲─────────╱
+     │   │                                   │     │
+ ┌───┴───┴───┐                           ┌───┴─────┴───┐
+ │  8 Hvy WD │                           │  8 Hvy WD   │
+ └───┬───┬───┘                           └───┬─────┬───┘
+ ┌───┴───┴───┐                           ┌───┴─────┴───┐
+ │ ●  SG  ● │                            │ ●   SG   ● │
+ └─────┬─────┘                           └──────┬──────┘
+       │                                         │
+       ╿ sharp tip → FLOOR contact              ╿ top point → FLOOR contact
+       · FLOOR                                  · FLOOR
+
+  Spin direction: set by ripcord pull — UNCHANGED by axis orientation
+  Flange geometry: downward sweep becomes upward sweep when inverted
+  Upper attack contacts: flange underside (normal) vs flange topside (inverted)
+  Inversion trigger: mid-battle tip-over past 90° (gyroscopic flip), NOT pre-launch
+```
+
+---
+
+### 4. Pagoda Dome AR: Geometry and the Downturned Flange Effect
+
+The AR in normal (single-tier) mode is a wide bell-dome with a continuous downturned outer flange:
+
+```
+Flange geometry:     outer edge swept downward at ~25–35° from horizontal
+Contact profile:     rounded underside of the downward flange faces approaching opponents
+Upper attack contact angle: incoming upper-attack blade strikes the underside slope
+                            → J_deflect / J_in = cos(θ_flange) ≈ cos(30°) ≈ 0.87 (upward component absorbed)
+                            → net force on Yak is downward-and-inward, not destabilising
+```
+
+The downturned flange acts as a passive upper-attack counter — an upper attacker launches a blade upward and inward, but strikes the downward-sweeping flange underside, which redirects the force vector downward rather than tipping the beyblade. This is analogous to a stadium-bowl surface redirecting a rolling ball inward: the geometry itself provides defence against upward destabilisation.
+
+```
+Recoil from downturned flange contact:
+  θ_contact ≈ 30° below horizontal on the flange underside
+  J_recoil lateral = J_in × sin(θ_contact) ≈ J_in × 0.50
+  J_recoil vertical (downward) = J_in × cos(θ_contact) ≈ J_in × 0.87
+```
+
+```
+FLANGE FORCE DEFLECTION — GEOMETRY (side view, normal mode)
+
+                                          dome
+                            ┌─────────────────────────────┐
+                           ╱                               ╲
+                          │                                 │
+              ────────────┤─────────────────────────────────├──── flange shoulder
+                           ╲                               ╱       (horizontal)
+                            ╲─────────────────────────────╱
+                              flange underside             ╲
+                              ~30° below horizontal         ╲ ← flange outer edge
+                                                             ╲
+
+  Incoming upper attack (opponent AR sweeping upward at ~45°):
+
+         ═══════════════════════════════════════ flange underside (−30° from horizontal)
+                                           ╱  contact point ×
+                            F_in ↗       ╱
+                          (upper attack ╱
+                           at ~45°)    ╱
+
+  Force decomposition at the downturned flange contact surface:
+
+         F_in
+          ↗                    F_lateral → (side push, ~0.50 × F_in)
+          ╱ 45°                 ──────────────────────────────────→
+         ╱──────× contact       F_vertical ↓ (presses tip to floor, ~0.87 × F_in)
+        ╱       ╲ 30° flange               ↓
+                 ╲ normal
+                  ↘ force resolves DOWNWARD → tip pressed into stadium → STABILISING
+
+  Compare: flat-edge AR contact at same incoming angle
+         F_vertical ↓ ≈ 0 (horizontal contact → all force lateral → destabilising)
+  The downturned flange geometry passively converts upper attack energy into downforce.
+```
+
+The vertical downward component presses the tip into the stadium rather than lifting the combo — a stabilising recoil direction. The Yak is therefore passively resistant to upper attack in normal mode, not because of mass or spin, but because of flange slope geometry.
+
+---
+
+### 5. Height-Doubling Mode Change: The Ultimate Move
+
+During the anime's "Power of the Yak" ultimate, the AR extends from single-tier bell to a full stacked multi-tier pagoda — approximately doubling the AR's vertical height. This is a deployed-layer mechanism: the upper tiers of the pagoda dome are retracted flush during normal play and extend outward/upward when triggered.
+
+```
+Normal AR height:       h_AR_normal ≈ 12–14 mm (single bell flange)
+Mode-changed AR height: h_AR_extended ≈ 24–28 mm (stacked pagoda, 3 tiers visible)
+```
+
+```
+AR HEIGHT COMPARISON — NORMAL vs MODE-CHANGED (side view)
+
+    NORMAL MODE (~13 mm AR)          MODE-CHANGED (~26 mm AR)
+
+         ╷ top point                       ╷ top point
+         │                                 │
+    ╭────┴────╮  ┐                    ╭────┴────╮   ┐
+   ╱  dome top ╲ │                   ╱  tier 3   ╲  │
+  │             │ │  ~13 mm          │  (narrow,   │ │
+  ╱─────────────╲│  AR height       ╱   steep)     ╲│
+  ╲─── flange ──╱┘                  ╲─────────────╱ │
+       │     │                       ╱  tier 2   ╲  │  ~26 mm
+                                    │  (mid tier, │  │  AR height
+                                    │  horizontal │  │
+                                    │   ledge)    │  │
+                                    ╲─────────────╱  │
+                                     ╱  tier 1   ╲   │
+                                    │  (original   │  │
+                                    │  bell dome)  │  │
+                                    ╲─────────────╱  ┘
+                                         │     │
+
+  Contact planes created by stacked tiers:
+    Tier 1 (low):  downturned flange — same as normal mode (upper attack deflected ↓)
+    Tier 2 (mid):  horizontal ledge between tiers — near-flat face, high recoil ~sin(80°) ≈ 0.98
+    Tier 3 (high): narrow steep slopes — strong downward deflection of high upper attacks
+
+  CoM elevation: ~12–14 mm higher in extended mode
+  Gyroscopic suppression: sufficient at high ω, fails at low ω → nutation onset earlier
+```
+
+Physics consequences of height doubling:
+
+**1. CoM elevation:**
+```
+AR mass shifts upward by ~Δh = 12–14 mm
+ΔI_system = m_AR × Δh² (parallel axis contribution — increased rotational inertia about the tip contact point)
+```
+Higher CoM increases toppling torque at any given tilt angle — the combo becomes less stable against lateral forces after mode change. At high spin this is suppressed by gyroscopic rigidity; at low spin the elevated CoM accelerates the nutation/wobble onset.
+
+**2. Tier-to-tier contact geometry:**
+The stacked tiers create multiple distinct contact planes at different heights. An opponent AR can now strike at tier 1 (low), tier 2 (mid), or tier 3 (high):
+- Low contact: functionally identical to normal mode (downturned lower flange)
+- Mid contact: the second tier has a transition region between tiers — a horizontal ledge, which presents a near-flat contact face (high recoil potential, ~sin(80°) ≈ 0.98)
+- High contact: the upper tier flanges are narrower and steeper — upper attack here strikes steep slope, producing strong downward deflection
+
+**3. Spin loss from mode change mechanism:**
+Any mechanical extension during spin requires energy — the extending tiers must overcome inertial resistance. The mode-change event produces a momentary spin dip:
+```
+ΔKE_lost ≈ ½ × ΔI × ω²_pre   (energy stored in the extending mass redistribution)
+```
+This is why the mode change is an "ultimate" — it is not freely repeatable without a significant spin cost.
+
+---
+
+### 6. Why Axis Inversion Becomes Unavailable After Mode Change
+
+The axis inversion mechanism depends on the AR sitting flush at a defined height relative to the shaft endpoints. In extended mode the AR has shifted upward — the extended pagoda tiers change the clearance geometry between the upper shaft tip and the AR top:
+
+```
+Normal mode:    top shaft point protrudes above AR crown → can be used as launch contact point → inversion viable
+Extended mode:  AR crown now extends above the top shaft point → shaft tip is recessed relative to AR top
+                → no usable contact protrusion above the AR → inversion physically impossible to seat in the launcher
+```
+
+```
+SHAFT CLEARANCE — NORMAL MODE vs EXTENDED MODE (side view, top of combo)
+
+  NORMAL MODE: top shaft point protrudes above AR crown
+
+       ╷ ← top shaft point (protrudes ~3–5 mm above AR crown)
+       │                           ← usable as floor contact when inverted
+  ─────┤─────  AR crown level
+       │
+  ╭────┴────╮
+ ╱   dome   ╲
+│             │
+
+  Result: shaft tip is ABOVE AR top → launcher can seat on it → INVERSION VIABLE
+
+
+  EXTENDED (MODE-CHANGED): AR crown rises above shaft point
+
+  ╭────────────╮  ← tier 3 crown (new highest point, ~12–14 mm above shaft tip)
+ ╱  pagoda top  ╲
+│                 │
+  ─────────────── ← shaft tip (now RECESSED below AR crown)
+       │
+  ╭────┴────╮
+ ╱  tier 2   ╲
+│              │
+╱  tier 1     ╲
+╲─────────────╱
+
+  Result: AR crown is ABOVE shaft tip → no protrusion to seat → INVERSION BLOCKED
+
+  Secondary lock: even if it could flip, elevated CoM (Δh ≈ 12 mm) means:
+    τ_topple = m · g · h_CoM · sin(θ)  grows faster than  τ_gyro = I · ω · Ω
+    → at any ω below high-spin lock, the inverted combo topples immediately
+```
+
+Additionally, the elevated CoM in extended mode would make an inverted spin unstable at any speed below high-spin gyroscopic lock:
+
+```
+At low ω, inverted CoM (h_CoM elevated by mode change) → toppling torque >> gyroscopic restoring torque
+→ the combo falls over immediately on the way out of the launcher
+```
+
+Mode change therefore represents a one-way trade: gain the extended pagoda attack profile and lose the dual-axis launch option for the remainder of the battle.
+
+---
+
+### 7. Role Summary
+
+```
+Pre-mode-change role:  Stamina / Axis-trick — SG Sharp tip, ball-bearing pocket LAD contribution,
+                       downturned flange passive upper-attack resistance, inversion launch option
+Post-mode-change role: Pseudo-upper-counter / Intimidation — extended tiers create multi-height
+                       contact planes, but elevated CoM reduces spin survival at low speeds;
+                       the move is an anime climax mechanic, not a repeatable competitive tool
+```
+
+**Competitive viability (retail equivalent, if it existed):**
+- SG Sharp provides genuine stamina; 8 Heavy is the correct WD pairing
+- Ball-bearing pocket is a novelty — 2-ball pocket LAD ceiling is below a proper free-shaft SG
+- AR geometry (downturned flange) is legitimately functional against upper attackers in RS
+- Axis inversion adds no stamina advantage — it changes the contact geometry of the flange sides, which is situational at best
+- Mode change in a real battle would be a self-destruct option at low spin — elevated CoM and spin cost make it uncompetitive outside of scripted anime physics
+
+---
+
+### 8. Physics Model
+
+```typescript
+interface YakAnimeBeyblade {
+  generation: 'G-Revolution (anime-only)';
+  blader: 'Andre';
+  specialtyLabel: 'Power of the Yak';
+  inspiration: 'Chinese pagoda architecture (not yak anatomy)';
+  ar: {
+    name: 'Pagoda Dome';
+    color: 'yellow';
+    normalHeightMm: 13;
+    extendedHeightMm: 26;           // mode-change: ~2× normal
+    flangeAngleDeg: 30;             // downward sweep of outer edge
+    tiers: { normal: 1; extended: 3 };
+    upperAttackDeflection: 'passive (flange slope redirects upward force downward)';
+  };
+  wd: { name: '8 Heavy'; mass_g: 14.0 };
+  sg: {
+    name: 'SG Sharp (modified)';
+    tip: 'sharp';
+    bearingPocket: 'yin-yang dual-ball (2-point radial, 180° separation)';
+    ladContribution: 'partial — centrifugal seating at high spin, slip at low spin';
+  };
+  axis: {
+    type: 'dual-point';
+    inversionViable: 'pre-mode-change only';
+    inversionEffect: 'flange geometry reoriented; spin direction unchanged';
+  };
+  modeChange: {
+    trigger: 'ultimate move (anime scripted)';
+    arHeightMultiplier: 2;
+    comElevationMm: 12;
+    spinCost: 'significant (inertial redistribution during extension)';
+    axisInversionAfter: false;
+    stabilityImpact: 'reduced at low spin — elevated CoM accelerates nutation onset';
+  };
+}
+
+function flangeDeflectionDownwardComponent(flangeAngleDeg: number, J_in: number): number {
+  return J_in * Math.cos(flangeAngleDeg * Math.PI / 180);
+}
+
+function ballPocketCentrifugalSeating(m_ball_kg: number, omega_rad_s: number, r_race_m: number): number {
+  return m_ball_kg * omega_rad_s ** 2 * r_race_m;
+}
+
+function modChangeSpinLoss(deltaI_kgm2: number, omega_pre_rad_s: number): number {
+  return 0.5 * deltaI_kgm2 * omega_pre_rad_s ** 2;
+}
+
+function inversionViable(arExtended: boolean, topShaftProtrudes: boolean): boolean {
+  return !arExtended && topShaftProtrudes;
+}
+
+// flangeDeflectionDownwardComponent(30, 1.0) → 0.866  (87% of impact force directed downward — stabilising)
+// ballPocketCentrifugalSeating(0.002, 200, 0.008) → 0.64 N  (strong seating at launch spin)
+// ballPocketCentrifugalSeating(0.002, 40, 0.008)  → 0.026 N (weak seating at low spin → ball slip → LAD kicks in)
+// modChangeSpinLoss(0.00015, 200) → 3.0 J  (energy cost of extending the pagoda tiers)
+// inversionViable(false, true)  → true   (normal mode: inversion available)
+// inversionViable(true,  false) → false  (extended mode: AR crown above shaft tip → inversion blocked)
 ```

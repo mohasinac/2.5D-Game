@@ -1,16 +1,13 @@
 import { useState } from "react";
-import { C, alpha } from "@/styles/theme";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/cn";
 
 interface Props {
   title: string;
   children: React.ReactNode;
   defaultOpen?: boolean;
-  /** Number badge shown when collapsed to indicate items inside */
   badge?: number | string | null;
-  /** Persists open/closed state in localStorage under this key */
   storageKey?: string;
-  /** Extra right-side element (e.g. an "Add" button) */
   action?: React.ReactNode;
 }
 
@@ -32,43 +29,29 @@ export function CollapsibleSection({
   };
 
   return (
-    <div style={{
-      border: `1px solid ${C.border}`,
-      borderRadius: 10,
-      overflow: "hidden",
-      marginBottom: 2,
-    }}>
-      {/* Header row */}
-      <div style={{ display: "flex", alignItems: "center", background: C.bg3 }}>
+    <div className="border border-border-c rounded-xl overflow-hidden mb-0.5">
+      <div className="flex items-center bg-bg3">
         <button
           onClick={toggle}
-          style={{
-            flex: 1, display: "flex", alignItems: "center", gap: 8,
-            padding: "10px 14px", background: "transparent", border: "none",
-            cursor: "pointer", textAlign: "left", color: C.text,
-          }}
+          className="flex-1 flex items-center gap-2 px-3.5 py-2.5 bg-transparent border-none cursor-pointer text-left text-theme-text"
         >
           {open
-            ? <ChevronDown size={13} color={C.muted} />
-            : <ChevronRight size={13} color={C.muted} />}
-          <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: C.text }}>{title}</span>
+            ? <ChevronDown size={13} className="text-theme-muted shrink-0" />
+            : <ChevronRight size={13} className="text-theme-muted shrink-0" />}
+          <span className="flex-1 text-[13px] font-semibold text-theme-text">{title}</span>
           {!open && badge !== undefined && badge !== null && badge !== 0 && (
-            <span style={{
-              background: alpha(C.purple, 0.25), color: C.purple,
-              borderRadius: 8, fontSize: 10, fontWeight: 700, padding: "1px 7px",
-            }}>
+            <span className="bg-purple-27 text-theme-purple rounded-lg text-[10px] font-bold px-1.5 py-px">
               {badge}
             </span>
           )}
         </button>
         {action && (
-          <div style={{ paddingRight: 10, flexShrink: 0 }}>{action}</div>
+          <div className="pr-2.5 shrink-0">{action}</div>
         )}
       </div>
 
-      {/* Body */}
       {open && (
-        <div style={{ padding: "14px 14px", background: C.bg2 }}>
+        <div className={cn("p-3.5 bg-bg2")}>
           {children}
         </div>
       )}

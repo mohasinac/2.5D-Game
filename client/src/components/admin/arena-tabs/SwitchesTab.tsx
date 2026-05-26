@@ -1,8 +1,8 @@
-import { C } from "@/styles/theme";
-import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
+import { ArenaFeatureSection } from "./ArenaFeatureSection";
 import type { ArenaConfig, SwitchConfig, SwitchTarget, SwitchAction } from "@/types/arenaConfigNew";
 import { PX_PER_CM_BASE } from "@/constants/units";
 import RotationBlockEditor from "./RotationBlockEditor";
+import { cn } from "@/lib/cn";
 
 interface Props {
   config: ArenaConfig;
@@ -29,7 +29,7 @@ function numInput(val: number | undefined, def: number, onChange: (n: number) =>
       value={val ?? def}
       step={step}
       onChange={e => onChange(Number(e.target.value))}
-      className="w-[90px] bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs"
+      className="w-[90px] bg-bg1 border border-border-c text-theme-text rounded-md py-1 px-2 text-xs"
     />
   );
 }
@@ -37,14 +37,13 @@ function numInput(val: number | undefined, def: number, onChange: (n: number) =>
 function SliderRow({ label, value, min, max, step, onChange }: { label: string; value: number; min: number; max: number; step: number; onChange: (n: number) => void }) {
   return (
     <div>
-      <div className="flex justify-between text-[11px] text-faint mb-0.5">
+      <div className="flex justify-between text-[11px] text-theme-faint mb-0.5">
         <span>{label}</span>
-        <span className="text-text font-mono">{value}</span>
+        <span className="text-theme-text font-mono">{value}</span>
       </div>
       <input type="range" min={min} max={max} step={step} value={value}
         onChange={e => onChange(+e.target.value)}
         className="w-full"
-        style={{ accentColor: C.purple }}
       />
     </div>
   );
@@ -56,32 +55,23 @@ export default function SwitchesTab({ config, onChange }: Props) {
   const add = () => {
     if (items.length >= 12) return;
     const sw: SwitchConfig = {
-      id: makeId(),
-      x: 0,
-      y: 0,
-      iconKey: "switch",
+      id: makeId(), x: 0, y: 0, iconKey: "switch",
       switch: { targets: [], cooldownMs: 2000 },
     };
     onChange({ switches: [...items, sw] } as any);
   };
 
-  const remove = (id: string) =>
-    onChange({ switches: items.filter(s => s.id !== id) } as any);
+  const remove = (id: string) => onChange({ switches: items.filter(s => s.id !== id) } as any);
 
   const update = (id: string, patch: Partial<SwitchConfig>) =>
     onChange({ switches: items.map(s => s.id === id ? { ...s, ...patch } : s) } as any);
 
   const updateSwitch = (id: string, patch: Partial<SwitchConfig["switch"]>) =>
-    onChange({
-      switches: items.map(s => s.id === id ? { ...s, switch: { ...s.switch, ...patch } } : s),
-    } as any);
+    onChange({ switches: items.map(s => s.id === id ? { ...s, switch: { ...s.switch, ...patch } } : s) } as any);
 
   const addTarget = (sw: SwitchConfig) => {
     const t: SwitchTarget & { _key: number } = {
-      _key: makeTargetId(),
-      targetType: "obstacle",
-      targetId: "",
-      action: { kind: "toggle" },
+      _key: makeTargetId(), targetType: "obstacle", targetId: "", action: { kind: "toggle" },
     } as any;
     updateSwitch(sw.id, { targets: [...sw.switch.targets, t] });
   };
@@ -90,9 +80,7 @@ export default function SwitchesTab({ config, onChange }: Props) {
     updateSwitch(sw.id, { targets: sw.switch.targets.filter((_, i) => i !== idx) });
 
   const patchTarget = (sw: SwitchConfig, idx: number, patch: Partial<SwitchTarget>) =>
-    updateSwitch(sw.id, {
-      targets: sw.switch.targets.map((t, i) => i === idx ? { ...t, ...patch } : t),
-    });
+    updateSwitch(sw.id, { targets: sw.switch.targets.map((t, i) => i === idx ? { ...t, ...patch } : t) });
 
   const patchAction = (sw: SwitchConfig, idx: number, actionPatch: Partial<SwitchAction>) => {
     const targets = sw.switch.targets.map((t, i) => {
@@ -104,170 +92,137 @@ export default function SwitchesTab({ config, onChange }: Props) {
 
   const setActionKind = (sw: SwitchConfig, idx: number, kind: SwitchAction["kind"]) => {
     const defaults: Record<string, SwitchAction> = {
-      toggle: { kind: "toggle" },
-      "set-on": { kind: "set-on" },
-      "set-off": { kind: "set-off" },
-      pulse: { kind: "pulse", durationMs: 1000 },
-      "rotation-on": { kind: "rotation-on" },
-      "rotation-off": { kind: "rotation-off" },
-      chain: { kind: "chain", nextSwitchId: "" },
+      toggle: { kind: "toggle" }, "set-on": { kind: "set-on" }, "set-off": { kind: "set-off" },
+      pulse: { kind: "pulse", durationMs: 1000 }, "rotation-on": { kind: "rotation-on" },
+      "rotation-off": { kind: "rotation-off" }, chain: { kind: "chain", nextSwitchId: "" },
     };
     patchTarget(sw, idx, { action: defaults[kind] ?? { kind: "toggle" } });
   };
 
   return (
-    <CollapsibleSection title="Switches" badge={items.length} storageKey="arena-switches-list" defaultOpen={true}>
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-between items-center">
-        <span className="text-[13px] text-muted">{items.length} / 12 switches</span>
-        <button
-          onClick={add}
-          disabled={items.length >= 12}
-          className="py-[5px] px-[14px] text-white border-none rounded-md text-xs font-medium cursor-pointer"
-          style={{ background: C.purple, opacity: items.length >= 12 ? 0.4 : 1 }}
-        >
-          + Add Switch
-        </button>
-      </div>
-
-      {items.length === 0 && (
-        <div className="text-center py-10 text-faint">
-          <div className="text-[32px] mb-2">🔀</div>
-          <p>No switches yet. Switches toggle other arena features when a beyblade collides with them.</p>
-        </div>
-      )}
-
-      {items.map((sw, idx) => (
-        <div key={sw.id} className="bg-bg3 rounded-xl p-4 border border-border">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-[13px] font-medium text-text">🔀 Switch #{idx + 1}</span>
-            <button onClick={() => remove(sw.id)} className="text-red bg-transparent border-none text-xs cursor-pointer">Remove</button>
-          </div>
-
+    <ArenaFeatureSection
+      title="Switches"
+      storageKey="arena-switches-list"
+      items={items}
+      maxItems={12}
+      onAdd={add}
+      addLabel="Add Switch"
+      onRemove={(id) => remove(id as string)}
+      emptyIcon="🔀"
+      emptyText="No switches yet. Switches toggle other arena features when a beyblade collides with them."
+      renderItemHeader={(_sw, idx) => <>🔀 Switch #{idx + 1}</>}
+      renderItemBody={(sw) => (
+        <div className="flex flex-col gap-2.5">
           {/* Identity */}
-          <div className="grid grid-cols-2 gap-2.5 mb-3">
+          <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-[11px] text-faint mb-1">Switch ID</label>
-              <input
-                type="text"
-                value={sw.id}
+              <label className="block text-[11px] text-theme-faint mb-1">Switch ID</label>
+              <input type="text" value={sw.id}
                 onChange={e => update(sw.id, { id: e.target.value })}
                 placeholder="e.g. sw1"
-                className="w-full bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
+                className="w-full bg-bg2 border border-border-c text-theme-text rounded-md py-1 px-2 text-xs"
               />
             </div>
             <div>
-              <label className="block text-[11px] text-faint mb-1">Icon Key</label>
-              <input
-                type="text"
-                value={sw.iconKey}
+              <label className="block text-[11px] text-theme-faint mb-1">Icon Key</label>
+              <input type="text" value={sw.iconKey}
                 onChange={e => update(sw.id, { iconKey: e.target.value })}
                 placeholder="e.g. switch"
-                className="w-full bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
+                className="w-full bg-bg2 border border-border-c text-theme-text rounded-md py-1 px-2 text-xs"
               />
             </div>
           </div>
 
           {/* Position */}
-          <div className="grid grid-cols-2 gap-2.5 mb-3">
-            <SliderRow label="X (cm from center)" value={Math.round(sw.x / PX_PER_CM_BASE * 10) / 10} min={-21} max={21} step={0.5} onChange={v => update(sw.id, { x: Math.round(v * PX_PER_CM_BASE) })} />
-            <SliderRow label="Y (cm from center)" value={Math.round(sw.y / PX_PER_CM_BASE * 10) / 10} min={-21} max={21} step={0.5} onChange={v => update(sw.id, { y: Math.round(v * PX_PER_CM_BASE) })} />
+          <div className="grid grid-cols-2 gap-2.5">
+            <SliderRow label="X (cm)" value={Math.round(sw.x / PX_PER_CM_BASE * 10) / 10} min={-21} max={21} step={0.5} onChange={v => update(sw.id, { x: Math.round(v * PX_PER_CM_BASE) })} />
+            <SliderRow label="Y (cm)" value={Math.round(sw.y / PX_PER_CM_BASE * 10) / 10} min={-21} max={21} step={0.5} onChange={v => update(sw.id, { y: Math.round(v * PX_PER_CM_BASE) })} />
           </div>
 
-          {/* Switch timing */}
-          <div className="grid grid-cols-4 gap-2.5 mb-3">
+          {/* Timing */}
+          <div className="grid grid-cols-4 gap-2.5">
             <div>
-              <label className="block text-[11px] text-faint mb-1">Cooldown (ms)</label>
+              <label className="block text-[11px] text-theme-faint mb-1">Cooldown (ms)</label>
               {numInput(sw.switch.cooldownMs, 2000, v => updateSwitch(sw.id, { cooldownMs: v }), 100)}
             </div>
             <div>
-              <label className="block text-[11px] text-faint mb-1">Auto-Reset (ms)</label>
+              <label className="block text-[11px] text-theme-faint mb-1">Auto-Reset (ms)</label>
               {numInput(sw.switch.autoReset, 0, v => updateSwitch(sw.id, { autoReset: v || undefined }), 100)}
             </div>
             <div>
-              <label className="block text-[11px] text-faint mb-1">Min Spin (%)</label>
+              <label className="block text-[11px] text-theme-faint mb-1">Min Spin (%)</label>
               {numInput(sw.switch.requiresMinSpin, 0, v => updateSwitch(sw.id, { requiresMinSpin: v || undefined }), 5)}
             </div>
             <div>
-              <label className="block text-[11px] text-faint mb-1">Trigger Count</label>
+              <label className="block text-[11px] text-theme-faint mb-1">Trigger Count</label>
               {numInput(sw.switch.triggerCountToActivate, 1, v => updateSwitch(sw.id, { triggerCountToActivate: v < 2 ? undefined : v }), 1)}
             </div>
           </div>
 
           {/* Targets */}
-          <div className="mb-3">
+          <div>
             <div className="flex justify-between items-center mb-1.5">
-              <label className="text-[11px] font-semibold text-muted">Targets ({sw.switch.targets.length})</label>
+              <label className="text-[11px] font-semibold text-theme-muted">Targets ({sw.switch.targets.length})</label>
               <button
                 onClick={() => addTarget(sw)}
-                className="text-[11px] py-[2px] px-2 text-white border-none rounded cursor-pointer"
-                style={{ background: C.purple }}
+                className="text-[11px] py-0.5 px-2 bg-theme-purple text-white border-none rounded cursor-pointer"
               >
                 + Target
               </button>
             </div>
             {sw.switch.targets.length === 0 && (
-              <div className="text-[11px] text-faint py-2">No targets — add one above.</div>
+              <div className="text-[11px] text-theme-faint py-2">No targets — add one above.</div>
             )}
             {sw.switch.targets.map((t, ti) => (
-              <div key={(t as any)._key ?? ti} className="bg-bg2 rounded-lg p-2.5 mb-1.5 border border-border">
-                <div className="grid gap-2 items-end mb-0" style={{ gridTemplateColumns: "1fr 1fr auto" }}>
+              <div key={(t as any)._key ?? ti} className="bg-bg2 rounded-lg p-2.5 mb-1.5 border border-border-c">
+                <div className="grid gap-2 items-end grid-cols-[1fr_1fr_auto]">
                   <div>
-                    <label className="block text-[10px] text-faint mb-0.5">Target Type</label>
-                    <select
-                      value={t.targetType}
+                    <label className="block text-[10px] text-theme-faint mb-0.5">Target Type</label>
+                    <select value={t.targetType}
                       onChange={e => patchTarget(sw, ti, { targetType: e.target.value as SwitchTarget["targetType"] })}
-                      className="w-full bg-bg1 border border-border text-text rounded py-1 px-1.5 text-[11px]"
+                      className="w-full bg-bg1 border border-border-c text-theme-text rounded py-1 px-1.5 text-[11px]"
                     >
-                      {TARGET_TYPES.map(tt => (
-                        <option key={tt} value={tt}>{tt}</option>
-                      ))}
+                      {TARGET_TYPES.map(tt => <option key={tt} value={tt}>{tt}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] text-faint mb-0.5">Target ID</label>
-                    <input
-                      type="text"
-                      value={t.targetId}
+                    <label className="block text-[10px] text-theme-faint mb-0.5">Target ID</label>
+                    <input type="text" value={t.targetId}
                       onChange={e => patchTarget(sw, ti, { targetId: e.target.value })}
                       placeholder="e.g. obs-1"
-                      className="w-full bg-bg1 border border-border text-text rounded py-1 px-1.5 text-[11px] box-border"
+                      className="w-full bg-bg1 border border-border-c text-theme-text rounded py-1 px-1.5 text-[11px]"
                     />
                   </div>
-                  <button onClick={() => removeTarget(sw, ti)} className="text-red bg-transparent border-none text-[11px] cursor-pointer pb-0.5">✕</button>
+                  <button onClick={() => removeTarget(sw, ti)} className="text-theme-red bg-transparent border-none text-[11px] cursor-pointer pb-0.5">✕</button>
                 </div>
-                {/* Action */}
                 <div className="mt-2 flex gap-1.5 flex-wrap items-center">
-                  <label className="text-[10px] text-faint min-w-[40px]">Action</label>
+                  <label className="text-[10px] text-theme-faint min-w-[40px]">Action</label>
                   <div className="flex gap-[3px] flex-wrap">
                     {ACTION_KINDS.map(k => (
                       <button key={k} onClick={() => setActionKind(sw, ti, k)}
-                        className="py-[2px] px-[7px] rounded text-[10px] cursor-pointer border"
-                        style={{
-                          background: t.action.kind === k ? C.purple : "transparent",
-                          color: t.action.kind === k ? C.white : C.muted,
-                          borderColor: t.action.kind === k ? C.purple : C.border,
-                        }}>
+                        className={cn(
+                          "py-0.5 px-1.5 rounded text-[10px] cursor-pointer border transition-colors",
+                          t.action.kind === k
+                            ? "bg-theme-purple text-white border-theme-purple"
+                            : "bg-transparent text-theme-muted border-border-c hover:border-theme-purple",
+                        )}>
                         {k}
                       </button>
                     ))}
                   </div>
                   {t.action.kind === "pulse" && (
                     <div className="flex items-center gap-1.5">
-                      <label className="text-[10px] text-faint">Duration (ms)</label>
+                      <label className="text-[10px] text-theme-faint">Duration (ms)</label>
                       {numInput((t.action as any).durationMs, 1000, v => patchAction(sw, ti, { durationMs: v } as any), 100)}
                     </div>
                   )}
                   {t.action.kind === "chain" && (
                     <div className="flex items-center gap-1.5">
-                      <label className="text-[10px] text-faint">Next Switch ID</label>
-                      <input
-                        type="text"
-                        value={(t.action as any).nextSwitchId ?? ""}
+                      <label className="text-[10px] text-theme-faint">Next Switch ID</label>
+                      <input type="text" value={(t.action as any).nextSwitchId ?? ""}
                         onChange={e => patchAction(sw, ti, { nextSwitchId: e.target.value } as any)}
                         placeholder="sw2"
-                        className="w-20 bg-bg1 border border-border text-text rounded py-[3px] px-1.5 text-[10px]"
+                        className="w-20 bg-bg1 border border-border-c text-theme-text rounded py-0.5 px-1.5 text-[10px]"
                       />
                     </div>
                   )}
@@ -276,13 +231,10 @@ export default function SwitchesTab({ config, onChange }: Props) {
             ))}
           </div>
 
-          {/* Shape (optional) */}
-          <div className="mb-1">
-            <label className="block text-[11px] text-faint mb-1">
-              Shape (optional)
-              <span className="text-muted font-normal ml-1.5">
-                {sw.shape ? `— ${sw.shape.kind}` : "— default (square touch area)"}
-              </span>
+          {/* Shape */}
+          <div>
+            <label className="block text-[11px] text-theme-faint mb-1">
+              Shape <span className="text-theme-muted font-normal ml-1.5">{sw.shape ? `— ${sw.shape.kind}` : "— default"}</span>
             </label>
             <div className="flex gap-1 flex-wrap">
               {[undefined, "circle", "rectangle"].map(k => (
@@ -291,45 +243,43 @@ export default function SwitchesTab({ config, onChange }: Props) {
                   if (k === "circle") update(sw.id, { shape: { kind: "circle", radiusCm: 10 } });
                   if (k === "rectangle") update(sw.id, { shape: { kind: "rectangle", widthCm: 20, heightCm: 20 } });
                 }}
-                  className="py-[2px] px-2 rounded text-[11px] cursor-pointer border"
-                  style={{
-                    background: (sw.shape?.kind ?? "none") === (k ?? "none") ? C.blue : "transparent",
-                    color: (sw.shape?.kind ?? "none") === (k ?? "none") ? C.white : C.muted,
-                    borderColor: (sw.shape?.kind ?? "none") === (k ?? "none") ? C.blue : C.border,
-                  }}>
+                  className={cn(
+                    "py-0.5 px-2 rounded text-[11px] cursor-pointer border transition-colors",
+                    (sw.shape?.kind ?? "none") === (k ?? "none")
+                      ? "bg-theme-blue text-white border-theme-blue"
+                      : "bg-transparent text-theme-muted border-border-c hover:border-theme-blue",
+                  )}>
                   {k ?? "none"}
                 </button>
               ))}
             </div>
             {sw.shape?.kind === "circle" && (
               <div className="flex items-center gap-2 mt-2">
-                <label className="text-[11px] text-faint min-w-[70px]">Radius (cm)</label>
+                <label className="text-[11px] text-theme-faint min-w-[70px]">Radius (cm)</label>
                 {numInput((sw.shape as any).radiusCm, 10, v => update(sw.id, { shape: { kind: "circle", radiusCm: v } }), 1)}
               </div>
             )}
             {sw.shape?.kind === "rectangle" && (
               <div className="flex gap-4 mt-2">
                 <div className="flex items-center gap-2">
-                  <label className="text-[11px] text-faint min-w-[55px]">Width (cm)</label>
+                  <label className="text-[11px] text-theme-faint min-w-[55px]">Width (cm)</label>
                   {numInput((sw.shape as any).widthCm, 20, v => update(sw.id, { shape: { ...(sw.shape as any), widthCm: v } }), 1)}
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="text-[11px] text-faint min-w-[58px]">Height (cm)</label>
+                  <label className="text-[11px] text-theme-faint min-w-[58px]">Height (cm)</label>
                   {numInput((sw.shape as any).heightCm, 20, v => update(sw.id, { shape: { ...(sw.shape as any), heightCm: v } }), 1)}
                 </div>
               </div>
             )}
           </div>
 
-          {/* Rotation */}
           <RotationBlockEditor
             value={sw.rotation}
             onChange={v => update(sw.id, { rotation: v })}
             label="Rotation"
           />
         </div>
-      ))}
-    </div>
-    </CollapsibleSection>
+      )}
+    />
   );
 }

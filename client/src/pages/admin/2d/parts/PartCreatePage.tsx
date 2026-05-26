@@ -3,7 +3,6 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
 
 const PART_TYPE_COLLECTION: Record<string, string> = {
   "bit-beasts":   COLLECTIONS.BIT_BEAST_PARTS,
@@ -40,7 +39,7 @@ export function PartCreatePage() {
   const label = PART_TYPE_LABEL[partType] ?? partType;
 
   if (!collectionName) {
-    return <div style={{ padding: 32, color: C.muted }}>Unknown part type: <code>{partType}</code></div>;
+    return <div className="p-8 text-theme-muted">Unknown part type: <code>{partType}</code></div>;
   }
 
   const handleCreate = async () => {
@@ -73,66 +72,55 @@ export function PartCreatePage() {
   };
 
   return (
-    <div style={{ padding: 32, maxWidth: 560 }}>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-          <Link to="/admin/2d/parts" style={{ color: C.muted, fontSize: 12, textDecoration: "none" }}>Part Search</Link>
-          <span style={{ color: C.faint }}>›</span>
-          <Link to={`/admin/2d/parts/${partType}`} style={{ color: C.muted, fontSize: 12, textDecoration: "none" }}>
+    <div className="p-8 max-w-[560px]">
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-1.5">
+          <Link to="/admin/2d/parts" className="text-theme-muted text-[12px] no-underline">Part Search</Link>
+          <span className="text-theme-faint">›</span>
+          <Link to={`/admin/2d/parts/${partType}`} className="text-theme-muted text-[12px] no-underline">
             {label}s
           </Link>
-          <span style={{ color: C.faint }}>›</span>
-          <span style={{ color: C.text, fontSize: 12 }}>New</span>
+          <span className="text-theme-faint">›</span>
+          <span className="text-theme-text text-[12px]">New</span>
         </div>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, margin: 0 }}>New {label}</h1>
+        <h1 className="text-[22px] font-bold text-theme-text m-0">New {label}</h1>
       </div>
 
-      <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
+      <div className="bg-bg1 border border-border-c rounded-[10px] p-6 flex flex-col gap-4">
         <div>
-          <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Display Name *</label>
+          <label className="block text-[12px] text-theme-muted mb-1.5">Display Name *</label>
           <input
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             placeholder={`e.g. Tiger Defenser (${label})`}
-            style={{
-              width: "100%", padding: "9px 12px", background: C.bg2,
-              border: `1px solid ${C.border}`, borderRadius: 7, color: C.text,
-              fontSize: 13, boxSizing: "border-box",
-            }}
+            className="w-full px-3 py-[9px] bg-bg2 border border-border-c rounded-[7px] text-theme-text text-[13px] box-border"
           />
         </div>
 
         <div>
-          <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Color</label>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <label className="block text-[12px] text-theme-muted mb-1.5">Color</label>
+          <div className="flex items-center gap-2.5">
             <input
               type="color"
               value={color}
               onChange={(e) => setColor(e.target.value)}
-              style={{ width: 40, height: 32, border: "none", cursor: "pointer", borderRadius: 5 }}
+              className="w-10 h-8 border-none cursor-pointer rounded-[5px]"
             />
-            <span style={{ fontSize: 13, color: C.muted }}>{color}</span>
+            <span className="text-[13px] text-theme-muted">{color}</span>
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+        <div className="flex gap-2.5 mt-2">
           <button
             onClick={handleCreate}
             disabled={saving}
-            style={{
-              flex: 1, padding: "10px 0", background: saving ? C.bg3 : C.blue,
-              color: "#fff", border: "none", borderRadius: 8, fontSize: 13,
-              fontWeight: 600, cursor: saving ? "not-allowed" : "pointer",
-            }}
+            className={`flex-1 py-2.5 border-none rounded-lg text-[13px] font-semibold text-white ${saving ? "bg-bg3 cursor-not-allowed" : "bg-theme-blue cursor-pointer"}`}
           >
             {saving ? "Creating…" : `Create ${label}`}
           </button>
           <button
             onClick={() => navigate(`/admin/2d/parts/${partType}`)}
-            style={{
-              padding: "10px 18px", background: C.bg2, color: C.muted,
-              border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, cursor: "pointer",
-            }}
+            className="px-[18px] py-2.5 bg-bg2 text-theme-muted border border-border-c rounded-lg text-[13px] cursor-pointer"
           >
             Cancel
           </button>

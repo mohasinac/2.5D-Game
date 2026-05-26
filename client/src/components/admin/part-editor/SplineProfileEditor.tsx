@@ -227,35 +227,32 @@ export function SplineProfileEditor({ value, onChange, imageUrl, maxHeight = 60,
   };
 
   return (
-    <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+    <div className="flex gap-3.5 items-start">
       {/* Canvas */}
       <div>
         <canvas
           ref={canvasRef}
           width={CANVAS_W}
           height={CANVAS_H}
-          style={{ borderRadius: 8, border: `1px solid ${C.border}`, cursor: "grab" }}
+          className="rounded-[8px] border border-border-c cursor-grab"
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}
           onMouseUp={onMouseUp}
           onMouseLeave={onMouseUp}
         />
-        <div style={{ fontSize: 10, color: C.faint, marginTop: 4, textAlign: "center" }}>
+        <div className="text-[10px] text-theme-faint mt-1 text-center">
           Drag knots · X = radius (mm) · Y = height (mm)
         </div>
       </div>
 
       {/* Knot list + controls */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
+      <div className="flex-1 flex flex-col gap-2">
         {imageUrl && (
           <button
             onClick={handleTrace}
             disabled={tracing}
-            style={{
-              padding: "6px 12px", background: C.blue, color: "#fff", border: "none",
-              borderRadius: 7, fontSize: 11, fontWeight: 600,
-              cursor: tracing ? "default" : "pointer", opacity: tracing ? 0.6 : 1,
-            }}
+            className="px-3 py-1.5 bg-theme-blue text-white border-none rounded-[7px] text-[11px] font-semibold"
+            style={{ cursor: tracing ? "default" : "pointer", opacity: tracing ? 0.6 : 1 }}
           >
             {tracing ? "Tracing…" : "Trace Side Profile"}
           </button>
@@ -263,36 +260,33 @@ export function SplineProfileEditor({ value, onChange, imageUrl, maxHeight = 60,
 
         <button
           onClick={addKnot}
-          style={{
-            padding: "5px 10px", background: C.bg3, border: `1px solid ${C.border}`,
-            borderRadius: 6, fontSize: 11, color: C.muted, cursor: "pointer",
-          }}
+          className="px-2.5 py-[5px] bg-bg3 border border-border-c rounded-[6px] text-[11px] text-theme-muted cursor-pointer"
         >
           + Add Knot
         </button>
 
-        <div style={{ maxHeight: 200, overflowY: "auto", display: "flex", flexDirection: "column", gap: 4 }}>
+        <div className="max-h-[200px] overflow-y-auto flex flex-col gap-1">
           {value.knots.map((k, i) => (
-            <div key={i} style={{ background: C.bg3, borderRadius: 6, padding: "6px 8px", display: "flex", gap: 6, alignItems: "center" }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1 }}>
-                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <span style={{ fontSize: 10, color: C.muted, width: 40 }}>h (mm)</span>
+            <div key={i} className="bg-bg3 rounded-[6px] px-2 py-1.5 flex gap-1.5 items-center">
+              <div className="flex flex-col gap-[3px] flex-1">
+                <div className="flex gap-1.5 items-center">
+                  <span className="text-[10px] text-theme-muted w-10">h (mm)</span>
                   <input
                     type="number" min={0} max={maxHeight} step={0.5} value={k.height}
                     onChange={(e) => updateKnot(i, "height", +e.target.value)}
-                    style={{ width: 55, padding: "2px 5px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 4, color: C.text, fontSize: 11 }}
+                    className="w-[55px] px-[5px] py-[2px] bg-bg2 border border-border-c rounded-[4px] text-theme-text text-[11px]"
                   />
-                  <span style={{ fontSize: 10, color: C.muted, width: 40 }}>r (mm)</span>
+                  <span className="text-[10px] text-theme-muted w-10">r (mm)</span>
                   <input
                     type="number" min={0} max={maxRadius} step={0.5} value={k.radius}
                     onChange={(e) => updateKnot(i, "radius", +e.target.value)}
-                    style={{ width: 55, padding: "2px 5px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 4, color: C.text, fontSize: 11 }}
+                    className="w-[55px] px-[5px] py-[2px] bg-bg2 border border-border-c rounded-[4px] text-theme-text text-[11px]"
                   />
                 </div>
               </div>
               <button
                 onClick={() => removeKnot(i)}
-                style={{ fontSize: 12, color: C.red, background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}
+                className="text-[12px] text-theme-red bg-transparent border-none cursor-pointer shrink-0"
               >
                 ×
               </button>

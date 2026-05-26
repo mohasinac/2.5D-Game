@@ -49,7 +49,7 @@ export function PartEditPage() {
 
   if (!collectionName) {
     return (
-      <div style={{ padding: 32, color: C.muted }}>
+      <div className="p-8 text-theme-muted">
         Unknown part type: <code>{partType}</code>
       </div>
     );
@@ -57,23 +57,23 @@ export function PartEditPage() {
 
   if (!id) {
     return (
-      <div style={{ padding: 32, color: C.muted }}>Missing part ID.</div>
+      <div className="p-8 text-theme-muted">Missing part ID.</div>
     );
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <div className="flex flex-col h-full">
       {/* Breadcrumb */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 24px", borderBottom: `1px solid ${C.border}`, background: C.bg1, flexShrink: 0 }}>
-        <Link to="/admin/2d/parts" style={{ color: C.muted, fontSize: 12, textDecoration: "none" }}>Part Search</Link>
-        <span style={{ color: C.faint }}>›</span>
-        <Link to={`/admin/2d/parts/${partType}`} style={{ color: C.muted, fontSize: 12, textDecoration: "none" }}>{label}s</Link>
-        <span style={{ color: C.faint }}>›</span>
-        <span style={{ color: C.text, fontSize: 12 }}>Edit</span>
+      <div className="flex items-center gap-2 px-6 py-2.5 border-b border-border-c bg-bg1 shrink-0">
+        <Link to="/admin/2d/parts" className="text-theme-muted text-[12px] no-underline">Part Search</Link>
+        <span className="text-theme-faint">›</span>
+        <Link to={`/admin/2d/parts/${partType}`} className="text-theme-muted text-[12px] no-underline">{label}s</Link>
+        <span className="text-theme-faint">›</span>
+        <span className="text-theme-text text-[12px]">Edit</span>
       </div>
 
       {/* Editor fills the remaining height */}
-      <div style={{ flex: 1, overflow: "hidden" }}>
+      <div className="flex-1 overflow-hidden">
         <PartEditor
           collectionName={collectionName}
           partId={id}

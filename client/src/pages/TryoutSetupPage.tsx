@@ -69,21 +69,21 @@ export function TryoutSetupPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg0, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-      <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 32, width: "100%", maxWidth: 480 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, marginBottom: 6 }}>Tryout Mode</h1>
-        <p style={{ color: C.faint, fontSize: 13, marginBottom: 28 }}>
+    <div className="min-h-screen bg-bg0 flex items-center justify-center p-6">
+      <div className="bg-bg1 border border-border-c rounded-2xl p-8 w-full max-w-[480px]">
+        <h1 className="text-[22px] font-bold text-theme-text mb-1.5">Tryout Mode</h1>
+        <p className="text-theme-faint text-[13px] mb-7">
           Practice solo with any beyblade and arena. No ranking impact.
         </p>
 
         {modeDisabled && (
-          <div style={{ background: `${C.yellow}18`, border: `1px solid ${C.yellow}44`, borderRadius: 8, padding: "10px 14px", marginBottom: 18, fontSize: 12, color: C.yellow }}>
+          <div className="bg-yellow-10 border border-yellow-40 rounded-lg px-3.5 py-2.5 mb-4 text-[12px] text-theme-yellow">
             Tryout mode is currently disabled by the administrator.
           </div>
         )}
 
-        <div style={{ marginBottom: 20 }}>
-          <label style={{ display: "block", fontSize: 12, color: C.muted, fontWeight: 600, marginBottom: 6 }}>
+        <div className="mb-5">
+          <label className="block text-[12px] text-theme-muted font-semibold mb-1.5">
             Beyblade
           </label>
           <SearchableSelect
@@ -96,8 +96,8 @@ export function TryoutSetupPage() {
           />
         </div>
 
-        <div style={{ marginBottom: 28 }}>
-          <label style={{ display: "block", fontSize: 12, color: C.muted, fontWeight: 600, marginBottom: 6 }}>
+        <div className="mb-7">
+          <label className="block text-[12px] text-theme-muted font-semibold mb-1.5">
             Arena
           </label>
           <SearchableSelect
@@ -110,15 +110,18 @@ export function TryoutSetupPage() {
           />
         </div>
 
-        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+        <div className="flex gap-2.5 justify-end">
           <button onClick={() => navigate(-1)}
-            style={{ padding: "10px 20px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>
+            className="px-5 py-2.5 rounded-lg text-[13px] border border-border-c bg-transparent text-theme-muted cursor-pointer">
             Back
           </button>
           <button onClick={handleStart} disabled={!canStart}
-            style={{ padding: "10px 24px", borderRadius: 8, fontSize: 13, fontWeight: 600, border: "none",
-              background: canStart ? C.blue : C.bg3, color: canStart ? "#fff" : C.faint,
-              cursor: canStart ? "pointer" : "not-allowed" }}>
+            className="px-6 py-2.5 rounded-lg text-[13px] font-semibold border-none"
+            style={{
+              background: canStart ? C.blue : C.bg3,
+              color: canStart ? "#fff" : C.faint,
+              cursor: canStart ? "pointer" : "not-allowed",
+            }}>
             Start Tryout
           </button>
         </div>

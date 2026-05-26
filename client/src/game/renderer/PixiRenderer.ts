@@ -117,6 +117,9 @@ export class BeybladeGameRenderer {
   // Phase 24 drift trail — shown when controlAuthority < 80 (semi-autonomous blending active)
   private driftTrails: Map<string, { x: number; y: number; alpha: number }[]> = new Map();
   private driftTrailGraphics: Map<string, PIXI.Graphics[]> = new Map();
+  // Motion blur trail — ghost copies behind fast-moving beyblades
+  private motionBlurTrails: Map<string, { x: number; y: number; alpha: number }[]> = new Map();
+  private motionBlurGraphics: Map<string, PIXI.Graphics[]> = new Map();
   // Phase 27 Tiered AoI — per-bey tier (0/1/2) and opacity fade tracking
   private beyTiers: Map<string, 0 | 1 | 2> = new Map();
   private beyTierAlphas: Map<string, number> = new Map(); // current faded alpha
@@ -171,6 +174,13 @@ export class BeybladeGameRenderer {
   protected readonly FADE_START_CM    = 24;
   /** Subclass overrides to true to enable LOS culling. */
   protected get is25D(): boolean { return false; }
+
+  // World background — full-canvas layer rendered behind the arena and everything else.
+  private worldBgLayer!: PIXI.Container;
+  private worldBgGraphics: PIXI.Graphics | null = null;
+  private worldBgSprite: PIXI.Sprite | null = null;
+  private worldBgLastType = "";
+  private worldBgLastUrl = "";
 
   // Arena geometry cache — screen space
   private arenaRadius = 0;
@@ -231,6 +241,13 @@ export class BeybladeGameRenderer {
     // arenaTiltOuter → arenaTiltScale → arenaTiltInner form a perspective-tilt chain so the
     // entire scene can appear tilted around the arena center (0,0 in world space).
     // arena + features sit under arenaRotationRoot so the bowl can also spin in-plane.
+    //
+    // worldBgLayer sits on app.stage BEFORE worldRoot — it fills the full canvas in screen
+    // space and is unaffected by camera zoom/pan or arena tilt/rotation.
+    this.worldBgLayer = new PIXI.Container();
+    this.worldBgLayer.eventMode = "none";
+    this.app.stage.addChild(this.worldBgLayer);
+
     this.worldRoot = new PIXI.Container();
     this.arenaTiltOuter = new PIXI.Container();
     this.arenaTiltScale = new PIXI.Container();
@@ -309,6 +326,8 @@ export class BeybladeGameRenderer {
       this.buildArena(gameState);
       this.bakeArenaFloor();
     }
+
+    this.updateWorldBackground(gameState);
 
     // R3: re-bake if tiltAngle changed
     const currentTilt = (gameState?.arena as any)?.tiltAngle ?? 0;
@@ -512,6 +531,106 @@ export class BeybladeGameRenderer {
   }
 
   // ─── Arena rendering ─────────────────────────────────────────────────────────
+
+  // ─── World background (full-canvas, screen-space, behind everything) ─────────
+
+  private updateWorldBackground(gameState: ServerGameState | null): void {
+    if (!this.worldBgLayer) return;
+    const arena = gameState?.arena;
+    const bgType    = arena?.worldBgType     ?? "none";
+    const bgColor   = arena?.worldBgColor    ?? "";
+    const bgUrl     = arena?.worldBgImageUrl ?? "";
+    const bgOpacity = arena?.worldBgOpacity  ?? 1.0;
+    const bgFit     = arena?.worldBgFit      ?? "cover";
+    const bgBlur    = arena?.worldBgBlurPx   ?? 0;
+    const W = this.app.screen.width;
+    const H = this.app.screen.height;
+
+    if (bgType === "none") {
+      this.worldBgLayer.visible = false;
+      return;
+    }
+
+    this.worldBgLayer.visible = true;
+    this.worldBgLayer.alpha = bgOpacity;
+
+    if (bgType === "color") {
+      // Remove any image sprite when switching to color
+      if (this.worldBgSprite) {
+        this.worldBgLayer.removeChild(this.worldBgSprite);
+        this.worldBgSprite.destroy();
+        this.worldBgSprite = null;
+        this.worldBgLastUrl = "";
+      }
+      if (!this.worldBgGraphics) {
+        this.worldBgGraphics = new PIXI.Graphics();
+        this.worldBgLayer.addChildAt(this.worldBgGraphics, 0);
+      }
+      const colorNum = parseInt((bgColor || "#000000").replace("#", ""), 16);
+      this.worldBgGraphics.clear();
+      this.worldBgGraphics.rect(0, 0, W, H).fill({ color: colorNum });
+      this.worldBgLastType = "color";
+      return;
+    }
+
+    if (bgType === "image") {
+      // Remove solid color rect when switching to image
+      if (this.worldBgGraphics) {
+        this.worldBgLayer.removeChild(this.worldBgGraphics);
+        this.worldBgGraphics.destroy();
+        this.worldBgGraphics = null;
+      }
+      // Load image if URL changed
+      if (bgUrl && bgUrl !== this.worldBgLastUrl) {
+        this.worldBgLastUrl = bgUrl;
+        if (this.worldBgSprite) {
+          this.worldBgLayer.removeChild(this.worldBgSprite);
+          this.worldBgSprite.destroy();
+          this.worldBgSprite = null;
+        }
+        PIXI.Assets.load(bgUrl).then((tex: PIXI.Texture) => {
+          if (this.worldBgLastUrl !== bgUrl) return; // url changed again — discard
+          const sprite = new PIXI.Sprite(tex);
+          if (bgBlur > 0) {
+            sprite.filters = [new PIXI.BlurFilter({ strength: bgBlur, quality: 4 })];
+          }
+          this.worldBgSprite = sprite;
+          this.worldBgLayer.addChildAt(sprite, 0);
+          this.sizeWorldBgSprite(bgFit);
+        }).catch(() => { /* ignore load errors */ });
+      } else if (this.worldBgSprite) {
+        this.sizeWorldBgSprite(bgFit);
+      }
+      this.worldBgLastType = "image";
+    }
+  }
+
+  private sizeWorldBgSprite(fit: string): void {
+    const sprite = this.worldBgSprite;
+    if (!sprite || !sprite.texture || sprite.texture.width === 0) return;
+    const W = this.app.screen.width;
+    const H = this.app.screen.height;
+    const tw = sprite.texture.width;
+    const th = sprite.texture.height;
+    if (fit === "stretch") {
+      sprite.width  = W;
+      sprite.height = H;
+    } else if (fit === "contain") {
+      const scale = Math.min(W / tw, H / th);
+      sprite.width  = tw * scale;
+      sprite.height = th * scale;
+      sprite.x = (W - sprite.width)  / 2;
+      sprite.y = (H - sprite.height) / 2;
+      return;
+    } else {
+      // cover (default): fill entire canvas, crop the excess
+      const scale = Math.max(W / tw, H / th);
+      sprite.width  = tw * scale;
+      sprite.height = th * scale;
+    }
+    sprite.x = (W - sprite.width)  / 2;
+    sprite.y = (H - sprite.height) / 2;
+  }
 
   private buildArena(gameState: ServerGameState) {
     this.arenaLayer.removeChildren();
@@ -812,6 +931,12 @@ export class BeybladeGameRenderer {
           driftG.forEach(g => this.beybladeLayer.removeChild(g));
           this.driftTrailGraphics.delete(id);
         }
+        const blurG = this.motionBlurGraphics.get(id);
+        if (blurG) {
+          blurG.forEach(g => this.beybladeLayer.removeChild(g));
+          this.motionBlurGraphics.delete(id);
+        }
+        this.motionBlurTrails.delete(id);
         // Remove 2.5D per-bey graphics
         const arc = this.airborneArcs.get(id);
         if (arc) { this.beybladeLayer.removeChild(arc); this.airborneArcs.delete(id); }
@@ -892,6 +1017,9 @@ export class BeybladeGameRenderer {
     // Drift trail (Phase 24 semi-autonomous mode indicator)
     this.driftTrails.set(id, []);
     this.driftTrailGraphics.set(id, []);
+    // Motion blur trail
+    this.motionBlurTrails.set(id, []);
+    this.motionBlurGraphics.set(id, []);
 
     this.beybladeLayer.addChild(container);
     this.beybladeContainers.set(id, container);
@@ -1214,6 +1342,50 @@ export class BeybladeGameRenderer {
           }
         }
         while (driftPoints.length > 0 && driftPoints[0].alpha < 0.02) driftPoints.shift();
+      }
+    }
+
+    // ── Motion blur: ghost trail when linear speed exceeds threshold ──────────
+    {
+      const SPEED_THRESHOLD = 3.5; // physics units/frame — tuned for visible fast movement
+      const TRAIL_COUNT = 8;
+      const speed = Math.hypot(beyblade.velocityX ?? 0, beyblade.velocityY ?? 0);
+      const blurTrails = this.motionBlurTrails.get(id);
+      let blurGraphics = this.motionBlurGraphics.get(id);
+
+      if (blurTrails !== undefined) {
+        if (speed > SPEED_THRESHOLD) {
+          blurTrails.push({ x: screenX, y: screenY, alpha: 0.45 });
+          if (blurTrails.length > TRAIL_COUNT) blurTrails.shift();
+        }
+
+        if (!blurGraphics) {
+          blurGraphics = [];
+          this.motionBlurGraphics.set(id, blurGraphics);
+        }
+        while (blurGraphics.length < TRAIL_COUNT) {
+          const bg = new PIXI.Graphics();
+          this.beybladeLayer.addChildAt(bg, 0);
+          blurGraphics.push(bg);
+        }
+
+        const typeColor = parseBeyColor(beyblade);
+        for (let i = 0; i < blurGraphics.length; i++) {
+          const bg = blurGraphics[i];
+          const pt = blurTrails[i];
+          if (pt) {
+            bg.clear();
+            bg.circle(pt.x, pt.y, r * (0.9 + i * 0.04));
+            bg.fill({ color: typeColor, alpha: pt.alpha * ((i + 1) / TRAIL_COUNT) * 0.65 });
+            bg.circle(pt.x, pt.y, r * 0.5);
+            bg.fill({ color: 0xffffff, alpha: pt.alpha * ((i + 1) / TRAIL_COUNT) * 0.25 });
+            pt.alpha *= 0.80;
+          } else {
+            bg.clear();
+          }
+        }
+
+        while (blurTrails.length > 0 && blurTrails[0].alpha < 0.02) blurTrails.shift();
       }
     }
 

@@ -3,7 +3,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "fi
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { C, alpha } from "@/styles/theme";
+import { alpha } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import WhatsAppStyleImageEditor from "./WhatsAppStyleImageEditor";
 import type { WhatsAppStyleImageEditorRef } from "./WhatsAppStyleImageEditor";
@@ -110,18 +110,18 @@ export function AssetCrudPage({
   const filtered = selectedTag === "all" ? assets : assets.filter(a => a.tag === selectedTag);
 
   return (
-    <div style={{ padding:24, maxWidth:900, margin:"0 auto" }}>
-      <div style={{ marginBottom:20 }}>
-        <h1 style={{ fontSize:22, fontWeight:700, color:C.text, display:"flex", alignItems:"center", gap:10 }}>
+    <div className="p-6 max-w-[900px] mx-auto">
+      <div className="mb-5">
+        <h1 className="text-[22px] font-bold text-theme-text flex items-center gap-2.5">
           <span>{icon}</span>{title}
         </h1>
-        <p style={{ color:C.faint, fontSize:13, marginTop:4 }}>{description}</p>
+        <p className="text-theme-faint text-[13px] mt-1">{description}</p>
       </div>
 
       {/* Upload form */}
-      <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20, marginBottom:20 }}>
+      <div className="bg-bg2 border border-border-c rounded-2xl p-5 mb-5">
         <div className="text-[11px] font-semibold text-muted uppercase tracking-[0.08em] mb-3">Upload New Asset</div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:12 }}>
+        <div className="grid grid-cols-3 gap-2.5 mb-3">
           <div>
             <label className="block text-xs text-muted mb-1.5">Name *</label>
             <input type="text" value={form.name} onChange={e => setForm(f => ({...f,name:e.target.value}))} placeholder="Asset name" className="w-full px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm" />
@@ -133,33 +133,37 @@ export function AssetCrudPage({
                 value={form.tag}
                 options={tags.map(t => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) }))}
                 onChange={v => setForm(f => ({...f, tag: v}))}
-                style={{ width: "100%", background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 12px", color: "var(--text)", fontSize: 13, cursor: "pointer" }}
+                className="w-full bg-bg3 border border-border rounded-lg text-text text-[13px] cursor-pointer"
               />
             </div>
           )}
           <div>
             <label className="block text-xs text-muted mb-1.5">File *</label>
-            <label style={{ cursor:"pointer", display:"flex", alignItems:"center", gap:8, background:C.bg3, border:`1px solid ${C.border}`, borderRadius:8, padding:"7px 12px", fontSize:13, color:C.muted }}>
-              <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{form.file ? form.file.name : "Choose file..."}</span>
-              <input key={fileInputKey} type="file" accept={acceptTypes} onChange={handleFileChange} style={{ display:"none" }} />
+            <label className="cursor-pointer flex items-center gap-2 bg-bg3 border border-border-c rounded-lg py-[7px] px-3 text-[13px] text-theme-muted">
+              <span className="overflow-hidden text-ellipsis whitespace-nowrap">{form.file ? form.file.name : "Choose file..."}</span>
+              <input key={fileInputKey} type="file" accept={acceptTypes} onChange={handleFileChange} className="hidden" />
             </label>
             {form.file && !isAudio && (
-              <div style={{ display:"flex", gap:6, marginTop:6 }}>
-                <button type="button" onClick={() => setImageEditorMode("whatsapp")} style={{ padding:"3px 10px", background:C.bg3, border:`1px solid ${C.border}`, borderRadius:6, fontSize:11, color:C.muted, cursor:"pointer" }}>🖼 Reposition</button>
-                <button type="button" onClick={() => setImageEditorMode("crop")} style={{ padding:"3px 10px", background:C.bg3, border:`1px solid ${C.border}`, borderRadius:6, fontSize:11, color:C.muted, cursor:"pointer" }}>✂️ Crop</button>
+              <div className="flex gap-1.5 mt-1.5">
+                <button type="button" onClick={() => setImageEditorMode("whatsapp")} className="py-[3px] px-2.5 bg-bg3 border border-border-c rounded text-[11px] text-theme-muted cursor-pointer">🖼 Reposition</button>
+                <button type="button" onClick={() => setImageEditorMode("crop")} className="py-[3px] px-2.5 bg-bg3 border border-border-c rounded text-[11px] text-theme-muted cursor-pointer">✂️ Crop</button>
               </div>
             )}
           </div>
         </div>
-        <button onClick={handleUpload} disabled={uploading||!form.file||!form.name.trim()} style={{ padding:"8px 20px", background:C.blue, color:C.white, borderRadius:8, fontSize:13, fontWeight:500, border:"none", cursor:"pointer", opacity: uploading||!form.file||!form.name.trim() ? 0.5 : 1 }}>
+        <button
+          onClick={handleUpload}
+          disabled={uploading||!form.file||!form.name.trim()}
+          className={`py-2 px-5 bg-theme-blue text-white rounded-lg text-[13px] font-medium border-none cursor-pointer ${uploading||!form.file||!form.name.trim() ? "opacity-50" : "opacity-100"}`}
+        >
           {uploading ? "Uploading..." : "Upload Asset"}
         </button>
       </div>
 
       {/* Image editor modal */}
       {imageEditorMode && rawImageUrl && (
-        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"flex-start", justifyContent:"center", zIndex:1000, overflowY:"auto", padding:"20px 16px" }}>
-          <div style={{ width:"100%", maxWidth: imageEditorMode === "whatsapp" ? "fit-content" : 420 }}>
+        <div className="fixed inset-0 bg-black/85 flex items-start justify-center z-[1000] overflow-y-auto py-5 px-4">
+          <div className={`w-full ${imageEditorMode === "whatsapp" ? "max-w-fit" : "max-w-[420px]"}`}>
             {imageEditorMode === "whatsapp" && (
               <WhatsAppStyleImageEditor
                 ref={whatsappRef}
@@ -172,11 +176,11 @@ export function AssetCrudPage({
               />
             )}
             {imageEditorMode === "crop" && (
-              <div style={{ background:C.bg2, borderRadius:12, padding:16 }}>
+              <div className="bg-bg2 rounded-xl p-4">
                 <ImageCropper ref={cropperRef} imageUrl={rawImageUrl} targetWidth={300} targetHeight={300} />
-                <div style={{ display:"flex", justifyContent:"flex-end", gap:8, marginTop:12 }}>
-                  <button onClick={() => setImageEditorMode(null)} style={{ padding:"6px 16px", background:C.bg3, border:`1px solid ${C.border}`, borderRadius:8, color:C.muted, fontSize:13, cursor:"pointer" }}>Cancel</button>
-                  <button onClick={handleImageEditorSave} style={{ padding:"6px 16px", background:C.blue, border:"none", borderRadius:8, color:C.white, fontSize:13, fontWeight:600, cursor:"pointer" }}>Apply Crop</button>
+                <div className="flex justify-end gap-2 mt-3">
+                  <button onClick={() => setImageEditorMode(null)} className="py-1.5 px-4 bg-bg3 border border-border-c rounded-lg text-theme-muted text-[13px] cursor-pointer">Cancel</button>
+                  <button onClick={handleImageEditorSave} className="py-1.5 px-4 bg-theme-blue border-none rounded-lg text-white text-[13px] font-semibold cursor-pointer">Apply Crop</button>
                 </div>
               </div>
             )}
@@ -186,12 +190,19 @@ export function AssetCrudPage({
 
       {/* Tag filter */}
       {tags.length > 0 && (
-        <div style={{ display:"flex", gap:8, marginBottom:16, flexWrap:"wrap" }}>
-          <button onClick={() => setSelectedTag("all")} style={{ padding:"4px 12px", borderRadius:8, fontSize:12, fontWeight:500, cursor:"pointer", background: selectedTag==="all" ? C.text : "transparent", color: selectedTag==="all" ? C.bg0 : C.muted, border:`1px solid ${selectedTag==="all" ? C.text : C.border}` }}>
+        <div className="flex gap-2 mb-4 flex-wrap">
+          <button
+            onClick={() => setSelectedTag("all")}
+            className={`py-1 px-3 rounded-lg text-xs font-medium cursor-pointer border ${selectedTag==="all" ? "bg-theme-text text-bg0 border-theme-text" : "bg-transparent text-theme-muted border-border-c"}`}
+          >
             All ({assets.length})
           </button>
           {tags.map(t => (
-            <button key={t} onClick={() => setSelectedTag(t)} style={{ padding:"4px 12px", borderRadius:8, fontSize:12, fontWeight:500, cursor:"pointer", textTransform:"capitalize", background: selectedTag===t ? C.text : "transparent", color: selectedTag===t ? C.bg0 : C.muted, border:`1px solid ${selectedTag===t ? C.text : C.border}` }}>
+            <button
+              key={t}
+              onClick={() => setSelectedTag(t)}
+              className={`py-1 px-3 rounded-lg text-xs font-medium cursor-pointer capitalize border ${selectedTag===t ? "bg-theme-text text-bg0 border-theme-text" : "bg-transparent text-theme-muted border-border-c"}`}
+            >
               {t} ({assets.filter(a => a.tag===t).length})
             </button>
           ))}
@@ -200,44 +211,49 @@ export function AssetCrudPage({
 
       {/* Asset grid */}
       {loading ? (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
-          {[1,2,3,4].map(i => <div key={i} style={{ background:C.bg2, borderRadius:12, height:160 }} className="pulse" />)}
+        <div className="grid grid-cols-4 gap-[14px]">
+          {[1,2,3,4].map(i => <div key={i} className="bg-bg2 rounded-xl h-40 pulse" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div style={{ textAlign:"center", padding:"64px 0", color:C.faint }}>
-          <div style={{ fontSize:28, marginBottom:8 }}>{icon}</div>
+        <div className="text-center py-16 text-theme-faint">
+          <div className="text-[28px] mb-2">{icon}</div>
           <p>No assets yet. Upload your first {title.toLowerCase()} asset.</p>
         </div>
       ) : isAudio ? (
-        <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+        <div className="flex flex-col gap-2.5">
           {filtered.map(asset => (
-            <div key={asset.id} style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:12, padding:14, display:"flex", alignItems:"center", gap:12 }}>
-              <div style={{ fontSize:22 }}>🎵</div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <p style={{ color:C.text, fontSize:13, fontWeight:500, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{asset.name}</p>
-                {asset.tag && <p style={{ color:C.faint, fontSize:11, textTransform:"capitalize" }}>{asset.tag}</p>}
+            <div key={asset.id} className="bg-bg2 border border-border-c rounded-xl p-[14px] flex items-center gap-3">
+              <div className="text-[22px]">🎵</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-theme-text text-[13px] font-medium overflow-hidden text-ellipsis whitespace-nowrap">{asset.name}</p>
+                {asset.tag && <p className="text-theme-faint text-[11px] capitalize">{asset.tag}</p>}
               </div>
-              <audio controls src={asset.url} style={{ height:32 }} />
-              <button onClick={() => handleDelete(asset)} disabled={deletingId===asset.id} style={{ color:C.red, background:"none", border:"none", fontSize:12, cursor:"pointer", opacity:deletingId===asset.id?0.5:1 }}>
+              <audio controls src={asset.url} className="h-8" />
+              <button
+                onClick={() => handleDelete(asset)}
+                disabled={deletingId===asset.id}
+                className={`text-theme-red bg-transparent border-none text-xs cursor-pointer ${deletingId===asset.id ? "opacity-50" : "opacity-100"}`}
+              >
                 {deletingId===asset.id ? "..." : "Delete"}
               </button>
             </div>
           ))}
         </div>
       ) : (
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14 }}>
+        <div className="grid grid-cols-4 gap-[14px]">
           {filtered.map(asset => (
-            <div key={asset.id} style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden", position:"relative" }}>
-              <div style={{ aspectRatio:"1/1", background:C.bg1, position:"relative" }}>
-                <img src={asset.url} alt={asset.name} style={{ width:"100%", height:"100%", objectFit:"contain", padding:8 }} loading="lazy" />
+            <div key={asset.id} className="bg-bg2 border border-border-c rounded-xl overflow-hidden relative">
+              <div className="aspect-square bg-bg1 relative">
+                <img src={asset.url} alt={asset.name} className="w-full h-full object-contain p-2" loading="lazy" />
                 <button
                   onClick={() => handleDelete(asset)} disabled={deletingId===asset.id}
-                  style={{ position:"absolute", top:6, right:6, width:24, height:24, background:alpha(C.red, 0.87), color:C.white, borderRadius:4, border:"none", fontSize:12, cursor:"pointer", opacity:deletingId===asset.id?0.5:1, display:"flex", alignItems:"center", justifyContent:"center" }}
+                  className={`absolute top-1.5 right-1.5 w-6 h-6 border-none rounded text-xs cursor-pointer flex items-center justify-center text-white ${deletingId===asset.id ? "opacity-50" : "opacity-100"}`}
+                  style={{ background: alpha("#ef4444", 0.87) }}
                 >{deletingId===asset.id?"...":"×"}</button>
               </div>
-              <div style={{ padding:8 }}>
-                <p style={{ color:C.text, fontSize:11, fontWeight:500, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{asset.name}</p>
-                {asset.tag && <p style={{ color:C.faint, fontSize:10, textTransform:"capitalize", marginTop:2 }}>{asset.tag}</p>}
+              <div className="p-2">
+                <p className="text-theme-text text-[11px] font-medium overflow-hidden text-ellipsis whitespace-nowrap">{asset.name}</p>
+                {asset.tag && <p className="text-theme-faint text-[10px] capitalize mt-0.5">{asset.tag}</p>}
               </div>
             </div>
           ))}

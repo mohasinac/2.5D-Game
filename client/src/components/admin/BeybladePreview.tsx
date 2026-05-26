@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import * as PIXI from "pixi.js";
-import { C } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 import type { BeybladeStats } from "@/types/beybladeStats";
 
 // Game coordinate constants — match game physics
@@ -295,58 +295,75 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
   }, [rebuildScene]);
 
   return (
-    <div style={{ background: C.bg2, borderRadius: 12, padding: 16, border: `1px solid ${C.border}` }}>
-      <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 12 }}>Live Preview</div>
+    <div className="bg-bg2 rounded-xl p-4 border border-border-c">
+      <div className="text-sm font-semibold text-theme-text mb-3">Live Preview</div>
 
       {/* Canvas container — fills width, enforced square */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
+      <div className="flex justify-center mb-3">
         <div
           ref={containerRef}
           onClick={handleClick}
-          style={{
-            borderRadius: 8,
-            border: `2px solid ${C.border}`,
-            overflow: "hidden",
-            cursor: clickMode ? "crosshair" : "default",
-            width: "100%",
-            aspectRatio: "1 / 1",
-          }}
+          className={cn(
+            "rounded-lg border-2 border-border-c overflow-hidden w-full aspect-square",
+            clickMode ? "cursor-crosshair" : "cursor-default",
+          )}
         />
       </div>
 
       {clickMode && (
-        <p style={{ fontSize: 12, color: C.blue, textAlign: "center", marginBottom: 12 }}>
+        <p className="text-xs text-theme-blue text-center mb-3">
           Click on the canvas to place a point (spinning paused)
         </p>
       )}
 
       {/* Spin + Zoom controls */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: C.bg3, borderRadius: 8, padding: "8px 12px" }}>
-          <span style={{ fontSize: 13, color: C.muted }}>Spinning:</span>
+      <div className="flex flex-col gap-2 mb-3">
+        <div className="flex items-center justify-between bg-bg3 rounded-lg px-3 py-2">
+          <span className="text-[13px] text-theme-muted">Spinning:</span>
           <button
             onClick={() => setIsSpinning(v => !v)}
-            style={{ padding: "4px 14px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 12, background: isSpinning ? C.green : C.bg0, color: isSpinning ? C.white : C.muted }}
+            className={cn(
+              "px-3.5 py-1 rounded-md border-none cursor-pointer font-semibold text-xs",
+              isSpinning
+                ? "bg-theme-green text-white"
+                : "bg-bg0 text-theme-muted",
+            )}
           >
             {isSpinning ? "ON" : "OFF"}
           </button>
         </div>
-        <div style={{ background: C.bg3, borderRadius: 8, padding: "8px 12px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-            <span style={{ fontSize: 13, color: C.muted }}>Zoom:</span>
-            <span style={{ fontSize: 13, color: C.blue, fontFamily: "monospace", fontWeight: 700 }}>{zoom}%</span>
+        <div className="bg-bg3 rounded-lg px-3 py-2">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[13px] text-theme-muted">Zoom:</span>
+            <span className="text-[13px] text-theme-blue font-mono font-bold">{zoom}%</span>
           </div>
-          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-            <button onClick={() => setZoom(z => Math.max(50, z - 10))} style={{ padding: "2px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 4, color: C.text, cursor: "pointer" }}>−</button>
-            <input type="range" min={50} max={200} value={zoom} onChange={e => setZoom(+e.target.value)} style={{ flex: 1, accentColor: C.blue }} />
-            <button onClick={() => setZoom(z => Math.min(200, z + 10))} style={{ padding: "2px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 4, color: C.text, cursor: "pointer" }}>+</button>
-            <button onClick={() => setZoom(100)} style={{ padding: "2px 8px", background: C.blue, border: "none", borderRadius: 4, color: C.white, cursor: "pointer", fontSize: 11 }}>Reset</button>
+          <div className="flex gap-1.5 items-center">
+            <button
+              onClick={() => setZoom(z => Math.max(50, z - 10))}
+              className="px-2 py-0.5 bg-bg2 border border-border-c rounded text-theme-text cursor-pointer text-sm"
+            >−</button>
+            <input
+              type="range"
+              min={50}
+              max={200}
+              value={zoom}
+              onChange={e => setZoom(+e.target.value)}
+              className="flex-1 accent-theme-blue"
+            />
+            <button
+              onClick={() => setZoom(z => Math.min(200, z + 10))}
+              className="px-2 py-0.5 bg-bg2 border border-border-c rounded text-theme-text cursor-pointer text-sm"
+            >+</button>
+            <button
+              onClick={() => setZoom(100)}
+              className="px-2 py-0.5 bg-theme-blue border-none rounded text-white cursor-pointer text-[11px]"
+            >Reset</button>
           </div>
         </div>
       </div>
 
       {/* Stats */}
-      <div style={{ fontSize: 12, color: C.faint, display: "flex", flexDirection: "column", gap: 4 }}>
+      <div className="text-xs text-theme-faint flex flex-col gap-1">
         {[
           ["Name", beyblade.displayName || "Unnamed"],
           ["Type", beyblade.type],
@@ -356,17 +373,17 @@ export default function BeybladePreview({ beyblade, onCanvasClick, clickMode = f
           ...(beyblade.speed != null ? [["Speed", String(beyblade.speed)]] : []),
           ...(beyblade.rotationSpeed != null ? [["Rot. Speed", `${beyblade.rotationSpeed}°/s`]] : []),
         ].map(([k, v]) => (
-          <div key={k} style={{ display: "flex", justifyContent: "space-between" }}>
+          <div key={k} className="flex justify-between">
             <span>{k}:</span>
-            <span style={{ color: C.text, textTransform: "capitalize" }}>{v}</span>
+            <span className="text-theme-text capitalize">{v}</span>
           </div>
         ))}
       </div>
 
       {/* Legend */}
       {(beyblade.pointsOfContact?.length ?? 0) > 0 && (
-        <div style={{ marginTop: 10, background: C.bg3, borderRadius: 8, padding: 10, fontSize: 11, color: C.faint }}>
-          <span style={{ fontWeight: 600, color: C.muted }}>Legend: </span>
+        <div className="mt-2.5 bg-bg3 rounded-lg p-2.5 text-[11px] text-theme-faint">
+          <span className="font-semibold text-theme-muted">Legend: </span>
           <span>Red→Yellow arcs = Contact points ({beyblade.pointsOfContact.length})</span>
         </div>
       )}

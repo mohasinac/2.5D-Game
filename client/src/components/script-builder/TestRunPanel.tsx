@@ -131,21 +131,27 @@ export function TestRunPanel({ steps }: Props) {
   }
 
   return (
-    <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 10 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+    <div className="p-3 flex flex-col gap-[10px]">
+      <div className="text-[11px] font-bold text-theme-muted uppercase tracking-[0.05em]">
         Mini Arena Preview
       </div>
       <canvas
         ref={canvasRef}
         width={W}
         height={H}
-        style={{ width: W, height: H, background: "#0f172a", borderRadius: 12, border: `1px solid ${C.border}` }}
+        className="bg-[#0f172a] rounded-xl border border-border-c"
+        style={{ width: W, height: H }}
       />
-      <div style={{ display: "flex", gap: 6 }}>
+      <div className="flex gap-[6px]">
         <button
           type="button"
           onClick={() => setRunning(r => !r)}
-          style={{ flex: 1, padding: "5px 12px", background: running ? C.red + "22" : C.green + "22", border: `1px solid ${running ? C.red : C.green}44`, borderRadius: 8, color: running ? C.red : C.green, fontSize: 12, cursor: "pointer", fontWeight: 600 }}
+          style={{
+            background: running ? C.red + "22" : C.green + "22",
+            border: `1px solid ${running ? C.red : C.green}44`,
+            color: running ? C.red : C.green,
+          }}
+          className="flex-1 py-[5px] px-3 rounded-lg text-[12px] cursor-pointer font-semibold"
         >
           {running ? "■ Stop" : "▶ Play"}
         </button>
@@ -153,19 +159,26 @@ export function TestRunPanel({ steps }: Props) {
           type="button"
           onClick={applySteps}
           disabled={steps.length === 0}
-          style={{ flex: 1, padding: "5px 12px", background: fired ? C.yellow + "44" : C.blue + "22", border: `1px solid ${fired ? C.yellow : C.blue}44`, borderRadius: 8, color: fired ? C.yellow : C.blue, fontSize: 12, cursor: steps.length === 0 ? "default" : "pointer", fontWeight: 600, opacity: steps.length === 0 ? 0.4 : 1 }}
+          style={{
+            background: fired ? C.yellow + "44" : C.blue + "22",
+            border: `1px solid ${fired ? C.yellow : C.blue}44`,
+            color: fired ? C.yellow : C.blue,
+            opacity: steps.length === 0 ? 0.4 : 1,
+          }}
+          className="flex-1 py-[5px] px-3 rounded-lg text-[12px] font-semibold"
+          // cursor is conditional on steps presence
         >
           {fired ? "✓ Fired!" : "⚡ Fire Steps"}
         </button>
         <button
           type="button"
           onClick={reset}
-          style={{ padding: "5px 10px", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 8, color: C.muted, fontSize: 12, cursor: "pointer" }}
+          className="py-[5px] px-[10px] bg-transparent border border-border-c rounded-lg text-theme-muted text-[12px] cursor-pointer"
         >
           ↺
         </button>
       </div>
-      <p style={{ fontSize: 10, color: C.faint, margin: 0 }}>Blue bey = caster, Red = target. Fire steps to preview movement effects.</p>
+      <p className="text-[10px] text-theme-faint m-0">Blue bey = caster, Red = target. Fire steps to preview movement effects.</p>
     </div>
   );
 }

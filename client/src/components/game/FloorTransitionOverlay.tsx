@@ -16,7 +16,9 @@
  *   portal     → circular warp ring
  *   corridor   → horizontal dash
  */
-import { C, alpha } from "@/styles/theme";
+import React from "react";
+import { alpha } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -44,11 +46,11 @@ export interface FloorTransitionProps {
 // ─── Metadata ────────────────────────────────────────────────────────────────
 
 const LINK_META: Record<string, { icon: string; label: string; color: string; verb: string; particleChar: string }> = {
-  corridor:   { icon: "🚪", label: "Corridor",   color: C.blue,   verb: "CROSSING",  particleChar: "─" },
-  portal:     { icon: "🌀", label: "Portal",     color: C.purple, verb: "WARPING",   particleChar: "✦" },
-  ramp:       { icon: "📐", label: "Ramp",       color: C.yellow, verb: "CLIMBING",  particleChar: "╱" },
-  pit:        { icon: "⬇️",  label: "Pit",        color: C.red,    verb: "FALLING",   particleChar: "▾" },
-  trampoline: { icon: "⬆️",  label: "Trampoline", color: C.green,  verb: "LAUNCHING", particleChar: "▴" },
+  corridor:   { icon: "🚪", label: "Corridor",   color: "#3b82f6", verb: "CROSSING",  particleChar: "─" },
+  portal:     { icon: "🌀", label: "Portal",     color: "#a855f7", verb: "WARPING",   particleChar: "✦" },
+  ramp:       { icon: "📐", label: "Ramp",       color: "#eab308", verb: "CLIMBING",  particleChar: "╱" },
+  pit:        { icon: "⬇️",  label: "Pit",        color: "#ef4444", verb: "FALLING",   particleChar: "▾" },
+  trampoline: { icon: "⬆️",  label: "Trampoline", color: "#22c55e", verb: "LAUNCHING", particleChar: "▴" },
 };
 
 // ─── Trajectory SVG ───────────────────────────────────────────────────────────
@@ -93,7 +95,7 @@ function TrajectoryPath({ linkType, progress, color }: { linkType: string; progr
   const by = def.by(p);
 
   return (
-    <svg width={W} height={H} style={{ display: "block", margin: "0 auto" }}>
+    <svg width={W} height={H} className="block mx-auto">
       {/* Ghost trail */}
       <path d={def.d} fill="none" stroke={alpha(color, 0.2)} strokeWidth={2} strokeDasharray="6 4" />
       {/* Traveled arc (grows with progress) */}
@@ -112,7 +114,7 @@ function TrajectoryPath({ linkType, progress, color }: { linkType: string; progr
 // ─── Phase indicator ──────────────────────────────────────────────────────────
 
 function PhaseBadge({ state, linkType }: { state: TransitionState; linkType: string }) {
-  const color = LINK_META[linkType]?.color ?? C.blue;
+  const color = LINK_META[linkType]?.color ?? "#3b82f6";
   const isTramps = linkType === "trampoline";
 
   const phases = isTramps
@@ -128,21 +130,23 @@ function PhaseBadge({ state, linkType }: { state: TransitionState; linkType: str
       ];
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 3, justifyContent: "center", marginBottom: 10 }}>
+    <div className="flex items-center gap-[3px] justify-center mb-[10px]">
       {phases.map((ph, i) => {
         const active = (ph.match as string[]).includes(state);
         return (
-          <div key={ph.key} style={{ display: "flex", alignItems: "center", gap: 3 }}>
-            <div style={{
-              padding: "2px 8px", borderRadius: 10, fontSize: 9, fontWeight: 700,
-              background: active ? alpha(color, 0.2) : alpha(C.bg3, 0.6),
-              border: `1px solid ${active ? color : C.border}`,
-              color: active ? color : C.faint,
-              transition: "all 0.15s",
-            }}>
+          <div key={ph.key} className="flex items-center gap-[3px]">
+            <div
+              style={{
+                background: active ? alpha(color, 0.2) : alpha("#1e293b", 0.6),
+                border: `1px solid ${active ? color : "#334155"}`,
+                color: active ? color : "#64748b",
+                transition: "all 0.15s",
+              }}
+              className="px-2 py-[2px] rounded-[10px] text-[9px] font-bold"
+            >
               {ph.label}
             </div>
-            {i < phases.length - 1 && <span style={{ color: C.faint, fontSize: 9 }}>›</span>}
+            {i < phases.length - 1 && <span style={{ color: "#64748b" }} className="text-[9px]">›</span>}
           </div>
         );
       })}
@@ -157,7 +161,9 @@ function Particles({ char, color, count = 8 }: { char: string; color: string; co
     <>
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} style={{
-          position: "absolute", fontSize: 13, color: alpha(color, 0.5),
+          position: "absolute",
+          fontSize: 13,
+          color: alpha(color, 0.5),
           left: `${8 + (i / count) * 84}%`,
           top: `${18 + Math.sin(i * 1.3) * 28}%`,
           animation: `floatP${i % 3} ${1.2 + (i % 3) * 0.4}s ease-in-out infinite`,
@@ -174,19 +180,19 @@ function Particles({ char, color, count = 8 }: { char: string; color: string; co
 
 function FloorBadge({ index, label, dim }: { index: number; label?: string; dim?: boolean }) {
   return (
-    <div style={{ textAlign: "center", opacity: dim ? 0.45 : 1, transition: "opacity 0.2s" }}>
-      <div style={{
-        width: 44, height: 44, borderRadius: 12,
-        background: dim ? alpha(C.bg3, 0.5) : alpha(C.blue, 0.15),
-        border: `2px solid ${dim ? C.border : C.blue}`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 18, fontWeight: 800, color: dim ? C.faint : C.text,
-        margin: "0 auto 4px",
-      }}>
+    <div style={{ opacity: dim ? 0.45 : 1, transition: "opacity 0.2s" }} className="text-center">
+      <div
+        style={{
+          background: dim ? alpha("#1e293b", 0.5) : alpha("#3b82f6", 0.15),
+          border: `2px solid ${dim ? "#334155" : "#3b82f6"}`,
+          color: dim ? "#64748b" : "#f1f5f9",
+        }}
+        className="w-11 h-11 rounded-xl flex items-center justify-center text-[18px] font-extrabold mx-auto mb-1"
+      >
         {index}
       </div>
       {label && (
-        <div style={{ fontSize: 10, color: dim ? C.faint : C.muted, maxWidth: 64, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div style={{ color: dim ? "#64748b" : "#94a3b8" }} className="text-[10px] max-w-[64px] overflow-hidden text-ellipsis whitespace-nowrap">
           {label}
         </div>
       )}
@@ -196,11 +202,7 @@ function FloorBadge({ index, label, dim }: { index: number; label?: string; dim?
 
 function Key({ children }: { children: React.ReactNode }) {
   return (
-    <kbd style={{
-      background: C.bg3, borderRadius: 4, padding: "1px 6px",
-      fontSize: 10, color: C.text, fontFamily: "monospace",
-      border: `1px solid ${C.border}`,
-    }}>
+    <kbd className="bg-bg3 text-theme-text border border-border-c rounded px-[6px] py-[1px] text-[10px] font-mono">
       {children}
     </kbd>
   );
@@ -222,7 +224,7 @@ export default function FloorTransitionOverlay({
   if (!visible) return null;
 
   return (
-    <div style={{ position: "absolute", inset: 0, zIndex: 30, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+    <div style={{ position: "absolute", inset: 0, zIndex: 30 }} className="flex items-center justify-center pointer-events-none">
       <style>{`
         @keyframes floatP0 { 0%,100%{transform:translateY(0);opacity:.6} 50%{transform:translateY(-16px);opacity:1} }
         @keyframes floatP1 { 0%,100%{transform:translateY(0);opacity:.4} 50%{transform:translateY(12px);opacity:.8} }
@@ -234,29 +236,29 @@ export default function FloorTransitionOverlay({
       `}</style>
 
       {/* Backdrop */}
-      <div style={{ position: "absolute", inset: 0, background: "rgba(2,8,23,0.65)", backdropFilter: "blur(2px)" }} />
+      <div style={{ position: "absolute", inset: 0 }} className="bg-[rgba(2,8,23,0.65)] backdrop-blur-sm" />
 
       {/* Main card */}
-      <div style={{
-        position: "relative",
-        background: "rgba(15,23,42,0.96)",
-        border: `2px solid ${alpha(meta.color, 0.5)}`,
-        borderRadius: 20, padding: "20px 30px",
-        minWidth: 300, maxWidth: 380, textAlign: "center",
-        animation: "tSlideIn 0.18s ease-out",
-        boxShadow: `0 0 48px ${alpha(meta.color, 0.18)}`,
-        overflow: "hidden",
-      }}>
+      <div
+        style={{
+          border: `2px solid ${alpha(meta.color, 0.5)}`,
+          animation: "tSlideIn 0.18s ease-out",
+          boxShadow: `0 0 48px ${alpha(meta.color, 0.18)}`,
+        }}
+        className="relative bg-[rgba(15,23,42,0.96)] rounded-[20px] px-[30px] py-5 min-w-[300px] max-w-[380px] text-center overflow-hidden"
+      >
         <Particles char={meta.particleChar} color={meta.color} />
 
         {/* Link type badge */}
-        <div style={{ marginBottom: 8, position: "relative" }}>
-          <span style={{
-            fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-            letterSpacing: 1.5, color: meta.color,
-            background: alpha(meta.color, 0.12), border: `1px solid ${alpha(meta.color, 0.3)}`,
-            borderRadius: 20, padding: "3px 12px",
-          }}>
+        <div className="mb-2 relative">
+          <span
+            style={{
+              color: meta.color,
+              background: alpha(meta.color, 0.12),
+              border: `1px solid ${alpha(meta.color, 0.3)}`,
+            }}
+            className="text-[11px] font-bold uppercase tracking-[1.5px] rounded-[20px] px-3 py-[3px]"
+          >
             {meta.icon} {meta.label}
           </span>
         </div>
@@ -265,22 +267,24 @@ export default function FloorTransitionOverlay({
         <PhaseBadge state={state} linkType={linkType} />
 
         {/* Verb */}
-        <div style={{
-          fontSize: 13, fontWeight: 700, color: C.muted,
-          letterSpacing: 2, textTransform: "uppercase", marginBottom: 10,
-          animation: state === "arrived" ? "tFlash 0.4s ease-in-out 3" : "none",
-        }}>
+        <div
+          style={{
+            color: "#94a3b8",
+            animation: state === "arrived" ? "tFlash 0.4s ease-in-out 3" : "none",
+          }}
+          className="text-[13px] font-bold tracking-[2px] uppercase mb-[10px]"
+        >
           {state === "arrived"   ? "ARRIVED"
            : state === "cancelled" ? "STAYING"
            : meta.verb}
         </div>
 
         {/* Floor F2 → arrow → F1 */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, marginBottom: 12 }}>
+        <div className="flex items-center justify-center gap-[14px] mb-3">
           <FloorBadge index={fromFloor} label={fromLabel} dim />
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-            <span style={{ fontSize: 22, color: meta.color, lineHeight: 1 }}>{arrow}</span>
-            <span style={{ fontSize: 9, color: C.faint }}>
+          <div className="flex flex-col items-center gap-[2px]">
+            <span style={{ color: meta.color }} className="text-[22px] leading-none">{arrow}</span>
+            <span className="text-theme-faint text-[9px]">
               {Math.abs(toFloor - fromFloor)} floor{Math.abs(toFloor - fromFloor) > 1 ? "s" : ""}
             </span>
           </div>
@@ -289,54 +293,57 @@ export default function FloorTransitionOverlay({
 
         {/* Trajectory SVG */}
         {(state === "transit" || state === "arrived") && (
-          <div style={{ marginBottom: 10 }}>
+          <div className="mb-[10px]">
             <TrajectoryPath linkType={linkType} progress={state === "arrived" ? 1 : progress} color={meta.color} />
           </div>
         )}
 
         {/* Transit progress bar */}
         {state === "transit" && (
-          <div style={{ width: "100%", height: 4, background: alpha(C.border, 0.5), borderRadius: 2, overflow: "hidden" }}>
+          <div style={{ background: alpha("#334155", 0.5) }} className="w-full h-[4px] rounded-[2px] overflow-hidden">
             <div style={{
               height: "100%", width: `${progress * 100}%`,
-              background: meta.color, borderRadius: 2,
+              background: meta.color,
               transition: "width 50ms linear", boxShadow: `0 0 6px ${meta.color}`,
-            }} />
+            }} className="rounded-[2px]" />
           </div>
         )}
 
         {/* Opt-out transit bar */}
         {state === "opt_out_window" && (
-          <div style={{ width: "100%", height: 3, background: alpha(C.border, 0.4), borderRadius: 2, overflow: "hidden", marginBottom: 4 }}>
+          <div style={{ background: alpha("#334155", 0.4) }} className="w-full h-[3px] rounded-[2px] overflow-hidden mb-1">
             <div style={{
               height: "100%", width: `${progress * 100}%`,
-              background: meta.color, borderRadius: 2, transition: "width 50ms linear",
-            }} />
+              background: meta.color, transition: "width 50ms linear",
+            }} className="rounded-[2px]" />
           </div>
         )}
 
         {/* Auto-launch / opt-out panel */}
         {(state === "auto_launch" || state === "opt_out_window") && (
-          <div style={{
-            marginTop: 10, padding: "10px 14px",
-            background: alpha(C.yellow, 0.08), border: `1px solid ${alpha(C.yellow, 0.3)}`,
-            borderRadius: 10, animation: "tPulse 1.2s ease-in-out infinite",
-          }}>
-            <div style={{ fontSize: 12, color: C.yellow, fontWeight: 700, marginBottom: 4 }}>
+          <div
+            style={{
+              background: alpha("#eab308", 0.08),
+              border: `1px solid ${alpha("#eab308", 0.3)}`,
+              animation: "tPulse 1.2s ease-in-out infinite",
+            }}
+            className="mt-[10px] px-[14px] py-[10px] rounded-[10px]"
+          >
+            <div className="text-theme-yellow text-[12px] font-bold mb-1">
               {state === "opt_out_window"
                 ? `OPT-OUT WINDOW — ${optOutTicksLeft ?? "…"}t left`
                 : `AUTO-LAUNCHING IN ${optOutTicksLeft != null ? `${optOutTicksLeft}t` : "…"}`
               }
             </div>
-            <div style={{ fontSize: 11, color: C.muted }}>
+            <div className="text-theme-muted text-[11px]">
               Hold <Key>SPACE</Key> or <Key>↓</Key> to stay on this floor
             </div>
             {optOutWindowTicks != null && (
-              <div style={{ marginTop: 6, width: "100%", height: 3, background: alpha(C.yellow, 0.2), borderRadius: 2, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${optOutPct}%`, background: C.yellow, borderRadius: 2, transition: "width 50ms linear" }} />
+              <div style={{ background: alpha("#eab308", 0.2) }} className="mt-[6px] w-full h-[3px] rounded-[2px] overflow-hidden">
+                <div style={{ height: "100%", width: `${optOutPct}%`, background: "#eab308", transition: "width 50ms linear" }} className="rounded-[2px]" />
               </div>
             )}
-            <div style={{ fontSize: 10, color: C.faint, marginTop: 6, lineHeight: 1.4 }}>
+            <div className="text-theme-faint text-[10px] mt-[6px] leading-[1.4]">
               You landed on a trampoline — it will bounce you back to F{fromFloor} unless you cancel.
             </div>
           </div>
@@ -344,19 +351,22 @@ export default function FloorTransitionOverlay({
 
         {/* Cancelled */}
         {state === "cancelled" && (
-          <div style={{
-            marginTop: 12, padding: "10px 14px",
-            background: alpha(C.green, 0.08), border: `1px solid ${alpha(C.green, 0.3)}`,
-            borderRadius: 10, animation: "tPop 0.25s ease-out",
-          }}>
-            <div style={{ fontSize: 13, color: C.green, fontWeight: 700 }}>✓ Launch cancelled</div>
-            <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>Staying on Floor {fromFloor}</div>
+          <div
+            style={{
+              background: alpha("#22c55e", 0.08),
+              border: `1px solid ${alpha("#22c55e", 0.3)}`,
+              animation: "tPop 0.25s ease-out",
+            }}
+            className="mt-3 px-[14px] py-[10px] rounded-[10px]"
+          >
+            <div className="text-theme-green text-[13px] font-bold">✓ Launch cancelled</div>
+            <div className="text-theme-muted text-[11px] mt-[2px]">Staying on Floor {fromFloor}</div>
           </div>
         )}
 
         {/* Arrived */}
         {state === "arrived" && (
-          <div style={{ marginTop: 10, fontSize: 12, color: meta.color, fontWeight: 700, animation: "tFlash 0.4s ease-in-out 2" }}>
+          <div style={{ color: meta.color, animation: "tFlash 0.4s ease-in-out 2" }} className="mt-[10px] text-[12px] font-bold">
             ✓ Floor {toFloor}{toLabel ? ` — ${toLabel}` : ""}
           </div>
         )}

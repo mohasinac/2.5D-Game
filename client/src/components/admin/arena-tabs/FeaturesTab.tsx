@@ -98,7 +98,7 @@ function BehaviorOverridePanel({ behaviorId, behaviorParams, onChangeBehaviorId,
 function BehaviorBadge({ behaviorId }: { behaviorId?: string }) {
   if (!behaviorId) return null;
   return (
-    <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 99, background: "rgba(168,85,247,0.15)", color: "#a855f7", border: "1px solid rgba(168,85,247,0.3)" }}>
+    <span className="text-[10px] font-semibold py-[2px] px-[7px] rounded-full bg-[rgba(168,85,247,0.15)] text-[#a855f7] border border-[rgba(168,85,247,0.3)]">
       Behavior: {behaviorId}
     </span>
   );
@@ -115,7 +115,10 @@ function AuthorityBadge({ config, zone }: { config: ArenaConfig; zone: Authority
   if (Math.abs(effective - 1.0) < 0.01) return null; // hide when at default
   const color = effective < 1.0 ? "#ff9900" : "#44dd88";
   return (
-    <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 99, background: color + "22", color, border: `1px solid ${color}55` }}>
+    <span
+      className="text-[10px] font-semibold py-[2px] px-[7px] rounded-full"
+      style={{ background: color + "22", color, border: `1px solid ${color}55` }}
+    >
       Authority ×{effective.toFixed(2)}
     </span>
   );
@@ -274,7 +277,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
 
       {/* Background Particles */}
       <Section title="Background Particles">
-        <div data-testid="arena-background-particles" style={{ display: "contents" }}></div>
+        <div data-testid="arena-background-particles" className="contents"></div>
         <Row label="Enabled">
           <input type="checkbox" checked={!!bp} onChange={e => onChange({ backgroundParticles: e.target.checked ? { type: "snow", density: 20 } : undefined })} />
         </Row>
@@ -287,7 +290,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 emptyLabel={featLoading ? "Loading…" : "Select type"}
                 options={particleOpts}
                 onChange={v => onChange({ backgroundParticles: { ...bp, type: v as BackgroundParticleType } })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded px-2 py-1 text-xs"
               />
             </Row>
             <Row label="Density (p/s)">{numInput(bp.density, 20, v => onChange({ backgroundParticles: { ...bp, density: v } }))}</Row>
@@ -309,7 +312,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
 
       {/* Environmental Effect */}
       <Section title="Environmental Effect">
-        <div data-testid="arena-env-effect" style={{ display: "contents" }}></div>
+        <div data-testid="arena-env-effect" className="contents"></div>
         <Row label="Enabled">
           <input type="checkbox" checked={!!env} onChange={e => onChange({ environmentalEffect: e.target.checked ? { preset: "storm", intensity: 0.5 } : undefined })} />
         </Row>
@@ -322,7 +325,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 emptyLabel={featLoading ? "Loading…" : "Select preset"}
                 options={envOpts}
                 onChange={v => onChange({ environmentalEffect: { ...env, preset: v as ArenaEnvironmentalEffectPreset } })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded px-2 py-1 text-xs"
               />
             </Row>
             <Row label="Intensity">
@@ -349,7 +352,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 emptyLabel={featLoading ? "Loading…" : "Select hazard"}
                 options={hazardOpts}
                 onChange={v => updateHazard(i, { hazardType: v as FloorHazardType })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
             <Row label="Element Type">
@@ -359,7 +362,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 emptyLabel={elemLoading ? "Loading…" : "— none —"}
                 options={elemOpts}
                 onChange={v => updateHazard(i, { elementType: (v as ElementType) || undefined })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
             <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateHazard(i, { x_cm: v }))}</Row>
@@ -408,7 +411,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 emptyLabel={featLoading ? "Loading…" : "Select effect"}
                 options={effectOpts}
                 onChange={v => updateEffect(i, { effectType: v as EffectZoneType })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
             <Row label="Element Type">
@@ -418,7 +421,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 emptyLabel={elemLoading ? "Loading…" : "— none —"}
                 options={elemOpts}
                 onChange={v => updateEffect(i, { elementType: (v as ElementType) || undefined })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
             <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateEffect(i, { x_cm: v }))}</Row>
@@ -494,7 +497,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 value={z.direction}
                 options={[{ value: "cw", label: "Clockwise" }, { value: "ccw", label: "Counter-clockwise" }]}
                 onChange={v => updateSpinZone(i, { direction: v as "cw" | "ccw" })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
             <Row label="Apply To">
@@ -502,7 +505,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 value={z.applyTo}
                 options={[{ value: "linear", label: "Linear (orbit)" }, { value: "spin", label: "Spin top-up" }, { value: "both", label: "Both" }]}
                 onChange={v => updateSpinZone(i, { applyTo: v as "linear" | "spin" | "both" })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
             <Row label="Element Type">
@@ -512,7 +515,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 emptyLabel={elemLoading ? "Loading…" : "— none —"}
                 options={elemOpts}
                 onChange={v => updateSpinZone(i, { elementType: (v as ElementType) || undefined })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
             {/* I6: Behavior override */}
@@ -568,7 +571,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 value={z.visibility}
                 options={[{ value: "always-hidden", label: "Always hidden" }, { value: "warning-only", label: "Warning only" }, { value: "visible", label: "Visible" }]}
                 onChange={v => updateGravityHole(i, { visibility: v as "always-hidden" | "warning-only" | "visible" })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
             <Row label="Element Type">
@@ -578,7 +581,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 emptyLabel={elemLoading ? "Loading…" : "— none —"}
                 options={elemOpts}
                 onChange={v => updateGravityHole(i, { elementType: (v as ElementType) || undefined })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
             {/* I6: Behavior override */}
@@ -634,7 +637,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 emptyLabel={elemLoading ? "Loading…" : "— none —"}
                 options={elemOpts}
                 onChange={v => updateBump(i, { elementType: (v as ElementType) || undefined })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
             {/* I6: Behavior override */}
@@ -678,7 +681,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <div className="flex justify-between items-center mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-text">{z.id}</span>
-                <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 99, background: "rgba(68,180,255,0.15)", color: "#44b4ff", border: "1px solid rgba(68,180,255,0.3)" }}>
+                <span className="text-[10px] py-[1px] px-1.5 rounded-full bg-[rgba(68,180,255,0.15)] text-[#44b4ff] border border-[rgba(68,180,255,0.3)]">
                   {z.type}
                 </span>
                 {z.behaviorId && <BehaviorBadge behaviorId={z.behaviorId} />}
@@ -692,7 +695,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 value={z.type}
                 options={DIRECTIONAL_ZONE_TYPES}
                 onChange={v => updateDirectionalZone(i, { type: v as DirectionalZoneType })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
 
@@ -721,10 +724,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                   <div className="flex gap-1.5">
                     {(["cw", "ccw"] as const).map(d => (
                       <button key={d} onClick={() => updateDirectionalZone(i, { spinDirection: d })}
-                        style={{ padding: "2px 10px", borderRadius: 5, fontSize: 11, cursor: "pointer",
-                          background: (z.spinDirection ?? "cw") === d ? "#44b4ff" : "transparent",
-                          color: (z.spinDirection ?? "cw") === d ? "#fff" : C.muted,
-                          border: `1px solid ${(z.spinDirection ?? "cw") === d ? "#44b4ff" : C.border}` }}>
+                        className={`py-[2px] px-2.5 rounded text-[11px] cursor-pointer border ${(z.spinDirection ?? "cw") === d ? "bg-[#44b4ff] text-white border-[#44b4ff]" : "bg-transparent text-theme-muted border-border-c"}`}>
                         {d.toUpperCase()}
                       </button>
                     ))}
@@ -765,7 +765,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 emptyLabel={elemLoading ? "Loading…" : "— none —"}
                 options={elemOpts}
                 onChange={v => updateDirectionalZone(i, { elementType: (v as any) || undefined })}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
               />
             </Row>
 
@@ -792,7 +792,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
             />
           </div>
         ))}
-        <button onClick={addDirectionalZone} style={{ padding: "6px 14px", background: "#44b4ff", color: "#fff", border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+        <button onClick={addDirectionalZone} className="py-1.5 px-3.5 bg-[#44b4ff] text-white border-none rounded-lg text-xs cursor-pointer">
           + Add Directional Zone
         </button>
       </Section>
@@ -826,7 +826,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                       : { kind: "circle", radiusCm: 5 };
                     updateTriggerZone(i, { shape });
                   }}
-                  style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                  className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
                 />
               </Row>
               {(z.shape as any).kind === "circle" && (
@@ -871,7 +871,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                     };
                     updateTriggerZone(i, { kind: defaults[kindType] ?? { type: "safe" } });
                   }}
-                  style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                  className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
                 />
               </Row>
               {kind.type === "damage" && <Row label="Damage/s">{numInput(kind.perSecond, 10, v => updateTriggerZone(i, { kind: { ...kind, perSecond: v } }))}</Row>}
@@ -884,7 +884,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                       value={kind.spinDirection}
                       options={[{ value: "cw", label: "CW" }, { value: "ccw", label: "CCW" }, { value: "match", label: "Match bey" }, { value: "alternate", label: "Alternate" }]}
                       onChange={v => updateTriggerZone(i, { kind: { ...kind, spinDirection: v as any } })}
-                      style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                      className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
                     />
                   </Row>
                   <Row label="Spin/s">{numInput(kind.perSecond, 50, v => updateTriggerZone(i, { kind: { ...kind, perSecond: v } }), 10)}</Row>
@@ -907,7 +907,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                     };
                     updateTriggerZone(i, { activation: defaults[actType] });
                   }}
-                  style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                  className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
                 />
               </Row>
               {activation.type === "intervaled" && (
@@ -922,7 +922,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                     value={activation.defaultState}
                     options={[{ value: "on", label: "On" }, { value: "off", label: "Off" }]}
                     onChange={v => updateTriggerZone(i, { activation: { ...activation, defaultState: v as "on" | "off" } })}
-                    style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                    className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
                   />
                 </Row>
               )}
@@ -980,7 +980,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                         { value: "never", label: "Never" },
                       ]}
                       onChange={v => updateBS({ despawnCondition: v as ArenaBeySawnConfig["despawnCondition"] })}
-                      style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                      className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
                     />
                   </Row>
                   {bs.despawnCondition === "timeout" && (
@@ -998,7 +998,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                         { value: "player_spin_below", label: "Player Spin Below" },
                       ]}
                       onChange={v => updateBS({ spawnOnCondition: v === "none" ? undefined : { type: v as any, threshold: 60 } })}
-                      style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+                      className="bg-bg1 border border-border-c text-theme-text rounded text-xs"
                     />
                   </Row>
                   {bs.spawnOnCondition && (
@@ -1028,10 +1028,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                           <div className="flex gap-1">
                             {(["medium", "hard", "hell"] as const).map(d => (
                               <button key={d} onClick={() => { const p = [...(bs.beyPool ?? [])]; p[ei] = { ...entry, aiDifficulty: d }; updateBS({ beyPool: p }); }}
-                                style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
-                                  background: entry.aiDifficulty === d ? C.red : "transparent",
-                                  color: entry.aiDifficulty === d ? C.white : C.muted,
-                                  border: `1px solid ${entry.aiDifficulty === d ? C.red : C.border}` }}>
+                                className={`py-[2px] px-[7px] rounded text-[10px] cursor-pointer border ${entry.aiDifficulty === d ? "bg-theme-red text-white border-theme-red" : "bg-transparent text-theme-muted border-border-c"}`}>
                                 {d}
                               </button>
                             ))}
@@ -1041,10 +1038,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                           <div className="flex gap-1">
                             {(["ai", "friendly"] as const).map(m => (
                               <button key={m} onClick={() => { const p = [...(bs.beyPool ?? [])]; p[ei] = { ...entry, controlMode: m }; updateBS({ beyPool: p }); }}
-                                style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
-                                  background: entry.controlMode === m ? C.blue : "transparent",
-                                  color: entry.controlMode === m ? C.white : C.muted,
-                                  border: `1px solid ${entry.controlMode === m ? C.blue : C.border}` }}>
+                                className={`py-[2px] px-[7px] rounded text-[10px] cursor-pointer border ${entry.controlMode === m ? "bg-theme-blue text-white border-theme-blue" : "bg-transparent text-theme-muted border-border-c"}`}>
                                 {m}
                               </button>
                             ))}

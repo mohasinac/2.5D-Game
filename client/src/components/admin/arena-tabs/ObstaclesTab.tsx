@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { C } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import { PX_PER_CM_BASE } from "@/constants/units";
 import type {
@@ -46,13 +46,12 @@ const PHYSICS_TYPES: ObstaclePhysicsType[] = [
   "magnetic", "trampoline", "spinner", "crusher", "electrified", "sticky", "bouncy_net",
 ];
 
-function numInput(val: number | undefined, def: number, onChange: (n: number) => void, step = 1, width = 80) {
+function numInput(val: number | undefined, def: number, onChange: (n: number) => void, step = 1, _width = 80) {
   return (
     <input
       type="number" value={val ?? def} step={step}
       onChange={e => onChange(Number(e.target.value))}
-      className="bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs"
-      style={{ width }}
+      className="w-20 bg-bg1 border border-border-c text-theme-text rounded-md py-1 px-2 text-xs"
     />
   );
 }
@@ -111,12 +110,7 @@ function ShapeEditor({ shape, onChange }: { shape?: ObstacleShape; onChange: (s?
       <div className="flex gap-1 flex-wrap">
         {SHAPE_KINDS.map(k => (
           <button key={k} onClick={() => setKind(k)}
-            className="py-[2px] px-[7px] rounded text-[10px] cursor-pointer border"
-            style={{
-              background: kind === k ? C.blue : "transparent",
-              color: kind === k ? C.white : C.muted,
-              borderColor: kind === k ? C.blue : C.border,
-            }}>
+            className={cn("py-[2px] px-[7px] rounded text-[10px] cursor-pointer border transition-colors", kind === k ? "bg-theme-blue text-white border-theme-blue" : "bg-transparent text-theme-muted border-border-c hover:border-theme-blue")}>
             {k}
           </button>
         ))}
@@ -306,12 +300,7 @@ function PhysicsEditor({ physics, onChange }: { physics?: ObstaclePhysicsBlock; 
           <div className="flex gap-1 flex-wrap">
             {PHYSICS_TYPES.map(t => (
               <button key={t} onClick={() => patch({ type: t })}
-                className="py-[2px] px-[7px] rounded text-[10px] cursor-pointer border"
-                style={{
-                  background: type === t ? C.red : "transparent",
-                  color: type === t ? C.white : C.muted,
-                  borderColor: type === t ? C.red : C.border,
-                }}>
+                className={cn("py-[2px] px-[7px] rounded text-[10px] cursor-pointer border transition-colors", type === t ? "bg-theme-red text-white border-theme-red" : "bg-transparent text-theme-muted border-border-c hover:border-theme-red")}>
                 {t}
               </button>
             ))}
@@ -326,12 +315,7 @@ function PhysicsEditor({ physics, onChange }: { physics?: ObstaclePhysicsBlock; 
               <div className="flex gap-1">
                 {(["one-way", "two-way"] as const).map(d => (
                   <button key={d} onClick={() => patch({ direction: d })}
-                    className="py-[2px] px-[7px] rounded text-[10px] cursor-pointer border"
-                    style={{
-                      background: (physics.direction ?? "two-way") === d ? C.blue : "transparent",
-                      color: (physics.direction ?? "two-way") === d ? C.white : C.muted,
-                      borderColor: (physics.direction ?? "two-way") === d ? C.blue : C.border,
-                    }}>
+                    className={cn("py-[2px] px-[7px] rounded text-[10px] cursor-pointer border transition-colors", (physics.direction ?? "two-way") === d ? "bg-theme-blue text-white border-theme-blue" : "bg-transparent text-theme-muted border-border-c hover:border-theme-blue")}>
                     {d}
                   </button>
                 ))}
@@ -393,12 +377,7 @@ function PhysicsEditor({ physics, onChange }: { physics?: ObstaclePhysicsBlock; 
                 <div className="flex gap-1">
                   {(["x", "y"] as const).map(a => (
                     <button key={a} onClick={() => patch({ crushAxis: a })}
-                      className="py-[2px] px-2 rounded text-[11px] cursor-pointer border"
-                      style={{
-                        background: (physics.crushAxis ?? "y") === a ? C.blue : "transparent",
-                        color: (physics.crushAxis ?? "y") === a ? C.white : C.muted,
-                        borderColor: (physics.crushAxis ?? "y") === a ? C.blue : C.border,
-                      }}>
+                      className={cn("py-[2px] px-2 rounded text-[11px] cursor-pointer border transition-colors", (physics.crushAxis ?? "y") === a ? "bg-theme-blue text-white border-theme-blue" : "bg-transparent text-theme-muted border-border-c hover:border-theme-blue")}>
                       {a}
                     </button>
                   ))}
@@ -440,12 +419,7 @@ function RenderModeEditor({ render, onChange }: { render?: ObstacleRenderMode; o
         <label className="text-[11px] text-faint min-w-[40px]">Mode</label>
         {(["floor", "line"] as const).map(m => (
           <button key={m} onClick={() => onChange(m === "floor" ? { mode: "floor" } : { mode: "line", stroke: "solid" })}
-            className="py-[2px] px-2 rounded text-[11px] cursor-pointer border"
-            style={{
-              background: mode === m ? C.purple : "transparent",
-              color: mode === m ? C.white : C.muted,
-              borderColor: mode === m ? C.purple : C.border,
-            }}>
+            className={cn("py-[2px] px-2 rounded text-[11px] cursor-pointer border transition-colors", mode === m ? "bg-theme-purple text-white border-theme-purple" : "bg-transparent text-theme-muted border-border-c hover:border-theme-purple")}>
             {m}
           </button>
         ))}
@@ -457,12 +431,7 @@ function RenderModeEditor({ render, onChange }: { render?: ObstacleRenderMode; o
             <div className="flex gap-1">
               {(["solid", "dashed", "dotted"] as const).map(s => (
                 <button key={s} onClick={() => onChange({ ...render, stroke: s })}
-                  className="py-[2px] px-1.5 rounded text-[10px] cursor-pointer border"
-                  style={{
-                    background: render.stroke === s ? C.blue : "transparent",
-                    color: render.stroke === s ? C.white : C.muted,
-                    borderColor: render.stroke === s ? C.blue : C.border,
-                  }}>
+                  className={cn("py-[2px] px-1.5 rounded text-[10px] cursor-pointer border transition-colors", render.stroke === s ? "bg-theme-blue text-white border-theme-blue" : "bg-transparent text-theme-muted border-border-c hover:border-theme-blue")}>
                   {s}
                 </button>
               ))}
@@ -544,8 +513,7 @@ export default function ObstaclesTab({ config, onChange }: Props) {
       <div className="flex justify-between items-center">
         <span className="text-[13px] text-muted">{items.length} / 10 obstacles — theme icon: {themeIcon}</span>
         <button onClick={add} disabled={items.length >= 10}
-          className="py-[5px] px-[14px] bg-blue text-white border-none rounded-md text-xs font-medium cursor-pointer"
-          style={{ opacity: items.length >= 10 ? 0.4 : 1 }}>
+          className={cn("py-[5px] px-[14px] bg-theme-blue text-white border-none rounded-md text-xs font-medium cursor-pointer transition-opacity", items.length >= 10 && "opacity-40")}>
           + Add Obstacle
         </button>
       </div>
@@ -564,8 +532,7 @@ export default function ObstaclesTab({ config, onChange }: Props) {
             <div className="flex items-center gap-2">
               <span className="text-[13px] font-medium text-text">{themeIcon} Obstacle #{idx + 1}</span>
               {obs.behaviorId && (
-                <span className="text-[10px] font-semibold py-[2px] px-[7px] rounded-full"
-                  style={{ background: "rgba(168,85,247,0.15)", color: "#a855f7", border: "1px solid rgba(168,85,247,0.3)" }}>
+                <span className="text-[10px] font-semibold py-[2px] px-[7px] rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30">
                   Behavior: {obs.behaviorId}
                 </span>
               )}
@@ -597,7 +564,6 @@ export default function ObstaclesTab({ config, onChange }: Props) {
                     value={display}
                     onChange={e => update(obs.id, field, pxUnit ? Math.round(+e.target.value * PX_PER_CM_BASE) : +e.target.value)}
                     className="w-full"
-                    style={{ accentColor: C.blue }}
                   />
                 </div>
               );
@@ -613,7 +579,6 @@ export default function ObstaclesTab({ config, onChange }: Props) {
               onChange={v => update(obs.id, "spriteId" as any, v || undefined)}
               disabled={assetsLoading}
               emptyLabel={assetsLoading ? "Loading…" : "No obstacle assets found"}
-              style={{ width: "100%" }}
             />
           </div>
 
@@ -627,7 +592,6 @@ export default function ObstaclesTab({ config, onChange }: Props) {
                 onChange={v => update(obs.id, "elementType" as any, v || undefined)}
                 disabled={elemLoading}
                 emptyLabel={elemLoading ? "Loading…" : "No element types"}
-                style={{ width: "100%" }}
               />
             </div>
             <div>
@@ -646,7 +610,6 @@ export default function ObstaclesTab({ config, onChange }: Props) {
                 value={obs.triggerState ?? "on"}
                 options={[{ value: "on", label: "On (active)" }, { value: "off", label: "Off (inactive)" }]}
                 onChange={v => update(obs.id, "triggerState", v as "on" | "off")}
-                style={{ width: "100%" }}
               />
             </div>
           </div>

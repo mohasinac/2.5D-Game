@@ -78,18 +78,18 @@ export function ToolboxPanel({ onDragStart }: Props) {
   const sortedGroups = Object.entries(groups).sort(([a], [b]) => groupOrder.indexOf(a) - groupOrder.indexOf(b));
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-      <div style={{ padding: "10px 12px", borderBottom: `1px solid ${C.border}` }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Blocks</div>
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="px-3 py-[10px] border-b border-border-c">
+        <div className="text-[11px] font-bold text-theme-muted uppercase tracking-[0.06em] mb-2">Blocks</div>
         <input
-          style={{ width: "100%", background: "var(--bg3)", border: `1px solid ${C.border}`, borderRadius: 6, padding: "4px 8px", color: C.text, fontSize: 12, boxSizing: "border-box" }}
+          className="w-full bg-bg3 border border-border-c rounded-md px-2 py-1 text-theme-text text-[12px] box-border"
           placeholder="Search blocks…"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
+      <div className="flex-1 overflow-y-auto py-2">
         {sortedGroups.map(([group, blocks]) => {
           const color = ACTION_COLORS[group] ?? C.muted;
           const isCollapsed = collapsed[group];
@@ -97,12 +97,12 @@ export function ToolboxPanel({ onDragStart }: Props) {
             <div key={group}>
               <button
                 type="button"
-                style={{ display: "flex", width: "100%", alignItems: "center", padding: "4px 12px", background: "transparent", border: "none", cursor: "pointer", color: C.muted, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", gap: 6 }}
+                className="flex w-full items-center px-3 py-1 bg-transparent border-none cursor-pointer text-theme-muted text-[11px] font-bold uppercase tracking-[0.04em] gap-[6px]"
                 onClick={() => setCollapsed(c => ({ ...c, [group]: !c[group] }))}
               >
                 <span style={{ width: 8, height: 8, borderRadius: 2, background: color, flexShrink: 0 }} />
                 {group.replace("_", " ")}
-                <span style={{ marginLeft: "auto" }}>{isCollapsed ? "▶" : "▼"}</span>
+                <span className="ml-auto">{isCollapsed ? "▶" : "▼"}</span>
               </button>
               {!isCollapsed && blocks.map(block => (
                 <div
@@ -111,21 +111,14 @@ export function ToolboxPanel({ onDragStart }: Props) {
                   onDragStart={() => onDragStart(block)}
                   title={block.description}
                   style={{
-                    margin: "2px 8px",
-                    padding: "5px 10px",
                     background: color + "22",
                     border: `1px solid ${color}44`,
-                    borderRadius: 8,
-                    cursor: "grab",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    userSelect: "none",
                   }}
+                  className="mx-2 my-[2px] px-[10px] py-[5px] rounded-lg cursor-grab flex items-center gap-[6px] select-none"
                 >
                   {block.icon && <span style={{ fontSize: 13, color }}>{block.icon}</span>}
-                  <span style={{ fontSize: 12, color: C.text, fontWeight: 500 }}>{block.name}</span>
-                  <span style={{ marginLeft: "auto", fontSize: 10, color: C.faint, fontFamily: "monospace" }}>{block.id.split(".").pop()}</span>
+                  <span className="text-[12px] text-theme-text font-medium">{block.name}</span>
+                  <span className="ml-auto text-[10px] text-theme-faint font-mono">{block.id.split(".").pop()}</span>
                 </div>
               ))}
             </div>

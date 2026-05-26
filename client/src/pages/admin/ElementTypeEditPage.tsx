@@ -348,12 +348,8 @@ export function ElementTypeEditPage() {
                             min={0} max={4} step={0.25}
                             value={val}
                             onChange={e => set("attackAdvantages", { ...form.attackAdvantages, [cfg.id]: parseFloat(e.target.value) || 0 })}
-                            style={{
-                              width: 52, textAlign: "center", padding: "5px 4px",
-                              background: "var(--bg3)", border: `1px solid ${multiplierColor(val)}44`,
-                              borderRadius: 6, color: multiplierColor(val),
-                              fontSize: 13, fontWeight: 600, fontFamily: "monospace",
-                            }}
+                            className="w-[52px] text-center py-[5px] px-1 bg-bg3 rounded-[6px] text-[13px] font-semibold font-mono"
+                            style={{ border: `1px solid ${multiplierColor(val)}44`, color: multiplierColor(val) }}
                           />
                         </td>
                       );

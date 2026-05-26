@@ -66,8 +66,8 @@ function RotationDial({
   const cx = size / 2, cy = size / 2, r = size / 2 - 3;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-      <svg width={size} height={size} style={{ overflow: "visible" }}>
+    <div className="flex flex-col items-center gap-0.5">
+      <svg width={size} height={size} className="overflow-visible">
         {/* Background ring */}
         <circle cx={cx} cy={cy} r={r} fill="none" stroke={alpha(color, 0.2)} strokeWidth={2} />
         {/* Active arc — CW = right half, CCW = left half */}
@@ -90,10 +90,10 @@ function RotationDial({
         </text>
       </svg>
       {speed > 0 && (
-        <span style={{ fontSize: 9, color: C.faint }}>{speed}°/s</span>
+        <span className="text-[9px] text-theme-faint">{speed}°/s</span>
       )}
       {speed > 0 && secPerRev > 0 && (
-        <span style={{ fontSize: 9, color, fontWeight: 600 }}>{secPerRev.toFixed(1)}s/rev</span>
+        <span className="text-[9px] font-semibold" style={{ color }}>{secPerRev.toFixed(1)}s/rev</span>
       )}
     </div>
   );
@@ -110,47 +110,49 @@ function CouplingStrip({ link }: { link: ArenaLink }) {
   const meta = LINK_TYPE_META[link.linkType] ?? LINK_TYPE_META.corridor;
 
   return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 8,
-      padding: "7px 10px", borderRadius: 8, marginBottom: 4,
-      border: `1px solid ${alpha(meta.color, 0.22)}`,
-      background: alpha(meta.color, 0.05),
-      position: "relative",
-    }} className="link-row">
+    <div
+      className="flex items-center gap-2 px-2.5 py-[7px] rounded-lg mb-1 relative link-row"
+      style={{
+        border: `1px solid ${alpha(meta.color, 0.22)}`,
+        background: alpha(meta.color, 0.05),
+      }}
+    >
       {/* Link type */}
-      <span style={{ fontSize: 15 }}>{meta.icon}</span>
-      <span style={{ fontSize: 12, fontWeight: 600, color: meta.color, minWidth: 64 }}>{meta.label}</span>
+      <span className="text-[15px]">{meta.icon}</span>
+      <span className="text-[12px] font-semibold min-w-[64px]" style={{ color: meta.color }}>{meta.label}</span>
 
       {/* Coupling arrows diagram */}
-      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-        <span style={{ fontSize: 14, color: alpha(m.color, 0.7) }}>{m.arrows[0]}</span>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+      <div className="flex items-center gap-1">
+        <span className="text-[14px]" style={{ color: alpha(m.color, 0.7) }}>{m.arrows[0]}</span>
+        <div className="flex flex-col items-center gap-px">
           {coupling === "driven" && link.rotationDrivenRatio != null && (
-            <span style={{ fontSize: 9, color: m.color, fontWeight: 700 }}>×{link.rotationDrivenRatio.toFixed(1)}</span>
+            <span className="text-[9px] font-bold" style={{ color: m.color }}>×{link.rotationDrivenRatio.toFixed(1)}</span>
           )}
-          <div style={{
-            width: 20, height: 2,
-            background: coupling === "independent" ? alpha(m.color, 0.2) : m.color,
-            borderRadius: 1,
-            backgroundImage: coupling === "independent" ? `repeating-linear-gradient(90deg,${m.color} 0 3px,transparent 3px 6px)` : "none",
-          }} />
+          <div
+            className="w-5 h-0.5 rounded-[1px]"
+            style={{
+              background: coupling === "independent" ? alpha(m.color, 0.2) : m.color,
+              backgroundImage: coupling === "independent" ? `repeating-linear-gradient(90deg,${m.color} 0 3px,transparent 3px 6px)` : "none",
+            }}
+          />
         </div>
-        <span style={{ fontSize: 14, color: alpha(m.color, 0.7) }}>{m.arrows[1]}</span>
+        <span className="text-[14px]" style={{ color: alpha(m.color, 0.7) }}>{m.arrows[1]}</span>
       </div>
 
       {/* Coupling pill */}
-      <span style={{
-        fontSize: 10, padding: "1px 7px", borderRadius: 20,
-        background: alpha(m.color, 0.12), border: `1px solid ${alpha(m.color, 0.3)}`,
-        color: m.color, fontWeight: 700,
-      }}>{m.label}</span>
+      <span
+        className="text-[10px] px-[7px] py-px rounded-[20px] font-bold"
+        style={{
+          background: alpha(m.color, 0.12),
+          border: `1px solid ${alpha(m.color, 0.3)}`,
+          color: m.color,
+        }}
+      >{m.label}</span>
 
       {/* Alignment mode */}
-      <span style={{
-        fontSize: 10, padding: "1px 7px", borderRadius: 20,
-        background: alpha(C.bg3, 0.8), border: `1px solid ${C.border}`,
-        color: alignMode === "none" ? C.purple : alignMode === "owner-only" ? C.yellow : C.blue,
-      }}>
+      <span
+        className={`text-[10px] px-[7px] py-px rounded-[20px] bg-bg3/80 border border-border-c ${alignMode === "none" ? "text-theme-purple" : alignMode === "owner-only" ? "text-theme-yellow" : "text-theme-blue"}`}
+      >
         {alignMode === "none"
           ? "always open"
           : alignMode === "owner-only"
@@ -160,24 +162,27 @@ function CouplingStrip({ link }: { link: ArenaLink }) {
 
       {/* Disconnect badge */}
       {link.alignment?.disconnectsWhenMisaligned && (
-        <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 20, background: alpha(C.red, 0.12), color: C.red, border: `1px solid ${alpha(C.red, 0.3)}` }}>
+        <span
+          className="text-[10px] px-1.5 py-px rounded-[20px]"
+          className="text-[10px] px-1.5 py-px rounded-[20px] bg-red-13 text-theme-red border border-red-30"
+        >
           ⚡ severs
         </span>
       )}
 
       {/* Traversal ticks */}
       {link.traversal && (
-        <span style={{ marginLeft: "auto", fontSize: 10, color: C.faint }}>
+        <span className="ml-auto text-[10px] text-theme-faint">
           {link.traversal.traversalTicks}t transit
         </span>
       )}
 
       {/* Edit / remove */}
-      <div style={{ display: "flex", gap: 5 }}>
+      <div className="flex gap-[5px]">
         <button
           onClick={() => { /* set edit — handled by parent */ }}
           data-edit-link="true"
-          style={{ padding: "3px 8px", borderRadius: 5, fontSize: 11, cursor: "pointer", background: alpha(C.blue, 0.13), color: C.blue, border: `1px solid ${alpha(C.blue, 0.27)}` }}
+          className="px-2 py-[3px] rounded-[5px] text-[11px] cursor-pointer bg-blue-13 text-theme-blue border border-blue-30"
         >Edit</button>
       </div>
     </div>
@@ -190,7 +195,7 @@ function CouplingStrip({ link }: { link: ArenaLink }) {
 function LinkMotionDiagram({ linkType, size = 80 }: { linkType: string; size?: number }) {
   const DIAGRAMS: Record<string, React.ReactElement> = {
     pit: (
-      <svg width={size} height={32} style={{ display: "block" }}>
+      <svg width={size} height={32} className="block">
         {/* Falling bey path */}
         <circle cx={size/2} cy={6} r={5} fill={alpha(C.red, 0.3)} stroke={C.red} strokeWidth={1.5} />
         <path d={`M${size/2} 11 L${size/2} 26`} stroke={C.red} strokeWidth={1.5} strokeDasharray="3 2"
@@ -202,7 +207,7 @@ function LinkMotionDiagram({ linkType, size = 80 }: { linkType: string; size?: n
       </svg>
     ),
     trampoline: (
-      <svg width={size} height={32} style={{ display: "block" }}>
+      <svg width={size} height={32} className="block">
         {/* Rising bey path (bounce arc) */}
         <circle cx={size/2} cy={26} r={5} fill={alpha(C.green, 0.3)} stroke={C.green} strokeWidth={1.5} />
         <path d={`M${size/2-8} 26 Q${size/2} 10 ${size/2+8} 26`} fill="none" stroke={C.green} strokeWidth={1.5} strokeDasharray="3 2" />
@@ -214,7 +219,7 @@ function LinkMotionDiagram({ linkType, size = 80 }: { linkType: string; size?: n
       </svg>
     ),
     ramp: (
-      <svg width={size} height={32} style={{ display: "block" }}>
+      <svg width={size} height={32} className="block">
         {/* Angled ascent */}
         <circle cx={12} cy={26} r={4} fill={alpha(C.yellow, 0.3)} stroke={C.yellow} strokeWidth={1.5} />
         <path d={`M12 22 L${size-12} 6`} stroke={C.yellow} strokeWidth={2} markerEnd="url(#ramp-arr)" />
@@ -225,7 +230,7 @@ function LinkMotionDiagram({ linkType, size = 80 }: { linkType: string; size?: n
       </svg>
     ),
     portal: (
-      <svg width={size} height={32} style={{ display: "block" }}>
+      <svg width={size} height={32} className="block">
         {/* Warp ring */}
         <ellipse cx={size/2} cy={16} rx={14} ry={8} fill={alpha(C.purple, 0.12)} stroke={C.purple} strokeWidth={1.5} strokeDasharray="4 2" />
         <circle cx={size/2} cy={16} r={3} fill={C.purple} />
@@ -233,7 +238,7 @@ function LinkMotionDiagram({ linkType, size = 80 }: { linkType: string; size?: n
       </svg>
     ),
     corridor: (
-      <svg width={size} height={32} style={{ display: "block" }}>
+      <svg width={size} height={32} className="block">
         <circle cx={10} cy={16} r={4} fill={alpha(C.blue, 0.3)} stroke={C.blue} strokeWidth={1.5} />
         <path d={`M16 16 L${size-16} 16`} stroke={C.blue} strokeWidth={2} markerEnd="url(#corr-arr)" />
         <circle cx={size-10} cy={16} r={4} fill={alpha(C.blue, 0.15)} stroke={C.blue} strokeWidth={1} strokeDasharray="2 2" />
@@ -402,12 +407,12 @@ export default function ArenaFloorGroupEditorPage() {
     finally { setSaving(false); }
   }
 
-  if (loading) return <div style={{ padding: 48, textAlign: "center", color: C.muted }}>Loading…</div>;
+  if (loading) return <div className="p-12 text-center text-theme-muted">Loading…</div>;
 
   const filledCount = floors.filter(f => f.arenaId.trim()).length;
 
   return (
-    <div style={{ padding: 24, width: "100%", boxSizing: "border-box" as const }}>
+    <div className="p-6 w-full box-border">
       <style>{`
         .floor-slot { transition: opacity 0.15s, transform 0.15s; }
         .floor-slot:hover .slot-drag-handle { opacity: 1 !important; }
@@ -417,13 +422,13 @@ export default function ArenaFloorGroupEditorPage() {
       `}</style>
 
       {/* ── Header ── */}
-      <Link to="/admin/arena-floor-groups" style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Floor Groups</Link>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8, marginBottom: 24 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, margin: 0 }}>
+      <Link to="/admin/arena-floor-groups" className="text-theme-faint text-[13px] no-underline">← Floor Groups</Link>
+      <div className="flex items-center gap-3 mt-2 mb-6">
+        <h1 className="text-[22px] font-bold text-theme-text m-0">
           {isNew ? "New Floor Group" : name || "Floor Group"}
         </h1>
         <span className={`${PILL_BASE} ${status === "active" ? "bg-green/[.13] text-green border-green/[.27]" : "bg-faint/[.13] text-faint border-faint/[.27]"}`}>{status}</span>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
+        <div className="ml-auto flex gap-2.5">
           <button
             onClick={() => setStatus(s => s === "active" ? "draft" : "active")}
             className={`px-4 py-2 rounded-lg text-sm font-semibold ${status === "active" ? "bg-bg3 text-text border border-border" : "bg-green text-white"}`}
@@ -437,19 +442,16 @@ export default function ArenaFloorGroupEditorPage() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 310px", gap: 20, alignItems: "start" }}>
+      <div className="grid gap-5 items-start" style={{ gridTemplateColumns: "1fr 310px" }}>
 
         {/* ── Left: Visual floor stack ── */}
         <div>
           {/* Floor count bar */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-            <div style={{ fontSize: 12, color: C.muted }}>{filledCount}/{MAX_FLOORS} floors configured</div>
-            <div style={{ display: "flex", gap: 4 }}>
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="text-[12px] text-theme-muted">{filledCount}/{MAX_FLOORS} floors configured</div>
+            <div className="flex gap-1">
               {Array.from({ length: MAX_FLOORS }).map((_, i) => (
-                <div key={i} title={i < filledCount ? `F${i}` : "empty"} style={{
-                  width: 8, height: 8, borderRadius: 2,
-                  background: i < filledCount ? C.blue : C.bg3,
-                }} />
+                <div key={i} title={i < filledCount ? `F${i}` : "empty"} className={`w-2 h-2 rounded-[2px] ${i < filledCount ? "bg-theme-blue" : "bg-bg3"}`} />
               ))}
             </div>
             {floors.length < MAX_FLOORS && (
@@ -469,26 +471,15 @@ export default function ArenaFloorGroupEditorPage() {
               <div key={idx}>
                 {/* ── Floor slot ── */}
                 <div
-                  className="floor-slot"
+                  className={`floor-slot rounded-xl p-[12px_14px] ${dragIdx === idx ? "bg-blue-15 border border-theme-blue" : "bg-bg1 border border-border-c"}`}
                   draggable
                   onDragStart={() => handleDragStart(idx)}
                   onDragOver={e => e.preventDefault()}
                   onDrop={() => handleDrop(idx)}
-                  style={{
-                    background: dragIdx === idx ? alpha(C.blue, 0.15) : C.bg1,
-                    border: `1px solid ${dragIdx === idx ? C.blue : C.border}`,
-                    borderRadius: 12,
-                    padding: "12px 14px",
-                  }}
                 >
-                  <div style={{ display: "grid", gridTemplateColumns: "28px 1fr auto auto auto", gap: 10, alignItems: "center" }}>
+                  <div className="grid gap-2.5 items-center" style={{ gridTemplateColumns: "28px 1fr auto auto auto" }}>
                     {/* Floor badge */}
-                    <div style={{
-                      width: 28, height: 28, borderRadius: 8,
-                      background: alpha(C.blue, 0.15), border: `1px solid ${alpha(C.blue, 0.3)}`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 12, fontWeight: 700, color: C.blue,
-                    }}>
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[12px] font-bold bg-blue-15 border border-blue-30 text-theme-blue">
                       F{idx}
                     </div>
 
@@ -499,13 +490,10 @@ export default function ArenaFloorGroupEditorPage() {
                         options={availableArenas.map(a => ({ value: a.id, label: a.name }))}
                         onChange={v => updateFloor(idx, { arenaId: v })}
                         emptyLabel="— Select arena —"
-                        style={{
-                          width: "100%", background: C.bg3, border: `1px solid ${C.border}`,
-                          borderRadius: 8, color: slot.arenaId ? C.text : C.faint, fontSize: 13,
-                        }}
+                        className="w-full"
                       />
                       {slot.arenaId && (
-                        <div style={{ fontSize: 10, color: C.faint, marginTop: 2, fontFamily: "monospace" }}>{slot.arenaId}</div>
+                        <div className="text-[10px] text-theme-faint mt-0.5 font-mono">{slot.arenaId}</div>
                       )}
                     </div>
 
@@ -519,12 +507,7 @@ export default function ArenaFloorGroupEditorPage() {
                     {/* Expand rotation settings */}
                     <button
                       onClick={() => setExpandedFloor(isExpanded ? null : idx)}
-                      style={{
-                        padding: "4px 8px", borderRadius: 6, fontSize: 11, cursor: "pointer",
-                        background: isExpanded ? alpha(C.blue, 0.15) : C.bg3,
-                        color: isExpanded ? C.blue : C.faint,
-                        border: `1px solid ${isExpanded ? C.blue : C.border}`,
-                      }}
+                      className={`px-2 py-1 rounded-md text-[11px] cursor-pointer border ${isExpanded ? "bg-blue-15 text-theme-blue border-theme-blue" : "bg-bg3 text-theme-faint border-border-c"}`}
                     >
                       ↻ rot
                     </button>
@@ -533,11 +516,7 @@ export default function ArenaFloorGroupEditorPage() {
                     <button
                       onClick={() => removeFloor(idx)}
                       disabled={floors.length <= 1}
-                      style={{
-                        width: 26, height: 26, borderRadius: 6, fontSize: 14, cursor: "pointer",
-                        background: alpha(C.red, 0.13), color: C.red, border: `1px solid ${alpha(C.red, 0.27)}`,
-                        opacity: floors.length <= 1 ? 0.3 : 1,
-                      }}
+                      className={`w-[26px] h-[26px] rounded-md text-[14px] cursor-pointer bg-red-13 text-theme-red border border-red-30 ${floors.length <= 1 ? "opacity-30" : ""}`}
                     >
                       ×
                     </button>
@@ -545,26 +524,26 @@ export default function ArenaFloorGroupEditorPage() {
 
                   {/* ── Expanded controls: rotation + position ── */}
                   {isExpanded && (
-                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border}`, display: "flex", flexDirection: "column", gap: 12 }}>
+                    <div className="mt-2.5 pt-2.5 border-t border-border-c flex flex-col gap-3">
 
                       {/* Rotation row */}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                      <div className="grid grid-cols-3 gap-2.5">
                         {/* Mode */}
                         <div>
-                          <label style={{ fontSize: 11, color: C.faint, display: "block", marginBottom: 4 }}>ROTATION MODE</label>
+                          <label className="text-[11px] text-theme-faint block mb-1">ROTATION MODE</label>
                           <SearchableSelect
                             value={slot.rotationMode ?? "none"}
                             options={[{ value: "none", label: "None (static)" }, { value: "auto", label: "Auto (constant)" }, { value: "linked", label: "Linked (coupling)" }]}
                             onChange={v => updateFloor(idx, { rotationMode: v as FloorSlot["rotationMode"] })}
-                            style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }}
+                            className="w-full"
                           />
                         </div>
 
                         {/* Speed */}
                         <div>
-                          <label style={{ fontSize: 11, color: C.faint, display: "block", marginBottom: 4 }}>
+                          <label className="text-[11px] text-theme-faint block mb-1">
                             SPEED (°/s) &nbsp;
-                            <span style={{ color: C.muted }}>
+                            <span className="text-theme-muted">
                               {slot.rotationSpeedDegPerSec
                                 ? `${(360 / slot.rotationSpeedDegPerSec).toFixed(1)}s/rev`
                                 : "—"}
@@ -574,22 +553,17 @@ export default function ArenaFloorGroupEditorPage() {
                             type="number" min={0} max={360} step={5}
                             value={slot.rotationSpeedDegPerSec ?? 0}
                             onChange={e => updateFloor(idx, { rotationSpeedDegPerSec: +e.target.value })}
-                            style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, padding: "5px 8px", color: C.text, fontSize: 12, boxSizing: "border-box" }}
+                            className="w-full bg-bg3 border border-border-c rounded-md px-2 py-[5px] text-theme-text text-[12px] box-border"
                           />
-                      </div>
+                        </div>
 
                         {/* Direction */}
                         <div>
-                          <label style={{ fontSize: 11, color: C.faint, display: "block", marginBottom: 4 }}>DIRECTION</label>
-                          <div style={{ display: "flex", gap: 6 }}>
+                          <label className="text-[11px] text-theme-faint block mb-1">DIRECTION</label>
+                          <div className="flex gap-1.5">
                             {(["cw", "ccw"] as const).map(dir => (
                               <button key={dir} onClick={() => updateFloor(idx, { rotationDirection: dir })}
-                                style={{
-                                  flex: 1, padding: "5px", borderRadius: 6, fontSize: 13, cursor: "pointer",
-                                  background: slot.rotationDirection === dir ? alpha(C.blue, 0.15) : C.bg3,
-                                  border: `1px solid ${slot.rotationDirection === dir ? C.blue : C.border}`,
-                                  color: slot.rotationDirection === dir ? C.blue : C.muted,
-                                }}>
+                                className={`flex-1 py-[5px] rounded-md text-[13px] cursor-pointer border ${slot.rotationDirection === dir ? "bg-blue-15 border-theme-blue text-theme-blue" : "bg-bg3 border-border-c text-theme-muted"}`}>
                                 {dir === "cw" ? "↻ CW" : "↺ CCW"}
                               </button>
                             ))}
@@ -598,31 +572,31 @@ export default function ArenaFloorGroupEditorPage() {
                       </div>
 
                       {/* Position row */}
-                      <div style={{ paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-                        <label style={{ fontSize: 11, color: C.faint, display: "block", marginBottom: 6 }}>
+                      <div className="pt-2 border-t border-border-c">
+                        <label className="text-[11px] text-theme-faint block mb-1.5">
                           FLOOR POSITION &nbsp;
-                          <span style={{ color: C.muted, fontWeight: 400 }}>offsets from group world origin (cm)</span>
+                          <span className="text-theme-muted font-normal">offsets from group world origin (cm)</span>
                         </label>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                        <div className="grid grid-cols-3 gap-2.5">
                           {([
                             { key: "xOffsetCm", label: "X offset", hint: "← / →" },
                             { key: "yOffsetCm", label: "Y offset", hint: "↑ / ↓" },
                             { key: "zOffsetCm", label: "Elevation", hint: "height" },
                           ] as { key: keyof FloorSlot; label: string; hint: string }[]).map(({ key, label, hint }) => (
                             <div key={key as string}>
-                              <label style={{ fontSize: 11, color: C.faint, display: "block", marginBottom: 4 }}>
-                                {label} <span style={{ color: C.muted, fontWeight: 400 }}>({hint})</span>
+                              <label className="text-[11px] text-theme-faint block mb-1">
+                                {label} <span className="text-theme-muted font-normal">({hint})</span>
                               </label>
                               <input
                                 type="number" step={1}
                                 value={(slot[key] as number) ?? 0}
                                 onChange={e => updateFloor(idx, { [key]: +e.target.value })}
-                                style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, padding: "5px 8px", color: C.text, fontSize: 12, boxSizing: "border-box" }}
+                                className="w-full bg-bg3 border border-border-c rounded-md px-2 py-[5px] text-theme-text text-[12px] box-border"
                               />
                             </div>
                           ))}
                         </div>
-                        <p style={{ fontSize: 10, color: C.faint, marginTop: 4 }}>
+                        <p className="text-[10px] text-theme-faint mt-1">
                           Non-zero X/Y offsets misalign floors so beys can knock each other off edges when crossing.
                           Elevation sets the floor height for camera and collision math.
                         </p>
@@ -633,14 +607,11 @@ export default function ArenaFloorGroupEditorPage() {
 
                 {/* ── Links between this floor and the one below ── */}
                 {idx > 0 && (
-                  <div style={{ margin: "6px 0 6px 40px", position: "relative" }}>
+                  <div className="my-1.5 ml-10 relative">
                     {/* Vertical connector line */}
-                    <div style={{
-                      position: "absolute", left: -26, top: 0, bottom: 0,
-                      width: 2,
-                      background: linksBelow.length > 0 ? alpha(C.blue, 0.4) : alpha(C.border, 0.5),
-                      borderRadius: 1,
-                    }} />
+                    <div
+                      className={`absolute rounded-[1px] inset-y-0 -left-[26px] w-0.5 ${linksBelow.length > 0 ? "bg-blue-20" : "bg-border-c/50"}`}
+                    />
 
                     {/* Existing links */}
                     {linksBelow.map((link, li) => {
@@ -649,58 +620,60 @@ export default function ArenaFloorGroupEditorPage() {
                       const couplingMeta = COUPLING_META[coupling];
 
                       return (
-                        <div key={link.id} style={{ marginBottom: 6 }}>
+                        <div key={link.id} className="mb-1.5">
                           {/* Link dot on connector */}
-                          <div style={{
-                            position: "absolute", left: -31, width: 12, height: 12,
-                            borderRadius: "50%", background: meta.color,
-                            border: `2px solid ${C.bg1}`,
-                            marginTop: 8,
-                          }} />
+                          <div
+                            className="absolute w-3 h-3 rounded-full mt-2 border-2 border-bg1"
+                            style={{ left: -31, background: meta.color }}
+                          />
 
                           {/* Motion diagram + link row */}
-                          <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
+                          <div className="flex gap-2 items-center mb-1">
                             <LinkMotionDiagram linkType={link.linkType} size={80} />
-                            <div style={{ flex: 1 }}>
-                              <div style={{
-                                display: "flex", alignItems: "center", gap: 6,
-                                padding: "5px 8px", borderRadius: 8,
-                                border: `1px solid ${alpha(meta.color, 0.2)}`,
-                                background: alpha(meta.color, 0.04),
-                              }} className="link-row">
-                                <span style={{ fontSize: 14 }}>{meta.icon}</span>
-                                <span style={{ fontSize: 12, fontWeight: 600, color: meta.color }}>{meta.label}</span>
+                            <div className="flex-1">
+                              <div
+                                className="flex items-center gap-1.5 px-2 py-[5px] rounded-lg link-row"
+                                style={{
+                                  border: `1px solid ${alpha(meta.color, 0.2)}`,
+                                  background: alpha(meta.color, 0.04),
+                                }}
+                              >
+                                <span className="text-[14px]">{meta.icon}</span>
+                                <span className="text-[12px] font-semibold" style={{ color: meta.color }}>{meta.label}</span>
                                 {/* Coupling arrows */}
-                                <span style={{ fontSize: 12, color: alpha(couplingMeta.color, 0.8) }}>
+                                <span className="text-[12px]" style={{ color: alpha(couplingMeta.color, 0.8) }}>
                                   {couplingMeta.arrows[0]}
                                   {coupling === "driven" && link.rotationDrivenRatio != null
-                                    ? <span style={{ fontSize: 9, color: couplingMeta.color }}>×{link.rotationDrivenRatio.toFixed(1)}</span>
+                                    ? <span className="text-[9px]" style={{ color: couplingMeta.color }}>×{link.rotationDrivenRatio.toFixed(1)}</span>
                                     : null}
                                   →{couplingMeta.arrows[1]}
                                 </span>
-                                <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 10, background: alpha(couplingMeta.color, 0.12), color: couplingMeta.color, border: `1px solid ${alpha(couplingMeta.color, 0.3)}` }}>
+                                <span
+                                  className="text-[10px] px-1.5 py-px rounded-[10px]"
+                                  style={{ background: alpha(couplingMeta.color, 0.12), color: couplingMeta.color, border: `1px solid ${alpha(couplingMeta.color, 0.3)}` }}
+                                >
                                   {couplingMeta.label}
                                 </span>
-                                <span style={{ fontSize: 10, color: link.alignment?.mode === "none" ? C.purple : link.alignment?.mode === "owner-only" ? C.yellow : C.blue }}>
+                                <span className={`text-[10px] ${link.alignment?.mode === "none" ? "text-theme-purple" : link.alignment?.mode === "owner-only" ? "text-theme-yellow" : "text-theme-blue"}`}>
                                   {link.alignment?.mode === "none"
                                     ? "always open"
                                     : `±${link.alignment?.errorMarginDeg ?? 10}°`}
                                 </span>
                                 {link.alignment?.disconnectsWhenMisaligned && (
-                                  <span style={{ fontSize: 10, color: C.red }}>⚡ severs</span>
+                                  <span className="text-[10px] text-theme-red">⚡ severs</span>
                                 )}
                                 {link.traversal && (
-                                  <span style={{ marginLeft: "auto", fontSize: 10, color: C.faint }}>
+                                  <span className="ml-auto text-[10px] text-theme-faint">
                                     {link.traversal.traversalTicks}t
                                   </span>
                                 )}
                                 <button
                                   onClick={() => setEditingLink({ pairIdx: idx - 1, linkIdx: li })}
-                                  style={{ padding: "2px 7px", borderRadius: 4, fontSize: 10, cursor: "pointer", background: alpha(C.blue, 0.13), color: C.blue, border: `1px solid ${alpha(C.blue, 0.27)}` }}
+                                  className="px-[7px] py-[2px] rounded cursor-pointer text-[10px] bg-blue-13 text-theme-blue border border-blue-30"
                                 >Edit</button>
                                 <button
                                   onClick={() => removeLink(idx - 1, link.id)}
-                                  style={{ padding: "2px 7px", borderRadius: 4, fontSize: 10, cursor: "pointer", background: alpha(C.red, 0.13), color: C.red, border: `1px solid ${alpha(C.red, 0.27)}` }}
+                                  className="px-[7px] py-[2px] rounded cursor-pointer text-[10px] bg-red-13 text-theme-red border border-red-30"
                                 >✕</button>
                               </div>
                             </div>
@@ -713,14 +686,7 @@ export default function ArenaFloorGroupEditorPage() {
                     <button
                       onClick={() => setEditingLink({ pairIdx: idx - 1, linkIdx: null })}
                       disabled={!floors[idx]?.arenaId || !floors[idx - 1]?.arenaId}
-                      style={{
-                        display: "flex", alignItems: "center", gap: 6,
-                        padding: "5px 12px", borderRadius: 8, fontSize: 12, fontWeight: 500,
-                        cursor: "pointer", width: "100%", justifyContent: "center",
-                        background: "transparent", color: C.muted,
-                        border: `1px dashed ${C.border}`,
-                        opacity: (!floors[idx]?.arenaId || !floors[idx - 1]?.arenaId) ? 0.4 : 1,
-                      }}
+                      className={`flex items-center gap-1.5 px-3 py-[5px] rounded-lg text-[12px] font-medium cursor-pointer w-full justify-center bg-transparent border border-dashed border-border-c text-theme-muted ${(!floors[idx]?.arenaId || !floors[idx - 1]?.arenaId) ? "opacity-40" : ""}`}
                     >
                       + Add link between F{idx - 1} and F{idx}
                     </button>
@@ -731,45 +697,45 @@ export default function ArenaFloorGroupEditorPage() {
           })}
 
           {/* Ground floor label */}
-          <div style={{ textAlign: "center", marginTop: 8, fontSize: 11, color: C.faint }}>
+          <div className="text-center mt-2 text-[11px] text-theme-faint">
             ▼ Ground Floor (F0)
           </div>
         </div>
 
         {/* ── Right sidebar ── */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div className="flex flex-col gap-3.5">
 
           {/* Group settings */}
-          <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
-            <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 12 }}>Group Settings</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div className="bg-bg1 rounded-xl border border-border-c p-4">
+            <p className="text-[11px] text-theme-faint font-semibold uppercase mb-3">Group Settings</p>
+            <div className="flex flex-col gap-2.5">
               <div>
-                <label style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Name</label>
+                <label className="text-[12px] text-theme-muted block mb-1">Name</label>
                 <input
                   value={name} onChange={e => setName(e.target.value)}
                   placeholder="e.g. Sky Temple"
-                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 10px", color: C.text, fontSize: 13, boxSizing: "border-box" }}
+                  className="w-full bg-bg3 border border-border-c rounded-lg px-2.5 py-1.5 text-theme-text text-[13px] box-border"
                 />
               </div>
               <div>
-                <label style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</label>
+                <label className="text-[12px] text-theme-muted block mb-1">Description</label>
                 <textarea
                   value={description} onChange={e => setDescription(e.target.value)}
                   rows={2} placeholder="Optional description…"
-                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 10px", color: C.text, fontSize: 13, resize: "vertical", boxSizing: "border-box" }}
+                  className="w-full bg-bg3 border border-border-c rounded-lg px-2.5 py-1.5 text-theme-text text-[13px] resize-y box-border"
                 />
               </div>
               <div>
-                <label style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
+                <label className="text-[12px] text-theme-muted block mb-1">
                   Min Floor Height (cm)
                 </label>
                 <input
                   type="number" min={20} max={500} step={5}
                   value={minFloorHeightCm}
                   onChange={e => setMinFloorHeightCm(+e.target.value)}
-                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 10px", color: C.text, fontSize: 13, boxSizing: "border-box" }}
+                  className="w-full bg-bg3 border border-border-c rounded-lg px-2.5 py-1.5 text-theme-text text-[13px] box-border"
                 />
-                <p style={{ fontSize: 10, color: C.faint, marginTop: 4, lineHeight: 1.4 }}>
+                <p className="text-[10px] text-theme-faint mt-1 leading-[1.4]">
                   Vertical clearance between floors. Governs camera zoom headroom and whether the floor above occludes the view.
                   Default: 60 cm.
                 </p>
@@ -778,9 +744,9 @@ export default function ArenaFloorGroupEditorPage() {
           </div>
 
           {/* Summary */}
-          <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
-            <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 12 }}>Summary</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 13 }}>
+          <div className="bg-bg1 rounded-xl border border-border-c p-4">
+            <p className="text-[11px] text-theme-faint font-semibold uppercase mb-3">Summary</p>
+            <div className="flex flex-col gap-2 text-[13px]">
               <Row label="Floors" value={`${filledCount} / ${MAX_FLOORS}`} color={C.blue} />
               <Row label="Total Links" value={pairLinks.reduce((s, p) => s + p.links.length, 0)} />
               {Object.entries(LINK_TYPE_META).map(([type, meta]) => {
@@ -791,38 +757,41 @@ export default function ArenaFloorGroupEditorPage() {
           </div>
 
           {/* Rotation coupling visual legend */}
-          <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
-            <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 12 }}>Rotation Coupling</p>
-            <p style={{ fontSize: 11, color: C.muted, marginBottom: 10, lineHeight: 1.5 }}>
+          <div className="bg-bg1 rounded-xl border border-border-c p-4">
+            <p className="text-[11px] text-theme-faint font-semibold uppercase mb-3">Rotation Coupling</p>
+            <p className="text-[11px] text-theme-muted mb-2.5 leading-[1.5]">
               Controls how each linked arena pair rotates relative to each other.
               Affects ramp/corridor alignment timing and difficulty.
             </p>
             {Object.entries(COUPLING_META).map(([key, m]) => (
-              <div key={key} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
-                <span style={{ fontSize: 14, minWidth: 32 }}>{m.arrows[0]}{m.arrows[1]}</span>
-                <span style={{
-                  fontSize: 10, padding: "1px 7px", borderRadius: 10,
-                  background: alpha(m.color, 0.12), border: `1px solid ${alpha(m.color, 0.3)}`,
-                  color: m.color, fontWeight: 700, minWidth: 64, textAlign: "center",
-                }}>{m.label}</span>
-                <span style={{ fontSize: 11, color: C.muted, lineHeight: 1.4 }}>{m.desc}</span>
+              <div key={key} className="flex gap-2 items-center mb-2">
+                <span className="text-[14px] min-w-[32px]">{m.arrows[0]}{m.arrows[1]}</span>
+                <span
+                  className="text-[10px] px-[7px] py-px rounded-[10px] font-bold min-w-[64px] text-center"
+                  style={{
+                    background: alpha(m.color, 0.12),
+                    border: `1px solid ${alpha(m.color, 0.3)}`,
+                    color: m.color,
+                  }}
+                >{m.label}</span>
+                <span className="text-[11px] text-theme-muted leading-[1.4]">{m.desc}</span>
               </div>
             ))}
           </div>
 
           {/* Alignment defaults per link type */}
-          <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
-            <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 10 }}>Alignment Behavior</p>
-            <p style={{ fontSize: 11, color: C.muted, marginBottom: 10, lineHeight: 1.5 }}>
+          <div className="bg-bg1 rounded-xl border border-border-c p-4">
+            <p className="text-[11px] text-theme-faint font-semibold uppercase mb-2.5">Alignment Behavior</p>
+            <p className="text-[11px] text-theme-muted mb-2.5 leading-[1.5]">
               When two arenas rotate, openings must line up for beys to traverse.
               Different link types have different tolerances.
             </p>
             {Object.entries(LINK_TYPE_META).map(([type, meta]) => (
-              <div key={type} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "flex-start" }}>
-                <span style={{ fontSize: 14, minWidth: 20 }}>{meta.icon}</span>
+              <div key={type} className="flex gap-2 mb-2 items-start">
+                <span className="text-[14px] min-w-[20px]">{meta.icon}</span>
                 <div>
-                  <span style={{ fontSize: 12, color: C.text, fontWeight: 600 }}>{meta.label}: </span>
-                  <span style={{ fontSize: 11, color: C.muted }}>{meta.desc}</span>
+                  <span className="text-[12px] text-theme-text font-semibold">{meta.label}: </span>
+                  <span className="text-[11px] text-theme-muted">{meta.desc}</span>
                 </div>
               </div>
             ))}
@@ -850,9 +819,9 @@ export default function ArenaFloorGroupEditorPage() {
 
 function Row({ label, value, color }: { label: string; value: React.ReactNode; color?: string }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-      <span style={{ color: C.muted }}>{label}</span>
-      <span style={{ color: color ?? C.text, fontWeight: 600 }}>{value}</span>
+    <div className="flex justify-between text-[13px]">
+      <span className="text-theme-muted">{label}</span>
+      <span className="font-semibold" style={{ color: color ?? C.text }}>{value}</span>
     </div>
   );
 }

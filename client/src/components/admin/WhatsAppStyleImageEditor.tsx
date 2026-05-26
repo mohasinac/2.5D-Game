@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
+import { cn } from "@/lib/cn";
 import { C, HEX } from "../../styles/theme";
 
 interface WhatsAppStyleImageEditorProps {
@@ -208,50 +209,15 @@ const WhatsAppStyleImageEditor = forwardRef<WhatsAppStyleImageEditorRef, WhatsAp
   const handleReset = () =>
     setPosition({ x: 0, y: 0, scale: 1, rotation: 0 });
 
-  const zoomRowStyle: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    background: C.bg3,
-    borderRadius: 999,
-    padding: "10px 16px",
-    width: "100%",
-    boxSizing: "border-box",
-  };
-
-  const roundBtn: React.CSSProperties = {
-    width: 36,
-    height: 36,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "transparent",
-    border: "none",
-    color: C.text,
-    fontSize: 22,
-    cursor: "pointer",
-    borderRadius: "50%",
-  };
-
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 16,
-      padding: 16,
-      background: "#000",
-      borderRadius: 12,
-      width: "100%",
-      boxSizing: "border-box",
-    }}>
+    <div className="flex flex-col items-center gap-4 p-4 bg-black rounded-xl w-full box-border">
       {/* Header */}
-      <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <button onClick={onCancel} style={{ background: "none", border: "none", color: C.text, fontSize: 15, cursor: "pointer" }}>
+      <div className="w-full flex justify-between items-center">
+        <button onClick={onCancel} className="bg-transparent border-none text-theme-text text-[15px] cursor-pointer">
           ✕ Cancel
         </button>
-        <span style={{ color: C.text, fontSize: 15, fontWeight: 600 }}>Drag the image to adjust</span>
-        <button onClick={onSave} style={{ background: "none", border: "none", color: C.blue, fontSize: 15, cursor: "pointer", fontWeight: 600 }}>
+        <span className="text-theme-text text-[15px] font-semibold">Drag the image to adjust</span>
+        <button onClick={onSave} className="bg-transparent border-none text-theme-blue text-[15px] cursor-pointer font-semibold">
           ✓ Upload
         </button>
       </div>
@@ -259,8 +225,8 @@ const WhatsAppStyleImageEditor = forwardRef<WhatsAppStyleImageEditorRef, WhatsAp
       {/* Canvas */}
       <div
         ref={containerRef}
+        className="relative"
         style={{
-          position: "relative",
           touchAction: "none",
           userSelect: "none",
           width: circleSize,
@@ -277,16 +243,19 @@ const WhatsAppStyleImageEditor = forwardRef<WhatsAppStyleImageEditorRef, WhatsAp
           ref={canvasRef}
           width={circleSize}
           height={circleSize}
-          style={{ borderRadius: 8 }}
+          className="rounded-lg"
         />
       </div>
 
       {/* Zoom Controls */}
-      <div style={zoomRowStyle}>
+      <div className="flex items-center gap-2 bg-bg3 rounded-full px-4 py-2.5 w-full box-border">
         <button
           onClick={handleZoomOut}
           disabled={position.scale <= 0.5}
-          style={{ ...roundBtn, opacity: position.scale <= 0.5 ? 0.4 : 1 }}
+          className={cn(
+            "w-9 h-9 flex items-center justify-center bg-transparent border-none text-theme-text text-[22px] cursor-pointer rounded-full",
+            position.scale <= 0.5 && "opacity-40",
+          )}
         >
           −
         </button>
@@ -300,55 +269,47 @@ const WhatsAppStyleImageEditor = forwardRef<WhatsAppStyleImageEditorRef, WhatsAp
           onChange={(e) =>
             setPosition((p) => ({ ...p, scale: parseFloat(e.target.value) }))
           }
-          style={{ flex: 1, minWidth: 60, accentColor: C.blue }}
+          className="flex-1 min-w-[60px] accent-theme-blue"
         />
-        <span style={{ color: C.text, fontSize: 12, fontWeight: 600, minWidth: 40 }}>
+        <span className="text-theme-text text-[12px] font-semibold min-w-[40px]">
           {Math.round(position.scale * 100)}%
         </span>
 
         <button
           onClick={handleZoomIn}
           disabled={position.scale >= 3}
-          style={{ ...roundBtn, opacity: position.scale >= 3 ? 0.4 : 1 }}
+          className={cn(
+            "w-9 h-9 flex items-center justify-center bg-transparent border-none text-theme-text text-[22px] cursor-pointer rounded-full",
+            position.scale >= 3 && "opacity-40",
+          )}
         >
           +
         </button>
       </div>
 
       {/* Rotate */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <div className="flex items-center gap-2">
         <button
           onClick={handleRotate}
-          style={{
-            padding: "6px 16px",
-            background: C.bg3,
-            border: "none",
-            color: C.text,
-            borderRadius: 8,
-            fontSize: 13,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-          }}
+          className="px-4 py-1.5 bg-bg3 border-none text-theme-text rounded-lg text-[13px] cursor-pointer flex items-center gap-1.5"
         >
           🔄 Rotate
-          <span style={{ color: C.faint, fontSize: 11 }}>({position.rotation}°)</span>
+          <span className="text-theme-faint text-[11px]">({position.rotation}°)</span>
         </button>
       </div>
 
       {/* Reset */}
       <button
         onClick={handleReset}
-        style={{ background: "none", border: "none", color: C.muted, fontSize: 13, cursor: "pointer" }}
+        className="bg-transparent border-none text-theme-muted text-[13px] cursor-pointer"
       >
         Reset Position & Rotation
       </button>
 
       {/* Instructions */}
-      <div style={{ textAlign: "center", color: C.faint, fontSize: 12, lineHeight: 1.6 }}>
+      <div className="text-center text-theme-faint text-[12px] leading-relaxed">
         <div>Drag to reposition • Scroll or pinch to zoom • Click rotate</div>
-        <div style={{ fontSize: 11 }}>Position will be saved with the beyblade</div>
+        <div className="text-[11px]">Position will be saved with the beyblade</div>
       </div>
     </div>
   );

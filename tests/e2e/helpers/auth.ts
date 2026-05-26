@@ -67,3 +67,24 @@ export async function ss(page: Page, name: string): Promise<void> {
     fullPage: true,
   });
 }
+
+/**
+ * Capture a diagnostic snapshot on timeout or unexpected state:
+ *   - full-page screenshot saved as <tag>-diag.png
+ *   - current URL
+ *   - visible page heading
+ *   - filtered JS errors (WebSocket / Firebase / WebGL noise excluded)
+ */
+export async function diagnose(page: Page, tag: string, errors: string[] = []): Promise<void> {
+  await ss(page, `${tag}-diag`);
+  console.log(`[${tag}] URL: ${page.url()}`);
+  const heading = await page.locator("h1, h2, canvas, [class*='error'], [class*='Error']").first()
+    .textContent().catch(() => "");
+  if (heading?.trim()) console.log(`[${tag}] Page heading/element: "${heading.trim()}"`);
+  const critical = errors.filter(e => {
+    const l = e.toLowerCase();
+    return !l.includes("websocket") && !l.includes("net::err") && !l.includes("firebase") &&
+           !l.includes("failed to fetch") && !l.includes("alphamode") && !l.includes("webgl");
+  });
+  if (critical.length) console.log(`[${tag}] JS errors: ${critical.join(" | ")}`);
+}

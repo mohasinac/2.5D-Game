@@ -3,7 +3,7 @@
 // are provided by the caller.
 
 import { useMemo, useState } from "react";
-import { C, alpha } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 
 export interface EntityOption {
   id: string;
@@ -78,50 +78,42 @@ export function EntityPicker({
   const activeTab = tabs.find((t) => t.id === activeTabId) ?? tabs[0];
 
   return (
-    <div style={{
-      background: C.bg1, borderRadius: 16, border: `1px solid ${C.border}`, overflow: "hidden",
-    }}>
+    <div className="bg-bg1 rounded-2xl border border-border-c overflow-hidden">
       {/* Header */}
       {(title || icon) && (
-        <div style={{ padding: "12px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 8 }}>
+        <div className="px-4 py-3 border-b border-border-c flex items-center gap-2">
           {icon && <span>{icon}</span>}
-          {title && <span style={{ fontWeight: 600, fontSize: 14, color: C.text }}>{title}</span>}
+          {title && <span className="font-semibold text-[14px] text-theme-text">{title}</span>}
           {selected && (
-            <span style={{ marginLeft: "auto", fontSize: 12, color: C.faint }}>
+            <span className="ml-auto text-[12px] text-theme-faint">
               «{selected.name}»
             </span>
           )}
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(220px, 1fr) minmax(280px, 2fr)", minHeight: 320 }}>
+      <div className="grid min-h-[320px]" style={{ gridTemplateColumns: "minmax(220px, 1fr) minmax(280px, 2fr)" }}>
         {/* Left — searchable name list */}
-        <div style={{ borderRight: `1px solid ${C.border}`, display: "flex", flexDirection: "column" }}>
-          <div style={{ padding: 10, borderBottom: `1px solid ${C.border}` }}>
+        <div className="border-r border-border-c flex flex-col">
+          <div className="p-2.5 border-b border-border-c">
             <input
               type="search"
               placeholder="🔎 Search name or era"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              style={{
-                width: "100%", padding: "8px 10px", borderRadius: 8, border: `1px solid ${C.border}`,
-                background: C.bg2, color: C.text, fontSize: 13, outline: "none",
-              }}
+              className="w-full px-2.5 py-2 rounded-lg border border-border-c bg-bg2 text-theme-text text-[13px] outline-none"
             />
           </div>
-          <div style={{ flex: 1, overflowY: "auto", maxHeight: 360 }}>
+          <div className="flex-1 overflow-y-auto max-h-[360px]">
             {options.length === 0 ? (
-              <div style={{ padding: 16, color: C.faint, fontSize: 12, textAlign: "center" }}>{emptyMessage}</div>
+              <div className="p-4 text-theme-faint text-[12px] text-center">{emptyMessage}</div>
             ) : grouped.length === 0 ? (
-              <div style={{ padding: 16, color: C.faint, fontSize: 12, textAlign: "center" }}>No matches for "{query}".</div>
+              <div className="p-4 text-theme-faint text-[12px] text-center">No matches for "{query}".</div>
             ) : (
               grouped.map(([groupName, list]) => (
                 <div key={groupName || "_default"}>
                   {groupName && (
-                    <div style={{
-                      padding: "6px 12px", fontSize: 10, color: C.faint, textTransform: "uppercase",
-                      letterSpacing: "0.07em", background: C.bg2, borderBottom: `1px solid ${C.border}`,
-                    }}>
+                    <div className="px-3 py-1.5 text-[10px] text-theme-faint uppercase tracking-[0.07em] bg-bg2 border-b border-border-c">
                       {groupName}
                     </div>
                   )}
@@ -132,20 +124,15 @@ export function EntityPicker({
                       <button
                         key={o.id}
                         onClick={() => onSelect(o.id)}
-                        style={{
-                          width: "100%", textAlign: "left", padding: "10px 12px",
-                          background: isSel ? alpha(C.blue, 0.13) : "transparent",
-                          color: isSel ? C.blue : C.text,
-                          border: "none",
-                          borderLeft: `3px solid ${isSel ? C.blue : "transparent"}`,
-                          opacity: isDim ? 0.45 : 1,
-                          cursor: "pointer",
-                          display: "block",
-                        }}
+                        className={cn(
+                          "w-full text-left px-3 py-2.5 border-none block cursor-pointer",
+                          isSel ? "bg-blue-13 text-theme-blue border-l-[3px] border-l-theme-blue" : "bg-transparent text-theme-text border-l-[3px] border-l-transparent",
+                          isDim && "opacity-45",
+                        )}
                       >
-                        <div style={{ fontSize: 13, fontWeight: isSel ? 700 : 500 }}>{o.name}</div>
+                        <div className={cn("text-[13px]", isSel ? "font-bold" : "font-medium")}>{o.name}</div>
                         {o.subtitle && (
-                          <div style={{ fontSize: 11, color: C.faint, marginTop: 2 }}>{o.subtitle}</div>
+                          <div className="text-[11px] text-theme-faint mt-0.5">{o.subtitle}</div>
                         )}
                       </button>
                     );
@@ -157,21 +144,19 @@ export function EntityPicker({
         </div>
 
         {/* Right — tabbed preview pane */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div className="flex flex-col">
           {/* Tab bar */}
-          <div style={{ display: "flex", borderBottom: `1px solid ${C.border}`, overflowX: "auto" }}>
+          <div className="flex border-b border-border-c overflow-x-auto">
             {tabs.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setActiveTabId(t.id)}
-                style={{
-                  padding: "10px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer",
-                  background: activeTabId === t.id ? C.bg2 : "transparent",
-                  color: activeTabId === t.id ? C.text : C.muted,
-                  border: "none",
-                  borderBottom: `2px solid ${activeTabId === t.id ? C.blue : "transparent"}`,
-                  whiteSpace: "nowrap",
-                }}
+                className={cn(
+                  "px-3.5 py-2.5 text-[12px] font-semibold cursor-pointer border-none whitespace-nowrap border-b-2",
+                  activeTabId === t.id
+                    ? "bg-bg2 text-theme-text border-b-theme-blue"
+                    : "bg-transparent text-theme-muted border-b-transparent",
+                )}
               >
                 {t.label}
               </button>
@@ -179,7 +164,7 @@ export function EntityPicker({
           </div>
 
           {/* Active tab content */}
-          <div style={{ padding: 16, flex: 1, overflowY: "auto", color: C.text }}>
+          <div className="p-4 flex-1 overflow-y-auto text-theme-text">
             {activeTab ? activeTab.render(selected) : null}
           </div>
         </div>

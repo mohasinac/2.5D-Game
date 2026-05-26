@@ -12,20 +12,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
     return (
       <div className="flex flex-col gap-1.5">
-        {label && <label htmlFor={inputId} className="text-xs text-muted font-medium">{label}</label>}
+        {label && <label htmlFor={inputId} className="text-xs text-theme-muted font-medium">{label}</label>}
         <input
           ref={ref}
           id={inputId}
           className={cn(
-            "w-full bg-bg3 border border-border rounded-md px-3 py-2 text-base text-text placeholder:text-faint",
-            "focus:outline-none focus:border-blue transition-colors",
-            error && "border-red",
+            "w-full bg-bg3 border border-border-c rounded-md px-3 py-2 text-sm text-theme-text placeholder:text-theme-faint",
+            "focus:outline-none focus:border-theme-blue transition-colors",
+            error && "border-theme-red",
             className,
           )}
           {...props}
         />
-        {error && <span className="text-xs text-red">{error}</span>}
-        {!error && hint && <span className="text-xs text-faint">{hint}</span>}
+        {error && <span className="text-xs text-theme-red">{error}</span>}
+        {!error && hint && <span className="text-xs text-theme-faint">{hint}</span>}
       </div>
     );
   }
@@ -42,19 +42,19 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
     return (
       <div className="flex flex-col gap-1.5">
-        {label && <label htmlFor={inputId} className="text-xs text-muted font-medium">{label}</label>}
+        {label && <label htmlFor={inputId} className="text-xs text-theme-muted font-medium">{label}</label>}
         <textarea
           ref={ref}
           id={inputId}
           className={cn(
-            "w-full bg-bg3 border border-border rounded-md px-3 py-2 text-base text-text placeholder:text-faint resize-y min-h-[80px]",
-            "focus:outline-none focus:border-blue transition-colors",
-            error && "border-red",
+            "w-full bg-bg3 border border-border-c rounded-md px-3 py-2 text-sm text-theme-text placeholder:text-theme-faint resize-y min-h-[80px]",
+            "focus:outline-none focus:border-theme-blue transition-colors",
+            error && "border-theme-red",
             className,
           )}
           {...props}
         />
-        {error && <span className="text-xs text-red">{error}</span>}
+        {error && <span className="text-xs text-theme-red">{error}</span>}
       </div>
     );
   }

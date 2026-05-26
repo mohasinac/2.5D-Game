@@ -47,47 +47,35 @@ export function RawScriptPanel({ steps, onChange }: Props) {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-      <div style={{ display: "flex", borderBottom: `1px solid ${C.border}` }}>
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex border-b border-border-c">
         {(["json", "timeline"] as const).map(t => (
           <button
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            style={{
-              padding: "8px 16px",
-              fontSize: 12,
-              fontWeight: tab === t ? 700 : 400,
-              background: "transparent",
-              border: "none",
-              borderBottom: tab === t ? `2px solid ${C.blue}` : "2px solid transparent",
-              color: tab === t ? C.text : C.faint,
-              cursor: "pointer",
-              textTransform: "uppercase",
-              letterSpacing: "0.04em",
-            }}
+            className={[
+              "px-4 py-2 text-[12px] bg-transparent border-none border-b-2 cursor-pointer uppercase tracking-[0.04em]",
+              tab === t
+                ? "font-bold border-b-theme-blue text-theme-text"
+                : "font-normal border-b-transparent text-theme-faint",
+            ].join(" ")}
+            style={{ borderBottom: tab === t ? "2px solid var(--blue)" : "2px solid transparent" }}
           >
             {t === "json" ? "Raw JSON" : "Timeline"}
           </button>
         ))}
         {jsonError && (
-          <span style={{ marginLeft: "auto", padding: "8px 12px", fontSize: 11, color: C.red }}>{jsonError}</span>
+          <span className="ml-auto px-3 py-2 text-[11px] text-theme-red">{jsonError}</span>
         )}
       </div>
 
       {tab === "json" && (
         <textarea
-          style={{
-            flex: 1,
-            background: "var(--bg3)",
-            border: "none",
-            color: jsonError ? "#fca5a5" : C.text,
-            fontFamily: "monospace",
-            fontSize: 12,
-            padding: 12,
-            resize: "none",
-            outline: "none",
-          }}
+          className={[
+            "flex-1 bg-bg3 border-none font-mono text-[12px] p-3 resize-none outline-none",
+            jsonError ? "text-[#fca5a5]" : "text-theme-text",
+          ].join(" ")}
           value={raw}
           onChange={e => handleChange(e.target.value)}
           spellCheck={false}
@@ -95,18 +83,18 @@ export function RawScriptPanel({ steps, onChange }: Props) {
       )}
 
       {tab === "timeline" && (
-        <div style={{ flex: 1, overflowY: "auto", padding: 12 }}>
+        <div className="flex-1 overflow-y-auto p-3">
           {steps.length === 0 && (
-            <div style={{ color: C.faint, fontSize: 12 }}>No steps yet.</div>
+            <div className="text-theme-faint text-[12px]">No steps yet.</div>
           )}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div className="flex flex-col gap-[6px]">
             {steps.map((step, i) => {
               const color = colorFor(step.behaviorId);
               const durationTicks = (step.params as Record<string, unknown>)?.durationTicks as number | undefined;
               const widthPx = Math.max(80, Math.min(240, (durationTicks ?? 30) * 3));
               return (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ width: 24, fontSize: 11, color: C.faint, textAlign: "right" }}>{i + 1}</span>
+                <div key={i} className="flex items-center gap-2">
+                  <span className="w-6 text-[11px] text-theme-faint text-right">{i + 1}</span>
                   <div
                     style={{
                       width: widthPx,
@@ -116,19 +104,16 @@ export function RawScriptPanel({ steps, onChange }: Props) {
                       padding: "4px 8px",
                       fontSize: 11,
                       color,
-                      fontFamily: "monospace",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
                     }}
+                    className="font-mono whitespace-nowrap overflow-hidden text-ellipsis"
                     title={step.behaviorId}
                   >
-                    {step.parallel && <span style={{ marginRight: 4, opacity: 0.7 }}>∥</span>}
+                    {step.parallel && <span className="mr-1 opacity-70">∥</span>}
                     {step.behaviorId.split(".").pop()}
-                    {durationTicks !== undefined && <span style={{ opacity: 0.6, marginLeft: 4 }}>{durationTicks}t</span>}
+                    {durationTicks !== undefined && <span className="opacity-60 ml-1">{durationTicks}t</span>}
                   </div>
                   {step.delayTicks && step.delayTicks > 0 && (
-                    <span style={{ fontSize: 10, color: C.faint }}>after {step.delayTicks}t</span>
+                    <span className="text-[10px] text-theme-faint">after {step.delayTicks}t</span>
                   )}
                 </div>
               );

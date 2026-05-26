@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
-import { C, alpha } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 
 interface ServerSettings {
   enableAI: boolean;
@@ -37,8 +37,7 @@ export function GameSelectPage() {
       title: "Tryout",
       desc: "Solo practice — master the arena hazards and your beyblade's special moves.",
       sub: "1 Player",
-      subColor: C.blue,
-      hoverBorder: C.blue,
+      hoverBorderClass: "hover:border-theme-blue",
       disabled: false,
     },
     {
@@ -48,8 +47,7 @@ export function GameSelectPage() {
       title: "PVP Battle",
       desc: "Live multiplayer — battle up to 4 players in real-time with full physics.",
       sub: "2-4 Players",
-      subColor: C.red,
-      hoverBorder: C.red,
+      hoverBorderClass: "hover:border-theme-red",
       disabled: false,
     },
     {
@@ -59,8 +57,7 @@ export function GameSelectPage() {
       title: "AI Battle",
       desc: "Fight CPU opponents at varying difficulty levels.",
       sub: srvSettings.enableAI ? "1 Player" : "Coming Soon",
-      subColor: srvSettings.enableAI ? C.purple : C.faint,
-      hoverBorder: srvSettings.enableAI ? C.purple : C.border,
+      hoverBorderClass: srvSettings.enableAI ? "hover:border-theme-purple" : "",
       disabled: !srvSettings.enableAI,
     },
     ...(srvSettings.enableTournament
@@ -71,62 +68,59 @@ export function GameSelectPage() {
           title: "Tournament",
           desc: "Compete in bracket-style tournaments against other players and AI.",
           sub: "Up to 8 players",
-          subColor: C.yellow,
-          hoverBorder: C.yellow,
+          hoverBorderClass: "hover:border-theme-yellow",
           disabled: false,
         }]
       : []),
   ];
 
+  const colCount = Math.min(modes.length, 3);
+
   return (
-    <div style={{ minHeight: "100vh", background: C.bg0, padding: 32 }}>
-      <div style={{ maxWidth: 900, margin: "0 auto" }}>
-        <div style={{ marginBottom: 32 }}>
-          <Link to="/" style={{ color: C.muted, fontSize: 13, textDecoration: "none" }}>← Back</Link>
-          <h1 style={{ fontSize: 36, fontWeight: 900, color: C.text, marginTop: 12, letterSpacing: "-0.02em" }}>
+    <div className="min-h-screen bg-bg0 p-8">
+      <div className="max-w-[900px] mx-auto">
+        <div className="mb-8">
+          <Link to="/" className="text-theme-muted text-[13px] no-underline">← Back</Link>
+          <h1 className="text-[36px] font-black text-theme-text mt-3 tracking-[-0.02em]">
             Select Game Mode
           </h1>
         </div>
 
         {srvSettings.maintenanceMode && (
-          <div style={{
-            background: alpha(C.yellow, 0.09), border: `1px solid ${alpha(C.yellow, 0.33)}`,
-            borderRadius: 10, padding: "12px 16px", marginBottom: 24,
-            color: C.yellow, fontSize: 13, fontWeight: 600,
-          }}>
+          <div className="bg-theme-yellow/[.09] border border-theme-yellow/[.33] rounded-[10px] px-4 py-3 mb-6 text-theme-yellow text-[13px] font-semibold">
             ⚠️ Server is in maintenance mode — some features may be unavailable.
             {srvSettings.serverMessage && ` ${srvSettings.serverMessage}`}
           </div>
         )}
 
         {!srvSettings.maintenanceMode && srvSettings.serverMessage && (
-          <div style={{
-            background: alpha(C.blue, 0.09), border: `1px solid ${alpha(C.blue, 0.27)}`,
-            borderRadius: 10, padding: "12px 16px", marginBottom: 24,
-            color: C.blue, fontSize: 13,
-          }}>
+          <div className="bg-theme-blue/[.09] border border-theme-blue/[.27] rounded-[10px] px-4 py-3 mb-6 text-theme-blue text-[13px]">
             {srvSettings.serverMessage}
           </div>
         )}
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${Math.min(modes.length, 3)}, 1fr)`,
-          gap: 16,
-        }}>
+        <div
+          className="grid gap-4"
+          style={{ gridTemplateColumns: `repeat(${colCount}, 1fr)` }}
+        >
           {modes.map((m) => {
             const inner = (
-              <div style={{
-                padding: 24, background: C.bg2, borderRadius: 20,
-                border: `1px solid ${C.border}`, height: "100%",
-                boxSizing: "border-box",
-                opacity: m.disabled ? 0.5 : 1,
-                cursor: m.disabled ? "not-allowed" : "pointer",
-              }}>
-                <div style={{ fontSize: 36, marginBottom: 16 }}>{m.icon}</div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, marginBottom: 8 }}>{m.title}</h2>
-                <p style={{ color: C.muted, fontSize: 13, lineHeight: 1.5 }}>{m.desc}</p>
-                <div style={{ marginTop: 16, fontSize: 12, fontWeight: 600, color: m.subColor }}>{m.sub}</div>
+              <div className={cn(
+                "p-6 bg-bg2 rounded-[20px] border border-border-c h-full box-border",
+                m.disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+              )}>
+                <div className="text-[36px] mb-4">{m.icon}</div>
+                <h2 className="text-[18px] font-bold text-theme-text mb-2">{m.title}</h2>
+                <p className="text-theme-muted text-[13px] leading-relaxed">{m.desc}</p>
+                <div className={cn(
+                  "mt-4 text-[12px] font-semibold",
+                  m.title === "Tryout" && "text-theme-blue",
+                  m.title === "PVP Battle" && "text-theme-red",
+                  m.title === "AI Battle" && (srvSettings.enableAI ? "text-theme-purple" : "text-theme-faint"),
+                  m.title === "Tournament" && "text-theme-yellow",
+                )}>
+                  {m.sub}
+                </div>
               </div>
             );
 
@@ -137,9 +131,7 @@ export function GameSelectPage() {
                 key={m.title}
                 to={m.to}
                 onClick={() => m.mode && setGameMode(m.mode)}
-                style={{ textDecoration: "none", display: "block" }}
-                onMouseEnter={(e) => (e.currentTarget.querySelector("div")!.style.borderColor = m.hoverBorder)}
-                onMouseLeave={(e) => (e.currentTarget.querySelector("div")!.style.borderColor = C.border)}
+                className={cn("no-underline block group transition-colors duration-200", m.hoverBorderClass, "[&>div]:transition-colors [&>div]:duration-200")}
               >
                 {inner}
               </Link>

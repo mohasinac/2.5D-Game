@@ -18,16 +18,16 @@ export function TabDropdown<T extends string = string>({ tabs, value, onChange, 
   const visible = tabs.filter(t => !t.hidden);
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      {label && <span className="text-xs text-muted font-medium shrink-0">{label}</span>}
+      {label && <span className="text-xs text-theme-muted font-medium shrink-0">{label}</span>}
       <select
         value={value}
         onChange={e => onChange(e.target.value as T)}
         className={cn(
-          "bg-bg2 border border-border rounded-md px-3 py-1.5 text-base text-text",
-          "focus:outline-none focus:border-blue cursor-pointer transition-colors",
+          "bg-bg2 border border-border-c rounded-md px-3 py-1.5 text-sm text-theme-text",
+          "focus:outline-none focus:border-theme-blue cursor-pointer transition-colors",
           "appearance-none pr-7",
+          "[background-image:url(\"data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='12'%20height='12'%20viewBox='0%200%2012%2012'%3E%3Cpath%20fill='%2394a3b8'%20d='M6%208L1%203h10z'/%3E%3C/svg%3E\")] bg-no-repeat [background-position:right_8px_center]",
         )}
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center" }}
       >
         {visible.map(t => (
           <option key={t.key} value={t.key}>{t.label}</option>

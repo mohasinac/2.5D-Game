@@ -3,7 +3,6 @@ import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore"
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGameDataStore, type SpecialMoveDoc } from "@/stores/gameDataStore";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
-import { C } from "@/styles/theme";
 import { PX_PER_CM_BASE } from "@/constants/units";
 import toast from "react-hot-toast";
 
@@ -43,9 +42,12 @@ const EMPTY = { name: "", kind: "attack", iconEmoji: "⚡", cooldownSec: 15, dur
 
 type SpecialMoveDocWithMechanicRefs = SpecialMoveDoc & { mechanicRefs?: MechanicInstance[] };
 
-const inputStyle: React.CSSProperties = {
-  width: "100%", padding: "8px 10px", background: C.bg0,
-  border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13, boxSizing: "border-box",
+/** Tailwind badge class per kind */
+const KIND_BADGE_CLS: Record<string, string> = {
+  attack:   "bg-theme-red/[.13] text-theme-red",
+  defense:  "bg-blue-10 text-theme-blue",
+  stamina:  "bg-theme-green/[.13] text-theme-green",
+  balanced: "bg-theme-yellow/[.13] text-theme-yellow",
 };
 
 export function SpecialMovesPage() {
@@ -125,98 +127,146 @@ export function SpecialMovesPage() {
 
   const filtered = query ? items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()) || i.id.includes(query)) : items;
 
-  const kindColor: Record<string, string> = { attack: C.red, defense: C.blue, stamina: C.green, balanced: C.yellow };
+  const inputCls = "w-full px-2.5 py-2 bg-bg0 border border-border-c rounded-lg text-theme-text text-[13px] box-border";
 
   return (
-    <div style={{ padding: 24, width: "100%", boxSizing: "border-box" as const }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
+    <div className="page-shell p-6">
+      <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>Special Moves</h1>
-          <p style={{ color: C.faint, fontSize: 13, marginTop: 4 }}>{loading ? "Loading…" : `${items.length} special moves`}</p>
+          <h1 className="text-[22px] font-bold text-theme-text">Special Moves</h1>
+          <p className="text-theme-faint text-[13px] mt-1">{loading ? "Loading…" : `${items.length} special moves`}</p>
         </div>
-        <button onClick={openCreate} style={{ padding: "8px 16px", background: C.blue, color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 500, border: "none", cursor: "pointer" }}>
+        <button
+          onClick={openCreate}
+          className="px-4 py-2 bg-theme-blue text-white rounded-lg text-[13px] font-medium border-none cursor-pointer"
+        >
           + New Move
         </button>
       </div>
 
-      <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Filter moves…"
-        style={{ ...inputStyle, marginBottom: 12 }} />
+      <input
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        placeholder="Filter moves…"
+        className={`${inputCls} mb-3`}
+      />
 
-      {loading ? <div style={{ color: C.muted }}>Loading…</div> : filtered.length === 0 ? <div style={{ color: C.muted }}>No special moves found.</div> : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {loading ? (
+        <div className="text-theme-muted">Loading…</div>
+      ) : filtered.length === 0 ? (
+        <div className="text-theme-muted">No special moves found.</div>
+      ) : (
+        <div className="flex flex-col gap-2">
           {filtered.map(item => (
-            <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 14, background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: "12px 16px" }}>
-              <div style={{ fontSize: 28, flexShrink: 0, width: 40, textAlign: "center" }}>{item.iconEmoji}</div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                  <span style={{ fontWeight: 600, color: C.text, fontSize: 14 }}>{item.name}</span>
-                  <span style={{ fontFamily: "monospace", fontSize: 11, color: C.faint, background: C.bg2, padding: "1px 6px", borderRadius: 4 }}>{item.id}</span>
-                  <span style={{ fontSize: 11, background: (kindColor[item.kind] ?? C.blue) + "22", color: kindColor[item.kind] ?? C.blue, padding: "2px 7px", borderRadius: 4 }}>{item.kind}</span>
-                  {item.isDefault && <span style={{ fontSize: 10, fontWeight: 700, color: C.blue, background: C.blue + "22", padding: "1px 6px", borderRadius: 4, letterSpacing: "0.05em" }}>DEFAULT</span>}
-                  <span style={{ fontSize: 11, color: C.muted }}>cd {item.cooldownSec}s · {item.durationMs}ms</span>
+            <div key={item.id} className="flex items-center gap-3.5 bg-bg1 border border-border-c rounded-xl px-4 py-3">
+              <div className="text-[28px] shrink-0 w-10 text-center">{item.iconEmoji}</div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-semibold text-theme-text text-[14px]">{item.name}</span>
+                  <span className="font-mono text-[11px] text-theme-faint bg-bg2 px-1.5 py-px rounded">{item.id}</span>
+                  <span className={`text-[11px] px-[7px] py-0.5 rounded ${KIND_BADGE_CLS[item.kind] ?? "bg-blue-10 text-theme-blue"}`}>
+                    {item.kind}
+                  </span>
+                  {item.isDefault && (
+                    <span className="text-[10px] font-bold text-theme-blue bg-blue-10 px-1.5 py-px rounded tracking-[0.05em]">
+                      DEFAULT
+                    </span>
+                  )}
+                  <span className="text-[11px] text-theme-muted">cd {item.cooldownSec}s · {item.durationMs}ms</span>
                 </div>
-                {item.description && <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{item.description}</div>}
+                {item.description && (
+                  <div className="text-[12px] text-theme-muted mt-1">{item.description}</div>
+                )}
               </div>
-              <button onClick={() => openEdit(item)} style={{ padding: "6px 14px", borderRadius: 7, fontSize: 12, cursor: "pointer", border: `1px solid ${C.border}`, background: "transparent", color: C.muted }}>Edit</button>
-              <button onClick={() => setConfirmDelete(item)} style={{ padding: "6px 14px", borderRadius: 7, fontSize: 12, cursor: "pointer", border: `1px solid ${C.red}66`, background: "transparent", color: C.red }}>Delete</button>
+              <button
+                onClick={() => openEdit(item)}
+                className="px-3.5 py-1.5 rounded-[7px] text-[12px] cursor-pointer border border-border-c bg-transparent text-theme-muted"
+              >Edit</button>
+              <button
+                onClick={() => setConfirmDelete(item)}
+                className="px-3.5 py-1.5 rounded-[7px] text-[12px] cursor-pointer border border-theme-red/40 bg-transparent text-theme-red"
+              >Delete</button>
             </div>
           ))}
         </div>
       )}
 
       {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 16 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, width: "100%", maxWidth: 560, maxHeight: "90vh", overflowY: "auto" }}>
-            <h3 style={{ fontSize: 17, fontWeight: 700, color: C.text, marginBottom: 20 }}>{editing ? "Edit Special Move" : "New Special Move"}</h3>
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000] p-4">
+          <div className="bg-bg1 border border-border-c rounded-2xl p-7 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
+            <h3 className="text-[17px] font-bold text-theme-text mb-5">
+              {editing ? "Edit Special Move" : "New Special Move"}
+            </h3>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, marginBottom: 14 }}>
+            <div className="grid grid-cols-[1fr_auto] gap-3 mb-3.5">
               <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Name</span>
-                <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} />
-                {!editing && form.name && <span style={{ fontSize: 11, color: C.faint }}>ID: {slugify(form.name) || "…"}</span>}
+                <span className="text-[12px] text-theme-muted block mb-1">Name</span>
+                <input
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  className={inputCls}
+                />
+                {!editing && form.name && (
+                  <span className="text-[11px] text-theme-faint">ID: {slugify(form.name) || "…"}</span>
+                )}
               </label>
               <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Icon</span>
-                <input value={form.iconEmoji} onChange={e => setForm(f => ({ ...f, iconEmoji: e.target.value }))}
-                  style={{ ...inputStyle, width: 64, textAlign: "center", fontSize: 22 }} />
+                <span className="text-[12px] text-theme-muted block mb-1">Icon</span>
+                <input
+                  value={form.iconEmoji}
+                  onChange={e => setForm(f => ({ ...f, iconEmoji: e.target.value }))}
+                  className="w-16 px-2.5 py-2 bg-bg0 border border-border-c rounded-lg text-theme-text text-[22px] text-center box-border"
+                />
               </label>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+            <div className="grid grid-cols-2 gap-3 mb-3.5">
               <div>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Kind</span>
+                <span className="text-[12px] text-theme-muted block mb-1">Kind</span>
                 <SearchableSelect value={form.kind} onChange={v => setForm(f => ({ ...f, kind: v }))} options={KIND_OPTIONS} placeholder="Kind…" />
               </div>
               <div>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Type affinity</span>
+                <span className="text-[12px] text-theme-muted block mb-1">Type affinity</span>
                 <SearchableSelect value={form.type} onChange={v => setForm(f => ({ ...f, type: v }))} options={TYPE_OPTIONS} placeholder="Type…" />
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+            <div className="grid grid-cols-2 gap-3 mb-3.5">
               <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Cooldown (sec)</span>
-                <input type="number" min={0} value={form.cooldownSec} onChange={e => setForm(f => ({ ...f, cooldownSec: Number(e.target.value) }))} style={inputStyle} />
+                <span className="text-[12px] text-theme-muted block mb-1">Cooldown (sec)</span>
+                <input type="number" min={0} value={form.cooldownSec}
+                  onChange={e => setForm(f => ({ ...f, cooldownSec: Number(e.target.value) }))}
+                  className={inputCls} />
               </label>
               <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Duration (ms)</span>
-                <input type="number" min={0} value={form.durationMs} onChange={e => setForm(f => ({ ...f, durationMs: Number(e.target.value) }))} style={inputStyle} />
+                <span className="text-[12px] text-theme-muted block mb-1">Duration (ms)</span>
+                <input type="number" min={0} value={form.durationMs}
+                  onChange={e => setForm(f => ({ ...f, durationMs: Number(e.target.value) }))}
+                  className={inputCls} />
               </label>
             </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Flash Color (hex)</span>
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <input type="color" value={form.flashColor} onChange={e => setForm(f => ({ ...f, flashColor: e.target.value }))}
-                  style={{ width: 40, height: 36, border: `1px solid ${C.border}`, borderRadius: 6, cursor: "pointer", padding: 2 }} />
-                <input value={form.flashColor} onChange={e => setForm(f => ({ ...f, flashColor: e.target.value }))}
-                  style={{ ...inputStyle, width: "auto", flex: 1 }} placeholder="#ffffff" />
+            <label className="block mb-3.5">
+              <span className="text-[12px] text-theme-muted block mb-1">Flash Color (hex)</span>
+              <div className="flex gap-2 items-center">
+                <input
+                  type="color"
+                  value={form.flashColor}
+                  onChange={e => setForm(f => ({ ...f, flashColor: e.target.value }))}
+                  className="w-10 h-9 border border-border-c rounded-md cursor-pointer p-0.5"
+                />
+                <input
+                  value={form.flashColor}
+                  onChange={e => setForm(f => ({ ...f, flashColor: e.target.value }))}
+                  className={`${inputCls} flex-1 w-auto`}
+                  placeholder="#ffffff"
+                />
               </div>
             </label>
 
-            <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, padding: 14, marginBottom: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.muted, marginBottom: 12 }}>Physics Effects</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div className="border border-border-c rounded-[10px] p-3.5 mb-3.5">
+              <div className="text-[12px] font-semibold text-theme-muted mb-3">Physics Effects</div>
+              <div className="grid grid-cols-2 gap-2.5">
                 {([
                   ["Linear Impulse (0–10000)", "linearImpulse", 0, 10000, 100, false],
                   ["Spin Delta (−500–500)", "spinDelta", -500, 500, 10, false],
@@ -228,46 +278,74 @@ export function SpecialMovesPage() {
                   const rawVal = (form.effects as any)[field] ?? 0;
                   const displayVal = isPx ? Math.round(rawVal / PX_PER_CM_BASE * 10) / 10 : rawVal;
                   return (
-                    <label key={field} style={{ display: "block" }}>
-                      <span style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 3 }}>{label}</span>
-                      <input type="number" min={min} max={max} step={step}
+                    <label key={field} className="block">
+                      <span className="text-[11px] text-theme-muted block mb-[3px]">{label}</span>
+                      <input
+                        type="number" min={min} max={max} step={step}
                         value={displayVal}
-                        onChange={e => setForm(f => ({ ...f, effects: { ...f.effects, [field]: isPx ? Math.round(Number(e.target.value) * PX_PER_CM_BASE) : Number(e.target.value) } }))}
-                        style={{ ...inputStyle, padding: "6px 8px", fontSize: 12 }} />
+                        onChange={e => setForm(f => ({
+                          ...f,
+                          effects: {
+                            ...f.effects,
+                            [field]: isPx
+                              ? Math.round(Number(e.target.value) * PX_PER_CM_BASE)
+                              : Number(e.target.value),
+                          },
+                        }))}
+                        className="w-full px-2 py-1.5 bg-bg0 border border-border-c rounded-lg text-theme-text text-[12px] box-border"
+                      />
                     </label>
                   );
                 })}
               </div>
             </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
+            <label className="block mb-3.5">
+              <span className="text-[12px] text-theme-muted block mb-1">
                 Mechanic Refs (MechanicInstance[]) — JSON array
-                {mechanicRefsError && <span style={{ color: "#e74c3c", marginLeft: 8 }}>{mechanicRefsError}</span>}
+                {mechanicRefsError && <span className="text-theme-red ml-2">{mechanicRefsError}</span>}
               </span>
               <textarea
                 value={form.mechanicRefsJson}
-                onChange={e => { setForm(f => ({ ...f, mechanicRefsJson: e.target.value })); setMechanicRefsError(tryParseJson(e.target.value) === null ? "Must be a JSON array" : ""); }}
+                onChange={e => {
+                  setForm(f => ({ ...f, mechanicRefsJson: e.target.value }));
+                  setMechanicRefsError(tryParseJson(e.target.value) === null ? "Must be a JSON array" : "");
+                }}
                 rows={4}
-                style={{ ...inputStyle, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
+                className={`${inputCls} resize-y font-mono text-[12px]`}
                 placeholder={'[\n  { "mechanicId": "attack_amplifier", "params": { "multiplier": 1.3 }, "duration": 1000 }\n]'}
               />
             </label>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>
-              <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2}
-                style={{ ...inputStyle, resize: "vertical" }} />
+            <label className="block mb-3.5">
+              <span className="text-[12px] text-theme-muted block mb-1">Description</span>
+              <textarea
+                value={form.description}
+                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                rows={2}
+                className={`${inputCls} resize-y`}
+              />
             </label>
 
-            <label style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, cursor: "pointer" }}>
-              <input type="checkbox" checked={form.isDefault} onChange={e => setForm(f => ({ ...f, isDefault: e.target.checked }))} />
-              <span style={{ fontSize: 13, color: C.text }}>Default for type (auto-assign to new beyblades)</span>
+            <label className="flex items-center gap-2.5 mb-5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.isDefault}
+                onChange={e => setForm(f => ({ ...f, isDefault: e.target.checked }))}
+              />
+              <span className="text-[13px] text-theme-text">Default for type (auto-assign to new beyblades)</span>
             </label>
 
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setShowModal(false)} style={{ padding: "8px 18px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleSave} disabled={saving} style={{ padding: "8px 18px", borderRadius: 8, fontSize: 13, border: "none", background: C.blue, color: "#fff", cursor: "pointer", opacity: saving ? 0.6 : 1 }}>
+            <div className="flex gap-2.5 justify-end">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-[18px] py-2 rounded-lg text-[13px] border border-border-c bg-transparent text-theme-muted cursor-pointer"
+              >Cancel</button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-[18px] py-2 rounded-lg text-[13px] border-none bg-theme-blue text-white cursor-pointer disabled:opacity-60"
+              >
                 {saving ? "Saving…" : "Save"}
               </button>
             </div>
@@ -276,13 +354,19 @@ export function SpecialMovesPage() {
       )}
 
       {confirmDelete && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, maxWidth: 400, width: "90%" }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 10 }}>Delete "{confirmDelete.name}"?</h3>
-            <p style={{ color: C.muted, fontSize: 13, marginBottom: 20 }}>This will permanently remove the special move from Firebase.</p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleDelete} style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: "none", background: C.red, color: "#fff", cursor: "pointer" }}>Delete</button>
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000]">
+          <div className="bg-bg1 border border-border-c rounded-2xl p-7 max-w-[400px] w-[90%]">
+            <h3 className="text-[16px] font-bold text-theme-text mb-2.5">Delete "{confirmDelete.name}"?</h3>
+            <p className="text-theme-muted text-[13px] mb-5">This will permanently remove the special move from Firebase.</p>
+            <div className="flex gap-2.5 justify-end">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="px-4 py-[7px] rounded-lg text-[13px] border border-border-c bg-transparent text-theme-muted cursor-pointer"
+              >Cancel</button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-[7px] rounded-lg text-[13px] border-none bg-theme-red text-white cursor-pointer"
+              >Delete</button>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { C } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, WallConfig, WallSegment } from "@/types/arenaConfigNew";
 import { getEdgeCount, generateRandomWalls } from "@/types/arenaConfigNew";
@@ -71,11 +71,7 @@ export default function WallsTab({ config, onChange }: Props) {
           </button>
           <button
             onClick={() => setWallProp("enabled", !wall.enabled)}
-            className="py-1 px-[14px] rounded-md border-none cursor-pointer font-semibold text-xs"
-            style={{
-              background: wall.enabled ? C.green : C.bg3,
-              color: wall.enabled ? C.white : C.muted,
-            }}
+            className={cn("py-1 px-[14px] rounded-md border-none cursor-pointer font-semibold text-xs transition-colors", wall.enabled ? "bg-theme-green text-white" : "bg-bg3 text-theme-muted")}
           >
             {wall.enabled ? "ON" : "OFF"}
           </button>
@@ -92,12 +88,7 @@ export default function WallsTab({ config, onChange }: Props) {
                 <div className="flex gap-1.5 flex-wrap">
                   {WALL_STYLES.map(s => (
                     <button key={s} onClick={() => setWallProp("wallStyle", s)}
-                      className="py-1 px-2.5 rounded text-[11px] cursor-pointer capitalize border"
-                      style={{
-                        background: wall.wallStyle === s ? C.blue : C.bg2,
-                        color: wall.wallStyle === s ? C.white : C.muted,
-                        borderColor: wall.wallStyle === s ? C.blue : C.border,
-                      }}>{s}</button>
+                      className={cn("py-1 px-2.5 rounded text-[11px] cursor-pointer capitalize border transition-colors", wall.wallStyle === s ? "bg-theme-blue text-white border-theme-blue" : "bg-bg2 text-theme-muted border-border-c hover:border-theme-blue")}>{s}</button>
                   ))}
                 </div>
               </div>
@@ -106,12 +97,7 @@ export default function WallsTab({ config, onChange }: Props) {
                 <div className="flex gap-1.5">
                   {EXIT_STYLES.map(s => (
                     <button key={s} onClick={() => setWallProp("exitStyle", s)}
-                      className="py-1 px-2.5 rounded text-[11px] cursor-pointer capitalize border"
-                      style={{
-                        background: wall.exitStyle === s ? C.red : C.bg2,
-                        color: wall.exitStyle === s ? C.white : C.muted,
-                        borderColor: wall.exitStyle === s ? C.red : C.border,
-                      }}>{s}</button>
+                      className={cn("py-1 px-2.5 rounded text-[11px] cursor-pointer capitalize border transition-colors", wall.exitStyle === s ? "bg-theme-red text-white border-theme-red" : "bg-bg2 text-theme-muted border-border-c hover:border-theme-red")}>{s}</button>
                   ))}
                 </div>
               </div>
@@ -131,7 +117,6 @@ export default function WallsTab({ config, onChange }: Props) {
                     value={wall[field] as number}
                     onChange={e => setWallProp(field, +e.target.value)}
                     className="w-full"
-                    style={{ accentColor: C.blue }}
                   />
                 </div>
               ))}
@@ -191,7 +176,6 @@ export default function WallsTab({ config, onChange }: Props) {
                               value={w[field]}
                               onChange={e => onChange({ wall: updateEdgeWall(wall, ei, wi, field, +e.target.value) })}
                               className="w-full"
-                              style={{ accentColor: C.blue }}
                             />
                           </div>
                         ))}

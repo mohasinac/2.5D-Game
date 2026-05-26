@@ -33,27 +33,21 @@ export function SPBar({ spinPct, label = "SPIN" }: SPBarProps) {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [critical]);
 
+  const fillStyle: React.CSSProperties = {
+    "--pct": `${clamped}%`,
+    background: visible ? color : "rgba(255,255,255,0.05)",
+    boxShadow: visible && clamped > 0 ? `0 0 4px ${color}88` : "none",
+    transition: critical ? "none" : "width 0.15s ease, background 0.3s ease",
+  } as React.CSSProperties;
+
   return (
-    <div style={{
-      display: "flex", flexDirection: "column", alignItems: "stretch", gap: "2px",
-      width: 90, fontFamily: "monospace",
-    }}>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.55rem", color: "#aabbcc" }}>
+    <div className="flex flex-col items-stretch gap-[2px] w-[90px] font-mono">
+      <div className="flex justify-between text-[0.55rem] text-[#aabbcc]">
         <span>{label}</span>
-        <span style={{ color: visible ? color : "transparent", fontWeight: 700 }}>{clamped}%</span>
+        <span style={{ color: visible ? color : "transparent" }} className="font-bold">{clamped}%</span>
       </div>
-      <div style={{
-        height: 6, borderRadius: 3,
-        background: "rgba(255,255,255,0.1)",
-        overflow: "hidden",
-      }}>
-        <div style={{
-          width: `${clamped}%`, height: "100%",
-          background: visible ? color : "rgba(255,255,255,0.05)",
-          borderRadius: 3,
-          transition: critical ? "none" : "width 0.15s ease, background 0.3s ease",
-          boxShadow: visible && clamped > 0 ? `0 0 4px ${color}88` : "none",
-        }} />
+      <div className="h-[6px] rounded-[3px] bg-white/10 overflow-hidden">
+        <div style={fillStyle} className="w-pct h-full rounded-[3px]" />
       </div>
     </div>
   );

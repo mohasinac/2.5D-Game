@@ -11,7 +11,6 @@ import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getBeybladeStability, mapToRecord, TYPE_COLORS } from "@/types/game";
 import { SoundManager } from "@/game/audio/SoundManager";
-import { C, alpha } from "@/styles/theme";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
 import { useCombos } from "@/hooks/useCombos";
@@ -176,7 +175,7 @@ export function TournamentBattleGamePage() {
   const launchState = useLaunchInput(room ?? null, gameState?.status ?? "");
 
   const myStability = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
-  const stabilityColor = myStability > 0.6 ? C.green : myStability > 0.3 ? C.yellow : C.red;
+  const stabilityColorClass = myStability > 0.6 ? "text-theme-green" : myStability > 0.3 ? "text-theme-yellow" : "text-theme-red";
   const stabilityLabel = myStability > 0.6 ? "Stable" : myStability > 0.3 ? "Wobbling" : "Critical!";
   const playerList = Array.from(beyblades.values());
   const alivePlayers = playerList.filter((b) => b.isActive);
@@ -188,10 +187,10 @@ export function TournamentBattleGamePage() {
 
   if (loadError) {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ textAlign: "center" }}>
-          <p style={{ color: C.red, fontSize: 18, marginBottom: 16 }}>{loadError}</p>
-          <Link to={`/game/tournament/${tournamentId}`} style={{ color: C.blue, textDecoration: "none" }}>
+      <div className="min-h-screen bg-bg0 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-theme-red text-[18px] mb-4">{loadError}</p>
+          <Link to={`/game/tournament/${tournamentId}`} className="text-theme-blue no-underline">
             Back to Lobby
           </Link>
         </div>
@@ -202,8 +201,8 @@ export function TournamentBattleGamePage() {
   const showLoading = !gameState || (gameState.status !== "in-progress" && gameState.status !== "warmup" && gameState.status !== "launching" && gameState.status !== "finished" && gameState.status !== "series-finished");
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100vh", background: "#000", overflow: "hidden" }}>
-      <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
+    <div className="relative w-full h-screen bg-black overflow-hidden">
+      <div ref={containerRef} className="absolute inset-0" />
 
       {showLoading && (
         <LoadingProgress
@@ -214,65 +213,65 @@ export function TournamentBattleGamePage() {
       )}
 
       {/* HUD top bar */}
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10, flexWrap: "wrap" }}>
+      <div className="absolute top-0 left-0 right-0 flex items-start justify-between p-[clamp(8px,2vw,16px)] pointer-events-none z-10 flex-wrap">
         {/* Left */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: connectionState === "connected" ? C.green : C.red }} className={connectionState === "connected" ? "pulse" : ""} />
-            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.muted, fontFamily: "monospace" }}>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${connectionState === "connected" ? "bg-theme-green pulse" : "bg-theme-red"}`} />
+            <span className="text-[clamp(9px,1.5vw,11px)] text-theme-muted font-mono">
               {isSpectating ? "SPECTATING" : "CONNECTED"}
             </span>
           </div>
           {gameState?.tournamentName && (
-            <span style={{ fontSize: "clamp(10px, 1.5vw, 12px)", color: C.yellow, fontWeight: 700 }}>{gameState.tournamentName}</span>
+            <span className="text-[clamp(10px,1.5vw,12px)] text-theme-yellow font-bold">{gameState.tournamentName}</span>
           )}
           {roundLabel && (
-            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.muted }}>{roundLabel}</span>
+            <span className="text-[clamp(9px,1.5vw,11px)] text-theme-muted">{roundLabel}</span>
           )}
         </div>
 
         {/* Center: timer + series */}
-        <div style={{ textAlign: "center" }}>
+        <div className="text-center">
           {gameState && (
-            <div style={{ color: C.text, fontFamily: "monospace", fontSize: "clamp(14px, 3vw, 24px)", fontWeight: 700 }}>
+            <div className="text-theme-text font-mono text-[clamp(14px,3vw,24px)] font-bold">
               {Math.ceil(Math.max(0, gameState.timer))}s
             </div>
           )}
           {seriesLabel && (
-            <div style={{ fontSize: "clamp(10px, 1.5vw, 12px)", color: C.muted, fontFamily: "monospace" }}>{seriesLabel}</div>
+            <div className="text-[clamp(10px,1.5vw,12px)] text-theme-muted font-mono">{seriesLabel}</div>
           )}
-          <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.muted, fontFamily: "monospace" }}>
+          <div className="text-[clamp(9px,1.5vw,11px)] text-theme-muted font-mono">
             {alivePlayers.length}/{playerList.length} alive
           </div>
           {gameState && (gameState.spectatorCount ?? 0) > 0 && (
-            <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.purple }}>
+            <div className="text-[clamp(9px,1.5vw,11px)] text-theme-purple">
               {gameState.spectatorCount} watching
             </div>
           )}
         </div>
 
         {/* Right */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
+        <div className="flex flex-col gap-1.5 items-end">
           <Link
             to={`/game/tournament/${tournamentId}`}
-            style={{ pointerEvents: "auto", padding: "clamp(3px, 0.5vw, 4px) clamp(8px, 1vw, 12px)", fontSize: "clamp(9px, 1.2vw, 12px)", background: "rgba(0,0,0,0.6)", color: C.muted, borderRadius: 6, border: `1px solid ${C.border}`, textDecoration: "none" }}
+            className="pointer-events-auto py-[clamp(3px,0.5vw,4px)] px-[clamp(8px,1vw,12px)] text-[clamp(9px,1.2vw,12px)] bg-black/60 text-theme-muted rounded-[6px] border border-border-c no-underline"
           >
             Lobby
           </Link>
           {isSpectating && (
-            <span style={{ fontSize: "clamp(9px, 1.5vw, 11px)", background: alpha(C.purple, 0.27), color: C.purple, padding: "2px 8px", borderRadius: 99, border: `1px solid ${alpha(C.purple, 0.33)}` }}>
+            <span className="text-[clamp(9px,1.5vw,11px)] bg-purple-27 text-theme-purple py-0.5 px-2 rounded-[99px] border border-purple-33">
               SPECTATING
             </span>
           )}
           {/* Series wins */}
           {gameState && (gameState.targetWins ?? 1) > 1 && playerList.length > 0 && (
-            <div style={{ background: "rgba(0,0,0,0.65)", borderRadius: 8, padding: "clamp(4px, 1vw, 10px)", fontSize: "clamp(10px, 1.5vw, 12px)", color: C.text }}>
+            <div className="bg-black/[0.65] rounded-lg p-[clamp(4px,1vw,10px)] text-[clamp(10px,1.5vw,12px)] text-theme-text">
               {playerList.map((p) => (
-                <div key={p.id} style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <span style={{ color: C.muted, maxWidth: "clamp(60px, 12vw, 100px)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <div key={p.id} className="flex gap-1.5 items-center">
+                  <span className="text-theme-muted max-w-[clamp(60px,12vw,100px)] overflow-hidden text-ellipsis whitespace-nowrap">
                     {p.username}
                   </span>
-                  <span style={{ fontWeight: 700, fontFamily: "monospace" }}>
+                  <span className="font-bold font-mono">
                     {gameState.seriesWins?.get(p.userId) ?? 0}
                   </span>
                 </div>
@@ -292,85 +291,88 @@ export function TournamentBattleGamePage() {
 
       {/* Spectator all-player list — click to follow */}
       {isSpectating && playerList.length > 0 && (
-        <div style={{ position: "absolute", top: 60, right: "clamp(8px, 2vw, 16px)", display: "flex", flexDirection: "column", gap: 6, pointerEvents: "auto", zIndex: 10, maxHeight: "60vh", overflowY: "auto" }}>
-          <div style={{ fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 2 }}>
+        <div className="absolute top-[60px] right-[clamp(8px,2vw,16px)] flex flex-col gap-1.5 pointer-events-auto z-10 max-h-[60vh] overflow-y-auto">
+          <div className="text-[10px] text-theme-muted uppercase tracking-[0.06em] mb-0.5">
             Watching — click to follow
           </div>
-          {playerList.map((p) => (
-            <div
-              key={p.id}
-              onClick={() => setSpectatorFollowId(p.id)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSpectatorFollowId(p.id); }}
-              style={{
-                background: spectatorFollowId === p.id ? "rgba(34,197,94,0.18)" : "rgba(15,23,42,0.85)",
-                borderRadius: 8,
-                border: `1px solid ${spectatorFollowId === p.id ? C.green : C.border}`,
-                padding: "8px 12px", minWidth: "clamp(120px, 20vw, 200px)",
-                opacity: p.isActive ? 1 : 0.5,
-                cursor: "pointer",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(9px, 1.5vw, 11px)", marginBottom: 6 }}>
-                <span style={{ color: C.muted, overflow: "hidden", maxWidth: "clamp(60px, 12vw, 100px)", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {p.username}{p.isAI ? " (AI)" : ""}
-                </span>
+          {playerList.map((p) => {
+            const hpPct = (p.health / Math.max(1, p.maxHealth)) * 100;
+            const hpColor = p.health / Math.max(1, p.maxHealth) > 0.5 ? "bg-theme-green" : p.health / Math.max(1, p.maxHealth) > 0.25 ? "bg-theme-yellow" : "bg-theme-red";
+            return (
+              <div
+                key={p.id}
+                onClick={() => setSpectatorFollowId(p.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSpectatorFollowId(p.id); }}
+                className={`rounded-lg border p-[8px_12px] min-w-[clamp(120px,20vw,200px)] cursor-pointer ${spectatorFollowId === p.id ? "bg-green-10 border-theme-green" : "bg-[rgba(15,23,42,0.85)] border-border-c"} ${p.isActive ? "opacity-100" : "opacity-50"}`}
+              >
+                <div className="flex justify-between text-[clamp(9px,1.5vw,11px)] mb-1.5">
+                  <span className="text-theme-muted overflow-hidden max-w-[clamp(60px,12vw,100px)] text-ellipsis whitespace-nowrap">
+                    {p.username}{p.isAI ? " (AI)" : ""}
+                  </span>
+                </div>
+                <div className="w-full h-[5px] bg-bg3 rounded-[3px] overflow-hidden">
+                  <div
+                    className={`h-full rounded-[3px] transition-[width] duration-150 ${hpColor} w-pct`}
+                    style={{ "--pct": `${hpPct}%` } as React.CSSProperties}
+                  />
+                </div>
+                {!p.isActive && <p className="text-theme-red text-[10px] mt-1 font-bold text-center">OUT</p>}
               </div>
-              <div style={{ width: "100%", height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
-                <div style={{
-                  height: "100%", borderRadius: 3, transition: "width 150ms",
-                  width: `${(p.health / Math.max(1, p.maxHealth)) * 100}%`,
-                  background: p.health / Math.max(1, p.maxHealth) > 0.5 ? C.green : p.health / Math.max(1, p.maxHealth) > 0.25 ? C.yellow : C.red,
-                }} />
-              </div>
-              {!p.isActive && <p style={{ color: C.red, fontSize: 10, marginTop: 4, fontWeight: 700, textAlign: "center" }}>OUT</p>}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {/* Non-spectator opponent bars */}
       {!isSpectating && myBeyblade && playerList.length > 1 && (
-        <div style={{ position: "absolute", top: 60, right: "clamp(8px, 2vw, 16px)", display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none", zIndex: 10, maxHeight: "60vh", overflowY: "auto" }}>
-          {playerList.filter((p) => p.userId !== userId).map((opp) => (
-            <div key={opp.id} style={{
-              background: "rgba(15,23,42,0.85)", borderRadius: 8, border: `1px solid ${opp.isActive ? C.border : C.bg3}`,
-              padding: "8px 12px", minWidth: "clamp(120px, 20vw, 200px)", opacity: opp.isActive ? 1 : 0.5,
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(9px, 1.5vw, 11px)", marginBottom: 6 }}>
-                <span style={{ color: C.muted, overflow: "hidden", maxWidth: "clamp(60px, 12vw, 100px)", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {opp.username}{opp.isAI ? " (AI)" : ""}
-                </span>
-                <span style={{ color: `#${(TYPE_COLORS[opp.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}`, fontSize: "clamp(8px, 1.2vw, 10px)" }}>{opp.type}</span>
+        <div className="absolute top-[60px] right-[clamp(8px,2vw,16px)] flex flex-col gap-1.5 pointer-events-none z-10 max-h-[60vh] overflow-y-auto">
+          {playerList.filter((p) => p.userId !== userId).map((opp) => {
+            const hpRatio = opp.health / Math.max(1, opp.maxHealth);
+            const hpPct = hpRatio * 100;
+            const hpColor = hpRatio > 0.5 ? "bg-theme-green" : "bg-theme-red";
+            return (
+              <div key={opp.id} className={`bg-[rgba(15,23,42,0.85)] rounded-lg border p-[8px_12px] min-w-[clamp(120px,20vw,200px)] ${opp.isActive ? "opacity-100 border-border-c" : "opacity-50 border-bg3"}`}>
+                <div className="flex justify-between text-[clamp(9px,1.5vw,11px)] mb-1.5">
+                  <span className="text-theme-muted overflow-hidden max-w-[clamp(60px,12vw,100px)] text-ellipsis whitespace-nowrap">
+                    {opp.username}{opp.isAI ? " (AI)" : ""}
+                  </span>
+                  {/* Dynamic runtime hex color — rule 4 exception */}
+                  <span style={{ color: `#${(TYPE_COLORS[opp.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}` }} className="text-[clamp(8px,1.2vw,10px)]">{opp.type}</span>
+                </div>
+                <div className="w-full h-[5px] bg-bg3 rounded-[3px] overflow-hidden">
+                  <div
+                    className={`h-full rounded-[3px] transition-[width] duration-150 ${hpColor} w-pct`}
+                    style={{ "--pct": `${hpPct}%` } as React.CSSProperties}
+                  />
+                </div>
+                {!opp.isActive && <p className="text-theme-red text-[10px] mt-1 font-bold text-center">ELIMINATED</p>}
               </div>
-              <div style={{ width: "100%", height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
-                <div style={{
-                  height: "100%", borderRadius: 3, transition: "width 150ms",
-                  width: `${(opp.health / Math.max(1, opp.maxHealth)) * 100}%`,
-                  background: opp.health / Math.max(1, opp.maxHealth) > 0.5 ? C.green : C.red,
-                }} />
-              </div>
-              {!opp.isActive && <p style={{ color: C.red, fontSize: 10, marginTop: 4, fontWeight: 700, textAlign: "center" }}>ELIMINATED</p>}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {/* My stats bottom */}
-      {myBeyblade && !isSpectating && (
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "clamp(8px, 2vw, 16px)", pointerEvents: "none", zIndex: 10 }}>
-          <div style={{ maxWidth: "min(320px, 90vw)", margin: "0 auto", background: "rgba(15,23,42,0.85)", borderRadius: 12, border: `1px solid ${C.border}`, padding: "clamp(8px, 2vw, 12px)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "clamp(10px, 1.5vw, 12px)", color: C.muted, marginBottom: 8 }}>
-              <span style={{ fontFamily: "monospace" }}>{myBeyblade.username} (you)</span>
-              <span style={{ textTransform: "capitalize", color: `#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>{myBeyblade.type}</span>
+      {myBeyblade && !isSpectating && (() => {
+        const hpRatio = myBeyblade.health / Math.max(1, myBeyblade.maxHealth);
+        const hpBarColor = hpRatio > 0.5 ? "bg-theme-green" : hpRatio > 0.25 ? "bg-theme-yellow" : "bg-theme-red";
+        return (
+          <div className="absolute bottom-0 left-0 right-0 p-[clamp(8px,2vw,16px)] pointer-events-none z-10">
+            <div className="mx-auto bg-[rgba(15,23,42,0.85)] rounded-[12px] border border-border-c p-[clamp(8px,2vw,12px)]" style={{ maxWidth: "min(320px, 90vw)" }}>
+              <div className="flex justify-between text-[clamp(10px,1.5vw,12px)] text-theme-muted mb-2">
+                <span className="font-mono">{myBeyblade.username} (you)</span>
+                {/* Dynamic runtime hex color — rule 4 exception */}
+                <span className="capitalize" style={{ color: `#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>{myBeyblade.type}</span>
+              </div>
+              <Bar label="HP" value={myBeyblade.health} max={myBeyblade.maxHealth} barColorClass={hpBarColor} />
+              <Bar label="Spin" value={myBeyblade.spin} max={myBeyblade.maxSpin} barColorClass="bg-theme-blue" />
+              <div className={`text-[clamp(9px,1.5vw,11px)] text-center font-mono mt-1 ${stabilityColorClass}`}>{stabilityLabel}</div>
             </div>
-            <Bar label="HP" value={myBeyblade.health} max={myBeyblade.maxHealth} color={myBeyblade.health / Math.max(1, myBeyblade.maxHealth) > 0.5 ? C.green : myBeyblade.health / Math.max(1, myBeyblade.maxHealth) > 0.25 ? C.yellow : C.red} />
-            <Bar label="Spin" value={myBeyblade.spin} max={myBeyblade.maxSpin} color={C.blue} />
-            <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", textAlign: "center", fontFamily: "monospace", color: stabilityColor, marginTop: 4 }}>{stabilityLabel}</div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* SpecialMoveHUD */}
       {myBeyblade && !isSpectating && (() => {
@@ -434,45 +436,45 @@ export function TournamentBattleGamePage() {
 
       {/* Game-end inter-game overlay */}
       {gameEndData && (
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.75)", zIndex: 40 }}>
-          <div style={{ textAlign: "center" }}>
-            <p style={{ color: C.yellow, fontSize: 14, fontWeight: 600, marginBottom: 4 }}>
+        <div className="absolute inset-0 flex items-center justify-center bg-black/75 z-40">
+          <div className="text-center">
+            <p className="text-theme-yellow text-[14px] font-semibold mb-1">
               Game {gameEndData.gameNumber} Complete
             </p>
-            <p style={{ color: C.text, fontSize: 22, fontWeight: 900 }}>
+            <p className="text-theme-text text-[22px] font-black">
               {playerList.find((p) => p.userId === gameEndData.winner)?.username ?? gameEndData.winner} wins!
             </p>
-            <div style={{ marginTop: 12, display: "flex", gap: 16, justifyContent: "center" }}>
+            <div className="mt-3 flex gap-4 justify-center">
               {Object.entries(gameEndData.seriesScore).map(([uid, wins]) => {
                 const player = playerList.find((p) => p.userId === uid);
                 return (
-                  <div key={uid} style={{ textAlign: "center" }}>
-                    <p style={{ fontSize: 12, color: C.muted }}>{player?.username ?? uid}</p>
-                    <p style={{ fontSize: 28, fontWeight: 900, color: C.text, fontFamily: "monospace" }}>{wins}</p>
+                  <div key={uid} className="text-center">
+                    <p className="text-[12px] text-theme-muted">{player?.username ?? uid}</p>
+                    <p className="text-[28px] font-black text-theme-text font-mono">{wins}</p>
                   </div>
                 );
               })}
             </div>
-            <p style={{ color: C.faint, fontSize: 12, marginTop: 12 }}>Next game starting...</p>
+            <p className="text-theme-faint text-[12px] mt-3">Next game starting...</p>
           </div>
         </div>
       )}
 
       {/* Series-end overlay */}
       {(gameState?.status === "series-finished" || seriesEndData) && !gameEndData && (
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.88)", zIndex: 50 }}>
-          <div style={{ textAlign: "center", maxWidth: 400 }}>
-            <div style={{ fontSize: 64, marginBottom: 12 }}>🏆</div>
-            <p style={{ color: C.yellow, fontWeight: 700, fontSize: 16, marginBottom: 4 }}>Tournament Match Over</p>
-            <h2 style={{ fontSize: 36, fontWeight: 900, color: C.text, marginBottom: 20 }}>
+        <div className="absolute inset-0 flex items-center justify-center bg-black/[0.88] z-50">
+          <div className="text-center max-w-[400px]">
+            <div className="text-[64px] mb-3">🏆</div>
+            <p className="text-theme-yellow font-bold text-[16px] mb-1">Tournament Match Over</p>
+            <h2 className="text-[36px] font-black text-theme-text mb-5">
               {playerList.find((p) => p.userId === (seriesEndData?.winner ?? gameState?.winner))?.username ?? seriesEndData?.winner ?? gameState?.winner} wins!
             </h2>
             {gameState?.targetWins && gameState.targetWins > 1 && (
-              <div style={{ display: "flex", gap: 20, justifyContent: "center", marginBottom: 24 }}>
+              <div className="flex gap-5 justify-center mb-6">
                 {playerList.map((p) => (
-                  <div key={p.id} style={{ textAlign: "center" }}>
-                    <p style={{ fontSize: 12, color: C.muted }}>{p.username}</p>
-                    <p style={{ fontSize: 32, fontWeight: 900, color: C.text, fontFamily: "monospace" }}>
+                  <div key={p.id} className="text-center">
+                    <p className="text-[12px] text-theme-muted">{p.username}</p>
+                    <p className="text-[32px] font-black text-theme-text font-mono">
                       {gameState.seriesWins?.get(p.userId) ?? 0}
                     </p>
                   </div>
@@ -481,7 +483,7 @@ export function TournamentBattleGamePage() {
             )}
             <Link
               to={`/game/tournament/${tournamentId}`}
-              style={{ display: "inline-block", padding: "12px 28px", background: C.yellow, color: C.bg0, borderRadius: 12, fontWeight: 700, textDecoration: "none" }}
+              className="inline-block py-3 px-7 bg-theme-yellow text-bg0 rounded-[12px] font-bold no-underline"
             >
               Back to Lobby
             </Link>
@@ -495,43 +497,34 @@ export function TournamentBattleGamePage() {
       )}
 
       {/* Launch phase overlay */}
-      {gameState?.status === "launching" && !isSpectating && (
+      {gameState?.status === "launching" && (
         <LaunchPhase
           launchTimer={gameState.launchTimer ?? 5}
-          launchTilt={launchState.tilt}
-          launchPosition={launchState.position}
-          launchPower={launchState.power}
-          chargingStarted={launchState.chargingStarted}
-          launched={launchState.launched}
-          failed={myBeyblade?.launchFailed ?? false}
-          isSpectating={false}
-        />
-      )}
-      {gameState?.status === "launching" && isSpectating && (
-        <LaunchPhase
-          launchTimer={gameState.launchTimer ?? 5}
-          launchTilt={0}
-          launchPosition={0.5}
-          launchPower={0}
-          chargingStarted={false}
-          launched={false}
-          failed={false}
-          isSpectating={true}
+          launchTilt={isSpectating ? 0 : launchState.tilt}
+          launchPosition={isSpectating ? 0.5 : launchState.position}
+          launchPower={isSpectating ? 0 : launchState.power}
+          chargingStarted={isSpectating ? false : launchState.chargingStarted}
+          launched={isSpectating ? false : launchState.launched}
+          failed={isSpectating ? false : (myBeyblade?.launchFailed ?? false)}
+          isSpectating={isSpectating}
+          myBeyId={myBeyblade?.id ?? null}
+          beyblades={beyblades}
+          arena={gameState.arena}
         />
       )}
 
       {/* Connecting overlay */}
       {connectionState !== "connected" && gameState === null && !loadError && (
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.85)", zIndex: 50 }}>
-          <div style={{ textAlign: "center" }}>
-            <div className="spin" style={{ width: 48, height: 48, border: `4px solid ${C.yellow}`, borderTopColor: "transparent", borderRadius: "50%", margin: "0 auto 16px" }} />
-            <p style={{ color: C.text }}>
+        <div className="absolute inset-0 flex items-center justify-center bg-black/85 z-50">
+          <div className="text-center">
+            <div className="spin w-12 h-12 border-4 border-theme-yellow border-t-transparent rounded-full mx-auto mb-4" />
+            <p className="text-theme-text">
               {!colyseusRoomId ? "Loading match..." : connectionState === "connecting" ? "Joining tournament room..." : "Connection lost"}
             </p>
             {connectionState === "error" && (
-              <div style={{ marginTop: 16 }}>
-                <p style={{ color: C.faint, fontSize: 13, marginBottom: 8 }}>Could not join room</p>
-                <Link to={`/game/tournament/${tournamentId}`} style={{ display: "block", padding: "8px 16px", background: C.yellow, color: C.bg0, borderRadius: 8, textDecoration: "none", fontSize: 13 }}>
+              <div className="mt-4">
+                <p className="text-theme-faint text-[13px] mb-2">Could not join room</p>
+                <Link to={`/game/tournament/${tournamentId}`} className="block py-2 px-4 bg-theme-yellow text-bg0 rounded-lg no-underline text-[13px]">
                   Back to Lobby
                 </Link>
               </div>
@@ -544,16 +537,19 @@ export function TournamentBattleGamePage() {
   );
 }
 
-function Bar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+function Bar({ label, value, max, barColorClass }: { label: string; value: number; max: number; barColorClass: string }) {
   const pct = Math.min(100, (value / Math.max(1, max)) * 100);
   return (
-    <div style={{ marginBottom: 6 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 4 }}>
-        <span style={{ color }}>{label}</span>
-        <span style={{ color: C.text, fontFamily: "monospace" }}>{Math.round(value)}</span>
+    <div className="mb-1.5">
+      <div className="flex justify-between text-[11px] mb-1">
+        <span className="text-theme-muted">{label}</span>
+        <span className="text-theme-text font-mono">{Math.round(value)}</span>
       </div>
-      <div style={{ width: "100%", height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
-        <div style={{ height: "100%", borderRadius: 3, transition: "width 150ms", width: `${pct}%`, background: color }} />
+      <div className="w-full h-[5px] bg-bg3 rounded-[3px] overflow-hidden">
+        <div
+          className={`h-full rounded-[3px] transition-[width] duration-150 w-pct ${barColorClass}`}
+          style={{ "--pct": `${pct}%` } as React.CSSProperties}
+        />
       </div>
     </div>
   );

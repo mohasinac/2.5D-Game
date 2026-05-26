@@ -1,7 +1,5 @@
-// ThemeToggle — small icon button that flips light/dark.
-// Stays out of the way; lives in admin top-bar and any header that wants it.
-
 import { useTheme } from "@/contexts/ThemeContext";
+import { cn } from "@/lib/cn";
 
 export function ThemeToggle({ compact = false }: { compact?: boolean }) {
   const { theme, toggleTheme } = useTheme();
@@ -12,16 +10,10 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
       onClick={toggleTheme}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Light mode" : "Dark mode"}
-      style={{
-        background: "transparent",
-        border: "1px solid rgba(120,160,200,0.35)",
-        borderRadius: "0.4rem",
-        color: "inherit",
-        cursor: "pointer",
-        padding: compact ? "0.2rem 0.45rem" : "0.4rem 0.65rem",
-        fontSize: compact ? "0.85rem" : "1rem",
-        lineHeight: 1,
-      }}
+      className={cn(
+        "border border-border-c rounded-md text-theme-text hover:bg-bg2 transition-colors leading-none",
+        compact ? "px-1.5 py-1 text-sm" : "px-2.5 py-1.5 text-base",
+      )}
     >
       {isDark ? "🌙" : "☀️"}
     </button>

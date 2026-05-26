@@ -4,7 +4,6 @@ import { collection, getDocs, deleteDoc, doc, orderBy, query } from "firebase/fi
 import { db, COLLECTIONS } from "@/lib/firebase";
 import type { BeybladeSystem } from "@/types/beybladeSystem";
 import toast from "react-hot-toast";
-import { C, alpha } from "@/styles/theme";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Layers } from "lucide-react";
 
@@ -42,27 +41,24 @@ export function BeybladeSystemListPage() {
   };
 
   return (
-    <div style={{ padding: 32, maxWidth: 900 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+    <div className="p-8 max-w-[900px]">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, margin: 0 }}>Beyblade Systems</h1>
-          <p style={{ color: C.muted, fontSize: 13, marginTop: 4 }}>
+          <h1 className="text-[22px] font-bold text-theme-text m-0">Beyblade Systems</h1>
+          <p className="text-theme-muted text-[13px] mt-1">
             Modular part compositions — each system references parts by ID.
           </p>
         </div>
         <Link
           to="/admin/2d/beyblade-systems/create"
-          style={{
-            padding: "9px 18px", background: C.blue, color: "#fff",
-            borderRadius: 8, textDecoration: "none", fontSize: 13, fontWeight: 600,
-          }}
+          className="px-[18px] py-[9px] bg-theme-blue text-white rounded-lg no-underline text-[13px] font-semibold"
         >
           + New System
         </Link>
       </div>
 
       {loading ? (
-        <div style={{ color: C.muted, fontSize: 13 }}>Loading…</div>
+        <div className="text-theme-muted text-[13px]">Loading…</div>
       ) : systems.length === 0 ? (
         <EmptyState
           icon={<Layers size={40} />}
@@ -71,60 +67,41 @@ export function BeybladeSystemListPage() {
           action={
             <Link
               to="/admin/2d/beyblade-systems/create"
-              style={{
-                padding: "9px 18px", background: C.blue, color: "#fff",
-                borderRadius: 8, textDecoration: "none", fontSize: 13, fontWeight: 600,
-              }}
+              className="px-[18px] py-[9px] bg-theme-blue text-white rounded-lg no-underline text-[13px] font-semibold"
             >
               Create First System
             </Link>
           }
         />
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {systems.map((sys) => (
             <div
               key={sys.id}
-              style={{
-                background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10,
-                padding: "14px 18px", display: "flex", alignItems: "center", gap: 16,
-              }}
+              className="bg-bg1 border border-border-c rounded-[10px] px-[18px] py-3.5 flex items-center gap-4"
             >
-              <div
-                style={{
-                  width: 36, height: 36, borderRadius: "50%", background: C.bg3,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 18, flexShrink: 0,
-                }}
-              >
+              <div className="w-9 h-9 rounded-full bg-bg3 flex items-center justify-center text-[18px] shrink-0">
                 {sys.spinDirection === "left" ? "↺" : "↻"}
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 600, color: C.text, fontSize: 14 }}>{sys.displayName}</div>
-                <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-theme-text text-[14px]">{sys.displayName}</div>
+                <div className="text-[11px] text-theme-muted mt-0.5">
                   {sys.spinDirection}-spin
                   {sys.linkedStatsId && (
-                    <span style={{ marginLeft: 8, color: C.green }}>· linked to stats</span>
+                    <span className="ml-2 text-theme-green">· linked to stats</span>
                   )}
                 </div>
               </div>
-              <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+              <div className="flex gap-2 shrink-0">
                 <Link
                   to={`/admin/2d/beyblade-systems/edit/${sys.id}`}
-                  style={{
-                    padding: "6px 14px", background: C.bg2, color: C.text,
-                    borderRadius: 6, textDecoration: "none", fontSize: 12,
-                    border: `1px solid ${C.border}`,
-                  }}
+                  className="px-3.5 py-1.5 bg-bg2 text-theme-text rounded-[6px] no-underline text-[12px] border border-border-c"
                 >
                   Edit
                 </Link>
                 <button
                   onClick={() => setConfirmDelete(sys)}
-                  style={{
-                    padding: "6px 14px", background: "none", color: C.red,
-                    border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 6, fontSize: 12, cursor: "pointer",
-                  }}
+                  className="px-3.5 py-1.5 bg-transparent text-theme-red border border-theme-red/[.27] rounded-[6px] text-[12px] cursor-pointer"
                 >
                   Delete
                 </button>
@@ -136,25 +113,22 @@ export function BeybladeSystemListPage() {
 
       {/* Delete confirmation */}
       {confirmDelete && (
-        <div style={{
-          position: "fixed", inset: 0, background: "#0009", display: "flex",
-          alignItems: "center", justifyContent: "center", zIndex: 1000,
-        }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: 28, maxWidth: 360, width: "100%" }}>
-            <div style={{ fontWeight: 700, color: C.text, fontSize: 16, marginBottom: 10 }}>Delete System?</div>
-            <div style={{ color: C.muted, fontSize: 13, marginBottom: 20 }}>
-              Delete <strong style={{ color: C.text }}>{confirmDelete.displayName}</strong>? This cannot be undone.
+        <div className="fixed inset-0 bg-black/[.55] flex items-center justify-center z-[1000]">
+          <div className="bg-bg1 border border-border-c rounded-xl p-7 max-w-[360px] w-full">
+            <div className="font-bold text-theme-text text-[16px] mb-2.5">Delete System?</div>
+            <div className="text-theme-muted text-[13px] mb-5">
+              Delete <strong className="text-theme-text">{confirmDelete.displayName}</strong>? This cannot be undone.
             </div>
-            <div style={{ display: "flex", gap: 10 }}>
+            <div className="flex gap-2.5">
               <button
                 onClick={handleDelete}
-                style={{ flex: 1, padding: "9px 0", background: C.red, color: "#fff", border: "none", borderRadius: 8, fontSize: 13, cursor: "pointer" }}
+                className="flex-1 py-[9px] bg-theme-red text-white border-none rounded-lg text-[13px] cursor-pointer"
               >
                 Delete
               </button>
               <button
                 onClick={() => setConfirmDelete(null)}
-                style={{ flex: 1, padding: "9px 0", background: C.bg2, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, cursor: "pointer" }}
+                className="flex-1 py-[9px] bg-bg2 text-theme-muted border border-border-c rounded-lg text-[13px] cursor-pointer"
               >
                 Cancel
               </button>

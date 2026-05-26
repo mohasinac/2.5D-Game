@@ -63,8 +63,7 @@ function Toggle({ on, onChange }: { on: boolean; onChange: () => void }) {
   return (
     <button
       role="switch" aria-checked={on} onClick={onChange}
-      className={`relative w-10 h-5.5 rounded-full border-none cursor-pointer flex-shrink-0 transition-colors ${on ? "bg-blue" : "bg-bg3"}`}
-      style={{ height: 22 }}
+      className={`relative w-10 h-[22px] rounded-full border-none cursor-pointer flex-shrink-0 transition-colors ${on ? "bg-blue" : "bg-bg3"}`}
     >
       <span className={`absolute top-[3px] w-4 h-4 bg-white rounded-full transition-[left] duration-150 ${on ? "left-[19px]" : "left-[3px]"}`} />
     </button>

@@ -1,77 +1,53 @@
 import { Link } from "react-router-dom";
-import { C } from "@/styles/theme";
 
 export function HomePage() {
   return (
-    <div style={{
-      minHeight:"100vh",
-      background:`radial-gradient(ellipse at 50% 0%, ${C.blue}18 0%, ${C.bg0} 70%)`,
-      display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:32,
-    }}>
-      <div style={{ textAlign:"center", marginBottom:56 }}>
-        <div style={{ fontSize:80, marginBottom:16 }}>🌀</div>
-        <h1 style={{ fontSize:52, fontWeight:900, color:C.text, letterSpacing:"-0.03em", marginBottom:12 }}>
+    <div className="min-h-screen bg-bg0 flex flex-col items-center justify-center p-8 [background:radial-gradient(ellipse_at_50%_0%,color-mix(in_srgb,var(--blue)_9%,transparent)_0%,var(--bg0)_70%)]">
+      <div className="text-center mb-14">
+        <div className="text-[80px] mb-4">🌀</div>
+        <h1 className="text-[52px] font-black text-theme-text tracking-[-0.03em] mb-3">
           Beyblade Game
         </h1>
-        <p style={{ fontSize:18, color:C.muted }}>Real-time multiplayer spinning top battles</p>
+        <p className="text-[18px] text-theme-muted">Real-time multiplayer spinning top battles</p>
       </div>
 
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, maxWidth:560, width:"100%", marginBottom:40 }}>
+      <div className="grid grid-cols-2 gap-4 max-w-[560px] w-full mb-10">
         <Link
           to="/game"
-          style={{
-            display:"block", padding:32, background:C.bg2,
-            borderRadius:20, border:`1px solid ${C.border}`,
-            textDecoration:"none", transition:"border-color 200ms",
-          }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = C.blue)}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
+          className="group block p-8 bg-bg2 rounded-[20px] border border-border-c no-underline transition-colors duration-200 hover:border-theme-blue"
         >
-          <div style={{ textAlign:"center" }}>
-            <div style={{ fontSize:44, marginBottom:12 }}>🎮</div>
-            <h2 style={{ fontSize:20, fontWeight:700, color:C.text, marginBottom:6 }}>Play Game</h2>
-            <p style={{ color:C.muted, fontSize:13 }}>Tryout mode or live PVP battles</p>
+          <div className="text-center">
+            <div className="text-[44px] mb-3">🎮</div>
+            <h2 className="text-[20px] font-bold text-theme-text mb-1.5">Play Game</h2>
+            <p className="text-theme-muted text-[13px]">Tryout mode or live PVP battles</p>
           </div>
         </Link>
 
         <Link
           to="/admin"
-          style={{
-            display:"block", padding:32, background:C.bg2,
-            borderRadius:20, border:`1px solid ${C.border}`,
-            textDecoration:"none", transition:"border-color 200ms",
-          }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = C.purple)}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
+          className="group block p-8 bg-bg2 rounded-[20px] border border-border-c no-underline transition-colors duration-200 hover:border-theme-purple"
         >
-          <div style={{ textAlign:"center" }}>
-            <div style={{ fontSize:44, marginBottom:12 }}>⚙️</div>
-            <h2 style={{ fontSize:20, fontWeight:700, color:C.text, marginBottom:6 }}>Admin Panel</h2>
-            <p style={{ color:C.muted, fontSize:13 }}>Manage beyblades, arenas, and assets</p>
+          <div className="text-center">
+            <div className="text-[44px] mb-3">⚙️</div>
+            <h2 className="text-[20px] font-bold text-theme-text mb-1.5">Admin Panel</h2>
+            <p className="text-theme-muted text-[13px]">Manage beyblades, arenas, and assets</p>
           </div>
         </Link>
       </div>
 
-      <div style={{ display:"flex", gap:12, marginBottom:20 }}>
+      <div className="flex gap-3 mb-5">
         <Link
           to="/leaderboard"
-          style={{
-            padding:"10px 20px", background:C.bg2+"99", borderRadius:12,
-            border:`1px solid ${C.border}`, textDecoration:"none",
-            color:C.yellow, fontSize:13, fontWeight:600,
-          }}
+          className="py-[10px] px-5 bg-bg2/60 rounded-xl border border-border-c no-underline text-theme-yellow text-[13px] font-semibold"
         >
           🏆 Leaderboard
         </Link>
       </div>
 
-      <div style={{
-        display:"flex", alignItems:"center", gap:10,
-        background:C.bg2+"99", borderRadius:12, padding:"10px 20px", border:`1px solid ${C.border}`,
-      }}>
-        <div style={{ width:8, height:8, borderRadius:"50%", background:C.green }} className="pulse" />
-        <span style={{ color:C.muted, fontSize:13 }}>Game Server Ready</span>
-        <span style={{ color:C.faint, fontSize:12 }}>· port 2567</span>
+      <div className="flex items-center gap-2.5 bg-bg2/60 rounded-xl py-[10px] px-5 border border-border-c">
+        <div className="w-2 h-2 rounded-full bg-theme-green pulse" />
+        <span className="text-theme-muted text-[13px]">Game Server Ready</span>
+        <span className="text-theme-faint text-[12px]">· port 2567</span>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore"
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGameDataStore } from "@/stores/gameDataStore";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
-import { C } from "@/styles/theme";
+import { cn } from "@/lib/cn";
 import { KEY_LABEL, type ComboKey } from "@/constants/combos";
 import toast from "react-hot-toast";
 
@@ -83,10 +83,7 @@ const DASH_DIRS = [
   { value: "back", label: "Back" },
 ];
 
-const inputStyle: React.CSSProperties = {
-  width: "100%", padding: "8px 10px", background: "var(--bg0, #0f172a)",
-  border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13, boxSizing: "border-box",
-};
+const INP = "w-full px-2.5 py-2 bg-bg0 border border-border-c rounded-lg text-theme-text text-sm";
 
 export function CombosPage() {
   const [items, setItems] = useState<ComboDoc[]>([]);
@@ -171,102 +168,102 @@ export function CombosPage() {
   const filtered = query ? items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()) || i.id.includes(query)) : items;
 
   return (
-    <div style={{ padding: 24, width: "100%", boxSizing: "border-box" as const }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
+    <div className="page-shell p-6">
+      <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>Combos</h1>
-          <p style={{ color: C.faint, fontSize: 13, marginTop: 4 }}>{loading ? "Loading…" : `${items.length} combos`}</p>
+          <h1 className="text-[22px] font-bold text-theme-text">Combos</h1>
+          <p className="text-theme-faint text-sm mt-1">{loading ? "Loading…" : `${items.length} combos`}</p>
         </div>
-        <button onClick={openCreate} style={{ padding: "8px 16px", background: C.blue, color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 500, border: "none", cursor: "pointer" }}>
+        <button onClick={openCreate} className="px-4 py-2 bg-theme-blue text-white rounded-lg text-sm font-medium border-none cursor-pointer">
           + New Combo
         </button>
       </div>
 
       <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Filter combos…"
-        style={{ ...inputStyle, marginBottom: 12 }} />
+        className={`${INP} mb-3`} />
 
-      {loading ? <div style={{ color: C.muted }}>Loading…</div> : filtered.length === 0 ? <div style={{ color: C.muted }}>No combos found.</div> : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {loading ? <div className="text-theme-muted">Loading…</div> : filtered.length === 0 ? <div className="text-theme-muted">No combos found.</div> : (
+        <div className="flex flex-col gap-2">
           {filtered.map(item => (
-            <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 14, background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: "12px 16px" }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                  <span style={{ fontWeight: 600, color: C.text, fontSize: 14 }}>{item.name}</span>
-                  <span style={{ fontFamily: "monospace", fontSize: 11, color: C.faint, background: C.bg2, padding: "1px 6px", borderRadius: 4 }}>{item.id}</span>
-                  <span style={{ fontSize: 11, background: C.blue + "22", color: C.blue, padding: "2px 7px", borderRadius: 4 }}>{item.type}</span>
-                  <span style={{ fontSize: 11, background: C.yellow + "22", color: C.yellow, padding: "2px 7px", borderRadius: 4 }}>cost {item.cost}</span>
-                  <span style={{ fontSize: 11, color: C.muted }}>cd {item.cooldownMs}ms</span>
+            <div key={item.id} className="flex items-center gap-3.5 bg-bg1 border border-border-c rounded-xl px-4 py-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-semibold text-theme-text text-sm">{item.name}</span>
+                  <span className="font-mono text-[11px] text-theme-faint bg-bg2 px-1.5 py-px rounded">{item.id}</span>
+                  <span className="text-[11px] bg-blue-10 text-theme-blue px-[7px] py-0.5 rounded">{item.type}</span>
+                  <span className="text-[11px] bg-yellow-10 text-theme-yellow px-[7px] py-0.5 rounded">cost {item.cost}</span>
+                  <span className="text-[11px] text-theme-muted">cd {item.cooldownMs}ms</span>
                 </div>
-                <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
+                <div className="flex gap-1 mt-1.5">
                   {item.sequence.map((k, i) => (
-                    <span key={i} style={{ background: C.bg2, padding: "2px 10px", borderRadius: 4, fontFamily: "monospace", fontSize: 14, color: C.green, fontWeight: 700 }}>
+                    <span key={i} className="bg-bg2 px-2.5 py-0.5 rounded font-mono text-sm text-theme-green font-bold">
                       {KEY_LABEL[k as ComboKey] ?? k}
                     </span>
                   ))}
                 </div>
-                {item.description && <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{item.description}</div>}
+                {item.description && <div className="text-xs text-theme-muted mt-1">{item.description}</div>}
               </div>
-              <button onClick={() => openEdit(item)} style={{ padding: "6px 14px", borderRadius: 7, fontSize: 12, cursor: "pointer", border: `1px solid ${C.border}`, background: "transparent", color: C.muted }}>Edit</button>
-              <button onClick={() => setConfirmDelete(item)} style={{ padding: "6px 14px", borderRadius: 7, fontSize: 12, cursor: "pointer", border: `1px solid ${C.red}66`, background: "transparent", color: C.red }}>Delete</button>
+              <button onClick={() => openEdit(item)} className="px-3.5 py-1.5 rounded-[7px] text-xs cursor-pointer border border-border-c bg-transparent text-theme-muted">Edit</button>
+              <button onClick={() => setConfirmDelete(item)} className="px-3.5 py-1.5 rounded-[7px] text-xs cursor-pointer border border-theme-red/40 bg-transparent text-theme-red">Delete</button>
             </div>
           ))}
         </div>
       )}
 
       {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 16 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, width: "100%", maxWidth: 560, maxHeight: "90vh", overflowY: "auto" }}>
-            <h3 style={{ fontSize: 17, fontWeight: 700, color: C.text, marginBottom: 20 }}>{editing ? "Edit Combo" : "New Combo"}</h3>
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000] p-4">
+          <div className="bg-bg1 border border-border-c rounded-2xl p-7 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
+            <h3 className="text-[17px] font-bold text-theme-text mb-5">{editing ? "Edit Combo" : "New Combo"}</h3>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Name</span>
-              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} />
-              {!editing && form.name && <span style={{ fontSize: 11, color: C.faint }}>ID: {slugify(form.name) || "…"}</span>}
+            <label className="block mb-3.5">
+              <span className="text-xs text-theme-muted block mb-1">Name</span>
+              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={INP} />
+              {!editing && form.name && <span className="text-[11px] text-theme-faint">ID: {slugify(form.name) || "…"}</span>}
             </label>
 
-            <div style={{ marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Sequence (3 keys)</span>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+            <div className="mb-3.5">
+              <span className="text-xs text-theme-muted block mb-1">Sequence (3 keys)</span>
+              <div className="grid grid-cols-3 gap-2">
                 {([0, 1, 2] as const).map(i => (
                   <SearchableSelect key={i} value={form.sequence[i]}
                     onChange={v => setForm(f => { const s = [...f.sequence] as [string, string, string]; s[i] = v; return { ...f, sequence: s }; })}
                     options={KEY_OPTIONS} placeholder={`Key ${i + 1}`} />
                 ))}
               </div>
-              <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+              <div className="flex gap-1.5 mt-2">
                 {form.sequence.map((k, i) => (
-                  <span key={i} style={{ background: C.bg2, padding: "3px 12px", borderRadius: 4, fontFamily: "monospace", fontSize: 16, color: C.green, fontWeight: 700 }}>
+                  <span key={i} className="bg-bg2 px-3 py-[3px] rounded font-mono text-base text-theme-green font-bold">
                     {KEY_LABEL[k as ComboKey] ?? k}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+            <div className="grid grid-cols-2 gap-3 mb-3.5">
               <div>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Cost</span>
+                <span className="text-xs text-theme-muted block mb-1">Cost</span>
                 <SearchableSelect value={String(form.cost)} onChange={v => setForm(f => ({ ...f, cost: Number(v) }))} options={COST_OPTIONS} placeholder="Cost…" />
               </div>
               <div>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Type</span>
+                <span className="text-xs text-theme-muted block mb-1">Type</span>
                 <SearchableSelect value={form.type} onChange={v => setForm(f => ({ ...f, type: v }))} options={TYPE_OPTIONS} placeholder="Type…" />
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
-              <label style={{ display: "block" }}>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Cooldown (ms)</span>
-                <input type="number" min={0} value={form.cooldownMs} onChange={e => setForm(f => ({ ...f, cooldownMs: Number(e.target.value) }))} style={inputStyle} />
+            <div className="grid grid-cols-2 gap-3 mb-3.5">
+              <label className="block">
+                <span className="text-xs text-theme-muted block mb-1">Cooldown (ms)</span>
+                <input type="number" min={0} value={form.cooldownMs} onChange={e => setForm(f => ({ ...f, cooldownMs: Number(e.target.value) }))} className={INP} />
               </label>
-              <label style={{ display: "block" }}>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Window (ms) — max time between keys</span>
-                <input type="number" min={100} max={800} step={50} value={form.windowMs} onChange={e => setForm(f => ({ ...f, windowMs: Number(e.target.value) }))} style={inputStyle} />
+              <label className="block">
+                <span className="text-xs text-theme-muted block mb-1">Window (ms) — max time between keys</span>
+                <input type="number" min={100} max={800} step={50} value={form.windowMs} onChange={e => setForm(f => ({ ...f, windowMs: Number(e.target.value) }))} className={INP} />
               </label>
             </div>
 
-            <div style={{ marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
-                Effect ID <span style={{ color: C.faint, fontWeight: 400 }}>(optional — links to combo_effects collection)</span>
+            <div className="mb-3.5">
+              <span className="text-xs text-theme-muted block mb-1">
+                Effect ID <span className="text-theme-faint font-normal">(optional — links to combo_effects collection)</span>
               </span>
               <SearchableSelect
                 value={form.effectId}
@@ -276,9 +273,9 @@ export function CombosPage() {
               />
             </div>
 
-            <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, padding: 14, marginBottom: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.muted, marginBottom: 12 }}>Combat Effect</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div className="border border-border-c rounded-[10px] p-3.5 mb-3.5">
+              <div className="text-xs font-semibold text-theme-muted mb-3">Combat Effect</div>
+              <div className="grid grid-cols-2 gap-2.5">
                 {([
                   ["Damage Multiplier (1.0–1.5)", "damageMultiplier", 1.0, 1.5, 0.05] as const,
                   ["Force Impulse", "forceImpulse", 0, 5000, 50] as const,
@@ -287,24 +284,26 @@ export function CombosPage() {
                   ["Spin Steal Bonus", "spinStealBonus", 0, 0.1, 0.005] as const,
                   ["Micro Spin Boost", "microSpinBoost", 0, 50, 1] as const,
                 ] as const).map(([label, field, min, max, step]) => (
-                  <label key={field} style={{ display: "block" }}>
-                    <span style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 3 }}>{label}</span>
+                  <label key={field} className="block">
+                    <span className="text-[11px] text-theme-muted block mb-[3px]">{label}</span>
                     <input type="number" min={min} max={max} step={step}
                       value={(form.effect as any)[field] ?? min}
                       onChange={e => setForm(f => ({ ...f, effect: { ...f.effect, [field]: Number(e.target.value) } }))}
-                      style={{ ...inputStyle, padding: "6px 8px", fontSize: 12 }} />
+                      className="w-full px-2 py-1.5 bg-bg0 border border-border-c rounded-lg text-theme-text text-xs" />
                   </label>
                 ))}
               </div>
-              <div style={{ marginTop: 10 }}>
-                <span style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 3 }}>Dash Direction</span>
-                <div style={{ display: "flex", gap: 6 }}>
+              <div className="mt-2.5">
+                <span className="text-[11px] text-theme-muted block mb-[3px]">Dash Direction</span>
+                <div className="flex gap-1.5">
                   {DASH_DIRS.map(d => (
                     <button key={d.value} onClick={() => setForm(f => ({ ...f, effect: { ...f.effect, dashDirection: d.value } }))}
-                      style={{ padding: "5px 12px", fontSize: 11, borderRadius: 6, cursor: "pointer",
-                        background: form.effect.dashDirection === d.value ? C.blue + "22" : C.bg2,
-                        color: form.effect.dashDirection === d.value ? C.blue : C.muted,
-                        border: `1px solid ${form.effect.dashDirection === d.value ? C.blue + "55" : C.border}` }}>
+                      className={cn(
+                        "px-3 py-[5px] text-[11px] rounded-md cursor-pointer border",
+                        form.effect.dashDirection === d.value
+                          ? "bg-blue-10 text-theme-blue border-theme-blue/35"
+                          : "bg-transparent text-theme-muted border-border-c"
+                      )}>
                       {d.label}
                     </button>
                   ))}
@@ -312,29 +311,29 @@ export function CombosPage() {
               </div>
             </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
+            <label className="block mb-3.5">
+              <span className="text-xs text-theme-muted block mb-1">
                 Effect Refs (MechanicInstance[]) — JSON array
-                {effectRefsError && <span style={{ color: "#e74c3c", marginLeft: 8 }}>{effectRefsError}</span>}
+                {effectRefsError && <span className="text-theme-red ml-2">{effectRefsError}</span>}
               </span>
               <textarea
                 value={form.effectRefsJson}
                 onChange={e => { setForm(f => ({ ...f, effectRefsJson: e.target.value })); setEffectRefsError(tryParseJson(e.target.value) === null ? "Must be a JSON array" : ""); }}
                 rows={4}
-                style={{ ...inputStyle, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
+                className={`${INP} resize-y font-mono text-xs`}
                 placeholder={'[\n  { "mechanicId": "velocity_burst", "params": { "forceX": 0.12 } }\n]'}
               />
             </label>
 
-            <label style={{ display: "block", marginBottom: 20 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>
+            <label className="block mb-5">
+              <span className="text-xs text-theme-muted block mb-1">Description</span>
               <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2}
-                style={{ ...inputStyle, resize: "vertical" }} />
+                className={`${INP} resize-y`} />
             </label>
 
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setShowModal(false)} style={{ padding: "8px 18px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleSave} disabled={saving} style={{ padding: "8px 18px", borderRadius: 8, fontSize: 13, border: "none", background: C.blue, color: "#fff", cursor: "pointer", opacity: saving ? 0.6 : 1 }}>
+            <div className="flex gap-2.5 justify-end">
+              <button onClick={() => setShowModal(false)} className="px-[18px] py-2 rounded-lg text-sm border border-border-c bg-transparent text-theme-muted cursor-pointer">Cancel</button>
+              <button onClick={handleSave} disabled={saving} className="px-[18px] py-2 rounded-lg text-sm border-none bg-theme-blue text-white cursor-pointer disabled:opacity-60">
                 {saving ? "Saving…" : "Save"}
               </button>
             </div>
@@ -343,13 +342,13 @@ export function CombosPage() {
       )}
 
       {confirmDelete && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, maxWidth: 400, width: "90%" }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 10 }}>Delete "{confirmDelete.name}"?</h3>
-            <p style={{ color: C.muted, fontSize: 13, marginBottom: 20 }}>This will permanently remove the combo. Beyblades with this combo ID will keep the reference but show nothing.</p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleDelete} style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: "none", background: C.red, color: "#fff", cursor: "pointer" }}>Delete</button>
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000]">
+          <div className="bg-bg1 border border-border-c rounded-2xl p-7 max-w-[400px] w-[90%]">
+            <h3 className="text-base font-bold text-theme-text mb-2.5">Delete "{confirmDelete.name}"?</h3>
+            <p className="text-theme-muted text-sm mb-5">This will permanently remove the combo. Beyblades with this combo ID will keep the reference but show nothing.</p>
+            <div className="flex gap-2.5 justify-end">
+              <button onClick={() => setConfirmDelete(null)} className="px-4 py-[7px] rounded-lg text-sm border border-border-c bg-transparent text-theme-muted cursor-pointer">Cancel</button>
+              <button onClick={handleDelete} className="px-4 py-[7px] rounded-lg text-sm border-none bg-theme-red text-white cursor-pointer">Delete</button>
             </div>
           </div>
         </div>

@@ -37,35 +37,26 @@ export function ScriptBuilder({ steps, onChange, label = "Script Builder" }: Pro
   return (
     <div
       data-testid="script-builder"
+      className="grid overflow-hidden bg-bg1 border border-border-c rounded-xl h-full"
       style={{
-        display: "grid",
         gridTemplateColumns: "200px 1fr 320px",
         gridTemplateRows: "36px 1fr",
-        height: "100%",
-        overflow: "hidden",
-        background: "var(--bg1)",
-        border: `1px solid ${C.border}`,
-        borderRadius: 14,
       }}
     >
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div style={{
-        gridColumn: "1 / -1",
-        borderBottom: `1px solid ${C.border}`,
-        display: "flex",
-        alignItems: "center",
-        padding: "0 14px",
-        gap: 10,
-      }}>
-        <span style={{ fontSize: 12, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</span>
-        <span style={{ fontSize: 11, color: C.faint }}>
+      <div
+        className="border-b border-border-c flex items-center px-[14px] gap-[10px]"
+        style={{ gridColumn: "1 / -1" }}
+      >
+        <span className="text-[12px] font-bold text-theme-muted uppercase tracking-[0.05em]">{label}</span>
+        <span className="text-[11px] text-theme-faint">
           {steps.length} step{steps.length !== 1 ? "s" : ""}
         </span>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+        <div className="ml-auto flex gap-[6px]">
           <button
             type="button"
             onClick={() => onChange([])}
-            style={{ padding: "2px 8px", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}
+            className="px-2 py-[2px] bg-transparent border border-border-c rounded-md text-theme-muted text-[11px] cursor-pointer"
           >
             Clear
           </button>
@@ -73,18 +64,12 @@ export function ScriptBuilder({ steps, onChange, label = "Script Builder" }: Pro
       </div>
 
       {/* ── Left: Toolbox ──────────────────────────────────────────────────── */}
-      <div style={{
-        borderRight: `1px solid ${C.border}`,
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        background: "var(--bg2)",
-      }}>
+      <div className="border-r border-border-c overflow-hidden flex flex-col bg-bg2">
         <ToolboxPanel onDragStart={setDraggedBlock} />
       </div>
 
       {/* ── Center: Block Canvas ───────────────────────────────────────────── */}
-      <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <div className="flex flex-col overflow-hidden">
         <BlockCanvas
           steps={steps}
           onChange={onChange}
@@ -94,40 +79,26 @@ export function ScriptBuilder({ steps, onChange, label = "Script Builder" }: Pro
       </div>
 
       {/* ── Right: Script / Test / Record tabs ────────────────────────────── */}
-      <div style={{
-        borderLeft: `1px solid ${C.border}`,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        background: "var(--bg2)",
-      }}>
+      <div className="border-l border-border-c flex flex-col overflow-hidden bg-bg2">
         {/* Tab bar */}
-        <div style={{ display: "flex", borderBottom: `1px solid ${C.border}` }}>
+        <div className="flex border-b border-border-c">
           {(["script", "test", "record"] as RightTab[]).map(t => (
             <button
               key={t}
               type="button"
               onClick={() => setRightTab(t)}
-              style={{
-                flex: 1,
-                padding: "6px 4px",
-                fontSize: 11,
-                fontWeight: rightTab === t ? 700 : 400,
-                background: "transparent",
-                border: "none",
-                borderBottom: rightTab === t ? `2px solid ${C.blue}` : "2px solid transparent",
-                color: rightTab === t ? C.text : C.faint,
-                cursor: "pointer",
-                textTransform: "uppercase",
-                letterSpacing: "0.03em",
-              }}
+              className={[
+                "flex-1 py-[6px] px-1 text-[11px] bg-transparent border-none cursor-pointer uppercase tracking-[0.03em]",
+                rightTab === t ? "font-bold text-theme-text" : "font-normal text-theme-faint",
+              ].join(" ")}
+              style={{ borderBottom: rightTab === t ? `2px solid ${C.blue}` : "2px solid transparent" }}
             >
               {t === "script" ? "JSON" : t === "test" ? "Test" : "Record"}
             </button>
           ))}
         </div>
 
-        <div style={{ flex: 1, overflow: "auto" }}>
+        <div className="flex-1 overflow-auto">
           {rightTab === "script" && (
             <RawScriptPanel steps={steps} onChange={onChange} />
           )}

@@ -67,37 +67,23 @@ export function OpponentPanel({ myId, beyGhosts }: OpponentPanelProps) {
   if (opponents.length === 0) return null;
 
   return (
-    <div style={{
-      position: "absolute",
-      right: "0.6rem",
-      top: "50%",
-      transform: "translateY(-50%)",
-      display: "flex",
-      flexDirection: "column",
-      gap: "3px",
-      zIndex: 50,
-      pointerEvents: "none",
-    }}>
+    <div
+      style={{ position: "absolute", right: "0.6rem", top: "50%", transform: "translateY(-50%)" }}
+      className="flex flex-col gap-[3px] z-50 pointer-events-none"
+    >
       {opponents.map(op => {
         const color = TYPE_COLORS[op.beyType] ?? "#aabbcc";
         return (
-          <div key={op.id} style={{
-            background: "rgba(10,14,28,0.80)",
-            border: `1px solid ${color}44`,
-            borderRadius: "0.35rem",
-            padding: "2px 6px",
-            display: "flex",
-            alignItems: "center",
-            gap: "5px",
-            fontFamily: "monospace",
-            fontSize: "0.6rem",
-            backdropFilter: "blur(2px)",
-          }}>
-            <span style={{ color, fontSize: "0.55rem" }}>{tierLabel(op.tier)}</span>
-            <span style={{ color: "#dde", maxWidth: 64, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <div
+            key={op.id}
+            style={{ border: `1px solid ${color}44` }}
+            className="bg-[rgba(10,14,28,0.80)] rounded-[0.35rem] px-1.5 py-[2px] flex items-center gap-[5px] font-mono text-[0.6rem] backdrop-blur-sm"
+          >
+            <span style={{ color }} className="text-[0.55rem]">{tierLabel(op.tier)}</span>
+            <span className="text-[#dde] max-w-16 overflow-hidden text-ellipsis whitespace-nowrap">
               {op.username}
             </span>
-            <span style={{ color: op.spinPct >= 40 ? "#aaccee" : "#ff6644", marginLeft: "auto" }}>
+            <span style={{ color: op.spinPct >= 40 ? "#aaccee" : "#ff6644" }} className="ml-auto">
               {op.spinPct}%
             </span>
           </div>

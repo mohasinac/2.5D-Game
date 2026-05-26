@@ -1,7 +1,6 @@
 // Reusable editor for ComboVisual — used by ComboEffectEditor, SpecialMoveEditor, etc.
 
 import type { ComboVisual } from "@/types/comboVisual";
-import { C } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 interface Props {
@@ -12,8 +11,8 @@ interface Props {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <label style={{ fontSize: 11, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+    <div className="flex flex-col gap-1">
+      <label className="text-[11px] text-theme-muted font-semibold uppercase tracking-[0.05em]">
         {label}
       </label>
       {children}
@@ -21,18 +20,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-const inputStyle = {
-  background: "var(--bg3)",
-  border: `1px solid ${C.border}`,
-  borderRadius: 8,
-  padding: "6px 10px",
-  color: C.text,
-  fontSize: 13,
-  width: "100%",
-  boxSizing: "border-box" as const,
-};
-
-const selectStyle = { ...inputStyle };
+const inputCls = "bg-bg3 border border-border-c rounded-lg px-[10px] py-[6px] text-theme-text text-[13px] w-full box-border";
 
 export function ComboVisualEditor({ value, onChange, label = "Visual Override" }: Props) {
   function set<K extends keyof ComboVisual>(key: K, val: ComboVisual[K]) {
@@ -40,16 +28,16 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
   }
 
   return (
-    <div style={{ background: "var(--bg2)", border: `1px solid ${C.border}`, borderRadius: 12, padding: 16 }}>
-      <div style={{ fontSize: 12, fontWeight: 700, color: C.muted, marginBottom: 14, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+    <div className="bg-bg2 border border-border-c rounded-xl p-4">
+      <div className="text-[12px] font-bold text-theme-muted mb-[14px] uppercase tracking-[0.06em]">
         {label}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
 
         <Field label="Sprite URL">
           <input
-            style={inputStyle}
+            className={inputCls}
             type="url"
             placeholder="https://…/sprite.png"
             value={value.spriteUrl ?? ""}
@@ -63,13 +51,13 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
             options={[{ value: "base", label: "base" }, { value: "overlay", label: "overlay" }, { value: "replace", label: "replace" }]}
             onChange={v => set("spriteLayer", (v || undefined) as ComboVisual["spriteLayer"])}
             emptyLabel="— none —"
-            style={selectStyle}
+            className={inputCls}
           />
         </Field>
 
         <Field label="Animation ID">
           <input
-            style={inputStyle}
+            className={inputCls}
             placeholder="e.g. spin_burst"
             value={value.animationId ?? ""}
             onChange={e => set("animationId", e.target.value || undefined)}
@@ -78,7 +66,7 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
 
         <Field label="Particle Preset ID">
           <input
-            style={inputStyle}
+            className={inputCls}
             placeholder="Firestore particle_presets doc id"
             value={value.particlePresetId ?? ""}
             onChange={e => set("particlePresetId", e.target.value || undefined)}
@@ -87,7 +75,7 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
 
         <Field label="Sound ID">
           <input
-            style={inputStyle}
+            className={inputCls}
             placeholder="Firestore sound_assets doc id"
             value={value.soundId ?? ""}
             onChange={e => set("soundId", e.target.value || undefined)}
@@ -95,15 +83,15 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
         </Field>
 
         <Field label="Screen Flash Color (hex)">
-          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <div className="flex gap-[6px] items-center">
             <input
               type="color"
               value={value.screenFlashColor ?? "#ff4400"}
               onChange={e => set("screenFlashColor", e.target.value)}
-              style={{ width: 36, height: 32, border: "none", borderRadius: 6, cursor: "pointer", background: "transparent" }}
+              className="w-9 h-8 border-none rounded-md cursor-pointer bg-transparent"
             />
             <input
-              style={{ ...inputStyle, flex: 1 }}
+              className={`${inputCls} flex-1`}
               placeholder="#FF4400"
               value={value.screenFlashColor ?? ""}
               onChange={e => set("screenFlashColor", e.target.value || undefined)}
@@ -113,7 +101,7 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
 
         <Field label="Flash Alpha (0–1)">
           <input
-            style={inputStyle}
+            className={inputCls}
             type="number"
             min={0} max={1} step={0.05}
             value={value.screenFlashAlpha ?? ""}
@@ -124,7 +112,7 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
 
         <Field label="Slow-Motion Factor (0–1)">
           <input
-            style={inputStyle}
+            className={inputCls}
             type="number"
             min={0} max={1} step={0.05}
             value={value.slowMotionFactor ?? ""}
@@ -135,7 +123,7 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
 
         <Field label="Slow-Motion Duration (ticks)">
           <input
-            style={inputStyle}
+            className={inputCls}
             type="number"
             min={1} step={1}
             value={value.slowMotionDurationTicks ?? ""}
@@ -145,13 +133,13 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
         </Field>
 
         <div style={{ gridColumn: "1 / -1" }}>
-          <div style={{ fontSize: 11, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>
+          <div className="text-[11px] text-theme-muted font-semibold uppercase tracking-[0.05em] mb-2">
             Camera Shake
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+          <div className="grid gap-2" style={{ gridTemplateColumns: "1fr 1fr" }}>
             <Field label="Intensity">
               <input
-                style={inputStyle}
+                className={inputCls}
                 type="number"
                 min={0} step={0.5}
                 placeholder="5"
@@ -169,7 +157,7 @@ export function ComboVisualEditor({ value, onChange, label = "Visual Override" }
             </Field>
             <Field label="Duration (ticks)">
               <input
-                style={inputStyle}
+                className={inputCls}
                 type="number"
                 min={1} step={1}
                 placeholder="10"
