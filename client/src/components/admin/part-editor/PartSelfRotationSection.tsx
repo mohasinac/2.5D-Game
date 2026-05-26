@@ -1,7 +1,6 @@
 // Reusable "Part-Driven Rotation" editor section.
 // Used by PartEditor (Overview tab) and ContactPointEditor (per-CP panel).
 
-import { C } from "@/styles/theme";
 import type {
   PartSelfRotation,
   PartRotationType,
@@ -34,14 +33,14 @@ function NumInput({ label, value, min, max, step = 1, unit, onChange }: {
   onChange: (v: number) => void;
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-      <label style={{ fontSize: 12, color: C.muted, whiteSpace: "nowrap" }}>{label}</label>
+    <div className="flex items-center gap-1.5">
+      <label className="text-[12px] text-muted whitespace-nowrap">{label}</label>
       <input
         type="number" min={min} max={max} step={step} value={value}
         onChange={e => onChange(+e.target.value)}
-        style={{ width: 80, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "3px 6px", fontSize: 12 }}
+        className="w-20 bg-bg2 border border-border text-text rounded-[6px] px-1.5 py-[3px] text-[12px]"
       />
-      {unit && <span style={{ fontSize: 11, color: C.faint }}>{unit}</span>}
+      {unit && <span className="text-[11px] text-faint">{unit}</span>}
     </div>
   );
 }
@@ -73,51 +72,50 @@ export function PartSelfRotationSection({ value, onChange, heading = "Part-Drive
   }
 
   return (
-    <div style={{ paddingTop: 14, borderTop: `1px solid ${C.border}` }}>
-      <div style={{ fontSize: 12, color: C.muted, marginBottom: 8, fontWeight: 600 }}>{heading}</div>
+    <div className="pt-3.5 border-t border-border">
+      <div className="text-[12px] text-muted mb-2 font-semibold">{heading}</div>
 
       {/* Enable toggle */}
-      <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: C.text, cursor: "pointer", marginBottom: enabled ? 12 : 0 }}>
+      <label className={`flex items-center gap-2 text-[13px] text-text cursor-pointer ${enabled ? "mb-3" : ""}`}>
         <input
           type="checkbox"
           checked={enabled}
           onChange={e => onChange(e.target.checked
             ? { type: "permanent", speedDegPerSec: 90, direction: "cw", axis: { type: "spin_axis" } }
             : null)}
-          style={{ accentColor: C.blue, width: 16, height: 16 }}
+          className="accent-blue w-4 h-4"
         />
         <span>Has own motor / rotation</span>
-        <span style={{ fontSize: 11, color: C.faint }}>(independent of bey spin axis)</span>
+        <span className="text-[11px] text-faint">(independent of bey spin axis)</span>
       </label>
 
       {enabled && sr && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingLeft: 4 }}>
+        <div className="flex flex-col gap-3 pl-1">
 
           {/* ── Speed + Direction ── */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+              <div className="flex justify-between text-[11px] text-faint mb-0.5">
                 <span>Speed (°/s)</span>
-                <span style={{ color: C.text, fontFamily: "monospace" }}>{sr.speedDegPerSec}</span>
+                <span className="text-text font-mono">{sr.speedDegPerSec}</span>
               </div>
               <input
                 type="range" min={1} max={1800} step={1}
                 value={sr.speedDegPerSec}
                 onChange={e => patch({ speedDegPerSec: +e.target.value })}
-                style={{ width: "100%", accentColor: C.blue }}
+                className="w-full accent-blue"
               />
             </div>
             <div>
-              <div style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>Direction</div>
-              <div style={{ display: "flex", gap: 5 }}>
+              <div className="text-[11px] text-faint mb-1">Direction</div>
+              <div className="flex gap-[5px]">
                 {(["cw", "ccw", "alternating"] as const).map(dir => (
                   <button key={dir} type="button" onClick={() => patch({ direction: dir })}
-                    style={{
-                      flex: 1, padding: "4px 0", borderRadius: 6, fontSize: 10, cursor: "pointer",
-                      background: sr.direction === dir ? C.blue : C.bg2,
-                      color: sr.direction === dir ? "#fff" : C.muted,
-                      border: `1px solid ${sr.direction === dir ? C.blue : C.border}`,
-                    }}
+                    className={`flex-1 py-1 rounded-[6px] text-[10px] cursor-pointer border ${
+                      sr.direction === dir
+                        ? "bg-blue text-white border-blue"
+                        : "bg-bg2 text-muted border-border"
+                    }`}
                   >
                     {dir === "cw" ? "↻ CW" : dir === "ccw" ? "↺ CCW" : "⇄ Alt"}
                   </button>
@@ -128,16 +126,15 @@ export function PartSelfRotationSection({ value, onChange, heading = "Part-Drive
 
           {/* ── Lifecycle type ── */}
           <div>
-            <div style={{ fontSize: 11, color: C.faint, marginBottom: 5 }}>Lifecycle</div>
-            <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+            <div className="text-[11px] text-faint mb-[5px]">Lifecycle</div>
+            <div className="flex gap-[5px] flex-wrap">
               {ROT_TYPES.map(rt => (
                 <button key={rt.value} type="button" onClick={() => patch({ type: rt.value })} title={rt.desc}
-                  style={{
-                    padding: "4px 10px", borderRadius: 6, fontSize: 11, cursor: "pointer",
-                    background: rotType === rt.value ? C.blue : C.bg2,
-                    color: rotType === rt.value ? "#fff" : C.muted,
-                    border: `1px solid ${rotType === rt.value ? C.blue : C.border}`,
-                  }}
+                  className={`px-2.5 py-1 rounded-[6px] text-[11px] cursor-pointer border ${
+                    rotType === rt.value
+                      ? "bg-blue text-white border-blue"
+                      : "bg-bg2 text-muted border-border"
+                  }`}
                 >
                   {rt.label}
                 </button>
@@ -147,28 +144,28 @@ export function PartSelfRotationSection({ value, onChange, heading = "Part-Drive
 
           {/* ── Lifecycle-specific timing fields ── */}
           {rotType === "interval" && (
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div className="flex gap-3 flex-wrap">
               <NumInput label="On" value={sr.intervalActiveMs ?? 1000} min={50} step={50} unit="ms" onChange={v => patch({ intervalActiveMs: v })} />
               <NumInput label="Pause" value={sr.intervalPauseMs ?? 1000} min={50} step={50} unit="ms" onChange={v => patch({ intervalPauseMs: v })} />
             </div>
           )}
 
           {rotType === "once" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div className="flex items-center gap-2">
               <NumInput label="Duration" value={sr.onceDurationMs ?? 2000} min={100} step={100} unit="ms" onChange={v => patch({ onceDurationMs: v })} />
-              <span style={{ fontSize: 11, color: C.faint }}>fires once then stops</span>
+              <span className="text-[11px] text-faint">fires once then stops</span>
             </div>
           )}
 
           {rotType === "pulsed" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: C.text, cursor: "pointer" }}>
+            <div className="flex flex-col gap-2">
+              <label className="flex items-center gap-2 text-[12px] text-text cursor-pointer">
                 <input type="checkbox" checked={sr.pulseOnCollision ?? false}
                   onChange={e => patch({ pulseOnCollision: e.target.checked })}
-                  style={{ accentColor: C.blue }} />
+                  className="accent-blue" />
                 Trigger pulse on collision
               </label>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <div className="flex gap-3 flex-wrap">
                 <NumInput label="Pulse" value={sr.pulseDurationMs ?? 300} min={50} step={50} unit="ms" onChange={v => patch({ pulseDurationMs: v })} />
                 <NumInput label="Cooldown" value={sr.pulseCooldownMs ?? 1000} min={100} step={100} unit="ms" onChange={v => patch({ pulseCooldownMs: v })} />
               </div>
@@ -176,37 +173,36 @@ export function PartSelfRotationSection({ value, onChange, heading = "Part-Drive
           )}
 
           {rotType === "oscillate" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-3 flex-wrap">
                 <NumInput label="Sweep from" value={sr.sweepFromDeg ?? 0} min={-360} max={360} unit="°" onChange={v => patch({ sweepFromDeg: v })} />
                 <NumInput label="Sweep to" value={sr.sweepToDeg ?? 45} min={-360} max={360} unit="°" onChange={v => patch({ sweepToDeg: v })} />
               </div>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: C.text, cursor: "pointer" }}>
+              <div className="flex gap-3 flex-wrap items-center">
+                <label className="flex items-center gap-2 text-[12px] text-text cursor-pointer">
                   <input type="checkbox" checked={sr.oscillateReturn !== false}
                     onChange={e => patch({ oscillateReturn: e.target.checked })}
-                    style={{ accentColor: C.blue }} />
+                    className="accent-blue" />
                   Return to origin (oscillate)
                 </label>
                 <NumInput label="Sweep duration" value={sr.sweepDurationMs ?? 0} min={0} step={50} unit="ms"
                   onChange={v => patch({ sweepDurationMs: v || undefined })} />
-                <span style={{ fontSize: 10, color: C.faint }}>(0 = auto from speed)</span>
+                <span className="text-[10px] text-faint">(0 = auto from speed)</span>
               </div>
             </div>
           )}
 
           {/* ── Rotation axis ── */}
           <div>
-            <div style={{ fontSize: 11, color: C.faint, marginBottom: 5 }}>Rotation Axis</div>
-            <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 6 }}>
+            <div className="text-[11px] text-faint mb-[5px]">Rotation Axis</div>
+            <div className="flex gap-[5px] flex-wrap mb-1.5">
               {AXIS_TYPES.map(at => (
                 <button key={at.value} type="button" onClick={() => patchAxis({ type: at.value })} title={at.desc}
-                  style={{
-                    padding: "4px 10px", borderRadius: 6, fontSize: 11, cursor: "pointer",
-                    background: axisType === at.value ? C.purple : C.bg2,
-                    color: axisType === at.value ? "#fff" : C.muted,
-                    border: `1px solid ${axisType === at.value ? C.purple : C.border}`,
-                  }}
+                  className={`px-2.5 py-1 rounded-[6px] text-[11px] cursor-pointer border ${
+                    axisType === at.value
+                      ? "bg-purple text-white border-purple"
+                      : "bg-bg2 text-muted border-border"
+                  }`}
                 >
                   {at.label}
                 </button>
@@ -215,11 +211,11 @@ export function PartSelfRotationSection({ value, onChange, heading = "Part-Drive
 
             {/* arc_pivot: pivot positioned on the curvature */}
             {axisType === "arc_pivot" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingLeft: 4, paddingTop: 6, borderTop: `1px solid ${C.border}` }}>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 2 }}>
+              <div className="flex flex-col gap-2 pl-1 pt-1.5 border-t border-border">
+                <div className="text-[10px] text-faint mb-0.5">
                   Pivot is placed at a point on the contact-point arc. The arm swings around that pivot.
                 </div>
-                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                <div className="flex gap-3 flex-wrap">
                   <NumInput label="Pivot angle" value={sr.axis?.pivotAngleDeg ?? 0} min={0} max={360} unit="°"
                     onChange={v => patchAxis({ pivotAngleDeg: v })} />
                   <NumInput label="Pivot radius" value={sr.axis?.pivotRadiusMm ?? 20} min={0} step={0.5} unit="mm"
@@ -227,7 +223,7 @@ export function PartSelfRotationSection({ value, onChange, heading = "Part-Drive
                   <NumInput label="Arm length" value={sr.axis?.motionRadiusMm ?? 5} min={0.1} step={0.5} unit="mm"
                     onChange={v => patchAxis({ motionRadiusMm: v })} />
                 </div>
-                <span style={{ fontSize: 10, color: C.faint }}>
+                <span className="text-[10px] text-faint">
                   Pivot angle: where on the arc the hinge sits · Pivot radius: how far from part center · Arm length: how far the tip moves
                 </span>
               </div>
@@ -235,19 +231,19 @@ export function PartSelfRotationSection({ value, onChange, heading = "Part-Drive
 
             {/* custom: euler angles */}
             {axisType === "custom" && (
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", paddingLeft: 4 }}>
+              <div className="flex gap-2.5 flex-wrap pl-1">
                 {(["customX", "customY", "customZ"] as const).map(field => (
-                  <div key={field} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <label style={{ fontSize: 11, color: C.muted, minWidth: 16 }}>{field.slice(-1).toUpperCase()} °</label>
+                  <div key={field} className="flex items-center gap-1.5">
+                    <label className="text-[11px] text-muted min-w-4">{field.slice(-1).toUpperCase()} °</label>
                     <input
                       type="number" min={-180} max={180} step={1}
                       value={sr.axis?.[field] ?? 0}
                       onChange={e => patchAxis({ [field]: +e.target.value })}
-                      style={{ width: 70, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "3px 6px", fontSize: 12 }}
+                      className="w-[70px] bg-bg2 border border-border text-text rounded-[6px] px-1.5 py-[3px] text-[12px]"
                     />
                   </div>
                 ))}
-                <span style={{ fontSize: 10, color: C.faint, alignSelf: "center" }}>local-space euler</span>
+                <span className="text-[10px] text-faint self-center">local-space euler</span>
               </div>
             )}
           </div>

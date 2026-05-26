@@ -3,7 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { C, S } from "@/styles/theme";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { DEFAULT_ARENA_CONFIG, initializeWallConfig } from "@/types/arenaConfigNew";
 import type { ArenaShape, ArenaTheme } from "@/types/arenaConfigNew";
 import { PX_PER_CM_BASE } from "@/constants/units";
@@ -80,30 +81,35 @@ export function ArenaCreatePage() {
   };
 
   return (
-    <div style={{ padding:24, maxWidth:560, margin:"0 auto" }}>
-      <div style={{ marginBottom:20 }}>
-        <Link to="/admin/arenas" style={{ color:C.faint, fontSize:13, textDecoration:"none" }}>← Arenas</Link>
-        <h1 style={{ fontSize:22, fontWeight:700, color:C.text, marginTop:8 }}>New Arena</h1>
+    <div className="p-6 max-w-[560px] mx-auto">
+      <div className="mb-5">
+        <Link to="/admin/arenas" className="text-faint text-xs no-underline">← Arenas</Link>
+        <h1 className="text-xl font-bold text-text mt-2">New Arena</h1>
       </div>
 
-      <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:24, display:"flex", flexDirection:"column", gap:18 }}>
-        <div>
-          <label style={S.label}>Arena Name *</label>
-          <input type="text" value={form.name} onChange={e => set("name",e.target.value)} placeholder="e.g. Crystal Colosseum" style={S.input} />
-        </div>
+      <div className="bg-bg2 border border-border rounded-2xl p-6 flex flex-col gap-4">
+        <Input
+          label="Arena Name *"
+          type="text"
+          value={form.name}
+          onChange={e => set("name", e.target.value)}
+          placeholder="e.g. Crystal Colosseum"
+        />
 
         <div>
-          <label style={S.label}>Shape</label>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:6 }}>
+          <label className="block text-xs text-muted mb-1.5">Shape</label>
+          <div className="grid grid-cols-4 gap-1.5">
             {shapes.map(s => (
-              <button key={s.value} onClick={() => set("shape", s.value as ArenaShape)} style={{
-                padding:"8px 4px", borderRadius:8, fontSize:11, fontWeight:500, cursor:"pointer",
-                background: form.shape===s.value ? C.purple+"22" : "transparent",
-                border: `1px solid ${form.shape===s.value ? C.purple : C.border}`,
-                color: form.shape===s.value ? C.text : C.muted,
-                display:"flex", flexDirection:"column", alignItems:"center", gap:2,
-              }}>
-                <span style={{ fontSize:16 }}>{SHAPE_ICONS[s.value] ?? "⬡"}</span>
+              <button key={s.value} onClick={() => set("shape", s.value as ArenaShape)}
+                className={[
+                  "px-1 py-2 rounded-lg text-xs font-medium cursor-pointer flex flex-col items-center gap-0.5",
+                  form.shape === s.value
+                    ? "border text-text"
+                    : "bg-transparent border border-border text-muted",
+                ].join(" ")}
+                style={form.shape === s.value ? { background: "color-mix(in srgb, var(--purple) 13%, transparent)", borderColor: "var(--purple)" } : {}}
+              >
+                <span className="text-base">{SHAPE_ICONS[s.value] ?? "⬡"}</span>
                 <span>{s.label}</span>
               </button>
             ))}
@@ -111,41 +117,46 @@ export function ArenaCreatePage() {
         </div>
 
         <div>
-          <label style={S.label}>Theme</label>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:6 }}>
+          <label className="block text-xs text-muted mb-1.5">Theme</label>
+          <div className="grid grid-cols-5 gap-1.5">
             {themes.map(theme => (
-              <button key={theme} onClick={() => set("theme", theme)} style={{
-                padding:"6px 4px", borderRadius:8, fontSize:11, fontWeight:500, cursor:"pointer", textTransform:"capitalize",
-                background: form.theme===theme ? C.purple+"22" : "transparent",
-                border: `1px solid ${form.theme===theme ? C.purple : C.border}`,
-                color: form.theme===theme ? C.text : C.faint,
-              }}>{theme}</button>
+              <button key={theme} onClick={() => set("theme", theme)}
+                className={[
+                  "px-1 py-1.5 rounded-lg text-xs font-medium cursor-pointer capitalize",
+                  form.theme === theme
+                    ? "border text-text"
+                    : "bg-transparent border border-border text-faint",
+                ].join(" ")}
+                style={form.theme === theme ? { background: "color-mix(in srgb, var(--purple) 13%, transparent)", borderColor: "var(--purple)" } : {}}
+              >{theme}</button>
             ))}
           </div>
         </div>
 
         <div>
-          <label style={S.label}>Size (cm) — Width × Height</label>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr auto 1fr", gap:8, alignItems:"center" }}>
+          <label className="block text-xs text-muted mb-1.5">Size (cm) — Width × Height</label>
+          <div className="grid gap-2 items-center" style={{ gridTemplateColumns: "1fr auto 1fr" }}>
             <input type="number" min={10} max={100} step={1} value={form.widthCm}
-              onChange={e => set("widthCm", Math.max(10, +e.target.value))} style={{ ...S.input, textAlign:"right" as const }} />
-            <span style={{ color:C.faint, fontSize:13 }}>×</span>
+              onChange={e => set("widthCm", Math.max(10, +e.target.value))}
+              className="w-full bg-bg3 border border-border rounded-md px-3 py-2 text-sm text-text text-right" />
+            <span className="text-faint text-xs">×</span>
             <input type="number" min={10} max={100} step={1} value={form.heightCm}
-              onChange={e => set("heightCm", Math.max(10, +e.target.value))} style={{ ...S.input, textAlign:"right" as const }} />
+              onChange={e => set("heightCm", Math.max(10, +e.target.value))}
+              className="w-full bg-bg3 border border-border rounded-md px-3 py-2 text-sm text-text text-right" />
           </div>
-          <p style={{ fontSize:11, color:C.faint, marginTop:4 }}>
+          <p className="text-xs text-faint mt-1">
             Stored as {Math.round(form.widthCm * PX_PER_CM_BASE)} × {Math.round(form.heightCm * PX_PER_CM_BASE)} px internally
           </p>
         </div>
 
-        <p style={{ fontSize:12, color:C.faint }}>Arena will be created with empty feature configuration. You can add obstacles, water bodies, speed paths, and more in the editor.</p>
+        <p className="text-xs text-faint">Arena will be created with empty feature configuration. You can add obstacles, water bodies, speed paths, and more in the editor.</p>
       </div>
 
-      <div style={{ display:"flex", justifyContent:"space-between", marginTop:20 }}>
-        <Link to="/admin/arenas" style={{ padding:"8px 18px", border:`1px solid ${C.border}`, color:C.muted, borderRadius:8, fontSize:13, textDecoration:"none" }}>Cancel</Link>
-        <button onClick={handleSave} disabled={saving||!form.name.trim()} style={{ padding:"8px 20px", background:C.purple, color:C.white, borderRadius:8, fontSize:13, fontWeight:500, border:"none", cursor:"pointer", opacity: saving||!form.name.trim() ? 0.5 : 1 }}>
+      <div className="flex justify-between mt-5">
+        <Link to="/admin/arenas" className="px-4 py-2 border border-border text-muted rounded-lg text-xs no-underline">Cancel</Link>
+        <Button variant="primary" onClick={handleSave} disabled={saving || !form.name.trim()} size="sm">
           {saving ? "Creating..." : "Create Arena"}
-        </button>
+        </Button>
       </div>
     </div>
   );

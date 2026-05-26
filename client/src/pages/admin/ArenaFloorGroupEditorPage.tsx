@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { C, btn, pill, alpha } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
+
+const PILL_BASE = "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border";
 import toast from "react-hot-toast";
 import type { ArenaFloorGroup, ArenaLink, ArenaConfig, FloorStackPosition } from "@/types/arenaConfigNew";
 import ArenaLinkEditorPanel from "@/components/admin/ArenaLinkEditorPanel";
@@ -420,16 +422,16 @@ export default function ArenaFloorGroupEditorPage() {
         <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, margin: 0 }}>
           {isNew ? "New Floor Group" : name || "Floor Group"}
         </h1>
-        <span style={pill(status === "active" ? C.green : C.faint)}>{status}</span>
+        <span className={`${PILL_BASE} ${status === "active" ? "bg-green/[.13] text-green border-green/[.27]" : "bg-faint/[.13] text-faint border-faint/[.27]"}`}>{status}</span>
         <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
           <button
             onClick={() => setStatus(s => s === "active" ? "draft" : "active")}
-            style={{ ...btn(status === "active" ? C.bg3 : C.green), fontSize: 13, color: status === "active" ? C.text : "#fff" }}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold ${status === "active" ? "bg-bg3 text-text border border-border" : "bg-green text-white"}`}
           >
             {status === "active" ? "Set Draft" : "Set Active"}
           </button>
           <button onClick={save} disabled={saving}
-            style={{ ...btn(C.blue), fontSize: 13, color: "#fff", opacity: saving ? 0.6 : 1 }}>
+            className="px-4 py-2 rounded-lg text-sm font-semibold bg-blue text-white disabled:opacity-60">
             {saving ? "Saving…" : "Save"}
           </button>
         </div>
@@ -451,7 +453,7 @@ export default function ArenaFloorGroupEditorPage() {
               ))}
             </div>
             {floors.length < MAX_FLOORS && (
-              <button onClick={addFloor} style={{ ...btn(C.bg3), fontSize: 12, color: C.text, padding: "4px 10px" }}>
+              <button onClick={addFloor} className="px-2.5 py-1 rounded-md text-xs text-text bg-bg3 border border-border hover:bg-bg2">
                 + Add Floor
               </button>
             )}

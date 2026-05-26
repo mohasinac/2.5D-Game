@@ -12,8 +12,8 @@ interface Props {
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-      <label style={{ fontSize: 12, color: C.muted, minWidth: 160 }}>{label}</label>
+    <div className="flex items-center gap-2 mb-2">
+      <label className="text-xs text-muted min-w-[160px]">{label}</label>
       {children}
     </div>
   );
@@ -24,11 +24,11 @@ export default function BoundaryTab({ config, onChange }: Props) {
 
   return (
     <CollapsibleSection title="Boundary" storageKey="arena-boundary-main" defaultOpen={true}>
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Shrink Config */}
-      <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>Shrinking Ring</h3>
+      <div className="bg-bg1 border border-border rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="m-0 text-sm font-semibold text-text">Shrinking Ring</h3>
           <input
             type="checkbox"
             checked={!!shrink}
@@ -38,7 +38,6 @@ export default function BoundaryTab({ config, onChange }: Props) {
 
         {shrink && (
           <>
-            {/* V6: Enable toggle + rate-based shrink inputs */}
             <Row label="Enable shrink">
               <input
                 type="checkbox"
@@ -54,9 +53,9 @@ export default function BoundaryTab({ config, onChange }: Props) {
                 min={0.01}
                 step={0.1}
                 onChange={e => onChange({ shrink: { ...shrink, shrinkRateCmPerSec: e.target.value ? Number(e.target.value) : undefined } })}
-                style={{ width: 100, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+                className="w-[100px] bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs"
               />
-              <span style={{ fontSize: 11, color: C.muted }}>cm/s</span>
+              <span className="text-[11px] text-muted">cm/s</span>
             </Row>
             <Row label="Min radius (cm)">
               <input
@@ -66,9 +65,9 @@ export default function BoundaryTab({ config, onChange }: Props) {
                 min={10}
                 step={5}
                 onChange={e => onChange({ shrink: { ...shrink, minRadiusCm: e.target.value ? Number(e.target.value) : undefined } })}
-                style={{ width: 100, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+                className="w-[100px] bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs"
               />
-              <span style={{ fontSize: 11, color: C.muted }}>cm (overrides fraction)</span>
+              <span className="text-[11px] text-muted">cm (overrides fraction)</span>
             </Row>
             <Row label="Start (ms after match)">
               <input
@@ -77,9 +76,9 @@ export default function BoundaryTab({ config, onChange }: Props) {
                 min={0}
                 step={5000}
                 onChange={e => onChange({ shrink: { ...shrink, startMs: Number(e.target.value) } })}
-                style={{ width: 100, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+                className="w-[100px] bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs"
               />
-              <span style={{ fontSize: 11, color: C.muted }}>{(shrink.startMs / 1000).toFixed(0)}s</span>
+              <span className="text-[11px] text-muted">{(shrink.startMs / 1000).toFixed(0)}s</span>
             </Row>
 
             <Row label="End (ms)">
@@ -89,9 +88,9 @@ export default function BoundaryTab({ config, onChange }: Props) {
                 min={shrink.startMs + 5000}
                 step={5000}
                 onChange={e => onChange({ shrink: { ...shrink, endMs: Number(e.target.value) } })}
-                style={{ width: 100, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+                className="w-[100px] bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs"
               />
-              <span style={{ fontSize: 11, color: C.muted }}>{(shrink.endMs / 1000).toFixed(0)}s</span>
+              <span className="text-[11px] text-muted">{(shrink.endMs / 1000).toFixed(0)}s</span>
             </Row>
 
             <Row label="Min radius fraction">
@@ -102,9 +101,9 @@ export default function BoundaryTab({ config, onChange }: Props) {
                 step={0.05}
                 value={shrink.minRadiusFraction}
                 onChange={e => onChange({ shrink: { ...shrink, minRadiusFraction: Number(e.target.value) } })}
-                style={{ width: 120 }}
+                className="w-[120px]"
               />
-              <span style={{ fontSize: 11, color: C.muted }}>{(shrink.minRadiusFraction * 100).toFixed(0)}%</span>
+              <span className="text-[11px] text-muted">{(shrink.minRadiusFraction * 100).toFixed(0)}%</span>
             </Row>
 
             <Row label="Damage per tick">
@@ -115,14 +114,14 @@ export default function BoundaryTab({ config, onChange }: Props) {
                 max={20}
                 step={0.5}
                 onChange={e => onChange({ shrink: { ...shrink, damageRatePerTick: Number(e.target.value) } })}
-                style={{ width: 80, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+                className="w-20 bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs"
               />
             </Row>
 
-            <div style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, padding: 10, fontSize: 11, color: C.muted, marginTop: 8 }}>
-              Ring starts shrinking at <strong style={{ color: C.text }}>{(shrink.startMs / 1000).toFixed(0)}s</strong>,
-              reaches {(shrink.minRadiusFraction * 100).toFixed(0)}% size by <strong style={{ color: C.text }}>{(shrink.endMs / 1000).toFixed(0)}s</strong>.
-              Beys outside take <strong style={{ color: C.text }}>{shrink.damageRatePerTick ?? 2} HP/tick</strong>.
+            <div className="bg-bg2 border border-border rounded-lg p-2.5 text-[11px] text-muted mt-2">
+              Ring starts shrinking at <strong className="text-text">{(shrink.startMs / 1000).toFixed(0)}s</strong>,
+              reaches {(shrink.minRadiusFraction * 100).toFixed(0)}% size by <strong className="text-text">{(shrink.endMs / 1000).toFixed(0)}s</strong>.
+              Beys outside take <strong className="text-text">{shrink.damageRatePerTick ?? 2} HP/tick</strong>.
             </div>
           </>
         )}

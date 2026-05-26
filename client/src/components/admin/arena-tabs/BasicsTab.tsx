@@ -1,4 +1,8 @@
-import { C, S } from "@/styles/theme";
+import type React from "react";
+import { C } from "@/styles/theme";
+
+const LBL = "block text-xs text-muted mb-1.5";
+const INP: React.CSSProperties = { width: "100%", background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 12px", color: "var(--text)", fontSize: 13 };
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, ArenaShape, ArenaTheme, BowlProfile } from "@/types/arenaConfigNew";
 import { ARENA_PRESETS, initializeWallConfig, BOWL_PROFILE_ANGLES, BOWL_PROFILE_LABELS } from "@/types/arenaConfigNew";
@@ -201,32 +205,32 @@ export default function BasicsTab({ config, onChange }: Props) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+    <div className="flex flex-col gap-2">
       {/* Name + Description — always visible, no collapse */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 4 }}>
+      <div className="flex flex-col gap-2.5 mb-1">
         <div>
-          <label style={S.label}>Arena Name</label>
+          <label className={LBL}>Arena Name</label>
           <input
             type="text"
             value={config.name ?? ""}
             onChange={e => onChange({ name: e.target.value })}
-            style={S.input}
+            style={INP}
             placeholder="e.g. Classic Stadium"
           />
         </div>
         <div>
-          <label style={S.label}>Description</label>
+          <label className={LBL}>Description</label>
           <textarea
             value={config.description ?? ""}
             onChange={e => onChange({ description: e.target.value })}
             rows={2}
-            style={{ ...S.input, resize: "vertical" as const, fontFamily: "inherit" }}
+            style={{ ...INP, resize: "vertical" as const, fontFamily: "inherit" }}
             placeholder="Optional arena description…"
           />
         </div>
         <div>
-          <label style={S.label}>Difficulty</label>
-          <div style={{ display: "flex", gap: 6 }}>
+          <label className={LBL}>Difficulty</label>
+          <div className="flex gap-1.5">
             {(["easy", "medium", "hard", "extreme"] as const).map(d => {
               const active = (config.difficulty ?? "medium") === d;
               const colors: Record<string, string> = { easy: "#22c55e", medium: "#3b82f6", hard: "#f97316", extreme: "#ef4444" };
@@ -253,24 +257,24 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Size */}
       <CollapsibleSection title="Size &amp; Presets" storageKey="arena-basics-size" defaultOpen={true}>
       <div>
-        <label style={S.label}>Size (cm) — Width × Height</label>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <label className={LBL}>Size (cm) — Width × Height</label>
+        <div className="flex gap-2 items-center">
           <input
             type="number" min={20} max={100} step={1}
             value={config.width ? Math.round(config.width / PX_PER_CM_BASE) : 50}
             onChange={e => onChange({ width: Math.round(parseFloat(e.target.value) || 50) * PX_PER_CM_BASE })}
-            style={{ ...S.input, width: 80, textAlign: "right" as const }}
+            style={{ ...INP, width: 80, textAlign: "right" as const }}
           />
-          <span style={{ color: C.faint, fontSize: 12 }}>×</span>
+          <span className="text-faint text-xs">×</span>
           <input
             type="number" min={20} max={100} step={1}
             value={config.height ? Math.round(config.height / PX_PER_CM_BASE) : 50}
             onChange={e => onChange({ height: Math.round(parseFloat(e.target.value) || 50) * PX_PER_CM_BASE })}
-            style={{ ...S.input, width: 80, textAlign: "right" as const }}
+            style={{ ...INP, width: 80, textAlign: "right" as const }}
           />
-          <span style={{ color: C.faint, fontSize: 12 }}>cm</span>
+          <span className="text-faint text-xs">cm</span>
         </div>
-        <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>
+        <div className="text-[11px] text-faint mt-1">
           {config.width && config.height
             ? `${config.width} × ${config.height} px stored — displayed as ${Math.round(config.width / PX_PER_CM_BASE)} × ${Math.round(config.height / PX_PER_CM_BASE)} cm`
             : "Default: 50 × 50 cm (1200 × 1200 px)"}
@@ -279,13 +283,13 @@ export default function BasicsTab({ config, onChange }: Props) {
 
       {/* Presets */}
       <div>
-        <label style={S.label}>Load Preset</label>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <label className={LBL}>Load Preset</label>
+        <div className="flex gap-2 flex-wrap">
           {Object.entries(ARENA_PRESETS).map(([key, preset]) => (
             <button
               key={key}
               onClick={() => onChange(preset)}
-              style={{ padding: "5px 12px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, fontSize: 12, color: C.muted, cursor: "pointer" }}
+              className="py-[5px] px-3 bg-bg3 border border-border rounded-md text-xs text-muted cursor-pointer"
             >
               {preset.name ?? key}
             </button>
@@ -297,7 +301,7 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Shape */}
       <CollapsibleSection title="Shape" storageKey="arena-basics-shape" defaultOpen={true}>
       <div>
-        <label style={S.label}>Shape</label>
+        <label className={LBL}>Shape</label>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: 8 }}>
           {shapes.map(s => (
             <button
@@ -320,7 +324,7 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Theme */}
       <CollapsibleSection title="Theme" storageKey="arena-basics-theme" defaultOpen={true}>
       <div>
-        <label style={S.label}>Theme</label>
+        <label className={LBL}>Theme</label>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 8 }}>
           {themes.map(t => (
             <button
@@ -347,7 +351,7 @@ export default function BasicsTab({ config, onChange }: Props) {
       <div>
 
         {/* Profile presets */}
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
+        <div className="flex gap-1.5 flex-wrap mb-3.5">
           {bowlProfiles.map(profile => {
             const active = (config.bowlProfile ?? "medium") === profile.id && config.wallAngle === undefined;
             return (
@@ -369,10 +373,10 @@ export default function BasicsTab({ config, onChange }: Props) {
         </div>
 
         {/* Custom angle slider */}
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+        <div className="mb-3.5">
+          <div className="flex justify-between text-xs text-muted mb-1">
             <span>Wall Angle (custom)</span>
-            <span style={{ color: C.text, fontFamily: "monospace" }}>{effectiveWallAngle}°</span>
+            <span className="text-text font-mono">{effectiveWallAngle}°</span>
           </div>
           <input
             type="range" min={0} max={75} step={1}
@@ -380,17 +384,17 @@ export default function BasicsTab({ config, onChange }: Props) {
             onChange={e => onChange({ wallAngle: +e.target.value, bowlProfile: undefined })}
             style={{ width: "100%", accentColor: C.blue }}
           />
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+          <div className="flex justify-between text-[10px] text-faint mt-0.5">
             <span>0° — flat / vertical</span>
             <span>75° — cup shape</span>
           </div>
         </div>
 
         {/* Bowl depth */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+        <div className="mb-4">
+          <div className="flex justify-between text-xs text-muted mb-1">
             <span>Bowl Depth</span>
-            <span style={{ color: C.text, fontFamily: "monospace" }}>{Math.round((config.bowlDepth ?? 0.4) * 100)}%</span>
+            <span className="text-text font-mono">{Math.round((config.bowlDepth ?? 0.4) * 100)}%</span>
           </div>
           <input
             type="range" min={0} max={100} step={5}
@@ -401,12 +405,12 @@ export default function BasicsTab({ config, onChange }: Props) {
         </div>
 
         {/* Cross-section preview */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 11, color: C.faint }}>Cross-section preview</span>
-          <div style={{ background: "#0f172a", borderRadius: 8, padding: "10px 16px", border: `1px solid ${C.border}` }}>
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-[11px] text-faint">Cross-section preview</span>
+          <div className="border border-border rounded-lg px-4 py-2.5" style={{ background: "#0f172a" }}>
             <BowlCrossSection wallAngle={effectiveWallAngle} bowlDepth={config.bowlDepth ?? 0.4} />
           </div>
-          <span style={{ fontSize: 10, color: C.faint, textAlign: "center" }}>
+          <span className="text-[10px] text-faint text-center">
             {config.wallAngle !== undefined
               ? `Custom angle: ${config.wallAngle}°`
               : BOWL_PROFILE_LABELS[config.bowlProfile ?? "medium"]}
@@ -418,8 +422,8 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Rotation */}
       <CollapsibleSection title="Auto-Rotate" storageKey="arena-basics-rotate" defaultOpen={false}>
       <div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>Auto-Rotate</span>
+        <div className="flex justify-between items-center mb-3.5">
+          <span className="text-[13px] font-semibold text-text">Auto-Rotate</span>
           <button
             onClick={() => onChange({ autoRotate: !config.autoRotate })}
             style={{
@@ -432,11 +436,11 @@ export default function BasicsTab({ config, onChange }: Props) {
           </button>
         </div>
         {config.autoRotate && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="flex flex-col gap-3">
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+              <div className="flex justify-between text-xs text-muted mb-1">
                 <span>Speed (°/s)</span>
-                <span style={{ color: C.text, fontFamily: "monospace" }}>{config.rotationSpeed ?? 6}°/s</span>
+                <span className="text-text font-mono">{config.rotationSpeed ?? 6}°/s</span>
               </div>
               <input
                 type="range" min={1} max={60} step={1}
@@ -446,8 +450,8 @@ export default function BasicsTab({ config, onChange }: Props) {
               />
             </div>
             <div>
-              <label style={S.label}>Direction</label>
-              <div style={{ display: "flex", gap: 8 }}>
+              <label className={LBL}>Direction</label>
+              <div className="flex gap-2">
                 {(["clockwise", "counterclockwise"] as const).map(dir => (
                   <button
                     key={dir}
@@ -467,28 +471,28 @@ export default function BasicsTab({ config, onChange }: Props) {
 
             {/* Rotation pivot */}
             <div>
-              <label style={S.label}>Pivot Offset (cm from center)</label>
-              <div style={{ display: "flex", gap: 8 }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 10, color: C.faint, marginBottom: 2 }}>X</div>
+              <label className={LBL}>Pivot Offset (cm from center)</label>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <div className="text-[10px] text-faint mb-0.5">X</div>
                   <input
                     type="number" step={1} min={-200} max={200}
                     value={config.rotationPivotX ?? 0}
                     onChange={e => onChange({ rotationPivotX: +e.target.value })}
-                    style={{ ...S.input, width: "100%" }}
+                    style={{ ...INP, width: "100%" }}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 10, color: C.faint, marginBottom: 2 }}>Y</div>
+                <div className="flex-1">
+                  <div className="text-[10px] text-faint mb-0.5">Y</div>
                   <input
                     type="number" step={1} min={-200} max={200}
                     value={config.rotationPivotY ?? 0}
                     onChange={e => onChange({ rotationPivotY: +e.target.value })}
-                    style={{ ...S.input, width: "100%" }}
+                    style={{ ...INP, width: "100%" }}
                   />
                 </div>
               </div>
-              <div style={{ fontSize: 10, color: C.faint, marginTop: 3 }}>
+              <div className="text-[10px] text-faint mt-[3px]">
                 (0, 0) = arena center. Offset rotates around an eccentric point.
               </div>
             </div>
@@ -500,14 +504,14 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Tilt — hidden in 2D mode */}
       {(config.rendererMode ?? "2.5d") !== "2d" && <CollapsibleSection title="Arena Tilt" storageKey="arena-basics-tilt" defaultOpen={false}>
       <div>
-        <div style={{ fontSize: 11, color: C.faint, marginBottom: 14 }}>
+        <div className="text-[11px] text-faint mb-3.5">
           0° = flat · 90° = wall-ride · 180° = inverted / Zero-G · 270° = wall-ride back
         </div>
 
         {/* Tilt mode selector */}
-        <div style={{ marginBottom: 14 }}>
-          <label style={S.label}>Tilt Mode</label>
-          <div style={{ display: "flex", gap: 6 }}>
+        <div className="mb-3.5">
+          <label className={LBL}>Tilt Mode</label>
+          <div className="flex gap-1.5">
             {(["fixed", "oscillate", "weight"] as const).map(mode => {
               const active = (config.tiltMode ?? "fixed") === mode;
               const labels: Record<string, string> = { fixed: "Fixed", oscillate: "Oscillate", weight: "Weight" };
@@ -527,7 +531,7 @@ export default function BasicsTab({ config, onChange }: Props) {
               );
             })}
           </div>
-          <div style={{ fontSize: 10, color: C.faint, marginTop: 4 }}>
+          <div className="text-[10px] text-faint mt-1">
             {(config.tiltMode ?? "fixed") === "fixed" && "Static tilt at the configured angle."}
             {(config.tiltMode ?? "fixed") === "oscillate" && "Angle rocks between min–max on a cosine wave."}
             {(config.tiltMode ?? "fixed") === "weight" && "Arena tilts toward where beyblades are massed."}
@@ -535,7 +539,7 @@ export default function BasicsTab({ config, onChange }: Props) {
         </div>
 
         {/* Quick presets */}
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
+        <div className="flex gap-1.5 flex-wrap mb-3.5">
           {TILT_PRESETS.map(p => {
             const active = (config.tiltAngle ?? 0) === p.angle;
             return (
@@ -560,10 +564,10 @@ export default function BasicsTab({ config, onChange }: Props) {
         {(config.tiltMode ?? "fixed") !== "oscillate" && (
           <>
             {/* Tilt angle slider */}
-            <div style={{ marginBottom: 14 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+            <div className="mb-3.5">
+              <div className="flex justify-between text-xs text-muted mb-1">
                 <span>{(config.tiltMode ?? "fixed") === "weight" ? "Max Tilt Angle" : "Tilt Angle"}</span>
-                <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltAngle ?? 0}°</span>
+                <span className="text-text font-mono">{config.tiltAngle ?? 0}°</span>
               </div>
               <input
                 type="range" min={0} max={360} step={1}
@@ -571,17 +575,17 @@ export default function BasicsTab({ config, onChange }: Props) {
                 onChange={e => onChange({ tiltAngle: +e.target.value })}
                 style={{ width: "100%", accentColor: C.blue }}
               />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+              <div className="flex justify-between text-[10px] text-faint mt-0.5">
                 <span>0° flat</span><span>90° wall</span><span>180° inverted</span><span>270° wall</span><span>360° flat</span>
               </div>
             </div>
 
             {/* Tilt direction slider (hidden for weight mode — direction is auto) */}
             {(config.tiltMode ?? "fixed") !== "weight" && (
-              <div style={{ marginBottom: 14 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
-                  <span>Tilt Direction <span style={{ fontSize: 10, color: C.faint }}>(downhill azimuth)</span></span>
-                  <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltDirection ?? 0}°</span>
+              <div className="mb-3.5">
+                <div className="flex justify-between text-xs text-muted mb-1">
+                  <span>Tilt Direction <span className="text-[10px] text-faint">(downhill azimuth)</span></span>
+                  <span className="text-text font-mono">{config.tiltDirection ?? 0}°</span>
                 </div>
                 <input
                   type="range" min={0} max={359} step={1}
@@ -589,7 +593,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                   onChange={e => onChange({ tiltDirection: +e.target.value })}
                   style={{ width: "100%", accentColor: C.blue }}
                 />
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+                <div className="flex justify-between text-[10px] text-faint mt-0.5">
                   <span>0° → right</span><span>90° ↓ down</span><span>180° ← left</span><span>270° ↑ up</span>
                 </div>
               </div>
@@ -599,12 +603,12 @@ export default function BasicsTab({ config, onChange }: Props) {
 
         {/* Oscillate mode — min / max / period */}
         {(config.tiltMode ?? "fixed") === "oscillate" && (
-          <div style={{ marginBottom: 14, display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ display: "flex", gap: 8 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+          <div className="mb-3.5 flex flex-col gap-2.5">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <div className="flex justify-between text-xs text-muted mb-1">
                   <span>Min Angle</span>
-                  <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltOscillateMin ?? 0}°</span>
+                  <span className="text-text font-mono">{config.tiltOscillateMin ?? 0}°</span>
                 </div>
                 <input
                   type="range" min={0} max={180} step={1}
@@ -613,10 +617,10 @@ export default function BasicsTab({ config, onChange }: Props) {
                   style={{ width: "100%", accentColor: C.blue }}
                 />
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+              <div className="flex-1">
+                <div className="flex justify-between text-xs text-muted mb-1">
                   <span>Max Angle</span>
-                  <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltOscillateMax ?? 45}°</span>
+                  <span className="text-text font-mono">{config.tiltOscillateMax ?? 45}°</span>
                 </div>
                 <input
                   type="range" min={0} max={360} step={1}
@@ -627,9 +631,9 @@ export default function BasicsTab({ config, onChange }: Props) {
               </div>
             </div>
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+              <div className="flex justify-between text-xs text-muted mb-1">
                 <span>Period</span>
-                <span style={{ color: C.text, fontFamily: "monospace" }}>{((config.tiltOscillatePeriodMs ?? 4000) / 1000).toFixed(1)}s</span>
+                <span className="text-text font-mono">{((config.tiltOscillatePeriodMs ?? 4000) / 1000).toFixed(1)}s</span>
               </div>
               <input
                 type="range" min={500} max={20000} step={500}
@@ -637,14 +641,14 @@ export default function BasicsTab({ config, onChange }: Props) {
                 onChange={e => onChange({ tiltOscillatePeriodMs: +e.target.value })}
                 style={{ width: "100%", accentColor: C.blue }}
               />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+              <div className="flex justify-between text-[10px] text-faint mt-0.5">
                 <span>0.5s fast</span><span>4s default</span><span>20s slow</span>
               </div>
             </div>
-            <div style={{ marginBottom: 4 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
-                <span>Tilt Direction <span style={{ fontSize: 10, color: C.faint }}>(downhill azimuth)</span></span>
-                <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltDirection ?? 0}°</span>
+            <div className="mb-1">
+              <div className="flex justify-between text-xs text-muted mb-1">
+                <span>Tilt Direction <span className="text-[10px] text-faint">(downhill azimuth)</span></span>
+                <span className="text-text font-mono">{config.tiltDirection ?? 0}°</span>
               </div>
               <input
                 type="range" min={0} max={359} step={1}
@@ -652,7 +656,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                 onChange={e => onChange({ tiltDirection: +e.target.value })}
                 style={{ width: "100%", accentColor: C.blue }}
               />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+              <div className="flex justify-between text-[10px] text-faint mt-0.5">
                 <span>0° → right</span><span>90° ↓ down</span><span>180° ← left</span><span>270° ↑ up</span>
               </div>
             </div>
@@ -660,11 +664,11 @@ export default function BasicsTab({ config, onChange }: Props) {
         )}
 
         {/* Preview */}
-        <div style={{ display: "flex", gap: 20, alignItems: "center", marginBottom: 14 }}>
-          <div style={{ background: "#0f172a", borderRadius: 8, padding: "8px 12px", border: `1px solid ${C.border}` }}>
+        <div className="flex gap-5 items-center mb-3.5">
+          <div className="border border-border rounded-lg py-2 px-3" style={{ background: "#0f172a" }}>
             <TiltPreview tiltAngle={config.tiltAngle ?? 0} tiltDirection={config.tiltDirection ?? 0} />
           </div>
-          <div style={{ fontSize: 11, color: C.faint, lineHeight: 1.6 }}>
+          <div className="text-[11px] text-faint leading-relaxed">
             <div>Yellow arrow = downhill</div>
             <div>Purple ⊗ = inverted</div>
             <div>Line = edge-on (wall-ride)</div>
@@ -672,38 +676,38 @@ export default function BasicsTab({ config, onChange }: Props) {
         </div>
 
         {/* Tilt pivot */}
-        <div style={{ marginBottom: 14 }}>
-          <label style={S.label}>Tilt Pivot Offset (cm from center)</label>
-          <div style={{ display: "flex", gap: 8 }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 2 }}>X</div>
+        <div className="mb-3.5">
+          <label className={LBL}>Tilt Pivot Offset (cm from center)</label>
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <div className="text-[10px] text-faint mb-0.5">X</div>
               <input
                 type="number" step={1} min={-200} max={200}
                 value={config.tiltPivotX ?? 0}
                 onChange={e => onChange({ tiltPivotX: +e.target.value })}
-                style={{ ...S.input, width: "100%" }}
+                style={{ ...INP, width: "100%" }}
               />
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 2 }}>Y</div>
+            <div className="flex-1">
+              <div className="text-[10px] text-faint mb-0.5">Y</div>
               <input
                 type="number" step={1} min={-200} max={200}
                 value={config.tiltPivotY ?? 0}
                 onChange={e => onChange({ tiltPivotY: +e.target.value })}
-                style={{ ...S.input, width: "100%" }}
+                style={{ ...INP, width: "100%" }}
               />
             </div>
           </div>
-          <div style={{ fontSize: 10, color: C.faint, marginTop: 3 }}>
+          <div className="text-[10px] text-faint mt-[3px]">
             (0, 0) = arena center. Offset tilts around an eccentric point.
           </div>
         </div>
 
         {/* Auto-Tilt (spinning tilt direction) */}
-        <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 12 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>
-              Auto-Tilt <span style={{ fontSize: 10, color: C.faint, fontWeight: 400 }}>(direction rotates)</span>
+        <div className="border-t border-border pt-3">
+          <div className="flex justify-between items-center mb-2.5">
+            <span className="text-xs font-semibold text-text">
+              Auto-Tilt <span className="text-[10px] text-faint font-normal">(direction rotates)</span>
             </span>
             <button
               onClick={() => onChange({ autoTilt: !config.autoTilt })}
@@ -718,9 +722,9 @@ export default function BasicsTab({ config, onChange }: Props) {
           </div>
           {config.autoTilt && (
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+              <div className="flex justify-between text-xs text-muted mb-1">
                 <span>Tilt-Direction Speed (°/s)</span>
-                <span style={{ color: C.text, fontFamily: "monospace" }}>{config.tiltSpeed ?? 10}°/s</span>
+                <span className="text-text font-mono">{config.tiltSpeed ?? 10}°/s</span>
               </div>
               <input
                 type="range" min={1} max={90} step={1}
@@ -728,7 +732,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                 onChange={e => onChange({ tiltSpeed: +e.target.value })}
                 style={{ width: "100%", accentColor: C.green }}
               />
-              <div style={{ fontSize: 10, color: C.faint, marginTop: 4 }}>
+              <div className="text-[10px] text-faint mt-1">
                 The downhill direction spins — creates a tilted spinning-bowl effect.
               </div>
             </div>
@@ -740,12 +744,12 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Physics / Gameplay */}
       <CollapsibleSection title="Physics &amp; Gameplay" storageKey="arena-basics-physics" defaultOpen={false}>
       <div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div className="flex flex-col gap-3.5">
           {/* Stamina drain */}
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+            <div className="flex justify-between text-xs text-muted mb-1">
               <span>Stamina Drain Multiplier</span>
-              <span style={{ color: C.text, fontFamily: "monospace" }}>{(config.staminaDrainMultiplier ?? 1).toFixed(2)}×</span>
+              <span className="text-text font-mono">{(config.staminaDrainMultiplier ?? 1).toFixed(2)}×</span>
             </div>
             <input
               type="range" min={25} max={400} step={5}
@@ -753,15 +757,15 @@ export default function BasicsTab({ config, onChange }: Props) {
               onChange={e => onChange({ staminaDrainMultiplier: +e.target.value / 100 })}
               style={{ width: "100%", accentColor: C.blue }}
             />
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+            <div className="flex justify-between text-[10px] text-faint mt-0.5">
               <span>0.25× slow drain</span><span>1.0× normal</span><span>4.0× fast drain</span>
             </div>
           </div>
 
           {/* QTE */}
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <span style={{ fontSize: 12, color: C.muted }}>QTE Enabled</span>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs text-muted">QTE Enabled</span>
               <button
                 onClick={() => onChange({ qteEnabled: !(config.qteEnabled ?? true) })}
                 style={{
@@ -775,8 +779,8 @@ export default function BasicsTab({ config, onChange }: Props) {
             </div>
             {(config.qteEnabled ?? true) && (
               <div>
-                <label style={S.label}>QTE Window Scaling</label>
-                <div style={{ display: "flex", gap: 8 }}>
+                <label className={LBL}>QTE Window Scaling</label>
+                <div className="flex gap-2">
                   {(["flat", "by_cost"] as const).map(mode => {
                     const active = (config.qteWindowScaling ?? "by_cost") === mode;
                     return (
@@ -795,7 +799,7 @@ export default function BasicsTab({ config, onChange }: Props) {
                     );
                   })}
                 </div>
-                <div style={{ fontSize: 10, color: C.faint, marginTop: 4 }}>
+                <div className="text-[10px] text-faint mt-1">
                   Flat = always 60 ticks. By Cost = window scales with combo/special cost.
                 </div>
               </div>
@@ -804,8 +808,8 @@ export default function BasicsTab({ config, onChange }: Props) {
 
           {/* Random Modifiers */}
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-              <span style={{ fontSize: 12, color: C.muted }}>Random Match Modifiers</span>
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-xs text-muted">Random Match Modifiers</span>
               <button
                 onClick={() => onChange({ randomModifiers: !config.randomModifiers })}
                 style={{
@@ -819,12 +823,12 @@ export default function BasicsTab({ config, onChange }: Props) {
             </div>
             {config.randomModifiers && (
               <div>
-                <label style={S.label}>Max Stacked Modifiers</label>
+                <label className={LBL}>Max Stacked Modifiers</label>
                 <input
                   type="number" min={1} max={10} step={1}
                   value={config.maxModifiers ?? 2}
                   onChange={e => onChange({ maxModifiers: Math.max(1, Math.min(10, +e.target.value || 2)) })}
-                  style={{ ...S.input, width: 80 }}
+                  style={{ ...INP, width: 80 }}
                 />
               </div>
             )}
@@ -836,29 +840,29 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Player Authority */}
       <CollapsibleSection title="Player Authority" storageKey="arena-basics-authority" defaultOpen={false}>
       <div>
-        <div style={{ fontSize: 11, color: C.faint, marginBottom: 12 }}>
+        <div className="text-[11px] text-faint mb-3">
           Controls how much arena features override player input. 1.0 = default. &lt;1 = arena controls more.
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="flex flex-col gap-3">
           {/* Global multiplier */}
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+            <div className="flex justify-between text-xs text-muted mb-1">
               <span>Global Multiplier</span>
-              <span style={{ fontFamily: "monospace", color: C.text }}>{((config.playerAuthorityConfig?.globalMultiplier ?? 1.0)).toFixed(2)}×</span>
+              <span className="font-mono text-text">{((config.playerAuthorityConfig?.globalMultiplier ?? 1.0)).toFixed(2)}×</span>
             </div>
             <input type="range" min={50} max={200} step={5}
               value={Math.round((config.playerAuthorityConfig?.globalMultiplier ?? 1.0) * 100)}
               onChange={e => onChange({ playerAuthorityConfig: { ...(config.playerAuthorityConfig ?? {}), globalMultiplier: +e.target.value / 100 } })}
               style={{ width: "100%", accentColor: C.blue }} />
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.faint, marginTop: 2 }}>
+            <div className="flex justify-between text-[10px] text-faint mt-0.5">
               <span>0.5× arena dominant</span><span>1.0× balanced</span><span>2.0× player dominant</span>
             </div>
           </div>
           {/* Curvature multiplier */}
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted, marginBottom: 4 }}>
+            <div className="flex justify-between text-xs text-muted mb-1">
               <span>Curvature Multiplier</span>
-              <span style={{ fontFamily: "monospace", color: C.text }}>{((config.playerAuthorityConfig?.curvatureMultiplier ?? 1.0)).toFixed(2)}×</span>
+              <span className="font-mono text-text">{((config.playerAuthorityConfig?.curvatureMultiplier ?? 1.0)).toFixed(2)}×</span>
             </div>
             <input type="range" min={0} max={100} step={5}
               value={Math.round((config.playerAuthorityConfig?.curvatureMultiplier ?? 1.0) * 100)}
@@ -872,17 +876,17 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Max Duration */}
       <CollapsibleSection title="Max Match Duration" storageKey="arena-basics-duration" defaultOpen={false}>
       <div>
-        <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>
+        <div className="text-[11px] text-faint mb-2.5">
           Overrides room default. Tournament rooms always use 180s regardless.
         </div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div className="flex gap-2 items-center">
           <input type="number" min={30} max={600} step={15}
             value={config.maxDurationSeconds ?? 180}
             onChange={e => onChange({ maxDurationSeconds: +e.target.value || undefined })}
-            style={{ ...S.input, width: 80 }} />
-          <span style={{ fontSize: 12, color: C.muted }}>seconds ({Math.floor((config.maxDurationSeconds ?? 180) / 60)}m {(config.maxDurationSeconds ?? 180) % 60}s)</span>
+            style={{ ...INP, width: 80 }} />
+          <span className="text-xs text-muted">seconds ({Math.floor((config.maxDurationSeconds ?? 180) / 60)}m {(config.maxDurationSeconds ?? 180) % 60}s)</span>
           <button onClick={() => onChange({ maxDurationSeconds: undefined })}
-            style={{ padding: "4px 8px", fontSize: 11, borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>
+            className="py-1 px-2 text-[11px] rounded-md border border-border bg-transparent text-muted cursor-pointer">
             Reset
           </button>
         </div>
@@ -892,10 +896,10 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Renderer Mode */}
       <CollapsibleSection title="Renderer Mode" storageKey="arena-basics-renderer" defaultOpen={false}>
       <div>
-        <div style={{ fontSize: 11, color: C.faint, marginBottom: 12 }}>
+        <div className="text-[11px] text-faint mb-3">
           2D = flat PixiJS · 2.5D = tilt-projected PixiJS (default) · 3D = Three.js stub
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="flex gap-2">
           {(["2d", "2.5d", "3d"] as const).map(m => {
             const active = (config.rendererMode ?? "2.5d") === m;
             const color = m === "3d" ? C.purple : m === "2.5d" ? C.blue : C.green;
@@ -917,12 +921,12 @@ export default function BasicsTab({ config, onChange }: Props) {
           })}
         </div>
         {(config.rendererMode ?? "2.5d") === "2d" && (
-          <div style={{ fontSize: 10, color: C.faint, marginTop: 8 }}>
+          <div className="text-[10px] text-faint mt-2">
             Tilt panel and auto-tilt settings have no physics effect in 2D mode.
           </div>
         )}
         {(config.rendererMode ?? "2.5d") === "3d" && (
-          <div style={{ fontSize: 10, color: "#f59e0b", marginTop: 8 }}>
+          <div className="text-[10px] mt-2" style={{ color: "#f59e0b" }}>
             Three.js renderer is a stub — not yet implemented. Falls back to 2.5D in-game.
           </div>
         )}
@@ -932,55 +936,55 @@ export default function BasicsTab({ config, onChange }: Props) {
       {/* Visual Overrides */}
       <CollapsibleSection title="Visual Overrides" storageKey="arena-basics-visuals" defaultOpen={false}>
       <div>
-        <div style={{ fontSize: 11, color: C.faint, marginBottom: 14 }}>
+        <div className="text-[11px] text-faint mb-3.5">
           Override theme defaults. Leave blank to use theme colors.
         </div>
-        <div style={{ display: "flex", gap: 12 }}>
-          <div style={{ flex: 1 }}>
-            <label style={S.label}>Background Color</label>
-            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+        <div className="flex gap-3">
+          <div className="flex-1">
+            <label className={LBL}>Background Color</label>
+            <div className="flex gap-1.5 items-center">
               <input
                 type="color"
                 value={config.backgroundColor ?? "#1a1a2e"}
                 onChange={e => onChange({ backgroundColor: e.target.value })}
-                style={{ width: 36, height: 30, padding: 2, border: `1px solid ${C.border}`, borderRadius: 6, cursor: "pointer", background: C.bg2 }}
+                className="w-9 h-[30px] p-0.5 border border-border rounded-md cursor-pointer bg-bg2"
               />
               <input
                 type="text"
                 value={config.backgroundColor ?? ""}
                 onChange={e => onChange({ backgroundColor: e.target.value || undefined })}
                 placeholder="e.g. #1a1a2e"
-                style={{ ...S.input, flex: 1, fontFamily: "monospace", fontSize: 11 }}
+                style={{ ...INP, flex: 1, fontFamily: "monospace", fontSize: 11 }}
               />
               {config.backgroundColor && (
                 <button
                   onClick={() => onChange({ backgroundColor: undefined })}
-                  style={{ padding: "4px 8px", fontSize: 11, borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}
+                  className="py-1 px-2 text-[11px] rounded-md border border-border bg-transparent text-muted cursor-pointer"
                   title="Clear override"
                 >×</button>
               )}
             </div>
           </div>
-          <div style={{ flex: 1 }}>
-            <label style={S.label}>Floor Color</label>
-            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <div className="flex-1">
+            <label className={LBL}>Floor Color</label>
+            <div className="flex gap-1.5 items-center">
               <input
                 type="color"
                 value={config.floorColor ?? "#374151"}
                 onChange={e => onChange({ floorColor: e.target.value })}
-                style={{ width: 36, height: 30, padding: 2, border: `1px solid ${C.border}`, borderRadius: 6, cursor: "pointer", background: C.bg2 }}
+                className="w-9 h-[30px] p-0.5 border border-border rounded-md cursor-pointer bg-bg2"
               />
               <input
                 type="text"
                 value={config.floorColor ?? ""}
                 onChange={e => onChange({ floorColor: e.target.value || undefined })}
                 placeholder="e.g. #374151"
-                style={{ ...S.input, flex: 1, fontFamily: "monospace", fontSize: 11 }}
+                style={{ ...INP, flex: 1, fontFamily: "monospace", fontSize: 11 }}
               />
               {config.floorColor && (
                 <button
                   onClick={() => onChange({ floorColor: undefined })}
-                  style={{ padding: "4px 8px", fontSize: 11, borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}
+                  className="py-1 px-2 text-[11px] rounded-md border border-border bg-transparent text-muted cursor-pointer"
                   title="Clear override"
                 >×</button>
               )}

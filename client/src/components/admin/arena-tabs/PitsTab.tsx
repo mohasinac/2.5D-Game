@@ -51,57 +51,64 @@ export default function PitsTab({ config, onChange }: Props) {
 
   return (
     <CollapsibleSection title="Pits" badge={pits.length} storageKey="arena-pits-list" defaultOpen={true}>
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 13, color: C.muted }}>{pits.length} / 3 pits</span>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={() => add("crater")} disabled={pits.length >= 3} style={{ padding: "5px 12px", background: C.bg3, border: `1px solid ${C.border}`, color: C.muted, borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer", opacity: pits.length >= 3 ? 0.4 : 1 }}>
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between items-center">
+        <span className="text-[13px] text-muted">{pits.length} / 3 pits</span>
+        <div className="flex gap-2">
+          <button onClick={() => add("crater")} disabled={pits.length >= 3}
+            className="py-[5px] px-3 bg-bg3 border border-border text-muted rounded-md text-xs font-medium cursor-pointer"
+            style={{ opacity: pits.length >= 3 ? 0.4 : 1 }}>
             + Crater
           </button>
-          <button onClick={() => add("edge")} disabled={pits.length >= 3} style={{ padding: "5px 12px", background: C.bg3, border: `1px solid ${C.border}`, color: C.muted, borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer", opacity: pits.length >= 3 ? 0.4 : 1 }}>
+          <button onClick={() => add("edge")} disabled={pits.length >= 3}
+            className="py-[5px] px-3 bg-bg3 border border-border text-muted rounded-md text-xs font-medium cursor-pointer"
+            style={{ opacity: pits.length >= 3 ? 0.4 : 1 }}>
             + Edge Pit
           </button>
         </div>
       </div>
 
       {pits.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px 0", color: C.faint }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>🕳️</div>
+        <div className="text-center py-10 text-faint">
+          <div className="text-[32px] mb-2">🕳️</div>
           <p>No pits yet. Pits trap beyblades, dealing spin damage until they escape.</p>
         </div>
       )}
 
       {pits.map((pit, idx) => (
-        <div key={pit.id} style={{ background: C.bg3, borderRadius: 12, padding: 16, border: `1px solid ${C.border}` }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: C.text }}>🕳️ Pit #{idx + 1} — <span style={{ color: C.muted, textTransform: "capitalize" }}>{pit.type}</span></span>
-            <button onClick={() => remove(pit.id)} style={{ color: C.red, background: "none", border: "none", fontSize: 12, cursor: "pointer" }}>Remove</button>
+        <div key={pit.id} className="bg-bg3 rounded-xl p-4 border border-border">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-[13px] font-medium text-text">
+              🕳️ Pit #{idx + 1} — <span className="text-muted capitalize">{pit.type}</span>
+            </span>
+            <button onClick={() => remove(pit.id)} className="text-red bg-transparent border-none text-xs cursor-pointer">Remove</button>
           </div>
 
           {/* Position */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+          <div className="grid grid-cols-2 gap-2.5 mb-2.5">
             {(["x", "y"] as const).map(axis => (
               <div key={axis}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+                <div className="flex justify-between text-[11px] text-faint mb-0.5">
                   <span>Pos {axis.toUpperCase()} (em)</span>
-                  <span style={{ color: C.text, fontFamily: "monospace" }}>{pit.position?.[axis] ?? 0}</span>
+                  <span className="text-text font-mono">{pit.position?.[axis] ?? 0}</span>
                 </div>
                 <input type="range" min={-20} max={20} step={0.5}
                   value={pit.position?.[axis] ?? 0}
                   onChange={e => updatePos(pit.id, axis, +e.target.value)}
-                  style={{ width: "100%", accentColor: C.muted }}
+                  className="w-full"
+                  style={{ accentColor: C.muted }}
                 />
               </div>
             ))}
           </div>
 
           {/* Stats */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div className="grid grid-cols-2 gap-2.5">
             {STAT_FIELDS.map(({ field, label, min, max, step }) => (
               <div key={field}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+                <div className="flex justify-between text-[11px] text-faint mb-0.5">
                   <span>{label}</span>
-                  <span style={{ color: C.text, fontFamily: "monospace" }}>
+                  <span className="text-text font-mono">
                     {field === "escapeChance"
                       ? `${((pit as any)[field] ?? 0.5) * 100}%`
                       : (pit as any)[field] ?? min}
@@ -110,36 +117,38 @@ export default function PitsTab({ config, onChange }: Props) {
                 <input type="range" min={min} max={max} step={step}
                   value={(pit as any)[field] ?? min}
                   onChange={e => update(pit.id, field, +e.target.value)}
-                  style={{ width: "100%", accentColor: C.muted }}
+                  className="w-full"
+                  style={{ accentColor: C.muted }}
                 />
               </div>
             ))}
           </div>
 
           {/* Sprite picker */}
-          <div style={{ marginTop: 12, marginBottom: 4 }}>
-            <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Pit Sprite</label>
+          <div className="mt-3 mb-1">
+            <label className="block text-[11px] text-faint mb-1">Pit Sprite</label>
             <SearchableSelect
               value={(pit as any).spriteId ?? ""}
               options={assetOpts}
               onChange={v => update(pit.id, "spriteId" as any, v || undefined)}
               disabled={assetsLoading}
               emptyLabel={assetsLoading ? "Loading…" : "No assets found"}
-              style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+              style={{ width: "100%" }}
             />
           </div>
 
           {/* Edge pit angle */}
           {pit.type === "edge" && (
-            <div style={{ marginTop: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+            <div className="mt-2.5">
+              <div className="flex justify-between text-[11px] text-faint mb-0.5">
                 <span>Edge Angle (°)</span>
-                <span style={{ color: C.text, fontFamily: "monospace" }}>{pit.angle ?? 0}°</span>
+                <span className="text-text font-mono">{pit.angle ?? 0}°</span>
               </div>
               <input type="range" min={0} max={359} step={5}
                 value={pit.angle ?? 0}
                 onChange={e => update(pit.id, "angle", +e.target.value)}
-                style={{ width: "100%", accentColor: C.muted }}
+                className="w-full"
+                style={{ accentColor: C.muted }}
               />
             </div>
           )}

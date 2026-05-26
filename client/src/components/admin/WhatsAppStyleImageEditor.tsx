@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-import { C, HEX, btn, btnOutline } from "../../styles/theme";
+import { C, HEX } from "../../styles/theme";
 
 interface WhatsAppStyleImageEditorProps {
   imageUrl: string;

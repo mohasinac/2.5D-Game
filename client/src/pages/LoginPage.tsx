@@ -4,7 +4,7 @@ import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 
 import { auth } from "@/lib/firebase";
 import { createUserDoc } from "@/lib/userDoc";
 import toast from "react-hot-toast";
-import { C, S } from "@/styles/theme";
+import { C } from "@/styles/theme";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const googleProvider = new GoogleAuthProvider();
@@ -103,26 +103,26 @@ export function LoginPage() {
 
         <form onSubmit={handleSubmit} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
-            <label style={S.label}>Email</label>
+            <label className="block text-xs text-muted mb-1.5">Email</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="you@example.com"
-              style={S.input}
+              className="w-full px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm"
               autoComplete="email"
               required
             />
           </div>
 
           <div>
-            <label style={S.label}>Password</label>
+            <label className="block text-xs text-muted mb-1.5">Password</label>
             <input
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
-              style={S.input}
+              className="w-full px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm"
               autoComplete="current-password"
               required
             />

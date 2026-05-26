@@ -1,25 +1,8 @@
-/**
- * PartEditor — generic editor shell for any part type.
- *
- * Sections (tabbed):
- *   Overview      display name, color, compatibility tags
- *   Shape         PartShapeEditor (preset / trace / Bezier / Fourier / side / bottom)
- *   Images        PartImagesSection (top/side/bottom upload)
- *   Dimensions    PartDimensionFields
- *   Material      MaterialSelector + MaterialBandsEditor
- *   Contact Points ContactPointEditor
- *   Configurations PartConfigurationsEditor
- *   Pockets       PocketListEditor
- *
- * Part-type-specific fields (weight, gripFactor, tipShape, etc.) are rendered
- * in a "Type Fields" section using the renderTypeFields prop.
- */
-
 import { useState, useEffect } from "react";
 import { useTabFromUrl } from "@/hooks/useTabFromUrl";
 import { doc, getDoc, updateDoc, getDocs, collection, serverTimestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, alpha } from "@/styles/theme";
+import { Eye } from "lucide-react";
 import toast from "react-hot-toast";
 import { PartShapeEditor } from "./PartShapeEditor";
 import { PartImagesSection } from "./PartImagesSection";
@@ -30,7 +13,11 @@ import { ContactPointEditor } from "./ContactPointEditor";
 import { PartConfigurationsEditor } from "./PartConfigurationsEditor";
 import { PocketListEditor } from "./PocketListEditor";
 import { PartLayerPreview, type PartKind } from "./PartLayerPreview";
-import { SearchableTabSelect, SearchableSelect, SearchableMultiSelect } from "@/components/admin/SearchableSelect";
+import { SearchableSelect, SearchableMultiSelect } from "@/components/admin/SearchableSelect";
+import { TabDropdown } from "@/components/ui/TabDropdown";
+import { PreviewOverlay } from "@/components/ui/PreviewOverlay";
+import type { BasePart, PartDimensions, Material, MaterialBand, SystemContactPoint, PartImages, PartSelfRotation, PartLayer } from "@/types/beybladeSystem";
+import { PartSelfRotationSection } from "./PartSelfRotationSection";
 
 const SLUG_TO_KIND: Record<string, PartKind> = {
   "bit-beasts":   "bitBeast",
@@ -42,10 +29,7 @@ const SLUG_TO_KIND: Record<string, PartKind> = {
   "tips":         "tip",
   "sub-parts":    "subPart",
 };
-import type { BasePart, PartDimensions, Material, MaterialBand, SystemContactPoint, PartImages, PartSelfRotation, PartLayer } from "@/types/beybladeSystem";
-import { PartSelfRotationSection } from "./PartSelfRotationSection";
 
-// Preview is no longer a tab — it's always visible in the right panel.
 type Tab = "overview" | "shape" | "images" | "dimensions" | "material" | "contacts" | "configs" | "pockets" | "type";
 
 const TABS: Array<{ key: Tab; label: string }> = [
@@ -64,13 +48,9 @@ interface Props {
   collectionName: string;
   partId: string;
   partTypeSlug: string;
-  /** Render part-type-specific fields (weight, gripFactor, etc.) */
   renderTypeFields?: (part: Record<string, unknown>, onChange: (patch: Record<string, unknown>) => void) => React.ReactNode;
-  /** Whether this part type has contact points */
   hasContactPoints?: boolean;
-  /** Whether this part type has material bands */
   hasMaterialBands?: boolean;
-  /** Whether to show inner radius field */
   showInnerRadius?: boolean;
 }
 
@@ -89,6 +69,7 @@ export function PartEditor({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [part, setPart] = useState<Record<string, any> | null>(null);
   const [dirty, setDirty] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [comboEffectOptions, setComboEffectOptions] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
@@ -123,12 +104,11 @@ export function PartEditor({
     finally { setSaving(false); }
   };
 
-  if (loading) return <div style={{ padding: 32, color: C.muted }}>Loading…</div>;
-  if (!part) return <div style={{ padding: 32, color: C.red }}>Part not found.</div>;
+  if (loading) return <div className="p-8 text-muted">Loading…</div>;
+  if (!part) return <div className="p-8 text-red">Part not found.</div>;
 
   const storagePath = `parts/${collectionName}/${partId}`;
 
-  // Type-cast helpers with fallbacks
   const images: PartImages = part.images ?? {};
   const geometry = part.geometry ?? { type: "preset" as const, preset: "circle" as const };
   const dimensions: PartDimensions = part.dimensions ?? { height: 30, outerRadius: 35, innerRadius: 5 };
@@ -143,127 +123,109 @@ export function PartEditor({
 
   const partKind = SLUG_TO_KIND[partTypeSlug] ?? "subPart";
 
+  const visibleTabs = TABS.filter((t) => {
+    if (t.key === "contacts" && !hasContactPoints) return false;
+    if (t.key === "material" && !hasMaterialBands) return false;
+    if (t.key === "type" && !renderTypeFields) return false;
+    return true;
+  });
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
+    <div className="flex flex-col flex-1 min-h-0">
       {/* Top bar */}
-      <div style={{
-        display: "flex", alignItems: "center", gap: 12, padding: "14px 24px",
-        borderBottom: `1px solid ${C.border}`, background: C.bg1, flexShrink: 0,
-      }}>
+      <div className="flex items-center gap-3 px-6 py-3.5 border-b border-border bg-bg1 shrink-0">
         <div
-          style={{
-            width: 28, height: 28, borderRadius: "50%",
-            background: part.color ?? C.faint, flexShrink: 0,
-            border: `2px solid ${C.border}`,
-          }}
+          className="w-7 h-7 rounded-full shrink-0 border-2 border-border"
+          style={{ background: part.color ?? "var(--faint)" }}
         />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div className="flex-1 min-w-0">
+          <div className="text-base font-bold text-text truncate">
             {part.displayName || "Unnamed Part"}
           </div>
-          <div style={{ fontSize: 11, color: C.faint }}>ID: {partId}</div>
+          <div className="text-[11px] text-faint">ID: {partId}</div>
         </div>
+
+        <TabDropdown
+          tabs={visibleTabs.map(t => ({ key: t.key, label: t.label }))}
+          value={tab}
+          onChange={(k) => setTab(k as Tab)}
+        />
+
+        <button
+          onClick={() => setPreviewOpen(o => !o)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs text-muted hover:text-text hover:bg-bg3 transition-colors"
+          title="Toggle preview"
+        >
+          <Eye size={13} />
+          Preview
+        </button>
+
         {dirty && (
-          <span style={{ fontSize: 11, color: C.yellow, background: alpha(C.yellow, 0.09), padding: "3px 8px", borderRadius: 5 }}>
+          <span className="text-[11px] text-yellow bg-yellow/[.09] px-2 py-1 rounded">
             Unsaved changes
           </span>
         )}
         <button
           onClick={save}
           disabled={saving || !dirty}
-          style={{
-            padding: "8px 20px", background: dirty ? C.blue : C.bg3,
-            color: dirty ? "#fff" : C.faint, border: "none", borderRadius: 8,
-            fontSize: 13, fontWeight: 600, cursor: dirty ? "pointer" : "default",
-          }}
+          className="px-5 py-2 rounded-lg text-[13px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-default bg-blue text-white hover:opacity-90 disabled:bg-bg3 disabled:text-faint"
         >
           {saving ? "Saving…" : "Save"}
         </button>
       </div>
 
-      {/* Tab strip */}
-      <div style={{ display: "flex", gap: 2, padding: "8px 24px 0", borderBottom: `1px solid ${C.border}`, background: C.bg1, flexShrink: 0, flexWrap: "wrap", alignItems: "flex-end" }}>
-        <SearchableTabSelect
-          tabs={TABS.filter((t) => {
-            if (t.key === "contacts" && !hasContactPoints) return false;
-            if (t.key === "material" && !hasMaterialBands) return false;
-            if (t.key === "type" && !renderTypeFields) return false;
-            return true;
-          }).map(t => ({ key: t.key, label: t.label }))}
-          activeTab={tab}
-          onSelect={(k) => setTab(k as Tab)}
-          style={{ minWidth: 160, marginBottom: 8, marginRight: 8 }}
-        />
-        {TABS.filter((t) => {
-          if (t.key === "contacts" && !hasContactPoints) return false;
-          if (t.key === "material" && !hasMaterialBands) return false;
-          if (t.key === "type" && !renderTypeFields) return false;
-          return true;
-        }).map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            style={{
-              padding: "7px 14px", fontSize: 12, borderRadius: "6px 6px 0 0",
-              background: tab === t.key ? C.bg0 : "transparent",
-              color: tab === t.key ? C.text : C.muted,
-              border: `1px solid ${tab === t.key ? C.border : "transparent"}`,
-              borderBottom: tab === t.key ? `1px solid ${C.bg0}` : "none",
-              cursor: "pointer", marginBottom: tab === t.key ? -1 : 0,
-            }}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Two-column body: left = tab content, right = always-visible part preview */}
-      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-
       {/* Tab content */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "24px", background: C.bg0 }}>
+      <div className="flex-1 overflow-y-auto p-6 bg-bg0">
 
         {/* Overview */}
         {tab === "overview" && (
-          <div style={{ maxWidth: 600, display: "flex", flexDirection: "column", gap: 20 }}>
+          <div className="max-w-xl flex flex-col gap-5">
             <div>
-              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Display Name</label>
+              <label className="block text-xs text-muted mb-1.5">Display Name</label>
               <input
                 value={part.displayName ?? ""}
                 onChange={(e) => update({ displayName: e.target.value })}
-                style={{ width: "100%", padding: "9px 12px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 14, boxSizing: "border-box" }}
+                className="w-full px-3 py-2 bg-bg2 border border-border rounded-lg text-text text-sm"
               />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Description</label>
+              <label className="block text-xs text-muted mb-1.5">Description</label>
               <textarea
                 value={part.description ?? ""}
                 onChange={(e) => update({ description: e.target.value })}
                 rows={3}
-                style={{ width: "100%", padding: "9px 12px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13, resize: "vertical", boxSizing: "border-box" }}
+                className="w-full px-3 py-2 bg-bg2 border border-border rounded-lg text-text text-sm resize-y"
               />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Color</label>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <input type="color" value={part.color ?? "#1a1a1a"} onChange={(e) => update({ color: e.target.value })} style={{ width: 44, height: 34, border: "none", cursor: "pointer", borderRadius: 6 }} />
-                <input value={part.color ?? ""} onChange={(e) => update({ color: e.target.value })} style={{ width: 100, padding: "7px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12, fontFamily: "monospace" }} />
+              <label className="block text-xs text-muted mb-1.5">Color</label>
+              <div className="flex items-center gap-2.5">
+                <input
+                  type="color"
+                  value={part.color ?? "#1a1a1a"}
+                  onChange={(e) => update({ color: e.target.value })}
+                  className="w-11 h-9 rounded-md cursor-pointer border-0"
+                />
+                <input
+                  value={part.color ?? ""}
+                  onChange={(e) => update({ color: e.target.value })}
+                  className="w-28 px-2.5 py-1.5 bg-bg2 border border-border rounded-md text-text text-xs font-mono"
+                />
               </div>
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Physics Coupling</label>
-              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: C.text, cursor: "pointer" }}>
+              <label className="block text-xs text-muted mb-1.5">Physics Coupling</label>
+              <label className="flex items-center gap-2 text-sm text-text cursor-pointer">
                 <input
                   type="checkbox"
                   checked={part.rotatable !== false}
                   onChange={(e) => update({ rotatable: e.target.checked })}
-                  style={{ accentColor: C.blue, width: 16, height: 16 }}
+                  className="w-4 h-4 accent-blue"
                 />
                 <span>Rotatable</span>
-                <span style={{ fontSize: 11, color: C.faint }}>(co-rotates with bey spin axis; uncheck to free-spin independently)</span>
+                <span className="text-[11px] text-faint">(co-rotates with bey spin axis; uncheck to free-spin independently)</span>
               </label>
             </div>
-            {/* Part-Driven Rotation */}
             <PartSelfRotationSection
               value={(part.selfRotation as PartSelfRotation | undefined) ?? null}
               onChange={(sr) => update({ selfRotation: sr ?? undefined })}
@@ -271,16 +233,14 @@ export function PartEditor({
             <TagsField label="Compatibility Tags" value={compatibilityTags} onChange={(v) => update({ compatibilityTags: v })} />
             <TagsField label="Required Compatibility" value={requiredCompatibility} onChange={(v) => update({ requiredCompatibility: v })} />
             <TagsField label="Excluded Compatibility" value={excludedCompatibility} onChange={(v) => update({ excludedCompatibility: v })} />
-            {/* Combo Effects */}
             <div>
-              <div style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Combo Effects</div>
+              <div className="text-xs text-muted mb-1.5">Combo Effects</div>
               <SearchableMultiSelect
                 values={(part.comboEffects as string[] | undefined) ?? []}
                 options={comboEffectOptions}
                 onChange={(ids) => update({ comboEffects: ids })}
               />
             </div>
-            {/* Slot wiring */}
             <SlotWiringSection
               slotsInto={(part.slotsInto as PartLayer | undefined) ?? null}
               slotPosition={(part.slotPosition as number | undefined) ?? null}
@@ -290,7 +250,6 @@ export function PartEditor({
           </div>
         )}
 
-        {/* Shape */}
         {tab === "shape" && (
           <PartShapeEditor
             value={geometry}
@@ -299,7 +258,6 @@ export function PartEditor({
           />
         )}
 
-        {/* Images */}
         {tab === "images" && (
           <PartImagesSection
             images={images}
@@ -308,9 +266,8 @@ export function PartEditor({
           />
         )}
 
-        {/* Dimensions */}
         {tab === "dimensions" && (
-          <div style={{ maxWidth: 420 }}>
+          <div className="max-w-sm">
             <PartDimensionFields
               value={dimensions}
               onChange={(d) => update({ dimensions: d })}
@@ -319,9 +276,8 @@ export function PartEditor({
           </div>
         )}
 
-        {/* Material */}
         {tab === "material" && (
-          <div style={{ maxWidth: 500, display: "flex", flexDirection: "column", gap: 24 }}>
+          <div className="max-w-lg flex flex-col gap-6">
             <MaterialSelector
               value={material}
               onChange={(m) => update({ material: m })}
@@ -336,7 +292,6 @@ export function PartEditor({
           </div>
         )}
 
-        {/* Contact Points */}
         {tab === "contacts" && hasContactPoints && (
           <ContactPointEditor
             value={contactPoints}
@@ -346,9 +301,8 @@ export function PartEditor({
           />
         )}
 
-        {/* Configurations */}
         {tab === "configs" && (
-          <div style={{ maxWidth: 680 }}>
+          <div className="max-w-2xl">
             <PartConfigurationsEditor
               value={configurations}
               onChange={(cfgs) => update({ configurations: cfgs })}
@@ -357,7 +311,6 @@ export function PartEditor({
           </div>
         )}
 
-        {/* Pockets */}
         {tab === "pockets" && (
           <PocketListEditor
             value={pockets}
@@ -366,34 +319,34 @@ export function PartEditor({
           />
         )}
 
-        {/* Type-specific fields */}
         {tab === "type" && renderTypeFields && (
-          <div style={{ maxWidth: 600 }}>
+          <div className="max-w-xl">
             {renderTypeFields(part, update)}
           </div>
         )}
       </div>
 
-      {/* Right panel — always-visible part preview */}
-      <div style={{
-        width: 260, flexShrink: 0, borderLeft: `1px solid ${C.border}`,
-        background: C.bg1, overflowY: "auto", padding: "20px 16px",
-        display: "flex", flexDirection: "column", gap: 16,
-      }}>
-        <PartLayerPreview
-          images={images}
-          partKind={partKind}
-          displayName={(part.displayName as string) || "Untitled Part"}
-          color={part.color as string | undefined}
-          dimensions={dimensions}
-        />
-        <div style={{ fontSize: 11, color: C.faint, textAlign: "center" }}>
-          {dimensions.outerRadius ? `⌀ ${(dimensions.outerRadius * 2 / 10).toFixed(1)} cm` : ""}
-          {dimensions.height ? `  ×  h ${(dimensions.height / 10).toFixed(1)} cm` : ""}
+      {/* Toggleable preview overlay */}
+      <PreviewOverlay
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        title="Part Preview"
+        width="w-72"
+      >
+        <div className="p-4 flex flex-col gap-3">
+          <PartLayerPreview
+            images={images}
+            partKind={partKind}
+            displayName={(part.displayName as string) || "Untitled Part"}
+            color={part.color as string | undefined}
+            dimensions={dimensions}
+          />
+          <div className="text-[11px] text-faint text-center">
+            {dimensions.outerRadius ? `⌀ ${(dimensions.outerRadius * 2 / 10).toFixed(1)} cm` : ""}
+            {dimensions.height ? `  ×  h ${(dimensions.height / 10).toFixed(1)} cm` : ""}
+          </div>
         </div>
-      </div>
-
-      </div>{/* end two-column body */}
+      </PreviewOverlay>
     </div>
   );
 }
@@ -422,10 +375,10 @@ function SlotWiringSection({
 }) {
   return (
     <div>
-      <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Slot Wiring</label>
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
-        <div style={{ flex: 1, minWidth: 160 }}>
-          <div style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>Slots Into</div>
+      <label className="block text-xs text-muted mb-1.5">Slot Wiring</label>
+      <div className="flex gap-3 flex-wrap items-end">
+        <div className="flex-1 min-w-40">
+          <div className="text-[11px] text-faint mb-1">Slots Into</div>
           <SearchableSelect
             value={slotsInto ?? ""}
             options={[{ value: "", label: "(not set)" }, ...PART_LAYER_OPTIONS]}
@@ -433,8 +386,8 @@ function SlotWiringSection({
             placeholder="Select slot layer…"
           />
         </div>
-        <div style={{ minWidth: 100 }}>
-          <div style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>Slot Position (0-indexed)</div>
+        <div className="min-w-24">
+          <div className="text-[11px] text-faint mb-1">Slot Position (0-indexed)</div>
           <input
             type="number"
             min={0}
@@ -442,11 +395,11 @@ function SlotWiringSection({
             value={slotPosition ?? ""}
             placeholder="0"
             onChange={(e) => onChangeSlotPosition(e.target.value === "" ? null : Number(e.target.value))}
-            style={{ width: 90, padding: "6px 9px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }}
+            className="w-24 px-2.5 py-1.5 bg-bg2 border border-border rounded-md text-text text-xs"
           />
         </div>
       </div>
-      <div style={{ fontSize: 10, color: C.faint, marginTop: 5 }}>
+      <div className="text-[10px] text-faint mt-1.5">
         Slot position only matters for beys with multiple sockets of the same layer (e.g. dual gear ports). Leave blank for single-slot systems.
       </div>
     </div>
@@ -467,27 +420,32 @@ function TagsField({ label, value, onChange }: { label: string; value: string[];
 
   return (
     <div>
-      <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>{label}</label>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+      <label className="block text-xs text-muted mb-1.5">{label}</label>
+      <div className="flex flex-wrap gap-1.5 mb-2">
         {value.map((t) => (
-          <span key={t} style={{ fontSize: 11, background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 4, padding: "2px 8px", color: C.text, display: "flex", alignItems: "center", gap: 4 }}>
+          <span key={t} className="text-[11px] bg-bg3 border border-border rounded px-2 py-0.5 text-text flex items-center gap-1">
             {t}
-            <button onClick={() => onChange(value.filter((x) => x !== t))} style={{ background: "none", border: "none", color: C.faint, cursor: "pointer", fontSize: 12, padding: 0 }}>×</button>
+            <button
+              onClick={() => onChange(value.filter((x) => x !== t))}
+              className="text-faint hover:text-red text-xs leading-none"
+            >×</button>
           </span>
         ))}
-        {value.length === 0 && <span style={{ fontSize: 11, color: C.faint }}>None</span>}
+        {value.length === 0 && <span className="text-[11px] text-faint">None</span>}
       </div>
-      <div style={{ display: "flex", gap: 6 }}>
+      <div className="flex gap-1.5">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && add()}
           placeholder="add tag…"
-          style={{ flex: 1, padding: "6px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }}
+          className="flex-1 px-2.5 py-1.5 bg-bg2 border border-border rounded-md text-text text-xs"
         />
-        <button onClick={add} style={{ padding: "6px 12px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, fontSize: 12, color: C.muted, cursor: "pointer" }}>Add</button>
+        <button
+          onClick={add}
+          className="px-3 py-1.5 bg-bg3 border border-border rounded-md text-xs text-muted hover:text-text transition-colors"
+        >Add</button>
       </div>
     </div>
   );
 }
-

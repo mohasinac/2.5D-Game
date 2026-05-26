@@ -1,10 +1,5 @@
 /**
  * BeybladeSystemEditor — compositor with dynamic slot tabs.
- *
- * Tabs: Overview, Bit Beast, Attack Ring, Weight Disk, Base › Tip,
- *       Base › Core, Base › Casing, Sub-Parts, Preview.
- *
- * Right panel: BeybladeSystemPreview (live 3-panel preview + computed stats).
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -12,7 +7,7 @@ import { useTabFromUrl } from "@/hooks/useTabFromUrl";
 import { doc, getDoc, getDocs, updateDoc, serverTimestamp, collection, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { C, alpha } from "@/styles/theme";
+import { TabDropdown } from "@/components/ui/TabDropdown";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { SlotTab } from "./SlotTab";
 import { BeybladeSystemPreview } from "./BeybladeSystemPreview";
@@ -67,7 +62,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
   const [partCache, setPartCache] = useState<Record<string, PartDoc>>({});
   const [resolved, setResolved] = useState<ResolvedBeybladeSystem | null>(null);
 
-  // Load system doc
   useEffect(() => {
     (async () => {
       try {
@@ -79,7 +73,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
     })();
   }, [systemId]);
 
-  // Fetch a part by collection + id, cache it
   const fetchPart = useCallback(async (col: string, id: string) => {
     if (!id || partCache[id]) return;
     try {
@@ -90,7 +83,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
     } catch { /* ignore */ }
   }, [partCache]);
 
-  // Fetch sub-parts collection for picker
   const [subPartDocs, setSubPartDocs] = useState<PartDoc[]>([]);
   useEffect(() => {
     getDocs(collection(db, COLLECTIONS.SUB_PARTS))
@@ -98,7 +90,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
       .catch(() => {});
   }, []);
 
-  // Fetch gear parts collection for picker
   const [gearPartDocs, setGearPartDocs] = useState<PartDoc[]>([]);
   useEffect(() => {
     getDocs(collection(db, COLLECTIONS.GEAR_PARTS))
@@ -106,7 +97,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
       .catch(() => {});
   }, []);
 
-  // Fetch all beyblade systems for the combinedWith partner picker
   const [systemOptions, setSystemOptions] = useState<{ value: string; label: string }[]>([]);
   useEffect(() => {
     getDocs(collection(db, COLLECTIONS.BEYBLADE_SYSTEMS))
@@ -119,7 +109,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
       .catch(() => {});
   }, [systemId]);
 
-  // Whenever system changes, fetch all referenced parts
   useEffect(() => {
     if (!system) return;
     const fetches: Promise<void>[] = [];
@@ -136,7 +125,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
     Promise.all(fetches);
   }, [system, fetchPart]);
 
-  // Try to resolve the system whenever parts are available
   useEffect(() => {
     if (!system) { setResolved(null); return; }
     try {
@@ -182,32 +170,27 @@ export function BeybladeSystemEditor({ systemId }: Props) {
     } finally { setSaving(false); }
   };
 
-  if (loading) return <div style={{ padding: 32, color: C.muted }}>Loading…</div>;
-  if (!system) return <div style={{ padding: 32, color: C.red }}>System not found.</div>;
+  if (loading) return <div className="p-8 text-muted">Loading…</div>;
+  if (!system) return <div className="p-8 text-red">System not found.</div>;
 
   return (
-    <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
-      {/* ── LEFT: Tab editor ──────────────────────────────────────────────────── */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, borderRight: `1px solid ${C.border}` }}>
+    <div className="flex h-full overflow-hidden">
+      {/* LEFT: Tab editor */}
+      <div className="flex-1 flex flex-col min-w-0 border-r border-border">
         {/* Top bar */}
-        <div style={{
-          display: "flex", alignItems: "center", gap: 10, padding: "12px 20px",
-          borderBottom: `1px solid ${C.border}`, background: C.bg1, flexShrink: 0,
-        }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>{system.displayName}</div>
-            <div style={{ fontSize: 11, color: C.faint }}>ID: {systemId}</div>
+        <div className="flex items-center gap-2.5 px-5 py-3 border-b border-border bg-bg1 shrink-0">
+          <div className="flex-1">
+            <div className="text-[15px] font-bold text-text">{system.displayName}</div>
+            <div className="text-[11px] text-faint">ID: {systemId}</div>
           </div>
-          {dirty && <span style={{ fontSize: 11, color: C.yellow, background: alpha(C.yellow, 0.09), padding: "3px 8px", borderRadius: 5 }}>Unsaved</span>}
+          {dirty && (
+            <span className="text-[11px] text-yellow bg-yellow/10 px-2 py-0.5 rounded">Unsaved</span>
+          )}
           {resolved && (
             <button
               onClick={publishToStats}
               disabled={saving}
-              style={{
-                padding: "7px 14px", background: alpha(C.green, 0.13), color: C.green,
-                border: `1px solid ${alpha(C.green, 0.27)}`, borderRadius: 7, fontSize: 12,
-                fontWeight: 600, cursor: saving ? "not-allowed" : "pointer",
-              }}
+              className="px-3.5 py-1.5 bg-green/10 text-green border border-green/25 rounded-lg text-xs font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
             >
               Publish Stats
             </button>
@@ -215,73 +198,59 @@ export function BeybladeSystemEditor({ systemId }: Props) {
           <button
             onClick={save}
             disabled={saving || !dirty}
-            style={{
-              padding: "7px 18px", background: dirty ? C.blue : C.bg3,
-              color: dirty ? "#fff" : C.faint, border: "none", borderRadius: 7,
-              fontSize: 12, fontWeight: 600, cursor: dirty ? "pointer" : "default",
-            }}
+            className={`px-4 py-1.5 border-none rounded-lg text-xs font-semibold ${dirty ? "bg-blue text-white cursor-pointer" : "bg-bg3 text-faint cursor-default"}`}
           >
             {saving ? "Saving…" : "Save"}
           </button>
         </div>
 
-        {/* Tab strip */}
-        <div style={{ display: "flex", gap: 2, padding: "6px 20px 0", borderBottom: `1px solid ${C.border}`, background: C.bg1, flexShrink: 0, flexWrap: "wrap" }}>
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              style={{
-                padding: "6px 12px", fontSize: 11, borderRadius: "5px 5px 0 0",
-                background: tab === t.key ? C.bg0 : "transparent",
-                color: tab === t.key ? C.text : C.muted,
-                border: `1px solid ${tab === t.key ? C.border : "transparent"}`,
-                borderBottom: tab === t.key ? `1px solid ${C.bg0}` : "none",
-                cursor: "pointer", marginBottom: tab === t.key ? -1 : 0,
-              }}
-            >
-              {t.icon ? `${t.icon} ${t.label}` : t.label}
-            </button>
-          ))}
+        {/* Tab dropdown */}
+        <div className="flex items-center gap-2 px-5 py-2 border-b border-border bg-bg1 shrink-0">
+          <TabDropdown
+            tabs={TABS.map(t => ({ key: t.key, label: t.icon ? `${t.icon} ${t.label}` : t.label }))}
+            value={tab}
+            onChange={(k) => setTab(k as Tab)}
+          />
         </div>
 
         {/* Tab content */}
-        <div style={{ flex: 1, overflowY: "auto", padding: 20, background: C.bg0 }}>
+        <div className="flex-1 overflow-y-auto p-5 bg-bg0">
 
-          {/* Overview */}
           {tab === "overview" && (
-            <div style={{ maxWidth: 500, display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="max-w-[500px] flex flex-col gap-4">
               <div>
-                <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 5 }}>Display Name</label>
+                <label className="block text-xs text-muted mb-1.5">Display Name</label>
                 <input
                   value={system.displayName}
                   onChange={(e) => updateSystem({ displayName: e.target.value })}
-                  style={{ width: "100%", padding: "8px 12px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, color: C.text, fontSize: 13, boxSizing: "border-box" }}
+                  className="w-full px-3 py-2 bg-bg2 border border-border rounded-lg text-text text-[13px] box-border"
                 />
               </div>
               <div>
-                <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 5 }}>Spin Direction</label>
-                <div style={{ display: "flex", gap: 8 }}>
+                <label className="block text-xs text-muted mb-1.5">Spin Direction</label>
+                <div className="flex gap-2">
                   {(["right", "left"] as const).map((d) => (
                     <button
                       key={d}
                       onClick={() => updateSystem({ spinDirection: d })}
-                      style={{
-                        padding: "7px 18px", fontSize: 13, borderRadius: 7, cursor: "pointer",
-                        background: system.spinDirection === d ? (d === "right" ? alpha(C.blue, 0.13) : alpha(C.red, 0.13)) : C.bg2,
-                        color: system.spinDirection === d ? (d === "right" ? C.blue : C.red) : C.muted,
-                        border: `1px solid ${system.spinDirection === d ? (d === "right" ? alpha(C.blue, 0.33) : alpha(C.red, 0.33)) : C.border}`,
-                      }}
+                      className={`px-4 py-1.5 text-[13px] rounded-lg cursor-pointer border ${
+                        system.spinDirection === d
+                          ? d === "right"
+                            ? "bg-blue/10 text-blue border-blue/30"
+                            : "bg-red/10 text-red border-red/30"
+                          : "bg-bg2 text-muted border-border"
+                      }`}
                     >
                       {d === "right" ? "↻ Right-Spin" : "↺ Left-Spin"}
                     </button>
                   ))}
                 </div>
               </div>
-              {/* Element Types (AB11) */}
+
+              {/* Element Types */}
               <div>
-                <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 6 }}>Element Types (max 2)</label>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+                <label className="block text-xs text-muted mb-1.5">Element Types (max 2)</label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
                   {(Object.keys(ELEMENT_ICONS) as ElementType[]).map((elem) => {
                     const active = (system.elementTypes ?? []).includes(elem);
                     const color = ELEMENT_COLORS[elem];
@@ -297,12 +266,12 @@ export function BeybladeSystemEditor({ systemId }: Props) {
                           updateSystem({ elementTypes: next });
                         }}
                         style={{
-                          padding: "4px 10px", fontSize: 11, borderRadius: 20, cursor: "pointer",
-                          background: active ? `${color}22` : C.bg2,
-                          color: active ? color : C.faint,
-                          border: `1px solid ${active ? color + "55" : C.border}`,
+                          background: active ? `${color}22` : undefined,
+                          color: active ? color : undefined,
+                          borderColor: active ? `${color}55` : undefined,
                           fontWeight: active ? 700 : 400,
                         }}
+                        className={`px-2.5 py-1 text-[11px] rounded-full cursor-pointer border ${active ? "" : "bg-bg2 text-faint border-border"}`}
                       >
                         {ELEMENT_ICONS[elem]} {elem}
                       </button>
@@ -310,22 +279,22 @@ export function BeybladeSystemEditor({ systemId }: Props) {
                   })}
                 </div>
                 {(system.elementTypes ?? []).length > 0 && (
-                  <div style={{ fontSize: 11, color: C.faint }}>
+                  <div className="text-[11px] text-faint">
                     Selected: {(system.elementTypes ?? []).map(e => `${ELEMENT_ICONS[e]} ${e}`).join(" + ")}
                   </div>
                 )}
               </div>
 
-              <div style={{ fontSize: 12, color: C.muted }}>
-                <div style={{ marginBottom: 4 }}>Linked Stats ID: <code style={{ color: C.text }}>{system.linkedStatsId ?? "(none — publish to create)"}</code></div>
+              <div className="text-xs text-muted">
+                <div className="mb-1">Linked Stats ID: <code className="text-text">{system.linkedStatsId ?? "(none — publish to create)"}</code></div>
               </div>
 
-              {/* Combined-bey section (Phantom Fox MS etc.) */}
-              <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 14 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 10 }}>Combined Bey (Split Gimmick)</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {/* Combined-bey section */}
+              <div className="border-t border-border pt-3.5">
+                <div className="text-[13px] font-semibold text-text mb-2.5">Combined Bey (Split Gimmick)</div>
+                <div className="flex flex-col gap-2.5">
                   <div>
-                    <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Partner System</label>
+                    <label className="block text-[11px] text-muted mb-1">Partner System</label>
                     <SearchableSelect
                       value={system.combinedWith?.partnerBeySystemId ?? ""}
                       onChange={(val) => {
@@ -342,28 +311,27 @@ export function BeybladeSystemEditor({ systemId }: Props) {
                   {system.combinedWith && (
                     <>
                       <div>
-                        <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Link Sub-Part Index (split spring position)</label>
+                        <label className="block text-[11px] text-muted mb-1">Link Sub-Part Index (split spring position)</label>
                         <input
                           type="number"
                           min={0}
                           value={system.combinedWith.linkSubPartIndex}
                           onChange={(e) => updateSystem({ combinedWith: { ...system.combinedWith!, linkSubPartIndex: Number(e.target.value) } })}
-                          style={{ width: 80, padding: "6px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }}
+                          className="w-20 px-2.5 py-1.5 bg-bg2 border border-border rounded text-text text-xs"
                         />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Player Controls</label>
-                        <div style={{ display: "flex", gap: 6 }}>
+                        <label className="block text-[11px] text-muted mb-1">Player Controls</label>
+                        <div className="flex gap-1.5">
                           {(["this", "partner"] as const).map((opt) => (
                             <button
                               key={opt}
                               onClick={() => updateSystem({ combinedWith: { ...system.combinedWith!, playerControlTarget: opt } })}
-                              style={{
-                                padding: "5px 14px", fontSize: 11, borderRadius: 6, cursor: "pointer",
-                                background: system.combinedWith!.playerControlTarget === opt ? alpha(C.blue, 0.13) : C.bg2,
-                                color: system.combinedWith!.playerControlTarget === opt ? C.blue : C.muted,
-                                border: `1px solid ${system.combinedWith!.playerControlTarget === opt ? alpha(C.blue, 0.33) : C.border}`,
-                              }}
+                              className={`px-3.5 py-1 text-[11px] rounded cursor-pointer border ${
+                                system.combinedWith!.playerControlTarget === opt
+                                  ? "bg-blue/10 text-blue border-blue/30"
+                                  : "bg-bg2 text-muted border-border"
+                              }`}
                             >
                               {opt === "this" ? "This system" : "Partner system"}
                             </button>
@@ -377,7 +345,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             </div>
           )}
 
-          {/* Bit Beast slot */}
           {tab === "bit_beast" && (
             <SlotTab
               label="Bit Beast"
@@ -390,7 +357,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             />
           )}
 
-          {/* Attack Ring slot */}
           {tab === "attack_ring" && (
             <SlotTab
               label="Attack Ring"
@@ -406,7 +372,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             />
           )}
 
-          {/* Weight Disk slot */}
           {tab === "weight_disk" && (
             <SlotTab
               label="Weight Disk"
@@ -419,7 +384,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             />
           )}
 
-          {/* Tip slot */}
           {tab === "tip" && (
             <SlotTab
               label="Tip"
@@ -432,7 +396,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             />
           )}
 
-          {/* Core slot */}
           {tab === "core" && (
             <SlotTab
               label="Core"
@@ -445,7 +408,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             />
           )}
 
-          {/* Casing slot */}
           {tab === "casing" && (
             <SlotTab
               label="Casing"
@@ -458,11 +420,10 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             />
           )}
 
-          {/* Spin Track slot (MFB) */}
           {tab === "spin_track" && (
             <div>
-              <div style={{ fontSize: 12, color: C.muted, marginBottom: 12 }}>
-                Spin Track is an MFB-specific height piece (e.g. S130, 145). Leave blank for plastic-gen beyblades. Mutually exclusive with Casing for height stacking.
+              <div className="text-xs text-muted mb-3">
+                Spin Track is an MFB-specific height piece (e.g. S130, 145). Leave blank for plastic-gen beyblades.
               </div>
               <SlotTab
                 label="Spin Track"
@@ -474,14 +435,13 @@ export function BeybladeSystemEditor({ systemId }: Props) {
                 partData={system.spinTrackId ? partCache[system.spinTrackId] : null}
               />
               {system.spinTrackId && (
-                <div style={{ marginTop: 12, padding: "8px 12px", background: alpha(C.yellow, 0.09), border: `1px solid ${alpha(C.yellow, 0.27)}`, borderRadius: 7, fontSize: 11, color: C.yellow }}>
-                  Track equipped — all AR/WD/Casing CP height ranges will be offset by track.height at runtime (stored values remain relative to floor).
+                <div className="mt-3 px-3 py-2 bg-yellow/10 border border-yellow/25 rounded-lg text-[11px] text-yellow">
+                  Track equipped — all AR/WD/Casing CP height ranges will be offset by track.height at runtime.
                 </div>
               )}
             </div>
           )}
 
-          {/* Sub-Parts */}
           {tab === "sub_parts" && (
             <SubPartsEditor
               attachments={system.subPartAttachments ?? []}
@@ -490,7 +450,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             />
           )}
 
-          {/* Gears */}
           {tab === "gears" && (
             <GearAttachmentsEditor
               attachments={system.gearAttachments ?? []}
@@ -499,7 +458,6 @@ export function BeybladeSystemEditor({ systemId }: Props) {
             />
           )}
 
-          {/* Combos */}
           {tab === "combos" && (
             <BeybladeComboSlotsEditor
               comboSlots={system.comboSlots ?? []}
@@ -511,13 +469,13 @@ export function BeybladeSystemEditor({ systemId }: Props) {
         </div>
       </div>
 
-      {/* ── RIGHT: Live preview sidebar ─────────────────────────────────────── */}
-      <div style={{ width: 320, flexShrink: 0, display: "flex", flexDirection: "column", background: C.bg1 }}>
-        <div style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, fontSize: 11, color: C.faint }}>
+      {/* RIGHT: Live preview sidebar */}
+      <div className="w-80 shrink-0 flex flex-col bg-bg1">
+        <div className="px-3.5 py-2.5 border-b border-border text-[11px] text-faint">
           Live Preview
-          {!resolved && <span style={{ marginLeft: 8, color: C.yellow }}>· incomplete (select all parts)</span>}
+          {!resolved && <span className="ml-2 text-yellow">· incomplete (select all parts)</span>}
         </div>
-        <div style={{ flex: 1, overflowY: "auto" }}>
+        <div className="flex-1 overflow-y-auto">
           <BeybladeSystemPreview resolved={resolved} />
         </div>
       </div>
@@ -553,78 +511,55 @@ function BeybladeComboSlotsEditor({
   onChange: (updated: Partial<BeybladeSystem>) => void;
 }) {
   const updateSlots = (slots: BeybladeComboSlot[]) => onChange({ comboSlots: slots });
-
-  const addSlot = () =>
-    updateSlots([...comboSlots, { sequence: ["attack", "attack", "attack"], effectId: "" }]);
-
-  const removeSlot = (i: number) =>
-    updateSlots(comboSlots.filter((_, idx) => idx !== i));
-
+  const addSlot = () => updateSlots([...comboSlots, { sequence: ["attack", "attack", "attack"], effectId: "" }]);
+  const removeSlot = (i: number) => updateSlots(comboSlots.filter((_, idx) => idx !== i));
   const patchSlot = (i: number, patch: Partial<BeybladeComboSlot>) =>
     updateSlots(comboSlots.map((s, idx) => idx === i ? { ...s, ...patch } : s));
-
   const patchSeq = (i: number, pos: 0 | 1 | 2, key: string) => {
     const seq = [...comboSlots[i].sequence] as [string, string, string];
     seq[pos] = key;
     patchSlot(i, { sequence: seq });
   };
 
-  // Detect duplicate sequences
   const seqStrings = comboSlots.map((s) => s.sequence.join(","));
   const hasDuplicates = seqStrings.some((s, i) => seqStrings.indexOf(s) !== i);
 
   const addSpecialMove = () =>
     onChange({ specialMove: { name: "", steps: [], cancelable: false, locksDurationTicks: 60, powerCost: 100 } });
-
   const removeSpecialMove = () => onChange({ specialMove: undefined });
-
   const patchSM = (patch: Partial<SpecialMoveConfig>) =>
     onChange({ specialMove: { ...specialMove!, ...patch } });
 
   return (
-    <div style={{ maxWidth: 560, display: "flex", flexDirection: "column", gap: 20 }}>
-      {/* Sequence Assignment */}
+    <div className="max-w-[560px] flex flex-col gap-5">
       <div>
-        <div style={{ fontSize: 13, fontWeight: 700, color: C.text, borderBottom: `1px solid ${C.border}`, paddingBottom: 6, marginBottom: 12 }}>
-          Sequence Assignment
-        </div>
-
+        <div className="text-[13px] font-bold text-text border-b border-border pb-1.5 mb-3">Sequence Assignment</div>
         {hasDuplicates && (
-          <div style={{ fontSize: 11, color: C.red, background: alpha(C.red, 0.09), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 6, padding: "6px 10px", marginBottom: 10 }}>
+          <div className="text-[11px] text-red bg-red/10 border border-red/25 rounded px-2.5 py-1.5 mb-2.5">
             Warning: two or more slots have identical sequences — only one will fire per window.
           </div>
         )}
-
         {comboSlots.length === 0 && (
-          <div style={{ fontSize: 11, color: C.faint, marginBottom: 10 }}>No combo slots. Add a slot to assign sequences to effects.</div>
+          <div className="text-[11px] text-faint mb-2.5">No combo slots. Add a slot to assign sequences to effects.</div>
         )}
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <div className="flex flex-col gap-2.5">
           {comboSlots.map((slot, i) => {
             const isDup = seqStrings.filter((s) => s === seqStrings[i]).length > 1;
             return (
-              <div key={i} style={{
-                background: C.bg1,
-                border: `1px solid ${isDup ? alpha(C.red, 0.4) : C.border}`,
-                borderRadius: 8, padding: 12, display: "flex", flexDirection: "column", gap: 10,
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: C.text, flex: 1 }}>
+              <div key={i} className={`bg-bg1 border rounded-lg p-3 flex flex-col gap-2.5 ${isDup ? "border-red/40" : "border-border"}`}>
+                <div className="flex items-center gap-2">
+                  <div className="text-xs font-semibold text-text flex-1">
                     Slot {i + 1}
                     {slot.effectId
-                      ? <span style={{ marginLeft: 8, fontSize: 11, color: C.purple }}>{slot.effectId}</span>
-                      : <span style={{ marginLeft: 8, fontSize: 11, color: C.faint }}>(no effect)</span>
+                      ? <span className="ml-2 text-[11px] text-purple">{slot.effectId}</span>
+                      : <span className="ml-2 text-[11px] text-faint">(no effect)</span>
                     }
                   </div>
-                  <button
-                    onClick={() => removeSlot(i)}
-                    style={{ background: "none", border: "none", color: C.red, fontSize: 14, cursor: "pointer" }}
-                  >×</button>
+                  <button onClick={() => removeSlot(i)} className="bg-transparent border-none text-red text-sm cursor-pointer">×</button>
                 </div>
-                {/* Trigger type + Effect ID row */}
-                <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
+                <div className="flex gap-2 items-end flex-wrap">
                   <div>
-                    <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Trigger</div>
+                    <div className="text-[10px] text-faint mb-0.5">Trigger</div>
                     <SearchableSelect
                       value={slot.condition?.trigger ?? "sequence"}
                       options={TRIGGER_OPTIONS}
@@ -634,55 +569,50 @@ function BeybladeComboSlotsEditor({
                           : { ...slot.condition, trigger: v as ComboTrigger };
                         patchSlot(i, { condition: cond });
                       }}
-                      style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
                     />
                   </div>
                   <div>
-                    <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Effect ID</div>
+                    <div className="text-[10px] text-faint mb-0.5">Effect ID</div>
                     <input
                       value={slot.effectId}
                       onChange={(e) => patchSlot(i, { effectId: e.target.value.trim() })}
                       placeholder="e.g. dash-l"
-                      style={{ width: 120, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                      className="w-28 px-2 py-1 bg-bg2 border border-border rounded text-text text-xs"
                     />
                   </div>
-                  {/* Trigger cooldown — shown for reactive triggers */}
                   {slot.condition?.trigger && slot.condition.trigger !== "sequence" && (
                     <div>
-                      <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Cooldown (ms)</div>
+                      <div className="text-[10px] text-faint mb-0.5">Cooldown (ms)</div>
                       <input
                         type="number" min={0} step={500}
                         value={slot.condition?.triggerCooldownMs ?? 3000}
                         onChange={(e) => patchSlot(i, { condition: { ...slot.condition, triggerCooldownMs: parseInt(e.target.value, 10) } })}
-                        style={{ width: 80, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                        className="w-20 px-2 py-1 bg-bg2 border border-border rounded text-text text-xs"
                       />
                     </div>
                   )}
                 </div>
 
-                {/* Sequence keys — only shown when trigger type is "sequence" */}
                 {(!slot.condition?.trigger || slot.condition.trigger === "sequence") && (
-                  <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
+                  <div className="flex gap-2 items-end flex-wrap">
                     {([0, 1, 2] as const).map((pos) => (
                       <div key={pos}>
-                        <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Key {pos + 1}</div>
+                        <div className="text-[10px] text-faint mb-0.5">Key {pos + 1}</div>
                         <SearchableSelect
                           value={slot.sequence[pos]}
                           options={ALL_KEYS.map((k) => ({ value: k, label: `${KEY_LABELS[k]} ${k}` }))}
                           onChange={(v) => patchSeq(i, pos, v)}
-                          style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
                         />
                       </div>
                     ))}
-                    <div style={{ fontSize: 11, color: C.faint, alignSelf: "center" }}>
+                    <div className="text-[11px] text-faint self-center">
                       {slot.sequence.map((k) => KEY_LABELS[k] ?? k).join(" → ")}
                     </div>
                   </div>
                 )}
 
-                {/* Reactive trigger info */}
                 {slot.condition?.trigger && slot.condition.trigger !== "sequence" && (
-                  <div style={{ fontSize: 11, color: C.blue, background: "rgba(80,140,255,0.07)", borderRadius: 5, padding: "5px 9px" }}>
+                  <div className="text-[11px] text-blue bg-blue/[0.07] rounded px-2 py-1">
                     Reactive: fires automatically when <strong>{slot.condition.trigger.replace(/_/g, " ")}</strong> triggers
                   </div>
                 )}
@@ -690,74 +620,52 @@ function BeybladeComboSlotsEditor({
             );
           })}
         </div>
-
-        <button
-          onClick={addSlot}
-          style={{ marginTop: 10, padding: "6px 14px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}
-        >
+        <button onClick={addSlot} className="mt-2.5 px-3.5 py-1.5 bg-bg2 border border-border rounded text-muted text-[11px] cursor-pointer">
           + Add Slot
         </button>
       </div>
 
-      {/* Special Move */}
       <div>
-        <div style={{ fontSize: 13, fontWeight: 700, color: C.text, borderBottom: `1px solid ${C.border}`, paddingBottom: 6, marginBottom: 12 }}>
-          Special Move
-        </div>
+        <div className="text-[13px] font-bold text-text border-b border-border pb-1.5 mb-3">Special Move</div>
         {!specialMove ? (
-          <button
-            onClick={addSpecialMove}
-            style={{ padding: "6px 14px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11, cursor: "pointer" }}
-          >
+          <button onClick={addSpecialMove} className="px-3.5 py-1.5 bg-bg2 border border-border rounded text-muted text-[11px] cursor-pointer">
             + Add Special Move
           </button>
         ) : (
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 14, display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="bg-bg1 border border-border rounded-lg p-3.5 flex flex-col gap-3">
             <div>
-              <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Name</div>
+              <div className="text-[10px] text-faint mb-0.5">Name</div>
               <input
                 value={specialMove.name}
                 onChange={(e) => patchSM({ name: e.target.value })}
                 placeholder="e.g. Stampede Rush"
-                style={{ width: "100%", padding: "7px 10px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12, boxSizing: "border-box" }}
+                className="w-full px-2.5 py-1.5 bg-bg2 border border-border rounded text-text text-xs box-border"
               />
             </div>
-            <div style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-end" }}>
+            <div className="flex gap-3.5 flex-wrap items-end">
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Locks Duration (ticks)</div>
+                <div className="text-[10px] text-faint mb-0.5">Locks Duration (ticks)</div>
                 <input
-                  type="number"
-                  min={0}
+                  type="number" min={0}
                   value={specialMove.locksDurationTicks}
                   onChange={(e) => patchSM({ locksDurationTicks: Number(e.target.value) })}
-                  style={{ width: 80, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                  className="w-20 px-2 py-1 bg-bg2 border border-border rounded text-text text-xs"
                 />
               </div>
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Power Cost</div>
+                <div className="text-[10px] text-faint mb-0.5">Power Cost</div>
                 <input
-                  type="number"
-                  min={0}
+                  type="number" min={0}
                   value={specialMove.powerCost}
                   onChange={(e) => patchSM({ powerCost: Number(e.target.value) })}
-                  style={{ width: 80, padding: "5px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 12 }}
+                  className="w-20 px-2 py-1 bg-bg2 border border-border rounded text-text text-xs"
                 />
               </div>
-              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: C.text, cursor: "pointer" }}>
-                <input
-                  type="checkbox"
-                  checked={specialMove.cancelable}
-                  onChange={(e) => patchSM({ cancelable: e.target.checked })}
-                  style={{ accentColor: C.blue }}
-                />
+              <label className="flex items-center gap-1.5 text-xs text-text cursor-pointer">
+                <input type="checkbox" checked={specialMove.cancelable} onChange={(e) => patchSM({ cancelable: e.target.checked })} className="accent-blue" />
                 Cancelable
               </label>
-              <button
-                onClick={removeSpecialMove}
-                style={{ padding: "5px 12px", background: alpha(C.red, 0.1), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 5, color: C.red, fontSize: 11, cursor: "pointer" }}
-              >
-                Remove
-              </button>
+              <button onClick={removeSpecialMove} className="px-3 py-1 bg-red/10 border border-red/25 rounded text-red text-[11px] cursor-pointer">Remove</button>
             </div>
           </div>
         )}
@@ -771,114 +679,79 @@ function BeybladeComboSlotsEditor({
 const GEAR_MOUNT_OPTIONS: GearAttachment["parentPart"][] = ["ar", "wd", "casing", "core"];
 
 function GearAttachmentsEditor({
-  attachments,
-  onChange,
-  gearPartDocs,
+  attachments, onChange, gearPartDocs,
 }: {
   attachments: GearAttachment[];
   onChange: (atts: GearAttachment[]) => void;
   gearPartDocs: PartDoc[];
 }) {
   const [adding, setAdding] = useState(false);
-
   const update = (idx: number, patch: Partial<GearAttachment>) =>
     onChange(attachments.map((a, i) => i === idx ? { ...a, ...patch } : a));
-
-  const remove = (idx: number) =>
-    onChange(attachments.filter((_, i) => i !== idx));
-
-  const add = (partId: string) => {
-    onChange([...attachments, { gearId: partId, parentPart: "ar" }]);
-    setAdding(false);
-  };
+  const remove = (idx: number) => onChange(attachments.filter((_, i) => i !== idx));
+  const add = (partId: string) => { onChange([...attachments, { gearId: partId, parentPart: "ar" }]); setAdding(false); };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      <div style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>
+    <div className="flex flex-col gap-2.5">
+      <div className="text-[11px] text-faint mb-1">
         Gears attach to a parent part and mesh with the spin axis to provide gear-ratio speed changes, clutch releases, or spring-wound launch assist.
       </div>
-
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ fontSize: 12, color: C.muted }}>Gear Attachments ({attachments.length})</div>
+      <div className="flex items-center justify-between">
+        <div className="text-xs text-muted">Gear Attachments ({attachments.length})</div>
         <button
           onClick={() => setAdding((a) => !a)}
-          style={{
-            padding: "4px 12px", fontSize: 11, borderRadius: 6, cursor: "pointer",
-            background: adding ? C.blue : C.bg3, color: adding ? "#fff" : C.muted,
-            border: `1px solid ${adding ? C.blue : C.border}`,
-          }}
+          className={`px-3 py-1 text-[11px] rounded cursor-pointer border ${adding ? "bg-blue text-white border-blue" : "bg-bg3 text-muted border-border"}`}
         >
           {adding ? "Cancel" : "+ Add Gear"}
         </button>
       </div>
-
       {adding && (
-        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12 }}>
-          <PartPicker
-            collectionName={COLLECTIONS.GEAR_PARTS}
-            onSelect={(id) => add(id)}
-            label="Select Gear Part"
-          />
+        <div className="bg-bg1 border border-border rounded-lg p-3">
+          <PartPicker collectionName={COLLECTIONS.GEAR_PARTS} onSelect={(id) => add(id)} label="Select Gear Part" />
         </div>
       )}
-
       {attachments.map((att, idx) => {
         const partDoc = gearPartDocs.find((p) => p.id === att.gearId);
         return (
-          <div key={idx} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 14 }}>⚙️</span>
-              <span style={{ flex: 1, fontSize: 12, color: C.text, fontWeight: 600 }}>
-                {partDoc?.displayName ?? att.gearId}
-              </span>
-              <button onClick={() => remove(idx)} style={{ background: "none", border: "none", color: C.red, fontSize: 14, cursor: "pointer" }}>×</button>
+          <div key={idx} className="bg-bg2 border border-border rounded-lg px-3 py-2.5 flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">⚙️</span>
+              <span className="flex-1 text-xs text-text font-semibold">{partDoc?.displayName ?? att.gearId}</span>
+              <button onClick={() => remove(idx)} className="bg-transparent border-none text-red text-sm cursor-pointer">×</button>
             </div>
-
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <div className="flex gap-2.5 flex-wrap">
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Mount Point</div>
-                <div style={{ display: "flex", gap: 3 }}>
+                <div className="text-[10px] text-faint mb-0.5">Mount Point</div>
+                <div className="flex gap-0.5">
                   {GEAR_MOUNT_OPTIONS.map((mp) => (
-                    <button
-                      key={mp}
-                      onClick={() => update(idx, { parentPart: mp })}
-                      style={{
-                        padding: "2px 7px", fontSize: 10, borderRadius: 4, cursor: "pointer",
-                        background: att.parentPart === mp ? alpha(C.blue, 0.13) : C.bg3,
-                        color: att.parentPart === mp ? C.blue : C.faint,
-                        border: `1px solid ${att.parentPart === mp ? alpha(C.blue, 0.27) : C.border}`,
-                      }}
-                    >
-                      {mp}
-                    </button>
+                    <button key={mp} onClick={() => update(idx, { parentPart: mp })}
+                      className={`px-1.5 py-0.5 text-[10px] rounded cursor-pointer border ${att.parentPart === mp ? "bg-blue/10 text-blue border-blue/25" : "bg-bg3 text-faint border-border"}`}
+                    >{mp}</button>
                   ))}
                 </div>
               </div>
-
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Active Config</div>
+                <div className="text-[10px] text-faint mb-0.5">Active Config</div>
                 <input
                   value={att.activeConfig ?? ""}
                   onChange={(e) => update(idx, { activeConfig: e.target.value.trim() || undefined })}
                   placeholder="(default)"
-                  style={{ width: 140, padding: "4px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
+                  className="w-36 px-2 py-1 bg-bg3 border border-border rounded text-text text-[11px]"
                 />
               </div>
             </div>
-
             {partDoc && (
-              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", fontSize: 10, color: C.faint }}>
-                {partDoc.gearRatio != null && <span>Ratio: <span style={{ color: C.text }}>{partDoc.gearRatio}</span></span>}
-                {partDoc.gearTeeth != null && <span>Teeth: <span style={{ color: C.text }}>{partDoc.gearTeeth}</span></span>}
-                {partDoc.clutchMode && <span>Clutch: <span style={{ color: C.yellow }}>{partDoc.clutchMode}</span></span>}
+              <div className="flex gap-3.5 flex-wrap text-[10px] text-faint">
+                {partDoc.gearRatio != null && <span>Ratio: <span className="text-text">{partDoc.gearRatio}</span></span>}
+                {partDoc.gearTeeth != null && <span>Teeth: <span className="text-text">{partDoc.gearTeeth}</span></span>}
+                {partDoc.clutchMode && <span>Clutch: <span className="text-yellow">{partDoc.clutchMode}</span></span>}
               </div>
             )}
           </div>
         );
       })}
-
       {attachments.length === 0 && !adding && (
-        <div style={{ fontSize: 11, color: C.faint }}>No gears attached. Add Engine Gear or CEW inserts here.</div>
+        <div className="text-[11px] text-faint">No gears attached. Add Engine Gear or CEW inserts here.</div>
       )}
     </div>
   );
@@ -889,142 +762,80 @@ function GearAttachmentsEditor({
 const PARENT_OPTIONS: SubPartParent[] = ["ar", "wd", "casing", "bit_beast", "tip", "core"];
 
 function SubPartsEditor({
-  attachments,
-  onChange,
-  subPartDocs,
+  attachments, onChange, subPartDocs,
 }: {
   attachments: SubPartAttachment[];
   onChange: (atts: SubPartAttachment[]) => void;
   subPartDocs: PartDoc[];
 }) {
   const [adding, setAdding] = useState(false);
-
-  const update = (idx: number, patch: Partial<SubPartAttachment>) => {
+  const update = (idx: number, patch: Partial<SubPartAttachment>) =>
     onChange(attachments.map((a, i) => i === idx ? { ...a, ...patch } : a));
-  };
-
-  const remove = (idx: number) => {
-    onChange(attachments.filter((_, i) => i !== idx));
-  };
-
+  const remove = (idx: number) => onChange(attachments.filter((_, i) => i !== idx));
   const add = (partId: string) => {
-    const newAtt: SubPartAttachment = {
-      subPartId: partId,
-      parentPart: "ar",
-      placement: "above",
-      flipped: false,
-    };
-    onChange([...attachments, newAtt]);
+    onChange([...attachments, { subPartId: partId, parentPart: "ar", placement: "above", flipped: false }]);
     setAdding(false);
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ fontSize: 12, color: C.muted }}>Sub-Parts ({attachments.length})</div>
+    <div className="flex flex-col gap-2.5">
+      <div className="flex items-center justify-between">
+        <div className="text-xs text-muted">Sub-Parts ({attachments.length})</div>
         <button
           onClick={() => setAdding((a) => !a)}
-          style={{
-            padding: "4px 12px", fontSize: 11, borderRadius: 6, cursor: "pointer",
-            background: adding ? C.blue : C.bg3, color: adding ? "#fff" : C.muted,
-            border: `1px solid ${adding ? C.blue : C.border}`,
-          }}
+          className={`px-3 py-1 text-[11px] rounded cursor-pointer border ${adding ? "bg-blue text-white border-blue" : "bg-bg3 text-muted border-border"}`}
         >
           {adding ? "Cancel" : "+ Add Sub-Part"}
         </button>
       </div>
-
       {adding && (
-        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 12 }}>
-          <PartPicker
-            collectionName={COLLECTIONS.SUB_PARTS}
-            onSelect={(id) => add(id)}
-            label="Select Sub-Part"
-          />
+        <div className="bg-bg1 border border-border rounded-lg p-3">
+          <PartPicker collectionName={COLLECTIONS.SUB_PARTS} onSelect={(id) => add(id)} label="Select Sub-Part" />
         </div>
       )}
-
       {attachments.map((att, idx) => {
         const partDoc = subPartDocs.find((p) => p.id === att.subPartId);
         return (
-          <div key={idx} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: partDoc?.color ?? C.faint, flexShrink: 0 }} />
-              <span style={{ flex: 1, fontSize: 12, color: C.text, fontWeight: 600 }}>
-                {partDoc?.displayName ?? att.subPartId}
-              </span>
-              <button onClick={() => remove(idx)} style={{ background: "none", border: "none", color: C.red, fontSize: 14, cursor: "pointer" }}>×</button>
+          <div key={idx} className="bg-bg2 border border-border rounded-lg px-3 py-2.5 flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full shrink-0 bg-faint" style={partDoc?.color ? { background: partDoc.color } : undefined} />
+              <span className="flex-1 text-xs text-text font-semibold">{partDoc?.displayName ?? att.subPartId}</span>
+              <button onClick={() => remove(idx)} className="bg-transparent border-none text-red text-sm cursor-pointer">×</button>
             </div>
-
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <div className="flex gap-2.5 flex-wrap">
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Attach to</div>
-                <div style={{ display: "flex", gap: 3 }}>
+                <div className="text-[10px] text-faint mb-0.5">Attach to</div>
+                <div className="flex gap-0.5">
                   {PARENT_OPTIONS.map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => update(idx, { parentPart: p })}
-                      style={{
-                        padding: "2px 7px", fontSize: 10, borderRadius: 4, cursor: "pointer",
-                        background: att.parentPart === p ? alpha(C.blue, 0.13) : C.bg3,
-                        color: att.parentPart === p ? C.blue : C.faint,
-                        border: `1px solid ${att.parentPart === p ? alpha(C.blue, 0.27) : C.border}`,
-                      }}
-                    >
-                      {p}
-                    </button>
+                    <button key={p} onClick={() => update(idx, { parentPart: p })}
+                      className={`px-1.5 py-0.5 text-[10px] rounded cursor-pointer border ${att.parentPart === p ? "bg-blue/10 text-blue border-blue/25" : "bg-bg3 text-faint border-border"}`}
+                    >{p}</button>
                   ))}
                 </div>
               </div>
-
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Placement</div>
-                <div style={{ display: "flex", gap: 3 }}>
+                <div className="text-[10px] text-faint mb-0.5">Placement</div>
+                <div className="flex gap-0.5">
                   {(["above", "below"] as const).map((pl) => (
-                    <button
-                      key={pl}
-                      onClick={() => update(idx, { placement: pl })}
-                      style={{
-                        padding: "2px 7px", fontSize: 10, borderRadius: 4, cursor: "pointer",
-                        background: att.placement === pl ? alpha(C.blue, 0.13) : C.bg3,
-                        color: att.placement === pl ? C.blue : C.faint,
-                        border: `1px solid ${att.placement === pl ? alpha(C.blue, 0.27) : C.border}`,
-                      }}
-                    >
-                      {pl}
-                    </button>
+                    <button key={pl} onClick={() => update(idx, { placement: pl })}
+                      className={`px-1.5 py-0.5 text-[10px] rounded cursor-pointer border ${att.placement === pl ? "bg-blue/10 text-blue border-blue/25" : "bg-bg3 text-faint border-border"}`}
+                    >{pl}</button>
                   ))}
                 </div>
               </div>
-
-              <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer" }}>
-                <input
-                  type="checkbox"
-                  checked={att.flipped}
-                  onChange={(e) => update(idx, { flipped: e.target.checked })}
-                  style={{ accentColor: C.blue }}
-                />
-                <span style={{ fontSize: 10, color: C.faint }}>Flipped</span>
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" checked={att.flipped} onChange={(e) => update(idx, { flipped: e.target.checked })} className="accent-blue" />
+                <span className="text-[10px] text-faint">Flipped</span>
               </label>
             </div>
-
             {(partDoc?.configurations?.length ?? 0) > 0 && (
               <div>
-                <div style={{ fontSize: 10, color: C.faint, marginBottom: 3 }}>Config</div>
-                <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+                <div className="text-[10px] text-faint mb-0.5">Config</div>
+                <div className="flex gap-0.5 flex-wrap">
                   {(partDoc?.configurations ?? []).map((cfg: { name: string }) => (
-                    <button
-                      key={cfg.name}
-                      onClick={() => update(idx, { activeConfig: cfg.name })}
-                      style={{
-                        padding: "2px 7px", fontSize: 10, borderRadius: 4, cursor: "pointer",
-                        background: att.activeConfig === cfg.name ? alpha(C.blue, 0.13) : C.bg3,
-                        color: att.activeConfig === cfg.name ? C.blue : C.faint,
-                        border: `1px solid ${att.activeConfig === cfg.name ? alpha(C.blue, 0.27) : C.border}`,
-                      }}
-                    >
-                      {cfg.name}
-                    </button>
+                    <button key={cfg.name} onClick={() => update(idx, { activeConfig: cfg.name })}
+                      className={`px-1.5 py-0.5 text-[10px] rounded cursor-pointer border ${att.activeConfig === cfg.name ? "bg-blue/10 text-blue border-blue/25" : "bg-bg3 text-faint border-border"}`}
+                    >{cfg.name}</button>
                   ))}
                 </div>
               </div>
@@ -1032,9 +843,8 @@ function SubPartsEditor({
           </div>
         );
       })}
-
       {attachments.length === 0 && !adding && (
-        <div style={{ fontSize: 11, color: C.faint }}>No sub-parts. Add sub-ARs, sub-casings, or WD sub-parts here.</div>
+        <div className="text-[11px] text-faint">No sub-parts. Add sub-ARs, sub-casings, or WD sub-parts here.</div>
       )}
     </div>
   );

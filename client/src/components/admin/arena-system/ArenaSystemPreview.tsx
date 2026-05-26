@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { ArenaSystem } from "@/types/arenaSystem";
-import { C } from "@/styles/theme";
 import { ArenaSystemTopDownView } from "./ArenaSystemTopDownView";
 import { ArenaSystemSideView } from "./ArenaSystemSideView";
 import { ArenaSystemIsometricView } from "./ArenaSystemIsometricView";
@@ -28,22 +27,16 @@ export function ArenaSystemPreview({ arenaSystem }: Props) {
   return (
     <div>
       {/* Tab bar */}
-      <div style={{ display: "flex", gap: 4, marginBottom: 16, borderBottom: `1px solid ${C.border}`, paddingBottom: 12 }}>
+      <div className="flex gap-1 mb-4 border-b border-border pb-3">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            style={{
-              padding: "8px 12px",
-              background: activeTab === tab.id ? C.blue : "transparent",
-              color: activeTab === tab.id ? C.white : C.muted,
-              border: activeTab === tab.id ? "none" : `1px solid ${C.border}`,
-              borderRadius: 4,
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 150ms",
-            }}
+            className={`px-3 py-2 rounded text-xs font-semibold cursor-pointer transition-all duration-150 ${
+              activeTab === tab.id
+                ? "bg-blue text-white border-none"
+                : "bg-transparent text-muted border border-border"
+            }`}
           >
             {tab.label}
           </button>
@@ -52,8 +45,8 @@ export function ArenaSystemPreview({ arenaSystem }: Props) {
 
       {/* Content */}
       {(activeTab === "all" || activeTab === "top-down") && (
-        <div style={{ marginBottom: activeTab === "all" ? 20 : 0 }}>
-          <h4 style={{ color: C.muted, fontSize: 11, marginBottom: 8, marginTop: 0, textTransform: "uppercase" }}>
+        <div className={activeTab === "all" ? "mb-5" : ""}>
+          <h4 className="text-muted text-[11px] mb-2 mt-0 uppercase">
             Top-Down View (Elevation Heatmap)
           </h4>
           <ArenaSystemTopDownView arenaSystem={arenaSystem} />
@@ -61,8 +54,8 @@ export function ArenaSystemPreview({ arenaSystem }: Props) {
       )}
 
       {(activeTab === "all" || activeTab === "side") && (
-        <div style={{ marginBottom: activeTab === "all" ? 20 : 0 }}>
-          <h4 style={{ color: C.muted, fontSize: 11, marginBottom: 8, marginTop: 0, textTransform: "uppercase" }}>
+        <div className={activeTab === "all" ? "mb-5" : ""}>
+          <h4 className="text-muted text-[11px] mb-2 mt-0 uppercase">
             Side View (Cross-Section Profile)
           </h4>
           <ArenaSystemSideView arenaSystem={arenaSystem} />
@@ -70,8 +63,8 @@ export function ArenaSystemPreview({ arenaSystem }: Props) {
       )}
 
       {(activeTab === "all" || activeTab === "isometric") && (
-        <div style={{ marginBottom: activeTab === "all" ? 20 : 0 }}>
-          <h4 style={{ color: C.muted, fontSize: 11, marginBottom: 8, marginTop: 0, textTransform: "uppercase" }}>
+        <div className={activeTab === "all" ? "mb-5" : ""}>
+          <h4 className="text-muted text-[11px] mb-2 mt-0 uppercase">
             Isometric View
           </h4>
           <ArenaSystemIsometricView arenaSystem={arenaSystem} />
@@ -79,8 +72,8 @@ export function ArenaSystemPreview({ arenaSystem }: Props) {
       )}
 
       {(activeTab === "all" || activeTab === "orbital") && (
-        <div style={{ marginBottom: activeTab === "all" ? 20 : 0 }}>
-          <h4 style={{ color: C.muted, fontSize: 11, marginBottom: 8, marginTop: 0, textTransform: "uppercase" }}>
+        <div className={activeTab === "all" ? "mb-5" : ""}>
+          <h4 className="text-muted text-[11px] mb-2 mt-0 uppercase">
             Orbital View (Physics Simulation)
           </h4>
           <ArenaSystemOrbitalView arenaSystem={arenaSystem} />
@@ -89,7 +82,7 @@ export function ArenaSystemPreview({ arenaSystem }: Props) {
 
       {(activeTab === "all" || activeTab === "stats") && (
         <div>
-          <h4 style={{ color: C.muted, fontSize: 11, marginBottom: 8, marginTop: 0, textTransform: "uppercase" }}>
+          <h4 className="text-muted text-[11px] mb-2 mt-0 uppercase">
             Computed Stats
           </h4>
           <ArenaSystemStatsPanel arenaSystem={arenaSystem} />

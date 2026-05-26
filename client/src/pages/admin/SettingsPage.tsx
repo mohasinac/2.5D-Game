@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { C, S } from "@/styles/theme";
+import { Button } from "@/components/ui/Button";
+import { Label } from "@/components/ui/Label";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 interface GameSettings {
@@ -51,6 +53,8 @@ const DEFAULTS: GameSettings = {
   maxSpectatorsBattle: 8, maxSpectatorsTournament: 8, maxSpectatorsAI: 8,
 };
 
+const inputCls = "w-full bg-bg1 border border-border rounded-md px-3 py-2 text-sm text-text placeholder:text-faint focus:outline-none focus:border-blue";
+
 function normalize(raw: string): string[] {
   return raw.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
 }
@@ -59,9 +63,10 @@ function Toggle({ on, onChange }: { on: boolean; onChange: () => void }) {
   return (
     <button
       role="switch" aria-checked={on} onClick={onChange}
-      style={{ position: "relative", width: 40, height: 22, borderRadius: 11, background: on ? C.blue : C.bg3, border: "none", cursor: "pointer", flexShrink: 0 }}
+      className={`relative w-10 h-5.5 rounded-full border-none cursor-pointer flex-shrink-0 transition-colors ${on ? "bg-blue" : "bg-bg3"}`}
+      style={{ height: 22 }}
     >
-      <span style={{ position: "absolute", top: 3, left: on ? 19 : 3, width: 16, height: 16, background: C.white, borderRadius: "50%", transition: "left 150ms" }} />
+      <span className={`absolute top-[3px] w-4 h-4 bg-white rounded-full transition-[left] duration-150 ${on ? "left-[19px]" : "left-[3px]"}`} />
     </button>
   );
 }
@@ -111,48 +116,45 @@ export function SettingsPage() {
   };
 
   if (loading) return (
-    <div style={{ padding: 24, display: "flex", justifyContent: "center" }}>
-      <div className="spin" style={{ width: 32, height: 32, border: `2px solid ${C.blue}`, borderTopColor: "transparent", borderRadius: "50%" }} />
+    <div className="p-6 flex justify-center">
+      <div className="spin w-8 h-8 border-2 border-blue border-t-transparent rounded-full" />
     </div>
   );
 
   return (
-    <div style={{ padding: 24, maxWidth: 660, margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+    <div className="p-6 max-w-[660px] mx-auto">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>Settings</h1>
-          <p style={{ color: C.faint, fontSize: 13, marginTop: 4 }}>Game-wide configuration</p>
+          <h1 className="text-2xl font-bold text-text">Settings</h1>
+          <p className="text-faint text-sm mt-1">Game-wide configuration</p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={() => setSettings(DEFAULTS)} style={{ padding: "8px 16px", background: "transparent", color: C.muted, borderRadius: 8, fontSize: 13, fontWeight: 500, border: `1px solid ${C.border}`, cursor: "pointer" }}>
-            Reset Defaults
-          </button>
-          <button onClick={handleSave} disabled={saving} style={{ padding: "8px 20px", background: C.blue, color: C.white, borderRadius: 8, fontSize: 13, fontWeight: 500, border: "none", cursor: "pointer", opacity: saving ? 0.5 : 1 }}>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setSettings(DEFAULTS)}>Reset Defaults</Button>
+          <Button variant="primary" onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save Settings"}
-          </button>
+          </Button>
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <div className="flex flex-col gap-3.5">
         {/* Game config */}
         <Section title="Game Configuration">
           <div>
-            <label style={S.label}>Default Arena ID</label>
-            <input type="text" value={settings.defaultArenaId} onChange={(e) => set("defaultArenaId", e.target.value)} placeholder="Firestore arena document ID" style={S.input} />
+            <Label>Default Arena ID</Label>
+            <input type="text" value={settings.defaultArenaId} onChange={(e) => set("defaultArenaId", e.target.value)} placeholder="Firestore arena document ID" className={inputCls} />
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label style={S.label}>Max Players / Room</label>
+              <Label>Max Players / Room</Label>
               <SearchableSelect
                 value={String(settings.maxPlayersPerRoom)}
                 options={[2, 3, 4].map((n) => ({ value: String(n), label: String(n) }))}
                 onChange={(v) => set("maxPlayersPerRoom", +v)}
-                style={{ ...S.input, cursor: "pointer" }}
               />
             </div>
             <div>
-              <label style={S.label}>Match Timeout (seconds)</label>
-              <input type="number" min={60} max={600} step={30} value={settings.matchTimeoutSeconds} onChange={(e) => set("matchTimeoutSeconds", +e.target.value)} style={S.input} />
+              <Label>Match Timeout (seconds)</Label>
+              <input type="number" min={60} max={600} step={30} value={settings.matchTimeoutSeconds} onChange={(e) => set("matchTimeoutSeconds", +e.target.value)} className={inputCls} />
             </div>
           </div>
         </Section>
@@ -170,14 +172,14 @@ export function SettingsPage() {
             <ToggleRow key={key} label={label} desc={desc} on={!!settings[key]} onChange={() => set(key, !settings[key])} last={i === arr.length - 1} />
           ))}
           {settings.maintenanceMode && (
-            <div style={{ paddingTop: 8 }}>
-              <label style={S.label}>Maintenance Message (shown to blocked players)</label>
+            <div className="pt-2">
+              <Label>Maintenance Message (shown to blocked players)</Label>
               <textarea
                 value={settings.maintenanceMessage}
                 onChange={e => set("maintenanceMessage", e.target.value)}
                 rows={2}
                 placeholder="We'll be back soon. Maintenance in progress."
-                style={{ ...S.input, resize: "vertical", lineHeight: 1.5 }}
+                className={`${inputCls} resize-y leading-relaxed`}
               />
             </div>
           )}
@@ -185,7 +187,7 @@ export function SettingsPage() {
 
         {/* Arena features */}
         <Section title="Arena Features">
-          <p style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>Disable individual arena hazards globally. Affects all rooms.</p>
+          <p className="text-[11px] text-faint -mt-1">Disable individual arena hazards globally. Affects all rooms.</p>
           {([
             ["featureSpecialMoves", "Special Moves", "Attack/Defense/Stamina/Balanced specials"],
             ["featureTurrets", "Turrets", "Automated projectile turrets"],
@@ -201,23 +203,23 @@ export function SettingsPage() {
         {/* Global blacklists */}
         <Section title="Global Blacklists">
           <div>
-            <label style={S.label}>Beyblade ID Blacklist (one per line or comma-separated)</label>
+            <Label>Beyblade ID Blacklist (one per line or comma-separated)</Label>
             <textarea
               value={settings.globalBeybladeBlacklist}
               onChange={(e) => set("globalBeybladeBlacklist", e.target.value)}
               rows={4}
-              placeholder="banned_beyblade_id1&#10;banned_beyblade_id2"
-              style={{ ...S.input, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
+              placeholder={"banned_beyblade_id1\nbanned_beyblade_id2"}
+              className={`${inputCls} resize-y font-mono text-xs`}
             />
           </div>
           <div>
-            <label style={S.label}>Arena ID Blacklist</label>
+            <Label>Arena ID Blacklist</Label>
             <textarea
               value={settings.globalArenaBlacklist}
               onChange={(e) => set("globalArenaBlacklist", e.target.value)}
               rows={3}
               placeholder="banned_arena_id1"
-              style={{ ...S.input, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
+              className={`${inputCls} resize-y font-mono text-xs`}
             />
           </div>
         </Section>
@@ -225,23 +227,23 @@ export function SettingsPage() {
         {/* Room limits */}
         <Section title="Room Limits">
           <div>
-            <label style={S.label}>Max Active Rooms (across all types)</label>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <input type="range" min={5} max={50} step={1} value={settings.maxActiveRooms} onChange={e => set("maxActiveRooms", +e.target.value)} style={{ flex: 1 }} />
-              <span style={{ fontSize: 13, color: C.text, minWidth: 28, textAlign: "right" }}>{settings.maxActiveRooms}</span>
+            <Label>Max Active Rooms (across all types)</Label>
+            <div className="flex items-center gap-3">
+              <input type="range" min={5} max={50} step={1} value={settings.maxActiveRooms} onChange={e => set("maxActiveRooms", +e.target.value)} className="flex-1" />
+              <span className="text-sm text-text min-w-[28px] text-right">{settings.maxActiveRooms}</span>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+          <div className="grid grid-cols-3 gap-3.5">
             {([
               ["maxSpectatorsBattle", "Spectators / Battle Room"],
               ["maxSpectatorsTournament", "Spectators / Tournament Room"],
               ["maxSpectatorsAI", "Spectators / AI Battle Room"],
             ] as [keyof GameSettings, string][]).map(([key, label]) => (
               <div key={key}>
-                <label style={S.label}>{label}</label>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <input type="range" min={0} max={12} step={1} value={settings[key] as number} onChange={e => set(key, +e.target.value)} style={{ flex: 1 }} />
-                  <span style={{ fontSize: 13, color: C.text, minWidth: 20 }}>{settings[key] as number}</span>
+                <Label>{label}</Label>
+                <div className="flex items-center gap-2">
+                  <input type="range" min={0} max={12} step={1} value={settings[key] as number} onChange={e => set(key, +e.target.value)} className="flex-1" />
+                  <span className="text-sm text-text min-w-[20px]">{settings[key] as number}</span>
                 </div>
               </div>
             ))}
@@ -251,14 +253,14 @@ export function SettingsPage() {
         {/* Tournament settings */}
         <Section title="Tournament Settings">
           <div>
-            <label style={S.label}>Minimum Gap Between Tournaments (minutes)</label>
+            <Label>Minimum Gap Between Tournaments (minutes)</Label>
             <input
               type="number" min={0} max={1440} step={5}
               value={settings.minimumTournamentGapMinutes}
               onChange={(e) => set("minimumTournamentGapMinutes", +e.target.value)}
-              style={{ ...S.input, width: 120 }}
+              className={`${inputCls} w-[120px]`}
             />
-            <p style={{ color: C.faint, fontSize: 11, marginTop: 4 }}>
+            <p className="text-faint text-[11px] mt-1">
               Advisory gap shown as a warning when scheduling overlapping tournaments. Not enforced.
             </p>
           </div>
@@ -271,7 +273,7 @@ export function SettingsPage() {
             onChange={(e) => set("serverMessage", e.target.value)}
             rows={3}
             placeholder="Displayed to all players in the lobby (leave empty to hide)"
-            style={{ ...S.input, resize: "none", lineHeight: 1.5, fontFamily: "inherit" }}
+            className={`${inputCls} resize-none leading-relaxed`}
           />
         </Section>
       </div>
@@ -281,9 +283,9 @@ export function SettingsPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 16, padding: 20 }}>
-      <div style={S.sectionTitle}>{title}</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+    <div className="bg-bg2 border border-border rounded-2xl p-5">
+      <SectionTitle>{title}</SectionTitle>
+      <div className="flex flex-col gap-3.5">
         {children}
       </div>
     </div>
@@ -292,10 +294,10 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function ToggleRow({ label, desc, on, onChange, last }: { label: string; desc: string; on: boolean; onChange: () => void; last?: boolean }) {
   return (
-    <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", cursor: "pointer", borderBottom: last ? "none" : `1px solid ${C.border}` }}>
+    <label className={`flex items-center justify-between py-2.5 cursor-pointer ${last ? "" : "border-b border-border"}`}>
       <div>
-        <p style={{ color: C.text, fontSize: 13 }}>{label}</p>
-        <p style={{ color: C.faint, fontSize: 11 }}>{desc}</p>
+        <p className="text-text text-sm">{label}</p>
+        <p className="text-faint text-[11px]">{desc}</p>
       </div>
       <Toggle on={on} onChange={onChange} />
     </label>

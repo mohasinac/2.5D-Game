@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { C, btn, pill, alpha } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type {
   ArenaLink,
@@ -609,8 +609,8 @@ export default function ArenaLinkEditorPanel({ fromArenaId, toArenaId, existing,
 
         {/* ── Footer ── */}
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
-          <button onClick={onClose} style={{ ...btn(C.bg3), color: C.text }}>Cancel</button>
-          <button onClick={handleSave} style={{ ...btn(C.blue), color: "#fff" }}>
+          <button onClick={onClose} className="px-4 py-2 bg-bg3 text-text rounded-lg text-sm font-semibold border border-border">Cancel</button>
+          <button onClick={handleSave} className="px-4 py-2 bg-blue text-white rounded-lg text-sm font-semibold">
             {isNew ? "Add Link" : "Save Changes"}
           </button>
         </div>

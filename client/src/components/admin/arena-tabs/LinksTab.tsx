@@ -48,8 +48,8 @@ const ALIGNMENT_COLORS: Record<BeyLinkAlignment, string> = {
 
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-      <span style={{ fontSize: 11, color: C.muted, width: 140, flexShrink: 0 }}>{label}</span>
+    <div className="flex items-center gap-2 mb-1.5">
+      <span className="text-[11px] text-muted w-[140px] shrink-0">{label}</span>
       {children}
     </div>
   );
@@ -72,16 +72,8 @@ function NumInput({
       value={value}
       step={step}
       onChange={e => onChange(Number(e.target.value))}
-      style={{
-        width: 70,
-        background: "var(--bg3,#1a1a2e)",
-        border: `1px solid ${C.border}`,
-        borderRadius: 6,
-        padding: "3px 6px",
-        color: C.text,
-        fontSize: 11,
-        ...style,
-      }}
+      className="bg-bg3 border border-border rounded-md text-text text-[11px]"
+      style={{ width: 70, padding: "3px 6px", ...style }}
     />
   );
 }
@@ -106,14 +98,11 @@ function TextInput({
       placeholder={placeholder}
       readOnly={readOnly}
       onChange={e => onChange?.(e.target.value)}
+      className="flex-1 border border-border rounded-md text-[11px]"
       style={{
-        flex: 1,
-        background: readOnly ? "var(--bg2,#0d0d1a)" : "var(--bg3,#1a1a2e)",
-        border: `1px solid ${C.border}`,
-        borderRadius: 6,
-        padding: "3px 6px",
+        background: readOnly ? "var(--bg2)" : "var(--bg3)",
         color: readOnly ? C.muted : C.text,
-        fontSize: 11,
+        padding: "3px 6px",
         ...style,
       }}
     />
@@ -226,10 +215,10 @@ function ArenaLinkCard({
         >
           {link.linkType.toUpperCase()}
         </span>
-        <span style={{ fontSize: 12, color: C.text, flex: 1 }}>
-          {link.fromArenaId || <span style={{ color: C.faint }}>from?</span>}
-          <span style={{ color: C.muted, margin: "0 6px" }}>→</span>
-          {link.toArenaId || <span style={{ color: C.faint }}>to?</span>}
+        <span className="text-xs text-text flex-1">
+          {link.fromArenaId || <span className="text-faint">from?</span>}
+          <span className="text-muted mx-1.5">→</span>
+          {link.toArenaId || <span className="text-faint">to?</span>}
         </span>
         {hasPair && (
           <span
@@ -245,7 +234,7 @@ function ArenaLinkCard({
             ↔ Paired
           </span>
         )}
-        <span style={{ fontSize: 11, color: C.muted }}>
+        <span className="text-[11px] text-muted">
           {link.momentumPreserved ? "momentum" : "rest"} · {link.reverseCondition ?? "always"}
         </span>
         <button
@@ -255,14 +244,7 @@ function ArenaLinkCard({
             onRemove();
           }}
           data-testid={`remove-link-${link.id}`}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: C.red,
-            cursor: "pointer",
-            fontSize: 13,
-            padding: "0 4px",
-          }}
+          className="bg-transparent border-none text-red cursor-pointer text-[13px] px-1 py-0"
         >
           ✕
         </button>
@@ -270,16 +252,9 @@ function ArenaLinkCard({
 
       {/* Expanded editor */}
       {expanded && (
-        <div
-          style={{
-            padding: "12px 14px",
-            background: "var(--bg2,#0d0d1a)",
-            display: "flex",
-            gap: 16,
-          }}
-        >
+        <div className="p-3 bg-bg2 flex gap-4">
           {/* Left: fields */}
-          <div style={{ flex: 1 }}>
+          <div className="flex-1">
             <FieldRow label="From Arena ID">
               <TextInput
                 value={link.fromArenaId}
@@ -315,16 +290,7 @@ function ArenaLinkCard({
               />
             </FieldRow>
             <FieldRow label="Momentum Preserved">
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  fontSize: 11,
-                  color: C.text,
-                  cursor: "pointer",
-                }}
-              >
+              <label className="flex items-center gap-1.5 text-[11px] text-text cursor-pointer">
                 <input
                   type="checkbox"
                   checked={link.momentumPreserved}
@@ -362,64 +328,48 @@ function ArenaLinkCard({
               </FieldRow>
             )}
 
-            <div
-              style={{
-                marginTop: 10,
-                marginBottom: 4,
-                fontSize: 11,
-                fontWeight: 600,
-                color: C.muted,
-              }}
-            >
+            <div className="mt-2.5 mb-1 text-[11px] font-semibold text-muted">
               Boundary Line (cm, arena coords)
             </div>
-            <div style={{ display: "flex", gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 11, color: C.faint, width: 16 }}>x1</span>
+            <div className="flex gap-2 mb-1.5">
+              <span className="text-[11px] text-faint w-4">x1</span>
               <NumInput
                 value={link.boundaryLine.x1}
                 onChange={v => updateBoundary("x1", v)}
               />
-              <span style={{ fontSize: 11, color: C.faint, width: 16 }}>y1</span>
+              <span className="text-[11px] text-faint w-4">y1</span>
               <NumInput
                 value={link.boundaryLine.y1}
                 onChange={v => updateBoundary("y1", v)}
               />
             </div>
-            <div style={{ display: "flex", gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 11, color: C.faint, width: 16 }}>x2</span>
+            <div className="flex gap-2 mb-1.5">
+              <span className="text-[11px] text-faint w-4">x2</span>
               <NumInput
                 value={link.boundaryLine.x2}
                 onChange={v => updateBoundary("x2", v)}
               />
-              <span style={{ fontSize: 11, color: C.faint, width: 16 }}>y2</span>
+              <span className="text-[11px] text-faint w-4">y2</span>
               <NumInput
                 value={link.boundaryLine.y2}
                 onChange={v => updateBoundary("y2", v)}
               />
             </div>
 
-            <div
-              style={{
-                marginTop: 8,
-                marginBottom: 4,
-                fontSize: 11,
-                fontWeight: 600,
-                color: C.muted,
-              }}
-            >
+            <div className="mt-2 mb-1 text-[11px] font-semibold text-muted">
               Exit Position in Destination (cm)
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <span style={{ fontSize: 11, color: C.faint, width: 12 }}>x</span>
+            <div className="flex gap-2">
+              <span className="text-[11px] text-faint w-3">x</span>
               <NumInput value={link.exitPosition.x} onChange={v => updateExit("x", v)} />
-              <span style={{ fontSize: 11, color: C.faint, width: 12 }}>y</span>
+              <span className="text-[11px] text-faint w-3">y</span>
               <NumInput value={link.exitPosition.y} onChange={v => updateExit("y", v)} />
             </div>
 
             {/* Rotation Coupling */}
-            <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Rotation Coupling</div>
-              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 6 }}>
+            <div className="mt-2.5 pt-2 border-t border-border">
+              <div className="text-[11px] font-semibold text-muted mb-1.5">Rotation Coupling</div>
+              <div className="flex gap-1 flex-wrap mb-1.5">
                 {(["independent", "synchronized", "counter", "driven"] as const).map(rc => (
                   <button key={rc} type="button" onClick={() => onUpdate({ rotationCoupling: rc })}
                     style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
@@ -439,9 +389,9 @@ function ArenaLinkCard({
             </div>
 
             {/* Alignment config */}
-            <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Alignment</div>
-              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 6 }}>
+            <div className="mt-2 pt-2 border-t border-border">
+              <div className="text-[11px] font-semibold text-muted mb-1.5">Alignment</div>
+              <div className="flex gap-1 flex-wrap mb-1.5">
                 {(["none", "positional", "owner-only"] as const).map(m => (
                   <button key={m} type="button" onClick={() => onUpdate({ alignment: { ...(link.alignment ?? { mode: "none", errorMarginDeg: 10, correctionTicks: 10, disconnectsWhenMisaligned: false, reconnectCooldownTicks: 30 }), mode: m } })}
                     style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
@@ -463,7 +413,7 @@ function ArenaLinkCard({
                       onChange={v => onUpdate({ alignment: { ...link.alignment!, correctionTicks: v } })} />
                   </FieldRow>
                   <FieldRow label="Disconnects When Misaligned">
-                    <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.text, cursor: "pointer" }}>
+                    <label className="flex items-center gap-1.5 text-[11px] text-text cursor-pointer">
                       <input type="checkbox" checked={link.alignment.disconnectsWhenMisaligned ?? false}
                         onChange={e => onUpdate({ alignment: { ...link.alignment!, disconnectsWhenMisaligned: e.target.checked } })} />
                       Gap shown when misaligned
@@ -478,8 +428,8 @@ function ArenaLinkCard({
             </div>
 
             {/* Traversal config */}
-            <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Traversal Timing</div>
+            <div className="mt-2 pt-2 border-t border-border">
+              <div className="text-[11px] font-semibold text-muted mb-1.5">Traversal Timing</div>
               <FieldRow label="Traversal Ticks">
                 <NumInput value={link.traversal?.traversalTicks ?? 20}
                   onChange={v => onUpdate({ traversal: { ...(link.traversal ?? { traversalTicks: 20, perBeyReuseCooldownTicks: 30, globalGapTicks: 5 }), traversalTicks: v } })} />
@@ -496,10 +446,10 @@ function ArenaLinkCard({
 
             {/* Pit config */}
             {link.linkType === "pit" && (
-              <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#ef4444", marginBottom: 6 }}>Pit Config</div>
+              <div className="mt-2 pt-2 border-t border-border">
+                <div className="text-[11px] font-semibold mb-1.5" style={{ color: "#ef4444" }}>Pit Config</div>
                 <FieldRow label="Landing Mode">
-                  <div style={{ display: "flex", gap: 4 }}>
+                  <div className="flex gap-1">
                     {(["fixed", "random", "current"] as const).map(m => (
                       <button key={m} type="button" onClick={() => onUpdate({ pitConfig: { landingMode: m } })}
                         style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
@@ -516,10 +466,10 @@ function ArenaLinkCard({
 
             {/* Trampoline config */}
             {link.linkType === "trampoline" && (
-              <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#22c55e", marginBottom: 6 }}>Trampoline Config</div>
+              <div className="mt-2 pt-2 border-t border-border">
+                <div className="text-[11px] font-semibold mb-1.5" style={{ color: "#22c55e" }}>Trampoline Config</div>
                 <FieldRow label="Auto-Launch from Pit">
-                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.text, cursor: "pointer" }}>
+                  <label className="flex items-center gap-1.5 text-[11px] text-text cursor-pointer">
                     <input type="checkbox" checked={link.trampolineConfig?.autoLaunchFromPit ?? false}
                       onChange={e => onUpdate({ trampolineConfig: { ...(link.trampolineConfig ?? { autoLaunchFromPit: false, autoLaunchAnimTicks: 20, autoLaunchForceMult: 1, autoLaunchOptOut: false }), autoLaunchFromPit: e.target.checked } })} />
                     Auto-launch bey back to pit above
@@ -534,7 +484,7 @@ function ArenaLinkCard({
                     onChange={v => onUpdate({ trampolineConfig: { ...(link.trampolineConfig ?? { autoLaunchFromPit: false, autoLaunchAnimTicks: 20, autoLaunchForceMult: 1, autoLaunchOptOut: false }), autoLaunchForceMult: v } })} />
                 </FieldRow>
                 <FieldRow label="Opt-Out Allowed">
-                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.text, cursor: "pointer" }}>
+                  <label className="flex items-center gap-1.5 text-[11px] text-text cursor-pointer">
                     <input type="checkbox" checked={link.trampolineConfig?.autoLaunchOptOut ?? false}
                       onChange={e => onUpdate({ trampolineConfig: { ...(link.trampolineConfig ?? { autoLaunchFromPit: false, autoLaunchAnimTicks: 20, autoLaunchForceMult: 1, autoLaunchOptOut: false }), autoLaunchOptOut: e.target.checked } })} />
                     Player can hold SPACE to cancel launch
@@ -545,17 +495,10 @@ function ArenaLinkCard({
           </div>
 
           {/* Right: mini diagram */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
-              alignItems: "center",
-            }}
-          >
-            <div style={{ fontSize: 10, color: C.faint }}>Boundary Preview</div>
+          <div className="flex flex-col gap-2 items-center">
+            <div className="text-[10px] text-faint">Boundary Preview</div>
             <LinkDiagram link={link} />
-            <div style={{ fontSize: 10, color: C.faint, textAlign: "center" }}>
+            <div className="text-[10px] text-faint text-center">
               ({link.boundaryLine.x1},{link.boundaryLine.y1}) → ({link.boundaryLine.x2},
               {link.boundaryLine.y2})
             </div>
@@ -640,7 +583,7 @@ function BeyLinkCard({
         >
           {link.alignment.toUpperCase()}
         </span>
-        <span style={{ fontSize: 12, color: C.text, flex: 1 }}>
+        <span className="text-xs text-text flex-1">
           radius {link.entryRadiusCm}cm · {link.triggerCondition}
         </span>
         <button
@@ -650,14 +593,7 @@ function BeyLinkCard({
             onRemove();
           }}
           data-testid={`remove-bey-link-${link.id}`}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: C.red,
-            cursor: "pointer",
-            fontSize: 13,
-            padding: "0 4px",
-          }}
+          className="bg-transparent border-none text-red cursor-pointer text-[13px] px-1 py-0"
         >
           ✕
         </button>
@@ -665,7 +601,7 @@ function BeyLinkCard({
 
       {/* Expanded editor */}
       {expanded && (
-        <div style={{ padding: "12px 14px", background: "var(--bg2,#0d0d1a)" }}>
+        <div className="p-3 bg-bg2">
           <FieldRow label="Link Type">
             <SearchableSelect
               value={link.linkType}
@@ -711,18 +647,18 @@ function BeyLinkCard({
           </FieldRow>
 
           {/* Duration and break conditions */}
-          <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Break Conditions</div>
+          <div className="mt-2 pt-2 border-t border-border">
+            <div className="text-[11px] font-semibold text-muted mb-1.5">Break Conditions</div>
             <FieldRow label="Max Duration (ticks)">
               <NumInput value={link.maxDurationTicks ?? 0} onChange={v => onUpdate({ maxDurationTicks: v || undefined })} />
-              <span style={{ fontSize: 10, color: C.faint, marginLeft: 4 }}>0 = unlimited</span>
+              <span className="text-[10px] text-faint ml-1">0 = unlimited</span>
             </FieldRow>
             <FieldRow label="Break Threshold">
               <NumInput value={link.breakThreshold ?? 0} step={5} onChange={v => onUpdate({ breakThreshold: v || undefined })} />
-              <span style={{ fontSize: 10, color: C.faint, marginLeft: 4 }}>collision force (0 = unbreakable)</span>
+              <span className="text-[10px] text-faint ml-1">collision force (0 = unbreakable)</span>
             </FieldRow>
             <FieldRow label="Break on Ring Edge">
-              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.text, cursor: "pointer" }}>
+              <label className="flex items-center gap-1.5 text-[11px] text-text cursor-pointer">
                 <input type="checkbox" checked={link.breakOnRingOut ?? false}
                   onChange={e => onUpdate({ breakOnRingOut: e.target.checked })} />
                 Break when participant nears ring-out
@@ -732,15 +668,8 @@ function BeyLinkCard({
 
           {/* Friendly boost fields */}
           {link.alignment === "friendly" && (
-            <div style={{ marginTop: 10 }}>
-              <div
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: "#14b8a6",
-                  marginBottom: 6,
-                }}
-              >
+            <div className="mt-2.5">
+              <div className="text-[11px] font-semibold mb-1.5" style={{ color: "#14b8a6" }}>
                 Friendly Boost
               </div>
               <FieldRow label="Damage Mult Bonus">
@@ -814,15 +743,8 @@ function BeyLinkCard({
 
           {/* Hostile effect fields */}
           {link.alignment === "hostile" && (
-            <div style={{ marginTop: 10 }}>
-              <div
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: "#ef4444",
-                  marginBottom: 6,
-                }}
-              >
+            <div className="mt-2.5">
+              <div className="text-[11px] font-semibold mb-1.5" style={{ color: "#ef4444" }}>
                 Hostile Effect
               </div>
               <FieldRow label="Bit-Chip Dmg/Tick">
@@ -896,10 +818,10 @@ function BeyLinkCard({
 
           {/* ── QTE Escape (hostile only) ─────────────────────────────────── */}
           {link.alignment === "hostile" && (
-            <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: "#f59e0b", marginBottom: 6 }}>QTE Escape</div>
+            <div className="mt-2.5 pt-2 border-t border-border">
+              <div className="text-[11px] font-semibold mb-1.5" style={{ color: "#f59e0b" }}>QTE Escape</div>
               <FieldRow label="QTE Escapable">
-                <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.text, cursor: "pointer" }}>
+                <label className="flex items-center gap-1.5 text-[11px] text-text cursor-pointer">
                   <input type="checkbox" checked={link.qteEscapable ?? false}
                     onChange={e => onUpdate({ qteEscapable: e.target.checked })} />
                   Victim can press a key to break free
@@ -914,8 +836,8 @@ function BeyLinkCard({
           )}
 
           {/* ── Movement Control ──────────────────────────────────────────── */}
-          <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Movement Control</div>
+          <div className="mt-2 pt-2 border-t border-border">
+            <div className="text-[11px] font-semibold text-muted mb-1.5">Movement Control</div>
             <FieldRow label="Control Mode">
               <SearchableSelect
                 value={link.movementControl ?? "auto"}
@@ -933,12 +855,12 @@ function BeyLinkCard({
                 onChange={v => onUpdate({ groupPattern: v ? v as BeyLinkGroupPattern : undefined })}
                 disabled={configsLoading}
                 emptyLabel="— (pairwise only)"
-                style={{ flex: 1, background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+                style={{ flex: 1, background: "var(--bg2)", border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
               />
-              <span style={{ fontSize: 10, color: C.faint, marginLeft: 4 }}>applies when 3+ beys share this link</span>
+              <span className="text-[10px] text-faint ml-1">applies when 3+ beys share this link</span>
             </FieldRow>
             {(link.movementControl && link.movementControl !== "auto") && (
-              <div style={{ fontSize: 10, color: "#a78bfa", marginTop: 4, padding: "4px 6px", background: "#a78bfa11", borderRadius: 5 }}>
+              <div className="text-[10px] mt-1 py-1 px-1.5 rounded" style={{ color: "#a78bfa", background: "#a78bfa11" }}>
                 {link.movementControl === "initiator"
                   ? "sidA (link initiator) steers the entire formation via WASD."
                   : "Any human-controlled bey in the group steers the formation."}
@@ -947,10 +869,10 @@ function BeyLinkCard({
           </div>
 
           {/* ── Hijack ────────────────────────────────────────────────────── */}
-          <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 6 }}>Hijack</div>
+          <div className="mt-2 pt-2 border-t border-border">
+            <div className="text-[11px] font-semibold text-muted mb-1.5">Hijack</div>
             <FieldRow label="Hijackable">
-              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.text, cursor: "pointer" }}>
+              <label className="flex items-center gap-1.5 text-[11px] text-text cursor-pointer">
                 <input type="checkbox" checked={link.hijackable ?? false}
                   onChange={e => onUpdate({ hijackable: e.target.checked })} />
                 Victim can attempt to seize control
@@ -960,13 +882,13 @@ function BeyLinkCard({
               <>
                 <FieldRow label="Hijack Window (ticks)">
                   <NumInput value={link.hijackWindowTicks ?? 90} onChange={v => onUpdate({ hijackWindowTicks: v })} />
-                  <span style={{ fontSize: 10, color: C.faint, marginLeft: 4 }}>attacker must block within this window</span>
+                  <span className="text-[10px] text-faint ml-1">attacker must block within this window</span>
                 </FieldRow>
                 <FieldRow label="Cooldown (ticks)">
                   <NumInput value={link.hijackCooldownTicks ?? 180} onChange={v => onUpdate({ hijackCooldownTicks: v })} />
-                  <span style={{ fontSize: 10, color: C.faint, marginLeft: 4 }}>applied to both beys after attempt</span>
+                  <span className="text-[10px] text-faint ml-1">applied to both beys after attempt</span>
                 </FieldRow>
-                <div style={{ fontSize: 10, color: "#f97316", marginTop: 4, padding: "4px 6px", background: "#f9731611", borderRadius: 5 }}>
+                <div className="text-[10px] mt-1 py-1 px-1.5 rounded" style={{ color: "#f97316", background: "#f9731611" }}>
                   On hijack success: roles reverse. Former victim becomes sidA (initiator). Former attacker suffers effects instead.
                 </div>
               </>
@@ -974,21 +896,22 @@ function BeyLinkCard({
           </div>
 
           {/* ── Composable Link Effects ───────────────────────────────────── */}
-          <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-              <span style={{ fontSize: 11, fontWeight: 600, color: C.muted }}>Link Effects ({link.linkEffects?.length ?? 0})</span>
+          <div className="mt-2.5 pt-2 border-t border-border">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-[11px] font-semibold text-muted">Link Effects ({link.linkEffects?.length ?? 0})</span>
               <button type="button"
                 onClick={() => {
                   const next: BeyLinkEffect = { type: "spin_drain", intensityPerTick: 1 };
                   onUpdate({ linkEffects: [...(link.linkEffects ?? []), next] });
                 }}
-                style={{ fontSize: 10, padding: "2px 8px", background: C.purple + "22", border: `1px solid ${C.purple}44`, borderRadius: 6, color: C.purple, cursor: "pointer" }}>
+                className="text-[10px] py-[2px] px-2 rounded cursor-pointer"
+                style={{ background: C.purple + "22", border: `1px solid ${C.purple}44`, color: C.purple }}>
                 + Add Effect
               </button>
             </div>
             {(link.linkEffects ?? []).map((eff, ei) => (
-              <div key={ei} style={{ background: "var(--bg3,#1a1a2e)", borderRadius: 8, padding: "8px 10px", marginBottom: 6 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+              <div key={ei} className="bg-bg3 rounded-lg mb-1.5 p-2 px-2.5">
+                <div className="flex items-center gap-2 mb-1">
                   <SearchableSelect
                     value={eff.type}
                     options={effectTypeOpts}
@@ -1006,27 +929,27 @@ function BeyLinkCard({
                       const updated = (link.linkEffects ?? []).filter((_, i) => i !== ei);
                       onUpdate({ linkEffects: updated });
                     }}
-                    style={{ background: "transparent", border: "none", color: C.red, cursor: "pointer", fontSize: 12, padding: "0 2px" }}>✕</button>
+                    className="bg-transparent border-none text-red cursor-pointer text-xs px-[2px]">✕</button>
                 </div>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  <label style={{ fontSize: 10, color: C.muted, display: "flex", alignItems: "center", gap: 4 }}>
+                <div className="flex gap-2 flex-wrap">
+                  <label className="text-[10px] text-muted flex items-center gap-1">
                     intensity/tick
                     <NumInput value={eff.intensityPerTick ?? 1} step={0.5}
                       onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, intensityPerTick: v }; onUpdate({ linkEffects: u }); }} style={{ width: 55 }} />
                   </label>
-                  <label style={{ fontSize: 10, color: C.muted, display: "flex", alignItems: "center", gap: 4 }}>
+                  <label className="text-[10px] text-muted flex items-center gap-1">
                     interval ticks
                     <NumInput value={eff.intervalTicks ?? 10}
                       onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, intervalTicks: v }; onUpdate({ linkEffects: u }); }} style={{ width: 55 }} />
                   </label>
-                  <label style={{ fontSize: 10, color: C.muted, display: "flex", alignItems: "center", gap: 4 }}>
+                  <label className="text-[10px] text-muted flex items-center gap-1">
                     impact mult
                     <NumInput value={eff.impactMult ?? 1} step={0.1}
                       onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, impactMult: v }; onUpdate({ linkEffects: u }); }} style={{ width: 55 }} />
                   </label>
                   {eff.type === "control_loss" && (
                     <>
-                      <label style={{ fontSize: 10, color: C.muted, display: "flex", alignItems: "center", gap: 4 }}>
+                      <label className="text-[10px] text-muted flex items-center gap-1">
                         mode
                         <SearchableSelect
                           value={eff.controlMode ?? "reverse"}
@@ -1036,7 +959,7 @@ function BeyLinkCard({
                           style={{ background: "var(--bg2,#0d0d1a)", border: `1px solid ${C.border}`, borderRadius: 4, color: C.text, fontSize: 10 }}
                         />
                       </label>
-                      <label style={{ fontSize: 10, color: C.muted, display: "flex", alignItems: "center", gap: 4 }}>
+                      <label className="text-[10px] text-muted flex items-center gap-1">
                         duration ticks
                         <NumInput value={eff.controlDurationTicks ?? 60}
                           onChange={v => { const u = [...(link.linkEffects ?? [])]; u[ei] = { ...eff, controlDurationTicks: v }; onUpdate({ linkEffects: u }); }} style={{ width: 55 }} />
@@ -1160,31 +1083,17 @@ export default function LinksTab({ config, onChange }: Props) {
     <CollapsibleSection title="Links" badge={links.length + beyLinks.length} storageKey="arena-links-main" defaultOpen={true}>
     <div>
       {/* ===== Section 1: Arena Links ===== */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 14,
-        }}
-      >
-        <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>
+      <div className="flex justify-between items-center mb-3.5">
+        <span className="text-[13px] font-semibold text-text">
           Arena Links ({links.length})
         </span>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="flex gap-2">
           <button
             type="button"
             onClick={addLinkPair}
             data-testid="add-pair-btn"
-            style={{
-              fontSize: 12,
-              padding: "5px 14px",
-              background: "#14b8a622",
-              border: `1px solid #14b8a655`,
-              borderRadius: 8,
-              color: "#14b8a6",
-              cursor: "pointer",
-            }}
+            className="text-xs py-[5px] px-3.5 rounded-lg cursor-pointer"
+            style={{ background: "#14b8a622", border: "1px solid #14b8a655", color: "#14b8a6" }}
           >
             + Add Pair
           </button>
@@ -1192,15 +1101,8 @@ export default function LinksTab({ config, onChange }: Props) {
             type="button"
             onClick={addLink}
             data-testid="add-link-btn"
-            style={{
-              fontSize: 12,
-              padding: "5px 14px",
-              background: C.purple + "22",
-              border: `1px solid ${C.purple}55`,
-              borderRadius: 8,
-              color: C.purple,
-              cursor: "pointer",
-            }}
+            className="text-xs py-[5px] px-3.5 rounded-lg cursor-pointer"
+            style={{ background: C.purple + "22", border: `1px solid ${C.purple}55`, color: C.purple }}
           >
             + Add Link
           </button>
@@ -1208,23 +1110,13 @@ export default function LinksTab({ config, onChange }: Props) {
       </div>
 
       {links.length === 0 && (
-        <div
-          style={{
-            textAlign: "center",
-            color: C.faint,
-            fontSize: 12,
-            padding: "24px 0",
-            border: `2px dashed ${C.border}`,
-            borderRadius: 12,
-            marginBottom: 8,
-          }}
-        >
+        <div className="text-center text-faint text-xs py-6 border-2 border-dashed border-border rounded-xl mb-2">
           No arena links yet. Add one to connect this arena to another, or use Add Pair to create a
           two-way link.
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div className="flex flex-col gap-2">
         {links.map(link => (
           <ArenaLinkCard
             key={link.id}
@@ -1242,53 +1134,27 @@ export default function LinksTab({ config, onChange }: Props) {
       </div>
 
       {/* ===== Divider ===== */}
-      <div
-        style={{
-          borderTop: `1px solid ${C.border}`,
-          margin: "24px 0 16px",
-        }}
-      />
+      <div className="border-t border-border my-6 mb-4" />
 
       {/* ===== Section 2: Bey Links ===== */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 14,
-        }}
-      >
-        <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>
+      <div className="flex justify-between items-center mb-3.5">
+        <span className="text-[13px] font-semibold text-text">
           Bey Links ({beyLinks.length})
         </span>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="flex gap-2">
           <button
             type="button"
             onClick={() => setShowMovementGuide(true)}
             title="View movement pattern guide"
-            style={{
-              fontSize: 12,
-              padding: "5px 10px",
-              background: "#818cf822",
-              border: `1px solid #818cf855`,
-              borderRadius: 8,
-              color: "#818cf8",
-              cursor: "pointer",
-            }}
+            className="text-xs py-[5px] px-2.5 rounded-lg cursor-pointer"
+            style={{ background: "#818cf822", border: "1px solid #818cf855", color: "#818cf8" }}
           >? Guide</button>
           <button
             type="button"
             onClick={addBeyLink}
             data-testid="add-bey-link-btn"
-            style={{
-              fontSize: 12,
-              padding: "5px 14px",
-              background: "#ef444422",
-              border: `1px solid #ef444455`,
-              borderRadius: 8,
-              color: "#ef4444",
-              cursor: "pointer",
-            }}
+            className="text-xs py-[5px] px-3.5 rounded-lg cursor-pointer"
+            style={{ background: "#ef444422", border: "1px solid #ef444455", color: "#ef4444" }}
           >
             + Add Bey Link
           </button>
@@ -1298,22 +1164,13 @@ export default function LinksTab({ config, onChange }: Props) {
       {showMovementGuide && <BeyLinkMovementGuide onClose={() => setShowMovementGuide(false)} />}
 
       {beyLinks.length === 0 && (
-        <div
-          style={{
-            textAlign: "center",
-            color: C.faint,
-            fontSize: 12,
-            padding: "24px 0",
-            border: `2px dashed ${C.border}`,
-            borderRadius: 12,
-          }}
-        >
+        <div className="text-center text-faint text-xs py-6 border-2 border-dashed border-border rounded-xl">
           No bey links yet. Add one to configure bey-to-bey stacking interactions (hostile
           bit-chip attacks, friendly spin transfers).
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div className="flex flex-col gap-2">
         {beyLinks.map(bl => (
           <BeyLinkCard
             key={bl.id}

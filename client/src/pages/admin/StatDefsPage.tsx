@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
-import { C } from "@/styles/theme";
+import { Button } from "@/components/ui/Button";
+import { Input, Textarea } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 import toast from "react-hot-toast";
 
 interface StatDefDoc {
@@ -38,15 +40,16 @@ function slugify(s: string) {
   return s.toLowerCase().replace(/\s+/g, ".").replace(/[^a-z0-9.]/g, "").replace(/\.+/g, ".").replace(/^\.|\.$/g, "");
 }
 
-const inputStyle: React.CSSProperties = {
-  width: "100%", padding: "8px 10px", background: C.bg0,
-  border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13, boxSizing: "border-box",
-};
-
 const EMPTY = {
   name: "", category: "beyblade", type: "float",
   description: "", min: 0, max: 150, default: 0,
   step: 1, unit: "", formula: "", affectsPhysics: true,
+};
+
+const typeColorClass: Record<string, string> = {
+  float: "bg-blue/10 text-blue",
+  int: "bg-green/10 text-green",
+  bool: "bg-yellow/10 text-yellow",
 };
 
 export default function StatDefsPage() {
@@ -144,61 +147,57 @@ export default function StatDefsPage() {
     items: filtered.filter(i => i.category === cat.value),
   })).filter(g => g.items.length > 0);
 
-  const typeColor: Record<string, string> = { float: C.blue, int: C.green, bool: C.yellow };
-
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 900 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+    <div className="p-8 max-w-[900px]">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, color: C.text }}>Stat Defs</h1>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: C.muted }}>
+          <h1 className="m-0 text-[22px] text-text">Stat Defs</h1>
+          <p className="mt-1 text-[13px] text-muted">
             {items.length} stat definition{items.length !== 1 ? "s" : ""} — typed numeric attributes for beys, arenas, and parts
           </p>
         </div>
-        <button onClick={openCreate} style={{ padding: "8px 18px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13 }}>
-          + New Stat
-        </button>
+        <Button variant="primary" size="sm" onClick={openCreate}>+ New Stat</Button>
       </div>
 
-      <input
+      <Input
         placeholder="Search by name, id, or category…"
         value={query}
         onChange={e => setQuery(e.target.value)}
-        style={{ ...inputStyle, marginBottom: 20 }}
+        className="mb-5"
       />
 
       {loading ? (
-        <p style={{ color: C.muted }}>Loading…</p>
+        <p className="text-muted">Loading…</p>
       ) : byCategory.length === 0 ? (
-        <p style={{ color: C.muted }}>No stat defs found.</p>
+        <p className="text-muted">No stat defs found.</p>
       ) : (
         byCategory.map(group => (
-          <div key={group.value} style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: C.blue, marginBottom: 8 }}>
-              {group.label} <span style={{ color: C.muted, fontWeight: 400 }}>— {group.hint}</span>
+          <div key={group.value} className="mb-7">
+            <div className="text-[11px] font-bold uppercase tracking-widest text-blue mb-2">
+              {group.label} <span className="text-muted font-normal">— {group.hint}</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div className="flex flex-col gap-1.5">
               {group.items.map(item => (
-                <div key={item.id} style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 14px", gap: 12 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2, flexWrap: "wrap" }}>
-                      <span style={{ fontWeight: 600, fontSize: 14, color: C.text }}>{item.name}</span>
-                      <span style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>{item.id}</span>
-                      <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 4, background: (typeColor[item.type] ?? C.blue) + "22", color: typeColor[item.type] ?? C.blue, fontWeight: 700 }}>{item.type}</span>
-                      {item.unit && <span style={{ fontSize: 11, color: C.muted }}>{item.unit}</span>}
-                      {item.affectsPhysics && <span style={{ fontSize: 10, color: C.green, background: C.green + "22", padding: "1px 6px", borderRadius: 4 }}>physics</span>}
+                <div key={item.id} className="flex items-start justify-between bg-bg1 border border-border rounded-lg px-3.5 py-2.5 gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                      <span className="font-semibold text-sm text-text">{item.name}</span>
+                      <span className="text-[11px] text-muted font-mono">{item.id}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${typeColorClass[item.type] ?? "bg-blue/10 text-blue"}`}>{item.type}</span>
+                      {item.unit && <span className="text-[11px] text-muted">{item.unit}</span>}
+                      {item.affectsPhysics && <span className="text-[10px] text-green bg-green/10 px-1.5 py-0.5 rounded">physics</span>}
                     </div>
-                    <p style={{ margin: 0, fontSize: 12, color: C.muted, lineHeight: 1.5 }}>{item.description}</p>
-                    <div style={{ marginTop: 4, fontSize: 11, color: C.muted, fontFamily: "monospace" }}>
+                    <p className="m-0 text-xs text-muted leading-relaxed">{item.description}</p>
+                    <div className="mt-1 text-[11px] text-muted font-mono">
                       {item.min != null && `min:${item.min} `}
                       {item.max != null && `max:${item.max} `}
                       {item.default != null && `default:${item.default}`}
-                      {item.formula && <span style={{ marginLeft: 8, color: C.yellow }}>= {item.formula}</span>}
+                      {item.formula && <span className="ml-2 text-yellow">= {item.formula}</span>}
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                    <button onClick={() => openEdit(item)} style={{ padding: "5px 12px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12, cursor: "pointer" }}>Edit</button>
-                    <button onClick={() => setConfirmDelete(item)} style={{ padding: "5px 12px", background: C.bg0, border: `1px solid #c0392b`, borderRadius: 6, color: "#e74c3c", fontSize: 12, cursor: "pointer" }}>Delete</button>
+                  <div className="flex gap-1.5 shrink-0">
+                    <Button variant="outline" size="xs" onClick={() => openEdit(item)}>Edit</Button>
+                    <Button variant="danger" size="xs" onClick={() => setConfirmDelete(item)}>Delete</Button>
                   </div>
                 </div>
               ))}
@@ -208,21 +207,21 @@ export default function StatDefsPage() {
       )}
 
       {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: 28, width: 540, maxWidth: "95vw", maxHeight: "90vh", overflowY: "auto" }}>
-            <h2 style={{ margin: "0 0 20px", fontSize: 17, color: C.text }}>{editing ? "Edit Stat" : "New Stat"}</h2>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000]">
+          <div className="bg-bg1 border border-border rounded-xl p-7 w-[540px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
+            <h2 className="m-0 mb-5 text-[17px] text-text">{editing ? "Edit Stat" : "New Stat"}</h2>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Name *</span>
-              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} placeholder="e.g. Beyblade Attack" />
+            <div className="mb-3.5">
+              <Label>Name *</Label>
+              <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Beyblade Attack" />
               {!editing && form.name && (
-                <span style={{ fontSize: 11, color: C.muted, marginTop: 2, display: "block" }}>ID: {slugify(form.name)}</span>
+                <span className="text-[11px] text-muted mt-0.5 block">ID: {slugify(form.name)}</span>
               )}
-            </label>
+            </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
+            <div className="grid grid-cols-2 gap-3 mb-3.5">
               <div>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Category *</span>
+                <Label>Category *</Label>
                 <SearchableSelect
                   options={CATEGORY_OPTIONS}
                   value={form.category}
@@ -231,7 +230,7 @@ export default function StatDefsPage() {
                 />
               </div>
               <div>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Value Type</span>
+                <Label>Value Type</Label>
                 <SearchableSelect
                   options={VAL_TYPE_OPTIONS}
                   value={form.type}
@@ -241,63 +240,61 @@ export default function StatDefsPage() {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 10, marginBottom: 14 }}>
+            <div className="grid grid-cols-4 gap-2.5 mb-3.5">
               {(["min", "max", "default", "step"] as const).map(field => (
-                <label key={field} style={{ display: "block" }}>
-                  <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4, textTransform: "capitalize" }}>{field}</span>
-                  <input type="number" value={form[field]}
-                    onChange={e => setForm(f => ({ ...f, [field]: Number(e.target.value) }))}
-                    style={{ ...inputStyle, padding: "6px 8px", fontSize: 12 }} />
-                </label>
+                <div key={field}>
+                  <Label className="capitalize">{field}</Label>
+                  <Input type="number" value={form[field]}
+                    onChange={e => setForm(f => ({ ...f, [field]: Number(e.target.value) }))} />
+                </div>
               ))}
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
-              <label style={{ display: "block" }}>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Unit <span style={{ color: C.faint }}>(optional)</span></span>
-                <input value={form.unit} onChange={e => setForm(f => ({ ...f, unit: e.target.value }))} placeholder="e.g. cm, px, deg/s" style={inputStyle} />
-              </label>
-              <label style={{ display: "block" }}>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Formula <span style={{ color: C.faint }}>(optional)</span></span>
-                <input value={form.formula} onChange={e => setForm(f => ({ ...f, formula: e.target.value }))} placeholder="e.g. 1.0 + attack * 0.007" style={inputStyle} />
-              </label>
+            <div className="grid grid-cols-2 gap-3 mb-3.5">
+              <div>
+                <Label>Unit <span className="text-faint font-normal">(optional)</span></Label>
+                <Input value={form.unit} onChange={e => setForm(f => ({ ...f, unit: e.target.value }))} placeholder="e.g. cm, px, deg/s" />
+              </div>
+              <div>
+                <Label>Formula <span className="text-faint font-normal">(optional)</span></Label>
+                <Input value={form.formula} onChange={e => setForm(f => ({ ...f, formula: e.target.value }))} placeholder="e.g. 1.0 + attack * 0.007" />
+              </div>
             </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>
-              <textarea
+            <div className="mb-3.5">
+              <Label>Description</Label>
+              <Textarea
                 value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 rows={3}
-                style={{ ...inputStyle, resize: "vertical" }}
               />
-            </label>
+            </div>
 
-            <label style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, cursor: "pointer" }}>
+            <label className="flex items-center gap-2.5 mb-5 cursor-pointer">
               <input type="checkbox" checked={form.affectsPhysics} onChange={e => setForm(f => ({ ...f, affectsPhysics: e.target.checked }))} />
-              <span style={{ fontSize: 13, color: C.text }}>Affects physics (server reads this stat at runtime)</span>
+              <span className="text-[13px] text-text">Affects physics (server reads this stat at runtime)</span>
             </label>
 
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setShowModal(false)} style={{ padding: "8px 16px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleSave} disabled={saving} style={{ padding: "8px 18px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}>
+            <div className="flex gap-2.5 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setShowModal(false)}>Cancel</Button>
+              <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
                 {saving ? "Saving…" : editing ? "Update" : "Create"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       )}
 
       {confirmDelete && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: 28, width: 380, maxWidth: "95vw" }}>
-            <h3 style={{ margin: "0 0 12px", color: C.text }}>Delete Stat?</h3>
-            <p style={{ margin: "0 0 20px", color: C.muted, fontSize: 13 }}>
-              Delete <strong style={{ color: C.text }}>{confirmDelete.name}</strong>? Any StatModifier referencing <code style={{ fontFamily: "monospace" }}>{confirmDelete.id}</code> will have no effect.
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100]">
+          <div className="bg-bg1 border border-border rounded-xl p-7 w-[380px] max-w-[95vw]">
+            <h3 className="m-0 mb-3 text-text">Delete Stat?</h3>
+            <p className="m-0 mb-5 text-muted text-[13px]">
+              Delete <strong className="text-text">{confirmDelete.name}</strong>? Any StatModifier referencing <code className="font-mono">{confirmDelete.id}</code> will have no effect.
             </p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ padding: "8px 16px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleDelete} style={{ padding: "8px 18px", background: "#c0392b", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>Delete</button>
+            <div className="flex gap-2.5 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+              <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
             </div>
           </div>
         </div>

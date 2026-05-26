@@ -96,11 +96,12 @@ test.describe("Server Load: 1 player + 7 spectators (8 unique connections)", () 
     }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_000);
+
+    // Start the battle (wait for Firestore to load form)
+    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     await ss(page, "SL02-load-player-setup");
 
-    // Start the battle
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }
@@ -194,7 +195,10 @@ test.describe("Server Load: 1 human vs 7 AI bots (aiCount=7)", () => {
     if (!landed) { await ss(page, "SL03-1v7-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_000);
+
+    // Wait for form to load (Firestore data)
+    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
 
     // Try to set AI count to max (7 if supported)
     const countInput = page.locator('input[type="number"][min], input[name*="count" i], input[id*="ai-count" i]').first();
@@ -211,7 +215,6 @@ test.describe("Server Load: 1 human vs 7 AI bots (aiCount=7)", () => {
 
     await ss(page, "SL03-1v7-configured");
 
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }
@@ -266,16 +269,18 @@ test.describe("Server Load: 1 human vs 7 AI bots (aiCount=7)", () => {
     await Promise.all(pages.map(async (p, i) => {
       await p.goto(`${base}/game/2d/ai-battle`);
       await p.waitForLoadState("domcontentloaded");
-      await p.waitForTimeout(2_000 + i * 500); // stagger slightly
+      // Stagger slightly to avoid thundering herd on Firestore
+      if (i > 0) await p.waitForTimeout(i * 500);
       console.log(`[SL04] Context ${i + 1} on AI battle setup`);
     }));
 
     await ss(page, "SL04-multi-room-all-setup");
 
-    // Start each battle
+    // Start each battle (wait for form to load before clicking)
     const battleUrls: string[] = [];
     for (const p of pages) {
       const startBtn = p.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+      await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
       if (await startBtn.isVisible().catch(() => false)) {
         await startBtn.click();
         await p.waitForURL(/ai-battle\/play/, { timeout: 15_000 }).catch(() => {});

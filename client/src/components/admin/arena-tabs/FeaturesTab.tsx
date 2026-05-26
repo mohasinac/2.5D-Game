@@ -21,10 +21,10 @@ interface Props {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(true);
   return (
-    <div style={{ borderBottom: `1px solid ${C.border}`, paddingBottom: 16, marginBottom: 16 }}>
+    <div className="border-b border-border pb-4 mb-4">
       <button
         onClick={() => setOpen(o => !o)}
-        style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", color: C.text, fontWeight: 600, fontSize: 13, padding: 0, marginBottom: open ? 12 : 0 }}
+        className={`flex items-center gap-2 bg-transparent border-none cursor-pointer text-text font-semibold text-[13px] p-0${open ? " mb-3" : ""}`}
       >
         <span>{open ? "▼" : "▶"}</span>
         <span>{title}</span>
@@ -36,8 +36,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-      <label style={{ fontSize: 12, color: C.muted, minWidth: 130 }}>{label}</label>
+    <div className="flex items-center gap-2 mb-1.5">
+      <label className="text-xs text-muted min-w-[130px]">{label}</label>
       {children}
     </div>
   );
@@ -50,7 +50,7 @@ function numInput(val: number | undefined, def: number, onChange: (n: number) =>
       value={val ?? def}
       step={step}
       onChange={e => onChange(Number(e.target.value))}
-      style={{ width: 80, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+      className="w-20 bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs"
     />
   );
 }
@@ -63,20 +63,20 @@ function BehaviorOverridePanel({ behaviorId, behaviorParams, onChangeBehaviorId,
   onChangeBehaviorParams: (params: Record<string, unknown> | undefined) => void;
 }) {
   return (
-    <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+    <div className="mt-2.5 grid grid-cols-2 gap-2.5">
       <div>
-        <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior ID (optional)</label>
+        <label className="block text-[11px] text-faint mb-1">Behavior ID (optional)</label>
         <input
           type="text"
           data-testid="behavior-id-input"
           value={behaviorId ?? ""}
           onChange={e => onChangeBehaviorId(e.target.value || undefined)}
           placeholder="e.g. movement.orbit"
-          style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" }}
+          className="w-full bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
         />
       </div>
       <div>
-        <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior Params (JSON)</label>
+        <label className="block text-[11px] text-faint mb-1">Behavior Params (JSON)</label>
         <textarea
           value={behaviorParams ? JSON.stringify(behaviorParams, null, 2) : ""}
           onChange={e => {
@@ -87,7 +87,7 @@ function BehaviorOverridePanel({ behaviorId, behaviorParams, onChangeBehaviorId,
           }}
           placeholder='{ "strength": 0.5 }'
           rows={2}
-          style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 11, fontFamily: "monospace", resize: "vertical", boxSizing: "border-box" }}
+          className="w-full bg-bg1 border border-border text-text rounded-md py-1 px-2 text-[11px] font-mono resize-y box-border"
         />
       </div>
     </div>
@@ -270,7 +270,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
 
   return (
     <CollapsibleSection title="Features" storageKey="arena-features-main" defaultOpen={true}>
-    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+    <div className="flex flex-col gap-0">
 
       {/* Background Particles */}
       <Section title="Background Particles">
@@ -293,12 +293,12 @@ export default function FeaturesTab({ config, onChange }: Props) {
             <Row label="Density (p/s)">{numInput(bp.density, 20, v => onChange({ backgroundParticles: { ...bp, density: v } }))}</Row>
             <Row label="Direction (°)">{numInput(bp.direction, 0, v => onChange({ backgroundParticles: { ...bp, direction: v } }))}</Row>
             <Row label="Speed">
-              <input type="range" min={0.1} max={3} step={0.1} value={bp.speed ?? 1} onChange={e => onChange({ backgroundParticles: { ...bp, speed: Number(e.target.value) } })} style={{ width: 100 }} />
-              <span style={{ fontSize: 11, color: C.muted }}>{(bp.speed ?? 1).toFixed(1)}×</span>
+              <input type="range" min={0.1} max={3} step={0.1} value={bp.speed ?? 1} onChange={e => onChange({ backgroundParticles: { ...bp, speed: Number(e.target.value) } })} className="w-[100px]" />
+              <span className="text-[11px] text-muted">{(bp.speed ?? 1).toFixed(1)}×</span>
             </Row>
             <Row label="Color">
               <input type="color" value={bp.color ?? "#ffffff"} onChange={e => onChange({ backgroundParticles: { ...bp, color: e.target.value } })}
-                style={{ width: 40, height: 28, border: `1px solid ${C.border}`, borderRadius: 4 }} />
+                className="w-10 h-7 border border-border rounded" />
             </Row>
             <Row label="Affected by rotation">
               <input type="checkbox" checked={bp.affectedByArenaRotation ?? true} onChange={e => onChange({ backgroundParticles: { ...bp, affectedByArenaRotation: e.target.checked } })} />
@@ -326,8 +326,8 @@ export default function FeaturesTab({ config, onChange }: Props) {
               />
             </Row>
             <Row label="Intensity">
-              <input type="range" min={0} max={1} step={0.05} value={env.intensity ?? 0.5} onChange={e => onChange({ environmentalEffect: { ...env, intensity: Number(e.target.value) } })} style={{ width: 100 }} />
-              <span style={{ fontSize: 11, color: C.muted }}>{(env.intensity ?? 0.5).toFixed(2)}</span>
+              <input type="range" min={0} max={1} step={0.05} value={env.intensity ?? 0.5} onChange={e => onChange({ environmentalEffect: { ...env, intensity: Number(e.target.value) } })} className="w-[100px]" />
+              <span className="text-[11px] text-muted">{(env.intensity ?? 0.5).toFixed(2)}</span>
             </Row>
             <Row label="Interval (ms)">{numInput(env.intervalMs, 4000, v => onChange({ environmentalEffect: { ...env, intervalMs: v } }), 500)}</Row>
           </>
@@ -337,10 +337,10 @@ export default function FeaturesTab({ config, onChange }: Props) {
       {/* Floor Hazard Zones */}
       <Section title={`Floor Hazard Zones (${fhz.length})`}>
         {fhz.map((z, i) => (
-          <div key={z.id} data-testid={`effect-zone-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
-              <button onClick={() => removeHazard(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+          <div key={z.id} data-testid={`effect-zone-${z.id}`} className="bg-bg1 border border-border rounded-[10px] p-3 mb-2.5">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs font-semibold text-text">{z.id}</span>
+              <button onClick={() => removeHazard(i)} className="bg-transparent border-none text-muted cursor-pointer text-sm">✕</button>
             </div>
             <Row label="Type">
               <SearchableSelect
@@ -388,7 +388,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
             />
           </div>
         ))}
-        <button onClick={addHazard} style={{ padding: "6px 14px", background: C.purple, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+        <button onClick={addHazard} className="py-1.5 px-3.5 bg-purple text-white border-none rounded-lg text-xs cursor-pointer">
           + Add Hazard Zone
         </button>
       </Section>
@@ -396,10 +396,10 @@ export default function FeaturesTab({ config, onChange }: Props) {
       {/* Effect Zones */}
       <Section title={`Effect Zones (${ez.length})`}>
         {ez.map((z: any, i: number) => (
-          <div key={z.id} data-testid={`effect-zone-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
-              <button onClick={() => removeEffect(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+          <div key={z.id} data-testid={`effect-zone-${z.id}`} className="bg-bg1 border border-border rounded-[10px] p-3 mb-2.5">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs font-semibold text-text">{z.id}</span>
+              <button onClick={() => removeEffect(i)} className="bg-transparent border-none text-muted cursor-pointer text-sm">✕</button>
             </div>
             <Row label="Effect Type">
               <SearchableSelect
@@ -437,7 +437,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
             />
           </div>
         ))}
-        <button onClick={addEffect} style={{ padding: "6px 14px", background: C.purple, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+        <button onClick={addEffect} className="py-1.5 px-3.5 bg-purple text-white border-none rounded-lg text-xs cursor-pointer">
           + Add Effect Zone
         </button>
       </Section>
@@ -445,10 +445,10 @@ export default function FeaturesTab({ config, onChange }: Props) {
       {/* Elevation Zones */}
       <Section title={`Elevation Zones (${elev.length})`}>
         {elev.map((z, i) => (
-          <div key={z.id} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
-              <button onClick={() => removeElev(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+          <div key={z.id} className="bg-bg1 border border-border rounded-[10px] p-3 mb-2.5">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs font-semibold text-text">{z.id}</span>
+              <button onClick={() => removeElev(i)} className="bg-transparent border-none text-muted cursor-pointer text-sm">✕</button>
             </div>
             <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateElev(i, { x_cm: v }))}</Row>
             <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateElev(i, { y_cm: v }))}</Row>
@@ -468,7 +468,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
             />
           </div>
         ))}
-        <button onClick={addElev} style={{ padding: "6px 14px", background: C.purple, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+        <button onClick={addElev} className="py-1.5 px-3.5 bg-purple text-white border-none rounded-lg text-xs cursor-pointer">
           + Add Elevation Zone
         </button>
       </Section>
@@ -476,14 +476,14 @@ export default function FeaturesTab({ config, onChange }: Props) {
       {/* Spin Zones (I6) */}
       <Section title={`Spin Zones (${spinZones.length})`}>
         {spinZones.map((z, i) => (
-          <div key={z.id} data-testid={`spin-zone-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
+          <div key={z.id} data-testid={`spin-zone-${z.id}`} className="bg-bg1 border border-border rounded-[10px] p-3 mb-2.5">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-text">{z.id}</span>
                 <BehaviorBadge behaviorId={z.behaviorId} />
                 <AuthorityBadge config={config} zone="spinZone" />
               </div>
-              <button onClick={() => removeSpinZone(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+              <button onClick={() => removeSpinZone(i)} className="bg-transparent border-none text-muted cursor-pointer text-sm">✕</button>
             </div>
             <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateSpinZone(i, { x_cm: v }))}</Row>
             <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateSpinZone(i, { y_cm: v }))}</Row>
@@ -528,7 +528,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 value={z.controlledBySwitchId ?? ""}
                 onChange={e => updateSpinZone(i, { controlledBySwitchId: e.target.value || undefined })}
                 placeholder="e.g. sw1"
-                style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
+                className="w-full bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
               />
             </Row>
             <SelfRotationPanel
@@ -539,7 +539,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
             />
           </div>
         ))}
-        <button onClick={addSpinZone} style={{ padding: "6px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+        <button onClick={addSpinZone} className="py-1.5 px-3.5 bg-blue text-white border-none rounded-lg text-xs cursor-pointer">
           + Add Spin Zone
         </button>
       </Section>
@@ -547,14 +547,14 @@ export default function FeaturesTab({ config, onChange }: Props) {
       {/* Gravity Holes (I6) */}
       <Section title={`Gravity Holes (${gravityHoles.length})`}>
         {gravityHoles.map((z, i) => (
-          <div key={z.id} data-testid={`gravity-hole-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
+          <div key={z.id} data-testid={`gravity-hole-${z.id}`} className="bg-bg1 border border-border rounded-[10px] p-3 mb-2.5">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-text">{z.id}</span>
                 <BehaviorBadge behaviorId={z.behaviorId} />
                 <AuthorityBadge config={config} zone="gravityWell" />
               </div>
-              <button onClick={() => removeGravityHole(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+              <button onClick={() => removeGravityHole(i)} className="bg-transparent border-none text-muted cursor-pointer text-sm">✕</button>
             </div>
             <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateGravityHole(i, { x_cm: v }))}</Row>
             <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateGravityHole(i, { y_cm: v }))}</Row>
@@ -594,7 +594,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 value={z.controlledBySwitchId ?? ""}
                 onChange={e => updateGravityHole(i, { controlledBySwitchId: e.target.value || undefined })}
                 placeholder="e.g. sw1"
-                style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
+                className="w-full bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
               />
             </Row>
             <SelfRotationPanel
@@ -605,7 +605,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
             />
           </div>
         ))}
-        <button onClick={addGravityHole} style={{ padding: "6px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+        <button onClick={addGravityHole} className="py-1.5 px-3.5 bg-blue text-white border-none rounded-lg text-xs cursor-pointer">
           + Add Gravity Hole
         </button>
       </Section>
@@ -613,14 +613,14 @@ export default function FeaturesTab({ config, onChange }: Props) {
       {/* Bumps (I6) */}
       <Section title={`Bumps (${bumps.length})`}>
         {bumps.map((z, i) => (
-          <div key={z.id} data-testid={`bump-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
+          <div key={z.id} data-testid={`bump-${z.id}`} className="bg-bg1 border border-border rounded-[10px] p-3 mb-2.5">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-text">{z.id}</span>
                 <BehaviorBadge behaviorId={z.behaviorId} />
                 <AuthorityBadge config={config} zone="bump" />
               </div>
-              <button onClick={() => removeBump(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+              <button onClick={() => removeBump(i)} className="bg-transparent border-none text-muted cursor-pointer text-sm">✕</button>
             </div>
             <Row label="X (cm)">{numInput(z.x_cm, 0, v => updateBump(i, { x_cm: v }))}</Row>
             <Row label="Y (cm)">{numInput(z.y_cm, 0, v => updateBump(i, { y_cm: v }))}</Row>
@@ -650,7 +650,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 value={z.controlledBySwitchId ?? ""}
                 onChange={e => updateBump(i, { controlledBySwitchId: e.target.value || undefined })}
                 placeholder="e.g. sw1"
-                style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
+                className="w-full bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
               />
             </Row>
             <SelfRotationPanel
@@ -661,7 +661,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
             />
           </div>
         ))}
-        <button onClick={addBump} style={{ padding: "6px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+        <button onClick={addBump} className="py-1.5 px-3.5 bg-blue text-white border-none rounded-lg text-xs cursor-pointer">
           + Add Bump
         </button>
       </Section>
@@ -669,21 +669,21 @@ export default function FeaturesTab({ config, onChange }: Props) {
       {/* Directional Zones (Phase ZP) */}
       <Section title={`Directional Zones (${directionalZones.length})`}>
         {directionalZones.length === 0 && (
-          <p style={{ fontSize: 12, color: C.faint, marginBottom: 10 }}>
+          <p className="text-xs text-faint mb-2.5">
             Zones that apply sustained directional forces — wind corridors, tornadoes, vortices, updrafts, and more.
           </p>
         )}
         {directionalZones.map((z, i) => (
-          <div key={z.id} data-testid={`directional-zone-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
+          <div key={z.id} data-testid={`directional-zone-${z.id}`} className="bg-bg1 border border-border rounded-[10px] p-3 mb-2.5">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-text">{z.id}</span>
                 <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 99, background: "rgba(68,180,255,0.15)", color: "#44b4ff", border: "1px solid rgba(68,180,255,0.3)" }}>
                   {z.type}
                 </span>
                 {z.behaviorId && <BehaviorBadge behaviorId={z.behaviorId} />}
               </div>
-              <button onClick={() => removeDirectionalZone(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+              <button onClick={() => removeDirectionalZone(i)} className="bg-transparent border-none text-muted cursor-pointer text-sm">✕</button>
             </div>
 
             {/* Zone type */}
@@ -718,7 +718,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
             {(z.type === "tornado" || z.type === "vortex" || z.type === "dust_devil") && (
               <>
                 <Row label="Spin Direction">
-                  <div style={{ display: "flex", gap: 6 }}>
+                  <div className="flex gap-1.5">
                     {(["cw", "ccw"] as const).map(d => (
                       <button key={d} onClick={() => updateDirectionalZone(i, { spinDirection: d })}
                         style={{ padding: "2px 10px", borderRadius: 5, fontSize: 11, cursor: "pointer",
@@ -781,7 +781,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                 value={(z as any).controlledBySwitchId ?? ""}
                 onChange={e => updateDirectionalZone(i, { controlledBySwitchId: e.target.value || undefined } as any)}
                 placeholder="e.g. sw1"
-                style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
+                className="w-full bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
               />
             </Row>
             <SelfRotationPanel
@@ -803,10 +803,10 @@ export default function FeaturesTab({ config, onChange }: Props) {
           const kind = z.kind as TriggerZoneKind;
           const activation = z.activation as TriggerZoneActivation;
           return (
-            <div key={z.id} data-testid={`trigger-zone-${z.id}`} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12, marginBottom: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{z.id}</span>
-                <button onClick={() => removeTriggerZone(i)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14 }}>✕</button>
+            <div key={z.id} data-testid={`trigger-zone-${z.id}`} className="bg-bg1 border border-border rounded-[10px] p-3 mb-2.5">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs font-semibold text-text">{z.id}</span>
+                <button onClick={() => removeTriggerZone(i)} className="bg-transparent border-none text-muted cursor-pointer text-sm">✕</button>
               </div>
 
               {/* Position */}
@@ -933,7 +933,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                   value={z.controlledBySwitchId ?? ""}
                   onChange={e => updateTriggerZone(i, { controlledBySwitchId: e.target.value || undefined })}
                   placeholder="e.g. sw1"
-                  style={{ width: "100%", background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" as const }}
+                  className="w-full bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
                 />
               </Row>
               <SelfRotationPanel
@@ -945,7 +945,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
             </div>
           );
         })}
-        <button onClick={addTriggerZone} style={{ padding: "6px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer" }}>
+        <button onClick={addTriggerZone} className="py-1.5 px-3.5 bg-blue text-white border-none rounded-lg text-xs cursor-pointer">
           + Add Trigger Zone
         </button>
       </Section>
@@ -1008,24 +1008,24 @@ export default function FeaturesTab({ config, onChange }: Props) {
                   )}
 
                   {/* Bey Pool */}
-                  <div style={{ marginTop: 10 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: C.muted }}>Bey Pool ({bs.beyPool?.length ?? 0})</span>
+                  <div className="mt-2.5">
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-xs font-semibold text-muted">Bey Pool ({bs.beyPool?.length ?? 0})</span>
                       <button onClick={() => updateBS({ beyPool: [...(bs.beyPool ?? []), { beyId: "", aiDifficulty: "medium", controlMode: "ai", statsMultiplier: 1.0 }] })}
-                        style={{ fontSize: 11, padding: "2px 8px", background: C.purple, color: C.white, border: "none", borderRadius: 5, cursor: "pointer" }}>
+                        className="text-[11px] py-[2px] px-2 bg-purple text-white border-none rounded cursor-pointer">
                         + Bey Entry
                       </button>
                     </div>
                     {(bs.beyPool ?? []).map((entry, ei) => (
-                      <div key={ei} style={{ background: C.bg2, borderRadius: 8, padding: 10, marginBottom: 6 }}>
+                      <div key={ei} className="bg-bg2 rounded-lg p-2.5 mb-1.5">
                         <Row label="Bey ID">
                           <input type="text" value={entry.beyId}
                             onChange={e => { const p = [...(bs.beyPool ?? [])]; p[ei] = { ...entry, beyId: e.target.value }; updateBS({ beyPool: p }); }}
                             placeholder="beyblade_stats doc ID"
-                            style={{ flex: 1, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "3px 6px", fontSize: 11 }} />
+                            className="flex-1 bg-bg1 border border-border text-text rounded-md py-[3px] px-1.5 text-[11px]" />
                         </Row>
                         <Row label="AI Difficulty">
-                          <div style={{ display: "flex", gap: 4 }}>
+                          <div className="flex gap-1">
                             {(["medium", "hard", "hell"] as const).map(d => (
                               <button key={d} onClick={() => { const p = [...(bs.beyPool ?? [])]; p[ei] = { ...entry, aiDifficulty: d }; updateBS({ beyPool: p }); }}
                                 style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
@@ -1038,7 +1038,7 @@ export default function FeaturesTab({ config, onChange }: Props) {
                           </div>
                         </Row>
                         <Row label="Control Mode">
-                          <div style={{ display: "flex", gap: 4 }}>
+                          <div className="flex gap-1">
                             {(["ai", "friendly"] as const).map(m => (
                               <button key={m} onClick={() => { const p = [...(bs.beyPool ?? [])]; p[ei] = { ...entry, controlMode: m }; updateBS({ beyPool: p }); }}
                                 style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
@@ -1056,9 +1056,9 @@ export default function FeaturesTab({ config, onChange }: Props) {
                         <Row label="Max Spawns">
                           {numInput(entry.maxFromThisEntry, 0, v => { const p = [...(bs.beyPool ?? [])]; p[ei] = { ...entry, maxFromThisEntry: v < 1 ? undefined : Math.round(v) }; updateBS({ beyPool: p }); }, 1)}
                         </Row>
-                        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 4 }}>
+                        <div className="flex justify-end mt-1">
                           <button onClick={() => updateBS({ beyPool: (bs.beyPool ?? []).filter((_, j) => j !== ei) })}
-                            style={{ color: C.red, background: "none", border: "none", fontSize: 11, cursor: "pointer" }}>
+                            className="text-red bg-transparent border-none text-[11px] cursor-pointer">
                             Remove Entry
                           </button>
                         </div>

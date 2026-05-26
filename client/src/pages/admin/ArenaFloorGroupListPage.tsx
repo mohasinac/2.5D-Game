@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { C, btn, pill, alpha } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import toast from "react-hot-toast";
 import type { ArenaFloorGroup, ArenaLink } from "@/types/arenaConfigNew";
 
@@ -96,19 +98,16 @@ function CouplingDiagram({ mode, size = 44 }: { mode: string; size?: number }) {
 
 /** Compact link type + alignment pill row */
 function LinkTypePills({ links }: { links?: ArenaLink[] }) {
-  if (!links?.length) return <span style={{ color: C.faint, fontSize: 11 }}>—</span>;
+  if (!links?.length) return <span className="text-faint text-xs">—</span>;
 
   const byType: Record<string, number> = {};
   links.forEach(l => { byType[l.linkType] = (byType[l.linkType] ?? 0) + 1; });
 
   return (
-    <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+    <div className="flex gap-1 flex-wrap">
       {Object.entries(byType).map(([type, count]) => (
-        <span key={type} style={{
-          fontSize: 11, padding: "1px 6px", borderRadius: 20,
-          background: alpha(C.bg3, 0.8), border: `1px solid ${C.border}`,
-          color: C.muted, display: "flex", alignItems: "center", gap: 3,
-        }}>
+        <span key={type} className="text-xs px-1.5 py-0.5 rounded-full border border-border text-muted flex items-center gap-1"
+          style={{ background: alpha(C.bg3, 0.8) }}>
           {LINK_TYPE_ICONS[type]} {count > 1 ? count : ""}
         </span>
       ))}
@@ -118,7 +117,7 @@ function LinkTypePills({ links }: { links?: ArenaLink[] }) {
 
 /** Shows the dominant coupling mode across all links in a group */
 function CouplingModeCell({ links }: { links?: ArenaLink[] }) {
-  if (!links?.length) return <span style={{ color: C.faint, fontSize: 11 }}>—</span>;
+  if (!links?.length) return <span className="text-faint text-xs">—</span>;
 
   const counts: Record<string, number> = {};
   links.forEach(l => {
@@ -129,17 +128,14 @@ function CouplingModeCell({ links }: { links?: ArenaLink[] }) {
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 5, alignItems: "center" }}>
+    <div className="flex flex-col gap-1 items-center">
       <CouplingDiagram mode={sorted[0][0]} size={40} />
-      <div style={{ display: "flex", gap: 3, flexWrap: "wrap", justifyContent: "center" }}>
+      <div className="flex gap-1 flex-wrap justify-center">
         {sorted.map(([mode, count]) => {
           const m = COUPLING_META[mode] ?? COUPLING_META.independent;
           return (
-            <span key={mode} style={{
-              fontSize: 9, padding: "1px 5px", borderRadius: 10,
-              background: alpha(m.color, 0.12), border: `1px solid ${alpha(m.color, 0.3)}`,
-              color: m.color, fontWeight: 700,
-            }}>
+            <span key={mode} className="text-[9px] px-1 py-0.5 rounded-lg font-bold"
+              style={{ background: alpha(m.color, 0.12), border: `1px solid ${alpha(m.color, 0.3)}`, color: m.color }}>
               {m.symbol} {count}
             </span>
           );
@@ -157,16 +153,10 @@ function AlignmentHealthBar({ links }: { links?: ArenaLink[] }) {
   const open    = links.length - disc;
 
   return (
-    <div style={{ fontSize: 10, display: "flex", flexDirection: "column", gap: 2 }}>
-      {always > 0 && (
-        <span style={{ color: C.purple }}>🌀 ×{always} always open</span>
-      )}
-      {disc > 0 && (
-        <span style={{ color: C.red }}>⚡ ×{disc} disconnect</span>
-      )}
-      {open - always > 0 && (
-        <span style={{ color: C.green }}>✓ ×{open - always} stays open</span>
-      )}
+    <div className="text-[10px] flex flex-col gap-0.5">
+      {always > 0 && <span className="text-purple">🌀 ×{always} always open</span>}
+      {disc > 0 && <span className="text-red">⚡ ×{disc} disconnect</span>}
+      {open - always > 0 && <span className="text-green">✓ ×{open - always} stays open</span>}
     </div>
   );
 }
@@ -208,83 +198,80 @@ export default function ArenaFloorGroupListPage() {
   const disconnectable = groups.reduce((s, g) => s + (g.links?.filter(l => l.alignment?.disconnectsWhenMisaligned).length ?? 0), 0);
 
   return (
-    <div style={{ padding: 24, width: "100%", boxSizing: "border-box" as const }}>
+    <div className="p-6 w-full box-border">
       <style>{`
         @keyframes spin { from { transform-origin: center; transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
 
       {/* ── Header ── */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, margin: 0 }}>Arena Floor Groups</h1>
-          <p style={{ color: C.muted, fontSize: 13, marginTop: 4 }}>
+          <h1 className="text-xl font-bold text-text m-0">Arena Floor Groups</h1>
+          <p className="text-muted text-sm mt-1">
             Link up to 7 arenas as stacked floors. Rotation coupling controls whether linked arenas spin
             independently, together, in opposite directions, or via a gear ratio.
           </p>
         </div>
         <Link
           to="/admin/arena-floor-groups/new"
-          style={{ ...btn(C.yellow), color: C.bg0, textDecoration: "none", fontSize: 13 }}
+          className="px-4 py-2 bg-yellow text-bg0 rounded-lg text-sm font-semibold no-underline"
         >
           + New Floor Group
         </Link>
       </div>
 
       {/* ── Stats bar ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 }}>
+      <div className="grid grid-cols-4 gap-3 mb-6">
         {[
-          { label: "Total Groups",         value: groups.length,                                                               color: C.blue },
-          { label: "Active",               value: groups.filter(g => g.status === "active").length,                           color: C.green },
-          { label: "Rotation Coupled",     value: `${coupledLinks} / ${totalLinks} links`,                                    color: C.yellow },
-          { label: "Disconnect on Misalign", value: `${disconnectable} link${disconnectable !== 1 ? "s" : ""}`,               color: C.red },
+          { label: "Total Groups",           value: groups.length,                                                             cls: "text-blue" },
+          { label: "Active",                 value: groups.filter(g => g.status === "active").length,                         cls: "text-green" },
+          { label: "Rotation Coupled",       value: `${coupledLinks} / ${totalLinks} links`,                                  cls: "text-yellow" },
+          { label: "Disconnect on Misalign", value: `${disconnectable} link${disconnectable !== 1 ? "s" : ""}`,               cls: "text-red" },
         ].map(s => (
-          <div key={s.label} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 18px" }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 11, color: C.faint, marginTop: 2, textTransform: "uppercase", fontWeight: 600 }}>{s.label}</div>
+          <div key={s.label} className="bg-bg1 border border-border rounded-xl px-4 py-3.5">
+            <div className={`text-2xl font-bold ${s.cls}`}>{s.value}</div>
+            <div className="text-[11px] text-faint mt-0.5 uppercase font-semibold">{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* ── Coupling legend ── */}
-      <div style={{
-        display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16,
-        padding: "10px 14px", background: C.bg1, borderRadius: 10, border: `1px solid ${C.border}`,
-        alignItems: "center",
-      }}>
-        <span style={{ fontSize: 11, color: C.faint, fontWeight: 600, marginRight: 4 }}>ROTATION COUPLING:</span>
+      <div className="flex gap-2 flex-wrap mb-4 px-3.5 py-2.5 bg-bg1 rounded-xl border border-border items-center">
+        <span className="text-[11px] text-faint font-semibold mr-1">ROTATION COUPLING:</span>
         {Object.entries(COUPLING_META).map(([key, m]) => (
-          <span key={key} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11 }}>
-            <span style={{
-              background: alpha(m.color, 0.12), border: `1px solid ${alpha(m.color, 0.3)}`,
-              borderRadius: 20, padding: "1px 8px", color: m.color, fontWeight: 700,
-            }}>{m.symbol} {m.label}</span>
-            <span style={{ color: C.faint }}>{m.desc}</span>
-            <span style={{ color: C.border, margin: "0 4px" }}>·</span>
+          <span key={key} className="flex items-center gap-1 text-[11px]">
+            <span className="rounded-full px-2 py-0.5 font-bold"
+              style={{ background: alpha(m.color, 0.12), border: `1px solid ${alpha(m.color, 0.3)}`, color: m.color }}>
+              {m.symbol} {m.label}
+            </span>
+            <span className="text-faint">{m.desc}</span>
+            <span className="text-border mx-1">·</span>
           </span>
         ))}
       </div>
 
       {/* ── Table ── */}
       {loading ? (
-        <div style={{ textAlign: "center", padding: 48, color: C.muted }}>Loading…</div>
+        <div className="text-center py-12 text-muted">Loading…</div>
       ) : groups.length === 0 ? (
-        <div style={{ textAlign: "center", padding: 64, background: C.bg1, borderRadius: 14, border: `1px dashed ${C.border}` }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>🏟️</div>
-          <div style={{ color: C.text, fontWeight: 600, marginBottom: 6 }}>No floor groups yet</div>
-          <div style={{ color: C.muted, fontSize: 13, marginBottom: 20 }}>
+        <div className="text-center py-16 bg-bg1 rounded-2xl border border-dashed border-border">
+          <div className="text-3xl mb-3">🏟️</div>
+          <div className="text-text font-semibold mb-1.5">No floor groups yet</div>
+          <div className="text-muted text-sm mb-5">
             Create your first group to start linking arenas as floors.
           </div>
-          <Link to="/admin/arena-floor-groups/new" style={{ ...btn(C.blue), textDecoration: "none" }}>
+          <Link to="/admin/arena-floor-groups/new"
+            className="px-4 py-2 bg-blue text-white rounded-lg text-sm font-semibold no-underline">
             + New Floor Group
           </Link>
         </div>
       ) : (
-        <div style={{ background: C.bg1, borderRadius: 14, border: `1px solid ${C.border}`, overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+        <div className="bg-bg1 rounded-2xl border border-border overflow-hidden">
+          <table className="w-full border-collapse text-sm">
             <thead>
-              <tr style={{ borderBottom: `1px solid ${C.border}` }}>
+              <tr className="border-b border-border">
                 {["Name / ID", "Floors", "Arena Stack", "Links", "Rotation Coupling", "Alignment Health", "Status", ""].map(h => (
-                  <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase" }}>
+                  <th key={h} className="px-3.5 py-2.5 text-left text-[11px] text-faint font-semibold uppercase">
                     {h}
                   </th>
                 ))}
@@ -292,57 +279,48 @@ export default function ArenaFloorGroupListPage() {
             </thead>
             <tbody>
               {groups.map((g, i) => (
-                <tr key={g.id} style={{ borderBottom: i < groups.length - 1 ? `1px solid ${C.border}` : "none" }}>
+                <tr key={g.id} className={i < groups.length - 1 ? "border-b border-border" : ""}>
 
                   {/* Name */}
-                  <td style={{ padding: "13px 14px" }}>
-                    <div style={{ fontWeight: 600, color: C.text }}>{g.name ?? "Unnamed Group"}</div>
-                    <div style={{ fontSize: 11, color: C.faint, marginTop: 2, fontFamily: "monospace" }}>{g.id}</div>
+                  <td className="px-3.5 py-3">
+                    <div className="font-semibold text-text">{g.name ?? "Unnamed Group"}</div>
+                    <div className="text-[11px] text-faint mt-0.5 font-mono">{g.id}</div>
                   </td>
 
                   {/* Floor count pips */}
-                  <td style={{ padding: "13px 14px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <td className="px-3.5 py-3">
+                    <div className="flex items-center gap-1">
                       {Array.from({ length: 7 }).map((_, idx) => (
                         <div
                           key={idx}
                           title={idx < (g.floorArenaIds?.length ?? 0) ? `F${idx}` : "empty"}
-                          style={{
-                            width: 10, height: 10, borderRadius: 2,
-                            background: idx < (g.floorArenaIds?.length ?? 0) ? C.blue : C.bg3,
-                            border: `1px solid ${idx < (g.floorArenaIds?.length ?? 0) ? C.blue : C.border}`,
-                          }}
+                          className={`w-2.5 h-2.5 rounded-sm ${idx < (g.floorArenaIds?.length ?? 0) ? "bg-blue border-blue" : "bg-bg3 border-border"} border`}
                         />
                       ))}
-                      <span style={{ color: C.muted, fontSize: 11, marginLeft: 2 }}>
+                      <span className="text-muted text-[11px] ml-0.5">
                         {g.floorArenaIds?.length ?? 0}/7
                       </span>
                     </div>
-                    <div style={{ fontSize: 10, color: C.faint, marginTop: 3 }}>
+                    <div className="text-[10px] text-faint mt-0.5">
                       {(g.floorArenaIds?.length ?? 0) > 1
                         ? `F0 (ground) → F${(g.floorArenaIds?.length ?? 1) - 1} (top)`
                         : "—"}
                     </div>
                   </td>
 
-                  {/* Arena stack (first 3 floors with rotation chip) */}
-                  <td style={{ padding: "13px 14px" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                  {/* Arena stack (first 3 floors) */}
+                  <td className="px-3.5 py-3">
+                    <div className="flex flex-col gap-0.5">
                       {(g.floorArenaIds ?? []).slice(0, 3).map((id, fi) => (
-                        <div key={id} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                          <span style={{ fontSize: 10, color: C.faint, fontFamily: "monospace", minWidth: 14 }}>F{fi}</span>
-                          <span style={{
-                            fontSize: 11, color: C.text, background: C.bg2,
-                            border: `1px solid ${C.border}`, borderRadius: 4,
-                            padding: "1px 6px", maxWidth: 100,
-                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                          }}>
+                        <div key={id} className="flex items-center gap-1">
+                          <span className="text-[10px] text-faint font-mono min-w-[14px]">F{fi}</span>
+                          <span className="text-[11px] text-text bg-bg2 border border-border rounded px-1.5 py-0.5 max-w-[100px] overflow-hidden text-ellipsis whitespace-nowrap">
                             {id}
                           </span>
                         </div>
                       ))}
                       {(g.floorArenaIds?.length ?? 0) > 3 && (
-                        <span style={{ fontSize: 11, color: C.faint }}>
+                        <span className="text-[11px] text-faint">
                           +{(g.floorArenaIds?.length ?? 0) - 3} more
                         </span>
                       )}
@@ -350,53 +328,41 @@ export default function ArenaFloorGroupListPage() {
                   </td>
 
                   {/* Link types breakdown */}
-                  <td style={{ padding: "13px 14px" }}>
+                  <td className="px-3.5 py-3">
                     <LinkTypePills links={g.links} />
-                    <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>
+                    <div className="text-[11px] text-faint mt-1">
                       {g.linkCount ?? 0} link{(g.linkCount ?? 0) !== 1 ? "s" : ""}
                     </div>
                   </td>
 
                   {/* Rotation coupling diagram */}
-                  <td style={{ padding: "13px 14px" }}>
+                  <td className="px-3.5 py-3">
                     <CouplingModeCell links={g.links} />
                   </td>
 
                   {/* Alignment health */}
-                  <td style={{ padding: "13px 14px" }}>
+                  <td className="px-3.5 py-3">
                     <AlignmentHealthBar links={g.links} />
                   </td>
 
                   {/* Status */}
-                  <td style={{ padding: "13px 14px" }}>
-                    <span style={pill(g.status === "active" ? C.green : C.faint)}>
+                  <td className="px-3.5 py-3">
+                    <Badge color={g.status === "active" ? "green" : "faint"}>
                       {g.status ?? "draft"}
-                    </span>
+                    </Badge>
                   </td>
 
                   {/* Actions */}
-                  <td style={{ padding: "13px 14px" }}>
-                    <div style={{ display: "flex", gap: 6 }}>
+                  <td className="px-3.5 py-3">
+                    <div className="flex gap-1.5">
                       <Link
                         to={`/admin/arena-floor-groups/${g.id}`}
-                        style={{
-                          padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600,
-                          cursor: "pointer", textDecoration: "none",
-                          background: alpha(C.blue, 0.13), color: C.blue, border: `1px solid ${alpha(C.blue, 0.27)}`,
-                        }}
+                        className="px-2.5 py-1 rounded-md text-xs font-semibold no-underline text-blue"
+                        style={{ background: alpha(C.blue, 0.13), border: `1px solid ${alpha(C.blue, 0.27)}` }}
                       >
                         Edit
                       </Link>
-                      <button
-                        onClick={() => setConfirmDelete(g)}
-                        style={{
-                          padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600,
-                          cursor: "pointer", background: alpha(C.red, 0.13), color: C.red,
-                          border: `1px solid ${alpha(C.red, 0.27)}`,
-                        }}
-                      >
-                        Delete
-                      </button>
+                      <Button variant="danger" size="xs" onClick={() => setConfirmDelete(g)}>Delete</Button>
                     </div>
                   </td>
                 </tr>
@@ -408,23 +374,23 @@ export default function ArenaFloorGroupListPage() {
 
       {/* ── Delete modal ── */}
       {confirmDelete && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}>
-          <div style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 20, padding: 24, maxWidth: 380, width: "90%" }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: C.text, marginBottom: 8 }}>Delete Floor Group?</h3>
-            <p style={{ color: C.muted, fontSize: 14, marginBottom: 6 }}>
-              <strong style={{ color: C.text }}>{confirmDelete.name}</strong> will be permanently deleted.
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-bg2 border border-border rounded-2xl p-6 max-w-[380px] w-[90%]">
+            <h3 className="text-lg font-bold text-text mb-2">Delete Floor Group?</h3>
+            <p className="text-muted text-sm mb-1.5">
+              <strong className="text-text">{confirmDelete.name}</strong> will be permanently deleted.
             </p>
-            <p style={{ color: C.red, fontSize: 13, marginBottom: 8 }}>
+            <p className="text-red text-sm mb-2">
               ⚡ {confirmDelete.links?.filter(l => l.alignment?.disconnectsWhenMisaligned).length ?? 0} disconnect-on-misalign
               link{(confirmDelete.links?.filter(l => l.alignment?.disconnectsWhenMisaligned).length ?? 0) !== 1 ? "s" : ""} will be lost.
             </p>
-            <p style={{ color: C.faint, fontSize: 13, marginBottom: 24 }}>
+            <p className="text-faint text-sm mb-6">
               All {confirmDelete.floorArenaIds?.length ?? 0} floor slots and {confirmDelete.linkCount ?? 0} links
               will be removed. Arena docs themselves are not affected.
             </p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ ...btn(C.bg3), color: C.text }}>Cancel</button>
-              <button onClick={() => handleDelete(confirmDelete)} style={{ ...btn(C.red), color: "#fff" }}>Delete</button>
+            <div className="flex gap-2.5 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+              <Button variant="danger" size="sm" onClick={() => handleDelete(confirmDelete)}>Delete</Button>
             </div>
           </div>
         </div>

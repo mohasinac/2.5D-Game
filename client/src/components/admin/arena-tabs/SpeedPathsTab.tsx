@@ -37,16 +37,17 @@ function numInput(val: number | undefined, def: number, onChange: (n: number) =>
   return (
     <input type="number" value={val ?? def} step={step}
       onChange={e => onChange(Number(e.target.value))}
-      style={{ width, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "3px 6px", fontSize: 11 }}
+      className="bg-bg1 border border-border text-text rounded-md py-[3px] px-1.5 text-[11px]"
+      style={{ width }}
     />
   );
 }
 
 function SectionHeader({ label, open, toggle }: { label: string; open: boolean; toggle: () => void }) {
   return (
-    <div onClick={toggle} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", padding: "5px 0", borderBottom: `1px solid ${C.border}`, marginBottom: 6 }}>
-      <span style={{ fontSize: 11, fontWeight: 600, color: C.muted }}>{label}</span>
-      <span style={{ color: C.faint, fontSize: 10 }}>{open ? "▲" : "▼"}</span>
+    <div onClick={toggle} className="flex justify-between items-center cursor-pointer py-[5px] border-b border-border mb-1.5">
+      <span className="text-[11px] font-semibold text-muted">{label}</span>
+      <span className="text-faint text-[10px]">{open ? "▲" : "▼"}</span>
     </div>
   );
 }
@@ -120,39 +121,42 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
 
   return (
     <CollapsibleSection title="Speed Paths" badge={paths.length} storageKey="arena-speedpaths-list" defaultOpen={true}>
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 13, color: C.muted }}>{paths.length} / 5 speed paths</span>
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between items-center">
+        <span className="text-[13px] text-muted">{paths.length} / 5 speed paths</span>
         <button onClick={add} disabled={paths.length >= 5}
-          style={{ padding: "5px 14px", background: C.yellow, color: "#000", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer", opacity: paths.length >= 5 ? 0.4 : 1 }}>
+          className="py-[5px] px-[14px] bg-yellow text-bg0 border-none rounded-md text-xs font-medium cursor-pointer"
+          style={{ opacity: paths.length >= 5 ? 0.4 : 1 }}>
           + Add Path
         </button>
       </div>
 
       {paths.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px 0", color: C.faint }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>⚡</div>
+        <div className="text-center py-10 text-faint">
+          <div className="text-[32px] mb-2">⚡</div>
           <p>No speed paths yet. Speed paths boost beyblades that travel along them.</p>
         </div>
       )}
 
       {paths.map((path, idx) => (
-        <div key={path.id ?? idx} style={{ background: C.bg3, borderRadius: 12, padding: 16, border: `1px solid ${C.border}` }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: C.text }}>⚡ Speed Path #{idx + 1}</span>
-            <button onClick={() => remove(path.id)} style={{ color: C.red, background: "none", border: "none", fontSize: 12, cursor: "pointer" }}>Remove</button>
+        <div key={path.id ?? idx} className="bg-bg3 rounded-xl p-4 border border-border">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-[13px] font-medium text-text">⚡ Speed Path #{idx + 1}</span>
+            <button onClick={() => remove(path.id)} className="text-red bg-transparent border-none text-xs cursor-pointer">Remove</button>
           </div>
 
           {/* Shape selector */}
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 6 }}>Path Shape</label>
-            <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+          <div className="mb-3">
+            <label className="block text-[11px] text-faint mb-1.5">Path Shape</label>
+            <div className="flex gap-1 flex-wrap">
               {ALL_SHAPES.map(s => (
                 <button key={s} onClick={() => update(path.id, "shape", s)}
-                  style={{ padding: "3px 8px", borderRadius: 5, fontSize: 11, cursor: "pointer",
+                  className="py-[3px] px-2 rounded text-[11px] cursor-pointer border"
+                  style={{
                     background: path.shape === s ? C.yellow : C.bg2,
                     color: path.shape === s ? "#000" : C.muted,
-                    border: `1px solid ${path.shape === s ? C.yellow : C.border}` }}>
+                    borderColor: path.shape === s ? C.yellow : C.border,
+                  }}>
                   {s}
                 </button>
               ))}
@@ -161,68 +165,72 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
 
           {/* Shape-specific params */}
           {path.shape === "spiral" && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Turns</label>
+            <div className="grid grid-cols-2 gap-2 mb-2.5">
+              <div className="flex items-center gap-1.5">
+                <label className="text-[11px] text-faint min-w-[70px]">Turns</label>
                 {numInput(path.spiralTurns, 2, v => update(path.id, "spiralTurns", v), 0.5)}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Inner Radius (em)</label>
+              <div className="flex items-center gap-1.5">
+                <label className="text-[11px] text-faint min-w-[70px]">Inner Radius (em)</label>
                 {numInput(path.spiralInnerRadius, 3, v => update(path.id, "spiralInnerRadius", v), 0.5)}
               </div>
             </div>
           )}
           {path.shape === "figure_8" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
-              <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Lobe Width (em)</label>
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <label className="text-[11px] text-faint min-w-[90px]">Lobe Width (em)</label>
               {numInput(path.figure8LobeWidth, 5, v => update(path.id, "figure8LobeWidth", v), 0.5)}
             </div>
           )}
           {path.shape === "custom_bezier" && (
-            <div style={{ marginBottom: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                <label style={{ fontSize: 11, color: C.faint }}>Bezier Control Points (em)</label>
-                <button onClick={() => addBezierPt(path)} style={{ fontSize: 10, padding: "1px 6px", background: C.yellow, color: "#000", border: "none", borderRadius: 4, cursor: "pointer" }}>+ Point</button>
+            <div className="mb-2.5">
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-[11px] text-faint">Bezier Control Points (em)</label>
+                <button onClick={() => addBezierPt(path)}
+                  className="text-[10px] py-[1px] px-1.5 bg-yellow text-bg0 border-none rounded cursor-pointer">+ Point</button>
               </div>
               {(path.bezierControlPoints ?? []).map((pt, i) => (
-                <div key={i} style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 4 }}>
-                  <label style={{ fontSize: 10, color: C.faint, minWidth: 10 }}>X</label>
+                <div key={i} className="flex gap-1.5 items-center mb-1">
+                  <label className="text-[10px] text-faint min-w-[10px]">X</label>
                   {numInput(pt.x, 0, v => patchBezierPt(path, i, "x", v), 0.5, 60)}
-                  <label style={{ fontSize: 10, color: C.faint, minWidth: 10 }}>Y</label>
+                  <label className="text-[10px] text-faint min-w-[10px]">Y</label>
                   {numInput(pt.y, 0, v => patchBezierPt(path, i, "y", v), 0.5, 60)}
-                  <button onClick={() => removeBezierPt(path, i)} style={{ color: C.red, background: "none", border: "none", fontSize: 11, cursor: "pointer" }}>✕</button>
+                  <button onClick={() => removeBezierPt(path, i)} className="text-red bg-transparent border-none text-[11px] cursor-pointer">✕</button>
                 </div>
               ))}
             </div>
           )}
 
           {/* Common sliders */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+          <div className="grid grid-cols-2 gap-2.5 mb-2.5">
             {SPEED_FIELDS.map(({ field, label, min, max, step }) => (
               <div key={field}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+                <div className="flex justify-between text-[11px] text-faint mb-0.5">
                   <span>{label}</span>
-                  <span style={{ color: C.text, fontFamily: "monospace" }}>{(path as any)[field] ?? min}</span>
+                  <span className="text-text font-mono">{(path as any)[field] ?? min}</span>
                 </div>
                 <input type="range" min={min} max={max} step={step}
                   value={(path as any)[field] ?? min}
                   onChange={e => update(path.id, field, +e.target.value)}
-                  style={{ width: "100%", accentColor: C.yellow }}
+                  className="w-full"
+                  style={{ accentColor: C.yellow }}
                 />
               </div>
             ))}
           </div>
 
           {/* Render style */}
-          <div style={{ marginBottom: 10 }}>
-            <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Render Style</label>
-            <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+          <div className="mb-2.5">
+            <label className="block text-[11px] text-faint mb-1">Render Style</label>
+            <div className="flex gap-1 flex-wrap">
               {RENDER_STYLES.map(rs => (
                 <button key={rs} onClick={() => update(path.id, "renderStyle", rs)}
-                  style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
+                  className="py-[2px] px-[7px] rounded text-[10px] cursor-pointer border"
+                  style={{
                     background: (path.renderStyle ?? "outline") === rs ? C.yellow : "transparent",
                     color: (path.renderStyle ?? "outline") === rs ? "#000" : C.muted,
-                    border: `1px solid ${(path.renderStyle ?? "outline") === rs ? C.yellow : C.border}` }}>
+                    borderColor: (path.renderStyle ?? "outline") === rs ? C.yellow : C.border,
+                  }}>
                   {rs}
                 </button>
               ))}
@@ -230,18 +238,19 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
           </div>
 
           {/* Breaks section */}
-          <div style={{ background: C.bg2, borderRadius: 8, padding: 10, marginBottom: 8 }}>
+          <div className="bg-bg2 rounded-lg p-2.5 mb-2">
             <SectionHeader label={`Path Breaks (${path.breaks?.length ?? 0})`} open={isOpen(path.id, "breaks")} toggle={() => toggleSection(path.id, "breaks")} />
             {isOpen(path.id, "breaks") && (
               <>
-                <button onClick={() => addBreak(path)} style={{ fontSize: 10, padding: "2px 8px", background: C.yellow, color: "#000", border: "none", borderRadius: 4, cursor: "pointer", marginBottom: 6 }}>+ Break</button>
+                <button onClick={() => addBreak(path)}
+                  className="text-[10px] py-[2px] px-2 bg-yellow text-bg0 border-none rounded cursor-pointer mb-1.5">+ Break</button>
                 {(path.breaks ?? []).map((br, i) => (
-                  <div key={i} style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 4 }}>
-                    <label style={{ fontSize: 11, color: C.faint, minWidth: 55 }}>Position (0–1)</label>
+                  <div key={i} className="flex gap-2.5 items-center mb-1">
+                    <label className="text-[11px] text-faint min-w-[55px]">Position (0–1)</label>
                     {numInput(br.position, 0.5, v => patchBreak(path, i, "position", Math.min(1, Math.max(0, v))), 0.01)}
-                    <label style={{ fontSize: 11, color: C.faint, minWidth: 48 }}>Length (0–0.5)</label>
+                    <label className="text-[11px] text-faint min-w-[48px]">Length (0–0.5)</label>
                     {numInput(br.length, 0.05, v => patchBreak(path, i, "length", Math.min(0.5, Math.max(0, v))), 0.01)}
-                    <button onClick={() => removeBreak(path, i)} style={{ color: C.red, background: "none", border: "none", fontSize: 11, cursor: "pointer" }}>✕</button>
+                    <button onClick={() => removeBreak(path, i)} className="text-red bg-transparent border-none text-[11px] cursor-pointer">✕</button>
                   </div>
                 ))}
               </>
@@ -249,54 +258,57 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
           </div>
 
           {/* Charge Points section */}
-          <div style={{ background: C.bg2, borderRadius: 8, padding: 10, marginBottom: 8 }}>
+          <div className="bg-bg2 rounded-lg p-2.5 mb-2">
             <SectionHeader label="Charge Points" open={isOpen(path.id, "cps")} toggle={() => toggleSection(path.id, "cps")} />
             {isOpen(path.id, "cps") && (
               <>
-                <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
-                  <label style={{ display: "flex", gap: 5, alignItems: "center", fontSize: 11, color: C.muted, cursor: "pointer" }}>
+                <div className="flex gap-2 items-center mb-2">
+                  <label className="flex gap-[5px] items-center text-[11px] text-muted cursor-pointer">
                     <input type="checkbox" checked={path.autoPlaceChargePoints ?? false}
                       onChange={e => update(path.id, "autoPlaceChargePoints", e.target.checked)} />
                     Auto-Place
                   </label>
                   {path.autoPlaceChargePoints && (
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <label style={{ fontSize: 11, color: C.faint }}>Count (1–3)</label>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-[11px] text-faint">Count (1–3)</label>
                       {numInput(path.chargePointCount, 3, v => update(path.id, "chargePointCount", Math.min(3, Math.max(1, Math.round(v)))), 1, 50)}
                     </div>
                   )}
                 </div>
                 {!path.autoPlaceChargePoints && (
                   <>
-                    <button onClick={() => addCP(path)} style={{ fontSize: 10, padding: "2px 8px", background: C.yellow, color: "#000", border: "none", borderRadius: 4, cursor: "pointer", marginBottom: 6 }}>+ Charge Point</button>
+                    <button onClick={() => addCP(path)}
+                      className="text-[10px] py-[2px] px-2 bg-yellow text-bg0 border-none rounded cursor-pointer mb-1.5">+ Charge Point</button>
                     {(path.chargePoints ?? []).map((cp, i) => (
-                      <div key={i} style={{ background: C.bg1, borderRadius: 6, padding: 8, marginBottom: 6 }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, marginBottom: 4 }}>
+                      <div key={i} className="bg-bg1 rounded-md p-2 mb-1.5">
+                        <div className="grid grid-cols-3 gap-1.5 mb-1">
                           <div>
-                            <label style={{ display: "block", fontSize: 10, color: C.faint, marginBottom: 2 }}>Position (0–100%)</label>
+                            <label className="block text-[10px] text-faint mb-0.5">Position (0–100%)</label>
                             {numInput(cp.pathPosition, 50, v => patchCP(path, i, { pathPosition: Math.min(100, Math.max(0, v)) }), 1)}
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: 10, color: C.faint, marginBottom: 2 }}>Dash Speed ×</label>
+                            <label className="block text-[10px] text-faint mb-0.5">Dash Speed ×</label>
                             {numInput(cp.dashSpeed, 2, v => patchCP(path, i, { dashSpeed: v }), 0.1)}
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: 10, color: C.faint, marginBottom: 2 }}>Button (1–3)</label>
+                            <label className="block text-[10px] text-faint mb-0.5">Button (1–3)</label>
                             {numInput(cp.buttonId, 1, v => patchCP(path, i, { buttonId: Math.min(3, Math.max(1, Math.round(v))) as 1|2|3 }), 1, 50)}
                           </div>
                         </div>
-                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                          <label style={{ fontSize: 10, color: C.faint }}>Target</label>
+                        <div className="flex gap-2 items-center">
+                          <label className="text-[10px] text-faint">Target</label>
                           {(["center", "opponent"] as const).map(t => (
                             <button key={t} onClick={() => patchCP(path, i, { target: t })}
-                              style={{ padding: "1px 6px", borderRadius: 4, fontSize: 10, cursor: "pointer",
+                              className="py-[1px] px-1.5 rounded text-[10px] cursor-pointer border"
+                              style={{
                                 background: cp.target === t ? C.yellow : "transparent",
                                 color: cp.target === t ? "#000" : C.muted,
-                                border: `1px solid ${cp.target === t ? C.yellow : C.border}` }}>
+                                borderColor: cp.target === t ? C.yellow : C.border,
+                              }}>
                               {t}
                             </button>
                           ))}
-                          <button onClick={() => removeCP(path, i)} style={{ marginLeft: "auto", color: C.red, background: "none", border: "none", fontSize: 10, cursor: "pointer" }}>Remove</button>
+                          <button onClick={() => removeCP(path, i)} className="ml-auto text-red bg-transparent border-none text-[10px] cursor-pointer">Remove</button>
                         </div>
                       </div>
                     ))}
@@ -307,30 +319,31 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
           </div>
 
           {/* Direction Arrows section */}
-          <div style={{ background: C.bg2, borderRadius: 8, padding: 10, marginBottom: 8 }}>
+          <div className="bg-bg2 rounded-lg p-2.5 mb-2">
             <SectionHeader label="Direction Arrows" open={isOpen(path.id, "arrows")} toggle={() => toggleSection(path.id, "arrows")} />
             {isOpen(path.id, "arrows") && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 11, color: C.muted, cursor: "pointer" }}>
+              <div className="flex flex-col gap-2">
+                <label className="flex gap-1.5 items-center text-[11px] text-muted cursor-pointer">
                   <input type="checkbox" checked={path.showDirectionArrows ?? false}
                     onChange={e => update(path.id, "showDirectionArrows", e.target.checked)} />
                   Show Direction Arrows
                 </label>
                 {path.showDirectionArrows && (
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Speed (cm/s)</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-[11px] text-faint min-w-[70px]">Speed (cm/s)</label>
                       {numInput(path.arrowSpeedCmPerSec, 20, v => update(path.id, "arrowSpeedCmPerSec", v), 1)}
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Spacing (cm)</label>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-[11px] text-faint min-w-[60px]">Spacing (cm)</label>
                       {numInput(path.arrowSpacingCm, 5, v => update(path.id, "arrowSpacingCm", v), 0.5)}
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <label style={{ fontSize: 11, color: C.faint, minWidth: 40 }}>Color</label>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-[11px] text-faint min-w-[40px]">Color</label>
                       <input type="color" value={path.arrowColor ?? "#ffcc00"}
                         onChange={e => update(path.id, "arrowColor", e.target.value)}
-                        style={{ width: 40, height: 26, cursor: "pointer", border: `1px solid ${C.border}`, borderRadius: 4 }} />
+                        className="w-10 h-[26px] cursor-pointer border border-border rounded"
+                      />
                     </div>
                   </div>
                 )}
@@ -339,23 +352,24 @@ export default function SpeedPathsTab({ config, onChange }: Props) {
           </div>
 
           {/* Bump/Ridge profiles */}
-          <div style={{ background: C.bg2, borderRadius: 8, padding: 10 }}>
+          <div className="bg-bg2 rounded-lg p-2.5">
             <SectionHeader label="Bump / Ridge Profiles (Advanced)" open={isOpen(path.id, "profiles")} toggle={() => toggleSection(path.id, "profiles")} />
             {isOpen(path.id, "profiles") && (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div className="grid grid-cols-2 gap-3">
                 {(["bumpProfile", "ridgeProfile"] as const).map(field => (
                   <div key={field}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                      <label style={{ fontSize: 11, color: C.faint }}>{field === "bumpProfile" ? "Bump Profile" : "Ridge Profile"}</label>
-                      <button onClick={() => addProfile(path, field)} style={{ fontSize: 10, padding: "1px 6px", background: C.yellow, color: "#000", border: "none", borderRadius: 4, cursor: "pointer" }}>+ Entry</button>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="text-[11px] text-faint">{field === "bumpProfile" ? "Bump Profile" : "Ridge Profile"}</label>
+                      <button onClick={() => addProfile(path, field)}
+                        className="text-[10px] py-[1px] px-1.5 bg-yellow text-bg0 border-none rounded cursor-pointer">+ Entry</button>
                     </div>
                     {((path as any)[field] ?? []).map((entry: any, i: number) => (
-                      <div key={i} style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 4 }}>
-                        <label style={{ fontSize: 10, color: C.faint, minWidth: 40 }}>Pos</label>
+                      <div key={i} className="flex gap-1.5 items-center mb-1">
+                        <label className="text-[10px] text-faint min-w-[40px]">Pos</label>
                         {numInput(entry.positionFrac, 0.5, v => patchProfile(path, field, i, "positionFrac", Math.min(1, Math.max(0, v))), 0.01, 55)}
-                        <label style={{ fontSize: 10, color: C.faint, minWidth: 40 }}>H (cm)</label>
+                        <label className="text-[10px] text-faint min-w-[40px]">H (cm)</label>
                         {numInput(entry.heightCm, 1, v => patchProfile(path, field, i, "heightCm", v), 0.1, 55)}
-                        <button onClick={() => removeProfile(path, field, i)} style={{ color: C.red, background: "none", border: "none", fontSize: 11, cursor: "pointer" }}>✕</button>
+                        <button onClick={() => removeProfile(path, field, i)} className="text-red bg-transparent border-none text-[11px] cursor-pointer">✕</button>
                       </div>
                     ))}
                   </div>

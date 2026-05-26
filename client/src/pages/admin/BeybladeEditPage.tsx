@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -10,7 +10,11 @@ import { useSpecialMoves } from "@/hooks/useSpecialMoves";
 import { useAssetLibrary } from "@/hooks/useAssetLibrary";
 import { KEY_LABEL } from "@/constants/combos";
 import toast from "react-hot-toast";
-import { C, S } from "@/styles/theme";
+import { C } from "@/styles/theme";
+
+const LBL = "block text-xs text-muted mb-1.5";
+const INP: React.CSSProperties = { width: "100%", background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 12px", color: "var(--text)", fontSize: 13 };
+const SEC_TITLE = "text-[11px] font-semibold text-muted uppercase tracking-[0.08em] mb-3";
 import WhatsAppStyleImageEditor from "@/components/admin/WhatsAppStyleImageEditor";
 import ImageCropper from "@/components/admin/ImageCropper";
 import type { ImageCropperRef } from "@/components/admin/ImageCropper";
@@ -179,14 +183,14 @@ export function BeybladeEditPage() {
         <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {/* Basic Info */}
           <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
-            <div style={S.sectionTitle}>Basic Info</div>
+            <div className={SEC_TITLE}>Basic Info</div>
             <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
               <div>
-                <label style={S.label}>Display Name</label>
-                <input type="text" value={beyblade.displayName} onChange={e => set("displayName",e.target.value)} style={S.input} />
+                <label className={LBL}>Display Name</label>
+                <input type="text" value={beyblade.displayName} onChange={e => set("displayName",e.target.value)} style={INP} />
               </div>
               <div>
-                <label style={S.label}>Beyblade Type</label>
+                <label className={LBL}>Beyblade Type</label>
                 <div style={{ display:"flex", gap:6 }}>
                   {([
                     { value: "attack",   label: "Attack",   color: C.red },
@@ -204,7 +208,7 @@ export function BeybladeEditPage() {
                 </div>
               </div>
               <div>
-                <label style={S.label}>Spin Direction</label>
+                <label className={LBL}>Spin Direction</label>
                 <div style={{ display:"flex", gap:6 }}>
                   {(["right","left"] as const).map(dir => (
                     <button key={dir} onClick={() => set("spinDirection",dir)} style={{
@@ -218,12 +222,12 @@ export function BeybladeEditPage() {
               </div>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
                 <div>
-                  <label style={S.label}>Mass (g)</label>
-                  <input type="number" min={30} max={80} value={beyblade.mass} onChange={e => set("mass",+e.target.value)} style={S.input} />
+                  <label className={LBL}>Mass (g)</label>
+                  <input type="number" min={30} max={80} value={beyblade.mass} onChange={e => set("mass",+e.target.value)} style={INP} />
                 </div>
                 <div>
-                  <label style={S.label}>Radius (cm)</label>
-                  <input type="number" min={2} max={7} step={0.5} value={beyblade.radius} onChange={e => set("radius",+e.target.value)} style={S.input} />
+                  <label className={LBL}>Radius (cm)</label>
+                  <input type="number" min={2} max={7} step={0.5} value={beyblade.radius} onChange={e => set("radius",+e.target.value)} style={INP} />
                 </div>
               </div>
             </div>
@@ -231,7 +235,7 @@ export function BeybladeEditPage() {
 
           {/* Sprite Image */}
           <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
-            <div style={S.sectionTitle}>Sprite Image</div>
+            <div className={SEC_TITLE}>Sprite Image</div>
             <div style={{ display:"flex", alignItems:"flex-start", gap:16 }}>
               <div style={{ width:80, height:80, borderRadius:"50%", background:C.bg1, border:`1px solid ${C.border}`, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", flexShrink:0 }}>
                 {imagePreview ? <img src={imagePreview} alt="Preview" style={{ width:"100%", height:"100%", objectFit:"contain" }} /> : <span style={{ fontSize:24, color:C.faint }}>🌀</span>}
@@ -259,7 +263,7 @@ export function BeybladeEditPage() {
           {/* Type Distribution */}
           <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-              <div style={S.sectionTitle}>Type Distribution</div>
+              <div className={SEC_TITLE}>Type Distribution</div>
               <span style={{ fontSize:12, fontFamily:"monospace", fontWeight:700, color: remaining===0 ? C.green : remaining<0 ? C.red : C.yellow }}>
                 {remaining>0 ? `${remaining} left` : remaining<0 ? `${Math.abs(remaining)} over!` : "✓ Balanced"}
               </span>
@@ -353,17 +357,17 @@ export function BeybladeEditPage() {
             <div style={{ fontSize:14, fontWeight:600, color:C.text, marginBottom:12 }}>Advanced Physics</div>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
               <div>
-                <label style={S.label}>Jump Force (N)</label>
-                <input type="number" min={0} step={0.5} value={(beyblade as any).jumpForce ?? 0} onChange={e => set("jumpForce" as any, parseFloat(e.target.value) || 0)} style={S.input} />
+                <label className={LBL}>Jump Force (N)</label>
+                <input type="number" min={0} step={0.5} value={(beyblade as any).jumpForce ?? 0} onChange={e => set("jumpForce" as any, parseFloat(e.target.value) || 0)} style={INP} />
                 <p style={{ fontSize:11, color:C.faint, marginTop:2 }}>0 = not jump-capable</p>
               </div>
               <div>
-                <label style={S.label}>Jump Height (cm)</label>
-                <input type="number" min={0} step={1} value={(beyblade as any).jumpHeight ?? 0} onChange={e => set("jumpHeight" as any, parseFloat(e.target.value) || 0)} style={S.input} />
+                <label className={LBL}>Jump Height (cm)</label>
+                <input type="number" min={0} step={1} value={(beyblade as any).jumpHeight ?? 0} onChange={e => set("jumpHeight" as any, parseFloat(e.target.value) || 0)} style={INP} />
               </div>
               <div>
-                <label style={S.label}>Burst Resistance (0–100)</label>
-                <input type="number" min={0} max={100} step={1} value={(beyblade as any).burstResistance ?? 0} onChange={e => set("burstResistance" as any, Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))} style={S.input} />
+                <label className={LBL}>Burst Resistance (0–100)</label>
+                <input type="number" min={0} max={100} step={1} value={(beyblade as any).burstResistance ?? 0} onChange={e => set("burstResistance" as any, Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))} style={INP} />
                 <p style={{ fontSize:11, color:C.faint, marginTop:2 }}>Higher = harder to burst</p>
               </div>
             </div>
@@ -375,7 +379,7 @@ export function BeybladeEditPage() {
 
             {/* Special Move */}
             <div style={{ marginBottom:16 }}>
-              <label style={S.label}>Special Move</label>
+              <label className={LBL}>Special Move</label>
               <SearchableSelect
                 value={(beyblade as any).specialMoveId ?? ""}
                 disabled={specialMovesLoading}
@@ -393,7 +397,7 @@ export function BeybladeEditPage() {
 
             {/* BitBeast */}
             <div style={{ marginBottom: 16 }}>
-              <label style={S.label}>BitBeast</label>
+              <label className={LBL}>BitBeast</label>
               <SearchableSelect
                 value={(beyblade as any).bitBeastId ?? ""}
                 disabled={bitBeastsLoading}
@@ -407,7 +411,7 @@ export function BeybladeEditPage() {
 
             {/* Combo IDs */}
             <div>
-              <label style={S.label}>Attached Combos <span style={{ fontWeight:400, color:C.faint }}>(max 3)</span></label>
+              <label className={LBL}>Attached Combos <span style={{ fontWeight:400, color:C.faint }}>(max 3)</span></label>
               <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:8 }}>
                 {((beyblade as any).comboIds as string[] ?? []).map((cid: string) => {
                   const combo = combos.find(c => c.id === cid);

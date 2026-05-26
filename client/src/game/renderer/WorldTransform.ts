@@ -45,7 +45,7 @@ export class WorldTransform {
   setScreen(w: number, h: number) {
     this.screenW = w;
     this.screenH = h;
-    recomputePxPerCm();
+    recomputePxPerCm(w, h);
   }
 
   setArenaBounds(minX_cm: number, minY_cm: number, maxX_cm: number, maxY_cm: number, allowFreePan = false) {

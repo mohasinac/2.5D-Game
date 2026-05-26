@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { ArenaSystem } from "@/types/arenaSystem";
-import { C } from "@/styles/theme";
 import { ArenaSystemPreview } from "./ArenaSystemPreview";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import { PX_PER_CM_BASE } from "@/constants/units";
+import { TabDropdown } from "@/components/ui/TabDropdown";
 
 interface Props {
   arenaSystem: ArenaSystem;
@@ -32,102 +32,68 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
 
   return (
     <div>
-      {/* Tab bar */}
-      <div style={{ display: "flex", gap: 4, marginBottom: 16, borderBottom: `1px solid ${C.border}`, paddingBottom: 12 }}>
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              padding: "8px 12px",
-              background: activeTab === tab.id ? C.blue : "transparent",
-              color: activeTab === tab.id ? C.white : C.muted,
-              border: activeTab === tab.id ? "none" : `1px solid ${C.border}`,
-              borderRadius: 4,
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 150ms",
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Tab dropdown */}
+      <div className="mb-4 border-b border-border pb-3">
+        <TabDropdown
+          tabs={tabs.map(t => ({ key: t.id, label: t.label }))}
+          value={activeTab}
+          onChange={(k) => setActiveTab(k as EditorTab)}
+        />
       </div>
 
       {/* Overview Tab */}
       {activeTab === "overview" && (
-        <div style={{ background: C.bg1, borderRadius: 8, border: `1px solid ${C.border}`, padding: 16 }}>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+        <div className="bg-bg1 rounded-lg border border-border p-4">
+          <div className="mb-4">
+            <label className="text-text text-xs font-semibold block mb-1">
               Display Name
             </label>
             <input
               type="text"
               value={arenaSystem.displayName}
               onChange={(e) => updateArena({ displayName: e.target.value })}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                background: C.bg0,
-                color: C.text,
-                border: `1px solid ${C.border}`,
-                borderRadius: 4,
-                fontSize: 12,
-              }}
+              className="w-full px-3 py-2 bg-bg0 text-text border border-border rounded text-xs"
             />
           </div>
 
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+          <div className="mb-4">
+            <label className="text-text text-xs font-semibold block mb-1">
               Description
             </label>
             <textarea
               value={arenaSystem.description || ""}
               onChange={(e) => updateArena({ description: e.target.value })}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                background: C.bg0,
-                color: C.text,
-                border: `1px solid ${C.border}`,
-                borderRadius: 4,
-                fontSize: 12,
-                minHeight: 60,
-                fontFamily: "monospace",
-              }}
+              className="w-full px-3 py-2 bg-bg0 text-text border border-border rounded text-xs min-h-[60px] font-mono resize-y"
             />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+          <div className="grid grid-cols-2 gap-3 mb-4">
             <div>
-              <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+              <label className="text-text text-xs font-semibold block mb-1">
                 Shape
               </label>
               <SearchableSelect
                 value={arenaSystem.shape}
                 options={[{ value: "circle", label: "Circle" }, { value: "hexagon", label: "Hexagon" }, { value: "rectangle", label: "Rectangle" }]}
                 onChange={(v) => updateArena({ shape: v as any })}
-                style={{ width: "100%", background: C.bg0, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontSize: 12 }}
               />
             </div>
 
             <div>
-              <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+              <label className="text-text text-xs font-semibold block mb-1">
                 Difficulty
               </label>
               <SearchableSelect
                 value={arenaSystem.difficulty || "medium"}
                 options={[{ value: "easy", label: "Easy" }, { value: "medium", label: "Medium" }, { value: "hard", label: "Hard" }, { value: "extreme", label: "Extreme" }]}
                 onChange={(v) => updateArena({ difficulty: v as any })}
-                style={{ width: "100%", background: C.bg0, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontSize: 12 }}
               />
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 4 }}>
+          <div className="grid grid-cols-2 gap-3 mb-1">
             <div>
-              <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+              <label className="text-text text-xs font-semibold block mb-1">
                 Width (cm)
               </label>
               <input
@@ -135,20 +101,12 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
                 min={10} max={100} step={1}
                 value={Math.round(arenaSystem.width / PX_PER_CM_BASE)}
                 onChange={(e) => updateArena({ width: Math.round(Math.max(10, parseFloat(e.target.value) || 10) * PX_PER_CM_BASE) })}
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  background: C.bg0,
-                  color: C.text,
-                  border: `1px solid ${C.border}`,
-                  borderRadius: 4,
-                  fontSize: 12,
-                }}
+                className="w-full px-3 py-2 bg-bg0 text-text border border-border rounded text-xs"
               />
             </div>
 
             <div>
-              <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+              <label className="text-text text-xs font-semibold block mb-1">
                 Height (cm)
               </label>
               <input
@@ -156,31 +114,22 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
                 min={10} max={100} step={1}
                 value={Math.round(arenaSystem.height / PX_PER_CM_BASE)}
                 onChange={(e) => updateArena({ height: Math.round(Math.max(10, parseFloat(e.target.value) || 10) * PX_PER_CM_BASE) })}
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  background: C.bg0,
-                  color: C.text,
-                  border: `1px solid ${C.border}`,
-                  borderRadius: 4,
-                  fontSize: 12,
-                }}
+                className="w-full px-3 py-2 bg-bg0 text-text border border-border rounded text-xs"
               />
             </div>
           </div>
-          <p style={{ fontSize: 11, color: C.faint, marginBottom: 16 }}>
+          <p className="text-[11px] text-faint mb-4">
             Stored as {arenaSystem.width} × {arenaSystem.height} px internally
           </p>
 
           <div>
-            <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+            <label className="text-text text-xs font-semibold block mb-1">
               Theme
             </label>
             <SearchableSelect
               value={arenaSystem.theme}
               options={["volcano","mountains","sea","forest","stone","ice","grass","space"].map(t => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) }))}
               onChange={(v) => updateArena({ theme: v as any })}
-              style={{ width: "100%", background: C.bg0, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontSize: 12 }}
             />
           </div>
         </div>
@@ -188,22 +137,21 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
 
       {/* Elevation Tab */}
       {activeTab === "elevation" && (
-        <div style={{ background: C.bg1, borderRadius: 8, border: `1px solid ${C.border}`, padding: 16 }}>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+        <div className="bg-bg1 rounded-lg border border-border p-4">
+          <div className="mb-4">
+            <label className="text-text text-xs font-semibold block mb-1">
               Elevation Type
             </label>
             <SearchableSelect
               value={arenaSystem.elevationMap.type}
               options={[{ value: "flat", label: "Flat" }, { value: "bowl", label: "Bowl" }, { value: "ramp", label: "Ramp" }, { value: "pyramid", label: "Pyramid" }]}
               onChange={(v) => updateArena({ elevationMap: { ...arenaSystem.elevationMap, type: v as any } })}
-              style={{ width: "100%", background: C.bg0, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontSize: 12 }}
             />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+              <label className="text-text text-xs font-semibold block mb-1">
                 Tilt Angle: {arenaSystem.elevationMap.tiltAngle}°
               </label>
               <input
@@ -219,12 +167,12 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
                     },
                   })
                 }
-                style={{ width: "100%" }}
+                className="w-full"
               />
             </div>
 
             <div>
-              <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+              <label className="text-text text-xs font-semibold block mb-1">
                 Tilt Direction: {arenaSystem.elevationMap.tiltDirection}°
               </label>
               <input
@@ -240,7 +188,7 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
                     },
                   })
                 }
-                style={{ width: "100%" }}
+                className="w-full"
               />
             </div>
           </div>
@@ -249,9 +197,9 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
 
       {/* Wall Profile Tab */}
       {activeTab === "wall" && (
-        <div style={{ background: C.bg1, borderRadius: 8, border: `1px solid ${C.border}`, padding: 16 }}>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+        <div className="bg-bg1 rounded-lg border border-border p-4">
+          <div className="mb-4">
+            <label className="text-text text-xs font-semibold block mb-1">
               Base Height (mm): {arenaSystem.wallProfile.baseHeight}
             </label>
             <input
@@ -264,18 +212,18 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
                   wallProfile: { ...arenaSystem.wallProfile, baseHeight: parseInt(e.target.value) },
                 })
               }
-              style={{ width: "100%" }}
+              className="w-full"
             />
           </div>
-          <p style={{ color: C.muted, fontSize: 11, marginTop: 8 }}>Custom wall height segments coming soon</p>
+          <p className="text-muted text-[11px] mt-2">Custom wall height segments coming soon</p>
         </div>
       )}
 
       {/* Slope Physics Tab */}
       {activeTab === "physics" && (
-        <div style={{ background: C.bg1, borderRadius: 8, border: `1px solid ${C.border}`, padding: 16 }}>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ color: C.text, fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4 }}>
+        <div className="bg-bg1 rounded-lg border border-border p-4">
+          <div className="mb-4">
+            <label className="text-text text-xs font-semibold block mb-1">
               Gravity Strength: {(arenaSystem.slopePhysics.gravityStrength * 100).toFixed(0)}%
             </label>
             <input
@@ -292,23 +240,23 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
                   },
                 })
               }
-              style={{ width: "100%" }}
+              className="w-full"
             />
           </div>
-          <p style={{ color: C.muted, fontSize: 11, marginTop: 8 }}>
+          <p className="text-muted text-[11px] mt-2">
             Friction zones: {arenaSystem.slopePhysics.frictionMap?.length ?? 0} configured
           </p>
-          <p style={{ color: C.muted, fontSize: 11, marginTop: 4 }}>Friction zone editor coming soon</p>
+          <p className="text-muted text-[11px] mt-1">Friction zone editor coming soon</p>
         </div>
       )}
 
       {/* Features Tab */}
       {activeTab === "features" && (
-        <div style={{ background: C.bg1, borderRadius: 8, border: `1px solid ${C.border}`, padding: 16 }}>
-          <p style={{ color: C.muted, fontSize: 11, marginTop: 0 }}>
+        <div className="bg-bg1 rounded-lg border border-border p-4">
+          <p className="text-muted text-[11px] mt-0">
             Obstacles, turrets, water bodies, pits, and portals can be configured here.
           </p>
-          <p style={{ color: C.muted, fontSize: 11, marginTop: 8 }}>Feature editor coming soon</p>
+          <p className="text-muted text-[11px] mt-2">Feature editor coming soon</p>
         </div>
       )}
 
@@ -320,21 +268,11 @@ export function ArenaSystemEditor({ arenaSystem, onChange, onSave, isSaving }: P
       )}
 
       {/* Save button */}
-      <div style={{ marginTop: 20, display: "flex", gap: 8 }}>
+      <div className="mt-5 flex gap-2">
         <button
           onClick={onSave}
           disabled={isSaving}
-          style={{
-            padding: "12px 24px",
-            background: C.blue,
-            color: C.white,
-            border: "none",
-            borderRadius: 6,
-            fontSize: 12,
-            fontWeight: 700,
-            cursor: "pointer",
-            opacity: isSaving ? 0.6 : 1,
-          }}
+          className="px-6 py-3 bg-blue text-white border-none rounded text-xs font-bold cursor-pointer disabled:opacity-60"
         >
           {isSaving ? "Saving..." : "Save Arena System"}
         </button>

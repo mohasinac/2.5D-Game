@@ -51,16 +51,17 @@ function numInput(val: number | undefined, def: number, onChange: (n: number) =>
     <input
       type="number" value={val ?? def} step={step}
       onChange={e => onChange(Number(e.target.value))}
-      style={{ width, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+      className="bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs"
+      style={{ width }}
     />
   );
 }
 
 function SectionHeader({ label, open, toggle }: { label: string; open: boolean; toggle: () => void }) {
   return (
-    <div onClick={toggle} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", padding: "6px 0", borderBottom: `1px solid ${C.border}`, marginBottom: 8 }}>
-      <span style={{ fontSize: 11, fontWeight: 600, color: C.muted }}>{label}</span>
-      <span style={{ color: C.faint, fontSize: 11 }}>{open ? "▲" : "▼"}</span>
+    <div onClick={toggle} className="flex justify-between items-center cursor-pointer py-1.5 border-b border-border mb-2">
+      <span className="text-[11px] font-semibold text-muted">{label}</span>
+      <span className="text-faint text-[11px]">{open ? "▲" : "▼"}</span>
     </div>
   );
 }
@@ -106,72 +107,75 @@ function ShapeEditor({ shape, onChange }: { shape?: ObstacleShape; onChange: (s?
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-1 flex-wrap">
         {SHAPE_KINDS.map(k => (
           <button key={k} onClick={() => setKind(k)}
-            style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
+            className="py-[2px] px-[7px] rounded text-[10px] cursor-pointer border"
+            style={{
               background: kind === k ? C.blue : "transparent",
               color: kind === k ? C.white : C.muted,
-              border: `1px solid ${kind === k ? C.blue : C.border}` }}>
+              borderColor: kind === k ? C.blue : C.border,
+            }}>
             {k}
           </button>
         ))}
       </div>
       {/* Per-kind params */}
       {shape?.kind === "circle" && (
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Radius (cm)</label>
+        <div className="flex items-center gap-2">
+          <label className="text-[11px] text-faint min-w-[70px]">Radius (cm)</label>
           {numInput(shape.radiusCm, 10, v => patch({ radiusCm: v }), 0.5)}
         </div>
       )}
       {shape?.kind === "ring" && (
-        <div style={{ display: "flex", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Inner (cm)</label>
+        <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] text-faint min-w-[70px]">Inner (cm)</label>
             {numInput(shape.innerRadiusCm, 8, v => patch({ innerRadiusCm: v }), 0.5)}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Outer (cm)</label>
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] text-faint min-w-[70px]">Outer (cm)</label>
             {numInput(shape.outerRadiusCm, 15, v => patch({ outerRadiusCm: v }), 0.5)}
           </div>
         </div>
       )}
       {shape?.kind === "arc" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8 }}>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Radius (cm)</label>{numInput(shape.radiusCm, 12, v => patch({ radiusCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Start (°)</label>{numInput(shape.startDeg, 0, v => patch({ startDeg: v }), 5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>End (°)</label>{numInput(shape.endDeg, 180, v => patch({ endDeg: v }), 5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Thickness (cm)</label>{numInput(shape.thicknessCm, 2, v => patch({ thicknessCm: v }), 0.5)}</div>
+        <div className="grid grid-cols-4 gap-2">
+          <div><label className="block text-[11px] text-faint mb-0.5">Radius (cm)</label>{numInput(shape.radiusCm, 12, v => patch({ radiusCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Start (°)</label>{numInput(shape.startDeg, 0, v => patch({ startDeg: v }), 5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">End (°)</label>{numInput(shape.endDeg, 180, v => patch({ endDeg: v }), 5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Thickness (cm)</label>{numInput(shape.thicknessCm, 2, v => patch({ thicknessCm: v }), 0.5)}</div>
         </div>
       )}
       {shape?.kind === "spiral" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8 }}>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Inner (cm)</label>{numInput(shape.innerRadiusCm, 5, v => patch({ innerRadiusCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Outer (cm)</label>{numInput(shape.outerRadiusCm, 15, v => patch({ outerRadiusCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Turns</label>{numInput(shape.turns, 2, v => patch({ turns: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Thickness (cm)</label>{numInput(shape.thicknessCm, 2, v => patch({ thicknessCm: v }), 0.5)}</div>
+        <div className="grid grid-cols-4 gap-2">
+          <div><label className="block text-[11px] text-faint mb-0.5">Inner (cm)</label>{numInput(shape.innerRadiusCm, 5, v => patch({ innerRadiusCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Outer (cm)</label>{numInput(shape.outerRadiusCm, 15, v => patch({ outerRadiusCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Turns</label>{numInput(shape.turns, 2, v => patch({ turns: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Thickness (cm)</label>{numInput(shape.thicknessCm, 2, v => patch({ thicknessCm: v }), 0.5)}</div>
         </div>
       )}
       {shape?.kind === "polyline" && (
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-            <label style={{ fontSize: 11, color: C.faint }}>Points</label>
-            <button onClick={() => addPoint("points")} style={{ fontSize: 10, padding: "1px 6px", background: C.blue, color: C.white, border: "none", borderRadius: 4, cursor: "pointer" }}>+ Point</button>
+          <div className="flex justify-between items-center mb-1">
+            <label className="text-[11px] text-faint">Points</label>
+            <button onClick={() => addPoint("points")}
+              className="text-[10px] py-[1px] px-1.5 bg-blue text-white border-none rounded cursor-pointer">+ Point</button>
           </div>
           {shape.points.map((pt, i) => (
-            <div key={i} style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 4 }}>
-              <label style={{ fontSize: 10, color: C.faint, minWidth: 14 }}>X</label>
+            <div key={i} className="flex gap-1.5 items-center mb-1">
+              <label className="text-[10px] text-faint min-w-[14px]">X</label>
               {numInput(pt.x_cm, 0, v => patchPoint("points", i, "x_cm", v), 1, 60)}
-              <label style={{ fontSize: 10, color: C.faint, minWidth: 14 }}>Y</label>
+              <label className="text-[10px] text-faint min-w-[14px]">Y</label>
               {numInput(pt.y_cm, 0, v => patchPoint("points", i, "y_cm", v), 1, 60)}
-              <button onClick={() => removePoint("points", i)} style={{ color: C.red, background: "none", border: "none", fontSize: 11, cursor: "pointer" }}>✕</button>
+              <button onClick={() => removePoint("points", i)} className="text-red bg-transparent border-none text-[11px] cursor-pointer">✕</button>
             </div>
           ))}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 4 }}>
-            <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Thickness (cm)</label>
+          <div className="flex items-center gap-3 mt-1">
+            <label className="text-[11px] text-faint min-w-[70px]">Thickness (cm)</label>
             {numInput(shape.thicknessCm, 2, v => patch({ thicknessCm: v }), 0.5)}
-            <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: C.faint, cursor: "pointer" }}>
+            <label className="flex items-center gap-1 text-[11px] text-faint cursor-pointer">
               <input type="checkbox" checked={shape.closed} onChange={e => patch({ closed: e.target.checked })} />
               Closed
             </label>
@@ -180,97 +184,98 @@ function ShapeEditor({ shape, onChange }: { shape?: ObstacleShape; onChange: (s?
       )}
       {shape?.kind === "bezier" && (
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-            <label style={{ fontSize: 11, color: C.faint }}>Control Points</label>
-            <button onClick={() => addPoint("controlPoints")} style={{ fontSize: 10, padding: "1px 6px", background: C.blue, color: C.white, border: "none", borderRadius: 4, cursor: "pointer" }}>+ Point</button>
+          <div className="flex justify-between items-center mb-1">
+            <label className="text-[11px] text-faint">Control Points</label>
+            <button onClick={() => addPoint("controlPoints")}
+              className="text-[10px] py-[1px] px-1.5 bg-blue text-white border-none rounded cursor-pointer">+ Point</button>
           </div>
           {shape.controlPoints.map((pt, i) => (
-            <div key={i} style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 4 }}>
-              <label style={{ fontSize: 10, color: C.faint, minWidth: 14 }}>X</label>
+            <div key={i} className="flex gap-1.5 items-center mb-1">
+              <label className="text-[10px] text-faint min-w-[14px]">X</label>
               {numInput(pt.x_cm, 0, v => patchPoint("controlPoints", i, "x_cm", v), 1, 60)}
-              <label style={{ fontSize: 10, color: C.faint, minWidth: 14 }}>Y</label>
+              <label className="text-[10px] text-faint min-w-[14px]">Y</label>
               {numInput(pt.y_cm, 0, v => patchPoint("controlPoints", i, "y_cm", v), 1, 60)}
-              <button onClick={() => removePoint("controlPoints", i)} style={{ color: C.red, background: "none", border: "none", fontSize: 11, cursor: "pointer" }}>✕</button>
+              <button onClick={() => removePoint("controlPoints", i)} className="text-red bg-transparent border-none text-[11px] cursor-pointer">✕</button>
             </div>
           ))}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-            <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Thickness (cm)</label>
+          <div className="flex items-center gap-2 mt-1">
+            <label className="text-[11px] text-faint min-w-[70px]">Thickness (cm)</label>
             {numInput(shape.thicknessCm, 2, v => patch({ thicknessCm: v }), 0.5)}
           </div>
         </div>
       )}
       {shape?.kind === "rectangle" && (
-        <div style={{ display: "flex", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 11, color: C.faint, minWidth: 55 }}>Width (cm)</label>
+        <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] text-faint min-w-[55px]">Width (cm)</label>
             {numInput(shape.widthCm, 20, v => patch({ widthCm: v }), 0.5)}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 11, color: C.faint, minWidth: 58 }}>Height (cm)</label>
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] text-faint min-w-[58px]">Height (cm)</label>
             {numInput(shape.heightCm, 10, v => patch({ heightCm: v }), 0.5)}
           </div>
         </div>
       )}
       {shape?.kind === "cross" && (
-        <div style={{ display: "flex", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Arm Length (cm)</label>
+        <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] text-faint min-w-[70px]">Arm Length (cm)</label>
             {numInput(shape.armLengthCm, 15, v => patch({ armLengthCm: v }), 0.5)}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Arm Width (cm)</label>
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] text-faint min-w-[70px]">Arm Width (cm)</label>
             {numInput(shape.armWidthCm, 4, v => patch({ armWidthCm: v }), 0.5)}
           </div>
         </div>
       )}
       {shape?.kind === "L_shape" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Long Arm (cm)</label>{numInput(shape.longArmCm, 20, v => patch({ longArmCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Short Arm (cm)</label>{numInput(shape.shortArmCm, 12, v => patch({ shortArmCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Thickness (cm)</label>{numInput(shape.thicknessCm, 3, v => patch({ thicknessCm: v }), 0.5)}</div>
+        <div className="grid grid-cols-3 gap-2">
+          <div><label className="block text-[11px] text-faint mb-0.5">Long Arm (cm)</label>{numInput(shape.longArmCm, 20, v => patch({ longArmCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Short Arm (cm)</label>{numInput(shape.shortArmCm, 12, v => patch({ shortArmCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Thickness (cm)</label>{numInput(shape.thicknessCm, 3, v => patch({ thicknessCm: v }), 0.5)}</div>
         </div>
       )}
       {shape?.kind === "T_shape" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Width (cm)</label>{numInput(shape.widthCm, 20, v => patch({ widthCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Height (cm)</label>{numInput(shape.heightCm, 12, v => patch({ heightCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Thickness (cm)</label>{numInput(shape.thicknessCm, 3, v => patch({ thicknessCm: v }), 0.5)}</div>
+        <div className="grid grid-cols-3 gap-2">
+          <div><label className="block text-[11px] text-faint mb-0.5">Width (cm)</label>{numInput(shape.widthCm, 20, v => patch({ widthCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Height (cm)</label>{numInput(shape.heightCm, 12, v => patch({ heightCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Thickness (cm)</label>{numInput(shape.thicknessCm, 3, v => patch({ thicknessCm: v }), 0.5)}</div>
         </div>
       )}
       {shape?.kind === "zigzag" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8 }}>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Seg Length (cm)</label>{numInput(shape.segmentLengthCm, 8, v => patch({ segmentLengthCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Seg Count</label>{numInput(shape.segmentCount, 4, v => patch({ segmentCount: Math.max(1, Math.round(v)) }), 1)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Zig Width (cm)</label>{numInput(shape.zigWidthCm, 4, v => patch({ zigWidthCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Thickness (cm)</label>{numInput(shape.thicknessCm, 2, v => patch({ thicknessCm: v }), 0.5)}</div>
+        <div className="grid grid-cols-4 gap-2">
+          <div><label className="block text-[11px] text-faint mb-0.5">Seg Length (cm)</label>{numInput(shape.segmentLengthCm, 8, v => patch({ segmentLengthCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Seg Count</label>{numInput(shape.segmentCount, 4, v => patch({ segmentCount: Math.max(1, Math.round(v)) }), 1)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Zig Width (cm)</label>{numInput(shape.zigWidthCm, 4, v => patch({ zigWidthCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Thickness (cm)</label>{numInput(shape.thicknessCm, 2, v => patch({ thicknessCm: v }), 0.5)}</div>
         </div>
       )}
       {shape?.kind === "star_shape" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Outer (cm)</label>{numInput(shape.outerRadiusCm, 12, v => patch({ outerRadiusCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Inner (cm)</label>{numInput(shape.innerRadiusCm, 5, v => patch({ innerRadiusCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Points (3–8)</label>{numInput(shape.points, 5, v => patch({ points: Math.min(8, Math.max(3, Math.round(v))) }), 1)}</div>
+        <div className="grid grid-cols-3 gap-2">
+          <div><label className="block text-[11px] text-faint mb-0.5">Outer (cm)</label>{numInput(shape.outerRadiusCm, 12, v => patch({ outerRadiusCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Inner (cm)</label>{numInput(shape.innerRadiusCm, 5, v => patch({ innerRadiusCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Points (3–8)</label>{numInput(shape.points, 5, v => patch({ points: Math.min(8, Math.max(3, Math.round(v))) }), 1)}</div>
         </div>
       )}
       {shape?.kind === "pinball_bumper" && (
-        <div style={{ display: "flex", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 11, color: C.faint, minWidth: 55 }}>Radius (cm)</label>
+        <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] text-faint min-w-[55px]">Radius (cm)</label>
             {numInput(shape.radiusCm, 8, v => patch({ radiusCm: v }), 0.5)}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Restitution</label>
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] text-faint min-w-[65px]">Restitution</label>
             {numInput(shape.restitution, 1.2, v => patch({ restitution: v }), 0.1)}
           </div>
         </div>
       )}
       {shape?.kind === "wrecking_ball" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr", gap: 8 }}>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Radius (cm)</label>{numInput(shape.radiusCm, 6, v => patch({ radiusCm: v }), 0.5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Cable (cm)</label>{numInput(shape.cableLength, 20, v => patch({ cableLength: v }), 1)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Swing (°)</label>{numInput(shape.swingAmplitudeDeg, 45, v => patch({ swingAmplitudeDeg: v }), 5)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Period (ms)</label>{numInput(shape.swingPeriodMs, 3000, v => patch({ swingPeriodMs: v }), 100)}</div>
-          <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Phase (°)</label>{numInput(shape.startPhaseDeg, 0, v => patch({ startPhaseDeg: v }), 5)}</div>
+        <div className="grid grid-cols-5 gap-2">
+          <div><label className="block text-[11px] text-faint mb-0.5">Radius (cm)</label>{numInput(shape.radiusCm, 6, v => patch({ radiusCm: v }), 0.5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Cable (cm)</label>{numInput(shape.cableLength, 20, v => patch({ cableLength: v }), 1)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Swing (°)</label>{numInput(shape.swingAmplitudeDeg, 45, v => patch({ swingAmplitudeDeg: v }), 5)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Period (ms)</label>{numInput(shape.swingPeriodMs, 3000, v => patch({ swingPeriodMs: v }), 100)}</div>
+          <div><label className="block text-[11px] text-faint mb-0.5">Phase (°)</label>{numInput(shape.startPhaseDeg, 0, v => patch({ startPhaseDeg: v }), 5)}</div>
         </div>
       )}
     </div>
@@ -289,40 +294,44 @@ function PhysicsEditor({ physics, onChange }: { physics?: ObstaclePhysicsBlock; 
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 11, color: C.muted, cursor: "pointer" }}>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <label className="flex gap-1.5 items-center text-[11px] text-muted cursor-pointer">
           <input type="checkbox" checked={enabled} onChange={e => e.target.checked ? enable() : disable()} />
           {enabled ? "Enabled" : "Disabled"}
         </label>
       </div>
       {enabled && physics && (
         <>
-          <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+          <div className="flex gap-1 flex-wrap">
             {PHYSICS_TYPES.map(t => (
               <button key={t} onClick={() => patch({ type: t })}
-                style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
+                className="py-[2px] px-[7px] rounded text-[10px] cursor-pointer border"
+                style={{
                   background: type === t ? C.red : "transparent",
                   color: type === t ? C.white : C.muted,
-                  border: `1px solid ${type === t ? C.red : C.border}` }}>
+                  borderColor: type === t ? C.red : C.border,
+                }}>
                 {t}
               </button>
             ))}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 11, color: C.faint, minWidth: 65 }}>Height (cm)</label>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] text-faint min-w-[65px]">Height (cm)</label>
               {numInput(physics.heightCm, 5, v => patch({ heightCm: v }), 0.5)}
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Direction</label>
-              <div style={{ display: "flex", gap: 4 }}>
+              <label className="block text-[11px] text-faint mb-1">Direction</label>
+              <div className="flex gap-1">
                 {(["one-way", "two-way"] as const).map(d => (
                   <button key={d} onClick={() => patch({ direction: d })}
-                    style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer",
+                    className="py-[2px] px-[7px] rounded text-[10px] cursor-pointer border"
+                    style={{
                       background: (physics.direction ?? "two-way") === d ? C.blue : "transparent",
                       color: (physics.direction ?? "two-way") === d ? C.white : C.muted,
-                      border: `1px solid ${(physics.direction ?? "two-way") === d ? C.blue : C.border}` }}>
+                      borderColor: (physics.direction ?? "two-way") === d ? C.blue : C.border,
+                    }}>
                     {d}
                   </button>
                 ))}
@@ -330,88 +339,90 @@ function PhysicsEditor({ physics, onChange }: { physics?: ObstaclePhysicsBlock; 
             </div>
           </div>
           {physics.direction === "one-way" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>One-Way Angle (°)</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] text-faint min-w-[90px]">One-Way Angle (°)</label>
               {numInput(physics.oneWayAngleDeg, 0, v => patch({ oneWayAngleDeg: v }), 5)}
             </div>
           )}
           {type === "ramp" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Ramp Angle (°)</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] text-faint min-w-[90px]">Ramp Angle (°)</label>
               {numInput(physics.rampAngleDeg, 15, v => patch({ rampAngleDeg: v }), 1)}
             </div>
           )}
           {type === "grip" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Grip Friction</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] text-faint min-w-[90px]">Grip Friction</label>
               {numInput(physics.gripFriction, 1.5, v => patch({ gripFriction: v }), 0.1)}
             </div>
           )}
           {type === "speedline" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Boost (cm/s)</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] text-faint min-w-[90px]">Boost (cm/s)</label>
               {numInput(physics.speedlineBoostCmPerS, 50, v => patch({ speedlineBoostCmPerS: v }), 5)}
             </div>
           )}
           {type === "magnetic" && (
-            <div style={{ display: "flex", gap: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={{ fontSize: 11, color: C.faint, minWidth: 80 }}>Radius (cm)</label>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2">
+                <label className="text-[11px] text-faint min-w-[80px]">Radius (cm)</label>
                 {numInput(physics.magnetRadiusCm, 20, v => patch({ magnetRadiusCm: v }), 1)}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Strength</label>
+              <div className="flex items-center gap-2">
+                <label className="text-[11px] text-faint min-w-[60px]">Strength</label>
                 {numInput(physics.magnetStrength, 0.01, v => patch({ magnetStrength: v }), 0.001)}
               </div>
             </div>
           )}
           {type === "trampoline" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Boost Mult</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] text-faint min-w-[90px]">Boost Mult</label>
               {numInput(physics.trampolineBoost, 1.5, v => patch({ trampolineBoost: v }), 0.1)}
             </div>
           )}
           {type === "spinner" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Spin RPM Impulse</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] text-faint min-w-[90px]">Spin RPM Impulse</label>
               {numInput(physics.spinRpmImpulse, 100, v => patch({ spinRpmImpulse: v }), 10)}
             </div>
           )}
           {type === "crusher" && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+            <div className="grid grid-cols-3 gap-2">
               <div>
-                <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Crush Axis</label>
-                <div style={{ display: "flex", gap: 4 }}>
+                <label className="block text-[11px] text-faint mb-1">Crush Axis</label>
+                <div className="flex gap-1">
                   {(["x", "y"] as const).map(a => (
                     <button key={a} onClick={() => patch({ crushAxis: a })}
-                      style={{ padding: "2px 8px", borderRadius: 5, fontSize: 11, cursor: "pointer",
+                      className="py-[2px] px-2 rounded text-[11px] cursor-pointer border"
+                      style={{
                         background: (physics.crushAxis ?? "y") === a ? C.blue : "transparent",
                         color: (physics.crushAxis ?? "y") === a ? C.white : C.muted,
-                        border: `1px solid ${(physics.crushAxis ?? "y") === a ? C.blue : C.border}` }}>
+                        borderColor: (physics.crushAxis ?? "y") === a ? C.blue : C.border,
+                      }}>
                       {a}
                     </button>
                   ))}
                 </div>
               </div>
-              <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Travel (cm)</label>{numInput(physics.crushTravelCm, 10, v => patch({ crushTravelCm: v }), 1)}</div>
-              <div><label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 2 }}>Cycle (ms)</label>{numInput(physics.crushCyclePeriodMs, 2000, v => patch({ crushCyclePeriodMs: v }), 100)}</div>
+              <div><label className="block text-[11px] text-faint mb-0.5">Travel (cm)</label>{numInput(physics.crushTravelCm, 10, v => patch({ crushTravelCm: v }), 1)}</div>
+              <div><label className="block text-[11px] text-faint mb-0.5">Cycle (ms)</label>{numInput(physics.crushCyclePeriodMs, 2000, v => patch({ crushCyclePeriodMs: v }), 100)}</div>
             </div>
           )}
           {type === "electrified" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Disable Ticks</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] text-faint min-w-[90px]">Disable Ticks</label>
               {numInput(physics.disableTicks, 60, v => patch({ disableTicks: Math.round(v) }), 10)}
             </div>
           )}
           {type === "sticky" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Sticky Ticks</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] text-faint min-w-[90px]">Sticky Ticks</label>
               {numInput(physics.stickyDurationTicks, 30, v => patch({ stickyDurationTicks: Math.round(v) }), 5)}
             </div>
           )}
           {type === "bouncy_net" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 11, color: C.faint, minWidth: 90 }}>Restitution</label>
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] text-faint min-w-[90px]">Restitution</label>
               {numInput(physics.netRestitution, 1.8, v => patch({ netRestitution: v }), 0.1)}
             </div>
           )}
@@ -424,30 +435,34 @@ function PhysicsEditor({ physics, onChange }: { physics?: ObstaclePhysicsBlock; 
 function RenderModeEditor({ render, onChange }: { render?: ObstacleRenderMode; onChange: (r?: ObstacleRenderMode) => void }) {
   const mode = render?.mode ?? "floor";
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-        <label style={{ fontSize: 11, color: C.faint, minWidth: 40 }}>Mode</label>
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-1 items-center">
+        <label className="text-[11px] text-faint min-w-[40px]">Mode</label>
         {(["floor", "line"] as const).map(m => (
           <button key={m} onClick={() => onChange(m === "floor" ? { mode: "floor" } : { mode: "line", stroke: "solid" })}
-            style={{ padding: "2px 8px", borderRadius: 5, fontSize: 11, cursor: "pointer",
+            className="py-[2px] px-2 rounded text-[11px] cursor-pointer border"
+            style={{
               background: mode === m ? C.purple : "transparent",
               color: mode === m ? C.white : C.muted,
-              border: `1px solid ${mode === m ? C.purple : C.border}` }}>
+              borderColor: mode === m ? C.purple : C.border,
+            }}>
             {m}
           </button>
         ))}
       </div>
       {render?.mode === "line" && (
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div className="flex gap-3 flex-wrap">
           <div>
-            <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Stroke</label>
-            <div style={{ display: "flex", gap: 4 }}>
+            <label className="block text-[11px] text-faint mb-1">Stroke</label>
+            <div className="flex gap-1">
               {(["solid", "dashed", "dotted"] as const).map(s => (
                 <button key={s} onClick={() => onChange({ ...render, stroke: s })}
-                  style={{ padding: "2px 6px", borderRadius: 5, fontSize: 10, cursor: "pointer",
+                  className="py-[2px] px-1.5 rounded text-[10px] cursor-pointer border"
+                  style={{
                     background: render.stroke === s ? C.blue : "transparent",
                     color: render.stroke === s ? C.white : C.muted,
-                    border: `1px solid ${render.stroke === s ? C.blue : C.border}` }}>
+                    borderColor: render.stroke === s ? C.blue : C.border,
+                  }}>
                   {s}
                 </button>
               ))}
@@ -455,34 +470,37 @@ function RenderModeEditor({ render, onChange }: { render?: ObstacleRenderMode; o
           </div>
           {render.stroke !== "solid" && (
             <>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <label style={{ fontSize: 11, color: C.faint }}>Dash (cm)</label>
+              <div className="flex items-center gap-1.5">
+                <label className="text-[11px] text-faint">Dash (cm)</label>
                 {numInput(render.dashCm, 2, v => onChange({ ...render, dashCm: v }), 0.5)}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <label style={{ fontSize: 11, color: C.faint }}>Gap (cm)</label>
+              <div className="flex items-center gap-1.5">
+                <label className="text-[11px] text-faint">Gap (cm)</label>
                 {numInput(render.gapCm, 2, v => onChange({ ...render, gapCm: v }), 0.5)}
               </div>
             </>
           )}
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <label style={{ fontSize: 11, color: C.faint }}>Color Key</label>
+          <div className="flex items-center gap-1.5">
+            <label className="text-[11px] text-faint">Color Key</label>
             <input type="text" value={render.colorKey ?? ""} onChange={e => onChange({ ...render, colorKey: e.target.value || undefined })}
-              placeholder="e.g. red" style={{ width: 70, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 5, padding: "3px 6px", fontSize: 11 }} />
+              placeholder="e.g. red"
+              className="w-[70px] bg-bg1 border border-border text-text rounded py-[3px] px-1.5 text-[11px]" />
           </div>
         </div>
       )}
       {render?.mode === "floor" && (
-        <div style={{ display: "flex", gap: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <label style={{ fontSize: 11, color: C.faint }}>Top Color</label>
+        <div className="flex gap-3">
+          <div className="flex items-center gap-1.5">
+            <label className="text-[11px] text-faint">Top Color</label>
             <input type="text" value={render.topColorKey ?? ""} onChange={e => onChange({ ...render, topColorKey: e.target.value || undefined })}
-              placeholder="e.g. stone" style={{ width: 70, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 5, padding: "3px 6px", fontSize: 11 }} />
+              placeholder="e.g. stone"
+              className="w-[70px] bg-bg1 border border-border text-text rounded py-[3px] px-1.5 text-[11px]" />
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <label style={{ fontSize: 11, color: C.faint }}>Side Color</label>
+          <div className="flex items-center gap-1.5">
+            <label className="text-[11px] text-faint">Side Color</label>
             <input type="text" value={render.sideColorKey ?? ""} onChange={e => onChange({ ...render, sideColorKey: e.target.value || undefined })}
-              placeholder="e.g. dark_stone" style={{ width: 80, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 5, padding: "3px 6px", fontSize: 11 }} />
+              placeholder="e.g. dark_stone"
+              className="w-20 bg-bg1 border border-border text-text rounded py-[3px] px-1.5 text-[11px]" />
           </div>
         </div>
       )}
@@ -522,52 +540,55 @@ export default function ObstaclesTab({ config, onChange }: Props) {
 
   return (
     <CollapsibleSection title="Obstacles" badge={items.length} storageKey="arena-obstacles-list" defaultOpen={true}>
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 13, color: C.muted }}>{items.length} / 10 obstacles — theme icon: {themeIcon}</span>
-        <button onClick={add} disabled={items.length >= 10} style={{ padding: "5px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer", opacity: items.length >= 10 ? 0.4 : 1 }}>
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between items-center">
+        <span className="text-[13px] text-muted">{items.length} / 10 obstacles — theme icon: {themeIcon}</span>
+        <button onClick={add} disabled={items.length >= 10}
+          className="py-[5px] px-[14px] bg-blue text-white border-none rounded-md text-xs font-medium cursor-pointer"
+          style={{ opacity: items.length >= 10 ? 0.4 : 1 }}>
           + Add Obstacle
         </button>
       </div>
 
       {items.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px 0", color: C.faint }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>{themeIcon}</div>
+        <div className="text-center py-10 text-faint">
+          <div className="text-[32px] mb-2">{themeIcon}</div>
           <p>No obstacles yet. Obstacles damage beyblades on collision.</p>
         </div>
       )}
 
       {items.map((obs, idx) => (
-        <div key={obs.id ?? idx} style={{ background: C.bg3, borderRadius: 12, padding: 16, border: `1px solid ${C.border}` }}>
+        <div key={obs.id ?? idx} className="bg-bg3 rounded-xl p-4 border border-border">
           {/* Header */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 13, fontWeight: 500, color: C.text }}>{themeIcon} Obstacle #{idx + 1}</span>
+          <div className="flex justify-between items-center mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-[13px] font-medium text-text">{themeIcon} Obstacle #{idx + 1}</span>
               {obs.behaviorId && (
-                <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 99, background: "rgba(168,85,247,0.15)", color: "#a855f7", border: "1px solid rgba(168,85,247,0.3)" }}>
+                <span className="text-[10px] font-semibold py-[2px] px-[7px] rounded-full"
+                  style={{ background: "rgba(168,85,247,0.15)", color: "#a855f7", border: "1px solid rgba(168,85,247,0.3)" }}>
                   Behavior: {obs.behaviorId}
                 </span>
               )}
             </div>
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 11, color: C.muted, cursor: "pointer" }}>
+            <div className="flex gap-2 items-center">
+              <label className="flex gap-1.5 items-center text-[11px] text-muted cursor-pointer">
                 <input type="checkbox" checked={obs.indestructible ?? false} onChange={e => update(obs.id, "indestructible", e.target.checked)} />
                 Indestructible
               </label>
-              <button onClick={() => remove(obs.id)} style={{ color: C.red, background: "none", border: "none", fontSize: 12, cursor: "pointer" }}>Remove</button>
+              <button onClick={() => remove(obs.id)} className="text-red bg-transparent border-none text-xs cursor-pointer">Remove</button>
             </div>
           </div>
 
           {/* Base sliders */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+          <div className="grid grid-cols-3 gap-2.5">
             {SLIDER_FIELDS.map(({ field, label, min, max, step, pxUnit }) => {
               const raw = (obs as any)[field] ?? 0;
               const display = pxUnit ? Math.round(raw / PX_PER_CM_BASE * 10) / 10 : raw;
               return (
                 <div key={field}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+                  <div className="flex justify-between text-[11px] text-faint mb-0.5">
                     <span>{label}</span>
-                    <span style={{ color: C.text, fontFamily: "monospace" }}>{pxUnit ? display.toFixed(1) : raw}</span>
+                    <span className="text-text font-mono">{pxUnit ? display.toFixed(1) : raw}</span>
                   </div>
                   <input type="range"
                     min={pxUnit ? min / PX_PER_CM_BASE : min}
@@ -575,7 +596,8 @@ export default function ObstaclesTab({ config, onChange }: Props) {
                     step={pxUnit ? 0.5 : step}
                     value={display}
                     onChange={e => update(obs.id, field, pxUnit ? Math.round(+e.target.value * PX_PER_CM_BASE) : +e.target.value)}
-                    style={{ width: "100%", accentColor: C.blue }}
+                    className="w-full"
+                    style={{ accentColor: C.blue }}
                   />
                 </div>
               );
@@ -583,67 +605,67 @@ export default function ObstaclesTab({ config, onChange }: Props) {
           </div>
 
           {/* Sprite picker */}
-          <div style={{ marginTop: 12, marginBottom: 10 }}>
-            <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Obstacle Sprite</label>
+          <div className="mt-3 mb-2.5">
+            <label className="block text-[11px] text-faint mb-1">Obstacle Sprite</label>
             <SearchableSelect
               value={(obs as any).spriteId ?? ""}
               options={assetOpts}
               onChange={v => update(obs.id, "spriteId" as any, v || undefined)}
               disabled={assetsLoading}
               emptyLabel={assetsLoading ? "Loading…" : "No obstacle assets found"}
-              style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+              style={{ width: "100%" }}
             />
           </div>
 
           {/* Element type + switch + trigger state */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+          <div className="grid grid-cols-3 gap-2.5 mb-2.5">
             <div>
-              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Element Type</label>
+              <label className="block text-[11px] text-faint mb-1">Element Type</label>
               <SearchableSelect
                 value={(obs.elementType as any) ?? ""}
                 options={elemOpts}
                 onChange={v => update(obs.id, "elementType" as any, v || undefined)}
                 disabled={elemLoading}
                 emptyLabel={elemLoading ? "Loading…" : "No element types"}
-                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+                style={{ width: "100%" }}
               />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Controlled By Switch ID</label>
+              <label className="block text-[11px] text-faint mb-1">Controlled By Switch ID</label>
               <input
                 type="text"
                 value={obs.controlledBySwitchId ?? ""}
                 onChange={e => update(obs.id, "controlledBySwitchId", e.target.value || undefined)}
                 placeholder="e.g. sw1"
-                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" }}
+                className="w-full bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
               />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Initial State</label>
+              <label className="block text-[11px] text-faint mb-1">Initial State</label>
               <SearchableSelect
                 value={obs.triggerState ?? "on"}
                 options={[{ value: "on", label: "On (active)" }, { value: "off", label: "Off (inactive)" }]}
                 onChange={v => update(obs.id, "triggerState", v as "on" | "off")}
-                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+                style={{ width: "100%" }}
               />
             </div>
           </div>
 
           {/* Floor index */}
           {(config.maxFloors ?? 1) > 1 && (
-            <div style={{ marginBottom: 10 }}>
-              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Floor Index (0 = ground)</label>
+            <div className="mb-2.5">
+              <label className="block text-[11px] text-faint mb-1">Floor Index (0 = ground)</label>
               <input
                 type="number" min={0} max={(config.maxFloors ?? 1) - 1} step={1}
                 value={obs.floorIndex ?? 0}
                 onChange={e => update(obs.id, "floorIndex", Math.max(0, Math.min((config.maxFloors ?? 1) - 1, +e.target.value)))}
-                style={{ width: 80, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+                className="w-20 bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs"
               />
             </div>
           )}
 
           {/* Shape section */}
-          <div style={{ marginBottom: 8, background: C.bg2, borderRadius: 8, padding: 10 }}>
+          <div className="mb-2 bg-bg2 rounded-lg p-2.5">
             <SectionHeader label="Shape" open={isSectionOpen(obs.id, "shape")} toggle={() => toggleSection(obs.id, "shape")} />
             {isSectionOpen(obs.id, "shape") && (
               <ShapeEditor shape={obs.shape} onChange={v => update(obs.id, "shape", v)} />
@@ -651,7 +673,7 @@ export default function ObstaclesTab({ config, onChange }: Props) {
           </div>
 
           {/* Physics block */}
-          <div style={{ marginBottom: 8, background: C.bg2, borderRadius: 8, padding: 10 }}>
+          <div className="mb-2 bg-bg2 rounded-lg p-2.5">
             <SectionHeader label="Physics Override" open={isSectionOpen(obs.id, "physics")} toggle={() => toggleSection(obs.id, "physics")} />
             {isSectionOpen(obs.id, "physics") && (
               <PhysicsEditor physics={obs.physics} onChange={v => update(obs.id, "physics", v)} />
@@ -659,7 +681,7 @@ export default function ObstaclesTab({ config, onChange }: Props) {
           </div>
 
           {/* Render mode */}
-          <div style={{ marginBottom: 8, background: C.bg2, borderRadius: 8, padding: 10 }}>
+          <div className="mb-2 bg-bg2 rounded-lg p-2.5">
             <SectionHeader label="Render Mode" open={isSectionOpen(obs.id, "render")} toggle={() => toggleSection(obs.id, "render")} />
             {isSectionOpen(obs.id, "render") && (
               <RenderModeEditor render={obs.render} onChange={v => update(obs.id, "render", v)} />
@@ -667,7 +689,7 @@ export default function ObstaclesTab({ config, onChange }: Props) {
           </div>
 
           {/* Feature Animation */}
-          <div style={{ marginBottom: 8, background: C.bg2, borderRadius: 8, padding: 10 }}>
+          <div className="mb-2 bg-bg2 rounded-lg p-2.5">
             <SectionHeader label="Feature Animation" open={isSectionOpen(obs.id, "anim")} toggle={() => toggleSection(obs.id, "anim")} />
             {isSectionOpen(obs.id, "anim") && (
               <FeatureAnimationPanel
@@ -679,20 +701,20 @@ export default function ObstaclesTab({ config, onChange }: Props) {
           </div>
 
           {/* Behavior override */}
-          <div style={{ marginBottom: 8, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div className="mb-2 grid grid-cols-2 gap-2.5">
             <div>
-              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior ID (optional)</label>
+              <label className="block text-[11px] text-faint mb-1">Behavior ID (optional)</label>
               <input
                 type="text"
                 data-testid={`obstacle-behavior-id-${idx}`}
                 value={obs.behaviorId ?? ""}
                 onChange={e => update(obs.id, "behaviorId", e.target.value || undefined)}
                 placeholder="e.g. movement.orbit"
-                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" }}
+                className="w-full bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
               />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Behavior Params (JSON)</label>
+              <label className="block text-[11px] text-faint mb-1">Behavior Params (JSON)</label>
               <textarea
                 value={obs.behaviorParams ? JSON.stringify(obs.behaviorParams, null, 2) : ""}
                 onChange={e => {
@@ -703,7 +725,7 @@ export default function ObstaclesTab({ config, onChange }: Props) {
                 }}
                 placeholder='{ "strength": 0.5 }'
                 rows={2}
-                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 11, fontFamily: "monospace", resize: "vertical", boxSizing: "border-box" }}
+                className="w-full bg-bg2 border border-border text-text rounded-md py-1 px-2 text-[11px] font-mono resize-y box-border"
               />
             </div>
           </div>

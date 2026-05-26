@@ -7,7 +7,16 @@ import {
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { C, pill, alpha } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
+
+const PILL_BASE = "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border";
+const STATUS_PILL: Record<string, string> = {
+  draft:          "bg-faint/[.13] text-faint border-faint/[.27]",
+  registration:   "bg-blue/[.13] text-blue border-blue/[.27]",
+  "in-progress":  "bg-green/[.13] text-green border-green/[.27]",
+  completed:      "bg-purple/[.13] text-purple border-purple/[.27]",
+  cancelled:      "bg-red/[.13] text-red border-red/[.27]",
+};
 import toast from "react-hot-toast";
 import type { TournamentDoc, TournamentParticipantDoc, TournamentMatchDoc } from "@/types/game";
 
@@ -298,7 +307,7 @@ export function TournamentLobbyPage() {
             <h1 style={{ fontSize: 28, fontWeight: 900, color: C.text, letterSpacing: "-0.02em" }}>
               {tournament.name}
             </h1>
-            <span style={pill(tournament.status === "in-progress" ? C.green : tournament.status === "registration" ? C.blue : C.faint)}>
+            <span className={`${PILL_BASE} ${STATUS_PILL[tournament.status] ?? STATUS_PILL.draft}`}>
               {tournament.status}
             </span>
           </div>
@@ -513,16 +522,16 @@ export function TournamentLobbyPage() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <span style={{ fontSize: 13, color: C.text, fontWeight: 500 }}>{p.username}</span>
-                        {p.isAI && <span style={pill(C.purple)}>AI</span>}
+                        {p.isAI && <span className={`${PILL_BASE} bg-purple/[.13] text-purple border-purple/[.27]`}>AI</span>}
                         {p.userId === settings.userId && <span style={{ fontSize: 11, color: C.faint }}>(you)</span>}
                       </div>
                       <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
-                        <span style={pill(
-                          p.status === "winner" ? C.yellow
-                          : p.status === "eliminated" ? C.red
-                          : p.status === "quit" ? C.faint
-                          : C.green,
-                        )}>
+                        <span className={`${PILL_BASE} ${
+                          p.status === "winner"     ? "bg-yellow/[.13] text-yellow border-yellow/[.27]"
+                          : p.status === "eliminated" ? "bg-red/[.13] text-red border-red/[.27]"
+                          : p.status === "quit"       ? "bg-faint/[.13] text-faint border-faint/[.27]"
+                          : "bg-green/[.13] text-green border-green/[.27]"
+                        }`}>
                           {p.status}
                         </span>
                       </div>

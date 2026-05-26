@@ -290,7 +290,10 @@ test.describe("AI battle: new aiCount feature (1 human vs N bots)", () => {
     if (!landed) { await ss(page, "AV05-1v2-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_500);
+
+    // Wait for form to load (Firestore data)
+    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
 
     // Try to increase AI count to 2 if the UI exposes it
     const countInput = page.locator('input[type="number"][min], input[name*="count" i]').first();
@@ -300,7 +303,6 @@ test.describe("AI battle: new aiCount feature (1 human vs N bots)", () => {
     }
 
     // Start the battle
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
       await page.waitForURL(/ai-battle\/play/, { timeout: 15_000 }).catch(() => {});
@@ -337,7 +339,10 @@ test.describe("AI battle: new aiCount feature (1 human vs N bots)", () => {
     if (!landed) { await ss(page, "AV06-1v3-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_500);
+
+    // Wait for form to load (Firestore data)
+    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
 
     const countInput = page.locator('input[type="number"][min], input[name*="count" i]').first();
     if (await countInput.isVisible().catch(() => false)) {
@@ -345,7 +350,6 @@ test.describe("AI battle: new aiCount feature (1 human vs N bots)", () => {
       await page.waitForTimeout(200);
     }
 
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
       await page.waitForURL(/ai-battle\/play/, { timeout: 15_000 }).catch(() => {});

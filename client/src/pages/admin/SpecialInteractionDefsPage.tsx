@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C } from "@/styles/theme";
+import { Button } from "@/components/ui/Button";
+import { Input, Textarea } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 import toast from "react-hot-toast";
 
 type KnockbackKind = "none" | "partial" | "full" | "reversed" | "enhanced";
@@ -42,17 +44,10 @@ const EMPTY: SpecialInteractionDoc = {
   description: "",
 };
 
-const inp: React.CSSProperties = {
-  width: "100%", padding: "7px 10px", background: C.bg0,
-  border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13, boxSizing: "border-box",
-};
-
-const numInp: React.CSSProperties = { ...inp, width: "100%" };
-
 function KbSelect({ value, onChange }: { value: KnockbackKind; onChange: (v: KnockbackKind) => void }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value as KnockbackKind)}
-      style={{ ...inp, padding: "6px 8px" }}>
+      className="w-full bg-bg3 border border-border rounded-md px-3 py-2 text-text text-sm focus:outline-none focus:border-blue">
       {KNOCKBACK_KINDS.map(k => <option key={k} value={k}>{k}</option>)}
     </select>
   );
@@ -115,7 +110,6 @@ export function SpecialInteractionDefsPage() {
         timingBonus: hasTimingBonus ? timingBonus : undefined,
         description: form.description || "",
       };
-      // Remove undefined fields before writing
       const cleaned = Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined));
       await setDoc(doc(db, COLLECTIONS.SPECIAL_INTERACTION_DEFS, id.trim()), cleaned, { merge: false });
       toast.success(editing ? "Updated" : "Created");
@@ -143,62 +137,57 @@ export function SpecialInteractionDefsPage() {
   const missingKeys = ALL_KEYS.filter(k => !items.some(i => i.id === k));
 
   return (
-    <div style={{ padding: 24, maxWidth: 900 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+    <div className="p-6 max-w-[900px]">
+      <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, margin: 0 }}>Special Interaction Defs</h1>
-          <p style={{ fontSize: 13, color: C.muted, margin: "4px 0 0" }}>
+          <h1 className="text-[22px] font-bold text-text m-0">Special Interaction Defs</h1>
+          <p className="text-[13px] text-muted mt-1">
             Group×group clash outcomes for special move collisions (10 entries: strike/aerial/guard/field × each).
             Loaded into room cache at match start — no server redeploy needed.
           </p>
         </div>
-        <button onClick={openCreate}
-          style={{ padding: "8px 18px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, fontSize: 13, cursor: "pointer", fontWeight: 600, flexShrink: 0 }}>
-          + Add Entry
-        </button>
+        <Button variant="primary" size="sm" onClick={openCreate} className="shrink-0">+ Add Entry</Button>
       </div>
 
       {missingKeys.length > 0 && (
-        <div style={{ marginBottom: 16, padding: "10px 14px", background: "#ff990022", border: "1px solid #ff990066", borderRadius: 8, fontSize: 12, color: "#ffbb44" }}>
+        <div className="mb-4 px-3.5 py-2.5 bg-yellow/10 border border-yellow/40 rounded-lg text-xs text-yellow">
           Missing keys: {missingKeys.join(", ")}
-          <span style={{ color: C.muted, marginLeft: 8 }}>— Run <code>npm run seed:special-interaction-defs</code> to seed defaults.</span>
+          <span className="text-muted ml-2">— Run <code>npm run seed:special-interaction-defs</code> to seed defaults.</span>
         </div>
       )}
 
-      <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search by key or description…"
-        style={{ ...inp, marginBottom: 16, maxWidth: 360 }} />
+      <Input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search by key or description…" className="mb-4 max-w-sm" />
 
       {loading ? (
-        <div style={{ color: C.muted, fontSize: 13 }}>Loading…</div>
+        <div className="text-muted text-[13px]">Loading…</div>
       ) : filtered.length === 0 ? (
-        <div style={{ color: C.muted, fontSize: 13 }}>No entries found.</div>
+        <div className="text-muted text-[13px]">No entries found.</div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {filtered.map(item => {
             const [attGroup, defGroup] = item.id.split(":");
             return (
-              <div key={item.id}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 16px", display: "flex", alignItems: "flex-start", gap: 14 }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: C.text, fontFamily: "monospace" }}>{item.id}</span>
-                    <span style={{ fontSize: 11, padding: "1px 7px", borderRadius: 99, background: "#3b82f622", color: "#60a5fa", border: "1px solid #3b82f644" }}>{attGroup}</span>
-                    <span style={{ fontSize: 11, color: C.muted }}>→</span>
-                    <span style={{ fontSize: 11, padding: "1px 7px", borderRadius: 99, background: "#a855f722", color: "#c084fc", border: "1px solid #a855f744" }}>{defGroup}</span>
+              <div key={item.id} className="flex items-start gap-3.5 bg-bg1 border border-border rounded-xl px-4 py-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[15px] font-bold text-text font-mono">{item.id}</span>
+                    <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-blue/10 text-blue border border-blue/25">{attGroup}</span>
+                    <span className="text-[11px] text-muted">&#8594;</span>
+                    <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-purple/10 text-purple border border-purple/25">{defGroup}</span>
                   </div>
-                  <div style={{ display: "flex", gap: 16, fontSize: 12, color: C.muted, flexWrap: "wrap" }}>
-                    <span>Att dmg <strong style={{ color: C.text }}>{item.attackerDamageScale}×</strong></span>
-                    <span>Def dmg <strong style={{ color: C.text }}>{item.defenderDamageScale}×</strong></span>
-                    <span>Att kb <strong style={{ color: C.text }}>{item.attackerKnockback}</strong></span>
-                    <span>Def kb <strong style={{ color: C.text }}>{item.defenderKnockback}</strong></span>
-                    {item.timingBonus && <span style={{ color: "#fbbf24" }}>⏱ Timing bonus ×{item.timingBonus.bonusScale} ({item.timingBonus.peakFor})</span>}
+                  <div className="flex gap-4 text-xs text-muted flex-wrap">
+                    <span>Att dmg <strong className="text-text">{item.attackerDamageScale}×</strong></span>
+                    <span>Def dmg <strong className="text-text">{item.defenderDamageScale}×</strong></span>
+                    <span>Att kb <strong className="text-text">{item.attackerKnockback}</strong></span>
+                    <span>Def kb <strong className="text-text">{item.defenderKnockback}</strong></span>
+                    {item.timingBonus && (
+                      <span className="text-yellow">&#9201; Timing bonus ×{item.timingBonus.bonusScale} ({item.timingBonus.peakFor})</span>
+                    )}
                   </div>
-                  {item.description && <div style={{ fontSize: 12, color: C.faint, marginTop: 4, fontStyle: "italic" }}>{item.description}</div>}
+                  {item.description && <div className="text-xs text-faint mt-1 italic">{item.description}</div>}
                 </div>
-                <button onClick={() => openEdit(item)}
-                  style={{ padding: "5px 12px", fontSize: 12, borderRadius: 6, border: `1px solid ${C.border}`, background: C.bg2, color: C.muted, cursor: "pointer", flexShrink: 0 }}>Edit</button>
-                <button onClick={() => setConfirmDelete(item)}
-                  style={{ padding: "5px 12px", fontSize: 12, borderRadius: 6, border: "1px solid #ef444444", background: "#ef44440d", color: "#ef4444", cursor: "pointer", flexShrink: 0 }}>Delete</button>
+                <Button variant="outline" size="sm" onClick={() => openEdit(item)} className="shrink-0">Edit</Button>
+                <Button variant="danger" size="sm" onClick={() => setConfirmDelete(item)} className="shrink-0">Delete</Button>
               </div>
             );
           })}
@@ -206,120 +195,113 @@ export function SpecialInteractionDefsPage() {
       )}
 
       {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "#00000088", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, overflowY: "auto", padding: "20px 0" }}>
-          <div style={{ background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 14, padding: 28, width: 520, maxWidth: "92vw", margin: "auto" }}>
-            <h2 style={{ fontSize: 17, fontWeight: 700, color: C.text, margin: "0 0 20px" }}>
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000] overflow-y-auto py-5">
+          <div className="bg-bg0 border border-border rounded-2xl p-7 w-[520px] max-w-[92vw] m-auto">
+            <h2 className="text-[17px] font-bold text-text m-0 mb-5">
               {editing ? "Edit" : "Add"} Interaction Def
             </h2>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Key (attacker:defender group) *</span>
+            <div className="mb-3.5">
+              <Label>Key (attacker:defender group) *</Label>
               {editing ? (
-                <div style={{ ...inp, color: C.faint, background: C.bg1 }}>{form.id}</div>
+                <div className="w-full bg-bg1 border border-border rounded-md px-3 py-2 text-faint text-sm">{form.id}</div>
               ) : (
                 <select value={form.id} onChange={e => setForm(f => ({ ...f, id: e.target.value }))}
-                  style={{ ...inp, padding: "6px 8px" }}>
+                  className="w-full bg-bg3 border border-border rounded-md px-3 py-2 text-text text-sm focus:outline-none focus:border-blue">
                   {ALL_KEYS.map(k => <option key={k} value={k}>{k}</option>)}
                 </select>
               )}
-            </label>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
-              <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Attacker Damage Scale</span>
-                <input type="number" min={0} max={5} step={0.1} value={form.attackerDamageScale}
-                  onChange={e => setForm(f => ({ ...f, attackerDamageScale: parseFloat(e.target.value) || 0 }))} style={numInp} />
-              </label>
-              <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Defender Damage Scale</span>
-                <input type="number" min={0} max={5} step={0.1} value={form.defenderDamageScale}
-                  onChange={e => setForm(f => ({ ...f, defenderDamageScale: parseFloat(e.target.value) || 0 }))} style={numInp} />
-              </label>
-              <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Attacker Spin Delta (fraction)</span>
-                <input type="number" min={-1} max={1} step={0.01} value={form.attackerSpinDelta}
-                  onChange={e => setForm(f => ({ ...f, attackerSpinDelta: parseFloat(e.target.value) || 0 }))} style={numInp} />
-              </label>
-              <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Defender Spin Delta (fraction)</span>
-                <input type="number" min={-1} max={1} step={0.01} value={form.defenderSpinDelta}
-                  onChange={e => setForm(f => ({ ...f, defenderSpinDelta: parseFloat(e.target.value) || 0 }))} style={numInp} />
-              </label>
-              <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Attacker Knockback</span>
-                <KbSelect value={form.attackerKnockback} onChange={v => setForm(f => ({ ...f, attackerKnockback: v }))} />
-              </label>
-              <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Defender Knockback</span>
-                <KbSelect value={form.defenderKnockback} onChange={v => setForm(f => ({ ...f, defenderKnockback: v }))} />
-              </label>
             </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>
-              <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                rows={2} style={{ ...inp, resize: "vertical" }} placeholder="Describe the clash outcome…" />
-            </label>
+            <div className="grid grid-cols-2 gap-3 mb-3.5">
+              <div>
+                <Label>Attacker Damage Scale</Label>
+                <Input type="number" min={0} max={5} step={0.1} value={form.attackerDamageScale}
+                  onChange={e => setForm(f => ({ ...f, attackerDamageScale: parseFloat(e.target.value) || 0 }))} />
+              </div>
+              <div>
+                <Label>Defender Damage Scale</Label>
+                <Input type="number" min={0} max={5} step={0.1} value={form.defenderDamageScale}
+                  onChange={e => setForm(f => ({ ...f, defenderDamageScale: parseFloat(e.target.value) || 0 }))} />
+              </div>
+              <div>
+                <Label>Attacker Spin Delta (fraction)</Label>
+                <Input type="number" min={-1} max={1} step={0.01} value={form.attackerSpinDelta}
+                  onChange={e => setForm(f => ({ ...f, attackerSpinDelta: parseFloat(e.target.value) || 0 }))} />
+              </div>
+              <div>
+                <Label>Defender Spin Delta (fraction)</Label>
+                <Input type="number" min={-1} max={1} step={0.01} value={form.defenderSpinDelta}
+                  onChange={e => setForm(f => ({ ...f, defenderSpinDelta: parseFloat(e.target.value) || 0 }))} />
+              </div>
+              <div>
+                <Label>Attacker Knockback</Label>
+                <KbSelect value={form.attackerKnockback} onChange={v => setForm(f => ({ ...f, attackerKnockback: v }))} />
+              </div>
+              <div>
+                <Label>Defender Knockback</Label>
+                <KbSelect value={form.defenderKnockback} onChange={v => setForm(f => ({ ...f, defenderKnockback: v }))} />
+              </div>
+            </div>
 
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: C.text, cursor: "pointer", marginBottom: 10 }}>
+            <div className="mb-3.5">
+              <Label>Description</Label>
+              <Textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                rows={2} placeholder="Describe the clash outcome…" />
+            </div>
+
+            <div className="mb-4">
+              <label className="flex items-center gap-2 text-[13px] text-text cursor-pointer mb-2.5">
                 <input type="checkbox" checked={hasTimingBonus} onChange={e => setHasTimingBonus(e.target.checked)} />
                 Has Timing Bonus
               </label>
               {hasTimingBonus && (
-                <div style={{ padding: "12px 14px", background: C.bg1, borderRadius: 8, border: `1px solid ${C.border}`, display: "flex", flexDirection: "column", gap: 10 }}>
-                  <label>
-                    <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Condition Description</span>
-                    <input value={timingBonus.conditionDescription}
+                <div className="px-3.5 py-3 bg-bg1 rounded-lg border border-border flex flex-col gap-2.5">
+                  <div>
+                    <Label>Condition Description</Label>
+                    <Input value={timingBonus.conditionDescription}
                       onChange={e => setTimingBonus(t => ({ ...t, conditionDescription: e.target.value }))}
-                      style={inp} placeholder="e.g. Contact within 200ms of anchor active-start" />
-                  </label>
-                  <div style={{ display: "flex", gap: 10 }}>
-                    <label style={{ flex: 1 }}>
-                      <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Peak For</span>
+                      placeholder="e.g. Contact within 200ms of anchor active-start" />
+                  </div>
+                  <div className="flex gap-2.5">
+                    <div className="flex-1">
+                      <Label>Peak For</Label>
                       <select value={timingBonus.peakFor}
                         onChange={e => setTimingBonus(t => ({ ...t, peakFor: e.target.value as PeakFor }))}
-                        style={{ ...inp, padding: "6px 8px" }}>
+                        className="w-full bg-bg3 border border-border rounded-md px-3 py-2 text-text text-sm focus:outline-none focus:border-blue">
                         {PEAK_FOR.map(p => <option key={p} value={p}>{p}</option>)}
                       </select>
-                    </label>
-                    <label style={{ flex: 1 }}>
-                      <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Bonus Scale</span>
-                      <input type="number" min={1} max={5} step={0.05} value={timingBonus.bonusScale}
-                        onChange={e => setTimingBonus(t => ({ ...t, bonusScale: parseFloat(e.target.value) || 1 }))}
-                        style={numInp} />
-                    </label>
+                    </div>
+                    <div className="flex-1">
+                      <Label>Bonus Scale</Label>
+                      <Input type="number" min={1} max={5} step={0.05} value={timingBonus.bonusScale}
+                        onChange={e => setTimingBonus(t => ({ ...t, bonusScale: parseFloat(e.target.value) || 1 }))} />
+                    </div>
                   </div>
                 </div>
               )}
             </div>
 
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setShowModal(false)}
-                style={{ padding: "8px 18px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.bg2, color: C.muted, fontSize: 13, cursor: "pointer" }}>
-                Cancel
-              </button>
-              <button onClick={handleSave} disabled={saving}
-                style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: C.blue, color: "#fff", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>
+            <div className="flex gap-2.5 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setShowModal(false)}>Cancel</Button>
+              <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
                 {saving ? "Saving…" : "Save"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       )}
 
       {confirmDelete && (
-        <div style={{ position: "fixed", inset: 0, background: "#00000088", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 14, padding: 28, width: 360, textAlign: "center" }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: C.text, marginBottom: 10 }}>Delete "{confirmDelete.id}"?</div>
-            <div style={{ fontSize: 13, color: C.muted, marginBottom: 20 }}>
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000]">
+          <div className="bg-bg0 border border-border rounded-2xl p-7 w-[360px] text-center">
+            <div className="text-base font-semibold text-text mb-2.5">Delete "{confirmDelete.id}"?</div>
+            <div className="text-[13px] text-muted mb-5">
               This removes the interaction rule for this group pair. Matches will use DEFAULT_CLASH_OUTCOME as fallback.
             </div>
-            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-              <button onClick={() => setConfirmDelete(null)}
-                style={{ padding: "8px 18px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.bg2, color: C.muted, fontSize: 13, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleDelete}
-                style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#ef4444", color: "#fff", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>Delete</button>
+            <div className="flex gap-2.5 justify-center">
+              <Button variant="outline" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+              <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
             </div>
           </div>
         </div>

@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
-import { C } from "@/styles/theme";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import toast from "react-hot-toast";
 
 interface AIBattlePreset {
@@ -15,14 +16,16 @@ interface AIBattlePreset {
   isActive: boolean;
 }
 
+type BadgeColor = "blue" | "red" | "green" | "yellow" | "purple" | "orange" | "muted" | "faint";
+
 const DIFFICULTIES = [
   { value: "medium", label: "Medium" },
   { value: "hard", label: "Hard" },
   { value: "hell", label: "Hell" },
 ];
 
-const DIFF_COLORS: Record<string, string> = {
-  medium: C.green, hard: C.yellow, hell: C.red,
+const DIFF_BADGE: Record<string, BadgeColor> = {
+  medium: "green", hard: "yellow", hell: "red",
 };
 
 const EMPTY: Omit<AIBattlePreset, "id"> = {
@@ -34,11 +37,7 @@ const EMPTY: Omit<AIBattlePreset, "id"> = {
   isActive: true,
 };
 
-const inputStyle: React.CSSProperties = {
-  width: "100%", padding: "8px 10px", background: C.bg0,
-  border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13,
-  boxSizing: "border-box",
-};
+const inputCls = "w-full bg-bg0 border border-border rounded-lg px-2.5 py-2 text-text text-sm focus:outline-none focus:border-blue box-border";
 
 export function AIBattlesPage() {
   const [items, setItems] = useState<AIBattlePreset[]>([]);
@@ -119,59 +118,50 @@ export function AIBattlesPage() {
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 900, margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
+    <div className="p-6 max-w-4xl mx-auto">
+      <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>AI Battle Presets</h1>
-          <p style={{ color: C.faint, fontSize: 13, marginTop: 4 }}>
+          <h1 className="text-2xl font-bold text-text">AI Battle Presets</h1>
+          <p className="text-faint text-sm mt-1">
             {loading ? "Loading…" : `${items.length} preset${items.length !== 1 ? "s" : ""} — quick-launch AI battles for players`}
           </p>
         </div>
-        <button onClick={openCreate} style={{ padding: "8px 16px", background: C.blue, color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 500, border: "none", cursor: "pointer" }}>
-          + New Preset
-        </button>
+        <Button variant="primary" onClick={openCreate}>+ New Preset</Button>
       </div>
 
       {loading ? (
-        <div style={{ color: C.muted }}>Loading…</div>
+        <div className="text-muted">Loading…</div>
       ) : items.length === 0 ? (
-        <div style={{ color: C.muted, textAlign: "center", padding: 40 }}>
-          No presets yet. Run <code style={{ fontFamily: "monospace", background: C.bg2, padding: "1px 6px", borderRadius: 4 }}>npm run seed:ai-battles</code> or create one above.
+        <div className="text-muted text-center py-10">
+          No presets yet. Run <code className="font-mono bg-bg2 px-1.5 py-0.5 rounded text-xs">npm run seed:ai-battles</code> or create one above.
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {items.map(item => (
-            <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 14, background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 16px", opacity: item.isActive ? 1 : 0.55 }}>
-              <div style={{ flexShrink: 0, width: 64, textAlign: "center" }}>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: (DIFF_COLORS[item.difficulty] ?? C.blue) + "22", color: DIFF_COLORS[item.difficulty] ?? C.blue }}>
+            <div key={item.id} className={`flex items-center gap-3.5 bg-bg1 border border-border rounded-xl px-4 py-3.5 transition-opacity ${item.isActive ? "" : "opacity-55"}`}>
+              <div className="flex-shrink-0 w-16 text-center">
+                <Badge color={DIFF_BADGE[item.difficulty] ?? "muted"}>
                   {item.difficulty.toUpperCase()}
-                </span>
+                </Badge>
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontWeight: 600, color: C.text, fontSize: 14 }}>{item.displayName}</span>
-                  <span style={{ fontFamily: "monospace", fontSize: 11, color: C.faint, background: C.bg2, padding: "1px 6px", borderRadius: 4 }}>{item.id}</span>
-                  {!item.isActive && <span style={{ fontSize: 10, fontWeight: 700, color: C.faint, background: C.bg3, padding: "1px 6px", borderRadius: 4 }}>INACTIVE</span>}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-text text-sm">{item.displayName}</span>
+                  <span className="font-mono text-[11px] text-faint bg-bg2 px-1.5 py-0.5 rounded">{item.id}</span>
+                  {!item.isActive && <span className="text-[10px] font-bold text-faint bg-bg3 px-1.5 py-0.5 rounded">INACTIVE</span>}
                 </div>
-                {item.description && <div style={{ fontSize: 12, color: C.muted, marginTop: 3 }}>{item.description}</div>}
-                <div style={{ fontSize: 11, color: C.faint, marginTop: 3, display: "flex", gap: 12 }}>
-                  {item.defaultBeybladeId && <span>Bey: <span style={{ color: C.muted }}>{beyOptions.find(b => b.value === item.defaultBeybladeId)?.label ?? item.defaultBeybladeId}</span></span>}
-                  {item.defaultArenaId && <span>Arena: <span style={{ color: C.muted }}>{arenaOptions.find(a => a.value === item.defaultArenaId)?.label ?? item.defaultArenaId}</span></span>}
+                {item.description && <div className="text-xs text-muted mt-0.5">{item.description}</div>}
+                <div className="text-[11px] text-faint mt-0.5 flex gap-3">
+                  {item.defaultBeybladeId && <span>Bey: <span className="text-muted">{beyOptions.find(b => b.value === item.defaultBeybladeId)?.label ?? item.defaultBeybladeId}</span></span>}
+                  {item.defaultArenaId && <span>Arena: <span className="text-muted">{arenaOptions.find(a => a.value === item.defaultArenaId)?.label ?? item.defaultArenaId}</span></span>}
                 </div>
               </div>
-              <div style={{ display: "flex", gap: 6 }}>
-                <button onClick={() => toggleActive(item)}
-                  style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, cursor: "pointer", border: `1px solid ${C.border}`, background: "transparent", color: C.muted }}>
+              <div className="flex gap-1.5">
+                <Button size="xs" variant="outline" onClick={() => toggleActive(item)}>
                   {item.isActive ? "Disable" : "Enable"}
-                </button>
-                <button onClick={() => openEdit(item)}
-                  style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, cursor: "pointer", border: `1px solid ${C.border}`, background: "transparent", color: C.muted }}>
-                  Edit
-                </button>
-                <button onClick={() => setConfirmDelete(item)}
-                  style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, cursor: "pointer", border: `1px solid ${C.red}66`, background: "transparent", color: C.red }}>
-                  Delete
-                </button>
+                </Button>
+                <Button size="xs" variant="outline" onClick={() => openEdit(item)}>Edit</Button>
+                <Button size="xs" variant="danger" onClick={() => setConfirmDelete(item)}>Delete</Button>
               </div>
             </div>
           ))}
@@ -179,64 +169,64 @@ export function AIBattlesPage() {
       )}
 
       {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 16 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, width: "100%", maxWidth: 500 }}>
-            <h3 style={{ fontSize: 17, fontWeight: 700, color: C.text, marginBottom: 20 }}>
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000] p-4">
+          <div className="bg-bg1 border border-border rounded-2xl p-7 w-full max-w-[500px]">
+            <h3 className="text-lg font-bold text-text mb-5">
               {editing ? "Edit Preset" : "New AI Battle Preset"}
             </h3>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div className="flex flex-col gap-3.5">
               <div>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Difficulty</span>
+                <span className="text-xs text-muted block mb-1">Difficulty</span>
                 <SearchableSelect value={form.difficulty} options={DIFFICULTIES} onChange={v => setForm(f => ({ ...f, difficulty: v as any }))} />
               </div>
 
               <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Display Name *</span>
-                <input value={form.displayName} onChange={e => setForm(f => ({ ...f, displayName: e.target.value }))} style={inputStyle} placeholder="e.g. Hard AI Battle" />
+                <span className="text-xs text-muted block mb-1">Display Name *</span>
+                <input value={form.displayName} onChange={e => setForm(f => ({ ...f, displayName: e.target.value }))} className={inputCls} placeholder="e.g. Hard AI Battle" />
               </label>
 
               <label>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>
-                <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} style={{ ...inputStyle, resize: "vertical" }} />
+                <span className="text-xs text-muted block mb-1">Description</span>
+                <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} className={`${inputCls} resize-y`} />
               </label>
 
               <div>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Default Beyblade (optional)</span>
+                <span className="text-xs text-muted block mb-1">Default Beyblade (optional)</span>
                 <SearchableSelect value={form.defaultBeybladeId} options={[{ value: "", label: "— Random / player picks —" }, ...beyOptions]}
                   onChange={v => setForm(f => ({ ...f, defaultBeybladeId: v }))} placeholder="Auto-pick…" />
               </div>
 
               <div>
-                <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Default Arena (optional)</span>
+                <span className="text-xs text-muted block mb-1">Default Arena (optional)</span>
                 <SearchableSelect value={form.defaultArenaId} options={[{ value: "", label: "— Random / player picks —" }, ...arenaOptions]}
                   onChange={v => setForm(f => ({ ...f, defaultArenaId: v }))} placeholder="Auto-pick…" />
               </div>
 
-              <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+              <label className="flex items-center gap-2.5 cursor-pointer">
                 <input type="checkbox" checked={form.isActive} onChange={e => setForm(f => ({ ...f, isActive: e.target.checked }))} />
-                <span style={{ fontSize: 13, color: C.text }}>Active (visible to players)</span>
+                <span className="text-sm text-text">Active (visible to players)</span>
               </label>
             </div>
 
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20 }}>
-              <button onClick={() => setShowModal(false)} style={{ padding: "8px 18px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleSave} disabled={saving} style={{ padding: "8px 18px", borderRadius: 8, fontSize: 13, border: "none", background: C.blue, color: "#fff", cursor: "pointer", opacity: saving ? 0.6 : 1 }}>
+            <div className="flex gap-2.5 justify-end mt-5">
+              <Button variant="outline" onClick={() => setShowModal(false)}>Cancel</Button>
+              <Button variant="primary" onClick={handleSave} disabled={saving}>
                 {saving ? "Saving…" : "Save"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       )}
 
       {confirmDelete && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, maxWidth: 380, width: "90%" }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 10 }}>Delete "{confirmDelete.displayName}"?</h3>
-            <p style={{ color: C.muted, fontSize: 13, marginBottom: 20 }}>This will remove the preset from the AI battle quick-launch list.</p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleDelete} style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: "none", background: C.red, color: "#fff", cursor: "pointer" }}>Delete</button>
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000]">
+          <div className="bg-bg1 border border-border rounded-2xl p-7 max-w-[380px] w-[90%]">
+            <h3 className="text-base font-bold text-text mb-2.5">Delete "{confirmDelete.displayName}"?</h3>
+            <p className="text-muted text-sm mb-5">This will remove the preset from the AI battle quick-launch list.</p>
+            <div className="flex gap-2.5 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+              <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
             </div>
           </div>
         </div>

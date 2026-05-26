@@ -3,8 +3,8 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useElementTypes, invalidateElementTypesCache } from "@/hooks/useElementTypes";
 import type { ElementTypeConfig } from "@/types/elementTypeConfig";
+import { Button } from "@/components/ui/Button";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
 import { useState } from "react";
 
 export function ElementTypesListPage() {
@@ -30,59 +30,46 @@ export function ElementTypesListPage() {
   };
 
   return (
-    <div style={{ padding: 24, width: "100%", boxSizing: "border-box" as const }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
+    <div className="p-6 w-full box-border">
+      <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>Element Types</h1>
-          <p style={{ color: C.faint, fontSize: 13, marginTop: 4 }}>
+          <h1 className="text-[22px] font-bold text-text">Element Types</h1>
+          <p className="text-faint text-[13px] mt-1">
             {loading ? "Loading…" : `${configs.length} types configured`}
           </p>
         </div>
-        <button
-          onClick={() => navigate("/admin/element-types/create")}
-          style={{ padding: "8px 16px", background: C.blue, color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 500, border: "none", cursor: "pointer" }}
-        >
+        <Button variant="primary" size="sm" onClick={() => navigate("/admin/element-types/create")}>
           + New Type
-        </button>
+        </Button>
       </div>
 
       {loading ? (
-        <div style={{ color: C.muted, fontSize: 14 }}>Loading element types…</div>
+        <div className="text-muted text-sm">Loading element types…</div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {configs.map(cfg => (
             <div
               key={cfg.id}
-              style={{
-                display: "flex", alignItems: "center", gap: 14,
-                background: C.bg1, border: `1px solid ${C.border}`,
-                borderRadius: 12, padding: "12px 16px",
-              }}
+              className="flex items-center gap-3.5 bg-bg1 border border-border rounded-xl px-4 py-3"
             >
               {/* Color badge + icon */}
-              <div style={{
-                width: 36, height: 36, borderRadius: 8, flexShrink: 0,
-                background: cfg.color + "33", border: `2px solid ${cfg.color}`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 18,
-              }}>
+              <div
+                className="w-9 h-9 rounded-lg shrink-0 flex items-center justify-center text-lg border-2"
+                style={{ background: cfg.color + "33", borderColor: cfg.color }}
+              >
                 {cfg.icon}
               </div>
 
               {/* Name + slug */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontWeight: 600, color: C.text, fontSize: 14 }}>{cfg.name}</span>
-                  <span style={{ fontFamily: "monospace", fontSize: 11, color: C.faint, background: C.bg2, padding: "1px 6px", borderRadius: 4 }}>
-                    {cfg.id}
-                  </span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-text text-sm">{cfg.name}</span>
+                  <span className="font-mono text-[11px] text-faint bg-bg2 px-1.5 py-px rounded">{cfg.id}</span>
                   {cfg.isDefault && (
-                    <span style={{ fontSize: 10, fontWeight: 700, color: C.blue, background: C.blue + "22", padding: "1px 6px", borderRadius: 4, letterSpacing: "0.05em" }}>
-                      DEFAULT
-                    </span>
+                    <span className="text-[10px] font-bold text-blue bg-blue/10 px-1.5 py-px rounded tracking-wide">DEFAULT</span>
                   )}
                 </div>
-                <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>
+                <div className="text-xs text-muted mt-0.5">
                   {cfg.zoneImmunities.length > 0
                     ? `Immune to: ${cfg.zoneImmunities.slice(0, 4).join(", ")}${cfg.zoneImmunities.length > 4 ? ` +${cfg.zoneImmunities.length - 4} more` : ""}`
                     : "No zone immunities"}
@@ -91,54 +78,39 @@ export function ElementTypesListPage() {
               </div>
 
               {/* Color swatch */}
-              <div style={{ width: 20, height: 20, borderRadius: 4, background: cfg.color, border: `1px solid ${C.border}`, flexShrink: 0 }} />
+              <div className="w-5 h-5 rounded shrink-0 border border-border" style={{ background: cfg.color }} />
 
               {/* Actions */}
-              <button
-                onClick={() => navigate(`/admin/element-types/${cfg.id}`)}
-                style={{ padding: "6px 14px", borderRadius: 7, fontSize: 12, fontWeight: 500, cursor: "pointer", border: `1px solid ${C.border}`, background: "transparent", color: C.muted }}
-              >
+              <Button variant="outline" size="sm" onClick={() => navigate(`/admin/element-types/${cfg.id}`)}>
                 Edit
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
                 onClick={() => !cfg.isDefault && setConfirmDelete(cfg)}
                 title={cfg.isDefault ? "Default types cannot be deleted" : "Delete"}
                 disabled={cfg.isDefault}
-                style={{
-                  padding: "6px 14px", borderRadius: 7, fontSize: 12, fontWeight: 500,
-                  cursor: cfg.isDefault ? "not-allowed" : "pointer",
-                  border: `1px solid ${cfg.isDefault ? C.border : C.red + "66"}`,
-                  background: "transparent",
-                  color: cfg.isDefault ? C.faint : C.red,
-                  opacity: cfg.isDefault ? 0.4 : 1,
-                }}
+                className={cfg.isDefault ? "opacity-40 cursor-not-allowed" : ""}
               >
                 Delete
-              </button>
+              </Button>
             </div>
           ))}
         </div>
       )}
 
-      {/* Delete confirm modal */}
       {confirmDelete && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, maxWidth: 400, width: "90%" }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 10 }}>Delete "{confirmDelete.name}"?</h3>
-            <p style={{ color: C.muted, fontSize: 13, marginBottom: 20 }}>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[1000]">
+          <div className="bg-bg1 border border-border rounded-2xl p-7 max-w-[400px] w-[90%]">
+            <h3 className="text-base font-bold text-text mb-2.5">Delete "{confirmDelete.name}"?</h3>
+            <p className="text-muted text-[13px] mb-5">
               This will permanently remove the element type config. Beyblades using this type will keep the slug in their data but will show no icon or color.
             </p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={!!deletingId}
-                style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: "none", background: C.red, color: "#fff", cursor: "pointer", opacity: deletingId ? 0.6 : 1 }}
-              >
+            <div className="flex gap-2.5 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+              <Button variant="danger" size="sm" onClick={handleDelete} disabled={!!deletingId}>
                 {deletingId ? "Deleting…" : "Delete"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

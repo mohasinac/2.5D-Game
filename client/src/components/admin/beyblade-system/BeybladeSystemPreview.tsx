@@ -4,7 +4,6 @@
  */
 
 import { useState, useEffect, useRef } from "react";
-import { C } from "@/styles/theme";
 import { SideProfileView } from "./SideProfileView";
 import { TopDownView } from "./TopDownView";
 import { IsometricView } from "./IsometricView";
@@ -107,21 +106,18 @@ export function BeybladeSystemPreview({ resolved }: Props) {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 0, height: "100%" }}>
+    <div className="flex flex-col gap-0 h-full">
       {/* Tab strip */}
-      <div style={{ display: "flex", gap: 2, padding: "6px 12px 0", borderBottom: `1px solid ${C.border}`, background: C.bg1, flexShrink: 0 }}>
+      <div className="flex gap-0.5 px-3 pt-1.5 border-b border-border bg-bg1 shrink-0">
         {TABS.map((t) => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            style={{
-              padding: "5px 10px", fontSize: 11, borderRadius: "5px 5px 0 0", cursor: "pointer",
-              background: tab === t.key ? C.bg0 : "transparent",
-              color: tab === t.key ? C.text : C.muted,
-              border: `1px solid ${tab === t.key ? C.border : "transparent"}`,
-              borderBottom: tab === t.key ? `1px solid ${C.bg0}` : "none",
-              marginBottom: tab === t.key ? -1 : 0,
-            }}
+            className={`px-2.5 py-[5px] text-[11px] rounded-t-[5px] cursor-pointer border ${
+              tab === t.key
+                ? "bg-bg0 text-text border-border -mb-px border-b-bg0"
+                : "bg-transparent text-muted border-transparent"
+            }`}
           >
             {t.label}
           </button>
@@ -129,27 +125,27 @@ export function BeybladeSystemPreview({ resolved }: Props) {
       </div>
 
       {/* Content */}
-      <div style={{ flex: 1, overflowY: "auto", padding: 12, background: C.bg0 }}>
+      <div className="flex-1 overflow-y-auto p-3 bg-bg0">
         {tab === "3panel" && (
-          <div style={{ display: "flex", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
+          <div className="flex gap-3 items-start flex-wrap">
             {/* Exploded view — primary anchor on the left */}
             <ExplodedView resolved={resolved} width={340} />
 
             {/* Other panels — analytical views stacked on the right */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1, minWidth: 280 }}>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div className="flex flex-col gap-3 flex-1 min-w-[280px]">
+              <div className="flex gap-3 flex-wrap">
                 <div>
-                  <div style={{ fontSize: 10, color: C.faint, marginBottom: 4 }}>Side Profile</div>
+                  <div className="text-[10px] text-faint mb-1">Side Profile</div>
                   <SideProfileView resolved={resolved} />
                 </div>
                 <div>
                   <TopDownView resolved={resolved} showMovementPath />
                 </div>
               </div>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <div className="flex gap-3 flex-wrap">
                 <IsometricView resolved={resolved} />
-                <div style={{ flex: 1, minWidth: 200, background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8 }}>
-                  <div style={{ fontSize: 10, color: C.faint, padding: "8px 14px 0" }}>Computed Stats</div>
+                <div className="flex-1 min-w-[200px] bg-bg1 border border-border rounded-[8px]">
+                  <div className="text-[10px] text-faint px-3.5 pt-2">Computed Stats</div>
                   <ComputedStatsPanel resolved={resolved} />
                 </div>
               </div>
@@ -162,12 +158,9 @@ export function BeybladeSystemPreview({ resolved }: Props) {
         {tab === "top"   && <TopDownView resolved={resolved} showMovementPath />}
         {tab === "iso"   && <IsometricView resolved={resolved} />}
         {tab === "live"  && livePreview && (
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <div style={{
-              width: 480, height: 480, background: C.bg1,
-              border: `1px solid ${C.border}`, borderRadius: 8, overflow: "hidden",
-            }}>
-              <div style={{ fontSize: 10, color: C.faint, padding: "8px 14px 4px" }}>
+          <div className="flex gap-3 flex-wrap">
+            <div className="w-[480px] h-[480px] bg-bg1 border border-border rounded-[8px] overflow-hidden">
+              <div className="text-[10px] text-faint px-3.5 pt-2 pb-1">
                 Live preview — drives the in-game PixiJS renderer with this system
               </div>
               <PreviewAdapter
@@ -181,7 +174,7 @@ export function BeybladeSystemPreview({ resolved }: Props) {
           </div>
         )}
         {tab === "stats" && (
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, maxWidth: 320 }}>
+          <div className="bg-bg1 border border-border rounded-[8px] max-w-xs">
             <ComputedStatsPanel resolved={resolved} />
           </div>
         )}

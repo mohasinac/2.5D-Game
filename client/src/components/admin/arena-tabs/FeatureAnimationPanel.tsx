@@ -33,31 +33,31 @@ export default function FeatureAnimationPanel({ value, onChange, featureId }: Pr
   const enabled = !!value;
 
   return (
-    <div data-testid={featureId ? `feature-animation-${featureId}` : "feature-animation"} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <label style={{ fontSize: 12, color: C.muted, minWidth: 100 }}>Animation</label>
+    <div data-testid={featureId ? `feature-animation-${featureId}` : "feature-animation"} className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <label className="text-xs text-muted min-w-[100px]">Animation</label>
         <input
           type="checkbox"
           checked={enabled}
           onChange={e => onChange(e.target.checked ? { preset: "pulse" } : undefined)}
         />
-        <span style={{ fontSize: 12, color: C.muted }}>{enabled ? "Enabled" : "None"}</span>
+        <span className="text-xs text-muted">{enabled ? "Enabled" : "None"}</span>
       </div>
 
       {enabled && value && (
         <>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 12, color: C.muted, minWidth: 100 }}>Preset</label>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-muted min-w-[100px]">Preset</label>
             <SearchableSelect
               value={value.preset}
               options={PRESETS.map(p => ({ value: p, label: PRESET_LABELS[p] }))}
               onChange={v => onChange({ ...value, preset: v as FeatureAnimationPreset })}
-              style={{ background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, fontSize: 12 }}
+              style={{ flex: 1 }}
             />
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 12, color: C.muted, minWidth: 100 }}>Period (ms)</label>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-muted min-w-[100px]">Period (ms)</label>
             <input
               type="number"
               value={value.periodMs ?? 1200}
@@ -65,22 +65,22 @@ export default function FeatureAnimationPanel({ value, onChange, featureId }: Pr
               max={10000}
               step={100}
               onChange={e => onChange({ ...value, periodMs: Number(e.target.value) })}
-              style={{ width: 80, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+              className="w-20 bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs"
             />
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 12, color: C.muted, minWidth: 100 }}>Color</label>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-muted min-w-[100px]">Color</label>
             <input
               type="color"
               value={value.color ?? "#ffffff"}
               onChange={e => onChange({ ...value, color: e.target.value })}
-              style={{ width: 40, height: 28, cursor: "pointer", border: `1px solid ${C.border}`, borderRadius: 4 }}
+              className="w-10 h-7 cursor-pointer border border-border rounded"
             />
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 12, color: C.muted, minWidth: 100 }}>Intensity</label>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-muted min-w-[100px]">Intensity</label>
             <input
               type="range"
               min={0}
@@ -88,9 +88,9 @@ export default function FeatureAnimationPanel({ value, onChange, featureId }: Pr
               step={0.1}
               value={value.intensity ?? 1.0}
               onChange={e => onChange({ ...value, intensity: Number(e.target.value) })}
-              style={{ width: 100 }}
+              className="w-[100px]"
             />
-            <span style={{ fontSize: 11, color: C.muted }}>{(value.intensity ?? 1.0).toFixed(1)}</span>
+            <span className="text-[11px] text-muted">{(value.intensity ?? 1.0).toFixed(1)}</span>
           </div>
         </>
       )}

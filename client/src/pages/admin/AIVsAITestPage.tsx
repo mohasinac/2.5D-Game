@@ -7,7 +7,6 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
 import { collection, getDocs } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, S, btn } from "@/styles/theme";
 import toast from "react-hot-toast";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
@@ -92,7 +91,6 @@ export function AIVsAITestPage() {
       state: {
         aiVsAi: true,
         arenaId,
-        // Used by AIBattleRoom to spawn two AI contestants in onCreate.
         aiP1BeybladeId: p1BeyId,
         aiP2BeybladeId: p2BeyId,
         aiP1Difficulty: p1Diff,
@@ -104,24 +102,24 @@ export function AIVsAITestPage() {
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 760, margin: "0 auto" }}>
-      <div style={{ marginBottom: 24 }}>
-        <Link to="/admin" style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Dashboard</Link>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, marginTop: 8 }}>AI vs AI Lab</h1>
-        <p style={{ color: C.faint, fontSize: 13, marginTop: 4 }}>
+    <div className="p-6 max-w-[760px] mx-auto">
+      <div className="mb-6">
+        <Link to="/admin" className="text-faint text-[13px] no-underline">← Dashboard</Link>
+        <h1 className="text-[22px] font-bold text-text mt-2">AI vs AI Lab</h1>
+        <p className="text-faint text-[13px] mt-1">
           Pit two AI controllers against each other to validate beyblade and arena interactions.
           You join the resulting room as a spectator.
         </p>
       </div>
 
       <Section title="Contestants">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div className="grid grid-cols-2 gap-3.5">
           <Field label="Player 1 Beyblade">
             <SearchableSelect
               value={p1BeyId}
               options={beys.map((b) => ({ value: b.id, label: `${b.displayName}${b.type ? ` (${b.type})` : ""}` }))}
               onChange={setP1BeyId}
-              style={S.input}
+              className="w-full"
             />
           </Field>
           <Field label="Player 2 Beyblade">
@@ -129,17 +127,17 @@ export function AIVsAITestPage() {
               value={p2BeyId}
               options={beys.map((b) => ({ value: b.id, label: `${b.displayName}${b.type ? ` (${b.type})` : ""}` }))}
               onChange={setP2BeyId}
-              style={S.input}
+              className="w-full"
             />
           </Field>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div className="grid grid-cols-2 gap-3.5">
           <Field label="Player 1 Difficulty">
             <SearchableSelect
               value={p1Diff}
               options={(Object.keys(DIFF_LABEL) as Difficulty[]).map((d) => ({ value: d, label: DIFF_LABEL[d] }))}
               onChange={(v) => setP1Diff(v as Difficulty)}
-              style={S.input}
+              className="w-full"
             />
           </Field>
           <Field label="Player 2 Difficulty">
@@ -147,7 +145,7 @@ export function AIVsAITestPage() {
               value={p2Diff}
               options={(Object.keys(DIFF_LABEL) as Difficulty[]).map((d) => ({ value: d, label: DIFF_LABEL[d] }))}
               onChange={(v) => setP2Diff(v as Difficulty)}
-              style={S.input}
+              className="w-full"
             />
           </Field>
         </div>
@@ -159,21 +157,21 @@ export function AIVsAITestPage() {
             value={arenaId}
             options={arenas.map((a) => ({ value: a.id, label: a.name }))}
             onChange={setArenaId}
-            style={S.input}
+            className="w-full"
           />
         </Field>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div className="grid grid-cols-2 gap-3.5">
           <Field label="Best Of">
             <SearchableSelect
               value={String(bestOf)}
               options={[{ value: "1", label: "BO1" }, { value: "3", label: "BO3" }, { value: "5", label: "BO5" }]}
               onChange={(v) => setBestOf(Number(v) as BestOf)}
-              style={S.input}
+              className="w-full"
             />
           </Field>
           <Field label="Deterministic seed (optional)">
             <input
-              style={S.input}
+              className="w-full px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm"
               type="text"
               value={seed}
               onChange={(e) => setSeed(e.target.value)}
@@ -183,11 +181,11 @@ export function AIVsAITestPage() {
         </div>
       </Section>
 
-      <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", marginTop: 20 }}>
-        <Link to="/admin" style={{ ...btn(C.bg3), textDecoration: "none", display: "inline-block" }}>
+      <div className="flex gap-3 justify-end mt-5">
+        <Link to="/admin" className="px-4 py-2 bg-bg3 text-text rounded-lg text-sm font-semibold border border-border no-underline inline-block">
           Cancel
         </Link>
-        <button onClick={onStart} disabled={!canStart} style={{ ...btn(C.yellow), color: C.bg0, opacity: canStart ? 1 : 0.6 }}>
+        <button onClick={onStart} disabled={!canStart} className="px-4 py-2 bg-yellow text-bg0 rounded-lg text-sm font-semibold" style={{ opacity: canStart ? 1 : 0.6 }}>
           Start AI vs AI
         </button>
       </div>
@@ -197,9 +195,9 @@ export function AIVsAITestPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 18, marginBottom: 16 }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>{title}</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>{children}</div>
+    <div className="bg-bg1 rounded-xl border border-border p-[18px] mb-4">
+      <p className="text-[11px] font-bold text-muted uppercase tracking-[0.08em] mb-3.5">{title}</p>
+      <div className="flex flex-col gap-3">{children}</div>
     </div>
   );
 }
@@ -207,7 +205,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label style={S.label}>{label}</label>
+      <label className="block text-xs text-muted mb-1.5">{label}</label>
       {children}
     </div>
   );

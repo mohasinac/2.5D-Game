@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, pill, btn, alpha } from "@/styles/theme";
+import { C } from "@/styles/theme";
 import type { TournamentDoc } from "@/types/game";
 import toast from "react-hot-toast";
 
@@ -21,6 +21,14 @@ function formatDate(ts: any): string {
 }
 
 const STATUS_ORDER = ["draft", "registration", "in-progress", "completed", "cancelled"];
+
+function statusPillClass(color: string): string {
+  if (color === C.blue) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue/[.13] text-blue border border-blue/[.27]";
+  if (color === C.green) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green/[.13] text-green border border-green/[.27]";
+  if (color === C.purple) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple/[.13] text-purple border border-purple/[.27]";
+  if (color === C.red) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red/[.13] text-red border border-red/[.27]";
+  return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-bg3 text-muted border border-border";
+}
 
 export function TournamentsListPage() {
   const [tournaments, setTournaments] = useState<TournamentDoc[]>([]);
@@ -55,7 +63,7 @@ export function TournamentsListPage() {
         return bt - at;
       }
       if (sortBy === "participants") return (b.maxParticipants ?? 0) - (a.maxParticipants ?? 0);
-      return 0; // "created" — already ordered by Firestore
+      return 0;
     });
 
   const setStatus = async (id: string, status: TournamentDoc["status"]) => {
@@ -71,34 +79,40 @@ export function TournamentsListPage() {
   };
 
   return (
-    <div style={{ padding: 24, width: "100%", boxSizing: "border-box" as const }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+    <div className="p-6 w-full box-border">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>Tournaments</h1>
-          <p style={{ color: C.faint, fontSize: 13, marginTop: 4 }}>Create and manage bracket tournaments.</p>
+          <h1 className="text-[22px] font-bold text-text">Tournaments</h1>
+          <p className="text-faint text-[13px] mt-1">Create and manage bracket tournaments.</p>
         </div>
-        <Link to="/admin/tournaments/create" style={{ ...btn(C.yellow), color: C.bg0, textDecoration: "none", display: "inline-block" }}>
+        <Link to="/admin/tournaments/create" className="px-4 py-2 bg-yellow text-bg0 rounded-lg text-sm font-semibold no-underline inline-block">
           + Create Tournament
         </Link>
       </div>
 
       {/* Search & filter bar */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
+      <div className="flex gap-2 mb-4 flex-wrap items-center">
         <input
           value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search by name…"
-          style={{ padding: "7px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.bg1, color: C.text, fontSize: 13, flex: "1 1 200px", minWidth: 160 }}
+          className="flex-1 min-w-40 px-3 py-1.5 rounded-lg border border-border bg-bg1 text-text text-[13px]"
         />
-        <div style={{ display: "flex", gap: 4 }}>
+        <div className="flex gap-1">
           {(["all", "draft", "registration", "in-progress", "completed", "cancelled"] as const).map(s => (
             <button key={s} onClick={() => setStatusFilter(s)}
-              style={{ padding: "5px 10px", borderRadius: 6, fontSize: 12, fontWeight: 500, border: `1px solid ${statusFilter === s ? (STATUS_COLORS[s] ?? C.border) : C.border}`, background: statusFilter === s ? (STATUS_COLORS[s] ?? C.blue) + "22" : "transparent", color: statusFilter === s ? (STATUS_COLORS[s] ?? C.text) : C.muted, cursor: "pointer" }}>
+              style={{
+                padding: "5px 10px", borderRadius: 6, fontSize: 12, fontWeight: 500,
+                border: `1px solid ${statusFilter === s ? (STATUS_COLORS[s] ?? C.border) : C.border}`,
+                background: statusFilter === s ? (STATUS_COLORS[s] ?? C.blue) + "22" : "transparent",
+                color: statusFilter === s ? (STATUS_COLORS[s] ?? C.text) : C.muted,
+                cursor: "pointer"
+              }}>
               {s === "all" ? "All" : s}
             </button>
           ))}
         </div>
         <select value={sortBy} onChange={e => setSortBy(e.target.value as any)}
-          style={{ padding: "6px 10px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.bg1, color: C.muted, fontSize: 12, cursor: "pointer" }}>
+          className="px-2.5 py-1.5 rounded-lg border border-border bg-bg1 text-muted text-xs cursor-pointer">
           <option value="created">Sort: Created</option>
           <option value="scheduled">Sort: Scheduled</option>
           <option value="participants">Sort: Max Participants</option>
@@ -106,57 +120,54 @@ export function TournamentsListPage() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: 60, color: C.faint }}>
-          <div className="spin" style={{ width: 32, height: 32, border: `2px solid ${C.border}`, borderTopColor: C.yellow, borderRadius: "50%", margin: "0 auto 12px" }} />
+        <div className="text-center py-16 text-faint">
+          <div className="spin w-8 h-8 border-2 border-border border-t-yellow rounded-full mx-auto mb-3" />
           Loading...
         </div>
       ) : filtered.length === 0 ? (
-        <div style={{ textAlign: "center", padding: 60, color: C.faint }}>
-          {tournaments.length === 0 ? (
-            <></>
-          ) : null}
+        <div className="text-center py-16 text-faint">
           {tournaments.length === 0
-            ? <><span>No tournaments yet. </span><Link to="/admin/tournaments/create" style={{ color: C.blue }}>Create one</Link>.</>
+            ? <><span>No tournaments yet. </span><Link to="/admin/tournaments/create" className="text-blue">Create one</Link>.</>
             : <span>No tournaments match the current filter.</span>
           }
         </div>
       ) : (
-        <div style={{ background: C.bg1, borderRadius: 14, border: `1px solid ${C.border}`, overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+        <div className="bg-bg1 rounded-[14px] border border-border overflow-hidden">
+          <table className="w-full border-collapse text-[13px]">
             <thead>
-              <tr style={{ borderBottom: `1px solid ${C.border}` }}>
+              <tr className="border-b border-border">
                 {["Name", "Type", "Status", "Participants", "Scheduled", "Actions"].map((h) => (
-                  <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase" }}>{h}</th>
+                  <th key={h} className="px-3.5 py-2.5 text-left text-[11px] text-faint font-semibold uppercase">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {filtered.map((t, i) => (
                 <tr key={t.id} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : "none" }}>
-                  <td style={{ padding: "12px 14px", color: C.text, fontWeight: 500 }}>
-                    <Link to={`/admin/tournaments/${t.id}`} style={{ color: C.text, textDecoration: "none" }}>{t.name}</Link>
-                    {t.description && <p style={{ color: C.faint, fontSize: 11, marginTop: 2 }}>{t.description.slice(0, 50)}{t.description.length > 50 ? "..." : ""}</p>}
+                  <td className="px-3.5 py-3 text-text font-medium">
+                    <Link to={`/admin/tournaments/${t.id}`} className="text-text no-underline">{t.name}</Link>
+                    {t.description && <p className="text-faint text-[11px] mt-0.5">{t.description.slice(0, 50)}{t.description.length > 50 ? "..." : ""}</p>}
                   </td>
-                  <td style={{ padding: "12px 14px" }}>
-                    <span style={pill(C.muted)}>{t.type}</span>
+                  <td className="px-3.5 py-3">
+                    <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-bg3 text-muted border border-border">{t.type}</span>
                   </td>
-                  <td style={{ padding: "12px 14px" }}>
-                    <span style={pill(STATUS_COLORS[t.status] ?? C.faint)}>{t.status}</span>
+                  <td className="px-3.5 py-3">
+                    <span className={statusPillClass(STATUS_COLORS[t.status] ?? C.faint)}>{t.status}</span>
                   </td>
-                  <td style={{ padding: "12px 14px", color: C.muted }}>Max {t.maxParticipants}</td>
-                  <td style={{ padding: "12px 14px", color: C.muted, fontSize: 12 }}>{formatDate(t.scheduledStartTime)}</td>
-                  <td style={{ padding: "12px 14px" }}>
-                    <div style={{ display: "flex", gap: 6 }}>
+                  <td className="px-3.5 py-3 text-muted">Max {t.maxParticipants}</td>
+                  <td className="px-3.5 py-3 text-muted text-xs">{formatDate(t.scheduledStartTime)}</td>
+                  <td className="px-3.5 py-3">
+                    <div className="flex gap-1.5">
                       <Link
                         to={`/admin/tournaments/${t.id}`}
-                        style={{ padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", background: C.bg3, color: C.text, textDecoration: "none", border: `1px solid ${C.border}` }}
+                        className="px-2.5 py-1 rounded-md text-xs font-semibold bg-bg3 text-text no-underline border border-border"
                       >
                         Manage
                       </Link>
                       {(t.status === "draft" || t.status === "registration") && (
                         <Link
                           to={`/admin/tournaments/${t.id}/edit`}
-                          style={{ padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", background: alpha(C.blue, 0.1), color: C.blue, textDecoration: "none", border: `1px solid ${alpha(C.blue, 0.25)}` }}
+                          className="px-2.5 py-1 rounded-md text-xs font-semibold no-underline bg-blue/[.10] text-blue border border-blue/[.25]"
                         >
                           Edit
                         </Link>
@@ -165,7 +176,7 @@ export function TournamentsListPage() {
                         <button
                           onClick={() => setStatus(t.id, "registration")}
                           disabled={updating === t.id}
-                          style={{ padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", background: alpha(C.blue, 0.13), color: C.blue, border: `1px solid ${alpha(C.blue, 0.27)}` }}
+                          className="px-2.5 py-1 rounded-md text-xs font-semibold bg-blue/[.13] text-blue border border-blue/[.27]"
                         >
                           Open Reg.
                         </button>
@@ -174,7 +185,7 @@ export function TournamentsListPage() {
                         <button
                           onClick={() => setStatus(t.id, "cancelled")}
                           disabled={updating === t.id}
-                          style={{ padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", background: alpha(C.red, 0.13), color: C.red, border: `1px solid ${alpha(C.red, 0.27)}` }}
+                          className="px-2.5 py-1 rounded-md text-xs font-semibold bg-red/[.13] text-red border border-red/[.27]"
                         >
                           Cancel
                         </button>

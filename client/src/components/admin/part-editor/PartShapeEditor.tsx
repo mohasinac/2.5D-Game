@@ -220,18 +220,14 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
     max = 300,
     step = 0.5,
   ) => (
-    <label style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: C.muted }}>
+    <label className="flex items-center gap-[5px] text-[11px] text-muted">
       {label}
       <input
         type="number"
         min={min} max={max} step={step}
         value={val}
         onChange={(e) => set(Math.max(min, Math.min(max, +e.target.value)))}
-        style={{
-          width: 52, padding: "2px 5px",
-          background: C.bg2, border: `1px solid ${C.border}`,
-          borderRadius: 4, color: C.text, fontSize: 11,
-        }}
+        className="w-[52px] px-[5px] py-0.5 bg-bg2 border border-border rounded text-text text-[11px]"
       />
       {unit && <span>{unit}</span>}
     </label>
@@ -246,70 +242,59 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
     step: number,
     fmt?: (v: number) => string,
   ) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.muted }}>
+    <div className="flex flex-col gap-0.5">
+      <div className="flex justify-between text-[11px] text-muted">
         <span>{label}</span>
-        <span style={{ fontFamily: "monospace", color: C.text }}>{fmt ? fmt(val) : val}</span>
+        <span className="font-mono text-text">{fmt ? fmt(val) : val}</span>
       </div>
       <input
         type="range" min={min} max={max} step={step} value={val}
         onChange={(e) => set(+e.target.value)}
-        style={{ width: "100%", accentColor: C.blue }}
+        className="w-full accent-blue"
       />
     </div>
   );
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+    <div className="flex flex-col gap-3.5">
 
       {/* Workflow tier badge */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 12, color: C.muted }}>Shape workflow:</span>
-        <span style={{
-          fontSize: 11, padding: "2px 9px", borderRadius: 99, fontWeight: 600,
-          background: alpha(tierMeta.color, 0.09), color: tierMeta.color, border: `1px solid ${alpha(tierMeta.color, 0.27)}`,
-        }}>
+      <div className="flex items-center gap-2">
+        <span className="text-[12px] text-muted">Shape workflow:</span>
+        <span
+          style={{ background: alpha(tierMeta.color, 0.09), color: tierMeta.color, border: `1px solid ${alpha(tierMeta.color, 0.27)}` }}
+          className="text-[11px] px-[9px] py-0.5 rounded-full font-semibold"
+        >
           {tierMeta.label}
         </span>
-        <span style={{ fontSize: 11, color: C.faint }}>{tierMeta.desc}</span>
+        <span className="text-[11px] text-faint">{tierMeta.desc}</span>
       </div>
 
       {/* Image scale + trace settings — only when at least one image is uploaded */}
       {hasAnyImage && (
-        <div style={{
-          display: "flex", flexDirection: "column", gap: 10,
-          padding: "10px 12px", background: C.bg2, borderRadius: 8,
-          border: `1px solid ${C.border}`,
-        }}>
+        <div className="flex flex-col gap-2.5 p-3 bg-bg2 rounded-[8px] border border-border">
           {/* Scale inputs row */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center" }}>
-            <span style={{ fontSize: 11, color: C.faint, fontWeight: 600 }}>Image scale</span>
+          <div className="flex flex-wrap gap-3.5 items-center">
+            <span className="text-[11px] text-faint font-semibold">Image scale</span>
             {images.topView    && numInput("Top diam:",    topDiamMm,    setTopDiamMm)}
             {images.bottomView && numInput("Bottom diam:", bottomDiamMm, setBottomDiamMm)}
             {images.sideView   && numInput("Side height:", sideMaxH,     setSideMaxH)}
             {images.sideView   && numInput("Side radius:", sideMaxR,     setSideMaxR)}
-            <span style={{ fontSize: 10, color: C.faint }}>Physical mm the image represents</span>
+            <span className="text-[10px] text-faint">Physical mm the image represents</span>
           </div>
 
           {/* Trace settings — collapsible */}
           <div>
             <button
               onClick={() => setTraceSettingsOpen((o) => !o)}
-              style={{
-                background: "none", border: "none", cursor: "pointer",
-                fontSize: 11, color: C.muted, display: "flex", alignItems: "center", gap: 5, padding: 0,
-              }}
+              className="bg-transparent border-none cursor-pointer text-[11px] text-muted flex items-center gap-[5px] p-0"
             >
-              <span style={{ fontSize: 10 }}>{traceSettingsOpen ? "▾" : "▸"}</span>
+              <span className="text-[10px]">{traceSettingsOpen ? "▾" : "▸"}</span>
               Trace settings
             </button>
 
             {traceSettingsOpen && (
-              <div style={{
-                marginTop: 10, paddingTop: 10,
-                borderTop: `1px solid ${C.border}`,
-                display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px",
-              }}>
+              <div className="mt-2.5 pt-2.5 border-t border-border grid grid-cols-2 gap-x-5 gap-y-2.5">
                 {/* RDP tolerance */}
                 <div>
                   {sliderRow(
@@ -317,7 +302,7 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
                     0.5, 12, 0.5,
                     (v) => `${v}px`,
                   )}
-                  <div style={{ fontSize: 10, color: C.faint, marginTop: 2 }}>
+                  <div className="text-[10px] text-faint mt-0.5">
                     Higher = fewer polygon points, smoother shape
                   </div>
                 </div>
@@ -329,14 +314,14 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
                     1, 200, 1,
                     (v) => `${v}/255`,
                   )}
-                  <div style={{ fontSize: 10, color: C.faint, marginTop: 2 }}>
+                  <div className="text-[10px] text-faint mt-0.5">
                     Pixels below this alpha are treated as background
                   </div>
                 </div>
 
                 {/* Trace resolution */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <span style={{ fontSize: 11, color: C.muted }}>Trace resolution</span>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] text-muted">Trace resolution</span>
                   <SearchableSelect
                     value={String(traceMaxDim)}
                     options={[
@@ -346,15 +331,14 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
                       { value: "512", label: "512 px — high detail" },
                     ]}
                     onChange={(v) => setTraceMaxDim(+v)}
-                    style={{ background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11 }}
                   />
                 </div>
 
                 {/* Side knots */}
                 {images.sideView && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div className="flex flex-col gap-1">
                     {numInput("Side trace knots:", sideKnots, setSideKnots, "", 3, 30, 1)}
-                    <div style={{ fontSize: 10, color: C.faint }}>
+                    <div className="text-[10px] text-faint">
                       Knot count extracted when tracing the side profile image
                     </div>
                   </div>
@@ -366,19 +350,16 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
       )}
 
       {/* Tab strip */}
-      <div style={{ display: "flex", gap: 4, borderBottom: `1px solid ${C.border}`, paddingBottom: 4 }}>
+      <div className="flex gap-1 border-b border-border pb-1">
         {availableTabs.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            style={{
-              padding: "5px 12px", fontSize: 12, borderRadius: "6px 6px 0 0",
-              background: tab === t ? C.bg1 : "transparent",
-              color: tab === t ? C.text : C.muted,
-              border: `1px solid ${tab === t ? C.border : "transparent"}`,
-              borderBottom: tab === t ? `1px solid ${C.bg1}` : "none",
-              cursor: "pointer", marginBottom: tab === t ? -1 : 0,
-            }}
+            className={`px-3 py-[5px] text-[12px] rounded-t-[6px] cursor-pointer border ${
+              tab === t
+                ? "bg-bg1 text-text border-border -mb-px border-b-bg1"
+                : "bg-transparent text-muted border-transparent"
+            }`}
           >
             {TAB_LABELS[t]}
           </button>
@@ -387,28 +368,26 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
 
       {/* ── Tab: Preset ──────────────────────────────────────────────────────── */}
       {tab === "preset" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div className="flex flex-col gap-3.5">
 
           {/* Shape picker grid */}
           <div>
-            <div style={{ fontSize: 12, color: C.muted, marginBottom: 8 }}>Preset shape</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <div className="text-[12px] text-muted mb-2">Preset shape</div>
+            <div className="flex flex-wrap gap-2">
               {PRESET_SHAPES.map((p) => {
                 const active = value.preset === p && value.type === "preset";
                 return (
                   <button
                     key={p}
                     onClick={() => applyPreset(p)}
-                    style={{
-                      padding: "8px 12px", borderRadius: 8, fontSize: 13, cursor: "pointer",
-                      background: active ? alpha(C.blue, 0.13) : C.bg2,
-                      color: active ? C.blue : C.muted,
-                      border: `1px solid ${active ? alpha(C.blue, 0.53) : C.border}`,
-                      display: "flex", alignItems: "center", gap: 6,
-                    }}
+                    className={`px-3 py-2 rounded-[8px] text-[13px] cursor-pointer flex items-center gap-1.5 border ${
+                      active
+                        ? "bg-blue/10 text-blue border-blue/50"
+                        : "bg-bg2 text-muted border-border"
+                    }`}
                   >
-                    <span style={{ fontSize: 16 }}>{PRESET_ICONS[p]}</span>
-                    <span style={{ textTransform: "capitalize" }}>{p}</span>
+                    <span className="text-[16px]">{PRESET_ICONS[p]}</span>
+                    <span className="capitalize">{p}</span>
                   </button>
                 );
               })}
@@ -416,14 +395,10 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
           </div>
 
           {/* Preset parameters */}
-          <div style={{
-            display: "flex", flexDirection: "column", gap: 10,
-            padding: "10px 12px", background: C.bg2, borderRadius: 8,
-            border: `1px solid ${C.border}`,
-          }}>
-            <span style={{ fontSize: 11, color: C.faint, fontWeight: 600 }}>Shape parameters</span>
+          <div className="flex flex-col gap-2.5 p-3 bg-bg2 rounded-[8px] border border-border">
+            <span className="text-[11px] text-faint font-semibold">Shape parameters</span>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px" }}>
+            <div className="grid grid-cols-2 gap-x-5 gap-y-2.5">
               {/* Diameter */}
               <div>
                 {sliderRow(
@@ -444,20 +419,20 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
 
               {/* Star ratio — only for star presets */}
               {isStarPreset && (
-                <div style={{ gridColumn: "1 / -1" }}>
+                <div className="col-span-2">
                   {sliderRow(
                     "Point depth (inner / outer ratio)", presetStarRatio, handlePresetStarRatio,
                     0.1, 0.9, 0.01,
                     (v) => `${(v * 100).toFixed(0)}%`,
                   )}
-                  <div style={{ fontSize: 10, color: C.faint, marginTop: 2 }}>
+                  <div className="text-[10px] text-faint mt-0.5">
                     Lower = sharper / more aggressive points
                   </div>
                 </div>
               )}
             </div>
 
-            <div style={{ fontSize: 10, color: C.faint }}>
+            <div className="text-[10px] text-faint">
               Changes are baked into the Bezier path — switch to the Bezier tab to refine further.
             </div>
           </div>
@@ -465,21 +440,17 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
           {/* Silhouette trace from top image */}
           {images.topView && (
             <div>
-              <div style={{ fontSize: 11, color: C.muted, marginBottom: 8 }}>
+              <div className="text-[11px] text-muted mb-2">
                 Or trace the shape from the uploaded top-view image:
               </div>
               <button
                 onClick={handleTrace}
                 disabled={tracing}
-                style={{
-                  padding: "8px 16px", background: tracing ? C.bg3 : C.blue,
-                  color: "#fff", border: "none", borderRadius: 8,
-                  fontSize: 13, fontWeight: 600, cursor: tracing ? "default" : "pointer",
-                }}
+                className={`px-4 py-2 text-white border-none rounded-[8px] text-[13px] font-semibold ${tracing ? "bg-bg3 cursor-default" : "bg-blue cursor-pointer"}`}
               >
                 {tracing ? "Tracing silhouette…" : "Trace Silhouette from Top Image →"}
               </button>
-              <div style={{ fontSize: 11, color: C.faint, marginTop: 6 }}>
+              <div className="text-[11px] text-faint mt-1.5">
                 Extracts a Bezier polygon from the no-background PNG. Adjust trace settings above, then switch to the Bezier tab to refine.
               </div>
             </div>
@@ -498,13 +469,13 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
               imageUrl={images.topView}
             />
           ) : (
-            <div style={{ fontSize: 12, color: C.faint }}>
+            <div className="text-[12px] text-faint">
               No Bezier path yet. Pick a preset on the Preset tab, or trace from a top-view image.
               {images.topView && (
                 <button
                   onClick={handleTrace}
                   disabled={tracing}
-                  style={{ marginLeft: 10, padding: "5px 12px", background: C.blue, color: "#fff", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                  className="ml-2.5 px-3 py-[5px] bg-blue text-white border-none rounded-[6px] text-[12px] cursor-pointer"
                 >
                   {tracing ? "Tracing…" : "Trace Now"}
                 </button>
@@ -536,17 +507,17 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
             traceKnots={sideKnots}
           />
 
-          <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+          <div className="mt-3.5 flex items-center gap-2.5">
+            <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={value.bottomMimic !== false}
                 onChange={(e) => update({ bottomMimic: e.target.checked })}
-                style={{ accentColor: C.blue, width: 14, height: 14 }}
+                className="accent-blue w-3.5 h-3.5"
               />
-              <span style={{ fontSize: 12, color: C.muted }}>Mimic top on bottom</span>
+              <span className="text-[12px] text-muted">Mimic top on bottom</span>
             </label>
-            <span style={{ fontSize: 11, color: C.faint }}>
+            <span className="text-[11px] text-faint">
               {value.bottomMimic !== false
                 ? "Bottom face = same polygon as top (default for AR/WD)"
                 : "Bottom face = circle at lowest spline knot radius (default for Casing/Core)"}
@@ -565,8 +536,8 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
               imageUrl={images.bottomView}
             />
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={{ fontSize: 12, color: C.faint }}>
+            <div className="flex flex-col gap-2.5">
+              <div className="text-[12px] text-faint">
                 No bottom Bezier path. Upload a bottom-view PNG to trace the contact surface.
               </div>
               {images.bottomView && (
@@ -581,11 +552,7 @@ export function PartShapeEditor({ value, onChange, images }: Props) {
                     finally { setTracing(false); }
                   }}
                   disabled={tracing}
-                  style={{
-                    alignSelf: "flex-start", padding: "7px 14px", background: C.blue, color: "#fff",
-                    border: "none", borderRadius: 7, fontSize: 12, fontWeight: 600,
-                    cursor: tracing ? "default" : "pointer", opacity: tracing ? 0.6 : 1,
-                  }}
+                  className={`self-start px-3.5 py-[7px] bg-blue text-white border-none rounded-[7px] text-[12px] font-semibold ${tracing ? "cursor-default opacity-60" : "cursor-pointer"}`}
                 >
                   {tracing ? "Tracing…" : "Trace Bottom Contact Surface"}
                 </button>

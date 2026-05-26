@@ -67,12 +67,13 @@ export default function LoopTracksTab({ config, onChange }: Props) {
 
   return (
     <CollapsibleSection title="Loop Tracks" badge={tracks.length} storageKey="arena-looptracks-list" defaultOpen={true}>
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 13, color: C.muted }}>{tracks.length} loop track{tracks.length !== 1 ? "s" : ""}</span>
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between items-center">
+        <span className="text-[13px] text-muted">{tracks.length} loop track{tracks.length !== 1 ? "s" : ""}</span>
         <button
           onClick={addTrack}
-          style={{ padding: "5px 14px", background: C.orange ?? "#ff9944", color: C.white, border: "none", borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer" }}
+          className="py-[5px] px-[14px] text-white border-none rounded-md text-xs font-medium cursor-pointer"
+          style={{ background: "#ff9944" }}
         >
           + Add Loop Track
         </button>
@@ -90,38 +91,38 @@ export default function LoopTracksTab({ config, onChange }: Props) {
 
       {/* Track list */}
       {tracks.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "30px 0", color: C.faint }}>
-          <div style={{ fontSize: 28, marginBottom: 6 }}>🔄</div>
-          <p style={{ fontSize: 13 }}>No loop tracks yet. Loop tracks give beyblades a speed boost when traversed.</p>
+        <div className="text-center py-[30px] text-faint">
+          <div className="text-[28px] mb-1.5">🔄</div>
+          <p className="text-[13px]">No loop tracks yet. Loop tracks give beyblades a speed boost when traversed.</p>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {tracks.map(t => (
             <div
               key={t.id}
               onClick={() => setSelectedId(t.id === selectedId ? null : t.id)}
+              className="rounded-[10px] py-[10px] px-[14px] cursor-pointer border"
               style={{
                 background: t.id === selectedId ? "rgba(255,153,68,0.1)" : C.bg3,
-                border: `1px solid ${t.id === selectedId ? "#ff994455" : C.border}`,
-                borderRadius: 10, padding: "10px 14px", cursor: "pointer",
+                borderColor: t.id === selectedId ? "#ff994455" : C.border,
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: C.text }}>
-                  Loop Track <span style={{ fontSize: 10, color: "#ff9944", marginLeft: 4 }}>×{t.speedBoostMultiplier.toFixed(1)} boost</span>
-                  <span style={{ fontSize: 10, color: C.muted, marginLeft: 6 }}>floor {t.floorIndex}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-[13px] font-medium text-text">
+                  Loop Track <span className="text-[10px] ml-1" style={{ color: "#ff9944" }}>×{t.speedBoostMultiplier.toFixed(1)} boost</span>
+                  <span className="text-[10px] text-muted ml-1.5">floor {t.floorIndex}</span>
                 </span>
-                <div style={{ display: "flex", gap: 8, fontSize: 11, color: C.muted }}>
+                <div className="flex gap-2 text-[11px] text-muted">
                   <span>r={t.radiusCm}cm @ ({t.centerX_cm},{t.centerY_cm})</span>
                   <button
                     onClick={e => { e.stopPropagation(); removeTrack(t.id); }}
-                    style={{ color: C.red, background: "none", border: "none", fontSize: 11, cursor: "pointer", padding: 0 }}
+                    className="text-red bg-transparent border-none text-[11px] cursor-pointer p-0"
                   >Remove</button>
                 </div>
               </div>
 
               {selected?.id === t.id && (
-                <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }} onClick={e => e.stopPropagation()}>
+                <div className="mt-3 grid grid-cols-2 gap-2.5" onClick={e => e.stopPropagation()}>
                   {([
                     ["centerX_cm", "Center X (cm)", -200, 200, 1],
                     ["centerY_cm", "Center Y (cm)", -200, 200, 1],
@@ -130,15 +131,16 @@ export default function LoopTracksTab({ config, onChange }: Props) {
                     ["speedBoostMultiplier", "Speed Boost ×", 1.0, 3.0, 0.1],
                   ] as [keyof LoopTrackConfig, string, number, number, number][]).map(([field, label, min, max, step]) => (
                     <div key={field}>
-                      <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3 }}>{label}</label>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <label className="block text-[11px] text-faint mb-0.5">{label}</label>
+                      <div className="flex items-center gap-1.5">
                         <input
                           type="range" min={min} max={max} step={step}
                           value={t[field] as number}
                           onChange={e => updateTrack(t.id, { [field]: +e.target.value })}
-                          style={{ flex: 1, accentColor: "#ff9944" }}
+                          className="flex-1"
+                          style={{ accentColor: "#ff9944" }}
                         />
-                        <span style={{ fontSize: 11, color: C.text, fontFamily: "monospace", minWidth: 36, textAlign: "right" }}>
+                        <span className="text-[11px] text-text font-mono min-w-[36px] text-right">
                           {typeof t[field] === "number" ? (t[field] as number).toFixed(step < 1 ? 1 : 0) : t[field]}
                         </span>
                       </div>
@@ -146,11 +148,11 @@ export default function LoopTracksTab({ config, onChange }: Props) {
                   ))}
                   {maxFloors > 1 && (
                     <div>
-                      <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3 }}>Floor Index</label>
+                      <label className="block text-[11px] text-faint mb-0.5">Floor Index</label>
                       <input
                         type="number" min={0} max={maxFloors - 1} step={1} value={t.floorIndex}
                         onChange={e => updateTrack(t.id, { floorIndex: Math.max(0, Math.min(maxFloors - 1, +e.target.value)) })}
-                        style={{ width: 80, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+                        className="w-20 bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs"
                       />
                     </div>
                   )}

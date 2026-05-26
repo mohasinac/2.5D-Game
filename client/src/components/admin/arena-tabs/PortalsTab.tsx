@@ -1,4 +1,3 @@
-import { C } from "@/styles/theme";
 import { CollapsibleSection } from "@/components/admin/CollapsibleSection";
 import type { ArenaConfig, PortalConfig } from "@/types/arenaConfigNew";
 import SelfRotationPanel from "./SelfRotationPanel";
@@ -45,17 +44,19 @@ export default function PortalsTab({ config, onChange }: Props) {
 
   return (
     <CollapsibleSection title="Portals" badge={portals.length} storageKey="arena-portals-list" defaultOpen={true}>
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 13, color: C.muted }}>{portals.length} / 4 portals — all portals are interconnected</span>
-        <button onClick={add} disabled={portals.length >= 4} style={{ padding: "5px 14px", background: C.purple, color: C.white, border: "none", borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer", opacity: portals.length >= 4 ? 0.4 : 1 }}>
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between items-center">
+        <span className="text-[13px] text-muted">{portals.length} / 4 portals — all portals are interconnected</span>
+        <button onClick={add} disabled={portals.length >= 4}
+          className="py-[5px] px-[14px] text-white border-none rounded-md text-xs font-medium cursor-pointer"
+          style={{ background: "var(--purple)", opacity: portals.length >= 4 ? 0.4 : 1 }}>
           + Add Portal
         </button>
       </div>
 
       {portals.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px 0", color: C.faint }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>🌀</div>
+        <div className="text-center py-10 text-faint">
+          <div className="text-[32px] mb-2">🌀</div>
           <p>No portals yet. Portals teleport beyblades to linked portals.</p>
         </div>
       )}
@@ -63,61 +64,65 @@ export default function PortalsTab({ config, onChange }: Props) {
       {portals.map((portal, idx) => {
         const color = PORTAL_COLORS[idx % 4];
         return (
-          <div key={portal.id} style={{ background: C.bg3, borderRadius: 12, padding: 16, border: `2px solid ${color}44` }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-              <span style={{ fontSize: 13, fontWeight: 500, color }}>
+          <div key={portal.id} className="bg-bg3 rounded-xl p-4"
+            style={{ border: `2px solid ${color}44` }}>
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-[13px] font-medium" style={{ color }}>
                 🌀 Portal #{idx + 1} ({PORTAL_LABELS[idx % 4]})
               </span>
-              <button onClick={() => remove(portal.id)} style={{ color: C.red, background: "none", border: "none", fontSize: 12, cursor: "pointer" }}>Remove</button>
+              <button onClick={() => remove(portal.id)} className="text-red bg-transparent border-none text-xs cursor-pointer">Remove</button>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+            <div className="grid grid-cols-3 gap-2.5">
               {(["x", "y"] as const).map(axis => (
                 <div key={axis}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+                  <div className="flex justify-between text-[11px] text-faint mb-0.5">
                     <span>Pos {axis.toUpperCase()} (em)</span>
-                    <span style={{ color: C.text, fontFamily: "monospace" }}>{portal.position?.[axis] ?? 0}</span>
+                    <span className="text-text font-mono">{portal.position?.[axis] ?? 0}</span>
                   </div>
                   <input type="range" min={-20} max={20} step={0.5}
                     value={portal.position?.[axis] ?? 0}
                     onChange={e => updatePos(portal.id, axis, +e.target.value)}
-                    style={{ width: "100%", accentColor: color }}
+                    className="w-full"
+                    style={{ accentColor: color }}
                   />
                 </div>
               ))}
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+                <div className="flex justify-between text-[11px] text-faint mb-0.5">
                   <span>Radius (em)</span>
-                  <span style={{ color: C.text, fontFamily: "monospace" }}>{portal.radius ?? 3}</span>
+                  <span className="text-text font-mono">{portal.radius ?? 3}</span>
                 </div>
                 <input type="range" min={1} max={8} step={0.5}
                   value={portal.radius ?? 3}
                   onChange={e => update(portal.id, "radius", +e.target.value)}
-                  style={{ width: "100%", accentColor: color }}
+                  className="w-full"
+                  style={{ accentColor: color }}
                 />
               </div>
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+                <div className="flex justify-between text-[11px] text-faint mb-0.5">
                   <span>Cooldown (s)</span>
-                  <span style={{ color: C.text, fontFamily: "monospace" }}>{portal.cooldown ?? 2}</span>
+                  <span className="text-text font-mono">{portal.cooldown ?? 2}</span>
                 </div>
                 <input type="range" min={0} max={10} step={0.5}
                   value={portal.cooldown ?? 2}
                   onChange={e => update(portal.id, "cooldown", +e.target.value)}
-                  style={{ width: "100%", accentColor: color }}
+                  className="w-full"
+                  style={{ accentColor: color }}
                 />
               </div>
             </div>
             {/* Sprite picker */}
-            <div style={{ marginTop: 12 }}>
-              <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 4 }}>Portal Sprite</label>
+            <div className="mt-3">
+              <label className="block text-[11px] text-faint mb-1">Portal Sprite</label>
               <SearchableSelect
                 value={(portal as any).spriteId ?? ""}
                 options={assetOpts}
                 onChange={v => update(portal.id, "spriteId" as any, v || undefined)}
                 disabled={assetsLoading}
                 emptyLabel={assetsLoading ? "Loading…" : "No portal assets found"}
-                style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
+                style={{ width: "100%" }}
               />
             </div>
             <SelfRotationPanel
@@ -131,7 +136,7 @@ export default function PortalsTab({ config, onChange }: Props) {
       })}
 
       {portals.length >= 2 && (
-        <div style={{ background: C.bg3, borderRadius: 8, padding: 10, fontSize: 11, color: C.faint }}>
+        <div className="bg-bg3 rounded-lg p-2.5 text-[11px] text-faint">
           All {portals.length} portals are connected. Entering any portal can teleport to any other portal.
         </div>
       )}

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc, serverTimestamp, Timestamp, collection, getDocs } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, S, btn, alpha } from "@/styles/theme";
+import { C } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type { TournamentDoc } from "@/types/game";
 import toast from "react-hot-toast";
@@ -30,6 +30,8 @@ function tsToDatetimeLocal(ts: any): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
+
+const inputCls = "w-full px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm";
 
 export function TournamentEditPage() {
   const { id: tournamentId } = useParams<{ id: string }>();
@@ -118,90 +120,90 @@ export function TournamentEditPage() {
 
   const canEdit = tournament && (tournament.status === "draft" || tournament.status === "registration");
 
-  if (loading) return <div style={{ padding: 40, textAlign: "center", color: C.faint }}>Loading…</div>;
-  if (error && !form) return <div style={{ padding: 40, textAlign: "center", color: C.red }}>{error}</div>;
+  if (loading) return <div className="p-10 text-center text-faint">Loading…</div>;
+  if (error && !form) return <div className="p-10 text-center text-red">{error}</div>;
   if (!form || !tournament) return null;
 
   return (
-    <div style={{ padding: 24, maxWidth: 700, margin: "0 auto" }}>
-      <div style={{ marginBottom: 24 }}>
-        <Link to={`/admin/tournaments/${tournamentId}`} style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Tournament</Link>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, marginTop: 8 }}>Edit Tournament</h1>
+    <div className="p-6 max-w-[700px] mx-auto">
+      <div className="mb-6">
+        <Link to={`/admin/tournaments/${tournamentId}`} className="text-faint text-[13px] no-underline">← Tournament</Link>
+        <h1 className="text-[22px] font-bold text-text mt-2">Edit Tournament</h1>
         {!canEdit && (
-          <div style={{ marginTop: 10, padding: "8px 14px", background: alpha(C.yellow, 0.1), border: `1px solid ${alpha(C.yellow, 0.3)}`, borderRadius: 8, color: C.yellow, fontSize: 12 }}>
+          <div className="mt-2.5 px-3.5 py-2 bg-yellow/[.10] border border-yellow/[.30] rounded-lg text-yellow text-xs">
             Tournament is <strong>{tournament.status}</strong> — only draft and registration tournaments can be edited.
           </div>
         )}
       </div>
 
       {error && (
-        <div style={{ background: alpha(C.red, 0.09), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 10, padding: "10px 14px", marginBottom: 16, color: C.red, fontSize: 13 }}>
+        <div className="bg-red/[.09] border border-red/[.27] rounded-xl px-3.5 py-2.5 mb-4 text-red text-[13px]">
           {error}
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 20, opacity: canEdit ? 1 : 0.65, pointerEvents: canEdit ? "auto" : "none" }}>
+      <div className="flex flex-col gap-5" style={{ opacity: canEdit ? 1 : 0.65, pointerEvents: canEdit ? "auto" : "none" }}>
         <Section title="Basic Info">
           <Field label="Name *">
-            <input style={S.input} value={form.name} onChange={e => set("name", e.target.value)} />
+            <input className={inputCls} value={form.name} onChange={e => set("name", e.target.value)} />
           </Field>
           <Field label="Description">
-            <textarea style={{ ...S.input, resize: "vertical", minHeight: 72 }} value={form.description} onChange={e => set("description", e.target.value)} />
+            <textarea className={inputCls + " resize-y min-h-[72px]"} value={form.description} onChange={e => set("description", e.target.value)} />
           </Field>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div className="grid grid-cols-2 gap-3.5">
             <Field label="Type">
               <SearchableSelect value={form.type} options={[
                 { value: "pvp", label: "PVP" },
                 { value: "player-gauntlet", label: "Player Gauntlet" },
                 { value: "mixed", label: "Mixed (AI fill)" },
                 { value: "ai-exhibition", label: "AI Exhibition" },
-              ]} onChange={v => set("type", v as any)} style={S.input} />
+              ]} onChange={v => set("type", v as any)} className="w-full" />
             </Field>
             <Field label="Max Participants">
               <SearchableSelect value={String(form.maxParticipants)} options={[
                 { value: "2", label: "2" }, { value: "4", label: "4" }, { value: "8", label: "8" },
-              ]} onChange={v => set("maxParticipants", Number(v))} style={S.input} />
+              ]} onChange={v => set("maxParticipants", Number(v))} className="w-full" />
             </Field>
           </div>
           <Field label="Min Participants (auto-cancel below this)">
             <input type="number" min={2} max={form.maxParticipants} value={form.minParticipants}
               onChange={e => set("minParticipants", Number(e.target.value))}
-              style={{ ...S.input, width: 100 }} />
+              className={inputCls + " w-[100px]"} />
           </Field>
         </Section>
 
         <Section title="Schedule">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div className="grid grid-cols-2 gap-3.5">
             <Field label="Start Time *">
-              <input type="datetime-local" style={S.input} value={form.scheduledStartTime} onChange={e => set("scheduledStartTime", e.target.value)} />
+              <input type="datetime-local" className={inputCls} value={form.scheduledStartTime} onChange={e => set("scheduledStartTime", e.target.value)} />
             </Field>
             <Field label="Registration Deadline">
-              <input type="datetime-local" style={S.input} value={form.registrationDeadline} onChange={e => set("registrationDeadline", e.target.value)} />
+              <input type="datetime-local" className={inputCls} value={form.registrationDeadline} onChange={e => set("registrationDeadline", e.target.value)} />
             </Field>
           </div>
           <Field label="Minutes Between Rounds">
             <input type="number" min={5} max={120} value={form.roundIntervalMinutes}
               onChange={e => set("roundIntervalMinutes", Number(e.target.value))}
-              style={{ ...S.input, width: 100 }} />
+              className={inputCls + " w-[100px]"} />
           </Field>
         </Section>
 
         <Section title="Format">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+          <div className="grid grid-cols-3 gap-3.5">
             <Field label="Best Of">
               <SearchableSelect value={String(form.bestOf)} options={[
                 { value: "1", label: "BO1 (Single)" }, { value: "3", label: "BO3 (First to 2)" }, { value: "5", label: "BO5 (First to 3)" },
-              ]} onChange={v => set("bestOf", Number(v) as any)} style={S.input} />
+              ]} onChange={v => set("bestOf", Number(v) as any)} className="w-full" />
             </Field>
             <Field label="AI Difficulty">
               <SearchableSelect value={form.aiDifficulty} options={[
                 { value: "medium", label: "Medium" }, { value: "hard", label: "Hard" }, { value: "hell", label: "Hell" },
-              ]} onChange={v => set("aiDifficulty", v as any)} style={S.input} />
+              ]} onChange={v => set("aiDifficulty", v as any)} className="w-full" />
             </Field>
             <Field label="Auto-Fill with AI">
-              <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6, cursor: "pointer" }}>
-                <input type="checkbox" checked={form.autoFillWithAI} onChange={e => set("autoFillWithAI", e.target.checked)} style={{ width: 16, height: 16 }} />
-                <span style={{ color: C.muted, fontSize: 13 }}>Fill empty slots</span>
+              <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
+                <input type="checkbox" checked={form.autoFillWithAI} onChange={e => set("autoFillWithAI", e.target.checked)} className="w-4 h-4" />
+                <span className="text-muted text-[13px]">Fill empty slots</span>
               </label>
             </Field>
           </div>
@@ -234,10 +236,10 @@ export function TournamentEditPage() {
           />
         </Section>
 
-        <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
-          <Link to={`/admin/tournaments/${tournamentId}`} style={{ ...btn(C.bg3), textDecoration: "none", display: "inline-block" }}>Cancel</Link>
+        <div className="flex gap-3 justify-end">
+          <Link to={`/admin/tournaments/${tournamentId}`} className="px-4 py-2 bg-bg3 text-text rounded-lg text-sm font-semibold border border-border no-underline inline-block">Cancel</Link>
           {canEdit && (
-            <button onClick={handleSave} disabled={saving} style={{ ...btn(C.yellow), color: C.bg0 }}>
+            <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-yellow text-bg0 rounded-lg text-sm font-semibold">
               {saving ? "Saving…" : "Save Changes"}
             </button>
           )}
@@ -265,15 +267,15 @@ function MultiIdSelect({
 
   return (
     <div>
-      <label style={S.label}>{label}</label>
-      <p style={{ fontSize: 11, color: C.faint, marginBottom: 6 }}>{hint}</p>
-      <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+      <label className="block text-xs text-muted mb-1.5">{label}</label>
+      <p className="text-[11px] text-faint mb-1.5">{hint}</p>
+      <div className="flex gap-1.5 mb-2">
         <SearchableSelect
           value={addValue}
           options={options.filter(o => !selected.includes(o.value))}
           onChange={setAddValue}
           placeholder="Select to add…"
-          style={{ ...S.input, flex: 1 }}
+          className="flex-1"
         />
         <button onClick={() => add(addValue)} disabled={!addValue}
           style={{ padding: "8px 14px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, fontSize: 13, cursor: "pointer", opacity: addValue ? 1 : 0.4 }}>
@@ -281,15 +283,15 @@ function MultiIdSelect({
         </button>
       </div>
       {selected.length === 0 ? (
-        <p style={{ fontSize: 12, color: C.faint, fontStyle: "italic" }}>None selected</p>
+        <p className="text-xs text-faint italic">None selected</p>
       ) : (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        <div className="flex flex-wrap gap-1.5">
           {selected.map(id => {
             const opt = options.find(o => o.value === id);
             return (
-              <span key={id} style={{ display: "flex", alignItems: "center", gap: 6, padding: "3px 10px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 20, fontSize: 12, color: C.text }}>
+              <span key={id} className="flex items-center gap-1.5 px-2.5 py-0.5 bg-bg3 border border-border rounded-[20px] text-xs text-text">
                 {opt?.label ?? id}
-                <button onClick={() => remove(id)} style={{ background: "none", border: "none", color: C.faint, cursor: "pointer", padding: 0, fontSize: 14, lineHeight: 1 }}>×</button>
+                <button onClick={() => remove(id)} className="bg-none border-none text-faint cursor-pointer p-0 text-sm leading-none">×</button>
               </span>
             );
           })}
@@ -301,9 +303,9 @@ function MultiIdSelect({
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 18 }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>{title}</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>{children}</div>
+    <div className="bg-bg1 rounded-xl border border-border p-[18px]">
+      <p className="text-[11px] font-bold text-muted uppercase tracking-[0.08em] mb-3.5">{title}</p>
+      <div className="flex flex-col gap-3">{children}</div>
     </div>
   );
 }
@@ -311,7 +313,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label style={S.label}>{label}</label>
+      <label className="block text-xs text-muted mb-1.5">{label}</label>
       {children}
     </div>
   );

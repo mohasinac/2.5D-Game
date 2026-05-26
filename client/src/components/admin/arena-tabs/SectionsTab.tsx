@@ -70,12 +70,12 @@ export default function SectionsTab({ config, onChange }: Props) {
 
   return (
     <CollapsibleSection title="Sections" badge={sections.length} storageKey="arena-sections-list" defaultOpen={true}>
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 13, color: C.muted }}>{sections.length} modular section{sections.length !== 1 ? "s" : ""}</span>
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between items-center">
+        <span className="text-[13px] text-muted">{sections.length} modular section{sections.length !== 1 ? "s" : ""}</span>
         <button
           onClick={addSection}
-          style={{ padding: "5px 14px", background: C.blue, color: C.white, border: "none", borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: "pointer" }}
+          className="py-[5px] px-[14px] bg-blue text-white border-none rounded-md text-xs font-medium cursor-pointer"
         >
           + Add Section
         </button>
@@ -93,75 +93,75 @@ export default function SectionsTab({ config, onChange }: Props) {
 
       {/* Section list */}
       {sections.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "30px 0", color: C.faint }}>
-          <div style={{ fontSize: 28, marginBottom: 6 }}>🧩</div>
-          <p style={{ fontSize: 13 }}>No sections yet. Click the canvas or use Add Section.</p>
+        <div className="text-center py-[30px] text-faint">
+          <div className="text-[28px] mb-1.5">🧩</div>
+          <p className="text-[13px]">No sections yet. Click the canvas or use Add Section.</p>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {sections.map(s => (
             <div
               key={s.id}
               onClick={() => setSelectedId(s.id === selectedId ? null : s.id)}
+              className="rounded-[10px] py-[10px] px-[14px] cursor-pointer border"
               style={{
                 background: s.id === selectedId ? "rgba(68,170,255,0.12)" : C.bg3,
-                border: `1px solid ${s.id === selectedId ? "#44aaff55" : C.border}`,
-                borderRadius: 10, padding: "10px 14px", cursor: "pointer",
+                borderColor: s.id === selectedId ? "#44aaff55" : C.border,
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: C.text }}>
-                  {s.name || s.type} <span style={{ fontSize: 10, color: C.muted, marginLeft: 4 }}>floor {s.floorIndex}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-[13px] font-medium text-text">
+                  {s.name || s.type} <span className="text-[10px] text-muted ml-1">floor {s.floorIndex}</span>
                 </span>
-                <div style={{ display: "flex", gap: 8, fontSize: 11, color: C.muted }}>
+                <div className="flex gap-2 text-[11px] text-muted">
                   <span>{s.width_cm}×{s.height_cm} cm</span>
                   <span>({s.centerX_cm},{s.centerY_cm})</span>
                   <button
                     onClick={e => { e.stopPropagation(); removeSection(s.id); }}
-                    style={{ color: C.red, background: "none", border: "none", fontSize: 11, cursor: "pointer", padding: 0 }}
+                    className="text-red bg-transparent border-none text-[11px] cursor-pointer p-0"
                   >Remove</button>
                 </div>
               </div>
 
               {selected?.id === s.id && (
-                <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }} onClick={e => e.stopPropagation()}>
+                <div className="mt-3 grid grid-cols-2 gap-2.5" onClick={e => e.stopPropagation()}>
                   <div>
-                    <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3 }}>Name</label>
+                    <label className="block text-[11px] text-faint mb-0.5">Name</label>
                     <input
                       type="text" value={s.name}
                       onChange={e => updateSection(s.id, { name: e.target.value })}
-                      style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" }}
+                      className="w-full bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3 }}>Type</label>
+                    <label className="block text-[11px] text-faint mb-0.5">Type</label>
                     <select
                       value={s.type}
                       onChange={e => updateSection(s.id, { type: e.target.value })}
-                      style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+                      className="w-full bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs"
                     >
                       {SECTION_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
                   {(["centerX_cm", "centerY_cm", "width_cm", "height_cm"] as const).map(field => (
                     <div key={field}>
-                      <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3 }}>
+                      <label className="block text-[11px] text-faint mb-0.5">
                         {field.replace(/_cm$/, " (cm)").replace(/([A-Z])/g, " $1").trim()}
                       </label>
                       <input
                         type="number" step={1} value={s[field]}
                         onChange={e => updateSection(s.id, { [field]: +e.target.value })}
-                        style={{ width: "100%", background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12, boxSizing: "border-box" }}
+                        className="w-full bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs box-border"
                       />
                     </div>
                   ))}
                   {maxFloors > 1 && (
                     <div>
-                      <label style={{ display: "block", fontSize: 11, color: C.faint, marginBottom: 3 }}>Floor Index</label>
+                      <label className="block text-[11px] text-faint mb-0.5">Floor Index</label>
                       <input
                         type="number" min={0} max={maxFloors - 1} step={1} value={s.floorIndex}
                         onChange={e => updateSection(s.id, { floorIndex: Math.max(0, Math.min(maxFloors - 1, +e.target.value)) })}
-                        style={{ width: 80, background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+                        className="w-20 bg-bg2 border border-border text-text rounded-md py-1 px-2 text-xs"
                       />
                     </div>
                   )}

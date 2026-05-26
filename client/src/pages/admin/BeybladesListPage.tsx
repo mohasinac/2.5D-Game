@@ -4,7 +4,7 @@ import { collection, getDocs, deleteDoc, doc, query, where, orderBy } from "fire
 import { db, COLLECTIONS } from "@/lib/firebase";
 import type { BeybladeStats } from "@/types/beybladeStats";
 import toast from "react-hot-toast";
-import { C, S } from "@/styles/theme";
+import { C } from "@/styles/theme";
 
 const TYPE_ACCENT: Record<string, string> = {
   attack: C.red, defense: C.blue, stamina: C.green, balanced: C.yellow,

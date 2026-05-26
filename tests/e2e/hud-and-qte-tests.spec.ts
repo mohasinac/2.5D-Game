@@ -55,9 +55,9 @@ test.describe("HUD: Loading Progress stepper", () => {
     if (!landed) { await ss(page, "H01-loading-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_000);
 
     const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }
@@ -111,9 +111,9 @@ test.describe("HUD: Player and Enemy StatCards", () => {
     if (!landed) { await ss(page, "H02-statcard-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_000);
 
     const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }
@@ -198,9 +198,9 @@ test.describe("HUD: Player and Enemy StatCards", () => {
     if (!landed) { await ss(page, "H03-spectator-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_000);
 
     const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }
@@ -249,9 +249,9 @@ test.describe("HUD: Camera Controls (zoom buttons)", () => {
     if (!landed) { await ss(page, "H04-zoom-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_000);
 
     const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }
@@ -328,10 +328,10 @@ test.describe("QTE: Launch Phase (tilt + position + power)", () => {
     if (!landed) { await ss(page, "Q01-launch-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_500);
     await ss(page, "Q01-tryout-setup");
 
     const startBtn = page.locator("button").filter({ hasText: /start|launch|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }
@@ -410,9 +410,9 @@ test.describe("QTE: Launch Phase (tilt + position + power)", () => {
     if (!landed) { await ss(page, "Q02-ai-launch-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_000);
 
     const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }
@@ -460,9 +460,9 @@ test.describe("QTE: Collision QTE (impact window button prompt)", () => {
     if (!landed) { await ss(page, "Q03-collision-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_000);
 
     const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }
@@ -533,16 +533,17 @@ test.describe("HUD: Series score panel (BO3)", () => {
     if (!landed) { await ss(page, "H05-series-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_500);
 
-    // Select BO3
+    // Wait for form to load, then select BO3
     const bo3Btn = page.locator("button").filter({ hasText: /^BO3$/i }).first();
+    await bo3Btn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     if (await bo3Btn.isVisible().catch(() => false)) {
       await bo3Btn.click();
       await page.waitForTimeout(200);
     }
 
     const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }
@@ -583,7 +584,10 @@ test.describe("Load Test: 1 human vs 7 AI bots in same arena", () => {
     if (!landed) { await ss(page, "L01-1v7-unauth"); return; }
 
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2_500);
+
+    // Wait for the form to load (Firestore data)
+    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
+    await startBtn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
     await ss(page, "L01-setup-page");
 
     // Set AI count to 7
@@ -597,7 +601,6 @@ test.describe("Load Test: 1 human vs 7 AI bots in same arena", () => {
     }
 
     // Start battle
-    const startBtn = page.locator("button").filter({ hasText: /start|launch|fight|play/i }).first();
     if (await startBtn.isVisible().catch(() => false)) {
       await startBtn.click();
     }

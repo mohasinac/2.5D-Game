@@ -4,8 +4,10 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useElementTypes, invalidateElementTypesCache } from "@/hooks/useElementTypes";
 import type { ElementTypeConfig, ZoneBonus } from "@/types/elementTypeConfig";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 import toast from "react-hot-toast";
-import { C } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
 const HAZARD_SUGGESTIONS = [
@@ -20,13 +22,6 @@ const STAT_SUGGESTIONS = [
   "powerGainRate", "spinBoost", "damageReduction", "recoilFactor",
   "spinStealFactor", "maxSpin",
 ];
-
-const MULTIPLIER_COLORS: Record<number, string> = {
-  0.5: "#ef4444",
-  1.0: "#64748b",
-  1.5: "#eab308",
-  2.0: "#22c55e",
-};
 
 function multiplierColor(v: number): string {
   if (v >= 2.0) return "#22c55e";
@@ -58,7 +53,6 @@ export function ElementTypeEditPage() {
   const [saving, setSaving] = useState(false);
   const [immunityInput, setImmunityInput] = useState("");
 
-  // Load existing doc when editing
   useEffect(() => {
     if (isCreate) { setLoading(false); return; }
     (async () => {
@@ -82,7 +76,6 @@ export function ElementTypeEditPage() {
     })();
   }, [id, isCreate, navigate]);
 
-  // When all types load, initialise any missing attackAdvantages keys to 1.0
   useEffect(() => {
     if (typesLoading || configs.length === 0) return;
     setForm(prev => {
@@ -97,7 +90,6 @@ export function ElementTypeEditPage() {
   const set = <K extends keyof typeof form>(k: K, v: typeof form[K]) =>
     setForm(f => ({ ...f, [k]: v }));
 
-  // Zone bonus helpers
   const addBonus = () =>
     set("zoneBonuses", [...form.zoneBonuses, { hazardType: "", stat: "", value: 1.0, mode: "mult" }]);
 
@@ -107,7 +99,6 @@ export function ElementTypeEditPage() {
   const removeBonus = (i: number) =>
     set("zoneBonuses", form.zoneBonuses.filter((_, idx) => idx !== i));
 
-  // Immunity helpers
   const addImmunity = () => {
     const val = immunityInput.trim().toLowerCase().replace(/\s+/g, "_");
     if (!val || form.zoneImmunities.includes(val)) return;
@@ -144,141 +135,108 @@ export function ElementTypeEditPage() {
       invalidateElementTypesCache();
       toast.success(isCreate ? "Created!" : "Saved!");
       navigate("/admin/element-types");
-    } catch (e) {
+    } catch {
       toast.error("Save failed");
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <div style={{ padding: 24, color: C.muted }}>Loading…</div>;
-
-  const inputStyle: React.CSSProperties = {
-    background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8,
-    color: C.text, padding: "8px 12px", fontSize: 13, width: "100%", boxSizing: "border-box",
-  };
-
-  const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: C.muted, marginBottom: 4, display: "block" };
+  if (loading) return <div className="p-6 text-muted">Loading…</div>;
 
   return (
-    <div style={{ padding: 24, maxWidth: 900, margin: "0 auto" }}>
+    <div className="p-6 max-w-[900px] mx-auto">
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: C.text }}>
+          <h1 className="text-[20px] font-bold text-text">
             {isCreate ? "New Element Type" : `Edit: ${form.name || id}`}
           </h1>
-          <p style={{ color: C.faint, fontSize: 12, marginTop: 4 }}>
+          <p className="text-faint text-xs mt-1">
             {isCreate ? "Create a custom element type with custom advantages and effects." : "Edit type advantages, zone immunities, and bonus effects."}
           </p>
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
-          <button
-            onClick={() => navigate("/admin/element-types")}
-            style={{ padding: "8px 16px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, border: "none", background: C.blue, color: "#fff", cursor: "pointer", opacity: saving ? 0.6 : 1, fontWeight: 600 }}
-          >
+        <div className="flex gap-2.5">
+          <Button variant="outline" size="sm" onClick={() => navigate("/admin/element-types")}>Cancel</Button>
+          <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
             {saving ? "Saving…" : "Save"}
-          </button>
+          </Button>
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <div className="flex flex-col gap-5">
 
-        {/* ── Section A: Metadata ── */}
-        <section style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 20 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 16 }}>A — Metadata</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 16 }}>
-
-            {/* Slug — editable only in create mode */}
+        {/* Section A: Metadata */}
+        <section className="bg-bg1 border border-border rounded-2xl p-5">
+          <div className="text-sm font-bold text-text mb-4">A — Metadata</div>
+          <div className="grid grid-cols-4 gap-4">
             <div>
-              <label style={labelStyle}>Slug (ID)</label>
+              <Label>Slug (ID)</Label>
               {isCreate ? (
-                <input
-                  style={inputStyle}
+                <Input
                   value={slug}
                   onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, ""))}
                   placeholder="e.g. plasma"
                 />
               ) : (
-                <code style={{ fontSize: 13, color: C.faint, background: C.bg2, padding: "8px 12px", borderRadius: 8, display: "block" }}>{id}</code>
+                <code className="text-[13px] text-faint bg-bg2 px-3 py-2 rounded-lg block">{id}</code>
               )}
             </div>
-
-            {/* Name */}
             <div>
-              <label style={labelStyle}>Name</label>
-              <input style={inputStyle} value={form.name} onChange={e => set("name", e.target.value)} placeholder="Plasma" />
+              <Label>Name</Label>
+              <Input value={form.name} onChange={e => set("name", e.target.value)} placeholder="Plasma" />
             </div>
-
-            {/* Icon */}
             <div>
-              <label style={labelStyle}>Icon (emoji)</label>
-              <input style={{ ...inputStyle, fontSize: 22, textAlign: "center" }} value={form.icon} onChange={e => set("icon", e.target.value)} maxLength={4} />
+              <Label>Icon (emoji)</Label>
+              <Input value={form.icon} onChange={e => set("icon", e.target.value)} maxLength={4} className="text-[22px] text-center" />
             </div>
-
-            {/* Color */}
             <div>
-              <label style={labelStyle}>Color</label>
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <Label>Color</Label>
+              <div className="flex gap-2 items-center">
                 <input type="color" value={form.color} onChange={e => set("color", e.target.value)}
-                  style={{ width: 40, height: 36, border: "none", borderRadius: 6, cursor: "pointer", background: "none", padding: 0 }} />
-                <input style={{ ...inputStyle, fontFamily: "monospace", width: 110 }} value={form.color} onChange={e => set("color", e.target.value)} maxLength={7} />
+                  className="w-10 h-9 border-none rounded-md cursor-pointer bg-transparent p-0" />
+                <Input value={form.color} onChange={e => set("color", e.target.value)} maxLength={7} className="font-mono w-28" />
               </div>
             </div>
           </div>
 
           {/* Preview badge */}
-          <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 11, color: C.faint }}>Preview:</span>
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              padding: "4px 12px", borderRadius: 20,
-              background: form.color + "33", border: `1px solid ${form.color}`,
-              fontSize: 13, color: C.text,
-            }}>
+          <div className="mt-4 flex items-center gap-2">
+            <span className="text-[11px] text-faint">Preview:</span>
+            <span
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] text-text border"
+              style={{ background: form.color + "33", borderColor: form.color }}
+            >
               {form.icon} {form.name || "My Type"}
             </span>
             {form.isDefault && (
-              <span style={{ fontSize: 11, color: C.blue, background: C.blue + "22", padding: "2px 7px", borderRadius: 4, fontWeight: 700 }}>DEFAULT</span>
+              <span className="text-[11px] text-blue bg-blue/10 px-1.5 py-px rounded font-bold">DEFAULT</span>
             )}
           </div>
         </section>
 
-        {/* ── Section B: Zone Immunities ── */}
-        <section style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 20 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 4 }}>B — Zone Immunities</div>
-          <p style={{ color: C.faint, fontSize: 12, marginBottom: 14 }}>
+        {/* Section B: Zone Immunities */}
+        <section className="bg-bg1 border border-border rounded-2xl p-5">
+          <div className="text-sm font-bold text-text mb-1">B — Zone Immunities</div>
+          <p className="text-faint text-xs mb-3.5">
             Beyblades of this type take no effect from these floor/zone hazard types.
           </p>
 
-          {/* Existing tags */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+          <div className="flex flex-wrap gap-1.5 mb-3">
             {form.zoneImmunities.map(tag => (
-              <span key={tag} style={{
-                display: "inline-flex", alignItems: "center", gap: 4,
-                padding: "3px 10px", borderRadius: 20, fontSize: 12,
-                background: C.bg3, border: `1px solid ${C.border}`, color: C.text,
-              }}>
+              <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs bg-bg3 border border-border text-text">
                 {tag}
-                <button onClick={() => removeImmunity(tag)} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+                <button onClick={() => removeImmunity(tag)} className="bg-transparent border-none text-muted cursor-pointer text-sm leading-none p-0 ml-0.5">×</button>
               </span>
             ))}
             {form.zoneImmunities.length === 0 && (
-              <span style={{ color: C.faint, fontSize: 12 }}>No immunities set</span>
+              <span className="text-faint text-xs">No immunities set</span>
             )}
           </div>
 
-          {/* Add input */}
-          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <div className="flex gap-2 items-center flex-wrap">
             <input
-              style={{ ...inputStyle, width: 180 }}
+              className="w-[180px] bg-bg2 border border-border rounded-lg px-3 py-2 text-text text-[13px] focus:outline-none focus:border-blue"
               value={immunityInput}
               onChange={e => setImmunityInput(e.target.value)}
               onKeyDown={e => e.key === "Enter" && (e.preventDefault(), addImmunity())}
@@ -288,106 +246,103 @@ export function ElementTypeEditPage() {
             <datalist id="hazard-suggestions">
               {HAZARD_SUGGESTIONS.map(h => <option key={h} value={h} />)}
             </datalist>
-            <button onClick={addImmunity} style={{ padding: "8px 14px", borderRadius: 8, fontSize: 12, border: `1px solid ${C.border}`, background: C.bg2, color: C.text, cursor: "pointer" }}>
-              + Add
-            </button>
+            <Button variant="outline" size="sm" onClick={addImmunity}>+ Add</Button>
           </div>
         </section>
 
-        {/* ── Section C: Zone Bonuses ── */}
-        <section style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 20 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 4 }}>C — Zone Bonus Effects</div>
-          <p style={{ color: C.faint, fontSize: 12, marginBottom: 14 }}>
+        {/* Section C: Zone Bonuses */}
+        <section className="bg-bg1 border border-border rounded-2xl p-5">
+          <div className="text-sm font-bold text-text mb-1">C — Zone Bonus Effects</div>
+          <p className="text-faint text-xs mb-3.5">
             Beyblades of this type receive a bonus stat while inside a matching zone.
           </p>
 
-          {/* Rows */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+          <div className="flex flex-col gap-2 mb-3">
             {form.zoneBonuses.length === 0 && (
-              <div style={{ color: C.faint, fontSize: 12 }}>No zone bonuses configured.</div>
+              <div className="text-faint text-xs">No zone bonuses configured.</div>
             )}
             {form.zoneBonuses.map((bonus, i) => (
-              <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 90px 90px 36px", gap: 8, alignItems: "center" }}>
+              <div key={i} className="grid gap-2 items-end" style={{ gridTemplateColumns: "1fr 1fr 90px 90px 36px" }}>
                 <div>
-                  <label style={{ ...labelStyle, marginBottom: 2 }}>Hazard Type</label>
-                  <input style={inputStyle} value={bonus.hazardType} onChange={e => updateBonus(i, { hazardType: e.target.value })}
+                  <Label className="text-[11px] mb-0.5">Hazard Type</Label>
+                  <input className="w-full bg-bg2 border border-border rounded-lg px-3 py-2 text-text text-[13px] focus:outline-none focus:border-blue"
+                    value={bonus.hazardType} onChange={e => updateBonus(i, { hazardType: e.target.value })}
                     placeholder="e.g. fire" list="hazard-suggestions-bonus" />
                   <datalist id="hazard-suggestions-bonus">
                     {HAZARD_SUGGESTIONS.map(h => <option key={h} value={h} />)}
                   </datalist>
                 </div>
                 <div>
-                  <label style={{ ...labelStyle, marginBottom: 2 }}>Stat</label>
-                  <input style={inputStyle} value={bonus.stat} onChange={e => updateBonus(i, { stat: e.target.value })}
+                  <Label className="text-[11px] mb-0.5">Stat</Label>
+                  <input className="w-full bg-bg2 border border-border rounded-lg px-3 py-2 text-text text-[13px] focus:outline-none focus:border-blue"
+                    value={bonus.stat} onChange={e => updateBonus(i, { stat: e.target.value })}
                     placeholder="spinDecayRate" list="stat-suggestions" />
                   <datalist id="stat-suggestions">
                     {STAT_SUGGESTIONS.map(s => <option key={s} value={s} />)}
                   </datalist>
                 </div>
                 <div>
-                  <label style={{ ...labelStyle, marginBottom: 2 }}>Value</label>
-                  <input type="number" style={inputStyle} value={bonus.value} step={0.1}
+                  <Label className="text-[11px] mb-0.5">Value</Label>
+                  <Input type="number" value={bonus.value} step={0.1}
                     onChange={e => updateBonus(i, { value: parseFloat(e.target.value) || 0 })} />
                 </div>
                 <div>
-                  <label style={{ ...labelStyle, marginBottom: 2 }}>Mode</label>
+                  <Label className="text-[11px] mb-0.5">Mode</Label>
                   <SearchableSelect
                     value={bonus.mode}
                     options={[{ value: "mult", label: "mult ×" }, { value: "flat", label: "flat =" }]}
                     onChange={v => updateBonus(i, { mode: v as "mult" | "flat" })}
-                    style={inputStyle}
                   />
                 </div>
-                <button onClick={() => removeBonus(i)} style={{ marginTop: 18, width: 32, height: 32, borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <button onClick={() => removeBonus(i)}
+                  className="mt-[18px] w-8 h-8 rounded-md border border-border bg-transparent text-muted cursor-pointer text-base flex items-center justify-center hover:border-red hover:text-red">
                   ×
                 </button>
               </div>
             ))}
           </div>
 
-          <button onClick={addBonus} style={{ padding: "7px 14px", borderRadius: 8, fontSize: 12, border: `1px solid ${C.border}`, background: C.bg2, color: C.text, cursor: "pointer" }}>
-            + Add Zone Bonus
-          </button>
+          <Button variant="outline" size="sm" onClick={addBonus}>+ Add Zone Bonus</Button>
         </section>
 
-        {/* ── Section D: Attack Advantages Grid ── */}
-        <section style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 20 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 4 }}>D — Attack Advantages</div>
-          <p style={{ color: C.faint, fontSize: 12, marginBottom: 16 }}>
-            Multiplier applied to damage + spin steal when <strong style={{ color: C.text }}>{form.name || "this type"}</strong> attacks each defender type.
+        {/* Section D: Attack Advantages */}
+        <section className="bg-bg1 border border-border rounded-2xl p-5">
+          <div className="text-sm font-bold text-text mb-1">D — Attack Advantages</div>
+          <p className="text-faint text-xs mb-4">
+            Multiplier applied to damage + spin steal when <strong className="text-text">{form.name || "this type"}</strong> attacks each defender type.
             {" "}0.5 = resisted · 1.0 = neutral · 1.5 = effective · 2.0 = super effective
           </p>
 
           {typesLoading ? (
-            <div style={{ color: C.muted, fontSize: 13 }}>Loading types…</div>
+            <div className="text-muted text-[13px]">Loading types…</div>
           ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ borderCollapse: "collapse", minWidth: "100%" }}>
+            <div className="overflow-x-auto">
+              <table className="border-collapse min-w-full">
                 <thead>
                   <tr>
-                    <th style={{ padding: "6px 10px", fontSize: 11, color: C.faint, textAlign: "left", whiteSpace: "nowrap" }}>Attacker → Defender</th>
+                    <th className="px-2.5 py-1.5 text-[11px] text-faint text-left whitespace-nowrap">Attacker → Defender</th>
                     {configs.map(cfg => (
-                      <th key={cfg.id} style={{ padding: "4px 6px", fontSize: 11, color: C.muted, textAlign: "center", minWidth: 56 }}>
+                      <th key={cfg.id} className="px-1.5 py-1 text-[11px] text-muted text-center min-w-[56px]">
                         <div>{cfg.icon}</div>
-                        <div style={{ fontSize: 10, color: C.faint }}>{cfg.name}</div>
+                        <div className="text-[10px] text-faint">{cfg.name}</div>
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  <tr style={{ background: C.bg2 }}>
-                    <td style={{ padding: "8px 10px", fontSize: 12, color: C.text, fontWeight: 600, whiteSpace: "nowrap" }}>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                        <span style={{ background: form.color + "33", border: `1px solid ${form.color}`, borderRadius: 12, padding: "2px 8px", fontSize: 11 }}>
+                  <tr className="bg-bg2">
+                    <td className="px-2.5 py-2 text-xs text-text font-semibold whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-xl text-[11px] border" style={{ background: form.color + "33", borderColor: form.color }}>
                           {form.icon} {form.name || "this type"}
                         </span>
-                        <span style={{ color: C.faint, fontSize: 10 }}>attacks →</span>
+                        <span className="text-faint text-[10px]">attacks →</span>
                       </span>
                     </td>
                     {configs.map(cfg => {
                       const val = form.attackAdvantages[cfg.id] ?? 1.0;
                       return (
-                        <td key={cfg.id} style={{ padding: "4px 4px", textAlign: "center" }}>
+                        <td key={cfg.id} className="px-1 py-1 text-center">
                           <input
                             type="number"
                             min={0} max={4} step={0.25}
@@ -395,7 +350,7 @@ export function ElementTypeEditPage() {
                             onChange={e => set("attackAdvantages", { ...form.attackAdvantages, [cfg.id]: parseFloat(e.target.value) || 0 })}
                             style={{
                               width: 52, textAlign: "center", padding: "5px 4px",
-                              background: C.bg3, border: `1px solid ${multiplierColor(val)}44`,
+                              background: "var(--bg3)", border: `1px solid ${multiplierColor(val)}44`,
                               borderRadius: 6, color: multiplierColor(val),
                               fontSize: 13, fontWeight: 600, fontFamily: "monospace",
                             }}
@@ -412,30 +367,30 @@ export function ElementTypeEditPage() {
           {/* Defensive (incoming) view */}
           {!typesLoading && configs.length > 0 && !isCreate && (
             <>
-              <div style={{ marginTop: 24, marginBottom: 10, fontSize: 13, fontWeight: 600, color: C.text }}>
-                Defensive View <span style={{ fontWeight: 400, color: C.faint, fontSize: 12 }}>(read-only — edit from the attacker's type page)</span>
+              <div className="mt-6 mb-2.5 text-[13px] font-semibold text-text">
+                Defensive View <span className="font-normal text-faint text-xs">(read-only — edit from the attacker's type page)</span>
               </div>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ borderCollapse: "collapse", minWidth: "100%" }}>
+              <div className="overflow-x-auto">
+                <table className="border-collapse min-w-full">
                   <thead>
                     <tr>
-                      <th style={{ padding: "6px 10px", fontSize: 11, color: C.faint, textAlign: "left", whiteSpace: "nowrap" }}>Attacker → {form.name || id}</th>
-                      <th style={{ padding: "4px 8px", fontSize: 11, color: C.muted, textAlign: "center" }}>Multiplier</th>
+                      <th className="px-2.5 py-1.5 text-[11px] text-faint text-left whitespace-nowrap">Attacker → {form.name || id}</th>
+                      <th className="px-2 py-1 text-[11px] text-muted text-center">Multiplier</th>
                     </tr>
                   </thead>
                   <tbody>
                     {configs.filter(cfg => cfg.id !== id).map(cfg => {
                       const val = cfg.attackAdvantages?.[id!] ?? 1.0;
                       return (
-                        <tr key={cfg.id} style={{ borderTop: `1px solid ${C.border}` }}>
-                          <td style={{ padding: "6px 10px" }}>
-                            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12 }}>
-                              <span style={{ background: cfg.color + "33", border: `1px solid ${cfg.color}`, borderRadius: 12, padding: "1px 8px" }}>
+                        <tr key={cfg.id} className="border-t border-border">
+                          <td className="px-2.5 py-1.5">
+                            <span className="inline-flex items-center gap-1.5 text-xs">
+                              <span className="px-2 py-px rounded-xl text-[11px] border" style={{ background: cfg.color + "33", borderColor: cfg.color }}>
                                 {cfg.icon} {cfg.name}
                               </span>
                             </span>
                           </td>
-                          <td style={{ padding: "6px 10px", textAlign: "center", fontFamily: "monospace", fontWeight: 700, fontSize: 13, color: multiplierColor(val) }}>
+                          <td className="px-2.5 py-1.5 text-center font-mono font-bold text-[13px]" style={{ color: multiplierColor(val) }}>
                             {val.toFixed(2)}×
                           </td>
                         </tr>
@@ -450,14 +405,12 @@ export function ElementTypeEditPage() {
 
       </div>
 
-      {/* Sticky bottom save bar */}
-      <div style={{ marginTop: 24, display: "flex", justifyContent: "flex-end", gap: 10, paddingBottom: 40 }}>
-        <button onClick={() => navigate("/admin/element-types")} style={{ padding: "9px 20px", borderRadius: 9, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>
-          Cancel
-        </button>
-        <button onClick={handleSave} disabled={saving} style={{ padding: "9px 24px", borderRadius: 9, fontSize: 13, border: "none", background: C.blue, color: "#fff", cursor: "pointer", opacity: saving ? 0.6 : 1, fontWeight: 600 }}>
+      {/* Bottom save bar */}
+      <div className="mt-6 flex justify-end gap-2.5 pb-10">
+        <Button variant="outline" size="sm" onClick={() => navigate("/admin/element-types")}>Cancel</Button>
+        <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
           {saving ? "Saving…" : isCreate ? "Create Type" : "Save Changes"}
-        </button>
+        </Button>
       </div>
     </div>
   );

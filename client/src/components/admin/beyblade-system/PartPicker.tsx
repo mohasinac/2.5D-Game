@@ -84,29 +84,28 @@ export function PartPicker({
   };
 
   return (
-    <div style={{ position: "relative" }}>
-      {label && <div style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>{label}</div>}
+    <div className="relative">
+      {label && <div className="text-[11px] text-muted mb-1.5">{label}</div>}
 
       {/* Selected chip */}
       {selectedPart ? (
-        <div style={{
-          display: "flex", alignItems: "center", gap: 8,
-          padding: "6px 10px", borderRadius: 7,
-          background: alpha(C.blue, 0.09), border: `1px solid ${alpha(C.blue, 0.33)}`,
-        }}>
-          <div style={{ width: 12, height: 12, borderRadius: "50%", background: selectedPart.color ?? C.faint, flexShrink: 0 }} />
-          <span style={{ flex: 1, fontSize: 12, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-[7px] bg-blue/[0.09] border border-blue/30">
+          <div
+            style={{ background: selectedPart.color ?? C.faint }}
+            className="w-3 h-3 rounded-full shrink-0"
+          />
+          <span className="flex-1 text-[12px] text-text overflow-hidden text-ellipsis whitespace-nowrap">
             {selectedPart.displayName || "(unnamed)"}
           </span>
           {(selectedPart.compatibilityTags ?? []).slice(0, 2).map((tag) => (
-            <span key={tag} style={{ fontSize: 9, background: C.bg3, color: C.faint, padding: "1px 5px", borderRadius: 3, border: `1px solid ${C.border}` }}>
+            <span key={tag} className="text-[9px] bg-bg3 text-faint px-[5px] py-px rounded-[3px] border border-border">
               {tag}
             </span>
           ))}
           {(onClear || true) && (
             <button
               onClick={() => { onClear?.(); setSearch(""); setOpen(true); setTimeout(() => inputRef.current?.focus(), 50); }}
-              style={{ background: "none", border: "none", color: C.faint, fontSize: 14, cursor: "pointer", lineHeight: 1, padding: "0 2px" }}
+              className="bg-transparent border-none text-faint text-sm cursor-pointer leading-none px-0.5"
               title="Clear selection"
             >×</button>
           )}
@@ -120,11 +119,7 @@ export function PartPicker({
           onBlur={() => setTimeout(() => setOpen(false), 150)}
           onKeyDown={handleKeyDown}
           placeholder="Search parts…"
-          style={{
-            width: "100%", padding: "6px 10px", background: C.bg2,
-            border: `1px solid ${C.border}`, borderRadius: 6, color: C.text,
-            fontSize: 12, boxSizing: "border-box" as const,
-          }}
+          className="w-full px-2.5 py-1.5 bg-bg2 border border-border rounded-[6px] text-text text-[12px] box-border"
         />
       )}
 
@@ -132,17 +127,12 @@ export function PartPicker({
       {open && !selectedPart && (
         <div
           ref={listRef}
-          style={{
-            position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 100,
-            background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8,
-            boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
-            maxHeight: 280, overflowY: "auto",
-          }}
+          className="absolute top-[calc(100%+4px)] left-0 right-0 z-[100] bg-bg1 border border-border rounded-[8px] shadow-[0_8px_24px_rgba(0,0,0,0.4)] max-h-[280px] overflow-y-auto"
         >
           {loading ? (
-            <div style={{ fontSize: 11, color: C.faint, padding: "10px 12px" }}>Loading…</div>
+            <div className="text-[11px] text-faint px-3 py-2.5">Loading…</div>
           ) : filtered.length === 0 ? (
-            <div style={{ fontSize: 11, color: C.faint, padding: "10px 12px" }}>No parts match "{search}"</div>
+            <div className="text-[11px] text-faint px-3 py-2.5">No parts match "{search}"</div>
           ) : (
             filtered.map((part, i) => {
               const compat = isCompatible(part, existingCompatibilityTags, isAdmin);
@@ -152,27 +142,25 @@ export function PartPicker({
                   key={part.id}
                   title={!compat.ok ? compat.reason : undefined}
                   onMouseDown={() => compat.ok && handleSelect(part)}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 8,
-                    padding: "7px 12px", cursor: compat.ok ? "pointer" : "default",
-                    background: isHighlighted ? alpha(C.blue, 0.13) : "transparent",
-                    opacity: compat.ok ? 1 : 0.45,
-                    borderBottom: `1px solid ${alpha(C.border, 0.13)}`,
-                  }}
+                  style={{ background: isHighlighted ? alpha(C.blue, 0.13) : "transparent" }}
+                  className={`flex items-center gap-2 px-3 py-[7px] border-b border-border/[0.13] ${compat.ok ? "cursor-pointer" : "cursor-default opacity-45"}`}
                 >
-                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: part.color ?? C.faint, flexShrink: 0 }} />
-                  <span style={{ flex: 1, fontSize: 12, color: compat.ok ? C.text : C.faint, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <div
+                    style={{ background: part.color ?? C.faint }}
+                    className="w-3 h-3 rounded-full shrink-0"
+                  />
+                  <span className={`flex-1 text-[12px] overflow-hidden text-ellipsis whitespace-nowrap ${compat.ok ? "text-text" : "text-faint"}`}>
                     {part.displayName || "(unnamed)"}
                   </span>
                   {!compat.ok && (
                     <button
                       title="Admin override — use regardless of compatibility"
                       onMouseDown={(e) => { e.stopPropagation(); handleSelect(part); }}
-                      style={{ padding: "2px 6px", fontSize: 9, borderRadius: 4, cursor: "pointer", background: alpha(C.yellow, 0.13), color: C.yellow, border: `1px solid ${alpha(C.yellow, 0.27)}` }}
+                      className="px-1.5 py-0.5 text-[9px] rounded cursor-pointer bg-yellow/10 text-yellow border border-yellow/25"
                     >Override</button>
                   )}
                   {(part.compatibilityTags ?? []).slice(0, 2).map((tag) => (
-                    <span key={tag} style={{ fontSize: 9, background: C.bg3, color: C.faint, padding: "1px 5px", borderRadius: 3, border: `1px solid ${C.border}` }}>
+                    <span key={tag} className="text-[9px] bg-bg3 text-faint px-[5px] py-px rounded-[3px] border border-border">
                       {tag}
                     </span>
                   ))}

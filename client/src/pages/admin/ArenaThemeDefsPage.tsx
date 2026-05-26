@@ -2,17 +2,14 @@ import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGameDataStore } from "@/stores/gameDataStore";
-import { C } from "@/styles/theme";
+import { Button } from "@/components/ui/Button";
 import toast from "react-hot-toast";
 
 interface ArenaThemeDoc { id: string; label: string; color?: string; description?: string; }
 
 const EMPTY: ArenaThemeDoc = { id: "", label: "", color: "#3b82f6", description: "" };
 
-const inp: React.CSSProperties = {
-  width: "100%", padding: "8px 10px", background: C.bg0,
-  border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13, boxSizing: "border-box",
-};
+const inputCls = "w-full bg-bg0 border border-border rounded-lg px-2.5 py-2 text-text text-sm box-border";
 
 export function ArenaThemeDefsPage() {
   const [items, setItems] = useState<ArenaThemeDoc[]>([]);
@@ -73,87 +70,85 @@ export function ArenaThemeDefsPage() {
   );
 
   return (
-    <div style={{ padding: 24, maxWidth: 800 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+    <div className="p-6 max-w-[800px]">
+      <div className="flex justify-between items-center mb-5">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, margin: 0 }}>Arena Theme Defs</h1>
-          <p style={{ fontSize: 13, color: C.muted, margin: "4px 0 0" }}>
+          <h1 className="text-xl font-bold text-text m-0">Arena Theme Defs</h1>
+          <p className="text-sm text-muted mt-1">
             Defines visual themes available in the arena editor. Falls back to built-ins when empty.
           </p>
         </div>
-        <button onClick={openCreate} style={{ padding: "8px 18px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, fontSize: 13, cursor: "pointer", fontWeight: 600 }}>
-          + Add Theme
-        </button>
+        <Button variant="primary" size="sm" onClick={openCreate}>+ Add Theme</Button>
       </div>
 
       <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search…"
-        style={{ ...inp, marginBottom: 16, maxWidth: 320 }} />
+        className={`${inputCls} mb-4 max-w-xs`} />
 
       {loading ? (
-        <div style={{ color: C.muted, fontSize: 13 }}>Loading…</div>
+        <div className="text-muted text-sm">Loading…</div>
       ) : filtered.length === 0 ? (
-        <div style={{ color: C.muted, fontSize: 13 }}>No arena themes found. Add one above.</div>
+        <div className="text-muted text-sm">No arena themes found. Add one above.</div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {filtered.map(item => (
-            <div key={item.id} style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 6, background: item.color ?? "#3b82f6", flexShrink: 0 }} />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>{item.label}</div>
-                <div style={{ fontSize: 11, color: C.faint, marginTop: 2 }}>ID: {item.id}{item.description ? ` — ${item.description}` : ""}</div>
+            <div key={item.id} className="bg-bg1 border border-border rounded-xl px-4 py-3 flex items-center gap-3">
+              <div className="w-7 h-7 rounded-md flex-shrink-0" style={{ background: item.color ?? "#3b82f6" }} />
+              <div className="flex-1">
+                <div className="text-sm font-semibold text-text">{item.label}</div>
+                <div className="text-xs text-faint mt-0.5">ID: {item.id}{item.description ? ` — ${item.description}` : ""}</div>
               </div>
-              <button onClick={() => openEdit(item)} style={{ padding: "5px 12px", fontSize: 12, borderRadius: 6, border: `1px solid ${C.border}`, background: C.bg2, color: C.muted, cursor: "pointer" }}>Edit</button>
-              <button onClick={() => setConfirmDelete(item)} style={{ padding: "5px 12px", fontSize: 12, borderRadius: 6, border: "1px solid #ef444444", background: "#ef44440d", color: "#ef4444", cursor: "pointer" }}>Delete</button>
+              <Button variant="outline" size="xs" onClick={() => openEdit(item)}>Edit</Button>
+              <Button variant="danger" size="xs" onClick={() => setConfirmDelete(item)}>Delete</Button>
             </div>
           ))}
         </div>
       )}
 
       {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "#00000088", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 14, padding: 28, width: 420, maxWidth: "90vw" }}>
-            <h2 style={{ fontSize: 17, fontWeight: 700, color: C.text, margin: "0 0 20px" }}>{editing ? "Edit" : "Add"} Arena Theme</h2>
-            <label style={{ display: "block", marginBottom: 12 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>ID (slug) *</span>
-              <input value={form.id} onChange={e => setForm(f => ({ ...f, id: e.target.value }))} disabled={!!editing} style={inp} placeholder="volcano" />
+        <div className="fixed inset-0 bg-black/[.53] flex items-center justify-center z-[1000]">
+          <div className="bg-bg0 border border-border rounded-2xl p-7 w-[420px] max-w-[90vw]">
+            <h2 className="text-base font-bold text-text mb-5">{editing ? "Edit" : "Add"} Arena Theme</h2>
+            <label className="block mb-3">
+              <span className="text-xs text-muted block mb-1">ID (slug) *</span>
+              <input value={form.id} onChange={e => setForm(f => ({ ...f, id: e.target.value }))} disabled={!!editing} className={`${inputCls} disabled:opacity-50`} placeholder="volcano" />
             </label>
-            <label style={{ display: "block", marginBottom: 12 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Label *</span>
-              <input value={form.label} onChange={e => setForm(f => ({ ...f, label: e.target.value }))} style={inp} placeholder="Volcano" />
+            <label className="block mb-3">
+              <span className="text-xs text-muted block mb-1">Label *</span>
+              <input value={form.label} onChange={e => setForm(f => ({ ...f, label: e.target.value }))} className={inputCls} placeholder="Volcano" />
             </label>
-            <label style={{ display: "block", marginBottom: 12 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>
-              <input value={form.description ?? ""} onChange={e => setForm(f => ({ ...f, description: e.target.value || undefined }))} style={inp} placeholder="Optional description…" />
+            <label className="block mb-3">
+              <span className="text-xs text-muted block mb-1">Description</span>
+              <input value={form.description ?? ""} onChange={e => setForm(f => ({ ...f, description: e.target.value || undefined }))} className={inputCls} placeholder="Optional description…" />
             </label>
-            <label style={{ display: "block", marginBottom: 20 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Theme Color</span>
-              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <label className="block mb-5">
+              <span className="text-xs text-muted block mb-1">Theme Color</span>
+              <div className="flex gap-2.5 items-center">
                 <input type="color" value={form.color ?? "#3b82f6"}
                   onChange={e => setForm(f => ({ ...f, color: e.target.value }))}
-                  style={{ width: 48, height: 38, border: `1px solid ${C.border}`, borderRadius: 8, background: C.bg0, cursor: "pointer" }} />
+                  className="w-12 h-9 border border-border rounded-lg bg-bg0 cursor-pointer p-0.5" />
                 <input value={form.color ?? "#3b82f6"}
                   onChange={e => setForm(f => ({ ...f, color: e.target.value }))}
-                  style={{ ...inp, flex: 1 }} placeholder="#3b82f6" />
+                  className={`${inputCls} flex-1`} placeholder="#3b82f6" />
               </div>
             </label>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setShowModal(false)} style={{ padding: "8px 18px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.bg2, color: C.muted, fontSize: 13, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleSave} disabled={saving} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: C.blue, color: "#fff", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>
+            <div className="flex gap-2.5 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setShowModal(false)}>Cancel</Button>
+              <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
                 {saving ? "Saving…" : "Save"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       )}
 
       {confirmDelete && (
-        <div style={{ position: "fixed", inset: 0, background: "#00000088", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 14, padding: 28, width: 360, textAlign: "center" }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: C.text, marginBottom: 10 }}>Delete "{confirmDelete.label}"?</div>
-            <div style={{ fontSize: 13, color: C.muted, marginBottom: 20 }}>This cannot be undone. Arenas using this theme ID will fall back to the default theme.</div>
-            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ padding: "8px 18px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.bg2, color: C.muted, fontSize: 13, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleDelete} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#ef4444", color: "#fff", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>Delete</button>
+        <div className="fixed inset-0 bg-black/[.53] flex items-center justify-center z-[1000]">
+          <div className="bg-bg0 border border-border rounded-2xl p-7 w-[360px] text-center">
+            <div className="text-base font-semibold text-text mb-2.5">Delete "{confirmDelete.label}"?</div>
+            <div className="text-sm text-muted mb-5">This cannot be undone. Arenas using this theme ID will fall back to the default theme.</div>
+            <div className="flex gap-2.5 justify-center">
+              <Button variant="outline" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+              <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
             </div>
           </div>
         </div>

@@ -5,7 +5,7 @@
 import * as PIXI from "pixi.js";
 import type { ServerBeyblade, ServerGameState, ServerDetachedBody } from "@/types/game";
 import { getBeybladeStability } from "@/types/game";
-import { PX_PER_CM_BASE, PHYSICS_SCALE } from "@/constants/units";
+import { PX_PER_CM_BASE, PHYSICS_SCALE, getPxPerCm } from "@/constants/units";
 import { WorldTransform } from "./WorldTransform";
 import { FeatureRenderer } from "./FeatureRenderer";
 import { StateInterpolator } from "../interpolation/StateInterpolator";
@@ -367,15 +367,18 @@ export class BeybladeGameRenderer {
   /** Apply current camera state to the world layer (position + scale). */
   private applyCameraTransform() {
     const z = this.world.camera.zoom;
-    // Compute scale that takes "world px" (= cm * PX_PER_CM_BASE) into screen px.
-    // worldRoot's children render at world-px; we scale by zoom and translate so
-    // camera.{x,y} (in cm) appears at the screen center.
-    this.worldRoot.scale.set(z);
+    // viewportScale maps world-px (cm * PX_PER_CM_BASE) to screen-px proportionally.
+    // At REFERENCE_VMIN viewport height, viewportScale = 1 and behaviour is identical
+    // to the fixed-24px/cm baseline.  On smaller/larger screens it shrinks/grows so
+    // the arena always occupies the same fraction of the viewport.
+    const viewportScale = getPxPerCm() / PX_PER_CM_BASE;
+    const s = z * viewportScale;
+    this.worldRoot.scale.set(s);
     const cx_worldPx = this.world.camera.x_cm * PX_PER_CM_BASE;
     const cy_worldPx = this.world.camera.y_cm * PX_PER_CM_BASE;
     this.worldRoot.position.set(
-      this.app.screen.width / 2 - cx_worldPx * z,
-      this.app.screen.height / 2 - cy_worldPx * z,
+      this.app.screen.width  / 2 - cx_worldPx * s,
+      this.app.screen.height / 2 - cy_worldPx * s,
     );
   }
 

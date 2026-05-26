@@ -485,11 +485,14 @@ export function useColyseus({
       });
 
       connectedRoom.onMessage("game-end", (data: any) => {
-        onGameEndRef.current?.(data);
+        // Server sends winner as { id, userId, username } object; normalize to userId string
+        const normalized = { ...data, winner: data.winner?.userId ?? data.winner ?? "" };
+        onGameEndRef.current?.(normalized);
       });
 
       connectedRoom.onMessage("series-end", (data: any) => {
-        onSeriesEndRef.current?.(data);
+        const normalized = { ...data, winner: data.winner?.userId ?? data.winner ?? "" };
+        onSeriesEndRef.current?.(normalized);
       });
 
       connectedRoom.onMessage("idle-disconnect", () => {

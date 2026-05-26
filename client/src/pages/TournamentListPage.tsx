@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
 import { collection, onSnapshot, query, orderBy, where } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGame } from "@/contexts/GameContext";
-import { C, pill, alpha } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import type { TournamentDoc } from "@/types/game";
 
-const STATUS_COLORS: Record<string, string> = {
-  draft: C.faint,
-  registration: C.blue,
-  "in-progress": C.green,
-  completed: C.purple,
-  cancelled: C.red,
+const STATUS_PILL: Record<string, string> = {
+  draft:          "bg-faint/[.13] text-faint border-faint/[.27]",
+  registration:   "bg-blue/[.13] text-blue border-blue/[.27]",
+  "in-progress":  "bg-green/[.13] text-green border-green/[.27]",
+  completed:      "bg-purple/[.13] text-purple border-purple/[.27]",
+  cancelled:      "bg-red/[.13] text-red border-red/[.27]",
 };
+const PILL_BASE = "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold border";
 
 const TYPE_LABELS: Record<string, string> = {
   pvp: "PVP",
@@ -42,7 +43,6 @@ function formatCountdown(ts: any): string {
 }
 
 export function TournamentListPage() {
-  const navigate = useNavigate();
   const location = useLocation();
   const mode = modeFromPath(location.pathname);
   const { settings } = useGame();
@@ -122,7 +122,7 @@ export function TournamentListPage() {
               <TournamentCard
                 key={t.id}
                 tournament={t}
-                onJoin={() => navigate(`/game/${mode}/tournament/${t.id}`)}
+                href={`/game/${mode}/tournament/${t.id}`}
                 userId={settings.userId}
               />
             ))}
@@ -135,11 +135,11 @@ export function TournamentListPage() {
 
 function TournamentCard({
   tournament: t,
-  onJoin,
+  href,
   userId,
 }: {
   tournament: TournamentDoc;
-  onJoin: () => void;
+  href: string;
   userId?: string;
 }) {
   const canJoin = t.status === "registration" || t.status === "in-progress";
@@ -169,9 +169,9 @@ function TournamentCard({
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4, flexWrap: "wrap" }}>
           <span style={{ fontSize: 16, fontWeight: 700, color: C.text }}>{t.name}</span>
-          <span style={pill(STATUS_COLORS[t.status] ?? C.faint)}>{t.status}</span>
-          <span style={pill(C.muted)}>{TYPE_LABELS[t.type] ?? t.type}</span>
-          <span style={pill(C.yellow)}>BO{t.bestOf}</span>
+          <span className={`${PILL_BASE} ${STATUS_PILL[t.status] ?? STATUS_PILL.draft}`}>{t.status}</span>
+          <span className={`${PILL_BASE} bg-bg3 text-muted border-border`}>{TYPE_LABELS[t.type] ?? t.type}</span>
+          <span className={`${PILL_BASE} bg-yellow/[.13] text-yellow border-yellow/[.27]`}>BO{t.bestOf}</span>
         </div>
 
         {t.description && (
@@ -193,26 +193,25 @@ function TournamentCard({
       {/* Action */}
       <div style={{ flexShrink: 0 }}>
         {canJoin ? (
-          <button
-            onClick={onJoin}
+          <Link
+            to={href}
             style={{
-              padding: "8px 20px", borderRadius: 10, fontSize: 13, fontWeight: 700,
-              cursor: "pointer", background: C.yellow, color: C.bg0, border: "none",
+              display: "inline-block", padding: "8px 20px", borderRadius: 10, fontSize: 13, fontWeight: 700,
+              background: C.yellow, color: C.bg0, textDecoration: "none",
             }}
           >
             {t.status === "in-progress" ? "Watch / Join" : "View Lobby"}
-          </button>
+          </Link>
         ) : (
-          <button
-            onClick={onJoin}
+          <Link
+            to={href}
             style={{
-              padding: "8px 20px", borderRadius: 10, fontSize: 13, fontWeight: 600,
-              cursor: "pointer", background: "transparent",
-              color: C.muted, border: `1px solid ${C.border}`,
+              display: "inline-block", padding: "8px 20px", borderRadius: 10, fontSize: 13, fontWeight: 600,
+              background: "transparent", color: C.muted, border: `1px solid ${C.border}`, textDecoration: "none",
             }}
           >
             View
-          </button>
+          </Link>
         )}
       </div>
     </div>

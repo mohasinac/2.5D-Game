@@ -64,31 +64,28 @@ test.describe("PvAI Gauntlet: admin creates tournament", () => {
     }
 
     // Select Player Gauntlet type
-    // The type picker is a SearchableSelect or radio buttons
-    const gauntletBtn = page.locator("button, label, [role='option']").filter({ hasText: /player.*gauntlet|gauntlet/i }).first();
-    const gauntletOption = page.locator("option").filter({ hasText: /player.*gauntlet/i }).first();
-    const gauntletSelect = page.locator("select").filter({ hasText: /pvp|gauntlet/i }).first();
-
-    if (await gauntletBtn.isVisible().catch(() => false)) {
-      await gauntletBtn.click();
-      await page.waitForTimeout(300);
-      await ss(page, "G01-gauntlet-type-selected");
-    } else if (await gauntletSelect.isVisible().catch(() => false)) {
-      await gauntletSelect.selectOption("player-gauntlet");
-      await page.waitForTimeout(300);
-      await ss(page, "G01-gauntlet-type-selected-dropdown");
+    // The type picker is a SearchableSelect (data-testid="tournament-type-select") — click trigger to open, then pick option
+    const typeSelectContainer = page.locator('[data-testid="tournament-type-select"]').first();
+    if (await typeSelectContainer.isVisible().catch(() => false)) {
+      await typeSelectContainer.click(); // open the dropdown
+      await page.waitForTimeout(200);
+      const gauntletOption = page.locator('[role="option"]').filter({ hasText: /player.*gauntlet|gauntlet/i }).first();
+      if (await gauntletOption.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        await gauntletOption.click();
+        await page.waitForTimeout(300);
+        await ss(page, "G01-gauntlet-type-selected");
+      } else {
+        console.log("[G01] Player Gauntlet option not visible after opening dropdown");
+      }
     } else {
-      console.log("[G01] Could not find Player Gauntlet type selector — trying text search");
-      const textInput = page.locator('input[type="text"], input[type="search"]').first();
-      if (await textInput.isVisible().catch(() => false)) {
-        await textInput.fill("gauntlet");
-        await page.waitForTimeout(500);
-        const option = page.locator('[role="option"], li').filter({ hasText: /gauntlet/i }).first();
-        if (await option.isVisible().catch(() => false)) {
-          await option.click();
-          await page.waitForTimeout(300);
-          await ss(page, "G01-gauntlet-type-found");
-        }
+      // Fallback: native select
+      const gauntletSelect = page.locator("select").first();
+      if (await gauntletSelect.isVisible().catch(() => false)) {
+        await gauntletSelect.selectOption("player-gauntlet");
+        await page.waitForTimeout(300);
+        await ss(page, "G01-gauntlet-type-selected-dropdown");
+      } else {
+        console.log("[G01] Could not find Player Gauntlet type selector");
       }
     }
 

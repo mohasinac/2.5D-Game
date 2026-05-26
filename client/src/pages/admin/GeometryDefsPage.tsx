@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
-import { C } from "@/styles/theme";
+import { Button } from "@/components/ui/Button";
+import { Input, Textarea } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 import toast from "react-hot-toast";
 
 interface GeometryDefDoc {
@@ -43,11 +45,6 @@ function slugify(s: string) {
 function tryParseJson(s: string): Record<string, unknown> | null {
   try { return JSON.parse(s); } catch { return null; }
 }
-
-const inputStyle: React.CSSProperties = {
-  width: "100%", padding: "8px 10px", background: C.bg0,
-  border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13, boxSizing: "border-box",
-};
 
 const EMPTY = { name: "", type: "circle", description: "", boundingRadius: 1.0, shapeJson: JSON.stringify({ radius: 1.0 }, null, 2) };
 
@@ -150,57 +147,55 @@ export default function GeometryDefsPage() {
   })).filter(g => g.items.length > 0);
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 900 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+    <div className="p-8 max-w-[900px]">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, color: C.text }}>Geometry Defs</h1>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: C.muted }}>
+          <h1 className="m-0 text-[22px] text-text">Geometry Defs</h1>
+          <p className="mt-1 text-[13px] text-muted">
             {items.length} shape{items.length !== 1 ? "s" : ""} — reusable geometry primitives for arenas, parts, and zones
           </p>
         </div>
-        <button onClick={openCreate} style={{ padding: "8px 18px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13 }}>
-          + New Geometry
-        </button>
+        <Button variant="primary" size="sm" onClick={openCreate}>+ New Geometry</Button>
       </div>
 
-      <input
+      <Input
         placeholder="Search by name, id, or type…"
         value={query}
         onChange={e => setQuery(e.target.value)}
-        style={{ ...inputStyle, marginBottom: 20 }}
+        className="mb-5"
       />
 
       {loading ? (
-        <p style={{ color: C.muted }}>Loading…</p>
+        <p className="text-muted">Loading…</p>
       ) : byType.length === 0 ? (
-        <p style={{ color: C.muted }}>No geometry defs found.</p>
+        <p className="text-muted">No geometry defs found.</p>
       ) : (
         byType.map(group => (
-          <div key={group.value} style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: C.blue, marginBottom: 8 }}>
-              {group.label} <span style={{ color: C.muted, fontWeight: 400 }}>— {group.hint}</span>
+          <div key={group.value} className="mb-7">
+            <div className="text-[11px] font-bold uppercase tracking-widest text-blue mb-2">
+              {group.label} <span className="text-muted font-normal">— {group.hint}</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div className="flex flex-col gap-1.5">
               {group.items.map(item => (
-                <div key={item.id} style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 14px", gap: 12 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                      <span style={{ fontWeight: 600, fontSize: 14, color: C.text }}>{item.name}</span>
-                      <span style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>{item.id}</span>
+                <div key={item.id} className="flex items-start justify-between bg-bg1 border border-border rounded-lg px-3.5 py-2.5 gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="font-semibold text-sm text-text">{item.name}</span>
+                      <span className="text-[11px] text-muted font-mono">{item.id}</span>
                       {item.boundingRadius != null && (
-                        <span style={{ fontSize: 11, color: C.muted }}>r={item.boundingRadius}cm</span>
+                        <span className="text-[11px] text-muted">r={item.boundingRadius}cm</span>
                       )}
                     </div>
-                    <p style={{ margin: 0, fontSize: 12, color: C.muted, lineHeight: 1.5 }}>{item.description}</p>
+                    <p className="m-0 text-xs text-muted leading-relaxed">{item.description}</p>
                     {item.shape && Object.keys(item.shape).length > 0 && (
-                      <div style={{ marginTop: 4, fontSize: 11, color: C.muted, fontFamily: "monospace" }}>
+                      <div className="mt-1 text-[11px] text-muted font-mono">
                         {Object.entries(item.shape).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join(" · ")}
                       </div>
                     )}
                   </div>
-                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                    <button onClick={() => openEdit(item)} style={{ padding: "5px 12px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12, cursor: "pointer" }}>Edit</button>
-                    <button onClick={() => setConfirmDelete(item)} style={{ padding: "5px 12px", background: C.bg0, border: `1px solid #c0392b`, borderRadius: 6, color: "#e74c3c", fontSize: 12, cursor: "pointer" }}>Delete</button>
+                  <div className="flex gap-1.5 shrink-0">
+                    <Button variant="outline" size="xs" onClick={() => openEdit(item)}>Edit</Button>
+                    <Button variant="danger" size="xs" onClick={() => setConfirmDelete(item)}>Delete</Button>
                   </div>
                 </div>
               ))}
@@ -210,78 +205,76 @@ export default function GeometryDefsPage() {
       )}
 
       {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: 28, width: 520, maxWidth: "95vw", maxHeight: "90vh", overflowY: "auto" }}>
-            <h2 style={{ margin: "0 0 20px", fontSize: 17, color: C.text }}>{editing ? "Edit Geometry" : "New Geometry"}</h2>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000]">
+          <div className="bg-bg1 border border-border rounded-xl p-7 w-[520px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
+            <h2 className="m-0 mb-5 text-[17px] text-text">{editing ? "Edit Geometry" : "New Geometry"}</h2>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Name *</span>
-              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} placeholder="e.g. Circle SM" />
+            <div className="mb-3.5">
+              <Label>Name *</Label>
+              <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Circle SM" />
               {!editing && form.name && (
-                <span style={{ fontSize: 11, color: C.muted, marginTop: 2, display: "block" }}>ID: {slugify(form.name)}</span>
+                <span className="text-[11px] text-muted mt-0.5 block">ID: {slugify(form.name)}</span>
               )}
-            </label>
+            </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Type *</span>
+            <div className="mb-3.5">
+              <Label>Type *</Label>
               <SearchableSelect
                 options={TYPE_OPTIONS}
                 value={form.type}
                 onChange={handleTypeChange}
                 placeholder="Select type"
               />
-            </label>
+            </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Bounding Radius (cm)</span>
-              <input type="number" min={0} step={0.1} value={form.boundingRadius}
-                onChange={e => setForm(f => ({ ...f, boundingRadius: Number(e.target.value) }))}
-                style={inputStyle} />
-            </label>
+            <div className="mb-3.5">
+              <Label>Bounding Radius (cm)</Label>
+              <Input type="number" min={0} step={0.1} value={form.boundingRadius}
+                onChange={e => setForm(f => ({ ...f, boundingRadius: Number(e.target.value) }))} />
+            </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>
-              <textarea
+            <div className="mb-3.5">
+              <Label>Description</Label>
+              <Textarea
                 value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 rows={2}
-                style={{ ...inputStyle, resize: "vertical" }}
               />
-            </label>
+            </div>
 
-            <label style={{ display: "block", marginBottom: 20 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
+            <div className="mb-5">
+              <Label>
                 Shape Data (JSON)
-                {jsonError && <span style={{ color: "#e74c3c", marginLeft: 8 }}>{jsonError}</span>}
-              </span>
+                {jsonError && <span className="text-red ml-2">{jsonError}</span>}
+              </Label>
               <textarea
                 value={form.shapeJson}
                 onChange={e => handleShapeChange(e.target.value)}
                 rows={5}
-                style={{ ...inputStyle, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
+                className="w-full bg-bg3 border border-border rounded-md px-3 py-2 text-text placeholder:text-faint focus:outline-none focus:border-blue resize-y font-mono text-xs"
               />
-            </label>
+            </div>
 
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setShowModal(false)} style={{ padding: "8px 16px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleSave} disabled={saving || !!jsonError} style={{ padding: "8px 18px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}>
+            <div className="flex gap-2.5 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setShowModal(false)}>Cancel</Button>
+              <Button variant="primary" size="sm" onClick={handleSave} disabled={saving || !!jsonError}>
                 {saving ? "Saving…" : editing ? "Update" : "Create"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       )}
 
       {confirmDelete && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: 28, width: 380, maxWidth: "95vw" }}>
-            <h3 style={{ margin: "0 0 12px", color: C.text }}>Delete Geometry?</h3>
-            <p style={{ margin: "0 0 20px", color: C.muted, fontSize: 13 }}>
-              Delete <strong style={{ color: C.text }}>{confirmDelete.name}</strong>? Any configs referencing <code style={{ fontFamily: "monospace" }}>{confirmDelete.id}</code> will lose their geometry link.
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100]">
+          <div className="bg-bg1 border border-border rounded-xl p-7 w-[380px] max-w-[95vw]">
+            <h3 className="m-0 mb-3 text-text">Delete Geometry?</h3>
+            <p className="m-0 mb-5 text-muted text-[13px]">
+              Delete <strong className="text-text">{confirmDelete.name}</strong>? Any configs referencing <code className="font-mono">{confirmDelete.id}</code> will lose their geometry link.
             </p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ padding: "8px 16px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleDelete} style={{ padding: "8px 18px", background: "#c0392b", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>Delete</button>
+            <div className="flex gap-2.5 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+              <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
             </div>
           </div>
         </div>

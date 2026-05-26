@@ -3,7 +3,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "fi
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { C, S, alpha } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import WhatsAppStyleImageEditor from "./WhatsAppStyleImageEditor";
 import type { WhatsAppStyleImageEditorRef } from "./WhatsAppStyleImageEditor";
@@ -120,25 +120,25 @@ export function AssetCrudPage({
 
       {/* Upload form */}
       <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:20, marginBottom:20 }}>
-        <div style={S.sectionTitle}>Upload New Asset</div>
+        <div className="text-[11px] font-semibold text-muted uppercase tracking-[0.08em] mb-3">Upload New Asset</div>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10, marginBottom:12 }}>
           <div>
-            <label style={S.label}>Name *</label>
-            <input type="text" value={form.name} onChange={e => setForm(f => ({...f,name:e.target.value}))} placeholder="Asset name" style={S.input} />
+            <label className="block text-xs text-muted mb-1.5">Name *</label>
+            <input type="text" value={form.name} onChange={e => setForm(f => ({...f,name:e.target.value}))} placeholder="Asset name" className="w-full px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm" />
           </div>
           {tags.length > 0 && (
             <div>
-              <label style={S.label}>{tagLabel}</label>
+              <label className="block text-xs text-muted mb-1.5">{tagLabel}</label>
               <SearchableSelect
                 value={form.tag}
                 options={tags.map(t => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) }))}
                 onChange={v => setForm(f => ({...f, tag: v}))}
-                style={{ ...S.input, cursor: "pointer" }}
+                style={{ width: "100%", background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 12px", color: "var(--text)", fontSize: 13, cursor: "pointer" }}
               />
             </div>
           )}
           <div>
-            <label style={S.label}>File *</label>
+            <label className="block text-xs text-muted mb-1.5">File *</label>
             <label style={{ cursor:"pointer", display:"flex", alignItems:"center", gap:8, background:C.bg3, border:`1px solid ${C.border}`, borderRadius:8, padding:"7px 12px", fontSize:13, color:C.muted }}>
               <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{form.file ? form.file.name : "Choose file..."}</span>
               <input key={fileInputKey} type="file" accept={acceptTypes} onChange={handleFileChange} style={{ display:"none" }} />

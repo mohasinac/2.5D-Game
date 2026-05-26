@@ -38,21 +38,14 @@ function msToLabel(ms: number) {
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-      <label style={{ fontSize: 11, color: C.muted, minWidth: 100 }}>{label}</label>
+    <div className="flex items-center gap-2 mb-1.5">
+      <label className="text-[11px] text-muted min-w-[100px]">{label}</label>
       {children}
     </div>
   );
 }
 
-const INPUT_STYLE = {
-  background: C.bg2,
-  border: `1px solid ${C.border}`,
-  color: C.text,
-  borderRadius: 6,
-  padding: "3px 7px",
-  fontSize: 12,
-};
+const INPUT_CLS = "bg-bg2 border border-border text-text rounded-md py-[3px] px-[7px] text-xs";
 
 function newEvent(): ArenaTimelineEvent {
   return { triggerMs: 30_000, type: "announcement", announcement: { text: "Event!", style: "info" } };
@@ -82,20 +75,21 @@ export default function TimelineTab({ config, onChange }: Props) {
 
   return (
     <CollapsibleSection title="Timeline" badge={events.length} storageKey="arena-timeline-list" defaultOpen={true}>
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text }}>
+      <div className="flex items-center justify-between">
+        <h3 className="m-0 text-sm font-semibold text-text">
           Timeline Events
           {events.length > 0 && (
-            <span style={{ fontSize: 11, color: C.muted, fontWeight: 400, marginLeft: 8 }}>
+            <span className="text-[11px] text-muted font-normal ml-2">
               ({events.length} event{events.length !== 1 ? "s" : ""})
             </span>
           )}
         </h3>
         <button
           onClick={addEvent}
-          style={{ padding: "5px 12px", background: C.purple, color: C.white, border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+          className="py-[5px] px-3 text-white border-none rounded-md text-xs cursor-pointer"
+          style={{ background: C.purple }}
         >
           + Add Event
         </button>
@@ -103,46 +97,46 @@ export default function TimelineTab({ config, onChange }: Props) {
 
       {/* Event list */}
       {events.length === 0 ? (
-        <div style={{ textAlign: "center", padding: 24, color: C.muted, fontSize: 13 }}>
+        <div className="text-center p-6 text-muted text-[13px]">
           No timeline events. Add one to script arena changes during the match.
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <div className="flex flex-col gap-1.5">
           {events.map((ev, idx) => {
             const isOpen = expandedIdx === idx;
             return (
               <div
                 key={idx}
-                style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, overflow: "hidden" }}
+                className="bg-bg1 border border-border rounded-[10px] overflow-hidden"
               >
                 {/* Row header */}
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", cursor: "pointer" }}
+                  className="flex items-center gap-2 py-2 px-3 cursor-pointer"
                   onClick={() => setExpandedIdx(isOpen ? null : idx)}
                 >
-                  <span style={{ fontSize: 13, color: C.purple, fontWeight: 700, minWidth: 40 }}>
+                  <span className="text-[13px] font-bold min-w-[40px]" style={{ color: C.purple }}>
                     {msToLabel(ev.triggerMs)}
                   </span>
-                  <span style={{ fontSize: 13 }}>{TYPE_ICONS[ev.type] ?? "?"}</span>
-                  <span style={{ fontSize: 12, color: C.text, flex: 1 }}>
+                  <span className="text-[13px]">{TYPE_ICONS[ev.type] ?? "?"}</span>
+                  <span className="text-xs text-text flex-1">
                     {ev.type === "announcement"
                       ? ev.announcement?.text ?? ev.type
                       : ev.type}
-                    {ev.repeat && <span style={{ color: C.muted, fontSize: 11 }}> ×{ev.repeat.count + 1}</span>}
+                    {ev.repeat && <span className="text-muted text-[11px]"> ×{ev.repeat.count + 1}</span>}
                   </span>
                   <button
                     onClick={e => { e.stopPropagation(); removeEvent(idx); }}
-                    style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 14, padding: "0 4px" }}
+                    className="bg-transparent border-none text-muted cursor-pointer text-sm px-1 py-0"
                   >
                     ×
                   </button>
-                  <span style={{ color: C.muted, fontSize: 12 }}>{isOpen ? "▲" : "▼"}</span>
+                  <span className="text-muted text-xs">{isOpen ? "▲" : "▼"}</span>
                 </div>
 
                 {/* Expanded editor */}
                 {isOpen && (
-                  <div style={{ padding: "0 12px 12px", borderTop: `1px solid ${C.border}` }}>
-                    <div style={{ marginTop: 10 }}>
+                  <div className="px-3 pb-3 border-t border-border">
+                    <div className="mt-2.5">
                       {/* Trigger time */}
                       <Row label="Trigger (ms)">
                         <input
@@ -152,9 +146,9 @@ export default function TimelineTab({ config, onChange }: Props) {
                           max={MATCH_DURATION_MS}
                           step={1000}
                           onChange={e => update(idx, { triggerMs: Number(e.target.value) })}
-                          style={{ ...INPUT_STYLE, width: 90 }}
+                          className={`${INPUT_CLS} w-[90px]`}
                         />
-                        <span style={{ fontSize: 11, color: C.muted }}>{msToLabel(ev.triggerMs)}</span>
+                        <span className="text-[11px] text-muted">{msToLabel(ev.triggerMs)}</span>
                       </Row>
 
                       {/* Event type */}
@@ -163,7 +157,7 @@ export default function TimelineTab({ config, onChange }: Props) {
                           value={ev.type}
                           options={EVENT_TYPES.map(t => ({ value: t, label: `${TYPE_ICONS[t]} ${t.replace(/_/g, " ")}` }))}
                           onChange={v => update(idx, { type: v as ArenaTimelineEventType })}
-                          style={{ ...INPUT_STYLE, width: 180 }}
+                          style={{ width: 180 }}
                         />
                       </Row>
 
@@ -175,7 +169,7 @@ export default function TimelineTab({ config, onChange }: Props) {
                             value={ev.featureId ?? ""}
                             placeholder="e.g. center-vortex"
                             onChange={e => update(idx, { featureId: e.target.value })}
-                            style={{ ...INPUT_STYLE, width: 180 }}
+                            className={`${INPUT_CLS} w-[180px]`}
                           />
                         </Row>
                       )}
@@ -190,9 +184,9 @@ export default function TimelineTab({ config, onChange }: Props) {
                             max={5}
                             step={0.1}
                             onChange={e => update(idx, { params: { ...ev.params, multiplier: Number(e.target.value) } })}
-                            style={{ ...INPUT_STYLE, width: 80 }}
+                            className={`${INPUT_CLS} w-20`}
                           />
-                          <span style={{ fontSize: 11, color: C.muted }}>× gravity</span>
+                          <span className="text-[11px] text-muted">× gravity</span>
                         </Row>
                       )}
 
@@ -207,7 +201,7 @@ export default function TimelineTab({ config, onChange }: Props) {
                               max={45}
                               step={1}
                               onChange={e => update(idx, { params: { ...ev.params, angleDeg: Number(e.target.value) } })}
-                              style={{ ...INPUT_STYLE, width: 70 }}
+                              className={`${INPUT_CLS} w-[70px]`}
                             />
                           </Row>
                           <Row label="Direction (deg)">
@@ -218,7 +212,7 @@ export default function TimelineTab({ config, onChange }: Props) {
                               max={359}
                               step={5}
                               onChange={e => update(idx, { params: { ...ev.params, directionDeg: Number(e.target.value) } })}
-                              style={{ ...INPUT_STYLE, width: 70 }}
+                              className={`${INPUT_CLS} w-[70px]`}
                             />
                           </Row>
                         </>
@@ -233,7 +227,7 @@ export default function TimelineTab({ config, onChange }: Props) {
                               value={ev.announcement?.text ?? ""}
                               placeholder="e.g. STORM INTENSIFIES"
                               onChange={e => update(idx, { announcement: { ...ev.announcement, text: e.target.value } })}
-                              style={{ ...INPUT_STYLE, width: 220 }}
+                              className={`${INPUT_CLS} w-[220px]`}
                             />
                           </Row>
                           <Row label="Style">
@@ -245,7 +239,7 @@ export default function TimelineTab({ config, onChange }: Props) {
                                 { value: "danger", label: "danger" },
                               ]}
                               onChange={v => update(idx, { announcement: { text: ev.announcement?.text ?? "", ...ev.announcement, style: v as "warning" | "info" | "danger" } })}
-                              style={{ ...INPUT_STYLE, width: 100 }}
+                              style={{ width: 100 }}
                             />
                           </Row>
                         </>
@@ -260,7 +254,7 @@ export default function TimelineTab({ config, onChange }: Props) {
                         />
                         {ev.repeat && (
                           <>
-                            <span style={{ fontSize: 11, color: C.muted, marginLeft: 4 }}>every</span>
+                            <span className="text-[11px] text-muted ml-1">every</span>
                             <input
                               type="number"
                               value={ev.repeat.intervalMs / 1000}
@@ -268,18 +262,18 @@ export default function TimelineTab({ config, onChange }: Props) {
                               max={60}
                               step={1}
                               onChange={e => update(idx, { repeat: { ...ev.repeat!, intervalMs: Number(e.target.value) * 1000 } })}
-                              style={{ ...INPUT_STYLE, width: 55 }}
+                              className={`${INPUT_CLS} w-[55px]`}
                             />
-                            <span style={{ fontSize: 11, color: C.muted }}>s ×</span>
+                            <span className="text-[11px] text-muted">s ×</span>
                             <input
                               type="number"
                               value={ev.repeat.count}
                               min={1}
                               max={20}
                               onChange={e => update(idx, { repeat: { ...ev.repeat!, count: Number(e.target.value) } })}
-                              style={{ ...INPUT_STYLE, width: 50 }}
+                              className={`${INPUT_CLS} w-[50px]`}
                             />
-                            <span style={{ fontSize: 11, color: C.muted }}>more</span>
+                            <span className="text-[11px] text-muted">more</span>
                           </>
                         )}
                       </Row>
@@ -294,21 +288,20 @@ export default function TimelineTab({ config, onChange }: Props) {
 
       {/* Swimlane preview */}
       {events.length > 0 && (
-        <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: 12 }}>
-          <div style={{ fontSize: 12, color: C.muted, marginBottom: 8 }}>Timeline preview (3 min match)</div>
-          <div style={{ position: "relative", height: 28, background: C.bg2, borderRadius: 6, overflow: "hidden" }}>
+        <div className="bg-bg1 border border-border rounded-[10px] p-3">
+          <div className="text-xs text-muted mb-2">Timeline preview (3 min match)</div>
+          <div className="relative h-7 bg-bg2 rounded-md overflow-hidden">
             {/* Minute markers */}
             {[0, 60, 120].map(s => (
               <div
                 key={s}
+                className="absolute top-0 bottom-0"
                 style={{
-                  position: "absolute",
                   left: `${(s / 180) * 100}%`,
-                  top: 0, bottom: 0,
                   borderLeft: `1px solid ${C.border}`,
                 }}
               >
-                <span style={{ position: "absolute", top: 2, left: 3, fontSize: 9, color: C.muted }}>
+                <span className="absolute top-0.5 left-[3px] text-[9px] text-muted">
                   {s === 0 ? "0:00" : `${s / 60}:00`}
                 </span>
               </div>
@@ -328,13 +321,9 @@ export default function TimelineTab({ config, onChange }: Props) {
                 <div
                   key={i}
                   title={`${msToLabel(ev.triggerMs)}: ${ev.type}`}
+                  className="absolute top-1 bottom-1 w-1 rounded-[2px]"
                   style={{
-                    position: "absolute",
                     left: `${pct}%`,
-                    top: 4,
-                    bottom: 4,
-                    width: 4,
-                    borderRadius: 2,
                     background: colors[ev.type] ?? C.purple,
                     transform: "translateX(-2px)",
                   }}
@@ -342,9 +331,9 @@ export default function TimelineTab({ config, onChange }: Props) {
               );
             })}
           </div>
-          <div style={{ display: "flex", gap: 12, marginTop: 8, flexWrap: "wrap" }}>
+          <div className="flex gap-3 mt-2 flex-wrap">
             {EVENT_TYPES.filter(t => events.some(e => e.type === t)).map(t => (
-              <span key={t} style={{ fontSize: 10, color: C.muted }}>
+              <span key={t} className="text-[10px] text-muted">
                 {TYPE_ICONS[t]} {t.replace(/_/g, " ")}
               </span>
             ))}

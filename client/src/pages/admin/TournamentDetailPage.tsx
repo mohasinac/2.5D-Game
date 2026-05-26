@@ -5,7 +5,7 @@ import {
   updateDoc, addDoc, serverTimestamp, Timestamp, writeBatch, getDocs, deleteDoc,
 } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, pill, btn, alpha } from "@/styles/theme";
+import { C } from "@/styles/theme";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 import type { TournamentDoc, TournamentParticipantDoc, TournamentMatchDoc } from "@/types/game";
 import toast from "react-hot-toast";
@@ -23,6 +23,15 @@ function formatDate(ts: any): string {
 
 const ROUND_NAMES: Record<number, string> = { 1: "Round 1", 2: "Semifinals", 3: "Final" };
 
+function statusPillClass(color: string): string {
+  if (color === C.blue) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue/[.13] text-blue border border-blue/[.27]";
+  if (color === C.green) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green/[.13] text-green border border-green/[.27]";
+  if (color === C.purple) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple/[.13] text-purple border border-purple/[.27]";
+  if (color === C.red) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red/[.13] text-red border border-red/[.27]";
+  if (color === C.yellow) return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-yellow/[.13] text-yellow border border-yellow/[.27]";
+  return "inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-bg3 text-muted border border-border";
+}
+
 export function TournamentDetailPage() {
   const { id: tournamentId } = useParams<{ id: string }>();
 
@@ -31,11 +40,9 @@ export function TournamentDetailPage() {
   const [matches, setMatches] = useState<TournamentMatchDoc[]>([]);
   const [busy, setBusy] = useState(false);
 
-  // Add AI participant form state
   const [aiUsername, setAiUsername] = useState("Bot");
   const [aiBeybladeId, setAiBeybladeId] = useState("");
 
-  // Match detail modal
   const [selectedMatch, setSelectedMatch] = useState<TournamentMatchDoc | null>(null);
   const [setWinnerValue, setSetWinnerValue] = useState("");
   const [rescheduleTime, setRescheduleTime] = useState("");
@@ -108,7 +115,6 @@ export function TournamentDetailPage() {
     setBusy(true);
     const generatingToast = toast.loading("Generating bracket...");
     try {
-      // Check if bracket docs already exist
       const existing = await getDocs(query(collection(db, COLLECTIONS.TOURNAMENT_BRACKETS), where("tournamentId", "==", tournamentId)));
       if (!existing.empty) {
         toast.dismiss(generatingToast);
@@ -122,7 +128,6 @@ export function TournamentDetailPage() {
       const startTs = tournament.scheduledStartTime;
       const intervalMs = tournament.roundIntervalMinutes * 60 * 1000;
 
-      // Standard seeding: 1v8, 4v5, 2v7, 3v6 (for 8p); 1v4, 2v3 (for 4p)
       const pairings: Array<[string, string]> = [];
       const n = maxP;
       for (let i = 0; i < n / 2; i++) {
@@ -160,7 +165,6 @@ export function TournamentDetailPage() {
         });
       });
 
-      // Generate subsequent rounds (slots with TBD participants)
       const numRounds = Math.ceil(Math.log2(maxP));
       for (let round = 2; round <= numRounds; round++) {
         const matchCount = maxP / Math.pow(2, round);
@@ -199,7 +203,6 @@ export function TournamentDetailPage() {
       await updateDoc(doc(db, COLLECTIONS.TOURNAMENT_BRACKETS, selectedMatch.id), {
         winnerId: setWinnerValue, status: "completed", updatedAt: serverTimestamp(),
       });
-      // Advance participant status
       const loser = setWinnerValue === selectedMatch.participant1Id ? selectedMatch.participant2Id : selectedMatch.participant1Id;
       if (loser && loser !== "__bye__") {
         const loserSnap = await getDocs(query(collection(db, COLLECTIONS.TOURNAMENT_PARTICIPANTS), where("id", "==", loser)));
@@ -281,8 +284,8 @@ export function TournamentDetailPage() {
 
   if (!tournament) {
     return (
-      <div style={{ padding: 24, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 200 }}>
-        <div className="spin" style={{ width: 32, height: 32, border: `2px solid ${C.border}`, borderTopColor: C.yellow, borderRadius: "50%" }} />
+      <div className="p-6 flex items-center justify-center min-h-[200px]">
+        <div className="spin w-8 h-8 border-2 border-border border-t-yellow rounded-full" />
       </div>
     );
   }
@@ -290,62 +293,62 @@ export function TournamentDetailPage() {
   const rounds = [...new Set(matches.map((m) => m.round))].sort();
 
   return (
-    <div style={{ padding: 24, maxWidth: 1000, margin: "0 auto" }}>
+    <div className="p-6 max-w-[1000px] mx-auto">
       {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <Link to="/admin/tournaments" style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Tournaments</Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8, flexWrap: "wrap" }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>{tournament.name}</h1>
-          <span style={pill(STATUS_COLORS[tournament.status] ?? C.faint)}>{tournament.status}</span>
+      <div className="mb-6">
+        <Link to="/admin/tournaments" className="text-faint text-[13px] no-underline">← Tournaments</Link>
+        <div className="flex items-center gap-3 mt-2 flex-wrap">
+          <h1 className="text-[22px] font-bold text-text">{tournament.name}</h1>
+          <span className={statusPillClass(STATUS_COLORS[tournament.status] ?? C.faint)}>{tournament.status}</span>
           {(tournament.status === "draft" || tournament.status === "registration") && (
             <Link to={`/admin/tournaments/${tournamentId}/edit`}
-              style={{ padding: "4px 12px", fontSize: 12, borderRadius: 6, background: alpha(C.blue, 0.1), color: C.blue, border: `1px solid ${alpha(C.blue, 0.25)}`, textDecoration: "none" }}>
+              className="px-3 py-1 text-xs rounded-md no-underline bg-blue/[.10] text-blue border border-blue/[.25]">
               Edit
             </Link>
           )}
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 20 }}>
+      <div className="grid gap-5" style={{ gridTemplateColumns: "1fr 300px" }}>
         {/* Left */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div className="flex flex-col gap-4">
           {/* Actions */}
-          <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
-            <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 12 }}>Admin Actions</p>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div className="bg-bg1 rounded-xl border border-border p-4">
+            <p className="text-[11px] text-faint font-semibold uppercase mb-3">Admin Actions</p>
+            <div className="flex gap-2 flex-wrap">
               {tournament.status === "draft" && (
-                <button onClick={() => setStatus("registration")} disabled={busy} style={{ ...btn(C.blue), fontSize: 12 }}>Open Registration</button>
+                <button onClick={() => setStatus("registration")} disabled={busy} className="px-4 py-2 bg-blue text-white rounded-lg text-xs font-semibold">Open Registration</button>
               )}
               {tournament.status === "registration" && participants.length >= 2 && (
-                <button onClick={generateBracket} disabled={busy} style={{ ...btn(C.green), color: C.bg0, fontSize: 12 }}>Generate Bracket & Start</button>
+                <button onClick={generateBracket} disabled={busy} className="px-4 py-2 bg-green text-bg0 rounded-lg text-xs font-semibold">Generate Bracket &amp; Start</button>
               )}
               {tournament.status === "in-progress" && (
-                <button onClick={() => setStatus("completed")} disabled={busy} style={{ ...btn(C.purple), fontSize: 12 }}>Mark Completed</button>
+                <button onClick={() => setStatus("completed")} disabled={busy} className="px-4 py-2 bg-purple text-white rounded-lg text-xs font-semibold">Mark Completed</button>
               )}
               {tournament.status === "in-progress" && (
-                <button onClick={() => setResetBracketConfirm(true)} disabled={busy} style={{ ...btn(C.red), fontSize: 12 }}>Reset Bracket</button>
+                <button onClick={() => setResetBracketConfirm(true)} disabled={busy} className="px-4 py-2 bg-red text-white rounded-lg text-xs font-semibold">Reset Bracket</button>
               )}
               {tournament.status === "in-progress" && (
-                <button onClick={handleForceFillAI} disabled={busy} style={{ ...btn(C.yellow), color: C.bg0, fontSize: 12 }}>Force-Fill AI</button>
+                <button onClick={handleForceFillAI} disabled={busy} className="px-4 py-2 bg-yellow text-bg0 rounded-lg text-xs font-semibold">Force-Fill AI</button>
               )}
               {(tournament.status === "draft" || tournament.status === "registration") && (
-                <button onClick={() => setStatus("cancelled")} disabled={busy} style={{ ...btn(C.red), fontSize: 12 }}>Cancel</button>
+                <button onClick={() => setStatus("cancelled")} disabled={busy} className="px-4 py-2 bg-red text-white rounded-lg text-xs font-semibold">Cancel</button>
               )}
-              <Link to={`/game/tournament/${tournamentId}`} target="_blank" style={{ ...btn(C.bg3), textDecoration: "none", fontSize: 12 }}>View Lobby ↗</Link>
+              <Link to={`/game/tournament/${tournamentId}`} target="_blank" className="px-4 py-2 bg-bg3 text-text rounded-lg text-xs font-semibold border border-border no-underline">View Lobby ↗</Link>
             </div>
           </div>
 
           {/* Bracket */}
           {rounds.length > 0 ? (
-            <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 16 }}>
-              <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 12 }}>Bracket</p>
-              <div style={{ display: "flex", gap: 16, overflowX: "auto" }}>
+            <div className="bg-bg1 rounded-xl border border-border p-4">
+              <p className="text-[11px] text-faint font-semibold uppercase mb-3">Bracket</p>
+              <div className="flex gap-4 overflow-x-auto">
                 {rounds.map((round) => (
-                  <div key={round} style={{ minWidth: 220 }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, marginBottom: 8, textTransform: "uppercase" }}>
+                  <div key={round} className="min-w-[220px]">
+                    <p className="text-[11px] font-bold text-muted mb-2 uppercase">
                       {ROUND_NAMES[round] ?? `Round ${round}`}
                     </p>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    <div className="flex flex-col gap-2">
                       {matches.filter((m) => m.round === round).sort((a, b) => a.matchNumber - b.matchNumber).map((m) => {
                         const p1 = participants.find((p) => p.id === m.participant1Id);
                         const p2 = participants.find((p) => p.id === m.participant2Id);
@@ -353,16 +356,16 @@ export function TournamentDetailPage() {
                         return (
                           <div key={m.id}
                             onClick={() => { setSelectedMatch(m); setSetWinnerValue(m.winnerId ?? ""); setRescheduleTime(""); }}
-                            style={{ background: C.bg2, borderRadius: 8, border: `1px solid ${C.border}`, padding: 10, cursor: "pointer" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                            className="bg-bg2 rounded-lg border border-border p-2.5 cursor-pointer">
+                            <div className="flex justify-between mb-1.5">
                               <span style={{ fontSize: 10, color: statusColor, fontWeight: 600, textTransform: "uppercase" }}>{m.status}</span>
-                              {m.colyseusRoomId && <span style={{ fontSize: 10, color: C.faint, fontFamily: "monospace" }}>{m.colyseusRoomId.slice(0, 8)}…</span>}
+                              {m.colyseusRoomId && <span className="text-[10px] text-faint font-mono">{m.colyseusRoomId.slice(0, 8)}…</span>}
                             </div>
                             <div style={{ fontSize: 12, color: m.winnerId === m.participant1Id ? C.yellow : C.text }}>
                               {p1?.username ?? (m.participant1Id === "__bye__" ? "BYE" : "TBD")}
                               {p1?.isAI && " (AI)"}{m.winnerId === m.participant1Id && " 🏆"}
                             </div>
-                            <div style={{ height: 1, background: C.border, margin: "4px 0" }} />
+                            <div className="h-px bg-border my-1" />
                             <div style={{ fontSize: 12, color: m.winnerId === m.participant2Id ? C.yellow : C.text }}>
                               {p2?.username ?? (m.participant2Id === "__bye__" ? "BYE" : "TBD")}
                               {p2?.isAI && " (AI)"}{m.winnerId === m.participant2Id && " 🏆"}
@@ -376,37 +379,37 @@ export function TournamentDetailPage() {
               </div>
             </div>
           ) : (
-            <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 24, textAlign: "center", color: C.faint, fontSize: 13 }}>
+            <div className="bg-bg1 rounded-xl border border-border p-6 text-center text-faint text-[13px]">
               No bracket generated yet.{tournament.status === "registration" && participants.length >= 2 ? " Use \"Generate Bracket\" above." : ""}
             </div>
           )}
         </div>
 
         {/* Right: participants */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div className="flex flex-col gap-3.5">
           {/* Participants list */}
-          <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, overflow: "hidden" }}>
-            <div style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: C.muted }}>Participants ({participants.length}/{tournament.maxParticipants})</span>
+          <div className="bg-bg1 rounded-xl border border-border overflow-hidden">
+            <div className="px-3.5 py-2.5 border-b border-border flex justify-between items-center">
+              <span className="text-xs font-semibold text-muted">Participants ({participants.length}/{tournament.maxParticipants})</span>
             </div>
             {participants.length === 0 ? (
-              <div style={{ padding: 20, textAlign: "center", color: C.faint, fontSize: 12 }}>No participants yet.</div>
+              <div className="p-5 text-center text-faint text-xs">No participants yet.</div>
             ) : (
               participants.map((p, i) => (
-                <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", borderBottom: i < participants.length - 1 ? `1px solid ${C.border}` : "none" }}>
-                  <span style={{ fontSize: 11, color: C.faint, width: 18 }}>{p.seed}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
-                      <span style={{ fontSize: 13, color: C.text }}>{p.username}</span>
-                      {p.isAI && <span style={pill(C.purple)}>AI</span>}
+                <div key={p.id} className="flex items-center gap-2 px-3.5 py-2.5" style={{ borderBottom: i < participants.length - 1 ? `1px solid ${C.border}` : "none" }}>
+                  <span className="text-[11px] text-faint w-[18px]">{p.seed}</span>
+                  <div className="flex-1">
+                    <div className="flex gap-1.5 items-center">
+                      <span className="text-[13px] text-text">{p.username}</span>
+                      {p.isAI && <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple/[.13] text-purple border border-purple/[.27]">AI</span>}
                     </div>
-                    <span style={pill(p.status === "winner" ? C.yellow : p.status === "eliminated" ? C.red : C.green)}>{p.status}</span>
+                    <span className={statusPillClass(p.status === "winner" ? C.yellow : p.status === "eliminated" ? C.red : C.green)}>{p.status}</span>
                   </div>
                   {tournament.status === "registration" && (
                     <button
                       onClick={() => removeParticipant(p.id)}
                       disabled={busy}
-                      style={{ fontSize: 10, color: C.red, background: "transparent", border: "none", cursor: "pointer", padding: "2px 6px" }}
+                      className="text-[10px] text-red bg-transparent border-none cursor-pointer px-1.5 py-0.5"
                     >
                       ✕
                     </button>
@@ -418,22 +421,22 @@ export function TournamentDetailPage() {
 
           {/* Add AI participant */}
           {tournament.status === "registration" && participants.length < tournament.maxParticipants && (
-            <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 14 }}>
-              <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 10 }}>Add AI Participant</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className="bg-bg1 rounded-xl border border-border p-3.5">
+              <p className="text-[11px] text-faint font-semibold uppercase mb-2.5">Add AI Participant</p>
+              <div className="flex flex-col gap-2">
                 <input
-                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 10px", color: C.text, fontSize: 13, boxSizing: "border-box" }}
+                  className="w-full px-3 py-1.5 bg-bg3 border border-border rounded-lg text-text text-sm box-border"
                   placeholder="Username (e.g. Tyson Bot)"
                   value={aiUsername}
                   onChange={(e) => setAiUsername(e.target.value)}
                 />
                 <input
-                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 10px", color: C.text, fontSize: 13, boxSizing: "border-box" }}
+                  className="w-full px-3 py-1.5 bg-bg3 border border-border rounded-lg text-text text-sm box-border"
                   placeholder="Beyblade ID (optional, auto-picked)"
                   value={aiBeybladeId}
                   onChange={(e) => setAiBeybladeId(e.target.value)}
                 />
-                <button onClick={addAIParticipant} disabled={busy || !aiUsername.trim()} style={{ ...btn(C.purple), fontSize: 12 }}>
+                <button onClick={addAIParticipant} disabled={busy || !aiUsername.trim()} className="px-4 py-2 bg-purple text-white rounded-lg text-xs font-semibold">
                   Add AI
                 </button>
               </div>
@@ -441,9 +444,9 @@ export function TournamentDetailPage() {
           )}
 
           {/* Tournament info */}
-          <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 14 }}>
-            <p style={{ fontSize: 11, color: C.faint, fontWeight: 600, textTransform: "uppercase", marginBottom: 10 }}>Details</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 12 }}>
+          <div className="bg-bg1 rounded-xl border border-border p-3.5">
+            <p className="text-[11px] text-faint font-semibold uppercase mb-2.5">Details</p>
+            <div className="flex flex-col gap-1.5 text-xs">
               <Row label="Type" value={tournament.type} />
               <Row label="Format" value={`Best of ${tournament.bestOf}`} />
               <Row label="AI Difficulty" value={tournament.aiDifficulty} />
@@ -470,13 +473,13 @@ export function TournamentDetailPage() {
 
       {/* Reset bracket confirmation */}
       {resetBracketConfirm && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28, maxWidth: 400, width: "90%" }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 10 }}>Reset Bracket?</h3>
-            <p style={{ color: C.muted, fontSize: 13, marginBottom: 20 }}>All match documents will be deleted and the tournament will return to registration status. This cannot be undone.</p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setResetBracketConfirm(false)} style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleResetBracket} disabled={busy} style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, border: "none", background: C.red, color: "#fff", cursor: "pointer" }}>Reset</button>
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000]">
+          <div className="bg-bg1 border border-border rounded-2xl p-7 max-w-[400px] w-[90%]">
+            <h3 className="text-base font-bold text-text mb-2.5">Reset Bracket?</h3>
+            <p className="text-muted text-[13px] mb-5">All match documents will be deleted and the tournament will return to registration status. This cannot be undone.</p>
+            <div className="flex gap-2.5 justify-end">
+              <button onClick={() => setResetBracketConfirm(false)} className="px-4 py-1.5 rounded-lg text-[13px] border border-border bg-transparent text-muted cursor-pointer">Cancel</button>
+              <button onClick={handleResetBracket} disabled={busy} className="px-4 py-1.5 rounded-lg text-[13px] border-none bg-red text-white cursor-pointer">Reset</button>
             </div>
           </div>
         </div>
@@ -503,25 +506,25 @@ function MatchDetailModal({ match, participants, onClose, onSetWinner, onResched
   ];
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 16 }}>
-      <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 16, padding: 24, width: "100%", maxWidth: 440 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text }}>Match Detail — R{match.round} M{match.matchNumber}</h3>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: C.faint, cursor: "pointer", fontSize: 18 }}>×</button>
+    <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000] p-4">
+      <div className="bg-bg1 border border-border rounded-2xl p-6 w-full max-w-[440px]">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-base font-bold text-text">Match Detail — R{match.round} M{match.matchNumber}</h3>
+          <button onClick={onClose} className="bg-none border-none text-faint cursor-pointer text-lg">×</button>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, fontSize: 13, marginBottom: 16 }}>
-          <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>Status</span><span style={{ color: C.text, textTransform: "capitalize" }}>{match.status}</span></div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>Scheduled</span><span style={{ color: C.text }}>{match.scheduledTime?.toDate ? match.scheduledTime.toDate().toLocaleString() : "—"}</span></div>
-          {match.colyseusRoomId && <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>Room ID</span><span style={{ color: C.text, fontFamily: "monospace", fontSize: 11 }}>{match.colyseusRoomId}</span></div>}
-          <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>P1</span><span style={{ color: C.text }}>{p1?.username ?? match.participant1Id}</span></div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>P2</span><span style={{ color: C.text }}>{p2?.username ?? match.participant2Id}</span></div>
-          {match.winnerId && <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: C.faint }}>Winner</span><span style={{ color: C.yellow }}>🏆 {participants.find(p => p.id === match.winnerId)?.username ?? match.winnerId}</span></div>}
+        <div className="flex flex-col gap-2.5 text-[13px] mb-4">
+          <div className="flex justify-between"><span className="text-faint">Status</span><span className="text-text capitalize">{match.status}</span></div>
+          <div className="flex justify-between"><span className="text-faint">Scheduled</span><span className="text-text">{match.scheduledTime?.toDate ? match.scheduledTime.toDate().toLocaleString() : "—"}</span></div>
+          {match.colyseusRoomId && <div className="flex justify-between"><span className="text-faint">Room ID</span><span className="text-text font-mono text-[11px]">{match.colyseusRoomId}</span></div>}
+          <div className="flex justify-between"><span className="text-faint">P1</span><span className="text-text">{p1?.username ?? match.participant1Id}</span></div>
+          <div className="flex justify-between"><span className="text-faint">P2</span><span className="text-text">{p2?.username ?? match.participant2Id}</span></div>
+          {match.winnerId && <div className="flex justify-between"><span className="text-faint">Winner</span><span className="text-yellow">🏆 {participants.find(p => p.id === match.winnerId)?.username ?? match.winnerId}</span></div>}
         </div>
 
-        <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 14, display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="border-t border-border pt-3.5 flex flex-col gap-3">
           <div>
-            <p style={{ fontSize: 11, color: C.faint, marginBottom: 6 }}>Set Winner</p>
-            <div style={{ display: "flex", gap: 6 }}>
+            <p className="text-[11px] text-faint mb-1.5">Set Winner</p>
+            <div className="flex gap-1.5">
               <SearchableSelect value={winnerSel} options={participantOpts} onChange={setWinnerSel} placeholder="Select winner…" style={{ flex: 1 }} />
               <button onClick={() => onSetWinner(winnerSel)} disabled={!winnerSel || busy}
                 style={{ padding: "6px 12px", background: C.yellow, color: C.bg0, border: "none", borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: "pointer", opacity: winnerSel && !busy ? 1 : 0.4 }}>
@@ -530,10 +533,10 @@ function MatchDetailModal({ match, participants, onClose, onSetWinner, onResched
             </div>
           </div>
           <div>
-            <p style={{ fontSize: 11, color: C.faint, marginBottom: 6 }}>Reschedule</p>
-            <div style={{ display: "flex", gap: 6 }}>
+            <p className="text-[11px] text-faint mb-1.5">Reschedule</p>
+            <div className="flex gap-1.5">
               <input type="datetime-local" value={reschedSel} onChange={e => setReschedSel(e.target.value)}
-                style={{ flex: 1, padding: "6px 10px", borderRadius: 7, border: `1px solid ${C.border}`, background: C.bg0, color: C.text, fontSize: 12 }} />
+                className="flex-1 px-2.5 py-1.5 rounded-lg border border-border bg-bg0 text-text text-xs" />
               <button onClick={() => onReschedule(reschedSel)} disabled={!reschedSel || busy}
                 style={{ padding: "6px 12px", background: C.blue, color: "#fff", border: "none", borderRadius: 7, fontSize: 12, cursor: "pointer", opacity: reschedSel && !busy ? 1 : 0.4 }}>
                 Save
@@ -548,9 +551,9 @@ function MatchDetailModal({ match, participants, onClose, onSetWinner, onResched
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span style={{ color: C.faint }}>{label}</span>
-      <span style={{ color: C.text, textTransform: "capitalize" }}>{value}</span>
+    <div className="flex justify-between">
+      <span className="text-faint">{label}</span>
+      <span className="text-text capitalize">{value}</span>
     </div>
   );
 }

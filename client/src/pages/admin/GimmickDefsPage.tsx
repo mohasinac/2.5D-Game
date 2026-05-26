@@ -1,8 +1,10 @@
-﻿import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { SearchableSelect, SearchableMultiSelect } from "@/components/admin/SearchableSelect";
-import { C } from "@/styles/theme";
+import { SearchableMultiSelect } from "@/components/admin/SearchableSelect";
+import { Button } from "@/components/ui/Button";
+import { Input, Textarea } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 import toast from "react-hot-toast";
 
 interface BehaviorRef {
@@ -26,57 +28,43 @@ const BEY_TYPE_OPTIONS = [
 ];
 
 const MECHANIC_ID_OPTIONS = [
-  // stamina
-  { value: "energy_reserve",          label: "energy_reserve",          hint: "Spring-loaded kinetic energy burst" },
-  { value: "free_spin",               label: "free_spin",               hint: "Reduced spin decay (bearing)" },
-  { value: "spin_transfer",           label: "spin_transfer",           hint: "Steal fraction of opponent spin on contact" },
-  { value: "spin_equalization",       label: "spin_equalization",       hint: "Bidirectional spin averaging on contact" },
-  { value: "stamina_recovery",        label: "stamina_recovery",        hint: "Passive spin recovery per tick" },
-  { value: "revival_spin",            label: "revival_spin",            hint: "Spin burst when below threshold" },
-  // defense
-  { value: "defense_stance",          label: "defense_stance",          hint: "Zero velocity + damage reduction for N ticks" },
-  { value: "burst_suppress",          label: "burst_suppress",          hint: "Resist burst pressure for N ms" },
-  { value: "recoil_guard",            label: "recoil_guard",            hint: "Reduces knockback distance" },
-  { value: "contact_deflect",         label: "contact_deflect",         hint: "Deflect attacker sideways at high-speed contact" },
-  { value: "spring_recoil",           label: "spring_recoil",           hint: "Launch attacker back with high recoil force" },
-  { value: "rubber_grip",             label: "rubber_grip",             hint: "High surface friction on contact" },
-  { value: "weight_shift",            label: "weight_shift",            hint: "Move center-of-mass toward impact point" },
-  // attack
-  { value: "attack_amplifier",        label: "attack_amplifier",        hint: "Multiply outgoing damage for N ticks" },
-  { value: "velocity_burst",          label: "velocity_burst",          hint: "Directional force impulse in facing direction" },
-  { value: "smash_impact",            label: "smash_impact",            hint: "High-power horizontal smash on contact" },
-  { value: "upper_launch",            label: "upper_launch",            hint: "Launch opponent upward on contact" },
-  { value: "barrage_hit",             label: "barrage_hit",             hint: "Rapid multi-hit burst on contact" },
-  { value: "sub_part_burst",          label: "sub_part_burst",          hint: "Spawn secondary projectile on hit" },
-  { value: "spin_steal_coupling",     label: "spin_steal_coupling",     hint: "Glancing-angle spin steal multiplier" },
-  // movement
-  { value: "orbit_movement",          label: "orbit_movement",          hint: "Circular orbital force (cw/ccw)" },
-  { value: "bearing_drift",           label: "bearing_drift",           hint: "Reduced friction drift" },
-  { value: "center_pull",             label: "center_pull",             hint: "Gentle pull toward arena center" },
+  { value: "energy_reserve",            label: "energy_reserve",            hint: "Spring-loaded kinetic energy burst" },
+  { value: "free_spin",                 label: "free_spin",                 hint: "Reduced spin decay (bearing)" },
+  { value: "spin_transfer",             label: "spin_transfer",             hint: "Steal fraction of opponent spin on contact" },
+  { value: "spin_equalization",         label: "spin_equalization",         hint: "Bidirectional spin averaging on contact" },
+  { value: "stamina_recovery",          label: "stamina_recovery",          hint: "Passive spin recovery per tick" },
+  { value: "revival_spin",              label: "revival_spin",              hint: "Spin burst when below threshold" },
+  { value: "defense_stance",            label: "defense_stance",            hint: "Zero velocity + damage reduction for N ticks" },
+  { value: "burst_suppress",            label: "burst_suppress",            hint: "Resist burst pressure for N ms" },
+  { value: "recoil_guard",              label: "recoil_guard",              hint: "Reduces knockback distance" },
+  { value: "contact_deflect",           label: "contact_deflect",           hint: "Deflect attacker sideways at high-speed contact" },
+  { value: "spring_recoil",             label: "spring_recoil",             hint: "Launch attacker back with high recoil force" },
+  { value: "rubber_grip",               label: "rubber_grip",               hint: "High surface friction on contact" },
+  { value: "weight_shift",              label: "weight_shift",              hint: "Move center-of-mass toward impact point" },
+  { value: "attack_amplifier",          label: "attack_amplifier",          hint: "Multiply outgoing damage for N ticks" },
+  { value: "velocity_burst",            label: "velocity_burst",            hint: "Directional force impulse in facing direction" },
+  { value: "smash_impact",              label: "smash_impact",              hint: "High-power horizontal smash on contact" },
+  { value: "upper_launch",              label: "upper_launch",              hint: "Launch opponent upward on contact" },
+  { value: "barrage_hit",               label: "barrage_hit",               hint: "Rapid multi-hit burst on contact" },
+  { value: "sub_part_burst",            label: "sub_part_burst",            hint: "Spawn secondary projectile on hit" },
+  { value: "spin_steal_coupling",       label: "spin_steal_coupling",       hint: "Glancing-angle spin steal multiplier" },
+  { value: "orbit_movement",            label: "orbit_movement",            hint: "Circular orbital force (cw/ccw)" },
+  { value: "bearing_drift",             label: "bearing_drift",             hint: "Reduced friction drift" },
+  { value: "center_pull",               label: "center_pull",               hint: "Gentle pull toward arena center" },
   { value: "surface_friction_modifier", label: "surface_friction_modifier", hint: "Alter ground grip friction" },
-  { value: "rail_lock",               label: "rail_lock",               hint: "Lock onto Xtreme Dash rail" },
-  // special
-  { value: "rotation_reverse",        label: "rotation_reverse",        hint: "Flip spin direction CWâ†”CCW" },
-  { value: "spin_threshold_switch",   label: "spin_threshold_switch",   hint: "Mode-change trigger at spin threshold" },
-  { value: "mode_switch",             label: "mode_switch",             hint: "Manual click-to-change mode switch" },
-  { value: "contact_height_gate",     label: "contact_height_gate",     hint: "Only fire mechanic above/below height" },
-  { value: "spin_direction_bonus",    label: "spin_direction_bonus",    hint: "Bonus damage vs counter-spin opponents" },
-  { value: "zero_g_float",            label: "zero_g_float",            hint: "Reduce effective gravity for bey" },
-  { value: "magnetic_pull",           label: "magnetic_pull",           hint: "Attract or repel nearby beys" },
+  { value: "rail_lock",                 label: "rail_lock",                 hint: "Lock onto Xtreme Dash rail" },
+  { value: "rotation_reverse",          label: "rotation_reverse",          hint: "Flip spin direction CW/CCW" },
+  { value: "spin_threshold_switch",     label: "spin_threshold_switch",     hint: "Mode-change trigger at spin threshold" },
+  { value: "mode_switch",               label: "mode_switch",               hint: "Manual click-to-change mode switch" },
+  { value: "contact_height_gate",       label: "contact_height_gate",       hint: "Only fire mechanic above/below height" },
+  { value: "spin_direction_bonus",      label: "spin_direction_bonus",      hint: "Bonus damage vs counter-spin opponents" },
+  { value: "zero_g_float",              label: "zero_g_float",              hint: "Reduce effective gravity for bey" },
+  { value: "magnetic_pull",             label: "magnetic_pull",             hint: "Attract or repel nearby beys" },
 ];
 
 function slugify(s: string) {
   return s.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "").replace(/_+/g, "_").replace(/^_|_$/g, "");
 }
-
-function tryParseJson(s: string): Record<string, unknown> | null {
-  try { return JSON.parse(s); } catch { return null; }
-}
-
-const inputStyle: React.CSSProperties = {
-  width: "100%", padding: "8px 10px", background: C.bg0,
-  border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13, boxSizing: "border-box",
-};
 
 const EMPTY_FORM = {
   name: "",
@@ -173,110 +161,106 @@ export default function GimmickDefsPage() {
   );
 
   return (
-    <div style={{ padding: "32px 40px", width: "100%", boxSizing: "border-box" as const }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+    <div className="p-8 max-w-[900px]">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, color: C.text }}>Gimmick Defs</h1>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: C.muted }}>
-            {items.length} gimmick{items.length !== 1 ? "s" : ""} â€” mechanic recipes referenced by beyblade_stats.gimmickIds[]
+          <h1 className="m-0 text-[22px] text-text">Gimmick Defs</h1>
+          <p className="mt-1 text-[13px] text-muted">
+            {items.length} gimmick{items.length !== 1 ? "s" : ""} — mechanic recipes referenced by beyblade_stats.gimmickIds[]
           </p>
         </div>
-        <button onClick={openCreate} style={{ padding: "8px 18px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13 }}>
-          + New Gimmick
-        </button>
+        <Button variant="primary" size="sm" onClick={openCreate}>+ New Gimmick</Button>
       </div>
 
-      <input
-        placeholder="Search by name, id, or mechanicâ€¦"
+      <Input
+        placeholder="Search by name, id, or mechanic…"
         value={query}
         onChange={e => setQuery(e.target.value)}
-        style={{ ...inputStyle, marginBottom: 20 }}
+        className="mb-5"
       />
 
       {loading ? (
-        <p style={{ color: C.muted }}>Loadingâ€¦</p>
+        <p className="text-muted">Loading…</p>
       ) : filtered.length === 0 ? (
-        <p style={{ color: C.muted }}>No gimmick defs found.</p>
+        <p className="text-muted">No gimmick defs found.</p>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {filtered.map(item => (
-            <div key={item.id} style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 16px", gap: 12 }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-                  <span style={{ fontWeight: 600, fontSize: 14, color: C.text }}>{item.name}</span>
-                  <span style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>{item.id}</span>
+            <div key={item.id} className="flex items-start justify-between bg-bg1 border border-border rounded-xl px-4 py-3 gap-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-semibold text-sm text-text">{item.name}</span>
+                  <span className="text-[11px] text-muted font-mono">{item.id}</span>
                 </div>
-                <p style={{ margin: "0 0 6px", fontSize: 12, color: C.muted }}>{item.description}</p>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+                <p className="m-0 mb-1.5 text-xs text-muted">{item.description}</p>
+                <div className="flex gap-1.5 flex-wrap items-center">
                   {(item.beybladeTypes ?? []).map(t => (
-                    <span key={t} style={{ fontSize: 11, padding: "2px 8px", borderRadius: 12, background: C.bg0, border: `1px solid ${C.border}`, color: C.muted }}>{t}</span>
+                    <span key={t} className="text-[11px] px-2 py-0.5 rounded-xl bg-bg0 border border-border text-muted">{t}</span>
                   ))}
-                  <span style={{ fontSize: 11, color: C.muted, marginLeft: 4 }}>â†’</span>
+                  {(item.beybladeTypes ?? []).length > 0 && <span className="text-[11px] text-muted ml-1">&#8594;</span>}
                   {(item.behaviorRefs ?? []).map((r, i) => (
-                    <span key={i} style={{ fontSize: 11, padding: "2px 8px", borderRadius: 12, background: "#1a2a1a", border: `1px solid #2a4a2a`, color: "#6fcf6f", fontFamily: "monospace" }}>{r.behaviorId}</span>
+                    <span key={i} className="text-[11px] px-2 py-0.5 rounded-xl font-mono text-green border border-green/30 bg-green/10">{r.behaviorId}</span>
                   ))}
                 </div>
               </div>
-              <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                <button onClick={() => openEdit(item)} style={{ padding: "5px 12px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12, cursor: "pointer" }}>Edit</button>
-                <button onClick={() => setConfirmDelete(item)} style={{ padding: "5px 12px", background: C.bg0, border: `1px solid #c0392b`, borderRadius: 6, color: "#e74c3c", fontSize: 12, cursor: "pointer" }}>Delete</button>
+              <div className="flex gap-1.5 shrink-0">
+                <Button variant="outline" size="xs" onClick={() => openEdit(item)}>Edit</Button>
+                <Button variant="danger" size="xs" onClick={() => setConfirmDelete(item)}>Delete</Button>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Create / Edit Modal */}
       {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: 28, width: 580, maxWidth: "95vw", maxHeight: "90vh", overflowY: "auto" }}>
-            <h2 style={{ margin: "0 0 20px", fontSize: 17, color: C.text }}>{editing ? "Edit Gimmick" : "New Gimmick"}</h2>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000]">
+          <div className="bg-bg1 border border-border rounded-xl p-7 w-[580px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
+            <h2 className="m-0 mb-5 text-[17px] text-text">{editing ? "Edit Gimmick" : "New Gimmick"}</h2>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Name *</span>
-              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} placeholder="e.g. Free Spin Tip" />
+            <div className="mb-3.5">
+              <Label>Name *</Label>
+              <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Free Spin Tip" />
               {!editing && form.name && (
-                <span style={{ fontSize: 11, color: C.muted, marginTop: 2, display: "block" }}>ID: {slugify(form.name)}</span>
+                <span className="text-[11px] text-muted mt-0.5 block">ID: {slugify(form.name)}</span>
               )}
-            </label>
+            </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Description</span>
-              <textarea
+            <div className="mb-3.5">
+              <Label>Description</Label>
+              <Textarea
                 value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 rows={2}
-                style={{ ...inputStyle, resize: "vertical" }}
-                placeholder="What this gimmick does in-gameâ€¦"
+                placeholder="What this gimmick does in-game…"
               />
-            </label>
+            </div>
 
-            <label style={{ display: "block", marginBottom: 14 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>Beyblade Types</span>
+            <div className="mb-3.5">
+              <Label>Beyblade Types</Label>
               <SearchableMultiSelect
                 options={BEY_TYPE_OPTIONS}
                 values={form.beybladeTypes}
                 onChange={v => setForm(f => ({ ...f, beybladeTypes: v }))}
-                placeholder="Select compatible beyblade typesâ€¦"
+                placeholder="Select compatible beyblade types…"
               />
-            </label>
+            </div>
 
-            <label style={{ display: "block", marginBottom: 20 }}>
-              <span style={{ fontSize: 12, color: C.muted, display: "block", marginBottom: 4 }}>
+            <div className="mb-5">
+              <Label>
                 Behavior Refs (JSON array)
-                {jsonError && <span style={{ color: "#e74c3c", marginLeft: 8 }}>{jsonError}</span>}
-              </span>
-              <div style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>
-                Each entry: <code style={{ fontFamily: "monospace" }}>{"{ \"behaviorId\": \"...\", \"params\": {} }"}</code>
+                {jsonError && <span className="text-red ml-2">{jsonError}</span>}
+              </Label>
+              <div className="text-[11px] text-muted mb-1.5">
+                Each entry: <code className="font-mono">{"{ \"behaviorId\": \"...\", \"params\": {} }"}</code>
               </div>
               <textarea
                 value={form.behaviorRefsJson}
                 onChange={e => handleRefsChange(e.target.value)}
                 rows={8}
-                style={{ ...inputStyle, resize: "vertical", fontFamily: "monospace", fontSize: 12 }}
+                className="w-full bg-bg3 border border-border rounded-md px-3 py-2 text-text placeholder:text-faint focus:outline-none focus:border-blue resize-y font-mono text-xs"
               />
-              <div style={{ marginTop: 6, display: "flex", gap: 6, flexWrap: "wrap" }}>
-                <span style={{ fontSize: 11, color: C.muted }}>Quick add:</span>
+              <div className="mt-1.5 flex gap-1.5 flex-wrap">
+                <span className="text-[11px] text-muted">Quick add:</span>
                 {MECHANIC_ID_OPTIONS.slice(0, 6).map(opt => (
                   <button
                     key={opt.value}
@@ -290,35 +274,34 @@ export default function GimmickDefsPage() {
                         }
                       } catch { /* ignore */ }
                     }}
-                    style={{ fontSize: 11, padding: "2px 8px", borderRadius: 10, background: C.bg0, border: `1px solid ${C.border}`, color: C.muted, cursor: "pointer" }}
+                    className="text-[11px] px-2 py-0.5 rounded-xl bg-bg0 border border-border text-muted cursor-pointer hover:border-blue hover:text-blue"
                   >
                     + {opt.value}
                   </button>
                 ))}
               </div>
-            </label>
+            </div>
 
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setShowModal(false)} style={{ padding: "8px 16px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleSave} disabled={saving || !!jsonError} style={{ padding: "8px 18px", background: C.blue, color: "#fff", border: "none", borderRadius: 8, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}>
-                {saving ? "Savingâ€¦" : editing ? "Update" : "Create"}
-              </button>
+            <div className="flex gap-2.5 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setShowModal(false)}>Cancel</Button>
+              <Button variant="primary" size="sm" onClick={handleSave} disabled={saving || !!jsonError}>
+                {saving ? "Saving…" : editing ? "Update" : "Create"}
+              </Button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Delete confirm */}
       {confirmDelete && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-          <div style={{ background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 12, padding: 28, width: 380, maxWidth: "95vw" }}>
-            <h3 style={{ margin: "0 0 12px", color: C.text }}>Delete Gimmick?</h3>
-            <p style={{ margin: "0 0 20px", color: C.muted, fontSize: 13 }}>
-              Delete <strong style={{ color: C.text }}>{confirmDelete.name}</strong>? Any beyblade_stats referencing <code style={{ fontFamily: "monospace" }}>{confirmDelete.id}</code> in gimmickIds[] will not expand at match start.
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100]">
+          <div className="bg-bg1 border border-border rounded-xl p-7 w-[380px] max-w-[95vw]">
+            <h3 className="m-0 mb-3 text-text">Delete Gimmick?</h3>
+            <p className="m-0 mb-5 text-muted text-[13px]">
+              Delete <strong className="text-text">{confirmDelete.name}</strong>? Any beyblade_stats referencing <code className="font-mono">{confirmDelete.id}</code> in gimmickIds[] will not expand at match start.
             </p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ padding: "8px 16px", background: C.bg0, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleDelete} style={{ padding: "8px 18px", background: "#c0392b", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>Delete</button>
+            <div className="flex gap-2.5 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+              <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
             </div>
           </div>
         </div>

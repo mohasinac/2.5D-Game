@@ -13,32 +13,33 @@ const ASSET_CATEGORIES = [
 
 export function AssetsLibraryPage() {
   return (
-    <div style={{ padding:24, maxWidth:900, margin:"0 auto" }}>
-      <div style={{ marginBottom:28 }}>
-        <h1 style={{ fontSize:22, fontWeight:700, color:C.text }}>Asset Library</h1>
-        <p style={{ color:C.faint, fontSize:13, marginTop:4 }}>Manage sprites, textures, and sounds for all in-game elements</p>
+    <div className="p-6 max-w-[900px] mx-auto">
+      <div className="mb-7">
+        <h1 className="text-xl font-bold text-text">Asset Library</h1>
+        <p className="text-faint text-xs mt-1">Manage sprites, textures, and sounds for all in-game elements</p>
       </div>
 
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14 }}>
+      <div className="grid grid-cols-3 gap-3.5">
         {ASSET_CATEGORIES.map(cat => (
           <Link
             key={cat.href} to={cat.href}
-            style={{ background:C.bg2, border:`1px solid ${cat.accent}33`, borderRadius:16, padding:20, textDecoration:"none", display:"block" }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = cat.accent+"88")}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = cat.accent+"33")}
+            className="bg-bg2 rounded-2xl p-5 no-underline block transition-colors"
+            style={{ border: `1px solid ${cat.accent}33` }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = cat.accent + "88")}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = cat.accent + "33")}
           >
-            <div style={{ fontSize:28, marginBottom:12 }}>{cat.icon}</div>
-            <h3 style={{ color:C.text, fontWeight:600, marginBottom:4 }}>{cat.title}</h3>
-            <p style={{ color:C.faint, fontSize:12, lineHeight:1.5 }}>{cat.desc}</p>
-            <div style={{ marginTop:10, fontSize:11, color:C.faint, fontFamily:"monospace" }}>{cat.tag}</div>
-            <div style={{ marginTop:10, fontSize:13, color:C.muted }}>Manage →</div>
+            <div className="text-3xl mb-3">{cat.icon}</div>
+            <h3 className="text-text font-semibold mb-1">{cat.title}</h3>
+            <p className="text-faint text-xs leading-relaxed">{cat.desc}</p>
+            <div className="mt-2.5 text-xs text-faint font-mono">{cat.tag}</div>
+            <div className="mt-2.5 text-sm text-muted">Manage →</div>
           </Link>
         ))}
       </div>
 
-      <div style={{ marginTop:28, background:C.bg2+"88", border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
-        <h3 style={{ fontSize:13, fontWeight:600, color:C.muted, marginBottom:10 }}>How assets work</h3>
-        <ul style={{ listStyle:"none", padding:0, display:"flex", flexDirection:"column", gap:6, fontSize:12, color:C.faint }}>
+      <div className="mt-7 bg-bg2/[.53] border border-border rounded-2xl p-5">
+        <h3 className="text-xs font-semibold text-muted mb-2.5">How assets work</h3>
+        <ul className="list-none p-0 flex flex-col gap-1.5 text-xs text-faint">
           <li>• Upload PNG or JPG images; audio as MP3 or OGG.</li>
           <li>• Tag each asset to map it to a specific arena theme, obstacle type, or effect.</li>
           <li>• The PixiJS renderer loads assets by tag at runtime — no code changes needed.</li>

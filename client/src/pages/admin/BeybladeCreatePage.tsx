@@ -4,7 +4,8 @@ import { collection, addDoc, getDocs, serverTimestamp } from "firebase/firestore
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage, COLLECTIONS } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { C, S } from "@/styles/theme";
+import { Label } from "@/components/ui/Label";
+import { Button } from "@/components/ui/Button";
 import WhatsAppStyleImageEditor from "@/components/admin/WhatsAppStyleImageEditor";
 import ImageCropper from "@/components/admin/ImageCropper";
 import type { ImageCropperRef } from "@/components/admin/ImageCropper";
@@ -15,21 +16,23 @@ import type { BeybladeStats, PointOfContact } from "@/types/beybladeStats";
 const TOTAL_POINTS = 360;
 const MAX_PER_TYPE = 150;
 
+const inputCls = "w-full bg-bg1 border border-border rounded-md px-3 py-2 text-sm text-text placeholder:text-faint focus:outline-none focus:border-blue";
+
 interface FormData {
   displayName: string; spinDirection: "left"|"right"; mass: number; radius: number;
   attack: number; defense: number; stamina: number; imageFile: File|null; imagePreview: string;
 }
 
-function DistBar({ label, value, color, remaining, onChange }: { label:string; value:number; color:string; remaining:number; onChange:(v:number)=>void }) {
+function DistBar({ label, value, colorCls, remaining, onChange }: { label:string; value:number; colorCls:string; remaining:number; onChange:(v:number)=>void }) {
   return (
     <div>
-      <div style={{ display:"flex", justifyContent:"space-between", fontSize:13, marginBottom:4 }}>
-        <span style={{ color }}>{label}</span>
-        <span style={{ color:C.text, fontFamily:"monospace" }}>{value} / {MAX_PER_TYPE}</span>
+      <div className="flex justify-between text-xs mb-1">
+        <span className={colorCls}>{label}</span>
+        <span className="text-text font-mono">{value} / {MAX_PER_TYPE}</span>
       </div>
-      <input type="range" min={0} max={Math.min(MAX_PER_TYPE, value+remaining)} value={value} onChange={e => onChange(+e.target.value)} style={{ accentColor:C.blue }} />
-      <div style={{ width:"100%", height:6, background:C.bg3, borderRadius:3, overflow:"hidden", marginTop:4 }}>
-        <div style={{ height:"100%", background:color, width:`${(value/MAX_PER_TYPE)*100}%`, borderRadius:3, transition:"width 150ms" }} />
+      <input type="range" min={0} max={Math.min(MAX_PER_TYPE, value+remaining)} value={value} onChange={e => onChange(+e.target.value)} className="w-full accent-blue" />
+      <div className="w-full h-1.5 bg-bg3 rounded-full overflow-hidden mt-1">
+        <div className={`h-full rounded-full transition-[width] duration-150 ${colorCls.replace("text-", "bg-")}`} style={{ width:`${(value/MAX_PER_TYPE)*100}%` }} />
       </div>
     </div>
   );
@@ -184,120 +187,115 @@ export function BeybladeCreatePage() {
   const steps = ["Basic Info", "Type Distribution", "Image", "Contact Points", "Abilities"];
 
   return (
-    <div style={{ padding:"20px 24px", width:"100%", maxWidth: step === 3 ? "100%" : 680, boxSizing:"border-box" as const, transition:"max-width 200ms" }}>
-      <div style={{ marginBottom:20 }}>
-        <Link to="/admin/beyblades" style={{ color:C.faint, fontSize:13, textDecoration:"none" }}>← Beyblades</Link>
-        <h1 style={{ fontSize:22, fontWeight:700, color:C.text, marginTop:8 }}>New Beyblade</h1>
+    <div className="py-5 px-6 w-full box-border transition-[max-width] duration-200" style={{ maxWidth: step === 3 ? "100%" : 680 }}>
+      <div className="mb-5">
+        <Link to="/admin/beyblades" className="text-faint text-xs no-underline hover:text-muted">← Beyblades</Link>
+        <h1 className="text-2xl font-bold text-text mt-2">New Beyblade</h1>
       </div>
 
       {/* Step indicators */}
-      <div style={{ display:"flex", alignItems:"center", marginBottom:28 }}>
+      <div className="flex items-center mb-7">
         {steps.map((s, i) => (
-          <div key={s} style={{ display:"flex", alignItems:"center", flex:1 }}>
+          <div key={s} className="flex items-center flex-1">
             <button
               onClick={() => i <= step && setStep(i)}
-              style={{
-                width:32, height:32, borderRadius:"50%", fontSize:13, fontWeight:700, cursor:"pointer", border:"none",
-                background: i === step ? C.blue : i < step ? C.green : C.bg3,
-                color: i <= step ? C.white : C.faint,
-              }}
+              className={`w-8 h-8 rounded-full text-sm font-bold cursor-pointer border-none flex-shrink-0 ${
+                i === step ? "bg-blue text-white" : i < step ? "bg-green text-white" : "bg-bg3 text-faint"
+              }`}
             >{i < step ? "✓" : i+1}</button>
-            <span style={{ marginLeft:8, fontSize:12, color: i === step ? C.text : C.faint, whiteSpace:"nowrap" }}>{s}</span>
-            {i < steps.length-1 && <div style={{ height:2, flex:1, marginLeft:8, background: i < step ? C.green : C.border }} />}
+            <span className={`ml-2 text-xs whitespace-nowrap ${i === step ? "text-text" : "text-faint"}`}>{s}</span>
+            {i < steps.length-1 && <div className={`h-0.5 flex-1 ml-2 ${i < step ? "bg-green" : "bg-border"}`} />}
           </div>
         ))}
       </div>
 
       {step < 3 && (
-        <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:24 }}>
+        <div className="bg-bg2 border border-border rounded-2xl p-6">
           {step === 0 && (
-            <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+            <div className="flex flex-col gap-4">
               <div>
-                <label style={S.label}>Display Name *</label>
-                <input type="text" value={form.displayName} onChange={e => set("displayName",e.target.value)} placeholder="e.g. Storm Pegasus" style={S.input} />
+                <Label>Display Name *</Label>
+                <input type="text" value={form.displayName} onChange={e => set("displayName",e.target.value)} placeholder="e.g. Storm Pegasus" className={inputCls} />
               </div>
               <div>
-                <label style={S.label}>Spin Direction</label>
-                <div style={{ display:"flex", gap:8 }}>
+                <Label>Spin Direction</Label>
+                <div className="flex gap-2">
                   {(["right","left"] as const).map(dir => (
-                    <button key={dir} onClick={() => set("spinDirection",dir)} style={{
-                      flex:1, padding:"8px", borderRadius:8, fontSize:13, fontWeight:500, cursor:"pointer", textTransform:"capitalize",
-                      background: form.spinDirection===dir ? C.blue : "transparent",
-                      color: form.spinDirection===dir ? C.white : C.muted,
-                      border: `1px solid ${form.spinDirection===dir ? C.blue : C.border}`,
-                    }}>{dir}</button>
+                    <button key={dir} onClick={() => set("spinDirection",dir)} className={`flex-1 py-2 rounded-lg text-sm font-medium cursor-pointer capitalize border transition-colors ${
+                      form.spinDirection===dir ? "bg-blue text-white border-blue" : "bg-transparent text-muted border-border hover:border-muted"
+                    }`}>{dir}</button>
                   ))}
                 </div>
               </div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label style={S.label}>Mass (grams)</label>
-                  <input type="number" min={30} max={80} value={form.mass} onChange={e => set("mass",+e.target.value)} style={S.input} />
-                  <p style={{ fontSize:11, color:C.faint, marginTop:4 }}>Real beyblades: 40–60g</p>
+                  <Label>Mass (grams)</Label>
+                  <input type="number" min={30} max={80} value={form.mass} onChange={e => set("mass",+e.target.value)} className={inputCls} />
+                  <p className="text-[11px] text-faint mt-1">Real beyblades: 40–60g</p>
                 </div>
                 <div>
-                  <label style={S.label}>Radius (cm)</label>
-                  <input type="number" min={2} max={7} step={0.5} value={form.radius} onChange={e => set("radius",+e.target.value)} style={S.input} />
-                  <p style={{ fontSize:11, color:C.faint, marginTop:4 }}>Standard: 3–5cm</p>
+                  <Label>Radius (cm)</Label>
+                  <input type="number" min={2} max={7} step={0.5} value={form.radius} onChange={e => set("radius",+e.target.value)} className={inputCls} />
+                  <p className="text-[11px] text-faint mt-1">Standard: 3–5cm</p>
                 </div>
               </div>
             </div>
           )}
 
           {step === 1 && (
-            <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                <p style={{ fontSize:13, color:C.muted }}>Distribute {TOTAL_POINTS} points (max {MAX_PER_TYPE} each)</p>
-                <span style={{ fontSize:13, fontFamily:"monospace", fontWeight:700, color: remaining===0 ? C.green : remaining<0 ? C.red : C.yellow }}>
+            <div className="flex flex-col gap-4">
+              <div className="flex justify-between items-center">
+                <p className="text-sm text-muted">Distribute {TOTAL_POINTS} points (max {MAX_PER_TYPE} each)</p>
+                <span className={`text-sm font-mono font-bold ${remaining===0 ? "text-green" : remaining<0 ? "text-red" : "text-yellow"}`}>
                   {remaining>0 ? `${remaining} remaining` : remaining<0 ? `${Math.abs(remaining)} over` : "Perfect!"}
                 </span>
               </div>
-              <DistBar label="Attack" value={form.attack} color={C.red} remaining={remaining} onChange={v => set("attack",v)} />
-              <DistBar label="Defense" value={form.defense} color={C.blue} remaining={remaining} onChange={v => set("defense",v)} />
-              <DistBar label="Stamina" value={form.stamina} color={C.green} remaining={remaining} onChange={v => set("stamina",v)} />
-              <div style={{ background:C.bg3+"88", borderRadius:12, padding:14 }}>
-                <p style={{ fontSize:12, color:C.muted, marginBottom:8 }}>Derived type: <strong style={{ color:C.text, textTransform:"capitalize" }}>{derivedType}</strong></p>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, fontSize:12, color:C.faint }}>
-                  <span>Damage mult: <span style={{ color:C.text }}>{((1.0+form.attack*0.007)*(derivedType==="attack"?1.2:1)).toFixed(2)}x</span></span>
-                  <span>Dmg taken: <span style={{ color:C.text }}>{(Math.max(0.45,1-form.defense*0.003)*(derivedType==="defense"?0.8:1)).toFixed(2)}x</span></span>
-                  <span>Max stamina: <span style={{ color:C.text }}>{derivedType==="stamina"?Math.ceil(1000*(1+form.stamina*0.01333)):Math.min(Math.ceil(1000*(1+form.stamina*0.01333)),2500)}</span></span>
-                  <span>Spin steal: <span style={{ color:C.text }}>{((0.1*(1+form.stamina*0.02667))*100).toFixed(1)}%</span></span>
-                  <span>Max spin: <span style={{ color:C.text }}>{Math.ceil(2000*(1+form.stamina*0.0008))}</span></span>
-                  <span>Spin decay: <span style={{ color:C.text }}>{(8*(1-form.stamina*0.001)).toFixed(1)}/s</span></span>
+              <DistBar label="Attack" value={form.attack} colorCls="text-red" remaining={remaining} onChange={v => set("attack",v)} />
+              <DistBar label="Defense" value={form.defense} colorCls="text-blue" remaining={remaining} onChange={v => set("defense",v)} />
+              <DistBar label="Stamina" value={form.stamina} colorCls="text-green" remaining={remaining} onChange={v => set("stamina",v)} />
+              <div className="bg-bg3/50 rounded-xl p-3.5">
+                <p className="text-xs text-muted mb-2">Derived type: <strong className="text-text capitalize">{derivedType}</strong></p>
+                <div className="grid grid-cols-2 gap-1.5 text-xs text-faint">
+                  <span>Damage mult: <span className="text-text">{((1.0+form.attack*0.007)*(derivedType==="attack"?1.2:1)).toFixed(2)}x</span></span>
+                  <span>Dmg taken: <span className="text-text">{(Math.max(0.45,1-form.defense*0.003)*(derivedType==="defense"?0.8:1)).toFixed(2)}x</span></span>
+                  <span>Max stamina: <span className="text-text">{derivedType==="stamina"?Math.ceil(1000*(1+form.stamina*0.01333)):Math.min(Math.ceil(1000*(1+form.stamina*0.01333)),2500)}</span></span>
+                  <span>Spin steal: <span className="text-text">{((0.1*(1+form.stamina*0.02667))*100).toFixed(1)}%</span></span>
+                  <span>Max spin: <span className="text-text">{Math.ceil(2000*(1+form.stamina*0.0008))}</span></span>
+                  <span>Spin decay: <span className="text-text">{(8*(1-form.stamina*0.001)).toFixed(1)}/s</span></span>
                 </div>
               </div>
             </div>
           )}
 
           {step === 2 && (
-            <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+            <div className="flex flex-col gap-4">
               <div>
-                <label style={S.label}>Beyblade Image (PNG, transparent background)</label>
-                <div style={{ border:`2px dashed ${C.border}`, borderRadius:12, padding:24, textAlign:"center" }}>
+                <Label>Beyblade Image (PNG, transparent background)</Label>
+                <div className="border-2 border-dashed border-border rounded-xl p-6 text-center">
                   {form.imagePreview ? (
-                    <div style={{ display:"flex", flexDirection:"column", gap:8, alignItems:"center" }}>
-                      <img src={form.imagePreview} alt="Preview" style={{ width:96, height:96, objectFit:"contain", background:C.bg1, borderRadius:"50%" }} />
-                      <p style={{ fontSize:11, color:C.faint }}>{form.imageFile?.name}</p>
-                      <div style={{ display:"flex", gap:8 }}>
-                        <button onClick={() => setImageEditorMode("whatsapp")} style={{ fontSize:12, color:C.blue, background:"none", border:"none", cursor:"pointer" }}>🖼 Reposition</button>
-                        <button onClick={() => setImageEditorMode("crop")} style={{ fontSize:12, color:C.muted, background:"none", border:"none", cursor:"pointer" }}>✂️ Crop</button>
-                        <button onClick={() => { set("imageFile",null); set("imagePreview",""); setRawImageUrl(""); }} style={{ fontSize:12, color:C.red, background:"none", border:"none", cursor:"pointer" }}>Remove</button>
+                    <div className="flex flex-col gap-2 items-center">
+                      <img src={form.imagePreview} alt="Preview" className="w-24 h-24 object-contain bg-bg1 rounded-full" />
+                      <p className="text-[11px] text-faint">{form.imageFile?.name}</p>
+                      <div className="flex gap-2">
+                        <button onClick={() => setImageEditorMode("whatsapp")} className="text-xs text-blue bg-none border-none cursor-pointer">🖼 Reposition</button>
+                        <button onClick={() => setImageEditorMode("crop")} className="text-xs text-muted bg-none border-none cursor-pointer">✂️ Crop</button>
+                        <button onClick={() => { set("imageFile",null); set("imagePreview",""); setRawImageUrl(""); }} className="text-xs text-red bg-none border-none cursor-pointer">Remove</button>
                       </div>
                     </div>
                   ) : (
-                    <label style={{ cursor:"pointer" }}>
-                      <div style={{ fontSize:32, marginBottom:8 }}>🖼️</div>
-                      <p style={{ color:C.muted, fontSize:13, marginBottom:4 }}>Click to upload image</p>
-                      <p style={{ color:C.faint, fontSize:11 }}>PNG with transparent background, 300×300px recommended</p>
-                      <input type="file" accept="image/*" onChange={handleImageChange} style={{ display:"none" }} />
+                    <label className="cursor-pointer">
+                      <div className="text-4xl mb-2">🖼️</div>
+                      <p className="text-muted text-sm mb-1">Click to upload image</p>
+                      <p className="text-faint text-[11px]">PNG with transparent background, 300×300px recommended</p>
+                      <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                     </label>
                   )}
                 </div>
               </div>
 
               {imageEditorMode && rawImageUrl && (
-                <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"flex-start", justifyContent:"center", zIndex:1000, overflowY:"auto", padding:"20px 16px" }}>
-                  <div style={{ width:"100%", maxWidth: imageEditorMode === "whatsapp" ? "fit-content" : 420 }}>
+                <div className="fixed inset-0 bg-black/85 flex items-start justify-center z-[1000] overflow-y-auto py-5 px-4">
+                  <div className="w-full" style={{ maxWidth: imageEditorMode === "whatsapp" ? "fit-content" : 420 }}>
                     {imageEditorMode === "whatsapp" && (
                       <WhatsAppStyleImageEditor
                         imageUrl={rawImageUrl}
@@ -309,11 +307,11 @@ export function BeybladeCreatePage() {
                       />
                     )}
                     {imageEditorMode === "crop" && (
-                      <div style={{ background:C.bg2, borderRadius:12, padding:16 }}>
+                      <div className="bg-bg2 rounded-xl p-4">
                         <ImageCropper ref={cropperRef} imageUrl={rawImageUrl} targetWidth={300} targetHeight={300} />
-                        <div style={{ display:"flex", justifyContent:"flex-end", gap:8, marginTop:12 }}>
-                          <button onClick={() => setImageEditorMode(null)} style={{ padding:"6px 16px", background:C.bg3, border:`1px solid ${C.border}`, borderRadius:8, color:C.muted, fontSize:13, cursor:"pointer" }}>Cancel</button>
-                          <button onClick={handleImageEditorSave} style={{ padding:"6px 16px", background:C.blue, border:"none", borderRadius:8, color:C.white, fontSize:13, fontWeight:600, cursor:"pointer" }}>Apply Crop</button>
+                        <div className="flex justify-end gap-2 mt-3">
+                          <Button variant="outline" size="sm" onClick={() => setImageEditorMode(null)}>Cancel</Button>
+                          <Button variant="primary" size="sm" onClick={handleImageEditorSave}>Apply Crop</Button>
                         </div>
                       </div>
                     )}
@@ -321,14 +319,14 @@ export function BeybladeCreatePage() {
                 </div>
               )}
 
-              <div style={{ background:C.bg3+"88", borderRadius:12, padding:14 }}>
-                <h4 style={{ fontSize:13, fontWeight:500, color:C.text, marginBottom:8 }}>Summary</h4>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:4, fontSize:12, color:C.faint }}>
-                  <span>Name: <span style={{ color:C.text }}>{form.displayName||"—"}</span></span>
-                  <span>Type: <span style={{ color:C.text, textTransform:"capitalize" }}>{derivedType}</span></span>
-                  <span>Spin: <span style={{ color:C.text, textTransform:"capitalize" }}>{form.spinDirection}</span></span>
-                  <span>Mass: <span style={{ color:C.text }}>{form.mass}g / {form.radius}cm</span></span>
-                  <span>Points: <span style={{ color: usedPoints===TOTAL_POINTS ? C.green : C.red }}>{usedPoints}/{TOTAL_POINTS}</span></span>
+              <div className="bg-bg3/50 rounded-xl p-3.5">
+                <h4 className="text-sm font-medium text-text mb-2">Summary</h4>
+                <div className="grid grid-cols-2 gap-1 text-xs text-faint">
+                  <span>Name: <span className="text-text">{form.displayName||"—"}</span></span>
+                  <span>Type: <span className="text-text capitalize">{derivedType}</span></span>
+                  <span>Spin: <span className="text-text capitalize">{form.spinDirection}</span></span>
+                  <span>Mass: <span className="text-text">{form.mass}g / {form.radius}cm</span></span>
+                  <span>Points: <span className={usedPoints===TOTAL_POINTS ? "text-green" : "text-red"}>{usedPoints}/{TOTAL_POINTS}</span></span>
                 </div>
               </div>
             </div>
@@ -346,37 +344,34 @@ export function BeybladeCreatePage() {
       )}
 
       {step === 4 && (
-        <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:16, padding:24, display:"flex", flexDirection:"column", gap:20 }}>
+        <div className="bg-bg2 border border-border rounded-2xl p-6 flex flex-col gap-5">
           <div>
-            <p style={{ fontSize:13, color:C.muted, marginBottom:16 }}>
+            <p className="text-sm text-muted mb-4">
               Optional — these can also be set later from the edit page.
             </p>
 
             {/* Element Types */}
-            <div style={{ marginBottom:20 }}>
-              <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Element Types (max 2)</label>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+            <div className="mb-5">
+              <label className="block text-xs text-muted font-semibold mb-1.5">Element Types (max 2)</label>
+              <div className="flex flex-wrap gap-1.5">
                 {["fire","water","wind","earth","lightning","ice","dark","light","metal","nature","psychic","void"].map(elem => {
                   const active = elementTypes.includes(elem);
                   return (
                     <button key={elem} onClick={() => {
                       if (active) setElementTypes(elementTypes.filter(e => e !== elem));
                       else if (elementTypes.length < 2) setElementTypes([...elementTypes, elem]);
-                    }} style={{
-                      padding:"4px 12px", fontSize:11, borderRadius:20, cursor:"pointer",
-                      background: active ? C.blue + "22" : C.bg3,
-                      color: active ? C.blue : C.muted,
-                      border:`1px solid ${active ? C.blue + "55" : C.border}`,
-                    }}>{elem}</button>
+                    }} className={`px-3 py-1 text-[11px] rounded-full cursor-pointer border transition-colors ${
+                      active ? "bg-blue/[.13] text-blue border-blue/[.33]" : "bg-bg3 text-muted border-border"
+                    }`}>{elem}</button>
                   );
                 })}
               </div>
-              {elementTypes.length > 0 && <div style={{ fontSize:11, color:C.faint, marginTop:6 }}>Selected: {elementTypes.join(", ")}</div>}
+              {elementTypes.length > 0 && <div className="text-[11px] text-faint mt-1.5">Selected: {elementTypes.join(", ")}</div>}
             </div>
 
             {/* Special Move */}
-            <div style={{ marginBottom:20 }}>
-              <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Special Move</label>
+            <div className="mb-5">
+              <label className="block text-xs text-muted font-semibold mb-1.5">Special Move</label>
               <SearchableSelect
                 value={specialMoveId}
                 onChange={setSpecialMoveId}
@@ -387,11 +382,11 @@ export function BeybladeCreatePage() {
 
             {/* Combos (max 3) */}
             <div>
-              <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Combos (max 3)</label>
-              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+              <label className="block text-xs text-muted font-semibold mb-1.5">Combos (max 3)</label>
+              <div className="flex flex-col gap-2">
                 {([0,1,2] as const).map(i => (
-                  <div key={i} style={{ display:"flex", gap:8, alignItems:"center" }}>
-                    <span style={{ fontSize:11, color:C.faint, width:16, flexShrink:0 }}>{i+1}</span>
+                  <div key={i} className="flex gap-2 items-center">
+                    <span className="text-[11px] text-faint w-4 flex-shrink-0">{i+1}</span>
                     <SearchableSelect
                       value={comboIds[i] ?? ""}
                       onChange={v => {
@@ -408,30 +403,30 @@ export function BeybladeCreatePage() {
             </div>
 
             {/* Advanced Physics */}
-            <div style={{ marginTop:20, paddingTop:20, borderTop:`1px solid ${C.border}` }}>
-              <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:700, marginBottom:12, textTransform:"uppercase", letterSpacing:"0.06em" }}>Advanced Physics</label>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:12 }}>
+            <div className="mt-5 pt-5 border-t border-border">
+              <label className="block text-xs text-muted font-bold mb-3 uppercase tracking-wider">Advanced Physics</label>
+              <div className="grid grid-cols-2 gap-3 mb-3">
                 <div>
-                  <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Jump Force (N, 0=off)</label>
+                  <label className="block text-xs text-muted font-semibold mb-1.5">Jump Force (N, 0=off)</label>
                   <input type="number" min={0} max={2000} step={50} value={jumpForce}
-                    onChange={e => setJumpForce(+e.target.value)} style={S.input} />
+                    onChange={e => setJumpForce(+e.target.value)} className={inputCls} />
                 </div>
                 <div>
-                  <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Jump Height (px, 0=off)</label>
+                  <label className="block text-xs text-muted font-semibold mb-1.5">Jump Height (px, 0=off)</label>
                   <input type="number" min={0} max={500} step={10} value={jumpHeight}
-                    onChange={e => setJumpHeight(+e.target.value)} style={S.input} />
+                    onChange={e => setJumpHeight(+e.target.value)} className={inputCls} />
                 </div>
               </div>
-              <div style={{ marginBottom:12 }}>
-                <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Burst Resistance (0–100)</label>
-                <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+              <div className="mb-3">
+                <label className="block text-xs text-muted font-semibold mb-1.5">Burst Resistance (0–100)</label>
+                <div className="flex gap-2 items-center">
                   <input type="range" min={0} max={100} value={burstResistance}
-                    onChange={e => setBurstResistance(+e.target.value)} style={{ flex:1, accentColor:C.yellow }} />
-                  <span style={{ fontSize:13, color:C.text, fontFamily:"monospace", width:32 }}>{burstResistance}</span>
+                    onChange={e => setBurstResistance(+e.target.value)} className="flex-1 accent-yellow" />
+                  <span className="text-sm text-text font-mono w-8">{burstResistance}</span>
                 </div>
               </div>
               <div>
-                <label style={{ display:"block", fontSize:12, color:C.muted, fontWeight:600, marginBottom:6 }}>Bit Beast (optional)</label>
+                <label className="block text-xs text-muted font-semibold mb-1.5">Bit Beast (optional)</label>
                 <SearchableSelect
                   value={bitBeastId}
                   onChange={setBitBeastId}
@@ -444,18 +439,18 @@ export function BeybladeCreatePage() {
         </div>
       )}
 
-      <div style={{ display:"flex", justifyContent:"space-between", marginTop:20 }}>
-        <button onClick={() => step>0 ? setStep(step-1) : navigate("/admin/beyblades")} style={{ padding:"8px 18px", border:`1px solid ${C.border}`, color:C.muted, background:"transparent", borderRadius:8, fontSize:13, cursor:"pointer" }}>
+      <div className="flex justify-between mt-5">
+        <Button variant="outline" onClick={() => step>0 ? setStep(step-1) : navigate("/admin/beyblades")}>
           {step===0 ? "Cancel" : "Back"}
-        </button>
+        </Button>
         {step < steps.length-1 ? (
-          <button onClick={() => setStep(step+1)} disabled={step===0 && !form.displayName.trim()} style={{ padding:"8px 20px", background:C.blue, color:C.white, borderRadius:8, fontSize:13, fontWeight:500, border:"none", cursor:"pointer", opacity: step===0&&!form.displayName.trim() ? 0.5 : 1 }}>
+          <Button variant="primary" onClick={() => setStep(step+1)} disabled={step===0 && !form.displayName.trim()}>
             Continue
-          </button>
+          </Button>
         ) : (
-          <button onClick={handleSave} disabled={saving||usedPoints!==TOTAL_POINTS} style={{ padding:"8px 20px", background:C.green, color:C.white, borderRadius:8, fontSize:13, fontWeight:500, border:"none", cursor:"pointer", opacity: saving||usedPoints!==TOTAL_POINTS ? 0.5 : 1 }}>
+          <Button variant="success" onClick={handleSave} disabled={saving||usedPoints!==TOTAL_POINTS}>
             {saving ? "Creating..." : "Create Beyblade"}
-          </button>
+          </Button>
         )}
       </div>
     </div>

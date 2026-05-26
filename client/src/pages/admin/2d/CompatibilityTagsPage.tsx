@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, btn, btnOutline, alpha } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 import toast from "react-hot-toast";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -9,8 +9,8 @@ import toast from "react-hot-toast";
 type TagField = "compatibilityTags" | "requiredCompatibility" | "excludedCompatibility";
 
 interface TagUsage {
-  collectionKey: string;   // e.g. "ATTACK_RING_PARTS"
-  collectionName: string;  // e.g. "attack_ring_parts"
+  collectionKey: string;
+  collectionName: string;
   partId: string;
   partName: string;
   field: TagField;
@@ -60,7 +60,6 @@ export function CompatibilityTagsPage() {
     setLoading(true);
     setError(null);
     try {
-      // Fetch all part collections in parallel
       const snapshots = await Promise.all(
         PART_COLLECTIONS.map(async (col) => ({
           col,
@@ -68,7 +67,6 @@ export function CompatibilityTagsPage() {
         }))
       );
 
-      // Aggregate tag → usages
       const tagMap = new Map<string, TagUsage[]>();
       for (const { col, docs } of snapshots) {
         for (const docSnap of docs) {
@@ -115,7 +113,6 @@ export function CompatibilityTagsPage() {
       const tagEntry = tags.find((t) => t.name === oldName);
       if (!tagEntry) return;
 
-      // Group usages by doc (a doc may appear in multiple fields)
       const docMap = new Map<string, { collectionName: string; fields: TagField[] }>();
       for (const usage of tagEntry.usages) {
         const key = `${usage.collectionName}/${usage.partId}`;
@@ -124,10 +121,8 @@ export function CompatibilityTagsPage() {
         if (!entry.fields.includes(usage.field)) entry.fields.push(usage.field);
       }
 
-      // Fetch affected docs and patch each field
       await Promise.all(
         [...docMap.entries()].map(async ([, { collectionName, fields }]) => {
-          // Find original doc to get current array values
           const usage = tagEntry.usages.find((u) => u.collectionName === collectionName);
           if (!usage) return;
           const docRef = doc(db, collectionName, usage.partId);
@@ -157,12 +152,10 @@ export function CompatibilityTagsPage() {
     }
   };
 
-  // ── Filter ───────────────────────────────────────────────────────────────────
   const visible = filter.trim()
     ? tags.filter((t) => t.name.toLowerCase().includes(filter.toLowerCase()))
     : tags;
 
-  // ── Collection labels used in a tag's usages ─────────────────────────────────
   const usedIn = (entry: TagEntry) => {
     const labels = new Set(
       entry.usages.map((u) => PART_COLLECTIONS.find((c) => c.key === u.collectionKey)?.label ?? u.collectionKey)
@@ -181,20 +174,18 @@ export function CompatibilityTagsPage() {
       return next;
     });
 
-  // ────────────────────────────────────────────────────────────────────────────
-
   return (
-    <div style={{ padding: 28, maxWidth: 860 }}>
+    <div className="p-7 max-w-[860px]">
       {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 21, fontWeight: 700, color: C.text, margin: 0 }}>Compatibility Tags</h1>
-        <p style={{ color: C.muted, fontSize: 13, marginTop: 4 }}>
+      <div className="mb-6">
+        <h1 className="text-[21px] font-bold text-text m-0">Compatibility Tags</h1>
+        <p className="text-muted text-[13px] mt-1">
           All tags in use across every part collection. Rename a tag here to update every part that uses it at once.
         </p>
       </div>
 
       {/* Field legend */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+      <div className="flex gap-2.5 mb-5 flex-wrap">
         {TAG_FIELDS.map((f) => (
           <span
             key={f}
@@ -210,45 +201,42 @@ export function CompatibilityTagsPage() {
       </div>
 
       {/* Search + refresh */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 18 }}>
+      <div className="flex gap-2.5 mb-[18px]">
         <input
           placeholder="Search tags…"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          style={{
-            flex: 1, background: C.bg2, border: `1px solid ${C.border}`,
-            borderRadius: 8, padding: "8px 12px", color: C.text, fontSize: 13,
-          }}
+          className="flex-1 bg-bg2 border border-border rounded-lg px-3 py-2 text-text text-[13px]"
         />
-        <button onClick={fetchTags} style={{ ...btnOutline(), padding: "8px 14px", fontSize: 12 }}>
+        <button onClick={fetchTags} className="px-3.5 py-2 bg-transparent text-text border border-border rounded-lg text-xs font-semibold cursor-pointer">
           Refresh
         </button>
       </div>
 
       {/* Error */}
       {error && (
-        <div style={{ background: alpha(C.red, 0.10), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 13, color: C.red }}>
+        <div className="bg-red/[.10] border border-red/[.27] rounded-lg px-3.5 py-2.5 mb-4 text-[13px] text-red">
           {error}
         </div>
       )}
 
       {/* Loading */}
       {loading && (
-        <div style={{ padding: 40, textAlign: "center", color: C.muted, fontSize: 13 }}>Loading tags…</div>
+        <div className="py-10 text-center text-muted text-[13px]">Loading tags…</div>
       )}
 
       {/* Empty state */}
       {!loading && visible.length === 0 && (
-        <div style={{ padding: 40, textAlign: "center", color: C.muted, fontSize: 13 }}>
+        <div className="py-10 text-center text-muted text-[13px]">
           {filter ? "No tags match your search." : "No compatibility tags found. Add tags to parts in their edit pages."}
         </div>
       )}
 
       {/* Tag list */}
       {!loading && visible.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <div className="flex flex-col gap-1.5">
           {/* Summary row */}
-          <div style={{ fontSize: 12, color: C.faint, marginBottom: 4 }}>
+          <div className="text-xs text-faint mb-1">
             {visible.length} tag{visible.length !== 1 ? "s" : ""}
             {filter ? ` matching "${filter}"` : ""} · {tags.reduce((s, t) => s + t.usages.length, 0)} total usages
           </div>
@@ -260,17 +248,11 @@ export function CompatibilityTagsPage() {
             return (
               <div
                 key={entry.name}
-                style={{
-                  background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 9,
-                  overflow: "hidden",
-                }}
+                className="bg-bg1 border border-border rounded-[9px] overflow-hidden"
               >
                 {/* Tag header row */}
                 <div
-                  style={{
-                    display: "flex", alignItems: "center", gap: 10,
-                    padding: "10px 14px", cursor: "pointer",
-                  }}
+                  className="flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer"
                   onClick={() => !isRenaming && toggleExpand(entry.name)}
                 >
                   {/* Tag chip */}
@@ -285,17 +267,14 @@ export function CompatibilityTagsPage() {
                   </span>
 
                   {/* Usage count */}
-                  <span style={{ fontSize: 12, color: C.muted }}>{entry.usages.length} use{entry.usages.length !== 1 ? "s" : ""}</span>
+                  <span className="text-xs text-muted">{entry.usages.length} use{entry.usages.length !== 1 ? "s" : ""}</span>
 
                   {/* Collection badges */}
-                  <div style={{ display: "flex", gap: 4, flex: 1, flexWrap: "wrap" }}>
+                  <div className="flex gap-1 flex-1 flex-wrap">
                     {usedIn(entry).map((label) => (
                       <span
                         key={label}
-                        style={{
-                          fontSize: 10, padding: "1px 6px", borderRadius: 4,
-                          background: C.bg3, color: C.muted, border: `1px solid ${C.border}`,
-                        }}
+                        className="text-[10px] px-1.5 py-px rounded bg-bg3 text-muted border border-border"
                       >
                         {label}
                       </span>
@@ -303,7 +282,7 @@ export function CompatibilityTagsPage() {
                   </div>
 
                   {/* Field type badges */}
-                  <div style={{ display: "flex", gap: 4 }}>
+                  <div className="flex gap-1">
                     {fieldsUsed(entry).map((f) => (
                       <span
                         key={f}
@@ -323,13 +302,13 @@ export function CompatibilityTagsPage() {
                       setRenaming({ tag: entry.name, newName: entry.name });
                       if (!isExpanded) toggleExpand(entry.name);
                     }}
-                    style={{ ...btnOutline(C.border), padding: "4px 10px", fontSize: 11, flexShrink: 0 }}
+                    className="px-2.5 py-1 text-[11px] flex-shrink-0 bg-transparent text-text border border-border rounded-lg cursor-pointer"
                   >
                     Rename
                   </button>
 
                   {/* Expand arrow */}
-                  <span style={{ fontSize: 10, color: C.faint, flexShrink: 0 }}>
+                  <span className="text-[10px] text-faint flex-shrink-0">
                     {isExpanded ? "▾" : "▸"}
                   </span>
                 </div>
@@ -337,35 +316,28 @@ export function CompatibilityTagsPage() {
                 {/* Rename inline form */}
                 {isRenaming && (
                   <div
-                    style={{
-                      padding: "10px 14px", background: C.bg2,
-                      borderTop: `1px solid ${C.border}`,
-                      display: "flex", gap: 8, alignItems: "center",
-                    }}
+                    className="px-3.5 py-2.5 bg-bg2 border-t border-border flex gap-2 items-center"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <span style={{ fontSize: 12, color: C.muted, flexShrink: 0 }}>New name:</span>
+                    <span className="text-xs text-muted flex-shrink-0">New name:</span>
                     <input
                       autoFocus
                       value={renaming.newName}
                       onChange={(e) => setRenaming({ ...renaming, newName: e.target.value })}
                       onKeyDown={(e) => { if (e.key === "Enter") confirmRename(); if (e.key === "Escape") setRenaming(null); }}
-                      style={{
-                        flex: 1, background: C.bg3, border: `1px solid ${C.border}`,
-                        borderRadius: 6, padding: "6px 10px", color: C.text, fontSize: 12,
-                        fontFamily: "monospace",
-                      }}
+                      className="flex-1 bg-bg3 border border-border rounded-md px-2.5 py-1.5 text-text text-xs font-mono"
                     />
                     <button
                       onClick={confirmRename}
                       disabled={saving || !renaming.newName.trim() || renaming.newName === entry.name}
-                      style={{ ...btn(C.blue), padding: "6px 12px", fontSize: 12, opacity: saving ? 0.6 : 1 }}
+                      className="px-3 py-1.5 text-xs font-semibold bg-blue text-white rounded-lg border-none cursor-pointer"
+                      style={{ opacity: saving ? 0.6 : 1 }}
                     >
                       {saving ? "Saving…" : "Save"}
                     </button>
                     <button
                       onClick={() => setRenaming(null)}
-                      style={{ ...btnOutline(), padding: "6px 10px", fontSize: 12 }}
+                      className="px-2.5 py-1.5 text-xs font-semibold bg-transparent text-text border border-border rounded-lg cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -375,17 +347,15 @@ export function CompatibilityTagsPage() {
                 {/* Expanded: usage detail */}
                 {isExpanded && (
                   <div
-                    style={{
-                      borderTop: `1px solid ${C.border}`,
-                      maxHeight: 260, overflowY: "auto",
-                    }}
+                    className="border-t border-border overflow-y-auto"
+                    style={{ maxHeight: 260 }}
                   >
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                    <table className="w-full border-collapse text-xs">
                       <thead>
-                        <tr style={{ background: C.bg2 }}>
-                          <th style={{ padding: "6px 14px", color: C.faint, fontWeight: 500, textAlign: "left" }}>Part</th>
-                          <th style={{ padding: "6px 14px", color: C.faint, fontWeight: 500, textAlign: "left" }}>Type</th>
-                          <th style={{ padding: "6px 14px", color: C.faint, fontWeight: 500, textAlign: "left" }}>Field</th>
+                        <tr className="bg-bg2">
+                          <th className="px-3.5 py-1.5 text-faint font-medium text-left">Part</th>
+                          <th className="px-3.5 py-1.5 text-faint font-medium text-left">Type</th>
+                          <th className="px-3.5 py-1.5 text-faint font-medium text-left">Field</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -394,11 +364,11 @@ export function CompatibilityTagsPage() {
                             key={i}
                             style={{ borderTop: `1px solid ${C.border}`, background: i % 2 === 0 ? "transparent" : alpha(C.bg2, 0.53) }}
                           >
-                            <td style={{ padding: "6px 14px", color: C.text }}>{u.partName}</td>
-                            <td style={{ padding: "6px 14px", color: C.muted }}>
+                            <td className="px-3.5 py-1.5 text-text">{u.partName}</td>
+                            <td className="px-3.5 py-1.5 text-muted">
                               {PART_COLLECTIONS.find((c) => c.key === u.collectionKey)?.label ?? u.collectionKey}
                             </td>
-                            <td style={{ padding: "6px 14px" }}>
+                            <td className="px-3.5 py-1.5">
                               <span
                                 style={{
                                   fontSize: 10, padding: "2px 7px", borderRadius: 4,

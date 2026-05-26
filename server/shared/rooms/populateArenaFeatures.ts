@@ -91,7 +91,7 @@ export function populateArenaFeatures(state: GameState, arena: AnyArenaConfig, f
   const turretsSrc = ff.featureTurrets === false ? [] : (arena.turrets ?? []);
   turretsSrc.forEach((t: any, i: number) => {
     const ts = new TurretState();
-    ts.turretId = t.id ?? `turret_${i}`;
+    ts.turretId = String(t.id ?? `turret_${i}`);
     ts.turretIndex = i;
     ts.attackType = t.attackType ?? "random";
     ts.x = Number(t.x ?? 0);

@@ -2,7 +2,7 @@
  * ComputedStatsPanel — displays live output of computeBeybladeStats().
  */
 
-import { C, alpha } from "@/styles/theme";
+import { C } from "@/styles/theme";
 import { computeBeybladeStats } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
 
@@ -15,9 +15,9 @@ const TYPE_COLORS: Record<string, string> = {
 
 function StatRow({ label, value, unit = "", highlight = false }: { label: string; value: string | number; unit?: string; highlight?: boolean }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0", borderBottom: `1px solid ${alpha(C.border, 0.13)}` }}>
-      <span style={{ fontSize: 11, color: C.muted }}>{label}</span>
-      <span style={{ fontSize: 12, fontWeight: highlight ? 700 : 500, color: highlight ? C.text : C.muted, fontFamily: "monospace" }}>
+    <div className="flex justify-between items-center py-1 border-b border-border/[0.13]">
+      <span className="text-[11px] text-muted">{label}</span>
+      <span className={`text-[12px] font-mono ${highlight ? "font-bold text-text" : "font-medium text-muted"}`}>
         {typeof value === "number" ? value.toFixed(2) : value}{unit}
       </span>
     </div>
@@ -27,13 +27,13 @@ function StatRow({ label, value, unit = "", highlight = false }: { label: string
 function DistBar({ label, value, max = 150, color }: { label: string; value: number; max?: number; color: string }) {
   const pct = Math.min(100, (value / max) * 100);
   return (
-    <div style={{ marginBottom: 6 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
-        <span style={{ fontSize: 10, color: C.muted }}>{label}</span>
-        <span style={{ fontSize: 10, color: C.muted, fontFamily: "monospace" }}>{value}/{max}</span>
+    <div className="mb-1.5">
+      <div className="flex justify-between mb-0.5">
+        <span className="text-[10px] text-muted">{label}</span>
+        <span className="text-[10px] text-muted font-mono">{value}/{max}</span>
       </div>
-      <div style={{ height: 5, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 3, transition: "width 0.3s" }} />
+      <div className="h-[5px] bg-bg3 rounded-[3px] overflow-hidden">
+        <div style={{ width: `${pct}%`, background: color, transition: "width 0.3s" }} className="h-full rounded-[3px]" />
       </div>
     </div>
   );
@@ -46,7 +46,7 @@ interface Props {
 export function ComputedStatsPanel({ resolved }: Props) {
   if (!resolved) {
     return (
-      <div style={{ padding: 16, color: C.faint, fontSize: 11 }}>
+      <div className="p-4 text-faint text-[11px]">
         Select all required parts to see computed stats.
       </div>
     );
@@ -62,7 +62,7 @@ export function ComputedStatsPanel({ resolved }: Props) {
 
   if (error || !stats) {
     return (
-      <div style={{ padding: 16, color: C.red, fontSize: 11 }}>
+      <div className="p-4 text-red text-[11px]">
         Stats error: {error || "Unknown"}
       </div>
     );
@@ -72,36 +72,35 @@ export function ComputedStatsPanel({ resolved }: Props) {
   const typeColor = TYPE_COLORS[s.type] ?? C.muted;
 
   return (
-    <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 14 }}>
+    <div className="px-3.5 py-3 flex flex-col gap-3.5">
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{
-          fontSize: 11, padding: "2px 8px", borderRadius: 99, fontWeight: 600,
-          background: alpha(typeColor, 0.13), color: typeColor, border: `1px solid ${alpha(typeColor, 0.27)}`,
-          textTransform: "capitalize",
-        }}>
+      <div className="flex items-center gap-2">
+        <span
+          style={{ background: `${typeColor}22`, color: typeColor, border: `1px solid ${typeColor}45` }}
+          className="text-[11px] px-2 py-0.5 rounded-full font-semibold capitalize"
+        >
           {s.type}
         </span>
-        <span style={{ fontSize: 11, color: C.faint }}>
+        <span className="text-[11px] text-faint">
           {s.spinDirection === "right" ? "↻ right-spin" : "↺ left-spin"}
         </span>
       </div>
 
       {/* Type distribution bars */}
       <div>
-        <div style={{ fontSize: 10, color: C.faint, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>Type Distribution</div>
+        <div className="text-[10px] text-faint mb-1.5 uppercase tracking-[0.05em]">Type Distribution</div>
         <DistBar label="Attack"  value={s.typeDistribution.attack}  color="#ef4444" />
         <DistBar label="Defense" value={s.typeDistribution.defense} color="#3b82f6" />
         <DistBar label="Stamina" value={s.typeDistribution.stamina} color="#22c55e" />
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
-          <span style={{ fontSize: 10, color: C.faint }}>Total</span>
-          <span style={{ fontSize: 10, color: C.muted, fontFamily: "monospace" }}>{s.typeDistribution.total} pts</span>
+        <div className="flex justify-between mt-1">
+          <span className="text-[10px] text-faint">Total</span>
+          <span className="text-[10px] text-muted font-mono">{s.typeDistribution.total} pts</span>
         </div>
       </div>
 
       {/* Physics stats */}
       <div>
-        <div style={{ fontSize: 10, color: C.faint, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>Physics</div>
+        <div className="text-[10px] text-faint mb-1.5 uppercase tracking-[0.05em]">Physics</div>
         <StatRow label="Damage Multiplier"   value={s.damageMultiplier}        unit="×" highlight />
         <StatRow label="Damage Taken"        value={s.damageTaken}             unit="×" />
         <StatRow label="Max Spin"            value={s.maxSpin.toFixed(0)}      unit=" RPM" />
@@ -115,7 +114,7 @@ export function ComputedStatsPanel({ resolved }: Props) {
 
       {/* Contact points summary */}
       <div>
-        <div style={{ fontSize: 10, color: C.faint, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>Contact Points</div>
+        <div className="text-[10px] text-faint mb-1.5 uppercase tracking-[0.05em]">Contact Points</div>
         <StatRow label="Attack CPs"    value={s.pointsOfContact.length}  />
         <StatRow label="Spin-Steal CPs" value={(s.spinStealPoints?.length ?? 0)} />
       </div>

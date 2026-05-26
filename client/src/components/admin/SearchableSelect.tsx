@@ -79,6 +79,8 @@ function OptionRow({ opt, selected, onClick }: { opt: SelectOption; selected: bo
   const accent = opt.color ?? C.blue;
   return (
     <div
+      role="option"
+      aria-selected={selected}
       onClick={() => { if (!opt.disabled) onClick(); }}
       style={{
         padding: "7px 12px", cursor: opt.disabled ? "default" : "pointer",
@@ -121,14 +123,17 @@ interface SearchableSelectProps {
   placeholder?: string;
   disabled?: boolean;
   style?: React.CSSProperties;
+  className?: string;
   /** If true, allows clearing back to empty string */
   clearable?: boolean;
   emptyLabel?: string;
+  "data-testid"?: string;
 }
 
 export function SearchableSelect({
   value, options, onChange, placeholder = "Select…",
-  disabled, style, clearable, emptyLabel,
+  disabled, style, className, clearable, emptyLabel,
+  "data-testid": dataTestId,
 }: SearchableSelectProps) {
   const { open, setOpen, query, setQuery, containerRef, inputRef } = useDropdown();
 
@@ -148,7 +153,7 @@ export function SearchableSelect({
   }, [filtered, onChange, setOpen]);
 
   return (
-    <div ref={containerRef} style={{ position: "relative", ...style }}>
+    <div ref={containerRef} className={className} data-testid={dataTestId} style={{ position: "relative", ...style }}>
       <div
         onClick={() => { if (!disabled) setOpen(o => !o); }}
         style={{

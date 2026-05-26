@@ -3,7 +3,7 @@ import { collection, getDocs, doc, updateDoc, query, orderBy } from "firebase/fi
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
-import { C, S, alpha } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 interface UserDoc {
   id: string;
@@ -57,33 +57,33 @@ export function UsersPage() {
     : users;
 
   return (
-    <div style={{ padding: 24, maxWidth: 900, margin: "0 auto" }}>
-      <div style={{ marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <div className="p-6 max-w-[900px] mx-auto">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text }}>Users</h1>
-          <p style={{ color: C.faint, fontSize: 13, marginTop: 4 }}>
+          <h1 className="text-[22px] font-bold text-text">Users</h1>
+          <p className="text-faint text-[13px] mt-1">
             {users.length} registered — manage roles and access
           </p>
         </div>
       </div>
 
-      <div style={{ marginBottom: 16 }}>
+      <div className="mb-4">
         <input
           type="search"
           placeholder="Search by email, display name, or UID…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ ...S.input, width: "100%", maxWidth: 420 }}
+          className="w-full max-w-[420px] px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm"
         />
       </div>
 
-      <div style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 16, overflow: "hidden" }}>
+      <div className="bg-bg2 border border-border rounded-2xl overflow-hidden">
         {loading ? (
-          <div style={{ padding: 48, display: "flex", justifyContent: "center" }}>
-            <div className="spin" style={{ width: 28, height: 28, border: `2px solid ${C.blue}`, borderTopColor: "transparent", borderRadius: "50%" }} />
+          <div className="py-12 flex justify-center">
+            <div className="spin w-7 h-7 border-2 border-blue border-t-transparent rounded-full" />
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ padding: 48, textAlign: "center", color: C.faint, fontSize: 13 }}>
+          <div className="py-12 text-center text-faint text-[13px]">
             {search ? "No users match your search" : "No users found"}
           </div>
         ) : (
@@ -94,38 +94,34 @@ export function UsersPage() {
             return (
               <div
                 key={user.id}
+                className="flex items-center gap-3 px-4 py-3"
                 style={{
-                  display: "flex", alignItems: "center", gap: 12, padding: "12px 16px",
                   borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : "none",
                   background: isMe ? alpha(C.blue, 0.05) : "transparent",
                 }}
               >
                 <div
-                  style={{
-                    width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
-                    background: alpha(ROLE_COLORS[role as keyof typeof ROLE_COLORS] ?? C.muted, 0.13),
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 16,
-                  }}
+                  className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-base"
+                  style={{ background: alpha(ROLE_COLORS[role as keyof typeof ROLE_COLORS] ?? C.muted, 0.13) }}
                 >
                   {role === "admin" ? "👑" : "🎮"}
                 </div>
 
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ color: C.text, fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-text text-[13px] font-medium overflow-hidden text-ellipsis whitespace-nowrap">
                       {user.displayName ?? user.email ?? user.id.slice(0, 12) + "…"}
                     </span>
-                    {isMe && <span style={{ fontSize: 10, color: C.blue, background: alpha(C.blue, 0.13), padding: "1px 6px", borderRadius: 4 }}>you</span>}
+                    {isMe && <span className="text-[10px] text-blue px-1.5 py-px rounded" style={{ background: alpha(C.blue, 0.13) }}>you</span>}
                   </div>
-                  <div style={{ display: "flex", gap: 8, marginTop: 2 }}>
-                    <span style={{ fontSize: 11, color: C.faint, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email ?? "—"}</span>
-                    <span style={{ fontSize: 11, color: C.faint }}>·</span>
-                    <span style={{ fontSize: 10, fontFamily: "monospace", color: C.faint }}>{user.id.slice(0, 10)}…</span>
+                  <div className="flex gap-2 mt-0.5">
+                    <span className="text-[11px] text-faint overflow-hidden text-ellipsis whitespace-nowrap">{user.email ?? "—"}</span>
+                    <span className="text-[11px] text-faint">·</span>
+                    <span className="text-[10px] font-mono text-faint">{user.id.slice(0, 10)}…</span>
                   </div>
                 </div>
 
-                <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                <div className="flex items-center gap-2.5 flex-shrink-0">
                   <span style={{
                     fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em",
                     color: ROLE_COLORS[role as keyof typeof ROLE_COLORS] ?? C.muted,
@@ -138,12 +134,8 @@ export function UsersPage() {
                     onClick={() => handleRoleToggle(user)}
                     disabled={isUpdating}
                     title={role === "admin" ? "Demote to player" : "Promote to admin"}
-                    style={{
-                      padding: "4px 10px", fontSize: 11, borderRadius: 6,
-                      background: "transparent", color: C.muted,
-                      border: `1px solid ${C.border}`,
-                      cursor: "pointer", opacity: isUpdating ? 0.5 : 1,
-                    }}
+                    className="px-2.5 py-1 text-[11px] rounded-md bg-transparent text-muted border border-border cursor-pointer"
+                    style={{ opacity: isUpdating ? 0.5 : 1 }}
                   >
                     {isUpdating ? "…" : role === "admin" ? "Demote" : "Promote"}
                   </button>

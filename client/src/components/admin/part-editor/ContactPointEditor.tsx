@@ -315,28 +315,23 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
   const sel = selected !== null ? value[selected] : null;
 
   return (
-    <div style={{ display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
+    <div className="flex gap-4 items-start flex-wrap">
       {/* Left: Canvas + list */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, flexShrink: 0 }}>
+      <div className="flex flex-col gap-2.5 shrink-0">
         {/* Canvas */}
         <canvas
           ref={canvasRef}
           width={CANVAS_SIZE}
           height={CANVAS_SIZE}
-          style={{ borderRadius: 8, border: `1px solid ${C.border}`, cursor: placing ? "crosshair" : "pointer" }}
+          className={`rounded-lg border border-border ${placing ? "cursor-crosshair" : "cursor-pointer"}`}
           onClick={onCanvasClick}
         />
 
         {/* Toolbar */}
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        <div className="flex gap-1.5 flex-wrap">
           <button
             onClick={() => setPlacing((p) => !p)}
-            style={{
-              padding: "5px 12px", fontSize: 11, borderRadius: 6, cursor: "pointer",
-              background: placing ? C.blue : C.bg3,
-              color: placing ? "#fff" : C.muted,
-              border: `1px solid ${placing ? C.blue : C.border}`,
-            }}
+            className={`px-3 py-1 text-[11px] rounded cursor-pointer border ${placing ? "bg-blue text-white border-blue" : "bg-bg3 text-muted border-border"}`}
           >
             {placing ? "Click canvas to place…" : "+ Place CP"}
           </button>
@@ -345,13 +340,12 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
             options={[2, 3, 4, 5, 6, 8].map((n) => ({ value: String(n), label: `${n} CPs` }))}
             onChange={(v) => { if (v) generate(+v); }}
             emptyLabel="Generate evenly…"
-            style={{ background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 11 }}
           />
           {value.length > 1 && (
             <button
               onClick={() => onChange(autoWeightFactors(value))}
               title="Set weight factors proportional to each CP's radius × thickness × arc"
-              style={{ padding: "5px 12px", fontSize: 11, borderRadius: 6, cursor: "pointer", background: C.bg3, color: C.muted, border: `1px solid ${C.border}` }}
+              className="px-3 py-1 text-[11px] rounded cursor-pointer bg-bg3 text-muted border border-border"
             >
               Auto-weight
             </button>
@@ -359,33 +353,33 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
         </div>
 
         {/* CP list */}
-        <div style={{ maxHeight: 200, overflowY: "auto", display: "flex", flexDirection: "column", gap: 4 }}>
+        <div className="max-h-48 overflow-y-auto flex flex-col gap-1">
           {value.map((cp, i) => (
             <div
               key={i}
               onClick={() => setSelected(selected === i ? null : i)}
-              style={{
-                background: selected === i ? alpha(C.blue, 0.09) : C.bg2,
-                border: `1px solid ${selected === i ? alpha(C.blue, 0.33) : C.border}`,
-                borderRadius: 7, padding: "7px 10px", cursor: "pointer",
-                display: "flex", alignItems: "center", gap: 8,
-              }}
+              className={`border rounded-lg px-2.5 py-1.5 cursor-pointer flex items-center gap-2 ${
+                selected === i ? "bg-blue/10 border-blue/30" : "bg-bg2 border-border"
+              }`}
             >
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: materialColors[cp.material] ?? FALLBACK_MATERIAL_COLORS[cp.material] ?? C.blue, flexShrink: 0 }} />
-              <div style={{ flex: 1, fontSize: 12, color: C.text }}>
+              <div
+                className="w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ background: materialColors[cp.material] ?? FALLBACK_MATERIAL_COLORS[cp.material] ?? C.blue }}
+              />
+              <div className="flex-1 text-xs text-text">
                 #{i + 1} — {cp.angle}° @ {cp.radius}mm — {cp.material} {cp.attackType}
-                <span style={{ fontSize: 10, color: C.faint, marginLeft: 6 }}>
+                <span className="text-[10px] text-faint ml-1.5">
                   {cpWeightPct(cp, value).toFixed(0)}%w
                 </span>
               </div>
               <button
                 onClick={(e) => { e.stopPropagation(); remove(i); }}
-                style={{ background: "none", border: "none", color: C.red, fontSize: 13, cursor: "pointer" }}
+                className="bg-transparent border-none text-red text-[13px] cursor-pointer"
               >×</button>
             </div>
           ))}
           {value.length === 0 && (
-            <div style={{ fontSize: 12, color: C.faint, padding: "8px 0" }}>
+            <div className="text-xs text-faint py-2">
               No contact points. Click "+ Place CP" or "Generate evenly".
             </div>
           )}
@@ -394,8 +388,8 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
 
       {/* Right: selected CP fields */}
       {sel !== null && selected !== null && (
-        <div style={{ flex: 1, minWidth: 260, display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>CP #{selected + 1}</div>
+        <div className="flex-1 min-w-[260px] flex flex-col gap-3">
+          <div className="text-[13px] font-semibold text-text">CP #{selected + 1}</div>
 
           {/* Geometry — format toggle */}
           {(() => {
@@ -416,15 +410,12 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
             return (
               <Section label="Geometry">
                 {/* Format toggle */}
-                <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+                <div className="flex gap-1 mb-2">
                   {(["Legacy", "Arc-Segment"] as const).map((fmt) => {
                     const active = fmt === "Arc-Segment" ? isArc : !isArc;
                     return (
                       <button key={fmt} onClick={fmt === "Arc-Segment" ? switchToArc : switchToLegacy}
-                        style={{ padding: "4px 10px", fontSize: 11, borderRadius: 5, cursor: "pointer",
-                          background: active ? alpha(C.blue, 0.13) : C.bg2,
-                          color: active ? C.blue : C.muted,
-                          border: `1px solid ${active ? alpha(C.blue, 0.33) : C.border}` }}
+                        className={`px-2.5 py-1 text-[11px] rounded cursor-pointer border ${active ? "bg-blue/10 text-blue border-blue/30" : "bg-bg2 text-muted border-border"}`}
                       >{fmt}</button>
                     );
                   })}
@@ -438,9 +429,9 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
                     <SliderField label="Outer Radius (mm)" value={sel.radiusOuter ?? sel.radius + sel.thickness / 2} min={1} max={60} step={0.5} onChange={(v) => update(selected, { radiusOuter: v })} />
                     <SliderField label="Line Thickness (mm)" value={sel.lineThickness ?? sel.thickness} min={0.5} max={10} step={0.5} onChange={(v) => update(selected, { lineThickness: v })} />
                     <div>
-                      <label style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 4 }}>Set ID</label>
+                      <label className="text-[11px] text-muted block mb-1">Set ID</label>
                       <input type="text" value={sel.setId ?? ""} onChange={(e) => update(selected, { setId: e.target.value.trim() || undefined })}
-                        placeholder="(none)" style={{ padding: "5px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11, width: "100%" }} />
+                        placeholder="(none)" className="px-2 py-1 bg-bg3 border border-border rounded text-text text-[11px] w-full" />
                     </div>
                   </>
                 ) : (
@@ -450,9 +441,9 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
                     <SliderField label="Radius (mm)" value={sel.radius} min={1} max={50} step={0.5} onChange={(v) => update(selected, { radius: v })} />
                     <SliderField label="Thickness (mm)" value={sel.thickness} min={0.5} max={10} step={0.5} onChange={(v) => update(selected, { thickness: v })} />
                     <div>
-                      <label style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 4 }}>Set ID</label>
+                      <label className="text-[11px] text-muted block mb-1">Set ID</label>
                       <input type="text" value={sel.setId ?? ""} onChange={(e) => update(selected, { setId: e.target.value.trim() || undefined })}
-                        placeholder="(none)" style={{ padding: "5px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 5, color: C.text, fontSize: 11, width: "100%" }} />
+                        placeholder="(none)" className="px-2 py-1 bg-bg3 border border-border rounded text-text text-[11px] w-full" />
                     </div>
                   </>
                 )}
@@ -472,13 +463,12 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
           </Section>
 
           <Section label="Attack Type">
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            <div className="flex flex-wrap gap-1.5">
               {attackLabels.map((at) => (
                 <button key={at} onClick={() => update(selected, { attackType: at })}
-                  style={{ padding: "5px 10px", fontSize: 11, borderRadius: 6, cursor: "pointer",
-                    background: sel.attackType === at ? alpha(C.orange, 0.16) : C.bg2,
-                    color: sel.attackType === at ? C.orange : C.muted,
-                    border: `1px solid ${sel.attackType === at ? alpha(C.orange, 0.40) : C.border}` }}
+                  className={`px-2.5 py-1 text-[11px] rounded cursor-pointer border ${
+                    sel.attackType === at ? "bg-orange/15 text-orange border-orange/40" : "bg-bg2 text-muted border-border"
+                  }`}
                 >{at}</button>
               ))}
             </div>
@@ -490,9 +480,9 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
 
           {/* Weight factor */}
           <Section label="Weight Factor">
-            <div style={{ fontSize: 11, color: C.faint, marginBottom: 6 }}>
+            <div className="text-[11px] text-faint mb-1.5">
               Share of part weight at this contact point.{" "}
-              <span style={{ color: C.blue }}>
+              <span className="text-blue">
                 {cpWeightPct(sel, value).toFixed(1)}% of total
               </span>
               {" "}({value.length} CPs, equal = {(100 / value.length).toFixed(1)}%)
@@ -501,21 +491,19 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
               onChange={(v) => update(selected, { weightFactor: parseFloat(v.toFixed(2)) })} />
             <button
               onClick={() => onChange(autoWeightFactors(value))}
-              style={{ marginTop: 6, padding: "4px 10px", fontSize: 10, borderRadius: 5, cursor: "pointer",
-                background: C.bg3, color: C.muted, border: `1px solid ${C.border}` }}>
+              className="mt-1.5 px-2.5 py-1 text-[10px] rounded cursor-pointer bg-bg3 text-muted border border-border">
               Auto-distribute all CPs from thickness
             </button>
           </Section>
 
           {/* Part layer */}
           <Section label="Part Layer">
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+            <div className="flex flex-wrap gap-1">
               {layerLabels.map((l) => (
                 <button key={l} onClick={() => update(selected, { partLayer: l })}
-                  style={{ padding: "4px 9px", fontSize: 10, borderRadius: 5, cursor: "pointer",
-                    background: sel.partLayer === l ? alpha(C.purple, 0.16) : C.bg2,
-                    color: sel.partLayer === l ? C.purple : C.faint,
-                    border: `1px solid ${sel.partLayer === l ? alpha(C.purple, 0.33) : C.border}` }}
+                  className={`px-2 py-1 text-[10px] rounded cursor-pointer border ${
+                    sel.partLayer === l ? "bg-purple/15 text-purple border-purple/30" : "bg-bg2 text-faint border-border"
+                  }`}
                 >{l}</button>
               ))}
             </div>
@@ -523,23 +511,21 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
 
           {/* Spin behavior */}
           <Section label="Spin Behavior">
-            <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Right-spin (↻)</div>
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <div className="text-[11px] text-muted mb-1">Right-spin (↻)</div>
                 <SearchableSelect
                   value={sel.spinBehavior.rightPin}
                   options={attackLabels.map((a) => ({ value: a, label: a }))}
                   onChange={(v) => update(selected, { spinBehavior: { ...sel.spinBehavior, rightPin: v as AttackType } })}
-                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
                 />
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Left-spin (↺)</div>
+              <div className="flex-1">
+                <div className="text-[11px] text-muted mb-1">Left-spin (↺)</div>
                 <SearchableSelect
                   value={sel.spinBehavior.leftPin}
                   options={attackLabels.map((a) => ({ value: a, label: a }))}
                   onChange={(v) => update(selected, { spinBehavior: { ...sel.spinBehavior, leftPin: v as AttackType } })}
-                  style={{ width: "100%", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11 }}
                 />
               </div>
             </div>
@@ -547,12 +533,12 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
 
           {/* Extends gimmick */}
           <Section label="Extends at High Spin">
-            <label style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
-              <input type="checkbox" checked={sel.extends} onChange={(e) => update(selected, { extends: e.target.checked })} style={{ accentColor: C.blue }} />
-              <span style={{ fontSize: 12, color: C.muted }}>Enable extension gimmick</span>
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input type="checkbox" checked={sel.extends} onChange={(e) => update(selected, { extends: e.target.checked })} className="accent-blue" />
+              <span className="text-xs text-muted">Enable extension gimmick</span>
             </label>
             {sel.extends && (
-              <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8 }}>
+              <div className="mt-2 flex flex-col gap-2">
                 <SliderField label="Extend threshold (fraction of maxSpin)" value={sel.extendThreshold} min={0} max={1} step={0.05}
                   onChange={(v) => update(selected, { extendThreshold: parseFloat(v.toFixed(2)) })} />
                 <SliderField label="Extended radius (mm)" value={sel.extendedRadius} min={1} max={60} step={0.5}
@@ -567,26 +553,26 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
 
           {/* Roller Wheel */}
           <Section label="Roller Wheel">
-            <label style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer", marginBottom: 8 }}>
+            <label className="flex gap-2 items-center cursor-pointer mb-2">
               <input type="checkbox" checked={!!(sel as any).roller}
                 onChange={(e) => update(selected, { roller: e.target.checked ? { radius: 3, material: "rubber", freeSpin: false } : undefined } as any)}
-                style={{ accentColor: C.blue }} />
-              <span style={{ fontSize: 12, color: C.muted }}>Has roller wheel</span>
+                className="accent-blue" />
+              <span className="text-xs text-muted">Has roller wheel</span>
             </label>
             {(sel as any).roller && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingLeft: 4 }}>
+              <div className="flex flex-col gap-2 pl-1">
                 <SliderField label="Radius (mm)" value={(sel as any).roller.radius ?? 3} min={0.5} max={15} step={0.5}
                   onChange={(v) => update(selected, { roller: { ...(sel as any).roller, radius: v } } as any)} />
                 <div>
-                  <div style={{ fontSize: 11, color: C.muted, marginBottom: 5, fontWeight: 600 }}>Material</div>
+                  <div className="text-[11px] text-muted mb-1.5 font-semibold">Material</div>
                   <MaterialSelector value={(sel as any).roller.material ?? "rubber"}
                     onChange={(m) => update(selected, { roller: { ...(sel as any).roller, material: m } } as any)} label={undefined} />
                 </div>
-                <label style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
+                <label className="flex gap-2 items-center cursor-pointer">
                   <input type="checkbox" checked={!!(sel as any).roller.freeSpin}
                     onChange={(e) => update(selected, { roller: { ...(sel as any).roller, freeSpin: e.target.checked } } as any)}
-                    style={{ accentColor: C.blue }} />
-                  <span style={{ fontSize: 12, color: C.muted }}>Free spin roller</span>
+                    className="accent-blue" />
+                  <span className="text-xs text-muted">Free spin roller</span>
                 </label>
               </div>
             )}
@@ -609,7 +595,7 @@ export function ContactPointEditor({ value, onChange, fourierProfile, outerRadiu
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <div style={{ fontSize: 11, color: C.muted, marginBottom: 6, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</div>
+      <div className="text-[11px] text-muted mb-1.5 font-semibold uppercase tracking-wider">{label}</div>
       {children}
     </div>
   );
@@ -620,15 +606,15 @@ function SliderField({ label, value, min, max, step, onChange }: {
   onChange: (v: number) => void;
 }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11 }}>
-        <span style={{ color: C.muted }}>{label}</span>
-        <span style={{ color: C.text, fontFamily: "monospace" }}>{value}</span>
+    <div className="flex flex-col gap-0.5">
+      <div className="flex justify-between text-[11px]">
+        <span className="text-muted">{label}</span>
+        <span className="text-text font-mono">{value}</span>
       </div>
       <input
         type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(+e.target.value)}
-        style={{ width: "100%", accentColor: C.blue }}
+        className="w-full accent-blue"
       />
     </div>
   );

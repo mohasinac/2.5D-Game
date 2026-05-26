@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, S, btn, alpha } from "@/styles/theme";
+import { C } from "@/styles/theme";
 import toast from "react-hot-toast";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
 
@@ -12,7 +12,7 @@ interface FormState {
   type: "pvp" | "player-gauntlet" | "mixed" | "ai-exhibition";
   maxParticipants: 2 | 4 | 8;
   minParticipants: number;
-  scheduledStartTime: string; // datetime-local string
+  scheduledStartTime: string;
   registrationDeadline: string;
   roundIntervalMinutes: number;
   bestOf: 1 | 3 | 5;
@@ -43,6 +43,8 @@ const defaults: FormState = {
 function splitIds(raw: string): string[] {
   return raw.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
 }
+
+const inputCls = "w-full px-3 py-2 bg-bg3 border border-border rounded-lg text-text text-sm";
 
 export function TournamentCreatePage() {
   const navigate = useNavigate();
@@ -101,33 +103,34 @@ export function TournamentCreatePage() {
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 700, margin: "0 auto" }}>
-      <div style={{ marginBottom: 24 }}>
-        <Link to="/admin/tournaments" style={{ color: C.faint, fontSize: 13, textDecoration: "none" }}>← Tournaments</Link>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: C.text, marginTop: 8 }}>Create Tournament</h1>
+    <div className="p-6 max-w-[700px] mx-auto">
+      <div className="mb-6">
+        <Link to="/admin/tournaments" className="text-faint text-[13px] no-underline">← Tournaments</Link>
+        <h1 className="text-[22px] font-bold text-text mt-2">Create Tournament</h1>
       </div>
 
       {error && (
-        <div style={{ background: alpha(C.red, 0.09), border: `1px solid ${alpha(C.red, 0.27)}`, borderRadius: 10, padding: "10px 14px", marginBottom: 16, color: C.red, fontSize: 13 }}>
+        <div className="bg-red/[.09] border border-red/[.27] rounded-xl px-3.5 py-2.5 mb-4 text-red text-[13px]">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <Section title="Basic Info">
           <Field label="Name *">
-            <input style={S.input} value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Summer Championship 2026" />
+            <input className={inputCls} value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Summer Championship 2026" />
           </Field>
           <Field label="Description">
-            <textarea style={{ ...S.input, resize: "vertical", minHeight: 72 }} value={form.description} onChange={(e) => set("description", e.target.value)} placeholder="Optional description..." />
+            <textarea className={inputCls + " resize-y min-h-[72px]"} value={form.description} onChange={(e) => set("description", e.target.value)} placeholder="Optional description..." />
           </Field>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div className="grid grid-cols-2 gap-3.5">
             <Field label="Type">
               <SearchableSelect
                 value={form.type}
                 options={[{ value: "pvp", label: "PVP" }, { value: "player-gauntlet", label: "Player Gauntlet" }, { value: "mixed", label: "Mixed (AI fill)" }, { value: "ai-exhibition", label: "AI Exhibition" }]}
                 onChange={(v) => set("type", v as any)}
-                style={S.input}
+                className="w-full"
+                data-testid="tournament-type-select"
               />
             </Field>
             <Field label="Max Participants">
@@ -135,13 +138,13 @@ export function TournamentCreatePage() {
                 value={String(form.maxParticipants)}
                 options={[{ value: "2", label: "2" }, { value: "4", label: "4" }, { value: "8", label: "8" }]}
                 onChange={(v) => set("maxParticipants", Number(v) as any)}
-                style={S.input}
+                className="w-full"
               />
             </Field>
           </div>
           <Field label="Minimum Participants (auto-cancels below this at deadline)">
             <input
-              style={{ ...S.input, width: 100 }}
+              className={inputCls + " w-[100px]"}
               type="number"
               min={2}
               max={form.maxParticipants}
@@ -152,27 +155,27 @@ export function TournamentCreatePage() {
         </Section>
 
         <Section title="Schedule">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div className="grid grid-cols-2 gap-3.5">
             <Field label="Start Time *">
-              <input style={S.input} type="datetime-local" value={form.scheduledStartTime} onChange={(e) => set("scheduledStartTime", e.target.value)} />
+              <input className={inputCls} type="datetime-local" value={form.scheduledStartTime} onChange={(e) => set("scheduledStartTime", e.target.value)} />
             </Field>
             <Field label="Registration Deadline">
-              <input style={S.input} type="datetime-local" value={form.registrationDeadline} onChange={(e) => set("registrationDeadline", e.target.value)} />
+              <input className={inputCls} type="datetime-local" value={form.registrationDeadline} onChange={(e) => set("registrationDeadline", e.target.value)} />
             </Field>
           </div>
           <Field label="Minutes Between Rounds">
-            <input style={{ ...S.input, width: 100 }} type="number" min={5} max={120} value={form.roundIntervalMinutes} onChange={(e) => set("roundIntervalMinutes", Number(e.target.value))} />
+            <input className={inputCls + " w-[100px]"} type="number" min={5} max={120} value={form.roundIntervalMinutes} onChange={(e) => set("roundIntervalMinutes", Number(e.target.value))} />
           </Field>
         </Section>
 
         <Section title="Format">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+          <div className="grid grid-cols-3 gap-3.5">
             <Field label="Best Of">
               <SearchableSelect
                 value={String(form.bestOf)}
                 options={[{ value: "1", label: "BO1 (Single)" }, { value: "3", label: "BO3 (First to 2)" }, { value: "5", label: "BO5 (First to 3)" }]}
                 onChange={(v) => set("bestOf", Number(v) as any)}
-                style={S.input}
+                className="w-full"
               />
             </Field>
             <Field label="AI Difficulty">
@@ -180,13 +183,13 @@ export function TournamentCreatePage() {
                 value={form.aiDifficulty}
                 options={[{ value: "medium", label: "Medium" }, { value: "hard", label: "Hard" }, { value: "hell", label: "Hell" }]}
                 onChange={(v) => set("aiDifficulty", v as any)}
-                style={S.input}
+                className="w-full"
               />
             </Field>
             <Field label="Auto-Fill with AI">
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
-                <input type="checkbox" checked={form.autoFillWithAI} onChange={(e) => set("autoFillWithAI", e.target.checked)} style={{ width: 16, height: 16 }} />
-                <span style={{ color: C.muted, fontSize: 13 }}>Fill empty slots</span>
+              <div className="flex items-center gap-2 mt-1.5">
+                <input type="checkbox" checked={form.autoFillWithAI} onChange={(e) => set("autoFillWithAI", e.target.checked)} className="w-4 h-4" />
+                <span className="text-muted text-[13px]">Fill empty slots</span>
               </div>
             </Field>
           </div>
@@ -194,21 +197,21 @@ export function TournamentCreatePage() {
 
         <Section title="Restrictions (optional)">
           <Field label="Allowed Beyblade IDs (comma/newline — empty = all allowed)">
-            <textarea style={{ ...S.input, resize: "vertical", minHeight: 60, fontFamily: "monospace", fontSize: 12 }} value={form.allowedBeybladeIds} onChange={(e) => set("allowedBeybladeIds", e.target.value)} placeholder="id1, id2, ..." />
+            <textarea className={inputCls + " resize-y min-h-[60px] font-mono text-xs"} value={form.allowedBeybladeIds} onChange={(e) => set("allowedBeybladeIds", e.target.value)} placeholder="id1, id2, ..." />
           </Field>
           <Field label="Disabled Beyblade IDs">
-            <textarea style={{ ...S.input, resize: "vertical", minHeight: 60, fontFamily: "monospace", fontSize: 12 }} value={form.disabledBeybladeIds} onChange={(e) => set("disabledBeybladeIds", e.target.value)} placeholder="banned_id1, ..." />
+            <textarea className={inputCls + " resize-y min-h-[60px] font-mono text-xs"} value={form.disabledBeybladeIds} onChange={(e) => set("disabledBeybladeIds", e.target.value)} placeholder="banned_id1, ..." />
           </Field>
           <Field label="Allowed Arena IDs (empty = any arena)">
-            <textarea style={{ ...S.input, resize: "vertical", minHeight: 40, fontFamily: "monospace", fontSize: 12 }} value={form.allowedArenaIds} onChange={(e) => set("allowedArenaIds", e.target.value)} placeholder="arena_id1, ..." />
+            <textarea className={inputCls + " resize-y min-h-[40px] font-mono text-xs"} value={form.allowedArenaIds} onChange={(e) => set("allowedArenaIds", e.target.value)} placeholder="arena_id1, ..." />
           </Field>
         </Section>
 
-        <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
-          <Link to="/admin/tournaments" style={{ ...btn(C.bg3), textDecoration: "none", display: "inline-block" }}>
+        <div className="flex gap-3 justify-end">
+          <Link to="/admin/tournaments" className="px-4 py-2 bg-bg3 text-text rounded-lg text-sm font-semibold border border-border no-underline inline-block">
             Cancel
           </Link>
-          <button type="submit" disabled={saving} style={{ ...btn(C.yellow), color: C.bg0 }}>
+          <button type="submit" disabled={saving} className="px-4 py-2 bg-yellow text-bg0 rounded-lg text-sm font-semibold">
             {saving ? "Creating..." : "Create Tournament"}
           </button>
         </div>
@@ -219,9 +222,9 @@ export function TournamentCreatePage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ background: C.bg1, borderRadius: 12, border: `1px solid ${C.border}`, padding: 18 }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>{title}</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    <div className="bg-bg1 rounded-xl border border-border p-[18px]">
+      <p className="text-[11px] font-bold text-muted uppercase tracking-[0.08em] mb-3.5">{title}</p>
+      <div className="flex flex-col gap-3">
         {children}
       </div>
     </div>
@@ -231,7 +234,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label style={S.label}>{label}</label>
+      <label className="block text-xs text-muted mb-1.5">{label}</label>
       {children}
     </div>
   );

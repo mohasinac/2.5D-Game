@@ -27,7 +27,7 @@ function numInput(val: number | undefined, def: number, onChange: (n: number) =>
       value={val ?? def}
       step={step}
       onChange={e => onChange(Number(e.target.value))}
-      style={{ width: 80, background: C.bg1, border: `1px solid ${C.border}`, color: C.text, borderRadius: 6, padding: "4px 8px", fontSize: 12 }}
+      className="w-20 bg-bg1 border border-border text-text rounded-md py-1 px-2 text-xs"
     />
   );
 }
@@ -50,30 +50,30 @@ export default function RotationBlockEditor({ value, onChange, label = "Rotation
   const showSpin = mode === "auto" || mode === "intervaled" || mode === "partial-swept";
 
   return (
-    <div style={{ marginTop: 10, padding: 10, background: C.bg2, borderRadius: 8, border: `1px solid ${C.border}` }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: enabled ? 10 : 0 }}>
-        <label style={{ fontSize: 11, fontWeight: 600, color: C.muted }}>{label}</label>
-        <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 11, color: C.muted, cursor: "pointer" }}>
+    <div className="mt-2.5 p-2.5 bg-bg2 rounded-lg border border-border">
+      <div className={`flex items-center justify-between ${enabled ? "mb-2.5" : ""}`}>
+        <label className="text-[11px] font-semibold text-muted">{label}</label>
+        <label className="flex gap-1.5 items-center text-[11px] text-muted cursor-pointer">
           <input type="checkbox" checked={enabled} onChange={e => e.target.checked ? enable() : disable()} />
           {enabled ? "Enabled" : "Disabled"}
         </label>
       </div>
 
       {enabled && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {/* Mode buttons */}
           <div>
-            <div style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>Mode</div>
-            <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+            <div className="text-[11px] text-faint mb-1">Mode</div>
+            <div className="flex gap-1 flex-wrap">
               {MODES.map(m => (
                 <button
                   key={m.value}
                   onClick={() => patch({ mode: m.value })}
+                  className="py-[3px] px-[9px] rounded text-[11px] cursor-pointer border"
                   style={{
-                    padding: "3px 9px", borderRadius: 5, fontSize: 11, cursor: "pointer",
                     background: mode === m.value ? C.blue : "transparent",
                     color: mode === m.value ? C.white : C.muted,
-                    border: `1px solid ${mode === m.value ? C.blue : C.border}`,
+                    borderColor: mode === m.value ? C.blue : C.border,
                   }}
                 >
                   {m.label}
@@ -83,49 +83,54 @@ export default function RotationBlockEditor({ value, onChange, label = "Rotation
           </div>
 
           {/* Initial angle — all modes */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 11, color: C.faint, minWidth: 110 }}>Initial Angle (°)</label>
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] text-faint min-w-[110px]">Initial Angle (°)</label>
             {numInput(value.initialAngleDeg, 0, v => patch({ initialAngleDeg: v }), 5)}
           </div>
 
           {/* Spin speed + direction + space */}
           {showSpin && (
             <>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.faint, marginBottom: 2 }}>
+                  <div className="flex justify-between text-[11px] text-faint mb-0.5">
                     <span>Speed (°/s)</span>
-                    <span style={{ color: C.text, fontFamily: "monospace" }}>{value.speedDegPerSec ?? 45}</span>
+                    <span className="text-text font-mono">{value.speedDegPerSec ?? 45}</span>
                   </div>
                   <input type="range" min={1} max={720} step={5}
                     value={value.speedDegPerSec ?? 45}
                     onChange={e => patch({ speedDegPerSec: +e.target.value })}
-                    style={{ width: "100%", accentColor: C.blue }}
+                    className="w-full"
+                    style={{ accentColor: C.blue }}
                   />
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, color: C.faint, marginBottom: 4 }}>Direction</div>
-                  <div style={{ display: "flex", gap: 4 }}>
+                  <div className="text-[11px] text-faint mb-1">Direction</div>
+                  <div className="flex gap-1">
                     {(["cw", "ccw", "alternating"] as const).map(d => (
                       <button key={d} onClick={() => patch({ direction: d })}
-                        style={{ padding: "2px 7px", borderRadius: 5, fontSize: 11, cursor: "pointer",
+                        className="py-[2px] px-[7px] rounded text-[11px] cursor-pointer border"
+                        style={{
                           background: (value.direction ?? "cw") === d ? C.blue : "transparent",
                           color: (value.direction ?? "cw") === d ? C.white : C.muted,
-                          border: `1px solid ${(value.direction ?? "cw") === d ? C.blue : C.border}` }}>
+                          borderColor: (value.direction ?? "cw") === d ? C.blue : C.border,
+                        }}>
                         {d}
                       </button>
                     ))}
                   </div>
                 </div>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={{ fontSize: 11, color: C.faint, minWidth: 50 }}>Space</label>
+              <div className="flex items-center gap-2">
+                <label className="text-[11px] text-faint min-w-[50px]">Space</label>
                 {(["local", "world"] as const).map(s => (
                   <button key={s} onClick={() => patch({ space: s })}
-                    style={{ padding: "2px 8px", borderRadius: 5, fontSize: 11, cursor: "pointer",
+                    className="py-[2px] px-2 rounded text-[11px] cursor-pointer border"
+                    style={{
                       background: (value.space ?? "local") === s ? C.blue : "transparent",
                       color: (value.space ?? "local") === s ? C.white : C.muted,
-                      border: `1px solid ${(value.space ?? "local") === s ? C.blue : C.border}` }}>
+                      borderColor: (value.space ?? "local") === s ? C.blue : C.border,
+                    }}>
                     {s}
                   </button>
                 ))}
@@ -135,13 +140,13 @@ export default function RotationBlockEditor({ value, onChange, label = "Rotation
 
           {/* Intervaled params */}
           {mode === "intervaled" && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Active (ms)</label>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex items-center gap-2">
+                <label className="text-[11px] text-faint min-w-[70px]">Active (ms)</label>
                 {numInput(value.intervalOn?.activeMs, 1000, v => patch({ intervalOn: { ...(value.intervalOn ?? { activeMs: 1000, pauseMs: 1000 }), activeMs: v } }), 100)}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <label style={{ fontSize: 11, color: C.faint, minWidth: 70 }}>Pause (ms)</label>
+              <div className="flex items-center gap-2">
+                <label className="text-[11px] text-faint min-w-[70px]">Pause (ms)</label>
                 {numInput(value.intervalOn?.pauseMs, 1000, v => patch({ intervalOn: { ...(value.intervalOn ?? { activeMs: 1000, pauseMs: 1000 }), pauseMs: v } }), 100)}
               </div>
             </div>
@@ -149,17 +154,17 @@ export default function RotationBlockEditor({ value, onChange, label = "Rotation
 
           {/* Partial-swept params */}
           {mode === "partial-swept" && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <label style={{ fontSize: 11, color: C.faint, minWidth: 50 }}>From (°)</label>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="flex items-center gap-1.5">
+                <label className="text-[11px] text-faint min-w-[50px]">From (°)</label>
                 {numInput(value.partialSweep?.fromDeg, 0, v => patch({ partialSweep: { ...(value.partialSweep ?? { fromDeg: 0, toDeg: 90, cycleMs: 2000 }), fromDeg: v } }), 5)}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <label style={{ fontSize: 11, color: C.faint, minWidth: 40 }}>To (°)</label>
+              <div className="flex items-center gap-1.5">
+                <label className="text-[11px] text-faint min-w-[40px]">To (°)</label>
                 {numInput(value.partialSweep?.toDeg, 90, v => patch({ partialSweep: { ...(value.partialSweep ?? { fromDeg: 0, toDeg: 90, cycleMs: 2000 }), toDeg: v } }), 5)}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <label style={{ fontSize: 11, color: C.faint, minWidth: 60 }}>Cycle (ms)</label>
+              <div className="flex items-center gap-1.5">
+                <label className="text-[11px] text-faint min-w-[60px]">Cycle (ms)</label>
                 {numInput(value.partialSweep?.cycleMs, 2000, v => patch({ partialSweep: { ...(value.partialSweep ?? { fromDeg: 0, toDeg: 90, cycleMs: 2000 }), cycleMs: v } }), 100)}
               </div>
             </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, S, alpha } from "@/styles/theme";
+import { C, alpha } from "@/styles/theme";
 
 interface DashboardStats { beyblades: number; arenas: number; matches: number; players: number; }
 interface TournamentStats { active: number; upcoming: number; }
@@ -55,40 +55,40 @@ export function AdminDashboardPage() {
   const statValues = [stats.beyblades, stats.arenas, stats.matches, stats.players];
 
   return (
-    <div style={{ padding:24, width: "100%", boxSizing: "border-box" as const }}>
-      <div style={{ marginBottom:28 }}>
-        <h1 style={{ fontSize:22, fontWeight:700, color:C.text }}>Dashboard</h1>
-        <p style={{ color:C.faint, fontSize:13, marginTop:4 }}>Game administration overview</p>
+    <div className="p-6 w-full box-border">
+      <div className="mb-7">
+        <h1 className="text-[22px] font-bold text-text">Dashboard</h1>
+        <p className="text-faint text-[13px] mt-1">Game administration overview</p>
       </div>
 
       {/* Stat cards */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:28 }}>
+      <div className="grid grid-cols-4 gap-3.5 mb-7">
         {statCards.map((card, i) => (
           <Link key={card.label} to={card.href} style={{ display:"block", background:alpha(card.accent, 0.06), border:`1px solid ${alpha(card.accent, 0.13)}`, borderRadius:14, padding:16, textDecoration:"none" }}>
-            <div style={{ fontSize:22, marginBottom:8 }}>{card.icon}</div>
+            <div className="text-[22px] mb-2">{card.icon}</div>
             {loading ? (
-              <div style={{ height:28, width:48, background:C.bg3, borderRadius:6, marginBottom:4 }} className="pulse" />
+              <div className="h-7 w-12 bg-bg3 rounded-md mb-1 pulse" />
             ) : (
-              <div style={{ fontSize:24, fontWeight:700, color:C.text, fontFamily:"monospace" }}>{statValues[i]}</div>
+              <div className="text-[24px] font-bold text-text font-mono">{statValues[i]}</div>
             )}
-            <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>{card.label}</div>
+            <div className="text-xs text-muted mt-0.5">{card.label}</div>
           </Link>
         ))}
       </div>
 
       {/* Tournament stats */}
       <div style={{ background:alpha(C.yellow, 0.06), border:`1px solid ${alpha(C.yellow, 0.13)}`, borderRadius:14, padding:16, marginBottom:28, display:"flex", alignItems:"center", gap:24 }}>
-        <span style={{ fontSize:28 }}>🏆</span>
-        <div style={{ flex:1 }}>
-          <div style={{ fontSize:13, fontWeight:600, color:C.text, marginBottom:4 }}>Tournaments</div>
-          <div style={{ display:"flex", gap:20 }}>
+        <span className="text-[28px]">🏆</span>
+        <div className="flex-1">
+          <div className="text-[13px] font-semibold text-text mb-1">Tournaments</div>
+          <div className="flex gap-5">
             <div>
-              {loading ? <div style={{ height:20, width:32, background:C.bg3, borderRadius:4 }} className="pulse" /> : <span style={{ fontSize:20, fontWeight:700, color:C.yellow, fontFamily:"monospace" }}>{tournamentStats.active}</span>}
-              <span style={{ fontSize:12, color:C.muted, marginLeft:6 }}>active</span>
+              {loading ? <div className="h-5 w-8 bg-bg3 rounded pulse" /> : <span className="text-[20px] font-bold text-yellow font-mono">{tournamentStats.active}</span>}
+              <span className="text-xs text-muted ml-1.5">active</span>
             </div>
             <div>
-              {loading ? <div style={{ height:20, width:32, background:C.bg3, borderRadius:4 }} className="pulse" /> : <span style={{ fontSize:20, fontWeight:700, color:C.blue, fontFamily:"monospace" }}>{tournamentStats.upcoming}</span>}
-              <span style={{ fontSize:12, color:C.muted, marginLeft:6 }}>registration open</span>
+              {loading ? <div className="h-5 w-8 bg-bg3 rounded pulse" /> : <span className="text-[20px] font-bold text-blue font-mono">{tournamentStats.upcoming}</span>}
+              <span className="text-xs text-muted ml-1.5">registration open</span>
             </div>
           </div>
         </div>
@@ -97,23 +97,23 @@ export function AdminDashboardPage() {
         </Link>
       </div>
 
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
+      <div className="grid grid-cols-2 gap-5">
         {/* Quick links */}
         <div>
-          <div style={S.sectionTitle}>Quick Actions</div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+          <div className="text-[11px] font-semibold text-muted uppercase tracking-[0.08em] mb-3">Quick Actions</div>
+          <div className="grid grid-cols-2 gap-2.5">
             {quickLinks.map((link) => {
               const inner = (
-                <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:12, padding:16 }}>
-                  <div style={{ fontSize:20, marginBottom:6 }}>{link.icon}</div>
-                  <div style={{ fontSize:13, fontWeight:500, color:C.text }}>{link.label}</div>
-                  <div style={{ fontSize:11, color:C.faint, marginTop:3 }}>{link.desc}</div>
+                <div className="bg-bg2 border border-border rounded-xl p-4">
+                  <div className="text-[20px] mb-1.5">{link.icon}</div>
+                  <div className="text-[13px] font-medium text-text">{link.label}</div>
+                  <div className="text-[11px] text-faint mt-0.5">{link.desc}</div>
                 </div>
               );
               return link.external ? (
-                <a key={link.label} href={link.href} target="_blank" rel="noreferrer" style={{ textDecoration:"none" }}>{inner}</a>
+                <a key={link.label} href={link.href} target="_blank" rel="noreferrer" className="no-underline">{inner}</a>
               ) : (
-                <Link key={link.label} to={link.href} style={{ textDecoration:"none" }}>{inner}</Link>
+                <Link key={link.label} to={link.href} className="no-underline">{inner}</Link>
               );
             })}
           </div>
@@ -121,24 +121,24 @@ export function AdminDashboardPage() {
 
         {/* Recent matches */}
         <div>
-          <div style={S.sectionTitle}>Recent Matches</div>
-          <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden" }}>
+          <div className="text-[11px] font-semibold text-muted uppercase tracking-[0.08em] mb-3">Recent Matches</div>
+          <div className="bg-bg2 border border-border rounded-xl overflow-hidden">
             {loading ? (
-              <div style={{ padding:32, textAlign:"center" }}>
-                <div className="spin" style={{ width:24, height:24, border:`2px solid ${C.blue}`, borderTopColor:"transparent", borderRadius:"50%", margin:"0 auto" }} />
+              <div className="p-8 text-center">
+                <div className="spin w-6 h-6 border-2 border-blue border-t-transparent rounded-full mx-auto" />
               </div>
             ) : recentMatches.length === 0 ? (
-              <div style={{ padding:32, textAlign:"center", color:C.faint, fontSize:13 }}>No matches played yet</div>
+              <div className="p-8 text-center text-faint text-[13px]">No matches played yet</div>
             ) : (
               recentMatches.map((match, i) => (
-                <div key={match.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom: i < recentMatches.length-1 ? `1px solid ${C.border}` : "none" }}>
+                <div key={match.id} className="flex justify-between items-center px-4 py-2.5" style={{ borderBottom: i < recentMatches.length-1 ? `1px solid ${C.border}` : "none" }}>
                   <div>
-                    <div style={{ color:C.text, fontFamily:"monospace", fontSize:11 }}>{match.id.slice(0,12)}...</div>
-                    <div style={{ color:C.faint, fontSize:11, textTransform:"capitalize" }}>{match.mode ?? "pvp"}</div>
+                    <div className="text-text font-mono text-[11px]">{match.id.slice(0,12)}...</div>
+                    <div className="text-faint text-[11px] capitalize">{match.mode ?? "pvp"}</div>
                   </div>
-                  <div style={{ textAlign:"right" }}>
-                    <div style={{ color:C.green, fontSize:11 }}>Winner: {match.winner ?? "—"}</div>
-                    <div style={{ color:C.faint, fontSize:11 }}>{match.createdAt?.toDate?.()?.toLocaleDateString() ?? "—"}</div>
+                  <div className="text-right">
+                    <div className="text-green text-[11px]">Winner: {match.winner ?? "—"}</div>
+                    <div className="text-faint text-[11px]">{match.createdAt?.toDate?.()?.toLocaleDateString() ?? "—"}</div>
                   </div>
                 </div>
               ))

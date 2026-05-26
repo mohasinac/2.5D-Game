@@ -17,6 +17,8 @@ export default defineConfig({
       "/colyseus": {
         target: "http://localhost:2567",
         changeOrigin: true,
+        ws: true,
+        rewrite: (path) => path.replace(/^\/colyseus/, ""),
       },
     },
   },
