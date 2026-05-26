@@ -116,9 +116,9 @@ const makeContainer = () => ({
   removeChildren: vi.fn(),
   destroy: vi.fn(),
   children: [] as unknown[],
-  // Containers in the renderer have these transform props (camera transform).
   position: { set: vi.fn(), x: 0, y: 0 },
   scale: { set: vi.fn(), x: 1, y: 1 },
+  pivot: { set: vi.fn(), x: 0, y: 0 },
   rotation: 0,
   x: 0, y: 0,
 });

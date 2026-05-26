@@ -68,11 +68,11 @@ export function useRPGEngine(
 
   useEffect(() => {
     if (!canvasContainerRef.current) return;
-    const container = canvasContainerRef.current;
+    const containerEl = canvasContainerRef.current;
 
     const getStore = () => useRPGStore.getState();
 
-    // ── Instantiate all engine + system objects ──────────────────────────────
+    // ── Instantiate systems that don't need PixiJS ──────────────────────────
     const collisionSystem = new CollisionSystem();
     const triggerSystem = new TriggerSystem();
     const spriteAnimation = new SpriteAnimationSystem();
@@ -90,21 +90,9 @@ export function useRPGEngine(
     const regionManager = new RegionManager();
 
     const pixi = new RPGPixiApp();
-    const mapManager = new MapManager(collisionSystem, triggerSystem);
-    const cameraController = new CameraController();
     const playerController = new PlayerController(spriteAnimation, collisionSystem);
 
-    const sceneLoader = new SceneLoader(
-      getStore,
-      mapManager,
-      npcScheduler,
-      triggerSystem,
-      playerController,
-      cameraController,
-      audioManager
-    );
-
-    const playerProgression = new PlayerProgression(getStore, questSystem, levelingSystem, badgeSystem);
+    const playerProgression = new PlayerProgression(getStore, questSystem, badgeSystem);
 
     const battleTransitionSystem = new BattleTransitionSystem(
       getStore,
@@ -116,6 +104,11 @@ export function useRPGEngine(
       navigate,
       getServerUrl
     );
+
+    // MapManager and CameraController require a PIXI.Container — created after pixi.init
+    let mapManager: MapManager;
+    let cameraController: CameraController;
+    let sceneLoader: SceneLoader;
 
     // ── Wire callbacks ───────────────────────────────────────────────────────
     timeSystem.onTimeSlotChange((slot) => {
@@ -136,7 +129,7 @@ export function useRPGEngine(
       const s = getStore();
 
       const exit = triggerSystem.getExitAt(tile);
-      if (exit && !s.isTransitioning) {
+      if (exit && !s.isTransitioning && sceneLoader) {
         sceneLoader.transition(exit);
         return;
       }
@@ -151,23 +144,43 @@ export function useRPGEngine(
       }
     });
 
-    sceneLoader.setMapLoader(async (mapId: string) => {
-      const mapData = await worldManager.loadMap(mapId);
-      if (!mapData) throw new Error(`Map not found: ${mapId}`);
-      const tilesetUrl = `/assets/tilesets/${mapData.tilesetId}.png`;
-      return { map: mapData as RPGMap, tilesetUrl };
-    });
+    // ── Create canvas and init PixiJS ────────────────────────────────────────
+    const canvas = document.createElement("canvas");
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.display = "block";
+    containerEl.appendChild(canvas);
 
-    // ── Init PixiJS ──────────────────────────────────────────────────────────
-    pixi.init(container, container.clientWidth, container.clientHeight).then(async () => {
-      const world = pixi.worldContainer;
+    pixi.init(canvas).then(async () => {
+      const world = pixi.getWorldContainer();
 
-      // Add sub-containers to world layer
-      world.addChild(mapManager.getContainer());
+      // Now create PixiJS-dependent objects
+      mapManager = new MapManager(world);
+      cameraController = new CameraController(world);
+      cameraController.setScreenSize(canvas.clientWidth, canvas.clientHeight);
+
+      // Add NPC container to world
       world.addChild(npcScheduler.getContainer());
 
+      sceneLoader = new SceneLoader(
+        getStore,
+        mapManager,
+        npcScheduler,
+        triggerSystem,
+        playerController,
+        cameraController,
+        audioManager
+      );
+
+      sceneLoader.setMapLoader(async (mapId: string) => {
+        const mapData = await worldManager.loadMap(mapId);
+        if (!mapData) throw new Error(`Map not found: ${mapId}`);
+        const tilesetUrl = `/assets/tilesets/${mapData.tilesetId}.png`;
+        return { map: mapData as RPGMap, tilesetUrl };
+      });
+
       const s = getStore();
-      const startMapId = s.currentMapId ?? "bakuten_city";
+      const startMapId = s.currentMapId ?? "bakuten-city-east";
 
       try {
         const mapData = await worldManager.loadMap(startMapId);
@@ -185,10 +198,9 @@ export function useRPGEngine(
           npcScheduler.spawnNPCsForMap(mapData as RPGMap, s.timeSlot, false);
 
           const entry = mapManager.getEntryPoint("start");
-          const startTile = entry?.tile ?? { x: 5, y: 5 };
-          const startFacing = entry?.facingDirection ?? "down";
+          const startTile = entry?.tile ?? s.playerTile ?? { x: 5, y: 5 };
+          const startFacing = entry?.facingDirection ?? s.playerFacing ?? "down";
 
-          // Need a placeholder player texture until real sprite sheets are loaded
           let playerTex: typeof Texture.EMPTY;
           try {
             playerTex = await Assets.load("/assets/sprites/player.png");
@@ -200,12 +212,12 @@ export function useRPGEngine(
 
           const worldPos = playerController.getWorldPosition();
           cameraController.setMapSize(mapData.width * TILE_SIZE, mapData.height * TILE_SIZE);
-          cameraController.snapTo(worldPos);
+          cameraController.follow(worldPos);
+          cameraController.update(0);
 
           getStore().setCurrentMap(mapData.id);
           getStore().setCurrentRegion(mapData.regionId);
 
-          // Fire on-entry story events
           storyEventSystem.checkTriggersForMapObj(mapData as RPGMap, getStore());
         }
       } catch (err) {
@@ -215,58 +227,68 @@ export function useRPGEngine(
       isReadyRef.current = true;
 
       // ── Main game tick ─────────────────────────────────────────────────────
-      pixi.addTicker((dt: number) => {
+      pixi.addTickListener((deltaMS: number) => {
         const input = inputRef.current;
-        const s = getStore();
+        const st = getStore();
 
-        timeSystem.update(dt);
-        getStore().addPlaytime(dt * (1000 / 60));
+        timeSystem.update(deltaMS);
+        getStore().addPlaytime(deltaMS);
 
-        if (!s.playerLocked && !s.activeDialogue) {
-          // Pass input to player controller (handles movement + animation)
-          playerController.update(dt, input);
+        if (!st.playerLocked && !st.activeDialogue) {
+          playerController.update(deltaMS, input);
 
-          // Confirm → interact
           if (input.confirm && !playerController.isWalking()) {
-            const npc = npcScheduler.getNPCAdjacentToTile(s.playerTile, s.playerFacing);
+            const npc = npcScheduler.getNPCAdjacentToTile(st.playerTile, st.playerFacing);
             if (npc) {
-              const tree = dialogueSystem.getDialogueForNPC(npc, s.flags);
+              const tree = dialogueSystem.getDialogueForNPC(npc, st.flags);
               if (tree) {
-                dialogueSystem.startDialogue(tree.id, s.flags);
+                dialogueSystem.startDialogue(tree.id);
                 playerProgression.applyNPCTalk(npc.id);
               }
             } else {
               const facingTile = playerController.getFacingTile();
-              const zoneTriggers = triggerSystem.getEventTriggersAt(facingTile, "interact", s.flags);
+              const zoneTriggers = triggerSystem.getEventTriggersAt(facingTile, "interact", st.flags);
               for (const trigger of zoneTriggers) {
-                storyEventSystem.queueEventIfEligibleFromStore(trigger.storyEventId, s);
+                storyEventSystem.queueEventIfEligibleFromStore(trigger.storyEventId, st);
               }
             }
           }
         } else {
-          playerController.update(dt, { up: false, down: false, left: false, right: false, confirm: false, cancel: false, menu: false });
+          playerController.update(deltaMS, { up: false, down: false, left: false, right: false, confirm: false, cancel: false, menu: false });
         }
 
-        npcScheduler.update(dt);
+        npcScheduler.update(deltaMS);
 
-        // Camera follows player
         const worldPos = playerController.getWorldPosition();
-        cameraController.update(dt, worldPos, pixi.worldContainer);
+        cameraController.follow(worldPos);
+        cameraController.update(deltaMS);
       });
+
+      // Populate the engine ref now that everything is wired
+      if (engineRef.current) {
+        engineRef.current.mapManager = mapManager;
+        engineRef.current.cameraController = cameraController;
+        engineRef.current.sceneLoader = sceneLoader;
+      }
     });
 
     const engine: RPGEngineRef = {
-      pixi, mapManager, cameraController, playerController,
+      pixi,
+      mapManager: null as unknown as MapManager,
+      cameraController: null as unknown as CameraController,
+      playerController,
       dialogueSystem, questSystem, storyEventSystem, cutsceneSystem,
-      npcScheduler, levelingSystem, badgeSystem, sceneLoader, audioManager,
-      portraitSystem, playerProgression, battleTransitionSystem,
-      worldManager, regionManager,
+      npcScheduler, levelingSystem, badgeSystem,
+      sceneLoader: null as unknown as SceneLoader,
+      audioManager, portraitSystem, playerProgression,
+      battleTransitionSystem, worldManager, regionManager,
     };
     engineRef.current = engine;
 
     return () => {
       pixi.destroy();
       timeSystem.stop();
+      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
       engineRef.current = null;
       isReadyRef.current = false;
     };

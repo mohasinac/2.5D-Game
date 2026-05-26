@@ -39,7 +39,7 @@ function patchMockCanvas() {
     },
     canvas: realCanvas,
     screen: { width: 800, height: 600 },
-    renderer: { context: { gl: { getExtension: vi.fn(() => null) } } },
+    renderer: { render: vi.fn(), resize: vi.fn(), context: { gl: { getExtension: vi.fn(() => null) } } },
   }));
 }
 

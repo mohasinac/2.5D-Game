@@ -63,20 +63,20 @@ export function CollisionQTEOverlay({
 
   return (
     <div
-      className="fixed bg-black/[.82] rounded-xl py-[18px] px-[28px] min-w-[360px] text-center text-white font-mono select-none border-2 border-[--bc] shadow-[0_0_24px_var(--bs)] z-[1000]"
-      style={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)", "--bc": barColor, "--bs": `${barColor}44` } as React.CSSProperties}
+      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/[.82] rounded-xl py-4 px-7 min-w-[360px] text-center text-white font-mono select-none border-2 border-[--bc] shadow-[0_0_24px_var(--bs)] z-[1000]"
+      style={{ "--bc": barColor, "--bs": `${barColor}44` } as React.CSSProperties}
     >
-      <div className="text-[18px] font-bold mb-[10px] tracking-[2px]">
+      <div className="text-[18px] font-bold mb-2.5 tracking-[2px]">
         ⚡ COLLISION! MASH BUTTONS! ⚡
       </div>
 
       {/* Power bar */}
-      <div className="bg-[#222] rounded-[6px] h-[22px] relative mb-[6px] overflow-hidden">
+      <div className="bg-[#222] rounded-[6px] h-[22px] relative mb-1.5 overflow-hidden">
         <div
           className={`h-full rounded-[6px] [transition:width_0.05s_linear,background_0.1s] w-[--fw] bg-[color:var(--bc)] ${isOvercharged ? "shadow-[0_0_12px_var(--bc)]" : ""}`}
           style={{ "--fw": `${fillPct}%`, "--bc": barColor } as React.CSSProperties}
         />
-        <div className="absolute right-[6px] top-[2px] text-[13px] font-bold text-white [text-shadow:1px_1px_2px_#000]">
+        <div className="absolute right-1.5 top-0.5 text-[13px] font-bold text-white [text-shadow:1px_1px_2px_#000]">
           {power}%
         </div>
       </div>
@@ -84,14 +84,14 @@ export function CollisionQTEOverlay({
       {/* Hard zone indicator */}
       {isHard && (
         <div
-          className="text-[11px] text-[#ff9900] mb-[6px] opacity-90 [animation:pulse_0.6s_infinite_alternate]"
+          className="text-[11px] text-[#ff9900] mb-1.5 opacity-90 [animation:pulse_0.6s_infinite_alternate]"
         >
           ── GETTING HARDER ──
         </div>
       )}
 
       {/* Multiplier display */}
-      <div className="text-[13px] text-[#aaa] mb-[10px]">
+      <div className="text-[13px] text-[#aaa] mb-2.5">
         QTE: <span className="text-[color:var(--tc)]" style={{ "--tc": barColor } as React.CSSProperties}>{qteMultiplier.toFixed(2)}x</span>
         &nbsp;×&nbsp;
         SP: <span className="text-[#88aaff]">{currentSP}%</span>

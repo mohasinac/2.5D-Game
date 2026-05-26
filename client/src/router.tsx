@@ -104,6 +104,59 @@ import { ArenaSystemEditPage } from "./pages/admin/arena-systems/ArenaSystemEdit
 import ArenaFloorGroupListPage from "./pages/admin/ArenaFloorGroupListPage";
 import ArenaFloorGroupEditorPage from "./pages/admin/ArenaFloorGroupEditorPage";
 
+// ── RPG pages (lazy-loaded) ──
+import { lazy, Suspense } from "react";
+const RPGRouteSelectPage = lazy(() => import("./rpg/pages/RPGRouteSelectPage"));
+const RPGGamePage = lazy(() => import("./rpg/pages/RPGGamePage"));
+const RPGWorldMapPage = lazy(() => import("./rpg/pages/RPGWorldMapPage"));
+const StoryBattleGamePage = lazy(() => import("./rpg/pages/StoryBattleGamePage"));
+
+// ── RPG admin pages (lazy-loaded) ──
+const RPGAdminDashboardPage = lazy(() => import("./pages/admin/rpg/RPGAdminDashboardPage"));
+const RPGRegionListPage = lazy(() => import("./pages/admin/rpg/regions/RPGRegionListPage"));
+const RPGRegionCreatePage = lazy(() => import("./pages/admin/rpg/regions/RPGRegionCreatePage"));
+const RPGRegionEditPage = lazy(() => import("./pages/admin/rpg/regions/RPGRegionEditPage"));
+const RPGMapListPage = lazy(() => import("./pages/admin/rpg/maps/RPGMapListPage"));
+const RPGMapCreatePage = lazy(() => import("./pages/admin/rpg/maps/RPGMapCreatePage"));
+const RPGMapEditPage = lazy(() => import("./pages/admin/rpg/maps/RPGMapEditPage"));
+const RPGNPCListPage = lazy(() => import("./pages/admin/rpg/npcs/RPGNPCListPage"));
+const RPGNPCCreatePage = lazy(() => import("./pages/admin/rpg/npcs/RPGNPCCreatePage"));
+const RPGNPCEditPage = lazy(() => import("./pages/admin/rpg/npcs/RPGNPCEditPage"));
+const RPGDialogueListPage = lazy(() => import("./pages/admin/rpg/dialogues/RPGDialogueListPage"));
+const RPGDialogueCreatePage = lazy(() => import("./pages/admin/rpg/dialogues/RPGDialogueCreatePage"));
+const RPGDialogueEditPage = lazy(() => import("./pages/admin/rpg/dialogues/RPGDialogueEditPage"));
+const RPGQuestListPage = lazy(() => import("./pages/admin/rpg/quests/RPGQuestListPage"));
+const RPGQuestCreatePage = lazy(() => import("./pages/admin/rpg/quests/RPGQuestCreatePage"));
+const RPGQuestEditPage = lazy(() => import("./pages/admin/rpg/quests/RPGQuestEditPage"));
+const RPGStoryEventListPage = lazy(() => import("./pages/admin/rpg/story-events/RPGStoryEventListPage"));
+const RPGStoryEventCreatePage = lazy(() => import("./pages/admin/rpg/story-events/RPGStoryEventCreatePage"));
+const RPGStoryEventEditPage = lazy(() => import("./pages/admin/rpg/story-events/RPGStoryEventEditPage"));
+const RPGCutsceneListPage = lazy(() => import("./pages/admin/rpg/cutscenes/RPGCutsceneListPage"));
+const RPGCutsceneCreatePage = lazy(() => import("./pages/admin/rpg/cutscenes/RPGCutsceneCreatePage"));
+const RPGCutsceneEditPage = lazy(() => import("./pages/admin/rpg/cutscenes/RPGCutsceneEditPage"));
+const RPGItemListPage = lazy(() => import("./pages/admin/rpg/items/RPGItemListPage"));
+const RPGItemCreatePage = lazy(() => import("./pages/admin/rpg/items/RPGItemCreatePage"));
+const RPGItemEditPage = lazy(() => import("./pages/admin/rpg/items/RPGItemEditPage"));
+const RPGBadgeListPage = lazy(() => import("./pages/admin/rpg/badges/RPGBadgeListPage"));
+const RPGBadgeCreatePage = lazy(() => import("./pages/admin/rpg/badges/RPGBadgeCreatePage"));
+const RPGBadgeEditPage = lazy(() => import("./pages/admin/rpg/badges/RPGBadgeEditPage"));
+const RPGLevelingConfigPage = lazy(() => import("./pages/admin/rpg/RPGLevelingConfigPage"));
+const RPGArcListPage = lazy(() => import("./pages/admin/rpg/arcs/RPGArcListPage"));
+const RPGArcCreatePage = lazy(() => import("./pages/admin/rpg/arcs/RPGArcCreatePage"));
+const RPGArcEditPage = lazy(() => import("./pages/admin/rpg/arcs/RPGArcEditPage"));
+const RPGRouteListPage = lazy(() => import("./pages/admin/rpg/routes/RPGRouteListPage"));
+const RPGRouteCreatePage = lazy(() => import("./pages/admin/rpg/routes/RPGRouteCreatePage"));
+const RPGRouteEditPage = lazy(() => import("./pages/admin/rpg/routes/RPGRouteEditPage"));
+const RPGDefListPage = lazy(() => import("./pages/admin/rpg/definitions/RPGDefListPage"));
+
+function SuspenseWrap({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-full p-8"><div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" /></div>}>
+      {children}
+    </Suspense>
+  );
+}
+
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -161,6 +214,12 @@ export const router = createBrowserRouter([
       { path: "game/2d/team-battle/:roomId", element: <ProtectedRoute><TeamBattleGamePage /></ProtectedRoute> },
       { path: "game/2.5d/team-battle/lobby", element: <ProtectedRoute><TeamBattleLobbyPage /></ProtectedRoute> },
       { path: "game/2.5d/team-battle/:roomId", element: <ProtectedRoute><TeamBattleGamePage /></ProtectedRoute> },
+
+      // ── RPG Story Mode ──
+      { path: "rpg", element: <ProtectedRoute><SuspenseWrap><RPGRouteSelectPage /></SuspenseWrap></ProtectedRoute> },
+      { path: "rpg/game", element: <ProtectedRoute><SuspenseWrap><RPGGamePage /></SuspenseWrap></ProtectedRoute> },
+      { path: "rpg/world-map", element: <ProtectedRoute><SuspenseWrap><RPGWorldMapPage /></SuspenseWrap></ProtectedRoute> },
+      { path: "rpg/battle/:roomId", element: <ProtectedRoute><SuspenseWrap><StoryBattleGamePage /></SuspenseWrap></ProtectedRoute> },
 
       // Leaderboard (public — no ProtectedRoute)
       { path: "leaderboard", element: <LeaderboardPage /> },
@@ -271,6 +330,44 @@ export const router = createBrowserRouter([
       { path: "2.5d/arena-systems", element: <ArenaSystemListPage /> },
       { path: "2.5d/arena-systems/create", element: <ArenaSystemCreatePage /> },
       { path: "2.5d/arena-systems/:id", element: <ArenaSystemEditPage /> },
+
+      // ── RPG Story Mode Admin ──
+      { path: "rpg", element: <SuspenseWrap><RPGAdminDashboardPage /></SuspenseWrap> },
+      { path: "rpg/regions", element: <SuspenseWrap><RPGRegionListPage /></SuspenseWrap> },
+      { path: "rpg/regions/create", element: <SuspenseWrap><RPGRegionCreatePage /></SuspenseWrap> },
+      { path: "rpg/regions/:id", element: <SuspenseWrap><RPGRegionEditPage /></SuspenseWrap> },
+      { path: "rpg/maps", element: <SuspenseWrap><RPGMapListPage /></SuspenseWrap> },
+      { path: "rpg/maps/create", element: <SuspenseWrap><RPGMapCreatePage /></SuspenseWrap> },
+      { path: "rpg/maps/:id", element: <SuspenseWrap><RPGMapEditPage /></SuspenseWrap> },
+      { path: "rpg/npcs", element: <SuspenseWrap><RPGNPCListPage /></SuspenseWrap> },
+      { path: "rpg/npcs/create", element: <SuspenseWrap><RPGNPCCreatePage /></SuspenseWrap> },
+      { path: "rpg/npcs/:id", element: <SuspenseWrap><RPGNPCEditPage /></SuspenseWrap> },
+      { path: "rpg/dialogues", element: <SuspenseWrap><RPGDialogueListPage /></SuspenseWrap> },
+      { path: "rpg/dialogues/create", element: <SuspenseWrap><RPGDialogueCreatePage /></SuspenseWrap> },
+      { path: "rpg/dialogues/:id", element: <SuspenseWrap><RPGDialogueEditPage /></SuspenseWrap> },
+      { path: "rpg/quests", element: <SuspenseWrap><RPGQuestListPage /></SuspenseWrap> },
+      { path: "rpg/quests/create", element: <SuspenseWrap><RPGQuestCreatePage /></SuspenseWrap> },
+      { path: "rpg/quests/:id", element: <SuspenseWrap><RPGQuestEditPage /></SuspenseWrap> },
+      { path: "rpg/story-events", element: <SuspenseWrap><RPGStoryEventListPage /></SuspenseWrap> },
+      { path: "rpg/story-events/create", element: <SuspenseWrap><RPGStoryEventCreatePage /></SuspenseWrap> },
+      { path: "rpg/story-events/:id", element: <SuspenseWrap><RPGStoryEventEditPage /></SuspenseWrap> },
+      { path: "rpg/cutscenes", element: <SuspenseWrap><RPGCutsceneListPage /></SuspenseWrap> },
+      { path: "rpg/cutscenes/create", element: <SuspenseWrap><RPGCutsceneCreatePage /></SuspenseWrap> },
+      { path: "rpg/cutscenes/:id", element: <SuspenseWrap><RPGCutsceneEditPage /></SuspenseWrap> },
+      { path: "rpg/items", element: <SuspenseWrap><RPGItemListPage /></SuspenseWrap> },
+      { path: "rpg/items/create", element: <SuspenseWrap><RPGItemCreatePage /></SuspenseWrap> },
+      { path: "rpg/items/:id", element: <SuspenseWrap><RPGItemEditPage /></SuspenseWrap> },
+      { path: "rpg/badges", element: <SuspenseWrap><RPGBadgeListPage /></SuspenseWrap> },
+      { path: "rpg/badges/create", element: <SuspenseWrap><RPGBadgeCreatePage /></SuspenseWrap> },
+      { path: "rpg/badges/:id", element: <SuspenseWrap><RPGBadgeEditPage /></SuspenseWrap> },
+      { path: "rpg/leveling", element: <SuspenseWrap><RPGLevelingConfigPage /></SuspenseWrap> },
+      { path: "rpg/arcs", element: <SuspenseWrap><RPGArcListPage /></SuspenseWrap> },
+      { path: "rpg/arcs/create", element: <SuspenseWrap><RPGArcCreatePage /></SuspenseWrap> },
+      { path: "rpg/arcs/:id", element: <SuspenseWrap><RPGArcEditPage /></SuspenseWrap> },
+      { path: "rpg/routes", element: <SuspenseWrap><RPGRouteListPage /></SuspenseWrap> },
+      { path: "rpg/routes/create", element: <SuspenseWrap><RPGRouteCreatePage /></SuspenseWrap> },
+      { path: "rpg/routes/:id", element: <SuspenseWrap><RPGRouteEditPage /></SuspenseWrap> },
+      { path: "rpg/definitions/:collection", element: <SuspenseWrap><RPGDefListPage /></SuspenseWrap> },
 
       // ── Legacy /admin/2d/ routes (kept for back-compat; these manage 2.5D content) ──
       { path: "2d/parts", element: <PartSearchPage /> },

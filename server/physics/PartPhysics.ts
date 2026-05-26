@@ -62,6 +62,10 @@ export interface ResolvedTipStats {
   spinStealResist: number;
   bearingFriction: number;   // 0 = frictionless bearing; 1 = no bearing
   effectiveGrip: number;     // gripFactor × spinBias multiplier for current spin direction
+  heightProfileType: 'flat' | 'spline' | 'slant' | 'cam';
+  airbornePercent: number;   // fraction of revolution tip is airborne (cam tips)
+  camDeltaHeightMm: number;  // vertical cam rise per revolution (cam tips)
+  slantRimMm: number;        // peak-to-peak rim height difference (slant tips)
 }
 
 export interface ResolvedBeyStats {
@@ -159,6 +163,33 @@ export function resolveTipStats(
 
   const bearingFriction = tip.bearingFriction ?? 1.0;
 
+  // Height profile resolution
+  const hp = tip.heightProfile;
+  const hpType = hp?.type ?? 'flat';
+  let airbornePercent = 0;
+  let camDeltaHeightMm = 0;
+  let slantRimMm = 0;
+  let gripModifier = 1.0;
+
+  if (hpType === 'cam' && hp?.cam) {
+    camDeltaHeightMm = hp.cam.deltaHeightMm;
+    airbornePercent = hp.cam.airbornePercent;
+    // Cam tips spend airbornePercent of each revolution off the floor — reduce effective grip
+    gripModifier = 1.0 - airbornePercent;
+  } else if (hpType === 'slant' && hp?.slant) {
+    slantRimMm = hp.slant.rimSlantMm;
+    // Slant tips on flat floor: only the high point contacts → point contact → low grip
+    // On sloped floor: wider contact arc → higher grip
+    // Without floor angle input, use a conservative average (40% of full arc contact)
+    gripModifier = 0.4;
+  } else if (hpType === 'spline' && hp?.splineKnots?.length) {
+    // Spline tips (Semi-flat): inner flat zone at full grip, outer rounded at reduced grip
+    // Effective grip is between flat and sharp — average ~70% of base
+    gripModifier = 0.7;
+  }
+
+  const finalEffectiveGrip = Math.min(1.0, effectiveGrip * gripModifier);
+
   return {
     tipShape,
     material,
@@ -170,8 +201,57 @@ export function resolveTipStats(
     surfaceFriction: resolvedFriction,
     spinStealResist: resolvedSSR,
     bearingFriction,
-    effectiveGrip,
+    effectiveGrip: finalEffectiveGrip,
+    heightProfileType: hpType,
+    airbornePercent,
+    camDeltaHeightMm,
+    slantRimMm,
   };
+}
+
+// ─── Height Profile Dynamic Resolution ───────────────────────────────────────
+
+/**
+ * Adjusts effectiveGrip based on floor angle for slant/cam height profile tips.
+ * Called per-tick by rooms that have floor angle data (bowl arenas).
+ *
+ * @param resolved  The base resolved tip stats from resolveTipStats()
+ * @param floorAngleRad  Floor angle at current bey position in radians (0=flat, π/2=wall)
+ * @returns Updated effectiveGrip accounting for floor-angle-dependent contact arc
+ */
+export function adjustGripForFloorAngle(
+  resolved: ResolvedTipStats,
+  floorAngleRad: number
+): number {
+  if (resolved.heightProfileType === 'slant' && resolved.slantRimMm > 0) {
+    // Contact arc half-angle = asin(sin(θ_floor) / tan(rimSlantAngle))
+    // where rimSlantAngle ≈ atan(rimSlantMm / tipRadius) — use ~10mm default tip radius
+    const rimSlantAngle = Math.atan(resolved.slantRimMm / 10);
+    const sinRatio = Math.sin(floorAngleRad) / Math.tan(rimSlantAngle);
+    const contactArcHalf = sinRatio >= 1.0 ? Math.PI : (sinRatio <= 0 ? 0 : Math.asin(sinRatio));
+    const arcFraction = contactArcHalf / Math.PI;
+    const gripPoint = resolved.gripFactor * 0.25;
+    const gripFlat = resolved.gripFactor;
+    return Math.min(1.0, gripPoint + (gripFlat - gripPoint) * arcFraction);
+  }
+  if (resolved.heightProfileType === 'cam') {
+    return resolved.effectiveGrip;
+  }
+  return resolved.effectiveGrip;
+}
+
+/**
+ * Returns true if a slant-type tip should trigger a hop impulse this tick.
+ * Hop fires when the contact arc is collapsing (slope→flat transition).
+ */
+export function shouldSlantHop(
+  resolved: ResolvedTipStats,
+  prevFloorAngleRad: number,
+  currFloorAngleRad: number
+): boolean {
+  if (resolved.heightProfileType !== 'slant' || resolved.slantRimMm <= 0) return false;
+  const threshold = 0.05;
+  return prevFloorAngleRad > threshold && currFloorAngleRad <= threshold;
 }
 
 // ─── Bearing Friction Effects ─────────────────────────────────────────────────
@@ -182,7 +262,7 @@ export function resolveTipStats(
  * incorporates spinStealFactor and spinStealResist from the universal stat table.
  */
 export function applyBearingFrictionToSteal(rawSteal: number, bearingFriction: number): number {
-  // EWD (single bearing) = 0.12; B:D (ball bearings) = 0.02; normal tip = 1.0
+  // EWD (single bearing) = 0.12; B:D (ball bearings) = 0.05 [CS10 confirmed]; normal tip = 1.0
   return rawSteal * bearingFriction;
 }
 

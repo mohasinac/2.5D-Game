@@ -518,7 +518,7 @@ export const useRPGStore = create<RPGStore>()(
           flags: {}, questStates: {}, activeQuestIds: [],
           activeDialogue: null, dialogueHistory: [],
           items: [], beyblades: [], equippedBeybladeId: null, money: 0,
-          reputation: 0, friendship: {}, rivalStatus: {}, battleRecords: {}, defeatedNPCs: {},
+          reputation: 0, friendship: {}, rivalStatus: {}, battleRecords: [], defeatedNPCs: {},
           level: 1, xp: 0, beybladeXP: {}, beybladeLevels: {},
           earnedBadges: [], activeStoryEventId: null, activeCutsceneId: null,
           isTransitioning: false, playerLocked: false,

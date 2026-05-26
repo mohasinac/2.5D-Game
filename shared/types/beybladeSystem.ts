@@ -142,6 +142,25 @@ export type TipShape =
   | "defense"     // D-tip shape; wider than spike, curved holes, recovery-capable
   | "custom";
 
+// Variable-height tip profile for tips whose contact geometry changes with floor angle or spin phase
+export interface TipHeightProfile {
+  type: 'flat' | 'spline' | 'slant' | 'cam';
+  // 'spline': revolution-symmetric profile (Semi-flat, Wide Flat)
+  splineKnots?: Array<{ radius: number; height: number; tangent?: number }>;
+  // 'slant': non-revolution-symmetric rim (BX Quake Bit diagonal cut)
+  slant?: {
+    rimSlantMm: number;    // peak-to-peak height difference across disc face
+    baseHeightMm: number;
+    highSideDeg: number;   // initial angular position of high side (0 = +x)
+  };
+  // 'cam': frustum-to-cylinder transition edge (Gen 1/MFB Storm Capricorn Q tip)
+  cam?: {
+    deltaHeightMm: number;  // vertical rise per revolution (Mode1=0.8, Mode2=1.6 [CS6])
+    tipRadiusMm: number;
+    airbornePercent: number; // fraction of revolution tip is airborne (46.5% [CS6])
+  };
+}
+
 export type WDCategory =
   | "round"
   | "wide"
@@ -841,7 +860,9 @@ export interface TipPart extends BasePart {
     leftSpin: { gripMultiplier: number };
   };
   // Bearing friction — B:D, EWD style
-  bearingFriction?: number;   // 0.0 (near-frictionless) to 1.0 (no bearing); B:D=0.02, EWD=0.03
+  bearingFriction?: number;   // 0.0 (near-frictionless) to 1.0 (no bearing); B:D=0.05 [CS10], EWD=0.12
+  // Variable height tip profile — Quake, Semi-flat, cam tips
+  heightProfile?: TipHeightProfile;
   // Left-spin hop — Wyborg behavior
   leftSpinHop?: {
     enabled: boolean;

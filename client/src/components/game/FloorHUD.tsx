@@ -105,7 +105,7 @@ function RotationBadge({ direction, speedDegPerSec }: { direction?: "cw" | "ccw"
   const secPerRev = (360 / speedDegPerSec).toFixed(1);
   const color = direction === "cw" ? "#3b82f6" : "#eab308";
   return (
-    <div className="flex flex-col items-center gap-[1px] flex-shrink-0">
+    <div className="flex flex-col items-center gap-px flex-shrink-0">
       <svg width={14} height={14} style={{ "--anim": `${direction === "cw" ? "rotCW" : "rotCCW"} ${secPerRev}s linear infinite` } as React.CSSProperties} className="[animation:var(--anim)]">
         <circle cx={7} cy={7} r={5} fill="none" stroke={`color-mix(in srgb, ${color} 60%, transparent)`} strokeWidth={1.5} strokeDasharray="8 4" />
         <circle cx={7} cy={2} r={1.5} fill={color} />
@@ -133,7 +133,7 @@ function LinkRow({ link }: { link: FloorLinkInfo }) {
     : Math.max(0, Math.round((1 - link.alignmentFraction) * 100));
 
   return (
-    <div className="flex items-center gap-[5px] py-[3px]">
+    <div className="flex items-center gap-1 py-1">
       {/* Arc or dot */}
       {isAlwaysOpen || isDisconnected ? (
         <div className="w-[22px] h-[22px] flex items-center justify-center">
@@ -198,8 +198,7 @@ export default function FloorHUD({ totalFloors, currentFloorIndex, floors }: Pro
       `}</style>
 
       <div
-        className="absolute pointer-events-none flex flex-col items-stretch select-none gap-0 w-[136px] z-[15]"
-        style={{ right: 14, top: "50%", transform: "translateY(-50%)" }}
+        className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-stretch select-none gap-0 w-[136px] z-[15]"
       >
 
         {/* Render top → bottom = highest floor index → F0 */}
@@ -214,14 +213,14 @@ export default function FloorHUD({ totalFloors, currentFloorIndex, floors }: Pro
             <div key={fi}>
               {/* ── Up-links connector strip ── */}
               {upLinks.length > 0 && (
-                <div className="bg-[rgba(15,23,42,0.88)] border border-[#334155] border-b-0 rounded-t-lg px-[9px] py-[5px]">
+                <div className="bg-[rgba(15,23,42,0.88)] border border-[#334155] border-b-0 rounded-t-lg px-2 py-1">
                   {upLinks.map((l, i) => <LinkRow key={i} link={l} />)}
                 </div>
               )}
 
               {/* ── Floor tile ── */}
               <div
-                className={`flex items-center gap-[6px] border px-[9px] py-[5px] ${isCur ? "bg-[rgba(59,130,246,0.18)] border-[#3b82f6] [animation:floorGlow_2.4s_ease-in-out_infinite]" : "bg-[rgba(15,23,42,0.88)] border-[#334155]"} ${upLinks.length > 0 && dnLinks.length > 0 ? "rounded-none" : upLinks.length > 0 ? "rounded-b-lg" : dnLinks.length > 0 ? "rounded-t-lg" : "rounded-lg"}`}
+                className={`flex items-center gap-1.5 border px-2 py-1 ${isCur ? "bg-[rgba(59,130,246,0.18)] border-[#3b82f6] [animation:floorGlow_2.4s_ease-in-out_infinite]" : "bg-[rgba(15,23,42,0.88)] border-[#334155]"} ${upLinks.length > 0 && dnLinks.length > 0 ? "rounded-none" : upLinks.length > 0 ? "rounded-b-lg" : dnLinks.length > 0 ? "rounded-t-lg" : "rounded-lg"}`}
               >
                 {/* Floor index badge */}
                 <div className={`w-[22px] h-[22px] rounded-[6px] flex-shrink-0 flex items-center justify-center text-[10px] font-bold ${isCur ? "bg-[#3b82f6] text-white" : "bg-[#1e293b] text-[#64748b]"}`}>
@@ -249,7 +248,7 @@ export default function FloorHUD({ totalFloors, currentFloorIndex, floors }: Pro
 
               {/* ── Down-links connector strip ── */}
               {dnLinks.length > 0 && (
-                <div className="bg-[rgba(15,23,42,0.88)] border border-[#334155] border-t-0 rounded-b-lg px-[9px] py-[5px]">
+                <div className="bg-[rgba(15,23,42,0.88)] border border-[#334155] border-t-0 rounded-b-lg px-2 py-1">
                   {dnLinks.map((l, i) => <LinkRow key={i} link={l} />)}
                 </div>
               )}
@@ -263,13 +262,13 @@ export default function FloorHUD({ totalFloors, currentFloorIndex, floors }: Pro
         })}
 
         {/* Ground label */}
-        <div className="text-theme-faint text-center text-[9px] mt-[2px] tracking-[0.5px] font-semibold">
+        <div className="text-theme-faint text-center text-[9px] mt-0.5 tracking-[0.5px] font-semibold">
           ▼ GROUND
         </div>
 
         {/* Rotation legend */}
         {anyRotating && (
-          <div className="mt-[5px] px-[6px] py-[3px] rounded-[6px] text-[8px] flex gap-[6px] justify-center bg-[rgba(15,23,42,0.7)] border border-border-c text-theme-faint">
+          <div className="mt-1 px-1.5 py-0.5 rounded-[6px] text-[8px] flex gap-1.5 justify-center bg-[rgba(15,23,42,0.7)] border border-border-c text-theme-faint">
             <span><span className="text-theme-blue">↻</span> CW</span>
             <span><span className="text-theme-yellow">↺</span> CCW</span>
             <span><span className="text-theme-green">↑↓</span> open</span>

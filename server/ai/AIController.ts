@@ -2,6 +2,8 @@
 // Computes a PlayerInput each tick based on difficulty level.
 // All logic is synchronous — no async calls.
 
+import type { PlayerInput } from "../shared/utils/bitmask";
+
 // Difficulty was previously easy|medium|hard. Easy was removed; Hell added.
 // Defensive: legacy "easy" reads collapse to "medium" at the call site.
 export type AIDifficulty = "medium" | "hard" | "hell";
@@ -473,5 +475,21 @@ export class AIController {
     if (Math.abs(normY) > 0.3) {
       if (normY > 0) input.moveDown = true; else input.moveUp = true;
     }
+  }
+
+  // ─── Client-side AI override ─────────────────────────────────────────────
+  private clientOverrides: Map<string, PlayerInput> = new Map();
+
+  overrideInput(beyId: string, input: PlayerInput): void {
+    this.clientOverrides.set(beyId, input);
+  }
+
+  consumeOverride(beyId: string): PlayerInput | null {
+    const override = this.clientOverrides.get(beyId);
+    if (override) {
+      this.clientOverrides.delete(beyId);
+      return override;
+    }
+    return null;
   }
 }

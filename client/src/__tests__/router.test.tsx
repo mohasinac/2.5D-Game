@@ -13,6 +13,14 @@ vi.mock("@/pages/BattleGamePage", () => ({ BattleGamePage: () => <div>BATTLE</di
 vi.mock("@/pages/AIBattleSetupPage", () => ({ AIBattleSetupPage: () => <div>AI-SETUP</div> }));
 vi.mock("@/pages/AIBattleGamePage", () => ({ AIBattleGamePage: () => <div>AI-GAME</div> }));
 vi.mock("@/pages/RendererDemoPage", () => ({ RendererDemoPage: () => <div>DEMO</div> }));
+vi.mock("@/pages/RegisterPage", () => ({ RegisterPage: () => <div>REGISTER</div> }));
+vi.mock("@/pages/TryoutSetupPage", () => ({ TryoutSetupPage: () => <div>TRYOUT-SETUP</div> }));
+vi.mock("@/pages/TournamentListPage", () => ({ TournamentListPage: () => <div>TOURNAMENT-LIST</div> }));
+vi.mock("@/pages/TournamentLobbyPage", () => ({ TournamentLobbyPage: () => <div>TOURNAMENT-LOBBY</div> }));
+vi.mock("@/pages/TournamentBattleGamePage", () => ({ TournamentBattleGamePage: () => <div>TOURNAMENT-BATTLE</div> }));
+vi.mock("@/pages/LeaderboardPage", () => ({ LeaderboardPage: () => <div>LEADERBOARD</div> }));
+vi.mock("@/pages/TeamBattleLobbyPage", () => ({ TeamBattleLobbyPage: () => <div>TEAM-LOBBY</div> }));
+vi.mock("@/pages/TeamBattleGamePage", () => ({ TeamBattleGamePage: () => <div>TEAM-BATTLE</div> }));
 
 // Admin pages
 vi.mock("@/pages/admin/AdminDashboardPage", () => ({ AdminDashboardPage: () => <div>ADMIN-DASHBOARD</div> }));
@@ -29,9 +37,46 @@ vi.mock("@/pages/admin/assets/TurretAssetsPage", () => ({ TurretAssetsPage: () =
 vi.mock("@/pages/admin/assets/WaterBodyAssetsPage", () => ({ WaterBodyAssetsPage: () => <div>WATER-ASSETS</div> }));
 vi.mock("@/pages/admin/assets/PortalAssetsPage", () => ({ PortalAssetsPage: () => <div>PORTAL-ASSETS</div> }));
 vi.mock("@/pages/admin/assets/SoundAssetsPage", () => ({ SoundAssetsPage: () => <div>SOUND-ASSETS</div> }));
+vi.mock("@/pages/admin/assets/BitBeastAssetsPage", () => ({ BitBeastAssetsPage: () => <div>BITBEAST-ASSETS</div> }));
+vi.mock("@/pages/admin/assets/ParticlePresetsPage", () => ({ ParticlePresetsPage: () => <div>PARTICLE-PRESETS</div> }));
 vi.mock("@/pages/admin/StatsPage", () => ({ StatsPage: () => <div>STATS</div> }));
 vi.mock("@/pages/admin/SettingsPage", () => ({ SettingsPage: () => <div>SETTINGS</div> }));
 vi.mock("@/pages/admin/ArenaTestPage", () => ({ ArenaTestPage: () => <div>ARENA-TEST</div> }));
+vi.mock("@/pages/admin/TournamentsListPage", () => ({ TournamentsListPage: () => <div>ADMIN-TOURNAMENTS</div> }));
+vi.mock("@/pages/admin/TournamentCreatePage", () => ({ TournamentCreatePage: () => <div>TOURNAMENT-CREATE</div> }));
+vi.mock("@/pages/admin/TournamentDetailPage", () => ({ TournamentDetailPage: () => <div>TOURNAMENT-DETAIL</div> }));
+vi.mock("@/pages/admin/TournamentEditPage", () => ({ TournamentEditPage: () => <div>TOURNAMENT-EDIT</div> }));
+vi.mock("@/pages/admin/AIBattlesPage", () => ({ AIBattlesPage: () => <div>AI-BATTLES</div> }));
+vi.mock("@/pages/admin/UsersPage", () => ({ UsersPage: () => <div>USERS</div> }));
+vi.mock("@/pages/admin/AIVsAITestPage", () => ({ AIVsAITestPage: () => <div>AI-VS-AI</div> }));
+vi.mock("@/pages/admin/ElementTypesListPage", () => ({ ElementTypesListPage: () => <div>ELEMENT-TYPES</div> }));
+vi.mock("@/pages/admin/ElementTypeEditPage", () => ({ ElementTypeEditPage: () => <div>ELEMENT-TYPE-EDIT</div> }));
+vi.mock("@/pages/admin/BehaviorDefsPage", () => ({ default: () => <div>BEHAVIOR-DEFS</div> }));
+vi.mock("@/pages/admin/ComboEffectsPage", () => ({ default: () => <div>COMBO-EFFECTS</div> }));
+vi.mock("@/pages/admin/AnimationPresetsPage", () => ({ default: () => <div>ANIMATION-PRESETS</div> }));
+vi.mock("@/pages/admin/RoundModifiersPage", () => ({ default: () => <div>ROUND-MODIFIERS</div> }));
+vi.mock("@/pages/admin/MechanicDefsPage", () => ({ default: () => <div>MECHANIC-DEFS</div> }));
+vi.mock("@/pages/admin/GimmickDefsPage", () => ({ default: () => <div>GIMMICK-DEFS</div> }));
+vi.mock("@/pages/admin/GeometryDefsPage", () => ({ default: () => <div>GEOMETRY-DEFS</div> }));
+vi.mock("@/pages/admin/StatDefsPage", () => ({ default: () => <div>STAT-DEFS</div> }));
+vi.mock("@/pages/admin/CombosPage", () => ({ CombosPage: () => <div>COMBOS</div> }));
+vi.mock("@/pages/admin/SpecialMovesPage", () => ({ SpecialMovesPage: () => <div>SPECIAL-MOVES</div> }));
+vi.mock("@/pages/admin/TurretAttackTypesPage", () => ({ TurretAttackTypesPage: () => <div>TURRET-ATTACK-TYPES</div> }));
+vi.mock("@/pages/admin/ArenaFeatureConfigsPage", () => ({ ArenaFeatureConfigsPage: () => <div>ARENA-FEATURE-CONFIGS</div> }));
+vi.mock("@/pages/admin/BeyLinkConfigsPage", () => ({ BeyLinkConfigsPage: () => <div>BEY-LINK-CONFIGS</div> }));
+vi.mock("@/pages/admin/PartMaterialsPage", () => ({ PartMaterialsPage: () => <div>PART-MATERIALS</div> }));
+vi.mock("@/pages/admin/TipShapeDefsPage", () => ({ TipShapeDefsPage: () => <div>TIP-SHAPE-DEFS</div> }));
+vi.mock("@/pages/admin/CoreGimmickDefsPage", () => ({ CoreGimmickDefsPage: () => <div>CORE-GIMMICK-DEFS</div> }));
+vi.mock("@/pages/admin/AttackTypeDefsPage", () => ({ AttackTypeDefsPage: () => <div>ATTACK-TYPE-DEFS</div> }));
+vi.mock("@/pages/admin/ArenaThemeDefsPage", () => ({ ArenaThemeDefsPage: () => <div>ARENA-THEME-DEFS</div> }));
+vi.mock("@/pages/admin/ArenaShapeDefsPage", () => ({ ArenaShapeDefsPage: () => <div>ARENA-SHAPE-DEFS</div> }));
+vi.mock("@/pages/admin/BowlProfileDefsPage", () => ({ BowlProfileDefsPage: () => <div>BOWL-PROFILE-DEFS</div> }));
+vi.mock("@/pages/admin/TriggerTypeDefsPage", () => ({ TriggerTypeDefsPage: () => <div>TRIGGER-TYPE-DEFS</div> }));
+vi.mock("@/pages/admin/StatEventDefsPage", () => ({ StatEventDefsPage: () => <div>STAT-EVENT-DEFS</div> }));
+vi.mock("@/pages/admin/PartLayerDefsPage", () => ({ PartLayerDefsPage: () => <div>PART-LAYER-DEFS</div> }));
+vi.mock("@/pages/admin/SpecialInteractionDefsPage", () => ({ SpecialInteractionDefsPage: () => <div>SPECIAL-INTERACTION-DEFS</div> }));
+vi.mock("@/pages/admin/ArenaFloorGroupListPage", () => ({ default: () => <div>FLOOR-GROUP-LIST</div> }));
+vi.mock("@/pages/admin/ArenaFloorGroupEditorPage", () => ({ default: () => <div>FLOOR-GROUP-EDITOR</div> }));
 
 // 2.5D part system pages
 vi.mock("@/pages/admin/2d/PartSearchPage", () => ({ PartSearchPage: () => <div>PART-SEARCH</div> }));
@@ -42,6 +87,11 @@ vi.mock("@/pages/admin/2d/beyblade-systems/BeybladeSystemListPage", () => ({ Bey
 vi.mock("@/pages/admin/2d/beyblade-systems/BeybladeSystemCreatePage", () => ({ BeybladeSystemCreatePage: () => <div>BEY-SYS-CREATE</div> }));
 vi.mock("@/pages/admin/2d/beyblade-systems/BeybladeSystemEditPage", () => ({ BeybladeSystemEditPage: () => <div>BEY-SYS-EDIT</div> }));
 vi.mock("@/pages/admin/2d/CompatibilityTagsPage", () => ({ CompatibilityTagsPage: () => <div>COMPAT-TAGS</div> }));
+
+// Arena system pages
+vi.mock("@/pages/admin/arena-systems/ArenaSystemListPage", () => ({ ArenaSystemListPage: () => <div>ARENA-SYS-LIST</div> }));
+vi.mock("@/pages/admin/arena-systems/ArenaSystemCreatePage", () => ({ ArenaSystemCreatePage: () => <div>ARENA-SYS-CREATE</div> }));
+vi.mock("@/pages/admin/arena-systems/ArenaSystemEditPage", () => ({ ArenaSystemEditPage: () => <div>ARENA-SYS-EDIT</div> }));
 
 // ── Mock layouts and auth guards ───────────────────────────────────────────────
 
@@ -120,9 +170,9 @@ describe("router", () => {
     expect(await screen.findByText("GAME")).toBeInTheDocument();
   });
 
-  it("/game/tryout renders TryoutGamePage", async () => {
+  it("/game/tryout renders TryoutSetupPage", async () => {
     renderAt("/game/tryout");
-    expect(await screen.findByText("TRYOUT")).toBeInTheDocument();
+    expect(await screen.findByText("TRYOUT-SETUP")).toBeInTheDocument();
   });
 
   it("/game/battle/lobby renders BattleLobbyPage", async () => {

@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Settings } from "lucide-react";
 import toast from "react-hot-toast";
 
-const FULLSCREEN_GAME_PATHS = ["/game/tryout", "/game/battle/", "/game/ai-battle/play"];
+const FULLSCREEN_GAME_PATHS = ["/game/tryout", "/game/battle/", "/game/ai-battle/play", "/rpg/game", "/rpg/battle"];
 function isFullScreenGame(pathname: string) {
   return FULLSCREEN_GAME_PATHS.some(p => pathname.startsWith(p));
 }

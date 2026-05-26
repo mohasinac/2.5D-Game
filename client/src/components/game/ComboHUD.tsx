@@ -56,8 +56,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
       {/* Attached-combos strip (bottom-right above history) — shown only when bey has combos */}
       {attached.length > 0 && (
         <div
-          className="absolute flex flex-col gap-[6px] pointer-events-none z-[11]"
-          style={{ bottom: 88, right: 16 }}
+          className="absolute bottom-[88px] right-4 flex flex-col gap-1.5 pointer-events-none z-[11]"
         >
           <div className="text-theme-muted text-[10px] uppercase tracking-[0.06em]">Combos</div>
           {attached.map((c) => {
@@ -69,7 +68,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
             const insufficient = c.cost > 0 && power < c.cost;
             const dim = onCooldown || insufficient;
             return (
-              <div key={c.id} className={`bg-[rgba(15,23,42,0.88)] rounded-[10px] px-[10px] py-2 min-w-[200px] relative overflow-hidden border ${dim ? "border-[#334155] opacity-[0.55]" : "border-[#22c55e] opacity-100"}`}>
+              <div key={c.id} className={`bg-[rgba(15,23,42,0.88)] rounded-[10px] px-2.5 py-2 min-w-[200px] relative overflow-hidden border ${dim ? "border-[#334155] opacity-[0.55]" : "border-[#22c55e] opacity-100"}`}>
                 <div className="flex justify-between items-center mb-1">
                   <span className={`text-[12px] font-bold ${dim ? "text-[#94a3b8]" : "text-[#22c55e]"}`}>
                     {c.name}
@@ -80,11 +79,11 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
                 </div>
                 <div className="text-theme-text text-[10px] flex gap-1">
                   {c.sequence.map((k, i) => (
-                    <span key={i} className="bg-bg3 px-[6px] py-[2px] rounded font-mono text-[10px]">{KL[k] ?? k}</span>
+                    <span key={i} className="bg-bg3 px-1.5 py-0.5 rounded font-mono text-[10px]">{KL[k] ?? k}</span>
                   ))}
                 </div>
                 {onCooldown && (
-                  <div className="absolute left-0 bottom-0 h-[2px] bg-[#22c55e] [transition:width_100ms_linear] w-[--cdw]" style={{ "--cdw": `${(1 - cdPct) * 100}%` } as React.CSSProperties} />
+                  <div className="absolute left-0 bottom-0 h-0.5 bg-[#22c55e] [transition:width_100ms_linear] w-[--cdw]" style={{ "--cdw": `${(1 - cdPct) * 100}%` } as React.CSSProperties} />
                 )}
                 {insufficient && !onCooldown && (
                   <div className="text-theme-red text-[9px] mt-1">
@@ -100,8 +99,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
       {/* Charge bar — shown while player holds the last key of a charged combo */}
       {comboChargeScale > 0 && (
         <div data-testid="combo-charge-bar"
-          className="absolute pointer-events-none flex flex-col items-center gap-1 z-[12]"
-          style={{ bottom: 72, left: "50%", transform: "translateX(-50%)" }}
+          className="absolute bottom-[72px] left-1/2 -translate-x-1/2 pointer-events-none flex flex-col items-center gap-1 z-[12]"
         >
           <div className="text-theme-yellow text-[10px] font-mono tracking-[0.1em] uppercase">
             {comboChargeScale >= 1 ? "CHARGED!" : "Charging…"}
@@ -117,8 +115,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
 
       {/* Fired-combo history (bottom-right) */}
       <div
-        className="absolute flex flex-col gap-1 pointer-events-none z-[10]"
-        style={{ bottom: 16, right: 16 }}
+        className="absolute bottom-4 right-4 flex flex-col gap-1 pointer-events-none z-[10]"
       >
         {comboHistory.map((combo) => {
           const comboId = combo.id.split("-")[0];
@@ -132,7 +129,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
               </div>
               <div className="text-theme-text text-[10px] flex gap-1 flex-wrap">
                 {display?.sequence.map((k, idx) => (
-                  <span key={idx} className="bg-bg3 px-[6px] py-[2px] rounded font-mono text-[9px]">{KL[k] ?? k}</span>
+                  <span key={idx} className="bg-bg3 px-1.5 py-0.5 rounded font-mono text-[9px]">{KL[k] ?? k}</span>
                 ))}
               </div>
             </div>
@@ -143,8 +140,7 @@ export function ComboHUD({ lastCombo, attachedComboIds, cooldowns, power = 0, co
       {/* COMBO! popup */}
       {comboPopup && (
         <div
-          className="absolute pointer-events-none [animation:comboFloat_1.2s_ease-out_forwards] z-[15]"
-          style={{ bottom: "50%", left: "50%", transform: "translateX(-50%)" }}
+          className="absolute bottom-1/2 left-1/2 -translate-x-1/2 pointer-events-none [animation:comboFloat_1.2s_ease-out_forwards] z-[15]"
         >
           <div className="text-theme-green text-[56px] font-black uppercase tracking-[0.1em] font-mono [text-shadow:0_0_20px_#22c55e]">COMBO!</div>
         </div>

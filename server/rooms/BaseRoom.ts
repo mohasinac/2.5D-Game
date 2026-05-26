@@ -281,6 +281,28 @@ export abstract class BaseRoom<T extends GameState = GameState> extends Room<T> 
     }
   }
 
+  // ─── Client-side AI input handler ────────────────────────────────────────
+
+  /**
+   * Registers an "ai-input" message handler so client-side AI can submit
+   * bitmask inputs for AI-controlled beys. Call this in onCreate() of any
+   * room that supports client-driven AI.
+   *
+   * The handler accepts `{ beyId: string; bitmask: number }` and applies
+   * the bitmask to the named beyblade's physics body — identical to how
+   * human input is processed.
+   */
+  protected registerAIInputHandler(
+    applyInput: (beyId: string, bitmask: number) => void
+  ): void {
+    this.onMessage("ai-input", (_client, data: { beyId: string; bitmask: number }) => {
+      if (typeof data?.beyId !== "string" || typeof data?.bitmask !== "number") return;
+      const bey = this.state.beyblades.get(data.beyId);
+      if (!bey || !bey.isAlive) return;
+      applyInput(data.beyId, data.bitmask);
+    });
+  }
+
   // ─── 2.5D extension hooks — no-op defaults ───────────────────────────────
 
   /** Called after each beyblade physics tick.  Override in 2.5D subclasses. */

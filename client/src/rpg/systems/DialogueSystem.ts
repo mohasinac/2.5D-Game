@@ -126,7 +126,6 @@ export class DialogueSystem {
     return this.trees.get(npc.defaultDialogueId) ?? null;
   }
 
-  isActive(): boolean { return this.currentTree !== null; }
   getCurrentTreeId(): string | null { return this.currentTree?.id ?? null; }
 
   private end(): void {

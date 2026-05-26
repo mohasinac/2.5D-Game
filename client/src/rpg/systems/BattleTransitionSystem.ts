@@ -34,22 +34,27 @@ export class BattleTransitionSystem {
     userId: string,
     username: string
   ): Promise<void> {
-    const store = this.store();
+    const s = this.store();
 
-    // Gate check
     if (npc.battleConfig?.gate) {
-      const result = this.levelingSystem.checkGate(npc.battleConfig.gate, store);
+      const result = this.levelingSystem.checkGate(
+        npc.battleConfig.gate,
+        s.flags,
+        s.level,
+        s.beybladeLevels,
+        s.earnedBadges,
+        s.defeatedNPCs
+      );
       if (!result.passed) {
         const lockedId = npc.battleConfig.lockedDialogueId ?? "generic_not_ready";
-        this.dialogueSystem.startDialogue(lockedId, store.flags);
+        this.dialogueSystem.startDialogue(lockedId);
         return;
       }
     }
 
-    store.setPlayerLocked(true);
-    store.setPendingBattleParams(params);
+    s.setPlayerLocked(true);
+    s.setPendingBattleParams(params);
 
-    // White flash transition
     this.onFlash?.();
     await this.delay(300);
 
@@ -72,61 +77,57 @@ export class BattleTransitionSystem {
       });
     } catch (err) {
       console.error("[BattleTransitionSystem] Failed to create story_battle_room:", err);
-      store.setPlayerLocked(false);
-      store.setPendingBattleParams(null);
+      s.setPlayerLocked(false);
+      s.setPendingBattleParams(null);
     }
   }
 
   handleBattleReturn(result: BattleResult): void {
-    const store = this.store();
+    const s = this.store();
 
-    // Record battle outcome
-    store.recordBattle(result.npcId, result.outcome);
+    s.recordBattle(result.npcId, result.outcome);
 
     if (result.outcome === "win") {
-      store.markNPCDefeated(result.npcId);
+      s.markNPCDefeated(result.npcId);
     }
 
-    // NPC battle config rewards on win
     const npcDef = this.npcScheduler.getNPCDef(result.npcId);
     if (npcDef?.battleConfig && result.outcome === "win") {
       const bc = npcDef.battleConfig;
 
       if (bc.rewardFlags) {
-        store.setFlags(bc.rewardFlags);
+        s.setFlags(bc.rewardFlags);
       }
 
       if (bc.xpReward) {
-        this.levelingSystem.awardXP(bc.xpReward, store.equippedBeybladeId);
+        if (bc.xpReward.playerXP) s.addPlayerXP(bc.xpReward.playerXP);
+        if (bc.xpReward.beybladeXP) {
+          const target = bc.xpReward.beybladeXPTarget ?? s.equippedBeybladeId;
+          if (target) s.addBeybladeXP(target, bc.xpReward.beybladeXP);
+        }
       }
 
       if (bc.awardsBadgeId) {
-        this.badgeSystem.awardBadge(bc.awardsBadgeId);
+        s.awardBadge(bc.awardsBadgeId);
       }
     }
 
-    // Reputation delta: +5 on win, -2 on loss
     const repDelta = result.outcome === "win" ? 5 : result.outcome === "loss" ? -2 : 0;
-    if (repDelta !== 0) store.adjustReputation(repDelta);
+    if (repDelta !== 0) s.adjustReputation(repDelta);
 
-    // Advance defeat-npc quest objectives
     if (result.outcome === "win") {
-      const quests = this.questSystem.getQuestsWithNPCDefeatObjective(result.npcId);
-      for (const quest of quests) {
-        if (store.questStates[quest.id]?.status === "active") {
-          for (const obj of quest.objectives) {
-            if (obj.type === "defeat-npc" && obj.targetId === result.npcId) {
-              store.advanceObjective(quest.id, obj.id, 1);
-            }
-          }
-        }
+      const matches = this.questSystem.getQuestsWithNPCDefeatObjective(
+        result.npcId,
+        s.activeQuestIds
+      );
+      for (const match of matches) {
+        s.advanceObjective(match.questId, match.objectiveId, 1);
       }
     }
 
-    // Clear pending params/result
-    store.setPendingBattleParams(null);
-    store.setPendingBattleResult(null);
-    store.setPlayerLocked(false);
+    s.setPendingBattleParams(null);
+    s.setPendingBattleResult(null);
+    s.setPlayerLocked(false);
   }
 
   private delay(ms: number): Promise<void> {

@@ -478,11 +478,11 @@ const parts = {
     base({
       id: "bd",
       displayName: "B:D (Bearing Drive)",
-      description: "Compact ball-bearing tip with near-zero friction — maximum stamina LAD. bearingFriction 0.02 (batch-013 §A).",
+      description: "Compact ball-bearing tip with low friction — maximum stamina LAD. bearingFriction 0.05 (CS10 Case 551 confirmed μ=0.05 for steel ball bearing on ABS).",
       rarity: "rare",
       friction: 0.05,
       tipShape: "bearing_sharp",
-      bearingFriction: 0.02,
+      bearingFriction: 0.05,
       suctionCap: 0,
       climbAssist: 0,
       color: "#60a5fa",

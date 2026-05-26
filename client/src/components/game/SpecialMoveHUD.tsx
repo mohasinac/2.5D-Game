@@ -42,8 +42,8 @@ export function SpecialMoveHUD({ myBeyblade, specialMoveData, lastSpecialMoveFir
 
   return (
     <div
-      className="absolute pointer-events-none z-10 rounded-xl"
-      style={{ bottom: 16, left: 16, "--fc": flashColor ?? "transparent", background: flashColor ? "var(--fc)" : undefined, opacity: flashColor ? 0.3 : undefined, transition: flashColor ? "opacity 200ms" : undefined, padding: flashColor ? 12 : undefined } as React.CSSProperties}
+      className={`absolute bottom-4 left-4 pointer-events-none z-10 rounded-xl ${flashColor ? "bg-[var(--fc)] opacity-30 p-3 transition-opacity duration-200" : ""}`}
+      style={flashColor ? { "--fc": flashColor } as React.CSSProperties : undefined}
     >
       <div className="flex flex-col items-center gap-2 bg-[rgba(15,23,42,0.9)] rounded-xl border border-border-c p-3 min-w-[140px]">
         {/* Icon and Name */}

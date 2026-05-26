@@ -8,6 +8,7 @@ import {
   LayoutDashboard, Swords, Shield, Palette, Trophy, Users, BarChart3, FlaskConical,
   Settings, Search, BookOpen, Tag, Layers, Cpu, Box, Circle, Disc, Wrench,
   Radio, Gamepad2, LogOut, Zap, List, Sparkles, Target, Map, Link2, Film, Sliders, Brain,
+  Globe, MapPin, UserCircle, MessageSquare, Scroll, Clapperboard, Package, Award, TrendingUp, Route, GitBranch,
   type LucideIcon,
 } from "lucide-react";
 
@@ -61,6 +62,20 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   "spin-tracks": "Spin Tracks",
   "beyblade-systems": "Beyblade Systems",
   "compatibility-tags": "Compat. Tags",
+  rpg: "RPG Story Mode",
+  regions: "Regions",
+  maps: "Maps",
+  npcs: "NPCs",
+  dialogues: "Dialogues",
+  quests: "Quests",
+  "story-events": "Story Events",
+  cutscenes: "Cutscenes",
+  items: "Items",
+  badges: "Badges",
+  leveling: "Leveling Config",
+  arcs: "Arcs",
+  routes: "Routes",
+  definitions: "Definitions",
   create: "Create",
   edit: "Edit",
   new: "New",
@@ -145,6 +160,33 @@ const partLibraryItems = [
   { to: "/admin/2d/parts/spin-tracks",  label: "Spin Tracks",  Icon: Disc },
 ];
 
+const rpgWorldItems = [
+  { to: "/admin/rpg/regions",      label: "Regions",      Icon: Globe },
+  { to: "/admin/rpg/maps",         label: "Maps",         Icon: MapPin },
+];
+
+const rpgCharacterItems = [
+  { to: "/admin/rpg/npcs",         label: "NPCs",         Icon: UserCircle },
+  { to: "/admin/rpg/dialogues",    label: "Dialogues",    Icon: MessageSquare },
+];
+
+const rpgStoryItems = [
+  { to: "/admin/rpg/quests",        label: "Quests",        Icon: Scroll },
+  { to: "/admin/rpg/story-events",  label: "Story Events",  Icon: Clapperboard },
+  { to: "/admin/rpg/cutscenes",     label: "Cutscenes",     Icon: Film },
+];
+
+const rpgProgressionItems = [
+  { to: "/admin/rpg/badges",       label: "Badges",        Icon: Award },
+  { to: "/admin/rpg/leveling",     label: "Leveling Config", Icon: TrendingUp },
+  { to: "/admin/rpg/items",        label: "Items",         Icon: Package },
+];
+
+const rpgGenerationItems = [
+  { to: "/admin/rpg/arcs",         label: "Arcs",          Icon: GitBranch },
+  { to: "/admin/rpg/routes",       label: "Routes",        Icon: Route },
+];
+
 function NavItem({
   to, label, Icon, end, indent = false, collapsed = false,
 }: {
@@ -173,6 +215,7 @@ export function AdminLayout() {
   const { currentUser, signOutUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [rpgExpanded, setRpgExpanded] = useState(() => location.pathname.startsWith("/admin/rpg"));
   const [libExpanded, setLibExpanded] = useState(() => location.pathname.startsWith("/admin/2d"));
   const [catalogExpanded, setCatalogExpanded] = useState(() => {
     const catalogPaths = ["/admin/combos", "/admin/special-moves", "/admin/turret-attack-types", "/admin/arena-feature-configs", "/admin/bey-link-configs", "/admin/part-materials", "/admin/combo-effects", "/admin/animation-presets", "/admin/round-modifiers", "/admin/behavior-defs"];
@@ -241,6 +284,58 @@ export function AdminLayout() {
           {navItems.map((item) => (
             <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} end={item.end} collapsed={collapsed} />
           ))}
+
+          {/* RPG Story Mode Section */}
+          {!collapsed && (
+            <div className="mt-3 mb-0.5">
+              <div className="text-[10px] font-bold text-theme-faint tracking-[0.08em] px-3 pt-1 pb-0.5 uppercase">
+                RPG Story Mode
+              </div>
+            </div>
+          )}
+          <NavItem to="/admin/rpg" label="RPG Dashboard" Icon={Gamepad2} end collapsed={collapsed} />
+          {!collapsed ? (
+            <>
+              <button
+                onClick={() => setRpgExpanded(e => !e)}
+                className="flex items-center gap-2.5 py-2 px-3 rounded-lg text-[13px] bg-transparent border-none cursor-pointer text-theme-muted w-full text-left hover:bg-bg2 transition-colors"
+              >
+                <BookOpen size={15} />
+                <span className="flex-1">RPG Content</span>
+                <span className="text-[10px] text-theme-faint">{rpgExpanded ? "▾" : "▸"}</span>
+              </button>
+              {rpgExpanded && (
+                <>
+                  <div className="text-[10px] text-theme-faint px-3 pl-7 pt-1 pb-0.5">World</div>
+                  {rpgWorldItems.map(item => (
+                    <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
+                  ))}
+                  <div className="text-[10px] text-theme-faint px-3 pl-7 pt-1 pb-0.5">Characters</div>
+                  {rpgCharacterItems.map(item => (
+                    <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
+                  ))}
+                  <div className="text-[10px] text-theme-faint px-3 pl-7 pt-1 pb-0.5">Story</div>
+                  {rpgStoryItems.map(item => (
+                    <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
+                  ))}
+                  <div className="text-[10px] text-theme-faint px-3 pl-7 pt-1 pb-0.5">Progression</div>
+                  {rpgProgressionItems.map(item => (
+                    <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
+                  ))}
+                  <div className="text-[10px] text-theme-faint px-3 pl-7 pt-1 pb-0.5">Generations</div>
+                  {rpgGenerationItems.map(item => (
+                    <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} indent />
+                  ))}
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              {[...rpgWorldItems, ...rpgCharacterItems, ...rpgStoryItems, ...rpgProgressionItems, ...rpgGenerationItems].map(item => (
+                <NavItem key={item.to} to={item.to} label={item.label} Icon={item.Icon} collapsed />
+              ))}
+            </>
+          )}
 
           {/* Catalog Section */}
           {!collapsed && (

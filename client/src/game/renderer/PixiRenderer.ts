@@ -204,6 +204,7 @@ export class BeybladeGameRenderer {
   private initialized = false;
   private contextLost = false;
   private interpolator = new StateInterpolator();
+  private lastPushedState = new Map<string, { x: number; y: number; angle: number; spin: number }>();
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -882,21 +883,26 @@ export class BeybladeGameRenderer {
         this.createBeybladeDisplayObject(beyblade, id);
       }
 
-      this.interpolator.push(id, {
-        time: performance.now(),
-        x: beyblade.x,
-        y: beyblade.y,
-        angle: beyblade.rotation,
-        spin: beyblade.spin,
-        wobbleAmplitude: 0,
-        beyTiltAngle: (beyblade as any).beyTiltAngle ?? 0,
-        adhering: !!(beyblade as any).adhering,
-        wallClimbing: !!(beyblade as any).wallClimbing,
-        spinDirection: beyblade.spinDirection,
-        specialMoveActive: !!(beyblade as any).specialMoveActive,
-        comboPhase: (beyblade as any).comboPhase ?? "",
-        combinationLocked: !!(beyblade as any).combinationLocked,
-      });
+      const prev = this.lastPushedState.get(id);
+      const bx = beyblade.x, by = beyblade.y, ba = beyblade.rotation, bs = beyblade.spin;
+      if (!prev || prev.x !== bx || prev.y !== by || prev.angle !== ba || prev.spin !== bs) {
+        this.lastPushedState.set(id, { x: bx, y: by, angle: ba, spin: bs });
+        this.interpolator.push(id, {
+          time: performance.now(),
+          x: bx,
+          y: by,
+          angle: ba,
+          spin: bs,
+          wobbleAmplitude: 0,
+          beyTiltAngle: (beyblade as any).beyTiltAngle ?? 0,
+          adhering: !!(beyblade as any).adhering,
+          wallClimbing: !!(beyblade as any).wallClimbing,
+          spinDirection: beyblade.spinDirection,
+          specialMoveActive: !!(beyblade as any).specialMoveActive,
+          comboPhase: (beyblade as any).comboPhase ?? "",
+          combinationLocked: !!(beyblade as any).combinationLocked,
+        });
+      }
 
       this.updateBeybladeDisplayObject(beyblade, id);
     });
@@ -920,6 +926,7 @@ export class BeybladeGameRenderer {
         this.prevWearLevels.delete(id);
         this._lastSpins.delete(id);
         this.flashTimers.delete(id);
+        this.lastPushedState.delete(id);
         // Remove trail ghost graphics from layer
         const trailG = this.dodgeTrailGraphics.get(id);
         if (trailG) {

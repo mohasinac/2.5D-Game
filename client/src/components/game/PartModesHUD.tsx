@@ -97,8 +97,7 @@ export function PartModesHUD({ myBeyblade, room }: PartModesHUDProps) {
 
   return (
     <div
-      className="absolute flex flex-col gap-[6px] pointer-events-auto z-[11]"
-      style={{ top: 80, right: 16 }}
+      className="absolute top-20 right-4 flex flex-col gap-1.5 pointer-events-auto z-[11]"
     >
       <div className="text-[10px] text-theme-muted uppercase tracking-[0.06em]">
         Modes
@@ -113,13 +112,13 @@ export function PartModesHUD({ myBeyblade, room }: PartModesHUDProps) {
         return (
           <div
             key={layer}
-            className={`rounded-[10px] px-[10px] py-2 min-w-[180px] relative overflow-hidden border [transition:background_0.3s,border-color_0.3s] ${isFlashing ? "bg-[rgba(251,191,36,0.18)] border-[#fbbf24]" : onCooldown ? "bg-[rgba(15,23,42,0.88)] border-border-c" : "bg-[rgba(15,23,42,0.88)] border-[rgba(168,85,247,0.4)]"}`}
+            className={`rounded-[10px] px-2.5 py-2 min-w-[180px] relative overflow-hidden border [transition:background_0.3s,border-color_0.3s] ${isFlashing ? "bg-[rgba(251,191,36,0.18)] border-[#fbbf24]" : onCooldown ? "bg-[rgba(15,23,42,0.88)] border-border-c" : "bg-[rgba(15,23,42,0.88)] border-[rgba(168,85,247,0.4)]"}`}
           >
             <div className="flex justify-between items-center mb-1">
-              <span className="text-[10px] text-theme-faint uppercase flex items-center gap-[5px]">
+              <span className="text-[10px] text-theme-faint uppercase flex items-center gap-1">
                 {labelForLayer(layer)}
                 {isEvolving && (
-                  <span className="text-[9px] font-bold px-[5px] py-[1px] rounded bg-[#fbbf24] text-black tracking-[0.04em]">
+                  <span className="text-[9px] font-bold px-1 py-px rounded bg-[#fbbf24] text-black tracking-[0.04em]">
                     STAGE {tipStage}
                   </span>
                 )}
@@ -127,7 +126,7 @@ export function PartModesHUD({ myBeyblade, room }: PartModesHUDProps) {
               <button
                 onClick={() => cycle(layer)}
                 disabled={onCooldown}
-                className={`text-[10px] px-2 py-[2px] rounded font-bold border-none ${onCooldown ? "bg-bg3 text-theme-faint cursor-not-allowed" : "bg-[var(--purple)] text-white cursor-pointer"}`}
+                className={`text-[10px] px-2 py-0.5 rounded font-bold border-none ${onCooldown ? "bg-bg3 text-theme-faint cursor-not-allowed" : "bg-[var(--purple)] text-white cursor-pointer"}`}
               >
                 Cycle
               </button>
@@ -135,12 +134,12 @@ export function PartModesHUD({ myBeyblade, room }: PartModesHUDProps) {
             <div className={`text-[12px] font-semibold [transition:color_0.3s] ${isFlashing ? "text-[#fbbf24]" : "text-theme-text"}`}>
               {String(activeName)}
               {isFlashing && (
-                <span className="ml-[6px] text-[10px] text-[#fbbf24] font-bold">EVOLVED!</span>
+                <span className="ml-1.5 text-[10px] text-[#fbbf24] font-bold">EVOLVED!</span>
               )}
             </div>
             {onCooldown && (
               <div
-                className="absolute left-0 bottom-0 h-[2px] bg-[var(--purple)] [transition:width_100ms_linear] w-[--cdw]"
+                className="absolute left-0 bottom-0 h-0.5 bg-[var(--purple)] [transition:width_100ms_linear] w-[--cdw]"
                 style={{ "--cdw": `${cdPct * 100}%` } as React.CSSProperties}
               />
             )}

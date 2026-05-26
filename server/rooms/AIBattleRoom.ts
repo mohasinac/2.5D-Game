@@ -158,6 +158,12 @@ export class AIBattleRoom extends BaseRoom<GameState> {
       this.handleSpatialPossession(data.direction, client.sessionId);
     });
 
+    // Client-side AI input — allows client AI to submit bitmasks for AI beys
+    this.registerAIInputHandler((beyId, bitmask) => {
+      const input = normalizeInput(bitmask);
+      this.aiController?.overrideInput(beyId, input);
+    });
+
     // ── AI vs AI bootstrap (admin-only) ─────────────────────────────────────
     // Spawn two AI beyblades immediately and start the match. Human seats are
     // closed; only spectators may join. Room auto-disposes when the last

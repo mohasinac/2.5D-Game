@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
+import { rpgTouchState } from "../components/hud/RPGTouchControls";
 
 export interface RPGInputState {
   up: boolean;
@@ -11,14 +12,12 @@ export interface RPGInputState {
 }
 
 const EMPTY_INPUT: RPGInputState = {
-  up: false,
-  down: false,
-  left: false,
-  right: false,
-  confirm: false,
-  cancel: false,
-  menu: false,
+  up: false, down: false, left: false, right: false,
+  confirm: false, cancel: false, menu: false,
 };
+
+// Keyboard state (separate from touch so both can be merged)
+const kbState: RPGInputState = { ...EMPTY_INPUT };
 
 function keyToAction(key: string): keyof RPGInputState | null {
   switch (key) {
@@ -27,7 +26,7 @@ function keyToAction(key: string): keyof RPGInputState | null {
     case "ArrowLeft":  case "a": case "A": return "left";
     case "ArrowRight": case "d": case "D": return "right";
     case "z": case "Z": case "Enter": case " ": return "confirm";
-    case "x": case "X": case "Backspace": case "Escape": return "cancel";
+    case "x": case "X": case "Backspace": return "cancel";
     case "Escape": case "p": case "P": return "menu";
     default: return null;
   }
@@ -39,15 +38,15 @@ export function useRPGInput(): React.RefObject<RPGInputState> {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const action = keyToAction(e.key);
-      if (action && !stateRef.current[action]) {
-        stateRef.current = { ...stateRef.current, [action]: true };
+      if (action) {
+        kbState[action] = true;
         e.preventDefault();
       }
     };
     const onKeyUp = (e: KeyboardEvent) => {
       const action = keyToAction(e.key);
-      if (action && stateRef.current[action]) {
-        stateRef.current = { ...stateRef.current, [action]: false };
+      if (action) {
+        kbState[action] = false;
       }
     };
 
@@ -56,7 +55,27 @@ export function useRPGInput(): React.RefObject<RPGInputState> {
     return () => {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
+      Object.keys(kbState).forEach((k) => { kbState[k as keyof RPGInputState] = false; });
     };
+  }, []);
+
+  // Merge keyboard + touch every frame via requestAnimationFrame
+  useEffect(() => {
+    let raf: number;
+    const merge = () => {
+      stateRef.current = {
+        up:      kbState.up      || rpgTouchState.up,
+        down:    kbState.down    || rpgTouchState.down,
+        left:    kbState.left    || rpgTouchState.left,
+        right:   kbState.right   || rpgTouchState.right,
+        confirm: kbState.confirm || rpgTouchState.confirm,
+        cancel:  kbState.cancel  || rpgTouchState.cancel,
+        menu:    kbState.menu    || rpgTouchState.menu,
+      };
+      raf = requestAnimationFrame(merge);
+    };
+    raf = requestAnimationFrame(merge);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   return stateRef;

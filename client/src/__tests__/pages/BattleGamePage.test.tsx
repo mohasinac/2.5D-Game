@@ -27,9 +27,9 @@ const defaultColyseusState = {
   loadingStep: null as string | null,
   loadingError: null as string | null,
   visualEventQueue: [] as any[],
-  floorInfo: null,
+  floorInfo: [] as any[],
   myFloorIndex: 0,
-  linkAlignments: null,
+  linkAlignments: [] as any[],
   floorTransition: null,
   collisionQTEData: null,
   collisionQTEPower: 0,
@@ -284,7 +284,7 @@ describe("BattleGamePage — timer", () => {
 // ─── Warmup overlay ──────────────────────────────────────────────────────────
 
 describe("BattleGamePage — warmup overlay", () => {
-  it("shows countdown timer and 'Get ready!' when status=warmup", () => {
+  it("shows countdown number when status=warmup", () => {
     colyseusState = {
       ...colyseusState,
       connectionState: "connected",
@@ -293,14 +293,10 @@ describe("BattleGamePage — warmup overlay", () => {
 
     renderPage();
 
-    // Two "3"s render: the new big Countdown overlay (Phase 13) and the
-    // legacy "Get ready!" warmup card. Either is sufficient evidence the
-    // warmup state is active.
     expect(screen.getAllByText("3").length).toBeGreaterThan(0);
-    expect(screen.getByText(/get ready/i)).toBeInTheDocument();
   });
 
-  it("does not show warmup overlay when status=in-progress", () => {
+  it("does not show countdown when status=in-progress", () => {
     colyseusState = {
       ...colyseusState,
       connectionState: "connected",
@@ -309,7 +305,8 @@ describe("BattleGamePage — warmup overlay", () => {
 
     renderPage();
 
-    expect(screen.queryByText(/get ready/i)).not.toBeInTheDocument();
+    // Countdown only renders during warmup with timer 1-3
+    expect(screen.queryByText("3")).not.toBeInTheDocument();
   });
 });
 

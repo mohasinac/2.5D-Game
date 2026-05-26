@@ -50,18 +50,18 @@ function VictimPanel({ data }: { data: BeyLinkHijackQTEData }) {
 
   return (
     <div
-      className="flex items-center gap-[10px] bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-4 py-[10px] min-w-[220px] border border-[#818cf888] shadow-[0_0_24px_#818cf822] [animation:beylink-pulse-blue_1.2s_ease-in-out_infinite]"
+      className="flex items-center gap-2.5 bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-4 py-[10px] min-w-[220px] border border-[#818cf888] shadow-[0_0_24px_#818cf822] [animation:beylink-pulse-blue_1.2s_ease-in-out_infinite]"
     >
       <CountdownRing fraction={fraction} color="#818cf8" />
       <div className="flex-1">
-        <div className="flex items-center gap-[6px] mb-[3px]">
+        <div className="flex items-center gap-1.5 mb-1">
           <div className="w-[7px] h-[7px] rounded-full bg-[#818cf8] shadow-[0_0_6px_#818cf8]" />
           <span className="text-[#818cf8] font-extrabold text-[11px] tracking-[0.8px]">HIJACK INITIATED</span>
         </div>
         <div className="text-[#9ca3af] text-[10px]">
           Waiting for attacker to respond…
         </div>
-        <div className="mt-[5px] h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
+        <div className="mt-1 h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
           <div className="h-full bg-[#818cf8] rounded-[1px] [transition:width_100ms_linear] w-[--pct]" style={{ "--pct": `${fraction * 100}%` } as React.CSSProperties} />
         </div>
       </div>
@@ -104,11 +104,11 @@ function AttackerPanel({ data, onBlock }: AttackerPanelProps) {
 
   return (
     <div
-      className={`flex items-center gap-[10px] bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-4 py-[10px] min-w-[240px] border [transition:border-color_0.2s,box-shadow_0.2s] ${pressed ? "border-[#14b8a888] shadow-[0_0_24px_#14b8a822]" : "border-[#ef444488] shadow-[0_0_24px_#ef444422] [animation:beylink-pulse-red_0.7s_ease-in-out_infinite]"}`}
+      className={`flex items-center gap-2.5 bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-4 py-[10px] min-w-[240px] border [transition:border-color_0.2s,box-shadow_0.2s] ${pressed ? "border-[#14b8a888] shadow-[0_0_24px_#14b8a822]" : "border-[#ef444488] shadow-[0_0_24px_#ef444422] [animation:beylink-pulse-red_0.7s_ease-in-out_infinite]"}`}
     >
       <CountdownRing fraction={fraction} color={pressed ? "#14b8a6" : "#ef4444"} />
       <div className="flex-1">
-        <div className="flex items-center gap-[6px] mb-[5px]">
+        <div className="flex items-center gap-1.5 mb-[5px]">
           <div
             className={`w-[7px] h-[7px] rounded-full ${pressed ? "bg-[#14b8a6] shadow-[0_0_6px_#14b8a6]" : "bg-[#ef4444] shadow-[0_0_6px_#ef4444]"}`}
           />
@@ -130,7 +130,7 @@ function AttackerPanel({ data, onBlock }: AttackerPanelProps) {
           </div>
         )}
         {!pressed && (
-          <div className="mt-[5px] h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
+          <div className="mt-1 h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
             <div className="h-full bg-[#ef4444] rounded-[1px] [transition:width_100ms_linear] w-[--pct]" style={{ "--pct": `${fraction * 100}%` } as React.CSSProperties} />
           </div>
         )}
@@ -170,7 +170,7 @@ function EscapePanel({ data, onEscape }: { data: BeyLinkQTEData; onEscape: (key:
 
   return (
     <div
-      className={`flex items-center gap-[10px] bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-4 py-[10px] min-w-[230px] border [transition:border-color_0.2s,box-shadow_0.2s] ${pressed ? "border-[#14b8a888] shadow-[0_0_24px_#14b8a822]" : "border-[#f59e0b88] shadow-[0_0_24px_#f59e0b22] [animation:beylink-pulse-orange_0.8s_ease-in-out_infinite]"}`}
+      className={`flex items-center gap-2.5 bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-4 py-[10px] min-w-[230px] border [transition:border-color_0.2s,box-shadow_0.2s] ${pressed ? "border-[#14b8a888] shadow-[0_0_24px_#14b8a822]" : "border-[#f59e0b88] shadow-[0_0_24px_#f59e0b22] [animation:beylink-pulse-orange_0.8s_ease-in-out_infinite]"}`}
     >
       <style>{`
         @keyframes beylink-pulse-orange {
@@ -180,7 +180,7 @@ function EscapePanel({ data, onEscape }: { data: BeyLinkQTEData; onEscape: (key:
       `}</style>
       <CountdownRing fraction={fraction} color={pressed ? "#14b8a6" : "#f59e0b"} />
       <div className="flex-1">
-        <div className="flex items-center gap-[6px] mb-[5px]">
+        <div className="flex items-center gap-1.5 mb-[5px]">
           <div
             className={`w-[7px] h-[7px] rounded-full ${pressed ? "bg-[#14b8a6] shadow-[0_0_6px_#14b8a6]" : "bg-[#f59e0b] shadow-[0_0_6px_#f59e0b]"}`}
           />
@@ -198,7 +198,7 @@ function EscapePanel({ data, onEscape }: { data: BeyLinkQTEData; onEscape: (key:
           <div className="text-[#14b8a6] text-[10px] font-semibold">Escape key registered!</div>
         )}
         {!pressed && (
-          <div className="mt-[5px] h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
+          <div className="mt-1 h-[2px] bg-[rgba(255,255,255,0.067)] rounded-[1px]">
             <div className="h-full bg-[#f59e0b] rounded-[1px] [transition:width_100ms_linear] w-[--pct]" style={{ "--pct": `${fraction * 100}%` } as React.CSSProperties} />
           </div>
         )}
@@ -225,7 +225,7 @@ function ControlLossBanner({ data }: { data: BeyLinkControlLossData }) {
   if (!visible) return null;
   return (
     <div
-      className="flex items-center gap-[10px] bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-[14px] py-2 border [animation:beylink-pulse-cl_0.6s_ease-in-out_infinite]"
+      className="flex items-center gap-2.5 bg-[rgba(10,10,20,0.92)] backdrop-blur-sm rounded-xl px-[14px] py-2 border [animation:beylink-pulse-cl_0.6s_ease-in-out_infinite]"
       style={{ "--mc": meta.color, borderColor: `${meta.color}88` } as React.CSSProperties}
     >
       <style>{`
@@ -275,8 +275,7 @@ export function BeyLinkHijackHUD({ hijackQTE, hijackBlockQTE, onBlock, escapeQTE
       `}</style>
 
       <div
-        className="absolute flex flex-col items-center gap-2 pointer-events-none z-[30]"
-        style={{ bottom: 110, left: "50%", transform: "translateX(-50%)" }}
+        className="absolute bottom-28 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none z-[30]"
       >
         {controlLoss && <ControlLossBanner data={controlLoss} />}
         {escapeQTE && onEscape && (

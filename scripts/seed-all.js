@@ -283,6 +283,30 @@ const SEEDERS = [
     collections: ["system_presets"],
     description: "7 complete 2.5D beyblade system templates per generation (Plastic/MFB/Burst/X)",
   },
+  {
+    name: "ai-character-profiles",
+    script: "seed-ai-character-profiles.js",
+    collections: ["ai_character_profiles"],
+    description: "12 blader character AI profiles (Tyson, Kai, Gingka, Valt, etc.)",
+  },
+  {
+    name: "ai-bey-personalities",
+    script: "seed-ai-bey-personalities.js",
+    collections: ["ai_bey_personalities"],
+    description: "13 bey personality profiles (Dragoon, Dranzer, Pegasus, Valtryek, etc.)",
+  },
+  {
+    name: "ai-difficulty-profiles",
+    script: "seed-ai-difficulty-profiles.js",
+    collections: ["ai_difficulty_profiles"],
+    description: "4 AI difficulty tiers (easy/medium/hard/hell)",
+  },
+  {
+    name: "story-mode",
+    script: "seed-story-mode.js",
+    collections: ["seasons", "episodes"],
+    description: "2 seasons + 8 episodes for story mode progression",
+  },
 ];
 
 // ── 4. Parse CLI flags ────────────────────────────────────────────────────────

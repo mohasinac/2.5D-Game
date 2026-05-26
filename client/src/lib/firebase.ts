@@ -96,4 +96,36 @@ export const COLLECTIONS = {
   THEME_PRESETS: "theme_presets",
   OBSTACLE_PRESETS: "obstacle_presets",
   FEATURE_GROUP_PRESETS: "feature_group_presets",
+  // RPG Story Mode collections
+  RPG_MAPS: "rpg_maps",
+  RPG_NPCS: "rpg_npcs",
+  RPG_QUESTS: "rpg_quests",
+  RPG_DIALOGUES: "rpg_dialogues",
+  RPG_STORY_EVENTS: "rpg_story_events",
+  RPG_CUTSCENES: "rpg_cutscenes",
+  RPG_ITEMS: "rpg_items",
+  RPG_REGIONS: "rpg_regions",
+  RPG_BADGES: "rpg_badges",
+  RPG_ARCS: "rpg_arcs",
+  RPG_ROUTES: "rpg_routes",
+  RPG_CONFIG: "rpg_config",
+  RPG_SAVES: "rpg_saves",
+  // RPG open definition collections
+  RPG_MAP_TYPE_DEFS: "rpg_map_type_defs",
+  RPG_NPC_TYPE_DEFS: "rpg_npc_type_defs",
+  RPG_BADGE_CATEGORY_DEFS: "rpg_badge_category_defs",
+  RPG_ITEM_CATEGORY_DEFS: "rpg_item_category_defs",
+  RPG_QUEST_CATEGORY_DEFS: "rpg_quest_category_defs",
+  RPG_EVENT_CATEGORY_DEFS: "rpg_event_category_defs",
+  RPG_TRAVEL_MODE_DEFS: "rpg_travel_mode_defs",
+  // AI preset collections (client-side AI system)
+  AI_CHARACTER_PROFILES: "ai_character_profiles",
+  AI_BEY_PERSONALITIES: "ai_bey_personalities",
+  AI_DIFFICULTY_PROFILES: "ai_difficulty_profiles",
+  // Story mode collections
+  SEASONS: "seasons",
+  EPISODES: "episodes",
+  PLAYER_PROGRESS: "player_progress",
+  // Replay system
+  MATCH_REPLAYS: "match_replays",
 } as const;

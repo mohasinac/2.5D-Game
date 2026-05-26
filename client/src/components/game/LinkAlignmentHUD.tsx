@@ -208,7 +208,7 @@ function LinkCard({ link }: { link: LinkAlignmentInfo }) {
   const isSevered = link.alignmentStatus === "severed" || link.alignmentStatus === "cooldown";
 
   return (
-    <div className="flex flex-col items-center gap-[5px] relative">
+    <div className="flex flex-col items-center gap-1 relative">
       <style>{`
         @keyframes lhudGlow  { 0%,100%{filter:drop-shadow(0 0 3px ${color}66)} 50%{filter:drop-shadow(0 0 9px ${color}cc)} }
         @keyframes lhudFlash { 0%,100%{opacity:1} 50%{opacity:0.4} }
@@ -216,7 +216,7 @@ function LinkCard({ link }: { link: LinkAlignmentInfo }) {
 
       {/* Dual compass */}
       <div
-        className={`bg-[rgba(15,23,42,0.8)] rounded-[10px] px-2 py-[6px] border border-[--lbc] ${isAligned ? "[animation:lhudGlow_1.5s_ease-in-out_infinite]" : ""}`}
+        className={`bg-[rgba(15,23,42,0.8)] rounded-[10px] px-2 py-1.5 border border-[--lbc] ${isAligned ? "[animation:lhudGlow_1.5s_ease-in-out_infinite]" : ""}`}
         style={{ "--lbc": `color-mix(in srgb, ${color} ${isSevered ? "20%" : "35%"}, transparent)` } as React.CSSProperties}
       >
         <DualCompass link={link} />
@@ -224,7 +224,7 @@ function LinkCard({ link }: { link: LinkAlignmentInfo }) {
 
       {/* Angular readout */}
       <div
-        className={`flex items-center gap-[5px] px-[10px] py-[3px] rounded-[20px] border border-[--lbc2] bg-[--lbg] ${isAligned ? "[animation:lhudFlash_1.2s_ease-in-out_infinite]" : ""}`}
+        className={`flex items-center gap-1 px-2.5 py-1 rounded-[20px] border border-[--lbc2] bg-[--lbg] ${isAligned ? "[animation:lhudFlash_1.2s_ease-in-out_infinite]" : ""}`}
         style={{ "--lbc2": `color-mix(in srgb, ${color} 30%, transparent)`, "--lbg": `color-mix(in srgb, ${isAligned ? color : "#0f172a"} ${isAligned ? "12%" : "80%"}, transparent)` } as React.CSSProperties}
       >
         <span className="text-[13px] leading-none">{LINK_ICONS[link.linkType]}</span>
@@ -254,7 +254,7 @@ function LinkCard({ link }: { link: LinkAlignmentInfo }) {
 
       {/* Trampoline opt-out hint */}
       {link.linkType === "trampoline" && link.optOutTicksLeft != null && (
-        <div className="text-[9px] font-bold rounded-[6px] px-[6px] py-[2px] text-theme-yellow bg-[rgba(234,179,8,0.1)] border border-[rgba(234,179,8,0.3)] [animation:lhudFlash_0.8s_ease-in-out_infinite]">
+        <div className="text-[9px] font-bold rounded-[6px] px-1.5 py-0.5 text-theme-yellow bg-[rgba(234,179,8,0.1)] border border-[rgba(234,179,8,0.3)] [animation:lhudFlash_0.8s_ease-in-out_infinite]">
           SPACE/↓ to stay · {link.optOutTicksLeft}t
         </div>
       )}
@@ -262,8 +262,8 @@ function LinkCard({ link }: { link: LinkAlignmentInfo }) {
       {/* Aligned flash outer ring */}
       {isAligned && (
         <div
-          className="absolute pointer-events-none rounded-[14px] border-2 border-[--arc] [animation:lhudFlash_1.2s_ease-in-out_infinite]"
-          style={{ "--arc": `color-mix(in srgb, ${color} 35%, transparent)`, inset: -4 } as React.CSSProperties}
+          className="absolute -inset-1 pointer-events-none rounded-[14px] border-2 border-[--arc] [animation:lhudFlash_1.2s_ease-in-out_infinite]"
+          style={{ "--arc": `color-mix(in srgb, ${color} 35%, transparent)` } as React.CSSProperties}
         />
       )}
     </div>
@@ -280,7 +280,7 @@ function SummaryBar({ links }: { links: LinkAlignmentInfo[] }) {
 
   return (
     <div
-      className="flex items-center gap-2 px-[14px] py-[5px] rounded-[10px] text-[11px] bg-[rgba(15,23,42,0.92)] border border-[--sbc]"
+      className="flex items-center gap-2 px-3.5 py-1 rounded-[10px] text-[11px] bg-[rgba(15,23,42,0.92)] border border-[--sbc]"
       style={{ "--sbc": `color-mix(in srgb, ${color} 35%, transparent)` } as React.CSSProperties}
     >
       <span className="text-[14px]">{LINK_ICONS[nearest.linkType]}</span>
@@ -301,7 +301,7 @@ function SummaryBar({ links }: { links: LinkAlignmentInfo[] }) {
       </span>
       {/* Alignment % for near/misaligned */}
       {(nearest.alignmentStatus === "near" || nearest.alignmentStatus === "misaligned") && (
-        <span className="text-theme-faint text-[10px] ml-[2px]">
+        <span className="text-theme-faint text-[10px] ml-0.5">
           {Math.max(0, Math.round((1 - nearest.degreesOff / (nearest.errorMarginDeg * 2)) * 100))}%
         </span>
       )}
@@ -316,8 +316,7 @@ export default function LinkAlignmentHUD({ links }: Props) {
 
   return (
     <div
-      className="absolute flex flex-col items-center gap-2 pointer-events-none z-[10]"
-      style={{ bottom: 16, left: "50%", transform: "translateX(-50%)" }}
+      className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none z-[10]"
     >
       {/* ── Per-link cards ── */}
       <div className="flex gap-3 items-end">
