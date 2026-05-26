@@ -102,6 +102,7 @@ function OptionRow({ opt, selected, onClick }: { opt: SelectOption; selected: bo
 function DropdownPanel({ containerRef, children }: { containerRef: React.RefObject<HTMLDivElement | null>; children: React.ReactNode }) {
   return (
     <div
+      role="listbox"
       style={{
         position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 300,
         background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8,
@@ -155,6 +156,9 @@ export function SearchableSelect({
   return (
     <div ref={containerRef} className={className} data-testid={dataTestId} style={{ position: "relative", ...style }}>
       <div
+        role="combobox"
+        aria-expanded={open}
+        aria-haspopup="listbox"
         onClick={() => { if (!disabled) setOpen(o => !o); }}
         style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",

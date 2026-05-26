@@ -66,6 +66,7 @@ test.describe("PvAI Gauntlet: admin creates tournament", () => {
     // Select Player Gauntlet type
     // The type picker is a SearchableSelect (data-testid="tournament-type-select") — click trigger to open, then pick option
     const typeSelectContainer = page.locator('[data-testid="tournament-type-select"]').first();
+    await typeSelectContainer.waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
     if (await typeSelectContainer.isVisible().catch(() => false)) {
       await typeSelectContainer.click(); // open the dropdown
       await page.waitForTimeout(200);
