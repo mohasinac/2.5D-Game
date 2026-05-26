@@ -208,6 +208,10 @@ export interface ServerBeyblade {
   // Last epoch-ms a player-initiated config switch fired on a given part slot.
   // Used to throttle re-clicks in PartModesHUD (mirror of MODE_SWITCH_COOLDOWN_MS).
   configLastSwitchAt?: Map<string, number> | Record<string, number>;
+  // Per-beyblade rendering color (hex, e.g. "#00d4ff"). Synced from BeybladeStats.
+  color?: string;
+  // Firestore beyblade_stats document ID — stable across matches.
+  beybladeId?: string;
   // Launch phase fields (synced from server during status="launching")
   launchTilt?: number;
   launchPosition?: number;

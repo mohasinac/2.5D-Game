@@ -465,6 +465,9 @@ export class Beyblade extends Schema {
   @type("boolean") spinOutImmune: boolean = false;   // spin ≤ 0 does not eliminate
   @type("boolean") knockoutImmune: boolean = false;  // shorthand: implies ringOut+burst+spinOut immune
 
+  // ── Per-beyblade rendering color (hex, e.g. "#00d4ff") ──────────────────────
+  @type("string") color: string = "";
+
   // ── Launch phase (pre-match) ─────────────────────────────────────────────────
   @type("float32") launchTilt: number = 0;            // -45 to +45 deg; A/D during launch phase
   @type("float32") launchPosition: number = 0.5;      // 0=forward/defensive, 1=backward/aggressive

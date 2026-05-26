@@ -14,6 +14,7 @@ import {
   getRegistrationTournaments,
   padWithAIParticipants,
   cancelTournament,
+  getPendingMatchesForTournament,
   type TournamentMatchDoc,
   type TournamentDoc,
   type TournamentParticipantDoc,
@@ -219,6 +220,9 @@ export class TournamentScheduler {
           await updateMatchStatus(match.id, { status: "completed", winnerId: winnerParticipantId || null });
           if (winnerParticipantId) {
             await this.advanceRound(match.tournamentId, match.id, match.round, match.matchNumber, winnerParticipantId, "");
+          } else {
+            // Both participants quit — no winner to advance; still check if humans remain
+            await this.checkHumanPlayersRemaining(match.tournamentId).catch(console.error);
           }
         }
       }
@@ -427,6 +431,9 @@ export class TournamentScheduler {
         }
       }
 
+      // End the tournament early if no original human players remain
+      await this.checkHumanPlayersRemaining(tournamentId);
+
       console.log(`✅ [TournamentScheduler] Advanced winner ${winnerId} in tournament ${tournamentId}`);
     } catch (err) {
       console.error("[TournamentScheduler] Error advancing round:", err);
@@ -449,6 +456,54 @@ export class TournamentScheduler {
       }
     } catch (err) {
       console.error("[TournamentScheduler] Error completing tournament:", err);
+    }
+  }
+
+  // ─── End tournament early when no human players remain ────────────────────
+
+  private async checkHumanPlayersRemaining(tournamentId: string): Promise<void> {
+    try {
+      // Guard: only act on tournaments still running
+      const tournament = await loadTournamentSettings(tournamentId);
+      if (!tournament || tournament.status !== "in-progress") return;
+
+      const participants = await getParticipantsForTournament(tournamentId);
+
+      // AI-only tournaments (e.g. ai-exhibition) are exempt — no human to lose
+      const anyHuman = participants.some(p => !p.isAI);
+      if (!anyHuman) return;
+
+      // Still have at least one human with active bracket slot
+      const activeHumans = participants.filter(p => !p.isAI && p.status === "registered");
+      if (activeHumans.length > 0) return;
+
+      console.log(
+        `[TournamentScheduler] No human players remain in tournament ${tournamentId} — ending early`
+      );
+
+      // Cancel all pending / room-opening matches so the scheduler won't open new rooms
+      const pendingMatches = await getPendingMatchesForTournament(tournamentId);
+      for (const m of pendingMatches) {
+        await updateMatchStatus(m.id, { status: "completed", winnerId: null });
+      }
+
+      // Mark remaining registered AI participants as eliminated
+      const remainingAI = participants.filter(p => p.isAI && p.status === "registered");
+      for (const p of remainingAI) {
+        await updateParticipantStatus(p.id, "eliminated");
+      }
+
+      // Complete the tournament with no human champion
+      await updateTournamentStatus(tournamentId, "completed", {
+        winnerId: null,
+        winnerUsername: null,
+      });
+
+      console.log(
+        `🏁 [TournamentScheduler] Tournament ${tournamentId} closed — all human players eliminated`
+      );
+    } catch (err) {
+      console.error("[TournamentScheduler] Error in checkHumanPlayersRemaining:", err);
     }
   }
 

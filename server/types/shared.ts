@@ -69,6 +69,8 @@ export interface BeybladeStats {
   comboIds?: string[];
   /** Phase 28: BitBeast asset id — triggers overlay animation on special activation */
   bitBeastId?: string;
+  /** Vivid hex color (e.g. "#00d4ff") used for in-game rendering tint and admin UI. */
+  color?: string;
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;

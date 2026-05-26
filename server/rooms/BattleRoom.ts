@@ -905,6 +905,7 @@ export class BattleRoom extends Room<GameState> {
 
   private applyBeybladeStats(beyblade: Beyblade, data: BeybladeStats) {
     beyblade.type = data.type;
+    beyblade.color = data.color ?? "";
     beyblade.spinDirection = data.spinDirection;
     beyblade.mass = data.mass;
     beyblade.radius = data.radius;

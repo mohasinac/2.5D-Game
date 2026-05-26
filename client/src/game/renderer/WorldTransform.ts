@@ -53,14 +53,18 @@ export class WorldTransform {
     this.limits.allowFreePan = allowFreePan;
   }
 
-  // Hard max-zoom cap: player always sees at least a 100×100 cm viewport (1 tile = 1 cm).
-  static readonly MAX_ZOOM_VIEWPORT_TILES = 100;
+  // Minimum cm visible on the short axis when fully zoomed in.
+  // Prevents zooming in so tight that the player loses all situational awareness.
+  static readonly MIN_VIEWPORT_CM = 10;
 
   /**
    * Compute zoom limits from arena bounds + bey radius.
-   * - minZoom = whatever shows the whole arena (unless allowFreePan and arena is huge).
-   * - maxZoom = 5-bey window (~5 beys edge-to-edge on the short screen axis),
-   *             further capped so the viewport never shows fewer than MAX_ZOOM_VIEWPORT_TILES cm.
+   * Because pxPerCm is now viewport-proportional, all three limits resolve to
+   * screen-independent constants — zoom semantics are identical on every device.
+   *
+   * - minZoom = fit the whole arena on screen (most zoomed out).
+   * - maxZoom = 5-bey close-up window, capped so the player always sees
+   *             at least MIN_VIEWPORT_CM on the short axis.
    */
   computeZoomLimits(beyRadiusCm: number) {
     const b = this.limits.arenaBounds;
@@ -70,10 +74,11 @@ export class WorldTransform {
     const screenShort = Math.min(this.screenW, this.screenH);
     const pxPerCm = getPxPerCm();
     if (pxPerCm <= 0 || screenShort <= 0 || arenaW <= 0 || arenaH <= 0 || beyRadiusCm <= 0) return;
-    const fitZoom = screenShort / (Math.max(arenaW, arenaH) * pxPerCm);
+    const fitZoom     = screenShort / (Math.max(arenaW, arenaH) * pxPerCm);
     const fiveBeyZoom = screenShort / (5 * 2 * beyRadiusCm * pxPerCm);
-    // 100-tile viewport cap: zoom can never make the short axis show fewer than 100 cm
-    const tileCapZoom = screenShort / (WorldTransform.MAX_ZOOM_VIEWPORT_TILES * pxPerCm);
+    // tileCapZoom: maximum zoom that still shows at least MIN_VIEWPORT_CM on the short axis.
+    // Must be >= fiveBeyZoom so there is always room to zoom in beyond fit.
+    const tileCapZoom = screenShort / (WorldTransform.MIN_VIEWPORT_CM * pxPerCm);
     this.limits.minZoom = this.limits.allowFreePan ? Math.min(fitZoom, 0.05) : fitZoom;
     this.limits.maxZoom = Math.min(Math.max(fiveBeyZoom, fitZoom * 1.5), tileCapZoom);
   }

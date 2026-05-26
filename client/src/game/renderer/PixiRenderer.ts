@@ -12,13 +12,20 @@ import { StateInterpolator } from "../interpolation/StateInterpolator";
 export type { ServerBeyblade, ServerGameState };
 export { WorldTransform } from "./WorldTransform";
 
-// Type color map for beyblade glow effects
+// Type color map for beyblade glow effects (fallback when no per-bey color is set)
 const TYPE_COLORS: Record<string, number> = {
   attack: 0xff4444,
   defense: 0x4488ff,
   stamina: 0x44ff88,
   balanced: 0xffcc44,
 };
+
+function parseBeyColor(bey: ServerBeyblade): number {
+  if (bey.color && /^#[0-9a-fA-F]{6}$/.test(bey.color)) {
+    return parseInt(bey.color.slice(1), 16);
+  }
+  return TYPE_COLORS[bey.type] ?? 0xffffff;
+}
 
 // Arena floor base colors — vivid enough to read on a dark canvas background.
 // Keep mid-range brightness (not neon) so bey sprites remain legible.
@@ -819,7 +826,7 @@ export class BeybladeGameRenderer {
 
   private createBeybladeDisplayObject(beyblade: ServerBeyblade, id: string) {
     const container = new PIXI.Container();
-    const typeColor = TYPE_COLORS[beyblade.type] ?? 0xffffff;
+    const typeColor = parseBeyColor(beyblade);
 
     // Shadow (drawn first, behind sprite)
     const shadow = new PIXI.Graphics();
@@ -1045,7 +1052,7 @@ export class BeybladeGameRenderer {
         this.prevWearLevels.get(id) !== wearPct  ||
         this._lastSpins.get(id)    !== spinBucket
       ) {
-        const typeColor = TYPE_COLORS[beyblade.type] ?? 0xffffff;
+        const typeColor = parseBeyColor(beyblade);
         this.drawBeybladeShape(sprite, typeColor, beyblade.actualSize || 48, tipStage, wearPct);
         this.prevTipStages.set(id, tipStage);
         this.prevWearLevels.set(id, wearPct);

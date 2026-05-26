@@ -50,14 +50,14 @@ describe("WorldTransform zoom clamping", () => {
     expect(wt.camera.targetZoom).toBeLessThanOrEqual(wt.limits.maxZoom);
   });
 
-  it("MAX_ZOOM_VIEWPORT_TILES is 20 tiles", () => {
-    expect(WorldTransform.MAX_ZOOM_VIEWPORT_TILES).toBe(20);
+  it("MIN_VIEWPORT_CM is 10 cm", () => {
+    expect(WorldTransform.MIN_VIEWPORT_CM).toBe(10);
   });
 
-  it("maxZoom never exceeds 20-tile cap (screenShort / (20 * pxPerCm))", () => {
-    const pxPerCm = 24;
+  it("maxZoom never exceeds tileCapZoom (screenShort / (MIN_VIEWPORT_CM * pxPerCm))", () => {
+    const pxPerCm = 24; // mocked value in this test suite
     const screenShort = Math.min(1920, 1080);
-    const tileCapZoom = screenShort / (20 * pxPerCm);
+    const tileCapZoom = screenShort / (WorldTransform.MIN_VIEWPORT_CM * pxPerCm);
     expect(wt.limits.maxZoom).toBeLessThanOrEqual(tileCapZoom + 0.001); // small tolerance
   });
 });

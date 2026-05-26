@@ -76,6 +76,8 @@ export interface BeybladeStats {
   jumpForce?: number;
   /** Max jump height (cm) */
   jumpHeight?: number;
+  /** Vivid hex color (e.g. "#00d4ff") used for in-game rendering tint and admin UI. */
+  color?: string;
   /** Burst resistance 0–100; higher = harder to burst */
   burstResistance?: number;
   createdAt?: any;

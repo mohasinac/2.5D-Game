@@ -431,6 +431,25 @@ export async function cancelTournament(tournamentId: string, reason: string): Pr
   await updateTournamentStatus(tournamentId, "cancelled", { cancelReason: reason });
 }
 
+/** All pending or room-opening bracket matches for a specific tournament. */
+export async function getPendingMatchesForTournament(tournamentId: string): Promise<TournamentMatchDoc[]> {
+  if (!db) return [];
+  try {
+    const snap = await withTimeout(
+      db
+        .collection(FIREBASE_COLLECTIONS.TOURNAMENT_BRACKETS)
+        .where("tournamentId", "==", tournamentId)
+        .where("status", "in", ["pending", "room-opening"])
+        .get(),
+      8000
+    );
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() } as TournamentMatchDoc));
+  } catch (err) {
+    console.error("Error fetching pending matches for tournament:", err);
+    return [];
+  }
+}
+
 /** Set a participant's tournament-level ready flag (used for auto-start). */
 export async function setParticipantReady(participantId: string, ready: boolean): Promise<void> {
   if (!db) return;
