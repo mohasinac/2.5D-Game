@@ -1422,6 +1422,8 @@ function fullCollisionResolve(A: BeyState, B: BeyState, cp: ContactResult) {
 
 ## Case 14 — Off-Axis Tip: Jumping, Airborne State, and Landing Impact (Storm Capricorn M145Q)
 
+> **Stock combo (Storm Capricorne M145Q):** CW: Capricorne · MW: Storm · Track: Move 145 · Bottom: Quake
+
 Storm Capricorn is **M145Q** — the Q is the **Quake tip**, specifically engineered to produce the jumping behaviour. It is NOT an S (Sharp) tip. The Q tip has a **rounded / multi-lobed dome** contact surface rather than a single point, and that geometry is what creates the cam mechanism below.
 
 ### Q Tip — The Real Geometry: Slanted Contact Surface (Frustum-to-Cylinder)
@@ -2765,6 +2767,8 @@ Diablo in Ultimate Balance Mode is a **three-part automatic state machine**: Met
 ---
 
 ## Case 18 — Mass Distribution Physics + Dual Bearing Architecture (Phantom Orion B:D)
+
+> **Stock combo (Phantom Orion B:D):** 4D CW: Orion · 4D MW: Phantom · 4D Bottom: Bearing Drive
 
 Phantom Orion is the stamina reference design. Every decision is an explicit physics optimization: Phantom maximises I by concentrating mass at maximum radius; B:D minimises friction through a dual-bearing shaft/casing split. Together they push stamina beyond what any single principle alone achieves.
 
@@ -7581,6 +7585,8 @@ All previous rubber cases placed rubber at: the tip (RF/RB), the Energy Ring (L-
 
 ## Case 40 — L-Drago Guardian: Armor-Flat Metal Frame + Full Rubber Core — Defense Mode Architecture
 
+> **Stock combo (L Drago Guardian S130MB):** 4D MW: L Drago Guardian · Track: Shield 130 · Bottom: Metal Ball
+
 L-Drago Guardian is the Defense-type counterpart to Destructor. Its Metal Frame weighs 39.7g (the heaviest single Metal Frame in MFB), its Core is 5.8g and composed almost entirely of rubber. Together these create a different two-layer absorption model from Destructor: the Metal Frame is an **armor shell** (smooth, rounded, low restitution face), and the rubber Core is a **full cushion** (not just a damping layer — the Core is mostly rubber, not rubber-over-plastic).
 
 ### Metal Frame — Armor Flat Design
@@ -9374,6 +9380,8 @@ Metal Spike is a metal tip with a single hardened spike. It is banned from WBO p
 ---
 
 ## Case 53 — Hades Fusion Wheel + BD145: Geometric Complementarity, Gap-Filling, and Normal-Mode Floor Scraping
+
+> **Stock combo (Fusion Hades AD145SWD):** 4D CW: Hades · 4D MW: Fusion · Track: Armor Defense 145 · Bottom: Sharp Wide Defense
 
 Hades has three wide wings with deep gaps between them. BD145 has three protrusions that match the width of those gaps. When assembled, BD145's protrusions fill Hades's gaps, creating a near-solid composite disc. The mode change (which way BD145 is oriented) determines whether the protrusions fill the gaps (Boost Mode = defensive) or stick down toward the floor (Normal Mode = scraping disaster).
 

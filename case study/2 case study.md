@@ -4398,6 +4398,7 @@ function canUseDoublebearingCore(cfg: LeftSpinGearShellConfig): boolean {
 ---
 
 ## Case 101 — Metal Change Base (Driger S BB): Small-Point Metal Tip Contact Mechanics, Launch-Dependent Orbit Bifurcation, Tornado-Ridge Catching, and Compact Height Advantage
+> **Stock combo (Driger S):** AR: Tiger Defenser · WD: Eight Heavy · SG: Right Spin Gear · BB: Metal Change Base
 
 Metal Change Base (~5.1 g total) is the Blade Base of Driger S. Its defining feature is the Metal Change tip: a small cylindrical steel pin (~1.0–1.2 mm diameter flat face) press-fitted into an ABS tip shaft that sits in a spring-loaded or friction-held collar, allowing the tip to pivot slightly relative to the base body under load. The result is a contact geometry that is neither fully sharp (no true point) nor flat (too small in area to grip like a flat tip), placing it in a transitional regime where launch energy determines whether the bey orbits aggressively or settles into a compact flower pattern. At 5.1 g it is a heavy Blade Base for Plastics and that mass is distributed in the wide, low ABS disc, producing the best CoM height in the compact category. The metal tip wears — small contact area means high contact pressure — but catches the stadium's Tornado Ridge reliably, providing a passive defensive mechanism that most tips of comparable aggression do not offer.
 
@@ -4719,6 +4720,7 @@ function catchesRidge(cfg: MetalChangeBaseConfig): boolean {
 ---
 
 ## Case 102 — Tiger Defenser AR (Driger S): Slope-Mediated Recoil Suppression, Spin-Direction Asymmetry, One-Piece Height Uniformity, and the Rear-Spike Stress Concentration
+> **Stock combo (Driger S):** AR: Tiger Defenser · WD: Eight Heavy · SG: Right Spin Gear · BB: Metal Change Base
 
 Tiger Defenser (~3.6 g) is a three-armed, one-piece ABS Attack Ring from Driger S. Each arm terminates in a "head" — a forward-swept curved blade face with a trailing rear spike connected to the body by a narrow bridge. The contact faces carry slight positive slopes in right-spin (contact normal tilts slightly upward), which is the mechanical source of the AR's defining property: very low rotational recoil in right-spin. In left-spin the slopes are presented trailing-edge-first, eliminating the slope benefit and raising recoil. The one-piece construction means the AR has no gap between a main AR and a Sub-AR layer, preventing opponents from wedging into the joint and making the height profile uniform across the full azimuth. At 3.6 g with edge-focused mass distribution, the I contribution is competitive with heavier ARs that place more mass inward. The part's one structural weakness — the joint connecting the rear spike to the head — is a geometry-driven stress concentration that has caused documented breakage under high-energy opposite-spin contacts.
 
@@ -5670,6 +5672,7 @@ function sgsfPrecessionDrag(
 ---
 
 ## Case 110 — Jumping Base (Trygle): Ski-Contact Critical Tilt, Positive-Feedback Instability, and Why 7.8 g of Mass Cannot Save a Geometrically Doomed Base
+> **Stock combo (Trygle):** AR: Triple Wing · WD: Eight Wide · SG: Right Spin Gear (Spring Version) · BB: Jumping Base (Trygle)
 
 Jumping Base (Trygle) (7.8 g) is a Plastics-era Blade Base with three large lateral ski protrusions and a sharp SG tip. At zero tilt and full tip extension the skis clear the stadium floor by only a few millimetres; the critical tilt angle before ski-to-stadium contact is approximately 3.6°. Once ski contact occurs, the large moment arm amplifies the contact torque into an angular impulse that increases the tilt further, creating a positive-feedback loop that produces the jumping behaviour. No tip substitution rescues it: a taller shaft reduces ski clearance to zero; a shorter shaft raises the base too high for any attack geometry. It is mechanically outclassed in every role by any base that keeps its skis off the stadium floor.
 
@@ -8814,6 +8817,7 @@ Flying Defense (Hasbro) achieves a contact angle of exactly 90° by geometry, ma
 ---
 
 ## Case 113 — Jumping Base 2 (Cyber Dragoon BB, 6.8 g): Dish Grind Redemption
+> **Stock combo (Cyber Dragoon):** AR: Cybernetic Dragon · WD: Ten Wide · SG: Right Spin Gear (MG Spring Version) · BB: Jumping Base 2
 
 Jumping Base 2 is a Blade Base whose competitive history traces an almost complete arc of reassessment: dismissed as a joke, confirmed as a joke, and then — through a narrow window of very specific customisation — recovered as a legitimately viable Force-Smash platform. The base is defined by three structural facts: a wide free-spinning outer disc at low height, a tall central body that raises the centre of mass, and a spring-return jump mechanism that launches the beyblade vertically on hard impacts. Each of these individually represents a competitive liability. The disc scrapes the stadium when the bey tilts after a jump; the protrusions on the disc's upper face add recoil on every downward contact; the inner fins generate negligible downforce; and the disc's width makes LAD performance poor. SG compatibility is superficially broad but practically useless since non-protruding cores never reach the stadium floor. Yet the same wide free-spinning disc that causes scrape damage turns out — when precisely balanced and paired with Hasbro Flying Defense — to be a potent overhead grinding mechanism that produces pseudo-Force-Smash displacement, converting two previously rejected parts into a shockingly effective combination.
 
@@ -10046,6 +10050,7 @@ The FAC Version Shaft operates across two physically distinct modes. In bearing-
 ---
 
 ## Case 115 — Flame Wing AR (Dranzer F, 3.8 g): Spin-Direction Asymmetric Wing Fragility
+> **Stock combo (Dranzer F):** AR: Flame Wing · WD: Eight Heavy · SG: Right Spin Gear (Triple Change Version) · BB: Flame Change Base
 
 Flame Wing is a three-wing Attack Ring from Dranzer F that presents a split competitive identity almost entirely dictated by spin direction. In right spin its rounded-but-forward-swept wings generate genuine upper attack and moderate smash simultaneously, a combination that should support compact and spin-stealing attack roles — but the wing tips fracture under RS contact forces with enough regularity that second-hand Dranzer F units are broken more often than not. In left spin the geometry reverses: the rounded leading edges become passive deflectors, recoil drops substantially, and the AR transitions into a defensive/zombie character that is viable at the top end without reaching the peak of its class. The fragility concern does not disappear in LS — it merely becomes manageable rather than disqualifying when Wide Survivor or Wide Defense is present to intercept hard hits before they reach the tips. Understanding why the wing geometry is so direction-asymmetric in both contact behaviour and fracture risk is the central physics question this case addresses.
 
@@ -10941,6 +10946,7 @@ function hoppingPresent(sg: SGTripleChangeCore, tip: TipPosition, worn: boolean)
 ---
 
 ## Case 117 — Flame Change Base (Dranzer F BB, 4.1 g): Dedicated TCVersion Shell
+> **Stock combo (Dranzer F):** AR: Flame Wing · WD: Eight Heavy · SG: Right Spin Gear (Triple Change Version) · BB: Flame Change Base
 
 Flame Change Base is a Blade Base designed exclusively to house SG (Triple Change Version) and has no compatibility with any other SG. It is one of the few bases in the Plastics generation whose design is entirely constrained by a single core part rather than offering any independent versatility. The base itself is a flat-profile ABS disc with a specialised cross-slot receiver for the Triple Change core's non-standard body, a smooth lower rim providing middling LAD, and a compact weight distribution. It cannot accept a Heavy Metal Core — the cross-slot bore does not permit the cylindrical HMC insert — which is the decisive competitive constraint. The base had marginal tournament relevance when SG (Triple Change Version) was novel, collapsed as the format identified dedicated-tip bases as universally superior, and retains only situational niche use as an aggressive balance-type platform when the SG's tips are sufficiently worn to eliminate ridge-hopping.
 

@@ -1041,6 +1041,8 @@ function magnestadiaForceRatio(
 
 ## Case 122 — SG Metal Flat Base (Gaia Dragoon V Version): Low-Friction Metal Flat Tip as the Rotational-Recoil-to-Linear-Recoil Converter, Tornado Ridge Grip by Contact Area, and the Two-Mold Distinction
 
+> **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right Spin Gear (South Magnecore Version) · BB: SG Metal Flat Base (Gaia Dragoon V Version)
+
 SG Metal Flat Base (SGMF2) is 6.2 g [FACT] at mid-to-low height, built around a metal flat tip whose low friction coefficient (~0.12) produces a specific failure mode that is simultaneously a survival advantage: ARs with high rotational recoil cause the tip to slip laterally rather than absorbing angular impulse as wobble, converting spin-draining recoil into a lateral bounce that preserves attacker spin at the cost of delivered power. The flat contact face grips the tornado ridge intermittently for orbital control, and the completely-flat mold variant maximises this by presenting full face area to the ridge. Two mold variants exist; the flat mold is strictly preferred.
 
 ---
@@ -1903,6 +1905,8 @@ function upperAttackBonusFraction(base: VolcanoChangeBase, opponentHeightMm: num
 ---
 
 ## Case 126 — Tryhorn (Land Attack AR / 8 Heavy / Right SG / SG Semi-Flat Base): V-Tread Circular Disk as the Only Mechanism That Recovers Smash from an Otherwise Zero-Smash Radial Profile
+
+> **Stock combo (Tryhorn):** AR: Land Attack · WD: Eight Heavy · SG: Right Spin Gear · BB: SG Semi-Flat Base
 
 Tryhorn is an anime/card-game Beyblade (card 096, Attack 4000 / Defense 2000) whose Bit Beast is a bull. Its four components each address a distinct performance variable: Land Attack AR converts a circular disk -- which by geometry delivers zero smash -- into a smash-capable surface via directional V-tread groove walls; 8 Heavy is the standard rim-weighted WD; Right SG is standard; SG Semi-Flat Base is the shortest plastics base at 13 mm. The AR is slightly taller than average. The V-tread mechanism is the central physics claim of this combo: without it, a circular AR surface returns 100% of impulse as recoil.
 
@@ -10708,6 +10712,8 @@ function egBaseStabilityThreshold(
 ---
 
 ## Case 187 — First Clutch Base (Metal Driger Version): Why First Clutch Activation Disrupts Rather Than Assists, Why LAD Is Insufficient Against the CEW Light Sharp Benchmark, and the Triangular Protrusion Recoil Tax
+
+> **Stock combo (Metal Driger):** AR: Cross Spiker · WD: Ten Heavy · SG: Right Spin Gear (Heavy Metal Core) / Right Engine Gear (Metal Semi-Flat) · BB: First Clutch Base (Metal Driger Version)
 
 First Clutch Base (Metal Driger Version) is 6.9 g. It is the lightest clutch-equipped EG blade base in the library. The First Clutch mechanism engages the Engine Gear spring at the start of the battle — releasing its stored energy as an immediate burst rather than a mid-match trigger. This is less disruptive than Final Clutch (which fires mid-match and forces a sudden speed change while the combo is in motion), but the early burst still breaks any orbital pattern the combo has established at launch, and occasionally sends the beyblade into a self-KO trajectory. The base has above-average LAD for an EG base, but "above-average for EG" still falls short of the Normal Base (Wolborg 4 / Rock Bison versions) which are the correct pairing for CEW Light Sharp stamina combinations. Triangular protrusions on the outer base rim add minor recoil — not severe, but unnecessary for any defensive or stamina role.
 

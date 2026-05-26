@@ -29,6 +29,34 @@ function DPad() {
   const originRef = useRef<{ x: number; y: number; id: number } | null>(null);
   const [knobPos, setKnobPos] = useState({ x: DPAD_SIZE / 2, y: DPAD_SIZE / 2 });
 
+  const applyDelta = (dx: number, dy: number) => {
+    const clamp = DPAD_SIZE * 0.35;
+    const kx = Math.min(clamp, Math.max(-clamp, dx));
+    const ky = Math.min(clamp, Math.max(-clamp, dy));
+    setKnobPos({ x: DPAD_SIZE / 2 + kx, y: DPAD_SIZE / 2 + ky });
+
+    const dirs: string[] = [];
+    if (Math.abs(dx) > DPAD_DEAD || Math.abs(dy) > DPAD_DEAD) {
+      if (dx < -DPAD_DEAD) dirs.push("moveLeft");
+      if (dx >  DPAD_DEAD) dirs.push("moveRight");
+      if (dy < -DPAD_DEAD) dirs.push("moveUp");
+      if (dy >  DPAD_DEAD) dirs.push("moveDown");
+    }
+    touchInputState.moveLeft  = dirs.includes("moveLeft");
+    touchInputState.moveRight = dirs.includes("moveRight");
+    touchInputState.moveUp    = dirs.includes("moveUp");
+    touchInputState.moveDown  = dirs.includes("moveDown");
+  };
+
+  const resetDpad = () => {
+    originRef.current = null;
+    setKnobPos({ x: DPAD_SIZE / 2, y: DPAD_SIZE / 2 });
+    touchInputState.moveLeft  = false;
+    touchInputState.moveRight = false;
+    touchInputState.moveUp    = false;
+    touchInputState.moveDown  = false;
+  };
+
   const handleStart = (e: React.TouchEvent) => {
     e.preventDefault();
     const t = e.changedTouches[0];
@@ -43,24 +71,7 @@ function DPad() {
     for (let i = 0; i < e.changedTouches.length; i++) {
       const t = e.changedTouches[i];
       if (t.identifier !== origin.id) continue;
-      const dx = t.clientX - origin.x;
-      const dy = t.clientY - origin.y;
-      const clamp = DPAD_SIZE * 0.35;
-      const kx = Math.min(clamp, Math.max(-clamp, dx));
-      const ky = Math.min(clamp, Math.max(-clamp, dy));
-      setKnobPos({ x: DPAD_SIZE / 2 + kx, y: DPAD_SIZE / 2 + ky });
-
-      const dirs: string[] = [];
-      if (Math.abs(dx) > DPAD_DEAD || Math.abs(dy) > DPAD_DEAD) {
-        if (dx < -DPAD_DEAD) dirs.push("moveLeft");
-        if (dx >  DPAD_DEAD) dirs.push("moveRight");
-        if (dy < -DPAD_DEAD) dirs.push("moveUp");
-        if (dy >  DPAD_DEAD) dirs.push("moveDown");
-      }
-      touchInputState.moveLeft  = dirs.includes("moveLeft");
-      touchInputState.moveRight = dirs.includes("moveRight");
-      touchInputState.moveUp    = dirs.includes("moveUp");
-      touchInputState.moveDown  = dirs.includes("moveDown");
+      applyDelta(t.clientX - origin.x, t.clientY - origin.y);
     }
   };
 
@@ -69,15 +80,25 @@ function DPad() {
     const origin = originRef.current;
     if (!origin) return;
     for (let i = 0; i < e.changedTouches.length; i++) {
-      if (e.changedTouches[i].identifier === origin.id) {
-        originRef.current = null;
-        setKnobPos({ x: DPAD_SIZE / 2, y: DPAD_SIZE / 2 });
-        touchInputState.moveLeft  = false;
-        touchInputState.moveRight = false;
-        touchInputState.moveUp    = false;
-        touchInputState.moveDown  = false;
-      }
+      if (e.changedTouches[i].identifier === origin.id) resetDpad();
     }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    originRef.current = { x: e.clientX, y: e.clientY, id: -1 };
+    setKnobPos({ x: DPAD_SIZE / 2, y: DPAD_SIZE / 2 });
+    const onMove = (ev: MouseEvent) => {
+      if (!originRef.current) return;
+      applyDelta(ev.clientX - originRef.current.x, ev.clientY - originRef.current.y);
+    };
+    const onUp = () => {
+      resetDpad();
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
   };
 
   return (
@@ -87,6 +108,7 @@ function DPad() {
       onTouchMove={handleMove}
       onTouchEnd={handleEnd}
       onTouchCancel={handleEnd}
+      onMouseDown={handleMouseDown}
     >
       {/* Knob — left/top are runtime pixel positions */}
       <div
@@ -109,12 +131,19 @@ function ActionBtn({
 }: { field: TouchField; label: string; sub: string; colorClass: string }) {
   const btnDown = (e: React.TouchEvent) => { e.preventDefault(); (touchInputState[field] as boolean) = true; };
   const btnUp   = (e: React.TouchEvent) => { e.preventDefault(); (touchInputState[field] as boolean) = false; };
+  const mouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    (touchInputState[field] as boolean) = true;
+    const onUp = () => { (touchInputState[field] as boolean) = false; window.removeEventListener("mouseup", onUp); };
+    window.addEventListener("mouseup", onUp);
+  };
   return (
     <div
       className={cn(actionBase, colorClass)}
       onTouchStart={btnDown}
       onTouchEnd={btnUp}
       onTouchCancel={btnUp}
+      onMouseDown={mouseDown}
     >
       {label}<br /><span className="text-[0.5rem]">{sub}</span>
     </div>
@@ -146,6 +175,15 @@ function ActionButtons() {
 function SpaceBar() {
   const pressTimeRef = useRef<number>(0);
 
+  const release = () => {
+    const held = Date.now() - pressTimeRef.current;
+    touchInputState.chargeHeld = false;
+    if (held < SPACE_TAP_MS) {
+      touchInputState.specialTap = true;
+      requestAnimationFrame(() => { touchInputState.specialTap = false; });
+    }
+  };
+
   const handleStart = (e: React.TouchEvent) => {
     e.preventDefault();
     pressTimeRef.current = Date.now();
@@ -154,13 +192,15 @@ function SpaceBar() {
 
   const handleEnd = (e: React.TouchEvent) => {
     e.preventDefault();
-    const held = Date.now() - pressTimeRef.current;
-    touchInputState.chargeHeld = false;
-    if (held < SPACE_TAP_MS) {
-      touchInputState.specialTap = true;
-      // Auto-clear specialTap after one frame so it acts as a one-shot pulse
-      requestAnimationFrame(() => { touchInputState.specialTap = false; });
-    }
+    release();
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    pressTimeRef.current = Date.now();
+    touchInputState.chargeHeld = true;
+    const onUp = () => { release(); window.removeEventListener("mouseup", onUp); };
+    window.addEventListener("mouseup", onUp);
   };
 
   return (
@@ -169,6 +209,7 @@ function SpaceBar() {
       onTouchStart={handleStart}
       onTouchEnd={handleEnd}
       onTouchCancel={handleEnd}
+      onMouseDown={handleMouseDown}
     >
       SPACE
     </div>
@@ -289,11 +330,6 @@ interface TouchControlsGBLayoutProps {
 }
 
 export function TouchControlsGBLayout({ children }: TouchControlsGBLayoutProps) {
-  // Only render on touch devices
-  if (!window.matchMedia("(pointer: coarse)").matches) {
-    return children ? <>{children}</> : null;
-  }
-
   return <TouchControlsGBLayoutInner>{children}</TouchControlsGBLayoutInner>;
 }
 

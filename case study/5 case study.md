@@ -5017,6 +5017,8 @@ function defenseSpinRetention(phi_deg: number, I_combo: number,
 
 ## Case 263 — Lightning Metal Wheel (L-Drago) · ≈ 28.0 g
 
+> **Stock combo (Lightning L Drago 100HF):** CW: L Drago · MW: Lightning · Track: 100 · Bottom: Hole Flat
+
 **Thesis: Lightning L-Drago's three left-handed asymmetric blades produce a contact geometry where a same-height collision with a right-spinning opponent applies a torque in the positive (accelerating) direction on the L-Drago Wheel — the spin-steal mechanism — but at Metal Fusion attack heights the effective momentum transfer per contact is small, making the theoretical spin-steal secondary to the upper-attack impulse in practice.**
 
 Lightning is the first Metal Wheel designed for left-spin (counter-clockwise) operation. Its three blades are swept in the opposite handedness to right-spin attack Wheels: where Storm's wings sweep back relative to the right-spin direction, Lightning's blades are swept back relative to the left-spin direction. This creates a qualitatively different contact geometry when Lightning meets a standard right-spinning beyblade.

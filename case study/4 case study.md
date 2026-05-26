@@ -397,6 +397,8 @@ function egBurstUseful(
 ---
 
 ## Case 191 — First Clutch Base (Driger G Version) · 7.3 g [FACT]
+> **Stock combo (Driger G):** AR: Triple Tiger · WD: Ten Balance · SG: Right Engine Gear (Metal Semi-Flat) · BB: First Clutch Base (Driger G Version)
+
 **Thesis:** The cleanest First Clutch base geometry — no protrusions eliminates recoil at the cost of all offensive upside, leaving acceptable LAD that still trails every clutch-free alternative.
 
 The First Clutch Base (Driger G Version) strips the EG blade base back to its functional minimum: a smooth outer skirt, a standard First Clutch mechanism, and a tip recess sized for the stock Light Sharp. Where Metal Driger's version (6.9 g) and Dragoon G's (7.6 g) carry protruding geometry that raises contact normals into attack angles, Driger G's rim is essentially cylindrical. The consequence is bidirectional — incoming smash finds nothing to grip, so recoil per hit is near zero, but the base also projects no geometry outward to compensate for the EG height penalty (h_tip ≈ 20 mm) that already disadvantages every engine-gear chassis in stamina match-ups. The 7.3 g figure sits between those two siblings, adding more rotational inertia than Metal Driger but slightly less than Dragoon G, a secondary consideration since all three share the same spring-burst timing and the same LAD ceiling set by the lack of a true skirt orbit surface.
@@ -1632,6 +1634,8 @@ function zeusCombinationMass(
 ---
 
 ## Case 198 — Normal Base (Rock Bison Version) · 5.6 g
+> **Stock combo (Rock Bison):** AR: Double Horn · WD: Ten Heavy · SG: Right Engine Gear (Circle Defenser) · BB: Normal Base (Rock Bison Version)
+
 **Thesis:** The "always-on" EG coupling removes timing constraints but demands launch discipline, enables hit-recharge with large CEW parts, and provides marginally more recoil than Wolborg 4's version from small rectangular protrusions — a functional second option for the same Circle Survivor role.
 
 Normal Base (Rock Bison Version) is a 5.6 g blade base with a small, round profile and no clutch mechanism in its EG coupling. Where First and Final Clutch bases hold the wound spring until a trigger condition fires, Normal Base connects the EG spring directly to the output shaft — the moment the spring is wound past the resting preload, it begins acting on the rotation. This "always on" character changes two things relative to clutch-equipped bases: the assembly must be held stationary at launch to prevent early discharge, and during battle any relative rotation between the EG body and the shaft tip (whether from hits, recoil, or the Circle Survivor CEW receiving spin from the opponent) can partially rewind the spring, enabling mid-battle recharge. Small rectangular protrusions run around the base edge, distinguishing it geometrically from Normal Base (Wolborg 4 Version)'s smooth rim and introducing marginal recoil at each contact.
@@ -1792,6 +1796,8 @@ function rcgBodyInertia(m_protrusion_g: number, r_mm: number): number {
 ---
 
 ## Case 199 — Normal Base (Wolborg 4 Version) · 5.4 g
+> **Stock combo (Wolborg 4):** AR: Star Wolf · WD: Ten Wide · SG: Right Engine Gear (Circle Survivor) · BB: Normal Base (Wolborg 4 Version)
+
 **Thesis:** A smooth perimeter eliminates the recoil penalty of Rock Bison's protrusions and exposes the WD outer rim below the base footprint — making it the reference Circle Survivor Defense base and the primary RCG (Free Shaft) platform.
 
 Normal Base (Wolborg 4 Version) is 5.4 g, 0.2 g lighter than Rock Bison's version, and shares the same "always-on" EG coupling with no clutch mechanism. The shared mechanics — launch-hold discipline, spring active immediately on winding, hit-recharge capability with large CEW parts — are identical to Case 198 and apply here without modification. The distinguishing geometry is the perimeter: Wolborg 4's base is essentially a complete circle with only minor tab interruptions, giving a contact-normal angle φ ≈ 5° across almost the entire rim. This is the lowest recoil surface achievable on any blade base, and it is the reason this base dominates Circle Survivor Defense: every attacker hit that lands on the base skirt rather than the AR or WD glances off with negligible spin loss. The base also sits low enough that a Wide Survivor WD's outer rim overhangs the base footprint, delegating all LAD orbit contact to the WD rather than the base skirt.
@@ -2471,6 +2477,8 @@ function pairedContactRatio(J_nose: number, J_tri: number): number {
 ---
 
 ## Case 203 — Final Clutch Base (Dranzer G Version) · 7.9 g
+> **Stock combo (Dranzer G):** AR: Wing Survivor · WD: Ten Balance · SG: Right Engine Gear (Metal Semi-Flat) · BB: Final Clutch Base (Dranzer G Version)
+
 **Thesis:** The heaviest Final Clutch base exploits the one scenario where late-match spring firing is useful rather than wasteful — post-topple EG burst with Metal Flat CEW — converting the Final Clutch's otherwise-low-RPM trigger window into a LAD extension mechanism through gyroscopic impulse and tilt-orbit geometry.
 
 Final Clutch Base (Dranzer G Version) at 7.9 g is the heaviest Final Clutch base in the library and the second heaviest EG blade base overall, behind First Clutch Base (Zeus Version). Its mass is distributed toward the outer edges rather than centrally, giving a relatively high moment of inertia for the chassis and moderate translational resistance. The side profile carries minor recoil-prone details that disqualify it from Circle Survivor Defense — a context where smooth perimeter geometry is mandatory — while those same details are irrelevant in its correct role: a post-topple LAD platform for Right Engine Gear (Metal Flat). The Final Clutch mechanism fires when spin drops below ~1350 RPM (Case 193). On most EG configurations this is a late-match nuisance that adds spin at a speed too low to ring out opponents. For this base and Final Clutch Base (Gaia Dragoon G Version), the burst fires precisely when the combination is beginning to topple, and the base geometry converts that burst energy into orbital precession rather than wasting it.
@@ -4112,6 +4120,7 @@ function stabilityPenaltyRatio(h_cm_m: number, delta_h_m: number): number {
 ---
 
 ## Case 211 — Final Clutch Base (Draciel G Version) · 7.3 g: Why Independent Non-Bridged Clutch Tabs Create an Alignment-Dependent EG Trigger Failure Mode, and Why the Lightest Final Clutch Base Has the Narrowest Competitive Window
+> **Stock combo (Draciel G):** AR: Shield Hammer · WD: Ten Wide · SG: Right Engine Gear (Metal Ball) · BB: Final Clutch Base (Draciel G Version)
 
 Final Clutch Base (Draciel G Version) is 7.3 g — the lightest of the Final Clutch bases, compared to Final Clutch Base (Dranzer G Version) at 7.9 g (Case 203). It carries two small metal balls embedded in its clutch tab arms, visible in the red-circled regions of the annotated image. The critical structural distinction from other Final Clutch bases is that the two clutch tabs are independent: they are not joined or bridged. This means the EG release switch is only depressed when the tab on the same side as the switch faces inward — if an opponent's hit rotates the base to place the switch on the uncontacted side, the clutch never triggers regardless of spin rate. The late-burst behavior is present in principle but unreliable in practice.
 
@@ -5125,6 +5134,7 @@ function spinStealOppositeSpin(
 ---
 
 ## Case 216 — Final Clutch Base (Gaia Dragoon G Version) · 7.4 g: Why a Visually Aggressive Perimeter Shape Is Irrelevant to V8 Combo Performance, How the Trigger Timing Aligns With Post-Topple EG Burst, and Why the Marginal Dranzer G Advantage Does Not Justify Its Cost Premium
+> **Stock combo (Gaia Dragoon G):** AR: Dragon Saucer · WD: Ten Heavy · SG: Right Engine Gear (Metal Flat) · BB: Final Clutch Base (Gaia Dragoon G Version)
 
 Final Clutch Base (Gaia Dragoon G Version) is 7.4 g and is the base included with Gaia Dragoon G — the same beyblade that provides Right Engine Gear (Metal Flat). This co-release is the reason it is the practical entry point for V8 Combo: the two required components come from the same box. The perimeter shape is visually aggressive — eight pointed protrusions alternating between larger and smaller spikes around the rim — which would normally predict high recoil and poor defensive character. In standard EG use outside the V8 context this assessment is correct. What redeems it is that V8 Combo's competitive value is generated almost entirely in the post-topple tilt phase, where the combination is tilted at ~40–60° and the base rim barely participates in contacts. The spike geometry is irrelevant at this tilt angle. Dranzer G FCB (Case 203) at 7.9 g is marginally better for the same role, but the 0.5 g mass difference produces a calculably small I advantage while the cost premium is severe, particularly given Dranzer G's cultural pricing premium ("Kai Tax").
 
@@ -6764,6 +6774,7 @@ function burstPeakPower(E_spring_J: number, delta_t_ms: number): number {
 ---
 
 ## Case 223 — First Clutch Base (Dragoon GT Version) · 7.4 g: Why Four-Wing Perimeter Geometry Generates Unacceptable Recoil in Both Spin Directions, How First Clutch Activation Avoids Final Clutch's Self-KO Pattern but Substitutes Broken Flower Pattern, and Why Dragoon G Version Is Strictly Superior
+> **Stock combo (Dragoon GT):** AR: G Upper · WD: Ten Wide · SG: Left Engine Gear (Turbo) · BB: First Clutch Base (Dragoon GT Version) · CEW: Metal Grip
 
 First Clutch Base (Dragoon GT Version) is a 7.4 g blade base with First Clutch activation timing and a four-wing perimeter body. The First Clutch mechanism fires at the start of the battle while spin is high, which avoids the post-topple self-destruction pattern of Final Clutch. However, the four wings that define the GT version's profile generate substantially higher recoil than the Dragoon G Version base body in both spin directions — worst in Left Spin, significant in Right Spin. The recoil cost is not offset by any attack capability: the wings do not function as effective contact points and serve only as surface area that produces defensive liability. The combination of manageable (but still problematic) First Clutch activation and high baseline recoil produces a base that is a liability in every practical role, strictly inferior to First Clutch Base (Dragoon G Version) for Engine Gear attack use.
 
@@ -7739,6 +7750,7 @@ function egComboTopplingTorque(m_kg: number, h_CoM_m: number, tilt_deg: number):
 ---
 
 ## Case 227 — Final Clutch Base (Dranzer GT Version) · 7.6 g: Why Three-Protrusion Mode-Change Geometry Produces Pseudo-Attack and Pseudo-Defense Modes With Limited Functional Difference, How Final Clutch Timing Fails Every Archetype Independently, and Why Desert Sphinxer Version Outclasses It in the Only Role Where Weight Matters
+> **Stock combo (Dranzer GT):** AR: Triangle Wing · WD: Ten Balance · SG: Right Engine Gear (Reverse) · BB: Final Clutch Base (Dranzer GT Version) · CEW: Metal Semi-Flat
 
 Final Clutch Base (Dranzer GT Version) is a 7.6 g blade base with Final Clutch activation timing and three flat-edged rounded protrusions distributed around the perimeter. The protrusions can be oriented to cover AR gaps or leave them open — an inbuilt mode-change that superficially creates an Attack mode (protrusions covering gaps, smoother profile) and a Survival/Defense mode (protrusions in open position, gaps exposed). This mode-change is cosmetically interesting but mechanically marginal: the protrusion profile is too rounded and low to function as smash contact geometry, and the gap-covering effect does not produce the continuous smooth arc that genuine defense ARs rely on. Final Clutch activation timing — late match at low spin — is structurally incompatible with Attack, Defense, and Survival independently of protrusion orientation. The one role where the base has qualified utility is Circle Survivor Defense, where its mass (7.6 g) exceeds typical Normal Base options, but Final Clutch Base (Desert Sphinxer Version) at 7.4 g provides the same mass advantage without the protrusions that create vulnerability to tall opponents.
 
@@ -8310,6 +8322,7 @@ function contactFrequency(nContacts: number, omega_rad_s: number): number {
 ---
 
 ## Case 230 — Final Clutch Base (Gigars Version) · 7.6 g: Why Spike Protrusions Compound EG System Recoil Beyond All Other Final Clutch Bases, How Decent LAD Is Irrelevant Without Competitive Stamina Architecture, and Why This Is the Worst-Case Final Clutch Implementation
+> **Stock combo (Gigars):** AR: Gigantic Claw · WD: Ten Balance · SG: Right Customize Gear (Full Auto Clutch Version) · BB: Final Clutch Base (Gigars Version) · CEW: Metal Change
 
 Final Clutch Base (Gigars Version) is a 7.6 g blade base with Final Clutch activation timing and an extreme perimeter profile: dense spike protrusions covering the full outer circumference. It shares its mass (7.6 g) with Final Clutch Base (Dranzer GT Version, Case 227) but its spike geometry produces substantially more recoil than the GT version's three rounded protrusions. The LAD is described as decent for an EG base — meaning the base geometry allows reasonable precession arc when spinning down — but LAD performance is irrelevant in context: EG bases cannot achieve the low-friction, stable spin-down arc that makes LAD competitively useful, because the clutch mechanism, height penalty, and now the spike recoil liability all preclude survival scenarios. Final Clutch timing adds nothing to any archetype as established in Case 227, and the Gigars version's spike protrusions add specific recoil liability on top of the shared Final Clutch failure mode. No competitive use exists.
 
@@ -9492,6 +9505,7 @@ function stockVsNonStockHeightPenalty(
 ---
 
 ## Case 236 — First Clutch Base (Zeus Version) · 8.0 g: Why the Heaviest EG Base Creates a Viable but Outclassed Weight-Based Defense Configuration, How Poor LAD Limits Every Other Role, and Why the Round-Edge Profile Does Not Compensate for Height
+> **Stock combo (Zeus):** AR: Holy Despell · S-AR: Screw Zeus · WD: Ten Wide · SG: Right Customize Gear (Free Shaft Version) · BB: First Clutch Base (Zeus Version) · CEW: Light Sharp
 
 First Clutch Base (Zeus Version) is an 8.0 g Engine Gear compatible blade base — the heaviest EG base in the library. Its round-edged outer profile and relatively even weight distribution distinguish it from the spike-heavy or wing-heavy profiles of other Final and First Clutch bases. The weight and round profile create a genuine Weight-Based Defense (WBD) use case when combined with Right Engine Gear (Circle Defenser) or Right Engine Gear (Mystery Cutter): the assembly mass approaches SG Metal Ball Base with 4 Metal Balls plus a Heavy Metal Core, and Circle Survivor is fixed relatively in place, creating a protected low-recoil defensive perimeter. The limitation common to all EG bases applies here: poor LAD. The elevated CoM from EG height reduces spin survival at low speeds, which is the mechanism WBD configurations rely on. The result is a WBD setup that is functional but less versatile than dedicated WBD options — adequate when alternatives are unavailable, outclassed when they are.
 

@@ -15,7 +15,7 @@ interface ServerSettings {
 export function GameSelectPage() {
   const { setGameMode } = useGame();
   const [srvSettings, setSrvSettings] = useState<ServerSettings>({
-    enableAI: false,
+    enableAI: true,
     enableTournament: false,
     maintenanceMode: false,
     serverMessage: "",

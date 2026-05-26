@@ -113,7 +113,7 @@ export function TryoutGamePage() {
         }
       } catch { /* use defaults */ }
 
-      // Load arena config
+      // Load arena config (fall back to a default 1080×1080 circle arena)
       try {
         const snap = await getDoc(doc(db, COLLECTIONS.ARENAS, arenaId));
         if (snap.exists()) {
@@ -129,11 +129,25 @@ export function TryoutGamePage() {
             shape: d.shape ?? "circle",
             theme: d.theme ?? "default",
           };
-          // Place beyblade at center of loaded arena
           bey.current.x = w / 2;
           bey.current.y = h / 2;
         }
       } catch { /* use defaults */ }
+
+      // Ensure we always have an arena config so the renderer has something to draw
+      if (!arenaConfig.current) {
+        arenaConfig.current = {
+          id: "default",
+          name: "Arena",
+          width: 1080,
+          height: 1080,
+          shape: "circle",
+          theme: "default",
+        };
+        arenaRadius.current = 1080 * 0.45;
+        bey.current.x = 540;
+        bey.current.y = 540;
+      }
 
       setHud((h) => ({
         ...h,
