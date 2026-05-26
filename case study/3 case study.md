@@ -1,8 +1,8 @@
 ﻿# Physics Chain: Part 3
 
-**« First:** [say-what-happens-if-lively-clock.md](C:\Users\mohsi\.claude\plans\say-what-happens-if-lively-clock.md) (Cases 1–74)
-**← Part 2:** [performance-tip-hole-flat-sorted-toast.md](C:\Users\mohsi\.claude\plans\performance-tip-hole-flat-sorted-toast.md) (Cases 74–115)
-**→ Part 4:** [4 case study.md](4 case study.md) (Cases 188+)
+**« Part 1:** [1 case study.md](1%20case%20study.md) (Cases 1–73)
+**← Part 2:** [2 case study.md](2%20case%20study.md) (Cases 74–123)
+**→ Part 4:** [4 case study.md](4%20case%20study.md) (Cases 189+)
 
 ---
 

@@ -1,5 +1,7 @@
 # Physics Chain: From Free Body → Gyro → Beyblade Tick
 
+**Part 2 →** [2 case study.md](2%20case%20study.md) (Cases 74–123)
+
 ---
 
 ## Context

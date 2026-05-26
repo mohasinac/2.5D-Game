@@ -1,6 +1,6 @@
 # Physics Chain: Part 5
 
-**« Part 4:** [4 case study.md](4%20case%20study.md) (Cases 188–235) | **Part 6 »** [6 case study.md](6%20case%20study.md) (Cases 297+)
+**« Part 4:** [4 case study.md](4%20case%20study.md) (Cases 189–237) | **Part 6 »** [6 case study.md](6%20case%20study.md) (Cases 297–353)
 
 ---
 

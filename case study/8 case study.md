@@ -1,5 +1,9 @@
 # Beyblade Case Studies — Part 8: Individual Part Analysis
 
+**« Part 7:** [7 case study.md](7%20case%20study.md) (Cases 354–374) | **Part 9 »** [9 case study.md](9%20case%20study.md) (Cases 392–544)
+
+---
+
 ## How to Read a Case Study
 
 Each case in this file examines a single Beyblade **part** (a specific Attack Ring, Weight Disk, Fusion Wheel, Layer, Driver, Disc, etc.) through four lenses:

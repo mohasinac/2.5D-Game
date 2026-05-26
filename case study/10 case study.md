@@ -1,6 +1,6 @@
 # Beyblade Case Studies — Part 10: Arena Mechanics and Stadium Physics
 
-**« Part 9:** [9 case study.md](9%20case%20study.md) (Cases 392–544, Burst Series multi-lineage)
+**« Part 9:** [9 case study.md](9%20case%20study.md) (Cases 392–544)
 
 **Scope:** Generation-neutral arena physics covering all official Beyblade stadium families (Plastic, MFB, Burst, BX). Each case treats a specific named real-world stadium or arena feature. Generation-specific mechanics are tagged explicitly. Cross-generational use is derived from first principles for every case.
 

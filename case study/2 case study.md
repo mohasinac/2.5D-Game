@@ -1,6 +1,6 @@
 # Physics Chain: Part 2
 
-**← Part 1:** [say-what-happens-if-lively-clock.md](C:\Users\mohsi.claude\plans\say-what-happens-if-lively-clock.md) (Cases 1–74)
+**← Part 1:** [1 case study.md](1%20case%20study.md) (Cases 1–73) | **Part 3 →** [3 case study.md](3%20case%20study.md) (Cases 118+)
 
 ---
 

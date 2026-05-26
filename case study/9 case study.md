@@ -1,6 +1,6 @@
 # Beyblade Case Studies — Part 9: Burst System Beyblades and Parts
 
-**« Part 8:** [8 case study.md](8%20case%20study.md) (Cases 375–391)
+**« Part 8:** [8 case study.md](8%20case%20study.md) (Cases 375–415) | **Part 10 »** [10 case study.md](10%20case%20study.md) (Cases 545–585)
 
 **Scope:** Takara Tomy releases only — Hasbro versions excluded from Gen 2 mid (4D) onward through all Burst sub-systems. Burst sub-system order: Standard Burst (2015) → God Layer (2017) → Cho-Z / Dash (2018) → Gatinko (2019) → Sparking (2020) → Dynamite Battle (2021) → Ultimate (2022).
 
