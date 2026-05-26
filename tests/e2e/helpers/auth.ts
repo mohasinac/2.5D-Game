@@ -49,9 +49,14 @@ export async function tryLogin(page: Page): Promise<boolean> {
 export async function gotoProtected(page: Page, path: string): Promise<boolean> {
   await page.goto(path);
   await page.waitForLoadState("domcontentloaded");
-  // Give React Router a tick to redirect
+  // Give React Router a tick to redirect (auth guard reads Firestore asynchronously)
   await page.waitForTimeout(800);
-  if (page.url().includes("/login")) return false;
+  const currentUrl = page.url();
+  if (currentUrl.includes("/login")) return false;
+  // Detect admin guard redirecting to home ("/") when user lacks admin role.
+  // The target path segment should appear in the final URL.
+  const segment = path.split("?")[0].replace(/^\//, "");
+  if (segment && !currentUrl.includes(segment)) return false;
   return true;
 }
 
