@@ -322,7 +322,7 @@ export function TournamentLobbyPage() {
           )}
         </div>
 
-        <div className="grid gap-5" style={{ gridTemplateColumns: "1fr 320px" }}>
+        <div className="grid gap-5 grid-cols-[1fr_320px]">
           {/* Left: bracket */}
           <div>
             {/* Info bar */}

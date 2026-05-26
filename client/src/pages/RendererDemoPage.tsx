@@ -154,13 +154,12 @@ export function RendererDemoPage() {
             <div className="bg-bg2 border border-border-c rounded-2xl p-4">
               <div className="text-[11px] font-semibold text-theme-muted uppercase tracking-[0.08em] mb-2.5">2.5D Effects Active</div>
               {[
-                ["#ef4444","Attack — fastest spin streak"],
-                ["#4488ff","Defense — solid gyro lock feel"],
-                ["#44ff88","Stamina — slowest, longest spin"],
-              ].map(([c,l]) => (
+                ["text-theme-red","Attack — fastest spin streak"],
+                ["text-theme-blue","Defense — solid gyro lock feel"],
+                ["text-theme-green","Stamina — slowest, longest spin"],
+              ].map(([cls,l]) => (
                 <div key={l} className="flex items-center gap-2 mb-1.5 text-[12px] text-theme-muted">
-                  {/* Dynamic runtime hex color — rule 4 exception */}
-                  <span style={{ color: c, fontSize: 8 }}>●</span>{l}
+                  <span className={`${cls} text-[8px]`}>●</span>{l}
                 </div>
               ))}
               <div className="border-t border-border-c mt-2 pt-2 text-[11px] text-theme-faint flex flex-col gap-1">

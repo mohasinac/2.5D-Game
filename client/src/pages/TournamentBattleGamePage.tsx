@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import { TouchControls } from "@/components/game/TouchControls";
 import { Link, useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
@@ -339,7 +339,7 @@ export function TournamentBattleGamePage() {
                     {opp.username}{opp.isAI ? " (AI)" : ""}
                   </span>
                   {/* Dynamic runtime hex color — rule 4 exception */}
-                  <span style={{ color: `#${(TYPE_COLORS[opp.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}` }} className="text-[clamp(8px,1.2vw,10px)]">{opp.type}</span>
+                  <span className="text-[clamp(8px,1.2vw,10px)] hud-type-text" style={{ "--tc": `#${(TYPE_COLORS[opp.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}` } as React.CSSProperties}>{opp.type}</span>
                 </div>
                 <div className="w-full h-[5px] bg-bg3 rounded-[3px] overflow-hidden">
                   <div
@@ -360,11 +360,11 @@ export function TournamentBattleGamePage() {
         const hpBarColor = hpRatio > 0.5 ? "bg-theme-green" : hpRatio > 0.25 ? "bg-theme-yellow" : "bg-theme-red";
         return (
           <div className="absolute bottom-0 left-0 right-0 p-[clamp(8px,2vw,16px)] pointer-events-none z-10">
-            <div className="mx-auto bg-[rgba(15,23,42,0.85)] rounded-[12px] border border-border-c p-[clamp(8px,2vw,12px)]" style={{ maxWidth: "min(320px, 90vw)" }}>
+            <div className="mx-auto bg-[rgba(15,23,42,0.85)] rounded-[12px] border border-border-c p-[clamp(8px,2vw,12px)] [max-width:min(320px,90vw)]">
               <div className="flex justify-between text-[clamp(10px,1.5vw,12px)] text-theme-muted mb-2">
                 <span className="font-mono">{myBeyblade.username} (you)</span>
                 {/* Dynamic runtime hex color — rule 4 exception */}
-                <span className="capitalize" style={{ color: `#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>{myBeyblade.type}</span>
+                <span className="capitalize hud-type-text" style={{ "--tc": `#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6, "0")}` } as React.CSSProperties}>{myBeyblade.type}</span>
               </div>
               <Bar label="HP" value={myBeyblade.health} max={myBeyblade.maxHealth} barColorClass={hpBarColor} />
               <Bar label="Spin" value={myBeyblade.spin} max={myBeyblade.maxSpin} barColorClass="bg-theme-blue" />

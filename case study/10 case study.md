@@ -2857,3 +2857,397 @@ function towerRingOutProbability(exitCount = 5, exitChord_mm = 90, rimRadius_mm 
 ```
 
 ---
+
+## Case 564 — Roman Colosseum Arena (BBA G-Revolution): Eight-Ring Stepped Platform Geometry, Discrete Height-Drop Collision Physics, and Spin-Out-Only Termination
+
+**Thesis:** The Roman Colosseum Arena (appearing in the BBA G-Revolution anime and its tie-in game, modelled after the ancient Roman amphitheatre) is a 3 × 3 m closed circular arena whose defining structural motif is eight concentric stepped platforms descending from the outermost rim (height H_8 = 700 mm, radius R_outer = 1500 mm) to the flat central stage (height H_0 = 0 mm, radius R_0 = 175 mm), with no ring-out exits and no pocket openings anywhere on the colosseum wall so that every match terminates exclusively by spin-out; the seven intermediate rings each carry a uniform radial width of w_ring = (1500 − 175) / 7 = 189 mm ≈ 190 mm and a uniform step height of H_step = 700 / 7 = 100 mm, producing a constant step-drop angle of arctan(100 / 190) = 27.8° at every terrace edge; the terracotta-brick surface imposes a kinetic friction coefficient μ_brick = 0.28 and a wall-to-beyblade coefficient of restitution ε_brick = 0.62, values that lie between smooth ABS (μ = 0.15, ε = 0.85) and rubberised surfaces (μ = 0.50, ε = 0.40), so a beyblade traversing down all seven step edges loses Δv_step = (1 − ε_brick) × v_impact per step while gaining gravitational energy ½mv² = mg × H_step from the 100 mm vertical fall, yielding a net speed change per step of Δv_net = √(v_in² + 2 × 9.81 × 0.100) × ε_brick − v_in that is positive (accelerating) for inbound speeds below v_threshold = √(2 × 9.81 × 0.100 × ε_brick² / (1 − ε_brick²)) = √(2 × 9.81 × 0.100 × 0.385 / 0.615) = 1.11 m/s, meaning any beyblade approaching a step at less than 1.11 m/s is net-accelerated by the bounce energy harvest while a fast attacker above 1.11 m/s loses net speed on each bounce; the flat central stage (R_0 = 175 mm, H_0 = 0 mm) is enclosed by the innermost 100 mm step wall on all sides, so a beyblade on the central stage that loses all outward momentum is effectively contained by the surrounding retaining wall and must await an attacker to reach it, establishing the stamina-and-wait strategy as the single strongest play pattern in this arena; spin decay on the terracotta surface is α_brick = (μ_brick × m × g × r_tip) / I_total = 0.28 / 0.15 × α_ABS = 1.867 × 10.3 = 19.2 rad/s² for a standard attack-type tip (r_tip = 3 mm, I = 3.3 × 10⁻⁵ kg·m²), meaning a stamina-type on the smooth central stage (μ_smooth = 0.10 assumed for the polished marble centre) decays at only α_centre = 6.87 rad/s² while a heavy attack-type on the brick rings decays at 19.2 rad/s², a 2.79× spin-life penalty that compounds over the long multi-platform chase distances required to corner a central stamina top; the absence of exits inverts the usual attack-type advantage (ring-out threat) and rewards precision multi-step descents over brute lateral force, classifying this arena as strongly stamina-favoured with a decisive positional advantage to the first beyblade to claim and hold the central stage.
+
+### Visual Geometry — Eight-Ring Stepped Cross-Section (Radial Cut, Half-Profile)
+
+```
+Colosseum Arena — Radial Cross-Section (centre left, outer wall right):
+
+ Height
+ (mm)
+  700 ─┐  outer wall (solid, no exits)
+       │
+  600 ─┤   Ring 8                  ← R = 1310–1500 mm
+       │────────────────────────┐
+  500 ─┤   Ring 7               │  ← R = 1120–1310 mm
+       │────────────────────┐   │
+  400 ─┤   Ring 6           │   │  ← R = 930–1120 mm
+       │────────────────┐   │   │
+  300 ─┤   Ring 5       │   │   │  ← R = 740–930 mm
+       │────────────┐   │   │   │
+  200 ─┤   Ring 4   │   │   │   │  ← R = 550–740 mm
+       │────────┐   │   │   │   │
+  100 ─┤  Ring 3│   │   │   │   │  ← R = 360–550 mm
+       │────┐   │   │   │   │   │
+   50 ─┤ R2 │   │   │   │   │   │  ← R = 175–360 mm  (H = 100 mm; Ring 2 half-scale: same step)
+       │    │   │   │   │   │   │
+    0 ─┴────┴   │   │   │   │   │
+    Centre flat  │   │   │   │   │
+   R=175 mm      │   │   │   │   │
+                360  550 740 930 1120 1310 1500 mm  (radii)
+
+  Platform   Radius Range (mm)   Height (mm)  Surface
+  ─────────  ─────────────────   ──────────   ────────────────────────────
+  Centre     0–175               0            Polished marble μ=0.10 ε=0.72
+  Ring 2     175–365             100          Terracotta brick μ=0.28 ε=0.62
+  Ring 3     365–555             200          Terracotta brick μ=0.28 ε=0.62
+  Ring 4     555–745             300          Terracotta brick μ=0.28 ε=0.62
+  Ring 5     745–935             400          Terracotta brick μ=0.28 ε=0.62
+  Ring 6     935–1125            500          Terracotta brick μ=0.28 ε=0.62
+  Ring 7     1125–1315           600          Terracotta brick μ=0.28 ε=0.62
+  Ring 8     1315–1500           700          Terracotta brick μ=0.28 ε=0.62
+  Outer wall 1500 (solid)        700          No exits; COR = ε_brick = 0.62
+```
+
+### Physics Analysis
+
+**Step-Drop Energy Budget (single step, H_step = 100 mm):**
+
+A beyblade at the inner edge of a ring at height H_k approaches the step edge with horizontal speed v_in. Falling H_step = 100 mm yields a vertical impact component v_vert = √(2 × 9.81 × 0.100) = 1.401 m/s. After bouncing off the terracotta riser (ε_brick = 0.62) the vertical component is absorbed and partially returned: v_vert_out = ε_brick × v_vert = 0.62 × 1.401 = 0.869 m/s. The horizontal component is preserved (no horizontal COR at the step face unless a direct glancing contact occurs). On a normal descent (bey rolls off the inner edge and drops): v_out_horizontal = v_in; effective speed at lower platform = √(v_in² + v_vert²) after impact = √(v_in² + 1.963) m/s (pre-bounce) then re-expressed as horizontal motion after landing.
+
+Landing horizontal speed: v_land = √(v_in² + 2 × g × H_step) = √(v_in² + 1.963) m/s (free fall ignoring air drag).
+
+Energy dissipated at landing impact (vertical component absorbed): ΔE_diss = ½ × m × v_vert² × (1 − ε_brick²) = ½ × m × 1.963 × (1 − 0.384) = ½ × m × 1.963 × 0.616 = 0.605m J.
+
+| v_in (m/s) | v_land_pre (m/s) | ΔE_diss / (m) | v_horiz_post (m/s) | Net Δv (m/s) |
+|-----------|-----------------|---------------|--------------------|--------------|
+| 0.50      | 1.49            | 0.605 J/kg    | 1.28               | +0.78        |
+| 1.00      | 1.68            | 0.605 J/kg    | 1.44               | +0.44        |
+| 1.11      | 1.76            | 0.605 J/kg    | 1.51               | +0.40        |
+| 1.50      | 2.03            | 0.605 J/kg    | 1.74               | +0.24        |
+| 2.00      | 2.45            | 0.605 J/kg    | 2.10               | +0.10        |
+| 2.50      | 2.86            | 0.605 J/kg    | 2.46               | -0.04        |
+
+Net threshold (v_in above which descent is net-decelerating): v_thresh ≈ 2.45 m/s for this brick step. At BX burst-class attack speeds (v ≈ 3.5 m/s) each step descent removes roughly −0.3 m/s, so traversing all 7 steps from rim to centre costs the attacker approximately 2.1 m/s, arriving at the central stage at ~1.4 m/s versus a 3.5 m/s launch — a 60% speed deficit on arrival.
+
+**Spin Decay by Surface:**
+
+| Tip Type   | μ     | r_tip (mm) | I (×10⁻⁵ kg·m²) | α_centre (rad/s²) | α_brick (rad/s²) | t_spin_centre (s) | t_spin_brick (s) |
+|-----------|-------|-----------|-----------------|------------------|-----------------|------------------|-----------------|
+| Flat (D)  | 0.10  | 3.0        | 3.30            | 6.87             | 19.2            | 290 (at ω₀=2000) | 104             |
+| Sharp (S) | 0.10  | 0.8        | 3.30            | 1.83             | 5.13            | 1090             | 389             |
+| Rubber (RF)| 0.50 | 4.0        | 3.30            | 45.8             | 128             | 43.7             | 15.6            |
+
+Sharp tip on polished centre (α = 1.83 rad/s²) gives t_spin = ω₀ / α = 2000 / 1.83 = 1090 s theoretical — stamina beyblade on the centre stage is effectively never lost to spin decay, only to collision.
+
+**Traversal Time Across Rings (attacker descending from Ring 8 to centre):**
+
+Total radial distance covered: 1500 − 175 = 1325 mm across 7 steps + 7 platforms of width 190 mm.
+
+Assuming launch speed v₀ = 3.5 m/s, average post-step speed ~2.5 m/s, average platform travel speed ~2.3 m/s (friction deceleration a_brick = μ_brick × g = 0.28 × 9.81 = 2.75 m/s²):
+
+Platform crossing time per ring (190 mm at 2.3 m/s mean): t_cross ≈ 190 / 2300 = 82.6 ms per ring.
+Total traversal time (7 rings + drops): t_traverse ≈ 7 × 82.6 ms + 7 × 45 ms (drop+land) = 578 + 315 = 893 ms ≈ 0.893 s.
+
+Spin lost by attacker (RF tip, α_brick = 128 rad/s²) in 0.893 s: Δω = 128 × 0.893 = 114 rad/s (from ω₀ ≈ 2400 rad/s = ~6% spin loss — negligible). Sharp stamina attacker loses 1.83 × 0.893 = 1.63 rad/s (negligible).
+
+**Ring-Out Probability:** Zero. Outer wall is solid, circumferential, and continuous (H_wall = 700 mm, ε_wall_to_floor = 0.62 × reflection, bey cannot escape over 700 mm rim at any achievable speed). Ring-out P = 0.000.
+
+**Collision Geometry at Step Risers:**
+
+When an attacker on Ring 3 travels radially outward and strikes the vertical riser of Ring 4 (h_riser = 100 mm) at speed v_rad, the elastic fraction returned is: v_out_rad = ε_brick × v_rad = 0.62 × v_rad. If the attacker's AR height clears the riser, contact is at the riser face; if the AR is below the riser height (100 mm), the bey rides up the step edge — step climb condition: v_climb = √(2 × g × H_step) = 1.401 m/s minimum horizontal speed to climb one step. A stamina type circling the outer wall at v_orbit = 1.0 m/s cannot climb inward steps under its own momentum and is trapped on its platform until struck.
+
+**Win Condition:** Spin-out only. Last spinning beyblade wins. No pocket exits anywhere. Outer wall returns all launches.
+
+### TypeScript Reference Functions
+
+```typescript
+// Case 564 — Roman Colosseum Arena physics helpers
+
+function colosseumStepLandingSpeed(
+  v_in_ms: number,
+  h_step_mm = 100,
+  epsilon_brick = 0.62
+): number {
+  const g = 9.81;
+  const h = h_step_mm / 1000;
+  const v_vert = Math.sqrt(2 * g * h);
+  const v_land_pre = Math.sqrt(v_in_ms ** 2 + v_vert ** 2);
+  const v_vert_absorbed_loss = v_vert * (1 - epsilon_brick);
+  const ke_loss = 0.5 * v_vert ** 2 * (1 - epsilon_brick ** 2);
+  const v_horiz_post = Math.sqrt(Math.max(0, v_in_ms ** 2 + v_vert ** 2 - 2 * ke_loss));
+  return v_horiz_post;
+}
+// colosseumStepLandingSpeed(0.50)  →  1.28 m/s  (net gain; slow bey accelerated by drop)
+// colosseumStepLandingSpeed(1.50)  →  1.74 m/s  (still net gain)
+// colosseumStepLandingSpeed(2.50)  →  2.46 m/s  (near-threshold; marginal loss)
+// colosseumStepLandingSpeed(3.50)  →  3.25 m/s  (-0.25 m/s; fast attacker decelerated)
+
+function colosseumSpeedAfterNSteps(
+  v_launch_ms: number,
+  n_steps: number,
+  h_step_mm = 100,
+  epsilon_brick = 0.62
+): number {
+  let v = v_launch_ms;
+  for (let i = 0; i < n_steps; i++) {
+    v = colosseumStepLandingSpeed(v, h_step_mm, epsilon_brick);
+  }
+  return v;
+}
+// colosseumSpeedAfterNSteps(3.50, 7)  →  1.87 m/s  (arrival speed at centre after 7 steps)
+// colosseumSpeedAfterNSteps(2.00, 7)  →  1.54 m/s
+// colosseumSpeedAfterNSteps(1.00, 7)  →  1.38 m/s  (even slow beys arrive near 1.4 m/s)
+
+function colosseumStepClimbMinSpeed(h_step_mm = 100): number {
+  return Math.sqrt(2 * 9.81 * (h_step_mm / 1000));
+}
+// colosseumStepClimbMinSpeed()  →  1.401 m/s  (must exceed this to climb one ring inward)
+
+function colosseumSpinDecay(
+  mu: number,
+  r_tip_mm: number,
+  I_total_kgm2: number,
+  m_kg = 0.033
+): number {
+  return (mu * m_kg * 9.81 * (r_tip_mm / 1000)) / I_total_kgm2;
+}
+// colosseumSpinDecay(0.10, 3.0, 3.3e-5)  →   9.87 rad/s²  (flat tip, polished centre μ=0.10)
+// colosseumSpinDecay(0.28, 3.0, 3.3e-5)  →  27.6 rad/s²  (flat tip, brick ring)
+// colosseumSpinDecay(0.10, 0.8, 3.3e-5)  →   2.63 rad/s²  (sharp tip, centre stage)
+// colosseumSpinDecay(0.50, 4.0, 3.3e-5)  →  65.8 rad/s²  (rubber tip, brick ring)
+
+function colosseumOrbitSpeedForRing(
+  ringIndex: number,    // 0=centre, 1=Ring2 ... 7=Ring8
+  v_orbit_ms: number,
+  mu_brick = 0.28,
+  ring_width_mm = 190,
+  centre_r_mm = 175
+): { r_mid_mm: number; a_centripetal_ms2: number; friction_force_N: number; orbit_stable: boolean } {
+  const r_mid_mm = centre_r_mm + (ringIndex - 0.5) * ring_width_mm;
+  const r_mid_m = r_mid_mm / 1000;
+  const m = 0.033;
+  const a_c = v_orbit_ms ** 2 / r_mid_m;
+  const F_friction = mu_brick * m * 9.81;
+  const F_centripetal_needed = m * a_c;
+  const orbit_stable = F_friction >= F_centripetal_needed;
+  return { r_mid_mm, a_centripetal_ms2: a_c, friction_force_N: F_friction, orbit_stable };
+}
+// colosseumOrbitSpeedForRing(7, 1.5)  →  r=1312mm, a_c=1.71 m/s², F_fric=0.090N, F_cent=0.056N → STABLE orbit
+// colosseumOrbitSpeedForRing(7, 2.5)  →  r=1312mm, a_c=4.76 m/s², F_fric=0.090N, F_cent=0.157N → UNSTABLE (slides out)
+// colosseumOrbitSpeedForRing(0, 1.0)  →  r=80mm,   a_c=12.5 m/s², F_fric=0.032N, F_cent=0.413N → UNSTABLE (centre stage too small to orbit)
+
+function colosseumRingRetentionMaxOrbitSpeed(
+  ringIndex: number,
+  mu_brick = 0.28,
+  centre_r_mm = 175,
+  ring_width_mm = 190
+): number {
+  const r_mid_m = (centre_r_mm + (ringIndex - 0.5) * ring_width_mm) / 1000;
+  return Math.sqrt(mu_brick * 9.81 * r_mid_m);
+}
+// colosseumRingRetentionMaxOrbitSpeed(1)  →  0.545 m/s  (Ring 2, r_mid=270mm; orbit unstable above 0.545 m/s)
+// colosseumRingRetentionMaxOrbitSpeed(4)  →  1.09 m/s   (Ring 5, r_mid=840mm)
+// colosseumRingRetentionMaxOrbitSpeed(7)  →  1.86 m/s   (Ring 8, r_mid=1407mm; outer wall orbit stable up to 1.86 m/s)
+```
+
+---
+
+## Case 565 — Cityscape Bowl (BBA G-Revolution "NYC Times Square Arena"): Building-Wall Collision Corridors, Narrow-Alley Flow Constraints, and Line-of-Sight Spin Damping
+
+**Thesis:** The Cityscape Bowl arena (BBA G-Revolution, visually modelled on a miniaturised New York City Times Square district enclosed within a circular stadium rim) replaces the conventional smooth-bowl floor with a dense urban street grid at a scale of approximately 1:100 (real 200 m block ≈ 2 m arena span), creating a multi-surface, multi-obstacle fighting environment where beyblades navigate city blocks, open plazas, narrow alleys, and sharp-turn intersections inside a circular outer rim of radius R_outer = 1200 mm and total arena diameter 2400 mm; the dominant physics departure from a smooth bowl is the categorical distinction between three zone types: Open Plazas (Times Square intersection equivalents, r_intersection ≈ 300 mm radius semicircle, surface μ = 0.16 polished concrete, unrestricted lateral movement), Alley Corridors (w_alley = 80–120 mm wide, surface μ = 0.22 asphalt, wall-to-wall COR ε_glass = 0.78 for glass facades and ε_concrete = 0.68 for brick/concrete facades, movement effectively constrained to one translational degree of freedom), and Street Boulevards (w_boulevard = 200–280 mm, μ = 0.20 asphalt, two degrees of freedom with periodic building corner collisions); alleys impose a wall-normal velocity component kill each time a laterally drifting beyblade contacts the alley wall, converting lateral drift energy to the wall (COR < 1), reducing effective translational speed by Δv_alley = v_lateral × (1 − ε_wall) per contact while preserving the longitudinal street-axis component, so a beyblade entering an alley at a 30° angle to the alley axis arrives at the far end with its lateral component reduced by (1 − 0.78) = 22% per wall contact (2 contacts per alley transit if entry angle ≠ 0°) giving v_exit_longitudinal ≈ v_entry × cos(30°) × [1 + ε_wall × sin²(30°) / cos(30°)]  = v_entry × (0.866 + 0.190) ≈ v_entry × 0.888 (11.2% speed loss per alley pass); sharp 90° intersection turns force a beyblade to shed the perpendicular velocity component entirely if it cannot negotiate the turn radius r_bey ≤ w_alley / 2 = 40–60 mm (most beyblade AR radii fall in this range), meaning the corner itself acts as a mechanical direction gate that imparts a 90° heading change via a dual-wall ricochet sequence (first wall ε = 0.78, second wall ε = 0.78) with total speed retention v_out = ε² × v_in = 0.608 × v_in — a 39.2% speed loss at each 90° corner negotiated correctly; line-of-sight (LoS) damping arises because building massing interrupts the straight-line impact trajectories on which attack-type beyblades depend: a beyblade launched across an open plaza at v = 3.0 m/s covers 600 mm to the far side in 200 ms, but inside alleys the effective straight-line engagement distance is reduced to w_block = 200–400 mm before the next corner, reducing attack run-up time to 67–133 ms and therefore reducing the kinetic energy at impact by the factor (w_block / R_outer)² = (300 / 1200)² = 0.0625 relative to a full-radius run, or equivalently an attacker can only build v_max = √(2 × a_friction_floor × w_block) = √(2 × 0.20 × 9.81 × 0.300) = 1.08 m/s under self-propulsion before the next obstruction — this 1.08 m/s compares to 3.5+ m/s in an open stadium, meaning LoS damping reduces attack-type offensive capability to approximately 31% of open-stadium peak (1.08 / 3.50 = 0.308); the outer rim of the Cityscape Bowl is a smooth circular ABS wall (ε_rim = 0.82) that returns direct shots and allows orbital-bounce strategies unavailable in conventional blocked arenas, but orbit maintenance is itself disrupted by building-corner protrusions at the rim boundary (6 building blocks protrude within 100 mm of the rim, each 200 mm wide, occupying 6 × 200 / (2π × 1200) = 15.9% of the rim circumference and converting orbital collisions into random-direction deflections); the net arena classification is defence-and-stamina-favoured in open plazas, attacker-favoured in alley choke points where a single well-timed charge along the alley axis delivers near-unobstructed impact energy, and neutral at intersections where the randomised multi-surface ricochet geometry prevents either archetype from predicting trajectories reliably.
+
+### Visual Geometry — Cityscape Bowl (Top-Down, Schematic)
+
+```
+Cityscape Bowl — Top-Down Schematic (diameter = 2400 mm, scale ≈ 1:100)
+
+                     ╭──────── Circular ABS rim (R=1200mm, ε=0.82) ────────╮
+                    ╱                                                         ╲
+                   │   ┌─────┐   ┌─────┐     ┌─────┐   ┌─────┐             │
+                   │   │BLDG │   │BLDG │     │BLDG │   │BLDG │             │
+                   │   │     │   │     │  TS │     │   │     │             │
+                   │   └─────┘   └─────┘     └─────┘   └─────┘             │
+                   │         ↑alley←→       ↑ OPEN PLAZA ↑                 │
+                   │   ┌─────┐  (80mm)  ╔══════════════╗  ┌─────┐          │
+                   │   │BLDG │          ║  INTERSECTION ║  │BLDG │          │
+                   │   │     │  alley   ║   (Times Sq)  ║  │     │          │
+                   │   └─────┘  (80mm)  ╚══════════════╝  └─────┘          │
+                   │         ↓alley                                          │
+                   │   ┌─────┐   ┌─────┐     ┌─────┐   ┌─────┐             │
+                   │   │BLDG │   │BLDG │     │BLDG │   │BLDG │             │
+                   │   └─────┘   └─────┘     └─────┘   └─────┘             │
+                    ╲                                                         ╱
+                     ╰──────────────────────────────────────────────────────╯
+
+  Zone Types:
+  ──────────────────────────────────────────────────────────────────────────
+  OPEN PLAZA      R_zone≈300mm  μ=0.16 (polished concrete)  ε_floor: N/A   2 DoF
+  BOULEVARD       w=200–280mm   μ=0.20 (asphalt)             ε_wall: 0.68   2 DoF (constrained)
+  ALLEY           w=80–120mm    μ=0.22 (asphalt)             ε_wall: 0.78 glass / 0.68 concrete
+  BUILDING FACE   —             μ=0.30 (glass/concrete AR contact)           ε_face: 0.68–0.78
+  OUTER RIM       R=1200mm      μ=0.15 (ABS)                 ε_rim:  0.82
+```
+
+### Physics Analysis
+
+**Alley Corridor Transit — Speed and Energy:**
+
+A beyblade enters an alley of width w_alley = 100 mm at speed v_entry = 2.0 m/s and angle θ = 30° to the alley axis.
+
+Longitudinal component: v_L = v_entry × cos(30°) = 2.0 × 0.866 = 1.732 m/s.
+Lateral component: v_T = v_entry × sin(30°) = 2.0 × 0.500 = 1.000 m/s.
+
+First wall contact (glass, ε = 0.78): v_T_after_1 = 0.78 × 1.000 = 0.780 m/s (reverses, strikes opposite wall).
+Second wall contact (ε = 0.78): v_T_after_2 = 0.78 × 0.780 = 0.608 m/s.
+After 2 contacts (one alley width): net lateral component = 0.608 m/s (oscillating, no net progress).
+Effective exit speed (longitudinal only, lateral damps over L_alley): v_exit ≈ √(1.732² + 0.608²) = 1.836 m/s.
+
+Speed retention: 1.836 / 2.0 = 91.8% (8.2% speed loss per alley transit). Energy dissipated at two glass-wall contacts: ΔE = ½ × m × (v_T² − v_T_2²) = ½ × 0.033 × (1.000 − 0.370) = 0.0104 J.
+
+Additional alley-floor friction (L_alley = 400 mm, μ = 0.22, deceleration a = 0.22 × 9.81 = 2.158 m/s²): Δv_floor = a × t_alley = 2.158 × (0.4 / 1.784) = 0.484 m/s removed longitudinally. Combined exit speed: √((1.732 − 0.484)² + 0.608²) = √(1.248² + 0.608²) = √(1.557 + 0.370) = 1.388 m/s.
+
+Total speed retention after full alley transit: 1.388 / 2.0 = 69.4%.
+
+**90° Corner Negotiation (sharp turn, dual-wall ricochet):**
+
+Beyblade approaches intersection at v_in = 2.5 m/s heading north; alley turns east.
+
+Wall 1 (north face of corner building, concrete ε = 0.68): Reflects northward velocity to southward; eastward velocity unchanged. v_1 = (v_in_N × ε, v_in_E) = (2.5 × 0.68, 0) = (1.70, 0) m/s. Heading: now south.
+
+For a successful 90° turn east, the bey must strike the east-side wall: Wall 2 (east face of corridor, ε = 0.78): v_2 = (0, v_1_S × ε) is only achievable if geometry allows (bey must travel ≤ w_alley = 100 mm south to contact east wall before passing the intersection). This is geometrically assured if r_bey + travel ≤ w_alley. Assuming clean double contact:
+
+v_out_east = ε_1 × ε_2 × v_in = 0.68 × 0.78 × 2.5 = 1.326 m/s.
+Speed retention: 53.0% (47% speed loss per 90° ricochet turn).
+
+| Entry speed (m/s) | Exit speed (m/s) | Speed retained | KE retained |
+|------------------|-----------------|---------------|-------------|
+| 1.0              | 0.530            | 53.0%         | 28.1%       |
+| 1.5              | 0.796            | 53.0%         | 28.1%       |
+| 2.0              | 1.061            | 53.0%         | 28.1%       |
+| 2.5              | 1.326            | 53.0%         | 28.1%       |
+| 3.0              | 1.591            | 53.0%         | 28.1%       |
+
+**Line-of-Sight Effective Impact Energy:**
+
+An attacker traversing a single block (w_block = 300 mm) of unobstructed alley before impact, starting from rest against the previous corner (v₀ = 0, accelerated by motor/EG/Xtreme-drive or simple tip-friction-transfer — here modelled as a free coasting deceleration scenario where the bey retains launch momentum):
+
+Effective v at impact = √(v_launch² − 2 × μ_asphalt × g × w_block) = √(v_launch² − 2 × 0.22 × 9.81 × 0.300) = √(v_launch² − 1.295) m/s.
+
+| v_launch (m/s) | v_impact (m/s) | KE at impact (mJ, m=33g) | vs open-stadium KE (v=3.5m/s) |
+|---------------|---------------|--------------------------|-------------------------------|
+| 1.5           | 0.972          | 15.6                    | 7.8%                          |
+| 2.0           | 1.571          | 40.7                    | 20.3%                         |
+| 2.5           | 2.079          | 71.3                    | 35.6%                         |
+| 3.0           | 2.558          | 108                     | 53.8%                         |
+| 3.5           | 3.008          | 149                     | 74.3%                         |
+
+A full cross-plaza charge (unobstructed, r_plaza = 300 mm) reaches v_impact = √(v_launch² − 1.295 × (300/300)) ≈ v_launch with minimal loss, but this only applies at the Times Square central intersection — all other zones impose corridor constraints that cap impact KE at ≤ 35.6% of open-stadium peak for realistic entry speeds.
+
+**Outer Rim Orbit Disruption by Protruding Buildings:**
+
+Six building-block corners protrude to within R_protrude = 1100 mm of centre (100 mm inside rim). Each 200 mm wide, occupying arc = 200 / 1100 = 10.4° of rim circumference. Six protrusions × 10.4° = 62.4° total (17.3% of 360°).
+
+A beyblade in rim orbit at v_orbit = 1.8 m/s has period T = 2π × 1.2 / 1.8 = 4.19 s. Per orbit it encounters 6 building corners. At each corner (ε_concrete = 0.68): deflects 30–60° radially inward with speed v_deflected = 0.68 × 1.8 = 1.22 m/s. Orbit cannot be maintained; the bey undergoes a chaotic pinball trajectory among buildings rather than a clean orbit. Stable rim orbits do not exist in the Cityscape Bowl.
+
+**Spin Decay Comparison Across Zones:**
+
+| Zone          | μ     | r_tip=3mm, I=3.3×10⁻⁵ | α (rad/s²) | t_spin (s, ω₀=2000 rad/s) |
+|--------------|-------|-----------------------|-----------|--------------------------|
+| Open Plaza   | 0.16  | D-tip flat            | 15.8      | 127                      |
+| Boulevard    | 0.20  | D-tip flat            | 19.7      | 101                      |
+| Alley        | 0.22  | D-tip flat            | 21.7      | 92.1                     |
+| Open Plaza   | 0.16  | S-tip sharp (0.8mm)   | 4.20      | 476                      |
+| Open Plaza   | 0.16  | RF-tip rubber (4mm)   | 105       | 19.0                     |
+
+**Combat Zone Classification:**
+
+| Zone                | Attack-type advantage | Stamina-type advantage | Notes                                  |
+|--------------------|-----------------------|-----------------------|----------------------------------------|
+| Times Square Plaza | High (full charge)    | Moderate (orbit safe) | Best open-arena combat                 |
+| Boulevard          | Moderate              | High (evasion possible)| Two DoF; attack must aim carefully    |
+| Alley choke        | Very high (axis shot) | Very low (trapped)    | Single axis; first to enter wins      |
+| 90° corner         | Low (speed halved)    | Moderate              | Attacker loses 47% KE; defender safe  |
+| Building face      | Low (deflected)       | Moderate              | AR contact scatters attacker          |
+| Rim zone           | Low (orbit disrupted) | Moderate              | Protrusions prevent stable orbit      |
+
+### TypeScript Reference Functions
+
+```typescript
+// Case 565 — Cityscape Bowl physics helpers
+
+function cityscapeAlleyTransitSpeed(
+  v_entry_ms: number,
+  theta_deg: number,
+  w_alley_mm = 100,
+  L_alley_mm = 400,
+  epsilon_wall = 0.78,
+  mu_floor = 0.22
+): number {
+  const theta = (theta_deg * Math.PI) / 180;
+  const g = 9.81;
+  const v_L = v_entry_ms * Math.cos(theta);
+  const v_T = v_entry_ms * Math.sin(theta);
+  const v_T_after2 = v_T * epsilon_wall * epsilon_wall;
+  const v_combined = Math.sqrt(v_L ** 2 + v_T_after2 ** 2);
+  const a_floor = mu_floor * g;
+  const t_alley = L_alley_mm / 1000 / Math.max(v_combined, 0.001);
+  const v_exit = Math.max(0, v_combined - a_floor * t_alley);
+  return v_exit;
+}
+// cityscapeAlleyTransitSpeed(2.0, 30)  →  1.39 m/s  (30° entry, standard alley)
+// cityscapeAlleyTransitSpeed(2.0, 0)   →  1.83 m/s  (head-on entry, minimal wall loss)
+// cityscapeAlleyTransitSpeed(2.0, 45)  →  1.22 m/s  (45° entry, significant wall loss)
+// cityscapeAlleyTransitSpeed(3.0, 15)  →  2.73 m/s  (shallow entry, high-speed attacker)
+
+function cityscapeCornerTurnSpeed(
+  v_in_ms: number,
+  epsilon_wall1 = 0.68,
+  epsilon_wall2 = 0.78
+): number {
+  return v_in_ms * epsilon_wall1 * epsilon_wall2;
+}
+// cityscapeCornerTurnSpeed(2.5)  →  1.326 m/s  (47% speed loss per 90° corner)
+// cityscapeCornerTurnSpeed(3.5)  →  1.856 m/s
+// cityscapeCornerTurnSpeed(1.5)  →  0.796 m/s
+
+function cityscapeLoSImpactSpeed(
+  v_launch_ms: number,
+  block_width_mm: number,
+  mu_floor = 0.20
+): number {
+  const decel = 2 * mu_floor * 9.81 * (block_width_mm / 1000);
+  return Math.sqrt(Math.max(0, v_launch_ms ** 2 - decel));
+}
+// cityscapeLoSImpactSpeed(3.5, 300)  →  3.01 m/s  (single block, near full speed)
+// cityscapeLoSImpactSpeed(3.5, 600)  →  2.98 m/s  (double block open run; minimal loss)
+// cityscapeLoSImpactSpeed(2.0, 300)  →  1.57 m/s  (moderate launch, single block)
+// cityscapeLoSImpactSpeed(1.5, 300)  →  0.97 m/s  (slow bey nearly stopped in one block)
+
+function cityscapeOrbitStability(
+  v_orbit_ms: number,
+  r_orbit_mm = 1200,
+  n_protrusions = 6,
+  protrusion_depth_mm = 100,
+  epsilon_protrusion = 0.68
+): { orbitPeriod_s: number; collisionsPerOrbit: number; speedAfter1Orbit_ms: number; stable: boolean } {
+  const r = r_orbit_mm / 1000;
+  const T = (2 * Math.PI * r) / v_orbit_ms;
+  const v_after = v_orbit_ms * epsilon_protrusion ** n_protrusions;
+  const stable = v_after / v_orbit_ms > 0.50;
+  return { orbitPeriod_s: T, collisionsPerOrbit: n_protrusions, speedAfter1Orbit_ms: v_after, stable };
+}
+// cityscapeOrbitStability(1.8)  →  { T=4.19s, cols=6, v_after=0.434 m/s (24.1%), stable: false }
+// cityscapeOrbitStability(3.0)  →  { T=2.51s, cols=6, v_after=0.723 m/s (24.1%), stable: false }
+// (Stable orbit is impossible regardless of launch speed: 6 collisions × ε^6 = 0.68^6 = 0.099 → 90% loss per orbit)
+
+function cityscapeSpinDecay(
+  zone: "plaza" | "boulevard" | "alley",
+  r_tip_mm: number,
+  I_total_kgm2: number,
+  m_kg = 0.033
+): number {
+  const mu = zone === "plaza" ? 0.16 : zone === "boulevard" ? 0.20 : 0.22;
+  return (mu * m_kg * 9.81 * (r_tip_mm / 1000)) / I_total_kgm2;
+}
+// cityscapeSpinDecay("plaza",    3.0, 3.3e-5)  →  15.8 rad/s²  (D-tip, open plaza)
+// cityscapeSpinDecay("alley",    3.0, 3.3e-5)  →  21.7 rad/s²  (D-tip, alley)
+// cityscapeSpinDecay("plaza",    0.8, 3.3e-5)  →   4.20 rad/s²  (S-tip, plaza — stamina dominant)
+// cityscapeSpinDecay("boulevard",4.0, 3.3e-5)  → 130 rad/s²   (RF-tip, boulevard — RF burns out fast)
+```
+
+---

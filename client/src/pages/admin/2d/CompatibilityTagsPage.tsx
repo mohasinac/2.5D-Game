@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
-import { C, alpha } from "@/styles/theme";
+import { C } from "@/styles/theme";
 import toast from "react-hot-toast";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -189,11 +189,8 @@ export function CompatibilityTagsPage() {
         {TAG_FIELDS.map((f) => (
           <span
             key={f}
-            style={{
-              fontSize: 11, padding: "3px 9px", borderRadius: 5,
-              background: alpha(FIELD_COLOR[f], 0.10), color: FIELD_COLOR[f],
-              border: `1px solid ${alpha(FIELD_COLOR[f], 0.27)}`,
-            }}
+            className="text-[11px] px-[9px] py-[3px] rounded-[5px] hud-type-text hud-type-border hud-type-bg border"
+            style={{ "--tc": FIELD_COLOR[f] } as React.CSSProperties}
           >
             {f}
           </span>
@@ -280,10 +277,8 @@ export function CompatibilityTagsPage() {
                     {fieldsUsed(entry).map((f) => (
                       <span
                         key={f}
-                        style={{
-                          width: 8, height: 8, borderRadius: "50%",
-                          background: FIELD_COLOR[f], flexShrink: 0,
-                        }}
+                        className="w-2 h-2 rounded-full shrink-0 hud-type-dot"
+                        style={{ "--tc": FIELD_COLOR[f] } as React.CSSProperties}
                         title={f}
                       />
                     ))}
@@ -362,12 +357,8 @@ export function CompatibilityTagsPage() {
                             </td>
                             <td className="px-3.5 py-1.5">
                               <span
-                                style={{
-                                  fontSize: 10, padding: "2px 7px", borderRadius: 4,
-                                  background: alpha(FIELD_COLOR[u.field], 0.10),
-                                  color: FIELD_COLOR[u.field],
-                                  border: `1px solid ${alpha(FIELD_COLOR[u.field], 0.20)}`,
-                                }}
+                                className="text-[10px] px-[7px] py-[2px] rounded-[4px] hud-type-text hud-type-border hud-type-bg border"
+                                style={{ "--tc": FIELD_COLOR[u.field] } as React.CSSProperties}
                               >
                                 {u.field}
                               </span>

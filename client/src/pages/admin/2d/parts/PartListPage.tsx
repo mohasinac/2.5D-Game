@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   collection, query, orderBy, getDocs, deleteDoc, doc,
@@ -158,8 +158,8 @@ export function PartListPage() {
             >
               {/* Color swatch */}
               <div
-                className="w-7 h-7 rounded-[6px] shrink-0 border border-border-c"
-                style={{ background: part.color ?? "#1a1a1a" }}
+                className="w-7 h-7 rounded-[6px] shrink-0 border border-border-c [background:var(--swatch-color)]"
+                style={{ "--swatch-color": part.color ?? "#1a1a1a" } as React.CSSProperties}
               />
 
               {/* Name + description */}

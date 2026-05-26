@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import { TouchControls } from "@/components/game/TouchControls";
 import { Link, useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { modeFromPath, roomNameFor } from "@/shared/utils/gameMode";
@@ -395,7 +395,7 @@ export function BattleGamePage() {
               >
                 <div className="flex justify-between text-[11px] mb-1.5">
                   <span className="overflow-hidden text-ellipsis whitespace-nowrap text-theme-muted max-w-[clamp(60px,12vw,100px)]">{p.username}</span>
-                  <span className="text-[10px]" style={{ color: `#${(TYPE_COLORS[p.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}` }}>{p.type}</span>
+                  <span className="text-[10px] hud-type-text" style={{ "--tc": `#${(TYPE_COLORS[p.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}` } as React.CSSProperties}>{p.type}</span>
                 </div>
                 <div className="w-full h-2 rounded-full overflow-hidden bg-bg3">
                   <div
@@ -428,12 +428,12 @@ export function BattleGamePage() {
                 >
                   <div className="flex justify-between text-[11px] mb-1">
                     <span className="overflow-hidden text-ellipsis whitespace-nowrap text-theme-muted max-w-[clamp(60px,12vw,100px)]">{opp.username}</span>
-                    <span className="text-[10px]" style={{ color: `#${(TYPE_COLORS[opp.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}` }}>{opp.type}</span>
+                    <span className="text-[10px] hud-type-text" style={{ "--tc": `#${(TYPE_COLORS[opp.type] ?? 0xaaaaaa).toString(16).padStart(6, "0")}` } as React.CSSProperties}>{opp.type}</span>
                   </div>
                   {(opp as any).elementTypes?.length > 0 && (
                     <div className="flex gap-[3px] mb-1">
                       {((opp as any).elementTypes as ElementType[]).map((et: ElementType) => (
-                        <span key={et} title={et} className="text-[11px] rounded border px-1 py-0" style={{ color: ELEMENT_COLORS[et], background: `${ELEMENT_COLORS[et]}22`, border: `1px solid ${ELEMENT_COLORS[et]}55` }}>
+                        <span key={et} title={et} className="text-[11px] rounded hud-type-border hud-type-text hud-type-bg border px-1 py-0" style={{ "--tc": ELEMENT_COLORS[et] } as React.CSSProperties}>
                           {ELEMENT_ICONS[et]}
                         </span>
                       ))}
@@ -459,14 +459,14 @@ export function BattleGamePage() {
         const mySpinPct = (myBeyblade.spin / Math.max(1, myBeyblade.maxSpin)) * 100;
         return (
           <div className="absolute bottom-0 left-0 right-0 pointer-events-none z-10 p-[clamp(8px,2vw,16px)]">
-            <div className="mx-auto rounded-xl border bg-[rgba(15,23,42,0.85)] border-border-c p-[clamp(8px,2vw,12px)]" style={{ maxWidth: "min(320px, 90vw)" }}>
+            <div className="mx-auto rounded-xl border bg-[rgba(15,23,42,0.85)] border-border-c p-[clamp(8px,2vw,12px)] [max-width:min(320px,90vw)]">
               <div className="flex justify-between mb-1 text-theme-muted text-[clamp(10px,1.5vw,12px)]">
                 <span className="font-mono">{myBeyblade.username} (you)</span>
                 <div className="flex items-center gap-1">
                   {((myBeyblade as any).elementTypes as ElementType[] | undefined)?.map((et: ElementType) => (
-                    <span key={et} title={et} className="text-[12px]" style={{ color: ELEMENT_COLORS[et] }}>{ELEMENT_ICONS[et]}</span>
+                    <span key={et} title={et} className="text-[12px] hud-type-text" style={{ "--tc": ELEMENT_COLORS[et] } as React.CSSProperties}>{ELEMENT_ICONS[et]}</span>
                   ))}
-                  <span className="capitalize" style={{ color: `#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>{myBeyblade.type}</span>
+                  <span className="capitalize hud-type-text" style={{ "--tc": `#${(TYPE_COLORS[myBeyblade.type] ?? 0xffffff).toString(16).padStart(6, "0")}` } as React.CSSProperties}>{myBeyblade.type}</span>
                 </div>
               </div>
               <div className="mb-1.5">

@@ -2,7 +2,7 @@
 // Physics runs locally in the browser; beyblade + arena data is loaded from
 // Firestore directly. No Colyseus connection is opened.
 
-import { useRef, useEffect, useState, useCallback, useMemo } from "react";
+import React, { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { TouchControls } from "@/components/game/TouchControls";
 import { Link, useLocation } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
@@ -460,7 +460,7 @@ export function TryoutGamePage() {
         <div className="max-w-[320px] mx-auto bg-[rgba(15,23,42,0.85)] rounded-[12px] border border-border-c p-3">
           <div className="flex justify-between text-[12px] text-theme-muted mb-2">
             <span className="font-mono">{settings.username ?? "Player"}</span>
-            <span className="capitalize" style={{ color: `#${(TYPE_COLORS[bey.current.type] ?? 0xffffff).toString(16).padStart(6, "0")}` }}>
+            <span className="capitalize hud-type-text" style={{ "--tc": `#${(TYPE_COLORS[bey.current.type] ?? 0xffffff).toString(16).padStart(6, "0")}` } as React.CSSProperties}>
               {bey.current.type}
             </span>
           </div>

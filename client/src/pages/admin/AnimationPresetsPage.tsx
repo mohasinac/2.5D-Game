@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -137,7 +137,7 @@ export default function AnimationPresetsPage() {
           {filtered.map(item => (
             <div key={item.id} className="flex items-center gap-3.5 bg-bg1 border border-border-c rounded-xl px-4 py-3">
               {item.color && (
-                <div className="w-5 h-9 rounded shrink-0 border border-border-c" style={{ background: item.color }} />
+                <div className="w-5 h-9 rounded shrink-0 border border-border-c [background:var(--swatch-color)]" style={{ "--swatch-color": item.color } as React.CSSProperties} />
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">

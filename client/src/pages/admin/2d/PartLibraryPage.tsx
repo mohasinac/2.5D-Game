@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { collection, query, orderBy, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
@@ -203,8 +203,8 @@ export function PartLibraryPage() {
                 >
                   {/* Color swatch */}
                   <div
-                    className="w-7 h-7 rounded shrink-0 border border-border"
-                    style={{ background: part.color ?? "#1a1a1a" }}
+                    className="w-7 h-7 rounded shrink-0 border border-border [background:var(--swatch-color)]"
+                    style={{ "--swatch-color": part.color ?? "#1a1a1a" } as React.CSSProperties}
                   />
                   {/* Name + meta */}
                   <div className="flex-1 min-w-0">

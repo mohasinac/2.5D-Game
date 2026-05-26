@@ -64,7 +64,7 @@ export function PartSearchPage() {
         </div>
       </div>
 
-      <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
+      <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(240px,1fr))]">
         {visibleLinks.map((pt) => (
           <Link
             key={pt.slug}
