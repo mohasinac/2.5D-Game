@@ -30,6 +30,7 @@ function parseBeyColor(bey: ServerBeyblade): number {
 // Arena floor base colors — vivid enough to read on a dark canvas background.
 // Keep mid-range brightness (not neon) so bey sprites remain legible.
 const THEME_COLORS: Record<string, number> = {
+  default:     0xe8e8e8,  // light grey-white (readable fallback)
   metrocity:   0x1e4080,  // steel blue city
   forest:      0x1a6b2e,  // green forest floor
   mountains:   0x2d4a6e,  // slate-blue highland
@@ -663,7 +664,7 @@ export class BeybladeGameRenderer {
     // by syncBeyblades once real beys arrive.
     this.world.computeZoomLimits(2.5);
 
-    const bgColor  = THEME_COLORS[theme] ?? 0x1e3060;
+    const bgColor  = THEME_COLORS[theme] ?? 0xe8e8e8;
     // Lighter rim tint: blend bgColor toward white by ~30% for the boundary ring
     const rimColor = (((bgColor >> 16 & 0xff) + 80) & 0xff) << 16
                    | (((bgColor >>  8 & 0xff) + 80) & 0xff) <<  8
