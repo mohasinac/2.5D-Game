@@ -1,13 +1,11 @@
-// [GAME-CONTEXT] useGameInput — four input sources merged into one bitmask.
-// Sources: (1) Keyboard, (2) Mouse (right-drag direction), (3) Gamepad, (4) Touch.
-// Sends the current bitmask every animation frame (60Hz cadence) — acts as both
-// input dispatch and heartbeat to recover from dropped packets within ~16ms.
-// Key map: WASD / Arrows (move), I=jump, J=attack, K=defense, L=dodge,
-//          Space (tap)=special, Space (hold)=charge.
-// Phase 24 attitude bits: J=attitudeAggressive (bit 10), K=attitudeDefensive (11),
-//                         L=attitudeStamina (12).
+// useGameInput — four input sources merged into one bitmask, sent every rAF.
+// Sources: (1) Keyboard (remappable via keyMap), (2) Mouse (right-drag),
+//          (3) Gamepad, (4) Touch (written by TouchControlsGBLayout).
+// Arrow keys are always active as movement fallbacks regardless of keyMap.
+// Space tap-vs-hold discrimination: < 150ms = specialTap, ≥ 150ms = chargeHeld.
 
 import { useEffect, useRef } from "react";
+import { keyMapRef, ARROW_FALLBACKS } from "./keyMap";
 
 export interface FullGameInput {
   // Movement
@@ -23,7 +21,7 @@ export interface FullGameInput {
   // Power
   chargeHeld?: boolean;
   specialTap?: boolean;
-  // Phase 24 attitude bits
+  // Phase 24 attitude bits (same key as actions — held with movement)
   attitudeAggressive?: boolean;
   attitudeDefensive?: boolean;
   attitudeStamina?: boolean;
@@ -31,92 +29,83 @@ export interface FullGameInput {
   comboKeys?: string[];
 }
 
-// Shared touch-input state written by TouchControls and read by the input loop.
-// Keyed by field name; component sets/clears these each render.
+// Shared mutable state written by touch controls, read by the input loop.
 export const touchInputState: Partial<FullGameInput> = {};
 
 type SendInputFn = (input: FullGameInput) => void;
 
-const ACTION_CODES: Record<string, keyof FullGameInput> = {
-  KeyJ: "attack",
-  KeyK: "defense",
-  KeyL: "dodge",
-  KeyI: "jump",
-};
+const SPACE_TAP_MS    = 150;
+const GAMEPAD_DEAD    = 0.15;
+const MOUSE_DRAG_PX   = 12;
+const HEARTBEAT_MS    = 500;
 
-const SPACE_TAP_THRESHOLD_MS = 150;
-const GAMEPAD_DEAD_ZONE = 0.15;
-// Right-mouse drag threshold in pixels before a direction is resolved
-const MOUSE_DRAG_THRESHOLD = 12;
-
-function encodeLocalBitmask(input: FullGameInput): number {
+function encodeBitmask(i: FullGameInput): number {
   let f = 0;
-  if (input.moveLeft)           f |= 1 << 0;
-  if (input.moveRight)          f |= 1 << 1;
-  if (input.moveUp)             f |= 1 << 2;
-  if (input.moveDown)           f |= 1 << 3;
-  if (input.attack)             f |= 1 << 4;
-  if (input.defense)            f |= 1 << 5;
-  if (input.dodge)              f |= 1 << 6;
-  if (input.jump)               f |= 1 << 7;
-  if (input.chargeHeld)         f |= 1 << 8;
-  if (input.specialTap)         f |= 1 << 9;
-  if (input.attitudeAggressive) f |= 1 << 10;
-  if (input.attitudeDefensive)  f |= 1 << 11;
-  if (input.attitudeStamina)    f |= 1 << 12;
+  if (i.moveLeft)           f |= 1 << 0;
+  if (i.moveRight)          f |= 1 << 1;
+  if (i.moveUp)             f |= 1 << 2;
+  if (i.moveDown)           f |= 1 << 3;
+  if (i.attack)             f |= 1 << 4;
+  if (i.defense)            f |= 1 << 5;
+  if (i.dodge)              f |= 1 << 6;
+  if (i.jump)               f |= 1 << 7;
+  if (i.chargeHeld)         f |= 1 << 8;
+  if (i.specialTap)         f |= 1 << 9;
+  if (i.attitudeAggressive) f |= 1 << 10;
+  if (i.attitudeDefensive)  f |= 1 << 11;
+  if (i.attitudeStamina)    f |= 1 << 12;
   return f;
 }
 
-// Heartbeat: resend even if bitmask unchanged to recover from dropped packets.
-const HEARTBEAT_MS = 500;
+export function useGameInput(sendInput: SendInputFn, enabled = true) {
+  const keysRef            = useRef<Set<string>>(new Set());
+  const rafRef             = useRef<number>(0);
+  const chargeDownTimeRef  = useRef<number>(0);   // >0 while charge/space held
+  const specialTapRef      = useRef<boolean>(false);
+  const gamepadIndexRef    = useRef<number | null>(null);
+  const gpSpecialTapRef    = useRef<boolean>(false);
+  const lastBitmaskRef     = useRef<number>(-1);
+  const lastSentTimeRef    = useRef<number>(0);
 
-export function useGameInput(sendInput: SendInputFn, enabled: boolean = true) {
-  const keysRef               = useRef<Set<string>>(new Set());
-  const animFrameRef          = useRef<number>(0);
-  const lastInputRef          = useRef<FullGameInput>({});
-  const spaceDownTimeRef      = useRef<number>(0);
-  const specialTapRef         = useRef<boolean>(false);
-  const gamepadIndexRef       = useRef<number | null>(null);
-  const gamepadSpecialTapRef  = useRef<boolean>(false);
-  const lastSentBitmaskRef    = useRef<number>(-1);
-  const lastSentTimeRef       = useRef<number>(0);
-
-  // Mouse right-drag state
-  const mouseRightDownRef     = useRef<{ x: number; y: number } | null>(null);
-  const mouseDragDeltaRef     = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  // Mouse right-drag
+  const mouseRightRef      = useRef<{ x: number; y: number } | null>(null);
+  const mouseDragRef       = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!enabled) return;
 
-    // ── Gamepad connect / disconnect ────────────────────────────────────────
-    const onGamepadConnected = () => {
-      if (gamepadIndexRef.current === null) {
-        gamepadIndexRef.current = 0;
-      }
-    };
-    const onGamepadDisconnected = () => { gamepadIndexRef.current = null; };
-    window.addEventListener("gamepadconnected",    onGamepadConnected);
-    window.addEventListener("gamepaddisconnected", onGamepadDisconnected);
+    // ── Gamepad ──────────────────────────────────────────────────────────────
+    const onGpIn  = () => { if (gamepadIndexRef.current === null) gamepadIndexRef.current = 0; };
+    const onGpOut = () => { gamepadIndexRef.current = null; };
+    window.addEventListener("gamepadconnected",    onGpIn);
+    window.addEventListener("gamepaddisconnected", onGpOut);
 
-    // ── Keyboard ────────────────────────────────────────────────────────────
+    // ── Keyboard ─────────────────────────────────────────────────────────────
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        if (spaceDownTimeRef.current === 0) spaceDownTimeRef.current = Date.now();
+      const km = keyMapRef.current;
+      // Charge key (default: Space) handled separately
+      if (e.code === km.charge) {
+        if (chargeDownTimeRef.current === 0) chargeDownTimeRef.current = Date.now();
         e.preventDefault();
         return;
       }
       keysRef.current.add(e.code);
-      if (
-        e.code.startsWith("Arrow") ||
-        ["KeyW","KeyA","KeyS","KeyD","KeyI","KeyJ","KeyK","KeyL"].includes(e.code)
-      ) e.preventDefault();
+      // Prevent scroll / browser defaults for game keys
+      const gameKeys = new Set([
+        km.moveLeft, km.moveRight, km.moveUp, km.moveDown,
+        km.jump, km.attack, km.defense, km.dodge,
+        "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+      ]);
+      if (gameKeys.has(e.code)) e.preventDefault();
     };
 
     const onKeyUp = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        const heldMs = spaceDownTimeRef.current > 0 ? Date.now() - spaceDownTimeRef.current : 999;
-        if (heldMs < SPACE_TAP_THRESHOLD_MS) specialTapRef.current = true;
-        spaceDownTimeRef.current = 0;
+      const km = keyMapRef.current;
+      if (e.code === km.charge) {
+        const held = chargeDownTimeRef.current > 0
+          ? Date.now() - chargeDownTimeRef.current : 999;
+        if (held < SPACE_TAP_MS) specialTapRef.current = true;
+        chargeDownTimeRef.current = 0;
         return;
       }
       keysRef.current.delete(e.code);
@@ -125,162 +114,156 @@ export function useGameInput(sendInput: SendInputFn, enabled: boolean = true) {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup",   onKeyUp);
 
-    // ── Mouse (right-drag → directional movement hint) ──────────────────────
+    // ── Mouse (right-drag → directional nudge) ────────────────────────────────
     const onMouseDown = (e: MouseEvent) => {
       if (e.button === 2) {
-        mouseRightDownRef.current  = { x: e.clientX, y: e.clientY };
-        mouseDragDeltaRef.current  = { x: 0, y: 0 };
+        mouseRightRef.current = { x: e.clientX, y: e.clientY };
+        mouseDragRef.current  = { x: 0, y: 0 };
         e.preventDefault();
       }
     };
     const onMouseMove = (e: MouseEvent) => {
-      if (mouseRightDownRef.current) {
-        mouseDragDeltaRef.current = {
-          x: e.clientX - mouseRightDownRef.current.x,
-          y: e.clientY - mouseRightDownRef.current.y,
+      if (mouseRightRef.current) {
+        mouseDragRef.current = {
+          x: e.clientX - mouseRightRef.current.x,
+          y: e.clientY - mouseRightRef.current.y,
         };
       }
     };
     const onMouseUp = (e: MouseEvent) => {
       if (e.button === 2) {
-        mouseRightDownRef.current = null;
-        mouseDragDeltaRef.current = { x: 0, y: 0 };
+        mouseRightRef.current = null;
+        mouseDragRef.current  = { x: 0, y: 0 };
       }
     };
-    const onContextMenu = (e: Event) => e.preventDefault();
+    window.addEventListener("mousedown",   onMouseDown);
+    window.addEventListener("mousemove",   onMouseMove);
+    window.addEventListener("mouseup",     onMouseUp);
+    window.addEventListener("contextmenu", (e) => e.preventDefault());
 
-    window.addEventListener("mousedown",    onMouseDown);
-    window.addEventListener("mousemove",    onMouseMove);
-    window.addEventListener("mouseup",      onMouseUp);
-    window.addEventListener("contextmenu",  onContextMenu);
-
-    // ── Main loop ───────────────────────────────────────────────────────────
+    // ── Main rAF loop ─────────────────────────────────────────────────────────
     const loop = () => {
       const keys      = keysRef.current;
-      const spaceHeld = spaceDownTimeRef.current > 0;
+      const km        = keyMapRef.current;
+      const chargeHeld = chargeDownTimeRef.current > 0;
 
-      // ── Source 1: Keyboard ────────────────────────────────────────────────
+      // Source 1: Keyboard (remappable) + arrow fallbacks always active
       const kb = {
-        moveLeft:  keys.has("KeyA") || keys.has("ArrowLeft"),
-        moveRight: keys.has("KeyD") || keys.has("ArrowRight"),
-        moveUp:    keys.has("KeyW") || keys.has("ArrowUp"),
-        moveDown:  keys.has("KeyS") || keys.has("ArrowDown"),
-        jump:      keys.has("KeyI"),
-        attack:    keys.has("KeyJ"),
-        defense:   keys.has("KeyK"),
-        dodge:     keys.has("KeyL"),
-        chargeHeld: spaceHeld,
+        moveLeft:  keys.has(km.moveLeft)  || keys.has(ARROW_FALLBACKS.moveLeft  ?? ""),
+        moveRight: keys.has(km.moveRight) || keys.has(ARROW_FALLBACKS.moveRight ?? ""),
+        moveUp:    keys.has(km.moveUp)    || keys.has(ARROW_FALLBACKS.moveUp    ?? ""),
+        moveDown:  keys.has(km.moveDown)  || keys.has(ARROW_FALLBACKS.moveDown  ?? ""),
+        jump:      keys.has(km.jump),
+        attack:    keys.has(km.attack),
+        defense:   keys.has(km.defense),
+        dodge:     keys.has(km.dodge),
+        chargeHeld,
         specialTap: specialTapRef.current,
-        // Attitude bits: same keys as actions — held together with movement
-        attitudeAggressive: keys.has("KeyJ"),
-        attitudeDefensive:  keys.has("KeyK"),
-        attitudeStamina:    keys.has("KeyL"),
+        attitudeAggressive: keys.has(km.attack),
+        attitudeDefensive:  keys.has(km.defense),
+        attitudeStamina:    keys.has(km.dodge),
       };
 
-      // ── Source 2: Mouse right-drag ────────────────────────────────────────
-      const drag  = mouseDragDeltaRef.current;
+      // Source 2: Mouse right-drag
+      const drag  = mouseDragRef.current;
       const dragX = Math.abs(drag.x);
       const dragY = Math.abs(drag.y);
       const mouse = {
-        moveLeft:  dragX > MOUSE_DRAG_THRESHOLD && drag.x < 0,
-        moveRight: dragX > MOUSE_DRAG_THRESHOLD && drag.x > 0,
-        moveUp:    dragY > MOUSE_DRAG_THRESHOLD && drag.y < 0,
-        moveDown:  dragY > MOUSE_DRAG_THRESHOLD && drag.y > 0,
+        moveLeft:  dragX > MOUSE_DRAG_PX && drag.x < 0,
+        moveRight: dragX > MOUSE_DRAG_PX && drag.x > 0,
+        moveUp:    dragY > MOUSE_DRAG_PX && drag.y < 0,
+        moveDown:  dragY > MOUSE_DRAG_PX && drag.y > 0,
       };
 
-      // ── Source 3: Gamepad ─────────────────────────────────────────────────
+      // Source 3: Gamepad
       const gp = {
         moveLeft: false, moveRight: false, moveUp: false, moveDown: false,
         jump: false, attack: false, defense: false, dodge: false,
         chargeHeld: false, specialTap: false,
       };
       if (gamepadIndexRef.current !== null) {
-        const gamepads = navigator.getGamepads?.() ?? [];
-        const pad = gamepads[gamepadIndexRef.current];
+        const pads = navigator.getGamepads?.() ?? [];
+        const pad  = pads[gamepadIndexRef.current];
         if (pad) {
-          if (pad.axes[0] < -GAMEPAD_DEAD_ZONE) gp.moveLeft  = true;
-          if (pad.axes[0] >  GAMEPAD_DEAD_ZONE) gp.moveRight = true;
-          if (pad.axes[1] < -GAMEPAD_DEAD_ZONE) gp.moveUp    = true;
-          if (pad.axes[1] >  GAMEPAD_DEAD_ZONE) gp.moveDown  = true;
-          if (pad.buttons[0]?.pressed) gp.attack     = true; // A/Cross
-          if (pad.buttons[1]?.pressed) gp.dodge      = true; // B/Circle
-          if (pad.buttons[2]?.pressed) gp.defense    = true; // X/Square
-          if (pad.buttons[3]?.pressed) gp.jump       = true; // Y/Triangle
-          if (pad.buttons[4]?.pressed) gp.chargeHeld = true; // LB/L1
+          if (pad.axes[0] < -GAMEPAD_DEAD) gp.moveLeft  = true;
+          if (pad.axes[0] >  GAMEPAD_DEAD) gp.moveRight = true;
+          if (pad.axes[1] < -GAMEPAD_DEAD) gp.moveUp    = true;
+          if (pad.axes[1] >  GAMEPAD_DEAD) gp.moveDown  = true;
+          if (pad.buttons[0]?.pressed) gp.attack     = true; // A / Cross
+          if (pad.buttons[1]?.pressed) gp.dodge      = true; // B / Circle
+          if (pad.buttons[2]?.pressed) gp.defense    = true; // X / Square
+          if (pad.buttons[3]?.pressed) gp.jump       = true; // Y / Triangle
+          if (pad.buttons[4]?.pressed) gp.chargeHeld = true; // LB / L1
+          // RB / R1 = special tap (edge trigger)
           if (pad.buttons[5]?.pressed) {
-            if (!gamepadSpecialTapRef.current) {
-              gp.specialTap = true;
-              gamepadSpecialTapRef.current = true;
-            }
-          } else {
-            gamepadSpecialTapRef.current = false;
-          }
+            if (!gpSpecialTapRef.current) { gp.specialTap = true; gpSpecialTapRef.current = true; }
+          } else { gpSpecialTapRef.current = false; }
+          // D-pad (buttons 12-15 on standard mapping)
+          if (pad.buttons[12]?.pressed) gp.moveUp    = true;
+          if (pad.buttons[13]?.pressed) gp.moveDown  = true;
+          if (pad.buttons[14]?.pressed) gp.moveLeft  = true;
+          if (pad.buttons[15]?.pressed) gp.moveRight = true;
         }
       }
 
-      // ── Source 4: Touch (written by TouchControls via touchInputState) ────
-      const touch = touchInputState;
+      // Source 4: Touch (written by TouchControlsGBLayout)
+      const tc = touchInputState;
 
-      // ── Merge all four sources (OR) ───────────────────────────────────────
+      // Merge all four sources (OR)
       const input: FullGameInput = {
-        moveLeft:  kb.moveLeft  || mouse.moveLeft  || gp.moveLeft  || !!touch.moveLeft,
-        moveRight: kb.moveRight || mouse.moveRight || gp.moveRight || !!touch.moveRight,
-        moveUp:    kb.moveUp    || mouse.moveUp    || gp.moveUp    || !!touch.moveUp,
-        moveDown:  kb.moveDown  || mouse.moveDown  || gp.moveDown  || !!touch.moveDown,
-        jump:      kb.jump      || gp.jump      || !!touch.jump,
-        attack:    kb.attack    || gp.attack    || !!touch.attack,
-        defense:   kb.defense   || gp.defense   || !!touch.defense,
-        dodge:     kb.dodge     || gp.dodge     || !!touch.dodge,
-        chargeHeld: kb.chargeHeld || gp.chargeHeld || !!touch.chargeHeld,
-        specialTap: kb.specialTap || gp.specialTap || !!touch.specialTap,
-        attitudeAggressive: kb.attitudeAggressive || !!touch.attitudeAggressive,
-        attitudeDefensive:  kb.attitudeDefensive  || !!touch.attitudeDefensive,
-        attitudeStamina:    kb.attitudeStamina     || !!touch.attitudeStamina,
+        moveLeft:  kb.moveLeft  || mouse.moveLeft  || gp.moveLeft  || !!tc.moveLeft,
+        moveRight: kb.moveRight || mouse.moveRight || gp.moveRight || !!tc.moveRight,
+        moveUp:    kb.moveUp    || mouse.moveUp    || gp.moveUp    || !!tc.moveUp,
+        moveDown:  kb.moveDown  || mouse.moveDown  || gp.moveDown  || !!tc.moveDown,
+        jump:      kb.jump      || gp.jump      || !!tc.jump,
+        attack:    kb.attack    || gp.attack    || !!tc.attack,
+        defense:   kb.defense   || gp.defense   || !!tc.defense,
+        dodge:     kb.dodge     || gp.dodge     || !!tc.dodge,
+        chargeHeld: kb.chargeHeld || gp.chargeHeld || !!tc.chargeHeld,
+        specialTap: kb.specialTap || gp.specialTap || !!tc.specialTap,
+        attitudeAggressive: kb.attitudeAggressive || !!tc.attitudeAggressive,
+        attitudeDefensive:  kb.attitudeDefensive  || !!tc.attitudeDefensive,
+        attitudeStamina:    kb.attitudeStamina     || !!tc.attitudeStamina,
       };
 
-      // Collect action keys for combo detection
+      // Build combo key list for server-side combo detection
       const comboKeys: string[] = [];
-      for (const [code, action] of Object.entries(ACTION_CODES)) {
-        if (keys.has(code)) comboKeys.push(action as string);
-      }
-      if (gp.jump)      comboKeys.push("jump");
-      if (gp.attack)    comboKeys.push("attack");
-      if (gp.defense)   comboKeys.push("defense");
-      if (gp.dodge)     comboKeys.push("dodge");
-      if (gp.moveLeft)  comboKeys.push("moveLeft");
-      if (gp.moveRight) comboKeys.push("moveRight");
-      if (gp.moveUp)    comboKeys.push("moveUp");
-      if (gp.moveDown)  comboKeys.push("moveDown");
-      input.comboKeys = comboKeys.length > 0 ? comboKeys : undefined;
+      if (input.jump)      comboKeys.push("jump");
+      if (input.attack)    comboKeys.push("attack");
+      if (input.defense)   comboKeys.push("defense");
+      if (input.dodge)     comboKeys.push("dodge");
+      if (input.moveLeft)  comboKeys.push("moveLeft");
+      if (input.moveRight) comboKeys.push("moveRight");
+      if (input.moveUp)    comboKeys.push("moveUp");
+      if (input.moveDown)  comboKeys.push("moveDown");
+      if (comboKeys.length > 0) input.comboKeys = comboKeys;
 
-      // Clear one-shot specialTap after reading
+      // Clear one-shot flags after reading
       specialTapRef.current = false;
 
-      // Dedup: skip send if bitmask unchanged AND heartbeat window hasn't elapsed.
-      const bitmask = encodeLocalBitmask(input);
+      // Dedup: only send if bitmask changed or heartbeat interval elapsed
+      const bitmask = encodeBitmask(input);
       const now     = performance.now();
-      if (bitmask !== lastSentBitmaskRef.current || now - lastSentTimeRef.current >= HEARTBEAT_MS) {
+      if (bitmask !== lastBitmaskRef.current || now - lastSentTimeRef.current >= HEARTBEAT_MS) {
         sendInput(input);
-        lastSentBitmaskRef.current = bitmask;
-        lastSentTimeRef.current    = now;
+        lastBitmaskRef.current = bitmask;
+        lastSentTimeRef.current = now;
       }
-      lastInputRef.current = input;
 
-      animFrameRef.current = requestAnimationFrame(loop);
+      rafRef.current = requestAnimationFrame(loop);
     };
 
-    animFrameRef.current = requestAnimationFrame(loop);
+    rafRef.current = requestAnimationFrame(loop);
 
     return () => {
+      cancelAnimationFrame(rafRef.current);
       window.removeEventListener("keydown",       onKeyDown);
       window.removeEventListener("keyup",         onKeyUp);
       window.removeEventListener("mousedown",     onMouseDown);
       window.removeEventListener("mousemove",     onMouseMove);
       window.removeEventListener("mouseup",       onMouseUp);
-      window.removeEventListener("contextmenu",   onContextMenu);
-      window.removeEventListener("gamepadconnected",    onGamepadConnected);
-      window.removeEventListener("gamepaddisconnected", onGamepadDisconnected);
-      cancelAnimationFrame(animFrameRef.current);
+      window.removeEventListener("gamepadconnected",    onGpIn);
+      window.removeEventListener("gamepaddisconnected", onGpOut);
     };
   }, [sendInput, enabled]);
 }

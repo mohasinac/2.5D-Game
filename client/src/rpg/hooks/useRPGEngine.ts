@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRPGStore } from "../stores/rpgStore";
 import { useRPGInput } from "./useRPGInput";
@@ -56,8 +56,8 @@ export function useRPGEngine(
   userId: string,
   username: string
 ): { engine: RPGEngineRef | null; isReady: boolean } {
-  const engineRef = useRef<RPGEngineRef | null>(null);
-  const isReadyRef = useRef(false);
+  const engineRef     = useRef<RPGEngineRef | null>(null);
+  const [isReady, setIsReady] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRPGInput();
 
@@ -171,6 +171,9 @@ export function useRPGEngine(
     canvas.style.width = "100%";
     canvas.style.height = "100%";
     canvas.style.display = "block";
+    // pointer-events:none so RPGTouchControls (above in z-order) receive touch/mouse events.
+    // RPG input is driven by keyboard + rpgTouchState, not by PixiJS canvas events.
+    canvas.style.pointerEvents = "none";
     containerEl.appendChild(canvas);
 
     pixi.init(canvas).then(async () => {
@@ -247,7 +250,7 @@ export function useRPGEngine(
         console.error("[useRPGEngine] Failed to load starting map:", err);
       }
 
-      isReadyRef.current = true;
+      setIsReady(true);
 
       // ── Main game tick ─────────────────────────────────────────────────────
       let prevDialogueActive = false;
@@ -326,13 +329,12 @@ export function useRPGEngine(
       timeSystem.stop();
       if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
       engineRef.current = null;
-      isReadyRef.current = false;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
     engine: engineRef.current,
-    isReady: isReadyRef.current,
+    isReady,
   };
 }

@@ -1,322 +1,407 @@
-// Phase E — GameBoy-style touch controls (GBLayout).
-// Portrait  (width < 600px): controls bar below the canvas.
-// Landscape (width ≥ 600px): D-pad panel on left side of canvas, action buttons on right side, space bar at bottom strip.
-// Each zone is independently draggable via DraggableZone.
-// Only rendered on coarse-pointer (touch) devices.
+// TouchControlsGBLayout — GBA-style virtual controller.
 //
-// Usage A — wraps canvas (full GBA layout):
-//   <TouchControlsGBLayout><div ref={canvasRef} /></TouchControlsGBLayout>
+// Layout:
+//   Left:   Cross D-pad  (proper + shape, touch + mouse drag, diagonal support)
+//   Right:  Diamond action buttons (JUMP/ATK/DEF/DODGE — no keyboard letters)
+//           + L (CHARGE, hold) and R (SPECIAL, tap) shoulder buttons above
+//   Center: START button
 //
-// Usage B — standalone overlay (backwards-compat, no children needed):
-//   <TouchControlsGBLayout />
-//   (Portrait: fixed bar at bottom; Landscape: fixed panels on sides + bottom strip)
+// Both touch AND mouse work on every element.
+// Always visible (no pointer:coarse gate); toggle button hides/shows.
+// All panels individually draggable via DraggableZone.
+//
+// Usage:
+//   <TouchControlsGBLayout />          — overlay (fixed position)
+//   <TouchControlsGBLayout>{canvas}</> — wraps canvas in GBA frame
 
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import { DraggableZone } from "@/components/ui/DraggableZone";
 import { touchInputState } from "@/game/hooks/useGameInput";
 import { useWindowWidth } from "@/game/hooks/useWindowWidth";
 import { cn } from "@/lib/cn";
+import { KeyBindingsPanel } from "@/components/game/KeyBindingsPanel";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Cross D-pad ──────────────────────────────────────────────────────────────
 
-const DPAD_SIZE = 120;
 const DPAD_DEAD = 18;
-const SPACE_TAP_MS = 200;
 
-// ─── D-pad ────────────────────────────────────────────────────────────────────
+interface DirState { up: boolean; down: boolean; left: boolean; right: boolean }
+const NO_DIRS: DirState = { up: false, down: false, left: false, right: false };
 
-function DPad() {
-  const originRef = useRef<{ x: number; y: number; id: number } | null>(null);
-  const [knobPos, setKnobPos] = useState({ x: DPAD_SIZE / 2, y: DPAD_SIZE / 2 });
+function applyDpadDirs(up: boolean, down: boolean, left: boolean, right: boolean) {
+  touchInputState.moveUp    = up;
+  touchInputState.moveDown  = down;
+  touchInputState.moveLeft  = left;
+  touchInputState.moveRight = right;
+}
 
-  const applyDelta = (dx: number, dy: number) => {
-    const clamp = DPAD_SIZE * 0.35;
-    const kx = Math.min(clamp, Math.max(-clamp, dx));
-    const ky = Math.min(clamp, Math.max(-clamp, dy));
-    setKnobPos({ x: DPAD_SIZE / 2 + kx, y: DPAD_SIZE / 2 + ky });
+function clearDpad() {
+  touchInputState.moveUp = touchInputState.moveDown =
+  touchInputState.moveLeft = touchInputState.moveRight = false;
+}
 
-    const dirs: string[] = [];
-    if (Math.abs(dx) > DPAD_DEAD || Math.abs(dy) > DPAD_DEAD) {
-      if (dx < -DPAD_DEAD) dirs.push("moveLeft");
-      if (dx >  DPAD_DEAD) dirs.push("moveRight");
-      if (dy < -DPAD_DEAD) dirs.push("moveUp");
-      if (dy >  DPAD_DEAD) dirs.push("moveDown");
-    }
-    touchInputState.moveLeft  = dirs.includes("moveLeft");
-    touchInputState.moveRight = dirs.includes("moveRight");
-    touchInputState.moveUp    = dirs.includes("moveUp");
-    touchInputState.moveDown  = dirs.includes("moveDown");
+function dirsFromCenter(dx: number, dy: number): DirState {
+  return {
+    up:    dy < -DPAD_DEAD,
+    down:  dy >  DPAD_DEAD,
+    left:  dx < -DPAD_DEAD,
+    right: dx >  DPAD_DEAD,
+  };
+}
+
+// Arm class helpers
+const armBase =
+  "flex items-center justify-center transition-colors duration-75 select-none touch-none";
+const armOff  = "bg-[rgba(30,45,80,0.85)] border-2 border-white/10 text-white/40";
+const armOn   = "bg-[rgba(80,140,255,0.90)] border-2 border-white/55 text-white/95";
+
+function CrossDpad() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const originRef = useRef<{ cx: number; cy: number; id: number } | null>(null);
+  const [dirs, setDirs] = useState<DirState>(NO_DIRS);
+
+  const getCenterFromRoot = (): { cx: number; cy: number } => {
+    const rect = rootRef.current?.getBoundingClientRect();
+    if (!rect) return { cx: 0, cy: 0 };
+    return { cx: rect.left + rect.width / 2, cy: rect.top + rect.height / 2 };
   };
 
-  const resetDpad = () => {
+  const applyAndSet = useCallback((dx: number, dy: number) => {
+    const d = dirsFromCenter(dx, dy);
+    applyDpadDirs(d.up, d.down, d.left, d.right);
+    setDirs(d);
+  }, []);
+
+  const release = useCallback(() => {
     originRef.current = null;
-    setKnobPos({ x: DPAD_SIZE / 2, y: DPAD_SIZE / 2 });
-    touchInputState.moveLeft  = false;
-    touchInputState.moveRight = false;
-    touchInputState.moveUp    = false;
-    touchInputState.moveDown  = false;
-  };
+    clearDpad();
+    setDirs(NO_DIRS);
+  }, []);
 
-  const handleStart = (e: React.TouchEvent) => {
+  // ── Touch handlers ────────────────────────────────────────────────────────
+  const onTouchStart = (e: React.TouchEvent) => {
     e.preventDefault();
     const t = e.changedTouches[0];
-    originRef.current = { x: t.clientX, y: t.clientY, id: t.identifier };
-    setKnobPos({ x: DPAD_SIZE / 2, y: DPAD_SIZE / 2 });
+    const { cx, cy } = getCenterFromRoot();
+    originRef.current = { cx, cy, id: t.identifier };
+    applyAndSet(t.clientX - cx, t.clientY - cy);
   };
 
-  const handleMove = (e: React.TouchEvent) => {
+  const onTouchMove = (e: React.TouchEvent) => {
     e.preventDefault();
     const origin = originRef.current;
     if (!origin) return;
     for (let i = 0; i < e.changedTouches.length; i++) {
       const t = e.changedTouches[i];
       if (t.identifier !== origin.id) continue;
-      applyDelta(t.clientX - origin.x, t.clientY - origin.y);
+      applyAndSet(t.clientX - origin.cx, t.clientY - origin.cy);
     }
   };
 
-  const handleEnd = (e: React.TouchEvent) => {
+  const onTouchEnd = (e: React.TouchEvent) => {
     e.preventDefault();
     const origin = originRef.current;
     if (!origin) return;
     for (let i = 0; i < e.changedTouches.length; i++) {
-      if (e.changedTouches[i].identifier === origin.id) resetDpad();
+      if (e.changedTouches[i].identifier === origin.id) release();
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  // ── Mouse handlers (also works on desktop) ───────────────────────────────
+  const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
-    originRef.current = { x: e.clientX, y: e.clientY, id: -1 };
-    setKnobPos({ x: DPAD_SIZE / 2, y: DPAD_SIZE / 2 });
+    const { cx, cy } = getCenterFromRoot();
+    originRef.current = { cx, cy, id: -1 };
+    applyAndSet(e.clientX - cx, e.clientY - cy);
+
     const onMove = (ev: MouseEvent) => {
-      if (!originRef.current) return;
-      applyDelta(ev.clientX - originRef.current.x, ev.clientY - originRef.current.y);
+      const o = originRef.current;
+      if (!o) return;
+      applyAndSet(ev.clientX - o.cx, ev.clientY - o.cy);
     };
     const onUp = () => {
-      resetDpad();
+      release();
       window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("mouseup",   onUp);
     };
     window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
+    window.addEventListener("mouseup",   onUp);
   };
 
   return (
     <div
-      className="w-[120px] h-[120px] rounded-full bg-[rgba(20,30,50,0.6)] border-2 border-[rgba(120,160,220,0.4)] relative select-none touch-none"
-      onTouchStart={handleStart}
-      onTouchMove={handleMove}
-      onTouchEnd={handleEnd}
-      onTouchCancel={handleEnd}
-      onMouseDown={handleMouseDown}
+      ref={rootRef}
+      className="inline-grid grid-cols-[1fr_1.4fr_1fr] grid-rows-[1fr_1.4fr_1fr] w-[108px] h-[108px] sm:w-[126px] sm:h-[126px] select-none touch-none gap-[2px]"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchEnd}
+      onMouseDown={onMouseDown}
     >
-      {/* Knob — left/top are runtime pixel positions */}
-      <div
-        className="absolute w-9 h-9 rounded-full bg-[rgba(100,160,240,0.7)] border-2 border-[rgba(180,210,255,0.6)] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-        style={{ left: knobPos.x, top: knobPos.y }}
-      />
+      {/* Row 1 */}
+      <div className="rounded-tl-md bg-transparent" />
+      <div className={cn(armBase, "rounded-t-xl text-sm", dirs.up ? armOn : armOff)}>▲</div>
+      <div className="rounded-tr-md bg-transparent" />
+
+      {/* Row 2 */}
+      <div className={cn(armBase, "rounded-l-xl text-sm", dirs.left ? armOn : armOff)}>◀</div>
+      <div className="bg-[rgba(10,18,36,0.9)] border border-white/8 rounded-sm" />
+      <div className={cn(armBase, "rounded-r-xl text-sm", dirs.right ? armOn : armOff)}>▶</div>
+
+      {/* Row 3 */}
+      <div className="rounded-bl-md bg-transparent" />
+      <div className={cn(armBase, "rounded-b-xl text-sm", dirs.down ? armOn : armOff)}>▼</div>
+      <div className="rounded-br-md bg-transparent" />
     </div>
   );
 }
 
-// ─── Action buttons ───────────────────────────────────────────────────────────
+// ─── Shoulder buttons ─────────────────────────────────────────────────────────
 
-const actionBase =
-  "w-14 h-14 flex items-center justify-center rounded-full border-2 border-white/25 text-white font-bold font-mono text-[0.65rem] tracking-[0.05em] select-none touch-none cursor-pointer";
+const SPECIAL_TAP_MS = 200;
 
-type TouchField = keyof typeof touchInputState;
+function ShoulderL() {
+  const pressRef = useRef(0);
 
-function ActionBtn({
-  field, label, sub, colorClass,
-}: { field: TouchField; label: string; sub: string; colorClass: string }) {
-  const btnDown = (e: React.TouchEvent) => { e.preventDefault(); (touchInputState[field] as boolean) = true; };
-  const btnUp   = (e: React.TouchEvent) => { e.preventDefault(); (touchInputState[field] as boolean) = false; };
-  const mouseDown = (e: React.MouseEvent) => {
+  const press = (e: React.TouchEvent | React.MouseEvent) => {
     e.preventDefault();
-    (touchInputState[field] as boolean) = true;
-    const onUp = () => { (touchInputState[field] as boolean) = false; window.removeEventListener("mouseup", onUp); };
-    window.addEventListener("mouseup", onUp);
+    pressRef.current = Date.now();
+    touchInputState.chargeHeld = true;
   };
+  const rel = () => {
+    touchInputState.chargeHeld = false;
+    pressRef.current = 0;
+  };
+
+  const mouseDown = (e: React.MouseEvent) => {
+    press(e);
+    const up = () => { rel(); window.removeEventListener("mouseup", up); };
+    window.addEventListener("mouseup", up);
+  };
+
   return (
     <div
-      className={cn(actionBase, colorClass)}
-      onTouchStart={btnDown}
-      onTouchEnd={btnUp}
-      onTouchCancel={btnUp}
+      className="flex-1 h-7 sm:h-8 rounded-tl-xl bg-[rgba(80,60,10,0.85)] border border-amber-400/30 flex items-center justify-center text-amber-300 font-bold text-[0.6rem] sm:text-[0.65rem] tracking-widest select-none touch-none cursor-pointer active:bg-[rgba(140,110,20,0.9)]"
+      onTouchStart={press}
+      onTouchEnd={() => rel()}
+      onTouchCancel={() => rel()}
       onMouseDown={mouseDown}
     >
-      {label}<br /><span className="text-[0.5rem]">{sub}</span>
+      L · CHARGE
     </div>
   );
 }
 
-function ActionButtons() {
-  return (
-    <div className="flex flex-col items-center gap-[0.4rem]">
-      {/* Top: Jump (I) */}
-      <div className="flex justify-center">
-        <ActionBtn field="jump"    label="I" sub="JUMP"  colorClass="bg-[rgba(60,80,200,0.8)]" />
-      </div>
-      {/* Middle: Attack (J) + Defense (K) */}
-      <div className="flex gap-2">
-        <ActionBtn field="attack"  label="J" sub="ATK"   colorClass="bg-[rgba(200,50,50,0.8)]" />
-        <ActionBtn field="defense" label="K" sub="DEF"   colorClass="bg-[rgba(50,80,200,0.8)]" />
-      </div>
-      {/* Bottom: Dodge (L) */}
-      <div className="flex justify-center">
-        <ActionBtn field="dodge"   label="L" sub="DODGE" colorClass="bg-[rgba(50,160,100,0.8)]" />
-      </div>
-    </div>
-  );
-}
+function ShoulderR() {
+  const pressRef = useRef(0);
 
-// ─── Space bar ────────────────────────────────────────────────────────────────
-
-function SpaceBar() {
-  const pressTimeRef = useRef<number>(0);
-
-  const release = () => {
-    const held = Date.now() - pressTimeRef.current;
-    touchInputState.chargeHeld = false;
-    if (held < SPACE_TAP_MS) {
+  const press = (e: React.TouchEvent | React.MouseEvent) => {
+    e.preventDefault();
+    pressRef.current = Date.now();
+  };
+  const rel = () => {
+    const held = pressRef.current > 0 ? Date.now() - pressRef.current : 999;
+    pressRef.current = 0;
+    if (held < SPECIAL_TAP_MS) {
       touchInputState.specialTap = true;
       requestAnimationFrame(() => { touchInputState.specialTap = false; });
     }
   };
 
-  const handleStart = (e: React.TouchEvent) => {
-    e.preventDefault();
-    pressTimeRef.current = Date.now();
-    touchInputState.chargeHeld = true;
-  };
-
-  const handleEnd = (e: React.TouchEvent) => {
-    e.preventDefault();
-    release();
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    pressTimeRef.current = Date.now();
-    touchInputState.chargeHeld = true;
-    const onUp = () => { release(); window.removeEventListener("mouseup", onUp); };
-    window.addEventListener("mouseup", onUp);
+  const mouseDown = (e: React.MouseEvent) => {
+    press(e);
+    const up = () => { rel(); window.removeEventListener("mouseup", up); };
+    window.addEventListener("mouseup", up);
   };
 
   return (
     <div
-      className="max-w-[200px] h-10 rounded-full bg-[rgba(40,50,70,0.8)] border border-white/20 text-xs text-white/60 font-mono tracking-widest flex items-center justify-center px-6 select-none touch-none cursor-pointer"
-      onTouchStart={handleStart}
-      onTouchEnd={handleEnd}
-      onTouchCancel={handleEnd}
-      onMouseDown={handleMouseDown}
+      className="flex-1 h-7 sm:h-8 rounded-tr-xl bg-[rgba(20,60,100,0.85)] border border-blue-400/30 flex items-center justify-center text-blue-300 font-bold text-[0.6rem] sm:text-[0.65rem] tracking-widest select-none touch-none cursor-pointer active:bg-[rgba(30,90,160,0.9)]"
+      onTouchStart={press}
+      onTouchEnd={() => rel()}
+      onTouchCancel={() => rel()}
+      onMouseDown={mouseDown}
     >
-      SPACE
+      R · SPECIAL
     </div>
   );
 }
 
-// ─── Portrait overlay (no children) ──────────────────────────────────────────
+// ─── Diamond action buttons ───────────────────────────────────────────────────
 
-function PortraitOverlay() {
+type TouchField = keyof typeof touchInputState;
+
+interface ActionBtnProps {
+  field: TouchField;
+  label: string;
+  colorClass: string;
+  size?: string;
+}
+
+function ActionBtn({ field, label, colorClass, size = "w-12 h-12 sm:w-14 sm:h-14" }: ActionBtnProps) {
+  const pressBtn = (e: React.TouchEvent | React.MouseEvent) => {
+    e.preventDefault();
+    (touchInputState[field] as boolean) = true;
+  };
+  const releaseBtn = () => { (touchInputState[field] as boolean) = false; };
+
+  const mouseDown = (e: React.MouseEvent) => {
+    pressBtn(e);
+    const up = () => { releaseBtn(); window.removeEventListener("mouseup", up); };
+    window.addEventListener("mouseup", up);
+  };
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 shrink-0 bg-[rgba(5,8,20,0.95)] border-t border-white/10 flex items-end justify-between px-5 pb-5 pt-3 h-[190px] z-[60] pointer-events-none">
-      <div className="pointer-events-auto">
-        <DraggableZone storageKey="tc-dpad"><DPad /></DraggableZone>
+    <div
+      className={cn(
+        size,
+        "flex items-center justify-center rounded-full border-2 border-white/20",
+        "text-white font-bold text-[0.6rem] sm:text-[0.65rem] tracking-[0.04em]",
+        "select-none touch-none cursor-pointer",
+        "active:brightness-125 active:scale-95 transition-transform duration-75",
+        colorClass,
+      )}
+      onTouchStart={pressBtn}
+      onTouchEnd={releaseBtn}
+      onTouchCancel={releaseBtn}
+      onMouseDown={mouseDown}
+    >
+      {label}
+    </div>
+  );
+}
+
+// Diamond layout: JUMP top, ATK left, DEF right, DODGE bottom
+function DiamondButtons() {
+  return (
+    <div className="flex flex-col items-center select-none">
+      {/* Shoulder buttons — full width above diamond */}
+      <div className="flex w-full gap-[2px] mb-[6px]">
+        <ShoulderL />
+        <ShoulderR />
       </div>
-      <div className="pointer-events-auto">
-        <DraggableZone storageKey="tc-space"><SpaceBar /></DraggableZone>
+
+      {/* Top: JUMP */}
+      <div className="flex justify-center mb-[3px]">
+        <ActionBtn field="jump"    label="JUMP"  colorClass="bg-[rgba(80,60,200,0.85)]" />
       </div>
-      <div className="pointer-events-auto">
-        <DraggableZone storageKey="tc-actions"><ActionButtons /></DraggableZone>
+
+      {/* Middle: ATK · gap · DEF */}
+      <div className="flex items-center gap-[6px] mb-[3px]">
+        <ActionBtn field="attack"  label="ATK"   colorClass="bg-[rgba(200,50,50,0.85)]" />
+        <div className="w-8 h-8 rounded-sm bg-[rgba(10,18,36,0.5)] border border-white/5" />
+        <ActionBtn field="defense" label="DEF"   colorClass="bg-[rgba(40,80,200,0.85)]" />
+      </div>
+
+      {/* Bottom: DODGE */}
+      <div className="flex justify-center">
+        <ActionBtn field="dodge"   label="DODGE" colorClass="bg-[rgba(30,150,90,0.85)]" />
       </div>
     </div>
   );
 }
 
-// ─── Landscape overlay (no children) ─────────────────────────────────────────
+// ─── START button ─────────────────────────────────────────────────────────────
+// Sits between D-pad and diamond in the center strip.
 
-function LandscapeOverlay() {
+// ─── Toggle + settings ───────────────────────────────────────────────────────
+
+function ToggleBar({
+  hidden,
+  onToggle,
+  onKeys,
+}: {
+  hidden: boolean;
+  onToggle: () => void;
+  onKeys: () => void;
+}) {
+  return (
+    <div className="fixed left-1/2 -translate-x-1/2 bottom-3 z-[70] flex items-center gap-2">
+      <button
+        onClick={onKeys}
+        className="h-6 px-3 rounded-full bg-[rgba(20,30,50,0.85)] border border-white/20 text-white/60 text-[10px] font-bold select-none cursor-pointer hover:bg-[rgba(40,60,100,0.9)] active:scale-95 transition-all"
+        title="Remap keys"
+      >
+        ⌨ Keys
+      </button>
+      <button
+        onClick={onToggle}
+        className="h-6 px-3 rounded-full bg-[rgba(20,30,50,0.85)] border border-white/20 text-white/60 text-[10px] font-bold select-none cursor-pointer hover:bg-[rgba(40,60,100,0.9)] active:scale-95 transition-all"
+        title={hidden ? "Show controls" : "Hide controls"}
+      >
+        {hidden ? "Show Controls" : "Hide Controls"}
+      </button>
+    </div>
+  );
+}
+
+// ─── Portrait: bar below canvas ───────────────────────────────────────────────
+
+function PortraitOverlay({ onKeys }: { onKeys: () => void }) {
+  void onKeys; // available for parent wiring
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-[rgba(4,7,18,0.96)] border-t border-white/8 flex items-center justify-between px-4 pt-3 pb-4 h-[175px] z-[60] pointer-events-none">
+      <div className="pointer-events-auto">
+        <DraggableZone storageKey="tc-dpad"><CrossDpad /></DraggableZone>
+      </div>
+      <div className="pointer-events-auto">
+        <DraggableZone storageKey="tc-diamond"><DiamondButtons /></DraggableZone>
+      </div>
+    </div>
+  );
+}
+
+function PortraitWithChildren({ children, onKeys }: { children: React.ReactNode; onKeys: () => void }) {
+  void onKeys;
+  return (
+    <div className="flex flex-col h-screen">
+      <div className="flex-1 relative overflow-hidden min-h-0">{children}</div>
+      <div className="shrink-0 bg-[rgba(4,7,18,0.96)] border-t border-white/8 flex items-center justify-between px-4 pt-3 pb-4 h-[175px]">
+        <DraggableZone storageKey="tc-dpad"><CrossDpad /></DraggableZone>
+        <DraggableZone storageKey="tc-diamond"><DiamondButtons /></DraggableZone>
+      </div>
+    </div>
+  );
+}
+
+// ─── Landscape: side panels ───────────────────────────────────────────────────
+
+function LandscapeOverlay({ onKeys }: { onKeys: () => void }) {
+  void onKeys;
   return (
     <>
-      {/* Left D-pad panel */}
-      <div className="fixed left-0 top-0 bottom-[64px] w-[130px] bg-[rgba(5,8,20,0.95)] border-r border-white/10 flex items-center justify-center z-[60] pointer-events-none">
+      <div className="fixed left-0 top-0 bottom-0 w-[136px] bg-[rgba(4,7,18,0.96)] border-r border-white/8 flex items-center justify-center z-[60] pointer-events-none">
         <div className="pointer-events-auto">
-          <DraggableZone storageKey="tc-dpad"><DPad /></DraggableZone>
+          <DraggableZone storageKey="tc-dpad"><CrossDpad /></DraggableZone>
         </div>
       </div>
-
-      {/* Right action buttons panel */}
-      <div className="fixed right-0 top-0 bottom-[64px] w-[130px] bg-[rgba(5,8,20,0.95)] border-l border-white/10 flex items-center justify-center z-[60] pointer-events-none">
+      <div className="fixed right-0 top-0 bottom-0 w-[148px] bg-[rgba(4,7,18,0.96)] border-l border-white/8 flex items-center justify-center z-[60] pointer-events-none">
         <div className="pointer-events-auto">
-          <DraggableZone storageKey="tc-actions"><ActionButtons /></DraggableZone>
-        </div>
-      </div>
-
-      {/* Bottom space bar strip */}
-      <div className="fixed bottom-0 left-0 right-0 h-[64px] bg-[rgba(5,8,20,0.95)] border-t border-white/10 flex justify-center items-center z-[60] pointer-events-none">
-        <div className="pointer-events-auto">
-          <DraggableZone storageKey="tc-space"><SpaceBar /></DraggableZone>
+          <DraggableZone storageKey="tc-diamond"><DiamondButtons /></DraggableZone>
         </div>
       </div>
     </>
   );
 }
 
-// ─── Portrait with children ───────────────────────────────────────────────────
-
-function PortraitWithChildren({ children }: { children: React.ReactNode }) {
+function LandscapeWithChildren({ children, onKeys }: { children: React.ReactNode; onKeys: () => void }) {
+  void onKeys;
   return (
-    <div className="flex flex-col h-screen">
-      {/* Canvas area fills remaining space */}
-      <div className="flex-1 relative overflow-hidden min-h-0">
-        {children}
-      </div>
-
-      {/* Controls bar below canvas */}
-      <div className="shrink-0 bg-[rgba(5,8,20,0.95)] border-t border-white/10 flex items-end justify-between px-5 pb-5 pt-3 h-[190px]">
-        <DraggableZone storageKey="tc-dpad"><DPad /></DraggableZone>
-        <DraggableZone storageKey="tc-space"><SpaceBar /></DraggableZone>
-        <DraggableZone storageKey="tc-actions"><ActionButtons /></DraggableZone>
-      </div>
-    </div>
-  );
-}
-
-// ─── Landscape with children ──────────────────────────────────────────────────
-
-function LandscapeWithChildren({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col h-screen">
-      <div className="flex flex-1 overflow-hidden min-h-0">
-        {/* Left: D-pad panel */}
-        <DraggableZone
-          storageKey="tc-dpad"
-          className="w-[130px] shrink-0 bg-[rgba(5,8,20,0.95)] border-r border-white/10 flex items-center justify-center"
-        >
-          <DPad />
-        </DraggableZone>
-
-        {/* Center: canvas slot */}
-        <div className="flex-1 relative overflow-hidden min-w-0">
-          {children}
-        </div>
-
-        {/* Right: action buttons panel */}
-        <DraggableZone
-          storageKey="tc-actions"
-          className="w-[130px] shrink-0 bg-[rgba(5,8,20,0.95)] border-l border-white/10 flex items-center justify-center"
-        >
-          <ActionButtons />
-        </DraggableZone>
-      </div>
-
-      {/* Bottom: space bar strip */}
+    <div className="flex h-screen">
       <DraggableZone
-        storageKey="tc-space"
-        className="shrink-0 h-[64px] bg-[rgba(5,8,20,0.95)] border-t border-white/10 flex justify-center items-center"
+        storageKey="tc-dpad"
+        className="w-[136px] shrink-0 bg-[rgba(4,7,18,0.96)] border-r border-white/8 flex items-center justify-center"
       >
-        <SpaceBar />
+        <CrossDpad />
+      </DraggableZone>
+
+      <div className="flex-1 relative overflow-hidden min-w-0">{children}</div>
+
+      <DraggableZone
+        storageKey="tc-diamond"
+        className="w-[148px] shrink-0 bg-[rgba(4,7,18,0.96)] border-l border-white/8 flex items-center justify-center"
+      >
+        <DiamondButtons />
       </DraggableZone>
     </div>
   );
@@ -324,60 +409,41 @@ function LandscapeWithChildren({ children }: { children: React.ReactNode }) {
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 
-interface TouchControlsGBLayoutProps {
-  /** The canvas/renderer element — wraps it in GBA layout when provided. */
+interface Props {
   children?: React.ReactNode;
+  /** Override to always show regardless of pointer type (default: true) */
+  alwaysShow?: boolean;
 }
 
-export function TouchControlsGBLayout({ children }: TouchControlsGBLayoutProps) {
-  return <TouchControlsGBLayoutInner>{children}</TouchControlsGBLayoutInner>;
-}
-
-function ToggleButton({ hidden, onClick }: { hidden: boolean; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        "fixed left-1/2 -translate-x-1/2 z-[70] h-6 px-3 rounded-full bg-[rgba(20,30,50,0.85)] border border-white/20 text-white/60 text-[10px] font-bold flex items-center justify-center select-none cursor-pointer hover:bg-[rgba(40,60,100,0.9)] active:scale-95 transition-all",
-        hidden ? "bottom-3" : "bottom-[200px]",
-      )}
-      title={hidden ? "Show controls" : "Hide controls"}
-      aria-label={hidden ? "Show controls" : "Hide controls"}
-    >
-      {hidden ? "Show Controls" : "Hide Controls"}
-    </button>
-  );
-}
-
-function TouchControlsGBLayoutInner({ children }: { children?: React.ReactNode }) {
-  const width = useWindowWidth();
-  const isPortrait = width < 600;
+export function TouchControlsGBLayout({ children, alwaysShow = true }: Props) {
+  const width        = useWindowWidth();
+  const isPortrait   = width < 600;
   const [hidden, setHidden] = useState(false);
+  const [keysOpen, setKeysOpen] = useState(false);
 
-  if (!children) {
-    return (
-      <>
-        <ToggleButton hidden={hidden} onClick={() => setHidden(h => !h)} />
-        {!hidden && (isPortrait ? <PortraitOverlay /> : <LandscapeOverlay />)}
-      </>
-    );
-  }
-
-  if (hidden) {
-    return (
-      <>
-        <ToggleButton hidden={hidden} onClick={() => setHidden(h => !h)} />
-        {children}
-      </>
-    );
-  }
+  const openKeyBindings  = useCallback(() => setKeysOpen(true),  []);
+  const closeKeyBindings = useCallback(() => setKeysOpen(false), []);
 
   return (
     <>
-      <ToggleButton hidden={hidden} onClick={() => setHidden(h => !h)} />
-      {isPortrait
-        ? <PortraitWithChildren>{children}</PortraitWithChildren>
-        : <LandscapeWithChildren>{children}</LandscapeWithChildren>}
+      {keysOpen && <KeyBindingsPanel onClose={closeKeyBindings} />}
+
+      <ToggleBar
+        hidden={hidden}
+        onToggle={() => setHidden((h) => !h)}
+        onKeys={openKeyBindings}
+      />
+
+      {!hidden && (
+        children
+          ? (isPortrait
+              ? <PortraitWithChildren onKeys={openKeyBindings}>{children}</PortraitWithChildren>
+              : <LandscapeWithChildren onKeys={openKeyBindings}>{children}</LandscapeWithChildren>)
+          : (isPortrait
+              ? <PortraitOverlay onKeys={openKeyBindings} />
+              : <LandscapeOverlay onKeys={openKeyBindings} />)
+      )}
+      {hidden && children}
     </>
   );
 }
