@@ -19,7 +19,7 @@ Total: **812 cases** across 14 files + 1 master reference.
 | [10 case study.md](10%20case%20study.md) | 545–585 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–842 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
+| [13 case study.md](13%20case%20study.md) | 619–863 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
 | [14 case study.md](14%20case%20study.md) | 759–777 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | Engine reference: constants, formulas, normalization |
 

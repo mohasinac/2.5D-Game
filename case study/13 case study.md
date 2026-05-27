@@ -14201,6 +14201,971 @@ function eternalCounter(
 
 ---
 
-*Cases continue from Case 846 as further franchise moves are provided.*
+---
+
+## Case 846 — [GIMMICK] Bel Daizora's Destruction Belfyre Nexus Venture-2 — Destruction Blade Geometry and Venture-2 Rubber Wall-Orbit Driver
+
+**Franchise context.** Bel Daizora (Beyblade Burst DB / Dynamite Battle era, Takara-Tomy). Assembly: Destruction Belfyre Nexus Venture-2 (JP: Dynamite Belial Nexus Venture-2). All values [M] (±15%) — no dedicated prior case analysis. The Destruction Blade is the defining physics component: large, multi-lobed blade with pronounced smash contacts. The Venture-2 driver is a rubber flat with mode-change capability, providing exceptional grip for wall-orbit maneuvers at the cost of very high spin decay.
+
+**Parts:**
+
+**Blade: Destruction Belfyre (JP: Dynamite Belial) [M]**
+Large DB-era blade with 3 primary Destruction Blade contacts at r_contact ≈ 23 mm [M]. Two contact geometries coexist:
+- Slash face: θ_slash ≈ 20° [M]; C_smash_slash ≈ 0.82 [M] — high-efficiency angled smash, maximizes spin transfer
+- Ram face: θ_ram ≈ 80° [M]; C_ram ≈ 0.35 [M] — broad mass contact, maximizes force transfer (ring-out oriented)
+
+  m_blade ≈ 20.0 g [M]; r_blade ≈ 23 mm [M]; r_inner ≈ 7 mm [M]
+  I_blade = (0.020/2)(0.023² + 0.007²) = 0.010 × 5.780×10⁻⁴ = 5.780×10⁻⁶ kg⋅m² [M]
+
+**Core: Nexus [M]**
+DB-era core providing structural rigidity and mass concentration near the spin axis.
+  m_nexus ≈ 8.0 g [M]; r_nexus ≈ 15 mm [M]; r_inner ≈ 6 mm [M]
+  I_nexus = (0.008/2)(0.015² + 0.006²) = 0.004 × 2.610×10⁻⁴ = 1.044×10⁻⁶ kg⋅m² [M]
+
+**Driver: Venture-2 [M]**
+Rubber flat mode-change driver. Two physical positions:
+- Attack Mode: r_tip ≈ 5 mm [M]; μ_rubber ≈ 0.85 [M] — maximum grip, aggressive orbit
+- Balance Mode: r_tip ≈ 2 mm [M]; μ_bal ≈ 0.60 [M] — reduced contact patch, moderate movement
+
+  m_venture2 ≈ 5.0 g [M]; m_chip ≈ 2.5 g [M]
+  I_venture2 ≈ 0.400×10⁻⁶ kg⋅m² [M]; I_chip ≈ 0.280×10⁻⁶ kg⋅m² [M]
+
+**Assembly [M]:**
+  m_total ≈ 36.0 g [M]   (blade 20.0 + nexus 8.0 + driver 5.0 + chip 2.5 + rounding 0.5)
+  I_total = 5.780 + 1.044 + 0.400 + 0.280 = 7.504×10⁻⁶ kg⋅m² [M]
+  ω₀ = 650 rad/s (Burst DB era standard)
+  KE₀ = 0.5 × 7.504×10⁻⁶ × 650² = 1.584 J [M]
+
+  Spin decay — Attack Mode (rubber flat):
+    dω/dt_A = −(0.85 × 0.036 × 9.81 × 0.005) / 7.504×10⁻⁶
+      = −(1.501×10⁻³) / 7.504×10⁻⁶ = −200.0 rad/s² [M]
+    → from ω₀ = 650 to ω_min = 100 rad/s: t = 2.75 s [M]
+    → Venture-2 Attack Mode is fastest-decaying driver in CS13; Belfyre must finish fast.
+
+  Wall-orbit physics:
+    At r_wall = 110 mm, centripetal requirement: F_c = m × v² / r = 0.036 × v² / 0.110 = 0.327 × v² [N]
+    Rubber wall grip: f_grip = μ_A × F_c = 0.85 × 0.327 × v² = 0.278 × v² [N]
+    Physical terminal v_orbit ≈ 1.5 m/s [M]
+    BeySpirit-amplified after 3 laps: v_orbit_BS ≈ 4.5 m/s [M] → ×3.0 transcendence [M]
+    KE_orbit = 0.5 × 0.036 × 4.5² = 0.365 J [M]
+    KE_total_at_release = KE_spin + KE_orbit = 1.584 + 0.365 = 1.949 J [M]
+
+```typescript
+function ventureWallOrbit(): {
+  v_terminal_ms: number; v_BS_ms: number; transcendence: number;
+  KE_orbit_J: number; spinDecayAttack_rad_s2: number; matchDurationAtk_s: number
+} {
+  return {
+    v_terminal_ms: 1.5, v_BS_ms: 4.5, transcendence: 3.0,
+    KE_orbit_J: parseFloat((0.5 * 0.036 * 4.5 ** 2).toFixed(3)),
+    spinDecayAttack_rad_s2: 200.0,
+    matchDurationAtk_s: (650 - 100) / 200,
+  };
+}
+// ventureWallOrbit() → { v_term:1.5, v_BS:4.5, ×3.0, KE:0.365J, spinDecay:200 rad/s², dur:2.75s }
+
+function destructionBladesStats(): {
+  slashC: number; ramC: number; I_kgm2: number; contacts: number
+} {
+  return { slashC: 0.82, ramC: 0.35, I_kgm2: 5.780e-6, contacts: 3 };
+}
+```
+
+---
+
+## Case 847 — [SPECIAL] Daring Flash (JP: Venture Flash / ベンチャーフラッシュ, Benchā Furasshu)
+
+**Franchise move.** Daring Flash (JP: Venture Flash) — Bel Daizora's Destruction Belfyre Nexus Venture-2 (Burst DB era). Belfyre circles the stadium perimeter for 3 BeySpirit-amplified laps, reaching v_orbit = 4.5 m/s, then releases toward the target. Two delivery modes are available — **Slash** (Destruction Blade angled contact: high burst potential) or **Ram** (head-on mass impact: ring-out threat) — determined by the player's QTE hold duration.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Phase 1 — Perimeter Sprint (3 laps, 1200ms):**
+Belfyre wall-orbits at r_wall = 110px. BeySpirit amplification builds v_orbit to 4.5 m/s over 3 laps (~460ms physical → 1200ms theatrical). Invulnerable during wall-orbit (Belfyre is riding the curved wall, hard to intersect).
+
+**Phase 2 — Destruction Blade Delivery:**
+At release, Belfyre fires toward target at v_release = 4.5 m/s [M].
+
+```
+QTE: "Venture" — hold J; release determines mode:
+  Ram   (hold ≥700ms): head-on mass impact, ring-out focus
+  Slash (tap  <700ms): angled Destruction Blade, burst focus
+
+Slash mode stats:
+  spinDelta:         −90
+  linearImpulse:     1400 eu
+  knockbackImpulse:  0 eu
+  dmgMult:           1.80×
+  burstBonus:        +22%   ← Destruction Blade angle optimizes burst entry
+
+Ram mode stats:
+  spinDelta:         −50
+  linearImpulse:     2100 eu
+  knockbackImpulse:  9000 eu
+  dmgMult:           1.55×
+  burstBonus:        +8%
+
+selfCost:    −95   (3-lap rubber-tip orbit drains spin rapidly)
+powerCost:   110
+cooldown:    6000 ms
+QTE:         "Venture" — hold J; ≥700ms → Ram; <700ms → Slash
+```
+
+```typescript
+function daringFlash(holdMs: number): {
+  mode: "slash" | "ram";
+  spinDelta: number; linearImpulse_eu: number; knockbackImpulse_eu: number;
+  dmgMult: number; burstBonus_pct: number
+} {
+  if (holdMs >= 700) {
+    return { mode: "ram",   spinDelta: -50, linearImpulse_eu: 2100,
+             knockbackImpulse_eu: 9000, dmgMult: 1.55, burstBonus_pct: 8 };
+  }
+  return   { mode: "slash", spinDelta: -90, linearImpulse_eu: 1400,
+             knockbackImpulse_eu: 0,    dmgMult: 1.80, burstBonus_pct: 22 };
+}
+// daringFlash(800) → { mode:"ram",   spin:-50, ko:9000, dmg:1.55×, burst:+8%  }
+// daringFlash(300) → { mode:"slash", spin:-90, ko:0,    dmg:1.80×, burst:+22% }
+```
+
+---
+
+## Case 848 — [COMBO] Flash Charge (→ ↑ J)
+
+**Franchise bey:** Bel Daizora's Destruction Belfyre Nexus Venture-2 — Destruction Belfyre blade active  
+**Required part:** `destructionBelfyreLayer`  
+**Sequence:** → ↑ J (moveRight + moveUp + attack)  
+**Type restriction:** universal  
+**Cost:** 15 power
+
+Belfyre strafes right into approach lane (→), surges forward with built-up momentum (↑), and delivers the Destruction Blade at the apex of the approach vector (J). A condensed perimeter-approach without the full wall-orbit, trading orbit buildup for speed of execution. **Venture Carry-Through**: on a successful J hit, Belfyre advances an additional 80 px post-impact (rubber tip maintains momentum through contact). Not invulnerability — Belfyre can be struck during carry-through.
+
+```
+Main hit:
+  spinDelta:      −45
+  dmgMult:        1.35×
+  lockMs:         50
+  carryThroughPx: 80
+  windowMs:       650
+  cooldownMs:     4200
+
+Ceiling: 1.35×≤1.5×; 50ms≤300ms; 45≤50 rad/s; carry-through ≠ invulnerability [check].
+```
+
+```typescript
+function flashChargeCombo(jHit: boolean): {
+  spinDelta: number; dmgMult: number; lockMs: number; carryThroughPx: number
+} {
+  return jHit
+    ? { spinDelta: -45, dmgMult: 1.35, lockMs: 50, carryThroughPx: 80 }
+    : { spinDelta: -22, dmgMult: 1.12, lockMs:  0, carryThroughPx:  0 };
+}
+```
+
+---
+
+## Case 849 — [GIMMICK] Lee's Galeon Attacker — Flat-Tip Orbit and Galeon BitBeast Lightning Aura
+
+**Franchise context.** Lee (White Tigers/Byakko team, original Beyblade anime, plastic gen, 2001). Assembly: Galeon Attacker. All values [M] (±15%) — no dedicated prior case analysis. Galeon is a white lion BitBeast. The defining gimmick: Galeon's BitBeast charges the AR with electrical energy internally — the lion does not project outward, giving a compact, internally-stored lightning aura (Lee's perfected form).
+
+**Parts:**
+
+**Attack Ring: Galeon AR [M]**
+Lion-mane themed attack ring with 4 wing contacts. Aggressive smash geometry.
+  m_AR ≈ 7.0 g [M]; r_AR ≈ 20 mm [M]; r_inner ≈ 8 mm [M]
+  I_AR = (0.007/2)(0.020² + 0.008²) = 0.0035 × 4.640×10⁻⁴ = 1.624×10⁻⁶ kg⋅m² [M]
+  4 wing contacts at r ≈ 20 mm; C_smash ≈ 0.75 [M]
+
+**Weight Disk: 8 Heavy [M]**
+  m_WD ≈ 14.0 g [M]; I_WD = 2.044×10⁻⁶ kg⋅m² [M]
+
+**Blade Base: Flat (Attack) [M]**
+  m_BB ≈ 4.5 g [M]; r_tip ≈ 3 mm [M]; μ_flat ≈ 0.35 [M]; I_BB ≈ 0.400×10⁻⁶ kg⋅m² [M]
+
+**Assembly [M]:**
+  m_total ≈ 26.5 g [M]; I_total ≈ 1.624 + 2.044 + 0.400 + 0.350 = 4.418×10⁻⁶ kg⋅m² [M]
+  ω₀ = 600 rad/s; KE₀ = 0.5 × 4.418×10⁻⁶ × 600² = 0.795 J [M]
+  dω/dt_flat = −(0.35 × 0.0265 × 9.81 × 0.003) / 4.418×10⁻⁶
+    = −(2.735×10⁻⁴) / 4.418×10⁻⁶ = −61.9 rad/s² [M]
+
+  BitBeast internal lightning aura: the white lion energy is stored within the AR rather than projected externally. This internal charge state is the prerequisite for Dark Lightning — no outward manifestation means the opponent cannot see the activation tell during Phase 1.
+
+```typescript
+function galeonAttackerStats(): {
+  I_kgm2: number; C_smash: number; spinDecay_rad_s2: number; KE0_J: number
+} {
+  return { I_kgm2: 4.418e-6, C_smash: 0.75, spinDecay_rad_s2: 61.9, KE0_J: 0.795 };
+}
+```
+
+---
+
+## Case 850 — [SPECIAL] Dark Lightning (JP: Black Thunder / ブラックサンダー)
+
+**Franchise move.** Dark Lightning (JP: Black Thunder) — Lee's Galeon Attacker (original Beyblade anime, plastic gen). Lee perfected this move so the BitBeast stays inside the bey — the white lion manifests as an internal electrical charge rather than projecting outward. Every beyblade that physically contacts Galeon during the active window triggers a violent electrical repulsion discharge, sending the opponent outward. First-ever **reactive contact AoE special** in CS13: the move is not aimed — it fires automatically on any opponent contact, making it the only special triggered by the opponent's actions rather than the user's.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Activation:**
+No targeting required. Galeon continues normal orbit during both phases.
+
+**Phase 1 — Lightning Charge (1200ms):**
+Internal electrical buildup. No visible external change — the charge is invisible to the opponent until first discharge. During this phase, Galeon is NOT yet discharging; contacts during Phase 1 deal normal physical damage only.
+
+**Phase 2 — Active Window (2000ms):**
+Any beyblade contacting Galeon triggers an electrical repulsion discharge.
+
+  On each contact trigger:
+    outwardImpulse:    3500 eu (radially outward from Galeon's center — electrical repulsion)
+    galeonSpinBoost:   +45 rad/s  (discharge feeds back into Galeon's spin)
+    targetSpinDelta:   −55 rad/s  (opponent's spin disrupted by electrical discharge)
+    dmgMult:           1.50×
+    visual:            blue-white lightning explosion at contact point
+
+  Energy pool: maximum 4 discharges per activation (electrical charge exhausts after 4 events).
+  Between consecutive discharges: 120ms recharge gap — no discharge fires during this gap.
+
+**Critical counter-play — The Gap:**
+Lee's canon weakness (Ray's Tiger Claw) corresponds to attacking precisely during the 120ms recharge gap between discharges. Opponents who track the discharge timing can time an attack into the gap to avoid the repulsion. Opponent QTE: if opponent's attack connects during any 120ms recharge gap window → no discharge, contact resolved as standard physical hit.
+
+```
+selfCost:    −80
+powerCost:   115
+cooldown:    7000 ms
+Activation:  no QTE for Lee (reactive) — opponent QTE: "Gap" (attack during 120ms recharge window)
+```
+
+```typescript
+const DARK_LIGHTNING = {
+  outwardImpulse_eu:  3500,
+  galeonSpinBoost:      45,
+  targetSpinDelta:     -55,
+  dmgMult:            1.50,
+  maxDischarges:         4,
+  rechargeGapMs:       120,
+  activeWindowMs:     2000,
+  chargeBuildupMs:    1200,
+} as const;
+
+function darkLightningContact(
+  contactIdx: number,   // 0-based index of this contact during active window
+  attackInGap: boolean  // opponent attacked during a 120ms recharge gap
+): { discharged: boolean; outwardImpulse_eu: number; galeonBoost: number } {
+  if (attackInGap || contactIdx >= DARK_LIGHTNING.maxDischarges) {
+    return { discharged: false, outwardImpulse_eu: 0, galeonBoost: 0 };
+  }
+  return {
+    discharged: true,
+    outwardImpulse_eu: DARK_LIGHTNING.outwardImpulse_eu,
+    galeonBoost: DARK_LIGHTNING.galeonSpinBoost,
+  };
+}
+// darkLightningContact(0, false) → { discharged:true,  impulse:3500, boost:+45 }
+// darkLightningContact(0, true)  → { discharged:false, impulse:0,    boost:0   } ← gap counter
+// darkLightningContact(4, false) → { discharged:false, impulse:0,    boost:0   } ← exhausted
+```
+
+---
+
+## Case 851 — [COMBO] Lion Rush (↑ ↑ J)
+
+**Franchise bey:** Lee's Galeon Attacker — Galeon AR active  
+**Required part:** `galeonAR`  
+**Sequence:** ↑ ↑ J (moveUp + moveUp + attack)  
+**Type restriction:** universal  
+**Cost:** 0 power (free)
+
+Double-advance sprint into AR wing contact — the white lion pounce. Galeon's flat-tip aggressive orbit covers ground rapidly; the double ↑ inputs bring Galeon from mid-arena to contact range in one fast motion. Clean free combo reflecting Galeon Attacker's launch-and-attack identity.
+
+```
+Main hit:
+  spinDelta:  −34
+  dmgMult:    1.22×
+  lockMs:     35
+  windowMs:   500
+  cooldownMs: 3800
+
+Ceiling: 1.22×≤1.5×; 35ms≤300ms; 34≤50 rad/s [check]. Free.
+```
+
+```typescript
+function lionRushCombo(jHit: boolean): {
+  spinDelta: number; dmgMult: number; lockMs: number
+} {
+  return jHit
+    ? { spinDelta: -34, dmgMult: 1.22, lockMs: 35 }
+    : { spinDelta: -16, dmgMult: 1.10, lockMs:  0 };
+}
+// lionRushCombo(true)  → { spin:-34, dmg:1.22×, lock:35ms }
+// lionRushCombo(false) → { spin:-16, dmg:1.10×, lock:0ms  }
+```
+
+---
+
+## Case 852 — [GIMMICK] Doji's Dark Wolf DF145FS — DF145 Downforce Track and FS Semi-Flat Tip
+
+**Franchise context.** Doji (antagonist, Metal Fight Beyblade, MFB era, Takara-Tomy). Assembly: Dark Wolf DF145FS. All values [M] (±15%) — no dedicated prior case analysis. Dark Wolf is a balance/attack hybrid fusion wheel. DF145 (Down Force 145) features aerodynamic fins on the underside of the track that generate small but measurable downforce at operating spin, increasing tip contact normal force and arena grip.
+
+**Parts:**
+
+**Fusion Wheel: Dark Wolf [M]**
+Dense, moderately compact fusion wheel. Balance-leaning with some attack contacts.
+  m_DW ≈ 28.0 g [M]; r_DW ≈ 21 mm [M]; r_inner ≈ 7 mm [M]
+  I_DW = (0.028/2)(0.021² + 0.007²) = 0.014 × 4.900×10⁻⁴ = 6.860×10⁻⁶ kg⋅m² [M]
+  Contact geometry: θ_contact ≈ 35° [M]; C_smash ≈ 0.62 [M]
+
+**Spin Track: DF145 (Down Force 145) [M]**
+Track height 14.5mm. Underside fins generate aerodynamic downforce at spin.
+  m_DF145 ≈ 3.5 g [M]; fin area A_fin ≈ 4 fins × (10mm × 3mm) = 1.2×10⁻⁴ m² [M]
+  At ω₀ = 600 rad/s: v_fin_tip = ω × r_fin = 600 × 0.013 = 7.80 m/s [M]
+  F_down = 0.5 × ρ_air × A_fin × C_L × v_fin² = 0.5 × 1.225 × 1.2×10⁻⁴ × 1.0 × 60.84 = 4.47×10⁻³ N [M]
+    (C_L ≈ 1.0 [M] for flat fin — simplified lift coefficient)
+  F_down ≈ 4.5 mN [M] — small grounding effect; increases normal force by ~1.4% of weight
+
+**Performance Tip: FS (Flat Sharp) [M]**
+Dual geometry tip: sharp center point (r_sharp ≈ 1mm) for stability when stationary, flat ring (r_flat ≈ 4mm) engaged during lateral movement. Effective tip radius r_eff ≈ 2.5mm [M]; μ_FS ≈ 0.25 [M].
+  m_FS ≈ 1.5 g [M]
+
+**Assembly [M]:**
+  m_total ≈ 33.5 g [M]; I_total ≈ 6.860 + 0.120 + 0.100 + 0.280 = 7.360×10⁻⁶ kg⋅m² [M]
+  ω₀ = 600 rad/s; KE₀ = 0.5 × 7.360×10⁻⁶ × 600² = 1.325 J [M]
+
+  dω/dt_FS (base) = −(0.25 × 0.0335 × 9.81 × 0.0025) / 7.360×10⁻⁶
+    = −(2.057×10⁻⁴) / 7.360×10⁻⁶ = −27.9 rad/s² [M]
+  dω/dt_extra (DF downforce) = −(μ_FS × F_down × r_eff) / I_total
+    = −(0.25 × 4.47×10⁻³ × 0.0025) / 7.360×10⁻⁶ = −(2.794×10⁻⁶) / 7.360×10⁻⁶ = −0.38 rad/s² [M]
+  dω/dt_total = −27.9 − 0.38 = −28.3 rad/s² [M]
+  → DF145 adds a small but physically real extra spin drain; Dark Wolf is grounded but slightly costlier to sustain.
+
+```typescript
+function darkWolfAssemblyStats(): {
+  I_kgm2: number; C_smash: number; spinDecay_rad_s2: number; DF_downforce_N: number
+} {
+  return { I_kgm2: 7.360e-6, C_smash: 0.62, spinDecay_rad_s2: 28.3, DF_downforce_N: 4.47e-3 };
+}
+```
+
+---
+
+## Case 853 — [SPECIAL] Darkness Howling Blazer (闇狼咆哮斬 / ダークネスハウリングブレイザー)
+
+**Franchise move.** Darkness Howling Blazer (JP: 闇狼咆哮斬, Anrou Hokozan / ダークネスハウリングブレイザー, Dākunesu Hauringu Bureizā) — Doji's Dark Wolf DF145FS (Metal Fight Beyblade). Dark Wolf's avatar manifests and howls; dark red energy surrounds the wheel and Dark Wolf smashes into the opponent. Uniquely, this attack is strong enough to apply a **Fusion Wheel Damage debuff** to the target — the only CS13 special that permanently weakens an opponent part for the rest of the match.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Phase 1 — Howl (800ms buildup):**
+Dark Wolf's wolf avatar rises and howls. Dark red energy aura charges the fusion wheel. DF145 downforce increases under BeySpirit: F_down_BS ≈ 4.47×10⁻³ × 6.0 = 26.8 mN [M] (BeySpirit amplifies rotational speed and thus aerodynamic downforce ×6 — dark energy augmentation). Grounding effect during Phase 1 prevents opponents from pushing Dark Wolf off center.
+
+**Phase 2 — Blazing Smash (QTE: "Blaze" — tap J, 150ms window):**
+
+```
+QTE hit:
+  spinDelta:          −90
+  linearImpulse:      1500 eu
+  dmgMult:            1.80×
+  burstBonus:         +18%
+  FusionWheelDamage:  35% chance to apply FW_Damage debuff to target
+    FW_Damage debuff: target's C_smash reduced by ×0.85 for remainder of match
+    visual: target wheel shows cracks/sparks; contact efficiency permanently reduced
+
+QTE miss:
+  spinDelta:          −50
+  linearImpulse:      900 eu
+  dmgMult:            1.50×
+  burstBonus:         +8%
+  FusionWheelDamage:  0% (miss — glancing contact, insufficient force for structural damage)
+
+selfCost:    −70
+powerCost:   105
+cooldown:    5500 ms
+QTE:         "Blaze" — tap J; 150ms window
+```
+
+The FW_Damage debuff is the first permanent-debuff mechanic in CS13. Unlike other special effects (which expire after duration), the Fusion Wheel Damage persists as a structural impairment for the rest of the match — modeling the anime canon that this attack can physically crack or deform an opponent's fusion wheel.
+
+```typescript
+function darknessHowlingBlazer(
+  qteHit: boolean,
+  rng: number  // 0.0–1.0, engine-seeded per match-seed
+): {
+  spinDelta: number; linearImpulse_eu: number; dmgMult: number;
+  burstBonus_pct: number; fusionWheelDamaged: boolean
+} {
+  if (qteHit) {
+    return { spinDelta: -90, linearImpulse_eu: 1500, dmgMult: 1.80,
+             burstBonus_pct: 18, fusionWheelDamaged: rng < 0.35 };
+  }
+  return { spinDelta: -50, linearImpulse_eu: 900, dmgMult: 1.50,
+           burstBonus_pct: 8, fusionWheelDamaged: false };
+}
+// darknessHowlingBlazer(true,  0.20) → { spin:-90, imp:1500, dmg:1.80×, burst:+18%, FWDamage:true  }
+// darknessHowlingBlazer(true,  0.80) → { spin:-90, imp:1500, dmg:1.80×, burst:+18%, FWDamage:false }
+// darknessHowlingBlazer(false, 0.10) → { spin:-50, imp:900,  dmg:1.50×, burst:+8%,  FWDamage:false }
+
+function fusionWheelDamageMult(damaged: boolean): number {
+  return damaged ? 0.85 : 1.0;
+}
+// fusionWheelDamageMult(true)  → 0.85 (applied to C_smash for remainder of match)
+// fusionWheelDamageMult(false) → 1.00 (no structural damage)
+```
+
+---
+
+## Case 854 — [COMBO] Wolf Pounce (↓ ↑ J)
+
+**Franchise bey:** Doji's Dark Wolf DF145FS — Dark Wolf wheel active  
+**Required part:** `darkWolfFW`  
+**Sequence:** ↓ ↑ J (moveDown + moveUp + attack)  
+**Type restriction:** balanced  
+**Cost:** 15 power
+
+Dark Wolf drops low (↓ — DF145 downforce anchors it briefly), springs upward (↑ — DF downforce releases as launch energy), and delivers a rising smash contact (J). The down-then-up motion mimics the wolf avatar's crouching pounce. On a successful J hit, the DF145 downforce briefly surges under the post-impact spin-up, applying a **DF Anchor** post-hit: Wolves's drift rate is reduced for 400ms (Dark Wolf stabilizes after pounce — doesn't slide away from center).
+
+```
+Main hit:
+  spinDelta:     −42
+  dmgMult:       1.30×
+  lockMs:        55
+  dfAnchorMs:    400  (post-hit reduced drift — DF145 downforce grounding, not invulnerability)
+  windowMs:      680
+  cooldownMs:    4300
+
+Ceiling: 1.30×≤1.5×; 55ms≤300ms; 42≤50 rad/s; DF Anchor is position-stability, not invulnerability [check].
+```
+
+```typescript
+function wolfPounceCombo(jHit: boolean): {
+  spinDelta: number; dmgMult: number; lockMs: number; dfAnchorMs: number
+} {
+  return jHit
+    ? { spinDelta: -42, dmgMult: 1.30, lockMs: 55, dfAnchorMs: 400 }
+    : { spinDelta: -20, dmgMult: 1.12, lockMs:  0, dfAnchorMs:   0 };
+}
+// wolfPounceCombo(true)  → { spin:-42, dmg:1.30×, lock:55ms, dfAnchor:400ms }
+// wolfPounceCombo(false) → { spin:-20, dmg:1.12×, lock:0ms,  dfAnchor:0ms   }
+```
+
+---
+
+## Case 855 — [GIMMICK] Takanosuke Shishiya's Archer Griffin C145S — C145 Claw Track and Penalty Pocket Acceleration
+
+**Franchise context.** Takanosuke Shishiya (Metal Fight Beyblade 4D / Metal Fury era, Takara-Tomy). Assembly: Archer Griffin C145S. All values [M] (±15%) — no dedicated prior case analysis. Archer is a 4D era fusion wheel with aggressive smash contacts. C145 (Claw 145) features extending claw protrusions at track height — at operating spin, centrifugal force extends the claws outward, providing defensive deflection at track height. S (Sharp) is a low-friction stable attack tip.
+
+**Parts:**
+
+**Fusion Wheel: Archer (4D) [M]**
+4D-era multi-layer wheel. Aggressive attack contacts optimized for high-speed smash.
+  m_Archer ≈ 32.0 g [M]; r_Archer ≈ 22 mm [M]; r_inner ≈ 7 mm [M]
+  I_Archer = (0.032/2)(0.022² + 0.007²) = 0.016 × 5.330×10⁻⁴ = 8.528×10⁻⁶ kg⋅m² [M]
+  Attack contacts: θ_blade ≈ 15° [M] (aggressive smash); C_smash ≈ 0.82 [M]
+
+**Spin Track: C145 (Claw 145) [M]**
+At ω ≥ ω_claw_threshold (estimated 120 rad/s [M]), claws extend centrifugally:
+  Extended claw protrusions: 4 claws at r_claw ≈ 12 mm [M]; θ_claw ≈ 60° [M]; C_deflect_claw ≈ 0.52 [M]
+  Claw absorption at track height: k_claw ≈ 0.52 (52% of lateral impulse at track height deflected by claws)
+  m_C145 ≈ 4.5 g [M]; I_C145 ≈ 0.200×10⁻⁶ kg⋅m² [M]
+
+**Performance Tip: S (Sharp) [M]**
+  r_tip ≈ 1 mm [M]; μ_S ≈ 0.08 [M]; m_S ≈ 1.5 g [M]
+  Low friction stable tip suitable for high-speed attack orbit.
+
+**Assembly [M]:**
+  m_total ≈ 41.0 g [M]  (wheel 32.0 + track 4.5 + tip 1.5 + face 3.0)
+  I_total ≈ 8.528 + 0.200 + 0.100 + 0.350 = 9.178×10⁻⁶ kg⋅m² [M]
+  ω₀ = 600 rad/s; KE₀ = 0.5 × 9.178×10⁻⁶ × 600² = 1.652 J [M]
+  dω/dt_S = −(0.08 × 0.041 × 9.81 × 0.001) / 9.178×10⁻⁶
+    = −(3.215×10⁻⁵) / 9.178×10⁻⁶ = −3.50 rad/s² [M]
+
+  Penalty pocket acceleration model (each bounce off stadium slope):
+    Pocket slope angle: α_slope ≈ 35° [M]; bounce restitution: e_pocket ≈ 0.88 [M]
+    v_out per bounce = v_in × e_pocket + (g × sin(α) × d_slope) / v_in  [simplified slope gain]
+    With v_0 = 1.0 m/s, 3 sequential bounces:
+      v_1 ≈ 1.0 × 0.88 + 0.28 = 1.16 m/s
+      v_2 ≈ 1.16 × 0.88 + 0.28 = 1.30 m/s
+      v_3 ≈ 1.30 × 0.88 + 0.28 = 1.42 m/s  [physical maximum, 3 pockets] [M]
+    BeySpirit v_strike ≈ 1.42 × 4.6 = 6.53 m/s [M]  (×4.6 transcendence — Griffin rises on BeySpirit)
+
+```typescript
+function archerGriffinStats(): {
+  I_kgm2: number; C_smash: number; clawDeflect: number; spinDecay_S_rad_s2: number
+} {
+  return { I_kgm2: 9.178e-6, C_smash: 0.82, clawDeflect: 0.52, spinDecay_S_rad_s2: 3.50 };
+}
+
+function pocketBounceVelocity(v_initial: number, bounces: number): number {
+  let v = v_initial;
+  for (let i = 0; i < bounces; i++) {
+    v = v * 0.88 + 0.28;
+  }
+  return parseFloat(v.toFixed(2));
+}
+// pocketBounceVelocity(1.0, 3) → 1.42 m/s (physical); ×4.6 BeySpirit → 6.53 m/s
+```
+
+---
+
+## Case 856 — [SPECIAL] Delta Slash
+
+**Franchise move.** Delta Slash — Takanosuke Shishiya's Archer Griffin C145S (Metal Fight Beyblade 4D / Metal Fury). Griffin circuits the three penalty pockets of the stadium in a triangular path, gaining speed at each slope bounce. At full pocket-circuit speed, the Griffin avatar rises (beyTiltAngle surge) and delivers a rising smash coated in purple BeySpirit aura — the upward tilt adds a vertical impulse component to the contact, tossing the target upward in the 2.5D engine. QTE "Delta" — one J tap per pocket (3 total); each confirmed tap adds to the final strike power.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Phase 1 — Triangular Pocket Circuit (1600ms, 3 pocket bounces):**
+Griffin travels a triangular path between the 3 penalty pockets, gaining speed each lap.
+Each QTE tap must be timed to the pocket bounce impact:
+  Pocket 1 hit at t ≈ 400ms; Pocket 2 at t ≈ 900ms; Pocket 3 at t ≈ 1400ms
+  QTE window per tap: 180ms
+  Invulnerable during pocket-circuit travel (Griffin is between pockets, not in contact range)
+
+**Phase 2 — Rising Griffin Smash (t = 1600ms):**
+At the third pocket, Griffin angles toward the target at full circuit speed. beyTiltAngle surges +25° briefly (the Griffin rise) delivering the tilted smash.
+
+tiltBurstTarget: beyTiltAngle +20° applied to target on hit (target thrown upward — rising smash tosses)
+
+```
+Strike power by confirmed QTE taps (0–3):
+
+3/3 taps confirmed (full power):
+  spinDelta:       −85
+  linearImpulse:   1100 eu
+  dmgMult:         1.75×
+  burstBonus:      +14%
+  tiltBurstDeg:    +20° on target
+
+2/3 taps:
+  spinDelta:       −60
+  linearImpulse:    800 eu
+  dmgMult:         1.55×
+  burstBonus:      +9%
+  tiltBurstDeg:    +10°
+
+0–1/3 taps (minimal):
+  spinDelta:       −35
+  linearImpulse:    500 eu
+  dmgMult:         1.35×
+  burstBonus:      +4%
+  tiltBurstDeg:    0°
+
+selfCost:    −55
+powerCost:   105
+cooldown:    5500 ms
+QTE:         "Delta" — 3× tap J at pocket contacts; 180ms window each; pockets at 400ms/900ms/1400ms
+```
+
+```typescript
+function deltaSlash(confirmedTaps: 0 | 1 | 2 | 3): {
+  spinDelta: number; linearImpulse_eu: number; dmgMult: number;
+  burstBonus_pct: number; tiltBurstTarget_deg: number
+} {
+  if (confirmedTaps === 3) return { spinDelta: -85, linearImpulse_eu: 1100, dmgMult: 1.75, burstBonus_pct: 14, tiltBurstTarget_deg: 20 };
+  if (confirmedTaps === 2) return { spinDelta: -60, linearImpulse_eu:  800, dmgMult: 1.55, burstBonus_pct:  9, tiltBurstTarget_deg: 10 };
+                           return { spinDelta: -35, linearImpulse_eu:  500, dmgMult: 1.35, burstBonus_pct:  4, tiltBurstTarget_deg:  0 };
+}
+// deltaSlash(3) → { spin:-85, imp:1100, dmg:1.75×, burst:+14%, tilt:+20° on target }
+// deltaSlash(2) → { spin:-60, imp:800,  dmg:1.55×, burst:+9%,  tilt:+10°            }
+// deltaSlash(0) → { spin:-35, imp:500,  dmg:1.35×, burst:+4%,  tilt:0°              }
+```
+
+---
+
+## Case 857 — [COMBO] Claw Dive (↓ J ↑)
+
+**Franchise bey:** Takanosuke Shishiya's Archer Griffin C145S — C145 track active  
+**Required part:** `c145`  
+**Sequence:** ↓ J ↑ (moveDown + attack + moveUp)  
+**Type restriction:** universal  
+**Cost:** 15 power
+
+Griffin dips into the pocket slope angle (↓), strikes the opponent at the slope's bounce point (J), then rides the slope upward past the contact (↑ carry). A miniaturized single-pocket Delta Slash — pocket energy converted to a quick combo contact. On a successful J hit, the slope pop delivers a small upward velocity component to the target (Δv_z = +50 eu — minimal tilt push, not full tiltBurst).
+
+```
+Main hit:
+  spinDelta:   −38
+  dmgMult:     1.28×
+  lockMs:      45
+  slopePop:    +50 eu upward velocity to target (not full tilt — slope graze only)
+  windowMs:    680
+  cooldownMs:  4200
+
+Ceiling: 1.28×≤1.5×; 45ms≤300ms; 38≤50 rad/s; slope pop is small linear impulse, not invulnerability [check].
+```
+
+```typescript
+function clawDiveCombo(jHit: boolean): {
+  spinDelta: number; dmgMult: number; lockMs: number; slopePopImpulse_eu: number
+} {
+  return jHit
+    ? { spinDelta: -38, dmgMult: 1.28, lockMs: 45, slopePopImpulse_eu: 50 }
+    : { spinDelta: -18, dmgMult: 1.10, lockMs:  0, slopePopImpulse_eu:  0 };
+}
+```
+
+---
+
+## Case 858 — [GIMMICK] Crusher's Gigars — AR Smash Geometry and BitBeast Environmental Weapon Conjuration
+
+**Franchise context.** Crusher (original Beyblade anime / Bakuten Shoot Beyblade, plastic gen). Assembly: Gigars (JP: ガイアーズ, Gaiāzu). All values [M] (±15%) — no dedicated prior case analysis. Gigars is a heavy, powerful plastic-gen bey with a horned/winged demon BitBeast. The BitBeast can interact with the physical environment — conjuring real rock debris into weapon shapes — making Gigars the only bey in CS13 whose BitBeast can manifest physical debris weapons from arena material.
+
+**Parts:**
+
+**Attack Ring: Gigars AR [M]**
+Large, aggressive attack ring with prominent horn/wing contacts. High contact coefficient.
+  m_AR ≈ 8.0 g [M]; r_AR ≈ 20 mm [M]; r_inner ≈ 8 mm [M]
+  I_AR = (0.008/2)(0.020² + 0.008²) = 0.004 × 4.640×10⁻⁴ = 1.856×10⁻⁶ kg⋅m² [M]
+  Contact geometry: 3 primary contacts at r ≈ 20mm; θ_smash ≈ 30° [M]; C_smash ≈ 0.78 [M]
+
+**Weight Disk: 8 Heavy [M]**
+  m_WD ≈ 14.0 g; I_WD = 2.044×10⁻⁶ kg⋅m² [M]
+
+**Blade Base: SG Flat/Heavy BB [M]**
+  m_BB ≈ 4.5 g [M]; r_tip ≈ 4 mm [M]; μ_BB ≈ 0.30 [M]; I_BB ≈ 0.400×10⁻⁶ kg⋅m² [M]
+
+**Assembly [M]:**
+  m_total ≈ 27.5 g [M]  (AR 8.0 + WD 14.0 + BB 4.5 + face 1.0)
+  I_total ≈ 1.856 + 2.044 + 0.400 + 0.350 = 4.650×10⁻⁶ kg⋅m² [M]
+  ω₀ = 600 rad/s; KE₀ = 0.5 × 4.650×10⁻⁶ × 600² = 0.837 J [M]
+  dω/dt_BB = −(0.30 × 0.0275 × 9.81 × 0.004) / 4.650×10⁻⁶
+    = −(3.237×10⁻⁴) / 4.650×10⁻⁶ = −69.6 rad/s² [M]
+
+  Effective debris mass (Demolition Ax axe form — BitBeast rock conjuration):
+    m_debris ≈ 15 g [M]  (rock mass conjured from arena floor — BeySpirit manifest)
+    m_effective_impact = m_AR + m_debris = 23 g [M]  (axe slam uses combined mass)
+    Axe impact KE contribution: KE_debris = 0.5 × 0.015 × v_slam²
+    At v_slam = 5.0 m/s [M]: KE_debris = 0.5 × 0.015 × 25 = 0.188 J [M]
+
+```typescript
+function gigarsAssemblyStats(): {
+  I_kgm2: number; C_smash: number; spinDecay_rad_s2: number; KE0_J: number
+} {
+  return { I_kgm2: 4.650e-6, C_smash: 0.78, spinDecay_rad_s2: 69.6, KE0_J: 0.837 };
+}
+```
+
+---
+
+## Case 859 — [SPECIAL] Demolition Ax
+
+**Franchise move.** Demolition Ax — Crusher's Gigars (original Beyblade anime / Bakuten Shoot Beyblade, plastic gen). Gigars rises from the ground using the BitBeast's strength, gathers surrounding rock debris from the arena floor, conjures the debris into a massive axe shape, and crashes down with the axe onto the opponent. The conjured rock mass adds to Gigars' effective impact weight. **Disruption backfire**: if the opponent disturbs Gigars during Phase 1 or 2 with sufficient force, a rock deflects back and strikes Gigars itself — the only CS13 special that can damage the user if disrupted mid-execution.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Phase 1 — Rise and Gather (1000ms):**
+Gigars' beyTiltAngle surges to 55° (rising up from stadium floor) while the BitBeast physically pulls rock debris from the arena surface. Gigars is vulnerable during this phase — a slow, telegraphed windup. Disruption threshold: if opponent applies ≥700eu impulse to Gigars during Phase 1 → backfire triggered.
+
+  Backfire mechanic: disrupted rock flies into Gigars:
+    Gigars receives self-damage = 0.30 × mainHitDamage [M]
+    Phase 2/3 do not fire; cooldown still consumed.
+
+**Phase 2 — Axe Form (400ms):**
+Rock debris assembles into axe shape. Gigars is still, axe clearly visible — opponent has a final window to attempt disruption (≥900eu threshold; harder to trigger than Phase 1).
+
+**Phase 3 — Axe Slam (QTE: "Demolish" — hold J; 900ms max charge):**
+Gigars beyTiltAngle returns from 55° → 0° in a powered slam.
+
+```
+Full charge (hold ≥700ms):
+  spinDelta:         −100
+  linearImpulse:     1600 eu
+  dmgMult:           1.85×
+  burstBonus:        +15%
+  debrisAoE:         chip damage to all opponents within 80px (debris scatter on impact)
+    chip per target: spinDelta −15, linearImpulse 250eu, dmgMult 1.20×
+
+Medium charge (hold 350–699ms):
+  spinDelta:         −65
+  linearImpulse:     1000 eu
+  dmgMult:           1.60×
+  burstBonus:        +9%
+  debrisAoE:         none (partial swing, debris doesn't scatter)
+
+Quick tap (<350ms):
+  spinDelta:         −35
+  linearImpulse:     600 eu
+  dmgMult:           1.35×
+  burstBonus:        +4%
+  debrisAoE:         none
+
+selfCost:    −70
+powerCost:   110
+cooldown:    6500 ms
+QTE:         "Demolish" — hold J; full charge at 700ms+; max window 900ms
+Disruption:  Phase 1: ≥700eu cancels + backfire; Phase 2: ≥900eu cancels (no backfire)
+```
+
+```typescript
+function demolitionAx(holdMs: number): {
+  chargeLevel: "full" | "medium" | "quick";
+  spinDelta: number; linearImpulse_eu: number; dmgMult: number;
+  burstBonus_pct: number; hasDebrisAoE: boolean
+} {
+  const lvl = holdMs >= 700 ? "full" : holdMs >= 350 ? "medium" : "quick";
+  const stats = {
+    full:   { spinDelta: -100, linearImpulse_eu: 1600, dmgMult: 1.85, burstBonus_pct: 15, hasDebrisAoE: true  },
+    medium: { spinDelta:  -65, linearImpulse_eu: 1000, dmgMult: 1.60, burstBonus_pct:  9, hasDebrisAoE: false },
+    quick:  { spinDelta:  -35, linearImpulse_eu:  600, dmgMult: 1.35, burstBonus_pct:  4, hasDebrisAoE: false },
+  };
+  return { chargeLevel: lvl, ...stats[lvl] };
+}
+// demolitionAx(900) → { level:"full",   spin:-100, imp:1600, dmg:1.85×, burst:+15%, AoE:true  }
+// demolitionAx(500) → { level:"medium", spin:-65,  imp:1000, dmg:1.60×, burst:+9%,  AoE:false }
+// demolitionAx(200) → { level:"quick",  spin:-35,  imp:600,  dmg:1.35×, burst:+4%,  AoE:false }
+
+function demolitionAxDisruption(
+  phase: 1 | 2,
+  impulse_eu: number
+): { cancelled: boolean; backfire: boolean; selfDamageRatio: number } {
+  const threshold = phase === 1 ? 700 : 900;
+  const cancelled = impulse_eu >= threshold;
+  const backfire  = cancelled && phase === 1;
+  return { cancelled, backfire, selfDamageRatio: backfire ? 0.30 : 0 };
+}
+// demolitionAxDisruption(1, 800) → { cancelled:true,  backfire:true,  selfDmg:0.30 }
+// demolitionAxDisruption(2, 950) → { cancelled:true,  backfire:false, selfDmg:0    }
+// demolitionAxDisruption(1, 500) → { cancelled:false, backfire:false, selfDmg:0    }
+```
+
+---
+
+## Case 860 — [COMBO] Rock Smash (J J ↓)
+
+**Franchise bey:** Crusher's Gigars — Gigars AR active  
+**Required part:** `gigarsAR`  
+**Sequence:** J J ↓ (attack + attack + moveDown)  
+**Type restriction:** universal  
+**Cost:** 25 power
+
+Two rapid AR contact strikes (J J) — the double horn/wing smash — followed by a ground-drive (↓) that slams Gigars' mass into the target's path, applying sustained pressure. The second J hit is at slightly reduced efficiency (opponent has begun to react after the first) but the ↓ ground-drive prevents the target from escaping the follow-through.
+
+```
+Hit 1 (first J):
+  spinDelta:  −40
+  dmgMult:    1.35×
+  lockMs:     30
+
+Hit 2 (second J):
+  spinDelta:  −28
+  dmgMult:    1.20×
+  lockMs:     20
+
+Ground Drive (↓, fires only if both J hits connected):
+  additionalLockMs: 40  (extra lock duration from ground pressure)
+  linearImpulse:    250 eu  (sustaining push)
+
+Ceiling: each hit individually ≤1.5× and ≤50 rad/s ✓; combined lock 30+20+40=90ms≤300ms ✓;
+  no AoE; no invulnerability; cost 25 matches power-thrust tier for double-hit combo [check].
+  windowMs:   680
+  cooldownMs: 4500
+```
+
+```typescript
+function rockSmashCombo(j1Hit: boolean, j2Hit: boolean): {
+  hit1: { spinDelta: number; dmgMult: number; lockMs: number };
+  hit2: { spinDelta: number; dmgMult: number; lockMs: number } | null;
+  groundDrive: { addLockMs: number; impulse_eu: number } | null;
+} {
+  const h1 = j1Hit ? { spinDelta: -40, dmgMult: 1.35, lockMs: 30 } : { spinDelta: -20, dmgMult: 1.10, lockMs: 0 };
+  const h2 = j2Hit ? { spinDelta: -28, dmgMult: 1.20, lockMs: 20 } : null;
+  const gd = (j1Hit && j2Hit) ? { addLockMs: 40, impulse_eu: 250 } : null;
+  return { hit1: h1, hit2: h2, groundDrive: gd };
+}
+// rockSmashCombo(true,  true)  → hit1:{-40,1.35×,30ms}, hit2:{-28,1.20×,20ms}, gd:{+40ms,250eu}
+// rockSmashCombo(true,  false) → hit1:{-40,1.35×,30ms}, hit2:null, gd:null
+// rockSmashCombo(false, false) → hit1:{-20,1.10×,0ms},  hit2:null, gd:null
+```
+
+---
+
+## Case 861 — [GIMMICK] Zeo Abyss's Flame Byxis 230WD — 230 Height Magnetic Field Geometry and WD Stable Spin Platform
+
+**Franchise context.** Zeo Abyss (Metal Fight Beyblade Metal Masters era, Takara-Tomy). Assembly: Flame Byxis 230WD. All values [M] (±15%) — no dedicated prior case analysis. Byxis uses magnetic wave generation from its BitBeast — a compass/navigational spirit. The 230 spin track (23.0mm — tallest standard MFB track) positions the fusion wheel at maximum height, projecting the magnetic field from a centrally elevated platform. WD (Wide Defense) tip provides an extremely stable spinning platform with near-zero lateral drift — ideal for the magnetic control special, which requires Byxis to remain essentially stationary during activation.
+
+**Parts:**
+
+**Fusion Wheel: Flame [M]**
+Circular, symmetric fusion wheel with smooth low-smash surfaces. Stamina-optimized — minimal contact protrusions, maximum rotational inertia from symmetric mass distribution.
+  m_Flame ≈ 30.0 g [M]; r_Flame ≈ 21 mm [M]; r_inner ≈ 7 mm [M]
+  I_Flame = (0.030/2)(0.021² + 0.007²) = 0.015 × 4.900×10⁻⁴ = 7.350×10⁻⁶ kg⋅m² [M]
+  Contact geometry: θ_contact ≈ 70° [M] (deflect/stamina type); C_deflect ≈ 0.38 [M]
+
+**Spin Track: 230 (tallest MFB track) [M]**
+Height 23.0mm — places Byxis' fusion wheel at the highest possible standard contact point above the stadium floor. Reduced bottom exposure to stadium-floor contacts; magnetic field is generated at this elevated plane. The aerial counter exploit (weakness overhead) is a direct consequence of this height: the magnetic compass needles project horizontally from a 23mm elevated platform; an attack vector from directly above (perpendicular to the needle plane) finds the weakest field density.
+  m_230 ≈ 2.5 g [M]; I_230 ≈ 0.100×10⁻⁶ kg⋅m² [M]
+
+  Magnetic field directional strength vs attack angle α (α = 0° horizontal, 90° overhead):
+    B_eff(α) = B_max × cos(α) [M] (horizontal = full field; overhead = zero)
+    At α = 0° (horizontal): B_eff = B_max → full magnetic control influence
+    At α = 30° elevation: B_eff = B_max × cos(30°) = 0.866 × B_max
+    At α = 90° (aerial, directly overhead): B_eff = 0 → magnetic influence drops to near zero
+
+**Performance Tip: WD (Wide Defense) [M]**
+Wide rubber-ring bearing tip. Inner bearing provides low friction spin; outer rubber ring engages on strong lateral force to resist displacement.
+  r_tip_bearing ≈ 1.5 mm [M]; μ_bearing ≈ 0.02 [M] (bearing friction, near-ES level)
+  r_tip_rubber ≈ 8 mm [M] (outer ring, engages only on lateral impulse ≥ F_engage) [M]
+  μ_rubber_ring ≈ 0.70 [M]; F_engage ≈ 0.5 N [M]
+  m_WD ≈ 1.5 g [M]
+
+  Normal spin decay (bearing only):
+    dω/dt_WD = −(0.02 × 0.040 × 9.81 × 0.0015) / I_total
+  Under lateral displacement impulse: rubber ring engages → near-zero drift (Byxis stays fixed)
+
+**Assembly [M]:**
+  m_total ≈ 40.0 g [M]  (wheel 30.0 + track 2.5 + tip 1.5 + face 3.0 + core 3.0)
+  I_total ≈ 7.350 + 0.100 + 0.080 + 0.350 + 0.500 = 8.380×10⁻⁶ kg⋅m² [M]
+  ω₀ = 600 rad/s; KE₀ = 0.5 × 8.380×10⁻⁶ × 600² = 1.508 J [M]
+  dω/dt_WD = −(0.02 × 0.040 × 9.81 × 0.0015) / 8.380×10⁻⁶
+    = −(1.177×10⁻⁵) / 8.380×10⁻⁶ = −1.40 rad/s² [M]
+  → WD tip has near-ES spin endurance (bearing inner race decouples spin from friction)
+  → Byxis can maintain Destiny Needle's 10-second active window with only 14 rad/s of spin loss (~2.3% of ω₀)
+
+```typescript
+function byxisAssemblyStats(): {
+  I_kgm2: number; spinDecay_rad_s2: number; fieldAngleMult: (alpha_deg: number) => number
+} {
+  return {
+    I_kgm2:            8.380e-6,
+    spinDecay_rad_s2:  1.40,
+    fieldAngleMult:    (alpha_deg: number) => parseFloat(Math.cos(alpha_deg * Math.PI / 180).toFixed(3)),
+  };
+}
+// byxisAssemblyStats().fieldAngleMult(0)  → 1.000  (horizontal — full control)
+// byxisAssemblyStats().fieldAngleMult(30) → 0.866  (elevated 30° — partial)
+// byxisAssemblyStats().fieldAngleMult(90) → 0.000  (aerial — counter window)
+```
+
+---
+
+## Case 862 — [SPECIAL] Destiny Needle
+
+**Franchise move.** Destiny Needle — Zeo Abyss's Flame Byxis 230WD (Metal Fight Beyblade Metal Masters). Byxis generates a phantom compass image via its magnetic BitBeast; the magnetic field seizes control of an opposing bey's movement, allowing the user to pilot the opponent's bey remotely. The opponent can resist the magnetic hijacking with their own inputs. The control contest is a **live tug-of-war**: both players simultaneously input controls for the opponent's bey; the net applied force is the weighted sum of both inputs according to the current magnetic influence factor. Duration: 10 seconds. Can be countered by an aerial attack (beyTiltAngle surge → approach from above bypasses horizontal magnetic field).
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Phase 1 — Compass Materialize (1000ms buildup):**
+Byxis becomes stationary (WD rubber ring engages). Phantom compass image projects across the arena. During buildup, Byxis is invulnerable (it is planting — wide rubber ring braces against any incoming impulse).
+
+**Phase 2 — Magnetic Control Window (10000ms active):**
+
+Control tug-of-war mechanic:
+```
+Magnetic influence factor: μ_mag
+  Normal (horizontal attack): μ_mag = 0.70
+    Net force on opponent bey = 0.70 × user_directional_input + 0.30 × opponent_directional_input
+  Aerial counter (opponent beyTiltAngle ≥ 45°): μ_mag = 0.15
+    Net force = 0.15 × user_directional_input + 0.85 × opponent_directional_input
+
+User control input during Destiny Needle: Space + directional keys (← ↑ → ↓)
+  Space activates the "magnetic override" — without Space held, user inputs apply to Byxis only (normal)
+  With Space held + directional: applies force to opponent's bey at μ_mag factor
+
+Opponent resistance: opponent's normal directional inputs are scaled by (1 − μ_mag)
+  Normal: opponent retains 30% input authority
+  Aerial:  opponent retains 85% input authority
+
+Byxis self-control: user may ALSO still control Byxis during the window (normal inputs without Space)
+  → simultaneous dual control: user manages both their own bey and the opponent's bey
+```
+
+Aerial counter conditions:
+  Opponent must reach beyTiltAngle ≥ 45° (by using J jump input or C145-type aerial approach)
+  At α ≥ 45°: fieldAngleMult = cos(45°) = 0.707 → μ_mag drops: 0.70 × 0.707 × (B_overhead_factor) ≈ 0.15 [M]
+  Aerial window lasts only as long as beyTiltAngle ≥ 45° — opponent must sustain the aerial approach
+
+```
+Duration:     10000 ms
+selfCost:     −0 spin (WD tip barely decays during 10s: Δω ≈ 14 rad/s — negligible)
+powerCost:    130  (highest power cost in CS13 — reflects the extreme capability)
+cooldown:     8000 ms
+Invulnerability: Phase 1 only (1000ms planting phase)
+```
+
+```typescript
+interface DestinyNeedleState {
+  active: boolean;
+  elapsedMs: number;
+  mu_mag: number;  // current magnetic influence factor
+}
+
+function destinyNeedleControl(
+  state: DestinyNeedleState,
+  opponentTiltAngle_deg: number,
+  userSpaceHeld: boolean
+): {
+  applyToOpponent: boolean;
+  opponentForceFraction: number;
+  userForceFraction: number;
+  remainingMs: number
+} {
+  if (!state.active || state.elapsedMs >= 10000) {
+    return { applyToOpponent: false, opponentForceFraction: 1.0, userForceFraction: 0, remainingMs: 0 };
+  }
+  const aerial = opponentTiltAngle_deg >= 45;
+  const mu = aerial ? 0.15 : 0.70;
+  return {
+    applyToOpponent:     userSpaceHeld,
+    opponentForceFraction: 1 - mu,
+    userForceFraction:   mu,
+    remainingMs:         10000 - state.elapsedMs,
+  };
+}
+// destinyNeedleControl({active:true,elapsed:0,mu:0.70}, 10,  true)  → { apply:true, opp:0.30, user:0.70, rem:10000 }
+// destinyNeedleControl({active:true,elapsed:0,mu:0.70}, 50,  true)  → { apply:true, opp:0.85, user:0.15, rem:10000 } ← aerial
+// destinyNeedleControl({active:true,elapsed:0,mu:0.70},  0, false)  → { apply:false (user not holding Space) }
+// destinyNeedleControl({active:true,elapsed:10000,...},  0,  true)  → { apply:false, rem:0 } ← expired
+```
+
+---
+
+## Case 863 — [COMBO] Compass Lock (K ↑ K)
+
+**Franchise bey:** Zeo Abyss's Flame Byxis 230WD — Flame wheel or 230 track active  
+**Required part:** `byxisFW`  
+**Sequence:** K ↑ K (defense + moveUp + defense)  
+**Type restriction:** stamina  
+**Cost:** 0 power (free)
+
+Byxis double-braces (K → K) with a brief advance (↑) between, using the WD rubber ring's engage-disengage-reengage cycle. On the second K lock, Byxis settles into the stable WD footprint; the brief magnetic field pulse from the compass spirit draws a small amount of spin from any opponent within 80px — a passive spin-siphon. No direct damage; this is a utility combo that preserves and builds Byxis' spin without committing to an attack.
+
+```
+First K brace:
+  incomingDmgReduction: ×0.55 (WD rubber ring absorbs lateral impulse — similar to ED145 ring)
+
+Second K lock (spin siphon — activates if opponent within 80px):
+  selfSpinGain:    +22  (magnetic compass draws ambient spin)
+  opponentSpinDelta: −22 (same spin transferred — zero-sum from physical contact)
+  lockMs:          30
+  dmgMult:         1.05×  (chip — slight edge contact during lock)
+
+  windowMs:   700
+  cooldownMs: 4000
+
+Ceiling: 1.05×≤1.5×; 30ms≤300ms; spinDelta 22≤50; partial spin steal, not full recovery;
+  no AoE; no invulnerability [check]. Free — stamina utility combo standard.
+```
+
+```typescript
+function compassLockCombo(
+  opponentInRange: boolean,   // within 80px at second K
+  k1TimingHit: boolean        // first K absorbed an incoming attack
+): {
+  incomingDmgMult: number;    // applied to any attack received during K1
+  selfSpinGain: number;
+  opponentSpinDelta: number;
+  dmgMult: number; lockMs: number
+} {
+  return {
+    incomingDmgMult:    k1TimingHit ? 0.55 : 1.0,
+    selfSpinGain:       opponentInRange ? 22 : 0,
+    opponentSpinDelta:  opponentInRange ? -22 : 0,
+    dmgMult:            1.05,
+    lockMs:             30,
+  };
+}
+// compassLockCombo(true,  true)  → { inDmg:0.55, spinGain:+22, oppDelta:-22, dmg:1.05×, lock:30ms }
+// compassLockCombo(false, true)  → { inDmg:0.55, spinGain:  0, oppDelta:  0, dmg:1.05×, lock:30ms }
+// compassLockCombo(true,  false) → { inDmg:1.00, spinGain:+22, oppDelta:-22, dmg:1.05×, lock:30ms }
+```
+
+---
+
+*Cases continue from Case 864 as further franchise moves are provided.*
 
 ---
