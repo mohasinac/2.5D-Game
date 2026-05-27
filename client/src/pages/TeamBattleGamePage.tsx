@@ -152,7 +152,9 @@ export function TeamBattleGamePage() {
   const showLoading = !gameState || (
     gameState.status !== "in-progress" &&
     gameState.status !== "warmup" &&
-    gameState.status !== "finished"
+    gameState.status !== "launching" &&
+    gameState.status !== "finished" &&
+    gameState.status !== "series-finished"
   );
 
   return (
@@ -211,7 +213,7 @@ export function TeamBattleGamePage() {
       {/* Possession notification */}
       {possessionMsg && (
         <div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/[0.53] rounded-[10px] py-[10px] px-5 text-[#f1f5f9] text-[14px] font-semibold pointer-events-none">
-          Switched to {possessionMsg}
+          {possessionMsg}
         </div>
       )}
       <TouchControlsGBLayout />

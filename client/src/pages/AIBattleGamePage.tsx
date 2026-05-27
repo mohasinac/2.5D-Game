@@ -248,21 +248,25 @@ export function AIBattleGamePage() {
     room.onMessage("spin-out", (data: any) => {
       const { x, y } = physicsToScreen(data.x, data.y);
       spawnSpinOutParticles(x, y, TYPE_COLORS[data.type] ?? 0xffffff);
+      SoundManager.play("spin-out");
       setKoVisible({ visible: true, type: data.reason === "ring_out" ? "ring_out" : data.reason === "outspin" ? "outspin" : "ko" });
     });
     room.onMessage("burst", (data: any) => {
       const { x, y } = physicsToScreen(data.x, data.y);
       spawnBurstParticles(x, y);
+      SoundManager.play("spin-out");
       setBurstVisible(true);
     });
     room.onMessage("special-move", (data: any) => {
       playSpecialMoveEffect(data.playerId, data.type, data.x, data.y, data.facing);
+      SoundManager.play("special-move");
       if (data.playerId === myBeyblade?.id) {
         setLastSpecialMove(data.type);
       }
     });
     room.onMessage("combo", (data: any) => {
       playComboEffect(data.playerId, data.comboName);
+      SoundManager.play("combo");
       if (data.playerId === myBeyblade?.id) {
         setLastCombo({ name: data.comboName, timestamp: Date.now() });
       }
@@ -270,12 +274,14 @@ export function AIBattleGamePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room]);
 
-  // Auto-dismiss game-end overlay
+  // Auto-dismiss game-end overlay + play victory/defeat sound.
   useEffect(() => {
     if (!gameEndData) return;
+    const isWinner = gameEndData.winner === userId;
+    SoundManager.play(isWinner ? "victory" : "defeat");
     const id = setTimeout(() => setGameEndData(null), 4000);
     return () => clearTimeout(id);
-  }, [gameEndData]);
+  }, [gameEndData, userId]);
 
   useGameInput(sendInput, !isSpectating && connectionState === "connected" && gameState?.status === "in-progress");
 

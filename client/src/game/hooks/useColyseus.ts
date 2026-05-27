@@ -960,7 +960,7 @@ export function useColyseus({
 
   // Watch state.status to advance step to "warmup-ready" once the room reports it.
   useEffect(() => {
-    if (gameState?.status === "in-progress") {
+    if (gameState?.status === "in-progress" || gameState?.status === "launching") {
       setLoadingStep("warmup-ready");
     } else if (gameState?.status === "warmup") {
       // Treat warmup as "almost ready" — sit at loading-audio-assets so the bar shows ~85%.
