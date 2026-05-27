@@ -12184,3 +12184,1852 @@ function gpsFractureSafetyFactor(
 
 Upper Wolf's right-spin contact faces at Î± â‰ˆ 14Â° (vs Triple Wing's 8Â°) produce cot(14Â°) = 4.01 smash efficiency â€” 56% of Triple Wing's 7.12, with 75% more self-recoil per hit (0.0194 vs 0.0111 NÂ·s at J = 0.08 NÂ·s). Over a 40-hit battle, the cumulative excess spin loss is ~2,272 rad/sÂ·AR equivalent â€” corresponding to ~467 rad/s at the combo level, a meaningful mid-battle spin deficit. Left-spin contact via wolf head backs (Î± â‰ˆ 22Â°, cot = 2.48) and forehead spikes (Î± â‰ˆ 30Â°, cot = 1.73) delivers 40â€“57% of Triple Wing's left-spin efficiency with similar recoil characterization. Mold 2's 0.2 g reinforcement adds 2.25% additional I at inner radius and reduces Î”v_self by 0.003 m/s â€” both sub-threshold for detection. Gold Plastic Syndrome reduces ABS yield strength from 45 MPa to ~27 MPa; at the spike root bending stress of 100 MPa from a moderate hit, the GPS safety factor is 0.27, guaranteeing catastrophic fracture on first contact. The silver/standard color molds at 5.0â€“5.2 g are usable as a pinch-substitute for Triple Wing in right-spin; the gold variant cannot be used competitively.
 
+---
+
+## Case 124 â€” Metal Saucer AR (Gaia Dragoon MS / Strata Dragoon MS) â€” ~15 g [ESTIMATED] â€” Spin-Steal Saucer: Smooth Arc Perimeter + Shared-Frame Inheritance + Left-Spin Orbit Drain
+
+### 1. Geometry
+
+Metal Saucer is an HMS Attack Ring for Gaia Dragoon MS (A-123, Takara; Hasbro: Strata Dragoon MS), Daichi Sumeragi's HMS iteration. The AR is constructed with an ABS plastic caul bonded to a die-cast zinc-alloy metal frame. Unlike the acute-slope upper-attack geometry dominant in most HMS ARs, Metal Saucer's metal frame traces a saucer-disc silhouette: a broad shallow curve around the full perimeter with no steep angle breaks. This continuous arc face means that approaching opponents glance along the saucer curve rather than catching on a smash slope.
+
+Weight: ~15 g [ESTIMATED â€” linka HMSDB cache]. Outer contact radius â‰ˆ 23 mm (wide HMS AR). Frame material: zinc alloy (Ï â‰ˆ 6,600 kg/mÂ³). Fold symmetry: approximately 2-fold (saucer geometry). Contact type: tangential glancing. The shared metal frame designation ("shared Metal Frame" per linka bey file) indicates the saucer frame appears across multiple HMS spin-steal builds.
+
+### 2. Physics
+
+**Spin-steal via glancing contact:**
+The saucer perimeter angle Î¸_saucer â‰ˆ 3â€“5Â° from tangent. Smash fraction sin(3Â°) â‰ˆ 0.052 â€” negligible outward impulse. Recoil fraction cos(3Â°) â‰ˆ 0.999 â€” almost all contact force is redirected back along the saucer curve, absorbed without imparting substantial KO impulse.
+
+The critical mechanic is spin-steal. On contact duration Î”t â‰ˆ 2â€“4 ms, the saucer surface slides along the opponent's AR. The friction force:
+
+    F_fric = Î¼_metal Ã— F_N,    Î¼_metal â‰ˆ 0.15 (zincâ€“ABS)
+    Ï„_steal = F_fric Ã— r_eff â‰ˆ 0.15 Ã— 0.8 Ã— 0.023 â‰ˆ 0.0028 NÂ·m
+
+Integrated over contact duration Î”t = 0.003 s, spin stolen per contact:
+
+    Î”Ï‰_steal â‰ˆ Ï„_steal Ã— Î”t / J_opponent â‰ˆ 0.0028 Ã— 0.003 / 0.0003 â‰ˆ 0.028 rad/s
+
+This is sub-threshold per hit, but repeated orbital contacts (typically 6â€“12 passes per battle in a sustained orbit approach) accumulate:
+
+    Î£ Î”Ï‰_steal (10 hits) â‰ˆ 0.28 rad/s â€” measurable opponent spin drain over battle duration
+
+**Mass at radius:**
+At ~15 g total AR mass, majority concentrated in the metal frame at r â‰ˆ 20â€“22 mm:
+
+    Î”I_AR â‰ˆ 0.012 Ã— (0.021)Â² â‰ˆ 5.3 Ã— 10â»â¶ kgÂ·mÂ²
+
+This contributes to the combo's rotational inertia, supporting sustained orbit at lower spin rates (a spin-steal archetype benefit â€” the AR's own I contributes to survival during orbit).
+
+**Gaia Dragoon MS full assembly:**
+- AR: Metal Saucer ~15 g
+- WD: Circle Heavy ~16 g
+- RC: Flat Core (aggressive flat metal tip, Î¼ â‰ˆ 0.35â€“0.45 steel-on-ABS floor)
+- Estimated total: ~15 + 16 + 7â€“9 (Flat Core + BP) â‰ˆ 38â€“40 g
+
+The Flat Core RC's aggressive flat movement propels Gaia Dragoon MS across the stadium at speed, enabling repeated saucer-perimeter contacts with the opponent. Each orbit pass = one spin-steal pulse.
+
+**Daichi's dual-spin:**
+Left-spin orientation rotates the saucer contact geometry so outward-facing contact runs right-to-left relative to the opponent, shifting spin-steal torque direction. Both spin directions produce valid glancing-contact spin-steal profiles; right-spin is conventional, left-spin enables same-directional orbit against right-spin opponents (co-rotation approach).
+
+### 3. Game Engine Mapping
+
+```typescript
+interface MetalSaucerAR {
+  name: "metal_saucer";
+  system: "HMS";
+  sourceBey: "Gaia Dragoon MS / Strata Dragoon MS";
+  mass_g: 15;                    // [ESTIMATED]
+  contactAngle_deg: 4;           // saucer glancing angle
+  smashFraction: 0.070;          // sin(4Â°) â€” negligible smash
+  recoilFraction: 0.997;         // cos(4Â°) â€” almost all tangential
+  spinStealRate_perContact: 0.028; // rad/s per 3 ms contact
+  outerRadius_mm: 23;
+  foldSymmetry: 2;
+  contactMaterial: "zinc_alloy";
+  competitiveTier: "mid_spin_steal";
+  archetype: "orbit_drain";
+  sharedMetalFrame: true;        // frame shared with other HMS spin-steal ARs
+  pairedRC: "flat_core";         // orbit-based attack pattern RC
+}
+
+function saucerSpinDrainPerBattle(
+  contactsPerBattle: number,      // typically 8â€“12
+  deltaOmegaPerContact: number    // â‰ˆ 0.028 rad/s
+): number {
+  return contactsPerBattle * deltaOmegaPerContact;
+  // 10 contacts Ã— 0.028 = 0.28 rad/s opponent drain
+}
+```
+
+### 4. Verdict
+
+**Role:** Spin-steal / orbit attacker. Metal Saucer's saucer perimeter is the defining mechanic: near-zero smash angle means no KO impulse, but sustained orbit contacts drain opponent spin via friction. The Flat Core RC (Gaia Dragoon MS stock) is the natural partner â€” it drives the orbit pattern needed for repeated saucer contacts. Competitive tier: mid â€” spin-steal ARs are niche in HMS (Upper Attack dominates), but Metal Saucer is a credible donor part for spin-steal custom builds. The "Spike Saw" anime special (Daichi's orbital shearing attack) correctly represents the mechanic: many grazing contacts = cumulative spin drain, not single-hit KO.
+
+---
+
+## Case 125 â€” Spiral Upper AR (Dranzer MS) â€” ~20 g [ESTIMATED] â€” Omnidirectional Slope: Spiral Geometry Eliminates Contact-Angle Dead Zones
+
+### 1. Geometry
+
+Spiral Upper is the HMS Attack Ring of Dranzer MS (A-131, Kai Hiwatari's 7th bey). The zinc-alloy metal frame traces spiral curves around the AR perimeter â€” unlike straight-slope upper-attack ARs whose attack angle peaks at a single leading edge and drops off symmetrically, the spiral curve maintains a consistent slope angle across the full perimeter arc.
+
+Weight: ~20 g [ESTIMATED â€” linka HMSDB cache]. Contact geometry: spiral-wound slope, upper-attack orientation. Coverage of attack-viable arc: spiral wraps continuously â†’ â‰ˆ 180Â° effective upper-attack arc vs. ~60â€“80Â° for typical straight-slope ARs. The phoenix-wing motif continues Dranzer's visual identity (Cross Attacker plastic-gen AR â†’ Spiral Upper HMS AR).
+
+### 2. Physics
+
+**Omnidirectional upper attack:**
+For a straight-slope upper AR (e.g., Samurai Upper), the upper-attack angle Î± is maximal at the leading edge and near-zero at the trailing edge. The effective upper-attack window per face is:
+
+    Î¸_window_straight â‰ˆ 60â€“70Â°
+
+For Spiral Upper, the spiral curvature keeps Î± approximately constant as the opponent approaches from any angle within the spiral arc:
+
+    Î¸_window_spiral â‰ˆ 160â€“180Â° (effectively omnidirectional)
+
+This means Spiral Upper generates consistent upper-attack lift regardless of the approach angle â€” an opponent approaching from the side, from slightly behind, or head-on all encounter a viable upper-attack ramp.
+
+**Upper-attack lift:**
+At Î±_effective â‰ˆ 35Â° (spiral slope angle, estimated):
+
+    F_upper = F_N Ã— sin(35Â°) = F_N Ã— 0.574
+
+For a contact normal force F_N â‰ˆ 8 N (typical HMS close-range contact):
+
+    F_upper â‰ˆ 4.6 N   (vertical component, opposes gravity and destabilizes opponent tilt)
+
+The upper-attack impulse lifts the opponent AR, shifting its contact point upward and reducing its gyroscopic coupling with the floor, triggering tilt-amplification (precession â†’ nutation â†’ stadium exit).
+
+**Mass contribution:**
+~20 g at r â‰ˆ 22 mm: Î”I_AR â‰ˆ 0.020 Ã— (0.022)Â² â‰ˆ 9.7 Ã— 10â»â¶ kgÂ·mÂ². Substantial I contribution â€” the heavy AR increases rotational inertia, improving spin conservation during the upper-attack exchange.
+
+**Dranzer MS assembly:**
+Manual Change Core (pre-battle tip selection) + Circle Balance WD + Spiral Upper AR. Kai's typical use: Attack tip (manual pre-set) for aggressive launch, switching to Survival tip against defensive opponents. Spiral Upper remains effective regardless of which tip is selected since the AR geometry determines contact profile, not the RC.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface SpiralUpperAR {
+  name: "spiral_upper";
+  system: "HMS";
+  sourceBey: "Dranzer MS";
+  mass_g: 20;                     // [ESTIMATED]
+  slopeAngle_deg: 35;             // spiral slope angle (estimated)
+  upperAttackFraction: 0.574;     // sin(35Â°)
+  effectiveWindowDeg: 170;        // omnidirectional vs 70Â° for straight-slope
+  outerRadius_mm: 22;
+  attackType: "upper_omnidirectional";
+  spiralGeometry: true;           // eliminates dead zones
+  competitiveTier: "high";
+  pairedRC: "manual_change_core";
+  phoenixWingMotif: true;
+}
+
+function spiralUpperContactProbability(
+  approachAngle_deg: number       // opponent approach angle relative to leading edge
+): number {
+  // Straight-slope: P = (Î¸_window / 360) = 0.19
+  // Spiral: much wider â€” constant contact across full 170Â° arc
+  return approachAngle_deg <= 170 ? 0.574 : 0.0;
+  // Simplified: any approach within 170Â° arc hits the upper slope
+}
+```
+
+### 4. Verdict
+
+**Role:** Top-tier HMS Upper Attack AR. The spiral geometry eliminates the dead-zone problem that limits straight-slope upper ARs â€” opponents cannot approach from an "off-angle" to avoid the slope. Dranzer MS's pairing with the Manual Change Core is appropriate: Kai selects the attack tip when Spiral Upper's omnidirectional ramp can launch opponents, and the survival tip when endurance is needed. Competitive tier: HIGH â€” Spiral Upper is among the best upper-attack ARs in the HMS system, rivaling Samurai Upper in practical coverage.
+
+---
+
+## Case 126 â€” Upper Dragon AR (Dragoon MF) â€” 19 g [FACT] â€” Shared-Frame Dual Attack: Left-Spin Metal Smash Primary, Right-Spin Upper Attack Blocked
+
+### 1. Geometry
+
+Upper Dragon is the HMS Attack Ring for Dragoon MF (RBA3 prize, Tyson Granger's manga HMS bey). The zinc-alloy metal frame is shared across three Gimmick Specialty ARs: Upper Dragon, Upper Fox (Phantom Fox MS), and Devil Crusher (Bloody Devil MS). All three carry identical frame geometry; the ABS plastic caul shape determines each AR's performance differential.
+
+Weight: 19 g [FACT â€” from linka dragoon-mf.md]. Material: ABS plastic body + die-cast zinc alloy frame. Contact asymmetry: in right spin, the ABS caul BLOCKS the lower portion of the metal frame's upper-attack slopes, reducing upper attack output. In left spin, the metal frame spikes are exposed at the perimeter, enabling direct metal-contact smash. Additional ABS caul spikes add secondary smash contact points.
+
+### 2. Physics
+
+**Left-spin smash (primary role):**
+Metal frame spikes exposed in left spin produce direct zinc-alloy contact:
+
+    Î±_smash_LS â‰ˆ 20Â° (estimated from exposed spike geometry)
+    Smash fraction = sin(20Â°) â‰ˆ 0.342
+    Contact material: zinc alloy â†’ high elastic modulus (E â‰ˆ 85 GPa), low deformation â†’ clean impulse delivery
+
+Metal-contact smash vs plastic-contact smash: for equivalent contact force F_N, metal contact produces approximately 35â€“50% higher impulse magnitude due to lower energy absorption during collision (metal elastic, ABS viscoelastic). Upper Dragon's left-spin metal spike contacts thus outperform same-angle ABS-dominant contacts in smash effectiveness.
+
+**Right-spin upper attack (blocked):**
+The ABS caul covers the bottom portion of the upper-attack ramp:
+
+    Effective upper-attack angle (right spin): Î±_UA_eff â‰ˆ 20Â° (reduced from frame's nominal 35Â°)
+    Upper fraction = sin(20Â°) â‰ˆ 0.342 (vs. 0.574 for unobstructed 35Â° slope)
+    Output: ~60% of Spiral Upper's omnidirectional upper â€” weaker, lower
+
+**Mass at radius:**
+19 g at r_eff â‰ˆ 21 mm: Î”I_AR â‰ˆ 0.019 Ã— (0.021)Â² â‰ˆ 8.4 Ã— 10â»â¶ kgÂ·mÂ². Substantial I contribution.
+
+**Shared frame family:**
+| AR | Left-Spin | Right-Spin | Key Differentiator |
+|----|-----------|-----------|-------------------|
+| Upper Dragon | Metal smash (strongest) | Upper attack (blocked) | Most exposed metal in LS |
+| Upper Fox | Metal smash (mid) | Upper attack | Plastic caul less aggressive LS geometry |
+| Devil Crusher | Metal smash (weakest, round caul) | Upper attack | Most circular ABS caul â€” Defense viability in LS |
+
+### 3. Game Engine Mapping
+
+```typescript
+interface UpperDragonAR {
+  name: "upper_dragon";
+  system: "HMS";
+  sourceBey: "Dragoon MF";
+  mass_g: 19;                      // [FACT]
+  smashFractionLS: 0.342;          // sin(20Â°), metal contact
+  upperAttackFractionRS: 0.342;    // sin(20Â°) â€” blocked by ABS caul
+  contactMaterialLS: "zinc_alloy_exposed";
+  contactMaterialRS: "abs_caul_blocks";
+  sharedMetalFrame: ["upper_fox", "devil_crusher"];
+  bestSpinDirection: "left";       // left-spin smash is primary role
+  competitiveTier: "low_mid";
+  outerRadius_mm: 21;
+  secondarySpikes: 2;              // ABS caul spikes add secondary contact
+}
+
+function upperDragonSmashEffectiveness(
+  spinDir: "left" | "right",
+  F_N: number
+): number {
+  if (spinDir === "left") {
+    // Metal exposed â€” higher impulse
+    return F_N * 0.342 * 1.4;   // Ã—1.4 = metal contact bonus vs ABS
+  } else {
+    // ABS caul blocks â†’ weaker upper attack
+    return F_N * 0.342 * 0.8;   // reduced by caul obstruction
+  }
+}
+```
+
+### 4. Verdict
+
+**Role:** Left-spin Smash Attack AR with secondary right-spin upper option. Upper Dragon is Tyson's HMS AR â€” a credible mid-tier donor for left-spin smash builds when Jiraiya Blade is unavailable. Its shared frame with Upper Fox and Devil Crusher makes all three ARs interchangeable at the frame level; the caul shape determines which spin direction receives priority. Left-spin Metal Weight Grip Core combos leverage both the metal spike smash and the RC's controlled rubber attack. Competitive tier: low-mid â€” functional, but Jiraiya Blade outperforms for dedicated smash builds.
+
+---
+
+## Case 127 â€” Devil Crusher AR (Bloody Devil MS) â€” ~19 g [ESTIMATED] â€” Shared-Frame Upper with Circular Caul: Weakest Smash, Most Defense Potential in Left Spin
+
+### 1. Geometry
+
+Devil Crusher is Bloody Devil MS's (MA-23) HMS Attack Ring. Its zinc-alloy metal frame is identical to Upper Dragon and Upper Fox â€” the same shared-frame acute-angled upper-attack geometry appears across all three Gimmick Specialty ARs. What distinguishes Devil Crusher is its ABS plastic caul: the most circular caul of the three, wrapping more completely around the metal frame and reducing the effective metal contact surface.
+
+Weight: ~19 g [ESTIMATED â€” from linka bloody-devil-ms.md]. Two ABS contact points per caul face for right-spin smash. In left spin, the near-circular ABS caul dominates contact â€” three small protrusions per side provide secondary spin-steal contacts but minimal smash force.
+
+### 2. Physics
+
+**Right-spin upper attack:**
+Metal frame slopes identical to Upper Dragon/Upper Fox. But ABS caul coverage is heavier â€” the caul blocks a larger portion of the slope base:
+
+    Î±_UA_RS â‰ˆ 18Â° (more blocked than Upper Dragon)
+    Upper fraction = sin(18Â°) â‰ˆ 0.309
+    Two ABS contact points supplement but do not restore metal-slope upper output
+
+**Left-spin defense:**
+Circular ABS caul â‰ˆ Defense profile (approaching constant tangential geometry):
+
+    Contact angle LS â‰ˆ 5â€“8Â° (very low smash angle due to caul roundness)
+    Smash fraction LS â‰ˆ sin(6Â°) â‰ˆ 0.105
+
+The round profile deflects incoming attacks back to the attacker:
+
+    Recoil fraction = cos(6Â°) â‰ˆ 0.995 â€” opponent suffers full recoil
+
+Three ABS protrusions passively shave opponent spin via friction (Î¼_ABS â‰ˆ 0.30):
+
+    Î”Ï‰_steal_LS â‰ˆ 0.015 rad/s per contact â€” minor but non-zero
+
+**Competitive use:**
+Devil Crusher as Samurai Upper substitute: provides upper-attack geometry for custom builds when Samurai Upper is unavailable. As a left-spin defense substitute: circular profile approximates a low-recoil defense shell â€” usable in left-spin defense customs pairing with Bearing Core or Shooter Change Core Gamma.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface DevilCrusherAR {
+  name: "devil_crusher";
+  system: "HMS";
+  sourceBey: "Bloody Devil MS";
+  mass_g: 19;                          // [ESTIMATED]
+  upperAttackFractionRS: 0.309;        // sin(18Â°) â€” caul blocks more than Upper Dragon
+  smashFractionLS: 0.105;             // sin(6Â°) â€” near-circular caul
+  recoilFractionLS: 0.995;            // cos(6Â°) â€” deflects attacks
+  spinStealLS_perContact: 0.015;      // minor passive spin steal
+  sharedMetalFrame: ["upper_dragon", "upper_fox"];
+  leftSpinRole: "defense_substitute";
+  rightSpinRole: "upper_attack_substitute";
+  caul: "most_circular_of_shared_frame";
+  competitiveTier: "low_mid";
+}
+```
+
+### 4. Verdict
+
+**Role:** Flexible substitute AR â€” right-spin upper attack (weaker than Samurai Upper), left-spin defense (via circular caul). Devil Crusher is the weakest attacker among the shared-frame family but the best defender. Its circular caul is a practical defense upgrade for Bloody Devil MS's gimmick architecture. The Shooter Change Core Alpha's pre-launch tip selection pairs naturally â€” left-spin = semi-flat tip (controlled defense) + Devil Crusher's circular defense profile. Tier: low-mid, useful as a parts donor when top-tier options are unavailable.
+
+---
+
+## Case 128 â€” Knight Crusher AR (Aero Knight MS) â€” 19 g [FACT] â€” High-Recoil Symmetric Nub: No Viable Attack or Defense in Either Spin
+
+### 1. Geometry
+
+Knight Crusher is Aero Knight MS's (MA-21) Attack Ring â€” one of the weakest HMS ARs ever released. The zinc-alloy metal frame consists of two symmetric blunt nub protrusions embedded in an ABS plastic body. Unlike slope-based ARs (upper or smash), the nubs are short and perpendicular to the contact plane: no ramp geometry â†’ no upper attack, no extended smash slope.
+
+Weight: 19 g [FACT â€” from linka aero-knight-ms.md]. Contact type: sudden blunt impact (nub geometry). Both right and left spin produce the same outcome: the leading nub face contacts the opponent head-on, generating maximum recoil with minimum forward impulse.
+
+### 2. Physics
+
+**Blunt contact impulse analysis:**
+For a nub protruding at Î±_nub â‰ˆ 90Â° from tangent (direct perpendicular):
+
+    Smash fraction = sin(90Â°) = 1.00   (maximum radial impulse)
+    Recoil fraction = cos(0Â°) = 1.00   (maximum self-recoil)
+
+This means BOTH beys receive equal and opposite impulses â€” Knight Crusher hits the opponent hard radially but simultaneously kicks itself backward equally. In asymmetric mass cases (Knight Crusher combo ~38 g vs opponent ~38 g):
+
+    J_contact = (m1 Ã— m2 / (m1 + m2)) Ã— Î”v_rel â‰ˆ 0.019 Ã— 2.0 â‰ˆ 0.038 NÂ·s
+    Î”v_KnightCrusher = 0.038 / 0.038 = 1.0 m/s backward
+
+This backward kick is KO-dangerous: the Aero Core RC is tall and the Aero Wing adds drag â€” Knight Crusher's own recoil destabilizes the bey before it can destabilize the opponent.
+
+**Left-spin additional penalty:**
+In left spin, the plastic ABS surrounding the metal nubs presents as the leading face before the metal. Sudden plastic-face collision â†’ nub arrives with reduced velocity after ABS deformation:
+
+    Effective smash velocity: 85% of right-spin (ABS absorption layer)
+    Recoil is unchanged â†’ recoil-to-smash ratio worsens in LS
+
+**Net verdict per spin:**
+- Right spin: equal smash + equal recoil = net neutral at best, dangerous against heavier opponents
+- Left spin: reduced smash + full recoil = negative net â†’ actively harmful
+
+### 3. Game Engine Mapping
+
+```typescript
+interface KnightCrusherAR {
+  name: "knight_crusher";
+  system: "HMS";
+  sourceBey: "Aero Knight MS";
+  mass_g: 19;                     // [FACT]
+  nubCount: 2;                    // symmetric blunt nubs
+  contactAngle_deg: 90;           // perpendicular nub contact
+  smashFraction: 1.00;            // maximum radial impulse
+  selfRecoilFraction: 1.00;       // equal self-recoil
+  leftSpinPenalty: 0.15;          // ABS absorption before metal
+  competitiveTier: "non_competitive";
+  primaryRole: "none";
+  harvestValue: "circle_wide_wd"; // Circle Wide is the reason to acquire this bey
+  donorValue: false;
+}
+```
+
+### 4. Verdict
+
+**Role:** None. Knight Crusher is among the weakest HMS ARs â€” the symmetric blunt nubs generate equal recoil in both spin directions, making it actively harmful to the user. The only reason to acquire Aero Knight MS is the Circle Wide Weight Disk (14 g, best available from this bey). Knight Crusher has no donor applications; it should be set aside immediately on acquisition. Tier: F.
+
+---
+
+## Case 129 â€” God Smasher AR (Shining God MS) â€” 18 g [FACT] â€” Wide-Caul Smash: Force Smash Left Weak, Right Smash Moderate; Shared Frame with Smash Leopard and Smash Phoenix
+
+### 1. Geometry
+
+God Smasher is the final HMS AR released under Takara's Original Series (MA-24, Shining God MS). Its zinc-alloy metal frame is shared with Smash Leopard (Dark Leopard MS) and Smash Phoenix (Dranzer MF). The distinguishing feature is God Smasher's large, aggressively shaped ABS caul â€” wider than Smash Leopard â€” extending the overall contact perimeter. Two ABS contact points per side in right spin; in left spin the metal frame delivers Force Smash.
+
+Weight: 18 g [FACT â€” from linka shining-god-ms.md]. Frame family: Smash Leopard / God Smasher / Smash Phoenix share the same zinc-alloy smash-oriented frame (contrast with upper-attack family: Upper Dragon / Upper Fox / Devil Crusher).
+
+### 2. Physics
+
+**Left-spin Force Smash:**
+Force Smash geometry is a compound contact: the leading edge catches under the opponent AR, then the following slope face lifts. In left spin for God Smasher's metal frame:
+
+    Î±_Force_LS â‰ˆ 22Â° (slope angle on LS-facing frame surface)
+    Force Smash = sin(22Â°) â‰ˆ 0.374 (upward component)
+
+However, the large ABS caul partially covers the metal frame's force-smash faces:
+
+    Effective Force Smash fraction â‰ˆ 0.374 Ã— 0.75 = 0.281 (caul coverage reduces delivery)
+
+This is weaker than dedicated force-smash ARs earlier in the HMS line (e.g., dedicated slope-profile ARs on competitive beys).
+
+**Right-spin smash:**
+Two ABS contact points per face, contact angle Î±_RS â‰ˆ 25Â°:
+
+    Smash fraction RS = sin(25Â°) â‰ˆ 0.423
+    Material: ABS â†’ moderate energy absorption, reduces effective impulse by ~20â€“25%
+    Effective smash: â‰ˆ 0.423 Ã— 0.78 = 0.330
+
+The wider ABS caul gives God Smasher broader attack range than Smash Leopard â€” contacts occur over a wider arc but each individual contact is weaker (plastic-dominant).
+
+**Comparative table â€” smash frame family:**
+| AR | LS Force Smash | RS Smash | Contact Width |
+|----|---------------|---------|--------------|
+| Smash Leopard | ~0.35 (narrow) | ~0.35 | Narrower |
+| God Smasher | ~0.281 (caul reduces) | ~0.330 | Wider |
+| Smash Phoenix | ~0.35 (wing-profile) | ~0.35 | Wide (wing protrusions) |
+
+### 3. Game Engine Mapping
+
+```typescript
+interface GodSmasherAR {
+  name: "god_smasher";
+  system: "HMS";
+  sourceBey: "Shining God MS";
+  mass_g: 18;                          // [FACT]
+  forceSmashFractionLS: 0.281;         // sin(22Â°) Ã— 0.75 caul reduction
+  smashFractionRS: 0.330;             // sin(25Â°) Ã— 0.78 ABS absorption
+  contactWidthBonus: 1.15;            // wider than Smash Leopard
+  sharedMetalFrame: ["smash_leopard", "smash_phoenix"];
+  plasticDominantContact: true;        // ABS caul is primary RS contact
+  competitiveTier: "low";
+  pairedRC: "shooter_change_core_gamma";
+  acquireFor: "cwd_god_ring";
+}
+```
+
+### 4. Verdict
+
+**Role:** Low-tier Smash AR. God Smasher arrives late in the HMS lifecycle when better smash options already exist. Its wide ABS caul gives broader range than Smash Leopard but at the cost of weaker per-contact impulse (ABS vs metal contact). The force smash (left-spin) output is reduced by caul coverage. Its primary use is enabling Shining God MS builds where CWD God Ring is the real prize â€” God Smasher is the donor tax. Tier: low. Use only when Jiraiya Blade and other top smash ARs are unavailable.
+
+---
+
+## Case 130 â€” Smash Phoenix AR (Dranzer MF) â€” ~18 g [ESTIMATED] â€” Wide-Wing Horizontal Smash: Phoenix-Wing Perimeter, Metal-Reinforced Mid-Tier Smash, Kai's Final HMS AR
+
+### 1. Geometry
+
+Smash Phoenix is Dranzer MF's Attack Ring â€” Kai Hiwatari's final HMS iteration (manga: Bakuten Shoot Beyblade: Rising; no anime appearance). The zinc-alloy metal frame is shared with Smash Leopard and God Smasher. The ABS caul is shaped as wide phoenix wings, extending outward at the contact perimeter â€” this differs from God Smasher's caul by providing a distinctly wider lateral attack surface via the wing-profile protrusions.
+
+Weight: ~18 g [ESTIMATED â€” from linka dranzer-mf.md]. Spin: both RS primary, LS secondary (contact angle shifts). The phoenix-wing motif continues the Cross Attacker â†’ Spiral Upper â†’ Smash Phoenix Dranzer evolutionary design line.
+
+### 2. Physics
+
+**Right-spin smash (primary):**
+Wing-shaped ABS perimeter contact at Î±_RS â‰ˆ 25Â° (horizontal smash orientation):
+
+    Smash fraction RS = sin(25Â°) â‰ˆ 0.423
+    Contact material: ABS dominant with metal frame behind â†’ effective impulse â‰ˆ 0.423 Ã— 0.85 = 0.360
+
+The wide wing profile means contact occurs over a broader arc than God Smasher or Smash Leopard:
+
+    Contact arc RS â‰ˆ 80Â° vs ~55Â° for Smash Leopard â†’ 45% more contact opportunities per pass
+
+**Left-spin geometry shift:**
+Contact angle shifts to Î±_LS â‰ˆ 18Â° (wing-back contact surface):
+
+    Smash fraction LS = sin(18Â°) â‰ˆ 0.309 â€” usable secondary smash
+
+**Comparative advantage vs Smash Leopard:**
+Smash Phoenix's wider wing caul gives it 45% more contact arc surface than Smash Leopard. At equivalent smash fractions, this translates to 45% more KO opportunities per battle in aggressive orbit use.
+
+**Free Shaft Core RC synergy:**
+The Free Shaft Core's decoupled inner shaft absorbs smash recoil â€” the outer body pivots on impact while the inner shaft continues spinning. This means Smash Phoenix + Free Shaft Core effectively reduces self-spin-loss per hit by approximately 20â€“30%, enabling sustained smash trading that a conventional flat-tip AR + RC combination cannot achieve.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface SmashPhoenixAR {
+  name: "smash_phoenix";
+  system: "HMS";
+  sourceBey: "Dranzer MF";
+  mass_g: 18;                          // [ESTIMATED]
+  smashFractionRS: 0.360;             // sin(25Â°) Ã— 0.85 material factor
+  smashFractionLS: 0.309;             // sin(18Â°) secondary LS
+  contactArcRS_deg: 80;               // wide wing profile
+  contactArcSmashLeopard_deg: 55;     // reference: Smash Leopard narrower
+  contactArcAdvantageVsSmashLeopard: 1.45;
+  sharedMetalFrame: ["smash_leopard", "god_smasher"];
+  primaryRole: "horizontal_smash_rs";
+  phoenixWingProfile: true;
+  pairedRC: "free_shaft_core";        // spin retention on smash exchange
+  competitiveTier: "mid";
+  pilotCanon: "Kai Hiwatari (manga only)";
+}
+```
+
+### 4. Verdict
+
+**Role:** Mid-tier HMS Smash AR. Smash Phoenix is Kai's final classical-era HMS AR and a credible mid-tier donor for smash builds. The wide wing perimeter increases contact opportunities over Smash Leopard, and the metal frame delivers real impulse on RS contact. Paired with the Free Shaft Core, it achieves a sustained smash-trading capability that makes Dranzer MF a viable aggressive balance build. Tier: mid â€” behind Jiraiya Blade and Samurai Upper in raw output but more accessible than Random Booster prize RCs.
+
+---
+
+## Case 131 â€” CWD God Ring (Shining God MS) â€” 18 g [FACT] â€” Near-Circular Mass Ring: Peer to CWD Defense Ring, Top-Tier HMS Weight Disk
+
+### 1. Geometry
+
+CWD God Ring is the Customize Weight Disk of Shining God MS (MA-24), and the most competitively valuable part in the set. Its ABS construction traces an almost complete circle â€” minimal asymmetry, near-uniform perimeter mass. Weight: 18 g [FACT â€” from linka shining-god-ms.md]. Profile: near-circular, heavy, centralized mass distribution. Unlike CWD Circle Wide (largest, lightest) or CWD Circle Heavy (heaviest, center-concentrated), God Ring sits between Circle Heavy and Circle Balance in mass while closely approximating Circle Defenser shape.
+
+### 2. Physics
+
+**Moment of inertia:**
+Near-circular ring, r_outer â‰ˆ 23 mm, wall thickness â‰ˆ 4 mm, r_inner â‰ˆ 19 mm:
+
+    I_GodRing â‰ˆ (m/2)(r_outerÂ² + r_innerÂ²) = (0.018/2)(0.023Â² + 0.019Â²) â‰ˆ 3.5 Ã— 10â»â¶ kgÂ·mÂ²
+
+For comparison:
+- CWD Circle Heavy (16 g, more center-massed): I â‰ˆ 3.0 Ã— 10â»â¶ kgÂ·mÂ²
+- CWD Defense Ring from Sea Dragon (18 g, near-identical): I â‰ˆ 3.5 Ã— 10â»â¶ kgÂ·mÂ²
+
+God Ring and Defense Ring are mechanically equivalent â€” the "not fixed" distinction from Defense Ring has no practical consequence in competitive use (both seat equally well under HMS architecture loading).
+
+**Spin velocity retention:**
+The high I from perimeter mass directly increases angular momentum L = I Ã— Ï‰. For a given deceleration torque Ï„_tip:
+
+    dÏ‰/dt = Ï„_tip / I
+
+At I = 3.5 Ã— 10â»â¶ kgÂ·mÂ² vs baseline I_WD = 2.8 Ã— 10â»â¶ kgÂ·mÂ² (Circle Heavy reference):
+
+    Spin decay improvement â‰ˆ (3.5 - 2.8) / 2.8 = 25% slower spin decay per unit torque
+
+God Ring's near-circular profile also minimizes wobble trigger from asymmetric mass distribution â€” contributing to gyroscopic stability at low spin rates (critical for late-battle zombie/compact combos).
+
+**Controllability:**
+Near-circular mass â†’ zero preferential wobble direction â†’ bey settles to precession axis smoothly when approaching stadium edge (LAD-favorable).
+
+### 3. Game Engine Mapping
+
+```typescript
+interface CWDGodRing {
+  name: "cwd_god_ring";
+  system: "HMS";
+  sourceBey: "Shining God MS";
+  mass_g: 18;                          // [FACT]
+  profile: "near_circular";
+  outerRadius_mm: 23;
+  innerRadius_mm: 19;
+  momentOfInertia_kgm2: 3.5e-6;
+  spinDecayImprovement: 0.25;          // 25% slower vs Circle Heavy baseline
+  competitiveTier: "high";
+  peerPart: "cwd_defense_ring";        // functionally equivalent
+  isFixed: false;                      // non-fixed unlike Defense Ring (no difference in practice)
+  bestRoles: ["upper_attack", "defense", "stamina"];
+  notedAbsenceOf: "asymmetric_wobble"; // near-circular = zero preferential wobble axis
+}
+```
+
+### 4. Verdict
+
+**Role:** Top-tier HMS Weight Disk. CWD God Ring is functionally equivalent to CWD Defense Ring from Sea Dragon â€” both are the optimal HMS CWD for any Defense or Upper Attack build. The high moment of inertia and near-circular profile give superior spin retention, gyroscopic stability, and LAD support vs. the standard Circle WDs. Tier: HIGH. The primary reason to acquire Shining God MS; God Smasher AR and Shooter Change Core Gamma are secondary considerations.
+
+---
+
+## Case 132 â€” CWD Devil Saucer (Bloody Devil MS) â€” ~17 g [ESTIMATED] â€” Free-Spinning Spike CWD: Wide Attack Range with Zero Net Benefit
+
+### 1. Geometry
+
+CWD Devil Saucer is Bloody Devil MS's Customize Weight Disk. ABS plastic, approximately 17 g [ESTIMATED â€” from linka bloody-devil-ms.md]. Eight large spikes ring the perimeter, giving it the widest attack footprint of any standard HMS component. The CWD is free-spinning â€” it rotates independently of the bey body on its mounting shaft.
+
+### 2. Physics
+
+**Free-spin penalty:**
+A free-spinning CWD decouples its rotational momentum from the bey body. When a spike contacts an opponent:
+
+    J_spike = Ï„_contact Ã— Î”t
+
+But since the disk is free-spinning relative to the body, the contact torque acts on the disk's own moment of inertia (I_disk), not the bey:
+
+    I_disk_spike â‰ˆ 0.017 Ã— (0.024)Â² â‰ˆ 9.8 Ã— 10â»â¶ kgÂ·mÂ²
+    Î”Ï‰_disk = J_spike / I_disk â€” the spike slows, not the opponent
+
+The opponent receives an impulse proportional only to the linear momentum transferred via friction, which is:
+
+    F_impact_effective â‰ˆ Î¼ Ã— F_N (tangential only) â‰ˆ 0.3 Ã— 0.5 = 0.15 N (negligible)
+
+**Self-damage:**
+The free-spinning disk's spikes brush the stadium floor and walls as the bey orbits. Each floor brush:
+
+    Torque_floor â‰ˆ Î¼_floor Ã— m_disk Ã— g Ã— r_mean â‰ˆ 0.4 Ã— 0.017 Ã— 9.81 Ã— 0.022 â‰ˆ 0.0015 NÂ·m
+    Spin loss per floor brush â‰ˆ Ï„ Ã— Î”t / I_bey â‰ˆ 0.0015 Ã— 0.005 / 2.5Ã—10â»âµ â‰ˆ 0.30 rad/s
+
+This is the host bey losing spin from its own CWD's floor drag â€” the CWD actively degrades the bey it belongs to.
+
+**Net result:** Opponent damage â‰ˆ 0.15 N (negligible). Host spin loss â‰ˆ 0.30 rad/s per orbit pass. CWD Devil Saucer inflicts net-negative combat performance on Bloody Devil MS.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface CWDDevilSaucer {
+  name: "cwd_devil_saucer";
+  system: "HMS";
+  sourceBey: "Bloody Devil MS";
+  mass_g: 17;                       // [ESTIMATED]
+  spikeCount: 8;
+  freeSpin: true;
+  attackRangeBonus: 1.30;           // 30% wider than typical HMS AR
+  effectiveDamageToOpponent: 0.005; // near-zero â€” free-spin dissipates impact
+  selfSpinLossPerOrbit_radPerS: 0.30; // host bey loses spin from own CWD drag
+  competitiveTier: "non_competitive";
+  acquireFor: "shooter_change_core_alpha";
+  alternativeNote: "Structural architecture (WD-at-bottom RC) is the harvested value";
+}
+```
+
+### 4. Verdict
+
+**Role:** Non-competitive. CWD Devil Saucer's free-spinning design neutralizes all spike contacts against the opponent while adding floor-drag spin loss to the host bey. The widest attack surface in HMS produces zero net benefit. Acquire Bloody Devil MS for Shooter Change Core Alpha (WD-at-bottom architecture) and the upper-attack combo potential of Devil Crusher â€” not for this CWD. Tier: F.
+
+---
+
+## Case 133 â€” Wing Attacker CWD (Dranzer MF) â€” ~17 g [ESTIMATED] â€” Asymmetric Wing Protrusions: Smash-Attack Radius Extender
+
+### 1. Geometry
+
+Wing Attacker is a non-circular HMS Customize Weight Disk from Dranzer MF (Random Booster Act 4). ABS plastic, ~17 g [ESTIMATED â€” from linka dranzer-mf.md]. Two large wing-shaped protrusions extend outward from the disk body at symmetric positions â€” unlike all circular HMS CWDs, Wing Attacker deliberately extends the attack footprint via wing edges that reach beyond the standard AR perimeter.
+
+Alternate releases ship with Reverse Defenser WD instead â€” this note indicates Wing Attacker is the "offensive" variant CWD and Reverse Defenser is the "defensive" variant for the same bey.
+
+### 2. Physics
+
+**Effective attack radius extension:**
+Standard HMS AR outer radius â‰ˆ 22â€“23 mm. Wing Attacker wing protrusion outer edge â‰ˆ 26â€“28 mm (estimated from extension profile):
+
+    Î”R_wing â‰ˆ 4â€“5 mm extension beyond AR perimeter
+
+This increases the effective attack radius from the ~22 mm AR to ~26 mm at the wing tip:
+
+    Î”I_wing_mass â‰ˆ 0.014 Ã— (0.027)Â² = 1.0 Ã— 10â»âµ kgÂ·mÂ²
+
+The wing tips contact opponents that the AR alone would miss â€” especially in scenarios where the AR's contact geometry is partly blocked by the WD level.
+
+**Smash via wing edge:**
+Wing edge contact angle Î±_wing â‰ˆ 30Â° (estimated from wing-tip geometry):
+
+    Smash fraction = sin(30Â°) = 0.500
+
+ABS material: effective impulse â‰ˆ 0.500 Ã— 0.75 = 0.375 per contact
+
+Wing Attacker + Smash Phoenix AR combined smash footprint â‰ˆ AR arc 80Â° + wing supplemental 40Â° â‰ˆ 120Â° total â€” substantially wider than either component alone.
+
+**Stamina/Defense penalty:**
+Asymmetric protrusions create uneven mass distribution â†’ wobble axis at wing positions â†’ reduced gyroscopic stability at low spin rates. Wing Attacker is not suitable for stamina or defense builds.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface WingAttackerCWD {
+  name: "wing_attacker_cwd";
+  system: "HMS";
+  sourceBey: "Dranzer MF";
+  mass_g: 17;                       // [ESTIMATED]
+  profile: "asymmetric_wing";
+  wingCount: 2;
+  baseRadius_mm: 22;
+  wingTipRadius_mm: 27;             // [ESTIMATED]
+  wingSmashFraction: 0.375;         // sin(30Â°) Ã— 0.75 ABS factor
+  smashFootprintExtension_deg: 40;  // supplemental smash arc beyond AR
+  wobbleRisk: true;                 // asymmetric mass â†’ gyro instability low spin
+  staminaCompatible: false;
+  defenseCompatible: false;
+  competitiveTier: "mid";
+  bestRole: "smash_attack_extender";
+  pairedAR: "smash_phoenix";
+}
+```
+
+### 4. Verdict
+
+**Role:** Smash attack radius extender. Wing Attacker is designed to complement Smash Phoenix's wide contact profile by adding further reach via wing protrusions. In aggressive smash builds (Smash Phoenix + Wing Attacker + Free Shaft Core), the combined contact footprint approaches 120Â° â€” ensuring smash contact from almost any approach angle. Not suitable for defense or stamina. Tier: mid for attack builds; avoid for defense/stamina. Alternate Reverse Defenser WD is superior for non-attack configurations.
+
+---
+
+## Case 134 â€” Metal Change Core RC (Death Gargoyle MS) â€” ~3 g [ESTIMATED] â€” Angle-Activated Auto-Switch: Sharp (Level) â†’ Flat (Tilted), Flower Pattern
+
+### 1. Geometry
+
+Metal Change Core is Death Gargoyle MS's Running Core and the origin of the HMS "Metal Change" mechanic â€” the same archetype that appeared in Driger S's Metal Change Base (plastic gen). The tip design is a central sharp metal point surrounded by a broad flat metal collar. When the bey spins level, it balances on the sharp point (Survival mode). When the bey tilts (from a hit or Sliding Shoot), the broad collar contacts the stadium floor (Attack mode).
+
+Weight: ~3 g [ESTIMATED â€” from linka death-gargoyle-ms.md]. Height: LOW (short profile â€” designed to complement Circle Upper's upper-attack geometry by keeping the bey's height low for getting under opponents). Tip material: metal throughout (both point and collar).
+
+### 2. Physics
+
+**Tip geometry:**
+- Sharp point: r_point â‰ˆ 0.2â€“0.3 mm (metal sharp tip Hertz contact)
+- Flat collar: r_collar â‰ˆ 3â€“4 mm (broad metal flat contact)
+
+**Mode switch angle:**
+The bey switches from sharp to flat when tilt angle Î¸ exceeds the collar contact angle:
+
+    Î¸_switch â‰ˆ arctan(h_tip / (r_collar - r_point)) â‰ˆ arctan(0.5 / 3.5) â‰ˆ 8Â°
+
+So at Î¸ > 8Â° tilt (easily triggered by a hit or Sliding Shoot), the broad collar engages:
+
+    Î¼_metal_flat â‰ˆ 0.15 (metal-on-ABS floor): aggressive movement
+    At Î¸ < 8Â°: sharp tip engaged: Î¼_metal_sharp â‰ˆ 0.08â€“0.12 (stationary survival)
+
+**Flower pattern (Sliding Shoot activation):**
+Sliding Shoot biases the initial launch tilt â†’ collar mode activates at launch. As the bey orbits the stadium wall, it alternates between:
+- Near wall: higher speed, some tilt â†’ collar active â†’ aggressive movement phase
+- Stadium center: lower speed, levels â†’ sharp tip â†’ survival/stationary phase
+
+This creates the "flower pattern": repeated center-passes in survival mode alternating with wall-orbit attack phases. The pattern is mechanically self-sustaining because the collar's friction keeps the bey moving outward (toward wall tilt) and the sharp tip allows recovery (central survival).
+
+**Spin decay comparison:**
+| Mode | Î¼ | dÏ‰/dt (35g combo) |
+|------|---|-------------------|
+| Sharp tip | 0.10 | ~8 rad/sÂ² |
+| Flat collar | 0.15 | ~12 rad/sÂ² |
+| Flower pattern (50/50) | 0.125 avg | ~10 rad/sÂ² |
+
+### 3. Game Engine Mapping
+
+```typescript
+interface MetalChangeCoreRC {
+  name: "metal_change_core";
+  system: "HMS";
+  sourceBey: "Death Gargoyle MS";
+  mass_g: 3;                        // [ESTIMATED]
+  height: "low";
+  tipModes: ["sharp_survival", "flat_attack"];
+  switchAngle_deg: 8;               // tilt threshold for mode switch
+  mu_sharpTip: 0.10;
+  mu_flatCollar: 0.15;
+  spinDecay_sharp_radPerS2: 8;
+  spinDecay_flat_radPerS2: 12;
+  autoSwitch: true;                 // passive, angle-triggered
+  slidingShootPattern: "flower";    // center-survival + wall-attack alternation
+  pairedAR: "circle_upper";         // low height complements upper-attack AR
+}
+
+function metalChangeCoreTipMode(tiltAngle_deg: number): "sharp" | "flat" {
+  return tiltAngle_deg > 8 ? "flat" : "sharp";
+}
+
+function metalChangeCoreSpinDecay(
+  tiltAngle_deg: number, mass_g: number
+): number {
+  const mu = tiltAngle_deg > 8 ? 0.15 : 0.10;
+  // Ï„_tip = Î¼ Ã— m Ã— g Ã— r_eff
+  const r_eff = tiltAngle_deg > 8 ? 0.003 : 0.0003;
+  const tau = mu * (mass_g / 1000) * 9.81 * r_eff;
+  const I = 2.5e-5; // typical 38g combo
+  return tau / I;   // rad/sÂ²
+}
+```
+
+### 4. Verdict
+
+**Role:** Auto-switching survival/attack RC. Metal Change Core's dual-mode metal tip is a genuine mechanical innovation for HMS: passive, angle-triggered, no pre-battle setup required. The flower pattern (Sliding Shoot) makes Death Gargoyle MS a center-threatening balance type that catches stationary opponents in their "safe zone." At ~3 g, it is among the lightest HMS RCs â€” keeping overall combo weight modest to complement Circle Upper's rim-heavy I distribution. A well-designed gimmick RC with real competitive application in balance-type builds. Tier: mid â€” not as specialized as Bearing Core for zombie or Grip Flat Core for attack, but uniquely versatile.
+
+---
+
+## Case 135 â€” Manual Change Core RC (Dranzer MS) â€” ~2 g [ESTIMATED] â€” Pre-Battle Mode Selector: Three-Tip Configuration, Kai's HMS Tactical Choice
+
+### 1. Geometry
+
+Manual Change Core is Dranzer MS's Running Core â€” the direct HMS-era continuation of Dranzer's tip-switch tradition (Dranzer S's Spiral Change Base â†’ Dranzer F's Flame Change â†’ Dranzer V's Volcano Change â†’ Dranzer MS's Manual Change Core). Unlike the automatic Metal Change Core (angle-triggered) or the Shooter Change Cores (spin-direction triggered), the Manual Change Core requires the player to physically rotate the tip mount before launch to select from three configurations.
+
+Weight: ~2 g [FACT â€” from linka hms/running-cores.md]. Height: MEDIUM. Three selectable tip modes: Attack Flat, Survival Sharp, Hybrid Semi-Flat.
+
+### 2. Physics
+
+**Three mode physics:**
+
+| Mode | Tip | Î¼ | dÏ‰/dt | Movement | Best vs |
+|------|-----|---|-------|---------|---------|
+| Attack Flat | Flat (ABS or metal) | 0.35â€“0.45 | ~72 rad/sÂ² | Aggressive orbit | Defensive/stationary opponents |
+| Survival Sharp | Sharp (metal) | 0.08â€“0.12 | ~8 rad/sÂ² | Stationary | Attackers needing contact |
+| Hybrid Semi-Flat | Semi-flat | 0.20â€“0.30 | ~40 rad/sÂ² | Moderate orbit | Unknown opponents |
+
+**Pre-battle tactical decision:**
+Unlike mid-battle auto-switches, Manual Change Core forces Kai to commit to a tip before launch. The meta-game implication:
+- Correct pick: Â±20â€“30% battle performance advantage
+- Wrong pick: significant disadvantage (attack tip vs. superior attacker â†’ self-KO; survival tip vs. heavy attacker â†’ gets KO'd while stationary)
+
+This creates the "Kai's mode-reading" mechanic: the Manual Change Core's value depends entirely on correctly predicting the opponent's archetype before launch.
+
+**Dranzer tradition:**
+Every Dranzer BB (plastic gen) and every Dranzer RC (HMS) uses a tip-switch gimmick. Manual Change Core is the most explicit version â€” it makes the player directly manipulate the mechanism, removing any automatic trigger. The "manual" designation is intentional: this is the base-form tip selector from which all other Dranzer automatic variants (spiral-triggered, magnet-triggered, clutch-triggered) descend.
+
+### 3. Game Engine Mapping
+
+```typescript
+type ManualChangeCoreMode = "attack_flat" | "survival_sharp" | "hybrid_semi_flat";
+
+interface ManualChangeCoreRC {
+  name: "manual_change_core";
+  system: "HMS";
+  sourceBey: "Dranzer MS";
+  mass_g: 2;                         // [ESTIMATED]
+  modes: ManualChangeCoreMode[];
+  setupTiming: "pre_battle";          // player selects before launch
+  mu: {
+    attack_flat: 0.40;
+    survival_sharp: 0.10;
+    hybrid_semi_flat: 0.25;
+  };
+  spinDecay_radPerS2: {
+    attack_flat: 72;
+    survival_sharp: 8;
+    hybrid_semi_flat: 40;
+  };
+  dranzertradition: "spiral_change_flame_change_volcano_change_manual_change";
+}
+
+function manualChangeCoreBestMode(
+  opponentArchetype: "attacker" | "defender" | "stamina" | "unknown"
+): ManualChangeCoreMode {
+  switch (opponentArchetype) {
+    case "attacker": return "survival_sharp";   // stationary â€” let attacker self-destruct
+    case "defender": return "attack_flat";      // orbit and wear down stationary bey
+    case "stamina":  return "hybrid_semi_flat"; // moderate orbit, outlast via Spiral Upper
+    case "unknown":  return "hybrid_semi_flat"; // balanced choice vs unknown
+  }
+}
+```
+
+### 4. Verdict
+
+**Role:** Pre-battle tactical mode selector. Manual Change Core rewards opponent-reading: correct mode selection gives a 20â€“30% performance advantage in the chosen dimension. It is the most lightweight HMS RC at ~2 g, keeping Dranzer MS combos lean and agile. Its weakness vs. automatic-switch RCs (Metal Change Core, Shooter Change Cores) is inflexibility mid-battle â€” once launched, the tip cannot change. Tier: mid. An excellent narrative gimmick (Kai's strategic thinking) that has real competitive implications in the HMS meta when mode-read correctly.
+
+---
+
+## Case 136 â€” Shooter Change Core Alpha RC (Bloody Devil MS) â€” ~8 g [ESTIMATED] â€” Spin-Direction Tip Preset: Rightâ†’Flat Attack, Leftâ†’Semi-Flat Defense; WD-at-Bottom Upper Mode Architecture
+
+### 1. Geometry
+
+Shooter Change Core Alpha is Bloody Devil MS's (MA-23) Running Core â€” the first iteration of the Shooter Change gimmick (Alpha; Gamma in Shining God MS is the improvement). The internal mechanism reads launcher spin direction pre-launch and deploys the corresponding tip. The defining architectural feature is inverted WD mounting: the CWD attaches to the BOTTOM of the RC rather than above it (as on all standard HMS Beyblades), creating a gap between the AR and RC body.
+
+Weight: ~8 g [ESTIMATED â€” from linka bloody-devil-ms.md]. Tip material: ABS plastic throughout (limits attack ceiling vs. metal-tipped RCs). WD position: bottom-mounted (unique architecture).
+
+### 2. Physics
+
+**Tip deployment by spin direction:**
+- Right-spin: Flat tip deployed â†’ Î¼_flat â‰ˆ 0.40â€“0.50 (ABS flat), aggressive movement
+- Left-spin: Semi-flat tip deployed â†’ Î¼_semi â‰ˆ 0.20â€“0.30, moderate controlled movement
+
+The mechanism is pre-set at launch â€” no mid-battle change. The flat tip width equals Battle Change Core's flat (per linka file):
+
+    r_flat_tip â‰ˆ 2.5â€“3.0 mm (moderate flat, not full-width)
+    dÏ‰/dt_flat â‰ˆ 55â€“65 rad/sÂ² (plastic flat â€” weaker than metal flat)
+
+**WD-at-bottom architecture:**
+Standard HMS assembly: [AR] â†’ [CWD/WD] â†’ [RC] â†’ [tip]
+Shooter Change Core Alpha: [AR] â†’ [gap] â†’ [RC body] â†’ [CWD] â†’ [tip]
+
+The gap between AR and RC body is the correct height for Upper Attack CWDs (e.g., CWD Circle Attacker from Phantom Fox MS):
+
+    Gap_height â‰ˆ 8â€“10 mm â€” Upper Attack CWD clearance
+
+This enables Upper Mode combos that cannot be assembled on any other HMS RC. The inverted position also shifts CoM toward the stadium floor:
+
+    CoM_shift_downward â‰ˆ 6 mm vs standard configuration
+
+Lower CoM â†’ more defense floor-hold stability. But: if the bey tilts > ~15Â°, the bottom-mounted CWD scrapes the stadium:
+
+    Scrape risk: CWD_bottom contacts floor at tilt_angle > arctan(h_CWD / r_bey) â‰ˆ 15Â°
+    Result: immediate spin loss spike (~100+ rad/sÂ² instantaneous) â†’ KO
+
+**Comparison vs Shooter Change Core Gamma (successor):**
+| Feature | Alpha | Gamma |
+|---------|-------|-------|
+| Right-spin tip | Flat (ABS) | Flat (ABS) |
+| Left-spin tip | Semi-flat | Sharp (better defense) |
+| Weight | ~8g | 6g |
+| WD position | Bottom | Bottom |
+| Upper Mode | Yes | Yes |
+| Attack ceiling | ABS flat (lower) | ABS flat (lower) |
+
+### 3. Game Engine Mapping
+
+```typescript
+interface ShooterChangeCoreAlphaRC {
+  name: "shooter_change_core_alpha";
+  system: "HMS";
+  sourceBey: "Bloody Devil MS";
+  mass_g: 8;                        // [ESTIMATED]
+  gimmick: "spin_direction_tip_preset";
+  rightSpin: { tipType: "flat_abs"; mu: 0.45; spinDecay_radPerS2: 60; };
+  leftSpin: { tipType: "semi_flat_abs"; mu: 0.25; spinDecay_radPerS2: 38; };
+  tipSetTiming: "pre_launch";       // locked at launch, cannot change mid-battle
+  wdMountPosition: "bottom_of_rc";  // inverted from standard
+  upperModeGapEnabled: true;        // gap allows Upper Attack CWDs to function
+  upperModeCWD: "cwd_circle_attacker"; // compatible CWD for Upper Mode
+  comShiftDown_mm: 6;               // CoM moves toward floor vs standard
+  scrapeTiltThreshold_deg: 15;      // WD contacts floor at > 15Â° tilt
+  successorPart: "shooter_change_core_gamma";
+  competitiveTier: "experimental";
+}
+```
+
+### 4. Verdict
+
+**Role:** Experimental spin-direction mode RC with unique WD-at-bottom architecture. The pre-launch tip selection is real tactical value: right-spin Attack mode or left-spin semi-flat Defense mode. The WD-at-bottom architecture enables Upper Mode with compatible Upper Attack CWDs â€” unique in HMS. Its plastic tip limits attack ceiling vs. metal RCs. The self-KO risk from CWD floor-scrape requires careful build management. Tier: experimental/low-mid. The successor Shooter Change Core Gamma (Shining God MS) is strictly better for the same role â€” acquire Alpha only if Gamma is unavailable or for Upper Mode experimentation.
+
+---
+
+## Case 137 â€” Shooter Change Core Gamma RC (Shining God MS) â€” 6 g [FACT] â€” Improved Spin-Direction Tip Preset: Rightâ†’Flat, Leftâ†’Sharp (Superior Defense); WD-at-Bottom Upper Mode
+
+### 1. Geometry
+
+Shooter Change Core Gamma (Shining God MS, MA-24) is the improved version of Shooter Change Core Alpha. Same core architecture (WD-at-bottom, spin-direction tip selection) but with a critical improvement in left-spin: the semi-flat tip (Alpha's defense mode) is replaced by a sharp tip â€” better defense capability with lower friction and higher gyroscopic stability at low spin rates.
+
+Weight: 6 g [FACT â€” from linka shining-god-ms.md]. Height: LOW-MED. WD position: bottom-mounted (same as Alpha). Tip options: Flat (RS, Attack) or Sharp (LS, Defense/Stamina).
+
+### 2. Physics
+
+**Left-spin sharp tip (defense/stamina mode):**
+Sharp tip in left-spin:
+
+    r_sharp â‰ˆ 0.3â€“0.5 mm
+    Î¼_sharp â‰ˆ 0.08â€“0.10 (metal-equivalent ABS sharp, lower than Alpha's semi-flat)
+    dÏ‰/dt_sharp â‰ˆ 10â€“15 rad/sÂ² â€” near-bearing Core territory for ABS
+
+This is a 60% improvement in left-spin spin decay rate over Alpha's semi-flat:
+- Alpha LS: dÏ‰/dt â‰ˆ 38 rad/sÂ²
+- Gamma LS: dÏ‰/dt â‰ˆ 12 rad/sÂ² â†’ 3Ã— better stamina retention
+
+**Right-spin flat tip (attack mode):**
+Same as Alpha â€” ABS flat, Î¼ â‰ˆ 0.45, dÏ‰/dt â‰ˆ 60 rad/sÂ².
+
+**WD-at-bottom self-KO risk:**
+Identical to Alpha. Tilt > 15Â° â†’ CWD floor contact â†’ spin collapse. This risk is inherent to the architecture and not resolved in Gamma.
+
+**Best defensive combo (Gamma LS):**
+Samurai Upper AR + CWD God Ring (or CWD Defense Ring) + Shooter Change Core Gamma (sharp, LS):
+- Samurai Upper's upper-attack geometry keeps the bey level (reduces tilt-triggered scrape)
+- God Ring's high I supports sustained survival
+- Gamma's sharp tip minimizes floor friction â€” effective balance/zombie build
+
+### 3. Game Engine Mapping
+
+```typescript
+interface ShooterChangeCoreGammaRC {
+  name: "shooter_change_core_gamma";
+  system: "HMS";
+  sourceBey: "Shining God MS";
+  mass_g: 6;                        // [FACT]
+  gimmick: "spin_direction_tip_preset";
+  rightSpin: { tipType: "flat_abs"; mu: 0.45; spinDecay_radPerS2: 60; };
+  leftSpin: { tipType: "sharp"; mu: 0.09; spinDecay_radPerS2: 12; };
+  tipSetTiming: "pre_launch";
+  wdMountPosition: "bottom_of_rc";
+  upperModeGapEnabled: true;
+  scrapeTiltThreshold_deg: 15;
+  improvement_vs_alpha: { leftSpin: "sharp_replaces_semi_flat"; spinDecayFactor: 3 };
+  competitiveTier: "low_mid_experimental";
+}
+```
+
+### 4. Verdict
+
+**Role:** Best spin-direction mode RC in HMS. The sharp left-spin tip makes Gamma a credible defense/stamina option when paired with appropriate ARs and CWDs. The WD-at-bottom architecture enables Upper Mode experimentation with compatible CWDs. Self-KO risk from CWD floor scrape remains the critical limitation â€” must avoid heavy tilt. At 6 g, lighter than Alpha (8 g), reducing total combo weight modestly. Tier: low-mid/experimental â€” genuinely useful for defense builds that can't access Bearing Core; the Upper Mode architecture is unique in HMS.
+
+---
+
+## Case 138 â€” Metal Weight Grip Core RC (Dragoon MF) â€” ~14â€“16 g [ESTIMATED] â€” Hardened Rubber Flat + Internal Metal Ballast: Controlled Attack with Smash-Recoil Resistance
+
+### 1. Geometry
+
+Metal Weight Grip Core is Dragoon MF's Running Core (RBA3 prize). It uses a hardened rubber flat tip â€” stiffer compound than Grip Flat Core and Ultimate Grip Flat Core â€” mounted on an ABS body containing an internal metal weight core. This makes it ~2â€“3Ã— heavier than rubber-only Grip Flat Cores and the heaviest single HMS RC in regular circulation.
+
+Weight: ~14â€“16 g [ESTIMATED â€” from linka dragoon-mf.md range "~2-3Ã— heavier than Grip Flat Core"]. Grip Flat Core â‰ˆ 5 g â†’ Metal Weight Grip Core â‰ˆ 10â€“16 g. Tip diameter: smaller than Grip Flat Core (tighter movement arcs).
+
+### 2. Physics
+
+**Rubber flat tip dynamics:**
+Hardened rubber tip (Î¼_rubber â‰ˆ 0.55â€“0.70 vs. ABS flat 0.35â€“0.45):
+
+    dÏ‰/dt_rubber = Ï„_tip / I_combo
+    Ï„_tip = Î¼ Ã— m Ã— g Ã— r_tip â‰ˆ 0.62 Ã— 0.038 Ã— 9.81 Ã— 0.003 â‰ˆ 0.0069 NÂ·m
+
+Smaller tip diameter (r_tip â‰ˆ 2.5â€“3.0 mm vs Grip Flat Core's 4â€“5 mm):
+
+    Spin decay: Ï„_MWGC / Ï„_GFC â‰ˆ 3.0/4.5 â‰ˆ 0.67 â€” 33% lower torque per unit friction
+
+**Internal metal weight contribution:**
+The metal insert (~6â€“10 g estimated) sits at the RC body center:
+
+    Î”I_metal â‰ˆ 0.008 Ã— (0.005)Â² â‰ˆ 2.0 Ã— 10â»â· kgÂ·mÂ² (negligible I contribution â€” small radius)
+    Inertia benefit: minimal (central mass adds little I)
+    Stability benefit: substantial â€” lower CoM + added central mass reduces wobble at low spin
+
+**Smash exchange behavior:**
+On lateral smash contact, heavier RC (14â€“16 g) resists angular deflection better than lighter Grip Flat Core (5 g):
+
+    Î”Î©_deflection âˆ 1 / (I_RC + I_combo)
+
+Heavier RC â†’ lower deflection â†’ bey stays on attack trajectory after taking a hit. This is the "smash-recoil resistance" effect: not full spin retention (the outer shell still absorbs the hit), but the central heavy mass contributes inertia that keeps the bottom stable.
+
+**Controllability:**
+Smaller tip diameter + stiffer rubber â†’ shorter, tighter movement arcs vs Grip Flat Core. Inexperienced bladers benefit: the bey orbits closer to center and doesn't sling-out erratically. Experienced bladers prefer Grip Flat Core's speed; MWGC is their fallback.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface MetalWeightGripCoreRC {
+  name: "metal_weight_grip_core";
+  system: "HMS";
+  sourceBey: "Dragoon MF";
+  mass_g: 15;                       // [ESTIMATED midpoint]
+  tipType: "hardened_rubber_flat";
+  tipRadius_mm: 2.8;                // smaller than Grip Flat Core
+  mu_rubber: 0.62;
+  spinDecay_radPerS2: 42;           // lower than GFC due to smaller r_tip
+  internalMetalWeight_g: 8;        // [ESTIMATED]
+  controlFactor: "moderate";        // tighter arcs vs GFC
+  smashRecoilResistance: true;      // heavier RC resists deflection
+  vsGripFlatCore: {
+    speed: "lower_by_30pct";
+    control: "higher";
+    recoilResist: "higher";
+    spinDecay: "similar";
+  };
+  competitiveTier: "low_mid";
+  targetBlader: "beginner_attacker";
+}
+```
+
+### 4. Verdict
+
+**Role:** Controlled rubber-flat Attack RC. Metal Weight Grip Core is the entry-level rubber attack option in HMS â€” more controllable than Grip Flat Core at the cost of some speed. The internal metal ballast adds smash-recoil resistance (the bey stays on trajectory after taking a hit better than lighter RCs). The heavy weight (~15 g) makes it the heaviest HMS RC â€” useful for stability in some builds but unwieldy in lightweight combos. Tier: low-mid. Replace with Grip Flat Core for experienced attack builds; keep MWGC for controlled setups or when Grip Flat Core is unavailable.
+
+---
+
+## Case 139 â€” Free Shaft Core RC (Dranzer MF) â€” ~8 g [ESTIMATED] â€” Decoupled Inner Shaft: Spin-Retention on Smash Contact via Shaft-Body Mechanical Isolation
+
+### 1. Geometry
+
+Free Shaft Core is Dranzer MF's Running Core (RBA4 prize). The "Free" in the name refers to the inner shaft: the spindle connecting the Metal Flat tip to the RC body is mechanically free to rotate relative to the outer ABS shell. On hard lateral smash contact, the outer shell absorbs and disperses rotational shock while the inner shaft and tip continue spinning independently.
+
+Weight: ~8 g [ESTIMATED â€” from linka dranzer-mf.md]. Tip type: Metal Flat (hard, non-rubber, metal contact material). Tip width: wide (high contact area with stadium floor). Movement pattern: aggressive, erratic (metal flat).
+
+### 2. Physics
+
+**Shaft decoupling on smash impact:**
+In a fixed-shaft RC, lateral smash impact transfers torque Î”Ï„_smash to the entire spinning body:
+
+    Î”Ï‰_fixed = Î”Ï„_smash / I_total â†’ high spin loss
+
+In Free Shaft Core, the outer shell receives Î”Ï„_smash. The inner shaft is isolated from shell torque by the free rotation mechanism:
+
+    Î”Ï‰_shaft = 0 (shaft continues spinning undisturbed)
+    Î”Ï‰_shell = Î”Ï„_smash / I_shell
+
+Since the shell couples back to the shaft via friction in the shaft bearing (Î¼_bearing â‰ˆ 0.05):
+
+    Î”Ï‰_shaft_via_coupling â‰ˆ Î¼_bearing Ã— (Î”Ï‰_shell - Î”Ï‰_shaft) Ã— Î”t / I_shaft
+
+Approximating, spin retention factor vs fixed shaft:
+
+    SpinRetained_FreeSHaft â‰ˆ 1 - (I_shaft / I_total) Ã— coupling_factor
+    I_shaft / I_total â‰ˆ 0.15 (shaft is 15% of total inertia)
+    Coupling_factor â‰ˆ 0.3 (bearing friction)
+    SpinRetained â‰ˆ 1 - 0.15 Ã— 0.3 â‰ˆ 0.955 â†’ 4.5% less spin lost per hit
+
+Over a 20-hit battle:
+    Cumulative spin retention â‰ˆ 0.955^20 â‰ˆ 0.40 (40% more spin retained vs fixed shaft)
+
+This is meaningful: Dranzer MF can outlast a conventional flat-tip RC bey in an extended smash-trading battle.
+
+**Metal Flat tip dynamics:**
+Metal contact (hard, low deformation):
+
+    Î¼_metal_flat â‰ˆ 0.15 (lower friction than ABS flat)
+    dÏ‰/dt â‰ˆ 20â€“25 rad/sÂ² (lower spin decay than rubber flat, similar to Grip Flat Core in steel-floor contact)
+
+Erratic movement pattern: metal flat contact is high-speed but less predictable than rubber flat â€” sharp rebounds off walls, wide stadium coverage.
+
+**Dranzer legacy:**
+The Free Shaft Core continues the Dranzer shaft-decoupling tradition: Dranzer S's Spiral Change Base had a mode-switching shaft; Dranzer F's Flame Change Base had a paired SG gimmick. Free Shaft Core adds the passive mechanical coupling variant â€” no setup, no spin direction choice, automatically activates on impact.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface FreeShaftCoreRC {
+  name: "free_shaft_core";
+  system: "HMS";
+  sourceBey: "Dranzer MF";
+  mass_g: 8;                        // [ESTIMATED]
+  tipType: "metal_flat";
+  tipWidth_mm: 3.5;                 // [ESTIMATED]
+  mu_metalFlat: 0.15;
+  spinDecay_radPerS2: 22;
+  shaftDecoupled: true;
+  spinRetentionPerHit: 0.955;       // 4.5% less spin loss vs fixed shaft per smash hit
+  cumulativeRetention_20hits: 0.40; // 40% more spin after 20 smash exchanges
+  movementPattern: "aggressive_erratic";
+  gimmick: "passive_on_smash_impact";
+  dranzertip_lineage: true;
+  pairedAR: "smash_phoenix";
+  pairedCWD: "wing_attacker_cwd";
+  competitiveTier: "mid";
+}
+
+function freeShaftRetainedSpin(
+  initialSpin: number,
+  hitCount: number
+): number {
+  const retentionPerHit = 0.955;
+  return initialSpin * Math.pow(retentionPerHit, hitCount);
+  // After 20 hits: 0.955^20 â‰ˆ 0.40 of initial spin â€” 40% more than fixed shaft
+}
+```
+
+### 4. Verdict
+
+**Role:** Smash-resistant Attack RC. The Free Shaft Core's decoupled shaft provides real spin retention benefit: ~4.5% less spin loss per hard smash hit, cumulating to 40% more spin after 20 exchanges vs a fixed-shaft equivalent. This makes Dranzer MF (Smash Phoenix + Wing Attacker + Free Shaft Core) a sustained smash-trading attacker rather than a glass-cannon. The Metal Flat tip produces aggressive stadium coverage. Tier: mid â€” genuinely competitive in attack builds; the spin-retention gimmick adds real battle longevity. The RBA4 prize-only distribution limits accessibility. The successor Dranzer tradition (passive shaft decoupling â†’ later Burst-era shaft mechanisms) is a meaningful mechanical lineage.
+
+---
+
+## Case 140 — CWD Defense Ring (Sea Dragon MS / RBA2) — ~19 g [ESTIMATED] — Near-Circular Top-Tier CWD: Peer to CWD God Ring, Universal Archetype Compatibility
+
+### 1. Geometry
+
+CWD Defense Ring is the Customize Weight Disk of Sea Dragon MS (RBA2 — Random Booster Act 2). ABS plastic, approximately 19 g [ESTIMATED — from hmsdb.com/initial-releases/rba2-sea-dragon]. Profile: "very conservative, circular, and weighty" (hmsdb). Near-circular outer perimeter — minimal asymmetry, near-uniform mass distribution. The only CWD in HMS with a profile equivalent to CWD God Ring (Case 131, ~18 g, Shining God MS). Competitively, both Defense Ring and God Ring occupy the same tier.
+
+Also referred to as "CWD Free Defense Ring" in combo recommendations — the "Free" prefix indicates the free-spin mounting common to all HMS CWDs.
+
+### 2. Physics
+
+**Moment of inertia:**
+Near-circular ring profile, r_outer ˜ 23 mm, r_inner ˜ 19 mm:
+
+    I_DefenseRing ˜ (0.019/2)(0.023² + 0.019²) ˜ 3.65 × 10?6 kg·m²
+
+The 1g mass advantage over God Ring (19g vs 18g) at the same outer radius:
+
+    ?I ˜ 0.001 × (0.021²) ˜ 4.4 × 10?7 kg·m²
+    Defense Ring I ˜ 3.65 × 10?6 vs God Ring ˜ 3.5 × 10?6 — marginal advantage (~4%)
+
+**Spin decay improvement over Circle Heavy baseline:**
+Circle Heavy: I ˜ 3.0 × 10?6 kg·m²
+Defense Ring: I ˜ 3.65 × 10?6 kg·m²
+
+    Improvement: (3.65 - 3.0) / 3.0 ˜ 22% slower spin decay vs Circle Heavy
+
+**"Perfectly viable across all archetypes" (hmsdb):**
+- Attack: High I ring doesn't hurt attack; its near-circular profile provides no recoil-causing geometry.
+- Defense: Smooth circular perimeter deflects attacks tangentially rather than catching them.
+- Stamina: Maximum I per gram for HMS CWDs — best sustained spin.
+- Upper Attack: Near-circular profile doesn't create height steps that reduce upper-attack clearance.
+
+**Seagon Attacker synergy note:**
+Sea Dragon's AR (Seagon Attacker, Case 88) is an upper-attack AR. Defense Ring's near-circular profile provides no cross-contamination of the upper-attack geometry — combining upper AR + neutral CWD is architecturally correct (cf. Devil Crusher + God Ring in Case 131).
+
+### 3. Game Engine Mapping
+
+```typescript
+interface CWDDefenseRing {
+  name: "cwd_defense_ring";
+  aliases: ["cwd_free_defense_ring"];
+  system: "HMS";
+  sourceBey: "Sea Dragon MS (RBA2)";
+  mass_g: 19;                          // [ESTIMATED]
+  profile: "near_circular";
+  outerRadius_mm: 23;
+  innerRadius_mm: 19;
+  momentOfInertia_kgm2: 3.65e-6;
+  spinDecayImprovementVsCircleHeavy: 0.22;
+  competitiveTier: "high";
+  equivalentPart: "cwd_god_ring";      // functionally peer; Defense Ring ~4% higher I
+  universalArchetype: true;            // viable in attack, defense, stamina, upper
+  recommendedCombos: [
+    "jiraiya_blade + cwd_defense_ring + grip_flat_core_ultimate",
+    "samurai_upper + cwd_defense_ring + bearing_core_2"
+  ];
+}
+```
+
+### 4. Verdict
+
+**Role:** Top-tier HMS CWD — peer to CWD God Ring. Defense Ring is the original top-tier circular HMS CWD, predating God Ring by several releases. Both are mechanically equivalent: near-circular, near-19g, I ˜ 3.5–3.65 × 10?6 kg·m². The Defense Ring's marginally higher mass (~1g more) gives it a fractional I edge. Obtain from Sea Dragon MS (RBA2). Recommended in the best HMS combos (Jiraiya Blade + Defense Ring + Grip Flat Core Ultimate = one of the top three HMS attack customs). Tier: HIGH.
+
+---
+
+## Case 141 — Metal Upper AR (Driger MS / A-124) — ~20 g [ESTIMATED] — Rei's HMS Upper: Paired Spiral Slopes, Narrower Window than Spiral Upper, Right-Spin Primary
+
+### 1. Geometry
+
+Metal Upper is the HMS Attack Ring of Driger MS (A-124, Rei Kon's HMS bey). Weight: ~20 g [ESTIMATED — from hmsdb.com/initial-releases/a-124-driger-ms]. Zinc-alloy metal frame bonded to ABS caul. Upper-attack orientation: the metal frame carries paired forward-swept slopes on each face.
+
+Note from hmsdb attack-ring-variations page: Metal Upper has mold variants. The "upper" in the name is confirmed by the attack type listed — it is an upper-attack AR, not a smash AR. Paired slopes implies two contact faces per revolution rather than Spiral Upper's continuous spiral arc.
+
+### 2. Physics
+
+**Paired slope upper attack (right-spin primary):**
+Two slope faces per half-revolution (estimated from "paired" description). Each slope face at a_upper ˜ 30°:
+
+    Upper fraction per face = sin(30°) = 0.500
+    Contact arc per face ˜ 55–65° (vs Spiral Upper's 170° omnidirectional)
+
+Effective upper-attack window: 2 × 60° = 120° per revolution — better than single-slope ARs but inferior to Spiral Upper (170°+).
+
+**Comparison with Spiral Upper (Case 125, ~20g):**
+| AR | Weight | Upper Window | Architecture |
+|----|--------|-------------|--------------|
+| Spiral Upper | ~20g | ~170° (omnidirectional) | Continuous spiral slope |
+| Metal Upper | ~20g | ~120° (paired slopes) | Two discrete slope faces |
+
+At equal weight, Spiral Upper's omnidirectional contact window is superior. Metal Upper is a viable second-choice upper-attack AR when Spiral Upper is unavailable.
+
+**Left-spin consideration:**
+Reversed slope contact in LS: slope leading-face reverses. The paired slopes become trailing-edge contacts — glancing rather than upper-attack. Left-spin produces lower-angle tangential contact:
+
+    LS smash fraction ˜ sin(15°) ˜ 0.259 (trailing edge from reversed slope)
+    Not a viable LS combat AR — use RS only
+
+**Mold variants:**
+hmsdb confirms mold variants exist. Without weight data for each mold variant, treat as same performance range (~20g ± 0.5g).
+
+### 3. Game Engine Mapping
+
+```typescript
+interface MetalUpperAR {
+  name: "metal_upper";
+  system: "HMS";
+  sourceBey: "Driger MS (A-124)";
+  mass_g: 20;                          // [ESTIMATED]
+  attackType: "upper";
+  upperFractionRS: 0.500;              // sin(30°) per slope face
+  contactWindowRS_deg: 120;            // 2 × ~60° faces vs Spiral Upper's 170°
+  smashFractionLS: 0.259;             // trailing edge LS — not viable
+  primarySpin: "right";
+  moldVariants: true;
+  comparedToSpiralUpper: {
+    weight: "equal",
+    upperWindow: "lower_by_50deg",
+    verdict: "second_choice_upper_ar"
+  };
+  competitiveTier: "mid";
+}
+```
+
+### 4. Verdict
+
+**Role:** Second-tier HMS Upper Attack AR. Metal Upper shares Spiral Upper's weight class (~20g) and upper-attack orientation but with a narrower effective contact window (120° vs 170°). Right-spin primary; left-spin is low-value trailing contact only. A credible donor for upper-attack builds when Spiral Upper (Dranzer MS) or Samurai Upper (MA-20) are unavailable. Tier: mid — functional upper-attack AR, outclassed by both Spiral Upper and Samurai Upper in coverage, but usable and accessible from Driger MS (A-124, Initial Release).
+
+---
+
+## Case 142 — Jiraiya Blade AR (Jiraiya MS / MA-22) — ~22 g [ESTIMATED] — Heaviest HMS AR: Symmetric Dual-Spin Rotational Smash, Top-Tier Attack
+
+### 1. Geometry
+
+Jiraiya Blade is the Attack Ring of Jiraiya MS (MA-22, Gimmick Specialty Series). Weight: ~22 g [ESTIMATED — from hmsdb.com/gimmick-specialty-series/ma-22-jiraiya-ms]. At ~22g, Jiraiya Blade is the heaviest known HMS AR — 2g above Spiral Upper (~20g) and 4g above God Smasher (18g). The AR is described as "symmetrical, heavy, and a very powerful Attack-oriented AR" (hmsdb) with "considerable amount of Rotational Smash" and performance "similarly well in left-spin as it does in right-spin."
+
+The name "Jiraiya Blade" and symmetrical design suggest multiple blade-edge contacts evenly distributed — true spin-direction symmetry (equal performance RS and LS is the rarest property in HMS ARs).
+
+### 2. Physics
+
+**Rotational smash at maximum AR mass:**
+At 22g concentrated in metal frame at r ˜ 22 mm:
+
+    I_AR ˜ 0.022 × (0.022)² ˜ 1.06 × 10?5 kg·m²
+
+This is the highest AR inertia contribution in HMS. During smash contact, the AR's inertia resists self-recoil:
+
+    ?O_self ? 1 / (I_AR + I_WD + I_RC) ? more AR mass = less self-deflection per hit
+
+At 22g AR vs 18g God Smasher:
+
+    Recoil reduction: ?(4g) × (0.022)² / I_combo ˜ 1.9 × 10?6 / 2.5×10?5 ˜ 7.7% less self-deflection per hit
+
+**Symmetric dual-spin smash:**
+"Performs similarly well in left-spin as it does in right-spin" — symmetrical blade geometry means no preferred spin direction for smash delivery:
+
+    Smash fraction RS ˜ smash fraction LS (hmsdb confirms)
+    Estimated a_smash ˜ 28° (symmetric blade): sin(28°) ˜ 0.469 each direction
+
+This dual-spin symmetry makes Jiraiya Blade uniquely versatile for counter-spin combos.
+
+**Wear dependency:**
+hmsdb notes: "performs noticeably worse on worn Grip Flat Core RC." Jiraiya Blade's high contact mass needs a fast-moving flat-tip RC to achieve sufficient orbital speed — worn rubber reduces attack velocity below Jiraiya Blade's kinematic threshold. Use only with mint or near-mint Grip Flat Core (Ultimate Mode preferred).
+
+### 3. Game Engine Mapping
+
+```typescript
+interface JiraiyaBladeAR {
+  name: "jiraiya_blade";
+  system: "HMS";
+  sourceBey: "Jiraiya MS (MA-22)";
+  mass_g: 22;                          // [ESTIMATED]
+  smashFractionRS: 0.469;              // sin(28°) symmetric blades
+  smashFractionLS: 0.469;             // EQUAL RS/LS — dual-spin symmetric
+  outerRadius_mm: 22;
+  momentOfInertia_AR: 1.06e-5;        // heaviest HMS AR — maximum AR inertia
+  selfRecoilReduction: 0.077;         // 7.7% less deflection vs God Smasher per hit
+  wearSensitive: true;                // needs mint Grip Flat Core for full output
+  pairedRC: "grip_flat_core_ultimate";
+  pairedCWD: "cwd_defense_ring";
+  competitiveTier: "high";
+  spinDirectionBias: "none";          // true dual-spin
+  recommendedCombo: "jiraiya_blade + cwd_defense_ring + grip_flat_core_ultimate";
+}
+
+function jiraiyaBladeEffectiveness(
+  rcCondition: "mint" | "worn",
+  spinDir: "right" | "left"
+): number {
+  const baseFraction = 0.469;
+  const wornPenalty = rcCondition === "worn" ? 0.25 : 0;
+  // symmetric — spinDir doesn't change output
+  return baseFraction * (1 - wornPenalty);
+}
+```
+
+### 4. Verdict
+
+**Role:** Top-tier HMS Smash AR. Jiraiya Blade is the heaviest HMS AR at ~22g, delivering the highest AR-level inertia contribution in the system. Its symmetric blade geometry produces equal smash output in both spin directions — a rarity in HMS. The recommended combo (Jiraiya Blade + CWD Defense Ring + Grip Flat Core Ultimate) is one of the highest-rated HMS attack customs. Weakness: wear-sensitive — performance degrades significantly on worn rubber RCs. Always pair with mint-condition Grip Flat Core. Tier: HIGH.
+
+---
+
+## Case 143 — Metal Ape AR (Magical Ape MS / MA-18) — ~19 g [ESTIMATED] — Ape-Motif Upper Attack: Shared Mass Class, Mid-Tier Gimmick Specialty AR
+
+### 1. Geometry
+
+Metal Ape is the Attack Ring of Magical Ape MS (MA-18, Gimmick Specialty Series). Weight: ~19 g [ESTIMATED — from hmsdb.com/gimmick-specialty-series/ma-18-magical-ape-ms]. Same mass class as Devil Crusher (~19g), Knight Crusher (19g [FACT]), and God Smasher (18g [FACT]). Primate-themed ABS caul over zinc-alloy frame.
+
+Primary competitive value of MA-18: the Flat Core (New Revision) RC that ships with it (Case 149) — the "strictly better" flat core revision. Metal Ape AR is a secondary consideration.
+
+### 2. Physics
+
+**19g shared mass class:**
+Metal Ape joins Devil Crusher, Knight Crusher, and Upper Dragon in the ~19g HMS AR tier. Without detailed blade geometry data beyond "upper attack" designation, the analysis uses mass and architecture class:
+
+    I_AR ˜ 0.019 × (0.021)² ˜ 8.4 × 10?6 kg·m² (same as Upper Dragon estimate)
+
+**Upper-attack archetype:**
+Magical Ape MS's AR name contains no "smash" or "crusher" descriptor — the "Ape" imagery and MA series positioning suggests an upper-attack or multi-type AR rather than pure smash. Given its place in the Gimmick Specialty line, it likely shares framework similarities with the upper-attack family (Upper Dragon / Upper Fox / Devil Crusher).
+
+**Competitive position:**
+Without detailed slope-angle data from physical measurement: Metal Ape AR is a mid-tier upper-attack AR at ~19g. Neither the worst (Knight Crusher) nor the best (Samurai Upper, Spiral Upper) in its category. Harvest value priority: Flat Core (New Revision) RC first; Metal Ape AR as secondary donor.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface MetalApeAR {
+  name: "metal_ape";
+  system: "HMS";
+  sourceBey: "Magical Ape MS (MA-18)";
+  mass_g: 19;                          // [ESTIMATED]
+  attackType: "upper";                 // INFERRED from name/series position
+  upperFraction: 0.45;                 // [ESTIMATED — typical HMS upper-attack range]
+  outerRadius_mm: 21;
+  competitiveTier: "mid";
+  primaryHarvestValue: "flat_core_new_revision";  // RC is the real prize
+  note: "Detailed blade geometry needs physical measurement for precise smash/upper fractions";
+}
+```
+
+### 4. Verdict
+
+**Role:** Mid-tier HMS upper-attack AR. Metal Ape AR occupies the ~19g upper-attack class but lacks the contact-window advantages of Spiral Upper or Samurai Upper. Acquire Magical Ape MS primarily for the Flat Core (New Revision) RC — the "strictly better" flat core that is the main competitive harvest. Metal Ape AR is a usable upper-attack substitute when better ARs aren't available. Tier: mid.
+
+---
+
+## Case 144 — Spark Dragon AR (Thunder Dragon / RBA1) — ~14 g [ESTIMATED] — Free-Spinning Plastic + Narrow Metal Frame: Width Without Contact, Non-Competitive
+
+### 1. Geometry
+
+Spark Dragon is the Attack Ring of Thunder Dragon (RBA1 — Random Booster Act 1). Weight: ~14 g total [ESTIMATED — hmsdb.com/initial-releases/rba1-thunder-dragon]: metal piece ~10g (narrower than Circle Heavy in diameter), free-spinning plastic component ~4g. The plastic component is attached to the metal frame but rotates freely — the same failure architecture as CWD Devil Saucer (Case 132) and CWD Chain Attacker (Case 46): free-spinning parts dissipate impact energy instead of delivering it.
+
+Spark Dragon also reportedly included "thin pieces of sandpaper and flint" on original releases — a decorative novelty gimmick that produces sparks but has no combat relevance.
+
+### 2. Physics
+
+**Free-spinning plastic dissipation:**
+On contact with opponent AR, the outer plastic component of Spark Dragon rotates freely:
+
+    Impact torque ? rotates plastic shell ? ??_shell = t / I_plastic
+    Effective impulse to opponent ˜ F_N × µ_plastic_on_plastic × ?t
+
+At µ ˜ 0.30 (ABS-on-ABS) vs µ ˜ 0.15 (zinc-on-ABS for metal contact):
+
+    Impulse ratio = µ_plastic / µ_metal ˜ 0.30 / 0.15 = 2.0 (higher friction) BUT
+    The free-spin absorbs the rotational shock — shell spins away, body continues unimpeded
+
+Net delivered impulse to opponent is governed by inelastic coupling:
+
+    ?J_opponent ˜ (1 - e_freespin) × J_contact ˜ 0.1 × J_contact
+
+~90% of impact energy goes into spinning up the free plastic shell. Only ~10% reaches the opponent.
+
+**Metal frame too narrow:**
+"Central metal piece no wider than a Circle Heavy" — the metal ring is not at the outer perimeter. Attack radius for the metal contact: r_metal ˜ 16–17mm vs typical HMS AR outer radius 22–23mm. Reduced attack reach means many opponent AR contacts happen at the plastic shell (free-spinning) before reaching the narrow metal ring.
+
+**Verdict from hmsdb:** "utterly useless" for competitive play across all archetypes.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface SparkDragonAR {
+  name: "spark_dragon";
+  system: "HMS";
+  sourceBey: "Thunder Dragon (RBA1)";
+  mass_g: 14;                          // [ESTIMATED total]
+  metalFrame_g: 10;
+  plasticShell_g: 4;
+  plasticShell_freeSpin: true;
+  effectiveImpulseRatio: 0.10;        // 90% energy lost to free-spin shell
+  metalFrameRadius_mm: 17;            // narrow — no wider than Circle Heavy
+  outerPlasticRadius_mm: 23;
+  sparkGimmick: true;                 // decorative only; no combat effect
+  competitiveTier: "non_competitive";
+  harvestValue: "cwd_free_survivor_or_saucer"; // CWDs are the actual prize
+}
+```
+
+### 4. Verdict
+
+**Role:** Non-competitive. Spark Dragon's free-spinning plastic shell absorbs 90% of impact energy; the narrow metal ring inside never reaches standard AR contact radius. The sandpaper/flint spark gimmick is purely visual. Tier: F. Acquire Thunder Dragon (RBA1) exclusively for the CWD Free Survivor / CWD Free Saucer WDs it includes — not for this AR.
+
+---
+
+## Case 145 — CWD Free Cross (Jiraiya MS / MA-22) — ~17 g [ESTIMATED] — Cross-Shaped CWD: Asymmetric Four-Arm Profile, Attack-Supplemental Role
+
+### 1. Geometry
+
+CWD Free Cross is Jiraiya MS's (MA-22) Customize Weight Disk. Weight: ~17g [ESTIMATED — from hmsdb]. Four-arm cross profile — distinctly non-circular, with four symmetric extensions at 90° intervals. The cross arms extend the effective radius at four points while leaving the 45° sectors less populated — a deliberately asymmetric mass distribution in the angular sense (four-fold, not continuous ring).
+
+### 2. Physics
+
+**Cross-arm mass distribution:**
+Four arms at r_arm ˜ 22–24 mm, sectors between arms at r_base ˜ 14–15 mm:
+
+    I_arms = 4 × (0.004 × 0.023²) ˜ 8.5 × 10?6 kg·m²  (arm mass at outer radius)
+    I_core = 0.001 × 0.015² ˜ 2.25 × 10?7 kg·m²       (between-arm core)
+    Total I ˜ 8.75 × 10?6 kg·m²   [ESTIMATED]
+
+Compare to CWD Defense Ring: I ˜ 3.65 × 10?6 kg·m²
+
+Free Cross appears to have higher total I than Defense Ring at the same ~17g because the cross arms act as extended radius spokes — each gram of arm mass sits farther from center than a solid ring of the same total mass.
+
+BUT: The cross arms also create angular mass asymmetry. Four preferred wobble directions (at arm positions) vs Defense Ring's zero. At low spin rates, Free Cross generates greater precession oscillation than circular CWDs.
+
+**Attack contribution:**
+Cross arm tips at r ˜ 23 mm act as secondary contact points that extend attack reach — similar role to Wing Attacker CWD (Case 133) but with four symmetric arms instead of two asymmetric wings.
+
+**Compatibility with Jiraiya Blade combo:**
+hmsdb recommends CWD Defense Ring over CWD Free Cross in Jiraiya Blade builds. Free Cross is functionally superseded by Defense Ring for pure stamina/defense. Free Cross's value is attack supplementation from the extended arm tips.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface CWDFreeCross {
+  name: "cwd_free_cross";
+  system: "HMS";
+  sourceBey: "Jiraiya MS (MA-22)";
+  mass_g: 17;                          // [ESTIMATED]
+  profile: "four_arm_cross";
+  armCount: 4;
+  armRadius_mm: 23;
+  coreRadius_mm: 15;
+  momentOfInertia_kgm2: 8.75e-6;      // [ESTIMATED — arms at outer radius]
+  angularAsymmetry: true;              // 4-fold preferred wobble directions
+  attackReachExtended: true;           // arm tips supplement AR contact radius
+  competitiveTier: "mid";
+  supersededBy: "cwd_defense_ring";    // for pure stamina/defense builds
+  bestRole: "attack_supplemental";
+}
+```
+
+### 4. Verdict
+
+**Role:** Attack-supplemental CWD. Free Cross's four cross arms extend attack reach similarly to Wing Attacker CWD but with four-fold symmetry (avoiding Wing Attacker's imbalance). Total I is estimated higher than Defense Ring due to arm-tip mass placement. Weakness: angular mass asymmetry from the four-arm pattern introduces wobble at low spin. For defense/stamina builds, CWD Defense Ring is the superior choice. For aggressive attack combos where arm-tip reach supplementation is valued, Free Cross is a usable alternative. Tier: mid.
+
+---
+
+## Case 146 — CWD Free Survivor (Thunder Dragon / RBA1) — ~17 g [ESTIMATED] — Survival-Oriented CWD: Circular-Trend Profile, Primary Harvest from RBA1
+
+### 1. Geometry
+
+CWD Free Survivor is one of two CWDs included with Thunder Dragon (RBA1). Weight: ~17g [ESTIMATED — from hmsdb RBA1 page]. "Survivor" suffix indicates stamina/survival-oriented geometry — smooth perimeter profile, minimal protrusions, circular-trend distribution aimed at reducing drag and maintaining spin velocity.
+
+### 2. Physics
+
+**Circular-trend survival profile:**
+Unlike CWD Free Saucer (Case 147, also from RBA1) which has protrusions, Free Survivor's smooth perimeter:
+
+    Drag coefficient: low (smooth surface, no protrusions)
+    I contribution ˜ mass × r_mean² ? at ~17g, r_mean ˜ 21mm
+    I_FreeSurvivor ˜ 0.017 × (0.021)² ˜ 7.5 × 10?6 kg·m² [ESTIMATED]
+
+Compared to CWD Circle Wide (14g, r_outer = 27mm, I ˜ 1.0×10?5 kg·m²):
+Free Survivor is heavier (17g vs 14g) but with smaller outer radius ? lower I per gram than Circle Wide. The "Survivor" designation refers to its smooth profile (less recoil) rather than maximum I.
+
+**Best role:**
+Defense-type combos where a smooth CWD profile reduces opponent contact recoil without the attack-range extension of cross-armed CWDs. The ~17g mass provides adequate combo weight.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface CWDFreeSurvivor {
+  name: "cwd_free_survivor";
+  system: "HMS";
+  sourceBey: "Thunder Dragon (RBA1)";
+  mass_g: 17;                          // [ESTIMATED]
+  profile: "smooth_circular_survival";
+  outerRadius_mm: 21;                  // [ESTIMATED]
+  momentOfInertia_kgm2: 7.5e-6;       // [ESTIMATED]
+  protrusions: false;                  // smooth perimeter
+  dragPenalty: "low";
+  competitiveTier: "low_mid";
+  bestRole: "smooth_defense_cwd";
+  harvestContext: "rba1_primary_cwd";  // the survival CWD from Thunder Dragon
+}
+```
+
+### 4. Verdict
+
+**Role:** Smooth survival CWD. Free Survivor provides a clean circular-profile CWD at ~17g without the protrusion complications of Saucer or the arm-asymmetry of Free Cross. Its primary competitive value is as a smooth heavy CWD substitute when Circle Wide or Defense Ring are unavailable. Tier: low-mid. Harvest from Thunder Dragon (RBA1) alongside Free Saucer (Case 147) — both included with the same bey.
+
+---
+
+## Case 147 — CWD Free Saucer (Thunder Dragon / RBA1) — ~17 g [ESTIMATED] — Saucer-Profile CWD: Shallow Spin-Steal Surface, Non-Competitive Analogue to Metal Saucer
+
+### 1. Geometry
+
+CWD Free Saucer is the second CWD from Thunder Dragon (RBA1). Weight: ~17g [ESTIMATED]. Saucer profile — a broad shallow curve perimeter similar to the Metal Saucer AR (Case 124) but as a CWD. The saucer geometry creates a wide, nearly flat outer surface.
+
+### 2. Physics
+
+**Saucer CWD spin-steal (limited):**
+Saucer profile at the WD level: the CWD sits below the AR. Its saucer perimeter contacts opponent ARs only if the opponent's contact point is low enough to reach CWD height. In standard HMS geometry, this occurs when:
+
+1. The opponent is significantly shorter (height mismatch contact)
+2. The opponent tilts toward the saucer face during collision
+
+In most encounters, the AR (higher, Case 124 type) makes contact first. The CWD saucer contacts are secondary or incidental.
+
+**Spin-steal contribution:**
+    a_saucer_CWD ˜ 3–5° (same shallow geometry as AR-level saucer)
+    t_steal ˜ µ × F_N × r_CWD = 0.15 × 0.5 × 0.021 ˜ 0.0016 N·m
+    ?? per contact ˜ 0.0016 × 0.003 / 0.0003 ˜ 0.016 rad/s
+
+Non-competitive: each contact drains ~0.016 rad/s from the opponent — half of AR-level Metal Saucer's 0.028 rad/s (lower contact frequency at CWD level).
+
+### 3. Game Engine Mapping
+
+```typescript
+interface CWDFreeSaucer {
+  name: "cwd_free_saucer";
+  system: "HMS";
+  sourceBey: "Thunder Dragon (RBA1)";
+  mass_g: 17;                          // [ESTIMATED]
+  profile: "saucer_shallow";
+  saucerAngle_deg: 4;
+  spinStealPerContact: 0.016;         // rad/s — secondary contacts only
+  contactHeight: "low";               // only contacts at tilt or height-mismatch
+  competitiveTier: "low";
+  analogue: "metal_saucer_ar_case124"; // same geometry, lower position
+  note: "Spin-steal CWD requires opponent height-mismatch to function — rarely triggers";
+}
+```
+
+### 4. Verdict
+
+**Role:** Low-tier saucer CWD. Free Saucer replicates the Metal Saucer AR's spin-steal geometry at the CWD level — where contacts are less frequent and opponent-height-dependent. The spin drain per contact (0.016 rad/s) is sub-threshold in normal combat. Acquire from Thunder Dragon (RBA1) alongside Free Survivor — use Free Survivor for practical builds; Free Saucer is curiosity harvest. Tier: low.
+
+---
+
+## Case 148 — Flat Core (Original) (Gaia Dragoon MS / A-123) — ~1.5 g [ESTIMATED] — Baseline HMS Flat: Lightest of Three Flat Variants, Mid-Diameter, Aggressive Standard
+
+### 1. Geometry
+
+Flat Core (Original) is the Running Core of Gaia Dragoon MS (A-123, the first HMS release). Weight: ~1.5 g [ESTIMATED — derived from hmsdb: New Revision adds ~0.5g to Original, New Revision ˜ 2g ? Original ˜ 1.5g]. Flat tip, mid-range diameter among the three Flat Core variants (Original, New Revision, Metal Weight). All-plastic construction (no metal insert).
+
+### 2. Physics
+
+**Flat tip dynamics at 1.5g RC mass:**
+Flat tip contact radius r_tip ˜ 2.0–2.5 mm (mid-diameter):
+
+    µ_flat ˜ 0.35–0.45 (ABS flat, mid-range)
+    t_tip = µ × m_combo × g × r_tip ˜ 0.40 × 0.038 × 9.81 × 0.0022 ˜ 0.0033 N·m
+    d?/dt = t / I_combo ˜ 0.0033 / 2.5×10?5 ˜ 132 rad/s²
+
+This is aggressive spin decay — faster than Grip Flat Core's controlled rubber flat because:
+1. ABS flat has less friction control than rubber
+2. No metal weight ballast (contrast: Metal Weight Grip Core ~15g provides smash stability)
+3. Small 1.5g mass means the RC itself adds negligible inertia resistance
+
+**Flower pattern:**
+The Flat Core (Original) can execute a flower pattern (repeated central passes alternating with wall orbits) but less stably than Grip Flat Core due to:
+- Harder ABS surface (less grip ? wider loops, harder to control arc)
+- Lighter mass ? more responsive to wall bounces (erratic direction changes)
+
+**Comparison with other flat variants:**
+| Core | Weight | Diameter | Performance |
+|------|--------|----------|-------------|
+| Flat Core (Original) | ~1.5g | Mid | Baseline — aggressive, less controlled |
+| Flat Core (New Revision) | ~2g | Smallest | Strictly better per hmsdb |
+| Metal Weight Flat Core | ~3g | Largest | Most controllable, heaviest |
+
+### 3. Game Engine Mapping
+
+```typescript
+interface FlatCoreOriginal {
+  name: "flat_core_original";
+  system: "HMS";
+  sourceBey: "Gaia Dragoon MS (A-123)";
+  mass_g: 1.5;                        // [ESTIMATED]
+  tipType: "flat_abs";
+  tipRadius_mm: 2.2;                  // mid-diameter [ESTIMATED]
+  mu: 0.40;
+  spinDecay_radPerS2: 132;
+  movementPattern: "aggressive_erratic";
+  supersededBy: "flat_core_new_revision";
+  note: "Baseline first-release flat core — improved by New Revision (MA-18)";
+  competitiveTier: "low_mid";
+}
+```
+
+### 4. Verdict
+
+**Role:** Baseline aggressive HMS flat RC. The original flat core from the first HMS release. Provides aggressive ABS flat movement but with less control and more erratic trajectory than Grip Flat Core (rubber) or Metal Weight Flat Core (ballasted). Superseded by the New Revision from MA-18 Magical Ape MS. Tier: low-mid — use New Revision when available. Still functional for aggressive attack builds where control is not the priority.
+
+---
+
+## Case 149 — Flat Core (New Revision) (Magical Ape MS / MA-18) — ~2 g [ESTIMATED] — Improved Flat: Smallest Diameter, Added Center Screw, "Strictly Better" than Original
+
+### 1. Geometry
+
+Flat Core (New Revision) is the Running Core of Magical Ape MS (MA-18). Weight: ~2 g [ESTIMATED — from hmsdb: adds "roughly half a gram" to Original's ~1.5g, plus center screw]. Modification from Original: a screw added in the center of the tip face — this screw slightly reduces effective tip contact diameter (the screw head is harder/narrower than ABS flat), creating a functionally smaller contact patch.
+
+hmsdb characterization: "strictly better" than Original. Smallest diameter of all three flat variants.
+
+### 2. Physics
+
+**Center screw effect:**
+The added center screw creates a harder central point within the flat face:
+
+    Effective tip contact = ring-shaped ABS flat + center screw hub
+    Screw hub radius ˜ 0.5 mm (hard metal/plastic)
+    Flat ring outer radius ˜ 1.8 mm (smaller than Original's 2.2 mm)
+
+This composite contact has lower effective diameter than Original ? tighter movement arcs (smaller r_tip ? less torque per unit friction ? slower spin decay than Original):
+
+    t_New = µ × m × g × r_new ˜ 0.40 × 0.038 × 9.81 × 0.0018 ˜ 0.0027 N·m
+    d?/dt_New ˜ 107 rad/s² vs Original 132 rad/s² ? 19% slower spin decay
+
+**"Strictly better" mechanism:**
+The combination of:
+1. Smaller effective diameter ? tighter, more controllable movement arcs
+2. Center screw harder pivot ? more repeatable arc radius (less random slip)
+3. Slightly heavier (+0.5g) ? marginally more stable on axis
+
+...makes New Revision produce more consistent flower patterns than Original while maintaining similar speed ceiling.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface FlatCoreNewRevision {
+  name: "flat_core_new_revision";
+  system: "HMS";
+  sourceBey: "Magical Ape MS (MA-18)";
+  mass_g: 2.0;                        // [ESTIMATED]
+  tipType: "flat_abs_with_center_screw";
+  tipRadius_mm: 1.8;                  // smaller than Original [ESTIMATED]
+  centerScrewHub: true;
+  mu: 0.40;
+  spinDecay_radPerS2: 107;            // 19% slower than Original
+  movementPattern: "controlled_flat";
+  improvesOn: "flat_core_original";
+  diameterVsVariants: "smallest";     // confirmed by hmsdb
+  competitiveTier: "mid";
+  note: "hmsdb: strictly better than Original — use this over Original when available";
+}
+```
+
+### 4. Verdict
+
+**Role:** Improved standard HMS flat RC. The center screw modification reduces effective tip radius, producing tighter movement arcs and 19% slower spin decay than the Original — making flower patterns more consistent and aggressive attack more controllable. Use New Revision over Original whenever available. Still below Grip Flat Core's rubber traction for attack, but better than Original at all margins. Tier: mid. Primary harvest reason to acquire MA-18 Magical Ape MS (Metal Ape AR is secondary).
+
+---
+
+## Case 150 — Metal Weight Flat Core (Thunder Dragon / RBA1) — ~3 g [ESTIMATED] — Most Controllable HMS Flat: Largest Diameter, Heaviest Flat Variant
+
+### 1. Geometry
+
+Metal Weight Flat Core is the Running Core of Thunder Dragon (RBA1). Weight: ~3 g [ESTIMATED — from hmsdb RBA1 page]. The heaviest and largest-diameter flat core variant. The "Metal Weight" in the name suggests an internal metal weight insert (similar concept to Metal Weight Grip Core, Case 138) — but within a flat-tip architecture rather than rubber.
+
+### 2. Physics
+
+**Largest flat diameter + internal weight:**
+Tip radius r_tip ˜ 2.8–3.0 mm (largest of three flat variants, per hmsdb "largest diameter"):
+
+    t_MWFC = µ × m × g × r_tip ˜ 0.40 × 0.038 × 9.81 × 0.0029 ˜ 0.0043 N·m
+    d?/dt_MWFC ˜ 173 rad/s² — actually FASTER decay than New Revision
+
+Wait — larger diameter = higher r_tip = more torque = faster spin decay. But hmsdb says "most controllable." Resolution: "most controllable" refers to movement arc predictability, not spin retention:
+
+    Larger contact patch ? more friction ? more grip ? less random slip ? more predictable arc
+    But: more torque = faster spin loss
+
+The metal weight adds ballast mass at the tip center:
+
+    ?I_tip ˜ 0.001 × (0.003)² ˜ 9.0 × 10?? kg·m² — negligible I contribution
+    Stability contribution: lower CoM from tip-end ballast ? more stable rotation axis
+
+**Control vs speed tradeoff:**
+Metal Weight Flat Core = slowest movement (most tip grip) but most predictable arc ? best for bladers who prefer controlled approach over maximum speed. Grip Flat Core (Case 77, rubber) provides higher grip but with elastic rubber behavior; MWFC provides lower-elasticity metal/ABS-weighted grip.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface MetalWeightFlatCore {
+  name: "metal_weight_flat_core";
+  system: "HMS";
+  sourceBey: "Thunder Dragon (RBA1)";
+  mass_g: 3.0;                        // [ESTIMATED]
+  tipType: "flat_abs_metal_weighted";
+  tipRadius_mm: 2.9;                  // largest flat diameter [ESTIMATED]
+  mu: 0.42;                           // slightly higher friction due to weight-loaded tip
+  spinDecay_radPerS2: 173;            // faster than smaller-diameter flats
+  movementPattern: "controlled_predictable";
+  controlability: "highest_among_flat_cores";
+  diameterVsVariants: "largest";
+  massVsVariants: "heaviest";
+  harvestContext: "rba1_rc";
+  competitiveTier: "low_mid";
+  tradeoff: "most_controllable_but_fastest_spin_decay_of_flat_variants";
+}
+```
+
+### 4. Verdict
+
+**Role:** Most controllable HMS flat RC at the cost of faster spin decay. Metal Weight Flat Core's large diameter provides predictable, gripping movement arcs — ideal for less experienced bladers or builds requiring consistent approach patterns. The trade-off is faster spin loss vs smaller-diameter flat variants. Preference order: Grip Flat Core (rubber) > Metal Weight Flat Core (controlled ABS) > Flat Core New Revision (precise ABS) > Flat Core Original (baseline ABS). Tier: low-mid. The actual RBA1 prize is the two CWDs (Free Survivor, Free Saucer) — MWFC is a tertiary harvest.
+
+---
+
+## Case 151 — Reverse Defenser CWD (Dranzer MF alt-color variant) — ~17 g [ESTIMATED] — Defensive Circular CWD: Smooth Perimeter, Opposite Preference to Wing Attacker, Same Bey Alternate Release
+
+### 1. Geometry
+
+Reverse Defenser CWD is an alternate CWD shipped with some color variants of Dranzer MF (RBA4). Weight: ~17 g [ESTIMATED — same mass class as Wing Attacker CWD, Case 133, which it replaces in alternate releases]. Profile: smooth circular perimeter — the defensive counterpart to Wing Attacker's asymmetric wing protrusions.
+
+From linka dranzer-mf.md: "Alternate releases ship with Reverse Defenser WD instead [of Wing Attacker CWD]" — confirming it is the same bey, different CWD based on release variant.
+
+### 2. Physics
+
+**Circular smooth profile:**
+No protrusions ? near-circular profile. At ~17g with r_outer ˜ 21 mm:
+
+    I_RD ˜ 0.5 × 0.017 × (0.021² + 0.018²) ˜ 6.5 × 10?6 kg·m²
+
+Comparison vs Wing Attacker CWD (Case 133):
+- Wing Attacker: asymmetric wings, extended smash reach, wobble risk at low spin
+- Reverse Defenser: circular smooth, no smash extension, no wobble
+
+**Defense utility:**
+Smooth circular perimeter = low contact-recoil on incoming hits ? suitable for defense/stamina builds. No protrusion geometry means opponents glance off smoothly rather than catching on wing tips.
+
+At 17g, Reverse Defenser is slightly lighter than CWD Defense Ring (19g) and CWD God Ring (18g). Lower mass ? lower I per gram but similar profile tier.
+
+**Name analysis:**
+"Reverse" likely indicates left-spin preference or "reverse/inverted" use case. "Defenser" = defensive archetype. The pairing with Dranzer MF (a smash-oriented bey) suggests Reverse Defenser is for survival builds with Smash Phoenix + Free Shaft Core in counter-smash defense setups.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface ReverseDefenserCWD {
+  name: "reverse_defenser_cwd";
+  system: "HMS";
+  sourceBey: "Dranzer MF (RBA4, alt-color variant)";
+  mass_g: 17;                          // [ESTIMATED]
+  profile: "circular_smooth";
+  outerRadius_mm: 21;
+  momentOfInertia_kgm2: 6.5e-6;       // [ESTIMATED]
+  protrusions: false;
+  contactRecoil: "low";                // smooth deflection
+  competitiveTier: "mid";
+  alternativeTo: "wing_attacker_cwd";  // same bey, different release variant
+  bestRole: "defense_stamina_cwd";
+  pairedAR: "smash_phoenix";
+  pairedRC: "free_shaft_core";
+}
+```
+
+### 4. Verdict
+
+**Role:** Defense/stamina CWD substitute on Dranzer MF. Reverse Defenser is the non-attack pairing for Dranzer MF builds: when Smash Phoenix AR's aggression is balanced by a defense-oriented CWD rather than Wing Attacker's attack extension. Lower mass (~17g) than top-tier circular CWDs (Defense Ring ~19g, God Ring ~18g) but same clean circular profile. Tier: mid — useful when CWD Defense Ring is unavailable, especially in Dranzer MF survival builds.
+
+---
+
+## Case 152 — Bearing Core 2 (Jiraiya MS / MA-22) — ~4 g [ESTIMATED] — Rubber Bearing Tip: Taller than Bearing Core 1, Worn-Tip-Dependent, Zombie/Balance Hybrid
+
+### 1. Geometry
+
+Bearing Core 2 is the Running Core of Jiraiya MS (MA-22). Weight: ~4 g [ESTIMATED — from hmsdb MA-22 page]. Architecture: plastic casing for a set of bearings, topped by a rubber tip. Two key differences from Bearing Core (Case 84):
+1. **Rubber tip** — Bearing Core 1 uses a plastic sharp tip; Bearing Core 2 uses rubber
+2. **Taller height** — Bearing Core 2 is notably taller than the original
+
+The rubber tip behavior is wear-dependent: "naturally more pointed when mint" (high tip-only contact, very low friction) but "truly released when worn" (increased surface area, more grip, more aggressive contact).
+
+### 2. Physics
+
+**Bearing + rubber tip dual-mode:**
+Bearing mechanism provides:
+
+    Bearing friction µ_bearing ˜ 0.02–0.05 (same bearing type as Bearing Core 1)
+    d?/dt_bearing ˜ (0.035 × µ × m × g × r_race) / I_combo
+
+At mint condition (pointed rubber tip):
+
+    Effective contact: small rubber tip r_tip ˜ 0.5 mm (pointed)
+    µ_rubber_pointed ˜ 0.08–0.12 (pointed rubber, similar to metal sharp)
+    d?/dt_total_mint ˜ bearing_component + pointed_rubber ˜ 12–18 rad/s²
+
+At worn condition (flatter rubber surface):
+
+    r_tip_worn ˜ 1.5–2.0 mm
+    µ_rubber_worn ˜ 0.35–0.50 (worn rubber, increased contact area)
+    d?/dt_total_worn ˜ bearing + flat_rubber ˜ 45–75 rad/s²
+
+This is a REVERSAL from normal bearing behavior — Bearing Core 2 becomes more aggressive (faster spin decay, more lateral movement) as it wears, not less. When worn:
+
+    Movement pattern: active orbit (rubber flat at 1.5mm radius) ? zombie/balance hybrid
+    When mint: near-stationary (pointed rubber barely contacts floor) ? pure stamina
+
+**Height impact:**
+Taller height raises CoM ? increases nutation susceptibility at low spin. This is why Bearing Core 2 does not simply replace Bearing Core 1 as the "better zombie" — the height penalty reduces stability in the LAD zone.
+
+**Combo recommendation from hmsdb:**
+Samurai Upper + CWD Defense Ring + Bearing Core 2 (worn, aggressive mode) — the worn rubber provides lateral force for repositioning while bearing mechanism maintains spin.
+
+### 3. Game Engine Mapping
+
+```typescript
+interface BearingCore2RC {
+  name: "bearing_core_2";
+  system: "HMS";
+  sourceBey: "Jiraiya MS (MA-22)";
+  mass_g: 4;                          // [ESTIMATED]
+  height: "taller_than_bearing_core_1";
+  tipType: "rubber_on_bearings";
+  tipConditions: {
+    mint: {
+      tipRadius_mm: 0.5,
+      mu: 0.10,
+      spinDecay_radPerS2: 15,
+      movementPattern: "near_stationary"
+    },
+    worn: {
+      tipRadius_mm: 1.8,
+      mu: 0.42,
+      spinDecay_radPerS2: 60,
+      movementPattern: "active_orbit_rubber_flat"
+    }
+  };
+  wearDependentPerformance: true;      // reversal: better when worn
+  comHeightPenalty: true;              // taller ? more nutation vs BC1
+  vsBearingCore1: {
+    height: "taller",
+    tipMaterial: "rubber_vs_plastic_sharp",
+    stabilitLow spin: "lower_due_to_height"
+  };
+  competitiveTier: "mid";
+  pairedAR: "samurai_upper";
+  pairedCWD: "cwd_defense_ring";
+}
+
+function bearingCore2Friction(wearState: "mint" | "worn"): number {
+  return wearState === "mint" ? 0.10 : 0.42;
+  // Mint: near-zero contact area ? low friction; Worn: flat rubber ? high friction
+}
+```
+
+### 4. Verdict
+
+**Role:** Wear-dependent zombie/balance hybrid RC. Bearing Core 2's rubber tip inverts the normal wear curve: mint condition = near-stationary stamina; worn condition = active rubber-flat attack orbit. The taller height vs Bearing Core 1 introduces nutation risk in the LAD zone that makes BC2 less reliable as a pure zombie base. Best used deliberately in "worn" state for active defense combos (Samurai Upper + Defense Ring + BC2 worn = controlled orbital defense). Not a replacement for Bearing Core 1 in pure zombie builds. Tier: mid — unique wear mechanic with genuine tactical applications in experienced hands.
+

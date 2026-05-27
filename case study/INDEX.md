@@ -1,5 +1,5 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **687 cases** across 13 files + 1 master reference.
+Total: **753 cases** across 14 files + 1 master reference.
 
 ---
 
@@ -8,18 +8,19 @@ Total: **687 cases** across 13 files + 1 master reference.
 | File | Cases | Scope |
 |------|-------|-------|
 | [1 case study.md](1%20case%20study.md) | 1–73 | Physics fundamentals → MFB/4D parts |
-| [2 case study.md](2%20case%20study.md) | 74–123 | HMS parts → Gen 1 Plastic SG-era parts |
+| [2 case study.md](2%20case%20study.md) | 74–152 | HMS parts → Gen 1 Plastic SG-era parts |
 | [3 case study.md](3%20case%20study.md) | 118–187 | Gen 1 Plastic SG/EG/CEW parts |
-| [4 case study.md](4%20case%20study.md) | 189–238 | Gen 1 EG/CEW parts → Anime-only → Magnacore ARs |
+| [4 case study.md](4%20case%20study.md) | 189–258 | Gen 1 EG/CEW parts → Anime-only → Magnacore ARs → A-F series ARs/BBs → WDs/BBs supplement |
 | [5 case study.md](5%20case%20study.md) | 236–296 | System architectures → MFB wheels/tracks/bottoms |
-| [6 case study.md](6%20case%20study.md) | 297–353 | MFB bottoms → 4D wheels/bottoms/tracks |
+| [6 case study.md](6%20case%20study.md) | 297–353 + 308a, 320a–320i, 326a, 353a–353i | MFB bottoms → 4D wheels/bottoms/tracks; MFB wheels; Zero-G Crystal Wheels |
 | [7 case study.md](7%20case%20study.md) | 354–374 | BX/UX/CX system architecture → All-gen system summaries |
 | [8 case study.md](8%20case%20study.md) | 375–415 | BX/UX blades, ratchets, bits |
 | [9 case study.md](9%20case%20study.md) | 392–544 | Burst series (all subsystems) full lineage analysis |
 | [10 case study.md](10%20case%20study.md) | 545–585 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619-719 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
+| [13 case study.md](13%20case%20study.md) | 619–772 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
+| [14 case study.md](14%20case%20study.md) | 759–777 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | Engine reference: constants, formulas, normalization |
 
 ### Numbering Notes
@@ -28,6 +29,7 @@ Total: **687 cases** across 13 files + 1 master reference.
 - **Out-of-order in CS1**: Case 16 (Kreis) placed after Case 21; Case 74 (Spring Core RC) placed between Cases 67 and 68.
 - **CS9 sequencing**: Cases are grouped by Beyblade lineage (Xcalibur, Valkyrie, Achilles, etc.) rather than strict numeric order. Cases 392–396 overlap numbering with CS8 (different parts).
 - **CS5 overlap**: Cases 236–237 in CS5 (system architectures) differ from Cases 236–237 in CS4 (specific EG parts).
+- **CS6 letter insertions**: Case 308a (Mercury Metal Wheel) inserted after Case 308 (Lightning). Cases 320a–320i (all Zero-G Crystal Wheels: Archer, Bandid, Berserker, Dark Knight/Ronin, Gladiator, Pirates, Samurai, Shinobi/Ninja, Thief) inserted after Case 320 (Guardian) and before Case 321 (Killerken). Case 326a (Jog Ball / JB) inserted after Case 326 (Wide Ball). Cases 353a–353i appended after Case 353 (Coat Sharp): 353a = Forbidden wheel, 353b = ED145, 353c = Flat Ball/FB, 353d = Eonis/Ionis CW, 353e = Dark wheel, 353f = Flat Spike/Flat Sharp/FS, 353g = Wolf CW, 353h = Poison wheel, 353i = Serpent CW.
 
 ---
 
@@ -410,7 +412,7 @@ Total: **687 cases** across 13 files + 1 master reference.
 
 ---
 
-## Part 6 — Cases 297–353
+## Part 6 — Cases 297–353 (+ inserted: 308a, 320a–320i, 326a, 353a–353i)
 
 > MFB bottoms, tracks, 4D wheels/bottoms, Chrome Wheels (Zero-G/Synchrome)
 
@@ -428,6 +430,7 @@ Total: **687 cases** across 13 files + 1 master reference.
 | 306 | Hell Metal Wheel | Gen2-MFB | MFS | Wheel | Hell |
 | 307 | Boost Disk 145 / BD145 | Gen2-MFB | MFS | Track | BD145 |
 | 308 | Lightning Metal Wheel (30.0g) | Gen2-MFB | MFS | Wheel | Lightning |
+| 308a | Metal Wheel: Mercury (29.0g) | Gen2-MFB | MFS | Wheel | Mercury, low-mass, rounded-lobe |
 | 309 | Flash 4D Metal Wheel | Gen2-4D | 4D | Wheel | Flash |
 | 310 | Chrome Wheel: Phoenic | Gen2-ZeroG | ZeroG | Wheel | Phoenic |
 | 311 | Chrome Wheel: Gargole | Gen2-ZeroG | ZeroG | Wheel | Gargole |
@@ -440,6 +443,15 @@ Total: **687 cases** across 13 files + 1 master reference.
 | 318 | Bottom: Giga Flat / GF | Gen2-MFB | MFS | Bottom | GF, giga-flat |
 | 319 | Chrome Wheel: Revizer | Gen2-ZeroG | ZeroG | Wheel | Revizer |
 | 320 | Crystal Wheel: Guardian | Gen2-ZeroG | ZeroG | ClearWheel | Guardian |
+| 320a | Crystal Wheel: Archer (5.16g) | Gen2-ZeroG | ZeroG | ClearWheel | Archer, C₁, bow, nutation |
+| 320b | Crystal Wheel: Bandid (4.8g) | Gen2-ZeroG | ZeroG | ClearWheel | Bandid, C₂, block-ridge, Goreim |
+| 320c | Crystal Wheel: Berserker (4.5g) | Gen2-ZeroG | ZeroG | ClearWheel | Berserker, C₂, chain, Begirados/Behemoth |
+| 320d | Crystal Wheel: Dark Knight / Ronin (3.87g) | Gen2-ZeroG | ZeroG | ClearWheel | Dark Knight, Ronin, C₁, left-spin-adapter, lightest |
+| 320e | Crystal Wheel: Gladiator (5.37g) | Gen2-ZeroG | ZeroG | ClearWheel | Gladiator, C₄, sword-tip, heaviest |
+| 320f | Crystal Wheel: Pirates (4.0g) | Gen2-ZeroG | ZeroG | ClearWheel | Pirates, C₂, complement-fit, Orojya/Orochi |
+| 320g | Crystal Wheel: Samurai (5.4g) | Gen2-ZeroG | ZeroG | ClearWheel | Samurai, mode-change, orb, Ifraid |
+| 320h | Crystal Wheel: Shinobi / Ninja (5.4g) | Gen2-ZeroG | ZeroG | ClearWheel | Shinobi, Ninja, C₂, flat-disc, highest-specific-I |
+| 320i | Crystal Wheel: Thief (5.3g) | Gen2-ZeroG | ZeroG | ClearWheel | Thief, C₁, circular-protrusions, Phoenic |
 | 321 | Chrome Wheel: Killerken | Gen2-ZeroG | ZeroG | Wheel | Killerken |
 | 322 | Track: Armor 230 / A230 | Gen2-ZeroG | ZeroG | Track | A230 |
 | 323 | Chrome Wheel: Pegasis | Gen2-ZeroG | ZeroG | Wheel | Pegasis |
@@ -474,6 +486,15 @@ Total: **687 cases** across 13 files + 1 master reference.
 | 351 | 4D Bottom: B:D Bearing Drive | Gen2-4D | 4D | Bottom | B:D, bearing |
 | 352 | Track: S130 Shield 130 | Gen2-MFB | MFS | Track | S130, shield |
 | 353 | Bottom: CS Coat Sharp | Gen2-MFB | MFS | Bottom | CS, coat |
+| 353a | Fusion Wheel: Forbidden (31.7g) | Gen2-MFB | MFS | Wheel | Forbidden, two-gap, recoil, balance |
+| 353b | Track: ED145 Eternal Defense 145 (3.6g) | Gen2-MFB | MFS | Track | ED145, free-wing, friction-pivot |
+| 353c | Bottom: Flat Ball / FB (0.6g) | Gen2-MFB | MFS | Bottom | FB, flat-ball, compound, destabilizer |
+| 353d | Clear Wheel: Eonis / Ionis (2.8g) | Gen2-MFB | MFS | ClearWheel | Eonis, Ionis, C₂, bull, two-fold |
+| 353e | Fusion Wheel: Dark (31.4g) | Gen2-MFB | MFS | Wheel | Dark, twelve-spike, spread-mass, no-competitive-use |
+| 353f | Bottom: Flat Spike / Flat Sharp / FS (0.6g) | Gen2-MFB | MFS | Bottom | FS, flat-spike, flat-sharp, compound, wear |
+| 353g | Clear Wheel: Wolf (3.1g) | Gen2-MFB | MFS | ClearWheel | Wolf, C₄, four-fold, stability |
+| 353h | Fusion Wheel: Poison (29.8g) | Gen2-MFB | MFS | Wheel | Poison, fifteen-tooth, recoil, raised-base, track-exposure |
+| 353i | Clear Wheel: Serpent (2.9g) | Gen2-MFB | MFS | ClearWheel | Serpent, Celtic-knot, C₄-equiv, eight-element |
 
 ---
 
@@ -903,7 +924,7 @@ Total: **687 cases** across 13 files + 1 master reference.
 | **Gen1-Plastic (MGS)** | 106b–108b, 120–121, 125, 131–132, 139, 142, 156, 185, 238, 361, 554 | ~15 |
 | **Gen1-Plastic (EGS)** | 187, 190–193, 195, 197–209, 211, 215–231, 234–236, 241, 362 | ~50+ |
 | **Gen1-HMS** | 45–52, 56, 74 (CS1), 76–98, 239, 363 | ~30 |
-| **Gen2-MFB (MFS)** | 14, 22, 26–27, 33–38, 41–42, 54–55, 57–60, 62–66, 68–69, 240, 253–273, 280–283, 286–289, 292–302, 306–308, 315, 318, 325–342, 352–353, 364, 545–547 | ~80+ |
+| **Gen2-MFB (MFS)** | 14, 22, 26–27, 33–38, 41–42, 54–55, 57–60, 62–66, 68–69, 240, 253–273, 280–283, 286–289, 292–302, 306–308, 315, 318, 325–342, 352–353, 326a, 353a–353g, 364, 545–547 | ~90+ |
 | **Gen2-MFB (HWS)** | 19, 24–25, 28, 30–32, 279, 290–291, 295, 365 | ~12 |
 | **Gen2-4D** | 16–18, 20–21, 23, 29, 39–40, 44, 53, 61, 67, 243, 275–278, 284–285, 300, 304–305, 309, 343–351, 366, 553, 557 | ~35 |
 | **Gen2-ZeroG** | 310–314, 316–317, 319–324, 367 | ~14 |
@@ -1191,7 +1212,7 @@ The following part types are **physics-negligible** — they share near-identica
 | Pisces D125BS | Pisces (271) | D125 (59) | Ball Sharp (336) |
 | L Drago 105F | L Drago (267) | 105 | Flat (339) |
 | Escolpio WD145B | Escolpio [M] | WD145 (256) | Ball (325) |
-| Gemios DF145FS | Gemios [M] | DF145 (254) | Flat Sharp [M] |
+| Gemios DF145FS | Gemios [M] | DF145 (254) | Flat Sharp (353f) |
 | Capricorne 100HF | Capricorne [M] | 100 (286) | Hole Flat (68) |
 
 ### Gen 2 — Hybrid Wheel System (HWS, 5-Layer MFB)
@@ -1202,27 +1223,27 @@ The following part types are **physics-negligible** — they share near-identica
 | Beyblade | Clear Wheel | Metal Wheel | Track | Bottom |
 |----------|------------|-------------|-------|--------|
 | Storm Pegasis 105RF | Pegasis | Storm (261) | 105 | Rubber Flat (297) |
-| Dark Wolf DF145FS | Wolf | Dark [M] | DF145 (254) | Flat Sharp [M] |
+| Dark Wolf DF145FS | Wolf (353g) | Dark (353e) | DF145 (254) | Flat Sharp (353f) |
 | Rock Leone 145WB | Leone (274) | Rock (262) | 145 (280) | Wide Ball (326) |
-| Mad Cancer CH120FS | Cancer [M] | Mad (Light) [M] | CH120 [M] | Flat Sharp [M] |
+| Mad Cancer CH120FS | Cancer [M] | Mad (Light) [M] | CH120 [M] | Flat Sharp (353f) |
 | Flame Sagittario C145S | Sagittario | Flame (264) | C145 (35) | Sharp (335) |
 | Wind Aquario 100HF/S | Aquario | Wind (Light) [M] | 100 (286) | Hole Flat (68) / Sharp (335) |
 | Dark Bull H145SD | Bull | Dark [M] | H145 (57) | Semi Defense (331) |
 | Lightning L Drago 100HF | L Drago (30–31) | Lightning (263/308) | 100 (286) | Hole Flat (68) |
-| Clay Aries ED145B | Aries | Clay (Light) [M] | ED145 [M] | Ball (325) |
+| Clay Aries ED145B | Aries | Clay (Light) [M] | ED145 (353b) | Ball (325) |
 | Earth Aquila 145WD | Aquila (282) | Earth (266/283) | 145 (280) | Wide Defense (332) |
 | Flame Libra T125ES | Libra | Flame (264/289) | T125 [M] | Eternal Sharp (337) |
 | Storm Capricorne M145Q | Capricorne | Storm (261) | M145 (298) | Quake (299) |
 | Rock Orso D125B | Orso [M] | Rock (262) | D125 (59) | Ball (325) |
 | Counter Leone D125B | Leone (274) | Counter [M] | D125 (59) | Ball (325) |
 | Dark Cancer CH120SF | Cancer [M] | Dark [M] | CH120 [M] | Semi Flat [M] |
-| Killer Gemios DF145FS | Gemios [M] | Killer [M] | DF145 (254) | Flat Sharp [M] |
+| Killer Gemios DF145FS | Gemios [M] | Killer [M] | DF145 (254) | Flat Sharp (353f) |
 | Thermal Pisces T125ES | Pisces | Thermal [M] | T125 [M] | Eternal Sharp (337) |
 | Cyber Pegasis 100HF | Pegasis | Cyber [M] | 100 (286) | Hole Flat (68) |
 | Burn Phoenix 135MS | Phoenix [M] | Burn (265) | 135 [M] | Metal Sharp (338) |
 | Earth Virgo GB145BS | Virgo | Earth (266/283) | GB145 (58) | Ball Sharp (336) |
 | Rock Escolpio T125JB | Escolpio | Rock (262) | T125 [M] | Jog Ball (326a) |
-| Poison Serpent SW145SD | Serpent [M] | Poison [M] | SW145 (255) | Semi Defense (331) |
+| Poison Serpent SW145SD | Serpent (353i) | Poison (353h) | SW145 (255) | Semi Defense (331) |
 | Galaxy Pegasis W105R²F | Pegasis II (290) | Galaxy (291) | W105 (37/292) | R²F (38/293) |
 | Ray Unicorno D125CS | Unicorno [M] | Ray [M] | D125 (59) | Coat Sharp (60/353) |
 | Thermal Lacerta WA130HF | Lacerta [M] | Thermal [M] | WA130 (69) | Hole Flat (68) |
@@ -1234,12 +1255,12 @@ The following part types are **physics-negligible** — they share near-identica
 | Sol Blaze V145AS | Blaze [M] | Sol [M] | V145 [M] | Around Sharp [M] |
 | Vulcan Horuseus 145D | Horuseus [M] | Vulcan (288) | 145 (280) | Defense (330) |
 | Grand Ketos T125/WD145 RS | Ketos (294) | Grand (295) | T125/WD145 (256) | Rubber Sharp (296) |
-| Poison Giraffe S130MB | Giraffe [M] | Poison [M] | S130 (352) | Metal Ball (327) |
+| Poison Giraffe S130MB | Giraffe [M] | Poison (353h) | S130 (352) | Metal Ball (327) |
 | Meteo L Drago LW105LF | L Drago II (30) | Meteo (32) | LW105 (315) | Left Flat [M] |
 | Ray Gill 100RSF | Gill [M] | Ray [M] | 100 (286) | Rubber Semi Flat (287) |
 | Tornado Herculeo 105F | Heracleo [M] | Tornado [M] | 105 | Flat (339) |
 | Flame Byxis 230WD | Byxis [M] | Flame (264/289) | 230 (62) | Wide Defense (332) |
-| Divine Chimera TR145FB | Chimera [M] | Divine [M] | TR145 (64) | Flat Ball [M] |
+| Divine Chimera TR145FB | Chimera [M] | Divine [M] | TR145 (64) | Flat Ball (353c) |
 | Nightmare Rex SW145SD | Rex [M] | Nightmare [M] | SW145 (255) | Semi Defense (331) |
 | Killer Beafowl UW145EWD | Beafowl [M] | Killer [M] | UW145 (303) | EWD (302) |
 | Hell Kerbecs BD145DS | Kerbecs (305) | Hell (306) | BD145 (307) | Defense Sharp (54) |
@@ -1260,9 +1281,9 @@ The following part types are **physics-negligible** — they share near-identica
 | Scythe Kronos T125EDS | Kronos [M] | Scythe [M] | T125 [M] | EDS [M] |
 | VariAres D:D | — | VariAres (276) | — | Delta Drive (277) |
 | Jade Jupiter S130RB | Jupiter [M] | Jade (19/29) | S130 (352) | Rubber Ball (328) |
-| Forbidden Eonis 130D / ED145FB | Eonis [M] | Forbidden [M] | 130/ED145 [M] | Defense (330) / Flat Ball [M] |
-| Divine/Hell Crown TR145D / 130FB | Crown [M] | Divine/Hell [M] | TR145 (64) / 130 [M] | Defense (330) / Flat Ball [M] |
-| Screw Lyra ED145MF | Lyra [M] | Screw [M] | ED145 [M] | Metal Flat (342) |
+| Forbidden Eonis 130D / ED145FB | Eonis (353d) | Forbidden (353a) | 130 [M] / ED145 (353b) | Defense (330) / Flat Ball (353c) |
+| Divine/Hell Crown TR145D / 130FB | Crown [M] | Divine/Hell [M] | TR145 (64) / 130 [M] | Defense (330) / Flat Ball (353c) |
+| Screw Lyra ED145MF | Lyra [M] | Screw [M] | ED145 (353b) | Metal Flat (342) |
 | Blitz Unicorno 100RSF | Unicorno II (284) | Blitz (20/285) | 100 (286) | Rubber Semi-Flat (287) |
 | Phantom Orion B:D | Orion (349) | Phantom (18/350) | — | Bearing Drive (351) |
 | Death Quetzalcoatl 125RDF | Quetzalcoatl [M] | Death (300) | 125 [M] | Rubber Defense Flat (66/301) |

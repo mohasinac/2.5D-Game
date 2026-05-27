@@ -10111,3 +10111,703 @@ function lSpinDecelerationRatio(v_attacker_norm: number, v_RS_norm: number): num
 // rsSpinDecayRate(4.33e-4, 1.5e-5)                        → 28.9 rad/s²
 // lSpinDecelerationRatio(1.0, 0.7)                        → 6.7×      (L-spin 6.7× more damaging)
 ```
+
+---
+
+## Case 297 — Upper Dragon AR (Dragoon MF) · ~19 g: Why the Most Aggressive Plastic Caul of the Shared Metal Frame Produces Tier-2 Attack Output, How Non-Uniform Three-Mass Distribution Limits Stamina Viability, and Why GFC Ultimate Mode Is the Only RC That Unlocks the AR's Throughput Ceiling
+
+Upper Dragon is Dragoon MF's Attack Ring at approximately 19 g [FACT]. It is a two-component assembly sharing its Metal Frame with Upper Fox (Phantom Fox MS) and Devil Crusher (Bloody Devil MS). Of the three, Upper Dragon's ABS plastic caul is the most aggressive — it maximises contact point exposure and provides slightly more smash-biased weight distribution around the Metal Frame. The Metal Frame carries the hard zinc-alloy contact surfaces at three evenly spaced positions; the caul routes opponent AR contacts onto these faces. Despite "the epitome of middle-of-the-road Attack ARs" status, Upper Dragon sits above the considerable majority of HMS ARs that cannot execute attack at all, and is consistent in right spin where contact point geometry is cleaner. GFC Ultimate Mode is the required RC partner — slower rubber RCs cannot drive the orbital speed needed to extract the AR's contact throughput.
+
+---
+
+### 1. Metal Frame + Caul Architecture (HMS Scale)
+
+HMS scale factor k = 0.75 (CS5 Case 239). Upper Dragon dimensions:
+
+```
+r_contact ≈ 0.75 × r_plastic_equivalent ≈ 0.75 × 26 mm ≈ 19.5 mm  [ESTIMATED]
+Metal Frame mass fraction: ~12–13 g of 19 g total  [ESTIMATED — zinc density ~7.1 g/cm³]
+ABS caul mass: ~6–7 g  [ESTIMATED]
+```
+
+The Metal Frame positions three zinc contact faces at equal 120° spacing. The caul funnels approach contacts onto these faces. For Upper Dragon the caul wings extend aggressively outward, fully exposing the Metal Frame contact zones while adding minimal plastic coverage over the non-contact arcs:
+
+```
+UPPER DRAGON — TOP-DOWN SCHEMATIC (RS, rotation →)
+
+        ← RS approach
+                               Metal Frame face (zinc)
+                              ╱
+   ── caul body ────────────╱──────── caul trailing
+                           │ φ ≈ 35–40° from tangent  [ESTIMATED]
+                           │  (zinc smash face)
+   ── caul body ────────────╲────────
+
+Smash fraction (metal face):
+  sin(38°) = 0.616  → 61.6% smash per contact
+  cos(38°) = 0.788  → 78.8% recoil
+
+Compare top-tier HMS ARs (e.g. Metal Upper, Jiraiya Blade): φ ≈ 45–55°
+  sin(50°) = 0.766 → 76.6% smash
+```
+
+Upper Dragon's metal contact angle produces smash fractions ~20% lower than the top tier — this is the "not on the level of Metal Upper or Jiraiya Blade" gap. The metal contact surface (zinc alloy) produces higher restitution than ABS:
+
+```
+e_zinc ≈ 0.80  [CONFIRMED — metal COR convention CS4 constants table]
+e_ABS  ≈ 0.675 [CONFIRMED]
+
+J_metal_contact = m_eff × Δv_rel × (1 + 0.80) = 1.80 × m_eff × Δv_rel
+J_ABS_contact   = m_eff × Δv_rel × (1 + 0.675) = 1.675 × m_eff × Δv_rel
+
+Metal COR advantage: 1.80 / 1.675 = 1.075 × (+7.5% impulse per contact)
+```
+
+Metal Frame provides +7.5% impulse per contact over equivalent ABS geometry via higher COR.
+
+---
+
+### 2. Left-Spin Obstruction
+
+Upper Dragon's caul in LS presents the wing bodies rather than the Metal Frame faces as the first contact zone. The caul wings are plastic (ABS, lower COR = 0.675) and angled more tangentially than the Metal Frame faces:
+
+```
+LS effective contact angle (caul wing back): φ_LS ≈ 15–20°  [ESTIMATED]
+sin(17°) = 0.292  →  29.2% smash in LS
+
+vs RS 61.6% smash: LS delivers only 47% of RS smash throughput
+```
+
+"Left-spin contact points are more obstructed" = caul geometry blocks Metal Frame exposure in LS. RS is preferred.
+
+---
+
+### 3. Non-Uniform Mass Distribution and Stamina Disqualification
+
+Three Metal Frame chunks at 120° spacing create a mass distribution with three local maxima. Rotational inertia is approximately:
+
+```
+I_UD ≈ I_uniform_ring + 3 × m_face × r_contact²
+
+For uniform ring: all mass at r → symmetric
+For 3-point distribution: symmetric under 120° rotation but not continuous
+```
+
+The discrete mass distribution causes slight aerodynamic asymmetry — at HMS spin rates (high ω, small r) the concentrated metal chunks generate measurable pressure differentials as they rotate. This is why Upper Dragon "is not even across the entire AR, but on opposite ends where the chunks of metal are" (applying the Smash Phoenix observation to Upper Dragon, which has the same issue in milder form). Even distribution would require metal underneath all caul sections, not just at the three contact zones.
+
+---
+
+### 4. GFC Ultimate Mode Requirement
+
+GFC Ultimate Mode (Grip Flat Core, rubber flat, HMS-scale r_tip ≈ 0.75 × 3 mm ≈ 2.25 mm [ESTIMATED]) provides the fastest rubber RC in HMS:
+
+```
+μ_rubber = 0.50  [CONFIRMED]
+F_N = m_combo × g ≈ (19 + 17 + 3) × 10⁻³ × 9.81 ≈ 0.382 N  [ESTIMATED]
+τ_GFC = 0.50 × 0.382 × 2.25×10⁻³ ≈ 4.29×10⁻⁴ N·m
+
+Maximum orbital speed:
+v_orb_max(GFC) = √(μ × F_N × r_orbit / m) = √(0.50 × 0.382 × 0.040 / 0.039) ≈ √(0.196) ≈ 0.443 m/s
+```
+
+At v_orb = 0.443 m/s and r_contact = 19.5 mm, contact impulse:
+```
+J_per_contact = m_eff × v_rel × (1+e)
+              ≈ (19×10⁻³ × (19.5×10⁻³)²/(19.5×10⁻³)²) × 0.443 × 1.80
+              ≈ 19×10⁻³ × 0.443 × 1.80 ≈ 0.0151 N·s  [ESTIMATED]
+```
+
+Slower rubber RCs reduce v_orb → proportionally reduce J_per_contact. For an AR that already sits below the top tier, any orbital speed reduction makes the attack output marginal.
+
+---
+
+### 5. Game Engine Mapping
+
+```typescript
+interface UpperDragonAR {
+  name:               "upper_dragon";
+  system:             "HMS";
+  sharedMetalFrame:   ["upper_fox", "devil_crusher"];
+  totalMass_g:        19;                           // [FACT]
+  metalFrameMass_g:   12.5;                         // [ESTIMATED]
+  contactAngleRS_deg: 38;                           // [ESTIMATED]
+  contactAngleLS_deg: 17;                           // [ESTIMATED — caul-obstructed]
+  smashFractionRS:    0.616;                        // sin(38°)
+  smashFractionLS:    0.292;                        // sin(17°)
+  metalCOR:           0.80;                         // [CONFIRMED]
+  impulseBoostOverABS: 1.075;                       // (1+e_metal)/(1+e_ABS)
+  tier:               "mid_attack";
+  bestRC:             "GFC_ultimate_mode";
+  spinPref:           "RS";
+}
+
+function upperDragonContactImpulse(
+  v_orb_m_s: number,
+  m_eff_kg:  number = 0.019
+): number {
+  const e_zinc = 0.80;
+  return m_eff_kg * v_orb_m_s * (1 + e_zinc);     // N·s per contact
+}
+
+// upperDragonContactImpulse(0.443) → 0.0151 N·s  (GFC Ultimate Mode orbital speed)
+// upperDragonContactImpulse(0.300) → 0.0102 N·s  (slower RC — 32% reduction)
+```
+
+---
+
+## Case 298 — CWD Chain Attacker (Dragoon MF) · ~17 g: Why Distributed Chain-Link Protrusions Produce Non-Committal Contact Geometry Suited Only for Spin-Steal Niche, and Why the Part Is Functionally Neutral Across Most Archetypes
+
+CWD Chain Attacker is Dragoon MF's stock CWD at approximately 17 g [FACT]. It is Dragoon MF's anime-combo default CWD. The "chain" geometry consists of ~12–14 small bi-lobed protrusions spaced around the CWD perimeter, resembling a bicycle chain link pattern. Each link provides a small contact surface — low per-contact impulse, high contact frequency. The part is "fairly sizeable but not so clunky as to be a complete detriment." This translates physically to: the protrusions extend modestly beyond a smooth-disc CWD (adding some contact area without creating large recoil-generating projections). The only genuine application is opposite-spin configurations where the chain links provide distributed spin-steal contact points — the low-mass protrusions avoid the self-KO recoil risk of large CWD projections.
+
+---
+
+### 1. Chain-Link Contact Physics
+
+At HMS scale (k = 0.75), protrusion dimensions:
+
+```
+Each link protrusion height above CWD surface: h ≈ 1.5–2.5 mm  [ESTIMATED]
+Link contact face area:  A_link ≈ 2 × 1.5 mm² = 3 mm²  [ESTIMATED — bi-lobe each side]
+Total links: ~14  →  total perimeter contact surface: 14 × 3 = 42 mm²  [ESTIMATED]
+```
+
+The small per-link area means each contact is low-impulse. This is an advantage for spin-steal (opposite spin) where large impulse events create self-KO risk, but a disadvantage for same-spin attack where total impulse throughput determines ring-out probability.
+
+For opposite-spin spin-steal with Advance Balancer AR:
+```
+Required: high contact frequency + low per-contact impulse + controlled orbital speed
+→ Chain links: high frequency (14 contacts per revolution vs 3–4 for attack ARs)
+→ At ω = 100 rad/s: f = (14/2π) × 100 ≈ 223 contacts/s  (very high)
+→ Each contact: low impulse, low recoil
+→ Preferred: Weak Launch (low orbital v → low recoil risk)
+```
+
+Bearing Core tip in this context provides near-zero floor friction → minimal spin decay → the combo can sustain high ω for longer to accumulate spin steal from the 223 contacts/s.
+
+---
+
+### 2. Neutral Performance Profile
+
+For attack: chain links protrude only modestly → don't provide significant smash height advantage → contact at the CWD level rather than AR level → most of the smash geometry comes from the AR (Advance Balancer or similar), not the CWD.
+
+For defense: chain links add protrusion points that can catch incoming AR contacts → slight recoil addition → worse than a smooth CWD like CWD Defense Ring for defense.
+
+"Could technically go just about anywhere" — this is the functional neutral: no large penalties in any role, no significant benefits either.
+
+---
+
+### 3. Game Engine Mapping
+
+```typescript
+interface CWDChainAttacker {
+  name:           "cwd_chain_attacker";
+  system:         "HMS";
+  animeComboBlade: "Dragoon MF";         // anime stock CWD for Dragoon MF
+  mass_g:         17;                    // [FACT]
+  linkCount:      14;                    // [ESTIMATED from image]
+  protrusion_mm:  2.0;                   // [ESTIMATED above CWD surface]
+  contactFreqAt100rads: 223;             // contacts/s [ESTIMATED]
+  impulsePer_contact: "low";
+  recoilRisk:     "low";
+  tierRating:     "niche_spin_steal";
+  versatility:    "neutral_anywhere";
+}
+```
+
+**Verdict:** CWD Chain Attacker's distributed chain-link geometry produces high contact frequency with low per-event impulse — ideal for opposite-spin spin-steal with a neutral stamina RC like Bearing Core, poor for attack (insufficient impulse), neutral for defense (adds minor recoil). The part neither penalises nor significantly benefits any standard configuration. Niche use only; not worth choosing over purpose-specific CWDs.
+
+---
+
+## Case 299 — CWD Eternal Survivor (Dragoon MF) · ~17 g: Why Three Gear-Like Protrusions at Oversized Diameter Absorb Rather Than Amplify Attack Contact, How Fixed-Rotation Provides Solid Foundation Relative to Free-Spinning CWDs, and Why Diameter Excess Is the Single Limiting Factor
+
+CWD Eternal Survivor is at approximately 17 g [FACT], found in RB3 (Secret Rare) for Dragoon MF. It has three pronounced gear-tooth protrusions placed 120° apart in a fixed (non-free-spinning) configuration. The source notes it was likely designed as a CWD companion to Advance Striker's Advance Attacker AR — the three protrusions "perfectly line up" with Advance Attacker's force-smash geometry slots. The critical physical problem is that the CWD diameter extends slightly beyond most HMS ARs' outer radius — meaning in an AR-vs-AR contact, Eternal Survivor makes contact first, at a level below the AR, absorbing some of the hit before the AR faces engage. This absorption reduces net smash delivery. Had it been 1–2 mm smaller in diameter it would be a staple AR companion rather than a niche CWD.
+
+---
+
+### 1. Diameter Excess and Contact Hierarchy
+
+```
+HMS AR contact height: ~AR centroid height above stadium
+CWD contact height:    ~lower, between AR and stadium floor
+
+Eternal Survivor protrusion outer radius: r_ES ≈ 22 mm  [ESTIMATED]
+Typical HMS AR outer radius:              r_AR ≈ 19–21 mm  [ESTIMATED]
+
+When r_ES > r_AR:
+  Opponent's lower-level geometry (CWD, lower AR face) contacts Eternal Survivor first
+  before the attacker's AR-level contacts can engage the AR
+```
+
+This sequence:
+1. Opponent CWD contacts Eternal Survivor protrusion
+2. Energy absorbed at CWD level (impulse at lower radius = lower momentum transfer efficiency)
+3. AR-level contact happens after, with reduced relative velocity
+
+The net effect is that Eternal Survivor "softens the blows landed" when facing an opponent with a protruding CWD. Against opponents with flush or recessed CWDs, Eternal Survivor's protrusions can engage the opponent body at the CWD level, providing destabilisation contact from below — this is the "destabilize chunky CWD combos" use case.
+
+---
+
+### 2. Fixed-Rotation Advantage
+
+Fixed CWDs transfer all contact impulse through the WD body to the combo's rotational inertia. Free-spinning CWDs allow the outer shell to spin independently:
+
+```
+Fixed CWD impulse transfer:
+  J_impact → full AR + WD + RC system  →  full combo absorbs hit
+  
+Free-spinning CWD impulse:
+  J_impact → outer shell (spins up/down independently) → partial coupling to combo
+  → impulse not fully transferred to combo spin → less stable platform for AR
+```
+
+Fixed Eternal Survivor means each protrusion hit directly challenges the combo's rotational momentum rather than slipping. For attack combos this is beneficial — the AR stays at consistent attack height during contact. For defense it means absorbing hits directly rather than sliding past them.
+
+---
+
+### 3. Circle Upper Synergy
+
+Circle Upper Mold 2 is specifically cited as the "least impacted Attack AR" by Eternal Survivor. Circle Upper's outer AR radius is small enough that Eternal Survivor's protrusions don't cause significant diameter conflict:
+
+```
+r_CU_mold2 ≈ 19 mm  [ESTIMATED]
+r_ES ≈ 22 mm  →  ES protrudes +3 mm beyond CU AR tips
+
+For most contacts: opponent AR hits Eternal Survivor protrusions, not CU AR
+But Circle Upper's contact faces are low enough to still engage even with CWD contact first
+```
+
+The synergy: Circle Upper doesn't depend on AR-first contact for its smash mechanism (its upper-attack slope can engage from multiple approach angles), so the CWD pre-contact is less disruptive than for flat-face ARs.
+
+---
+
+### 4. Game Engine Mapping
+
+```typescript
+interface CWDEternalSurvivor {
+  name:             "cwd_eternal_survivor";
+  system:           "HMS";
+  mass_g:           17;                   // [FACT]
+  protrusions:      3;
+  protrusion_spacing_deg: 120;
+  rotation:         "fixed";             // non-free-spinning
+  outerRadius_mm:   22;                  // [ESTIMATED — exceeds most HMS ARs]
+  diameterLimitingFactor: true;          // primary competitive constraint
+  bestAR:           "circle_upper_mold2"; // least impacted by diameter excess
+  bestRC:           "GFC_ultimate_mode";
+  destabilizeRole:  "chunky_CWD_combos"; // niche — hits opponent CWD from below
+}
+```
+
+**Verdict:** CWD Eternal Survivor's 3 fixed-rotation protrusions provide a solid, non-slipping contact base but the CWD diameter excess causes it to intercept opponent contacts before the AR can fully engage, absorbing energy rather than amplifying it. Had the outer radius been 1–2 mm smaller, it would be a staple for Advance Striker configurations. As-is, Circle Upper Mold 2 is the only AR where the diameter penalty is minimally disruptive, and the niche use case of destabilising chunky CWD opponents via protrusion-to-body contact is the only genuine competitive scenario.
+
+---
+
+## Case 300 — Metal Weight Grip Core (Dragoon MF) · ~3 g: Why a Heavier Rubber RC With Smaller Tip Diameter Trades Maximum Orbital Speed for Consistency, and Why the Speed Deficit Disqualifies It Outside the Big Three Attack ARs
+
+Metal Weight Grip Core (MWGC) is Dragoon MF's stock Running Core at approximately 3 g [FACT]. It is a rubber-grip attack RC — heavier than both GFC variants. The rubber tip section (green in images) is slightly smaller in diameter than original GFC's rubber section. The extra mass (~1 g over GFC) increases F_N on the tip at all spin states, raising friction force and improving tip-to-stadium contact, which makes the RC more controllable on surfaces with less pronounced Tornado Ridges. The smaller tip radius reduces orbital speed vs GFC at the same spin rate. The speed deficit translates directly to reduced ring-out impulse for any AR below the top tier (Metal Upper, Jiraiya Blade, Circle Upper) — those ARs are powerful enough that the smaller impulse reduction is recoverable; mid-tier ARs like Upper Dragon cannot overcome it.
+
+---
+
+### 1. Mass-Friction Trade-off
+
+```
+MWGC vs GFC:
+  MWGC mass: ~3.0 g  [FACT]
+  GFC mass:  ~2.0 g  [ESTIMATED]
+
+Normal force on tip (static, level):
+  F_N_MWGC = (m_MWGC_contrib + m_combo_share) × g
+           ≈ (0.003 + 0.036) × 9.81 ≈ 0.383 N  [ESTIMATED, m_combo ~39g with CWD]
+  F_N_GFC  = (0.002 + 0.036) × 9.81 ≈ 0.373 N
+
+Friction force:  F_f = μ_rubber × F_N
+  MWGC: 0.50 × 0.383 = 0.192 N  [ESTIMATED]
+  GFC:  0.50 × 0.373 = 0.187 N  (+2.7% MWGC advantage)
+```
+
+The extra mass provides only +2.7% friction advantage. The real benefit is in launch controllability: on a slippery or worn stadium, F_N_MWGC's extra 10 mN maintains grip contact where GFC would begin to skate.
+
+---
+
+### 2. Smaller Tip Radius and Speed Penalty
+
+MWGC rubber tip diameter is slightly smaller than original GFC:
+
+```
+r_tip_MWGC ≈ 2.0 mm  [ESTIMATED from image comparison]
+r_tip_GFC  ≈ 2.25 mm  [ESTIMATED — original GFC reference CS5]
+
+Maximum orbital speed: v_orb_max = √(μ × F_N × r_orbit / m_combo)
+  MWGC: √(0.50 × 0.383 × 0.040 / 0.039) ≈ √(0.196) ≈ 0.443 m/s
+  GFC:  √(0.50 × 0.373 × 0.040 / 0.039) ≈ √(0.191) ≈ 0.437 m/s
+```
+
+The v_orb_max calculation shows nearly identical maximum orbital speeds (only +1.4% for MWGC from higher F_N). The real difference is in movement pattern:
+
+```
+Tip diameter effect on movement:
+  Larger rubber flat: greater contact patch area → more cornering stability → straighter path
+                     → higher actual orbit radius at same spin → more centrifugal force
+  Smaller rubber flat: tighter turning radius → more controlled but lower peak orbital radius
+```
+
+"Highly controllable" = smaller tip footprint prevents the tip from skidding wide under high centrifugal load. "Middling speed" = tighter radius orbit → lower v_orb at same position in stadium.
+
+---
+
+### 3. Big Three vs Mid-Tier Threshold
+
+For Metal Upper, Jiraiya Blade, Circle Upper (top-tier HMS ARs):
+
+```
+J_ring-out_required ≈ impulse to translate combo from r_orbit to r_wall
+                     = m_combo × (v_wall − v_orb) ≈ m_combo × Δv
+
+For top-tier ARs: high metal COR, high φ_contact → large J_contact
+                  J_contact >> J_ring-out_required even at MWGC's orbital speed
+                  → ring-out achieved without maximum orbital speed
+
+For mid-tier ARs (Upper Dragon): smaller J_contact
+                  At MWGC v_orb: J_contact < J_ring-out_required
+                  → ring-out probability drops significantly
+```
+
+"Their performance is noticeably inferior and limited" with MWGC on mid-tier ARs is the mathematical consequence of J_contact dropping below the ring-out threshold.
+
+---
+
+### 4. Game Engine Mapping
+
+```typescript
+interface MetalWeightGripCore {
+  name:            "metal_weight_grip_core";
+  system:          "HMS";
+  mass_g:          3.0;                    // [FACT]
+  tipMaterial:     "rubber";
+  mu:              0.50;                   // [CONFIRMED]
+  tipRadius_mm:    2.0;                    // [ESTIMATED — slightly smaller than GFC]
+  normalForce_N:   0.383;                  // [ESTIMATED at 39g combo]
+  orbitalControl:  "high";                 // smaller tip = tighter orbit
+  orbitalSpeed:    "moderate";             // slightly less than GFC
+  bigThreeCompat:  true;                   // top-tier ARs overcome speed deficit
+  midTierPenalty:  "significant";         // mid-tier ARs fall below ring-out threshold
+  launcherFriendly: true;                  // best beginner rubber RC
+}
+
+function mwgcVsGFCRingOutProbability(
+  j_contact_norm: number,    // normalised contact impulse (1.0 = GFC top-tier)
+  j_threshold:    number     // ring-out threshold (varies by AR: big3 ~0.6, mid ~0.85)
+): { mwgc: boolean; gfc: boolean } {
+  const j_mwgc = j_contact_norm * 0.986;  // 1.4% orbital speed deficit  [ESTIMATED]
+  const j_gfc  = j_contact_norm * 1.000;
+  return { mwgc: j_mwgc >= j_threshold, gfc: j_gfc >= j_threshold };
+}
+
+// mwgcVsGFCRingOutProbability(1.0, 0.95)  → { mwgc: false, gfc: true }   (mid-tier AR)
+// mwgcVsGFCRingOutProbability(1.0, 0.60)  → { mwgc: true,  gfc: true }   (big three AR)
+```
+
+---
+
+## Case 301 — Smash Phoenix AR (Dranzer MF) · ~18 g: Why Conservative Phoenix-Motif Geometry Produces Too Much Recoil for Stamina and Insufficient Smash for Attack, How Uneven Metal Frame Distribution Limits Stamina Potential, and Why Left-Spin Defense Is the Only Viable Competitive Role
+
+Smash Phoenix is Dranzer MF's Attack Ring at approximately 18 g [FACT]. It shares the same Metal Frame as Smash Leopard (Dark Leopard MS) and God Smasher (Shining God MS). Of the three, Smash Phoenix's ABS caul is the most conservative — the most circular with only small Phoenix beak and head features serving as contact points. This conservative design produces a contradiction: too much recoil per contact for stamina (the near-smooth circular body causes each hit to generate sideways impulse that destabilises spin), but too little focused smash geometry for attack (the contact points are small and poorly angled). The uneven Metal Frame distribution — heavy at the Phoenix head locations, absent under the wing bodies — creates rotational mass asymmetry that prevents the smooth precession required for stamina and LAD. Left-spin defense is the only role where the conservative geometry provides a genuine benefit: in LS the Phoenix heads and beaks present lower-angle LS contact geometry with marginally reduced recoil.
+
+---
+
+### 1. Conservative Geometry: Contact Point Geometry
+
+```
+SMASH PHOENIX — CONTACT POINTS (RS):
+
+  Main body:    nearly circular rim → contact geometry approaches α ≈ 0° (tangential)
+                sin(0°) = 0 smash → essentially no ring-out force
+                cos(0°) = 1 recoil → full destabilisation recoil
+
+  Phoenix beak: small protrusion at ~φ_beak ≈ 25–30°  [ESTIMATED]
+                sin(27°) = 0.454 smash  /  cos(27°) = 0.891 recoil
+                Area: small (~3–4 mm contact face)  →  low total impulse
+
+  Phoenix head: rounded dome → contact angle ≈ 10–15°  [ESTIMATED]
+                sin(12°) = 0.208 smash
+```
+
+The primary body's near-circular rim produces near-zero smash and near-full recoil on body contacts. Productive contacts are limited to the small beak features, which are infrequent (2 beak contacts per revolution × 3-fold = 6 contact events per revolution).
+
+Recoil from body contacts destabilises stamina: each tangential body hit slightly displaces the combo and reduces orbital radius consistency, even if smash is minimal. This is the "too much recoil to be considered a legitimate threat to existing HMS Stamina ARs" mechanism — not high-impulse ring-out recoil, but low-impulse lateral perturbation that degrades precession stability.
+
+---
+
+### 2. Uneven Metal Frame Distribution
+
+Three Metal Frame chunks at Phoenix head positions only — the wing body sections between Phoenix heads contain only ABS caul. This creates a 3-point mass distribution:
+
+```
+I_SP = m_ABS_caul × r_avg_caul² + 3 × m_MF_chunk × r_head²
+
+m_MF_chunk × r_head² >> m_ABS_caul_filler × r_filler²   (metal is denser and at larger r)
+
+Effective I distribution: 3 heavy points + light ring fill
+```
+
+For stamina, a continuous ring distribution is ideal (uniform I per unit arc → symmetric precession → no wobble-inducing inertia asymmetry). Smash Phoenix's three-point distribution creates a slight 3-fold inertia asymmetry — the combo "nods" slightly (3 nutation events per revolution) during precession. Each nod slightly reduces LAD efficiency.
+
+"Had there been metal underneath the Phoenix heads to add a bit more evenness to the AR's distribution, Smash Phoenix might have made for a dangerous Stamina AR" — the missing metal would be under the wing bodies, filling in the 3-fold asymmetry to approach a continuous ring. It would also push mass toward the ~20 g "sweet spot" that maximises I contribution per gram at HMS scale.
+
+---
+
+### 3. Left-Spin Defense Viability
+
+In LS the Phoenix beaks and heads become trailing secondary contacts. More importantly, the nearly circular main body presents a deflection surface to incoming RS attackers:
+
+```
+LS contact geometry (incoming RS attacker):
+  Phoenix body rim (near-circular) → tangential deflection α_LS_body ≈ 5–8°
+  sin(6°) = 0.105 smash (outward push on defender) → negligible
+  cos(6°) = 0.995 recoil (tangential) → mainly redirects attacker
+
+LS vs RS recoil comparison:
+  RS body contact: cos(α_RS_body) ≈ 1.0 → full recoil on attacker
+  LS body contact: cos(α_LS_body) ≈ 0.995 → nearly same recoil on attacker
+```
+
+The LS advantage is small (marginally less recoil in LS than RS for the Phoenix-specific contacts) but combined with CWD Reverse Defenser or CWD God Ring, the combo uses the CWD as the primary contact absorber rather than the AR, making the LS AR geometry almost irrelevant to the defense performance. Bearing Core 2 provides the bearing-based survival. Smash Phoenix functions as a placeholder AR in this combo rather than a performance driver.
+
+---
+
+### 4. Game Engine Mapping
+
+```typescript
+interface SmashPhoenixAR {
+  name:               "smash_phoenix";
+  system:             "HMS";
+  sharedMetalFrame:   ["smash_leopard", "god_smasher"];
+  mass_g:             18;                          // [FACT]
+  contactPoints: {
+    bodyRim:   { alpha_deg: 3,  smash: 0.052, coverage: "majority" };  // [ESTIMATED]
+    phoenixBeak: { alpha_deg: 27, smash: 0.454, count: 3 };             // [ESTIMATED]
+    phoenixHead: { alpha_deg: 12, smash: 0.208, count: 3 };             // [ESTIMATED]
+  };
+  metalFrameDistribution: "3_point_uneven";         // asymmetric stamina penalty
+  stamina:    "sub_competitive";
+  attack:     "insufficient_smash";
+  defense_LS: "viable_with_reverse_defenser";
+  bestSpin:   "LS";
+}
+```
+
+---
+
+## Case 302 — CWD Wing Attacker (Dranzer MF) · ~17 g: Why Large Free-Spinning Plastic Wings Beyond the AR Diameter Create an Easy Destabilisation Vector, and Why the Part Is Functionally a Liability in All Competitive Contexts
+
+CWD Wing Attacker is Dranzer MF's stock CWD at approximately 17 g [FACT], and is Dranzer MF's anime-combo default CWD. It is described as the HMS equivalent of Wing Base from plastic gen — the large wing extensions "extend well past any HMS AR" and are an easy contact point for opponents before they reach the AR itself. The free-spinning property means the wings can spin up or down independently of the main combo, absorbing no productive impulse from contacts but providing an always-accessible destabilisation target for opponents.
+
+---
+
+### 1. Wing Extension Contact Hierarchy
+
+```
+r_wing_outer ≈ 28–32 mm  [ESTIMATED from images — extends significantly beyond AR]
+r_AR_outer   ≈ 19–21 mm  [typical HMS AR radius]
+
+Stadium contact during topple at tilt φ:
+  h_wing_tip ≈ r_wing × sin(φ_topple_critical)
+  
+  φ_critical_wing = arcsin(h_clearance / r_wing)
+  φ_critical_AR   = arcsin(h_clearance / r_AR)
+
+  r_wing > r_AR → φ_critical_wing < φ_critical_AR
+  → wing contacts stadium at a smaller tilt angle than the AR
+  → topple-scrape begins earlier with Wing Attacker than without
+```
+
+"Allows your Beyblade to scrape the stadium very early on in the wobbling phase" — this is the geometric consequence of large outer radius. The combo starts its topple-scrape phase at a tilt angle that is significantly smaller than for a compact flush CWD.
+
+---
+
+### 2. Free-Spinning Destabilisation
+
+Free-spinning outer shell: the wings can rotate independently. When an opponent AR contacts the wing:
+
+```
+Opponent AR → wing contact → wing spins up (or down if opposite rotation)
+            → minimal impulse transferred to main combo axis
+            → but combo experiences lateral force from the contact geometry
+
+Result: combo is deflected laterally (displacement) without receiving the rotational
+        recoil that would normally stabilise it against further displacement
+```
+
+A fixed CWD (Eternal Survivor) transfers the hit to the combo axis, potentially damaging the opponent via counterforce. Wing Attacker's free-spinning means the wing "absorbs" the hit by spinning up, transferring no useful counterforce — the combo just gets pushed.
+
+---
+
+### 3. Hypothetical Fixed Metal Variant
+
+"Had it been made of pure metal, been fixed in place, and weighed ~5g rather than 2g" — this describes a completely different part. The current part is plastic (~15 g total with metal frame ~2 g). Pure metal at the same geometry:
+
+```
+Density ratio: zinc (~7.1 g/cm³) / ABS (~1.1 g/cm³) ≈ 6.5×
+At same volume: 15 × 6.5 / (7.1/1.1) ≈ 15 × 0.155 = ... 
+
+Actually if only the plastic section went to metal: 
+m_plastic_only ≈ 15 − 2 = 13 g ABS → 13 × 6.5 ≈ 85 g zinc
+→ This is unrealistically heavy
+```
+
+The "~5g" statement actually implies a dramatically smaller wing geometry (short studs, not large wings). A small fixed metal CWD at the AR radius rather than beyond it would be an entirely different part — essentially CWD Defense Ring with smaller protrusions. The real point is that the wing geometry itself is the problem, not the material.
+
+```typescript
+interface CWDWingAttacker {
+  name:           "cwd_wing_attacker";
+  system:         "HMS";
+  animeComboBlade: "Dranzer MF";           // anime stock CWD for Dranzer MF
+  mass_g:         17;                      // [FACT]
+  rotation:       "free_spinning";
+  wingRadius_mm:  30;                      // [ESTIMATED — extends well past AR]
+  toppleCriticalAngle: "reduced";          // wings contact stadium before AR would
+  impulseTransfer: "minimal";             // free spin absorbs hits rather than counterforce
+  competitiveUse: "none";
+}
+```
+
+**Verdict:** CWD Wing Attacker's large free-spinning wings extend beyond the AR radius, causing stadium contact at reduced tilt angles (earlier topple scrape) and providing opponents with an easy destabilisation target. Free-spinning construction prevents the combo from using the wing as a counterforce element. No competitive application exists.
+
+---
+
+## Case 303 — CWD Reverse Defenser (Dranzer MF) · ~17 g: Why a Functionally Identical But Obscure Alternative to CWD God Ring Achieves the Same Defense and Zombie Role at Potentially Lower Cost
+
+CWD Reverse Defenser is at approximately 17 g [FACT], found in RB5. It is described as "essentially a slightly thinner and lighter God Ring" that performs identically for the primary defense CWD role. The name suggests it was designed for defensive reversal — absorbing hits and redirecting them — which is consistent with CWD God Ring's confirmed defense function. When worn naturally through play it develops a low-recoil surface profile and its shape becomes conducive to LAD, expanding its use into stamina configurations.
+
+---
+
+### 1. CWD God Ring Functional Equivalence
+
+CWD God Ring's competitive value is its large smooth outer radius that takes the majority of incoming contacts in a wall-defense setup, keeping the AR (typically Metal Ape) small and protected. Reverse Defenser achieves the same via:
+
+```
+CWD God Ring outer radius:         r_GR  ≈ 22 mm  [ESTIMATED]
+CWD Reverse Defenser outer radius: r_RD  ≈ 21–22 mm  [ESTIMATED — "slightly thinner"]
+Contact reduction geometry: smooth curved outer rim → tangential deflection → low recoil
+```
+
+"Slightly thinner" means the outer profile is marginally shallower. At the same outer radius this means slightly less height exposure to incoming AR contacts — a marginal reduction in contact catch area but also marginal reduction in recoil leverage. Net: essentially identical performance.
+
+---
+
+### 2. Wear-Induced Improvement
+
+"When worn down through the course of natural play, it becomes very low-recoil":
+
+```
+New CWD Reverse Defenser: outer rim has slight geometric details/edges from moulding
+                           → edges create contact catch points → some recoil variance
+
+Worn Reverse Defenser: edges rounded by repeated impacts → smoother profile
+                        → contact geometry converges to smooth tangential deflection
+                        → lower recoil variance → better LAD (smooth outer shell)
+```
+
+This is the same wear-in mechanism seen in other smooth-profile parts. Fresh parts have mould flashing and sharp edges; battle-worn parts have functionally better surfaces for their role.
+
+---
+
+### 3. Metal Ape Synergy (Defense Application)
+
+Metal Ape AR is small (r_AR ≈ 14–16 mm [ESTIMATED]). With CWD Reverse Defenser:
+
+```
+Incoming attacker approach:
+  Attacker AR contacts CWD Reverse Defenser first (r_RD ≈ 22 mm > r_MA ≈ 15 mm)
+  CWD smooth rim deflects attack tangentially → low impulse to Metal Ape AR
+  Most non-top-tier attackers cannot deliver sufficient J to overcome this geometry
+```
+
+The combo is essentially "ball-shaped" at the CWD level — a smooth disc that incoming attacks glance off rather than catch on. Bearing Core 2 (HMS bearing-based stamina RC) provides the spin retention to outlast opponents after deflection.
+
+```typescript
+interface CWDReverseDefenser {
+  name:             "cwd_reverse_defenser";
+  system:           "HMS";
+  mass_g:           17;                    // [FACT]
+  outerRadius_mm:   22;                    // [ESTIMATED — God Ring equivalent]
+  rotation:         "fixed";
+  contactProfile:   "smooth_curved_rim";   // tangential deflection
+  wornProfile:      "superior";            // wear improves surface
+  godRingEquivalence: true;
+  defenseTier:      "top";
+  zombieTier:       "viable_worn";
+  bestAR:           "metal_ape";
+}
+```
+
+---
+
+## Case 304 — Free Shaft Core (Dranzer MF) · ~3 g: Why an Early-Precession-Prone Compact RC Cannot Compete Against Bearing Core in Stamina or Generate Ring-Out Force in Attack, and Why High-RPM Flat Launching Is the Only Recovery Strategy
+
+Free Shaft Core is Dranzer MF's stock RC at approximately 3 g [FACT]. The "free shaft" mechanism is analogous to the plastic-gen free-shaft SG concept: the outer shell is coupled to the inner shaft through a bearing or low-friction interface that allows partial spin decoupling. At high ω the coupling is tight; as ω decays the decoupling fraction increases. This produces earlier precession onset (the shaft-to-shell coupling loosens before the critical tilt threshold a fixed-shaft RC would reach) — the combo begins to wobble while still at relatively high spin. The precession itself is not tall enough (short RC height) to exploit any gyroscopic advantage during the wobble phase. Against Bearing Core, Free Shaft Core loses in stamina. Against attackers, the docile low-orbital movement makes it a stationary target. The best-case scenario is high-RPM flat-launch using Jiraiya Blade to attempt early ring-out before any spin decay.
+
+---
+
+### 1. Free-Shaft Coupling and Early Precession
+
+At high ω (launch spin), centrifugal effects maintain tight shaft-to-shell coupling — the combo behaves like a fixed-shaft RC. As ω decays below a threshold:
+
+```
+ω_decouple ≈ threshold where centrifugal coupling force < restoring force requirement
+           → shaft begins to slip relative to shell
+           → tip and shell now partially decoupled
+           → effective tip inertia drops
+           → nutation threshold reached at higher ω than fixed shaft
+```
+
+For Bearing Core, the ball bearing provides near-perfect decoupling at all speeds — the shell always spins freely and the tip carries minimal rotational inertia. This maintains precession stability at much lower ω than Free Shaft Core achieves.
+
+```
+ω_survive_FreeShaft ≈ ω_survive_BearingCore × (I_shell / I_FreeShaft_coupled)
+                     > ω_survive_BearingCore   (terminates earlier)
+```
+
+Free Shaft Core exits the competitive spin window while Bearing Core is still fully functional.
+
+---
+
+### 2. Docile Movement and Attack Limitation
+
+"Docile" = low orbital movement speed. Metal sharp tip (estimated from image: narrow metal tip visible at RC base):
+
+```
+μ_tip ≈ 0.12  [CONFIRMED — metal tip]  (if sharp)
+r_tip ≈ 0.4 mm  [ESTIMATED]
+```
+
+Low friction tip → low centripetal grip → low v_orb before tip skips. For Jiraiya Blade (top-tier HMS attack AR):
+
+```
+Strategy: high-RPM flat launch → momentary high orbital speed → ring-out attempt
+          before spin decay brings the combo below Jiraiya Blade's ring-out threshold
+
+This only works if:
+1. First-contact impulse from Jiraiya Blade exceeds ring-out threshold
+2. Combo reaches the opponent before it loses the orbital speed advantage
+```
+
+At full-power flat launch with high RPM, this is possible against stamina and defense combos that are centred in the stadium. Against attackers on fast rubber RCs, the Free Shaft Core combo is KO'd before it can execute.
+
+```typescript
+interface FreeShaftCore {
+  name:             "free_shaft_core";
+  system:           "HMS";
+  mass_g:           3.0;                    // [FACT]
+  tipType:          "metal_sharp";          // [INFERRED from image]
+  mu:               0.12;                   // [CONFIRMED]
+  shaftCoupling:    "free_at_low_omega";   // decouples as spin decays
+  earlyprecession:  true;                  // core limitation
+  stamina:          "below_bearing_core";
+  attack:           "docile_only";
+  bestUse:          "compact_flat_launch_jiraiya";
+  launchStrategy:   "full_power_flat";
+}
+```
+
+**Verdict:** Free Shaft Core's decoupling mechanism introduces early precession that shortens competitive spin life below Bearing Core's. Low-friction metal tip produces minimal orbital movement, disqualifying aggressive attack and making the combo a stationary target. The only viable strategy is high-RPM flat launch with Jiraiya Blade to attempt early ring-out via the AR's top-tier impulse output before orbital decay makes the combo passive. Not a competitive stamina or compact RC outside this narrow high-RPM window.
