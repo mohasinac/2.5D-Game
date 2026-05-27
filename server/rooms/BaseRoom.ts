@@ -6,6 +6,11 @@ import { populateArenaFeatures } from "../shared/rooms/populateArenaFeatures";
 import type { BeybladeStats, ArenaConfig } from "../types/shared";
 import type { ArenaSystem } from "../types/arenaSystem";
 import type { GlobalSettingsDoc } from "../utils/tournamentFirebase";
+import {
+  WARMUP_DURATION_S, LAUNCH_DURATION_S,
+  LAUNCH_MAX_POWER, LAUNCH_MAX_TILT,
+  LAUNCH_GRACE_POWER,
+} from "../shared/constants/gameConstants";
 
 // ─── BaseRoom ────────────────────────────────────────────────────────────────
 //
@@ -324,9 +329,100 @@ export abstract class BaseRoom<T extends GameState = GameState> extends Room<T> 
     this.onMessage("ai-input", (_client, data: { beyId: string; bitmask: number }) => {
       if (typeof data?.beyId !== "string" || typeof data?.bitmask !== "number") return;
       const bey = this.state.beyblades.get(data.beyId);
-      if (!bey || !bey.isAlive) return;
+      if (!bey || !bey.isActive) return;
       applyInput(data.beyId, data.bitmask);
     });
+  }
+
+  // ─── Launch input handler (shared across all rooms) ───────────────────────
+
+  protected spectatorSessionsBase = new Set<string>();
+
+  /**
+   * Register the "launch-input" message handler.  Call in onCreate().
+   * Pass the room's spectator set so spectator messages are ignored.
+   */
+  protected registerLaunchInputHandler(spectatorSessions?: Set<string>): void {
+    const specs = spectatorSessions ?? this.spectatorSessionsBase;
+    this.onMessage("launch-input", (client, data: {
+      tilt: number; position: number; power: number;
+      charging: boolean; launched: boolean;
+    }) => {
+      if (this.state.status !== "launching") return;
+      if (specs.has(client.sessionId)) return;
+      const bey = this.state.beyblades.get(client.sessionId);
+      if (!bey || bey.launchReady || bey.launchFailed) return;
+
+      bey.launchTilt = Math.max(-LAUNCH_MAX_TILT, Math.min(LAUNCH_MAX_TILT, data.tilt ?? 0));
+      bey.launchPosition = Math.max(0, Math.min(1, data.position ?? 0.5));
+      bey.launchPower = Math.max(0, Math.min(LAUNCH_MAX_POWER, data.power ?? 0));
+      if (data.charging) bey.launchChargingStarted = true;
+
+      if (data.launched && bey.launchPower > 0) {
+        bey.launchReady = true;
+      }
+    });
+  }
+
+  // ─── Shared warmup/launch phase tick ─────────────────────────────────────
+
+  protected warmupTimerBase = WARMUP_DURATION_S;
+  protected launchPhaseTimerBase = LAUNCH_DURATION_S;
+
+  /**
+   * Tick the warmup phase.  Returns true if the phase transitioned to
+   * "launching" (so the caller can do room-specific work like resetting
+   * AI launch timers).
+   */
+  protected tickWarmupPhase(dt: number): boolean {
+    if (this.state.status !== "warmup") return false;
+    this.warmupTimerBase -= dt;
+    this.state.timer = Math.max(0, this.warmupTimerBase);
+    if (this.warmupTimerBase <= 0) {
+      this.state.status = "launching";
+      this.state.launchTimer = this.launchPhaseTimerBase;
+      this.broadcast("launch-phase-start", {});
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Tick the launch phase.  Returns true if the phase ended (all launched
+   * or timer expired).  Calls `onLaunchTimeout()` when timer expires — override
+   * to customise (e.g. TryoutRoom grants grace power instead of auto-fail).
+   */
+  protected tickLaunchPhase(dt: number): boolean {
+    if (this.state.status !== "launching") return false;
+    this.state.launchTimer = Math.max(0, this.state.launchTimer - dt);
+
+    let allLaunched = this.state.beyblades.size > 0;
+    this.state.beyblades.forEach(bey => {
+      if (!bey.launchReady && !bey.launchFailed) allLaunched = false;
+    });
+
+    if (this.state.launchTimer <= 0 || allLaunched) {
+      if (this.state.launchTimer <= 0) {
+        this.onLaunchTimeout();
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Called when the launch timer expires.  Default: mark un-launched beys
+   * as failed.  TryoutRoom overrides to grant grace power instead.
+   */
+  protected onLaunchTimeout(): void {
+    this.state.beyblades.forEach(bey => {
+      if (!bey.launchReady) bey.launchFailed = true;
+    });
+  }
+
+  /** Reset warmup timer for next game in a series. */
+  protected resetWarmupTimer(): void {
+    this.warmupTimerBase = WARMUP_DURATION_S;
   }
 
   // ─── 2.5D extension hooks — no-op defaults ───────────────────────────────

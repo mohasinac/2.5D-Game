@@ -17,6 +17,10 @@ import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
 import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
+import {
+  LAUNCH_DURATION_S, LAUNCH_MAX_POWER, LAUNCH_MAX_TILT,
+  LAUNCH_TILT_RATE, LAUNCH_POSITION_RATE, LAUNCH_GRACE_POWER,
+} from "@/shared/constants/gameConstants";
 
 // ─── Physics constants ────────────────────────────────────────────────────────
 
@@ -75,7 +79,7 @@ export function TryoutGamePage() {
   type Phase = "countdown" | "launching" | "playing";
   const [phase, setPhase] = useState<Phase>("countdown");
   const [countdownSecs, setCountdownSecs] = useState(3);
-  const [launchTimer, setLaunchTimer] = useState(10);
+  const [launchTimer, setLaunchTimer] = useState(LAUNCH_DURATION_S);
   const [localLaunch, setLocalLaunch] = useState({ tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false });
   const phaseRef = useRef<Phase>("countdown");
   const launchRef = useRef({ tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false, chargeStartMs: 0, chargeTick: 0 });
@@ -235,7 +239,7 @@ export function TryoutGamePage() {
     if (phase !== "launching") return;
     const startMs = performance.now();
     let raf: number;
-    const TILT_RATE = 50, POS_RATE = 0.4, MAX_TILT = 45, MAX_POWER = 150;
+    const TILT_RATE = LAUNCH_TILT_RATE, POS_RATE = LAUNCH_POSITION_RATE, MAX_TILT = LAUNCH_MAX_TILT, MAX_POWER = LAUNCH_MAX_POWER;
 
     const onKeyDown = (e: KeyboardEvent) => {
       const lr = launchRef.current;
@@ -280,7 +284,7 @@ export function TryoutGamePage() {
       prevTs = ts;
       const lr = launchRef.current;
       const elapsed = (ts - startMs) / 1000;
-      const remaining = Math.max(0, 10 - elapsed);
+      const remaining = Math.max(0, LAUNCH_DURATION_S - elapsed);
       setLaunchTimer(remaining);
 
       if (!lr.launched) {
@@ -303,7 +307,7 @@ export function TryoutGamePage() {
         if (remaining <= 0) {
           // Grace: give 50% power and start
           if (!lr.launched) {
-            lr.power = lr.power > 0 ? lr.power : 50;
+            lr.power = lr.power > 0 ? lr.power : LAUNCH_GRACE_POWER;
             lr.launched = true;
             applyLaunchAndStart();
           }
@@ -445,7 +449,7 @@ export function TryoutGamePage() {
     launchRef.current = { tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false, chargeStartMs: 0, chargeTick: 0 };
     setLocalLaunch({ tilt: 0, position: 0.5, power: 0, chargingStarted: false, launched: false });
     setCountdownSecs(3);
-    setLaunchTimer(10);
+    setLaunchTimer(LAUNCH_DURATION_S);
     phaseRef.current = "countdown";
     setPhase("countdown");
   }, []);

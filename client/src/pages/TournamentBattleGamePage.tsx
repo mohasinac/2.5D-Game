@@ -27,6 +27,7 @@ import { LoadingProgress } from "@/components/LoadingProgress";
 import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
 import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
+import { LAUNCH_DURATION_S } from "@/shared/constants/gameConstants";
 import { useLaunchInput } from "@/game/hooks/useLaunchInput";
 
 const ROUND_NAMES: Record<number, string> = { 1: "Round 1", 2: "Semifinals", 3: "Final" };
@@ -508,7 +509,7 @@ export function TournamentBattleGamePage() {
       {/* Launch phase overlay */}
       {gameState?.status === "launching" && (
         <LaunchPhase
-          launchTimer={gameState.launchTimer ?? 10}
+          launchTimer={gameState.launchTimer ?? LAUNCH_DURATION_S}
           launchTilt={isSpectating ? 0 : launchState.tilt}
           launchPosition={isSpectating ? 0.5 : launchState.position}
           launchPower={isSpectating ? 0 : launchState.power}

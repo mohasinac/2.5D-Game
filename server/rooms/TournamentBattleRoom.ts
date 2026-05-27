@@ -1,5 +1,6 @@
 import { Client } from "colyseus";
 import { BaseRoom } from "./BaseRoom";
+import { AI_LAUNCH_DELAY_S } from "../shared/constants/gameConstants";
 import { GameState, Beyblade } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats } from "../utils/firebase";
@@ -56,16 +57,16 @@ const SPAWN_OFFSETS = [
 export class TournamentBattleRoom extends BaseRoom<GameState> {
   static pendingMatchCallbacks = new Map<string, (winnerId: string, matchFirestoreId: string) => void>();
 
-  private warmupTimer = 3;
   private lastInputTime = 0;
   protected playerSessions = new Set<string>();
   protected spectatorSessions = new Set<string>();
   protected aiSessions = new Set<string>();
+  /** Union of spectator + AI sessions — kept live so late-joining spectators are excluded from launch input. */
+  private launchIgnoredSessions = new Set<string>();
   private aiControllers = new Map<string, AIController>();
   private beybladeDataCache = new Map<string, BeybladeStats | null>();
   protected spawnPositions = new Map<string, { x: number; y: number; angle: number }>();
-  private launchPhaseTimer = 10;
-  private aiLaunchTimer = 1.5;
+  private aiLaunchTimer = AI_LAUNCH_DELAY_S;
   protected comboTrackers = new Map<string, ComboTracker>();
   /** Per-session camera-follow target id (purely informational). */
   protected spectatorFollowTargets = new Map<string, string>();
@@ -157,19 +158,9 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
       this.spectatorFollowTargets.set(client.sessionId, message?.targetBeybladeId ?? "");
     });
 
-    this.onMessage("launch-input", (client, data: { tilt: number; position: number; power: number; charging: boolean; launched: boolean }) => {
-      if (this.state.status !== "launching") return;
-      if (this.spectatorSessions.has(client.sessionId)) return;
-      if (this.aiSessions.has(client.sessionId)) return;
-      const bey = this.state.beyblades.get(client.sessionId);
-      if (!bey || bey.launchReady || bey.launchFailed) return;
-
-      bey.launchTilt = Math.max(-45, Math.min(45, data.tilt ?? 0));
-      bey.launchPosition = Math.max(0, Math.min(1, data.position ?? 0.5));
-      bey.launchPower = Math.max(0, Math.min(150, data.power ?? 0));
-      if (data.charging) bey.launchChargingStarted = true;
-      if (data.launched && bey.launchPower > 0) bey.launchReady = true;
-    });
+    // AI sessions are all registered by this point — seed the live ignored set
+    this.aiSessions.forEach(s => this.launchIgnoredSessions.add(s));
+    this.registerLaunchInputHandler(this.launchIgnoredSessions);
 
     if (aiParticipants.length >= 2) {
       this.startMatch();
@@ -182,6 +173,7 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
     if (options.spectate) {
       this.state.spectatorCount++;
       this.spectatorSessions.add(client.sessionId);
+      this.launchIgnoredSessions.add(client.sessionId);
       console.log(`Spectator joined TournamentBattleRoom (${this.state.spectatorCount} watching)`);
       return;
     }
@@ -344,7 +336,7 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
     this.state.status = "warmup";
     this.lastInputTime = Date.now();
     this.setSimulationInterval((dt: number) => { this.tick(dt); }, 1000 / 60);
-    this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimer });
+    this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase });
   }
 
   // ─── Input handling — delegates to shared/rooms/InputHandler ────────────────
@@ -493,22 +485,13 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
       applyWeightTilt(this.state.arena, this.state.beyblades, cx, cy, r);
     }
 
-    if (this.state.status === "warmup") {
-      this.warmupTimer -= dt;
-      this.state.timer = Math.max(0, this.warmupTimer);
-      if (this.warmupTimer <= 0) {
-        this.state.status = "launching";
-        this.state.launchTimer = this.launchPhaseTimer;
-        this.aiLaunchTimer = 1.5;
-        this.broadcast("launch-phase-start", {});
-      }
+    if (this.tickWarmupPhase(dt)) {
+      this.aiLaunchTimer = AI_LAUNCH_DELAY_S;
       return;
     }
+    if (this.state.status === "warmup") return;
 
     if (this.state.status === "launching") {
-      this.state.launchTimer = Math.max(0, this.state.launchTimer - dt);
-
-      // AI participants auto-launch once after aiLaunchTimer seconds
       if (this.aiLaunchTimer > 0) {
         this.aiLaunchTimer -= dt;
         if (this.aiLaunchTimer <= 0) {
@@ -524,22 +507,13 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
           });
         }
       }
+    }
 
-      let allLaunched = true;
-      this.state.beyblades.forEach(bey => {
-        if (!bey.launchReady && !bey.launchFailed) allLaunched = false;
-      });
-
-      if (this.state.launchTimer <= 0 || allLaunched) {
-        if (this.state.launchTimer <= 0) {
-          this.state.beyblades.forEach(bey => {
-            if (!bey.launchReady) bey.launchFailed = true;
-          });
-        }
-        this.startMatchFromLaunch();
-      }
+    if (this.tickLaunchPhase(dt)) {
+      this.startMatchFromLaunch();
       return;
     }
+    if (this.state.status === "launching") return;
 
     if (this.state.status !== "in-progress") return;
 
@@ -776,9 +750,9 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
 
   private resetForNextGame() {
     resetStateForNextGame(this.state, this.spawnPositions, this.physics, 3);
-    this.warmupTimer = 3;
+    this.resetWarmupTimer();
 
-    this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimer, gameNumber: this.state.currentGame });
+    this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase, gameNumber: this.state.currentGame });
   }
 
   /**

@@ -101,14 +101,12 @@ const SPAWN_OFFSETS = [
 
 export class BattleRoom extends BaseRoom<GameState> {
   private matchStarted = false;
-  private warmupTimer = 3;
   private lastInputTime = 0;
   protected globalSettings: GlobalSettingsDoc | null = null;
   protected playerSessions = new Set<string>();
   protected spectatorSessions = new Set<string>();
   protected beybladeDataCache = new Map<string, BeybladeStats | null>();
   protected spawnPositions = new Map<string, { x: number; y: number; angle: number }>();
-  private launchPhaseTimer = 10;
   protected comboTrackers = new Map<string, ComboTracker>();
   protected comboMatchStates = new Map<string, BeyComboMatchState>();
   protected triggerStates = new Map<string, TriggerState>();
@@ -335,21 +333,7 @@ export class BattleRoom extends BaseRoom<GameState> {
       console.log(`Client ${client.sessionId} is ready`);
     });
 
-    this.onMessage("launch-input", (client, data: { tilt: number; position: number; power: number; charging: boolean; launched: boolean }) => {
-      if (this.state.status !== "launching") return;
-      if (this.spectatorSessions.has(client.sessionId)) return;
-      const bey = this.state.beyblades.get(client.sessionId);
-      if (!bey || bey.launchReady || bey.launchFailed) return;
-
-      bey.launchTilt = Math.max(-45, Math.min(45, data.tilt ?? 0));
-      bey.launchPosition = Math.max(0, Math.min(1, data.position ?? 0.5));
-      bey.launchPower = Math.max(0, Math.min(150, data.power ?? 0));
-      if (data.charging) bey.launchChargingStarted = true;
-
-      if (data.launched && bey.launchPower > 0) {
-        bey.launchReady = true;
-      }
-    });
+    this.registerLaunchInputHandler(this.spectatorSessions);
 
     // K10: possession-request — player swaps control to a nearby arena-spawned friendly bey
     this.onMessage("possession-request", (client, data: { direction: "left" | "right" | "up" | "down" }) => {
@@ -607,7 +591,7 @@ export class BattleRoom extends BaseRoom<GameState> {
       this.state.status = "warmup";
       this.lastInputTime = Date.now();
       this.setSimulationInterval((dt: number) => { this.tick(dt); }, 1000 / 60);
-      this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimer });
+      this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase });
     }
   }
 
@@ -1787,35 +1771,14 @@ export class BattleRoom extends BaseRoom<GameState> {
       applyWeightTilt(this.state.arena, this.state.beyblades, cx, cy, r);
     }
 
-    if (this.state.status === "warmup") {
-      this.warmupTimer -= dt;
-      this.state.timer = Math.max(0, this.warmupTimer);
-      if (this.warmupTimer <= 0) {
-        this.state.status = "launching";
-        this.state.launchTimer = this.launchPhaseTimer;
-        this.broadcast("launch-phase-start", {});
-      }
+    if (this.tickWarmupPhase(dt)) return;
+    if (this.state.status === "warmup") return;
+
+    if (this.tickLaunchPhase(dt)) {
+      this.startMatchFromLaunch();
       return;
     }
-
-    if (this.state.status === "launching") {
-      this.state.launchTimer = Math.max(0, this.state.launchTimer - dt);
-
-      let allLaunched = true;
-      this.state.beyblades.forEach(bey => {
-        if (!bey.launchReady && !bey.launchFailed) allLaunched = false;
-      });
-
-      if (this.state.launchTimer <= 0 || allLaunched) {
-        if (this.state.launchTimer <= 0) {
-          this.state.beyblades.forEach(bey => {
-            if (!bey.launchReady) bey.launchFailed = true;
-          });
-        }
-        this.startMatchFromLaunch();
-      }
-      return;
-    }
+    if (this.state.status === "launching") return;
 
     if (this.state.status !== "in-progress") return;
 
@@ -3311,9 +3274,9 @@ export class BattleRoom extends BaseRoom<GameState> {
       this.timelineEvents = [...this.arenaCache.arenaTimeline].sort((a, b) => a.triggerMs - b.triggerMs);
     }
     resetStateForNextGame(this.state, this.spawnPositions, this.physics, 3);
-    this.warmupTimer = 3;
+    this.resetWarmupTimer();
 
-    this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimer, gameNumber: this.state.currentGame });
+    this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase, gameNumber: this.state.currentGame });
   }
 
   private async persistMatch(winner: Beyblade | null, seriesEnd = false) {

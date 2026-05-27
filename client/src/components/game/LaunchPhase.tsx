@@ -9,6 +9,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import type { ServerBeyblade, ServerArenaState } from "@/types/game";
+import { LAUNCH_DURATION_S } from "@/shared/constants/gameConstants";
 
 interface LaunchPhaseProps {
   launchTimer: number;
@@ -176,7 +177,7 @@ function StringLauncherUI({
         <div className="h-[4px] rounded-[2px] mt-2 overflow-hidden bg-white/10 w-full">
           <div
             className="h-full rounded-[2px] [transition:width_100ms_linear,background_300ms] bg-[color:var(--tc)]"
-            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / 10) * 100)}%` } as React.CSSProperties}
+            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / LAUNCH_DURATION_S) * 100)}%` } as React.CSSProperties}
           />
         </div>
       </div>
@@ -350,7 +351,7 @@ function RipcordLauncherUI({
         <div className="h-[4px] rounded-[2px] mt-2 overflow-hidden bg-white/10 w-full">
           <div
             className="h-full rounded-[2px] [transition:width_100ms_linear,background_300ms] bg-[color:var(--tc)]"
-            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / 10) * 100)}%` } as React.CSSProperties}
+            style={{ "--tc": timerColor, width: `${Math.max(0, (launchTimer / LAUNCH_DURATION_S) * 100)}%` } as React.CSSProperties}
           />
         </div>
       </div>

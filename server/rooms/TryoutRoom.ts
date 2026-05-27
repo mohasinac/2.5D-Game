@@ -24,6 +24,7 @@ import {
   computeForceMagnitude,
 } from "../shared/rooms/InputHandler";
 import { BaseRoom } from "./BaseRoom";
+import { LAUNCH_GRACE_POWER } from "../shared/constants/gameConstants";
 
 // [SERVER-ROOM] TryoutRoom — solo practice mode (maxClients=1)
 // Player vs arena only; no opponent beyblade collision.
@@ -32,11 +33,18 @@ import { BaseRoom } from "./BaseRoom";
 export class TryoutRoom extends BaseRoom<GameState> {
   private simulationStarted = false;
   private lastInputTime = 0;
-  private warmupTimer = 3;
-  private launchPhaseTimer = 10;
   private spawnAngle = 0; // angle used for position-offset calculation
 
   maxClients = 1;
+
+  protected override onLaunchTimeout(): void {
+    this.state.beyblades.forEach(bey => {
+      if (!bey.launchReady) {
+        bey.launchPower = LAUNCH_GRACE_POWER;
+        bey.launchReady = true;
+      }
+    });
+  }
 
   async onCreate(options: any) {
     if (!tryReserveRoom()) throw new Error("Server at capacity (max 20 rooms)");
@@ -100,11 +108,18 @@ export class TryoutRoom extends BaseRoom<GameState> {
 
       this.state.arena.wallAngle = resolveWallAngle(arenaData);
 
-      this.state.arena.loopCount = arenaData.loops?.length ?? 0;
+      this.state.arena.loopCount = arenaData.loops?.length ?? (arenaData as any).speedPaths?.length ?? 0;
       this.state.arena.obstacleCount = arenaData.obstacles?.length ?? 0;
       this.state.arena.pitCount = arenaData.pits?.length ?? 0;
       this.state.arena.turretCount = arenaData.turrets?.length ?? 0;
       this.state.arena.waterBodyCount = arenaData.waterBodies?.length ?? 0;
+      this.state.arena.arenaWallDamageMult       = (arenaData as any).wallDamageMult       ?? 1.0;
+      this.state.arena.arenaObstacleDamageMult   = (arenaData as any).obstacleDamageMult   ?? 1.0;
+      this.state.arena.arenaBeyDamageMult        = (arenaData as any).beyDamageMult        ?? 1.0;
+      this.state.arena.arenaProjectileDamageMult = (arenaData as any).projectileDamageMult ?? 1.0;
+      this.state.arena.arenaFriendlyFireEnabled  = (arenaData as any).friendlyFireEnabled  ?? true;
+      this.state.arena.arenaPhaseObstacles       = (arenaData as any).phaseObstacles       ?? false;
+
       const wb = (arenaData as any).worldBackground;
       this.state.arena.worldBgType     = wb?.type     ?? "none";
       this.state.arena.worldBgColor    = wb?.color    ?? "";
@@ -169,17 +184,7 @@ export class TryoutRoom extends BaseRoom<GameState> {
       this.handleAction(client, message);
     });
 
-    this.onMessage("launch-input", (client, data: { tilt: number; position: number; power: number; charging: boolean; launched: boolean }) => {
-      if (this.state.status !== "launching") return;
-      const bey = this.state.beyblades.get(client.sessionId);
-      if (!bey || bey.launchReady || bey.launchFailed) return;
-
-      bey.launchTilt = Math.max(-45, Math.min(45, data.tilt ?? 0));
-      bey.launchPosition = Math.max(0, Math.min(1, data.position ?? 0.5));
-      bey.launchPower = Math.max(0, Math.min(150, data.power ?? 0));
-      if (data.charging) bey.launchChargingStarted = true;
-      if (data.launched && bey.launchPower > 0) bey.launchReady = true;
-    });
+    this.registerLaunchInputHandler();
   }
 
   async onJoin(client: Client, options: any) {
@@ -239,10 +244,10 @@ export class TryoutRoom extends BaseRoom<GameState> {
     }
 
     this.state.status = "warmup";
-    this.warmupTimer = 3;
-    this.state.timer = 3;
+    this.resetWarmupTimer();
+    this.state.timer = this.warmupTimerBase;
     this.lastInputTime = Date.now();
-    this.broadcast("match-warmup", { secondsUntilStart: 3 });
+    this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase });
 
     if (!this.simulationStarted) {
       this.simulationStarted = true;
@@ -417,39 +422,14 @@ export class TryoutRoom extends BaseRoom<GameState> {
   private tick(deltaTime: number) {
     const dt = deltaTime / 1000;
 
-    if (this.state.status === "warmup") {
-      this.warmupTimer -= dt;
-      this.state.timer = Math.max(0, this.warmupTimer);
-      if (this.warmupTimer <= 0) {
-        this.state.status = "launching";
-        this.state.launchTimer = this.launchPhaseTimer;
-        this.broadcast("launch-phase-start", {});
-      }
+    if (this.tickWarmupPhase(dt)) return;
+    if (this.state.status === "warmup") return;
+
+    if (this.tickLaunchPhase(dt)) {
+      this.startMatchFromLaunch();
       return;
     }
-
-    if (this.state.status === "launching") {
-      this.state.launchTimer = Math.max(0, this.state.launchTimer - dt);
-
-      let allLaunched = true;
-      this.state.beyblades.forEach(bey => {
-        if (!bey.launchReady && !bey.launchFailed) allLaunched = false;
-      });
-
-      if (this.state.launchTimer <= 0 || allLaunched) {
-        // Tryout: grace — if timer expired without launch, give 50% power instead of auto-loss
-        if (this.state.launchTimer <= 0) {
-          this.state.beyblades.forEach(bey => {
-            if (!bey.launchReady) {
-              bey.launchPower = 50;
-              bey.launchReady = true;
-            }
-          });
-        }
-        this.startMatchFromLaunch();
-      }
-      return;
-    }
+    if (this.state.status === "launching") return;
 
     if (this.state.status !== "in-progress") return;
 

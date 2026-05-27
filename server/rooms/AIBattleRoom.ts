@@ -1,5 +1,6 @@
 import { Client } from "colyseus";
 import { BaseRoom } from "./BaseRoom";
+import { AI_LAUNCH_DELAY_S } from "../shared/constants/gameConstants";
 import {
   GameState,
   Beyblade,
@@ -75,9 +76,7 @@ export class AIBattleRoom extends BaseRoom<GameState> {
   private aiBeybladeData: BeybladeStats | null = null;
   private humanSpawnPos = { x: 0, y: 0, angle: Math.PI };
   private aiSpawnPos = { x: 0, y: 0, angle: 0 };
-  private warmupTimer = 3;
-  private launchPhaseTimer = 10;
-  private aiLaunchTimer = 1.5; // AI auto-launches ~1.5s into the launch phase
+  private aiLaunchTimer = AI_LAUNCH_DELAY_S;
   private aiDifficulty: AIDifficulty = "medium";
   private aiBeybladeId = "default";
   private comboTrackers = new Map<string, ComboTracker>();
@@ -361,27 +360,15 @@ export class AIBattleRoom extends BaseRoom<GameState> {
 
     this.matchStarted = true;
     this.state.status = "warmup";
-    this.warmupTimer = 3;
-    this.state.timer = 3;
-    this.aiLaunchTimer = 1.5;
+    this.resetWarmupTimer();
+    this.state.timer = this.warmupTimerBase;
+    this.aiLaunchTimer = AI_LAUNCH_DELAY_S;
     this.lastInputTime = Date.now();
 
     this.setSimulationInterval((dt: number) => { this.tick(dt); }, 1000 / 60);
-    this.broadcast("match-warmup", { secondsUntilStart: 3 });
+    this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase });
 
-    // Register launch-input handler for human
-    this.onMessage("launch-input", (client, data: { tilt: number; position: number; power: number; charging: boolean; launched: boolean }) => {
-      if (this.state.status !== "launching") return;
-      if (client.sessionId !== this.humanSessionId) return;
-      const bey = this.state.beyblades.get(client.sessionId);
-      if (!bey || bey.launchReady || bey.launchFailed) return;
-
-      bey.launchTilt = Math.max(-45, Math.min(45, data.tilt ?? 0));
-      bey.launchPosition = Math.max(0, Math.min(1, data.position ?? 0.5));
-      bey.launchPower = Math.max(0, Math.min(150, data.power ?? 0));
-      if (data.charging) bey.launchChargingStarted = true;
-      if (data.launched && bey.launchPower > 0) bey.launchReady = true;
-    });
+    this.registerLaunchInputHandler(this.spectatorSessions);
 
     const aiNames = Array.from({ length: aiCount }, (_, i) => {
       const sid = aiCount === 1 ? AI_SESSION_ID : `${AI_SESSION_ID}_${i}`;
@@ -408,8 +395,16 @@ export class AIBattleRoom extends BaseRoom<GameState> {
     if (this.matchStarted) {
       this.physics.removeBeyblade(client.sessionId);
       this.state.beyblades.delete(client.sessionId);
-      this.physics.removeBeyblade(AI_SESSION_ID);
-      this.state.beyblades.delete(AI_SESSION_ID);
+      // Remove single-AI bey
+      if (this.state.beyblades.has(AI_SESSION_ID)) {
+        this.physics.removeBeyblade(AI_SESSION_ID);
+        this.state.beyblades.delete(AI_SESSION_ID);
+      }
+      // Remove multi-AI beys
+      for (const sid of this.aiControllers.keys()) {
+        this.physics.removeBeyblade(sid);
+        this.state.beyblades.delete(sid);
+      }
     }
 
     this.disconnect();
@@ -531,66 +526,53 @@ export class AIBattleRoom extends BaseRoom<GameState> {
     }
   }
 
+  private autoLaunchAIs(): void {
+    const aiBey = this.state.beyblades.get(AI_SESSION_ID);
+    if (aiBey && !aiBey.launchReady && !aiBey.launchFailed) {
+      aiBey.launchTilt = (this.rand() - 0.5) * 20;
+      aiBey.launchPosition = 0.3 + this.rand() * 0.3;
+      aiBey.launchPower = 90 + this.rand() * 30;
+      aiBey.launchChargingStarted = true;
+      aiBey.launchReady = true;
+    }
+    for (const [sid] of this.aiControllers) {
+      const bey = this.state.beyblades.get(sid);
+      if (bey && !bey.launchReady && !bey.launchFailed) {
+        bey.launchTilt = (this.rand() - 0.5) * 20;
+        bey.launchPosition = 0.3 + this.rand() * 0.3;
+        bey.launchPower = 90 + this.rand() * 30;
+        bey.launchChargingStarted = true;
+        bey.launchReady = true;
+      }
+    }
+  }
+
   // ─── Game tick ───────────────────────────────────────────────────────────────
 
   private tick(deltaTime: number) {
     const dt = deltaTime / 1000;
 
-    if (this.state.status === "warmup") {
-      this.warmupTimer -= dt;
-      this.state.timer = Math.max(0, this.warmupTimer);
-      if (this.warmupTimer <= 0) {
-        this.state.status = "launching";
-        this.state.launchTimer = this.launchPhaseTimer;
-        this.aiLaunchTimer = 1.5;
-        this.broadcast("launch-phase-start", {});
-      }
+    if (this.tickWarmupPhase(dt)) {
+      this.aiLaunchTimer = AI_LAUNCH_DELAY_S;
       return;
     }
+    if (this.state.status === "warmup") return;
 
     if (this.state.status === "launching") {
-      this.state.launchTimer = Math.max(0, this.state.launchTimer - dt);
-
       // AI auto-launches once after aiLaunchTimer seconds
       if (this.aiLaunchTimer > 0) {
         this.aiLaunchTimer -= dt;
         if (this.aiLaunchTimer <= 0) {
-          const aiBey = this.state.beyblades.get(AI_SESSION_ID);
-          if (aiBey && !aiBey.launchReady && !aiBey.launchFailed) {
-            aiBey.launchTilt = (this.rand() - 0.5) * 20;
-            aiBey.launchPosition = 0.3 + this.rand() * 0.3;
-            aiBey.launchPower = 90 + this.rand() * 30;
-            aiBey.launchChargingStarted = true;
-            aiBey.launchReady = true;
-          }
-          for (const [sid] of this.aiControllers) {
-            const bey = this.state.beyblades.get(sid);
-            if (bey && !bey.launchReady && !bey.launchFailed) {
-              bey.launchTilt = (this.rand() - 0.5) * 20;
-              bey.launchPosition = 0.3 + this.rand() * 0.3;
-              bey.launchPower = 90 + this.rand() * 30;
-              bey.launchChargingStarted = true;
-              bey.launchReady = true;
-            }
-          }
+          this.autoLaunchAIs();
         }
       }
+    }
 
-      let allLaunched = true;
-      this.state.beyblades.forEach(bey => {
-        if (!bey.launchReady && !bey.launchFailed) allLaunched = false;
-      });
-
-      if (this.state.launchTimer <= 0 || allLaunched) {
-        if (this.state.launchTimer <= 0) {
-          this.state.beyblades.forEach(bey => {
-            if (!bey.launchReady) bey.launchFailed = true;
-          });
-        }
-        this.startMatchFromLaunch();
-      }
+    if (this.tickLaunchPhase(dt)) {
+      this.startMatchFromLaunch();
       return;
     }
+    if (this.state.status === "launching") return;
 
     if (this.state.status !== "in-progress") return;
 
@@ -951,9 +933,9 @@ export class AIBattleRoom extends BaseRoom<GameState> {
 
     this.state.currentGame++;
     this.state.status = "warmup";
-    this.state.timer = 3;
-    this.warmupTimer = 3;
-    this.aiLaunchTimer = 1.5;
+    this.resetWarmupTimer();
+    this.state.timer = this.warmupTimerBase;
+    this.aiLaunchTimer = AI_LAUNCH_DELAY_S;
     this.state.winner = "";
 
     if (this.humanSessionId) {
@@ -971,7 +953,7 @@ export class AIBattleRoom extends BaseRoom<GameState> {
       if (bey && spawn) resetBeybladeForNextGame(bey, spawn, this.physics);
     }
 
-    this.broadcast("match-warmup", { secondsUntilStart: 3, gameNumber: this.state.currentGame });
+    this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase, gameNumber: this.state.currentGame });
   }
 
   // ─── K9: Spatial possession for arena-spawned friendly beys ─────────────────

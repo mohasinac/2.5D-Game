@@ -8,6 +8,7 @@
 
 import type { Beyblade, GameState } from "../../rooms/schema/GameState";
 import { isSeriesOver as bareIsSeriesOver } from "../utils/seriesFormat";
+import { WARMUP_DURATION_S } from "../constants/gameConstants";
 
 export interface SeriesPhysicsBridge {
   setPosition(id: string, x: number, y: number): void;
@@ -143,7 +144,7 @@ export function resetStateForNextGame(
   state: GameState,
   spawnPositions: Map<string, { x: number; y: number; angle?: number }>,
   physics: SeriesPhysicsBridge,
-  warmupSeconds = 180,
+  warmupSeconds = WARMUP_DURATION_S,
 ): void {
   state.currentGame++;
   state.status = "warmup";

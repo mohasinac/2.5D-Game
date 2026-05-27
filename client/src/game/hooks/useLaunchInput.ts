@@ -8,16 +8,15 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { Room } from "colyseus.js";
-
-const TILT_RATE = 50;        // degrees per second while key held
-const POSITION_RATE = 0.4;   // units per second while key held
-const MAX_TILT = 45;
-const CHARGE_INTERVAL_MS = 200;  // every 0.2s (string mode)
-const CHARGE_PER_INTERVAL = 25;  // +25% per interval (string mode)
-const MAX_POWER = 150;
-
-// Ripcord oscillation: sweeps 0→100 and back in a triangle wave
-const RIPCORD_CYCLE_MS = 1200; // one full up-down cycle
+import {
+  LAUNCH_TILT_RATE as TILT_RATE,
+  LAUNCH_POSITION_RATE as POSITION_RATE,
+  LAUNCH_MAX_TILT as MAX_TILT,
+  LAUNCH_CHARGE_INTERVAL_MS as CHARGE_INTERVAL_MS,
+  LAUNCH_CHARGE_PER_INTERVAL as CHARGE_PER_INTERVAL,
+  LAUNCH_MAX_POWER as MAX_POWER,
+  LAUNCH_RIPCORD_CYCLE_MS as RIPCORD_CYCLE_MS,
+} from "@/shared/constants/gameConstants";
 
 export type LauncherType = "string" | "ripcord";
 

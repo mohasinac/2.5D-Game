@@ -14,6 +14,7 @@ interface StoryBattleOptions {
   arenaId: string;
   userId: string;
   username: string;
+  spectate?: boolean;
   aiDifficulty?: "medium" | "hard" | "hell";
   bestOf?: 1 | 3 | 5;
   rpgContext: RPGContext;
@@ -26,26 +27,22 @@ export class StoryBattleRoom extends AIBattleRoom {
   private rpgContext: RPGContext = { npcId: "", isBossEncounter: false };
   private humanUserId = "";
 
-  onCreate(options: StoryBattleOptions) {
-    super.onCreate(options);
+  async onCreate(options: StoryBattleOptions) {
+    await super.onCreate(options);
     this.rpgContext = options.rpgContext ?? { npcId: "", isBossEncounter: false };
+    this.humanUserId = options.userId ?? "";
   }
 
-  onJoin(client: Client, options: StoryBattleOptions) {
-    super.onJoin(client, options);
+  async onJoin(client: Client, options: StoryBattleOptions) {
+    await super.onJoin(client, options);
     if (!options.spectate) {
       this.humanUserId = options.userId ?? "";
     }
   }
 
-  // Called by onMessage("series-end") listener in base; we hook the broadcast
-  onMessage(client: Client, message: unknown) {
-    super.onMessage(client, message);
-  }
-
   // Override broadcast to intercept "series-end" and append rpg context
-  broadcast(type: string, message?: unknown, options?: { except?: Client }) {
-    super.broadcast(type, message, options);
+  broadcast(type: string | number, message?: any, options?: any): any {
+    const result = super.broadcast(type, message, options);
     if (type === "series-end") {
       const msg = message as {
         winner: { userId?: string } | null;
@@ -66,5 +63,6 @@ export class StoryBattleRoom extends AIBattleRoom {
         rpgContext: this.rpgContext,
       });
     }
+    return result;
   }
 }

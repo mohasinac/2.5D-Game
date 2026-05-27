@@ -1,5 +1,5 @@
 // scripts/seed-arenas.js
-// Seeds 4 preset arenas into Firestore arenas collection.
+// Seeds arena presets into Firestore arenas collection.
 // Run: node scripts/seed-arenas.js
 // Idempotent — uses preset ID as document ID, safe to re-run.
 
@@ -65,11 +65,44 @@ function hexWall(style = "metal", damage = 18, recoil = 10) {
   };
 }
 
+function rectWall(style = "metal", damage = 20, recoil = 12, thickness = 4) {
+  return {
+    enabled: true,
+    wallStyle: style,
+    baseDamage: damage,
+    recoilDistance: recoil,
+    hasSpikes: false,
+    spikeDamageMultiplier: 1.5,
+    thickness,
+    edges: Array.from({ length: 4 }, (_, i) => ({
+      edge: i,
+      walls: [{ position: 0, width: 100, thickness }],
+    })),
+  };
+}
+
+function spikedCircleWall(style = "metal", damage = 22, recoil = 14) {
+  return {
+    enabled: true,
+    wallStyle: style,
+    baseDamage: damage,
+    recoilDistance: recoil,
+    hasSpikes: true,
+    spikeDamageMultiplier: 2.0,
+    thickness: 3,
+    edges: [],
+  };
+}
+
 // ─── Preset definitions ───────────────────────────────────────────────────────
 
 const now = new Date().toISOString();
 
 const ARENAS = [
+  // ════════════════════════════════════════════════════════════════════════════
+  //  EXISTING ARENAS (1–21) — DO NOT REMOVE
+  // ════════════════════════════════════════════════════════════════════════════
+
   // ── 1. Bey Stadium Classic ─────────────────────────────────────────────────
   // The training ground — clean circle, no hazards. Perfect for new players.
   {
@@ -689,8 +722,6 @@ const ARENAS = [
   },
 
   // ── 9. Lava Core (Phase Z — new theme) ─────────────────────────────────────
-  // Extreme volcanic arena. Electric hazard zones ring the center; wrecking ball
-  // obstacle sweeps across the middle; embers fill the air.
   {
     id: "lava-core",
     name: "Lava Core",
@@ -742,8 +773,6 @@ const ARENAS = [
   },
 
   // ── 10. Storm Citadel (Phase Z — new theme) ─────────────────────────────────
-  // A crumbling fortress battered by storms. Rain and wind push beys off-course;
-  // tracking missiles from two turrets punish slow play.
   {
     id: "storm-citadel",
     name: "Storm Citadel",
@@ -811,8 +840,6 @@ const ARENAS = [
   },
 
   // ── 11. Quantum Realm (Phase Z — new theme) ──────────────────────────────────
-  // A dimension where physics behaves strangely. A spin zone dominates the center;
-  // four portals create chaotic teleportation; an EMP turret disrupts combos.
   {
     id: "quantum-realm",
     name: "Quantum Realm",
@@ -1059,9 +1086,6 @@ const ARENAS = [
   },
 
   // ── 17. Hot Wheels Turbo — Ground Floor ──────────────────────────────────────
-  // Banked outer ring loop + figure-8 inner track. Four bump peaks launch beys
-  // vertically. Orbital spin zones at the crossover nodes. Elevator trampoline
-  // links up to hw-mid-floor.
   {
     id: "hw-ground-floor",
     name: "Hot Wheels Turbo — Ground Level",
@@ -1163,8 +1187,6 @@ const ARENAS = [
   },
 
   // ── 18. Hot Wheels Turbo — Mid Floor ──────────────────────────────────────────
-  // Figure-8 crossing track with opposing orbital spin zones at each loop. Bump at
-  // the crossover launches beys airborne. Elevators connect ground ↔ mid ↔ top.
   {
     id: "hw-mid-floor",
     name: "Hot Wheels Turbo — Mid Level",
@@ -1290,8 +1312,6 @@ const ARENAS = [
   },
 
   // ── 19. Hot Wheels Turbo — Top Floor ──────────────────────────────────────────
-  // Rooftop spiral finish. Tightest floor — auto-rotating, extreme spin zone vortex,
-  // four corner bumps launch beys into full vertical airtime. Only one way down.
   {
     id: "hw-top-floor",
     name: "Hot Wheels Turbo — Top Level",
@@ -1383,10 +1403,6 @@ const ARENAS = [
   },
 
   // ── 20. Spiral Labyrinth — concentric arc walls, gravity-sink center ────────
-  // Three concentric arc walls with staggered gap openings create a spiral
-  // corridor. Pits mark the dead-end pockets. A central gravity hole pulls beys
-  // inward — the arena is effectively bowled toward the center. Players must
-  // navigate the gaps to advance rings; wrong turns send them to a pit pocket.
   {
     id: "spiral-labyrinth",
     name: "Spiral Labyrinth",
@@ -1400,35 +1416,22 @@ const ARENAS = [
     staminaDrainMultiplier: 1.3,
     wall: circleWall("metal", 20, 10),
 
-    // ── Arc-wall obstacles (the spiral corridors) ─────────────────────────────
-    // Each ring is a fat arc obstacle leaving a gap:
-    //   Outer ring  (r≈20 cm) — gap at 270° (top of screen / north)
-    //   Middle ring (r≈13 cm) — gap at  90° (south)
-    //   Inner ring  (r≈ 7 cm) — gap at 180° (west)
-    // The gaps are staggered so a bey must make ¾ of a loop between each ring
-    // transition — exactly the hand-drawn spiral corridor feel.
     obstacles: [
-      // Outer arc wall — east half (0°–240°), gap 240°–360°(=0°)
       {
         id: "sl-arc-outer-a",
         shape: { kind: "arc", cx_cm: 0, cy_cm: 0, radius_cm: 20, arcStart_deg: 0,   arcEnd_deg: 240, thickness_cm: 2.5 },
         health: 9999, damage: 22, recoilDistance: 10, autoPlaced: false, indestructible: true,
       },
-      // Outer arc wall — west sliver (300°–360° closes back but leaves 240°–300° gap)
       {
         id: "sl-arc-outer-b",
         shape: { kind: "arc", cx_cm: 0, cy_cm: 0, radius_cm: 20, arcStart_deg: 300, arcEnd_deg: 360, thickness_cm: 2.5 },
         health: 9999, damage: 22, recoilDistance: 10, autoPlaced: false, indestructible: true,
       },
-
-      // Middle arc wall — north half (90°–330°), gap 330°–90°
       {
         id: "sl-arc-mid-a",
         shape: { kind: "arc", cx_cm: 0, cy_cm: 0, radius_cm: 13, arcStart_deg: 90,  arcEnd_deg: 330, thickness_cm: 2.5 },
         health: 9999, damage: 18, recoilDistance: 8, autoPlaced: false, indestructible: true,
       },
-
-      // Inner arc wall — south + west (180°–420°=60°), gap 60°–180°
       {
         id: "sl-arc-inner-a",
         shape: { kind: "arc", cx_cm: 0, cy_cm: 0, radius_cm: 7,  arcStart_deg: 180, arcEnd_deg: 420, thickness_cm: 2.5 },
@@ -1436,26 +1439,19 @@ const ARENAS = [
       },
     ],
 
-    // ── Pits — dead-end pockets where the arc closes ──────────────────────────
-    // Placed just inside the dead-end side of each gap (the pocket a bey rolls
-    // into if it misses the gap and hits the closing wall segment).
     pits: [
-      // Outer ring pocket — bey misses gap at ~270°, hits east re-entry arc
       { id: "sl-pit-outer", x_cm:  17, y_cm: -10, radius_cm: 3.5, instantKO: false, damagePerSec: 60, warningRingColor: "#ef4444" },
-      // Middle ring pocket — bey misses gap at ~90°, jams into north arc
       { id: "sl-pit-mid",   x_cm: -10, y_cm:  11, radius_cm: 3.0, instantKO: false, damagePerSec: 60, warningRingColor: "#ef4444" },
-      // Inner ring pocket — bey misses gap at ~180°, bounces into east arc
       { id: "sl-pit-inner", x_cm:   5, y_cm:  -3, radius_cm: 2.5, instantKO: false, damagePerSec: 80, warningRingColor: "#dc2626" },
     ],
 
-    // ── Central gravity well — slopes the arena toward center ─────────────────
     gravityHoles: [
       {
         id: "sl-gravity-center",
         x_cm: 0, y_cm: 0,
         forceN: 0.006,
         effectiveRadiusCm: 22,
-        activeMs: -1,       // always on
+        activeMs: -1,
         intervalMs: 1,
         warningMs: 0,
         visibility: "always",
@@ -1463,7 +1459,6 @@ const ARENAS = [
       },
     ],
 
-    // ── Speed path — ideal inward spiral route ────────────────────────────────
     speedPaths: [
       {
         id: 1,
@@ -1481,7 +1476,6 @@ const ARENAS = [
       },
     ],
 
-    // ── Spin zone at center — reward for reaching the core ───────────────────
     spinZones: [
       {
         id: "sl-sz-core",
@@ -1505,8 +1499,6 @@ const ARENAS = [
   },
 
   // ── 21. Test Arena (Spawn) — E2E testing ──────────────────────────────────
-  // Minimal circular arena designed for spawn-interval E2E tests.
-  // spawnIntervalSec is intentionally very short (5 s) for fast test feedback.
   {
     id: "test-arena-spawn",
     name: "Test Arena (Spawn)",
@@ -1536,6 +1528,949 @@ const ARENAS = [
         { beyId: "storm-pegasus", statsMultiplier: 0.5, aiDifficulty: "medium", controlMode: "ai" },
       ],
     },
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  //  NEW ARENAS (22–39) — Anime / Real-World Beyblade Stadiums
+  // ════════════════════════════════════════════════════════════════════════════
+
+  // ── 22. BeyStadium Attack Type — THE MFB tournament standard ───────────────
+  // Real product: 340mm diameter, 30mm depth, 3 pockets, tornado ridge at R=125mm.
+  {
+    id: "beystadium-attack-type",
+    name: "BeyStadium Attack Type",
+    description: "The definitive MFB tournament stadium. 340mm diameter bowl with tornado ridge and 3 pockets. The standard by which all battles are judged.",
+    width: 816,   // 340mm * 24px/cm / 10
+    height: 816,
+    shape: "circle",
+    theme: "default",
+    autoRotate: false,
+    wall: circleWall("metal", 16, 9),
+    backgroundColor: "#e5e7eb",
+    floorColor: "#d1d5db",
+    bowlProfile: "moderate",
+    bowlWallAngle: 30,
+    tornadoRidge: {
+      radiusCm: 12.5,  // 125mm = 12.5cm
+      widthCm: 3,
+      orbitIntensity: 0.005,
+      direction: "cw",
+      spinBoostPercent: 12,
+    },
+    pits: [
+      { id: 1, type: "pocket", x: 0,    y: -14, radius: 2.5, depth: 5, damagePerSecond: 0, pullForce: 2, escapeThreshold: 0.6 },
+      { id: 2, type: "pocket", x: -12,  y:  7,  radius: 2.5, depth: 5, damagePerSecond: 0, pullForce: 2, escapeThreshold: 0.6 },
+      { id: 3, type: "pocket", x:  12,  y:  7,  radius: 2.5, depth: 5, damagePerSecond: 0, pullForce: 2, escapeThreshold: 0.6 },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.01,
+    surfaceFriction: 0.008,
+    difficulty: "medium",
+  },
+
+  // ── 23. BX-10 Xtreme Stadium — single-side exit BX stadium ─────────────────
+  // Real product: square outer shell, 365mm circular battle zone, gear rails, 3 exits on front face.
+  {
+    id: "bx10-xtreme-stadium",
+    name: "BX-10 Xtreme Stadium",
+    description: "The BX-10 Xtreme Stadium. Square outer with circular battle zone. All three exits line the front face — X-Dash launches send beys flying out.",
+    width: 876,   // ~365mm * 24px/cm / 10
+    height: 876,
+    shape: "circle",
+    theme: "metrocity",
+    autoRotate: false,
+    wall: circleWall("metal", 22, 14),
+    backgroundColor: "#1e293b",
+    floorColor: "#334155",
+    scoringMode: "points",
+    pointsTarget: 3,
+    scoringZones: [
+      { id: "sz-exit-l",  kind: "xtreme", x_cm: -12, y_cm: -18, radius_cm: 4, points: 1, color: "#ef4444" },
+      { id: "sz-exit-c",  kind: "over",   x_cm:   0, y_cm: -18, radius_cm: 4, points: 2, color: "#f59e0b" },
+      { id: "sz-exit-r",  kind: "xtreme", x_cm:  12, y_cm: -18, radius_cm: 4, points: 1, color: "#3b82f6" },
+    ],
+    gearRails: [
+      {
+        id: "bx10-rail-l",
+        polylineCm: [{ x: -8, y: 10 }, { x: -14, y: 0 }, { x: -12, y: -16 }],
+        speedBoostPermille: 900,
+        requiresGearCompatibleBit: false,
+        boostDurationMs: 400,
+        exitZoneIds: ["sz-exit-l"],
+        color: "#ef4444",
+      },
+      {
+        id: "bx10-rail-c",
+        polylineCm: [{ x: 0, y: 14 }, { x: 0, y: 0 }, { x: 0, y: -16 }],
+        speedBoostPermille: 1000,
+        requiresGearCompatibleBit: false,
+        boostDurationMs: 350,
+        exitZoneIds: ["sz-exit-c"],
+        color: "#f59e0b",
+      },
+      {
+        id: "bx10-rail-r",
+        polylineCm: [{ x: 8, y: 10 }, { x: 14, y: 0 }, { x: 12, y: -16 }],
+        speedBoostPermille: 900,
+        requiresGearCompatibleBit: false,
+        boostDurationMs: 400,
+        exitZoneIds: ["sz-exit-r"],
+        color: "#3b82f6",
+      },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.008,
+    surfaceFriction: 0.006,
+    difficulty: "hard",
+  },
+
+  // ── 24. Wide Xtreme Stadium — larger BX variant ────────────────────────────
+  {
+    id: "wide-xtreme-stadium",
+    name: "Wide Xtreme Stadium",
+    description: "The wide-body BX stadium variant. Larger battle zone gives stamina types room to breathe, but gear rails still deliver devastating ring-outs.",
+    width: 960,   // ~400mm
+    height: 960,
+    shape: "circle",
+    theme: "metrocity",
+    autoRotate: false,
+    wall: circleWall("metal", 20, 12),
+    backgroundColor: "#1e293b",
+    floorColor: "#475569",
+    scoringMode: "points",
+    pointsTarget: 3,
+    scoringZones: [
+      { id: "sz-wide-n",  kind: "xtreme", x_cm: 0,   y_cm: -20, radius_cm: 5, points: 1, color: "#ef4444" },
+      { id: "sz-wide-s",  kind: "xtreme", x_cm: 0,   y_cm:  20, radius_cm: 5, points: 1, color: "#3b82f6" },
+      { id: "sz-wide-over", kind: "over", x_cm: -20, y_cm:   0, radius_cm: 4, points: 2, color: "#f59e0b" },
+    ],
+    gearRails: [
+      {
+        id: "wide-rail-n",
+        polylineCm: [{ x: 0, y: 16 }, { x: 8, y: 6 }, { x: 6, y: -18 }],
+        speedBoostPermille: 850,
+        requiresGearCompatibleBit: false,
+        boostDurationMs: 450,
+        exitZoneIds: ["sz-wide-n"],
+        color: "#ef4444",
+      },
+      {
+        id: "wide-rail-s",
+        polylineCm: [{ x: 0, y: -16 }, { x: -8, y: -6 }, { x: -6, y: 18 }],
+        speedBoostPermille: 850,
+        requiresGearCompatibleBit: false,
+        boostDurationMs: 450,
+        exitZoneIds: ["sz-wide-s"],
+        color: "#3b82f6",
+      },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.008,
+    surfaceFriction: 0.006,
+    difficulty: "hard",
+  },
+
+  // ── 25. Infinity Stadium — oval BX variant ─────────────────────────────────
+  // Asymmetric X-Dash force in the elongated direction.
+  {
+    id: "infinity-stadium",
+    name: "Infinity Stadium",
+    description: "Oval BX stadium variant. The elongated shape creates asymmetric X-Dash trajectories — master the oval or get launched into oblivion.",
+    width: 1104,  // ~460mm
+    height: 720,  // ~300mm
+    shape: "rectangle",
+    theme: "metrocity",
+    autoRotate: false,
+    wall: rectWall("metal", 22, 14),
+    backgroundColor: "#0f172a",
+    floorColor: "#1e293b",
+    scoringMode: "points",
+    pointsTarget: 3,
+    scoringZones: [
+      { id: "sz-inf-e", kind: "xtreme", x_cm:  22, y_cm: 0, radius_cm: 5, points: 1, color: "#ef4444" },
+      { id: "sz-inf-w", kind: "xtreme", x_cm: -22, y_cm: 0, radius_cm: 5, points: 1, color: "#3b82f6" },
+      { id: "sz-inf-over", kind: "over", x_cm: 0, y_cm: -14, radius_cm: 4, points: 2, color: "#f59e0b" },
+    ],
+    gearRails: [
+      {
+        id: "inf-rail-e",
+        polylineCm: [{ x: -10, y: 0 }, { x: 0, y: -5 }, { x: 10, y: 0 }, { x: 20, y: 0 }],
+        speedBoostPermille: 1100,
+        requiresGearCompatibleBit: false,
+        boostDurationMs: 500,
+        exitZoneIds: ["sz-inf-e"],
+        color: "#ef4444",
+      },
+      {
+        id: "inf-rail-w",
+        polylineCm: [{ x: 10, y: 0 }, { x: 0, y: 5 }, { x: -10, y: 0 }, { x: -20, y: 0 }],
+        speedBoostPermille: 1100,
+        requiresGearCompatibleBit: false,
+        boostDurationMs: 500,
+        exitZoneIds: ["sz-inf-w"],
+        color: "#3b82f6",
+      },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.007,
+    surfaceFriction: 0.005,
+    difficulty: "extreme",
+  },
+
+  // ── 26. Ultimate Beyta Stadium — 4D motorized ──────────────────────────────
+  // Real product: 737x432mm, magnetic spin spot at center, motor disc.
+  {
+    id: "ultimate-beyta-stadium",
+    name: "Ultimate Beyta Stadium",
+    description: "The legendary 4D motorized stadium. A magnetic spin spot at the center replenishes spin, while the motor disc rotates the entire bowl. Massive battlefield for epic clashes.",
+    width: 1440,  // 737mm * ~2 (scaled for game playability)
+    height: 1080, // 432mm * ~2.5
+    shape: "rectangle",
+    theme: "ancient_temple",
+    autoRotate: true,
+    rotationSpeed: 2,
+    rotationDirection: "clockwise",
+    wall: rectWall("stone", 20, 10, 4),
+    backgroundColor: "#1c1917",
+    floorColor: "#292524",
+    gravityHoles: [
+      {
+        id: "ub-magnet-center",
+        x_cm: 0, y_cm: 0,
+        forceN: 0.004,
+        effectiveRadiusCm: 10,
+        activeMs: -1,
+        intervalMs: 1,
+        warningMs: 0,
+        visibility: "always",
+        featureAnimation: { preset: "pulse", periodMs: 2000, color: "#a855f7" },
+      },
+    ],
+    spinZones: [
+      {
+        id: "ub-motor-disc",
+        x_cm: 0, y_cm: 0,
+        radius_cm: 8,
+        direction: "cw",
+        intensityRadPerSec: 2.5,
+        applyTo: "spin",
+        featureAnimation: { preset: "shimmer", periodMs: 3000, color: "#d4af37" },
+      },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.01,
+    surfaceFriction: 0.009,
+    difficulty: "extreme",
+  },
+
+  // ── 27. Tornado Attack Stadium — Plastic gen ───────────────────────────────
+  // ~300mm diameter, taller tornado ridge (10mm), 3 pockets. Classic 1st gen.
+  {
+    id: "tornado-attack-stadium",
+    name: "Tornado Attack Stadium",
+    description: "The classic 1st-generation Plastic stadium. Smaller bowl with a prominent tornado ridge — the birthplace of competitive Beyblade.",
+    width: 720,   // ~300mm
+    height: 720,
+    shape: "circle",
+    theme: "default",
+    autoRotate: false,
+    wall: circleWall("metal", 14, 7),
+    backgroundColor: "#f3f4f6",
+    floorColor: "#e5e7eb",
+    tornadoRidge: {
+      radiusCm: 10,   // 100mm
+      widthCm: 3,
+      orbitIntensity: 0.007,   // taller ridge = stronger orbit
+      direction: "cw",
+      spinBoostPercent: 10,
+    },
+    pits: [
+      { id: 1, type: "pocket", x: 0,    y: -12, radius: 2, depth: 4, damagePerSecond: 0, pullForce: 1.5, escapeThreshold: 0.5 },
+      { id: 2, type: "pocket", x: -10,  y:  6,  radius: 2, depth: 4, damagePerSecond: 0, pullForce: 1.5, escapeThreshold: 0.5 },
+      { id: 3, type: "pocket", x:  10,  y:  6,  radius: 2, depth: 4, damagePerSecond: 0, pullForce: 1.5, escapeThreshold: 0.5 },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.01,
+    surfaceFriction: 0.009,
+    difficulty: "easy",
+  },
+
+  // ── 28. Super Attack Stadium — Plastic gen, deeper bowl ────────────────────
+  {
+    id: "super-attack-stadium",
+    name: "Super Attack Stadium",
+    description: "The deeper, wider Plastic-gen stadium. Higher walls and a steeper bowl give defense types an advantage, but ring-outs hit harder.",
+    width: 768,   // ~320mm
+    height: 768,
+    shape: "circle",
+    theme: "default",
+    autoRotate: false,
+    wall: circleWall("metal", 18, 10),
+    backgroundColor: "#dbeafe",
+    floorColor: "#bfdbfe",
+    bowlProfile: "moderate",
+    bowlWallAngle: 35,
+    tornadoRidge: {
+      radiusCm: 11,
+      widthCm: 3,
+      orbitIntensity: 0.006,
+      direction: "cw",
+      spinBoostPercent: 12,
+    },
+    pits: [
+      { id: 1, type: "pocket", x: 0,    y: -13, radius: 2.5, depth: 5, damagePerSecond: 0, pullForce: 2, escapeThreshold: 0.55 },
+      { id: 2, type: "pocket", x: -11,  y:  6,  radius: 2.5, depth: 5, damagePerSecond: 0, pullForce: 2, escapeThreshold: 0.55 },
+      { id: 3, type: "pocket", x:  11,  y:  6,  radius: 2.5, depth: 5, damagePerSecond: 0, pullForce: 2, escapeThreshold: 0.55 },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.01,
+    surfaceFriction: 0.009,
+    difficulty: "medium",
+  },
+
+  // ── 29. Dark Nebula Fortress — MFB anime villain HQ ────────────────────────
+  // Dark Nebula HQ arena. Lightning hazards, spike walls, oppressive atmosphere.
+  {
+    id: "dark-nebula-fortress",
+    name: "Dark Nebula Fortress",
+    description: "The Dark Nebula organization's secret arena. Lightning crackles across the floor, spike walls punish ring-outs, and darkness swallows the weak.",
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "haunted_factory",
+    autoRotate: false,
+    wall: spikedCircleWall("metal", 28, 16),
+    backgroundColor: "#1a0a2e",
+    floorColor: "#2d1b4e",
+    backgroundParticles: { type: "embers", density: 15, direction: 0, affectedByArenaRotation: false },
+    environmentalEffect: { preset: "storm", intensity: 0.6, intervalMs: 5000 },
+    floorHazardZones: [
+      { id: "dn-hz1", x_cm: -10, y_cm: -10, radius_cm: 5, hazardType: "electric", disableTicks: 120, intensity: 1.5, featureAnimation: { preset: "lightning", periodMs: 600 } },
+      { id: "dn-hz2", x_cm:  10, y_cm: -10, radius_cm: 5, hazardType: "electric", disableTicks: 120, intensity: 1.5, featureAnimation: { preset: "lightning", periodMs: 600 } },
+      { id: "dn-hz3", x_cm: -10, y_cm:  10, radius_cm: 5, hazardType: "electric", disableTicks: 120, intensity: 1.5, featureAnimation: { preset: "lightning", periodMs: 600 } },
+      { id: "dn-hz4", x_cm:  10, y_cm:  10, radius_cm: 5, hazardType: "electric", disableTicks: 120, intensity: 1.5, featureAnimation: { preset: "lightning", periodMs: 600 } },
+    ],
+    obstacles: [
+      { id: 1, x: -16, y: 0, radius: 2, health: 999, damage: 20, recoilDistance: 10, indestructible: true, autoPlaced: false },
+      { id: 2, x:  16, y: 0, radius: 2, health: 999, damage: 20, recoilDistance: 10, indestructible: true, autoPlaced: false },
+      { id: 3, x: 0, y: -16, radius: 2, health: 999, damage: 20, recoilDistance: 10, indestructible: true, autoPlaced: false },
+      { id: 4, x: 0, y:  16, radius: 2, health: 999, damage: 20, recoilDistance: 10, indestructible: true, autoPlaced: false },
+    ],
+    waterBodies: [],
+    pits: [],
+    turrets: [
+      {
+        id: 1, x: -18, y: -18, radius: 2.5, health: 999, indestructible: true,
+        attackType: "periodic", attackDamage: 15, attackRange: 30, attackCooldown: 4,
+        bulletCount: 2, bulletSpread: 15,
+        color: "#7c3aed",
+      },
+      {
+        id: 2, x: 18, y: 18, radius: 2.5, health: 999, indestructible: true,
+        attackType: "periodic", attackDamage: 15, attackRange: 30, attackCooldown: 4,
+        bulletCount: 2, bulletSpread: 15,
+        color: "#7c3aed",
+      },
+    ],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.012,
+    surfaceFriction: 0.01,
+    difficulty: "extreme",
+    arenaTimeline: [
+      { triggerMs: 30_000, type: "announcement", announcement: { text: "DARK NEBULA POWER SURGE!", style: "danger" } },
+      { triggerMs: 30_000, type: "gravity_change", params: { multiplier: 1.4 } },
+      { triggerMs: 60_000, type: "announcement", announcement: { text: "LIGHTNING INTENSIFIES!", style: "warning" } },
+      { triggerMs: 90_000, type: "announcement", announcement: { text: "DARKNESS CONSUMES ALL!", style: "danger" } },
+      { triggerMs: 90_000, type: "gravity_change", params: { multiplier: 1.8 } },
+    ],
+  },
+
+  // ── 30. Bey Forest — Forest of Endurance (MFB anime training) ─────────────
+  {
+    id: "bey-forest",
+    name: "Bey Forest",
+    description: "The Forest of Endurance from MFB training arcs. A healing spring sustains the worthy, while scattered boulders and dense undergrowth test navigation.",
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "forest",
+    autoRotate: false,
+    wall: circleWall("wood", 10, 5),
+    backgroundColor: "#14532d",
+    floorColor: "#166534",
+    obstacles: [
+      { id: 1, x: -14, y: -8, radius: 3, health: 4, damage: 10, recoilDistance: 5, autoPlaced: false },
+      { id: 2, x:  14, y: -8, radius: 3, health: 4, damage: 10, recoilDistance: 5, autoPlaced: false },
+      { id: 3, x:  -8, y: 14, radius: 2.5, health: 3, damage: 8, recoilDistance: 4, autoPlaced: false },
+      { id: 4, x:   8, y: 14, radius: 2.5, health: 3, damage: 8, recoilDistance: 4, autoPlaced: false },
+      { id: 5, x:   0, y: -16, radius: 3.5, health: 5, damage: 12, recoilDistance: 6, autoPlaced: false },
+      { id: 6, x: -16, y:  4, radius: 2, health: 3, damage: 8, recoilDistance: 4, autoPlaced: false },
+    ],
+    waterBodies: [
+      {
+        id: "water1",
+        type: "zone",
+        liquidType: "healing",
+        shape: "circle",
+        position: { x: 0, y: 0 },
+        radius: 5,
+        opacity: 0.5,
+        depth: 3,
+        wavyEffect: true,
+        effects: {
+          healPerSecond: 4,
+          spinBoostPerSecond: 25,
+          frictionMultiplier: 1.0,
+          showParticles: true,
+          particleColor: "#6ee7b7",
+        },
+      },
+    ],
+    speedPaths: [
+      {
+        id: 1,
+        radius: 14,
+        shape: "circle",
+        speedBoost: 1.4,
+        spinBoost: 10,
+        frictionMultiplier: 0.85,
+        renderStyle: "outline",
+        color: "#22c55e",
+      },
+    ],
+    pits: [],
+    turrets: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.015,
+    surfaceFriction: 0.012,
+    difficulty: "medium",
+  },
+
+  // ── 31. Big Bang Bladers Stadium — World Championship finals ───────────────
+  {
+    id: "big-bang-bladers-stadium",
+    name: "Big Bang Bladers Stadium",
+    description: "The World Championship finals arena. Grand proportions, pristine floor, chrome walls. No hazards — only the strongest blader prevails.",
+    width: 1200,
+    height: 1200,
+    shape: "circle",
+    theme: "metrocity",
+    autoRotate: false,
+    wall: circleWall("metal", 18, 10),
+    backgroundColor: "#fffbeb",
+    floorColor: "#fef3c7",
+    tornadoRidge: {
+      radiusCm: 16,
+      widthCm: 4,
+      orbitIntensity: 0.005,
+      direction: "cw",
+      spinBoostPercent: 14,
+    },
+    pits: [
+      { id: 1, type: "pocket", x: 0,    y: -18, radius: 3, depth: 5, damagePerSecond: 0, pullForce: 2, escapeThreshold: 0.6 },
+      { id: 2, type: "pocket", x: -15,  y:  9,  radius: 3, depth: 5, damagePerSecond: 0, pullForce: 2, escapeThreshold: 0.6 },
+      { id: 3, type: "pocket", x:  15,  y:  9,  radius: 3, depth: 5, damagePerSecond: 0, pullForce: 2, escapeThreshold: 0.6 },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.01,
+    surfaceFriction: 0.008,
+    difficulty: "medium",
+  },
+
+  // ── 32. Hades City Arena — MFB underground lava arena ──────────────────────
+  {
+    id: "hades-city-arena",
+    name: "Hades City Arena",
+    description: "The underground arena of Hades City. Lava moat rings the battle zone, fire turrets rain destruction, and the dark floor absorbs hope.",
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "lava_core",
+    autoRotate: false,
+    wall: circleWall("stone", 24, 14),
+    backgroundColor: "#1c0a00",
+    floorColor: "#3b1100",
+    backgroundParticles: { type: "embers", density: 30, direction: 350, affectedByArenaRotation: false },
+    environmentalEffect: { preset: "volcanic", intensity: 0.8 },
+    waterBodies: [
+      {
+        id: "water1",
+        type: "moat",
+        liquidType: "lava",
+        thickness: 6,
+        distanceFromArena: 18,
+        followsArenaShape: true,
+        opacity: 0.85,
+        depth: 10,
+        wavyEffect: true,
+        effects: {
+          damagePerSecond: 7,
+          speedLoss: 0.5,
+          frictionMultiplier: 2.5,
+          pushForce: 4,
+          showParticles: true,
+          particleColor: "#ff4400",
+        },
+      },
+    ],
+    turrets: [
+      {
+        id: 1, x: -16, y: -16, radius: 3, health: 999, indestructible: true,
+        attackType: "periodic", attackDamage: 20, attackRange: 28, attackCooldown: 4,
+        bulletCount: 3, bulletSpread: 25,
+        color: "#ef4444",
+        featureAnimation: { preset: "pulse", periodMs: 1500, color: "#ff4400" },
+      },
+      {
+        id: 2, x: 16, y: -16, radius: 3, health: 999, indestructible: true,
+        attackType: "periodic", attackDamage: 20, attackRange: 28, attackCooldown: 4,
+        bulletCount: 3, bulletSpread: 25,
+        color: "#ef4444",
+        featureAnimation: { preset: "pulse", periodMs: 1500, color: "#ff4400" },
+      },
+      {
+        id: 3, x: 0, y: 16, radius: 3, health: 999, indestructible: true,
+        attackType: "tracking_missile", attackDamage: 25, attackRange: 30, attackCooldown: 6,
+        missileTrackingDeg: 90, firePattern: "lowest_spin",
+        color: "#dc2626",
+      },
+    ],
+    floorHazardZones: [
+      { id: "hc-hz1", x_cm: 0, y_cm: 0, radius_cm: 5, hazardType: "lava", damagePerTick: 5, spinDecayMult: 1.5, featureAnimation: { preset: "pulse", color: "#ff4400" } },
+    ],
+    obstacles: [],
+    pits: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.014,
+    surfaceFriction: 0.012,
+    difficulty: "extreme",
+    arenaTimeline: [
+      { triggerMs: 20_000, type: "announcement", announcement: { text: "HADES AWAKENS!", style: "danger" } },
+      { triggerMs: 20_000, type: "gravity_change", params: { multiplier: 1.3 } },
+      { triggerMs: 60_000, type: "announcement", announcement: { text: "INFERNO RISING!", style: "danger" } },
+      { triggerMs: 60_000, type: "gravity_change", params: { multiplier: 1.6 } },
+      { triggerMs: 120_000, type: "announcement", announcement: { text: "HADES FURY — NO ESCAPE!", style: "danger" } },
+      { triggerMs: 120_000, type: "gravity_change", params: { multiplier: 2.0 } },
+    ],
+  },
+
+  // ── 33. Tower of Babel Arena — Burst anime, tilted + auto-rotating ─────────
+  {
+    id: "tower-of-babel-arena",
+    name: "Tower of Babel Arena",
+    description: "The Tower of Babel from the Burst anime. A tilted, auto-rotating arena that shifts gravity mid-match. Only the adaptable survive.",
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "ancient_temple",
+    autoRotate: true,
+    rotationSpeed: 3,
+    rotationDirection: "counterclockwise",
+    wall: circleWall("stone", 20, 11),
+    backgroundColor: "#44403c",
+    floorColor: "#57534e",
+    tiltAngle: 15,
+    tiltDirection: 0,
+    autoTilt: true,
+    tiltSpeed: 8,
+    elevationZones: [
+      { id: "tob-elev-center", x_cm: 0, y_cm: 0, radius_cm: 8, heightCm: 15, spinBoostOnPlatform: 20, edgeDropForce: 6 },
+    ],
+    obstacles: [
+      { id: 1, x: -12, y: -12, radius: 3, health: 6, damage: 18, recoilDistance: 8, autoPlaced: false },
+      { id: 2, x:  12, y: -12, radius: 3, health: 6, damage: 18, recoilDistance: 8, autoPlaced: false },
+      { id: 3, x: -12, y:  12, radius: 3, health: 6, damage: 18, recoilDistance: 8, autoPlaced: false },
+      { id: 4, x:  12, y:  12, radius: 3, health: 6, damage: 18, recoilDistance: 8, autoPlaced: false },
+    ],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.012,
+    surfaceFriction: 0.009,
+    difficulty: "hard",
+    arenaTimeline: [
+      { triggerMs: 20_000, type: "announcement", announcement: { text: "THE TOWER SHIFTS!", style: "warning" } },
+      { triggerMs: 20_000, type: "arena_tilt", params: { angleDeg: 25, directionDeg: 90 } },
+      { triggerMs: 50_000, type: "announcement", announcement: { text: "BABEL TILTS FURTHER!", style: "warning" } },
+      { triggerMs: 50_000, type: "arena_tilt", params: { angleDeg: 35, directionDeg: 180 } },
+      { triggerMs: 90_000, type: "announcement", announcement: { text: "TOWER PEAK — MAXIMUM TILT!", style: "danger" } },
+      { triggerMs: 90_000, type: "arena_tilt", params: { angleDeg: 45, directionDeg: 270 } },
+      { triggerMs: 120_000, type: "arena_tilt", params: { angleDeg: 15, directionDeg: 0 } },
+    ],
+  },
+
+  // ── 34. WBBA Official Stadium — Burst-era tournament standard ──────────────
+  {
+    id: "wbba-official-stadium",
+    name: "WBBA Official Stadium",
+    description: "The WBBA Official Tournament Stadium. Clean, fair, no hazards. The standard for all Burst-era competitive play. Blue and white livery.",
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "default",
+    autoRotate: false,
+    wall: circleWall("metal", 16, 9),
+    backgroundColor: "#eff6ff",
+    floorColor: "#dbeafe",
+    pits: [
+      { id: 1, type: "pocket", x: 0,    y: -16, radius: 2.5, depth: 4, damagePerSecond: 0, pullForce: 1.5, escapeThreshold: 0.5 },
+      { id: 2, type: "pocket", x: -14,  y:  8,  radius: 2.5, depth: 4, damagePerSecond: 0, pullForce: 1.5, escapeThreshold: 0.5 },
+      { id: 3, type: "pocket", x:  14,  y:  8,  radius: 2.5, depth: 4, damagePerSecond: 0, pullForce: 1.5, escapeThreshold: 0.5 },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.01,
+    surfaceFriction: 0.008,
+    difficulty: "easy",
+  },
+
+  // ── 35. Lost Scroll Arena — G-Revolution anime ─────────────────────────────
+  // Desert theme, sand traps (quicksand water bodies), obstacle pillars.
+  {
+    id: "lost-scroll-arena",
+    name: "Lost Scroll Arena",
+    description: "The Lost Scroll arena from G-Revolution. Desert sands conceal quicksand traps, and ancient stone pillars block escape routes.",
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "desert",
+    autoRotate: false,
+    wall: circleWall("stone", 18, 10),
+    backgroundColor: "#78350f",
+    floorColor: "#92400e",
+    obstacles: [
+      { id: 1, x: -10, y: -10, radius: 3, health: 7, damage: 18, recoilDistance: 8, autoPlaced: false },
+      { id: 2, x:  10, y: -10, radius: 3, health: 7, damage: 18, recoilDistance: 8, autoPlaced: false },
+      { id: 3, x:   0, y:  12, radius: 3.5, health: 8, damage: 20, recoilDistance: 9, autoPlaced: false },
+      { id: 4, x: -16, y:   0, radius: 2.5, health: 5, damage: 14, recoilDistance: 6, autoPlaced: false },
+      { id: 5, x:  16, y:   0, radius: 2.5, health: 5, damage: 14, recoilDistance: 6, autoPlaced: false },
+    ],
+    waterBodies: [
+      {
+        id: "water1",
+        type: "zone",
+        liquidType: "quicksand",
+        shape: "circle",
+        position: { x: -8, y: 6 },
+        radius: 5,
+        opacity: 0.6,
+        depth: 6,
+        wavyEffect: false,
+        effects: {
+          speedLoss: 0.7,
+          frictionMultiplier: 3.0,
+          showParticles: true,
+          particleColor: "#d4a574",
+          damagePerSecond: 2,
+        },
+      },
+      {
+        id: "water2",
+        type: "zone",
+        liquidType: "quicksand",
+        shape: "circle",
+        position: { x: 8, y: -6 },
+        radius: 4,
+        opacity: 0.6,
+        depth: 6,
+        wavyEffect: false,
+        effects: {
+          speedLoss: 0.7,
+          frictionMultiplier: 3.0,
+          showParticles: true,
+          particleColor: "#d4a574",
+          damagePerSecond: 2,
+        },
+      },
+    ],
+    pits: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.018,
+    surfaceFriction: 0.014,
+    difficulty: "hard",
+  },
+
+  // ── 36. Beylin Temple Arena — MFB mountain temple training ─────────────────
+  {
+    id: "beylin-temple-arena",
+    name: "Beylin Temple Arena",
+    description: "The Beylin Temple training grounds. Mountain wind buffets all combatants while the elevated center platform rewards those who claim the high ground.",
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "ancient_temple",
+    autoRotate: false,
+    wall: circleWall("stone", 16, 9),
+    backgroundColor: "#1e3a5f",
+    floorColor: "#2c5282",
+    elevationZones: [
+      { id: "bt-elev-center", x_cm: 0, y_cm: 0, radius_cm: 7, heightCm: 12, spinBoostOnPlatform: 18, edgeDropForce: 5 },
+    ],
+    spinZones: [
+      {
+        id: "bt-wind",
+        x_cm: 0, y_cm: 0,
+        radius_cm: 20,
+        direction: "ccw",
+        intensityRadPerSec: 1.5,
+        applyTo: "linear",
+      },
+    ],
+    obstacles: [
+      { id: 1, x: -14, y: -6, radius: 2.5, health: 6, damage: 14, recoilDistance: 6, autoPlaced: false },
+      { id: 2, x:  14, y: -6, radius: 2.5, health: 6, damage: 14, recoilDistance: 6, autoPlaced: false },
+      { id: 3, x: -14, y:  6, radius: 2.5, health: 6, damage: 14, recoilDistance: 6, autoPlaced: false },
+      { id: 4, x:  14, y:  6, radius: 2.5, health: 6, damage: 14, recoilDistance: 6, autoPlaced: false },
+    ],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.02,
+    surfaceFriction: 0.01,
+    difficulty: "hard",
+  },
+
+  // ── 37. Nemesis Crisis Arena — 4D anime finale ─────────────────────────────
+  // Apocalyptic theme, gravity wells, void effects, shrinking arena.
+  {
+    id: "nemesis-crisis-arena",
+    name: "Nemesis Crisis Arena",
+    description: "The apocalyptic finale arena from the Nemesis Crisis. Gravity wells pull beys into the void, the arena shrinks relentlessly, and shadow effects drain spin.",
+    width: 1200,
+    height: 1200,
+    shape: "circle",
+    theme: "quantum_realm",
+    autoRotate: true,
+    rotationSpeed: 2,
+    rotationDirection: "counterclockwise",
+    wall: circleWall("metal", 22, 12),
+    backgroundColor: "#0a0010",
+    floorColor: "#1a0030",
+    backgroundParticles: { type: "stars", density: 25, affectedByArenaRotation: false },
+    environmentalEffect: { preset: "void", intensity: 1.0 },
+    shrink: { enabled: true, startMs: 30000, endMs: 150000, minRadiusFraction: 0.4, damageRatePerTick: 5, shrinkRateCmPerSec: 0.8, minRadiusCm: 60 },
+    gravityHoles: [
+      {
+        id: "nc-grav-1", x_cm: -12, y_cm: -12,
+        forceN: 0.005, effectiveRadiusCm: 10,
+        activeMs: 3000, intervalMs: 6000, warningMs: 800,
+        visibility: "warning-only",
+        featureAnimation: { preset: "vortex", periodMs: 2000, color: "#6b21a8" },
+      },
+      {
+        id: "nc-grav-2", x_cm: 12, y_cm: 12,
+        forceN: 0.005, effectiveRadiusCm: 10,
+        activeMs: 3000, intervalMs: 6000, warningMs: 800,
+        visibility: "warning-only",
+        featureAnimation: { preset: "vortex", periodMs: 2000, color: "#6b21a8" },
+      },
+      {
+        id: "nc-grav-center", x_cm: 0, y_cm: 0,
+        forceN: 0.003, effectiveRadiusCm: 15,
+        activeMs: 5000, intervalMs: 10000, warningMs: 1000,
+        visibility: "always",
+        featureAnimation: { preset: "ghost", periodMs: 3000, color: "#7c3aed" },
+      },
+    ],
+    floorHazardZones: [
+      { id: "nc-hz1", x_cm: 0, y_cm: 0, radius_cm: 6, hazardType: "void", damagePerTick: 4, spinDecayMult: 2.0, featureAnimation: { preset: "ghost", color: "#4c1d95" } },
+    ],
+    obstacles: [],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.008,
+    surfaceFriction: 0.006,
+    difficulty: "extreme",
+    arenaTimeline: [
+      { triggerMs: 15_000, type: "announcement", announcement: { text: "NEMESIS STIRS...", style: "warning" } },
+      { triggerMs: 30_000, type: "announcement", announcement: { text: "THE VOID EXPANDS!", style: "danger" } },
+      { triggerMs: 60_000, type: "announcement", announcement: { text: "NEMESIS CRISIS — ARENA COLLAPSING!", style: "danger" } },
+      { triggerMs: 60_000, type: "gravity_change", params: { multiplier: 1.5 } },
+      { triggerMs: 100_000, type: "announcement", announcement: { text: "FINAL DARKNESS!", style: "danger" } },
+      { triggerMs: 100_000, type: "gravity_change", params: { multiplier: 2.0 } },
+    ],
+  },
+
+  // ── 38. Bey Colosseum Rome — G-Revolution Roman arena ──────────────────────
+  // Stone/prehistoric theme, spiked walls, turret archers.
+  {
+    id: "bey-colosseum-rome",
+    name: "Bey Colosseum Rome",
+    description: "The Roman Colosseum from G-Revolution. Gladiatorial combat among stone pillars, spiked walls, and archer turrets. Fight for glory!",
+    width: 1200,
+    height: 1200,
+    shape: "circle",
+    theme: "prehistoric",
+    autoRotate: false,
+    wall: spikedCircleWall("stone", 24, 14),
+    backgroundColor: "#44403c",
+    floorColor: "#57534e",
+    obstacles: [
+      { id: 1, x: -10, y: -10, radius: 3.5, health: 8, damage: 22, recoilDistance: 10, autoPlaced: false },
+      { id: 2, x:  10, y: -10, radius: 3.5, health: 8, damage: 22, recoilDistance: 10, autoPlaced: false },
+      { id: 3, x: -10, y:  10, radius: 3.5, health: 8, damage: 22, recoilDistance: 10, autoPlaced: false },
+      { id: 4, x:  10, y:  10, radius: 3.5, health: 8, damage: 22, recoilDistance: 10, autoPlaced: false },
+      { id: 5, x:   0, y:   0, radius: 4, health: 10, damage: 25, recoilDistance: 12, autoPlaced: false },
+    ],
+    turrets: [
+      {
+        id: 1, x: -20, y: 0, radius: 2.5, health: 300, indestructible: false,
+        attackType: "periodic", attackDamage: 16, attackRange: 25, attackCooldown: 3,
+        bulletCount: 2, bulletSpread: 10,
+        color: "#a16207",
+      },
+      {
+        id: 2, x: 20, y: 0, radius: 2.5, health: 300, indestructible: false,
+        attackType: "periodic", attackDamage: 16, attackRange: 25, attackCooldown: 3,
+        bulletCount: 2, bulletSpread: 10,
+        color: "#a16207",
+      },
+      {
+        id: 3, x: 0, y: -20, radius: 2.5, health: 300, indestructible: false,
+        attackType: "periodic", attackDamage: 16, attackRange: 25, attackCooldown: 3,
+        bulletCount: 2, bulletSpread: 10,
+        color: "#a16207",
+      },
+      {
+        id: 4, x: 0, y: 20, radius: 2.5, health: 300, indestructible: false,
+        attackType: "periodic", attackDamage: 16, attackRange: 25, attackCooldown: 3,
+        bulletCount: 2, bulletSpread: 10,
+        color: "#a16207",
+      },
+    ],
+    waterBodies: [],
+    pits: [],
+    speedPaths: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.012,
+    surfaceFriction: 0.011,
+    difficulty: "hard",
+  },
+
+  // ── 39. Spiral Mountain Arena — original anime, auto-rotating + wind ───────
+  {
+    id: "spiral-mountain-arena",
+    name: "Spiral Mountain Arena",
+    description: "Spiral Mountain from the original Beyblade anime. Mountain winds create constant orbital push, and the auto-rotating floor keeps bladers on their toes.",
+    width: 1080,
+    height: 1080,
+    shape: "circle",
+    theme: "mountains",
+    autoRotate: true,
+    rotationSpeed: 2,
+    rotationDirection: "clockwise",
+    wall: circleWall("stone", 14, 8),
+    backgroundColor: "#365314",
+    floorColor: "#3f6212",
+    spinZones: [
+      {
+        id: "sm-wind-outer",
+        x_cm: 0, y_cm: 0,
+        radius_cm: 18,
+        direction: "cw",
+        intensityRadPerSec: 1.8,
+        applyTo: "linear",
+      },
+      {
+        id: "sm-wind-inner",
+        x_cm: 0, y_cm: 0,
+        radius_cm: 6,
+        direction: "ccw",
+        intensityRadPerSec: 1.0,
+        applyTo: "spin",
+      },
+    ],
+    obstacles: [
+      { id: 1, x: -12, y: 0, radius: 2.5, health: 4, damage: 12, recoilDistance: 5, autoPlaced: false },
+      { id: 2, x:  12, y: 0, radius: 2.5, health: 4, damage: 12, recoilDistance: 5, autoPlaced: false },
+    ],
+    speedPaths: [
+      {
+        id: 1,
+        radius: 14,
+        shape: "circle",
+        speedBoost: 1.5,
+        spinBoost: 15,
+        frictionMultiplier: 0.8,
+        renderStyle: "spiral",
+        color: "#84cc16",
+      },
+    ],
+    waterBodies: [],
+    pits: [],
+    turrets: [],
+    portals: [],
+    gravity: 0,
+    airResistance: 0.02,
+    surfaceFriction: 0.008,
+    difficulty: "medium",
   },
 ];
 
@@ -1606,7 +2541,7 @@ async function seedArenas() {
         waterCount  ? `💧${waterCount} liquid`  : null,
       ].filter(Boolean).join("  ");
 
-      console.log(`  ✔ ${arena.name.padEnd(24)} [${arena.shape.padEnd(8)} / ${arena.theme.padEnd(11)}]  ${features || "(no features)"}`);
+      console.log(`  ✔ ${arena.name.padEnd(34)} [${arena.shape.padEnd(9)} / ${arena.theme.padEnd(15)}]  ${features || "(no features)"}`);
     } catch (err) {
       console.error(`  ✘ ${arena.name}: ${err.message}`);
     }
