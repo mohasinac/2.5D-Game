@@ -6,6 +6,7 @@ import {
 import { BaseRoom } from "./BaseRoom";
 import { BeyGhostState } from "./schema/BeyGhostState";
 import { AoI } from "../shared/constants/aoi";
+import { WARMUP_DURATION_S } from "../shared/constants/gameConstants";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats, loadComboEffects, getFirestoreDb, type ComboEffectDoc } from "../utils/firebase";
 import { loadGimmickDefs } from "../utils/firestoreLoaders";
@@ -3273,7 +3274,7 @@ export class BattleRoom extends BaseRoom<GameState> {
     if (this.arenaCache?.arenaTimeline) {
       this.timelineEvents = [...this.arenaCache.arenaTimeline].sort((a, b) => a.triggerMs - b.triggerMs);
     }
-    resetStateForNextGame(this.state, this.spawnPositions, this.physics, 3);
+    resetStateForNextGame(this.state, this.spawnPositions, this.physics, WARMUP_DURATION_S);
     this.resetWarmupTimer();
 
     this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase, gameNumber: this.state.currentGame });

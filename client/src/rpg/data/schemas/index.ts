@@ -163,6 +163,11 @@ export interface NPCBattleConfig {
    * Lets casual players still progress when grinding tough NPCs.
    */
   lossXpReward?: XPReward;
+  /**
+   * Flags set regardless of win/loss outcome. Use for story beats that must
+   * advance no matter the result (e.g. Kai battle — story continues either way).
+   */
+  alwaysSetFlags?: Record<string, boolean>;
   gate?: GateCondition;
   rewardQuestId?: string;
   rewardFlags?: Record<string, boolean>;
@@ -540,6 +545,21 @@ export interface InventoryItem {
   buyPrice?: number;
   questRelated: boolean;
   droppedBy?: string[];
+  /**
+   * Wear / durability system (launchers and ripcords).
+   * maxDurability: starting HP of the item (e.g. 100).
+   * wearRate:      durability lost per battle (e.g. 20 → breaks after 5 battles).
+   * launchBoost:   additive launch power multiplier while item is equipped
+   *                (e.g. 0.10 = +10% spin on launch). Stacks additively across upgrades.
+   * Items without maxDurability are indestructible (quest items, etc.).
+   */
+  maxDurability?: number;
+  wearRate?: number;
+  launchBoost?: number;
+  /** If true this item occupies the launcher equipment slot when equipped. */
+  isLauncher?: boolean;
+  /** If true this item is a launcher upgrade (boosts without replacing the launcher). */
+  isLauncherUpgrade?: boolean;
 }
 
 // ── Quest Runtime State ───────────────────────────────────────────────────────

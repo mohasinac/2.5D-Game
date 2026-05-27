@@ -107,7 +107,6 @@ export class BeybladeGameRenderer {
   private healthBars: Map<string, PIXI.Graphics> = new Map();
   private spinBars: Map<string, PIXI.Graphics> = new Map();
   private labelTexts: Map<string, PIXI.Text> = new Map();
-  private glowFilters: Map<string, PIXI.Filter> = new Map();
 
   // Phase G visual effect layers (per beyblade)
   private shadowSprites: Map<string, PIXI.Graphics> = new Map();
@@ -180,7 +179,6 @@ export class BeybladeGameRenderer {
   private worldBgLayer!: PIXI.Container;
   private worldBgGraphics: PIXI.Graphics | null = null;
   private worldBgSprite: PIXI.Sprite | null = null;
-  private worldBgLastType = "";
   private worldBgLastUrl = "";
 
   // Arena geometry cache — screen space
@@ -571,7 +569,6 @@ export class BeybladeGameRenderer {
       const colorNum = parseInt((bgColor || "#000000").replace("#", ""), 16);
       this.worldBgGraphics.clear();
       this.worldBgGraphics.rect(0, 0, W, H).fill({ color: colorNum });
-      this.worldBgLastType = "color";
       return;
     }
 
@@ -603,7 +600,6 @@ export class BeybladeGameRenderer {
       } else if (this.worldBgSprite) {
         this.sizeWorldBgSprite(bgFit);
       }
-      this.worldBgLastType = "image";
     }
   }
 
@@ -1977,7 +1973,7 @@ export class BeybladeGameRenderer {
     });
   }
 
-  playSpecialMoveEffect(playerId: string, type: string, physX: number, physY: number, facing: number) {
+  playSpecialMoveEffect(_playerId: string, type: string, physX: number, physY: number, facing: number) {
     const screenCoords = this.physicsToScreen(physX, physY);
     const x = screenCoords.x;
     const y = screenCoords.y;
@@ -2284,6 +2280,17 @@ export class BeybladeGameRenderer {
     this.meteorLandingGraphics = null;
     this.meteorLandingZone = null;
     this.interpolator.clear();
+
+    // Explicitly destroy GPU-allocated textures that are not in the scene graph
+    // and therefore not cleaned up by app.destroy({ children: true }).
+    if (this.arenaFloorRT) {
+      try { this.arenaFloorRT.destroy(true); } catch { /* ignore */ }
+      this.arenaFloorRT = null;
+    }
+    if (this._particleDotTexture) {
+      try { this._particleDotTexture.destroy(true); } catch { /* ignore */ }
+      this._particleDotTexture = null;
+    }
 
     // PixiJS calls gl.getExtension('WEBGL_lose_context').loseContext() inside its
     // own destroy(), which fires an async contextlost event.  That event can arrive

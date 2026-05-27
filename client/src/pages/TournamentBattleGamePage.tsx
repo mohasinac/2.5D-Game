@@ -46,6 +46,7 @@ export function TournamentBattleGamePage() {
 
   const mode = modeFromPath(location.pathname);
   const spectate = searchParams.get("spectate") === "true";
+  const launcherType = (searchParams.get("launcher") === "ripcord" ? "ripcord" : "string") as "string" | "ripcord";
   const userId = currentUser?.uid ?? settings.userId ?? "guest";
 
   const [colyseusRoomId, setColyseusRoomId] = useState<string | null>(null);
@@ -182,7 +183,7 @@ export function TournamentBattleGamePage() {
   }, [gameEndData]);
 
   useGameInput(sendInput, !isSpectating && connectionState === "connected" && gameState?.status === "in-progress");
-  const launchState = useLaunchInput(room ?? null, gameState?.status ?? "");
+  const launchState = useLaunchInput(room ?? null, gameState?.status ?? "", launcherType);
 
   const myStability = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
   const stabilityColorClass = myStability > 0.6 ? "text-theme-green" : myStability > 0.3 ? "text-theme-yellow" : "text-theme-red";
@@ -519,6 +520,7 @@ export function TournamentBattleGamePage() {
           isSpectating={isSpectating}
           myBeyId={myBeyblade?.id ?? null}
           beyblades={beyblades}
+          launcherType={launcherType}
           arena={gameState.arena}
         />
       )}

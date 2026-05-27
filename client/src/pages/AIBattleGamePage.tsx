@@ -54,6 +54,7 @@ interface AIBattleLocationState {
   aiP1Difficulty?: string;
   aiP2Difficulty?: string;
   matchId?: string;
+  launcherType?: "string" | "ripcord";
 }
 
 const TYPE_FLASH: Record<string, string> = { attack: "#ff4444", defense: "#4488ff", stamina: "#44ff88", balanced: "#ffcc44" };
@@ -261,7 +262,8 @@ export function AIBattleGamePage() {
 
   useGameInput(sendInput, !isSpectating && connectionState === "connected" && gameState?.status === "in-progress");
 
-  const launchState = useLaunchInput(room ?? null, gameState?.status ?? "");
+  const launcherType = loc.launcherType ?? "string";
+  const launchState = useLaunchInput(room ?? null, gameState?.status ?? "", launcherType);
 
   const myStability    = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
   const stabilityColorClass = myStability > 0.6 ? "text-theme-green" : myStability > 0.3 ? "text-theme-yellow" : "text-theme-red";
@@ -596,6 +598,7 @@ export function AIBattleGamePage() {
           myBeyId={myBeyblade?.id ?? null}
           beyblades={beyblades}
           arena={gameState.arena}
+          launcherType={launcherType}
         />
       )}
 

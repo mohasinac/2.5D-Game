@@ -15,6 +15,9 @@ interface LiveNPC {
   isPatrolling: boolean;
 }
 
+/** Callback fired when a chaser NPC enters catchRadius of the player. */
+export type NPCCatchCallback = (npcId: string, catchEventId: string) => void;
+
 export class NPCScheduler {
   private liveNPCs: Map<string, LiveNPC> = new Map();
   private npcDefs: Map<string, NPC> = new Map();
@@ -23,11 +26,35 @@ export class NPCScheduler {
   private placeholderTexture: PIXI.Texture | null = null;
   private textureCache: Map<string, PIXI.Texture> = new Map();
 
+  // ── Chase / catch state ────────────────────────────────────────────────────
+  /** Current player tile — updated every frame by PlayerController. */
+  private playerTile: TileCoord = { x: 0, y: 0 };
+  /** NPCs whose catch event has already fired this map session. Cleared on map change. */
+  private catchFiredIds: Set<string> = new Set();
+  /** External callback that fires a StoryEvent when the player is caught. */
+  private onNPCCatch?: NPCCatchCallback;
+
   constructor(animSystem: SpriteAnimationSystem) {
     this.animSystem = animSystem;
   }
 
   getContainer(): PIXI.Container { return this.npcContainer; }
+
+  /**
+   * Register the callback that fires when a patrol NPC catches the player.
+   * Typically wired to StoryEventSystem.queueEventIfEligible in useRPGEngine.
+   */
+  setOnNPCCatch(cb: NPCCatchCallback): void {
+    this.onNPCCatch = cb;
+  }
+
+  /**
+   * Update the tracked player tile each frame so chase detection is current.
+   * Called by PlayerController after every movement step.
+   */
+  setPlayerTile(tile: TileCoord): void {
+    this.playerTile = { ...tile };
+  }
 
   registerNPCs(npcs: NPC[]): void {
     npcs.forEach((n) => this.npcDefs.set(n.id, n));
@@ -43,6 +70,8 @@ export class NPCScheduler {
 
   spawnNPCsForMap(map: RPGMap, timeSlot: TimeSlot, tournamentDay = false): void {
     this.despawnAllNPCs();
+    // Reset catch-fired set so events can re-trigger on a fresh map load
+    this.catchFiredIds.clear();
     const activeSlot = tournamentDay ? "tournament" : timeSlot;
 
     for (const placement of map.npcPlacements) {
@@ -87,7 +116,41 @@ export class NPCScheduler {
     for (const live of this.liveNPCs.values()) {
       this.animSystem.update(live.cs, deltaMS);
       this.updatePatrol(live, deltaMS);
+      this.checkCatch(live);
     }
+  }
+
+  /**
+   * Chase / catch detection.
+   * Uses Chebyshev (chessboard) distance so diagonal adjacency counts.
+   * Fires at most once per map session per NPC (catchFiredIds guard).
+   */
+  private checkCatch(live: LiveNPC): void {
+    if (!live.def.catchRadius || !live.def.catchEventId) return;
+    if (this.catchFiredIds.has(live.def.id)) return;
+    if (!this.onNPCCatch) return;
+
+    const dx = Math.abs(live.tile.x - this.playerTile.x);
+    const dy = Math.abs(live.tile.y - this.playerTile.y);
+    const dist = Math.max(dx, dy); // Chebyshev distance
+
+    if (dist <= live.def.catchRadius) {
+      this.catchFiredIds.add(live.def.id);
+      this.onNPCCatch(live.def.id, live.def.catchEventId);
+    }
+  }
+
+  /**
+   * Allow the catch event to fire again (e.g. after the player is reset to
+   * the room start point and re-enters the dojo).
+   */
+  resetCatch(npcId: string): void {
+    this.catchFiredIds.delete(npcId);
+  }
+
+  /** Clear all catch state — call when leaving a map entirely. */
+  resetAllCatch(): void {
+    this.catchFiredIds.clear();
   }
 
   private updatePatrol(live: LiveNPC, deltaMS: number): void {

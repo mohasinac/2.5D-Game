@@ -55,6 +55,7 @@ export function BattleGamePage() {
 
   const mode = modeFromPath(location.pathname);
   const spectate = searchParams.get("spectate") === "true";
+  const launcherType = (searchParams.get("launcher") === "ripcord" ? "ripcord" : "string") as "string" | "ripcord";
   const userId = settings.userId ?? "guest";
 
   const [gameEndData, setGameEndData] = useState<{ winner: string; gameNumber: number; seriesScore: Record<string, number> } | null>(null);
@@ -255,7 +256,7 @@ export function BattleGamePage() {
 
   useGameInput(sendInput, !isSpectating && connectionState === "connected" && gameState?.status === "in-progress");
 
-  const launchState = useLaunchInput(room ?? null, gameState?.status ?? "");
+  const launchState = useLaunchInput(room ?? null, gameState?.status ?? "", launcherType);
 
   const myStability = myBeyblade ? getBeybladeStability(myBeyblade) : 0;
   const stabilityColor = myStability > 0.6 ? "text-theme-green" : myStability > 0.3 ? "text-theme-yellow" : "text-theme-red";
@@ -389,6 +390,7 @@ export function BattleGamePage() {
           myBeyId={myBeyblade?.id ?? null}
           beyblades={beyblades}
           arena={gameState.arena}
+          launcherType={launcherType}
         />
       )}
       {/* Minimap — toggle with M key; reads from beyGhosts (Phase 27) */}

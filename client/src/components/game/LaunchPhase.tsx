@@ -4,7 +4,7 @@
 // Shows arena world background behind the scrim and teammate launch progress below.
 //
 // launcherType="string"  (default) — hold SPACE to charge, release to launch.
-// launcherType="ripcord"           — oscillating gauge, press A at peak for PERFECT.
+// launcherType="ripcord"           — oscillating gauge, press SPACE at peak for PERFECT.
 
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";

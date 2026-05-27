@@ -77,13 +77,30 @@ interface InventorySlice {
   items: Array<{ itemId: string; quantity: number }>;
   beyblades: string[];
   equippedBeybladeId: string | null;
+  /** Currently equipped launcher item id (ripcord / performance launcher). */
+  equippedLauncherId: string | null;
+  /** Per-item current durability; only tracked for items with maxDurability. */
+  itemDurability: Record<string, number>;
+  /** Installed launcher upgrade item ids (stack their launchBoost values). */
+  installedUpgradeIds: string[];
   money: number;
   addItem: (itemId: string, quantity: number) => void;
   removeItem: (itemId: string, quantity: number) => boolean;
   addBeyblade: (beybladeId: string) => void;
   equipBeyblade: (beybladeId: string) => void;
+  equipLauncher: (itemId: string, maxDurability: number) => void;
+  unequipLauncher: () => void;
+  installUpgrade: (itemId: string) => void;
+  uninstallUpgrade: (itemId: string) => void;
+  /**
+   * Wear the item by `amount` durability points.
+   * Returns true if the item is now broken (durability reached 0).
+   */
+  wearItem: (itemId: string, amount: number) => boolean;
   hasItem: (itemId: string) => boolean;
   addMoney: (amount: number) => void;
+  /** Sum of launchBoost from equipped launcher + all installed upgrades. */
+  getLaunchBoostTotal: (itemDefs: Record<string, { launchBoost?: number }>) => number;
 }
 
 // ── Progression Slice ─────────────────────────────────────────────────────────
@@ -93,11 +110,29 @@ interface ProgressionSlice {
   rivalStatus: Record<string, RivalStatus>;
   battleRecords: Array<{ npcId: string; result: "win" | "loss" | "draw"; timestamp: number }>;
   defeatedNPCs: Record<string, boolean>;
+  /** Total battles fought this session — used to tick down rematch cooldowns. */
+  totalBattleCount: number;
+  /**
+   * Per-NPC rematch cooldown counter.
+   * Value = number of OTHER battles the player must finish before a rematch.
+   * Decremented by 1 after every battle. When it reaches 0, rematch is open.
+   */
+  npcRematchCooldowns: Record<string, number>;
+  /** Arc 2+ team score (resets at the start of each team tournament round). */
+  teamPoints: number;
   adjustReputation: (delta: number) => void;
   adjustFriendship: (characterId: string, delta: number) => void;
   setRivalStatus: (characterId: string, status: RivalStatus) => void;
   recordBattle: (npcId: string, result: "win" | "loss" | "draw") => void;
   markNPCDefeated: (npcId: string) => void;
+  /** Set a count-based rematch cooldown for an NPC after the player beats them. */
+  setNPCRematchCooldown: (npcId: string, battles: number) => void;
+  /** Call after every battle to tick all active cooldowns down by 1. */
+  tickRematchCooldowns: () => void;
+  /** Returns true if a rematch against this NPC is currently available. */
+  canRematch: (npcId: string) => boolean;
+  addTeamPoints: (amount: number) => void;
+  resetTeamPoints: () => void;
 }
 
 // ── Leveling Slice ────────────────────────────────────────────────────────────
@@ -107,9 +142,19 @@ interface LevelingSlice {
   beybladeXP: Record<string, number>;
   beybladeLevels: Record<string, number>;
   xpCurve: number[];
+  /**
+   * Active arc level cap. Level-up notifications and gate checks respect this
+   * ceiling; raw XP still accumulates so the player doesn't lose progress when
+   * the cap is lifted at the start of the next arc.
+   * null = no cap (use MAX_PLAYER_LEVEL).
+   */
+  arcLevelCap: number | null;
   addPlayerXP: (amount: number) => void;
   addBeybladeXP: (beybladeId: string, amount: number) => void;
   setXPCurve: (curve: number[]) => void;
+  setArcLevelCap: (cap: number | null) => void;
+  /** Effective level — min(computed level, arcLevelCap ?? MAX_PLAYER_LEVEL). */
+  effectiveLevel: () => number;
 }
 
 // ── Badge Slice ───────────────────────────────────────────────────────────────
@@ -162,6 +207,8 @@ export interface RPGStore
   applyQuestReward: (reward: import("../data/schemas").QuestReward) => void;
   applyBattleResult: (result: BattleResult) => void;
   resetRPGState: () => void;
+  /** Convenience — checks rematch gate + cooldown for a given NPC. */
+  isRematchAllowed: (npcId: string, canRematchConfig: boolean) => boolean;
 }
 
 const defaultPlayerTile: TileCoord = { x: 5, y: 5 };
@@ -286,6 +333,9 @@ export const useRPGStore = create<RPGStore>()(
       items: [],
       beyblades: [],
       equippedBeybladeId: null,
+      equippedLauncherId: null,
+      itemDurability: {},
+      installedUpgradeIds: [],
       money: 0,
       addItem: (itemId, quantity) =>
         set((s) => {
@@ -319,8 +369,67 @@ export const useRPGStore = create<RPGStore>()(
             : { beyblades: [...s.beyblades, beybladeId] }
         ),
       equipBeyblade: (beybladeId) => set({ equippedBeybladeId: beybladeId }),
+      equipLauncher: (itemId, maxDurability) =>
+        set((s) => ({
+          equippedLauncherId: itemId,
+          itemDurability: {
+            ...s.itemDurability,
+            // Initialise durability only if not already tracked (preserve wear)
+            [itemId]: s.itemDurability[itemId] ?? maxDurability,
+          },
+        })),
+      unequipLauncher: () => set({ equippedLauncherId: null }),
+      installUpgrade: (itemId) =>
+        set((s) =>
+          s.installedUpgradeIds.includes(itemId)
+            ? {}
+            : { installedUpgradeIds: [...s.installedUpgradeIds, itemId] }
+        ),
+      uninstallUpgrade: (itemId) =>
+        set((s) => ({
+          installedUpgradeIds: s.installedUpgradeIds.filter((id) => id !== itemId),
+        })),
+      wearItem: (itemId, amount) => {
+        const current = get().itemDurability[itemId];
+        if (current === undefined) return false; // indestructible
+        const next = Math.max(0, current - amount);
+        set((s) => ({ itemDurability: { ...s.itemDurability, [itemId]: next } }));
+        if (next === 0) {
+          // Auto-notify if it's the launcher
+          const isLauncher = get().equippedLauncherId === itemId;
+          if (isLauncher) {
+            set((s) => ({
+              equippedLauncherId: null,
+              notifications: [
+                ...s.notifications,
+                {
+                  id: crypto.randomUUID(),
+                  type: "item-received" as const,
+                  title: "Launcher Broke!",
+                  subtitle: "Visit the shop to get a new one.",
+                  timestamp: Date.now(),
+                },
+              ],
+            }));
+          }
+          return true;
+        }
+        return false;
+      },
       hasItem: (itemId) => get().items.some((i) => i.itemId === itemId),
       addMoney: (amount) => set((s) => ({ money: Math.max(0, s.money + amount) })),
+      getLaunchBoostTotal: (itemDefs) => {
+        const s = get();
+        let boost = 0;
+        if (s.equippedLauncherId) {
+          const dur = s.itemDurability[s.equippedLauncherId] ?? 1;
+          if (dur > 0) boost += itemDefs[s.equippedLauncherId]?.launchBoost ?? 0;
+        }
+        for (const upgradeId of s.installedUpgradeIds) {
+          boost += itemDefs[upgradeId]?.launchBoost ?? 0;
+        }
+        return boost;
+      },
 
       // ── Progression ────────────────────────────────────────────────────────
       reputation: 0,
@@ -328,6 +437,9 @@ export const useRPGStore = create<RPGStore>()(
       rivalStatus: {},
       battleRecords: [],
       defeatedNPCs: {},
+      totalBattleCount: 0,
+      npcRematchCooldowns: {},
+      teamPoints: 0,
       adjustReputation: (delta) =>
         set((s) => ({ reputation: Math.max(-100, Math.min(100, s.reputation + delta)) })),
       adjustFriendship: (characterId, delta) =>
@@ -342,9 +454,26 @@ export const useRPGStore = create<RPGStore>()(
       recordBattle: (npcId, result) =>
         set((s) => ({
           battleRecords: [...s.battleRecords, { npcId, result, timestamp: Date.now() }],
+          totalBattleCount: s.totalBattleCount + 1,
         })),
       markNPCDefeated: (npcId) =>
         set((s) => ({ defeatedNPCs: { ...s.defeatedNPCs, [npcId]: true } })),
+      setNPCRematchCooldown: (npcId, battles) =>
+        set((s) => ({
+          npcRematchCooldowns: { ...s.npcRematchCooldowns, [npcId]: battles },
+        })),
+      tickRematchCooldowns: () =>
+        set((s) => {
+          const updated: Record<string, number> = {};
+          for (const [id, count] of Object.entries(s.npcRematchCooldowns)) {
+            updated[id] = Math.max(0, count - 1);
+          }
+          return { npcRematchCooldowns: updated };
+        }),
+      canRematch: (npcId) => (get().npcRematchCooldowns[npcId] ?? 0) === 0,
+      addTeamPoints: (amount) =>
+        set((s) => ({ teamPoints: s.teamPoints + amount })),
+      resetTeamPoints: () => set({ teamPoints: 0 }),
 
       // ── Leveling ───────────────────────────────────────────────────────────
       level: 1,
@@ -352,11 +481,15 @@ export const useRPGStore = create<RPGStore>()(
       beybladeXP: {},
       beybladeLevels: {},
       xpCurve: [],
+      arcLevelCap: null,
       addPlayerXP: (amount) =>
         set((s) => {
           const newXP = s.xp + amount;
+          const rawLevel = computeLevel(newXP, s.xpCurve);
+          // Apply arc cap — XP accumulates but displayed/effective level is clamped
+          const cap = s.arcLevelCap ?? MAX_PLAYER_LEVEL;
+          const newLevel = Math.min(rawLevel, cap);
           const oldLevel = s.level;
-          const newLevel = computeLevel(newXP, s.xpCurve);
           const leveledUp = newLevel > oldLevel;
           return {
             xp: newXP,
@@ -369,7 +502,7 @@ export const useRPGStore = create<RPGStore>()(
                       id: crypto.randomUUID(),
                       type: "level-up" as const,
                       title: `Level Up!`,
-                      subtitle: `Player Level ${newLevel}`,
+                      subtitle: `Player Level ${newLevel}${s.arcLevelCap && newLevel >= s.arcLevelCap ? " (Arc Cap)" : ""}`,
                       timestamp: Date.now(),
                     },
                   ],
@@ -404,6 +537,11 @@ export const useRPGStore = create<RPGStore>()(
           };
         }),
       setXPCurve: (curve) => set({ xpCurve: curve }),
+      setArcLevelCap: (cap) => set({ arcLevelCap: cap }),
+      effectiveLevel: () => {
+        const s = get();
+        return s.arcLevelCap != null ? Math.min(s.level, s.arcLevelCap) : s.level;
+      },
 
       // ── Badges ─────────────────────────────────────────────────────────────
       earnedBadges: [],
@@ -510,6 +648,11 @@ export const useRPGStore = create<RPGStore>()(
         }
       },
 
+      isRematchAllowed: (npcId, canRematchConfig) => {
+        if (!canRematchConfig) return false;
+        return get().canRematch(npcId);
+      },
+
       resetRPGState: () =>
         set({
           currentMapId: null, currentRegionId: null, routeId: null, arcId: null,
@@ -517,9 +660,15 @@ export const useRPGStore = create<RPGStore>()(
           timeSlot: "morning", gameHour: 9, elapsedPlaytimeMs: 0,
           flags: {}, questStates: {}, activeQuestIds: [],
           activeDialogue: null, dialogueHistory: [],
-          items: [], beyblades: [], equippedBeybladeId: null, money: 0,
-          reputation: 0, friendship: {}, rivalStatus: {}, battleRecords: [], defeatedNPCs: {},
+          items: [], beyblades: [], equippedBeybladeId: null,
+          equippedLauncherId: null, itemDurability: {}, installedUpgradeIds: [],
+          money: 0,
+          reputation: 0, friendship: {}, rivalStatus: {},
+          battleRecords: [], defeatedNPCs: {},
+          totalBattleCount: 0, npcRematchCooldowns: {},
+          teamPoints: 0,
           level: 1, xp: 0, beybladeXP: {}, beybladeLevels: {},
+          arcLevelCap: null,
           earnedBadges: [], activeStoryEventId: null, activeCutsceneId: null,
           isTransitioning: false, playerLocked: false,
           pendingBattleResult: null, pendingBattleParams: null,
@@ -544,17 +693,24 @@ export const useRPGStore = create<RPGStore>()(
         items: state.items,
         beyblades: state.beyblades,
         equippedBeybladeId: state.equippedBeybladeId,
+        equippedLauncherId: state.equippedLauncherId,
+        itemDurability: state.itemDurability,
+        installedUpgradeIds: state.installedUpgradeIds,
         money: state.money,
         reputation: state.reputation,
         friendship: state.friendship,
         rivalStatus: state.rivalStatus,
         battleRecords: state.battleRecords,
         defeatedNPCs: state.defeatedNPCs,
+        totalBattleCount: state.totalBattleCount,
+        npcRematchCooldowns: state.npcRematchCooldowns,
+        teamPoints: state.teamPoints,
         level: state.level,
         xp: state.xp,
         beybladeXP: state.beybladeXP,
         beybladeLevels: state.beybladeLevels,
         xpCurve: state.xpCurve,
+        arcLevelCap: state.arcLevelCap,
         earnedBadges: state.earnedBadges,
         currentSaveSlot: state.currentSaveSlot,
         elapsedPlaytimeMs: state.elapsedPlaytimeMs,

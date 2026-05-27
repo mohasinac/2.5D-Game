@@ -1,6 +1,6 @@
 import { Client } from "colyseus";
 import { BaseRoom } from "./BaseRoom";
-import { AI_LAUNCH_DELAY_S } from "../shared/constants/gameConstants";
+import { AI_LAUNCH_DELAY_S, WARMUP_DURATION_S } from "../shared/constants/gameConstants";
 import { GameState, Beyblade } from "./schema/GameState";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats } from "../utils/firebase";
@@ -749,7 +749,7 @@ export class TournamentBattleRoom extends BaseRoom<GameState> {
   }
 
   private resetForNextGame() {
-    resetStateForNextGame(this.state, this.spawnPositions, this.physics, 3);
+    resetStateForNextGame(this.state, this.spawnPositions, this.physics, WARMUP_DURATION_S);
     this.resetWarmupTimer();
 
     this.broadcast("match-warmup", { secondsUntilStart: this.warmupTimerBase, gameNumber: this.state.currentGame });
