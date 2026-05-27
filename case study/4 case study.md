@@ -4401,7 +4401,7 @@ Dragon Saucer with War Lion SAR:
   "Usable but outclassed" follows directly
 ```
 
-Right spin with War Lion: core contact faces become trailing (φ_RS ≈ 70°) → recoil-dominant → confirmed "largely useless in RS" per user description.
+Right spin with War Lion SAR: core contact faces become trailing (φ_RS ≈ 70°) → recoil-dominant → confirmed "largely useless in RS" per user description.
 
 ---
 
@@ -5775,7 +5775,7 @@ The only mechanical link between the two sections is bearing friction. Any other
     Contact impulses are almost entirely absorbed by the SAR outer ring and shell, not
     the gyro disc — enabling extreme OS against heavy attackers.
 
-  War Lion AR:
+  War Lion Core AR:
     Outer radius too small — does not extend to r_AR > 35 mm in attack direction.
     Force-smash impulse J_contact is proportionally reduced; the SAR compatibility is moot
     since the War Lion SAR simply doesn't generate significant contact forces to isolate.
@@ -13270,210 +13270,313 @@ function doubleWingContactFreqVsTripleWing(omega_rad_s: number): {
 
 ---
 
-## Case 244 — War Bear Attack Ring (Galzzly) · ~3.7 g [ESTIMATED]: Why Three Curved Bear-Claw Arms Produce Lower Smash Fraction Than War Lion, How Convex Arm Profile Reduces Effective Contact Angle Below the Zombie-Tier Threshold, and Why No Competitive Archetype Benefits From the Resulting Contact Profile
+## Case 244 — War Bear AR (Galzzly) — Core AR: 4.3 g [FACT(PDB)] / Total with War Bear SAR: 6.7 g [FACT(PDB)] — Rounded Claw Arms with Free-Spinning Offensive SAR: Core Usable Only with Dragon Saucer SAR in LS; Fragile Spiked Sections; Non-Competitive as Stocked
 
-War Bear is Galzzly's Attack Ring at approximately 3.7 g [ESTIMATED]. It carries three bear-claw motif arms spaced at 120° intervals, each arm carrying a convex S-curve profile. This curvature makes each arm face more rounded than War Lion's relatively planar wing faces, reducing the fraction of each collision impulse directed radially outward (smash) and increasing the fraction reflected tangentially back onto self (recoil). The consequences cascade across all archetypes: smash fraction is too low to ring out opponents in RS, tangential recoil in LS does not destabilise self significantly but provides no competitive benefit, and contact reach is short enough that Wide Survivor leaves arm tips partially exposed. War Bear is non-competitive in all practical configurations.
+### 1. Geometry
 
----
+War Bear AR is Galzzly's Attack Ring: a **3-fold, three-arm SGS AR** with a bear-claw/lightning motif. Two components:
 
-### 1. Contact Geometry: Convex Arm Curvature vs War Lion
+- **Core AR: War Bear** — 4.3 g [FACT(PDB)]. Three convex bear-claw arms at ~120° spacing. Arm profile is rounded — curved rather than planar faces — which generates recoil in both spin directions rather than directed smash or clean deflection. The outer arm profile features **spiked/pointed sections** which are the intended contact points; however these sections are **fragile in Right Spin** (stress concentration at spike tips from high-impulse RS contacts) and **can even break in Left Spin**, though LS breakage risk is lower. The Core AR is also notably wide — arm tips protrude past Wide Defense's coverage radius, meaning the WD does not fully shield contact points.
 
-War Lion's arms present a relatively planar leading face in RS (α_WL_RS ≈ 18–22° from tangent, from CS2 Case 112). War Bear's equivalent arms carry a convex profile — the arm surface curves away from the approaching opponent at the contact moment:
+- **War Bear SAR** — 2.4 g [FACT(PDB)] — a free-spinning Sub Attack Ring (Case 278). Stock gimmick: free-spinning offensive SAR intended to absorb wall/arena rim impacts while still threatening opponent contacts. In practice, a free-spinning offensive SAR is non-functional: it cannot build the rim-speed differential needed to land hits (free-spins away from contact), and the mass distribution on the rotating SAR creates recoil back into the Core AR. Not useful in the stock free-spinning configuration.
 
-```
-CONTACT FACE COMPARISON (top-down schematic):
-
-War Lion RS (planar face):           War Bear RS (convex face):
-        ←                                    ←
-    ────┤  α ≈ 20°                       ────╮  α_eff ≈ 13°
-    ────┘                                 ╰──╯  (curved surface reduces effective α)
-```
-
-The convex curvature reduces effective contact angle:
+**Core AR arm geometry:**
 
 ```
-War Lion:  α_WL_RS ≈ 20°  → smash = sin(20°) = 0.342
-War Bear:  α_WB_RS ≈ 13°  → smash = sin(13°) = 0.225   [ESTIMATED]
+3 arms at ~120° (C3 symmetry):
+  Arm profile:    rounded/convex bear-claw face
+  α_RS ≈ 13°     [ESTIMATED — convex curvature reduces effective contact angle]
+  α_LS ≈ 8°      [ESTIMATED — trailing claw back, near-tangential]
+  Tip radius r:   ≈ 22–24 mm [ESTIMATED]
 
-Recoil:
-  War Lion: cos(20°) = 0.940
-  War Bear: cos(13°) = 0.974  (more tangential → higher self-recoil per contact)
+The convex arm curvature reduces smash transfer relative to War Lion:
+  War Lion RS: α ≈ 20° → smash = sin(20°) = 0.342
+  War Bear RS: α ≈ 13° → smash = sin(13°) = 0.225  (~34% less per contact)
 ```
 
-Contact reach is also slightly shorter:
+**Width / WD interaction:**
 
 ```
-r_contact_WB ≈ 20–22 mm   [ESTIMATED]
-r_contact_WL ≈ 21–23 mm
+Wide Defense radius: ≈ 22 mm
+War Bear arm tip radius: ≈ 23–24 mm → 1–2 mm tip protrusion past Wide Defense
+Wide Survivor radius: ≈ 19 mm → 3–5 mm exposed tip zone
 
+Protrusion effect: tips exposed past WD → direct-tip contact events add recoil variance
+In LS: Wide Defense preferred (best coverage); Wide Survivor leaves more tips exposed
+```
+
+### 2. Physics
+
+**Moment of inertia:**
+
+```
+Core AR (3 arms, r_outer ≈ 23 mm, r_inner ≈ 12 mm, m = 4.3 g):
+  I_core = (0.0043/2)(0.023² + 0.012²) ≈ 0.00215 × 0.000673 ≈ 1.45 × 10⁻⁶ kg·m²  [ESTIMATED]
+
+With War Bear SAR (2.4 g, r ≈ 28 mm):
+  I_SAR ≈ (0.0024/2)(0.028² + 0.018²) ≈ 0.0012 × 0.001108 ≈ 1.33 × 10⁻⁶ kg·m²  [ESTIMATED]
+  Total I ≈ 2.78 × 10⁻⁶ kg·m²  [ESTIMATED]
+```
+
+**Ring-out impulse deficit vs War Lion:**
+
+```
 At ω = 200 rad/s:
-  v_contact_WB = 200 × 0.021 = 4.2 m/s
-  v_contact_WL = 200 × 0.022 = 4.4 m/s
-
-Ring-out impulse per contact ∝ v_contact × smash:
-  WB: 4.2 × 0.225 = 0.945
-  WL: 4.4 × 0.342 = 1.505
-
-War Bear delivers ~37% less ring-out impulse per contact than War Lion at the same spin.
+  War Bear:  v × smash = 200 × 0.023 × sin(13°) = 4.6 × 0.225 = 1.035
+  War Lion:  v × smash = 200 × 0.022 × sin(20°) = 4.4 × 0.342 = 1.505
+  Deficit: ~31% less ring-out impulse per contact
 ```
 
----
-
-### 2. Left-Spin Zombie Geometry
-
-In LS the claw trailing backs become the primary contact surface. The convex back presents an even more tangential profile than the leading face:
+**With Dragon Saucer SAR (fixed):**
 
 ```
-α_WB_LS ≈ 7–9°  [ESTIMATED — curved trailing back]
-smash_LS = sin(8°) = 0.139   (minimal outward push)
-recoil_LS = cos(8°) = 0.990  (near-tangential)
+Dragon Saucer SAR fixed in place over War Bear Core AR:
+  SAR winglets provide azimuthal coverage that partially compensates for Core AR arm gaps
+  LS smash (Dragon Saucer SAR contributing): moderate improvement over bare core
+  Effective LS performance: acceptable but outclassed by War Lion Core AR, War Monkey Core AR, Twin Horn
+  Verdict: [FACT(PDB)] "acceptable in a competitive situation with Dragon Saucer SAR in LS"
+
+Dragon Saucer SAR cannot fix War Bear's width problem or fragility:
+  Arm tips still protrude → protrusion contact remains a recoil source
+  Spiked sections fragility unchanged
 ```
 
-Low LS smash and tangential recoil make War Bear passably suitable for zombie geometry. However, actual zombie viability is limited:
-
-1. **Tip exposure beyond Wide Survivor**: arm tips at r_tip_WB ≈ 22 mm vs Wide Survivor coverage ≈ 19 mm → ~3 mm exposed tip zone, generating direct-tip hits that add recoil variance (same mechanism as Cross Fang and Double Wing).
-
-2. **Three-arm gaps**: 3-fold symmetry leaves 60° dead zones between arms. Opponents contact the body ring between arms at lower angles, generating higher-recoil body-ring impacts.
-
-3. **No SAR provision**: War Lion AR's Sub AR fills coverage gaps; War Bear is a single-piece moulding with no SAR provision.
-
----
-
-### 3. Mass Distribution and WD Interaction
-
-Three arms at 120° spacing — 3-fold I symmetry:
-
-```
-I_WB ≈ 0.0037 × (0.021)² × 0.65   [arm mass fraction ~65%, ESTIMATED]
-     ≈ 1.06 × 10⁻⁶ kg·m²
-```
-
-Wide Defense (r_WD ≈ 22 mm) shields the arm tips by matching their radius, blocking RS smash in the same manner as Double Wing. For LS zombie, Wide Defense is preferred over Wide Survivor — it covers the 3 mm exposed tip zone, reducing direct-tip hits at a small LAD cost.
-
----
-
-### 4. Game Engine Mapping
+### 3. Game Engine Mapping
 
 ```typescript
 interface WarBearAR {
-  name:             "war_bear";
-  foldSymmetry:     3;
-  contactAngleRS:   13;              // degrees from tangent [ESTIMATED]
-  contactAngleLS:   8;               // degrees from tangent [ESTIMATED]
-  smashFractionRS:  0.225;           // sin(13°)
-  smashFractionLS:  0.139;           // sin(8°)
-  contactFreq_200:  95.5;            // events/s at 200 rad/s (3 × 200/2π)
-  tipRadius_mm:     22;              // [ESTIMATED]
-  mass_g:           3.7;             // [ESTIMATED]
-  coverageGap_deg:  60;              // dead zone between arms
-  competitiveRole:  "non_competitive";
-  wdRecommendation: "wide_defense";  // covers exposed tips vs Wide Survivor's 3mm gap
+  name: "war_bear_ar";
+  system: "SGS";
+  sourceBey: "Galzzly";
+  foldSymmetry: 3;
+
+  coreAR: {
+    mass_g: 4.3;                         // [FACT(PDB)]
+    contactAngleRS_deg: 13;              // [ESTIMATED — convex curvature]
+    contactAngleLS_deg: 8;               // [ESTIMATED — trailing back]
+    smashFractionRS: 0.225;              // sin(13°)
+    smashFractionLS: 0.139;              // sin(8°)
+    recoilFactor: 0.78;                  // [ESTIMATED — both directions]
+    tipRadius_mm: 23;                    // [ESTIMATED]
+    armsProtrudePastWideDefense: true;   // [FACT(PDB)] width issue
+    fragility: {
+      rs: "fragile_spiked_sections";     // [FACT(PDB)]
+      ls: "can_still_break";             // [FACT(PDB)] lower risk but not safe
+    };
+  };
+
+  sarMass_g: 2.4;                        // [FACT(PDB)] War Bear SAR
+  totalMass_g: 6.7;                      // [FACT(PDB)]
+
+  configurations: {
+    stock_freeSpinSAR: {
+      competitive: false;
+      reason: "free_spinning_offensive_SAR_only_creates_recoil"; // [FACT(PDB)]
+    };
+    withDragonSaucerSAR: {
+      ls: "acceptable_but_outclassed";   // [FACT(PDB)]
+      outclassedBy: ["war_lion_ar", "war_monkey_ar", "twin_horn_hasbro"];
+    };
+    withOtherSmallSARs: {
+      competitive: false;
+      reason: "width_protrudes_past_WD_plus_fragility"; // [FACT(PDB)]
+    };
+  };
+  I_kgm2_core: 1.45e-6;                 // [ESTIMATED]
+  I_kgm2_total: 2.78e-6;               // [ESTIMATED] with SAR
 }
-
-function warBearVsWarLionImpulse(omega_rad_s: number): {
-  wb: number; wl: number; deficit_pct: number
-} {
-  const imp_wb = omega_rad_s * 0.021 * Math.sin(13 * Math.PI / 180);
-  const imp_wl = omega_rad_s * 0.022 * Math.sin(20 * Math.PI / 180);
-  return { wb: imp_wb, wl: imp_wl, deficit_pct: (1 - imp_wb / imp_wl) * 100 };
-}
-
-// warBearVsWarLionImpulse(200) → { wb: 0.969, wl: 1.504, deficit_pct: 35.6 }
-// War Bear delivers ~36% less ring-out impulse per contact than War Lion at 200 rad/s
 ```
 
-**Verdict:** War Bear's convex arm curvature reduces effective contact angle to ~13° (vs War Lion's ~20°), delivering ~36% less ring-out impulse per contact. Single-piece moulding eliminates the SAR coverage fill that elevates War Lion LS zombie. Three-arm 60° dead zones allow body-ring contacts. No competitive archetype is achievable; non-competitive in all spin directions.
+### 4. Verdict
+
+**Role:** Non-competitive as stocked; limited LS use with Dragon Saucer SAR only.
+
+War Bear's rounded convex arms reduce smash transfer to ~0.225 (RS) and ~0.139 (LS) — below War Lion's ~0.342 and ~0.200 respectively. The stock free-spinning War Bear SAR is entirely non-functional: it creates recoil without landing hits, making the 6.7 g stock configuration useless. The Core AR alone, with smaller SARs, is too wide (arms protrude past Wide Defense) and too fragile (spiked sections break in RS, risk in LS) for competitive use.
+
+With Dragon Saucer SAR (fixed) in LS: acceptable performance, but outclassed by War Lion Core AR, War Monkey Core AR, and Hasbro's Twin Horn in this role. The width and fragility remain limiting factors. Tier: **non-competitive as stocked; limited LS use with Dragon Saucer SAR** — generally not preferred over the alternatives.
 
 ---
 
-## Case 245 — War Monkey Attack Ring (Galman) · ~3.8 g [ESTIMATED]: Why Asymmetric Tool-Shaped Arms Produce Both a Smash Deficit and a Rotational Imbalance, How Non-Uniform Arm Spacing Accelerates Nutation in the Survival Zone, and Why Neither RS Attack Nor LS Zombie Are Achievable
+## Case 245 — War Monkey AR (Galman) — Core AR: 3.7 g Mold 1 / 4.5 g Mold 2 [FACT(PDB)] / Total: 5.6 g Mold 1 / 6.3 g Mold 2 [FACT(PDB)] — Four-Fold Symmetric AR with Rounded Monkey Heads: LS Top-Tier Survival, Zombie, and Weight-Based Defense; RS Tier 2 Only
 
-War Monkey is Galman's Attack Ring at approximately 3.8 g [ESTIMATED]. The arm motif is non-symmetric — a "wrench" styling produces two larger arms and one smaller bridging arm at approximately 130°/130°/100° spacing. This asymmetry is the defining physical problem: uneven arm spacing distributes mass non-uniformly around the AR body, producing non-zero centre-of-mass eccentricity. The resulting once-per-revolution imbalance force accelerates nutation onset at low spin, reducing LAD for zombie builds and shortening stamina endurance relative to symmetric ARs. Contact geometry on the two large arms provides moderate RS smash in principle, but the bridging arm's deflective geometry reduces the weighted average smash below practical ring-out threshold. War Monkey fails all competitive archetypes.
+### 1. Geometry
 
----
+War Monkey AR is Galman's Attack Ring: a **4-winged, 4-fold symmetric** SGS AR with monkey head motifs as the leading contact face in Left Spin. Two molds with different Core AR weights:
 
-### 1. Rotational Imbalance From Non-Uniform Arm Spacing
+- **Mold 1 (Takara):** Core AR 3.7 g [FACT(PDB)] → total 5.6 g with War Monkey SAR
+- **Mold 2 (Hasbro):** Core AR 4.5 g [FACT(PDB)] — noticeably thicker construction throughout, otherwise same shape → total 6.3 g with War Monkey SAR
 
-Symmetric 3-fold ARs produce constant I(θ). War Monkey's irregular arm placement creates directional inertia variation:
+**War Monkey SAR** — 1.9 g [FACT(PDB)] — see Case 277. SAR same design across both molds.
 
-```
-Symmetric (120° spacing): I(θ) ≈ I_mean  (3-fold invariance)
+**Arm construction (4-fold):** Each arm features a **monkey head** as the leading face in Left Spin — the heads are rounded and convex, presenting a curved surface to incoming contacts. Rounded convex contacts deflect impulse nearly tangentially (very low effective contact angle) → minimal smash transfer and low recoil when struck from outside. In Right Spin, the opposite face of each arm (an angular protrusion) leads — these generate recoil without useful smash, making RS non-viable for attack.
 
-War Monkey (estimated 130°/130°/100° spacing):
-  Heavy sector: two large arms each subtending ~130°
-  Light sector: bridging arm in the narrower 100° gap
-  ΔI/I_mean ≈ 4–7%  [ESTIMATED]
-  CoM eccentricity e_cm ≈ 0.5–1.5 mm  [ESTIMATED]
-```
+**C4 symmetry:** Arms at approximately 90° spacing. This means:
+- I(θ) is nearly constant (4-fold invariance)
+- CoM eccentricity ≈ 0
+- **No rotational imbalance** — War Monkey imposes no nutation penalty on survival or stamina builds. LAD is not shortened by imbalance forces.
 
-Imbalance force at ω:
+**Elevation and width:** War Monkey sits somewhat tall on the beyblade stack and its arms extend far enough that it is not a compact AR. This limits its use in Compact customizations (contacts are more exposed when WD is narrower than the arm reach) but is not a problem for WBD or survival builds.
 
-```
-F_imbalance = m_unbalance × e_cm × ω²
-  m_unbalance ≈ 0.5 g, e_cm ≈ 1 mm, ω = 100 rad/s:
-  F = 0.0005 × 0.001 × 100² = 0.005 N  (once per rev = ~1.6 Hz)
-```
-
-At ω < 80 rad/s the ~1 Hz disturbance period (1+ s) falls within the nutation growth timescale — each pulse adds to tilt rather than averaging out, accelerating the death spiral.
-
----
-
-### 2. Contact Geometry: Weighted Average Across Three Arms
-
-Two large arms (moderate RS contact):
+**SAR coverage interaction with WD size:**
 
 ```
-α_WM_RS_large ≈ 16–18°  [ESTIMATED — flatter face than War Bear]
-smash_large = sin(17°) = 0.292
+Wide Defense / Wide Survivor: WD extends past (or near) AR radius → good shielding
+Ten Heavy (compact WD):       Does not extend to AR radius → contact points more exposed
+  → With smaller WDs, War Monkey SAR and Dragon Saucer SAR are more important for coverage
+  → War Lion SAR less effective here (shorter winglets, less coverage for War Monkey's width)
 ```
 
-Bridging arm (gap-fill, more tangential):
+### 2. Physics
+
+**Moment of inertia:**
 
 ```
-α_WM_RS_bridge ≈ 5–10°  [ESTIMATED]
-smash_bridge = sin(7°) = 0.122
+Core AR ring model (r_outer ≈ 31 mm, r_inner ≈ 12 mm):
+
+Mold 1 (m = 3.7 g):
+  I_M1 = (0.0037/2)(0.031² + 0.012²) ≈ 0.00185 × 0.001105 ≈ 2.04 × 10⁻⁶ kg·m²  [ESTIMATED]
+
+Mold 2 (m = 4.5 g):
+  I_M2 ≈ (4.5/3.7) × 2.04 ≈ 2.48 × 10⁻⁶ kg·m²  [ESTIMATED]
+
+With War Monkey SAR (1.9 g, r ≈ 28 mm):
+  I_SAR ≈ 1.30 × 10⁻⁶ kg·m²  [ESTIMATED]
+  Total M1 + SAR ≈ 3.34 × 10⁻⁶ kg·m²  [ESTIMATED]
+  Total M2 + SAR ≈ 3.78 × 10⁻⁶ kg·m²  [ESTIMATED]
+
+C4 symmetry → no imbalance:
+  ΔI(θ)/I_mean ≈ 0%  (4-fold invariance)
+  e_cm ≈ 0 mm  → no once-per-rev forcing → no nutation acceleration
 ```
 
-Weighted average smash per contact:
+**Left Spin contact model (monkey heads leading):**
 
 ```
-smash_avg = (2 × 0.292 + 0.122) / 3 = 0.235
+Rounded convex monkey head geometry:
+  α_LS ≈ 8–12°  [ESTIMATED — curved surface → near-tangential deflection]
+  smashFraction_LS ≈ 0.12   [ESTIMATED]
+  recoilFactor_LS  ≈ 0.28   [ESTIMATED — "low recoil, not as low as Twin Horn"]
+
+Comparison (LS recoil from low to high):
+  Twin Horn (Hasbro):    recoilFactor_LS ≈ 0.20  [ESTIMATED — benchmark lower]
+  War Monkey LS:         recoilFactor_LS ≈ 0.28  [ESTIMATED]
+  War Lion LS:           recoilFactor_LS ≈ 0.38  [ESTIMATED — "more exposure"]
+
+Low LS recoil enables:
+  → Survival: bey absorbs hits without losing significant spin
+  → Zombie: outspins opponents by taking low-impact contacts repeatedly
+  → WBD: hits deflected without destabilising the setup
+  → CSD: effective with Wide Survivor; less so than smaller ARs with narrow WDs
 ```
 
-This is lower than War Lion (0.342) and marginally above War Bear (0.225). The bridge arm actively reduces the average — War Monkey would be modestly better without it.
-
-LS geometry:
+**Right Spin contact model (angular protrusions leading):**
 
 ```
-α_WM_LS_large ≈ 10–12°  [ESTIMATED — flatter trailing face]
-smash_LS = sin(11°) = 0.191   (higher than War Bear's 0.139 — worse for zombie survival)
+Angular protrusion geometry:
+  α_RS ≈ 10–15°   [ESTIMATED — "only enough for recoil"]
+  smashFraction_RS ≈ 0.10   [ESTIMATED — "no offensive ability"]
+  recoilFactor_RS  ≈ 0.78   [ESTIMATED — "unpleasant recoil"]
+
+RS consequence:
+  Each contact destabilises attacker without delivering ring-out force to opponent
+  Self-destabilisation risk limits RS to Tier 2 spin-stealer with Wide Defense / Wide Survivor
+  RS attack: non-viable
 ```
 
-Higher LS smash transfers more destabilising radial impulse from each incoming opponent hit — zombie viability is lower than War Bear.
+**SAR coverage:**
 
----
+```
+Without SAR: Core AR contacts fully exposed in LS
+With War Monkey SAR: winglets intercept incoming hits before reaching core protrusions
+  → "often covers contact points very well"  [FACT(PDB)]
+  → Particularly effective in LS; reduces effective contact events on Core AR
+War Lion SAR: viable on larger WDs (Wide Defense+) but less effective at coverage
+Dragon Saucer SAR: also excellent coverage with War Monkey Core AR  [FACT(PDB)]
+```
 
 ### 3. Game Engine Mapping
 
 ```typescript
 interface WarMonkeyAR {
-  name:             "war_monkey";
-  foldSymmetry:     3;              // nominal — non-uniform arm spacing
-  isSymmetric:      false;          // imbalance flag — critical for nutation modelling
-  armSpacing_deg:   [130, 130, 100]; // estimated [ESTIMATED]
-  contactAngleRS:   17;             // large arms [ESTIMATED]
-  contactAngleLS:   11;             // [ESTIMATED]
-  smashFractionRS:  0.292;          // large arms only
-  smashFractionLS:  0.191;          // worse for zombie than War Bear
-  weightedSmashRS:  0.235;          // (2×0.292 + 0.122) / 3
-  eccentricity_mm:  1.0;            // [ESTIMATED]
-  imbalanceEffect:  "nutation_acceleration";
-  mass_g:           3.8;            // [ESTIMATED]
-  competitiveRole:  "non_competitive";
+  name: "war_monkey_ar";
+  system: "SGS";
+  sourceBey: "Galman";
+  foldSymmetry: 4;                        // C4 — ~90° arm spacing [FACT]
+  isSymmetric: true;                      // no rotational imbalance [FACT]
+
+  molds: {
+    mold1_takara: { coreAR_g: 3.7, total_g: 5.6 };  // [FACT(PDB)]
+    mold2_hasbro: { coreAR_g: 4.5, total_g: 6.3 };  // [FACT(PDB)] thicker
+    sarMass_g: 1.9;                                   // [FACT(PDB)] shared
+  };
+
+  I_kgm2_core_M1: 2.04e-6;               // [ESTIMATED]
+  I_kgm2_core_M2: 2.48e-6;               // [ESTIMATED]
+  I_kgm2_withSAR_M1: 3.34e-6;            // [ESTIMATED]
+
+  contactModel: {
+    ls: {
+      leadingFeature: "rounded_monkey_head";
+      smashFraction: 0.12;               // [ESTIMATED]
+      recoilFactor: 0.28;               // [ESTIMATED] — low, not as low as Twin Horn
+    };
+    rs: {
+      leadingFeature: "angular_protrusion";
+      smashFraction: 0.10;              // [ESTIMATED — "no offensive ability"]
+      recoilFactor: 0.78;               // [ESTIMATED — "unpleasant recoil"]
+    };
+  };
+
+  sarSynergy: {
+    war_monkey_sar: "excellent";         // [FACT(PDB)] own SAR — best coverage
+    dragon_saucer_sar: "excellent";      // [FACT(PDB)]
+    war_lion_sar: "viable_large_WD_only"; // [FACT(PDB)]
+  };
+
+  competitiveUses: {
+    ls_zombie_survival: "top_tier";      // [FACT(PDB)]
+    ls_weight_based_defense: "top_tier"; // [FACT(PDB)] "greater coverage than War Lion"
+    ls_circle_survivor_defense: "top_tier_with_wide_survivor"; // [FACT(PDB)]
+    rs_spin_stealer: "tier_2";           // [FACT(PDB)] needs Wide Defense+
+    rs_attack: "non_viable";             // [FACT(PDB)]
+    compact_rs: "acceptable_prone_to_destabilisation"; // [FACT(PDB)]
+    compact_ls: "poor_without_wide_WD";  // [FACT(PDB)]
+    screw_zeus_upper_rs: {
+      viable: true;
+      vsWarLion: "less_effective_but_much_lower_breakage_risk"; // [FACT(PDB)]
+    };
+  };
+
+  vsWarLion: {
+    ls_coverage: "greater";              // [FACT(PDB)] better defensive choice
+    ls_recoil: "lower_than_war_lion";    // [FACT(PDB)]
+    compact_viability: "not_for_compacts"; // [FACT(PDB)]
+  };
+
+  vsTwinHorn: {
+    ls_recoil: "slightly_higher";        // [FACT(PDB)] Twin Horn = lower recoil
+    ls_tier: "both_top_tier";           // [FACT(PDB)]
+  };
 }
 ```
 
-**Verdict:** War Monkey's irregular arm spacing creates rotational imbalance that accelerates nutation, disqualifying zombie and stamina roles. The bridge arm reduces weighted RS smash (0.235) below practical ring-out threshold. LS smash fraction (0.191) is higher than War Bear's, making War Monkey worse for zombie survival. No competitive archetype is achievable.
+### 4. Verdict
+
+**Role:** Top-tier Left Spin survival / zombie / defense AR; Tier 2 in Right Spin only.
+
+War Monkey's defining feature is the **rounded monkey head faces in Left Spin**, which deflect incoming hits with very low recoil (≈0.28 — close behind Twin Horn's ≈0.20). The 4-fold symmetric arm spacing produces no rotational imbalance, so LAD and survival duration are not shortened by imbalance forces. This enables competitive performance across all LS stamina archetypes:
+
+- **LS Zombie / Survival:** Top-tier. Own SAR or Dragon Saucer SAR provides excellent contact coverage. Prefer Wide Defense or Wide Survivor.
+- **LS Weight-Based Defense:** Top-tier. Greater arm coverage than War Lion means better defense in this archetype.
+- **LS Circle Survivor Defense:** Top-tier with Wide Survivor; less effective than smaller ARs when paired with narrower WDs.
+- **RS Spin Stealer:** Tier 2 only (Wide Defense/Wide Survivor). Heavily outclassed by War Lion and even Twin Horn in RS.
+- **RS Attack:** Non-viable. Angular protrusions generate self-destabilising recoil with no smash.
+- **Compact (RS):** Acceptable but prone to destabilisation from elevation and width.
+- **Screw Zeus Upper Attack (RS):** Viable — exposes Screw Zeus slopes with much lower breakage risk than War Lion SAR's fragile winglets.
+
+Long underrated and overshadowed by War Lion, War Monkey is a top-tier LS specialist in its own right. Hasbro's thicker Mold 2 (4.5 g Core AR) provides marginally more mass but the impact is generally too small to be decisive.
+
+Tier: **top-tier LS survival / zombie / defense** — one of the best LS ARs in the plastic generation.
 
 ---
 
@@ -15056,70 +15159,59 @@ function hammerTuskSpinDrain(
 
 ---
 
-## Case 265 � Jungle Shock AR (4.1 g [FACT(PDB)], Trygator) � Left-Spin Alligator Head Protrusions: Solid LS Smash with Obstructed RS Contact
+## Case 265 — Jungle Shock AR (4.1 g [FACT(PDB)], Trygator) — Round Spiked AR with Alligator Head Protrusions: LS Competitive Smash In Line with G Upper / Eight Spiker; RS Passable but Inconsistent and Outclassed
 
 ### 1. Geometry
 
-Jungle Shock AR is a 4.1 g round-profile AR with prominent alligator head protrusions from Trygator. The alligator snout shapes are the contact points � the snout geometry creates angled surfaces that work well as smash contacts in left-spin (LS) but become obstructed in right-spin (RS) due to the directional orientation of the snout angles.
+Jungle Shock is Trygator's Attack Ring: a **4-fold, round-profile** SGS single-piece AR at **4.1 g [FACT(PDB)]**. Two distinct structural features define its contact geometry:
 
-**LS performance:** in LS, the snout protrusions lead into contact � the alligator jaw geometry presents the hardest snout face to opposing ARs, generating "solid Smash with moderate recoil" comparable to similar left-spin attack ARs.
+1. **Four alligator head protrusions at ~90° spacing (C4)** — the snouts form the primary large contact surfaces. In Left Spin, the snout faces lead cleanly into contact; in Right Spin, the same snouts become slightly obstructed by the arm geometry, reducing contact consistency.
 
-**RS performance:** in RS, the same snouts now trail into contact � the jaw geometry works against the contact direction, obstructing the contact surface and reducing effective smash to the point where Jungle Shock "underperforms significantly." This is not a minor preference difference; the RS performance is actively poor (smashFractionRS � 0.18).
+2. **Dense spiked outer rim** — a continuous ring of small spike teeth around the circumference (from photos: ~16–20 spikes evenly distributed). These spikes contribute secondary contact surfaces and a mild grinding/friction effect, particularly in same-spin matchups, but the alligator heads are the dominant contact geometry.
 
-**Use case:** left-spin attack combos only. In LS it is a secondary option behind dedicated LS attack ARs (Reverse Dragon, Case 103), but it is a viable choice.
+**LS geometry (alligator snouts leading):**
+
+
+
+**RS geometry (alligator snouts partially obstructed):**
+
+
+
+No SAR slot — single-piece moulding.
 
 ### 2. Physics
 
-```
-Moment of inertia (ring model):
-  r_outer � 25 mm, r_inner � 12 mm,  m = 4.1 g
-  I = (0.0041/2)(0.025� + 0.012�) = 0.00205 � (0.000625 + 0.000144)
-    = 0.00205 � 0.000769 � 1.6 � 10?6 kg�m�
+**Moment of inertia:**
 
-Contact model (alligator-snout directional):
-  smashFractionLS: 0.45  [FACT(PDB) � "solid Smash with moderate recoil" in LS]
-  smashFractionRS: 0.18  [FACT(PDB) � "underperforms significantly" in RS; obstructed contacts]
-  recoilFactor_LS: 0.32  [ESTIMATED � "moderate recoil"]
-  recoilFactor_RS: 0.50  [ESTIMATED � obstructed geometry ? poor energy transfer ? high recoil]
 
-LS performance benchmark:
-  vs. Reverse Dragon LS (smashFractionLS � 0.55): Jungle Shock = secondary option
-  vs. Double Wing LS  (smashFractionLS � 0.52): Jungle Shock = slightly below
-```
+
+**RS vs LS smash comparison:**
+
+
+
+**Gyro Defense comparison (RS):**
+
+
+
+**LS spin-stealing secondary use:**
+
+
 
 ### 3. Game Engine Mapping
 
-```typescript
-interface JungleShockAR {
-  name: "jungle_shock_ar";
-  system: "SGS";
-  sourceBey: "Trygator";
-  mass_g: 4.1;                           // [FACT(PDB)]
-  I_kgm2: 1.6e-6;                        // [ESTIMATED]
-  contactType: "directional_snout_smash";
-  theme: "alligator_heads";
-  // Left spin (intended direction)
-  smashFractionLS: 0.45;                 // [FACT(PDB)] solid LS smash
-  recoilFactor_LS: 0.32;                 // moderate
-  // Right spin (obstructed)
-  smashFractionRS: 0.18;                 // [FACT(PDB)] poor; snouts obstruct RS contact
-  recoilFactor_RS: 0.50;                 // high; obstructed geometry bounces
-  spinPreference: "left_spin";           // strong directional dependency
-  competitiveTier: "LS_secondary";       // viable LS option; outclassed by Reverse Dragon, Double Wing
-}
-function jungleShockSmash(ar: JungleShockAR, spin: "RS" | "LS", J_base: number): number {
-  const frac = spin === "LS" ? ar.smashFractionLS : ar.smashFractionRS;
-  const recoil = spin === "LS" ? ar.recoilFactor_LS : ar.recoilFactor_RS;
-  return J_base * frac * (1 - recoil * 0.5);
-}
-```
+
 
 ### 4. Verdict
 
-**Role:** Left-spin secondary attack AR. Jungle Shock AR delivers solid LS smash (smashFractionLS = 0.45) from its alligator snout protrusions but is essentially non-functional in RS (smashFractionRS = 0.18 due to geometry obstruction). In LS builds it is a viable secondary choice behind Reverse Dragon (Case 103, 3.5g preferred for lower recoil) and Double Wing (Case 243), but Trygator is notable as a donor for left-spin combos where Jungle Shock AR is the only available LS option. Tier: LS secondary (viable but outclassed).
+**Role:** Competitive Left Spin smash AR; passable but inconsistent and outclassed in Right Spin.
+
+Jungle Shock's alligator snout protrusions are well-positioned in Left Spin, delivering competitive smash (smashFractionLS ≈ 0.45) with moderate recoil — performance comparable to G Upper and Eight Spiker. This makes it a legitimate LS smash choice. As a secondary option for LS spin-stealing attack combos, its aggression occasionally interferes with smooth spin transfer, but it remains usable.
+
+In Right Spin, the snout geometry is partially obstructed, producing inconsistent contacts with passable-but-lower smash (≈0.30) and moderate recoil. RS spin-stealing is possible but outclassed by Gyro Defense and conventional RS attack options. Not worth using in RS when LS is available.
+
+The spiked outer rim (visible in photos) contributes minor friction grinding in same-spin contexts but is not the primary contact surface. Tier: **competitive LS smash** — valid secondary choice; not the strongest option but reliable for LS builds.
 
 ---
-
 ## Case 266 � Panther Claw AR (4.5 g [FACT(PDB)], Flash Leopard / Flash Leopard Hasbro Magnacore Version) � Compact Wider Profile with Wing Gaps: RS Smash with Manageable Recoil, Low-Moderate Tier
 
 ### 1. Geometry
@@ -16206,3 +16298,484 @@ G Special Base's four metal balls (6.4 g total with balls) were its primary sell
 **Critical assembly note:** Always use SG (G Ball) (Case 274) when using all four pocket balls. Standard SG retains only two diagonal balls, causes rotational imbalance, and risks ball ejection during play — a genuine safety hazard. More than two balls = SG (G Ball) is mandatory.
 
 The base is "not a particularly useful part, but not terrible either" — a reasonable attack base for its era, outclassed in modern play by Defense Grip Base and SG Grip Change Base Tip configurations. The tip is shared with SG Wing Base, meaning the tip profile can be compared directly. Black version must be avoided (Gold Plastic Syndrome). Tier: **niche functional** — useful if SG (G Ball) is available and a semi-flat attack base is needed; poor for Compacts/Stamina/Zombie.
+
+## Case 277 — War Monkey SAR (Galman) — 1.9 g [FACT(PDB)] — Dual-Winglet Sub-Ring with ~100° Coverage: Top-Tier LS SAR; RS Requires Wide Defense or Wider
+
+### 1. Geometry
+
+War Monkey SAR is the Sub Attack Ring shipped with Galman. Weight: **1.9 g [FACT(PDB)]**. The same design is used for both Takara (Mold 1) and Hasbro (Mold 2) versions of Galman — Hasbro reinforced the Core AR but the SAR is identical.
+
+**Physical form:** A thin annular ring with **two main contact winglets at ~180° spacing** (C2 symmetry), each winglet subtending approximately 50° of arc. Total contact coverage: **~100° of azimuthal arc** [from CS2 Case 113]. The ring body is thin and flat; additional tabs provide structural locking into the Core AR's SAR slot (these are not contact winglets).
+
+**Coverage comparison:**
+
+```
+War Lion SAR:    2 winglets × ~30° each = 60° total arc
+War Monkey SAR:  2 winglets × ~50° each = 100° total arc  (67% more than War Lion SAR)
+Dragon Saucer SAR: near-full ring → ~320° effective arc
+
+War Monkey SAR sits between War Lion SAR (minimal coverage) and Dragon Saucer SAR
+(maximum coverage, but greater RS recoil penalty).
+```
+
+**RS leading face geometry:** The winglet leading face in RS is slightly steeper than the LS face (β_WM_RS ≈ 12° from tangential), generating more recoil in RS than LS. This is why Wide Defense or wider is required in RS — smaller WDs leave gaps between winglets that expose the Core AR protrusions to direct contact.
+
+**SAR slot compatibility:** Interchangeable across all SGS ARs. Documented competitive pairings: War Monkey Core AR (own), War Lion Core AR, Hasbro's Twin Horn.
+
+### 2. Physics
+
+**Inertia:**
+
+```
+Thin ring model: r_outer ≈ 29 mm, r_inner ≈ 23 mm, m = 1.9 g
+  I_SAR = (0.0019/2)(0.029² + 0.023²) ≈ 0.00095 × 0.001370 ≈ 1.30 × 10⁻⁶ kg·m²  [ESTIMATED]
+```
+
+**Contact model:**
+
+```
+Left Spin (swept/curved winglet leading face):
+  smashFraction_LS ≈ 0.10  [ESTIMATED]
+  recoilFactor_LS  ≈ 0.25  [ESTIMATED — "relatively low recoil"]
+  coverage_deg:     100
+
+Right Spin (steeper winglet face):
+  smashFraction_RS ≈ 0.10  [ESTIMATED]
+  recoilFactor_RS  ≈ 0.40  [ESTIMATED — "more recoil laden" in RS]
+  minimumWD:       "Wide Defense or wider"  // [FACT(PDB)]
+
+Both directions: "not useful in RS with anything smaller than Wide Defense"  [FACT(PDB)]
+```
+
+**Synergy with Core ARs:**
+
+```
+With War Monkey Core AR (own):
+  SAR winglets overhang and intercept contacts before reaching Core AR protrusions in LS
+  "Covers contact points very well"  [FACT(PDB)]
+  Combined LS performance: top-tier zombie/survival/WBD  [FACT(PDB)]
+
+With War Lion Core AR:
+  Closes War Lion SAR's gap-liability (r=24–26mm wedge trap at War Lion SAR's slot)
+  Greater coverage (100°) than War Lion SAR (60°) → better LS survival
+  Competitive LS pairing  [FACT(PDB)]
+
+With Twin Horn (Hasbro):
+  Competitive addition; Twin Horn itself already has low LS recoil
+  SAR adds mass and some coverage benefit  [FACT(PDB)]
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface WarMonkeySAR {
+  name: "war_monkey_sar";
+  system: "SGS";
+  sourceBey: "Galman";
+  mass_g: 1.9;                          // [FACT(PDB)]
+  I_kgm2: 1.30e-6;                      // [ESTIMATED]
+  foldSymmetry: 2;                       // C2 — 2 winglets at ~180°
+  wingletArc_deg: 50;                    // per winglet [from CS2 Case 113]
+  totalCoverage_deg: 100;               // 2 × 50° [from CS2 Case 113]
+
+  contactModel: {
+    ls: { smashFraction: 0.10, recoilFactor: 0.25 };   // [ESTIMATED]
+    rs: { smashFraction: 0.10, recoilFactor: 0.40,     // [ESTIMATED]
+          minimumWD: "wide_defense" };                   // [FACT(PDB)]
+  };
+
+  compatibility: {
+    war_monkey_ar: "excellent";          // [FACT(PDB)] own — best synergy
+    war_lion_ar: "competitive";          // [FACT(PDB)]
+    twin_horn_hasbro: "competitive";     // [FACT(PDB)]
+  };
+
+  hasbro: "identical_to_takara";         // [FACT(PDB)]
+  vsDragonSaucerSAR: "often_overshadowed_by"; // [FACT(PDB)]
+  vsWarLionSAR_coverage: "67_percent_more"; // from CS2 Case 113
+  competitiveTier_ls: "top_tier";       // [FACT(PDB)]
+  competitiveTier_rs: "acceptable_wide_defense_plus"; // [FACT(PDB)]
+}
+```
+
+### 4. Verdict
+
+**Role:** Top-tier LS Sub Attack Ring; viable RS with Wide Defense or wider.
+
+Two 50° winglets give War Monkey SAR 100° of azimuthal coverage — substantially more than War Lion SAR (60°) while keeping mass and RS recoil manageable. In LS, the low-recoil winglet profile (recoilFactor ≈ 0.25) allows it to intercept contacts before they reach the Core AR's contact points, making it excellent with War Monkey Core AR (own), War Lion Core AR, and Twin Horn. In RS, only use with Wide Defense or larger — smaller WDs expose contact gaps and increase recoil-induced self-destabilisation.
+
+Dragon Saucer SAR is the higher-coverage alternative but carries a greater RS recoil penalty. War Monkey SAR is the better balanced option for builds that need some RS usability. Tier: **top-tier LS SAR** — excellent default for War Monkey and War Lion LS builds.
+
+---
+
+## Case 278 — War Bear SAR (Galzzly) — 2.4 g [FACT(PDB)] — Free-Spinning Offensive Sub-Ring: Non-Functional Free-Spinning; Fixed-Position LS = Top-Tier Smash; Fixation-Dependent and Fragile; Worn Versions Less Suitable
+
+### 1. Geometry
+
+War Bear SAR is the Sub Attack Ring included with Galzzly. Weight: **2.4 g [FACT(PDB)]**. It ships as a **free-spinning SAR** intended to absorb arena rim impacts while still contacting opponents — a "selling point" gimmick from an era before Tornado Ridges made wall contacts rare. Neither function works in practice.
+
+**Physical form (from photos):** A thin asymmetric ring with contact winglets/arm sections at two positions (C2-ish geometry) plus yellow sticker sections indicating the contact areas. The ring is flat and somewhat open in construction. Locking tabs on the underside secure it to the Core AR's SAR slot.
+
+**Fixation mechanism:**
+
+```
+Free-spinning (stock): non-functional for attack [FACT(PDB)]
+  → Cannot build speed differential relative to Core AR
+  → Only creates recoil when contacted; cannot land solid hits on opponents
+
+Fixed in place: requires Ten Wide or Wide Defense oriented **concave-up** [FACT(PDB)]
+  → The WD holds the SAR in a fixed angular position against the Core AR
+  → Fixed SAR exposes contact points as rigid attack faces
+  → Comes loose over time as the locking lines on the underside wear down
+  → Some versions (e.g. Hyperblades War Bear) have less pronounced raised areas on the
+     underside → fix is less secure → less suitable for fixed-SAR builds
+```
+
+**Contact point geometry (fixed orientation):**
+
+```
+Left Spin (contact points well-angled):
+  The LS-facing sections of War Bear SAR form well-angled smash surfaces when fixed
+  Significant reach: extends to r ≈ 30–32 mm  [ESTIMATED]
+  Heavy mass (2.4 g) concentrated at outer radius → good smash-per-contact potential
+  smashFraction_LS (fixed): ≈ 0.55–0.65  [ESTIMATED — "well angled, excellent range"]
+  fragility: tips can shear off in LS even when fixed [FACT(PDB)]
+
+Right Spin (contact points poorly angled):
+  The RS-facing geometry is unfavourable — effectively presents the wrong angle
+  High recoil, significant stress on spike tips in RS even free-spinning
+  smashFraction_RS (fixed): ≈ 0.15  [ESTIMATED — "significant recoil issues"]
+  fragility: RS use breaks the SAR even free-spinning [FACT(PDB)]
+```
+
+### 2. Physics
+
+**Inertia:**
+
+```
+Thin ring with arm sections: r_outer ≈ 31 mm, r_inner ≈ 21 mm, m = 2.4 g
+  I_SAR = (0.0024/2)(0.031² + 0.021²) ≈ 0.0012 × 0.001402 ≈ 1.68 × 10⁻⁶ kg·m²  [ESTIMATED]
+```
+
+**LS fixed smash model:**
+
+```
+Well-angled contact points + large radius + 2.4 g mass:
+  Effective contact radius r ≈ 30 mm  [ESTIMATED]
+  At ω = 200 rad/s:  v_contact = 200 × 0.030 = 6.0 m/s
+  smashFraction (fixed, LS) ≈ 0.60  [ESTIMATED]
+  Ring-out impulse ≈ 6.0 × 0.60 × 0.0024 ≈ 8.6 × 10⁻³ N·s per contact  [ESTIMATED]
+
+This is comparable to Great Dragon AR + War Bear SAR (smashFractionLS = 0.72 documented
+in Case 259 — the Great Dragon body also contributes in that configuration).
+```
+
+**SAR-Core AR combination specifics:**
+
+```
+With Dragon Breaker Core AR:
+  Dragon Breaker's geometry exposes War Bear SAR well; combined mass at large radius
+  "Highly aggressive attack setup with excellent range"  [FACT(PDB)]
+  SAR can still slip → fixation must be maintained carefully  [FACT(PDB)]
+  Heavier total weight helps recoil control on SG Metal Flat Base GDV  [FACT(PDB)]
+
+With Great Dragon Core AR:
+  "Great Dragon and War Bear SAR reinforce each other's weight distribution and
+   contact points almost perfectly"  [FACT(PDB)]
+  Both contact points aligned → "should help with breakage for both AR and SAR" [FACT(PDB)]
+  Combined: "particularly powerful LS Smash Attack, notable recoil but explosive power" [FACT(PDB)]
+  smashFraction_LS (combined): 0.72  [FACT(PDB) from Case 259 — "comparable to Square Edge"]
+  Do NOT use Great Dragon + War Bear SAR in Right Spin:
+    War Lion SAR preferred in RS because Great Dragon does more RS work itself  [FACT(PDB)]
+    War Bear has greater RS fragility and RS recoil issues
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface WarBearSAR {
+  name: "war_bear_sar";
+  system: "SGS";
+  sourceBey: "Galzzly";
+  mass_g: 2.4;                           // [FACT(PDB)]
+  I_kgm2: 1.68e-6;                       // [ESTIMATED]
+
+  spinMode: {
+    freeSpinning: {
+      competitive: false;               // [FACT(PDB)]
+      reason: "only_creates_recoil_cannot_land_hits";
+    };
+    fixed: {
+      requiresWD: "ten_wide_or_wide_defense_concave_up"; // [FACT(PDB)]
+      loosensOverTime: true;            // [FACT(PDB)]
+      hyperbladesVersionLessSecure: true; // [FACT(PDB)]
+    };
+  };
+
+  contactModel_fixed: {
+    ls: {
+      smashFraction: 0.60;             // [ESTIMATED — "well angled, excellent range"]
+      recoilFactor: 0.42;              // [ESTIMATED]
+      fragility: "tips_can_shear";     // [FACT(PDB)]
+      competitive: "top_tier_when_fixed"; // [FACT(PDB)]
+    };
+    rs: {
+      smashFraction: 0.15;             // [ESTIMATED — "poorly angled"]
+      recoilFactor: 0.78;              // [ESTIMATED — "significant recoil"]
+      fragility: "breaks_even_free_spinning"; // [FACT(PDB)]
+      competitive: false;
+    };
+  };
+
+  combinations: {
+    dragonBreaker: {
+      ls: "highly_aggressive_excellent_range"; // [FACT(PDB)]
+      slipRisk: true;
+      heavierWeightHelpsRecoilOnFastBases: true;
+    };
+    greatDragon: {
+      ls_smashFraction: 0.72;           // [FACT(PDB) — Case 259]
+      ls_tier: "top_tier_comparable_to_square_edge"; // [FACT(PDB)]
+      note: "perfect_weight_and_CP_alignment"; // [FACT(PDB)]
+      rs: "do_not_use_war_lion_sar_preferred"; // [FACT(PDB)]
+    };
+  };
+}
+```
+
+### 4. Verdict
+
+**Role:** LS top-tier fixed-position smash SAR; non-functional free-spinning; avoid RS entirely.
+
+War Bear SAR's 2.4 g of mass at large radius, when fixed by a Wide Defense or Ten Wide concave-up, delivers well-angled LS contact points with excellent range — capable of top-tier smash output, particularly with Great Dragon (smashFraction 0.72, comparable to Square Edge). This is the primary competitive value of the part.
+
+**Critical limitations:** The fixation degrades over time (underside locking lines wear); Hyperblades version is inherently less secure. Tips can shear even in LS. In RS, the contact points are poorly angled, fragility is severe, and the SAR provides no competitive benefit — always use War Lion SAR for RS builds. Free-spinning mode is non-functional.
+
+In LS smash builds: **top-tier** with Great Dragon or Dragon Breaker. In any other configuration: non-competitive.
+
+---
+
+## Case 279 — Delta Wave AR (Orca Diver) — 4.3 g [FACT(PDB)] — Three-Fold RS Smash with Limited Range and Above-Average Recoil: Below Top-Tier; No LS Use; Contact Points Wear Quickly
+
+### 1. Geometry
+
+Delta Wave is Orca Diver's Attack Ring: a **3-fold, 3-arm** SGS single-piece AR at **4.3 g [FACT(PDB)]**. The motif is orca/dolphin-themed, with each arm forming a swept wing section terminating in an angular contact face. From photos (top view): three large wing-shaped arms at approximately 120° spacing, each featuring both curved and angular surfaces, with some depth variation giving the AR a moderate height profile (side view).
+
+**Contact geometry (RS):**
+
+The leading faces in RS are angular — angled forward to generate smash — but with more curvature/width than Triple Wing's relatively slim profile:
+
+```
+RS contact angle α ≈ 22–28°  [ESTIMATED — "solid Smash Attack but greater recoil than Triple Wing"]
+smashFraction_RS ≈ 0.40      [ESTIMATED]
+recoilFactor_RS  ≈ 0.55      [ESTIMATED — "greater recoil than Triple Wing"]
+
+Triple Wing RS (reference):
+  α ≈ 30–35°, smashFraction ≈ 0.50, recoilFactor ≈ 0.45  [ESTIMATED comparison]
+
+Delta Wave vs Triple Wing:
+  smash: ~80% of Triple Wing  [ESTIMATED — "slightly lower power output"]
+  recoil: higher              [FACT(PDB)]
+  → Leaves Delta Wave outside top tier despite solid smash in absolute terms
+```
+
+**Contact range:**
+
+```
+Arm tip radius r ≈ 27–29 mm  [ESTIMATED — "somewhat limited range"]
+Triple Wing tip radius: ≈ 30–32 mm (wider reach)
+→ Lower orbital speed at contact → less kinetic energy per hit
+```
+
+**Contact wear:**
+
+```
+"Contact points wear down relatively quickly"  [FACT(PDB)]
+→ Angular contact edges soften with use → effective α decreases over time
+→ smashFraction degrades; worn Delta Wave progressively less effective in RS
+```
+
+**LS geometry:**
+
+The trailing faces in LS present poorly angled geometry:
+
+```
+α_LS ≈ 50–60°  [ESTIMATED — "poorly angled contact points"]
+recoilFactor_LS ≈ 0.85  [ESTIMATED — "recoil and lack of power"]
+smashFraction_LS ≈ 0.10  [ESTIMATED]
+→ No useful LS application
+```
+
+**No SAR slot:** Single-piece moulding, no Sub AR provision.
+
+### 2. Physics
+
+**Moment of inertia:**
+
+```
+3-arm ring (r_outer ≈ 28 mm, r_inner ≈ 12 mm, m = 4.3 g):
+  I = (0.0043/2)(0.028² + 0.012²) ≈ 0.00215 × 0.000928 ≈ 2.0 × 10⁻⁶ kg·m²  [ESTIMATED]
+```
+
+**RS smash deficit vs Triple Wing:**
+
+```
+At ω = 200 rad/s:
+  Delta Wave: v × smash = 200 × 0.028 × 0.40 = 2.24
+  Triple Wing: v × smash = 200 × 0.031 × 0.50 = 3.10
+  Deficit: ~28% less effective RS ring-out impulse  [ESTIMATED]
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface DeltaWaveAR {
+  name: "delta_wave_ar";
+  system: "SGS";
+  sourceBey: "Orca Diver";
+  foldSymmetry: 3;
+  mass_g: 4.3;                          // [FACT(PDB)]
+  I_kgm2: 2.0e-6;                       // [ESTIMATED]
+
+  contactModel: {
+    rs: {
+      smashFraction: 0.40;             // [ESTIMATED]
+      recoilFactor: 0.55;              // [ESTIMATED — above Triple Wing]
+      tipRadius_mm: 28;                // [ESTIMATED — "limited range"]
+      wearRate: "relatively_fast";     // [FACT(PDB)]
+      tier: "below_top_tier";          // [FACT(PDB)]
+    };
+    ls: {
+      smashFraction: 0.10;            // [ESTIMATED]
+      recoilFactor: 0.85;             // [ESTIMATED]
+      competitive: false;              // [FACT(PDB)]
+    };
+  };
+
+  vsTripleWing: {
+    smashDeficit_pct: 28;             // [ESTIMATED]
+    recoilHigher: true;               // [FACT(PDB)]
+    rangeDeficit: true;               // [ESTIMATED]
+  };
+  sarSlot: false;                      // single-piece
+}
+```
+
+### 4. Verdict
+
+**Role:** Below-top-tier RS smash AR; no LS use; contact wear limits longevity.
+
+Delta Wave's RS geometry delivers solid smash but is hampered by limited contact range and greater recoil than top-tier references like Triple Wing, leaving it approximately 28% less effective in RS ring-out impulse. Contact points wear relatively quickly, reducing performance over time. LS is non-viable (poorly angled, recoil-only). Not in the top tier and not a priority acquisition. Tier: **mid RS** — functional but outclassed; avoid LS entirely.
+
+---
+
+## Case 280 — Scissors Arm AR (Crab Diver) — 4.6 g [FACT(PDB)] — Two-Fold Large Crab-Claw Design: LS Massive Power with Self-KO Recoil; RS Non-Viable; Best Non-CCL LS Smash AR
+
+### 1. Geometry
+
+Scissors Arm is Crab Diver's Attack Ring: a **2-fold, 2-arm** SGS single-piece AR at **4.6 g [FACT(PDB)]**. Two large crab-claw arm structures at ~180° spacing (C2 symmetry) — "scissors" referring to the opposed claw layout. From photos: the arms are large, thick, and feature "CRAB DIVER" stickers on each of the two claw faces. The side profile shows notable height/thickness. The underside reveals a standard mounting structure without SAR slot.
+
+**LS contact geometry (wide claw faces):**
+
+```
+Left Spin — large claw faces lead:
+  Contact surfaces are wide and positioned at large radius (r ≈ 33–35 mm)  [ESTIMATED]
+  α_LS ≈ 40–45°  [ESTIMATED — "large claws, wide contact points, huge power"]
+  smashFraction_LS ≈ 0.58–0.65  [ESTIMATED — "similar or greater power than top-tier LS ARs"]
+  recoilFactor_LS  ≈ 0.70–0.75  [ESTIMATED — "tremendous recoil, more than Hayate Attack Ring"]
+
+Power/recoil balance:
+  Hayate AR LS recoilFactor reference: ≈ 0.65  [ESTIMATED]
+  Scissors Arm exceeds Hayate in both power AND recoil → self-KO as often as opponent KO
+  Described as "often self-KOs as it KOs the opponent"  [FACT(PDB)]
+```
+
+**RS contact geometry (claw backs angled backward):**
+
+```
+Right Spin — claw backs face contact:
+  "Contact points are angled back" in RS  [FACT(PDB)]
+  α_RS ≈ 70–80°  [ESTIMATED — backs create near-radial contact = pure recoil]
+  smashFraction_RS ≈ 0.08   [ESTIMATED — "little power"]
+  recoilFactor_RS  ≈ 0.85   [ESTIMATED — "recoil with little power"]
+  → RS non-viable for any archetype
+```
+
+**SG Grip Change Base Tip (worn/grippy) — competitive exception:**
+
+```
+Worn/grippy SG Grip Change Base Tip provides extra lateral friction during high-recoil contacts:
+  Additional friction resists self-KO trajectory from recoil
+  Allows Scissors Arm to stay in the stadium through more high-power LS contacts
+  "Can be taken to a competitive level"  [FACT(PDB)]
+  "Obscure" — not widely practised; recoil remains a concern even with this setup
+```
+
+**No SAR slot:** Single-piece moulding.
+
+### 2. Physics
+
+**Moment of inertia:**
+
+```
+2-arm design (r_outer ≈ 34 mm, r_inner ≈ 14 mm, m = 4.6 g):
+  I = (0.0046/2)(0.034² + 0.014²) ≈ 0.0023 × 0.001352 ≈ 3.11 × 10⁻⁶ kg·m²  [ESTIMATED]
+
+High I relative to mass (2-arm design concentrates mass at large radius):
+  Compare Triple Wing: I ≈ 2.1 × 10⁻⁶ at 4.0 g → I/m ≈ 0.53 × 10⁻⁶ per gram
+  Scissors Arm: I/m ≈ 0.68 × 10⁻⁶ per gram (29% higher I per gram)
+  → High peripheral mass → more rotational energy per hit delivered to opponent
+  → Also more energy returned to self = recoil self-destabilisation
+```
+
+**LS smash comparison:**
+
+```
+At ω = 200 rad/s:
+  Scissors Arm LS: v × smash = 200 × 0.034 × 0.62 = 4.22
+  Square Edge LS (reference top-tier): ≈ 4.30  [ESTIMATED comparison]
+  Scissors Arm approaches top-tier power, exceeds it in self-recoil
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface ScissorsArmAR {
+  name: "scissors_arm_ar";
+  system: "SGS";
+  sourceBey: "Crab Diver";
+  foldSymmetry: 2;
+  mass_g: 4.6;                          // [FACT(PDB)]
+  I_kgm2: 3.11e-6;                      // [ESTIMATED]
+
+  contactModel: {
+    ls: {
+      smashFraction: 0.62;             // [ESTIMATED — "similar or greater than top-tier"]
+      recoilFactor: 0.72;              // [ESTIMATED — "more than Hayate AR"]
+      tipRadius_mm: 34;                // [ESTIMATED]
+      selfKORisk: "high";              // [FACT(PDB)] — "often self-KOs as it KOs opponent"
+      tier: "best_non_CCL_ls_smash";   // [FACT(PDB)]
+    };
+    rs: {
+      smashFraction: 0.08;             // [ESTIMATED — "little power"]
+      recoilFactor: 0.85;              // [ESTIMATED]
+      competitive: false;              // [FACT(PDB)]
+    };
+  };
+
+  competitive: {
+    standard: "below_competitive_combos_list"; // [FACT(PDB)] self-KO issue
+    withWornSGCGBTip: "can_reach_competitive_level"; // [FACT(PDB)] "obscure"
+  };
+
+  sarSlot: false;
+}
+```
+
+### 4. Verdict
+
+**Role:** Best LS smash AR outside the Competitive Combos List — massive power, massive recoil, frequent self-KOs.
+
+Scissors Arm delivers LS smash comparable to or exceeding top-tier ARs (smashFraction ≈ 0.62) but couples this with tremendous recoil (recoilFactor ≈ 0.72 — more than Hayate Attack Ring), leading to frequent self-KOs. This self-KO tendency keeps it off the Competitive Combos List despite the raw power. With a worn/grippy SG Grip Change Base Tip the lateral friction can hold Scissors Arm in-stadium through recoil, bringing it to competitive viability, but this is obscure and recoil remains a concern. RS is non-viable (contact faces are angled backward in RS, creating pure recoil with no smash).
+
+Tier: **high-power niche** — best non-CCL LS smash AR; competitive with specific SG Grip Change Base Tip configuration; avoid RS.

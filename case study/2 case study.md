@@ -7878,11 +7878,11 @@ function companionTiltFactor(
 }
 ```
 
-#### 5d. War Lion SAR / War Monkey SAR
+#### 5d. War Lion Core AR / War Monkey Core AR (hosting Screw Zeus SAR)
 
-War Lion and War Monkey are traditional HMS-style Upper Attack companions. Their defining feature is that their protruding slopes are exposed **above** the Screw Zeus head plane in right-spin, creating an upper-attack geometry that the bare SAR alone lacks.
+War Lion Core AR and War Monkey Core AR are traditional HMS-style Upper Attack companions for Screw Zeus SAR. Their defining feature is that their protruding slopes are exposed **above** the Screw Zeus head plane in right-spin, creating an upper-attack geometry that the bare Screw Zeus SAR alone lacks.
 
-The slope angle Î²_WL â‰ˆ 28Â° (upper face of War Lion protrusion) produces an upward impulse component on contact:
+The slope angle Î²_WL â‰ˆ 28Â° (upper face of War Lion Core AR protrusion) produces an upward impulse component on contact:
 
     J_upper = J Ã— sin(28Â°) = 0.469 Ã— J
 
@@ -7890,13 +7890,13 @@ At J = 0.10 NÂ·s (moderate hit):
 
     J_upper = 0.047  NÂ·s upward on opponent
 
-This is substantial â€” comparable to Upper Fox AR's upper attack performance. The combined Screw Zeus smash (from the SAR head) plus War Lion upper attack creates a two-vector impulse: lateral smash to destabilize plus upward upper to lift. The pairing is one of the few HMS setups that delivers both simultaneously.
+This is substantial â€” comparable to Upper Fox AR's upper attack performance. The combined Screw Zeus smash (from the Screw Zeus SAR head) plus War Lion Core AR upper attack creates a two-vector impulse: lateral smash to destabilize plus upward upper to lift. The pairing is one of the few HMS setups that delivers both simultaneously.
 
-**War Lion vs War Monkey**: War Lion's protrusions are slightly more aggressive (steeper slope face), producing a higher upper attack component but also higher self-recoil. War Monkey's protrusions are shallower (Î²_WM â‰ˆ 22Â°), giving:
+**War Lion Core AR vs War Monkey Core AR**: War Lion Core AR's protrusions are slightly more aggressive (steeper slope face), producing a higher upper attack component but also higher self-recoil. War Monkey Core AR's protrusions are shallower (Î²_WM â‰ˆ 22Â°), giving:
 
     J_upper_WM = J Ã— sin(22Â°) = 0.374 Ã— J
 
-War Monkey is therefore the safer pairing â€” it sacrifices 20% upper attack power in exchange for lower self-destabilization risk, making it viable on a broader range of bases.
+War Monkey Core AR is therefore the safer pairing â€” it sacrifices 20% upper attack power in exchange for lower self-destabilization risk, making it viable on a broader range of bases.
 
 ```typescript
 function warLionUpperImpulse(
@@ -7957,7 +7957,7 @@ function overlapInterferenceFactor(
 
 ### Summary
 
-Screw Zeus SAR is a high-ceiling, high-floor attack ring whose ceiling is set by companion choice and speed maintenance, and whose floor is set by the mandatory fixation requirement and CSD immunity. Free-spinning the SAR collapses performance to near-zero impulse efficiency within one revolution due to dumbbell phase-slip. Fixed, the SAR requires above ~340 RPM at contact to avoid self-destabilizing recoil. Right-spin presents the designed Î± â‰ˆ 22Â° corner contact with cot(22Â°) = 2.48 efficiency; left-spin inverts the slope to a downward Î² â‰ˆ 8Â°, imposing ~0.83 rad/hit tilt perturbation on tall bases. Dragon Breaker maximises mass and power against heavy defense; Dragon Saucer optimises durability through wider contact; Great Dragon maximises speed threshold headroom; War Lion adds 28Â°-slope upper attack at the cost of 14% higher self-recoil relative to War Monkey's 22Â°-slope safer profile. Circle Survivor Defense is structurally immune via rim geometry: r_CSD = 0.028 m > r_corner = 0.026 m forces contact onto an Î± â‰ˆ 85Â° face, converting 91% of impulse into attacker self-recoil.
+Screw Zeus SAR is a high-ceiling, high-floor attack ring whose ceiling is set by companion choice and speed maintenance, and whose floor is set by the mandatory fixation requirement and CSD immunity. Free-spinning the SAR collapses performance to near-zero impulse efficiency within one revolution due to dumbbell phase-slip. Fixed, the SAR requires above ~340 RPM at contact to avoid self-destabilizing recoil. Right-spin presents the designed Î± â‰ˆ 22Â° corner contact with cot(22Â°) = 2.48 efficiency; left-spin inverts the slope to a downward Î² â‰ˆ 8Â°, imposing ~0.83 rad/hit tilt perturbation on tall bases. Dragon Breaker Core AR maximises mass and power against heavy defense; Dragon Saucer Core AR optimises durability through wider contact; Great Dragon Core AR maximises speed threshold headroom; War Lion Core AR adds 28Â°-slope upper attack at the cost of 14% higher self-recoil relative to War Monkey Core AR's 22Â°-slope safer profile. Circle Survivor Defense is structurally immune via rim geometry: r_CSD = 0.028 m > r_corner = 0.026 m forces contact onto an Î± â‰ˆ 85Â° face, converting 91% of impulse into attacker self-recoil.
 
 ## Case 112 -- AR War Lion: Two-Wing Oval Silhouette, Near-Spin-Direction-Symmetric Low Recoil, and WD-Radius-Dependent Contact Obstruction
 
@@ -13273,40 +13273,40 @@ function freeShaftRetainedSpin(
 
 ---
 
-## Case 140 — CWD Defense Ring (Sea Dragon MS / RBA2) — ~19 g [ESTIMATED] — Near-Circular Top-Tier CWD: Peer to CWD God Ring, Universal Archetype Compatibility
+## Case 140 ï¿½ CWD Defense Ring (Sea Dragon MS / RBA2) ï¿½ ~19 g [ESTIMATED] ï¿½ Near-Circular Top-Tier CWD: Peer to CWD God Ring, Universal Archetype Compatibility
 
 ### 1. Geometry
 
-CWD Defense Ring is the Customize Weight Disk of Sea Dragon MS (RBA2 — Random Booster Act 2). ABS plastic, approximately 19 g [ESTIMATED — from hmsdb.com/initial-releases/rba2-sea-dragon]. Profile: "very conservative, circular, and weighty" (hmsdb). Near-circular outer perimeter — minimal asymmetry, near-uniform mass distribution. The only CWD in HMS with a profile equivalent to CWD God Ring (Case 131, ~18 g, Shining God MS). Competitively, both Defense Ring and God Ring occupy the same tier.
+CWD Defense Ring is the Customize Weight Disk of Sea Dragon MS (RBA2 ï¿½ Random Booster Act 2). ABS plastic, approximately 19 g [ESTIMATED ï¿½ from hmsdb.com/initial-releases/rba2-sea-dragon]. Profile: "very conservative, circular, and weighty" (hmsdb). Near-circular outer perimeter ï¿½ minimal asymmetry, near-uniform mass distribution. The only CWD in HMS with a profile equivalent to CWD God Ring (Case 131, ~18 g, Shining God MS). Competitively, both Defense Ring and God Ring occupy the same tier.
 
-Also referred to as "CWD Free Defense Ring" in combo recommendations — the "Free" prefix indicates the free-spin mounting common to all HMS CWDs.
+Also referred to as "CWD Free Defense Ring" in combo recommendations ï¿½ the "Free" prefix indicates the free-spin mounting common to all HMS CWDs.
 
 ### 2. Physics
 
 **Moment of inertia:**
-Near-circular ring profile, r_outer ˜ 23 mm, r_inner ˜ 19 mm:
+Near-circular ring profile, r_outer ï¿½ 23 mm, r_inner ï¿½ 19 mm:
 
-    I_DefenseRing ˜ (0.019/2)(0.023² + 0.019²) ˜ 3.65 × 10?6 kg·m²
+    I_DefenseRing ï¿½ (0.019/2)(0.023ï¿½ + 0.019ï¿½) ï¿½ 3.65 ï¿½ 10?6 kgï¿½mï¿½
 
 The 1g mass advantage over God Ring (19g vs 18g) at the same outer radius:
 
-    ?I ˜ 0.001 × (0.021²) ˜ 4.4 × 10?7 kg·m²
-    Defense Ring I ˜ 3.65 × 10?6 vs God Ring ˜ 3.5 × 10?6 — marginal advantage (~4%)
+    ?I ï¿½ 0.001 ï¿½ (0.021ï¿½) ï¿½ 4.4 ï¿½ 10?7 kgï¿½mï¿½
+    Defense Ring I ï¿½ 3.65 ï¿½ 10?6 vs God Ring ï¿½ 3.5 ï¿½ 10?6 ï¿½ marginal advantage (~4%)
 
 **Spin decay improvement over Circle Heavy baseline:**
-Circle Heavy: I ˜ 3.0 × 10?6 kg·m²
-Defense Ring: I ˜ 3.65 × 10?6 kg·m²
+Circle Heavy: I ï¿½ 3.0 ï¿½ 10?6 kgï¿½mï¿½
+Defense Ring: I ï¿½ 3.65 ï¿½ 10?6 kgï¿½mï¿½
 
-    Improvement: (3.65 - 3.0) / 3.0 ˜ 22% slower spin decay vs Circle Heavy
+    Improvement: (3.65 - 3.0) / 3.0 ï¿½ 22% slower spin decay vs Circle Heavy
 
 **"Perfectly viable across all archetypes" (hmsdb):**
 - Attack: High I ring doesn't hurt attack; its near-circular profile provides no recoil-causing geometry.
 - Defense: Smooth circular perimeter deflects attacks tangentially rather than catching them.
-- Stamina: Maximum I per gram for HMS CWDs — best sustained spin.
+- Stamina: Maximum I per gram for HMS CWDs ï¿½ best sustained spin.
 - Upper Attack: Near-circular profile doesn't create height steps that reduce upper-attack clearance.
 
 **Seagon Attacker synergy note:**
-Sea Dragon's AR (Seagon Attacker, Case 88) is an upper-attack AR. Defense Ring's near-circular profile provides no cross-contamination of the upper-attack geometry — combining upper AR + neutral CWD is architecturally correct (cf. Devil Crusher + God Ring in Case 131).
+Sea Dragon's AR (Seagon Attacker, Case 88) is an upper-attack AR. Defense Ring's near-circular profile provides no cross-contamination of the upper-attack geometry ï¿½ combining upper AR + neutral CWD is architecturally correct (cf. Devil Crusher + God Ring in Case 131).
 
 ### 3. Game Engine Mapping
 
@@ -13334,44 +13334,44 @@ interface CWDDefenseRing {
 
 ### 4. Verdict
 
-**Role:** Top-tier HMS CWD — peer to CWD God Ring. Defense Ring is the original top-tier circular HMS CWD, predating God Ring by several releases. Both are mechanically equivalent: near-circular, near-19g, I ˜ 3.5–3.65 × 10?6 kg·m². The Defense Ring's marginally higher mass (~1g more) gives it a fractional I edge. Obtain from Sea Dragon MS (RBA2). Recommended in the best HMS combos (Jiraiya Blade + Defense Ring + Grip Flat Core Ultimate = one of the top three HMS attack customs). Tier: HIGH.
+**Role:** Top-tier HMS CWD ï¿½ peer to CWD God Ring. Defense Ring is the original top-tier circular HMS CWD, predating God Ring by several releases. Both are mechanically equivalent: near-circular, near-19g, I ï¿½ 3.5ï¿½3.65 ï¿½ 10?6 kgï¿½mï¿½. The Defense Ring's marginally higher mass (~1g more) gives it a fractional I edge. Obtain from Sea Dragon MS (RBA2). Recommended in the best HMS combos (Jiraiya Blade + Defense Ring + Grip Flat Core Ultimate = one of the top three HMS attack customs). Tier: HIGH.
 
 ---
 
-## Case 141 — Metal Upper AR (Driger MS / A-124) — ~20 g [ESTIMATED] — Rei's HMS Upper: Paired Spiral Slopes, Narrower Window than Spiral Upper, Right-Spin Primary
+## Case 141 ï¿½ Metal Upper AR (Driger MS / A-124) ï¿½ ~20 g [ESTIMATED] ï¿½ Rei's HMS Upper: Paired Spiral Slopes, Narrower Window than Spiral Upper, Right-Spin Primary
 
 ### 1. Geometry
 
-Metal Upper is the HMS Attack Ring of Driger MS (A-124, Rei Kon's HMS bey). Weight: ~20 g [ESTIMATED — from hmsdb.com/initial-releases/a-124-driger-ms]. Zinc-alloy metal frame bonded to ABS caul. Upper-attack orientation: the metal frame carries paired forward-swept slopes on each face.
+Metal Upper is the HMS Attack Ring of Driger MS (A-124, Rei Kon's HMS bey). Weight: ~20 g [ESTIMATED ï¿½ from hmsdb.com/initial-releases/a-124-driger-ms]. Zinc-alloy metal frame bonded to ABS caul. Upper-attack orientation: the metal frame carries paired forward-swept slopes on each face.
 
-Note from hmsdb attack-ring-variations page: Metal Upper has mold variants. The "upper" in the name is confirmed by the attack type listed — it is an upper-attack AR, not a smash AR. Paired slopes implies two contact faces per revolution rather than Spiral Upper's continuous spiral arc.
+Note from hmsdb attack-ring-variations page: Metal Upper has mold variants. The "upper" in the name is confirmed by the attack type listed ï¿½ it is an upper-attack AR, not a smash AR. Paired slopes implies two contact faces per revolution rather than Spiral Upper's continuous spiral arc.
 
 ### 2. Physics
 
 **Paired slope upper attack (right-spin primary):**
-Two slope faces per half-revolution (estimated from "paired" description). Each slope face at a_upper ˜ 30°:
+Two slope faces per half-revolution (estimated from "paired" description). Each slope face at a_upper ï¿½ 30ï¿½:
 
-    Upper fraction per face = sin(30°) = 0.500
-    Contact arc per face ˜ 55–65° (vs Spiral Upper's 170° omnidirectional)
+    Upper fraction per face = sin(30ï¿½) = 0.500
+    Contact arc per face ï¿½ 55ï¿½65ï¿½ (vs Spiral Upper's 170ï¿½ omnidirectional)
 
-Effective upper-attack window: 2 × 60° = 120° per revolution — better than single-slope ARs but inferior to Spiral Upper (170°+).
+Effective upper-attack window: 2 ï¿½ 60ï¿½ = 120ï¿½ per revolution ï¿½ better than single-slope ARs but inferior to Spiral Upper (170ï¿½+).
 
 **Comparison with Spiral Upper (Case 125, ~20g):**
 | AR | Weight | Upper Window | Architecture |
 |----|--------|-------------|--------------|
-| Spiral Upper | ~20g | ~170° (omnidirectional) | Continuous spiral slope |
-| Metal Upper | ~20g | ~120° (paired slopes) | Two discrete slope faces |
+| Spiral Upper | ~20g | ~170ï¿½ (omnidirectional) | Continuous spiral slope |
+| Metal Upper | ~20g | ~120ï¿½ (paired slopes) | Two discrete slope faces |
 
 At equal weight, Spiral Upper's omnidirectional contact window is superior. Metal Upper is a viable second-choice upper-attack AR when Spiral Upper is unavailable.
 
 **Left-spin consideration:**
-Reversed slope contact in LS: slope leading-face reverses. The paired slopes become trailing-edge contacts — glancing rather than upper-attack. Left-spin produces lower-angle tangential contact:
+Reversed slope contact in LS: slope leading-face reverses. The paired slopes become trailing-edge contacts ï¿½ glancing rather than upper-attack. Left-spin produces lower-angle tangential contact:
 
-    LS smash fraction ˜ sin(15°) ˜ 0.259 (trailing edge from reversed slope)
-    Not a viable LS combat AR — use RS only
+    LS smash fraction ï¿½ sin(15ï¿½) ï¿½ 0.259 (trailing edge from reversed slope)
+    Not a viable LS combat AR ï¿½ use RS only
 
 **Mold variants:**
-hmsdb confirms mold variants exist. Without weight data for each mold variant, treat as same performance range (~20g ± 0.5g).
+hmsdb confirms mold variants exist. Without weight data for each mold variant, treat as same performance range (~20g ï¿½ 0.5g).
 
 ### 3. Game Engine Mapping
 
@@ -13382,9 +13382,9 @@ interface MetalUpperAR {
   sourceBey: "Driger MS (A-124)";
   mass_g: 20;                          // [ESTIMATED]
   attackType: "upper";
-  upperFractionRS: 0.500;              // sin(30°) per slope face
-  contactWindowRS_deg: 120;            // 2 × ~60° faces vs Spiral Upper's 170°
-  smashFractionLS: 0.259;             // trailing edge LS — not viable
+  upperFractionRS: 0.500;              // sin(30ï¿½) per slope face
+  contactWindowRS_deg: 120;            // 2 ï¿½ ~60ï¿½ faces vs Spiral Upper's 170ï¿½
+  smashFractionLS: 0.259;             // trailing edge LS ï¿½ not viable
   primarySpin: "right";
   moldVariants: true;
   comparedToSpiralUpper: {
@@ -13398,24 +13398,24 @@ interface MetalUpperAR {
 
 ### 4. Verdict
 
-**Role:** Second-tier HMS Upper Attack AR. Metal Upper shares Spiral Upper's weight class (~20g) and upper-attack orientation but with a narrower effective contact window (120° vs 170°). Right-spin primary; left-spin is low-value trailing contact only. A credible donor for upper-attack builds when Spiral Upper (Dranzer MS) or Samurai Upper (MA-20) are unavailable. Tier: mid — functional upper-attack AR, outclassed by both Spiral Upper and Samurai Upper in coverage, but usable and accessible from Driger MS (A-124, Initial Release).
+**Role:** Second-tier HMS Upper Attack AR. Metal Upper shares Spiral Upper's weight class (~20g) and upper-attack orientation but with a narrower effective contact window (120ï¿½ vs 170ï¿½). Right-spin primary; left-spin is low-value trailing contact only. A credible donor for upper-attack builds when Spiral Upper (Dranzer MS) or Samurai Upper (MA-20) are unavailable. Tier: mid ï¿½ functional upper-attack AR, outclassed by both Spiral Upper and Samurai Upper in coverage, but usable and accessible from Driger MS (A-124, Initial Release).
 
 ---
 
-## Case 142 — Jiraiya Blade AR (Jiraiya MS / MA-22) — ~22 g [ESTIMATED] — Heaviest HMS AR: Symmetric Dual-Spin Rotational Smash, Top-Tier Attack
+## Case 142 ï¿½ Jiraiya Blade AR (Jiraiya MS / MA-22) ï¿½ ~22 g [ESTIMATED] ï¿½ Heaviest HMS AR: Symmetric Dual-Spin Rotational Smash, Top-Tier Attack
 
 ### 1. Geometry
 
-Jiraiya Blade is the Attack Ring of Jiraiya MS (MA-22, Gimmick Specialty Series). Weight: ~22 g [ESTIMATED — from hmsdb.com/gimmick-specialty-series/ma-22-jiraiya-ms]. At ~22g, Jiraiya Blade is the heaviest known HMS AR — 2g above Spiral Upper (~20g) and 4g above God Smasher (18g). The AR is described as "symmetrical, heavy, and a very powerful Attack-oriented AR" (hmsdb) with "considerable amount of Rotational Smash" and performance "similarly well in left-spin as it does in right-spin."
+Jiraiya Blade is the Attack Ring of Jiraiya MS (MA-22, Gimmick Specialty Series). Weight: ~22 g [ESTIMATED ï¿½ from hmsdb.com/gimmick-specialty-series/ma-22-jiraiya-ms]. At ~22g, Jiraiya Blade is the heaviest known HMS AR ï¿½ 2g above Spiral Upper (~20g) and 4g above God Smasher (18g). The AR is described as "symmetrical, heavy, and a very powerful Attack-oriented AR" (hmsdb) with "considerable amount of Rotational Smash" and performance "similarly well in left-spin as it does in right-spin."
 
-The name "Jiraiya Blade" and symmetrical design suggest multiple blade-edge contacts evenly distributed — true spin-direction symmetry (equal performance RS and LS is the rarest property in HMS ARs).
+The name "Jiraiya Blade" and symmetrical design suggest multiple blade-edge contacts evenly distributed ï¿½ true spin-direction symmetry (equal performance RS and LS is the rarest property in HMS ARs).
 
 ### 2. Physics
 
 **Rotational smash at maximum AR mass:**
-At 22g concentrated in metal frame at r ˜ 22 mm:
+At 22g concentrated in metal frame at r ï¿½ 22 mm:
 
-    I_AR ˜ 0.022 × (0.022)² ˜ 1.06 × 10?5 kg·m²
+    I_AR ï¿½ 0.022 ï¿½ (0.022)ï¿½ ï¿½ 1.06 ï¿½ 10?5 kgï¿½mï¿½
 
 This is the highest AR inertia contribution in HMS. During smash contact, the AR's inertia resists self-recoil:
 
@@ -13423,18 +13423,18 @@ This is the highest AR inertia contribution in HMS. During smash contact, the AR
 
 At 22g AR vs 18g God Smasher:
 
-    Recoil reduction: ?(4g) × (0.022)² / I_combo ˜ 1.9 × 10?6 / 2.5×10?5 ˜ 7.7% less self-deflection per hit
+    Recoil reduction: ?(4g) ï¿½ (0.022)ï¿½ / I_combo ï¿½ 1.9 ï¿½ 10?6 / 2.5ï¿½10?5 ï¿½ 7.7% less self-deflection per hit
 
 **Symmetric dual-spin smash:**
-"Performs similarly well in left-spin as it does in right-spin" — symmetrical blade geometry means no preferred spin direction for smash delivery:
+"Performs similarly well in left-spin as it does in right-spin" ï¿½ symmetrical blade geometry means no preferred spin direction for smash delivery:
 
-    Smash fraction RS ˜ smash fraction LS (hmsdb confirms)
-    Estimated a_smash ˜ 28° (symmetric blade): sin(28°) ˜ 0.469 each direction
+    Smash fraction RS ï¿½ smash fraction LS (hmsdb confirms)
+    Estimated a_smash ï¿½ 28ï¿½ (symmetric blade): sin(28ï¿½) ï¿½ 0.469 each direction
 
 This dual-spin symmetry makes Jiraiya Blade uniquely versatile for counter-spin combos.
 
 **Wear dependency:**
-hmsdb notes: "performs noticeably worse on worn Grip Flat Core RC." Jiraiya Blade's high contact mass needs a fast-moving flat-tip RC to achieve sufficient orbital speed — worn rubber reduces attack velocity below Jiraiya Blade's kinematic threshold. Use only with mint or near-mint Grip Flat Core (Ultimate Mode preferred).
+hmsdb notes: "performs noticeably worse on worn Grip Flat Core RC." Jiraiya Blade's high contact mass needs a fast-moving flat-tip RC to achieve sufficient orbital speed ï¿½ worn rubber reduces attack velocity below Jiraiya Blade's kinematic threshold. Use only with mint or near-mint Grip Flat Core (Ultimate Mode preferred).
 
 ### 3. Game Engine Mapping
 
@@ -13444,10 +13444,10 @@ interface JiraiyaBladeAR {
   system: "HMS";
   sourceBey: "Jiraiya MS (MA-22)";
   mass_g: 22;                          // [ESTIMATED]
-  smashFractionRS: 0.469;              // sin(28°) symmetric blades
-  smashFractionLS: 0.469;             // EQUAL RS/LS — dual-spin symmetric
+  smashFractionRS: 0.469;              // sin(28ï¿½) symmetric blades
+  smashFractionLS: 0.469;             // EQUAL RS/LS ï¿½ dual-spin symmetric
   outerRadius_mm: 22;
-  momentOfInertia_AR: 1.06e-5;        // heaviest HMS AR — maximum AR inertia
+  momentOfInertia_AR: 1.06e-5;        // heaviest HMS AR ï¿½ maximum AR inertia
   selfRecoilReduction: 0.077;         // 7.7% less deflection vs God Smasher per hit
   wearSensitive: true;                // needs mint Grip Flat Core for full output
   pairedRC: "grip_flat_core_ultimate";
@@ -13463,34 +13463,34 @@ function jiraiyaBladeEffectiveness(
 ): number {
   const baseFraction = 0.469;
   const wornPenalty = rcCondition === "worn" ? 0.25 : 0;
-  // symmetric — spinDir doesn't change output
+  // symmetric ï¿½ spinDir doesn't change output
   return baseFraction * (1 - wornPenalty);
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Top-tier HMS Smash AR. Jiraiya Blade is the heaviest HMS AR at ~22g, delivering the highest AR-level inertia contribution in the system. Its symmetric blade geometry produces equal smash output in both spin directions — a rarity in HMS. The recommended combo (Jiraiya Blade + CWD Defense Ring + Grip Flat Core Ultimate) is one of the highest-rated HMS attack customs. Weakness: wear-sensitive — performance degrades significantly on worn rubber RCs. Always pair with mint-condition Grip Flat Core. Tier: HIGH.
+**Role:** Top-tier HMS Smash AR. Jiraiya Blade is the heaviest HMS AR at ~22g, delivering the highest AR-level inertia contribution in the system. Its symmetric blade geometry produces equal smash output in both spin directions ï¿½ a rarity in HMS. The recommended combo (Jiraiya Blade + CWD Defense Ring + Grip Flat Core Ultimate) is one of the highest-rated HMS attack customs. Weakness: wear-sensitive ï¿½ performance degrades significantly on worn rubber RCs. Always pair with mint-condition Grip Flat Core. Tier: HIGH.
 
 ---
 
-## Case 143 — Metal Ape AR (Magical Ape MS / MA-18) — ~19 g [ESTIMATED] — Ape-Motif Upper Attack: Shared Mass Class, Mid-Tier Gimmick Specialty AR
+## Case 143 ï¿½ Metal Ape AR (Magical Ape MS / MA-18) ï¿½ ~19 g [ESTIMATED] ï¿½ Ape-Motif Upper Attack: Shared Mass Class, Mid-Tier Gimmick Specialty AR
 
 ### 1. Geometry
 
-Metal Ape is the Attack Ring of Magical Ape MS (MA-18, Gimmick Specialty Series). Weight: ~19 g [ESTIMATED — from hmsdb.com/gimmick-specialty-series/ma-18-magical-ape-ms]. Same mass class as Devil Crusher (~19g), Knight Crusher (19g [FACT]), and God Smasher (18g [FACT]). Primate-themed ABS caul over zinc-alloy frame.
+Metal Ape is the Attack Ring of Magical Ape MS (MA-18, Gimmick Specialty Series). Weight: ~19 g [ESTIMATED ï¿½ from hmsdb.com/gimmick-specialty-series/ma-18-magical-ape-ms]. Same mass class as Devil Crusher (~19g), Knight Crusher (19g [FACT]), and God Smasher (18g [FACT]). Primate-themed ABS caul over zinc-alloy frame.
 
-Primary competitive value of MA-18: the Flat Core (New Revision) RC that ships with it (Case 149) — the "strictly better" flat core revision. Metal Ape AR is a secondary consideration.
+Primary competitive value of MA-18: the Flat Core (New Revision) RC that ships with it (Case 149) ï¿½ the "strictly better" flat core revision. Metal Ape AR is a secondary consideration.
 
 ### 2. Physics
 
 **19g shared mass class:**
 Metal Ape joins Devil Crusher, Knight Crusher, and Upper Dragon in the ~19g HMS AR tier. Without detailed blade geometry data beyond "upper attack" designation, the analysis uses mass and architecture class:
 
-    I_AR ˜ 0.019 × (0.021)² ˜ 8.4 × 10?6 kg·m² (same as Upper Dragon estimate)
+    I_AR ï¿½ 0.019 ï¿½ (0.021)ï¿½ ï¿½ 8.4 ï¿½ 10?6 kgï¿½mï¿½ (same as Upper Dragon estimate)
 
 **Upper-attack archetype:**
-Magical Ape MS's AR name contains no "smash" or "crusher" descriptor — the "Ape" imagery and MA series positioning suggests an upper-attack or multi-type AR rather than pure smash. Given its place in the Gimmick Specialty line, it likely shares framework similarities with the upper-attack family (Upper Dragon / Upper Fox / Devil Crusher).
+Magical Ape MS's AR name contains no "smash" or "crusher" descriptor ï¿½ the "Ape" imagery and MA series positioning suggests an upper-attack or multi-type AR rather than pure smash. Given its place in the Gimmick Specialty line, it likely shares framework similarities with the upper-attack family (Upper Dragon / Upper Fox / Devil Crusher).
 
 **Competitive position:**
 Without detailed slope-angle data from physical measurement: Metal Ape AR is a mid-tier upper-attack AR at ~19g. Neither the worst (Knight Crusher) nor the best (Samurai Upper, Spiral Upper) in its category. Harvest value priority: Flat Core (New Revision) RC first; Metal Ape AR as secondary donor.
@@ -13504,7 +13504,7 @@ interface MetalApeAR {
   sourceBey: "Magical Ape MS (MA-18)";
   mass_g: 19;                          // [ESTIMATED]
   attackType: "upper";                 // INFERRED from name/series position
-  upperFraction: 0.45;                 // [ESTIMATED — typical HMS upper-attack range]
+  upperFraction: 0.45;                 // [ESTIMATED ï¿½ typical HMS upper-attack range]
   outerRadius_mm: 21;
   competitiveTier: "mid";
   primaryHarvestValue: "flat_core_new_revision";  // RC is the real prize
@@ -13514,17 +13514,17 @@ interface MetalApeAR {
 
 ### 4. Verdict
 
-**Role:** Mid-tier HMS upper-attack AR. Metal Ape AR occupies the ~19g upper-attack class but lacks the contact-window advantages of Spiral Upper or Samurai Upper. Acquire Magical Ape MS primarily for the Flat Core (New Revision) RC — the "strictly better" flat core that is the main competitive harvest. Metal Ape AR is a usable upper-attack substitute when better ARs aren't available. Tier: mid.
+**Role:** Mid-tier HMS upper-attack AR. Metal Ape AR occupies the ~19g upper-attack class but lacks the contact-window advantages of Spiral Upper or Samurai Upper. Acquire Magical Ape MS primarily for the Flat Core (New Revision) RC ï¿½ the "strictly better" flat core that is the main competitive harvest. Metal Ape AR is a usable upper-attack substitute when better ARs aren't available. Tier: mid.
 
 ---
 
-## Case 144 — Spark Dragon AR (Thunder Dragon / RBA1) — ~14 g [ESTIMATED] — Free-Spinning Plastic + Narrow Metal Frame: Width Without Contact, Non-Competitive
+## Case 144 ï¿½ Spark Dragon AR (Thunder Dragon / RBA1) ï¿½ ~14 g [ESTIMATED] ï¿½ Free-Spinning Plastic + Narrow Metal Frame: Width Without Contact, Non-Competitive
 
 ### 1. Geometry
 
-Spark Dragon is the Attack Ring of Thunder Dragon (RBA1 — Random Booster Act 1). Weight: ~14 g total [ESTIMATED — hmsdb.com/initial-releases/rba1-thunder-dragon]: metal piece ~10g (narrower than Circle Heavy in diameter), free-spinning plastic component ~4g. The plastic component is attached to the metal frame but rotates freely — the same failure architecture as CWD Devil Saucer (Case 132) and CWD Chain Attacker (Case 46): free-spinning parts dissipate impact energy instead of delivering it.
+Spark Dragon is the Attack Ring of Thunder Dragon (RBA1 ï¿½ Random Booster Act 1). Weight: ~14 g total [ESTIMATED ï¿½ hmsdb.com/initial-releases/rba1-thunder-dragon]: metal piece ~10g (narrower than Circle Heavy in diameter), free-spinning plastic component ~4g. The plastic component is attached to the metal frame but rotates freely ï¿½ the same failure architecture as CWD Devil Saucer (Case 132) and CWD Chain Attacker (Case 46): free-spinning parts dissipate impact energy instead of delivering it.
 
-Spark Dragon also reportedly included "thin pieces of sandpaper and flint" on original releases — a decorative novelty gimmick that produces sparks but has no combat relevance.
+Spark Dragon also reportedly included "thin pieces of sandpaper and flint" on original releases ï¿½ a decorative novelty gimmick that produces sparks but has no combat relevance.
 
 ### 2. Physics
 
@@ -13532,21 +13532,21 @@ Spark Dragon also reportedly included "thin pieces of sandpaper and flint" on or
 On contact with opponent AR, the outer plastic component of Spark Dragon rotates freely:
 
     Impact torque ? rotates plastic shell ? ??_shell = t / I_plastic
-    Effective impulse to opponent ˜ F_N × µ_plastic_on_plastic × ?t
+    Effective impulse to opponent ï¿½ F_N ï¿½ ï¿½_plastic_on_plastic ï¿½ ?t
 
-At µ ˜ 0.30 (ABS-on-ABS) vs µ ˜ 0.15 (zinc-on-ABS for metal contact):
+At ï¿½ ï¿½ 0.30 (ABS-on-ABS) vs ï¿½ ï¿½ 0.15 (zinc-on-ABS for metal contact):
 
-    Impulse ratio = µ_plastic / µ_metal ˜ 0.30 / 0.15 = 2.0 (higher friction) BUT
-    The free-spin absorbs the rotational shock — shell spins away, body continues unimpeded
+    Impulse ratio = ï¿½_plastic / ï¿½_metal ï¿½ 0.30 / 0.15 = 2.0 (higher friction) BUT
+    The free-spin absorbs the rotational shock ï¿½ shell spins away, body continues unimpeded
 
 Net delivered impulse to opponent is governed by inelastic coupling:
 
-    ?J_opponent ˜ (1 - e_freespin) × J_contact ˜ 0.1 × J_contact
+    ?J_opponent ï¿½ (1 - e_freespin) ï¿½ J_contact ï¿½ 0.1 ï¿½ J_contact
 
 ~90% of impact energy goes into spinning up the free plastic shell. Only ~10% reaches the opponent.
 
 **Metal frame too narrow:**
-"Central metal piece no wider than a Circle Heavy" — the metal ring is not at the outer perimeter. Attack radius for the metal contact: r_metal ˜ 16–17mm vs typical HMS AR outer radius 22–23mm. Reduced attack reach means many opponent AR contacts happen at the plastic shell (free-spinning) before reaching the narrow metal ring.
+"Central metal piece no wider than a Circle Heavy" ï¿½ the metal ring is not at the outer perimeter. Attack radius for the metal contact: r_metal ï¿½ 16ï¿½17mm vs typical HMS AR outer radius 22ï¿½23mm. Reduced attack reach means many opponent AR contacts happen at the plastic shell (free-spinning) before reaching the narrow metal ring.
 
 **Verdict from hmsdb:** "utterly useless" for competitive play across all archetypes.
 
@@ -13562,7 +13562,7 @@ interface SparkDragonAR {
   plasticShell_g: 4;
   plasticShell_freeSpin: true;
   effectiveImpulseRatio: 0.10;        // 90% energy lost to free-spin shell
-  metalFrameRadius_mm: 17;            // narrow — no wider than Circle Heavy
+  metalFrameRadius_mm: 17;            // narrow ï¿½ no wider than Circle Heavy
   outerPlasticRadius_mm: 23;
   sparkGimmick: true;                 // decorative only; no combat effect
   competitiveTier: "non_competitive";
@@ -13572,33 +13572,33 @@ interface SparkDragonAR {
 
 ### 4. Verdict
 
-**Role:** Non-competitive. Spark Dragon's free-spinning plastic shell absorbs 90% of impact energy; the narrow metal ring inside never reaches standard AR contact radius. The sandpaper/flint spark gimmick is purely visual. Tier: F. Acquire Thunder Dragon (RBA1) exclusively for the CWD Free Survivor / CWD Free Saucer WDs it includes — not for this AR.
+**Role:** Non-competitive. Spark Dragon's free-spinning plastic shell absorbs 90% of impact energy; the narrow metal ring inside never reaches standard AR contact radius. The sandpaper/flint spark gimmick is purely visual. Tier: F. Acquire Thunder Dragon (RBA1) exclusively for the CWD Free Survivor / CWD Free Saucer WDs it includes ï¿½ not for this AR.
 
 ---
 
-## Case 145 — CWD Free Cross (Jiraiya MS / MA-22) — ~17 g [ESTIMATED] — Cross-Shaped CWD: Asymmetric Four-Arm Profile, Attack-Supplemental Role
+## Case 145 ï¿½ CWD Free Cross (Jiraiya MS / MA-22) ï¿½ ~17 g [ESTIMATED] ï¿½ Cross-Shaped CWD: Asymmetric Four-Arm Profile, Attack-Supplemental Role
 
 ### 1. Geometry
 
-CWD Free Cross is Jiraiya MS's (MA-22) Customize Weight Disk. Weight: ~17g [ESTIMATED — from hmsdb]. Four-arm cross profile — distinctly non-circular, with four symmetric extensions at 90° intervals. The cross arms extend the effective radius at four points while leaving the 45° sectors less populated — a deliberately asymmetric mass distribution in the angular sense (four-fold, not continuous ring).
+CWD Free Cross is Jiraiya MS's (MA-22) Customize Weight Disk. Weight: ~17g [ESTIMATED ï¿½ from hmsdb]. Four-arm cross profile ï¿½ distinctly non-circular, with four symmetric extensions at 90ï¿½ intervals. The cross arms extend the effective radius at four points while leaving the 45ï¿½ sectors less populated ï¿½ a deliberately asymmetric mass distribution in the angular sense (four-fold, not continuous ring).
 
 ### 2. Physics
 
 **Cross-arm mass distribution:**
-Four arms at r_arm ˜ 22–24 mm, sectors between arms at r_base ˜ 14–15 mm:
+Four arms at r_arm ï¿½ 22ï¿½24 mm, sectors between arms at r_base ï¿½ 14ï¿½15 mm:
 
-    I_arms = 4 × (0.004 × 0.023²) ˜ 8.5 × 10?6 kg·m²  (arm mass at outer radius)
-    I_core = 0.001 × 0.015² ˜ 2.25 × 10?7 kg·m²       (between-arm core)
-    Total I ˜ 8.75 × 10?6 kg·m²   [ESTIMATED]
+    I_arms = 4 ï¿½ (0.004 ï¿½ 0.023ï¿½) ï¿½ 8.5 ï¿½ 10?6 kgï¿½mï¿½  (arm mass at outer radius)
+    I_core = 0.001 ï¿½ 0.015ï¿½ ï¿½ 2.25 ï¿½ 10?7 kgï¿½mï¿½       (between-arm core)
+    Total I ï¿½ 8.75 ï¿½ 10?6 kgï¿½mï¿½   [ESTIMATED]
 
-Compare to CWD Defense Ring: I ˜ 3.65 × 10?6 kg·m²
+Compare to CWD Defense Ring: I ï¿½ 3.65 ï¿½ 10?6 kgï¿½mï¿½
 
-Free Cross appears to have higher total I than Defense Ring at the same ~17g because the cross arms act as extended radius spokes — each gram of arm mass sits farther from center than a solid ring of the same total mass.
+Free Cross appears to have higher total I than Defense Ring at the same ~17g because the cross arms act as extended radius spokes ï¿½ each gram of arm mass sits farther from center than a solid ring of the same total mass.
 
 BUT: The cross arms also create angular mass asymmetry. Four preferred wobble directions (at arm positions) vs Defense Ring's zero. At low spin rates, Free Cross generates greater precession oscillation than circular CWDs.
 
 **Attack contribution:**
-Cross arm tips at r ˜ 23 mm act as secondary contact points that extend attack reach — similar role to Wing Attacker CWD (Case 133) but with four symmetric arms instead of two asymmetric wings.
+Cross arm tips at r ï¿½ 23 mm act as secondary contact points that extend attack reach ï¿½ similar role to Wing Attacker CWD (Case 133) but with four symmetric arms instead of two asymmetric wings.
 
 **Compatibility with Jiraiya Blade combo:**
 hmsdb recommends CWD Defense Ring over CWD Free Cross in Jiraiya Blade builds. Free Cross is functionally superseded by Defense Ring for pure stamina/defense. Free Cross's value is attack supplementation from the extended arm tips.
@@ -13615,7 +13615,7 @@ interface CWDFreeCross {
   armCount: 4;
   armRadius_mm: 23;
   coreRadius_mm: 15;
-  momentOfInertia_kgm2: 8.75e-6;      // [ESTIMATED — arms at outer radius]
+  momentOfInertia_kgm2: 8.75e-6;      // [ESTIMATED ï¿½ arms at outer radius]
   angularAsymmetry: true;              // 4-fold preferred wobble directions
   attackReachExtended: true;           // arm tips supplement AR contact radius
   competitiveTier: "mid";
@@ -13630,11 +13630,11 @@ interface CWDFreeCross {
 
 ---
 
-## Case 146 — CWD Free Survivor (Thunder Dragon / RBA1) — ~17 g [ESTIMATED] — Survival-Oriented CWD: Circular-Trend Profile, Primary Harvest from RBA1
+## Case 146 ï¿½ CWD Free Survivor (Thunder Dragon / RBA1) ï¿½ ~17 g [ESTIMATED] ï¿½ Survival-Oriented CWD: Circular-Trend Profile, Primary Harvest from RBA1
 
 ### 1. Geometry
 
-CWD Free Survivor is one of two CWDs included with Thunder Dragon (RBA1). Weight: ~17g [ESTIMATED — from hmsdb RBA1 page]. "Survivor" suffix indicates stamina/survival-oriented geometry — smooth perimeter profile, minimal protrusions, circular-trend distribution aimed at reducing drag and maintaining spin velocity.
+CWD Free Survivor is one of two CWDs included with Thunder Dragon (RBA1). Weight: ~17g [ESTIMATED ï¿½ from hmsdb RBA1 page]. "Survivor" suffix indicates stamina/survival-oriented geometry ï¿½ smooth perimeter profile, minimal protrusions, circular-trend distribution aimed at reducing drag and maintaining spin velocity.
 
 ### 2. Physics
 
@@ -13642,10 +13642,10 @@ CWD Free Survivor is one of two CWDs included with Thunder Dragon (RBA1). Weight
 Unlike CWD Free Saucer (Case 147, also from RBA1) which has protrusions, Free Survivor's smooth perimeter:
 
     Drag coefficient: low (smooth surface, no protrusions)
-    I contribution ˜ mass × r_mean² ? at ~17g, r_mean ˜ 21mm
-    I_FreeSurvivor ˜ 0.017 × (0.021)² ˜ 7.5 × 10?6 kg·m² [ESTIMATED]
+    I contribution ï¿½ mass ï¿½ r_meanï¿½ ? at ~17g, r_mean ï¿½ 21mm
+    I_FreeSurvivor ï¿½ 0.017 ï¿½ (0.021)ï¿½ ï¿½ 7.5 ï¿½ 10?6 kgï¿½mï¿½ [ESTIMATED]
 
-Compared to CWD Circle Wide (14g, r_outer = 27mm, I ˜ 1.0×10?5 kg·m²):
+Compared to CWD Circle Wide (14g, r_outer = 27mm, I ï¿½ 1.0ï¿½10?5 kgï¿½mï¿½):
 Free Survivor is heavier (17g vs 14g) but with smaller outer radius ? lower I per gram than Circle Wide. The "Survivor" designation refers to its smooth profile (less recoil) rather than maximum I.
 
 **Best role:**
@@ -13672,15 +13672,15 @@ interface CWDFreeSurvivor {
 
 ### 4. Verdict
 
-**Role:** Smooth survival CWD. Free Survivor provides a clean circular-profile CWD at ~17g without the protrusion complications of Saucer or the arm-asymmetry of Free Cross. Its primary competitive value is as a smooth heavy CWD substitute when Circle Wide or Defense Ring are unavailable. Tier: low-mid. Harvest from Thunder Dragon (RBA1) alongside Free Saucer (Case 147) — both included with the same bey.
+**Role:** Smooth survival CWD. Free Survivor provides a clean circular-profile CWD at ~17g without the protrusion complications of Saucer or the arm-asymmetry of Free Cross. Its primary competitive value is as a smooth heavy CWD substitute when Circle Wide or Defense Ring are unavailable. Tier: low-mid. Harvest from Thunder Dragon (RBA1) alongside Free Saucer (Case 147) ï¿½ both included with the same bey.
 
 ---
 
-## Case 147 — CWD Free Saucer (Thunder Dragon / RBA1) — ~17 g [ESTIMATED] — Saucer-Profile CWD: Shallow Spin-Steal Surface, Non-Competitive Analogue to Metal Saucer
+## Case 147 ï¿½ CWD Free Saucer (Thunder Dragon / RBA1) ï¿½ ~17 g [ESTIMATED] ï¿½ Saucer-Profile CWD: Shallow Spin-Steal Surface, Non-Competitive Analogue to Metal Saucer
 
 ### 1. Geometry
 
-CWD Free Saucer is the second CWD from Thunder Dragon (RBA1). Weight: ~17g [ESTIMATED]. Saucer profile — a broad shallow curve perimeter similar to the Metal Saucer AR (Case 124) but as a CWD. The saucer geometry creates a wide, nearly flat outer surface.
+CWD Free Saucer is the second CWD from Thunder Dragon (RBA1). Weight: ~17g [ESTIMATED]. Saucer profile ï¿½ a broad shallow curve perimeter similar to the Metal Saucer AR (Case 124) but as a CWD. The saucer geometry creates a wide, nearly flat outer surface.
 
 ### 2. Physics
 
@@ -13693,11 +13693,11 @@ Saucer profile at the WD level: the CWD sits below the AR. Its saucer perimeter 
 In most encounters, the AR (higher, Case 124 type) makes contact first. The CWD saucer contacts are secondary or incidental.
 
 **Spin-steal contribution:**
-    a_saucer_CWD ˜ 3–5° (same shallow geometry as AR-level saucer)
-    t_steal ˜ µ × F_N × r_CWD = 0.15 × 0.5 × 0.021 ˜ 0.0016 N·m
-    ?? per contact ˜ 0.0016 × 0.003 / 0.0003 ˜ 0.016 rad/s
+    a_saucer_CWD ï¿½ 3ï¿½5ï¿½ (same shallow geometry as AR-level saucer)
+    t_steal ï¿½ ï¿½ ï¿½ F_N ï¿½ r_CWD = 0.15 ï¿½ 0.5 ï¿½ 0.021 ï¿½ 0.0016 Nï¿½m
+    ?? per contact ï¿½ 0.0016 ï¿½ 0.003 / 0.0003 ï¿½ 0.016 rad/s
 
-Non-competitive: each contact drains ~0.016 rad/s from the opponent — half of AR-level Metal Saucer's 0.028 rad/s (lower contact frequency at CWD level).
+Non-competitive: each contact drains ~0.016 rad/s from the opponent ï¿½ half of AR-level Metal Saucer's 0.028 rad/s (lower contact frequency at CWD level).
 
 ### 3. Game Engine Mapping
 
@@ -13709,36 +13709,36 @@ interface CWDFreeSaucer {
   mass_g: 17;                          // [ESTIMATED]
   profile: "saucer_shallow";
   saucerAngle_deg: 4;
-  spinStealPerContact: 0.016;         // rad/s — secondary contacts only
+  spinStealPerContact: 0.016;         // rad/s ï¿½ secondary contacts only
   contactHeight: "low";               // only contacts at tilt or height-mismatch
   competitiveTier: "low";
   analogue: "metal_saucer_ar_case124"; // same geometry, lower position
-  note: "Spin-steal CWD requires opponent height-mismatch to function — rarely triggers";
+  note: "Spin-steal CWD requires opponent height-mismatch to function ï¿½ rarely triggers";
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Low-tier saucer CWD. Free Saucer replicates the Metal Saucer AR's spin-steal geometry at the CWD level — where contacts are less frequent and opponent-height-dependent. The spin drain per contact (0.016 rad/s) is sub-threshold in normal combat. Acquire from Thunder Dragon (RBA1) alongside Free Survivor — use Free Survivor for practical builds; Free Saucer is curiosity harvest. Tier: low.
+**Role:** Low-tier saucer CWD. Free Saucer replicates the Metal Saucer AR's spin-steal geometry at the CWD level ï¿½ where contacts are less frequent and opponent-height-dependent. The spin drain per contact (0.016 rad/s) is sub-threshold in normal combat. Acquire from Thunder Dragon (RBA1) alongside Free Survivor ï¿½ use Free Survivor for practical builds; Free Saucer is curiosity harvest. Tier: low.
 
 ---
 
-## Case 148 — Flat Core (Original) (Gaia Dragoon MS / A-123) — ~1.5 g [ESTIMATED] — Baseline HMS Flat: Lightest of Three Flat Variants, Mid-Diameter, Aggressive Standard
+## Case 148 ï¿½ Flat Core (Original) (Gaia Dragoon MS / A-123) ï¿½ ~1.5 g [ESTIMATED] ï¿½ Baseline HMS Flat: Lightest of Three Flat Variants, Mid-Diameter, Aggressive Standard
 
 ### 1. Geometry
 
-Flat Core (Original) is the Running Core of Gaia Dragoon MS (A-123, the first HMS release). Weight: ~1.5 g [ESTIMATED — derived from hmsdb: New Revision adds ~0.5g to Original, New Revision ˜ 2g ? Original ˜ 1.5g]. Flat tip, mid-range diameter among the three Flat Core variants (Original, New Revision, Metal Weight). All-plastic construction (no metal insert).
+Flat Core (Original) is the Running Core of Gaia Dragoon MS (A-123, the first HMS release). Weight: ~1.5 g [ESTIMATED ï¿½ derived from hmsdb: New Revision adds ~0.5g to Original, New Revision ï¿½ 2g ? Original ï¿½ 1.5g]. Flat tip, mid-range diameter among the three Flat Core variants (Original, New Revision, Metal Weight). All-plastic construction (no metal insert).
 
 ### 2. Physics
 
 **Flat tip dynamics at 1.5g RC mass:**
-Flat tip contact radius r_tip ˜ 2.0–2.5 mm (mid-diameter):
+Flat tip contact radius r_tip ï¿½ 2.0ï¿½2.5 mm (mid-diameter):
 
-    µ_flat ˜ 0.35–0.45 (ABS flat, mid-range)
-    t_tip = µ × m_combo × g × r_tip ˜ 0.40 × 0.038 × 9.81 × 0.0022 ˜ 0.0033 N·m
-    d?/dt = t / I_combo ˜ 0.0033 / 2.5×10?5 ˜ 132 rad/s²
+    ï¿½_flat ï¿½ 0.35ï¿½0.45 (ABS flat, mid-range)
+    t_tip = ï¿½ ï¿½ m_combo ï¿½ g ï¿½ r_tip ï¿½ 0.40 ï¿½ 0.038 ï¿½ 9.81 ï¿½ 0.0022 ï¿½ 0.0033 Nï¿½m
+    d?/dt = t / I_combo ï¿½ 0.0033 / 2.5ï¿½10?5 ï¿½ 132 rad/sï¿½
 
-This is aggressive spin decay — faster than Grip Flat Core's controlled rubber flat because:
+This is aggressive spin decay ï¿½ faster than Grip Flat Core's controlled rubber flat because:
 1. ABS flat has less friction control than rubber
 2. No metal weight ballast (contrast: Metal Weight Grip Core ~15g provides smash stability)
 3. Small 1.5g mass means the RC itself adds negligible inertia resistance
@@ -13751,7 +13751,7 @@ The Flat Core (Original) can execute a flower pattern (repeated central passes a
 **Comparison with other flat variants:**
 | Core | Weight | Diameter | Performance |
 |------|--------|----------|-------------|
-| Flat Core (Original) | ~1.5g | Mid | Baseline — aggressive, less controlled |
+| Flat Core (Original) | ~1.5g | Mid | Baseline ï¿½ aggressive, less controlled |
 | Flat Core (New Revision) | ~2g | Smallest | Strictly better per hmsdb |
 | Metal Weight Flat Core | ~3g | Largest | Most controllable, heaviest |
 
@@ -13769,22 +13769,22 @@ interface FlatCoreOriginal {
   spinDecay_radPerS2: 132;
   movementPattern: "aggressive_erratic";
   supersededBy: "flat_core_new_revision";
-  note: "Baseline first-release flat core — improved by New Revision (MA-18)";
+  note: "Baseline first-release flat core ï¿½ improved by New Revision (MA-18)";
   competitiveTier: "low_mid";
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Baseline aggressive HMS flat RC. The original flat core from the first HMS release. Provides aggressive ABS flat movement but with less control and more erratic trajectory than Grip Flat Core (rubber) or Metal Weight Flat Core (ballasted). Superseded by the New Revision from MA-18 Magical Ape MS. Tier: low-mid — use New Revision when available. Still functional for aggressive attack builds where control is not the priority.
+**Role:** Baseline aggressive HMS flat RC. The original flat core from the first HMS release. Provides aggressive ABS flat movement but with less control and more erratic trajectory than Grip Flat Core (rubber) or Metal Weight Flat Core (ballasted). Superseded by the New Revision from MA-18 Magical Ape MS. Tier: low-mid ï¿½ use New Revision when available. Still functional for aggressive attack builds where control is not the priority.
 
 ---
 
-## Case 149 — Flat Core (New Revision) (Magical Ape MS / MA-18) — ~2 g [ESTIMATED] — Improved Flat: Smallest Diameter, Added Center Screw, "Strictly Better" than Original
+## Case 149 ï¿½ Flat Core (New Revision) (Magical Ape MS / MA-18) ï¿½ ~2 g [ESTIMATED] ï¿½ Improved Flat: Smallest Diameter, Added Center Screw, "Strictly Better" than Original
 
 ### 1. Geometry
 
-Flat Core (New Revision) is the Running Core of Magical Ape MS (MA-18). Weight: ~2 g [ESTIMATED — from hmsdb: adds "roughly half a gram" to Original's ~1.5g, plus center screw]. Modification from Original: a screw added in the center of the tip face — this screw slightly reduces effective tip contact diameter (the screw head is harder/narrower than ABS flat), creating a functionally smaller contact patch.
+Flat Core (New Revision) is the Running Core of Magical Ape MS (MA-18). Weight: ~2 g [ESTIMATED ï¿½ from hmsdb: adds "roughly half a gram" to Original's ~1.5g, plus center screw]. Modification from Original: a screw added in the center of the tip face ï¿½ this screw slightly reduces effective tip contact diameter (the screw head is harder/narrower than ABS flat), creating a functionally smaller contact patch.
 
 hmsdb characterization: "strictly better" than Original. Smallest diameter of all three flat variants.
 
@@ -13794,13 +13794,13 @@ hmsdb characterization: "strictly better" than Original. Smallest diameter of al
 The added center screw creates a harder central point within the flat face:
 
     Effective tip contact = ring-shaped ABS flat + center screw hub
-    Screw hub radius ˜ 0.5 mm (hard metal/plastic)
-    Flat ring outer radius ˜ 1.8 mm (smaller than Original's 2.2 mm)
+    Screw hub radius ï¿½ 0.5 mm (hard metal/plastic)
+    Flat ring outer radius ï¿½ 1.8 mm (smaller than Original's 2.2 mm)
 
 This composite contact has lower effective diameter than Original ? tighter movement arcs (smaller r_tip ? less torque per unit friction ? slower spin decay than Original):
 
-    t_New = µ × m × g × r_new ˜ 0.40 × 0.038 × 9.81 × 0.0018 ˜ 0.0027 N·m
-    d?/dt_New ˜ 107 rad/s² vs Original 132 rad/s² ? 19% slower spin decay
+    t_New = ï¿½ ï¿½ m ï¿½ g ï¿½ r_new ï¿½ 0.40 ï¿½ 0.038 ï¿½ 9.81 ï¿½ 0.0018 ï¿½ 0.0027 Nï¿½m
+    d?/dt_New ï¿½ 107 rad/sï¿½ vs Original 132 rad/sï¿½ ? 19% slower spin decay
 
 **"Strictly better" mechanism:**
 The combination of:
@@ -13827,38 +13827,38 @@ interface FlatCoreNewRevision {
   improvesOn: "flat_core_original";
   diameterVsVariants: "smallest";     // confirmed by hmsdb
   competitiveTier: "mid";
-  note: "hmsdb: strictly better than Original — use this over Original when available";
+  note: "hmsdb: strictly better than Original ï¿½ use this over Original when available";
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Improved standard HMS flat RC. The center screw modification reduces effective tip radius, producing tighter movement arcs and 19% slower spin decay than the Original — making flower patterns more consistent and aggressive attack more controllable. Use New Revision over Original whenever available. Still below Grip Flat Core's rubber traction for attack, but better than Original at all margins. Tier: mid. Primary harvest reason to acquire MA-18 Magical Ape MS (Metal Ape AR is secondary).
+**Role:** Improved standard HMS flat RC. The center screw modification reduces effective tip radius, producing tighter movement arcs and 19% slower spin decay than the Original ï¿½ making flower patterns more consistent and aggressive attack more controllable. Use New Revision over Original whenever available. Still below Grip Flat Core's rubber traction for attack, but better than Original at all margins. Tier: mid. Primary harvest reason to acquire MA-18 Magical Ape MS (Metal Ape AR is secondary).
 
 ---
 
-## Case 150 — Metal Weight Flat Core (Thunder Dragon / RBA1) — ~3 g [ESTIMATED] — Most Controllable HMS Flat: Largest Diameter, Heaviest Flat Variant
+## Case 150 ï¿½ Metal Weight Flat Core (Thunder Dragon / RBA1) ï¿½ ~3 g [ESTIMATED] ï¿½ Most Controllable HMS Flat: Largest Diameter, Heaviest Flat Variant
 
 ### 1. Geometry
 
-Metal Weight Flat Core is the Running Core of Thunder Dragon (RBA1). Weight: ~3 g [ESTIMATED — from hmsdb RBA1 page]. The heaviest and largest-diameter flat core variant. The "Metal Weight" in the name suggests an internal metal weight insert (similar concept to Metal Weight Grip Core, Case 138) — but within a flat-tip architecture rather than rubber.
+Metal Weight Flat Core is the Running Core of Thunder Dragon (RBA1). Weight: ~3 g [ESTIMATED ï¿½ from hmsdb RBA1 page]. The heaviest and largest-diameter flat core variant. The "Metal Weight" in the name suggests an internal metal weight insert (similar concept to Metal Weight Grip Core, Case 138) ï¿½ but within a flat-tip architecture rather than rubber.
 
 ### 2. Physics
 
 **Largest flat diameter + internal weight:**
-Tip radius r_tip ˜ 2.8–3.0 mm (largest of three flat variants, per hmsdb "largest diameter"):
+Tip radius r_tip ï¿½ 2.8ï¿½3.0 mm (largest of three flat variants, per hmsdb "largest diameter"):
 
-    t_MWFC = µ × m × g × r_tip ˜ 0.40 × 0.038 × 9.81 × 0.0029 ˜ 0.0043 N·m
-    d?/dt_MWFC ˜ 173 rad/s² — actually FASTER decay than New Revision
+    t_MWFC = ï¿½ ï¿½ m ï¿½ g ï¿½ r_tip ï¿½ 0.40 ï¿½ 0.038 ï¿½ 9.81 ï¿½ 0.0029 ï¿½ 0.0043 Nï¿½m
+    d?/dt_MWFC ï¿½ 173 rad/sï¿½ ï¿½ actually FASTER decay than New Revision
 
-Wait — larger diameter = higher r_tip = more torque = faster spin decay. But hmsdb says "most controllable." Resolution: "most controllable" refers to movement arc predictability, not spin retention:
+Wait ï¿½ larger diameter = higher r_tip = more torque = faster spin decay. But hmsdb says "most controllable." Resolution: "most controllable" refers to movement arc predictability, not spin retention:
 
     Larger contact patch ? more friction ? more grip ? less random slip ? more predictable arc
     But: more torque = faster spin loss
 
 The metal weight adds ballast mass at the tip center:
 
-    ?I_tip ˜ 0.001 × (0.003)² ˜ 9.0 × 10?? kg·m² — negligible I contribution
+    ?I_tip ï¿½ 0.001 ï¿½ (0.003)ï¿½ ï¿½ 9.0 ï¿½ 10?? kgï¿½mï¿½ ï¿½ negligible I contribution
     Stability contribution: lower CoM from tip-end ballast ? more stable rotation axis
 
 **Control vs speed tradeoff:**
@@ -13888,24 +13888,24 @@ interface MetalWeightFlatCore {
 
 ### 4. Verdict
 
-**Role:** Most controllable HMS flat RC at the cost of faster spin decay. Metal Weight Flat Core's large diameter provides predictable, gripping movement arcs — ideal for less experienced bladers or builds requiring consistent approach patterns. The trade-off is faster spin loss vs smaller-diameter flat variants. Preference order: Grip Flat Core (rubber) > Metal Weight Flat Core (controlled ABS) > Flat Core New Revision (precise ABS) > Flat Core Original (baseline ABS). Tier: low-mid. The actual RBA1 prize is the two CWDs (Free Survivor, Free Saucer) — MWFC is a tertiary harvest.
+**Role:** Most controllable HMS flat RC at the cost of faster spin decay. Metal Weight Flat Core's large diameter provides predictable, gripping movement arcs ï¿½ ideal for less experienced bladers or builds requiring consistent approach patterns. The trade-off is faster spin loss vs smaller-diameter flat variants. Preference order: Grip Flat Core (rubber) > Metal Weight Flat Core (controlled ABS) > Flat Core New Revision (precise ABS) > Flat Core Original (baseline ABS). Tier: low-mid. The actual RBA1 prize is the two CWDs (Free Survivor, Free Saucer) ï¿½ MWFC is a tertiary harvest.
 
 ---
 
-## Case 151 — Reverse Defenser CWD (Dranzer MF alt-color variant) — ~17 g [ESTIMATED] — Defensive Circular CWD: Smooth Perimeter, Opposite Preference to Wing Attacker, Same Bey Alternate Release
+## Case 151 ï¿½ Reverse Defenser CWD (Dranzer MF alt-color variant) ï¿½ ~17 g [ESTIMATED] ï¿½ Defensive Circular CWD: Smooth Perimeter, Opposite Preference to Wing Attacker, Same Bey Alternate Release
 
 ### 1. Geometry
 
-Reverse Defenser CWD is an alternate CWD shipped with some color variants of Dranzer MF (RBA4). Weight: ~17 g [ESTIMATED — same mass class as Wing Attacker CWD, Case 133, which it replaces in alternate releases]. Profile: smooth circular perimeter — the defensive counterpart to Wing Attacker's asymmetric wing protrusions.
+Reverse Defenser CWD is an alternate CWD shipped with some color variants of Dranzer MF (RBA4). Weight: ~17 g [ESTIMATED ï¿½ same mass class as Wing Attacker CWD, Case 133, which it replaces in alternate releases]. Profile: smooth circular perimeter ï¿½ the defensive counterpart to Wing Attacker's asymmetric wing protrusions.
 
-From linka dranzer-mf.md: "Alternate releases ship with Reverse Defenser WD instead [of Wing Attacker CWD]" — confirming it is the same bey, different CWD based on release variant.
+From linka dranzer-mf.md: "Alternate releases ship with Reverse Defenser WD instead [of Wing Attacker CWD]" ï¿½ confirming it is the same bey, different CWD based on release variant.
 
 ### 2. Physics
 
 **Circular smooth profile:**
-No protrusions ? near-circular profile. At ~17g with r_outer ˜ 21 mm:
+No protrusions ? near-circular profile. At ~17g with r_outer ï¿½ 21 mm:
 
-    I_RD ˜ 0.5 × 0.017 × (0.021² + 0.018²) ˜ 6.5 × 10?6 kg·m²
+    I_RD ï¿½ 0.5 ï¿½ 0.017 ï¿½ (0.021ï¿½ + 0.018ï¿½) ï¿½ 6.5 ï¿½ 10?6 kgï¿½mï¿½
 
 Comparison vs Wing Attacker CWD (Case 133):
 - Wing Attacker: asymmetric wings, extended smash reach, wobble risk at low spin
@@ -13942,17 +13942,17 @@ interface ReverseDefenserCWD {
 
 ### 4. Verdict
 
-**Role:** Defense/stamina CWD substitute on Dranzer MF. Reverse Defenser is the non-attack pairing for Dranzer MF builds: when Smash Phoenix AR's aggression is balanced by a defense-oriented CWD rather than Wing Attacker's attack extension. Lower mass (~17g) than top-tier circular CWDs (Defense Ring ~19g, God Ring ~18g) but same clean circular profile. Tier: mid — useful when CWD Defense Ring is unavailable, especially in Dranzer MF survival builds.
+**Role:** Defense/stamina CWD substitute on Dranzer MF. Reverse Defenser is the non-attack pairing for Dranzer MF builds: when Smash Phoenix AR's aggression is balanced by a defense-oriented CWD rather than Wing Attacker's attack extension. Lower mass (~17g) than top-tier circular CWDs (Defense Ring ~19g, God Ring ~18g) but same clean circular profile. Tier: mid ï¿½ useful when CWD Defense Ring is unavailable, especially in Dranzer MF survival builds.
 
 ---
 
-## Case 152 — Bearing Core 2 (Jiraiya MS / MA-22) — ~4 g [ESTIMATED] — Rubber Bearing Tip: Taller than Bearing Core 1, Worn-Tip-Dependent, Zombie/Balance Hybrid
+## Case 152 ï¿½ Bearing Core 2 (Jiraiya MS / MA-22) ï¿½ ~4 g [ESTIMATED] ï¿½ Rubber Bearing Tip: Taller than Bearing Core 1, Worn-Tip-Dependent, Zombie/Balance Hybrid
 
 ### 1. Geometry
 
-Bearing Core 2 is the Running Core of Jiraiya MS (MA-22). Weight: ~4 g [ESTIMATED — from hmsdb MA-22 page]. Architecture: plastic casing for a set of bearings, topped by a rubber tip. Two key differences from Bearing Core (Case 84):
-1. **Rubber tip** — Bearing Core 1 uses a plastic sharp tip; Bearing Core 2 uses rubber
-2. **Taller height** — Bearing Core 2 is notably taller than the original
+Bearing Core 2 is the Running Core of Jiraiya MS (MA-22). Weight: ~4 g [ESTIMATED ï¿½ from hmsdb MA-22 page]. Architecture: plastic casing for a set of bearings, topped by a rubber tip. Two key differences from Bearing Core (Case 84):
+1. **Rubber tip** ï¿½ Bearing Core 1 uses a plastic sharp tip; Bearing Core 2 uses rubber
+2. **Taller height** ï¿½ Bearing Core 2 is notably taller than the original
 
 The rubber tip behavior is wear-dependent: "naturally more pointed when mint" (high tip-only contact, very low friction) but "truly released when worn" (increased surface area, more grip, more aggressive contact).
 
@@ -13961,31 +13961,31 @@ The rubber tip behavior is wear-dependent: "naturally more pointed when mint" (h
 **Bearing + rubber tip dual-mode:**
 Bearing mechanism provides:
 
-    Bearing friction µ_bearing ˜ 0.02–0.05 (same bearing type as Bearing Core 1)
-    d?/dt_bearing ˜ (0.035 × µ × m × g × r_race) / I_combo
+    Bearing friction ï¿½_bearing ï¿½ 0.02ï¿½0.05 (same bearing type as Bearing Core 1)
+    d?/dt_bearing ï¿½ (0.035 ï¿½ ï¿½ ï¿½ m ï¿½ g ï¿½ r_race) / I_combo
 
 At mint condition (pointed rubber tip):
 
-    Effective contact: small rubber tip r_tip ˜ 0.5 mm (pointed)
-    µ_rubber_pointed ˜ 0.08–0.12 (pointed rubber, similar to metal sharp)
-    d?/dt_total_mint ˜ bearing_component + pointed_rubber ˜ 12–18 rad/s²
+    Effective contact: small rubber tip r_tip ï¿½ 0.5 mm (pointed)
+    ï¿½_rubber_pointed ï¿½ 0.08ï¿½0.12 (pointed rubber, similar to metal sharp)
+    d?/dt_total_mint ï¿½ bearing_component + pointed_rubber ï¿½ 12ï¿½18 rad/sï¿½
 
 At worn condition (flatter rubber surface):
 
-    r_tip_worn ˜ 1.5–2.0 mm
-    µ_rubber_worn ˜ 0.35–0.50 (worn rubber, increased contact area)
-    d?/dt_total_worn ˜ bearing + flat_rubber ˜ 45–75 rad/s²
+    r_tip_worn ï¿½ 1.5ï¿½2.0 mm
+    ï¿½_rubber_worn ï¿½ 0.35ï¿½0.50 (worn rubber, increased contact area)
+    d?/dt_total_worn ï¿½ bearing + flat_rubber ï¿½ 45ï¿½75 rad/sï¿½
 
-This is a REVERSAL from normal bearing behavior — Bearing Core 2 becomes more aggressive (faster spin decay, more lateral movement) as it wears, not less. When worn:
+This is a REVERSAL from normal bearing behavior ï¿½ Bearing Core 2 becomes more aggressive (faster spin decay, more lateral movement) as it wears, not less. When worn:
 
     Movement pattern: active orbit (rubber flat at 1.5mm radius) ? zombie/balance hybrid
     When mint: near-stationary (pointed rubber barely contacts floor) ? pure stamina
 
 **Height impact:**
-Taller height raises CoM ? increases nutation susceptibility at low spin. This is why Bearing Core 2 does not simply replace Bearing Core 1 as the "better zombie" — the height penalty reduces stability in the LAD zone.
+Taller height raises CoM ? increases nutation susceptibility at low spin. This is why Bearing Core 2 does not simply replace Bearing Core 1 as the "better zombie" ï¿½ the height penalty reduces stability in the LAD zone.
 
 **Combo recommendation from hmsdb:**
-Samurai Upper + CWD Defense Ring + Bearing Core 2 (worn, aggressive mode) — the worn rubber provides lateral force for repositioning while bearing mechanism maintains spin.
+Samurai Upper + CWD Defense Ring + Bearing Core 2 (worn, aggressive mode) ï¿½ the worn rubber provides lateral force for repositioning while bearing mechanism maintains spin.
 
 ### 3. Game Engine Mapping
 
@@ -14031,47 +14031,47 @@ function bearingCore2Friction(wearState: "mint" | "worn"): number {
 
 ### 4. Verdict
 
-**Role:** Wear-dependent zombie/balance hybrid RC. Bearing Core 2's rubber tip inverts the normal wear curve: mint condition = near-stationary stamina; worn condition = active rubber-flat attack orbit. The taller height vs Bearing Core 1 introduces nutation risk in the LAD zone that makes BC2 less reliable as a pure zombie base. Best used deliberately in "worn" state for active defense combos (Samurai Upper + Defense Ring + BC2 worn = controlled orbital defense). Not a replacement for Bearing Core 1 in pure zombie builds. Tier: mid — unique wear mechanic with genuine tactical applications in experienced hands.
+**Role:** Wear-dependent zombie/balance hybrid RC. Bearing Core 2's rubber tip inverts the normal wear curve: mint condition = near-stationary stamina; worn condition = active rubber-flat attack orbit. The taller height vs Bearing Core 1 introduces nutation risk in the LAD zone that makes BC2 less reliable as a pure zombie base. Best used deliberately in "worn" state for active defense combos (Samurai Upper + Defense Ring + BC2 worn = controlled orbital defense). Not a replacement for Bearing Core 1 in pure zombie builds. Tier: mid ï¿½ unique wear mechanic with genuine tactical applications in experienced hands.
 
 
 ---
 
-## Case 153 — Sharp Core RC (~1.5 g [ESTIMATED], Hasbro HMS beys) — Basic Sharp-Tip Running Core with Mold-Dependent Sharpness: Hasbro Ball-Shaped vs SonoKong Pointed, Both Below Flat Core Performance
+## Case 153 ï¿½ Sharp Core RC (~1.5 g [ESTIMATED], Hasbro HMS beys) ï¿½ Basic Sharp-Tip Running Core with Mold-Dependent Sharpness: Hasbro Ball-Shaped vs SonoKong Pointed, Both Below Flat Core Performance
 
 ### 1. Geometry
 
 Sharp Core is a basic sharp-tipped Running Core with no mechanical gimmick. Its primary characteristic is its tip shape: a single sharp plastic point that produces low ground contact area, resulting in slow, centered movement with minimal floor friction. The RC body is a standard ABS housing with no metal elements and no mode-change mechanism.
 
 **Critical mold difference:** Sharp Core exhibits the most pronounced brand-dependent mold variation of any HMS RC:
-- **Hasbro version:** the tip is "noticeably less sharp — more of a ball shape." This moves behavior closer to a Semi-Flat tip than a true sharp point. Hasbro's molding tolerance or intentional safety rounding produces a tip that is functionally a rounded-sharp hybrid.
+- **Hasbro version:** the tip is "noticeably less sharp ï¿½ more of a ball shape." This moves behavior closer to a Semi-Flat tip than a true sharp point. Hasbro's molding tolerance or intentional safety rounding produces a tip that is functionally a rounded-sharp hybrid.
 - **SonoKong version:** "even more pointed" than expected for a sharp tip. The SonoKong mold delivers a genuinely needle-like contact point, producing the lowest possible floor friction among HMS RCs.
 
 Despite this difference, both versions share the same competitive verdict: Sharp Core is below Flat Core in competitive relevance because a sharp tip in HMS (where beys spin very fast and arena diameter is small) produces too-centered movement for attack use and insufficient spin retention for survival use. It occupies no competitive niche.
 
-**Weight:** estimated ~1.5 g based on: Flat Core Original ˜ 1.5 g (from Case 148); Sharp Core has a similar ABS-only plastic body without metal ballast. No exact weight confirmed from any source [ESTIMATED].
+**Weight:** estimated ~1.5 g based on: Flat Core Original ï¿½ 1.5 g (from Case 148); Sharp Core has a similar ABS-only plastic body without metal ballast. No exact weight confirmed from any source [ESTIMATED].
 
 ### 2. Physics
 
 ```
 Tip contact model:
   tipType: "sharp_point"
-  tipRadius_mm: 0.5 (SonoKong)  /  1.5 (Hasbro — rounded ball tip)   [ESTIMATED]
+  tipRadius_mm: 0.5 (SonoKong)  /  1.5 (Hasbro ï¿½ rounded ball tip)   [ESTIMATED]
   mu_tip: 0.08 (SonoKong)  /  0.12 (Hasbro)                          [ESTIMATED]
 
 Floor friction torque:
-  t_friction = µ × F_normal × r_tip
-  SonoKong: t = 0.08 × F_N × 0.0005 ? near-zero torque ? extremely slow spin decay
-  Hasbro:   t = 0.12 × F_N × 0.0015 ? still low, but slightly more grounded
+  t_friction = ï¿½ ï¿½ F_normal ï¿½ r_tip
+  SonoKong: t = 0.08 ï¿½ F_N ï¿½ 0.0005 ? near-zero torque ? extremely slow spin decay
+  Hasbro:   t = 0.12 ï¿½ F_N ï¿½ 0.0015 ? still low, but slightly more grounded
 
 Movement type:
   Both: near-stationary center-point movement (too little friction for orbital drive)
-  SonoKong: slightly more prone to drifting outward at launch (low µ less able to anchor)
+  SonoKong: slightly more prone to drifting outward at launch (low ï¿½ less able to anchor)
   Hasbro:   slightly more stable at center due to rounded contact spreading load
 
 Spin retention:
-  spinDecayRate ˜ 0.003 rad/s² (SonoKong)  /  0.005 rad/s² (Hasbro)   [ESTIMATED]
+  spinDecayRate ï¿½ 0.003 rad/sï¿½ (SonoKong)  /  0.005 rad/sï¿½ (Hasbro)   [ESTIMATED]
   Both: lower spin decay than Semi-Flat Core ? marginally better stamina than Semi-Flat
-  Both: dramatically below Bearing Core (˜ 0.0005 rad/s²) for survival use
+  Both: dramatically below Bearing Core (ï¿½ 0.0005 rad/sï¿½) for survival use
 ```
 
 ### 3. Game Engine Mapping
@@ -14081,7 +14081,7 @@ type SharpCoreBrand = "hasbro" | "sonokong";
 interface SharpCore {
   name: "sharp_core";
   system: "HMS";
-  mass_g: 1.5;                           // [ESTIMATED — ABS-only body, no metal]
+  mass_g: 1.5;                           // [ESTIMATED ï¿½ ABS-only body, no metal]
   tipType: "sharp";
   // Brand-dependent tip geometry
   brand: SharpCoreBrand;
@@ -14105,49 +14105,49 @@ interface SharpCore {
   mold_note: "most pronounced brand mold variation in HMS RC lineup";
 }
 function sharpCoreMovement(rc: SharpCore, brand: SharpCoreBrand): "center" | "drift" {
-  // Both brands stay near center; SonoKong has slightly higher drift at launch due to low µ
+  // Both brands stay near center; SonoKong has slightly higher drift at launch due to low ï¿½
   return brand === "sonokong" && Math.random() < 0.15 ? "drift" : "center";
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Non-competitive sharp-tip baseline. Sharp Core occupies the HMS RC hierarchy below all other options: it lacks the orbital drive of Flat Cores (attack), the friction control of Grip Flat Core (aggressive attack), the gimmick of Metal Change Core (mode-switch), or the spin retention of Bearing Core (survival). The Hasbro vs SonoKong mold difference is the most notable aspect of this RC — it is a case study in how brand-specific manufacturing tolerances create functionally different parts from nominally identical designs. No competitive HMS build uses Sharp Core. Tier: non-competitive.
+**Role:** Non-competitive sharp-tip baseline. Sharp Core occupies the HMS RC hierarchy below all other options: it lacks the orbital drive of Flat Cores (attack), the friction control of Grip Flat Core (aggressive attack), the gimmick of Metal Change Core (mode-switch), or the spin retention of Bearing Core (survival). The Hasbro vs SonoKong mold difference is the most notable aspect of this RC ï¿½ it is a case study in how brand-specific manufacturing tolerances create functionally different parts from nominally identical designs. No competitive HMS build uses Sharp Core. Tier: non-competitive.
 
 ---
 
-## Case 154 — Metal Sharp Core RC (~2.5 g [ESTIMATED], SonoKong Three Kingdoms HMS) — Metal-Tipped Sharp Core with Three Kingdoms "Completely Flat" Variant: Higher Mass Than Sharp Core, Still Below Competitive Threshold
+## Case 154 ï¿½ Metal Sharp Core RC (~2.5 g [ESTIMATED], SonoKong Three Kingdoms HMS) ï¿½ Metal-Tipped Sharp Core with Three Kingdoms "Completely Flat" Variant: Higher Mass Than Sharp Core, Still Below Competitive Threshold
 
 ### 1. Geometry
 
-Metal Sharp Core is a sharp-tipped Running Core with a metal shaft/tip replacing the all-plastic construction of Sharp Core (Case 153). The metal tip provides higher durability than the plastic Sharp Core, and the additional metal mass raises the RC weight to approximately 2.5 g [ESTIMATED — metal adds ~1 g over Sharp Core's ~1.5 g body].
+Metal Sharp Core is a sharp-tipped Running Core with a metal shaft/tip replacing the all-plastic construction of Sharp Core (Case 153). The metal tip provides higher durability than the plastic Sharp Core, and the additional metal mass raises the RC weight to approximately 2.5 g [ESTIMATED ï¿½ metal adds ~1 g over Sharp Core's ~1.5 g body].
 
 **Three Kingdoms variant anomaly:** hmsdb.com notes that Metal Sharp Core versions found in Three Kingdoms HMS sets have "completely flat" tips rather than the sharp tip implied by the name. This creates a paradox: the "Metal Sharp Core" in these releases is functionally a "Metal Flat Core" tip on the Metal Sharp Core body. The Three Kingdoms flat variant has higher ground friction than true-sharp variants and behaves more like Metal Weight Flat Core (Case 150) with lower mass.
 
 **Source context:** Metal Sharp Core appears in SonoKong and Korean-market HMS releases, including the Three Kingdoms series. It is less common than Sharp Core in standard Hasbro/Takara releases.
 
-**Competitive position:** Metal Sharp Core is described on hmsdb as "behaves like taller Metal Flat Core" for the standard (non-Three Kingdoms) version. If the tip is truly sharp, movement is near-stationary (same as Sharp Core but harder). If the tip is the Three Kingdoms flat variant, it approximates Metal Weight Flat Core behavior but at lower mass — still below Flat Core New Revision (Case 149) for attack applications.
+**Competitive position:** Metal Sharp Core is described on hmsdb as "behaves like taller Metal Flat Core" for the standard (non-Three Kingdoms) version. If the tip is truly sharp, movement is near-stationary (same as Sharp Core but harder). If the tip is the Three Kingdoms flat variant, it approximates Metal Weight Flat Core behavior but at lower mass ï¿½ still below Flat Core New Revision (Case 149) for attack applications.
 
 ### 2. Physics
 
 ```
 Standard variant (sharp tip):
   tipType: "metal_sharp"
-  tipRadius_mm: 0.8   [ESTIMATED — metal allows sharper mold tolerance than plastic]
-  mu_metal_sharp: 0.06  [ESTIMATED — metal on plastic, very low friction]
-  spinDecayRate ˜ 0.002 rad/s²  [ESTIMATED — lower decay than plastic sharp due to metal hardness]
+  tipRadius_mm: 0.8   [ESTIMATED ï¿½ metal allows sharper mold tolerance than plastic]
+  mu_metal_sharp: 0.06  [ESTIMATED ï¿½ metal on plastic, very low friction]
+  spinDecayRate ï¿½ 0.002 rad/sï¿½  [ESTIMATED ï¿½ lower decay than plastic sharp due to metal hardness]
   movementType: "near_stationary_center" (same archetype as Sharp Core, harder surface)
 
 Three Kingdoms flat variant:
   tipType: "metal_flat"  (despite the name)
-  tipRadius_mm: 4.0   [ESTIMATED — flat face approximated as radius of flat disk contact]
-  mu_metal_flat: 0.14  [ESTIMATED — metal flat on plastic, moderate friction]
-  spinDecayRate ˜ 0.012 rad/s²  [ESTIMATED]
+  tipRadius_mm: 4.0   [ESTIMATED ï¿½ flat face approximated as radius of flat disk contact]
+  mu_metal_flat: 0.14  [ESTIMATED ï¿½ metal flat on plastic, moderate friction]
+  spinDecayRate ï¿½ 0.012 rad/sï¿½  [ESTIMATED]
   movementType: "orbital_drive_moderate"
   ? approximates Metal Weight Flat Core (Case 150) at lower mass ? slightly less controllable
 
 Height comparison:
-  Metal Sharp Core is taller than Bearing Core (Case 84) by ~1–2 mm [FACT(behavior)]
+  Metal Sharp Core is taller than Bearing Core (Case 84) by ~1ï¿½2 mm [FACT(behavior)]
   Taller RC = slightly higher pivot point ? marginally more tilt-stable
 ```
 
@@ -14158,7 +14158,7 @@ type MetalSharpCoreVariant = "standard_sharp" | "three_kingdoms_flat";
 interface MetalSharpCore {
   name: "metal_sharp_core";
   system: "HMS";
-  mass_g: 2.5;                           // [ESTIMATED — metal tip adds ~1g over Sharp Core]
+  mass_g: 2.5;                           // [ESTIMATED ï¿½ metal tip adds ~1g over Sharp Core]
   variant: MetalSharpCoreVariant;
   // Standard variant (sharp tip)
   standard: {
@@ -14167,11 +14167,11 @@ interface MetalSharpCore {
     mu: 0.06;                            // [ESTIMATED]
     spinDecayRate_rads2: 0.002;          // [ESTIMATED]
     movementType: "near_stationary_center";
-    desc: "behaves like taller Metal Flat Core [per hmsdb] — but at this tip radius, movement is center-biased";
+    desc: "behaves like taller Metal Flat Core [per hmsdb] ï¿½ but at this tip radius, movement is center-biased";
   };
   // Three Kingdoms variant (flat tip despite name)
   three_kingdoms: {
-    tipType: "metal_flat";               // [FACT(hmsdb)] — "completely flat" tips
+    tipType: "metal_flat";               // [FACT(hmsdb)] ï¿½ "completely flat" tips
     tipRadius_mm: 4.0;                   // [ESTIMATED]
     mu: 0.14;                            // [ESTIMATED]
     spinDecayRate_rads2: 0.012;          // [ESTIMATED]
@@ -14181,7 +14181,7 @@ interface MetalSharpCore {
   heightNote: "taller than Bearing Core by ~1-2mm; slightly higher CoM";
   competitiveTier: "non_competitive";    // below Flat Core New Revision for attack; below Bearing for survival
   origin: "SonoKong / Korean market HMS (Three Kingdoms series)";
-  mold_note: "Three Kingdoms variant name mismatch — Metal Sharp Core sold with flat tip";
+  mold_note: "Three Kingdoms variant name mismatch ï¿½ Metal Sharp Core sold with flat tip";
 }
 function metalSharpCoreMovement(rc: MetalSharpCore): "center" | "orbital" {
   return rc.variant === "three_kingdoms_flat" ? "orbital" : "center";
@@ -14190,15 +14190,15 @@ function metalSharpCoreMovement(rc: MetalSharpCore): "center" | "orbital" {
 
 ### 4. Verdict
 
-**Role:** Non-competitive metal-tipped sharp RC. Metal Sharp Core improves on Sharp Core's durability (metal tip) and marginally improves spin retention (mu = 0.06 vs 0.08 for SonoKong Sharp), but remains non-competitive. The Three Kingdoms flat-tip variant is the more practically useful version — it approximates orbital drive at lighter mass than Metal Weight Flat Core — but both variants are outclassed by confirmed competitive RCs (Flat Core New Revision for attack, Bearing Core 2 for survival). Primarily of interest as a regional/collector variant for SonoKong Three Kingdoms HMS sets. Tier: non-competitive.
+**Role:** Non-competitive metal-tipped sharp RC. Metal Sharp Core improves on Sharp Core's durability (metal tip) and marginally improves spin retention (mu = 0.06 vs 0.08 for SonoKong Sharp), but remains non-competitive. The Three Kingdoms flat-tip variant is the more practically useful version ï¿½ it approximates orbital drive at lighter mass than Metal Weight Flat Core ï¿½ but both variants are outclassed by confirmed competitive RCs (Flat Core New Revision for attack, Bearing Core 2 for survival). Primarily of interest as a regional/collector variant for SonoKong Three Kingdoms HMS sets. Tier: non-competitive.
 
 ---
 
-## Case 155 — Semi-Flat Core RC (~2 g [ESTIMATED], Driger MS A-124) — First Balance-Style HMS Running Core: Ambidextrous Aggression Level Depending on Launch Style, Distinct from Metal Semi-Flat Core
+## Case 155 ï¿½ Semi-Flat Core RC (~2 g [ESTIMATED], Driger MS A-124) ï¿½ First Balance-Style HMS Running Core: Ambidextrous Aggression Level Depending on Launch Style, Distinct from Metal Semi-Flat Core
 
 ### 1. Geometry
 
-Semi-Flat Core is the first "balance" style Running Core in the HMS series, found in Driger MS (A-124). It is a basic ABS plastic RC with a semi-flat tip — a profile between sharp (very little ground contact) and flat (maximum ground contact). The semi-flat shape produces moderate ground friction, allowing the bey to either orbit aggressively or sit more centred depending on launch technique.
+Semi-Flat Core is the first "balance" style Running Core in the HMS series, found in Driger MS (A-124). It is a basic ABS plastic RC with a semi-flat tip ï¿½ a profile between sharp (very little ground contact) and flat (maximum ground contact). The semi-flat shape produces moderate ground friction, allowing the bey to either orbit aggressively or sit more centred depending on launch technique.
 
 **This RC is distinct from Metal Semi-Flat Core (Case 87):** Metal Semi-Flat Core (from Advance Averazer) has a die-cast metal tip, wider dome profile, and weighs approximately 3 g. Semi-Flat Core (from Driger MS) is all-ABS plastic with a smaller semi-flat profile and weighs approximately 2 g [ESTIMATED]. The metal tip on Metal Semi-Flat Core provides a wider, slower contact; the plastic Semi-Flat Core's smaller tip is slightly less damped.
 
@@ -14208,26 +14208,26 @@ Semi-Flat Core is the first "balance" style Running Core in the HMS series, foun
 
 This adaptability is Semi-Flat Core's distinguishing property vs other HMS RCs, which have more fixed behavior profiles.
 
-**Limitation:** "lacks the performance of more specialized cores available later in the HMS lineup." Semi-Flat Core is an early HMS RC — the Metal Change Core (Case 134), Bearing Core 2 (Case 152), and Flat Core New Revision (Case 149) all outperform it in their respective roles.
+**Limitation:** "lacks the performance of more specialized cores available later in the HMS lineup." Semi-Flat Core is an early HMS RC ï¿½ the Metal Change Core (Case 134), Bearing Core 2 (Case 152), and Flat Core New Revision (Case 149) all outperform it in their respective roles.
 
 ### 2. Physics
 
 ```
 Tip contact model:
   tipType: "semi_flat_plastic"
-  tipRadius_mm: 2.5   [ESTIMATED — between flat 4mm and sharp 0.5mm]
-  mu_plastic: 0.20    [ESTIMATED — ABS semi-flat on floor plastic, moderate friction]
+  tipRadius_mm: 2.5   [ESTIMATED ï¿½ between flat 4mm and sharp 0.5mm]
+  mu_plastic: 0.20    [ESTIMATED ï¿½ ABS semi-flat on floor plastic, moderate friction]
 
-Movement model — launch-speed dependent:
+Movement model ï¿½ launch-speed dependent:
   High launch spin (? = 400 rad/s):
-    F_centrifugal presses tip harder ? µ_eff ˜ 0.22
+    F_centrifugal presses tip harder ? ï¿½_eff ï¿½ 0.22
     movementType: "mild_orbital_aggressive"
-    orbitRadius_m: 0.04–0.06  [ESTIMATED]
+    orbitRadius_m: 0.04ï¿½0.06  [ESTIMATED]
   Low launch spin (? < 300 rad/s):
-    F_centrifugal weaker ? µ_eff ˜ 0.17
+    F_centrifugal weaker ? ï¿½_eff ï¿½ 0.17
     movementType: "centre_docile"
 
-spinDecayRate ˜ 0.010 rad/s²  [ESTIMATED — plastic semi-flat, moderate floor drag]
+spinDecayRate ï¿½ 0.010 rad/sï¿½  [ESTIMATED ï¿½ plastic semi-flat, moderate floor drag]
 vs Metal Semi-Flat Core (Case 87):
   Metal Semi-Flat: metal tip, wider dome, ~3g ? slower docile movement, better Compact use
   Semi-Flat Core:  plastic tip, smaller dome, ~2g ? mildly faster orbit when launched hard
@@ -14240,7 +14240,7 @@ interface SemiFlatCore {
   name: "semi_flat_core";
   system: "HMS";
   sourceBey: "Driger MS (A-124)";
-  mass_g: 2.0;                           // [ESTIMATED — all-ABS, smaller than Metal Semi-Flat]
+  mass_g: 2.0;                           // [ESTIMATED ï¿½ all-ABS, smaller than Metal Semi-Flat]
   tipType: "semi_flat_plastic";
   tipRadius_mm: 2.5;                     // [ESTIMATED]
   mu: 0.20;                              // [ESTIMATED]
@@ -14260,7 +14260,7 @@ interface SemiFlatCore {
   };
   competitiveTier: "non_competitive_outside_compact";
   note: "first HMS balance-style RC; outperformed by all later specialized HMS RCs";
-  distinctFrom: "metal_semi_flat_core";  // Case 87 — different part, different tip material
+  distinctFrom: "metal_semi_flat_core";  // Case 87 ï¿½ different part, different tip material
 }
 function semiFlatMovement(rc: SemiFlatCore, launchOmega_rads: number): "mild_orbital" | "center_docile" {
   return launchOmega_rads >= 400 ? "mild_orbital" : "center_docile";
@@ -14269,5 +14269,5 @@ function semiFlatMovement(rc: SemiFlatCore, launchOmega_rads: number): "mild_orb
 
 ### 4. Verdict
 
-**Role:** Non-competitive outside Compact; historical HMS balance-RC baseline. Semi-Flat Core is notable as the first HMS RC to offer launch-technique-dependent behavior — a property that would be refined in later RCs (Metal Change Core's auto-switch, Manual Change Core's pre-battle modes). In Compact builds with Driger MS, Semi-Flat Core's docile mode provides stability, but Metal Semi-Flat Core (Case 87) supersedes it with a heavier metal-tip damping profile. The plastic semi-flat tip ages faster than metal, and the ~2 g mass contributes little to assembly inertia. Do not mistake Semi-Flat Core (plastic, Driger MS) for Metal Semi-Flat Core (metal, Advance Averazer) — they are different parts from different beys with different competitive contexts. Tier: non-competitive.
+**Role:** Non-competitive outside Compact; historical HMS balance-RC baseline. Semi-Flat Core is notable as the first HMS RC to offer launch-technique-dependent behavior ï¿½ a property that would be refined in later RCs (Metal Change Core's auto-switch, Manual Change Core's pre-battle modes). In Compact builds with Driger MS, Semi-Flat Core's docile mode provides stability, but Metal Semi-Flat Core (Case 87) supersedes it with a heavier metal-tip damping profile. The plastic semi-flat tip ages faster than metal, and the ~2 g mass contributes little to assembly inertia. Do not mistake Semi-Flat Core (plastic, Driger MS) for Metal Semi-Flat Core (metal, Advance Averazer) ï¿½ they are different parts from different beys with different competitive contexts. Tier: non-competitive.
 

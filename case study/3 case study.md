@@ -1317,7 +1317,7 @@ function spinLossPerHit(
 
 > **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right SG South · BB: SG Metal Flat Base GDV
 
-Dragon Breaker Core AR is 5.3 g — the heaviest core AR in the plastics library — with an asymmetric design that favours left-spin attack. Its contact geometry in right spin produces high recoil from sub-optimal blade backs; in left spin the serrations and exposed contact faces deliver competitive smash at the cost of significant rotational recoil, which is partially remedied by SGMF2's slip-conversion mechanism (Case 122). SAR choice is the primary performance variable: War Lion fills the slot without interfering; Screw Zeus adds the heaviest AR configuration in the generation; War Bear fixes in left spin under wide WD pressure, enabling its outer contact points.
+Dragon Breaker Core AR is 5.3 g — the heaviest core AR in the plastics library — with an asymmetric design that favours left-spin attack. Its contact geometry in right spin produces high recoil from sub-optimal blade backs; in left spin the serrations and exposed contact faces deliver competitive smash at the cost of significant rotational recoil, which is partially remedied by SGMF2's slip-conversion mechanism (Case 122). SAR choice is the primary performance variable: War Lion SAR fills the slot without interfering; Screw Zeus SAR adds the heaviest AR configuration in the generation; War Bear SAR fixes in left spin under wide WD pressure, enabling its outer contact points.
 
 ---
 
@@ -1534,7 +1534,7 @@ function totalARMassG(sar: DragonBreakerCoreSetup["sar"]): number {
 // totalARMassG("war-lion")    -> ~6.8g
 ```
 
-**Verdict:** Dragon Breaker Core AR's value is entirely combination-dependent. As a solo AR in right spin it produces Tier 2 smash with high recoil. Screw Zeus in right spin delivers 86.6% smash fraction at the cost of maximum combo weight, viable against WBD via momentum rather than geometry. In left spin, serrations at 37° from tangent produce 79.9% smash; War Bear pinned by wide WD raises this to 89.1% and fixes the SAR contact; Screw Zeus achieves 90.6% smash at maximum weight, requiring very-high-traction rubber tips to maintain orbital speed. Inverted slope on Screw Zeus introduces self-tilt risk at lower base heights. Circle Survivor resistance relies on momentum bludgeoning rather than contact geometry in all setups.
+**Verdict:** Dragon Breaker Core AR's value is entirely combination-dependent. As a solo AR in right spin it produces Tier 2 smash with high recoil. Screw Zeus SAR in right spin delivers 86.6% smash fraction at the cost of maximum combo weight, viable against WBD via momentum rather than geometry. In left spin, serrations at 37° from tangent produce 79.9% smash; War Bear SAR pinned by wide WD raises this to 89.1% and fixes the SAR contact; Screw Zeus SAR achieves 90.6% smash at maximum weight, requiring very-high-traction rubber tips to maintain orbital speed. Inverted slope on Screw Zeus SAR introduces self-tilt risk at lower base heights. Circle Survivor resistance relies on momentum bludgeoning rather than contact geometry in all setups.
 
 ---
 

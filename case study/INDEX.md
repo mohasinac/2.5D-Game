@@ -1,5 +1,5 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **803 cases** across 14 files + 1 master reference.
+Total: **807 cases** across 14 files + 1 master reference.
 
 ---
 
@@ -10,7 +10,7 @@ Total: **803 cases** across 14 files + 1 master reference.
 | [1 case study.md](1%20case%20study.md) | 1–73 | Physics fundamentals → MFB/4D parts |
 | [2 case study.md](2%20case%20study.md) | 74–155 | HMS parts → Gen 1 Plastic SG-era parts + HMS RC supplement |
 | [3 case study.md](3%20case%20study.md) | 118–187 | Gen 1 Plastic SG/EG/CEW parts |
-| [4 case study.md](4%20case%20study.md) | 189–276 | Gen 1 EG/CEW parts → Anime-only → Magnacore ARs → A-F series ARs/BBs → WD/BB/AR supplement |
+| [4 case study.md](4%20case%20study.md) | 189–280 | Gen 1 EG/CEW parts → Anime-only → Magnacore ARs → A-F series ARs/BBs → WD/BB/AR supplement |
 | [5 case study.md](5%20case%20study.md) | 236–296 | System architectures → MFB wheels/tracks/bottoms |
 | [6 case study.md](6%20case%20study.md) | 297–353 + 308a, 320a–320i, 326a, 353a–353z, 354a–354j | MFB bottoms → 4D wheels/bottoms/tracks; MFB wheels; Zero-G Crystal/Chrome Wheels, ZeroG tracks/tips, Grand FW, D tip |
 | [7 case study.md](7%20case%20study.md) | 354–374 | BX/UX/CX system architecture → All-gen system summaries |
@@ -19,7 +19,7 @@ Total: **803 cases** across 14 files + 1 master reference.
 | [10 case study.md](10%20case%20study.md) | 545–585 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–814 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
+| [13 case study.md](13%20case%20study.md) | 619–836 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
 | [14 case study.md](14%20case%20study.md) | 759–777 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | Engine reference: constants, formulas, normalization |
 
@@ -282,7 +282,7 @@ Total: **803 cases** across 14 files + 1 master reference.
 
 ---
 
-## Part 4 — Cases 189–276
+## Part 4 — Cases 189–280
 
 > Gen 1 Plastic: Engine Gear era parts, CEW tips, anime-only entries, V-Force WD/BB supplement, Draciel Metal Ball Defenser, Galux (unreleased)
 
@@ -344,8 +344,8 @@ Total: **803 cases** across 14 files + 1 master reference.
 | 241 | Cyber Driger (Salima, Anime-Only): Thin Cyber-Claw AR | Gen1-Plastic | — | Assembly | anime-only, Cyber Driger |
 | 242 | Spiral Change Base (Dranzer S): Notch-Spring Dual-Tip Mode | Gen1-Plastic | SGS | BB | Spiral Change, LAD, spin-steal |
 | 243 | Double Wing AR (Dranzer S): Two-Fold Wing, Left-Spin Compact | Gen1-Plastic | SGS | AR | Double Wing |
-| 244 | War Bear AR (Galzzly): Curved Three-Claw, Pure Attack | Gen1-Plastic | SGS | AR | War Bear, Galzzly |
-| 245 | War Monkey AR (Galman): Asymmetric Arms, Imbalance | Gen1-Plastic | SGS | AR | War Monkey, Galman, asymmetric |
+| 244 | War Bear AR (Galzzly): 4.3g Core, Free-Spin SAR Non-Functional; DS-SAR LS Acceptable | Gen1-Plastic | SGS | AR | War Bear, Galzzly, fragile, wide |
+| 245 | War Monkey AR (Galman): 4-Fold Symmetric, LS Top-Tier Zombie/Defense, RS Tier 2 | Gen1-Plastic | SGS | AR | War Monkey, Galman, 4-fold, LS top-tier |
 | 246 | Whale Attacker AR (Seaborg): Rounded Orca-Head, Non-Competitive | Gen1-Plastic | SGS | AR | Whale Attacker, Seaborg |
 | 247 | Cross Spike AR (Draciel S): Four Radial Spikes, Recoil Only | Gen1-Plastic | SGS | AR | Cross Spike |
 | 248 | SG Metal Ball Base (Draciel S): Metal Ball Tip, Tier 2 Zombie | Gen1-Plastic | SGS | BB | SG Metal Ball, zombie |
@@ -377,6 +377,10 @@ Total: **803 cases** across 14 files + 1 master reference.
 | 274 | Right SG (G Ball) (Gaia Dragoon): Ball-Weighted Core, G Special Base Retention Platform | Gen1-Plastic | SGS | SG | SG G Ball, retention platform, G Special Base, black fragile |
 | 275 | Neo Right SG (South Magne) (Gaia Dragoon): Mid-Weight Neo Core, Attack-Stamina Balance | Gen1-Plastic | SGS | SG | Neo Right SG, South Magnecore, attack-stamina, Magne Stadia |
 | 276 | G Special Base (Gaia Dragoon): Four-Ball Pocket Gimmick, Semi-Flat Tip, Poor LAD | Gen1-Plastic | SGS | BB | G Special Base, four-ball, semi-flat tip, poor LAD, black fragile |
+| 277 | War Monkey SAR (Galman): 1.9g Dual-Winglet, 100° Coverage, Top-Tier LS SAR | Gen1-Plastic | SGS | SAR | War Monkey SAR, LS top-tier, coverage |
+| 278 | War Bear SAR (Galzzly): 2.4g Free-Spin Useless; Fixed LS Top-Tier Smash; Fragile Tips | Gen1-Plastic | SGS | SAR | War Bear SAR, fixed LS smash, fragile |
+| 279 | Delta Wave AR (Orca Diver): 4.3g RS Below-Top-Tier, Wears Fast, No LS | Gen1-Plastic | SGS | AR | Delta Wave, Orca Diver, RS mid |
+| 280 | Scissors Arm AR (Crab Diver): 4.6g LS Huge Power+Recoil, Self-KO Risk, Best Non-CCL | Gen1-Plastic | SGS | AR | Scissors Arm, Crab Diver, LS smash, self-KO |
 
 ---
 
@@ -1141,8 +1145,8 @@ The following part types are **physics-negligible** — they share near-identica
 | Gabriel | Twin Horn (178) | Revolver Attack (162) | Neo Right SG MW (107b) | SG Wing Base (110b) |
 | Guardian Driger | Great Tiger [M] | Eight Heavy [M] | Neo Right SG South (121) | SG Flat Base (117) |
 | Spike Lizard | Lizard Blocker (176) | Ten Heavy (114a) | Neo Right SG North (120) | SG Roller Base (175) |
-| Crab Diver | Scissors Arm [M] | Random | Neo Right SG MW (107b) | SG Semi-Flat Base (109a) |
-| Orca Diver | Delta Wave [M] | Random | Neo Right SG MW (107b) | SG Flat Base (117) |
+| Crab Diver | Scissors Arm (280) | Random | Neo Right SG MW (107b) | SG Semi-Flat Base (109a) |
+| Orca Diver | Delta Wave (279) | Random | Neo Right SG MW (107b) | SG Flat Base (117) |
 | Manta Diver | Square Edge (116a) | Random | Neo Right SG MW (107b) | SG Sharp Base (111c) |
 | Killer Eagle | Penta Wing (172) | Random | Neo Right SG MW (107b) | SG Semi-Flat Base (109a) |
 | Death Gargoyle | Genocide Circle [M] | Random | Neo Right SG MW (107b) | SG Flat Base (117) |
@@ -1369,7 +1373,7 @@ The following part types are **physics-negligible** — they share near-identica
 Parts appearing in stock combos above that have **no case study coverage** ([M]). Grouped by type.
 
 **Attack Rings (Gen 1 Plastics):**
-Cross Dragon · Try Cutter · Wing Cross · Down Force Ring · Upper Force Ring · Scissor Cutter · Bound Attack Ring · Bound Defense Ring · Roller Attack Ring · Roller Defense Ring · Wing Cutter · Wing Attack Ring · Wing Defense Ring · Max Shield · Spark Attack Ring · Turtle Survivor · Metal Sting Base (BB) · Star Shape · Knight Claws Ring · Double Wing · War Bear · War Monkey · Whale Attacker · Cross Spike · Cross Fang · Eight Spike · Great Dragon · Scissor Attacker · Cross Attacker · Panther Claw · Ten Spike · Cross Horn · Great Tiger · Scissors Arm · Delta Wave · Genocide Circle · Hammer Tusk · Howling Leo · Jungle Shock · Mirage Goddess · Trident Vector · Neo Cross Horn · Dark Wing
+Cross Dragon · Try Cutter · Wing Cross · Down Force Ring · Upper Force Ring · Scissor Cutter · Bound Attack Ring · Bound Defense Ring · Roller Attack Ring · Roller Defense Ring · Wing Cutter · Wing Attack Ring · Wing Defense Ring · Max Shield · Spark Attack Ring · Turtle Survivor · Metal Sting Base (BB) · Star Shape · Knight Claws Ring · Double Wing · Whale Attacker · Cross Spike · Cross Fang · Eight Spike · Scissor Attacker · Cross Attacker · Panther Claw · Ten Spike · Cross Horn · Great Tiger · Howling Leo · Jungle Shock · Mirage Goddess · Trident Vector · Neo Cross Horn · Dark Wing
 
 **Weight Disks (Gen 1):**
 Heavy (4LS) · Balance (4LS) · Eight Heavy · Heavy Attack
