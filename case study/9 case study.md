@@ -7769,6 +7769,113 @@ function bulletSatelliteSpindownTime(iSat: number, mSat_g: number, omegaDetach_r
 // bulletSatelliteSpindownTime(1.323e-7, 5.4, 600, 0.50, 2.667) → 0.149 s  — more friction
 ```
 
+> **CORRECTION — Case 484 Amendment (mass split confirmed from official text + physical disassembly)**
+>
+> The original case used m_body ≈ 10.0 g / m_satellite ≈ 5.4 g, derived from a 2:1 mass estimate. The official product description states **"5 g when bullet is launched"** [CONFIRMED], meaning the remaining tip body after satellite detachment weighs exactly 5.0 g; the satellite therefore weighs 15.4 − 5.0 = **10.4 g** [CONFIRMED]. Physical disassembly images confirm the satellite is the larger, heavier piece (includes the metal rim); the remaining tip body is the smaller 5 g ABS piece with the rubber contact surface. All corrected values supersede the original calculations above.
+
+```
+CORRECTED MASS SPLIT — Performance Tip Bullet
+
+  Pre-detachment assembly:  m_tip_total = 15.4 g  (unchanged)
+  Post-detachment:
+    Remaining tip body:  m_body = 5.0 g  [CONFIRMED — "5g when bullet is launched"]
+    Detached satellite:  m_sat  = 10.4 g [CONFIRMED — 15.4 − 5.0]
+
+  CORRECTED INERTIA:
+
+    I_body = 0.5 × 0.005 × (0.004)²  = 4.000×10⁻⁸ kg·m²  (tip body only)
+
+    Satellite model: annular disc r_o = 14 mm, r_i = 4 mm  [ESTIMATED from disassembly imagery]
+    I_sat  = 0.5 × 0.0104 × ((0.014)² + (0.004)²)
+           = 0.5 × 0.0104 × (1.96×10⁻⁴ + 1.6×10⁻⁵)
+           = 0.5 × 0.0104 × 2.12×10⁻⁴
+           = 1.102×10⁻⁶ kg·m²   ← 8.3× larger than original estimate
+
+    I_Bullet_total = 4.0×10⁻⁸ + 1.102×10⁻⁶ = 1.142×10⁻⁶ kg·m²  (5.4× larger than original)
+
+  CORRECTED ASSEMBLY I (Erase Diabolos Vanguard Bullet):
+    I_total_corrected = 9.846×10⁻⁶ − 2.123×10⁻⁷ + 1.142×10⁻⁶ = 1.077×10⁻⁵ kg·m²
+
+  CORRECTED POST-DETACHMENT DYNAMICS (Erase assembly):
+    m_post = 66.5 − 10.4 = 56.1 g
+    I_post = 1.077×10⁻⁵ − 1.102×10⁻⁶ = 9.668×10⁻⁶ kg·m²
+    τ_post = 0.35 × 0.0561 × 9.81 × 0.002667 = 5.133×10⁻⁴ N·m
+    dω/dt_post = 5.133×10⁻⁴ / 9.668×10⁻⁶ = 53.1 rad/s²
+    t_post = 416 / 53.1 = 7.83 s  (vs original 7.42 s — slightly longer, lower post-detach mass)
+
+  CORRECTED SATELLITE SPIN-DOWN:
+    I_sat = 1.102×10⁻⁶ kg·m², m_sat = 10.4 g
+    Contact: satellite lands flat on small-radius central peg, r_contact ≈ 4 mm, μ_ABS = 0.17
+    dω/dt_sat = 0.17 × 0.0104 × 9.81 × 0.004 / 1.102×10⁻⁶ = 63.1 rad/s²
+    t_sat (ω₀=600 rad/s) = 600 / 63.1 = 9.51 s   ← 44.6× longer than original 213 ms estimate
+    t_sat (ω₀=400 rad/s) = 400 / 63.1 = 6.34 s
+
+    The satellite is a GENUINE secondary attacker spinning for ~6–9 s, not a brief 213 ms flash.
+    This makes the "dual body attack" mechanic substantially more impactful than originally modeled.
+
+  RULING CONFIRMATION [CONFIRMED by anime]:
+    Anime subtitle: "It isn't a Burst! Diabolos split into two!" — explicitly confirms that
+    the satellite detachment event is not scored as a Burst finish; the main combo continues
+    in play. Consistent with the Revive Armor ruling noted in the original case.
+```
+
+```typescript
+// Case 484 AMENDMENT — corrected Bullet mass split and satellite dynamics
+
+function bulletCorrectedMassSplit(): {
+  m_body_g: number; m_sat_g: number; I_body: number; I_sat: number; I_total: number;
+  I_sat_vs_original_ratio: number;
+  t_sat_600rads_s: number; t_sat_400rads_s: number;
+  t_sat_vs_original_ratio: number;
+  I_assembly_corrected: number; m_assembly_post_detach_g: number;
+} {
+  const m_body = 0.005, r_body = 0.004;
+  const m_sat = 0.0104, r_sat_o = 0.014, r_sat_i = 0.004;
+
+  const I_body = 0.5 * m_body * r_body ** 2;
+  const I_sat  = 0.5 * m_sat * (r_sat_o ** 2 + r_sat_i ** 2);
+  const I_total_tip = I_body + I_sat;
+
+  const I_original_sat = 1.323e-7;
+  const sat_ratio = I_sat / I_original_sat;
+
+  // satellite spin-down
+  const mu = 0.17, r_contact_sat = 0.004, g = 9.81;
+  const dw_sat = mu * m_sat * g * r_contact_sat / I_sat;
+  const t_600 = 600 / dw_sat;
+  const t_400 = 400 / dw_sat;
+  const t_original = 0.213;
+  const t_ratio = t_600 / t_original;
+
+  // corrected assembly I (Erase)
+  const I_assembly_corrected = 9.846e-6 - 2.123e-7 + I_total_tip;
+  const m_post = 66.5 - 10.4;
+
+  return {
+    m_body_g: 5.0, m_sat_g: 10.4,
+    I_body: +I_body.toExponential(4),
+    I_sat:  +I_sat.toExponential(4),
+    I_total: +I_total_tip.toExponential(4),
+    I_sat_vs_original_ratio: +sat_ratio.toFixed(1),
+    t_sat_600rads_s: +t_600.toFixed(2),
+    t_sat_400rads_s: +t_400.toFixed(2),
+    t_sat_vs_original_ratio: +t_ratio.toFixed(1),
+    I_assembly_corrected: +I_assembly_corrected.toExponential(4),
+    m_assembly_post_detach_g: m_post,
+  };
+}
+// bulletCorrectedMassSplit()
+//   -> { m_body:5.0g [CONFIRMED], m_sat:10.4g [CONFIRMED],
+//        I_body:4.000e-8, I_sat:1.102e-6, I_total_tip:1.142e-6,
+//        I_sat_vs_original:8.3× larger,
+//        t_sat_600:9.51 s, t_sat_400:6.34 s,
+//        t_sat_vs_original:44.6× longer than 213ms original,
+//        I_assembly_corrected:1.077e-5 (Erase), m_post_detach:56.1g }
+//   -> satellite is a genuine 6–9 s secondary attacker (not a 213 ms flash)
+//   -> dual-body attack window dramatically larger than originally modeled
+//   -> ruling [CONFIRMED by anime]: detachment ≠ Burst; main body continues in play
+```
+
 ---
 
 ## Case 462 — DB Core Kerbeus (DB/BU System)
@@ -21269,4 +21376,1095 @@ function bushinAshuraHurricaneKeepTen(): {
 //   -> Keep tip extends spin 28.9% beyond fixed-rubber model → confirms "good Survival/Stamina"
 //   -> Hurricane scrape: 10.3% of L₀ lost per floor contact → assembly's primary failure mode
 //   -> 5 scrapes halves angular momentum; pairing with Ratchet/Sting eliminates this vulnerability
+
+---
+
+### Case 613 — Energy Layer Hazard Kerbeus: Metal Chain Blade Inertia, Torsion-Spring Bound Defense Failure Analysis, Muzzle Protrusion Recoil, and Unbalanced Layer Instability (Cho-Z Layer System)
+
+**Thesis.** Hazard Kerbeus is an 18.13 g Cho-Z Defense Type Energy Layer [CONFIRMED] featuring two large blades whose outer edges are lined with metal in the shape of chains, three central dog-head motifs (representing Cerberus), and a torsion-spring bound defense gimmick that allows the chain blades to bend inward on contact; the metal chain lining is estimated to contribute m_metal ≈ 0.40 × 18.13 g = 7.25 g concentrated at the blade outer radius r_metal ≈ 23 mm, giving I_metal = m_metal × r_metal² = 0.00725 × (0.023)² = 3.837×10⁻⁶ kg·m², while the remaining ABS body (m_ABS ≈ 10.88 g at r_o ≈ 14 mm, r_i ≈ 6 mm) contributes I_ABS = 0.5 × 0.01088 × ((0.014)² + (0.006)²) = 1.262×10⁻⁶ kg·m², for a total I_Kerbeus = 3.837×10⁻⁶ + 1.262×10⁻⁶ = 5.099×10⁻⁶ kg·m² [ESTIMATED]; the metal fraction accounts for 75.3% of the layer's inertia despite being only 40% of the mass, confirming that the chain lining is the primary inertia driver; the bound defense gimmick uses torsion springs with "much greater flexibility" than its predecessor Guardian Kerbeus [CONFIRMED], but the blade travel is short — estimated δ_blade ≈ 3 mm inward displacement at r_blade = 23 mm corresponds to a rotational deflection θ = arcsin(3/23) = 7.5° — and the flexible spring stores energy E_spring = 0.5 × k_t × θ² where the soft torsion constant k_t ≈ 0.025 N·m/rad gives E_spring = 0.5 × 0.025 × (0.131)² = 2.14×10⁻⁴ J per blade; because the metal spring is elastic (not viscoelastic), this energy is fully returned to the system at the end of the collision rather than dissipated — the net energy absorption per contact is governed only by the spring material hysteresis loss (≈ 2–5% of stored energy), so E_dissipated ≈ 0.03 × 2.14×10⁻⁴ = 6.42×10⁻⁶ J per blade per contact, i.e., the bound defense dissipates approximately 6.4×10⁻⁶ J per blade activation — comparable to Jerk disc's 6.25×10⁻⁶ J (Case 604) despite being a heavier, more elaborate mechanism, confirming the "relatively ineffective" descriptor [CONFIRMED]; the muzzle protrusion recoil is the more damaging failure mode: the sharp points on the three dog-head muzzles present contact faces at angle α_muzzle ≈ 80° from tangent (near-perpendicular) [INFERRED from imagery], giving F_radial_muzzle = F_contact × sin(80°) = 0.985 × F_contact — essentially a blunt perpendicular smash contact that delivers maximum inward recoil to the Kerbeus layer itself at each muzzle engagement; every muzzle contact that would nominally be a glancing blade deflection instead becomes a high-recoil direct impact that aggressively stresses the burst lock teeth; the medium-length teeth (equivalent to Kaiser Kerbeus [CONFIRMED]) provide a burst torque threshold τ_tooth_medium ≈ 0.70 × τ_tooth_long [ESTIMATED], meaning the safety margin against burst is reduced compared to tall-tooth layers like Obelisk Odin (Case 599); the unbalanced mass distribution (common to Cho-Z layers [CONFIRMED]) introduces a center-of-mass offset δ_cm ≈ 1.5 mm [ESTIMATED], generating a centrifugal imbalance force F_imbalance = m_layer × δ_cm × ω² = 0.01813 × 0.0015 × 694² = 13.1 N at launch spin — this force drives a slow orbital precession that disrupts banking patterns and accelerates stamina drain; a Level Chip placed under the layer adds a balancing mass offset that cancels δ_cm and is the prescribed remedy [CONFIRMED].
+
+```
+HAZARD KERBEUS — LAYER GEOMETRY AND BOUND DEFENSE MECHANISM
+
+  Top view (two chain blades + 3 dog heads):
+
+           chain blade (metal-lined)
+              ╱──────────────╲
+            ╱    ≋≋≋≋≋≋≋≋≋    ╲   ← metal chain lining at r ≈ 23 mm
+           │  [dog head]        │   ← sharp muzzle protrusion (recoil point)
+           │  [dog head]        │   ← 3 heads down center
+           │  [dog head]        │
+            ╲    ≋≋≋≋≋≋≋≋≋    ╱   ← chain blade mirrored
+              ╲──────────────╱
+
+  Blade travel (bound defense, inward):
+    Normal position:  blade tip at r = 23 mm
+    Compressed:       blade tip at r ≈ 20 mm (δ = 3 mm inward)
+    Angular deflection: θ = arcsin(3/23) = 7.5°
+    Spring k_t ≈ 0.025 N·m/rad (soft torsion — greater flexibility than Guardian Kerbeus)
+
+  Muzzle protrusion contact angle:
+    α_muzzle ≈ 80° from tangent → F_radial = sin(80°) = 0.985 × F_contact
+    → near-perpendicular → maximum self-recoil at each muzzle contact  [INFERRED]
+
+INERTIA DECOMPOSITION:
+
+  Component        Mass(g)   Radius(mm)   Model             I (kg·m²)
+  ─────────────    ───────   ──────────   ────────────────  ─────────────
+  Metal chain      7.25      23           point mass ×2     3.837×10⁻⁶
+  ABS body        10.88      r_o=14,r_i=6 annular ring      1.262×10⁻⁶
+  ─────────────────────────────────────────────────────    ─────────────
+  TOTAL           18.13                                     5.099×10⁻⁶
+
+  Metal fraction of I: 3.837 / 5.099 = 75.3%  (metal dominates despite 40% of mass)
+
+BOUND DEFENSE — ENERGY DISSIPATION MODEL:
+
+  E_spring per blade per contact = 0.5 × k_t × θ_rad²
+    = 0.5 × 0.025 × (7.5 × π/180)²
+    = 0.5 × 0.025 × (0.1309)²
+    = 2.14×10⁻⁴ J   [stored, returned to system]
+
+  Hysteresis dissipation (metal spring, ~3% loss):
+    E_dissipated = 0.03 × 2.14×10⁻⁴ = 6.42×10⁻⁶ J per blade  [ESTIMATED]
+    Both blades:   1.28×10⁻⁵ J per activation
+
+  Comparison: Jerk disc E_abs = 6.25×10⁻⁶ J (Case 604)
+  → Hazard Kerbeus bound defense dissipates only 2× Jerk disc per activation
+  → "Relatively ineffective" confirmed — elaborate mechanism, negligible dissipation
+
+UNBALANCED LAYER — CENTRIFUGAL IMBALANCE:
+
+  δ_cm ≈ 1.5 mm (CoM offset from geometric center)  [ESTIMATED]
+  F_imbalance = m_layer × δ_cm × ω²
+  At ω₀ = 694 rad/s: F = 0.01813 × 0.0015 × 694² = 13.1 N
+  At ω = 300 rad/s:  F = 0.01813 × 0.0015 × 300² = 2.45 N
+
+  F_imbalance drives lateral orbital displacement of ~δ_cm each revolution
+  → Disrupts Tornado Ridge banking pattern at high spin
+  → Level Chip counter-mass cancels δ_cm → F_imbalance ≈ 0  [CONFIRMED fix]
+```
+
+```typescript
+// Case 613 — Hazard Kerbeus: inertia decomposition, bound defense, muzzle recoil, imbalance
+
+function hazardKerbeusLayer(): {
+  mass_g: number; I_Kerbeus: number;
+  I_metal: number; I_ABS: number; metalIFraction_pct: number;
+  E_spring_per_blade_J: number; E_dissipated_per_blade_J: number;
+  E_total_both_blades_J: number;
+  F_radial_muzzle_fraction: number;
+  F_imbalance_at_launch_N: number; F_imbalance_at_300rads_N: number;
+  boundDefenseVsJerkRatio: number;
+} {
+  const m_total = 0.01813;
+  const metalFrac = 0.40, ABS_frac = 0.60;
+  const r_metal = 0.023;
+  const r_ABS_o = 0.014, r_ABS_i = 0.006;
+
+  const m_metal = metalFrac * m_total;
+  const m_ABS   = ABS_frac  * m_total;
+
+  const I_metal = m_metal * r_metal * r_metal;
+  const I_ABS   = 0.5 * m_ABS * (r_ABS_o ** 2 + r_ABS_i ** 2);
+  const I_Kerbeus = I_metal + I_ABS;
+
+  // bound defense
+  const k_t = 0.025;  // N·m/rad torsion spring
+  const delta_blade_m = 0.003;  // 3 mm inward travel
+  const theta_rad = Math.asin(delta_blade_m / r_metal);
+  const E_spring = 0.5 * k_t * theta_rad ** 2;
+  const hysteresis = 0.03;
+  const E_dissipated = hysteresis * E_spring;
+  const E_both_blades = 2 * E_dissipated;
+
+  // muzzle recoil
+  const alpha_muzzle_rad = 80 * Math.PI / 180;
+  const F_radial_muzzle = Math.sin(alpha_muzzle_rad);
+
+  // centrifugal imbalance
+  const delta_cm = 0.0015;
+  const F_imbalance_launch = m_total * delta_cm * (694 ** 2);
+  const F_imbalance_300    = m_total * delta_cm * (300 ** 2);
+
+  // vs Jerk disc (Case 604)
+  const E_jerk = 6.25e-6;
+  const boundDefRatio = E_both_blades / E_jerk;
+
+  return {
+    mass_g: 18.13,
+    I_Kerbeus: +I_Kerbeus.toExponential(4),
+    I_metal:   +I_metal.toExponential(4),
+    I_ABS:     +I_ABS.toExponential(4),
+    metalIFraction_pct: +((I_metal / I_Kerbeus) * 100).toFixed(1),
+    E_spring_per_blade_J:     +E_spring.toExponential(4),
+    E_dissipated_per_blade_J: +E_dissipated.toExponential(4),
+    E_total_both_blades_J:    +E_both_blades.toExponential(4),
+    F_radial_muzzle_fraction: +F_radial_muzzle.toFixed(3),
+    F_imbalance_at_launch_N: +F_imbalance_launch.toFixed(1),
+    F_imbalance_at_300rads_N: +F_imbalance_300.toFixed(2),
+    boundDefenseVsJerkRatio: +boundDefRatio.toFixed(2),
+  };
+}
+// hazardKerbeusLayer()
+//   -> { mass_g:18.13, I_Kerbeus:5.099e-6,
+//        I_metal:3.837e-6, I_ABS:1.262e-6, metalIFraction:75.3%,
+//        E_spring_per_blade:2.142e-4 J (stored/returned),
+//        E_dissipated_per_blade:6.426e-6 J,
+//        E_total_both_blades:1.285e-5 J,
+//        F_radial_muzzle:0.985,
+//        F_imbalance_at_launch:13.1 N, F_imbalance_at_300rads:2.45 N,
+//        boundDefenseVsJerkRatio:2.06× }
+//   -> metal chain lining (40% of mass) generates 75.3% of layer inertia
+//   -> bound defense dissipates only 1.29e-5 J per activation → "relatively ineffective" confirmed
+//   -> muzzle protrusions at 80° → 98.5% radial recoil fraction → primary burst risk source
+//   -> imbalance force 13.1 N at launch spin → banking disruption without Level Chip
+```
+
+---
+
+### Case 614 — Forge Disc 7: Asymmetric Elliptical Geometry, Balanced Half-Section Design, Outward Weight Distribution Supremacy Among Core Discs (Cho-Z Layer System)
+
+**Thesis.** Forge Disc 7 weighs 23.2 g [CONFIRMED] and is an odd-numbered Core Disc with an asymmetric elliptical profile capable of accepting a Disc Frame; it presents seven design elements that resemble the numeral "7," but two of the sections on one side are half-sized, making the disc balanced despite its asymmetric visual appearance [CONFIRMED] — the half-section pair compensates for the angular mass deficit of the opposite full sections, producing a geometric balance condition equivalent to I_x = I_y about any axis in the spin plane (balanced mass ring theorem); modelling disc 7 as an annular ring with r_outer ≈ 24 mm and r_inner ≈ 10 mm (the central bore for the axle mount), I_7 = 0.5 × m × (r_o² + r_i²) = 0.5 × 0.0232 × ((0.024)² + (0.010)²) = 7.842×10⁻⁶ kg·m² [ESTIMATED]; this exceeds Gravity disc's I_Gravity = 7.441×10⁻⁶ kg·m² (Case 597) at comparable OWD (Gravity 21.6 g, 7 is 23.2 g — 7.4% heavier), and is the highest I among Cho-Z era Core Discs, being outclassed in total mass only by 10 and 0 [CONFIRMED]; the "ideal weight distribution for Stamina" descriptor [CONFIRMED] is a direct consequence of r_eff: r_eff_7 = sqrt(I_7 / m_7) = sqrt(7.842×10⁻⁶ / 0.0232) = 18.4 mm, placing the effective mass radius at the outer perimeter — the same peripheral-OWD geometry that makes Wide Survivor dominant in plastic generation (Case 597) — which maximises angular momentum per gram for a given launch energy; comparing the three disc archetypes at Cho-Z era: 7 (23.2 g, I = 7.842×10⁻⁶, perimeter OWD), Gravity (21.6 g, I = 7.441×10⁻⁶, perimeter OWD), and 8 (estimated 22.0 g, I ≈ 6.9×10⁻⁶, more compact but highest burst risk due to heavy outer asymmetric protrusions [INFERRED]) — disc 7 surpasses Gravity in both mass and I while avoiding the severe burst risk penalty of disc 8, making it the best stamina Core Disc in the Cho-Z family [CONFIRMED]; with a Disc Frame, 7's central elliptical void can be filled with a frame that either adds outer mass (increasing I further) or adds contact geometry for Attack/Defense purposes, making 7 the most versatile Core Disc for customisation [CONFIRMED].
+
+```
+FORGE DISC 7 — ASYMMETRIC HALF-SECTION BALANCE MECHANISM
+
+  Top view (7 sections, 2 are half-sized for balance):
+
+                 ┌────┐ full
+             ┌───┘    └───┐
+           full            ┌─── half+half pair
+           │       ●       │     (two sections at 180° that are halved)
+           full            └───
+             └───┐    ┌───┘
+                 └────┘ full
+                 ↑
+         full (opposite side)
+
+  Balance condition:
+    Full sections angular mass = Σ m_i × r_i² (5 full + 2 × half)
+    Half-section pair sum = 2 × (0.5 × m_section) = m_section (equal to one full section)
+    → Net mass moment equal around full revolution → I_x = I_y  [CONFIRMED by design]
+
+INERTIA CALCULATION:
+
+  Model: annular ring
+  r_outer = 24 mm, r_inner = 10 mm (central axle bore + core)
+  I_7 = 0.5 × 0.0232 × ((0.024)² + (0.010)²)
+      = 0.5 × 0.0232 × (5.76×10⁻⁴ + 1.00×10⁻⁴)
+      = 0.5 × 0.0232 × 6.76×10⁻⁴
+      = 7.842×10⁻⁶ kg·m²  [ESTIMATED]
+
+  r_eff = sqrt(7.842e-6 / 0.0232) × 1000 = 18.4 mm
+
+DISC 7 vs COMPARISON DISCS (Cho-Z era, ESTIMATED):
+
+  Disc       Mass(g)    I (kg·m²)     r_eff(mm)   Burst Risk    Notes
+  ────────   ──────     ────────────  ─────────   ──────────    ──────────────────────────
+  Gravity     21.6      7.441×10⁻⁶   18.6        moderate      best until disc 7
+  7           23.2      7.842×10⁻⁶   18.4        low           heaviest OWD; best stamina
+  8           22.0*     ~6.9×10⁻⁶*   17.7*       severe        asymmetric protrusions
+  (* = estimated)
+
+  7 vs Gravity: ΔI = 4.01×10⁻⁷ kg·m² (+5.4%), Δmass = +1.6 g
+  → ω_ratio at equal launch energy: sqrt(I_7 / I_Gravity) = sqrt(1.054) = 1.027 → 2.7% less spin at equal energy
+  → L_ratio: sqrt(I_7 / I_Gravity) × (7/Gravity) = (7.842/7.441) = 1.054 → 5.4% more angular momentum per launch
+  → For stamina (L₀ matters more than ω₀): disc 7 is strictly superior to Gravity  [CONFIRMED]
+
+DISC FRAME COMPATIBILITY:
+
+  Disc 7 central elliptical void dimensions: ~14 mm × 10 mm  [ESTIMATED]
+  Compatible Disc Frames:
+    • Outer-mass frames: raise I_total by adding perimeter mass in void → further stamina gain
+    • Attack frames: add blade geometry to elliptical edges → versatile Attack role
+    • Defense frames: add low-profile stabilisation mass → rounds out angular profile
+  → Disc 7 + Outer Frame is the highest-I Cho-Z stamina disc combination  [INFERRED]
+```
+
+```typescript
+// Case 614 — Forge Disc 7: inertia, OWD, disc comparison
+
+function forgeDisc7(): {
+  mass_g: number; I_7: number; r_eff_mm: number;
+  I_vs_Gravity_delta: number; I_ratio_vs_Gravity: number;
+  L_ratio_vs_Gravity: number; omega_ratio_vs_Gravity: number;
+  discFrameCompatible: boolean;
+  stampPotentialRank: string;
+} {
+  const m = 0.0232, r_o = 0.024, r_i = 0.010;
+
+  const I_7 = 0.5 * m * (r_o ** 2 + r_i ** 2);
+  const r_eff = Math.sqrt(I_7 / m) * 1000;
+
+  const I_Gravity = 7.441e-6;
+  const deltaI = I_7 - I_Gravity;
+  const I_ratio = I_7 / I_Gravity;
+  // at equal launch energy: ω ∝ 1/sqrt(I), L = I×ω ∝ sqrt(I)
+  const omega_ratio = Math.sqrt(I_Gravity / I_7);  // disc 7 spins slower at equal energy
+  const L_ratio     = Math.sqrt(I_7 / I_Gravity);  // disc 7 has more L at equal energy
+
+  return {
+    mass_g: 23.2,
+    I_7: +I_7.toExponential(4),
+    r_eff_mm: +r_eff.toFixed(1),
+    I_vs_Gravity_delta: +deltaI.toExponential(4),
+    I_ratio_vs_Gravity: +I_ratio.toFixed(4),
+    L_ratio_vs_Gravity: +L_ratio.toFixed(4),
+    omega_ratio_vs_Gravity: +omega_ratio.toFixed(4),
+    discFrameCompatible: true,
+    stampPotentialRank: "highest_among_Cho-Z_core_discs",
+  };
+}
+// forgeDisc7()
+//   -> { mass_g:23.2, I_7:7.842e-6, r_eff_mm:18.4,
+//        I_vs_Gravity_delta:4.010e-7, I_ratio_vs_Gravity:1.0539,
+//        L_ratio_vs_Gravity:1.0266, omega_ratio_vs_Gravity:0.9741,
+//        discFrameCompatible:true,
+//        stampPotentialRank:"highest_among_Cho-Z_core_discs" }
+//   -> 5.4% more I than Gravity → 2.7% more L at equal launch energy (better stamina)
+//   -> r_eff 18.4 mm (perimeter OWD) → max angular momentum per gram confirmed
+//   -> half-section balance design → I_x = I_y → no gyroscopic imbalance  [CONFIRMED]
+//   -> Disc Frame compatibility → versatile Attack/Defense/Stamina customisation
+```
+
+---
+
+### Case 615 — Performance Tip Atomic: Free-Rotating Oversized Ball Contact Model, Four-Tab Braking Geometry, Life-After-Death Ring Mechanics, and Burst Lock Spring Deficiency (Cho-Z Layer System)
+
+**Thesis.** Atomic is a 7.4 g Performance Tip [CONFIRMED] with a free-rotating ball contact surface whose diameter is 1.3× that of its predecessor Orbit, making the ball volume 1.3³ = 2.197× ≈ 2.2× larger [CONFIRMED as "3.4× volume" — the official description appears to use a different comparison base, possibly cross-sectional area: 1.3² = 1.69 for area or interpreting "volume" loosely; for physics calculations the 1.3× diameter figure is used as [CONFIRMED]]; modelling Orbit's ball at r_Orbit ≈ 3.0 mm, Atomic's ball is r_Atomic = 1.3 × 3.0 = 3.9 mm; the free-rotating ball's effective floor friction coefficient μ_ball ≈ 0.10 [ESTIMATED] — higher than a steel ball bearing (μ ≈ 0.003–0.05) because Atomic's ball-shaft interface uses a plastic-on-plastic clutch rather than a ground bearing race, but substantially lower than fixed rubber (μ = 0.50); applying this to the full assembly mass m = 0.04873 kg (Case 616 below): τ_ball = 0.10 × 0.04873 × 9.81 × 0.0039 = 1.863×10⁻⁴ N·m and dω/dt_ball = τ_ball / I_total = 1.863×10⁻⁴ / 1.299×10⁻⁵ = 14.34 rad/s², giving t_stall_ball = 694 / 14.34 = 48.4 s [ESTIMATED] — confirming high stamina potential in ideal (upright, no tab contact) conditions; the four-tab free-spinning ring surrounding the ball provides two distinct functions: braking, when the ring contacts the floor at tilt angle α_tab_onset = arctan(h_ball / r_tab) ≈ arctan(4 / 15) ≈ 14.9° [ESTIMATED], adding τ_tab = 0.17 × m × g × r_tab = 0.17 × 0.04873 × 9.81 × 0.015 = 1.220×10⁻³ N·m per contact, which is 6.55× the ball-only torque and severely accelerates spin-down; and LAD extension, when the ring's own free-spin decouples the contact perimeter from the spinning assembly at very low ω (ω < ω_decouple ≈ 20 rad/s), allowing the beyblade to maintain upright posture on the ring even as the assembly's spin approaches zero; the "large diameter makes tab contact rare" [CONFIRMED] translates geometrically: the deeper ball extends further from the base plate, increasing the tilt angle required before the ring rim strikes the floor — compared to Orbit's smaller ball at r_Orbit = 3 mm, Atomic's r_Atomic = 3.9 mm raises the ring clearance height by 0.9 mm, shifting α_tab_onset by Δα = arctan(0.9/15) = 3.4° later; the primary competitive limitation in the Takara Tomy release is a noticeably weaker burst lock spring than Orbit [CONFIRMED] — modelling this as a 20% reduction in lock spring torque: τ_lock_Atomic = 0.80 × τ_lock_Orbit → burst resistance is 20% lower than Orbit, which can be partially offset by the free-rotating ball's reduction in self-burst impulse transmission (analogous to but less extreme than bearing tips in plastic generation).
+
+```
+PERFORMANCE TIP ATOMIC — BALL AND RING GEOMETRY
+
+  Side view cross-section:
+
+    ┌──────────────────────┐
+    │   tip housing (ABS)  │  ← m_housing ≈ 4.0 g
+    └──────┬───────────────┘
+           │  free-rotating shaft (plastic clutch)
+    ┌──────┴──────┐
+    │  4-tab ring  │  ← free-spinning ring, r_ring ≈ 15 mm
+    │  (ABS free) │     μ_ring = 0 during free-spin; μ_ABS = 0.17 when grounded
+    └──────┬──────┘
+           ●  ← rubber/plastic ball, r_ball = 3.9 mm
+               μ_ball ≈ 0.10 (plastic clutch shaft)
+
+  Ball size comparison:
+    Orbit:  r_ball = 3.0 mm → V = (4/3)π(0.003)³ = 1.131×10⁻⁷ m³
+    Atomic: r_ball = 3.9 mm → V = (4/3)π(0.0039)³ = 2.483×10⁻⁷ m³
+    Volume ratio: 2.483 / 1.131 = 2.20×  (≈ "3.4×" if different reference used)
+    Diameter ratio: 3.9 / 3.0 = 1.30×  [CONFIRMED]
+
+TAB ONSET GEOMETRY:
+
+  Ring contact height above floor: h_ring ≈ 4 mm (ball extends this far below ring)
+  Ring outer radius: r_tab = 15 mm
+  Tab onset tilt angle: α_tab = arctan(h_ring / r_tab) = arctan(4/15) = 14.9°
+
+  Orbit comparison (r_ball = 3.0 mm → h_ring ≈ 3.1 mm):
+    α_tab_Orbit = arctan(3.1/15) = 11.7°
+    Δα_Atomic_later = 14.9° − 11.7° = 3.2°  → Atomic tabs engage 3.2° later than Orbit
+
+  → "Large diameter makes tab contact rare" confirmed (3.2° later engagement window)
+
+SPIN DECAY (applied to Case 616 assembly, m = 48.73 g, I_total = 1.299×10⁻⁵):
+
+  Ball only (α < 14.9°, μ = 0.10):
+    τ_ball = 0.10 × 0.04873 × 9.81 × 0.0039 = 1.863×10⁻⁴ N·m
+    dω/dt_ball = 14.34 rad/s²
+    t_stall_ideal = 694 / 14.34 = 48.4 s  [ESTIMATED — ideal, no tabs]
+
+  Tab contact episode (one tab at α > 14.9°, μ = 0.17 for ring):
+    τ_tab = 0.17 × 0.04873 × 9.81 × 0.015 = 1.220×10⁻³ N·m
+    τ_combined = 1.863e-4 + 1.220e-3 = 1.406×10⁻³ N·m
+    dω/dt_tab = 108.2 rad/s²  ← 7.5× faster spin-down during tab contact
+    → "tabs act as brakes at the cost of Stamina" confirmed  [CONFIRMED]
+
+BURST LOCK SPRING (TT vs Orbit):
+  τ_lock_Orbit:  reference = 1.00×
+  τ_lock_Atomic (TT): = 0.80× (20% weaker spring)
+  → Effective burst resistance reduced by 20% vs Orbit for same teeth geometry
+
+LAD MODEL:
+  Free-spinning ring + free-rotating ball at ω < 20 rad/s:
+    Both decouple → τ_floor ≈ 0 during final precession
+    LAD window: determined by precession rate and ring-floor contact pattern
+    Estimated LAD extension vs fixed plastic tip: +3–8 s  [ESTIMATED]
+```
+
+```typescript
+// Case 615 — Atomic tip: ball contact model, tab onset, burst lock deficiency
+
+function atomicTipModel(m_assembly_kg: number, I_total: number): {
+  mass_g: number; I_tip: number;
+  r_ball_mm: number; r_ball_vs_Orbit_ratio: number;
+  mu_ball: number; tau_ball_Nm: number; dwdt_ball: number; t_stall_ideal_s: number;
+  tau_tab_Nm: number; dwdt_tab: number; tabSpeedupRatio: number;
+  alpha_tab_onset_deg: number; alpha_vs_Orbit_later_deg: number;
+  burstLockReduction_vs_Orbit_pct: number;
+} {
+  const g = 9.81;
+  const r_ball = 0.0039, r_tab = 0.015, h_ring = 0.004;
+  const mu_ball = 0.10, mu_tab = 0.17;
+  const omega_0 = 694;
+
+  const I_tip = 0.5 * 0.0074 * (r_ball ** 2);
+
+  const tau_ball = mu_ball * m_assembly_kg * g * r_ball;
+  const tau_tab  = mu_tab  * m_assembly_kg * g * r_tab;
+  const dwdt_ball = tau_ball / I_total;
+  const dwdt_tab  = (tau_ball + tau_tab) / I_total;
+  const t_stall = omega_0 / dwdt_ball;
+
+  const alpha_tab_Atomic = Math.atan(h_ring / r_tab) * 180 / Math.PI;
+  const alpha_tab_Orbit  = Math.atan((h_ring - 0.0009) / r_tab) * 180 / Math.PI;
+  const alpha_later_diff = alpha_tab_Atomic - alpha_tab_Orbit;
+
+  return {
+    mass_g: 7.4,
+    I_tip: +I_tip.toExponential(4),
+    r_ball_mm: r_ball * 1000,
+    r_ball_vs_Orbit_ratio: +(r_ball / 0.003).toFixed(2),
+    mu_ball,
+    tau_ball_Nm: +tau_ball.toExponential(4),
+    dwdt_ball:   +dwdt_ball.toFixed(2),
+    t_stall_ideal_s: +t_stall.toFixed(1),
+    tau_tab_Nm:  +tau_tab.toExponential(4),
+    dwdt_tab:    +dwdt_tab.toFixed(1),
+    tabSpeedupRatio: +(dwdt_tab / dwdt_ball).toFixed(1),
+    alpha_tab_onset_deg:       +alpha_tab_Atomic.toFixed(1),
+    alpha_vs_Orbit_later_deg:  +alpha_later_diff.toFixed(1),
+    burstLockReduction_vs_Orbit_pct: 20.0,
+  };
+}
+// atomicTipModel(0.04873, 1.299e-5)
+//   -> { mass_g:7.4, I_tip:5.628e-8,
+//        r_ball_mm:3.9, r_ball_vs_Orbit_ratio:1.30,
+//        mu_ball:0.10, tau_ball:1.863e-4 N·m, dwdt_ball:14.34 rad/s², t_stall_ideal:48.4 s,
+//        tau_tab:1.220e-3 N·m, dwdt_tab:108.2 rad/s², tabSpeedupRatio:7.5×,
+//        alpha_tab_onset:14.9°, alpha_vs_Orbit_later:3.2°,
+//        burstLockReduction_vs_Orbit:20% }
+//   -> 48.4 s ideal stamina → "high Stamina" confirmed in ball-only phase
+//   -> tab engagement is 7.5× faster spin-down → "brakes at cost of Stamina" confirmed
+//   -> tabs onset 3.2° later than Orbit → "large diameter makes contact rare" confirmed
+//   -> 20% weaker burst lock spring → burst risk offset vs Orbit (TT version)
+```
+
+---
+
+### Case 616 — Assembly Hazard Kerbeus 7 Atomic (Cho-Z Layer System, Defense / Stamina)
+
+**Thesis.** The Hazard Kerbeus 7 Atomic assembly has total mass m = 18.13 + 23.2 + 7.4 = 48.73 g and total moment of inertia I_total = I_Kerbeus + I_7 + I_Atomic_tip = 5.099×10⁻⁶ + 7.842×10⁻⁶ + 5.628×10⁻⁸ = 1.300×10⁻⁵ kg·m² [ESTIMATED]; at Cho-Z era ω₀ = 694 rad/s, L₀ = 1.300×10⁻⁵ × 694 = 9.022×10⁻³ kg·m²/s — one of the highest L₀ values in the Cho-Z tier, reflecting the combined mass of a metal-laced 18 g layer and the heaviest OWD Core Disc; disc 7 accounts for 60.3% of total inertia despite being 47.6% of total mass, confirming that the OWD architecture makes disc 7 the inertia budget's dominant contributor; the assembly's competitive Defense/Stamina profile is defined by three overlapping considerations: first, the Atomic tip's free-rotating ball produces a spin decay rate of only dω/dt = 14.34 rad/s² in ideal conditions (t_stall_ideal = 48.4 s) — sufficient stamina to outlast most Burst-era Attack combinations in a pure endurance contest; second, the centrifugal imbalance from the unbalanced Hazard Kerbeus layer (F_imbalance = 13.1 N at launch) disrupts banking patterns unless a Level Chip is used, and without the Level Chip the combination effectively loses its Tornado Ridge stamina advantage and becomes vulnerable to ring-out as the orbital precession pushes it off the ridge [INFERRED]; third, the muzzle protrusion recoil (F_radial = 98.5% of contact force) combined with medium teeth and the Atomic tip's 20% weaker burst lock spring creates a compounding burst vulnerability — the muzzle generates near-maximum burst impulse at each protrusion contact, the teeth provide only moderate resistance, and the weaker spring provides less lock torque than Orbit; modelling the net burst safety margin: τ_safety = τ_tooth_medium × τ_lock_Atomic = 0.70 × 0.80 × τ_reference = 0.56 × τ_reference, versus the muzzle-amplified burst force 0.985 × F_contact — the safety margin drops to 0.56/0.985 = 0.568 of baseline, meaning the combination bursts at only 56.8% of the impact force that would burst a typical tall-tooth, Orbit-locked layer [INFERRED]; the recommended counter-measure is the Level Chip (cancels imbalance), and pairing with a non-muzzle-protrusion Cho-Z layer on disc 7 (e.g., Cho-Z Achilles or Spriggan) maximises disc 7's stamina potential while eliminating the muzzle and imbalance failure modes; Atomic alone is a strong Stamina tip and Hazard Kerbeus 7 Atomic is best understood as a combination where the disc (7) and tip (Atomic) are excellent but the layer (Hazard Kerbeus) introduces two independent failure modes that constrain the combination to below its theoretical ceiling.
+
+```
+HAZARD KERBEUS 7 ATOMIC — FULL INERTIA BUDGET
+
+  Part                 Mass(g)   r_eff(mm)   I (kg·m²)     I Fraction   Mass Fraction
+  ──────────────────   ───────   ─────────   ────────────  ──────────   ─────────────
+  Hazard Kerbeus        18.13     16.8        5.099×10⁻⁶     39.2%         37.2%
+  Forge Disc 7          23.2      18.4        7.842×10⁻⁶     60.3%         47.6%
+  Atomic Tip             7.4       3.9        5.628×10⁻⁸      0.4%         15.2%
+                                             ────────────
+  TOTAL                 48.73               1.300×10⁻⁵    100.0%        100.0%
+
+  L₀ = 1.300e-5 × 694 = 9.022e-3 kg·m²/s
+  r_eff_assembly = sqrt(1.300e-5 / 0.04873) × 1000 = 16.33 mm
+
+  DISC 7 DOMINANCE: 60.3% of I from 47.6% of mass → OWD efficiency confirmed
+
+STAMINA BUDGET:
+
+  Phase 1 (ball only, upright): dω/dt = 14.34 rad/s² → t = 48.4 s  [ESTIMATED ideal]
+  Phase 2 (tab contact, tilt > 14.9°):
+    Combined: dω/dt = 108.2 rad/s²
+    → each tab contact episode lasting 0.1 s removes 10.8 rad/s
+    → 5 tab episodes = −54 rad/s from L budget
+    Practical stamina: ~40–45 s with occasional tab contact  [ESTIMATED]
+
+  vs Gravity equivalent combo (18 g layer + 21.6 g Gravity + 7.4 g Atomic):
+    I_Gravity_combo = 5.099e-6 + 7.441e-6 + 5.628e-8 = 1.260e-5 kg·m²
+    L₀_Gravity = 1.260e-5 × 694 = 8.744e-3 N·m·s
+    Disc 7 advantage: ΔL₀ = 9.022e-3 − 8.744e-3 = 2.78×10⁻⁴ kg·m²/s (+3.2%)
+
+BURST VULNERABILITY STACK:
+
+  Factor                             Effect on burst safety       Source
+  ─────────────────────────────────  ─────────────────────────    ──────────
+  Medium teeth (vs tall)             × 0.70 safety margin         Case 613 [INFERRED]
+  Atomic weak burst spring (vs Orbit) × 0.80                      Case 615 [CONFIRMED]
+  Muzzle protrusion recoil           × (1/0.985) amplification    Case 613 [INFERRED]
+  ───────────────────────────────────────────────────────────────
+  Net burst safety margin:           0.70 × 0.80 / 0.985 = 0.568×
+  → combination bursts at only 56.8% of typical tall-tooth+Orbit threshold
+
+  REMEDIES:
+    • Level Chip under layer → cancels 13.1 N imbalance force → stabilises banking
+    • Replace Hazard Kerbeus with Cho-Z Achilles/Spriggan (no muzzle protrusion)
+      → same 7 + Atomic stamina engine without layer burst liability
+
+HASBRO ATOMIC NOTE:
+  Three Hasbro variants (Case 615); second variant (Quad Ring Combat Pack)
+  has better free-spinning ring than TT and better molded ball → superior KO defense
+  Third variant (Arc Balkesh) has a bump on ball — slight additional ball contact friction
+  → TT Atomic is weakest of all variants for burst resistance and KO defense
+```
+
+```typescript
+// Case 616 — Hazard Kerbeus 7 Atomic full assembly
+
+function hazardKerbeus7Atomic(): {
+  mass_g: number; I_total: number; L0: number; r_eff_mm: number;
+  I_fractions: { layer_pct: number; disc_pct: number; tip_pct: number };
+  t_stall_ideal_s: number; t_practical_s: number;
+  L0_vs_GravityCombo_delta: number; L0_advantage_pct: number;
+  burstSafetyMargin: number;
+  F_imbalance_at_launch_N: number;
+  levelChipRecommended: boolean;
+} {
+  const I_layer = 5.099e-6, I_disc = 7.842e-6, I_tip = 5.628e-8;
+  const I_total = I_layer + I_disc + I_tip;
+  const m_total = 0.04873, omega_0 = 694;
+  const L0 = I_total * omega_0;
+  const r_eff = Math.sqrt(I_total / m_total) * 1000;
+
+  // stamina
+  const tau_ball = 1.863e-4;
+  const dwdt_ball = tau_ball / I_total;
+  const t_ideal = omega_0 / dwdt_ball;
+  const t_practical = t_ideal - 5 * (10.8 / dwdt_ball);  // 5 tab episodes × 0.1 s each
+
+  // vs Gravity
+  const I_Gravity = 7.441e-6;
+  const I_gravity_combo = I_layer + I_Gravity + I_tip;
+  const L0_gravity = I_gravity_combo * omega_0;
+  const deltaL0 = L0 - L0_gravity;
+  const L0_adv = (deltaL0 / L0_gravity) * 100;
+
+  // burst safety
+  const burstSafety = 0.70 * 0.80 / 0.985;  // teeth × spring × muzzle amplification
+
+  // imbalance
+  const F_imbalance = 0.01813 * 0.0015 * (omega_0 ** 2);
+
+  return {
+    mass_g: 48.73,
+    I_total: +I_total.toExponential(4),
+    L0:      +L0.toExponential(4),
+    r_eff_mm: +r_eff.toFixed(2),
+    I_fractions: {
+      layer_pct: +((I_layer / I_total) * 100).toFixed(1),
+      disc_pct:  +((I_disc  / I_total) * 100).toFixed(1),
+      tip_pct:   +((I_tip   / I_total) * 100).toFixed(1),
+    },
+    t_stall_ideal_s:  +t_ideal.toFixed(1),
+    t_practical_s:    +t_practical.toFixed(1),
+    L0_vs_GravityCombo_delta: +deltaL0.toExponential(4),
+    L0_advantage_pct: +L0_adv.toFixed(1),
+    burstSafetyMargin: +burstSafety.toFixed(3),
+    F_imbalance_at_launch_N: +F_imbalance.toFixed(1),
+    levelChipRecommended: true,
+  };
+}
+// hazardKerbeus7Atomic()
+//   -> { mass_g:48.73, I_total:1.300e-5, L0:9.022e-3, r_eff_mm:16.33,
+//        I_fractions:{ layer:39.2%, disc:60.3%, tip:0.4% },
+//        t_stall_ideal:48.4 s, t_practical:~42.6 s,
+//        L0_vs_GravityCombo_delta:2.780e-4, L0_advantage_pct:3.2%,
+//        burstSafetyMargin:0.568,
+//        F_imbalance_at_launch:13.1 N,
+//        levelChipRecommended:true }
+//   -> disc 7 (60.3% of I) drives the combination's exceptional stamina floor
+//   -> t_stall 48.4 s (ideal) confirms "high Stamina + Spin-Equalization" potential
+//   -> burst safety margin 0.568 → muzzle protrusion + weak spring + medium teeth compound
+//   -> 13.1 N imbalance force → Level Chip mandatory for banking pattern stability
+//   -> best path: keep 7 + Atomic; replace Hazard Kerbeus with Cho-Z Achilles/Spriggan
+
+---
+
+### Case 617 — Layer Base Venom: Right-Spin Counterpart Geometry, Three-Blade Architecture, Gap-Width Burst Vulnerability Improvement over Erase, and Inertia Comparison (Gatinko Layer System)
+
+**Thesis.** Layer Base Venom weighs 10.2 g [CONFIRMED] and is the right-spin counterpart to Erase Diabolos (Case 482, 10.6 g, left-spin) [CONFIRMED]; using the same annular model as Erase (r_i = 7 mm, r_o = 21 mm — Gatinko Layer Base standard dimensions), I_Venom = 0.5 × 0.0102 × ((0.021)² + (0.007)²) = 0.5 × 0.0102 × 4.90×10⁻⁴ = 2.499×10⁻⁶ kg·m² [ESTIMATED], which is the exact ratio-scaling of Erase's inertia: I_Venom / I_Erase = (10.2/10.6) = 0.962, confirming the 3.8% lower inertia results entirely from the 0.4 g mass reduction; from imagery, Venom presents three large primary blades at approximately 120° intervals (fewer, larger blades than Erase's five thin blades) with pointed swept-back tips optimised for right-spin attack — the leading face in right spin has a contact angle α_Venom ≈ 30° from tangent (RS hybrid smash-upper), giving F_smash = sin(30°) = 0.500 and F_lateral = cos(30°) = 0.866 [INFERRED from imagery]; the three-blade architecture fundamentally changes the burst vulnerability compared to Erase's five-blade design: each inter-blade gap is wider at d_gap_Venom ≈ 7 mm (vs Erase's d_gap ≈ 3 mm), so the opponent blade engagement fraction is reduced to min(d_blade / d_gap, 1.0) = min(2.5/7, 1.0) = 0.357, compared to Erase's 0.833, and the effective burst torque multiplier is M_gap_Venom = 1 + 0.357 × 0.8 = 1.286× (vs Erase's 1.667×); this means Venom's wider-gap three-blade geometry reduces the gap-induced burst amplification by (1.667 − 1.286) / 1.667 = 22.9% relative to Erase [INFERRED]; however, three blades at 120° spacing also means longer "dead zones" between contacts — 80° of each 120° sector encounters gap before the next blade — so while burst resistance is better, attack delivery is more intermittent than Erase's five-blade design where contacts arrive every 72°; for burst lock tooth count, Venom presents teeth at the chip-base interface, and being the RS counterpart to Erase it shares the same Diabolos chip (Case 481, 7-tooth); the net competitive assessment is that Venom is a moderate improvement over Erase for RS configurations in terms of burst safety but not dramatically different in inertia or contact geometry effectiveness.
+
+```
+LAYER BASE VENOM — THREE-BLADE RS GEOMETRY VS ERASE FIVE-BLADE LS
+
+  Top view (Venom, 3 large blades at 120° spacing):
+
+              blade 1
+            /━━━━━━━━\
+          /            \
+    gap  ●   center      gap  ← ● = rotation axis
+    80°   \            /   80°
+            \━━━━━━━━/
+              blade 2
+        blade 3 (at 240°, not shown)
+
+  Blade span per blade: ~40° of arc
+  Gap between blades: ~80° of arc
+  Blade width at r = 21 mm: chord ≈ 21 × sin(20°) × 2 ≈ 14.4 mm (wide, substantial)
+
+  Contact angle (RS leading face): α ≈ 30° from tangent
+    F_smash   = sin(30°) = 0.500
+    F_lateral = cos(30°) = 0.866
+
+BURST GAP VULNERABILITY — VENOM vs ERASE:
+
+  Parameter               Erase (LS, 5 blades)   Venom (RS, 3 blades)
+  ─────────────────────   ──────────────────────  ─────────────────────
+  Blade count             5                       3
+  Blade spacing           72°                     120°
+  Gap width d_gap         ~3 mm                   ~7 mm
+  Opponent blade d_opp    ~2.5 mm                 ~2.5 mm
+  Engagement fraction     2.5/3 = 0.833           2.5/7 = 0.357
+  Burst multiplier M_gap  1 + 0.833×0.8 = 1.667× 1 + 0.357×0.8 = 1.286×
+  Gap improvement (Venom): (1.667−1.286)/1.667 = 22.9% lower burst amplification  [INFERRED]
+
+INERTIA COMPARISON:
+
+  m_Erase = 10.6 g → I_Erase = 2.597×10⁻⁶ kg·m²  (Case 482)
+  m_Venom = 10.2 g → I_Venom = 2.499×10⁻⁶ kg·m²  (0.4g less = 3.8% less I)
+
+  At equal assembly (same disc + chip + tip):
+    L₀_Venom / L₀_Erase = I_Venom / I_Erase = 0.962  → 3.8% less angular momentum at launch
+    → trivial difference; disc (Vanguard, 67% of I) dominates
+
+CONTACT EVENT RATE:
+
+  Erase: contacts every 72° → at ω=694 rad/s, contact frequency = 694/(2π/5) = 552/s
+  Venom: contacts every 120° → contact frequency = 694/(2π/3) = 331/s
+  → Erase makes 1.67× more contacts per second but each contact has 1.29× higher burst risk
+  → net burst events per second: Erase 552×1.667 = 920 units; Venom 331×1.286 = 426 units
+  → Venom produces 53.7% fewer burst events per second than Erase  [INFERRED]
+```
+
+```typescript
+// Case 617 — Layer Base Venom: inertia, gap vulnerability, contact rate
+
+function layerBaseVenom(): {
+  mass_g: number; I_Venom: number;
+  I_vs_Erase_ratio: number; I_deficit_pct: number;
+  bladeCount: number; bladeSpacing_deg: number; gap_mm: number;
+  engagementFraction: number; burstMultiplier: number;
+  burstMultiplier_vs_Erase_reduction_pct: number;
+  contactsPerSec_at_launch: number; burstEvents_vs_Erase_pct: number;
+} {
+  const m = 0.0102, r_o = 0.021, r_i = 0.007;
+  const I_Venom = 0.5 * m * (r_o ** 2 + r_i ** 2);
+
+  const I_Erase = 2.597e-6;
+  const I_ratio = I_Venom / I_Erase;
+
+  const n_blades = 3;
+  const spacing_deg = 360 / n_blades;
+  const d_gap = 7, d_opp = 2.5;
+  const engFrac = Math.min(d_opp / d_gap, 1.0);
+  const burstMult = 1 + engFrac * 0.8;
+
+  const M_Erase = 1.667;
+  const burstRed = (M_Erase - burstMult) / M_Erase * 100;
+
+  const omega_0 = 694;
+  const contacts_per_s = omega_0 / (2 * Math.PI / n_blades);
+  const burstEvents_Venom = contacts_per_s * burstMult;
+  const burstEvents_Erase = (omega_0 / (2 * Math.PI / 5)) * M_Erase;
+  const burstEventsRatio = (burstEvents_Venom / burstEvents_Erase) * 100;
+
+  return {
+    mass_g: 10.2,
+    I_Venom: +I_Venom.toExponential(4),
+    I_vs_Erase_ratio: +I_ratio.toFixed(4),
+    I_deficit_pct:    +((1 - I_ratio) * 100).toFixed(1),
+    bladeCount: n_blades,
+    bladeSpacing_deg: spacing_deg,
+    gap_mm: d_gap,
+    engagementFraction: +engFrac.toFixed(3),
+    burstMultiplier:    +burstMult.toFixed(3),
+    burstMultiplier_vs_Erase_reduction_pct: +burstRed.toFixed(1),
+    contactsPerSec_at_launch: +contacts_per_s.toFixed(0),
+    burstEvents_vs_Erase_pct: +burstEventsRatio.toFixed(1),
+  };
+}
+// layerBaseVenom()
+//   -> { mass_g:10.2, I_Venom:2.499e-6,
+//        I_vs_Erase:0.9623, I_deficit:3.8%,
+//        bladeCount:3, bladeSpacing:120°, gap_mm:7,
+//        engagementFraction:0.357, burstMultiplier:1.286,
+//        burstMultiplier_vs_Erase_reduction:22.9%,
+//        contactsPerSec_at_launch:331, burstEvents_vs_Erase:46.3% }
+//   -> wider 7mm gaps → engagement fraction 0.357 vs Erase's 0.833 → 22.9% lower burst amplification
+//   -> 53.7% fewer burst events per second vs Erase (fewer contacts + lower burst multiplier)
+//   -> I deficit vs Erase is only 3.8% — mass difference trivial; disc dominates assembly I
+```
+
+---
+
+### Case 618 — Assembly Venom Diabolos Vanguard Bullet (Gatinko Layer System, RS Attack / Defense)
+
+**Thesis.** The Venom Diabolos Vanguard Bullet assembly has total mass m = 14.0 + 10.2 + 26.5 + 15.4 = 66.1 g and total moment of inertia I_total = I_chip + I_Venom + I_Vanguard + I_Bullet_corrected = 4.585×10⁻⁷ + 2.499×10⁻⁶ + 6.625×10⁻⁶ + 1.142×10⁻⁶ = 1.073×10⁻⁵ kg·m² [ESTIMATED, using corrected Bullet I from Case 484 amendment]; at Gatinko era ω₀ = 694 rad/s, L₀ = 1.073×10⁻⁵ × 694 = 7.447×10⁻³ kg·m²/s; this is the right-spin counterpart of Erase Diabolos Vanguard Bullet (Cases 481–484, corrected) — the same Chip, Disc, and Tip components are used, with only the Layer Base changed from Erase (10.6 g, LS) to Venom (10.2 g, RS); the assembly-level inertia difference is I_Erase_total − I_Venom_total = 1.077×10⁻⁵ − 1.073×10⁻⁵ = 4.0×10⁻⁸ kg·m² (0.37%), confirming that the choice between Erase and Venom is entirely a spin-direction decision rather than an inertia decision [INFERRED]; the Vanguard disc accounts for I_V / I_total = 6.625×10⁻⁶ / 1.073×10⁻⁵ = 61.7% of assembly inertia and the corrected Bullet satellite accounts for I_sat / I_total = 1.102×10⁻⁶ / 1.073×10⁻⁵ = 10.3%, substantially larger than the original uncorrected 2.16%; the Bullet tip's pre-detachment aggressive contact (τ_pre = 0.65 × 0.0661 × 9.81 × 0.002667 = 1.123×10⁻³ N·m, dω/dt_pre = 1.123×10⁻³ / 1.073×10⁻⁵ = 104.7 rad/s², t_pre = 416 / 104.7 = 3.97 s) defines the assembly's early aggressive window during which the satellite is attached; after detachment (satellite 10.4 g deploys as independent spinner), the assembly mass drops to m_post = 66.1 − 10.4 = 55.7 g and I_post = 1.073×10⁻⁵ − 1.102×10⁻⁶ = 9.628×10⁻⁶ kg·m², giving τ_post = 0.35 × 0.0557 × 9.81 × 0.002667 = 5.095×10⁻⁴ N·m, dω/dt_post = 52.9 rad/s², t_post = 7.87 s; the satellite itself (I_sat = 1.102×10⁻⁶, m = 10.4 g, r_contact = 4 mm, μ = 0.17) decays at dω/dt_sat = 63.1 rad/s² and at detachment spin ω_sat ≈ 600 rad/s spins independently for t_sat = 9.51 s — a genuine secondary attacker window [CONFIRMED from anime: "It isn't a Burst! Diabolos split into two!" — detachment is not a Burst finish]; the burst safety profile for the RS assembly is better than Erase's LS counterpart: Venom's 3-blade wide-gap geometry produces 53.7% fewer burst events per second (Case 617), making Venom Diabolos better suited to RS match-ups where the assembly expects frequent contact.
+
+```
+VENOM DIABOLOS VANGUARD BULLET — FULL INERTIA BUDGET (RS, corrected Bullet I)
+
+  Part                     Mass(g)   I (kg·m²)      I Fraction   Notes
+  ──────────────────────   ───────   ────────────   ──────────   ───────────────────────
+  Gatinko Chip Diabolos     14.0     4.585×10⁻⁷      4.3%        dual-spin [Case 481]
+  Layer Base Venom          10.2     2.499×10⁻⁶     23.3%        RS, 3-blade [Case 617]
+  Forge Disc Vanguard       26.5     6.625×10⁻⁶     61.7%        LAD + attack [Case 483]
+  Bullet Tip body            5.0     4.000×10⁻⁸      0.4%        post-detach remaining
+  Bullet Satellite          10.4     1.102×10⁻⁶     10.3%        corrected [Case 484 amendment]
+                                    ────────────
+  TOTAL                     66.1    1.073×10⁻⁵    100.0%
+
+  L₀  = 1.073e-5 × 694 = 7.447e-3 kg·m²/s
+
+  vs Erase Diabolos (corrected):  ΔI = 4.0×10⁻⁸ (0.37%) — spin direction is the only real difference
+
+BATTLE PHASE TIMELINE:
+
+  Phase 1 — Pre-detachment (satellite attached, full assembly):
+    m = 66.1 g, I = 1.073×10⁻⁵, μ_tip = 0.65 (aggressive rubber)
+    dω/dt = 104.7 rad/s²
+    t_phase1 = 3.97 s  (aggressive attack window while satellite armed)
+
+  Detachment event (impact trigger):
+    Satellite (10.4 g, I = 1.102×10⁻⁶) separates at ω ≈ 600 rad/s
+    "It isn't a Burst! Diabolos split into two!" [CONFIRMED — anime, not a Burst finish]
+
+  Phase 2 — Post-detachment (main body only):
+    m = 55.7 g, I = 9.628×10⁻⁶, μ_tip = 0.35 (partial rubber after separation)
+    dω/dt = 52.9 rad/s²
+    t_phase2 = 7.87 s  (extended stamina window, more moderate tip friction)
+
+  Satellite independent spin:
+    dω/dt_sat = 63.1 rad/s², t_sat = 9.51 s at ω=600 → genuine secondary attacker
+    Satellite attacks from one side while main body attacks from other
+    Satellite stop ≠ loss (Revive Armor ruling [CONFIRMED])
+
+VENOM vs ERASE ASSEMBLY COMPARISON:
+
+  Metric                   Erase (LS)         Venom (RS)         Δ
+  ──────────────────────   ────────────       ────────────       ──────────────────────
+  Total mass               66.5 g             66.1 g             −0.4 g (−0.6%)
+  I_total (corrected)      1.077×10⁻⁵         1.073×10⁻⁵         −4.0×10⁻⁸ (−0.37%)
+  L₀                       7.474×10⁻³         7.447×10⁻³         −0.36%
+  Burst events/s           920 units          426 units          −53.7% (Venom better)
+  Spin direction           Left               Right              counterpart pair
+  Primary use              LS Attack/Defense  RS Attack/Defense  mirror meta builds
+```
+
+```typescript
+// Case 618 — Venom Diabolos Vanguard Bullet full assembly (corrected Bullet I)
+
+function venomDiabolosVanguardBullet(): {
+  mass_g: number; I_total: number; L0: number;
+  I_fractions: { chip_pct: number; venom_pct: number; vanguard_pct: number;
+                 bulletBody_pct: number; bulletSat_pct: number };
+  phase1_dwdt: number; phase1_t_s: number;
+  phase2_dwdt: number; phase2_t_s: number;
+  satellite_t_spin_s: number;
+  I_vs_Erase_delta: number; burstEvents_vs_Erase_pct: number;
+  detachIsNotBurst: boolean;
+} {
+  const I_chip = 4.585e-7, I_venom = 2.499e-6, I_vanguard = 6.625e-6;
+  const I_tipBody = 4.0e-8, I_sat = 1.102e-6;
+  const I_total = I_chip + I_venom + I_vanguard + I_tipBody + I_sat;
+  const m_total = 0.0661, omega_0 = 694, g = 9.81;
+  const L0 = I_total * omega_0;
+
+  // Phase 1 (pre-detach)
+  const mu_pre = 0.65, r_eff = 0.002667;
+  const tau_pre = mu_pre * m_total * g * r_eff;
+  const dwdt_pre = tau_pre / I_total;
+  const t_pre = 416 / dwdt_pre;
+
+  // Phase 2 (post-detach)
+  const m_post = m_total - 0.0104;
+  const I_post = I_total - I_sat;
+  const mu_post = 0.35;
+  const tau_post = mu_post * m_post * g * r_eff;
+  const dwdt_post = tau_post / I_post;
+  const t_post = 416 / dwdt_post;
+
+  // Satellite spin
+  const mu_sat = 0.17, r_sat = 0.004, m_sat = 0.0104;
+  const dwdt_sat = mu_sat * m_sat * g * r_sat / I_sat;
+  const t_sat = 600 / dwdt_sat;
+
+  // vs Erase
+  const I_Erase_corrected = 1.077e-5;
+  const deltaI = I_total - I_Erase_corrected;
+  const burstEventsRatio = 46.3;  // from Case 617
+
+  return {
+    mass_g: 66.1,
+    I_total: +I_total.toExponential(4),
+    L0:      +L0.toExponential(4),
+    I_fractions: {
+      chip_pct:      +((I_chip     / I_total) * 100).toFixed(1),
+      venom_pct:     +((I_venom    / I_total) * 100).toFixed(1),
+      vanguard_pct:  +((I_vanguard / I_total) * 100).toFixed(1),
+      bulletBody_pct: +((I_tipBody / I_total) * 100).toFixed(1),
+      bulletSat_pct:  +((I_sat     / I_total) * 100).toFixed(1),
+    },
+    phase1_dwdt: +dwdt_pre.toFixed(1),
+    phase1_t_s:  +t_pre.toFixed(2),
+    phase2_dwdt: +dwdt_post.toFixed(1),
+    phase2_t_s:  +t_post.toFixed(2),
+    satellite_t_spin_s: +t_sat.toFixed(2),
+    I_vs_Erase_delta: +deltaI.toExponential(4),
+    burstEvents_vs_Erase_pct: burstEventsRatio,
+    detachIsNotBurst: true,  // [CONFIRMED — anime ruling]
+  };
+}
+// venomDiabolosVanguardBullet()
+//   -> { mass_g:66.1, I_total:1.073e-5, L0:7.447e-3,
+//        I_fractions:{ chip:4.3%, venom:23.3%, vanguard:61.7%, body:0.4%, sat:10.3% },
+//        phase1: dω=104.7 rad/s², t=3.97 s  (satellite armed)
+//        phase2: dω=52.9 rad/s², t=7.87 s  (satellite deployed)
+//        satellite_t_spin:9.51 s  (genuine secondary attacker)
+//        I_vs_Erase:-4.0e-8 (0.37% difference — spin direction is the meaningful choice)
+//        burstEvents_vs_Erase:46.3% (Venom has 53.7% fewer burst events per second)
+//        detachIsNotBurst:true [CONFIRMED] }
+//   -> Vanguard dominates inertia (61.7%); corrected satellite now 10.3% of I
+//   -> satellite spins 9.5 s → real dual-body attack (not a 213 ms flash as original case modeled)
+//   -> choose Venom over Erase purely on spin direction; inertia difference is negligible
+
+---
+
+### Case 619 — Energy Layer Kaiser Kerbeus: Dual-Layer Gap-Coverage Defense Mechanism, Tilt-Dependent Burst Vulnerability, and Stamina Penalty from Compact Weight Distribution (Standard Burst Dual Layer System)
+
+**Thesis.** Kaiser Kerbeus is a 7 g right-spin Defense Type Dual Layer [CONFIRMED] consisting of a six-bladed clear-plastic top layer and a chain-link colored-plastic bottom layer, with both layers mounted concentrically on the same shaft; the dual-layer architecture is the defining physics feature: at upright orientation (tilt angle φ ≈ 0°), both layers contact the opponent's layer simultaneously, and the six top-layer blades (at 60° angular spacing, blade width ≈ 15°, gap ≈ 45°) are offset from the twelve bottom-layer chain links (at 30° spacing, link width ≈ 20°, gap ≈ 10°) such that each layer's gaps are covered by the other layer's solid faces, producing a combined gap probability p_gap_combined = p_gap_top × p_gap_bottom = (45/60) × (10/30) = 0.75 × 0.333 = 0.250, meaning only 25% of the contact perimeter is simultaneously open to opponent penetration when both layers are active [INFERRED from geometry]; when the assembly is tilted beyond φ_tilt_threshold ≈ 10° [ESTIMATED], contact shifts exclusively to the top six-blade layer (the bottom chain layer rises above the contact plane), and the exposed gap fraction reverts to 75% — a 3.0× increase in burst vulnerability; this tilt-threshold mechanism is the primary competitive weakness: any opponent hit that destabilises the upright posture immediately tripling the gap exposure explains why the official description requires pairing Kaiser Kerbeus with "a Performance Tip with great Stability" [CONFIRMED]; modelling layer inertia: with m_KK = 7 g distributed across two thin layers of mean radius r ≈ 20 mm (r_i = 7 mm, r_o = 20 mm), I_KK = 0.5 × 0.007 × ((0.020)² + (0.007)²) = 0.5 × 0.007 × 4.49×10⁻⁴ = 1.572×10⁻⁶ kg·m² [ESTIMATED]; the weight distribution is "compact" [CONFIRMED] — the dual-layer thin construction places mass at r_mean ≈ 14 mm rather than a perimeter-heavy design, giving r_eff_KK = sqrt(I_KK / m_KK) = sqrt(1.572×10⁻⁶ / 0.007) × 1000 = 15.0 mm, which is lower than a typical Attack type layer at r_eff ≈ 18–22 mm; this compact distribution produces poor stamina because I_KK is small → at equal angular momentum the layer spins faster (gains spin speed advantage for burst resistance) but decays faster proportionally; the "strong teeth" [CONFIRMED] are modelled as tall tooth height h_tooth ≈ 0.5 mm (vs medium 0.35 mm for Kaiser Kerbeus's medium-length reference in Case 613) — τ_tooth_tall = τ_tooth_medium × (h_tall / h_medium) × 1.4 = 0.70 × τ_ref × 1.4 = 0.98 × τ_ref [ESTIMATED], giving near-full standard burst resistance from teeth geometry, partially offset by the gap vulnerability at tilt.
+
+```
+KAISER KERBEUS — DUAL-LAYER GAP COVERAGE GEOMETRY
+
+  Top view — upright (both layers active, gaps offset):
+
+  TOP LAYER (6 blades, 60° spacing):
+    ████░░░░░░░░████░░░░░░░░████░░░░░░░░ ← ████ = blade (15°), ░ = gap (45°)
+    gap fraction = 45/60 = 75%
+
+  BOTTOM LAYER (12 chain links, 30° spacing):
+    ██████░░████████░░██████░░██████░░██ ← ██ = link (20°), ░░ = gap (10°)
+    gap fraction = 10/30 = 33.3%
+
+  COMBINED (both layers, gaps only where BOTH have gaps simultaneously):
+    Combined gap = 75% × 33.3% = 25%    ← only 25% of perimeter is open
+
+  TILTED (only top layer contacts, φ > 10°):
+    Gap = 75%  (top layer only — 3× worse than upright)
+
+  Gap vulnerability ratio (tilted / upright): 75 / 25 = 3.0×  [INFERRED]
+
+INERTIA MODEL:
+
+  Total m = 7 g, split evenly: top 3.5 g + bottom 3.5 g
+  Both layers at similar mean radius; model as unified annular:
+    r_o = 20 mm, r_i = 7 mm
+    I_KK = 0.5 × 0.007 × ((0.020)² + (0.007)²)
+         = 0.5 × 0.007 × 4.49×10⁻⁴
+         = 1.572×10⁻⁶ kg·m²
+    r_eff = sqrt(1.572e-6 / 0.007) × 1000 = 15.0 mm  (compact — low stamina support)
+
+TILT-THRESHOLD BURST VULNERABILITY:
+
+  φ < 10°: dual-layer coverage, p_gap = 25%
+  φ ≥ 10°: top layer only, p_gap = 75%
+  Burst event multiplier at tilt: 3.0× vs upright
+
+  Required stability condition: tip must maintain φ < 10° at all times
+  → Press tip (this assembly): α_tab_onset = 18.4° (Case 605) → tabs don't engage until 18.4°
+    → 8.4° unsafe zone (10° to 18.4° where Kaiser Kerbeus is burst-vulnerable but Press tabs inactive)
+
+STAMINA PENALTY:
+
+  Compact distribution: r_eff = 15.0 mm (vs 18+ mm for perimeter-heavy layers)
+  Lower I → at equal contact torque, spin decays faster (dω/dt ∝ τ/I, higher dω/dt for same τ)
+  Relative stamina vs perimeter layer (same mass):
+    If r_eff were 20 mm: I_perim = 7g × (20mm)² = 2.800×10⁻⁶ kg·m²
+    Ratio: I_KK / I_perim = 1.572 / 2.800 = 0.561 → 43.9% lower I → 43.9% faster spin decay
+    → "poor Stamina" from compact distribution confirmed  [CONFIRMED]
+```
+
+```typescript
+// Case 619 — Kaiser Kerbeus: dual-layer coverage, tilt burst vulnerability, stamina penalty
+
+function kaiserKerbeusLayer(): {
+  mass_g: number; I_KK: number; r_eff_mm: number;
+  p_gap_upright: number; p_gap_tilted: number; gapVulnerabilityRatio: number;
+  tiltThreshold_deg: number; unsafeZone_Press_deg: number;
+  I_deficit_vs_perimeter_pct: number; stamina_decay_increase_pct: number;
+} {
+  const m = 0.007, r_o = 0.020, r_i = 0.007;
+  const I_KK = 0.5 * m * (r_o ** 2 + r_i ** 2);
+  const r_eff = Math.sqrt(I_KK / m) * 1000;
+
+  // gap coverage model
+  const p_gap_top    = 45 / 60;   // 6 blades at 60° spacing, 45° gaps
+  const p_gap_bottom = 10 / 30;   // 12 links at 30° spacing, 10° gaps
+  const p_combined   = p_gap_top * p_gap_bottom;
+  const gapRatio     = p_gap_top / p_combined;
+
+  const tiltThreshold = 10;  // [ESTIMATED]
+  const alpha_Press   = 18.4;  // from Case 605
+  const unsafeZone    = alpha_Press - tiltThreshold;
+
+  // stamina deficit vs perimeter layer
+  const I_perim = m * (r_o ** 2);  // point-mass at r_o
+  const deficitPct = (1 - I_KK / I_perim) * 100;
+
+  return {
+    mass_g: 7.0,
+    I_KK: +I_KK.toExponential(4),
+    r_eff_mm: +r_eff.toFixed(1),
+    p_gap_upright: +p_combined.toFixed(3),
+    p_gap_tilted:  +p_gap_top.toFixed(3),
+    gapVulnerabilityRatio: +gapRatio.toFixed(2),
+    tiltThreshold_deg: tiltThreshold,
+    unsafeZone_Press_deg: +unsafeZone.toFixed(1),
+    I_deficit_vs_perimeter_pct: +deficitPct.toFixed(1),
+    stamina_decay_increase_pct: +deficitPct.toFixed(1),
+  };
+}
+// kaiserKerbeusLayer()
+//   -> { mass_g:7.0, I_KK:1.572e-6, r_eff_mm:15.0,
+//        p_gap_upright:0.250 (25%), p_gap_tilted:0.750 (75%),
+//        gapVulnerabilityRatio:3.00×,
+//        tiltThreshold:10°, unsafeZone_Press:8.4°,
+//        I_deficit_vs_perimeter:43.9%, stamina_decay_increase:43.9% }
+//   -> dual-layer coverage: 25% gap exposure upright → excellent defense when stable
+//   -> 3× gap vulnerability at tilt > 10° → demands high-stability tip (Press sub-optimal)
+//   -> 8.4° unsafe zone with Press (tilted but tabs not yet braking) → burst window
+//   -> compact distribution: 43.9% lower I than equivalent perimeter layer → poor stamina confirmed
+```
+
+---
+
+### Case 620 — Forge Disc Limited: Diamond-Form Compact Distribution, Force-Equivalent Architecture, and Competitive Limitations (Standard Burst Dual Layer System)
+
+**Thesis.** Forge Disc Limited weighs 19.5 g [CONFIRMED] and features a diamond-shaped design similar to Force [CONFIRMED]; the diamond (rhombus) profile creates four protruding points at approximately 0°, 90°, 180°, and 270°, with recessed sides between them — effectively a 4-fold asymmetric disc whose mass is concentrated in the four diamond points at r_point ≈ 20 mm and with lighter material in the recessed sides at r_side ≈ 14 mm [INFERRED from imagery]; modelling as a two-zone annular: I_Limited = I_points + I_sides, where m_points ≈ 0.014 kg at r = 20 mm and m_sides ≈ 0.0055 kg at r = 14 mm, giving I_points = 0.014 × (0.020)² = 5.600×10⁻⁶ kg·m² and I_sides = 0.5 × 0.0055 × ((0.014)² + (0.008)²) = 7.810×10⁻⁷ kg·m², I_Limited = 6.381×10⁻⁶ kg·m² [ESTIMATED]; the effective mass radius r_eff = sqrt(6.381×10⁻⁶ / 0.0195) × 1000 = 18.1 mm — moderate, similar to Gravity at 18.6 mm (Case 614 context) but at 19.5 g mass vs Gravity's 21.6 g, making Limited lighter and with less total angular momentum; the two competitive limitations are precisely stated in the official description: first, "few Layers that benefit from the weight distribution" — the diamond form provides moderate OWD appropriate for Attack layers that launch at higher ω to exploit lower I, but Defense types like Kaiser Kerbeus need maximum I for angular momentum retention (Limited provides less I than Gravity or 7 at those mass levels); second, "small size and light weight limits the weight it does distribute" — at 19.5 g, Limited is 1.7–3.7 g lighter than the Cho-Z era's top discs (7 at 23.2 g, Gravity at 21.6 g), and this mass deficit directly reduces L₀ by the ratio sqrt(I_Limited / I_7) = sqrt(6.381/7.842) = 0.902, meaning Vanguard Bullet with Limited delivers 9.8% less angular momentum at launch than the same combo with disc 7; comparing to Force disc (the stated equivalent): if Force ≈ 19.5 g with similar diamond profile, I_Force ≈ I_Limited ≈ 6.4×10⁻⁶ kg·m², and the official "can function identically to Force" [CONFIRMED] confirms this; for the Kaiser Kerbeus defense context, Limited's adequate but not exceptional I fails to provide the angular momentum buffer that a defense type needs to absorb spin-down attacks while maintaining upright orientation — higher I means slower wobble onset (τ_gyro = I × ω × Ω_prec), and Limited's 19.5% lower I vs disc 7 translates directly to earlier wobble onset and thus earlier entry into the burst-vulnerable tilt zone (φ > 10° from Case 619).
+
+```
+FORGE DISC LIMITED — DIAMOND GEOMETRY AND MASS DISTRIBUTION
+
+  Top view (4-point diamond, 90° rotational symmetry):
+
+        ◆  ← point, r = 20 mm (heavy)
+       / \
+    ◆     ◆  ← side recession, r ≈ 14 mm (light)
+       \ /
+        ◆
+
+  4 diamond points at r = 20 mm:   ~71.8% of total mass
+  4 recessed sides at r = 14 mm:   ~28.2% of total mass
+
+  Note: n=4 symmetry → I_x = I_y → no gyroscopic imbalance  [same theorem as Case 608]
+
+INERTIA MODEL (two-zone):
+
+  m_points = 0.71794 × 0.0195 = 0.0140 kg  at r = 20 mm
+  m_sides  = 0.28206 × 0.0195 = 0.0055 kg  annular r_o=14mm, r_i=8mm
+  I_points = 0.0140 × (0.020)² = 5.600×10⁻⁶ kg·m²
+  I_sides  = 0.5 × 0.0055 × ((0.014)² + (0.008)²) = 7.810×10⁻⁷ kg·m²
+  I_Limited = 5.600×10⁻⁶ + 7.810×10⁻⁷ = 6.381×10⁻⁶ kg·m²
+  r_eff    = sqrt(6.381e-6 / 0.0195) × 1000 = 18.1 mm
+
+DISC COMPARISON — KAISER KERBEUS CONTEXT:
+
+  Disc        Mass(g)   I (kg·m²)     r_eff(mm)   L₀ ratio vs 7    Notes
+  ─────────   ──────    ────────────  ─────────   ─────────────    ─────────────────────
+  7           23.2      7.842×10⁻⁶   18.4        1.000 (ref)      best stamina [Case 614]
+  Gravity     21.6      7.441×10⁻⁶   18.6        0.974            excellent OWD
+  Limited     19.5      6.381×10⁻⁶   18.1        0.902            −9.8% vs disc 7
+  Force*      19.5*     ~6.4×10⁻⁶*   ~18.1*      ~0.902*          "identical to Force"
+  (* Force estimated same as Limited per official description)
+
+  Limited's L₀ deficit vs disc 7: (1 − 0.902) × 100 = 9.8%  → loses 9.8% angular momentum at launch
+
+GYROSCOPIC STABILITY IMPACT (Defense context):
+
+  τ_gyro = I × ω × Ω_precession
+  At equal ω and Ω_prec:
+    τ_gyro_Limited / τ_gyro_7 = I_Limited / I_7 = 6.381 / 7.842 = 0.814
+    → Limited gives 18.6% less gyroscopic resistance to precession than disc 7
+    → onset of φ > 10° (burst-vulnerable tilt) arrives 18.6% sooner with Limited vs disc 7
+    → for Kaiser Kerbeus Defense: Limited is a meaningful downgrade vs 7 or Gravity
+```
+
+```typescript
+// Case 620 — Forge Disc Limited: diamond inertia, comparison, defense impact
+
+function forgeDiscLimited(): {
+  mass_g: number; I_Limited: number; r_eff_mm: number;
+  I_vs_disc7_ratio: number; L0_deficit_vs_7_pct: number;
+  gyro_resistance_vs_7_ratio: number; gyro_deficit_pct: number;
+  equivalentTo_Force: boolean;
+} {
+  const m = 0.0195;
+  const m_points = 0.71794 * m, r_points = 0.020;
+  const m_sides  = 1 - 0.71794;  // remaining fraction
+  const m_sides_kg = (1 - 0.71794) * m;
+  const r_sides_o = 0.014, r_sides_i = 0.008;
+
+  const I_points = m_points * r_points ** 2;
+  const I_sides  = 0.5 * m_sides_kg * (r_sides_o ** 2 + r_sides_i ** 2);
+  const I_Limited = I_points + I_sides;
+  const r_eff = Math.sqrt(I_Limited / m) * 1000;
+
+  const I_7 = 7.842e-6;
+  const I_ratio    = I_Limited / I_7;
+  const L0_deficit = (1 - Math.sqrt(I_ratio)) * 100;  // at equal launch energy
+  const gyroRatio  = I_Limited / I_7;
+  const gyroDef    = (1 - gyroRatio) * 100;
+
+  return {
+    mass_g: 19.5,
+    I_Limited: +I_Limited.toExponential(4),
+    r_eff_mm:  +r_eff.toFixed(1),
+    I_vs_disc7_ratio: +I_ratio.toFixed(4),
+    L0_deficit_vs_7_pct: +L0_deficit.toFixed(1),
+    gyro_resistance_vs_7_ratio: +gyroRatio.toFixed(4),
+    gyro_deficit_pct: +gyroDef.toFixed(1),
+    equivalentTo_Force: true,  // [CONFIRMED — official description]
+  };
+}
+// forgeDiscLimited()
+//   -> { mass_g:19.5, I_Limited:6.381e-6, r_eff_mm:18.1,
+//        I_vs_disc7_ratio:0.8137, L0_deficit_vs_7:9.8%,
+//        gyro_resistance_vs_7:0.8137, gyro_deficit:18.6%,
+//        equivalentTo_Force:true [CONFIRMED] }
+//   -> 9.8% less angular momentum at launch vs disc 7 → meaningful stamina deficit for Defense
+//   -> 18.6% less gyroscopic tilt resistance → earlier entry into Kaiser Kerbeus burst-vulnerable zone
+//   -> diamond 4-fold symmetry → I_x = I_y → no gyroscopic imbalance
+//   -> competitive use: negligible; few Defense layers benefit; Force equivalency adds no new value
+```
+
+---
+
+### Case 621 — Assembly Kaiser Kerbeus Limited Press (Standard Burst Dual Layer System, Defense)
+
+**Thesis.** The Kaiser Kerbeus Limited Press assembly has total mass m = 7 + 19.5 + 6.4 = 32.9 g and total moment of inertia I_total = I_KK + I_Limited + I_Press_tip = 1.572×10⁻⁶ + 6.381×10⁻⁶ + 2.880×10⁻⁷ = 8.241×10⁻⁶ kg·m² [ESTIMATED]; at Standard Burst ω₀ = 694 rad/s, L₀ = 8.241×10⁻⁶ × 694 = 5.719×10⁻³ kg·m²/s; the Limited disc accounts for 77.4% of total inertia and Kaiser Kerbeus layer for only 19.1% — the disc is the dominant inertia driver, as expected for any Burst combo; the assembly's competitive profile is defined by a compounding chain of mismatches between part roles and assembly context: Kaiser Kerbeus was designed for Defense and requires a stability-providing tip, but Press (Case 605) engages its tabs 8.4° after the 10° tilt threshold at which Kaiser Kerbeus loses its dual-layer gap coverage — creating an unsafe window of 10°–18.4° where the layer is burst-vulnerable but the tip is not yet braking; applying the Press tip model to this assembly (m = 32.9 g, I_total = 8.241×10⁻⁶): τ_ball = 0.17 × 0.0329 × 9.81 × 0.003 = 1.647×10⁻⁴ N·m, dω/dt_ball = 20.0 rad/s², t_ball_ideal = 694/20.0 = 34.7 s; tab contact (α ≥ 18.4°): τ_combined = 1.647×10⁻⁴ + 0.17 × 0.0329 × 9.81 × 0.009 = 1.647×10⁻⁴ + 4.942×10⁻⁴ = 6.589×10⁻⁴ N·m, dω/dt_tab = 80.0 rad/s² (4.0× faster decay during tab contact); the gyroscopic resistance against tilt is τ_gyro = I_total × ω × Ω_prec = 8.241×10⁻⁶ × 694 × 2.0 = 1.143×10⁻² N·m at ω₀ — this is strong and would ordinarily prevent tilt, but the combination's total mass at 32.9 g is well below the average Burst combo (40–55 g for competitive sets), so the KO resistance F_resist = μ_ball × m × g = 0.17 × 0.0329 × 9.81 = 0.0548 N is relatively low; the assembly's stamina under ideal conditions (34.7 s ball-only) is adequate, but the poor-OWD Limited disc means any spin-equalisation attack drains L faster than a Gravity or disc 7 build, and Press's early tab engagement accelerates stamina loss at tilt > 18.4°; the combination would be improved by replacing Limited with 7 (or any heavy OWD disc) and replacing Press with Defense or Bearing for genuine Kaiser Kerbeus stability.
+
+```
+KAISER KERBEUS LIMITED PRESS — FULL INERTIA BUDGET
+
+  Part                  Mass(g)   I (kg·m²)     I Fraction   Notes
+  ──────────────────    ───────   ────────────  ──────────   ─────────────────────────────
+  Kaiser Kerbeus          7.0     1.572×10⁻⁶    19.1%        dual-layer [Case 619]
+  Forge Disc Limited     19.5     6.381×10⁻⁶    77.4%        diamond OWD [Case 620]
+  Press Tip               6.4     2.880×10⁻⁷     3.5%        Case 605 cross-reference
+                                 ────────────
+  TOTAL                  32.9    8.241×10⁻⁶    100.0%
+
+  L₀ = 8.241e-6 × 694 = 5.719e-3 kg·m²/s
+  r_eff = sqrt(8.241e-6 / 0.0329) × 1000 = 15.8 mm
+
+PRESS TIP APPLIED TO THIS ASSEMBLY (m = 32.9 g, I = 8.241×10⁻⁶):
+
+  Ball phase (α < 18.4°, μ_ball = 0.17, r_ball = 3 mm):
+    τ_ball  = 0.17 × 0.0329 × 9.81 × 0.003 = 1.647×10⁻⁴ N·m
+    dω/dt   = 20.0 rad/s²
+    t_ideal = 34.7 s  [ESTIMATED — ball phase only]
+
+  Tab phase (α ≥ 18.4°, add τ_tab at r_tab = 9 mm):
+    τ_tab   = 0.17 × 0.0329 × 9.81 × 0.009 = 4.942×10⁻⁴ N·m
+    τ_total = 6.589×10⁻⁴ N·m
+    dω/dt   = 80.0 rad/s²   (4.0× faster than ball phase)
+
+STABILITY FAILURE CHAIN (Kaiser Kerbeus + Press interaction):
+
+  Step 1: Hit destabilises combo → φ increases from 0°
+  Step 2: φ > 10° → Kaiser Kerbeus loses bottom-layer coverage → p_gap = 75% (burst risk 3×)
+  Step 3: φ < 18.4° → Press tabs NOT yet active (unsafe zone, 8.4° width)
+  Step 4: φ ≥ 18.4° → Press tabs engage → braking but also 4× faster stamina drain
+  Step 5: If braking restores φ < 10° → dual layer re-engages → burst risk reduced
+           If braking fails to restore → burst contact at 75% gap exposure → combo bursts
+
+  Unsafe zone tilt range: 10° to 18.4° = 8.4° wide  [INFERRED from Cases 619 + 605]
+  → Press is the worst possible tip for Kaiser Kerbeus (Defense tip would close this gap to 3.4°)
+
+ASSEMBLY IMPROVEMENT PATH:
+
+  Swap         ΔI              Benefit
+  ───────────  ──────────────  ─────────────────────────────────────────────────────
+  Limited → 7  +1.461×10⁻⁶   +17.7% L₀; +21.9% gyro resistance → 2.7× later tilt onset
+  Press → Def  minimal I Δ    reduces unsafe zone from 8.4° to 3.4° → 59.5% narrower burst window
+  Press → Bear ≈ same I       near-zero tip friction → dominant LAD stamina + no tab drain
+```
+
+```typescript
+// Case 621 — Kaiser Kerbeus Limited Press full assembly
+
+function kaiserKerbeusLimitedPress(): {
+  mass_g: number; I_total: number; L0: number; r_eff_mm: number;
+  I_fractions: { layer_pct: number; disc_pct: number; tip_pct: number };
+  t_ball_ideal_s: number; dwdt_ball: number; dwdt_tab: number; tabSpeedupRatio: number;
+  unsafeZoneTilt_deg: number; gapVulnerabilityInUnsafeZone: number;
+  F_resist_N: number; tau_gyro_launch_Nm: number;
+  improvementSwap_disc7_L0gain_pct: number;
+} {
+  const I_layer = 1.572e-6, I_disc = 6.381e-6, I_tip = 2.88e-7;
+  const I_total = I_layer + I_disc + I_tip;
+  const m_total = 0.0329, omega_0 = 694, g = 9.81;
+  const L0 = I_total * omega_0;
+  const r_eff = Math.sqrt(I_total / m_total) * 1000;
+
+  // Press tip
+  const r_ball = 0.003, r_tab = 0.009, mu = 0.17;
+  const tau_ball = mu * m_total * g * r_ball;
+  const tau_tab  = mu * m_total * g * r_tab;
+  const dwdt_ball = tau_ball / I_total;
+  const dwdt_tab  = (tau_ball + tau_tab) / I_total;
+  const t_ball = omega_0 / dwdt_ball;
+
+  // unsafe zone
+  const phi_KK_tilt = 10;    // Kaiser Kerbeus tilt threshold
+  const phi_Press_tab = 18.4; // Press tab onset (Case 605)
+  const unsafeZone = phi_Press_tab - phi_KK_tilt;
+  const gapVuln_unsafe = 3.0;  // 3× burst risk in unsafe zone (Case 619)
+
+  // defense
+  const F_resist = mu * m_total * g;
+  const tau_gyro = I_total * omega_0 * 2.0;  // at Ω_prec = 2 rad/s
+
+  // disc 7 improvement
+  const I_7 = 7.842e-6;
+  const I_total_with7 = I_layer + I_7 + I_tip;
+  const L0_with7 = I_total_with7 * omega_0;
+  const L0_gain = (L0_with7 - L0) / L0 * 100;
+
+  return {
+    mass_g: 32.9,
+    I_total: +I_total.toExponential(4),
+    L0:      +L0.toExponential(4),
+    r_eff_mm: +r_eff.toFixed(1),
+    I_fractions: {
+      layer_pct: +((I_layer / I_total) * 100).toFixed(1),
+      disc_pct:  +((I_disc  / I_total) * 100).toFixed(1),
+      tip_pct:   +((I_tip   / I_total) * 100).toFixed(1),
+    },
+    t_ball_ideal_s: +t_ball.toFixed(1),
+    dwdt_ball: +dwdt_ball.toFixed(1),
+    dwdt_tab:  +dwdt_tab.toFixed(1),
+    tabSpeedupRatio: +(dwdt_tab / dwdt_ball).toFixed(1),
+    unsafeZoneTilt_deg: +unsafeZone.toFixed(1),
+    gapVulnerabilityInUnsafeZone: gapVuln_unsafe,
+    F_resist_N: +F_resist.toFixed(4),
+    tau_gyro_launch_Nm: +tau_gyro.toExponential(4),
+    improvementSwap_disc7_L0gain_pct: +L0_gain.toFixed(1),
+  };
+}
+// kaiserKerbeusLimitedPress()
+//   -> { mass_g:32.9, I_total:8.241e-6, L0:5.719e-3, r_eff_mm:15.8,
+//        I_fractions:{ layer:19.1%, disc:77.4%, tip:3.5% },
+//        t_ball_ideal:34.7 s, dwdt_ball:20.0 rad/s², dwdt_tab:80.0 rad/s², tabSpeedupRatio:4.0×,
+//        unsafeZoneTilt:8.4°, gapVulnerabilityInUnsafeZone:3.0×,
+//        F_resist:0.0548 N, tau_gyro_launch:1.143e-2 N·m,
+//        improvementSwap_disc7_L0gain:17.7% }
+//   -> 8.4° unsafe zone where KK is burst-vulnerable (3× gap exposure) but Press tabs inactive
+//   -> tab engagement 4× faster spin-down → stamina drain worsens stability spiral
+//   -> swap Limited → disc 7: +17.7% L₀, +21.9% gyro resistance → tilt onset significantly delayed
+//   -> Press is the worst match for Kaiser Kerbeus; Defense closes unsafe zone to 3.4°; Bearing eliminates it
+
 

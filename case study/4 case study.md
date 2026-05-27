@@ -15126,7 +15126,7 @@ Max Shield AR is a 3.5 g AR from Draciel Metal Ball Defenser. The name "Max Shie
 
 As a defensive AR, Max Shield provides no benefits � a defensive AR needs rounded, smooth geometry (like Tiger Defenser, Case 102) to redirect contact force. Flat faces on a defensive AR are counterproductive: they generate high recoil that destabilizes the bearer (negative defense) while also providing no attack output.
 
-The AR has no competitive role in any format. Its notable appearance in Draciel Metal Ball Defenser � a bey specifically designed for defense � underscores a disconnect between the bey's defensive BB design (Metal Ball Base, Case 270) and the non-functional AR. The Metal Ball Base is the entire value of that bey; the Max Shield AR contributes nothing.
+The AR has no competitive role in any format. Its notable appearance in Draciel Metal Ball Defenser � a bey specifically designed for defense � underscores a disconnect between the bey's defensive BB design (Metal Ball Base, Case 272) and the non-functional AR. The Metal Ball Base is the entire value of that bey; the Max Shield AR contributes nothing.
 
 **Circle Defenser note:** plasticsdb lists "Circle Defenser" under the Spin Gear section (not Attack Rings) � it is a SG defense shell, not an AR. Max Shield AR is the Draciel Metal Ball Defenser AR, distinct from any SG-level defense component.
 
@@ -15167,5 +15167,436 @@ interface MaxShieldAR {
 
 ### 4. Verdict
 
-**Role:** Non-competitive; the Draciel Metal Ball Defenser is only useful for its Metal Ball Base (Case 270). Max Shield AR provides no attack or defense value � flat faces generate the heaviest recoil in this size class (0.62) with smashFraction = 0.10. The "shield" in the name is decorative, not functional. Harvest Draciel Metal Ball Defenser solely for the Metal Ball Base SG component; discard or ignore Max Shield AR. Tier: non-competitive.
+**Role:** Non-competitive; the Draciel Metal Ball Defenser is only useful for its Metal Ball Base (Case 272). Max Shield AR provides no attack or defense value � flat faces generate the heaviest recoil in this size class (0.62) with smashFraction = 0.10. The "shield" in the name is decorative, not functional. Harvest Draciel Metal Ball Defenser solely for the Metal Ball Base SG component; discard or ignore Max Shield AR. Tier: non-competitive.
+
+
+---
+
+## Case 270 � Revolver Attack WD (Bakuten Henkei Gaia Dragoon / Wolborg 03 / Gabriel / Orthrus) � 15.0 g [FACT(PDB)] � Compact WD with Protruding Contact Points: Same Weight Class as Ten Balance, Non-Competitive Due to AR Recoil Generation
+
+### 1. Geometry
+
+Revolver Attack WD is a 15.0 g [FACT(PDB)] compact weight disk sourced from four beys: Bakuten Henkei Gaia Dragoon, Wolborg 03 (Uriel), Gabriel, and Orthrus. The "Revolver" in the name reflects the WD's angular protrusion geometry � rather than smooth round, spoke, or octagonal-rim profiles, Revolver Attack has protruding contact points arranged cylindrically around the disk perimeter, mimicking the chamber-face geometry of a revolver cylinder.
+
+**Compact distribution:** despite the protrusions, the mass distribution is compact � "similarly compact weight distribution" compared to Heavy and Eight Heavy WDs (Cases 256, 255). This means the protrusions are relatively short and most mass remains near the disk center rather than at the perimeter. Compact mass distribution ? lower moment of inertia per gram compared to wide-profile WDs (Wide Defense, Ten Wide).
+
+**The critical flaw � protrusion recoil:** the protruding contact points on the disk perimeter can engage opposing ARs during battle. This WD-level contact is undesirable � in standard plastic gen builds the WD should be shielded by the AR above it. When Revolver Attack's protrusions are exposed, they generate recoil that destabilizes the bearer without producing usable force transfer. "The recoil from the contact points and the relatively middling weight means it doesn't work well � even Heavy Attack is a better choice."
+
+At 15.0 g, Revolver Attack is lighter than Heavy Attack (16.0 g) and the same weight as Ten Balance (15.0 g). It is outclassed by both in their respective roles: Ten Balance provides better I for Compact; Heavy Attack provides more mass for attack momentum. Revolver Attack's protrusion geometry adds no benefit and creates a liability.
+
+### 2. Physics
+
+```
+Moment of inertia (compact ring model):
+  r_outer � 23 mm (protrusion tips extend slightly past compact norm), r_inner � 10 mm
+  m = 15.0 g
+  I = (0.015/2)(0.023� + 0.010�) = 0.0075 � (0.000529 + 0.000100)
+    = 0.0075 � 0.000629 � 4.7 � 10?6 kg�m�  [ESTIMATED]
+
+Comparison at equivalent mass (15.0 g):
+  Ten Balance (15.0g, wide-compact):     I � 6.0 � 10?6 kg�m�  ? 28% higher I than Revolver Attack
+  Revolver Attack (15.0g, compact+prong): I � 4.7 � 10?6 kg�m�  ? lower I, adds protrusion recoil
+  Net: Revolver Attack is strictly worse than Ten Balance at the same mass
+
+Protrusion recoil model:
+  protrusion_height_m: 0.003   [ESTIMATED � short protrusions, "compact distribution"]
+  recoilFactor_protrusion: 0.40  [ESTIMATED � protrusion geometry from WD-level contact]
+  F_recoil_per_hit = recoilFactor � J_base / ?t ? net destabilizing torque on bearer
+
+vs Heavy Attack (16.0g):
+  Heavy Attack: compact, smooth rim, no protrusion ? no WD-level recoil
+  Revolver Attack: compact + protrusion ? adds recoil at every WD-height contact
+  Even 1g lighter + recoil = strictly worse in all attack-recoil management scenarios
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface RevolverAttackWD {
+  name: "revolver_attack_wd";
+  system: "SGS";
+  sourceBey: "Bakuten Henkei Gaia Dragoon | Wolborg 03 (Uriel) | Gabriel | Orthrus";
+  mass_g: 15.0;                          // [FACT(PDB)]
+  I_kgm2: 4.7e-6;                        // [ESTIMATED � compact + prong model]
+  r_outer_m: 0.023;
+  r_inner_m: 0.010;
+  profile: "compact_with_protrusions";
+  // Protrusion geometry (the defining flaw)
+  hasWDLevelContactPoints: true;
+  protrusion_height_m: 0.003;            // [ESTIMATED]
+  protrusion_recoilFactor: 0.40;         // [FACT(PDB) � "recoil from contact points"]
+  competitiveTier: "non_competitive";
+  // Comparative hierarchy
+  vsHeavyAttack: "strictly_worse";       // lighter + recoil penalty
+  vsTenBalance: "strictly_worse";        // same mass, lower I, adds recoil
+  vsHeavy:      "slightly_lighter_same_flaw"; // 0.3g lighter; no competitive separation
+  note: "even Heavy Attack is a better choice on setups that reduce recoil [PlasticsDB]";
+  donorValue: "gabriel_orthrus_beys";    // only reason to acquire: access to Gabriel/Orthrus source beys
+}
+```
+
+### 4. Verdict
+
+**Role:** Non-competitive; no WD donor applications. Revolver Attack WD is outclassed at every angle � its 15.0 g is matched by Ten Balance (which has better I) and beaten by Heavy Attack (which has more mass without adding protrusion recoil). The protruding contact points on the disk perimeter are the primary flaw: they create recoil at WD height without contributing to attack output. There is no standard plastic gen build where Revolver Attack outperforms the available alternatives. The source beys (Bakuten Henkei Gaia Dragoon, Wolborg 03, Gabriel, Orthrus) may be worth acquiring for their ARs or BBs, but the Revolver Attack WD itself should be swapped out immediately. Tier: non-competitive.
+
+---
+
+## Case 271 � Star Attack WD (Uriel 2) � 15.6 g [FACT(PDB)] � Five-Pointed Star Geometry: Uniquely Penta Wing-Aligned, Non-Competitive in All Other Configurations Due to Star-Tip Recoil
+
+### 1. Geometry
+
+Star Attack WD is a 15.6 g [FACT(PDB)] five-pointed star-shaped weight disk from Uriel 2. The geometry is unique among plastic gen WDs � rather than a circular, spoke, or polygonal profile, Star Attack has five arms arranged in pentagonal symmetry, with holes cut at each star tip ("holes at the tops of each star"). These cutouts mean the maximum outer radius of the disk is the star-arm side profile, not the very tip.
+
+**Star-arm geometry and contact risk:** the five star arm ends create five angular protrusions around the disk perimeter. When the WD's star arms are at AR height (or near-AR height depending on BB/SG configuration), they can generate contact points with opposing ARs. For most AR geometries this produces chaotic, recoil-heavy contacts � "recoil issues negate any other usefulness."
+
+**The Penta Wing exception:** the plasticsdb source notes that Star Attack "only aligns with Penta Wing" among ARs that theoretically suit its star geometry. Penta Wing AR (CS3 Case 172) has a 5-fold pentagonal wing symmetry � in a Penta Wing + Star Attack combination, the five star arms spatially align with the five Penta Wing sections. This alignment means the WD's star-arm profile is consistently shielded by the Penta Wing's corresponding wing faces during contact � the star tips do not randomly protrude into opposing ARs, eliminating the recoil-at-WD-height problem. The result: "synergy combined with suitable weight distribution making Star Attack a competitive Traditional Upper Attack Weight Disk" with Penta Wing.
+
+**Why this WD-AR pairing works:** Penta Wing is a 5-fold AR. Star Attack is 5-fold. When their rotational phases are reasonably aligned (which they will be on average, as both spin at the same angular velocity), the WD star arms sit behind the AR wings rather than between them, shielding the star tips from direct contact with opposing ARs.
+
+**With any non-5-fold AR:** the angular mismatch means the star tips can protrude between the AR's contact points at contact height, creating high recoil on WD contact. "None of which are at all useful" � the three other ARs that match the 5-fold count are confirmed non-competitive.
+
+At 15.6 g Star Attack is heavier than Heavy Attack (16.0 g � only 0.4 g lighter) but lighter than Ten Heavy (16.1 g standard). Its competitive status is therefore very narrow: viable only in the Penta Wing + Star Attack upper-attack combination.
+
+### 2. Physics
+
+```
+Moment of inertia (five-pointed star model):
+  Star arms extend to r_outer � 27 mm (arm tip to center)
+  Star inner radius (between arm bases) � r_inner � 16 mm
+  m = 15.6 g � mass concentrated in star arms (higher effective r_eff than compact WD)
+  I_star = (m/2)(r_outer� + r_inner�) � star_arm_factor
+         = (0.0156/2)(0.027� + 0.016�) � 0.85  [star_arm_factor corrects for incomplete ring]
+         = 0.0078 � (0.000729 + 0.000256) � 0.85
+         = 0.0078 � 0.000985 � 0.85 � 6.5 � 10?6 kg�m�  [ESTIMATED]
+
+The star arm geometry concentrates mass at moderate outer radius (arm sides rather than tips due to tip cutouts):
+  I � 6.5 � 10?6  vs  Heavy Attack (16.0g) I � 7.3 � 10?6  vs  Ten Heavy (16.1g) I � 8.9 � 10?6
+
+Star-tip recoil model (non-Penta Wing):
+  Phase mismatch probability: ~0.70 at any given contact moment
+  (5 star arms in 360� ? each arm spans 72�; arm tip unshielded for ~0.50 of each 72� arc)
+  recoilFactor_starmismatch: 0.55  [ESTIMATED � star tip contacts generate high recoil]
+  effective_smashFraction_other_AR: 0.08  [extremely low � recoil dominates]
+
+Penta Wing alignment model:
+  Phase alignment: both 5-fold ? arms track with wings throughout rotation
+  Star arm shielded by Penta Wing face: ~0.80 of rotation arc
+  recoilFactor_pentaWing: 0.28  [ESTIMATED � shielded geometry, moderate recoil managed by Penta Wing]
+  upperFraction_pentaWing: 0.46  [FACT(PDB) � "competitive Traditional Upper Attack"]
+
+Penta Wing + Star Attack traditional upper-attack output:
+  J_net = J_base � 0.46 � (1 - 0.28 � 0.5) � J_base � 0.396
+  This is comparable to standard upper-attack ARs at B�C tier level
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface StarAttackWD {
+  name: "star_attack_wd";
+  system: "SGS";
+  sourceBey: "Uriel 2";
+  mass_g: 15.6;                          // [FACT(PDB)]
+  I_kgm2: 6.5e-6;                        // [ESTIMATED � five-star arm model]
+  r_outer_m: 0.027;                      // star arm tip (before cutout)
+  r_inner_m: 0.016;                      // between arm bases
+  profile: "five_pointed_star";
+  starArmCount: 5;
+  tipCutouts: true;                      // holes at star tip positions
+  // Non-Penta Wing (general case)
+  recoilFactor_generic: 0.55;            // [ESTIMATED] star tips protrude on phase mismatch
+  effectiveSmash_generic: 0.08;          // effectively non-competitive
+  // Penta Wing-specific pairing (Case 172)
+  pentaWingAlignment: {
+    foldMatch: 5;                        // both 5-fold ? arms track with wings
+    recoilFactor: 0.28;                  // [ESTIMATED] shielded
+    upperFraction: 0.46;                 // [FACT(PDB)] "competitive Traditional Upper Attack"
+    tier: "B_C_tier_upper";
+    note: "the only competitive application; Penta Wing AR shields star arms from WD-height contact";
+  };
+  competitiveTier: "niche_penta_wing_only"; // [FACT(PDB)] � "exclusively with Penta Wing"
+  vsTenBalance: "slightly_heavier_niche_use";
+  vsHeavyAttack: "lighter_0.4g_lower_I";
+  donorBey: "uriel_2";                   // unique donor bey
+}
+function starAttackRecoil(wd: StarAttackWD, arName: string): number {
+  return arName === "penta_wing_ar"
+    ? wd.pentaWingAlignment.recoilFactor
+    : wd.recoilFactor_generic;
+}
+function starAttackUpper(wd: StarAttackWD, arName: string, J_base: number): number {
+  if (arName !== "penta_wing_ar") return J_base * wd.effectiveSmash_generic;
+  const recoilPenalty = 1 - wd.pentaWingAlignment.recoilFactor * 0.5;
+  return J_base * wd.pentaWingAlignment.upperFraction * recoilPenalty;
+}
+```
+
+### 4. Verdict
+
+**Role:** Niche competitive � Penta Wing only. Star Attack WD's five-pointed star geometry creates a WD-AR phase alignment requirement unlike any other plastic gen WD. In the single pairing it works with (Penta Wing AR, Case 172), it functions as a competitive Traditional Upper Attack WD (B�C tier) with the star arms shielded by the wing faces. In every other configuration the star tips generate high recoil (0.55) that negates any performance. At 15.6 g it is among the heavier plastic gen WDs but achieves worse I than Ten Heavy (16.1 g) or Wide Defense (14.5 g). The Penta Wing + Star Attack combo is a real competitive entry in Traditional Upper Attack formats; outside that pairing, the WD is non-competitive. Source bey: Uriel 2. Tier: niche competitive (Penta Wing pairing only).
+
+---
+
+## Case 272 — Metal Ball Base (Draciel Metal Ball Defenser) — 8.4 g + up to 6×1.05 g steel balls [FACT(PDB)] — 4LS Built-In Right SG: Passive Tornado-Ridge Defender Whose Gimmick Is Non-Functional at Competition Speed
+
+### 1. Geometry
+
+Metal Ball Base is the Blade Base of Draciel Metal Ball Defenser (4 Layer System, Plastic Generation). It weighs **8.4 g** for the base body alone, plus up to six 1/4" (≈ 6.35 mm) steel balls at **1.05 g each** — giving a range of 9.45 g (1 ball) to 14.7 g (6 balls). The part ships with two balls installed; the remaining four pockets can be filled. The base incorporates a **built-in Right SG** (Spin Gear), placing it in the 4LS (4-Layer System) as distinct from the SGS (5-Layer System) bases that accept separate SG shells.
+
+The tip is **a somewhat shallow, slightly rounded-off Sharp tip**. Fresh from the box, the tip profile is acceptable but prone to destabilisation on impact — the beyblade has difficulty regaining balance after being hit. As the tip wears to a more rounded shape, both **tip stability and defensive ability improve**. This is one of the few tips in the Plastic generation where wear is unambiguously beneficial rather than detrimental.
+
+The gimmick consists of radial pockets arranged around the base body designed so that the steel balls roll outward under centripetal force as the base spins, theoretically shifting mass distribution outward to increase rotational inertia and thereby stability. In practice the gimmick is **non-functional** (see Physics).
+
+The base body design is more passive at the tornado ridge than Metal Change–tipped bases such as Customize Metal Change Base, which actively catch the ridge due to the pronounced contact edge of the Metal Change tip.
+
+### 2. Physics
+
+**Ball gimmick threshold analysis:**
+
+The balls sit in shallow radial pockets. A ball of mass m at radius r_pocket from the spin axis is in the outward position when centripetal force exceeds the inward restoring force:
+
+```
+Threshold condition: mω²r_pocket ≥ mg·sin(θ_pocket)
+→ ω_threshold = √(g·sin(θ_pocket) / r_pocket)
+
+Pocket geometry (estimated from photos):
+  r_pocket    ≈ 18 mm   (ball centre at outward position)
+  θ_pocket    ≈ 10°     (very shallow slope — "shallow slope of the pockets")
+
+ω_threshold = √(9.81 × sin(10°) / 0.018)
+            = √(9.81 × 0.1736 / 0.018)
+            = √(94.6)
+            ≈ 9.73 rad/s  →  93 RPM  [ESTIMATED]
+```
+
+Competition launch RPM is 2,000–3,000 RPM. **The balls are therefore at maximum outward radius for virtually the entire match.** The gimmick never transitions between inward and outward states during competitive play — it is permanently in the "engaged" position from the moment of launch. There is no dynamic mass-shift effect. The gimmick is functionally equivalent to a fixed-mass ring at r = 18 mm for all competitive purposes.
+
+**Inertia with balls at maximum outward radius:**
+
+```
+Base body (hollow cylinder approximation):
+  m_base = 8.4 g,  r_outer ≈ 26 mm,  r_inner ≈ 12 mm
+  I_base = (0.0084/2)(0.026² + 0.012²) = 0.0042 × (0.000676 + 0.000144)
+         = 0.0042 × 0.000820 ≈ 3.44 × 10⁻⁶ kg·m²  [ESTIMATED]
+
+Each ball at r = 18 mm (point mass approximation):
+  I_ball = 0.00105 × 0.018² = 0.00105 × 0.000324 = 3.40 × 10⁻⁷ kg·m²
+
+With 2 balls: I_total ≈ 3.44e-6 + 2 × 3.40e-7 = 4.12 × 10⁻⁶ kg·m²  [ESTIMATED]
+With 6 balls: I_total ≈ 3.44e-6 + 6 × 3.40e-7 = 5.48 × 10⁻⁶ kg·m²  [ESTIMATED]
+```
+
+**Tip friction and tornado ridge behaviour:**
+
+The shallow slightly-rounded Sharp tip sits in the Flat/Semi-Flat–to–Sharp continuum. With a fresh tip:
+
+```
+tipFrictionCoeff: 0.12  [ESTIMATED — shallow sharp, slight rounding]
+stadiumBehaviour: "passive" — avoids tornado ridge contact (opposite of Metal Change)
+defensePosture:   "orbit-and-survive" — low linear speed, stays near centre
+```
+
+With wear:
+```
+tipFrictionCoeff: 0.09  [ESTIMATED — more rounded, lower friction]
+stadiumBehaviour: "passive" — remains away from ridge, improved stability
+defensePosture:   "improved" — better balance recovery on impact
+```
+
+Metal Change tip (e.g. Customize Metal Change Base) catches the tornado ridge, drawing the beyblade into ridge orbits that repeatedly redirect hit force into the opponent. Metal Ball Base is **deliberately passive** — it avoids the tornado ridge, preventing collision there, at the cost of not exploiting ridge-rebound momentum. This passivity is the source of its advantage in Weight-Based Defense: fewer ridge collisions = fewer destabilisation events.
+
+**Spin decay rate (tip-driven):**
+
+```
+// Approximate from tip profile comparison:
+spinDecayRate (fresh):  8.5 /s  [ESTIMATED — slightly worse than average sharp]
+spinDecayRate (worn):   7.8 /s  [ESTIMATED — improved with rounding]
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface MetalBallBase4LS {
+  name: "metal_ball_base_4ls";
+  system: "4LS";                        // 4-Layer System, built-in Right SG
+  sourceBey: "Draciel Metal Ball Defenser";
+  spin: "right";
+
+  // Base body
+  baseMass_g: 8.4;                      // [FACT(PDB)]
+  I_base_kgm2: 3.44e-6;                 // [ESTIMATED]
+
+  // Metal ball gimmick
+  balls: {
+    shipsWith: 2;
+    maxBalls: 6;
+    ballMass_g: 1.05;                   // [FACT(PDB)] — 1/4" steel ball
+    pocketRadius_mm: 18;                // [ESTIMATED]
+    pocketAngle_deg: 10;                // [ESTIMATED] — "very shallow"
+    thresholdRPM: 93;                   // [ESTIMATED] ω = √(g·sin(θ)/r) ≈ 9.73 rad/s
+    competitiveEffect: "none";          // always at max radius from launch
+    I_perBall_kgm2: 3.40e-7;           // [ESTIMATED]
+  };
+
+  // Tip
+  tip: {
+    profile: "shallow_rounded_sharp";
+    frictionFresh: 0.12;                // [ESTIMATED]
+    frictionWorn:  0.09;                // [ESTIMATED]
+    wearEffect: "beneficial";          // [FACT(PDB)] stability improves with wear
+    stadiumBehaviour: "passive";       // [FACT(PDB)] avoids tornado ridge
+    vsMetalChange: "less defensive but more passive (fewer ridge collisions)";
+  };
+
+  // Spin decay
+  spinDecayFresh: 8.5;                  // [ESTIMATED] /s
+  spinDecayWorn:  7.8;                  // [ESTIMATED] /s
+
+  // Competitive role
+  competitiveTiers: ["weight_based_defense", "semi_flat_base_stamina"];
+  notes: [
+    "Gimmick is non-functional at competition speed (threshold ≈ 93 RPM, launch ≥ 2000 RPM)",
+    "Wear improves tip profile — one of few plastic-gen tips where worn > fresh",
+    "More passive than Metal Change Base at tornado ridge",
+    "4LS built-in SG: not SGS-compatible; use only with 4LS system builds",
+    "Draciel Metal Ball Defenser value is this base; Max Shield AR (Case 269) is non-competitive"
+  ];
+}
+```
+
+### 4. Verdict
+
+**Role:** Weight-Based Defense and Semi-Flat Stamina backup. Metal Ball Base provides a compact, slightly bottom-heavy mass distribution with a passive tornado-ridge tip profile. The ball gimmick is non-functional in competitive play (threshold ≈ 93 RPM, far below launch speed) — treat it as a fixed mass ring adding 2.1 g at r ≈ 18 mm. Fresh-tip stability is slightly inferior to SG Metal Ball Base (Case 248) due to the shallower pocket slope, but worn tips are more competitive than worn ABS equivalents.
+
+The base is most useful when passivity at the tornado ridge is desirable — it avoids ridge contact that would allow opponents to generate rebound momentum. Customize Metal Change Base outperforms it for active defensive exploitation of the tornado ridge, but in combos where ridge collisions are costly, Metal Ball Base is the preferred choice. Tier: **competitive backup** for Weight-Based Defense and Semi-Flat Stamina. The Draciel Metal Ball Defenser's value is entirely this base; harvest it and ignore the Max Shield AR (Case 269).
+
+---
+
+## Case 273 — War Lynx AR (Galux — UNRELEASED) — ~6.65 g [ESTIMATED] — Speed-Optimised War Lion Variant: 6.3% Lighter, Higher Orbital Speed, Counter-Oriented Balanced Design
+
+### 1. Geometry
+
+War Lynx is the Attack Ring of **Galux** (ガルクス), a Plastic-Generation Beyblade that **was never commercially released**. Its existence is confirmed by official Takara promotional card **#093, Ver. 2.0**, which lists:
+
+- **Type:** Balance (バランス)
+- **Spin:** Right (右)
+- **AR:** War Lynx (ウォーリンクス) — marked "unknown" on the card
+- **WD:** Eight Wide (エイトワイド)
+- **BB:** Metal Ball Base (メタルボールベース)
+- **Attack / Defense stats:** 3000 / 3000
+- **Special ability:** activated vs Driger-type Bits
+- **Copyright:** ©HUDSON SOFT / TAKARA
+
+War Lynx consists of an **AR + Sub AR** system, mirroring the War Lion + Sub AR architecture of Galeon (Galman's beast, a different White Tiger cohort). The geometry is described as similar to War Lion (Case [refer to War Lion case when assigned]) but with a measurable mass reduction: **War Lynx ≈ 6.65 g** vs **War Lion ≈ 7.1 g** — a reduction of approximately **0.45 g (6.3%)**. This lighter profile is achieved through thinner contact face cross-sections or reduced blade span, at the cost of per-hit impulse.
+
+The Sub AR reinforces and extends the contact geometry in the same manner as the War Lion Sub AR, compensating partially for the reduced base AR mass by increasing effective contact surface area. Together the AR + Sub AR assembly approaches War Lion's total angular coverage while maintaining the lighter individual AR mass.
+
+**Design philosophy per Galux card context:** Galux was conceived as a **counter-oriented fast attacker** rather than a power attacker:
+- Attack of Galzly (power attacker type)
+- Defense of War Monkey (Case 245)
+- Stamina of Galeon (all-round stamina archetype)
+
+The 3000/3000 Attack/Defense card stats explicitly confirm a **balanced profile** — not raw attack or raw defense, but a synthesis of both into a fast, adaptable counter-style beyblade. The Eight Wide WD (Case 104) provides standard mid-range attack coverage, and the Metal Ball Base (Case 272) anchors the defense layer.
+
+### 2. Physics
+
+**Mass trade-off vs War Lion:**
+
+```
+War Lynx AR mass (estimated):  6.65 g  [ESTIMATED — from PDB-era comparison data]
+War Lion AR mass:               7.10 g  [FACT(PDB)]
+Δm = 0.45 g  →  6.3% lighter
+
+Per-hit impulse at equal contact angle α:
+  J = (Δm × v_rel) × sin(α)
+  War Lynx impulse / War Lion impulse = m_Lynx / m_Lion = 6.65 / 7.10 = 0.937
+  → ~6.3% lower per-hit impulse for equal geometry  [ESTIMATED]
+```
+
+**Orbital speed compensation:**
+
+At equal spin rate, a lighter AR has lower angular momentum, but lower I also means faster recovery from destabilisation and potentially higher orbital speed at equal launch power (less rotational inertia to accelerate):
+
+```
+I_WL (War Lion AR, ring model):
+  m = 7.10 g, r_outer ≈ 22 mm, r_inner ≈ 8 mm
+  I = (0.0071/2)(0.022² + 0.008²) = 0.00355 × (0.000484 + 0.000064)
+    = 0.00355 × 0.000548 ≈ 1.95 × 10⁻⁶ kg·m²  [ESTIMATED]
+
+I_WLynx (War Lynx AR, ring model):
+  m = 6.65 g, r_outer ≈ 22 mm, r_inner ≈ 8 mm
+  I = (0.00665/2)(0.022² + 0.008²) = 0.003325 × 0.000548
+    ≈ 1.82 × 10⁻⁶ kg·m²  [ESTIMATED]
+
+Spin-up advantage: same launch power → I_Lynx is 6.7% lower → ~3.3% higher ω at launch
+(I·ω = const for equal launch power — so ω_Lynx / ω_WL = √(I_WL / I_Lynx) ≈ 1.033)
+```
+
+This ~3.3% orbital speed advantage slightly compensates for the 6.3% mass reduction in impulse. Net: War Lynx delivers marginally lower per-hit force than War Lion but arrives at the target fractionally faster — consistent with the "speed over power" characterisation.
+
+**Contact angle and smash geometry (mirroring War Lion structure):**
+
+```
+smashFractionRS:   ~0.65  [ESTIMATED — similar wing geometry to War Lion]
+recoilFactor:      ~0.35  [ESTIMATED]
+upperFraction:     ~0.20  [ESTIMATED — Sub AR provides upper lift component]
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface WarLynxAR {
+  name: "war_lynx_ar";
+  system: "SGS";                          // Spin Gear System (4LS BB, standard SGS AR)
+  sourceBey: "Galux";
+  releaseStatus: "unreleased";            // [FACT — Takara Card #093 never sold commercially]
+  cardNumber: "093";                      // Ver. 2.0
+  beyType: "balance";                     // Card: バランス
+  spin: "right";                          // Card: 右
+  stockCombo: {
+    ar: "war_lynx";
+    wd: "eight_wide";                     // [FACT — Card #093]
+    bb: "metal_ball_base_4ls";            // [FACT — Card #093]
+  };
+  cardStats: { attack: 3000, defense: 3000 };  // [FACT — Card #093]
+
+  // Physics
+  mass_g: 6.65;                           // [ESTIMATED — 6.3% lighter than War Lion 7.10 g]
+  I_kgm2: 1.82e-6;                        // [ESTIMATED]
+  smashFractionRS: 0.65;                  // [ESTIMATED]
+  recoilFactor: 0.35;                     // [ESTIMATED]
+  upperFraction: 0.20;                    // [ESTIMATED — from Sub AR contribution]
+
+  // Design intent
+  designPhilosophy: "counter_fast_balanced"; // "speed over power" vs War Lion/Galeon
+  vsWarLion: {
+    massReduction_pct: 6.3;
+    perHitImpulseReduction_pct: 6.3;
+    orbitalSpeedGain_pct: 3.3;             // [ESTIMATED]
+    netCharacter: "faster but slightly weaker per hit";
+  };
+
+  // Sub AR
+  hasSubAR: true;
+  subARRole: "angular_coverage_extension";
+
+  competitiveTiers: ["attack_type", "counter_attack"];
+  notes: [
+    "UNRELEASED — Card #093 never commercially sold (War Lynx listed as 'unknown')",
+    "3000/3000 balanced card stats — counter-style fast attacker, not pure power",
+    "Similar geometry to War Lion but optimised for speed over raw impulse",
+    "Stock combo with Eight Wide (WD) + Metal Ball Base (BB) supports balanced role",
+    "Special ability activates vs Driger-type Bits (card-confirmed)",
+    "©HUDSON SOFT / TAKARA — Takara official promotional card only"
+  ];
+}
+```
+
+### 4. Verdict
+
+**Role:** Counter-attack balanced attacker (unreleased). War Lynx trades 6.3% of War Lion's per-hit mass for a compensating orbital speed advantage, producing a fast, balanced AR suited to disrupting multiple opponent types rather than maximising single-hit damage. The 3000/3000 card stat profile confirms the design intent — not an extreme type, but a versatile counter tool. Its stock combo (Eight Wide + Metal Ball Base) builds defensively with a fast AR, making Galux a "respond-to-anything" balanced archetype consistent with Takara's promotional framing ("best of Galzly, War Monkey, and Galeon").
+
+Because the part was never sold, all real-world use data is absent. Physics estimates are derived from card-confirmed mass comparison and geometric similarity to War Lion. Game-engine implementation should model War Lynx as a slightly lighter, slightly faster War Lion with balanced attack/defense weighting. Tier: **unreleased — estimated mid-tier attack/balanced** based on geometry analysis.
+
+---
 

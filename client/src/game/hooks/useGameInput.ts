@@ -136,10 +136,12 @@ export function useGameInput(sendInput: SendInputFn, enabled = true) {
         mouseDragRef.current  = { x: 0, y: 0 };
       }
     };
+    const onContextMenu = (e: Event) => e.preventDefault();
+
     window.addEventListener("mousedown",   onMouseDown);
     window.addEventListener("mousemove",   onMouseMove);
     window.addEventListener("mouseup",     onMouseUp);
-    window.addEventListener("contextmenu", (e) => e.preventDefault());
+    window.addEventListener("contextmenu", onContextMenu);
 
     // ── Main rAF loop ─────────────────────────────────────────────────────────
     const loop = () => {
@@ -262,6 +264,7 @@ export function useGameInput(sendInput: SendInputFn, enabled = true) {
       window.removeEventListener("mousedown",     onMouseDown);
       window.removeEventListener("mousemove",     onMouseMove);
       window.removeEventListener("mouseup",       onMouseUp);
+      window.removeEventListener("contextmenu",   onContextMenu);
       window.removeEventListener("gamepadconnected",    onGpIn);
       window.removeEventListener("gamepaddisconnected", onGpOut);
     };

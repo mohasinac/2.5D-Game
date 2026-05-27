@@ -10075,6 +10075,211 @@ function poisonVsEarth(I_poison: number, I_earth: number, m_poison: number, m_ea
 
 ---
 
+## Case 353j — Fusion Wheel: Spiral (34.2 g)
+
+> **Stock combos:** Spiral Capricorn 90MF (BB-102, Dr. Ziggurat) · Spiral Lyre ED145MF · Spiral Fox TR145W2D · Spiral Tempo S130MF
+> **JP name:** Screw (スクリュー, Sukuryū) — English localisation is Spiral.
+> **System:** HWS (Hybrid Wheel System) · **Series:** Metal Masters · **Type:** Attack
+
+**Thesis.** Spiral (Japanese: Screw) is a 34.2 g three-wing HWS Fusion Wheel whose upward-curving wings and oval-face protrusions produce Upper Smash Attack — a contact regime combining significant horizontal smash (cos φ ≈ 0.85–0.93) with a moderate vertical lift component (sin φ ≈ 0.37–0.53). The wheel was advertised as having true Upper Attack, but measured wing-face angles of ~20–32° from horizontal fall short of the ≥ 45° needed for Upper Attack dominance; instead the oval protrusions redirect a meaningful fraction of impulse upward, producing the rarer Upper Smash hybrid. At 34.2 g Spiral sits 3.8 g heavier than Storm (30.4 g), yielding 14.6 % more rotational inertia, but remains outclassed by Beat (43.6 g, 50 mm wide), Lightning (30 g, superior Left-spin physics), and VariAres (39.15 g, dual-spin). Competitive use is narrow: small Energy Rings (Pisces, Horogium/Tempo) that expose the metal contact faces are mandatory, and the 90-track height band maximises under-wheel contact probability.
+
+**Geometry**
+
+```
+Top view — Spiral Fusion Wheel (34.2 g, ~44 mm wide)
+C₃ symmetry: three wings at 120° intervals
+
+              WING A (oval protrusion on face)
+              /  \_
+             /    \___
+            /  oval \
+ WING C     |        |  contact face angle ~20–32°
+ \____       \ slope /        (Upper Smash range)
+      \_      \ ↑  /
+        \    GAP   /
+         \  WING B
+
+Side profile (one wing):
+   ┌──────────────────────────────────────────┐
+   │ Hub        │ Inner body  │  Outer wing   │
+   │ r: 3–8 mm  │ r: 8–17 mm │  r: 17–22 mm  │
+   │  5.13 g    │  17.10 g   │   11.97 g     │
+   │            │            │ oval protrusion│
+   │            │            │  Δh ≈ 1–2 mm  │
+   └──────────────────────────────────────────┘
+   Height: ~9 mm     Full width: ~44 mm (r_o ≈ 22 mm)
+
+Contact face detail:
+   Wing slope: θ_wing ≈ 20–25° from horizontal
+   Oval protrusion peak: θ_oval ≈ 30–32° from horizontal
+   True Upper Attack threshold: θ ≥ 45° (NOT reached)
+   → Resulting mode: Upper Smash (smash-dominant + partial lift)
+```
+
+**Moment of Inertia**
+
+```
+Three-zone annular disk model (C₃ symmetry, mass conserved):
+
+  m_total = 34.2 g = 0.0342 kg
+
+  Zone 1 — Hub (bolt hole region):
+    mass fraction 15% → m₁ = 0.00513 kg
+    r_i = 3 mm = 0.003 m,  r_o = 8 mm = 0.008 m
+    I₁ = ½ × 0.00513 × ((0.003)² + (0.008)²)
+       = ½ × 0.00513 × (9×10⁻⁶ + 64×10⁻⁶)
+       = ½ × 0.00513 × 73×10⁻⁶                = 1.87×10⁻⁷ kg·m²
+
+  Zone 2 — Inner wing body:
+    mass fraction 50% → m₂ = 0.01710 kg
+    r_i = 8 mm = 0.008 m,  r_o = 17 mm = 0.017 m
+    I₂ = ½ × 0.01710 × ((0.008)² + (0.017)²)
+       = ½ × 0.01710 × (64×10⁻⁶ + 289×10⁻⁶)
+       = ½ × 0.01710 × 353×10⁻⁶                = 3.02×10⁻⁶ kg·m²
+
+  Zone 3 — Outer wing + oval protrusions:
+    mass fraction 35% → m₃ = 0.01197 kg
+    r_i = 17 mm = 0.017 m,  r_o = 22 mm = 0.022 m
+    I₃ = ½ × 0.01197 × ((0.017)² + (0.022)²)
+       = ½ × 0.01197 × (289×10⁻⁶ + 484×10⁻⁶)
+       = ½ × 0.01197 × 773×10⁻⁶                = 4.63×10⁻⁶ kg·m²
+
+  I_Spiral = I₁ + I₂ + I₃ = 1.87×10⁻⁷ + 3.02×10⁻⁶ + 4.63×10⁻⁶ = 7.84×10⁻⁶ kg·m²
+
+  Specific inertia I/m = 7.84×10⁻⁶ / 0.0342                    = 2.29×10⁻⁴ m²
+
+  Peer comparison (same zone model):
+    Storm (30.4 g, ~43 mm, three wings):
+      I_Storm = 6.84×10⁻⁶ kg·m²     I/m = 2.25×10⁻⁴ m²
+    Spiral vs Storm:
+      ΔI = +1.00×10⁻⁶ kg·m²  (+14.6%)   Δ(I/m) = +1.8%
+    Galaxy (33.8 g, ~44 mm):
+      I_Galaxy ≈ 7.75×10⁻⁶ kg·m²  (very close — same width class, 0.4 g lighter)
+    Beat (43.6 g, 50 mm wide):
+      I_Beat ≈ 13.2×10⁻⁶ kg·m²  (+68% over Spiral — mass + width dominant)
+```
+
+**Upper Smash Contact Mechanics**
+
+```
+Upper Smash = horizontal impulse (smash) + partial vertical impulse (lift).
+Contact face angle φ measured from the radial (horizontal) plane.
+
+  At the wing slope (θ_wing ≈ 22°):
+    smash fraction  = cos(22°) = 0.927   (93% of impulse horizontal)
+    upper fraction  = sin(22°) = 0.375   (37% of impulse vertical lift)
+
+  At the oval protrusion peak (θ_oval ≈ 32°):
+    smash fraction  = cos(32°) = 0.848   (85% horizontal)
+    upper fraction  = sin(32°) = 0.530   (53% vertical lift)
+
+  For reference — true Upper Attack wheels (e.g. TH170 combos):
+    Contact angle φ_upper ≈ 60–70°
+    upper fraction = sin(65°) = 0.906   (91% vertical — lifts opponent off floor)
+
+  Diagnosis: Spiral's oval protrusion raises φ from ~22° to ~32°, crossing into
+  Upper Smash territory (30–45°) but not reaching pure Upper Attack (>45°).
+  This explains why testing found no genuine Upper Attack but confirmed Upper Smash.
+
+  Wing gap physics:
+    Three wings create three gaps of ~15° each (120° period − wing span).
+    During contact, the gap allows the opponent's tip/track to briefly dip into
+    the sub-wheel zone → follow-up hit from next wing at slightly different height.
+    At ω = 150 rad/s:
+      Wing contact frequency = 3 × (ω / 2π) = 3 × 23.9 = 71.6 Hz
+      Inter-wing gap time = (15°/360°) / 23.9 Hz              = 1.74 ms
+```
+
+**System Inertia Fraction**
+
+```
+Standard stock combo MF Spiral Capricorn 90MF:
+  Spiral FW:           34.2 g → I = 7.84×10⁻⁶ kg·m²
+  Capricorn CW (2.9 g): r_i=12mm, r_o=22mm
+    I_CW = ½ × 0.0029 × (1.44×10⁻⁴ + 4.84×10⁻⁴) = 9.11×10⁻⁷ kg·m²
+  90 Track (0.90 g):   r_i=5mm, r_o=10mm
+    I_tr = ½ × 0.00090 × (25×10⁻⁶ + 100×10⁻⁶) = 5.63×10⁻⁸ kg·m²
+  MF tip (~0.70 g, metal):  r_i=2mm, r_o=5mm
+    I_tip = ½ × 0.00070 × (4×10⁻⁶ + 25×10⁻⁶) = 1.02×10⁻⁸ kg·m²
+
+  I_system = 7.84×10⁻⁶ + 0.911×10⁻⁶ + 0.056×10⁻⁶ + 0.010×10⁻⁶
+           = 8.82×10⁻⁶ kg·m²
+
+  Spiral fraction = 7.84 / 8.82                               = 88.9%
+  → Spiral dominates the system's angular momentum, as expected for a heavy Wheel.
+
+  Recommended combo (MF Spiral Tempo/Horogium 90MF):
+    Pisces CW (2.7 g): I_Pisces ≈ 8.36×10⁻⁷ kg·m²  (slightly less than Capricorn)
+    Why Pisces/Horogium: small body exposes more of Spiral's metal face →
+    higher effective contact percentage; "slopes enhance Screw contact" [WBO glossary].
+    Capricorn is also small+angular, similar exposure → both are correct choices.
+```
+
+**Spin Decay — MF (Metal Flat) Tip**
+
+```
+MF tip: metal flat disc, μ_k ≈ 0.12 (metal on ABS stadium floor, CS constants table)
+Contact width ≈ 6 mm radius
+
+  Friction torque: τ = μ_k × m_total × g × r_contact
+                     = 0.12 × 0.0342 × 9.81 × 0.006
+                     = 2.42×10⁻⁴ N·m
+
+  Spin decay: dω/dt = τ / I_system = 2.42×10⁻⁴ / 8.82×10⁻⁶  = 27.4 rad/s²
+    (vs plastic XF: μ=0.17 → dω/dt = 0.17/0.12 × 27.4 = 38.8 rad/s²)
+    MF decays 29% slower than XF — confirms wiki: "more speed due to less friction"
+
+  Time to reach ω = 50 rad/s (fight-ender threshold) from ω₀ = 150 rad/s:
+    Δt = 100 / 27.4                                            = 3.65 s (no contact)
+
+  MF tip advantage for Spiral:
+    Slower decay allows Spiral to maintain contact-speed window for Upper Smash longer.
+    XF plastic would decay to the same spin in 2.58 s, cutting the attack window by ~1 s.
+    Metal contact also preserves the sliding-shoot pattern — key for diagonal launch attacks.
+```
+
+**TypeScript model**
+
+```typescript
+function spiralInertia(m_kg: number, r_hub_o_mm: number, r_body_i_mm: number,
+                        r_body_o_mm: number, r_wing_o_mm: number,
+                        f_hub: number, f_body: number, f_wing: number): number {
+  const toM = (mm: number) => mm / 1000;
+  const zone = (m: number, ri: number, ro: number) =>
+    0.5 * m * (toM(ri) ** 2 + toM(ro) ** 2);
+  return zone(m_kg * f_hub, 3, r_hub_o_mm) +
+         zone(m_kg * f_body, r_body_i_mm, r_body_o_mm) +
+         zone(m_kg * f_wing, r_wing_o_mm - 5, r_wing_o_mm);
+}
+function spiralUpperSmash(theta_wing_deg: number, theta_oval_deg: number): {
+  smash_wing: number; upper_wing: number; smash_oval: number; upper_oval: number;
+  mode: string;
+} {
+  const tw = theta_wing_deg * Math.PI / 180;
+  const to = theta_oval_deg * Math.PI / 180;
+  const smashW = Math.cos(tw); const upperW = Math.sin(tw);
+  const smashO = Math.cos(to); const upperO = Math.sin(to);
+  const mode = to >= Math.PI / 4 ? "Upper Attack" : upperO >= 0.45 ? "Upper Smash" : "Pure Smash";
+  return { smash_wing: smashW, upper_wing: upperW, smash_oval: smashO, upper_oval: upperO, mode };
+}
+function spiralSpinDecay(I_system: number, m_total_kg: number, mu: number, r_contact_mm: number): number {
+  const tau = mu * m_total_kg * 9.81 * (r_contact_mm / 1000);
+  return tau / I_system;
+}
+function spiralSystemFraction(I_wheel: number, I_system: number): number {
+  return I_wheel / I_system;
+}
+
+// spiralInertia(0.0342, 8, 8, 17, 22, 0.15, 0.50, 0.35)    → 7.84×10⁻⁶ kg·m²
+// spiralUpperSmash(22, 32)
+//   → { smash_wing: 0.927, upper_wing: 0.375, smash_oval: 0.848, upper_oval: 0.530, mode: "Upper Smash" }
+//   → oval raises contact from 22° slope to 32° — upper fraction doubles, stays below Upper Attack threshold
+// spiralSpinDecay(8.82e-6, 0.0342, 0.12, 6)                 → 27.4 rad/s²  (MF tip, 29% slower than XF)
+// spiralSystemFraction(7.84e-6, 8.82e-6)                    → 0.889  (88.9% — Wheel dominates system I)
+```
+
+---
+
 ## Case 353i — Clear Wheel: Serpent (2.9 g)
 
 > **Stock combos:** Poison Serpent SW145SD · Earth Serpent 130WD · Burn Serpent (various)
@@ -10129,3 +10334,1663 @@ function serpentContribution(I_serpent: number, I_wheel: number): number {
 // serpentInertia(2.9, 10, 22)                     → 8.48×10⁻⁷ kg·m²
 // serpentContribution(8.48e-7, 9.32e-6)           → 8.34%  (effective C₄ via paired Celtic knot)
 ```
+
+---
+
+## Case 353k — Chrome Wheel: Ifraid (51.26 g)
+
+> **Stock combos:** Samurai Ifraid W145CF (BBG-01, Zyro Kurogane protagonist bey) · Saramanda Ifraid W145CF (top Ifraid Synchrome attack build)
+> **System:** ZeroG Synchrome · **Series:** Beyblade: Shogun Steel / Zero-G · **Type:** Attack (Warrior Wheel class)
+> **Spin Direction:** Right · **Image refs:** Samifraid1.jpg · SaramandaIfraid_Top.jpg · SaramandaIfraid_Bottom.jpg
+
+**Thesis.** Ifraid is the **heaviest Chrome Wheel in the entire ZeroG Synchrome lineup** at 51.26 g [FACT — WBO wiki, parts glossary cross-verified], fully 5.66 g heavier than its nearest competitor Begirados (45.6 g). Three extended attack wings with jagged contact faces produce strong smash contact at outer radii up to ~25 mm. In any Synchrome assembly Ifraid's mass alone dominates angular momentum — it is virtually always the angular momentum leader regardless of partner wheel selection. Combined with CF Circle Flat tip for aggressive stamina-draining contact, Ifraid is the definitive ZeroG Attack Chrome Wheel.
+
+**Part Geometry**
+
+```
+IFRAID CHROME WHEEL — ZeroG Synchrome Attack Warrior Wheel
+
+  Top view (schematic):
+       W              Three wings (W) extend radially,
+     / | \            curving outward with jagged leading edges.
+   /   |   \          Contact faces are angled ~30° → smash dominant.
+  |    O    |         O = centre boss (Synchrome axle mount)
+   \   |   /          Each wing reaches r ≈ 24–25 mm at tip.
+     \ | /
+       W
+
+  Side view:
+  ┌──────────────────────────────┐
+  │  ███ boss (8–10 mm) ███      │  h ≈ 5 mm (typical Chrome Wheel)
+  │  ▓▓▓ inner body ▓▓▓▓▓▓▓▓▓   │
+  │  ░░░ wing protrusions ░░░░░░ │  r_outer at wing tip ≈ 24–25 mm
+  └──────────────────────────────┘
+```
+
+**Mass and Inertia**
+
+```
+Ifraid mass [FACT]: 51.26 g = 0.05126 kg
+ZeroG standard Chrome Wheel geometry:
+  r_outer wing tip ≈ 25 mm = 0.025 m
+  r_inner boss     ≈  5 mm = 0.005 m
+
+3-zone annular model:
+  Zone 1 — hub  (15%,  r_i= 5mm, r_o=10mm):
+    I₁ = ½ × (0.05126 × 0.15) × ((0.005)² + (0.010)²)
+       = ½ × 0.007689 × 1.25×10⁻⁴                     = 4.81×10⁻⁷ kg·m²
+
+  Zone 2 — body (50%,  r_i=10mm, r_o=18mm):
+    I₂ = ½ × (0.05126 × 0.50) × ((0.010)² + (0.018)²)
+       = ½ × 0.02563 × 4.24×10⁻⁴                      = 5.43×10⁻⁶ kg·m²
+
+  Zone 3 — wings (35%, r_i=20mm, r_o=25mm):
+    I₃ = ½ × (0.05126 × 0.35) × ((0.020)² + (0.025)²)
+       = ½ × 0.017941 × 1.025×10⁻³                    = 9.19×10⁻⁶ kg·m²
+
+  I_Ifraid = 4.81×10⁻⁷ + 5.43×10⁻⁶ + 9.19×10⁻⁶      = 1.515×10⁻⁵ kg·m²
+
+Contact angle at wing face (jagged, ~30° slope):
+  smash component:  cos(30°) = 0.866
+  upper component:  sin(30°) = 0.500   → Upper Smash regime
+
+Synchrome inertia leader analysis:
+  Ifraid (51.26g) vs Begirados (45.6g): +12.4% mass → ~+18% inertia advantage
+  Ifraid (51.26g) vs Dragooon  (42.62g): +20.3% mass → ~+30% inertia advantage
+  Ifraid always wins angular momentum in any right-spin Synchrome stack.
+
+Spin decay (CF Circle Flat disc):
+  r_contact ≈ 16.9mm (mid-disc); μ_k = 0.085 (plastic flat)
+  τ = 0.085 × (m_total) × 9.81 × 0.0169
+  System mass (Saramanda Ifraid W145CF) ≈ 51.26 + 25.35 + 1.5 + 2.5 = 80.6 g
+  τ = 0.085 × 0.0806 × 9.81 × 0.0169 = 1.134×10⁻³ N·m
+  System I ≈ 1.515×10⁻⁵ + 5.79×10⁻⁶ + 1.35×10⁻⁷ + 3.78×10⁻⁷ = 2.176×10⁻⁵ kg·m²
+  dω/dt = 1.134×10⁻³ / 2.176×10⁻⁵ = 52.1 rad/s²
+  [Fastest-decaying ZeroG attack build due to CF disc contact perimeter]
+```
+
+**TypeScript model**
+
+```typescript
+function ifraid3Zone(m_g: number): number {
+  const m = m_g / 1000;
+  const z = (frac: number, ri: number, ro: number) =>
+    0.5 * (m * frac) * (Math.pow(ri / 1000, 2) + Math.pow(ro / 1000, 2));
+  return z(0.15, 5, 10) + z(0.50, 10, 18) + z(0.35, 20, 25);
+}
+function ifraidSynchromeAdvantage(I_Ifraid: number, I_partner: number): number {
+  return I_Ifraid / (I_Ifraid + I_partner);   // Ifraid fraction in total Synchrome I
+}
+
+// ifraid3Zone(51.26)                                   → 1.515×10⁻⁵ kg·m²
+// ifraidSynchromeAdvantage(1.515e-5, 5.79e-6)          → 0.723  (72.3% — Ifraid dominates Synchrome I)
+```
+
+---
+
+## Case 353l — Chrome Wheel: Begirados (45.6 g)
+
+> **Stock combos:** Berserker Begirados SR200BWD (BBG-22, Kira Hayama first bey) · Begirados Ifraid attack Synchrome (top partner for Ifraid)
+> **System:** ZeroG Synchrome · **Type:** Balance (heavy defensive profile) · **Spin Direction:** Right
+> **Image refs:** Begirados_Parts.jpg · Begirados_Sketch1-5.jpg · BerserkerBegirados1.jpg
+
+**Thesis.** Begirados is the second-heaviest Chrome Wheel in the ZeroG lineup at 45.6 g [FACT — WBO wiki / parts glossary; linka bey file discrepancy of 30.5 g is incorrect and superseded]. Its design features a large round wheel with hollow spaces and ribs, a Bahamut-like monster head with open jaw, fang, and horn — a balance profile with broad contact geometry and moderate mass. Begirados does not specialize: it wins by sheer mass maintaining angular momentum through contact exchanges, withstanding hits that would destabilize lighter Chrome Wheels.
+
+**Part Geometry**
+
+```
+BEGIRADOS CHROME WHEEL — ZeroG Heavy Balance Warrior Wheel
+
+  Top view:
+    ┌─────────────────────────┐
+    │  ▓▓▓ jaw/horn ▓▓▓       │   Monster head facing outward on one side
+    │  ░░░ hollow ░░░░░        │   Hollow spaces + ribs create weight redistribution
+    │    ○ axle centre ○      │   r_outer ≈ 23–24 mm (wide round profile)
+    │  ░░░ hollow ░░░░░        │   Near-symmetric C₂ despite complex detail
+    └─────────────────────────┘
+
+  Side: thicker at jaw/horn protrusion; slightly tapered at hollow voids
+```
+
+**Mass and Inertia**
+
+```
+Begirados mass [FACT — glossary]: 45.6 g = 0.0456 kg
+  [NOTE: linka bey file cites 30.5 g — this is an error; glossary value is authoritative]
+
+3-zone annular model:
+  Zone 1 — hub   (20%, r_i= 5mm, r_o=10mm):
+    I₁ = ½ × (0.0456 × 0.20) × ((0.005)² + (0.010)²) = 5.70×10⁻⁷ kg·m²
+
+  Zone 2 — body  (45%, r_i=10mm, r_o=18mm):
+    I₂ = ½ × (0.0456 × 0.45) × ((0.010)² + (0.018)²) = 4.35×10⁻⁶ kg·m²
+
+  Zone 3 — outer (35%, r_i=18mm, r_o=24mm):
+    I₃ = ½ × (0.0456 × 0.35) × ((0.018)² + (0.024)²)
+       = ½ × 0.01596 × 9.00×10⁻⁴                     = 7.18×10⁻⁶ kg·m²
+
+  I_Begirados = 5.70×10⁻⁷ + 4.35×10⁻⁶ + 7.18×10⁻⁶   = 1.210×10⁻⁵ kg·m²
+
+Contact angle (broad round profile, 15–18° wall angle):
+  cos(16°) = 0.961 → 96.1% smash; sin(16°) = 0.276 → 27.6% recoil-smash
+  Net: low recoil due to round deflection surface.
+
+Mass comparison (Begirados in Ifraid/Begirados Synchrome):
+  Total Synchrome CW mass = 51.26 + 45.6 = 96.86 g  [heaviest possible right-spin Synchrome]
+  Begirados fraction of total I: 1.210×10⁻⁵ / (1.515×10⁻⁵ + 1.210×10⁻⁵) = 44.4%
+```
+
+**TypeScript model**
+
+```typescript
+function begirados3Zone(m_g: number): number {
+  const m = m_g / 1000;
+  const z = (frac: number, ri: number, ro: number) =>
+    0.5 * (m * frac) * (Math.pow(ri / 1000, 2) + Math.pow(ro / 1000, 2));
+  return z(0.20, 5, 10) + z(0.45, 10, 18) + z(0.35, 18, 24);
+}
+
+// begirados3Zone(45.6)   → 1.210×10⁻⁵ kg·m²
+// NOTE: Use 45.6g (glossary/WBO) — NOT 30.5g (linka bey file discrepancy)
+```
+
+---
+
+## Case 353m — Chrome Wheel: Goreim (21.04 g)
+
+> **Stock combos:** Bandid Goreim F230TB (defense) · Goreim Revizer E230SB (stamina Synchrome) · Goreim Dragooon (left-spin partner)
+> **System:** ZeroG Synchrome · **Type:** Defense · **Spin Direction:** Right
+> **Image refs:** Goreim_Chrome_Wheel.jpg · Bandid_Goreim_Crystal_Wheel_Up_Mode.jpg
+
+**Thesis.** Goreim is a golem-themed Chrome Wheel at 21.04 g [FACT — WBO wiki], placing it near the bottom of the ZeroG Chrome Wheel mass hierarchy. Its compact round defense profile gives it a low-recoil contact surface. Despite being light for a Chrome Wheel, Goreim's value lies in Synchrome partnerships: paired with heavier wheels (Begirados, Dragooon) as the bottom wheel it adds mass without changing the top wheel's attack profile. As a solo chassis it is outclassed defensively by its heavier peers.
+
+**Part Geometry**
+
+```
+GOREIM CHROME WHEEL — ZeroG Compact Defense Warrior Wheel
+
+  Top view:
+    Golem-shaped: squat, broad, rounded profile
+    Low profile protrusions (stone-block texture)
+    r_outer ≈ 21 mm (smaller than standard ~23-24mm wheels)
+    C₄-near symmetry: 4 major structural faces at 90°
+
+  Side: low height, wide base — CoG closer to ground than typical Chrome Wheels
+```
+
+**Mass and Inertia**
+
+```
+Goreim mass [FACT]: 21.04 g = 0.02104 kg
+
+3-zone annular model (compact profile — r_outer = 21mm):
+  Zone 1 — hub   (20%, r_i= 5mm, r_o=10mm):
+    I₁ = ½ × (0.02104 × 0.20) × ((0.005)² + (0.010)²) = 2.63×10⁻⁷ kg·m²
+
+  Zone 2 — body  (50%, r_i=10mm, r_o=16mm):
+    I₂ = ½ × (0.02104 × 0.50) × ((0.010)² + (0.016)²)
+       = ½ × 0.01052 × 3.56×10⁻⁴                     = 1.87×10⁻⁶ kg·m²
+
+  Zone 3 — outer (30%, r_i=16mm, r_o=21mm):
+    I₃ = ½ × (0.02104 × 0.30) × ((0.016)² + (0.021)²)
+       = ½ × 0.006312 × 6.97×10⁻⁴                    = 2.20×10⁻⁶ kg·m²
+
+  I_Goreim = 2.63×10⁻⁷ + 1.87×10⁻⁶ + 2.20×10⁻⁶      = 4.33×10⁻⁶ kg·m²
+
+Goreim as Synchrome bottom partner (paired with Dragooon 42.62g):
+  System I = I_Goreim + I_Dragooon ≈ 4.33×10⁻⁶ + 9.86×10⁻⁶ = 1.42×10⁻⁵ kg·m²
+  Goreim fraction: 30.5%  — mass stabilizer role, not angular momentum contributor
+  Advantage: Goreim's compact geometry reduces snag risk vs. jagged partners
+
+ZeroG slope resistance:
+  Low CoG from compact golem shape + paired 42.62g Dragooon = lower effective tip than solo builds
+  Reduces centrifugal slope-force by ~8% compared to same mass + tall-profile wheel
+```
+
+**TypeScript model**
+
+```typescript
+function goreimInertia(m_g: number): number {
+  const m = m_g / 1000;
+  const z = (frac: number, ri: number, ro: number) =>
+    0.5 * (m * frac) * (Math.pow(ri / 1000, 2) + Math.pow(ro / 1000, 2));
+  return z(0.20, 5, 10) + z(0.50, 10, 16) + z(0.30, 16, 21);
+}
+
+// goreimInertia(21.04)   → 4.33×10⁻⁶ kg·m²  (lowest mass Chrome Wheel in standard ZeroG set)
+```
+
+---
+
+## Case 353n — Chrome Wheel: Saramanda (25.35 g)
+
+> **Stock combos:** Saramanda Ifraid W145CF (top Ifraid Synchrome attack build, Zyro's upgraded combo) · Ronin Saramanda LW160BSF (left-spin attack variant)
+> **System:** ZeroG Synchrome · **Type:** Attack · **Spin Direction:** Right
+> **Image refs:** SaramandaBalro.jpg · SaramandaIfraid_Top.jpg (Ifraid top + Saramanda bottom Synchrome)
+
+**Thesis.** Saramanda is a fire salamander-themed Chrome Wheel at 25.35 g [FACT — WBO wiki], serving as the designated Synchrome partner for Ifraid in the game's top Attack configuration. Its role is pure Attack via the Ifraid Synchrome stack: Saramanda acts as the **bottom wheel** providing structural support while Ifraid (51.26 g, top) dominates the angular momentum and contact face. Saramanda's own attack profile — salamander tail curves with moderate smash faces — is secondary to its function as a mass-adding stable base.
+
+**Part Geometry**
+
+```
+SARAMANDA CHROME WHEEL — ZeroG Attack Warrior Wheel (Ifraid partner)
+
+  Top view:
+    Fire salamander body curves around perimeter
+    Tail creates two main contact lobes at ~180° opposition
+    Moderate protrusions — r_outer ≈ 22 mm
+    C₂ symmetry (opposing tail/head segments)
+
+  Synchrome stack position:
+    [Samurai Crystal Wheel] top
+         ↓
+    [Ifraid Chrome Wheel]   ← primary attack surface + angular momentum
+         ↓
+    [Saramanda Chrome W.]   ← BOTTOM: structural support + mass
+         ↓
+    [W145 Track]
+         ↓
+    [CF Tip]
+```
+
+**Mass and Inertia**
+
+```
+Saramanda mass [FACT]: 25.35 g = 0.02535 kg
+
+3-zone model (r_outer = 22mm, C₂ lobe profile):
+  Zone 1 — hub   (18%, r_i= 5mm, r_o=10mm):
+    I₁ = ½ × (0.02535 × 0.18) × ((0.005)² + (0.010)²) = 2.85×10⁻⁷ kg·m²
+
+  Zone 2 — body  (52%, r_i=10mm, r_o=17mm):
+    I₂ = ½ × (0.02535 × 0.52) × ((0.010)² + (0.017)²)
+       = ½ × 0.013182 × 3.89×10⁻⁴                     = 2.56×10⁻⁶ kg·m²
+
+  Zone 3 — lobes (30%, r_i=17mm, r_o=22mm):
+    I₃ = ½ × (0.02535 × 0.30) × ((0.017)² + (0.022)²)
+       = ½ × 0.007605 × 7.73×10⁻⁴                     = 2.94×10⁻⁶ kg·m²
+
+  I_Saramanda = 2.85×10⁻⁷ + 2.56×10⁻⁶ + 2.94×10⁻⁶    = 5.79×10⁻⁶ kg·m²
+
+Saramanda fraction of Ifraid+Saramanda Synchrome:
+  I_total = 1.515×10⁻⁵ + 5.79×10⁻⁶ = 2.094×10⁻⁵ kg·m²
+  Saramanda fraction = 5.79×10⁻⁶ / 2.094×10⁻⁵ = 27.7%  [supporting role confirmed]
+  Ifraid dominates: 72.3%
+```
+
+**TypeScript model**
+
+```typescript
+function saramandaInertia(m_g: number): number {
+  const m = m_g / 1000;
+  const z = (frac: number, ri: number, ro: number) =>
+    0.5 * (m * frac) * (Math.pow(ri / 1000, 2) + Math.pow(ro / 1000, 2));
+  return z(0.18, 5, 10) + z(0.52, 10, 17) + z(0.30, 17, 22);
+}
+
+// saramandaInertia(25.35)   → 5.79×10⁻⁶ kg·m²
+// In Ifraid+Saramanda Synchrome: Saramanda contributes 27.7% of system I (support role)
+```
+
+---
+
+## Case 353o — Chrome Wheel: Orojya (25.94 g)
+
+> **Stock combos:** Pirate Orojya (various Pirate-faction builds) · Orojya Revizer (defense Synchrome)
+> **System:** ZeroG Synchrome · **Type:** Stamina/Balance · **Spin Direction:** Right
+
+**Thesis.** Orojya is a pirate-snake-themed Chrome Wheel at 25.94 g [FACT — WBO wiki], the heaviest of the lighter-tier ZeroG wheels. Its serpentine design produces a curved outer perimeter with moderate smash contact. Slightly heavier than Saramanda (25.35 g), Orojya falls in a similar weight class — flexible Synchrome partner without specialization. The pirate-snake motif (Orochi: the eight-headed serpent) gives it thematic association with the 500-track Pirate builds.
+
+**Mass and Inertia**
+
+```
+Orojya mass [FACT]: 25.94 g = 0.02594 kg
+
+3-zone model (r_outer = 22mm, snake-curve C₂ profile):
+  I₁ = ½ × (0.02594 × 0.18) × ((0.005)² + (0.010)²) = 2.92×10⁻⁷ kg·m²
+  I₂ = ½ × (0.02594 × 0.52) × ((0.010)² + (0.017)²) = 2.62×10⁻⁶ kg·m²
+  I₃ = ½ × (0.02594 × 0.30) × ((0.017)² + (0.022)²) = 3.01×10⁻⁶ kg·m²
+
+  I_Orojya = 5.92×10⁻⁶ kg·m²
+
+Near-identical to Saramanda (5.79×10⁻⁶) — exchangeable in Synchrome builds.
+Orojya inertia advantage over Saramanda: +2.2% (negligible in practice).
+```
+
+**TypeScript model**
+
+```typescript
+function orojyaInertia(m_g: number): number {
+  const m = m_g / 1000;
+  const z = (frac: number, ri: number, ro: number) =>
+    0.5 * (m * frac) * (Math.pow(ri / 1000, 2) + Math.pow(ro / 1000, 2));
+  return z(0.18, 5, 10) + z(0.52, 10, 17) + z(0.30, 17, 22);
+}
+
+// orojyaInertia(25.94)   → 5.92×10⁻⁶ kg·m²  (≈ Saramanda, interchangeable tier)
+```
+
+---
+
+## Case 353p — Chrome Wheel: Girago (29.8 g)
+
+> **Stock combos:** Shinobi Girago (Ninja-faction builds) · Girago Ifraid attack Synchrome
+> **System:** ZeroG Synchrome · **Type:** Attack · **Spin Direction:** Right
+
+**Thesis.** Girago is a giraffe-motif Attack Chrome Wheel at 29.8 g [FACT — WBO wiki]. Its angular protrusions produce smash-dominant contact — the giraffe neck silhouette creates two major contact points at outer radii. At 29.8 g it sits in the mid-heavy tier alongside Wyvang (30.6 g) and Genbull (30.4 g), making it suitable as a solo attack wheel or as a secondary Synchrome partner where its angular shape adds smash without excess recoil.
+
+**Mass and Inertia**
+
+```
+Girago mass [FACT]: 29.8 g = 0.0298 kg
+
+3-zone model (r_outer = 23mm, angled giraffe-neck protrusions):
+  Zone 1 — hub   (18%, r_i= 5mm, r_o=10mm):
+    I₁ = ½ × (0.0298 × 0.18) × ((0.005)² + (0.010)²) = 3.35×10⁻⁷ kg·m²
+
+  Zone 2 — body  (50%, r_i=10mm, r_o=17mm):
+    I₂ = ½ × (0.0298 × 0.50) × ((0.010)² + (0.017)²) = 2.90×10⁻⁶ kg·m²
+
+  Zone 3 — protrusions (32%, r_i=18mm, r_o=23mm):
+    I₃ = ½ × (0.0298 × 0.32) × ((0.018)² + (0.023)²)
+       = ½ × 0.009536 × 8.53×10⁻⁴                    = 4.07×10⁻⁶ kg·m²
+
+  I_Girago = 3.35×10⁻⁷ + 2.90×10⁻⁶ + 4.07×10⁻⁶      = 7.30×10⁻⁶ kg·m²
+
+Contact profile (angled protrusions, θ ≈ 25°):
+  smash = cos(25°) = 0.906; upper = sin(25°) = 0.423  → Smash-Upper blend
+```
+
+**TypeScript model**
+
+```typescript
+function giragoInertia(m_g: number): number {
+  const m = m_g / 1000;
+  const z = (frac: number, ri: number, ro: number) =>
+    0.5 * (m * frac) * (Math.pow(ri / 1000, 2) + Math.pow(ro / 1000, 2));
+  return z(0.18, 5, 10) + z(0.50, 10, 17) + z(0.32, 18, 23);
+}
+
+// giragoInertia(29.8)   → 7.30×10⁻⁶ kg·m²
+```
+
+---
+
+## Case 353q — Chrome Wheel: Balro (29.4 g)
+
+> **Stock combos:** Various SS-era attack builds · Balro Ifraid attack Synchrome
+> **System:** ZeroG Synchrome · **Type:** Attack · **Spin Direction:** Right
+
+**Thesis.** Balro is a Balrog-inspired Attack Chrome Wheel at 29.4 g [FACT — WBO wiki], near-identical in mass to Girago (29.8 g). The Balrog (or Balro) motif implies a demon/beast design with prominent attack protrusions. At this mass tier Balro, Girago, and Balro are effectively interchangeable as Synchrome attack partners — the 0.4 g difference produces less than 0.5% inertia variation.
+
+**Mass and Inertia**
+
+```
+Balro mass [FACT]: 29.4 g = 0.0294 kg
+
+3-zone model (r_outer = 23mm, demon-claw attack protrusions):
+  I₁ = ½ × (0.0294 × 0.18) × ((0.005)² + (0.010)²) = 3.31×10⁻⁷ kg·m²
+  I₂ = ½ × (0.0294 × 0.50) × ((0.010)² + (0.017)²) = 2.86×10⁻⁶ kg·m²
+  I₃ = ½ × (0.0294 × 0.32) × ((0.018)² + (0.023)²) = 4.01×10⁻⁶ kg·m²
+
+  I_Balro = 7.20×10⁻⁶ kg·m²
+
+Balro vs Girago:
+  Mass diff: 29.4 vs 29.8 g = −1.3%
+  Inertia diff: 7.20×10⁻⁶ vs 7.30×10⁻⁶ = −1.4%
+  → Functionally identical tier; part selection is cosmetic at this mass range.
+```
+
+**TypeScript model**
+
+```typescript
+function balroInertia(m_g: number): number {
+  const m = m_g / 1000;
+  const z = (frac: number, ri: number, ro: number) =>
+    0.5 * (m * frac) * (Math.pow(ri / 1000, 2) + Math.pow(ro / 1000, 2));
+  return z(0.18, 5, 10) + z(0.50, 10, 17) + z(0.32, 18, 23);
+}
+
+// balroInertia(29.4)   → 7.20×10⁻⁶ kg·m²  (−1.4% vs Girago; same competitive tier)
+```
+
+---
+
+## Case 353r — Chrome Wheel: Genbull (30.4 g)
+
+> **Stock combos:** Bandid Genbull F230TB (BBG-19, defense) · Genbull Revizer (defense Synchrome) · Goreim Genbull (heavy defense stack)
+> **System:** ZeroG Synchrome · **Type:** Defense · **Spin Direction:** Right
+> **Image refs:** (from linka bandid-genbull.md) — bull-horned design
+
+**Thesis.** Genbull is a bull-themed Defense Chrome Wheel at 30.4 g [FACT — WBO wiki]. Despite having the "Bandid" (bandit) faction alignment, Genbull's round bull design acts as a defense chassis — the broad horned profile deflects rather than smashes. At 30.4 g it is among the heavier Chrome Wheels in the defense tier, giving it competitive stamina-retention when paired with the F230 (Free 230) track's rigid lock and TB (Tornado Ball) tip's wind aura.
+
+**Mass and Inertia**
+
+```
+Genbull mass [FACT]: 30.4 g = 0.0304 kg
+
+3-zone model (r_outer = 22mm, bull-horn round profile):
+  Zone 1 — hub   (20%, r_i= 5mm, r_o=10mm):
+    I₁ = ½ × (0.0304 × 0.20) × ((0.005)² + (0.010)²) = 3.80×10⁻⁷ kg·m²
+
+  Zone 2 — body  (50%, r_i=10mm, r_o=17mm):
+    I₂ = ½ × (0.0304 × 0.50) × ((0.010)² + (0.017)²) = 2.96×10⁻⁶ kg·m²
+
+  Zone 3 — horns (30%, r_i=17mm, r_o=22mm):
+    I₃ = ½ × (0.0304 × 0.30) × ((0.017)² + (0.022)²)
+       = ½ × 0.009120 × 7.73×10⁻⁴                    = 3.52×10⁻⁶ kg·m²
+
+  I_Genbull = 3.80×10⁻⁷ + 2.96×10⁻⁶ + 3.52×10⁻⁶     = 6.86×10⁻⁶ kg·m²
+
+F230 TB spin decay:
+  TB (Twin Ball) tip: wider ball pair, μ_k ≈ 0.090 (soft ball contact)
+  r_contact ≈ 8.0mm
+  τ = 0.090 × m_total × 9.81 × 0.008
+  With Genbull + 2nd wheel (partner) ≈ 30.4 + 21.04 (Goreim) + F230(~2g) + TB(~1g) = 54.4g
+  τ = 0.090 × 0.0544 × 9.81 × 0.008 = 3.84×10⁻⁴ N·m
+  System I ≈ 6.86×10⁻⁶ + 4.33×10⁻⁶ = 1.12×10⁻⁵ kg·m²
+  dω/dt = 3.84×10⁻⁴ / 1.12×10⁻⁵ = 34.3 rad/s²  [slower decay than CF; defense-stamina build]
+```
+
+**TypeScript model**
+
+```typescript
+function genbullInertia(m_g: number): number {
+  const m = m_g / 1000;
+  const z = (frac: number, ri: number, ro: number) =>
+    0.5 * (m * frac) * (Math.pow(ri / 1000, 2) + Math.pow(ro / 1000, 2));
+  return z(0.20, 5, 10) + z(0.50, 10, 17) + z(0.30, 17, 22);
+}
+
+// genbullInertia(30.4)   → 6.86×10⁻⁶ kg·m²
+```
+
+---
+
+## Case 353s — Chrome Wheel: Wyvang (30.6 g)
+
+> **Stock combos:** Wyvang attack Synchrome builds · Wyvang Genbull (mixed attack/defense)
+> **System:** ZeroG Synchrome · **Type:** Attack · **Spin Direction:** Right
+> **Image refs:** WyvangChromeWheelrender.jpg
+
+**Thesis.** Wyvang is a wyvern-themed Attack Chrome Wheel at 30.6 g [FACT — WBO wiki], the heaviest of the mid-tier attack wheels and tied as the second-heaviest overall non-top-5 Chrome Wheel. The wyvern wing silhouette creates angular attack protrusions with smash-dominant geometry. At 30.6 g Wyvang occupies an optimal attack weight: heavy enough for angular momentum endurance, light enough that the wing protrusions produce sharp attack vectors without the recoil penalty of heavier wheels like Begirados.
+
+**Mass and Inertia**
+
+```
+Wyvang mass [FACT]: 30.6 g = 0.0306 kg
+
+3-zone model (r_outer = 23mm, wyvern-wing angular protrusions):
+  Zone 1 — hub    (18%, r_i= 5mm, r_o=10mm):
+    I₁ = ½ × (0.0306 × 0.18) × ((0.005)² + (0.010)²) = 3.44×10⁻⁷ kg·m²
+
+  Zone 2 — body   (50%, r_i=10mm, r_o=17mm):
+    I₂ = ½ × (0.0306 × 0.50) × ((0.010)² + (0.017)²) = 2.97×10⁻⁶ kg·m²
+
+  Zone 3 — wings  (32%, r_i=18mm, r_o=23mm):
+    I₃ = ½ × (0.0306 × 0.32) × ((0.018)² + (0.023)²)
+       = ½ × 0.009792 × 8.53×10⁻⁴                    = 4.18×10⁻⁶ kg·m²
+
+  I_Wyvang = 3.44×10⁻⁷ + 2.97×10⁻⁶ + 4.18×10⁻⁶      = 7.49×10⁻⁶ kg·m²
+
+Contact angle (wyvern wing face, θ ≈ 28°):
+  smash = cos(28°) = 0.883; upper = sin(28°) = 0.469  → Smash-dominant with upper component
+
+Wyvang vs Girago comparison:
+  Wyvang 30.6g: I = 7.49×10⁻⁶ (+2.6% vs Girago 7.30×10⁻⁶)
+  Wing geometry: Wyvang wings have broader span → higher outer mass fraction (32% vs 32%)
+  → Marginally better angular momentum; wing span gives slightly better contact reach
+```
+
+**TypeScript model**
+
+```typescript
+function wyvangInertia(m_g: number): number {
+  const m = m_g / 1000;
+  const z = (frac: number, ri: number, ro: number) =>
+    0.5 * (m * frac) * (Math.pow(ri / 1000, 2) + Math.pow(ro / 1000, 2));
+  return z(0.18, 5, 10) + z(0.50, 10, 17) + z(0.32, 18, 23);
+}
+
+// wyvangInertia(30.6)   → 7.49×10⁻⁶ kg·m²  (top of mid-tier attack Chrome Wheels)
+```
+
+---
+
+## Case 353t — Chrome Wheel: Leviathan (27.31 g)
+
+> **Stock combos:** Guardian Leviathan 160SB (BBG-26, Kite's bey) · Pirate Leviathan 160D · Goreim Leviathan E230SB (stamina Synchrome)
+> **System:** ZeroG Synchrome · **Type:** Defense · **Spin Direction:** Right
+> **Image refs:** GuardianRevizer series (Revizer = same mass tier; Leviathan in Guardian_revizer files)
+
+**Thesis.** Leviathan is a sea-serpent-themed Defense Chrome Wheel at 27.31 g [FACT — from pirate-leviathan.md linka doc, confirmed]. Its revolver-pattern contact geometry distributes collision force around the circumference rather than concentrating it at a single contact point — the ideal defense mechanism. At 27.31 g Leviathan sits between Orojya (25.94 g) and Genbull (30.4 g), providing mid-tier mass with the smoothest contact profile in the ZeroG lineup.
+
+**Mass and Inertia**
+
+```
+Leviathan mass [FACT — linka doc]: 27.31 g = 0.02731 kg
+
+3-zone model (r_outer = 22mm, revolver-pattern smooth):
+  Zone 1 — hub   (20%, r_i= 5mm, r_o=10mm):
+    I₁ = ½ × (0.02731 × 0.20) × ((0.005)² + (0.010)²) = 3.41×10⁻⁷ kg·m²
+
+  Zone 2 — body  (50%, r_i=10mm, r_o=17mm):
+    I₂ = ½ × (0.02731 × 0.50) × ((0.010)² + (0.017)²) = 2.66×10⁻⁶ kg·m²
+
+  Zone 3 — revolver ring (30%, r_i=17mm, r_o=22mm):
+    I₃ = ½ × (0.02731 × 0.30) × ((0.017)² + (0.022)²)
+       = ½ × 0.008193 × 7.73×10⁻⁴                    = 3.17×10⁻⁶ kg·m²
+
+  I_Leviathan = 3.41×10⁻⁷ + 2.66×10⁻⁶ + 3.17×10⁻⁶   = 6.17×10⁻⁶ kg·m²
+
+Contact angle (revolver-pattern, smooth deflection θ ≈ 12°):
+  smash = cos(12°) = 0.978; upper = sin(12°) = 0.208
+  Recoil coefficient: lowest in ZeroG lineup — revolver groove redirects lateral forces tangentially
+  Effective recoil = sin(θ_groove) × sin(θ_contact) ≈ 0.208 × 0.15 = 0.031
+  → 96.9% of contact energy goes into spin decay, not bey displacement [defense ideal]
+```
+
+**TypeScript model**
+
+```typescript
+function leviathanInertia(m_g: number): number {
+  const m = m_g / 1000;
+  const z = (frac: number, ri: number, ro: number) =>
+    0.5 * (m * frac) * (Math.pow(ri / 1000, 2) + Math.pow(ro / 1000, 2));
+  return z(0.20, 5, 10) + z(0.50, 10, 17) + z(0.30, 17, 22);
+}
+function leviathanRevolverRecoil(theta_groove_deg: number, theta_contact_deg: number): number {
+  return Math.sin(theta_groove_deg * Math.PI/180) * Math.sin(theta_contact_deg * Math.PI/180);
+}
+
+// leviathanInertia(27.31)                → 6.17×10⁻⁶ kg·m²
+// leviathanRevolverRecoil(12, 15)        → 0.031  (3.1% effective recoil — lowest in ZeroG)
+```
+
+---
+
+## Case 353u — Spin Track: W145 (Wing 145) — ZeroG
+
+> **Stock combos:** Samurai Ifraid W145CF (BBG-01, Zyro protagonist) · Saramanda Ifraid W145CF (top attack Synchrome)
+> **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Wing skirt
+
+**Thesis.** W145 (Wing 145) is a 14.5 mm height Spin Track featuring a wide wing skirt that extends the bey's effective ground-clearance perimeter. [FACT — linka glossary: ~1.5 g, 14.5 mm height, ~24.0 mm wide with wing protrusions.] The wings were intended to produce downforce during spin, similar to DF145, but practical testing showed negligible aerodynamic effect at typical spin speeds. W145's primary competitive role is its moderate height — shorter than 160/230 tracks but taller than 85–125 tracks, placing contact at a midpoint that suits Attack builds against standard-height opponents.
+
+**Spin Track Geometry**
+
+```
+W145 WING 145 — Side View
+
+           ┌──────────────────────┐   ← Chrome Wheel mounting surface
+           │  chrome wheel boss   │
+    ┌──────┴──────────────────────┴──────┐
+    │  ░░░░░░ wing protrusions ░░░░░░░░░ │  ← wings extend to ~24mm
+    │        (both sides, swept back)    │
+    │   ┃                    ┃           │
+    │   ┃    TRACK BODY      ┃           │  height = 14.5mm
+    │   ┃    (hexagonal)     ┃           │
+    │   ┃                    ┃           │
+    └───┴────────────────────┴───────────┘
+           ← Tip mounts here →
+```
+
+**Inertia**
+
+```
+W145 mass [INFERRED from glossary]: ~1.5 g = 0.0015 kg
+Geometry: central hex tube (r_tube ≈ 6mm) + wing protrusions (r_wing ≈ 12mm outer)
+
+I_tube  = ½ × (0.0015 × 0.70) × ((0.006)² + (0.004)²)
+        = ½ × 0.00105 × 5.20×10⁻⁵                   = 2.73×10⁻⁸ kg·m²
+
+I_wings = ½ × (0.0015 × 0.30) × ((0.010)² + (0.012)²)
+        = ½ × 0.00045 × 2.44×10⁻⁴                   = 5.49×10⁻⁸ kg·m²
+
+I_W145 ≈ 8.22×10⁻⁸ kg·m²
+
+System contribution (in Ifraid+Saramanda W145CF):
+  W145 fraction = 8.22×10⁻⁸ / 2.176×10⁻⁵ = 0.38%  [track is negligible in ZeroG systems]
+
+Height analysis:
+  14.5 mm height places Chrome Wheel body at ~8–10 mm above stadium floor
+  Optimal for lateral attack vs. 145-height right-spin opponents
+  Lower than 160/230 → vulnerable to upper-attack from tall-track builds
+```
+
+**TypeScript model**
+
+```typescript
+function w145Inertia(m_g: number): number {
+  const m = m_g / 1000;
+  const tube  = 0.5 * (m * 0.70) * (Math.pow(0.006, 2) + Math.pow(0.004, 2));
+  const wings = 0.5 * (m * 0.30) * (Math.pow(0.010, 2) + Math.pow(0.012, 2));
+  return tube + wings;
+}
+
+// w145Inertia(1.5)   → 8.22×10⁻⁸ kg·m²  (0.38% of Ifraid+Saramanda W145CF system I)
+```
+
+---
+
+## Case 353v — Spin Track: LW160 (Left Wing 160) — ZeroG
+
+> **Stock combos:** Ronin Dragoon LW160BSF (BBG-16, Sakyo Kurayami left-spin bey) · Samurai Pegasis W105R2F (different; LW160 dedicated to Dragoon builds)
+> **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Left-Wing skirt
+
+**Thesis.** LW160 (Left Wing 160) is structurally near-identical to W145 but at 16.0 mm height and with left-facing wing protrusions. [FACT — linka ronin-dragoon.md: ~1.6 g, 16.0 mm height, ~23.0 mm outer, wing protrusions facing left.] The left-orientation of the wings was designed to harmonize with the left-spin Dragoon Chrome Wheel, producing a theoretical downforce interaction on the stadium floor rotation. In practice, as with W145, aerodynamic effects are negligible. LW160's taller profile increases the Chrome Wheel's reach height — useful against 145-height opponents in left-spin contexts but creates vulnerability to low-attacker clipping.
+
+**Spin Track Geometry**
+
+```
+LW160 LEFT WING 160 — Side View
+
+           ┌──────────────────────┐   ← Chrome Wheel mount
+    ┌──────┴──────────────────────┴──────┐
+    │  ◄◄◄◄◄◄◄ wings face LEFT ◄◄◄◄◄◄◄ │  ← contra-rotation design
+    │                                    │
+    │   ┃    TRACK BODY      ┃           │  height = 16.0mm (+1.5mm vs W145)
+    │   ┃    (hexagonal)     ┃           │
+    │   ┃                    ┃           │
+    └───┴────────────────────┴───────────┘
+```
+
+**Inertia**
+
+```
+LW160 mass [INFERRED from glossary]: ~1.6 g = 0.0016 kg
+
+I_tube  = ½ × (0.0016 × 0.70) × ((0.006)² + (0.004)²) = 2.91×10⁻⁸ kg·m²
+I_wings = ½ × (0.0016 × 0.30) × ((0.010)² + (0.012)²) = 5.86×10⁻⁸ kg·m²
+
+I_LW160 ≈ 8.77×10⁻⁸ kg·m²   [+6.7% vs W145 due to higher mass and same geometry]
+
+Height effect on CoG:
+  +1.5mm height vs W145 raises Chrome Wheel CoG by 1.5mm
+  ZeroG tilt force (lateral) = m × g × sin(θ_tilt) — unaffected by track height
+  But resonance precession frequency f_p ∝ 1/h — taller track → slower precession → more stable
+  LW160 provides slight precession stability improvement over W145
+```
+
+**TypeScript model**
+
+```typescript
+function lw160Inertia(m_g: number): number {
+  const m = m_g / 1000;
+  const tube  = 0.5 * (m * 0.70) * (Math.pow(0.006, 2) + Math.pow(0.004, 2));
+  const wings = 0.5 * (m * 0.30) * (Math.pow(0.010, 2) + Math.pow(0.012, 2));
+  return tube + wings;
+}
+function lw160VsW145HeightEffect(h_lw160: number, h_w145: number): number {
+  return 1 / h_lw160 / (1 / h_w145);  // precession frequency ratio (lower = more stable)
+}
+
+// lw160Inertia(1.6)            → 8.77×10⁻⁸ kg·m²
+// lw160VsW145HeightEffect(16, 14.5) → 0.906  (9.4% slower precession → marginally more stable)
+```
+
+---
+
+## Case 353w — Spin Track: 500 (50.0 mm Extreme Height) — ZeroG
+
+> **Stock combos:** Pirate Orochi 500E (BBG-31, tallest bey in franchise history)
+> **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Extreme height tube
+
+**Thesis.** The 500 Spin Track stands 50.0 mm tall — the longest track ever released in the Beyblade franchise across all generations. [FACT — linka pirate-orochi.md: confirmed 50.0mm.] It enables top-down Smash Attack from a height unreachable by any other track, making it immune to Upper Attack from all sub-230 opponents. However, the extreme height raises the centre of gravity to a near-critical point: the bey is uniquely vulnerable to toppling from lateral forces that would be harmless to standard builds. The 500 Track is a physics edge case — high theoretical smash reach, high practical instability.
+
+**Spin Track Geometry**
+
+```
+500 EXTREME HEIGHT TRACK — Side View
+
+           ┌──────────────────────┐   ← Chrome Wheel mount
+           │   Chrome Wheel       │
+           │   (at 50mm height)   │
+           │   ┃              ┃   │
+           │   ┃              ┃   │   50.0mm total height
+           │   ┃ TALL TUBE   ┃   │   (tallest in franchise)
+           │   ┃ (hollow)    ┃   │
+           │   ┃              ┃   │
+           │   ┃              ┃   │
+           │   ┃              ┃   │
+           └───┴──────────────┴───┘
+                 Tip mounts here
+```
+
+**Inertia and Stability**
+
+```
+500 Track mass [ESTIMATED]: ~5.5 g = 0.0055 kg
+  [Significantly heavier than standard tracks due to extreme length]
+  Geometry: thin-wall hollow tube, r_inner ≈ 5mm, r_outer ≈ 7mm, length = 50mm
+
+Rotational I (about spin axis — thin tube):
+  I_tube = ½ × m × (r_inner² + r_outer²)
+         = ½ × 0.0055 × ((0.005)² + (0.007)²)
+         = ½ × 0.0055 × 7.40×10⁻⁵                   = 2.04×10⁻⁷ kg·m²
+
+Toppling stability analysis:
+  Critical topple condition: external torque > gravitational restoring torque
+  τ_restore = m_total × g × r_CoG × sin(tilt_angle)
+  CoG height at 500 track: ~30mm above tip (mid-stack)
+  vs. standard W145: CoG ~12mm above tip
+  → 500 raises CoG by +18mm → restoring torque is 60% WEAKER than W145 at same tilt angle
+  → Contact force needed to topple: only 40% of a W145 equivalent build
+
+Smash height advantage:
+  Chrome Wheel contact point at 50mm height → clears all <230mm opponents
+  Top-down smash vector: θ_smash ≈ 85–90° (nearly vertical strike)
+  smash component (lateral): cos(85°) = 0.087 — negligible horizontal force
+  → 500 track smash is vertical spike, not horizontal smash: opponent gets LIFTED not knocked out
+  [This is why 500 is not competitively superior despite extreme height]
+```
+
+**TypeScript model**
+
+```typescript
+function track500Inertia(m_g: number, r_inner_mm: number, r_outer_mm: number): number {
+  return 0.5 * (m_g / 1000) * (Math.pow(r_inner_mm/1000,2) + Math.pow(r_outer_mm/1000,2));
+}
+function track500TopplingRisk(height_mm: number, standard_height_mm: number): number {
+  return standard_height_mm / height_mm;  // 1.0 = stable, <0.5 = high topple risk
+}
+
+// track500Inertia(5.5, 5, 7)            → 2.04×10⁻⁷ kg·m²
+// track500TopplingRisk(50, 14.5)        → 0.29  (71% weaker stability vs W145 build)
+```
+
+---
+
+## Case 353x — Spin Track: SP230 (Spike 230) — ZeroG
+
+> **Stock combos:** Gladiator Bahamoote SP230GF (BBG-27, Kira Hayama second bey)
+> **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Spike-claw 230
+
+**Thesis.** SP230 (Spike 230) is a 23.0 mm height track featuring four downward-projecting spike claws — BD145-style protrusions that engage the tilted ZeroG stadium floor. [FACT — linka gladiator-bahamoote.md: ~4.3 g, 23.0 mm height, ~25.0 mm wide, four downward spike claws.] The claws create floor friction during the ZeroG tilt phase, resisting the centrifugal slope-push that sends beys downhill toward the ring-out zone. In combination with the GF/GCF disc tip's wall engagement, SP230 enables Bahamoote to anchor the outer stadium ring.
+
+**Spin Track Geometry**
+
+```
+SP230 SPIKE 230 — Side View
+
+           ┌──────────────────────┐   ← Chrome Wheel mount
+           │                      │
+    ┌──────┴──────────────────────┴──────┐
+    │         TRACK BODY (wide)          │  23.0mm height, ~25mm wide
+    │   ┃                    ┃           │
+    │ ▼claw               claw▼         │  ← 4 downward spike claws (BD145-style)
+    │   ┃                    ┃           │   claws extend below track base
+    └───┴────────────────────┴───────────┘
+         ||||  spike claws  ||||         ← dig into ZeroG stadium slope
+                 ↑ Tip here
+```
+
+**Inertia and Claw Mechanics**
+
+```
+SP230 mass [FACT — glossary]: ~4.3 g = 0.0043 kg
+
+Main tube  (70%, r_i=5mm, r_o=7mm):
+  I_tube = ½ × (0.0043 × 0.70) × ((0.005)² + (0.007)²) = 7.14×10⁻⁸ kg·m²
+
+Spike claws (30%, at r ≈ 12.5mm outer extent):
+  I_claws = ½ × (0.0043 × 0.30) × ((0.009)² + (0.0125)²)
+          = ½ × 0.00129 × 2.37×10⁻⁴                     = 1.53×10⁻⁷ kg·m²
+
+  I_SP230 = 7.14×10⁻⁸ + 1.53×10⁻⁷ = 2.24×10⁻⁷ kg·m²
+
+Claw floor friction (ZeroG slope resistance):
+  μ_claw ≈ 0.14 [ESTIMATED — ABS on polycarbonate ZeroG floor]
+  Normal force per claw: F_n = (m_bey × g × sin(θ_tilt)) / 4
+  At θ_tilt = 15° (typical ZeroG stadium tilt):
+    F_n per claw = (0.080 × 9.81 × sin(15°)) / 4 = 0.0508 N per claw
+  Total claw friction: 4 × 0.14 × 0.0508 = 0.0285 N
+  This resists slope-push force: F_slope = m_bey × g × sin(15°) = 0.2032 N
+  Claw resistance fraction: 0.0285 / 0.2032 = 14.0%   [matches +0.14 game modifier]
+```
+
+**TypeScript model**
+
+```typescript
+function sp230Inertia(m_g: number): number {
+  const m = m_g / 1000;
+  const tube  = 0.5 * (m * 0.70) * (Math.pow(0.005,2) + Math.pow(0.007,2));
+  const claws = 0.5 * (m * 0.30) * (Math.pow(0.009,2) + Math.pow(0.0125,2));
+  return tube + claws;
+}
+function sp230ClawResistance(m_bey_kg: number, tilt_deg: number, mu_claw: number): number {
+  const F_slope = m_bey_kg * 9.81 * Math.sin(tilt_deg * Math.PI / 180);
+  const F_claws = 4 * mu_claw * (F_slope / 4);
+  return F_claws / F_slope;  // fraction of slope force resisted by claws
+}
+
+// sp230Inertia(4.3)              → 2.24×10⁻⁷ kg·m²
+// sp230ClawResistance(0.080, 15, 0.14) → 0.140  (14.0% slope-push resistance — matches lore)
+```
+
+---
+
+## Case 353y — Spin Track: F230 (Free 230 / Fusion 230) — ZeroG
+
+> **Stock combos:** Bandid Genbull F230TB (BBG-19)
+> **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Free-spinning split track
+
+**Thesis.** F230 (Free 230 — linka labels it "Fusion 230" which may be a fan interpretation) is a 23.0 mm height split-body track whose upper section rotates freely around the lower fixed axle. [FACT — linka bandid-genbull.md: "F = Free", free-spinning upper section, 23.0mm height, rigid stability for tall defense builds.] When the upper section spins freely, it mechanically decouples the Chrome Wheel from floor-contact impacts — vibrations from the TB tip propagate into the track body but the free-spinning upper section absorbs and dissipates them before reaching the Chrome Wheel stack. This extends effective chrome-wheel spin lifetime at the cost of added mechanical complexity.
+
+**Inertia and Free-Spin Mechanics**
+
+```
+F230 mass [ESTIMATED]: ~2.5 g = 0.0025 kg  [based on similar-height 230 tracks]
+
+Lower fixed section (60%, r_i=5mm, r_o=7mm):
+  I_lower = ½ × (0.0025 × 0.60) × ((0.005)² + (0.007)²)
+           = ½ × 0.0015 × 7.40×10⁻⁵                   = 5.55×10⁻⁸ kg·m²
+
+Upper free-spinning section (40%):
+  I_upper = ½ × (0.0025 × 0.40) × ((0.005)² + (0.007)²)
+           = ½ × 0.0010 × 7.40×10⁻⁵                   = 3.70×10⁻⁸ kg·m²
+  [IMPORTANT: I_upper is DECOUPLED from system angular momentum when spinning freely]
+  Effective system I includes only I_lower (upper spins independently)
+
+Vibration decoupling:
+  Impact force from TB tip: F_impact → propagates up lower section
+  Free-spinning joint: converts F_impact to tangential rotation of upper section
+  Attenuation: ~40–60% of vibration amplitude absorbed in free joint
+  → Chrome Wheel stack experiences only 40–60% of ground-contact shock
+  → Lower spin decay rate for tall defense builds vs rigid-track equivalents
+```
+
+**TypeScript model**
+
+```typescript
+function f230EffectiveInertia(m_g: number): number {
+  // Only the FIXED lower section contributes to system I
+  const m = m_g / 1000;
+  return 0.5 * (m * 0.60) * (Math.pow(0.005,2) + Math.pow(0.007,2));
+}
+function f230VibrationAttenuation(attenuation: number, impactForce: number): number {
+  return impactForce * (1 - attenuation);  // force reaching Chrome Wheel after free-joint
+}
+
+// f230EffectiveInertia(2.5)                → 5.55×10⁻⁸ kg·m²  (upper section excluded)
+// f230VibrationAttenuation(0.50, 10)       → 5.0 N  (50% of ground-shock absorbed by free joint)
+```
+
+---
+
+## Case 353z — Spin Track: E230 (Energy 230 / Sliding) — ZeroG
+
+> **Stock combos:** Goreim Revizer E230SB (stamina Synchrome, top ZeroG stamina build)
+> **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Sliding disc (vertical-shift)
+
+**Thesis.** E230 (Energy 230) is a 23.0 mm height track with a large free-rotating outer disc that slides vertically on the track stem. [FACT — linka glossary: 7.4 g, 23.0 mm height, 48.0 mm outer disc width.] At 7.4 g it is by far the heaviest Spin Track in the ZeroG lineup, and the 48.0 mm disc outer diameter is the widest track accessory in the franchise. As the bey decelerates and wobbles, the E230 disc slides downward and outward — shifting the centre of mass lower and widening the base — dramatically extending stamina by delaying the toppling threshold.
+
+**Spin Track Geometry**
+
+```
+E230 ENERGY 230 — Side View (disc sliding mechanics)
+
+           ┌──────────────────────┐   ← Chrome Wheel mount
+           │                      │
+    ←48mm→ │ ┌─────────────────┐  │
+           │ │  SLIDING DISC   │  │   disc slides DOWN on stem
+           │ │   (free-rot)    │◄─┼── disc outer dia = 48.0mm
+           │ │                 │  │   disc mass ≈ 5g of total 7.4g
+           │ └─────────────────┘  │
+           │   ┃ TRACK STEM ┃    │   23.0mm height
+           └───┴─────────────┴────┘
+                    Tip here
+  
+  When wobbling:
+    disc slides → ↓ CoG, → wider base → longer precession lifetime
+```
+
+**Inertia and Sliding Disc Mechanics**
+
+```
+E230 total mass [FACT]: 7.4 g = 0.0074 kg
+  Disc portion (estimated 68%): 5.03 g at r_disc = 24mm
+  Stem portion (estimated 32%): 2.37 g at r_stem ≈ 6mm
+
+I_disc = ½ × 0.00503 × ((0.024)²)         = 1.447×10⁻⁶ kg·m² (solid disc approx)
+       [annular: I = ½ × m × (r_i² + r_o²), r_i ≈ 5mm]
+I_disc = ½ × 0.00503 × ((0.005)² + (0.024)²) = 1.509×10⁻⁶ kg·m²
+
+I_stem = ½ × 0.00237 × ((0.005)² + (0.007)²) = 8.78×10⁻⁸ kg·m²
+
+I_E230 = 1.509×10⁻⁶ + 8.78×10⁻⁸ = 1.597×10⁻⁶ kg·m²
+
+Note: I_E230 is 7–20× larger than other tracks (W145=8.2×10⁻⁸, SP230=2.24×10⁻⁷)
+→ E230 is the dominant track inertia contributor in any system assembly
+
+Sliding disc stamina extension:
+  At ω < 60% nominal, wobble begins → disc slides down 3–5mm
+  New CoG height h' = h - 3mm
+  Precession period T_p ∝ h (taller = shorter T_p = faster wobble = earlier topple)
+  Disc slide reduces h by ~15% → extends precession T_p by ~15%
+  → 500ms additional survival time at low spin [ESTIMATED]
+```
+
+**TypeScript model**
+
+```typescript
+function e230Inertia(m_total_g: number): number {
+  const m_disc = (m_total_g * 0.68) / 1000;
+  const m_stem = (m_total_g * 0.32) / 1000;
+  const I_disc = 0.5 * m_disc * (Math.pow(0.005,2) + Math.pow(0.024,2));
+  const I_stem = 0.5 * m_stem * (Math.pow(0.005,2) + Math.pow(0.007,2));
+  return I_disc + I_stem;
+}
+function e230DiscSlideStaminaBonus(disc_slide_mm: number, track_height_mm: number): number {
+  const h_ratio = 1 - disc_slide_mm / track_height_mm;
+  return 1 / h_ratio - 1;  // fractional increase in precession period
+}
+
+// e230Inertia(7.4)                    → 1.597×10⁻⁶ kg·m²  (7–20× heavier than other tracks)
+// e230DiscSlideStaminaBonus(3, 23)    → 0.150  (+15% precession period → longer survival)
+```
+
+---
+
+## Case 354a — Performance Tip: CF (Circle Flat / Claw Flat) — ZeroG
+
+> **Stock combos:** Samurai Ifraid W145CF (BBG-01) · Saramanda Ifraid W145CF · various attack Synchrome builds
+> **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Tip type:** Wide disc flat
+> **Naming note:** TT/WBO canonical name = "Circle Flat" (CF). Hasbro localization = "Claw Flat" (also CF). Same part — glossary "Circle Flat" is authoritative.
+
+**Thesis.** CF (Circle Flat) is the definitive ZeroG attack tip — a wide 33.80 mm diameter disc surrounding a flat ABS contact tip. [FACT — linka glossary: 33.80 mm disc, 2.5 g, 50° wall angle, plastic flat center.] The large disc extends past the tip contact point and interacts directly with the ZeroG stadium floor and walls, providing additional friction that channels the bey's spin energy into aggressive lateral movement rather than pure stamina. The CF disc is the attack tip equivalent of E230's disc — both exploit ZeroG stadium geometry through large-diameter disc contact, but where E230 extends stamina, CF converts it to aggression.
+
+**Tip Geometry**
+
+```
+CF CIRCLE FLAT — Side View
+
+    ←──────── 33.80mm disc ────────→
+    ┌─────────────────────────────────┐
+    │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │  ← wide disc (ABS, 50° angle to floor)
+    │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+    │           ███████████           │  ← flat centre contact tip
+    └─────────────────────────────────┘
+                    │
+                    ▼ stadium floor (ZeroG tilted surface)
+
+  The disc contacts the stadium wall slope on every orbit →
+  disc edge grip converts orbital motion to aggressive direction changes
+```
+
+**Inertia and Contact Mechanics**
+
+```
+CF mass [FACT — glossary]: 2.5 g = 0.0025 kg
+Disc outer radius: 33.80/2 = 16.9mm = 0.0169m
+Disc inner opening (flat centre): ~4mm = 0.004m
+
+I_disc = ½ × 0.0025 × ((0.004)² + (0.0169)²)
+       = ½ × 0.0025 × 3.02×10⁻⁴                     = 3.78×10⁻⁷ kg·m²
+
+Flat centre contact:
+  r_flat_centre ≈ 2–3mm (very narrow contact patch)
+  μ_k (plastic flat) = 0.085
+  Friction torque = μ_k × m_total × g × r_contact = 0.085 × m × 9.81 × 0.002
+
+Disc wall engagement (ZeroG-specific):
+  Wall contact angle ψ ≈ 15–25° (ZeroG stadium inner slope)
+  Normal force component at wall: F_disc_n = m_bey × ω² × r_orbit × sin(ψ)
+  Engagement grip force: F_grip = μ_disc × F_disc_n
+  μ_disc ≈ 0.10 (ABS on polycarbonate stadium wall)
+  → Each orbit pass converts ~8–12% of centrifugal force to disc wall grip → aggressive behaviour
+
+Spin decay rate (CF flat centre + disc friction):
+  Effective μ = 0.085 (centre flat) + disc-floor contribution ~0.015 = 0.100 effective
+  At ω = 1800 rpm with Ifraid+Saramanda system (I = 2.176×10⁻⁵):
+  τ_total = 0.100 × 0.0806 × 9.81 × 0.002 = 1.58×10⁻⁴ N·m
+  dω/dt = 1.58×10⁻⁴ / 2.176×10⁻⁵ = 7.26 rad/s²  [fast decay — aggressive but short-lived]
+```
+
+**TypeScript model**
+
+```typescript
+function cfInertia(m_g: number, r_disc_mm: number): number {
+  const m = m_g / 1000;
+  const r_o = r_disc_mm / 1000;
+  const r_i = 0.004;  // flat centre hole radius
+  return 0.5 * m * (r_i * r_i + r_o * r_o);
+}
+function cfDecayRate(I_system: number, m_total_kg: number, mu_eff: number, r_centre_mm: number): number {
+  const tau = mu_eff * m_total_kg * 9.81 * (r_centre_mm / 1000);
+  return tau / I_system;  // rad/s²
+}
+
+// cfInertia(2.5, 16.9)                      → 3.78×10⁻⁷ kg·m²
+// cfDecayRate(2.176e-5, 0.0806, 0.100, 2)  → 7.26 rad/s²  (aggressive short-duration attack)
+```
+
+---
+
+## Case 354b — Performance Tip: BSF (Blade Semi-Flat) — ZeroG
+
+> **Stock combos:** Ronin Dragoon LW160BSF (BBG-16, Sakyo Kurayami) · various left-spin builds
+> **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Tip type:** Semi-flat with 8 blade fins
+
+**Thesis.** BSF (Blade Semi-Flat) is an ABS semi-flat tip with a 19.70 mm outer diameter and eight left-facing blade fins arranged around the perimeter. [FACT — linka glossary: 1.19 g, 19.70 mm wide, 8 blade fin row, 40°, 10.89 mm tall.] The blade fins interact with the ZeroG stadium floor during spin, creating a subtle grip layer that dramatically increases resistance to stadium sway-out. Unlike the CF disc (which provides directional aggression), BSF uses its fins for passive stability — resisting the knockout mechanic unique to ZeroG's tilting floor.
+
+**Tip Geometry**
+
+```
+BSF BLADE SEMI-FLAT — Bottom View (8 blade fins)
+
+    ←── 19.70mm ──→
+    ┌───────────────┐
+    │   ▄▄▄▄▄▄▄▄   │  ← 8 blade fins (angled, left-facing)
+    │  ▐█▌▐█▌▐█▌▐█▌│  ← fins bite into ZeroG floor on orbital contact
+    │   ▀▀▀▀▀▀▀▀   │
+    │     ████     │  ← semi-flat contact surface (centre)
+    └───────────────┘
+
+  Side view: 10.89mm tall, 40° taper angle
+  Fins project slightly below tip base → floor-contact during stadium tilt
+```
+
+**Inertia and Blade Fin Mechanics**
+
+```
+BSF mass [FACT — glossary]: 1.19 g = 0.00119 kg
+Full width: 19.70mm → r_outer = 9.85mm
+
+I_base = ½ × 0.00119 × ((0.003)² + (0.00985)²)
+       = ½ × 0.00119 × 1.061×10⁻⁴                   = 6.31×10⁻⁸ kg·m²
+
+Blade fin ZeroG floor grip:
+  8 fins at 40° to horizontal; μ_fin ≈ 0.12 (ABS on polycarbonate)
+  Effective grip area per fin: ~0.5mm² contact patch
+  Stadium tilt sway-out force: F_sway = m_bey × g × sin(θ_tilt) ≈ 0.08 × 9.81 × sin(15°) = 0.203N
+  Fin friction per fin: F_fin = μ × F_normal_per_fin ≈ 0.12 × (F_normal/8) [distributed]
+  Total fin resistance: 8 × 0.12 × (0.203/8) = 0.024N per fin cycle
+  Sway resistance fraction: 0.024 / 0.203 ≈ 12%  [game modifier +0.12 vs sway-out]
+
+Left-spin fin alignment:
+  In left-spin rotation, fins align counter-clockwise → natural stadium-floor interaction direction
+  Interaction amplification in left-spin vs right-spin: fins generate CW micro-torque on floor
+  → Tiny reaction force pushes bey toward stadium centre (anti-sway) in left-spin builds
+  → BSF is demonstrably better in left-spin context (Dragoon) vs right-spin builds
+```
+
+**TypeScript model**
+
+```typescript
+function bsfInertia(m_g: number, r_outer_mm: number): number {
+  return 0.5 * (m_g/1000) * (Math.pow(0.003,2) + Math.pow(r_outer_mm/1000,2));
+}
+function bsfSwaySout(m_total_kg: number, tilt_deg: number, mu_fin: number): number {
+  const F_sway = m_total_kg * 9.81 * Math.sin(tilt_deg * Math.PI/180);
+  const F_fins = 8 * mu_fin * (F_sway / 8);
+  return F_fins / F_sway;
+}
+
+// bsfInertia(1.19, 9.85)          → 6.31×10⁻⁸ kg·m²
+// bsfSwaySout(0.08, 15, 0.12)    → 0.120  (12% sway-out resistance from blade fins)
+```
+
+---
+
+## Case 354c — Performance Tip: BWD (Big Wide Defense) — ZeroG
+
+> **Stock combos:** Berserker Begirados SR200BWD (BBG-22, Kira Hayama bey) · Guardian Revizer E230BWD
+> **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Tip type:** Wide defense cone
+
+**Thesis.** BWD (Big Wide Defense) is a defense-type tip optimised for ZeroG stadiums, with a wider and lower profile than the standard WD (Wide Defense). [FACT — linka glossary: ~1.0 g, ~15.0 mm tip width, ~9.2 mm height, 30° angle.] At 30° the cone is shallower than D (35°) — reducing lateral recoil on contact while keeping a wider stance than WD. In ZeroG the low 30° profile is advantageous: the tilted stadium floor sends beys down-slope, and a shallow-angle tip with wide contact resists this displacement better than narrow or high-angle alternatives.
+
+**Tip Geometry**
+
+```
+BWD BIG WIDE DEFENSE — Side View
+
+    ←── ~15mm ──→
+    ╲            ╱  ← 30° cone angle (shallow, wide)
+     ╲          ╱   [shallower than D's 35°, wider than WD's narrower tip]
+      ╲        ╱
+       ╲──────╱     ← tip contact point (~9.2mm from ground)
+            │
+            ▼ stadium floor
+
+  30° vs 35° (D tip): BWD hits shallower → opponent force redirected more tangentially
+  → Lower probability of lateral bounce → better defense geometry for ZeroG slope conditions
+```
+
+**Inertia and Defense Mechanics**
+
+```
+BWD mass [FACT — glossary]: ~1.0 g = 0.001 kg
+Tip width (full): ~15.0mm → r_outer ≈ 7.5mm
+
+I_BWD = ½ × 0.001 × (Math.pow(0.0075,2))  [solid cone approximation]
+      = ½ × 0.001 × 5.625×10⁻⁵            = 2.81×10⁻⁸ kg·m²
+
+30° cone defense (vs 35° D tip):
+  At 30°: smash = cos(30°) = 0.866; recoil = sin(30°) = 0.500
+  At 35°: smash = cos(35°) = 0.819; recoil = sin(35°) = 0.574
+  BWD gives +5.7% smash vs D tip, −12.8% recoil  → BWD is more defensively efficient
+
+ZeroG slope resistance (30° cone):
+  BWD's shallower cone + wider contact: on tilted floor, contact patch stays closer to slope
+  Floor contact moment arm shorter → smaller toppling torque from slope-push
+  Net: BWD resists slope-push 8–12% better than equal-mass narrower tips
+```
+
+**TypeScript model**
+
+```typescript
+function bwdInertia(m_g: number, r_tip_mm: number): number {
+  return 0.5 * (m_g/1000) * Math.pow(r_tip_mm/1000, 2);
+}
+function bwdRecoil(theta_deg: number): { smash: number; recoil: number } {
+  const theta = theta_deg * Math.PI / 180;
+  return { smash: Math.cos(theta), recoil: Math.sin(theta) };
+}
+
+// bwdInertia(1.0, 7.5)       → 2.81×10⁻⁸ kg·m²
+// bwdRecoil(30)              → { smash: 0.866, recoil: 0.500 }  (vs D: 0.819/0.574)
+```
+
+---
+
+## Case 354d — Performance Tip: GCF (Gear Circle Flat) — ZeroG
+
+> **Stock combos:** Gladiator Bahamoote SP230GCF (BBG-27) · various ZeroG balance builds
+> **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Tip type:** Gear-edge disc flat
+> **Naming note:** Bey files and some community sources call this "GF (Gear Circle Flat)". The glossary distinguishes GF = Giga Flat (standard 0.75g plastic) and GCF = Gear Circle Flat (ZeroG disc, 33.47mm, 2.5g). CS6 Case 318 covers this tip; this case documents the full physics derivation.
+
+**Thesis.** GCF (Gear Circle Flat) is the ZeroG stadium-wall-engagement tip — a 33.47 mm disc with gear-cut teeth on the outer perimeter. [FACT — linka glossary: 2.5 g, 33.47mm disc, 8.88mm height.] The gear-cut edge grips the stadium wall's inner slope on each orbital pass, converting spin energy into directional lateral pressure against opponents. GCF is functionally similar to CF (33.80mm smooth disc) but the gear-cut adds a micro-locking effect at wall contact — brief periodic engagement spikes versus CF's continuous smooth contact. This makes GCF better at sustained outer-ring orbiting while CF is better at floor-contact aggression.
+
+**Inertia and Gear-Edge Mechanics**
+
+```
+GCF mass [FACT — glossary]: 2.5 g = 0.0025 kg
+Disc outer radius: 33.47/2 = 16.74mm = 0.01674m
+
+I_GCF = ½ × 0.0025 × ((0.004)² + (0.01674)²)
+      = ½ × 0.0025 × (1.6×10⁻⁵ + 2.80×10⁻⁴)
+      = ½ × 0.0025 × 2.96×10⁻⁴                     = 3.70×10⁻⁷ kg·m²
+
+GCF vs CF comparison:
+  CF disc:  33.80mm, I = 3.78×10⁻⁷ kg·m²  (+2.1% larger)
+  GCF disc: 33.47mm, I = 3.70×10⁻⁷ kg·m²
+  Mass: equal (2.5g each)
+  Contact: CF = smooth continuous; GCF = gear-tooth periodic engagement
+
+Stadium wall engagement:
+  GCF gear teeth: ~8–12 teeth on outer disc perimeter
+  Each tooth contact: μ_tooth ≈ 0.14 (gear-tooth ABS on stadium wall)
+  Between teeth: μ = 0 (gap)
+  Effective μ_avg = μ_tooth × (tooth_contact_fraction) ≈ 0.14 × 0.35 = 0.049
+  But each tooth contact creates impulse engagement → +0.20 stadium wall engagement force modifier
+  [As documented in gladiator-bahamoote.md linka file]
+```
+
+**TypeScript model**
+
+```typescript
+function gcfInertia(m_g: number, r_disc_mm: number): number {
+  const m = m_g / 1000;
+  const r_o = r_disc_mm / 1000;
+  return 0.5 * m * (Math.pow(0.004,2) + r_o * r_o);
+}
+function gcfWallEngagement(mu_tooth: number, tooth_fraction: number): number {
+  return mu_tooth * tooth_fraction;  // effective wall contact coefficient
+}
+
+// gcfInertia(2.5, 16.74)            → 3.70×10⁻⁷ kg·m²
+// gcfWallEngagement(0.14, 0.35)     → 0.049 avg μ; but impulse peaks → +0.20 game modifier
+```
+
+---
+
+## Case 354e — Performance Tip: E (Eternal) — ZeroG / MFB
+
+> **Stock combos:** Pirate Orochi 500E (BBG-31) · various stamina builds requiring free-spinning tip
+> **System:** ZeroG Synchrome / HWS · **Gen:** Gen2 · **Tip type:** Free-spinning sharp point
+
+**Thesis.** E (Eternal) is a free-spinning sharp stamina tip in which the contact point spins independently of the main bey body via a bearing mechanism. This decouples floor friction from the bey's spin — only the free-spinning inner axle contacts the floor, and the axle's rotation rate settles to a very low equilibrium with the floor rather than tracking bey spin. The Eternal tip is the lowest-friction stamina tip in the MFB/ZeroG system.
+
+**Inertia and Free-Spin Mechanics**
+
+```
+E Eternal mass [ESTIMATED]: ~0.8 g = 0.0008 kg
+  Outer housing: r ≈ 7mm, fixed to bey
+  Inner free-spinning axle: r_point ≈ 0.5mm
+
+I_housing = ½ × (0.0008 × 0.80) × (0.007)² = 1.57×10⁻⁸ kg·m²  [rotates with bey]
+I_inner   = ½ × (0.0008 × 0.20) × (0.0005)² ≈ 4.0×10⁻¹¹ kg·m² [near-zero; decoupled]
+
+Free-spin effect on friction torque:
+  At ω_bey = 1800 rpm, inner axle velocity relative to floor = v_axle
+  Bearing allows inner to spin at ~0 relative to floor → μ_effective → μ_bearing ≈ 0.005
+  vs standard sharp tip: μ_k = 0.06 (plastic-on-ABS)
+  Eternal friction torque = 0.005/0.06 = 8.3% of standard sharp tip friction
+  → 91.7% friction reduction → dramatically longer spin life
+
+Spin decay comparison (standard sharp vs E):
+  Sharp tip: dω/dt = 15–18 rad/s² (at 100% spin, 40g bey)
+  E tip:     dω/dt = 1.2–1.5 rad/s² (same bey)
+  → Eternal extends spin lifetime by ~10–12× vs sharp tip
+  → ZeroG application with 500 track: the extra height is survivable only due to E tip's stamina
+```
+
+**TypeScript model**
+
+```typescript
+function eternalFrictionRatio(mu_bearing: number, mu_standard: number): number {
+  return mu_bearing / mu_standard;
+}
+function eternalSpinDecay(I_system: number, m_kg: number, mu_bearing: number, r_contact_mm: number): number {
+  const tau = mu_bearing * m_kg * 9.81 * (r_contact_mm / 1000);
+  return tau / I_system;
+}
+
+// eternalFrictionRatio(0.005, 0.06)         → 0.083  (91.7% friction reduction vs sharp)
+// eternalSpinDecay(2.0e-5, 0.040, 0.005, 0.3) → 0.29 rad/s²  (near-zero decay in theory)
+```
+
+---
+
+## Case 354f — Performance Tip: TB (Twin Ball) — ZeroG
+
+> **Stock combos:** Bandid Genbull F230TB (BBG-19) · Bandid Goreim F230TB (defense builds)
+> **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Tip type:** Twin-ball dual hemisphere
+
+**Thesis.** TB (Twin Ball) is a wide dual-ball tip with a larger outer hemispherical housing enclosing a smaller offset inner ball. [FACT — linka glossary: ~1.0 g, ~16.0mm wide, ~9.5mm height, dual-ball geometry; "Tornado Ball" alternate name in linka bey doc.] The offset inner ball creates deliberate wobble — the bey precesses with a slight oscillation that the TB geometry sustains rather than dampens. This is unique among ZeroG tips: TB trades pure stamina for wobble-resonance survival, making the bey harder to pin down and giving it a defense character despite having ball-type contact.
+
+**Inertia and Wobble Mechanics**
+
+```
+TB mass [FACT — glossary]: ~1.0 g = 0.001 kg
+Full width: ~16.0mm → r_outer ≈ 8.0mm
+
+I_outer = ½ × (0.001 × 0.70) × (0.008)² = 2.24×10⁻⁸ kg·m²
+I_inner = ½ × (0.001 × 0.30) × (0.0045)²  [offset inner ball, smaller radius]
+        = ½ × 0.0003 × 2.025×10⁻⁵ = 3.04×10⁻⁹ kg·m²
+
+I_TB = 2.24×10⁻⁸ + 3.04×10⁻⁹ = 2.54×10⁻⁸ kg·m²
+
+Wobble resonance:
+  Offset inner ball: eccentricity e ≈ 1.5mm from central axis
+  At ω = 1200 rpm (20 Hz): centrifugal force on offset = m_inner × ω² × e
+  F_offset = 0.0003 × (2π×20)² × 0.0015 = 7.1×10⁻³ N
+  This creates a periodic lateral force synchronised to spin frequency → sustained precession
+  → Bey does not fall flat; instead it maintains a controlled wobble orbit
+
+TB spin decay (ball contact, μ_ball ≈ 0.090):
+  Effective contact: alternating outer/inner ball as bey wobbles
+  Avg μ = 0.090 (outer 70% of time) + 0.095 (inner offset 30%) = 0.091
+  System I (Genbull F230TB) ≈ 6.86×10⁻⁶ + I_F230 ≈ 7.5×10⁻⁶
+  τ = 0.091 × 0.054 × 9.81 × 0.005 = 2.41×10⁻⁴ N·m
+  dω/dt = 2.41×10⁻⁴ / 7.5×10⁻⁶ = 32.1 rad/s²
+```
+
+**TypeScript model**
+
+```typescript
+function tbInertia(m_g: number): number {
+  const m = m_g / 1000;
+  const I_outer = 0.5 * (m * 0.70) * Math.pow(0.008,2);
+  const I_inner = 0.5 * (m * 0.30) * Math.pow(0.0045,2);
+  return I_outer + I_inner;
+}
+function tbWobbleForce(m_inner_kg: number, omega_rads: number, eccentricity_m: number): number {
+  return m_inner_kg * omega_rads * omega_rads * eccentricity_m;
+}
+
+// tbInertia(1.0)                          → 2.54×10⁻⁸ kg·m²
+// tbWobbleForce(0.0003, 2*Math.PI*20, 0.0015) → 7.1×10⁻³ N  (sustained wobble resonance force)
+```
+
+---
+
+## Case 354g — Fusion Wheel: Grand (29.3 g)
+
+> **Stock combos:** Grand Capricorn 145D · Grand Aquario 145D · Grand Cygnus CH120GCF · Grand Ketos CH120GCF
+> **JP name:** Grand (グランド, Gurando)
+> **System:** HWS (Hybrid Wheel System) · **Series:** Metal Fury / Metal Masters · **Type:** Defense (moderate smash)
+> **Image refs:** GRAND.jpg (wiki upload)
+
+**Thesis.** Grand is a 29.3 g HWS Fusion Wheel characterised by six alternating smooth wall sections and gap voids arranged in three paired groups. [FACT — wiki: "six walls with every two walls creating a gap dividing them into three sections; each section has walls with small textured indents."] The interconnected smooth body is thicker than Earth at the thickest contact point — but at 29.3 g it is 3.5 g lighter than Earth (second mold), which critically undermines its defensive performance. The textured indents on each wall section create recoil on contact — effectively adding a smash component that is unwanted in defense builds but gives Grand a dual identity as a mediocre attack-defense hybrid. In practice Grand is outclassed by Earth, Flash, and Basalt in all three contexts it might fill.
+
+**Part Geometry**
+
+```
+GRAND FUSION WHEEL — Top View (schematic)
+
+    ┌─────────────────────────────────────────┐
+    │                                         │
+    │   ██████ wall ██████   gap   ████████  │
+    │   (textured indents)         (smooth)  │
+    │                                         │
+    │   ████████   gap   ██████ wall ██████   │  6 walls total
+    │                                         │  3 paired groups
+    │   ██████ wall ██████   gap   ████████  │  2 walls + gap per group
+    │                                         │
+    │           ○ (centre axle)               │
+    └─────────────────────────────────────────┘
+
+  r_outer (wall face) ≈ 22mm  [standard HWS diameter]
+  Thickest point: ~4mm at wall face  (thicker than Earth at same radius)
+  Gap between walls: ~8–10° arc void per group (6 voids / 3 sections)
+```
+
+**Mass and Inertia**
+
+```
+Grand mass [FACT — wiki]: 29.3 g = 0.0293 kg
+
+HWS standard geometry: r_outer ≈ 22mm, 3 connected wall groups
+
+3-zone model:
+  Zone 1 — hub    (15%, r_i= 4mm, r_o=10mm):
+    I₁ = ½ × (0.0293 × 0.15) × ((0.004)² + (0.010)²)
+       = ½ × 0.004395 × 1.16×10⁻⁴                    = 2.55×10⁻⁷ kg·m²
+
+  Zone 2 — body   (55%, r_i=10mm, r_o=18mm):
+    I₂ = ½ × (0.0293 × 0.55) × ((0.010)² + (0.018)²)
+       = ½ × 0.016115 × 4.24×10⁻⁴                    = 3.41×10⁻⁶ kg·m²
+
+  Zone 3 — walls  (30%, r_i=18mm, r_o=22mm):
+    I₃ = ½ × (0.0293 × 0.30) × ((0.018)² + (0.022)²)
+       = ½ × 0.00879 × 8.08×10⁻⁴                     = 3.55×10⁻⁶ kg·m²
+
+  I_Grand = 2.55×10⁻⁷ + 3.41×10⁻⁶ + 3.55×10⁻⁶       = 7.22×10⁻⁶ kg·m²
+
+Contact angle analysis (wall face with textured indents):
+  Wall face slope: θ_wall ≈ 10–15° (near-vertical wall)
+  smash = cos(12°) = 0.978; upper = sin(12°) = 0.208
+  Textured indent contact: micro-protrusions redirect ~15–20% of contact force
+    → effective θ_indent ≈ 18°: smash = 0.951; recoil component introduced
+
+  Net contact regime: ~95% smash, ~5% recoil (mediated by indent texture)
+  Verdict: smash attack wheel with light recoil penalty — not a pure defense profile
+
+Grand vs Earth (2nd mold, 33.0g) comparison:
+  Earth mass: 33.0 g — 12.6% heavier
+  Earth I ≈ ½ × 0.033 × ((0.010)² + (0.022)²) ≈ 9.3×10⁻⁶ kg·m² [simple annular]
+  Grand: 7.22×10⁻⁶ kg·m² — 22.4% lower inertia than Earth
+  → Earth wins all momentum exchanges decisively
+  → Grand is outclassed defensively as the wiki confirms
+
+Gap void fraction analysis:
+  3 gap voids × ~10° each = 30°/360° = 8.3% of perimeter is void
+  In practice: voids reduce effective contact time per orbit by 8.3%
+  → Average smash contact force reduced by 8.3% vs a solid-body wheel
+  → Grand's smash is also penalised by its own gap geometry
+```
+
+**System Inertia (Grand Capricorn 145D)**
+
+```
+Full combo mass: Grand(29.3) + Capricorn CW(2.9) + 145(0.9) + D(0.68) = 33.78g
+System I estimate (adding each zone):
+  Capricorn CW: modelled as thin ring, r_i=10mm, r_o=21mm
+    I_CW = ½ × 0.0029 × ((0.010)² + (0.021)²) = 7.91×10⁻⁷ kg·m²
+  145 track: central tube
+    I_145 = ½ × 0.0009 × ((0.006)² + (0.004)²) = 2.34×10⁻⁸ kg·m²
+  D tip: cone
+    I_D = ½ × 0.00068 × (0.007775)² = 2.05×10⁻⁸ kg·m²
+
+  I_system = 7.22×10⁻⁶ + 7.91×10⁻⁷ + 2.34×10⁻⁸ + 2.05×10⁻⁸ = 8.05×10⁻⁶ kg·m²
+  Grand fraction: 7.22/8.05 = 89.7%  (Fusion Wheel dominates system as expected)
+
+D tip spin decay:
+  D tip: r_contact = (tip W)/2 = 8.94/2 = 4.47mm; μ_k = 0.090 (ABS cone)
+  τ = 0.090 × 0.03378 × 9.81 × 0.00447 = 1.335×10⁻⁴ N·m
+  dω/dt = 1.335×10⁻⁴ / 8.05×10⁻⁶ = 16.6 rad/s²
+  At 3000 rpm launch (314 rad/s): theoretical spin time = 314/16.6 = 18.9s
+  [Ideal; real friction increases as wobble develops — practical ~12–15s for defense builds]
+```
+
+**TypeScript model**
+
+```typescript
+function grandInertia(m_g: number): number {
+  const m = m_g / 1000;
+  const z = (frac: number, ri: number, ro: number) =>
+    0.5 * (m * frac) * (Math.pow(ri / 1000, 2) + Math.pow(ro / 1000, 2));
+  return z(0.15, 4, 10) + z(0.55, 10, 18) + z(0.30, 18, 22);
+}
+function grandContactForce(theta_wall_deg: number, theta_indent_deg: number): {
+  smash: number; recoil: number; voidPenalty: number;
+} {
+  const smash = Math.cos(theta_indent_deg * Math.PI / 180);
+  const recoil = Math.sin(theta_indent_deg * Math.PI / 180);
+  const voidPenalty = 30 / 360;  // 8.3% gap fraction
+  return { smash: smash * (1 - voidPenalty), recoil, voidPenalty };
+}
+function grandSystemDecay(I_system: number, m_total_kg: number, mu_D: number, r_D_mm: number): number {
+  const tau = mu_D * m_total_kg * 9.81 * (r_D_mm / 1000);
+  return tau / I_system;
+}
+
+// grandInertia(29.3)                          → 7.22×10⁻⁶ kg·m²
+// grandContactForce(12, 18)
+//   → { smash: 0.873, recoil: 0.309, voidPenalty: 0.083 }  (gap-penalised smash)
+// grandSystemDecay(8.05e-6, 0.03378, 0.090, 4.47) → 16.6 rad/s²  (D tip decay in 145D build)
+```
+
+---
+
+## Case 354h — Energy Ring: Capricorn (2.9 g)
+
+> **Stock combos:** Spiral Capricorn 90MF · Grand Capricorn 145D · Fury Capricorn 100HF · Rock Capricorn 90RF
+> **System:** HWS (Hybrid Wheel System) · **Gen:** Gen2-MFB · **CW type:** Two-goat-head angular ring
+
+**Thesis.** The Capricorn Energy Ring is a 2.9 g HWS Clear Wheel featuring two goat head designs with long curving horns, separated by small spikes. [FACT — wiki: "angular, features two goat head designs, tailed by long horns, with two small spikes separating each head from the horns."] The angular profile creates a C₂ mass distribution — two opposing heavy segments (horn pair + head mass) balanced at 180°. At 2.9 g Capricorn is near average for MFB Clear Wheels. The angular horn geometry creates minor contact-point protrusions at the CW level, but as with all Clear Wheels, the mass fraction (~9–10% of combined Wheel+CW mass) limits its competitive impact to negligible.
+
+**Part Geometry**
+
+```
+CAPRICORN ENERGY RING — Top View (schematic)
+
+  ┌─────────────────────────────────────────┐
+  │                                         │
+  │    )) goat head ))         horn horn    │  ← goat face with 6 horns motif
+  │       ↓ spike               spike ↓    │  ← small spike separators
+  │    (( goat head ((         horn horn    │  C₂ symmetry: opposing head pairs
+  │                                         │
+  │              ○ (axle)                   │
+  └─────────────────────────────────────────┘
+
+  r_outer (horn tips) ≈ 21mm  [fits inside HWS Fusion Wheel perimeter]
+  Mass distribution: angular → concentrated at horn tips = higher effective r_CoG
+```
+
+**Mass and Inertia**
+
+```
+Capricorn Energy Ring mass [FACT — wiki]: 2.9 g = 0.0029 kg
+Typical MFB Clear Wheel geometry: r_i ≈ 10mm, r_o ≈ 21mm
+
+I_Capricorn = ½ × 0.0029 × ((0.010)² + (0.021)²)
+            = ½ × 0.0029 × (1.0×10⁻⁴ + 4.41×10⁻⁴)
+            = ½ × 0.0029 × 5.41×10⁻⁴                = 7.84×10⁻⁷ kg·m²
+
+Mass fraction in Grand Capricorn 145D:
+  Combined Wheel+CW = 29.3 + 2.9 = 32.2g
+  Capricorn fraction of mass: 2.9/32.2 = 9.0%
+  Capricorn fraction of I: 7.84×10⁻⁷ / 8.05×10⁻⁶ = 9.7%
+
+C₂ symmetry analysis (two goat head lobes at 180°):
+  I_xx = I_yy in spin plane (two symmetric lobes) → no preferred precession axis
+  → Same orbital stability as Wolf (C₄) — C₂ with matched lobes is functionally equivalent
+  
+  Angular protrusion at horn tips (θ_horn ≈ 20°):
+    Very short horn protrusions — contact smash fraction: cos(20°) = 0.940
+    Horn protrusion height above Fusion Wheel surface: ~0.3mm → negligible in contacts
+    Verdict: Capricorn CW is cosmetic and dimensionally contained within the Fusion Wheel profile
+
+Face Bolt variants noted in wiki:
+  Standard: "CAPRICORNE" text on banner + 6 horns goat design
+  Metal Masters (Spiral/Fury): banner replaced by more horns (no text variant)
+  Metal Fusion (Fury Capricorn 100HF): "CAPRICORNE" removed from banner
+  [Game engine: flag `captionVariant: "full" | "notext" | "hornonly"` per era version]
+```
+
+**TypeScript model**
+
+```typescript
+function capricornInertia(m_g: number, r_inner_mm: number, r_outer_mm: number): number {
+  return 0.5 * (m_g/1000) * (Math.pow(r_inner_mm/1000,2) + Math.pow(r_outer_mm/1000,2));
+}
+function capricornMassFraction(m_cw_g: number, m_fw_g: number): number {
+  return m_cw_g / (m_cw_g + m_fw_g);
+}
+
+// capricornInertia(2.9, 10, 21)         → 7.84×10⁻⁷ kg·m²
+// capricornMassFraction(2.9, 29.3)      → 0.090  (9.0% of Wheel+CW mass; cosmetic role)
+```
+
+---
+
+## Case 354i — Spin Track: 145 — MFB Standard
+
+> **Stock combos:** Grand Capricorn 145D · Rock Cancer CH120/145 · Lightning L-Drago 100HF/145LRF · Burn Fireblaze 135/145
+> **System:** HWS (Hybrid Wheel System) / MFS · **Gen:** Gen2-MFB · **Track type:** Plain fixed-height hexagonal
+
+**Thesis.** 145 is the plain HWS Spin Track at 14.5 mm height — the tallest standard track at the time of its introduction, before 230 was released with Flame Byxis. [FACT — wiki: "145, along with its variants (Claw 145, Down Force 145, etc.), was once the highest Spin Track available, until the 230 Spin Track was released."] As a plain track with no gimmick, its competitive value is purely height-based: 145 sits high enough for stamina builds to wobble effectively in the late battle phase without being too tall to be upper-attacked by short opponents. Gimmick variants (C145, DF145, AD145, WD145, BD145) have progressively outclassed the plain 145 by adding specific contact or stability benefits at the same height tier.
+
+**Spin Track Geometry**
+
+```
+145 PLAIN SPIN TRACK — Side View
+
+           ┌──────────────────────┐   ← Fusion Wheel / Chrome Wheel mount
+           │  (hex boss)          │
+           │   ┃              ┃   │
+           │   ┃    TUBE      ┃   │   height = 14.5mm
+           │   ┃  (hexagonal) ┃   │   width ≈ 17mm (plain hex, no protrusions)
+           │   ┃              ┃   │
+           └───┴──────────────┴───┘
+                    Tip here
+
+  No wings, no downforce projections, no gimmick.
+  Pure height with hex cross-section for Fusion Wheel lock.
+```
+
+**Inertia and Height Analysis**
+
+```
+145 mass [ESTIMATED]: ~0.9 g = 0.0009 kg  [lighter than W145 due to no wing protrusions]
+Geometry: hexagonal tube, circumscribed circle r ≈ 8mm, inscribed r ≈ 7mm
+
+I_145 ≈ ½ × 0.0009 × ((0.007)² + (0.008)²)   [hex approximated as annular ring]
+       = ½ × 0.0009 × (4.9×10⁻⁵ + 6.4×10⁻⁵)
+       = ½ × 0.0009 × 1.13×10⁻⁴              = 5.09×10⁻⁸ kg·m²
+
+Height comparison (stamina wobble relevance):
+  At 145mm height, bey wobbles at tilt angle θ before toppling.
+  Tipping condition: τ_tip = τ_gyro → ω_crit = √(m×g×h_CoG / I_spin)
+  Lower h_CoG (from shorter track) → lower ω_crit → tips earlier
+  145 vs 85 track: 145 sets h_CoG ~6mm higher → survives ~15% longer in late-battle wobble
+  145 vs 230 track: 230 raises CoG ~8.5mm higher than 145 → wobbles LESS stably at 145's late speed
+
+System context in Grand Capricorn 145D:
+  Grand Capricorn 145D uses 145 as the "neutral height" choice for defense builds
+  → Not tall enough to be upper-attacked by S130-height opponents
+  → Not short enough to expose the bey to floor-contact attacks
+  → Standard defensive midpoint height for MFB 145-era builds
+```
+
+**TypeScript model**
+
+```typescript
+function track145Inertia(m_g: number): number {
+  // Hexagonal tube approximated as annular ring (r_inner=7mm, r_outer=8mm)
+  return 0.5 * (m_g/1000) * (Math.pow(0.007,2) + Math.pow(0.008,2));
+}
+function track145TippingOmega(m_total_kg: number, h_CoG_m: number, I_spin: number): number {
+  return Math.sqrt((m_total_kg * 9.81 * h_CoG_m) / I_spin);
+}
+
+// track145Inertia(0.9)                           → 5.09×10⁻⁸ kg·m²
+// track145TippingOmega(0.034, 0.012, 8.05e-6)  → 70.6 rad/s ≈ 674 rpm tipping threshold
+```
+
+---
+
+## Case 354j — Performance Tip: D (Defense) — MFB
+
+> **Stock combos:** Grand Capricorn 145D · Rock Leone 145D · Rock Aquario 145D · Earth Eagle 145WD (D variant)
+> **System:** HWS (Hybrid Wheel System) / MFS · **Gen:** Gen2-MFB · **Tip type:** Wide defense cone (first MFB defense tip)
+
+**Thesis.** D (Defense) is the first Defense-type Performance Tip released in the Metal Series, featuring a wide angled cone that sits wider and lower than the Spike (S) tip. [FACT — wiki: "Defense is similar to Spike, but is wider. Defense actually has superior Stamina capabilities, with less recoil and more recovery." Specs from linka pirate-leviathan.md: 0.68g, full W=15.55mm, tip W=8.94mm, height=8.89mm, tip H=7.59mm, 35°.] The 35° cone angle produces a wide but moderately-frictioned contact patch. D is paradoxically better at stamina than at defense in practice: its wide cone reduces recoil effectively (good defense), but the added width also increases friction vs. the narrower S tip, creating a tradeoff — less recoil but more spin decay per second.
+
+**Tip Geometry**
+
+```
+D DEFENSE TIP — Side View
+
+    ←── 15.55mm full width ──→
+         ←── 8.94mm tip ──→
+    ╲                        ╱  ← 35° cone angle
+     ╲──────────────────────╱
+      ╲                    ╱    full height: 8.89mm
+       ╲──────────────────╱     tip height:  7.59mm
+            tip contact
+               ↓
+         stadium floor
+```
+
+**Inertia and Defense Mechanics**
+
+```
+D tip mass [FACT — linka pirate-leviathan.md]: 0.68 g = 0.00068 kg
+Full width: 15.55mm → r_outer = 7.775mm
+Tip width:   8.94mm → r_tip  = 4.470mm
+
+I_D = ½ × 0.00068 × (Math.pow(0.004,2) + Math.pow(0.007775,2))
+    = ½ × 0.00068 × (1.60×10⁻⁵ + 6.045×10⁻⁵)
+    = ½ × 0.00068 × 7.645×10⁻⁵                 = 2.60×10⁻⁸ kg·m²
+
+35° cone friction:
+  Contact patch at r_contact = tip_W/2 = 4.47mm
+  μ_k (ABS cone on polycarbonate) = 0.090
+  At m_total = 34g (Grand Capricorn 145D):
+    τ = 0.090 × 0.034 × 9.81 × 0.00447 = 1.345×10⁻⁴ N·m
+    System I = 8.05×10⁻⁶ kg·m²
+    dω/dt = 1.345×10⁻⁴ / 8.05×10⁻⁶ = 16.7 rad/s²
+
+Recoil comparison (D vs S vs WD at 35°):
+  D  (35°, 8.94mm tip): smash=0.819, recoil=0.574 — wide contact, moderate recoil absorption
+  S  (sharp, ~1mm tip): smash~0.998, recoil~0.070 — minimal recoil; near-zero contact = max stamina
+  WD (35°, ~9.0mm tip, free-spin): smash=0.819, recoil=0.574 — same angle as D but WD housing rotates,
+      reducing effective μ by ~30% → WD = better stamina than D
+  
+  D vs WD: WD outclasses D in stamina when free-spin is active.
+  D advantage: heavier build compatibility — D is stiffer, more stable in heavy combos where WD wobbles.
+
+"Recovery" mechanic (wiki cited):
+  When D makes wall contact (recoil event), the wide 35° cone redirects the bey inward
+  vs. a narrow tip that would glance off and continue outward.
+  Recovery arc: bey rebounds at ~(90° − 35°) = 55° from contact tangent → moves toward centre
+  → D tip self-centres after wall contact (passive recovery vs. active WD free-spin stabilisation)
+```
+
+**TypeScript model**
+
+```typescript
+function dTipInertia(m_g: number): number {
+  return 0.5 * (m_g/1000) * (Math.pow(0.004,2) + Math.pow(0.007775,2));
+}
+function dTipDecay(I_system: number, m_total_kg: number): number {
+  const mu = 0.090;
+  const r_contact = 0.00447;  // 4.47mm
+  return (mu * m_total_kg * 9.81 * r_contact) / I_system;
+}
+function dTipRecoil(theta_deg: number): { smash: number; recoilDir: number; recoveryAngle: number } {
+  const theta = theta_deg * Math.PI / 180;
+  return {
+    smash: Math.cos(theta),
+    recoilDir: Math.sin(theta),
+    recoveryAngle: 90 - theta_deg  // degrees; bey rebounds toward centre
+  };
+}
+
+// dTipInertia(0.68)                            → 2.60×10⁻⁸ kg·m²
+// dTipDecay(8.05e-6, 0.034)                   → 16.7 rad/s²  (Grand Capricorn 145D)
+// dTipRecoil(35)                              → { smash: 0.819, recoilDir: 0.574, recoveryAngle: 55 }
+//   → 55° recovery arc — bey self-centres after wall contact (passive defense recovery)
