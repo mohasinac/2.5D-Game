@@ -1,13 +1,15 @@
 /**
  * SideProfileView — cross-section canvas (height × radius).
+ * Ported from Canvas 2D → PixiJS 8 so all admin views use one renderer.
  *
  * Y axis = height from floor (mm, 0 at bottom).
  * X axis = radius from center (mm, 0 at center line).
  * Each layer is drawn as a filled rectangle/polygon at its absolute height.
- * Contact points appear as colored horizontal bands on the outer edge.
+ * Contact points appear as coloured horizontal bands on the outer edge.
  */
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
+import * as PIXI from "pixi.js";
 import { HEX } from "@/styles/theme";
 import { computeEffectiveRadius } from "@/lib/beybladeSystemConverter";
 import type { ResolvedBeybladeSystem } from "@/lib/beybladeSystemConverter";
@@ -22,36 +24,20 @@ const PAD = { left: 40, right: 20, top: 14, bottom: 28 };
 const DRAW_W = W - PAD.left - PAD.right;
 const DRAW_H = H - PAD.top - PAD.bottom;
 
-// Attack type → angle for the indicator line inside the CP band
 const ATTACK_ANGLES: Record<string, number> = {
-  smash:      0,
-  upper:      30,
-  absorb:     -15,
-  burst:      0,
-  spin_steal: 0,
+  smash: 0, upper: 30, absorb: -15, burst: 0, spin_steal: 0,
 };
-
-// Attack type → dash pattern
-const ATTACK_DASH: Record<string, number[]> = {
-  burst:      [3, 3],
-  spin_steal: [2, 2],
-};
-
-// Material → CP band color
 const MATERIAL_COLORS: Record<string, string> = {
-  abs:           "#3b82f6",
-  rubber:        "#22c55e",
-  metal:         "#94a3b8",
-  pom:           "#eab308",
-  polycarbonate: "#a855f7",
+  abs: "#3b82f6", rubber: "#22c55e", metal: "#94a3b8",
+  pom: "#eab308", polycarbonate: "#a855f7",
 };
 
 interface LayerInfo {
   label: string;
   color: string;
-  heightMm: number;          // top of this layer (absolute from floor)
-  radiusMm: number;          // effective outer radius
-  innerRadiusMm: number;     // inner bore radius (0 for solid)
+  heightMm: number;
+  radiusMm: number;
+  innerRadiusMm: number;
   contactPoints: SystemContactPoint[];
   isTip: boolean;
   tipOffsetX?: number;
@@ -75,14 +61,12 @@ function buildLayers(resolved: ResolvedBeybladeSystem): {
   const containsCasing = !!(tip?.containsCasing);
   const trackHeight = (resolved.spinTrack as Loose | undefined)?.height ?? 0;
 
-  const add = (
-    label: string,
-    part: Loose | null | undefined,
-    isTip = false,
-    heightOffset = 0,
-  ) => {
+  const add = (label: string, part: Loose | null | undefined, isTip = false, heightOffset = 0) => {
     if (!part) return;
-    const dims = part.dimensions as { height?: number; outerRadius?: number; innerRadius?: number; radius?: number; tipWidth?: number } | undefined;
+    const dims = part.dimensions as {
+      height?: number; outerRadius?: number; innerRadius?: number;
+      radius?: number; tipWidth?: number;
+    } | undefined;
     const rawHeight = dims?.height ?? 0;
     if (rawHeight <= 0) return;
     const heightMm = rawHeight + heightOffset;
@@ -91,51 +75,40 @@ function buildLayers(resolved: ResolvedBeybladeSystem): {
     const radiusMm = isTip
       ? (dims?.tipWidth ?? dims?.outerRadius ?? 5)
       : (geometry ? computeEffectiveRadius(geometry, fallbackR) : fallbackR);
-
     layers.push({
-      label,
-      color: (part.color as string) ?? HEX.faint,
-      heightMm,
-      radiusMm,
+      label, color: (part.color as string) ?? HEX.faint,
+      heightMm, radiusMm,
       innerRadiusMm: isTip ? 0 : (dims?.innerRadius ?? 0),
       contactPoints: (part.contactPoints as SystemContactPoint[]) ?? [],
-      isTip,
-      tipOffsetX: 0,
-      tipOffsetY: 0,
+      isTip, tipOffsetX: 0, tipOffsetY: 0,
     });
   };
 
   if (containsCasing) {
-    // Cup-inside-cup: casing renders first (inner), tip cup renders last (outermost)
-    add("Core",     resolved.core as Loose, false, trackHeight);
-    add("Casing",   resolved.casing as Loose, false, trackHeight);
+    add("Core",     resolved.core as Loose,       false, trackHeight);
+    add("Casing",   resolved.casing as Loose,     false, trackHeight);
     add("WD",       resolved.weightDisk as Loose, false, trackHeight);
     add("AR",       resolved.attackRing as Loose, false, trackHeight);
-    add("BitBeast", resolved.bitBeast as Loose, false, trackHeight);
-    // Tip cup drawn last with full height — no offset (it IS the outermost shell)
+    add("BitBeast", resolved.bitBeast as Loose,   false, trackHeight);
     add("Tip (cup)", tip, true);
   } else {
-    // Standard stacking — tip at bottom, track lifts everything above it
-    add("Tip",      tip, true);
+    add("Tip", tip, true);
     if (trackHeight > 0) {
-      // SpinTrack column: drawn as a thin rectangular column
       const track = resolved.spinTrack as Loose;
       const trackDims = track?.dimensions as { outerRadius?: number } | undefined;
       layers.push({
         label: `Track (${trackHeight}mm)`,
         color: (track?.color as string) ?? "#64748b",
-        heightMm: trackHeight,
-        radiusMm: trackDims?.outerRadius ?? 4,
-        innerRadiusMm: 2,
-        contactPoints: [],
-        isTip: false, tipOffsetX: 0, tipOffsetY: 0,
+        heightMm: trackHeight, radiusMm: trackDims?.outerRadius ?? 4,
+        innerRadiusMm: 2, contactPoints: [], isTip: false,
+        tipOffsetX: 0, tipOffsetY: 0,
       });
     }
-    add("Core",     resolved.core as Loose, false, trackHeight);
-    add("Casing",   resolved.casing as Loose, false, trackHeight);
+    add("Core",     resolved.core as Loose,       false, trackHeight);
+    add("Casing",   resolved.casing as Loose,     false, trackHeight);
     add("WD",       resolved.weightDisk as Loose, false, trackHeight);
     add("AR",       resolved.attackRing as Loose, false, trackHeight);
-    add("BitBeast", resolved.bitBeast as Loose, false, trackHeight);
+    add("BitBeast", resolved.bitBeast as Loose,   false, trackHeight);
   }
 
   for (const { part: subPart, attachment } of resolved.subParts ?? []) {
@@ -143,69 +116,64 @@ function buildLayers(resolved: ResolvedBeybladeSystem): {
     add(`Sub (${hLabel})`, subPart as Loose, false, trackHeight);
   }
 
-  // Shield disk info for separate rendering
   const trackDoc = resolved.spinTrack as Loose | undefined;
   const sd = trackDoc?.shieldDisk as { enabled?: boolean; diskHeight?: number; diskRadius?: number } | undefined;
   const trackShieldDisk = sd?.enabled
-    ? { diskHeight: (sd.diskHeight ?? 0), diskRadius: sd.diskRadius ?? 17, color: (trackDoc?.color as string) ?? "#64748b" }
+    ? { diskHeight: sd.diskHeight ?? 0, diskRadius: sd.diskRadius ?? 17, color: (trackDoc?.color as string) ?? "#64748b" }
     : undefined;
 
   return { layers, trackHeight, containsCasing, trackShieldDisk };
 }
 
-function drawView(
-  ctx: CanvasRenderingContext2D,
+// ── Scene builder (called once per resolved change) ───────────────────────────
+function buildScene(
+  stage: PIXI.Container,
   layers: LayerInfo[],
   maxH: number,
   trackShieldDisk?: { diskHeight: number; diskRadius: number; color: string },
   trackHeight = 0,
 ) {
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = HEX.bg0;
-  ctx.fillRect(0, 0, W, H);
+  stage.removeChildren();
 
-  const scaleY = DRAW_H / maxH;           // px per mm height
+  const bg = new PIXI.Graphics();
+  bg.rect(0, 0, W, H).fill({ color: HEX.bg0 });
+  stage.addChild(bg);
+
+  const scaleY = DRAW_H / maxH;
   const maxRadius = layers.reduce((m, l) => Math.max(m, l.radiusMm), 20);
-  const scaleX = (DRAW_W / 2) / maxRadius; // px per mm radius
-
-  const toY = (hmm: number) => PAD.top + DRAW_H - hmm * scaleY;
-  const toX = (rmm: number) => PAD.left + DRAW_W / 2 + rmm * scaleX;
-  const toXl = (rmm: number) => PAD.left + DRAW_W / 2 - rmm * scaleX;
-
-  // ── Grid lines ────────────────────────────────────────────────────────────
-  ctx.strokeStyle = HEX.border + "44";
-  ctx.lineWidth = 0.5;
-  // Horizontal every 10mm
-  for (let h = 0; h <= maxH; h += 10) {
-    const y = toY(h);
-    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
-  }
-  // Center line
-  ctx.strokeStyle = HEX.faint;
-  ctx.lineWidth = 0.5;
+  const scaleX = (DRAW_W / 2) / maxRadius;
   const cx = PAD.left + DRAW_W / 2;
-  ctx.beginPath(); ctx.moveTo(cx, PAD.top); ctx.lineTo(cx, PAD.top + DRAW_H); ctx.stroke();
-  // Floor line
-  ctx.beginPath(); ctx.moveTo(PAD.left, toY(0)); ctx.lineTo(W - PAD.right, toY(0)); ctx.stroke();
 
-  // ── Axis labels ───────────────────────────────────────────────────────────
-  ctx.fillStyle = HEX.faint;
-  ctx.font = "9px sans-serif";
-  ctx.textAlign = "right";
+  const toY  = (h: number) => PAD.top + DRAW_H - h * scaleY;
+  const toX  = (r: number) => cx + r * scaleX;
+  const toXl = (r: number) => cx - r * scaleX;
+
+  // ── Grid ─────────────────────────────────────────────────────────────────────
+  const grid = new PIXI.Graphics();
+  for (let h = 0; h <= maxH; h += 10)
+    grid.moveTo(PAD.left, toY(h)).lineTo(W - PAD.right, toY(h));
+  grid.stroke({ color: HEX.border, width: 0.5, alpha: 0.27 });
+  const axes = new PIXI.Graphics();
+  axes.moveTo(cx, PAD.top).lineTo(cx, PAD.top + DRAW_H);
+  axes.moveTo(PAD.left, toY(0)).lineTo(W - PAD.right, toY(0));
+  axes.stroke({ color: HEX.faint, width: 0.5 });
+  stage.addChild(grid);
+  stage.addChild(axes);
+
+  // Height labels
   for (let h = 0; h <= maxH; h += 10) {
-    ctx.fillText(`${h}`, PAD.left - 4, toY(h) + 3);
+    const t = new PIXI.Text({ text: `${h}`, style: { fill: HEX.faint, fontSize: 9, fontFamily: "sans-serif" } });
+    t.anchor.set(1, 0.5);
+    t.position.set(PAD.left - 4, toY(h));
+    stage.addChild(t);
   }
-  ctx.textAlign = "center";
-  ctx.fillText("h mm", PAD.left - 18, PAD.top + DRAW_H / 2);
 
-  // ── Part layers ───────────────────────────────────────────────────────────
-  // Sort by heightMm ascending so lower parts draw first
+  // ── Part layers ───────────────────────────────────────────────────────────────
   const sorted = [...layers].sort((a, b) => a.heightMm - b.heightMm);
-
   for (const layer of sorted) {
-    const yTop    = toY(layer.heightMm);
-    const yFloor  = toY(0);
-    const layerH  = yFloor - yTop;
+    const yTop   = toY(layer.heightMm);
+    const yFloor = toY(0);
+    const layerH = yFloor - yTop;
     if (layerH <= 0) continue;
 
     const xRight  = toX(layer.radiusMm);
@@ -213,146 +181,170 @@ function drawView(
     const xInnerR = layer.innerRadiusMm > 0 ? toX(layer.innerRadiusMm) : cx;
     const xInnerL = layer.innerRadiusMm > 0 ? toXl(layer.innerRadiusMm) : cx;
 
-    // Fill
-    ctx.fillStyle = layer.color + "44";
+    const fill    = new PIXI.Graphics();
+    const outline = new PIXI.Graphics();
+
     if (layer.innerRadiusMm > 0) {
-      // Ring shape — draw two rectangles
-      ctx.fillRect(xLeft, yTop, xInnerL - xLeft, layerH);
-      ctx.fillRect(xInnerR, yTop, xRight - xInnerR, layerH);
+      fill.rect(xLeft, yTop, xInnerL - xLeft, layerH).fill({ color: layer.color, alpha: 0.27 });
+      fill.rect(xInnerR, yTop, xRight - xInnerR, layerH).fill({ color: layer.color, alpha: 0.27 });
+      outline.rect(xLeft, yTop, xInnerL - xLeft, layerH).stroke({ color: layer.color, width: 1, alpha: 0.8 });
+      outline.rect(xInnerR, yTop, xRight - xInnerR, layerH).stroke({ color: layer.color, width: 1, alpha: 0.8 });
     } else if (layer.isTip && (layer.tipOffsetX || layer.tipOffsetY)) {
       const offX = (layer.tipOffsetX ?? 0) * scaleX;
-      ctx.fillRect(cx + offX - layer.radiusMm * scaleX, yTop, layer.radiusMm * 2 * scaleX, layerH);
+      fill.rect(cx + offX - layer.radiusMm * scaleX, yTop, layer.radiusMm * 2 * scaleX, layerH).fill({ color: layer.color, alpha: 0.27 });
+      outline.rect(cx + offX - layer.radiusMm * scaleX, yTop, layer.radiusMm * 2 * scaleX, layerH).stroke({ color: layer.color, width: 1, alpha: 0.8 });
     } else {
-      ctx.fillRect(xLeft, yTop, xRight - xLeft, layerH);
+      fill.rect(xLeft, yTop, xRight - xLeft, layerH).fill({ color: layer.color, alpha: 0.27 });
+      outline.rect(xLeft, yTop, xRight - xLeft, layerH).stroke({ color: layer.color, width: 1, alpha: 0.8 });
     }
+    stage.addChild(fill);
+    stage.addChild(outline);
 
-    // Outline
-    ctx.strokeStyle = layer.color + "cc";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    if (layer.innerRadiusMm > 0) {
-      ctx.rect(xLeft, yTop, xInnerL - xLeft, layerH);
-      ctx.rect(xInnerR, yTop, xRight - xInnerR, layerH);
-    } else {
-      ctx.rect(xLeft, yTop, xRight - xLeft, layerH);
-    }
-    ctx.stroke();
+    const lbl = new PIXI.Text({ text: layer.label, style: { fill: HEX.muted, fontSize: 9, fontFamily: "sans-serif" } });
+    lbl.anchor.set(0, 0.5);
+    lbl.position.set(xRight + 3, yTop + 6);
+    stage.addChild(lbl);
 
-    // Label
-    ctx.fillStyle = HEX.muted;
-    ctx.font = "9px sans-serif";
-    ctx.textAlign = "left";
-    ctx.fillText(layer.label, xRight + 3, yTop + 10);
-
-    // ── Contact point bands ────────────────────────────────────────────────
+    // ── Contact-point bands ────────────────────────────────────────────────────
     for (const cp of layer.contactPoints) {
-      const bandColor = MATERIAL_COLORS[cp.material] ?? HEX.blue;
-      const yMin = toY(cp.heightRange.max);
-      const yMax = toY(cp.heightRange.min);
+      const bc = MATERIAL_COLORS[cp.material] ?? HEX.blue;
+      const yMin  = toY(cp.heightRange.max);
+      const yMax  = toY(cp.heightRange.min);
       const bandH = yMax - yMin;
       if (bandH <= 0) continue;
 
-      // Band fill on outer edge (right side only, mirrored)
-      ctx.fillStyle = bandColor + "55";
-      ctx.fillRect(xRight - 6, yMin, 6, bandH);
-      ctx.fillRect(xLeft, yMin, 6, bandH);
+      const bf = new PIXI.Graphics();
+      bf.rect(xRight - 6, yMin, 6, bandH).fill({ color: bc, alpha: 0.33 });
+      bf.rect(xLeft, yMin, 6, bandH).fill({ color: bc, alpha: 0.33 });
+      const bs = new PIXI.Graphics();
+      bs.rect(xRight - 6, yMin, 6, bandH).stroke({ color: bc, width: 0.8, alpha: 0.73 });
+      bs.rect(xLeft, yMin, 6, bandH).stroke({ color: bc, width: 0.8, alpha: 0.73 });
+      stage.addChild(bf);
+      stage.addChild(bs);
 
-      ctx.strokeStyle = bandColor + "bb";
-      ctx.lineWidth = 0.8;
-      ctx.strokeRect(xRight - 6, yMin, 6, bandH);
-      ctx.strokeRect(xLeft, yMin, 6, bandH);
-
-      // Attack angle indicator inside band
+      // Attack angle indicator
       const angle = ATTACK_ANGLES[cp.attackType] ?? 0;
-      const rad = (angle * Math.PI) / 180;
-      const midY = (yMin + yMax) / 2;
-      const len = Math.min(bandH * 0.8, 12);
-
-      ctx.strokeStyle = bandColor;
-      ctx.lineWidth = 1;
-      const dash = ATTACK_DASH[cp.attackType];
-      if (dash) ctx.setLineDash(dash);
-
-      // Right side arrow
-      const rxc = xRight - 3;
-      ctx.beginPath();
-      ctx.moveTo(rxc - len / 2 * Math.cos(rad), midY + len / 2 * Math.sin(rad));
-      ctx.lineTo(rxc + len / 2 * Math.cos(rad), midY - len / 2 * Math.sin(rad));
-      ctx.stroke();
-      ctx.setLineDash([]);
+      const rad   = (angle * Math.PI) / 180;
+      const midY  = (yMin + yMax) / 2;
+      const len   = Math.min(bandH * 0.8, 12);
+      const rxc   = xRight - 3;
+      const ind   = new PIXI.Graphics();
+      ind.moveTo(rxc - len / 2 * Math.cos(rad), midY + len / 2 * Math.sin(rad))
+         .lineTo(rxc + len / 2 * Math.cos(rad), midY - len / 2 * Math.sin(rad))
+         .stroke({ color: bc, width: 1 });
+      stage.addChild(ind);
     }
   }
 
-  // ── Shield disk horizontal bar ────────────────────────────────────────────
+  // ── Shield disk ───────────────────────────────────────────────────────────────
   if (trackShieldDisk) {
     const dY = toY(trackShieldDisk.diskHeight);
     const dX1 = toXl(trackShieldDisk.diskRadius);
     const dX2 = toX(trackShieldDisk.diskRadius);
-    ctx.fillStyle = trackShieldDisk.color + "55";
-    ctx.fillRect(dX1, dY - 3, dX2 - dX1, 6);
-    ctx.strokeStyle = trackShieldDisk.color + "cc";
-    ctx.lineWidth = 1;
-    ctx.setLineDash([2, 2]);
-    ctx.strokeRect(dX1, dY - 3, dX2 - dX1, 6);
-    ctx.setLineDash([]);
-    ctx.fillStyle = trackShieldDisk.color;
-    ctx.font = "8px sans-serif";
-    ctx.textAlign = "left";
-    ctx.fillText(`Shield @${trackShieldDisk.diskHeight}mm`, toX(trackShieldDisk.diskRadius) + 3, dY + 3);
+    const sdf = new PIXI.Graphics();
+    sdf.rect(dX1, dY - 3, dX2 - dX1, 6).fill({ color: trackShieldDisk.color, alpha: 0.33 });
+    const sds = new PIXI.Graphics();
+    sds.rect(dX1, dY - 3, dX2 - dX1, 6).stroke({ color: trackShieldDisk.color, width: 1, alpha: 0.8 });
+    stage.addChild(sdf);
+    stage.addChild(sds);
+    const sdl = new PIXI.Text({ text: `Shield @${trackShieldDisk.diskHeight}mm`, style: { fill: trackShieldDisk.color, fontSize: 8, fontFamily: "sans-serif" } });
+    sdl.position.set(toX(trackShieldDisk.diskRadius) + 3, dY - 3);
+    stage.addChild(sdl);
   }
 
-  // ── Track height annotation ───────────────────────────────────────────────
+  // ── Track height annotation ───────────────────────────────────────────────────
   if (trackHeight > 0) {
-    const tY = toY(trackHeight);
-    ctx.strokeStyle = "#f59e0b44";
-    ctx.lineWidth = 0.8;
-    ctx.setLineDash([3, 3]);
-    ctx.beginPath(); ctx.moveTo(PAD.left, tY); ctx.lineTo(W - PAD.right, tY); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = "#f59e0b";
-    ctx.font = "8px sans-serif";
-    ctx.textAlign = "right";
-    ctx.fillText(`+${trackHeight}mm track`, PAD.left + DRAW_W - 2, tY - 3);
+    const tY  = toY(trackHeight);
+    const tl  = new PIXI.Graphics();
+    tl.moveTo(PAD.left, tY).lineTo(W - PAD.right, tY).stroke({ color: "#f59e0b", width: 0.8, alpha: 0.27 });
+    stage.addChild(tl);
+    const tlt = new PIXI.Text({ text: `+${trackHeight}mm track`, style: { fill: "#f59e0b", fontSize: 8, fontFamily: "sans-serif" } });
+    tlt.anchor.set(1, 1);
+    tlt.position.set(PAD.left + DRAW_W - 2, tY - 2);
+    stage.addChild(tlt);
   }
 
-  // ── Floor label ───────────────────────────────────────────────────────────
-  ctx.fillStyle = HEX.faint;
-  ctx.font = "9px sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText("FLOOR", cx, toY(0) + 18);
+  // ── Floor label ───────────────────────────────────────────────────────────────
+  const fl = new PIXI.Text({ text: "FLOOR", style: { fill: HEX.faint, fontSize: 9, fontFamily: "sans-serif" } });
+  fl.anchor.set(0.5, 0);
+  fl.position.set(cx, toY(0) + 6);
+  stage.addChild(fl);
 }
 
+// ── Component ─────────────────────────────────────────────────────────────────
 export function SideProfileView({ resolved, width = W, height = H }: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef  = useRef<HTMLDivElement>(null);
+  const appRef        = useRef<PIXI.Application | null>(null);
+  const appInitRef    = useRef(false);
+  const resolvedRef   = useRef(resolved);
+  resolvedRef.current = resolved;
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  // Stable rebuild — reads from ref, never causes re-render
+  const rebuildScene = useCallback(() => {
+    const app = appRef.current;
+    if (!app || !appInitRef.current) return;
 
-    if (!resolved) {
-      ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = HEX.bg0;
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = HEX.faint;
-      ctx.font = "11px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("No system loaded", width / 2, height / 2);
+    const res = resolvedRef.current;
+    if (!res) {
+      app.stage.removeChildren();
+      const bg = new PIXI.Graphics();
+      bg.rect(0, 0, W, H).fill({ color: HEX.bg0 });
+      app.stage.addChild(bg);
+      const msg = new PIXI.Text({ text: "No system loaded", style: { fill: HEX.faint, fontSize: 11, fontFamily: "sans-serif" } });
+      msg.anchor.set(0.5, 0.5);
+      msg.position.set(W / 2, H / 2);
+      app.stage.addChild(msg);
       return;
     }
 
-    const { layers, trackHeight, trackShieldDisk } = buildLayers(resolved);
+    const { layers, trackHeight, trackShieldDisk } = buildLayers(res);
     const maxH = layers.reduce((m, l) => Math.max(m, l.heightMm), 60);
-    drawView(ctx, layers, maxH + 4, trackShieldDisk, trackHeight);
-  }, [resolved, width, height]);
+    buildScene(app.stage, layers, maxH + 4, trackShieldDisk, trackHeight);
+  }, []);
+
+  // Init once
+  useEffect(() => {
+    if (!containerRef.current) return;
+    let cancelled = false;
+    const app = new PIXI.Application();
+
+    void (async () => {
+      await app.init({ width: W, height: H, antialias: true, resolution: 1, backgroundColor: 0x111827 });
+      if (cancelled || !containerRef.current) { app.destroy(true); return; }
+
+      app.canvas.style.display = "block";
+      app.canvas.style.width   = "100%";
+      app.canvas.style.height  = "auto";
+      containerRef.current.appendChild(app.canvas);
+      appInitRef.current = true;
+      appRef.current     = app;
+      rebuildScene();
+    })();
+
+    return () => {
+      cancelled = true;
+      appInitRef.current = false;
+      try {
+        if (app.canvas?.parentNode) app.canvas.parentNode.removeChild(app.canvas);
+        app.destroy(true, { children: true });
+      } catch { /* init may still be in flight */ }
+      appRef.current = null;
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Rebuild when resolved changes
+  useEffect(() => {
+    if (appRef.current && appInitRef.current) rebuildScene();
+  }, [resolved, rebuildScene]);
+
+  // width/height props kept for API compatibility — the canvas fills the container
+  void width; void height;
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      className="block rounded-lg border border-border-c"
+    <div
+      ref={containerRef}
+      className="block rounded-lg border border-border-c overflow-hidden"
+      style={{ width: W, height: H }}
     />
   );
 }

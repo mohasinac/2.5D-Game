@@ -1,12 +1,15 @@
 /**
- * TopDownView — 2D top-down canvas.
+ * TopDownView — 2D top-down PixiJS canvas.
+ * Ported from Canvas 2D → PixiJS 8 so all admin views use one renderer.
  *
- * Image Mode (default): sprite overlay of topView images, thin CP arc lines.
- * Material Mode: filled polygon/annuli derived from renderRadius(θ), CP filled sectors.
+ * Material Mode (default): filled polygon/annuli derived from renderRadius(θ), CP filled sectors.
+ * Image Mode: sprite overlay of topView images, thin CP arc lines.
+ *   (Images load from part.images.topView URLs; fallback ring drawn when unavailable.)
  * Movement path overlay shows expected tip movement pattern.
  */
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
+import * as PIXI from "pixi.js";
 import { HEX } from "@/styles/theme";
 import { renderRadius, synthesizeRadialCache } from "@/types/beybladeSystem";
 import { computeEffectiveRadius } from "@/lib/beybladeSystemConverter";
@@ -16,40 +19,15 @@ import type { SystemContactPoint, FourierRadialProfile, PartShape } from "@/type
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Loose = Record<string, any>;
 
-const SIZE = 280;
+const SIZE   = 280;
 const CENTER = SIZE / 2;
 
 const MATERIAL_COLORS: Record<string, string> = {
-  abs:           "#3b82f6",
-  rubber:        "#22c55e",
-  metal:         "#94a3b8",
-  pom:           "#eab308",
-  polycarbonate: "#a855f7",
+  abs: "#3b82f6", rubber: "#22c55e", metal: "#94a3b8",
+  pom: "#eab308", polycarbonate: "#a855f7",
 };
 
-// Extra rings drawn in material mode for SpinTrack shield disk
-function drawShieldDiskRing(
-  ctx: CanvasRenderingContext2D,
-  diskRadius: number,
-  pxPerMm: number,
-  color: string,
-) {
-  const r = diskRadius * pxPerMm;
-  ctx.beginPath();
-  ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
-  ctx.strokeStyle = color + "99";
-  ctx.lineWidth = 2;
-  ctx.setLineDash([4, 3]);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle = color + "11";
-  ctx.beginPath();
-  ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
-  ctx.arc(CENTER, CENTER, Math.max(1, r - 3), 0, Math.PI * 2, true);
-  ctx.fill();
-}
-
-// Movement path patterns based on tip shape
+// ── Movement path pattern ─────────────────────────────────────────────────────
 type PathPattern = "flat" | "sharp" | "semi_flat" | "rubber_flat" | "ball" | "off_center";
 
 function getPathPattern(resolved: ResolvedBeybladeSystem): PathPattern {
@@ -65,278 +43,233 @@ function getPathPattern(resolved: ResolvedBeybladeSystem): PathPattern {
   return "flat";
 }
 
-function drawMovementPath(ctx: CanvasRenderingContext2D, pattern: PathPattern) {
-  ctx.save();
-  ctx.globalAlpha = 0.35;
+function addMovementPath(stage: PIXI.Container, pattern: PathPattern) {
+  const gfx = new PIXI.Graphics();
+  gfx.alpha = 0.35;
 
   switch (pattern) {
     case "flat": {
-      // Large circular orbit near outer edge
       const r = CENTER * 0.70;
-      ctx.beginPath();
-      ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
-      ctx.strokeStyle = HEX.blue;
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([6, 5]);
-      ctx.stroke();
+      gfx.circle(CENTER, CENTER, r).stroke({ color: HEX.blue, width: 1.5 });
       break;
     }
     case "rubber_flat": {
-      // Tight central orbit
       const r = CENTER * 0.30;
-      ctx.beginPath();
-      ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
-      ctx.strokeStyle = HEX.green;
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([4, 4]);
-      ctx.stroke();
+      gfx.circle(CENTER, CENTER, r).stroke({ color: HEX.green, width: 1.5 });
       break;
     }
     case "sharp": {
-      // Jagged charge lines radiating outward
-      ctx.strokeStyle = HEX.red;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([]);
       for (let i = 0; i < 6; i++) {
-        const a = (i / 6) * Math.PI * 2;
+        const a   = (i / 6) * Math.PI * 2;
         const len = CENTER * 0.5;
-        ctx.beginPath();
-        ctx.moveTo(CENTER, CENTER);
-        ctx.lineTo(CENTER + Math.cos(a) * len, CENTER + Math.sin(a) * len);
-        ctx.stroke();
+        gfx.moveTo(CENTER, CENTER).lineTo(CENTER + Math.cos(a) * len, CENTER + Math.sin(a) * len);
       }
+      gfx.stroke({ color: HEX.red, width: 1 });
       break;
     }
     case "semi_flat": {
-      // Medium arc with occasional radial spikes
       const r = CENTER * 0.50;
-      ctx.beginPath();
-      ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
-      ctx.strokeStyle = HEX.yellow;
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([5, 4]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.strokeStyle = HEX.yellow;
-      ctx.lineWidth = 1;
+      gfx.circle(CENTER, CENTER, r).stroke({ color: HEX.yellow, width: 1.5 });
       for (let i = 0; i < 4; i++) {
         const a = (i / 4) * Math.PI * 2;
-        ctx.beginPath();
-        ctx.moveTo(CENTER + Math.cos(a) * r, CENTER + Math.sin(a) * r);
-        ctx.lineTo(CENTER + Math.cos(a) * (r + CENTER * 0.18), CENTER + Math.sin(a) * (r + CENTER * 0.18));
-        ctx.stroke();
+        gfx.moveTo(CENTER + Math.cos(a) * r, CENTER + Math.sin(a) * r)
+           .lineTo(CENTER + Math.cos(a) * (r + CENTER * 0.18), CENTER + Math.sin(a) * (r + CENTER * 0.18));
       }
+      gfx.stroke({ color: HEX.yellow, width: 1 });
       break;
     }
     case "ball": {
-      // Medium orbit with scattered dots
       const r = CENTER * 0.50;
-      ctx.beginPath();
-      ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
-      ctx.strokeStyle = HEX.muted;
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([3, 6]);
-      ctx.stroke();
-      // Random bounce dots
-      ctx.setLineDash([]);
-      ctx.fillStyle = HEX.muted;
+      gfx.circle(CENTER, CENTER, r).stroke({ color: HEX.muted, width: 1.5 });
+      const dotGfx = new PIXI.Graphics();
       for (let i = 0; i < 8; i++) {
-        const a = (i / 8) * Math.PI * 2 + 0.4;
+        const a  = (i / 8) * Math.PI * 2 + 0.4;
         const dr = (((i * 37) % 5) - 2) * 6;
-        const px = CENTER + Math.cos(a) * (r + dr);
-        const py = CENTER + Math.sin(a) * (r + dr);
-        ctx.beginPath();
-        ctx.arc(px, py, 2, 0, Math.PI * 2);
-        ctx.fill();
+        dotGfx.circle(CENTER + Math.cos(a) * (r + dr), CENTER + Math.sin(a) * (r + dr), 2).fill({ color: HEX.muted });
       }
+      dotGfx.alpha = 0.35;
+      stage.addChild(dotGfx);
       break;
     }
     case "off_center": {
-      // Expanding spiral
-      ctx.strokeStyle = HEX.orange;
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([4, 3]);
-      ctx.beginPath();
+      const pts: number[] = [];
       for (let i = 0; i <= 120; i++) {
         const t = i / 120;
         const a = t * Math.PI * 4;
         const r = CENTER * 0.15 + t * CENTER * 0.55;
-        const x = CENTER + Math.cos(a) * r;
-        const y = CENTER + Math.sin(a) * r;
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        pts.push(CENTER + Math.cos(a) * r, CENTER + Math.sin(a) * r);
       }
-      ctx.stroke();
+      for (let i = 2; i < pts.length; i += 2)
+        gfx.moveTo(pts[i - 2], pts[i - 1]).lineTo(pts[i], pts[i + 1]);
+      gfx.stroke({ color: HEX.orange, width: 1.5 });
       break;
     }
   }
-
-  ctx.setLineDash([]);
-  ctx.globalAlpha = 1;
-  ctx.restore();
+  stage.addChild(gfx);
 }
 
-function drawCPArc(
-  ctx: CanvasRenderingContext2D,
-  cp: SystemContactPoint,
-  pxPerMm: number,
-  filled: boolean,
-) {
+// ── CP arc (annular sector) ───────────────────────────────────────────────────
+function addCPArc(stage: PIXI.Container, cp: SystemContactPoint, pxPerMm: number, filled: boolean) {
   const color = MATERIAL_COLORS[cp.material] ?? HEX.blue;
-
-  // Resolve arc bounds — prefer new arc-segment fields over legacy angle/width
-  const acp = cp as any;
+  const acp   = cp as Loose;
   const startDeg = acp.arcStart !== undefined ? acp.arcStart : (cp.angle - (cp.width ?? 30) / 2);
   const endDeg   = acp.arcEnd   !== undefined ? acp.arcEnd   : (cp.angle + (cp.width ?? 30) / 2);
-  const rInner = (acp.radiusInner ?? cp.radius ?? 10) * pxPerMm;
-  const rOuter = (acp.radiusOuter !== undefined ? acp.radiusOuter : (acp.radiusInner ?? cp.radius ?? 10) + (acp.lineThickness ?? cp.thickness ?? 2)) * pxPerMm;
+  const rInner   = (acp.radiusInner ?? cp.radius ?? 10) * pxPerMm;
+  const rOuter   = (acp.radiusOuter !== undefined
+    ? acp.radiusOuter
+    : (acp.radiusInner ?? cp.radius ?? 10) + (acp.lineThickness ?? cp.thickness ?? 2)) * pxPerMm;
   const startRad = ((startDeg - 90) * Math.PI) / 180;
   const endRad   = ((endDeg   - 90) * Math.PI) / 180;
 
+  const gfx = new PIXI.Graphics();
   if (filled) {
-    // Filled annular sector
-    ctx.beginPath();
-    ctx.arc(CENTER, CENTER, rOuter, startRad, endRad);
-    ctx.arc(CENTER, CENTER, Math.max(1, rInner), endRad, startRad, true);
-    ctx.closePath();
-    ctx.fillStyle = color + "99";
-    ctx.fill();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 0.8;
-    ctx.stroke();
-
-    // Extended envelope (dashed)
-    if (cp.extends) {
-      const er = cp.extendedRadius * pxPerMm;
-      const et = cp.extendedThickness * pxPerMm;
-      const eHalf = cp.extendedWidth / 2;
-      const es = ((cp.angle - eHalf - 90) * Math.PI) / 180;
-      const ee = ((cp.angle + eHalf - 90) * Math.PI) / 180;
-      ctx.setLineDash([3, 2]);
-      ctx.strokeStyle = color + "66";
-      ctx.lineWidth = 0.8;
-      ctx.beginPath();
-      ctx.arc(CENTER, CENTER, er + et / 2, es, ee);
-      ctx.stroke();
-      ctx.setLineDash([]);
+    // Annular sector: outer arc forward + inner arc backward
+    const steps = Math.max(12, Math.round(Math.abs(endRad - startRad) * 20));
+    const pts: number[] = [];
+    for (let i = 0; i <= steps; i++) {
+      const a = startRad + (i / steps) * (endRad - startRad);
+      pts.push(CENTER + Math.cos(a) * rOuter, CENTER + Math.sin(a) * rOuter);
     }
+    for (let i = steps; i >= 0; i--) {
+      const a = startRad + (i / steps) * (endRad - startRad);
+      pts.push(CENTER + Math.cos(a) * Math.max(1, rInner), CENTER + Math.sin(a) * Math.max(1, rInner));
+    }
+    gfx.poly(pts).fill({ color, alpha: 0.6 });
+    gfx.poly(pts).stroke({ color, width: 0.8 });
   } else {
-    // Thin arc line
     const rMid = (rInner + rOuter) / 2;
-    ctx.beginPath();
-    ctx.arc(CENTER, CENTER, rMid, startRad, endRad);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
+    gfx.arc(CENTER, CENTER, rMid, startRad, endRad).stroke({ color, width: 1.5 });
   }
+  stage.addChild(gfx);
 }
 
-function drawMaterialMode(
-  ctx: CanvasRenderingContext2D,
-  resolved: ResolvedBeybladeSystem,
-  pxPerMm: number,
-) {
+// ── Shield disk ring ──────────────────────────────────────────────────────────
+function addShieldDiskRing(stage: PIXI.Container, diskRadius: number, pxPerMm: number, color: string) {
+  const r = diskRadius * pxPerMm;
+  const gfx = new PIXI.Graphics();
+  gfx.circle(CENTER, CENTER, r).stroke({ color, width: 2, alpha: 0.6 });
+  // Thin ring fill
+  const ring = new PIXI.Graphics();
+  const steps = 60;
+  const pts: number[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const a = (i / steps) * Math.PI * 2;
+    pts.push(CENTER + Math.cos(a) * r, CENTER + Math.sin(a) * r);
+  }
+  for (let i = steps; i >= 0; i--) {
+    const a = (i / steps) * Math.PI * 2;
+    pts.push(CENTER + Math.cos(a) * Math.max(0, r - 3), CENTER + Math.sin(a) * Math.max(0, r - 3));
+  }
+  ring.poly(pts).fill({ color, alpha: 0.07 });
+  stage.addChild(ring);
+  stage.addChild(gfx);
+}
+
+// ── Grid ─────────────────────────────────────────────────────────────────────
+function addGrid(stage: PIXI.Container, maxRadius: number, pxPerMm: number) {
+  const gfx = new PIXI.Graphics();
+  for (let r = 5; r <= maxRadius + 5; r += 5)
+    gfx.circle(CENTER, CENTER, r * pxPerMm);
+  gfx.stroke({ color: HEX.border, width: 0.5, alpha: 0.33 });
+  // Crosshair
+  const ch = new PIXI.Graphics();
+  ch.moveTo(CENTER - 8, CENTER).lineTo(CENTER + 8, CENTER);
+  ch.moveTo(CENTER, CENTER - 8).lineTo(CENTER, CENTER + 8);
+  ch.stroke({ color: HEX.faint, width: 0.5 });
+  stage.addChild(gfx);
+  stage.addChild(ch);
+}
+
+// ── Material mode ─────────────────────────────────────────────────────────────
+function addMaterialMode(stage: PIXI.Container, resolved: ResolvedBeybladeSystem, pxPerMm: number) {
   const parts = [
-    { part: resolved.weightDisk,  layer: "wd"  },
-    { part: resolved.attackRing,  layer: "ar"  },
-    { part: resolved.bitBeast,    layer: "bb"  },
+    { part: resolved.weightDisk,  layer: "wd" },
+    { part: resolved.attackRing,  layer: "ar" },
+    { part: resolved.bitBeast,    layer: "bb" },
     ...(resolved.subParts ?? []).map((a) => ({ part: a.part, layer: "sub" })),
   ];
 
   for (const { part } of parts) {
     if (!part) continue;
     const p = part as Loose;
-    const dims = p.dimensions as { outerRadius?: number; innerRadius?: number } | undefined;
+    const dims     = p.dimensions as { outerRadius?: number; innerRadius?: number } | undefined;
     const geometry = p.geometry as PartShape | undefined;
     const fallbackR = dims?.outerRadius ?? 20;
     const outerR = geometry ? computeEffectiveRadius(geometry, fallbackR) : fallbackR;
     const innerR = dims?.innerRadius ?? 0;
-    const color = (p.color as string) ?? HEX.faint;
+    const color  = (p.color as string) ?? HEX.faint;
     const fourierProfile = p.geometry?.fourierProfile as FourierRadialProfile | undefined;
     const cps = (p.contactPoints as SystemContactPoint[]) ?? [];
 
+    const gfx = new PIXI.Graphics();
     if (fourierProfile) {
-      // Draw CP-warped radial polygon
       const cache = fourierProfile.radialCache ?? synthesizeRadialCache(fourierProfile);
-      const polygon: Array<[number, number]> = [];
+      const polygon: number[] = [];
       for (let deg = 0; deg < 360; deg++) {
-        const r = renderRadius(deg, cache, cps) * pxPerMm;
+        const r   = renderRadius(deg, cache, cps) * pxPerMm;
         const rad = ((deg - 90) * Math.PI) / 180;
-        polygon.push([CENTER + Math.cos(rad) * r, CENTER + Math.sin(rad) * r]);
+        polygon.push(CENTER + Math.cos(rad) * r, CENTER + Math.sin(rad) * r);
       }
-      ctx.beginPath();
-      ctx.moveTo(polygon[0][0], polygon[0][1]);
-      for (let i = 1; i < polygon.length; i++) ctx.lineTo(polygon[i][0], polygon[i][1]);
-      ctx.closePath();
-      ctx.fillStyle = color + "44";
-      ctx.fill();
-      ctx.strokeStyle = color + "aa";
-      ctx.lineWidth = 1;
-      ctx.stroke();
+      gfx.poly(polygon).fill({ color, alpha: 0.27 });
+      gfx.poly(polygon).stroke({ color, width: 1, alpha: 0.67 });
     } else {
-      // Annulus / disc fill
-      ctx.beginPath();
-      ctx.arc(CENTER, CENTER, outerR * pxPerMm, 0, Math.PI * 2);
       if (innerR > 0) {
-        ctx.arc(CENTER, CENTER, innerR * pxPerMm, 0, Math.PI * 2, true);
+        // Annulus
+        const steps = 60;
+        const pts: number[] = [];
+        for (let i = 0; i <= steps; i++) {
+          const a = (i / steps) * Math.PI * 2;
+          pts.push(CENTER + Math.cos(a) * outerR * pxPerMm, CENTER + Math.sin(a) * outerR * pxPerMm);
+        }
+        for (let i = steps; i >= 0; i--) {
+          const a = (i / steps) * Math.PI * 2;
+          pts.push(CENTER + Math.cos(a) * innerR * pxPerMm, CENTER + Math.sin(a) * innerR * pxPerMm);
+        }
+        gfx.poly(pts).fill({ color, alpha: 0.27 });
+        gfx.poly(pts).stroke({ color, width: 1, alpha: 0.67 });
+      } else {
+        gfx.circle(CENTER, CENTER, outerR * pxPerMm).fill({ color, alpha: 0.27 });
+        gfx.circle(CENTER, CENTER, outerR * pxPerMm).stroke({ color, width: 1, alpha: 0.67 });
       }
-      ctx.fillStyle = color + "44";
-      ctx.fill();
-      ctx.strokeStyle = color + "aa";
-      ctx.lineWidth = 1;
-      ctx.stroke();
     }
+    stage.addChild(gfx);
 
-    // CPs as filled sectors
-    for (const cp of cps) {
-      drawCPArc(ctx, cp, pxPerMm, true);
-    }
+    for (const cp of cps) addCPArc(stage, cp, pxPerMm, true);
   }
 
-  // Tip — contact patch or cup outer wall
+  // Tip contact patch
   const tip = resolved.tip as Loose | undefined;
   if (tip) {
     const tipDims = tip.dimensions as { tipWidth?: number; outerRadius?: number; innerRadius?: number; tipOffsetX?: number; tipOffsetY?: number } | undefined;
     const containsCasing = !!(tip.containsCasing);
     const ox = (tipDims?.tipOffsetX ?? 0) * pxPerMm;
     const oy = (tipDims?.tipOffsetY ?? 0) * pxPerMm;
+    const tipColor = (tip.color as string) || HEX.faint;
+    const tipGfx = new PIXI.Graphics();
 
     if (containsCasing) {
-      // Draw cup outer wall as large ring, casing as ghost inner ring
       const outerR = (tipDims?.outerRadius ?? 20) * pxPerMm;
       const innerR = (tipDims?.innerRadius ?? 15) * pxPerMm;
-      ctx.beginPath();
-      ctx.arc(CENTER + ox, CENTER + oy, outerR, 0, Math.PI * 2);
-      ctx.arc(CENTER + ox, CENTER + oy, innerR, 0, Math.PI * 2, true);
-      ctx.fillStyle = (tip.color as string || HEX.faint) + "44";
-      ctx.fill();
-      ctx.strokeStyle = tip.color as string || HEX.faint;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      // Ghost inner ring (casing position)
-      ctx.beginPath();
-      ctx.arc(CENTER + ox, CENTER + oy, innerR, 0, Math.PI * 2);
-      ctx.strokeStyle = (tip.color as string || HEX.faint) + "44";
-      ctx.lineWidth = 0.8;
-      ctx.setLineDash([2, 3]);
-      ctx.stroke();
-      ctx.setLineDash([]);
+      const steps = 60;
+      const pts: number[] = [];
+      for (let i = 0; i <= steps; i++) { const a = (i / steps) * Math.PI * 2; pts.push(CENTER + ox + Math.cos(a) * outerR, CENTER + oy + Math.sin(a) * outerR); }
+      for (let i = steps; i >= 0; i--) { const a = (i / steps) * Math.PI * 2; pts.push(CENTER + ox + Math.cos(a) * innerR, CENTER + oy + Math.sin(a) * innerR); }
+      tipGfx.poly(pts).fill({ color: tipColor, alpha: 0.27 });
+      tipGfx.circle(CENTER + ox, CENTER + oy, outerR).stroke({ color: tipColor, width: 1.5 });
+      tipGfx.circle(CENTER + ox, CENTER + oy, innerR).stroke({ color: tipColor, width: 0.8, alpha: 0.27 });
     } else {
       const tw = (tipDims?.tipWidth ?? tipDims?.outerRadius ?? 3) * pxPerMm;
-      ctx.beginPath();
-      ctx.arc(CENTER + ox, CENTER + oy, tw, 0, Math.PI * 2);
-      ctx.fillStyle = (tip.color as string || HEX.faint) + "88";
-      ctx.fill();
-      ctx.strokeStyle = tip.color as string || HEX.faint;
-      ctx.lineWidth = 1;
-      ctx.stroke();
+      tipGfx.circle(CENTER + ox, CENTER + oy, tw).fill({ color: tipColor, alpha: 0.53 });
+      tipGfx.circle(CENTER + ox, CENTER + oy, tw).stroke({ color: tipColor, width: 1 });
     }
+    stage.addChild(tipGfx);
   }
 
-  // SpinTrack shield disk ring
+  // SpinTrack shield disk
   const spinTrack = (resolved as Loose).spinTrack as Loose | undefined;
   if (spinTrack?.shieldDisk?.enabled) {
     const sd = spinTrack.shieldDisk as { diskRadius?: number };
-    drawShieldDiskRing(ctx, sd.diskRadius ?? 17, pxPerMm, (spinTrack.color as string) ?? "#64748b");
+    addShieldDiskRing(stage, sd.diskRadius ?? 17, pxPerMm, (spinTrack.color as string) ?? "#64748b");
   }
 
   // Pocket balls
@@ -345,23 +278,22 @@ function drawMaterialMode(
     if (!part) continue;
     const pockets = ((part as Loose).pockets as Array<{ position: { x: number; y: number }; ballMaterial: string }>) ?? [];
     for (const pocket of pockets) {
-      const px = CENTER + pocket.position.x * pxPerMm;
-      const py = CENTER + pocket.position.y * pxPerMm;
-      ctx.beginPath();
-      ctx.arc(px, py, 3, 0, Math.PI * 2);
-      ctx.fillStyle = pocket.ballMaterial === "metal" ? HEX.muted : HEX.yellow;
-      ctx.fill();
+      const px   = CENTER + pocket.position.x * pxPerMm;
+      const py   = CENTER + pocket.position.y * pxPerMm;
+      const pGfx = new PIXI.Graphics();
+      pGfx.circle(px, py, 3).fill({ color: pocket.ballMaterial === "metal" ? HEX.muted : HEX.yellow });
+      stage.addChild(pGfx);
     }
   }
 }
 
-function drawImageMode(
-  ctx: CanvasRenderingContext2D,
+// ── Image mode (shows topView images; fallback to outline ring) ───────────────
+function addImageMode(
+  stage: PIXI.Container,
   resolved: ResolvedBeybladeSystem,
   pxPerMm: number,
-  images: Map<string, HTMLImageElement>,
+  textures: Map<string, PIXI.Texture>,
 ) {
-  // Draw images from bottom to top order
   const parts: Array<{ part: Loose | null | undefined; key: string }> = [
     { part: resolved.weightDisk as Loose, key: "wd" },
     { part: resolved.attackRing as Loose, key: "ar" },
@@ -370,48 +302,30 @@ function drawImageMode(
 
   for (const { part, key } of parts) {
     if (!part) continue;
-    const img = images.get(key);
-    const dims = part.dimensions as { outerRadius?: number } | undefined;
-    const r = (dims?.outerRadius ?? 20) * pxPerMm;
-    if (img) {
-      ctx.drawImage(img, CENTER - r, CENTER - r, r * 2, r * 2);
+    const dims   = part.dimensions as { outerRadius?: number } | undefined;
+    const r      = (dims?.outerRadius ?? 20) * pxPerMm;
+    const color  = part.color as string || HEX.faint;
+    const tex    = textures.get(key);
+
+    if (tex && tex !== PIXI.Texture.EMPTY) {
+      const sprite = new PIXI.Sprite(tex);
+      sprite.anchor.set(0.5);
+      sprite.position.set(CENTER, CENTER);
+      sprite.width  = r * 2;
+      sprite.height = r * 2;
+      stage.addChild(sprite);
     } else {
-      // Fallback ring
-      const color = part.color as string || HEX.faint;
-      ctx.beginPath();
-      ctx.arc(CENTER, CENTER, r, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1;
-      ctx.stroke();
+      const ring = new PIXI.Graphics();
+      ring.circle(CENTER, CENTER, r).stroke({ color, width: 1 });
+      stage.addChild(ring);
     }
 
-    // Thin CP arc lines
-    const cps = part.contactPoints as SystemContactPoint[] ?? [];
-    for (const cp of cps) {
-      drawCPArc(ctx, cp, pxPerMm, false);
-    }
+    const cps = (part.contactPoints as SystemContactPoint[]) ?? [];
+    for (const cp of cps) addCPArc(stage, cp, pxPerMm, false);
   }
 }
 
-function drawGrid(ctx: CanvasRenderingContext2D, maxRadius: number, pxPerMm: number) {
-  ctx.strokeStyle = HEX.border + "55";
-  ctx.lineWidth = 0.5;
-  ctx.setLineDash([2, 3]);
-  for (let r = 5; r <= maxRadius + 5; r += 5) {
-    ctx.beginPath();
-    ctx.arc(CENTER, CENTER, r * pxPerMm, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-  ctx.setLineDash([]);
-  // Crosshair
-  ctx.strokeStyle = HEX.faint;
-  ctx.lineWidth = 0.5;
-  ctx.beginPath();
-  ctx.moveTo(CENTER - 8, CENTER); ctx.lineTo(CENTER + 8, CENTER);
-  ctx.moveTo(CENTER, CENTER - 8); ctx.lineTo(CENTER, CENTER + 8);
-  ctx.stroke();
-}
-
+// ── Component ─────────────────────────────────────────────────────────────────
 interface FullProps {
   resolved?: ResolvedBeybladeSystem | null;
   showMaterial?: boolean;
@@ -419,61 +333,121 @@ interface FullProps {
 }
 
 export function TopDownView({ resolved, showMaterial = false, showMovementPath = true }: FullProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [materialMode, setMaterialMode] = useState(showMaterial);
-  const imagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
+  const containerRef    = useRef<HTMLDivElement>(null);
+  const appRef          = useRef<PIXI.Application | null>(null);
+  const appInitRef      = useRef(false);
+  const resolvedRef     = useRef(resolved);
+  const materialModeRef = useRef(showMaterial);
+  const showPathRef     = useRef(showMovementPath);
+  const textureCache    = useRef<Map<string, PIXI.Texture>>(new Map());
+  // texture load triggers
+  const [, setTextureVer] = useState(0);
 
+  resolvedRef.current     = resolved;
+  materialModeRef.current = showMaterial;
+  showPathRef.current     = showMovementPath;
+
+  const [materialMode, setMaterialMode] = useState(showMaterial);
   useEffect(() => { setMaterialMode(showMaterial); }, [showMaterial]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  const rebuildScene = useCallback(() => {
+    const app = appRef.current;
+    if (!app || !appInitRef.current) return;
 
-    ctx.clearRect(0, 0, SIZE, SIZE);
-    ctx.fillStyle = HEX.bg0;
-    ctx.fillRect(0, 0, SIZE, SIZE);
+    app.stage.removeChildren();
+    const bg = new PIXI.Graphics();
+    bg.rect(0, 0, SIZE, SIZE).fill({ color: HEX.bg0 });
+    app.stage.addChild(bg);
 
-    if (!resolved) {
-      ctx.fillStyle = HEX.faint;
-      ctx.font = "11px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("No system loaded", SIZE / 2, SIZE / 2);
+    const res = resolvedRef.current;
+    if (!res) {
+      const msg = new PIXI.Text({ text: "No system loaded", style: { fill: HEX.faint, fontSize: 11, fontFamily: "sans-serif" } });
+      msg.anchor.set(0.5, 0.5);
+      msg.position.set(SIZE / 2, SIZE / 2);
+      app.stage.addChild(msg);
       return;
     }
 
-    // Determine pxPerMm from effective radius
-    const ar = resolved.attackRing as Loose;
-    const wd = resolved.weightDisk as Loose;
-    const tip = resolved.tip as Loose | undefined;
+    const ar = res.attackRing as Loose;
+    const wd = res.weightDisk as Loose;
+    const tip = res.tip as Loose | undefined;
     const arFallback = (ar?.dimensions?.outerRadius as number) ?? 30;
     const wdFallback = (wd?.dimensions?.outerRadius as number) ?? 30;
     const arR = ar?.geometry ? computeEffectiveRadius(ar.geometry as PartShape, arFallback) : arFallback;
     const wdR = wd?.geometry ? computeEffectiveRadius(wd.geometry as PartShape, wdFallback) : wdFallback;
-    // Include tip outerRadius if it's wider than casing (extendsAboveCasing / containsCasing)
     const tipR = (tip?.containsCasing || tip?.extendsAboveCasing)
-      ? ((tip?.dimensions?.outerRadius as number) ?? 0)
-      : 0;
-    const maxR = Math.max(arR, wdR, tipR, 20);
+      ? ((tip?.dimensions?.outerRadius as number) ?? 0) : 0;
+    const maxR  = Math.max(arR, wdR, tipR, 20);
     const pxPerMm = (SIZE * 0.46) / maxR;
 
-    drawGrid(ctx, maxR, pxPerMm);
+    addGrid(app.stage, maxR, pxPerMm);
 
-    if (materialMode) {
-      drawMaterialMode(ctx, resolved, pxPerMm);
+    if (materialModeRef.current) {
+      addMaterialMode(app.stage, res, pxPerMm);
     } else {
-      drawImageMode(ctx, resolved, pxPerMm, imagesRef.current);
+      // Trigger async texture loads for parts that have topView images
+      const loadIfNeeded = (part: Loose | null | undefined, key: string) => {
+        if (!part) return;
+        const topView = (part.images as Loose | undefined)?.topView as string | undefined;
+        if (topView && !textureCache.current.has(key)) {
+          textureCache.current.set(key, PIXI.Texture.EMPTY); // placeholder
+          PIXI.Assets.load(topView).then((tex: PIXI.Texture) => {
+            textureCache.current.set(key, tex);
+            setTextureVer(v => v + 1); // trigger rebuild
+          }).catch(() => {
+            textureCache.current.delete(key);
+          });
+        }
+      };
+      loadIfNeeded(res.weightDisk as Loose, "wd");
+      loadIfNeeded(res.attackRing as Loose, "ar");
+      loadIfNeeded(res.bitBeast as Loose,   "bb");
+      addImageMode(app.stage, res, pxPerMm, textureCache.current);
     }
 
-    if (showMovementPath) {
-      const pattern = getPathPattern(resolved);
-      drawMovementPath(ctx, pattern);
+    if (showPathRef.current) {
+      const pattern = getPathPattern(res);
+      addMovementPath(app.stage, pattern);
     }
-  }, [resolved, materialMode, showMovementPath]);
+  }, []);
+
+  // Init once
+  useEffect(() => {
+    if (!containerRef.current) return;
+    let cancelled = false;
+    const app = new PIXI.Application();
+
+    void (async () => {
+      await app.init({ width: SIZE, height: SIZE, antialias: true, resolution: 1, backgroundColor: 0x111827 });
+      if (cancelled || !containerRef.current) { app.destroy(true); return; }
+
+      app.canvas.style.display = "block";
+      app.canvas.style.width   = "100%";
+      app.canvas.style.height  = "auto";
+      containerRef.current.appendChild(app.canvas);
+      appInitRef.current = true;
+      appRef.current     = app;
+      rebuildScene();
+    })();
+
+    return () => {
+      cancelled = true;
+      appInitRef.current = false;
+      try {
+        if (app.canvas?.parentNode) app.canvas.parentNode.removeChild(app.canvas);
+        app.destroy(true, { children: true });
+      } catch { /* init may still be in flight */ }
+      appRef.current = null;
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Rebuild when inputs change
+  useEffect(() => {
+    if (appRef.current && appInitRef.current) rebuildScene();
+  }, [resolved, materialMode, showMovementPath, rebuildScene]);
 
   const tip = resolved?.tip as Record<string, unknown> | undefined;
-  const tipShape = tip?.tipShape as string | undefined ?? "?";
+  const tipShape = (tip?.tipShape as string | undefined) ?? "?";
 
   return (
     <div>
@@ -487,17 +461,20 @@ export function TopDownView({ resolved, showMaterial = false, showMovementPath =
           )}
           <button
             onClick={() => setMaterialMode((m) => !m)}
-            className={`py-[3px] px-2 text-[10px] rounded-[5px] cursor-pointer border ${materialMode ? "bg-blue-13 text-theme-blue border-[rgba(59,130,246,0.33)]" : "bg-bg2 text-theme-muted border-border-c"}`}
+            className={`py-[3px] px-2 text-[10px] rounded-[5px] cursor-pointer border ${
+              materialMode
+                ? "bg-blue-13 text-theme-blue border-[rgba(59,130,246,0.33)]"
+                : "bg-bg2 text-theme-muted border-border-c"
+            }`}
           >
             {materialMode ? "Image" : "Material"}
           </button>
         </div>
       </div>
-      <canvas
-        ref={canvasRef}
-        width={SIZE}
-        height={SIZE}
-        className="rounded-lg border border-border-c block w-full h-auto"
+      <div
+        ref={containerRef}
+        className="rounded-lg border border-border-c block overflow-hidden"
+        style={{ width: SIZE, height: SIZE }}
       />
     </div>
   );
