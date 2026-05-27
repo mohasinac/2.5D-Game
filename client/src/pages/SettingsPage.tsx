@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { SoundManager } from "@/game/audio/SoundManager";
 
 interface Settings {
   masterVolume: number;
@@ -67,6 +68,10 @@ export default function SettingsPage() {
     setSettings((prev) => {
       const next = { ...prev, ...patch };
       saveSettings(next);
+      // Keep SoundManager in sync with the master volume slider.
+      if (patch.masterVolume !== undefined) {
+        SoundManager.setVolume(patch.masterVolume / 100);
+      }
       return next;
     });
   }

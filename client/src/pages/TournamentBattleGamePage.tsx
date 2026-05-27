@@ -281,6 +281,12 @@ export function TournamentBattleGamePage() {
         {/* Right */}
         <div className="flex flex-col gap-1.5 items-end">
           <Link
+            to="/game"
+            className="pointer-events-auto py-[clamp(3px,0.5vw,4px)] px-[clamp(8px,1vw,12px)] text-[clamp(9px,1.2vw,12px)] bg-black/60 text-theme-muted rounded-[6px] border border-border-c no-underline"
+          >
+            Exit
+          </Link>
+          <Link
             to={`/game/tournament/${tournamentId}`}
             className="pointer-events-auto py-[clamp(3px,0.5vw,4px)] px-[clamp(8px,1vw,12px)] text-[clamp(9px,1.2vw,12px)] bg-black/60 text-theme-muted rounded-[6px] border border-border-c no-underline"
           >

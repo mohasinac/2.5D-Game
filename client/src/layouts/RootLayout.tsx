@@ -1,8 +1,10 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { GameProvider } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { IS_LOCAL } from "@/game/hooks/useColyseus";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { SoundManager } from "@/game/audio/SoundManager";
 
 import { Settings } from "lucide-react";
 import toast from "react-hot-toast";
@@ -44,6 +46,18 @@ function AuthChip() {
 export function RootLayout() {
   const location = useLocation();
   const hideAuth = isFullScreenGame(location.pathname);
+
+  // Unlock Web Audio on the first user interaction anywhere in the app.
+  // Browsers suspend AudioContext until a gesture fires; this lifts the block.
+  useEffect(() => {
+    const unlock = () => SoundManager.unlock();
+    window.addEventListener("pointerdown", unlock, { once: true, capture: true });
+    window.addEventListener("keydown",     unlock, { once: true, capture: true });
+    return () => {
+      window.removeEventListener("pointerdown", unlock, { capture: true });
+      window.removeEventListener("keydown",     unlock, { capture: true });
+    };
+  }, []);
 
   return (
     <GameProvider>

@@ -84,7 +84,7 @@ export function AIBattleSetupPage() {
   const [playerBeyId, setPlayerBeyId] = useState(settings.beybladeId ?? "default");
   const [aiBeyId, setAiBeyId]         = useState("default");
   const [arenaId, setArenaId]         = useState(settings.arenaId ?? "default");
-  const [difficulty, setDifficulty]   = useState<Difficulty>("medium");
+  const [difficulty, setDifficulty]   = useState<Difficulty>("hard");
   const [bestOf, setBestOf]           = useState<BestOf>(1);
   const [aiCount, setAiCount]         = useState<number>(1);
   const [partOverrides, setPartOverrides] = useState<Record<string, string>>({});
@@ -97,7 +97,9 @@ export function AIBattleSetupPage() {
           getDocs(collection(db, COLLECTIONS.ARENAS)),
           getDoc(doc(db, "settings", "game")),
         ]);
-        if (settingsSnap.exists() && settingsSnap.data().enableAiBattle === false) {
+        // AI battle is always enabled client-side; only disable if explicitly set false in Firestore.
+        if (settingsSnap.exists() && settingsSnap.data().enableAiBattle === false &&
+            settingsSnap.data().enableAI === false) {
           setModeDisabled(true);
         }
         const beys = [FALLBACK_BEY_OPTION, ...bSnap.docs.map(d => ({ id: d.id, ...d.data() } as BeybladeOption))];

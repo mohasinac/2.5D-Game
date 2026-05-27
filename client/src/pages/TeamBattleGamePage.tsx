@@ -3,7 +3,7 @@
 
 import { useRef, useEffect, useState, useMemo, useCallback } from "react";
 
-import { useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { Link, useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { modeFromPath } from "@/shared/utils/gameMode";
 import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGameInput } from "@/game/hooks/useGameInput";
@@ -189,7 +189,14 @@ export function TeamBattleGamePage() {
         </>
       )}
 
-      <div className="absolute" style={{ top: 10, right: 10 }}>
+      {/* Top-right: Exit + camera controls */}
+      <div className="absolute flex flex-col items-end gap-1.5 pointer-events-auto z-10" style={{ top: 10, right: 10 }}>
+        <Link
+          to="/game"
+          className="rounded-md border no-underline min-h-[32px] flex items-center bg-black/60 text-theme-muted border-border-c px-3 py-1 text-[12px]"
+        >
+          Exit
+        </Link>
         <CameraControls onZoomIn={cameraZoomIn} onZoomOut={cameraZoomOut} onZoomReset={cameraZoomReset} />
       </div>
 

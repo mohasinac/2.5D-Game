@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 
 interface ServerSettings {
   enableAI: boolean;
+  enablePvp: boolean;
   enableTournament: boolean;
   maintenanceMode: boolean;
   serverMessage: string;
@@ -14,9 +15,13 @@ interface ServerSettings {
 
 export function GameSelectPage() {
   const { setGameMode } = useGame();
+  // AI Battle is always on by default.
+  // PvP Battle is always off by default (enable via admin settings/game if needed).
+  // Tournament is always on by default (supports AI opponents).
   const [srvSettings, setSrvSettings] = useState<ServerSettings>({
-    enableAI: false,   // safe default — Firestore settings/game doc enables it
-    enableTournament: false,
+    enableAI: true,
+    enablePvp: false,
+    enableTournament: true,
     maintenanceMode: false,
     serverMessage: "",
   });
@@ -24,7 +29,18 @@ export function GameSelectPage() {
   useEffect(() => {
     getDoc(doc(db, "settings", "game"))
       .then((snap) => {
-        if (snap.exists()) setSrvSettings((s) => ({ ...s, ...(snap.data() as Partial<ServerSettings>) }));
+        if (snap.exists()) {
+          const data = snap.data() as Partial<ServerSettings>;
+          setSrvSettings((s) => ({
+            ...s,
+            ...data,
+            // If Firestore doc doesn't explicitly set these, keep our safe defaults:
+            // AI on, PvP off, Tournament on.
+            enableAI:         data.enableAI         ?? true,
+            enablePvp:        data.enablePvp        ?? false,
+            enableTournament: data.enableTournament ?? true,
+          }));
+        }
       })
       .catch(() => {/* use defaults */});
   }, []);
@@ -39,7 +55,9 @@ export function GameSelectPage() {
       sub: "1 Player",
       hoverBorderClass: "hover:border-theme-blue",
       disabled: false,
+      show: true,
     },
+    // PvP Battle — hidden unless explicitly enabled in admin settings.
     {
       to: "/game/battle/lobby",
       mode: "pvp" as const,
@@ -49,6 +67,7 @@ export function GameSelectPage() {
       sub: "2-4 Players",
       hoverBorderClass: "hover:border-theme-red",
       disabled: false,
+      show: srvSettings.enablePvp,
     },
     {
       to: srvSettings.enableAI ? "/game/ai-battle" : "#",
@@ -59,20 +78,20 @@ export function GameSelectPage() {
       sub: srvSettings.enableAI ? "1 Player" : "Coming Soon",
       hoverBorderClass: srvSettings.enableAI ? "hover:border-theme-purple" : "",
       disabled: !srvSettings.enableAI,
+      show: true,
     },
-    ...(srvSettings.enableTournament
-      ? [{
-          to: "/game/tournament",
-          mode: null,
-          icon: "🏆",
-          title: "Tournament",
-          desc: "Compete in bracket-style tournaments against other players and AI.",
-          sub: "Up to 8 players",
-          hoverBorderClass: "hover:border-theme-yellow",
-          disabled: false,
-        }]
-      : []),
-  ];
+    {
+      to: "/game/tournament",
+      mode: null,
+      icon: "🏆",
+      title: "Tournament",
+      desc: "Compete in bracket-style tournaments against AI opponents and other players.",
+      sub: "Up to 8 players",
+      hoverBorderClass: "hover:border-theme-yellow",
+      disabled: !srvSettings.enableTournament,
+      show: true,
+    },
+  ].filter((m) => m.show);
 
   const colCount = Math.min(modes.length, 3);
 
