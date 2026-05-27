@@ -11831,3 +11831,475 @@ The AR similarity to Turtle Survivor noted by the user is confirmed visually:
 ```
 
 The base assembly diverges entirely: Turtle Survivor uses Metal Sting Base (sharp metal tip, no gimmick), while Darllanzer uses SG Semi-Flat Base — which in the anime/theoretical depiction contains the hydro-siphon mechanism. The similarity is skin-deep (AR aesthetics) while the mechanical innovation is entirely in the base.
+
+---
+
+## Case 238 — Sharkrash Attack Ring · ~6.0 g [ESTIMATED]: Why Four Curved Plastic Shark Profiles Produce High Recoil Without Smash Throughput, How Convex-Back Contact Geometry Mimics Bound-Style Deflection Without the Energy-Absorbing Rubber, and Why the Full Combo Sits Below the Mid-Tier Attack Benchmark
+
+Sharkrash (シャークラッシュ) is a Magnacore System beyblade owned by Mariam in the original series. Its four curved shark-head AR blades project aggressively and appear attack-class, but the convex outer surfaces deliver more lateral deflection than radial smash. Without any rubber absorption mechanism the full ABS recoil (e ≈ 0.65–0.70) returns to the user's bey, producing self-destabilisation after each contact. The combo's performance tier matches Bound Attacker and Bound Defender — flashy geometry, poor output — for structurally related but mechanically distinct reasons.
+
+---
+
+### 1. Part Identification
+
+```
+Bit Chip (BC):     Sharkrash — depicts the Sharkrash bit beast
+Attack Ring (AR):  Sharkrash — four curved shark-head blades, ABS plastic
+Weight Disk (WD):  Ten Balance — standard 10-weight balanced disk, ~14.0 g [ESTIMATED]
+Spin Gear (SG):    NEO Right SG — right-spin only, contains Magnacore magnetic chip
+Blade Base (BB):   SG Semi-Flat Base — hard ABS semi-flat tip, standard SG socket
+System:            Magnacore System (Neo Spin Gear generation)
+Owner:             Mariam (original series + manga)
+```
+
+Full combo mass estimate:
+
+```
+AR:  ~6.0 g  [ESTIMATED — 4-blade medium-size ring, typical aggressive-AR range]
+WD:  ~14.0 g [ESTIMATED — Ten Balance, comparable to Eight Balance]
+SG:  ~4.0 g  [ESTIMATED — NEO Right SG with magnacore chip]
+BB:  ~4.5 g  [ESTIMATED — SG Semi-Flat Base]
+BC:  ~0.5 g  [ESTIMATED — standard bit chip]
+─────────────
+Total: ~29.0 g [ESTIMATED]
+```
+
+---
+
+### 2. AR Geometry: The Curved Shark Profile and Its Contact Angle Problem
+
+Each of the four shark blades has a characteristic shape: a narrow pointed snout at the outer radius and a swept, convex curved body/back that arcs rearward (counterclockwise when viewed from above in right spin). This is an involute-cam-like surface rather than a flat smash face.
+
+```
+  Right-spin view from above (CW rotation):
+
+         ← spin direction
+
+       /‾‾\        <- shark snout (pointed outer tip)
+      /    \
+     |  ●  |      <- shark body: convex outer curve
+      \    /
+       \__/        <- swept trailing edge
+
+  Contact event in RS:
+    At initial strike, the snout tip contacts opponent AR.
+    As rotation continues, the convex back of the shark sweeps through.
+
+  Contact angle θ (between contact-face normal and radial direction):
+    Snout tip contact:  θ ≈ 30–40°  [ESTIMATED — image measurement]
+    Mid-body contact:   θ ≈ 50–65°  [ESTIMATED — follows convex curvature]
+    Trailing edge:       glancing, ~70–80°
+```
+
+For a contact face whose normal points at angle θ from the radial:
+
+```
+  Smash component (radial):      F_smash  = F_impact × cos(θ)
+  Deflection component (tang.):  F_deflect = F_impact × sin(θ)
+  Recoil on attacker:            F_recoil = e × F_impact × cos(θ)    [e = COR]
+```
+
+At the mid-body contact (θ ≈ 55°, the dominant zone due to surface area):
+
+```
+  cos(55°) = 0.574   sin(55°) = 0.819
+
+  F_smash   = F × 0.574   (57% of impact force as useful smash)
+  F_deflect = F × 0.819   (82% as deflection — pushes opponent sideways/up)
+  F_recoil  = 0.675 × F × 0.574 = 0.387 × F    [e = 0.675 (ABS mid-range), CONFIRMED]
+
+  Deflection-to-smash ratio: 0.819 / 0.574 = 1.43
+  → Sharkrash deflects 43% more than it smashes in the dominant contact zone.
+```
+
+Compare to a flat smash AR at θ = 15° (e.g. Triple Wing sawtooth face):
+
+```
+  cos(15°) = 0.966   sin(15°) = 0.259
+  F_smash   = F × 0.966
+  F_deflect = F × 0.259
+  F_recoil  = 0.675 × F × 0.966 = 0.652 × F
+
+  Smash-to-deflect ratio: 3.73   ← much higher smash output
+  But recoil is also higher (0.652F vs 0.387F).
+```
+
+Sharkrash's convex profile thus trades smash for deflection compared to a flat-face AR, while keeping a moderate (not low) recoil level. It is geometrically positioned between pure smash and pure deflection archetypes — and excels at neither.
+
+---
+
+### 3. Why This Is Structurally Similar to Bound Attacker / Bound Defender
+
+The Bound Attacker and Bound Defender ARs also use curved surfaces to deflect opponents, but their curves are backed by rubber bumpers. The rubber's COR (e ≈ 0.25, [CONFIRMED]) absorbs the recoil impulse that would otherwise destabilise the attacker.
+
+```
+  Bound Attacker contact sequence:
+    Impact impulse J → rubber bumper compresses (absorbs ΔE = ½kx²)
+    Recoil on attacker = e_rubber × J_normal = 0.25 × J_normal
+    Net recoil impulse: LOW → attacker remains stable
+
+  Sharkrash contact sequence:
+    Impact impulse J → ABS deflects elastically (no absorption)
+    Recoil on attacker = e_ABS × J_normal = 0.675 × J_normal
+    Net recoil impulse: 2.7× higher than Bound Attacker
+
+  Bound Attacker deficiency: rubber kills attack output even while reducing recoil.
+  Sharkrash deficiency: no rubber → full recoil → destabilisation, AND the
+    curved profile already limits smash throughput, so it pays the recoil cost
+    without getting the smash benefit.
+
+  Result: Both combos end up with poor net attack effectiveness, via different failure modes.
+    Bound Attacker: low attack output, acceptable stability
+    Sharkrash:      moderate attack output, high recoil → KO risk on self
+```
+
+---
+
+### 4. Contact Frequency and Cumulative Spin Decay
+
+4-fold symmetry, contact every 90°:
+
+```
+  Contact frequency = 4 × (ω / 2π)
+
+  At ω₀ = 314 rad/s (3000 RPM, launch):   f_contact = 4 × 50 = 200 contacts/s
+  At ω₁ = 209 rad/s (2000 RPM, mid-match): f_contact = 4 × 33.3 = 133 contacts/s
+```
+
+Each contact event delivers a recoil impulse that partially opposes spin. The angular momentum loss per contact:
+
+```
+  ΔL = r_AR × F_recoil × Δt_contact
+
+  r_AR     ≈ 0.030 m        [ESTIMATED — AR outer radius ~30 mm]
+  F_recoil = 0.387 × F_impact (from §2, dominant zone)
+  Δt_contact ≈ 0.5–1.0 ms   [ESTIMATED — ABS-on-ABS contact duration]
+
+  With F_impact = 5 N (light collision):
+    F_recoil = 0.387 × 5 = 1.94 N
+    ΔL = 0.030 × 1.94 × 0.001 = 5.8 × 10⁻⁵ N·m·s per contact
+
+  I_combo ≈ 3.2 × 10⁻⁵ kg·m²   [ESTIMATED — 29 g standard-radius combo]
+  Δω per contact = ΔL / I = 5.8×10⁻⁵ / 3.2×10⁻⁵ = 1.81 rad/s
+
+  In an aggressive 10-contact exchange:
+    Spin loss = 10 × 1.81 = 18.1 rad/s ≈ 173 RPM lost per exchange
+```
+
+At 2000 RPM this is an ~8.6% spin loss per aggressive exchange — sufficient to push toward the < 40% stability wobble threshold (< 800 RPM) after only a handful of engagements. [INFERRED from confirmed gyroscopic wobble threshold at 40% max-spin]
+
+---
+
+### 5. NEO Right SG / Magnacore Chip: No Functional Advantage in Practice
+
+The NEO Right SG holds the Magnacore chip — a small magnet embedded in the spin gear core. At 3 mm separation, F_magnacore ≈ 0.40 N [ESTIMATED — from confirmed constant CS4]. At typical battle distances (>20 mm), the force falls off as r⁻², reaching negligible levels:
+
+```
+  F_magnacore(r) = 0.40 × (3/r)² N
+
+  r = 3 mm:   F = 0.40 N       (design spec)
+  r = 10 mm:  F = 0.036 N      (near-contact range — small)
+  r = 30 mm:  F = 0.004 N      (typical engagement distance — negligible)
+  r = 50 mm:  F = 0.0014 N     (any non-contact separation — irrelevant)
+```
+
+The Magnacore lateral attraction (or repulsion, depending on polarity alignment) only becomes physically meaningful when beyblades are nearly touching. In practice the AR-to-AR collision geometry dominates at that range; the 0.036 N magnetic contribution is overwhelmed by multi-Newton contact impulse forces. For Sharkrash, the NEO Right SG adds complexity without measurable performance benefit.
+
+The NEO Right SG also locks Sharkrash to right spin. There is no Magnacore left-spin equivalent that offers performance parity; left-spin combos must use standard SG left shells, losing the Magnacore chip entirely (with negligible performance cost, per the above).
+
+---
+
+### 6. SG Semi-Flat Base: Neutral Contribution
+
+SG Semi-Flat Base is a standard, competent base. The semi-flat tip provides:
+
+```
+  μ_k = 0.17 [CONFIRMED — hard ABS]
+  Tip contact radius: ~2.0 mm [ESTIMATED]
+  Friction torque: τ_f = μ_k × m × g × r_tip = 0.17 × 0.029 × 9.81 × 0.002
+                       = 9.68 × 10⁻⁴ N·m ≈ 0.97 mN·m [INFERRED]
+
+  Tip drag spin decay: dω/dt = -τ_f / I = -0.97×10⁻³ / 3.2×10⁻⁵ = -30.3 rad/s²
+  In RPM/s: 30.3 × 60/(2π) ≈ 289 RPM/s [INFERRED]
+```
+
+This is near-average for a hard-ABS flat/semi-flat tip — slightly faster than sharp (which would be ~200 RPM/s), consistent with the SG Semi-Flat category. The base is not responsible for the combo's poor performance; it is the only neutral-to-positive part in the stack.
+
+---
+
+### 7. Role Summary
+
+| Role | Verdict | Reason |
+|------|---------|--------|
+| Smash Attack | ✗ Poor | Convex AR profile routes most force into deflection; moderate smash with full ABS recoil → self-destabilisation |
+| Deflection Attack | ✗ Poor | Deflection geometry without rubber → high self-recoil; useful deflection requires stable platform |
+| Defense | ✗ Poor | High AR recoil, no rubber shock absorption; destabilised by its own contacts |
+| Stamina | ✗ Poor | SG Semi-Flat Base is viable but AR's high contact frequency bleeds spin rapidly under pressure |
+| Magnacore combo | ✗ No advantage | Magnetic force negligible at battle distances; Right-spin lock adds no value |
+
+Sharkrash is a cosmetically aggressive beyblade with a structurally deflection-biased AR in a medium-friction plastic. It fits the same performance tier as Bound Attacker and Bound Defender: prominent design concept, poor execution without the right supporting mechanism.
+
+---
+
+### 8. Physics Model
+
+```typescript
+interface SharkrashAR {
+  bladeCount: 4;
+  profileType: "convex-swept";           // curved shark-back, NOT flat smash face
+  dominantContactAngleDeg: 55;           // [ESTIMATED] mid-body convex zone
+  tipMaterial: "ABS";
+  cor: 0.675;                            // [CONFIRMED] ABS restitution mid-range
+  outerRadiusM: 0.030;                   // [ESTIMATED]
+  massKg: 0.006;                         // [ESTIMATED]
+}
+
+function sharkrashContactForces(
+  F_impact: number,          // N — collision force
+  thetaDeg: number = 55      // dominant contact angle from radial
+): { smash: number; deflect: number; recoil: number } {
+  const theta = thetaDeg * Math.PI / 180;
+  const e_ABS = 0.675;                   // [CONFIRMED]
+  const smash   = F_impact * Math.cos(theta);
+  const deflect = F_impact * Math.sin(theta);
+  const recoil  = e_ABS * smash;
+  return { smash, deflect, recoil };
+}
+
+function magnaForce(r_mm: number): number {
+  // F = 0.40 × (3/r)² N  [ESTIMATED baseline at 3 mm]
+  return 0.40 * Math.pow(3 / r_mm, 2);
+}
+
+function contactFrequency(omega_rad_s: number): number {
+  // 4-blade AR: 4 contacts per revolution
+  return 4 * omega_rad_s / (2 * Math.PI);
+}
+
+function spinLossPerContact(
+  F_recoil: number,
+  r_AR_m: number,
+  dt_contact_s: number,
+  I_combo_kgm2: number
+): number {
+  const ΔL = r_AR_m * F_recoil * dt_contact_s;
+  return ΔL / I_combo_kgm2;  // rad/s lost
+}
+
+// sharkrashContactForces(5)     → { smash: 2.87, deflect: 4.10, recoil: 1.94 }
+// magnaForce(3)                 → 0.40 N  (spec range)
+// magnaForce(30)                → 0.004 N (negligible at battle distance)
+// contactFrequency(209)         → 133 contacts/s at 2000 RPM
+// spinLossPerContact(1.94, 0.030, 0.001, 3.2e-5) → 1.81 rad/s per contact
+```
+
+---
+
+### 9. Special Move — Abyss Shark Attack: Tilt-Driven Streak Mechanics
+
+The "Abyss Shark Attack" (アビスシャークアタック) is Mariam's signature move. The bey tilts sharply as if diving, traverses the arena in a low, fast arc, then straightens and streaks through the opponent in a straight line — mimicking a shark rising from depth to strike. Three distinct physics phases produce this trajectory.
+
+---
+
+#### Phase 1 — Deep Tilt Initiation ("Diving")
+
+When Sharkrash tilts to angle φ from vertical, the centre of mass displaces laterally relative to the tip contact point:
+
+```
+  Lateral CoM displacement: δ_CoM = h_CoM × sin(φ)
+
+  h_CoM ≈ 18 mm [ESTIMATED — standard plastic-gen combo, CoM ~18 mm above tip]
+
+  At φ = 45°:  δ_CoM = 18 × sin(45°) = 12.7 mm
+  At φ = 60°:  δ_CoM = 18 × sin(60°) = 15.6 mm  ← anime exaggeration range
+  At φ = 30°:  δ_CoM = 18 × sin(30°) =  9.0 mm   ← realistic tilt threshold
+```
+
+This CoM shift creates a gravitational restoring torque acting at the tip:
+
+```
+  τ_gravity = m × g × δ_CoM = 0.029 × 9.81 × 0.0127 = 3.61 × 10⁻³ N·m  (at φ = 45°) [INFERRED]
+```
+
+The gyroscope does not fall — it precesses. The precession angular velocity:
+
+```
+  Ω_prec = τ_gravity / (I_spin × ω_spin)
+
+  I_spin ≈ 3.2 × 10⁻⁵ kg·m²   [ESTIMATED — §4]
+  ω_spin = 209 rad/s            (2000 RPM, mid-match)
+
+  Ω_prec = 3.61×10⁻³ / (3.2×10⁻⁵ × 209) = 0.539 rad/s ≈ 30.9°/s  [INFERRED]
+```
+
+This precession rotates the tilt axis around the vertical — the bey traces a slow, tilted circle. This is the "shark circling below the surface" phase: the bey orbits the arena with its shark AR blades angled downward-outward, grazing the floor at a steep rake.
+
+---
+
+#### Phase 2 — Bowl Acceleration ("Emerging")
+
+A tilted bey on a curved bowl floor is subject to both the gravitational restoring force (toward centre) and the normal force from the bowl curvature. The key effect: when the bey's CoM is low and outside the centre, the bowl's inclined wall adds a centripetal restoring component that redirects the precession orbit inward.
+
+```
+  Bowl restoring force (at radius r from centre, bowl angle α_wall):
+    F_bowl = m × g × tan(α_wall)
+
+  Typical plastic-gen stadium wall: α_wall ≈ 20–35°  [ESTIMATED — per CS10 §545]
+  At α_wall = 25°, r = 80 mm from centre:
+    F_bowl = 0.029 × 9.81 × tan(25°) = 0.132 N  [INFERRED]
+
+  This adds to the precession torque, accelerating the precession rate.
+```
+
+At the outer bowl wall, the bey's precession orbit diameter shrinks as F_bowl pushes it inward — the trajectory tightens. The tilt angle simultaneously decreases as the centripetal force partially cancels the CoM offset. This is the visual "shark rising from the abyss": the bey physically rises in the bowl (moves from low outer wall toward the flat centre plane) while accelerating inward.
+
+```
+  Streak velocity acquired during bowl climb:
+    Energy in = bowl wall potential energy drop
+
+  Δh = r_outer × sin(α_wall) ≈ 0.080 × sin(25°) = 0.0338 m  [ESTIMATED]
+  ΔKE = m × g × Δh = 0.029 × 9.81 × 0.0338 = 9.6 × 10⁻³ J  [INFERRED]
+
+  v_streak = √(2 × ΔKE / m) = √(2 × 9.6×10⁻³ / 0.029) = 0.814 m/s  [INFERRED]
+```
+
+This ~0.81 m/s translational velocity is the lateral speed acquired from the bowl descent converted to inward motion — roughly the observed "streak" speed.
+
+---
+
+#### Phase 3 — Strike Geometry ("Abyss Shark" Impact)
+
+At tilt recovery, the AR transitions from its normal horizontal attack geometry to a raked strike. During the streak, φ ≈ 15–25° residual tilt remains; the shark blades now present their undersides and inner curves as the leading contact surface.
+
+```
+  Normal (flat) contact:
+    Shark blade outer curve sweeps horizontally into opponent AR
+    Contact zone: mid-body convex face at θ ≈ 55° from radial (§2)
+
+  Tilted (streak) contact:
+    Shark blade lower surface + snout tip contacts opponent AR at a
+    compound angle combining horizontal smash and downward press
+
+  Effective contact angle decomposition at φ = 20° tilt:
+    Horizontal smash component: F × cos(θ_horiz) = F × cos(55°) = 0.574 F
+    Downward press component:   F × sin(φ) = F × sin(20°) = 0.342 F
+
+  Net effective smash vector magnitude:
+    √(0.574² + 0.342²) × F = √(0.330 + 0.117) × F = 0.668 F  [INFERRED]
+```
+
+The downward press component (0.342 F) is the physical mechanism behind "shark emerging from abyss" — the bey strikes with a downward-inward force vector rather than a pure horizontal one. This downward component:
+
+1. Presses the opponent's tip harder into the floor → increased floor friction on the opponent (destabilises its tip)
+2. Reduces the opponent's ability to ride the hit (no upward deflection available)
+3. Delivers a "diving" contact geometry the opponent's AR is not shaped to resist
+
+However, the tilted contact also raises the Sharkrash AR's recoil in the vertical plane:
+
+```
+  Vertical recoil at φ = 20°:
+    F_recoil_vert = e_ABS × F × sin(φ) = 0.675 × F × sin(20°) = 0.231 F
+
+  This vertical recoil component pushes Sharkrash upward on contact — 
+  partially extending the tilt rather than correcting it → the bey may
+  continue into further tilt wobble post-strike rather than recovering cleanly.
+```
+
+This is the self-limiting factor of the move: the same tilt that enables the downward press creates a vertical recoil that destabilises Sharkrash after the strike. The move is a genuine but fragile attack.
+
+---
+
+#### Trajectory Summary (ASCII)
+
+```
+  ABYSS SHARK ATTACK — arena top view + side profile
+
+  Top view:
+    ┌─────────────────────────────────┐
+    │        ARENA (circular)         │
+    │                                 │
+    │   ④ ←streak──── ③              │
+    │                   ↑             │
+    │                  bowl           │
+    │                  climb          │
+    │  ①tilt          ②prec.orbit    │
+    │  initiate ──→   (deep/low)     │
+    └─────────────────────────────────┘
+
+  Side profile (shark analogy):
+    ①        ②          ③       ④
+    [DIVE] → [DEEP ARC] → [RISE] → [STREAK STRIKE]
+
+    surface  ___________________________________
+                    \        /‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+    deep      \_____/ ← tilt  → tilt recovery
+               precession arc     → streak dash
+```
+
+---
+
+#### Game Engine Mapping
+
+```typescript
+interface AbyssSharkAttack {
+  moveType:           "special";
+  archetype:          "tilt-streak";      // distinct from Stampede Rush (linear only)
+  phases: {
+    dive: {
+      tiltAngleDeg:     number;           // 30–60°, anime ≈ 45–60°
+      precessRad_s:     number;           // Ω_prec from gyroscope formula
+      durationMs:       number;           // orbit buildup period
+    };
+    emerge: {
+      bowlRadiusM:      number;           // distance from centre at phase start
+      wallAngleDeg:     number;           // bowl wall angle α_wall
+      streakVelocity_m_s: number;         // v from ΔKE conversion
+    };
+    strike: {
+      residualTiltDeg:  number;           // φ at contact moment ≈ 15–25°
+      horizontalSmash:  number;           // F × cos(θ_horiz)
+      downwardPress:    number;           // F × sin(φ)
+      verticalRecoil:   number;           // e_ABS × F × sin(φ) — self-KO risk
+    };
+  };
+}
+
+function abyssSharkStrikeForces(
+  F_impact: number,
+  tiltDeg: number = 20,
+  contactAngleDeg: number = 55
+): { horizSmash: number; downPress: number; vertRecoil: number; netSmash: number } {
+  const phi   = tiltDeg        * Math.PI / 180;
+  const theta = contactAngleDeg * Math.PI / 180;
+  const e_ABS = 0.675;                             // [CONFIRMED]
+  const horizSmash  = F_impact * Math.cos(theta);
+  const downPress   = F_impact * Math.sin(phi);
+  const vertRecoil  = e_ABS * F_impact * Math.sin(phi);
+  const netSmash    = Math.sqrt(horizSmash ** 2 + downPress ** 2);
+  return { horizSmash, downPress, vertRecoil, netSmash };
+}
+
+function precessRate(
+  tau_Nm: number,
+  I_kgm2: number,
+  omega_rad_s: number
+): number {
+  return tau_Nm / (I_kgm2 * omega_rad_s);   // rad/s
+}
+
+function streakVelocity(
+  mass_kg: number,
+  bowlRadius_m: number,
+  wallAngleDeg: number
+): number {
+  const alpha = wallAngleDeg * Math.PI / 180;
+  const dh    = bowlRadius_m * Math.sin(alpha);
+  return Math.sqrt(2 * mass_kg * 9.81 * dh / mass_kg);  // √(2·g·Δh)
+}
+
+// abyssSharkStrikeForces(5, 20, 55) → { horizSmash: 2.87, downPress: 1.71, vertRecoil: 1.15, netSmash: 3.34 }
+// precessRate(3.61e-3, 3.2e-5, 209)  → 0.539 rad/s ≈ 31°/s at 2000 RPM
+// streakVelocity(0.029, 0.080, 25)   → 0.814 m/s
+```
+
+The move delivers a genuine net smash improvement over flat-stance contact (3.34 F vs 2.87 F, +16%) by adding the downward press vector. The cost is the vertical recoil (1.15 F upward on Sharkrash post-strike) which extends the post-move wobble window. As a high-power single-exchange finisher rather than a sustained attack pattern, the Abyss Shark Attack is mechanically coherent — the tilt-buildup investment is repaid by the enhanced strike geometry, but the window for a clean recovery is narrow.

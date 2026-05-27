@@ -97,13 +97,15 @@ const COMBO_EFFECTS = [
   {
     id: "spin-leech",
     name: "Spin Leech",
-    cost: 25, cooldownMs: 5000, windupTicks: 0, bleedTicks: 0,
+    cost: 35, cooldownMs: 5000, windupTicks: 0, bleedTicks: 0,
+    // Case 615: only activates during counter-spin clashes (attacker & defender spinning opposite)
+    activationCondition: { clashTypeRequired: "counter_spin" },
     tasks: [
-      { action: { type: "multiplier", statDeltas: [{ stat: "spinStealResist", multiplier: 0.3 }] }, target: "opponent", timing: { type: "timed", durationTicks: 60 } },
+      { action: { type: "multiplier", statDeltas: [{ stat: "spinStealResist", multiplier: 0.3 }] }, target: "opponent", timing: { type: "timed", durationTicks: 60 }, condition: { clashTypeRequired: "counter_spin" } },
       { action: { type: "multiplier", statDeltas: [{ stat: "spinDecayRate", multiplier: 0.0 }] }, target: "self", timing: { type: "timed", durationTicks: 60 } },
     ],
     steps: [
-      { behaviorId: "factor.boost", params: { stat: "spinStealResist", mult: 0.3, dur: 60 }, delayTicks: 0, parallel: false },
+      { behaviorId: "factor.boost", params: { stat: "spinStealResist", mult: 0.3, dur: 60, clashTypeRequired: "counter_spin" }, delayTicks: 0, parallel: false },
       { behaviorId: "factor.boost", params: { stat: "spinDecayRate",   mult: 0.0, dur: 60 }, delayTicks: 0, parallel: true },
     ],
   },

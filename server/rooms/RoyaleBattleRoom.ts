@@ -75,17 +75,34 @@ export class RoyaleBattleRoom extends BattleRoom {
 
     const cx = arena.safeZoneX;
     const cy = arena.safeZoneY;
-    const r = arena.safeZoneRadius;
-    const drain = phaseConfig.drainRate * dtS;
+    const currentShrinkRadius = arena.safeZoneRadius;
+    const ZONE_BASE_DAMAGE = phaseConfig.drainRate;
+
+    // Compute arena radius for normalisation (same formula as initSafeZone)
+    const arenaRadius = Math.min(
+      (arena.width || 1080) * 0.45,
+      (arena.height || 1080) * 0.45,
+    );
+
+    let maxFracThisTick = 0;
 
     this.state.beyblades.forEach(bey => {
       if (!bey.isActive) return;
       const dx = bey.x - cx;
       const dy = bey.y - cy;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist > r) {
-        bey.spin = Math.max(0, bey.spin - drain);
+      const overlapPx = dist - currentShrinkRadius;
+      if (overlapPx > 0) {
+        // ── Distance-Scaled Zone Damage (PUBG Blue Zone) ──────────────────────
+        // Damage scales from 1× at the ring edge to 4× at the far arena wall.
+        const overlapFrac = Math.min(1, overlapPx / arenaRadius);
+        const scaledDrain = ZONE_BASE_DAMAGE * (1 + overlapFrac * 3.0) * dtS;
+        bey.spin = Math.max(0, bey.spin - scaledDrain);
+        if (overlapFrac > maxFracThisTick) maxFracThisTick = overlapFrac;
       }
     });
+
+    // Update zoneDistanceFrac so the client HUD can display a danger meter
+    arena.zoneDistanceFrac = maxFracThisTick;
   }
 }

@@ -4,7 +4,7 @@ import type {
   TileCoord, FacingDirection, TimeSlot, RouteId, ArcId,
   FlagCondition, GateCondition, QuestStatus, QuestRuntimeState,
   BattleParams, BattleResult, RivalStatus, PlayerLevelState,
-  SaveSlotMeta,
+  SaveSlotMeta, ActiveMiniGame, MiniGameResult,
 } from "../data/schemas";
 import { evaluateFlagCondition, evaluateGateCondition } from "../utils/flagUtils";
 import { MAX_PLAYER_LEVEL, MAX_BEYBLADE_LEVEL } from "../constants/rpgConstants";
@@ -88,7 +88,8 @@ interface InventorySlice {
   removeItem: (itemId: string, quantity: number) => boolean;
   addBeyblade: (beybladeId: string) => void;
   equipBeyblade: (beybladeId: string) => void;
-  equipLauncher: (itemId: string, maxDurability: number) => void;
+  /** Pass `itemDef` to enforce left-launcher purchase rule. */
+  equipLauncher: (itemId: string, maxDurability: number, itemDef?: unknown) => void;
   unequipLauncher: () => void;
   installUpgrade: (itemId: string) => void;
   uninstallUpgrade: (itemId: string) => void;
@@ -101,6 +102,12 @@ interface InventorySlice {
   addMoney: (amount: number) => void;
   /** Sum of launchBoost from equipped launcher + all installed upgrades. */
   getLaunchBoostTotal: (itemDefs: Record<string, { launchBoost?: number }>) => number;
+  /**
+   * Consume one unit of a single-use item.
+   * Removes 1 from inventory. Returns false if not owned.
+   * Does NOT apply the useEffect — the caller (EventSystem / UI) handles that.
+   */
+  useConsumable: (itemId: string) => boolean;
 }
 
 // ── Progression Slice ─────────────────────────────────────────────────────────
@@ -185,6 +192,15 @@ interface SceneSlice {
   dismissNotification: (id: string) => void;
 }
 
+// ── Mini-Game Slice ───────────────────────────────────────────────────────────
+interface MiniGameSlice {
+  activeMiniGame: ActiveMiniGame | null;
+  miniGameResult: MiniGameResult | null;
+  launchMiniGame: (game: ActiveMiniGame) => void;
+  completeMiniGame: (result: MiniGameResult) => void;
+  clearMiniGame: () => void;
+}
+
 // ── Save Slice ────────────────────────────────────────────────────────────────
 interface SaveSlice {
   currentSaveSlot: 0 | 1 | 2 | null;
@@ -203,7 +219,7 @@ interface SaveSlice {
 export interface RPGStore
   extends WorldSlice, FlagSlice, QuestSlice, DialogueSlice,
     InventorySlice, ProgressionSlice, LevelingSlice, BadgeSlice,
-    SceneSlice, SaveSlice {
+    SceneSlice, MiniGameSlice, SaveSlice {
   applyQuestReward: (reward: import("../data/schemas").QuestReward) => void;
   applyBattleResult: (result: BattleResult) => void;
   resetRPGState: () => void;
@@ -369,7 +385,16 @@ export const useRPGStore = create<RPGStore>()(
             : { beyblades: [...s.beyblades, beybladeId] }
         ),
       equipBeyblade: (beybladeId) => set({ equippedBeybladeId: beybladeId }),
-      equipLauncher: (itemId, maxDurability) =>
+      equipLauncher: (itemId, maxDurability, itemDef?) => {
+        // Left-spin launchers must be present in the player's inventory (purchased).
+        // They are NEVER granted for free — the store enforces this.
+        if (itemDef && (itemDef as { launchSide?: string }).launchSide === "left") {
+          const owned = get().items.some((i) => i.itemId === itemId);
+          if (!owned) {
+            console.warn(`[RPGStore] equipLauncher: left-spin launcher "${itemId}" not in inventory — blocked.`);
+            return;
+          }
+        }
         set((s) => ({
           equippedLauncherId: itemId,
           itemDurability: {
@@ -377,7 +402,8 @@ export const useRPGStore = create<RPGStore>()(
             // Initialise durability only if not already tracked (preserve wear)
             [itemId]: s.itemDurability[itemId] ?? maxDurability,
           },
-        })),
+        }));
+      },
       unequipLauncher: () => set({ equippedLauncherId: null }),
       installUpgrade: (itemId) =>
         set((s) =>
@@ -418,6 +444,12 @@ export const useRPGStore = create<RPGStore>()(
       },
       hasItem: (itemId) => get().items.some((i) => i.itemId === itemId),
       addMoney: (amount) => set((s) => ({ money: Math.max(0, s.money + amount) })),
+      useConsumable: (itemId) => {
+        const owned = get().items.some((i) => i.itemId === itemId && i.quantity > 0);
+        if (!owned) return false;
+        get().removeItem(itemId, 1);
+        return true;
+      },
       getLaunchBoostTotal: (itemDefs) => {
         const s = get();
         let boost = 0;
@@ -601,6 +633,13 @@ export const useRPGStore = create<RPGStore>()(
       dismissNotification: (id) =>
         set((s) => ({ notifications: s.notifications.filter((n) => n.id !== id) })),
 
+      // ── Mini-Game ──────────────────────────────────────────────────────────
+      activeMiniGame: null,
+      miniGameResult: null,
+      launchMiniGame: (game) => set({ activeMiniGame: game, miniGameResult: null }),
+      completeMiniGame: (result) => set({ miniGameResult: result }),
+      clearMiniGame: () => set({ activeMiniGame: null, miniGameResult: null }),
+
       // ── Save ───────────────────────────────────────────────────────────────
       currentSaveSlot: null,
       saveSlotMetas: [],
@@ -673,6 +712,7 @@ export const useRPGStore = create<RPGStore>()(
           isTransitioning: false, playerLocked: false,
           pendingBattleResult: null, pendingBattleParams: null,
           notifications: [], currentSaveSlot: null, lastSaveTime: null,
+          activeMiniGame: null, miniGameResult: null,
         }),
     }),
     {

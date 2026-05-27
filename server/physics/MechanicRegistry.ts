@@ -21,6 +21,35 @@ export interface MechanicHandler {
 // Populated by registerMechanic() calls from each handler file
 const REGISTRY: Record<string, MechanicHandler> = {};
 
+// ── #19: Gimmick × Part Material Synergy Registry ────────────────────────────
+// Loaded at match start from Firestore `gimmick_synergies`. Keys = `${gimmickId}:${materialId}`.
+export interface GimmickSynergyDef {
+  gimmickId: string;
+  materialId: string;
+  modifierType: string; // e.g. "force_multiplier", "spin_bonus", "cooldown_reduction"
+  value: number;        // multiplier or additive bonus
+  description?: string;
+}
+
+const SYNERGY_REGISTRY: Map<string, GimmickSynergyDef> = new Map();
+
+/** Load synergies from Firestore data at match start. */
+export function loadGimmickSynergies(synergies: GimmickSynergyDef[]): void {
+  SYNERGY_REGISTRY.clear();
+  for (const s of synergies) {
+    SYNERGY_REGISTRY.set(`${s.gimmickId}:${s.materialId}`, s);
+  }
+}
+
+/** Get the synergy multiplier for a gimmick + material pair. Returns 1.0 if no synergy. */
+export function getGimmickSynergyMultiplier(gimmickId: string, materialId: string): number {
+  const key = `${gimmickId}:${materialId}`;
+  const syn = SYNERGY_REGISTRY.get(key);
+  if (!syn) return 1.0;
+  // For force_multiplier and spin_bonus types, return as multiplier
+  return syn.value ?? 1.0;
+}
+
 export function registerMechanic(id: string, handler: MechanicHandler): void {
   REGISTRY[id] = handler;
 }

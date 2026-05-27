@@ -105,6 +105,25 @@ export function useRPGEngine(
       getServerUrl
     );
 
+    // ── Story event step handlers ────────────────────────────────────────────
+    // "start-mini-game": lock the player, dispatch mini-game to the store.
+    // The step returns immediately; RPGGamePage resolves it via miniGameResult.
+    storyEventSystem.onStepType("start-mini-game", async (step) => {
+      if (!step.miniGame) return;
+      getStore().setPlayerLocked(true);
+      getStore().launchMiniGame(step.miniGame);
+      // Wait until the mini-game clears (completeMiniGame called from the page)
+      await new Promise<void>((resolve) => {
+        const interval = setInterval(() => {
+          if (!getStore().activeMiniGame) {
+            clearInterval(interval);
+            getStore().setPlayerLocked(false);
+            resolve();
+          }
+        }, 200);
+      });
+    });
+
     // MapManager and CameraController require a PIXI.Container — created after pixi.init
     let mapManager: MapManager;
     let cameraController: CameraController;
@@ -116,7 +135,10 @@ export function useRPGEngine(
       const s = getStore();
       if (s.currentMapId) {
         const map = worldManager.getCachedMap(s.currentMapId);
-        if (map) npcScheduler.spawnNPCsForMap(map as RPGMap, slot, false);
+        if (map) {
+          npcScheduler.spawnNPCsForMap(map as RPGMap, slot, false);
+          npcScheduler.restoreAllBubbles();
+        }
       }
     });
 
@@ -196,6 +218,7 @@ export function useRPGEngine(
           await mapManager.loadMap(mapData as RPGMap, tilesetTex);
           triggerSystem.loadMap(mapData as RPGMap);
           npcScheduler.spawnNPCsForMap(mapData as RPGMap, s.timeSlot, false);
+          npcScheduler.restoreAllBubbles();
 
           const entry = mapManager.getEntryPoint("start");
           const startTile = entry?.tile ?? s.playerTile ?? { x: 5, y: 5 };
@@ -227,6 +250,7 @@ export function useRPGEngine(
       isReadyRef.current = true;
 
       // ── Main game tick ─────────────────────────────────────────────────────
+      let prevDialogueActive = false;
       pixi.addTickListener((deltaMS: number) => {
         const input = inputRef.current;
         const st = getStore();
@@ -243,6 +267,7 @@ export function useRPGEngine(
               const tree = dialogueSystem.getDialogueForNPC(npc, st.flags);
               if (tree) {
                 dialogueSystem.startDialogue(tree.id);
+                npcScheduler.hideDialogueBubble(npc.id);
                 playerProgression.applyNPCTalk(npc.id);
               }
             } else {
@@ -258,6 +283,17 @@ export function useRPGEngine(
         }
 
         npcScheduler.update(deltaMS);
+
+        // Restore dialogue bubbles when dialogue finishes
+        const dialogueActive = !!st.activeDialogue;
+        if (prevDialogueActive && !dialogueActive) {
+          npcScheduler.restoreAllBubbles();
+        }
+        // Hide all bubbles during cutscenes
+        if (st.activeCutsceneId) {
+          npcScheduler.hideAllBubbles();
+        }
+        prevDialogueActive = dialogueActive;
 
         const worldPos = playerController.getWorldPosition();
         cameraController.follow(worldPos);

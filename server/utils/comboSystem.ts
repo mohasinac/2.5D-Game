@@ -40,6 +40,16 @@ export interface ComboResult {
   costPaid: number;
   /** Coarse effect tag for renderer / SFX selection. */
   effect: "damage_boost" | "speed_burst_left" | "speed_burst_right" | "speed_burst_back" | "guard" | "spin_steal";
+  /**
+   * Fractional spin steal applied to opponent on contact (0–0.1 cap).
+   * Non-zero only for spin-steal combos (e.g. spin-leech-jab = 0.08).
+   */
+  spinStealBonus: number;
+  /**
+   * Flat spin top-up for self on activation (0–50 cap).
+   * Non-zero only for spin-leech-jab-style combos (= 30).
+   */
+  microSpinBoost: number;
 }
 
 export function createComboTracker(): ComboTracker {
@@ -122,6 +132,8 @@ export function detectCombo(
     lockMs: combo.effect.lockMs,
     costPaid: effectiveCost,
     effect: classifyEffect(combo),
+    spinStealBonus: combo.effect.spinStealBonus ?? 0,
+    microSpinBoost: combo.effect.microSpinBoost ?? 0,
   };
 }
 

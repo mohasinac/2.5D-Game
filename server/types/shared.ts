@@ -71,6 +71,8 @@ export interface BeybladeStats {
   bitBeastId?: string;
   /** Vivid hex color (e.g. "#00d4ff") used for in-game rendering tint and admin UI. */
   color?: string;
+  /** Optional bey accessory item id (from `bey_accessories` collection). Applies passive modifier at match start. */
+  accessoryItemId?: string;
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;
@@ -434,6 +436,7 @@ export interface ArenaConfig {
   triggerZones?: any[];
   spinZones?: any[];
   bumps?: any[];
+  boostPads?: any[];   // #24 — BoostPadConfig[] directional speed strips
 
   // Round modifiers (Phase X)
   defaultModifiers?: string[];

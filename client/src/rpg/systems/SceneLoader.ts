@@ -52,6 +52,7 @@ export class SceneLoader {
       await this.mapManager.loadMap(map, tilesetTex);
       this.triggerSystem.loadMap(map);
       this.npcScheduler.spawnNPCsForMap(map, store.timeSlot);
+      this.npcScheduler.restoreAllBubbles();
 
       const entryPoint = this.mapManager.getEntryPoint(exit.targetEntryId);
       if (entryPoint) {

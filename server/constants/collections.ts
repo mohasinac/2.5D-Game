@@ -46,6 +46,8 @@ export const SHARED_COLLECTIONS = {
   BEY_LINK_CONFIGS: "bey_link_configs",
   MECHANIC_DEFS: "mechanic_defs",
   GIMMICK_DEFS: "gimmick_defs",
+  GIMMICK_SYNERGIES: "gimmick_synergies",
+  BEY_ACCESSORIES: "bey_accessories",
   COMBO_EFFECTS: "combo_effects",
   CAMERA_PROFILES: "camera_profiles",
   AUDIO_PROFILES: "audio_profiles",

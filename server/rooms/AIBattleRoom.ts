@@ -604,6 +604,29 @@ export class AIBattleRoom extends BaseRoom<GameState> {
     const arenaHalfW = (this.state.arena.width * 16) / 2;
     const arenaHalfH = (this.state.arena.height * 16) / 2;
     const arenaRadius = Math.min(this.state.arena.width, this.state.arena.height) * 16 * 0.45;
+    // #14: Build obstacle + pit lists for AI avoidance (physics coords = pixel coords)
+    const aiObstacles: Array<{ x: number; y: number; radius: number }> = [];
+    const aiPits: Array<{ x: number; y: number; radius: number }> = [];
+    const _arenaData = this.arenaCache;
+    if (_arenaData) {
+      const aHalfW = (this.state.arena.width * 16) / 2;
+      const aHalfH = (this.state.arena.height * 16) / 2;
+      // Obstacles (pillars / barriers): use radius or derive from geometry
+      for (const obs of (_arenaData.obstacles ?? [])) {
+        const x = aHalfW + (obs.x ?? 0) * 16;
+        const y = aHalfH + (obs.y ?? 0) * 16;
+        const radius = (obs.radius ?? 30) * 16;
+        aiObstacles.push({ x, y, radius });
+      }
+      // Pits: use radius from config, convert to pixels
+      for (const pit of (_arenaData.pits ?? [])) {
+        const x = aHalfW + (pit.x ?? 0) * 16;
+        const y = aHalfH + (pit.y ?? 0) * 16;
+        const radius = ((pit.radius ?? 30) / 2) * 16;
+        aiPits.push({ x, y, radius });
+      }
+    }
+
     const allSnapshots = Array.from(this.state.beyblades.values()).map(b => ({
       id: b.id,
       x: b.x, y: b.y,
@@ -615,6 +638,9 @@ export class AIBattleRoom extends BaseRoom<GameState> {
       power: b.power,
       spinDirection: b.spinDirection,
       type: b.type,
+      // #14: Obstacle avoidance
+      obstacles: aiObstacles,
+      pits: aiPits,
     }));
 
     // Single-AI (human vs AI) path — preserved as-is.

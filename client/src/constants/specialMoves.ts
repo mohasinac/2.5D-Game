@@ -36,10 +36,9 @@ export interface SpecialMoveDef {
 }
 
 // ─── Move roster ──────────────────────────────────────────────────────────────
-// REFERENCE EXAMPLE ONLY — kept so the HUD has something to render.
-// Replace with real CS11-derived moves.
 
 export const SPECIAL_MOVES: Record<string, SpecialMoveDef> = {
+  /** Attack type — linear force burst in facing direction + spin boost. */
   stampede_rush: {
     id: "stampede_rush",
     name: "Stampede Rush",
@@ -50,13 +49,57 @@ export const SPECIAL_MOVES: Record<string, SpecialMoveDef> = {
     effects: { linearImpulse: 5000, invulnerabilityMs: 200, spinDelta: 60 },
     flashColor: "#ff5522",
   },
+  /** Defense type — zero linear velocity, maximize spin, 1.5s invulnerability. */
+  gyro_anchor: {
+    id: "gyro_anchor",
+    name: "Gyro Anchor",
+    kind: "anchor",
+    iconEmoji: "🛡️",
+    cooldownSec: 5,
+    durationMs: 1500,
+    effects: { invulnerabilityMs: 1500, spinDelta: 400, linearImpulse: 0 },
+    flashColor: "#3399ff",
+  },
+  /** Stamina type — orbital force (circular path), gradual spin recovery. */
+  spin_recovery: {
+    id: "spin_recovery",
+    name: "Spin Recovery",
+    kind: "orbital",
+    iconEmoji: "🌀",
+    cooldownSec: 6,
+    durationMs: 2000,
+    effects: { spinDelta: 300, spinStealRadiusPx: 0 },
+    flashColor: "#33dd88",
+  },
+  /** Balanced type — directional burst + 20% spin recovery. */
+  tactical_burst: {
+    id: "tactical_burst",
+    name: "Tactical Burst",
+    kind: "directional-burst",
+    iconEmoji: "💫",
+    cooldownSec: 4,
+    durationMs: 600,
+    effects: { linearImpulse: 3000, spinDelta: 200, invulnerabilityMs: 100 },
+    flashColor: "#ffcc00",
+  },
+  /** Universal — shockwave AoE knockback + spin steal around bey. */
+  shock_pulse: {
+    id: "shock_pulse",
+    name: "Shock Pulse",
+    kind: "shockwave",
+    iconEmoji: "⚡🌊",
+    cooldownSec: 7,
+    durationMs: 400,
+    effects: { aoeRadiusPx: 120, knockbackImpulse: 4000, spinStealRadiusPx: 80 },
+    flashColor: "#bb44ff",
+  },
 };
 
 export const DEFAULT_TYPE_TO_MOVE: Record<string, string> = {
   attack:   "stampede_rush",
-  defense:  "stampede_rush",
-  stamina:  "stampede_rush",
-  balanced: "stampede_rush",
+  defense:  "gyro_anchor",
+  stamina:  "spin_recovery",
+  balanced: "tactical_burst",
 };
 
 export function getSpecialMoveById(id: string | undefined | null): SpecialMoveDef | null {
@@ -70,8 +113,9 @@ export function resolveSpecialMove(opts: {
 }): SpecialMoveDef {
   return (
     getSpecialMoveById(opts.specialMoveId) ??
-    getSpecialMoveById(DEFAULT_TYPE_TO_MOVE[opts.type ?? "attack"]) ??
-    SPECIAL_MOVES.stampede_rush
+    // "" key won't match any DEFAULT_TYPE_TO_MOVE entry, so unknown type falls through to tactical_burst
+    getSpecialMoveById(DEFAULT_TYPE_TO_MOVE[opts.type ?? ""]) ??
+    SPECIAL_MOVES.tactical_burst   // universal balanced fallback for any unknown type or id
   );
 }
 

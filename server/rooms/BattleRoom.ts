@@ -9,7 +9,7 @@ import { AoI } from "../shared/constants/aoi";
 import { WARMUP_DURATION_S } from "../shared/constants/gameConstants";
 import { PhysicsEngine } from "../physics/PhysicsEngine";
 import { loadBeyblade, loadArena, loadArenaSystem, saveMatch, updatePlayerStats, loadComboEffects, getFirestoreDb, type ComboEffectDoc } from "../utils/firebase";
-import { loadGimmickDefs } from "../utils/firestoreLoaders";
+import { loadGimmickDefs, initGimmickSynergies, loadBeyAccessories, type BeyAccessoryDef } from "../utils/firestoreLoaders";
 import { expandGimmicks } from "../utils/gimmickExpander";
 import { loadGlobalSettings, type GlobalSettingsDoc } from "../utils/tournamentFirebase";
 import { tryReserveRoom, releaseRoom, setMaxActiveRooms } from "../shared/utils/roomCounter";
@@ -25,7 +25,7 @@ import { normalizeBestOf, targetWinsFor } from "../shared/utils/seriesFormat";
 import { normalizeInput, invertInputControls, type PlayerInput } from "../shared/utils/bitmask";
 import { computeTiltForce, getFloorAngleAtRadius } from "../shared/physics/ArenaUtils";
 import { resolvePhysicsFlags } from "../utils/physicsFlags";
-import { processArenaFeatures } from "../shared/rooms/ArenaFeatureProcessor";
+import { processArenaFeatures, processBoostPads } from "../shared/rooms/ArenaFeatureProcessor";
 import { tickTurrets, type TurretProcessorBridge } from "../shared/rooms/TurretDispatch";
 import type { TurretRuntimeState } from "../shared/rooms/TurretProcessor";
 import { advanceArenaRotation, advanceArenaTilt, applyWeightTilt } from "../shared/rooms/advanceArenaRotation";
@@ -55,6 +55,8 @@ import { MODIFIER_MAP, type RoundModifier } from "../../shared/types/roundModifi
 import { loadElementTypeMatrix, computeDynamicTypeMultiplier, type LoadedTypeMatrix } from "../utils/elementTypeLoader";
 import type { ArenaTimelineEvent } from "../types/shared";
 import type { ArenaLink, BeyLink, BeyLinkEffect, BeyLinkGroupPattern, BeyLinkMovementControl } from "../../shared/types/arenaConfigNew";
+import { getMechanic, type MechanicContext } from "../physics/MechanicRegistry";
+import { ReplayRecorder } from "./ReplayRecorder";
 
 const QTE_KEY_POOL = ["left", "right", "up", "down", "attack", "defense", "dodge"];
 
@@ -103,10 +105,22 @@ const SPAWN_OFFSETS = [
 export class BattleRoom extends BaseRoom<GameState> {
   private matchStarted = false;
   private lastInputTime = 0;
+  // #9: Per-client input rate limiting — max 10 inputs per 100ms window
+  private inputRateMap: Map<string, { count: number; windowStart: number }> = new Map();
+  // #9: Per-client special-tap cooldown (800ms minimum between special-tap inputs)
+  private specialTapLastMs: Map<string, number> = new Map();
+  // #10: Per-client estimated ping in ms (updated via "ping" messages from client)
+  private clientPingMs: Map<string, number> = new Map();
   protected globalSettings: GlobalSettingsDoc | null = null;
   protected playerSessions = new Set<string>();
   protected spectatorSessions = new Set<string>();
   protected beybladeDataCache = new Map<string, BeybladeStats | null>();
+  /** #21: Per-session accessory def cache (loaded once in onJoin, used in game loop). */
+  protected accessoryCache = new Map<string, BeyAccessoryDef | null>();
+  /** #24: Boost pad activation cooldowns — keyed by "${padId}:${beyId}". */
+  private boostPadCooldowns: Map<string, number> = new Map();
+  /** #28: Replay recorder — captures state at ~20Hz for killcam + Firestore replay. */
+  protected replayRecorder: ReplayRecorder | null = null;
   protected spawnPositions = new Map<string, { x: number; y: number; angle: number }>();
   protected comboTrackers = new Map<string, ComboTracker>();
   protected comboMatchStates = new Map<string, BeyComboMatchState>();
@@ -308,6 +322,12 @@ export class BattleRoom extends BaseRoom<GameState> {
     const effectDocs = await loadComboEffects();
     for (const doc of effectDocs) this.comboEffectsCache.set(doc.id, doc);
 
+    // #19: Load gimmick × part material synergies (idempotent, cached in-process)
+    await initGimmickSynergies();
+
+    // #28: Initialise replay recorder (matchId = room id)
+    this.replayRecorder = new ReplayRecorder(this.roomId);
+
     // Load Firestore-backed element type matrix (with hardcoded fallback)
     const firestoreDb = getFirestoreDb();
     if (firestoreDb) {
@@ -320,6 +340,12 @@ export class BattleRoom extends BaseRoom<GameState> {
       let input = normalizeInput(message);
       if (this.invertControlsActive) input = invertInputControls(input);
       this.handleInput(client, input);
+    });
+
+    // #10: Client ping report — used for lag-compensated collision detection
+    this.onMessage("ping", (client, message: { rtt?: number }) => {
+      const rtt = typeof message?.rtt === "number" ? Math.max(0, Math.min(1000, message.rtt)) : 0;
+      this.clientPingMs.set(client.sessionId, rtt);
     });
 
     this.onMessage("spectator:follow", (client, message: { targetBeybladeId?: string }) => {
@@ -587,6 +613,27 @@ export class BattleRoom extends BaseRoom<GameState> {
       instances.forEach(inst => beyblade.mechanics.push(inst));
     }
 
+    // #21: Apply bey accessory passive modifiers at match start
+    const accessoryItemId: string | undefined = beybladeData?.accessoryItemId;
+    if (accessoryItemId) {
+      const accessories = await loadBeyAccessories();
+      const acc: BeyAccessoryDef | undefined = accessories[accessoryItemId];
+      this.accessoryCache.set(client.sessionId, acc ?? null);
+      if (acc) {
+        if (acc.statModifiers) {
+          for (const [field, delta] of Object.entries(acc.statModifiers)) {
+            const bey = beyblade as any;
+            if (typeof bey[field] === "number") {
+              bey[field] += delta;
+            }
+          }
+        }
+        console.log(`✅ Applied accessory "${acc.name}" to ${beyblade.username}`);
+      }
+    } else {
+      this.accessoryCache.set(client.sessionId, null);
+    }
+
     if (!this.matchStarted) {
       this.matchStarted = true;
       this.state.status = "warmup";
@@ -797,7 +844,36 @@ export class BattleRoom extends BaseRoom<GameState> {
     const beyblade = this.state.beyblades.get(client.sessionId);
     if (!beyblade || !beyblade.isActive) return;
     if (this.state.status !== "in-progress") return;
-    this.lastInputTime = Date.now();
+
+    // #9: Input rate limiting — max 10 inputs per 100ms per client
+    const nowMs = Date.now();
+    let rateEntry = this.inputRateMap.get(client.sessionId);
+    if (!rateEntry) {
+      rateEntry = { count: 0, windowStart: nowMs };
+      this.inputRateMap.set(client.sessionId, rateEntry);
+    }
+    if (nowMs - rateEntry.windowStart >= 100) {
+      rateEntry.count = 0;
+      rateEntry.windowStart = nowMs;
+    }
+    rateEntry.count++;
+    if (rateEntry.count > 10) return; // drop excess inputs silently
+
+    // #9: Bitmask sanity — clear contradicting directional pairs
+    if (message.moveLeft && message.moveRight) { message.moveLeft = false; message.moveRight = false; }
+    if (message.moveUp && message.moveDown) { message.moveUp = false; message.moveDown = false; }
+
+    // #9: Special-tap server-side cooldown (800ms minimum gap)
+    if (message.specialTap) {
+      const lastSpecial = this.specialTapLastMs.get(client.sessionId) ?? 0;
+      if (nowMs - lastSpecial < 800) {
+        message.specialTap = false; // suppress
+      } else {
+        this.specialTapLastMs.set(client.sessionId, nowMs);
+      }
+    }
+
+    this.lastInputTime = nowMs;
     this.lastPlayerInput.set(client.sessionId, message);
 
     const forceMagnitude = computeForceMagnitude(beyblade);
@@ -828,6 +904,12 @@ export class BattleRoom extends BaseRoom<GameState> {
 
     if (events.attacked) {
       this.broadcast("attack", { playerId: client.sessionId });
+    }
+    if ((events as any).furyReleased) {
+      this.broadcast("fury-released", { beyId: beyblade.id, type: beyblade.type });
+    }
+    if ((events as any).gimmickModeChanged) {
+      this.broadcast("gimmick-mode-changed", { beyId: beyblade.id, loaded: beyblade.gimmickLoadedMode });
     }
 
     // ── Combo detection ──────────────────────────────────────────────────────
@@ -946,12 +1028,18 @@ export class BattleRoom extends BaseRoom<GameState> {
       const stats = this.beybladeDataCache.get(beyblade.userId);
       if (stats?.bitBeastId) {
         const side = this.getPlayerSide(beyblade.userId);
+        const bbDurationMs = durationMs + 400;
         this.broadcast("bitbeast-show", {
           beyId: beyblade.id,
           side,
           bitBeastId: stats.bitBeastId,
-          durationMs: durationMs + 400,
+          durationMs: bbDurationMs,
+          durationTicks: Math.round(bbDurationMs / (1000 / 60)),
         });
+        // ── Bit-Beast Gameplay Hook (GBA Beyblade) ──────────────────────────
+        // While BitBeast is active: spin decay halved, contact damage +10%
+        beyblade.bitBeastActive = true;
+        beyblade.contactDamageMultiplier = (beyblade.contactDamageMultiplier ?? 1) * 1.10;
       }
 
       return;
@@ -1126,8 +1214,9 @@ export class BattleRoom extends BaseRoom<GameState> {
     const b1 = this.state.beyblades.get(qte.player1Id);
     const b2 = this.state.beyblades.get(qte.player2Id);
 
-    const p1Mult = b1 ? b1.collisionQTEPower / 100 : 1.0;
-    const p2Mult = b2 ? b2.collisionQTEPower / 100 : 1.0;
+    // #9: Clamp QTE multipliers to [0, 1.5] (server enforces 150% cap)
+    const p1Mult = Math.min(1.5, Math.max(0, b1 ? b1.collisionQTEPower / 100 : 1.0));
+    const p2Mult = Math.min(1.5, Math.max(0, b2 ? b2.collisionQTEPower / 100 : 1.0));
 
     // Apply held damage × QTE multiplier
     if (b1 && b1.isActive) {
@@ -1172,6 +1261,32 @@ export class BattleRoom extends BaseRoom<GameState> {
         timestamp: Date.now(),
       }).catch((e: unknown) => console.warn("collision_qte_events write failed", e));
     }
+  }
+
+  // ─── Overhaul: Perfect Clash Timing Ring (Mario & Luigi GBA) ─────────────────
+
+  private resolveClashTiming(id1: string, id2: string): void {
+    const b1 = this.state.beyblades.get(id1);
+    const b2 = this.state.beyblades.get(id2);
+
+    if (b1) { b1.clashTimingWindowOpen = false; b1.clashTimingPressed = false; }
+    if (b2) { b2.clashTimingWindowOpen = false; b2.clashTimingPressed = false; }
+
+    // clashTimingPressed is set by InputHandler when any action key is pressed
+    // while clashTimingWindowOpen is true.
+    const p1Perfect = b1 ? b1.clashTimingPressed : false;
+    const p2Perfect = b2 ? b2.clashTimingPressed : false;
+
+    if (b1 && p1Perfect) {
+      b1.comboDamageMultiplier = 1.3;
+      b1.comboDamageMultiplierTimer = 0.5;
+    }
+    if (b2 && p2Perfect) {
+      b2.comboDamageMultiplier = 1.3;
+      b2.comboDamageMultiplierTimer = 0.5;
+    }
+
+    this.broadcast("clash-timing-result", { id1, id2, p1Perfect, p2Perfect });
   }
 
   // ─── Phase 29: Airborne Z-axis physics ──────────────────────────────────────
@@ -1751,6 +1866,15 @@ export class BattleRoom extends BaseRoom<GameState> {
     }
   }
 
+  // ─── Subclass hooks ─────────────────────────────────────────────────────────
+
+  /**
+   * #27: Called when a burst is about to occur. Subclasses may override to intercept
+   * (e.g. TeamBattleRoom burst recall). Return true to mark the burst as "consumed"
+   * (the default burst elimination will not run). Return false (default) to proceed.
+   */
+  protected onBurstOccurred(_victim: Beyblade, _attacker: Beyblade): boolean { return false; }
+
   // ─── Game tick ───────────────────────────────────────────────────────────────
 
   protected tick(deltaTime: number) {
@@ -1801,6 +1925,15 @@ export class BattleRoom extends BaseRoom<GameState> {
 
     this.tickCounter++;
     this.ghostTickCounter++;
+
+    // #28: Replay recording at ~20Hz (every 3 ticks at 60Hz)
+    if (this.replayRecorder && this.tickCounter % 3 === 0) {
+      this.replayRecorder.recordFrame(this.state.beyblades as unknown as Map<string, {
+        x: number; y: number; angle: number; spin: number;
+        tiltAngle?: number; isActive: boolean;
+      }>);
+    }
+
     // Phase 27: populate beyGhosts at 10Hz (every 6 ticks at 60Hz)
     if (this.ghostTickCounter >= 6) {
       this.ghostTickCounter = 0;
@@ -1853,6 +1986,21 @@ export class BattleRoom extends BaseRoom<GameState> {
           if (dx * dx + dy * dy > minContactDist * minContactDist) continue;
         }
 
+        // #10: Lag compensation — check if collision would register at rewound attacker time.
+        // We use the b1 player's ping to determine how many ticks back to look.
+        // If the rewound check fails but the current check would succeed, we still proceed
+        // (lag-comp only helps register missed hits, not create false ones).
+        const b1PingMs = this.clientPingMs.get(id1) ?? 0;
+        const lagTicks = Math.round(b1PingMs / (1000 / 60));
+        if (lagTicks > 0) {
+          const lagHit = this.physics.checkLagCompensatedCollision(id1, id2, lagTicks);
+          if (!lagHit) {
+            // Double-check current state: if also no current collision, skip
+            const currentCollision = this.physics.checkBeybladeCollision(id1, id2);
+            if (!currentCollision) continue;
+          }
+        }
+
         const collision = this.physics.checkBeybladeCollision(id1, id2);
         if (!collision) continue;
 
@@ -1897,6 +2045,14 @@ export class BattleRoom extends BaseRoom<GameState> {
           b2.clashQTEActive = true;
           b2.clashQTETimer  = CLASH_S;
           this.broadcast("clash-qte-start", { id1, id2, duration: CLASH_S });
+
+          // ── Perfect Clash Timing Ring (Mario & Luigi GBA) ──────────────────
+          // Open a 300ms window; pressing any action key (clashBoostTicks > 0)
+          // during the window grants a comboDamageMultiplier bonus.
+          b1.clashTimingWindowOpen = true;
+          b2.clashTimingWindowOpen = true;
+          this.broadcast("clash-timing-start", { id1, id2, windowMs: 300 });
+          setTimeout(() => this.resolveClashTiming(id1, id2), 300);
         }
 
         const dmg = this.physics.calculateCollisionDamage(collision, b1, b2);
@@ -1911,12 +2067,36 @@ export class BattleRoom extends BaseRoom<GameState> {
         // Arena-wide damage multipliers
         const arenaMult = this.state.arena.arenaBeyDamageMult;
 
+        // ── Directional Stance Damage Modifiers (For Honor) ───────────────────
+        const STANCE_TABLE: Record<string, { dmgOut: number; dmgIn: number }> = {
+          aggressive: { dmgOut: 1.15, dmgIn: 1.15 },
+          defensive:  { dmgOut: 0.90, dmgIn: 0.80 },
+          stamina:    { dmgOut: 0.95, dmgIn: 1.00 },
+          "":         { dmgOut: 1.00, dmgIn: 1.00 },
+        };
+        const s1 = STANCE_TABLE[b1.activeStance ?? ""] ?? STANCE_TABLE[""];
+        const s2 = STANCE_TABLE[b2.activeStance ?? ""] ?? STANCE_TABLE[""];
+        const stanceMult1 = s1.dmgOut * s2.dmgIn;   // b2 hits b1
+        const stanceMult2 = s2.dmgOut * s1.dmgIn;   // b1 hits b2
+
         // Damage immunity: permanent flag or active i-frames both zero incoming damage
         const b1DmgImmune = b1.damageImmune || b1.isInvulnerable;
         const b2DmgImmune = b2.damageImmune || b2.isInvulnerable;
 
-        const effDmg1 = b1DmgImmune ? 0 : dmg.damage1 * typeMultB2vsB1 * arenaMult;
-        const effDmg2 = b2DmgImmune ? 0 : dmg.damage2 * typeMultB1vsB2 * arenaMult;
+        // #22: Gimmick Loaded Mode — ×1.5 outgoing damage when gimmickLoadedMode is charged.
+        // damage1 is received by b1 (b2 is attacker) → b2's loaded mode amplifies it.
+        // damage2 is received by b2 (b1 is attacker) → b1's loaded mode amplifies it.
+        const gimmickLoadMult1 = b1.gimmickLoadedMode ? 1.5 : 1.0; // b1 loaded: boosts damage TO b2
+        const gimmickLoadMult2 = b2.gimmickLoadedMode ? 1.5 : 1.0; // b2 loaded: boosts damage TO b1
+        if (b1.gimmickLoadedMode) { b1.gimmickLoadedMode = false; this.broadcast("gimmick-mode-changed", { beyId: id1, loaded: false }); }
+        if (b2.gimmickLoadedMode) { b2.gimmickLoadedMode = false; this.broadcast("gimmick-mode-changed", { beyId: id2, loaded: false }); }
+
+        // #23: Team support damage reduction — reduces incoming damage when a teammate is nearby
+        const supportReduct1 = 1 - (b1._supportDmgReduction ?? 0);
+        const supportReduct2 = 1 - (b2._supportDmgReduction ?? 0);
+
+        const effDmg1 = b1DmgImmune ? 0 : dmg.damage1 * typeMultB2vsB1 * arenaMult * stanceMult1 * gimmickLoadMult2 * supportReduct1;
+        const effDmg2 = b2DmgImmune ? 0 : dmg.damage2 * typeMultB1vsB2 * arenaMult * stanceMult2 * gimmickLoadMult1 * supportReduct2;
         const effSS1  = b1DmgImmune ? 0 : dmg.spinSteal1 * typeMultB1vsB2;
         const effSS2  = b2DmgImmune ? 0 : dmg.spinSteal2 * typeMultB2vsB1;
 
@@ -1965,6 +2145,14 @@ export class BattleRoom extends BaseRoom<GameState> {
           b2.power = Math.min(100, b2.power + (applyD1 > 0 ? 0.5 : 0) + (applyD2 > 0 ? 0.3 : 0));
           if (applyD1 > 15) b1.attackBuffTimer = 0;
           if (applyD2 > 15) b2.attackBuffTimer = 0;
+
+          // ── Fury Gauge (Advance Wars CO Power) — fills from incoming damage ──
+          const prevFury1 = b1.furyGauge;
+          const prevFury2 = b2.furyGauge;
+          b1.furyGauge = Math.min(100, b1.furyGauge + applyD1 * 0.8);
+          b2.furyGauge = Math.min(100, b2.furyGauge + applyD2 * 0.8);
+          if (prevFury1 < 100 && b1.furyGauge >= 100) this.broadcast("fury-ready", { beyId: id1 });
+          if (prevFury2 < 100 && b2.furyGauge >= 100) this.broadcast("fury-ready", { beyId: id2 });
         }
 
         this.broadcast("collision", {
@@ -1977,12 +2165,37 @@ export class BattleRoom extends BaseRoom<GameState> {
           contactPoint: collision.contactPoint,
           typeEffectB1vsB2: typeMultB1vsB2,
           typeEffectB2vsB1: typeMultB2vsB1,
+          stance1: b1.activeStance,
+          stance2: b2.activeStance,
         });
 
         // 2.5D hook: PartSystemManager picks this up to fire SubPart switches,
         // bearing friction, hop impulse, detachment, on_hit_* events.
         const impactForce = Math.max(effDmg1, effDmg2);
         this.onBeyCollided(id1, id2, impactForce);
+
+        // ── Status on Type-Effective Collision (40% chance when typeMultiplier > 1) ──
+        const STATUS_BY_ELEMENT: Record<string, { status: string; duration: number }> = {
+          fire: { status: "burning", duration: 5 }, lava: { status: "burning", duration: 5 },
+          ice: { status: "frozen", duration: 3 },
+          electric: { status: "paralyzed", duration: 4 }, lightning: { status: "paralyzed", duration: 4 },
+          acid: { status: "corroded", duration: 8 },
+          void: { status: "confused", duration: 3 }, dark: { status: "confused", duration: 3 },
+        };
+        const applyElementStatus = (victim: Beyblade, attackerElems: string[], mult: number) => {
+          if (mult <= 1.0 || victim.statusEffect || this.rand() > 0.4) return;
+          for (const elem of attackerElems) {
+            const statusDef = STATUS_BY_ELEMENT[elem];
+            if (statusDef) {
+              victim.statusEffect = statusDef.status;
+              victim.statusTimer = statusDef.duration;
+              this.broadcast("status-applied", { beyId: victim.id, status: statusDef.status, durationS: statusDef.duration });
+              break;
+            }
+          }
+        };
+        applyElementStatus(b1, b2Elems, typeMultB2vsB1);
+        applyElementStatus(b2, b1Elems, typeMultB1vsB2);
 
         // ── Burst chance (Phase R) ────────────────────────────────────────────
         // Check both beys: the one that received higher damage may burst.
@@ -1999,13 +2212,23 @@ export class BattleRoom extends BaseRoom<GameState> {
           const burstResist = Math.max(0, Math.min(100, victim.burstResistance ?? 50));
           const burstFinal = burstRaw * burstSpinMod * (1 - burstResist / 100);
           if (this.rand() < burstFinal) {
-            victim.isActive = false;
-            victim.isBurst = true;
-            victim.eliminationType = "burst";
-            victim.spin = 0;
             const attacker = victim === b1 ? b2 : b1;
             attacker.burstKillsDealt++;
-            this.broadcast("burst", { beyId: victim.id, attackerId: attacker.id, x: victim.x, y: victim.y });
+            // Allow subclasses to intercept burst (e.g. TeamBattleRoom burst recall)
+            const consumed = this.onBurstOccurred(victim, attacker);
+            if (!consumed) {
+              victim.isActive = false;
+              victim.isBurst = true;
+              victim.eliminationType = "burst";
+              victim.spin = 0;
+              this.broadcast("burst", { beyId: victim.id, attackerId: attacker.id, x: victim.x, y: victim.y });
+              // #28: Record burst event + broadcast killcam
+              this.replayRecorder?.recordEvent("burst", { beyId: victim.id, killerId: attacker.id });
+              const killcamFrames = this.replayRecorder?.getLastNSeconds(5) ?? [];
+              if (killcamFrames.length > 0) {
+                this.broadcast("death-replay", { frames: killcamFrames, victimId: victim.id, killerId: attacker.id });
+              }
+            }
           }
         }
       }
@@ -2016,6 +2239,21 @@ export class BattleRoom extends BaseRoom<GameState> {
 
     // ── Per-beyblade update ──────────────────────────────────────────────────
     this.state.beyblades.forEach((beyblade) => {
+      // #15: Physics LOD — classify bey into tier and skip expensive updates on low-priority beys.
+      // Tier 0 (active, spin ≥ 20%): full 60Hz — every tick.
+      // Tier 1 (active, spin < 20%): 30Hz — skip odd ticks.
+      // Tier 2 (eliminated / in pit): 15Hz — only every 4th tick.
+      {
+        const spinFracLod = beyblade.maxSpin > 0 ? beyblade.spin / beyblade.maxSpin : 0;
+        const newTier: 0 | 1 | 2 =
+          !beyblade.isActive || beyblade.inPit ? 2 :
+          spinFracLod < 0.20 ? 1 : 0;
+        beyblade.lodTier = newTier;
+        const divisor = newTier === 0 ? 1 : newTier === 1 ? 2 : 4;
+        // Matter.js physics always runs; only non-physics state updates are gated.
+        if (divisor > 1 && this.tickCounter % divisor !== 0) return;
+      }
+
       const physicsState = this.physics.getBodyState(beyblade.id);
       if (!physicsState) return;
 
@@ -2027,6 +2265,7 @@ export class BattleRoom extends BaseRoom<GameState> {
       beyblade.angularVelocity = physicsState.angularVelocity;
 
       if (arenaData) {
+        const prevStatusEffect = beyblade.statusEffect;
         const events = processArenaFeatures(
           beyblade,
           arenaData,
@@ -2039,6 +2278,15 @@ export class BattleRoom extends BaseRoom<GameState> {
         );
         if (events.obstacleHit) this.broadcast("obstacle-collision", events.obstacleHit);
         if (events.wallHit) this.broadcast("wall-collision", events.wallHit);
+        // Broadcast status-applied when a new status condition is applied via hazard
+        if (!prevStatusEffect && beyblade.statusEffect) {
+          this.broadcast("status-applied", { beyId: beyblade.id, status: beyblade.statusEffect, durationS: beyblade.statusTimer });
+        }
+
+        // #24: Boost pads
+        if (arenaData?.boostPads?.length) {
+          processBoostPads(beyblade, arenaData.boostPads, this.boostPadCooldowns, this.physics, this.broadcast.bind(this));
+        }
       }
 
       // Natural gyroscopic motion: orbit layer + momentum continuation + attitude bias
@@ -2072,6 +2320,34 @@ export class BattleRoom extends BaseRoom<GameState> {
         this.physics.applyForce(beyblade.id, fx, fy);
       }
 
+      // #22: Gimmick mechanic passive tick — dispatch passive() for each loaded mechanic.
+      // Skip passive dispatch while gimmickLoadedMode is true (charge accumulation instead).
+      if (!beyblade.gimmickLoadedMode && beyblade.mechanics.length > 0) {
+        const mechCtx: MechanicContext = {
+          bey: beyblade,
+          dt,
+          applyForce: this.physics.applyForce.bind(this.physics),
+          applyKnockback: (id, dir, dist) => { this.physics.applyForce(id, dir.x * dist * 0.001, dir.y * dist * 0.001); },
+          setVelocity: undefined,
+          getPosition: (id) => {
+            const b = this.state.beyblades.get(id);
+            return b ? { x: b.x, y: b.y } : null;
+          },
+        };
+        for (const mechInst of beyblade.mechanics) {
+          if (!mechInst.active) continue;
+          const handler = getMechanic(mechInst.type);
+          if (!handler?.passive) continue;
+          let params: Record<string, unknown> = {};
+          let state: Record<string, unknown> = {};
+          try { params = JSON.parse(mechInst.params); } catch { /* skip */ }
+          try { state = JSON.parse(mechInst.state); } catch { /* skip */ }
+          handler.passive(mechCtx, params);
+          // Persist state changes back if handler mutated the state object
+          mechInst.state = JSON.stringify(state);
+        }
+      }
+
       {
         const spinRatio = beyblade.maxSpin > 0 ? beyblade.spin / beyblade.maxSpin : 0;
         const slopeCx = (this.state.arena.width * 16) / 2;
@@ -2080,16 +2356,81 @@ export class BattleRoom extends BaseRoom<GameState> {
         const radialDist = Math.hypot(beyblade.x - slopeCx, beyblade.y - slopeCy);
         const floorAngle = getFloorAngleAtRadius(radialDist, slopeR, this.state.arena.wallAngle);
         const slopeFactor = Math.max(0.5, Math.cos(floorAngle));
-        const decayThisTick = beyblade.spinDecayRate * dt * (1 + (1 - spinRatio) * 0.5) * slopeFactor;
+
+        // Stamina stance: reduce spin decay by 20% while held
+        const stanceDecayMod = beyblade.activeStance === "stamina" ? 0.80 : 1.0;
+        // Bit-Beast active: halve spin decay while special is active
+        const bitBeastDecayMod = beyblade.bitBeastActive ? 0.5 : 1.0;
+        const decayThisTick = beyblade.spinDecayRate * dt * (1 + (1 - spinRatio) * 0.5) * slopeFactor * stanceDecayMod * bitBeastDecayMod;
         beyblade.spin = Math.max(0, beyblade.spin - decayThisTick);
+
+        // ── Status Effect Tick (Pokémon GBA/NDS) ──────────────────────────────
+        if (beyblade.statusTimer > 0 && beyblade.statusEffect) {
+          switch (beyblade.statusEffect) {
+            case "burning":
+              beyblade.spin = Math.max(0, beyblade.spin - beyblade.spinDecayRate * 0.20 * dt);
+              break;
+            case "frozen":
+              beyblade.controlAuthority = Math.max(0, beyblade.controlAuthority - 40);
+              break;
+            case "paralyzed":
+              // 30% chance per tick to skip directional force — handled in NaturalMotion / InputHandler by checking statusEffect
+              break;
+            case "corroded":
+              beyblade.damageReduction = Math.max(0.1, beyblade.damageReduction - 0.25 * dt);
+              break;
+            case "confused":
+              // 20% chance to invert control — handled in applyMovementInput by checking statusEffect
+              break;
+          }
+          beyblade.statusTimer -= dt;
+          if (beyblade.statusTimer <= 0) {
+            beyblade.statusTimer = 0;
+            beyblade.statusEffect = "";
+          }
+        }
+
+        // ── Desperation Spin Recovery — Catch-Up (Mario Kart DS) ──────────────
+        const spinFrac = beyblade.spin / (beyblade.maxSpin || 1);
+        if (spinFrac < 0.15 && beyblade.isActive) {
+          const desperationRegen = ((0.15 - spinFrac) / 0.15) * 2.0;
+          beyblade.spin = Math.min(beyblade.maxSpin * 0.18, beyblade.spin + desperationRegen * dt);
+          if (!beyblade.desperationFired) {
+            beyblade.desperationFired = true;
+            this.broadcast("desperation-active", { beyId: beyblade.id });
+          }
+        } else if (spinFrac >= 0.18) {
+          beyblade.desperationFired = false;
+        }
       }
       beyblade.stamina = Math.max(0, beyblade.stamina - Math.abs(physicsState.angularVelocity) * 0.01);
 
       if (beyblade.spin <= 0 && beyblade.isActive && !beyblade.spinOutImmune && !beyblade.knockoutImmune) {
-        beyblade.isActive = false;
-        beyblade.health = 0;
-        beyblade.eliminationType = "spin_out";
-        this.broadcast("spin-out", { playerId: beyblade.id, username: beyblade.username, x: beyblade.x, y: beyblade.y, type: beyblade.type });
+        // #21: on_proc accessory — survive one lethal spin-out (e.g. spin_sash), checked synchronously from cache
+        const sessionId = [...this.playerSessions].find(sid => this.state.beyblades.get(sid)?.id === beyblade.id) ?? "";
+        const acc = this.accessoryCache.get(sessionId);
+        let procSaved = false;
+        if (acc?.effectType === "on_proc" && (acc.procChance ?? 0) > 0) {
+          if (Math.random() < (acc.procChance ?? 0)) {
+            beyblade.spin = beyblade.maxSpin * 0.10;
+            beyblade.spinOutImmune = true;
+            setTimeout(() => { beyblade.spinOutImmune = false; }, 3000);
+            this.broadcast("accessory-activated", { beyId: beyblade.id, accessoryId: acc.id });
+            procSaved = true;
+          }
+        }
+        if (!procSaved) {
+          beyblade.isActive = false;
+          beyblade.health = 0;
+          beyblade.eliminationType = "spin_out";
+          this.broadcast("spin-out", { playerId: beyblade.id, username: beyblade.username, x: beyblade.x, y: beyblade.y, type: beyblade.type });
+          // #28: Record spin-out + killcam
+          this.replayRecorder?.recordEvent("spinout", { beyId: beyblade.id });
+          const killcamFrames = this.replayRecorder?.getLastNSeconds(5) ?? [];
+          if (killcamFrames.length > 0) {
+            this.broadcast("death-replay", { frames: killcamFrames, victimId: beyblade.id, killerId: null });
+          }
+        }
       }
 
       // Charge combo: update comboChargeScale for HUD rendering
@@ -2117,6 +2458,12 @@ export class BattleRoom extends BaseRoom<GameState> {
 
       if (beyblade.specialMoveActive && Date.now() > beyblade.specialMoveEndTime) {
         beyblade.specialMoveActive = false;
+        // ── Bit-Beast hook cleanup ──────────────────────────────────────────
+        if (beyblade.bitBeastActive) {
+          beyblade.bitBeastActive = false;
+          beyblade.contactDamageMultiplier = Math.max(1.0, (beyblade.contactDamageMultiplier ?? 1.1) / 1.10);
+          this.broadcast("bitbeast-hide", { beyId: beyblade.id });
+        }
       }
 
       if (beyblade.attackBuffTimer > 0) beyblade.attackBuffTimer = Math.max(0, beyblade.attackBuffTimer - dt);
@@ -2178,6 +2525,12 @@ export class BattleRoom extends BaseRoom<GameState> {
           beyblade.isActive = false;
           beyblade.eliminationType = "ring_out";
           this.broadcast("ring-out", { playerId: beyblade.id, username: beyblade.username });
+          // #28: Record ring-out + killcam
+          this.replayRecorder?.recordEvent("ringout", { beyId: beyblade.id });
+          const killcamFrames = this.replayRecorder?.getLastNSeconds(5) ?? [];
+          if (killcamFrames.length > 0) {
+            this.broadcast("death-replay", { frames: killcamFrames, victimId: beyblade.id, killerId: null });
+          }
         }
       }
     });
@@ -3307,6 +3660,26 @@ export class BattleRoom extends BaseRoom<GameState> {
       };
 
       await saveMatch(matchData);
+
+      // #28: Write replay to Firestore match_replays collection (series end only)
+      if (seriesEnd && this.replayRecorder) {
+        const db = getFirestoreDb();
+        if (db) {
+          try {
+            const replayData = this.replayRecorder.getReplayData();
+            const { matchId: _rid, ...replayFrames } = replayData;
+            await db.collection("match_replays").doc(this.roomId).set({
+              matchId: this.roomId,
+              ...replayFrames,
+              createdAt: new Date(),
+              winner: winner?.userId ?? null,
+            });
+          } catch (replayErr) {
+            console.error("Failed to save match replay:", replayErr);
+          }
+        }
+        this.replayRecorder.clear();
+      }
 
       if (seriesEnd) {
         for (const b of beyblades) {

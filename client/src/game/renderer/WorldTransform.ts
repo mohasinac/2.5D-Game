@@ -42,6 +42,11 @@ export class WorldTransform {
   followLerp = 0.12;
   zoomLerp = 0.08;
 
+  // ── Camera Shake ─────────────────────────────────────────────────────────────
+  private shakeIntensity = 0;
+  private shakeDuration = 0;
+  private shakeStartTime = 0;
+
   setScreen(w: number, h: number) {
     this.screenW = w;
     this.screenH = h;
@@ -111,6 +116,35 @@ export class WorldTransform {
     this.camera.targetY_cm = y_cm;
   }
 
+  /** Trigger a camera shake. intensity is in px; durationMs in ms. */
+  triggerShake(intensity: number, durationMs: number): void {
+    // Only upgrade — don't downgrade an active strong shake
+    if (intensity >= this.shakeIntensity) {
+      this.shakeIntensity = intensity;
+      this.shakeDuration = durationMs;
+      this.shakeStartTime = performance.now();
+    }
+  }
+
+  /** Returns the current shake offset in screen pixels. Decays over shakeDuration. */
+  getShakeOffset(): { x: number; y: number } {
+    if (this.shakeIntensity <= 0 || this.shakeDuration <= 0) return { x: 0, y: 0 };
+    const elapsed = performance.now() - this.shakeStartTime;
+    if (elapsed >= this.shakeDuration) {
+      this.shakeIntensity = 0;
+      return { x: 0, y: 0 };
+    }
+    const decay = 1 - elapsed / this.shakeDuration;
+    const t = elapsed;
+    // High-frequency sinusoidal shake in both axes, decaying exponentially
+    const angle = t * 0.08;
+    const amp = this.shakeIntensity * decay;
+    return {
+      x: Math.sin(angle * 2.3 + 0.5) * amp,
+      y: Math.cos(angle * 1.7 + 1.2) * amp,
+    };
+  }
+
   /** Advance smooth follow / zoom one frame. */
   tick() {
     const c = this.camera;
@@ -118,6 +152,12 @@ export class WorldTransform {
     c.x_cm += (c.targetX_cm - c.x_cm) * this.followLerp;
     c.y_cm += (c.targetY_cm - c.y_cm) * this.followLerp;
     this.clampToArena();
+
+    // Expire shake
+    if (this.shakeIntensity > 0) {
+      const elapsed = performance.now() - this.shakeStartTime;
+      if (elapsed >= this.shakeDuration) this.shakeIntensity = 0;
+    }
   }
 
   private clampToArena() {

@@ -460,9 +460,20 @@ export class FeatureRenderer {
   private portalGfx = new Map<string, PIXI.Container>();
   private loopGfx = new Map<string, PIXI.Graphics>();
   private directionalZoneGfx = new Map<string, PIXI.Graphics>();
+  // #24: Boost pad static graphics (set once from arena config)
+  private boostPadGfx = new Map<string, PIXI.Graphics>();
+  private staticBoostPads: Array<{ id: string; x_cm: number; y_cm: number; width_cm: number; height_cm: number; angleDeg: number }> = [];
 
   constructor(featureLayer: PIXI.Container) {
     this.layer = featureLayer;
+  }
+
+  /** #24: Set boost pad static config from arena data (called once on arena load). */
+  setBoostPads(pads: Array<{ id: string; x_cm: number; y_cm: number; width_cm: number; height_cm: number; angleDeg: number }>): void {
+    // Destroy old graphics
+    for (const g of this.boostPadGfx.values()) { g.destroy(); }
+    this.boostPadGfx.clear();
+    this.staticBoostPads = pads;
   }
 
   /** Render one frame of features. Called from PixiRenderer.render(). */
@@ -490,6 +501,7 @@ export class FeatureRenderer {
     this.syncLoops(opts.loops);
     this.syncPortals(opts.portals, opts.nowMs);
     this.syncDirectionalZones(opts.directionalZones, opts.nowMs);
+    this.syncBoostPads(opts.nowMs);
     this.syncTurrets(opts.turrets);
     this.syncProjectiles(opts.projectiles);
   }
@@ -2350,6 +2362,60 @@ export class FeatureRenderer {
     this.bgParticles = [];
   }
 
+  // #24: Boost pad animated directional arrows ─────────────────────────────
+  private syncBoostPads(nowMs: number): void {
+    if (this.staticBoostPads.length === 0) return;
+
+    const arrowColor = 0x44ffcc;
+    const pulse = 0.6 + 0.25 * Math.sin(nowMs / 600);
+
+    for (const pad of this.staticBoostPads) {
+      let g = this.boostPadGfx.get(pad.id);
+      if (!g) {
+        g = new PIXI.Graphics();
+        this.layer.addChild(g);
+        this.boostPadGfx.set(pad.id, g);
+      }
+      g.clear();
+
+      const px = pad.x_cm * PX_PER_CM_BASE;
+      const py = pad.y_cm * PX_PER_CM_BASE;
+      const hw = (pad.width_cm * PX_PER_CM_BASE) / 2;
+      const hh = (pad.height_cm * PX_PER_CM_BASE) / 2;
+      const aRad = (pad.angleDeg * Math.PI) / 180;
+      const cosA = Math.cos(aRad), sinA = Math.sin(aRad);
+
+      // Rotated rectangle outline
+      const corners: [number, number][] = [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]];
+      const wx = corners.map(([lx, ly]) => px + lx * cosA - ly * sinA);
+      const wy = corners.map(([lx, ly]) => py + lx * sinA + ly * cosA);
+      g.poly([wx[0], wy[0], wx[1], wy[1], wx[2], wy[2], wx[3], wy[3]])
+        .fill({ color: arrowColor, alpha: 0.10 * pulse })
+        .stroke({ color: arrowColor, width: 2, alpha: 0.55 * pulse });
+
+      // Animated flow arrows along the pad direction
+      const arrowSpacing = hw * 0.6;
+      const arrowPhase = ((nowMs / 500) % 1) * arrowSpacing;
+      for (let lax = -hw + arrowPhase; lax < hw; lax += arrowSpacing) {
+        const ah = hh * 0.5;
+        const toWorld = (lx: number, ly: number) => ({ x: px + lx * cosA - ly * sinA, y: py + lx * sinA + ly * cosA });
+        const p0 = toWorld(lax - 8, -ah);
+        const p1 = toWorld(lax + 4, 0);
+        const p2 = toWorld(lax - 8, ah);
+        g.moveTo(p0.x, p0.y).lineTo(p1.x, p1.y).lineTo(p2.x, p2.y)
+          .stroke({ color: arrowColor, width: 2.5, alpha: 0.75 * pulse });
+      }
+    }
+
+    // Remove any pads no longer in the config
+    for (const [id, g] of this.boostPadGfx) {
+      if (!this.staticBoostPads.find(p => p.id === id)) {
+        g.destroy();
+        this.boostPadGfx.delete(id);
+      }
+    }
+  }
+
   destroy() {
     this.layer.removeChildren();
     this.obstacleGfx.clear();
@@ -2360,6 +2426,8 @@ export class FeatureRenderer {
     this.waterGfx.clear();
     this.portalGfx.clear();
     this.loopGfx.clear();
+    for (const g of this.boostPadGfx.values()) { g.destroy(); }
+    this.boostPadGfx.clear();
     this.destroyBackgroundParticles();
   }
 }

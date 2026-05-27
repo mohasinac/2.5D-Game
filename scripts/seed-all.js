@@ -113,6 +113,18 @@ const SEEDERS = [
     description: "27 gimmick_defs (22 original + 5 new: magnacore_repel, magnacore_attract, dual_spin_launch, mode_switch_tip, spring_launch)",
   },
   {
+    name: "gimmick-synergies",
+    script: "seed-gimmick-synergies.js",
+    collections: ["gimmick_synergies"],
+    description: "12 gimmick × part material synergy definitions (rubber×magnetism, metal×smash, POM×bearing-drift, etc.)",
+  },
+  {
+    name: "bey-accessories",
+    script: "seed-bey-accessories.js",
+    collections: ["bey_accessories"],
+    description: "12 bey accessory definitions (Pokémon held-item style: rubber_grip, spin_sash, steel_core, etc.)",
+  },
+  {
     name: "particle-presets",
     script: "seed-particle-presets.js",
     collections: ["particle_presets"],

@@ -503,6 +503,48 @@ export class Beyblade extends Schema {
   @type("number")  specialPhaseIndex: number = 0;    // current phase in phases[]
   @type("number")  specialPhaseElapsed: number = 0;  // ms elapsed in current phase
   @type("string")  specialPhaseSubState: string = "";// "windup"|"active"|"winddown"
+
+  // ── Overhaul: Element Status Conditions ──────────────────────────────────
+  // "burning"|"frozen"|"paralyzed"|"corroded"|"confused"|""
+  @type("string")  statusEffect: string = "";
+  @type("float32") statusTimer: number = 0;           // seconds remaining
+
+  // ── Overhaul: Fury Gauge ──────────────────────────────────────────────────
+  @type("float32") furyGauge: number = 0;             // 0–100; fills from incoming damage
+
+  // ── Overhaul: Gimmick Loaded Mode (Djinn-style toggle) ───────────────────
+  @type("boolean") gimmickLoadedMode: boolean = false;
+  // server-only cooldown (not synced — tick counter)
+  gimmickToggleCooldown: number = 0;
+
+  // ── Overhaul: Bit-Beast Active Gameplay Hook ─────────────────────────────
+  @type("boolean") bitBeastActive: boolean = false;
+
+  // ── Overhaul: Clash Timing Window ────────────────────────────────────────
+  @type("boolean") clashTimingWindowOpen: boolean = false;
+
+  // ── Overhaul: Physics LOD tier ───────────────────────────────────────────
+  @type("uint8")   lodTier: number = 0;               // 0=60Hz, 1=30Hz, 2=15Hz
+
+  // ── Overhaul: Burst Recall (team modes) ──────────────────────────────────
+  @type("boolean") isBurstPending: boolean = false;
+  @type("boolean") recallUsed: boolean = false;
+
+  // ── Overhaul: server-only transient fields (not synced) ──────────────────
+  // SDI (Smash DI): true after the player uses their one directional SDI escape per hitstun
+  sdiUsed: boolean = false;
+  // Clash timing: set to true when any action key is pressed during clashTimingWindowOpen
+  clashTimingPressed: boolean = false;
+  // Stance set each tick from input bitmask bits 10–12 ("aggressive"|"defensive"|"stamina"|"")
+  activeStance: string = "";
+  // Fury: last epoch-ms when defense key was pressed (for K+K double-tap detection)
+  lastDefenseTapMs: number = 0;
+  // Desperation: true after the first "desperation-active" broadcast (prevents repeat fires)
+  desperationFired: boolean = false;
+  // Team support damage reduction, recalculated every tick in TeamBattleRoom
+  _supportDmgReduction: number = 0;
+  // Gimmick × Part Material Synergy: active tip/part material id (populated at match start)
+  activeMaterialId: string = "";
 }
 
 /**
@@ -626,6 +668,8 @@ export class ArenaState extends Schema {
   @type("float32") safeZoneY:      number = 0;
   @type("float32") safeZoneTimer:  number = 0;
   @type("uint8")   safeZonePhase:  number = 0;
+  // 0–1 fraction: how far the nearest tracked bey is beyond the ring (for HUD danger meter)
+  @type("float32") zoneDistanceFrac: number = 0;
 
   // ── World Background (visual-only, synced once on join) ─────────────────────
   // Rendered behind the arena/stadium — independent of the arena floor/theme.

@@ -1,11 +1,21 @@
 // scripts/seed-rpg-arc1-episode1.js
+// ═══════════════════════════════════════════════════════════════════════════════
 // Arc 1 — Episode 1: "Let It Rip!"
-// Full story seed: Tyson's room → defeating Kai at the Blade Sharks hideout
+// Full story seed — Tyson's room → Kai showdown → Meet Max → Seaside Dome
 //
-// Run:  node scripts/seed-rpg-arc1-episode1.js
-//       node scripts/seed-rpg-arc1-episode1.js --dry-run
-// Idempotent — uses set() with { merge: true }.
-
+//  Phases:
+//   1  (start  → Lv5)  : Wakeup · Grandpa escape · Park (Billy) · Rooftop (Carlos) · Backyard practice
+//   2  (Lv5  → Lv10)  : River Carlos battle · Kai entrance · Lose checkpoint ·
+//                        Dragoon-S parts quest · Assembly
+//   3  (Lv10 → Lv12)  : Blade Sharks hideout · Family sword + bit-beast · Final Kai battle
+//   4  (Lv12 → Lv15)  : River puppy mini-game · Meet Max · Shop unlock · Max battle (defence tutorial)
+//   5  (Lv15 → end )  : Dickinson meets Tyson · Tournament registration at Seaside Dome
+//
+//  Run:  node scripts/seed-rpg-arc1-episode1.js
+//        node scripts/seed-rpg-arc1-episode1.js --dry-run
+//
+//  Idempotent — uses set() with { merge: true }.
+// ═══════════════════════════════════════════════════════════════════════════════
 "use strict";
 require("dotenv").config();
 const admin = require("firebase-admin");
@@ -20,21 +30,22 @@ if (!projectId || !clientEmail || !privateKey) {
 if (!admin.apps.length) {
   admin.initializeApp({ credential: admin.credential.cert({ projectId, clientEmail, privateKey }) });
 }
-const db = admin.firestore();
+const db  = admin.firestore();
 const DRY = process.argv.includes("--dry-run");
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 const now = new Date().toISOString();
+
 async function put(col, id, data) {
   if (DRY) { console.log(`  [dry] ${col}/${id}`); return; }
   await db.collection(col).doc(id).set({ ...data, updatedAt: now }, { merge: true });
   console.log(`  ✔  ${col}/${id}`);
 }
 
-/** Generate a flat placeholder tile layer (all one tile type). */
+/** Flat placeholder tile-layer (all one tile type). */
 function flat(w, h, tile = 0) { return Array(w * h).fill(tile); }
 
-/** Build all five standard tile layers for a map. */
+/** Five standard tile layers for any map. */
 function layers(w, h) {
   return [
     { name: "ground",     width: w, height: h, data: flat(w, h, 0), visible: true  },
@@ -45,73 +56,81 @@ function layers(w, h) {
   ];
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 1. ARC DEFINITION
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 1 — ARC & ROUTE
+// ═══════════════════════════════════════════════════════════════════════════════
 async function seedArc() {
-  console.log("\n📖  Arc");
+  console.log("\n📖  Arc & Route");
+
   await put("rpg_arcs", "arc1_ep1", {
-    id: "arc1_ep1",
-    displayName: "Season 1 — Episode 1: Let It Rip!",
-    order: 1,
-    routeIds: ["tyson_route"],
+    id:               "arc1_ep1",
+    displayName:      "Season 1 — Episode 1: Let It Rip!",
+    order:            1,
+    routeIds:         ["tyson_route"],
     startingRegionId: "beigoma_city",
     completionFlagId: "arc1_ep1_complete",
     description:
-      "Tyson Granger discovers the world of Beyblade, earns rivals and allies on the streets of Beigoma, " +
-      "and fights his way to a showdown with the cold-hearted Kai Hiwatari deep inside the Blade Sharks' hideout.",
-    levelCap: 20,
-    teamBattles: false,
+      "Tyson Granger's journey begins in the back streets of Beigoma City. " +
+      "He'll battle bullies, befriend rivals, assemble a legendary Beyblade, " +
+      "and earn his first tournament invitation — all before the ink is dry on Episode 2.",
+    levelCap:     20,
+    teamBattles:  false,
     protagonists: [{ npcId: "tyson", beybladeId: "dragoon", playerControlled: true }],
     previousArcId: null,
+    nextArcId:     "arc1_ep2",
   });
 
   await put("rpg_routes", "tyson_route", {
-    id: "tyson_route",
-    displayName: "Tyson's Story",
-    protagonistNpcId: "tyson",
-    description: "Play as Tyson Granger — the kid who never backs down from a challenge.",
-    startingMapId: "tyson_room",
-    startingTile: { x: 7, y: 2 },
-    startingFacing: "down",
-    startingBeybladeId: "dragoon",
-    cardImageAssetId: "img_tyson_card",
-    availableInArcs: ["arc1_ep1"],
+    id:                  "tyson_route",
+    displayName:         "Tyson's Story",
+    protagonistNpcId:    "tyson",
+    description:         "Follow Tyson Granger — the kid who never, ever backs down.",
+    startingMapId:       "tyson_room",
+    startingTile:        { x: 7, y: 2 },
+    startingFacing:      "down",
+    startingBeybladeId:  "dragoon",
+    cardImageAssetId:    "img_tyson_card",
+    availableInArcs:     ["arc1_ep1"],
   });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 2. REGION
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 2 — REGION
+// ═══════════════════════════════════════════════════════════════════════════════
 async function seedRegion() {
   console.log("\n🌍  Region");
+
   await put("rpg_regions", "beigoma_city", {
-    id: "beigoma_city",
+    id:          "beigoma_city",
     displayName: "Beigoma City",
-    country: "Japan",
-    description: "Tyson's hometown — full of alleys, parks, a dojo, and secrets lurking in every corner.",
+    country:     "Japan",
+    description:
+      "Tyson's hometown — a lively Japanese city packed with dojos, back alleys, " +
+      "a riverside park, and secrets that only the boldest Bladers discover.",
     mapIds: [
-      "tyson_room", "tyson_dojo", "tyson_backyard",
-      "dojo_garden_path", "beigoma_street",
-      "beigoma_park", "apartment_1f", "rooftop",
+      "tyson_room", "granger_dojo", "dojo_garden_path",
+      "tyson_backyard", "beigoma_street",
+      "beigoma_park", "park_deepend",
+      "apartment_1f", "rooftop",
       "river_side", "blade_sharks_hideout",
+      "max_shop", "seaside_dome",
     ],
-    hubMapId: "beigoma_street",
-    connections: [],
-    unlockGate: null,
-    worldMapTile: { x: 5, y: 3 },
-    bgmTrackId: "bgm_beigoma_town",
-    arcIds: ["arc1_ep1"],
+    hubMapId:        "beigoma_street",
+    connections:     [],
+    unlockGate:      null,
+    worldMapTile:    { x: 5, y: 3 },
+    bgmTrackId:      "bgm_beigoma_town",
+    arcIds:          ["arc1_ep1"],
   });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 3. MAPS
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 3 — MAPS  (13 maps)
+// ═══════════════════════════════════════════════════════════════════════════════
 async function seedMaps() {
   console.log("\n🗺️   Maps");
 
-  // ── Tyson's Room ────────────────────────────────────────────────────────────
+  // ── 1. Tyson's Room ──────────────────────────────────────────────────────────
   await put("rpg_maps", "tyson_room", {
     id: "tyson_room", regionId: "beigoma_city",
     displayName: "Tyson's Room", type: "indoor",
@@ -120,8 +139,9 @@ async function seedMaps() {
     layers: layers(15, 10),
     exits: [{
       id: "exit_to_dojo",
-      triggerRect: { x: 7, y: 9, width: 1, height: 1 },
-      targetMapId: "tyson_dojo", targetEntryId: "from_room",
+      triggerRect:    { x: 7, y: 9, width: 1, height: 1 },
+      targetMapId:    "granger_dojo",
+      targetEntryId:  "from_room",
       direction: "south", transitionType: "door",
     }],
     entryPoints: [
@@ -131,24 +151,24 @@ async function seedMaps() {
     eventTriggers: [
       {
         id: "trig_wakeup",
-        triggerRect: { x: 5, y: 1, width: 5, height: 3 },
-        storyEventId: "ev_room_wakeup",
-        triggerCondition: { none: { wakeup_done: true } },
+        triggerRect:      { x: 4, y: 1, width: 7, height: 3 },
+        storyEventId:     "ev_room_wakeup",
+        triggerCondition: { none: ["wakeup_done"] },
         triggerOnce: true, triggerMode: "enter",
       },
       {
-        id: "trig_sword_room",
-        triggerRect: { x: 1, y: 1, width: 3, height: 4 },
-        storyEventId: "ev_dragoon_sword_room",
-        triggerCondition: { all: { wakeup_done: true }, none: { sword_room_viewed: true } },
+        id: "trig_sword_inspect_room",
+        triggerRect:      { x: 1, y: 1, width: 3, height: 4 },
+        storyEventId:     "ev_dragoon_sword_room",
+        triggerCondition: { all: ["wakeup_done"], none: ["sword_room_viewed"] },
         triggerOnce: true, triggerMode: "interact",
       },
       {
-        // After Kai river battle — fade back home
+        // After losing to Kai at river → fade back home
         id: "trig_new_bey_home",
-        triggerRect: { x: 3, y: 1, width: 9, height: 8 },
-        storyEventId: "ev_new_beyblade_home",
-        triggerCondition: { all: { kai_battled_river: true }, none: { new_bey_scene_done: true } },
+        triggerRect:      { x: 3, y: 1, width: 9, height: 8 },
+        storyEventId:     "ev_new_beyblade_home",
+        triggerCondition: { all: ["kai_battled_river"], none: ["new_bey_scene_done"] },
         triggerOnce: true, triggerMode: "enter",
       },
     ],
@@ -156,17 +176,33 @@ async function seedMaps() {
     bgmTrackId: "bgm_tyson_room", lightingPreset: "indoor",
   });
 
-  // ── Tyson's Dojo ────────────────────────────────────────────────────────────
-  await put("rpg_maps", "tyson_dojo", {
-    id: "tyson_dojo", regionId: "beigoma_city",
-    displayName: "Hiro Family Dojo", type: "indoor",
+  // ── 2. Granger Dojo ─────────────────────────────────────────────────────────
+  await put("rpg_maps", "granger_dojo", {
+    id: "granger_dojo", regionId: "beigoma_city",
+    displayName: "Granger Family Dojo", type: "indoor",
     width: 25, height: 20,
     tilesetId: "tileset_dojo",
     layers: layers(25, 20),
     exits: [
-      { id: "exit_to_room",    triggerRect: { x: 12, y: 0,  width: 1, height: 1 }, targetMapId: "tyson_room",     targetEntryId: "from_dojo",    direction: "north", transitionType: "door" },
-      { id: "exit_to_garden",  triggerRect: { x: 12, y: 19, width: 1, height: 1 }, targetMapId: "dojo_garden_path", targetEntryId: "from_dojo",  direction: "south", transitionType: "walk" },
-      { id: "exit_to_backyard",triggerRect: { x: 0,  y: 9,  width: 1, height: 3 }, targetMapId: "tyson_backyard", targetEntryId: "from_dojo",    direction: "west",  transitionType: "door" },
+      {
+        id: "exit_to_room",
+        triggerRect: { x: 12, y: 0, width: 1, height: 1 },
+        targetMapId: "tyson_room", targetEntryId: "from_dojo",
+        direction: "north", transitionType: "door",
+      },
+      {
+        id: "exit_to_garden",
+        triggerRect: { x: 12, y: 19, width: 1, height: 1 },
+        targetMapId: "dojo_garden_path", targetEntryId: "from_dojo",
+        direction: "south", transitionType: "walk",
+        // Grandpa patrols this exit — no hard gate, but he'll catch you
+      },
+      {
+        id: "exit_to_backyard",
+        triggerRect: { x: 0, y: 9, width: 1, height: 3 },
+        targetMapId: "tyson_backyard", targetEntryId: "from_dojo",
+        direction: "west", transitionType: "door",
+      },
     ],
     entryPoints: [
       { id: "default",       tile: { x: 12, y: 16 }, facingDirection: "down"  },
@@ -176,17 +212,17 @@ async function seedMaps() {
     ],
     eventTriggers: [
       {
-        id: "trig_sword_dojo",
-        triggerRect: { x: 21, y: 2, width: 3, height: 4 },
-        storyEventId: "ev_dragoon_sword_dojo",
-        triggerCondition: { all: { rooftop_visited: true }, none: { sword_dojo_viewed: true } },
+        id: "trig_sword_dojo_fascination",
+        triggerRect:      { x: 21, y: 2, width: 3, height: 4 },
+        storyEventId:     "ev_dragoon_sword_dojo",
+        triggerCondition: { all: ["rooftop_visited"], none: ["sword_dojo_viewed"] },
         triggerOnce: true, triggerMode: "interact",
       },
       {
-        id: "trig_family_sword_beastawaken",
-        triggerRect: { x: 21, y: 2, width: 3, height: 4 },
-        storyEventId: "ev_family_sword_interaction",
-        triggerCondition: { all: { dragoon_s_assembled: true }, none: { dragoon_bit_beast_awakened: true } },
+        id: "trig_family_sword_awakening",
+        triggerRect:      { x: 21, y: 2, width: 3, height: 4 },
+        storyEventId:     "ev_family_sword_interaction",
+        triggerCondition: { all: ["dragoon_s_assembled"], none: ["dragoon_bit_beast_awakened"] },
         triggerOnce: true, triggerMode: "interact",
       },
     ],
@@ -196,31 +232,49 @@ async function seedMaps() {
     bgmTrackId: "bgm_dojo", lightingPreset: "indoor",
   });
 
-  // ── Dojo Garden Path ────────────────────────────────────────────────────────
+  // ── 3. Dojo Garden Path (Grandpa's Patrol Zone) ──────────────────────────────
   await put("rpg_maps", "dojo_garden_path", {
     id: "dojo_garden_path", regionId: "beigoma_city",
     displayName: "Dojo Garden", type: "outdoor",
-    width: 15, height: 8,
+    width: 15, height: 10,
     tilesetId: "tileset_outdoor_city",
-    layers: layers(15, 8),
+    layers: layers(15, 10),
     exits: [
-      { id: "exit_to_dojo",   triggerRect: { x: 7, y: 0, width: 1, height: 1 }, targetMapId: "tyson_dojo",    targetEntryId: "from_garden",  direction: "north", transitionType: "walk" },
-      { id: "exit_to_street", triggerRect: { x: 7, y: 7, width: 1, height: 1 }, targetMapId: "beigoma_street", targetEntryId: "from_dojo",   direction: "south", transitionType: "walk" },
+      {
+        id: "exit_to_dojo",
+        triggerRect: { x: 7, y: 0, width: 1, height: 1 },
+        targetMapId: "granger_dojo", targetEntryId: "from_garden",
+        direction: "north", transitionType: "walk",
+      },
+      {
+        id: "exit_to_street",
+        triggerRect: { x: 7, y: 9, width: 1, height: 1 },
+        targetMapId: "beigoma_street", targetEntryId: "from_dojo",
+        direction: "south", transitionType: "walk",
+      },
     ],
     entryPoints: [
       { id: "from_dojo",   tile: { x: 7, y: 1 }, facingDirection: "down" },
-      { id: "from_street", tile: { x: 7, y: 6 }, facingDirection: "up"  },
+      { id: "from_street", tile: { x: 7, y: 8 }, facingDirection: "up"  },
     ],
-    eventTriggers: [],
-    // Grandpa patrols this corridor — catchRadius 1 fires ev_grandpa_caught
+    eventTriggers: [
+      {
+        id: "trig_escaped_grandpa",
+        triggerRect:      { x: 5, y: 8, width: 5, height: 2 },
+        storyEventId:     "ev_grandpa_escaped",
+        triggerCondition: { all: ["wakeup_done"], none: ["dojo_escaped"] },
+        triggerOnce: true, triggerMode: "enter",
+      },
+    ],
+    // Grandpa patrols here — catchRadius 2 fires ev_grandpa_caught
     npcPlacements: [
-      { npcId: "grandpa", spawnTile: { x: 7, y: 3 } },
+      { npcId: "grandpa", spawnTile: { x: 7, y: 4 } },
     ],
     bgmTrackId: "bgm_dojo", lightingPreset: "day",
-    metaFlags: { grandpaPatrolsHere: true },
+    notes: "Grandpa patrols left-right across the path. Player must dodge him to reach the street.",
   });
 
-  // ── Tyson's Backyard ────────────────────────────────────────────────────────
+  // ── 4. Tyson's Backyard ──────────────────────────────────────────────────────
   await put("rpg_maps", "tyson_backyard", {
     id: "tyson_backyard", regionId: "beigoma_city",
     displayName: "Tyson's Backyard", type: "outdoor",
@@ -229,8 +283,8 @@ async function seedMaps() {
     layers: layers(20, 15),
     exits: [{
       id: "exit_to_dojo",
-      triggerRect: { x: 19, y: 6, width: 1, height: 3 },
-      targetMapId: "tyson_dojo", targetEntryId: "from_backyard",
+      triggerRect:   { x: 19, y: 6, width: 1, height: 3 },
+      targetMapId:   "granger_dojo", targetEntryId: "from_backyard",
       direction: "east", transitionType: "door",
     }],
     entryPoints: [
@@ -239,17 +293,27 @@ async function seedMaps() {
     ],
     eventTriggers: [
       {
-        id: "trig_practice",
-        triggerRect: { x: 6, y: 4, width: 8, height: 7 },
-        storyEventId: "ev_backyard_practice",
-        triggerCondition: { all: { has_dragoon: true }, none: { dragoon_s_assembled: true } },
+        // Practice zone — AI battle against beginner dummy while level < 5
+        id: "trig_ai_practice_basic",
+        triggerRect:      { x: 6, y: 4, width: 8, height: 7 },
+        storyEventId:     "ev_backyard_practice",
+        triggerCondition: { all: ["has_dragoon"], none: ["dragoon_s_assembled"] },
         triggerOnce: false, triggerMode: "interact",
       },
       {
-        id: "trig_practice_dragoons",
-        triggerRect: { x: 6, y: 4, width: 8, height: 7 },
-        storyEventId: "ev_backyard_practice_dragoons",
-        triggerCondition: { all: { dragoon_s_assembled: true } },
+        // Practice zone with Dragoon S — different flavour text
+        id: "trig_ai_practice_dragoons",
+        triggerRect:      { x: 6, y: 4, width: 8, height: 7 },
+        storyEventId:     "ev_backyard_practice_dragoons",
+        triggerCondition: { all: ["dragoon_s_assembled"] },
+        triggerOnce: false, triggerMode: "interact",
+      },
+      {
+        // Mini-game — hit the tin cans stacked in corner
+        id: "trig_can_hit_minigame",
+        triggerRect:      { x: 1, y: 1, width: 4, height: 4 },
+        storyEventId:     "ev_can_hit_practice",
+        triggerCondition: { all: ["dojo_escaped"] },
         triggerOnce: false, triggerMode: "interact",
       },
     ],
@@ -257,7 +321,7 @@ async function seedMaps() {
     bgmTrackId: "bgm_beigoma_town", lightingPreset: "day",
   });
 
-  // ── Beigoma Street ──────────────────────────────────────────────────────────
+  // ── 5. Beigoma Street (Hub) ──────────────────────────────────────────────────
   await put("rpg_maps", "beigoma_street", {
     id: "beigoma_street", regionId: "beigoma_city",
     displayName: "Beigoma City Streets", type: "outdoor",
@@ -265,11 +329,45 @@ async function seedMaps() {
     tilesetId: "tileset_outdoor_city",
     layers: layers(40, 20),
     exits: [
-      { id: "exit_to_garden",   triggerRect: { x: 7, y: 0,  width: 3, height: 1 }, targetMapId: "dojo_garden_path", targetEntryId: "from_street",  direction: "north", transitionType: "walk" },
-      { id: "exit_to_park",     triggerRect: { x: 39, y: 8, width: 1, height: 4 }, targetMapId: "beigoma_park",     targetEntryId: "from_street",  direction: "east",  transitionType: "walk" },
-      { id: "exit_to_building", triggerRect: { x: 20, y: 0, width: 3, height: 1 }, targetMapId: "apartment_1f",     targetEntryId: "default",      direction: "north", transitionType: "door" },
-      { id: "exit_to_river",    triggerRect: { x: 39, y: 0, width: 1, height: 4 }, targetMapId: "river_side",       targetEntryId: "from_street",  direction: "east",  transitionType: "walk" },
-      { id: "exit_to_hideout",  triggerRect: { x: 0,  y: 8, width: 1, height: 4 }, targetMapId: "blade_sharks_hideout", targetEntryId: "default",  direction: "west",  transitionType: "walk" },
+      {
+        id: "exit_to_garden",
+        triggerRect: { x: 7, y: 0, width: 3, height: 1 },
+        targetMapId: "dojo_garden_path", targetEntryId: "from_street",
+        direction: "north", transitionType: "walk",
+      },
+      {
+        id: "exit_to_park",
+        triggerRect: { x: 39, y: 8, width: 1, height: 4 },
+        targetMapId: "beigoma_park", targetEntryId: "from_street",
+        direction: "east", transitionType: "walk",
+      },
+      {
+        id: "exit_to_apartment",
+        triggerRect: { x: 20, y: 0, width: 3, height: 1 },
+        targetMapId: "apartment_1f", targetEntryId: "default",
+        direction: "north", transitionType: "door",
+        // Rooftop path — gated until Billy is defeated
+        gateCondition:  { all: ["billy_defeated"] },
+        gateDialogueId: "dlg_street_rooftop_locked",
+      },
+      {
+        id: "exit_to_river",
+        triggerRect: { x: 39, y: 0, width: 1, height: 4 },
+        targetMapId: "river_side", targetEntryId: "from_street",
+        direction: "east", transitionType: "walk",
+        // River is locked until level 5
+        gateCondition:  { all: ["level_5_reached"] },
+        gateDialogueId: "dlg_river_not_ready",
+      },
+      {
+        id: "exit_to_hideout",
+        triggerRect: { x: 0, y: 8, width: 1, height: 4 },
+        targetMapId: "blade_sharks_hideout", targetEntryId: "default",
+        direction: "west", transitionType: "walk",
+        // Hideout only unlocks when Kenny is kidnapped
+        gateCondition:  { all: ["kenny_kidnapped_known"] },
+        gateDialogueId: "dlg_hideout_locked",
+      },
     ],
     entryPoints: [
       { id: "default",    tile: { x: 9,  y: 2  }, facingDirection: "down" },
@@ -277,1626 +375,1871 @@ async function seedMaps() {
       { id: "from_park",  tile: { x: 37, y: 9  }, facingDirection: "left" },
       { id: "from_river", tile: { x: 37, y: 2  }, facingDirection: "left" },
     ],
-    eventTriggers: [
-      {
-        id: "trig_river_gate",
-        triggerRect: { x: 39, y: 0, width: 1, height: 4 },
-        storyEventId: "ev_river_gate_blocked",
-        triggerCondition: { none: { carlos_defeated: true } },
-        triggerOnce: false, triggerMode: "enter",
-      },
-      {
-        id: "trig_hideout_gate",
-        triggerRect: { x: 0, y: 8, width: 1, height: 4 },
-        storyEventId: "ev_hideout_gate_blocked",
-        triggerCondition: { none: { kenny_kidnapped_known: true } },
-        triggerOnce: false, triggerMode: "enter",
-      },
-    ],
+    eventTriggers: [],
     npcPlacements: [],
     bgmTrackId: "bgm_beigoma_town", lightingPreset: "day",
   });
 
-  // ── Beigoma Park ────────────────────────────────────────────────────────────
+  // ── 6. Beigoma Park (front) ──────────────────────────────────────────────────
   await put("rpg_maps", "beigoma_park", {
     id: "beigoma_park", regionId: "beigoma_city",
-    displayName: "Beigoma City Park", type: "outdoor",
-    width: 45, height: 30,
+    displayName: "Beigoma Park", type: "outdoor",
+    width: 25, height: 20,
     tilesetId: "tileset_outdoor_park",
-    layers: layers(45, 30),
+    layers: layers(25, 20),
+    exits: [
+      {
+        id: "exit_to_street",
+        triggerRect: { x: 0, y: 8, width: 1, height: 4 },
+        targetMapId: "beigoma_street", targetEntryId: "from_park",
+        direction: "west", transitionType: "walk",
+      },
+      {
+        id: "exit_to_park_deep",
+        triggerRect: { x: 24, y: 8, width: 1, height: 4 },
+        targetMapId: "park_deepend", targetEntryId: "from_park",
+        direction: "east", transitionType: "walk",
+        gateCondition:  { all: ["billy_defeated"] },
+        gateDialogueId: "dlg_park_deeper_locked",
+      },
+    ],
+    entryPoints: [
+      { id: "from_street", tile: { x: 2,  y: 10 }, facingDirection: "right" },
+      { id: "from_deep",   tile: { x: 22, y: 10 }, facingDirection: "left"  },
+    ],
+    eventTriggers: [
+      {
+        id: "trig_billy_challenge",
+        triggerRect:      { x: 10, y: 6, width: 6, height: 6 },
+        storyEventId:     "ev_billy_challenge",
+        triggerCondition: { all: ["dojo_escaped"], none: ["billy_defeated"] },
+        triggerOnce: true, triggerMode: "enter",
+      },
+    ],
+    npcPlacements: [
+      { npcId: "billy",   spawnTile: { x: 12, y: 9 } },
+      { npcId: "andrew",  spawnTile: { x: 18, y: 5 } },
+    ],
+    bgmTrackId: "bgm_beigoma_town", lightingPreset: "day",
+  });
+
+  // ── 7. Park Deep End ────────────────────────────────────────────────────────
+  await put("rpg_maps", "park_deepend", {
+    id: "park_deepend", regionId: "beigoma_city",
+    displayName: "Beigoma Park — Back Courts", type: "outdoor",
+    width: 20, height: 15,
+    tilesetId: "tileset_outdoor_park",
+    layers: layers(20, 15),
     exits: [{
-      id: "exit_to_street",
-      triggerRect: { x: 0, y: 12, width: 1, height: 6 },
-      targetMapId: "beigoma_street", targetEntryId: "from_park",
+      id: "exit_to_park",
+      triggerRect: { x: 0, y: 6, width: 1, height: 3 },
+      targetMapId: "beigoma_park", targetEntryId: "from_deep",
       direction: "west", transitionType: "walk",
     }],
     entryPoints: [
-      { id: "default",     tile: { x: 2,  y: 15 }, facingDirection: "right" },
-      { id: "from_street", tile: { x: 2,  y: 15 }, facingDirection: "right" },
+      { id: "from_park", tile: { x: 2, y: 7 }, facingDirection: "right" },
     ],
-    eventTriggers: [
-      {
-        id: "trig_billy_first",
-        triggerRect: { x: 14, y: 8, width: 16, height: 12 },
-        storyEventId: "ev_billy_first_encounter",
-        triggerCondition: { none: { billy_encountered: true } },
-        triggerOnce: true, triggerMode: "enter",
-      },
-      {
-        id: "trig_part_attack_ring",
-        triggerRect: { x: 30, y: 20, width: 8, height: 6 },
-        storyEventId: "ev_part_found_attack_ring",
-        triggerCondition: { all: { q_find_parts_active: true }, none: { part_attack_ring_found: true, has_dragoon: true } },
-        triggerOnce: true, triggerMode: "interact",
-      },
-    ],
+    eventTriggers: [],
     npcPlacements: [
-      { npcId: "billy",  spawnTile: { x: 22, y: 14 } },
-      { npcId: "kenny",  spawnTile: { x: 10, y: 20 } },
-      { npcId: "andrew", spawnTile: { x: 8,  y: 18 } },
+      { npcId: "kenny",          spawnTile: { x: 10, y: 4 } },
+      { npcId: "random_blader_1", spawnTile: { x: 5,  y: 11 } },
+      { npcId: "random_blader_2", spawnTile: { x: 16, y: 8  } },
     ],
     bgmTrackId: "bgm_beigoma_town", lightingPreset: "day",
+    notes: "Quiet back courts — Kenny hangs here. Random bladers appear after Dragoon-S is assembled.",
   });
 
-  // ── Apartment Ground Floor ──────────────────────────────────────────────────
+  // ── 8. Apartment Lobby 1F ────────────────────────────────────────────────────
   await put("rpg_maps", "apartment_1f", {
     id: "apartment_1f", regionId: "beigoma_city",
-    displayName: "City Apartment — Ground Floor", type: "indoor",
-    width: 20, height: 15,
-    tilesetId: "tileset_indoor_apartment",
-    layers: layers(20, 15),
+    displayName: "Apartment Building 1F", type: "indoor",
+    width: 12, height: 8,
+    tilesetId: "tileset_indoor_building",
+    layers: layers(12, 8),
     exits: [
-      { id: "exit_to_street",   triggerRect: { x: 9,  y: 14, width: 2, height: 1 }, targetMapId: "beigoma_street", targetEntryId: "from_park",   direction: "south", transitionType: "door" },
-      { id: "exit_to_rooftop",  triggerRect: { x: 18, y: 6,  width: 2, height: 3 }, targetMapId: "rooftop",        targetEntryId: "from_stairs",  direction: "east",  transitionType: "door" },
-    ],
-    entryPoints: [
-      { id: "default",     tile: { x: 10, y: 13 }, facingDirection: "up"   },
-      { id: "from_stairs", tile: { x: 17, y: 7  }, facingDirection: "left" },
-    ],
-    eventTriggers: [
       {
-        id: "trig_staircase_gate",
-        triggerRect: { x: 18, y: 6, width: 2, height: 3 },
-        storyEventId: "ev_rooftop_locked",
-        triggerCondition: { none: { billy_defeated: true } },
-        triggerOnce: false, triggerMode: "enter",
+        id: "exit_to_street",
+        triggerRect: { x: 5, y: 7, width: 2, height: 1 },
+        targetMapId: "beigoma_street", targetEntryId: "from_park",
+        direction: "south", transitionType: "door",
+      },
+      {
+        id: "exit_to_rooftop",
+        triggerRect: { x: 5, y: 0, width: 2, height: 1 },
+        targetMapId: "rooftop", targetEntryId: "default",
+        direction: "north", transitionType: "walk",
       },
     ],
+    entryPoints: [
+      { id: "default",     tile: { x: 6, y: 6 }, facingDirection: "up"   },
+      { id: "from_street", tile: { x: 6, y: 6 }, facingDirection: "up"   },
+      { id: "from_roof",   tile: { x: 6, y: 1 }, facingDirection: "down" },
+    ],
+    eventTriggers: [],
     npcPlacements: [],
-    bgmTrackId: "bgm_indoor_ambient", lightingPreset: "indoor",
+    bgmTrackId: "bgm_beigoma_town", lightingPreset: "indoor",
   });
 
-  // ── Rooftop ─────────────────────────────────────────────────────────────────
+  // ── 9. Rooftop ───────────────────────────────────────────────────────────────
   await put("rpg_maps", "rooftop", {
     id: "rooftop", regionId: "beigoma_city",
-    displayName: "City Rooftop", type: "outdoor",
-    width: 30, height: 15,
+    displayName: "Apartment Rooftop", type: "outdoor",
+    width: 18, height: 12,
     tilesetId: "tileset_rooftop",
-    layers: layers(30, 15),
+    layers: layers(18, 12),
     exits: [{
       id: "exit_to_building",
-      triggerRect: { x: 0, y: 6, width: 1, height: 3 },
-      targetMapId: "apartment_1f", targetEntryId: "from_stairs",
-      direction: "west", transitionType: "door",
+      triggerRect: { x: 8, y: 11, width: 2, height: 1 },
+      targetMapId: "apartment_1f", targetEntryId: "from_roof",
+      direction: "south", transitionType: "walk",
     }],
     entryPoints: [
-      { id: "default",     tile: { x: 2, y: 7 }, facingDirection: "right" },
-      { id: "from_stairs", tile: { x: 2, y: 7 }, facingDirection: "right" },
+      { id: "default", tile: { x: 9, y: 10 }, facingDirection: "up" },
     ],
     eventTriggers: [
       {
-        id: "trig_carlos_scene",
-        triggerRect: { x: 4, y: 3, width: 22, height: 9 },
-        storyEventId: "ev_rooftop_carlos_scene",
-        triggerCondition: { all: { billy_defeated: true }, none: { rooftop_visited: true } },
-        triggerOnce: true, triggerMode: "enter",
-      },
-      {
-        id: "trig_kenny_quest",
-        triggerRect: { x: 4, y: 3, width: 22, height: 9 },
-        storyEventId: "ev_kenny_gives_quest",
-        triggerCondition: { all: { carlos_scene_done: true }, none: { q_level5_started: true } },
+        id: "trig_rooftop_carlos_scene",
+        triggerRect:      { x: 4, y: 2, width: 10, height: 6 },
+        storyEventId:     "ev_rooftop_aftermath",
+        triggerCondition: { none: ["rooftop_visited"] },
         triggerOnce: true, triggerMode: "enter",
       },
     ],
     npcPlacements: [
-      { npcId: "kenny",  spawnTile: { x: 14, y: 7 } },
-      { npcId: "andrew", spawnTile: { x: 17, y: 8 } },
-      { npcId: "carlos", spawnTile: { x: 22, y: 6 } },
+      { npcId: "carlos", spawnTile: { x: 9, y: 4 } },
+      { npcId: "kenny",  spawnTile: { x: 5, y: 5 } },
+      { npcId: "andrew", spawnTile: { x: 13, y: 5 } },
     ],
-    bgmTrackId: "bgm_rooftop", lightingPreset: "evening",
+    bgmTrackId: "bgm_beigoma_town", lightingPreset: "dusk",
+    notes: "Dusk lighting — the tournament wreckage scene happens here.",
   });
 
-  // ── River Side ──────────────────────────────────────────────────────────────
+  // ── 10. River Side ───────────────────────────────────────────────────────────
   await put("rpg_maps", "river_side", {
     id: "river_side", regionId: "beigoma_city",
-    displayName: "Beigoma River Side", type: "outdoor",
-    width: 40, height: 20,
+    displayName: "Beigoma Riverside", type: "outdoor",
+    width: 30, height: 15,
     tilesetId: "tileset_outdoor_river",
-    layers: layers(40, 20),
+    layers: layers(30, 15),
     exits: [{
       id: "exit_to_street",
-      triggerRect: { x: 0, y: 8, width: 1, height: 4 },
+      triggerRect: { x: 0, y: 6, width: 1, height: 3 },
       targetMapId: "beigoma_street", targetEntryId: "from_river",
       direction: "west", transitionType: "walk",
     }],
     entryPoints: [
-      { id: "default",     tile: { x: 2, y: 10 }, facingDirection: "right" },
-      { id: "from_street", tile: { x: 2, y: 10 }, facingDirection: "right" },
+      { id: "default",     tile: { x: 3,  y: 7  }, facingDirection: "right" },
+      { id: "from_street", tile: { x: 3,  y: 7  }, facingDirection: "right" },
     ],
     eventTriggers: [
       {
-        id: "trig_river_arrival",
-        triggerRect: { x: 4, y: 4, width: 32, height: 12 },
-        storyEventId: "ev_river_arrival_scene",
-        triggerCondition: { all: { q_level5_complete: true }, none: { river_scene_done: true } },
+        id: "trig_carlos_challenge",
+        triggerRect:      { x: 12, y: 4, width: 8, height: 6 },
+        storyEventId:     "ev_river_carlos_challenge",
+        triggerCondition: { all: ["level_5_reached"], none: ["carlos_defeated"] },
         triggerOnce: true, triggerMode: "enter",
       },
       {
         id: "trig_kai_entrance",
-        triggerRect: { x: 4, y: 4, width: 32, height: 12 },
-        storyEventId: "ev_kai_entrance",
-        triggerCondition: { all: { carlos_defeated: true }, none: { kai_seen: true } },
+        triggerRect:      { x: 12, y: 4, width: 8, height: 6 },
+        storyEventId:     "ev_kai_river_entrance",
+        triggerCondition: { all: ["carlos_defeated"], none: ["kai_battled_river"] },
+        triggerOnce: true, triggerMode: "enter",
+      },
+      {
+        id: "trig_puppy_rescue",
+        triggerRect:      { x: 20, y: 1, width: 8, height: 5 },
+        storyEventId:     "ev_puppy_rescue_minigame",
+        triggerCondition: { all: ["level_12_reached"], none: ["puppy_saved"] },
+        triggerOnce: true, triggerMode: "enter",
+      },
+      {
+        id: "trig_meet_max",
+        triggerRect:      { x: 20, y: 1, width: 8, height: 5 },
+        storyEventId:     "ev_meet_max",
+        triggerCondition: { all: ["puppy_saved"], none: ["max_met"] },
         triggerOnce: true, triggerMode: "enter",
       },
     ],
     npcPlacements: [
-      { npcId: "carlos",             spawnTile: { x: 20, y: 8  } },
-      { npcId: "kenny",              spawnTile: { x: 28, y: 10 } },
-      { npcId: "andrew",             spawnTile: { x: 26, y: 10 } },
-      { npcId: "kai",                spawnTile: { x: 35, y: 7  } },
-      { npcId: "random_blader_rick", spawnTile: { x: 10, y: 11 } },
-      { npcId: "random_blader_sam",  spawnTile: { x: 13, y: 13 } },
+      { npcId: "carlos", spawnTile: { x: 16, y: 7 } },
+      { npcId: "kenny",  spawnTile: { x: 8,  y: 7 } },
+      { npcId: "andrew", spawnTile: { x: 10, y: 8 } },
     ],
     bgmTrackId: "bgm_river", lightingPreset: "day",
   });
 
-  // ── Blade Sharks Hideout ────────────────────────────────────────────────────
+  // ── 11. Blade Sharks Hideout ─────────────────────────────────────────────────
   await put("rpg_maps", "blade_sharks_hideout", {
     id: "blade_sharks_hideout", regionId: "beigoma_city",
     displayName: "Blade Sharks Hideout", type: "indoor",
-    width: 30, height: 20,
+    width: 25, height: 18,
     tilesetId: "tileset_indoor_warehouse",
-    layers: layers(30, 20),
+    layers: layers(25, 18),
     exits: [{
       id: "exit_to_street",
-      triggerRect: { x: 0, y: 8, width: 1, height: 4 },
-      targetMapId: "beigoma_street", targetEntryId: "from_river",
-      direction: "west", transitionType: "door",
+      triggerRect: { x: 24, y: 8, width: 1, height: 2 },
+      targetMapId: "beigoma_street", targetEntryId: "default",
+      direction: "east", transitionType: "walk",
     }],
     entryPoints: [
-      { id: "default", tile: { x: 2, y: 10 }, facingDirection: "right" },
+      { id: "default", tile: { x: 22, y: 9 }, facingDirection: "left" },
     ],
     eventTriggers: [
       {
-        id: "trig_hideout_entry",
-        triggerRect: { x: 4, y: 2, width: 22, height: 16 },
-        storyEventId: "ev_blade_sharks_entry",
-        triggerCondition: {
-          all: { dragoon_bit_beast_awakened: true },
-          none: { hideout_entered: true },
-        },
-        gate: { minPlayerLevel: 10 },
+        id: "trig_hideout_entry_scene",
+        triggerRect:      { x: 10, y: 3, width: 10, height: 10 },
+        storyEventId:     "ev_hideout_entry",
+        triggerCondition: { all: ["kenny_kidnapped_known"], none: ["hideout_entered"] },
         triggerOnce: true, triggerMode: "enter",
       },
       {
-        id: "trig_kai_final",
-        triggerRect: { x: 20, y: 4, width: 8, height: 12 },
-        storyEventId: "ev_kai_blade_sharks_battle",
-        triggerCondition: { all: { hideout_entered: true }, none: { kai_hideout_defeated: true } },
-        triggerOnce: false, triggerMode: "enter",
+        id: "trig_kai_final_battle",
+        triggerRect:      { x: 2, y: 3, width: 8, height: 10 },
+        storyEventId:     "ev_final_kai_battle",
+        triggerCondition: { all: ["hideout_entered", "dragoon_bit_beast_awakened"], none: ["kai_defeated_hideout"] },
+        triggerOnce: true, triggerMode: "enter",
       },
     ],
     npcPlacements: [
-      { npcId: "kai",    spawnTile: { x: 24, y: 10 } },
-      { npcId: "kenny",  spawnTile: { x: 21, y: 10 } },
-      { npcId: "carlos", spawnTile: { x: 14, y: 13 } },
+      { npcId: "kai",   spawnTile: { x: 5,  y: 9  } },
+      { npcId: "rick",  spawnTile: { x: 13, y: 6  } },
+      { npcId: "sam",   spawnTile: { x: 13, y: 12 } },
+      { npcId: "kenny", spawnTile: { x: 8,  y: 14 } },
+      { npcId: "carlos", spawnTile: { x: 16, y: 9 } },
     ],
-    bgmTrackId: "bgm_tense", lightingPreset: "indoor",
+    bgmTrackId: "bgm_blade_sharks", lightingPreset: "dark",
+  });
+
+  // ── 12. Max's Dad's Shop ─────────────────────────────────────────────────────
+  await put("rpg_maps", "max_shop", {
+    id: "max_shop", regionId: "beigoma_city",
+    displayName: "Tate's Bey Supply Shop", type: "indoor",
+    width: 14, height: 10,
+    tilesetId: "tileset_indoor_shop",
+    layers: layers(14, 10),
+    exits: [{
+      id: "exit_to_river",
+      triggerRect: { x: 6, y: 9, width: 2, height: 1 },
+      targetMapId: "river_side", targetEntryId: "default",
+      direction: "south", transitionType: "door",
+      gateCondition:  { all: ["shop_unlocked"] },
+    }],
+    entryPoints: [
+      { id: "default",     tile: { x: 7, y: 8 }, facingDirection: "up" },
+      { id: "from_river",  tile: { x: 7, y: 8 }, facingDirection: "up" },
+    ],
+    eventTriggers: [
+      {
+        id: "trig_first_shop_visit",
+        triggerRect:      { x: 2, y: 2, width: 10, height: 6 },
+        storyEventId:     "ev_shop_first_visit",
+        triggerCondition: { all: ["shop_unlocked"], none: ["shop_visited"] },
+        triggerOnce: true, triggerMode: "enter",
+      },
+    ],
+    npcPlacements: [
+      { npcId: "mr_tate", spawnTile: { x: 7, y: 2 } },
+      { npcId: "max",     spawnTile: { x: 4, y: 5 } },
+    ],
+    shopInventoryId: "shop_tate_supplies",
+    bgmTrackId: "bgm_shop", lightingPreset: "indoor",
+  });
+
+  // ── 13. Seaside Dome ─────────────────────────────────────────────────────────
+  await put("rpg_maps", "seaside_dome", {
+    id: "seaside_dome", regionId: "beigoma_city",
+    displayName: "Seaside Dome — Registration Lobby", type: "indoor",
+    width: 20, height: 14,
+    tilesetId: "tileset_indoor_arena",
+    layers: layers(20, 14),
+    exits: [],
+    entryPoints: [
+      { id: "default", tile: { x: 10, y: 12 }, facingDirection: "up" },
+    ],
+    eventTriggers: [
+      {
+        id: "trig_dickinson_meeting",
+        triggerRect:      { x: 6, y: 3, width: 8, height: 6 },
+        storyEventId:     "ev_dickinson_meeting",
+        triggerCondition: { all: ["level_15_reached"], none: ["tournament_registered"] },
+        triggerOnce: true, triggerMode: "enter",
+      },
+    ],
+    npcPlacements: [
+      { npcId: "dickinson", spawnTile: { x: 10, y: 6 } },
+    ],
+    bgmTrackId: "bgm_tournament_lobby", lightingPreset: "indoor",
+    unlockGate: { all: ["max_met"] },
+    notes: "Unlocks on world map after meeting Max. Registration triggers arc2 transition.",
   });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 4. NPCs
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 4 — NPCs  (15 characters)
+// ═══════════════════════════════════════════════════════════════════════════════
 async function seedNPCs() {
-  console.log("\n👤  NPCs");
+  console.log("\n🧍  NPCs");
 
-  // Grandpa Tate
+  // ── Grandpa Granger ──────────────────────────────────────────────────────────
   await put("rpg_npcs", "grandpa", {
-    id: "grandpa", displayName: "Grandpa", type: "story",
+    id: "grandpa", displayName: "Grandpa Granger", type: "elder",
     spriteSheetId: "sprite_grandpa", portraitId: "portrait_grandpa",
-    defaultFacing: "down", defaultDialogueId: "dlg_grandpa_default",
-    catchRadius: 1, catchEventId: "ev_grandpa_caught",
+    defaultFacing: "down", defaultDialogueId: "dlg_grandpa_idle",
+    catchRadius: 2, catchEventId: "ev_grandpa_caught",
     schedule: [
-      { timeSlot: "morning",   mapId: "dojo_garden_path", tile: { x: 7, y: 3 }, facing: "down",
-        patrolPath: [{ x: 7, y: 2 }, { x: 7, y: 5 }, { x: 7, y: 2 }] },
-      { timeSlot: "afternoon", mapId: "tyson_dojo",        tile: { x: 12, y: 8 }, facing: "down",
-        patrolPath: [{ x: 12, y: 5 }, { x: 12, y: 14 }, { x: 12, y: 5 }] },
+      { timeSlot: "morning", mapId: "granger_dojo",   tile: { x: 12, y: 8 }, facing: "down",  idleAnimation: "sword_practice" },
+      { timeSlot: "midday",  mapId: "dojo_garden_path", tile: { x: 7, y: 4 }, facing: "right", patrol: [{ x:3,y:4 },{ x:11,y:4 }] },
+      { timeSlot: "evening", mapId: "granger_dojo",   tile: { x: 12, y: 8 }, facing: "down",  idleAnimation: "meditation" },
     ],
     arcIds: ["arc1_ep1"],
   });
 
-  // Billy
+  // ── Billy ─────────────────────────────────────────────────────────────────────
   await put("rpg_npcs", "billy", {
     id: "billy", displayName: "Billy", type: "rival",
     spriteSheetId: "sprite_billy", portraitId: "portrait_billy",
-    defaultFacing: "left", defaultDialogueId: "dlg_billy_default",
-    schedule: [
-      { timeSlot: "morning",   mapId: "beigoma_park", tile: { x: 22, y: 14 }, facing: "left" },
-      { timeSlot: "afternoon", mapId: "beigoma_park", tile: { x: 22, y: 14 }, facing: "left" },
-    ],
+    defaultFacing: "down", defaultDialogueId: "dlg_billy_idle",
     battleConfig: {
       beybladeId: "bound-attacker", arenaId: "classic_circle", difficulty: "easy",
-      introDialogueId: "dlg_billy_battle_intro",
+      introDialogueId:   "dlg_billy_battle_intro",
       victoryDialogueId: "dlg_billy_defeated",
-      defeatDialogueId: "dlg_billy_wins",
-      rematchDialogueId: "dlg_billy_rematch",
-      lockedDialogueId: "dlg_billy_default",
+      defeatDialogueId:  "dlg_billy_wins",
       canRematch: true, rematchCooldownBattles: 2,
-      xpReward: { playerXP: 80, beybladeXP: 40, beybladeXPTarget: "dragoon" },
-      lossXpReward: { playerXP: 20 },
-      rewardFlags: { billy_defeated: true },
+      xpReward:    { playerXP: 60,  beybladeXP: 30 },
+      lossXpReward:{ playerXP: 15 },
       awardsBadgeId: "badge_first_victory",
     },
-    arcIds: ["arc1_ep1"],
+    questIds: [], arcIds: ["arc1_ep1"],
   });
 
-  // Kenny
+  // ── Kenny ("The Chief") ───────────────────────────────────────────────────────
   await put("rpg_npcs", "kenny", {
     id: "kenny", displayName: "Kenny", type: "ally",
     spriteSheetId: "sprite_kenny", portraitId: "portrait_kenny",
-    defaultFacing: "right", defaultDialogueId: "dlg_kenny_default",
-    schedule: [
-      { timeSlot: "morning",   mapId: "beigoma_park", tile: { x: 10, y: 20 }, facing: "right" },
-      { timeSlot: "afternoon", mapId: "rooftop",      tile: { x: 14, y: 7  }, facing: "left"  },
-    ],
-    questIds: ["q_reach_level_5", "q_find_4_parts"],
+    defaultFacing: "down", defaultDialogueId: "dlg_kenny_idle",
     battleConfig: {
       beybladeId: "jumping-base-set", arenaId: "classic_circle", difficulty: "easy",
-      introDialogueId: "dlg_kenny_battle_intro",
+      introDialogueId:   "dlg_kenny_battle_intro",
       victoryDialogueId: "dlg_kenny_defeated",
-      defeatDialogueId: "dlg_kenny_wins",
-      rematchDialogueId: "dlg_kenny_rematch",
+      defeatDialogueId:  "dlg_kenny_wins",
+      lockedDialogueId:  "dlg_kenny_no_bey",
       canRematch: true, rematchCooldownBattles: 1,
-      xpReward: { playerXP: 40, beybladeXP: 20 },
-      lossXpReward: { playerXP: 10 },
+      xpReward:    { playerXP: 40,  beybladeXP: 20 },
+      lossXpReward:{ playerXP: 10 },
     },
-    arcIds: ["arc1_ep1"],
+    questIds: ["q_reach_level_5", "q_find_4_parts"], arcIds: ["arc1_ep1"],
   });
 
-  // Andrew
+  // ── Andrew ────────────────────────────────────────────────────────────────────
   await put("rpg_npcs", "andrew", {
-    id: "andrew", displayName: "Andrew", type: "ally",
+    id: "andrew", displayName: "Andrew", type: "trainer",
     spriteSheetId: "sprite_andrew", portraitId: "portrait_andrew",
-    defaultFacing: "right", defaultDialogueId: "dlg_andrew_default",
-    schedule: [
-      { timeSlot: "morning",   mapId: "beigoma_park", tile: { x: 8,  y: 18 }, facing: "right" },
-      { timeSlot: "afternoon", mapId: "rooftop",      tile: { x: 17, y: 8  }, facing: "left"  },
-    ],
+    defaultFacing: "down", defaultDialogueId: "dlg_andrew_idle",
     battleConfig: {
       beybladeId: "sparkling-attacker", arenaId: "classic_circle", difficulty: "easy",
-      introDialogueId: "dlg_andrew_battle_intro",
+      introDialogueId:   "dlg_andrew_battle_intro",
       victoryDialogueId: "dlg_andrew_defeated",
-      defeatDialogueId: "dlg_andrew_wins",
-      rematchDialogueId: "dlg_andrew_rematch",
+      defeatDialogueId:  "dlg_andrew_wins",
       canRematch: true, rematchCooldownBattles: 1,
-      xpReward: { playerXP: 60, beybladeXP: 30 },
-      lossXpReward: { playerXP: 15 },
+      xpReward:    { playerXP: 50,  beybladeXP: 25 },
+      lossXpReward:{ playerXP: 12 },
     },
     arcIds: ["arc1_ep1"],
   });
 
-  // Carlos
+  // ── Carlos ────────────────────────────────────────────────────────────────────
   await put("rpg_npcs", "carlos", {
     id: "carlos", displayName: "Carlos", type: "rival",
     spriteSheetId: "sprite_carlos", portraitId: "portrait_carlos",
-    defaultFacing: "left", defaultDialogueId: "dlg_carlos_default",
-    schedule: [
-      { timeSlot: "morning",   mapId: "rooftop",    tile: { x: 22, y: 6  }, facing: "left" },
-      { timeSlot: "afternoon", mapId: "river_side", tile: { x: 20, y: 8  }, facing: "left" },
-    ],
+    defaultFacing: "down", defaultDialogueId: "dlg_carlos_idle",
     battleConfig: {
       beybladeId: "kids-draciel", arenaId: "classic_circle", difficulty: "medium",
-      introDialogueId: "dlg_carlos_battle_intro",
+      introDialogueId:   "dlg_carlos_battle_intro",
       victoryDialogueId: "dlg_carlos_defeated",
-      defeatDialogueId: "dlg_carlos_player_loses",
-      rematchDialogueId: "dlg_carlos_rematch",
-      lockedDialogueId: "dlg_carlos_not_ready",
-      canRematch: false, rematchCooldownBattles: 0,
-      gate: { minPlayerLevel: 5 },
-      xpReward: { playerXP: 150, beybladeXP: 80 },
-      lossXpReward: { playerXP: 40 },
-      rewardFlags: { carlos_defeated: true },
+      defeatDialogueId:  "dlg_carlos_wins",
+      lockedDialogueId:  "dlg_carlos_gate",
+      canRematch: false,
+      xpReward:    { playerXP: 120, beybladeXP: 60 },
+      lossXpReward:{ playerXP: 30 },
       awardsBadgeId: "badge_carlos_beaten",
+      gateLevel: 5,
     },
     arcIds: ["arc1_ep1"],
   });
 
-  // Kai
+  // ── Kai ───────────────────────────────────────────────────────────────────────
   await put("rpg_npcs", "kai", {
-    id: "kai", displayName: "Kai", type: "boss",
+    id: "kai", displayName: "Kai Hiwatari", type: "boss",
     spriteSheetId: "sprite_kai", portraitId: "portrait_kai",
-    defaultFacing: "left", defaultDialogueId: "dlg_kai_dismissive",
-    schedule: [
-      { timeSlot: "morning",   mapId: "river_side",           tile: { x: 35, y: 7  }, facing: "left" },
-      { timeSlot: "afternoon", mapId: "blade_sharks_hideout", tile: { x: 24, y: 10 }, facing: "left" },
-    ],
+    defaultFacing: "down", defaultDialogueId: "dlg_kai_idle",
     battleConfig: {
-      beybladeId: "dranzer_s", arenaId: "dark_bowl", difficulty: "hard",
-      introDialogueId: "dlg_kai_battle_intro_hideout",
+      beybladeId: "dranzer_s", arenaId: "classic_circle", difficulty: "hard",
+      introDialogueId:   "dlg_kai_final_intro",
       victoryDialogueId: "dlg_kai_hideout_defeated",
-      defeatDialogueId: "dlg_kai_hideout_player_loses",
-      lockedDialogueId: "dlg_kai_not_ready",
-      rematchDialogueId: "dlg_kai_rematch",
+      defeatDialogueId:  "dlg_kai_wins_hideout",
       canRematch: true, rematchCooldownBattles: 0,
-      gate: { minPlayerLevel: 10, flags: { all: { dragoon_bit_beast_awakened: true } } },
-      xpReward: { playerXP: 300, beybladeXP: 150 },
-      lossXpReward: { playerXP: 80 },
-      rewardFlags:   { kai_hideout_defeated: true, arc1_ep1_complete: true },
-      alwaysSetFlags: { kai_battled_hideout: true },
+      xpReward:    { playerXP: 300, beybladeXP: 150 },
+      lossXpReward:{ playerXP: 60 },
       awardsBadgeId: "badge_kai_beaten",
+      gateFlag: "dragoon_bit_beast_awakened",
     },
     arcIds: ["arc1_ep1"],
   });
 
-  // Kai (river encounter — first meeting, no battle config, just confrontation)
-  // The river Kai uses a separate dialogue/event. Battle is gated by story flag.
-
-  // Rick — random blader
-  await put("rpg_npcs", "random_blader_rick", {
-    id: "random_blader_rick", displayName: "Rick", type: "blader",
-    spriteSheetId: "sprite_random_boy_1", portraitId: "portrait_random_1",
-    defaultFacing: "right", defaultDialogueId: "dlg_rick_default",
-    schedule: [
-      { timeSlot: "morning",   mapId: "river_side", tile: { x: 10, y: 11 }, facing: "right" },
-      { timeSlot: "afternoon", mapId: "river_side", tile: { x: 10, y: 11 }, facing: "right" },
-    ],
+  // ── Rick ──────────────────────────────────────────────────────────────────────
+  await put("rpg_npcs", "rick", {
+    id: "rick", displayName: "Rick", type: "trainer",
+    spriteSheetId: "sprite_blade_shark", portraitId: "portrait_rick",
+    defaultFacing: "left", defaultDialogueId: "dlg_rick_idle",
     battleConfig: {
-      beybladeId: "dragoon", arenaId: "classic_circle", difficulty: "easy",
-      introDialogueId: "dlg_rick_battle",
+      beybladeId: "trygle", arenaId: "classic_circle", difficulty: "easy",
+      introDialogueId:   "dlg_rick_battle_intro",
       victoryDialogueId: "dlg_rick_defeated",
-      defeatDialogueId: "dlg_rick_wins",
-      canRematch: true, rematchCooldownBattles: 1,
-      xpReward: { playerXP: 50, beybladeXP: 25 },
-      lossXpReward: { playerXP: 10 },
+      defeatDialogueId:  "dlg_rick_wins",
+      canRematch: false,
+      xpReward:    { playerXP: 80, beybladeXP: 40 },
+      lossXpReward:{ playerXP: 20 },
     },
     arcIds: ["arc1_ep1"],
   });
 
-  // Sam — random blader
-  await put("rpg_npcs", "random_blader_sam", {
-    id: "random_blader_sam", displayName: "Sam", type: "blader",
-    spriteSheetId: "sprite_random_boy_2", portraitId: "portrait_random_2",
-    defaultFacing: "left", defaultDialogueId: "dlg_sam_default",
-    schedule: [
-      { timeSlot: "morning",   mapId: "river_side", tile: { x: 13, y: 13 }, facing: "left" },
-      { timeSlot: "afternoon", mapId: "river_side", tile: { x: 13, y: 13 }, facing: "left" },
-    ],
+  // ── Sam ───────────────────────────────────────────────────────────────────────
+  await put("rpg_npcs", "sam", {
+    id: "sam", displayName: "Sam", type: "trainer",
+    spriteSheetId: "sprite_blade_shark", portraitId: "portrait_sam",
+    defaultFacing: "right", defaultDialogueId: "dlg_sam_idle",
     battleConfig: {
-      beybladeId: "draciel", arenaId: "classic_circle", difficulty: "easy",
-      introDialogueId: "dlg_sam_battle",
+      beybladeId: "sparkling-attacker", arenaId: "classic_circle", difficulty: "easy",
+      introDialogueId:   "dlg_sam_battle_intro",
       victoryDialogueId: "dlg_sam_defeated",
-      defeatDialogueId: "dlg_sam_wins",
-      canRematch: true, rematchCooldownBattles: 1,
-      xpReward: { playerXP: 50, beybladeXP: 25 },
-      lossXpReward: { playerXP: 10 },
+      defeatDialogueId:  "dlg_sam_wins",
+      canRematch: false,
+      xpReward:    { playerXP: 80, beybladeXP: 40 },
+      lossXpReward:{ playerXP: 20 },
     },
+    arcIds: ["arc1_ep1"],
+  });
+
+  // ── Random Blader 1 (appears after Dragoon-S) ────────────────────────────────
+  await put("rpg_npcs", "random_blader_1", {
+    id: "random_blader_1", displayName: "Takeo", type: "blader",
+    spriteSheetId: "sprite_generic_blader_a", portraitId: "portrait_generic_a",
+    defaultFacing: "down", defaultDialogueId: "dlg_random_blader_1_idle",
+    battleConfig: {
+      beybladeId: "bound-attacker", arenaId: "classic_circle", difficulty: "easy",
+      introDialogueId:   "dlg_random_blader_1_battle_intro",
+      victoryDialogueId: "dlg_random_blader_1_defeated",
+      defeatDialogueId:  "dlg_random_blader_1_wins",
+      canRematch: true, rematchCooldownBattles: 1,
+      xpReward:    { playerXP: 35, beybladeXP: 18 },
+      lossXpReward:{ playerXP: 8 },
+      gateFlag: "dragoon_s_assembled",
+    },
+    arcIds: ["arc1_ep1"],
+  });
+
+  // ── Random Blader 2 ──────────────────────────────────────────────────────────
+  await put("rpg_npcs", "random_blader_2", {
+    id: "random_blader_2", displayName: "Miku", type: "blader",
+    spriteSheetId: "sprite_generic_blader_b", portraitId: "portrait_generic_b",
+    defaultFacing: "down", defaultDialogueId: "dlg_random_blader_2_idle",
+    battleConfig: {
+      beybladeId: "jumping-base-set", arenaId: "classic_circle", difficulty: "easy",
+      introDialogueId:   "dlg_random_blader_2_battle_intro",
+      victoryDialogueId: "dlg_random_blader_2_defeated",
+      defeatDialogueId:  "dlg_random_blader_2_wins",
+      canRematch: true, rematchCooldownBattles: 1,
+      xpReward:    { playerXP: 35, beybladeXP: 18 },
+      lossXpReward:{ playerXP: 8 },
+      gateFlag: "dragoon_s_assembled",
+    },
+    arcIds: ["arc1_ep1"],
+  });
+
+  // ── Max Tate ──────────────────────────────────────────────────────────────────
+  await put("rpg_npcs", "max", {
+    id: "max", displayName: "Max Tate", type: "rival",
+    spriteSheetId: "sprite_max", portraitId: "portrait_max",
+    defaultFacing: "down", defaultDialogueId: "dlg_max_idle",
+    battleConfig: {
+      beybladeId: "kids-draciel", arenaId: "classic_circle", difficulty: "medium",
+      introDialogueId:   "dlg_max_battle_intro",
+      victoryDialogueId: "dlg_max_defeated",
+      defeatDialogueId:  "dlg_max_wins",
+      canRematch: true, rematchCooldownBattles: 2,
+      xpReward:    { playerXP: 150, beybladeXP: 75 },
+      lossXpReward:{ playerXP: 35 },
+      awardsBadgeId: "badge_max_beaten",
+      gateFlag: "max_met",
+    },
+    questIds: [], arcIds: ["arc1_ep1"],
+  });
+
+  // ── Mr. Tate (Max's dad, shopkeeper) ─────────────────────────────────────────
+  await put("rpg_npcs", "mr_tate", {
+    id: "mr_tate", displayName: "Mr. Tate", type: "shopkeeper",
+    spriteSheetId: "sprite_mr_tate", portraitId: "portrait_mr_tate",
+    defaultFacing: "down", defaultDialogueId: "dlg_mr_tate_idle",
+    shopInventoryId: "shop_tate_supplies",
+    schedule: [
+      { timeSlot: "morning", mapId: "max_shop", tile: { x: 7, y: 2 }, facing: "down" },
+      { timeSlot: "evening", mapId: "max_shop", tile: { x: 7, y: 2 }, facing: "down" },
+    ],
+    arcIds: ["arc1_ep1"],
+  });
+
+  // ── Dickinson ─────────────────────────────────────────────────────────────────
+  await put("rpg_npcs", "dickinson", {
+    id: "dickinson", displayName: "Mr. Dickinson", type: "quest_giver",
+    spriteSheetId: "sprite_dickinson", portraitId: "portrait_dickinson",
+    defaultFacing: "down", defaultDialogueId: "dlg_dickinson_idle",
+    schedule: [
+      { timeSlot: "midday", mapId: "seaside_dome", tile: { x: 10, y: 6 }, facing: "down" },
+    ],
     arcIds: ["arc1_ep1"],
   });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 5. DIALOGUE TREES
-// All dialogue is original character-true writing — not reproduced from any source.
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 5 — DIALOGUES
+// All dialogue is original writing — character voices, story beats, original prose.
+// ═══════════════════════════════════════════════════════════════════════════════
 async function seedDialogues() {
   console.log("\n💬  Dialogues");
+  const D = [];
 
-  function dlg(id, startNodeId, nodes) {
-    return { id, startNodeId, nodes: Object.fromEntries(nodes.map(n => [n.id, n])) };
-  }
-  function speech(id, speakerId, text, nextNodeId, opts = {}) {
-    return { id, type: "speech", speakerId, text, nextNodeId, ...opts };
-  }
-  function choice(id, speakerId, text, choices, opts = {}) {
-    return { id, type: "choice", speakerId, text, choices, ...opts };
-  }
-  function end(id) {
-    return { id, type: "end", speakerId: "narrator", text: "" };
-  }
-  function setFlag(id, flags, nextNodeId) {
-    return { id, type: "speech", speakerId: "narrator", text: "", setsFlags: flags, nextNodeId };
-  }
+  // ─── Phase 1: Wakeup & Escape ────────────────────────────────────────────────
 
-  const trees = [
+  D.push({ id: "dlg_grandpa_wakeup", nodes: [
+    { id: "n1", speaker: "grandpa", text: "Tyson! The sun has been up for three hours. Your Beyblade has been spinning longer than you have today!", next: "n2" },
+    { id: "n2", speaker: "tyson",   text: "Five more minutes, Grandpa... I was just dreaming about the perfect launch.", next: "n3" },
+    { id: "n3", speaker: "grandpa", text: "Dreams don't build muscle. Come. The morning practice waits for no one — and neither does your grandfather.", next: null },
+  ]});
 
-    // ── Grandpa wakeup (room) ──────────────────────────────────────────────
-    dlg("dlg_grandpa_wakeup", "n1", [
-      speech("n1",  "grandpa", "Tyson! The sun's been up for two hours! Get moving, boy!", "n2", { portraitState: "stern" }),
-      speech("n2",  "tyson",   "Ugh... five more minutes, Gramps...", "n3", { portraitState: "sleepy" }),
-      speech("n3",  "grandpa", "Five more minutes?! I'll give you five seconds! One... two...", "n4", { portraitState: "stern", shake: true }),
-      speech("n4",  "tyson",   "Okay, okay! I'm up! I'm up!", "n5"),
-      speech("n5",  "grandpa", "That's more like it. Come, there's something I want to show you before training.", "n6", { portraitState: "calm" }),
-      speech("n6",  "narrator","[Grandpa gestures toward the far wall of the room.]", "n7"),
-      speech("n7",  "grandpa", "See that sword hanging there? That is the Hiro family Dragon Dagger. It has passed down through our bloodline for generations.", "n8"),
-      speech("n8",  "tyson",   "Whoa... I never really looked at it before. It's got this weird glow to it.", "n9"),
-      speech("n9",  "grandpa", "Hmph. Not weird — ancient. Now enough gawking. To the dojo! Your training starts now!", "n10", { portraitState: "stern" }),
-      setFlag("n10", { wakeup_done: true }, "n11"),
-      end("n11"),
-    ]),
+  D.push({ id: "dlg_grandpa_idle", nodes: [
+    { id: "n1", speaker: "grandpa", text: "A blade that spins true comes from a hand that trains hard. Now — are you training, or are you talking?", next: null },
+  ]});
 
-    // ── Grandpa default idle ────────────────────────────────────────────────
-    dlg("dlg_grandpa_default", "n1", [
-      speech("n1", "grandpa", "Stay focused, Tyson. A blader without discipline is just a kid spinning a toy.", "n2"),
-      end("n2"),
-    ]),
+  D.push({ id: "dlg_grandpa_patrol", nodes: [
+    { id: "n1", speaker: "grandpa", text: "HA! Thought you could sneak past your grandfather? Begin your forms. One hundred repetitions.", next: "n2" },
+    { id: "n2", speaker: "tyson",   text: "Aw come ON, Grandpa! The guys are waiting for me outside!", next: "n3" },
+    { id: "n3", speaker: "grandpa", text: "The guys will wait. Your form will not fix itself. One hundred — starting NOW.", next: null },
+  ]});
 
-    // ── Grandpa caught sneaking ─────────────────────────────────────────────
-    dlg("dlg_grandpa_caught", "n1", [
-      speech("n1", "grandpa", "And just where do you think you're sneaking off to?!", "n2", { portraitState: "angry", shake: true }),
-      speech("n2", "tyson",   "I wasn't sneaking! I was just... going for a walk.", "n3"),
-      speech("n3", "grandpa", "A walk. Through the garden. Without telling anyone. Uh-huh.", "n4", { portraitState: "skeptical" }),
-      speech("n4", "tyson",   "Okay fine, I wanted to go to the park! The guys are probably down there right now!", "n5"),
-      speech("n5", "grandpa", "The park will still be there after your training, young man. Back inside!", "n6", { portraitState: "stern" }),
-      speech("n6", "tyson",   "But Gramps...", "n7"),
-      speech("n7", "grandpa", "No buts! A warrior earns his freedom. Now MARCH.", "n8", { portraitState: "angry", sfxId: "sfx_grandpa_stomp" }),
-      end("n8"),
-    ]),
+  D.push({ id: "dlg_grandpa_caught", nodes: [
+    { id: "n1", speaker: "grandpa", text: "You are fast, Tyson — but not fast enough. Back inside.", next: "n2" },
+    { id: "n2", speaker: "tyson",   text: "*groans* I was so close!", next: null },
+  ]});
 
-    // ── Dragon Sword — room (first view) ───────────────────────────────────
-    dlg("dlg_dragoon_sword_room", "n1", [
-      speech("n1", "narrator", "[You step closer to the sword on the wall. The blade seems to shimmer faintly...]", "n2"),
-      speech("n2", "tyson",    "There's something about this sword... it's like it's watching me.", "n3"),
-      speech("n3", "grandpa",  "Your instincts are good, Tyson. The Dragon Dagger is more than steel.", "n4", { portraitState: "calm" }),
-      speech("n4", "grandpa",  "One day, when you are ready, its spirit will find its way into your Beyblade. But that day is earned — not given.", "n5"),
-      speech("n5", "tyson",    "Its spirit? You mean like... a bit beast?", "n6"),
-      speech("n6", "grandpa",  "You have been paying more attention than I thought. Now come. Training first.", "n7", { portraitState: "approving" }),
-      setFlag("n7", { sword_room_viewed: true }, "n8"),
-      end("n8"),
-    ]),
+  D.push({ id: "dlg_grandpa_escaped_taunt", nodes: [
+    { id: "n1", speaker: "grandpa", text: "*calling from the dojo window* Well played, boy! But I WILL get those extra practice sessions back from you — one way or another!", next: "n2" },
+    { id: "n2", speaker: "tyson",   text: "...I'll take that as a win! LET'S GO!", next: null },
+  ]});
 
-    // ── Dragon Sword — dojo (after rooftop, deeper connection) ─────────────
-    dlg("dlg_dragoon_sword_dojo", "n1", [
-      speech("n1", "narrator", "[The Dragon Dagger hangs on the dojo wall. After everything you saw at the rooftop, you see it differently now.]", "n2"),
-      speech("n2", "tyson",    "Carlos took everyone's Beyblades... Kenny, Andrew... I have to get stronger.", "n3"),
-      speech("n3", "narrator", "[You reach out — not quite touching it. A warmth pulses from the blade.]", "n4"),
-      speech("n4", "tyson",    "Dragoon... do you feel it too? This sword is connected to you somehow.", "n5"),
-      speech("n5", "grandpa",  "Trust what you feel, Tyson.", "n6", { portraitState: "calm" }),
-      speech("n6", "grandpa",  "The Dragon's power has always been in our family. When you are truly ready — it will answer.", "n7"),
-      speech("n7", "tyson",    "Then I'll get ready. I'll train until I'm strong enough to face anyone.", "n8", { portraitState: "determined" }),
-      setFlag("n8", { sword_dojo_viewed: true }, "n9"),
-      end("n9"),
-    ]),
+  // ─── Phase 1: Sword Views ────────────────────────────────────────────────────
 
-    // ── Billy — first encounter cutscene trigger ─────────────────────────────
-    dlg("dlg_billy_first_scene", "n1", [
-      speech("n1", "billy",  "Hey! New kid!", "n2", { portraitState: "aggressive" }),
-      speech("n2", "tyson",  "Who, me?", "n3"),
-      speech("n3", "billy",  "Yeah, you. You got a Beyblade?", "n4"),
-      speech("n4", "tyson",  "Sure do. You want to see what it can do?", "n5", { portraitState: "confident" }),
-      speech("n5", "billy",  "Ha! Big words from a little kid. My Bound Attacker has never lost. Not once. You really wanna embarrass yourself?", "n6", { portraitState: "smug" }),
-      speech("n6", "kenny",  "Tyson, don't! That's Billy — he's taken Beyblades from half the kids in this park!", "n7", { portraitState: "scared" }),
-      speech("n7", "tyson",  "Taken them? That's low.", "n8", { portraitState: "angry" }),
-      speech("n8", "billy",  "Finders keepers. Winner takes all. That's the rules around here.", "n9"),
-      speech("n9", "tyson",  "Not my rules. And not today. Let it rip!", "n10", { portraitState: "battle-ready", sfxId: "sfx_let_it_rip" }),
-      setFlag("n10", { billy_encountered: true }, "n11"),
-      end("n11"),
-    ]),
+  D.push({ id: "dlg_sword_room_view", nodes: [
+    { id: "n1", speaker: "narrator", text: "[A decorative family sword rests in the corner of Tyson's room. There's something about it... like it hums with old energy.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "Grandpa's always said this sword was special. I never really believed him... but looking at it now, I kind of do.", next: null },
+  ]});
 
-    // ── Billy — battle intro ────────────────────────────────────────────────
-    dlg("dlg_billy_battle_intro", "n1", [
-      speech("n1", "billy", "Alright rookie, prepare to hand over that Beyblade when Bound Attacker's done with you!", "n2", { portraitState: "aggressive" }),
-      speech("n2", "tyson", "I'm not handing over anything. Dragoon — let it rip!", "n3", { sfxId: "sfx_let_it_rip" }),
-      end("n3"),
-    ]),
+  D.push({ id: "dlg_sword_dojo_view", nodes: [
+    { id: "n1", speaker: "narrator", text: "[The family sword gleams from its mount on the dojo wall. After everything you saw on that rooftop, it feels different somehow — older, weightier.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "Carlos took everyone's Beyblades like it was nothing. How does someone get that strong?", next: "n3" },
+    { id: "n3", speaker: "tyson",    text: "...Grandpa always says this sword has a story. Maybe it's time I actually listened.", next: null },
+  ]});
 
-    // ── Billy — player wins ─────────────────────────────────────────────────
-    dlg("dlg_billy_defeated", "n1", [
-      speech("n1", "billy",  "What?! Impossible! Bound Attacker never loses!", "n2", { portraitState: "shocked" }),
-      speech("n2", "tyson",  "Just did! Guess there's a first time for everything.", "n3", { portraitState: "triumphant" }),
-      speech("n3", "kenny",  "Incredible, Tyson! Dragoon's attack power is off the charts — according to Dizzi!", "n4", { portraitState: "excited" }),
-      speech("n4", "billy",  "...Don't think this is over. I'll be back.", "n5", { portraitState: "bitter" }),
-      end("n5"),
-    ]),
+  // ─── Phase 1: Billy ──────────────────────────────────────────────────────────
 
-    // ── Billy — player loses ────────────────────────────────────────────────
-    dlg("dlg_billy_wins", "n1", [
-      speech("n1", "billy", "Ha! What did I tell you? Bound Attacker never fails. Come back when you're actually good.", "n2", { portraitState: "smug" }),
-      speech("n2", "tyson", "That was just a warm-up. I'll be back — count on it.", "n3", { portraitState: "determined" }),
-      end("n3"),
-    ]),
+  D.push({ id: "dlg_billy_challenge", nodes: [
+    { id: "n1", speaker: "billy",  text: "Hey, new kid! You wanna play in this park, you gotta prove you belong here. My Bound Attacker has never, ever lost.", next: "n2" },
+    { id: "n2", speaker: "tyson", text: "Never? That's a big promise for a Beyblade with a name like that.", next: "n3" },
+    { id: "n3", speaker: "billy",  text: "I'm serious! One battle. You lose, you leave. You win... well, you WON'T, so I haven't thought that far.", next: "n4" },
+    { id: "n4", speaker: "tyson", text: "Oh, I'll WIN alright. And then you're going to feel really silly. Let it RIP!", next: null },
+  ]});
 
-    // ── Billy — rematch ─────────────────────────────────────────────────────
-    dlg("dlg_billy_rematch", "n1", [
-      speech("n1", "billy", "You again? Still haven't learned your lesson?", "n2", { portraitState: "smug" }),
-      speech("n2", "tyson", "I learned plenty. Ready to go again?", "n3"),
-      end("n3"),
-    ]),
+  D.push({ id: "dlg_billy_battle_intro", nodes: [
+    { id: "n1", speaker: "billy",  text: "Three... two... one... LET IT RIP! Go, Bound Attacker!", next: null },
+  ]});
 
-    // ── Billy — default idle ────────────────────────────────────────────────
-    dlg("dlg_billy_default", "n1", [
-      speech("n1", "billy", "I'm the best blader in this park. Fight me if you dare.", "n2"),
-      end("n2"),
-    ]),
+  D.push({ id: "dlg_billy_defeated", nodes: [
+    { id: "n1", speaker: "billy",  text: "W— what?! Impossible! My Bound Attacker never loses! It NEVER—", next: "n2" },
+    { id: "n2", speaker: "tyson", text: "It just did. Good battle though — you've got real technique.", next: "n3" },
+    { id: "n3", speaker: "billy",  text: "...*takes a breath*... Yeah. You're something, new kid. The rooftop's yours — people up there are in trouble, by the way.", next: null },
+  ]});
 
-    // ── Rooftop — Carlos scene ──────────────────────────────────────────────
-    dlg("dlg_carlos_rooftop_scene", "n1", [
-      speech("n1", "narrator","[You reach the rooftop. A group of kids look miserable. A tough older boy holds a bag full of Beyblades.]", "n2"),
-      speech("n2", "carlos",  "Aww, how touching. More little bladers climbing up here to cry.", "n3", { portraitState: "mocking" }),
-      speech("n3", "kenny",   "Tyson... that's Carlos. He's a Blade Shark. He took all our Beyblades...", "n4", { portraitState: "frightened" }),
-      speech("n4", "andrew",  "Mine too. Said he'd give them back if we could beat him. Nobody could.", "n5", { portraitState: "defeated" }),
-      speech("n5", "tyson",   "You stole their Beyblades?! That's seriously uncool.", "n6", { portraitState: "angry" }),
-      speech("n6", "carlos",  "Stole? I WON them. There's a difference, rookie.", "n7", { portraitState: "cold" }),
-      speech("n7", "tyson",   "Then fight me. Right now. Give them back if I win.", "n8", { portraitState: "determined" }),
-      speech("n8", "carlos",  "Ha! You? You just beat Billy. Billy. I've seen better launches from little kids on training wheels.", "n9", { portraitState: "amused" }),
-      speech("n9", "carlos",  "Come find me when you're actually worth my time. Until then — stay off my turf.", "n10"),
-      speech("n10","narrator","[Carlos pockets the bag of Beyblades and walks toward the stairwell. He doesn't even look back.]", "n11"),
-      speech("n11","tyson",   "Hey — I'm not done talking to you!", "n12", { portraitState: "furious" }),
-      speech("n12","carlos",  "I am.", "end1", { portraitState: "cold" }),
-      end("end1"),
-    ]),
+  D.push({ id: "dlg_billy_wins", nodes: [
+    { id: "n1", speaker: "billy",  text: "HA! I TOLD you! Nobody beats Bound Attacker in this park. You can stay — just don't challenge me again.", next: "n2" },
+    { id: "n2", speaker: "tyson", text: "Are you KIDDING me? Best two out of three! I'm not done!", next: null },
+  ]});
 
-    // ── Kenny gives the Level 5 quest ───────────────────────────────────────
-    dlg("dlg_kenny_rooftop_quest", "n1", [
-      speech("n1", "kenny",  "Tyson, I've been running the numbers with Dizzi. Carlos's Beyblade stats are on a completely different level from Billy's.", "n2"),
-      speech("n2", "kenny",  "If you battle him now, you'll just lose everything. You need to get stronger first.", "n3", { portraitState: "analytical" }),
-      speech("n3", "andrew", "We believe in you, man. You've got the talent — you just need the experience.", "n4", { portraitState: "encouraging" }),
-      speech("n4", "tyson",  "So how strong do I need to get?", "n5"),
-      speech("n5", "kenny",  "According to Dizzi... Level 5 should give Dragoon the power to match Kid Draciel. Train in the backyard, battle in the park — get your experience up.", "n6"),
-      speech("n6", "tyson",  "Level 5. Got it. I'll get there — and then Carlos is going DOWN.", "n7", { portraitState: "determined", sfxId: "sfx_determined" }),
-      setFlag("n7", { q_level5_started: true }, "n8"),
-      end("n8"),
-    ]),
+  D.push({ id: "dlg_billy_idle", nodes: [
+    { id: "n1", speaker: "billy",  text: "This park is MY turf. You remember that.", next: null },
+  ]});
 
-    // ── Kenny default ────────────────────────────────────────────────────────
-    dlg("dlg_kenny_default", "n1", [
-      speech("n1", "kenny", "Dizzi's analysis says you need more battle experience before taking on Carlos. Keep training!", "n2"),
-      end("n2"),
-    ]),
+  // ─── Phase 1: Andrew ─────────────────────────────────────────────────────────
 
-    // ── Andrew battle intro ──────────────────────────────────────────────────
-    dlg("dlg_andrew_battle_intro", "n1", [
-      speech("n1", "andrew", "Alright Tyson, don't hold back! This is good practice for both of us.", "n2"),
-      end("n2"),
-    ]),
+  D.push({ id: "dlg_andrew_idle", nodes: [
+    { id: "n1", speaker: "andrew", text: "Hey. You any good with that thing?", next: "n2" },
+    { id: "n2", speaker: "tyson",  text: "Better than anyone in this park, easy.", next: "n3" },
+    { id: "n3", speaker: "andrew", text: "Bold. I like it. Come find me when you want a real match.", next: null },
+  ]});
 
-    // ── Andrew defeated ──────────────────────────────────────────────────────
-    dlg("dlg_andrew_defeated", "n1", [
-      speech("n1", "andrew", "Whoa! That was intense. You're getting really good, Tyson.", "n2"),
-      end("n2"),
-    ]),
+  D.push({ id: "dlg_andrew_battle_intro", nodes: [
+    { id: "n1", speaker: "andrew", text: "Let's keep it clean. Three... two... one — Let it RIP!", next: null },
+  ]});
 
-    // ── Andrew wins ─────────────────────────────────────────────────────────
-    dlg("dlg_andrew_wins", "n1", [
-      speech("n1", "andrew", "Haha, got you that time! Keep practicing though, you're close.", "n2"),
-      end("n2"),
-    ]),
+  D.push({ id: "dlg_andrew_defeated", nodes: [
+    { id: "n1", speaker: "andrew", text: "Hah. You weren't kidding. My Sparkling Attacker's got nothing on your speed.", next: "n2" },
+    { id: "n2", speaker: "tyson",  text: "Don't feel bad — I've been training since I could walk. Literally.", next: null },
+  ]});
 
-    // ── Andrew rematch ───────────────────────────────────────────────────────
-    dlg("dlg_andrew_rematch", "n1", [
-      speech("n1", "andrew", "Ready to go again? I've been working on my launch technique.", "n2"),
-      end("n2"),
-    ]),
+  D.push({ id: "dlg_andrew_wins", nodes: [
+    { id: "n1", speaker: "andrew", text: "Speed means nothing without control. Train up, then come back.", next: null },
+  ]});
 
-    // ── Andrew default ───────────────────────────────────────────────────────
-    dlg("dlg_andrew_default", "n1", [
-      speech("n1", "andrew", "You've really come a long way, Tyson. Carlos doesn't stand a chance.", "n2"),
-      end("n2"),
-    ]),
+  // ─── Phase 1: Park / Rooftop gate dialogues ──────────────────────────────────
 
-    // ── Carlos — default / not ready ────────────────────────────────────────
-    dlg("dlg_carlos_not_ready", "n1", [
-      speech("n1", "carlos", "You're still weak. Come back when you've actually trained.", "n2", { portraitState: "cold" }),
-      end("n2"),
-    ]),
+  D.push({ id: "dlg_street_rooftop_locked", nodes: [
+    { id: "n1", speaker: "narrator", text: "[A group of Blade Sharks are blocking the stairwell entrance. They watch you with crossed arms.]", next: "n2" },
+    { id: "n2", speaker: "blade_shark_grunt", text: "Park's one thing, runt. Rooftop's Blade Shark territory. Prove you're worth the climb.", next: null },
+  ]});
 
-    dlg("dlg_carlos_default", "n1", [
-      speech("n1", "carlos", "What are you staring at? Battle me if you've got the nerve.", "n2"),
-      end("n2"),
-    ]),
+  D.push({ id: "dlg_park_deeper_locked", nodes: [
+    { id: "n1", speaker: "narrator", text: "[The path winds deeper into the park. Billy and his crew used to hang back here — but now that Billy's been beaten, the way is open.]", next: null },
+  ]});
 
-    // ── Carlos — river battle intro ─────────────────────────────────────────
-    dlg("dlg_carlos_battle_intro", "n1", [
-      speech("n1", "carlos", "So you actually came back. And you brought that toy of yours.", "n2", { portraitState: "amused" }),
-      speech("n2", "tyson",  "Give back everyone's Beyblades, Carlos. This is your last chance to do it the easy way.", "n3", { portraitState: "determined" }),
-      speech("n3", "carlos", "Last chance? I like that. Sure, if you can beat Kid Draciel — they're yours. But when you LOSE — Dragoon is mine.", "n4", { portraitState: "cold" }),
-      speech("n4", "tyson",  "You won't get anywhere near Dragoon. Let it rip!", "n5", { sfxId: "sfx_let_it_rip" }),
-      end("n5"),
-    ]),
+  D.push({ id: "dlg_river_not_ready", nodes: [
+    { id: "n1", speaker: "narrator", text: "[The riverside is quiet — too quiet. Word is the Blade Sharks hold that stretch of river too.]", next: "n2" },
+    { id: "n2", speaker: "kenny",    text: "Tyson, my data says you need to be stronger before facing Carlos. Chief recommends hitting Level 5 first.", next: null },
+  ]});
 
-    // ── Carlos defeated ─────────────────────────────────────────────────────
-    dlg("dlg_carlos_defeated", "n1", [
-      speech("n1", "carlos", "No... Kid Draciel... how?!", "n2", { portraitState: "shocked" }),
-      speech("n2", "tyson",  "A deal's a deal, Carlos. Hand them over.", "n3", { portraitState: "calm" }),
-      speech("n3", "carlos", "...", "n4", { portraitState: "humiliated" }),
-      speech("n4", "narrator","[Carlos tosses the bag of Beyblades onto the ground. The other kids rush forward, grabbing their own.]", "n5"),
-      speech("n5", "carlos", "Don't celebrate yet, kid. You haven't met everyone in the Blade Sharks.", "n6", { portraitState: "bitter" }),
-      end("n6"),
-    ]),
+  // ─── Phase 1: Kenny dialogues ─────────────────────────────────────────────────
 
-    // ── Carlos — player loses ────────────────────────────────────────────────
-    dlg("dlg_carlos_player_loses", "n1", [
-      speech("n1", "carlos", "And that's why you train before you come at me. Better luck next time — if there is one.", "n2", { portraitState: "cold" }),
-      speech("n2", "tyson",  "This isn't over, Carlos.", "n3", { portraitState: "determined" }),
-      end("n3"),
-    ]),
+  D.push({ id: "dlg_kenny_idle", nodes: [
+    { id: "n1", speaker: "kenny", text: "According to my calculations, your win rate is... improving. Slowly. Chief gives it a B-minus.", next: null },
+  ]});
 
-    // ── Carlos rematch (disabled, but left for completeness) ─────────────────
-    dlg("dlg_carlos_rematch", "n1", [
-      speech("n1", "carlos", "I already lost to you. I won't make the same mistake twice.", "n2"),
-      end("n2"),
-    ]),
+  D.push({ id: "dlg_kenny_battle_intro", nodes: [
+    { id: "n1", speaker: "kenny", text: "Chief says my Jumping Base Set has a 71.3% spin advantage on this surface. Ready when you are!", next: null },
+  ]});
 
-    // ── River arrival scene ──────────────────────────────────────────────────
-    dlg("dlg_river_arrival_scene", "n1", [
-      speech("n1", "narrator","[The river sparkles in the afternoon sun. You see the group you've been chasing all this time — and Carlos, right in the middle of it.]", "n2"),
-      speech("n2", "andrew",  "Tyson! You came!", "n3", { portraitState: "relieved" }),
-      speech("n3", "kenny",   "And at Level 5! Dizzi's scan confirms it — you're ready!", "n4", { portraitState: "excited" }),
-      speech("n4", "carlos",  "...You really showed up.", "n5", { portraitState: "surprised" }),
-      speech("n5", "tyson",   "Said I would. Let's finish this, Carlos.", "n6", { portraitState: "calm" }),
-      end("n6"),
-    ]),
+  D.push({ id: "dlg_kenny_defeated", nodes: [
+    { id: "n1", speaker: "kenny", text: "...Chief is recalculating. Chief did not expect this outcome.", next: "n2" },
+    { id: "n2", speaker: "tyson", text: "Tell Chief I said hi.", next: null },
+  ]});
 
-    // ── Kai entrance at river ────────────────────────────────────────────────
-    dlg("dlg_kai_entrance_scene", "n1", [
-      speech("n1", "narrator","[A shadow falls across Carlos. Someone has been watching from the distance all along.]", "n2"),
-      speech("n2", "carlos",  "K-Kai...", "n3", { portraitState: "frightened" }),
-      speech("n3", "narrator","[Without a word, Kai crosses to Carlos. A sharp sound cracks across the air.]", "n4", { sfxId: "sfx_slap", shake: true }),
-      speech("n4", "carlos",  "Kai, I—", "n5"),
-      speech("n5", "kai",     "You lost.", "n6", { portraitState: "cold" }),
-      speech("n6", "carlos",  "I know, but—", "n7"),
-      speech("n7", "kai",     "To a beginner.", "n8", { portraitState: "contemptuous" }),
-      speech("n8", "tyson",   "HEY! What gives you the right to do that?!", "n9", { portraitState: "furious" }),
-      speech("n9", "kai",     "...", "n10"),
-      speech("n10","kai",     "Stay out of things that don't concern you.", "n11", { portraitState: "cold" }),
-      speech("n11","tyson",   "It concerns me plenty! You're standing right in front of me. I'm Tyson Granger — and I'm challenging you to a battle!", "n12", { portraitState: "battle-ready" }),
-      speech("n12","kenny",   "Tyson, wait — that's KAI. The Blade Sharks' top blader! You can't just—", "n13", { portraitState: "panicked" }),
-      speech("n13","kai",     "Hmph.", "n14", { portraitState: "amused" }),
-      speech("n14","kai",     "You have spirit. I'll give you that. But spirit without skill is just noise.", "n15"),
-      speech("n15","tyson",   "Then let me show you it's more than that. Right here, right now.", "n16", { portraitState: "determined" }),
-      speech("n16","kai",     "...Fine. This won't take long.", "end1", { portraitState: "cold" }),
-      setFlag("end1", { kai_seen: true, kai_challenged: true }, "end2"),
-      end("end2"),
-    ]),
+  D.push({ id: "dlg_kenny_wins", nodes: [
+    { id: "n1", speaker: "kenny", text: "Chief says your power curve needs work. But your trajectory analysis is solid. Keep at it!", next: null },
+  ]});
 
-    // ── Kai river — battle is handled by NPC interaction
-    // ── (River Kai uses the same battleConfig as hideout but different dialogue)
-    dlg("dlg_kai_river_battle_intro", "n1", [
-      speech("n1", "kai",   "Show me what you have, Granger.", "n2", { portraitState: "focused" }),
-      speech("n2", "tyson", "Dragoon — let it rip!", "end1", { sfxId: "sfx_let_it_rip" }),
-      end("end1"),
-    ]),
+  D.push({ id: "dlg_kenny_no_bey", nodes: [
+    { id: "n1", speaker: "kenny", text: "You don't have a Beyblade, Tyson! Chief says we can't calculate a battle we can't even begin.", next: null },
+  ]});
 
-    // ── Kai dismissive (idle) ────────────────────────────────────────────────
-    dlg("dlg_kai_dismissive", "n1", [
-      speech("n1", "kai", "Don't waste my time.", "n2", { portraitState: "cold" }),
-      end("n2"),
-    ]),
+  // ─── Phase 1: Rooftop aftermath ───────────────────────────────────────────────
 
-    // ── Kai not ready ────────────────────────────────────────────────────────
-    dlg("dlg_kai_not_ready", "n1", [
-      speech("n1", "kai", "You're not ready. Come back when you have something worth watching.", "n2", { portraitState: "cold" }),
-      end("n2"),
-    ]),
+  D.push({ id: "dlg_rooftop_arrival", nodes: [
+    { id: "n1", speaker: "narrator", text: "[The rooftop is a mess. Shattered Beyblade parts are scattered everywhere. A dozen kids sit on the edges, heads down. Their Beyblades are gone.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "What happened here?", next: "n3" },
+    { id: "n3", speaker: "kenny",    text: "Carlos happened. He showed up, issued an open challenge. Everyone accepted. Everyone lost.", next: "n4" },
+    { id: "n4", speaker: "andrew",   text: "He took our Beyblades as trophies. Every single one.", next: "n5" },
+    { id: "n5", speaker: "tyson",    text: "He TOOK them?! You can't just take someone's Beyblade!", next: "n6" },
+    { id: "n6", speaker: "carlos",   text: "I just did. And I'll take yours too if you want to make something of it, little man.", next: null },
+  ]});
 
-    // ── Kai hideout — battle intro ───────────────────────────────────────────
-    dlg("dlg_kai_battle_intro_hideout", "n1", [
-      speech("n1", "tyson", "Let Kenny go, Kai! This is between us!", "n2", { portraitState: "furious" }),
-      speech("n2", "kai",   "He'll be free when you beat me. Which you won't.", "n3", { portraitState: "cold" }),
-      speech("n3", "tyson", "I've got something new this time. Dragoon S — and we're not holding back!", "n4", { portraitState: "battle-ready" }),
-      speech("n4", "kai",   "Dranzer... let's see how bright this little Dragoon burns.", "n5", { portraitState: "focused" }),
-      end("n5"),
-    ]),
+  D.push({ id: "dlg_carlos_rooftop_challenge", nodes: [
+    { id: "n1", speaker: "tyson",  text: "You've got a lot of nerve showing up here. Give those Beyblades back!", next: "n2" },
+    { id: "n2", speaker: "carlos", text: "Come and get them. Show me you're worth my time — and maybe I'll consider it.", next: "n3" },
+    { id: "n3", speaker: "tyson",  text: "You want a battle? Fine. But when I win, every bey you stole comes back. EVERY. SINGLE. ONE.", next: "n4" },
+    { id: "n4", speaker: "carlos", text: "...*laughs slowly*... Oh, I like your spirit. But you're not ready for me today. Go get stronger. Come find me at the river.", next: "n5" },
+    { id: "n5", speaker: "narrator", text: "[Carlos leaves. A heavy silence settles over the rooftop.]", next: null },
+  ]});
 
-    // ── Kai hideout — player wins ────────────────────────────────────────────
-    dlg("dlg_kai_hideout_defeated", "n1", [
-      speech("n1", "narrator","[Dranzer S tumbles out of the stadium. For a moment, there is total silence.]", "n2"),
-      speech("n2", "kenny",   "TYSON! You did it!", "n3", { portraitState: "ecstatic" }),
-      speech("n3", "carlos",  "...He actually won.", "n4", { portraitState: "disbelief" }),
-      speech("n4", "kai",     "...", "n5"),
-      speech("n5", "kai",     "You've awakened it. The spirit inside your Beyblade.", "n6", { portraitState: "serious" }),
-      speech("n6", "tyson",   "What are you talking about? Awakened what?", "n7"),
-      speech("n7", "kai",     "A Bit Beast. An ancient spirit sealed inside your blade. That is what Dragoon is.", "n8", { portraitState: "calm" }),
-      speech("n8", "tyson",   "Dragoon is... alive?", "n9"),
-      speech("n9", "kai",     "They all are. Dranzer. Dragoon. Every Bit Beast chooses its blader. Yours chose well.", "n10", { portraitState: "grudging" }),
-      speech("n10","kai",     "Don't let that go to your head, Granger. We are not finished.", "n11"),
-      speech("n11","narrator","[Kai picks up Dranzer S and walks toward the exit without another word.]", "n12"),
-      speech("n12","tyson",   "Hey — next time, it's a REAL battle! No hostages, no tricks! Just us!", "n13", { portraitState: "excited" }),
-      speech("n13","kai",     "...", "end1"),
-      end("end1"),
-    ]),
+  D.push({ id: "dlg_kenny_quest_intro", nodes: [
+    { id: "n1", speaker: "kenny",  text: "Tyson — Chief has been running the numbers. Carlos's Kid Draciel is a Level 5 tier opponent. Minimum.", next: "n2" },
+    { id: "n2", speaker: "andrew", text: "Translation: you need to get a LOT stronger before you face him.", next: "n3" },
+    { id: "n3", speaker: "tyson",  text: "Then that's exactly what I'll do. How long?", next: "n4" },
+    { id: "n4", speaker: "kenny",  text: "Battle in your backyard. Battle in the park. Train every chance you get. Chief will track your progress.", next: "n5" },
+    { id: "n5", speaker: "tyson",  text: "Alright! Carlos won't know what hit him. Starting NOW!", next: null },
+  ]});
 
-    // ── Kai hideout — player loses ───────────────────────────────────────────
-    dlg("dlg_kai_hideout_player_loses", "n1", [
-      speech("n1", "kai",   "Not enough.", "n2", { portraitState: "cold" }),
-      speech("n2", "tyson", "I'm not done yet—", "n3"),
-      speech("n3", "kai",   "Yes. You are. For today.", "n4"),
-      speech("n4", "kai",   "Go home. Train. Come back when your Bit Beast's flame burns properly.", "n5", { portraitState: "cold" }),
-      speech("n5", "tyson", "Bit Beast? What— wait, come back!", "n6"),
-      speech("n6", "kai",   "The boy and the girl go free. I have no use for them.", "n7"),
-      speech("n7", "narrator","[Kai gestures. The Blade Sharks release Kenny.]", "n8"),
-      speech("n8", "kenny", "Tyson... what's a Bit Beast?", "n9", { portraitState: "confused" }),
-      speech("n9", "tyson", "I don't know yet. But I'm going to find out — and then I'm beating him for real.", "end1", { portraitState: "determined" }),
-      end("end1"),
-    ]),
+  // ─── Phase 2: River (Carlos battle + Kai entrance) ───────────────────────────
 
-    // ── Kai rematch ──────────────────────────────────────────────────────────
-    dlg("dlg_kai_rematch", "n1", [
-      speech("n1", "kai",   "You again. You are persistent.", "n2"),
-      speech("n2", "tyson", "Rematch. Same stakes.", "n3"),
-      speech("n3", "kai",   "...Acceptable.", "end1"),
-      end("end1"),
-    ]),
+  D.push({ id: "dlg_river_arrival", nodes: [
+    { id: "n1", speaker: "kenny",   text: "Chief's sensors are picking up Beyblade signatures all along the riverbank. Carlos is definitely here.", next: "n2" },
+    { id: "n2", speaker: "carlos",  text: "I was wondering if you'd actually come. You've grown, I'll give you that.", next: "n3" },
+    { id: "n3", speaker: "tyson",   text: "Enough small talk. Hand over those Beyblades — or I'll take them the same way you did. In a battle.", next: "n4" },
+    { id: "n4", speaker: "carlos",  text: "Kid Draciel! Let's show this hot-shot Beyblade what real power looks like.", next: null },
+  ]});
 
-    // ── New Beyblade — friends arrive home ──────────────────────────────────
-    dlg("dlg_new_beyblade_home", "n1", [
-      speech("n1", "grandpa","Tyson! Your friends are here — and they look like they've been up all night!", "n2"),
-      speech("n2", "kenny",  "Tyson! Good, you're awake. I've been running analysis all night on what happened with Dragoon.", "n3", { portraitState: "excited-tired" }),
-      speech("n3", "andrew", "You battled Kai?! And you're still in one piece? Respect.", "n4", { portraitState: "impressed" }),
-      speech("n4", "tyson",  "Dragoon took a hit. A bad one. What's the damage, Chief?", "n5"),
-      speech("n5", "kenny",  "It's more than just damage. Dragoon absorbed something from the battle. Energy. Dizzi thinks... it's ready to evolve.", "n6"),
-      speech("n6", "tyson",  "Evolve?!", "n7"),
-      speech("n7", "kenny",  "Into Dragoon S. I know the upgrade. But I need four specific parts. They're scattered around the city — lost in all the chaos from the Blade Shark raids.", "n8"),
-      speech("n8", "tyson",  "Then we find them. Simple. Where do we start?", "n9", { portraitState: "determined" }),
-      speech("n9", "kenny",  "The Attack Ring fragment is somewhere in the park arena. Weight Disk Core should be in your dojo's equipment room. The Spin Tip Assembly... I think it washed up by the river. And the Blade Base Casing—", "n10"),
-      speech("n10","andrew", "That one's on Blade Shark territory. Be careful, Tyson.", "n11", { portraitState: "worried" }),
-      speech("n11","tyson",  "Got it. Four parts, four locations. No Beyblade until we find them all.", "n12", { portraitState: "determined" }),
-      speech("n12","kenny",  "Right. And without Dragoon, no battles. You'll have to rely on your feet and your head.", "end1"),
-      end("end1"),
-    ]),
+  D.push({ id: "dlg_carlos_battle_intro", nodes: [
+    { id: "n1", speaker: "carlos", text: "Don't hold back. My Kid Draciel has been waiting for a real challenge.", next: null },
+  ]});
 
-    // ── 4 parts found — individual ──────────────────────────────────────────
-    dlg("dlg_part_attack_ring_found", "n1", [
-      speech("n1", "narrator","[Tucked behind the park arena — partially buried under the old tournament board. There it is.]", "n2"),
-      speech("n2", "tyson",   "The Attack Ring fragment! One down, three to go.", "end1"),
-      end("end1"),
-    ]),
-    dlg("dlg_part_weight_disk_found", "n1", [
-      speech("n1", "narrator","[In the back of the dojo equipment room, wrapped in a training cloth. Grandpa must have stashed it years ago without realising what it was.]", "n2"),
-      speech("n2", "tyson",   "The Weight Disk Core. I can't believe it was here the whole time!", "end1"),
-      end("end1"),
-    ]),
-    dlg("dlg_part_spin_tip_found", "n1", [
-      speech("n1", "narrator","[You spot something glinting in the riverbank grass. Still intact. The river current must have carried it here from the battle.]", "n2"),
-      speech("n2", "tyson",   "The Spin Tip Assembly! Nice — I was worried this one was gone for good.", "end1"),
-      end("end1"),
-    ]),
-    dlg("dlg_part_blade_base_found", "n1", [
-      speech("n1", "narrator","[Near the entrance to Blade Shark territory. Someone left it here on purpose — maybe to taunt you, or maybe as a clue.]", "n2"),
-      speech("n2", "tyson",   "The Blade Base Casing. Okay. All four. Now — let's build something.", "end1"),
-      end("end1"),
-    ]),
+  D.push({ id: "dlg_carlos_defeated", nodes: [
+    { id: "n1", speaker: "carlos",   text: "No... Kid Draciel... how?! HOW is that even—", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "You're good, Carlos. Really good. But you've been bullying instead of bettering yourself. There's a difference.", next: "n3" },
+    { id: "n3", speaker: "carlos",   text: "*stares at his stopped Beyblade*... Hmph. You've earned them back. All the Beyblades I took — they'll be returned by tonight.", next: "n4" },
+    { id: "n4", speaker: "narrator", text: "[The mood shifts — everyone watching breaks into quiet cheers. Then, footsteps. Slow. Deliberate.]", next: null },
+  ]});
 
-    // ── Dragoon S assembled ──────────────────────────────────────────────────
-    dlg("dlg_dragoon_s_assembled", "n1", [
-      speech("n1", "kenny",   "All four parts are ready. Dizzi, run final calibration.", "n2"),
-      speech("n2", "narrator","[Kenny's fingers fly across the keyboard. A soft hum fills the room.]", "n3"),
-      speech("n3", "kenny",   "...Complete. Tyson — may I present Dragoon S.", "n4"),
-      speech("n4", "narrator","[A new Beyblade sits in the launcher. Sleek, sharp, and somehow alive-looking.]", "n5"),
-      speech("n5", "tyson",   "Dragoon... you look incredible. And you feel different too.", "n6"),
-      speech("n6", "andrew",  "Can I just say — that is the coolest thing I've ever seen.", "n7"),
-      speech("n7", "tyson",   "Let's get to the backyard. I need to see what this thing can really do.", "end1", { portraitState: "excited", sfxId: "sfx_upgrade_complete" }),
-      end("end1"),
-    ]),
+  D.push({ id: "dlg_carlos_wins", nodes: [
+    { id: "n1", speaker: "carlos", text: "Not strong enough. Not yet.", next: "n2" },
+    { id: "n2", speaker: "kenny",  text: "Your data is improving every battle, Tyson. Chief says you're close. Don't give up.", next: null },
+  ]});
 
-    // ── Family sword — Dragoon bit beast awakens ─────────────────────────────
-    dlg("dlg_family_sword_dragoon_awaken", "n1", [
-      speech("n1", "narrator","[You stand before the Dragon Dagger with Dragoon S in hand. Something pulls at you — a feeling you can't explain.]", "n2"),
-      speech("n2", "tyson",   "Dragoon S... something in this sword is the same as something in you. I can feel it.", "n3"),
-      speech("n3", "narrator","[You reach out and touch the blade. The room explodes in white light—]", "n4", { sfxId: "sfx_bit_beast_flash" }),
-      speech("n4", "narrator","[—and you see it. A massive dragon made of lightning, circling the dojo. Ancient. Powerful. Looking right at you.]", "n5"),
-      speech("n5", "tyson",   "D-Dragoon?!", "n6"),
-      speech("n6", "narrator","[The dragon roars — and everything goes quiet. When your vision clears, Dragoon S glows from the inside.]", "n7"),
-      speech("n7", "grandpa", "...", "n8", { portraitState: "moved" }),
-      speech("n8", "grandpa", "It has chosen you, Tyson. The Dragon Spirit. The Bit Beast.", "n9"),
-      speech("n9", "tyson",   "That was really Dragoon? He's... in my Beyblade?", "n10"),
-      speech("n10","grandpa", "He always was. He was simply waiting for you to be worthy of seeing him.", "n11"),
-      speech("n11","tyson",   "Storm Attack... now I know where it really comes from.", "n12", { portraitState: "awed" }),
-      speech("n12","grandpa", "Go. Use that power well. And come home safe.", "end1", { portraitState: "proud" }),
-      end("end1"),
-    ]),
+  D.push({ id: "dlg_carlos_idle", nodes: [
+    { id: "n1", speaker: "carlos", text: "You looking for a battle? You'd better be ready.", next: null },
+  ]});
 
-    // ── Blade Sharks Hideout — entry ─────────────────────────────────────────
-    dlg("dlg_blade_sharks_entry_scene", "n1", [
-      speech("n1", "narrator","[The hideout is dim and cold. And in the middle of it — Kenny, tied to a post. Carlos sits in the corner, holding the shattered remains of Kid Draciel.]", "n2"),
-      speech("n2", "tyson",   "Kenny! Are you okay?!", "n3", { portraitState: "alarmed" }),
-      speech("n3", "kenny",   "Tyson... I'm fine. Just scared. Dizzi got damaged, I don't know if she's—", "n4", { portraitState: "shaken" }),
-      speech("n4", "tyson",   "She'll be fine. I'm getting you out of here. Who did this?", "n5", { portraitState: "determined" }),
-      speech("n5", "carlos",  "Who do you think.", "n6", { portraitState: "hollow" }),
-      speech("n6", "tyson",   "Carlos... your Beyblade—", "n7"),
-      speech("n7", "carlos",  "Kai destroyed it. Said it was punishment for losing to you. Said weak bladers don't deserve Beyblades.", "n8", { portraitState: "bitter-sad" }),
-      speech("n8", "tyson",   "That's... that's brutal.", "n9"),
-      speech("n9", "carlos",  "He's in the back. Waiting for you. He said you'd come.", "n10"),
-      speech("n10","tyson",   "He was right.", "n11", { portraitState: "cold-determined" }),
-      speech("n11","carlos",  "Tyson. Be careful. Dranzer S is different from when you last saw it. He's been training.", "n12"),
-      speech("n12","tyson",   "So have I. And I've got Dragoon with me now. The real Dragoon.", "end1", { portraitState: "confident" }),
-      end("end1"),
-    ]),
+  D.push({ id: "dlg_carlos_gate", nodes: [
+    { id: "n1", speaker: "carlos", text: "Come back when your Beyblade is worth my time. You're not there yet.", next: null },
+  ]});
 
-    // ── Gatekeeper dialogues ─────────────────────────────────────────────────
-    dlg("dlg_river_gate_blocked", "n1", [
-      speech("n1", "narrator","[Something's happening down by the river — you can hear voices. But you're not ready to face what's there yet. Defeat Carlos first.]", "n2"),
-      end("n2"),
-    ]),
-    dlg("dlg_hideout_gate_blocked", "n1", [
-      speech("n1", "narrator","[The building on the other side of the street looks abandoned. Something feels wrong — but you don't know enough yet to go in there.]", "n2"),
-      end("n2"),
-    ]),
-    dlg("dlg_rooftop_locked", "n1", [
-      speech("n1", "narrator","[The staircase door is blocked. Some older kids are guarding it — they say only bladers who have proven themselves can go up.]", "n2"),
-      speech("n2", "narrator","[Beat Billy in the park first.]", "end1"),
-      end("end1"),
-    ]),
+  D.push({ id: "dlg_kai_river_entrance", nodes: [
+    { id: "n1", speaker: "narrator", text: "[A shadow falls across the riverbank. Kai Hiwatari steps out — arms folded, expression unreadable.]", next: "n2" },
+    { id: "n2", speaker: "kai",     text: "Carlos.", next: "n3" },
+    { id: "n3", speaker: "carlos",  text: "Kai... I—", next: "n4" },
+    { id: "n4", speaker: "kai",     text: "Weakness. I have no use for it.", next: "n5" },
+    { id: "n5", speaker: "narrator", text: "[Without a word of warning, Kai slaps Carlos's Beyblade right out of his hands. It skitters across the concrete.]", next: "n6" },
+    { id: "n6", speaker: "kenny",   text: "T-Tyson—", next: "n7" },
+    { id: "n7", speaker: "tyson",   text: "Hey! You can't just DO that! That's someone's Beyblade!", next: "n8" },
+    { id: "n8", speaker: "kai",     text: "*turns to look at Tyson for the first time* ... You. You beat him?", next: "n9" },
+    { id: "n9", speaker: "tyson",   text: "Yeah, I did. Got a problem with that?", next: "n10" },
+    { id: "n10", speaker: "kai",    text: "Then show me. Now.", next: "n11" },
+    { id: "n11", speaker: "tyson",  text: "You're ON!", next: null },
+  ]});
 
-    // ── Kenny — battle dialogues ────────────────────────────────────────────
-    dlg("dlg_kenny_battle_intro", "n1", [
-      speech("n1", "kenny",  "O-okay, if you insist! Dizzi, run pre-battle calculations!", "n2", { portraitState: "nervous" }),
-      speech("n2", "kenny",  "Don't go easy on me just because I'm the Chief — my Jumping Base is a lot sneakier than it looks!", "n3"),
-      end("n3"),
-    ]),
-    dlg("dlg_kenny_defeated", "n1", [
-      speech("n1", "kenny",  "I knew it — Dizzi predicted a 73% loss probability. You're getting really strong, Tyson.", "n2", { portraitState: "proud-defeated" }),
-      speech("n2", "tyson",  "Your Jumping Base kept me on my toes! Good match, Chief.", "n3", { portraitState: "grinning" }),
-      end("n3"),
-    ]),
-    dlg("dlg_kenny_wins", "n1", [
-      speech("n1", "kenny",  "I-I won?! Dizzi, are you registering this?!", "n2", { portraitState: "shocked" }),
-      speech("n2", "kenny",  "The Jumping Base's reposition timing caught you off guard. Keep it in mind for tougher battles!", "n3", { portraitState: "analytical" }),
-      end("n3"),
-    ]),
-    dlg("dlg_kenny_rematch", "n1", [
-      speech("n1", "kenny",  "Again? Dizzi's recalibrating my strategy. Don't expect the same tricks twice!", "n2"),
-      end("n2"),
-    ]),
+  D.push({ id: "dlg_kai_river_battle_result", nodes: [
+    { id: "n1", speaker: "narrator", text: "[Dragoon launches — and meets Dranzer S head-on. For a moment, both blades hold their ground. Then Dragoon falters. The spin slows. Stops.]", next: "n2" },
+    { id: "n2", speaker: "kai",     text: "...", next: "n3" },
+    { id: "n3", speaker: "tyson",   text: "*breathing hard* W— wait. I'm not done—", next: "n4" },
+    { id: "n4", speaker: "kai",     text: "You ARE done. But you have potential. Don't waste it.", next: "n5" },
+    { id: "n5", speaker: "narrator", text: "[Kai walks away. Everything goes dark. When you come to, you're back home.]", next: null },
+  ]});
 
-    // ── Random bladers ──────────────────────────────────────────────────────
-    dlg("dlg_rick_default", "n1", [
-      speech("n1", "random_blader_rick", "Hey, you want to battle? I just got my Beyblade back and I'm itching to use it!", "n2"),
-      end("n2"),
-    ]),
-    dlg("dlg_rick_battle", "n1", [
-      speech("n1", "random_blader_rick", "Thanks for standing up to those Blade Sharks. Now — let's battle for real!", "n2"),
-      end("n2"),
-    ]),
-    dlg("dlg_rick_defeated", "n1", [
-      speech("n1", "random_blader_rick", "Ha, you're really something! I'll get better, promise!", "n2"),
-      end("n2"),
-    ]),
-    dlg("dlg_rick_wins", "n1", [
-      speech("n1", "random_blader_rick", "Yes! Nice try though — you're getting stronger, I can tell!", "n2"),
-      end("n2"),
-    ]),
-    dlg("dlg_sam_default", "n1", [
-      speech("n1", "random_blader_sam", "You're Tyson, right? I saw you battle Carlos. That was amazing!", "n2"),
-      end("n2"),
-    ]),
-    dlg("dlg_sam_battle", "n1", [
-      speech("n1", "random_blader_sam", "I'm not as strong as Carlos — but I've been training! Don't go easy on me!", "n2"),
-      end("n2"),
-    ]),
-    dlg("dlg_sam_defeated", "n1", [
-      speech("n1", "random_blader_sam", "You're incredible! I've got a long way to go...", "n2"),
-      end("n2"),
-    ]),
-    dlg("dlg_sam_wins", "n1", [
-      speech("n1", "random_blader_sam", "I won! I actually won! You're still way stronger than me though, for real.", "n2"),
-      end("n2"),
-    ]),
-  ];
+  // ─── Phase 2: New Beyblade + Parts Quest ─────────────────────────────────────
 
-  for (const tree of trees) {
-    await put("rpg_dialogues", tree.id, tree);
+  D.push({ id: "dlg_new_bey_home", nodes: [
+    { id: "n1", speaker: "grandpa", text: "There he is. Finally awake. Your friends came by — worried sick.", next: "n2" },
+    { id: "n2", speaker: "tyson",   text: "...I lost. I actually lost.", next: "n3" },
+    { id: "n3", speaker: "grandpa", text: "Yes. And?", next: "n4" },
+    { id: "n4", speaker: "tyson",   text: "...And what?", next: "n5" },
+    { id: "n5", speaker: "grandpa", text: "That's all you have? 'I lost'? No anger? No fire? I'm disappointed.", next: "n6" },
+    { id: "n6", speaker: "tyson",   text: "I'm FURIOUS. I just don't know what to do about it yet.", next: "n7" },
+    { id: "n7", speaker: "grandpa", text: "*smiles* NOW you're talking. Your friends have an idea. Go hear them out.", next: null },
+  ]});
+
+  D.push({ id: "dlg_kenny_parts_quest", nodes: [
+    { id: "n1", speaker: "kenny",  text: "Okay Tyson — so Chief has been doing some research. Your Dragoon needs an upgrade.", next: "n2" },
+    { id: "n2", speaker: "andrew", text: "Not just an upgrade — a full rebuild. Dragoon S. Storm Attack configuration.", next: "n3" },
+    { id: "n3", speaker: "tyson",  text: "Dragoon S? Sounds intense.", next: "n4" },
+    { id: "n4", speaker: "kenny",  text: "It IS. And Chief has traced the four component parts to places all over Beigoma. Attack ring, weight disk, spin gear, blade base — scattered.", next: "n5" },
+    { id: "n5", speaker: "tyson",  text: "So... we go find them. Quest time. Let's do this.", next: "n6" },
+    { id: "n6", speaker: "andrew", text: "One thing — you don't HAVE a Beyblade right now. So no battles on the road.", next: "n7" },
+    { id: "n7", speaker: "tyson",  text: "I know, I know. I'll find the parts first. Then Kai won't know what hit him.", next: null },
+  ]});
+
+  D.push({ id: "dlg_part_found_attack_ring", nodes: [
+    { id: "n1", speaker: "narrator", text: "[Wedged under a park bench, half-buried in dirt — a Beyblade attack ring. A four-wing spiral cut. This is the piece Kenny described.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "Found it! One down — three to go. Come on, Dragoon S. Come back together.", next: null },
+  ]});
+
+  D.push({ id: "dlg_part_found_weight_disk", nodes: [
+    { id: "n1", speaker: "narrator", text: "[Tucked into a crack in the riverside wall — the heavy, perfectly balanced weight disk. Kenny's data was right on the mark.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "Two down. I can feel it — Dragoon S is almost here.", next: null },
+  ]});
+
+  D.push({ id: "dlg_part_found_spin_gear", nodes: [
+    { id: "n1", speaker: "narrator", text: "[Hanging from a nail on the dojo wall, almost like it was waiting — the spin gear. One of Grandpa's old students must have left it here years ago.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "Grandpa... did you leave this here on purpose?", next: "n3" },
+    { id: "n3", speaker: "narrator", text: "[No answer. But somewhere deep in the dojo, you hear quiet, knowing laughter.]", next: null },
+  ]});
+
+  D.push({ id: "dlg_part_found_blade_base", nodes: [
+    { id: "n1", speaker: "narrator", text: "[On a high shelf in the back of a storage room — the blade base, glinting silver in the afternoon light. The last piece.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "THAT'S IT! ALL FOUR PARTS! Kenny — wherever you are — CHIEF CALLED IT!", next: null },
+  ]});
+
+  D.push({ id: "dlg_dragoon_s_assembled", nodes: [
+    { id: "n1", speaker: "kenny",    text: "*typing furiously* Attack ring — check. Weight disk — check. Spin gear — check. Blade base — check. All readings nominal!", next: "n2" },
+    { id: "n2", speaker: "andrew",   text: "Tyson... that looks incredible.", next: "n3" },
+    { id: "n3", speaker: "tyson",    text: "Dragoon S. Hey, buddy. It's me. Ready to do this?", next: "n4" },
+    { id: "n4", speaker: "narrator", text: "[The Beyblade sits quietly in your palm. Then — a faint pulse. Like a heartbeat.]", next: "n5" },
+    { id: "n5", speaker: "tyson",    text: "...I felt that. Did everyone else feel that?", next: "n6" },
+    { id: "n6", speaker: "kenny",    text: "Chief felt it. Chief is... not sure how to classify it. Yet.", next: null },
+  ]});
+
+  // ─── Phase 3: Family Sword & Bit-Beast Awakening ─────────────────────────────
+
+  D.push({ id: "dlg_family_sword_interaction", nodes: [
+    { id: "n1", speaker: "narrator", text: "[You touch the family sword. And the world goes still.]", next: "n2" },
+    { id: "n2", speaker: "grandpa", text: "Ah. So the time has come.", next: "n3" },
+    { id: "n3", speaker: "tyson",   text: "Grandpa — what is this? What's happening?", next: "n4" },
+    { id: "n4", speaker: "grandpa", text: "That sword has been in our family for generations. The dragon spirit inside it has been waiting for the right Blader.", next: "n5" },
+    { id: "n5", speaker: "tyson",   text: "A... dragon spirit?", next: "n6" },
+    { id: "n6", speaker: "grandpa", text: "Dragoon, Tyson. A Bit-Beast. Ancient. Powerful. Loyal — if you prove yourself worthy.", next: "n7" },
+    { id: "n7", speaker: "narrator", text: "[The sword glows. Dragoon S trembles in your hands. A roar — distant but vast — shakes the dojo walls.]", next: "n8" },
+    { id: "n8", speaker: "tyson",   text: "YEAH! I can feel it — Dragoon's inside! STORM ATTACK — READY!", next: null },
+  ]});
+
+  // ─── Phase 3: Hideout ─────────────────────────────────────────────────────────
+
+  D.push({ id: "dlg_kenny_kidnapped_news", nodes: [
+    { id: "n1", speaker: "andrew",  text: "Tyson. It's Kenny. The Blade Sharks took him.", next: "n2" },
+    { id: "n2", speaker: "tyson",   text: "What?!", next: "n3" },
+    { id: "n3", speaker: "andrew",  text: "Carlos saw it happen. He tried to stop them — they shoved him aside. Said it was 'on Kai's orders.'", next: "n4" },
+    { id: "n4", speaker: "tyson",   text: "Kai. Of COURSE it's Kai. Where's their hideout?", next: "n5" },
+    { id: "n5", speaker: "andrew",  text: "West side of town. Big warehouse. Carlos says he knows another way in.", next: "n6" },
+    { id: "n6", speaker: "carlos",  text: "*quietly* ...I'll show you. Those Blade Sharks — they're not what I thought they were.", next: null },
+  ]});
+
+  D.push({ id: "dlg_hideout_entry", nodes: [
+    { id: "n1", speaker: "narrator", text: "[The warehouse is dark and cold. Rows of metal shelving line the walls. At the centre — Kenny, sitting on the floor, laptop clutched to his chest.]", next: "n2" },
+    { id: "n2", speaker: "kenny",    text: "Tyson! I knew you'd come! Chief — Chief said you would!", next: "n3" },
+    { id: "n3", speaker: "rick",     text: "Cute reunion. But nobody leaves until Kai says so.", next: "n4" },
+    { id: "n4", speaker: "tyson",    text: "Then I'll make Kai say so. Where is he?", next: "n5" },
+    { id: "n5", speaker: "narrator", text: "[A door swings open at the far end of the warehouse. Kai steps out, Dranzer S already in hand.]", next: "n6" },
+    { id: "n6", speaker: "kai",      text: "You actually came. Good.", next: "n7" },
+    { id: "n7", speaker: "tyson",    text: "You bet I came. Let Kenny go — and then we finish this. For real this time.", next: "n8" },
+    { id: "n8", speaker: "kai",      text: "Finish it? This is only the beginning.", next: null },
+  ]});
+
+  D.push({ id: "dlg_kai_final_intro", nodes: [
+    { id: "n1", speaker: "kai",   text: "Dranzer S — Flame Spiral. Let's see your so-called Bit-Beast.", next: "n2" },
+    { id: "n2", speaker: "tyson", text: "Oh, we'll SHOW you our Bit-Beast. Dragoon S — Storm Attack! LET IT RIP!", next: null },
+  ]});
+
+  D.push({ id: "dlg_kai_hideout_defeated", nodes: [
+    { id: "n1", speaker: "narrator", text: "[Two Beyblades tear across the concrete in a blur of wind and fire. Then — silence. Dranzer S slows. Stops.]", next: "n2" },
+    { id: "n2", speaker: "kai",     text: "...", next: "n3" },
+    { id: "n3", speaker: "tyson",   text: "It's over, Kai. Let. Kenny. Go.", next: "n4" },
+    { id: "n4", speaker: "kai",     text: "*a long silence* ...Bit-Beasts. You've awakened yours. Interesting.", next: "n5" },
+    { id: "n5", speaker: "kai",     text: "These battles — they're not just about spinning tops, are they. Fine. Take your friend. But this? Between us? This isn't over.", next: "n6" },
+    { id: "n6", speaker: "tyson",   text: "I know. And I can't wait.", next: null },
+  ]});
+
+  D.push({ id: "dlg_kai_wins_hideout", nodes: [
+    { id: "n1", speaker: "kai",    text: "You're strong. But Dranzer's Flame Spiral is stronger. Come back when you've mastered your Storm Attack.", next: "n2" },
+    { id: "n2", speaker: "tyson",  text: "Round two isn't over yet, Kai — not by a long shot!", next: "n3" },
+    { id: "n3", speaker: "narrator", text: "[Game saved. You can level up and try again — Kai will be waiting.]", next: null },
+  ]});
+
+  D.push({ id: "dlg_kai_idle", nodes: [
+    { id: "n1", speaker: "kai", text: "...", next: null },
+  ]});
+
+  // ─── Phase 3: Carlos in Hideout ──────────────────────────────────────────────
+
+  D.push({ id: "dlg_carlos_hideout", nodes: [
+    { id: "n1", speaker: "carlos",   text: "My Beyblade... they destroyed it. I thought we were a team.", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "Carlos—", next: "n3" },
+    { id: "n3", speaker: "carlos",   text: "You knew this was wrong before I did. Maybe... maybe that's what real strength looks like.", next: null },
+  ]});
+
+  // ─── Phase 3: Bit-Beast knowledge ────────────────────────────────────────────
+
+  D.push({ id: "dlg_bit_beast_knowledge", nodes: [
+    { id: "n1", speaker: "kenny",  text: "Incredible. Chief's analysis confirms it — those energy readings during battle were Bit-Beast resonance. Ancient spirits, inside the Beyblades!", next: "n2" },
+    { id: "n2", speaker: "andrew", text: "And Kai knew. All along.", next: "n3" },
+    { id: "n3", speaker: "tyson",  text: "That's why he's so obsessed with getting stronger. He wants to collect them.", next: "n4" },
+    { id: "n4", speaker: "kenny",  text: "Chief recommends... caution. If there are more Bladers out there with Bit-Beasts... this could get a LOT more serious.", next: "n5" },
+    { id: "n5", speaker: "tyson",  text: "Then we get serious too. Whatever comes next — we face it together.", next: null },
+  ]});
+
+  // ─── Phase 4: Puppy Rescue & Meet Max ────────────────────────────────────────
+
+  D.push({ id: "dlg_puppy_rescue_setup", nodes: [
+    { id: "n1", speaker: "narrator", text: "[A faint whimpering carries over the sound of the river. Something small is clinging to a rock in the current — a puppy, trapped behind a small waterfall.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "Hey — there's a dog in there! I've gotta do something!", next: "n3" },
+    { id: "n3", speaker: "narrator", text: "[The waterfall is too strong to wade through. But there's a series of loose wooden logs above the flow — if something hit them at the right angle...]", next: "n4" },
+    { id: "n4", speaker: "tyson",    text: "Dragoon S — I've got a plan. Follow my lead!", next: null },
+  ]});
+
+  D.push({ id: "dlg_puppy_rescued", nodes: [
+    { id: "n1", speaker: "narrator", text: "[CRACK! The log swings across the waterfall, blocking the flow just long enough — the puppy scrambles onto dry land, shaking itself off.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "YES! Got him! Hey, little guy — you okay?", next: "n3" },
+    { id: "n3", speaker: "narrator", text: "[A pair of sneakers land beside you with a thud. Someone else jumped down from the embankment above.]", next: "n4" },
+    { id: "n4", speaker: "max",      text: "That was AMAZING! Did you just use your Beyblade to deflect the waterfall?! That's the coolest thing I've EVER seen!", next: "n5" },
+    { id: "n5", speaker: "tyson",    text: "Uh — yeah, I did. Hi. Who are you?", next: "n6" },
+    { id: "n6", speaker: "max",      text: "Max Tate! Blader, world traveller, defence-type specialist — and I think I just found my new best rival!", next: "n7" },
+    { id: "n7", speaker: "tyson",    text: "*laughs* That's... the most excited anyone's ever been to meet me. I like it.", next: null },
+  ]});
+
+  D.push({ id: "dlg_max_shop_intro", nodes: [
+    { id: "n1", speaker: "max",   text: "My dad runs a Bey supply shop, right near the river. Best ripcords in the city — and trust me, with how hard you battle, you're gonna NEED good ones.", next: "n2" },
+    { id: "n2", speaker: "tyson", text: "Ripcords wear out?", next: "n3" },
+    { id: "n3", speaker: "max",   text: "Everything wears out if you battle enough. Launchers, ripcords, even the blade base. Dad says a good Blader maintains their gear as carefully as they train.", next: "n4" },
+    { id: "n4", speaker: "tyson", text: "I... had no idea. Your dad sounds like someone I need to meet.", next: "n5" },
+    { id: "n5", speaker: "max",   text: "Oh, you'll love him! Come on — shop's right this way!", next: null },
+  ]});
+
+  D.push({ id: "dlg_mr_tate_welcome", nodes: [
+    { id: "n1", speaker: "mr_tate", text: "Well! Max — you brought a friend. Welcome, son. I'm Mr. Tate. You look like someone who pushes their gear hard.", next: "n2" },
+    { id: "n2", speaker: "tyson",   text: "That's... one way to put it.", next: "n3" },
+    { id: "n3", speaker: "mr_tate", text: "Nothing wrong with that — as long as you maintain it. We carry ripcords, launchers, repair kits, all graded by launch power and durability. Take your time and look around.", next: "n4" },
+    { id: "n4", speaker: "tyson",   text: "This is incredible. Kenny is going to LOSE his mind.", next: null },
+  ]});
+
+  D.push({ id: "dlg_mr_tate_idle", nodes: [
+    { id: "n1", speaker: "mr_tate", text: "A worn ripcord costs you launch power. Keep your gear in shape and your Beyblade will reward you.", next: null },
+  ]});
+
+  D.push({ id: "dlg_max_idle", nodes: [
+    { id: "n1", speaker: "max", text: "Defence isn't about avoiding hits — it's about absorbing them and coming back stronger. Sound familiar?", next: null },
+  ]});
+
+  // ─── Phase 4: Max Battle (defence type tutorial) ─────────────────────────────
+
+  D.push({ id: "dlg_max_battle_intro", nodes: [
+    { id: "n1", speaker: "max",   text: "I've been wanting to battle you since that waterfall! Let me show you what a real defence-type can do!", next: "n2" },
+    { id: "n2", speaker: "tyson", text: "Bring it! Dragoon S doesn't know the word 'defence' — that's why we WIN!", next: null },
+  ]});
+
+  D.push({ id: "dlg_max_defeated", nodes: [
+    { id: "n1", speaker: "max",   text: "Wow. Just... wow. Your storm attack PUNCHES through everything.", next: "n2" },
+    { id: "n2", speaker: "tyson", text: "You weren't kidding about defence types. Your bey barely MOVED.", next: "n3" },
+    { id: "n3", speaker: "max",   text: "That's the whole point! Defence outlasts attack — usually. But your Bit-Beast gives you an edge most Bladers don't have.", next: "n4" },
+    { id: "n4", speaker: "tyson", text: "Bit-Beasts... you know about those?", next: "n5" },
+    { id: "n5", speaker: "max",   text: "I know a little. My mom's been studying them for years — she's a Beyblade researcher. Maybe we can learn together?", next: "n6" },
+    { id: "n6", speaker: "tyson", text: "Yeah. I'd like that. Hey Max — you wanna stick around Beigoma for a while?", next: "n7" },
+    { id: "n7", speaker: "max",   text: "I thought you'd never ask! Partners?", next: "n8" },
+    { id: "n8", speaker: "tyson", text: "Partners!", next: null },
+  ]});
+
+  D.push({ id: "dlg_max_wins", nodes: [
+    { id: "n1", speaker: "max",   text: "Attack without stability always burns itself out eventually. That's the science of defence!", next: "n2" },
+    { id: "n2", speaker: "tyson", text: "Okay okay, you made your point. Rematch — whenever you're ready!", next: null },
+  ]});
+
+  // ─── Phase 5: Dickinson & Tournament Registration ────────────────────────────
+
+  D.push({ id: "dlg_dickinson_entrance", nodes: [
+    { id: "n1", speaker: "narrator",    text: "[The Seaside Dome registration lobby is bigger than any room you've been in. Marble floors, tall banners, the smell of fresh beyblade plastic. An elderly man in a three-piece suit approaches.]", next: "n2" },
+    { id: "n2", speaker: "dickinson",   text: "Tyson Granger. I've been hearing your name from every corner of Beigoma City. You're the boy who defeated the Blade Sharks?", next: "n3" },
+    { id: "n3", speaker: "tyson",       text: "...You know about that?", next: "n4" },
+    { id: "n4", speaker: "dickinson",   text: "I know about most things that matter in the Beyblade world, young man. I'm Mr. Dickinson. I run the World Beyblade Organisation — and I have a proposition for you.", next: "n5" },
+    { id: "n5", speaker: "tyson",       text: "A proposition? From the WBO? Kenny is going to FLIP out.", next: "n6" },
+    { id: "n6", speaker: "dickinson",   text: "Ha! I've met Mr. Kenny. He seems like a very thorough young man. Now — I'm hosting an invitational tournament here at this dome. Six of the most talented young Bladers in Japan. I'd like you to be one of them.", next: "n7" },
+    { id: "n7", speaker: "tyson",       text: "...An official tournament? With the best Bladers in the country?", next: "n8" },
+    { id: "n8", speaker: "dickinson",   text: "Are you interested?", next: "n9" },
+    { id: "n9", speaker: "tyson",       text: "Are you KIDDING? YES! Where do I sign?!", next: null },
+  ]});
+
+  D.push({ id: "dlg_tournament_registered", nodes: [
+    { id: "n1", speaker: "dickinson",   text: "Excellent. The tournament begins in two weeks. Train hard, Tyson. The Bladers you'll face there are in a different league from anyone you've met in Beigoma.", next: "n2" },
+    { id: "n2", speaker: "tyson",       text: "Different league? Good. I've been getting bored of the same league.", next: "n3" },
+    { id: "n3", speaker: "dickinson",   text: "*chuckles* Yes. I thought you might say something like that. Good luck, young man. The world is watching.", next: "n4" },
+    { id: "n4", speaker: "narrator",    text: "[Tyson steps out of the Seaside Dome into the afternoon sun. The city feels smaller somehow — and yet bigger with possibility than it ever has before.]", next: "n5" },
+    { id: "n5", speaker: "tyson",       text: "...Alright. Whatever comes next — bring it.", next: null },
+  ]});
+
+  D.push({ id: "dlg_dickinson_idle", nodes: [
+    { id: "n1", speaker: "dickinson", text: "The Seaside Dome Invitational awaits. Train well, Tyson.", next: null },
+  ]});
+
+  // ─── Gate / misc dialogues ────────────────────────────────────────────────────
+
+  D.push({ id: "dlg_hideout_locked", nodes: [
+    { id: "n1", speaker: "narrator", text: "[A row of heavy crates blocks the alley. Nobody inside — nobody visible outside. Whatever is back here is hidden for a reason.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "...I don't even know where to look. I need more info first.", next: null },
+  ]});
+
+  D.push({ id: "dlg_rick_idle", nodes: [
+    { id: "n1", speaker: "rick", text: "You don't belong here. Unless you want to battle.", next: null },
+  ]});
+
+  D.push({ id: "dlg_rick_battle_intro", nodes: [
+    { id: "n1", speaker: "rick", text: "Kai said to keep intruders occupied. My Trygle will handle you fast.", next: null },
+  ]});
+
+  D.push({ id: "dlg_rick_defeated", nodes: [
+    { id: "n1", speaker: "rick", text: "How— go. Just go. Kai's at the far end.", next: null },
+  ]});
+
+  D.push({ id: "dlg_rick_wins", nodes: [
+    { id: "n1", speaker: "rick", text: "Nobody passes me. Back to the door — come back stronger.", next: null },
+  ]});
+
+  D.push({ id: "dlg_sam_idle", nodes: [
+    { id: "n1", speaker: "sam", text: "Think before you go any further. Kai doesn't lose.", next: null },
+  ]});
+
+  D.push({ id: "dlg_sam_battle_intro", nodes: [
+    { id: "n1", speaker: "sam", text: "You want Kenny? Go through ME first.", next: null },
+  ]});
+
+  D.push({ id: "dlg_sam_defeated", nodes: [
+    { id: "n1", speaker: "sam", text: "...Not bad. Not bad at all.", next: null },
+  ]});
+
+  D.push({ id: "dlg_sam_wins", nodes: [
+    { id: "n1", speaker: "sam", text: "Better luck next time.", next: null },
+  ]});
+
+  D.push({ id: "dlg_random_blader_1_idle", nodes: [
+    { id: "n1", speaker: "random_blader_1", text: "Hey! You're Tyson, right? You got my Beyblade back from those Blade Sharks! Thanks, man — wanna battle?", next: null },
+  ]});
+
+  D.push({ id: "dlg_random_blader_1_battle_intro", nodes: [
+    { id: "n1", speaker: "random_blader_1", text: "This one's for fun! Let it RIP!", next: null },
+  ]});
+
+  D.push({ id: "dlg_random_blader_1_defeated", nodes: [
+    { id: "n1", speaker: "random_blader_1", text: "Man, you really ARE as good as they say. Rematch next time!", next: null },
+  ]});
+
+  D.push({ id: "dlg_random_blader_1_wins", nodes: [
+    { id: "n1", speaker: "random_blader_1", text: "Nice try! I've been practising since I got my bey back — rematch any time!", next: null },
+  ]});
+
+  D.push({ id: "dlg_random_blader_2_idle", nodes: [
+    { id: "n1", speaker: "random_blader_2", text: "You look like a good Blader. Wanna see what my Jumping Base can do?", next: null },
+  ]});
+
+  D.push({ id: "dlg_random_blader_2_battle_intro", nodes: [
+    { id: "n1", speaker: "random_blader_2", text: "Don't hold back — I can take it!", next: null },
+  ]});
+
+  D.push({ id: "dlg_random_blader_2_defeated", nodes: [
+    { id: "n1", speaker: "random_blader_2", text: "Whoa. That Storm Attack is no joke!", next: null },
+  ]});
+
+  D.push({ id: "dlg_random_blader_2_wins", nodes: [
+    { id: "n1", speaker: "random_blader_2", text: "Haha! One more round? I wanna see if I can do it again.", next: null },
+  ]});
+
+  // ─── Backyard practice ────────────────────────────────────────────────────────
+
+  D.push({ id: "dlg_backyard_practice", nodes: [
+    { id: "n1", speaker: "narrator", text: "[The old wooden beystadium in the corner of the backyard creaks as you set it up. Time to train.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "Alright Dragoon — let's figure out what we can do. No audience, no pressure. Just you and me.", next: null },
+  ]});
+
+  D.push({ id: "dlg_backyard_practice_dragoons", nodes: [
+    { id: "n1", speaker: "narrator", text: "[Dragoon S hums in your palm. The Storm Attack isn't just a move — it feels like Dragoon is alive.]", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "Let's sharpen this. When I face Kai again, I want Storm Attack to be PERFECT.", next: null },
+  ]});
+
+  // ─── Can-hit practice mini-game ──────────────────────────────────────────────
+
+  D.push({ id: "dlg_can_hit_intro", nodes: [
+    { id: "n1", speaker: "narrator", text: "[A stack of old tin cans is set up against the garden wall. A hand-painted sign reads: 'TYSON'S LAUNCHING LAB — 3 hits wins!']", next: "n2" },
+    { id: "n2", speaker: "tyson",    text: "Time to sharpen my aim. Launch from the marker, hit all three cans — simple!", next: null },
+  ]});
+
+  // Seed all dialogues
+  for (const d of D) {
+    await put("rpg_dialogues", d.id, {
+      ...d,
+      language: "en",
+      arcIds: ["arc1_ep1"],
+    });
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 6. STORY EVENTS
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 6 — STORY EVENTS  (~40 events across all 5 phases)
+// ═══════════════════════════════════════════════════════════════════════════════
 async function seedStoryEvents() {
-  console.log("\n📜  Story Events");
+  console.log("\n⚡  Story Events");
 
-  const events = [
-    // ── Room wakeup ──────────────────────────────────────────────────────────
-    {
-      id: "ev_room_wakeup",
-      displayName: "Tyson Wakes Up",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { none: { wakeup_done: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "play-bgm", bgmId: "bgm_tyson_room" },
-        { type: "dialogue", dialogueId: "dlg_grandpa_wakeup" },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { wakeup_done: true },
-    },
+  // ── Phase 1 events ───────────────────────────────────────────────────────────
 
-    // ── Dragon Sword — room ──────────────────────────────────────────────────
-    {
-      id: "ev_dragoon_sword_room",
-      displayName: "Dragon Sword (Room)",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { wakeup_done: true }, none: { sword_room_viewed: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "camera-pan", targetTile: { x: 2, y: 2 } },
-        { type: "screen-flash", flashColor: "#ffffff", duration: 200 },
-        { type: "dialogue", dialogueId: "dlg_dragoon_sword_room" },
-        { type: "camera-pan", targetTile: { x: 7, y: 5 } },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { sword_room_viewed: true },
-    },
+  await put("rpg_story_events", "ev_room_wakeup", {
+    id: "ev_room_wakeup", displayName: "Wakeup — Grandpa Arrives",
+    mapId: "tyson_room", category: "cutscene",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: "dlg_grandpa_wakeup",
+    actions: [{ type: "setFlag", flag: "wakeup_done", value: true }],
+    nextEventId: null,
+  });
 
-    // ── Grandpa catches Tyson ────────────────────────────────────────────────
-    {
-      id: "ev_grandpa_caught",
-      displayName: "Grandpa Catches Tyson",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: {},
-      triggerOnce: false, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "play-sfx", sfxId: "sfx_grandpa_catch" },
-        { type: "dialogue", dialogueId: "dlg_grandpa_caught" },
-        // Reset player back to top of garden path
-        { type: "move-player", targetTile: { x: 7, y: 1 } },
-        { type: "unlock-player" },
-      ],
-      completionFlags: {},
-    },
+  await put("rpg_story_events", "ev_dragoon_sword_room", {
+    id: "ev_dragoon_sword_room", displayName: "Sword Glimpse — Tyson's Room",
+    mapId: "tyson_room", category: "explore",
+    triggerMode: "interact", triggerOnce: true,
+    dialogueId: "dlg_sword_room_view",
+    actions: [{ type: "setFlag", flag: "sword_room_viewed", value: true }],
+    nextEventId: null,
+  });
 
-    // ── Dragon Sword — dojo ──────────────────────────────────────────────────
-    {
-      id: "ev_dragoon_sword_dojo",
-      displayName: "Dragon Sword (Dojo — After Rooftop)",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { rooftop_visited: true }, none: { sword_dojo_viewed: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "camera-pan", targetTile: { x: 22, y: 3 } },
-        { type: "play-sfx", sfxId: "sfx_sword_shimmer" },
-        { type: "dialogue", dialogueId: "dlg_dragoon_sword_dojo" },
-        { type: "camera-pan", targetTile: { x: 12, y: 10 } },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { sword_dojo_viewed: true },
-    },
+  await put("rpg_story_events", "ev_grandpa_caught", {
+    id: "ev_grandpa_caught", displayName: "Grandpa Catches Tyson",
+    mapId: "dojo_garden_path", category: "chase",
+    triggerMode: "catch", triggerOnce: false,
+    dialogueId: "dlg_grandpa_caught",
+    actions: [
+      { type: "teleportPlayer", mapId: "granger_dojo", entryId: "from_garden" },
+    ],
+    nextEventId: null,
+  });
 
-    // ── Backyard practice (Dragoon) ──────────────────────────────────────────
-    {
-      id: "ev_backyard_practice",
-      displayName: "Backyard Practice (Dragoon)",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { has_dragoon: true }, none: { dragoon_s_assembled: true } },
-      triggerOnce: false, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "show-title-card", titleText: "Practice Mode", subtitleText: "Tyson's Backyard" },
-        {
-          type: "start-battle",
-          battleParams: {
-            mode: "ai", playerBeybladeId: "dragoon", opponentBeybladeId: "dark_helmet",
-            arenaId: "classic_circle", difficulty: "medium", npcId: "training_dummy",
-            bestOf: 1, rpgContext: { isBossEncounter: false },
-          },
-        },
-        { type: "unlock-player" },
-      ],
-      completionFlags: {},
-    },
+  await put("rpg_story_events", "ev_grandpa_escaped", {
+    id: "ev_grandpa_escaped", displayName: "Escaped the Dojo!",
+    mapId: "dojo_garden_path", category: "milestone",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: "dlg_grandpa_escaped_taunt",
+    actions: [
+      { type: "setFlag",  flag: "dojo_escaped",  value: true },
+      { type: "addXP",    amount: 15, source: "escape" },
+    ],
+    nextEventId: null,
+  });
 
-    // ── Backyard practice (Dragoon S) ────────────────────────────────────────
-    {
-      id: "ev_backyard_practice_dragoons",
-      displayName: "Backyard Practice (Dragoon S)",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { dragoon_s_assembled: true } },
-      triggerOnce: false, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "show-title-card", titleText: "Training", subtitleText: "Testing Dragoon S" },
-        {
-          type: "start-battle",
-          battleParams: {
-            mode: "ai", playerBeybladeId: "dragoon_s", opponentBeybladeId: "dark_helmet",
-            arenaId: "classic_circle", difficulty: "hard", npcId: "training_dummy",
-            bestOf: 1, rpgContext: { isBossEncounter: false },
-          },
-        },
-        { type: "unlock-player" },
-      ],
-      completionFlags: {},
-    },
+  await put("rpg_story_events", "ev_billy_challenge", {
+    id: "ev_billy_challenge", displayName: "Billy's Challenge",
+    mapId: "beigoma_park", category: "battle_intro",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: "dlg_billy_challenge",
+    actions: [{ type: "startBattle", npcId: "billy", onWin: "ev_billy_won", onLose: null }],
+    nextEventId: null,
+  });
 
-    // ── Billy first encounter ────────────────────────────────────────────────
-    {
-      id: "ev_billy_first_encounter",
-      displayName: "Billy — First Encounter",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { none: { billy_encountered: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "spawn-npc", npcId: "billy" },
-        { type: "dialogue", dialogueId: "dlg_billy_first_scene" },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { billy_encountered: true },
-    },
+  await put("rpg_story_events", "ev_billy_won", {
+    id: "ev_billy_won", displayName: "Billy Defeated",
+    mapId: "beigoma_park", category: "milestone",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: null,
+    actions: [
+      { type: "setFlag",    flag: "billy_defeated", value: true },
+      { type: "addBadge",   badgeId: "badge_first_victory" },
+    ],
+    nextEventId: null,
+  });
 
-    // ── Rooftop — Carlos scene ───────────────────────────────────────────────
-    {
-      id: "ev_rooftop_carlos_scene",
-      displayName: "Rooftop — Carlos Has Everyone's Beys",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { billy_defeated: true }, none: { rooftop_visited: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "play-bgm", bgmId: "bgm_rooftop" },
-        { type: "show-title-card", titleText: "City Rooftop", subtitleText: "Evening" },
-        { type: "spawn-npc", npcId: "carlos" },
-        { type: "spawn-npc", npcId: "kenny"  },
-        { type: "spawn-npc", npcId: "andrew" },
-        { type: "wait", duration: 800 },
-        { type: "dialogue", dialogueId: "dlg_carlos_rooftop_scene" },
-        { type: "despawn-npc", npcId: "carlos" },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { rooftop_visited: true, carlos_scene_done: true },
-    },
+  await put("rpg_story_events", "ev_rooftop_aftermath", {
+    id: "ev_rooftop_aftermath", displayName: "Rooftop — The Aftermath",
+    mapId: "rooftop", category: "cutscene",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: "dlg_rooftop_arrival",
+    actions: [{ type: "setFlag", flag: "rooftop_visited", value: true }],
+    nextEventId: "ev_carlos_rooftop_challenge",
+  });
 
-    // ── Kenny gives Level 5 quest ────────────────────────────────────────────
-    {
-      id: "ev_kenny_gives_quest",
-      displayName: "Kenny — Reach Level 5 Quest",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { carlos_scene_done: true }, none: { q_level5_started: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "dialogue", dialogueId: "dlg_kenny_rooftop_quest" },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { q_level5_started: true },
-    },
+  await put("rpg_story_events", "ev_carlos_rooftop_challenge", {
+    id: "ev_carlos_rooftop_challenge", displayName: "Carlos Taunts Tyson",
+    mapId: "rooftop", category: "cutscene",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_carlos_rooftop_challenge",
+    actions: [],
+    nextEventId: "ev_kenny_quest_intro",
+  });
 
-    // ── River side arrival ───────────────────────────────────────────────────
-    {
-      id: "ev_river_arrival_scene",
-      displayName: "River Side Arrival",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { q_level5_complete: true }, none: { river_scene_done: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "play-bgm", bgmId: "bgm_river_arrive" },
-        { type: "show-title-card", titleText: "Beigoma River Side" },
-        { type: "dialogue", dialogueId: "dlg_river_arrival_scene" },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { river_scene_done: true },
-    },
+  await put("rpg_story_events", "ev_kenny_quest_intro", {
+    id: "ev_kenny_quest_intro", displayName: "Kenny & Andrew — Level Up Quest",
+    mapId: "rooftop", category: "quest_start",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_kenny_quest_intro",
+    actions: [
+      { type: "startQuest", questId: "q_reach_level_5" },
+    ],
+    nextEventId: null,
+  });
 
-    // ── Kai entrance ─────────────────────────────────────────────────────────
-    {
-      id: "ev_kai_entrance",
-      displayName: "Kai Arrives at the River",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { carlos_defeated: true }, none: { kai_seen: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "play-bgm", bgmId: "bgm_kai_theme" },
-        { type: "wait", duration: 600 },
-        { type: "spawn-npc", npcId: "kai" },
-        { type: "move-npc", npcId: "kai", targetTile: { x: 22, y: 8 } },
-        { type: "camera-pan", targetTile: { x: 22, y: 8 } },
-        { type: "dialogue", dialogueId: "dlg_kai_entrance_scene" },
-        { type: "save-checkpoint" },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { kai_seen: true, kai_challenged: true },
-    },
+  await put("rpg_story_events", "ev_dragoon_sword_dojo", {
+    id: "ev_dragoon_sword_dojo", displayName: "Sword Fascination — Dojo",
+    mapId: "granger_dojo", category: "explore",
+    triggerMode: "interact", triggerOnce: true,
+    dialogueId: "dlg_sword_dojo_view",
+    actions: [{ type: "setFlag", flag: "sword_dojo_viewed", value: true }],
+    nextEventId: null,
+  });
 
-    // ── River gate blocked ───────────────────────────────────────────────────
-    {
-      id: "ev_river_gate_blocked",
-      displayName: "River Gate — Not Ready",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { none: { carlos_defeated: true } },
-      triggerOnce: false, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "dialogue", dialogueId: "dlg_river_gate_blocked" },
-        { type: "unlock-player" },
-      ],
-      completionFlags: {},
-    },
+  await put("rpg_story_events", "ev_backyard_practice", {
+    id: "ev_backyard_practice", displayName: "Backyard Practice (AI Battle)",
+    mapId: "tyson_backyard", category: "battle",
+    triggerMode: "interact", triggerOnce: false,
+    dialogueId: "dlg_backyard_practice",
+    actions: [{ type: "startAIBattle", difficulty: "easy", arenaId: "classic_circle" }],
+    nextEventId: null,
+  });
 
-    // ── Rooftop locked ───────────────────────────────────────────────────────
-    {
-      id: "ev_rooftop_locked",
-      displayName: "Rooftop Staircase — Locked",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { none: { billy_defeated: true } },
-      triggerOnce: false, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "dialogue", dialogueId: "dlg_rooftop_locked" },
-        { type: "unlock-player" },
-      ],
-      completionFlags: {},
+  // Can-hit mini-game stub
+  await put("rpg_story_events", "ev_can_hit_practice", {
+    id: "ev_can_hit_practice", displayName: "Can-Hit Launching Practice",
+    mapId: "tyson_backyard", category: "mini_game",
+    triggerMode: "interact", triggerOnce: false,
+    dialogueId: "dlg_can_hit_intro",
+    miniGame: {
+      id:          "can_hit_practice",
+      type:        "bey_trajectory_aim",
+      description: "Launch Dragoon from the marker and hit 3 stacked tin cans.",
+      targets:     3,
+      xpReward:    20,
     },
+    actions: [],
+    nextEventId: null,
+  });
 
-    // ── Kai battle aftermath (river) — fires on re-enter room ────────────────
-    {
-      id: "ev_new_beyblade_home",
-      displayName: "New Beyblade — Home (After Kai River Battle)",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { kai_battled_river: true }, none: { new_bey_scene_done: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "screen-fade", duration: 600 },
-        { type: "play-bgm", bgmId: "bgm_tyson_room" },
-        { type: "wait", duration: 400 },
-        { type: "dialogue", dialogueId: "dlg_new_beyblade_home" },
-        { type: "set-flags", flags: { has_dragoon: false, q_find_parts_active: true } },
-        // Unequip Dragoon until rebuilt
-        { type: "unlock-player" },
-      ],
-      completionFlags: { new_bey_scene_done: true, q_find_parts_active: true },
-    },
+  // ── Phase 2 events ───────────────────────────────────────────────────────────
 
-    // ── Part finds (4 events) ────────────────────────────────────────────────
-    {
-      id: "ev_part_found_attack_ring",
-      displayName: "Found: Attack Ring Fragment",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { q_find_parts_active: true }, none: { part_attack_ring_found: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "play-sfx", sfxId: "sfx_item_pickup" },
-        { type: "screen-flash", flashColor: "#ffdd44", duration: 150 },
-        { type: "dialogue", dialogueId: "dlg_part_attack_ring_found" },
-        { type: "award-item", itemId: "dragoon_s_attack_ring", quantity: 1 },
-        { type: "set-flags", flags: { part_attack_ring_found: true } },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { part_attack_ring_found: true },
-    },
-    {
-      id: "ev_part_found_weight_disk",
-      displayName: "Found: Weight Disk Core",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { q_find_parts_active: true }, none: { part_weight_disk_found: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "play-sfx", sfxId: "sfx_item_pickup" },
-        { type: "screen-flash", flashColor: "#ffdd44", duration: 150 },
-        { type: "dialogue", dialogueId: "dlg_part_weight_disk_found" },
-        { type: "award-item", itemId: "dragoon_s_weight_disk", quantity: 1 },
-        { type: "set-flags", flags: { part_weight_disk_found: true } },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { part_weight_disk_found: true },
-    },
-    {
-      id: "ev_part_found_spin_tip",
-      displayName: "Found: Spin Tip Assembly",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { q_find_parts_active: true }, none: { part_spin_tip_found: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "play-sfx", sfxId: "sfx_item_pickup" },
-        { type: "screen-flash", flashColor: "#ffdd44", duration: 150 },
-        { type: "dialogue", dialogueId: "dlg_part_spin_tip_found" },
-        { type: "award-item", itemId: "dragoon_s_spin_tip", quantity: 1 },
-        { type: "set-flags", flags: { part_spin_tip_found: true } },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { part_spin_tip_found: true },
-    },
-    {
-      id: "ev_part_found_blade_base",
-      displayName: "Found: Blade Base Casing",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { q_find_parts_active: true }, none: { part_blade_base_found: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "play-sfx", sfxId: "sfx_item_pickup" },
-        { type: "screen-flash", flashColor: "#ffdd44", duration: 150 },
-        { type: "dialogue", dialogueId: "dlg_part_blade_base_found" },
-        { type: "award-item", itemId: "dragoon_s_blade_base", quantity: 1 },
-        { type: "set-flags", flags: { part_blade_base_found: true } },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { part_blade_base_found: true },
-    },
+  await put("rpg_story_events", "ev_river_carlos_challenge", {
+    id: "ev_river_carlos_challenge", displayName: "River — Carlos Challenge",
+    mapId: "river_side", category: "battle_intro",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: "dlg_river_arrival",
+    actions: [{ type: "startBattle", npcId: "carlos", onWin: "ev_carlos_won", onLose: null }],
+    nextEventId: null,
+  });
 
-    // ── Dragoon S assembled ──────────────────────────────────────────────────
-    {
-      id: "ev_dragoon_s_assembled",
-      displayName: "Dragoon S Assembled!",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: {
-        all: {
-          part_attack_ring_found: true, part_weight_disk_found: true,
-          part_spin_tip_found: true,    part_blade_base_found: true,
-        },
-        none: { dragoon_s_assembled: true },
-      },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "screen-flash", flashColor: "#ffffff", duration: 300 },
-        { type: "play-sfx", sfxId: "sfx_upgrade_complete" },
-        { type: "dialogue", dialogueId: "dlg_dragoon_s_assembled" },
-        { type: "award-beyblade", beybladeId: "dragoon_s" },
-        { type: "set-flags", flags: { dragoon_s_assembled: true, has_dragoon: true } },
-        { type: "set-arc-level-cap", levelCap: 20 },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { dragoon_s_assembled: true },
-    },
+  await put("rpg_story_events", "ev_carlos_won", {
+    id: "ev_carlos_won", displayName: "Carlos Defeated at River",
+    mapId: "river_side", category: "milestone",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_carlos_defeated",
+    actions: [
+      { type: "setFlag",  flag: "carlos_defeated", value: true },
+      { type: "addBadge", badgeId: "badge_carlos_beaten" },
+    ],
+    nextEventId: "ev_kai_river_entrance",
+  });
 
-    // ── Family sword — Dragoon bit beast ────────────────────────────────────
-    {
-      id: "ev_family_sword_interaction",
-      displayName: "Family Sword — Dragon Spirit Awakens",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { dragoon_s_assembled: true }, none: { dragoon_bit_beast_awakened: true } },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "camera-pan", targetTile: { x: 22, y: 3 } },
-        { type: "play-bgm", bgmId: "bgm_bit_beast_awaken" },
-        { type: "screen-flash", flashColor: "#00aaff", duration: 800 },
-        { type: "camera-shake" },
-        { type: "dialogue", dialogueId: "dlg_family_sword_dragoon_awaken" },
-        { type: "set-flags", flags: { dragoon_bit_beast_awakened: true, kenny_kidnapped_known: true } },
-        { type: "camera-pan", targetTile: { x: 12, y: 10 } },
-        { type: "play-bgm", bgmId: "bgm_dojo" },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { dragoon_bit_beast_awakened: true, kenny_kidnapped_known: true },
-    },
+  await put("rpg_story_events", "ev_kai_river_entrance", {
+    id: "ev_kai_river_entrance", displayName: "Kai Arrives at the River",
+    mapId: "river_side", category: "cutscene",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_kai_river_entrance",
+    actions: [{ type: "startBattle", npcId: "kai", onWin: null, onLose: "ev_kai_wins_river" }],
+    nextEventId: null,
+  });
 
-    // ── Hideout blocked ──────────────────────────────────────────────────────
-    {
-      id: "ev_hideout_gate_blocked",
-      displayName: "Hideout — Not Ready",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { none: { kenny_kidnapped_known: true } },
-      triggerOnce: false, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "dialogue", dialogueId: "dlg_hideout_gate_blocked" },
-        { type: "unlock-player" },
-      ],
-      completionFlags: {},
-    },
+  await put("rpg_story_events", "ev_kai_wins_river", {
+    id: "ev_kai_wins_river", displayName: "Kai Defeats Tyson — Checkpoint",
+    mapId: "river_side", category: "checkpoint",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_kai_river_battle_result",
+    actions: [
+      { type: "setFlag",      flag: "kai_battled_river", value: true },
+      { type: "saveCheckpoint", checkpointId: "cp_after_kai_river" },
+      { type: "teleportPlayer", mapId: "tyson_room", entryId: "default" },
+    ],
+    nextEventId: null,
+  });
 
-    // ── Blade Sharks entry ───────────────────────────────────────────────────
-    {
-      id: "ev_blade_sharks_entry",
-      displayName: "Blade Sharks Hideout — Entry",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { dragoon_bit_beast_awakened: true }, none: { hideout_entered: true } },
-      gate: { minPlayerLevel: 10 },
-      triggerOnce: true, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "play-bgm", bgmId: "bgm_tense" },
-        { type: "show-title-card", titleText: "Blade Sharks Hideout", subtitleText: "East of Beigoma Street" },
-        { type: "wait", duration: 1000 },
-        { type: "dialogue", dialogueId: "dlg_blade_sharks_entry_scene" },
-        { type: "unlock-player" },
-      ],
-      completionFlags: { hideout_entered: true },
-    },
+  await put("rpg_story_events", "ev_new_beyblade_home", {
+    id: "ev_new_beyblade_home", displayName: "Home After Kai — New Bey Quest",
+    mapId: "tyson_room", category: "quest_start",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: "dlg_new_bey_home",
+    actions: [{ type: "nextScene", sceneId: "ev_kenny_parts_quest_home" }],
+    nextEventId: "ev_kenny_parts_quest_home",
+  });
 
-    // ── Kai — final battle setup ─────────────────────────────────────────────
-    {
-      id: "ev_kai_blade_sharks_battle",
-      displayName: "Kai — Final Battle (Blade Sharks)",
-      arcId: "arc1_ep1", category: "shared",
-      triggerCondition: { all: { hideout_entered: true }, none: { kai_hideout_defeated: true } },
-      triggerOnce: false, blocksPlayerInput: true,
-      steps: [
-        { type: "lock-player" },
-        { type: "play-bgm", bgmId: "bgm_boss_encounter" },
-        { type: "dialogue", dialogueId: "dlg_kai_battle_intro_hideout" },
-        {
-          type: "start-battle",
-          battleParams: {
-            mode: "ai", playerBeybladeId: "dragoon_s", opponentBeybladeId: "dranzer_s",
-            arenaId: "dark_bowl", difficulty: "hard", npcId: "kai",
-            bestOf: 1,
-            rpgContext: { storyEventId: "ev_kai_blade_sharks_battle", isBossEncounter: true },
-          },
-        },
-        { type: "unlock-player" },
-      ],
-      completionFlags: {},
-    },
+  await put("rpg_story_events", "ev_kenny_parts_quest_home", {
+    id: "ev_kenny_parts_quest_home", displayName: "Kenny Explains Dragoon-S Parts",
+    mapId: "tyson_room", category: "quest_start",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_kenny_parts_quest",
+    actions: [
+      { type: "setFlag",    flag: "new_bey_scene_done",  value: true },
+      { type: "setFlag",    flag: "has_beyblade",        value: false },
+      { type: "startQuest", questId: "q_find_4_parts" },
+    ],
+    nextEventId: null,
+  });
+
+  // Part-found events
+  const PARTS = [
+    { id: "ev_part_attack_ring_found",  flag: "part_attack_ring_found",  dlg: "dlg_part_found_attack_ring",  itemId: "dragoon_s_attack_ring",  mapId: "beigoma_park" },
+    { id: "ev_part_weight_disk_found",  flag: "part_weight_disk_found",  dlg: "dlg_part_found_weight_disk",  itemId: "dragoon_s_weight_disk",  mapId: "river_side"   },
+    { id: "ev_part_spin_gear_found",    flag: "part_spin_gear_found",    dlg: "dlg_part_found_spin_gear",    itemId: "dragoon_s_spin_gear",    mapId: "granger_dojo" },
+    { id: "ev_part_blade_base_found",   flag: "part_blade_base_found",   dlg: "dlg_part_found_blade_base",   itemId: "dragoon_s_blade_base",   mapId: "apartment_1f" },
   ];
-
-  for (const ev of events) {
-    await put("rpg_story_events", ev.id, ev);
+  for (const p of PARTS) {
+    await put("rpg_story_events", p.id, {
+      id: p.id, displayName: `Found: ${p.itemId}`,
+      mapId: p.mapId, category: "item_pickup",
+      triggerMode: "interact", triggerOnce: true,
+      dialogueId: p.dlg,
+      actions: [
+        { type: "setFlag",  flag: p.flag,  value: true },
+        { type: "addItem",  itemId: p.itemId, qty: 1 },
+        { type: "progressQuest", questId: "q_find_4_parts", objectiveId: "obj_find_parts" },
+      ],
+      nextEventId: null,
+      triggerCondition: { all: ["new_bey_scene_done"], none: [p.flag] },
+    });
   }
+
+  await put("rpg_story_events", "ev_dragoon_s_assembled", {
+    id: "ev_dragoon_s_assembled", displayName: "Dragoon S — Assembled!",
+    mapId: "tyson_room", category: "milestone",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_dragoon_s_assembled",
+    actions: [
+      { type: "setFlag",    flag: "dragoon_s_assembled", value: true },
+      { type: "setFlag",    flag: "has_beyblade",        value: true },
+      { type: "completeQuest", questId: "q_find_4_parts" },
+      { type: "addBadge",   badgeId: "badge_dragoon_s_built" },
+    ],
+    nextEventId: null,
+    triggerCondition: { all: ["part_attack_ring_found","part_weight_disk_found","part_spin_gear_found","part_blade_base_found"] },
+  });
+
+  await put("rpg_story_events", "ev_backyard_practice_dragoons", {
+    id: "ev_backyard_practice_dragoons", displayName: "Backyard Practice with Dragoon S",
+    mapId: "tyson_backyard", category: "battle",
+    triggerMode: "interact", triggerOnce: false,
+    dialogueId: "dlg_backyard_practice_dragoons",
+    actions: [{ type: "startAIBattle", difficulty: "medium", arenaId: "classic_circle" }],
+    nextEventId: null,
+  });
+
+  // ── Phase 3 events ───────────────────────────────────────────────────────────
+
+  await put("rpg_story_events", "ev_family_sword_interaction", {
+    id: "ev_family_sword_interaction", displayName: "Family Sword — Bit-Beast Awakens",
+    mapId: "granger_dojo", category: "cutscene",
+    triggerMode: "interact", triggerOnce: true,
+    dialogueId: "dlg_family_sword_interaction",
+    actions: [
+      { type: "setFlag",      flag: "dragoon_bit_beast_awakened", value: true },
+      { type: "grantSpecialMove", beybladeId: "dragoon_s", specialMoveId: "storm_attack" },
+      { type: "addBadge",     badgeId: "badge_bit_beast_awakened" },
+    ],
+    nextEventId: null,
+  });
+
+  await put("rpg_story_events", "ev_kenny_kidnapped_news", {
+    id: "ev_kenny_kidnapped_news", displayName: "Kenny Kidnapped — Hideout Unlocked",
+    mapId: "beigoma_street", category: "cutscene",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: "dlg_kenny_kidnapped_news",
+    actions: [
+      { type: "setFlag",    flag: "kenny_kidnapped_known", value: true },
+      { type: "startQuest", questId: "q_rescue_kenny" },
+    ],
+    triggerCondition: { all: ["level_10_reached", "dragoon_s_assembled"], none: ["kenny_kidnapped_known"] },
+    nextEventId: null,
+  });
+
+  await put("rpg_story_events", "ev_hideout_entry", {
+    id: "ev_hideout_entry", displayName: "Inside the Blade Sharks Hideout",
+    mapId: "blade_sharks_hideout", category: "cutscene",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: "dlg_hideout_entry",
+    actions: [{ type: "setFlag", flag: "hideout_entered", value: true }],
+    nextEventId: null,
+  });
+
+  await put("rpg_story_events", "ev_final_kai_battle", {
+    id: "ev_final_kai_battle", displayName: "Final Battle — Kai vs Tyson (Dragoon S)",
+    mapId: "blade_sharks_hideout", category: "boss_battle",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: null,
+    actions: [
+      { type: "saveCheckpoint", checkpointId: "cp_before_final_kai" },
+      { type: "startBattle", npcId: "kai", onWin: "ev_kai_final_defeated", onLose: "ev_kai_wins_hideout" },
+    ],
+    nextEventId: null,
+  });
+
+  await put("rpg_story_events", "ev_kai_final_defeated", {
+    id: "ev_kai_final_defeated", displayName: "Kai Defeated — Bit-Beast Revelation",
+    mapId: "blade_sharks_hideout", category: "cutscene",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_kai_hideout_defeated",
+    actions: [
+      { type: "setFlag",       flag: "kai_defeated_hideout", value: true },
+      { type: "addBadge",      badgeId: "badge_kai_beaten" },
+      { type: "completeQuest", questId: "q_rescue_kenny" },
+    ],
+    nextEventId: "ev_bit_beast_revelation",
+  });
+
+  await put("rpg_story_events", "ev_kai_wins_hideout", {
+    id: "ev_kai_wins_hideout", displayName: "Kai Wins — Try Again",
+    mapId: "blade_sharks_hideout", category: "checkpoint_restore",
+    triggerMode: "auto", triggerOnce: false,
+    dialogueId: "dlg_kai_wins_hideout",
+    actions: [
+      { type: "saveCheckpoint",  checkpointId: "cp_before_final_kai" },
+    ],
+    nextEventId: null,
+  });
+
+  await put("rpg_story_events", "ev_bit_beast_revelation", {
+    id: "ev_bit_beast_revelation", displayName: "Bit-Beasts — The Bigger Picture",
+    mapId: "blade_sharks_hideout", category: "cutscene",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_bit_beast_knowledge",
+    actions: [
+      { type: "setFlag",      flag: "bit_beast_knowledge_gained", value: true },
+      { type: "saveCheckpoint", checkpointId: "cp_arc1_complete" },
+      // arc1_ep2 unlocked here — engine handles arc transition
+    ],
+    nextEventId: null,
+  });
+
+  // ── Phase 4 events ───────────────────────────────────────────────────────────
+
+  // Puppy rescue mini-game
+  await put("rpg_story_events", "ev_puppy_rescue_minigame", {
+    id: "ev_puppy_rescue_minigame", displayName: "Puppy Rescue — Waterfall Mini-Game",
+    mapId: "river_side", category: "mini_game",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: "dlg_puppy_rescue_setup",
+    miniGame: {
+      id:          "puppy_rescue",
+      type:        "bey_trajectory_block",
+      description: "Launch Dragoon S to hit the wooden logs above the waterfall and redirect the flow. Save the puppy!",
+      stages:      3,     // hit each log in sequence
+      timeLimit:   30,    // seconds
+      xpReward:    50,
+      onSuccess:   "ev_puppy_rescued",
+    },
+    actions: [],
+    nextEventId: null,
+  });
+
+  await put("rpg_story_events", "ev_puppy_rescued", {
+    id: "ev_puppy_rescued", displayName: "Puppy Saved!",
+    mapId: "river_side", category: "milestone",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_puppy_rescued",
+    actions: [
+      { type: "setFlag", flag: "puppy_saved", value: true },
+      { type: "addXP",   amount: 50 },
+    ],
+    nextEventId: "ev_meet_max",
+  });
+
+  await put("rpg_story_events", "ev_meet_max", {
+    id: "ev_meet_max", displayName: "Meeting Max Tate",
+    mapId: "river_side", category: "cutscene",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_max_shop_intro",
+    actions: [
+      { type: "setFlag",    flag: "max_met",      value: true },
+      { type: "setFlag",    flag: "shop_unlocked", value: true },
+      { type: "unlockMap",  mapId: "max_shop" },
+      { type: "startQuest", questId: "q_challenge_max" },
+    ],
+    nextEventId: null,
+  });
+
+  await put("rpg_story_events", "ev_shop_first_visit", {
+    id: "ev_shop_first_visit", displayName: "First Visit to Mr. Tate's Shop",
+    mapId: "max_shop", category: "cutscene",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: "dlg_mr_tate_welcome",
+    actions: [{ type: "setFlag", flag: "shop_visited", value: true }],
+    nextEventId: null,
+  });
+
+  // ── Phase 5 events ───────────────────────────────────────────────────────────
+
+  await put("rpg_story_events", "ev_dickinson_meeting", {
+    id: "ev_dickinson_meeting", displayName: "Mr. Dickinson — Tournament Invitation",
+    mapId: "seaside_dome", category: "cutscene",
+    triggerMode: "enter", triggerOnce: true,
+    dialogueId: "dlg_dickinson_entrance",
+    actions: [],
+    nextEventId: "ev_tournament_registration",
+  });
+
+  await put("rpg_story_events", "ev_tournament_registration", {
+    id: "ev_tournament_registration", displayName: "Tournament Registration Complete",
+    mapId: "seaside_dome", category: "milestone",
+    triggerMode: "auto", triggerOnce: true,
+    dialogueId: "dlg_tournament_registered",
+    actions: [
+      { type: "setFlag",       flag: "tournament_registered",  value: true },
+      { type: "setFlag",       flag: "arc1_ep1_complete",      value: true },
+      { type: "addBadge",      badgeId: "badge_tournament_invite" },
+      { type: "completeQuest", questId: "q_reach_level_15" },
+      { type: "saveCheckpoint", checkpointId: "cp_arc1_ep1_done" },
+      // Engine unlocks arc2 from here
+    ],
+    nextEventId: null,
+  });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 7. QUESTS
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 7 — QUESTS  (5 quests)
+// ═══════════════════════════════════════════════════════════════════════════════
 async function seedQuests() {
   console.log("\n📋  Quests");
 
-  const quests = [
+  await put("rpg_quests", "q_reach_level_5", {
+    id: "q_reach_level_5",
+    displayName: "Getting Stronger",
+    description: "Carlos is way out of your league right now. Train hard — battles in the park and your backyard will sharpen your skills. Reach Level 5 to challenge him at the river.",
+    category: "training",
+    objectives: [
+      { id: "obj_level_5", description: "Reach Blader Level 5", type: "reach_level", quantity: 5, progress: 0 },
+    ],
+    rewardXP: 80,
+    rewardItems: [],
+    completionFlag: "level_5_reached",
+    prerequisiteFlags: ["rooftop_visited"],
+    arcIds: ["arc1_ep1"],
+  });
 
-    // ── Reach Level 5 ─────────────────────────────────────────────────────────
-    {
-      id: "q_reach_level_5",
-      title: "Get Strong Enough to Face Carlos",
-      description: "Kenny says you need to reach Level 5 before challenging Carlos. Battle in the park and practice in the backyard!",
-      arcId: "arc1_ep1", category: "main",
-      prerequisites: [],
-      requiredFlags: { all: { q_level5_started: true } },
-      objectives: [
-        { id: "obj_reach_lv5", type: "reach-level", targetId: "player", quantity: 5,
-          description: "Reach Player Level 5", optional: false },
-      ],
-      rewards: {
-        reputation: 10,
-        setFlags: { q_level5_complete: true },
-        xp: { playerXP: 100 },
-        unlockMapIds: ["river_side"],
-      },
-      failCondition: null,
-    },
+  await put("rpg_quests", "q_find_4_parts", {
+    id: "q_find_4_parts",
+    displayName: "Rebuild Dragoon S",
+    description: "You don't have a Beyblade and you lost to Kai. But Kenny and Andrew have figured out a plan — the four components of Dragoon S are hidden across Beigoma. Find them all and rebuild.",
+    category: "main_story",
+    objectives: [
+      { id: "obj_find_parts", description: "Find all 4 Dragoon S components", type: "collect_item", quantity: 4, progress: 0 },
+    ],
+    rewardXP: 200,
+    rewardItems: ["standard_ripcord"],
+    completionFlag: "dragoon_s_assembled",
+    prerequisiteFlags: ["kai_battled_river"],
+    arcIds: ["arc1_ep1"],
+  });
 
-    // ── Find the 4 Dragoon S Parts ────────────────────────────────────────────
-    {
-      id: "q_find_4_parts",
-      title: "Rebuild Dragoon",
-      description: "Kenny needs four specific parts scattered across the city to rebuild Dragoon into Dragoon S. You have no Beyblade until then — explore carefully.",
-      arcId: "arc1_ep1", category: "main",
-      prerequisites: ["q_reach_level_5"],
-      requiredFlags: { all: { q_find_parts_active: true } },
-      objectives: [
-        { id: "obj_attack_ring", type: "collect-item", targetId: "dragoon_s_attack_ring", quantity: 1,
-          description: "Find the Attack Ring Fragment (Beigoma Park)", optional: false },
-        { id: "obj_weight_disk", type: "collect-item", targetId: "dragoon_s_weight_disk", quantity: 1,
-          description: "Find the Weight Disk Core (Hiro Dojo)", optional: false },
-        { id: "obj_spin_tip",   type: "collect-item", targetId: "dragoon_s_spin_tip",    quantity: 1,
-          description: "Find the Spin Tip Assembly (River Side)", optional: false },
-        { id: "obj_blade_base", type: "collect-item", targetId: "dragoon_s_blade_base",  quantity: 1,
-          description: "Find the Blade Base Casing (Near Blade Shark territory)", optional: false },
-      ],
-      rewards: {
-        beybladeId: "dragoon_s",
-        setFlags: { dragoon_s_assembled: true },
-        xp: { playerXP: 200 },
-      },
-      failCondition: null,
-    },
+  await put("rpg_quests", "q_rescue_kenny", {
+    id: "q_rescue_kenny",
+    displayName: "Rescue Kenny!",
+    description: "The Blade Sharks have kidnapped Kenny. Awaken Dragoon's bit-beast using the family sword, then storm the Blade Sharks' hideout and face Kai in the final battle.",
+    category: "main_story",
+    objectives: [
+      { id: "obj_awaken_bit_beast",   description: "Awaken Dragoon's bit-beast",         type: "story_flag", quantity: 1, progress: 0, flagId: "dragoon_bit_beast_awakened" },
+      { id: "obj_defeat_kai_hideout", description: "Defeat Kai at the Blade Sharks HQ",  type: "battle_win", quantity: 1, progress: 0, npcId: "kai" },
+    ],
+    rewardXP: 400,
+    rewardItems: ["grip_tape_upgrade"],
+    completionFlag: "kai_defeated_hideout",
+    prerequisiteFlags: ["level_10_reached", "dragoon_s_assembled"],
+    arcIds: ["arc1_ep1"],
+  });
 
-    // ── Defeat Kai at Blade Sharks ────────────────────────────────────────────
-    {
-      id: "q_defeat_blade_sharks_kai",
-      title: "Rescue Kenny — Defeat Kai",
-      description: "Kenny is being held in the Blade Sharks hideout. Storm in and beat Kai in a battle to free him. You'll need Dragoon S at full power and the Dragon Spirit on your side.",
-      arcId: "arc1_ep1", category: "main",
-      prerequisites: ["q_find_4_parts"],
-      requiredFlags: { all: { dragoon_bit_beast_awakened: true } },
-      objectives: [
-        { id: "obj_defeat_kai", type: "defeat-npc", targetId: "kai", quantity: 1,
-          description: "Defeat Kai at the Blade Sharks hideout", optional: false },
-      ],
-      rewards: {
-        reputation: 50,
-        setFlags: { arc1_ep1_complete: true },
-        xp: { playerXP: 500, beybladeXP: 200, beybladeXPTarget: "dragoon_s" },
-        badgeId: "badge_kai_beaten",
-        friendship: { carlos: 30, kenny: 25, andrew: 25 },
-      },
-      failCondition: null,
-    },
-  ];
+  await put("rpg_quests", "q_challenge_max", {
+    id: "q_challenge_max",
+    displayName: "The Defence Expert",
+    description: "Max Tate is a defence-type specialist and your new friend. Challenge him to a battle — and visit his dad's shop to keep your gear in top shape.",
+    category: "side_story",
+    objectives: [
+      { id: "obj_visit_shop",  description: "Visit Mr. Tate's shop",      type: "story_flag", quantity: 1, progress: 0, flagId: "shop_visited" },
+      { id: "obj_defeat_max",  description: "Defeat Max in battle",        type: "battle_win", quantity: 1, progress: 0, npcId: "max" },
+    ],
+    rewardXP: 180,
+    rewardItems: ["wrist_strap_upgrade"],
+    completionFlag: "max_defeated",
+    prerequisiteFlags: ["max_met"],
+    arcIds: ["arc1_ep1"],
+  });
 
-  for (const q of quests) {
-    await put("rpg_quests", q.id, q);
-  }
+  await put("rpg_quests", "q_reach_level_15", {
+    id: "q_reach_level_15",
+    displayName: "Ready for the World",
+    description: "After everything that's happened in Beigoma — the battles, the friends, the Bit-Beast awakening — it's time to prove you belong on a bigger stage. Reach Level 15 and head to the Seaside Dome.",
+    category: "main_story",
+    objectives: [
+      { id: "obj_level_15",  description: "Reach Blader Level 15",       type: "reach_level", quantity: 15, progress: 0 },
+      { id: "obj_dome_visit", description: "Visit the Seaside Dome",     type: "story_flag",  quantity: 1,  progress: 0, flagId: "tournament_registered" },
+    ],
+    rewardXP: 500,
+    rewardItems: ["turbo_release_upgrade"],
+    completionFlag: "arc1_ep1_complete",
+    prerequisiteFlags: ["max_met"],
+    arcIds: ["arc1_ep1"],
+  });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 8. ITEMS
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 8 — ITEMS  (consumables, gear, Dragoon-S parts, shop stock)
+// ═══════════════════════════════════════════════════════════════════════════════
 async function seedItems() {
   console.log("\n🎒  Items");
 
   const items = [
+    // ── Dragoon-S Quest Parts ─────────────────────────────────────────────────
     {
-      id: "dragoon_s_attack_ring",
-      displayName: "Attack Ring Fragment",
-      description: "A jagged attack ring component from the original Dragoon. Still sharp — still dangerous.",
-      category: "beyblade-part", iconAssetId: "icon_attack_ring",
-      stackable: false, usable: false, questRelated: true,
+      id: "dragoon_s_attack_ring", displayName: "Dragoon S — Attack Ring",
+      description: "A four-wing spiral attack ring — the first component of Dragoon S. Seek it in the park.",
+      category: "quest_item", equipSlot: null,
+      stackable: false, usable: false, isConsumable: false, questRelated: true,
+      buyPrice: 0, sellPrice: 0, questId: "q_find_4_parts",
     },
     {
-      id: "dragoon_s_weight_disk",
-      displayName: "Weight Disk Core",
-      description: "The heavy central disk that controls Dragoon's balance. Found in the dojo equipment room.",
-      category: "beyblade-part", iconAssetId: "icon_weight_disk",
-      stackable: false, usable: false, questRelated: true,
+      id: "dragoon_s_weight_disk", displayName: "Dragoon S — Weight Disk",
+      description: "A perfectly balanced weight disk that enhances stability and spin time. Found near the river.",
+      category: "quest_item", equipSlot: null,
+      stackable: false, usable: false, isConsumable: false, questRelated: true,
+      buyPrice: 0, sellPrice: 0, questId: "q_find_4_parts",
     },
     {
-      id: "dragoon_s_spin_tip",
-      displayName: "Spin Tip Assembly",
-      description: "The tip and shaft assembly that defines Dragoon's movement. Recovered from the river.",
-      category: "beyblade-part", iconAssetId: "icon_spin_tip",
-      stackable: false, usable: false, questRelated: true,
+      id: "dragoon_s_spin_gear", displayName: "Dragoon S — Spin Gear",
+      description: "The high-torque spin gear that powers Dragoon's Storm Attack. Hidden in the dojo.",
+      category: "quest_item", equipSlot: null,
+      stackable: false, usable: false, isConsumable: false, questRelated: true,
+      buyPrice: 0, sellPrice: 0, questId: "q_find_4_parts",
     },
     {
-      id: "dragoon_s_blade_base",
-      displayName: "Blade Base Casing",
-      description: "The reinforced base casing. Slightly scorched from the battle with Kai — which somehow makes it stronger.",
-      category: "beyblade-part", iconAssetId: "icon_blade_base",
-      stackable: false, usable: false, questRelated: true,
+      id: "dragoon_s_blade_base", displayName: "Dragoon S — Blade Base",
+      description: "The final piece — a wide, flat blade base designed for aggressive stadium movement.",
+      category: "quest_item", equipSlot: null,
+      stackable: false, usable: false, isConsumable: false, questRelated: true,
+      buyPrice: 0, sellPrice: 0, questId: "q_find_4_parts",
+    },
+
+    // ── Ripcords (with durability — wear per battle) ──────────────────────────
+    {
+      id: "standard_ripcord", displayName: "Standard Ripcord",
+      description: "A solid basic ripcord. Reliable for casual battles but will wear down after heavy use.",
+      category: "gear", equipSlot: "ripcord",
+      stackable: false, usable: false, isConsumable: false, questRelated: false,
+      buyPrice: 30, sellPrice: 8,
+      durability: { max: 100, wearPerBattle: 8, breakEffect: "launch_power_penalty_15pct" },
     },
     {
-      id: "standard_ripcord",
-      displayName: "Standard Ripcord",
-      description: "A basic ripcord for launching your Beyblade. It wears out after several battles.",
-      category: "launcher", iconAssetId: "icon_ripcord",
-      stackable: true, maxStack: 5, usable: false, questRelated: false,
-      buyPrice: 30, sellPrice: 10,
-      maxDurability: 100, wearRate: 25, launchBoost: 0, isLauncher: false,
+      id: "pro_ripcord", displayName: "Pro Ripcord",
+      description: "Reinforced cord with a textured grip — less wear, more consistent launch power.",
+      category: "gear", equipSlot: "ripcord",
+      stackable: false, usable: false, isConsumable: false, questRelated: false,
+      buyPrice: 75, sellPrice: 20,
+      durability: { max: 100, wearPerBattle: 4, breakEffect: "launch_power_penalty_10pct" },
+      shopOnly: true,
+    },
+
+    // ── Launchers (with durability) ───────────────────────────────────────────
+    {
+      id: "standard_launcher", displayName: "Standard String Launcher",
+      description: "The basic Beyblade string launcher. Gets the job done — but heavy battle schedules will wear it out.",
+      category: "gear", equipSlot: "launcher",
+      stackable: false, usable: false, isConsumable: false, questRelated: false,
+      buyPrice: 50, sellPrice: 15,
+      durability: { max: 100, wearPerBattle: 5, breakEffect: "launch_power_penalty_20pct" },
+      launchBoost: 0,
     },
     {
-      id: "standard_launcher",
-      displayName: "Standard Launcher",
-      description: "A reliable grip launcher. Durable enough for everyday battles.",
-      category: "launcher", iconAssetId: "icon_launcher",
-      stackable: false, usable: false, questRelated: false,
-      buyPrice: 120, sellPrice: 40,
-      maxDurability: 100, wearRate: 15, launchBoost: 0.05, isLauncher: true,
+      id: "power_launcher", displayName: "Power String Launcher",
+      description: "A heavier-duty launcher with better grip and spring mechanism. Lasts longer under battle conditions.",
+      category: "gear", equipSlot: "launcher",
+      stackable: false, usable: false, isConsumable: false, questRelated: false,
+      buyPrice: 120, sellPrice: 35,
+      durability: { max: 100, wearPerBattle: 3, breakEffect: "launch_power_penalty_10pct" },
+      launchBoost: 0.06, shopOnly: true,
     },
+
+    // ── Upgrades ──────────────────────────────────────────────────────────────
     {
-      id: "grip_tape_upgrade",
-      displayName: "Grip Tape Upgrade",
-      description: "A rubberised grip add-on that improves launch power by 8%.",
-      category: "accessory", iconAssetId: "icon_grip_tape",
-      stackable: false, usable: false, questRelated: false,
+      id: "grip_tape_upgrade", displayName: "Grip Tape Wrap",
+      description: "Wrap your launcher handle for better control. +8% launch power and reduces ripcord slip.",
+      category: "upgrade", equipSlot: "upgrade",
+      stackable: false, usable: false, isConsumable: false, questRelated: false,
       buyPrice: 80, sellPrice: 25,
       launchBoost: 0.08, isLauncherUpgrade: true,
+    },
+    {
+      id: "turbo_release_upgrade", displayName: "Turbo Release Mechanism",
+      description: "A precision spring-release clip that fires at exactly the right moment. +12% launch power.",
+      category: "upgrade", equipSlot: "upgrade",
+      stackable: false, usable: false, isConsumable: false, questRelated: false,
+      buyPrice: 160, sellPrice: 50, shopOnly: true,
+      launchBoost: 0.12, isLauncherUpgrade: true,
+    },
+    {
+      id: "wrist_strap_upgrade", displayName: "Blader Wrist Strap",
+      description: "A stabilising wrist strap that reduces launch deviation. +5% launch power and tighter accuracy.",
+      category: "accessory", equipSlot: "accessory",
+      stackable: false, usable: false, isConsumable: false, questRelated: false,
+      buyPrice: 60, sellPrice: 18,
+      launchBoost: 0.05,
+    },
+
+    // ── Consumables ───────────────────────────────────────────────────────────
+    {
+      id: "repair_kit", displayName: "Gear Repair Kit",
+      description: "A screwdriver, lubricant, and spare clips. Restores 50 durability to your launcher or ripcord.",
+      category: "consumable", equipSlot: "consumable",
+      stackable: true, maxStack: 5, usable: true, isConsumable: true, questRelated: false,
+      buyPrice: 40, sellPrice: 12,
+      useEffect: { type: "repair", value: 50 },
+    },
+    {
+      id: "energy_drink", displayName: "Blader Energy Drink",
+      description: "A focus boost in a can. Temporarily increases your effective level by +2 for one battle.",
+      category: "consumable", equipSlot: "consumable",
+      stackable: true, maxStack: 10, usable: true, isConsumable: true, questRelated: false,
+      buyPrice: 25, sellPrice: 8,
+      useEffect: { type: "xp_boost", value: 2 },
+    },
+    {
+      id: "bey_tune_kit", displayName: "Bey Tune-Up Kit",
+      description: "A fine-tuning set for your Beyblade. Restores 30 Beyblade XP to your active bey.",
+      category: "consumable", equipSlot: "consumable",
+      stackable: true, maxStack: 5, usable: true, isConsumable: true, questRelated: false,
+      buyPrice: 55, sellPrice: 15,
+      useEffect: { type: "bey_xp_restore", value: 30 },
     },
   ];
 
   for (const item of items) {
-    await put("rpg_items", item.id, item);
+    await put("rpg_items", item.id, { ...item, arcIds: ["arc1_ep1"] });
   }
+
+  // ── Shop inventory definition ─────────────────────────────────────────────
+  await put("rpg_items", "shop_tate_supplies", {
+    id: "shop_tate_supplies",
+    displayName: "Tate's Bey Supply Shop — Stock",
+    type: "shop_inventory",
+    description: "Mr. Tate's selection. Gear wears out after battles — come back regularly to restock.",
+    stock: [
+      { itemId: "standard_ripcord",    unlimited: true,  stock: null, price: 30  },
+      { itemId: "pro_ripcord",         unlimited: true,  stock: null, price: 75  },
+      { itemId: "standard_launcher",   unlimited: true,  stock: null, price: 50  },
+      { itemId: "power_launcher",      unlimited: true,  stock: null, price: 120 },
+      { itemId: "grip_tape_upgrade",   unlimited: true,  stock: null, price: 80  },
+      { itemId: "turbo_release_upgrade", unlimited: false, stock: 2, price: 160 },
+      { itemId: "repair_kit",          unlimited: true,  stock: null, price: 40  },
+      { itemId: "energy_drink",        unlimited: true,  stock: null, price: 25  },
+      { itemId: "bey_tune_kit",        unlimited: true,  stock: null, price: 55  },
+    ],
+    arcIds: ["arc1_ep1"],
+  });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 9. BADGES
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 9 — BADGES  (6 badges)
+// ═══════════════════════════════════════════════════════════════════════════════
 async function seedBadges() {
   console.log("\n🏅  Badges");
 
   const badges = [
     {
       id: "badge_first_victory",
-      displayName: "First Victory",
-      description: "Won your very first Beyblade battle against Billy in Beigoma Park.",
-      iconAssetId: "icon_badge_first_win",
-      category: "street", arcId: "arc1_ep1",
-      earnCondition: { type: "defeat-npc", targetId: "billy" }, order: 1,
+      displayName: "First Victory!",
+      description: "Defeated Billy in your very first street battle. Every legend starts somewhere.",
+      iconAssetId: "badge_icon_star",
+      category: "battle",
+      rarity: "common",
+      arcIds: ["arc1_ep1"],
     },
     {
       id: "badge_carlos_beaten",
-      displayName: "Blade Shark Breaker",
-      description: "Defeated Carlos and won back the stolen Beyblades. Justice delivered.",
-      iconAssetId: "icon_badge_carlos",
-      category: "street", arcId: "arc1_ep1",
-      earnCondition: { type: "defeat-npc", targetId: "carlos" }, order: 2,
+      displayName: "Park Protector",
+      description: "Defeated Carlos and made him return every Beyblade he stole. Beigoma owes you one.",
+      iconAssetId: "badge_icon_shield",
+      category: "battle",
+      rarity: "uncommon",
+      arcIds: ["arc1_ep1"],
+    },
+    {
+      id: "badge_dragoon_s_built",
+      displayName: "Rebuild Complete",
+      description: "Found all four Dragoon S components and reassembled your Beyblade from scratch. You earned this.",
+      iconAssetId: "badge_icon_wrench",
+      category: "story",
+      rarity: "uncommon",
+      arcIds: ["arc1_ep1"],
+    },
+    {
+      id: "badge_bit_beast_awakened",
+      displayName: "Spirit Awakened",
+      description: "Awakened Dragoon's bit-beast through the family sword. You and Dragoon are one.",
+      iconAssetId: "badge_icon_dragon",
+      category: "story",
+      rarity: "rare",
+      arcIds: ["arc1_ep1"],
     },
     {
       id: "badge_kai_beaten",
-      displayName: "Kai's Grudging Respect",
-      description: "Defeated Kai Hiwatari at the Blade Sharks hideout and freed Kenny. Bit Beasts are real.",
-      iconAssetId: "icon_badge_kai",
-      category: "arc", arcId: "arc1_ep1",
-      earnCondition: { type: "defeat-npc", targetId: "kai" }, order: 3,
+      displayName: "Showdown at the Hideout",
+      description: "Defeated Kai Hiwatari in the Blade Sharks' warehouse. The city is safe — for now.",
+      iconAssetId: "badge_icon_flame",
+      category: "battle",
+      rarity: "rare",
+      arcIds: ["arc1_ep1"],
+    },
+    {
+      id: "badge_max_beaten",
+      displayName: "Defence Buster",
+      description: "Broke through Max Tate's famous defence-type strategy. He's your friend AND your rival.",
+      iconAssetId: "badge_icon_shield_break",
+      category: "battle",
+      rarity: "uncommon",
+      arcIds: ["arc1_ep1"],
+    },
+    {
+      id: "badge_tournament_invite",
+      displayName: "Dickinson's Invitation",
+      description: "Earned an invitation to the Seaside Dome Invitational from Mr. Dickinson himself. The world is watching.",
+      iconAssetId: "badge_icon_trophy",
+      category: "story",
+      rarity: "rare",
+      arcIds: ["arc1_ep1"],
     },
   ];
 
-  for (const badge of badges) {
-    await put("rpg_badges", badge.id, badge);
-  }
+  for (const b of badges) await put("rpg_badges", b.id, b);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 10. MAP EVENT TRIGGERS FOR PART FINDS (dojo + street)
-//     These augment the maps seeded above with additional triggers.
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// SECTION 10 — PART TRIGGERS  (Dragoon-S parts scattered across Beigoma)
+// ═══════════════════════════════════════════════════════════════════════════════
 async function seedPartTriggers() {
-  console.log("\n🔧  Part-find triggers (dojo / river / street)");
+  console.log("\n🔩  Part Triggers");
 
-  // Weight Disk — dojo equipment room
-  const dojoDoc = await db.collection("rpg_maps").doc("tyson_dojo").get();
-  if (dojoDoc.exists) {
-    const existing = dojoDoc.data();
-    const triggers = [...(existing.eventTriggers || []),
-      {
-        id: "trig_part_weight_disk",
-        triggerRect: { x: 0, y: 9, width: 2, height: 4 },
-        storyEventId: "ev_part_found_weight_disk",
-        triggerCondition: { all: { q_find_parts_active: true }, none: { part_weight_disk_found: true, has_dragoon: true } },
-        triggerOnce: true, triggerMode: "interact",
-      },
-    ];
-    if (!DRY) {
-      await db.collection("rpg_maps").doc("tyson_dojo").update({ eventTriggers: triggers });
-      console.log("  ✔  dojo weight-disk trigger added");
-    }
-  }
+  const partTriggers = [
+    {
+      mapId: "beigoma_park",
+      triggerId: "trig_part_attack_ring",
+      triggerRect: { x: 5, y: 14, width: 2, height: 2 },
+      storyEventId: "ev_part_attack_ring_found",
+      triggerCondition: { all: ["new_bey_scene_done"], none: ["part_attack_ring_found"] },
+    },
+    {
+      mapId: "river_side",
+      triggerId: "trig_part_weight_disk",
+      triggerRect: { x: 25, y: 10, width: 2, height: 2 },
+      storyEventId: "ev_part_weight_disk_found",
+      triggerCondition: { all: ["new_bey_scene_done"], none: ["part_weight_disk_found"] },
+    },
+    {
+      mapId: "granger_dojo",
+      triggerId: "trig_part_spin_gear",
+      triggerRect: { x: 5, y: 5, width: 2, height: 2 },
+      storyEventId: "ev_part_spin_gear_found",
+      triggerCondition: { all: ["new_bey_scene_done"], none: ["part_spin_gear_found"] },
+    },
+    {
+      mapId: "apartment_1f",
+      triggerId: "trig_part_blade_base",
+      triggerRect: { x: 2, y: 2, width: 2, height: 2 },
+      storyEventId: "ev_part_blade_base_found",
+      triggerCondition: { all: ["new_bey_scene_done"], none: ["part_blade_base_found"] },
+    },
+  ];
 
-  // Spin Tip — river side
-  const riverDoc = await db.collection("rpg_maps").doc("river_side").get();
-  if (riverDoc.exists) {
-    const existing = riverDoc.data();
-    const triggers = [...(existing.eventTriggers || []),
-      {
-        id: "trig_part_spin_tip",
-        triggerRect: { x: 6, y: 15, width: 8, height: 4 },
-        storyEventId: "ev_part_found_spin_tip",
-        triggerCondition: { all: { q_find_parts_active: true }, none: { part_spin_tip_found: true } },
+  // Patch the triggers into their respective map docs
+  for (const pt of partTriggers) {
+    if (DRY) { console.log(`  [dry] patch trigger ${pt.triggerId} → rpg_maps/${pt.mapId}`); continue; }
+    const mapRef  = db.collection("rpg_maps").doc(pt.mapId);
+    const mapSnap = await mapRef.get();
+    if (!mapSnap.exists) { console.warn(`  ⚠  Map ${pt.mapId} not found — skipping part trigger`); continue; }
+    const existing  = mapSnap.data().eventTriggers ?? [];
+    const alreadyIn = existing.some(t => t.id === pt.triggerId);
+    if (alreadyIn) { console.log(`  ↩  Trigger ${pt.triggerId} already in ${pt.mapId}`); continue; }
+    await mapRef.update({
+      eventTriggers: admin.firestore.FieldValue.arrayUnion({
+        id: pt.triggerId,
+        triggerRect: pt.triggerRect,
+        storyEventId: pt.storyEventId,
+        triggerCondition: pt.triggerCondition,
         triggerOnce: true, triggerMode: "interact",
-      },
-    ];
-    if (!DRY) {
-      await db.collection("rpg_maps").doc("river_side").update({ eventTriggers: triggers });
-      console.log("  ✔  river spin-tip trigger added");
-    }
-  }
-
-  // Blade Base — street (near hideout entrance)
-  const streetDoc = await db.collection("rpg_maps").doc("beigoma_street").get();
-  if (streetDoc.exists) {
-    const existing = streetDoc.data();
-    const triggers = [...(existing.eventTriggers || []),
-      {
-        id: "trig_part_blade_base",
-        triggerRect: { x: 2, y: 8, width: 3, height: 4 },
-        storyEventId: "ev_part_found_blade_base",
-        triggerCondition: { all: { q_find_parts_active: true }, none: { part_blade_base_found: true } },
-        triggerOnce: true, triggerMode: "interact",
-      },
-    ];
-    if (!DRY) {
-      await db.collection("rpg_maps").doc("beigoma_street").update({ eventTriggers: triggers });
-      console.log("  ✔  street blade-base trigger added");
-    }
+      }),
+    });
+    console.log(`  ✔  Patched trigger ${pt.triggerId} into ${pt.mapId}`);
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
 // MAIN
-// ─────────────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
 async function main() {
-  console.log(DRY ? "\n🔎  DRY RUN — nothing written\n" : "\n🚀  Seeding Arc 1, Episode 1…\n");
+  console.log(`\n${"═".repeat(60)}`);
+  console.log("  Arc 1 Episode 1 — Let It Rip!  (seed)");
+  console.log(`  Mode: ${DRY ? "DRY RUN" : "LIVE"}`);
+  console.log(`${"═".repeat(60)}`);
+
   await seedArc();
   await seedRegion();
   await seedMaps();
@@ -1907,7 +2250,10 @@ async function main() {
   await seedItems();
   await seedBadges();
   await seedPartTriggers();
-  console.log("\n✅  Arc 1 Episode 1 seed complete.\n");
+
+  console.log(`\n${"═".repeat(60)}`);
+  console.log("  ✅  Arc 1 Episode 1 seed complete.");
+  console.log(`${"═".repeat(60)}\n`);
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch(err => { console.error("❌", err); process.exit(1); });

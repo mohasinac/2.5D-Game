@@ -82,8 +82,85 @@ export function applyActionInput(
 ): InputEvents {
   const events: InputEvents = {};
   if (beyblade.comboExecuting || beyblade.stunTimer > 0) return events;
+
+  // ── Directional Stance — write from attitude bits every tick ─────────────────
+  // Auto-clears to "" next tick when bitmask is re-read and no bit is held.
+  if (input.attitudeAggressive) beyblade.activeStance = "aggressive";
+  else if (input.attitudeDefensive) beyblade.activeStance = "defensive";
+  else if (input.attitudeStamina) beyblade.activeStance = "stamina";
+  else beyblade.activeStance = "";
+
+  // ── Clash Timing: mark pressed if any action key hit during timing window ───
+  if (beyblade.clashTimingWindowOpen && (input.attack || input.defense || input.dodge || input.jump || input.specialTap)) {
+    beyblade.clashTimingPressed = true;
+  }
+
+  // ── Gimmick Loaded Mode Toggle: L + K same tick (dodge + defense) ───────────
+  if (input.dodge && input.defense && beyblade.gimmickToggleCooldown <= 0) {
+    beyblade.gimmickLoadedMode = !beyblade.gimmickLoadedMode;
+    beyblade.gimmickToggleCooldown = 60; // 1s at 60Hz
+    (events as any).gimmickModeChanged = true;
+  }
+  if (beyblade.gimmickToggleCooldown > 0) beyblade.gimmickToggleCooldown--;
+
+  // ── SDI During Hitstun (Smash Bros) ─────────────────────────────────────────
+  // Player gets one directional nudge per hitstun window.
+  if (isControlLocked(beyblade)) {
+    const SDI_FORCE = 0.003;
+    if (!beyblade.sdiUsed && (input.moveLeft || input.moveRight || input.moveUp || input.moveDown)) {
+      physics.applyForce(
+        beyblade.id,
+        ((input.moveRight ? 1 : 0) - (input.moveLeft ? 1 : 0)) * SDI_FORCE,
+        ((input.moveDown ? 1 : 0) - (input.moveUp ? 1 : 0)) * SDI_FORCE,
+      );
+      beyblade.sdiUsed = true;
+    }
+    return events;
+  }
+  // SDI flag resets when control is returned
+  beyblade.sdiUsed = false;
+
+  // ── Fury Release: K double-tap within 200ms when furyGauge ≥ 100 ─────────────
+  if (input.defense && beyblade.furyGauge >= 100) {
+    const now = Date.now();
+    const lastTap = beyblade.lastDefenseTapMs ?? 0;
+    if (now - lastTap <= 200) {
+      // Fury release — type-specific effect
+      switch (beyblade.type) {
+        case "stamina":
+          beyblade.spin = Math.min(beyblade.maxSpin, beyblade.spin + beyblade.maxSpin * 0.25);
+          break;
+        case "attack":
+          beyblade.attackBuffTimer = 3;
+          beyblade.comboDamageMultiplier = 1.5;
+          beyblade.comboDamageMultiplierTimer = 3;
+          break;
+        case "defense":
+          beyblade.isInvulnerable = true;
+          beyblade.invulnerabilityTimer = 2;
+          break;
+        case "balanced":
+        default:
+          // 50% of all three effects
+          beyblade.spin = Math.min(beyblade.maxSpin, beyblade.spin + beyblade.maxSpin * 0.125);
+          beyblade.attackBuffTimer = 1.5;
+          beyblade.isInvulnerable = true;
+          beyblade.invulnerabilityTimer = 1;
+          break;
+      }
+      beyblade.furyGauge = 0;
+      beyblade.lastDefenseTapMs = 0;
+      (events as any).furyReleased = true;
+    } else {
+      beyblade.lastDefenseTapMs = now;
+    }
+  } else if (input.defense) {
+    beyblade.lastDefenseTapMs = Date.now();
+  }
+
   // Loss of control: ignore movement/action bits during a special / combo window.
-  if (isControlLocked(beyblade)) return events;
+  // (Checked AFTER SDI which is the only allowed action during hitstun)
+  if (beyblade.comboExecuting) return events;
 
   if (input.jump && !beyblade.isAirborne && !beyblade.inPit && !beyblade.isDefending && beyblade.landingLag <= 0) {
     beyblade.isAirborne = true;

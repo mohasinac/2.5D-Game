@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { collection, getDocs, deleteDoc, doc, query, where, orderBy } from "firebase/firestore";
+import { Link, useNavigate } from "react-router-dom";
+import { collection, getDocs, deleteDoc, doc, query, where, orderBy, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import type { BeybladeStats } from "@/types/beybladeStats";
 import toast from "react-hot-toast";
@@ -30,10 +30,12 @@ const STAT_ROWS = [
 ] as const;
 
 export function BeybladesListPage() {
+  const navigate = useNavigate();
   const [beyblades, setBeyblades] = useState<BeybladeStats[]>([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [cloningId, setCloningId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<BeybladeStats | null>(null);
 
   const fetchBeyblades = async () => {
@@ -50,6 +52,22 @@ export function BeybladesListPage() {
   };
 
   useEffect(() => { fetchBeyblades(); }, [filter]);
+
+  const handleClone = async (b: BeybladeStats) => {
+    const newId = `${b.id}_copy_${Date.now()}`;
+    setCloningId(b.id);
+    try {
+      const { id: _id, ...rest } = b;
+      await setDoc(doc(db, COLLECTIONS.BEYBLADE_STATS, newId), {
+        ...rest,
+        displayName: `${b.displayName} (Copy)`,
+        templateId: b.id,
+      });
+      toast.success(`Cloned as ${newId}`);
+      navigate(`/admin/beyblades/edit/${newId}`);
+    } catch { toast.error("Clone failed"); }
+    finally { setCloningId(null); }
+  };
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
@@ -154,6 +172,14 @@ export function BeybladesListPage() {
                 >
                   Edit
                 </Link>
+                <button
+                  onClick={() => handleClone(b)}
+                  disabled={cloningId === b.id}
+                  title="Clone as template"
+                  className="flex-1 py-2.5 text-center text-[13px] text-theme-purple bg-transparent border-none border-l border-border-c cursor-pointer disabled:opacity-50"
+                >
+                  {cloningId === b.id ? "…" : "Clone"}
+                </button>
                 <button
                   onClick={() => setConfirmDelete(b)}
                   className="flex-1 py-2.5 text-center text-[13px] text-theme-red bg-transparent border-none border-l border-border-c cursor-pointer"

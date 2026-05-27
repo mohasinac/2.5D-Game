@@ -44,6 +44,8 @@
     "seed:bey-link-configs": "node scripts/seed-all.js --only bey-link-configs",
     "seed:mechanics": "node scripts/seed-all.js --only mechanics",
     "seed:gimmicks": "node scripts/seed-all.js --only gimmicks",
+    "seed:gimmick-synergies": "node scripts/seed-all.js --only gimmick-synergies",
+    "seed:bey-accessories": "node scripts/seed-all.js --only bey-accessories",
     "seed:geometry": "node scripts/seed-all.js --only geometry",
     "seed:stat-defs": "node scripts/seed-all.js --only stat-defs",
     "seed:gears": "node scripts/seed-all.js --only gears",

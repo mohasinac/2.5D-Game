@@ -1,5 +1,5 @@
 import type { TileCoord, RPGMap } from "../data/schemas";
-import { tileIndex } from "../utils/tileUtils";
+import { tileIndex, worldToTile } from "../utils/tileUtils";
 
 export class CollisionSystem {
   private grid: boolean[] = [];
@@ -42,5 +42,27 @@ export class CollisionSystem {
     this.grid = [];
     this.mapWidth = 0;
     this.mapHeight = 0;
+  }
+
+  get width(): number  { return this.mapWidth; }
+  get height(): number { return this.mapHeight; }
+
+  /** #17: Tile-walkable by world coordinate — used for AABB corner queries. */
+  isWalkableTile(worldX: number, worldY: number): boolean {
+    return this.isWalkable(worldToTile({ x: worldX, y: worldY }));
+  }
+
+  /**
+   * #17: Check whether an axis-aligned bounding box centered at (cx, cy)
+   * with half-extents (halfW, halfH) is fully walkable.
+   * Tests all 4 corners; if any corner is in a blocked tile, returns false.
+   */
+  isRectWalkable(cx: number, cy: number, halfW: number, halfH: number): boolean {
+    return (
+      this.isWalkableTile(cx - halfW, cy - halfH) &&
+      this.isWalkableTile(cx + halfW, cy - halfH) &&
+      this.isWalkableTile(cx - halfW, cy + halfH) &&
+      this.isWalkableTile(cx + halfW, cy + halfH)
+    );
   }
 }

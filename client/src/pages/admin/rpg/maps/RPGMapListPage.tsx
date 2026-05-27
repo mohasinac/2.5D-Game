@@ -1,16 +1,18 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { Link, useNavigate } from "react-router-dom";
+import { collection, getDocs, deleteDoc, doc, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import type { RPGMap } from "@/rpg/data/schemas";
 import { TABLE_TH, TABLE_TD, BTN_DANGER, INP } from "../rpgAdminShared";
 import { MapMiniPreview } from "../components/MapMiniPreview";
 
 export default function RPGMapListPage() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<RPGMap[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [cloning, setCloning] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -21,6 +23,21 @@ export default function RPGMapListPage() {
       finally { setLoading(false); }
     })();
   }, []);
+
+  const handleClone = async (m: RPGMap) => {
+    const newId = `${m.id}_copy_${Date.now()}`;
+    setCloning(m.id);
+    try {
+      const { id: _id, ...rest } = m;
+      await setDoc(doc(db, COLLECTIONS.RPG_MAPS, newId), {
+        ...rest,
+        displayName: `${m.displayName} (Copy)`,
+        templateId: m.id,
+      });
+      navigate(`/admin/rpg/maps/${newId}/edit`);
+    } catch (e) { console.error(e); }
+    finally { setCloning(null); }
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm(`Delete map "${id}"?`)) return;
@@ -111,13 +128,23 @@ export default function RPGMapListPage() {
                     </span>
                   </td>
                   <td className={TABLE_TD}>
-                    <button
-                      onClick={() => handleDelete(m.id)}
-                      disabled={deleting === m.id}
-                      className={BTN_DANGER + " text-xs py-1 px-2"}
-                    >
-                      {deleting === m.id ? "..." : "Delete"}
-                    </button>
+                    <div className="flex gap-1.5 items-center">
+                      <button
+                        onClick={() => handleClone(m)}
+                        disabled={cloning === m.id}
+                        title="Clone as template"
+                        className="text-xs py-1 px-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors"
+                      >
+                        {cloning === m.id ? "…" : "Clone"}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(m.id)}
+                        disabled={deleting === m.id}
+                        className={BTN_DANGER + " text-xs py-1 px-2"}
+                      >
+                        {deleting === m.id ? "..." : "Delete"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

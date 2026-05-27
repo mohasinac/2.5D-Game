@@ -151,6 +151,18 @@ export class StoryEventSystem {
     );
   }
 
+  /**
+   * Queue an event by ID unconditionally (bypasses gate/flag checks).
+   * Used by the mini-game system to fire the onSuccess/onFailure event
+   * after a mini-game completes, without needing a full store snapshot.
+   */
+  queueEventById(eventId: string): boolean {
+    const event = this.events.get(eventId);
+    if (!event) return false;
+    this.queueEvent(event);
+    return true;
+  }
+
   // Trigger queue processing is automatic when events are enqueued.
   // This no-op is here so callers can call processQueue() without error.
   processQueue(): void { /* self-draining async queue */ }

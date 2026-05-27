@@ -4,7 +4,8 @@ import { doc, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { ArenaSystem } from "@/types/arenaSystem";
 import { ArenaSystemEditor } from "@/components/admin/arena-system/ArenaSystemEditor";
-import { v4 as uuidv4 } from "uuid";
+/** Simple UUID v4 substitute using crypto.randomUUID (available in all modern browsers). */
+const uuidv4 = () => crypto.randomUUID();
 
 const defaultArena: ArenaSystem = {
   id: "",

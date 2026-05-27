@@ -98,6 +98,11 @@ export class BeybladeGameRenderer {
   private controlledBeyId: string | null = null;
   private cameraInitialized = false;
 
+  // #29: Client-side prediction override — maps beyId → {x, y} in physics coords.
+  // Set each rAF frame by useColyseus prediction loop; used in place of interpolator
+  // for the controlled bey to give sub-RTT input feel.
+  private predictionOverride: Map<string, { x: number; y: number }> = new Map();
+
   // Feature layer renderer (obstacles / pits / portals / turrets / water / loops / projectiles).
   private featureRenderer: FeatureRenderer | null = null;
 
@@ -134,6 +139,15 @@ export class BeybladeGameRenderer {
   // R4: skip shape redraw when spin% bucket hasn't changed (buckets: full/half/quarter/low/critical)
   private _lastSpins: Map<string, number> = new Map();
   private splitBodySprites: Map<string, PIXI.Graphics> = new Map(); // 6.16 partner half
+
+  // Overhaul visual-effect rings (per beyblade)
+  private stanceRings:      Map<string, PIXI.Graphics> = new Map(); // stance arc border
+  private gimmickRings:     Map<string, PIXI.Graphics> = new Map(); // gimmick loaded/active ring
+  private desperationRings: Map<string, PIXI.Graphics> = new Map(); // red ring at <15% spin
+  private bitbeastHalos:    Map<string, PIXI.Graphics> = new Map(); // gold halo while bitBeastActive
+  private furyRings:        Map<string, PIXI.Graphics> = new Map();  // gold aura ring when furyGauge>=100
+  private statusIconTexts:  Map<string, PIXI.Text>     = new Map(); // status emoji icon above bey
+  private furyBars:         Map<string, PIXI.Graphics> = new Map();  // thin fury bar below spin bar
 
   // 6.13 — DetachedBody sprites (projectile / mini_bey / fragment)
   private detachedBodySprites: Map<string, PIXI.Graphics> = new Map();
@@ -195,6 +209,9 @@ export class BeybladeGameRenderer {
   private arenaFloorRT: PIXI.RenderTexture | null = null;
   private arenaFloorSprite: PIXI.Sprite | null = null;
   private arenaFloorTiltAngle = -9999; // sentinel — force first bake
+  // #13: dirty-flag invalidation — non-tilt rebakes rate-limited to 500ms
+  private arenaFloorDirty = true;
+  private arenaFloorLastBakeMs = 0;
 
   // R2: Shared 4×4 white-circle texture for dot particles. All dot-sprites share
   // the same base texture so PixiJS batches them into a single draw call.
@@ -325,15 +342,26 @@ export class BeybladeGameRenderer {
     if (gameState?.arena && this.arenaRadius === 0) {
       this.buildArena(gameState);
       this.bakeArenaFloor();
+      this.arenaFloorDirty = false;
+      this.arenaFloorLastBakeMs = Date.now();
     }
 
     this.updateWorldBackground(gameState);
 
-    // R3: re-bake if tiltAngle changed
+    // R3 / #13: re-bake if tiltAngle changed (immediate) or dirty flag set (rate-limited to 500ms)
     const currentTilt = (gameState?.arena as any)?.tiltAngle ?? 0;
     if (this.arenaRadius > 0 && currentTilt !== this.arenaFloorTiltAngle) {
       this.bakeArenaFloor();
       this.arenaFloorTiltAngle = currentTilt as number;
+      this.arenaFloorDirty = false;
+      this.arenaFloorLastBakeMs = Date.now();
+    } else if (this.arenaFloorDirty && this.arenaRadius > 0) {
+      const nowMs = Date.now();
+      if (nowMs - this.arenaFloorLastBakeMs >= 500) {
+        this.bakeArenaFloor();
+        this.arenaFloorDirty = false;
+        this.arenaFloorLastBakeMs = nowMs;
+      }
     }
 
     this.updateCameraTarget(beyblades);
@@ -402,9 +430,12 @@ export class BeybladeGameRenderer {
     this.worldRoot.scale.set(s);
     const cx_worldPx = this.world.camera.x_cm * PX_PER_CM_BASE;
     const cy_worldPx = this.world.camera.y_cm * PX_PER_CM_BASE;
+
+    // ── Camera Shake (WorldTransform absorbs shake) ────────────────────────────
+    const shake = this.world.getShakeOffset();
     this.worldRoot.position.set(
-      this.app.screen.width  / 2 - cx_worldPx * s,
-      this.app.screen.height / 2 - cy_worldPx * s,
+      this.app.screen.width  / 2 - cx_worldPx * s + shake.x,
+      this.app.screen.height / 2 - cy_worldPx * s + shake.y,
     );
   }
 
@@ -412,6 +443,20 @@ export class BeybladeGameRenderer {
   setControlledBeyblade(id: string | null) {
     this.controlledBeyId = id;
     this.cameraInitialized = false; // snap to new target on next frame
+  }
+
+  /**
+   * #29: Client-side prediction — called by the useColyseus rAF prediction loop
+   * every frame with the locally-predicted physics-space position.  The renderer
+   * substitutes this for the interpolator output on the controlled bey only.
+   */
+  setPredictedPosition(beyId: string, x: number, y: number): void {
+    this.predictionOverride.set(beyId, { x, y });
+  }
+
+  /** Clear the predicted position for a bey (e.g. when the bey is eliminated). */
+  clearPredictedPosition(beyId: string): void {
+    this.predictionOverride.delete(beyId);
   }
 
   /** Phase 27: apply tier values from beyGhosts so containers fade to correct opacity. */
@@ -460,9 +505,12 @@ export class BeybladeGameRenderer {
       } else {
         // Auto-rotate fallback driven by arena config.
         if (arena.autoRotate && typeof arena.rotationSpeed === "number") {
-          this.arenaRotationSpeedRadPerS = (arena.rotationSpeed * Math.PI) / 180;
+          const newSpeed = (arena.rotationSpeed * Math.PI) / 180;
+          if (newSpeed !== this.arenaRotationSpeedRadPerS) this.arenaFloorDirty = true;
+          this.arenaRotationSpeedRadPerS = newSpeed;
           this.arenaRotationDirection = arena.rotationDirection === "counterclockwise" ? -1 : 1;
         } else if (!arena.autoRotate) {
+          if (this.arenaRotationSpeedRadPerS !== 0) this.arenaFloorDirty = true;
           this.arenaRotationSpeedRadPerS = 0;
         }
         this.arenaRotationRad += this.arenaRotationSpeedRadPerS * this.arenaRotationDirection * dt;
@@ -950,6 +998,14 @@ export class BeybladeGameRenderer {
         if (split) { this.beybladeLayer.removeChild(split); this.splitBodySprites.delete(id); }
         this.flashGraphics.delete(id);
         this.beyVisualOverrides.delete(id); // H3: clean up any pending visual override
+        // Overhaul per-bey effect cleanup
+        this.stanceRings.delete(id);
+        this.gimmickRings.delete(id);
+        this.desperationRings.delete(id);
+        this.bitbeastHalos.delete(id);
+        this.furyRings.delete(id);
+        this.furyBars.delete(id);
+        this.statusIconTexts.delete(id);
         this.interpolator.remove(id);
       }
     });
@@ -1027,6 +1083,39 @@ export class BeybladeGameRenderer {
     this.motionBlurTrails.set(id, []);
     this.motionBlurGraphics.set(id, []);
 
+    // Overhaul per-bey effect graphics (added to container so they move with the bey)
+    const stanceRing = new PIXI.Graphics();
+    container.addChild(stanceRing);
+    this.stanceRings.set(id, stanceRing);
+
+    const gimmickRing = new PIXI.Graphics();
+    container.addChild(gimmickRing);
+    this.gimmickRings.set(id, gimmickRing);
+
+    const desperationRing = new PIXI.Graphics();
+    container.addChild(desperationRing);
+    this.desperationRings.set(id, desperationRing);
+
+    const bitbeastHalo = new PIXI.Graphics();
+    container.addChildAt(bitbeastHalo, 0); // behind sprite
+    this.bitbeastHalos.set(id, bitbeastHalo);
+
+    const furyRing = new PIXI.Graphics();
+    container.addChild(furyRing);
+    this.furyRings.set(id, furyRing);
+
+    const furyBar = new PIXI.Graphics();
+    container.addChild(furyBar);
+    this.furyBars.set(id, furyBar);
+
+    const statusIcon = new PIXI.Text({
+      text: "",
+      style: { fontSize: 14, fontFamily: "sans-serif" },
+    });
+    statusIcon.anchor.set(0.5, 1);
+    container.addChild(statusIcon);
+    this.statusIconTexts.set(id, statusIcon);
+
     this.beybladeLayer.addChild(container);
     this.beybladeContainers.set(id, container);
   }
@@ -1095,9 +1184,11 @@ export class BeybladeGameRenderer {
     const r = (beyblade.actualSize || 48) / 2;
 
     // Use interpolated position/angle for smooth motion; fall back to raw server values.
+    // #29: For the controlled bey, prefer client-side predicted position (sub-RTT feel).
     const interp = this.interpolator.getInterpolated(id, performance.now());
-    const interpX = interp?.x ?? beyblade.x;
-    const interpY = interp?.y ?? beyblade.y;
+    const predicted = (id === this.controlledBeyId) ? this.predictionOverride.get(id) : undefined;
+    const interpX = predicted?.x ?? interp?.x ?? beyblade.x;
+    const interpY = predicted?.y ?? interp?.y ?? beyblade.y;
     const interpAngle = interp?.angle ?? beyblade.rotation;
 
     // Map physics coords → screen coords using the stored physics scale
@@ -1529,6 +1620,130 @@ export class BeybladeGameRenderer {
 
     // Label position
     label.y = barY - 4;
+
+    // ── Fury bar (thin gold ring below spin bar) ───────────────────────────────
+    {
+      const furyBar = this.furyBars.get(id);
+      const furyGauge = (beyblade as any).furyGauge as number ?? 0;
+      if (furyBar) {
+        furyBar.clear();
+        const furyFrac = Math.min(1, furyGauge / 100);
+        const fbY = barY + barHeight + 2 + 3 + 2; // below spin bar
+        furyBar.rect(-barWidth / 2, fbY, barWidth, 2);
+        furyBar.fill({ color: 0x222200 });
+        if (furyFrac > 0) {
+          furyBar.rect(-barWidth / 2, fbY, barWidth * furyFrac, 2);
+          const furyColor = furyGauge >= 100
+            ? (0.5 + 0.5 * Math.sin(Date.now() / 120)) > 0.5 ? 0xffd700 : 0xffaa00
+            : 0xaa8800;
+          furyBar.fill({ color: furyColor });
+        }
+      }
+    }
+
+    // ── Stance arc ring (thin 1-px arc while activeStance is held) ───────────
+    {
+      const stanceRing = this.stanceRings.get(id);
+      const activeStance = (beyblade as any).activeStance as string ?? "";
+      if (stanceRing) {
+        stanceRing.clear();
+        if (activeStance && activeStance !== "none") {
+          const stanceColor =
+            activeStance === "aggressive" ? 0xff4400 :
+            activeStance === "defensive"  ? 0x0088ff :
+            activeStance === "stamina"    ? 0x00ff88 : 0xffffff;
+          stanceRing.circle(0, 0, r * 1.55);
+          stanceRing.stroke({ color: stanceColor, width: 1.5, alpha: 0.7 });
+        }
+      }
+    }
+
+    // ── Gimmick loaded/active ring ─────────────────────────────────────────────
+    {
+      const gimmickRing = this.gimmickRings.get(id);
+      const gimmickLoadedMode = (beyblade as any).gimmickLoadedMode as boolean ?? false;
+      if (gimmickRing) {
+        gimmickRing.clear();
+        const gColor = gimmickLoadedMode ? 0xffd700 : 0x3399ff;
+        const pulse = 0.55 + 0.25 * Math.sin(Date.now() / 200);
+        gimmickRing.circle(0, 0, r * 1.7);
+        gimmickRing.stroke({ color: gColor, width: 1, alpha: pulse * 0.6 });
+      }
+    }
+
+    // ── Desperation ring (red pulsing outer ring when spin < 15%) ─────────────
+    {
+      const desperationRing = this.desperationRings.get(id);
+      const spinFracDesp = beyblade.maxSpin > 0 ? beyblade.spin / beyblade.maxSpin : 0;
+      if (desperationRing) {
+        desperationRing.clear();
+        if (spinFracDesp < 0.15 && beyblade.isActive) {
+          const despPulse = 0.5 + 0.5 * Math.sin(Date.now() / 120);
+          desperationRing.circle(0, 0, r * 1.65);
+          desperationRing.stroke({ color: 0xff2222, width: 2, alpha: 0.5 + despPulse * 0.5 });
+        }
+      }
+    }
+
+    // ── Bit-beast golden halo (behind sprite, drawn while bitBeastActive) ──────
+    {
+      const bitbeastHalo = this.bitbeastHalos.get(id);
+      const bitBeastActive = (beyblade as any).bitBeastActive as boolean ?? false;
+      if (bitbeastHalo) {
+        bitbeastHalo.clear();
+        if (bitBeastActive) {
+          const haloPulse = 0.3 + 0.25 * Math.sin(Date.now() / 150);
+          bitbeastHalo.circle(0, 0, r * 1.4);
+          bitbeastHalo.fill({ color: 0xffd700, alpha: 0.18 + haloPulse * 0.10 });
+          bitbeastHalo.circle(0, 0, r * 1.4);
+          bitbeastHalo.stroke({ color: 0xffee55, width: 2, alpha: 0.45 + haloPulse * 0.35 });
+        }
+      }
+    }
+
+    // ── Fury aura ring (gold ring when furyGauge >= 100, 2.5D gets extra glow) ─
+    {
+      const furyRing = this.furyRings.get(id);
+      const furyGaugeFull = ((beyblade as any).furyGauge as number ?? 0) >= 100;
+      if (furyRing) {
+        furyRing.clear();
+        if (furyGaugeFull && beyblade.isActive) {
+          const furyPulse = 0.5 + 0.5 * Math.sin(Date.now() / 90);
+          furyRing.circle(0, 0, r * 1.85);
+          furyRing.stroke({ color: 0xffd700, width: this.is25D ? 3 : 2, alpha: 0.4 + furyPulse * 0.5 });
+          if (this.is25D) {
+            furyRing.circle(0, 0, r * 1.95);
+            furyRing.stroke({ color: 0xffee99, width: 1, alpha: 0.2 + furyPulse * 0.25 });
+          }
+        }
+      }
+    }
+
+    // ── Status effect icon (emoji above bey, blinks when statusTimer < 1s) ─────
+    {
+      const statusIcon = this.statusIconTexts.get(id);
+      const statusEffect = (beyblade as any).statusEffect as string ?? "";
+      const statusTimer  = (beyblade as any).statusTimer  as number ?? 0;
+      if (statusIcon) {
+        if (statusEffect) {
+          const iconMap: Record<string, string> = {
+            burning:   "🔥",
+            frozen:    "❄️",
+            paralyzed: "⚡",
+            corroded:  "☠️",
+            confused:  "❓",
+          };
+          statusIcon.text = iconMap[statusEffect] ?? "?";
+          statusIcon.y = -r - 38;
+          // Blink in last second
+          const shouldBlink = statusTimer < 1 && statusTimer > 0;
+          statusIcon.visible = !shouldBlink || (Math.sin(Date.now() / 120) > 0);
+        } else {
+          statusIcon.text = "";
+          statusIcon.visible = false;
+        }
+      }
+    }
   }
 
   // ─── DetachedBody rendering (6.13 / 6.14) ───────────────────────────────────
@@ -1765,6 +1980,154 @@ export class BeybladeGameRenderer {
       const c = this.beybladeContainers.get(data.beyId);
       if (c) c.visible = true;
     }, restoreMs);
+  }
+
+  // ── Overhaul: New event handler stubs ─────────────────────────────────────────
+
+  /** Called when a tier-3 clash timing window opens (show shrinking ring). */
+  public onClashTimingStart(data: { id1: string; id2: string; windowMs: number }): void {
+    for (const beyId of [data.id1, data.id2]) {
+      const container = this.beybladeContainers.get(beyId);
+      if (!container) continue;
+      const ring = new PIXI.Graphics();
+      const beySprite = container.children[0] as PIXI.Sprite | undefined;
+      const radius = (beySprite?.width ?? 32) * 0.8;
+      container.addChild(ring);
+      const startMs = performance.now();
+      const animate = () => {
+        const elapsed = performance.now() - startMs;
+        const frac = Math.max(0, 1 - elapsed / data.windowMs);
+        ring.clear();
+        if (frac > 0) {
+          ring.circle(0, 0, radius * (1 + frac));
+          ring.stroke({ color: 0xffffff, alpha: 0.5 * frac, width: 2 });
+          requestAnimationFrame(animate);
+        } else {
+          container.removeChild(ring);
+          ring.destroy();
+        }
+      };
+      requestAnimationFrame(animate);
+    }
+  }
+
+  /** Called when a clash timing result arrives (show "Perfect!" text). */
+  public onClashTimingResult(data: { id1: string; id2: string; p1Perfect: boolean; p2Perfect: boolean }): void {
+    const entries: Array<{ beyId: string; perfect: boolean }> = [
+      { beyId: data.id1, perfect: data.p1Perfect },
+      { beyId: data.id2, perfect: data.p2Perfect },
+    ];
+    for (const { beyId, perfect } of entries) {
+      if (!perfect) continue;
+      const container = this.beybladeContainers.get(beyId);
+      if (!container) continue;
+      const text = new PIXI.Text({ text: "Perfect!", style: { fontSize: 14, fill: 0xffd700, fontWeight: "bold", dropShadow: { color: 0x000000, blur: 3, distance: 1 } } });
+      text.anchor.set(0.5, 1);
+      text.y = -36;
+      this.particleLayer.addChild(text);
+      text.x = container.x;
+      text.y = container.y - 36;
+      text.scale.set(0.1);
+      const startMs = performance.now();
+      const dur = 600;
+      const animate = () => {
+        const elapsed = performance.now() - startMs;
+        const frac = Math.min(1, elapsed / dur);
+        text.scale.set(0.1 + 0.9 * frac);
+        text.alpha = frac < 0.7 ? 1 : 1 - (frac - 0.7) / 0.3;
+        if (elapsed < dur) requestAnimationFrame(animate);
+        else { this.particleLayer.removeChild(text); text.destroy(); }
+      };
+      requestAnimationFrame(animate);
+    }
+  }
+
+  /** Called when a status condition is applied to a bey. */
+  public onStatusApplied(data: { beyId: string; status: string; durationS: number }): void {
+    const container = this.beybladeContainers.get(data.beyId);
+    if (!container) return;
+    const ICONS: Record<string, string> = {
+      burning: "🔥", frozen: "❄️", paralyzed: "⚡", corroded: "☠️", confused: "❓",
+    };
+    const icon = ICONS[data.status] ?? "❓";
+    // Store on container so updateBey() can refresh it
+    (container as any).__statusIcon?.destroy();
+    const text = new PIXI.Text({ text: icon, style: { fontSize: 10 } });
+    text.anchor.set(0.5, 1);
+    text.x = 0;
+    text.y = -36;
+    container.addChild(text);
+    (container as any).__statusIcon = text;
+    (container as any).__statusEnd = performance.now() + data.durationS * 1000;
+  }
+
+  /** Called when fury gauge reaches 100 — pulse gold bar (HUD handles the bar; renderer can add VFX). */
+  public onFuryReady(_data: { beyId: string }): void {
+    // HUD bar pulses via React state; renderer can optionally add a glow
+  }
+
+  /** Called when fury is released — type-specific VFX flash. */
+  public onFuryReleased(data: { beyId: string; type: string }): void {
+    const container = this.beybladeContainers.get(data.beyId);
+    if (!container) return;
+    const COLOR_BY_TYPE: Record<string, number> = {
+      attack: 0xff4400, defense: 0x0088ff, stamina: 0x00ff88, balanced: 0xffd700,
+    };
+    const color = COLOR_BY_TYPE[data.type] ?? 0xffd700;
+    const flash = new PIXI.Graphics();
+    flash.circle(0, 0, 40);
+    flash.fill({ color, alpha: 0.6 });
+    this.beybladeLayer.addChild(flash);
+    flash.x = container.x;
+    flash.y = container.y;
+    const startMs = performance.now();
+    const animate = () => {
+      const frac = Math.min(1, (performance.now() - startMs) / 300);
+      flash.alpha = 0.6 * (1 - frac);
+      flash.scale.set(1 + frac);
+      if (frac < 1) requestAnimationFrame(animate);
+      else { this.beybladeLayer.removeChild(flash); flash.destroy(); }
+    };
+    requestAnimationFrame(animate);
+  }
+
+  /** Called when gimmick mode toggles (blue = active, gold = loaded). */
+  public onGimmickModeChanged(data: { beyId: string; loaded: boolean }): void {
+    const container = this.beybladeContainers.get(data.beyId);
+    if (!container) return;
+    (container as any).__gimmickMode = data.loaded ? "loaded" : "active";
+  }
+
+  /** Called when a bey drops below 15% spin (desperation). */
+  public onDesperationActive(_data: { beyId: string }): void {
+    // Visual ring is drawn in updateBey() via statusEffect / spin fraction
+  }
+
+  /** Called when bit-beast special expires. */
+  public onBitBeastHide(_data: { beyId: string }): void {
+    // Halo is drawn while bitBeastActive in updateBey()
+  }
+
+  /** Called when a bey accessory procs (e.g. spin_sash). */
+  public onAccessoryActivated(data: { beyId: string; accessoryId: string }): void {
+    const container = this.beybladeContainers.get(data.beyId);
+    if (!container) return;
+    // Brief gold shimmer flash
+    const flash = new PIXI.Graphics();
+    flash.circle(0, 0, 32);
+    flash.fill({ color: 0xffd700, alpha: 0.7 });
+    this.beybladeLayer.addChild(flash);
+    flash.x = container.x;
+    flash.y = container.y;
+    const startMs = performance.now();
+    const animate = () => {
+      const frac = Math.min(1, (performance.now() - startMs) / 250);
+      flash.alpha = 0.7 * (1 - frac);
+      if (frac < 1) requestAnimationFrame(animate);
+      else { this.beybladeLayer.removeChild(flash); flash.destroy(); }
+    };
+    requestAnimationFrame(animate);
+    void data.accessoryId;
   }
 
   private renderMeteorLandingZone(): void {
@@ -2136,6 +2499,8 @@ export class BeybladeGameRenderer {
    * and is drawn every frame by renderArenaEffectOverlay().
    */
   public handleArenaEffect(phase: "start" | "end", effectType: string, durationTicks: number): void {
+    // #13: arena effects can change floor appearance — mark dirty for rebake
+    this.arenaFloorDirty = true;
     if (phase === "end") {
       this.activeArenaEffect = null;
       this.arenaEffectOverlay?.clear();

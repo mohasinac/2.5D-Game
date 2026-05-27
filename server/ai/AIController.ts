@@ -39,6 +39,9 @@ interface BeybladeSnapshot {
   comboSlots?: AIComboSlot[];
   beyTiltAngle?: number;       // degrees 0–360: 0=vertical, 90=on-side, 180=on-back, 270=on-head, 360=full rotation
   specialMoveActive?: boolean; // true while opponent's special is executing
+  // #14: Obstacle avoidance
+  obstacles?: Array<{ x: number; y: number; radius: number }>;
+  pits?: Array<{ x: number; y: number; radius: number }>;
 }
 
 export interface AIPlayerInput {
@@ -271,7 +274,9 @@ export class AIController {
         const normY = dy / dist;
 
         if (dist > 120) {
-          this.applyMoveDir(input, normX, normY);
+          // #14: Hard — obstacle avoidance when approaching
+          const dir = this.avoidObstacles(ai, normX, normY);
+          this.applyMoveDir(input, dir.x, dir.y);
         } else {
           const perpX = -normY;
           const perpY = normX;
@@ -359,16 +364,20 @@ export class AIController {
 
         if (dist > 140) {
           // Approach from the side that pushes opponent toward the wall.
+          let preferX = normX;
+          let preferY = normY;
           if (oppDistFromCenter > r * 0.45) {
             const pushNormX = oppDx / Math.max(oppDistFromCenter, 1);
             const pushNormY = oppDy / Math.max(oppDistFromCenter, 1);
             const approachX = nearest.x - pushNormX * 80 - ai.x;
             const approachY = nearest.y - pushNormY * 80 - ai.y;
             const aLen = Math.sqrt(approachX * approachX + approachY * approachY) || 1;
-            this.applyMoveDir(input, approachX / aLen, approachY / aLen);
-          } else {
-            this.applyMoveDir(input, normX, normY);
+            preferX = approachX / aLen;
+            preferY = approachY / aLen;
           }
+          // #14: Hell — obstacle avoidance when approaching
+          const dir = this.avoidObstacles(ai, preferX, preferY);
+          this.applyMoveDir(input, dir.x, dir.y);
         } else {
           // Tight circle-strafe.
           const perpX = -normY;
@@ -452,6 +461,56 @@ export class AIController {
   }
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
+
+  // #14: Obstacle avoidance — scan a ray ahead of the AI bey for obstacles/pits.
+  // Returns true if the path at (dirX, dirY) is blocked within `distance` units.
+  private scanAhead(
+    ai: BeybladeSnapshot,
+    dirX: number,
+    dirY: number,
+    distance = 140,
+  ): boolean {
+    const obstacles = [...(ai.obstacles ?? []), ...(ai.pits ?? [])];
+    if (obstacles.length === 0) return false;
+    const AI_RADIUS = 24; // physics px
+    for (const obs of obstacles) {
+      // Check closest point on segment [ai → ai+dir*distance] to obs center.
+      const toCx = obs.x - ai.x;
+      const toCy = obs.y - ai.y;
+      const t = Math.max(0, Math.min(distance, toCx * dirX + toCy * dirY));
+      const closestX = dirX * t;
+      const closestY = dirY * t;
+      const dx = toCx - closestX;
+      const dy = toCy - closestY;
+      const distSq = dx * dx + dy * dy;
+      const minDist = obs.radius + AI_RADIUS;
+      if (distSq < minDist * minDist) return true;
+    }
+    return false;
+  }
+
+  /** Given a preferred move direction, rotate it up to 4×45° to avoid obstacles.
+   *  Returns the first non-blocked direction, or the original if all are blocked. */
+  private avoidObstacles(
+    ai: BeybladeSnapshot,
+    preferX: number,
+    preferY: number,
+    distance = 140,
+  ): { x: number; y: number } {
+    if (!this.scanAhead(ai, preferX, preferY, distance)) return { x: preferX, y: preferY };
+    const baseAngle = Math.atan2(preferY, preferX);
+    for (let step = 1; step <= 4; step++) {
+      const angle = baseAngle + (step * Math.PI) / 4;
+      const tx = Math.cos(angle);
+      const ty = Math.sin(angle);
+      if (!this.scanAhead(ai, tx, ty, distance)) return { x: tx, y: ty };
+      const angle2 = baseAngle - (step * Math.PI) / 4;
+      const tx2 = Math.cos(angle2);
+      const ty2 = Math.sin(angle2);
+      if (!this.scanAhead(ai, tx2, ty2, distance)) return { x: tx2, y: ty2 };
+    }
+    return { x: preferX, y: preferY };
+  }
 
   private getNearestOpponent(ai: BeybladeSnapshot, opponents: BeybladeSnapshot[]): BeybladeSnapshot | null {
     if (opponents.length === 0) return null;

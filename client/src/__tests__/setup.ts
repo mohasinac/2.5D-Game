@@ -235,14 +235,46 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 // ─── RAF / cancelAnimationFrame stubs ────────────────────────────────────────
+//
+// The mock calls the callback ONCE synchronously at depth 0 only.
+// Recursive rAF calls (e.g. prediction loops) are queued but not auto-fired,
+// preventing infinite call-stack overflows in tests.
+// Call flushRaf() from a test to advance one generation of pending callbacks.
 
 let rafId = 0;
-global.requestAnimationFrame = vi.fn((cb) => { ++rafId; cb(0); return rafId; });
-global.cancelAnimationFrame = vi.fn();
+let rafCallDepth = 0;
+const rafQueue = new Map<number, FrameRequestCallback>();
+
+export function flushRaf(timestampMs = 0): void {
+  const callbacks = [...rafQueue.values()];
+  rafQueue.clear();
+  for (const cb of callbacks) {
+    rafCallDepth++;
+    cb(timestampMs);
+    rafCallDepth--;
+  }
+}
+
+global.requestAnimationFrame = vi.fn((cb: FrameRequestCallback) => {
+  ++rafId;
+  if (rafCallDepth === 0) {
+    // Top-level call: invoke synchronously so existing tests (init, one-shot rAF) still work.
+    rafCallDepth++;
+    cb(0);
+    rafCallDepth--;
+  } else {
+    // Re-entrant call from inside a rAF callback: queue without firing.
+    rafQueue.set(rafId, cb);
+  }
+  return rafId;
+});
+global.cancelAnimationFrame = vi.fn((id: number) => { rafQueue.delete(id); });
 
 // ─── Reset all mocks between tests ───────────────────────────────────────────
 
 beforeEach(() => {
   vi.clearAllMocks();
   rafId = 0;
+  rafCallDepth = 0;
+  rafQueue.clear();
 });

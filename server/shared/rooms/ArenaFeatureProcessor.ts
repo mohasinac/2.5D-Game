@@ -9,7 +9,7 @@ import * as Matter from "matter-js";
 import type { Beyblade, GameState } from "../../rooms/schema/GameState";
 import type { ArenaConfig, FloorHazardZoneConfig } from "../../types/shared";
 import { wallBowlForce } from "../physics/ArenaUtils";
-import { dispatchBehaviorRef, type MechanicContext } from "../../physics/MechanicRegistry";
+import { dispatchBehaviorRef, getGimmickSynergyMultiplier, type MechanicContext } from "../../physics/MechanicRegistry";
 
 export interface ArenaPhysicsBridge {
   checkLoopCollision(id: string, loops: any[]): {
@@ -83,13 +83,25 @@ function executeBehavior(
     case behaviorId.startsWith("transform."):
     case behaviorId.startsWith("spawn."):
     case behaviorId.startsWith("arena."): {
+      // #19: Extract gimmickId (last segment of behaviorId) for synergy lookup
+      const gimmickIdParts = behaviorId.split(".");
+      const gimmickId = gimmickIdParts[gimmickIdParts.length - 1];
+
       for (const bey of beys) {
         const beySchema = beybladeSchema?.get(bey.id);
         if (!beySchema) continue;
+
+        // #19: Gimmick × Part Material Synergy — wrap applyForce to multiply by synergy factor
+        const synergyMult = getGimmickSynergyMultiplier(gimmickId, beySchema.activeMaterialId ?? "");
+        const baseApplyForce = physics.applyForce.bind(physics);
+        const synergyApplyForce = synergyMult !== 1.0
+          ? (id: string, fx: number, fy: number) => baseApplyForce(id, fx * synergyMult, fy * synergyMult)
+          : baseApplyForce;
+
         const ctx: MechanicContext = {
           bey: beySchema,
           dt: 1 / 60,
-          applyForce: physics.applyForce.bind(physics),
+          applyForce: synergyApplyForce,
           applyKnockback: physics.applyKnockback.bind(physics),
           setVelocity: physics.setVelocity?.bind(physics),
           getPosition: physics.getPosition?.bind(physics),
@@ -376,6 +388,20 @@ export function processFloorHazardZones(
       case "lava":
         beyblade.health -= (zone.damagePerTick ?? 5) * intensity;
         beyblade.spin = Math.max(0, beyblade.spin - (beyblade.maxSpin * (zone.spinDecayMult ?? 1.5) - beyblade.maxSpin) * dt);
+        // ── Element Status: burning ───────────────────────────────────────────
+        if (!beyblade.statusEffect) {
+          beyblade.statusEffect = "burning";
+          beyblade.statusTimer = 5;
+        }
+        break;
+
+      case "fire" as string:
+        // Fire hazard: lighter damage + burning status
+        beyblade.health -= (zone.damagePerTick ?? 3) * intensity;
+        if (!beyblade.statusEffect) {
+          beyblade.statusEffect = "burning";
+          beyblade.statusTimer = 5;
+        }
         break;
 
       case "electric": {
@@ -386,6 +412,11 @@ export function processFloorHazardZones(
           beyblade.controlLockSource = "electric";
         }
         events.electricDisable = { playerId: beyblade.id, ticks };
+        // ── Element Status: paralyzed ─────────────────────────────────────────
+        if (!beyblade.statusEffect) {
+          beyblade.statusEffect = "paralyzed";
+          beyblade.statusTimer = 4;
+        }
         break;
       }
 
@@ -412,6 +443,11 @@ export function processFloorHazardZones(
 
       case "ice":
         physics.applyWaterResistance(beyblade.id, zone.frictionMultiplier ?? 0.05);
+        // ── Element Status: frozen ────────────────────────────────────────────
+        if (!beyblade.statusEffect) {
+          beyblade.statusEffect = "frozen";
+          beyblade.statusTimer = 3;
+        }
         break;
 
       case "mud":
@@ -430,6 +466,27 @@ export function processFloorHazardZones(
       case "void":
         // Instant ring-out zone — set isRingOut
         beyblade.isRingOut = true;
+        // ── Element Status: confused ──────────────────────────────────────────
+        if (!beyblade.statusEffect) {
+          beyblade.statusEffect = "confused";
+          beyblade.statusTimer = 3;
+        }
+        break;
+
+      case "dark" as string:
+        if (!beyblade.statusEffect) {
+          beyblade.statusEffect = "confused";
+          beyblade.statusTimer = 3;
+        }
+        break;
+
+      case "acid" as string:
+        beyblade.health -= (zone.damagePerTick ?? 2) * intensity;
+        // ── Element Status: corroded ──────────────────────────────────────────
+        if (!beyblade.statusEffect) {
+          beyblade.statusEffect = "corroded";
+          beyblade.statusTimer = 8;
+        }
         break;
 
       case "poison":
@@ -1353,6 +1410,49 @@ export function processTiltMechanic(
     bey.effectiveGravity = 9.8 * gravScale;
     if (gravScale < 0.3) {
       bey.spinDecayRate *= 0.5;
+    }
+  }
+}
+
+// ── #24: Boost Pad Processor (F-Zero GBA style) ─────────────────────────────
+
+/**
+ * Process boost pads: AABB overlap check → applyForce along angleDeg.
+ * Per-pad cooldown prevents spam activation for the same bey.
+ * Returns a list of activation events for broadcasting.
+ */
+export function processBoostPads(
+  beyblade: Beyblade,
+  boostPads: any[],
+  padCooldowns: Map<string, number>,
+  physics: ArenaPhysicsBridge,
+  broadcast: (type: string, payload: unknown) => void,
+): void {
+  if (!boostPads || boostPads.length === 0) return;
+  const now = Date.now();
+
+  for (const pad of boostPads) {
+    if (pad.controlledBySwitchId) continue; // skipped when off (not wired here)
+
+    const cooldownMs = pad.cooldownMs ?? 500;
+    const coolKey = `${pad.id}:${beyblade.id}`;
+    if ((padCooldowns.get(coolKey) ?? 0) > now) continue;
+
+    // Pad dimensions in pixels (1 cm = 24 px)
+    const px = (pad.x_cm ?? 0) * 24;
+    const py = (pad.y_cm ?? 0) * 24;
+    const hw = ((pad.width_cm ?? 10) * 24) / 2;
+    const hh = ((pad.height_cm ?? 5) * 24) / 2;
+
+    const bx = beyblade.x, by = beyblade.y;
+
+    // AABB overlap test
+    if (bx >= px - hw && bx <= px + hw && by >= py - hh && by <= py + hh) {
+      const angleRad = ((pad.angleDeg ?? 0) * Math.PI) / 180;
+      const force = pad.forceMagnitude ?? 0.01;
+      physics.applyForce(beyblade.id, Math.cos(angleRad) * force, Math.sin(angleRad) * force);
+      padCooldowns.set(coolKey, now + cooldownMs);
+      broadcast("boost-pad-hit", { beyId: beyblade.id, padId: pad.id, forceMagnitude: force });
     }
   }
 }

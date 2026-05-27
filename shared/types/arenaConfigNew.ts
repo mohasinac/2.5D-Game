@@ -2906,6 +2906,28 @@ export interface SpinZoneConfig {
   behaviorParams?: Record<string, unknown>;
 }
 
+// ─── Boost Pad (#24 — F-Zero GBA) ─────────────────────────────────────────
+// Directional speed strip that launches beyblades along angleDeg when driven over.
+
+export interface BoostPadConfig {
+  id: string;
+  /** Center X in cm from arena center. */
+  x_cm: number;
+  /** Center Y in cm from arena center. */
+  y_cm: number;
+  /** Width of the pad in cm. */
+  width_cm: number;
+  /** Height of the pad in cm. */
+  height_cm: number;
+  /** Direction of the boost force (0=right, 90=down, 180=left, 270=up). */
+  angleDeg: number;
+  /** Magnitude of the applied impulse force. */
+  forceMagnitude: number;
+  /** Cooldown per-pad in ms (default 500ms) before it can activate again for the same bey. */
+  cooldownMs?: number;
+  controlledBySwitchId?: string;
+}
+
 // ─── Bump (new in this overhaul) ───────────────────────────────────────────
 // Small raised feature that adds vertical impulse + small lateral recoil on contact.
 
@@ -3720,6 +3742,7 @@ export interface ArenaConfig {
   // ===== NEW FEATURE FAMILY (this overhaul) =====
   spinZones?: SpinZoneConfig[];           // Circular zones that impart orbit or spin
   bumps?: BumpConfig[];                   // Raised features that pop beys vertically
+  boostPads?: BoostPadConfig[];           // Directional speed strips (F-Zero GBA style)
   directionalZones?: DirectionalZoneConfig[]; // Wind/tornado/vortex/updraft zones (Phase ZP)
 
   // ── BX / Gen4 features ──────────────────────────────────────────────────────

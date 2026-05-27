@@ -15,7 +15,7 @@ interface ServerSettings {
 export function GameSelectPage() {
   const { setGameMode } = useGame();
   const [srvSettings, setSrvSettings] = useState<ServerSettings>({
-    enableAI: true,
+    enableAI: false,   // safe default — Firestore settings/game doc enables it
     enableTournament: false,
     maintenanceMode: false,
     serverMessage: "",

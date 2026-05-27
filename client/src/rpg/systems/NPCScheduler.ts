@@ -1,8 +1,9 @@
 import * as PIXI from "pixi.js";
 import type { NPC, RPGMap, TileCoord, FacingDirection, TimeSlot } from "../data/schemas";
-import { tileCenterWorld, tilesEqual } from "../utils/tileUtils";
+import { tileCenterWorld, tilesEqual, adjacentTile as adjTile } from "../utils/tileUtils";
 import { TILE_SIZE, NPC_PATROL_PAUSE_MS } from "../constants/rpgConstants";
 import type { SpriteAnimationSystem, CharacterSprite } from "../engine/SpriteAnimationSystem";
+import type { CollisionSystem } from "../engine/CollisionSystem";
 
 interface LiveNPC {
   def: NPC;
@@ -16,10 +17,22 @@ interface LiveNPC {
   bubble?: PIXI.Text;
   bubbleBaseY?: number;
   bubbleVisible?: boolean;
+  // #16: Terror radius
+  warningBubble?: PIXI.Text;
+  warningLevel?: "low" | "high" | "none";
+  // #18: BFS chase pathfinding
+  chaseMode?: boolean;
+  chasePath?: TileCoord[];
+  chasePathIndex?: number;
+  chaseRecomputeMs?: number;
+  chaseMoveTimer?: number; // ms accumulator for tile-step movement during chase
 }
 
 /** Callback fired when a chaser NPC enters catchRadius of the player. */
 export type NPCCatchCallback = (npcId: string, catchEventId: string) => void;
+
+/** #16: Terror radius warning callback — fired when proximity changes. */
+export type NPCWarningCallback = (npcId: string, intensity: "low" | "high" | "none") => void;
 
 export class NPCScheduler {
   private liveNPCs: Map<string, LiveNPC> = new Map();
@@ -29,6 +42,8 @@ export class NPCScheduler {
   private placeholderTexture: PIXI.Texture | null = null;
   private textureCache: Map<string, PIXI.Texture> = new Map();
   private bubbleElapsed: number = 0; // ms accumulator for bubble bob
+  // #18: collision system for BFS pathfinding
+  private collision?: CollisionSystem;
 
   // ── Chase / catch state ────────────────────────────────────────────────────
   /** Current player tile — updated every frame by PlayerController. */
@@ -37,9 +52,17 @@ export class NPCScheduler {
   private catchFiredIds: Set<string> = new Set();
   /** External callback that fires a StoryEvent when the player is caught. */
   private onNPCCatch?: NPCCatchCallback;
+  /** #16: Terror radius warning callback. */
+  private onNPCWarning?: NPCWarningCallback;
 
-  constructor(animSystem: SpriteAnimationSystem) {
+  constructor(animSystem: SpriteAnimationSystem, collision?: CollisionSystem) {
     this.animSystem = animSystem;
+    this.collision = collision;
+  }
+
+  /** #18: Wire in the collision system after construction (if not passed in ctor). */
+  setCollisionSystem(cs: CollisionSystem): void {
+    this.collision = cs;
   }
 
   getContainer(): PIXI.Container { return this.npcContainer; }
@@ -50,6 +73,11 @@ export class NPCScheduler {
    */
   setOnNPCCatch(cb: NPCCatchCallback): void {
     this.onNPCCatch = cb;
+  }
+
+  /** #16: Register terror radius warning callback. */
+  setOnNPCWarning(cb: NPCWarningCallback): void {
+    this.onNPCWarning = cb;
   }
 
   /**
@@ -120,11 +148,34 @@ export class NPCScheduler {
       bubble.zIndex = 10;
       this.npcContainer.addChild(bubble);
 
+      // #16: Terror radius "!" warning bubble (separate from dialogue bubble)
+      let warningBubble: PIXI.Text | undefined;
+      if (def.catchRadius) {
+        warningBubble = new PIXI.Text({
+          text: "!",
+          style: {
+            fontSize: 10,
+            fill: 0xff4400,
+            fontFamily: "monospace",
+            fontWeight: "bold",
+            dropShadow: { color: 0x000000, blur: 2, angle: Math.PI / 4, distance: 1 },
+          },
+        });
+        warningBubble.anchor.set(0.5, 1);
+        warningBubble.x = cs.container.x + 8;
+        warningBubble.y = cs.container.y - TILE_SIZE * 2;
+        warningBubble.visible = false;
+        warningBubble.alpha = 0;
+        warningBubble.zIndex = 11;
+        this.npcContainer.addChild(warningBubble);
+      }
+
       this.liveNPCs.set(def.id, {
         def, cs, tile: { ...spawnTile }, facing,
         patrolPath, patrolIndex: 0,
         patrolPauseTimer: 0, isPatrolling: false,
         bubble, bubbleBaseY, bubbleVisible: false,
+        warningBubble, warningLevel: "none",
       });
     }
   }
@@ -133,6 +184,7 @@ export class NPCScheduler {
     for (const live of this.liveNPCs.values()) {
       this.npcContainer.removeChild(live.cs.container);
       if (live.bubble) this.npcContainer.removeChild(live.bubble);
+      if (live.warningBubble) this.npcContainer.removeChild(live.warningBubble); // #16
     }
     this.liveNPCs.clear();
   }
@@ -142,7 +194,9 @@ export class NPCScheduler {
     const bob = Math.sin(this.bubbleElapsed / 400) * 2; // ±2px gentle bob
     for (const live of this.liveNPCs.values()) {
       this.animSystem.update(live.cs, deltaMS);
-      this.updatePatrol(live, deltaMS);
+      // #18: Chase takes priority over patrol when active
+      const inChase = this.updateChase(live, deltaMS);
+      if (!inChase) this.updatePatrol(live, deltaMS);
       this.checkCatch(live);
       // Keep bubble anchored above NPC sprite (which may move during patrol)
       if (live.bubble && live.bubbleVisible) {
@@ -150,24 +204,56 @@ export class NPCScheduler {
         live.bubbleBaseY = live.cs.container.y - TILE_SIZE * 1.6;
         live.bubble.y = live.bubbleBaseY + bob;
       }
+      // #16: Keep warning "!" bubble positioned above NPC
+      if (live.warningBubble && live.warningBubble.visible) {
+        live.warningBubble.x = live.cs.container.x + 8;
+        live.warningBubble.y = live.cs.container.y - TILE_SIZE * 2 + bob;
+        // Pulse alpha for high warning
+        if (live.warningLevel === "high") {
+          live.warningBubble.alpha = 0.6 + 0.4 * Math.sin(this.bubbleElapsed / 150);
+        }
+      }
     }
   }
 
   /**
-   * Chase / catch detection.
+   * Chase / catch detection + #16 terror radius warnings.
    * Uses Chebyshev (chessboard) distance so diagonal adjacency counts.
    * Fires at most once per map session per NPC (catchFiredIds guard).
    */
   private checkCatch(live: LiveNPC): void {
     if (!live.def.catchRadius || !live.def.catchEventId) return;
-    if (this.catchFiredIds.has(live.def.id)) return;
     if (!this.onNPCCatch) return;
 
     const dx = Math.abs(live.tile.x - this.playerTile.x);
     const dy = Math.abs(live.tile.y - this.playerTile.y);
     const dist = Math.max(dx, dy); // Chebyshev distance
+    const cr = live.def.catchRadius;
 
-    if (dist <= live.def.catchRadius) {
+    // #18: Activate BFS chase when player enters 2× catchRadius
+    if (dist <= cr * 2 && !live.chaseMode) {
+      live.chaseMode = true;
+      live.chasePath = undefined;
+      live.chasePathIndex = 0;
+      live.chaseRecomputeMs = 0;
+    }
+
+    // #16: Terror radius warning tiers
+    const newWarning: "low" | "high" | "none" =
+      dist <= cr * 1.5 ? "high" :
+      dist <= cr * 3   ? "low"  : "none";
+
+    if (newWarning !== live.warningLevel) {
+      live.warningLevel = newWarning;
+      this.onNPCWarning?.(live.def.id, newWarning);
+      // Update "!" bubble visibility and alpha
+      if (live.warningBubble) {
+        live.warningBubble.visible = newWarning !== "none";
+        live.warningBubble.alpha = newWarning === "high" ? 1.0 : 0.4;
+      }
+    }
+
+    if (!this.catchFiredIds.has(live.def.id) && dist <= cr) {
       this.catchFiredIds.add(live.def.id);
       this.onNPCCatch(live.def.id, live.def.catchEventId);
     }
@@ -237,6 +323,92 @@ export class NPCScheduler {
       live.cs.container.y += dy2 * ratio;
       this.animSystem.setMoving(live.cs, true);
     }
+  }
+
+  // #18: BFS pathfinding from `start` to `goal` in the collision map.
+  // Returns array of TileCoords from start (exclusive) to goal (inclusive), or null if no path.
+  private bfsPath(start: TileCoord, goal: TileCoord, maxDepth = 64): TileCoord[] | null {
+    if (!this.collision) return null;
+    if (tilesEqual(start, goal)) return [];
+    const visited = new Set<string>();
+    const queue: Array<{ tile: TileCoord; path: TileCoord[] }> = [{ tile: start, path: [] }];
+    const key = (t: TileCoord) => `${t.x},${t.y}`;
+    visited.add(key(start));
+    while (queue.length > 0) {
+      const { tile, path } = queue.shift()!;
+      if (path.length >= maxDepth) continue;
+      for (const dir of ["up", "down", "left", "right"] as const) {
+        const next = adjTile(tile, dir);
+        const nk = key(next);
+        if (visited.has(nk)) continue;
+        if (!this.collision.isWalkable(next)) continue;
+        visited.add(nk);
+        const newPath = [...path, next];
+        if (tilesEqual(next, goal)) return newPath;
+        queue.push({ tile: next, path: newPath });
+      }
+    }
+    return null;
+  }
+
+  // #18: Advance NPC one tile toward player if in chaseMode.
+  private updateChase(live: LiveNPC, deltaMS: number): boolean {
+    if (!live.chaseMode || !live.def.catchRadius) return false;
+    const cr = live.def.catchRadius;
+    const dx = Math.abs(live.tile.x - this.playerTile.x);
+    const dy = Math.abs(live.tile.y - this.playerTile.y);
+    const dist = Math.max(dx, dy);
+
+    // Exit chase if player is more than 3× catchRadius away
+    if (dist > cr * 3) {
+      live.chaseMode = false;
+      live.chasePath = undefined;
+      return false;
+    }
+
+    // Recompute path every 500ms or when path exhausted
+    const now = Date.now();
+    if (!live.chasePath || live.chasePath.length === 0 || (now - (live.chaseRecomputeMs ?? 0)) > 500) {
+      live.chasePath = this.bfsPath(live.tile, this.playerTile) ?? undefined;
+      live.chasePathIndex = 0;
+      live.chaseRecomputeMs = now;
+    }
+
+    if (!live.chasePath || live.chasePath.length === 0) return true;
+
+    // Advance timer for tile-step movement
+    live.chaseMoveTimer = (live.chaseMoveTimer ?? 0) + deltaMS;
+    const stepMs = NPC_PATROL_PAUSE_MS; // reuse patrol timing constant
+    if (live.chaseMoveTimer < stepMs) return true;
+    live.chaseMoveTimer = 0;
+
+    const nextTile = live.chasePath[live.chasePathIndex ?? 0];
+    if (!nextTile || tilesEqual(live.tile, this.playerTile)) return true;
+
+    // Snap NPC to next tile
+    live.tile = { ...nextTile };
+    const pos = tileCenterWorld(nextTile);
+    live.cs.container.x = pos.x;
+    live.cs.container.y = pos.y + TILE_SIZE / 2;
+
+    // Update facing
+    const facingDx = nextTile.x - live.tile.x;
+    const facingDy = nextTile.y - live.tile.y;
+    const newFacing: FacingDirection =
+      Math.abs(facingDx) > Math.abs(facingDy)
+        ? facingDx > 0 ? "right" : "left"
+        : facingDy > 0 ? "down" : "up";
+    if (newFacing !== live.facing) {
+      live.facing = newFacing;
+      this.animSystem.setFacing(live.cs, newFacing);
+    }
+    this.animSystem.setMoving(live.cs, true);
+
+    live.chasePathIndex = (live.chasePathIndex ?? 0) + 1;
+    if (live.chasePathIndex >= live.chasePath.length) {
+      live.chasePath = undefined; // path exhausted; will recompute next frame
+    }
+    return true;
   }
 
   // ── Speech bubble API ───────────────────────────────────────────────────────

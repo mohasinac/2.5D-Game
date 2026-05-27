@@ -13,7 +13,8 @@ import { DialogueBox } from "../components/overlays/DialogueBox";
 import { CutsceneOverlay } from "../components/overlays/CutsceneOverlay";
 import { MenuOverlay } from "../components/overlays/MenuOverlay";
 import { TransitionOverlay } from "../components/overlays/TransitionOverlay";
-import type { Quest } from "../data/schemas";
+import { RPGMiniGameOverlay } from "../components/mini-games/RPGMiniGameOverlay";
+import type { Quest, MiniGameResult } from "../data/schemas";
 
 // GBC = portrait (160×144 → 10:9 aspect), GBA = landscape (240×160 → 3:2 aspect).
 // We detect orientation and apply the matching aspect ratio frame.
@@ -26,10 +27,12 @@ export default function RPGGamePage() {
 
   const { engine, isReady } = useRPGEngine(canvasRef, userId, username);
 
-  const activeDialogue    = useRPGStore((s) => s.activeDialogue);
-  const activeCutsceneId  = useRPGStore((s) => s.activeCutsceneId);
-  const isTransitioning   = useRPGStore((s) => s.isTransitioning);
+  const activeDialogue      = useRPGStore((s) => s.activeDialogue);
+  const activeCutsceneId    = useRPGStore((s) => s.activeCutsceneId);
+  const isTransitioning     = useRPGStore((s) => s.isTransitioning);
   const pendingBattleResult = useRPGStore((s) => s.pendingBattleResult);
+  const activeMiniGame      = useRPGStore((s) => s.activeMiniGame);
+  const miniGameResult      = useRPGStore((s) => s.miniGameResult);
 
   const [menuOpen,    setMenuOpen]    = useState(false);
   const [menuTab,     setMenuTab]     = useState<"inventory" | "quests" | "badges" | "map" | "save">("inventory");
@@ -63,6 +66,22 @@ export default function RPGGamePage() {
       engine.battleTransitionSystem.handleBattleReturn(pendingBattleResult);
     }
   }, [pendingBattleResult, engine]);
+
+  // Handle mini-game completion — award XP, fire success/failure story event
+  useEffect(() => {
+    if (!miniGameResult || !activeMiniGame) return;
+    const store = useRPGStore.getState();
+    const { xpEarned, success } = miniGameResult;
+    if (xpEarned > 0) store.addPlayerXP(xpEarned);
+    const nextEvent = success
+      ? activeMiniGame.config.onSuccess
+      : activeMiniGame.config.onFailure;
+    if (nextEvent && engine) {
+      engine.storyEventSystem.queueEventById(nextEvent);
+    }
+    store.clearMiniGame();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [miniGameResult]);
 
   // Keyboard shortcuts: P = menu, M = map tab
   useEffect(() => {
@@ -177,6 +196,16 @@ export default function RPGGamePage() {
 
         {/* Touch controls */}
         <RPGTouchControls />
+
+        {/* Mini-game overlay — renders on top of everything including dialogue */}
+        {activeMiniGame && (
+          <RPGMiniGameOverlay
+            game={activeMiniGame}
+            onComplete={(result: MiniGameResult) =>
+              useRPGStore.getState().completeMiniGame(result)
+            }
+          />
+        )}
       </div>
     </div>
   );

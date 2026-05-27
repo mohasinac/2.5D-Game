@@ -1,6 +1,6 @@
 # Beyblade Case Studies — Master Index
 
-Total: **600 cases** across 11 files + 1 master reference.
+Total: **674 cases** across 13 files + 1 master reference.
 
 ---
 
@@ -11,7 +11,7 @@ Total: **600 cases** across 11 files + 1 master reference.
 | [1 case study.md](1%20case%20study.md) | 1–73 | Physics fundamentals → MFB/4D parts |
 | [2 case study.md](2%20case%20study.md) | 74–123 | HMS parts → Gen 1 Plastic SG-era parts |
 | [3 case study.md](3%20case%20study.md) | 118–187 | Gen 1 Plastic SG/EG/CEW parts |
-| [4 case study.md](4%20case%20study.md) | 189–237 | Gen 1 EG/CEW parts → Anime-only |
+| [4 case study.md](4%20case%20study.md) | 189–238 | Gen 1 EG/CEW parts → Anime-only → Magnacore ARs |
 | [5 case study.md](5%20case%20study.md) | 236–296 | System architectures → MFB wheels/tracks/bottoms |
 | [6 case study.md](6%20case%20study.md) | 297–353 | MFB bottoms → 4D wheels/bottoms/tracks |
 | [7 case study.md](7%20case%20study.md) | 354–374 | BX/UX/CX system architecture → All-gen system summaries |
@@ -19,6 +19,8 @@ Total: **600 cases** across 11 files + 1 master reference.
 | [9 case study.md](9%20case%20study.md) | 392–544 | Burst series (all subsystems) full lineage analysis |
 | [10 case study.md](10%20case%20study.md) | 545–585 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | Special move physics: real-part archetypes → game-engine derivation |
+| [12 case study.md](12%20case%20study.md) | 601–618 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
+| [13 case study.md](13%20case%20study.md) | 619–671 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | Engine reference: constants, formulas, normalization |
 
 ### Numbering Notes
@@ -335,6 +337,7 @@ Total: **600 cases** across 11 files + 1 master reference.
 | 235 | Right Customize Gear (Free Shaft Version) Shaft | Gen1-Plastic | EGS | EG | CG Free Shaft, shaft |
 | 236 | First Clutch Base (Zeus Version) | Gen1-Plastic | EGS | BB | First Clutch, Zeus |
 | 237 | Andre's Yak (Anime-Only): Pagoda-Inspired Dome AR | Gen1-Plastic | — | Assembly | anime-only, Yak |
+| 238 | Sharkrash AR: Convex Shark Profile High Recoil | Gen1-Plastic | MGS | AR | Sharkrash, Mariam, Magnacore, convex, recoil |
 
 ---
 
@@ -861,6 +864,33 @@ Total: **600 cases** across 11 files + 1 master reference.
 
 ---
 
+## Part 12 — Cases 601–618
+
+> Combo system physics: real-part archetypes, per-combo derivation, detection windows, power cost tiers, and design ceilings
+
+| # | Title | Gen | System | Type | Tags |
+|---|-------|-----|--------|------|------|
+| 601 | Combo System Taxonomy: Three Physics Archetypes vs. Special Move | Cross-Gen | — | Combo | combo, taxonomy, archetypes, ceiling |
+| 602 | Detection Window Calibration: Orbital Period → windowMs | Cross-Gen | — | Combo | window, detection, orbital-period |
+| 603 | Quick Dash (←←J / →→J): Rubber Grip Burst → Directional Dash | Cross-Gen | EGS/Burst | Combo | dash, rubber, grip, free |
+| 604 | Guard Tap (KKK): Gyroscopic Recentering via Repeated Brake Impulse | Cross-Gen | — | Combo | defense, gyroscope, brake, free |
+| 605 | Feint (←→K): Centrifugal Side-Reversal Minimum Radius Constraint | Cross-Gen | — | Combo | feint, centrifugal, radius, free |
+| 606 | Riposte (KKJ): Parry-Counter Impulse Chain (e=0.67 Rebound) | Cross-Gen | — | Combo | parry, counter, rebound, cost-15 |
+| 607 | Pivot Strike (←→J): Off-Axis AR Contact at φ=35° (82.2% Flat-Face Efficiency) | Cross-Gen | — | Combo | off-axis, AR, smash, cost-15 |
+| 608 | Power Thrust (JJJ): Three-Hit Compound Sequence at damageMultiplier Ceiling 1.5× | Cross-Gen | — | Combo | multi-hit, compound, ceiling, cost-25 |
+| 609 | Spin-Leech Jab (←J→): Rubber ER Angular Momentum Transfer (Δω=6.71 rad/s per 10ms) | Cross-Gen | EGS/HWS | Combo | spin-steal, rubber, ER, cost-35, stamina |
+| 610 | Sliding-Window Detection Algorithm: pruneHistory → 3-Key Match → Gate Checks | Cross-Gen | — | Combo | detection, algorithm, sliding-window |
+| 611 | Power Cost Tier Calibration: 0/15/25/35 → 0/0.197/0.329/0.461 J | Cross-Gen | — | Combo | power-cost, calibration, energy |
+| 612 | Combo Cooldown as Orbital Period Multiples (free ~1 orbit, cost35 ~5 orbits) | Cross-Gen | — | Combo | cooldown, orbital-period, balance |
+| 613 | Type Restriction Gate Physics: Why Riposte=Defense, Spin-Leech=Stamina | Cross-Gen | — | Combo | type-gate, restriction, balance |
+| 614 | Four Hard Ceilings: Combo vs. Special Move Physics Boundary Derivation | Cross-Gen | — | Combo | ceiling, boundary, special-move, balance |
+| 615 | ComboTask→BehaviorRef Compilation: Admin-Facing to Engine-Facing Translation | Cross-Gen | — | Combo | compilation, BehaviorRef, admin |
+| 616 | comboIds Attachment Limit: AR Perimeter ÷ 45mm Arc ≈ 3 Slots | Cross-Gen | — | Combo | attachment, limit, AR-perimeter |
+| 617 | Power Bar Charge/Deduct Cycle and comboCostMultiplier=0.0 (free_combos modifier) | Cross-Gen | — | Combo | power-bar, charge, modifier |
+| 618 | Forbidden Effect Table and New Combo Design Checklist | Cross-Gen | — | Combo | forbidden, design-checklist, ceiling |
+
+---
+
 ## Tag Indexes
 
 ### By Generation
@@ -879,7 +909,7 @@ Total: **600 cases** across 11 files + 1 master reference.
 | **Gen2-ZeroG** | 310–314, 316–317, 319–324, 367 | ~14 |
 | **Gen3-Burst** | 70–73, 244–245, 368–374, 392–544 | ~170+ |
 | **Gen4-BX** | 246–252, 354–358, 375–415, 548–552, 580 | ~60+ |
-| **Cross-Gen** | 15, 43, 546, 551, 555–556, 578–579, 581–585, 586–600 | ~27 |
+| **Cross-Gen** | 15, 43, 546, 551, 555–556, 578–579, 581–585, 586–600, 601–618 | ~45 |
 
 ### By Part Type
 
@@ -918,7 +948,8 @@ Total: **600 cases** across 11 files + 1 master reference.
 | **Face Bolt / Stone Face** | 42–43 |
 | **Mechanic** | 1–13, 15, 547, 555–557, 581–585 |
 | **Assembly** | 17–19, 49, 126, 237, 246–248, 533, 537, 542–544 |
-| **Special Move** | 586–600 |
+| **Special Move** | 586–600, 620, 623–624 |
+| **Combo** | 601–618, 625–626 |
 
 ---
 

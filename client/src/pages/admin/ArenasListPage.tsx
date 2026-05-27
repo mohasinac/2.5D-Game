@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { collection, getDocs, deleteDoc, doc, orderBy, query } from "firebase/firestore";
+import { Link, useNavigate } from "react-router-dom";
+import { collection, getDocs, deleteDoc, doc, orderBy, query, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { cn } from "@/lib/cn";
 import toast from "react-hot-toast";
@@ -26,10 +26,12 @@ const THEME_BG_CLS: Record<string, string> = {
 };
 
 export function ArenasListPage() {
+  const navigate = useNavigate();
   const [arenas, setArenas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [cloningId, setCloningId] = useState<string | null>(null);
   const [tagFilter, setTagFilter] = useState<string>("all");
 
   useEffect(() => {
@@ -41,6 +43,22 @@ export function ArenasListPage() {
       finally { setLoading(false); }
     })();
   }, []);
+
+  const handleClone = async (arena: any) => {
+    const newId = `${arena.id}_copy_${Date.now()}`;
+    setCloningId(arena.id);
+    try {
+      const { id: _id, ...rest } = arena;
+      await setDoc(doc(db, COLLECTIONS.ARENAS, newId), {
+        ...rest,
+        name: `${arena.name} (Copy)`,
+        templateId: arena.id,
+      });
+      toast.success(`Cloned as ${newId}`);
+      navigate(`/admin/arenas/edit/${newId}`);
+    } catch { toast.error("Clone failed"); }
+    finally { setCloningId(null); }
+  };
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
@@ -117,6 +135,14 @@ export function ArenasListPage() {
                     </div>
                     <div className="flex border-t border-border-c">
                       <a href={`/admin/arenas/edit/${arena.id}`} className="flex-1 py-2.5 text-center text-[13px] text-theme-purple no-underline">Edit</a>
+                      <button
+                        onClick={() => handleClone(arena)}
+                        disabled={cloningId === arena.id}
+                        title="Clone as template"
+                        className="flex-1 py-2.5 text-[13px] text-theme-blue bg-transparent border-none border-l border-border-c cursor-pointer disabled:opacity-50"
+                      >
+                        {cloningId === arena.id ? "…" : "Clone"}
+                      </button>
                       <button onClick={() => setConfirmDelete(arena)} className="flex-1 py-2.5 text-[13px] text-theme-red bg-transparent border-none border-l border-border-c cursor-pointer">Delete</button>
                     </div>
                   </div>

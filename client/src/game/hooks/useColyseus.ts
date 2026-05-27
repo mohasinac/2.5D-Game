@@ -28,6 +28,18 @@ export interface BurstEventData {
   y: number;
 }
 
+// #28: Killcam / replay
+export interface DeathReplayData {
+  frames: Array<{
+    tick: number;
+    timestampMs: number;
+    positions: Record<string, { x: number; y: number; angle: number; spin: number; tiltAngle: number; isActive: boolean }>;
+    events: Array<{ type: string; payload: unknown }>;
+  }>;
+  victimId: string;
+  killerId: string | null;
+}
+
 export interface QTEPromptData {
   attackerBeyId: string;
   sequence: string[];
@@ -201,6 +213,10 @@ interface UseColyseusReturn {
   linkAlignments: LinkAlignmentInfo[];
   /** Active floor-transition animation props. Null when not traversing. */
   floorTransition: Omit<FloorTransitionProps, "visible"> | null;
+  // #28: Killcam data — set when a "death-replay" message arrives
+  killcamData: DeathReplayData | null;
+  /** Dismiss (clear) the active killcam overlay. */
+  dismissKillcam: () => void;
   // Phase 29: Collision QTE state
   collisionQTEData: CollisionQTEStartData | null;
   collisionQTEPower: number;           // 0–150, for the local player's bey
@@ -300,6 +316,8 @@ export function useColyseus({
   const [myFloorIndex, setMyFloorIndex] = useState(0);
   const [linkAlignments, setLinkAlignments] = useState<LinkAlignmentInfo[]>([]);
   const [floorTransition, setFloorTransition] = useState<Omit<FloorTransitionProps, "visible"> | null>(null);
+  // #28: Killcam state — set when a "death-replay" message arrives; cleared when user skips
+  const [killcamData, setKillcamData] = useState<DeathReplayData | null>(null);
   // Phase 29: Collision QTE state
   const [collisionQTEData, setCollisionQTEData] = useState<CollisionQTEStartData | null>(null);
   const [collisionQTEPower, setCollisionQTEPower] = useState(0);
@@ -315,6 +333,13 @@ export function useColyseus({
   const N1_AHEAD_TICKS = 3;
   const N1_LERP_ALPHA   = 0.25; // lerp weight per server tick when error < threshold
   const N1_SNAP_PX      = 5;    // hard-reconcile if predicted diverges >= this many pixels
+
+  // #29: Per-frame prediction state — velocity integration between server ticks.
+  // vx/vy are in physics units/ms; updated when sendInput is called.
+  const predVelRef = useRef<{ x: number; y: number; vx: number; vy: number; lastFrameMs: number } | null>(null);
+  const PRED_DRAG = 0.985; // velocity decay per ms (approx frame-rate independent)
+  const PRED_SOFT_THRESHOLD = 20; // px — soft correction below this, hard snap above
+  const PRED_SOFT_ALPHA = 0.3;    // lerp weight for soft corrections
 
   const visualEventQueueRef = useRef(new VisualEventQueue());
 
@@ -432,8 +457,33 @@ export function useColyseus({
           }
           n1PredRef.current = { x: px, y: py };
           nextBeyblades.set(connectedRoom.sessionId, { ...myB, x: px, y: py });
+
+          // #29: Reconcile per-frame prediction (predVelRef) with server position.
+          // Soft-correct if within 20px; hard-snap if further (diverged from physics).
+          if (predVelRef.current) {
+            const pv = predVelRef.current;
+            const pvDist = Math.hypot(pv.x - targetX, pv.y - targetY);
+            if (pvDist < PRED_SOFT_THRESHOLD) {
+              pv.x = pv.x + (targetX - pv.x) * PRED_SOFT_ALPHA;
+              pv.y = pv.y + (targetY - pv.y) * PRED_SOFT_ALPHA;
+            } else {
+              pv.x = targetX;
+              pv.y = targetY;
+              pv.vx = myB.velocityX;
+              pv.vy = myB.velocityY;
+            }
+          } else {
+            predVelRef.current = {
+              x: targetX, y: targetY,
+              vx: myB.velocityX, vy: myB.velocityY,
+              lastFrameMs: performance.now(),
+            };
+          }
         } else {
           n1PredRef.current = null;
+          predVelRef.current = null;
+          // Clear prediction override so renderer falls back to interpolator
+          rendererRefInternal.current?.current?.clearPredictedPosition(connectedRoom.sessionId);
         }
 
         // Build seriesWins map
@@ -753,6 +803,60 @@ export function useColyseus({
         // Renderer picks this up via state sync; can add camera shake here
       });
 
+      // ── Overhaul: New broadcast event subscriptions ──────────────────────────
+
+      connectedRoom.onMessage("clash-timing-start", (data: { id1: string; id2: string; windowMs: number }) => {
+        rendererRefInternal.current?.current?.onClashTimingStart?.(data);
+      });
+
+      connectedRoom.onMessage("clash-timing-result", (data: { id1: string; id2: string; p1Perfect: boolean; p2Perfect: boolean }) => {
+        rendererRefInternal.current?.current?.onClashTimingResult?.(data);
+      });
+
+      connectedRoom.onMessage("status-applied", (data: { beyId: string; status: string; durationS: number }) => {
+        rendererRefInternal.current?.current?.onStatusApplied?.(data);
+      });
+
+      connectedRoom.onMessage("fury-ready", (data: { beyId: string }) => {
+        rendererRefInternal.current?.current?.onFuryReady?.(data);
+      });
+
+      connectedRoom.onMessage("fury-released", (data: { beyId: string; type: string }) => {
+        rendererRefInternal.current?.current?.onFuryReleased?.(data);
+        // Camera shake for fury release
+        rendererRefInternal.current?.current?.world.triggerShake(6, 200);
+      });
+
+      connectedRoom.onMessage("gimmick-mode-changed", (data: { beyId: string; loaded: boolean }) => {
+        rendererRefInternal.current?.current?.onGimmickModeChanged?.(data);
+      });
+
+      connectedRoom.onMessage("desperation-active", (data: { beyId: string }) => {
+        rendererRefInternal.current?.current?.onDesperationActive?.(data);
+      });
+
+      connectedRoom.onMessage("bitbeast-hide", (data: { beyId: string }) => {
+        rendererRefInternal.current?.current?.onBitBeastHide?.(data);
+      });
+
+      connectedRoom.onMessage("accessory-activated", (data: { beyId: string; accessoryId: string }) => {
+        rendererRefInternal.current?.current?.onAccessoryActivated?.(data);
+      });
+
+      // Camera shakes for existing events — wired through WorldTransform
+      connectedRoom.onMessage("burst", () => {
+        rendererRefInternal.current?.current?.world.triggerShake(15, 400);
+      });
+
+      connectedRoom.onMessage("ring-out", () => {
+        rendererRefInternal.current?.current?.world.triggerShake(10, 250);
+      });
+
+      // #28: Killcam — display last 5s of replay on elimination
+      connectedRoom.onMessage("death-replay", (data: DeathReplayData) => {
+        setKillcamData(data);
+      });
+
       connectedRoom.onError((code, message) => {
         console.error(`Room error [${code}]: ${message}`);
         setConnectionState("error");
@@ -830,6 +934,19 @@ export function useColyseus({
     if (roomRef.current && roomRef.current.connection.isOpen) {
       roomRef.current.send("input", encodeInputBitmask(input));
     }
+    // #29: Update predicted velocity from directional input.
+    // Force magnitude ≈ 0.08 px/ms (matches server base move speed at 60Hz).
+    const PRED_FORCE = 0.08;
+    const dx = (input.moveRight ? 1 : 0) - (input.moveLeft ? 1 : 0);
+    const dy = (input.moveDown  ? 1 : 0) - (input.moveUp   ? 1 : 0);
+    if (dx !== 0 || dy !== 0) {
+      const len = Math.hypot(dx, dy);
+      if (predVelRef.current) {
+        predVelRef.current.vx += (dx / len) * PRED_FORCE;
+        predVelRef.current.vy += (dy / len) * PRED_FORCE;
+        predVelRef.current.lastFrameMs = performance.now();
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -851,6 +968,39 @@ export function useColyseus({
     }
   }, [gameState?.status]);
 
+  // #29: Per-frame prediction rAF loop.
+  // Advances predicted position using velocity + drag every frame, then feeds result
+  // into the renderer's predictionOverride for the controlled bey.
+  useEffect(() => {
+    let rafHandle = 0;
+
+    const tick = () => {
+      rafHandle = requestAnimationFrame(tick);
+      const renderer = rendererRefInternal.current?.current;
+      const pred = predVelRef.current;
+      if (!renderer || !pred || !pred.vx && !pred.vy) return;
+
+      const now = performance.now();
+      const dtMs = Math.min(now - pred.lastFrameMs, 50); // cap at 50ms to avoid huge jumps
+      pred.lastFrameMs = now;
+
+      // Apply drag and advance position
+      pred.vx *= Math.pow(PRED_DRAG, dtMs);
+      pred.vy *= Math.pow(PRED_DRAG, dtMs);
+      pred.x += pred.vx * dtMs;
+      pred.y += pred.vy * dtMs;
+
+      // Push to renderer — it uses this for the controlled bey position
+      const sessionId = roomRef.current?.sessionId;
+      if (sessionId) {
+        renderer.setPredictedPosition(sessionId, pred.x, pred.y);
+      }
+    };
+
+    rafHandle = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafHandle);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return {
     connectionState, room, gameState, beyblades, myBeyblade, isSpectating,
     loadingStep, loadingError,
@@ -860,6 +1010,8 @@ export function useColyseus({
     floorInfo, myFloorIndex, linkAlignments, floorTransition,
     // Phase 29
     collisionQTEData, collisionQTEPower, collisionQTESpecialPrompt, collisionQTEResult, splitScreenData,
+    // #28: Killcam
+    killcamData, dismissKillcam: () => setKillcamData(null),
     connect, disconnect, sendQTEInput, sendBeyLinkQTEInput, sendHijackAttempt, sendHijackBlock,
     sendCollisionQTEMash, sendCollisionQTEFireSpecial,
     sendInput,

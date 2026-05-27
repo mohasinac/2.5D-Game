@@ -129,6 +129,12 @@ export interface RPGMap {
   ambientSfxId?: string;
   lightingPreset: "day" | "evening" | "night" | "indoor" | "cave";
   metaFlags?: Record<string, boolean>;
+  /** URL to an uploaded background image (rendered behind tile layer). */
+  bgImageUrl?: string;
+  /** URL to the uploaded tileset sprite sheet image. */
+  tilesetImageUrl?: string;
+  /** If cloned from a template map, the source map id. */
+  templateId?: string;
 }
 
 // ── NPC ───────────────────────────────────────────────────────────────────────
@@ -183,6 +189,10 @@ export interface NPC {
   type: NPCType;
   spriteSheetId: string;
   portraitId: string;
+  /** URL to uploaded sprite sheet image (overrides spriteSheetId asset lookup). */
+  spriteUrl?: string;
+  /** URL to uploaded portrait / face-card image (used in dialogue box). */
+  portraitUrl?: string;
   defaultFacing: FacingDirection;
   schedule: NPCScheduleEntry[];
   defaultDialogueId: string;
@@ -198,6 +208,8 @@ export interface NPC {
    */
   catchRadius?: number;
   catchEventId?: string;
+  /** If cloned from a template NPC, the source NPC id. */
+  templateId?: string;
 }
 
 // ── Dialogue ──────────────────────────────────────────────────────────────────
@@ -285,6 +297,56 @@ export interface Quest {
   failCondition?: FlagCondition;
 }
 
+// ── Mini-Games ────────────────────────────────────────────────────────────────
+/**
+ * Three mini-game varieties:
+ * • qte               — Quick Time Event: press at the right moment (timing bar / button sequence)
+ * • bey_trajectory_aim   — Aim + charge + launch; hit N targets in X seconds
+ * • bey_trajectory_block — Sequential aim+launch to hit objects in order (e.g. waterfall logs)
+ */
+export type MiniGameType = "qte" | "bey_trajectory_aim" | "bey_trajectory_block";
+
+export interface MiniGameConfig {
+  /** Short flavour description shown in the pre-game title card. */
+  description?: string;
+  /** Number of independent targets (bey_trajectory_aim). Default 3. */
+  targets?: number;
+  /** Number of sequential stages (bey_trajectory_block). Default 3. */
+  stages?: number;
+  /** Countdown timer in seconds. 0 = no timer. */
+  timeLimit?: number;
+  /** XP awarded on success. */
+  xpReward?: number;
+  /** For qte: button labels in sequence e.g. ["SPACE","SPACE","SPACE"]. */
+  sequence?: string[];
+  /** For qte: width of the "perfect" green zone as fraction of bar [0-1]. Default 0.25. */
+  perfectZoneWidth?: number;
+  /** Minimum fraction of targets/stages required to count as success [0-1]. Default 1. */
+  successThreshold?: number;
+  /** Story-event ID to fire on success (null = just award XP). */
+  onSuccess?: string;
+  /** Story-event ID to fire on failure (null = allow retry). */
+  onFailure?: string;
+}
+
+export interface ActiveMiniGame {
+  /** Unique run ID (can be reused across retries). */
+  id: string;
+  type: MiniGameType;
+  /** Story event that triggered this mini-game. */
+  storyEventId: string;
+  config: MiniGameConfig;
+}
+
+export interface MiniGameResult {
+  success: boolean;
+  /** 0–100 score. */
+  score: number;
+  hitsLanded: number;
+  xpEarned: number;
+  timeTakenMs: number;
+}
+
 // ── Story Events ──────────────────────────────────────────────────────────────
 export type StoryEventStepType =
   | "dialogue" | "move-npc" | "move-player" | "camera-pan" | "camera-shake"
@@ -293,6 +355,8 @@ export type StoryEventStepType =
   | "lock-player" | "unlock-player" | "start-battle"
   | "award-item" | "award-beyblade" | "award-badge"
   | "change-map" | "show-title-card"
+  // Mini-games
+  | "start-mini-game"    // launch a mini-game overlay; step resolves on completion
   // Tournament / team-match steps
   | "award-team-points"    // add teamPoints to store (Arc 2 team scoring)
   | "set-arc-level-cap"    // set/clear the active arc level cap
@@ -321,6 +385,8 @@ export interface StoryEventStep {
   waitForInput?: boolean;
   /** "award-team-points" — number of points to add to the team score. */
   teamPoints?: number;
+  /** "start-mini-game" — inline mini-game definition to launch. */
+  miniGame?: ActiveMiniGame;
   /** "set-arc-level-cap" — cap to apply; null/0 clears the cap. */
   levelCap?: number | null;
 }
@@ -525,41 +591,98 @@ export interface RegionDef {
   arcIds: ArcId[];
 }
 
+// ── Equipment slot identifiers ────────────────────────────────────────────────
+/**
+ * Named slots in the player's equipment panel.
+ * - "launcher"   — the grip launcher (one at a time; must be purchased).
+ * - "ripcord"    — the pull cord (consumable; stacks up to 5).
+ * - "upgrade"    — performance add-ons stacked on the launcher (up to 3).
+ * - "accessory"  — stat-modifying wearable (grip tape, wrist strap, etc.).
+ * - "consumable" — single-use items (energy drink, repair kit, tune-up).
+ * - "beyblade-part" — quest/assembly parts (Attack Ring, Weight Disk, etc.).
+ * - "collectible" — badges, trophies; never tradeable.
+ */
+export type EquipSlot =
+  | "launcher" | "ripcord" | "upgrade" | "accessory"
+  | "consumable" | "beyblade-part" | "collectible" | "key-item";
+
+/**
+ * Spin direction a launcher supports.
+ * "right"  — standard right-spin; available from the start of the game.
+ * "left"   — left-spin (L-Drago launcher); MUST be purchased; never granted free.
+ * "either" — dual-spin compatible (e.g. String Launcher Pro).
+ */
+export type LauncherSide = "right" | "left" | "either";
+
 // ── Inventory Item ────────────────────────────────────────────────────────────
 export interface InventoryItem {
   id: string;
   displayName: string;
   description: string;
+  /** Broad category used for bag-tab filtering. Matches EquipSlot values. */
   category: ItemCategory;
+  /** Which equipment slot this item occupies when equipped (undefined = unequippable). */
+  equipSlot?: EquipSlot;
   iconAssetId: string;
+  /** Optional URL to an uploaded icon image (overrides iconAssetId lookup). */
+  iconUrl?: string;
   stackable: boolean;
   maxStack?: number;
+  /** Single-use: removed from inventory on use. */
+  isConsumable?: boolean;
   usable: boolean;
   useEffect?: {
+    /** xp-boost | heal | repair | spin-boost | flag | warp */
     type: string;
     value?: number;
+    /** For flag-type effects */
+    flagKey?: string;
+    flagValue?: boolean;
     eventId?: string;
     mapId?: string;
   };
   sellPrice?: number;
   buyPrice?: number;
+  /**
+   * Whether this item can only be obtained from a specific shop or event.
+   * If true the item never appears in random drops or quest rewards.
+   */
+  shopOnly?: boolean;
   questRelated: boolean;
+  /** NPC ids or enemy ids that can drop this item. */
   droppedBy?: string[];
   /**
    * Wear / durability system (launchers and ripcords).
-   * maxDurability: starting HP of the item (e.g. 100).
-   * wearRate:      durability lost per battle (e.g. 20 → breaks after 5 battles).
-   * launchBoost:   additive launch power multiplier while item is equipped
-   *                (e.g. 0.10 = +10% spin on launch). Stacks additively across upgrades.
-   * Items without maxDurability are indestructible (quest items, etc.).
+   * maxDurability: starting durability (e.g. 100).
+   * wearRate:      durability lost per battle.
+   * Items without maxDurability are indestructible (quest items, trophies, etc.).
    */
   maxDurability?: number;
   wearRate?: number;
+  /**
+   * Additive launch-power multiplier while equipped.
+   * e.g. 0.10 = +10% spin. Stacks across installed upgrades.
+   */
   launchBoost?: number;
-  /** If true this item occupies the launcher equipment slot when equipped. */
+  /** If true this item occupies the "launcher" equipment slot when equipped. */
   isLauncher?: boolean;
+  /**
+   * Spin direction this launcher supports.
+   * Left-spin launchers MUST be purchased; they are never granted free.
+   * Defaults to "right" for all launchers unless explicitly set.
+   */
+  launchSide?: LauncherSide;
   /** If true this item is a launcher upgrade (boosts without replacing the launcher). */
   isLauncherUpgrade?: boolean;
+  /**
+   * Template / reuse metadata.
+   * templateId: if this item was cloned from a template, its source id.
+   * isTemplate:  marks the canonical version of a reusable item archetype.
+   */
+  templateId?: string;
+  isTemplate?: boolean;
+  /** Arc or episode restriction — item only available in these arc ids. */
+  arcIds?: ArcId[];
 }
 
 // ── Quest Runtime State ───────────────────────────────────────────────────────

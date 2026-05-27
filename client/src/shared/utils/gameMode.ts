@@ -33,6 +33,6 @@ export function roomNameFor(mode: GameMode, flavor: RoomFlavor): string {
 // /game/2d/... and /game/2.5d/... routing. Falls back to "2d" for legacy
 // URLs (/game/battle/:id, etc.) so existing bookmarks keep working.
 export function modeFromPath(pathname: string): GameMode {
-  if (pathname.includes("/2d/")) return "2d";
-  return "2.5d";
+  if (pathname.includes("/2.5d/") || pathname.includes("/25d/")) return "2.5d";
+  return "2d"; // default — preserves backwards-compat with legacy /game/battle/... bookmarks
 }

@@ -7,6 +7,7 @@
 import { BattleRoom } from "./BattleRoom";
 import { Client } from "colyseus";
 import type { PlayerInput } from "../shared/utils/bitmask";
+import type { Beyblade } from "./schema/GameState";
 
 interface TeamJoinOptions {
   beybladeId: string;
@@ -27,6 +28,21 @@ const teamMap = new Map<string, "red" | "blue">();
 const controlledBey = new Map<string, string>();
 // Maps beyId → ownerSessionId (who spawned this bey)
 const beyOwner = new Map<string, string>();
+
+// #27: Burst recall state — maps fragmentId → recall data
+interface RecallEntry {
+  beyId: string;
+  teamId: "red" | "blue";
+  fragmentId: string;
+  createdAt: number;
+  expiresAt: number;
+  /** teammateId → timestamp when they started standing over fragment.
+   *  Keys prefixed with "destroy_" track opponent destruction timers. */
+  recallStartMs: Map<string, number>;
+}
+
+// Active burst-recall fragments across all team battle rooms
+const recallEntries = new Map<string, RecallEntry>(); // fragmentId → RecallEntry
 
 export class TeamBattleRoom extends BattleRoom {
   // Override maxClients for team format (2×2 players + spectators)
@@ -57,6 +73,185 @@ export class TeamBattleRoom extends BattleRoom {
     controlledBey.delete(client.sessionId);
     beyOwner.delete(client.sessionId);
     return super.onLeave(client, consented);
+  }
+
+  // #23: Support proximity bonus (Fire Emblem GBA) ────────────────────────────
+  private static readonly SUPPORT_RADIUS = 120; // px
+
+  protected override tick(dt: number): void {
+    super.tick(dt);
+    this.tickSupportProximity(dt);
+    this.tickBurstRecall();
+  }
+
+  private tickSupportProximity(dt: number): void {
+    // Reset support damage reduction for all beys each tick
+    this.state.beyblades.forEach(bey => { bey._supportDmgReduction = 0; });
+
+    // For each active bey, check if any same-team bey is within SUPPORT_RADIUS
+    this.state.beyblades.forEach((bey, sid) => {
+      if (!bey.isActive) return;
+      const myTeam = teamMap.get(beyOwner.get(sid) ?? sid) ?? null;
+      if (!myTeam) return;
+
+      this.state.beyblades.forEach((teammate, tid) => {
+        if (tid === sid || !teammate.isActive) return;
+        const tmTeam = teamMap.get(beyOwner.get(tid) ?? tid) ?? null;
+        if (tmTeam !== myTeam) return;
+
+        const dist = Math.hypot(bey.x - teammate.x, bey.y - teammate.y);
+        if (dist < TeamBattleRoom.SUPPORT_RADIUS) {
+          const bonus = 1 - dist / TeamBattleRoom.SUPPORT_RADIUS;
+          // Spin regen from nearby teammate
+          bey.spin = Math.min(bey.maxSpin, bey.spin + 0.5 * bonus * dt);
+          // Accumulate damage reduction (capped at 8%)
+          bey._supportDmgReduction = Math.min(0.08, bey._supportDmgReduction + 0.08 * bonus);
+          // Broadcast support-active (throttled: only first pair per tick is fine)
+          this.broadcast("support-active", { beyId: bey.id, teammateId: teammate.id, bonus });
+        }
+      });
+    });
+  }
+
+  // #27: Burst recall ─────────────────────────────────────────────────────────
+
+  /**
+   * Intercept a burst before it eliminates the victim.  If the victim still has
+   * a recall charge available, freeze the fragment and start a 15-second recall
+   * window for teammates.  Returns `true` (consumed) to suppress default elimination.
+   */
+  protected override onBurstOccurred(victim: Beyblade, _attacker: Beyblade): boolean {
+    // Each bey may only be recalled once per match
+    if (victim.recallUsed) return false;
+
+    const ownerSid = beyOwner.get(victim.id) ?? victim.id;
+    const team = teamMap.get(ownerSid);
+    if (!team) return false;
+
+    // Only intercept if there is at least one active teammate to do the recall
+    let hasTeammate = false;
+    this.state.beyblades.forEach((bey, sid) => {
+      if (hasTeammate || sid === victim.id || !bey.isActive) return;
+      if (teamMap.get(beyOwner.get(sid) ?? sid) === team) hasTeammate = true;
+    });
+    if (!hasTeammate) return false;
+
+    // Mark as pending — client renders it as a dim fragment
+    victim.isBurstPending = true;
+    // Freeze the fragment so it stays at its burst position
+    this.physics.setLinearVelocity(victim.id, 0, 0);
+    // Minimal spin so it reads as alive in Colyseus state
+    victim.spin = victim.maxSpin * 0.03;
+
+    const fragmentId = `${victim.id}-recall`;
+    const now = Date.now();
+    recallEntries.set(fragmentId, {
+      beyId: victim.id,
+      teamId: team,
+      fragmentId,
+      createdAt: now,
+      expiresAt: now + 15_000,
+      recallStartMs: new Map(),
+    });
+
+    this.broadcast("burst-recall-start", { fragmentId, beyId: victim.id, teamId: team });
+    return true; // consumed — skip default burst elimination
+  }
+
+  /** Per-tick recall logic: teammate proximity check, expiry, and opponent destruction. */
+  private tickBurstRecall(): void {
+    if (recallEntries.size === 0) return;
+    const now = Date.now();
+
+    const RECALL_RADIUS = 60;        // px — teammate must stand within this distance
+    const RECALL_DURATION_MS = 2000; // ms — continuous proximity required for recall
+    const DESTROY_RADIUS = 60;       // px — opponent must overlap fragment to destroy it
+    const DESTROY_DURATION_MS = 1000; // ms — continuous overlap required to destroy fragment
+
+    recallEntries.forEach((entry, fragmentId) => {
+      const victim = this.state.beyblades.get(entry.beyId);
+      if (!victim || !victim.isBurstPending) {
+        recallEntries.delete(fragmentId);
+        return;
+      }
+
+      // ── 1. Fragment expiry ───────────────────────────────────────────────────
+      if (now >= entry.expiresAt) {
+        victim.isBurstPending = false;
+        victim.isActive = false;
+        victim.isBurst = true;
+        victim.eliminationType = "burst";
+        victim.spin = 0;
+        this.broadcast("burst", {
+          beyId: victim.id,
+          x: victim.x,
+          y: victim.y,
+        });
+        recallEntries.delete(fragmentId);
+        return;
+      }
+
+      // ── 2. Teammate recall proximity ────────────────────────────────────────
+      let recalled = false;
+      this.state.beyblades.forEach((bey, sid) => {
+        if (recalled) return;
+        if (sid === entry.beyId || !bey.isActive) return;
+        const ownerSid = beyOwner.get(sid) ?? sid;
+        if (teamMap.get(ownerSid) !== entry.teamId) return;
+
+        const dist = Math.hypot(bey.x - victim.x, bey.y - victim.y);
+        if (dist < RECALL_RADIUS) {
+          if (!entry.recallStartMs.has(sid)) entry.recallStartMs.set(sid, now);
+          const elapsed = now - (entry.recallStartMs.get(sid) ?? now);
+          if (elapsed >= RECALL_DURATION_MS) {
+            // ── Recall complete ──────────────────────────────────────────────
+            victim.isBurstPending = false;
+            victim.recallUsed = true;
+            victim.spin = victim.maxSpin * 0.30;
+            victim.power = 20;
+            victim.controlAuthority = Math.max(50, victim.controlAuthority);
+            recallEntries.delete(fragmentId);
+            this.broadcast("burst-recall-complete", { beyId: victim.id, revivedBy: bey.id });
+            recalled = true;
+          }
+        } else {
+          // Out of range — reset this teammate's timer
+          entry.recallStartMs.delete(sid);
+        }
+      });
+      if (recalled) return;
+
+      // ── 3. Opponent fragment destruction (spin over it for 1s) ─────────────
+      if (!recallEntries.has(fragmentId)) return;
+      this.state.beyblades.forEach((bey, sid) => {
+        if (recalled) return;
+        if (sid === entry.beyId || !bey.isActive) return;
+        const ownerSid = beyOwner.get(sid) ?? sid;
+        // Opponent only
+        if (teamMap.get(ownerSid) === entry.teamId) return;
+
+        const dist = Math.hypot(bey.x - victim.x, bey.y - victim.y);
+        const destroyKey = `destroy_${sid}`;
+        if (dist < DESTROY_RADIUS) {
+          if (!entry.recallStartMs.has(destroyKey)) entry.recallStartMs.set(destroyKey, now);
+          const elapsed = now - (entry.recallStartMs.get(destroyKey) ?? now);
+          if (elapsed >= DESTROY_DURATION_MS) {
+            // Fragment destroyed by opponent
+            victim.isBurstPending = false;
+            victim.isActive = false;
+            victim.isBurst = true;
+            victim.eliminationType = "burst";
+            victim.spin = 0;
+            this.broadcast("burst", { beyId: victim.id, x: victim.x, y: victim.y });
+            this.broadcast("burst-recall-destroyed", { fragmentId });
+            recallEntries.delete(fragmentId);
+            recalled = true;
+          }
+        } else {
+          entry.recallStartMs.delete(destroyKey);
+        }
+      });
+    });
   }
 
   /**

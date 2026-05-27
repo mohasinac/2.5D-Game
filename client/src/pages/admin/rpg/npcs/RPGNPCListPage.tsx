@@ -1,16 +1,18 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { Link, useNavigate } from "react-router-dom";
+import { collection, getDocs, deleteDoc, doc, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import type { NPC } from "@/rpg/data/schemas";
 import { TABLE_TH, TABLE_TD, BTN_DANGER, INP } from "../rpgAdminShared";
 import { NPCSpriteBlock, NPCTypeBadge } from "../components/NPCSpriteBlock";
 
 export default function RPGNPCListPage() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<NPC[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [cloning, setCloning] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -21,6 +23,23 @@ export default function RPGNPCListPage() {
       finally { setLoading(false); }
     })();
   }, []);
+
+  const handleClone = async (n: NPC) => {
+    const newId = `${n.id}_copy_${Date.now()}`;
+    setCloning(n.id);
+    try {
+      const { id: _id, ...rest } = n;
+      await setDoc(doc(db, COLLECTIONS.RPG_NPCS, newId), {
+        ...rest,
+        displayName: `${n.displayName} (Copy)`,
+        templateId: n.id,
+        // Reset battle records and quest progress for clone
+        defaultDialogueId: rest.defaultDialogueId ?? "",
+      });
+      navigate(`/admin/rpg/npcs/${newId}/edit`);
+    } catch (e) { console.error(e); }
+    finally { setCloning(null); }
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm(`Delete NPC "${id}"?`)) return;
@@ -114,13 +133,23 @@ export default function RPGNPCListPage() {
                     <span className="text-gray-500 text-[10px] font-mono">{n.spriteSheetId || "—"}</span>
                   </td>
                   <td className={TABLE_TD}>
-                    <button
-                      onClick={() => handleDelete(n.id)}
-                      disabled={deleting === n.id}
-                      className={BTN_DANGER + " text-xs py-1 px-2"}
-                    >
-                      {deleting === n.id ? "..." : "Delete"}
-                    </button>
+                    <div className="flex gap-1.5 items-center">
+                      <button
+                        onClick={() => handleClone(n)}
+                        disabled={cloning === n.id}
+                        title="Clone as template — reuse in another arc or map"
+                        className="text-xs py-1 px-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors"
+                      >
+                        {cloning === n.id ? "…" : "Clone"}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(n.id)}
+                        disabled={deleting === n.id}
+                        className={BTN_DANGER + " text-xs py-1 px-2"}
+                      >
+                        {deleting === n.id ? "..." : "Delete"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

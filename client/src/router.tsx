@@ -108,6 +108,11 @@ import { ElementStatDefsPage } from "./pages/admin/ElementStatDefsPage";
 import { ArenaTemplateDefsPage } from "./pages/admin/ArenaTemplateDefsPage";
 import { RPGTriggerModeDefsPage } from "./pages/admin/RPGTriggerModeDefsPage";
 import { RPGFacingDefsPage } from "./pages/admin/RPGFacingDefsPage";
+import { GimmickSynergiesPage } from "./pages/admin/GimmickSynergiesPage";
+import { BeyAccessoriesPage } from "./pages/admin/BeyAccessoriesPage";
+import { BeyAccessoryEditPage } from "./pages/admin/BeyAccessoryEditPage";
+import { BoostPadDefsPage } from "./pages/admin/BoostPadDefsPage";
+import { StatusConditionDefsPage } from "./pages/admin/StatusConditionDefsPage";
 
 // 2.5D part system pages
 import { PartSearchPage } from "./pages/admin/2d/PartSearchPage";
@@ -329,7 +334,13 @@ export const router = createBrowserRouter([
       { path: "round-modifiers",    element: <RoundModifiersPage /> },
       { path: "mechanic-defs",      element: <MechanicDefsPage /> },
       { path: "gimmick-defs",       element: <GimmickDefsPage /> },
-      { path: "geometry-defs",      element: <GeometryDefsPage /> },
+      { path: "gimmick-synergies",        element: <GimmickSynergiesPage /> },
+      { path: "bey-accessories",          element: <BeyAccessoriesPage /> },
+      { path: "bey-accessories/create",   element: <BeyAccessoryEditPage /> },
+      { path: "bey-accessories/:id",      element: <BeyAccessoryEditPage /> },
+      { path: "boost-pad-defs",           element: <BoostPadDefsPage /> },
+      { path: "status-condition-defs",    element: <StatusConditionDefsPage /> },
+      { path: "geometry-defs",            element: <GeometryDefsPage /> },
       { path: "stat-defs",          element: <StatDefsPage /> },
 
       // ── Catalog CRUD ──

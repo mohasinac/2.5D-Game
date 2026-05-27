@@ -38,6 +38,10 @@ interface CollisionResult {
   contactAngle2: number;
 }
 
+// ── Lag Compensation: position history ring (10 ticks ≈ 166ms at 60Hz) ─────────
+const POSITION_HISTORY_SIZE = 10;
+interface PositionSnapshot { x: number; y: number; tick: number; }
+
 export class PhysicsEngine {
   private engine: Matter.Engine;
   private world: Matter.World;
@@ -50,6 +54,10 @@ export class PhysicsEngine {
   private arenaRadius: number = 0;
 
   private obstacles: Map<string, Matter.Body> = new Map();
+
+  // #10: Per-body position history for lag-compensated collision detection
+  private positionHistory: Map<string, PositionSnapshot[]> = new Map();
+  private currentTick = 0;
 
   constructor() {
     this.engine = Matter.Engine.create({
@@ -200,6 +208,58 @@ export class PhysicsEngine {
   update(deltaTime?: number): void {
     const dt = deltaTime ?? (1000 / 60);
     Matter.Engine.update(this.engine, dt);
+    this.currentTick++;
+
+    // ── Max Velocity Clamping (Valorant) ─────────────────────────────────────────
+    // Prevents stacked impulses (special + AoE + spin zone) from launching beys
+    // outside the arena. Clamps each active body without zeroing angular momentum.
+    const MAX_SPEED = 600; // px/s
+    for (const [id, body] of this.bodies.entries()) {
+      const speed = Math.hypot(body.velocity.x, body.velocity.y);
+      if (speed > MAX_SPEED) {
+        Matter.Body.setVelocity(body, {
+          x: (body.velocity.x / speed) * MAX_SPEED,
+          y: (body.velocity.y / speed) * MAX_SPEED,
+        });
+      }
+      // #10: Record position in history ring
+      let hist = this.positionHistory.get(id);
+      if (!hist) { hist = []; this.positionHistory.set(id, hist); }
+      hist.push({ x: body.position.x, y: body.position.y, tick: this.currentTick });
+      if (hist.length > POSITION_HISTORY_SIZE) hist.shift();
+    }
+  }
+
+  /** #10: Get the rewound position for `id` at the given past tick.
+   *  Returns the closest snapshot older-or-equal to `targetTick`, or current position if history too short. */
+  getRewindPosition(id: string, targetTick: number): { x: number; y: number } | null {
+    const body = this.bodies.get(id);
+    if (!body) return null;
+    const hist = this.positionHistory.get(id);
+    if (!hist || hist.length === 0) return { x: body.position.x, y: body.position.y };
+    // Walk backwards for the first snapshot with tick <= targetTick
+    for (let i = hist.length - 1; i >= 0; i--) {
+      if (hist[i].tick <= targetTick) return { x: hist[i].x, y: hist[i].y };
+    }
+    // History doesn't go back far enough — use oldest we have
+    return { x: hist[0].x, y: hist[0].y };
+  }
+
+  /** #10: Lag-compensated collision check. Rewinds defender to attackerPingTick, checks overlap.
+   *  Falls back to current position if history is too short.
+   *  Returns true if the two bodies overlap (with their physics radii) at that point in time. */
+  checkLagCompensatedCollision(attackerId: string, defenderId: string, attackerPingTicks: number): boolean {
+    const attackerBody = this.bodies.get(attackerId);
+    const defenderBody = this.bodies.get(defenderId);
+    if (!attackerBody || !defenderBody) return false;
+    const targetTick = this.currentTick - attackerPingTicks;
+    const defPos = this.getRewindPosition(defenderId, targetTick) ?? defenderBody.position;
+    const dx = attackerBody.position.x - defPos.x;
+    const dy = attackerBody.position.y - defPos.y;
+    const distSq = dx * dx + dy * dy;
+    const rA = (attackerBody as any).circleRadius ?? 24;
+    const rD = (defenderBody as any).circleRadius ?? 24;
+    return distSq <= (rA + rD) * (rA + rD);
   }
 
   getBodyState(id: string): {
@@ -315,6 +375,18 @@ export class PhysicsEngine {
     // (Element type effectiveness is applied in BattleRoom after this call, at the collision loop)
     let outDamageFrom1 = rawDamage * contactMult1 * beyblade1.damageMultiplier * attackBuff1 * heightOverlap;
     let outDamageFrom2 = rawDamage * contactMult2 * beyblade2.damageMultiplier * attackBuff2 * heightOverlap;
+
+    // ── Spin Differential Damage Scaling (GBA Beyblade) ─────────────────────────
+    // Faster-spinning attacker deals up to ×1.5 damage when at max spin advantage.
+    const spinAdv1 = Math.max(0, spinFrac1 - spinFrac2);
+    const spinAdv2 = Math.max(0, spinFrac2 - spinFrac1);
+    const SPIN_DIFF_BONUS = 0.5;
+    outDamageFrom1 *= (1 + spinAdv1 * SPIN_DIFF_BONUS);
+    outDamageFrom2 *= (1 + spinAdv2 * SPIN_DIFF_BONUS);
+
+    // #26: Bit-Beast Active — +10% contact damage while special is firing
+    if ((beyblade1 as any).bitBeastActive) outDamageFrom1 *= 1.10;
+    if ((beyblade2 as any).bitBeastActive) outDamageFrom2 *= 1.10;
 
     // Spin steal uses RAW damage (pre-defense) for a fair stamina calculation
     const oppositeSpin = beyblade1.spinDirection !== beyblade2.spinDirection;

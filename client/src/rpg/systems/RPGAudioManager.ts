@@ -7,6 +7,11 @@ export class RPGAudioManager {
   private volume = 0.7;
   private muted = false;
 
+  // #16: Terror radius tension music layer
+  private tensionAudio: HTMLAudioElement | null = null;
+  private tensionTrackId: string | null = null;
+  private tensionVolume = 0;
+
   registerBgmTrack(trackId: string, url: string): void {
     this.bgmUrls.set(trackId, url);
   }
@@ -63,6 +68,35 @@ export class RPGAudioManager {
 
   getCurrentTrack(): string | null {
     return this.currentBgmId;
+  }
+
+  // #16: Terror radius tension music — fade in/out based on NPC proximity warning.
+  setTensionTrack(trackId: string): void {
+    this.tensionTrackId = trackId;
+  }
+
+  async setTensionLevel(level: "low" | "high" | "none"): Promise<void> {
+    const targetVol = level === "high" ? 0.6 : level === "low" ? 0.3 : 0;
+    if (targetVol > 0 && !this.tensionAudio && this.tensionTrackId) {
+      const url = this.bgmUrls.get(this.tensionTrackId);
+      if (url) {
+        this.tensionAudio = new Audio(url);
+        this.tensionAudio.loop = true;
+        this.tensionAudio.volume = 0;
+        try { await this.tensionAudio.play(); } catch { /* autoplay blocked */ }
+      }
+    }
+    if (this.tensionAudio) {
+      const current = this.tensionAudio.volume;
+      const finalVol = this.muted ? 0 : Math.min(targetVol, this.volume);
+      await this.fadeVolume(this.tensionAudio, current, finalVol, 400);
+      if (targetVol === 0) {
+        this.tensionAudio.pause();
+        this.tensionAudio.src = "";
+        this.tensionAudio = null;
+      }
+    }
+    this.tensionVolume = targetVol;
   }
 
   private fadeVolume(

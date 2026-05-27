@@ -22,6 +22,10 @@ const quickLinks = [
   { label:"Game Monitor", href:"http://localhost:2567/colyseus", icon:"📡", desc:"Colyseus server monitor", external:true },
   { label:"Mechanic Defs", href:"/admin/mechanic-defs", icon:"⚙️", desc:"31 atomic mechanic handler definitions" },
   { label:"Gimmick Defs", href:"/admin/gimmick-defs", icon:"🧬", desc:"27 gimmick recipes (behaviorRef bundles)" },
+  { label:"Gimmick Synergies", href:"/admin/gimmick-synergies", icon:"⚗️", desc:"Gimmick × part material synergy bonuses" },
+  { label:"Bey Accessories",   href:"/admin/bey-accessories",   icon:"💎", desc:"Pokémon held-item style passive accessories" },
+  { label:"Boost Pad Defs",    href:"/admin/boost-pad-defs",    icon:"⚡", desc:"F-Zero style directional speed strips" },
+  { label:"Status Conditions", href:"/admin/status-condition-defs", icon:"🌡️", desc:"Element-based status effect definitions" },
   { label:"Settings", href:"/admin/settings", icon:"🔧", desc:"Game-wide settings" },
 ];
 
