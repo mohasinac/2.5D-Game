@@ -21,6 +21,16 @@ export type ItemCategory  = string; // rpg_item_category_defs
 export type ArcId         = string; // rpg_arcs
 export type RouteId       = string; // rpg_routes
 
+// ── Protagonist Definition ────────────────────────────────────────────────────
+// Used for multi-protagonist tournament battles (Kenny, Max, Tyson etc.)
+export interface ProtagonistDef {
+  npcId: string;
+  beybladeId: string;
+  displayName: string;
+  /** If true the player controls this battle. If false it auto-resolves as a win. */
+  playerControlled: boolean;
+}
+
 // ── Arc (Generation) Definition — rpg_arcs ───────────────────────────────────
 export interface ArcDef {
   id: ArcId;
@@ -31,6 +41,19 @@ export interface ArcDef {
   previousArcId?: string;
   completionFlagId: string;
   description: string;
+  /**
+   * Hard level cap while this arc is active. XP still accumulates but the
+   * displayed level and gate checks are clamped to this value, keeping AI
+   * difficulty balanced. Set null / omit to use MAX_PLAYER_LEVEL.
+   */
+  levelCap?: number;
+  /**
+   * If true, this arc uses team-match scoring (Arc 2+).
+   * Team points are tracked separately in the store.
+   */
+  teamBattles?: boolean;
+  /** Ordered list of protagonist definitions for tournament-mode arcs. */
+  protagonists?: ProtagonistDef[];
 }
 
 // ── Route Definition — rpg_routes ────────────────────────────────────────────
@@ -128,11 +151,25 @@ export interface NPCBattleConfig {
   lockedDialogueId?: string;
   rematchDialogueId?: string;
   canRematch: boolean;
+  /**
+   * Count-based rematch cooldown. After the player beats this NPC, they must
+   * fight this many OTHER battles before a rematch is available.
+   * 0 / undefined = rematch immediately; 1-3 = short cooldown (Billy/random);
+   * higher values for rivals like Carlos or Kai.
+   */
+  rematchCooldownBattles?: number;
+  /**
+   * XP awarded on loss (partial reward for effort). Defaults to 0.
+   * Lets casual players still progress when grinding tough NPCs.
+   */
+  lossXpReward?: XPReward;
   gate?: GateCondition;
   rewardQuestId?: string;
   rewardFlags?: Record<string, boolean>;
   awardsBadgeId?: string;
   xpReward?: XPReward;
+  /** Team points awarded on win (Arc 2 team matches). */
+  teamPointsReward?: number;
 }
 
 export interface NPC {
@@ -149,6 +186,13 @@ export interface NPC {
   questIds?: string[];
   routeExclusiveFor?: RouteId;
   arcIds?: ArcId[];
+  /**
+   * Chase / catch mechanic. If set, this NPC chases the player during patrol.
+   * When the player enters within `catchRadius` tiles (Chebyshev), the
+   * `catchEventId` StoryEvent is fired (e.g. Grandpa catches Tyson in the dojo).
+   */
+  catchRadius?: number;
+  catchEventId?: string;
 }
 
 // ── Dialogue ──────────────────────────────────────────────────────────────────
@@ -243,7 +287,12 @@ export type StoryEventStepType =
   | "screen-flash" | "screen-fade" | "spawn-npc" | "despawn-npc"
   | "lock-player" | "unlock-player" | "start-battle"
   | "award-item" | "award-beyblade" | "award-badge"
-  | "change-map" | "show-title-card";
+  | "change-map" | "show-title-card"
+  // Tournament / team-match steps
+  | "award-team-points"    // add teamPoints to store (Arc 2 team scoring)
+  | "set-arc-level-cap"    // set/clear the active arc level cap
+  | "tournament-advance"   // signal UI to advance the bracket display
+  | "save-checkpoint";     // trigger a hard SaveSystem save (checkpoint)
 
 export interface StoryEventStep {
   type: StoryEventStepType;
@@ -265,6 +314,10 @@ export interface StoryEventStep {
   titleText?: string;
   subtitleText?: string;
   waitForInput?: boolean;
+  /** "award-team-points" — number of points to add to the team score. */
+  teamPoints?: number;
+  /** "set-arc-level-cap" — cap to apply; null/0 clears the cap. */
+  levelCap?: number | null;
 }
 
 export interface StoryEvent {
@@ -335,7 +388,26 @@ export interface BattleParams {
     questId?: string;
     storyEventId?: string;
     isBossEncounter: boolean;
+    /** Protagonist playing this battle. If omitted = Tyson (main player route). */
+    protagonistNpcId?: string;
+    /** If set the server auto-resolves this outcome (scripted Kenny/Max battles). */
+    forcedOutcome?: "win" | "loss";
   };
+  /**
+   * Player level at time of battle — sent to StoryBattleRoom so the server
+   * can normalise AI spin/stats against the player's current power tier.
+   */
+  playerLevel?: number;
+  /**
+   * Active arc level cap — AI stats are also capped at the same ceiling,
+   * keeping difficulty proportional throughout the arc.
+   */
+  arcLevelCap?: number;
+  /**
+   * Launch power multiplier from equipped launcher upgrade (e.g. 1.1 = +10%).
+   * Applied by StoryBattleRoom when setting initial spin.
+   */
+  launchBoost?: number;
 }
 
 export interface BattleResult {
