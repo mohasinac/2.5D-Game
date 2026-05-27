@@ -16,9 +16,23 @@ import { BeyLinkHijackHUD } from "@/components/game/BeyLinkHijackHUD";
 import { CameraControls } from "@/components/game/CameraControls";
 import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { LoadingProgress } from "@/components/LoadingProgress";
-import type { ServerBeyblade } from "@/types/game";
+import type { ServerBeyblade, ServerGameState } from "@/types/game";
 
 const TEAM_BATTLE_ROOM = "team_battle_room";
+
+// Default arena game state — used as fallback before Colyseus connects so the
+// renderer initialises and draws the arena background from frame 1 (no black screen).
+const DEFAULT_GAME_STATE: ServerGameState = {
+  matchId: "default", mode: "single-battle-pvp", status: "waiting",
+  timer: 0, startTime: 0, winner: "", beyblades: new Map(),
+  arena: {
+    id: "default", name: "Standard Arena",
+    width: 1080, height: 1080, shape: "circle", theme: "default",
+    rotation: 0, wallEnabled: true, wallAngle: 0,
+    worldBgType: "none", worldBgColor: "", worldBgImageUrl: "",
+    worldBgOpacity: 1.0, worldBgFit: "cover", worldBgBlurPx: 0,
+  },
+};
 
 export function TeamBattleGamePage() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -73,7 +87,9 @@ export function TeamBattleGamePage() {
 
   useEffect(() => {
     let raf: number;
-    const loop = () => { render(gameStateRef.current, beybladesRef.current, visualEventQueueRef.current); raf = requestAnimationFrame(loop); };
+    // Use DEFAULT_GAME_STATE as fallback so the renderer builds the arena on frame 1
+    // even before Colyseus connects — eliminates black screen during connection.
+    const loop = () => { render(gameStateRef.current ?? DEFAULT_GAME_STATE, beybladesRef.current, visualEventQueueRef.current); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, [render]);

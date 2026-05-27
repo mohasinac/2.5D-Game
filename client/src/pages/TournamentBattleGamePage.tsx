@@ -10,6 +10,7 @@ import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getBeybladeStability, mapToRecord, TYPE_COLORS } from "@/types/game";
+import type { ServerGameState } from "@/types/game";
 import { SoundManager } from "@/game/audio/SoundManager";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
@@ -32,6 +33,20 @@ import { useLaunchInput } from "@/game/hooks/useLaunchInput";
 
 const ROUND_NAMES: Record<number, string> = { 1: "Round 1", 2: "Semifinals", 3: "Final" };
 const TYPE_FLASH: Record<string, string> = { attack: "#ff4444", defense: "#4488ff", stamina: "#44ff88", balanced: "#ffcc44" };
+
+// Default arena game state — used as fallback before Colyseus connects so the
+// renderer initialises and draws the arena background from frame 1 (no black screen).
+const DEFAULT_GAME_STATE: ServerGameState = {
+  matchId: "default", mode: "tournament", status: "waiting",
+  timer: 0, startTime: 0, winner: "", beyblades: new Map(),
+  arena: {
+    id: "default", name: "Standard Arena",
+    width: 1080, height: 1080, shape: "circle", theme: "default",
+    rotation: 0, wallEnabled: true, wallAngle: 0,
+    worldBgType: "none", worldBgColor: "", worldBgImageUrl: "",
+    worldBgOpacity: 1.0, worldBgFit: "cover", worldBgBlurPx: 0,
+  },
+};
 
 export function TournamentBattleGamePage() {
   const { tournamentId, matchId } = useParams<{ tournamentId: string; matchId: string }>();
@@ -138,7 +153,9 @@ export function TournamentBattleGamePage() {
 
   useEffect(() => {
     let raf: number;
-    const loop = () => { render(gameStateRef.current, beybladesRef.current, visualEventQueueRef.current); raf = requestAnimationFrame(loop); };
+    // Use DEFAULT_GAME_STATE as fallback so the renderer builds the arena on frame 1
+    // even before Colyseus connects — eliminates black screen during connection.
+    const loop = () => { render(gameStateRef.current ?? DEFAULT_GAME_STATE, beybladesRef.current, visualEventQueueRef.current); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, [render]);

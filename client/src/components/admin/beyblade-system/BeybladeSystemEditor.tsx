@@ -2,7 +2,7 @@
  * BeybladeSystemEditor — compositor with dynamic slot tabs.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTabFromUrl } from "@/hooks/useTabFromUrl";
 import { doc, getDoc, getDocs, updateDoc, serverTimestamp, collection, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
@@ -74,15 +74,21 @@ export function BeybladeSystemEditor({ systemId }: Props) {
     })();
   }, [systemId]);
 
+  // Track in-flight and already-loaded part IDs so fetchPart is stable (no partCache dep).
+  // A ref-based seen-set prevents duplicate Firestore reads when the effect re-runs.
+  const loadedPartIdsRef = useRef<Set<string>>(new Set());
   const fetchPart = useCallback(async (col: string, id: string) => {
-    if (!id || partCache[id]) return;
+    if (!id || loadedPartIdsRef.current.has(id)) return;
+    loadedPartIdsRef.current.add(id); // mark before async fetch to prevent duplicate loads
     try {
       const snap = await getDoc(doc(db, col, id));
       if (snap.exists()) {
         setPartCache((c) => ({ ...c, [id]: { id: snap.id, ...snap.data() } }));
       }
-    } catch { /* ignore */ }
-  }, [partCache]);
+    } catch {
+      loadedPartIdsRef.current.delete(id); // allow retry on error
+    }
+  }, []); // stable — no partCache dependency; uses ref instead
 
   const [subPartDocs, setSubPartDocs] = useState<PartDoc[]>([]);
   useEffect(() => {
