@@ -1,6 +1,6 @@
 # Beyblade Case Studies — Master Index
 
-Total: **585 cases** across 10 files + 1 master reference.
+Total: **600 cases** across 11 files + 1 master reference.
 
 ---
 
@@ -18,6 +18,7 @@ Total: **585 cases** across 10 files + 1 master reference.
 | [8 case study.md](8%20case%20study.md) | 375–415 | BX/UX blades, ratchets, bits |
 | [9 case study.md](9%20case%20study.md) | 392–544 | Burst series (all subsystems) full lineage analysis |
 | [10 case study.md](10%20case%20study.md) | 545–585 | Arena mechanics, stadiums, launch physics |
+| [11 case study.md](11%20case%20study.md) | 586–600 | Special move physics: real-part archetypes → game-engine derivation |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | Engine reference: constants, formulas, normalization |
 
 ### Numbering Notes
@@ -836,6 +837,30 @@ Total: **585 cases** across 10 files + 1 master reference.
 
 ---
 
+## Part 11 — Cases 586–600
+
+> Special move physics: real-part physics archetypes, per-move analysis, engine-unit derivation, and meta-mechanics
+
+| # | Title | Gen | System | Type | Tags |
+|---|-------|-----|--------|------|------|
+| 586 | Special Move Taxonomy: Four Physics Archetypes | Cross-Gen | — | Mechanic | special-move, taxonomy, archetypes |
+| 587 | Stampede Rush (Linear-Burst): AR Flat-Face Smash + EG Spring Burst | Cross-Gen | — | Mechanic | linear-burst, smash, EG-spring |
+| 588 | Gyro Anchor (Anchor): Gyroscopic Stability + Bearing LAD + Spin Steal | Cross-Gen | — | Mechanic | anchor, gyroscope, bearing, spin-steal |
+| 589 | Spin Recovery (Orbital): Life-After-Death Bowl Orbit + Centripetal Recovery | Cross-Gen | — | Mechanic | orbital, LAD, bowl-orbit, spin-recovery |
+| 590 | Tactical Burst (Directional-Burst): 70% Smash + Partial Spin Recovery | Cross-Gen | — | Mechanic | directional-burst, balanced, hybrid |
+| 591 | Shock Pulse (Shockwave): AoE Radial Impulse from Gyroscopic KE Release | Cross-Gen | — | Mechanic | shockwave, AoE, radial-impulse |
+| 592 | Ascending Dragon Bite (Knockup): Upper-Attack Sweep → Airborne Bite | Cross-Gen | — | Mechanic | knockup, upper-attack, aerial, two-phase |
+| 593 | Storm Bringer (Aerial-Launch): Self-Launch Parabola + Dive Strike + Landing AoE | Cross-Gen | — | Mechanic | aerial-launch, parabola, spring-launch |
+| 594 | Special Move Power Cost and Cooldown Architecture | Cross-Gen | — | Mechanic | power-cost, cooldown, balance |
+| 595 | Multi-Phase Wind-Up / Active / Wind-Down Timing: Frame Data | Cross-Gen | — | Mechanic | phase-timing, frame-data, peak |
+| 596 | Special Clash Outcome Matrix: Archetype-vs-Archetype Interactions | Cross-Gen | — | Mechanic | clash-matrix, interaction, outcome |
+| 597 | Game-Engine Unit Derivation: SI Physics to Engine Parameters | Cross-Gen | — | Mechanic | engine-units, calibration, derivation |
+| 598 | Beyblade Type to Move Archetype Assignment: Physics-Based Default Mapping | Cross-Gen | — | Mechanic | type-assignment, default-map, archetype |
+| 599 | AI Special Move Activation Thresholds: Hell, Hard, Medium Decision Physics | Cross-Gen | — | Mechanic | AI, activation, threshold, difficulty |
+| 600 | Special Move Design Constraints and Balance Ceiling | Cross-Gen | — | Mechanic | balance-ceiling, constraints, design-space |
+
+---
+
 ## Tag Indexes
 
 ### By Generation
@@ -854,7 +879,7 @@ Total: **585 cases** across 10 files + 1 master reference.
 | **Gen2-ZeroG** | 310–314, 316–317, 319–324, 367 | ~14 |
 | **Gen3-Burst** | 70–73, 244–245, 368–374, 392–544 | ~170+ |
 | **Gen4-BX** | 246–252, 354–358, 375–415, 548–552, 580 | ~60+ |
-| **Cross-Gen** | 15, 43, 546, 551, 555–556, 578–579, 581–585 | ~12 |
+| **Cross-Gen** | 15, 43, 546, 551, 555–556, 578–579, 581–585, 586–600 | ~27 |
 
 ### By Part Type
 
@@ -893,6 +918,7 @@ Total: **585 cases** across 10 files + 1 master reference.
 | **Face Bolt / Stone Face** | 42–43 |
 | **Mechanic** | 1–13, 15, 547, 555–557, 581–585 |
 | **Assembly** | 17–19, 49, 126, 237, 246–248, 533, 537, 542–544 |
+| **Special Move** | 586–600 |
 
 ---
 

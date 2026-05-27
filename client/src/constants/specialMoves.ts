@@ -1,6 +1,10 @@
-// Client mirror of the server special-moves seed.
+// Client mirror of the server special-moves registry.
 // Used by SpecialMoveHUD and the admin special-move CRUD page.
-// See plan Phase 9.
+//
+// ─── NOTE: Roster is intentionally sparse — special moves are being redesigned
+// from first principles using Case Study 11 (case study/11 case study.md).
+// Add new moves here as they are derived. The single entry below is kept as
+// a structural reference only.
 
 export type SpecialMoveKind =
   | "linear-burst"
@@ -8,6 +12,9 @@ export type SpecialMoveKind =
   | "orbital"
   | "directional-burst"
   | "shockwave"
+  | "aerial-launch"
+  | "knockup"
+  | "homerun"
   | "custom";
 
 export interface SpecialMoveDef {
@@ -28,6 +35,10 @@ export interface SpecialMoveDef {
   flashColor: string;
 }
 
+// ─── Move roster ──────────────────────────────────────────────────────────────
+// REFERENCE EXAMPLE ONLY — kept so the HUD has something to render.
+// Replace with real CS11-derived moves.
+
 export const SPECIAL_MOVES: Record<string, SpecialMoveDef> = {
   stampede_rush: {
     id: "stampede_rush",
@@ -39,53 +50,13 @@ export const SPECIAL_MOVES: Record<string, SpecialMoveDef> = {
     effects: { linearImpulse: 5000, invulnerabilityMs: 200, spinDelta: 60 },
     flashColor: "#ff5522",
   },
-  gyro_anchor: {
-    id: "gyro_anchor",
-    name: "Gyro Anchor",
-    kind: "anchor",
-    iconEmoji: "🛡️",
-    cooldownSec: 4,
-    durationMs: 1500,
-    effects: { spinDelta: 250, invulnerabilityMs: 1500 },
-    flashColor: "#4488ff",
-  },
-  spin_recovery: {
-    id: "spin_recovery",
-    name: "Spin Recovery",
-    kind: "orbital",
-    iconEmoji: "♻️",
-    cooldownSec: 3,
-    durationMs: 1000,
-    effects: { spinDelta: 400 },
-    flashColor: "#44ff88",
-  },
-  tactical_burst: {
-    id: "tactical_burst",
-    name: "Tactical Burst",
-    kind: "directional-burst",
-    iconEmoji: "💫",
-    cooldownSec: 3,
-    durationMs: 600,
-    effects: { linearImpulse: 3500, spinDelta: 150 },
-    flashColor: "#ffcc44",
-  },
-  shock_pulse: {
-    id: "shock_pulse",
-    name: "Shock Pulse",
-    kind: "shockwave",
-    iconEmoji: "💥",
-    cooldownSec: 5,
-    durationMs: 700,
-    effects: { aoeRadiusPx: 250, knockbackImpulse: 6000, invulnerabilityMs: 250 },
-    flashColor: "#ff44aa",
-  },
 };
 
 export const DEFAULT_TYPE_TO_MOVE: Record<string, string> = {
   attack:   "stampede_rush",
-  defense:  "gyro_anchor",
-  stamina:  "spin_recovery",
-  balanced: "tactical_burst",
+  defense:  "stampede_rush",
+  stamina:  "stampede_rush",
+  balanced: "stampede_rush",
 };
 
 export function getSpecialMoveById(id: string | undefined | null): SpecialMoveDef | null {
@@ -99,8 +70,8 @@ export function resolveSpecialMove(opts: {
 }): SpecialMoveDef {
   return (
     getSpecialMoveById(opts.specialMoveId) ??
-    getSpecialMoveById(DEFAULT_TYPE_TO_MOVE[opts.type ?? "balanced"]) ??
-    SPECIAL_MOVES.tactical_burst
+    getSpecialMoveById(DEFAULT_TYPE_TO_MOVE[opts.type ?? "attack"]) ??
+    SPECIAL_MOVES.stampede_rush
   );
 }
 

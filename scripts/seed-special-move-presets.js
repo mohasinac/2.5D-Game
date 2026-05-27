@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 // scripts/seed-special-move-presets.js
-// Seeds special_move_presets — "quick preset" cards admins pick when configuring
-// a beyblade's special move slot. Each preset is a ready-to-use SpecialMoveConfig
-// with recommended thresholds and visual effect configs. Idempotent.
+// Seeds special_move_presets collection.
+//
+// NOTE: Roster is intentionally sparse — special moves are being redesigned
+// from first principles using Case Study 11 (case study/11 case study.md).
+// The single entry below is kept as a structural reference. Add new presets
+// here as they are derived from the case study.
 
 require("dotenv").config();
 const admin = require("firebase-admin");
@@ -31,11 +34,12 @@ async function clearCollection(name) {
   console.log(`  🗑️  Cleared ${snap.size} docs from ${name}`);
 }
 
+// ─── REFERENCE EXAMPLE (keep structure, replace values when designing new presets) ───
 const PRESETS = [
   {
     id: "preset-stampede-rush",
     name: "Stampede Rush",
-    description: "Attack archetype: linear force burst in facing direction + spin boost. Best on high-attack beyblades (attack ≥ 100).",
+    description: "Reference example — linear-burst archetype. Forward impulse + brief invulnerability. Physics basis: flat-face AR smash + EG spring energy (CS11 Case 587). 1 engine-unit linearImpulse = 3.60×10⁻⁵ N·s (CS11 Case 597).",
     archetype: "attack",
     icon: "⚡",
     recommendedBeyType: "attack",
@@ -44,116 +48,20 @@ const PRESETS = [
       name: "Stampede Rush",
       steps: [
         { type: "apply_force", direction: "facing", magnitude: 0.005, durationTicks: 10 },
-        { type: "spin_boost", amount: 1.8, durationTicks: 5 },
+        { type: "spin_boost", amount: 60, durationTicks: 5 },
       ],
       cancelable: true,
-      locksDurationTicks: 20,
+      locksDurationTicks: 42,  // 700ms total at 60 Hz
       powerCost: 100,
     },
-    visual: { particleColor: "#ff6600", screenFlashColor: "#ff4444", iconEmoji: "⚡", animationType: "rush" },
-    physics: { forceMultiplier: 0.005, spinMultiplier: 1.8, staminaRecovery: 0, invulnerabilityMs: 0, speedBurstMs: 500 },
-  },
-  {
-    id: "preset-gyro-anchor",
-    name: "Gyro Anchor",
-    description: "Defense archetype: zero linear velocity, maximize spin, 1.5s invulnerability. Best on high-defense beyblades (defense ≥ 100).",
-    archetype: "defense",
-    icon: "🛡️",
-    recommendedBeyType: "defense",
-    recommendedDefenseMin: 100,
-    config: {
-      name: "Gyro Anchor",
-      steps: [
-        { type: "zero_velocity", durationTicks: 0 },
-        { type: "spin_maximize", durationTicks: 0 },
-        { type: "invulnerability", durationMs: 1500 },
-      ],
-      cancelable: false,
-      locksDurationTicks: 90,
-      powerCost: 100,
+    visual: { particleColor: "#ff6600", screenFlashColor: "#ff5522", iconEmoji: "⚡", animationType: "rush" },
+    physics: {
+      linearImpulse: 5000,
+      spinDelta: 60,
+      invulnerabilityMs: 200,
+      damageMultiplier: 1.3,
+      knockbackImpulse: 3000,
     },
-    visual: { particleColor: "#4488ff", screenFlashColor: "#2266cc", iconEmoji: "🛡️", animationType: "anchor" },
-    physics: { forceMultiplier: 0, spinMultiplier: 2.0, staminaRecovery: 0, invulnerabilityMs: 1500, speedBurstMs: 0 },
-  },
-  {
-    id: "preset-spin-recovery",
-    name: "Spin Recovery",
-    description: "Stamina archetype: orbital force (circular path), gradual spin recovery over 2s. Best on high-stamina beyblades (stamina ≥ 100).",
-    archetype: "stamina",
-    icon: "🌀",
-    recommendedBeyType: "stamina",
-    recommendedStaminaMin: 100,
-    config: {
-      name: "Spin Recovery",
-      steps: [
-        { type: "orbital_force", durationTicks: 60 },
-        { type: "spin_recovery_gradual", amount: 0.3, durationTicks: 120 },
-      ],
-      cancelable: true,
-      locksDurationTicks: 60,
-      powerCost: 100,
-    },
-    visual: { particleColor: "#44ff88", screenFlashColor: "#22aa55", iconEmoji: "🌀", animationType: "orbit" },
-    physics: { forceMultiplier: 0.002, spinMultiplier: 1.0, staminaRecovery: 0.3, invulnerabilityMs: 0, speedBurstMs: 0 },
-  },
-  {
-    id: "preset-tactical-burst",
-    name: "Tactical Burst",
-    description: "Balanced archetype: directional burst + 20% spin recovery. Works on any beyblade type.",
-    archetype: "balanced",
-    icon: "💥",
-    recommendedBeyType: "balanced",
-    config: {
-      name: "Tactical Burst",
-      steps: [
-        { type: "apply_force", direction: "facing", magnitude: 0.003, durationTicks: 8 },
-        { type: "spin_recovery_gradual", amount: 0.2, durationTicks: 30 },
-      ],
-      cancelable: true,
-      locksDurationTicks: 30,
-      powerCost: 100,
-    },
-    visual: { particleColor: "#cc88ff", screenFlashColor: "#8833cc", iconEmoji: "💥", animationType: "burst" },
-    physics: { forceMultiplier: 0.003, spinMultiplier: 1.2, staminaRecovery: 0.2, invulnerabilityMs: 0, speedBurstMs: 300 },
-  },
-  {
-    id: "preset-defensive-surge",
-    name: "Defensive Surge",
-    description: "High-mass defense: brief knockback immunity + recoil push on impact. Pairs with defense-type heavy weight disks.",
-    archetype: "defense",
-    icon: "🔵",
-    recommendedBeyType: "defense",
-    config: {
-      name: "Defensive Surge",
-      steps: [
-        { type: "invulnerability", durationMs: 800 },
-        { type: "recoil_on_hit", multiplier: 2.0, durationTicks: 60 },
-      ],
-      cancelable: false,
-      locksDurationTicks: 70,
-      powerCost: 100,
-    },
-    visual: { particleColor: "#0088ff", screenFlashColor: "#0044cc", iconEmoji: "🔵", animationType: "shield" },
-    physics: { forceMultiplier: 0, spinMultiplier: 1.3, staminaRecovery: 0, invulnerabilityMs: 800, speedBurstMs: 0 },
-  },
-  {
-    id: "preset-rapid-strike",
-    name: "Rapid Strike",
-    description: "Attack archetype — 3-hit rapid attack sequence. Each hit deals 1.4x damage. Works best with smash-type contact points.",
-    archetype: "attack",
-    icon: "🗡️",
-    recommendedBeyType: "attack",
-    config: {
-      name: "Rapid Strike",
-      steps: [
-        { type: "attack_sequence", hits: 3, damageMultiplier: 1.4, intervalTicks: 8 },
-      ],
-      cancelable: true,
-      locksDurationTicks: 40,
-      powerCost: 100,
-    },
-    visual: { particleColor: "#ff2222", screenFlashColor: "#cc0000", iconEmoji: "🗡️", animationType: "slash" },
-    physics: { forceMultiplier: 0.004, spinMultiplier: 1.5, staminaRecovery: 0, invulnerabilityMs: 0, speedBurstMs: 400 },
   },
 ];
 
@@ -171,7 +79,7 @@ async function seed() {
       console.error(`  ✘ ${p.name}: ${err.message}`);
     }
   }
-  console.log(`\n✅ Seeded ${PRESETS.length} special move presets into special_move_presets\n`);
+  console.log(`\n✅ Seeded ${PRESETS.length} special move preset(s) into special_move_presets\n`);
 }
 
 seed()

@@ -1,5 +1,10 @@
 #!/usr/bin/env node
-// Seed special_moves collection with 4 moves
+// Seed special_moves collection.
+//
+// NOTE: Roster is intentionally sparse — special moves are being redesigned
+// from first principles using Case Study 11 (case study/11 case study.md).
+// The single entry below is kept as a structural reference. Add new moves
+// here as they are derived from the case study.
 
 require('dotenv').config();
 const admin = require('firebase-admin');
@@ -23,139 +28,41 @@ async function clearCollection(name) {
   console.log(`  🗑️  Cleared ${snap.size} docs from ${name}`);
 }
 
+// ─── REFERENCE EXAMPLE (keep structure, replace values when designing new moves) ───
 const specialMoves = [
   {
     id: "stampede_rush",
     name: "Stampede Rush",
-    description: "A powerful forward rush attack that damages and pushes opponents.",
+    description: "Reference example — linear-burst archetype. Forward impulse + brief invulnerability. Derived from flat-face AR smash + EG spring energy (CS11 Case 587).",
     archetype: "attack",
-    powerCost: 50,
+    powerCost: 100,
     cooldownSeconds: 3,
     durationMs: 500,
-    windupTicks: 30,
-    bleedTicks: 20,
+    windupTicks: 6,   // 100ms at 60 Hz
+    bleedTicks: 6,
     cameraConfig: { zoomFactor: 1.5, durationTicks: 60, slowMotionFactor: 0.7 },
     introAnimation: "special_intro",
     outroAnimation: "special_outro",
     cancelableByQTE: true,
     physics: {
-      forceMultiplier: 0.005,
-      spinMultiplier: 1.8,
-      staminaRecovery: 0,
-      invulnerabilityMs: 0,
-      speedBurstMs: 500,
+      linearImpulse: 5000,
+      spinDelta: 60,
+      invulnerabilityMs: 200,
+      damageMultiplier: 1.3,
+      knockbackImpulse: 3000,
     },
     visual: {
       particleColor: "#ff6600",
-      screenFlashColor: "#ff4444",
+      screenFlashColor: "#ff5522",
       iconEmoji: "⚡",
       animationType: "rush",
     },
-  },
-  {
-    id: "gyro_anchor",
-    name: "Gyro Anchor",
-    description: "Lock in place with maximum spin for 1.5 seconds of invulnerability.",
-    archetype: "defense",
-    powerCost: 50,
-    cooldownSeconds: 3,
-    durationMs: 1500,
-    windupTicks: 30,
-    bleedTicks: 20,
-    cameraConfig: { zoomFactor: 1.5, durationTicks: 60, slowMotionFactor: 0.7 },
-    introAnimation: "special_intro",
-    outroAnimation: "special_outro",
-    cancelableByQTE: true,
-    physics: {
-      forceMultiplier: 0,
-      spinMultiplier: 1,
-      staminaRecovery: 0,
-      invulnerabilityMs: 1500,
-      speedBurstMs: 0,
-    },
-    visual: {
-      particleColor: "#4488ff",
-      screenFlashColor: "#4488ff",
-      iconEmoji: "🛡️",
-      animationType: "anchor",
-    },
-  },
-  {
-    id: "spin_recovery",
-    name: "Spin Recovery",
-    description: "Orbit around and recover 40% of max spin and stamina.",
-    archetype: "stamina",
-    powerCost: 50,
-    cooldownSeconds: 3,
-    durationMs: 1000,
-    windupTicks: 30,
-    bleedTicks: 20,
-    cameraConfig: { zoomFactor: 1.5, durationTicks: 60, slowMotionFactor: 0.7 },
-    introAnimation: "special_intro",
-    outroAnimation: "special_outro",
-    cancelableByQTE: true,
-    physics: {
-      forceMultiplier: 0.002,
-      spinMultiplier: 1.4,
-      staminaRecovery: 0.2,
-      invulnerabilityMs: 0,
-      speedBurstMs: 0,
-    },
-    visual: {
-      particleColor: "#44ff88",
-      screenFlashColor: "#44ff88",
-      iconEmoji: "♻️",
-      animationType: "orbit",
-    },
-  },
-  {
-    id: "tactical_burst",
-    name: "Tactical Burst",
-    description: "Directional burst with spin boost and stamina recovery.",
-    archetype: "balanced",
-    powerCost: 50,
-    cooldownSeconds: 3,
-    durationMs: 300,
-    windupTicks: 30,
-    bleedTicks: 20,
-    cameraConfig: { zoomFactor: 1.5, durationTicks: 60, slowMotionFactor: 0.7 },
-    introAnimation: "special_intro",
-    outroAnimation: "special_outro",
-    cancelableByQTE: true,
-    physics: {
-      forceMultiplier: 0.003,
-      spinMultiplier: 1.5,
-      staminaRecovery: 0.15,
-      invulnerabilityMs: 0,
-      speedBurstMs: 300,
-    },
-    visual: {
-      particleColor: "#ffff00",
-      screenFlashColor: "#ffcc44",
-      iconEmoji: "💫",
-      animationType: "burst",
-    },
+    steps: [
+      { action: "velocity_burst", params: { forceX: 0.12, forceY: 0 } },
+      { action: "attack_amplifier", params: { multiplier: 1.3 }, durationMs: 500 },
+    ],
   },
 ];
-
-// New SpecialMoveConfig-format steps (parallel to legacy physics block)
-const MIGRATED_STEPS = {
-  stampede_rush: [
-    { action: "velocity_burst", params: { forceX: 0.12, forceY: 0 } },
-    { action: "attack_amplifier", params: { multiplier: 1.3 }, durationMs: 1000 },
-  ],
-  gyro_anchor: [
-    { action: "defense_stance", params: { durationMs: 1500 } },
-  ],
-  spin_recovery: [
-    { action: "orbit_movement", params: { intensity: 0.003, direction: "cw" }, durationMs: 2000 },
-    { action: "stamina_recovery", params: { recoveryRate: 30 }, durationMs: 2000 },
-  ],
-  tactical_burst: [
-    { action: "velocity_burst", params: { forceX: 0.06, forceY: 0 } },
-    { action: "stamina_recovery", params: { recoveryRate: 15 }, durationMs: 500 },
-  ],
-};
 
 async function seed() {
   try {
@@ -163,8 +70,7 @@ async function seed() {
     await clearCollection("special_moves");
 
     for (const move of specialMoves) {
-      const steps = MIGRATED_STEPS[move.id] ?? [];
-      await db.collection("special_moves").doc(move.id).set({ ...move, steps });
+      await db.collection("special_moves").doc(move.id).set(move);
       console.log(`  ✅ Created move: ${move.name}`);
     }
 

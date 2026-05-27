@@ -1,16 +1,21 @@
 // Static seed for the named special moves.
 // Server reads this at room create (no async in the game loop). Eventually
 // the `special_moves` Firestore collection becomes authoritative and this
-// file is the fallback / dev seed. See plan Phase 9.
+// file is the fallback / dev seed.
+//
+// ─── NOTE: Roster is intentionally sparse — special moves are being redesigned
+// from first principles using Case Study 11 (case study/11 case study.md).
+// Add new moves here as they are derived. The single entry below is kept as
+// a structural reference only.
 
 export type SpecialMoveKind =
   | "linear-burst"      // forward impulse + brief invulnerability
   | "anchor"            // zero linear velocity + max spin restore + i-frames
   | "orbital"           // circular force + spin recovery
-  | "directional-burst" // small forward impulse + 20% spin recovery
+  | "directional-burst" // small forward impulse + partial spin recovery
   | "shockwave"         // outward AoE knock with spin steal
   | "aerial-launch"     // self launches into parabolic arc; landing AoE burst
-  | "knockup"           // ground sweep → sends target airborne; Phase 1 aerial bite
+  | "knockup"           // ground sweep → sends target airborne; aerial follow
   | "homerun"           // massive horizontal impulse + slight vertical on target
   | "custom";
 
@@ -37,11 +42,11 @@ export interface SpecialMovePhase {
   windDownMs: number;           // recovery: no new forces, existing velocity carries
   effects: SpecialMovePhaseEffects;
   targetFlags: {
-    canHitGrounded: boolean;    // this phase can connect on a grounded target
-    canHitAirborne: boolean;    // this phase can connect on an airborne target
-    requiresAirborneTarget: boolean; // gate: phase effect only fires when target is in the air
+    canHitGrounded: boolean;
+    canHitAirborne: boolean;
+    requiresAirborneTarget: boolean;
   };
-  skipCondition?: "target_already_airborne" | "target_grounded"; // skip at activation if true
+  skipCondition?: "target_already_airborne" | "target_grounded";
   waitForAirborne?: number;     // ms to hold waiting for target to be airborne
   fallback?: {
     effects: SpecialMovePhaseEffects;
@@ -64,7 +69,7 @@ export interface SpecialMoveDef {
   iconEmoji: string;
   cooldownSec: number;
   radius: number;               // search distance for nearest-target acquisition
-  phases: SpecialMovePhase[];   // replaces flat effects + durationMs
+  phases: SpecialMovePhase[];
   /** Default screen-flash color used by SpecialMoveHUD. */
   flashColor: string;
 }
@@ -94,6 +99,10 @@ export const DEFAULT_CLASH_OUTCOME: SpecialInteractionDef = {
   defenderKnockback: "partial",
   description: "Default clash outcome (fallback when no Firestore entry found)",
 };
+
+// ─── Move roster ──────────────────────────────────────────────────────────────
+// REFERENCE EXAMPLE ONLY — kept so the type system compiles and the HUD has
+// something to render during development. Replace with real CS11-derived moves.
 
 export const SPECIAL_MOVES: Record<string, SpecialMoveDef> = {
   stampede_rush: {
@@ -125,221 +134,15 @@ export const SPECIAL_MOVES: Record<string, SpecialMoveDef> = {
     ],
     flashColor: "#ff5522",
   },
-
-  gyro_anchor: {
-    id: "gyro_anchor",
-    name: "Gyro Anchor",
-    kind: "anchor",
-    group: "guard",
-    iconEmoji: "🛡️",
-    cooldownSec: 4,
-    radius: 250,
-    phases: [
-      {
-        phaseId: "gyro_anchor_main",
-        windUpMs: 100,
-        durationMs: 1500,
-        windDownMs: 100,
-        effects: {
-          spinDelta: 250,
-          invulnerabilityMs: 1500,
-          spinStealRadiusPx: 250,
-        },
-        targetFlags: { canHitGrounded: true, canHitAirborne: false, requiresAirborneTarget: false },
-        rangeCheck: "aoe",
-        peakMs: 0,       // peak absorption is at start of active window
-        peakToleranceMs: 200,
-      },
-    ],
-    flashColor: "#4488ff",
-  },
-
-  spin_recovery: {
-    id: "spin_recovery",
-    name: "Spin Recovery",
-    kind: "orbital",
-    group: "field",
-    iconEmoji: "♻️",
-    cooldownSec: 3,
-    radius: 300,
-    phases: [
-      {
-        phaseId: "spin_recovery_main",
-        windUpMs: 100,
-        durationMs: 1000,
-        windDownMs: 100,
-        effects: {
-          spinDelta: 400,
-        },
-        targetFlags: { canHitGrounded: true, canHitAirborne: false, requiresAirborneTarget: false },
-        rangeCheck: "none",
-        peakMs: 500,
-        peakToleranceMs: 150,
-      },
-    ],
-    flashColor: "#44ff88",
-  },
-
-  tactical_burst: {
-    id: "tactical_burst",
-    name: "Tactical Burst",
-    kind: "directional-burst",
-    group: "strike",
-    iconEmoji: "💫",
-    cooldownSec: 3,
-    radius: 350,
-    phases: [
-      {
-        phaseId: "tactical_burst_main",
-        windUpMs: 100,
-        durationMs: 600,
-        windDownMs: 100,
-        effects: {
-          linearImpulse: 3500,
-          spinDelta: 150,
-          damageMultiplier: 1.1,
-          knockbackImpulse: 2000,
-        },
-        targetFlags: { canHitGrounded: true, canHitAirborne: false, requiresAirborneTarget: false },
-        rangeCheck: "radius",
-        peakMs: 300,
-        peakToleranceMs: 100,
-      },
-    ],
-    flashColor: "#ffcc44",
-  },
-
-  shock_pulse: {
-    id: "shock_pulse",
-    name: "Shock Pulse",
-    kind: "shockwave",
-    group: "field",
-    iconEmoji: "💥",
-    cooldownSec: 5,
-    radius: 250,
-    phases: [
-      {
-        phaseId: "shock_pulse_main",
-        windUpMs: 150,
-        durationMs: 700,
-        windDownMs: 100,
-        effects: {
-          aoeRadiusPx: 250,
-          knockbackImpulse: 6000,
-          invulnerabilityMs: 250,
-          damageMultiplier: 1.2,
-        },
-        targetFlags: { canHitGrounded: true, canHitAirborne: false, requiresAirborneTarget: false },
-        rangeCheck: "aoe",
-        peakMs: 350,
-        peakToleranceMs: 150,
-      },
-    ],
-    flashColor: "#ff44aa",
-  },
-
-  ascending_dragon_bite: {
-    id: "ascending_dragon_bite",
-    name: "Ascending Dragon Bite",
-    kind: "knockup",
-    group: "aerial",
-    iconEmoji: "🐉",
-    cooldownSec: 5,
-    radius: 300,
-    phases: [
-      {
-        phaseId: "sweep_knockup",
-        windUpMs: 100,
-        durationMs: 300,
-        windDownMs: 100,
-        effects: {
-          knockbackImpulse: 1000,
-          knockupTarget: true,
-          verticalImpulse: 300,
-          damageMultiplier: 0.8,
-        },
-        targetFlags: { canHitGrounded: true, canHitAirborne: false, requiresAirborneTarget: false },
-        skipCondition: "target_already_airborne",
-        rangeCheck: "contact",
-        peakMs: 150,
-        peakToleranceMs: 80,
-      },
-      {
-        phaseId: "ascending_bite",
-        windUpMs: 150,
-        durationMs: 400,
-        windDownMs: 150,
-        effects: {
-          verticalImpulse: 400,
-          damageMultiplier: 2.0,
-          knockbackImpulse: 4000,
-        },
-        targetFlags: { canHitGrounded: false, canHitAirborne: true, requiresAirborneTarget: true },
-        waitForAirborne: 350,
-        fallback: {
-          effects: { linearImpulse: 2500, damageMultiplier: 1.0, knockbackImpulse: 2000 },
-          targetFlags: { canHitGrounded: true, canHitAirborne: false },
-          label: "Dragon Descending Bite — L-Drago lands and bites from above at 1.0x power",
-        },
-        rangeCheck: "radius",
-        peakMs: 200,
-        peakToleranceMs: 100,
-      },
-    ],
-    flashColor: "#ff2200",
-  },
-
-  storm_bringer: {
-    id: "storm_bringer",
-    name: "Storm Bringer",
-    kind: "aerial-launch",
-    group: "aerial",
-    iconEmoji: "🌪️",
-    cooldownSec: 5,
-    radius: 400,
-    phases: [
-      {
-        phaseId: "ascent",
-        windUpMs: 100,
-        durationMs: 500,
-        windDownMs: 0,
-        effects: {
-          verticalImpulse: 350,
-        },
-        targetFlags: { canHitGrounded: false, canHitAirborne: false, requiresAirborneTarget: false },
-        rangeCheck: "none",
-        peakMs: 0,
-        peakToleranceMs: 50,
-      },
-      {
-        phaseId: "diving_strike",
-        windUpMs: 0,
-        durationMs: 700,
-        windDownMs: 100,
-        effects: {
-          linearImpulse: 4500,
-          damageMultiplier: 1.7,
-          verticalImpulse: -500,
-          landingAoePx: 200,
-          landingDmgMult: 1.4,
-          knockbackImpulse: 3500,
-        },
-        targetFlags: { canHitGrounded: true, canHitAirborne: true, requiresAirborneTarget: false },
-        rangeCheck: "radius",
-        peakMs: 350,
-        peakToleranceMs: 120,
-      },
-    ],
-    flashColor: "#00aaff",
-  },
 };
 
-/** Default mapping from beyblade type → special move id (back-compat). */
+/** Default mapping from beyblade type → special move id.
+ *  All types fall back to stampede_rush while the roster is being rebuilt. */
 export const DEFAULT_TYPE_TO_MOVE: Record<string, string> = {
   attack:   "stampede_rush",
-  defense:  "gyro_anchor",
-  stamina:  "spin_recovery",
-  balanced: "tactical_burst",
+  defense:  "stampede_rush",
+  stamina:  "stampede_rush",
+  balanced: "stampede_rush",
 };
 
 export function getSpecialMoveById(id: string | undefined | null): SpecialMoveDef | null {
@@ -353,8 +156,8 @@ export function resolveSpecialMove(opts: {
 }): SpecialMoveDef {
   return (
     getSpecialMoveById(opts.specialMoveId) ??
-    getSpecialMoveById(DEFAULT_TYPE_TO_MOVE[opts.type ?? "balanced"]) ??
-    SPECIAL_MOVES.tactical_burst
+    getSpecialMoveById(DEFAULT_TYPE_TO_MOVE[opts.type ?? "attack"]) ??
+    SPECIAL_MOVES.stampede_rush
   );
 }
 
@@ -366,15 +169,13 @@ export function totalMoveDurationMs(moveDef: SpecialMoveDef): number {
   );
 }
 
-// ─── Attack type damage curve (Phase 9 nice-to-have) ──────────────────────
-
+// ─── Attack type damage curve ──────────────────────────────────────────────
 export type CpAttackType = "smash" | "upper" | "absorb" | "burst" | "spin_steal";
 
-/** Damage multiplier applied to base collision damage based on CP attack type. */
 export const ATTACK_TYPE_MULTIPLIER: Record<CpAttackType, number> = {
-  smash:      1.3,    // big hit damage
-  upper:      1.15,   // upward angle + medium damage
-  burst:      1.5,    // very spiky damage + recoil
-  absorb:     0.5,    // takes less damage but stable
-  spin_steal: 0.7,    // converts hit to spin gain instead of damage
+  smash:      1.3,
+  upper:      1.15,
+  burst:      1.5,
+  absorb:     0.5,
+  spin_steal: 0.7,
 };
