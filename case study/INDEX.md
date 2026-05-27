@@ -1,5 +1,5 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **800 cases** across 14 files + 1 master reference.
+Total: **803 cases** across 14 files + 1 master reference.
 
 ---
 
@@ -10,7 +10,7 @@ Total: **800 cases** across 14 files + 1 master reference.
 | [1 case study.md](1%20case%20study.md) | 1–73 | Physics fundamentals → MFB/4D parts |
 | [2 case study.md](2%20case%20study.md) | 74–155 | HMS parts → Gen 1 Plastic SG-era parts + HMS RC supplement |
 | [3 case study.md](3%20case%20study.md) | 118–187 | Gen 1 Plastic SG/EG/CEW parts |
-| [4 case study.md](4%20case%20study.md) | 189–273 | Gen 1 EG/CEW parts → Anime-only → Magnacore ARs → A-F series ARs/BBs → WD/BB/AR supplement |
+| [4 case study.md](4%20case%20study.md) | 189–276 | Gen 1 EG/CEW parts → Anime-only → Magnacore ARs → A-F series ARs/BBs → WD/BB/AR supplement |
 | [5 case study.md](5%20case%20study.md) | 236–296 | System architectures → MFB wheels/tracks/bottoms |
 | [6 case study.md](6%20case%20study.md) | 297–353 + 308a, 320a–320i, 326a, 353a–353z, 354a–354j | MFB bottoms → 4D wheels/bottoms/tracks; MFB wheels; Zero-G Crystal/Chrome Wheels, ZeroG tracks/tips, Grand FW, D tip |
 | [7 case study.md](7%20case%20study.md) | 354–374 | BX/UX/CX system architecture → All-gen system summaries |
@@ -19,7 +19,7 @@ Total: **800 cases** across 14 files + 1 master reference.
 | [10 case study.md](10%20case%20study.md) | 545–585 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–805 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
+| [13 case study.md](13%20case%20study.md) | 619–814 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
 | [14 case study.md](14%20case%20study.md) | 759–777 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | Engine reference: constants, formulas, normalization |
 
@@ -282,7 +282,7 @@ Total: **800 cases** across 14 files + 1 master reference.
 
 ---
 
-## Part 4 — Cases 189–273
+## Part 4 — Cases 189–276
 
 > Gen 1 Plastic: Engine Gear era parts, CEW tips, anime-only entries, V-Force WD/BB supplement, Draciel Metal Ball Defenser, Galux (unreleased)
 
@@ -374,6 +374,9 @@ Total: **800 cases** across 14 files + 1 master reference.
 | 271 | Star Attack WD (Uriel 2): Five-Pointed Star Geometry, Penta Wing Specialist | Gen1-Plastic | SGS | WD | Star Attack WD, penta wing |
 | 272 | Metal Ball Base 4LS (Draciel Metal Ball Defenser): Built-In SG, Passive Tip, Non-Functional Gimmick | Gen1-Plastic | 4LS | BB | Metal Ball Base, 4LS, passive, zombie-backup |
 | 273 | War Lynx AR (Galux) [UNRELEASED]: Speed-Variant War Lion, Counter-Balanced | Gen1-Plastic | SGS | AR | War Lynx, Galux, unreleased, balanced |
+| 274 | Right SG (G Ball) (Gaia Dragoon): Ball-Weighted Core, G Special Base Retention Platform | Gen1-Plastic | SGS | SG | SG G Ball, retention platform, G Special Base, black fragile |
+| 275 | Neo Right SG (South Magne) (Gaia Dragoon): Mid-Weight Neo Core, Attack-Stamina Balance | Gen1-Plastic | SGS | SG | Neo Right SG, South Magnecore, attack-stamina, Magne Stadia |
+| 276 | G Special Base (Gaia Dragoon): Four-Ball Pocket Gimmick, Semi-Flat Tip, Poor LAD | Gen1-Plastic | SGS | BB | G Special Base, four-ball, semi-flat tip, poor LAD, black fragile |
 
 ---
 
@@ -1119,7 +1122,7 @@ The following part types are **physics-negligible** — they share near-identica
 | Master Driger | Knight Claws Ring [M] | Eight Wide (104) | Right SG (111b) | SG Semi-Flat Base (109a) |
 | Wolborg 2 | Upper Wolf (123a) | Eight Balance (121a) | Right SG Bearing v2 [M] | Defense Grip Base 2 [M] |
 | Seaborg 2 | Whale Crusher (116) | Eight Wide (104) | Right SG (111b) | SG Flat Base (117) |
-| Gaia Dragoon | Great Dragon (259) | Heavy Attack (257) | Right SG G Ball [M] | G Special Base [M] |
+| Gaia Dragoon | Great Dragon (259) | Heavy Attack (257) | Right SG G Ball (274) | G Special Base (276) |
 | Bakuten Henkei Gaia Dragoon | Fire Cracker (184) | Revolver Attack (162) | — | Salamalyon Base [M] |
 
 ### Gen 1 — Plastics: V Series (Magnacore)

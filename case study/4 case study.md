@@ -14335,34 +14335,93 @@ interface HeavyWD {
 
 ---
 
-## Case 257 — Heavy Attack WD (Gaia Dragoon / all variants) — 16.0 g [FACT(PDB)] — Compact High-Mass: Heaviest Non-Ten WD, Gaia Dragoon Exclusive Distribution
+## Case 257 — Heavy Attack WD (Gaia Dragoon / all variants) — 16.0 g [FACT(PDB)] — Compact Heavy with Rounded Corner Protrusions: Severe Recoil Limits Use to Shielded Weight-Based Defense
 
 ### 1. Geometry
 
-Heavy Attack WD — 16.0 g [FACT(PDB)]. Compact profile similar to Heavy WD but heavier by 0.7g. Sources: Gaia Dragoon (all color variants) — the widest distribution of any single WD to one beyblade across its color range. Unlike Ten Heavy (16.1g, 10-spoke wide distribution) or Eight Heavy (15.3g, 8-spoke), Heavy Attack uses a compact round architecture with 16.0g mass.
+Heavy Attack WD is a **16.0 g [FACT(PDB)]** compact metal Weight Disk sourced exclusively from Gaia Dragoon and its color variants. It is structurally a compact hexagonal body — essentially a standard Heavy WD architecture — with **rounded dome-shaped protrusions at each of the six corners**. These protrusions are the defining feature: they add ~0.7 g over the base Heavy WD mass by extending outward to r ≈ 24 mm, and they are described as "attack points," but their **rounded profile generates severe recoil rather than functional smash attack**.
+
+**Geometry comparison to Heavy WD (Case 256):**
+- Heavy WD (15.3 g): hexagonal body, sharp-ish corners, corner recoil ≈ cos(30°) = 0.866
+- Heavy Attack WD (16.0 g): hexagonal body + rounded dome protrusions at corners
+- The added protrusion mass sits at larger radius (r ≈ 24 mm) than the ring body (r ≈ 21 mm)
+- The rounded dome shape means contact near the apex of the curve → effective contact angle varies between 0° and ~60° → **average smash transfer near zero** (curved surface deflects force rather than converting it to opponent angular momentum)
+
+**Profile from photo:** Hexagonal outline with six symmetrically placed rounded bumps. The ring body is solid flat metal, identical in cross-section to Heavy WD. The protrusions are hemispherical raised sections at each corner.
 
 ### 2. Physics
 
-**Mass position in WD spectrum:**
-| WD | Mass | Profile | I_est |
-|----|------|---------|-------|
-| Eight Heavy | 15.3g | 8-spoke | 7.55×10⁻⁶ |
-| Heavy Attack | 16.0g | compact round | 7.3×10⁻⁶ |
-| Ten Heavy | 16.1g | 10-spoke wide | 8.9×10⁻⁶ |
+**Moment of inertia:**
 
-Heavy Attack (16.0g compact) vs Ten Heavy (16.1g wide):
-- Nearly same mass but dramatically different I: Ten Heavy has peripheral spokes at larger radius
-- Heavy Attack loses I per gram vs Ten Heavy
-- But: Heavy Attack's compact round profile is 7.3 × 10⁻⁶ kg·m² vs Heavy WD's 7.0 × 10⁻⁶ — marginally better than plain Heavy
+```
+Ring body (r_outer ≈ 21 mm, r_inner ≈ 9 mm, m_body ≈ 15.3 g):
+  I_body = (0.0153/2)(0.021² + 0.009²) = 0.00765 × 0.000522 ≈ 3.99 × 10⁻⁶ kg·m²
 
-**Attack-oriented name:**
-"Attack" suffix in plastic gen WDs typically indicates a design optimized for lower CoM (compact) to sit closer to the AR contact zone, providing better mass coupling during smash hits. The compact round profile at 16.0g means the bey's inertial mass resists post-contact angular deflection well without extending to wide-distribution stamina territory.
+Corner protrusions (6 domes × 0.117 g each at r ≈ 24 mm):
+  I_protrusions ≈ 6 × 0.000117 × 0.024² ≈ 4.0 × 10⁻⁷ kg·m²
 
-**Spin decay rate:**
-τ_floor ≈ μ_tip × m_total × g × r_tip (depends on BB)
-I contribution from Heavy Attack WD:
-    I_HA ≈ 7.3 × 10⁻⁶ kg·m²
-    dω/dt from WD alone: 13% improvement over Eight Balance baseline
+Total I ≈ 4.4 × 10⁻⁶ kg·m²  [ESTIMATED]
+```
+
+**WD spectrum comparison (accurate I values):**
+
+| WD | Mass | I_est | Profile | Key limit |
+|----|------|-------|---------|-----------|
+| Heavy WD (256) | 15.3 g | ~4.1×10⁻⁶ | hexagonal compact | corner recoil 0.866 |
+| Heavy Attack (257) | 16.0 g | ~4.4×10⁻⁶ | compact + dome corners | **severe dome recoil** |
+| Eight Heavy (255) | 15.3–15.5 g | ~4.1×10⁻⁶ | 8-spoke compact | low recoil |
+| Ten Heavy (114a) | 16.1 g | ~5.8×10⁻⁶ | 10-spoke wide | best I for mass |
+
+Heavy Attack's I advantage over plain Heavy WD is marginal (~7%). Ten Heavy has **32% more I at nearly the same mass** due to its wide 10-spoke distribution.
+
+**Rounded protrusion contact model:**
+
+```
+Contact geometry (dome protrusions):
+  On a rounded dome, the contact point lies near the apex where the
+  tangential velocity vector of the incoming AR is nearly parallel to
+  the dome surface normal → force transfer is mostly perpendicular
+  (reactive) with little tangential (smash) component.
+
+  smashFraction:   ~0.08   [ESTIMATED — rounded dome ≈ near-zero smash conversion]
+  recoilFactor:    ~0.72   [FACT(PDB) — "severe recoil"; dome redirects force inward]
+
+When shielded by a wide/overhanging AR (WBD configuration):
+  Contact events on WD = zero → recoilFactor irrelevant
+  Full I contribution applies → mass functions as pure flywheel
+  effectiveRecoil: 0.00
+```
+
+**Use condition — shielding requirement:**
+
+Heavy Attack WD is only competitive when completely shielded from direct contact by the AR above and the BB below:
+
+```
+RequiredCondition:
+  arOverhang: true   — AR must extend past WD radius or sit above it to deflect hits
+  baseWidth:  wide   — BB must be wide enough to prevent undercut contact
+
+Confirmed-shielded setups:
+  WBD with wide overhanging AR (e.g., Tiger Defenser, SG Bearing Base width): ✓ shielded
+  WBD with SG Metal Ball Base: ✓ wide, but base height is a concern for non-overhanging ARs
+  Traditional Upper Attack: ✓ AR height shields WD; type is non-competitive overall
+
+Non-viable setups:
+  Compact customizations: WD contact directly exposed → severe recoil on every hit
+  Standard Attack (exposed WD): recoilFactor 0.72 causes frequent self-destabilization
+```
+
+**Attack builds (fast-base exception):**
+
+With **Defense Grip Base (tip inverted)** or **SG Grip Change Base Tip** setups (which produce high movement speed), Heavy Attack can be paired with attack ARs:
+
+```
+Attack-use physics:
+  High base speed → contact events are brief; WD I contribution improves rotational smash
+  ARs: Square Edge, Hayate Attack Ring (benefit from extra mass at attack ARs)
+  tradeoff: flywheel effect vs Wide Defense/Ten Wide is reduced → more recoil KOs
+  verdict: "acceptable option" but Wide Defense/Ten Wide preferred for stability
+```
 
 ### 3. Game Engine Mapping
 
@@ -14370,25 +14429,54 @@ I contribution from Heavy Attack WD:
 interface HeavyAttackWD {
   name: "heavy_attack";
   system: "SGS";
-  mass_g: 16.0;                    // [FACT(PDB)]
-  profile: "compact_round_heavy";
-  outerRadius_mm: 23;              // [ESTIMATED]
-  momentOfInertia_kgm2: 7.3e-6;   // [ESTIMATED]
-  universalFit: true;
-  competitiveTier: "mid";
-  note: "Heaviest compact WD — but Ten Heavy (16.1g, 10-spoke) has better I at near-same mass";
-  sourceBeys: ["gaia_dragoon", "gaia_dragoon_color_variants"];
-  vsTenHeavy: {
-    massDiff: -0.1,
-    iDiff: -1.6e-6,
-    profileAdvantage: "compact_for_low_attack_combos"
+  mass_g: 16.0;                          // [FACT(PDB)]
+  profile: "compact_hexagonal_dome_corners";
+  outerRadius_mm: 24;                    // [ESTIMATED — to protrusion tips]
+  ringRadius_mm: 21;                     // [ESTIMATED — body ring]
+  I_kgm2: 4.4e-6;                        // [ESTIMATED]
+  sourceBeys: ["gaia_dragoon_all_variants"];
+
+  // Recoil model
+  smashFraction: 0.08;                   // [ESTIMATED — dome = near-zero smash]
+  recoilFactor: 0.72;                    // [FACT(PDB)] "severe recoil when hit"
+  shieldedRecoil: 0.00;                  // when fully protected by AR + BB geometry
+
+  // Use conditions
+  requiresShielding: true;               // [FACT(PDB)] competitive only when shielded
+  shieldedUses: ["weight_based_defense", "traditional_upper_attack"];
+  nonViable: ["compact_customizations"]; // [FACT(PDB)] "precludes use for Compacts"
+
+  // Attack-base exception
+  fastBaseAttack: {
+    compatible: true;
+    usableARs: ["square_edge", "hayate_ar"];
+    tradeoff: "more_recoil_KOs_vs_wide_defense";
+    verdict: "acceptable_but_suboptimal";
   };
+
+  // Comparison
+  vsTenHeavy: {
+    massDiff_g: -0.1,
+    I_deficit: -1.4e-6,
+    survivabilityDeficit: "Ten Heavy significantly better survival [FACT(PDB)]",
+    tenHeavyPreferred: true              // [FACT(PDB)]
+  };
+  competitiveTier: "niche_competitive";  // [FACT(PDB)] "interesting and niche but competitive"
+  mustHave: false;                       // [FACT(PDB)] "not a must-have"
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Compact high-mass attack WD. Heavy Attack WD's 16.0g in a compact profile fills the niche between Eight Heavy (lighter, 8-spoke) and Ten Heavy (heavier, 10-spoke, wider). For pure stamina/I maximization, Ten Heavy (16.1g, I ≈ 8.9×10⁻⁶) is superior — 0.1g more mass, much better I per gram. For attack combos needing compact low CoM at maximum available mass without wide-distribution risks, Heavy Attack is the best option. Available from all Gaia Dragoon color variants — one of the most accessible heavy compact WDs. Tier: mid — useful, but Ten Heavy wins for stamina and competitive use.
+**Role:** Niche competitive — Weight-Based Defense only, with full AR+BB shielding.
+
+Heavy Attack WD's 16.0 g in a compact body delivers useful mass, but the rounded corner dome protrusions generate **severe recoil (≈0.72)** whenever the WD is directly struck — making it non-competitive in any setup where the WD is exposed. The only viable use is in Weight-Based Defense configurations where a wide/overhanging AR and wide BB together ensure the WD never makes direct contact with opponents. Both competitive WBD bases are wide enough for this, though SG Metal Ball Base's height creates a risk window for non-overhanging ARs.
+
+Ten Heavy (Case 114a) is the superior general-purpose choice at 16.1 g, better I, better survival, easier to obtain, and no recoil penalty. Heavy Attack is a viable backup in the specific shielded context — it is **competitive but not preferred**, and is essentially never the best option when Ten Heavy is available.
+
+Fast-attack-base builds (DGB inverted/SGCB Tip) can exploit the mass on attack ARs like Square Edge or Hayate, but expect more recoil KOs than Wide Defense/Ten Wide would produce. An acceptable option where those WDs are unavailable.
+
+Tier: **niche competitive** — effective in shielded WBD and specific attack builds; not a must-have. Ten Heavy is almost always the better choice.
 
 ---
 
@@ -14456,38 +14544,104 @@ interface ViperMetalBallBase {
 **Role:** Non-competitive transitional base. Viper Metal Ball Base was an early V-Force era attempt to deliver metal ball floor contact in a compact, pole-mounted form. The single metal ball on a pole tip provides less stability and defense than SG Metal Ball Base (Case 248), requires Magnecore to function, and is "severely susceptible to low attackers" (PlasticsDB). No competitive donor applications. Historical interest only: it represents the prototype concept for metal ball tips that SG Metal Ball Base later perfected. Tier: non-competitive. Do not use when SG Metal Ball Base is available.
 ---
 
-## Case 259 � Great Dragon AR (5.4 g [FACT(PDB)], Gaia Dragoon) � Top-Tier Symmetric Smash Ring with Interchangeable Wing Sub-Ring SAR: Equal RS/LS Ridge Attack and Best SAR-Slot Donor
+## Case 259 — Great Dragon AR (5.4 g [FACT(PDB)], Gaia Dragoon) — Two-Part Smash AR with SAR-Slot: Top-Tier with War Lion or War Bear SAR; Wing Sub-Ring Hurts Performance
 
 ### 1. Geometry
 
-Great Dragon AR is a two-component plastic gen AR: a thin-construction core ring (3.9 g [FACT(PDB)]) with ridge-based contact points, paired with the Wing Sub-Ring SAR (1.5 g [FACT(PDB)], free-spinning). The core ring's ridges sit at equatorial height � they engage opposing ARs directly rather than reaching WD level, so this is a pure smash AR with no upper-attack slope.
+Great Dragon AR is a two-component SGS Attack Ring: the **Core AR: Great Dragon** (3.9 g [FACT(PDB)]) and the **Wing Sub-Ring SAR** (1.5 g [FACT(PDB)]). The Sub-Ring's name comes from the SG Wing Base assembly instructions — it is **not** referred to as "Great Dragon Sub AR." Together they total **5.4 g [FACT(PDB)]**.
 
-Critically, the ridge geometry is bilaterally symmetric in the plane of rotation � the contact angle for RS and LS is equal on both sides. This makes Great Dragon one of the very few plastic gen ARs with genuine both-spin smash parity (smashFractionRS = smashFractionLS � 0.52).
+**Core AR construction:** Two large curved wing extensions protruding from a compact ring body. The contact faces are angled forward relative to the direction of rotation, providing smash-type contacts rather than upper-attack slopes. Ridge height is equatorial — contacts engage opposing ARs at AR level, not WD level. The shape and thin construction make Great Dragon less robust than heavier ARs, but **non-black versions are not especially fragile**, though not considered a sturdy part either.
 
-The Wing Sub-Ring SAR slot accepts any compatible SAR (War Lion SAR, War Bear SAR, Dragon Saucer SAR, etc.). The most competitive build strips the Wing Sub-Ring and uses War Lion core AR + Dragon Saucer SAR instead � but Great Dragon's core ridge is where the attack power originates.
+> **Black version warning:** The black recolour of Great Dragon Core AR suffers from severe brittleness — a case of "Gold Plastic Syndrome" in a non-gold plastic. **Do not use the black version under any circumstances.**
 
-**Sources of contact force:**
-- Core ridges: primary smash on both spin directions
-- Wing Sub-Ring SAR: free-spin ? absorbs ~25% contact moment via angular momentum exchange with the ring (reduces recoil to the bearer)
+**Wing Sub-Ring geometry (transparent blue):** Two wide flat wing extensions forming a near-symmetric oval ring. These extensions **obstruct Great Dragon's contact points** when installed, reducing effective smash and providing no compensating attack value. The Wing Sub-Ring is consistently rated as detrimental to Great Dragon's performance — it should be replaced with a competitive SAR in virtually all use cases.
+
+**SAR-slot importance:** Great Dragon's core ridge contacts have excellent smash in both RS and LS spin directions. The SAR slot determines whether those contacts are exposed or blocked, and adds mass distribution at the ring's outer radius depending on SAR choice.
+
+**Contact point height:** With War Lion SAR installed, Great Dragon's contact points sit at an **elevated height** relative to Circle Survivor Defense configurations — allowing it to land hits **above** Circle Survivor's defensive ring rather than being deflected. This is a specific matchup advantage.
 
 ### 2. Physics
 
+**Moment of inertia:**
+
 ```
-Moment of inertia (ring model):
-  r_outer � 30 mm, r_inner � 13 mm,  m_total = 5.4 g
-  I = (m/2)(r_o� + r_i�) = (0.0054/2)(0.030� + 0.013�)
-    = 0.0027 � (0.000900 + 0.000169) = 0.0027 � 0.001069 � 2.9 � 10?6 kg�m�
+Core AR (ring + wing extensions):
+  Effective r_outer ≈ 30 mm, r_inner ≈ 13 mm,  m_core = 3.9 g
+  I_core = (0.0039/2)(0.030² + 0.013²) = 0.00195 × 0.001069 ≈ 2.09 × 10⁻⁶ kg·m²  [ESTIMATED]
 
-SAR free-spin effect on contact:
-  J_delivered_to_opponent = J_base � 0.75  (SAR absorbs ~25% of contact moment)
-  spinStealFactor_SAR � 0.04              (mild spin steal via orbital contact)
+Wing Sub-Ring (oval plate):
+  Effective r_outer ≈ 33 mm, r_inner ≈ 13 mm,  m_sar = 1.5 g
+  I_sar  = (0.0015/2)(0.033² + 0.013²) = 0.00075 × 0.001258 ≈ 9.4 × 10⁻⁷ kg·m²   [ESTIMATED]
 
-Smash model:
-  smashFractionRS = 0.52  [FACT(PDB) � symmetric ridge geometry, "excellent Smash both spins"]
-  smashFractionLS = 0.52  [FACT(PDB) � both-spin parity confirmed]
-  recoilFactor    = 0.32  [ESTIMATED � "competitive with appropriate base"; managed by Defense Grip Base]
+Total (with Wing Sub-Ring): I ≈ 3.0 × 10⁻⁶ kg·m²  [ESTIMATED]
+War Lion SAR (≈ 2.6 g, r_outer ≈ 27 mm): I_WL ≈ 7.5 × 10⁻⁷ kg·m²  [ESTIMATED]
+War Bear SAR (≈ 2.1 g, r_outer ≈ 28 mm): I_WB ≈ 6.5 × 10⁻⁷ kg·m²  [ESTIMATED]
+```
 
-Best base pairing: Defense Grip Base or SG Metal Ball Base (recoil absorbed ? net outward force)
+**Smash model by SAR configuration:**
+
+```
+With Wing Sub-Ring (stock):
+  smashFractionRS: 0.35  [ESTIMATED — Wing SAR blocks and gets in the way; reduced effectiveness]
+  smashFractionLS: 0.35  [ESTIMATED]
+  recoilFactor:    0.55  [ESTIMATED — no recoil management from Wing geometry]
+  competitiveValue: "poor — Wing Sub-Ring obstructs Great Dragon's contacts"
+
+With War Lion SAR:
+  smashFractionRS: 0.62  [FACT(PDB) — "Right Spin noticeably better; more power, lower recoil; highly competitive"]
+  smashFractionLS: 0.55  [FACT(PDB) — "falls just short of Competitive Combos List; greater recoil, lower power"]
+  recoilFactor_RS: 0.29  [ESTIMATED]
+  recoilFactor_LS: 0.38  [ESTIMATED]
+  contactHeightBonus: true  // elevated hits above Circle Survivor Defense ring
+  requiredBase: "Defense Grip Base | SG Grip Change Base Tip"  // recoil control mandatory
+  competitiveValue_RS: "highly competitive — top-tier smash"
+  competitiveValue_LS: "good but suboptimal — just misses Competitive Combos List"
+
+With War Bear SAR (Left Spin focus):
+  smashFractionLS: 0.72  [FACT(PDB) — "comparable to Square Edge; impressive power; top-tier in LS"]
+  smashFractionRS: 0.68  [ESTIMATED — effective but War Bear SAR fragile in RS; avoid RS use]
+  recoilFactor_LS: 0.30  [ESTIMATED]
+  fragileRS: true         // [FACT(PDB)] War Bear SAR fragile in Right Spin — do not use RS
+  mechanism: "Great Dragon fixes War Bear SAR underneath itself; focused mass on both ARs' contacts + huge reach"
+  competitiveValue_LS: "top-tier smash — comparable to Square Edge; best LS option"
+
+With War Monkey SAR:
+  smashFractionRS: 0.57  [ESTIMATED — "gets in the way a bit more than War Lion"]
+  recoilFactor:    0.35  [ESTIMATED]
+  competitiveValue: "acceptable substitute for War Lion; suboptimal"
+
+With Dragon Breaker SAR:
+  smashFractionLS: 0.52  [ESTIMATED — decent LS synergy]
+  competitiveValue: "fair LS option; much better than Wing Sub-Ring; inferior to War Lion/War Bear"
+```
+
+**With Screw Zeus Core AR (fixing Screw Zeus in place):**
+
+Great Dragon is used to fix Screw Zeus's core AR in place, exposing Screw Zeus's contact points as the primary attack surface.
+
+```
+Right Spin (with Screw Zeus):
+  Primary contacts: rear of Screw Zeus heads + corners of Screw Zeus sloped sections
+  Secondary:        ridges of Great Dragon (less effective in RS than LS direction)
+  combinedSmash:    ≈ 0.60  [ESTIMATED — top-tier RS smash via Screw Zeus heads]
+  recoilFactor:     0.28    [ESTIMATED — Screw Zeus geometry manages recoil in RS]
+  fragility note:   [FACT(PDB)] reports of breakage in RS — use with caution
+  safetyNote:       "lighter weight than Dragon Breaker/Dragon Saucer = more forgiving base choice"
+  competitiveValue: "top-tier competitive"
+
+Left Spin (with Screw Zeus):
+  Primary contacts: foreheads of Screw Zeus (reasonably well exposed) + leading edge of
+                    second section (completely unobstructed) + crests of Great Dragon
+  combinedSmash:    ≈ 0.65  [ESTIMATED — all Screw Zeus contacts well exposed in LS]
+  recoilFactor:     0.30    [ESTIMATED]
+  warningNote:      "Does NOT work with SG Metal Flat Base (Gaia Dragoon V) — too much recoil,
+                     too little weight for the tip speed"
+  disadvantage_LS:  "Screw Zeus inverted slope can destabilise the combo when hit by taller bases
+                     in LS; overhanging section can reduce efficacy vs Circle Survivor Defense
+                     (requires very strong launch to overcome)"
+  massNote:         "lighter weight vs Dragon Breaker/Dragon Saucer = more forgiving of tip
+                     speed and launch power"
+  competitiveValue: "top-tier competitive"
 ```
 
 ### 3. Game Engine Mapping
@@ -14497,35 +14651,64 @@ interface GreatDragonAR {
   name: "great_dragon_ar";
   system: "SGS";
   sourceBey: "Gaia Dragoon";
-  mass_g: 5.4;                         // [FACT(PDB)] core 3.9g + Wing Sub-Ring 1.5g
-  coreAR_g: 3.9;                       // [FACT(PDB)]
-  sarName: "wing_sub_ring";
-  sar_g: 1.5;                          // [FACT(PDB)]
-  sarFreeSpin: true;
-  I_kgm2: 2.9e-6;                      // [ESTIMATED � ring model]
-  contactType: "smash_ridge";
-  smashFractionRS: 0.52;               // [FACT(PDB)] symmetric ridge
-  smashFractionLS: 0.52;               // [FACT(PDB)] both-spin parity
-  upperFraction: 0.05;                 // minimal � ridges at equatorial, not upper height
-  recoilFactor: 0.32;
-  sarSpinStealFactor: 0.04;
+  mass_g: 5.4;                               // [FACT(PDB)] core 3.9g + Wing Sub-Ring 1.5g
+  coreAR_g: 3.9;                             // [FACT(PDB)]
+  sarSlotName: "wing_sub_ring";              // named from SG Wing Base instructions; NOT "Great Dragon Sub AR"
+  sar_g: 1.5;                                // [FACT(PDB)] Wing Sub-Ring
+  I_kgm2_withWingSubRing: 3.0e-6;           // [ESTIMATED]
+  I_kgm2_coreOnly: 2.09e-6;                 // [ESTIMATED]
+  contactType: "smash_ridge_elevated";
+  contactHeightBonus: true;                  // [FACT(PDB)] elevated hits above Circle Survivor ring
+
+  // Fragility flags
+  fragility: {
+    blackRecolour: "do_not_use";             // [FACT(PDB)] Gold Plastic Syndrome in non-gold plastic
+    standardColours: "moderate";             // not especially fragile, but not sturdy
+    warBearSAR_RS: "fragile";               // [FACT(PDB)] War Bear SAR breaks in Right Spin
+    screwZeusRS: "reports_of_breakage";     // [FACT(PDB)]
+  };
+
+  // SAR configurations (smash by SAR choice)
+  sarConfigs: {
+    wing_sub_ring: { smashRS: 0.35, smashLS: 0.35, recoil: 0.55, competitive: false };
+    war_lion_sar:  { smashRS: 0.62, smashLS: 0.55, recoilRS: 0.29, recoilLS: 0.38,
+                     rsCompetitive: true, lsCompetitive: false,
+                     note: "RS highly competitive; LS just misses Competitive Combos List" };
+    war_bear_sar:  { smashLS: 0.72, smashRS: 0.68, recoilLS: 0.30,
+                     lsCompetitive: "top_tier", rsFragile: true,
+                     note: "LS comparable to Square Edge; avoid RS (fragile)" };
+    war_monkey_sar:{ smashRS: 0.57, recoil: 0.35, competitive: "acceptable_substitute" };
+    dragon_breaker:{ smashLS: 0.52, competitive: "fair_ls_option" };
+  };
+
+  // Screw Zeus AR combination
+  screwZeusCombo: {
+    rs: { combinedSmash: 0.60, recoil: 0.28, competitive: "top_tier", fragile: "reports_of_breakage" };
+    ls: { combinedSmash: 0.65, recoil: 0.30, competitive: "top_tier",
+          warning: "no_SG_Metal_Flat_Base_GDV",
+          note: "lighter weight than Dragon Breaker/Saucer = more forgiving base choice" };
+  };
+
   competitiveTier: "top_tier_smash";
-  sarCompatible: ["wing_sub_ring", "war_lion_sar", "dragon_saucer_sar", "war_bear_sar"];
-  bestSAR: "dragon_saucer_sar";        // Dragon Saucer SAR = best defensive partner
-  notesBothSpin: "equal smash RS and LS � use for attack builds in either spin direction";
-}
-function greatDragonContact(ar: GreatDragonAR, J_base: number): number {
-  // SAR absorbs 25% of impact moment; core delivers 75%
-  const J_core = J_base * 0.75;
-  return J_core * ar.smashFractionRS;  // same value for either spin
+  bestSAR_RS: "war_lion_sar";
+  bestSAR_LS: "war_bear_sar";
+  requiredBase: "defense_grip_base | sg_grip_change_base_tip";
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Top-tier both-spin smash AR. Great Dragon AR's symmetric ridge contacts deliver smashFractionRS = smashFractionLS = 0.52 � one of the only plastic gen ARs with genuine spin-direction parity. The Wing Sub-Ring SAR slot is the key asset: swap in Dragon Saucer SAR for the best zombie/defense configuration, or War Lion SAR for a lighter defensive option. The core ridge attack performance is independent of SAR choice. Use with Defense Grip Base to contain recoil. Tier: top-tier smash.
+**Role:** Top-tier smash AR — SAR choice determines spin direction and performance tier.
 
----
+The Wing Sub-Ring SAR (stock) obstructs Great Dragon's contact points and should always be replaced. The core ring itself delivers excellent smash in both spin directions; the SAR determines whether that smash is fully realised:
+
+- **War Lion SAR (RS):** Best RS build — smashFraction 0.62, highly competitive. Elevated contact height beats Circle Survivor Defense. Requires Defense Grip Base or SG Grip Change Base Tip for recoil control. RS significantly better than LS in this configuration.
+- **War Bear SAR (LS):** Best LS build — smashFraction 0.72, comparable to Square Edge. Top-tier left-spin smash. Never use in RS (War Bear SAR is fragile in right spin).
+- **Screw Zeus Core AR (either spin):** Top-tier RS and LS when fixing Screw Zeus in place. Lighter weight than Dragon Breaker/Dragon Saucer = more forgiving of base choice. Avoid SG Metal Flat Base GDV in LS.
+
+**Fragility notes:** Avoid the black recolour entirely (Gold Plastic Syndrome). Exercise care with Screw Zeus RS (reports of breakage). Standard colour versions are acceptable but not sturdy.
+
+Tier: **top-tier smash** in the correct SAR configuration. Non-competitive with stock Wing Sub-Ring installed.
 
 ## Case 260 � Dark Wing AR (6.4 g [FACT(PDB)], Dark Draciel / Dark Dragoon / Dark Dranzer / Dark Driger / Dark Gaia Dragoon) � Hyper-Aggro Three-Sided Thick Contact Ring with Matching Sub-AR: Maximum Offensive Power at High Recoil Cost
 
@@ -15600,3 +15783,426 @@ Because the part was never sold, all real-world use data is absent. Physics esti
 
 ---
 
+
+## Case 274 — Right Spin Gear (G Ball) [Gaia Dragoon] — Shells: 1.1 g each + SG Core: 0.88 g + up to 1× 3/16" Ball (0.448 g) + Optional Metal Weight Gear (1.12 g) [FACT(PDB)] — Ball-Weighted Core with G Special Base Retention Platform: Lightest Possible SG; Black Version Fragile
+
+### 1. Geometry
+
+The **Right Spin Gear (G Ball)** included with Gaia Dragoon is a complete SGS Spin Gear assembly comprising two sub-components:
+
+**Right Spin Gear Shells (Standard):**
+- Mass: **1.1 g each** (2.2 g pair) [FACT(PDB)]
+- Standard SGS shell design. **Incompatible with Neo SG Cores** (Heavy Metal Core, Neo Magne Cores, etc.) due to physical interference — Neo Cores require Neo Shell geometry.
+- Can be made compatible with some Neo-Core setups via **Wyborg's SG (Auto Change Version) SG Core Part** acting as an adapter, but this is a specific workaround.
+- Neo Shells (1.15 g each, see Case 275) are generally preferred for their full Neo Core compatibility, particularly with the Heavy Metal Core for Compact, Weight-Based Defense, and Force Smash builds.
+- The standard Right Shells produce the **lightest possible SG in the game** when combined with SG (Auto Change Version) core and no Metal Weight Gear (because Auto Change SG core is the lightest compatible core, and no MWG is permitted by legality precedent).
+
+**Metal Weight Gear (optional):**
+- Mass: **1.12 g** [FACT(PDB)]
+- Does **not function as a gear** in any mechanical capacity — purely a weight ring that sits in the SG assembly.
+- Reduces wobble/rattling during spin; adds a small mass increment.
+- Not mandatory: BBA Survivor, Attacker, Defenser, and Balancer all ship with standard Right SGs but **no Metal Weight Gear**, confirming legality without it.
+
+**SG (G Ball) Core:**
+- Mass: **0.88 g** (body only) **+ up to one 3/16" metal ball (0.448 g)** [FACT(PDB)]
+- The core body is modified from the standard SG core to include a central hemispherical cavity accepting a 3/16" steel ball, adding ~0.45 g of additional axial mass — inspired by the player practice of manually loading balls into regular SGs (documented in Spin Up Guide Book Vol. 1).
+- Contains a **platform / retaining structure** that engages with G Special Base's four ball pockets, **keeping the pocket balls from escaping the beyblade**. Without SG (G Ball), the four 3/16" balls in G Special Base can exit the entire assembled beyblade during spin — a safety hazard. Standard SG spurs retain only two diagonally-positioned pocket balls (causing balance issues from asymmetric loading); SG (G Ball) retains all four equally.
+- **Black version warning:** The black recolour of SG (G Ball) Core suffers from "Gold Plastic Syndrome" in a non-gold plastic → extremely brittle. **Do not use the black version.**
+
+**Compatible bases:**
+```
+G Special Base:      ✓ full — retains all 4 pocket balls [primary use]
+Fortress Base:       ✓ but ONLY with Magne Flat Base Tip; does NOT prevent ball escape
+Jumping Base (Trygle): ✓ physical fit but provides NO tip
+Jumping Base 2:      ✓ physical fit but provides NO tip
+Customize Grip Base: tip protrudes but doesn't extend past base gimmick → ~10s spin max;
+                     likely ILLEGAL (no functional tip)
+Magne Flat Base:     tip doesn't protrude past gimmick → ~10s spin max;
+                     legality UNCLEAR; impractical without functional tip
+```
+
+**Ball configurations:**
+- 0 balls: base + no G Ball weight (0.88 g core only)
+- 1 ball (recommended): base + 0.448 g ball = 1.33 g core; "1 is preferred for the gimmick's sake"
+
+### 2. Physics
+
+**SG (G Ball) total mass range:**
+
+```
+Minimum (shells + no MWG + no ball): 2.2 + 0.88 = 3.08 g
+Standard (shells + MWG + 1 ball):    2.2 + 1.12 + 0.88 + 0.45 = 4.65 g
+Lightest possible SG (Auto Change core, no MWG, standard shells): ~3.2 g  [ESTIMATED]
+```
+
+**Inertia estimate:**
+
+```
+SG (G Ball) assembly — cross/star shell body:
+  Shells at effective r ≈ 14 mm:  I_shells = 2 × 0.0011 × 0.014² ≈ 4.3 × 10⁻⁷ kg·m²
+  Core cross at r ≈ 10 mm:        I_core   = 0.00133 × 0.010²    ≈ 1.3 × 10⁻⁷ kg·m²
+  Metal Weight Gear at r ≈ 12 mm: I_MWG    = 0.00112 × 0.012²    ≈ 1.6 × 10⁻⁷ kg·m²
+  Total (standard config):  I ≈ 7.2 × 10⁻⁷ kg·m²  [ESTIMATED]
+```
+
+The G Ball metal ball sits on the rotation axis — it contributes near-zero rotational inertia but adds 0.45 g of axial mass, lowering the system's centre of mass slightly.
+
+**G Special Base ball retention physics:**
+
+Standard SG spurs retain balls in 2 of 4 pockets (diagonal pair only). The retained pair at diametrically opposite positions at r ≈ 18 mm contribute equal but opposite I increments → net rotational balance is maintained only for that pair. The two unretained balls can shift freely in their pockets during spin:
+
+```
+Unretained ball mass shift (standard SG):
+  At launch ω₀ ≈ 2500 RPM: centripetal force holds balls outward
+  As spin decays, balls rattle → introduces wobble oscillations
+  If ejected entirely: sudden I loss + safety hazard
+
+With SG (G Ball) retaining all 4 balls:
+  All 4 balls at r ≈ 18 mm, C₄ symmetric:
+  ΔI_balls = 4 × 0.000448 × 0.018² ≈ 5.8 × 10⁻⁷ kg·m²  [ESTIMATED]
+  Complete C₄ symmetry → zero dynamic imbalance contribution
+  Safety maintained throughout the match
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface SGGBallRight {
+  name: "sg_g_ball_right";
+  system: "SGS";
+  shellType: "standard_right";          // NOT Neo-compatible
+  sourceBey: "Gaia Dragoon";
+  spin: "right";
+
+  shells: {
+    mass_g: 1.1;                        // [FACT(PDB)] each; 2.2 g pair
+    neoCompatible: false;               // [FACT(PDB)] incompatible with Neo Cores
+    canAdaptWithAutoChangePart: true;   // [FACT(PDB)] Wyborg SG Auto Change Part workaround
+    neosPreferred: "for HMC / Compact / WBD builds use Neo Right Shells (Case 275)";
+  };
+
+  metalWeightGear: {
+    mass_g: 1.12;                       // [FACT(PDB)]
+    functionalGear: false;              // [FACT(PDB)] no mechanical gear action
+    optional: true;                     // [FACT(PDB)] legal without (BBA series precedent)
+    effect: "reduces_wobble_adds_mass";
+  };
+
+  core: {
+    name: "sg_g_ball_core";
+    mass_g_noball: 0.88;                // [FACT(PDB)]
+    ballMass_g: 0.448;                  // [FACT(PDB)] one 3/16" steel ball
+    maxBalls: 1;
+    recommendedBalls: 1;
+    blackVersion: "do_not_use";         // [FACT(PDB)] Gold Plastic Syndrome
+    retentionPlatform: true;            // [FACT(PDB)] key feature: retains all 4 GSB pocket balls
+    standardSGRetains: 2;              // [FACT(PDB)] standard spurs retain only 2 diagonal balls
+  };
+
+  I_kgm2: 7.2e-7;                       // [ESTIMATED] full standard config
+  lightestSGConfig: true;               // [FACT(PDB)] with Auto Change core + no MWG = lightest SG
+
+  compatibleBases: {
+    g_special_base: "full_4ball_retention";      // [FACT(PDB)]
+    fortress_base: "magne_flat_tip_only";        // [FACT(PDB)]
+    jumping_base_trygle: "no_tip";               // [FACT(PDB)]
+    jumping_base_2: "no_tip";                    // [FACT(PDB)]
+    customize_grip_base: "likely_illegal";       // [FACT(PDB)]
+    magne_flat_base: "legality_unclear";         // [FACT(PDB)]
+  };
+}
+```
+
+### 4. Verdict
+
+**Role:** Specialist SG core for G Special Base ball retention.
+
+The primary competitive value of SG (G Ball) is not the G Ball core weight itself (0.45 g axial is negligible competitively), but the **retention platform** that prevents G Special Base's four 3/16" steel balls from ejecting during use. Without it, only two diagonal balls are retained (causing imbalance); with it, all four are held in C₄ symmetry throughout the match. This makes SG (G Ball) a mandatory component if using G Special Base with all four balls.
+
+Outside G Special Base, SG (G Ball) has no particular advantage over standard Right SG configurations. The standard Right Shells are meanwhile outclassed by Neo Right Shells (Case 275) for virtually all competitive builds that require Neo Core compatibility (HMC, South/North Magnecore). The one exception is the lightest-possible SG setup (standard shells + Auto Change core + no MWG) which may serve specific weight-minimisation goals.
+
+Avoid the black recolour of the SG (G Ball) core entirely (Gold Plastic Syndrome). Tier: **specialist** — mandatory for G Special Base 4-ball config; otherwise standard/inferior to Neo setup.
+
+---
+
+## Case 275 — Neo Right Spin Gear (South Magne Version) [Gaia Dragoon] — Neo Shells: 1.15 g each (2.3 g pair) + South Magnecore: 3.3 g [FACT(PDB)] — Recoil-Managing Attack-Stamina Core; Negligible Magnetic Effect in Standard Play
+
+### 1. Geometry
+
+The **Neo Right Spin Gear (South Magne Version)** included with Gaia Dragoon consists of two components:
+
+**Neo Right Spin Gear Shells:**
+- Mass: **1.15 g each (2.3 g pair)** [FACT(PDB)]
+- The standard Neo Right Shells compatible with **all SG-compatible bases**, and critically with **Neo SG Cores** including the Heavy Metal Core — the key advantage over standard Right Shells (Case 274).
+- Neo Right Shells are a necessity for Compact Customizations, Weight-Based Defense, Force Smash, and Traditional Upper Attack builds that require Neo Core compatibility. For Left Spin versions of those types, Neo Left Shells are used instead.
+- **Exceedingly common** — appear in dozens of beys across the plastic generation. Despite their competitive importance, sourcing is not an issue.
+
+**South Magnecore:**
+> Note: When used in an SG, any Magnecore is listed as "Magne Version" with no specification of polarity or variety. "South Magnecore" refers to the polarity designation from PlasticsDB for clarity.
+
+- Mass: **3.3 g** [FACT(PDB)]
+- **Only compatible with Neo Shells** (Neo Right and Neo Left). Cannot be used in standard Right/Left Shells.
+
+**From photos:** The SG (G Ball) core (Case 274) is the red cross-shaped component; the South Magnecore that ships with the Neo SG in the same Gaia Dragoon set has the same cross-tab geometry but houses a magnet rather than a ball cavity. The transparent blue component visible in Gaia Dragoon assembly photos is the G Special Base tip (Case 276), not part of the SG.
+
+### 2. Physics
+
+**South Magnecore mass context:**
+
+```
+SG Core mass comparison:
+  Standard SG Core:        ~0.9 g   (lightest)
+  SG (G Ball) Core + ball: ~1.33 g
+  South Magnecore:          3.3 g   ← significant additional mass
+  Heavy Metal Core:        ~14 g    (heaviest competitive core; best I)
+
+Neo Right Shell pair + South Magnecore total: 2.3 + 3.3 = 5.6 g
+Neo Right Shell pair + HMC total:             2.3 + 14  = 16.3 g
+```
+
+**Inertia estimate:**
+
+```
+Neo Right Shells (cross-body, r ≈ 14 mm): I_shells ≈ 2 × 0.00115 × 0.014² ≈ 4.5 × 10⁻⁷ kg·m²
+South Magnecore (cylinder r ≈ 11 mm):    I_mag    = 0.0033 × 0.011²         ≈ 4.0 × 10⁻⁷ kg·m²
+Total: I ≈ 8.5 × 10⁻⁷ kg·m²  [ESTIMATED]
+```
+
+**Rotational recoil control:**
+
+South Magnecore's 3.3 g provides meaningful rotational inertia at the SG level — noticeably more than a standard SG core (~0.9 g) but far less than HMC (~14 g). Its competitive value on attack builds:
+
+```
+On attack combos caring about post-hit stamina (e.g., SG Metal Flat Base GDV combos):
+  HMC:             best recoil control, best stamina — but slows movement speed
+  South Magnecore: "decent choice" [FACT(PDB)] — better balance:
+                   - more recoil control than Metal Weight Core
+                   - better stamina and faster movement than HMC
+                   - "slightly better balance than Metal Weight Core for attack-stamina"
+  MWCore:          slightly worse for this balance point
+
+recoilControlIndex (relative):
+  Standard SG:    0.10  [ESTIMATED baseline]
+  South Magnecore: 0.35  [ESTIMATED — 3.3 g at r≈11 mm]
+  HMC:            1.00  [ESTIMATED reference — ~14 g at r≈11 mm]
+```
+
+**Magnetic gimmick physics:**
+
+South Magnecore contains a South-polarity magnet:
+
+```
+Attraction targets:
+  - Customize Grip Base Tip (magnetised tip, attracted to South core)
+  - Magne Flat Base Tip (magnetised, attracted)
+  - Magne Weight Disk (can be flipped to align polarity as needed)
+
+In-game effect on performance: "negligible" [FACT(PDB)] — the magnetic force at
+  interbeyblade distances during normal play is too weak to meaningfully alter
+  movement or contact outcomes.
+
+In Magne Stadia (specialised magnetic stadium):
+  South Magnecores = OFFENSIVE (repelled by south-polarity stadium magnets → moves
+  erratically around the stadium, increasing contact frequency)
+  → not relevant to standard competitive play
+
+Assembly note: magnetic attraction to compatible tips can make assembly
+  slightly more difficult but does not affect competitive performance.
+```
+
+**Defense and Compacts use:**
+
+```
+South Magnecore for WBD / Compacts:
+  "Outclassed by HMC" [FACT(PDB)] — significant weight deficit (3.3 g vs ~14 g)
+  "Still works okay for Defense/Compacts, albeit not nearly as well as HMC"
+  Use when HMC is unavailable or when stamina/speed balance is more important
+  than maximum defense mass
+
+Driger V2 combos (specific outspins):
+  South Magnecore has use for certain outspin configurations on Driger V2
+  "Generally HMC is superior, always preferred when using Wide Defense"
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface NeoRightSGSouthMagne {
+  name: "neo_right_sg_south_magne";
+  system: "SGS";
+  shellType: "neo_right";
+  sourceBey: "Gaia Dragoon";             // also common in many other beys
+  spin: "right";
+
+  shells: {
+    mass_g: 1.15;                        // [FACT(PDB)] each; 2.3 g pair
+    neoCompatible: true;                 // [FACT(PDB)] works with HMC, Neo Cores
+    availability: "exceedingly_common";  // [FACT(PDB)]
+    preferredOver: "standard_right_shells_for_hmc_builds";
+  };
+
+  core: {
+    name: "south_magnecore";
+    mass_g: 3.3;                         // [FACT(PDB)]
+    polarity: "south";
+    magneticEffect_normalPlay: "negligible"; // [FACT(PDB)]
+    magneticEffect_magnestadia: "offensive_repelled"; // [FACT(PDB)]
+    neoShellsOnly: true;                 // [FACT(PDB)]
+    attractedTips: ["customize_grip_base_tip", "magne_flat_base_tip"];
+    attractedWD: ["magne_weight_disk_south_side"];
+  };
+
+  I_kgm2: 8.5e-7;                        // [ESTIMATED]
+  recoilControlIndex: 0.35;              // [ESTIMATED] relative to HMC=1.0
+
+  competitiveUse: {
+    attackStaminaBalance: {
+      vsHMC: "faster_movement_less_control";
+      vsMWCore: "slightly_better_attack_stamina_balance"; // [FACT(PDB)]
+      bestFor: ["sg_metal_flat_base_gdv_combos"];          // [FACT(PDB)]
+    };
+    defenseCompacts: {
+      viable: true;
+      vsHMC: "significantly_inferior_but_ok_without_hmc"; // [FACT(PDB)]
+    };
+    drigerV2: "some_outspin_use_cases";  // [FACT(PDB)]
+    magnetStadia: "offensive_south";
+  };
+}
+```
+
+### 4. Verdict
+
+**Role:** Mid-weight Neo SG core for attack-stamina balance; Neo Right Shells are universally preferred shells.
+
+**South Magnecore (3.3 g):** Best used on attack combos that require post-hit survival — specifically SG Metal Flat Base (Gaia Dragoon V) configurations where maximum movement speed and some recoil management are both needed. It occupies the gap between standard SG cores (too light, almost no recoil control) and HMC (too heavy, slows movement). For pure defense or Compacts, HMC is always superior. Magnetic gimmick is irrelevant in standard play; only meaningful in Magne Stadia where South cores behave offensively.
+
+**Neo Right Shells (1.15 g each):** The correct shell choice for almost all competitive SGS builds. Their Neo Core compatibility (especially HMC) makes them a prerequisite for Compacts, WBD, Force Smash, and Traditional Upper Attack. The most common competitive shell in the plastic generation. Tier: **Neo Shells — top-tier essential**; **South Magnecore — niche competitive** for attack-stamina balance.
+
+---
+
+## Case 276 — G Special Base (Gaia Dragoon) — 4.6 g + up to 4 × 3/16" Metal Balls (0.448 g each) [FACT(PDB)] — Four-Ball Pocket Gimmick Base with Aggressive Semi-Flat Tip; Poor LAD Limits Competitive Range; Black Version Fragile
+
+### 1. Geometry
+
+**G Special Base** is the Blade Base of Gaia Dragoon (all variants). It weighs **4.6 g** for the base body [FACT(PDB)], with four radially-positioned pockets for 3/16" metal balls at r ≈ 18 mm.
+
+The base is a compact circular disc with a cross-shaped underside support structure (from photos: four raised ribs on the bottom, meeting at the central tip housing). The SG socket is centrally located; the four ball pockets are evenly distributed around the ring at 90° spacing (C₄ symmetry).
+
+**Tip:** Shared with **SG Wing Base** (Dranzer G). A small semi-flat/flat transparent tip approximately 3-4 mm in diameter. From photos and description, the tip produces:
+> "aggressive movement pattern with good controllability"
+
+This is typical of semi-flat tip geometry — sufficient friction to drive active stadium-searching movement, but with enough surface contact area to avoid uncontrolled spinning. In the pre-Tornado Ridge meta, this tip was considered advantageous for attack builds.
+
+**Black version warning:** Gold Plastic Syndrome applies — the black recolour is very fragile. **Do not use.**
+
+**Ball pocket mechanics:**
+- Pockets are cylindrical cavities, each large enough to accept one 3/16" ball
+- When **SG (G Ball)** core (Case 274) is installed: all 4 balls are retained by the core's platform extension → C₄ symmetry maintained
+- When **standard SG** is installed: only 2 diagonally-opposite balls are retained by the SG spurs → 2 balls can escape → **safety hazard** + rotational asymmetry
+- With any SG, more than 2 balls requires SG (G Ball) for retention integrity
+
+The pockets themselves **destroy LAD** — balls rolling in their cavities during tip-phase spin introduce micro-impacts on the pocket walls, disrupting the smooth tip-friction LAD profile that stamina and zombie builds require. This severely limits G Special Base for those archetypes.
+
+### 2. Physics
+
+**Total mass configurations:**
+
+```
+G Special Base body only:           4.6 g
+With 4 balls (full config):         4.6 + 4 × 0.448 = 6.4 g  [recommended with SG G Ball]
+With 2 balls (standard SG max):     4.6 + 2 × 0.448 = 5.5 g
+```
+
+**Inertia estimate:**
+
+```
+Base disc (r_outer ≈ 24 mm, ring model):
+  I_base = (0.0046/2)(0.024² + 0.009²) = 0.0023 × 0.000657 ≈ 1.51 × 10⁻⁶ kg·m²  [ESTIMATED]
+
+4 pocket balls at r ≈ 18 mm:
+  I_balls = 4 × 0.000448 × 0.018² ≈ 5.8 × 10⁻⁷ kg·m²  [ESTIMATED]
+
+Total (full config): I ≈ 2.09 × 10⁻⁶ kg·m²  [ESTIMATED]
+Note: I is stable when balls are retained (SG G Ball); with standard SG and loose
+balls, effective I fluctuates as balls shift in pockets during spin decay.
+```
+
+**Tip friction model:**
+
+```
+Tip profile: semi-flat dome, r_contact ≈ 1.5–2.0 mm  [ESTIMATED from photos]
+tipFrictionCoeff: 0.28  [ESTIMATED — semi-flat ABS, "aggressive but controllable"]
+spinDecayRate:    8.8 /s  [ESTIMATED — semi-flat ≈ intermediate between flat and sharp]
+stadiumBehaviour: "active_searching" — tip drives consistent lateral movement
+
+Pre-Tornado-Ridge era relevance:
+  In original play environments (no tornado ridge), the semi-flat tip's active
+  movement was advantageous for locating opponents without self-KO risk.
+  In Tornado-Ridge stadia, the more aggressive movement pattern becomes
+  a liability for stamina combos, reducing the base's survivability.
+
+LAD: "poor" [FACT(PDB)] — ball pockets disrupt tip-phase smooth spin; LAD ≈ 0 s  [ESTIMATED]
+```
+
+**Legal inversion:**
+```
+Tip inversion (turning base upside-down): legal [FACT(PDB)], but "negligible utility"
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface GSpecialBase {
+  name: "g_special_base";
+  system: "SGS";
+  sourceBey: "Gaia Dragoon";
+  blackVersion: "do_not_use";           // [FACT(PDB)] Gold Plastic Syndrome
+
+  baseBody_g: 4.6;                      // [FACT(PDB)]
+  pocketBalls: {
+    count: 4;
+    ballMass_g: 0.448;                  // [FACT(PDB)] 3/16" steel ball
+    pocketRadius_mm: 18;                // [ESTIMATED]
+    retentionRequirement: "sg_g_ball_required_for_4_balls"; // [FACT(PDB)]
+    standardSGRetains: 2;              // [FACT(PDB)] causes asymmetry + safety hazard
+    recommendedConfig: 4;              // [FACT(PDB)]
+    I_4balls: 5.8e-7;                  // [ESTIMATED]
+    safetyNote: "balls can exit the entire beyblade without SG G Ball retention platform";
+  };
+
+  I_kgm2_full: 2.09e-6;                 // [ESTIMATED] base + 4 retained balls
+  tipSharedWith: "sg_wing_base";        // [FACT(PDB)]
+
+  tip: {
+    profile: "semi_flat";
+    radius_mm: 1.75;                    // [ESTIMATED]
+    frictionCoeff: 0.28;               // [ESTIMATED]
+    spinDecayRate: 8.8;                // [ESTIMATED] /s
+    stadiumBehaviour: "active_searching_aggressive";
+    LAD: 0;                            // [FACT(PDB)] "poor LAD" — pocket balls destroy it
+    tipInversionLegal: true;           // [FACT(PDB)] but "negligible utility"
+  };
+
+  competitiveUses: {
+    attack: "viable_pre_tornado_ridge; aggressive_tip_limits_modern_use";
+    compact: "poor_LAD_severely_limits"; // [FACT(PDB)]
+    upperAttack: "poor_LAD_limits";      // [FACT(PDB)]
+    zombie: "not_viable";               // LAD = 0
+    weightBasedDefense: "possible_if_other_parts_compensate";
+  };
+
+  overallVerdict: "not_useful_but_not_terrible"; // [FACT(PDB)]
+  primaryValue: "four_ball_weight_gimmick_requires_sg_g_ball";
+}
+```
+
+### 4. Verdict
+
+**Role:** Niche gimmick base; not a competitive staple but functional for attack builds.
+
+G Special Base's four metal balls (6.4 g total with balls) were its primary selling point at launch, adding mass for its era. The aggressive semi-flat tip provides controlled movement — competitive in the pre-Tornado-Ridge environment where consistent opponent-finding without self-KO was the priority. In modern Tornado-Ridge stadia, the tip's active movement is more risky, and the complete absence of LAD (ball pockets disrupt tip-phase spinning) bars it from Compact, Zombie, and Stamina roles.
+
+**Critical assembly note:** Always use SG (G Ball) (Case 274) when using all four pocket balls. Standard SG retains only two diagonal balls, causes rotational imbalance, and risks ball ejection during play — a genuine safety hazard. More than two balls = SG (G Ball) is mandatory.
+
+The base is "not a particularly useful part, but not terrible either" — a reasonable attack base for its era, outclassed in modern play by Defense Grip Base and SG Grip Change Base Tip configurations. The tip is shared with SG Wing Base, meaning the tip profile can be compared directly. Black version must be avoided (Gold Plastic Syndrome). Tier: **niche functional** — useful if SG (G Ball) is available and a semi-flat attack base is needed; poor for Compacts/Stamina/Zombie.

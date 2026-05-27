@@ -11512,6 +11512,599 @@ function cloneImpactResult(
 // cloneImpactResult(false, true,  80) → { spin:−232, imp:3000, dmg:1.71×, tilt:28°, burst:+20% }  — no sat
 ```
 
+## Case 806 — [GIMMICK] Strata Dragoon S (Gaia Dragoon) — Great Dragon SGS Attack Ring + Wing Sub-Ring SAR
+
+**Franchise context.** Daichi Sumeragi (Beyblade V-Force / G-Revolution, 2002–2004). Assembly: Strata Dragoon S (JP: Gaia Dragoon S, ガイアドラグーンS). AR data from Case 259 (FACT/ESTIMATED as marked); all other parts [M] (±15%).
+
+**Parts:**
+
+**AR: Great Dragon SGS Attack Ring [Case 259]**
+Two-component SGS Attack Ring: **Core AR: Great Dragon** (3.9 g [FACT(PDB)]) + **Wing Sub-Ring SAR** (1.5 g [FACT(PDB)]) = **5.4 g total [FACT(PDB)]**. The SAR slot name derives from the SG Wing Base assembly instructions — the sub-ring is not referred to as "Great Dragon Sub AR."
+
+Core AR geometry: two large curved wing extensions from a compact ring body. Contact faces angled forward → smash-type ridge contacts at equatorial (AR-level) height. r_outer ≈ 30 mm [ESTIMATED], r_inner ≈ 13 mm [ESTIMATED].
+I_core = (0.0039/2)(0.030² + 0.013²) = 0.00195 × 0.001069 = 2.09×10⁻⁶ kg⋅m² [ESTIMATED per Case 259]
+Black recolour warning [FACT(PDB)]: the black version suffers Gold Plastic Syndrome — do not use under any circumstances.
+
+Wing Sub-Ring SAR: wide flat oval wing extensions, r_outer ≈ 33 mm [ESTIMATED], r_inner ≈ 13 mm [ESTIMATED].
+I_sar = (0.0015/2)(0.033² + 0.013²) = 0.00075 × 0.001258 = 9.4×10⁻⁷ kg⋅m² [ESTIMATED per Case 259]
+I_AR_total (Core + Wing SAR installed) = 3.0×10⁻⁶ kg⋅m² [ESTIMATED per Case 259]
+
+**Physical SAR behaviour [FACT(PDB)]:** The Wing Sub-Ring SAR is mechanically static — fixed into the Core AR's SAR slot, it does NOT spin independently. In competitive use the Wing SAR obstructs Great Dragon's smash contact points, reducing smashFraction to ≈ 0.35. Optimal play replaces it: War Lion SAR (RS, smashFraction 0.62 [FACT(PDB)]) or War Bear SAR (LS, smashFraction 0.72 [FACT(PDB)] — comparable to Square Edge). Competitive use requires Defense Grip Base or SG Grip Change Base Tip for recoil management.
+
+**Anime co-ring fiction — basis for Case 807:**
+In the anime, BeySpirit animates the Wing Sub-Ring SAR as a freely-spinning cutting ring — physically impossible (the SAR is a static slot-fit with no bearing mechanism), but established as the fictional gimmick of Co-Ring Cutter. Treating the Wing SAR as an anime-physics free-spinning ring (η_coupling ≈ 0.78 [M, anime fiction only]):
+  ω_ring_eq = 0.78 × 500 = 390 rad/s at launch spin
+  KE_ring_eq = 0.5 × 9.4×10⁻⁷ × 390² = 0.0715 J [M, anime fiction]
+Passive anime bonus: opponent spinDecayRate +0.6 /s during sustained co-ring contact [M, anime fiction].
+
+**WD: Wide Defense [M]**
+m_WD ≈ 12.0 g [M]; I_WD ≈ 4.32×10⁻⁶ kg⋅m² [M] (dominant inertia contributor)
+
+**SG: Normal Right Spin SG [M]**
+m_SG ≈ 5.5 g [M]; I_SG ≈ 8.0×10⁻⁸ kg⋅m² [M]
+
+**BB: Sharp Base [M]**
+Single-point sharp tip, μ_tip ≈ 0.08 [M], r_contact = 0.3 mm [M].
+dω/dt_tip = −(μ × m × g × r_tip) / I_total ≈ −(0.08 × 0.0311 × 9.81 × 0.0003) / 9.50×10⁻⁶ ≈ −7.72 rad/s² [M]
+t_spin ≈ 500 / 7.72 ≈ 64.8 s [M] (sharp-tip ideal run-time)
+
+**Assembly [M, AR mass FACT(PDB)]:**
+m_total ≈ 27.4 g  (AR 5.4 g [FACT(PDB)] + WD 12.0 g [M] + SG 5.5 g [M] + BB+Face 4.5 g [M])
+I_total ≈ 7.40×10⁻⁶ kg⋅m² [M, AR ESTIMATED per Case 259]
+  (I_AR_total 3.0×10⁻⁶ [ESTIMATED] + I_WD 4.32×10⁻⁶ [M] + I_SG ~0.08×10⁻⁶ [M])
+ω₀ = 500 rad/s (plastic gen standard)
+KE₀ = 0.5 × 7.40×10⁻⁶ × 500² = 0.925 J [M]
+dω/dt_base = −(0.08 × 0.0274 × 9.81 × 0.0003) / 7.40×10⁻⁶ ≈ −8.74 rad/s² [M]
+t_spin ≈ 500 / 8.74 ≈ 57.2 s [M]
+
+```typescript
+// Co-ring equilibrium coupling model
+function coRingEquilibrium(
+  omegaMain: number,
+  etaCoupling: number = 0.78    // steady-state ratio [M, nylon bearing]
+): { omegaRing: number; keRing_J: number } {
+  const I_ring = 9.4e-7;         // kg⋅m², Wing Sub-Ring SAR [ESTIMATED per Case 259, anime fiction]
+  const omegaRing = etaCoupling * omegaMain;
+  return {
+    omegaRing,
+    keRing_J: 0.5 * I_ring * omegaRing ** 2,
+  };
+}
+// coRingEquilibrium(500) → { omegaRing:390, keRing_J:0.0715J }  — launch [Wing SAR anime fiction]
+// coRingEquilibrium(300) → { omegaRing:234, keRing_J:0.0257J }  — mid-match
+// coRingEquilibrium(150) → { omegaRing:117, keRing_J:0.00643J } — near-dead
+```
+
 ---
 
-*Cases continue from Case 806 as further franchise moves are provided.*
+## Case 807 — [SPECIAL] Co-Ring Cutter (光輪刃断)
+
+**Franchise move.** Co-Ring Cutter (コ・リングカッター, Kō Ringu Kattā; JP: 光輪刃断, Kōrin Jindan — "Halo-Ring Blade Severance") — Daichi Sumeragi's Strata Dragoon S. BeySpirit drives the co-ring sub-AR to synchronous spin, then releases a ring-shaped slicing arc across the opponent's Attack Ring. A precision cut rather than a brute smash — moderate damage, spin-drain emphasis.
+
+NOTE: special move overrides all EG/clutch mechanical state; the EG spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override).
+
+**Phase 1 — ring_spinup (400 ms):**
+BeySpirit forces coupling ratio η: 0.78 → 1.00 (synchronous lock). The co-ring luminescently glows as it reaches ω_main:
+  ΔKE_spinup = 0.5 × I_ring × (ω_main² − ω_ring_eq²)
+             = 0.5 × 9.4×10⁻⁷ × (500² − 390²)
+             = 0.5 × 9.4×10⁻⁷ × 97,900 = 0.04601 J [M, Wing SAR ESTIMATED per Case 259]
+
+QTE prompt "Slice" — player presses J when the co-ring reaches full luminescence peak.
+QTE window: 250 ms.
+
+**Phase 2 — arc_slash (single contact event):**
+Co-ring contacts opponent's layer tangentially in a sweeping arc along the ring circumference. The contact vector is predominantly tangential (circumferential) rather than radial — extracting rotational energy rather than delivering lateral impulse.
+
+Physical contact impulse (cutting edge at r_outer = 33 mm [Case 259 ESTIMATED]):
+  J_ring_phys = I_ring × ω_ring_final / r_outer
+              = 9.4×10⁻⁷ × 500 / 0.033 = 0.01424 N⋅s
+
+BeySpirit amplification × 3.5 → J_anime = 0.04984 N⋅s [anime physics]
+
+Spin extraction delivered to opponent:
+  Δω_opp = J_anime × r_outer / I_opp_generic ≈ 0.04984 × 0.033 / (10×10⁻⁶) ≈ 164 rad/s equivalent
+  → spinDelta ≈ −130 (game units; circumferential vector = no beyTiltAngle contribution, no knock-over)
+
+Arc-cut leaves micro-grooves on opponent's layer edge → elevated friction for 1000 ms post-contact (arcCutBonus).
+
+```
+Full power (QTE hit, ≤ 250 ms):
+  spinDelta:       −130
+  linearImpulse:   1600 eu
+  dmgMult:         1.45×
+  arcCutBonus:     opponent spinDecayRate × 1.40 for 1000 ms
+
+50% power (QTE miss — desynchronised ring, auto-fire):
+  spinDelta:       −65
+  linearImpulse:   800 eu
+  dmgMult:         1.225×
+  arcCutBonus:     none (ring not at synchronous RPM at contact)
+
+Self-cost:   −60
+powerCost:   80
+cooldown:    4000 ms
+QTE:         "Slice" — J at co-ring glow peak (250 ms window)
+```
+
+```typescript
+function coRingCutterResult(
+  qteHit: boolean
+): { spinDelta: number; linearImpulse: number; dmgMult: number; arcCutDuration_ms: number } {
+  const base = qteHit ? 1.0 : 0.50;
+  return {
+    spinDelta:         Math.round(-130 * base),
+    linearImpulse:     Math.round(1600 * base),
+    dmgMult:           1.0 + (1.45 - 1.0) * base,
+    arcCutDuration_ms: qteHit ? 1000 : 0,
+  };
+}
+// coRingCutterResult(true)  → { spin:−130, imp:1600, dmg:1.45×, arcCut:1000 ms }
+// coRingCutterResult(false) → { spin:−65,  imp:800,  dmg:1.225×, arcCut:0 ms  }
+
+function coRingSpinupDeltaKE(
+  omegaMain: number, etaEq: number = 0.78
+): number {
+  const I_ring = 9.4e-7;  // Wing Sub-Ring SAR [ESTIMATED per Case 259]
+  return 0.5 * I_ring * (omegaMain ** 2 - (etaEq * omegaMain) ** 2);
+}
+// coRingSpinupDeltaKE(500) → 0.0460 J   — full launch spin [Wing SAR ESTIMATED per Case 259]
+// coRingSpinupDeltaKE(350) → 0.0226 J   — mid-match, less energy stored
+// coRingSpinupDeltaKE(200) → 0.00736 J  — low spin: weak activation
+```
+
+---
+
+## Case 808 — [COMBO] Ring Slash (→↑J)
+
+**Franchise bey:** Strata Dragoon S (Gaia Dragoon S) — co-ring sub-AR component active  
+**Required part:** `strataCoRing` (co-ring sub-AR; any beyblade carrying this part qualifies)  
+**Sequence:** → ↑ J (moveRight + moveUp + attack)  
+**Type restriction:** universal  
+**Cost:** 15 power
+
+A quick trajectory arc that sweeps the co-ring edge across the opponent in a rising diagonal graze. The player rolls the bey's approach path to maximise the angular exposure of the co-ring contact face. Less destructive than the full Co-Ring Cutter special but executable mid-exchange with no prerequisite spin-up.
+
+```
+spinDelta:     −42
+dmgMult:       1.28×
+lockMs:        40
+windowMs:      600
+cooldownMs:    4500
+```
+
+**Effect:** `arcGraze` — opponent receives spinDecayRate × 1.15 for 600 ms (co-ring edge leaves brief increased surface friction). No stun, no tilt, no ring-out impulse.
+
+**Ceiling compliance:** 1.28× ≤ 1.5×; 40 ms ≤ 300 ms; 42 ≤ 50 rad/s; no invulnerability, no AoE [check]
+
+## Case 809 — [GIMMICK] Cosmic Pegasus F:D — 4D Metal Wheel and Final Drive Two-Mode Tip
+
+**Franchise context.** Gingka Hagane (Beyblade Metal Fury / 4D, 2011–2012). Assembly: Cosmic Pegasus F:D (JP: BB-105, コズミックペガシスF:D). Final evolution of the Pegasus lineage. All component values estimated [M] (±15%) — 4D-generation bey, no dedicated prior case analysis.
+
+**Parts:**
+
+**Face Bolt: Pegasus IV [M]**
+Lightweight aluminium-core face bolt.
+m_face ≈ 0.5 g [M]; negligible inertia contribution.
+
+**Crystal Wheel (PC Frame): Pegasus [M]**
+Polycarbonate top frame, Pegasus wing motif. Sits above the Metal Wheel, contributes to upper-layer contact profile.
+m_CW ≈ 3.5 g [M]; r_outer ≈ 22 mm [M]; I_CW ≈ 8.47×10⁻⁷ kg⋅m² [M]
+
+**4D Metal Wheel: Cosmic [M]**
+The defining component. A large, round MFB 4D wheel with three swept wing blades at r_outer ≈ 23.5 mm, each presenting a compound contact face (smash-leading + moderate upper trailing). The orbital symmetry (3-fold C₃) creates contact frequency:
+  f_C = ω × 3 / (2π)
+  At ω₀ = 600 rad/s: f_C = 600 × 3 / 6.283 ≈ 286 Hz [M]   (D₄ octave range)
+
+The Cosmic wheel's large swept area maximises rotational inertia for a 4D wheel — the mass distribution is biased toward r_outer (ring-dominant).
+m_Cosmic ≈ 43.5 g [M]; r_outer ≈ 23.5 mm [M]
+I_Cosmic ≈ 1.199×10⁻⁵ kg⋅m² [M]  (ring model: I = m × r_outer² × 0.62 distribution factor [M])
+
+Smash coefficient C_smash ≈ 0.95 [M] (large-radius impact face; high contact efficiency).
+Blade pitch angle θ_blade ≈ 25° [M] → mixed smash + mild upper component.
+Upper force fraction: sin(25°) = 0.423 → meaningful upward tilt force on opponent at high speed.
+
+**Spin Track + Performance Tip: F:D (Final Drive) [M]**
+The F:D system is the gimmick core: a two-mode performance tip that transitions one-way from Attack mode to Final Drive mode during battle.
+
+**Mode A — Attack (pre-transition):**
+Wide flat rubber contact surface (annular ring, r_inner=3mm, r_outer=9mm [M]).
+μ_A ≈ 0.40 [M]; effective contact radius r_A ≈ 6.5 mm [M]
+dω/dt_A = −(μ_A × m × g × r_A) / I_total = −(0.40 × 0.0485 × 9.81 × 0.0065) / (1.23×10⁻⁵) ≈ −103 rad/s² [M]
+→ aggressive spin decay → high friction → unpredictable attack-orbit movement (high lateral force)
+
+**Mode B — Final Drive (post-transition):**
+Central low-friction bearing point deploys from inside the rubber tip. Contact narrows to single bearing ball, r_B ≈ 1.5 mm [M].
+μ_B ≈ 0.010 [M]
+dω/dt_B = −(0.010 × 0.0485 × 9.81 × 0.0015) / (1.23×10⁻⁵) ≈ −5.77 rad/s² [M]
+t_spin_FD ≈ 600 / 5.77 ≈ 104 s [M]  — exceptional stamina once transitioned
+
+**Mode transition trigger:**
+A spring-loaded centrifugal latch mechanism: the inner bearing point is held retracted by a pre-loaded spring. The latch releases when radial centrifugal force exceeds spring preload:
+  F_centrifugal = m_latch × ω² × r_latch ≥ F_spring_preload
+  ω_transition ≈ 420 rad/s at neutral [M]   (latch fires at ~70% launch spin)
+
+Alternate trigger: impact > 350 eu compresses the tip axially, depressing the latch directly (impact-triggered transition, similar to Bound tip [Case 71] but one-way).
+
+Once in Final Drive mode, the latch is mechanically engaged. Cannot revert under normal physics.
+NOTE: special-move BeySpirit can force reversion to Attack mode (anime physics override; see Case 810).
+
+m_FD ≈ 5.5 g [M] (track + tip combined);  I_FD ≈ small, dominated by Cosmic wheel.
+
+**Assembly [M]:**
+m_total ≈ 53.0 g [M]  (0.5 + 3.5 + 43.5 + 5.5)
+I_total ≈ 1.23×10⁻⁵ kg⋅m² [M]  (Cosmic wheel dominant at I_C / m-distribution)
+ω₀ = 600 rad/s (MFB standard launch)
+KE₀ = 0.5 × 1.23×10⁻⁵ × 600² = 2.214 J [M]
+dω/dt (Mode A) ≈ −103 rad/s² [M] → ω drops below transition threshold in ~1.7 s during aggressive orbit [M]
+dω/dt (Mode B) ≈ −5.77 rad/s² [M]
+
+```typescript
+function fdTransitionCheck(
+  omega: number, impactEu: number,
+  omegaThreshold: number = 420,   // [M]
+  impactThreshold: number = 350
+): boolean {
+  return omega <= omegaThreshold || impactEu >= impactThreshold;
+}
+// fdTransitionCheck(500, 200) → false   — still in Attack mode
+// fdTransitionCheck(400, 200) → true    — spin below threshold → Final Drive
+// fdTransitionCheck(500, 400) → true    — impact-triggered → Final Drive
+
+function cosmicWheelContactForce(
+  omega: number, cSmash: number = 0.95, thetaDeg: number = 25
+): { smashForce_N: number; upperFraction: number } {
+  const I_total = 1.23e-5;
+  const r_outer = 0.0235;
+  const KE = 0.5 * I_total * omega ** 2;
+  const F_contact = cSmash * KE / r_outer;     // N (simplified energy/radius)
+  return {
+    smashForce_N:  F_contact,
+    upperFraction: Math.sin(thetaDeg * Math.PI / 180),
+  };
+}
+// cosmicWheelContactForce(600) → { smashForce:14.9N, upperFraction:0.423 }  — launch spin
+// cosmicWheelContactForce(400) → { smashForce:6.63N, upperFraction:0.423 }  — mid-match
+```
+
+---
+
+## Case 810 — [SPECIAL] Super Cosmic Nova (超コズミックノヴァ)
+
+**Franchise move.** Super Cosmic Nova (スーパーコズミックノヴァ, Sūpā Kozumikku Novu~a) — Gingka Hagane's ultimate move with Cosmic Pegasus F:D. Powered by the coherent resonance of every Blader Spirit on Earth, Pegasus ascends through the atmosphere on Shining Wind, draws orbital power via Cosmic Tornado, then delivers a terminal-velocity re-entry strike identical in structure to Galaxy Nova but amplified to a planetary-scale energy event. Used exclusively in the final episode of Metal Fury.
+
+NOTE: special move overrides all EG/clutch mechanical state; the EG spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override). The F:D tip reverts to Attack mode for Phase 1 under BeySpirit power, transitioning back to Final Drive for Phase 2 gyroscopic stability (anime physics override of the one-way latch).
+
+---
+
+**WORLD BEYSPIRIT AMPLIFICATION — Special Category**
+
+Standard specials use a single blader's BeySpirit (amplification factor A_BS = 2.5–3.5×).
+Multi-blader cooperative moves (e.g. team specials): A_team ≈ A_BS × √n (coherence-limited).
+
+Super Cosmic Nova draws on the coherent resonance of all Bladers worldwide — not an additive sum but a phase-locked superposition of global Blader Spirit. This is categorically different from multi-blader scaling:
+
+  A_world = World BeySpirit amplification = 10.0×   [defined constant, not extrapolated]
+
+This value is used only for World-Spirit-class moves. No other case in CS13 reaches this tier.
+
+---
+
+**Phase 1 — shining_wind (500 ms) | QTE "Shining Wind" ↑J, 300 ms window:**
+BeySpirit forces F:D tip back to Attack mode (μ=0.40). The bey spirals vertically upward on a helical launch trajectory under Gingka's World-Spirit lift force.
+
+Vertical velocity from BeySpirit lift (using fraction α=0.35 of KE₀):
+  v_vertical_phys = sqrt(2 × α × KE₀ / m_total)
+                  = sqrt(2 × 0.35 × 2.214 / 0.053) = sqrt(29.24) = 5.41 m/s (physical baseline)
+  v_vertical_anime = 5.41 × A_world = 54.1 m/s → atmospheric-penetration class [anime]
+
+QTE: player presses ↑ then J when Pegasus's Beast silhouette appears (↑J combination, 300 ms window). Hit: full Phase 1 power. Miss: 40% power multiplier applied to all phases.
+
+**Phase 2 — cosmic_tornado (600 ms) | automatic — no QTE:**
+F:D transitions to Final Drive mode (μ=0.010) — bearing-point minimises spin loss during orbital ascent. The bey corkscrews through upper atmosphere. Angular momentum conservation as effective orbit radius r tightens:
+
+  ω₂ = ω₁ × (r₁² / r₂²)  [corkscrewing inward: r₂ < r₁]
+  BeySpirit continuously drives r reduction. At r₂ = r₁ × 0.30:
+  ω₂ = ω₁ × (1/0.09) = 11.1 × ω₁  →  ω_tornado = 600 × 11.1 = 6,660 rad/s [anime]
+
+The Cosmic Tornado is not a discrete impact event — it is the spin-energy accumulation phase. No damage dealt during Phase 2. The atmospheric spin-up stores energy for Phase 3.
+
+Pegasus Beast motif manifests at peak altitude (anime visual: enormous golden wings flashing).
+
+**Phase 3 — nova_strike (terminal re-entry impact) | QTE "Nova" J, 200 ms window:**
+Bey re-enters from above at terminal velocity. F:D tip re-engages to Attack mode (BeySpirit override) for maximum impact contact:
+
+  KE_strike_phys  = 0.5 × I_total × ω_tornado²
+                  = 0.5 × 1.23×10⁻⁵ × 6660²
+                  = 0.5 × 1.23×10⁻⁵ × 4.435×10⁷ = 272.8 J (physical, unreachable in real-world)
+
+  KE_anime_final = KE₀ × A_world = 2.214 × 10.0 = 22.14 J [World BeySpirit scale]
+  v_nova = sqrt(2 × KE_anime_final / m_total) = sqrt(2 × 22.14 / 0.053) = sqrt(835.8) = 28.9 m/s [anime]
+
+Beyond-upper-atmosphere re-entry → vertical force component extremely high → guaranteed maximum beyTiltAngle on opponent (knock-over effect from above):
+  F_vertical = KE_anime_final × sin(90°) / r_approach ≈ full vertical injection
+  beyTiltAngle_forced = 60° (cap) on opponent
+
+Galaxy Nova comparison: Galaxy Nova uses A_BS ≈ 3.0× with Galaxy Pegasus (KE₀ ≈ 2.0J) → v_nova_GN ≈ 15.5 m/s. Super Cosmic Nova at 28.9 m/s is 1.86× faster — appropriate for the series-culminating scale difference.
+
+QTE: player presses J at the moment of re-entry flash (200 ms window). Hit: full Phase 3 power. Miss: 80% power (bey impacts slightly off-axis).
+
+---
+
+```
+Full power (Phase 1 QTE hit, Phase 3 QTE hit — World BeySpirit resonance):
+  spinDelta:        −600
+  linearImpulse:    9000 eu
+  dmgMult:          3.0×
+  novaBlastBonus:   beyTiltAngle += 60° forced on opponent (max cap)
+                    opponent spinDecayRate × 4.0 for 2000 ms (floor-scrape + impact after-burn)
+  burstBonus:       +35% burst probability (cosmic vertical impact stress on burst tabs from above)
+
+65% power (Phase 1 QTE hit, Phase 3 QTE miss — misaligned re-entry):
+  spinDelta:        −390
+  linearImpulse:    5850 eu
+  dmgMult:          2.25×
+  novaBlastBonus:   beyTiltAngle += 40°
+  burstBonus:       +20%
+
+40% power (Phase 1 QTE miss — failed ascent, auto-fire continues at reduced energy):
+  spinDelta:        −240
+  linearImpulse:    3600 eu
+  dmgMult:          1.80×
+  novaBlastBonus:   beyTiltAngle += 25°
+  burstBonus:       +10%
+
+Self-cost:   −250  (World-Spirit expenditure; severe recoil on Gingka after use)
+powerCost:   100
+cooldown:    10000 ms  (match-defining move; intended for use once per series)
+QTE:         Phase 1 "Shining Wind" — ↑J combination (300 ms window, directional + attack)
+             Phase 2 — automatic (no input required)
+             Phase 3 "Nova" — J at re-entry flash (200 ms window)
+```
+
+```typescript
+function superCosmicNovaResult(
+  phase1Hit: boolean, phase3Hit: boolean
+): { spinDelta: number; linearImpulse: number; dmgMult: number; tiltForceDeg: number; burstBonus_pct: number } {
+  const base = phase1Hit ? (phase3Hit ? 1.00 : 0.65) : 0.40;
+  return {
+    spinDelta:      Math.round(-600 * base),
+    linearImpulse:  Math.round(9000 * base),
+    dmgMult:        1.0 + (3.0 - 1.0) * base,
+    tiltForceDeg:   phase1Hit ? (phase3Hit ? 60 : 40) : 25,
+    burstBonus_pct: phase1Hit ? (phase3Hit ? 35 : 20) : 10,
+  };
+}
+// superCosmicNovaResult(true,  true)  → { spin:−600, imp:9000, dmg:3.0×, tilt:60°, burst:+35% }  — full
+// superCosmicNovaResult(true,  false) → { spin:−390, imp:5850, dmg:2.3×, tilt:40°, burst:+20% }  — partial
+// superCosmicNovaResult(false, false) → { spin:−240, imp:3600, dmg:1.8×, tilt:25°, burst:+10% }  — failed ascent
+
+function novaStrikeKinematics(
+  ke0_J: number,
+  aWorld: number = 10.0,
+  mTotal_kg: number = 0.053
+): { keAnime_J: number; vNova_ms: number; galaxyNovaRatio: number } {
+  const keAnime = ke0_J * aWorld;
+  const vNova   = Math.sqrt(2 * keAnime / mTotal_kg);
+  // Galaxy Nova reference: KE₀_GN≈2.0J, A_BS=3.0 → v_GN=15.5 m/s
+  return { keAnime_J: keAnime, vNova_ms: vNova, galaxyNovaRatio: vNova / 15.5 };
+}
+// novaStrikeKinematics(2.214) → { keAnime:22.14J, vNova:28.9 m/s, ratio:1.86× Galaxy Nova }
+```
+
+---
+
+## Case 811 — [COMBO] Final Drive Surge (↑↑J)
+
+**Franchise bey:** Cosmic Pegasus F:D — F:D performance tip active  
+**Required part:** `cosmicFDTip` (F:D two-mode tip; any beyblade carrying this part qualifies)  
+**Sequence:** ↑ ↑ J (moveUp + moveUp + attack)  
+**Type restriction:** attack  
+**Cost:** 25 power
+
+The player triggers the F:D mode transition as a deliberate combat technique — a rising double-approach sweep forces the tip to impact-trigger into Final Drive mode mid-combo, instantly locking gyroscopic stability and delivering the final J-key strike from a sudden stable-orbit base. The opponent receives the hit while the Cosmic wheel's swept wing contacts them on the rising approach arc.
+
+```
+spinDelta:     −46
+dmgMult:       1.40×
+lockMs:        50
+windowMs:      700
+cooldownMs:    5500
+```
+
+**Effect:** `driveShift` — the combo forcibly triggers F:D mode transition (regardless of current mode and ω threshold). For 1000 ms after the combo fires, the bey gains spinDecayRate × 0.85 (Final Drive stability) while in F:D mode. If already in Final Drive mode, a BeySpirit mini-pulse briefly re-engages Attack mode for the strike contact, then re-commits to Final Drive immediately after (50 ms attack window only).
+
+**Ceiling compliance:** 1.40× ≤ 1.5×; 50 ms ≤ 300 ms; 46 ≤ 50 rad/s; no invulnerability, no AoE [check]
+
+## Case 812 — [GIMMICK] Spryzen S2 — Dual-Spin Energy Layer and S-Driver Two-Surface Tip
+
+**Franchise context.** Shu Kurenai (Beyblade Burst, 2015–2016). Assembly: Spryzen S2 (JP: スプライゼンS2). Takara-Tomy Burst generation (in scope). All component values estimated [M] (±15%) — no dedicated prior case analysis.
+
+**Note:** Shu later evolves to Spryzen Requiem 0H (season 3, Cho-Z), retaining Counter Break as his signature technique. The gimmick physics below describe the original S2 assembly; the Requiem upgrade is noted at the end.
+
+**Parts:**
+
+**Energy Layer: Spryzen [M]**
+The primary gimmick: a **dual-spin Energy Layer**. Unlike all other Burst-era layers which are hard-locked to right-spin, the Spryzen layer is mechanically symmetric — it can be set to launch in either right-spin (RS) or left-spin (LS) via the launcher pin orientation. Both spin directions present valid contact geometry.
+
+Contact geometry: 3-fold C₃ symmetry, aggressive wing-blade profile at r_outer ≈ 22 mm [M].
+Blade pitch angle θ_blade ≈ 32° [M] — steep attack + moderate burst-engagement angle.
+In RS mode: leading edge engages opponent; C_smash ≈ 0.90 [M].
+In LS mode: trailing edge (opposite face) engages; C_smash ≈ 0.85 [M] (slightly less optimised geometry, same face used as trailing [M]).
+
+Burst tabs: 3 tabs at θ_tab ≈ 120° spacing. τ_burst ≈ 2.1 mNm per tab [M] → total τ_burst_hold ≈ 6.3 mNm [M].
+
+m_layer ≈ 12.5 g [M]; I_layer ≈ 6.05×10⁻⁷ kg⋅m² [M]
+Contact frequency (C₃ symmetry): f = ω × 3 / (2π) → at ω₀=600: f ≈ 286 Hz [M]
+
+**Forge Disc: 2 [M]**
+Burst-gen symmetric disc. 6-prong distributed mass, mid-range radius bias.
+m_disc ≈ 16.0 g [M]; r_mean ≈ 19 mm [M]; I_disc ≈ 2.888×10⁻⁶ kg⋅m² [M]
+
+**Driver: S (Survive) [M]**
+The enabling mechanism for Counter Break. The S driver is a **dual-contact-surface performance tip**:
+
+**Surface 1 — inner sharp point (normal operation):**
+  r_sharp ≈ 0.5 mm [M]; μ_sharp ≈ 0.10 [M]
+  dω/dt_sharp = −(μ_sharp × m × g × r_sharp) / I_total = −(0.10 × 0.0345 × 9.81 × 0.0005) / 5.02×10⁻⁶ ≈ −3.38 rad/s² [M]
+  → stable, low-friction orbit; high spin retention (t_spin ≈ 600 / 3.38 ≈ 178 s ideal [M])
+
+**Surface 2 — outer rubber ring (redirect mode):**
+  r_rubber ≈ 5.0 mm [M]; μ_rubber ≈ 0.55 [M] (natural rubber compound)
+  Engages when bey tilts (beyTiltAngle > θ_engage ≈ 8° [M]) — the ring's radius brings it into floor contact.
+  dω/dt_rubber = −(μ_rubber × m × g × r_rubber) / I_total = −(0.55 × 0.0345 × 9.81 × 0.005) / 5.02×10⁻⁶ ≈ −18.5 rad/s² [M]
+  → sharp spin decay; high lateral friction → strong trajectory-redirecting centripetal force
+
+Redirect force during rubber-ring contact (normal ops):
+  F_redirect = μ_rubber × m × g = 0.55 × 0.0345 × 9.81 = 0.1861 N [M]
+  → lateral impulse over Δt_contact = 150 ms [M]: Δv_lateral = 0.1861 × 0.15 / 0.0345 = 0.809 m/s [M]
+
+This rubber-ring redirect is the physical basis of Counter Break's trajectory-change mechanic.
+
+m_driver ≈ 4.5 g [M]; m_face ≈ 0.5 g [M]
+
+**Assembly [M]:**
+m_total ≈ 33.5 g [M]
+I_total ≈ (I_layer + I_disc) ≈ 5.02×10⁻⁶ kg⋅m² [M] (disc dominant)
+ω₀ = 600 rad/s (Burst generation standard launch)
+KE₀ = 0.5 × 5.02×10⁻⁶ × 600² = 0.904 J [M]
+dω/dt (sharp, normal orbit) ≈ −3.38 rad/s² [M]
+dω/dt (rubber ring, redirect phase) ≈ −18.5 rad/s² [M]
+
+**Spryzen Requiem upgrade note:** Spryzen Requiem 0H (Cho-Z era) replaces the Forge Disc with "0" (heavier, lower centre of mass) and the Driver with "H" (Hybrid — adds a LAD outer ring for high spin retention). Mass increases to m ≈ 40g [M]; I increases. Counter Break's redirect physics remain the same in principle but BeySpirit amplification scales with the larger KE₀.
+
+```typescript
+// S-driver contact mode selector
+function sDriverMode(
+  beyTiltAngle_deg: number,
+  engageThreshold_deg: number = 8.0     // [M]
+): "sharp" | "rubber" {
+  return beyTiltAngle_deg >= engageThreshold_deg ? "rubber" : "sharp";
+}
+
+function sDriverSpinDecay(tiltDeg: number): number {
+  return sDriverMode(tiltDeg) === "rubber" ? -18.5 : -3.38;  // rad/s²
+}
+
+function counterBreakRedirectDeltaV(
+  mu_rubber: number = 0.55, m_kg: number = 0.0335,
+  contactTime_s: number = 0.15
+): number {
+  const F = mu_rubber * m_kg * 9.81;
+  return F * contactTime_s / m_kg;  // m/s lateral velocity added
+}
+// counterBreakRedirectDeltaV() → 0.809 m/s  (physical baseline [M])
+```
+
+---
+
+## Case 813 — [SPECIAL] Counter Break (カウンターブレイク)
+
+**Franchise move.** Counter Break (カウンターブレイク, Kauntā Bureiku) — Shu Kurenai's signature technique with Spryzen S2 (later Spryzen Requiem). The bey uses its S Driver's rubber-ring redirect to abruptly change trajectory under BeySpirit control, then accelerates along the new vector and slams into the opponent. Shu's most-used special in Burst Season 1; notable for reliably achieving Burst finishes.
+
+NOTE: special move overrides all EG/clutch mechanical state; the EG spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override).
+
+**Phase 1 — trajectory_feint (automatic, 300 ms):**
+Spryzen curves away from the opponent on the sharp-point tip (low friction, high spin). This feint establishes the deflection approach angle — the greater the arc, the higher the closing speed on the redirect intercept.
+
+**Phase 2 — rubber_redirect (QTE "Counter" — J, 300 ms window):**
+BeySpirit forces beyond-threshold tilt (beyTiltAngle → θ_engage + margin) → outer rubber ring contacts floor. The lateral friction from the rubber ring, amplified by BeySpirit, executes a controlled high-magnitude trajectory change:
+
+  F_redirect_anime = F_redirect_phys × A_BS = 0.1861 × 3.0 = 0.5583 N [anime]
+  Δv_lateral_anime = 0.5583 × 0.15 / 0.0335 = 2.500 m/s [anime]
+
+The redirect is not a smooth curve — it is a snapping direction change (< 50 ms arc [M]) that bypasses the opponent's defensive read window.
+
+Counter-reactive bonus: if the opponent is in an active approach (closing speed > 1.5 m/s toward Spryzen) when the redirect fires, the opponent's own velocity adds to the closing speed at impact:
+  v_close_total = v_spryzen_post_redirect + v_opponent_approach
+  → scaling bonus on impact: up to ×1.20 spinDelta and linearImpulse when opponent is charging in
+
+**Phase 3 — slam_intercept (single contact event):**
+High-speed impact along the redirect vector. The Spryzen layer's steep blade angle (θ=32°) focuses the collision force efficiently onto the opponent's burst tabs (C_smash=0.90). The direct tab-engagement vector is why Counter Break reliably generates burst finishes.
+
+v_impact_base = v_orbit_normal + Δv_lateral_anime = ~0.8 + 2.50 = ~3.30 m/s (physical)
+BeySpirit amplification ×3.0 → v_impact_anime = 9.90 m/s
+
+QTE: player presses J when the redirect snap-arc aligns with the opponent (directional indicator). Hit: full power. Miss: 55% power (redirect misfires, partial contact only).
+
+```
+Full power (QTE hit, standard approach):
+  spinDelta:       −280
+  linearImpulse:   4000 eu
+  dmgMult:         1.85×
+  burstBonus:      +18%  (steep blade angle → direct burst-tab engagement)
+
+Full power + counter-reactive (QTE hit, opponent charging in):
+  spinDelta:       −336  (×1.20 counter-reactive)
+  linearImpulse:   4800 eu
+  dmgMult:         1.85×  (unchanged — burst focus, not raw force amplification)
+  burstBonus:      +25%  (opponent's own momentum compresses burst tabs further)
+
+55% power (QTE miss — partial redirect):
+  spinDelta:       −154
+  linearImpulse:   2200 eu
+  dmgMult:         1.42×
+  burstBonus:      +8%
+
+Self-cost:   −100
+powerCost:   100
+cooldown:    5500 ms
+QTE:         "Counter" — J at redirect-snap alignment (300 ms window)
+```
+
+```typescript
+function counterBreakResult(
+  qteHit: boolean,
+  opponentCharging: boolean  // opponent closing speed > 1.5 m/s toward Spryzen
+): { spinDelta: number; linearImpulse: number; dmgMult: number; burstBonus_pct: number } {
+  const base       = qteHit ? 1.0 : 0.55;
+  const reactive   = qteHit && opponentCharging ? 1.20 : 1.0;
+  return {
+    spinDelta:      Math.round(-280 * base * reactive),
+    linearImpulse:  Math.round(4000 * base * reactive),
+    dmgMult:        1.0 + (1.85 - 1.0) * base,  // dmgMult scales on base only, not reactive
+    burstBonus_pct: qteHit ? (opponentCharging ? 25 : 18) : 8,
+  };
+}
+// counterBreakResult(true,  false) → { spin:−280, imp:4000, dmg:1.85×, burst:+18% }  — standard
+// counterBreakResult(true,  true)  → { spin:−336, imp:4800, dmg:1.85×, burst:+25% }  — counter-reactive
+// counterBreakResult(false, false) → { spin:−154, imp:2200, dmg:1.42×, burst:+8%  }  — miss
+
+function counterBreakRedirectAnime(
+  vApproach_ms: number = 0.8,
+  aBS: number = 3.0,
+  deltaVPhys_ms: number = 0.809
+): { vRedirect_ms: number; vImpact_ms: number } {
+  const dvAnime    = deltaVPhys_phys(aBS);   // conceptual — A_BS scales force
+  const vRedirect  = vApproach_ms + deltaVPhys_ms * aBS;
+  return { vRedirect_ms: vRedirect, vImpact_ms: vRedirect * aBS };
+}
+// At a_BS=3.0, v_approach=0.8: vRedirect=3.23 m/s, vImpact≈9.69 m/s [anime scale]
+```
+
+---
+
+## Case 814 — [COMBO] Quick Counter (←J→)
+
+**Franchise bey:** Spryzen S2 — S Driver active  
+**Required part:** `spryzenSDriver` (S Survive driver; any beyblade carrying this part qualifies)  
+**Sequence:** ← J → (moveLeft + attack + moveRight)  
+**Type restriction:** balanced  
+**Cost:** 15 power
+
+A compressed version of Counter Break's redirect mechanic — the player swings left (feint), fires the attack input at the tightest point of the arc, then immediately recovers right. The S driver's rubber ring briefly engages at the attack moment, snapping the trajectory toward the opponent for a quick intercept. No full build-up phase; executes within the normal bey movement rhythm.
+
+```
+spinDelta:     −43
+dmgMult:       1.32×
+lockMs:        45
+windowMs:      600
+cooldownMs:    4500
+```
+
+**Effect:** `tipRedirect` — immediately after the combo hit, Spryzen gains a brief trajectory recovery boost (30% of the impact `linearImpulse` applied as a rebound-momentum vector in the opposite direction), leaving the bey in a better follow-up position. If the combo misses (opponent dodges), the rubber-ring floor-contact still occurs and the bey repositions without dealing damage.
+
+**Ceiling compliance:** 1.32× ≤ 1.5×; 45 ms ≤ 300 ms; 43 ≤ 50 rad/s; no invulnerability, no AoE [check]
+
+---
+
+*Cases continue from Case 815 as further franchise moves are provided.*
