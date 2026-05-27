@@ -1,4 +1,4 @@
-# Beyblade Case Studies — Part 9: Burst System Beyblades and Parts
+﻿# Beyblade Case Studies — Part 9: Burst System Beyblades and Parts
 
 **« Part 8:** [8 case study.md](8%20case%20study.md) (Cases 375–415) | **Part 10 »** [10 case study.md](10%20case%20study.md) (Cases 545–585)
 
@@ -22471,7 +22471,7 @@ function kaiserKerbeusLimitedPress(): {
 
 ---
 
-## Case 622 — Energy Layer: Dead Phoenix (Cho-Z, 21.8 g)
+## Case 867 — Energy Layer: Dead Phoenix (Cho-Z, 21.8 g)
 
 Dead Phoenix is a four-fold-symmetric Cho-Z Energy Layer whose primary mechanical identity is the dual-armor burst-sacrifice system; the Dead Armor (DA) constitutes an outer annular shell that detaches under sufficient burst force, after which the smooth perimeter of the Dead Core (DC) renders the beyblade nearly immune to subsequent burst attempts [CONFIRMED]. The layer mass of 21.8 g is partitioned into DA ≈ 13.0 g at an annular zone r_o = 22 mm, r_i = 16 mm, and DC ≈ 8.8 g modelled as a two-zone composite (60% metal at r = 13 mm, 40% ABS at r = 9 mm); these values yield I_DA = 0.5 × 0.0130 × (0.022² + 0.016²) = 4.810 × 10⁻⁶ kg·m² and I_DC = 0.60 × 0.0088 × 0.013² + 0.40 × 0.0088 × 0.009² = 1.218 × 10⁻⁶ kg·m², giving I_total = 6.028 × 10⁻⁶ kg·m² [ESTIMATED geometry; CONFIRMED mass]. The r_eff = √(I/m) = √(6.028 × 10⁻⁶ / 0.0218) = 16.63 mm confirms the armor dominates the gyroscopic contribution; the armor's inertia fraction is 4.810 / 6.028 = 79.8% despite constituting only 13.0 / 21.8 = 59.6% of the mass — a mass-inversion effect that maximises burst resistance while sacrificing some stamina efficiency [INFERRED]. At ω₀ = 694 rad/s the layer angular momentum is L₀ = 6.028 × 10⁻⁶ × 694 = 4.183 × 10⁻³ kg·m²/s; with μ_ABS = 0.17, r_contact = 16.63 mm, and m = 0.0218 kg, spin-down torque τ = 0.17 × 0.0218 × 9.81 × 0.01663 = 6.043 × 10⁻⁴ N·m, dω/dt = 10.03 rad/s², giving an obstacle-only stall time of 69.2 s from ω₀ — however at the battle-representative ω = 500 rad/s (layer alone) the armor detachment window τ_obstacle ≈ 5.77 s [ESTIMATED]. The n = 4 rotational symmetry guarantees I_x = I_y (no gyroscopic wobble contribution from layer asymmetry) [CONFIRMED]. A Level Chip is required to seat the layer flush on standard discs [CONFIRMED]. Dead Phoenix is cross-compatible with Perfect Phoenix and Unperfect Phoenix armors as all share the Dead Core chassis [CONFIRMED].
 
@@ -22494,7 +22494,7 @@ Dead Phoenix — Cross-Section (r in mm, not to scale)
 ```
 
 ```
-// Case 622 — Dead Phoenix Layer Physics
+// Case 867 — Dead Phoenix Layer Physics
 m_DA     = 0.0130 kg    r_o_DA = 0.022 m   r_i_DA = 0.016 m
 I_DA     = 0.5 × 0.0130 × (0.022² + 0.016²)
          = 0.5 × 0.0130 × (4.84e-4 + 2.56e-4)
@@ -22542,7 +22542,7 @@ function deadPhoenixLayer() {
 
 ---
 
-## Case 623 — Forge Disc: 10 (Cho-Z, 23.8 g)
+## Case 868 — Forge Disc: 10 (Cho-Z, 23.8 g)
 
 Forge Disc 10 is a ten-fold-symmetric Cho-Z Core Disc whose mass of 23.8 g is distributed in an annular profile with outer radius r_o = 24 mm and inner radius r_i = 13 mm; applying the annular moment-of-inertia formula gives I_10 = 0.5 × 0.0238 × (0.024² + 0.013²) = 0.5 × 0.0238 × (5.76 × 10⁻⁴ + 1.69 × 10⁻⁴) = 8.861 × 10⁻⁶ kg·m² [ESTIMATED geometry; CONFIRMED mass]. The effective radius r_eff = √(8.861 × 10⁻⁶ / 0.0238) = 19.30 mm places the disc mass well outboard, and the angular momentum at ω₀ = 694 rad/s is L₀ = 6.149 × 10⁻³ kg·m²/s [CALCULATED]. Comparing to Disc 7 (I_7 = 7.841 × 10⁻⁶ kg·m², r_eff ≈ 19.11 mm), Disc 10 provides +13.0% inertia and +0.90 mm effective radius, translating directly to +13.0% angular momentum at the same launch speed; this makes Disc 10 strictly superior to Disc 7 in stamina-oriented assemblies when the additional 2.3 g total mass is acceptable [CONFIRMED comparative; ESTIMATED I_7 reference]. The n = 10 rotational symmetry guarantees moment isotropy and eliminates wobble contribution from disc asymmetry [CONFIRMED]. Two Frame slots (standard even-numbered disc architecture) allow the addition of Cross, Jaggy, or Hit frames to tune contact geometry without significantly changing the core inertia budget [CONFIRMED].
 
@@ -22561,7 +22561,7 @@ Forge Disc 10 — Top View (schematic)
 ```
 
 ```
-// Case 623 — Forge Disc 10 Physics
+// Case 868 — Forge Disc 10 Physics
 m     = 0.0238 kg    r_o = 0.024 m    r_i = 0.013 m
 I_10  = 0.5 × 0.0238 × (0.024² + 0.013²)
       = 0.5 × 0.0238 × (5.76e-4 + 1.69e-4)
@@ -22596,7 +22596,7 @@ function forgeDisc10() {
 
 ---
 
-## Case 624 — Performance Tip: Friction (Cho-Z, 7.0 g)
+## Case 869 — Performance Tip: Friction (Cho-Z, 7.0 g)
 
 Friction is a POM (polyoxymethylene) flat tip with contact radius r_contact = 4.5 mm whose low-friction coefficient μ_POM = 0.10 places it in the stamina-specialist regime; POM's self-lubricating crystalline structure produces far less resistive torque than rubber tips (μ ≈ 0.50) or ABS flats (μ ≈ 0.17), while the flat geometry provides a firm grip on the stadium floor that maximises knock-out resistance through a large normal-force footprint rather than orbital speed [CONFIRMED material; ESTIMATED r_contact]. For a representative 52.6 g assembly (Dead Phoenix 10 Friction), the spin-down torque is τ = μ × m × g × r = 0.10 × 0.0526 × 9.81 × 0.0045 = 2.322 × 10⁻⁴ N·m [CALCULATED]; comparing to an equivalent Atomic tip assembly (μ_Atomic ≈ 0.003 rolling + bearing contribution, effective τ ≈ 2.013 × 10⁻⁴ N·m at r = 2 mm ball contact), Friction's torque is 15.4% higher, giving Atomic a stamina advantage of approximately 13.3% at equal inertia [ESTIMATED Atomic τ]. The burst-resistance mechanism of Friction is indirect: the flat contact geometry anchors the beyblade in the center of the stadium, limiting the high-speed orbital patterns that force layer-teeth skip from centrifugal loads; combined with the high inertia of the Cho-Z disc, this produces a burst-resistance factor ≈ 1.70× relative to a generic mobile-tip assembly [ESTIMATED]. Friction does not activate rubber-contact bouncing (the POM surface produces no spring-back) and thus avoids the erratic rebound patterns of Quake or Operate Attack Mode [CONFIRMED]. KO resistance is superior to Atomic and Orbit because the center-holding flat maximises the impulse required to displace the beyblade to the stadium lip [CONFIRMED].
 
@@ -22614,7 +22614,7 @@ Performance Tip: Friction — Side Profile
 ```
 
 ```
-// Case 624 — Friction Tip Physics
+// Case 869 — Friction Tip Physics
 mu_POM     = 0.10
 r_contact  = 0.0045 m
 m_assembly = 0.0526 kg   (Dead Phoenix 10 Friction reference)
@@ -22654,9 +22654,9 @@ function frictionTip(m_assembly_kg: number) {
 
 ---
 
-## Case 625 — Assembly: Dead Phoenix 10 Friction (Cho-Z, 52.6 g)
+## Case 870 — Assembly: Dead Phoenix 10 Friction (Cho-Z, 52.6 g)
 
-Dead Phoenix 10 Friction is a 52.6 g Cho-Z stamina assembly whose total moment of inertia sums the four components: I_layer = 6.028 × 10⁻⁶ (Case 622), I_disc = 8.861 × 10⁻⁶ (Case 623), I_tip ≈ 0.5 × 0.007 × 0.006² = 1.260 × 10⁻⁷ (tip approximated as solid cylinder r = 6 mm) [ESTIMATED], yielding I_total = 6.028 × 10⁻⁶ + 8.861 × 10⁻⁶ + 1.260 × 10⁻⁷ = 1.503 × 10⁻⁵ kg·m² [CALCULATED]; the inertia fractions are: armor = 32.0%, core = 8.1%, disc = 58.9%, tip = 0.84% — the disc dominates because Forge Disc 10 is among the heaviest Cho-Z discs and its mass sits at the largest effective radius [CONFIRMED relative]. At ω₀ = 694 rad/s, L₀ = 1.503 × 10⁻⁵ × 694 = 1.043 × 10⁻² kg·m²/s and r_eff = √(1.503 × 10⁻⁵ / 0.0526) = 16.90 mm [CALCULATED]. Spin decay with Friction tip: τ = 2.322 × 10⁻⁴ N·m (Case 624), dω/dt = τ / I_total = 2.322 × 10⁻⁴ / 1.503 × 10⁻⁵ = 15.45 rad/s², giving an ideal stall time t_stall = 694 / 15.45 = 44.9 s [CALCULATED]. A comparative Atomic assembly (same layer + disc) yields t_stall ≈ 52.1 s, confirming Friction's 13.7% stamina deficit against Atomic in a pure spin-down model [ESTIMATED]. Post-armor-detach phase (armor releases at ω ≈ 500 rad/s [ESTIMATED threshold]): m = 39.6 g, I_post = 1.022 × 10⁻⁵ kg·m², τ_post = 0.10 × 0.0396 × 9.81 × 0.0045 = 1.749 × 10⁻⁴ N·m, dω/dt_post = 17.10 rad/s², t_from500 = 500 / 17.10 = 29.2 s from ω = 500 — a 10.7% decay acceleration from lost inertia [CALCULATED]. The assembly is an effective stamina build whose principal weakness is the Atomic/Bearing tip gap; its strength is near-burst-immunity post-detach combined with competitive knock-out resistance from the center-holding flat [CONFIRMED].
+Dead Phoenix 10 Friction is a 52.6 g Cho-Z stamina assembly whose total moment of inertia sums the four components: I_layer = 6.028 × 10⁻⁶ (Case 867), I_disc = 8.861 × 10⁻⁶ (Case 868), I_tip ≈ 0.5 × 0.007 × 0.006² = 1.260 × 10⁻⁷ (tip approximated as solid cylinder r = 6 mm) [ESTIMATED], yielding I_total = 6.028 × 10⁻⁶ + 8.861 × 10⁻⁶ + 1.260 × 10⁻⁷ = 1.503 × 10⁻⁵ kg·m² [CALCULATED]; the inertia fractions are: armor = 32.0%, core = 8.1%, disc = 58.9%, tip = 0.84% — the disc dominates because Forge Disc 10 is among the heaviest Cho-Z discs and its mass sits at the largest effective radius [CONFIRMED relative]. At ω₀ = 694 rad/s, L₀ = 1.503 × 10⁻⁵ × 694 = 1.043 × 10⁻² kg·m²/s and r_eff = √(1.503 × 10⁻⁵ / 0.0526) = 16.90 mm [CALCULATED]. Spin decay with Friction tip: τ = 2.322 × 10⁻⁴ N·m (Case 869), dω/dt = τ / I_total = 2.322 × 10⁻⁴ / 1.503 × 10⁻⁵ = 15.45 rad/s², giving an ideal stall time t_stall = 694 / 15.45 = 44.9 s [CALCULATED]. A comparative Atomic assembly (same layer + disc) yields t_stall ≈ 52.1 s, confirming Friction's 13.7% stamina deficit against Atomic in a pure spin-down model [ESTIMATED]. Post-armor-detach phase (armor releases at ω ≈ 500 rad/s [ESTIMATED threshold]): m = 39.6 g, I_post = 1.022 × 10⁻⁵ kg·m², τ_post = 0.10 × 0.0396 × 9.81 × 0.0045 = 1.749 × 10⁻⁴ N·m, dω/dt_post = 17.10 rad/s², t_from500 = 500 / 17.10 = 29.2 s from ω = 500 — a 10.7% decay acceleration from lost inertia [CALCULATED]. The assembly is an effective stamina build whose principal weakness is the Atomic/Bearing tip gap; its strength is near-burst-immunity post-detach combined with competitive knock-out resistance from the center-holding flat [CONFIRMED].
 
 ```
 Assembly: Dead Phoenix 10 Friction — Inertia Budget
@@ -22674,7 +22674,7 @@ vs Atomic (same layer+disc): t_stall ≈ 52.1 s  → Friction deficit: −13.3%
 ```
 
 ```
-// Case 625 — Dead Phoenix 10 Friction Assembly Physics
+// Case 870 — Dead Phoenix 10 Friction Assembly Physics
 I_layer  = 6.028e-6 kg·m²
 I_disc   = 8.861e-6 kg·m²
 I_tip    = 1.260e-7 kg·m²
@@ -22730,9 +22730,9 @@ function deadPhoenix10Friction() {
 
 ---
 
-## Case 626 — Energy Layer: Revive Phoenix (Cho-Z, 23.3 g)
+## Case 871 — Energy Layer: Revive Phoenix (Cho-Z, 23.3 g)
 
-Revive Phoenix is a Cho-Z Energy Layer confirmed as the best Right-Spin Defense Layer of the Cho-Z generation; it shares the dual-armor architecture of Dead Phoenix but substitutes the passive detach mechanism for a parry mechanism in which the Revive Armor (RA) can rotate freely relative to the Revive Core (RC) when impact force falls within the parry window (approximately 0.45–0.75 N) [ESTIMATED threshold; CONFIRMED parry behavior]. The layer mass of 23.3 g is partitioned into RA ≈ 9.3 g at r_o = 22 mm, r_i = 17 mm (confirmed from B-191 data indicating Revive Armor 9.3 g [CONFIRMED]) and RC ≈ 14.0 g modelled as a two-zone composite (45% metal at r = 13 mm, 55% ABS at r = 10 mm); these yield I_RA = 0.5 × 0.0093 × (0.022² + 0.017²) = 3.594 × 10⁻⁶ kg·m² and I_RC = 0.45 × 0.0140 × 0.013² + 0.55 × 0.0140 × 0.010² = 1.835 × 10⁻⁶ kg·m², giving I_total = 5.429 × 10⁻⁶ kg·m² [ESTIMATED geometry; CONFIRMED mass]. The r_eff = √(5.429 × 10⁻⁶ / 0.0233) = 15.26 mm is 1.37 mm lower than Dead Phoenix's 16.63 mm; the armor fraction is 3.594 / 5.429 = 66.2% — lower than Dead Phoenix's 79.8% but compensated by the parry mechanism that prevents armor detachment on sub-threshold hits entirely [INFERRED tradeoff]. At ω₀ = 694 rad/s, L₀ = 5.429 × 10⁻⁶ × 694 = 3.768 × 10⁻³ kg·m²/s, representing a −10.0% angular momentum deficit versus Dead Phoenix (4.183 × 10⁻³); however, the Revive Core's I_RC = 1.835 × 10⁻⁶ is 50.6% higher than Dead Core's 1.218 × 10⁻⁶, providing substantially better post-detach stamina if the armor eventually releases [CALCULATED]. At ω = 500 rad/s the armor obstacle time is t ≈ 5.89 s [ESTIMATED comparable basis to Case 622]. The official description confirms Revive Phoenix has greater stamina than Emperor Forneus and equal or better performance to Ace Dragon [CONFIRMED].
+Revive Phoenix is a Cho-Z Energy Layer confirmed as the best Right-Spin Defense Layer of the Cho-Z generation; it shares the dual-armor architecture of Dead Phoenix but substitutes the passive detach mechanism for a parry mechanism in which the Revive Armor (RA) can rotate freely relative to the Revive Core (RC) when impact force falls within the parry window (approximately 0.45–0.75 N) [ESTIMATED threshold; CONFIRMED parry behavior]. The layer mass of 23.3 g is partitioned into RA ≈ 9.3 g at r_o = 22 mm, r_i = 17 mm (confirmed from B-191 data indicating Revive Armor 9.3 g [CONFIRMED]) and RC ≈ 14.0 g modelled as a two-zone composite (45% metal at r = 13 mm, 55% ABS at r = 10 mm); these yield I_RA = 0.5 × 0.0093 × (0.022² + 0.017²) = 3.594 × 10⁻⁶ kg·m² and I_RC = 0.45 × 0.0140 × 0.013² + 0.55 × 0.0140 × 0.010² = 1.835 × 10⁻⁶ kg·m², giving I_total = 5.429 × 10⁻⁶ kg·m² [ESTIMATED geometry; CONFIRMED mass]. The r_eff = √(5.429 × 10⁻⁶ / 0.0233) = 15.26 mm is 1.37 mm lower than Dead Phoenix's 16.63 mm; the armor fraction is 3.594 / 5.429 = 66.2% — lower than Dead Phoenix's 79.8% but compensated by the parry mechanism that prevents armor detachment on sub-threshold hits entirely [INFERRED tradeoff]. At ω₀ = 694 rad/s, L₀ = 5.429 × 10⁻⁶ × 694 = 3.768 × 10⁻³ kg·m²/s, representing a −10.0% angular momentum deficit versus Dead Phoenix (4.183 × 10⁻³); however, the Revive Core's I_RC = 1.835 × 10⁻⁶ is 50.6% higher than Dead Core's 1.218 × 10⁻⁶, providing substantially better post-detach stamina if the armor eventually releases [CALCULATED]. At ω = 500 rad/s the armor obstacle time is t ≈ 5.89 s [ESTIMATED comparable basis to Case 867]. The official description confirms Revive Phoenix has greater stamina than Emperor Forneus and equal or better performance to Ace Dragon [CONFIRMED].
 
 ```
 Revive Phoenix — Cross-Section (r in mm, not to scale)
@@ -22753,7 +22753,7 @@ Revive Phoenix — Cross-Section (r in mm, not to scale)
 ```
 
 ```
-// Case 626 — Revive Phoenix Layer Physics
+// Case 871 — Revive Phoenix Layer Physics
 m_RA   = 0.0093 kg    r_o_RA = 0.022 m   r_i_RA = 0.017 m
 I_RA   = 0.5 × 0.0093 × (0.022² + 0.017²)
        = 0.5 × 0.0093 × (4.84e-4 + 2.89e-4)
@@ -22806,7 +22806,7 @@ function revivePhoenixLayer() {
 
 ---
 
-## Case 627 — DB Core: Phoenix (DB System, 7.6 g)
+## Case 872 — DB Core: Phoenix (DB System, 7.6 g)
 
 DB Core Phoenix is the innermost component of the DB Layer System, functioning as the ratchet hub whose four locking teeth engage the Blade and resist burst; the core mass of 7.6 g is modelled as an annular cylinder with r_o = 10 mm and r_i = 4 mm (consistent with DB Core physical dimensions) [ESTIMATED geometry; CONFIRMED mass], giving I_core = 0.5 × 0.0076 × (0.010² + 0.004²) = 0.5 × 0.0076 × (1.00 × 10⁻⁴ + 1.60 × 10⁻⁵) = 4.408 × 10⁻⁷ kg·m² and r_eff = √(4.408 × 10⁻⁷ / 0.0076) = 7.62 mm [CALCULATED]. The four locking teeth are spaced at 90° intervals, giving a tooth engagement fraction of 4 × (tooth arc) / 360° ≈ 27.8% [ESTIMATED based on standard DB tooth geometry]; this places burst resistance in the average range — superior to thin-toothed cores (e.g., 3-tooth variants) but inferior to burst-specialist cores such as Kerbeus (which has a compound locking geometry) [CONFIRMED relative]. The core's contribution to total assembly inertia is minimal (≈ 1.6% in the full Prominence Phoenix assembly) because the disc and blade components dominate at larger radii; however, the core entirely determines burst-lock behaviour independent of the outer components [CONFIRMED]. DB Core Phoenix is outclassed by Kerbeus Core for burst resistance and Dragon Core for stamina, but pairs competently with high-inertia Blades and defense-oriented Armors [CONFIRMED].
 
@@ -22824,7 +22824,7 @@ DB Core Phoenix — Top View (schematic)
 ```
 
 ```
-// Case 627 — DB Core Phoenix Physics
+// Case 872 — DB Core Phoenix Physics
 m     = 0.0076 kg    r_o = 0.010 m    r_i = 0.004 m
 I     = 0.5 × 0.0076 × (0.010² + 0.004²)
       = 0.5 × 0.0076 × (1.00e-4 + 1.60e-5)
@@ -22859,7 +22859,7 @@ function dbCorePhoenix() {
 
 ---
 
-## Case 628 — Blade: Prominence (DB System, ~24.0 g total: Shield 9.5 g [CONFIRMED], Blade body ~14.5 g [ESTIMATED])
+## Case 873 — Blade: Prominence (DB System, ~24.0 g total: Shield 9.5 g [CONFIRMED], Blade body ~14.5 g [ESTIMATED])
 
 Blade Prominence is the outermost contact component of the DB Layer System, comprising a detachable Prominence Shield (PS, 9.5 g [CONFIRMED from B-191]) and an integrated blade body; the blade body mass is estimated at 14.5 g [ESTIMATED from total blade reported weight], giving combined blade mass ≈ 24.0 g. The blade body is modelled as a thick annular ring with r_o = 23 mm, r_i = 11 mm: I_blade = 0.5 × 0.0145 × (0.023² + 0.011²) = 0.5 × 0.0145 × (5.29 × 10⁻⁴ + 1.21 × 10⁻⁴) = 4.713 × 10⁻⁶ kg·m²; the Prominence Shield is a thin annular disc at r_o = 25 mm, r_i = 19 mm: I_shield = 0.5 × 0.0095 × (0.025² + 0.019²) = 0.5 × 0.0095 × (6.25 × 10⁻⁴ + 3.61 × 10⁻⁴) = 4.684 × 10⁻⁶ kg·m²; the combined I_total = 9.397 × 10⁻⁶ kg·m² [CALCULATED]. The shield's inertia fraction is 4.684 / 9.397 = 49.9% despite constituting only 9.5 / 24.0 = 39.6% of the blade mass — a mass-inversion effect analogous to Dead Phoenix armor [INFERRED]; the shield sits at the largest radius (r_o = 25 mm) of any DB Layer component, making its contribution disproportionate to its mass. Normal Mode (lighter lock, lower detach threshold) and Heavy Mode (stronger lock, higher detach threshold) differ in lock spring force but the inertia difference is less than 1% [CONFIRMED; <1% I difference between modes]. Heavy Mode is generally recommended to prevent premature shield detachment that would immediately halve the blade inertia [CONFIRMED]. Post-detach (shield gone): I_post = 4.713 × 10⁻⁶ kg·m² — a 50.1% retention of the full-blade inertia; the sharp perimeter reduction also exposes more of the core assembly to ring-out impacts [CONFIRMED vulnerable].
 
@@ -22878,7 +22878,7 @@ Blade Prominence — Component Geometry (r in mm)
 ```
 
 ```
-// Case 628 — Blade Prominence Physics
+// Case 873 — Blade Prominence Physics
 // Blade body
 m_bb   = 0.0145 kg    r_o_bb = 0.023 m    r_i_bb = 0.011 m
 I_bb   = 0.5 × 0.0145 × (0.023² + 0.011²)
@@ -22923,7 +22923,7 @@ function bladeProminence() {
 
 ---
 
-## Case 629 — Armor-10 (DB System, 13.4 g)
+## Case 874 — Armor-10 (DB System, 13.4 g)
 
 Armor-10 is a DB System Armor (outer decorative and structural shell) whose mass of 13.4 g is distributed in an annular ring with r_o = 22 mm, r_i = 15 mm; applying the annular formula gives I_A10 = 0.5 × 0.0134 × (0.022² + 0.015²) = 0.5 × 0.0134 × (4.84 × 10⁻⁴ + 2.25 × 10⁻⁴) = 4.750 × 10⁻⁶ kg·m² and r_eff = √(4.750 × 10⁻⁶ / 0.0134) = 18.83 mm [ESTIMATED geometry; CONFIRMED mass]. The n = 10 rotational symmetry (ten angular protrusions matching the digit of the armor designation) guarantees I_x = I_y and contributes no gyroscopic wobble to the assembly [CONFIRMED]. At 13.4 g the armor represents a moderate mass contribution to the DB system; in the Prominence Phoenix assembly (85.4 g total) it constitutes 15.7% of mass and 17.2% of inertia — an approximately proportionate contribution with slight outboard bias (18.83 mm r_eff vs assembly 17.96 mm r_eff) [CALCULATED]. Armor-10 is versatile across Defense and Stamina oriented assemblies; the ten-blade geometry creates a smooth effective perimeter that minimises recoil on contact, while the moderate radius adds inertia without exceeding the upper DB Armor mass range [CONFIRMED].
 
@@ -22940,7 +22940,7 @@ Armor-10 — Cross-Section Ring (r in mm)
 ```
 
 ```
-// Case 629 — Armor-10 Physics
+// Case 874 — Armor-10 Physics
 m     = 0.0134 kg    r_o = 0.022 m    r_i = 0.015 m
 I_A10 = 0.5 × 0.0134 × (0.022² + 0.015²)
       = 0.5 × 0.0134 × (4.84e-4 + 2.25e-4)
@@ -22971,7 +22971,7 @@ function armor10() {
 
 ---
 
-## Case 630 — Forge Disc: Tapered (DB System, 29.3 g)
+## Case 875 — Forge Disc: Tapered (DB System, 29.3 g)
 
 Forge Disc Tapered is a DB System Core Disc whose elevated mass of 29.3 g and larger outer radius relative to Cho-Z generation discs make it the highest-inertia standard disc examined to this point; modelling the disc as an annular ring with r_o = 27 mm and r_i = 11 mm yields I_Tap = 0.5 × 0.0293 × (0.027² + 0.011²) = 0.5 × 0.0293 × (7.29 × 10⁻⁴ + 1.21 × 10⁻⁴) = 1.245 × 10⁻⁵ kg·m² and r_eff = √(1.245 × 10⁻⁵ / 0.0293) = 20.61 mm [ESTIMATED geometry; CONFIRMED mass]. Comparing across the disc progression: vs Disc 10 (I = 8.861 × 10⁻⁶): ratio = 1.405 (+40.5%); vs Disc 7 (I = 7.841 × 10⁻⁶): ratio = 1.588 (+58.8%) [CALCULATED]. This step-change in inertia reflects both the larger physical size of DB generation components and Tapered's deliberate mass distribution at maximum outer radius; the disc's tapered-wall profile (which gives it its name) slightly extends the effective mass outboard relative to a flat ring of equal dimensions [INFERRED from geometry]. At ω₀ = 694 rad/s, L₀ = 1.245 × 10⁻⁵ × 694 = 8.640 × 10⁻³ kg·m²/s — this single disc contributes more angular momentum than the entire Dead Phoenix 10 Friction layer + disc system (L₀ = 6.149 × 10⁻³ from Disc 10 alone) and makes Tapered the decisive stamina driver in any DB assembly [CALCULATED]. Tapered is used in the Prominence Phoenix assembly as the stamina foundation [CONFIRMED].
 
@@ -22989,7 +22989,7 @@ Forge Disc Tapered — Cross-Section Profile (r in mm)
 ```
 
 ```
-// Case 630 — Forge Disc Tapered Physics
+// Case 875 — Forge Disc Tapered Physics
 m     = 0.0293 kg    r_o = 0.027 m    r_i = 0.011 m
 I_Tap = 0.5 × 0.0293 × (0.027² + 0.011²)
       = 0.5 × 0.0293 × (7.29e-4 + 1.21e-4)
@@ -23022,9 +23022,9 @@ function forgeDiscTapered() {
 
 ---
 
-## Case 631 — Performance Tip: Metal Universe (DB System, 11.1 g)
+## Case 876 — Performance Tip: Metal Universe (DB System, 11.1 g)
 
-Metal Universe (MU) is a DB System Performance Tip featuring a wide hemispherical ball contact point with a metal (steel) ball bearing insert, giving an effective friction coefficient μ_MU ≈ 0.012 and a contact radius r_contact ≈ 2 mm (near-point contact from the spherical geometry) [CONFIRMED metal bearing; ESTIMATED μ and r_contact]. For a representative 85.4 g assembly (Prominence Phoenix assembly, Case 632), spin-down torque is τ = 0.012 × 0.0854 × 9.81 × 0.002 = 2.011 × 10⁻⁵ N·m [CALCULATED]; the torque ratio vs Friction tip (at same assembly mass) = 2.011 × 10⁻⁵ / 2.322 × 10⁻⁴ = 0.0866, meaning MU produces only 8.7% of Friction's resistive torque — a dramatic stamina extension that yields theoretical stall times in the hundreds of seconds under ideal stadium conditions [CALCULATED]. The Metal Lock mechanism (shorter tabs than standard DB tips combined with a stronger spring) produces a net burst resistance factor of approximately 0.94× standard: shorter tab ≈ 0.75× standard hold torque, stronger spring ≈ 1.25× standard spring tension, net = 0.75 × 1.25 = 0.9375 ≈ 0.94 [CONFIRMED tab geometry; ESTIMATED spring tension, net from official description noting shorter tabs]. The self-KO risk is the critical practical limitation: the near-zero friction allows extremely high orbit speeds if the beyblade is disturbed from center; the critical orbit angular speed at which the beyblade rides over the stadium Tornado Ridge is ω_orbit_crit ≈ √(g / r_orbit) ≈ √(9.81 / 0.08) ≈ 11.1 rad/s (assuming 8 cm orbit radius at the Tornado Ridge) [ESTIMATED stadium geometry], corresponding to a spin speed of approximately 550 rad/s at which centrifugal force from orbital motion provides enough horizontal velocity to ride the ridge [ESTIMATED]; the self-KO risk is therefore primarily a hard-launch / small-stadium problem, solved by DB Standard stadium or soft launch [CONFIRMED].
+Metal Universe (MU) is a DB System Performance Tip featuring a wide hemispherical ball contact point with a metal (steel) ball bearing insert, giving an effective friction coefficient μ_MU ≈ 0.012 and a contact radius r_contact ≈ 2 mm (near-point contact from the spherical geometry) [CONFIRMED metal bearing; ESTIMATED μ and r_contact]. For a representative 85.4 g assembly (Prominence Phoenix assembly, Case 877), spin-down torque is τ = 0.012 × 0.0854 × 9.81 × 0.002 = 2.011 × 10⁻⁵ N·m [CALCULATED]; the torque ratio vs Friction tip (at same assembly mass) = 2.011 × 10⁻⁵ / 2.322 × 10⁻⁴ = 0.0866, meaning MU produces only 8.7% of Friction's resistive torque — a dramatic stamina extension that yields theoretical stall times in the hundreds of seconds under ideal stadium conditions [CALCULATED]. The Metal Lock mechanism (shorter tabs than standard DB tips combined with a stronger spring) produces a net burst resistance factor of approximately 0.94× standard: shorter tab ≈ 0.75× standard hold torque, stronger spring ≈ 1.25× standard spring tension, net = 0.75 × 1.25 = 0.9375 ≈ 0.94 [CONFIRMED tab geometry; ESTIMATED spring tension, net from official description noting shorter tabs]. The self-KO risk is the critical practical limitation: the near-zero friction allows extremely high orbit speeds if the beyblade is disturbed from center; the critical orbit angular speed at which the beyblade rides over the stadium Tornado Ridge is ω_orbit_crit ≈ √(g / r_orbit) ≈ √(9.81 / 0.08) ≈ 11.1 rad/s (assuming 8 cm orbit radius at the Tornado Ridge) [ESTIMATED stadium geometry], corresponding to a spin speed of approximately 550 rad/s at which centrifugal force from orbital motion provides enough horizontal velocity to ride the ridge [ESTIMATED]; the self-KO risk is therefore primarily a hard-launch / small-stadium problem, solved by DB Standard stadium or soft launch [CONFIRMED].
 
 ```
 Metal Universe Tip — Side Profile
@@ -23040,7 +23040,7 @@ Metal Universe Tip — Side Profile
 ```
 
 ```
-// Case 631 — Metal Universe Tip Physics
+// Case 876 — Metal Universe Tip Physics
 mu_MU      = 0.012
 r_contact  = 0.002 m
 m_assembly = 0.0854 kg   (Prominence Phoenix assembly)
@@ -23089,9 +23089,9 @@ function metalUniverseTip(m_assembly_kg: number) {
 
 ---
 
-## Case 632 — Assembly: Prominence Phoenix 10 Tapered Metal Universe (DB System, 85.4 g)
+## Case 877 — Assembly: Prominence Phoenix 10 Tapered Metal Universe (DB System, 85.4 g)
 
-Prominence Phoenix Tapered-10 Metal Universe is an 85.4 g DB stamina assembly whose total moment of inertia sums all six DB components: I_core = 4.408 × 10⁻⁷ (Case 627), I_blade = 9.397 × 10⁻⁶ (Case 628, full with shield), I_armor10 = 4.750 × 10⁻⁶ (Case 629), I_tapered = 1.245 × 10⁻⁵ (Case 630), I_tip ≈ 5.13 × 10⁻⁷ (MU tip, solid sphere approximation r = 5.5 mm at 11.1 g) [ESTIMATED tip I], yielding I_total = 4.408 × 10⁻⁷ + 9.397 × 10⁻⁶ + 4.750 × 10⁻⁶ + 1.245 × 10⁻⁵ + 5.13 × 10⁻⁷ = 2.755 × 10⁻⁵ kg·m² [CALCULATED]. Inertia fractions: core = 1.6%, blade body = 17.1%, shield = 17.0%, armor = 17.2%, disc = 45.2%, tip = 1.9% — the Tapered disc alone contributes nearly half the total angular momentum [CALCULATED]. At ω₀ = 694 rad/s, L₀ = 2.755 × 10⁻⁵ × 694 = 1.912 × 10⁻² kg·m²/s and r_eff = √(2.755 × 10⁻⁵ / 0.0854) = 17.96 mm [CALCULATED]. Spin decay with Metal Universe: τ = 2.011 × 10⁻⁵ N·m (Case 631), dω/dt = 2.011 × 10⁻⁵ / 2.755 × 10⁻⁵ = 0.730 rad/s², giving an ideal stall time t_stall = 694 / 0.730 = 950 s in the DB Standard stadium [CALCULATED ideal; practical estimate with soft launch ≈ 548 s from ω₀ = 400 rad/s]. Comparing to Dead Phoenix 10 Friction (L₀ = 1.043 × 10⁻²): L₀ ratio = 1.912 / 1.043 = 1.834, i.e., +83.4% angular momentum — the DB generation step-change is decisive [CALCULATED]. Post-shield-detach phase (shield releases): m = 75.9 g, I_post = 2.755 × 10⁻⁵ − 4.684 × 10⁻⁶ = 2.287 × 10⁻⁵ kg·m², τ_post = 0.012 × 0.0759 × 9.81 × 0.002 = 1.784 × 10⁻⁵ N·m, dω/dt_post = 0.781 rad/s², t_from500 = 500 / 0.781 = 640 s from ω = 500 [CALCULATED].
+Prominence Phoenix Tapered-10 Metal Universe is an 85.4 g DB stamina assembly whose total moment of inertia sums all six DB components: I_core = 4.408 × 10⁻⁷ (Case 872), I_blade = 9.397 × 10⁻⁶ (Case 873, full with shield), I_armor10 = 4.750 × 10⁻⁶ (Case 874), I_tapered = 1.245 × 10⁻⁵ (Case 875), I_tip ≈ 5.13 × 10⁻⁷ (MU tip, solid sphere approximation r = 5.5 mm at 11.1 g) [ESTIMATED tip I], yielding I_total = 4.408 × 10⁻⁷ + 9.397 × 10⁻⁶ + 4.750 × 10⁻⁶ + 1.245 × 10⁻⁵ + 5.13 × 10⁻⁷ = 2.755 × 10⁻⁵ kg·m² [CALCULATED]. Inertia fractions: core = 1.6%, blade body = 17.1%, shield = 17.0%, armor = 17.2%, disc = 45.2%, tip = 1.9% — the Tapered disc alone contributes nearly half the total angular momentum [CALCULATED]. At ω₀ = 694 rad/s, L₀ = 2.755 × 10⁻⁵ × 694 = 1.912 × 10⁻² kg·m²/s and r_eff = √(2.755 × 10⁻⁵ / 0.0854) = 17.96 mm [CALCULATED]. Spin decay with Metal Universe: τ = 2.011 × 10⁻⁵ N·m (Case 876), dω/dt = 2.011 × 10⁻⁵ / 2.755 × 10⁻⁵ = 0.730 rad/s², giving an ideal stall time t_stall = 694 / 0.730 = 950 s in the DB Standard stadium [CALCULATED ideal; practical estimate with soft launch ≈ 548 s from ω₀ = 400 rad/s]. Comparing to Dead Phoenix 10 Friction (L₀ = 1.043 × 10⁻²): L₀ ratio = 1.912 / 1.043 = 1.834, i.e., +83.4% angular momentum — the DB generation step-change is decisive [CALCULATED]. Post-shield-detach phase (shield releases): m = 75.9 g, I_post = 2.755 × 10⁻⁵ − 4.684 × 10⁻⁶ = 2.287 × 10⁻⁵ kg·m², τ_post = 0.012 × 0.0759 × 9.81 × 0.002 = 1.784 × 10⁻⁵ N·m, dω/dt_post = 0.781 rad/s², t_from500 = 500 / 0.781 = 640 s from ω = 500 [CALCULATED].
 
 ```
 Assembly: Prominence Phoenix Tapered-10 MU — Inertia Budget
@@ -23111,7 +23111,7 @@ vs Dead Phoenix 10 Friction: +83.4% L₀ (generation step-change)
 ```
 
 ```
-// Case 632 — Prominence Phoenix 10 Tap MU Assembly Physics
+// Case 877 — Prominence Phoenix 10 Tap MU Assembly Physics
 I_core   = 4.408e-7 kg·m²
 I_blade  = 9.397e-6 kg·m²   (with shield)
 I_armor  = 4.750e-6 kg·m²
@@ -23174,7 +23174,7 @@ function prominencePhoenixTaperedMU() {
 
 ---
 
-## Case 633 — Energy Layer: Twin Nemesis (God Layer System, 13.1 g)
+## Case 878 — Energy Layer: Twin Nemesis (God Layer System, 13.1 g)
 
 Twin Nemesis is a 13.1 g God Layer whose defining geometric feature is two-fold rotational symmetry (n = 2) — an elliptical blade plan view in which two large opposing blades consolidate mass; this is the only common layer geometry where I_x ≠ I_y, confirming the gyroscopic imbalance wobble that is characteristic of Twin Nemesis and documented in official sources [CONFIRMED]. The mass is modelled in three zones: blades (50%, 6.55 g at r = 20 mm — the outermost extremities), mechanism (20%, 2.62 g at r = 15 mm — the internal mode-change spring assembly), and body (30%, 3.93 g at r = 8 mm — central ABS structure); this gives I_TN = 0.0655 × 0.020² + 0.0262 × 0.015² + 0.0393 × 0.008² = 2.620 × 10⁻⁵ + 5.895 × 10⁻⁶ + 2.515 × 10⁻⁶ = wait — applying correctly as point masses: I_TN = 6.55 × 10⁻³ × 0.020² + 2.62 × 10⁻³ × 0.015² + 3.93 × 10⁻³ × 0.008² = 2.620 × 10⁻⁶ + 5.895 × 10⁻⁷ + 2.515 × 10⁻⁷ = 3.461 × 10⁻⁶ kg·m² [ESTIMATED zone masses and radii]. r_eff = √(3.461 × 10⁻⁶ / 0.0131) = 16.25 mm [CALCULATED]. The tall teeth provide greater angular engagement before skipping relative to medium-length God Layer teeth; the hold-torque ratio is estimated at 1.43× standard (tall tooth ≈ +30° angular contact over medium, torque ∝ arc length) [ESTIMATED from tooth geometry]. Upper Mode (smooth contact face presented inward, reduces recoil via gear-mesh effect with right-spin opponent) shows consistently greater success than Smash Mode (aggressive protruding blades, recoil unpredictable) [CONFIRMED]. The perimeter mass arrangement (blades at r = 20 mm) maximises r_eff per gram of layer mass [INFERRED]. At ω_battle = 416 rad/s, L₀_battle = 3.461 × 10⁻⁶ × 416 = 1.440 × 10⁻³ kg·m²/s; F_upper ≈ ω² × m_blade × r × sin(20°) = 416² × 6.55 × 10⁻³ × 0.020 × 0.342 = 7.73 N upward blade force at 20° tip angle [ESTIMATED angle].
 
@@ -23193,7 +23193,7 @@ Twin Nemesis — Top View (schematic, n=2 elliptical)
 ```
 
 ```
-// Case 633 — Twin Nemesis Layer Physics
+// Case 878 — Twin Nemesis Layer Physics
 // 3-zone point mass model
 m_blades = 6.55e-3 kg   r_blades = 0.020 m
 m_mech   = 2.62e-3 kg   r_mech   = 0.015 m
@@ -23238,7 +23238,7 @@ function twinNemesisLayer() {
 
 ---
 
-## Case 634 — Forge Disc: 3 (God Layer System, 21.6 g)
+## Case 879 — Forge Disc: 3 (God Layer System, 21.6 g)
 
 Forge Disc 3 is a 21.6 g God Layer Core Disc whose two-zone mass distribution concentrates mass inboard relative to all even-numbered discs: an inner ring (45%, 9.72 g at r_o = 8 mm, r_i = 4 mm) plus outer slim perimeter ring (55%, 11.88 g at r = 17 mm); applying annular and point-mass formulas: I_inner = 0.5 × 9.72 × 10⁻³ × (0.008² + 0.004²) = 0.5 × 9.72 × 10⁻³ × (6.40 × 10⁻⁵ + 1.60 × 10⁻⁵) = 3.888 × 10⁻⁷ kg·m², I_outer = 11.88 × 10⁻³ × 0.017² = 3.432 × 10⁻⁶ kg·m², I_3 = 3.821 × 10⁻⁶ kg·m² ≈ 3.822 × 10⁻⁶ kg·m², r_eff = √(3.822 × 10⁻⁶ / 0.0216) = 13.30 mm [ESTIMATED zone geometry; CONFIRMED mass]. Comparing to Disc 7 (I_7 = 7.841 × 10⁻⁶): I_3 / I_7 = 3.822 / 7.841 = 0.4874, a 51.3% inertia deficit; however at the same launch angular momentum L₀, the lower inertia means ω_3 = L₀ / I_3 = (L₀ / I_7) × (I_7 / I_3) = ω_7 × 2.052, i.e., blade tip velocity is 2.05× higher for the same amount of launch energy [CALCULATED]. Disc 3 is an even-numbered-classification odd disc (confirmed to accept Frames despite the numeral being odd) [CONFIRMED]; without a Frame, the LAD (Life-After-Death) quality is high because the inboard mass distribution lowers the center of mass and improves tilted-spin precession [CONFIRMED]. In the Twin Nemesis assembly, Disc 3's low inertia trades stamina for substantially higher rotational speed at any given angular momentum budget [CONFIRMED tradeoff].
 
@@ -23255,7 +23255,7 @@ Forge Disc 3 — Two-Zone Mass Distribution (r in mm)
 ```
 
 ```
-// Case 634 — Forge Disc 3 Physics
+// Case 879 — Forge Disc 3 Physics
 // Inner ring
 m_in  = 9.72e-3 kg    r_o_in = 0.008 m    r_i_in = 0.004 m
 I_in  = 0.5 × 9.72e-3 × (0.008² + 0.004²)
@@ -23301,7 +23301,7 @@ function forgeDisc3() {
 
 ---
 
-## Case 635 — Disc Frame: Hit (God Layer System, 2.0 g)
+## Case 880 — Disc Frame: Hit (God Layer System, 2.0 g)
 
 Disc Frame Hit is a 2.0 g God Layer Frame whose mass distribution consists of a thin ring body (1.5 g at r = 18 mm) plus one asymmetric protrusion (0.5 g at r = 19 mm); I_Hit = 1.5 × 10⁻³ × 0.018² + 0.5 × 10⁻³ × 0.019² = 4.860 × 10⁻⁷ + 1.805 × 10⁻⁷ = 6.665 × 10⁻⁷ kg·m² [ESTIMATED geometry; CONFIRMED mass]. Combined with Disc 3: I_3Hit = 3.822 × 10⁻⁶ + 6.665 × 10⁻⁷ = 4.489 × 10⁻⁶ kg·m², m_3Hit = 23.6 g, r_eff_3Hit = √(4.489 × 10⁻⁶ / 0.0236) = 13.79 mm — a modest improvement of 0.49 mm r_eff and 17.4% inertia gain over Disc 3 alone [CALCULATED]. The n = 1 symmetry (single protrusion) produces the highest possible rotational imbalance for a frame: Δr_cm = (0.5 × 10⁻³ × 0.019) / 0.0020 = 4.75 mm offset [ESTIMATED], imbalance torque ≈ m_offset × r_cm² × ω² = 9.5 × 10⁻⁶ kg·m × (416 rad/s)² ≈ 1.65 N·m — substantial wobble induction at launch [ESTIMATED]. Contact rarely activates in practice because the protrusion height is insufficient to reach the opposing layer consistently; official sources confirm contact is rare [CONFIRMED]. The 2.0 g mass is too light to generate meaningful offensive impact even when contact does occur [CONFIRMED]. LAD quality is reduced compared to Cross Frame due to the imbalance-induced precession instability [CONFIRMED].
 
@@ -23317,7 +23317,7 @@ Disc Frame Hit — Top View (schematic)
 ```
 
 ```
-// Case 635 — Disc Frame Hit Physics
+// Case 880 — Disc Frame Hit Physics
 // Ring body
 m_ring = 1.5e-3 kg    r_ring = 0.018 m
 I_ring = 1.5e-3 × 0.018² = 4.860e-7 kg·m²
@@ -23362,9 +23362,9 @@ function discFrameHit() {
 
 ---
 
-## Case 636 — Assembly: Twin Nemesis 3Hit Jaggy (God Layer System, 42.4 g)
+## Case 881 — Assembly: Twin Nemesis 3Hit Jaggy (God Layer System, 42.4 g)
 
-Twin Nemesis 3Hit Jaggy is a 42.4 g God Layer assembly whose total moment of inertia sums: I_TN = 3.461 × 10⁻⁶ (Case 633), I_3Hit = 4.489 × 10⁻⁶ (Case 635 combined), I_Jaggy = 9.674 × 10⁻⁷ (Case 475, established) [CONFIRMED from CS9 Case 475], yielding I_total = 3.461 × 10⁻⁶ + 4.489 × 10⁻⁶ + 9.674 × 10⁻⁷ = 8.917 × 10⁻⁶ ≈ 8.918 × 10⁻⁶ kg·m² [CALCULATED]. Inertia fractions: TN layer = 38.8%, Disc 3 = 42.8%, Hit Frame = 7.5%, Jaggy = 10.8% — Disc 3 dominates despite its low absolute inertia because the rubber tip is even lower [CALCULATED]. At ω₀ = 694 rad/s, L₀ = 8.918 × 10⁻⁶ × 694 = 6.189 × 10⁻³ kg·m²/s and r_eff = √(8.918 × 10⁻⁶ / 0.0424) = 14.50 mm [CALCULATED]. Spin decay uses the Jaggy friction model from Case 475: μ_Jaggy = 0.45, r_eff_effective = 1 mm (star intermittency), τ = 0.45 × 0.0424 × 9.81 × 0.001 = 1.870 × 10⁻⁴ N·m, dω/dt = 1.870 × 10⁻⁴ / 8.918 × 10⁻⁶ = 20.97 rad/s², t_battle = 416 / 20.97 = 19.8 s from ω_battle = 416 rad/s [CALCULATED; r_eff_effective consistent with Case 475 convention]. Comparing to a hypothetical Disc 7 assembly (same layer + Hit + Jaggy, I_disc7 = 7.841 × 10⁻⁶): I_total_7 = 3.461 × 10⁻⁶ + 8.808 × 10⁻⁶ + 9.674 × 10⁻⁷ = 1.327 × 10⁻⁵, L₀_7 = 9.197 × 10⁻³, giving L₀ ratio = 6.189 / 9.197 = 0.673 (Disc 3 gives −32.7% L₀ vs Disc 7); however, the ω advantage (2.051× rotation rate at same L₀) makes the Disc 3 choice explicitly correct for attack — higher blade impact velocity and faster reaction time outweigh the stamina cost [CALCULATED tradeoff].
+Twin Nemesis 3Hit Jaggy is a 42.4 g God Layer assembly whose total moment of inertia sums: I_TN = 3.461 × 10⁻⁶ (Case 878), I_3Hit = 4.489 × 10⁻⁶ (Case 880 combined), I_Jaggy = 9.674 × 10⁻⁷ (Case 475, established) [CONFIRMED from CS9 Case 475], yielding I_total = 3.461 × 10⁻⁶ + 4.489 × 10⁻⁶ + 9.674 × 10⁻⁷ = 8.917 × 10⁻⁶ ≈ 8.918 × 10⁻⁶ kg·m² [CALCULATED]. Inertia fractions: TN layer = 38.8%, Disc 3 = 42.8%, Hit Frame = 7.5%, Jaggy = 10.8% — Disc 3 dominates despite its low absolute inertia because the rubber tip is even lower [CALCULATED]. At ω₀ = 694 rad/s, L₀ = 8.918 × 10⁻⁶ × 694 = 6.189 × 10⁻³ kg·m²/s and r_eff = √(8.918 × 10⁻⁶ / 0.0424) = 14.50 mm [CALCULATED]. Spin decay uses the Jaggy friction model from Case 475: μ_Jaggy = 0.45, r_eff_effective = 1 mm (star intermittency), τ = 0.45 × 0.0424 × 9.81 × 0.001 = 1.870 × 10⁻⁴ N·m, dω/dt = 1.870 × 10⁻⁴ / 8.918 × 10⁻⁶ = 20.97 rad/s², t_battle = 416 / 20.97 = 19.8 s from ω_battle = 416 rad/s [CALCULATED; r_eff_effective consistent with Case 475 convention]. Comparing to a hypothetical Disc 7 assembly (same layer + Hit + Jaggy, I_disc7 = 7.841 × 10⁻⁶): I_total_7 = 3.461 × 10⁻⁶ + 8.808 × 10⁻⁶ + 9.674 × 10⁻⁷ = 1.327 × 10⁻⁵, L₀_7 = 9.197 × 10⁻³, giving L₀ ratio = 6.189 / 9.197 = 0.673 (Disc 3 gives −32.7% L₀ vs Disc 7); however, the ω advantage (2.051× rotation rate at same L₀) makes the Disc 3 choice explicitly correct for attack — higher blade impact velocity and faster reaction time outweigh the stamina cost [CALCULATED tradeoff].
 
 ```
 Assembly: Twin Nemesis 3Hit Jaggy — Inertia Budget
@@ -23381,7 +23381,7 @@ vs Disc 7 assembly: −32.7% L₀ but +105% ω at same L₀ → attack justified
 ```
 
 ```
-// Case 636 — Twin Nemesis 3Hit Jaggy Assembly Physics
+// Case 881 — Twin Nemesis 3Hit Jaggy Assembly Physics
 I_TN     = 3.461e-6 kg·m²
 I_3Hit   = 4.489e-6 kg·m²   (Disc 3 + Hit Frame)
 I_Jaggy  = 9.674e-7 kg·m²   (from Case 475)
@@ -23436,7 +23436,7 @@ function twinNemesis3HitJaggy() {
 
 ---
 
-## Case 637 — Energy Layer: Hell Salamander (Cho-Z, Left-Spin, 21.27 g)
+## Case 882 — Energy Layer: Hell Salamander (Cho-Z, Left-Spin, 21.27 g)
 
 Hell Salamander is a 21.27 g Left-Spin Cho-Z Energy Layer with a mode-change gimmick that rearranges its ten blades between Defense Mode (all ten blades spread apart) and Attack Mode (five consolidated double-blades); the Left-Spin orientation is the most mechanically significant attribute, as it causes right-spin opponents to interact with Hell Salamander in a gear-mesh pattern rather than a head-on impact — rotational directions oppose, reducing recoil dramatically, and making burst nearly impossible against right-spin in Defense Mode [CONFIRMED]. Five of the ten blades are metal-lined, providing mass concentration at the perimeter; the layer is modelled in two zones: metal-reinforced blade tips (50% of mass, 10.635 g at r = 21 mm) and ABS body plus plastic blade region (50% of mass, 10.635 g at r = 14 mm), giving I_HS = 10.635 × 10⁻³ × 0.021² + 10.635 × 10⁻³ × 0.014² = 4.690 × 10⁻⁶ + 2.084 × 10⁻⁶ = 6.774 × 10⁻⁶ kg·m² [ESTIMATED zone geometry; CONFIRMED mass and metal count]. r_eff = √(6.774 × 10⁻⁶ / 0.02127) = 17.85 mm [CALCULATED]. Defense Mode presents n = 10 symmetry (no wobble, smooth effective perimeter) while Attack Mode consolidates to n = 5 (still symmetric, no wobble); the clockwise blade face direction in both modes reduces recoil even against other Left-Spin opponents [CONFIRMED]. The metal inertia concentration raises burst resistance in both modes via high I resisting teeth skip [CONFIRMED], and stamps the layer's stamina at equal to or greater than Crash Ragnaruk [CONFIRMED]. The documented unbalanced nature (not as severe as other Cho-Z Layers) creates a measurable stamina drain and burst risk that a Level Chip corrects by filling the underside gap and restoring rotational balance [CONFIRMED; Level Chip fits underneath]. At ω₀ = 694 rad/s, L₀_layer = 6.774 × 10⁻⁶ × 694 = 4.701 × 10⁻³ kg·m²/s [CALCULATED].
 
@@ -23456,7 +23456,7 @@ Hell Salamander — Mode Geometry (top view schematic)
 ```
 
 ```
-// Case 637 — Hell Salamander Layer Physics
+// Case 882 — Hell Salamander Layer Physics
 // 2-zone point mass model
 m_metal = 10.635e-3 kg    r_metal = 0.021 m
 m_ABS   = 10.635e-3 kg    r_ABS   = 0.014 m
@@ -23502,7 +23502,7 @@ function hellSalamanderLayer() {
 
 ---
 
-## Case 638 — Forge Disc: 12 (Cho-Z, 16.1 g)
+## Case 883 — Forge Disc: 12 (Cho-Z, 16.1 g)
 
 Forge Disc 12 is the lightest confirmed Cho-Z Core Disc at 16.1 g; its even-numbered designation places it in the Frame-compatible class (two Frame slots), and its aggressive three-protrusion-per-side design with "12" molding and four central holes gives it a visually aggressive profile [CONFIRMED]. The mass of 16.1 g is modelled as an annular ring with r_o = 21 mm and r_i = 12 mm (lighter disc → smaller overall radius than Discs 10 or 7): I_12 = 0.5 × 0.0161 × (0.021² + 0.012²) = 0.5 × 0.0161 × (4.41 × 10⁻⁴ + 1.44 × 10⁻⁴) = 4.711 × 10⁻⁶ kg·m², r_eff = √(4.711 × 10⁻⁶ / 0.0161) = 17.12 mm [ESTIMATED geometry; CONFIRMED mass]. Comparing across the Cho-Z disc family: vs Disc 10 (8.861 × 10⁻⁶): ratio = 0.532 (−46.8%); vs Disc 7 (7.841 × 10⁻⁶): ratio = 0.601 (−39.9%) [CALCULATED]. L₀ at ω₀ = 694 rad/s is 3.269 × 10⁻³ kg·m²/s — only 53% of Disc 10's contribution. The light weight does not provide meaningful burst resistance with heavy Cho-Z or God Layers, as the burst mechanism at those layer weights is dominated by the layer teeth engagement, not disc mass [CONFIRMED]. The aggressive protrusion geometry has caused documented damage to opposing layers on disc-to-layer contact, though such contact is rare because most Performance Tips hold the disc below the opposing layer height [CONFIRMED damage risk]. In practice, Disc 12 is primarily a niche choice: its low mass reduces total assembly inertia, which can benefit burst-attack strategies on left-spin setups where lower L₀ translates to faster spin deceleration on contact — though this effect is marginal and better achieved by tip selection [INFERRED].
 
@@ -23521,7 +23521,7 @@ Forge Disc 12 — Top View (schematic)
 ```
 
 ```
-// Case 638 — Forge Disc 12 Physics
+// Case 883 — Forge Disc 12 Physics
 m     = 0.0161 kg    r_o = 0.021 m    r_i = 0.012 m
 I_12  = 0.5 × 0.0161 × (0.021² + 0.012²)
       = 0.5 × 0.0161 × (4.41e-4 + 1.44e-4)
@@ -23559,7 +23559,7 @@ function forgeDisc12() {
 
 ---
 
-## Case 639 — Performance Tip: Operate (Cho-Z, 7.1 g)
+## Case 884 — Performance Tip: Operate (Cho-Z, 7.1 g)
 
 Operate is a 7.1 g Cho-Z Performance Tip with a sliding mechanism that offsets or centers a wide plastic ball contact point, creating Attack Mode (ball off-center) and Defense Mode (ball centered); both modes underperform their intended role, making Operate a rare example of a dual-mode tip whose gimmick actively impedes competitive viability [CONFIRMED]. In Attack Mode, the off-center ball contact produces erratic stadium movement akin to Quake but more pronounced; the hopping gimmick (intended to create Layer-to-Disc contact and burst opponents) is confirmed more effective than Quake's equivalent but still inconsistent [CONFIRMED]. The off-center contact prevents Banking Pattern maintenance — the beyblade orbits near the Tornado Ridge or stagnates in the center with very poor stamina, making KO easy [CONFIRMED]. In Defense Mode, the centered wide ball should theoretically provide defense via large contact area, but the absence of the braking tabs present on the standard Defense tip means there is no mechanism to arrest inward orbital drift; the semi-aggressive early movement pattern brings the beyblade toward the Tornado Ridge before spin decays enough to stabilize, and without the tabs, KO resistance is lower than Massive (itself poor) [CONFIRMED]. Modelling Operate as a plastic ball tip: μ_Operate_def ≈ 0.04 (smooth plastic ball, moderate friction), r_contact ≈ 3 mm (ball contact point); for a representative 44.47 g assembly (Hell Salamander 12 Operate): τ_def = 0.04 × 0.04447 × 9.81 × 0.003 = 5.232 × 10⁻⁵ N·m, dω/dt = 5.232 × 10⁻⁵ / I_assembly [ESTIMATED]; I_tip ≈ 0.5 × 0.0071 × 0.005² = 8.875 × 10⁻⁸ kg·m² (stem cylinder approximation) [ESTIMATED]. The Attack Mode offset shifts r_contact to ≈ 5 mm from axis, raising τ to ≈ 8.72 × 10⁻⁵ N·m and causing the erratic orbital behavior.
 
@@ -23579,7 +23579,7 @@ Operate Tip — Two-Mode Diagram
 ```
 
 ```
-// Case 639 — Operate Tip Physics
+// Case 884 — Operate Tip Physics
 // Defense Mode
 mu_def      = 0.04    r_def = 0.003 m
 // Attack Mode
@@ -23628,9 +23628,9 @@ function operateTip(m_assembly_kg: number) {
 
 ---
 
-## Case 640 — Assembly: Hell Salamander 12 Operate (Cho-Z, Left-Spin, 44.47 g)
+## Case 885 — Assembly: Hell Salamander 12 Operate (Cho-Z, Left-Spin, 44.47 g)
 
-Hell Salamander 12 Operate is a 44.47 g Left-Spin Cho-Z assembly whose total moment of inertia sums: I_HS = 6.774 × 10⁻⁶ (Case 637), I_12 = 4.711 × 10⁻⁶ (Case 638), I_tip ≈ 8.875 × 10⁻⁸ (Case 639), yielding I_total = 6.774 × 10⁻⁶ + 4.711 × 10⁻⁶ + 8.875 × 10⁻⁸ = 1.157 × 10⁻⁵ kg·m² [CALCULATED]; inertia fractions: HS layer = 58.6%, Disc 12 = 40.7%, Operate tip = 0.77% — the layer dominates strongly because Disc 12 is the lightest Cho-Z disc [CALCULATED]. At ω₀ = 694 rad/s, L₀ = 1.157 × 10⁻⁵ × 694 = 8.027 × 10⁻³ kg·m²/s and r_eff = √(1.157 × 10⁻⁵ / 0.04447) = 16.13 mm [CALCULATED]. In Defense Mode (Operate centered, Hell Salamander 10-blade), spin decay: τ = 5.232 × 10⁻⁵ N·m (Case 639), dω/dt = 5.232 × 10⁻⁵ / 1.157 × 10⁻⁵ = 4.522 rad/s², t_stall = 694 / 4.522 = 153.5 s [CALCULATED ideal]; however the semi-aggressive early movement and absent braking tabs make this stamina advantage theoretical — practical stamina is cut significantly by KO before ω decays to stall [CONFIRMED]. The assembly's dominant competitive property is its Left-Spin gear-mesh burst resistance in Hell Salamander's Defense Mode, which makes it nearly impossible to burst against right-spin opponents; combined with the confirmed stamina level at or above Crash Ragnaruk and a moderate overall inertia, the assembly functions as a stamina-defense hybrid against right-spin [CONFIRMED layer property; CONFIRMED stamina]. The Operate tip is the assembly's critical weakness: neither mode performs adequately, and a substitution of Friction, Atomic, or Bearing would yield strictly superior stamina without changing the layer's primary property [INFERRED]. Disc 12's low inertia represents a −46.8% I deficit versus Disc 10 that directly reduces L₀; paired with a better disc such as Disc 10 or Disc Spread, the assembly's stamina ceiling improves substantially [CALCULATED].
+Hell Salamander 12 Operate is a 44.47 g Left-Spin Cho-Z assembly whose total moment of inertia sums: I_HS = 6.774 × 10⁻⁶ (Case 882), I_12 = 4.711 × 10⁻⁶ (Case 883), I_tip ≈ 8.875 × 10⁻⁸ (Case 884), yielding I_total = 6.774 × 10⁻⁶ + 4.711 × 10⁻⁶ + 8.875 × 10⁻⁸ = 1.157 × 10⁻⁵ kg·m² [CALCULATED]; inertia fractions: HS layer = 58.6%, Disc 12 = 40.7%, Operate tip = 0.77% — the layer dominates strongly because Disc 12 is the lightest Cho-Z disc [CALCULATED]. At ω₀ = 694 rad/s, L₀ = 1.157 × 10⁻⁵ × 694 = 8.027 × 10⁻³ kg·m²/s and r_eff = √(1.157 × 10⁻⁵ / 0.04447) = 16.13 mm [CALCULATED]. In Defense Mode (Operate centered, Hell Salamander 10-blade), spin decay: τ = 5.232 × 10⁻⁵ N·m (Case 884), dω/dt = 5.232 × 10⁻⁵ / 1.157 × 10⁻⁵ = 4.522 rad/s², t_stall = 694 / 4.522 = 153.5 s [CALCULATED ideal]; however the semi-aggressive early movement and absent braking tabs make this stamina advantage theoretical — practical stamina is cut significantly by KO before ω decays to stall [CONFIRMED]. The assembly's dominant competitive property is its Left-Spin gear-mesh burst resistance in Hell Salamander's Defense Mode, which makes it nearly impossible to burst against right-spin opponents; combined with the confirmed stamina level at or above Crash Ragnaruk and a moderate overall inertia, the assembly functions as a stamina-defense hybrid against right-spin [CONFIRMED layer property; CONFIRMED stamina]. The Operate tip is the assembly's critical weakness: neither mode performs adequately, and a substitution of Friction, Atomic, or Bearing would yield strictly superior stamina without changing the layer's primary property [INFERRED]. Disc 12's low inertia represents a −46.8% I deficit versus Disc 10 that directly reduces L₀; paired with a better disc such as Disc 10 or Disc Spread, the assembly's stamina ceiling improves substantially [CALCULATED].
 
 ```
 Assembly: Hell Salamander 12 Operate — Inertia Budget
@@ -23660,7 +23660,7 @@ Assembly: Hell Salamander 12 Operate — Inertia Budget
 ```
 
 ```
-// Case 640 — Hell Salamander 12 Operate Assembly Physics
+// Case 885 — Hell Salamander 12 Operate Assembly Physics
 I_HS    = 6.774e-6 kg·m²
 I_12    = 4.711e-6 kg·m²
 I_tip   = 8.875e-8 kg·m²
@@ -23719,15 +23719,15 @@ function hellSalamander12Operate() {
 
 ---
 
-## Case 641 — Armor Detachment: Dimensional Collapse and Geometric Phase Transition (Cross-System Analysis)
+## Case 886 — Armor Detachment: Dimensional Collapse and Geometric Phase Transition (Cross-System Analysis)
 
-Losing detachable armor is not merely an inertia event — it is a simultaneous collapse across three spatial dimensions (diameter, height, and perimeter shape) that constitutes a genuine phase transition in the beyblade's mechanical identity; the spinning body that exists after detachment is geometrically a fundamentally different object from the one that entered the battle, and the physical consequences of that shape change are distinct from and additive to the angular momentum loss already quantified in Cases 625 and 632 [INFERRED from geometry; CONFIRMED by competitive observation of post-detach behavior]. Diameter reduction is the most dramatic axis: Dead Phoenix contracts from a spinning envelope of Ø 44 mm (r_o_armor = 22 mm) to Ø ≈ 28 mm (r_o_core ≈ 14 mm) — a 36.4% reduction in swept diameter — while Revive Phoenix contracts from Ø 44 mm to Ø ≈ 30 mm (−31.8%) and Prominence's shield detach is comparatively modest at Ø 50 mm → Ø 46 mm (−8.0%) [CALCULATED from Case 622, 626, 628 geometry]; these reductions directly shrink the beyblade's spatial footprint in the stadium, reducing wall-contact radius and shifting bowl interaction from upper-wall riding to center-seeking [INFERRED from geometry]. The height collapse accompanies the diameter collapse: the detachable armor shell adds approximately 3–5 mm to the total layer stack height [ESTIMATED from visual inspection of Cho-Z Layer profile], and its removal drops the beyblade's operational height by that margin; since opposing layers are aimed at the pre-detach contact zone, after detachment their blades swing through empty space at the former armor height and only connect at the lower disc/core junction, which is structurally far more robust and mechanically non-threatening to the ratchet system [INFERRED; CONFIRMED by burst-immunity observation]. The perimeter shape transition from bladed to smooth is the primary burst-resistance mechanism — an aggressive bladed perimeter presents gaps between blades that act as mechanical catches for opposing blade tips, transmitting radial force directly to the ratchet teeth; a smooth circular perimeter instead generates a tangential deflection vector on contact (F_radial ≈ F_impact × sin(α_gap) collapsing to ≈ 0 as α_gap → 0) that never reaches the teeth regardless of impact magnitude [CONFIRMED for Dead Phoenix; INFERRED mechanism]. Center of mass height drops with armor removal: modelling the armor as a shell at h_armor ≈ 8 mm above the tip contact plane and the core CoM at h_core ≈ 5 mm [ESTIMATED], the post-detach CoM height h₂ ≈ 5 mm vs h₁ ≈ 7 mm pre-detach; the precession rate ω_p = m·g·h_CoM·sin(θ) / (I·ω) therefore changes: at ω = 500 rad/s and θ = 10°, Dead Phoenix 10 Friction post-detach gives ω_p_post = (0.0396 × 9.81 × 0.005 × 0.1736) / (1.022 × 10⁻⁵ × 500) = 6.610 × 10⁻⁴ / 5.110 × 10⁻³ = 0.1294 rad/s vs full-assembly ω_p_full = (0.0526 × 9.81 × 0.007 × 0.1736) / (1.503 × 10⁻⁵ × 500) = 6.278 × 10⁻⁴ / 7.515 × 10⁻³ = 0.0835 rad/s — paradoxically the precession rate increases post-detach at the same ω because the mass drop reduces I more than it reduces m·g·h_CoM [CALCULATED]; however at the lower ω that accompanies the reduced L₀ post-detach, the net tilt stability deteriorates [CALCULATED]. Aerodynamic skin-drag torque scales as r⁵: the Dead Core's r_o ≈ 14 mm vs armor r_o = 22 mm gives a drag ratio of (14/22)⁵ = 0.636⁵ = 0.105, meaning aerodynamic drag on the spinning perimeter drops to approximately 10.5% of its pre-detach value — a meaningful but secondary stamina benefit relative to tip friction dominance [CALCULATED].
+Losing detachable armor is not merely an inertia event — it is a simultaneous collapse across three spatial dimensions (diameter, height, and perimeter shape) that constitutes a genuine phase transition in the beyblade's mechanical identity; the spinning body that exists after detachment is geometrically a fundamentally different object from the one that entered the battle, and the physical consequences of that shape change are distinct from and additive to the angular momentum loss already quantified in Cases 625 and 632 [INFERRED from geometry; CONFIRMED by competitive observation of post-detach behavior]. Diameter reduction is the most dramatic axis: Dead Phoenix contracts from a spinning envelope of Ø 44 mm (r_o_armor = 22 mm) to Ø ≈ 28 mm (r_o_core ≈ 14 mm) — a 36.4% reduction in swept diameter — while Revive Phoenix contracts from Ø 44 mm to Ø ≈ 30 mm (−31.8%) and Prominence's shield detach is comparatively modest at Ø 50 mm → Ø 46 mm (−8.0%) [CALCULATED from Case 867, 626, 628 geometry]; these reductions directly shrink the beyblade's spatial footprint in the stadium, reducing wall-contact radius and shifting bowl interaction from upper-wall riding to center-seeking [INFERRED from geometry]. The height collapse accompanies the diameter collapse: the detachable armor shell adds approximately 3–5 mm to the total layer stack height [ESTIMATED from visual inspection of Cho-Z Layer profile], and its removal drops the beyblade's operational height by that margin; since opposing layers are aimed at the pre-detach contact zone, after detachment their blades swing through empty space at the former armor height and only connect at the lower disc/core junction, which is structurally far more robust and mechanically non-threatening to the ratchet system [INFERRED; CONFIRMED by burst-immunity observation]. The perimeter shape transition from bladed to smooth is the primary burst-resistance mechanism — an aggressive bladed perimeter presents gaps between blades that act as mechanical catches for opposing blade tips, transmitting radial force directly to the ratchet teeth; a smooth circular perimeter instead generates a tangential deflection vector on contact (F_radial ≈ F_impact × sin(α_gap) collapsing to ≈ 0 as α_gap → 0) that never reaches the teeth regardless of impact magnitude [CONFIRMED for Dead Phoenix; INFERRED mechanism]. Center of mass height drops with armor removal: modelling the armor as a shell at h_armor ≈ 8 mm above the tip contact plane and the core CoM at h_core ≈ 5 mm [ESTIMATED], the post-detach CoM height h₂ ≈ 5 mm vs h₁ ≈ 7 mm pre-detach; the precession rate ω_p = m·g·h_CoM·sin(θ) / (I·ω) therefore changes: at ω = 500 rad/s and θ = 10°, Dead Phoenix 10 Friction post-detach gives ω_p_post = (0.0396 × 9.81 × 0.005 × 0.1736) / (1.022 × 10⁻⁵ × 500) = 6.610 × 10⁻⁴ / 5.110 × 10⁻³ = 0.1294 rad/s vs full-assembly ω_p_full = (0.0526 × 9.81 × 0.007 × 0.1736) / (1.503 × 10⁻⁵ × 500) = 6.278 × 10⁻⁴ / 7.515 × 10⁻³ = 0.0835 rad/s — paradoxically the precession rate increases post-detach at the same ω because the mass drop reduces I more than it reduces m·g·h_CoM [CALCULATED]; however at the lower ω that accompanies the reduced L₀ post-detach, the net tilt stability deteriorates [CALCULATED]. Aerodynamic skin-drag torque scales as r⁵: the Dead Core's r_o ≈ 14 mm vs armor r_o = 22 mm gives a drag ratio of (14/22)⁵ = 0.636⁵ = 0.105, meaning aerodynamic drag on the spinning perimeter drops to approximately 10.5% of its pre-detach value — a meaningful but secondary stamina benefit relative to tip friction dominance [CALCULATED].
 
 ```
 Dimensional Collapse — Three Systems Compared
                      ┌─────────────────┬──────────────────┬────────────────┐
                      │  Dead Phoenix   │  Revive Phoenix  │  Prominence    │
-                     │  (Case 622)     │  (Case 626)      │  (Case 628)    │
+                     │  (Case 867)     │  (Case 871)      │  (Case 873)    │
 ┌────────────────────┼─────────────────┼──────────────────┼────────────────┤
 │ Ø before (mm)      │      44         │       44         │      50        │
 │ Ø after  (mm)      │     ~28         │      ~30         │      46        │
@@ -23755,7 +23755,7 @@ Contact zone shift (Dead Phoenix example):
 ```
 
 ```
-// Case 641 — Dimensional Collapse Physics
+// Case 886 — Dimensional Collapse Physics
 
 // 1. Diameter reduction
 r_o_armor_DP   = 0.022 m    r_o_core_DP  = 0.014 m
@@ -23767,7 +23767,7 @@ diam_ratio_RP  = 15 / 22    = 0.682      (−31.8%)
 r_o_shield_PR  = 0.025 m    r_o_blade_PR = 0.023 m
 diam_ratio_PR  = 23 / 25    = 0.920      (−8.0%)
 
-// 2. Precession rate — Dead Phoenix 10 Friction (Case 625)
+// 2. Precession rate — Dead Phoenix 10 Friction (Case 870)
 // at ω=500, θ=10°, h values estimated
 g = 9.81   sin10 = 0.1736
 
@@ -23861,4 +23861,381 @@ function armorDetachGeometry(system: "DeadPhoenix" | "RevivePhoenix" | "Prominen
   };
 }
 ```
+
+
+---
+
+## Case 887 — Energy Layer: Killer Deathscyther (God Layer, Right-Spin, Attack, 9.2 g)
+
+Killer Deathscyther is a 9.2 g God Layer comprising six blades in two material classes — two colored ABS blades (sloped for Upper Attack and Destabilization) and four clear ABS blades (flat, intended for Burst Attack) — plus a centrifugally-actuated translucent sliding blade mounted on one colored blade that constitutes the "Double Strike" gimmick; all three components of the gimmick fail by confirmed independent mechanisms, making the layer one of the most thoroughly counterproductive God Layers for its stated attack purpose [CONFIRMED]. The layer mass is modelled in three zones: six blade tips (55%, 5.06 g at r = 18 mm — compact blade reach), gimmick mechanism (10%, 0.92 g at r = 14 mm), and body (35%, 3.22 g at r = 10 mm); these give I_KD = 5.06 × 10⁻³ × 0.018² + 0.92 × 10⁻³ × 0.014² + 3.22 × 10⁻³ × 0.010² = 1.639 × 10⁻⁶ + 1.803 × 10⁻⁷ + 3.220 × 10⁻⁷ = 2.141 × 10⁻⁶ kg·m², r_eff = 15.25 mm [ESTIMATED zone geometry; CONFIRMED mass]. The gimmick failure cascade operates across three simultaneous mechanisms: (1) mechanical interference — the translucent blade cannot physically clear the colored blade that houses it, making contact with the opponent geometrically impossible regardless of actuation [CONFIRMED]; (2) mass insufficiency — the sliding blade mass m_slide ≈ 0.15 g [ESTIMATED] produces a centrifugal force at ω_battle = 416 rad/s of F_c = 1.5 × 10⁻⁴ × 416² × 0.018 = 0.467 N, but its momentum contribution to a second strike is m_slide × v_slide = 1.5 × 10⁻⁴ × (416 × 0.018) = 1.124 × 10⁻³ N·s — negligible against a multi-gram opponent layer [CALCULATED; CONFIRMED insufficient]; (3) timing failure — the beyblade collision duration τ_coll ≈ 2 × m × Δv / F_impact ≈ 3–5 ms [ESTIMATED], but the sliding blade requires approximately 8–12 ms to traverse its travel path after the bey decelerates [ESTIMATED], meaning the bey has already rebounded before the second strike occurs [CONFIRMED]. The unbalanced mass distribution (two asymmetric colored blades against four clear blades, plus the one-sided gimmick mechanism) creates a centrifugal imbalance force F_imbal = m_KD × r_cm × ω² ≈ 9.2 × 10⁻³ × 3.0 × 10⁻³ × 416² = 4.78 N at battle speed [ESTIMATED r_cm = 3 mm]; this produces Destabilization potential [CONFIRMED] but drains stamina faster than competitors [CONFIRMED]. The compact blade geometry (r_blade = 18 mm vs 20–22 mm for effective attack layers) limits impact momentum transfer to opponents even when contact is achieved [CONFIRMED]. At ω₀ = 694 rad/s, L₀_layer = 2.141 × 10⁻⁶ × 694 = 1.486 × 10⁻³ kg·m²/s [CALCULATED].
+
+```
+Killer Deathscyther — Blade Layout and Gimmick Failure Map
+  Top view (schematic):
+        ╱ clear ╲        ← flat, burst-attack blades (×4)
+   ────────────────────
+   colored (sloped)       ← Upper Attack / Destabilization (×2, 180° apart)
+     └── [slide]──►       ← translucent sliding blade
+         FAIL ①: cannot clear colored blade (mechanical block) [CONFIRMED]
+         FAIL ②: m_slide≈0.15g → negligible impact momentum [CONFIRMED]
+         FAIL ③: τ_rebond < τ_slide_travel [CONFIRMED]
+
+  n=6 blade count but asymmetric (2 colored ≠ 4 clear) → unbalanced
+  F_imbal @ ω=416: 4.78 N → Destabilization [CONFIRMED], stamina drain [CONFIRMED]
+  Compact blade radius r=18mm → limited damage even on clean hits [CONFIRMED]
+```
+
+```
+// Case 887 — Killer Deathscyther Layer Physics
+// 3-zone mass model (all ABS — no metal in God Layer base system)
+m_blades  = 5.06e-3 kg    r_blades = 0.018 m
+m_gimmick = 0.92e-3 kg    r_gimmick= 0.014 m
+m_body    = 3.22e-3 kg    r_body   = 0.010 m
+
+I_KD = 5.06e-3×0.018² + 0.92e-3×0.014² + 3.22e-3×0.010²
+     = 5.06e-3×3.24e-4 + 0.92e-3×1.96e-4 + 3.22e-3×1.00e-4
+     = 1.639e-6 + 1.803e-7 + 3.220e-7
+     = 2.141e-6 kg·m²
+
+r_eff  = √(2.141e-6 / 0.0092) = √(2.327e-4) = 15.25 mm
+L₀     = 2.141e-6 × 694 = 1.486e-3 kg·m²/s
+
+// Gimmick timing failure
+m_slide      = 1.5e-4 kg    r_slide = 0.018 m
+F_c_at416    = 1.5e-4 × 416² × 0.018 = 0.467 N
+p_slide      = m_slide × (416×0.018) = 1.124e-3 N·s  [negligible]
+tau_coll_ms  ≈ 3–5 ms   [ESTIMATED]
+tau_slide_ms ≈ 8–12 ms  [ESTIMATED] → bey rebounds first [CONFIRMED]
+
+// Unbalance
+r_cm_offset = 3.0e-3 m  [ESTIMATED — asymmetric blade layout]
+F_imbal_416 = 9.2e-3 × 3.0e-3 × 416² = 4.78 N
+F_imbal_200 = 9.2e-3 × 3.0e-3 × 200² = 1.10 N
+```
+
+```typescript
+function killerDeathscytherLayer() {
+  return {
+    m_g: 9.2,
+    I_KD_kgm2: 2.141e-6,
+    r_eff_mm: 15.25,
+    L0_layer_kgm2s: 1.486e-3,
+    bladeCount: 6,
+    bladeTypes: { colored_sloped: 2, clear_flat: 4 },
+    gimmick: "Double Strike — centrifugal sliding blade",
+    gimmickFails: [
+      "mechanical: slide cannot clear colored blade [CONFIRMED]",
+      "mass: p_slide = 1.124e-3 N·s — negligible [CONFIRMED]",
+      "timing: rebound before slide completes [CONFIRMED]",
+    ],
+    gimmickEffective: false,
+    bladeRadius_mm: 18,             // compact [CONFIRMED → limited damage]
+    unbalanced: true,               // [CONFIRMED — "incredibly unbalanced"]
+    F_imbal_at416_N: 4.78,
+    r_cm_offset_mm: 3.0,            // [ESTIMATED]
+    destabilizationPotential: true, // [CONFIRMED — unbalance creates wobble]
+    suitedFor_attack: false,        // compact blades [CONFIRMED]
+    suitedFor_defense: false,       // recoil-heavy [CONFIRMED]
+    suitedFor_stamina: false,       // unbalanced [CONFIRMED]
+    predecessors: ["Deathscyther", "Dark Deathscyther"],
+    predecessorBestUse: "Defense/Stamina",
+    spin: "right",
+    generation: "God",
+  };
+}
+```
+
+---
+
+## Case 888 — Forge Disc: 2 (God Layer, 21.21 g)
+
+Forge Disc 2 is a 21.21 g God Layer Core Disc whose standard weight and uniform annular distribution earn it the designation "Jack-of-All-Trades" — capable of adequate performance in any combination type without excelling in any [CONFIRMED]. The even-numbered designation gives it two Frame slots; the single protrusion per side (with "2" molding) is a minimal protrusion design that avoids the aggressive disc-to-layer contact damage risk documented for Disc 12 [CONFIRMED; INFERRED comparison]. Modelling as an annular ring with r_o = 22 mm and r_i = 11 mm: I_2 = 0.5 × 0.02121 × (0.022² + 0.011²) = 0.5 × 0.02121 × (4.84 × 10⁻⁴ + 1.21 × 10⁻⁴) = 6.416 × 10⁻⁶ kg·m², r_eff = √(6.416 × 10⁻⁶ / 0.02121) = 17.39 mm [ESTIMATED geometry; CONFIRMED mass]. Comparing to the God Layer disc family: vs Disc 7 (I = 7.841 × 10⁻⁶): ratio = 0.818 (−18.2%); vs Disc 3 (I = 3.822 × 10⁻⁶): ratio = 1.678 (+67.8%) [CALCULATED] — Disc 2 occupies the middle range, heavier than Disc 3 but lighter than Discs 7, 00, or higher. The "Jack-of-All-Trades" characterisation is quantitatively justified: the −18.2% L₀ deficit versus Disc 7 is small enough that any combination type can function acceptably, but Disc 7 or 00 will always outperform Disc 2 in their respective specialities when available [CONFIRMED; CALCULATED]. At ω₀ = 694 rad/s, L₀ = 6.416 × 10⁻⁶ × 694 = 4.453 × 10⁻³ kg·m²/s [CALCULATED].
+
+```
+Forge Disc 2 — Top View (schematic)
+  Even disc → 2 Frame slots
+  1 protrusion per side (minimal aggressive profile)
+       r_i=11mm    r_o=22mm
+    ┌──────────────────────────┐
+    │     ▲           ▲       │  ← 1 protrusion per side (×2)
+    │  [    standard annular ] │
+    └──────────────────────────┘
+  I = 6.416e-6  r_eff = 17.39mm
+  "Jack-of-All-Trades": −18.2% vs Disc 7, +67.8% vs Disc 3
+  Minimal protrusion → no disc-layer damage risk [INFERRED]
+```
+
+```
+// Case 888 — Forge Disc 2 Physics
+m     = 0.02121 kg    r_o = 0.022 m    r_i = 0.011 m
+I_2   = 0.5 × 0.02121 × (0.022² + 0.011²)
+      = 0.5 × 0.02121 × (4.84e-4 + 1.21e-4)
+      = 0.5 × 0.02121 × 6.05e-4
+      = 6.416e-6 kg·m²
+
+r_eff = √(6.416e-6 / 0.02121) = √(3.025e-4) = 17.39 mm
+L₀    = 6.416e-6 × 694 = 4.453e-3 kg·m²/s
+
+vs Disc 7 (I=7.841e-6): 6.416/7.841 = 0.818  (−18.2%)
+vs Disc 3 (I=3.822e-6): 6.416/3.822 = 1.678  (+67.8%)
+vs Disc 12(I=4.711e-6): 6.416/4.711 = 1.362  (+36.2%)
+```
+
+```typescript
+function forgeDisc2() {
+  return {
+    mass_g: 21.21,
+    I_2_kgm2: 6.416e-6,
+    r_eff_mm: 17.39,
+    L0_at694_kgm2s: 4.453e-3,
+    vs_disc7_I_ratio: 0.818,
+    vs_disc7_I_deficit_pct: -18.2,
+    vs_disc3_I_ratio: 1.678,
+    vs_disc12_I_ratio: 1.362,
+    frameSlots: 2,
+    protrusions_per_side: 1,
+    layerDamageRisk: false,       // minimal protrusion [INFERRED]
+    versatility: "Jack-of-All-Trades",  // [CONFIRMED]
+    alternatives_better: ["Disc 7", "Disc 00"],  // [CONFIRMED]
+    generation: "God",
+  };
+}
+```
+
+---
+
+## Case 889 — Disc Frame: Vortex (God Layer, 2.51 g)
+
+Disc Frame Vortex is a 2.51 g God Layer Frame with a wide triangular profile and wave-like detail surfaces on each of its three sides; at 2.51 g it is one of the heaviest God Layer Frames [CONFIRMED], heavier than Hit Frame (2.0 g, Case 880) and Cross Frame (~2.0 g) by approximately 25%, making it a notable inertia contributor relative to peer frames. The frame is too small in its protrusion height to reach opposing layers during contact [CONFIRMED], meaning Vortex contributes no direct attack from frame-to-layer contact; its attack potential instead derives entirely from its mass addition at the disc perimeter increasing the assembly's Outward Weight Distribution (OWD) and thereby sustaining Banking Pattern speed [CONFIRMED]. Modelling as a ring with 3 triangular protrusions: I_V ≈ m_V × r_V² = 2.51 × 10⁻³ × 0.019² = 9.061 × 10⁻⁷ kg·m², r_eff = 19.0 mm [ESTIMATED geometry; CONFIRMED mass]. The n = 3 symmetry guarantees I_x = I_y (no wobble) [CONFIRMED]. Combined with Disc 2: I_2V = 6.416 × 10⁻⁶ + 9.061 × 10⁻⁷ = 7.322 × 10⁻⁶ kg·m², m_2V = 23.72 g, r_eff_2V = √(7.322 × 10⁻⁶ / 0.02372) = 17.56 mm — bringing the 2Vortex combination to within 6.6% of Disc 7's inertia alone, while the frame's outboard mass slightly extends the effective radius beyond what Disc 2 provides alone [CALCULATED]. The "high Attack potential when paired with Discs 7 and 00" [CONFIRMED] reflects that heavier discs already provide good OWD and Vortex amplifies that rather than correcting a weakness.
+
+```
+Disc Frame Vortex — Top View (schematic)
+  Triangular, 3 wide sides with wave details
+         r ≈ 19mm
+    ┌────────────────────┐
+    │   ~~~  ~~~  ~~~    │  ← wave detail per side
+    │  [  wide frame ]   │
+    └────────────────────┘
+  n=3 → I_x = I_y (no wobble)
+  mass = 2.51g → heaviest common God Frame [CONFIRMED]
+  Cannot reach opponent's layer [CONFIRMED]
+  Attack via OWD only, not direct contact
+
+  Combined 2Vortex: I = 7.322e-6   vs Disc 7 alone: −6.6%
+```
+
+```
+// Case 889 — Disc Frame Vortex Physics
+m_V    = 2.51e-3 kg    r_V = 0.019 m
+I_V    = 2.51e-3 × 0.019² = 2.51e-3 × 3.61e-4 = 9.061e-7 kg·m²
+r_eff  = 19.0 mm
+
+// Combined 2Vortex
+I_2V   = 6.416e-6 + 9.061e-7 = 7.322e-6 kg·m²
+m_2V   = 21.21e-3 + 2.51e-3 = 23.72e-3 kg
+r_eff_2V = √(7.322e-6 / 0.02372) = √(3.086e-4) = 17.56 mm
+L₀_2V  = 7.322e-6 × 694 = 5.081e-3 kg·m²/s
+
+vs Disc 7 alone (I=7.841e-6):
+  2Vortex / Disc7 = 7.322/7.841 = 0.934  (−6.6%)
+
+vs Disc 2 alone (I=6.416e-6):
+  Vortex adds: +14.1% inertia, +0.17mm r_eff
+```
+
+```typescript
+function discFrameVortex() {
+  return {
+    mass_g: 2.51,
+    I_V_kgm2: 9.061e-7,
+    r_eff_mm: 19.0,
+    symmetryN: 3,
+    wobbleContribution: false,
+    layerContact: false,              // [CONFIRMED — too small]
+    attackMechanism: "OWD increase only",
+    heavierThanHit: true,             // 2.51 vs 2.0g
+    heavierThanCross: true,
+    combined_2Vortex: {
+      I_kgm2: 7.322e-6,
+      mass_g: 23.72,
+      r_eff_mm: 17.56,
+      L0_at694: 5.081e-3,
+      vs_disc7_alone_ratio: 0.934,
+      vs_disc7_alone_deficit_pct: -6.6,
+    },
+    bestPairing: ["Disc 7", "Disc 00"],  // [CONFIRMED]
+    generation: "God",
+  };
+}
+```
+
+---
+
+## Case 890 — Performance Tip: Hunter (God Layer, 5.9 g)
+
+Hunter is a 5.9 g God Layer rubber flat tip with a central circular depression that creates an annular rubber contact ring rather than a full flat contact surface, akin to Xtreme but with the center void; the effective contact radius is the centroid of this ring, r_contact ≈ 3.5 mm (midpoint between outer rubber edge r_outer ≈ 5 mm and inner depression r_inner ≈ 2 mm) [ESTIMATED from image and Xtreme comparison], giving μ_rubber = 0.50 and placing Hunter in the highest-friction tip category alongside Xtreme and rubber variants [CONFIRMED]. Hunter's confirmed speed hierarchy — faster than Accel and Zephyr but slower than Xtreme, Hold, and worn Variable [CONFIRMED] — reflects the annular contact ring's slightly smaller effective radius than Xtreme's full flat (r_eff_Xtreme ≈ 5 mm vs Hunter's 3.5 mm); at equal normal force, a smaller contact radius generates less tangential friction force, allowing higher orbital speed before the tip skids and loses banking [INFERRED]. Four confirmed failure modes preclude competitive viability: (1) stamina — rubber friction at r = 3.5 mm produces τ = 0.50 × m × g × 0.0035, which for a 38.82 g assembly gives τ = 6.649 × 10⁻⁴ N·m and dω/dt = 69.7 rad/s² — stall time from ω_battle = 416 rad/s is only 5.97 s, far below viable attack window [CALCULATED]; (2) self-burst — rubber's resistance to spin changes under contact forces all impact recoil into the teeth rather than dissipating via tip slip [CONFIRMED]; (3) wear — rubber degrades with use, decreasing aggression with no stamina gain [CONFIRMED]; (4) early center-settling — high friction causes the beyblade to stop aggressively orbiting and settle to center too quickly for attack combinations unless high OWD parts are used [CONFIRMED; OWD pairing confirmed to mitigate]. KO resistance when settled is high (confirmed higher than Defense and Bite tips) but irrelevant given the stamina is too short to reach that settled phase against a healthy opponent [CONFIRMED].
+
+```
+Hunter Tip — Contact Profile (side view)
+        ┌──────────────┐
+        │  rubber body │   height ≈ standard
+        │              │
+        └──┬────────┬──┘
+           │ ░ void │       ← central depression
+           ╰────────╯       r_inner ≈ 2mm
+           ████████         ← rubber contact ring
+       r_inner=2mm  r_outer=5mm
+       r_contact_eff = 3.5mm  μ=0.50
+
+  Speed: Accel < Zephyr < Hunter < Xtreme [CONFIRMED]
+  KO when settled: > Defense, > Bite [CONFIRMED]
+  Self-burst risk: HIGH — rubber absorbs no recoil [CONFIRMED]
+  Wear: degrades aggression only, no stamina benefit [CONFIRMED]
+```
+
+```
+// Case 890 — Hunter Tip Physics
+mu_rubber   = 0.50
+r_contact   = 0.0035 m   (annular ring centroid)
+m_assembly  = 0.03882 kg  (Killer Deathscyther 2Vortex Hunter)
+
+tau_H = 0.50 × 0.03882 × 9.81 × 0.0035
+      = 6.649e-4 N·m
+
+I_assembly = 9.537e-6 kg·m²  (from Case 891)
+dwdt_H     = 6.649e-4 / 9.537e-6 = 69.71 rad/s²
+t_battle   = 416 / 69.71 = 5.97 s   ← very short
+
+// vs Xtreme (r≈5mm, same μ)
+tau_X_est = 0.50 × 0.03882 × 9.81 × 0.005 = 9.499e-4 N·m
+tau_ratio = 6.649e-4 / 9.499e-4 = 0.700
+→ Hunter produces 70% of Xtreme torque → runs faster (less deceleration)
+  but still drains in ~5–8 s
+
+I_tip = 0.5 × 0.0059 × 0.005² = 7.375e-8 kg·m²  [ESTIMATED]
+```
+
+```typescript
+function hunterTip(m_assembly_kg: number) {
+  const mu = 0.50;
+  const r_contact_m = 0.0035;
+  const tau = mu * m_assembly_kg * 9.81 * r_contact_m;
+  return {
+    mass_g: 5.9,
+    mu_rubber: mu,
+    r_contact_mm: 3.5,
+    r_inner_depression_mm: 2.0,
+    r_outer_mm: 5.0,
+    tau_Nm: tau,
+    tau_at_3882g_Nm: 6.649e-4,
+    I_tip_kgm2: 7.375e-8,
+    speedRank: "Accel < Zephyr < Hunter < Xtreme < Hold",  // [CONFIRMED]
+    bankingMaintenance: "moderate — good with OWD parts",  // [CONFIRMED]
+    weaknesses: [
+      "stamina: ~6s battle time [CALCULATED]",
+      "self-burst: rubber absorbs no recoil → force to teeth [CONFIRMED]",
+      "wear: degrades aggression only [CONFIRMED]",
+      "early center-settle: mitigated by high OWD [CONFIRMED]",
+    ],
+    koWhenSettled: "high — above Defense and Bite",  // [CONFIRMED]
+    koViable: false,  // stamina too short to reach settled phase
+    centerSettleSpeed: "too fast for attack without OWD",  // [CONFIRMED]
+  };
+}
+```
+
+---
+
+## Case 891 — Assembly: Killer Deathscyther 2Vortex Hunter (God Layer, Right-Spin, 38.82 g)
+
+Killer Deathscyther 2Vortex Hunter is a 38.82 g God Layer assembly whose total moment of inertia sums: I_KD = 2.141 × 10⁻⁶ (Case 887), I_2V = 7.322 × 10⁻⁶ (Case 889 combined), I_Hunter = 7.375 × 10⁻⁸ (Case 890), yielding I_total = 9.537 × 10⁻⁶ kg·m² [CALCULATED]; the inertia fractions are: KD layer = 22.5%, Disc 2 = 67.3%, Vortex Frame = 9.5%, Hunter = 0.77% — the disc+frame dominates strongly over the layer because Killer Deathscyther's compact geometry gives it the lowest layer inertia fraction of any assembly examined to this point [CALCULATED]. At ω₀ = 694 rad/s, L₀ = 9.537 × 10⁻⁶ × 694 = 6.619 × 10⁻³ kg·m²/s and r_eff = √(9.537 × 10⁻⁶ / 0.03882) = 15.67 mm [CALCULATED]. Spin decay: τ = 6.649 × 10⁻⁴ N·m, dω/dt = 6.649 × 10⁻⁴ / 9.537 × 10⁻⁶ = 69.71 rad/s², t_battle = 416 / 69.71 = 5.97 s from ω_battle = 416 rad/s [CALCULATED] — among the shortest battle times of any assembly examined; the combination of rubber tip drain and the layer's own unbalance-driven extra decay compounds to make prolonged battle survival essentially impossible [CALCULATED + CONFIRMED]. The assembly suffers a complete alignment failure: every component's strength is cancelled by another component's weakness — Hunter's attack aggression is cut short by its own stamina drain; the Vortex Frame adds OWD to help banking but the KD layer's self-burst risk means that contact is dangerous rather than advantageous; Disc 2's "jack-of-all-trades" neutrality provides no compensating specialisation; and the KD layer's gimmick fails entirely [CONFIRMED per component]. The unbalance imbalance force of 4.78 N at ω = 416 rad/s (Case 887) adds a wobble-driven destabilization that further erodes stamina and banking stability during the already-short engagement window [CALCULATED]. A meaningful attack strategy would require replacing Hunter with Xtreme (similar aggression, lower effective torque and self-burst risk), replacing Disc 2 with Disc 7 (more OWD to delay center-settle), and accepting that KD layer itself is the unresolvable limiting factor [INFERRED from confirmed component properties].
+
+```
+Assembly: Killer Deathscyther 2Vortex Hunter — Inertia Budget
+  KD Layer:          I = 2.141e-6  (22.5%) ← weakest layer relative I seen
+  Forge Disc 2:      I = 6.416e-6  (67.3%) ← dominant
+  Vortex Frame:      I = 9.061e-7  (9.5%)
+  Hunter Tip:        I = 7.375e-8  (0.77%)
+  ────────────────────────────────────────
+  TOTAL:             I = 9.537e-6 kg·m²   m = 38.82 g
+
+dω/dt = 69.71 rad/s²   t_battle = 5.97 s   L₀ = 6.619e-3 kg·m²/s
+
+Component failure cascade:
+  KD gimmick    → fails (3 independent mechanisms) [CONFIRMED]
+  KD unbalance  → burst risk + stamina drain [CONFIRMED]
+  Hunter rubber → self-burst + 6s stamina [CONFIRMED]
+  Hunter settle → banking lost before attack lands [CONFIRMED]
+  Disc 2        → no specialisation to offset above [CONFIRMED]
+
+Optimal replacements (to partially rescue):
+  Tip:  Xtreme or Variable (lower self-burst, similar speed)
+  Disc: 7 or 00 (more OWD, higher L₀ → longer attack window)
+  Layer: any of Drain Fafnir, Alter Chronos, Blaze Ragnaruk
+         for KD's specific gimmick-failure and unbalance issues
+```
+
+```
+// Case 891 — KD 2Vortex Hunter Assembly Physics
+I_KD     = 2.141e-6 kg·m²
+I_2V     = 7.322e-6 kg·m²
+I_Hunter = 7.375e-8 kg·m²
+I_total  = 9.537e-6 kg·m²
+
+m_total  = 0.03882 kg
+r_eff    = √(9.537e-6 / 0.03882) = √(2.457e-4) = 15.67 mm
+L₀       = 9.537e-6 × 694 = 6.619e-3 kg·m²/s
+
+tau      = 0.50 × 0.03882 × 9.81 × 0.0035 = 6.649e-4 N·m
+dwdt     = 6.649e-4 / 9.537e-6 = 69.71 rad/s²
+t_battle = 416 / 69.71 = 5.97 s   (from ω_battle=416)
+t_stall  = 694 / 69.71 = 9.95 s   (from ω₀, ideal)
+
+// Layer inertia fraction
+KD_frac = 2.141e-6 / 9.537e-6 = 22.5%   (lowest seen — compact layer)
+
+// Upgrade path: Disc 7 + Hunter
+I_7V  = 7.841e-6 + 9.061e-7 = 8.747e-6
+I_total_7V = 2.141e-6 + 8.747e-6 + 7.375e-8 = 1.096e-5
+L₀_7V = 1.096e-5 × 694 = 7.606e-3  (+14.9% vs 2Vortex)
+t_7V  = 416 / (6.649e-4 × (0.04182/0.03882) / 1.096e-5)
+      = 416 / (6.649e-4 × 1.077 / 1.096e-5)
+      → tau_7V = 6.649e-4 × (0.04182/0.03882) = 7.163e-4 N·m
+      → dwdt_7V = 7.163e-4 / 1.096e-5 = 65.35 rad/s²
+      → t_7V = 416 / 65.35 = 6.37 s  (+0.4s improvement only)
+// Confirms KD layer is the limiting factor, not the disc
+```
+
+```typescript
+function killerDeathscyther2VortexHunter() {
+  return {
+    mass_g: 38.82,
+    spin: "right",
+    I_total_kgm2: 9.537e-6,
+    L0_kgm2s: 6.619e-3,
+    r_eff_mm: 15.67,
+    I_fractions: {
+      killerDeathscyther_pct: 22.5,
+      disc2_pct: 67.3,
+      vortexFrame_pct: 9.5,
+      hunterTip_pct: 0.77,
+    },
+    omega_battle_rads: 416,
+    dwdt_rads2: 69.71,
+    t_battle_s: 5.97,
+    t_stall_ideal_s: 9.95,
+    layerGimmickWorks: false,         // triple-confirmed failure
+    selfBurstRisk: "high",            // unbalanced layer + rubber tip
+    bankingWindow_s: "< 3",          // [ESTIMATED — center-settle very fast]
+    componentSynergyScore: "poor — all weaknesses compound",
+    upgrades: {
+      tip: ["Xtreme", "Variable"],
+      disc: ["7", "00"],
+      layer: ["Drain Fafnir", "Alter Chronos", "Blaze Ragnaruk"],
+    },
+    upgradedDisc7_t_battle_s: 6.37,  // minimal improvement — layer is root issue
+  };
+}
+```
+
 

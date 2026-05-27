@@ -103,7 +103,7 @@ export function ArenasListPage() {
                 </button>
               ))}
             </div>
-            <div className="grid grid-cols-3 gap-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
               {filtered.map(arena => {
                 const accentBorder = THEME_ACCENT_CLS[arena.theme] ?? "border-border-c";
                 const accentBg = THEME_BG_CLS[arena.theme] ?? "bg-bg2";

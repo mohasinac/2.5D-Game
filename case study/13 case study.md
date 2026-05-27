@@ -15166,6 +15166,210 @@ function compassLockCombo(
 
 ---
 
-*Cases continue from Case 864 as further franchise moves are provided.*
+---
+
+## Case 864 — [GIMMICK] Bel Daizora's Divine/Dangerous Belial — Upper-Axis Blade Geometry and Aerial Dive Physics
+
+**Franchise context.** Bel Daizora (Beyblade Burst DB era variant, Takara-Tomy). Assembly: Divine Belial (JP: Dangerous Belial / ダンジャラス ベリアル). All values [M] (±15%) — no dedicated prior case analysis. Divine/Dangerous Belial is a Belial-lineage bey distinct from Destruction Belfyre (Case 846) with blade contacts optimised for the overhead upper-attack vector rather than the horizontal smash vector. The defining physics property: unlike lateral smash beyblades that maximise horizontal tangential contact force, Divine Belial is designed for a **vertical axis attack** — blade contacts angled for downward strike delivery (θ_upper ≈ 45°), meaning the highest contact efficiency is achieved when the bey is descending from above rather than orbiting horizontally.
+
+**Parts:**
+
+**Blade: Divine/Dangerous Belial [M]**
+Belial-lineage DB blade. Primary contacts feature an upper-attack geometry:
+  θ_upper ≈ 45° [M]  (angled to engage most efficiently when bey descends from above)
+  C_upper ≈ 0.78 [M]  (upper-attack coefficient at optimal dive approach angle)
+  C_smash_horizontal ≈ 0.50 [M]  (reduced efficiency at horizontal contact — this blade is not optimised for flat orbit smashing)
+  3 primary upper contacts at r_contact ≈ 23 mm [M]
+
+  m_blade ≈ 21.0 g [M]; r_blade ≈ 23 mm [M]; r_inner ≈ 7 mm [M]
+  I_blade = (0.021/2)(0.023² + 0.007²) = 0.0105 × 5.780×10⁻⁴ = 6.069×10⁻⁶ kg⋅m² [M]
+
+**Core: Nexus variant [M]**
+  m_core ≈ 8.0 g [M]; I_core ≈ 1.044×10⁻⁶ kg⋅m² [M]
+
+**Driver: Semi-Rubber Sharp [M]**
+Narrow rubber sharp tip — precision landing tip for the gravity dive. Narrow contact point concentrates the downward impact force; rubber compound grips on landing without excessive lateral spread.
+  r_tip ≈ 1.5 mm [M]; μ_tip ≈ 0.55 [M]  (rubber semi-sharp — between full rubber and sharp)
+  m_driver ≈ 5.0 g [M]; m_chip ≈ 2.5 g [M]
+  I_driver ≈ 0.350×10⁻⁶ kg⋅m² [M]; I_chip ≈ 0.280×10⁻⁶ kg⋅m² [M]
+
+**Assembly [M]:**
+  m_total ≈ 37.0 g [M]   (blade 21.0 + core 8.0 + driver 5.0 + chip 2.5 + rounding 0.5)
+  I_total = 6.069 + 1.044 + 0.350 + 0.280 = 7.743×10⁻⁶ kg⋅m² [M]
+  ω₀ = 650 rad/s (Burst DB era)
+  KE₀_spin = 0.5 × 7.743×10⁻⁶ × 650² = 1.637 J [M]
+
+  Spin decay:
+    dω/dt = −(0.55 × 0.037 × 9.81 × 0.0015) / 7.743×10⁻⁶
+      = −(2.994×10⁻⁴) / 7.743×10⁻⁶ = −38.7 rad/s² [M]
+
+  **Gravity-dive kinetic energy analysis:**
+    BeySpirit launch height: h_launch ≈ 2.0 m [M]
+    Physical free-fall terminal velocity from h: v_fall_phys = √(2 × g × h) = √(2 × 9.81 × 2.0) = 6.26 m/s [M]
+    Anime transcendence factor: ×3.0 [M]  (BeySpirit amplifies gravitational pull during descent — Belial "uses gravity")
+    v_fall_anime = 6.26 × 3.0 = 18.78 m/s [M]
+    KE_fall_anime = 0.5 × 0.037 × 18.78² = 0.5 × 0.037 × 352.69 = 6.52 J [M]
+    KE_total_at_impact = KE₀_spin + KE_fall_anime = 1.637 + 6.52 = 8.157 J [M]
+    → The falling kinetic energy exceeds the rotational kinetic energy by ×4.0 — gravity is the dominant energy source at impact, which is the physical basis for the extreme dmgMult of Divine Dive.
+
+  Upper-attack contact efficiency vs angle of approach:
+    At dive angle α = 90° (vertical descent): C_eff = C_upper = 0.78 [M]
+    At horizontal orbit α = 0°: C_eff = C_smash_horizontal = 0.50 [M]
+    C_eff(α) = 0.50 + 0.28 × sin(α) [M]  (linear interpolation between horizontal and vertical)
+
+```typescript
+function divineBelialStats(): {
+  I_kgm2: number; C_upper: number; C_horizontal: number; KE_fall_anime_J: number; KE_total_J: number
+} {
+  const h = 2.0, g = 9.81, m = 0.037, transcendence = 3.0;
+  const v_fall = Math.sqrt(2 * g * h) * transcendence;
+  const KE_fall = 0.5 * m * v_fall ** 2;
+  const KE_spin = 1.637;
+  return {
+    I_kgm2:           7.743e-6,
+    C_upper:          0.78,
+    C_horizontal:     0.50,
+    KE_fall_anime_J:  parseFloat(KE_fall.toFixed(3)),
+    KE_total_J:       parseFloat((KE_spin + KE_fall).toFixed(3)),
+  };
+}
+// divineBelialStats() → { I:7.743e-6, C_upper:0.78, C_horiz:0.50, KE_fall:6.523J, KE_total:8.160J }
+
+function upperContactCoeff(diveAngle_deg: number): number {
+  const rad = diveAngle_deg * Math.PI / 180;
+  return parseFloat((0.50 + 0.28 * Math.sin(rad)).toFixed(3));
+}
+// upperContactCoeff(90) → 0.780  (full dive — maximum contact efficiency)
+// upperContactCoeff(45) → 0.698  (45° approach — partial)
+// upperContactCoeff(0)  → 0.500  (horizontal orbit — minimum)
+```
+
+---
+
+## Case 865 — [SPECIAL] Dangerous/Divine Dive
+
+**Franchise move.** Dangerous/Divine Dive — Bel Daizora's Divine/Dangerous Belial (Beyblade Burst DB era). Belial launches skyward using BeySpirit, rises to h ≈ 2.0m (anime-physics transcendence), briefly hangs at apex, then plunges back down using gravity as the primary accelerant — Belial "uses gravity to increase its speed and power of its fall." The descending KE (6.52 J [M]) dwarfs the rotational KE (1.64 J), making this the highest single-impact kinetic energy delivery in CS13. While airborne, Belial is unreachable — true invulnerability during the aerial phase.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Phase 1 — Divine Launch (600ms ascent):**
+BeySpirit fires Belial vertically upward. beyTiltAngle → 90° (fully airborne).
+**Invulnerable during entire aerial phase** (Phases 1 + 2 + first 100ms of Phase 3) — Belial is physically above the stadium.
+
+**Phase 2 — Apex Hang (150ms):**
+Belial hangs at peak height, targeting below. The player aims the dive direction with ← or → input during this window (default: targets the opponent directly below).
+
+**Phase 3 — Gravity Dive (400ms descent + impact):**
+Belial plunges. BeySpirit amplifies gravitational acceleration (×3.0 [M]). Speed builds through the 400ms descent. QTE "Divine Drop" — hold J during descent; release timing determines contact quality.
+
+```
+QTE: "Divine Drop" — hold J; release timing within 400ms dive window:
+  Late release  (held 300–400ms — full gravity build): full power
+  Mid  release  (held 150–299ms):                      medium
+  Early release (held   0–149ms):                      minimal
+
+Full power (released 300–400ms):
+  spinDelta:           −100
+  linearImpulse:       1800 eu
+  knockbackImpulse:    5000 eu
+  dmgMult:             1.90×   ← highest single-hit dmgMult in CS13 [gravity-justified: KE_total 8.16J]
+  burstBonus:          +18%
+  tiltBurstTarget:     beyTiltAngle +30° on target (struck bey launched sideways by downforce)
+
+Medium (released 150–299ms):
+  spinDelta:           −65
+  linearImpulse:       1100 eu
+  knockbackImpulse:    2500 eu
+  dmgMult:             1.65×
+  burstBonus:          +10%
+  tiltBurstTarget:     +15°
+
+Minimal (released 0–149ms):
+  spinDelta:           −35
+  linearImpulse:        600 eu
+  knockbackImpulse:    1000 eu
+  dmgMult:             1.40×
+  burstBonus:          +5%
+  tiltBurstTarget:     0°
+
+selfCost:    −65
+powerCost:   120
+cooldown:    7000 ms
+Invulnerability: Phase 1 + Phase 2 + first 100ms of Phase 3 (total ~850ms — airborne)
+QTE:         "Divine Drop" — hold J; late release = maximum gravity build
+```
+
+```typescript
+type DiveLevel = "full" | "medium" | "minimal";
+
+function dangerousDivineDive(holdMs: number): {
+  diveLevel: DiveLevel; spinDelta: number; linearImpulse_eu: number;
+  knockbackImpulse_eu: number; dmgMult: number; burstBonus_pct: number; tiltBurstTarget_deg: number
+} {
+  const lvl: DiveLevel = holdMs >= 300 ? "full" : holdMs >= 150 ? "medium" : "minimal";
+  const stats: Record<DiveLevel, Omit<ReturnType<typeof dangerousDivineDive>, "diveLevel">> = {
+    full:    { spinDelta: -100, linearImpulse_eu: 1800, knockbackImpulse_eu: 5000, dmgMult: 1.90, burstBonus_pct: 18, tiltBurstTarget_deg: 30 },
+    medium:  { spinDelta:  -65, linearImpulse_eu: 1100, knockbackImpulse_eu: 2500, dmgMult: 1.65, burstBonus_pct: 10, tiltBurstTarget_deg: 15 },
+    minimal: { spinDelta:  -35, linearImpulse_eu:  600, knockbackImpulse_eu: 1000, dmgMult: 1.40, burstBonus_pct:  5, tiltBurstTarget_deg:  0 },
+  };
+  return { diveLevel: lvl, ...stats[lvl] };
+}
+// dangerousDivineDive(380) → { level:"full",    spin:-100, imp:1800, ko:5000, dmg:1.90×, burst:+18%, tilt:+30° }
+// dangerousDivineDive(200) → { level:"medium",  spin:-65,  imp:1100, ko:2500, dmg:1.65×, burst:+10%, tilt:+15° }
+// dangerousDivineDive(80)  → { level:"minimal", spin:-35,  imp:600,  ko:1000, dmg:1.40×, burst:+5%,  tilt:0°   }
+
+function divineDiveInvulnerability(phaseElapsedMs: number): {
+  phase: "ascent" | "apex" | "dive" | "impact"; invulnerable: boolean
+} {
+  if (phaseElapsedMs < 600)        return { phase: "ascent", invulnerable: true  };
+  if (phaseElapsedMs < 750)        return { phase: "apex",   invulnerable: true  };
+  if (phaseElapsedMs < 850)        return { phase: "dive",   invulnerable: true  };
+  return                                  { phase: "impact", invulnerable: false };
+}
+// divineDiveInvulnerability(400) → { phase:"ascent", invulnerable:true  }
+// divineDiveInvulnerability(700) → { phase:"apex",   invulnerable:true  }
+// divineDiveInvulnerability(900) → { phase:"impact", invulnerable:false }
+```
+
+---
+
+## Case 866 — [COMBO] Aerial Drive (← ↑ J)
+
+**Franchise bey:** Bel Daizora's Divine/Dangerous Belial — Divine Belial blade active  
+**Required part:** `divineBelialLayer`  
+**Sequence:** ← ↑ J (moveLeft + moveUp + attack)  
+**Type restriction:** universal  
+**Cost:** 15 power
+
+Belial strafes into position from the left (←), surges forward-upward with a brief angled approach (↑ — representing a low arc entry mimicking the Divine Dive trajectory), and delivers the upper-attack blade contact at the apex of the mini-arc (J). The upper-attack blade geometry gives this combo a marginally higher contact coefficient than a standard horizontal smash combo when the J input catches the target from a slightly elevated angle. On hit, the target receives a small upward velocity component — a scaled-down version of the Divine Dive's tiltBurstTarget.
+
+```
+Main hit:
+  spinDelta:           −48
+  dmgMult:             1.35×
+  lockMs:              55
+  aerialKnock_eu:      60  (small upward impulse to target — mini tiltBurst, not full)
+  windowMs:            650
+  cooldownMs:          4500
+
+Ceiling: 1.35×≤1.5×; 55ms≤300ms; 48≤50 rad/s; aerialKnock is small linear impulse (not invulnerability,
+  not full tilt) [check]. Cost 15 — standard tier for a combo with a secondary positional effect.
+```
+
+```typescript
+function aerialDriveCombo(jHit: boolean): {
+  spinDelta: number; dmgMult: number; lockMs: number; aerialKnockImpulse_eu: number
+} {
+  return jHit
+    ? { spinDelta: -48, dmgMult: 1.35, lockMs: 55, aerialKnockImpulse_eu: 60 }
+    : { spinDelta: -22, dmgMult: 1.12, lockMs:  0, aerialKnockImpulse_eu:  0 };
+}
+// aerialDriveCombo(true)  → { spin:-48, dmg:1.35×, lock:55ms, aerialKnock:60eu }
+// aerialDriveCombo(false) → { spin:-22, dmg:1.12×, lock:0ms,  aerialKnock:0eu  }
+```
+
+---
+
+*Cases continue from Case 867 as further franchise moves are provided.*
 
 ---

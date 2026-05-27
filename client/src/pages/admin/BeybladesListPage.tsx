@@ -112,7 +112,7 @@ export function BeybladesListPage() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="bg-bg2 rounded-2xl border border-border-c h-[200px] pulse" />
           ))}
@@ -123,7 +123,7 @@ export function BeybladesListPage() {
           <p>No beyblades found. Create your first one!</p>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {beyblades.map(b => (
             <div key={b.id} className="bg-bg2 border border-border-c rounded-2xl overflow-hidden">
               <div className="flex items-center gap-3 p-3.5 border-b border-border-c">

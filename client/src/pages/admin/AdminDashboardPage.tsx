@@ -57,14 +57,14 @@ export function AdminDashboardPage() {
   const statValues = [stats.beyblades, stats.arenas, stats.matches, stats.players];
 
   return (
-    <div className="p-6 w-full box-border">
+    <div className="p-4 sm:p-6 w-full max-w-[1600px] mx-auto box-border">
       <div className="mb-7">
         <h1 className="text-[22px] font-bold text-text">Dashboard</h1>
         <p className="text-faint text-[13px] mt-1">Game administration overview</p>
       </div>
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-4 gap-3.5 mb-7">
+      {/* Stat cards — 2 cols on mobile, 4 on sm+ */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-3.5 mb-7">
         {statCards.map((card, i) => (
           <Link key={card.label} to={card.href} className={`block ${card.bgClass} border ${card.borderClass} rounded-[14px] p-4 no-underline`}>
             <div className="text-[22px] mb-2">{card.icon}</div>
@@ -79,7 +79,7 @@ export function AdminDashboardPage() {
       </div>
 
       {/* Tournament stats */}
-      <div className="bg-yellow-10 border border-yellow-20 rounded-[14px] p-4 mb-7 flex items-center gap-6">
+      <div className="bg-yellow-10 border border-yellow-20 rounded-[14px] p-4 mb-7 flex flex-wrap items-center gap-3 sm:gap-6">
         <span className="text-[28px]">🏆</span>
         <div className="flex-1">
           <div className="text-[13px] font-semibold text-text mb-1">Tournaments</div>
@@ -99,11 +99,11 @@ export function AdminDashboardPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
         {/* Quick links */}
         <div>
           <div className="text-[11px] font-semibold text-muted uppercase tracking-[0.08em] mb-3">Quick Actions</div>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-2 gap-2.5">
             {quickLinks.map((link) => {
               const inner = (
                 <div className="bg-bg2 border border-border rounded-xl p-4">

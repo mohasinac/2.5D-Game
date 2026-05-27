@@ -198,7 +198,7 @@ export function TeamBattleGamePage() {
   );
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-black">
+    <div className="min-w-[320px] max-w-[1920px] w-full mx-auto relative h-screen overflow-hidden bg-black">
       <div ref={containerRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(100vw,100vh)] h-[min(100vw,100vh)]" />
 
       {showLoading && (

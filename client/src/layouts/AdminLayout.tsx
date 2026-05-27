@@ -540,8 +540,11 @@ export function AdminLayout() {
           </div>
         </header>
 
-        <main className="flex-1 flex flex-col overflow-y-auto min-h-0">
-          <Outlet />
+        <main className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden min-h-0">
+          {/* Caps content width on ultra-wide monitors while keeping it centred */}
+          <div className="flex-1 w-full max-w-[1800px] mx-auto flex flex-col">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
