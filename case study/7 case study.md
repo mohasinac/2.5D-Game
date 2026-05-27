@@ -896,7 +896,7 @@ Transmitted fraction = 7.1×10⁻⁶ / (7.1×10⁻⁶ + 8.76×10⁻⁷)
                      ≈ 0.890  → 89.0% transmitted, 11.0% absorbed by Sub-AR rotation
 ```
 
-The Sub-AR does not eliminate recoil — it reduces it proportionally to the ratio of Sub-AR inertia to total system inertia. A heavier or wider Sub-AR increases I_subAR and absorbs a larger fraction. This is why large-radius Sub-ARs (e.g., Dragon Breaker) produce measurably lower self-destabilisation on contact than small Sub-ARs.
+The Sub-AR does not eliminate recoil — it reduces it proportionally to the ratio of Sub-AR inertia to total system inertia. A heavier or wider Sub-AR increases I_subAR and absorbs a larger fraction. This is why large-radius Sub-ARs (e.g., Dragon Breaker Core AR used as SAR filler) produce measurably lower self-destabilisation on contact than small Sub-ARs.
 
 ### Five-Layer Inertia Budget
 

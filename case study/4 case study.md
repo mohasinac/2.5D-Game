@@ -4347,7 +4347,7 @@ function fcbLateBurstRingOutFeasibility(
 
 > **Stock combo (Gaia Dragoon G (Great)):** AR: Dragon Saucer · WD: Ten Heavy · SG/EG: Right EG Metal Flat · BB: Final Clutch Base GDG
 
-Dragon Saucer is a composite AR: a 4.5 g core AR with large, outward-projecting contact points, paired with a full-circle gear-shaped Sub-AR (approximately 2.0 g). In default assembly the gear Sub-AR wraps completely around the core, blocking access to the core AR's contact points and producing a combination of mutual cancellation — the core AR is too aggressive to avoid recoil when tilted, and the Sub-AR covers the faces that would otherwise deliver smash. With War Lion SAR (or any SAR that exposes the core contacts) the AR becomes a usable but recoil-heavy left-spin smash option. With Screw Zeus SAR, the geometry aligns specifically: in RS the rear heads, flat protrusions, and corner contacts combine into one of the library's best Smash Attack configurations; in LS the foreheads and spike contacts stack on Screw Zeus' second section for severe impact power — but the weight demands a very fast, high-traction tip to translate mass into ring-outs.
+Dragon Saucer is a composite AR: a 4.5 g core AR with large, outward-projecting contact points, paired with a full-circle gear-shaped Sub-AR (approximately 2.0 g). In default assembly the gear Sub-AR wraps completely around the core, blocking access to the core AR's contact points and producing a combination of mutual cancellation — the core AR is too aggressive to avoid recoil when tilted, and the Sub-AR covers the faces that would otherwise deliver smash. With War Lion SAR (or any SAR that exposes the core contacts) the AR becomes a usable but recoil-heavy left-spin smash option. With Screw Zeus SAR, the geometry aligns specifically: in RS the rear heads, flat protrusions, and corner contacts combine into one of the library's best Smash Attack configurations; in LS the foreheads and spike contacts stack on Screw Zeus SAR's second section for severe impact power — but the weight demands a very fast, high-traction tip to translate mass into ring-outs.
 
 ---
 
@@ -4378,7 +4378,7 @@ Result: 98% recoil per contact, 17% smash — worse than most defensive ARs
 
 The two components in default configuration don't "do two things poorly" by accident — the gear ring's coverage radius exceeding the core AR radius is the geometric cause.
 
-**Sub-AR seating architecture:** All SAR-compatible ARs have a raised inner ledge on the underside of the core AR body (visible in the annotated underside image — the stepped channel circled in red). The Sub-AR's inner rim clips into this ledge, providing vertical retention and angular alignment. This ledge adds approximately 1.5–2 mm to the AR's total height compared to a non-SAR AR of similar outer geometry. SG Wing Base uses the same seating principle but with the ledge on the top face of the SG body rather than the bottom of an AR. The height addition from the ledge is universal across all SAR-compatible ARs and is not specific to Dragon Saucer.
+**Sub-AR seating architecture:** All SAR-compatible ARs have a raised inner ledge on the underside of the core AR body (visible in the annotated underside image — the stepped channel circled in red). The Sub-AR's inner rim clips into this ledge, providing vertical retention and angular alignment. This ledge adds approximately 1.5–2 mm to the AR's total height compared to a non-SAR AR of similar outer geometry. SG Wing Base uses the same seating principle but with the ledge on the top face of the SG body rather than the bottom of an AR. The height addition from the ledge is universal across all SAR-compatible ARs and is not specific to Dragon Saucer Core AR.
 
 ---
 
@@ -4410,10 +4410,10 @@ Right spin with War Lion SAR: core contact faces become trailing (φ_RS ≈ 70°
 Screw Zeus SAR has specific geometry: rear head contact faces, a sloped section with corner contacts, and overhanging contact points that extend beyond typical AR radius.
 
 ```
-RS active contact points (Dragon Saucer core + Screw Zeus SAR):
-  1. Rear heads of Screw Zeus:        φ ≈ 25–30°  (primary smash)
-  2. Flat protrusions of Dragon Saucer: φ ≈ 20–25°  (reinforces smash, adds mass behind contact)
-  3. Corner contacts of Screw Zeus slope: φ ≈ 40°   (secondary smash, deflects downward)
+RS active contact points (Dragon Saucer Core AR + Screw Zeus SAR):
+  1. Rear heads of Screw Zeus SAR:        φ ≈ 25–30°  (primary smash)
+  2. Flat protrusions of Dragon Saucer Core AR: φ ≈ 20–25°  (reinforces smash, adds mass behind contact)
+  3. Corner contacts of Screw Zeus SAR slope: φ ≈ 40°   (secondary smash, deflects downward)
   4. Overhanging contacts:            extends r_contact beyond WD perimeter
                                       → contacts low opponents that main AR misses
 
@@ -4435,15 +4435,15 @@ Defense Grip Base (Tip Inverted) pairing: this base positions the combination lo
 
 ```
 LS active contact points:
-  1. Foreheads of Screw Zeus:         φ_LS ≈ 20–25°  (leading face for LS rotation)
-  2. Spike contact of Dragon Saucer:  φ_LS ≈ 25–30°  (compounds forehead hit — same contact event)
-  3. Second section of Screw Zeus:    φ_LS ≈ 30–35°  (unobstructed, consistent secondary hit)
+  1. Foreheads of Screw Zeus SAR:         φ_LS ≈ 20–25°  (leading face for LS rotation)
+  2. Spike contact of Dragon Saucer Core AR:  φ_LS ≈ 25–30°  (compounds forehead hit — same contact event)
+  3. Second section of Screw Zeus SAR:    φ_LS ≈ 30–35°  (unobstructed, consistent secondary hit)
 
 J_effective_LS ≈ J × cos(22°) × (1 + 0.45) ≈ 1.34J smash  (stacked contacts on same face)
   Compared to RS: LS hits harder per contact at φ cost, but total contact count is similar
 
-Inverted slope (Screw Zeus LS):
-  In LS rotation, Screw Zeus' slope faces inverted → if struck by opponent:
+Inverted slope (Screw Zeus SAR in LS):
+  In LS rotation, Screw Zeus SAR's slope faces inverted → if struck by opponent:
   Normal force has an upward component → combo launches upward → destabilisation
   Effect size: at φ_slope_inverted ≈ 30°:
     F_up = F_contact × sin(30°) = 0.5 × F_contact
@@ -4455,7 +4455,7 @@ Mass requirement:
   At v_orbit = 0.7 m/s:  E_k ∝ m_combo
   Higher total AR mass → higher orbital KE → higher J per collision
   
-  For LS Screw Zeus + Dragon Saucer to ring-out a ~35g opponent:
+  For LS Screw Zeus SAR + Dragon Saucer Core AR to ring-out a ~35g opponent:
     Required J_min ≈ m_target × Δv_escape ≈ 0.035 × 1.0 = 0.035 kg·m/s
     Orbital impact J = m_reduced × v_relative
     m_reduced = (m_attacker × m_target) / (m_attacker + m_target) ≈ 0.017 kg  (for ~35g each)
@@ -4472,17 +4472,17 @@ Mass requirement:
 
 ```
 AR + SAR assembly mass comparison:
-  Great Dragon AR:           lighter  (exact mass varies by version, ~5–5.5 g typical)
-  Dragon Saucer + Screw Zeus: 6.5 g
-  Dragon Breaker:            heavier  (~7–8 g)
+  Great Dragon Core AR:           lighter  (exact mass varies by version, ~5–5.5 g typical)
+  Dragon Saucer Core AR + Screw Zeus SAR: 6.5 g
+  Dragon Breaker Core AR:            heavier  (~7–8 g)
 
-Dragon Saucer + Screw Zeus LS sits between:
-  → Lower than Dragon Breaker: less mass → lower J at same v → worse against heavy defenders
-  → Higher than Great Dragon:  more mass → higher J → better against defended targets
-  → "Stands out for lining up nicely with Screw Zeus' contact points" = specific geometric synergy,
+Dragon Saucer Core AR + Screw Zeus SAR LS sits between:
+  → Lower than Dragon Breaker Core AR: less mass → lower J at same v → worse against heavy defenders
+  → Higher than Great Dragon Core AR:  more mass → higher J → better against defended targets
+  → "Stands out for lining up nicely with Screw Zeus SAR's contact points" = specific geometric synergy,
      not simply a mass compromise
 
-The lineup advantage: Screw Zeus' foreheads and Dragon Saucer's spike contacts share the same
+The lineup advantage: Screw Zeus SAR's foreheads and Dragon Saucer Core AR's spike contacts share the same
 angular position at the leading edge in LS rotation → both contact the same opponent face in the
 same impact event → impulse stacks, not sequential
 ```
@@ -5766,7 +5766,7 @@ The only mechanical link between the two sections is bearing friction. Any other
   The Gyro EG's outer shell carries the AR face (contact layer). AR choice determines
   both the contact geometry and whether the free-spinning SAR isolation stacks with GEG isolation.
 
-  Dragon Saucer AR (+ Dragon Saucer SAR):
+  Dragon Saucer Core AR (+ Dragon Saucer SAR):
     As derived in Case 212–213, Dragon Saucer SAR provides ~85% force isolation at the
     SAR–core interface (μ_seat ≈ 0.15, limited to 15% transmission).
     Combined with GEG's 99.998% per-contact bearing isolation:
@@ -5781,10 +5781,10 @@ The only mechanical link between the two sections is bearing friction. Any other
     since the War Lion SAR simply doesn't generate significant contact forces to isolate.
     Not recommended.
 
-  Dragon Breaker AR (from Dragoon G stock):
-    Wider coverage than War Lion; not as effective as Dragon Saucer SAR but acceptable.
-    For stock combo running the GEG as shipped with Dragoon G, Dragon Breaker is the
-    available option; upgrade to Dragon Saucer AR when possible.
+  Dragon Breaker Core AR (from Dragoon G stock):
+    Wider coverage than War Lion Core AR; not as effective as Dragon Saucer Core AR (with SAR) but acceptable.
+    For stock combo running the GEG as shipped with Dragoon G, Dragon Breaker Core AR is the
+    available option; upgrade to Dragon Saucer Core AR when possible.
 
   FLS AR with LS launch (unique use case):
     Any FLS AR (designed to attack in Left-Spin orientation) can be used effectively with
@@ -8917,11 +8917,11 @@ interface HolyDespellAnalysis {
   apexAngleFromTangent_deg: 85;
   flankAngleFromTangent_deg: 65;
   sarSlot: true;
-  incompatibleSAR: ['Dragon Saucer'];
-  compatibleSAR: ['War Lion', 'Twin Horn (Hasbro)'];
+  incompatibleSAR: ['Dragon Saucer SAR'];
+  compatibleSAR: ['War Lion SAR', 'Twin Horn SAR (Hasbro)'];
   competitiveRoles: ['zombie_niche', 'CSD_niche', 'compact_niche'];
   outclassedBy: {
-    zombie:  'War Lion (lower recoil body)';
+    zombie:  'War Lion Core AR (lower recoil body)';
     CSD:     'Roller Defense Ring (no protrusion liability)';
     compact: 'lower-recoil CARs';
   };
@@ -8960,7 +8960,7 @@ function deadZoneFraction(protrusion_arc_deg: number, nProtrusions: number): num
 
 > **Stock combo (Zeus):** AR: Holy Despell + SAR Screw Zeus · WD: Ten Wide · SG/EG: Right CG Free Shaft · BB: First Clutch Base Zeus · CEW: Light Sharp
 
-Screw Zeus is a 4.4 g Sub Attack Ring (SAR) with a near-rectangular mass distribution — weight concentrated at two opposing far ends — and aggressive mixed geometry: forehead contact points, sloped sections with corners, rear head contact points, an inverted slope designed for Force Smash in LS, and overhanging protrusions. Free-spinning, the aggressive face geometry produces severe recoil with no usable offensive output — fixing in place is mandatory. Fixed, the rectangular mass distribution combined with high contact-point density makes it the highest-ceiling Smash Attack SAR of its generation, but only with sufficient tip speed: the combination requires fast tips (SG Grip Change Base Tip, Defense Grip Base inverted) to deliver its mass into contacts hard enough to overcome the self-recoil. SAR choice determines which contact points are exposed and how evenly mass is distributed; Dragon Breaker adds the most mass and evens distribution for maximum power; Great Dragon exposes contact points well with lower mass for greater setup flexibility; Dragon Saucer is a middle-weight option with excellent contact point alignment. War Lion and War Monkey serve a separate role — locking Screw Zeus to expose its RS slopes for Traditional Upper Attack, adding nothing to pure Smash. LS setups carry an inverted-slope self-destabilisation liability that is manageable on fast bases but becomes a problem against low, heavy opponents.
+Screw Zeus is a 4.4 g Sub Attack Ring (SAR) with a near-rectangular mass distribution — weight concentrated at two opposing far ends — and aggressive mixed geometry: forehead contact points, sloped sections with corners, rear head contact points, an inverted slope designed for Force Smash in LS, and overhanging protrusions. Free-spinning, the aggressive face geometry produces severe recoil with no usable offensive output — fixing in place is mandatory. Fixed, the rectangular mass distribution combined with high contact-point density makes it the highest-ceiling Smash Attack SAR of its generation, but only with sufficient tip speed: the combination requires fast tips (SG Grip Change Base Tip, Defense Grip Base inverted) to deliver its mass into contacts hard enough to overcome the self-recoil. Core AR choice determines which contact points are exposed and how evenly mass is distributed; Dragon Breaker Core AR adds the most mass and evens distribution for maximum power; Great Dragon Core AR exposes contact points well with lower mass for greater setup flexibility; Dragon Saucer Core AR is a middle-weight option with excellent contact point alignment. War Lion Core AR and War Monkey Core AR serve a separate role — locking Screw Zeus SAR to expose its RS slopes for Traditional Upper Attack, adding nothing to pure Smash. LS setups carry an inverted-slope self-destabilisation liability that is manageable on fast bases but becomes a problem against low, heavy opponents.
 
 ---
 
@@ -8982,9 +8982,9 @@ At ω = 150 rad/s: E ≈ 0.101 J  (44% less)
 At ω = 100 rad/s: E ≈ 0.045 J  (75% less)
 ```
 
-The E ∝ ω² relationship means spin rate has a squared effect on available energy. At low ω, the energy advantage of Screw Zeus's mass distribution is not realised — conventional smash ARs with lower mass concentration perform comparably because both are energy-limited at low spin. At high ω (fast tip required), Screw Zeus's concentrated end-mass delivers disproportionately more energy per contact than lighter, more distributed ARs.
+The E ∝ ω² relationship means spin rate has a squared effect on available energy. At low ω, the energy advantage of Screw Zeus SAR's mass distribution is not realised — conventional smash ARs with lower mass concentration perform comparably because both are energy-limited at low spin. At high ω (fast tip required), Screw Zeus SAR's concentrated end-mass delivers disproportionately more energy per contact than lighter, more distributed ARs.
 
-The speed requirement is structural: Screw Zeus is not "fast enough" — it forces the combo to be fast. Slow setups waste the mass advantage.
+The speed requirement is structural: Screw Zeus SAR is not "fast enough" — it forces the combo to be fast. Slow setups waste the mass advantage.
 
 ---
 
@@ -9020,31 +9020,31 @@ Corner of sloped section  φ ≈ 45°               Smash (corner impact)
 Overhanging protrusions   φ ≈ 30–35°            Low-reach Smash
 ```
 
-**Dragon Breaker (RS):**
-- Ridges of Dragon Breaker add smash on their own contact events
+**Dragon Breaker Core AR (RS):**
+- Ridges of Dragon Breaker Core AR add smash on their own contact events
 - Exposes rear heads and slope corners cleanly
 - Does not expose upper slopes (slope upper surface still accessible for Upper Attack context)
 - Heaviest combination — maximum energy delivery at high speed
 - Overhanging protrusions remain active for low-opponent contacts
 
-**Dragon Saucer (RS):**
-- Flat protrusion of Dragon Saucer covers the sloped section's upper face with its own flat contact
-- Rear heads remain exposed; Dragon Saucer flat protrusion adds its own contact point
+**Dragon Saucer Core AR (RS):**
+- Flat protrusion of Dragon Saucer Core AR covers the sloped section's upper face with its own flat contact
+- Rear heads remain exposed; Dragon Saucer Core AR flat protrusion adds its own contact point
 - Slope corners still active
-- Mid-weight — less total energy than Dragon Breaker but better SAR contact point alignment
+- Mid-weight — less total energy than Dragon Breaker Core AR but better contact point alignment
 - Still top-tier competitive
 
-**Great Dragon (RS):**
-- Rear heads of Screw Zeus well-exposed
-- Great Dragon ridges add minor smash in RS (not primary contributors)
+**Great Dragon Core AR (RS):**
+- Rear heads of Screw Zeus SAR well-exposed
+- Great Dragon Core AR ridges add minor smash in RS (not primary contributors)
 - Slope corners exposed to a lesser degree
 - Lightest combination — more forgiving of tip speed, but less "safe" (easier to push back)
 
-**War Lion / War Monkey (RS):**
+**War Lion Core AR / War Monkey Core AR (RS):**
 - Exposes the upper face of the sloped section → Traditional Upper Attack geometry
 - The slope, normally covered or partially obstructed by attack SARs, becomes the primary contact surface
-- No additional smash from War Lion/War Monkey bodies
-- This is the only RS Upper Attack use case for Screw Zeus; all other SARs outclass these for Smash
+- No additional smash from War Lion Core AR / War Monkey Core AR bodies
+- This is the only RS Upper Attack use case for Screw Zeus SAR; all other Core ARs outclass these for Smash
 
 ---
 
@@ -9078,42 +9078,42 @@ This is self-destabilisation: each contact with the slope face in LS drives Scre
 
 ---
 
-### 5. SAR Pairing Comparison: LS
+### 5. Core AR Pairing Comparison: LS
 
 ```
-SAR            Primary LS contacts              Weight added   Self-destab risk   Speed req.
-──────────────────────────────────────────────────────────────────────────────────────────────
-Dragon Breaker Foreheads + serrations           high           moderate           very high
-Dragon Saucer  Foreheads + DS spike compound    medium-high    moderate           high
-Great Dragon   Foreheads + crests               low-medium     moderate           medium
-War Lion       Screw Zeus fixed, no additions   low            moderate           medium
-War Monkey     Screw Zeus fixed, no additions   low            moderate           medium
+Core AR              Primary LS contacts              Weight added   Self-destab risk   Speed req.
+──────────────────────────────────────────────────────────────────────────────────────────────────
+Dragon Breaker Core AR  Foreheads + serrations        high           moderate           very high
+Dragon Saucer Core AR   Foreheads + DS spike compound medium-high    moderate           high
+Great Dragon Core AR    Foreheads + crests            low-medium     moderate           medium
+War Lion Core AR        Screw Zeus fixed, no additions low           moderate           medium
+War Monkey Core AR      Screw Zeus fixed, no additions low           moderate           medium
 ```
 
-Dragon Breaker in LS:
-- Serrations of Dragon Breaker add smash independently; mass concentrations cover "dead spike" area of Screw Zeus (the spikes on Screw Zeus that are not effective contact points — Dragon Breaker fills this dead space while distributing mass more evenly)
+Dragon Breaker Core AR in LS:
+- Serrations of Dragon Breaker Core AR add smash independently; mass concentrations cover "dead spike" area of Screw Zeus SAR (the spikes on Screw Zeus SAR that are not effective contact points — Dragon Breaker Core AR fills this dead space while distributing mass more evenly)
 - Maximum mass → maximum energy at high speed
-- Even weight distribution reduces the torque imbalance of Screw Zeus's dual-end concentration
+- Even weight distribution reduces the torque imbalance of Screw Zeus SAR's dual-end concentration
 - Best for fast tips against heavy opponents; SG Metal Flat Base (Gaia Dragoon V Version) viable
 
-Dragon Saucer in LS:
-- Dragon Saucer spike contact point compounds with Screw Zeus foreheads — the DS spike and Screw Zeus forehead engage the same opponent zone sequentially or simultaneously depending on exact orientation
-- Second section of Screw Zeus (the rear body between the two contact zones) remains unobstructed
-- Consistent, powerful contacts — arguably better contact point alignment than Dragon Breaker in LS
+Dragon Saucer Core AR in LS:
+- Dragon Saucer Core AR spike contact point compounds with Screw Zeus SAR foreheads — the DS spike and Screw Zeus SAR forehead engage the same opponent zone sequentially or simultaneously depending on exact orientation
+- Second section of Screw Zeus SAR (the rear body between the two contact zones) remains unobstructed
+- Consistent, powerful contacts — arguably better contact point alignment than Dragon Breaker Core AR in LS
 
-Great Dragon in LS:
-- Foreheads exposed; Great Dragon crests provide own smash contacts
+Great Dragon Core AR in LS:
+- Foreheads exposed; Great Dragon Core AR crests provide own smash contacts
 - Lighter → more forgiving on worn or lower-speed tips
-- Does not work on SG Metal Flat Base (Gaia Dragoon V Version): "too much recoil, too little weight" — the recoil from Great Dragon's crests without Dragon Breaker's mass to stabilise causes ring-out risk exceeding the smash benefit at Metal Flat speed
+- Does not work on SG Metal Flat Base (Gaia Dragoon V Version): "too much recoil, too little weight" — the recoil from Great Dragon Core AR's crests without Dragon Breaker Core AR's mass to stabilise causes ring-out risk exceeding the smash benefit at Metal Flat speed
 - Top-tier but lighter window
 
 ---
 
 ### 6. Circle Survivor Defense Interference
 
-The overhanging protrusions of Screw Zeus extend beyond the WD radius in certain configurations. Circle Survivor Defense uses a large outer body (Roller Defense Ring or Circle Survivor itself) that creates a "moat" — a region where attacking ARs are blocked before reaching the inner beyblade.
+The overhanging protrusions of Screw Zeus SAR extend beyond the WD radius in certain configurations. Circle Survivor Defense uses a large outer body (Roller Defense Ring or Circle Survivor itself) that creates a "moat" — a region where attacking ARs are blocked before reaching the inner beyblade.
 
-Screw Zeus's overhang extends into this moat region:
+Screw Zeus SAR's overhang extends into this moat region:
 ```
 r_overhang ≈ r_WD + 3–5 mm protrusion
 r_CSD_outer_body ≈ r_WD + 8–12 mm
@@ -9125,13 +9125,13 @@ If r_overhang < r_CSD_outer_body, the protrusion contacts the CSD outer body rat
 r_overhang ≥ r_CSD_inner_ring → overhang blocked by CSD outer body → impact absorbed
 ```
 
-The recommended response — strong launch, weight, momentum bludgeon — is the only counter: at high enough closing speed, even a blocked overhang contact with the CSD outer body produces sufficient impulse to push the CSD combo toward the wall. It does not require landing on the inner AR. This converts from a "precision attack" to a "mass attack" strategy, which requires Screw Zeus's mass advantage.
+The recommended response — strong launch, weight, momentum bludgeon — is the only counter: at high enough closing speed, even a blocked overhang contact with the CSD outer body produces sufficient impulse to push the CSD combo toward the wall. It does not require landing on the inner AR. This converts from a "precision attack" to a "mass attack" strategy, which requires Screw Zeus SAR's mass advantage.
 
 ---
 
-### 7. RS Upper Attack Configuration: War Lion / War Monkey
+### 7. RS Upper Attack Configuration: War Lion Core AR / War Monkey Core AR (with Screw Zeus SAR)
 
-Both War Lion and War Monkey lock Screw Zeus in a fixed position that exposes the upper face of the sloped section in RS. The slope parameters:
+Both War Lion Core AR and War Monkey Core AR lock Screw Zeus SAR in a fixed position that exposes the upper face of the sloped section in RS. The slope parameters:
 
 ```
 α_upper_slope_RS ≈ 25–30° from horizontal (upper face, forward-facing in RS)
@@ -9139,11 +9139,11 @@ J_vertical = J × sin(27°) ≈ J × 0.454
 J_lateral  = J × cos(27°) ≈ J × 0.891
 ```
 
-This is competitive Upper Attack geometry. The advantage over pure Upper Attack ARs (Triangle Wing, Upper Dragoon): Screw Zeus's mass concentration provides higher J_total per contact than lighter dedicated upper ARs, amplifying both J_vertical and J_lateral.
+This is competitive Upper Attack geometry. The advantage over pure Upper Attack ARs (Triangle Wing, Upper Dragoon): Screw Zeus SAR's mass concentration provides higher J_total per contact than lighter dedicated upper ARs, amplifying both J_vertical and J_lateral.
 
-War Monkey is preferred over War Lion due to War Lion's wing tips being at risk of fracture from the high-impulse contacts that Screw Zeus generates. War Monkey's geometry provides equivalent slope exposure without the fragility liability.
+War Monkey Core AR is preferred over War Lion Core AR due to War Lion Core AR's wing tips being at risk of fracture from the high-impulse contacts that Screw Zeus SAR generates. War Monkey Core AR's geometry provides equivalent slope exposure without the fragility liability.
 
-Neither SAR adds smash, so for pure Smash Attack use, Dragon Breaker/Saucer/Great Dragon all outclass War Lion and War Monkey here. This configuration's value is exclusively in Traditional Upper Attack.
+Neither War Lion Core AR nor War Monkey Core AR adds smash, so for pure Smash Attack use, Dragon Breaker Core AR / Dragon Saucer Core AR / Great Dragon Core AR all outclass War Lion Core AR and War Monkey Core AR here. This configuration's value is exclusively in Traditional Upper Attack.
 
 ---
 
@@ -9157,11 +9157,11 @@ interface ScrewZeusAnalysis {
   momentOfInertia_kgm2: 9.0e-6;
   freeSpin: 'non_competitive';
   fixedSpin: 'mandatory';
-  preferredBases: ['SG Grip Change Base Tip', 'Defense Grip Base (Tip Inverted)', 'SG Metal Flat Base (GDV Version) with Dragon Breaker/Saucer'];
-  sarPairings: {
-    RS_smash:    ['Dragon Breaker', 'Dragon Saucer', 'Great Dragon'];
-    LS_smash:    ['Dragon Breaker', 'Dragon Saucer', 'Great Dragon'];
-    RS_upper:    ['War Lion', 'War Monkey'];
+  preferredBases: ['SG Grip Change Base Tip', 'Defense Grip Base (Tip Inverted)', 'SG Metal Flat Base (GDV Version) with Dragon Breaker Core AR/Dragon Saucer Core AR'];
+  coreArPairings: {
+    RS_smash:    ['Dragon Breaker Core AR', 'Dragon Saucer Core AR', 'Great Dragon Core AR'];
+    LS_smash:    ['Dragon Breaker Core AR', 'Dragon Saucer Core AR', 'Great Dragon Core AR'];
+    RS_upper:    ['War Lion Core AR', 'War Monkey Core AR'];
     LS_upper:    'none_viable';
   };
 }
@@ -13289,9 +13289,9 @@ War Bear AR is Galzzly's Attack Ring: a **3-fold, three-arm SGS AR** with a bear
   α_LS ≈ 8°      [ESTIMATED — trailing claw back, near-tangential]
   Tip radius r:   ≈ 22–24 mm [ESTIMATED]
 
-The convex arm curvature reduces smash transfer relative to War Lion:
-  War Lion RS: α ≈ 20° → smash = sin(20°) = 0.342
-  War Bear RS: α ≈ 13° → smash = sin(13°) = 0.225  (~34% less per contact)
+The convex arm curvature reduces smash transfer relative to War Lion Core AR:
+  War Lion Core AR RS: α ≈ 20° → smash = sin(20°) = 0.342
+  War Bear Core AR RS: α ≈ 13° → smash = sin(13°) = 0.225  (~34% less per contact)
 ```
 
 **Width / WD interaction:**
@@ -13318,12 +13318,12 @@ With War Bear SAR (2.4 g, r ≈ 28 mm):
   Total I ≈ 2.78 × 10⁻⁶ kg·m²  [ESTIMATED]
 ```
 
-**Ring-out impulse deficit vs War Lion:**
+**Ring-out impulse deficit vs War Lion Core AR:**
 
 ```
 At ω = 200 rad/s:
-  War Bear:  v × smash = 200 × 0.023 × sin(13°) = 4.6 × 0.225 = 1.035
-  War Lion:  v × smash = 200 × 0.022 × sin(20°) = 4.4 × 0.342 = 1.505
+  War Bear Core AR:  v × smash = 200 × 0.023 × sin(13°) = 4.6 × 0.225 = 1.035
+  War Lion Core AR:  v × smash = 200 × 0.022 × sin(20°) = 4.4 × 0.342 = 1.505
   Deficit: ~31% less ring-out impulse per contact
 ```
 
@@ -13336,7 +13336,7 @@ Dragon Saucer SAR fixed in place over War Bear Core AR:
   Effective LS performance: acceptable but outclassed by War Lion Core AR, War Monkey Core AR, Twin Horn
   Verdict: [FACT(PDB)] "acceptable in a competitive situation with Dragon Saucer SAR in LS"
 
-Dragon Saucer SAR cannot fix War Bear's width problem or fragility:
+Dragon Saucer SAR cannot fix War Bear Core AR's width problem or fragility:
   Arm tips still protrude → protrusion contact remains a recoil source
   Spiked sections fragility unchanged
 ```
@@ -13391,7 +13391,7 @@ interface WarBearAR {
 
 **Role:** Non-competitive as stocked; limited LS use with Dragon Saucer SAR only.
 
-War Bear's rounded convex arms reduce smash transfer to ~0.225 (RS) and ~0.139 (LS) — below War Lion's ~0.342 and ~0.200 respectively. The stock free-spinning War Bear SAR is entirely non-functional: it creates recoil without landing hits, making the 6.7 g stock configuration useless. The Core AR alone, with smaller SARs, is too wide (arms protrude past Wide Defense) and too fragile (spiked sections break in RS, risk in LS) for competitive use.
+War Bear Core AR's rounded convex arms reduce smash transfer to ~0.225 (RS) and ~0.139 (LS) — below War Lion Core AR's ~0.342 and ~0.200 respectively. The stock free-spinning War Bear SAR is entirely non-functional: it creates recoil without landing hits, making the 6.7 g stock configuration useless. The Core AR alone, with smaller SARs, is too wide (arms protrude past Wide Defense) and too fragile (spiked sections break in RS, risk in LS) for competitive use.
 
 With Dragon Saucer SAR (fixed) in LS: acceptable performance, but outclassed by War Lion Core AR, War Monkey Core AR, and Hasbro's Twin Horn in this role. The width and fragility remain limiting factors. Tier: **non-competitive as stocked; limited LS use with Dragon Saucer SAR** — generally not preferred over the alternatives.
 
@@ -13423,7 +13423,7 @@ War Monkey AR is Galman's Attack Ring: a **4-winged, 4-fold symmetric** SGS AR w
 Wide Defense / Wide Survivor: WD extends past (or near) AR radius → good shielding
 Ten Heavy (compact WD):       Does not extend to AR radius → contact points more exposed
   → With smaller WDs, War Monkey SAR and Dragon Saucer SAR are more important for coverage
-  → War Lion SAR less effective here (shorter winglets, less coverage for War Monkey's width)
+  → War Lion SAR less effective here (shorter winglets, less coverage for War Monkey Core AR's width)
 ```
 
 ### 2. Physics
@@ -13535,7 +13535,7 @@ interface WarMonkeyAR {
 
   competitiveUses: {
     ls_zombie_survival: "top_tier";      // [FACT(PDB)]
-    ls_weight_based_defense: "top_tier"; // [FACT(PDB)] "greater coverage than War Lion"
+    ls_weight_based_defense: "top_tier"; // [FACT(PDB)] "greater coverage than War Lion Core AR"
     ls_circle_survivor_defense: "top_tier_with_wide_survivor"; // [FACT(PDB)]
     rs_spin_stealer: "tier_2";           // [FACT(PDB)] needs Wide Defense+
     rs_attack: "non_viable";             // [FACT(PDB)]
@@ -13564,17 +13564,17 @@ interface WarMonkeyAR {
 
 **Role:** Top-tier Left Spin survival / zombie / defense AR; Tier 2 in Right Spin only.
 
-War Monkey's defining feature is the **rounded monkey head faces in Left Spin**, which deflect incoming hits with very low recoil (≈0.28 — close behind Twin Horn's ≈0.20). The 4-fold symmetric arm spacing produces no rotational imbalance, so LAD and survival duration are not shortened by imbalance forces. This enables competitive performance across all LS stamina archetypes:
+War Monkey Core AR's defining feature is the **rounded monkey head faces in Left Spin**, which deflect incoming hits with very low recoil (≈0.28 — close behind Twin Horn's ≈0.20). The 4-fold symmetric arm spacing produces no rotational imbalance, so LAD and survival duration are not shortened by imbalance forces. This enables competitive performance across all LS stamina archetypes:
 
 - **LS Zombie / Survival:** Top-tier. Own SAR or Dragon Saucer SAR provides excellent contact coverage. Prefer Wide Defense or Wide Survivor.
-- **LS Weight-Based Defense:** Top-tier. Greater arm coverage than War Lion means better defense in this archetype.
+- **LS Weight-Based Defense:** Top-tier. Greater arm coverage than War Lion Core AR means better defense in this archetype.
 - **LS Circle Survivor Defense:** Top-tier with Wide Survivor; less effective than smaller ARs when paired with narrower WDs.
-- **RS Spin Stealer:** Tier 2 only (Wide Defense/Wide Survivor). Heavily outclassed by War Lion and even Twin Horn in RS.
+- **RS Spin Stealer:** Tier 2 only (Wide Defense/Wide Survivor). Heavily outclassed by War Lion Core AR and even Twin Horn in RS.
 - **RS Attack:** Non-viable. Angular protrusions generate self-destabilising recoil with no smash.
 - **Compact (RS):** Acceptable but prone to destabilisation from elevation and width.
-- **Screw Zeus Upper Attack (RS):** Viable — exposes Screw Zeus slopes with much lower breakage risk than War Lion SAR's fragile winglets.
+- **Screw Zeus Upper Attack (RS):** Viable — exposes Screw Zeus SAR slopes with much lower breakage risk than War Lion SAR's fragile winglets.
 
-Long underrated and overshadowed by War Lion, War Monkey is a top-tier LS specialist in its own right. Hasbro's thicker Mold 2 (4.5 g Core AR) provides marginally more mass but the impact is generally too small to be decisive.
+Long underrated and overshadowed by War Lion Core AR, War Monkey Core AR is a top-tier LS specialist in its own right. Hasbro's thicker Mold 2 (4.5 g Core AR) provides marginally more mass but the impact is generally too small to be decisive.
 
 Tier: **top-tier LS survival / zombie / defense** — one of the best LS ARs in the plastic generation.
 
@@ -14657,11 +14657,11 @@ Great Dragon AR is a two-component SGS Attack Ring: the **Core AR: Great Dragon*
 
 > **Black version warning:** The black recolour of Great Dragon Core AR suffers from severe brittleness — a case of "Gold Plastic Syndrome" in a non-gold plastic. **Do not use the black version under any circumstances.**
 
-**Wing Sub-Ring geometry (transparent blue):** Two wide flat wing extensions forming a near-symmetric oval ring. These extensions **obstruct Great Dragon's contact points** when installed, reducing effective smash and providing no compensating attack value. The Wing Sub-Ring is consistently rated as detrimental to Great Dragon's performance — it should be replaced with a competitive SAR in virtually all use cases.
+**Wing Sub-Ring geometry (transparent blue):** Two wide flat wing extensions forming a near-symmetric oval ring. These extensions **obstruct Great Dragon Core AR's contact points** when installed, reducing effective smash and providing no compensating attack value. The Wing Sub-Ring is consistently rated as detrimental to Great Dragon Core AR's performance — it should be replaced with a competitive SAR in virtually all use cases.
 
-**SAR-slot importance:** Great Dragon's core ridge contacts have excellent smash in both RS and LS spin directions. The SAR slot determines whether those contacts are exposed or blocked, and adds mass distribution at the ring's outer radius depending on SAR choice.
+**SAR-slot importance:** Great Dragon Core AR's core ridge contacts have excellent smash in both RS and LS spin directions. The SAR slot determines whether those contacts are exposed or blocked, and adds mass distribution at the ring's outer radius depending on SAR choice.
 
-**Contact point height:** With War Lion SAR installed, Great Dragon's contact points sit at an **elevated height** relative to Circle Survivor Defense configurations — allowing it to land hits **above** Circle Survivor's defensive ring rather than being deflected. This is a specific matchup advantage.
+**Contact point height:** With War Lion SAR installed, Great Dragon Core AR's contact points sit at an **elevated height** relative to Circle Survivor Defense configurations — allowing it to land hits **above** Circle Survivor's defensive ring rather than being deflected. This is a specific matchup advantage.
 
 ### 2. Physics
 
@@ -14688,7 +14688,7 @@ With Wing Sub-Ring (stock):
   smashFractionRS: 0.35  [ESTIMATED — Wing SAR blocks and gets in the way; reduced effectiveness]
   smashFractionLS: 0.35  [ESTIMATED]
   recoilFactor:    0.55  [ESTIMATED — no recoil management from Wing geometry]
-  competitiveValue: "poor — Wing Sub-Ring obstructs Great Dragon's contacts"
+  competitiveValue: "poor — Wing Sub-Ring obstructs Great Dragon Core AR's contacts"
 
 With War Lion SAR:
   smashFractionRS: 0.62  [FACT(PDB) — "Right Spin noticeably better; more power, lower recoil; highly competitive"]
@@ -14709,40 +14709,40 @@ With War Bear SAR (Left Spin focus):
   competitiveValue_LS: "top-tier smash — comparable to Square Edge; best LS option"
 
 With War Monkey SAR:
-  smashFractionRS: 0.57  [ESTIMATED — "gets in the way a bit more than War Lion"]
+  smashFractionRS: 0.57  [ESTIMATED — "gets in the way a bit more than War Lion Core AR"]
   recoilFactor:    0.35  [ESTIMATED]
-  competitiveValue: "acceptable substitute for War Lion; suboptimal"
+  competitiveValue: "acceptable substitute for War Lion Core AR; suboptimal"
 
-With Dragon Breaker SAR:
+With Dragon Breaker Core AR (filling SAR slot):
   smashFractionLS: 0.52  [ESTIMATED — decent LS synergy]
-  competitiveValue: "fair LS option; much better than Wing Sub-Ring; inferior to War Lion/War Bear"
+  competitiveValue: "fair LS option; much better than Wing Sub-Ring; inferior to War Lion Core AR/War Bear Core AR"
 ```
 
-**With Screw Zeus Core AR (fixing Screw Zeus in place):**
+**With Screw Zeus SAR (fixed by Great Dragon Core AR):**
 
-Great Dragon is used to fix Screw Zeus's core AR in place, exposing Screw Zeus's contact points as the primary attack surface.
+Great Dragon Core AR is used to fix Screw Zeus SAR in place, exposing Screw Zeus SAR's contact points as the primary attack surface.
 
 ```
-Right Spin (with Screw Zeus):
-  Primary contacts: rear of Screw Zeus heads + corners of Screw Zeus sloped sections
-  Secondary:        ridges of Great Dragon (less effective in RS than LS direction)
-  combinedSmash:    ≈ 0.60  [ESTIMATED — top-tier RS smash via Screw Zeus heads]
-  recoilFactor:     0.28    [ESTIMATED — Screw Zeus geometry manages recoil in RS]
+Right Spin (with Screw Zeus SAR):
+  Primary contacts: rear of Screw Zeus SAR heads + corners of Screw Zeus SAR sloped sections
+  Secondary:        ridges of Great Dragon Core AR (less effective in RS than LS direction)
+  combinedSmash:    ≈ 0.60  [ESTIMATED — top-tier RS smash via Screw Zeus SAR heads]
+  recoilFactor:     0.28    [ESTIMATED — Screw Zeus SAR geometry manages recoil in RS]
   fragility note:   [FACT(PDB)] reports of breakage in RS — use with caution
-  safetyNote:       "lighter weight than Dragon Breaker/Dragon Saucer = more forgiving base choice"
+  safetyNote:       "lighter weight than Dragon Breaker Core AR/Dragon Saucer Core AR = more forgiving base choice"
   competitiveValue: "top-tier competitive"
 
-Left Spin (with Screw Zeus):
-  Primary contacts: foreheads of Screw Zeus (reasonably well exposed) + leading edge of
-                    second section (completely unobstructed) + crests of Great Dragon
-  combinedSmash:    ≈ 0.65  [ESTIMATED — all Screw Zeus contacts well exposed in LS]
+Left Spin (with Screw Zeus SAR):
+  Primary contacts: foreheads of Screw Zeus SAR (reasonably well exposed) + leading edge of
+                    second section (completely unobstructed) + crests of Great Dragon Core AR
+  combinedSmash:    ≈ 0.65  [ESTIMATED — all Screw Zeus SAR contacts well exposed in LS]
   recoilFactor:     0.30    [ESTIMATED]
   warningNote:      "Does NOT work with SG Metal Flat Base (Gaia Dragoon V) — too much recoil,
                      too little weight for the tip speed"
-  disadvantage_LS:  "Screw Zeus inverted slope can destabilise the combo when hit by taller bases
+  disadvantage_LS:  "Screw Zeus SAR inverted slope can destabilise the combo when hit by taller bases
                      in LS; overhanging section can reduce efficacy vs Circle Survivor Defense
                      (requires very strong launch to overcome)"
-  massNote:         "lighter weight vs Dragon Breaker/Dragon Saucer = more forgiving of tip
+  massNote:         "lighter weight vs Dragon Breaker Core AR/Dragon Saucer Core AR = more forgiving of tip
                      speed and launch power"
   competitiveValue: "top-tier competitive"
 ```
@@ -14789,7 +14789,7 @@ interface GreatDragonAR {
     rs: { combinedSmash: 0.60, recoil: 0.28, competitive: "top_tier", fragile: "reports_of_breakage" };
     ls: { combinedSmash: 0.65, recoil: 0.30, competitive: "top_tier",
           warning: "no_SG_Metal_Flat_Base_GDV",
-          note: "lighter weight than Dragon Breaker/Saucer = more forgiving base choice" };
+          note: "lighter weight than Dragon Breaker Core AR/Dragon Saucer Core AR = more forgiving base choice" };
   };
 
   competitiveTier: "top_tier_smash";
@@ -14803,13 +14803,13 @@ interface GreatDragonAR {
 
 **Role:** Top-tier smash AR — SAR choice determines spin direction and performance tier.
 
-The Wing Sub-Ring SAR (stock) obstructs Great Dragon's contact points and should always be replaced. The core ring itself delivers excellent smash in both spin directions; the SAR determines whether that smash is fully realised:
+The Wing Sub-Ring SAR (stock) obstructs Great Dragon Core AR's contact points and should always be replaced. The core ring itself delivers excellent smash in both spin directions; the SAR determines whether that smash is fully realised:
 
 - **War Lion SAR (RS):** Best RS build — smashFraction 0.62, highly competitive. Elevated contact height beats Circle Survivor Defense. Requires Defense Grip Base or SG Grip Change Base Tip for recoil control. RS significantly better than LS in this configuration.
 - **War Bear SAR (LS):** Best LS build — smashFraction 0.72, comparable to Square Edge. Top-tier left-spin smash. Never use in RS (War Bear SAR is fragile in right spin).
 - **Screw Zeus Core AR (either spin):** Top-tier RS and LS when fixing Screw Zeus in place. Lighter weight than Dragon Breaker/Dragon Saucer = more forgiving of base choice. Avoid SG Metal Flat Base GDV in LS.
 
-**Fragility notes:** Avoid the black recolour entirely (Gold Plastic Syndrome). Exercise care with Screw Zeus RS (reports of breakage). Standard colour versions are acceptable but not sturdy.
+**Fragility notes:** Avoid the black recolour entirely (Gold Plastic Syndrome). Exercise care with Screw Zeus SAR in RS (reports of breakage). Standard colour versions are acceptable but not sturdy.
 
 Tier: **top-tier smash** in the correct SAR configuration. Non-competitive with stock Wing Sub-Ring installed.
 
@@ -15764,7 +15764,7 @@ War Lynx is the Attack Ring of **Galux** (ガルクス), a Plastic-Generation Be
 
 War Lynx consists of an **AR + Sub AR** system, mirroring the War Lion + Sub AR architecture of Galeon (Galman's beast, a different White Tiger cohort). The geometry is described as similar to War Lion (Case [refer to War Lion case when assigned]) but with a measurable mass reduction: **War Lynx ≈ 6.65 g** vs **War Lion ≈ 7.1 g** — a reduction of approximately **0.45 g (6.3%)**. This lighter profile is achieved through thinner contact face cross-sections or reduced blade span, at the cost of per-hit impulse.
 
-The Sub AR reinforces and extends the contact geometry in the same manner as the War Lion Sub AR, compensating partially for the reduced base AR mass by increasing effective contact surface area. Together the AR + Sub AR assembly approaches War Lion's total angular coverage while maintaining the lighter individual AR mass.
+The Sub AR reinforces and extends the contact geometry in the same manner as the War Lion Sub AR, compensating partially for the reduced base AR mass by increasing effective contact surface area. Together the AR + Sub AR assembly approaches War Lion Core AR's total angular coverage while maintaining the lighter individual AR mass.
 
 **Design philosophy per Galux card context:** Galux was conceived as a **counter-oriented fast attacker** rather than a power attacker:
 - Attack of Galzly (power attacker type)
@@ -15775,16 +15775,16 @@ The 3000/3000 Attack/Defense card stats explicitly confirm a **balanced profile*
 
 ### 2. Physics
 
-**Mass trade-off vs War Lion:**
+**Mass trade-off vs War Lion Core AR:**
 
 ```
 War Lynx AR mass (estimated):  6.65 g  [ESTIMATED — from PDB-era comparison data]
-War Lion AR mass:               7.10 g  [FACT(PDB)]
+War Lion Core AR mass:          7.10 g  [FACT(PDB)]
 Δm = 0.45 g  →  6.3% lighter
 
 Per-hit impulse at equal contact angle α:
   J = (Δm × v_rel) × sin(α)
-  War Lynx impulse / War Lion impulse = m_Lynx / m_Lion = 6.65 / 7.10 = 0.937
+  War Lynx impulse / War Lion Core AR impulse = m_Lynx / m_Lion = 6.65 / 7.10 = 0.937
   → ~6.3% lower per-hit impulse for equal geometry  [ESTIMATED]
 ```
 
@@ -15807,12 +15807,12 @@ Spin-up advantage: same launch power → I_Lynx is 6.7% lower → ~3.3% higher �
 (I·ω = const for equal launch power — so ω_Lynx / ω_WL = √(I_WL / I_Lynx) ≈ 1.033)
 ```
 
-This ~3.3% orbital speed advantage slightly compensates for the 6.3% mass reduction in impulse. Net: War Lynx delivers marginally lower per-hit force than War Lion but arrives at the target fractionally faster — consistent with the "speed over power" characterisation.
+This ~3.3% orbital speed advantage slightly compensates for the 6.3% mass reduction in impulse. Net: War Lynx delivers marginally lower per-hit force than War Lion Core AR but arrives at the target fractionally faster — consistent with the "speed over power" characterisation.
 
 **Contact angle and smash geometry (mirroring War Lion structure):**
 
 ```
-smashFractionRS:   ~0.65  [ESTIMATED — similar wing geometry to War Lion]
+smashFractionRS:   ~0.65  [ESTIMATED — similar wing geometry to War Lion Core AR]
 recoilFactor:      ~0.35  [ESTIMATED]
 upperFraction:     ~0.20  [ESTIMATED — Sub AR provides upper lift component]
 ```
@@ -15843,7 +15843,7 @@ interface WarLynxAR {
   upperFraction: 0.20;                    // [ESTIMATED — from Sub AR contribution]
 
   // Design intent
-  designPhilosophy: "counter_fast_balanced"; // "speed over power" vs War Lion/Galeon
+  designPhilosophy: "counter_fast_balanced"; // "speed over power" vs War Lion Core AR/Galeon
   vsWarLion: {
     massReduction_pct: 6.3;
     perHitImpulseReduction_pct: 6.3;
@@ -15869,9 +15869,9 @@ interface WarLynxAR {
 
 ### 4. Verdict
 
-**Role:** Counter-attack balanced attacker (unreleased). War Lynx trades 6.3% of War Lion's per-hit mass for a compensating orbital speed advantage, producing a fast, balanced AR suited to disrupting multiple opponent types rather than maximising single-hit damage. The 3000/3000 card stat profile confirms the design intent — not an extreme type, but a versatile counter tool. Its stock combo (Eight Wide + Metal Ball Base) builds defensively with a fast AR, making Galux a "respond-to-anything" balanced archetype consistent with Takara's promotional framing ("best of Galzly, War Monkey, and Galeon").
+**Role:** Counter-attack balanced attacker (unreleased). War Lynx trades 6.3% of War Lion Core AR's per-hit mass for a compensating orbital speed advantage, producing a fast, balanced AR suited to disrupting multiple opponent types rather than maximising single-hit damage. The 3000/3000 card stat profile confirms the design intent — not an extreme type, but a versatile counter tool. Its stock combo (Eight Wide + Metal Ball Base) builds defensively with a fast AR, making Galux a "respond-to-anything" balanced archetype consistent with Takara's promotional framing ("best of Galzly, War Monkey Core AR, and Galeon").
 
-Because the part was never sold, all real-world use data is absent. Physics estimates are derived from card-confirmed mass comparison and geometric similarity to War Lion. Game-engine implementation should model War Lynx as a slightly lighter, slightly faster War Lion with balanced attack/defense weighting. Tier: **unreleased — estimated mid-tier attack/balanced** based on geometry analysis.
+Because the part was never sold, all real-world use data is absent. Physics estimates are derived from card-confirmed mass comparison and geometric similarity to War Lion Core AR. Game-engine implementation should model War Lynx as a slightly lighter, slightly faster War Lion Core AR with balanced attack/defense weighting. Tier: **unreleased — estimated mid-tier attack/balanced** based on geometry analysis.
 
 ---
 
@@ -16474,7 +16474,7 @@ in Case 259 — the Great Dragon body also contributes in that configuration).
 
 ```
 With Dragon Breaker Core AR:
-  Dragon Breaker's geometry exposes War Bear SAR well; combined mass at large radius
+  Dragon Breaker Core AR's geometry exposes War Bear SAR well; combined mass at large radius
   "Highly aggressive attack setup with excellent range"  [FACT(PDB)]
   SAR can still slip → fixation must be maintained carefully  [FACT(PDB)]
   Heavier total weight helps recoil control on SG Metal Flat Base GDV  [FACT(PDB)]
@@ -16547,11 +16547,11 @@ interface WarBearSAR {
 
 **Role:** LS top-tier fixed-position smash SAR; non-functional free-spinning; avoid RS entirely.
 
-War Bear SAR's 2.4 g of mass at large radius, when fixed by a Wide Defense or Ten Wide concave-up, delivers well-angled LS contact points with excellent range — capable of top-tier smash output, particularly with Great Dragon (smashFraction 0.72, comparable to Square Edge). This is the primary competitive value of the part.
+War Bear SAR's 2.4 g of mass at large radius, when fixed by a Wide Defense or Ten Wide concave-up, delivers well-angled LS contact points with excellent range — capable of top-tier smash output, particularly with Great Dragon Core AR (smashFraction 0.72, comparable to Square Edge). This is the primary competitive value of the part.
 
 **Critical limitations:** The fixation degrades over time (underside locking lines wear); Hyperblades version is inherently less secure. Tips can shear even in LS. In RS, the contact points are poorly angled, fragility is severe, and the SAR provides no competitive benefit — always use War Lion SAR for RS builds. Free-spinning mode is non-functional.
 
-In LS smash builds: **top-tier** with Great Dragon or Dragon Breaker. In any other configuration: non-competitive.
+In LS smash builds: **top-tier** with Great Dragon Core AR or Dragon Breaker Core AR. In any other configuration: non-competitive.
 
 ---
 
@@ -16779,3 +16779,786 @@ interface ScissorsArmAR {
 Scissors Arm delivers LS smash comparable to or exceeding top-tier ARs (smashFraction ≈ 0.62) but couples this with tremendous recoil (recoilFactor ≈ 0.72 — more than Hayate Attack Ring), leading to frequent self-KOs. This self-KO tendency keeps it off the Competitive Combos List despite the raw power. With a worn/grippy SG Grip Change Base Tip the lateral friction can hold Scissors Arm in-stadium through recoil, bringing it to competitive viability, but this is obscure and recoil remains a concern. RS is non-viable (contact faces are angled backward in RS, creating pure recoil with no smash).
 
 Tier: **high-power niche** — best non-CCL LS smash AR; competitive with specific SG Grip Change Base Tip configuration; avoid RS.
+
+
+---
+
+## Case 281 — Cross Gator AR (4.0 g [FACT(PDB)], Trygator V-Force): 4-Fold Balance AR; Moderate RS and LS, Outclassed in Both Directions
+
+**Source beyblade:** Trygator (トライゲータ), Card #097 Ver.2.0. Balance type; right spin. Stock parts: Wide Attack WD, Metal Ball Base.  
+**System:** SGS (Spin Gear System), standard right SG.  
+**Part name (JP):** クロスゲータ (Cross Gator).  
+**Card stats:** ATK 3000 / DEF 3000 (balanced, confirming neither attack nor stamina specialisation).
+
+---
+
+### 1. Geometry
+
+**4-fold (C4) symmetry** [ESTIMATED from card art and product images]:
+
+```
+Cross Gator AR: 4 wings extending from central hub
+  Wing structure:  flat upper surface with curved outer contact edge
+  Contact edge:    orange-red curved sections (distinct from green/purple body)
+  Hub fill:        crosshatch-textured green body between wings
+  Profile:         wide, flat --- low overall height
+  Outer radius:    ~32 mm  [ESTIMATED]
+  Inner radius:    ~12 mm  [ESTIMATED]
+  Mass:            4.0 g   [FACT(PDB)]
+```
+
+C4 symmetry implies:
+- Near-constant moment of inertia I(θ) — no periodic variation with rotation angle
+- Zero centre-of-mass eccentricity — no nutation penalty
+- Uniform contact presentation in any rotational orientation
+
+**Contact edge geometry (RS):**
+
+```
+Leading face (RS): curved outer edge, moderate forward angle
+  Contact angle from tangential α ≈ 25°  [ESTIMATED]
+  smashFraction_RS = sin(25°) ≈ 0.42  [ESTIMATED]
+  recoilFactor_RS  ≈ 0.50              [ESTIMATED — curved face reduces peak recoil vs. flat edge]
+```
+
+The curved rather than sharp-edged faces reduce both peak smash and recoil relative to a knife-edge wing design (e.g., Triple Wing). The moderate angle is consistent with a Balance-type designation: partial smash, partial deflection, no archetype dominance.
+
+**Moment of inertia estimate:**
+
+```
+4-wing annular approximation (m = 4.0 g, r_outer = 32 mm, r_inner = 12 mm):
+  I = (m/2)(r_outer^2 + r_inner^2)
+    = (0.004/2)(0.032^2 + 0.012^2)
+    = 0.002 x (0.001024 + 0.000144)
+    = 2.34 x 10^-6 kg*m^2  [ESTIMATED]
+```
+
+At 4.0 g this is below the mass range of the most competitive plastic-gen ARs (typically 4.5–6.0 g), limiting impact transfer.
+
+---
+
+### 2. Physics
+
+**RS smash performance:**
+
+```
+At omega = 200 rad/s, r_tip = 32 mm:
+  Smash impulse index = omega x r_tip x smashFraction
+                      = 200 x 0.032 x 0.42 = 2.69  [ESTIMATED]
+
+  Triple Wing RS reference: ~ 200 x 0.033 x 0.55 = 3.63
+  Cross Gator RS vs. Triple Wing: 2.69 / 3.63 ~ 74%  [ESTIMATED]
+```
+
+RS smash is roughly three-quarters of Triple Wing output. This is above the barely-usable tier (Cross Fang at ~0.174 fraction) but not competitive for dedicated RS attack. The rounded contact edges also reduce consistency versus flat-faced wings (contact glances off the curve at shallow approach angles).
+
+**LS performance:**
+
+```
+LS trailing face: smooth back side of the orange curved edge
+  Contact angle from tangential (LS) α ≈ 15°  [ESTIMATED]
+  smashFraction_LS ≈ sin(15°) ≈ 0.26  [ESTIMATED]
+  recoilFactor_LS  ≈ 0.30              [ESTIMATED]
+```
+
+Low LS recoil is a necessary (but not sufficient) condition for zombie survival; however the contact geometry is not optimised for it. Dedicated zombie ARs (Tiger Defenser, War Monkey Core AR) have specifically tailored trailing faces and AR floor clearance. Cross Gator’s balance-AR profile does not achieve the clearance or spin-steal surface needed for tier-1 zombie use.
+
+**Mass vs. competitive threshold:**
+
+```
+4.0 g AR mass: below the 4.5-5.0 g range that maximises impact transfer at equal geometry
+Low I relative to competitive ARs: reduces orbital kinetic energy transferred per collision
+```
+
+---
+
+### 3. Game Engine Mapping
+
+```typescript
+interface CrossGatorAR {
+  name: "cross_gator_ar";
+  system: "SGS";
+  sourceBey: "Trygator_VForce";      // Card #097 Ver.2.0
+  foldSymmetry: 4;                    // [ESTIMATED from imagery]
+  isSymmetric: true;
+  mass_g: 4.0;                        // [FACT(PDB)]
+  I_kgm2: 2.34e-6;                    // [ESTIMATED]
+  beyType: "balance";                 // [FACT — card designation]
+
+  contactModel: {
+    rs: {
+      contactEdge: "curved_orange_wing_tip";
+      alpha_deg: 25;                  // [ESTIMATED]
+      smashFraction: 0.42;            // [ESTIMATED]
+      recoilFactor: 0.50;             // [ESTIMATED]
+      vsTripleWing_pct: 74;           // [ESTIMATED]
+      competitive: false;
+    };
+    ls: {
+      smashFraction: 0.26;            // [ESTIMATED]
+      recoilFactor: 0.30;             // [ESTIMATED]
+      zombiePotential: "non_viable";  // not optimised for survival
+    };
+  };
+
+  cardStats: { atk: 3000; def: 3000; }; // balanced [FACT — card]
+  sarSlot: false;
+}
+```
+
+---
+
+### 4. Verdict
+
+**Role:** Mediocre Balance AR — moderate in both RS and LS, competitive in neither.
+
+Cross Gator’s 4 g mass and curved moderate-angle contact faces produce roughly 74% of Triple Wing’s RS smash without the consistency, and insufficient LS geometry for zombie survival. The Balance type designation accurately reflects the design: it tries to do everything at a mid-level and excels at nothing. The Wide Attack WD pairing in stock form partially compensates for the AR’s moderate output, but competitive RS attack and LS zombie builds have purpose-built ARs that definitively outclass it. Avoid in both directions for competitive play.
+
+Tier: **non-competitive** — moderate performance ceiling; outclassed in RS and LS by specialised ARs.
+
+
+---
+
+## Case 282 — Vanishing Moot AR (ANIME/MANGA EXCLUSIVE, Vanishing Moot): 3-Fold Swept-Back Turbine Blades; RS Survival/LAD-Optimised; Magnacore Centering; Never Released
+
+**Source beyblade:** Vanishing Moot (バニシングムート), Card #216 Ver.4.0.  
+**Owner:** Joseph (original series + Bakuten Shoot manga).  
+**System:** Magnacore System, right spin.  
+**Type:** Stamina (持久, jikyū).  
+**Release status:** NEVER RELEASED — anime and manga exclusive. No physical retail product. [FACT]  
+**Confirmed physical data:** None — all part measurements are estimated from anime/manga art and card imagery.
+
+> **Anime Physics Override:** Card stats (ATK 5000 / DEF 5000) and the card’s described effect (「強烈な猛攻アタックで、相手をリングはじきす」 — “ring-outs opponents with powerful fierce attack”) reflect BeySpirit/anime-power amplification and do not map to real plastic-gen physics. Physical geometry (see below) clearly indicates a **survival/LAD** design, not an attack design. Treat all card performance values as anime-fiction.
+
+---
+
+### 1. Geometry
+
+**3-fold (C3) symmetry** [ESTIMATED from all available imagery]:
+
+```
+Vanishing Moot AR: 3 large swept-back curved turbine blades
+  Blade sweep:     blades curve backward from hub (trailing-tip turbine design)
+  Blade arc span:  ~80 deg each  [ESTIMATED]
+  Total coverage:  3 x 80 = 240 deg -> good azimuthal overlap, limited gap zones
+  Outer radius:    ~36-38 mm  [ESTIMATED — wide, far-reaching blades]
+  Inner radius:    ~10 mm  [ESTIMATED]
+  Surface details: two screw-like protrusions per blade (decorative / two-piece mould seam)
+  Hub:             separate circular disc element, grooved/ribbed surface
+  Mass:            ~4.5-5.0 g  [ESTIMATED — no physical release, no weigh data]
+```
+
+**Blade sweep geometry (RS):**
+
+```
+In right spin (RS), the blade tips trail behind the direction of rotation:
+  Leading face: smooth curved inward-swept arc edge
+  The blade sweeps tangentially away from the impact direction
+  Effective contact angle from radial: ~80 deg  [ESTIMATED]
+  smashFraction_RS = sin(90 - 80) = sin(10 deg) ~ 0.08  [ESTIMATED — nearly tangential]
+  recoilFactor_RS  ~ 0.12  [ESTIMATED — smooth curved exit, minimal self-recoil]
+```
+
+The swept-back blades act like a turbine impeller in RS: incoming contact is deflected smoothly outward and backward relative to the Vanishing Moot, minimising both smash transfer to the opponent and recoil to the user. This is optimal for LAD (Life After Death): during the nutation/walking phase the AR must avoid catching floor edges that rob spin; smooth swept blades wipe cleanly across the stadium floor without snagging.
+
+**Blade sweep geometry (LS):**
+
+```
+In LS, the blade backs become the leading edge:
+  Flat/slightly concave back surface -> more abrupt contact than RS
+  Estimated smashFraction_LS ~ 0.22  [ESTIMATED]
+  Estimated recoilFactor_LS  ~ 0.55  [ESTIMATED]
+  LS is not an intended use direction for this design
+```
+
+**Moment of inertia estimate:**
+
+```
+3-blade, large-radius design (m ~ 4.75 g, r_outer ~ 37 mm, r_inner ~ 10 mm):
+  I ~ (0.00475/2)(0.037^2 + 0.010^2)
+    ~ 0.002375 x (0.001369 + 0.0001)
+    ~ 3.49 x 10^-6 kg*m^2  [ESTIMATED]
+```
+
+High I per gram due to mass concentrated at large radius — consistent with Stamina typing.
+
+---
+
+### 2. Physics
+
+**Magnacore System — South Pole centering effect:**
+
+```
+Magnacore (South Pole, サウスマグネコア):
+  South Pole core attracted to North Pole magnet in Beystadium floor
+  Centering force at arena centre: F_mag ~ 0.15-0.30 N  [ESTIMATED, ref. South Magnecore, Case 275]
+  Pulls beyblade toward centre when displaced
+  Effect on survival: reduces ring-out probability, passively re-centres during LAD
+  Effect weakens with distance from stadium magnet (inverse-square falloff)
+```
+
+**RS survival profile:**
+
+```
+LAD phase spin decay (estimated, reference SG Bearing Base zombie as upper bound):
+  AR floor sweep:  ~2-3 rad/s^2  (reduced by smooth swept blades vs. square-edge ARs)
+  Air drag:        ~1-2 rad/s^2
+  Tip friction:    varies by tip selection (no physical release -> ideal tip unknown)
+
+  With rubber/bearing tip + Magnacore centering: LAD floor phase ~3-8 s  [ESTIMATED]
+```
+
+**RS attack incompatibility (physics reasoning):**
+
+The card description of “ring-outs with powerful attack” conflicts with physical geometry. A swept-back blade in RS:
+- Delivers primarily tangential force, not radial smash
+- Smash impulse index ~ 200 x 0.037 x 0.08 = 0.59 [ESTIMATED] vs. Triple Wing RS ~ 3.63
+
+The design is approximately 6x weaker than Triple Wing for ring-out by radial smash. This is a **stamina/survival AR** misrepresented as an attack part by anime fiction.
+
+---
+
+### 3. Game Engine Mapping
+
+```typescript
+interface VanishingMootAR {
+  name: "vanishing_moot_ar";
+  system: "Magnacore";
+  sourceBey: "Vanishing_Moot";        // Joseph's bey
+  releasedPhysically: false;          // [FACT — anime/manga exclusive]
+  foldSymmetry: 3;                    // [ESTIMATED from imagery]
+  bladeDesign: "swept_back_turbine";  // [ESTIMATED from imagery]
+  mass_g: 4.75;                       // [ESTIMATED — no weigh data]
+  I_kgm2: 3.49e-6;                    // [ESTIMATED]
+  beyType: "stamina";                 // [FACT — card: 持久]
+
+  contactModel: {
+    rs: {
+      smashFraction: 0.08;            // [ESTIMATED — nearly tangential swept blade]
+      recoilFactor: 0.12;             // [ESTIMATED — smooth curved exit]
+      ladQuality: "excellent";        // swept blades = clean floor wipe
+      tier_rs_attack: "non_viable";
+      tier_rs_survival: "high_potential_if_produced_with_correct_tip";
+    };
+    ls: {
+      smashFraction: 0.22;            // [ESTIMATED]
+      recoilFactor: 0.55;             // [ESTIMATED]
+      competitive: false;
+    };
+  };
+
+  magnacoreEffect: {
+    poleType: "south";                // [ESTIMATED from system]
+    centeringForce_N: 0.15;           // [ESTIMATED — ref. South Magnecore, Case 275]
+    effect: "passive_centering";
+    ringOutReduction: "moderate";
+  };
+
+  animeCardStats: {
+    atk: 5000; def: 5000;            // [FACT — card values, NOT real physics values]
+    animePhysicsOverride: true;       // BeySpirit power, not geometry
+    cardDescription_EN: "Ring-outs opponents with powerful fierce attack";
+    physicalGeometryContradictsCardDescription: true;
+  };
+
+  sarSlot: false;
+}
+```
+
+---
+
+### 4. Verdict
+
+**Role:** Survival/LAD-optimised anime AR — never released; swept-back turbine design provides excellent RS LAD and Magnacore centering at the cost of near-zero smash.
+
+Vanishing Moot’s AR is architecturally a strong zombie/survival design: the three large swept-back blades provide smooth floor-wipe LAD and minimal recoil in RS, while the South Pole Magnacore passively re-centres the bey during the nutation phase. The combination would theoretically produce strong endgame performance with an appropriate tip (bearing or rubber). The card’s ATK 5000 / DEF 5000 and its “powerful attack” description are anime physics fiction — the physical geometry contradicts these stats entirely. RS attack potential is near-zero (smashFraction ~ 0.08), consistent with a stamina type that wins by outlasting opponents rather than knocking them out.
+
+Since the part was never manufactured, no practical assembly data exists. All values are estimated from visual geometry and system knowledge.
+
+Tier: **anime-only — cannot be assigned a competitive tier; estimated survival/LAD potential is high if produced**.
+
+
+---
+
+## Case 283 — Neo Cross Horn AR (5.7 g [FACT(PDB)], Uriel 2 / Capricorn Strike G): 3-Fold Dual-Direction Hyper-Aggressive Smash; Takara GPS Non-Competitive; Hasbro Version Competitive Both Directions
+
+**Source beyblades:** Uriel 2 (Takara — Gold Plastic Syndrome version), Capricorn Strike G (Hasbro — standard ABS).  
+**System:** SGS (Spin Gear System).  
+**Mass:** 5.7 g [FACT(PDB)].
+
+---
+
+### 0. Gold Plastic Syndrome Warning
+
+> **TAKARA VERSION IS NON-COMPETITIVE.** The Takara Neo Cross Horn (gold metallic colour, from Uriel 2) suffers from Gold Plastic Syndrome (GPS): the gold pigment disrupts polymer crystallinity, causing progressive embrittlement over time. Impact forces during competitive use are sufficient to cause catastrophic fracture — the part is unlikely to survive more than a few matches. Even an intact Takara Neo Cross Horn cannot be relied upon in tournament conditions. The Hasbro version (Capricorn Strike G, yellow ABS) uses standard GPS-free plastic and is the only version safe for competitive play. [FACT(PDB)]
+
+---
+
+### 1. Geometry
+
+**3-fold (C3) symmetry** [ESTIMATED from imagery; underside SG tabs confirm C3]:
+
+```
+Neo Cross Horn AR: 3 horn-cluster arms extending from central hub
+  Primary body:     thick angular horn with flat back face
+  Up-tick feature:  raised pointed protrusion at the tip of each horn (distinct LS contact point)
+  RS contact face:  angular back face of the horn body
+  LS contact face:  up-tick protrusion (hook/spur pointing forward in LS)
+  Outer radius:     ~33 mm  [ESTIMATED]
+  Inner radius:     ~12 mm  [ESTIMATED]
+  Mass:             5.7 g   [FACT(PDB)]
+```
+
+The dual-face design (back-of-horn for RS, up-tick for LS) means the AR is purpose-built to be aggressive in both spin directions — not a balance compromise. Each face has a distinct steep attack angle, contributing to the hyper-aggressive characterisation.
+
+**Contact angle estimates:**
+
+```
+RS — back of horn (angular flat face):
+  Contact angle from tangential α_RS ≈ 33°  [ESTIMATED]
+  smashFraction_RS = sin(33°) ≈ 0.54  [ESTIMATED]
+  recoilFactor_RS  ≈ 0.62              [ESTIMATED — 'heavy but not overwhelming']
+
+LS — up-tick protrusion (hook/spur):
+  Contact angle from tangential α_LS ≈ 30°  [ESTIMATED]
+  smashFraction_LS = sin(30°) ≈ 0.50  [ESTIMATED]
+  recoilFactor_LS  ≈ 0.60              [ESTIMATED]
+```
+
+**Moment of inertia estimate:**
+
+```
+3-fold (m = 5.7 g, r_outer = 33 mm, r_inner = 12 mm):
+  I = (0.0057/2)(0.033^2 + 0.012^2)
+    = 0.00285 x (0.001089 + 0.000144)
+    = 0.00285 x 0.001233
+    = 3.51 x 10^-6 kg*m^2  [ESTIMATED]
+```
+
+---
+
+### 2. Physics
+
+**RS smash performance:**
+
+```
+At omega = 200 rad/s, r_tip = 33 mm:
+  Smash impulse index = 200 x 0.033 x 0.54 = 3.56  [ESTIMATED]
+
+  Mountain Hammer RS reference (top RS tier): ~ 200 x 0.033 x 0.57 = 3.76  [ESTIMATED]
+  Neo Cross Horn RS vs. Mountain Hammer: ~95%  [ESTIMATED — 'competitive with Mountain Hammer']
+```
+
+The heavy recoil (≈0.62) is near the threshold of what recoil-control setups can manage. A Heavy Metal Core (mass at hub) reduces net rotational recoil by absorbing angular momentum. Without recoil control, consistent performance is not guaranteed in every matchup.
+
+**LS smash performance:**
+
+```
+At omega = 200 rad/s, r_tip = 33 mm:
+  Smash impulse index = 200 x 0.033 x 0.50 = 3.30  [ESTIMATED]
+
+  Hayate AR LS reference (top LS tier): estimated ~3.5-4.0  [ESTIMATED]
+  Neo Cross Horn LS: competitive within top LS tier  [FACT(PDB)]
+```
+
+**Gold Plastic Syndrome (GPS) — material failure model:**
+
+```
+Takara version:
+  Material:       gold-pigmented ABS with GPS degradation
+  Failure mode:   brittle fracture on high-energy impact (not gradual wear)
+  Trigger:        single high-energy collision sufficient at advanced GPS stage
+  Age dependence: worsens over years regardless of use frequency
+  In-match risk:  catastrophic fracture within first few matches
+  Competitive:    NO — unreliable even if 'looks intact'
+
+Hasbro version:
+  Material:       standard ABS (no GPS), softer than Takara ABS
+  Wear rate:      faster edge rounding than Takara (softer)
+  Failure mode:   gradual wear (no catastrophic fracture risk)
+  Competitive:    YES — 'sufficiently durable'  [FACT(PDB)]
+```
+
+The Hasbro softness slightly reduces peak smash over many uses as edges round, but this is the expected gradual-wear profile of any competitive plastic-gen AR — not a disqualifying factor.
+
+---
+
+### 3. Game Engine Mapping
+
+```typescript
+interface NeoCrossHornAR {
+  name: "neo_cross_horn_ar";
+  system: "SGS";
+  sourceBeys: ["Uriel_2", "Capricorn_Strike_G"];
+  foldSymmetry: 3;                    // [ESTIMATED — C3 confirmed by SG tabs]
+  mass_g: 5.7;                        // [FACT(PDB)]
+  I_kgm2: 3.51e-6;                    // [ESTIMATED]
+
+  contactModel: {
+    rs: {
+      contactFeature: "back_of_horn_angular_face";
+      smashFraction: 0.54;            // [ESTIMATED — 'hyper-aggressive, competitive with Mountain Hammer']
+      recoilFactor: 0.62;             // [ESTIMATED — 'heavy but not overwhelming']
+      recoilControl: "HMC_recommended";
+      tier: "hyper_aggressive_top_tier_hasbro_only";
+      benchmark: "mountain_hammer_rs"; // [FACT(PDB)]
+    };
+    ls: {
+      contactFeature: "up_tick_protrusion_hook";
+      smashFraction: 0.50;            // [ESTIMATED]
+      recoilFactor: 0.60;             // [ESTIMATED]
+      tier: "hyper_aggressive_top_tier_hasbro_only";
+      benchmark: "hayate_ar_ls";     // [FACT(PDB)]
+    };
+  };
+
+  versionDifferences: {
+    takara: {
+      colour: "gold_metallic";
+      bey: "Uriel_2";
+      goldPlasticSyndrome: true;
+      competitive: false;
+      reason: "GPS_embrittlement_catastrophic_fracture_risk";
+    };
+    hasbro: {
+      colour: "yellow_ABS";
+      bey: "Capricorn_Strike_G";
+      goldPlasticSyndrome: false;
+      plasticSofter: true;
+      wearsFaster: true;
+      competitive: true;
+    };
+  };
+
+  sarSlot: false;
+}
+```
+
+---
+
+### 4. Verdict
+
+**Role (Hasbro version):** Hyper-Aggressive Smash in both RS and LS — one of the rare ARs competitive in both spin directions at the top tier.
+
+Neo Cross Horn's dual-face design (horn back for RS, up-tick for LS) makes it genuinely competitive in both spin directions: RS competes with Mountain Hammer (smashFraction ≈ 0.54 vs. ~0.57), and LS competes with Hayate AR. The heavy recoil in both directions (≈0.60–0.62) requires recoil control setups — HMC + appropriate base. The Takara version (Uriel 2, gold metallic) is excluded entirely by Gold Plastic Syndrome: GPS embrittlement causes catastrophic fracture within a few matches and cannot be safely used even in casual competition. The Hasbro version (Capricorn Strike G, yellow) is the only competitive version — softer plastic wears slightly faster but never breaks catastrophically. Since Mountain Hammer and Hayate exist as GPS-free alternatives that match or exceed Neo Cross Horn's performance in their respective best directions, Neo Cross Horn is not required for any combination, but is valid and effective on the Hasbro version.
+
+Tier: **top-tier (Hasbro only) — competitive RS and LS smash; not recommended for Takara GPS version**.
+
+
+---
+
+## Case 284 — Trident Vector AR (5.4 g [FACT(PDB)], Poseidon / Ocean Wrath G): 3-Fold High-Recoil Multiple Contact Points; RS Self-Destructive; LS Mediocre; Non-Competitive Both Directions
+
+**Source beyblades:** Poseidon (Takara), Ocean Wrath G (Hasbro — smoothed underside, no performance difference).  
+**System:** SGS (Spin Gear System).  
+**Mass:** 5.4 g [FACT(PDB)].
+
+---
+
+### 1. Geometry
+
+**3-fold (C3) symmetry** [ESTIMATED from imagery]:
+
+```
+Trident Vector AR: 3 large complex arms with numerous contact protrusions per arm
+  Contact point count: multiple per arm (dense array of points and ridges)  [ESTIMATED ~4-6 per arm]
+  Contact face angles: predominantly outward-angled in RS  [FACT(PDB)]
+  Profile: very large outer footprint, aggressive serrated edge
+  Outer radius: ~35 mm  [ESTIMATED]
+  Inner radius: ~13 mm  [ESTIMATED]
+  Mass: 5.4 g  [FACT(PDB)]
+```
+
+The 'outward-angled' contact points are the critical design flaw: in RS the contact faces point outward from the spin axis, meaning the face normal at impact is oriented away from the opponent. When this face strikes an opponent bey, the reaction force (recoil) is directed backward into the Trident Vector's own rotation, creating severe rotational recoil — angular momentum transferred back as opposing torque, rapidly decelerating the beyblade.
+
+**RS contact angle analysis:**
+
+```
+RS outward-angled face:
+  Effective contact angle from tangential α_RS ≈ 15-20°  [ESTIMATED]
+  smashFraction_RS = sin(17°) ≈ 0.29  [ESTIMATED — 'respectable power in spite']
+  recoilFactor_RS  ≈ 0.84              [ESTIMATED — 'massive recoil']
+
+Rotational recoil effect (approximate):
+  Each contact diverts ~84% of impact energy into self-rotation deceleration
+  Multiple contacts per arm compound this: net result = rapid spin loss per match
+  'Only gets 1-2 hits before being out of spin'  [FACT(PDB)]
+```
+
+**LS contact angle analysis:**
+
+```
+LS face (different arm orientation in LS):
+  smashFraction_LS ≈ 0.18  [ESTIMATED — 'much less power in LS']
+  recoilFactor_LS  ≈ 0.62  [ESTIMATED — 'lower recoil than RS but still very heavy']
+```
+
+**Moment of inertia estimate:**
+
+```
+3-fold (m = 5.4 g, r_outer = 35 mm, r_inner = 13 mm):
+  I = (0.0054/2)(0.035^2 + 0.013^2)
+    = 0.0027 x (0.001225 + 0.000169)
+    = 0.0027 x 0.001394
+    = 3.76 x 10^-6 kg*m^2  [ESTIMATED]
+```
+
+---
+
+### 2. Physics
+
+**RS — high recoil, self-depleting performance:**
+
+```
+Per-hit analysis (omega_initial = 200 rad/s, r = 35 mm):
+  Smash impulse index = 200 x 0.035 x 0.29 = 2.03  [ESTIMATED]
+  Rotational recoil impulse = 200 x 0.035 x 0.84 = 5.88  [ESTIMATED]
+
+  Net effect per hit: small ring-out push to opponent, large self-deceleration
+  Spin remaining after 2 contacts: substantially depleted (estimated <50% omega)
+  Result: 1-2 effective hits before incapacitated  [FACT(PDB)]
+```
+
+Comparison to Cybernetic Dragon AR (the reference for violent self-destruct on contact):
+- Trident Vector: similar violent disassembly potential, slightly less severe
+- Both share the high recoilFactor pattern at extreme contact angles
+- Cybernetic Dragon is worse (the benchmark reference for this failure mode)
+
+**LS — low smash, lower but still excessive recoil:**
+
+```
+Smash impulse index LS = 200 x 0.035 x 0.18 = 1.26  [ESTIMATED]
+  Below non-competitive threshold for dedicated attack
+  High recoil still present: not viable for survival role either
+```
+
+---
+
+### 3. Game Engine Mapping
+
+```typescript
+interface TridentVectorAR {
+  name: "trident_vector_ar";
+  system: "SGS";
+  sourceBeys: ["Poseidon", "Ocean_Wrath_G"];
+  foldSymmetry: 3;                     // [ESTIMATED]
+  contactPointsPerArm: 4;              // [ESTIMATED — 'numerous thick contact points']
+  mass_g: 5.4;                         // [FACT(PDB)]
+  I_kgm2: 3.76e-6;                     // [ESTIMATED]
+
+  contactModel: {
+    rs: {
+      contactGeometry: "outward_angled_multiple_points";
+      smashFraction: 0.29;             // [ESTIMATED — respectable but overwhelmed by recoil]
+      recoilFactor: 0.84;             // [ESTIMATED — 'massive recoil']
+      effectiveHits: 2;               // [FACT(PDB) — '1-2 hits before out of spin']
+      disassemblyRisk: "high";        // [FACT(PDB) — violent contact like Cybernetic Dragon]
+      tier: "non_competitive";        // [FACT(PDB)]
+      verdict: "bad_design_despite_fearsome_appearance"; // [FACT(PDB)]
+    };
+    ls: {
+      smashFraction: 0.18;             // [ESTIMATED — 'much less power']
+      recoilFactor: 0.62;             // [ESTIMATED — 'lower than RS but still heavy']
+      tier: "mediocre_at_best";       // [FACT(PDB)]
+    };
+  };
+
+  moldDifferences: {
+    hasbro_OceanWrathG: "smoothed_underside_details";
+    performanceDifference: "none_significant"; // [FACT(PDB)]
+  };
+
+  lessonNote: "Example of how bad contact angles ruin a part — large, heavy, aggressive-looking, yet outperformed by simpler ARs due to geometry."; // [FACT(PDB)]
+  sarSlot: false;
+}
+```
+
+---
+
+### 4. Verdict
+
+**Role:** Non-competitive in both RS and LS — a textbook case of how bad contact angles destroy a part's viability regardless of size and mass.
+
+Trident Vector's RS outward-angled contact faces (recoilFactor ≈ 0.84) create massive rotational recoil that drains angular momentum faster than the smash output can offset it. The result: 1–2 effective hits before spin exhaustion, with occasional violent disassembly on contact (comparable to Cybernetic Dragon). 'Fearsome looks' from its dense array of tines cannot overcome the fundamental geometry flaw. LS is slightly less bad (lower recoil) but offers so little power that it cannot reach even the 'mediocre' threshold for competitive use. Despite 5.4 g of mass and a large outer radius — numbers that should produce a strong AR — poor geometry makes it one of the worst-performing competitive-looking ARs in the plastic generation. Avoid both directions.
+
+Tier: **non-competitive (both directions)** — outward-angled contact destroys RS; LS power too low.
+
+
+---
+
+## Case 285 — Mirage Goddess AR (7.8 g [FACT(PDB)], Venus / Venusian G): 3-Fold Heaviest Competitive AR; Top-Tier RS Smash; Top-Tier LS Weight-Based Defense + Spin-Steal Attack
+
+**Source beyblades:** Venus (Takara), Venusian G (Hasbro).  
+**System:** SGS (Spin Gear System).  
+**Mass:** 7.8 g [FACT(PDB)] — heaviest competitive AR in the plastic generation.
+
+---
+
+### 1. Geometry
+
+**3-fold (C3) symmetry** [ESTIMATED from imagery]:
+
+```
+Mirage Goddess AR: 3 large thick wing sections with wave-serrated outer edge
+  Primary contact:   thick flat/angled face on leading edge of each wing (RS)
+  Serrated outer rim: multiple lower-level contact protrusions at outer edge
+  LS face:           inner/trailing face — heavy mass, low recoil profile
+  Gentle tip slopes: lower surface has gradual angle (minor destabilisation in LS)
+  Outer radius:      ~36 mm  [ESTIMATED — 'wide, good range']
+  Inner radius:      ~13 mm  [ESTIMATED]
+  Height/thickness:  significant — tall profile compared to most ARs  [ESTIMATED from side photo]
+  Mass:              7.8 g   [FACT(PDB)]
+```
+
+At 7.8 g, Mirage Goddess is approximately 37% heavier than Neo Cross Horn (5.7 g) and 72% heavier than War Monkey (4.5 g). This mass is exceptional for an AR and is the primary driver of its performance in both directions.
+
+**RS contact geometry:**
+
+```
+RS leading face: 'angled a little more inward than ideal'  [FACT(PDB)]
+  'Inward' = contact face normal tilted slightly toward the AR centre vs. the theoretically optimal
+  ~45 deg smash angle. The face still has a strong smash component.
+
+  Contact angle from tangential α_RS ≈ 35°  [ESTIMATED — 'inward of optimal but still top-tier']
+  smashFraction_RS = sin(35°) ≈ 0.57  [ESTIMATED]
+  recoilFactor_RS  ≈ 0.55              [ESTIMATED — 'bulk reassuring for recoil']
+```
+
+The large outer radius (36 mm) and 7.8 g mass compensate for the non-ideal angle: the orbital kinetic energy at impact is high enough that even slightly sub-optimal geometry produces top-tier smash.
+
+**LS contact geometry:**
+
+```
+LS profile: 'heavy, low recoil'  [FACT(PDB)]
+  LS face: trailing/inner face — smooth, rounded relative to RS face
+  Contact angle from tangential (LS) α_LS ≈ 12°  [ESTIMATED — near-tangential for WBD]
+  smashFraction_LS ≈ 0.21  [ESTIMATED — not the purpose; WBD uses mass not smash]
+  recoilFactor_LS  ≈ 0.18  [ESTIMATED — 'low recoil' ← WBD-critical property]
+
+LS spin-steal attack (secondary mechanism):
+  Large mass + large radius -> high contact force even at low smash angle
+  Sustained contact at the 36 mm outer edge -> spin transfer opportunity
+  Competitive spin-steal use despite low smashFraction  [FACT(PDB)]
+```
+
+**Gentle tip slopes (LS secondary effect):**
+
+```
+Gradual slope on lower AR surface, visible in side profile
+  At very low spin (nutation/walking phase): slope contacts stadium -> minor lateral push on opponent
+  Effect: 'pretty negligible' per PDB  [FACT(PDB)]
+  Not a design feature to rely on — incidental geometry
+```
+
+**Moment of inertia estimate:**
+
+```
+3-fold (m = 7.8 g, r_outer = 36 mm, r_inner = 13 mm):
+  I = (0.0078/2)(0.036^2 + 0.013^2)
+    = 0.0039 x (0.001296 + 0.000169)
+    = 0.0039 x 0.001465
+    = 5.71 x 10^-6 kg*m^2  [ESTIMATED]
+```
+
+This is the highest AR moment of inertia seen in this case study series.
+
+---
+
+### 2. Physics
+
+**RS smash performance:**
+
+```
+At omega = 200 rad/s, r_tip = 36 mm:
+  Smash impulse index = 200 x 0.036 x 0.57 = 4.10  [ESTIMATED]
+
+  Mountain Hammer RS reference: ~ 200 x 0.033 x 0.57 = 3.76  [ESTIMATED]
+  Mirage Goddess RS vs. Mountain Hammer: ~109%  [ESTIMATED]
+
+Larger r_tip compensates for same smashFraction -> higher output than Mountain Hammer
+despite the 'slightly inward' angle note.
+```
+
+The extra mass (7.8 vs ~5.5 g for Mountain Hammer-tier ARs) also increases contact energy: I_AR x omega^2 / 2 is ~62% higher for Mirage Goddess, delivering more energy per hit. HMC at the hub further damps rotational recoil, making the recoilFactor effective value even lower.
+
+**LS Weight-Based Defense:**
+
+```
+WBD combo reference (Ten Heavy WD + HMC + Defense Grip Base / Grip Base):
+  Total combo mass (estimate): 7.8 (AR) + 16.0 (WD) + 3.5 (HMC) + ~7-8 (BB) ≈ 35-37 g
+  Inertia at 36 mm outer radius -> very high resistance to lateral displacement
+
+  recoilFactor_LS ≈ 0.18 -> collision energy returned to user:
+    E_return = 0.18 x E_impact (very low)
+    E_return absorbed by combo's own inertia: high mass = stays in place
+    Opponent loses proportionally more spin per contact
+
+WBD viability:
+  'Heavy, low recoil, thick — perfect for WBD in LS'  [FACT(PDB)]
+  'Top tier choice for WBD in LS' (niche — LS WBD is situationally useful)  [FACT(PDB)]
+```
+
+**LS Spin-Steal Attack:**
+
+```
+Spin-steal mechanism:
+  Large mass at large r -> high contact force even at low angular velocity
+  Sustained contact surface (large outer arc) -> longer friction window than small-AR contacts
+  During contact: opponent's spin transfers into Mirage Goddess's shell via friction
+  Result: opponent loses spin while user retains or gains -> 'competitive spin-steal attack'  [FACT(PDB)]
+```
+
+---
+
+### 3. Game Engine Mapping
+
+```typescript
+interface MirageGoddessAR {
+  name: "mirage_goddess_ar";
+  system: "SGS";
+  sourceBeys: ["Venus", "Venusian_G"];
+  foldSymmetry: 3;                    // [ESTIMATED]
+  mass_g: 7.8;                        // [FACT(PDB)] — heaviest competitive plastic-gen AR
+  I_kgm2: 5.71e-6;                    // [ESTIMATED]
+  beyType: "attack";                  // Attack AR (deceptively well-rounded)
+
+  contactModel: {
+    rs: {
+      angleNote: "slightly_inward_of_ideal";
+      smashFraction: 0.57;            // [ESTIMATED]
+      recoilFactor: 0.55;             // [ESTIMATED — 'bulk reassuring']
+      recoilControlNote: "HMC_helpful"; // [FACT(PDB)]
+      smashinImpulseIndex: 4.10;      // [ESTIMATED — vs Mountain Hammer ~3.76]
+      tier: "top_tier_rs_smash";     // [FACT(PDB)]
+    };
+    ls: {
+      smashFraction: 0.21;            // [ESTIMATED — not primary LS mechanism]
+      recoilFactor: 0.18;             // [ESTIMATED — 'heavy low recoil']
+      wbdRole: "top_tier_ls";        // [FACT(PDB)]
+      wbdNote: "niche_ls_wbd_preferred_over_rs_wbd_for_vs_ls_opponents";
+      spinStealAttack: {
+        viable: true;                 // [FACT(PDB)]
+        mechanism: "large_mass_large_radius_sustained_contact";
+        tier: "competitive";
+      };
+      gentleSlopeTip: {
+        effect: "minor_destabilisation_at_very_low_spin";
+        significance: "negligible"; // [FACT(PDB)]
+      };
+    };
+  };
+
+  dualRoleNote: "Top-tier RS smash AND top-tier LS WBD + spin-steal — deceptively well-rounded"; // [FACT(PDB)]
+  sarSlot: false;
+}
+```
+
+---
+
+### 4. Verdict
+
+**Role:** Deceptively well-rounded heavy AR — top-tier RS smash and top-tier LS Weight-Based Defense + spin-steal attack from the same part.
+
+Mirage Goddess's 7.8 g mass (the highest of any competitive plastic-gen AR) drives performance in both directions. In RS, the thick contact faces (slightly inward of ideal) are compensated by the large outer radius (36 mm) and exceptional mass, producing smash output that matches or exceeds Mountain Hammer. HMC assists recoil control (recoilFactor ≈ 0.55 — manageable with proper setup). In LS, the near-tangential profile (recoilFactor ≈ 0.18) creates the mass-inertia resistance required for Weight-Based Defense: the beyblade absorbs opponent hits without significant displacement or spin loss, while the large contact surface provides a secondary spin-steal attack capability. The 'deceptively' in its description comes from its imposing RS appearance suggesting pure aggressive attack — the LS WBD capability is a surprise. Not worth buying specifically (alternatives exist), but competitive in all three roles for owners.
+
+Tier: **top-tier RS smash; top-tier LS WBD (niche); competitive LS spin-steal attack** — not a required purchase but effective in all roles on the Hasbro/Takara versions.

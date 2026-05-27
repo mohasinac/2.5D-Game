@@ -4923,7 +4923,7 @@ Tiger Defenser (~3.6 g) is a three-armed, one-piece ABS Attack Ring from Driger 
    h_top = 6.0 mm (uniform across all 360°)
    No height variation between head and inter-head gap — the body ring maintains a consistent floor.
 
-   War Lion + Dragon Breaker SAR (two-piece):
+   War Lion Core AR + Dragon Breaker Sub AR (two-piece):
    h_main_AR = 7.0 mm at main AR heads
    h_SAR = 4.5 mm at SAR extensions (inter-head zones lower)
    Height variation: 2.5 mm across azimuth → more accessible contact surfaces for attackers.
@@ -5099,7 +5099,7 @@ function hasWedgeVulnerability(isOnePiece: boolean): boolean {
 // bridgeFractureStress({bridgeWidthM:0.0015, bridgeThickM:0.001, bridgeArmM:0.004, Kt:2.2,...}, 9.0)
 //   ≈ 317 MPa  → 7× over ABS tensile limit → breakage under extreme hits ✓
 // hasWedgeVulnerability(true) → false  (one-piece: no SAR gap to exploit)
-// hasWedgeVulnerability(false) → true  (War Lion + Dragon Breaker SAR: gap exists)
+// hasWedgeVulnerability(false) → true  (War Lion Core AR + Dragon Breaker Sub AR: gap exists)
 ```
 
 ---
@@ -7812,30 +7812,30 @@ function leftSpinTiltPerturbation(
 
 ---
 
-### 5. SAR Companion Analysis
+### 5. Core AR Companion Analysis
 
-Each SAR companion changes the effective contact geometry by altering what face of the Screw Zeus head is exposed and at what radial height.
+Each Core AR companion changes the effective contact geometry by altering what face of the Screw Zeus SAR head is exposed and at what radial height.
 
-#### 5a. Dragon Breaker SAR (~5.2 g)
+#### 5a. Dragon Breaker Core AR (~5.2 g)
 
-Dragon Breaker is the heaviest SAR companion. Its additional mass increases the combined AR assembly mass, raising I_AR and thus orbital stability, but also increasing the recoil the attacker must absorb.
+Dragon Breaker Core AR is the heaviest Core AR companion. Its additional mass increases the combined AR assembly mass, raising I_AR and thus orbital stability, but also increasing the recoil the attacker must absorb.
 
-Combined AR moment of inertia with Dragon Breaker:
+Combined AR moment of inertia with Dragon Breaker Core AR:
 
     I_AR_combo = I_SAR + I_DB = 1.94×10⁻⁶ + (0.0052 × 0.019²)
                = 1.94×10⁻⁶ + 1.88×10⁻⁶
                = 3.82×10⁻⁶  kg·m²
 
-Dragon Breaker's contact points align with heavy defense ARs (Metal Driger, Gyro Attacker) — opponents who resist smash but cannot absorb the sustained mass. In right-spin Dragon Breaker adds contact surface at mid-radius, complementing the Screw Zeus corner hits with a second-tier impact. In left-spin Dragon Breaker's protrusions are forward-angled, partially compensating for the inverted slope penalty.
+Dragon Breaker Core AR's contact points align with heavy defense ARs (Metal Driger, Gyro Attacker) — opponents who resist smash but cannot absorb the sustained mass. In right-spin Dragon Breaker Core AR adds contact surface at mid-radius, complementing the Screw Zeus SAR corner hits with a second-tier impact. In left-spin Dragon Breaker Core AR's protrusions are forward-angled, partially compensating for the inverted slope penalty.
 
-    Δ(forward impulse) with DB right-spin: ≈ +12% vs bare SAR (from additional contact area)
-    Δ(self-recoil) with DB left-spin: ≈ -7% (DB geometry partially opposes destabilizing torque)
+    Δ(forward impulse) with DB Core AR right-spin: ≈ +12% vs bare SAR (from additional contact area)
+    Δ(self-recoil) with DB Core AR left-spin: ≈ -7% (DB Core AR geometry partially opposes destabilizing torque)
 
 Best pairing: heavy defense opponents in right-spin where raw force overcomes their inertia.
 
-#### 5b. Dragon Saucer SAR (~4.8 g)
+#### 5b. Dragon Saucer Core AR (~4.8 g)
 
-Mid-weight companion. Dragon Saucer's protrusions are positioned to align directly with the Screw Zeus head contact points rather than adding independent contact surfaces. The effect is geometric reinforcement: the combined face presents a larger effective contact width, reducing the sensitivity to micro-alignment errors.
+Mid-weight companion. Dragon Saucer Core AR's protrusions are positioned to align directly with the Screw Zeus SAR head contact points rather than adding independent contact surfaces. The effect is geometric reinforcement: the combined face presents a larger effective contact width, reducing the sensitivity to micro-alignment errors.
 
 Contact width increase:
 
@@ -7845,21 +7845,21 @@ Wider contact reduces the peak Hertzian stress at impact (contact mechanics: a �
 
     F_peak_DS / F_peak_bare ≈ (w_bare / w_DS)^(1/3) = (0.006/0.010)^(1/3) = 0.843
 
-14% lower peak force — this marginally reduces smash power but substantially reduces the probability of AR cracking. Dragon Saucer is the durability-optimized companion, suited for extended use against mixed fields.
+14% lower peak force — this marginally reduces smash power but substantially reduces the probability of AR cracking. Dragon Saucer Core AR is the durability-optimized companion, suited for extended use against mixed fields.
 
-#### 5c. Great Dragon SAR (~3.9 g)
+#### 5c. Great Dragon Core AR (~3.9 g)
 
 Lightest companion. Lower combined mass means:
 
     I_AR_GD = 1.94×10⁻⁶ + (0.0039 × 0.018²) = 1.94×10⁻⁶ + 1.26×10⁻⁶ = 3.20×10⁻⁶  kg·m²
 
-The spin-down rate of the combined AR is slower (less inertia to maintain, but also less mass contributing drag). Net effect: the combined system stays above the speed threshold for more of the battle. Great Dragon is the most tip-forgiving companion — even a base slightly below fresh performance can sustain effective hits longer.
+The spin-down rate of the combined AR is slower (less inertia to maintain, but also less mass contributing drag). Net effect: the combined system stays above the speed threshold for more of the battle. Great Dragon Core AR is the most tip-forgiving companion — even a base slightly below fresh performance can sustain effective hits longer.
 
-In left-spin, Great Dragon's reduced mass means the destabilizing torque (Section 4) is somewhat attenuated:
+In left-spin, Great Dragon Core AR's reduced mass means the destabilizing torque (Section 4) is somewhat attenuated:
 
     Δθ_GD / Δθ_bare ≈ √(I_AR_GD / I_AR_bare)  ≈  √(3.20/1.94)  =  1.28
 
-Wait — more inertia actually resists tilt perturbation less. The correct relationship: additional companion mass increases I_combo, which directly divides Δθ. So Great Dragon (less mass) gives **higher** Δθ — slightly more destabilization in left-spin than Dragon Breaker. Great Dragon is therefore primarily a right-spin companion where the speed advantage outweighs the slightly reduced mass.
+Wait — more inertia actually resists tilt perturbation less. The correct relationship: additional companion mass increases I_combo, which directly divides Δθ. So Great Dragon Core AR (less mass) gives **higher** Δθ — slightly more destabilization in left-spin than Dragon Breaker Core AR. Great Dragon Core AR is therefore primarily a right-spin companion where the speed advantage outweighs the slightly reduced mass.
 
 ```typescript
 function companionTiltFactor(
@@ -7874,7 +7874,7 @@ function companionTiltFactor(
   const I_total = I_SAR_base + m_companion * r_companion ** 2;
   const J_vert = J * Math.sin((beta_deg * Math.PI) / 180);
   return (J_vert * r_c) / (I_total * omega);
-  // Great Dragon: 3.20e-6 → Δθ=0.74 rad/hit; Dragon Breaker: 3.82e-6 → Δθ=0.62 rad/hit
+  // Great Dragon Core AR: 3.20e-6 → Δθ=0.74 rad/hit; Dragon Breaker Core AR: 3.82e-6 → Δθ=0.62 rad/hit
 }
 ```
 
@@ -8086,7 +8086,7 @@ TD contacts remain fully exposed -> TD better weight distribution (3-fold unifor
 2-fold lumped) gives TD superior azimuthal I consistency and the edge in RS defense.
 With WDs other than Wide Defense or Wide Survivor (which obstruct access to Tiger
 Defenser contact points), Tiger Defenser better weight distribution gives it
-an edge over War Lion.
+an edge over War Lion Core AR.
 ` `\`
 
 ### SAR Combination Performance Summary
@@ -8104,8 +8104,8 @@ an edge over War Lion.
 | War Monkey SAR | Moderate | Low | More RS recoil; larger free-spin area; |
 | | | | better LS coverage than WL SAR |
 +---------------------+-----------+-----------+-----------------------------------------+
-| Screw Zeus | High | High | Breakage risk; no smash benefit; |
-| | | | outclassed by Great Dragon / Breaker; |
+| Screw Zeus SAR | High | High | Breakage risk; no smash benefit; |
+| | | | outclassed by Great Dragon Core AR / Dragon Breaker Core AR; |
 | | | | one of two cores exposing SZ TUA slopes |
 +---------------------+-----------+-----------+-----------------------------------------+
 
@@ -8113,11 +8113,11 @@ With Screw Zeus -- TUA exposure condition:
 Screw Zeus upper-attack slopes sit below the core AR contact height.
 War Lion small wing radius (r_wing ~26 mm, slim body ring) allows the slopes
 to remain geometrically accessible below the core AR at correct tilt approach angles.
-For pure smash: War Lion beta ~7 deg -> J_rad per hit is low -> less ring-out force
-than Great Dragon (beta ~20 deg) or Dragon Breaker (beta ~22 deg).
-Adds nothing to Screw Zeus Attack ability -- the low contact angle cannot amplify
-Screw Zeus smash potential.
-For Traditional Upper Attack: one of two core ARs that exposes Screw Zeus slopes correctly.
+For pure smash: War Lion Core AR beta ~7 deg -> J_rad per hit is low -> less ring-out force
+than Great Dragon Core AR (beta ~20 deg) or Dragon Breaker Core AR (beta ~22 deg).
+Adds nothing to Screw Zeus SAR attack ability -- the low contact angle cannot amplify
+Screw Zeus SAR smash potential.
+For Traditional Upper Attack: one of two core ARs that exposes Screw Zeus SAR slopes correctly.
 ` `\`
 
 ` `\`typescript
@@ -8258,20 +8258,20 @@ Tradeoff: Dragon Saucer SAR vertical extent creates its own interference with ve
 Condition for SAR to be transparent (not obstruct main AR contacts):
 r_SAR_max < r_AR_contact AND h_SAR_top < h_AR_contact_band
 
-Dragon Breaker contact points: r_c ~0.028 m, h_c ~10-12 mm
-Great Dragon contact points: r_c ~0.027 m, h_c ~10-12 mm
-Dark Wing contact points: r_c ~0.025 m, h_c ~10-11 mm
+Dragon Breaker Core AR contact points: r_c ~0.028 m, h_c ~10-12 mm
+Great Dragon Core AR contact points: r_c ~0.027 m, h_c ~10-12 mm
+Dark Wing Core AR contact points: r_c ~0.025 m, h_c ~10-11 mm
 
 War Lion SAR winglet tip: r_SAR ~0.024 m, h_SAR_top ~8.5 mm
 
-r_SAR (0.024) < r_c_DB (0.028): Dragon Breaker contacts unobstructed.
-r_SAR (0.024) < r_c_GD (0.027): Great Dragon contacts unobstructed.
-r_SAR (0.024) < r_c_DW (0.025): Dark Wing contacts unobstructed.
+r_SAR (0.024) < r_c_DB (0.028): Dragon Breaker Core AR contacts unobstructed.
+r_SAR (0.024) < r_c_GD (0.027): Great Dragon Core AR contacts unobstructed.
+r_SAR (0.024) < r_c_DW (0.025): Dark Wing Core AR contacts unobstructed.
 h_SAR_top (8.5 mm) < h_AR_contact_band (10 mm): height band clear.
 
-Primary competitive use is with Dragon Breaker and Great Dragon which are very
+Primary competitive use is with Dragon Breaker Core AR and Great Dragon Core AR which are very
 competitive with their contact points exposed.
-Can even be used with Dark Wing as a backup should its more suitable stock SAR be lost.
+Can even be used with Dark Wing Core AR as a backup should its more suitable stock SAR be lost.
 
 With SG Wing Base -- anti-scrape sizing:
 War Lion SAR winglets at r = 24 mm do not extend below the base plane and
@@ -8349,7 +8349,7 @@ return 2 * Math.PI \_ r_inner \* t_ring;
 // wedgeGapExists(0.024, 0.026) -> true (2 mm radial gap with Wide Defense -> wedge possible)
 // wedgeGapExists(0.026, 0.026) -> false (Dragon Saucer SAR closes gap -> no wedge)
 // wedgeImpulse(9.0, 33.7, 0.030) ~0.180 N.s (10x a normal face hit at 0.018 N.s)
-// sarObstructsContact(0.024, 8.5, 0.028, 10.0) -> false (Dragon Breaker: both clear)
+// sarObstructsContact(0.024, 8.5, 0.028, 10.0) -> false (Dragon Breaker Core AR: both clear)
 // sarObstructsContact(0.024, 8.5, 0.022, 10.0) -> true (contact at r=22mm: blocked)
 // gegContactArea(0.018, 0.0015) ~1.70e-4 m^2 (half of Dragon Saucer SAR ~3.4e-4 m^2 -> worse GEG)
 ` `\`
@@ -9464,7 +9464,7 @@ function wornContactAngle(
 Circle Survivor Defense immunity against attack ARs has two requirements the attacker must defeat:
 
 - **Rim height match**: attacker must contact at the CSD rim's height, not below or above it.
-- **No overhang ride-up**: attacker must not ride up over the CSD rim before the designed contact face engages (the overhang failure documented in Case 114 for Screw Zeus).
+- **No overhang ride-up**: attacker must not ride up over the CSD rim before the designed contact face engages (the overhang failure documented in Case 114 for Screw Zeus SAR).
 
 Square Edge's outer contact radius r_SE ≈ 0.030–0.032 m vs. CSD rim r_CSD ≈ 0.028 m. Because r_SE > r_CSD, Square Edge's lobe face is at or beyond the CSD rim radially — it does not try to sneak under the rim (which would fail) or overhang over it (which creates the Case 114 interference). Instead:
 

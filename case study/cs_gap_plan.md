@@ -29,7 +29,7 @@
 | Tiger Defenser | 102 | CS2 |
 | Triple Wing | 111a | CS2 |
 | Reverse Dragon | 103 | CS2 |
-| War Lion | 112c | CS2 |
+| War Lion Core AR | 112c | CS2 |
 | War Lion SAR | 113b | CS2 |
 | Flying Defense (Takara) | 112b | CS2 |
 | Flying Defense (Hasbro) | 115a | CS2 |
@@ -39,7 +39,7 @@
 | Upper Wolf | 123a | CS2 |
 | Whale Crusher | 116 | CS3 |
 | Dragon Head | 106a | CS2 |
-| Dragon Breaker Core | 123 | CS3 |
+| Dragon Breaker Core AR | 123 | CS3 |
 | Dragon Breaker SAR | 124 | CS3 |
 | Cross Griffon | 127 | CS3 |
 | Dual Dragon | 128 | CS3 |
@@ -76,8 +76,8 @@
 | Cross Fang | 240 | CS4 |
 | Cyber Driger | 241 | CS4 (anime-only) |
 | Double Wing | 243 | CS4 |
-| War Bear | 244 | CS4 |
-| War Monkey | 245 | CS4 |
+| War Bear Core AR | 244 | CS4 |
+| War Monkey Core AR | 245 | CS4 |
 | Whale Attacker | 246 | CS4 |
 | Cross Spike | 247 | CS4 |
 | Ark Pyramid Core | CS4 batch1 | CS4 |
@@ -110,7 +110,7 @@
 | Cross Dragon | Unknown | PlasticsDB index only |
 | Dark Wing | Unknown | PlasticsDB index only |
 | Genocide Circle | Unknown | PlasticsDB index only |
-| Great Dragon | Unknown | PlasticsDB index only |
+| Great Dragon Core AR | Unknown | PlasticsDB index only |
 | Hammer Tusk | Unknown | PlasticsDB index only |
 | Jungle Shock | Unknown | PlasticsDB index only |
 | Knight Claws Ring | Unknown | PlasticsDB index only |

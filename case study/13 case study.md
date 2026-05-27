@@ -1,4 +1,4 @@
-﻿# Beyblade Case Studies — Part 13: Franchise Special Moves, Gimmicks, and Derived Combos
+# Beyblade Case Studies — Part 13: Franchise Special Moves, Gimmicks, and Derived Combos
 
 **« Part 12:** [12 case study.md](12%20case%20study.md) (Cases 601–618)
 
@@ -712,72 +712,81 @@ function applyAggressiveTipDash(bey: Beyblade, targetPos: Vec2 | null): void {
 
 ## Case 628 — [SPECIAL MOVE] Abyss Fire: Mariam / Sharkrash (Original Series / Bakuten Shoot Beyblade)
 
-**Franchise Move:** A streak attack in which Sharkrash cuts across the stadium at extreme speed leaving abyss shark mirage afterimages in its wake, then delivers a heavy hit with massive recoil that launches the opponent.
+**Franchise Move:** Sharkrash circles the target in a tightening spiral, reading the opponent's position as a shark circles its prey, then dives to the abyss below and surges upward from underneath in a devastating rising strike — hitting from below where the burst-tab resistance is weakest, exactly as a shark hunts by approaching from depth.
 
-**Thesis:** Abyss Fire is the anime transcendence of the aggressive-tip streak dash gimmick (Case 627) taken to an impossible extreme: the physical gimmick produces approach velocities of 0.75–1.18 m/s and a single crossing path [INFERRED, Case 627], but the special move projects Sharkrash across the full stadium in a precisely-aimed diagonal streak at speeds the anime renders as visible motion blur, leaves three persistent shark-mirage afterimage zones along the path that threaten the traversed space for 400ms after the main pass, and delivers a final impact with an overwhelming knockbackImpulse tuned for ring-out rather than spin damage; the mirage mechanic is the unique element of this move that has no physical basis — real beyblades do not persist at prior positions — and is the clearest example of the special move as anime-rule-breaker: the mirages are independently threatening objects occupying the streak corridor, punishing any opponent movement through that zone while the main beyblade continues toward its target; the move is explicitly ring-out oriented: damageMultiplier is moderate (1.8×) but knockbackImpulse is the highest in the current roster, calibrated to send a target near the wall out of the arena regardless of their defense type; this is also the first move that calculates and travels a target-aimed streak path rather than firing in the bey's current facing direction, meaning the player's aim is automatic at activation but the opponent can still move during the ~150ms travel time if they read the activation early enough; the QTE for the opponent is a directional dodge (choose left or right) timed to the travel window.
+**Thesis:** Abyss Fire is the anime transcendence of the aggressive-tip streak dash gimmick (Case 627): the physical gimmick produces approach velocities of 0.75–1.18 m/s in a single crossing path [INFERRED, Case 627], but the special move first circles the target in a BeySpirit-driven tightening orbit — spawning shark-mirage zone hazards around the perimeter as it circles — and then executes a 2.5D abyss dive (beyTiltAngle surge to ~80°, representing Sharkrash submerging below the arena plane) before reversing the dive into a below-strike that applies force with a strong upward z-component; the below-strike is the defining physics departure: unlike all prior CS13 specials that apply horizontal-plane impulses, Abyss Fire Phase 3 delivers its knockback from directly below, which (a) exploits the burst-tab's weakest axis — vertical upward force hits the top face of the tab rather than the latch mechanism, reducing effective burst resistance — and (b) means the opponent's horizontal dodge QTE is ineffective — the correct counter is a vertical brace (K) not a directional dash; the ring-out calibration is unchanged (14000 engine-units, highest in roster) since the force magnitude is the same, only the vector has been updated to the below-strike axis.
 
 ### Phase Structure
 
 ```
 Abyss Fire — phase sequence:
 
-Phase 1 — "abyss_fire_streak" (travel):
-  windUpMs: 80  (Sharkrash crouches briefly — shark spirit materializes)
-  durationMs: 150ms  (streak travel across stadium at anime-impossible speed)
-  effects during travel:
-    bey position: lerp from startPos to calculated strikePos over 150ms
-    mirageSpawn: 3 mirage zones at 25%, 50%, 75% of streak path
-      each mirage: radius 60px, duration 400ms from spawn time
-      mirage damage: 20% of main hit damageMultiplier (chip damage)
-      mirage visualEffect: shark silhouette afterimage, blue-white particle burst
-    invulnerabilityMs: 150 (bey is untouchable during travel — it is the weapon)
+Phase 1 — "shark_circle" (tightening spiral, 1500ms):
+  windUpMs: 150  (Sharkrash briefly slows — shark spirit manifests, begins orbiting)
+  Orbit: r_orbit decreasing from 120px → 60px over 1500ms (tightening spiral)
+  orbitSpeed: 2.0 m/s [M] → T_orbit ≈ 0.38s at r=120px → ≈4 orbits over 1500ms
+  mirageSpawn: 3 shark-spirit mirage zones spawned at t=400ms, t=800ms, t=1200ms
+    each mirage: radius 55px, positioned at orbit perimeter around target (120° apart)
+    mirage duration: 600ms from spawn
+    mirage damage: chip = mainHitDamage × 0.20
+    mirage visualEffect: shark silhouette orbit ring, blue-gold particle burst
+  invulnerabilityMs: 0  (Sharkrash is touchable during circle — can be disrupted)
+  disruptThreshold: if opponent deals >400eu impulse to Sharkrash during orbit → circle
+    phase cancels (BeySpirit lost), no Phase 2/3 fires, cooldown consumed
 
-Phase 2 — "abyss_fire_impact" (hit):
-  windUpMs: 0  (no delay — impact occurs at end of travel)
-  durationMs: 80ms
-  windDownMs: 200ms
-  effects:
-    linearImpulse: 2000 engine-units (self forward momentum maintained)
+Phase 2 — "abyss_dive" (submersion, 200ms):
+  Sharkrash breaks orbit at r=60px and dives to abyss:
+    beyTiltAngle → 80°  (nearly horizontal — 2.5D "submarine" below the arena floor)
+  durationMs: 200ms
+  invulnerabilityMs: 200  (bey is untouchable while diving — below the arena plane)
+
+Phase 3 — "below_strike" (rising impact, 100ms + 200ms wind-down):
+  Sharkrash surges upward from beyTiltAngle 80° → 0° in one explosive motion:
+    attackVector: upward z-component (hits burst-tab top face, not latch side)
+    burstResistanceMult: ×0.75 on target  (below-strike bypasses horizontal burst guard)
+    linearImpulse: 2000 engine-units (surge momentum carried into target)
     knockbackImpulse: 14000 engine-units  ← HIGHEST IN ROSTER [GAME-DERIVED]
-    damageMultiplier: 1.8×
+    damageMultiplier: 1.85×  (slightly higher than prior 1.8× — burst bypass adds effective damage)
     spinDelta: +30 (minor spin from aggressive contact)
-    targetFlags: { canHitGrounded: true, canHitAirborne: false }
-    rangeCheck: "contact"  (must physically reach target)
-  peakMs: 40
+    targetFlags: { canHitGrounded: true, canHitAirborne: true }  (below-strike hits any height)
+    rangeCheck: "contact_radius_80px"  (wider range — rising strike covers target area)
+  peakMs: 50
   peakToleranceMs: 30
-  QTEType: "dodge_direction"  (opponent picks ← or → to reduce knockback by 60%)
-  QTEWindowMs: 100  (tight window — fast move, hard to react)
+  QTEType: "brace"  (opponent taps K to brace; reduces knockback by 50%)
+  QTEWindowMs: 120  (slightly longer than prior dodge — brace is harder to execute than dodge)
+  Note: horizontal dodge (← / →) does NOT reduce knockback on a below-strike
 ```
 
-### Mirage Zone Mechanic
+### Orbit Circle Mechanic
 
 ```
-Abyss Fire path — mirage placement:
+Abyss Fire orbit — mirage placement around target:
 
-  startPos ──25%──mirage1──25%──mirage2──25%──mirage3──25%── strikePos
-       │            │             │             │              │
-    t=0ms       t=37ms        t=75ms        t=112ms       t=150ms
-                persist        persist       persist
-                400ms          400ms         400ms
+  target position = (T_x, T_y)
+  mirage zones at r_orbit = 120px, equally spaced at 120° intervals:
 
-  Each mirage zone (radius 60px):
+    mirage1 at t=400ms:  (T_x + 120×cos(θ_orbit_now),         T_y + 120×sin(θ_orbit_now))
+    mirage2 at t=800ms:  (T_x + 120×cos(θ_orbit_now + 2π/3),  T_y + 120×sin(θ_orbit_now + 2π/3))
+    mirage3 at t=1200ms: (T_x + 120×cos(θ_orbit_now + 4π/3),  T_y + 120×sin(θ_orbit_now + 4π/3))
+    where θ_orbit_now = current Sharkrash orbital angle at spawn time
+
+  Each mirage zone (radius 55px):
     On entry: opponent takes chip damage = mainHitDamage × 0.20
     Can only trigger once per mirage (not continuous)
-    Visual: blue glowing shark silhouette at position, fades over 400ms
+    Visual: blue-white rotating shark silhouette, fades over 600ms
 
-  Post-pass threat:
-    If opponent dodged the main hit (QTE success) they may still cross a mirage zone
-    during their dodge movement → chip damage is unavoidable if dodging through the path
-    This punishes "dodge along the streak path" as opposed to "dodge perpendicular"
-
-  Correct counter-play: dodge perpendicular to streak direction (left or right of path)
-  Incorrect: dodge backward along the path (crosses all three mirages)
+  Circling threat:
+    The three orbit mirages surround the target at 120° intervals — any evasive movement
+    during Phase 1 risks crossing a mirage. The correct counter to the circle phase is to
+    stand still and wait for Phase 3 (then brace K on the below-strike).
+    Aggressive disruption (>400eu impulse) is the other valid counter — cancelling Phase 2/3
+    entirely — but disrupting Sharkrash at close orbit range also risks taking a mirage chip.
 ```
 
 ### Ring-Out Calibration
 
 ```
-Abyss Fire knockbackImpulse = 14000 engine-units:
+Abyss Fire knockbackImpulse = 14000 engine-units (unchanged from prior design):
 
   Physical basis (Case 627 flat-face smash at v_approach = 1.18 m/s):
     J_smash = m_eff × v × (1+e) = 0.020 × 1.18 × 1.67 = 0.0395 N·s
@@ -786,48 +795,68 @@ Abyss Fire knockbackImpulse = 14000 engine-units:
   Anime transcendence multiplier: 14000 / 1097 = 12.8×  [GAME-DERIVED]
   Interpretation: the shark spirit multiplies the contact force ~13× beyond physical limit
 
-  Ring-out probability:
+  Below-strike direction: impulse vector is (0, 0, +z) in arena space → projects to
+  upward screen-space vector under current tilt renderer. Target is flung upward/outward.
+
+  Ring-out probability (below-strike):
     Against a target 200px from wall:
-      Δv_target = knockbackImpulse_N·s / m_target = (14000 × 3.60×10⁻⁵) / 0.040
-               = 0.504 / 0.040 = 12.6 m/s  (anime — instantly at wall)  [GAME-DERIVED]
-    In game terms: target receives impulse pointing away from attacker;
-    if target is within 250px of arena boundary, Abyss Fire is a near-guaranteed ring-out
-    unless QTE succeeds (reduces knockback by 60% → 5600 units → 5.04 m/s still large)
+      Δv_target = (14000 × 3.60×10⁻⁵) / 0.040 = 12.6 m/s  [GAME-DERIVED]
+    if target is within 250px of arena boundary, Abyss Fire remains near-guaranteed ring-out.
+    QTE brace (K success) reduces knockback by 50% → 7000 units → 6.3 m/s — still threatening.
+    burstResistanceMult ×0.75 means burst probability increases even if ring-out is avoided.
 ```
 
 ```typescript
-// Special move: Abyss Fire
+// Special move: Abyss Fire (circle → dive → below-strike)
 function activateAbyssFire(bey: Beyblade, target: Beyblade): void {
-  const strikePos = computeStreakStrikePos(bey, target);
-  const pathVec   = { x: strikePos.x - bey.x, y: strikePos.y - bey.y };
-  const pathLen   = Math.hypot(pathVec.x, pathVec.y);
+  const ORBIT_RADIUS_START = 120;   // px
+  const ORBIT_RADIUS_END   = 60;    // px
+  const ORBIT_DURATION_MS  = 1500;
+  const DIVE_DURATION_MS   = 200;
 
-  // Spawn three mirage zones along path
-  for (let i = 1; i <= 3; i++) {
-    const frac = i / 4;
-    spawnMirageZone({
-      x: bey.x + pathVec.x * frac,
-      y: bey.y + pathVec.y * frac,
-      radius: 60,
-      durationMs: 400,
-      chipsOn: target.id,
-      chipDamageMultiplier: 0.20,
-      visual: "abyss_shark_mirage",
+  // Phase 1 — tightening spiral orbit around target
+  bey.orbitTarget   = target.id;
+  bey.orbitRadiusStart = ORBIT_RADIUS_START;
+  bey.orbitRadiusEnd   = ORBIT_RADIUS_END;
+  bey.orbitDurationMs  = ORBIT_DURATION_MS;
+  bey.invulnerableUntil = 0;  // touchable during orbit
+
+  // Spawn three orbit mirage zones at 400ms intervals
+  const mirageAngles = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3];
+  [400, 800, 1200].forEach((spawnMs, i) => {
+    scheduleAt(spawnMs, () => {
+      const θ = bey.currentOrbitAngle + mirageAngles[i];
+      spawnMirageZone({
+        x: target.x + ORBIT_RADIUS_START * Math.cos(θ),
+        y: target.y + ORBIT_RADIUS_START * Math.sin(θ),
+        radius: 55,
+        durationMs: 600,
+        chipsOn: target.id,
+        chipDamageMultiplier: 0.20,
+        visual: "abyss_shark_orbit_mirage",
+      });
     });
-  }
+  });
 
-  // Teleport/lerp bey along streak path over 150ms (handled by renderer)
-  bey.streakTarget = strikePos;
-  bey.streakDurationMs = 150;
-  bey.invulnerableUntil = Date.now() + 150;
+  // Phase 2 — abyss dive at end of orbit
+  scheduleAt(ORBIT_DURATION_MS, () => {
+    bey.orbitTarget = null;
+    bey.beyTiltAngle = 80;           // submarine: below the arena plane
+    bey.invulnerableUntil = Date.now() + DIVE_DURATION_MS;
+  });
 
-  // Impact fires at end of travel
-  scheduleImpact(150, () => {
-    const impactAngle = Math.atan2(pathVec.y, pathVec.x);
+  // Phase 3 — below-strike rising surge
+  scheduleAt(ORBIT_DURATION_MS + DIVE_DURATION_MS, () => {
+    bey.beyTiltAngle = 0;            // resurface: upward surge
+    target.burstResistanceMult = (target.burstResistanceMult ?? 1.0) * 0.75;
+
+    const ABYSS_FIRE_KNOCKBACK = 14000;
+    // below-strike: impulse in upward z-component → maps to outward radial on screen
+    const impactAngle = Math.atan2(target.y - bey.y, target.x - bey.x);
     applyForce(target.id,
-      Math.cos(impactAngle) * ABYSS_FIRE_KNOCKBACK,  // 14000 engine-units
+      Math.cos(impactAngle) * ABYSS_FIRE_KNOCKBACK,
       Math.sin(impactAngle) * ABYSS_FIRE_KNOCKBACK);
-    target.damageReceived += BASE_DAMAGE * 1.8;
+    target.damageReceived += BASE_DAMAGE * 1.85;
     bey.spin = Math.min(bey.maxSpin, bey.spin + 30);
   });
 }
@@ -9331,7 +9360,7 @@ function applyIfraidWingArc(ifraid: Beyblade, target: Beyblade): void {
 
 **Note:** Dragon Saucer Core AR from Case 212. Dragon Saucer Sub AR from Case 213. Ten Heavy WD from Case 114a. Right EG Metal Flat from Case 215. Final Clutch Base GDG from Case 216.
 
-**Thesis:** Strata Dragoon V's battle identity is the Dragon Saucer AR's (Cases 212–213) circular disc geometry: unlike virtually all other plastic-gen ARs which have angular blade or claw protrusions, the Dragon Saucer Core AR is a near-circular disc (r_saucer≈21mm) with a free-spinning gear-ring Sub AR (Case 213) that decouples outer ring rotation from the main AR — this creates a smooth-faced circular contact that can engage opponents from any orientation without a "preferred smash angle"; the disc geometry's critical property for Vast Cutter (Case 770) is the tilt mechanic: when beyTiltAngle→85°, the Dragon Saucer's circular edge (r_saucer=21mm) becomes the primary contact surface with the arena floor, and the bey transitions from a spinning top to a rolling disc (v_roll=ω×r_saucer×cos(beyTiltAngle)=500×0.021×cos(5°)≈10.5 m/s linear rolling speed); the Right EG Metal Flat (Case 215) provides the high-speed flat-metal orbital that drives both Vast Cutter's rolling approach and Vast Hurricane's (Case 771) circular vortex generation; the Final Clutch Base GDG (Case 216) EG spring fires at the Final Clutch trigger moment under the base, providing a one-time orbital speed burst.
+**Thesis:** Strata Dragoon V's battle identity is the Dragon Saucer AR's (Cases 212–213) circular disc geometry: unlike virtually all other plastic-gen ARs which have angular blade or claw protrusions, the Dragon Saucer Core AR is a near-circular disc (r_saucer≈21mm) with a free-spinning gear-ring Sub AR (Case 213) that decouples outer ring rotation from the main AR — this creates a smooth-faced circular contact that can engage opponents from any orientation without a "preferred smash angle"; the disc geometry's critical property for Vast Cutter (Case 770) is the tilt mechanic: when beyTiltAngle→85°, the Dragon Saucer Core AR's circular edge (r_saucer=21mm) becomes the primary contact surface with the arena floor, and the bey transitions from a spinning top to a rolling disc (v_roll=ω×r_saucer×cos(beyTiltAngle)=500×0.021×cos(5°)≈10.5 m/s linear rolling speed); the Right EG Metal Flat (Case 215) provides the high-speed flat-metal orbital that drives both Vast Cutter's rolling approach and Vast Hurricane's (Case 771) circular vortex generation; the Final Clutch Base GDG (Case 216) EG spring fires at the Final Clutch trigger moment under the base, providing a one-time orbital speed burst.
 
 ```
 Dragon Saucer Core AR [Case 212]:
@@ -9442,7 +9471,7 @@ function activateVastCutter(dragoon: Beyblade, target: Beyblade): void {
 
 **Franchise Move:** Strata Dragoon begins moving around in circles at high speed creating a dust devil to blow the opposing bey away. Vast Hurricane is the second special move used by Daichi Sumeragi with Strata Dragoon V. [Beyblade V-Force]
 
-**Thesis:** Vast Hurricane is the BeySpirit expression of the Right EG Metal Flat's (Case 215) high-speed orbital capability combined with the EG spring's one-time orbital boost: the EG spring fires (BeySpirit re-engages under anime physics override for special moves) delivering a sudden orbital speed surge, driving Strata Dragoon to v_orb=3.0 m/s in a tight circular orbit (R_orbit≈80mm, the EG Metal Flat's flat tip at high spin produces tight orbital arcs similar to a standard Metal Flat); the circular orbit at v=3.0 m/s produces a centrifugal wind displacement (the physical mechanism of dust devil formation in proximity to a fast-spinning top) — the centrifugal air flow from the Dragon Saucer's disc body is amplified by the BeySpirit into a stadium-filling dust devil vortex; the vortex force on the opponent is outward (directed away from the orbital centre), which is the inverse of Burning Uppercut's inward cyclone pull — the dust devil push is specifically designed for ring-out, driving the opponent toward the bowl wall; the "blow away" outcome: the outward impulse is high (5000eu, ring-out threat), while spinDelta is moderate (−220) because the wind/vortex is not a direct spin-contact attack.
+**Thesis:** Vast Hurricane is the BeySpirit expression of the Right EG Metal Flat's (Case 215) high-speed orbital capability combined with the EG spring's one-time orbital boost: the EG spring fires (BeySpirit re-engages under anime physics override for special moves) delivering a sudden orbital speed surge, driving Strata Dragoon to v_orb=3.0 m/s in a tight circular orbit (R_orbit≈80mm, the EG Metal Flat's flat tip at high spin produces tight orbital arcs similar to a standard Metal Flat); the circular orbit at v=3.0 m/s produces a centrifugal wind displacement (the physical mechanism of dust devil formation in proximity to a fast-spinning top) — the centrifugal air flow from the Dragon Saucer Core AR's disc body is amplified by the BeySpirit into a stadium-filling dust devil vortex; the vortex force on the opponent is outward (directed away from the orbital centre), which is the inverse of Burning Uppercut's inward cyclone pull — the dust devil push is specifically designed for ring-out, driving the opponent toward the bowl wall; the "blow away" outcome: the outward impulse is high (5000eu, ring-out threat), while spinDelta is moderate (−220) because the wind/vortex is not a direct spin-contact attack.
 
 ```
 Vast Hurricane — phase structure:
@@ -9501,7 +9530,7 @@ function activateVastHurricane(dragoon: Beyblade, target: Beyblade): void {
 **Type Restriction:** attack
 **Part Requirement:** dragonSaucerAR  (Dragon Saucer Core AR, Case 212)
 
-Saucer Roll is the combo-level expression of the Dragon Saucer AR's circular disc-edge contact geometry (Cases 769, 770): the moveRight sweeps Strata Dragoon along the rightward orbital arc at mild tilt (beyTiltAngle increases to ≈20° during the rightward sweep — the Dragon Saucer's disc edge begins to contribute to contact beyond the normal wheel rim), the attack fires at the disc-edge contact moment (the Saucer AR's circular rim contacts the opponent — unlike angular blade ARs, the disc contact is a wider edge that spreads force across a larger surface), and the moveUp completes the upward exit arc (Strata Dragoon's tilt recovers as it exits the contact — the upward arc is the tilt-restoration path); at combo scale beyTiltAngle reaches only ≈20° (no full 85° rolling mode — that is BeySpirit territory), but the mild disc-edge engagement still produces a wider contact than a blade tip: spinDelta = −43 (disc-edge contact spreads force — slightly below ceiling because the wide contact distributes rather than concentrating force), damageMultiplier = 1.25×; the lockMs = 80 reflects the disc-edge traversal arc (the circular rim sweeps through the contact zone, longer than a blade point impact) at combo scale.
+Saucer Roll is the combo-level expression of the Dragon Saucer AR's circular disc-edge contact geometry (Cases 769, 770): the moveRight sweeps Strata Dragoon along the rightward orbital arc at mild tilt (beyTiltAngle increases to ≈20° during the rightward sweep — the Dragon Saucer Core AR's disc edge begins to contribute to contact beyond the normal wheel rim), the attack fires at the disc-edge contact moment (the Dragon Saucer Core AR's circular rim contacts the opponent — unlike angular blade ARs, the disc contact is a wider edge that spreads force across a larger surface), and the moveUp completes the upward exit arc (Strata Dragoon's tilt recovers as it exits the contact — the upward arc is the tilt-restoration path); at combo scale beyTiltAngle reaches only ≈20° (no full 85° rolling mode — that is BeySpirit territory), but the mild disc-edge engagement still produces a wider contact than a blade tip: spinDelta = −43 (disc-edge contact spreads force — slightly below ceiling because the wide contact distributes rather than concentrating force), damageMultiplier = 1.25×; the lockMs = 80 reflects the disc-edge traversal arc (the circular rim sweeps through the contact zone, longer than a blade point impact) at combo scale.
 
 ```
 Saucer Roll — geometry:
@@ -11529,7 +11558,7 @@ Wing Sub-Ring SAR: wide flat oval wing extensions, r_outer ≈ 33 mm [ESTIMATED]
 I_sar = (0.0015/2)(0.033² + 0.013²) = 0.00075 × 0.001258 = 9.4×10⁻⁷ kg⋅m² [ESTIMATED per Case 259]
 I_AR_total (Core + Wing SAR installed) = 3.0×10⁻⁶ kg⋅m² [ESTIMATED per Case 259]
 
-**Physical SAR behaviour [FACT(PDB)]:** The Wing Sub-Ring SAR is mechanically static — fixed into the Core AR's SAR slot, it does NOT spin independently. In competitive use the Wing SAR obstructs Great Dragon's smash contact points, reducing smashFraction to ≈ 0.35. Optimal play replaces it: War Lion SAR (RS, smashFraction 0.62 [FACT(PDB)]) or War Bear SAR (LS, smashFraction 0.72 [FACT(PDB)] — comparable to Square Edge). Competitive use requires Defense Grip Base or SG Grip Change Base Tip for recoil management.
+**Physical SAR behaviour [FACT(PDB)]:** The Wing Sub-Ring SAR is mechanically static — fixed into the Core AR's SAR slot, it does NOT spin independently. In competitive use the Wing SAR obstructs Great Dragon Core AR's smash contact points, reducing smashFraction to ≈ 0.35. Optimal play replaces it: War Lion SAR (RS, smashFraction 0.62 [FACT(PDB)]) or War Bear SAR (LS, smashFraction 0.72 [FACT(PDB)] — comparable to Square Edge). Competitive use requires Defense Grip Base or SG Grip Change Base Tip for recoil management.
 
 **Anime co-ring fiction — basis for Case 807:**
 In the anime, BeySpirit animates the Wing Sub-Ring SAR as a freely-spinning cutting ring — physically impossible (the SAR is a static slot-fit with no bearing mechanism), but established as the fictional gimmick of Co-Ring Cutter. Treating the Wing SAR as an anime-physics free-spinning ring (η_coupling ≈ 0.78 [M, anime fiction only]):
@@ -13497,4 +13526,681 @@ Main deflect-and-strike:
 
 ---
 
-*Cases continue from Case 837 as further franchise moves are provided.*
+---
+
+## Case 837 — [GIMMICK] Kevin's Galman — 4-Fold AR Symmetry and Phantom Resonance Condition
+
+**Franchise context.** Kevin (White Tigers team, Beyblade original series, 2001–2002). Assembly: Galman (JP: ガルマン, Garuman). Original plastic generation (Takara-Tomy in-scope era). All values [M] (±15%) — no dedicated prior case analysis. Galman's BitBeast is a gorilla-type spirit. The defining physics property: the Attack Ring's 4-fold rotational symmetry, which is the physical basis for the Crazy Monkey Attack optical illusion.
+
+**Parts:**
+
+**Attack Ring: Galman Attack Ring [M]**
+Ape/gorilla-themed AR with four wing-like protrusions arranged at 90° intervals, giving the ring exact 4-fold rotational symmetry. This symmetry is the optical mechanism underlying Crazy Monkey Attack: at high ω, human persistence of vision integrates the 4-fold pattern over the integration time of ~17ms (one frame at 60 Hz) → the AR appears in four simultaneous identical orientations → 4 phantom copies perceived.
+
+Critical Flicker Fusion (CFF) threshold analysis:
+  f_apparent = ω × N_symmetry / (2π) = 600 × 4 / 6.283 = 381.7 Hz >> f_CFF = 60 Hz [M]
+  → At launch spin, the 4-fold pattern already far exceeds the CFF threshold — any opponent tracking Galman visually will perceive 4 simultaneous copies when it is moving in a continuous orbit.
+
+  m_AR ≈ 6.5 g [M]; r_AR ≈ 20 mm [M]; r_inner ≈ 8 mm [M]
+  I_AR = (0.0065/2)(0.020² + 0.008²) ≈ 0.00325 × 0.000464 = 1.508×10⁻⁶ kg⋅m² [M]
+  Contact geometry: 4 wing contacts at r_wing ≈ 20 mm [M]; C_smash ≈ 0.72 [M]
+
+Phantom orbital resonance condition (BeySpirit required):
+  For 4 distinct phantom positions equally spaced around a circular orbit (not merely a blur), the orbital period T_orbit and spin ω must satisfy:
+    T_orbit × ω = 8π × n   (n = 1, 2, 3, ...)   — each quarter-orbit, bey has rotated exactly 2nπ + 0 → same orientation as start → 4 indistinguishable snapshots
+  At ω = 600 rad/s, first resonance (n=1): T_orbit_res = 8π / 600 = 0.04189 s [M]
+  Required v_orbit_res = 2π × r_orbit / T_orbit_res = 2π × 0.120 / 0.04189 = 17.98 m/s [M]
+  Physical v_orbit ≈ 1.5 m/s [M] → resonance amplification factor ≈ ×12.0 [M] (far beyond physical capability → BeySpirit required; a flip-launch alone provides the dual-axis precession that sets up this orbit mode, per Kevin's claim)
+
+**Weight Disk: 8 Heavy [M]**
+Standard 8-section heavy WD, dominant inertia contributor.
+m_8H ≈ 14.0 g [M]; r ≈ 16 mm [M]; r_inner ≈ 6 mm [M]
+I_8H = (0.014/2)(0.016² + 0.006²) ≈ 0.007 × 0.000292 = 2.044×10⁻⁶ kg⋅m² [M]
+
+**Blade Base: Semi-Flat [M]**
+Slightly curved flat tip — mid-range between Flat (aggressive orbit) and Sharp (stable spin). Creates the moderate-speed, erratic orbit characteristic of attack-type plastic-gen beys.
+m_BB ≈ 4.0 g [M]; r_tip ≈ 5 mm [M]; μ_semi ≈ 0.30 [M]
+
+**Assembly [M]:**
+m_total ≈ 25.5 g [M]  (AR 6.5 + WD 14.0 + BB 4.0 + face 1.0 [M])
+I_total = I_AR + I_8H + I_BB ≈ 1.508 + 2.044 + 0.370 = 3.922×10⁻⁶ kg⋅m² [M]
+ω₀ = 600 rad/s (plastic gen standard)
+KE₀ = 0.5 × 3.922×10⁻⁶ × 600² = 0.706 J [M]
+dω/dt_semflat = −(μ × m × g × r_tip) / I_total
+  = −(0.30 × 0.0255 × 9.81 × 0.005) / 3.922×10⁻⁶
+  = −(3.749×10⁻⁴) / 3.922×10⁻⁶
+  = −95.6 rad/s² [M]  (high decay — attack-type semi-flat tip)
+
+```typescript
+function galmanPhantomCondition(
+  omega_rad_s: number,
+  r_orbit_m: number = 0.120,
+  n_resonance: number = 1
+): { v_resonance_ms: number; ampFactor: number; cff_hz: number; phantomVisible: boolean } {
+  const N_sym = 4;
+  const T_res  = (N_sym * 2 * Math.PI) / (omega_rad_s * n_resonance);
+  const v_res  = (2 * Math.PI * r_orbit_m) / T_res;
+  const v_phys = 1.5;
+  const cff    = omega_rad_s * N_sym / (2 * Math.PI);
+  return {
+    v_resonance_ms:  parseFloat(v_res.toFixed(2)),
+    ampFactor:       parseFloat((v_res / v_phys).toFixed(1)),
+    cff_hz:          parseFloat(cff.toFixed(1)),
+    phantomVisible:  cff >= 60,  // physical spin already satisfies CFF condition
+  };
+}
+// galmanPhantomCondition(600) → { v_res:17.98 m/s, amp:×12.0, cff:381.7 Hz, phantomVisible:true }
+// galmanPhantomCondition(94)  → { v_res:2.83 m/s,  amp:×1.9,  cff:59.9 Hz,  phantomVisible:false }
+
+function galmanARStats(): { I_kgm2: number; C_smash: number; contacts: number; symmetry: number } {
+  return { I_kgm2: 1.508e-6, C_smash: 0.72, contacts: 4, symmetry: 4 };
+}
+```
+
+---
+
+## Case 838 — [SPECIAL] Crazy Monkey Attack (JP: Drunk Monkey Attack / ドランクモンキーアタック)
+
+**Franchise move.** Crazy Monkey Attack (JP: Drunk Monkey Attack, ドランクモンキーアタック) — Kevin's Galman (original Beyblade anime, plastic gen). The 4-fold AR symmetry + BeySpirit-boosted orbital resonance speed creates 4 apparent phantom copies of Galman equally spaced around the stadium. Compared by the anime to Dragoon Storm's speed attack (also physics-based). Kevin states the effect is "similarly to Dragoon Storm's speed attack" and in reality this orbit mode should only be achievable via a flip-launch like Tyson's; Kevin achieves the equivalent through BeySpirit alone.
+
+NOTE: special move overrides all EG/clutch mechanical state; the EG spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override).
+
+**Phase 1 — Phantom Generation (automatic, 400ms build-up):**
+BeySpirit boosts Galman's orbital speed to the resonance condition.
+  v_orbit_phys ≈ 1.5 m/s → v_orbit_anime = v_orbit_phys × 12.0 = 18.0 m/s [M] (×12 amplification — extraordinary, reflecting the visual extremity of the effect)
+  Flip-launch equivalent: BeySpirit grants the dual-axis precession normally requiring a physical flip-launch, producing the 4-lobe cloverleaf orbital path (figure-four orbit) that places Galman at the four cardinal orbital positions with identical AR orientation.
+  T_orbit_res = 2π × 0.120 / 18.0 = 0.0419 s [M] → 4 quarter-lobe positions 10.5ms apart [M]
+
+**Phantom Confusion debuff** (active for 1200ms total — Phase 1 + Phase 2):
+  The opponent cannot determine which of the 4 apparent copies is the real Galman or which direction the next strike will come from. Their burst-tab guard reaction window is compressed:
+    opponentBurstGuardWindow × 0.50  [M]  (guard timing effectively randomized — 50% narrower window)
+  This is the first "defense-timing suppression" effect in CS13 — the opponent still can input K, but their effective window to trigger burst-tab defense is halved.
+
+**Phase 2 — 4-Direction Strike (QTE: "Monkey" — 4× J taps):**
+Galman strikes from each of the 4 phantom positions in sequence, separated by 36ms per hit (one per quarter-orbit cycle). Each strike comes from a 90°-rotated vector relative to the last: 0° → 90° → 180° → 270°.
+
+One hit (randomly assigned by the engine each activation) gains the **phantom burst bypass**: that strike arrives at the angle with the lowest burst-tab resistance of the opponent's current orientation. +25% burstBonus for that hit only, regardless of QTE result.
+
+QTE window per tap: 150ms.
+
+```
+Per-hit stats (QTE J tap hit):
+  spinDelta:      −55
+  linearImpulse:  700 eu
+  dmgMult:        1.40×
+  burstBonus:     +10% (standard confusion bonus)
+
+Per-hit stats (QTE miss — hit still lands, glancing angle):
+  spinDelta:      −30
+  linearImpulse:  400 eu
+  dmgMult:        1.20×
+  burstBonus:     0%
+
+Phantom burst bypass hit (1 of 4, random): burstBonus +25% regardless of QTE
+```
+
+```
+Cumulative (all 4 QTE hit):   spinDelta −220; linearImpulse 2800 eu
+Cumulative (all 4 QTE miss):  spinDelta −120; linearImpulse 1600 eu
+Cumulative (2/4 hit):         spinDelta −170; linearImpulse 2200 eu
+selfCost:    −70  (plastic gen — lower power pool than MFB/Burst era)
+powerCost:   100
+cooldown:    5000 ms
+QTE:         "Monkey" — 4× tap J; 150ms window each; ~36ms between hit arrivals
+```
+
+```typescript
+function crazyMonkeyAttack(
+  qteHitsCount: number,         // 0–4 successful taps
+  phantomBurstHitIndex: number  // 0–3, randomly assigned by engine each use
+): {
+  totalSpinDelta: number; totalLinearImpulse: number;
+  perHit: Array<{ spinDelta: number; linearImpulse: number; dmgMult: number; burstBonus_pct: number }>
+} {
+  const perHit = Array.from({ length: 4 }, (_, i) => {
+    const hit = i < qteHitsCount;
+    const isPhantomBurst = i === phantomBurstHitIndex;
+    return {
+      spinDelta:      hit ? -55 : -30,
+      linearImpulse:  hit ? 700  : 400,
+      dmgMult:        hit ? 1.40 : 1.20,
+      burstBonus_pct: isPhantomBurst ? 25 : (hit ? 10 : 0),
+    };
+  });
+  return {
+    totalSpinDelta:     perHit.reduce((s, h) => s + h.spinDelta, 0),
+    totalLinearImpulse: perHit.reduce((s, h) => s + h.linearImpulse, 0),
+    perHit,
+  };
+}
+// crazyMonkeyAttack(4, 2) → totalSpin:−220, totalImp:2800, hit[2].burst:+25%
+// crazyMonkeyAttack(0, 0) → totalSpin:−120, totalImp:1600, hit[0].burst:+25%
+// crazyMonkeyAttack(2, 3) → totalSpin:−170, totalImp:2200
+
+function phantomConfusionDebuff(elapsed_ms: number): {
+  guardWindowMultiplier: number; active: boolean
+} {
+  if (elapsed_ms >= 1200) return { guardWindowMultiplier: 1.0, active: false };
+  return { guardWindowMultiplier: 0.50, active: true };
+}
+// phantomConfusionDebuff(0)    → { mult:0.50, active:true  }
+// phantomConfusionDebuff(1200) → { mult:1.00, active:false }
+```
+
+---
+
+## Case 839 — [COMBO] Monkey Rush (← J →)
+
+**Franchise bey:** Kevin's Galman — Galman Attack Ring active  
+**Required part:** `galmanAR` (any beyblade carrying this part qualifies)  
+**Sequence:** ← J → (moveLeft + attack + moveRight)  
+**Type restriction:** universal  
+**Cost:** 0 power (free)
+
+A quick side-to-side weave strike: Galman sweeps left, delivers the lateral wing contact hit from the left approach, then momentum carries through to the right. The 4-fold AR symmetry ensures that regardless of the bey's spin phase at contact, one of the four wing contacts is always properly aligned for the lateral hit — no "dead spot" in the contact geometry.
+
+```
+Main hit:
+  spinDelta:     −32
+  dmgMult:       1.25×
+  lockMs:        40
+  windowMs:      600
+  cooldownMs:    4000
+```
+
+No phantom effect — the combo is at normal orbital speed and does not trigger the persistence-of-vision condition. The speed is sufficient for a clean side-weave hit only.
+
+**Ceiling compliance:** 1.25×≤1.5×; 40ms≤300ms; 32≤50 rad/s; no invulnerability, no AoE, no spin recovery [check]. Free (0 cost) — consistent with free-tier universal combos (quick-dash-l/r, guard-tap, feint).
+
+---
+
+---
+
+## Case 840 — [GIMMICK] Suoh Genji's Heat Salamander 12 Operate — Hybrid Attack/Defense Layer and Operate Driver Mode-Change System
+
+**Franchise context.** Suoh Genji (Beyblade Burst era, Takara-Tomy). Assembly: Heat Salamander 12 Operate. All values [M] (±15%) — no dedicated prior case analysis. Heat Salamander is a hybrid attack+defense type energy layer; the Operate driver is a Burst-era mechanical mode-change performance tip with two distinct physical positions.
+
+**Parts:**
+
+**Energy Layer: Heat Salamander [M]**
+Burst-era hybrid energy layer. Blade geometry combines aggressive forward-facing strike contacts (smash-type, θ_blade ≈ 25°) with broad defensive deflector surfaces (upper-type, θ_deflect ≈ 65°) alternating at 45° intervals around the layer perimeter. This gives 8 total contact points — 4 blade contacts for outgoing attack and 4 deflectors for incoming burst resistance — providing effective coverage at a wider range of impact angles than a pure attack-type layer, at a small efficiency cost to peak attack.
+
+  m_layer ≈ 18.0 g [M]; r_layer ≈ 22 mm [M]; r_inner ≈ 8 mm [M]
+  I_layer = (0.018/2)(0.022² + 0.008²) = 0.009 × 5.480×10⁻⁴ = 4.932×10⁻⁶ kg⋅m² [M]
+  Blade contacts: 4 at r_blade ≈ 22 mm [M]; θ_blade ≈ 25° [M]; C_smash ≈ 0.68 [M]
+  Deflector contacts: 4 at r_def ≈ 18 mm [M]; θ_def ≈ 65° [M]; C_absorb ≈ 0.45 [M]
+  Effective C_eff (hybrid weighted): (0.68 × 4 + 0.45 × 4) / 8 = 0.565 [M]
+
+**Forge Disc: 12 [M]**
+Standard 12-wing BX-era forge disc. Symmetric, balanced inertia distribution.
+  m_12 ≈ 10.0 g [M]; r_disc ≈ 14 mm [M]; r_inner ≈ 6 mm [M]
+  I_12 = (0.010/2)(0.014² + 0.006²) = 0.005 × 2.320×10⁻⁴ = 1.160×10⁻⁶ kg⋅m² [M]
+
+**Driver: Operate [M]**
+Mode-change performance tip. Two mechanical positions distinguished by physical driver state:
+- **Attack Mode** (default): small-diameter rounded tip; r_tip_atk ≈ 3 mm [M]; μ_atk ≈ 0.30 [M] → active lateral movement orbit, aggressive attack pattern.
+- **Defense Mode**: wider flat-contact pad; r_tip_def ≈ 6 mm [M]; μ_def ≈ 0.08 [M] → stable stationary spin with minimal lateral drift, stable defensive posture.
+
+Mode is set before launch; in-battle, an impact force exceeding the mode-lock threshold can disengage the lock and shift mode. Defense Mode significantly extends endurance by reducing tip-friction spin decay.
+
+  m_Operate ≈ 4.5 g [M]; m_chip ≈ 2.5 g [M]
+  I_Operate ≈ 0.350×10⁻⁶ kg⋅m² [M]; I_chip ≈ 0.300×10⁻⁶ kg⋅m² [M]
+
+**Assembly [M]:**
+  m_total ≈ 35.0 g [M]   (layer 18.0 + disc 10.0 + driver 4.5 + chip 2.5)
+  I_total = I_layer + I_12 + I_Operate + I_chip = 4.932 + 1.160 + 0.350 + 0.300 = 6.742×10⁻⁶ kg⋅m² [M]
+  ω₀ = 650 rad/s (Burst era standard)
+  KE₀ = 0.5 × 6.742×10⁻⁶ × 650² = 1.424 J [M]
+
+  dω/dt_atk = −(μ_atk × m × g × r_tip_atk) / I_total
+    = −(0.30 × 0.035 × 9.81 × 0.003) / 6.742×10⁻⁶
+    = −(3.090×10⁻⁴) / 6.742×10⁻⁶ = −45.8 rad/s² [M]
+
+  dω/dt_def = −(μ_def × m × g × r_tip_def) / I_total
+    = −(0.08 × 0.035 × 9.81 × 0.006) / 6.742×10⁻⁶
+    = −(1.648×10⁻⁴) / 6.742×10⁻⁶ = −24.4 rad/s² [M]
+
+  Stability differential: |dω/dt_atk| / |dω/dt_def| = 45.8 / 24.4 = 1.88× — Defense Mode spin endurance is 88% longer than Attack Mode for the same initial ω. This is the physical basis for the Crimson Lotus Blaze special: launching in Defense Mode preserves spin long enough to allow the BeySpirit spin-up to exceed the tornado generation threshold. Note: Operate driver is a Burst-era component; physics parameters and assembly totals reflect Burst era standards (ω₀ = 650 rad/s).
+
+```typescript
+function operateDriverStats(mode: "attack" | "defense"): {
+  r_tip_m: number; mu: number; spinDecay_rad_s2: number
+} {
+  const m = 0.035, g = 9.81, I = 6.742e-6;
+  if (mode === "attack") {
+    const r = 0.003, mu = 0.30;
+    return { r_tip_m: r, mu, spinDecay_rad_s2: parseFloat(((mu * m * g * r) / I).toFixed(1)) };
+  } else {
+    const r = 0.006, mu = 0.08;
+    return { r_tip_m: r, mu, spinDecay_rad_s2: parseFloat(((mu * m * g * r) / I).toFixed(1)) };
+  }
+}
+// operateDriverStats("attack")  → { r_tip:0.003m, mu:0.30, spinDecay:45.8 rad/s² }
+// operateDriverStats("defense") → { r_tip:0.006m, mu:0.08, spinDecay:24.4 rad/s² }
+
+function heatSalamanderLayerStats(): {
+  I_kgm2: number; C_smash: number; C_absorb: number; C_eff: number;
+  bladeContacts: number; deflectorContacts: number
+} {
+  return {
+    I_kgm2: 4.932e-6, C_smash: 0.68, C_absorb: 0.45, C_eff: 0.565,
+    bladeContacts: 4, deflectorContacts: 4,
+  };
+}
+```
+
+---
+
+## Case 841 — [SPECIAL] Crimson Lotus Blaze (JP: Raging Crimson Hellfire / 烈火紅蓮地獄, Rekka Guren Jigoku)
+
+**Franchise move.** Crimson Lotus Blaze (JP: Raging Crimson Hellfire, 烈火紅蓮地獄) — Suoh Genji's Heat Salamander 12 Operate (Beyblade Burst X era). While in Defense Mode, BeySpirit increases Salamander's spin far beyond its physical limit, generating a flaming crimson tornado updraft that simultaneously amplifies both Attack and Defense. This is the **first dual-buff special in CS13** — the only special that boosts both damageMultiplier and damageReduction simultaneously.
+
+NOTE: special move overrides all EG/clutch mechanical state; the EG spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override).
+
+**Activation requirement:** Operate driver must be in Defense Mode at the moment of special activation. If the driver is in Attack Mode, the special is suppressed (cooldown is not consumed — the input is ignored by the engine). This is the only CS13 special with a pre-condition on driver mode state.
+
+**Phase 1 — Crimson Spin-Up (600ms buildup):**
+BeySpirit drives a counter-friction spin increase starting from the Defense Mode stable base.
+
+  ω_activation ≈ 440 rad/s (nominal Defense Mode mid-match spin, Burst era) [M]
+  Net BeySpirit angular acceleration: α_spinup = +350 rad/s² [M] (BeySpirit input overwhelms μ_def friction)
+  τ_BeySpirit = I_total × (α_spinup + |dω/dt_def|) = 6.742×10⁻⁶ × (350 + 24.4) = 2.524×10⁻³ N⋅m [M]
+  Δω over 600ms: +350 × 0.60 = +210 rad/s → ω_tornado = 440 + 210 = 650 rad/s [M]
+
+  Tornado aura tangential wind speed at r_aura = 80 mm:
+    v_tangential = ω_tornado × r_aura = 650 × 0.080 = 52.0 m/s [M]
+    (BeySpirit-amplified; well beyond physical centrifugal air entrainment limits — anime physics)
+
+**Phase 2 — Tornado Dual-Buff (2000ms active window):**
+The crimson tornado aura activates simultaneously as both an offensive and defensive field — first dual-buff (simultaneous attack AND defense amplification) in CS13:
+
+  (a) **attackBuff**: outgoing damageMultiplier +1.45× additive during aura window
+      Mechanism: tornado blades extend effective contact radius beyond the physical layer edge; tangential wind pressure adds ~ωv force at each hit contact.
+  (b) **defenseBuff**: incoming damageReduction +0.20 additive during aura window
+      Mechanism: rotating wind barrier absorbs incoming impulse before it reaches the tip contact layer; effective burst-tab force reduced.
+
+  Both buffs are active simultaneously for the full 2000ms. Dual-buff is the defining property of this special — no other CS13 special modifies both vectors at once.
+
+**Phase 3 — Hellfire Strike (QTE: "Hellfire" — hold J; max charge at 1000ms; window 1200ms):**
+Salamander delivers the tornado-charged release strike. Holding J longer charges the strike; releasing triggers the hit. Three charge tiers:
+
+```
+Full charge   (hold ≥1000ms): spinDelta −100; linearImpulse 1350 eu; dmgMult 1.70×; burstBonus +15%
+Medium charge (hold 500–999ms): spinDelta −65;  linearImpulse  850 eu; dmgMult 1.55×; burstBonus  +8%
+Quick tap     (hold <500ms):    spinDelta −35;  linearImpulse  500 eu; dmgMult 1.35×; burstBonus   0%
+selfCost:    −55  (spin cost from BeySpirit spin-up effort)
+powerCost:   110
+cooldown:    6500 ms
+QTE:         "Hellfire" — hold J; full charge at 1000ms hold; total charge window 1200ms
+```
+
+Note: the tornado dual-buff (Phase 2) applies to the Phase 3 strike — the final dmgMult is the combination of Salamander's bey-stat base multiplier plus the 1.45× aura additive. The values above represent the total delivered output.
+
+```typescript
+type ChargeLevel = "full" | "medium" | "quick";
+
+function crimsonLotusBlaze(holdDurationMs: number): {
+  chargeLevel: ChargeLevel; spinDelta: number; linearImpulse: number;
+  dmgMult: number; burstBonus_pct: number
+} {
+  const lvl: ChargeLevel = holdDurationMs >= 1000 ? "full"
+                         : holdDurationMs >= 500  ? "medium"
+                                                   : "quick";
+  const stats = {
+    full:   { spinDelta: -100, linearImpulse: 1350, dmgMult: 1.70, burstBonus_pct: 15 },
+    medium: { spinDelta:  -65, linearImpulse:  850, dmgMult: 1.55, burstBonus_pct:  8 },
+    quick:  { spinDelta:  -35, linearImpulse:  500, dmgMult: 1.35, burstBonus_pct:  0 },
+  };
+  return { chargeLevel: lvl, ...stats[lvl] };
+}
+// crimsonLotusBlaze(1200) → { level:"full",   spin:−100, imp:1350, dmg:1.70×, burst:+15% }
+// crimsonLotusBlaze(700)  → { level:"medium", spin:−65,  imp:850,  dmg:1.55×, burst:+8%  }
+// crimsonLotusBlaze(200)  → { level:"quick",  spin:−35,  imp:500,  dmg:1.35×, burst:0%   }
+
+function tornadoAuraDualBuff(elapsed_ms: number): {
+  attackBuffMult: number; defenseReductionDelta: number; active: boolean
+} {
+  if (elapsed_ms >= 2000) return { attackBuffMult: 1.0, defenseReductionDelta: 0, active: false };
+  return { attackBuffMult: 1.45, defenseReductionDelta: 0.20, active: true };
+}
+// tornadoAuraDualBuff(0)    → { attackBuff:×1.45, defReduction:+0.20, active:true  }
+// tornadoAuraDualBuff(2000) → { attackBuff:×1.00, defReduction: 0.00, active:false }
+
+function crimsonSpinUpPhysics(): {
+  tau_BeySpirit_Nm: number; alpha_net_rad_s2: number; delta_omega_600ms: number
+} {
+  const I = 6.742e-6;
+  const alpha_up = 350;
+  const alpha_fric = 24.4;
+  const tau = I * (alpha_up + alpha_fric);
+  return {
+    tau_BeySpirit_Nm:  parseFloat(tau.toFixed(6)),
+    alpha_net_rad_s2:  alpha_up,
+    delta_omega_600ms: parseFloat((alpha_up * 0.60).toFixed(1)),
+  };
+}
+// crimsonSpinUpPhysics() → { tau:0.002524 N·m, alpha_net:350 rad/s², Δω:210 rad/s over 600ms → 440→650 rad/s }
+```
+
+---
+
+## Case 842 — [COMBO] Salamander Surge (↑ J K)
+
+**Franchise bey:** Suoh Genji's Heat Salamander 12 Operate — Heat Salamander layer active  
+**Required part:** `heatSalamanderLayer` (any beyblade carrying this part qualifies)  
+**Sequence:** ↑ J K (moveUp + attack + defense)  
+**Type restriction:** universal  
+**Cost:** 15 power
+
+Salamander charges in with momentum (↑), delivers a forward blade contact strike (J), then immediately braces into the Operate Defense stance (K). The attack-then-defend motion in a single sequence is thematic of the Operate driver's dual-mode nature: the layer's hybrid contact geometry converts the incoming charge into a clean blade hit, and the K input triggers the Operate Lock — a brief self-defense stance post-strike representing Salamander settling into Defense Mode footing after impact.
+
+```
+Main hit:
+  spinDelta:     −38
+  dmgMult:       1.30×
+  lockMs:        60
+  windowMs:      700
+  cooldownMs:    4500
+  cost:          15
+
+Operate Lock (activates on successful J hit, K input confirmed):
+  incomingDamageReduction: +12% for 500 ms
+  (represents Operate driver flat-tip contact patch absorbing the post-strike recoil stance)
+```
+
+The Operate Lock is a partial damage reduction, not invulnerability: it lowers incoming damage by 12% for 500ms only if the J hit lands and the K input is successfully registered within the windowMs. On a glancing J hit (J miss), the combo still resolves but Operate Lock does not activate.
+
+**Ceiling compliance:** 1.30×≤1.5×; 60ms≤300ms; 38≤50 rad/s; no invulnerability, no AoE, no spin recovery [check]. +12% DR for 500ms is a partial buff, not invulnerability; within ceiling rules for combos with secondary on-hit effects (cf. riposte parry window).
+
+```typescript
+function salamanderSurgeCombo(jHit: boolean, kConfirmed: boolean): {
+  spinDelta: number; dmgMult: number; lockMs: number;
+  operateLockActive: boolean; operateLockDurationMs: number; damageReductionBonus: number
+} {
+  if (jHit && kConfirmed) {
+    return { spinDelta: -38, dmgMult: 1.30, lockMs: 60,
+             operateLockActive: true, operateLockDurationMs: 500, damageReductionBonus: 0.12 };
+  }
+  if (jHit) {
+    return { spinDelta: -38, dmgMult: 1.30, lockMs: 60,
+             operateLockActive: false, operateLockDurationMs: 0, damageReductionBonus: 0 };
+  }
+  return { spinDelta: -20, dmgMult: 1.10, lockMs: 0,
+           operateLockActive: false, operateLockDurationMs: 0, damageReductionBonus: 0 };
+}
+// salamanderSurgeCombo(true,  true)  → { spin:−38, dmg:1.30×, lock:60ms, operateLock:true,  DR:+12% }
+// salamanderSurgeCombo(true,  false) → { spin:−38, dmg:1.30×, lock:60ms, operateLock:false, DR: 0%  }
+// salamanderSurgeCombo(false, false) → { spin:−20, dmg:1.10×, lock:0ms,  operateLock:false, DR: 0%  }
+```
+
+---
+
+---
+
+## Case 843 — [GIMMICK] Chao Xin's Poison Virgo ED145ES — ED145 Eternal Defense Ring and ES Bearing Spin Isolation
+
+**Franchise context.** Chao Xin (Chinese team, Metal Fight Beyblade, MFB era, Takara-Tomy). Assembly: Poison Virgo ED145ES. All values [M] (±15%) — no dedicated prior case analysis. Poison Virgo is a stamina-type bey with two physics-distinguishing components: the ED145 track's freely rotating outer ring (Eternal Defense), which absorbs lateral contact impulse, and the ES (Eternal Sharp) performance tip, a bearing-supported sharp tip that nearly eliminates rotational friction — the lowest spin-decay tip in the MFB roster.
+
+**Parts:**
+
+**Fusion Wheel: Poison [M]**
+Asymmetric fusion wheel with an irregular bumpy outer profile. The asymmetry gives Virgo a characteristic erratic orbit pattern at high spin and smooth tight orbit at low spin. All contact surfaces are curved and angled toward stamina deflection rather than smash attack.
+  m_Poison ≈ 30.0 g [M]; r_wheel ≈ 22 mm [M]; r_inner ≈ 8 mm [M]
+  I_Poison = (0.030/2)(0.022² + 0.008²) = 0.015 × 5.480×10⁻⁴ = 8.220×10⁻⁶ kg⋅m² [M]
+  Contact geometry: θ_contact ≈ 55° [M] (stamina deflect type); C_deflect ≈ 0.40 [M]
+
+**Spin Track: ED145 (Eternal Defense 145) [M]**
+Height 14.5mm spin track featuring a freely rotating outer ring. The ring is mounted on a bearing and spins independently of the main track body. When Virgo is struck at track height, the ring rotates freely, converting the tangential component of impact into ring rotation rather than transmitting it to the body.
+
+  m_ED145_total ≈ 4.0 g [M]  (body: 2.5 g; ring: 1.5 g)
+  r_ring ≈ 10 mm [M]
+  I_ring_independent = m_ring × r_ring² = 0.0015 × 0.010² = 1.500×10⁻⁷ kg⋅m² [M]
+  (ring is kinematically independent — not part of body I_total)
+  I_ED145_body = (0.0025/2)(0.010²) = 1.250×10⁻⁷ kg⋅m² = 0.125×10⁻⁶ kg⋅m² [M]
+
+  ED145 ring impact absorption factor [M]:
+    Tangential impact at ring height: force transferred to body = F × k_ED
+    k_ED ≈ 0.55 [M]  (55% transferred; 45% absorbed by ring rotation)
+    → burst impulse at ED145 contact height is 45% weaker than at wheel contact height
+    This is Virgo's burst-resistance mechanism: body presents at ED145 height when stationary-spinning, and the ring dissipates nearly half of each incoming burst impulse.
+
+**Performance Tip: ES (Eternal Sharp) [M]**
+Bearing-supported sharp tip. The bearing inner race (tip contact) spins independently from the outer race (body attachment), decoupling spin from tip friction. The effective friction coefficient at the tip is reduced to near-zero — only bearing seal drag contributes to spin decay.
+
+  r_tip ≈ 0.5 mm [M]  (near-point sharp contact)
+  μ_ES ≈ 0.005 [M]  (bearing-decoupled; only seal drag)
+  m_ES ≈ 1.5 g [M]
+
+**Assembly [M]:**
+  m_total ≈ 38.0 g [M]  (wheel 30.0 + track 4.0 + tip 1.5 + face 2.5)
+  I_total = I_Poison + I_ED145_body + I_ES + I_face
+    = 8.220 + 0.125 + 0.100 + 0.350 = 8.795×10⁻⁶ kg⋅m² [M]
+  ω₀ = 600 rad/s (MFB standard)
+  KE₀ = 0.5 × 8.795×10⁻⁶ × 600² = 1.583 J [M]
+
+  ES spin decay:
+    dω/dt_ES = −(μ_ES × m × g × r_tip) / I_total
+      = −(0.005 × 0.038 × 9.81 × 0.0005) / 8.795×10⁻⁶
+      = −(9.333×10⁻⁷) / 8.795×10⁻⁶
+      = −0.106 rad/s² [M]
+
+  Comparative (standard Sharp tip; μ≈0.10, r_tip≈1mm):
+    dω/dt_Sharp = −(0.10 × 0.038 × 9.81 × 0.001) / 8.795×10⁻⁶ = −4.24 rad/s² [M]
+
+  ES vs Sharp endurance ratio: 4.24 / 0.106 = 40× lower spin decay for ES [M]
+  → At ω₀ = 600 rad/s with ES: Virgo reaches ω_min = 100 rad/s after t = (600−100)/0.106 ≈ 4717 s (theoretical — ~79 minutes)
+  → In practice, air resistance and impacts dominate; ES simply ensures tip friction is negligible relative to all other loss mechanisms.
+  → This extreme spin endurance is the physical basis for the Left Right Reverse Wheeling Forearm special: the near-zero tip damping allows oscillation amplitude to grow without bound under BeySpirit resonant driving.
+
+```typescript
+function ed145RingAbsorption(impactImpulse_eu: number): {
+  impulseToBody_eu: number; impulseToRing_eu: number; k_ED: number
+} {
+  const k_ED = 0.55;
+  return {
+    impulseToBody_eu: parseFloat((impactImpulse_eu * k_ED).toFixed(1)),
+    impulseToRing_eu: parseFloat((impactImpulse_eu * (1 - k_ED)).toFixed(1)),
+    k_ED,
+  };
+}
+// ed145RingAbsorption(1000) → { toBody:550, toRing:450, k:0.55 }
+// ed145RingAbsorption(2800) → { toBody:1540, toRing:1260, k:0.55 }
+
+function virgoAssemblyStats(): {
+  I_total_kgm2: number; spinDecay_ES_rad_s2: number; spinDecay_Sharp_rad_s2: number; enduranceRatio: number
+} {
+  return {
+    I_total_kgm2:         8.795e-6,
+    spinDecay_ES_rad_s2:  0.106,
+    spinDecay_Sharp_rad_s2: 4.24,
+    enduranceRatio:        40,
+  };
+}
+```
+
+---
+
+## Case 844 — [SPECIAL] Left Right Reverse Wheeling Forearm
+
+**Franchise move.** Left Right Reverse Wheeling Forearm (JP: 左右逆車前腕, same martial arts lineage) — Chao Xin's Poison Virgo ED145ES (Metal Fight Beyblade). Virgo begins oscillating left-right in a small arc, the amplitude slowly increasing under BeySpirit resonant driving; at maximum amplitude the sweep speed far exceeds the Critical Flicker Fusion threshold, producing 2–3 persistent after-image copies of Virgo sweeping the full arena width — any beyblade anywhere in the stadium is in the sweep zone. Confirmed AoE: used in a 2v2 tag battle, simultaneously striking Sophie's Grand Cetus and Wales's Grand Cetus.
+
+NOTE: special move overrides all EG/clutch mechanical state; the EG spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override).
+
+**Oscillation physics (BeySpirit-driven resonance):**
+The ES bearing eliminates tip friction → oscillation is effectively undamped. BeySpirit resonantly drives the system at the natural lateral pendulum frequency:
+
+  ω_osc = √(g / h_CoM) = √(9.81 / 0.008) = 35.0 rad/s = 5.57 Hz [M]
+    where h_CoM ≈ 8 mm [M] (height of Virgo's CoM above the ES tip contact point, MFB low profile)
+
+  I_tilt (about tilt axis through tip) = I_total + m × h_CoM²
+    = 8.795×10⁻⁶ + 0.038 × (0.008)²
+    = 8.795×10⁻⁶ + 2.432×10⁻⁶ = 1.123×10⁻⁵ kg⋅m² [M]
+
+  Amplitude buildup under BeySpirit resonant driving (β = drive rate):
+    A(t) = A₀ × e^(β × t)  where A₀ = 10 mm [M]; β ≈ 1.77 rad/s [M]
+    A(1800ms) = 0.010 × e^(1.77 × 1.8) = 0.010 × e^3.186 = 0.010 × 24.2 = 242 mm [M]
+    (exceeds arena radius of 120 mm → full stadium sweep — BeySpirit-amplified)
+
+**After-image (CFF) analysis:**
+  At A_BS = 240 mm [M]:
+    v_sweep_peak = A_BS × ω_osc = 0.240 × 35.0 = 8.40 m/s [M]
+    f_apparent = v_sweep / d_bey = 8.40 / 0.048 = 175 Hz >> f_CFF = 60 Hz [M]
+    N_images = f_apparent / f_CFF = 175 / 60 = 2.9 → ~3 persistent after-image copies [M]
+  
+  AoE sweep zone at full amplitude: width = 2 × A_BS = 480 mm > arena diameter (240 mm)
+    → entire arena is within the sweep zone; all opponents are threatened simultaneously
+    → confirmed by canon: tag-battle use vs Sophie + Wales (two simultaneous targets)
+
+  After-image copies (3 at full amplitude): each copy is an independent hit zone,
+  not a visual-only effect — consistent with Galman's phantomVisible flag (Case 837).
+
+**Phase 1 — Wheeling Buildup (1800ms):**
+Virgo begins L-R oscillation at A₀ = 10mm. Amplitude grows exponentially under BeySpirit resonance.
+  At t ≈ 1200ms: A ≈ 0.010 × e^(1.77×1.2) = 0.010 × 8.27 = 82 mm → v_sweep = 2.87 m/s → f_app ≈ 59.8 Hz → after-images begin appearing (just at CFF threshold)
+  At t = 1800ms: A = 240 mm → v_sweep = 8.40 m/s → 3 after-images active → Phase 2 auto-triggers
+
+No damage during Phase 1. After-images are visible from t ≈ 1200ms onward as a visual warning.
+
+**Phase 2 — Full Sweep Strike (QTE: "Forearm" — tap ← or → at amplitude peak; 200ms window):**
+At peak amplitude, Virgo delivers the AoE sweep. QTE input determines strike direction alignment:
+- Correct direction (← or → matching Virgo's current sweep direction at QTE trigger): full hit
+- Wrong direction (input against the sweep): 70% hit (mistimed brace reduces impact)
+- No input: 70% hit (auto-hit — sweep cannot miss anything in the arena)
+
+```
+Per-target main hit (correct QTE direction):
+  spinDelta:     −65
+  linearImpulse: 700 eu
+  dmgMult:       1.55×
+  burstBonus:    +10%
+
+Per-target main hit (wrong direction / no input):
+  spinDelta:     −40
+  linearImpulse: 500 eu
+  dmgMult:       1.35×
+  burstBonus:    +5%
+
+Per-target after-image chip (×3, applied to each hit target regardless of QTE):
+  spinDelta:     −12 per chip
+  linearImpulse: 180 eu per chip
+  dmgMult:       1.15× per chip
+
+Cumulative main + 3 afterimage chips (correct QTE):
+  spinDelta:     −65 − (3 × 12) = −101
+  linearImpulse: 700 + (3 × 180) = 1240 eu
+
+AoE:            hits ALL opponents in arena simultaneously
+selfCost:        −85  (oscillation driven by BeySpirit consumes Virgo spin energy)
+powerCost:       100
+cooldown:        5500 ms
+QTE:             "Forearm" — tap ← or → matching sweep direction; 200ms window at A_max
+```
+
+```typescript
+function leftRightReverseWheelingForearm(
+  qteCorrect: boolean,  // correct direction matched
+  targetCount: number   // opponents in arena (usually 1 in solo, 2+ in tag)
+): {
+  perTarget: { mainSpinDelta: number; mainImpulse_eu: number; mainDmgMult: number;
+               chipTotal: { spinDelta: number; impulse_eu: number } };
+  totalSpinDeltaAllTargets: number; totalImpulseAllTargets_eu: number
+} {
+  const AFTER_IMAGES = 3;
+  const main = qteCorrect
+    ? { spinDelta: -65, impulse: 700, dmgMult: 1.55, burstBonus: 0.10 }
+    : { spinDelta: -40, impulse: 500, dmgMult: 1.35, burstBonus: 0.05 };
+  const chipPerTarget = {
+    spinDelta: -12 * AFTER_IMAGES,       // −36
+    impulse:   180 * AFTER_IMAGES,       // 540
+  };
+  const perTarget = {
+    mainSpinDelta: main.spinDelta,
+    mainImpulse_eu: main.impulse,
+    mainDmgMult: main.dmgMult,
+    chipTotal: chipPerTarget,
+  };
+  return {
+    perTarget,
+    totalSpinDeltaAllTargets:   (main.spinDelta + chipPerTarget.spinDelta) * targetCount,
+    totalImpulseAllTargets_eu:  (main.impulse   + chipPerTarget.impulse)   * targetCount,
+  };
+}
+// leftRightReverseWheelingForearm(true,  1) → perTarget: main-65, chip-36; total: -101 / 1240eu
+// leftRightReverseWheelingForearm(true,  2) → total: -202 / 2480eu  (tag-battle — both Sophie + Wales)
+// leftRightReverseWheelingForearm(false, 1) → perTarget: main-40, chip-36; total:  -76 / 1040eu
+
+function wheelingOscillationBuild(elapsed_ms: number): {
+  amplitude_mm: number; sweepSpeed_ms: number; afterImagesVisible: number
+} {
+  const A0 = 10, beta = 1.77, omega_osc = 35.0, d_bey = 0.048, CFF = 60;
+  const A = A0 * Math.exp(beta * (elapsed_ms / 1000));
+  const v = (A / 1000) * omega_osc;  // m/s
+  const f_app = v / d_bey;
+  return {
+    amplitude_mm:        parseFloat(Math.min(A, 240).toFixed(1)),
+    sweepSpeed_ms:       parseFloat(v.toFixed(2)),
+    afterImagesVisible:  Math.max(0, Math.floor(f_app / CFF)),
+  };
+}
+// wheelingOscillationBuild(0)    → { amp:10mm,   v:0.35m/s, images:0 }
+// wheelingOscillationBuild(1200) → { amp:82mm,   v:2.87m/s, images:0 }  ← CFF threshold crossed
+// wheelingOscillationBuild(1800) → { amp:240mm,  v:8.40m/s, images:2 }  ← ~3 visible (floor of 2.9)
+```
+
+---
+
+## Case 845 — [COMBO] Eternal Counter (↑ K J)
+
+**Franchise bey:** Chao Xin's Poison Virgo ED145ES — ED145 track active  
+**Required part:** `ed145` (any beyblade carrying the ED145 track qualifies)  
+**Sequence:** ↑ K J (moveUp + defense + attack)  
+**Type restriction:** stamina  
+**Cost:** 15 power
+
+Virgo advances toward the opponent (↑), presenting the ED145 ring at contact height to absorb an incoming strike (K — brace phase deliberately invites a contact at ED145 ring height), then counter-strikes while the ring has partially absorbed the opponent's burst impulse (J). The K brace phase is not passive guard — it actively triggers the ED145 ring absorption mechanic, reducing the impulse transferred to Virgo's body and simultaneously positioning Virgo for the J counter at close range.
+
+```
+K brace phase (on successful K timing — opponent strike received during K window):
+  incomingImpulseMultiplier: ×0.55  (ED145 ring absorbs 45% — only applied if opponent strikes)
+  spinStealOnContact: +18  (ED ring friction transfers small spin from opponent to Virgo's ring
+                            → body spin slightly boosted via ring-body coupling during rebound)
+
+Main hit (J counter):
+  spinDelta:     −35
+  dmgMult:       1.25×
+  lockMs:        45
+  windowMs:      700
+  cooldownMs:    4500
+
+Ceiling compliance: 1.25×≤1.5×; 45ms≤300ms; 35≤50 rad/s; no invulnerability; no AoE;
+  +18 spin steal is partial (not full spin recovery); ED absorb is partial DR (not invulnerability) [check].
+Note: cost 15 reflects the secondary K brace mechanic; pure-free combos have no secondary on-hit effects.
+```
+
+```typescript
+function eternalCounter(
+  kTimingHit: boolean,    // opponent struck during K brace window
+  jHit: boolean           // J counter connected
+): {
+  incomingDamageMultiplier: number; spinGain: number;
+  spinDelta: number; dmgMult: number; lockMs: number
+} {
+  const ringAbsorb = kTimingHit ? 0.55 : 1.0;  // no absorption if no incoming strike
+  const spinSteal  = kTimingHit ? 18   : 0;
+  if (jHit) {
+    return { incomingDamageMultiplier: ringAbsorb, spinGain: spinSteal,
+             spinDelta: -35, dmgMult: 1.25, lockMs: 45 };
+  }
+  return { incomingDamageMultiplier: ringAbsorb, spinGain: spinSteal,
+           spinDelta: -18, dmgMult: 1.10, lockMs: 0 };
+}
+// eternalCounter(true,  true)  → { ringAbsorb:0.55, spinGain:+18, spin:-35, dmg:1.25×, lock:45ms }
+// eternalCounter(false, true)  → { ringAbsorb:1.00, spinGain:  0, spin:-35, dmg:1.25×, lock:45ms }
+// eternalCounter(true,  false) → { ringAbsorb:0.55, spinGain:+18, spin:-18, dmg:1.10×, lock:0ms  }
+```
+
+---
+
+*Cases continue from Case 846 as further franchise moves are provided.*
+
+---

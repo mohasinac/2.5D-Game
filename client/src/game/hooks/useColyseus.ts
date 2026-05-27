@@ -414,7 +414,9 @@ export function useColyseus({
       roomRef.current = connectedRoom;
       setRoom(connectedRoom);
       setConnectionState("connected");
-      // Renderer + asset hook will advance to loading-arena-assets / beyblade-assets / audio.
+      // Advance past "joining-room" immediately so the user sees progress while
+      // the server's async onJoin (Firestore loads) completes before warmup starts.
+      setLoadingStep("loading-arena-assets");
 
       // Detect spectator mode — spectators have no beyblade entry keyed to their sessionId
       const spectate = Boolean((options as any).spectate);

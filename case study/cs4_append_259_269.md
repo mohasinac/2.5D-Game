@@ -9,7 +9,7 @@ Great Dragon AR is a two-component plastic gen AR: a thin-construction core ring
 
 Critically, the ridge geometry is bilaterally symmetric in the plane of rotation — the contact angle for RS and LS is equal on both sides. This makes Great Dragon one of the very few plastic gen ARs with genuine both-spin smash parity (smashFractionRS = smashFractionLS ≈ 0.52).
 
-The Wing Sub-Ring SAR slot accepts any compatible SAR (War Lion SAR, War Bear SAR, Dragon Saucer SAR, etc.). The most competitive build strips the Wing Sub-Ring and uses War Lion core AR + Dragon Saucer SAR instead — but Great Dragon's core ridge is where the attack power originates.
+The Wing Sub-Ring SAR slot accepts any compatible SAR (War Lion SAR, War Bear SAR, Dragon Saucer SAR, etc.). The most competitive build strips the Wing Sub-Ring and uses War Lion Core AR + Dragon Saucer SAR instead — but Great Dragon Core AR's core ridge is where the attack power originates.
 
 **Sources of contact force:**
 - Core ridges: primary smash on both spin directions

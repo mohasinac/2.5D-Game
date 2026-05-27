@@ -90,8 +90,7 @@ export function ControlsLegend({
 
       {row(`${key(km.moveLeft)} / ${key(km.moveRight)} / ← →`, "Move")}
       {row(`${key(km.moveUp)} / ${key(km.moveDown)} / ↑ ↓`, "Move")}
-      {row(`${key(km.charge)} hold`, "Charge spin")}
-      {row(`${key(km.charge)} tap`, "Special move")}
+      {row(key(km.charge), "Hold=Charge · Tap=Special")}
       {row("+ / − / 0", "Zoom")}
 
       {!isTryout && (

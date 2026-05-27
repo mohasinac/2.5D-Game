@@ -9,6 +9,7 @@ import { useColyseus } from "@/game/hooks/useColyseus";
 import { useGameInput } from "@/game/hooks/useGameInput";
 import { usePixiRenderer } from "@/game/hooks/usePixiRenderer";
 import { useGame } from "@/contexts/GameContext";
+import { SoundManager } from "@/game/audio/SoundManager";
 import { BeySelector } from "@/components/game/BeySelector";
 import { SpecialMoveHUD } from "@/components/game/SpecialMoveHUD";
 import { ComboHUD } from "@/components/game/ComboHUD";
@@ -17,6 +18,7 @@ import { CameraControls } from "@/components/game/CameraControls";
 import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { LoadingProgress } from "@/components/LoadingProgress";
 import type { ServerBeyblade, ServerGameState } from "@/types/game";
+import { TYPE_COLORS } from "@/types/game";
 
 const TEAM_BATTLE_ROOM = "team_battle_room";
 
@@ -49,6 +51,7 @@ export function TeamBattleGamePage() {
   const [possessionMsg, setPossessionMsg] = useState<string | null>(null);
   const [myTeam, setMyTeam] = useState<"red" | "blue">("blue");
   const [controlledBeyId, setControlledBeyId] = useState<string | null>(null);
+  const possessionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const colyseusOptions = useMemo(() => ({
     beybladeId: settings.beybladeId ?? "default",
@@ -71,6 +74,13 @@ export function TeamBattleGamePage() {
 
   const {
     render,
+    spawnCollisionParticles,
+    spawnSpinOutParticles,
+    spawnBurstParticles,
+    spawnDamageNumber,
+    physicsToScreen,
+    playSpecialMoveEffect,
+    playComboEffect,
     setControlledBeyblade,
     cameraZoomIn,
     cameraZoomOut,
@@ -99,7 +109,7 @@ export function TeamBattleGamePage() {
     setControlledBeyblade(controlledBeyId ?? myBeyblade?.id ?? null);
   }, [controlledBeyId, myBeyblade?.id, setControlledBeyblade]);
 
-  // Listen for team-specific messages
+  // Listen for team-specific and game event messages
   useEffect(() => {
     if (!room) return;
     room.onMessage("team-joined", (data: { sessionId: string; team: string }) => {
@@ -110,11 +120,41 @@ export function TeamBattleGamePage() {
         setControlledBeyId(data.toBeyId);
         const bey = beyblades.get(data.toBeyId) as (ServerBeyblade & { username?: string }) | undefined;
         const label = bey?.username ?? data.toBeyId.slice(0, 6);
+        if (possessionTimerRef.current) clearTimeout(possessionTimerRef.current);
         setPossessionMsg(`Switched to ${label}`);
-        setTimeout(() => setPossessionMsg(null), 1500);
+        possessionTimerRef.current = setTimeout(() => setPossessionMsg(null), 1500);
       }
     });
-    room.onMessage("game-end", () => navigate(`/game/${mode}/team-battle/lobby`));
+    room.onMessage("collision", (data: any) => {
+      const { x: cx, y: cy } = physicsToScreen(data.contactPoint.x, data.contactPoint.y);
+      spawnCollisionParticles(cx, cy, 0xff4444, 0x44aaff);
+      if (data.damage1 > 0) spawnDamageNumber(cx - 12, cy - 8, data.damage1, 0xff5555);
+      if (data.damage2 > 0) spawnDamageNumber(cx + 12, cy - 8, data.damage2, 0x55aaff);
+      SoundManager.play("collision");
+    });
+    room.onMessage("spin-out", (data: any) => {
+      const { x, y } = physicsToScreen(data.x, data.y);
+      spawnSpinOutParticles(x, y, TYPE_COLORS[data.type] ?? 0xffffff);
+      SoundManager.play("spin-out");
+    });
+    room.onMessage("burst", (data: any) => {
+      const { x, y } = physicsToScreen(data.x, data.y);
+      spawnBurstParticles(x, y);
+      SoundManager.play("spin-out");
+    });
+    room.onMessage("special-move", (data: any) => {
+      playSpecialMoveEffect(data.playerId, data.type, data.x, data.y, data.facing);
+      SoundManager.play("special-move");
+    });
+    room.onMessage("combo", (data: any) => {
+      playComboEffect(data.playerId, data.comboName);
+      SoundManager.play("combo");
+    });
+    room.onMessage("game-end", (data: any) => {
+      const winner = data?.winner?.userId ?? data?.winner ?? "";
+      SoundManager.play(winner === userId ? "victory" : "defeat");
+      navigate(`/game/${mode}/team-battle/lobby`);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room, navigate, mode]);
 

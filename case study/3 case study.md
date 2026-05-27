@@ -1368,7 +1368,7 @@ Dragon Breaker Core AR is 5.3 g — the heaviest core AR in the plastics library
    J_smash_SZ  = J * cos(30) = J * 0.866  (86.6%) -- significantly better than DB alone
    J_recoil_SZ = J * sin(30) = J * 0.500  (50.0%)
 
-   Total AR mass (DB core + Screw Zeus): 5.3g + ~3.5g ~ 8.8g
+   Total AR mass (DB core + Screw Zeus SAR): 5.3g + ~3.5g ~ 8.8g
    Orbital momentum: p = m_AR * v_orb = 0.0088 * (300 * 0.027) ~ 0.071 kg.m/s
    vs typical AR combo p ~ 0.006 * (300 * 0.025) ~ 0.045 kg.m/s
    +58% orbital momentum -> significantly more impulse against heavy WBD opponents.
@@ -1433,16 +1433,16 @@ Dragon Breaker Core AR is 5.3 g — the heaviest core AR in the plastics library
    Degradation is progressive; replacement required past threshold.
 
    Setup C: Screw Zeus SAR (left spin)
-   Heaviest AR combination. Dragon Breaker + Screw Zeus total ~ 8.8g.
-   Left-spin primary contacts: Screw Zeus forehead + rear spike protrusion + Dragon Breaker serrations.
-   Screw Zeus forehead angle in left spin ~ a_SZ_head ~ 25 deg from tangent:
+   Heaviest AR combination. Dragon Breaker Core AR + Screw Zeus SAR total ~ 8.8g.
+   Left-spin primary contacts: Screw Zeus SAR forehead + rear spike protrusion + Dragon Breaker Core AR serrations.
+   Screw Zeus SAR forehead angle in left spin ~ a_SZ_head ~ 25 deg from tangent:
    J_smash_SZ  = J * cos(25) = J * 0.906 (90.6%) -- exceptional
    J_recoil_SZ = J * sin(25) = J * 0.423 (42.3%)
 
-   Dragon Breaker mostly occupies dead space over Screw Zeus less-effective spikes
-   but noticeably evens weight distribution (Screw Zeus is asymmetric mass):
-   Screw Zeus alone: mass asymmetry -> periodic wobble frequency = w_spin / n_prongs
-   Dragon Breaker added: redistributes mass angularly -> reduces periodic wobble amplitude.
+   Dragon Breaker Core AR mostly occupies dead space over Screw Zeus SAR less-effective spikes
+   but noticeably evens weight distribution (Screw Zeus SAR is asymmetric mass):
+   Screw Zeus SAR alone: mass asymmetry -> periodic wobble frequency = w_spin / n_prongs
+   Dragon Breaker Core AR added: redistributes mass angularly -> reduces periodic wobble amplitude.
 
    Mass requirement: 8.8g AR at high r_outer needs fast tip for adequate orbital speed.
    F_centripetal = m_AR * v_orb^2 / r_orbit
@@ -1455,10 +1455,10 @@ Dragon Breaker Core AR is 5.3 g — the heaviest core AR in the plastics library
 
 ---
 
-### 5. Inverted Slope and Tilt Risk (Left Spin Screw Zeus)
+### 5. Inverted Slope and Tilt Risk (Left Spin Screw Zeus SAR)
 
 ```
-   Screw Zeus in left spin exposes an inverted slope contact surface.
+   Screw Zeus SAR in left spin exposes an inverted slope contact surface.
    Inverted slope angle: th_inv ~ 15 deg downward from horizontal.
 
    When this slope contacts the opponent from above:
@@ -1471,7 +1471,7 @@ Dragon Breaker Core AR is 5.3 g — the heaviest core AR in the plastics library
    Cumulative tilt risk is higher at lower base heights (shorter bases amplify this
    by placing the AR at a height where this slope engages more often).
    Taller bases: inverted slope contacts happen more frequently against shorter opponents.
-   The notes flag this as a reason right-spin Screw Zeus is "arguably safer" on taller bases.
+   The notes flag this as a reason right-spin Screw Zeus SAR is "arguably safer" on taller bases.
 ```
 
 ---
@@ -1480,8 +1480,8 @@ Dragon Breaker Core AR is 5.3 g — the heaviest core AR in the plastics library
 
 ```
    Circle Survivor Defense base height: H_CS ~ 18-19 mm.
-   Screw Zeus/Dragon Breaker combo on standard base: H_AR ~ 16 mm.
-   Overhanging protrusions of Screw Zeus extend radially outward and slightly downward.
+   Screw Zeus SAR / Dragon Breaker Core AR combo on standard base: H_AR ~ 16 mm.
+   Overhanging protrusions of Screw Zeus SAR extend radially outward and slightly downward.
 
    At H_AR < H_CS: overhanging protrusions cannot reach Circle Survivor's AR underside.
    Contact is protrusion-on-Circle-Survivor-body (cylindrical shell): contact angle -> 90 deg.
@@ -1637,7 +1637,7 @@ When a SAR is free to rotate, a collision impulse J at the SAR contact radius r_
 
 ```
    Dragon Breaker Sub AR outer radius (31 mm) exceeds most core AR contact radii.
-   On aggressive core ARs (Great Dragon, Dragon Breaker):
+   On aggressive core ARs (Great Dragon Core AR, Dragon Breaker Core AR):
    r_core_AR_contact ~ 26-28 mm < r_SAR_outer = 31 mm.
 
    If SAR extends radially beyond core AR contact zone:
@@ -6968,7 +6968,7 @@ J_smash  = J × cos(8°) ≈ 0.990J
 J_recoil = J × sin(8°) ≈ 0.139J
 `
 
-This is among the lowest contact angles achievable in ABS construction — Dragon Breaker's primary face is similar (~6°), Driger S is ~10°. The spike features along the wing edge are small raised ribs spaced ~2mm apart. Each spike has a tip radius r_spike ≈ 0.5mm, concentrating the contact pressure:
+This is among the lowest contact angles achievable in ABS construction — Dragon Breaker Core AR's primary face is similar (~6°), Driger S is ~10°. The spike features along the wing edge are small raised ribs spaced ~2mm apart. Each spike has a tip radius r_spike ≈ 0.5mm, concentrating the contact pressure:
 
 `
 P_spike = F_contact / A_spike = F / (π × r_spike²)
@@ -6998,7 +6998,7 @@ function spikeConsistencyFactor(
 
 ### No-Overhang Advantage Against Circle Survivor Defense
 
-Circle Survivor Defense presents a convex rim at its outer diameter. An AR with an overhang (a top-face lip that extends radially beyond the main wing, e.g. Dragon Breaker) contacts the CSD rim from above at elevation angle θ_oh above the equatorial plane. The lateral impulse is:
+Circle Survivor Defense presents a convex rim at its outer diameter. An AR with an overhang (a top-face lip that extends radially beyond the main wing, e.g. Dragon Breaker Core AR) contacts the CSD rim from above at elevation angle θ_oh above the equatorial plane. The lateral impulse is:
 
 `
 J_lateral_overhang = J × cos(θ_oh)

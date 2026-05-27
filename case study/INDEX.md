@@ -1,5 +1,5 @@
-﻿# Beyblade Case Studies — Master Index
-Total: **807 cases** across 14 files + 1 master reference.
+# Beyblade Case Studies — Master Index
+Total: **812 cases** across 14 files + 1 master reference.
 
 ---
 
@@ -19,7 +19,7 @@ Total: **807 cases** across 14 files + 1 master reference.
 | [10 case study.md](10%20case%20study.md) | 545–585 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–836 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
+| [13 case study.md](13%20case%20study.md) | 619–842 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
 | [14 case study.md](14%20case%20study.md) | 759–777 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | Engine reference: constants, formulas, normalization |
 
@@ -282,7 +282,7 @@ Total: **807 cases** across 14 files + 1 master reference.
 
 ---
 
-## Part 4 — Cases 189–280
+## Part 4 — Cases 189–285
 
 > Gen 1 Plastic: Engine Gear era parts, CEW tips, anime-only entries, V-Force WD/BB supplement, Draciel Metal Ball Defenser, Galux (unreleased)
 
@@ -381,6 +381,8 @@ Total: **807 cases** across 14 files + 1 master reference.
 | 278 | War Bear SAR (Galzzly): 2.4g Free-Spin Useless; Fixed LS Top-Tier Smash; Fragile Tips | Gen1-Plastic | SGS | SAR | War Bear SAR, fixed LS smash, fragile |
 | 279 | Delta Wave AR (Orca Diver): 4.3g RS Below-Top-Tier, Wears Fast, No LS | Gen1-Plastic | SGS | AR | Delta Wave, Orca Diver, RS mid |
 | 280 | Scissors Arm AR (Crab Diver): 4.6g LS Huge Power+Recoil, Self-KO Risk, Best Non-CCL | Gen1-Plastic | SGS | AR | Scissors Arm, Crab Diver, LS smash, self-KO |
+| 281 | Cross Gator AR (Trygator V-Force): 4.0g Balance AR, Moderate RS/LS, Non-Competitive in Both | Gen1-Plastic | SGS | AR | Cross Gator, Trygator, balance AR |
+| 282 | Vanishing Moot AR (ANIME-ONLY): 3-Fold Swept-Back Turbine, RS LAD/Survival, Magnacore Centering | Gen1-Plastic | Magnacore | AR | Vanishing Moot, anime-only, survival, LAD |
 
 ---
 
@@ -1146,6 +1148,7 @@ The following part types are **physics-negligible** — they share near-identica
 | Guardian Driger | Great Tiger [M] | Eight Heavy [M] | Neo Right SG South (121) | SG Flat Base (117) |
 | Spike Lizard | Lizard Blocker (176) | Ten Heavy (114a) | Neo Right SG North (120) | SG Roller Base (175) |
 | Crab Diver | Scissors Arm (280) | Random | Neo Right SG MW (107b) | SG Semi-Flat Base (109a) |
+| Vanishing Moot [ANIME] | Vanishing Moot AR (282) | ??? [ANIME] | Magnacore (standard) | ??? [ANIME] |
 | Orca Diver | Delta Wave (279) | Random | Neo Right SG MW (107b) | SG Flat Base (117) |
 | Manta Diver | Square Edge (116a) | Random | Neo Right SG MW (107b) | SG Sharp Base (111c) |
 | Killer Eagle | Penta Wing (172) | Random | Neo Right SG MW (107b) | SG Semi-Flat Base (109a) |
@@ -1154,11 +1157,14 @@ The following part types are **physics-negligible** — they share near-identica
 | Galeon 2 | Howling Leo [M] | Random | Neo Right SG MW (107b) | SG Semi-Flat Base (109a) |
 | Trygle 2 | Triple Beak (165) | Random | Neo Right SG MW (107b) | SG Sharp Base (111c) |
 | Trygator | Jungle Shock (265) | Random | Neo Right SG MW (107b) | SG Flat Base (117) |
+| Trygator [V-Force] | Cross Gator (281) | Wide Attack [M] | Neo Right SG (standard) | Metal Ball Base (248) |
 | Cyber Dragoon Battle Spec. | Cybernetic Dragon (137) | Eight Wide (104) | Neo Right SG MW (107b) | SG Wing Base (110b) |
 | Ultimate Dragoon V | Cross Dragon [M] | Magne WD (139) | — | Flat Base [M] |
 | Appollon | Corona Saber (164) | Random | Neo Right SG MW (107b) | SG Flat Base (117) |
-| Venus | Mirage Goddess [M] | Random | Neo Right SG MW (107b) | SG Sharp Base (111c) |
-| Poseidon | Trident Vector [M] | Random | Neo Right SG MW (107b) | SG Semi-Flat Base (109a) |
+| Venus | Mirage Goddess (285) | Random | Neo Right SG MW (107b) | SG Sharp Base (111c) |
+| Venusian G [Hasbro] | Mirage Goddess (285) | Random | Neo Right SG MW (107b) | SG Sharp Base (111c) |
+| Poseidon | Trident Vector (284) | Random | Neo Right SG MW (107b) | SG Semi-Flat Base (109a) |
+| Ocean Wrath G [Hasbro] | Trident Vector (284) | Random | Neo Right SG (standard) | SG Semi-Flat Base (109a) |
 
 ### Gen 1 — Plastics: V2 Series
 
@@ -1171,7 +1177,8 @@ The following part types are **physics-negligible** — they share near-identica
 | Dranzer V2 | Cross Dranzer (151) | Ten Balance (144) | Neo Right SG MW (107b) | Cross Survivor (152) | Customize Clutch Change (150) |
 | Burning Kerberous | Triple Attacker (153) | Ten Wide (154) | Neo Right SG DB (155–156) | Cross Attack (157) | Customize Bearing Base (158) |
 | Draciel V2 | Strike Turtle (159) | Ten Heavy (114a) | Neo Right SG North (120) | Fin Tector (179) | Switch Metal Ball Base (180) |
-| Uriel 2 | Neo Cross Horn [M] | Star Attack (170) | Neo Right SG MW (107b) | Over Attack [M] | SG Grip Change Base [M] |
+| Uriel 2 | Neo Cross Horn (283) | Star Attack (170) | Neo Right SG MW (107b) | Over Attack [M] | SG Grip Change Base [M] |
+| Capricorn Strike G [Hasbro] | Neo Cross Horn (283) | Random | Neo Right SG (standard) | SG Grip Change Base [M] |
 | Dark Dragoon | Dark Wing (260) | Ten Wide (154) | Neo Right SG MW (107b) | Survivor Ring (214) | Customize Sharp Base [M] |
 | Dark Driger | Dark Wing (260) | Ten Balance (144) | Neo Right SG MW (107b) | Survivor Ring (214) | Customize Sharp Base [M] |
 | Dark Draciel | Dark Wing (260) | Ten Heavy (114a) | Neo Right SG MW (107b) | Survivor Ring (214) | Customize Sharp Base [M] |
@@ -1373,7 +1380,7 @@ The following part types are **physics-negligible** — they share near-identica
 Parts appearing in stock combos above that have **no case study coverage** ([M]). Grouped by type.
 
 **Attack Rings (Gen 1 Plastics):**
-Cross Dragon · Try Cutter · Wing Cross · Down Force Ring · Upper Force Ring · Scissor Cutter · Bound Attack Ring · Bound Defense Ring · Roller Attack Ring · Roller Defense Ring · Wing Cutter · Wing Attack Ring · Wing Defense Ring · Max Shield · Spark Attack Ring · Turtle Survivor · Metal Sting Base (BB) · Star Shape · Knight Claws Ring · Double Wing · Whale Attacker · Cross Spike · Cross Fang · Eight Spike · Scissor Attacker · Cross Attacker · Panther Claw · Ten Spike · Cross Horn · Great Tiger · Howling Leo · Jungle Shock · Mirage Goddess · Trident Vector · Neo Cross Horn · Dark Wing
+Cross Dragon · Try Cutter · Wing Cross · Down Force Ring · Upper Force Ring · Scissor Cutter · Bound Attack Ring · Bound Defense Ring · Roller Attack Ring · Roller Defense Ring · Wing Cutter · Wing Attack Ring · Wing Defense Ring · Max Shield · Spark Attack Ring · Turtle Survivor · Metal Sting Base (BB) · Star Shape · Knight Claws Ring · Double Wing · Whale Attacker · Cross Spike · Cross Fang · Eight Spike · Scissor Attacker · Cross Attacker · Panther Claw · Ten Spike · Cross Horn · Great Tiger · Howling Leo · Jungle Shock · Dark Wing
 
 **Weight Disks (Gen 1):**
 Heavy (4LS) · Balance (4LS) · Eight Heavy · Heavy Attack
