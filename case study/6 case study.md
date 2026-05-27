@@ -4847,6 +4847,121 @@ function wbRestoringForce(W: number, R_mm: number, r_off_mm: number): number {
 
 ---
 
+## Case 326a — Bottom: Jog Ball / JB (est. 0.7 g)
+
+> **Stock combo (Rock Escolpio T125JB):** Clear Wheel: Escolpio · Metal Wheel: Rock · Track: T125 · Bottom: Jog Ball
+
+**Thesis.** JB belongs to the Ball tip family and is geometrically similar to WB (nominal ball radius R_JB ≈ 4.3 mm vs R_WB = 4.475 mm) but with tiny spikes covering the entire spherical surface. The spikes shift the contact geometry from full-sphere Hertzian to single-spike-tip Hertzian: effective contact is now determined by the spike tip radius of curvature (r_spike ≈ 0.5 mm), not the full ball. This reduces the Hertzian contact radius from WB's 0.107 mm to just 0.052 mm — a 51% reduction — cutting the contact area by 76% and nearly halving the spinning friction torque. As a result JB decays at 0.167 rad/s², meaningfully better than WB (0.344) and B (0.300), and sits between MB (0.144) and B in the stamina table. However, the far smaller contact patch reduces grip force against lateral impulse during a strike, making JB inferior to WB in its primary design role of defense. JB has found above-mediocre use in exactly one competitive combination: **L-Drago 100JB**, a Left-Spin Destabilizer where the spike texture generates micro-torque pulses that introduce orbit irregularity, destabilizing opposing right-spin beyblades through erratic rebound trajectories.
+
+**Geometry (side view)**
+
+```
+         ╔═══════════════╗   ← shaft
+  ┌──────╩───────────────╩──────┐   r_full ≈ 7.8 mm
+  │  scalloped disc             │   h ≈ 9.0 mm
+  └─────────────────────────────┘
+           ╔═══════════╗         nominal R_JB ≈ 4.3 mm  (est.)
+          ╱ ·  ·  ·  · ╲        (· = surface spikes, covering entire sphere)
+         ╱ · ·  · ·  · · ╲
+         ╲ · ·  · ·  · · ╱
+          ╲ ·  ·  ·  · ╱
+           ╲___________╱
+                 ● a = 0.052 mm  (spike-tip Hertzian, r_spike ≈ 0.5 mm)
+```
+
+**Spike Contact vs Full-Sphere Contact**
+
+The spikes ensure only the tip of the lowest spike contacts the stadium floor at any moment. Contact radius is governed by the spike tip curvature, not the full ball:
+
+```
+Full ball (WB): a_WB = (3 × W × R_WB / 4E*)^(1/3) = 1.071×10⁻⁴ m  (R = 4.475 mm)
+Spike tip (JB): a_JB = (3 × W × r_spike / 4E*)^(1/3)
+
+  a_JB = (3 × 0.491 × 0.0005 / (4 × 1.332×10⁹))^(1/3)
+       = (7.365×10⁻⁴ / 5.328×10⁹)^(1/3)
+       = (1.382×10⁻¹³)^(1/3)                              → 5.17×10⁻⁵ m  (0.052 mm)
+
+Contact area ratio JB / WB = (0.052 / 0.107)²             → 0.236×  (−76% contact area vs WB)
+Contact area ratio JB / B  = (0.052 / 0.093)²             → 0.313×  (−69% contact area vs B)
+```
+
+**Spinning Friction and Spin Decay**
+
+```
+τ_JB = (3/16) × 0.35 × 0.491 × 5.17×10⁻⁵                → 1.67×10⁻⁶ N·m
+τ_WB = 3.44×10⁻⁶ N·m
+τ_B  = 3.00×10⁻⁶ N·m
+
+dω/dt_JB = 1.67×10⁻⁶ / 1.0×10⁻⁵                         → 0.167 rad/s²
+
+Stamina hierarchy (lower = better): MB (0.144) < JB (0.167) < B (0.300) < WB (0.344)
+JB decays 2.06× slower than WB, 1.80× slower than B — but still 1.16× faster than MB.
+```
+
+**Centering Spring**
+
+```
+k = W / R_nominal
+
+k_JB = 0.491 / 0.0043                                     = 114 N/m
+k_WB = 0.491 / 0.004475                                   = 110 N/m
+k_B  = 0.491 / 0.00294                                    = 167 N/m
+
+At r_off = 5 mm:
+  F_JB = 114 × 0.005                                      = 0.570 N
+  F_WB = 110 × 0.005                                      = 0.550 N  (3% less than JB)
+  F_B  = 167 × 0.005                                      = 0.835 N
+```
+
+JB's centering spring is marginally stiffer than WB's (114 vs 110 N/m), so orbital drift is slightly less severe — but the difference is negligible in practice. Both JB and WB require a reduced launch power (~60–70%) to prevent ring-out drift.
+
+**Defense: Why JB Is Inferior to WB**
+
+JB and WB share the same μ (0.35, ABS-ABS) and same beyblade weight (F_N ≈ 0.491 N), so raw grip force F_grip = μ × F_N is nominally equal. However:
+
+1. **Smaller contact footprint**: JB's 76% contact area reduction means each spike tip sustains 4.2× higher Hertzian pressure per unit area — accelerating plastic deformation and spike wear, reducing effective μ over match duration.
+2. **Narrower post-impact recovery arc**: The spike contact point is geometrically near-point, offering a steeper, less stable rebound trajectory vs WB's broad footprint.
+3. **No pressure distribution benefit**: WB's wide contact distributes impact load over more area, reducing peak stress at the interface and yielding a shallower lateral excursion after a hit. JB loses this advantage entirely.
+
+**Destabilizer Use: L-Drago 100JB**
+
+The spike texture is the mechanistic foundation of JB's only competitive role:
+
+```
+Micro-torque pulse per spike contact:
+  Δτ ≈ (3/16) × Δμ_effective × W × a_spike × n_spikes_per_rev
+  (n_spikes ≈ rotational frequency × contact footprint sweep rate)
+
+At ω_bey = 150 rad/s:
+  Each spike cycles in and out of floor contact at ~150× the ball's orbit frequency.
+  → Irregular lateral impulse injected into opponent on each glancing strike.
+```
+
+- **Track height 100** places the contact point low relative to the beyblade's CoM — maximising lateral force transfer per contact event.
+- **Left-spin** (L-Drago) aligns the spike-pulse asymmetry with the opponent's weakest gyroscopic axis, reinforcing destabilisation per hit.
+- The combination of low height + spike pulses + left-spin creates an effective destabilizer that bypasses the need for WB-level defense.
+
+**TypeScript model**
+
+```typescript
+function jbSpikeContactRadius(r_spike_mm: number, W: number): number {
+  const E_star = 1.332e9;
+  return Math.pow((3 * W * (r_spike_mm / 1000)) / (4 * E_star), 1 / 3);
+}
+function jbSpinTorque(mu: number, W: number, a: number): number {
+  return (3 / 16) * mu * W * a;
+}
+function jbCenteringSpring(W: number, R_nominal_mm: number): number {
+  return W / (R_nominal_mm / 1000);
+}
+
+// jbSpikeContactRadius(0.5, 0.491)           → 5.17×10⁻⁵ m  (0.052 mm; −76% vs WB, −44% vs B)
+// jbSpinTorque(0.35, 0.491, 5.17e-5)         → 1.67×10⁻⁶ N·m  (dω/dt = 0.167 rad/s²)
+// jbCenteringSpring(0.491, 4.3)              → 114 N/m  (marginal improvement over WB's 110 N/m)
+```
+
+---
+
 ## Case 327 — Bottom: Metal Ball / MB (1.4 g)
 
 > **Stock combo (Poison Giraffe S130MB):** Clear Wheel: Giraffe · Metal Wheel: Poison · Track: S130 · Bottom: Metal Ball

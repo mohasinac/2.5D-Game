@@ -1,6 +1,5 @@
-# Beyblade Case Studies — Master Index
-
-Total: **674 cases** across 13 files + 1 master reference.
+﻿# Beyblade Case Studies — Master Index
+Total: **687 cases** across 13 files + 1 master reference.
 
 ---
 
@@ -20,7 +19,7 @@ Total: **674 cases** across 13 files + 1 master reference.
 | [10 case study.md](10%20case%20study.md) | 545–585 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–671 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
+| [13 case study.md](13%20case%20study.md) | 619-719 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | Engine reference: constants, formulas, normalization |
 
 ### Numbering Notes
@@ -447,6 +446,7 @@ Total: **674 cases** across 13 files + 1 master reference.
 | 324 | Chrome Wheel: Wyvang | Gen2-ZeroG | ZeroG | Wheel | Wyvang |
 | 325 | Bottom: Ball / B | Gen2-MFB | MFS | Bottom | B, ball |
 | 326 | Bottom: Wide Ball / WB | Gen2-MFB | MFS | Bottom | WB, wide-ball |
+| 326a | Bottom: Jog Ball / JB | Gen2-MFB | MFS | Bottom | JB, jog-ball, spikes, destabilizer |
 | 327 | Bottom: Metal Ball / MB | Gen2-MFB | MFS | Bottom | MB, metal |
 | 328 | Bottom: Rubber Ball / RB | Gen2-MFB | MFS | Bottom | RB, rubber |
 | 329 | Bottom: Sharp Ball / SB | Gen2-MFB | MFS | Bottom | SB |
@@ -1221,7 +1221,7 @@ The following part types are **physics-negligible** — they share near-identica
 | Cyber Pegasis 100HF | Pegasis | Cyber [M] | 100 (286) | Hole Flat (68) |
 | Burn Phoenix 135MS | Phoenix [M] | Burn (265) | 135 [M] | Metal Sharp (338) |
 | Earth Virgo GB145BS | Virgo | Earth (266/283) | GB145 (58) | Ball Sharp (336) |
-| Rock Escolpio T125JB | Escolpio | Rock (262) | T125 [M] | Jog Ball [M] |
+| Rock Escolpio T125JB | Escolpio | Rock (262) | T125 [M] | Jog Ball (326a) |
 | Poison Serpent SW145SD | Serpent [M] | Poison [M] | SW145 (255) | Semi Defense (331) |
 | Galaxy Pegasis W105R²F | Pegasis II (290) | Galaxy (291) | W105 (37/292) | R²F (38/293) |
 | Ray Unicorno D125CS | Unicorno [M] | Ray [M] | D125 (59) | Coat Sharp (60/353) |

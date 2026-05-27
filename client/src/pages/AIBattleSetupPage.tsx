@@ -308,7 +308,7 @@ export function AIBattleSetupPage() {
           {/* Start */}
           <button
             onClick={handleStart}
-            disabled={!playerBeyId || !aiBeyId || !arenaId || modeDisabled}
+            disabled={!playerBeyId || !aiBeyId || !arenaId}
             className="py-4 rounded-[14px] font-bold text-[16px] bg-theme-purple text-white border-none cursor-pointer transition-[background_150ms] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Start Battle

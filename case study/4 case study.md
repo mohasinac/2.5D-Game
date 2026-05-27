@@ -12302,4 +12302,357 @@ function streakVelocity(
 // streakVelocity(0.029, 0.080, 25)   → 0.814 m/s
 ```
 
-The move delivers a genuine net smash improvement over flat-stance contact (3.34 F vs 2.87 F, +16%) by adding the downward press vector. The cost is the vertical recoil (1.15 F upward on Sharkrash post-strike) which extends the post-move wobble window. As a high-power single-exchange finisher rather than a sustained attack pattern, the Abyss Shark Attack is mechanically coherent — the tilt-buildup investment is repaid by the enhanced strike geometry, but the window for a clean recovery is narrow.
+---
+
+## Case 239 — Cyber Dranzer (Goki, Anime-Only) · Estimated ~30–35 g Full Combo: Why Three-Claw Broad-Face AR Geometry Delivers Higher Right-Spin Smash Throughput Than Triple Wing, How the Metal Sting Base Suppresses Attack Output by Eliminating Orbital Speed, and Why No Competitive Archetype Can Exploit This Combination
+
+Cyber Dranzer (サイバードランザー) is an anime-exclusive beyblade belonging to Goki in the original series. No retail version exists. The combo pairs a three-claw attack ring whose broad flat contact faces produce measurably more impulse per hit than Triple Wing (Trygle's AR) with Master Dranzer's Metal Sting Base — the same sharp metal tip architecture confirmed in the Master Dranzer case study. The AR improvement over Trygle is real: wider faces increase contact duration per collision event, raising total smash impulse per second at equal orbital speed. The Metal Sting Base improvement over Jumping Base (Trygle's stock BB) is also real: μ_metal = 0.12 [CONFIRMED] vs μ_ABS = 0.17 [CONFIRMED] gives lower spin decay. The combination of both improvements produces a mechanical contradiction — the AR wants maximum orbital speed to maximise ring-out force, while the sharp metal tip minimises the floor friction that allows an attacker to maintain aggressive orbital paths. The combo cannot compete as an attacker or as a stamina type.
+
+---
+
+### 1. Part Identification (Anime Reconstruction)
+
+```
+Attack Ring (AR):   Cyber Claw — three claw arms radiating outward from central hub
+                    Leading face (RS): broad, flat strike surface per arm
+                    Estimated contact face width: ~9–12 mm per arm  [ESTIMATED from images]
+                    Estimated AR mass: ~4.5–5.5 g  [ESTIMATED, comparable to Triple Wing 4.8 g]
+Weight Disk (WD):   Anime imagery consistent with a standard wide disk
+                    Ten Wide equivalent assumed: ~11 g  [ESTIMATED]
+Spin Gear (SG):     Standard Right SG — fixed shaft, right spin  [INFERRED — Dranzer lineage]
+Blade Base (BB):    Metal Sting Base — 6.3 g  [FACT — confirmed Master Dranzer case]
+                    Sharp metal sting tip, r_tip ≈ 0.4 mm, open 4-spoke frame
+
+Full combo mass estimate:
+  AR ~5.0 + WD ~11 + SG ~5.5 + BB 6.3 = ~27.8 g  [ESTIMATED — no retail mass]
+```
+
+```
+FULL COMBO — VERTICAL CROSS-SECTION (not to scale)
+
+        RS rotation →
+
+      ╱╲            ╱╲
+     ╱  ╲──────────╱  ╲
+    │  claw    hub  claw │   ← Cyber Claw AR
+     ╲  ╱╲  centre  ╱╲  ╱      three flat-face arms
+      ╲╱  ╲        ╱  ╲╱
+            ╲      ╱
+     ┌────────╲──╱────────┐
+     │   Ten Wide  ~38 mm │   ~11 g  [ESTIMATED]
+     │  ████████████████  │
+     └────────────────────┘
+     ┌────────────────────┐
+     │    Right SG        │
+     │  standard shaft    │
+     └─────────┬──────────┘
+     ┌─────────┴──────────┐
+     │  Metal Sting Base  │   6.3 g  [FACT]
+     │  4-spoke open frame│
+     │   ●──spokes──●     │
+     └─────────┬──────────┘
+               ╿  ← metal sting tip  (r_tip ≈ 0.4 mm)
+               ·  FLOOR
+```
+
+---
+
+### 2. Cyber Claw AR Geometry: Broad Flat Face vs Triple Wing
+
+Triple Wing (Trygle's stock AR) carries three swept wings with a contact face angle of α_TW ≈ 15° from the orbital tangent [from CS3 Mountain Hammer / Triple Beak sections]. Each wing presents a contact face of width ~5–7 mm [ESTIMATED]. The smash fraction at that angle:
+
+```
+smash fraction = sin(α)     where α = face angle from orbital tangent
+recoil fraction = cos(α)
+
+Triple Wing:   α_TW ≈ 15°  → sin(15°) = 0.259  smash  /  cos(15°) = 0.966  recoil
+```
+
+Cyber Claw arms are visually broader — the flat claw face subtends a wider arc at the outer radius. From image measurement the face width per arm is approximately 9–12 mm [ESTIMATED], giving a width ratio:
+
+```
+face_width_CC / face_width_TW ≈ 10.5 mm / 6 mm ≈ 1.75  [ESTIMATED]
+```
+
+A wider face at the same approach geometry increases contact duration because the opponent's AR must traverse the full face width before disengaging:
+
+```
+Δt_contact ∝ face_width / v_rel
+
+where v_rel = relative tangential speed at the contact radius
+            = (ω_attacker + ω_defender) × r_contact    (co-rotation subtracted for same-spin)
+```
+
+Impulse per contact event:
+
+```
+J_event = F_avg × Δt_contact ∝ F_avg × face_width / v_rel
+
+J_CC / J_TW = (face_width_CC / face_width_TW) × (sin α_CC / sin α_TW)
+```
+
+If face angles are similar (Cyber Claw arms share the Dranzer forward-sweep aesthetic at α_CC ≈ 15–20°):
+
+```
+At α_CC ≈ 18°:  sin(18°) / sin(15°) = 0.309 / 0.259 = 1.19
+
+J_CC / J_TW ≈ 1.75 × 1.19 ≈ 2.08   [ESTIMATED]
+```
+
+Cyber Claw delivers approximately twice the impulse per contact event as Triple Wing at the same orbital speed. Contact frequency is identical (both are 3-arm ARs):
+
+```
+f_contact = (3 / 2π) × ω
+
+At ω = 200 rad/s: f_contact = 95.5 events/s  (both ARs)
+```
+
+Total smash impulse per second:
+
+```
+Σ_smash/s = f_contact × J_CC ≈ 2.08 × Σ_smash_TW/s
+```
+
+The "more attack due to more flat surface" result: ~2× Trygle's smash throughput at equal orbital speed, via wider face area extending contact duration.
+
+---
+
+### 3. Right-Spin Contact Geometry
+
+```
+TOP-DOWN CONTACT GEOMETRY — ONE ARM, RS (rotation counter-clockwise from above):
+
+   ←── opponent approach ──
+
+         ╱────────────────╲
+        ╱  BROAD FLAT FACE  ╲     ← contact face, width W_CC ≈ 10.5 mm
+       ╱  α ≈ 18° from tangent╲
+      │                        │
+      │   claw arm body        │
+      │                        │
+       ╲                      ╱
+        ╲────────────────────╱
+              (trailing side — concave recess, presents no meaningful surface to opponent in RS)
+
+  Smash component per hit:  F_impact × sin(18°) ≈ 0.31 × F_impact
+  Recoil component:         F_impact × cos(18°) ≈ 0.95 × F_impact
+```
+
+Recoil fraction is high at 0.95 — comparable to Triple Wing's 0.966. Cyber Claw does not reduce recoil; the attack advantage is purely from extended contact duration, not from improved face geometry. Like Triple Wing, Cyber Dranzer self-destabilises under heavy counter-hit.
+
+---
+
+### 4. Left-Spin Dead Zone
+
+The three-claw arms are geometrically asymmetric: each arm has a broad leading face (RS) and a narrow, concave trailing reverse (the claw's back side). In LS rotation the trailing reverse face leads into contact first. The concave geometry deflects opponent AR surfaces away from productive contact rather than presenting a flat strike face:
+
+```
+LS contact event:
+  incoming opponent AR → claw back (concave) → radially inward deflection
+  net impulse direction: inward (toward attacker's own centre) → negative ring-out contribution
+
+RS contact event:
+  incoming opponent AR → claw flat face → radially outward impulse on opponent
+  net impulse direction: outward → positive ring-out contribution
+```
+
+No LS smash role exists. The claw back surfaces also produce recoil at arbitrary angles — unpredictable and self-destabilising in LS. Cyber Dranzer is right-spin only for any purposeful contact role.
+
+---
+
+### 5. Metal Sting Base: Low-Friction Tip Mechanics
+
+The Metal Sting Base is documented in the Master Dranzer case. The sharp metal tip operates at:
+
+```
+μ_metal (polished steel on ABS stadium) = 0.12  [CONFIRMED — CS3 Case 119]
+r_tip ≈ 0.4 mm                                  [ESTIMATED — image scale]
+contact area A_tip = π × (0.4×10⁻³)² ≈ 5.0×10⁻⁷ m²
+
+Normal force: F_N = m_combo × g ≈ 0.030 × 9.81 ≈ 0.294 N
+Floor friction: F_f = μ × F_N = 0.12 × 0.294 ≈ 0.035 N
+```
+
+Spin decay rate from tip friction:
+
+```
+τ_friction = F_f × r_tip = 0.035 × 4×10⁻⁴ ≈ 1.4×10⁻⁵ N·m
+
+For comparison, μ_ABS = 0.17  [CONFIRMED]:
+τ_ABS_flat = 0.17 × 0.294 × r_flat
+  (r_flat ≈ 3 mm for a flat tip) → τ_flat ≈ 1.5×10⁻⁴ N·m
+```
+
+Metal sting tip torque is approximately 10× lower than an ABS flat tip — the spin decay rate from floor contact is negligible. This is excellent for a stationary stamina design.
+
+---
+
+### 6. Attack-Stamina Contradiction: Why the Base Destroys Attack Viability
+
+An attack beyblade derives ring-out force from orbital velocity v_orb — the linear speed of the combo moving around the stadium bowl. Ring-out force per contact:
+
+```
+F_ring-out ∝ J_event / Δt_contact × sin(α) = (m_eff × v_orb × (1+e)) × sin(α)
+```
+
+The attacker's orbital speed v_orb requires the tip to resist centripetal slide. For a circular orbit of radius r_orbit:
+
+```
+centripetal condition: F_tip_lateral ≥ m × v_orb² / r_orbit
+
+where F_tip_lateral = μ × F_N (tip's available lateral grip)
+```
+
+Maximum achievable orbital speed before tip skips out:
+
+```
+v_orb_max = √(μ × F_N × r_orbit / m)
+          = √(0.12 × 0.294 × 0.05 / 0.030)
+          = √(0.0588 / 0.030)
+          ≈ √1.96 ≈ 1.40 m/s   [ESTIMATED — r_orbit = 50 mm assumed]
+```
+
+For comparison, a Wolborg 4 metal ball tip (μ_B:D = 0.05 [CONFIRMED]) on a similar mass:
+
+```
+v_orb_max(B:D) = √(0.05 × 0.294 × 0.05 / 0.030) ≈ √0.245 ≈ 0.49 m/s
+```
+
+And an SG Metal Flat Base (μ_metal = 0.12 on a wider ~1.5 mm flat tip r_eff):
+
+```
+v_orb_max(SGMF2) = √(0.12 × 0.294 × 0.05 / 0.030) ≈ 1.40 m/s
+```
+
+Cyber Dranzer's sting tip and SG Metal Flat produce the same μ, so theoretically the same maximum orbital speed. However, the sting tip's near-zero r_tip means the restoring torque from tip lateral friction is applied at effectively zero moment arm — the beyblade lacks rotational stabilisation in orbital path. In practice, a sting tip skips outward under the centrifugal load of a curved orbit before reaching the theoretical v_orb_max, while a flat tip with r_flat ≈ 1.5–3 mm develops a self-correcting stabilising torque. The effective orbital ceiling for a sting tip is substantially lower than v_orb_max:
+
+```
+STING TIP ORBITAL SKIP DIAGRAM:
+
+     r_orbit
+   ←──────────────────────────────●  beyblade CoM
+                                   │
+                      F_centrifugal │→  (outward, destabilising)
+                                   │
+                           tip contact (r_tip ≈ 0.4 mm)
+                            ↑
+                     F_grip = μ × F_N   (single point, zero restoring torque)
+                     → any lateral perturbation → tip skips outward
+                     → orbital radius expands uncontrolled
+```
+
+Net result: Cyber Dranzer cannot sustain the orbital attack paths that its Cyber Claw AR's smash throughput requires. The AR is geometrically capable of ring-out attack; the base prevents the orbital mechanics from reaching the speed needed to convert that capability into competitive output.
+
+---
+
+### 7. System-Level Assessment
+
+```
+PART FUNCTION CONFLICT TABLE:
+
+  Part               Optimal Role          Actual Role in Combo
+  ─────────────────────────────────────────────────────────────
+  Cyber Claw AR      RS smash attack       ✓ correct for attack
+  Metal Sting Base   Stationary stamina    ✗ suppresses attack orbit
+  Ten Wide WD        Mass distribution     neutral
+  Right SG           RS fixed shaft        ✓ correct for attack
+
+  Attack goal requires:  high v_orb → needs flat/rubber tip with large r_tip for grip
+  Stamina goal requires: low μ → sting tip ✓, but needs survival/defensive AR
+  Combo achieves:        neither — attack AR on stamina base
+```
+
+Jumping Base (Trygle's stock BB) uses μ_ABS = 0.17 [CONFIRMED] with Jumping Base's characteristic ski geometry. Despite the ski instability problem (Case 110), Trygle can achieve orbital paths precisely because it has higher floor grip. Cyber Dranzer's sting tip removes the orbital attack capability while the AR demands it.
+
+The only scenario where Metal Sting Base benefits Cyber Dranzer is extended-spin stamina — but the Cyber Claw AR generates recoil at every contact that drains spin faster than the sting tip saves it:
+
+```
+Spin drain rate estimate:
+
+  From tip friction: τ_tip ≈ 1.4×10⁻⁵ N·m  (sting tip — negligible)
+  From AR recoil:    τ_recoil = J_recoil × f_contact × (1 - e_ABS)
+                              ≈ 0.95J × 95.5 × (1 - 0.675)  [e_ABS = 0.675, CONFIRMED]
+                   per-hit:  ΔI_per_hit = m_eff × v_rel × e_ABS × cos(α)
+
+  Each contact event costs ~0.95 × Δspin in recoil loss.
+  Cyber Claw with 95.5 contacts/s → continuous recoil drain >> sting tip savings
+```
+
+In any contested engagement the AR's recoil overwrites the tip's stamina contribution. Cyber Dranzer would need to avoid all contact to benefit from the low-friction base — which requires the orbital suppression that the same sting tip causes.
+
+---
+
+### 8. Comparison to Trygle
+
+| Parameter | Trygle (stock) | Cyber Dranzer |
+|-----------|---------------|---------------|
+| AR | Triple Wing · α ≈ 15° · face ~6 mm | Cyber Claw · α ≈ 18° · face ~10.5 mm [ESTIMATED] |
+| AR smash/contact | 1.0× baseline | ~2.0× [ESTIMATED] |
+| Contact frequency | 95.5/s at 200 rad/s | 95.5/s at 200 rad/s |
+| Base tip | ABS (Jumping Base ski) μ = 0.17 | Metal sting μ = 0.12 |
+| Orbital capability | Limited by ski geometry | Limited by sting tip skip |
+| LS viability | None (Triple Wing trailing) | None (Cyber Claw concave back) |
+| Competitive role | None (ski base self-KOs) | None (tip-orbit mismatch) |
+| Stamina | Poor (ski scrape, AR recoil) | Poor (AR recoil > tip savings) |
+
+Both are non-competitive. Trygle fails because its base geometry forces ski-to-floor contact (Case 110). Cyber Dranzer fails because the sting tip cannot maintain the orbital paths the superior AR geometry would otherwise enable.
+
+---
+
+### 9. Game Engine Mapping
+
+```typescript
+interface CyberDranzerAR {
+  name:               "cyber_claw";
+  armCount:           3;
+  contactFaceWidthMm: 10.5;                       // [ESTIMATED]
+  contactAngleDeg:    18;                          // α from tangent [ESTIMATED]
+  smashFraction:      number;                      // sin(18°) ≈ 0.309
+  recoilFraction:     number;                      // cos(18°) ≈ 0.951
+  spinDir:            "right";                     // RS only — LS concave back = no valid contact
+  mass_g:             5.0;                         // [ESTIMATED]
+}
+
+interface MetalStingBase {
+  tipType:            "metal_sting";
+  tipRadius_mm:       0.4;                        // [ESTIMATED]
+  mu_kinetic:         0.12;                       // [CONFIRMED — CS3 Case 119]
+  mass_g:             6.3;                        // [FACT]
+  orbitalCapability:  "minimal";                  // sting tip skips under centrifugal load
+}
+
+function cyberDranzerSmashPerSecond(
+  omega_rad_s: number,
+  r_contact_m: number = 0.022
+): { contactsPerSec: number; smashImpulseRatio: number } {
+  const N_arms      = 3;
+  const alpha_rad   = 18 * Math.PI / 180;
+  const f_contact   = (N_arms / (2 * Math.PI)) * omega_rad_s;
+  const smashFrac   = Math.sin(alpha_rad);          // 0.309
+  const faceRatio   = 10.5 / 6.0;                  // CC vs TW face width [ESTIMATED]
+  const smashRatio  = faceRatio * (smashFrac / Math.sin(15 * Math.PI / 180)); // vs TW
+  return { contactsPerSec: f_contact, smashImpulseRatio: smashRatio };
+}
+
+function stingTipOrbitalLimit(
+  mass_kg:      number,
+  mu_metal:     number = 0.12,                    // [CONFIRMED]
+  r_orbit_m:    number = 0.050
+): number {
+  const F_N      = mass_kg * 9.81;
+  const F_grip   = mu_metal * F_N;
+  return Math.sqrt(F_grip * r_orbit_m / mass_kg);  // v_orb_max m/s (theoretical ceiling)
+  // actual ceiling lower: sting tip skips before this due to zero restoring torque
+}
+
+// cyberDranzerSmashPerSecond(200)
+//   → { contactsPerSec: 95.5, smashImpulseRatio: 2.08 }   (2× Trygle throughput)
+// stingTipOrbitalLimit(0.030, 0.12, 0.05)
+//   → 1.40 m/s   (theoretical; real orbital speed lower due to skip instability)
+```
+
+---
+
+### 10. Verdict
+
+Cyber Dranzer's AR is a genuine improvement over Triple Wing in right spin: broader flat faces deliver approximately twice the smash impulse per unit time at equal orbital speed. The left-spin dead zone is identical — claw trailing geometry is as useless as Triple Wing's trailing wings in LS. The Metal Sting Base copies Master Dranzer's stamina architecture with no modification for an attack application, imposing orbital skip instability that caps usable v_orb below the level required to convert the AR's smash advantage into ring-out force. The beyblade is an anime design that assembles two real improvement directions — better AR, lower tip friction — without recognising that they serve opposing mechanical roles. No competitive archetype is achievable.

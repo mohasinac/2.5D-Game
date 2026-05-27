@@ -66,7 +66,16 @@ export function TryoutGamePage() {
     settings.username ?? "Player"
   ));
   const arenaRadius = useRef(1080 * 0.45); // default for 1080px arena = 486
-  const arenaConfig = useRef<ServerGameState["arena"] | null>(null);
+  // Pre-seed with a default so render() is called every frame from the start
+  // (before Firestore finishes loading). Firestore data overwrites this once ready.
+  const arenaConfig = useRef<ServerGameState["arena"] | null>({
+    id: "default", name: "Standard Arena",
+    width: 1080, height: 1080, shape: "circle", theme: "default",
+    rotation: 0, autoRotate: false, rotationSpeed: 0,
+    rotationDirection: "clockwise", wallEnabled: true, wallAngle: 0,
+    worldBgType: "none", worldBgColor: "", worldBgImageUrl: "",
+    worldBgOpacity: 1.0, worldBgFit: "cover", worldBgBlurPx: 0,
+  });
   const keysRef = useRef<Set<string>>(new Set());
   const timerRef = useRef(0);     // elapsed seconds
   const lastTsRef = useRef<number | null>(null);

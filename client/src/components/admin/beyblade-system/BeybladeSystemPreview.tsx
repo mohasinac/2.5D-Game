@@ -38,9 +38,16 @@ function buildLivePreviewState(resolved: ResolvedBeybladeSystem | null | undefin
   // Heuristic type bucket — chosen by attackRing tag if available, else "balanced".
   const type: ServerBeyblade["type"] = "balanced";
 
+  // Arena uses standard 1080×1080 px dimensions (same as real game).
+  // Beyblade x/y must be in physics space (arena_px * PHYSICS_SCALE=16).
+  // Center of 1080×1080 arena = 540 arena_px → 540*16 = 8640 physics units.
+  const PREVIEW_ARENA_PX = 1080;
+  const PHYSICS_SCALE = 16;
+  const centerPhys = (PREVIEW_ARENA_PX / 2) * PHYSICS_SCALE; // 8640
+
   const bey: ServerBeyblade = {
     id: "preview", userId: "preview", username: system.displayName,
-    x: 540, y: 540, rotation: 0,
+    x: centerPhys, y: centerPhys, rotation: 0,
     velocityX: 0, velocityY: 0, angularVelocity: 12,
     health: 1000, maxHealth: 1000,
     stamina: 1000, maxStamina: 1000,
@@ -63,7 +70,8 @@ function buildLivePreviewState(resolved: ResolvedBeybladeSystem | null | undefin
     currentGame: 1, targetWins: 1, timer: 0, startTime: 0,
     winner: "", seriesLeader: "", spectatorCount: 0,
     arena: {
-      id: "preview-arena", name: "Preview", width: 50, height: 50,
+      id: "preview-arena", name: "Preview",
+      width: PREVIEW_ARENA_PX, height: PREVIEW_ARENA_PX,
       shape: "circle", theme: "metrocity", rotation: 0,
       gravity: 0, airResistance: 0.01, surfaceFriction: 0.01,
       wallEnabled: false, wallBaseDamage: 0, wallRecoilDistance: 0,

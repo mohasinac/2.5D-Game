@@ -342,6 +342,13 @@ export class BeybladeGameRenderer {
     if (gameState?.arena && this.arenaRadius === 0) {
       this.buildArena(gameState);
       this.bakeArenaFloor();
+      // CRITICAL: stamp the tiltAngle so the R3 sentinel check below does NOT
+      // fire a second bake on this same frame (or the very next frame).
+      // Without this, arenaFloorTiltAngle stays at -9999 and the condition
+      // `currentTilt !== arenaFloorTiltAngle` is always true, triggering a
+      // spurious re-bake after the camera has already been repositioned —
+      // which writes an empty/black RenderTexture over the correct bake.
+      this.arenaFloorTiltAngle = (gameState.arena as any)?.tiltAngle ?? 0;
       this.arenaFloorDirty = false;
       this.arenaFloorLastBakeMs = Date.now();
     }
@@ -771,15 +778,35 @@ export class BeybladeGameRenderer {
     }
     this.arenaFloorRT = PIXI.RenderTexture.create({ width: size, height: size });
 
-    // Temporarily translate the arenaLayer so its center aligns with the RT origin
-    const saved = { x: this.arenaLayer.x, y: this.arenaLayer.y };
+    // Temporarily translate the arenaLayer so its center aligns with the RT origin.
+    // Also hide the floor sprite (if it already exists) to avoid baking a cached
+    // copy of itself into the new texture — that causes circular RT-in-RT rendering.
+    //
+    // In PixiJS 8, renderer.render({ container, target }) projects using the
+    // container's WORLD transform, which includes worldRoot's camera position and
+    // scale.  We must neutralise worldRoot during the bake so the RT receives
+    // arenaLayer centred exactly at (size/2, size/2) rather than being offset by
+    // the current camera pan.  worldRoot is restored immediately after.
+    const savedLayerX = this.arenaLayer.x;
+    const savedLayerY = this.arenaLayer.y;
+    const savedWRX = this.worldRoot.position.x;
+    const savedWRY = this.worldRoot.position.y;
+    const savedWRSX = this.worldRoot.scale.x;
+    const savedWRSY = this.worldRoot.scale.y;
+
     this.arenaLayer.x = size / 2;
     this.arenaLayer.y = size / 2;
+    this.worldRoot.position.set(0, 0);
+    this.worldRoot.scale.set(1, 1);
+    if (this.arenaFloorSprite) this.arenaFloorSprite.visible = false;
 
     this.app.renderer.render({ container: this.arenaLayer, target: this.arenaFloorRT, clear: true });
 
-    this.arenaLayer.x = saved.x;
-    this.arenaLayer.y = saved.y;
+    this.arenaLayer.x = savedLayerX;
+    this.arenaLayer.y = savedLayerY;
+    this.worldRoot.position.set(savedWRX, savedWRY);
+    this.worldRoot.scale.set(savedWRSX, savedWRSY);
+    if (this.arenaFloorSprite) this.arenaFloorSprite.visible = true;
 
     // Replace or create the sprite that sits on top of arenaLayer
     if (!this.arenaFloorSprite) {
@@ -2485,6 +2512,11 @@ export class BeybladeGameRenderer {
       this.cameraInitialized = false;
       this.shrinkRingGraphics = null;
       this.lastShrinkRadiusPx = -1;
+      // Reset baked floor state so bakeArenaFloor() re-creates and re-adds
+      // the sprite after buildArena() clears arenaLayer with removeChildren().
+      // Without this the sprite reference points to a removed (orphaned) child.
+      this.arenaFloorSprite = null;
+      this.arenaFloorTiltAngle = -9999; // force re-bake on first post-resize render
       // Inform world transform of new screen size; zoom limits recompute
       // when buildArena runs again next frame.
       this.world.setScreen(this.app.screen.width, this.app.screen.height);
