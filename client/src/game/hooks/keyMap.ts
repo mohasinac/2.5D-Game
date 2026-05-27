@@ -81,7 +81,31 @@ export const ACTION_DISPLAY: Record<GameAction, { label: string; color: string }
   charge:    { label: "Charge / Special", color: "#fbbf24" },
 };
 
-// ── Persistence ───────────────────────────────────────────────────────────────
+// ── Mouse-drag input toggle ───────────────────────────────────────────────────
+// Mouse right-drag as directional input is OFF by default.
+// Keyboard, Gamepad, and Touch are always active regardless of this flag.
+
+const MOUSE_STORAGE_KEY = "beyblade.mouseInput";
+
+export const mouseInputRef: { enabled: boolean } = { enabled: false };
+
+export function loadMouseInput(): boolean {
+  try {
+    const v = localStorage.getItem(MOUSE_STORAGE_KEY);
+    mouseInputRef.enabled = v === "1";
+  } catch { /* ignore */ }
+  return mouseInputRef.enabled;
+}
+
+export function setMouseInput(enabled: boolean): void {
+  mouseInputRef.enabled = enabled;
+  try {
+    localStorage.setItem(MOUSE_STORAGE_KEY, enabled ? "1" : "0");
+    window.dispatchEvent(new CustomEvent("beyblade:keymap:changed"));
+  } catch { /* ignore */ }
+}
+
+// ── Key map persistence ───────────────────────────────────────────────────────
 
 const STORAGE_KEY = "beyblade.keyMap.v2";
 
@@ -103,7 +127,6 @@ export function saveKeyMap(map: KeyMap): void {
   keyMapRef.current = map;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
-    // Notify any listeners (e.g. ControlsLegend)
     window.dispatchEvent(new CustomEvent("beyblade:keymap:changed", { detail: map }));
   } catch { /* ignore */ }
 }
@@ -114,3 +137,4 @@ export function resetKeyMap(): void {
 
 // ── Auto-load on import ───────────────────────────────────────────────────────
 loadKeyMap();
+loadMouseInput();

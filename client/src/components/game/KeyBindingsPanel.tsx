@@ -5,8 +5,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  keyMapRef, loadKeyMap, saveKeyMap, resetKeyMap,
-  keyCodeLabel, ACTION_DISPLAY,
+  keyMapRef, mouseInputRef, loadKeyMap, saveKeyMap, resetKeyMap,
+  setMouseInput, keyCodeLabel, ACTION_DISPLAY,
   type GameAction, type KeyMap,
 } from "@/game/hooks/keyMap";
 
@@ -20,9 +20,10 @@ const REMAPPABLE_ACTIONS: GameAction[] = [
 ];
 
 export function KeyBindingsPanel({ onClose }: Props) {
-  const [map, setMap]           = useState<KeyMap>(() => ({ ...loadKeyMap() }));
+  const [map, setMap]             = useState<KeyMap>(() => ({ ...loadKeyMap() }));
   const [listening, setListening] = useState<GameAction | null>(null);
-  const [flash, setFlash]       = useState<GameAction | null>(null);
+  const [flash, setFlash]         = useState<GameAction | null>(null);
+  const [mouseOn, setMouseOn]     = useState<boolean>(() => mouseInputRef.enabled);
 
   // While waiting for a key press
   useEffect(() => {
@@ -92,8 +93,40 @@ export function KeyBindingsPanel({ onClose }: Props) {
           </div>
         )}
 
+        {/* Mouse drag toggle — OFF by default */}
+        <div className="px-4 py-2.5 border-b border-white/6 flex items-center justify-between gap-3">
+          <div>
+            <div className="text-white/80 text-xs font-semibold">Mouse right-drag input</div>
+            <div className="text-white/35 text-[10px] mt-0.5">
+              Keyboard, touch and gamepad are always active.
+              Mouse drag is off by default.
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              const next = !mouseOn;
+              setMouseOn(next);
+              setMouseInput(next);
+            }}
+            className={cn(
+              "relative w-10 h-5 rounded-full border transition-colors shrink-0",
+              mouseOn
+                ? "bg-blue-600 border-blue-400/40"
+                : "bg-white/10 border-white/15",
+            )}
+            aria-label={mouseOn ? "Disable mouse input" : "Enable mouse input"}
+          >
+            <span
+              className={cn(
+                "absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-150",
+                mouseOn ? "left-[calc(100%-18px)]" : "left-0.5",
+              )}
+            />
+          </button>
+        </div>
+
         {/* Bindings list */}
-        <div className="px-3 py-2 space-y-[3px] max-h-[60vh] overflow-y-auto">
+        <div className="px-3 py-2 space-y-[3px] max-h-[55vh] overflow-y-auto">
           {REMAPPABLE_ACTIONS.map((action) => {
             const { label, color } = ACTION_DISPLAY[action];
             const isListening = listening === action;

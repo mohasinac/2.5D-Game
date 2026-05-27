@@ -1,5 +1,5 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **753 cases** across 14 files + 1 master reference.
+Total: **767 cases** across 14 files + 1 master reference.
 
 ---
 
@@ -8,9 +8,9 @@ Total: **753 cases** across 14 files + 1 master reference.
 | File | Cases | Scope |
 |------|-------|-------|
 | [1 case study.md](1%20case%20study.md) | 1–73 | Physics fundamentals → MFB/4D parts |
-| [2 case study.md](2%20case%20study.md) | 74–152 | HMS parts → Gen 1 Plastic SG-era parts |
+| [2 case study.md](2%20case%20study.md) | 74–155 | HMS parts → Gen 1 Plastic SG-era parts + HMS RC supplement |
 | [3 case study.md](3%20case%20study.md) | 118–187 | Gen 1 Plastic SG/EG/CEW parts |
-| [4 case study.md](4%20case%20study.md) | 189–258 | Gen 1 EG/CEW parts → Anime-only → Magnacore ARs → A-F series ARs/BBs → WDs/BBs supplement |
+| [4 case study.md](4%20case%20study.md) | 189–269 | Gen 1 EG/CEW parts → Anime-only → Magnacore ARs → A-F series ARs/BBs → WDs/BBs/INFERENCE AR supplement |
 | [5 case study.md](5%20case%20study.md) | 236–296 | System architectures → MFB wheels/tracks/bottoms |
 | [6 case study.md](6%20case%20study.md) | 297–353 + 308a, 320a–320i, 326a, 353a–353i | MFB bottoms → 4D wheels/bottoms/tracks; MFB wheels; Zero-G Crystal Wheels |
 | [7 case study.md](7%20case%20study.md) | 354–374 | BX/UX/CX system architecture → All-gen system summaries |
@@ -282,9 +282,9 @@ Total: **753 cases** across 14 files + 1 master reference.
 
 ---
 
-## Part 4 — Cases 189–237
+## Part 4 — Cases 189–261
 
-> Gen 1 Plastic: Engine Gear era parts, CEW tips, anime-only entries
+> Gen 1 Plastic: Engine Gear era parts, CEW tips, anime-only entries, V-Force WD/BB supplement, Draciel Metal Ball Defenser, Galux (unreleased)
 
 | # | Title | Gen | System | Type | Tags |
 |---|-------|-----|--------|------|------|
@@ -339,6 +339,29 @@ Total: **753 cases** across 14 files + 1 master reference.
 | 236 | First Clutch Base (Zeus Version) | Gen1-Plastic | EGS | BB | First Clutch, Zeus |
 | 237 | Andre's Yak (Anime-Only): Pagoda-Inspired Dome AR | Gen1-Plastic | — | Assembly | anime-only, Yak |
 | 238 | Sharkrash AR: Convex Shark Profile High Recoil | Gen1-Plastic | MGS | AR | Sharkrash, Mariam, Magnacore, convex, recoil |
+| 239 | Cyber Dranzer (Goki, Anime-Only): Three-Claw AR + Metal Sting Base | Gen1-Plastic | — | Assembly | anime-only, Cyber Dranzer |
+| 240 | Cross Fang AR (Driger F): Thin Four-Fold, Left-Spin Zombie | Gen1-Plastic | SGS | AR | Cross Fang, zombie, left-spin |
+| 241 | Cyber Driger (Salima, Anime-Only): Thin Cyber-Claw AR | Gen1-Plastic | — | Assembly | anime-only, Cyber Driger |
+| 242 | Spiral Change Base (Dranzer S): Notch-Spring Dual-Tip Mode | Gen1-Plastic | SGS | BB | Spiral Change, LAD, spin-steal |
+| 243 | Double Wing AR (Dranzer S): Two-Fold Wing, Left-Spin Compact | Gen1-Plastic | SGS | AR | Double Wing |
+| 244 | War Bear AR (Galzzly): Curved Three-Claw, Pure Attack | Gen1-Plastic | SGS | AR | War Bear, Galzzly |
+| 245 | War Monkey AR (Galman): Asymmetric Arms, Imbalance | Gen1-Plastic | SGS | AR | War Monkey, Galman, asymmetric |
+| 246 | Whale Attacker AR (Seaborg): Rounded Orca-Head, Non-Competitive | Gen1-Plastic | SGS | AR | Whale Attacker, Seaborg |
+| 247 | Cross Spike AR (Draciel S): Four Radial Spikes, Recoil Only | Gen1-Plastic | SGS | AR | Cross Spike |
+| 248 | SG Metal Ball Base (Draciel S): Metal Ball Tip, Tier 2 Zombie | Gen1-Plastic | SGS | BB | SG Metal Ball, zombie |
+| 249 | SG Bearing Base (Wolborg): Built-In Bearings, Tier 1 Zombie | Gen1-Plastic | SGS | BB | SG Bearing, zombie, LAD |
+| 250 | Cross Attacker AR (Dranzer V): Phoenix-Head Smash/Upper Hybrid | Gen1-Plastic | SGS | AR | Cross Attacker, compound |
+| 251 | Ten Spike AR (Draciel V): Uneven Alternating Spikes, F-Tier | Gen1-Plastic | SGS | AR | Ten Spike, recoil |
+| 252 | Eight Spike AR (Draciel F): Eight Blunt Spikes, No Smash Angle | Gen1-Plastic | SGS | AR | Eight Spike |
+| 253 | Weight Ring WD (Hayate-type): Specialty Non-Universal WD | Gen1-Plastic | SGS | WD | Weight Ring, Hayate |
+| 254 | Balance WD / Eight Balance WD (14.1g): Eight-Spoke Compact | Gen1-Plastic | SGS | WD | Eight Balance |
+| 255 | Eight Heavy WD (15.3–15.5g): Two Molds, Max-Mass 8-Spoke | Gen1-Plastic | SGS | WD | Eight Heavy |
+| 256 | Heavy WD (15.3g): Most Compact Standard WD, Hexagonal | Gen1-Plastic | SGS | WD | Heavy, compact, high-variance |
+| 257 | Heavy Attack WD (16.0g, Gaia Dragoon): Compact High-Mass | Gen1-Plastic | SGS | WD | Heavy Attack, Gaia Dragoon |
+| 258 | Viper Metal Ball Base (Draciel V): Ball-on-Pole, Non-Competitive | Gen1-Plastic | MGS | BB | Viper Metal Ball, non-competitive |
+| 259 | Max Shield AR (Draciel Metal Ball Defenser): Flat-Face, Zero Competitive Value | Gen1-Plastic | SGS | AR | Max Shield, recoil, non-competitive |
+| 260 | Metal Ball Base 4LS (Draciel Metal Ball Defenser): Built-In SG, Ball Pockets | Gen1-Plastic | SGS | BB | Metal Ball Base, compact, top-tier |
+| 261 | War Lynx AR (Galux): Unreleased Speed-Variant War Lion | Gen1-Plastic | SGS | AR | War Lynx, Galux, unreleased |
 
 ---
 
@@ -1046,7 +1069,7 @@ The following part types are **physics-negligible** — they share near-identica
 | Dranzer Auto Change Balancer | Wing Cutter [M] | Balance [M] | Auto Change Base (194) |
 | Wing Attacker | Wing Attack Ring [M] | Balance [M] | Semi-Flat Base [M] |
 | Wing Defenser | Wing Defense Ring [M] | Heavy [M] | Semi-Flat Base [M] |
-| Draciel Metal Ball Defenser | Max Shield [M] | Heavy [M] | Metal Ball Base [M] |
+| Draciel Metal Ball Defenser | Max Shield (259) | Heavy (256) | Metal Ball Base (260) |
 | Sparkling Attacker | Spark Attack Ring [M] | Heavy [M] | Flat Base [M] |
 | Jumping Base (set) | Tiger Defenser (102) | Eight Wide (104) | Jumping Base (99) |
 
@@ -1063,14 +1086,15 @@ The following part types are **physics-negligible** — they share near-identica
 | Kids Draciel | Smash Turtle (173) | Eight Heavy [M] | Right SG (111b) | SG Sharp Base (111c) |
 | Dranzer S (Spiral) | Double Wing [M] | Eight Balance (121a) | Right SG Free Shaft [M] | Spiral Change Base [M] |
 | Galeon | War Lion (112c) | Eight Heavy [M] | Right SG (111b) | SG Semi-Flat Base (109a) |
-| Galzzly | War Bear [M] | Eight Wide (104) | Right SG (111b) | SG Flat Base (117) |
-| Galman | War Monkey [M] | Eight Heavy [M] | Right SG (111b) | SG Sharp Base (111c) |
+| Galzzly | War Bear (244) | Eight Wide (104) | Right SG (111b) | SG Flat Base (117) |
+| Galman | War Monkey (245) | Eight Heavy [M] | Right SG (111b) | SG Sharp Base (111c) |
+| Galux | War Lynx (261) [UNRELEASED] | Eight Wide (104) | Right SG built-in | Metal Ball Base (260) |
 | Wolborg | Reverse Wolf (166) | Eight Balance (121a) | Right SG Bearing [M] | SG Bearing Base [M] |
-| Seaborg | Whale Attacker [M] | Eight Wide (104) | Right SG (111b) | Defense Grip Base (113a) |
-| Draciel S (Shield) | Cross Spike [M] | Eight Balance (121a) | Right SG (111b) | SG Metal Ball Base [M] |
+| Seaborg | Whale Attacker (246) | Eight Wide (104) | Right SG (111b) | Defense Grip Base (113a) |
+| Draciel S (Shield) | Cross Spike (247) | Eight Balance (121a) | Right SG (111b) | SG Metal Ball Base (248) |
 | Trygle | Triple Wing (111a) | Eight Wide (104) | Right SG Spring (112a) | Jumping Base Trygle (110a) |
 | Trypio | Flying Defense (112b/115a) | Eight Heavy [M] | Right SG (111b) | SG Sharp Base (111c) |
-| Driger F (Fang) | Cross Fang [M] | Eight Balance (121a) | Right SG FAC (117a) | Full Auto Clutch Base (118a) |
+| Driger F (Fang) | Cross Fang (240) | Eight Balance (121a) | Right SG FAC (117a) | Full Auto Clutch Base (118a) |
 | Dragoon F (Fantom) | Dual Dragon (128) | Eight Wide (104) | Left SG (100) | Fantom Grip Base (129) |
 | Dranzer F (Flame) | Flame Wing (115b) | Eight Heavy [M] | Right SG TC (116b) | Flame Change Base (117b) |
 | Griffolyon | Cross Griffon (127) | Eight Balance (121a) | — | Griffolyon Base (136) |

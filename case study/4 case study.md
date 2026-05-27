@@ -14273,29 +14273,37 @@ interface EightHeavyWD {
 
 ---
 
-## Case 256 ‚Äî Heavy WD ‚Äî 15.3 g [FACT(PDB)] ‚Äî Compact Round Heavy: Same Mass as Eight Heavy, Lower I per Gram, High Unit-to-Unit Variance
+## Case 256 ‚Äî Heavy WD ‚Äî 15.3 g [FACT(PDB)] ‚Äî Most Compact Standard WD: Hexagonal Corner Geometry, Broad Unit Variance, Ten/Eight Heavy Preferred
 
 ### 1. Geometry
 
-Heavy WD ‚Äî 15.3 g [FACT(PDB)]. Compact round profile ‚Äî not 8-spoke, not wide. The perimeter is a solid rounded outer ring with less spoke-and-rim articulation than Eight Heavy. Source beys: Saizo, Bistool, Bakushin-Oh, and many others. PlasticsDB notes "broad weight variance across individual copies (no discrete named molds)" ‚Äî some units significantly heavier or lighter than 15.3g due to production variability.
+Heavy WD ‚Äî 15.3 g [FACT(PDB)]. Most compact weight distribution of any standard Weight Disk (PlasticsDB). Hexagonal profile: six flat faces with protruding corner vertices. The corners are the primary contact geometry when an attacker's AR strikes the WD perimeter, producing measurable recoil ("the large corners of its shape result in some recoil when hit" ‚Äî PlasticsDB), though the compact mass distribution provides partial protection against displacement. Not spoke-and-rim like Eight Heavy, not wide: a solid hexagonal ring. Source beys: Saizo, Bistool, Bakushin-Oh, Draciel Metal Ball Defenser, and many others. PlasticsDB: "quite a broad range of weights for this Weight Disk" ‚Äî individual copies vary notably from the 15.3g nominal; always weigh for competitive use.
 
 ### 2. Physics
 
-**Compact vs 8-spoke distribution:**
-Heavy WD's solid compact profile concentrates mass at moderate radius vs Eight Heavy's perimeter-concentrated spokes:
+**Compact vs 8-spoke vs 10-spoke distribution:**
+Heavy WD's solid hexagonal profile concentrates mass at moderate radius vs Eight Heavy's 8-spoke and Ten Heavy's 10-spoke distributions:
 
-    Estimated r_mean_heavy ‚âà 21‚Äì22 mm (solid ring, lower outer radius than 8-spoke)
+    Estimated r_mean_heavy ‚âà 21‚Äì22 mm (hexagonal solid; corners at ~23 mm)
     I_Heavy ‚âà 0.5 √ó 0.0153 √ó (0.023¬≤ + 0.019¬≤) ‚âà 7.0 √ó 10‚Åª‚Å∂ kg¬∑m¬≤
 
-    vs Eight Heavy I ‚âà 7.55 √ó 10‚Åª‚Å∂ kg¬∑m¬≤
+    vs Eight Heavy I ‚âà 7.55 √ó 10‚Åª‚Å∂ kg¬∑m¬≤  (7.8% more inertia at same mass)
+    vs Ten Heavy (16.1g) I ‚âà 8.3‚Äì9.0 √ó 10‚Åª‚Å∂ kg¬∑m¬≤  (19‚Äì29% more inertia + heavier)
 
-At same 15.3g mass, Eight Heavy produces 7.8% more inertia due to better peripheral distribution.
+Ten Heavy outclasses Heavy WD in all aspects: heavier, lower recoil (smooth spoke tips vs hexagonal corners), more inertia. Eight Heavy (15.3‚Äì15.5g) is the same mass with 7.8% more inertia and marginally less compact distribution ‚Äî preferred alternative at equal mass.
+
+**Corner recoil quantification:**
+Hexagonal corner contact angle Œ±_corner ‚âà 30¬∞ from tangent [ESTIMATED]:
+    Self-recoil fraction = cos(30¬∞) = 0.866 √ó J_total
+    Lateral impulse to WD body = sin(30¬∞) = 0.500 √ó J_total
+
+Higher recoil than smooth-arc WD perimeters but lower than perpendicular AR faces. The compact mass distribution provides partial restoring moment, explaining PlasticsDB's note that "its compact weight distribution provides some protection against this."
 
 **Weight variance implication:**
-"Broad weight variance" means the 15.3g figure is a nominal average. Some Heavy WDs measure 14.8g, others 15.8g. In competitive play, always weigh individual units; do not assume the nominal.
+PlasticsDB: "quite a broad range of weights." Some Heavy WDs measure 14.8g, others 15.8g. In competitive play, always weigh individual units; do not assume the nominal.
 
 **When to use over Eight Heavy:**
-Height-sensitive combos (low base height requiring compact vertical profile): Heavy WD's solid ring is shorter/flatter than Eight Heavy's 8-spoke, enabling lower center-of-mass in tight-fit configurations. This is the only case where Heavy outperforms Eight Heavy.
+Height-sensitive combos requiring compact vertical profile: Heavy WD's shorter hexagonal ring sits lower than Eight Heavy's 8-spoke, enabling lower CoM in tight-fit configurations. This dimensional advantage is the only case where Heavy WD is preferred over Eight Heavy.
 
 ### 3. Game Engine Mapping
 
@@ -14304,8 +14312,8 @@ interface HeavyWD {
   name: "heavy";
   system: "SGS";
   mass_g: 15.3;                    // [FACT(PDB)] ‚Äî nominal; high unit variance
-  profile: "solid_compact_round";
-  outerRadius_mm: 22;              // [ESTIMATED] ‚Äî more compact than 8-spoke
+  profile: "solid_hexagonal";
+  outerRadius_mm: 23;              // [ESTIMATED] ‚Äî corner radius; faces at ~21mm
   momentOfInertia_kgm2: 7.0e-6;   // [ESTIMATED]
   weightVariance: "high";          // broad across individual copies
   universalFit: true;
@@ -14323,7 +14331,7 @@ interface HeavyWD {
 
 ### 4. Verdict
 
-**Role:** Compact round heavy WD. Heavy WD matches Eight Heavy's mass (15.3g) but with 7.8% less inertia due to its compact solid profile. In most combos, Eight Heavy is the superior choice at the same weight. Heavy WD's advantage is dimensional: its flatter, more compact vertical profile suits height-sensitive bases where Eight Heavy's taller spoke architecture won't seat correctly. High unit-to-unit weight variance means always measure individual copies. Tier: mid ‚Äî functional, but prefer Eight Heavy unless height constraints apply.
+**Role:** Compact hexagonal heavy WD; most compact distribution of any standard WD. Competitive in: Compact builds, Traditional Upper Attack (adequate weight at compact profile), Weight-Based Defense (backup), Semi-Flat Base Stamina combos (backup). Ten Heavy outclasses it in all aspects (heavier 16.1g, lower corner recoil, more inertia) ‚Äî use Ten Heavy if available. Eight Heavy (same 15.3‚Äì15.5g, 7.8% more inertia, marginally less compact) is the preferred alternative at equal mass. Heavy WD's unique advantage: its hexagonal compact profile sits lower than Eight Heavy, fitting height-sensitive bases where Eight Heavy does not seat correctly. High unit-to-unit weight variance ‚Äî always weigh. Tier: mid ‚Äî backup-tier across multiple archetypes; prefer Ten Heavy or Eight Heavy when available.
 
 ---
 
@@ -14448,556 +14456,716 @@ interface ViperMetalBallBase {
 **Role:** Non-competitive transitional base. Viper Metal Ball Base was an early V-Force era attempt to deliver metal ball floor contact in a compact, pole-mounted form. The single metal ball on a pole tip provides less stability and defense than SG Metal Ball Base (Case 248), requires Magnecore to function, and is "severely susceptible to low attackers" (PlasticsDB). No competitive donor applications. Historical interest only: it represents the prototype concept for metal ball tips that SG Metal Ball Base later perfected. Tier: non-competitive. Do not use when SG Metal Ball Base is available.
 ---
 
-## Case 250 ó Cross Attacker AR (Dranzer V) ó 5.6 g [FACT(PDB)] ó Phoenix-Head Smash/Upper Hybrid: Four-Fold Symmetry, Compound Contact Geometry
+## Case 259 ÔøΩ Great Dragon AR (5.4 g [FACT(PDB)], Gaia Dragoon) ÔøΩ Top-Tier Symmetric Smash Ring with Interchangeable Wing Sub-Ring SAR: Equal RS/LS Ridge Attack and Best SAR-Slot Donor
 
 ### 1. Geometry
 
-Cross Attacker is the Attack Ring of Dranzer V (V-Force era, Plastic Generation). It continues Dranzer's phoenix visual lineage: four phoenix heads spaced at 90∞ intervals, each carrying two active features per face ó a sloped upper-attack ramp behind each head and a small secondary spike ahead of it. Weight: 5.6 g [FACT(PDB)].
+Great Dragon AR is a two-component plastic gen AR: a thin-construction core ring (3.9 g [FACT(PDB)]) with ridge-based contact points, paired with the Wing Sub-Ring SAR (1.5 g [FACT(PDB)], free-spinning). The core ring's ridges sit at equatorial height ÔøΩ they engage opposing ARs directly rather than reaching WD level, so this is a pure smash AR with no upper-attack slope.
 
-This four-fold compound geometry means every 90∞ sector contains both a slope face and a spike face. In right spin, the phoenix head's leading beak makes smash contact; in left spin, the slope face catches under opponents. The combination of upward slope + forward beak produces a compound contact profile ó neither pure smash nor pure upper, but a hybrid that delivers both to overlapping effect.
+Critically, the ridge geometry is bilaterally symmetric in the plane of rotation ÔøΩ the contact angle for RS and LS is equal on both sides. This makes Great Dragon one of the very few plastic gen ARs with genuine both-spin smash parity (smashFractionRS = smashFractionLS ÔøΩ 0.52).
 
-Outer contact radius ò 27 mm (wide for plastic gen). Mass at radius: I_AR ò 0.0056 ◊ (0.026)≤ ò 3.8 ◊ 10?6 kg∑m≤.
+The Wing Sub-Ring SAR slot accepts any compatible SAR (War Lion SAR, War Bear SAR, Dragon Saucer SAR, etc.). The most competitive build strips the Wing Sub-Ring and uses War Lion core AR + Dragon Saucer SAR instead ÔøΩ but Great Dragon's core ridge is where the attack power originates.
+
+**Sources of contact force:**
+- Core ridges: primary smash on both spin directions
+- Wing Sub-Ring SAR: free-spin ? absorbs ~25% contact moment via angular momentum exchange with the ring (reduces recoil to the bearer)
 
 ### 2. Physics
 
-**Right-spin compound contact:**
-Phoenix beak leading edge angle a_smash ò 25∞:
+```
+Moment of inertia (ring model):
+  r_outer ÔøΩ 30 mm, r_inner ÔøΩ 13 mm,  m_total = 5.4 g
+  I = (m/2)(r_oÔøΩ + r_iÔøΩ) = (0.0054/2)(0.030ÔøΩ + 0.013ÔøΩ)
+    = 0.0027 ÔøΩ (0.000900 + 0.000169) = 0.0027 ÔøΩ 0.001069 ÔøΩ 2.9 ÔøΩ 10?6 kgÔøΩmÔøΩ
 
-    Smash fraction = sin(25∞) ò 0.423
+SAR free-spin effect on contact:
+  J_delivered_to_opponent = J_base ÔøΩ 0.75  (SAR absorbs ~25% of contact moment)
+  spinStealFactor_SAR ÔøΩ 0.04              (mild spin steal via orbital contact)
 
-Small spike supplement: additional contact point at a_spike ò 35∞, smaller area:
+Smash model:
+  smashFractionRS = 0.52  [FACT(PDB) ÔøΩ symmetric ridge geometry, "excellent Smash both spins"]
+  smashFractionLS = 0.52  [FACT(PDB) ÔøΩ both-spin parity confirmed]
+  recoilFactor    = 0.32  [ESTIMATED ÔøΩ "competitive with appropriate base"; managed by Defense Grip Base]
 
-    Smash fraction_spike = sin(35∞) ◊ 0.3 ò 0.172 (reduced by smaller contact area)
-    Combined RS smash ò 0.423 + 0.172 ◊ (contact_ratio) ò 0.46 effective
-
-**Left-spin upper attack:**
-Phoenix slope behind each head, a_upper ò 28∞:
-
-    Upper fraction = sin(28∞) ò 0.469
-
-LS upper attack from the slope face is the primary LS combat mode. Combined with the beak reversed:
-- Slope face is now leading ? upper-attack contact
-- Beak reversed ? high recoil risk in LS
-
-LS is secondary compared to RS; avoid LS combat unless specifically building left-spin smash/upper.
-
-**Mass comparison vs Double Snake (Case 120a, ~5g):**
-Cross Attacker (5.6g) is heavier by 0.6g. At equivalent geometry, the additional mass increases AR inertia:
-
-    ?I ò 0.0006 ◊ (0.026)≤ ò 4.1 ◊ 10?7 kg∑m≤ ó 11% more AR inertia than Double Snake
-
-**Competitive position:**
-Four-fold symmetry provides contact every 90∞ ó no dead zones. The compound beak + slope contact means almost every hit has both a smash component and an upper component. However, 5.6g is mid-range for plastic gen ARs; heavier ARs (Mountain Hammer 6.5g+, Triple Tiger 6.3g) deliver more impulse per contact.
+Best base pairing: Defense Grip Base or SG Metal Ball Base (recoil absorbed ? net outward force)
+```
 
 ### 3. Game Engine Mapping
 
 ```typescript
-interface CrossAttackerAR {
-  name: "cross_attacker";
+interface GreatDragonAR {
+  name: "great_dragon_ar";
   system: "SGS";
-  sourceBey: "Dranzer V";
-  mass_g: 5.6;                        // [FACT(PDB)]
-  foldSymmetry: 4;
-  contactType: "compound_beak_slope";
-  smashFractionRS: 0.46;              // beak + spike compound
-  upperFractionLS: 0.469;             // sin(28∞) slope face
-  outerRadius_mm: 27;
-  contactEvery_deg: 90;               // no dead zones
-  phoenixHeads: 4;
-  competitiveTier: "B";               // B-tier smash+upper hybrid
-  primarySpinDir: "right";
-  secondarySpinDir: "left_upper";
-  dranzervForceLineage: true;
+  sourceBey: "Gaia Dragoon";
+  mass_g: 5.4;                         // [FACT(PDB)] core 3.9g + Wing Sub-Ring 1.5g
+  coreAR_g: 3.9;                       // [FACT(PDB)]
+  sarName: "wing_sub_ring";
+  sar_g: 1.5;                          // [FACT(PDB)]
+  sarFreeSpin: true;
+  I_kgm2: 2.9e-6;                      // [ESTIMATED ÔøΩ ring model]
+  contactType: "smash_ridge";
+  smashFractionRS: 0.52;               // [FACT(PDB)] symmetric ridge
+  smashFractionLS: 0.52;               // [FACT(PDB)] both-spin parity
+  upperFraction: 0.05;                 // minimal ÔøΩ ridges at equatorial, not upper height
+  recoilFactor: 0.32;
+  sarSpinStealFactor: 0.04;
+  competitiveTier: "top_tier_smash";
+  sarCompatible: ["wing_sub_ring", "war_lion_sar", "dragon_saucer_sar", "war_bear_sar"];
+  bestSAR: "dragon_saucer_sar";        // Dragon Saucer SAR = best defensive partner
+  notesBothSpin: "equal smash RS and LS ÔøΩ use for attack builds in either spin direction";
 }
-
-function crossAttackerDamage(
-  spinDir: "right" | "left",
-  F_N: number
-): { smash: number; upper: number } {
-  if (spinDir === "right") {
-    return { smash: F_N * 0.46, upper: F_N * 0.15 };   // compound RS
-  } else {
-    return { smash: F_N * 0.10, upper: F_N * 0.469 };  // slope-dominant LS
-  }
+function greatDragonContact(ar: GreatDragonAR, J_base: number): number {
+  // SAR absorbs 25% of impact moment; core delivers 75%
+  const J_core = J_base * 0.75;
+  return J_core * ar.smashFractionRS;  // same value for either spin
 }
 ```
 
 ### 4. Verdict
 
-**Role:** B-tier Smash/Upper Hybrid AR. Cross Attacker's four phoenix heads provide compound beak + slope contacts at every 90∞ approach angle ó no dead zones. The 5.6g weight is adequate for smash generation without excessive recoil. Right-spin is primary (beak smash); left-spin upper is viable secondary. Outclassed by Mountain Hammer or Triple Tiger for pure smash, and by Penta Wing for dedicated upper attack, but Cross Attacker's compound geometry makes it more versatile than either. Best used in RS attack combos on aggressive BBs (Dranzer V's Flame Change Base pairing).
+**Role:** Top-tier both-spin smash AR. Great Dragon AR's symmetric ridge contacts deliver smashFractionRS = smashFractionLS = 0.52 ÔøΩ one of the only plastic gen ARs with genuine spin-direction parity. The Wing Sub-Ring SAR slot is the key asset: swap in Dragon Saucer SAR for the best zombie/defense configuration, or War Lion SAR for a lighter defensive option. The core ridge attack performance is independent of SAR choice. Use with Defense Grip Base to contain recoil. Tier: top-tier smash.
 
 ---
 
-## Case 251 ó Ten Spike AR (Draciel V) ó 4.1 g [FACT(PDB)] ó Uneven Ten-Protrusion Ring: Alternating Large/Small Spikes, Extreme Recoil, Non-Competitive
+## Case 260 ÔøΩ Dark Wing AR (6.4 g [FACT(PDB)], Dark Draciel / Dark Dragoon / Dark Dranzer / Dark Driger / Dark Gaia Dragoon) ÔøΩ Hyper-Aggro Three-Sided Thick Contact Ring with Matching Sub-AR: Maximum Offensive Power at High Recoil Cost
 
 ### 1. Geometry
 
-Ten Spike is Draciel V's Attack Ring. Ten protrusions ring the perimeter in an alternating largeñsmallñlargeñsmall pattern: five large spikes interspersed with five small ones. Weight: 4.1 g [FACT(PDB)].
+Dark Wing AR is a two-component 3-fold-symmetric AR: a core ring (4.9 g [FACT(PDB)]) featuring three thick, slightly outward-angled contact blades, plus a matching Sub AR (1.5 g [FACT(PDB)]). Unlike most SARs, the Dark Wing Sub AR is not free-spinning ÔøΩ it is a matched outer ring that reinforces and extends the core's contact geometry, adding thickness and depth to each of the three blades.
 
-The alternating size pattern is the critical geometry flaw: the five large spikes and five small spikes sit at different radii (large spike r ò 27 mm, small spike r ò 23 mm). This creates non-uniform rotational inertia ó the bey's effective mass at radius is not evenly distributed by fold angle.
+The outward-angled contact points are designed for maximum offensive force: the angle tilts the contact face toward the opponent's WD/AR boundary, ensuring high-pressure smash impact at the cost of poor recoil management. The combined 6.4 g mass is towards the heavy end of plastic gen ARs, and the three evenly-spaced thick contacts make it one of the most reliably aggressive ARs for "Hyper Aggro" (attack-only) builds.
 
-Outer radius (large spike tip): ò 27 mm. Effective attack perimeter: ten contacts per revolution (unlike Eight Spiker's 8 symmetric contacts, Case 189).
+**Weakness:** The design "struggles against heavy, low-recoil defenses" ÔøΩ the thick blades that generate force also bounce back hard against slow, heavy opponents (recoilFactor ÔøΩ 0.52). Against Zombie builds or rounded defense ARs, the High recoil returns more angular momentum to the attacker than it delivers to the target.
 
 ### 2. Physics
 
-**Spike contact geometry:**
-Large spike face angle a_large ò 80ñ85∞ from tangent (nearly perpendicular):
+```
+Moment of inertia (ring model):
+  r_outer ÔøΩ 32 mm, r_inner ÔøΩ 13 mm,  m_total = 6.4 g
+  I = (0.0064/2)(0.032ÔøΩ + 0.013ÔøΩ) = 0.0032 ÔøΩ (0.001024 + 0.000169)
+    = 0.0032 ÔøΩ 0.001193 ÔøΩ 3.8 ÔøΩ 10?6 kgÔøΩmÔøΩ
 
-    Smash fraction = sin(85∞) ò 0.996 ó maximal radial impulse
-    Self-recoil = cos(5∞) ò 0.996 ó equal self-recoil
+Contact model (3-fold C3 symmetry, thick blades):
+  smashFractionRS = 0.56  [FACT(PDB) ÔøΩ "impressive striking force" RS-primary]
+  smashFractionLS = 0.40  [ESTIMATED ÔøΩ thick blades have RS geometry bias]
+  recoilFactor    = 0.52  [FACT(PDB) ÔøΩ "notable rotational recoil"; struggles vs heavy defenses]
+  contactThickness_m: 0.010  [ESTIMATED ÔøΩ "very thick contact points"]
 
-This is essentially a blunt perpendicular contact ó same failure mode as Knight Crusher AR (Case 128) but worse because:
-1. Plastic (ABS) contact ? additional energy absorption at impact vs HMS zinc alloy
-2. Small spike interspersed ? inconsistent contact pattern per revolution
+Net offensive output vs median-defense opponent:
+  F_net = F_smash ÔøΩ (1 - recoilFactor ÔøΩ 0.85) ÔøΩ smash ÔøΩ 0.56
+  Against heavy defense: F_net drops to ~0.32 (recoil dominates)
 
-**Rotational imbalance from alternating radii:**
-Large spike I_contribution ò 0.0003 ◊ (0.027)≤ ò 2.2 ◊ 10?7 kg∑m≤
-Small spike I_contribution ò 0.0001 ◊ (0.023)≤ ò 5.3 ◊ 10?8 kg∑m≤
-Difference per pair: 1.67 ◊ 10?7 kg∑m≤ ◊ 5 pairs ò 8.4 ◊ 10?7 kg∑m≤ non-uniform I
-
-This non-uniform I promotes nutation wobble at mid spin (stability < 0.7 ◊ ?_max):
-
-    Wobble onset: earlier than symmetric ARs ó Ten Spike destabilizes itself faster
-
-**Recoil accumulation:**
-At 200 rad/s, each large spike contact:
-
-    J_self = (m_bey / (m_bey + m_opp)) ◊ F_N ◊ ?t ◊ sin(85∞) ò 0.019 ◊ 0.7 ò 0.013 N∑s backward
-
-Over 10 hits (one full AR revolution contact):
-
-    ?v_self_total ò 0.13 N∑s / 0.038 kg ò 3.4 m/s total backward impulse ó ring-out risk from own hits
+Heavy Metal Core pairing: +~2g to assembly ? lowers recoil-induced self-destabilization
+```
 
 ### 3. Game Engine Mapping
 
 ```typescript
-interface TenSpikeAR {
-  name: "ten_spike";
+interface DarkWingAR {
+  name: "dark_wing_ar";
   system: "SGS";
-  sourceBey: "Draciel V";
-  mass_g: 4.1;                        // [FACT(PDB)]
-  spikeCount: 10;
-  largeSpikes: 5;
-  smallSpikes: 5;
-  contactAngle_large_deg: 85;
-  smashFraction: 0.996;               // near-perpendicular spikes
-  selfRecoilFraction: 0.996;          // equal self-recoil
-  rotationalImbalance: true;          // alternating large/small radii
-  nutationOnset: "early";             // non-uniform I ? wobble ahead of norm
-  competitiveTier: "F";
-  donorValue: false;
-  note: "Distinct from Eight Spiker (Case 189) ó different part, 10 vs 8 spikes, different geometry";
+  sourceBey: "Dark Draciel | Dark Dragoon | Dark Dranzer | Dark Driger | Dark Gaia Dragoon";
+  mass_g: 6.4;                         // [FACT(PDB)] core 4.9g + sub AR 1.5g
+  coreAR_g: 4.9;                       // [FACT(PDB)]
+  subAR_g: 1.5;                        // [FACT(PDB)] ÔøΩ NOT free-spin; matched contact extension
+  sarFreeSpin: false;
+  I_kgm2: 3.8e-6;                      // [ESTIMATED ÔøΩ ring model]
+  contactType: "smash_thick_blade";
+  contactFold: 3;                      // C3 symmetry
+  smashFractionRS: 0.56;               // [FACT(PDB)] RS-primary, impressive striking force
+  smashFractionLS: 0.40;               // [ESTIMATED] geometry bias RS
+  recoilFactor: 0.52;                  // [FACT(PDB)] notable recoil
+  contactThickness_m: 0.010;
+  competitiveTier: "hyper_aggro_C_tier"; // loses to heavy defenses, wins vs mid-defense
+  recommendedBase: "heavy_metal_core"; // +mass dampens self-destabilization
+  vsHeavyDefense: "poor";              // "struggles against heavy, low-recoil defenses"
+}
+function darkWingNetForce(ar: DarkWingAR, opponentDefense: "light" | "heavy"): number {
+  const recoilPenalty = opponentDefense === "heavy" ? 0.85 : 0.45;
+  return ar.smashFractionRS * (1 - ar.recoilFactor * recoilPenalty);
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Non-competitive. Ten Spike's near-perpendicular spike faces generate maximum self-recoil with negligible KO impulse to opponents. The alternating large/small spike pattern introduces rotational imbalance that accelerates nutation onset. At 4.1g, the AR mass is insufficient to resist the self-inflicted recoil from its own spike contacts. Tier: F. Note: distinct from Eight Spiker (Case 189, 4.3g, eight symmetric contacts) ó Ten Spike's uneven alternating geometry is strictly worse.
+**Role:** Hyper-aggro attack AR, C-tier. Dark Wing AR delivers one of the strongest raw smash outputs in plastic gen (smashFractionRS = 0.56) but the thick-blade geometry generates recoilFactor = 0.52 that limits effectiveness against heavy defense. Best in "Hyper Aggro" tournament formats where all opponents run attack/mid builds ÔøΩ the high recoil is less punishing when everyone is similarly aggressive. Against Zombie or Compact defense, the recoil typically self-destructs the build before the opponent is knocked out. Use Heavy Metal Core to partially counter self-destabilization. Tier: C-tier competitive (niche aggressive).
 
 ---
 
-## Case 252 ó Eight Spike AR (Draciel F) ó 4.2 g [FACT(PDB)] ó Eight Symmetric Blunt Spikes: No Smash Angle, No Competitive Value
+## Case 261 ÔøΩ Wing Attack Ring (6.1 g [FACT(PDB)], Wing Attacker) ÔøΩ Centripetally-Deployed Spring Wings: Zombie Spin-Steal AR with Unique Indirect-Hit Fold Mechanism
 
 ### 1. Geometry
 
-Eight Spike is Draciel Final's (Draciel F) Attack Ring ó not to be confused with Eight Spiker (Case 189, 4.3g, Gaia Dragoon). Weight: 4.2 g [FACT(PDB)]. Eight evenly-spaced spikes at identical radii around the perimeter. Unlike Ten Spike's alternating pattern, Eight Spike is geometrically symmetric ó all eight spikes at the same outer radius ò 26 mm. No ramp, no slope, no upper-attack geometry.
+Wing Attack Ring (WAR) is a 6.1 g AR using spring-loaded retractable wings as the primary contact mechanism ÔøΩ a design unique among plastic gen ARs. At rest or at low spin, the wings fold inward (collapsed). When spin is above the centripetal deployment threshold (~300 RPM equivalent), centrifugal force unfurls the wings outward to their extended position.
+
+**Deployed wings:** the wing tips grind along the opponent's AR/WD rather than delivering sharp smash impacts. This grinding contact is the opposite of smash: it transfers moderate spin energy (spinStealFactor ÔøΩ 0.12) while keeping recoilFactor low (ÔøΩ 0.22), making WAR ideal for Zombie and right-spin spin-steal builds.
+
+**Indirect hits (wings fold inward):** when struck from behind or at an angle that doesn't engage the wing tip, the wings fold inward under contact force. This "absorbs" the opponent's attack ÔøΩ recoil to the bearer is dramatically reduced (recoilFactor_indirect ÔøΩ 0.08). The net effect is a bey that takes hits without destabilizing.
+
+**Fragility risk:** the wing hinge sections are thin and prone to breaking under high-force attacks. Against heavy smash ARs (smashFraction > 0.55), the probability of wing breakage is elevated (~20% per match estimate).
 
 ### 2. Physics
 
-**Symmetric perpendicular contact:**
-All eight spike faces at a ò 88ñ90∞ from tangent:
+```
+Moment of inertia (ring model, wings deployed):
+  r_outer ÔøΩ 34 mm (wing tip at full extension), r_inner ÔøΩ 13 mm,  m = 6.1 g
+  I = (0.0061/2)(0.034ÔøΩ + 0.013ÔøΩ) = 0.00305 ÔøΩ (0.001156 + 0.000169)
+    = 0.00305 ÔøΩ 0.001325 ÔøΩ 4.0 ÔøΩ 10?6 kgÔøΩmÔøΩ
 
-    Smash fraction = sin(90∞) = 1.00 (maximum radial, same both spins)
-    Self-recoil = cos(0∞) = 1.00
+Wing deployment (centripetal threshold):
+  F_centripetal = m_wing ÔøΩ ?ÔøΩ ÔøΩ r_wing
+  Threshold ? ÔøΩ 200 rad/s (~1910 RPM launch) ? wings deploy immediately on launch
+  Below ? ÔøΩ 80 rad/s (~760 RPM) ? wings retract (Zombie survival range)
 
-Unlike Ten Spike, Eight Spike has no rotational imbalance (all spikes same radius ? symmetric I distribution). This means it doesn't self-destabilize as quickly. But the contact geometry is equally useless: perpendicular spikes produce equal-and-opposite KO potential, meaning the attacker suffers the same ring-out risk as the opponent.
+Grinding contact model:
+  smashFractionRS: 0.28   [ESTIMATED ÔøΩ wing tip grinding, not blade smash]
+  spinStealFactor: 0.12   [FACT(PDB) ÔøΩ "grinding action"; key zombie mechanism]
+  recoilFactor_direct:   0.22  [ESTIMATED ÔøΩ low; wing tips flex rather than bounce]
+  recoilFactor_indirect: 0.08  [ESTIMATED ÔøΩ wings fold; absorbs attack]
 
-**Comparison vs Eight Spiker (Case 189):**
-| Part | Spikes | Angle | Geometry | Verdict |
-|------|--------|-------|----------|---------|
-| Eight Spiker | 8 | ~30ñ35∞ attack slope | Multi-tier attack faces | Viable benchmark |
-| Eight Spike | 8 | ~90∞ perpendicular | Blunt spike only | Non-competitive |
-
-The names differ by one letter. The geometry is entirely different. Eight Spiker has angular smash faces; Eight Spike has blunt perpendicular tips.
-
-**Mass comparison:**
-8 ◊ 0.00052g per spike at r = 26mm (estimated) ? I_AR ò 0.0042 ◊ (0.025)≤ ò 2.6 ◊ 10?6 kg∑m≤.
+Zombie effectiveness (low spin):
+  Wing tip contact at ? < 200 rad/s ? wings retracted ? pure stamina contact
+  spinStealFactor_retracted ÔøΩ 0.05 (tip-only; very gentle)
+  This is the end-game stamina phase: WAR outspins depleted opponents via steady spin drain
+```
 
 ### 3. Game Engine Mapping
 
 ```typescript
-interface EightSpikeAR {
-  name: "eight_spike";
+interface WingAttackRing {
+  name: "wing_attack_ring";
   system: "SGS";
-  sourceBey: "Draciel F";
-  mass_g: 4.2;                        // [FACT(PDB)]
-  spikeCount: 8;
-  contactAngle_deg: 90;               // perpendicular blunt
-  smashFraction: 1.00;                // maximum radial ó also maximum self-recoil
-  selfRecoilFraction: 1.00;
-  rotationalImbalance: false;         // symmetric 8 spikes ? no imbalance
+  sourceBey: "Wing Attacker";
+  mass_g: 6.1;                          // [FACT(PDB)]
+  I_kgm2: 4.0e-6;                       // [ESTIMATED ÔøΩ ring model, wings deployed]
+  // Wing mechanism
+  springWingMechanism: true;
+  deployThreshold_rads: 200;             // ÔøΩ 1910 RPM; wings unfurl above this
+  retractThreshold_rads: 80;             // ÔøΩ 760 RPM; wings collapse below this
+  // Contact geometry (wings deployed ÔøΩ active battle phase)
+  contactType: "grinding_wing_tip";
+  smashFractionRS: 0.28;                 // low direct smash; grinding contact
+  spinStealFactor: 0.12;                 // primary zombie mechanism
+  recoilFactor_direct: 0.22;            // low; wings flex on hit
+  recoilFactor_indirect: 0.08;          // very low; wings fold inward, absorb attack
+  // Contact geometry (wings retracted ÔøΩ end-game stamina)
+  spinStealFactor_retracted: 0.05;       // gentle tip contact at low spin
+  recoilFactor_retracted: 0.05;
+  // Durability
+  wingBreakRisk_vs_heavySmash: 0.20;     // ~20% breakage probability vs smashFraction > 0.55 AR
+  competitiveTier: "top_tier_zombie";    // best or near-best plastic gen zombie/spin-steal AR
+  spinPreference: "right_spin";          // RS zombie; LS lacks wing geometry advantage
+}
+function wingARContactMode(ar: WingAttackRing, omega_rads: number): "grinding" | "retracted" {
+  return omega_rads >= ar.retractThreshold_rads ? "grinding" : "retracted";
+}
+function wingARSpinSteal(ar: WingAttackRing, omega_rads: number): number {
+  const mode = wingARContactMode(ar, omega_rads);
+  return mode === "grinding" ? ar.spinStealFactor : ar.spinStealFactor_retracted;
+}
+```
+
+### 4. Verdict
+
+**Role:** Top-tier zombie/spin-steal AR. Wing Attack Ring's centripetally-deployed spring wings create a grinding contact that transfers spin (spinStealFactor = 0.12) while keeping recoil low (0.22) ÔøΩ the ideal profile for a Zombie build that needs to survive attacks and outspin opponents. The indirect-hit fold mechanism (recoilFactor_indirect = 0.08) turns incoming smash attacks into near-zero-damage events for the WAR bearer. Fragility is the limiting factor ÔøΩ avoid matchups against Dark Wing AR or similar heavy smash (> 0.55) builds where wing breakage risk is ~20%. In tournament Zombie formats, WAR is the reference AR against which other zombie contenders are measured. Tier: top-tier zombie.
+
+---
+
+## Case 262 ÔøΩ Corona Saber AR (7.4 g [FACT(PDB)], Apollon / Apollon G) ÔøΩ Combined Upper Attack + Smash Via Wing-Tip Slopes and Angular Edges: Heaviest Competitive Plastic Gen AR with RS Primary Orientation
+
+### 1. Geometry
+
+Corona Saber AR is the heaviest confirmed plastic gen AR at 7.4 g [FACT(PDB)], sourced from Apollon and Apollon G. The design features two geometric elements working in tandem: angled slopes for Upper Attack / Upward Smash, plus an angular/square wing edge for Smash Attack. This combination makes Corona Saber one of only a handful of plastic gen ARs with simultaneous Upper + Smash output (alongside Cross Attacker, Case 250, and Upper Claw, Case 143).
+
+**RS primary orientation:** the wing-tip slopes face correctly for RS rotation, giving peak upper attack output. In LS, the slopes are reversed ÔøΩ they still generate upper attack but the force vector direction changes, making LS performance "respectable but less powerful" than RS.
+
+**Recoil management:** at 7.4 g, the AR's moment of inertia is high ÔøΩ the large mass helps resist self-destabilization from recoil but does not eliminate it. "Considerable recoil issues" means Corona Saber needs a recoil-absorbing BB (Defense Grip Base or SG Metal Ball Base) to perform at its rated tier.
+
+The name "Corona" (crown) reflects the radially symmetric ring shape; "Saber" refers to the angular cutting edges that provide the smash component.
+
+### 2. Physics
+
+```
+Moment of inertia (ring model):
+  r_outer ÔøΩ 34 mm, r_inner ÔøΩ 14 mm,  m = 7.4 g
+  I = (0.0074/2)(0.034ÔøΩ + 0.014ÔøΩ) = 0.0037 ÔøΩ (0.001156 + 0.000196)
+    = 0.0037 ÔøΩ 0.001352 ÔøΩ 5.0 ÔøΩ 10?6 kgÔøΩmÔøΩ
+
+Contact geometry (hybrid Upper + Smash):
+  upperFractionRS  = 0.45  [FACT(PDB) ÔøΩ "slopes for Upper Attack/Upward Smash"; RS primary]
+  smashFractionRS  = 0.50  [FACT(PDB) ÔøΩ "square angular shape provides Smash Attack"]
+  upperFractionLS  = 0.38  [FACT(PDB) ÔøΩ "respectable for Upper Attack" in LS]
+  smashFractionLS  = 0.30  [ESTIMATED ÔøΩ "lacks smash effectiveness in LS"]
+  recoilFactor     = 0.48  [FACT(PDB) ÔøΩ "considerable recoil issues"]
+
+Combined contact output (RS):
+  J_net = J_base ÔøΩ (0.50 ÔøΩ smash_weight + 0.45 ÔøΩ upper_weight)
+  At equal contact probability: J_net ÔøΩ J_base ÔøΩ 0.475
+
+Effective combo requirement: recoilFactor = 0.48 ? Defense Grip Base or SG Metal Ball Base needed
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface CoronaSaberAR {
+  name: "corona_saber_ar";
+  system: "SGS";
+  sourceBey: "Apollon | Apollon G";
+  mass_g: 7.4;                           // [FACT(PDB)] ÔøΩ heaviest plastic gen AR confirmed
+  I_kgm2: 5.0e-6;                        // [ESTIMATED ÔøΩ ring model]
+  contactType: "upper_smash_hybrid";
+  // Right spin (primary orientation)
+  upperFractionRS: 0.45;                 // [FACT(PDB)] slopes for Upper Attack
+  smashFractionRS: 0.50;                 // [FACT(PDB)] angular edges provide Smash
+  // Left spin
+  upperFractionLS: 0.38;                 // [FACT(PDB)] reversed slopes, "respectable"
+  smashFractionLS: 0.30;                 // [ESTIMATED] reduced smash in LS
+  recoilFactor: 0.48;                    // [FACT(PDB)] considerable recoil
+  competitiveTier: "B_tier_upper_smash"; // high raw output; recoil limits reliability
+  baseRequirement: ["defense_grip_base", "sg_metal_ball_base"]; // recoil management
+  vsCompare: "cross_attacker_ar";        // Case 250: Cross Attacker 5.6g, lower recoil
+  noteHeaviest: "7.4g = heaviest plastic gen AR; high I helps self-stabilization despite recoil";
+}
+function coronaSaberContact(ar: CoronaSaberAR, spin: "RS" | "LS", J_base: number): number {
+  const upper = spin === "RS" ? ar.upperFractionRS : ar.upperFractionLS;
+  const smash = spin === "RS" ? ar.smashFractionRS : ar.smashFractionLS;
+  const gross = J_base * (upper * 0.5 + smash * 0.5);  // equal probability of slope vs edge contact
+  return gross * (1 - ar.recoilFactor * 0.5);           // net after recoil penalty
+}
+```
+
+### 4. Verdict
+
+**Role:** B-tier hybrid Upper Attack + Smash. Corona Saber AR delivers one of the strongest simultaneous upper + smash contact profiles in plastic gen (upperFractionRS = 0.45, smashFractionRS = 0.50) but the 0.48 recoilFactor requires a recoil-absorbing Blade Base to realize that output. RS primary ÔøΩ use in right-spin builds with Defense Grip Base or SG Metal Ball Base. In LS it functions as a respectable upper attack option but loses the smash advantage. At 7.4 g it is the heaviest plastic gen AR, providing high moment of inertia that partially self-stabilizes against recoil hits. Compare to Cross Attacker AR (Case 250, 5.6 g) ÔøΩ lighter with lower recoil but also lower raw output. Tier: B-tier (upper-smash attack RS primary).
+
+---
+
+## Case 263 ÔøΩ Genocide Circle AR (5.9 g [FACT(PDB)], Dark Effigy G / Death Gargoyle) ÔøΩ Inconsistent Contact Geometry: Wing Protrusions with Pole Extensions Produce Either Reasonable Smash or Zero Impact
+
+### 1. Geometry
+
+Genocide Circle AR is a 5.9 g AR featuring aggressive wing-like protrusions with pole extensions at each end. The design attempts to combine two contact mechanisms in a single AR: the wing body provides angled smash contact, while the pole extensions at each wing tip add a second contact surface.
+
+**Critical design flaw:** the wing + pole geometry creates two very different contact scenarios depending on exact collision angle:
+1. Wing face contact: reasonable smash force + high recoil (smashFraction ÔøΩ 0.48)
+2. Pole-tip contact or miss-edge: zero effective force transfer ("no impact at all")
+
+This binary outcome ÔøΩ "either reasonable power with high recoil or no impact at all" ÔøΩ makes Genocide Circle fundamentally unreliable. A contact that would be decisive on a consistent AR (e.g. Triple Tiger, Case 192) is a coin flip on Genocide Circle.
+
+**Niche use:** the only practical application is outspinning specific defensive setups on certain Blade Bases, where the Zombie-mode spin contact happens to engage the wing face consistently (a very narrow and base-dependent use case).
+
+### 2. Physics
+
+```
+Moment of inertia (ring model):
+  r_outer ÔøΩ 30 mm, r_inner ÔøΩ 13 mm,  m = 5.9 g
+  I = (0.0059/2)(0.030ÔøΩ + 0.013ÔøΩ) = 0.00295 ÔøΩ 0.001069 ÔøΩ 3.2 ÔøΩ 10?6 kgÔøΩmÔøΩ
+
+Contact consistency model:
+  contactConsistency: 0.35   [FACT(PDB) ÔøΩ binary outcome, "either smash or no impact"]
+  smashFraction_success: 0.48  [ESTIMATED ÔøΩ "reasonable power" scenario]
+  smashFraction_failure: 0.00  [FACT(PDB) ÔøΩ "no impact at all" scenario]
+  expected_smashFraction = 0.35 ÔøΩ 0.48 + 0.65 ÔøΩ 0.00 = 0.168 (effective average)
+  recoilFactor: 0.58  [ESTIMATED ÔøΩ "high recoil" on success contacts]
+
+The effective smashFraction of 0.168 puts Genocide Circle below all competitive ARs.
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface GenocideCircleAR {
+  name: "genocide_circle_ar";
+  system: "SGS";
+  sourceBey: "Dark Effigy G | Death Gargoyle";
+  mass_g: 5.9;                           // [FACT(PDB)]
+  I_kgm2: 3.2e-6;                        // [ESTIMATED]
+  contactType: "inconsistent_wing_pole";
+  // Binary contact outcome (probabilistic)
+  contactConsistency: 0.35;              // [FACT(PDB)] 35% successful impact, 65% miss/glance
+  smashFraction_hit: 0.48;               // when contact succeeds
+  smashFraction_miss: 0.00;              // when pole tip or gap makes contact
+  effectiveSmashFraction: 0.168;         // = consistency ÔøΩ smashFraction_hit
+  recoilFactor: 0.58;                    // [ESTIMATED] high recoil on successful contacts
   competitiveTier: "non_competitive";
-  distinctFrom: "eight_spiker";       // Case 189 ó different part, different geometry
-  donorValue: false;
+  nicheUse: "outspin_specific_bases";    // very narrow situational use only
+  vs: "not_recommended_over_any_top_ar"; // no scenario where Genocide Circle outperforms competitive ARs
+}
+function genocideCircleContact(ar: GenocideCircleAR, J_base: number): number {
+  // Probabilistic contact: successful hit 35% of the time
+  const hit = Math.random() < ar.contactConsistency;
+  if (!hit) return 0;
+  return J_base * ar.smashFraction_hit * (1 - ar.recoilFactor * 0.5);
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Non-competitive. Eight Spike's symmetric blunt spikes produce maximum recoil equally in both directions ó the bey self-KOs as readily as it KOs opponents. Unlike Ten Spike, the symmetric design avoids rotational imbalance, but this only means it fails gracefully rather than catastrophically. No smash angle ? no KO potential beyond random perpendicular contact. Tier: non-competitive (equivalent to Knight Crusher, Case 128). Distinct from Eight Spiker (Case 189) by geometry and performance ó do not confuse.
+**Role:** Non-competitive; avoid. Genocide Circle AR's wing + pole geometry creates a fundamentally unreliable contact profile ÔøΩ 65% of contacts produce zero force transfer. The effective smashFraction of 0.168 (averaged across the contact probability distribution) is lower than any tier-competitive AR. The name "Genocide Circle" reflects the aggressive design intent, but the execution fails. Historical interest only: the Dark Effigy G and Death Gargoyle builds with Genocide Circle are notable only as cautionary examples of how contact-point inconsistency negates raw geometric aggression. Tier: non-competitive.
 
 ---
 
-## Case 253 ó Weight Ring WD (Hayate-type beys) ó 12.4 g [FACT(PDB)] ó Specialty Non-Universal WD: Hayate Base-Only Channel Fit, Same Mass as Wide Survivor
+## Case 264 ÔøΩ Hammer Tusk AR (4.7 g [FACT(PDB)], Rushing Boar) ÔøΩ Three-Sided Spiked Wing Grinding: Stamina-Drain via Low-Recoil Spike Contact, Not Smash
 
 ### 1. Geometry
 
-Weight Ring is a specialty Weight Disk exclusive to Hayate-type beys (plastic generation). Weight: 12.4 g [FACT(PDB)] ó identical to Wide Survivor's weight, but different geometry. The Weight Ring's defining feature is its internal mounting groove: it is machined to fit the Hayate Base's internal channel specifically. Standard SGS/EGS blade bases cannot accept Weight Ring, and Hayate Base cannot accept standard WDs.
+Hammer Tusk AR is a 4.7 g three-sided AR from Rushing Boar. The design features three evenly-spaced spiked wings as the primary contact points. Unlike smash ARs (which use large flat or angled blade faces), Hammer Tusk's spikes are narrow and pointed ÔøΩ they engage the opponent's AR at small contact area, producing a grinding/scraping contact rather than a force-transfer smash.
 
-Profile: Compact outer ring with channel-fit mounting geometry. Outer radius ò 24ñ25 mm (estimate). The "ring" name reflects its appearance: a simple ring-shaped WD without the spoked architecture of most plastic gen WDs.
+This grinding contact mechanism has a specific physics property: it slowly strips spin energy from the opponent (spin steal via scraping friction) while maintaining low recoil for the Hammer Tusk bearer. The result is a slow stamina drain ÔøΩ not a high-damage OHKO attacker, but a persistent spin-reducer that can outspin opponents in extended battles.
+
+**Use case:** right-spin attack combos where the goal is to grind the opponent's spin down over several contacts rather than knock out immediately. Also viable in right-spin spin-steal (not zombie ÔøΩ Hammer Tusk bearer is not a pure survivor).
+
+**Limitation:** "lacks the raw power for true top-tier status." Against pure attack builds, Hammer Tusk does not deliver enough per-hit force to win before it is knocked out.
 
 ### 2. Physics
 
-**Non-universal mounting:**
-Hayate Base's internal channel is narrower and recessed differently than standard SGS WD slots:
+```
+Moment of inertia (ring model):
+  r_outer ÔøΩ 27 mm, r_inner ÔøΩ 12 mm,  m = 4.7 g
+  I = (0.0047/2)(0.027ÔøΩ + 0.012ÔøΩ) = 0.00235 ÔøΩ (0.000729 + 0.000144)
+    = 0.00235 ÔøΩ 0.000873 ÔøΩ 2.1 ÔøΩ 10?6 kgÔøΩmÔøΩ
 
-    Hayate channel width ò 2.5 mm internal ring fit
-    Standard WD slot width ò 3.5 mm
-    Incompatibility: Weight Ring's inner tab geometry is matched to Hayate only
+Grinding contact model (spikes):
+  smashFractionRS: 0.30  [ESTIMATED ÔøΩ spikes grind, not smash; low direct force]
+  spinStealFactor: 0.06  [FACT(PDB) ÔøΩ "grinding abilities allow it to wear down opponents"]
+  recoilFactor:    0.25  [FACT(PDB) ÔøΩ "relatively low recoil" relative to spike geometry]
 
-This means Weight Ring cannot be used in any competitive SG/EG combo outside of Hayate Base builds. It is purpose-designed hardware.
+Stamina drain per contact:
+  ??_opponent ÔøΩ -(spinStealFactor ÔøΩ J_base ÔøΩ r_spike) / I_opponent
+  ??_bearer  ÔøΩ -(recoilFactor ÔøΩ J_base) / I_bearer   (small; self-decay)
 
-**Mass and inertia:**
-12.4 g at r ò 24 mm. As a compact ring (not spoke-and-rim):
-
-    I_WeightRing ò 0.5 ◊ 0.0124 ◊ (0.024≤ + 0.021≤) ò 6.5 ◊ 10?6 kg∑m≤
-
-For comparison:
-- Wide Survivor (12.4g, r_outer = 27mm): I_WS ò 7.0 ◊ 10?6 kg∑m≤
-- Weight Ring: I ò 6.5 ◊ 10?6 kg∑m≤ ó 7% less than Wide Survivor despite equal mass
-
-The difference is outer radius: Wide Survivor's wider rim places more mass farther out. Weight Ring's compact ring concentrates mass at slightly lower radius.
-
-**Hayate Base assembly function:**
-The Hayate Base's internal channel integrates the Weight Ring as a structural member ó it is not just a replaceable WD but a functional component of the base mechanism. Removing the Weight Ring and substituting another WD is mechanically impossible (incompatible fit).
-
-    Hayate combo: AR + Weight Ring (fixed pairing) + Hayate Base
-    No WD substitution possible ? Weight Ring defines the Hayate archetype
+At 4ÔøΩ6 contacts: cumulative ??_opponent ÔøΩ -18ÔøΩ27 rad/s (meaningful spin drain vs 500 rad/s launch)
+```
 
 ### 3. Game Engine Mapping
 
 ```typescript
-interface WeightRingWD {
-  name: "weight_ring";
+interface HammerTuskAR {
+  name: "hammer_tusk_ar";
   system: "SGS";
-  mass_g: 12.4;                       // [FACT(PDB)]
-  profile: "compact_ring";
-  outerRadius_mm: 24;
-  innerRadius_mm: 21;
-  momentOfInertia_kgm2: 6.5e-6;
-  universal: false;                   // ONLY fits Hayate Base's internal channel
-  compatibleBases: ["hayate_base"];
-  functionallyEquivalentTo: null;     // unique ó no standard WD substitutes
-  sameWeightAs: "wide_survivor";      // 12.4g but 7% less I due to smaller radius
-  competitiveUse: "hayate_only";
-  note: "Cannot be used outside Hayate-type assemblies ó structural component, not swap part";
+  sourceBey: "Rushing Boar";
+  mass_g: 4.7;                           // [FACT(PDB)]
+  I_kgm2: 2.1e-6;                        // [ESTIMATED]
+  contactType: "spike_grinding";
+  contactFold: 3;                        // C3 three-sided symmetry
+  smashFractionRS: 0.30;                 // [ESTIMATED] low direct smash
+  spinStealFactor: 0.06;                 // [FACT(PDB)] grinding spin drain
+  recoilFactor: 0.25;                    // [FACT(PDB)] low recoil for spike type
+  competitiveTier: "mid_niche";          // viable in specific stamina-contest formats
+  role: "spin_steal_grinder";            // not a knockout AR; a spin-drain AR
+  spinPreference: "right_spin";          // RS attack + spin-steal combos
+  vsLightDefense: "viable";              // can outspin light defense over multiple contacts
+  vsHeavySmash: "loses";                 // not enough per-hit force to win before being KO'd
+}
+function hammerTuskSpinDrain(
+  ar: HammerTuskAR, omega_opponent: number, J_base: number, contactCount: number
+): number {
+  // Cumulative spin drain across multiple contacts
+  const drainPerContact = ar.spinStealFactor * J_base * 0.03; // 0.03 = spike contact ratio
+  return omega_opponent - drainPerContact * contactCount;
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Purpose-fit Hayate Base structural WD. Weight Ring is not a competitive WD in the normal sense ó it cannot be substituted into any other combo, and no other WD can replace it in Hayate Base. Its inertia (6.5 ◊ 10?6 kg∑m≤) is 7% lower than Wide Survivor despite equal mass, due to the compact ring profile. As a Hayate Base component, it defines that base's stamina behavior: adequate mass for zombie/stamina combos but not top-tier vs Wide Survivor + SG Bearing Base setups. Tier: specialty.
+**Role:** Mid-tier stamina-drain attacker (niche). Hammer Tusk AR's three spiked wings create a grinding contact (spinStealFactor = 0.06) with low recoil (0.25), making it suitable for right-spin attack builds that want to drain opponent spin over multiple hits rather than score a knockout. In same-spin matchups it performs well; against light defense it outspins reliably over 4ÔøΩ6 contacts. Against pure attack builds it lacks the per-hit force to win before being knocked out. Historical interest: Hammer Tusk introduced the "grinding stamina attack" archetype in plastic gen, later refined by Tip types in MFB. Tier: mid-tier niche (spin-drain).
 
 ---
 
-## Case 254 ó Balance WD / Eight Balance WD ó 14.1 g [FACT(PDB)] ó Eight-Spoke Compact Distribution: Mid-Weight Universal WD, Heaviest Compact Class
+## Case 265 ÔøΩ Jungle Shock AR (4.1 g [FACT(PDB)], Trygator) ÔøΩ Left-Spin Alligator Head Protrusions: Solid LS Smash with Obstructed RS Contact
 
 ### 1. Geometry
 
-Balance WD (also sold as "Eight Balance" on some releases) ó 14.1 g [FACT(PDB)]. Eight-spoke architecture similar in profile to other octagonal WDs. Sources: Balance variant ó Frostic Dranzer, Spark Knight, Makendo, Wing Attacker beys. Eight Balance variant ó Draciel S, Draciel F, Wolborg 2, Dranzer S, Driger F, Death Driger, Knight Dranzer, Griffolyon.
+Jungle Shock AR is a 4.1 g round-profile AR with prominent alligator head protrusions from Trygator. The alligator snout shapes are the contact points ÔøΩ the snout geometry creates angled surfaces that work well as smash contacts in left-spin (LS) but become obstructed in right-spin (RS) due to the directional orientation of the snout angles.
 
-Both variants share the same 14.1 g weight and functional architecture. The name difference reflects branding across different bey lines. An "Eight" prefix typically denotes the 8-spoke octagonal design in plastic gen WD naming. "Balance" without prefix uses the same 8-spoke form.
+**LS performance:** in LS, the snout protrusions lead into contact ÔøΩ the alligator jaw geometry presents the hardest snout face to opposing ARs, generating "solid Smash with moderate recoil" comparable to similar left-spin attack ARs.
+
+**RS performance:** in RS, the same snouts now trail into contact ÔøΩ the jaw geometry works against the contact direction, obstructing the contact surface and reducing effective smash to the point where Jungle Shock "underperforms significantly." This is not a minor preference difference; the RS performance is actively poor (smashFractionRS ÔøΩ 0.18).
+
+**Use case:** left-spin attack combos only. In LS it is a secondary option behind dedicated LS attack ARs (Reverse Dragon, Case 103), but it is a viable choice.
 
 ### 2. Physics
 
-**Octagonal 8-spoke mass distribution:**
-Eight spokes at 45∞ intervals, perimeter rim, central hub. Mass concentrated in the rim ring:
+```
+Moment of inertia (ring model):
+  r_outer ÔøΩ 25 mm, r_inner ÔøΩ 12 mm,  m = 4.1 g
+  I = (0.0041/2)(0.025ÔøΩ + 0.012ÔøΩ) = 0.00205 ÔøΩ (0.000625 + 0.000144)
+    = 0.00205 ÔøΩ 0.000769 ÔøΩ 1.6 ÔøΩ 10?6 kgÔøΩmÔøΩ
 
-    I_Eight_Balance ò m_rim ◊ r_rim≤ ò 0.010 ◊ (0.025)≤ = 6.25 ◊ 10?6 kg∑m≤
-    (remaining 4.1g in spokes + hub contributes less due to lower radius)
-    Total I ò 6.8 ◊ 10?6 kg∑m≤ [estimated]
+Contact model (alligator-snout directional):
+  smashFractionLS: 0.45  [FACT(PDB) ÔøΩ "solid Smash with moderate recoil" in LS]
+  smashFractionRS: 0.18  [FACT(PDB) ÔøΩ "underperforms significantly" in RS; obstructed contacts]
+  recoilFactor_LS: 0.32  [ESTIMATED ÔøΩ "moderate recoil"]
+  recoilFactor_RS: 0.50  [ESTIMATED ÔøΩ obstructed geometry ? poor energy transfer ? high recoil]
 
-**Position in WD hierarchy:**
-| WD | Mass | I_est | Class |
-|----|------|-------|-------|
-| Wide Survivor | 12.4g | 7.0◊10?6 | Light, wide |
-| Eight Wide (hard) | 12.7g | 7.2◊10?6 | Light, wide |
-| Eight Balance / Balance | 14.1g | 6.8◊10?6 | Mid-heavy, compact |
-| Wide Defense | 14.5g | 8.5◊10?6 | Mid-heavy, wide |
-| Eight Heavy | 15.3g | 7.8◊10?6 | Heavy, compact |
-
-Eight Balance occupies the middle of the WD mass spectrum. Its 8-spoke compact distribution provides more mass than Eight Wide (better smash stability) but less I per gram than Wide Defense or Wide Survivor (both more peripheral). It is the transition WD between "light wide" and "heavy compact."
-
-**Competition use:**
-Eight Balance is the most widely-distributed competitive WD across S1 releases ó it ships with many top-tier beys (Driger S, Dranzer S, etc.) and provides reliable stamina/compact performance. Not best-in-class for any single archetype but broadly usable.
+LS performance benchmark:
+  vs. Reverse Dragon LS (smashFractionLS ÔøΩ 0.55): Jungle Shock = secondary option
+  vs. Double Wing LS  (smashFractionLS ÔøΩ 0.52): Jungle Shock = slightly below
+```
 
 ### 3. Game Engine Mapping
 
 ```typescript
-interface EightBalanceWD {
-  name: "eight_balance";           // also "balance" ó same part different branding
+interface JungleShockAR {
+  name: "jungle_shock_ar";
   system: "SGS";
-  mass_g: 14.1;                    // [FACT(PDB)]
-  profile: "eight_spoke_octagonal";
-  outerRadius_mm: 25;
-  momentOfInertia_kgm2: 6.8e-6;   // [ESTIMATED]
-  wdClass: "compact_mid_heavy";
-  universalFit: true;
-  aliases: ["balance_wd"];        // same part, different bey releases
-  competitiveTier: "mid";
-  bestRole: "general_purpose_compact";
-  distributionBias: "compact";    // vs Wide/Wide Defense which are peripheral
+  sourceBey: "Trygator";
+  mass_g: 4.1;                           // [FACT(PDB)]
+  I_kgm2: 1.6e-6;                        // [ESTIMATED]
+  contactType: "directional_snout_smash";
+  theme: "alligator_heads";
+  // Left spin (intended direction)
+  smashFractionLS: 0.45;                 // [FACT(PDB)] solid LS smash
+  recoilFactor_LS: 0.32;                 // moderate
+  // Right spin (obstructed)
+  smashFractionRS: 0.18;                 // [FACT(PDB)] poor; snouts obstruct RS contact
+  recoilFactor_RS: 0.50;                 // high; obstructed geometry bounces
+  spinPreference: "left_spin";           // strong directional dependency
+  competitiveTier: "LS_secondary";       // viable LS option; outclassed by Reverse Dragon, Double Wing
+}
+function jungleShockSmash(ar: JungleShockAR, spin: "RS" | "LS", J_base: number): number {
+  const frac = spin === "LS" ? ar.smashFractionLS : ar.smashFractionRS;
+  const recoil = spin === "LS" ? ar.recoilFactor_LS : ar.recoilFactor_RS;
+  return J_base * frac * (1 - recoil * 0.5);
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Universal mid-weight compact WD. Eight Balance/Balance is the most common mid-tier WD in plastic gen and the benchmark against which heavier compact WDs (Eight Heavy, Heavy, Heavy Attack) are measured. Its 14.1g and octagonal distribution provides solid base stamina for standard attack/compact combos. Not best-in-class for stamina (Wide Survivor wins) or smash stability (Ten Heavy wins) but reliable in both roles and easily obtained. Tier: mid ó universal workhorse.
+**Role:** Left-spin secondary attack AR. Jungle Shock AR delivers solid LS smash (smashFractionLS = 0.45) from its alligator snout protrusions but is essentially non-functional in RS (smashFractionRS = 0.18 due to geometry obstruction). In LS builds it is a viable secondary choice behind Reverse Dragon (Case 103, 3.5g preferred for lower recoil) and Double Wing (Case 243), but Trygator is notable as a donor for left-spin combos where Jungle Shock AR is the only available LS option. Tier: LS secondary (viable but outclassed).
 
 ---
 
-## Case 255 ó Eight Heavy WD (Driger S / Dranzer F / Master Dragoon) ó 15.3 g / 15.5 g [FACT(PDB)] ó Eight-Spoke Heavy: Two Molds, Maximum Mass 8-Spoke WD
+## Case 266 ÔøΩ Panther Claw AR (4.5 g [FACT(PDB)], Flash Leopard / Flash Leopard Hasbro Magnacore Version) ÔøΩ Compact Wider Profile with Wing Gaps: RS Smash with Manageable Recoil, Low-Moderate Tier
 
 ### 1. Geometry
 
-Eight Heavy WD ó 15.3 g (Regular mold) / 15.5 g (Indent mold) [FACT(PDB)]. Same 8-spoke octagonal architecture as Eight Balance but heavier rim. The indent mold adds small indentations along the outer rim ó mass and I contribution nearly identical per PlasticsDB ("practically identical performance"). Source beys: Driger S, Dranzer F, Master Dragoon.
+Panther Claw AR is a 4.5 g AR from Flash Leopard and its Hasbro Magnacore variant. The design is "relatively compact but wider than comparable options" ÔøΩ it sits mid-range between tight (Tiger Defenser, 3.6 g) and wide (Triple Tiger, 6.3 g) AR profiles. The defining geometric feature is "a rather large gap between the two parts of each wing," creating an aggressive visual profile.
+
+The wing gap creates a two-phase contact: the wing leading edge strikes first (smash), and if the opponent passes into the gap, a second "catch" contact occurs. This does not improve force output ÔøΩ it introduces variability in contact behavior similar to (but less severe than) Genocide Circle (Case 263).
+
+**RS primary:** the wing geometry is optimized for RS rotation ÔøΩ in RS the wings present their leading faces correctly. LS performance is not mentioned as competitive.
+
+**Hasbro Magnacore version:** identical AR geometry; the difference is Magnecore integration in the BB. AR weight is the same (4.5 g).
 
 ### 2. Physics
 
-**Additional mass vs Eight Balance:**
-Eight Heavy adds 1.2g over Eight Balance at same r_rim:
+```
+Moment of inertia (ring model):
+  r_outer ÔøΩ 26 mm, r_inner ÔøΩ 12 mm,  m = 4.5 g
+  I = (0.0045/2)(0.026ÔøΩ + 0.012ÔøΩ) = 0.00225 ÔøΩ (0.000676 + 0.000144)
+    = 0.00225 ÔøΩ 0.000820 ÔøΩ 1.8 ÔøΩ 10?6 kgÔøΩmÔøΩ
 
-    ?I ò 0.0012 ◊ (0.025)≤ = 7.5 ◊ 10?7 kg∑m≤ additional inertia
-    Total I_Eight_Heavy ò 6.8◊10?6 + 7.5◊10?7 ò 7.55 ◊ 10?6 kg∑m≤
+Contact model (wing with gap):
+  smashFractionRS: 0.42  [FACT(PDB) ÔøΩ "decent Smash Attack in Right Spin"]
+  smashFractionLS: 0.15  [ESTIMATED ÔøΩ not mentioned as viable in LS]
+  recoilFactor:    0.38  [ESTIMATED ÔøΩ "recoil issues that compromise stamina and defense"]
+  gapContactVariance: 0.12  [ESTIMATED ÔøΩ wing gap introduces secondary contact uncertainty]
 
-**Spin decay improvement:**
-d?/dt ? 1/I. Eight Heavy vs Eight Balance:
-
-    Improvement = (I_EH - I_EB) / I_EB = 7.5◊10?7 / 6.8◊10?6 ò 11%
-    Effectively: 11% slower spin decay per unit floor torque
-
-**Position in heavy WD hierarchy:**
-| WD | Mass | I_est |
-|----|------|-------|
-| Eight Balance | 14.1g | 6.8◊10?6 |
-| Heavy WD | 15.3g | 7.0◊10?6 (compact) |
-| Eight Heavy Regular | 15.3g | 7.55◊10?6 (8-spoke) |
-| Eight Heavy Indent | 15.5g | 7.60◊10?6 |
-| Wide Defense | 14.5g | 8.5◊10?6 (wide) |
-| Ten Heavy | 16.1g | 8.9◊10?6 (10-spoke) |
-
-Eight Heavy and Heavy WD share the same 15.3g mass but different profiles: Eight Heavy's 8-spoke perimeter places mass farther out (better I) than Heavy's compact round center.
-
-**Mold difference:**
-Regular vs Indent: 0.2g difference, practically identical spin decay. Prefer Regular for simplicity; Indent adds nothing measurable.
-
-### 3. Game Engine Mapping
-
-```typescript
-interface EightHeavyWD {
-  name: "eight_heavy";
-  system: "SGS";
-  mass_g: 15.3;                    // [FACT(PDB)] regular; 15.5g indent
-  profile: "eight_spoke_octagonal_heavy";
-  outerRadius_mm: 25;
-  momentOfInertia_kgm2: 7.55e-6;  // [ESTIMATED]
-  molds: ["regular_15_3g", "indent_15_5g"];
-  moldPerformanceDiff: "negligible";
-  universalFit: true;
-  competitiveTier: "mid_high";
-  vsEightBalance: { spinDecayImprovement: 0.11 };
-  vsTenHeavy: { massDiff: -0.8, iDiff: -1.35e-6 }; // Ten Heavy still better for pure stamina
-  sourceBeys: ["driger_s", "dranzer_f", "master_dragoon"];
-}
+Net RS performance:
+  F_net_RS = smashFractionRS ÔøΩ (1 - recoilFactor ÔøΩ 0.5) ÔøΩ 0.42 ÔøΩ 0.81 = 0.34
+  vs. Tiger Defenser (Case 102): Tiger Defenser = D-tier (defense), Panther Claw = RS attack only
+  vs. Triple Tiger (Case 192): Triple Tiger smashFraction = 0.48 ? Panther Claw clearly below S-tier
 ```
 
-### 4. Verdict
-
-**Role:** Heavy 8-spoke WD ó best 8-spoke option below Ten Heavy. Eight Heavy's 15.3g provides an 11% spin decay improvement over Eight Balance while maintaining the familiar octagonal profile. It fills the gap between Eight Balance and Ten Heavy for custom builds where Ten Heavy mass isn't required. The indent mold variant adds 0.2g with no performance difference ó prefer the regular. Tier: mid-high. Use when Ten Heavy is unavailable or when the additional 0.8g of Ten Heavy would push the combo over an effective weight threshold.
-
----
-
-## Case 256 ó Heavy WD ó 15.3 g [FACT(PDB)] ó Compact Round Heavy: Same Mass as Eight Heavy, Lower I per Gram, High Unit-to-Unit Variance
-
-### 1. Geometry
-
-Heavy WD ó 15.3 g [FACT(PDB)]. Compact round profile ó not 8-spoke, not wide. The perimeter is a solid rounded outer ring with less spoke-and-rim articulation than Eight Heavy. Source beys: Saizo, Bistool, Bakushin-Oh, and many others. PlasticsDB notes "broad weight variance across individual copies (no discrete named molds)" ó some units significantly heavier or lighter than 15.3g due to production variability.
-
-### 2. Physics
-
-**Compact vs 8-spoke distribution:**
-Heavy WD's solid compact profile concentrates mass at moderate radius vs Eight Heavy's perimeter-concentrated spokes:
-
-    Estimated r_mean_heavy ò 21ñ22 mm (solid ring, lower outer radius than 8-spoke)
-    I_Heavy ò 0.5 ◊ 0.0153 ◊ (0.023≤ + 0.019≤) ò 7.0 ◊ 10?6 kg∑m≤
-
-    vs Eight Heavy I ò 7.55 ◊ 10?6 kg∑m≤
-
-At same 15.3g mass, Eight Heavy produces 7.8% more inertia due to better peripheral distribution.
-
-**Weight variance implication:**
-"Broad weight variance" means the 15.3g figure is a nominal average. Some Heavy WDs measure 14.8g, others 15.8g. In competitive play, always weigh individual units; do not assume the nominal.
-
-**When to use over Eight Heavy:**
-Height-sensitive combos (low base height requiring compact vertical profile): Heavy WD's solid ring is shorter/flatter than Eight Heavy's 8-spoke, enabling lower center-of-mass in tight-fit configurations. This is the only case where Heavy outperforms Eight Heavy.
-
 ### 3. Game Engine Mapping
 
 ```typescript
-interface HeavyWD {
-  name: "heavy";
+interface PantherClawAR {
+  name: "panther_claw_ar";
   system: "SGS";
-  mass_g: 15.3;                    // [FACT(PDB)] ó nominal; high unit variance
-  profile: "solid_compact_round";
-  outerRadius_mm: 22;              // [ESTIMATED] ó more compact than 8-spoke
-  momentOfInertia_kgm2: 7.0e-6;   // [ESTIMATED]
-  weightVariance: "high";          // broad across individual copies
-  universalFit: true;
-  competitiveTier: "mid";
-  vsEightHeavy: {
-    massEqual: true;
-    iLower: true;
-    heightLower: true;             // compact profile ? lower CoM in tight bases
-    preferEightHeavy: "generally";
-    preferHeavy: "height_sensitive_combo";
-  };
-  sourceBeys: ["saizo_bey", "bistool", "bakushin_oh", "others"];
-}
-```
-
-### 4. Verdict
-
-**Role:** Compact round heavy WD. Heavy WD matches Eight Heavy's mass (15.3g) but with 7.8% less inertia due to its compact solid profile. In most combos, Eight Heavy is the superior choice at the same weight. Heavy WD's advantage is dimensional: its flatter, more compact vertical profile suits height-sensitive bases where Eight Heavy's taller spoke architecture won't seat correctly. High unit-to-unit weight variance means always measure individual copies. Tier: mid ó functional, but prefer Eight Heavy unless height constraints apply.
-
----
-
-## Case 257 ó Heavy Attack WD (Gaia Dragoon / all variants) ó 16.0 g [FACT(PDB)] ó Compact High-Mass: Heaviest Non-Ten WD, Gaia Dragoon Exclusive Distribution
-
-### 1. Geometry
-
-Heavy Attack WD ó 16.0 g [FACT(PDB)]. Compact profile similar to Heavy WD but heavier by 0.7g. Sources: Gaia Dragoon (all color variants) ó the widest distribution of any single WD to one beyblade across its color range. Unlike Ten Heavy (16.1g, 10-spoke wide distribution) or Eight Heavy (15.3g, 8-spoke), Heavy Attack uses a compact round architecture with 16.0g mass.
-
-### 2. Physics
-
-**Mass position in WD spectrum:**
-| WD | Mass | Profile | I_est |
-|----|------|---------|-------|
-| Eight Heavy | 15.3g | 8-spoke | 7.55◊10?6 |
-| Heavy Attack | 16.0g | compact round | 7.3◊10?6 |
-| Ten Heavy | 16.1g | 10-spoke wide | 8.9◊10?6 |
-
-Heavy Attack (16.0g compact) vs Ten Heavy (16.1g wide):
-- Nearly same mass but dramatically different I: Ten Heavy has peripheral spokes at larger radius
-- Heavy Attack loses I per gram vs Ten Heavy
-- But: Heavy Attack's compact round profile is 7.3 ◊ 10?6 kg∑m≤ vs Heavy WD's 7.0 ◊ 10?6 ó marginally better than plain Heavy
-
-**Attack-oriented name:**
-"Attack" suffix in plastic gen WDs typically indicates a design optimized for lower CoM (compact) to sit closer to the AR contact zone, providing better mass coupling during smash hits. The compact round profile at 16.0g means the bey's inertial mass resists post-contact angular deflection well without extending to wide-distribution stamina territory.
-
-**Spin decay rate:**
-t_floor ò µ_tip ◊ m_total ◊ g ◊ r_tip (depends on BB)
-I contribution from Heavy Attack WD:
-    I_HA ò 7.3 ◊ 10?6 kg∑m≤
-    d?/dt from WD alone: 13% improvement over Eight Balance baseline
-
-### 3. Game Engine Mapping
-
-```typescript
-interface HeavyAttackWD {
-  name: "heavy_attack";
-  system: "SGS";
-  mass_g: 16.0;                    // [FACT(PDB)]
-  profile: "compact_round_heavy";
-  outerRadius_mm: 23;              // [ESTIMATED]
-  momentOfInertia_kgm2: 7.3e-6;   // [ESTIMATED]
-  universalFit: true;
-  competitiveTier: "mid";
-  note: "Heaviest compact WD ó but Ten Heavy (16.1g, 10-spoke) has better I at near-same mass";
-  sourceBeys: ["gaia_dragoon", "gaia_dragoon_color_variants"];
-  vsTenHeavy: {
-    massDiff: -0.1,
-    iDiff: -1.6e-6,
-    profileAdvantage: "compact_for_low_attack_combos"
+  sourceBey: "Flash Leopard | Flash Leopard (Hasbro Magnacore)";
+  mass_g: 4.5;                           // [FACT(PDB)]
+  I_kgm2: 1.8e-6;                        // [ESTIMATED]
+  contactType: "wing_with_gap";
+  smashFractionRS: 0.42;                 // [FACT(PDB)] decent RS smash
+  smashFractionLS: 0.15;                 // [ESTIMATED] not viable in LS
+  recoilFactor: 0.38;                    // recoil issues limit stamina applications
+  gapContactVariance: 0.12;             // secondary catch contact uncertainty
+  spinPreference: "right_spin";
+  competitiveTier: "low_moderate";       // "outclassed by Tiger Defenser for balanced applications"
+  nicheUse: "rs_spin_steal_secondary";  // occasionally used in RS spin-steal combinations
+  hasbro_magnacore_variant: {
+    arIdentical: true,                   // same AR geometry
+    massChange: 0,
+    noteDifference: "BB only: Magnecore integrated"
   };
 }
+function pantherClawSmash(ar: PantherClawAR, spin: "RS" | "LS", J_base: number): number {
+  const frac = spin === "RS" ? ar.smashFractionRS : ar.smashFractionLS;
+  return J_base * frac * (1 - ar.recoilFactor * 0.5);
+}
 ```
 
 ### 4. Verdict
 
-**Role:** Compact high-mass attack WD. Heavy Attack WD's 16.0g in a compact profile fills the niche between Eight Heavy (lighter, 8-spoke) and Ten Heavy (heavier, 10-spoke, wider). For pure stamina/I maximization, Ten Heavy (16.1g, I ò 8.9◊10?6) is superior ó 0.1g more mass, much better I per gram. For attack combos needing compact low CoM at maximum available mass without wide-distribution risks, Heavy Attack is the best option. Available from all Gaia Dragoon color variants ó one of the most accessible heavy compact WDs. Tier: mid ó useful, but Ten Heavy wins for stamina and competitive use.
+**Role:** Low-to-moderate tier RS attack AR. Panther Claw AR offers decent RS smash (smashFractionRS = 0.42) with manageable recoil (0.38) but is "outclassed" by higher-tier ARs (Triple Tiger at 0.48, Eight Spiker at similar values) for competitive attack builds. Its flash leopard source beys provide access in Flash Leopard combos where it serves as a placeholder RS attack ring before obtaining better ARs. The Hasbro Magnacore version has the same AR. Niche use in RS spin-steal setups where the compact profile suits Zombie combos with wider WDs. Tier: low-moderate (borderline competitive).
 
 ---
 
-## Case 258 ó Viper Metal Ball Base (Draciel V) ó 8.2 g [FACT(PDB)] ó Ball-in-Shaft Design: Metal Ball Tip on Metal Pole, Magnecore-Dependent, Non-Competitive
+## Case 267 ÔøΩ Cross Dragon AR (2.7 g [FACT(PDB)], Ultimate Dragoon / Megaro Arm / Makendo) ÔøΩ Lightest Confirmed Plastic Gen AR: Flat Faces, Excessive Recoil, No Competitive Role
 
 ### 1. Geometry
 
-Viper Metal Ball Base is the Blade Base of Draciel V (Draciel Viper, V-Force era). Weight: 8.2 g [FACT(PDB)]. Tip mechanism: a somewhat free-spinning small metal ball connected to the SG (Spin Gear) by a metal pole. The metal pole rests in contact with the ball ó the ball is the floor contact point, the pole is the structural mount. Magnecore is integrated to prevent the metal balls from moving outward (a failure mode in predecessor Draciel bases: SG Metal Ball Base, Case 248, which kept the metal balls in the base body rather than the shaft).
+Cross Dragon AR is the lightest confirmed plastic gen AR at 2.7 g [FACT(PDB)], sourced from Ultimate Dragoon, Megaro Arm, and Makendo (international variants of the same bey). The AR is very compact with flat faces as the contact surface ÔøΩ "flat faces produce a fair amount of recoil without providing worthwhile contact points for attack."
+
+The flat-face geometry is the worst possible AR design: flat surfaces generate high recoil (the collision is nearly elastic ÔøΩ the two ARs bounce off each other) while delivering low net force transfer to the opponent. The low mass (2.7 g) further limits the moment of inertia, meaning Cross Dragon AR cannot contribute meaningfully to either attack or defense.
+
+**Two molds exist:** the second mold is reinforced to address durability concerns from the original. The reinforcement adds structural stability but does not improve contact geometry or competitive performance.
+
+**Mold 1 (fragile):** thin construction ? high breakage risk against heavy smash ARs
+**Mold 2 (reinforced):** improved durability ? prefer Mold 2 if available, still non-competitive
 
 ### 2. Physics
 
-**Ball-in-shaft vs body-ball design:**
-| Feature | SG Metal Ball Base (Case 248) | Viper Metal Ball Base |
-|---------|------------------------------|----------------------|
-| Ball location | Base body housing | Metal shaft/pole tip |
-| Ball count | Multiple (housing) | Single at pole tip |
-| µ contact | 0.12 (steel-on-ABS) | 0.12ñ0.15 [ESTIMATED] |
-| Magnecore | Optional (standard SG) | Required (prevents ball migration) |
-| Competitive tier | Tier 2 defense | Non-competitive |
+```
+Moment of inertia (ring model):
+  r_outer ÔøΩ 22 mm, r_inner ÔøΩ 11 mm,  m = 2.7 g
+  I = (0.0027/2)(0.022ÔøΩ + 0.011ÔøΩ) = 0.00135 ÔøΩ (0.000484 + 0.000121)
+    = 0.00135 ÔøΩ 0.000605 ÔøΩ 0.82 ÔøΩ 10?6 kgÔøΩmÔøΩ
 
-The key difference: Viper Metal Ball Base mounts a single metal ball at the END of a metal pole. This pole-and-ball assembly has more compliance than SG Metal Ball Base's housing-contained balls ó the pole can flex or wobble slightly, introducing instability.
+Contact model (flat face):
+  smashFractionRS: 0.15  [FACT(PDB) ÔøΩ "without worthwhile contact points for attack"]
+  smashFractionLS: 0.15  [ESTIMATED ÔøΩ symmetric flat face, equally poor both directions]
+  recoilFactor:    0.55  [FACT(PDB) ÔøΩ "fair amount of recoil"; flat face = near-elastic collision]
 
-**Magnecore dependency:**
-Without Magnecore, the metal ball tends to migrate outward on the pole contact ó reducing tip contact stability. The Magnecore's field provides lateral constraint that substitutes for mechanical housing containment. This means Viper Metal Ball Base is architecturally dependent on Magnecore Beys / V-Force MGS builds.
-
-**Performance vs SG Metal Ball Base:**
-SG Metal Ball Base (8.2g equivalent to 6.1g base + 2.0g ball hardware) with µ = 0.12 achieves Tier 2 defense. Viper Metal Ball Base at 8.2g total with single-ball pole tip:
-
-    Stability: LOWER than SG Metal Ball Base (pole compliance, single contact point)
-    Defense: LOWER (less floor-hold from single ball vs multi-ball housing)
-    Attack resistance: LOWER ("severely susceptible to low attackers" ó PlasticsDB)
-
-PlasticsDB verdict: "a totally useless part."
-
-**Draciel V context:**
-Draciel V is a V-Force era bey (early S2) ó a transitional design before the SG Metal Ball Base was optimized. The Viper Metal Ball Base represents an early attempt to put metal ball contact in a compact form factor that failed mechanically.
+Low-mass inertia consequence:
+  At ? = 500 rad/s, kinetic energy E = ÔøΩ ÔøΩ 0.82e-6 ÔøΩ 500ÔøΩ = 0.103 J (AR contribution only)
+  Compare Wide Defense WD (I = 8.5e-6 kgÔøΩmÔøΩ): E_WD ÔøΩ 1.06 J ÔøΩ 10ÔøΩ the energy contribution
+  Cross Dragon AR contributes negligibly to the assembly's angular momentum budget
+```
 
 ### 3. Game Engine Mapping
 
 ```typescript
-interface ViperMetalBallBase {
-  name: "viper_metal_ball_base";
+interface CrossDragonAR {
+  name: "cross_dragon_ar";
   system: "SGS";
-  sourceBey: "Draciel V (Draciel Viper)";
-  mass_g: 8.2;                       // [FACT(PDB)]
-  tipType: "metal_ball_on_pole";
-  tipBallRadius_mm: 1.5;             // [ESTIMATED small ball]
-  mu: 0.14;                          // [ESTIMATED ó steel-on-plastic, pole compliance]
-  magnecoreRequired: true;           // prevents ball outward migration
-  poleCompliance: true;              // introduces tilt instability
+  sourceBey: "Ultimate Dragoon | Megaro Arm | Makendo";
+  mass_g: 2.7;                           // [FACT(PDB)] ÔøΩ lightest plastic gen AR confirmed
+  I_kgm2: 0.82e-6;                       // [ESTIMATED]
+  contactType: "flat_face";
+  smashFractionRS: 0.15;                 // [FACT(PDB)] poor contact geometry
+  smashFractionLS: 0.15;                 // [ESTIMATED] symmetric flat = equal both ways
+  recoilFactor: 0.55;                    // [FACT(PDB)] high recoil from flat-face bounce
   competitiveTier: "non_competitive";
-  vsSGMetalBallBase: {
-    mass: "equal_approx",
-    stability: "lower",
-    defense: "lower",
-    attackResistance: "much_lower"
-  };
-  plasticdbNote: "totally useless part";
-  historicalNote: "Early attempt at compact metal ball tip ó superseded by SG Metal Ball Base";
+  molds: 2;                              // Mold 1 fragile; Mold 2 reinforced
+  breakageRisk_mold1: 0.35;             // ~35% per match vs heavy smash ARs
+  breakageRisk_mold2: 0.12;            // improved but not reliable
+  donor_value: "none";                   // no competitive applications
+  historicalNote: "from early gen1 Dragoon variants; lightest AR in plastic gen lineage";
 }
 ```
 
 ### 4. Verdict
 
-**Role:** Non-competitive transitional base. Viper Metal Ball Base was an early V-Force era attempt to deliver metal ball floor contact in a compact, pole-mounted form. The single metal ball on a pole tip provides less stability and defense than SG Metal Ball Base (Case 248), requires Magnecore to function, and is "severely susceptible to low attackers" (PlasticsDB). No competitive donor applications. Historical interest only: it represents the prototype concept for metal ball tips that SG Metal Ball Base later perfected. Tier: non-competitive. Do not use when SG Metal Ball Base is available.
+**Role:** Non-competitive; no donor applications. Cross Dragon AR is the lightest plastic gen AR (2.7 g) but achieves this by sacrificing all contact-point geometry ÔøΩ flat faces generate recoilFactor = 0.55 with smashFraction = 0.15. The second reinforced mold improves durability but does not rescue competitive performance. There is no build in the plastic gen metagame where Cross Dragon AR outperforms any other AR. Historical note: appears in early Dragoon continuation variants (Ultimate Dragoon) as a placeholder before the series received proper attack ARs. Tier: non-competitive.
+
+---
+
+## Case 268 ÔøΩ Knight Claws Ring (3.5 g [FACT(PDB)], Knight Dranzer / Master Driger) ÔøΩ Fragile Thin AR with Severe Recoil: Design Intent (Aggressive Claws) Negated by Structural Failure Risk
+
+### 1. Geometry
+
+Knight Claws Ring is a 3.5 g AR from Knight Dranzer and Master Driger. The design uses a thin, aggressive claw profile intended to deliver attack ÔøΩ but the thinness that creates the sharp claw geometry also makes the AR "remarkably fragile."
+
+The contact points are "poorly positioned" ÔøΩ the claw tips that should engage the opponent AR instead produce "severe recoil while having relatively limited power in either direction." The combination of fragility + high recoil + low power output across both RS and LS makes Knight Claws Ring one of the worst plastic gen ARs for any role.
+
+**One noted exception:** "promise with RC Super Flat Bases, where reduced recoil could enhance aggressive properties ÔøΩ but this combination isn't currently legal in tournament play." This means the theoretical pairing that might salvage Knight Claws Ring is banned from competitive use.
+
+### 2. Physics
+
+```
+Moment of inertia (ring model):
+  r_outer ÔøΩ 23 mm, r_inner ÔøΩ 11 mm,  m = 3.5 g
+  I = (0.0035/2)(0.023ÔøΩ + 0.011ÔøΩ) = 0.00175 ÔøΩ (0.000529 + 0.000121)
+    = 0.00175 ÔøΩ 0.000650 ÔøΩ 1.1 ÔøΩ 10?6 kgÔøΩmÔøΩ
+
+Contact model (thin claw):
+  smashFractionRS: 0.20  [FACT(PDB) ÔøΩ "relatively limited power in either direction"]
+  smashFractionLS: 0.20  [FACT(PDB) ÔøΩ equally poor both directions]
+  recoilFactor:    0.60  [FACT(PDB) ÔøΩ "severe recoil"]
+
+Breakage model:
+  breakageRisk_vs_heavySmash: 0.40  [ESTIMATED ÔøΩ "remarkably fragile"]
+  expectedLifespan_matches:  5ÔøΩ8    [ESTIMATED ÔøΩ thin claw tips break rapidly in competitive use]
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface KnightClawsRing {
+  name: "knight_claws_ring";
+  system: "SGS";
+  sourceBey: "Knight Dranzer | Master Driger";
+  mass_g: 3.5;                           // [FACT(PDB)]
+  I_kgm2: 1.1e-6;                        // [ESTIMATED]
+  contactType: "thin_claw_aggressive";
+  smashFractionRS: 0.20;                 // [FACT(PDB)] limited power
+  smashFractionLS: 0.20;                 // [FACT(PDB)] limited power both directions
+  recoilFactor: 0.60;                    // [FACT(PDB)] severe recoil
+  breakageRisk_per_match: 0.40;         // [ESTIMATED] fragile construction
+  competitiveTier: "non_competitive";
+  theoreticPairing: "rc_super_flat_base"; // potentially viable but tournament-illegal
+  tournamentLegal: false;                 // the only potentially viable combo is banned
+}
+```
+
+### 4. Verdict
+
+**Role:** Non-competitive; fragile. Knight Claws Ring combines the worst attack properties (smashFraction = 0.20, recoilFactor = 0.60) with high fragility ÔøΩ the thin claw construction breaks readily in competitive use. The only theoretically viable pairing (RC Super Flat Base) is not legal in tournament play. No competitive applications. The AR exists as a thematic accessory for the "knight" bey aesthetic rather than as a functional part. Tier: non-competitive.
+
+---
+
+## Case 269 ÔøΩ Max Shield AR (3.5 g [FACT(PDB)], Draciel Metal Ball Defenser) ÔøΩ Flat-Face Non-Competitive AR: Identical Weight to Knight Claws Ring, Even Fewer Contact Points
+
+### 1. Geometry
+
+Max Shield AR is a 3.5 g AR from Draciel Metal Ball Defenser. The name "Max Shield" implies defensive capability, but the actual contact geometry is purely flat faces ÔøΩ "flat faces cause heavy recoil and tend to be somewhat fragile." This is functionally identical to the Cross Dragon AR failure mode (Case 267) but slightly heavier (3.5 g vs 2.7 g).
+
+As a defensive AR, Max Shield provides no benefits ÔøΩ a defensive AR needs rounded, smooth geometry (like Tiger Defenser, Case 102) to redirect contact force. Flat faces on a defensive AR are counterproductive: they generate high recoil that destabilizes the bearer (negative defense) while also providing no attack output.
+
+The AR has no competitive role in any format. Its notable appearance in Draciel Metal Ball Defenser ÔøΩ a bey specifically designed for defense ÔøΩ underscores a disconnect between the bey's defensive BB design (Metal Ball Base, Case 270) and the non-functional AR. The Metal Ball Base is the entire value of that bey; the Max Shield AR contributes nothing.
+
+**Circle Defenser note:** plasticsdb lists "Circle Defenser" under the Spin Gear section (not Attack Rings) ÔøΩ it is a SG defense shell, not an AR. Max Shield AR is the Draciel Metal Ball Defenser AR, distinct from any SG-level defense component.
+
+### 2. Physics
+
+```
+Moment of inertia (ring model):
+  r_outer ÔøΩ 22 mm, r_inner ÔøΩ 11 mm,  m = 3.5 g
+  I = (0.0035/2)(0.022ÔøΩ + 0.011ÔøΩ) = 0.00175 ÔøΩ (0.000484 + 0.000121)
+    = 0.00175 ÔøΩ 0.000605 ÔøΩ 1.1 ÔøΩ 10?6 kgÔøΩmÔøΩ  [same as Knight Claws Ring]
+
+Contact model (flat face):
+  smashFractionRS: 0.10  [FACT(PDB) ÔøΩ "no competitive use"; even weaker than Cross Dragon]
+  smashFractionLS: 0.10  [ESTIMATED ÔøΩ equally poor]
+  recoilFactor:    0.62  [FACT(PDB) ÔøΩ "heavy recoil" from flat face]
+  defenseValue:    0.00  [FACT(PDB) ÔøΩ flat face is anti-defensive; generates recoil to bearer]
+```
+
+### 3. Game Engine Mapping
+
+```typescript
+interface MaxShieldAR {
+  name: "max_shield_ar";
+  system: "SGS";
+  sourceBey: "Draciel Metal Ball Defenser";
+  mass_g: 3.5;                           // [FACT(PDB)]
+  I_kgm2: 1.1e-6;                        // [ESTIMATED]
+  contactType: "flat_face";
+  smashFractionRS: 0.10;                 // [FACT(PDB)] no attack value
+  smashFractionLS: 0.10;                 // [ESTIMATED]
+  recoilFactor: 0.62;                    // [FACT(PDB)] heavy recoil
+  defenseValue: 0.00;                    // flat face = anti-defense on a "defense" bey
+  competitiveTier: "non_competitive";
+  beyValue: "metal_ball_base_only";      // the bey's entire competitive value is the BB
+  circleDefenserNote: "Circle Defenser on plasticsdb is a Spin Gear defense shell, not an AR";
+}
+```
+
+### 4. Verdict
+
+**Role:** Non-competitive; the Draciel Metal Ball Defenser is only useful for its Metal Ball Base (Case 270). Max Shield AR provides no attack or defense value ÔøΩ flat faces generate the heaviest recoil in this size class (0.62) with smashFraction = 0.10. The "shield" in the name is decorative, not functional. Harvest Draciel Metal Ball Defenser solely for the Metal Ball Base SG component; discard or ignore Max Shield AR. Tier: non-competitive.
 

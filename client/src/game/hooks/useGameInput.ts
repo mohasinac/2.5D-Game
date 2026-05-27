@@ -5,7 +5,7 @@
 // Space tap-vs-hold discrimination: < 150ms = specialTap, ≥ 150ms = chargeHeld.
 
 import { useEffect, useRef } from "react";
-import { keyMapRef, ARROW_FALLBACKS } from "./keyMap";
+import { keyMapRef, mouseInputRef, ARROW_FALLBACKS } from "./keyMap";
 
 export interface FullGameInput {
   // Movement
@@ -164,8 +164,8 @@ export function useGameInput(sendInput: SendInputFn, enabled = true) {
         attitudeStamina:    keys.has(km.dodge),
       };
 
-      // Source 2: Mouse right-drag
-      const drag  = mouseDragRef.current;
+      // Source 2: Mouse right-drag — only when user explicitly enables it (default OFF)
+      const drag  = mouseInputRef.enabled ? mouseDragRef.current : { x: 0, y: 0 };
       const dragX = Math.abs(drag.x);
       const dragY = Math.abs(drag.y);
       const mouse = {
