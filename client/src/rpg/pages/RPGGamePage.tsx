@@ -6,11 +6,14 @@ import { useRPGEngine } from "../hooks/useRPGEngine";
 import { RPGHUD } from "../components/hud/RPGHUD";
 import { ReputationBadge } from "../components/hud/ReputationBadge";
 import { NotificationFeed } from "../components/hud/NotificationFeed";
+import { QuestTrackerHUD } from "../components/hud/QuestTrackerHUD";
+import { BadgeAchievementOverlay } from "../components/hud/BadgeAchievementOverlay";
 import { RPGTouchControls } from "../components/hud/RPGTouchControls";
 import { DialogueBox } from "../components/overlays/DialogueBox";
 import { CutsceneOverlay } from "../components/overlays/CutsceneOverlay";
 import { MenuOverlay } from "../components/overlays/MenuOverlay";
 import { TransitionOverlay } from "../components/overlays/TransitionOverlay";
+import type { Quest } from "../data/schemas";
 
 // GBC = portrait (160×144 → 10:9 aspect), GBA = landscape (240×160 → 3:2 aspect).
 // We detect orientation and apply the matching aspect ratio frame.
@@ -18,17 +21,19 @@ import { TransitionOverlay } from "../components/overlays/TransitionOverlay";
 export default function RPGGamePage() {
   const canvasRef = useRef<HTMLDivElement>(null);
   const { currentUser } = useAuth();
-  const userId = currentUser?.uid ?? "";
+  const userId  = currentUser?.uid ?? "";
   const username = currentUser?.displayName ?? "Player";
 
   const { engine, isReady } = useRPGEngine(canvasRef, userId, username);
 
-  const activeDialogue = useRPGStore((s) => s.activeDialogue);
-  const activeCutsceneId = useRPGStore((s) => s.activeCutsceneId);
-  const isTransitioning = useRPGStore((s) => s.isTransitioning);
+  const activeDialogue    = useRPGStore((s) => s.activeDialogue);
+  const activeCutsceneId  = useRPGStore((s) => s.activeCutsceneId);
+  const isTransitioning   = useRPGStore((s) => s.isTransitioning);
   const pendingBattleResult = useRPGStore((s) => s.pendingBattleResult);
 
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen,    setMenuOpen]    = useState(false);
+  const [menuTab,     setMenuTab]     = useState<"inventory" | "quests" | "badges" | "map" | "save">("inventory");
+  const [questDefs,   setQuestDefs]   = useState<Quest[]>([]);
   const [isLandscape, setIsLandscape] = useState(
     typeof window !== "undefined" ? window.innerWidth > window.innerHeight : true
   );
@@ -40,6 +45,18 @@ export default function RPGGamePage() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // Load quest defs for QuestTrackerHUD (lazy, once)
+  useEffect(() => {
+    if (!isReady || questDefs.length > 0) return;
+    import("firebase/firestore").then(({ collection, getDocs }) => {
+      import("@/lib/firebase").then(({ db }) => {
+        getDocs(collection(db, "rpg_quests"))
+          .then((snap) => setQuestDefs(snap.docs.map((d) => d.data() as Quest)))
+          .catch(() => { /* non-fatal */ });
+      });
+    });
+  }, [isReady, questDefs.length]);
+
   // Handle battle return
   useEffect(() => {
     if (pendingBattleResult && engine) {
@@ -47,12 +64,18 @@ export default function RPGGamePage() {
     }
   }, [pendingBattleResult, engine]);
 
-  // Menu toggle
+  // Keyboard shortcuts: P = menu, M = map tab
   useEffect(() => {
     if (!isReady) return;
     const onKey = (e: KeyboardEvent) => {
-      if ((e.key === "p" || e.key === "P") && !activeDialogue && !activeCutsceneId) {
+      if (activeDialogue || activeCutsceneId) return;
+      if (e.key === "p" || e.key === "P") {
+        setMenuTab("inventory");
         setMenuOpen((prev) => !prev);
+        e.preventDefault();
+      } else if (e.key === "m" || e.key === "M") {
+        setMenuTab("map");
+        setMenuOpen(true);
         e.preventDefault();
       }
     };
@@ -65,9 +88,7 @@ export default function RPGGamePage() {
     const node = engine.dialogueSystem.advance(undefined, (key, val) => {
       useRPGStore.getState().setFlag(key, val);
     });
-    if (!node) {
-      useRPGStore.getState().closeDialogue();
-    }
+    if (!node) useRPGStore.getState().closeDialogue();
   }, [engine]);
 
   const handleChoiceSelect = useCallback(
@@ -76,18 +97,20 @@ export default function RPGGamePage() {
       const node = engine.dialogueSystem.advance(choiceId, (key, val) => {
         useRPGStore.getState().setFlag(key, val);
       });
-      if (!node) {
-        useRPGStore.getState().closeDialogue();
-      }
+      if (!node) useRPGStore.getState().closeDialogue();
     },
     [engine]
   );
 
+  const handleOpenMap = useCallback(() => {
+    setMenuTab("map");
+    setMenuOpen(true);
+  }, []);
+
   const currentNode = engine?.dialogueSystem?.getCurrentNode?.() ?? null;
-  const choices = engine?.dialogueSystem?.getAvailableChoices?.() ?? [];
+  const choices     = engine?.dialogueSystem?.getAvailableChoices?.() ?? [];
 
   // GBA landscape: 3:2 aspect. GBC portrait: 10:9 aspect.
-  // On desktop, we always use landscape GBA-style.
   const aspectClass = isLandscape
     ? "aspect-[3/2] max-h-[100vh] max-w-[150vh]"
     : "aspect-[10/9] max-w-[100vw] max-h-[90vh]";
@@ -110,8 +133,9 @@ export default function RPGGamePage() {
         {/* HUD */}
         {isReady && !activeCutsceneId && (
           <>
-            <RPGHUD />
+            <RPGHUD onOpenMap={handleOpenMap} />
             <ReputationBadge />
+            <QuestTrackerHUD questDefs={questDefs} />
           </>
         )}
 
@@ -139,6 +163,7 @@ export default function RPGGamePage() {
         {/* Menu */}
         <MenuOverlay
           open={menuOpen}
+          initialTab={menuTab}
           onClose={() => setMenuOpen(false)}
           onSave={() => setMenuOpen(false)}
         />
@@ -146,10 +171,11 @@ export default function RPGGamePage() {
         {/* Transition */}
         <TransitionOverlay type={isTransitioning ? "fade" : "none"} active={isTransitioning} />
 
-        {/* Notifications */}
+        {/* Notifications + Badge achievement */}
         <NotificationFeed />
+        <BadgeAchievementOverlay />
 
-        {/* Touch controls: D-pad + A/B + Start (GBA-style, below the viewport frame) */}
+        {/* Touch controls */}
         <RPGTouchControls />
       </div>
     </div>

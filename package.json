@@ -73,6 +73,7 @@
     "seed:arena-template-defs": "node scripts/seed-all.js --only arena-template-defs",
     "seed:rpg-trigger-mode-defs": "node scripts/seed-all.js --only rpg-trigger-mode-defs",
     "seed:rpg-facing-defs": "node scripts/seed-all.js --only rpg-facing-defs",
+    "seed:rpg-ep1": "node scripts/seed-rpg-arc1-episode1.js",
     "seed:special-move-presets": "node scripts/seed-all.js --only special-move-presets",
     "seed:combo-presets": "node scripts/seed-all.js --only combo-presets",
     "seed:mechanic-presets": "node scripts/seed-all.js --only mechanic-presets",

@@ -527,7 +527,7 @@ async function seedNPCs() {
       { timeSlot: "afternoon", mapId: "beigoma_park", tile: { x: 22, y: 14 }, facing: "left" },
     ],
     battleConfig: {
-      beybladeId: "big_foot", arenaId: "classic_circle", difficulty: "easy",
+      beybladeId: "bound-attacker", arenaId: "classic_circle", difficulty: "easy",
       introDialogueId: "dlg_billy_battle_intro",
       victoryDialogueId: "dlg_billy_defeated",
       defeatDialogueId: "dlg_billy_wins",
@@ -552,6 +552,16 @@ async function seedNPCs() {
       { timeSlot: "afternoon", mapId: "rooftop",      tile: { x: 14, y: 7  }, facing: "left"  },
     ],
     questIds: ["q_reach_level_5", "q_find_4_parts"],
+    battleConfig: {
+      beybladeId: "jumping-base-set", arenaId: "classic_circle", difficulty: "easy",
+      introDialogueId: "dlg_kenny_battle_intro",
+      victoryDialogueId: "dlg_kenny_defeated",
+      defeatDialogueId: "dlg_kenny_wins",
+      rematchDialogueId: "dlg_kenny_rematch",
+      canRematch: true, rematchCooldownBattles: 1,
+      xpReward: { playerXP: 40, beybladeXP: 20 },
+      lossXpReward: { playerXP: 10 },
+    },
     arcIds: ["arc1_ep1"],
   });
 
@@ -565,7 +575,7 @@ async function seedNPCs() {
       { timeSlot: "afternoon", mapId: "rooftop",      tile: { x: 17, y: 8  }, facing: "left"  },
     ],
     battleConfig: {
-      beybladeId: "cross_viper", arenaId: "classic_circle", difficulty: "easy",
+      beybladeId: "sparkling-attacker", arenaId: "classic_circle", difficulty: "easy",
       introDialogueId: "dlg_andrew_battle_intro",
       victoryDialogueId: "dlg_andrew_defeated",
       defeatDialogueId: "dlg_andrew_wins",
@@ -587,7 +597,7 @@ async function seedNPCs() {
       { timeSlot: "afternoon", mapId: "river_side", tile: { x: 20, y: 8  }, facing: "left" },
     ],
     battleConfig: {
-      beybladeId: "trygle", arenaId: "classic_circle", difficulty: "medium",
+      beybladeId: "kids-draciel", arenaId: "classic_circle", difficulty: "medium",
       introDialogueId: "dlg_carlos_battle_intro",
       victoryDialogueId: "dlg_carlos_defeated",
       defeatDialogueId: "dlg_carlos_player_loses",
@@ -765,7 +775,7 @@ async function seedDialogues() {
       speech("n2", "tyson",  "Who, me?", "n3"),
       speech("n3", "billy",  "Yeah, you. You got a Beyblade?", "n4"),
       speech("n4", "tyson",  "Sure do. You want to see what it can do?", "n5", { portraitState: "confident" }),
-      speech("n5", "billy",  "Ha! Big words from a little kid. My Big Foot has never lost. Not once. You really wanna embarrass yourself?", "n6", { portraitState: "smug" }),
+      speech("n5", "billy",  "Ha! Big words from a little kid. My Bound Attacker has never lost. Not once. You really wanna embarrass yourself?", "n6", { portraitState: "smug" }),
       speech("n6", "kenny",  "Tyson, don't! That's Billy — he's taken Beyblades from half the kids in this park!", "n7", { portraitState: "scared" }),
       speech("n7", "tyson",  "Taken them? That's low.", "n8", { portraitState: "angry" }),
       speech("n8", "billy",  "Finders keepers. Winner takes all. That's the rules around here.", "n9"),
@@ -776,14 +786,14 @@ async function seedDialogues() {
 
     // ── Billy — battle intro ────────────────────────────────────────────────
     dlg("dlg_billy_battle_intro", "n1", [
-      speech("n1", "billy", "Alright rookie, prepare to hand over that Beyblade when Big Foot's done with you!", "n2", { portraitState: "aggressive" }),
+      speech("n1", "billy", "Alright rookie, prepare to hand over that Beyblade when Bound Attacker's done with you!", "n2", { portraitState: "aggressive" }),
       speech("n2", "tyson", "I'm not handing over anything. Dragoon — let it rip!", "n3", { sfxId: "sfx_let_it_rip" }),
       end("n3"),
     ]),
 
     // ── Billy — player wins ─────────────────────────────────────────────────
     dlg("dlg_billy_defeated", "n1", [
-      speech("n1", "billy",  "What?! Impossible! Big Foot never loses!", "n2", { portraitState: "shocked" }),
+      speech("n1", "billy",  "What?! Impossible! Bound Attacker never loses!", "n2", { portraitState: "shocked" }),
       speech("n2", "tyson",  "Just did! Guess there's a first time for everything.", "n3", { portraitState: "triumphant" }),
       speech("n3", "kenny",  "Incredible, Tyson! Dragoon's attack power is off the charts — according to Dizzi!", "n4", { portraitState: "excited" }),
       speech("n4", "billy",  "...Don't think this is over. I'll be back.", "n5", { portraitState: "bitter" }),
@@ -792,7 +802,7 @@ async function seedDialogues() {
 
     // ── Billy — player loses ────────────────────────────────────────────────
     dlg("dlg_billy_wins", "n1", [
-      speech("n1", "billy", "Ha! What did I tell you? Big Foot never fails. Come back when you're actually good.", "n2", { portraitState: "smug" }),
+      speech("n1", "billy", "Ha! What did I tell you? Bound Attacker never fails. Come back when you're actually good.", "n2", { portraitState: "smug" }),
       speech("n2", "tyson", "That was just a warm-up. I'll be back — count on it.", "n3", { portraitState: "determined" }),
       end("n3"),
     ]),
@@ -833,7 +843,7 @@ async function seedDialogues() {
       speech("n2", "kenny",  "If you battle him now, you'll just lose everything. You need to get stronger first.", "n3", { portraitState: "analytical" }),
       speech("n3", "andrew", "We believe in you, man. You've got the talent — you just need the experience.", "n4", { portraitState: "encouraging" }),
       speech("n4", "tyson",  "So how strong do I need to get?", "n5"),
-      speech("n5", "kenny",  "According to Dizzi... Level 5 should give Dragoon the power to match Trygle. Train in the backyard, battle in the park — get your experience up.", "n6"),
+      speech("n5", "kenny",  "According to Dizzi... Level 5 should give Dragoon the power to match Kid Draciel. Train in the backyard, battle in the park — get your experience up.", "n6"),
       speech("n6", "tyson",  "Level 5. Got it. I'll get there — and then Carlos is going DOWN.", "n7", { portraitState: "determined", sfxId: "sfx_determined" }),
       setFlag("n7", { q_level5_started: true }, "n8"),
       end("n8"),
@@ -890,14 +900,14 @@ async function seedDialogues() {
     dlg("dlg_carlos_battle_intro", "n1", [
       speech("n1", "carlos", "So you actually came back. And you brought that toy of yours.", "n2", { portraitState: "amused" }),
       speech("n2", "tyson",  "Give back everyone's Beyblades, Carlos. This is your last chance to do it the easy way.", "n3", { portraitState: "determined" }),
-      speech("n3", "carlos", "Last chance? I like that. Sure, if you can beat Trygle — they're yours. But when you LOSE — Dragoon is mine.", "n4", { portraitState: "cold" }),
+      speech("n3", "carlos", "Last chance? I like that. Sure, if you can beat Kid Draciel — they're yours. But when you LOSE — Dragoon is mine.", "n4", { portraitState: "cold" }),
       speech("n4", "tyson",  "You won't get anywhere near Dragoon. Let it rip!", "n5", { sfxId: "sfx_let_it_rip" }),
       end("n5"),
     ]),
 
     // ── Carlos defeated ─────────────────────────────────────────────────────
     dlg("dlg_carlos_defeated", "n1", [
-      speech("n1", "carlos", "No... Trygle... how?!", "n2", { portraitState: "shocked" }),
+      speech("n1", "carlos", "No... Kid Draciel... how?!", "n2", { portraitState: "shocked" }),
       speech("n2", "tyson",  "A deal's a deal, Carlos. Hand them over.", "n3", { portraitState: "calm" }),
       speech("n3", "carlos", "...", "n4", { portraitState: "humiliated" }),
       speech("n4", "narrator","[Carlos tosses the bag of Beyblades onto the ground. The other kids rush forward, grabbing their own.]", "n5"),
@@ -1089,7 +1099,7 @@ async function seedDialogues() {
 
     // ── Blade Sharks Hideout — entry ─────────────────────────────────────────
     dlg("dlg_blade_sharks_entry_scene", "n1", [
-      speech("n1", "narrator","[The hideout is dim and cold. And in the middle of it — Kenny, tied to a post. Carlos sits in the corner, holding the shattered remains of Trygle.]", "n2"),
+      speech("n1", "narrator","[The hideout is dim and cold. And in the middle of it — Kenny, tied to a post. Carlos sits in the corner, holding the shattered remains of Kid Draciel.]", "n2"),
       speech("n2", "tyson",   "Kenny! Are you okay?!", "n3", { portraitState: "alarmed" }),
       speech("n3", "kenny",   "Tyson... I'm fine. Just scared. Dizzi got damaged, I don't know if she's—", "n4", { portraitState: "shaken" }),
       speech("n4", "tyson",   "She'll be fine. I'm getting you out of here. Who did this?", "n5", { portraitState: "determined" }),
@@ -1117,6 +1127,27 @@ async function seedDialogues() {
       speech("n1", "narrator","[The staircase door is blocked. Some older kids are guarding it — they say only bladers who have proven themselves can go up.]", "n2"),
       speech("n2", "narrator","[Beat Billy in the park first.]", "end1"),
       end("end1"),
+    ]),
+
+    // ── Kenny — battle dialogues ────────────────────────────────────────────
+    dlg("dlg_kenny_battle_intro", "n1", [
+      speech("n1", "kenny",  "O-okay, if you insist! Dizzi, run pre-battle calculations!", "n2", { portraitState: "nervous" }),
+      speech("n2", "kenny",  "Don't go easy on me just because I'm the Chief — my Jumping Base is a lot sneakier than it looks!", "n3"),
+      end("n3"),
+    ]),
+    dlg("dlg_kenny_defeated", "n1", [
+      speech("n1", "kenny",  "I knew it — Dizzi predicted a 73% loss probability. You're getting really strong, Tyson.", "n2", { portraitState: "proud-defeated" }),
+      speech("n2", "tyson",  "Your Jumping Base kept me on my toes! Good match, Chief.", "n3", { portraitState: "grinning" }),
+      end("n3"),
+    ]),
+    dlg("dlg_kenny_wins", "n1", [
+      speech("n1", "kenny",  "I-I won?! Dizzi, are you registering this?!", "n2", { portraitState: "shocked" }),
+      speech("n2", "kenny",  "The Jumping Base's reposition timing caught you off guard. Keep it in mind for tougher battles!", "n3", { portraitState: "analytical" }),
+      end("n3"),
+    ]),
+    dlg("dlg_kenny_rematch", "n1", [
+      speech("n1", "kenny",  "Again? Dizzi's recalibrating my strategy. Don't expect the same tricks twice!", "n2"),
+      end("n2"),
     ]),
 
     // ── Random bladers ──────────────────────────────────────────────────────

@@ -13,6 +13,9 @@ interface LiveNPC {
   patrolIndex: number;
   patrolPauseTimer: number;
   isPatrolling: boolean;
+  bubble?: PIXI.Text;
+  bubbleBaseY?: number;
+  bubbleVisible?: boolean;
 }
 
 /** Callback fired when a chaser NPC enters catchRadius of the player. */
@@ -25,6 +28,7 @@ export class NPCScheduler {
   private animSystem: SpriteAnimationSystem;
   private placeholderTexture: PIXI.Texture | null = null;
   private textureCache: Map<string, PIXI.Texture> = new Map();
+  private bubbleElapsed: number = 0; // ms accumulator for bubble bob
 
   // ── Chase / catch state ────────────────────────────────────────────────────
   /** Current player tile — updated every frame by PlayerController. */
@@ -97,10 +101,30 @@ export class NPCScheduler {
       cs.container.y = pos.y + TILE_SIZE / 2;
       this.npcContainer.addChild(cs.container);
 
+      // Speech bubble (shown when NPC has dialogue available)
+      const bubble = new PIXI.Text({
+        text: "...",
+        style: {
+          fontSize: 7,
+          fill: 0xffffff,
+          fontFamily: "monospace",
+          fontWeight: "bold",
+          dropShadow: { color: 0x000000, blur: 2, angle: Math.PI / 4, distance: 1 },
+        },
+      });
+      bubble.anchor.set(0.5, 1);
+      const bubbleBaseY = cs.container.y - TILE_SIZE * 1.6;
+      bubble.x = cs.container.x;
+      bubble.y = bubbleBaseY;
+      bubble.visible = false;
+      bubble.zIndex = 10;
+      this.npcContainer.addChild(bubble);
+
       this.liveNPCs.set(def.id, {
         def, cs, tile: { ...spawnTile }, facing,
         patrolPath, patrolIndex: 0,
         patrolPauseTimer: 0, isPatrolling: false,
+        bubble, bubbleBaseY, bubbleVisible: false,
       });
     }
   }
@@ -108,15 +132,24 @@ export class NPCScheduler {
   despawnAllNPCs(): void {
     for (const live of this.liveNPCs.values()) {
       this.npcContainer.removeChild(live.cs.container);
+      if (live.bubble) this.npcContainer.removeChild(live.bubble);
     }
     this.liveNPCs.clear();
   }
 
   update(deltaMS: number): void {
+    this.bubbleElapsed += deltaMS;
+    const bob = Math.sin(this.bubbleElapsed / 400) * 2; // ±2px gentle bob
     for (const live of this.liveNPCs.values()) {
       this.animSystem.update(live.cs, deltaMS);
       this.updatePatrol(live, deltaMS);
       this.checkCatch(live);
+      // Keep bubble anchored above NPC sprite (which may move during patrol)
+      if (live.bubble && live.bubbleVisible) {
+        live.bubble.x = live.cs.container.x;
+        live.bubbleBaseY = live.cs.container.y - TILE_SIZE * 1.6;
+        live.bubble.y = live.bubbleBaseY + bob;
+      }
     }
   }
 
@@ -203,6 +236,43 @@ export class NPCScheduler {
       live.cs.container.x += dx2 * ratio;
       live.cs.container.y += dy2 * ratio;
       this.animSystem.setMoving(live.cs, true);
+    }
+  }
+
+  // ── Speech bubble API ───────────────────────────────────────────────────────
+
+  /** Show the "..." bubble above an NPC to indicate they have dialogue. */
+  showDialogueBubble(npcId: string): void {
+    const live = this.liveNPCs.get(npcId);
+    if (!live?.bubble) return;
+    live.bubble.visible = true;
+    live.bubbleVisible = true;
+  }
+
+  /** Hide the dialogue bubble (e.g. while dialogue is playing). */
+  hideDialogueBubble(npcId: string): void {
+    const live = this.liveNPCs.get(npcId);
+    if (!live?.bubble) return;
+    live.bubble.visible = false;
+    live.bubbleVisible = false;
+  }
+
+  /** Hide all bubbles (e.g. during a cutscene). */
+  hideAllBubbles(): void {
+    for (const live of this.liveNPCs.values()) {
+      if (!live.bubble) continue;
+      live.bubble.visible = false;
+      live.bubbleVisible = false;
+    }
+  }
+
+  /** Restore bubbles for all NPCs that have a dialogueId. */
+  restoreAllBubbles(): void {
+    for (const live of this.liveNPCs.values()) {
+      if (!live.bubble) continue;
+      const hasDlg = !!live.def.defaultDialogueId;
+      live.bubble.visible = hasDlg;
+      live.bubbleVisible = hasDlg;
     }
   }
 

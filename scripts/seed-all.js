@@ -338,6 +338,16 @@ const SEEDERS = [
     description: "4 RPG character facing directions (up, down, left, right)",
   },
   {
+    name: "rpg-ep1",
+    script: "seed-rpg-arc1-episode1.js",
+    collections: [
+      "rpg_arcs", "rpg_routes", "rpg_regions", "rpg_maps",
+      "rpg_npcs", "rpg_dialogues", "rpg_story_events",
+      "rpg_quests", "rpg_items", "rpg_badges",
+    ],
+    description: "Arc 1 Episode 1: Let It Rip! — full story seed (Tyson's room → Kai showdown)",
+  },
+  {
     name: "special-move-presets",
     script: "seed-special-move-presets.js",
     collections: ["special_move_presets"],
