@@ -31110,10 +31110,10 @@ function huntSweep(
 
 **Bey:** Omega Dragonis 85XF
 **Blader:** Ryuto
-**Label:** GIMMICK — XF Rubber-Rim Triboelectric Accumulation (Hammer Bolt charging mechanism)
+**Label:** GIMMICK — XF ABS-Plastic Flat-Face Triboelectric Accumulation (Hammer Bolt charging mechanism)
 **EXTENDS** Cases 1546–1554 (CS 9 — Omega Dragonis 85XF full assembly analysis)
 
-**New analysis:** Hammer Bolt begins with a sustained stadium charging run before the strike. CS 9 established XF tip geometry (outer rubber rim r_XF = 18.8 mm, rubber-on-PC contact) and Omega Dragonis mass m = 38.0 g. This case quantifies the electrostatic accumulation during the charge run and the resulting strike impulse.
+**New analysis:** Hammer Bolt begins with a sustained stadium charging run before the strike. CS 9 established XF tip geometry (outer flat face r_XF = 18.8 mm, ABS-plastic-on-PC contact) and Omega Dragonis mass m = 38.0 g. This case quantifies the electrostatic accumulation during the charge run and the resulting strike impulse.
 
 **XF tip kinematics:**
 At peak match-entry spin ω = 2π × 53.3 = 334.9 rad/s (3,200 RPM):
@@ -31125,24 +31125,23 @@ Normal force from bey weight on tip:
 F_N = m_total × g = 0.038 × 9.81 ≈ **0.373 N**
 
 **Triboelectric charging:**
-Rubber-on-polycarbonate tribopair: specific charge density σ_t ≈ 3.0×10⁻⁸ C/m². Hertzian contact patch radius under F_N = 0.373 N, rubber modulus E* ≈ 5 MPa:
+ABS-plastic-on-polycarbonate tribopair: specific charge density σ_t ≈ 1.0×10⁻⁹ C/m² (ABS negative, PC positive in triboelectric series). XF is a flat rigid tip; contact modelled as outer annular rim strip (r_XF = 18.8 mm, strip width w ≈ 1.5 mm — characteristic of a hard-polymer flat tip under normal load on a flat stadium surface):
 
-a_contact = (3 × F_N × R_tip / (4 × E*))^(1/3) ≈ (3 × 0.373 × 0.003 / (4 × 5×10⁶))^(1/3) ≈ 1.9×10⁻³ m
-A_c = π × (1.9×10⁻³)² ≈ **1.13×10⁻⁵ m²**
+A_c = 2π × r_XF × w = 2π × 0.0188 × 0.0015 ≈ **1.77×10⁻⁴ m²**
 
 Charge transfer rate at v_contact = 6.30 m/s:
 
-dQ/dt ≈ σ_t × A_c × v_contact = 3.0×10⁻⁸ × 1.13×10⁻⁵ × 6.30 ≈ **2.14×10⁻¹² C/s**
+dQ/dt ≈ σ_t × A_c × v_contact = 1.0×10⁻⁹ × 1.77×10⁻⁴ × 6.30 ≈ **1.12×10⁻¹² C/s**
 
 Accumulated charge over t_run = 0.5 s charging run:
 
-Q_acc = 2.14×10⁻¹² × 0.5 ≈ **1.07×10⁻¹² C**
+Q_acc = 1.12×10⁻¹² × 0.5 ≈ **5.6×10⁻¹³ C**
 
 Surface voltage (body capacitance C_body ≈ 4.0×10⁻¹¹ F for a beyblade-scale sphere):
 
-V_physical ≈ Q_acc / C_body = 1.07×10⁻¹² / 4.0×10⁻¹¹ ≈ **0.027 V** [physical baseline, sub-volt]
+V_physical ≈ Q_acc / C_body = 5.6×10⁻¹³ / 4.0×10⁻¹¹ ≈ **0.014 V** [physical baseline, sub-volt — even lower than a rubber tribopair, underscoring BeySpirit amplification]
 
-**[M] — BeySpirit amplification:** Physical triboelectric voltage is sub-volt and leaks immediately into humid stadium air (surface resistivity of dry PC ≈ 10¹⁵ Ω/sq; damp conditions reduce this by ×10⁻³). In Hammer Bolt, Ryuto's Dragonis constellation BeySpirit functions as a continuous charge pump that saturates the charge rate and suppresses dissipation. Observable turquoise lightning bolts imply arc-discharge thresholds: breakdown of air at 3×10⁶ V/m across a 0.5 mm gap requires V ≈ 1.5 kV. The [M] amplification factor ≈ 5.6×10⁴ applied to dQ/dt bridges physical (2.14×10⁻¹²) to BeySpirit-sustained (≈ 4.67×10⁻¹¹ C/s equivalent) — adequate to maintain visible arc discharge for the ~0.5 s lighting phase. Stone-pillar fracture is fully [M]: a 38 g bey at v_impact ≈ 2.0 m/s delivers 0.076 J — two orders short of limestone fracture energy (~5 J/m² × stone cross-section).
+**[M] — BeySpirit amplification:** Physical triboelectric voltage is sub-volt and leaks immediately into humid stadium air (surface resistivity of dry PC ≈ 10¹⁵ Ω/sq; damp conditions reduce this by ×10⁻³). In Hammer Bolt, Ryuto's Dragonis constellation BeySpirit functions as a continuous charge pump that saturates the charge rate and suppresses dissipation. Observable turquoise lightning bolts imply arc-discharge thresholds: breakdown of air at 3×10⁶ V/m across a 0.5 mm gap requires V ≈ 1.5 kV. The [M] amplification factor ≈ 1.1×10⁵ applied to dQ/dt bridges physical (1.12×10⁻¹²) to BeySpirit-sustained (≈ 4.67×10⁻¹¹ C/s equivalent) — adequate to maintain visible arc discharge for the ~0.5 s lighting phase. Stone-pillar fracture is fully [M]: a 38 g bey at v_impact ≈ 2.0 m/s delivers 0.076 J — two orders short of limestone fracture energy (~5 J/m² × stone cross-section).
 
 **Strike impulse (into Case 1593):**
 Momentum of Omega Dragonis at charge-run terminal velocity:
@@ -31162,9 +31161,9 @@ At 2.3 m/s radial Δv, Pegasus crosses a 400 mm radius stadium in ~0.17 s — su
 **Blader:** Ryuto
 **Label:** SPECIAL — Hammer Bolt
 
-**Anime description:** Omega Dragonis accelerates across the stadium floor, building static electricity through its XF rubber tip's contact charging run while Ryuto channels his Dragonis constellation BeySpirit into his hands. Dragonis becomes sheathed in turquoise lightning before charging into the opposing Bey with an electro-kinetic blast strong enough to shatter stone pillars. First observed defeating Cosmic Pegasus F:D.
+**Anime description:** Omega Dragonis accelerates across the stadium floor, building static electricity through its XF flat-plastic tip's floor-contact run while Ryuto channels his Dragonis constellation BeySpirit into his hands. Dragonis becomes sheathed in turquoise lightning before charging into the opposing Bey with an electro-kinetic blast strong enough to shatter stone pillars. First observed defeating Cosmic Pegasus F:D.
 
-**Compatible beys:** Any bey whose XF (Xtreme Flat) tip has sufficient rubber-contact charging time before the strike. The turquoise-lightning visual and stone-shattering kinetic output specifically require Ryuto's Omega Dragonis constellation BeySpirit; the base strike impulse (0.076 N·s → Δv = 2.3 m/s; Case 1592) is available to any bey with XF given equivalent stadium approach speed.
+**Compatible beys:** Any bey whose XF (Xtreme Flat) tip has sufficient floor-contact accumulation time before the strike. The turquoise-lightning visual and stone-shattering kinetic output specifically require Ryuto's Omega Dragonis constellation BeySpirit; the base strike impulse (0.076 N·s → Δv = 2.3 m/s; Case 1592) is available to any bey with XF given equivalent stadium approach speed.
 
 ```typescript
 function hammerBolt(
@@ -31203,10 +31202,10 @@ function hammerBolt(
 
 **Sequence:** moveLeft → moveRight → jump (← → J)
 **Cost:** 15
-**Type restriction:** attack or balanced (XF tip requires aggressive lateral traversal to pre-load the rubber contact zone; defense and stamina beys lack the lateral-to-lateral approach speed to build meaningful contact charge within the ~80ms combo window)
-**Parent gimmick:** XF rubber-rim triboelectric accumulation (Case 1592)
+**Type restriction:** attack or balanced (XF tip requires aggressive lateral traversal to pre-load the flat-face contact zone; defense and stamina beys lack the lateral-to-lateral approach speed to build meaningful contact charge within the ~80ms combo window)
+**Parent gimmick:** XF flat-face ABS-plastic triboelectric accumulation (Case 1592)
 
-**Thesis:** Thunder Lash compresses Hammer Bolt's charge-direction-reversal pattern into a 3-key burst. ← drives the bey on a leftward arc (XF rubber begins contact pre-load on the leftward slide — a shorter pre-load than the 800ms special run, approximately 60–80ms of directional build), → sharply reverses into a rightward cut (the direction change concentrates contact pressure on the rubber rim's trailing edge, replicating the apex-velocity instant of the full Hammer Bolt charge run), and J fires the strike at peak approach momentum from the direction reversal. Against wall-side opponents the ← pre-load builds approach energy that the → reversal converts into a higher-impulse cut through the wall-proximity ring-out corridor.
+**Thesis:** Thunder Lash compresses Hammer Bolt's charge-direction-reversal pattern into a 3-key burst. ← drives the bey on a leftward arc (XF flat-face begins contact pre-load on the leftward slide — a shorter pre-load than the 800ms special run, approximately 60–80ms of directional build), → sharply reverses into a rightward cut (the direction change concentrates contact pressure on the ABS rim's trailing edge, replicating the apex-velocity instant of the full Hammer Bolt charge run), and J fires the strike at peak approach momentum from the direction reversal. Against wall-side opponents the ← pre-load builds approach energy that the → reversal converts into a higher-impulse cut through the wall-proximity ring-out corridor.
 
 ```typescript
 function thunderLash(
@@ -31587,4 +31586,2424 @@ function fangRush(
 
 **Ceiling check:** dmgMult 1.42× ≤ 1.5 ✓ | lockMs 80 ≤ 300 ✓ | cost 35 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
 
-*Cases continue from Case 1604 as further franchise moves are provided.*
+## Case 1610
+
+**Bey:** Crash Roktavor 11Reach Wedge
+**Blader:** Ranjiro Kiyama
+**Label:** GIMMICK — Reach Frame Dual-Angle Spike Counter-Deflection
+**EXTENDS** Cases 515–518 (CS 9 — Crash Ragnaruk 11Reach Wedge: Disc 11, Reach frame, Wedge driver assembly analysis)
+
+**New analysis:** Hurricane Counter depends on the Reach disc frame's spike geometry to register incoming attacks at both low and high contact angles, then counter-redirect the attacker while delivering a reactive impulse to Roktavor. CS 9 Cases 515–518 established Reach frame spike dimensions (r_spike ≈ 22 mm from axis, h_spike ≈ 4 mm total vertical extent ≈ ±2 mm above/below the equatorial plane) and the Wedge driver's aggressive approach profile. Hurricane Counter adds the counter-deflection analysis.
+
+**Reach spike geometry — dual-angle coverage:**
+Reach frame spikes are tall enough (h_spike = 4 mm) to intercept contact from both below-equatorial (low) and above-equatorial (high) attacks. For opponent layer contact at ±h_contact ≤ 2 mm from the equatorial plane, at least 50% of the spike height is engaged regardless of attack angle:
+
+Contact window: –2 mm ≤ h_contact ≤ +2 mm → Reach spike intercepts 100% of attacks within this height range.
+
+**Deflection vector analysis:**
+Reach spike face is chamfered at δ_spike ≈ 30° from vertical (angled to redirect both inward horizontal attacks and angular attacks):
+
+Attacker approaching at v_atk ≈ 2.0 m/s (typical mid-match contact speed). Impulse magnitude at contact:
+
+p_atk = m_atk × v_atk = 0.035 × 2.0 = 0.070 N·s (35 g attacker)
+
+Spike deflection resolves p_atk into:
+- Tangential (redirected): p_tangential = p_atk × sin(δ_spike) = 0.070 × sin(30°) = **0.035 N·s** (outward)
+- Normal reflection (back toward attacker): p_normal = p_atk × cos(δ_spike) = 0.070 × cos(30°) = **0.061 N·s**
+
+Reactive counter impulse on Crash Roktavor (Newton's 3rd law, directed toward attacker):
+
+p_counter = p_normal = **0.061 N·s** (directed inward toward attacker layer)
+
+Transfer to Roktavor's layer at r_spike = 22 mm as torque contribution:
+
+τ_counter = p_counter × r_spike / t_contact = 0.061 × 0.022 / 0.005 ≈ **0.268 N·m** [instantaneous, 5ms contact]
+
+**Low vs high symmetry:**
+The spike chamfer is symmetric about the equatorial plane — the upper face chamfer (for high attacks) and lower face chamfer (for low attacks) are mirror-image geometries. Both produce the same δ_spike ≈ 30° deflection angle, confirming the anime description: "works against attacks from both low and high angles."
+
+**[M] — BeySpirit counter-flash:** Ranjiro's Roktavor BeySpirit amplifies the contact instant into a visible crackle-energy counter (blue spark flash at the spike contact point). The physical counter impulse (0.061 N·s) is the mechanistic basis; BeySpirit scale is consistent with observed outcomes (attacker deflected and spin-reduced without Roktavor losing significant position).
+
+
+## Case 1611
+
+**Bey:** Crash Roktavor 11Reach Wedge
+**Blader:** Ranjiro Kiyama
+**Label:** SPECIAL — Hurricane Counter
+
+**Anime description:** When an opposing Bey attempts to attack Crash Roktavor, the Reach disc frame's spike protrusions intercept the strike and redirect it, simultaneously delivering a counter-impulse that drives Roktavor's layer back into the attacker. The spike geometry works at both low and high attack angles, making the move effective regardless of the opponent's approach height.
+
+**Compatible beys:** Any bey using the Reach disc frame (or an equivalent disc frame with outward spike protrusions of comparable height h_spike ≥ 3 mm). The counter-flash visual and Ranjiro's high-energy exclamation require his Crash Roktavor BeySpirit; the physical deflection-and-counter impulse (0.061 N·s; Case 1610) is available to any Reach-frame bey at equivalent approach speeds.
+
+```typescript
+function hurricaneCounter(
+  attackerApproaching: boolean,  // opponent bey closing at v ≥ 1.0 m/s (triggers counter window)
+  attackAngle: "low" | "high" | "equatorial",
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (!attackerApproaching) {
+    return { spinDelta: 0, dmgMult: 1.0, lockMs: 0, powerCost: 100, ringOutBonus: 0 };
+  }
+  const angleCoverage = attackAngle === "equatorial" ? 1.0 : 0.85; // equatorial = full spike engagement
+  if (qteHit) {
+    return {
+      spinDelta:    Math.round(-45 * angleCoverage),  // −38 to −45
+      dmgMult:      1.45 * angleCoverage + (1 - angleCoverage) * 1.20,  // 1.20×–1.45×
+      lockMs:       60,
+      powerCost:    100,
+      ringOutBonus: 0.08,
+    };
+  }
+  return { spinDelta: -12, dmgMult: 1.08, lockMs: 0, powerCost: 100, ringOutBonus: 0 };
+}
+```
+
+**Notes:**
+- `attackerApproaching`: the counter window only opens when an opponent is actively closing at speed. A slow-drifting opponent or a retreating one does not engage the Reach spike fully.
+- `attackAngle`: "equatorial" gives maximum spike engagement (both spike faces active); "low" or "high" engages primarily one face (85% coverage per Case 1610 symmetry). The anime description confirms both angles work.
+- `lockMs: 60`: the reactive impulse briefly channels Roktavor's layer into a fixed-axis counter stance.
+
+
+## Case 1612
+
+**Bey:** Crash Roktavor 11Reach Wedge
+**Blader:** Ranjiro Kiyama
+**Label:** COMBO — Spike Parry
+
+**Sequence:** moveDown → attack → moveUp (↓ K ↑)
+**Cost:** 15
+**Type restriction:** defense or balanced (Reach frame spike counter requires precise bracing before absorbing the attack; attack beys approach too aggressively to hold the ↓ brace without self-collision; stamina beys lack the layer rotational inertia at spike r = 22 mm to deliver the counter impulse cleanly)
+**Parent gimmick:** Reach frame dual-angle spike counter-deflection (Case 1610)
+
+**Thesis:** Spike Parry compresses Hurricane Counter's brace-and-counter into a 3-key burst. ↓ positions Roktavor in a low-braced approach arc (Reach spike leading edge oriented downward toward opponent layer — mirroring the "low angle" coverage from Case 1610), K triggers the spike engagement at approach contact (the attack input commits the Reach frame into the deflection moment — analogous to the QTE in the special but at combo intensity), and ↑ fires the follow-through counter-thrust (upward direction change replicates Roktavor's reactive impulse from Case 1610: p_counter = 0.061 N·s redirected upward after deflection). Against wall-proximate opponents the ↓ brace angles the spike toward the wall-convergence zone and the ↑ counter-thrust catches the deflected attacker before they recover.
+
+```typescript
+function spikeParry(
+  lowApproachBrace: boolean,  // ↓ input established a below-equatorial brace before K
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    lowApproachBrace ? -20 : -12,
+      dmgMult:      lowApproachBrace ? 1.28 : 1.15,
+      lockMs:       lowApproachBrace ? 80 : 50,
+      powerCost:    15,
+      ringOutBonus: lowApproachBrace ? 0.05 : 0.02,
+    };
+  }
+  return { spinDelta: -6, dmgMult: 1.04, lockMs: 0, powerCost: 15, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.28× ≤ 1.5 ✓ | lockMs 80 ≤ 300 ✓ | cost 15 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+
+## Case 1613
+
+**Bey:** Wild Wyvron Vertical-Orbit / Tempest Wyvron 4Glaive Atomic
+**Blader:** Wakiya Murasaki
+**Label:** GIMMICK — Wall-Climb and Stadium-Rim Gravity-Dive (Hyper Shield Crash mechanism)
+**EXTENDS** Cases 543 and 1569–1573 (CS 9 — Tornado Wyvern 4Glaive Atomic: 4Glaive frame, Atomic driver, Wyvron family wall-ride analysis)
+
+**New analysis:** Hyper Shield Crash depends on Wyvron's tip (Vertical-Orbit or Atomic variant) maintaining sustained wall contact, climbing to the stadium's upper green rim, then converting the accumulated gravitational potential energy into a high-force downward dive. CS 9 established that the Atomic driver's free-spinning outer ring enables wall-riding at near-zero spin loss (CS 9 Case 543: gap P_gap = 55.6% for orbital contact). This case quantifies the rim-height gravitational energy and the combined impact velocity.
+
+**Wall-climb kinematics:**
+Wakiya's bey maintains orbital contact with the stadium wall. Stadium B-200 outer rim height above floor: h_rim ≈ 45 mm = 0.045 m (the "green edge" visible in the anime stills).
+
+Tempest Wyvron 4Glaive Atomic mass: m_TW ≈ 40.0 g (CS 9 Case 543: Tornado Wyvern 4Glaive Atomic ≈ 38.65 g; Tempest variant estimated ~40 g with Tempest layer).
+
+Gravitational potential energy at rim:
+
+E_pot = m × g × h_rim = 0.040 × 9.81 × 0.045 ≈ **0.0177 J**
+
+Gravitational component of dive velocity:
+
+v_gravity = √(2 × g × h_rim) = √(2 × 9.81 × 0.045) ≈ **0.939 m/s**
+
+**Orbital wall speed:**
+Wyvron translating around the stadium rim at ~1 revolution per second (Atomic tip wall-ride orbital period ≈ 0.8–1.2 s based on CS 9 gap analysis):
+
+v_orbital = 2π × r_stadium / T_rev = 2π × 0.195 / 1.0 ≈ **1.225 m/s** (orbital translational speed)
+
+**Combined impact velocity (vector sum):**
+At the dive apex, v_gravity is directed downward and v_orbital is directed tangentially toward the opponent:
+
+v_impact = √(v_orbital² + v_gravity²) = √(1.225² + 0.939²) ≈ **1.56 m/s** [CALCULATED]
+
+Impact impulse on opponent (m_opp ≈ 38 g):
+
+p_impact = m_TW × v_impact = 0.040 × 1.56 = **0.062 N·s**
+Δv_opp = p_impact / m_opp = 0.062 / 0.038 ≈ **1.63 m/s**
+
+**[M] — "Hyper" amplification:** The physical dive adds 0.939 m/s vertical to the orbital 1.225 m/s for a 1.56 m/s combined impact — a modest improvement over a flat orbital strike. The "Hyper" designation implies Wakiya's Wyvron BeySpirit amplifies the crash force well beyond this physical ceiling. The visual shows bright green-magenta energy flash on impact, consistent with BeySpirit multiplying the dive's kinetic yield. Shield Crash (base move) = orbital strike without rim climb; Hyper Shield Crash = rim-climb + gravity-dive + [M] BeySpirit burst.
+
+
+## Case 1614
+
+**Bey:** Wild Wyvron Vertical-Orbit / Tempest Wyvron 4Glaive Atomic
+**Blader:** Wakiya Murasaki
+**Label:** SPECIAL — Hyper Shield Crash
+
+**Anime description:** Wyvron climbs to the top of the stadium's green outer rim using its wall-riding tip, then crashes down with dramatically amplified force. The attack is a stronger version of the base Shield Crash, with the added gravitational potential from the rim height contributing to the impact.
+
+**Compatible beys:** Any bey with a wall-riding capable tip (Atomic, Orbit, Variable, or equivalent free-spinning outer-ring drivers that maintain wall contact with low spin loss). Both Wild Wyvron Vertical-Orbit and Tempest Wyvron 4Glaive Atomic qualify. The Hyper-level BeySpirit amplification requires Wakiya Murasaki's Wyvron constellation.
+
+```typescript
+function hyperShieldCrash(
+  rimClimbed: boolean,           // bey reached the stadium upper rim before diving
+  rimHeightPx: number,           // height above floor in game pixels at dive start; max meaningful ≈ 90px
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  const heightNorm = Math.min(rimHeightPx, 90) / 90;
+  if (rimClimbed && qteHit) {
+    return {
+      spinDelta:    -(40 + Math.round(heightNorm * 35)),   // −40 to −75 [M Hyper peak]
+      dmgMult:      1.40 + heightNorm * 0.40,               // 1.40× to 1.80× [M full rim]
+      lockMs:       0,
+      powerCost:    100,
+      ringOutBonus: 0.10 + heightNorm * 0.20,               // 0.10–0.30
+    };
+  }
+  if (!rimClimbed && qteHit) {
+    return { spinDelta: -25, dmgMult: 1.25, lockMs: 0, powerCost: 100, ringOutBonus: 0.06 };
+  }
+  return { spinDelta: -10, dmgMult: 1.08, lockMs: 0, powerCost: 100, ringOutBonus: 0 };
+}
+```
+
+**Notes:**
+- `rimClimbed` is the primary gate: the stadium wall must be ridden to the upper rim (the green boundary). Without rim contact, the move defaults to the base Shield Crash profile.
+- `rimHeightPx` scales the dive energy (Case 1613: E_pot ∝ h_rim; at full rim height → v_impact = 1.56 m/s physical + [M] BeySpirit amplification).
+- No `lockMs`: the crash is an explosive downward strike — Wyvron rebounds freely afterward.
+
+
+## Case 1615
+
+**Bey:** Wild Wyvron Vertical-Orbit / Tempest Wyvron 4Glaive Atomic
+**Blader:** Wakiya Murasaki
+**Label:** COMBO — Rim Rush
+
+**Sequence:** moveUp → moveUp → attack (↑ ↑ K)
+**Cost:** 25
+**Type restriction:** stamina or defense (double-↑ requires the tip to execute a rapid two-step wall-ascent; attack beys with aggressive flat tips cannot sustain the two-step wall contact needed for the second ↑ input; balanced beys can attempt Rim Rush but with reduced height gain per step)
+**Parent gimmick:** Wall-climb and stadium-rim gravity-dive (Case 1613)
+
+**Thesis:** Rim Rush compresses Hyper Shield Crash's wall-climb-and-crash into a 3-key burst. The first ↑ drives Wyvron up the stadium wall (initiating orbital wall contact — first step of the rim ascent, ~50% of full rim height), the second ↑ pushes further up the bowl slope (second step reaching near the rim edge — not the full rim, approximately 70% of h_rim), and K fires the dive-crash at the partial-height apex. The two-step ↑↑ approach covers approximately 0.031 m effective height (70% of h_rim = 0.045 m) — sufficient for a meaningful gravity-dive component (v_gravity ≈ √(2 × 9.81 × 0.031) ≈ 0.78 m/s). Against wall-adjacent opponents, the ↑↑ approach curves directly over the target so the K crash lands on the opponent from above rather than needing to redirect after the climb.
+
+```typescript
+function rimRush(
+  doubleClimbCompleted: boolean,  // both ↑ inputs generated wall-contact height gain
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    doubleClimbCompleted ? -32 : -18,
+      dmgMult:      doubleClimbCompleted ? 1.40 : 1.22,
+      lockMs:       doubleClimbCompleted ? 80 : 40,
+      powerCost:    25,
+      ringOutBonus: doubleClimbCompleted ? 0.12 : 0.04,
+    };
+  }
+  return { spinDelta: -9, dmgMult: 1.05, lockMs: 0, powerCost: 25, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.40× ≤ 1.5 ✓ | lockMs 80 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+
+## Case 1616
+
+**Bey:** Dragoon V (Dragoon Victory) / Dragoon V2
+**Blader:** Tyson Granger
+**Label:** GIMMICK — Dragoon Wing AR Multi-Vortex Rotating Wake Generation
+
+**Note:** Victory Tornado (Dragoon V / Dragoon Victory) is the base move; Hyper Victory Tornado (Dragoon V2) is the powered-up version. This case establishes the physical basis shared by both (Cases 1619–1621 EXTEND from here for the V2 variant). Physical vortex theory baseline reference: Case 1598 (Horusood Field Rankine vortex model).
+
+**Dragoon wing AR kinematics:**
+Dragoon V's attack ring (Victory AR or equivalent wing-profile AR) has 4–5 wing protrusions angled for air circulation. At plastic-generation launch spin:
+
+ω_launch ≈ 5,000 RPM = 523.6 rad/s (plastic-gen beys launch significantly faster than Burst-era)
+
+Wing AR outer tip radius: r_AR ≈ 22 mm = 0.022 m
+
+v_tip = r_AR × ω_launch = 0.022 × 523.6 ≈ **11.5 m/s**
+
+**Rankine vortex — Victory Tornado:**
+Using Case 1598 model with Dragoon AR as the rotating core (r_core = r_AR = 0.022 m):
+
+Γ = 2π × v_tip × r_core = 2π × 11.5 × 0.022 ≈ **1.59 m²/s**
+
+Pressure differential at the AR rim:
+
+ΔP_core = ½ × ρ × v_tip² = ½ × 1.20 × (11.5)² ≈ **79.4 Pa** (far above Horusood Field's 3.28 Pa)
+
+Vortex velocity at r = 0.025 m (just beyond AR rim):
+
+v_θ(0.025) = Γ / (2π × 0.025) = 1.59 / (2π × 0.025) ≈ **10.1 m/s** > 8.28 m/s aerodynamic ejection threshold (Case 1598)
+
+**Physical ring-out capability:** Unlike Horusood Field (which required [M] to reach 8.28 m/s), Victory Tornado's physical vortex at launch speed already exceeds the ejection threshold. The Dragoon wing AR's large r_AR combined with plastic-gen ω_launch generates sufficient circulation without BeySpirit amplification for near-rim ring-out.
+
+**Multi-vortex wake structure (manga/game version):**
+The Dragoon AR's 4–5 wing tips shed discrete trailing vortices as they rotate — analogous to a helicopter rotor's tip vortex helix:
+
+Shedding frequency: f_shed = n_wings × ω / (2π) = 5 × 523.6 / (2π) ≈ 417 Hz
+
+Each shed vortex carries a fraction of total circulation: Γ_sub ≈ Γ / n_wings ≈ 1.59 / 5 = **0.318 m²/s per sub-vortex**
+
+These sub-vortices form a helical wake that rotates around the main axis — physically consistent with the manga/PlayStation game depiction of "multiple sub-vortices rotating around, inside of, and as part of the main vortex."
+
+**[M] components:**
+- The "tornado cloaking" visual (Dragoon V enclosed in a visible tornado): real vortex exists but is not visually observable; BeySpirit makes it visible.
+- Multi-opponent effect in manga (the tornado fends off multiple opponents simultaneously): physically the vortex pressure acts radially — single-opponent focus is physical; simultaneous multi-target is [M].
+- Tornado rush propulsion (tornado carries Dragoon toward opponent): the bey moving WHILE generating the vortex is physical; the vortex directing Dragoon's movement is [M].
+
+
+## Case 1617
+
+**Bey:** Dragoon V (Dragoon Victory)
+**Blader:** Tyson Granger
+**Label:** SPECIAL — Victory Tornado
+
+**Anime description:** Dragoon V (Dragoon Victory) generates a rapidly rotating vortex that cloaks it while it rushes toward the opposing Beyblade. In the manga, Dragoon creates a multi-vortex tornado from high-speed rotation that can simultaneously fend off multiple opponents. The PlayStation game depicts the move with a main vortex containing several sub-vortices rotating around and within it.
+
+**Compatible beys:** Any bey with a wing-profile AR with ≥ 4 protrusions at r_AR ≥ 20 mm, launched at plastic-gen speeds (ω ≥ 450 rad/s). Physical ejection-threshold vortex is achievable without BeySpirit (Case 1616: v_tip = 11.5 m/s, v_θ = 10.1 m/s > 8.28 m/s). The multi-vortex visual and multi-opponent effects require Tyson's Dragoon BeySpirit (white wind dragon).
+
+```typescript
+function victoryTornado(
+  launchSpin: number,          // normalized 0–1, where 1 = peak plastic-gen 5000 RPM
+  multiVortexMode: boolean,    // manga/game version — sub-vortex wake active
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number; aoeRadius: number } {
+  const spinFactor = Math.max(0.3, launchSpin);
+  if (qteHit) {
+    return {
+      spinDelta:    -(50 + Math.round(spinFactor * 30)),   // −50 to −80
+      dmgMult:      1.50 + spinFactor * 0.30,               // 1.50× to 1.80× [physical → [M]]
+      lockMs:       0,
+      powerCost:    100,
+      ringOutBonus: 0.35 + spinFactor * 0.25,               // 0.35–0.60 (physical vortex above ejection threshold at peak spin)
+      aoeRadius:    multiVortexMode ? 60 : 0,               // px; [M] multi-vortex sub-vortex spread
+    };
+  }
+  return { spinDelta: -15, dmgMult: 1.10, lockMs: 0, powerCost: 100, ringOutBonus: 0, aoeRadius: 0 };
+}
+```
+
+**Notes:**
+- `launchSpin`: scales with match-entry spin (high at launch, decreasing with time). Victory Tornado is most powerful immediately after launch.
+- `ringOutBonus` at peak spin (0.60) reflects the **physical vortex** exceeding the aerodynamic ejection threshold without [M] (Case 1616). This is higher than Horusood Field's non-[M] value because Dragoon's plastic-gen v_tip = 11.5 m/s vs Horusood's 2.34 m/s.
+- `aoeRadius: 60` for `multiVortexMode` represents the sub-vortex wake radius ([M] manga version — fending off multiple opponents simultaneously).
+- `powerCost: 100`: standard special cost.
+
+
+## Case 1618
+
+**Bey:** Dragoon V (Dragoon Victory)
+**Blader:** Tyson Granger
+**Label:** COMBO — Twister Rush
+
+**Sequence:** attack → moveUp → jump (K ↑ J)
+**Cost:** 15
+**Type restriction:** attack or balanced (the K-contact-initiation requires the bey to be in active spin-energy output mode — stamina beys executing a low-energy contact generate insufficient circulation for the mini-vortex; defense beys can make the K contact but lack the AR wing geometry to convert spin into directional air impulse at combo intensity)
+**Parent gimmick:** Dragoon wing AR multi-vortex rotating wake (Case 1616)
+
+**Thesis:** Twister Rush compresses Victory Tornado's vortex-and-rush into a 3-key burst. K makes the initial wing-tip contact (at combo intensity, approximately 30ms of AR contact at approach spin — generating a brief micro-circulation burst: Γ_combo ≈ 0.48 m²/s, ~30% of full Γ, sufficient for a localised vortex pressure impulse), ↑ elevates the attack vector (the rising direction change replicates the spiral ascent of Victory Tornado's charge — brief upward component converts orbital momentum into a vertical cut), and J fires the strike at the apex of the spiral, directing the accumulated vortex energy into a concentrated hit. Against wall-side opponents K initiates the approach along the bowl wall so the ↑ rise carries the attack up the slope toward the rim.
+
+```typescript
+function twisterRush(
+  wingContactConfirmed: boolean,  // K input generated AR-face contact (not just near-miss)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    wingContactConfirmed ? -26 : -15,
+      dmgMult:      wingContactConfirmed ? 1.35 : 1.18,
+      lockMs:       wingContactConfirmed ? 80 : 40,
+      powerCost:    15,
+      ringOutBonus: wingContactConfirmed ? 0.14 : 0.04,
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.05, lockMs: 0, powerCost: 15, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.35× ≤ 1.5 ✓ | lockMs 80 ≤ 300 ✓ | cost 15 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+
+## Case 1619
+
+**Bey:** Dragoon V2
+**Blader:** Tyson Granger
+**Label:** GIMMICK — Dragoon V2 Enhanced Wing AR Hyper-Vortex Amplification
+**EXTENDS** Cases 1616–1618 (Victory Tornado — Dragoon V wing AR vortex mechanics)
+
+**New analysis:** Hyper Victory Tornado is the powered-up V2 version of Victory Tornado. Dragoon V2's Enhanced AR has enlarged wing protrusions compared to Dragoon V. This case quantifies the incremental physical upgrade and the [M] amplification that makes it "Hyper." CS 9 has no dedicated V2 case — this case establishes V2 geometry from first principles relative to Case 1616.
+
+**V2 wing AR upgrade:**
+Dragoon V2's Enhanced AR outer radius: r_AR_V2 ≈ 25 mm = 0.025 m (estimated ~3 mm larger than Dragoon V's 22 mm, consistent with V2's visibly wider attack ring profile). Same launch spin ω_launch ≈ 523.6 rad/s:
+
+v_tip_V2 = r_AR_V2 × ω_launch = 0.025 × 523.6 ≈ **13.1 m/s** (+13.9% vs V's 11.5 m/s)
+
+Γ_V2 = 2π × v_tip_V2 × r_AR_V2 = 2π × 13.1 × 0.025 ≈ **2.06 m²/s** (+29.6% vs V's 1.59 m²/s)
+
+ΔP_V2 = ½ × 1.20 × (13.1)² ≈ **103.0 Pa** (+29.7% vs V's 79.4 Pa)
+
+v_θ(0.025m) = Γ_V2 / (2π × 0.025) = 2.06 / (2π × 0.025) ≈ **13.1 m/s** (+29.7% vs V's 10.1 m/s)
+
+F_aero at r = 0.025 m (opponent cross-section A_opp = 0.0025 m²): 0.0015 × 13.1² ≈ **0.257 N** (vs 0.154 N for V) — 67% stronger aerodynamic ejection force at the same proximity.
+
+**[M] — Red-glow BeySpirit surge:** Hyper Victory Tornado shows Dragoon V2 glowing red — a higher BeySpirit activation intensity than V's base-state. The [M] amplification factor for V2 is correspondingly larger than V's baseline: physical upgrade (+29%) provides a stronger foundation but the "Hyper" title refers primarily to BeySpirit amplification that takes V2's 13.1 m/s vortex to anime-scale power (shattered stadium floor tiles in some manga panels, full stone-ring destruction).
+
+
+## Case 1620
+
+**Bey:** Dragoon V2
+**Blader:** Tyson Granger
+**Label:** SPECIAL — Hyper Victory Tornado
+
+**Anime description:** Dragoon V2 generates an enhanced vortex while glowing with red BeySpirit energy — a more powerful version of the Victory Tornado. The tornado is fearsome enough to charge directly into opponents and deliver a devastating high-force strike. Used against Ozuma's Flash Leopard, Cyber Dragoon, and Burning Cerberus.
+
+**Compatible beys:** Any bey with the Dragoon V2 Enhanced AR (or equivalent enlarged wing-profile AR with r_AR ≥ 24 mm) at plastic-gen launch speeds. The red-glow "Hyper" BeySpirit amplification is specific to Tyson Granger's Dragoon V2 bond; the physical vortex (v_tip = 13.1 m/s, v_θ = 13.1 m/s at 25 mm, already above ejection threshold) is available to any bey with comparable V2-equivalent AR geometry.
+
+```typescript
+function hyperVictoryTornado(
+  hyperCharge: boolean,      // red-glow BeySpirit fully active (higher power cost, higher output)
+  launchSpin: number,        // normalized 0–1 (1 = peak 5000 RPM)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  const spinFactor = Math.max(0.3, launchSpin);
+  const hyperMult  = hyperCharge ? 1.20 : 1.0;  // [M] red-glow BeySpirit multiplier
+  if (qteHit) {
+    return {
+      spinDelta:    -Math.round((55 + spinFactor * 35) * hyperMult),  // −55 to −108 [M]
+      dmgMult:      Math.min(2.0, (1.55 + spinFactor * 0.35) * hyperMult), // 1.55×–2.0× [M]
+      lockMs:       0,
+      powerCost:    hyperCharge ? 120 : 105,
+      ringOutBonus: Math.min(0.90, (0.40 + spinFactor * 0.30) * hyperMult), // 0.40–0.90 [M]
+    };
+  }
+  return { spinDelta: -18, dmgMult: 1.12, lockMs: 0, powerCost: hyperCharge ? 120 : 105, ringOutBonus: 0 };
+}
+```
+
+**Notes:**
+- `hyperCharge` activates the full red-glow BeySpirit multiplier (×1.20 across spinDelta, dmgMult, ringOutBonus). Physical V2 upgrade (+29% vs V) is folded into the base values; [M] BeySpirit provides the additional ×1.20 for the "Hyper" tier.
+- `dmgMult` is capped at 2.0× — special moves are not subject to the 1.5× combo ceiling but are bounded by the [M] physical plausibility horizon.
+- `powerCost: 120` for full hyperCharge reflects the elevated BeySpirit output cost.
+
+
+## Case 1621
+
+**Bey:** Dragoon V2
+**Blader:** Tyson Granger
+**Label:** COMBO — Hyper Twister
+
+**Sequence:** moveRight → moveUp → jump (→ ↑ J)
+**Cost:** 25
+**Type restriction:** attack (the → rightward charge pre-loads maximum approach speed for the V2 Enhanced AR's larger wing tips; stamina beys cannot sustain the → vector long enough to build V2-level wing contact intensity; defense beys lack the translational aggression for the full V2 vortex buildup at combo timescale)
+**Parent gimmick:** Dragoon V2 enhanced wing AR hyper-vortex amplification (Case 1619)
+
+**Thesis:** Hyper Twister compresses Hyper Victory Tornado's charge-and-spiral into a 3-key burst. → drives Dragoon V2 on a rightward charge arc (V2 Enhanced AR wing tips begin air circulation on the approach — slightly higher micro-Γ than Twister Rush due to r_AR_V2 = 25 mm vs 22 mm), ↑ converts the rightward momentum into a rising spiral (the V2's larger wing surface area creates a stronger upward lift component during the direction change), and J fires the tornado strike at the spiral apex. The → ↑ diagonal approach vector pre-loads the V2 wing geometry at a compound angle — the AR tip contacts the airflow from two directions simultaneously, producing a stronger micro-circulation burst than a purely cardinal approach.
+
+```typescript
+function hyperTwister(
+  diagonalApproach: boolean,  // → and ↑ inputs produced a compound rightward-upward vector
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    diagonalApproach ? -32 : -20,
+      dmgMult:      diagonalApproach ? 1.45 : 1.28,
+      lockMs:       diagonalApproach ? 100 : 60,
+      powerCost:    25,
+      ringOutBonus: diagonalApproach ? 0.18 : 0.08,
+    };
+  }
+  return { spinDelta: -9, dmgMult: 1.06, lockMs: 0, powerCost: 25, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.45× ≤ 1.5 ✓ | lockMs 100 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+
+## Case 1622
+
+**Bey:** Jade Jupiter S130RB
+**Blader:** Dynamis
+**Label:** GIMMICK — Jupiter Fusion Wheel Macro-Vortex and Beast-Summoned Electromagnetic Spin Drain
+
+**Note:** Physical vortex theory reference Cases 1598 (Horusood Field) and 1616 (Victory Tornado/Dragoon). Grand Lightning is a multi-phase move: Phase 1 — Jupiter wheel vortex (large physical circulation); Phase 2 — Jupiter Beast emergence ([M] BeySpirit manifestation); Phase 3 — blue lightning spin drain ([M] electromagnetic outspin).
+
+**Jupiter wheel macro-vortex:**
+Jupiter Fusion Wheel: largest-class MFB 4D wheel with wide arc blade geometry. Estimated outer radius r_Jupiter ≈ 38 mm = 0.038 m; mass m_JJ ≈ 52 g (Face Bolt + Jupiter wheel ~48g + S130 ~2g + RB ~0.8g + Energy Ring ~2g = ≈ 52.8 g).
+
+At mid-match operational spin ω_D ≈ 2,800 RPM = 293 rad/s:
+
+v_tip = r_Jupiter × ω_D = 0.038 × 293 ≈ **11.1 m/s**
+
+Γ_JJ = 2π × v_tip × r_Jupiter = 2π × 11.1 × 0.038 ≈ **2.65 m²/s**
+
+ΔP_JJ = ½ × 1.20 × (11.1)² ≈ **74.0 Pa**
+
+v_θ(r = 0.025 m from rim) = 2.65 / (2π × 0.025) ≈ **16.9 m/s** >> 8.28 m/s ejection threshold
+
+F_aero at opponent: 0.0015 × 16.9² ≈ **0.43 N** (4.2× friction force of 0.103 N) — Jupiter's wheel generates aerodynamic ring-out force physically without BeySpirit at typical operational spin.
+
+**RB tip (Rubber Ball):**
+RB = Rubber Ball — a full rubber sphere tip (NOT the XF plastic flat). Rubber on polycarbonate μ ≈ 0.40–0.50, high spin maintenance via low-translational-drift contact. RB's high-friction contact keeps Dynamis' bey stationary at the arena centre while the macro-vortex builds — consistent with Grand Lightning's mid-arena standing position while the cyclone forms.
+
+**[M] Phase 2–3 — Jupiter Beast and blue lightning:**
+"Purple cyclone headed into outer space" — the macro-vortex extends beyond stadium scale: fully [M]. Physical macro-vortex (Γ = 2.65 m²/s) generates measurable aerodynamic ring-out force; the stadium-wide purple cyclone requires BeySpirit multiplication by ≈ 10²–10³.
+
+"Jade Jupiter's Beast appears" — BeySpirit manifestation as the god-planet Jupiter archetype.
+
+"Beast summons blue lightning that depletes spin entirely" — electromagnetic spin drain: physical spin loss from metal-on-metal eddy-current coupling is milliwatts; BeySpirit lightning at kV-scale arc discharge induces a transient EM torque that opposes the opponent's spin (Lenz's law direction), effectively draining spin to zero at [M] scale.
+
+Spin-to-zero drain rate (physical baseline): eddy-current braking power at arc-proximity: P_eddy ≈ σ × B² × v_layer² × V_conducting = micro-watts → [M] BeySpirit scale: P_lightning_[M] sufficient to reduce 600 rad/s to 0 in ~0.5 s.
+
+
+## Case 1623
+
+**Bey:** Jade Jupiter S130RB
+**Blader:** Dynamis
+**Label:** SPECIAL — Grand Lightning
+
+**Anime description:** Jade Jupiter unleashes a purple cyclone that spirals upward toward outer space as Dynamis calls upon the power of the planet Jupiter. The Jade Jupiter Beast appears in a show of brilliant light, spreading across the sky. The Beast then summons blue lightning that strikes the opposing Beyblade, completely depleting its spin.
+
+**Compatible beys:** Any bey with a large-radius fusion wheel (r_wheel ≥ 35 mm) generating sufficient physical vortex circulation (Γ ≥ 2 m²/s — Jade Jupiter achieves this at standard operational spin; Case 1622). The Jupiter Beast emergence, planetary-scale cyclone, and spin-to-zero lightning are specific to Dynamis and Jade Jupiter's god-of-planet BeySpirit.
+
+```typescript
+function grandLightning(
+  beastSummoned: boolean,    // Phase 2 activated: Jupiter Beast visible (longer charge but max power)
+  vortexBuildMs: number,     // ms of Jupiter wheel continuous vortex generation before lightning
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  const buildNorm = Math.min(vortexBuildMs, 1200) / 1200;
+  const beastBonus = beastSummoned ? 1.30 : 1.0;
+  if (qteHit) {
+    return {
+      spinDelta:    -Math.round((70 + buildNorm * 80) * beastBonus),  // −70 to −195 [M Beast lightning → spin zero]
+      dmgMult:      Math.min(2.0, (1.40 + buildNorm * 0.40) * beastBonus),
+      lockMs:       beastSummoned ? 200 : 80,
+      powerCost:    beastSummoned ? 120 : 105,
+      ringOutBonus: (0.20 + buildNorm * 0.30) * beastBonus,  // up to 0.65 [M Jupiter vortex]
+    };
+  }
+  return { spinDelta: -20, dmgMult: 1.10, lockMs: 0, powerCost: beastSummoned ? 120 : 105, ringOutBonus: 0 };
+}
+```
+
+**Notes:**
+- `beastSummoned`: Phase 2 activation (longer wind-up) enables the [M] blue-lightning spin drain at spinDelta up to −195 (effectively spin to zero for any opponent at peak build + Beast). Without Beast, the move is a powerful physical macro-vortex (Γ = 2.65 m²/s; Case 1622) but not the complete spin-zero drain.
+- `lockMs: 200` when Beast is summoned reflects the opponent being held in place by the electromagnetic grip of the lightning field during drain.
+- `powerCost: 120` with Beast: the planetary BeySpirit invocation draws the highest power of any standard special move.
+
+
+## Case 1624
+
+**Bey:** Jade Jupiter S130RB
+**Blader:** Dynamis
+**Label:** COMBO — Jupiter Strike
+
+**Sequence:** moveDown → attack → jump (↓ K J)
+**Cost:** 35
+**Type restriction:** stamina (Jupiter wheel's macro-vortex requires sustained center-arena positioning with minimal translational drift — only stamina beys can maintain the stable spin needed for the ↓ approach + K lightning-touch + J drain-throw sequence; attack beys scatter their spin into translational aggression and cannot build the mini-vortex at combo timescale; defense beys lack the spin duration to sustain the combo's vortex pre-load)
+**Parent gimmick:** Jupiter fusion wheel macro-vortex and Beast-summoned spin drain (Case 1622)
+
+**Thesis:** Jupiter Strike compresses Grand Lightning's vortex-and-drain into a 3-key burst. ↓ drives Jade Jupiter inward toward the opponent (RB tip's high-friction stable contact maintains the vortex column during the approach — the Jupiter wheel begins building brief Γ_combo ≈ 0.80 m²/s, ~30% of full Γ), K fires the lightning-contact strike (analogous to the Beast's blue lightning at combo intensity — a brief electromagnetic discharge at the contact point, draining ~35 spin units rather than the full Beast drain), and J releases the spin-drain energy as a throwing impulse (the accumulated torsional drain converts into a radial push — the opponent's depleted spin momentum is redirected outward). Against wall-proximate opponents, the J radial push at low opponent spin creates a ring-out opportunity proportional to the K drain success.
+
+```typescript
+function jupiterStrike(
+  centrePositionHeld: boolean,  // bey maintained near-centre RB stable contact during ↓ approach
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    centrePositionHeld ? -35 : -20,
+      dmgMult:      centrePositionHeld ? 1.48 : 1.30,
+      lockMs:       centrePositionHeld ? 160 : 80,
+      powerCost:    35,
+      ringOutBonus: centrePositionHeld ? 0.15 : 0.06,
+    };
+  }
+  return { spinDelta: -10, dmgMult: 1.06, lockMs: 0, powerCost: 35, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.48× ≤ 1.5 ✓ | lockMs 160 ≤ 300 ✓ | cost 35 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+
+## Case 1625
+
+**Bey:** Evil Gemios DF145FS
+**Blader:** Evil Gemios (the "Ice Twin" counterpart)
+**Label:** GIMMICK — DF145 Defense Frame Counter-Deflection Sword Strike
+
+**Note:** Evil Gemios DF145FS is a dark variant of Gemios, a Metal Fight Beyblade (MFB) bey from the Metal Masters series. No dedicated CS assembly case exists — this case derives from first principles using DF145 dimensions and FS tip mechanics.
+
+**DF145 defense frame geometry:**
+DF145 = Defense Frame 145 (spin track height 14.5 mm with a free-spinning outer defense ring at the top). The defense ring has a smooth rounded outer edge at r_DF ≈ 20 mm from the axis. At h_DF = 14.5 mm, the defense ring sits slightly above the equatorial plane of most standard beys (~11–13 mm equatorial height), creating a secondary contact zone.
+
+Gemios Energy Ring blade geometry: Gemios AR has two symmetrical flat-face protrusions ("twin swords") at approximately r_blade ≈ 22 mm, angled at ~25° from vertical — the "sword" face Icicle Edge deploys.
+
+FS tip: Flat Sharp — dual-mode tip (Flat = r_contact ≈ 4 mm, aggressive translational movement, μ ≈ 0.35; Sharp = r_contact ≈ 0.5 mm, centered stable stamina mode). Icicle Edge functions in Flat mode (FS tip in its wider contact position).
+
+**Counter-deflection mechanics:**
+When opponent attacks → contacts DF145 outer ring or Gemios blade face → angled geometry deflects the attack. DF145 ring angle δ_DF ≈ 25° from vertical (defense ring is slightly chamfered outward):
+
+Evil Gemios mass estimate: m_EG ≈ 37 g (Gemios energy ring ~3g + Evil Clear Wheel ~8g + DF145 ~2.5g + FS ~0.8g + Face Bolt ~1.5g; Evil Metal Wheel contribution dominates at ~21g)
+
+Attacker at v_atk = 2.0 m/s: p_atk = 0.038 × 2.0 = **0.076 N·s**
+
+DF145 deflection impulse (δ_DF = 25°):
+- Deflected sideways: p_side = 0.076 × sin(25°) = **0.032 N·s**
+- Counter-reactive: p_counter = 0.076 × cos(25°) = **0.069 N·s** (directed toward attacker)
+
+The counter reactive impulse p_counter = 0.069 N·s drives the Gemios blade face into the attacker at the DF145 contact height (h = 14.5 mm) — the "sword smash" observed in the anime. Above-equatorial contact means the blade face strikes the opponent's upper layer, potentially compressing the Burst lock tabs from above (above-equatorial smash burst risk in Burst; for MFB: upper-layer KE transfer).
+
+**[M] — Ice Twin icy blue energy:** Evil Gemios' dark counterpart BeySpirit manifests as icy blue crackle energy at the blade contact point. Physical counter impulse (0.069 N·s) is the mechanistic basis; BeySpirit amplification delivers the "smashes Bey away" outcome visible in the anime.
+
+
+## Case 1626
+
+**Bey:** Evil Gemios DF145FS
+**Blader:** Evil Gemios
+**Label:** SPECIAL — Icicle Edge
+
+**Anime description:** The "Ice Twin" counterpart of Gemios uses its sword-like blade face to smash the opposing Beyblade away upon contact, functioning as a powerful counter-attack. The DF145 defense frame and Gemios twin-blade geometry allow the counter to activate upon opponent approach.
+
+**Compatible beys:** Any bey using the DF145 defense ring track in combination with a twin-face AR with angled blade edges at comparable radius (r_blade ≥ 20 mm). The full "smash away" counter power requires the Evil Gemios dark BeySpirit energy amplification; the physical DF145 deflection-and-counter (p_counter = 0.069 N·s; Case 1625) is available to any DF145 bey.
+
+```typescript
+function icicleEdge(
+  contactInitiatedByOpponent: boolean,  // counter mode: opponent approached first
+  contactHeight: "upper" | "equatorial" | "lower",
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (!contactInitiatedByOpponent) {
+    return { spinDelta: -8, dmgMult: 1.06, lockMs: 0, powerCost: 100, ringOutBonus: 0 };
+  }
+  const heightBonus = contactHeight === "upper" ? 1.15 : contactHeight === "equatorial" ? 1.0 : 0.85;
+  if (qteHit) {
+    return {
+      spinDelta:    Math.round(-48 * heightBonus),   // −41 to −55
+      dmgMult:      1.40 * heightBonus,               // 1.19×–1.61× [M upper-contact ceiling]
+      lockMs:       70,
+      powerCost:    100,
+      ringOutBonus: 0.10 * heightBonus,               // 0.085–0.115
+    };
+  }
+  return { spinDelta: -12, dmgMult: 1.08, lockMs: 0, powerCost: 100, ringOutBonus: 0 };
+}
+```
+
+**Notes:**
+- `contactInitiatedByOpponent`: Icicle Edge is a counter — it requires the opponent to approach first. Self-initiated activation results in a weaker forward slash only.
+- `contactHeight`: "upper" (DF145 above-equatorial contact height, h = 14.5 mm) gives the maximum counter since the sword face meets the opponent's upper layer for full burst-point leverage (MFB: upper smash KE; Burst: tab compression).
+- `lockMs: 70`: the brief icy-grip counter force holds the opponent's spin axis during the smash.
+
+
+## Case 1627
+
+**Bey:** Evil Gemios DF145FS
+**Blader:** Evil Gemios
+**Label:** COMBO — Ice Counter
+
+**Sequence:** moveLeft → attack → attack (← K K)
+**Cost:** 15
+**Type restriction:** defense or balanced (the ← brace-left positions the bey in a passive-wait defensive stance for the first K counter; attack beys move too aggressively on ← to execute the double-K follow-through at combo intensity; the ← K K sequence mirrors Icicle Edge's "receive contact, first sword counter, second sword smash" three-beat counter rhythm)
+**Parent gimmick:** DF145 defense frame counter-deflection sword strike (Case 1625)
+
+**Thesis:** Ice Counter compresses Icicle Edge's brace-and-slash into a 3-key burst. ← positions Evil Gemios in a leftward defensive stance (DF145 defense ring's outer face presented toward the opponent approach vector — mirroring Phase 1 of the counter from Case 1625), the first K fires the DF145 deflection-and-counter impulse (p_counter ≈ 0.069 N·s at combo contact intensity — the first "sword smash"), and the second K fires a follow-through slash (Gemios' twin-face geometry allows a second blade contact immediately after the first as the bey continues rotating — the second K represents the second sword sweep, doubling the contact at slightly reduced force). Against wall-adjacent opponents, ← braces toward the wall so the first K deflects the attacker toward the wall and the second K catches the wall-rebound with a follow-up slash.
+
+```typescript
+function iceCounter(
+  dfContactFirst: boolean,  // first K connected via DF145 defense ring (not AR-face miss)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    dfContactFirst ? -23 : -13,
+      dmgMult:      dfContactFirst ? 1.32 : 1.16,
+      lockMs:       dfContactFirst ? 90 : 50,
+      powerCost:    15,
+      ringOutBonus: dfContactFirst ? 0.06 : 0.02,
+    };
+  }
+  return { spinDelta: -6, dmgMult: 1.04, lockMs: 0, powerCost: 15, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.32× ≤ 1.5 ✓ | lockMs 90 ≤ 300 ✓ | cost 15 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+
+## Case 1628
+
+**Bey:** Command Dragon Ignition' (also Master Dragon Ignition')
+**Blader:** Dante Koryu
+**Label:** GIMMICK — Ignition' Driver Spring-Clutch Progressive Acceleration and Direction-Reversal Mechanism
+**EXTENDS** Cases 498–500 (CS 9 — Imperial Dragon Ignition': Ignition' tip spring-clutch geometry and Gatinko-layer assembly)
+
+**New analysis:** Ignition Force (Ignition Boost) depends on the Ignition' performance tip's internal spring-clutch engaging at a threshold spin speed to convert rotational energy into progressive translational acceleration. CS 9 Cases 498–500 established Ignition' tip dimensions (outer contact ring r_contact ≈ 5 mm, spring clutch engagement at ω_threshold ≈ 220 rad/s, spring constant k_spring ≈ 0.45 N/mm). This case models the acceleration profile and the direction-reversal gimmick for Command Dragon.
+
+**Progressive acceleration mechanism:**
+At ω > ω_threshold = 220 rad/s, the Ignition' spring clutch engages the outer contact ring against the stadium floor:
+
+F_clutch = k_spring × x_compress × (ω / ω_max) = 0.45×10³ × 0.001 × (ω / 630) N
+
+At typical battle ω = 400 rad/s:
+
+F_clutch = 450 × 0.001 × (400 / 630) = 450 × 0.001 × 0.635 ≈ **0.286 N**
+
+Translational thrust (floor contact friction):
+
+F_thrust = F_clutch × μ_floor = 0.286 × 0.30 ≈ **0.086 N**
+
+Translational acceleration (Command Dragon mass m_CD ≈ 65 g):
+
+a_boost = F_thrust / m_CD = 0.086 / 0.065 ≈ **1.32 m/s²**
+
+Over a 0.3 s boost: Δv = 1.32 × 0.3 ≈ **0.40 m/s** progressive velocity gain [CALCULATED]
+
+"Increasing speed as it spins" — at higher ω, F_clutch increases ∝ ω/ω_max: at ω = 630 rad/s (battle peak), F_clutch = 0.45 N → a_boost = 0.45 × 0.30 / 0.065 ≈ 2.08 m/s² (1.57× the value at 400 rad/s). The acceleration does increase with spin — mechanically grounded.
+
+**Direction-reversal mechanism:**
+The Ignition' tip's outer contact ring is free-spinning relative to the inner spring shaft. When the spring releases (ω drops below a second threshold ω_release ≈ 180 rad/s), the contact ring briefly detaches from the stadium floor, then re-engages in the opposite contact orientation (a physical ratchet/pawl allows this flip). Direction reversal takes ~0.1–0.15 s (the free-spin period between detach and re-engage).
+
+**[M] — BeySpirit-amplified boost:** The physical Δv = 0.40 m/s is modest. In the anime, Ignition Force shows Command Dragon launching across the stadium at clearly higher speeds. BeySpirit amplifies the clutch engagement beyond physical spring compression limits.
+
+
+## Case 1629
+
+**Bey:** Command Dragon Ignition' / Master Dragon Ignition'
+**Blader:** Dante Koryu
+**Label:** SPECIAL — Ignition Force (Ignition Boost)
+
+**Anime description:** The Ignition' driver tip engages, causing Command Dragon to accelerate at progressively increasing speed as its spin increases (Ignition Boost mode). Alternatively, the driver disengages and re-engages in the opposite orientation, reversing the bey's translational direction (Direction Reversal mode). The move is used to either build devastating charge speed or to confuse opponents by switching approach direction mid-match.
+
+**Compatible beys:** Any bey with the Ignition' performance tip (spring-clutch activation at ω_threshold ≈ 220 rad/s). Command Dragon Ignition' and Master Dragon Ignition' both qualify. Physical progressive acceleration (a_boost = 1.32–2.08 m/s² depending on ω; Case 1628) is available to any Ignition' bey. The high-speed [M] BeySpirit surge is specific to Dante Koryu's Dragon constellation bond.
+
+```typescript
+function ignitionForce(
+  mode: "boost" | "reversal",
+  currentSpin: number,    // normalized 0–1 (1 = peak ω = 630 rad/s)
+  boostDurationMs: number, // ms of active Ignition' clutch engagement; max effective = 500
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number; velocityBoost: number } {
+  const spinFactor  = Math.max(0.3, currentSpin);
+  const boostNorm   = Math.min(boostDurationMs, 500) / 500;
+  if (qteHit) {
+    if (mode === "boost") {
+      return {
+        spinDelta:     -Math.round(25 * spinFactor),            // spin cost of clutch engagement
+        dmgMult:       1.35 + spinFactor * boostNorm * 0.45,   // 1.35×–1.80× [M full-clutch peak]
+        lockMs:        0,
+        powerCost:     100,
+        ringOutBonus:  0.12 + boostNorm * 0.18,                 // 0.12–0.30
+        velocityBoost: boostNorm * spinFactor * 40,             // px/s boost on contact [M amplified]
+      };
+    } else {
+      return {
+        spinDelta:     -15,
+        dmgMult:       1.25,
+        lockMs:        120,                                      // reversal grip briefly immobilizes user during direction flip
+        powerCost:     100,
+        ringOutBonus:  0.08,
+        velocityBoost: -30,                                      // negative = direction reversed
+      };
+    }
+  }
+  return { spinDelta: -10, dmgMult: 1.08, lockMs: 0, powerCost: 100, ringOutBonus: 0, velocityBoost: 0 };
+}
+```
+
+**Notes:**
+- `mode: "boost"` is the primary Ignition Force use: progressive acceleration builds velocity until the QTE fires the contact strike.
+- `mode: "reversal"` models the direction-change variant: `velocityBoost: -30` indicates the bey's translational direction reverses, potentially catching opponents who anticipated the original approach vector.
+- `velocityBoost` is a translational speed modifier in px/s applied at the strike moment — represents the Ignition' clutch's physical thrust (Case 1628: Δv = 0.40 m/s physical → [M] scaled up by BeySpirit).
+- `lockMs: 120` during reversal: the free-spin detach-and-re-engage period briefly reduces Dante's stadium agility.
+
+
+## Case 1630
+
+**Bey:** Command Dragon Ignition' / Master Dragon Ignition'
+**Blader:** Dante Koryu
+**Label:** COMBO — Ignition Dash
+
+**Sequence:** moveRight → moveUp → attack (→ ↑ K)
+**Cost:** 15
+**Type restriction:** attack or balanced (the → boost-approach, ↑ redirect, K strike sequence captures Ignition Force's boost-then-change mechanic at combo intensity; stamina beys cannot sustain the → translational velocity needed to fully engage the Ignition' clutch within the combo window; defense beys can approach but lose the clutch pre-load during the ↑ redirect)
+**Parent gimmick:** Ignition' driver spring-clutch progressive acceleration (Case 1628)
+
+**Thesis:** Ignition Dash compresses Ignition Force's boost-and-strike into a 3-key burst. → drives Command Dragon on a rightward acceleration arc (Ignition' clutch engages at approach: pre-loading ~40ms of spring compression — F_clutch ≈ 0.286 N at ω = 400 rad/s from Case 1628), ↑ redirects upward (the direction change replicates the Ignition' direction-reversal mechanism at combo intensity — the clutch briefly releases and re-engages on the new ↑ vector, converting the pre-loaded spring energy into an upward velocity component), and K fires the strike at the new vector's apex (the combined →+↑ approach diagonal concentrates the Ignition' thrust into a compound strike angle that opponents rarely anticipate). Against wall-adjacent opponents, → charges along the wall-side path so the ↑ redirect catches the retreating opponent in the wall-convergence zone.
+
+```typescript
+function ignitionDash(
+  clutchPreloaded: boolean,  // → input engaged Ignition' clutch before ↑+K
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    clutchPreloaded ? -24 : -14,
+      dmgMult:      clutchPreloaded ? 1.36 : 1.19,
+      lockMs:       clutchPreloaded ? 80 : 40,
+      powerCost:    15,
+      ringOutBonus: clutchPreloaded ? 0.09 : 0.03,
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.05, lockMs: 0, powerCost: 15, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.36× ≤ 1.5 ✓ | lockMs 80 ≤ 300 ✓ | cost 15 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+
+## Case 1631
+
+**Bey:** Scythe Kronos T125EDS
+**Blader:** Aguma
+**Label:** GIMMICK — Scythe Fusion Wheel Macro-Vortex Ring Wall and Outward-Push Defense
+**EXTENDS** Cases 1313–1318 (CS 9 — Scythe Kronos T125EDS: Scythe Fusion Wheel, T125, EDS assembly) and Case 1580 (CS 13 — Heaven and Earth Strike GIMMICK: Scythe Kronos blade geometry and I_coupled = 3.418×10⁻⁵ kg·m²)
+
+**New analysis:** Iron Wall Fist uses the Scythe Fusion Wheel's large-radius arc blades to generate a high-circulation vortex ring that both pushes opponents toward the stadium edge (ring-out offense) and creates a headwind that deflects incoming attacks (defensive property). CS 9 Cases 1313–1318 established Scythe wheel dimensions (large 4D fusion wheel, r_Scythe ≈ 42 mm, m_Scythe_metal ≈ 37.8 g) and Case 1580 confirmed the coupled moment of inertia I_coupled = 3.418×10⁻⁵ kg·m² relevant to angular momentum. This case analyses the vortex physics.
+
+**Scythe vortex at operational spin:**
+At ω_K ≈ 3,000 RPM = 314 rad/s (Scythe Kronos operational spin; 4D heavy wheel, slower than Burst beys but more torque):
+
+v_tip = r_Scythe × ω_K = 0.042 × 314 ≈ **13.2 m/s**
+
+Γ_SK = 2π × v_tip × r_Scythe = 2π × 13.2 × 0.042 ≈ **3.48 m²/s**
+
+ΔP_core = ½ × ρ × v_tip² = ½ × 1.20 × (13.2)² ≈ **104.7 Pa** [significantly above ring-out threshold]
+
+Vortex velocity at r = 0.025 m from wheel rim:
+
+v_θ(0.025) = Γ_SK / (2π × 0.025) = 3.48 / (2π × 0.025) ≈ **22.1 m/s**
+
+F_aero at opponent (A_opp = 0.0025 m², C_D = 1.0):
+
+F_aero = 0.0015 × (22.1)² ≈ **0.734 N** — 7.1× the friction force threshold (0.103 N)
+
+**Physical ring-out push:** Iron Wall Fist's outward vortex generates F_aero = 0.734 N at r = 0.025 m proximity — sufficient to physically push a 35 g opponent at ~21 m/s² acceleration (moving toward the stadium boundary within ~0.1 s at that force). The physical basis of the ring-out push is **well-grounded without [M]** for close-proximity opponents (within ~25–30 mm of Kronos).
+
+**Defensive property (keeps attacks at bay):**
+An approaching attacker moving at v_atk = 2.0 m/s into the Kronos vortex headwind (outward flow at v_θ = 22.1 m/s in the radial direction) faces an aerodynamic retarding force:
+
+F_headwind = F_aero = 0.734 N (opposing attacker's inward motion)
+Attacker deceleration: a_decel = 0.734 / 0.038 ≈ 19.3 m/s² — the attacker is decelerated from 2.0 m/s to 0 in ~0.10 s, stopping the attack ~0.10 m from Kronos. This is the physical "keeps attacks at bay" mechanism — confirmed without [M] for within-25mm proximity.
+
+**EDS tip (Eternal Defense Sharp):**
+EDS = Eternal Defense Sharp — free-spinning outer ring with sharp inner tip. The free-spin ring enables Kronos to maintain spin while the outer ring absorbs contact spin loss (similar to ED145 but as a full bottom tip). At defensive stance, EDS allows the Scythe vortex to persist even under mild contact.
+
+**[M]:** The "enormous storm" scale visible in the anime (vortex extending across the entire stadium, Kronos generating visible white wind columns) requires BeySpirit amplification of Γ beyond the ~3.48 m²/s physical level. Close-range physical vortex is grounded; stadium-wide is [M].
+
+
+## Case 1632
+
+**Bey:** Scythe Kronos T125EDS
+**Blader:** Aguma
+**Label:** SPECIAL — Iron Wall Fist
+
+**Anime description:** Scythe Kronos spins rapidly and constructs a powerful whirlwind from its spinning blades. The air current blows outward, creating a ring of wind around Kronos that simultaneously pushes opponents toward the stadium edge and repels incoming attacks. Aguma maintains Kronos at the stadium centre while the enormous storm grows. Similar in principle to Dashan Wang and Chi-yun Li's Solid Iron Wall.
+
+**Compatible beys:** Any bey whose Fusion Wheel (or Layer in Burst) has large-radius blade arcs (r_wheel ≥ 35 mm) generating F_aero ≥ 0.30 N at opponent proximity. Scythe Kronos physically achieves F_aero = 0.734 N at 25 mm proximity (Case 1631). The "enormous storm" visual and stadium-wide push are [M] BeySpirit amplified; the close-proximity vortex defense and ring-out push are physically grounded.
+
+```typescript
+function ironWallFist(
+  vortexBuildMs: number,     // ms of continuous Scythe spin at operational ω; max effective = 1200
+  defensiveStance: boolean,  // true = center-arena maintenance (deflect mode); false = outward push
+  oppDistancePx: number,     // opponent distance from Kronos centre
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number; deflectBonus: number } {
+  const buildNorm       = Math.min(vortexBuildMs, 1200) / 1200;
+  const proximityFactor = Math.max(0, 1 - oppDistancePx / 250);
+  if (qteHit) {
+    if (defensiveStance) {
+      return {
+        spinDelta:    -(15 + Math.round(buildNorm * 20)),         // minimal own-spin loss in deflect mode
+        dmgMult:      1.0,                                         // deflect mode does not deal damage directly
+        lockMs:       0,
+        powerCost:    105,
+        ringOutBonus: proximityFactor * (0.20 + buildNorm * 0.30), // 0 to 0.50 [physical→[M]]
+        deflectBonus: 0.30 + buildNorm * 0.40,                    // 0.30–0.70 incoming-attack deflect probability
+      };
+    } else {
+      return {
+        spinDelta:    -(25 + Math.round(buildNorm * 40)),          // −25 to −65
+        dmgMult:      1.20 + buildNorm * 0.60,                     // 1.20× to 1.80× [M full vortex]
+        lockMs:       0,
+        powerCost:    105,
+        ringOutBonus: proximityFactor * (0.40 + buildNorm * 0.40), // 0 to 0.80 [M]
+        deflectBonus: 0,
+      };
+    }
+  }
+  return { spinDelta: -(10 + Math.round(buildNorm * 10)), dmgMult: 1.0, lockMs: 0, powerCost: 105, ringOutBonus: 0, deflectBonus: 0.15 };
+}
+```
+
+**Notes:**
+- `defensiveStance`: toggling mode mirrors the move's dual nature — it can push opponents OUT (outward vortex) or act as a deflection wall (ring-of-wind defense).
+- `deflectBonus` (0.30–0.70): probability of deflecting incoming attacks back outward. Physical basis: Case 1631 shows F_headwind = 0.734 N fully decelerating a 2.0 m/s attacker — the probability of full deflection is ~1.0 for weak attacks and lower for fast attacks. [M] scales this to 0.70 at full build.
+- `ringOutBonus` in push mode (up to 0.80): at full build + close proximity, the physical F_aero = 0.734 N already exceeds ring-out friction by 7.1× (Case 1631). [M] BeySpirit extends the effective radius to stadium-wide.
+- `powerCost: 105`: sustained Scythe vortex maintenance draws slightly above standard.
+
+
+## Case 1633
+
+**Bey:** Scythe Kronos T125EDS
+**Blader:** Aguma
+**Label:** COMBO — Stone Cyclone
+
+**Sequence:** moveUp → attack → moveDown (↑ K ↓)
+**Cost:** 25
+**Type restriction:** stamina or defense (the ↑ orbital ascent requires sustained low-friction tip engagement to build the mini-vortex column before K; attack beys dissipate approach energy into translational thrust rather than vortex circulation; the ↑K↓ arc-contact-arc pattern mirrors the outward ring → contact-point → return-inward geometry of Iron Wall Fist's wind ring)
+**Parent gimmick:** Scythe Fusion Wheel macro-vortex ring wall (Case 1631)
+
+**Thesis:** Stone Cyclone compresses Iron Wall Fist's vortex-build-and-push into a 3-key arc burst. ↑ drives Kronos on an upward orbital arc (Scythe wheel blade tips begin generating brief forced circulation — ~70ms of approach vortex, Γ_combo ≈ 1.05 m²/s, ~30% of full Γ; F_aero_combo ≈ 0.067 N at 0.025m — modest but above zero), K fires the vortex-push contact at the orbital apex (the Scythe blade face strikes at the ring-of-wind's inner boundary, delivering both a physical blade hit and the accumulated air pressure in the contact zone as a combined impulse), and ↓ channels the rebound inward (the ↓ direction after the strike replicates Kronos returning to centre-arena stance — the post-contact centripetal deceleration adds a secondary inward pull on the still-deflected opponent). Against wall-adjacent opponents, the ↑ arc approaches along the wall-side corridor so the K contact point is adjacent to the boundary, converting the modest Γ_combo into a ring-out push at the stadium rim.
+
+```typescript
+function stoneCyclone(
+  orbitalArcPreloaded: boolean,  // ↑ generated significant orbital path before K
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number; deflectBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    orbitalArcPreloaded ? -27 : -15,
+      dmgMult:      orbitalArcPreloaded ? 1.38 : 1.20,
+      lockMs:       orbitalArcPreloaded ? 130 : 70,
+      powerCost:    25,
+      ringOutBonus: orbitalArcPreloaded ? 0.14 : 0.05,
+      deflectBonus: orbitalArcPreloaded ? 0.12 : 0.04,
+    };
+  }
+  return { spinDelta: -8, dmgMult: 1.05, lockMs: 0, powerCost: 25, ringOutBonus: 0, deflectBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.38× ≤ 1.5 ✓ | lockMs 130 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+## Case 1643
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** GIMMICK — Rock Leone Metal Wheel Rankine Vortex + WB Tip Dynamics (Leone Tornado Baseline)
+
+**New analysis:** Lion 100 Fang Fury and all subsequent Kyoya Leone tornado moves derive from the same aerodynamic foundation: the Leone metal wheel's three large fang protrusions spinning at launch speed generate a Rankine vortex whose core coincides with the wheel perimeter. This case establishes the baseline vortex parameters and the WB tip friction properties used by Cases 1644–1660.
+
+**Rock Leone 145WB assembly parameters:**
+- Leone metal wheel: m_L = 34 g, r_L = 23 mm (outer radius to fang tip), three major asymmetric fang protrusions at ~120° spacing
+- Rock clear wheel: m_R = 3 g
+- 145 spin track: h = 14.5 mm, m_145 = 2 g
+- WB (Wide Ball) tip: rubber hemisphere r_WB = 11 mm, m_WB = 3 g, dynamic friction μ_WB ≈ 0.45 (rubber-on-ABS)
+- Total assembly: m = 42 g
+- Moment of inertia (disc approximation + correction for fang mass): I ≈ ½ m_L r_L² × 1.10 + I_WD_contrib ≈ 0.5 × 0.034 × (0.023)² × 1.10 + 3.2×10⁻⁶ ≈ **1.35×10⁻⁵ kg·m²**
+
+**Spin and tip velocity at launch:**
+ω₀ = 250 rad/s (≈ 2,388 RPM; typical MFB 145WB launch from Kyoya's reverse-grip style)
+v_tip = ω₀ × r_L = 250 × 0.023 = **5.75 m/s**
+
+**Rankine vortex — Leone core:**
+The three fang protrusions act as blade elements generating circulation. Core radius r_c = r_L = 0.023 m; the vortex core rotates as a solid body at ω₀.
+
+v_θ_max = ω₀ × r_c = 250 × 0.023 = **5.75 m/s** (at r = r_c)
+Circulation: Γ = 2π r_c v_θ_max = 2π × 0.023 × 5.75 = **0.831 m²/s**
+
+Outer (irrotational) region at radius r > r_c:
+v_θ(r) = Γ / (2πr) = 0.831 / (2πr)
+
+Selected values:
+- r = 0.03 m: v_θ = 4.41 m/s
+- r = 0.05 m: v_θ = 2.64 m/s
+- r = 0.08 m: v_θ = 1.65 m/s
+- r = 0.12 m: v_θ = 1.10 m/s
+
+**Ring-out threshold (standardised):**
+Threshold v_θ_ring_out = 8.0 m/s (lateral aerodynamic force exceeds typical MFB-opponent surface friction at that tangential speed; established from cross-case calibration).
+
+Physical: v_θ_max = 5.75 m/s < 8.0 m/s → Rock Leone's physical vortex **cannot** directly ring-out an opponent at any radius. [M] factor needed for ring-out: **≥ 1.39× [M]**.
+
+**Debris entrainment threshold (rock/earth fragments):**
+For a loose rock m_r = 0.030 kg, projected area A_r = 0.001 m²:
+v_lift = √(2 m_r g / (ρ_air A_r)) = √(2 × 0.030 × 9.81 / (1.2 × 0.001)) = √(490.5) = **22.1 m/s**
+[M] factor for debris: 22.1 / 5.75 ≈ **3.85× [M]**
+
+**WB tip spin-down:**
+Spin-decay torque from WB rubber contact: τ_WB = μ_WB × m × g × r_WB = 0.45 × 0.042 × 9.81 × 0.011 = **2.04×10⁻³ N·m**
+Spin decay rate: dω/dt = −τ_WB / I = −2.04×10⁻³ / 1.35×10⁻⁵ = **−151 rad/s²**
+Time to 50% spin (125 rad/s): Δt = (250−125)/151 = **0.83 s**
+
+**Physical baseline:** v_θ_max = 5.75 m/s, sub-ring-out, no debris lift, mild aerodynamic disturbance on opponent.
+**[M]-sustained:** Full tornado column to stadium height, rock/debris entrainment active, v_θ ≥ 22 m/s with [M] ≈ 3.85–8× applied.
+
+---
+
+## Case 1644
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** SPECIAL — Lion 100 Fang Fury (second special move; rock-debris tornado)
+**EXTENDS** Case 1643 (Leone vortex baseline)
+
+**Anime description:** Leone creates a tornado with [M] amplification that hurls rocks and debris at the opposing bey. First used against Doji and Dark Wolf DF145FS (minimal effect), later against Earth Eagle 145WD (significant damage), and Damian (unnamed use). The move is named only occasionally; Kyoya often fires it without calling the name.
+
+**Compatible beys:** Any bey with Leone wheel or functionally equivalent wide metal wheel generating sufficient circulation. Rock Leone 145WB is canonical.
+
+**Special move physics (anime override — BeySpirit amplification applies):**
+[M] = 3.85× applied to base circulation → v_θ_debris = 5.75 × 3.85 = **22.1 m/s** (entrainment threshold just reached)
+Rock fragment velocity after entrainment: v_projectile ≈ v_θ / 3 ≈ 7.4 m/s (partial coupling)
+
+Debris-impact force on opponent: F_debris = m_r × v_projectile / t_impact = 0.030 × 7.4 / 0.001 = **222 N** [M] per rock fragment
+
+BeySpirit wave: the "huge wave" description indicates a Water-element or Air-element BeySpirit surge that compounds with debris impact. Modelled as an additional pressure impulse Δp_wave = [M] × ½ρv² × A_front.
+
+The move has two damage components: (a) airborne debris-as-projectile, (b) the base vortex aerodynamic push. At [M] ≈ 3.85×, component (a) dominates against lighter beys; against heavier defensive beys (Doji's Dark Wolf), the debris scatter is insufficient to overcome the defensive advantage — consistent with the anime showing minimal effect vs Dark Wolf.
+
+```typescript
+function lion100FangFury(
+  leoneSpin: number,      // current spin ω rad/s
+  stadiumHasDebris: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; aoePushRadius: number } {
+  const base = leoneSpin / 250;  // normalised to launch spin
+  if (qteHit) {
+    return {
+      spinDelta:       stadiumHasDebris ? -Math.round(65 * base) : -Math.round(40 * base),
+      dmgMult:         stadiumHasDebris ? 1.65 * base : 1.40 * base,
+      lockMs:          stadiumHasDebris ? 220 : 150,
+      powerCost:       75,
+      aoePushRadius:   stadiumHasDebris ? 0.18 : 0.12,  // metres
+    };
+  }
+  return { spinDelta: -20, dmgMult: 1.15, lockMs: 0, powerCost: 75, aoePushRadius: 0 };
+}
+```
+
+*[M] override: BeySpirit amplification raises v_θ beyond physical 5.75 m/s to entrainment threshold ~22 m/s; debris physics then applies without further [M] factor on top — the BeySpirit provides the missing kinetic energy budget.*
+
+---
+
+## Case 1645
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** COMBO — Fang Cyclone (Lion 100 Fang Fury in-game 3-key combo)
+**EXTENDS** Case 1643 (Leone vortex baseline)
+
+**Sequence:** moveDown → moveRight → attack (↓ → K)
+**Cost:** 25
+**Type restriction:** attack (Leone's wide-fang wheel generates the vortex through aggressive outward rotation; defensive and stamina tips dissipate approach energy before the fang-arc contact develops circulation; attack-type beys sustain the peripheral speed needed to initiate vortex pre-load on the ↓ approach arc)
+**Parent gimmick:** Rock Leone metal wheel Rankine vortex (Case 1643)
+
+**Thesis:** Fang Cyclone compresses Lion 100 Fang Fury's debris-tornado into a concentrated 3-key arc burst. ↓ drives Leone on a downward orbital approach, aligning the Leone wheel's fang protrusions with the stadium floor and generating a brief circulation burst (v_θ_combo ≈ 1.8 m/s at r=0.03m — below ring-out, but creating a forward aerodynamic push). → angles the approach so the ↓K contact lands on the opponent's flank rather than front face, using the fang geometry to maximise blade-face contact area (A_contact_fang ≈ 3.2×10⁻⁵ m² per fang × 3 fangs = 9.6×10⁻⁵ m²). K fires the fang-face contact at orbital apex; the combo vortex push delivers a brief lateral impulse (F_combo ≈ 0.065 N, ~1.8× friction threshold at that range) that compounds with the blade impact.
+
+```typescript
+function fangCyclone(
+  approachArcComplete: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (qteHit) {
+    return {
+      spinDelta: approachArcComplete ? -38 : -20,
+      dmgMult:   approachArcComplete ? 1.42 : 1.22,
+      lockMs:    approachArcComplete ? 160 : 70,
+      powerCost: 25,
+    };
+  }
+  return { spinDelta: -8, dmgMult: 1.05, lockMs: 0, powerCost: 25 };
+}
+```
+
+**Ceiling check:** dmgMult 1.42 ≤ 1.5 ✓ | lockMs 160 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1646
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** GIMMICK — Ballistic Tornado-Cocoon Trajectory + Steerable Multi-Pass (King Lion Furious Blast Shot mechanism)
+**EXTENDS** Case 1643 (Leone vortex baseline; all v_θ, Γ, ω₀ parameters as established there)
+
+**New analysis:** King Lion Furious Blast Shot launches Rock Leone as an aerodynamic projectile encased inside a self-generated vortex cocoon. The vortex cocoon reduces drag and provides a pressure-gradient envelope that guides Leone's ballistic path. BeySpirit-driven heading changes allow multiple passes at the same opponent.
+
+**Bey-as-projectile: physical baseline:**
+Leone must leave the stadium surface. Physical lift from WB rotation (Magnus effect):
+F_Magnus = ρ × Γ × v_translational × L_effective
+At v_translational = 3 m/s and effective span L_eff ≈ 0.046 m:
+F_Magnus = 1.2 × 0.831 × 3.0 × 0.046 = **0.138 N**
+Weight = m g = 0.042 × 9.81 = **0.412 N**
+F_Magnus << Weight → physical Magnus lift insufficient; bey cannot self-launch. [M] required.
+
+[M] vortex-cocoon model:
+With [M] amplification, circulation Γ_[M] = Γ × [M_factor]; pressure drop inside cocoon ΔP_cocoon = ½ρv_θ_[M]² creates net upward force.
+Required Γ_[M] for levitation: Γ_[M] ≥ Weight / (ρ × v_translational × L_eff) = 0.412/(1.2 × 3.0 × 0.046) = **2.49 m²/s**
+[M] factor = Γ_[M] / Γ = 2.49/0.831 = **3.0× [M]** for initial lift.
+
+**Ballistic trajectory within cocoon:**
+Once airborne at v_0_[M] ≈ 6 m/s at θ = 45°:
+- Horizontal range: R = v_0²sin(2θ)/g = 36 × 1 / 9.81 = **3.67 m** [M]
+- Flight time: T = 2 v_0 sinθ / g = 2 × 6 × 0.707/9.81 = **0.864 s**
+- Peak height: h_max = (v_0 sinθ)²/(2g) = (4.24)²/19.62 = **0.92 m**
+
+**Multi-pass steering:**
+Between passes, BeySpirit applies a lateral impulse J_steer to redirect Leone's heading. Physical basis: gyroscopic precession from the BeySpirit force:
+δφ_steer = J_steer × r_contact / (I × ω) × (t_manoeuvre)
+Each pass can be directed within ±180° of the initial approach vector, allowing Kyoya to aim successive strikes at the same opponent or multiple opponents.
+
+**Impact velocity on contact:**
+v_impact = √(v_0² − v_terminal²) ... For near-horizontal trajectory at end of parabola:
+v_x_final ≈ v_0 cosθ = 4.24 m/s (horizontal component preserved by cocoon)
+Contact impulse: J_impact = μ_reduced × (1+e) × v_impact = (m₁m₂/(m₁+m₂)) × 1.5 × 6 = 0.0257 × 1.5 × 6 = **0.231 N·s** per pass [M]
+
+---
+
+## Case 1647
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** SPECIAL — King Lion Furious Blast Shot (Kyoya's most powerful Rock Leone move)
+**EXTENDS** Cases 1643, 1646
+
+**Anime description:** Leone launches through the air inside a powerful tornado and crashes into the enemy bey. Kyoya steers the move so Leone makes multiple passes. Used in Metal Fusion to devastating effect, including against Ryuga's dark powered form. The tornado is visible, white-green, and reaches several metres in height — entirely BeySpirit-sustained above physical capability.
+
+**Compatible beys:** Any Leone-type bey or beys with equivalent wide metal wheel + rubber/high-friction tip that allows self-generated Magnus/vortex lift with sufficient [M].
+
+**Special move physics:**
+- Stage 1 (takeoff): [M] = 3.0× lifts Leone off surface, cocoon forms
+- Stage 2 (trajectory): steerable ballistic path, R ≈ 3.67 m per pass
+- Stage 3 (impact): v_impact ≈ 6 m/s → J_impact ≈ 0.231 N·s per pass
+- Stage 4 (multi-pass): BeySpirit heading correction, up to 3 sequential passes in anime
+- Total impulse over 3 passes: J_total ≈ 3 × 0.231 × 0.85 (diminishing v_rel each pass) ≈ **0.589 N·s** [M]
+
+```typescript
+function kingLionFuriousBlastShot(
+  leoneSpin: number,
+  passCount: number,    // 1–3 steering passes
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutForce: number } {
+  const spinRatio = leoneSpin / 250;
+  const passMulti  = 1 + (passCount - 1) * 0.25;  // each additional pass adds 25% stack
+  if (qteHit) {
+    return {
+      spinDelta:    -Math.round(90 * spinRatio * passMulti),
+      dmgMult:       Math.min(2.20, 1.70 * spinRatio * passMulti),
+      lockMs:        300,
+      powerCost:     120,
+      ringOutForce:  0.62 * spinRatio * passMulti,  // N, applied radially
+    };
+  }
+  return { spinDelta: -25, dmgMult: 1.25, lockMs: 0, powerCost: 120, ringOutForce: 0 };
+}
+```
+
+*[M] override: BeySpirit provides vortex-cocoon lift (3.0× Γ amplification), steerable heading correction between passes, and sustained cocoon integrity during flight. All physical limits on self-launch, trajectory height, and pass count are overridden by BeySpirit power proportional to Kyoya's fighting spirit.*
+
+---
+
+## Case 1648
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** COMBO — Blast Rush (King Lion Furious Blast Shot in-game 3-key combo)
+**EXTENDS** Cases 1643, 1646
+
+**Sequence:** moveDown → moveDown → attack (↓ ↓ K)
+**Cost:** 35
+**Type restriction:** attack (two consecutive ↓ inputs build a steep downward orbital approach, pre-loading Leone's fang protrusions with maximum ground-contact speed before the K-fire upward arc that mimics the Blast Shot's launch ramp; a stamina or defense bey's tip would brake too hard on the double-↓ to generate the required launch-ramp velocity)
+**Parent gimmick:** Ballistic tornado-cocoon trajectory (Case 1646)
+
+**Thesis:** Blast Rush uses a double-↓ run-up to replicate the compact launch ramp of King Lion Furious Blast Shot within the 3-key window. ↓↓ drives Leone down and forward on a steep approach arc, aligning Leone's underside (fang protrusion backs) with the bowl wall tangent so that the ↓↓ segment generates maximum translational velocity (v_approach ≈ 2.1 m/s). K fires at the steep-ascent point where that translational velocity is channelled upward by the bowl geometry, delivering a concentrated upward-angled impact that replicates the single-pass contact of the full Blast Shot. The pre-load arc is sufficient to bring contact velocity above the ring-out force threshold for mid-stadium opponents.
+
+```typescript
+function blastRush(
+  doubleDownComplete: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    doubleDownComplete ? -45 : -22,
+      dmgMult:      doubleDownComplete ? 1.48 : 1.25,
+      lockMs:       doubleDownComplete ? 200 : 80,
+      powerCost:    35,
+      ringOutBonus: doubleDownComplete ? 0.18 : 0.06,
+    };
+  }
+  return { spinDelta: -10, dmgMult: 1.07, lockMs: 0, powerCost: 35, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.48 ≤ 1.5 ✓ | lockMs 200 ≤ 300 ✓ | cost 35 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1649
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** GIMMICK — Triple Vortex Superposition via Leone 3-Fold Fang Symmetry + Orbit Ejection (King Lion Tearing Blast mechanism)
+**EXTENDS** Case 1643 (Leone vortex baseline)
+
+**New analysis:** Leone's three fang protrusions at ~120° spacing generate three discrete circulation centres during rotation. At sufficient spin these vortex filaments partially separate into co-rotating vortex triplets, each with their own identifiable core. King Lion Tearing Blast exploits this to produce three distinguishable tornado columns. This case models the triple-vortex superposition and the resulting multi-directional ejection field.
+
+**Three-vortex co-rotation model:**
+Each fang tip generates a bound vortex of circulation Γ_vane = Γ/3 = 0.831/3 = 0.277 m²/s.
+Three vortices at 120° spacing, radius from spin axis r_tri = r_L = 0.023 m.
+
+Co-rotating triplet angular velocity:
+Ω_triplet = (3 × Γ_vane) / (4π × r_tri²) = (3 × 0.277) / (4π × (0.023)²) = 0.831 / (4π × 5.29×10⁻⁴) = 0.831 / 6.64×10⁻³ = **125.2 rad/s**
+
+Each vortex core sweeps a circular path at Ω_triplet. At [M] amplification:
+- Γ_[M] per vortex = Γ_vane × [M_factor]
+- Each tornado column propagates upward as a stretched vortex line
+
+**Orbit ejection (original King Lion Tearing Blast — "send bey into orbit"):**
+Three outward-directed tangential components combine at an opponent bey to produce a resultant ejection force from three sequential strikes (120° apart in Leone's reference frame).
+
+At r = 0.07 m (nominal opponent range):
+v_θ per vortex (physical): Γ_vane/(2π×0.07) = 0.277/0.440 = 0.630 m/s per vortex
+Three sequential impacts, each delivering J_vane = μ_r × (1+e) × v_rel:
+μ_r = (m_L × m_opp)/(m_L + m_opp) = (0.042×0.042)/(0.084) = 0.021 kg
+J_vane = 0.021 × 1.5 × (5.75 + 0.63) = 0.021 × 1.5 × 6.38 = **0.201 N·s** physical per vane
+Three vanes: J_total_physical = 3 × 0.201 = **0.603 N·s** (within single revolution, ~25 ms at 250 rad/s)
+
+Ring-out: v_threshold = 8.0 m/s. At 250 rad/s, v_tip = 5.75 m/s < 8.0 m/s (marginally sub-threshold for individual vane contact).
+With [M] = 1.4× on circulation: v_θ_[M] = 5.75 × 1.4 = 8.05 m/s ≥ threshold → triple vortex achieves ring-out with modest [M].
+
+**True King Lion Tearing Blast (5 mobile tornadoes):** See Case 1652 — obtained by fang-tip vortex shedding at higher spin rates generating additional secondary vortex filaments; basis established here.
+
+---
+
+## Case 1650
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** SPECIAL — King Lion Tearing Blast (3 tornadoes → orbit ejection; upgrades to True version)
+**EXTENDS** Cases 1643, 1649
+
+**Anime description:** Leone creates three large tornadoes using its three-fold fang symmetry. The tornadoes tear through the opponent's defences and either send the bey into orbit (via combined ejection field) or merge into one large hurricane to obliterate the opponent. First used in "Heated Battle! Gingka Versus Kyoya" during Kyoya's second battle with Gingka. Later upgraded to True King Lion Tearing Blast (5 mobile tornadoes) during Kyoya's training for Metal Masters (first used in "Eternal Rivals").
+
+**Compatible beys:** Any Leone-type bey with 3-fold fang geometry. Rock Leone 145WB canonical.
+
+**Special move physics:**
+Three-vortex ejection: J_total_[M] = 0.603 × 1.4 ≈ **0.844 N·s** combined impulse on opponent
+Against a defensive bey (Earth Eagle 145WD, m ≈ 45g):
+v_eject = J_total / m_opp = 0.844/0.045 = **18.8 m/s** [M] — well above ring-out threshold
+
+```typescript
+function kingLionTearingBlast(
+  leoneSpin: number,
+  vortexCount: 3 | 5,      // 3 = base, 5 = True version
+  mobile: boolean,          // true for True version (vortices track opponent)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutForce: number; aoeCount: number } {
+  const spinRatio   = leoneSpin / 250;
+  const vortexBonus = vortexCount === 5 ? 1.35 : 1.0;
+  const mobileBonus = mobile ? 1.20 : 1.0;
+  if (qteHit) {
+    return {
+      spinDelta:    -Math.round(80 * spinRatio * vortexBonus),
+      dmgMult:       Math.min(2.50, 1.80 * spinRatio * vortexBonus * mobileBonus),
+      lockMs:        350,
+      powerCost:     100,
+      ringOutForce:  0.72 * spinRatio * vortexBonus,
+      aoeCount:      vortexCount,
+    };
+  }
+  return { spinDelta: -28, dmgMult: 1.30, lockMs: 0, powerCost: 100, ringOutForce: 0, aoeCount: 0 };
+}
+```
+
+*[M] override: BeySpirit amplifies circulation to 1.4× physical baseline, allowing three-vortex ejection force to exceed ring-out threshold; True version BeySpirit also provides vortex mobility (active tracking).*
+
+---
+
+## Case 1651
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** COMBO — Tearing Surge (King Lion Tearing Blast in-game 3-key combo)
+**EXTENDS** Cases 1643, 1649
+
+**Sequence:** attack → moveRight → attack (K → K)
+**Cost:** 35
+**Type restriction:** attack (the K-to-K structure requires maintaining blade-face contact through the intermediate → arc to generate vortex-face pressure on the second K; a defense or stamina tip's lateral slip on the → transition dissipates blade engagement before the second K fires)
+**Parent gimmick:** Triple vortex superposition (Case 1649)
+
+**Thesis:** Tearing Surge replicates one leg of the three-vortex triplet using a two-strike K→K sequence around a lateral arc. The first K delivers a blade-face hit, generating a partial circulation burst (v_θ_combo ≈ 1.2 m/s at r=0.03m). → continues the arc at blade contact range, maintaining the vortex filament shed from the fang protrusion for ~60ms. The second K re-strikes at the far side of the → arc where the accumulated shed vorticity concentrates, producing a second hit with amplified blade-face area (the opponent is still rotating from the first K's impulse, so the second K contacts a fresh face). Combined two-hit total spinDelta is approximately 1.65× a single hit, capturing the multi-tornado "tear" in compact form.
+
+```typescript
+function tearingSurge(
+  arcComplete: boolean,   // → arc maintained blade contact
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (qteHit) {
+    return {
+      spinDelta: arcComplete ? -46 : -24,
+      dmgMult:   arcComplete ? 1.47 : 1.26,
+      lockMs:    arcComplete ? 190 : 90,
+      powerCost: 35,
+    };
+  }
+  return { spinDelta: -10, dmgMult: 1.07, lockMs: 0, powerCost: 35 };
+}
+```
+
+**Ceiling check:** dmgMult 1.47 ≤ 1.5 ✓ | lockMs 190 ≤ 300 ✓ | cost 35 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1652
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** GIMMICK — Quintet Vortex Lattice + Mobile Vortex Steering (True King Lion Tearing Blast mechanism)
+**EXTENDS** Case 1649 (triple-vortex baseline)
+
+**New analysis:** True King Lion Tearing Blast produces five mobile tornadoes. This case explains the source of the two additional vortices and the mobility mechanism. The upgrade reflects Kyoya's mastery of tornado generation after deep training in which "he learned how a tornado is created and mastered it completely."
+
+**Two additional vortex filaments — vortex shedding at higher spin:**
+At elevated [M] spin (ω_[M] > 350 rad/s), the Leone fang tips enter a regime where each fang generates both a tip vortex (as in Case 1649) AND a trailing vortex shed from the lower fang edge. This doubles the vortex count from 3 tip-vortices to 3 tip + 3 edge − 1 (recombination of two edge vortices into a single central column) = **5 total vortex structures**.
+
+Tip vortices (3): Γ_tip = Γ_vane = 0.277 m²/s each (carried forward from Case 1649)
+Edge-shed vortices (2 independent + 1 central merger):
+Γ_edge = 0.5 × Γ_tip = 0.139 m²/s each (partial shedding; edge vortices are weaker)
+Fifth central vortex: Γ_central = Γ_tip × 0.75 = 0.208 m²/s (merger of two edge structures)
+
+Total circulation of quintet: Γ_total = 3 × 0.277 + 2 × 0.139 + 0.208 = 0.831 + 0.278 + 0.208 = **1.317 m²/s** (≈ 1.58× the original triple-vortex circulation)
+
+**Vortex mobility (BeySpirit tracking):**
+Physical vortex columns are advected by background flow and the stadium wall reflections — they are not truly mobile. True version mobility is entirely [M]: BeySpirit provides active vortex-steering to track fleeing opponents.
+
+```
+v_vortex_track = [M] × dθ_opponent/dt × r_opponent
+```
+
+At opponent v_lateral = 2 m/s, r = 0.10 m: dθ/dt = 2/0.10 = 20 rad/s
+v_track_[M] ≈ [M] × 20 × 0.10 → [M] must supply lateral vortex drift up to 20 m/s tracking speed [M]
+
+---
+
+## Case 1653
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** SPECIAL — True King Lion Tearing Blast (upgraded 5-mobile-tornado version)
+**EXTENDS** Cases 1643, 1649, 1652
+
+**Anime description:** An enhanced form of King Lion Tearing Blast developed during training between Metal Fusion and Metal Masters. Produces five mobile tornadoes (vs the original three fixed columns) with the ability to actively track and pursue the opponent bey. First used in "Eternal Rivals" against Gingka to demonstrate Kyoya's new power.
+
+**Compatible beys:** Rock Leone 145WB only (requires Kyoya's specific mastery level for the quintet shedding regime).
+
+**Special move physics:**
+Quintet circulation Γ_total = 1.317 m²/s (from Case 1652) — 1.58× the base triple-vortex.
+Each mobile tornado tracks independently: 5 × impact sequences possible on a single opponent.
+
+Five-tornado combined ejection:
+J_quintet = 5 × μ_r × (1+e) × v_θ_[M]_per_tornado
+With [M] = 1.4× on each: J_quintet = 5 × 0.021 × 1.5 × (5.75 × 1.4 × 1.317/0.831) ≈ 5 × 0.021 × 1.5 × 12.72 ≈ **2.00 N·s** total [M]
+
+```typescript
+function trueKingLionTearingBlast(
+  leoneSpin: number,
+  activeVortices: number,  // 1–5 mobile tornadoes on-target
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutForce: number; aoeCount: number } {
+  const spinRatio = leoneSpin / 250;
+  const vMult     = 1 + (activeVortices - 1) * 0.18;  // each extra vortex adds 18% stack
+  if (qteHit) {
+    return {
+      spinDelta:    -Math.round(100 * spinRatio * vMult),
+      dmgMult:       Math.min(2.80, 2.00 * spinRatio * vMult),
+      lockMs:        400,
+      powerCost:     130,
+      ringOutForce:  0.92 * spinRatio * vMult,
+      aoeCount:      activeVortices,
+    };
+  }
+  return { spinDelta: -32, dmgMult: 1.35, lockMs: 0, powerCost: 130, ringOutForce: 0, aoeCount: 0 };
+}
+```
+
+*[M] override: BeySpirit provides quintet vortex shedding beyond physical Leone spin capacity, active tracking of all five tornado columns, and sustained multi-target engagement. Kyoya's mastery enables conscious control of each vortex independently — each acts as a directed weapon rather than a passive aerodynamic phenomenon.*
+
+---
+
+## Case 1654
+
+**Bey:** Rock Leone 145WB
+**Blader:** Kyoya Tategami
+**Label:** COMBO — True Storm (True King Lion Tearing Blast in-game 3-key combo)
+**EXTENDS** Cases 1649, 1652
+
+**Sequence:** moveRight → attack → moveRight (→ K →)
+**Cost:** 35
+**Type restriction:** attack (the →K→ arc-hit-arc structure requires aggressive outward orbital motion on both sides of the K contact; a defense bey's reduced speed on the post-K → segment fails to carry the secondary vortex filament far enough for the second → to generate any additional circulation; stamina beys similarly lack the tip-speed to complete the second → arc before Leone's spin loss kills the vortex)
+**Parent gimmick:** Quintet vortex lattice (Case 1652)
+
+**Thesis:** True Storm captures one "mobile vortex chase" sequence from True King Lion Tearing Blast: the opening → approaches the opponent along an outward arc, pre-loading the fang edge with shed vorticity (Γ_edge_combo ≈ 0.08 m²/s over ~90ms). K fires at arc midpoint, delivering the primary blade hit plus the pre-loaded edge vortex as an aerodynamic force boost (ΔF_aero ≈ 0.04 N — modest contribution but above zero). The post-K → drives Leone away on an outward arc, but this arc generates a second trailing shed vortex that curves back inward (vortex-ring topology within the stadium boundary), producing a secondary aerodynamic push on the opponent ≈ 120ms after K. This secondary push is the "mobile" aspect — it arrives slightly after the blade contact, extending the effective window of the combo's pressure on the opponent.
+
+```typescript
+function trueStorm(
+  preArcComplete: boolean,    // first → generated vortex pre-load
+  postArcRebound: boolean,    // second → vortex ring curved back to opponent
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number } {
+  if (qteHit) {
+    const bonus = (preArcComplete ? 12 : 0) + (postArcRebound ? 8 : 0);
+    return {
+      spinDelta: -(35 + bonus),
+      dmgMult:   Math.min(1.50, 1.30 + bonus * 0.007),
+      lockMs:    Math.min(300, 140 + bonus * 8),
+      powerCost: 35,
+    };
+  }
+  return { spinDelta: -10, dmgMult: 1.08, lockMs: 0, powerCost: 35 };
+}
+```
+
+**Ceiling check:** dmgMult 1.50 ≤ 1.5 ✓ | lockMs 300 ≤ 300 ✓ | cost 35 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1655
+
+**Bey:** Rock Leone 145WB / Fang Leone 130W2D
+**Blader:** Kyoya Tategami
+**Label:** GIMMICK — Inverted Gyroscope CW Vortex + Counter-Spin Torque + Vertical Drop Strike (King Lion Reverse Wind Strike mechanism)
+**EXTENDS** Case 1643 (Leone vortex baseline)
+
+**New analysis:** King Lion Reverse Wind Strike requires Leone to invert (flip upside-down mid-battle), generate a clockwise (CW) vortex (opposite to normal CCW spin in CW-dominant stadiums), and then plummet from above to strike the opponent. This case models the inversion mechanics, the counter-spin vortex, and the vertical drop impact.
+
+**Bey inversion physics:**
+A CCW-spinning bey at ω₀ = 250 rad/s can be flipped by applying a torque T_flip perpendicular to its angular momentum vector L = I × ω₀.
+
+L = I ω₀ = 1.35×10⁻⁵ × 250 = 3.375×10⁻³ kg·m²/s (direction: CCW, upward)
+To invert (rotate L by π radians): angular impulse required: ΔL = 2L = 2 × 3.375×10⁻³ = **6.75×10⁻³ kg·m²/s**
+
+Physical inversion force from WB Magnus lift:
+F_Magnus = ρ Γ v_translational L_eff = 1.2 × 0.831 × 4.0 × 0.046 = **0.184 N**
+Inversion torque: τ_inversion = F_Magnus × r_moment ≈ 0.184 × 0.023 = 4.23×10⁻³ N·m
+Time to flip: t_flip = ΔL / τ = 6.75×10⁻³ / 4.23×10⁻³ = **1.60 s** (too slow physically — bey would stop first)
+[M] required for practical inversion: [M] ≈ 10× torque reduction → t_flip = 0.16 s [M]
+
+**Inverted CW vortex:**
+Once inverted, ω vector reverses to downward = CW from above-view. Vortex now rotates CW.
+CW vortex interacts with CCW-spinning opponent: v_θ_relative = v_θ_Leone + v_θ_opponent (additive when approaching from opposite-spin side):
+v_θ_effective = (ω_Leone × r_L) + (ω_opp × r_opp_contact) = 5.75 + (300 × 0.020) = 5.75 + 6.0 = **11.75 m/s**
+
+This exceeds the ring-out threshold (8.0 m/s) even BEFORE [M] for the CW-on-CCW interaction — the counter-spin vortex is physically more effective than a same-spin vortex. [M] factor = 1.0 required for ring-out in this configuration (already physically capable).
+
+**Counter-spin torque on opponent:**
+When CW vortex contacts CCW opponent, aerodynamic friction torque removes spin energy:
+τ_counter = ½ρ(v_θ_effective)² × A_contact × r_contact = ½ × 1.2 × 11.75² × 0.003 × 0.022 = **0.0138 N·m**
+Opponent spin-down rate: Δω = τ_counter / I_opp = 0.0138 / 1.3×10⁻⁵ = **1062 rad/s²** — near-instantaneous spin kill
+
+**Vertical drop impact:**
+[M] apex height h_apex = 2.0 m (BeySpirit sustained levitation)
+v_impact = √(2 g h_apex) = √(2 × 9.81 × 2.0) = **6.26 m/s** (vertical component)
+Combined impact: v_net = √(v_x² + v_impact²) ≈ √(3² + 6.26²) = 6.95 m/s
+Contact impulse: J_drop = μ_r × (1+e) × v_net = 0.0257 × 1.5 × 6.95 = **0.268 N·s** [M]
+
+---
+
+## Case 1656
+
+**Bey:** Rock Leone 145WB / Fang Leone 130W2D
+**Blader:** Kyoya Tategami
+**Label:** SPECIAL — King Lion Reverse Wind Strike (inverted Leone CW-tornado + plunge)
+**EXTENDS** Cases 1643, 1655
+
+**Anime description:** Leone launches into the air, turns upside down, and releases a giant tornado that engulfs the opponent. Then plummets downward and strikes the enemy bey. Because the tornado spins in reverse (CW from above) compared to normal CCW beyblades, it forces right-rotating beys in the wrong direction and halts their spin. First used in "The Shocking Wild Fang" to defeat Salhan (Team Chandora). Carried into Metal Fury with Fang Leone. Kyoya learned this after "mastering how a tornado is created" (per Nile). Considered Kyoya's strongest move before King Lion Crushing Fang.
+
+**Compatible beys:** Leone-type beys only (CCW → CW inversion requires leone wheel vortex coupling). Both Rock Leone 145WB and Fang Leone 130W2D compatible.
+
+**Special move physics:**
+- Inversion: [M] ≈ 10× torque accelerates to t_flip = 0.16 s
+- CW counter-vortex: τ_counter = 0.0138 N·m → Δω_opp = 1062 rad/s² (opponent spin-kill)
+- Drop impact: J_drop = 0.268 N·s at v_net = 6.95 m/s
+
+```typescript
+function kingLionReverseWindStrike(
+  leoneSpin: number,
+  inversionComplete: boolean,
+  cwVortexEngaged: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; counterSpinBonus: number } {
+  const spinRatio = leoneSpin / 250;
+  if (qteHit && inversionComplete) {
+    return {
+      spinDelta:        cwVortexEngaged ? -Math.round(110 * spinRatio) : -Math.round(70 * spinRatio),
+      dmgMult:          cwVortexEngaged ? Math.min(2.30, 1.90 * spinRatio) : Math.min(1.90, 1.50 * spinRatio),
+      lockMs:           320,
+      powerCost:        110,
+      counterSpinBonus: cwVortexEngaged ? 0.85 : 0.30,  // fraction of opponent spin removed via counter-torque
+    };
+  }
+  if (!inversionComplete && qteHit) {
+    return { spinDelta: -30, dmgMult: 1.30, lockMs: 80, powerCost: 110, counterSpinBonus: 0 };
+  }
+  return { spinDelta: -15, dmgMult: 1.10, lockMs: 0, powerCost: 110, counterSpinBonus: 0 };
+}
+```
+
+*[M] override: BeySpirit provides ×10 torque amplification for rapid inversion, sustains inverted levitation for CW vortex generation, and guides drop trajectory for maximum impact energy. Physical CW-on-CCW counter-spin torque is genuine (no [M] needed for the spin-kill mechanism); only the inversion itself and the levitated drop require BeySpirit power.*
+
+---
+
+## Case 1657
+
+**Bey:** Rock Leone 145WB / Fang Leone 130W2D
+**Blader:** Kyoya Tategami
+**Label:** COMBO — Reverse Fang (King Lion Reverse Wind Strike in-game 3-key combo)
+**EXTENDS** Cases 1643, 1655
+
+**Sequence:** moveUp → attack → moveUp (↑ K ↑)
+**Cost:** 25
+**Type restriction:** attack (the ↑K↑ structure uses two upward orbital segments bracketing the K contact; this pre-loads Leone's vertical approach angle on the first ↑, fires the contact at the apex, then the second ↑ drives Leone upward post-strike — replicating the "brief inversion and drop" arc in compressed form; a defense bey's broad flat tip grip causes excessive drag on both ↑ arcs, preventing the clean apex contact; stamina beys lack the fang blade-face area for meaningful contact at the brief ↑K↑ apex)
+**Parent gimmick:** Inverted CW vortex (Case 1655)
+
+**Thesis:** Reverse Fang condenses Reverse Wind Strike's inversion arc into a ↑K↑ that mimics an angled overhead approach. The first ↑ drives Leone on an upward arc so that at K the contact angle is tilted ~30° above the opponent's equatorial plane — approximating the plunge geometry without full inversion. The CW counter-spin effect is absent (no actual inversion in the combo), but the elevated contact angle creates a downward force component F_z_combo = J_contact × sin(30°) = 0.17 × 0.5 = 0.085 N pushing the opponent toward the floor and destabilizing their balance. The second ↑ is a brief retreat-and-redirect that prevents mutual lockup.
+
+```typescript
+function reverseFang(
+  apexAngleCorrect: boolean,  // first ↑ achieved ~30° approach angle
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; destabilizeBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:        apexAngleCorrect ? -36 : -20,
+      dmgMult:          apexAngleCorrect ? 1.42 : 1.22,
+      lockMs:           apexAngleCorrect ? 150 : 70,
+      powerCost:        25,
+      destabilizeBonus: apexAngleCorrect ? 0.35 : 0.10,  // tilt-state modifier
+    };
+  }
+  return { spinDelta: -8, dmgMult: 1.06, lockMs: 0, powerCost: 25, destabilizeBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.42 ≤ 1.5 ✓ | lockMs 150 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1658
+
+**Bey:** Fang Leone 130W2D
+**Blader:** Kyoya Tategami
+**Label:** GIMMICK — Funnel Vortex Updraft Capture + Vertical Lift + Overhead Plunge Impact Explosion (King Lion Crushing Fang mechanism)
+**EXTENDS** Cases 1643, 1655
+
+**New analysis:** King Lion Crushing Fang is Kyoya's ultimate move. It operates in three phases: (1) a giant funnel vortex creates an updraft that lifts the opponent bey off the stadium floor; (2) Fang Leone ascends inside the vortex column after the captured opponent; (3) Leone delivers a downward fang-face smash from above, causing an explosive BeySpirit detonation that disperses the tornado.
+
+**Fang Leone 130W2D specs (vs Rock Leone 145WB):**
+- 130 track: lower height (13.0mm vs 14.5mm) → lower centre-of-mass → improved stability for vortex generation
+- W2D (Wide Defense 2): flat low-friction tip; μ_W2D ≈ 0.20; larger contact area r_W2D ≈ 13mm → better lateral stance
+- Mass same order: m_FL ≈ 42 g
+
+**Phase 1 — Funnel updraft lifts opponent:**
+Funnel vortex: v_θ at core = v_θ_max_[M] (requires [M] amplification).
+Updraft core velocity: v_z_core = v_θ_max_[M] × (r_c / h_column) — Rankine vortex updraft from centrifugal pumping
+For v_θ_[M] = 15 m/s and h_column = 0.5 m (typical funnel height):
+v_z_core = 15 × (0.023/0.5) = **0.69 m/s** (vertical)
+F_lift = ½ρ v_z_core² A_opp = ½ × 1.2 × 0.69² × 0.004 = **0.00115 N** physical (grossly insufficient)
+
+[M] factor required for lift: F_lift ≥ m_opp × g → ½ρ v_z² A_opp ≥ 0.412 N
+v_z_min = √(2×0.412/(1.2×0.004)) = √171.7 = **13.1 m/s** updraft
+[M] amplification: v_z_[M] = 13.1 m/s → [M] factor on v_z ≈ 13.1/0.69 ≈ **19× [M]** on funnel depth (large move, Kyoya's strongest)
+
+**Phase 2 — Leone ascent:**
+Leone follows opponent into the funnel under BeySpirit power. [M]-sustained levitation as in Case 1655.
+Apex height above opponent: h_apex = 0.5 m (funnel top)
+Leone v_ascent_[M] ≈ 5 m/s (BeySpirit powered)
+
+**Phase 3 — Overhead plunge impact:**
+Leone free-falls from h_apex = 0.5 m ABOVE the lifted opponent (total above stadium floor = opponent_h + h_apex ≈ 2 m)
+Drop velocity: v_drop = √(2g × 0.5) = √(9.81) = **3.13 m/s** from apex to opponent
+Leone approaches from directly above → contact: fang-face strikes top of opponent layer
+F_impact = m_FL × v_drop / t_c = 0.042 × 3.13 / 0.001 = **131.5 N** [M]
+Explosion: BeySpirit detonation disperses vortex. Energy released = ½ I ω² = ½ × 1.35×10⁻⁵ × 250² = **0.422 J** (physical spin energy released as BeySpirit pulse on impact) [M-amplified × N_[M]]
+
+---
+
+## Case 1659
+
+**Bey:** Fang Leone 130W2D
+**Blader:** Kyoya Tategami
+**Label:** SPECIAL — King Lion Crushing Fang (Kyoya's ultimate move; funnel capture + overhead strike)
+**EXTENDS** Cases 1643, 1655, 1658
+
+**Anime description:** Fang Leone creates a giant fierce green tornado (larger than Lion Gale Force Wall) that engulfs and lifts the opposing bey high into the funnel. Once above Leone, Leone leaps and strikes the opponent from above, causing an explosion that disperses the twister and sends the bey flying. Can also be used as a direct head-on charge.
+
+**Compatible beys:** Fang Leone 130W2D primary. Can also be executed as a simplified direct charge without funnel capture by Rock Leone 145WB.
+
+**Special move physics:**
+- Phase 1: [M] = 19× on updraft → v_z_[M] = 13.1 m/s → F_lift = 0.412 N (just at threshold)
+- Phase 2: BeySpirit levitation to apex h = 2.0 m above floor
+- Phase 3: v_drop = √(2×9.81×0.5) = 3.13 m/s, F_impact = 131.5 N, BeySpirit explosion disperses tornado
+
+Direct charge variant: no funnel capture; straight ballistic approach; physics same as Case 1646 Blast Shot but with Fang Leone geometry.
+
+```typescript
+function kingLionCrushingFang(
+  leoneSpin: number,
+  funnelCapture: boolean,  // true = full funnel-lift phase
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutForce: number; explosionRadius: number } {
+  const spinRatio = leoneSpin / 250;
+  if (qteHit) {
+    if (funnelCapture) {
+      return {
+        spinDelta:       -Math.round(130 * spinRatio),
+        dmgMult:          Math.min(3.0, 2.40 * spinRatio),
+        lockMs:           500,
+        powerCost:        150,
+        ringOutForce:     1.10 * spinRatio,
+        explosionRadius:  0.25,
+      };
+    }
+    return {
+      spinDelta:       -Math.round(80 * spinRatio),
+      dmgMult:          Math.min(2.20, 1.80 * spinRatio),
+      lockMs:           280,
+      powerCost:        150,
+      ringOutForce:     0.70 * spinRatio,
+      explosionRadius:  0.10,
+    };
+  }
+  return { spinDelta: -30, dmgMult: 1.35, lockMs: 0, powerCost: 150, ringOutForce: 0, explosionRadius: 0 };
+}
+```
+
+*[M] override: BeySpirit provides the ×19 updraft amplification for funnel capture, the levitation for Leone's ascent, and the explosion-energy release on impact. Physical fang-contact drop impulse (131.5 N) is real once the overhead position is established by BeySpirit. The explosion disperses all stored BeySpirit energy simultaneously — this is the ultimate commitment move and requires Kyoya's full spiritual power.*
+
+---
+
+## Case 1660
+
+**Bey:** Fang Leone 130W2D
+**Blader:** Kyoya Tategami
+**Label:** COMBO — Crushing Descent (King Lion Crushing Fang in-game 3-key combo)
+**EXTENDS** Cases 1643, 1658
+
+**Sequence:** moveUp → moveUp → attack (↑ ↑ K)
+**Cost:** 35
+**Type restriction:** attack (↑↑K requires two successive upward orbital arcs that build Leone to the highest stadium approach angle before K fires; only attack beys carry sufficient fang-face contact area and approach velocity through both ↑ segments to deliver meaningful overhead contact; defense beys tip-drag on first ↑ and never reach orbital apex for second ↑; stamina beys similarly stall in the steep approach)
+**Parent gimmick:** Funnel vortex overhead plunge (Case 1658)
+
+**Thesis:** Crushing Descent compresses the Crushing Fang's overhead plunge into a ↑↑K where the two consecutive ↑ inputs drive Leone on a steep ascending orbital arc approximating the Phase 2 ascent. The first ↑ begins the ascent (approach elevation ~20°); the second ↑ steepens to ~45° approach angle, so the K contact arrives from an above-and-forward trajectory vector. The downward component of this K contact is F_z_combo = J_contact × sin(45°) ≈ 0.185 × 0.707 = 0.131 N — meaningfully elevated vs a flat K hit. This overhead geometry replicates the plunge impact geometry of the full move without the BeySpirit funnel.
+
+```typescript
+function crushingDescent(
+  doubleAscentComplete: boolean,   // both ↑ arcs achieved steep angle
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; overheadBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:     doubleAscentComplete ? -48 : -25,
+      dmgMult:       doubleAscentComplete ? 1.49 : 1.27,
+      lockMs:        doubleAscentComplete ? 210 : 90,
+      powerCost:     35,
+      overheadBonus: doubleAscentComplete ? 0.20 : 0.05,  // bonus ring-out force from downward contact vector
+    };
+  }
+  return { spinDelta: -10, dmgMult: 1.07, lockMs: 0, powerCost: 35, overheadBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.49 ≤ 1.5 ✓ | lockMs 210 ≤ 300 ✓ | cost 35 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1661
+
+**Bey:** Vanish Fafnir Tapered Kick-3
+**Blader:** Free De La Hoya
+**Label:** GIMMICK — Kick Driver Spring-Disc Upper-Attack + Gyroscopic Heading Change (Kick Counter mechanism)
+
+**New analysis:** The Kick driver (Kick-3 variant) features a spring-loaded outer disc on the driver shaft. During spin, the disc is partially compressed by rotational centrifugal preload. When the disc contacts an opposing bey's layer, the spring releases rapidly, delivering an upward impulse (upper-attack component) while the gyroscopic reaction from the spring torque alters Vanish Fafnir's heading (direction-change component). This case models both effects.
+
+**Kick-3 driver spring parameters:**
+- Spring constant (estimate from driver geometry): k ≈ 1,200 N/m
+- Maximum spring compression (centrifugal preload): x₀ = 2.5 mm = 0.0025 m
+- Spring disc outer radius: r_disc = 18 mm = 0.018 m
+- Stored elastic energy: E_spring = ½ k x₀² = ½ × 1200 × (0.0025)² = **3.75×10⁻³ J**
+
+**Upper attack impulse:**
+Contact time estimate: t_c = 2√(m_eff/k) = 2√(0.035/1200) = 2 × 5.40×10⁻³ = **10.8 ms** (half-period of spring-mass oscillation at contact)
+
+Impulse: J_z = √(2 m_eff E_spring) = √(2 × 0.035 × 3.75×10⁻³) = √(2.625×10⁻⁴) = **0.0162 N·s**
+where m_eff = m_opponent × m_Fafnir / (m_opponent + m_Fafnir) = (0.038 × 0.033)/(0.071) = 0.01764 kg
+
+Vertical launch speed of opponent: v_z = J_z / m_opponent = 0.0162 / 0.038 = **0.427 m/s**
+Height: h = v_z²/(2g) = (0.427)²/19.62 = **0.0093 m = 9.3 mm** [physical, sub-centimetre]
+
+With [M] amplification: BeySpirit multiplies spring energy release → v_z_[M] can reach 3–5 m/s, launching the opponent bey visibly into the air.
+
+**Gyroscopic heading change:**
+The spring fires at one contact point on the disc perimeter. The impulsive lateral force at r_disc from the bey axis creates a torque:
+τ_prec = r_disc × F_spring_peak = 0.018 × (k × x₀) = 0.018 × 3.0 = **0.054 N·m**
+
+Angular momentum: L = I × ω = 1.0×10⁻⁵ × 320 = **3.2×10⁻³ kg·m²/s** (Vanish Fafnir at operating spin)
+Precession rate: Ω_prec = τ_prec / L = 0.054 / 0.0032 = **16.9 rad/s** during contact
+Heading change: δφ = Ω_prec × t_c = 16.9 × 0.0108 = **0.182 rad ≈ 10.4°** per trigger [physical]
+
+With [M]: BeySpirit provides up to 90° heading change per trigger, enabling rapid direction reversals to chase or evade.
+
+---
+
+## Case 1662
+
+**Bey:** Vanish Fafnir Tapered Kick-3
+**Blader:** Free De La Hoya
+**Label:** SPECIAL — Kick Counter (spring-disc upper attack + direction change)
+**EXTENDS** Case 1661
+
+**Anime description:** Using the spring-loaded disc on its Kick Driver, Vanish Fafnir can create an upper attack, causing the opposing Beyblade to be knocked away. Fafnir can also use the Kick Driver's disc to change its direction. Used reactively as a counter when opponents attempt to attack.
+
+**Compatible beys:** Any bey with Kick driver variant (Kick-3, Kick). The direction-change aspect requires sufficient angular momentum for meaningful gyroscopic precession; stamina and balanced beys get the most reliable heading-change from this move.
+
+**Special move physics:**
+Upper attack: J_z = 0.0162 N·s [physical] → with [M]: J_z_[M] up to 0.10 N·s → v_z_opp ≈ 2.6 m/s (airborne)
+Direction change: δφ = 10.4° [physical] → with [M]: up to 90° [M]
+
+```typescript
+function kickCounter(
+  springPreloaded: boolean,    // disc compressed by centrifugal preload
+  counterTriggered: boolean,   // opponent initiated contact
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; headingChangeDeg: number } {
+  if (qteHit) {
+    return {
+      spinDelta:        springPreloaded ? -50 : -28,
+      dmgMult:          springPreloaded ? (counterTriggered ? 1.85 : 1.55) : 1.30,
+      lockMs:           springPreloaded ? 180 : 80,
+      powerCost:        70,
+      headingChangeDeg: springPreloaded ? (counterTriggered ? 75 : 45) : 20,
+    };
+  }
+  return { spinDelta: -15, dmgMult: 1.15, lockMs: 0, powerCost: 70, headingChangeDeg: 0 };
+}
+```
+
+*[M] override: BeySpirit amplifies spring release energy beyond the physical 3.75×10⁻³ J stored in the compressed disc; physical spring mechanism is real (sub-centimetre launch height), BeySpirit scales the launch height and heading change to anime-visible levels.*
+
+---
+
+## Case 1663
+
+**Bey:** Vanish Fafnir Tapered Kick-3
+**Blader:** Free De La Hoya
+**Label:** COMBO — Spring Kick (Kick Counter in-game 3-key combo)
+**EXTENDS** Case 1661
+
+**Sequence:** moveUp → attack → moveRight (↑ K →)
+**Cost:** 15
+**Type restriction:** defense or stamina (the spring-disc upper-attack is most effective as a counter rather than an initiation; defense beys use the ↑ approach to elevate their profile against an incoming attack, triggering the K spring contact at the ideal angle; stamina beys use the → redirect to exit the contact zone efficiently after the spring fires, maintaining their orbital pattern; attack beys tend to over-commit through the spring contact and lose the → redirect benefit)
+**Parent gimmick:** Kick driver spring disc (Case 1661)
+
+**Thesis:** Spring Kick condenses the Kick Counter's two-phase action into a ↑K→ sequence. ↑ positions Vanish Fafnir in the approach vector where the Kick disc is most likely to register contact (elevated approach presents the disc to opponent's layer at the equatorial height). K fires the spring disc contact at this pre-positioned angle; the spring release delivers J_z_combo = 0.016 N·s × combo_fraction ≈ 0.011 N·s vertical impulse (partial spring compression due to approach speed). → captures the gyroscopic heading-change and carries Fafnir out of the engagement zone at ~5° redirect angle (δφ_combo ≈ 0.182 × 0.5 = 0.091 rad ≈ 5.2°).
+
+```typescript
+function springKick(
+  contactAngleCorrect: boolean,   // ↑ achieved ideal spring-disc elevation
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; headingChangeDeg: number } {
+  if (qteHit) {
+    return {
+      spinDelta:        contactAngleCorrect ? -28 : -14,
+      dmgMult:          contactAngleCorrect ? 1.38 : 1.18,
+      lockMs:           contactAngleCorrect ? 120 : 50,
+      powerCost:        15,
+      headingChangeDeg: contactAngleCorrect ? 12 : 5,
+    };
+  }
+  return { spinDelta: -5, dmgMult: 1.04, lockMs: 0, powerCost: 15, headingChangeDeg: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.38 ≤ 1.5 ✓ | lockMs 120 ≤ 300 ✓ | cost 15 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1664
+
+**Bey:** Wind Aquario 100HF/S
+**Blader:** Hikaru Hasama
+**Label:** GIMMICK — HF/S Dual-Mode Rapid Direction Switch: Multi-Apparent-Position Illusion + BeySpirit Wave (Infinite Assault mechanism)
+
+**New analysis:** Infinite Assault exploits the Hole Flat/Spike dual-tip design of HF/S. Rapid mode switching combined with Hikaru's BeySpirit creates the illusion of multiple Wind Aquarios surrounding the stadium, while the real bey attacks from a hidden position. This case establishes the HF mode erratic-path physics and the mode-switch position uncertainty model; it cross-references CS9 Cases 1607–1609 for HF/S tip parameters.
+
+**HF/S parameters (from CS9 Cases 1607–1609):**
+- HF (Hole Flat) mode: annular contact ring r_inner ≈ 2 mm, r_outer ≈ 8 mm; erratic orbital path with deviation r_path ≈ 20–35 mm from mean centre
+- S (Spike) mode: sharp point contact, r_contact ≈ 1 mm; stable central orbit
+- Mode switch: physical spring/centrifugal mechanism toggles between modes under vibration or deliberate tilt
+
+**Erratic path in HF mode:**
+In HF mode, the contact ring's annular geometry creates uneven friction distribution. Net friction torque is off-centre, causing precession-driven lateral wander:
+v_lateral_max ≈ μ_HF × m × g × r_eccentricity / (I × ω) ≈ 0.5 × 0.021 × 9.81 × 0.010 / (1.0×10⁻⁵ × 280) = **0.369 m/s** lateral wander speed
+
+Path deviation: r_path ≈ v_lateral / (ω_precession) — with ω_prec ≈ 20 rad/s: r_path ≈ 0.369/20 = **0.018 m = 18 mm** [physical]
+
+**Multi-apparent-position illusion:**
+Position uncertainty of bey in HF mode forms an annular zone of width Δr_path ≈ 18 mm. If mode switches occur at rate f_switch, the bey occupies N_apparent ≈ f_switch × T_observation different positions during any perceived instant.
+
+At T_observation = 0.033 s (30 Hz visual perception) and f_switch = 5 Hz: N_apparent ≈ 5 × 0.033 = 0.17 — sub-perceptual, physically cannot create visible illusion.
+
+[M] required: BeySpirit projects ghost-images of previous path positions as sustained luminous ghost-beys. In the anime, N_ghost ≈ 5–8 ghost images are visible. [M] factor = N_ghost / N_apparent_physical ≈ 7/0.17 ≈ **41× [M]** for visible ghost illusion.
+
+**Wave component:**
+"Huge wave" = Water-element BeySpirit. Modelled as a pressure-wave impulse propagating radially from Aquario at v_wave = c_sound × [M_wave]. Physical: no acoustic pressure significant. [M]-sustained wave impact = additional hit concurrent with real-bey contact.
+
+---
+
+## Case 1665
+
+**Bey:** Wind Aquario 100HF/S
+**Blader:** Hikaru Hasama
+**Label:** SPECIAL — Infinite Assault (multi-bey illusion + wave)
+**EXTENDS** Cases CS9 1607–1609, Case 1664
+
+**Anime description:** Tricks the opponent into thinking there are many Wind Aquarios surrounding the stadium; attacks with the real one while a huge wave smashes the opponent. Mode-switching of HF/S creates the illusion of several Wind Aquarios at once. Gingka was able to see through this move by using sunlight reflection to find the actual Wind Aquario.
+
+**Compatible beys:** Wind Aquario 100HF/S only (HF/S dual-mode tip is essential for the illusion mechanism). Hikaru Hasama's Water-element BeySpirit provides the wave component.
+
+**Sunlight counter:** The ghost images lack physical presence and cannot cast a visible shadow or catch sunlight. The real Aquario creates an actual specular reflection as it moves. This physical distinction — glint detection — is the basis for Gingka seeing through the illusion.
+
+```typescript
+function infiniteAssault(
+  ghostCount: number,       // 1–8 ghost images active
+  waveCharged: boolean,
+  opponentSeesThrough: boolean,
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; evasionBonus: number; waveHit: boolean } {
+  const confusionMult = opponentSeesThrough ? 0.6 : (1 + ghostCount * 0.08);
+  if (qteHit) {
+    return {
+      spinDelta:    -Math.round(55 * confusionMult),
+      dmgMult:       waveCharged ? 1.75 * confusionMult : 1.45 * confusionMult,
+      lockMs:        200,
+      powerCost:     85,
+      evasionBonus:  opponentSeesThrough ? 0 : ghostCount * 0.12,
+      waveHit:       waveCharged,
+    };
+  }
+  return { spinDelta: -15, dmgMult: 1.10, lockMs: 0, powerCost: 85, evasionBonus: 0, waveHit: false };
+}
+```
+
+*[M] override: BeySpirit provides ×41 ghost-image projection above physical position-uncertainty baseline; Water-element BeySpirit (wave component) is entirely [M] with no physical fluid mechanism.*
+
+---
+
+## Case 1666
+
+**Bey:** Wind Aquario 100HF/S
+**Blader:** Hikaru Hasama
+**Label:** COMBO — Ghost Rush (Infinite Assault in-game 3-key combo)
+**EXTENDS** Case 1664
+
+**Sequence:** moveRight → moveLeft → attack (→ ← K)
+**Cost:** 25
+**Type restriction:** stamina (the →← rapid reversal requires the HF mode erratic path to create enough lateral position scatter that the opponent cannot predict which approach angle the K will come from; a stamina bey's low-friction HF tip maximises the lateral wander amplitude (r_path ≈ 18 mm physical) needed for the →← direction reversal to generate an unpredictable K approach vector; attack beys' faster approach kills the HF wander before the ← reversal; defense beys' stable tips don't exploit HF mode at all)
+**Parent gimmick:** HF/S dual-mode erratic path (Case 1664)
+
+**Thesis:** Ghost Rush uses a →← direction reversal to replicate one "ghost position change" from Infinite Assault. The → moves Aquario rightward in HF mode (erratic, leaving a path zone); ← sharply reverses, creating a brief period where Aquario's true position is ambiguous even at the combo's short timescale (~180ms total). K fires from within this ambiguous zone, arriving at an angle the opponent cannot fully read. The combo delivers no actual wave damage (no Water BeySpirit boost), but the positional unpredictability reduces the opponent's dodge probability, increasing effective hit probability for the K contact.
+
+```typescript
+function ghostRush(
+  hfModeActive: boolean,    // bey in Hole Flat mode during →←
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; evasionNegate: number } {
+  if (qteHit) {
+    return {
+      spinDelta:     hfModeActive ? -32 : -18,
+      dmgMult:       hfModeActive ? 1.40 : 1.22,
+      lockMs:        hfModeActive ? 140 : 65,
+      powerCost:     25,
+      evasionNegate: hfModeActive ? 0.35 : 0.10,  // fraction of opponent evasion negated
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.04, lockMs: 0, powerCost: 25, evasionNegate: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.40 ≤ 1.5 ✓ | lockMs 140 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1667
+
+**Bey:** Infinite Achilles Dimension' 1B
+**Blader:** Aiger Akabane
+**Label:** GIMMICK — Infinite Ring Attack Mode: 4-Blade Sequential Impulse Train (Infinite Breaker mechanism)
+**EXTENDS** CS9 Cases 449–453 (Infinite Achilles Dimension' 1B part analysis: Chassis 1B, Dimension' layer, m_Achilles ≈ 66 g, I ≈ 2.1×10⁻⁵ kg·m²)
+
+**New analysis:** Infinite Breaker requires Infinite Achilles in Attack Mode, deploying the Infinite Ring's four Infinite Sword blade protrusions. This case models the sequential four-blade contact as an impulse train and establishes the combined spin-drain and damage delivered. Cf. Z Breaker / Turbo Breaker / Unison Breaker (same franchise family).
+
+**Infinite Ring Attack Mode geometry:**
+- 4 Infinite Sword blades at 90° spacing, r_blade ≈ 38 mm from axis
+- Blade protrusion height: h_blade ≈ 5 mm (effective contact projection)
+- Blade face area: A_blade ≈ 5 mm × 8 mm = 4×10⁻⁵ m²
+- At ω_Achilles = 320 rad/s: v_blade = ω × r_blade = 320 × 0.038 = **12.16 m/s**
+
+**Sequential impulse train (4 blades):**
+Reduced mass: μ_r = (m_Achilles × m_opp)/(m_Achilles + m_opp) = (0.066 × 0.042)/(0.108) = **0.02567 kg**
+Coefficient of restitution: e ≈ 0.55 (ABS-on-ABS hard plastic)
+
+Single blade impulse (head-on, v_rel = v_blade − v_opp ≈ 12.16 − 2 = 10.16 m/s):
+J₁ = μ_r × (1+e) × v_rel = 0.02567 × 1.55 × 10.16 = **0.404 N·s**
+
+Subsequent blades: each blade arrives 90° later (dt = T/4 = 2π/(4ω) = 2π/(4×320) = 4.91 ms)
+After blade 1: v_opp_new = J₁/m_opp = 0.404/0.042 = 9.62 m/s (opponent moving away)
+Relative velocity for blade 2: v_rel₂ = v_blade − v_opp_new = 12.16 − 9.62 = **2.54 m/s** (greatly reduced)
+
+So blades 2–4 deliver diminishing impulses. Effective total: J_total ≈ J₁ × (1 + 0.25 + 0.10 + 0.04) = 0.404 × 1.39 = **0.562 N·s**
+
+**Angular spin drain on opponent:**
+ΔL_opp = J_total × r_contact_opp = 0.562 × 0.020 = 0.01124 kg·m²/s
+Δω_opp = ΔL_opp / I_opp = 0.01124 / 1.3×10⁻⁵ = **865 rad/s** spin loss [physical, from all 4 blades]
+
+This is a physically substantial spin drain — 865 rad/s ≈ 8,260 RPM lost in a single 4-blade pass. This exceeds typical launch spin for most Burst beys (launch ≈ 300–500 rad/s), so the move is physically capable of stopping an opponent without [M]. [M] amplification adds the "flame blade" visual and ensures the impulse overcomes any defensive bonuses.
+
+---
+
+## Case 1668
+
+**Bey:** Infinite Achilles Dimension' 1B
+**Blader:** Aiger Akabane
+**Label:** SPECIAL — Infinite Breaker (Attack Mode; 4 flame blades)
+**EXTENDS** Cases CS9 449–453, Case 1667
+
+**Anime description:** Achilles in Attack Mode with the Infinite Sword. Generates four flame blades and strikes the opposing Beyblade with all its might. Like Z Breaker, Turbo Breaker, and Unison Breaker — each iteration in the Achilles lineage escalates the blade count and damage. Infinite Breaker represents the peak iteration.
+
+**Compatible beys:** Infinite Achilles Dimension' 1B or Master Dragon Ignition' (Aiger's DB-era beys) with equivalent blade-count ring.
+
+**Special move physics:**
+J_total_physical = 0.562 N·s
+Δω_opp = 865 rad/s [physically capable of ring-out even without [M]]
+[M] flame blades: ×1.5 on J_total → J_total_[M] = 0.843 N·s, Δω_opp_[M] = 1,298 rad/s
+
+```typescript
+function infiniteBreaker(
+  achillesSpin: number,
+  bladeCount: number,    // 1–4 blades landed
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; burstBonus: number } {
+  const spinRatio  = achillesSpin / 320;
+  const bladeMult  = 1 + (bladeCount - 1) * 0.22;
+  if (qteHit) {
+    return {
+      spinDelta:   -Math.round(120 * spinRatio * bladeMult),
+      dmgMult:      Math.min(2.60, 1.90 * spinRatio * bladeMult),
+      lockMs:       350,
+      powerCost:    110,
+      burstBonus:   0.45 * spinRatio * bladeMult,  // burst probability multiplier
+    };
+  }
+  return { spinDelta: -30, dmgMult: 1.30, lockMs: 0, powerCost: 110, burstBonus: 0 };
+}
+```
+
+*[M] override: BeySpirit (Aiger's fire-element) wraps each blade contact in a flame burst that adds thermal-expansion impulse component; physical 4-blade impulse train (J = 0.562 N·s) is already above ring-out threshold — [M] flames push it to spectacle level.*
+
+---
+
+## Case 1669
+
+**Bey:** Infinite Achilles Dimension' 1B
+**Blader:** Aiger Akabane
+**Label:** COMBO — Quad Blade (Infinite Breaker in-game 3-key combo)
+**EXTENDS** Cases CS9 449–453, Case 1667
+
+**Sequence:** moveRight → moveRight → attack (→ → K)
+**Cost:** 25
+**Type restriction:** attack (the →→ double-advance requires aggressive approach velocity to maintain Achilles' relative speed advantage over the opponent; the two rightward inputs are analogous to a two-phase blade pre-alignment run, positioning Achilles' leading blade face perpendicular to the target at the K moment; defense and stamina beys lack the translational speed to set up the correct blade-face angle through two → inputs)
+**Parent gimmick:** Infinite Ring 4-blade impulse train (Case 1667)
+
+**Thesis:** Quad Blade uses a →→K double-approach to replicate the first (highest-impulse) blade contact from Infinite Breaker within the 3-key window. The two → inputs align Achilles' Infinite Sword leading blade with the opponent at the correct azimuth so that the K contact maximises blade-face area contact (A_contact ≈ 3.8×10⁻⁵ m²), capturing ~85% of the first-blade J₁ = 0.404 N·s impulse from the full Breaker (combo limited: effective J_combo ≈ 0.343 N·s). The combo fires only the first blade (not all 4), so the spin drain is ~40% of the full move's Δω_opp. The two remaining blades at 90°/180°/270° are not triggered in the 3-key window.
+
+```typescript
+function quadBlade(
+  alignmentCorrect: boolean,   // →→ achieved correct blade-face alignment
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; burstBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:   alignmentCorrect ? -48 : -25,
+      dmgMult:     alignmentCorrect ? 1.46 : 1.25,
+      lockMs:      alignmentCorrect ? 185 : 85,
+      powerCost:   25,
+      burstBonus:  alignmentCorrect ? 0.25 : 0.08,
+    };
+  }
+  return { spinDelta: -10, dmgMult: 1.07, lockMs: 0, powerCost: 25, burstBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.46 ≤ 1.5 ✓ | lockMs 185 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1670
+
+**Bey:** Infinite Achilles Dimension' 1B
+**Blader:** Aiger Akabane
+**Label:** GIMMICK — Infinite Ring Defense Mode: Infinite Shield Short-Edge Deflection + Return Damage (Infinite Guard mechanism)
+**EXTENDS** CS9 Cases 449–453 (Infinite Achilles Dimension' 1B)
+
+**New analysis:** Infinite Guard uses the Infinite Ring in Defense Mode. Unlike Attack Mode's four sharp Infinite Sword blades, Defense Mode presents the ring's short, rounded outer edges (the Infinite Shield profile) — a near-smooth surface that deflects incoming attacks and reflects a portion of their energy back to the attacker. Analogous to Final Wall (CS13 Cases 1417–1419) but specific to Achilles' ring geometry.
+
+**Infinite Ring Defense Mode geometry:**
+- Defense Mode: ring rotated to present flat/short-edge profile to contact
+- Effective contact radius (outer edge): r_shield = 40 mm = 0.040 m (wider than Attack Mode r_blade = 38mm due to ring rotation)
+- Shield surface: ~smooth ABS, rounded profile → reflection coefficient e_shield ≈ 0.80 (elastic, minimal energy loss)
+- Contact area per hit: A_shield ≈ 5 mm × 12 mm = 6×10⁻⁵ m² (wider than blade face)
+
+**Deflection + return damage:**
+Opponent (attacker) delivers impulse J_atk at Achilles' shield at v_rel.
+Deflected momentum: J_reflected = e_shield × J_atk (elastic reflection component)
+Return force on attacker: F_return = J_reflected / t_c = e_shield × J_atk / t_c
+
+For typical attack attempt: J_atk = 0.20 N·s (moderate attack)
+J_reflected = 0.80 × 0.20 = **0.160 N·s** reflected back to attacker
+Spin loss on attacker from own attack: Δω_atk_return = J_reflected × r_contact_atk / I_atk = 0.160 × 0.022 / 1.3×10⁻⁵ = **271 rad/s** spin loss on attacker [physical]
+
+**Achilles spin change during deflection:**
+Achilles absorbs: J_absorbed = (1 − e_shield) × J_atk = 0.20 × 0.20 = 0.040 N·s
+Achilles spin: Δω_Achilles = J_absorbed × r_shield / I_Achilles = 0.040 × 0.040 / 2.1×10⁻⁵ = **76.2 rad/s** loss (much less than attacker)
+
+Ratio: attacker loses 271 rad/s vs Achilles loses 76 rad/s → **3.56:1 exchange ratio** in Achilles' favour [physical]
+
+---
+
+## Case 1671
+
+**Bey:** Infinite Achilles Dimension' 1B
+**Blader:** Aiger Akabane
+**Label:** SPECIAL — Infinite Guard (Defense Mode; Infinite Shield deflect-and-return)
+**EXTENDS** Cases CS9 449–453, Case 1670
+
+**Anime description:** Achilles uses the short edges on the Infinite Ring with the Infinite Shield to deflect incoming attacks and return damage back to its opponent. Like Z Defense, Turbo Defense, and Unison Defense — Achilles' defensive iterations escalate the return-damage efficiency at each generation. Infinite Guard is the peak defensive form.
+
+**Compatible beys:** Infinite Achilles Dimension' 1B. Defense Mode must be active (ring in correct orientation).
+
+**Special move physics:**
+Physical reflection ratio: 3.56:1 in Achilles' favour
+[M] amplification: BeySpirit increases e_shield → 0.95 (near-perfect reflection), raising return ratio to:
+J_reflected_[M] = 0.95 × J_atk, spin loss ratio ≈ **5.7:1** [M]
+
+```typescript
+function infiniteGuard(
+  shieldActive: boolean,       // ring in Defense Mode
+  incomingImpulse: number,     // J_atk in N·s
+  qteHit: boolean
+): { achillesSpinDelta: number; attackerSpinDelta: number; dmgReturn: number; lockMs: number; powerCost: number } {
+  const e_eff = shieldActive ? 0.88 : 0.50;
+  const j_ret = incomingImpulse * e_eff;
+  if (qteHit) {
+    return {
+      achillesSpinDelta: -Math.round(incomingImpulse * 1800),   // absorbed fraction → spin loss
+      attackerSpinDelta: -Math.round(j_ret * 21000),             // reflected → attacker spin loss
+      dmgReturn:          shieldActive ? 1.60 : 0.90,
+      lockMs:             200,
+      powerCost:          80,
+    };
+  }
+  return { achillesSpinDelta: -20, attackerSpinDelta: -15, dmgReturn: 0.80, lockMs: 0, powerCost: 80 };
+}
+```
+
+*[M] override: BeySpirit elevates shield reflection coefficient from physical 0.80 to near 0.95, increasing return damage ratio. Base physical shield geometry is fully real — Defense Mode short edges genuinely deflect with e ≈ 0.80.*
+
+---
+
+## Case 1672
+
+**Bey:** Infinite Achilles Dimension' 1B
+**Blader:** Aiger Akabane
+**Label:** COMBO — Shield Return (Infinite Guard in-game 3-key combo)
+**EXTENDS** Cases CS9 449–453, Case 1670
+
+**Sequence:** attack → attack → moveRight (K K →)
+**Cost:** 25
+**Type restriction:** defense (the KK→ pattern uses two consecutive attack inputs — which in the guard context represent bracing Achilles into the incoming hit and the shield-face counter — before the → redirects the deflected opponent; an attack bey executing KK→ would over-rotate through both K contacts without maintaining the passive-deflect stance that Infinite Guard requires; stamina beys lack the Achilles ring geometry needed for the shield face)
+**Parent gimmick:** Infinite Shield deflection model (Case 1670)
+
+**Thesis:** Shield Return compresses Infinite Guard into a KK→ that uses the first K as a passive brace (Achilles holds position, presenting the shield face to the incoming opponent who triggered the first K), the second K as the active return pulse (reflecting the absorbed impulse back), and → as the rebound carry-through (Achilles exits laterally as the opponent is pushed back by the reflected impulse). The spin drain on the attacker is about 35% of the full Infinite Guard return because only one contact cycle is captured in the combo's ~100ms window vs the full move's sustained shield engagement.
+
+```typescript
+function shieldReturn(
+  shieldFacePresented: boolean,   // first K achieved passive-deflect stance
+  qteHit: boolean
+): { achillesSpinDelta: number; attackerSpinDelta: number; dmgReturn: number; lockMs: number; powerCost: number } {
+  if (qteHit) {
+    return {
+      achillesSpinDelta: shieldFacePresented ? -12 : -25,
+      attackerSpinDelta: shieldFacePresented ? -40 : -18,
+      dmgReturn:         shieldFacePresented ? 1.38 : 1.10,
+      lockMs:            shieldFacePresented ? 130 : 60,
+      powerCost:         25,
+    };
+  }
+  return { achillesSpinDelta: -8, attackerSpinDelta: -5, dmgReturn: 0.85, lockMs: 0, powerCost: 25 };
+}
+```
+
+**Ceiling check:** dmgReturn as dmgMult 1.38 ≤ 1.5 ✓ | lockMs 130 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1673
+
+**Bey:** Death Quetzalcoatl 125RDF
+**Blader:** Tithi
+**Label:** GIMMICK — RDF Rubber-Flat Spin Acceleration + Quetzalcoatl Beast Counter-Endurance Dual Mode (Ishtar Impact mechanism)
+
+**New analysis:** Ishtar Impact relies on two coupled mechanisms: (a) the RDF (Rubber Defense Flat) tip's rubber contact accelerating Death Quetzalcoatl's orbital speed prior to the strike, and (b) the Quetzalcoatl Beast's dual-function appearance — both as a shield (endurance, absorb incoming damage) and as a charger (extra spin boost via BeySpirit on collision). This case establishes both physical mechanisms.
+
+**Death Quetzalcoatl 125RDF specs:**
+- Death Quetzalcoatl wheel: asymmetric with large feathered protrusions; m_DQ ≈ 35 g, r_DQ = 22 mm
+- 125 track: h = 12.5 mm (mid-height), m_125 = 2 g
+- RDF (Rubber Defense Flat): rubber annular flat, r_inner ≈ 3 mm, r_outer ≈ 9 mm, μ_RDF ≈ 0.65 (rubber-on-PC)
+- Total: m = 40 g, I ≈ 1.2×10⁻⁵ kg·m²
+
+**RDF spin acceleration (rubber-floor friction driving orbital speed):**
+RDF's high friction coefficient creates a strong coupling between stadium floor and bey. When Quetzalcoatl precesses off-centre, the rubber contact point has both a spin component AND a translational component:
+v_contact = v_orbital + ω × r_RDF_inner = v_orb + (280 × 0.003) = v_orb + 0.84 m/s
+
+The rubber grip generates a net traction force in the direction of orbital motion (like a rubber-tired wheel gripping asphalt):
+F_traction = μ_RDF × m × g × sin(θ_slip) where θ_slip = contact slip angle ≈ 5°
+F_traction = 0.65 × 0.040 × 9.81 × sin(5°) = 0.255 × 0.0872 = **0.0222 N** (orbital acceleration force)
+
+Orbital acceleration: a_orbital = F_traction / m = 0.0222 / 0.040 = **0.556 m/s²**
+From standing orbit (v_orb_0 = 1.5 m/s), after pre-charge Δt = 1 s:
+v_orb_final = 1.5 + 0.556 × 1.0 = **2.06 m/s** (significant speed build for a rubber-flat tip)
+
+**Quetzalcoatl Beast dual function:**
+Endurance mode: Beast manifests as a yellow aura shield that absorbs fraction f_abs ≈ 0.30 of incoming impulse [M].
+Counter mode: Beast emergence provides BeySpirit spin boost at collision instant: Δω_beast = +40 rad/s [M].
+
+**Impact mechanics:**
+After speed build to v_orb = 2.06 m/s:
+J_impact = μ_r × (1+e) × v_rel = 0.02105 × 1.5 × (2.06 + v_opp) ≈ 0.02105 × 1.5 × 4.06 = **0.128 N·s** [physical baseline]
+
+---
+
+## Case 1674
+
+**Bey:** Death Quetzalcoatl 125RDF
+**Blader:** Tithi
+**Label:** SPECIAL — Ishtar Impact (RDF speed build + Beast counter/endurance)
+**EXTENDS** Case 1673
+
+**Anime description:** Death Quetzalcoatl generates speed and rotates more rapidly while attempting a collision. The Quetzalcoatl Beast emerges with a bright yellow aura encircling the bey. Then slams into the opponent. Primarily used to not only endure the damage dealt to it, but also to counter-attack, causing extra damage.
+
+**Compatible beys:** Death Quetzalcoatl 125RDF. RDF rubber tip essential for the traction-driven speed build. Tithi's BeySpirit (Light/Air element) powers the Quetzalcoatl Beast dual-mode.
+
+**Special move physics:**
+- Speed build: a_orbital = 0.556 m/s², from v_orb = 1.5 → 2.06 m/s over 1s pre-charge
+- J_impact_physical = 0.128 N·s
+- Beast endurance: f_abs = 0.30 (30% incoming impulse absorbed) [M]
+- Beast counter: Δω_DQ = +40 rad/s on collision [M]
+- Net exchange: attacker loses J_atk × 1.3 (normal damage + reflection); Quetzalcoatl takes only J_atk × 0.70
+
+```typescript
+function ishtarImpact(
+  speedBuilt: boolean,         // RDF traction pre-charge complete
+  beastManifestation: boolean, // Quetzalcoatl Beast active
+  incomingAttack: boolean,     // used as counter-move
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; absorbFraction: number; spinBoost: number } {
+  if (qteHit) {
+    const speedBonus = speedBuilt ? 1.30 : 1.0;
+    const beastBonus = beastManifestation ? 1.25 : 1.0;
+    return {
+      spinDelta:      -Math.round(65 * speedBonus),
+      dmgMult:         Math.min(2.10, 1.55 * speedBonus * beastBonus),
+      lockMs:          250,
+      powerCost:       90,
+      absorbFraction:  beastManifestation ? (incomingAttack ? 0.38 : 0.15) : 0,
+      spinBoost:       beastManifestation ? 35 : 0,  // +35 rad/s to Death Quetzalcoatl on hit
+    };
+  }
+  return { spinDelta: -18, dmgMult: 1.15, lockMs: 0, powerCost: 90, absorbFraction: 0, spinBoost: 0 };
+}
+```
+
+*[M] override: Quetzalcoatl Beast manifestation and absorption are BeySpirit-powered; physical RDF traction acceleration (0.556 m/s²) and impact impulse (0.128 N·s) are genuine and form the physical grounding.*
+
+---
+
+## Case 1675
+
+**Bey:** Death Quetzalcoatl 125RDF
+**Blader:** Tithi
+**Label:** COMBO — Solar Counter (Ishtar Impact in-game 3-key combo)
+**EXTENDS** Case 1673
+
+**Sequence:** moveRight → attack → moveLeft (→ K ←)
+**Cost:** 25
+**Type restriction:** balanced (the →K← sequence captures both the RDF speed-build approach phase (→) and the post-impact redirect (←) that characterises Ishtar Impact's counter-endurance dual use; balanced beys can leverage both the approach speed from → and the exit-redirect from ← without over-committing to either offensive or defensive posture; pure attack beys push too hard through the ← and miss the controlled exit; pure defense beys don't generate sufficient v_orb on the → to build the traction pre-charge)
+**Parent gimmick:** RDF traction speed-build (Case 1673)
+
+**Thesis:** Solar Counter uses →K← to replicate Ishtar Impact's speed-build-strike-endure sequence. → simulates a brief RDF traction run (~60ms; Δv_orbital ≈ +0.033 m/s, modest but non-zero). K delivers the impact at the end of the traction run. ← carries Quetzalcoatl away from the contact point, using the gyroscopic momentum from the collision to redirect laterally — mimicking the Beast's counter-mode by converting collision energy into a controlled exit rather than absorbing it as spin loss. Against incoming attacks: if the opponent initiates during the → pre-phase, the K lands as a simultaneous counter-hit, giving a brief double-impact window.
+
+```typescript
+function solarCounter(
+  tractionRunComplete: boolean,  // → achieved RDF speed build
+  counterHit: boolean,           // opponent also struck during K
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; counterBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    tractionRunComplete ? -34 : -18,
+      dmgMult:      tractionRunComplete ? (counterHit ? 1.48 : 1.38) : 1.20,
+      lockMs:       tractionRunComplete ? 145 : 65,
+      powerCost:    25,
+      counterBonus: counterHit ? 0.18 : 0,
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.04, lockMs: 0, powerCost: 25, counterBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.48 ≤ 1.5 ✓ | lockMs 145 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1676
+
+**Bey:** Ray Gil 100RSF
+**Blader:** Argo Garcia
+**Label:** GIMMICK — Ray Energy Ring Multi-Rib Sequential Contact + RSF Rubber Spin-Leech Coupling (Keel Strangler mechanism)
+**EXTENDS** CS9 Cases 1634–1642 (Ray Gil 100RSF: Ray energy ring, Gil metal wheel, 100 track, RSF tip, assembly analyses)
+
+**New analysis:** Keel Strangler deploys Ray Gil's Energy Ring (the "bone exterior" — Ray's clear wheel with rib-like protrusions) as the primary contact surface, delivering multiple rapid rib strikes per revolution. The RSF (Rubber Semi-Flat) tip provides both aggressive mobility AND a spin-leeching rubber-floor coupling that drains the opponent's spin via contact friction while Ray Gil attacks with its ribs.
+
+**Ray Gil 100RSF specs:**
+- Gil metal wheel: multi-lobed aggressive shape; m_Gil ≈ 33 g, r_Gil = 23 mm
+- Ray energy ring (clear wheel): rib-like bone-exterior protrusions; m_Ray ≈ 3 g, r_Ray = 26 mm (ribs extend to ~2 mm beyond Gil wheel)
+- 100 track: h = 10.0 mm (low height, aggressive contact angle); m_100 = 2 g
+- RSF (Rubber Semi-Flat) tip: rubber outer annulus (r_inner = 2mm point, r_outer = 7mm rubber ring), μ_RSF ≈ 0.62 (rubber-on-PC); semi-flat profile provides both erratic movement (like RF) and partial stability (unlike full RF)
+- Total: m = 37 g, I ≈ 1.1×10⁻⁵ kg·m²
+
+**Energy Ring rib geometry:**
+Ray ring: approximately 4 rib protrusions at 90° spacing, h_rib ≈ 2 mm (subtle but creating high-frequency contact events)
+At ω = 310 rad/s: v_rib = ω × r_Ray = 310 × 0.026 = **8.06 m/s**
+Contact frequency: f_contact = (N_ribs × ω) / (2π) = (4 × 310) / (2π) = **197.4 Hz** (audible creaking range ~200 Hz)
+This matches the canon "creaking sounds" observed during Keel Strangler — the ~197 Hz rib-contact frequency falls in the low-pitch creaking band.
+
+**Single rib impulse:**
+μ_r = (m_RayGil × m_opp)/(m_RayGil + m_opp) = (0.037 × 0.042)/(0.079) = 0.01966 kg
+e_rib ≈ 0.65 (ABS-ABS, rib geometry with partial compliance)
+v_rel = v_rib − v_opp_contact = 8.06 − 2.0 = 6.06 m/s
+J_rib = μ_r × (1+e) × v_rel = 0.01966 × 1.65 × 6.06 = **0.197 N·s**
+
+Over 4 ribs per revolution with diminishing v_rel (opponent accelerates after each hit):
+J_total_per_rev = 4 × J_rib × 0.90 (×0.9 diminishing factor) = **0.710 N·s/revolution** [physical]
+
+**RSF spin-leech during stationary contact:**
+If Ray Gil presses against the opponent directly, rubber RSF contact transfers angular momentum through friction:
+τ_leech = μ_RSF × F_normal × r_RSF_contact = 0.62 × (m×g) × 0.007 = 0.62 × 0.363 × 0.007 = **1.57×10⁻³ N·m**
+Opponent spin drain: Δω_opp/dt = τ_leech / I_opp = 1.57×10⁻³ / 1.3×10⁻⁵ = **120.8 rad/s per second** (sustained drain during press)
+
+---
+
+## Case 1677
+
+**Bey:** Ray Gil 100RSF
+**Blader:** Argo Garcia
+**Label:** SPECIAL — Keel Strangler (Energy Ring rib barrage + RSF spin-leech)
+**EXTENDS** Case 1676
+
+**Anime description:** The beast within Ray Gil reveals itself and attacks the opponent with its bone exterior (Energy Ring) repeatedly. Creaking sounds are heard during the move (per trivia). Used against Tsubasa to counter Eagle's Diving Crush. The Japanese name means "keel strangle" — the "keel" referring to the rib structure of the Ray Energy Ring, and "strangle" reflecting the sustained spin-drain mechanic.
+
+**Compatible beys:** Ray Gil 100RSF. The RSF rubber tip's spin-leech component requires a rubber tip; the Energy Ring rib sequence requires Ray Gil's specific rib-bone clear wheel geometry. Argo Garcia's BeySpirit (Marine/Beast element) manifests the Ray beast for visual amplification.
+
+**Special move physics:**
+Rib barrage: J_total_per_rev = 0.710 N·s/revolution [physical] — substantial with no [M] needed
+Over n_rev = 3 revolutions (at 310 rad/s, 3 revs ≈ 60ms):
+J_barrage = 3 × 0.710 = **2.13 N·s** [physical, 3-revolution barrage]
+RSF spin-leech (concurrent): Δω_opp = 120.8 × 0.060 = **7.25 rad/s** drain per barrage period (modest but cumulative over sustained contact)
+[M] Beast manifest: ×1.8 on rib impulse → J_barrage_[M] = 3.83 N·s
+
+```typescript
+function keelStrangler(
+  rayGilSpin: number,
+  revolutionCount: number,    // 1–5 revolutions of sustained rib contact
+  rsfLeeching: boolean,       // RSF rubber in sustained contact with opponent
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; leechPerMs: number } {
+  const spinRatio  = rayGilSpin / 310;
+  const revMult    = 1 + (revolutionCount - 1) * 0.15;
+  if (qteHit) {
+    return {
+      spinDelta:   -Math.round(85 * spinRatio * revMult),
+      dmgMult:      Math.min(2.40, 1.80 * spinRatio * revMult),
+      lockMs:       380,
+      powerCost:    105,
+      leechPerMs:   rsfLeeching ? 0.120 : 0,  // rad/s drained per ms of sustained contact
+    };
+  }
+  return { spinDelta: -22, dmgMult: 1.20, lockMs: 0, powerCost: 105, leechPerMs: 0 };
+}
+```
+
+*[M] override: Ray Beast manifestation amplifies rib impulse by ×1.8; physical creaking-rib contact (197 Hz, J = 0.197 N·s/rib) and RSF rubber spin-leech (120.8 rad/s/s) are entirely genuine physical mechanisms.*
+
+---
+
+## Case 1678
+
+**Bey:** Ray Gil 100RSF
+**Blader:** Argo Garcia
+**Label:** COMBO — Rib Lock (Keel Strangler in-game 3-key combo)
+**EXTENDS** Case 1676
+
+**Sequence:** attack → moveLeft → attack (K ← K)
+**Cost:** 35
+**Type restriction:** stamina (the K←K structure requires sustained rib contact through the ← lateral pull to maintain the spin-leech coupling; a stamina bey's RSF rubber tip stays engaged with the opponent through the ← arc without bouncing off; attack beys over-drive through the first K and lose the ← press contact; defense beys do not carry enough rotational speed for the 197 Hz rib frequency to operate above the detectable contact-force threshold on their heavy, slow-rotating layers)
+**Parent gimmick:** Energy Ring rib contact + RSF spin-leech (Case 1676)
+
+**Thesis:** Rib Lock compresses Keel Strangler's multi-revolution barrage into a K←K that executes one partial revolution of rib contact (~90° arc). The first K initiates rib contact. ← applies lateral force to hold Ray Gil against the opponent for ~60ms, maximising RSF spin-leech duration (Δω_combo_leech = 120.8 × 0.060 = 7.25 rad/s drain). The second K re-fires the contact face after the ← drift, catching the opponent's layer on a fresh face for a second rib hit. Combined: first rib hit + 60ms RSF leech + second rib hit = two J_rib impacts plus the sustained drain, approximately equivalent to one full revolution of Keel Strangler barrage.
+
+```typescript
+function ribLock(
+  firstRibLanded: boolean,
+  rsfContactSustained: boolean,  // ← held RSF contact for ≥ 60ms
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; leechBonus: number } {
+  if (qteHit) {
+    const base = firstRibLanded ? 40 : 20;
+    const leech = rsfContactSustained ? 10 : 0;
+    return {
+      spinDelta:   -(base + leech),
+      dmgMult:     Math.min(1.50, (firstRibLanded ? 1.35 : 1.15) + (rsfContactSustained ? 0.08 : 0)),
+      lockMs:      rsfContactSustained ? 260 : 130,
+      powerCost:   35,
+      leechBonus:  rsfContactSustained ? 0.18 : 0,
+    };
+  }
+  return { spinDelta: -10, dmgMult: 1.07, lockMs: 0, powerCost: 35, leechBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.50 ≤ 1.5 ✓ | lockMs 260 ≤ 300 ✓ | cost 35 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+---
+
+## Case 1679
+
+**Bey:** Zeus (Plastic Generation)
+**Blader:** Brooklyn
+**Label:** GIMMICK — Zeus AR Barrage Impulse Train + Brooklyn BeySpirit Darkness Field [M] Amplification (King of Darkness mechanism)
+
+**New analysis:** King of Darkness is Brooklyn's only special move and operates almost entirely in [M] territory. The physical grounding is the Zeus attack ring's aggressive multi-point protrusion pattern delivering a rapid strike sequence. Brooklyn's overwhelming BeySpirit power generates the "darkness field" — an anti-light [M] region — and the Zeus Bit Beast delivers the final catastrophic smash impact.
+
+**Zeus plastic gen bey specs (estimated from plastic-gen attack type standards):**
+- Zeus Attack Ring: wide aggressive multi-protrusion AR; m_AR ≈ 14 g, r_AR ≈ 28 mm
+- Weight Disk: ~10 Heavy or equivalent; m_WD ≈ 15 g
+- Spin Gear: standard right-spin; m_SG ≈ 3 g
+- Blade Base: sharp tip (attack type); m_BB ≈ 4 g
+- Total: m_Zeus ≈ 36 g, I ≈ 7.5×10⁻⁶ kg·m²
+- Launch spin: ω₀ = 280 rad/s (standard plastic gen launcher)
+- AR tip velocity: v_AR = 280 × 0.028 = **7.84 m/s**
+
+**AR strike sequence:**
+Assuming 4 primary protrusions at ~90° spacing:
+v_rel = v_AR − v_opp ≈ 7.84 − 2.0 = 5.84 m/s
+μ_r = (0.036 × 0.038)/(0.074) = 0.01849 kg
+e ≈ 0.60 (plastic-gen ABS)
+J_single = μ_r × (1+e) × v_rel = 0.01849 × 1.60 × 5.84 = **0.173 N·s** per protrusion
+
+4-strike barrage (one revolution, ~22ms at 280 rad/s):
+J_barrage = 4 × 0.173 × 0.88 (diminishing) = **0.609 N·s** [physical barrage]
+
+**Final smash (Zeus Bit Beast):**
+[M] concentrated energy release: Zeus Beast manifests and delivers a singular directional smash.
+J_smash_[M] = J_barrage × [M_factor] = 0.609 × 3.5 ≈ **2.13 N·s** [M]
+Impact: F_smash_[M] = J_smash_[M] / t_c = 2.13 / 0.001 = **2,130 N** [M] — devastating, impossible physically, entirely BeySpirit-powered.
+
+**Darkness field:**
+Brooklyn's BeySpirit negates ambient light around the battle zone. Physical: no mechanism. [M]: total BeySpirit dominance (Brooklyn is stated to have overwhelming innate BeySpirit that surpasses Tyson in raw power). Effect in-game: reduces opponent's ability to read trajectory (reduces dodge probability during the barrage).
+
+---
+
+## Case 1680
+
+**Bey:** Zeus (Plastic Generation)
+**Blader:** Brooklyn
+**Label:** SPECIAL — King of Darkness (darkness barrage + Zeus Beast smash)
+**EXTENDS** Case 1679
+
+**Anime description:** Darkness appears behind Brooklyn; Zeus Bit Beast emerges from the darkness as Brooklyn disappears. Zeus delivers a barrage of striking attacks, then concludes with an intense smash attack. Brooklyn's BeySpirit power is so overwhelming that he effectively becomes one with Zeus during the move.
+
+**Compatible beys:** Zeus (Brooklyn's bey) only. The darkness field is specific to Brooklyn's overwhelming BeySpirit; no other blader can replicate the anti-light environment component.
+
+**Special move physics:**
+Barrage: J_barrage_physical = 0.609 N·s (4 protrusion hits)
+Final smash: J_smash_[M] = 2.13 N·s total
+Darkness field: removes dodge reaction from opponent for duration of barrage [M]
+
+```typescript
+function kingOfDarkness(
+  zeusSpin: number,
+  brooklynSpiritLevel: number,    // 0.0–1.0, controls darkness field intensity
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; darknessField: boolean; finalSmash: number } {
+  const spinRatio    = zeusSpin / 280;
+  const spiritScale  = 1 + brooklynSpiritLevel * 0.80;
+  if (qteHit) {
+    return {
+      spinDelta:    -Math.round(110 * spinRatio * spiritScale),
+      dmgMult:       Math.min(3.20, 2.20 * spinRatio * spiritScale),
+      lockMs:        450,
+      powerCost:     140,
+      darknessField: brooklynSpiritLevel >= 0.50,
+      finalSmash:    2.13 * spinRatio * spiritScale,  // N·s additional terminal impulse
+    };
+  }
+  return { spinDelta: -28, dmgMult: 1.28, lockMs: 0, powerCost: 140, darknessField: false, finalSmash: 0 };
+}
+```
+
+*[M] override: BeySpirit provides darkness field (anti-light [M] phenomenon), Zeus Beast manifestation, and final smash energy amplification (×3.5 on physical barrage). Physical AR barrage (J = 0.609 N·s) is real and above ring-out force threshold for most plastic-gen opponents.*
+
+---
+
+## Case 1681
+
+**Bey:** Zeus (Plastic Generation)
+**Blader:** Brooklyn
+**Label:** COMBO — Dark Strike (King of Darkness in-game 3-key combo)
+**EXTENDS** Case 1679
+
+**Sequence:** moveDown → attack → moveDown (↓ K ↓)
+**Cost:** 35
+**Type restriction:** attack (the ↓K↓ structure uses a downward approach arc before and after the K strike, replicating the King of Darkness's downward falling-strike trajectory from above; an attack bey carries the orbital speed needed to complete both ↓ arcs at full velocity, maintaining the approach angles required for Zeus' protrusions to strike from slightly above the equatorial plane; a defense bey tip would brake too hard on the first ↓; a stamina bey's wide/flat tip skips the approach geometry)
+**Parent gimmick:** Zeus AR barrage impulse train (Case 1679)
+
+**Thesis:** Dark Strike condenses the King of Darkness barrage into a ↓K↓ arc-strike-arc that replicates the downward angle of the Zeus Beast's smash strike. ↓ drives Zeus on a descending orbital arc (approach elevation −20° below equatorial plane, approximating a downward strike angle). K fires at the deepest point of the ↓ arc where Zeus' AR protrusions contact at a downward-tilted vector, delivering the combined horizontal + downward impulse (F_z_combo = J × sin(20°) ≈ 0.34 N downward). Post-K ↓ continues the descent arc, converting residual orbital momentum into a brief continued push. The darkness field is absent (no BeySpirit basis in the combo), but the protrusion geometry and downward strike angle mirror the final-smash trajectory from the full move.
+
+```typescript
+function darkStrike(
+  descendArcCorrect: boolean,   // ↓ achieved −20° approach angle
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; downwardBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:     descendArcCorrect ? -46 : -24,
+      dmgMult:       descendArcCorrect ? 1.49 : 1.27,
+      lockMs:        descendArcCorrect ? 200 : 85,
+      powerCost:     35,
+      downwardBonus: descendArcCorrect ? 0.17 : 0.05,  // additional downward force component
+    };
+  }
+  return { spinDelta: -10, dmgMult: 1.07, lockMs: 0, powerCost: 35, downwardBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.49 ≤ 1.5 ✓ | lockMs 200 ≤ 300 ✓ | cost 35 ✓ | no full recovery ✓ | no AoE ✓ | no invulnerability ✓
+
+*Cases continue from Case 1682 as further franchise moves are provided.*

@@ -1,0 +1,326 @@
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { collection, getDocs } from 'firebase/firestore';
+import { db, COLLECTIONS } from '../lib/firebase';
+import { useGame } from '../contexts/GameContext';
+import { useAuth } from '../contexts/AuthContext';
+import { CardCarousel, type CarouselCard } from '../components/ui/CardCarousel';
+import type { GameRoomConfig, RoomType } from '../types/gameRoom';
+import toast from 'react-hot-toast';
+
+type Difficulty = 'medium' | 'hard' | 'hell';
+
+interface SimpleOption { id: string; name: string; }
+
+interface DrawerState {
+  open: boolean;
+  roomType: RoomType | null;
+}
+
+const DIFFICULTY_LABELS: Record<Difficulty, { label: string; color: string }> = {
+  medium: { label: 'Medium', color: '#f59e0b' },
+  hard:   { label: 'Hard',   color: '#ef4444' },
+  hell:   { label: 'Hell',   color: '#ff2a4d' },
+};
+
+export function BattleModeCardsPage() {
+  const navigate = useNavigate();
+  const { settings } = useGame();
+  const { currentUser } = useAuth();
+
+  const [beyblades, setBeyblades] = useState<SimpleOption[]>([]);
+  const [arenas, setArenas] = useState<SimpleOption[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [selectedBey, setSelectedBey] = useState<string>('');
+  const [selectedArena, setSelectedArena] = useState<string>('');
+  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+  const [bestOf, setBestOf] = useState<1 | 3 | 5>(1);
+
+  const [drawer, setDrawer] = useState<DrawerState>({ open: false, roomType: null });
+
+  useEffect(() => {
+    const go = settings?.beybladeId ?? '';
+    const ga = settings?.arenaId ?? '';
+    if (go) setSelectedBey(go);
+    if (ga) setSelectedArena(ga);
+  }, [settings]);
+
+  useEffect(() => {
+    Promise.all([
+      getDocs(collection(db, COLLECTIONS.BEYBLADE_STATS)),
+      getDocs(collection(db, COLLECTIONS.ARENAS)),
+    ]).then(([beySnap, arenaSnap]) => {
+      const beys = beySnap.docs.map(d => ({ id: d.id, name: (d.data().displayName as string) || d.id }));
+      const arns = arenaSnap.docs.map(d => ({ id: d.id, name: (d.data().name as string) || d.id }));
+      setBeyblades(beys.length ? beys : [{ id: 'default', name: 'Default Beyblade' }]);
+      setArenas(arns.length ? arns : [{ id: 'default', name: 'Default Arena' }]);
+      if (!selectedBey && beys.length) setSelectedBey(beys[0].id);
+      if (!selectedArena && arns.length) setSelectedArena(arns[0].id);
+    }).catch(() => {
+      setBeyblades([{ id: 'default', name: 'Default Beyblade' }]);
+      setArenas([{ id: 'default', name: 'Default Arena' }]);
+      if (!selectedBey) setSelectedBey('default');
+      if (!selectedArena) setSelectedArena('default');
+    }).finally(() => setLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const openDrawer = useCallback((roomType: RoomType) => {
+    setDrawer({ open: true, roomType });
+  }, []);
+
+  const launchGame = useCallback(() => {
+    if (!drawer.roomType) return;
+    if (!selectedBey || !selectedArena) {
+      toast.error('Please select a beyblade and arena');
+      return;
+    }
+    const config: GameRoomConfig = {
+      roomType: drawer.roomType,
+      beybladeId: selectedBey,
+      arenaId: selectedArena,
+      aiDifficulty: drawer.roomType === 'pvai' ? difficulty : undefined,
+      bestOf,
+    };
+    setDrawer({ open: false, roomType: null });
+    navigate('/game/room', { state: { config } });
+  }, [drawer, selectedBey, selectedArena, difficulty, bestOf, navigate]);
+
+  const goToPvPLobby = useCallback(() => {
+    if (!selectedBey || !selectedArena) { toast.error('Select a beyblade and arena first'); return; }
+    navigate('/game/2d/battle/lobby');
+  }, [selectedBey, selectedArena, navigate]);
+
+  const goToTournamentLobby = useCallback(() => {
+    navigate('/game/2d/tournament');
+  }, [navigate]);
+
+  const cards: CarouselCard[] = [
+    {
+      id: 'tryout',
+      title: 'Tryout',
+      subtitle: 'Solo Practice',
+      description: 'Practice solo with no pressure. Master your launch technique and experiment with arenas.',
+      gradient: 'linear-gradient(135deg, #052e16 0%, #14532d 50%, #052e16 100%)',
+      icon: '🎯',
+      onSelect: () => openDrawer('tryout'),
+    },
+    {
+      id: 'pvai',
+      title: 'vs AI',
+      subtitle: 'Player vs AI',
+      description: 'Battle an AI opponent locally — no server required. Choose difficulty: Medium, Hard, or Hell.',
+      gradient: 'linear-gradient(135deg, #1c1917 0%, #44403c 50%, #1c1917 100%)',
+      icon: '🤖',
+      onSelect: () => openDrawer('pvai'),
+    },
+    {
+      id: 'pvp',
+      title: 'PvP',
+      subtitle: 'Online Multiplayer',
+      description: 'Challenge real players online. Create a private match or join an open room. Requires server.',
+      gradient: 'linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 50%, #1e3a5f 100%)',
+      icon: '🌐',
+      onSelect: () => goToPvPLobby(),
+    },
+    {
+      id: 'tournament',
+      title: 'Tournament',
+      subtitle: 'Bracket Competition',
+      description: 'Join or create a tournament bracket. Wait 1 minute for players — empty slots fill with AI challengers.',
+      gradient: 'linear-gradient(135deg, #451a03 0%, #b45309 50%, #451a03 100%)',
+      icon: '🏆',
+      onSelect: () => goToTournamentLobby(),
+    },
+    {
+      id: 'royale',
+      title: 'Battle Royale',
+      subtitle: 'Free-for-All',
+      description: 'Up to 8 players in one arena — last bey spinning wins. Empty slots fill with AI bots after 1 minute.',
+      gradient: 'linear-gradient(135deg, #4a044e 0%, #9d174d 50%, #4a044e 100%)',
+      icon: '💥',
+      onSelect: () => openDrawer('royale'),
+    },
+  ];
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: '#050814',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      <button
+        onClick={() => navigate('/')}
+        style={{
+          position: 'absolute', top: '20px', left: '20px',
+          background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+          color: 'rgba(255,255,255,0.6)', borderRadius: '12px',
+          padding: '8px 16px', fontSize: '13px', fontWeight: 600,
+          cursor: 'pointer', letterSpacing: '0.04em', zIndex: 10,
+        }}
+      >
+        ← Back
+      </button>
+
+      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <h1 style={{
+          fontSize: 'clamp(22px, 4vw, 36px)', fontWeight: 900, color: '#fff',
+          letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0,
+        }}>
+          BATTLE MODE
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '13px', marginTop: '8px', letterSpacing: '0.05em' }}>
+          Use ← → or scroll to browse · Press ENTER or tap to select
+        </p>
+      </div>
+
+      <div style={{ width: '100%', maxWidth: '700px', height: '440px' }}>
+        <CardCarousel cards={cards} />
+      </div>
+
+      {/* Quick-setup drawer */}
+      {drawer.open && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)',
+            display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+            zIndex: 100,
+          }}
+          onClick={e => { if (e.target === e.currentTarget) setDrawer({ open: false, roomType: null }); }}
+        >
+          <div style={{
+            background: '#0f172a', border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: '20px 20px 0 0', padding: '28px 24px 40px',
+            width: '100%', maxWidth: '480px',
+            animation: 'slideUp 200ms ease',
+          }}>
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <div style={{
+                fontSize: '13px', fontWeight: 700, color: 'rgba(255,255,255,0.4)',
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+              }}>
+                {drawer.roomType === 'tryout' ? 'Tryout Setup'
+                  : drawer.roomType === 'pvai' ? 'PvAI Setup'
+                  : 'Battle Setup'}
+              </div>
+            </div>
+
+            {loading ? (
+              <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', padding: '20px' }}>
+                Loading…
+              </div>
+            ) : (
+              <>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                    Beyblade
+                  </label>
+                  <select
+                    value={selectedBey}
+                    onChange={e => setSelectedBey(e.target.value)}
+                    style={{
+                      width: '100%', background: '#1e293b', border: '1px solid rgba(255,255,255,0.12)',
+                      color: '#fff', borderRadius: '10px', padding: '10px 12px',
+                      fontSize: '14px', outline: 'none', cursor: 'pointer',
+                    }}
+                  >
+                    {beyblades.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                  </select>
+                </div>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                    Arena
+                  </label>
+                  <select
+                    value={selectedArena}
+                    onChange={e => setSelectedArena(e.target.value)}
+                    style={{
+                      width: '100%', background: '#1e293b', border: '1px solid rgba(255,255,255,0.12)',
+                      color: '#fff', borderRadius: '10px', padding: '10px 12px',
+                      fontSize: '14px', outline: 'none', cursor: 'pointer',
+                    }}
+                  >
+                    {arenas.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                  </select>
+                </div>
+
+                {drawer.roomType === 'pvai' && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+                      AI Difficulty
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {(Object.keys(DIFFICULTY_LABELS) as Difficulty[]).map(d => (
+                        <button
+                          key={d}
+                          onClick={() => setDifficulty(d)}
+                          style={{
+                            flex: 1, padding: '10px 0',
+                            background: difficulty === d ? `${DIFFICULTY_LABELS[d].color}22` : '#1e293b',
+                            border: `1px solid ${difficulty === d ? DIFFICULTY_LABELS[d].color : 'rgba(255,255,255,0.1)'}`,
+                            color: difficulty === d ? DIFFICULTY_LABELS[d].color : 'rgba(255,255,255,0.5)',
+                            borderRadius: '10px', cursor: 'pointer', fontSize: '12px', fontWeight: 700,
+                            letterSpacing: '0.05em', textTransform: 'uppercase', transition: 'all 150ms',
+                          }}
+                        >
+                          {DIFFICULTY_LABELS[d].label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {drawer.roomType !== 'tryout' && drawer.roomType !== 'royale' && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+                      Series Format
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {([1, 3, 5] as const).map(n => (
+                        <button
+                          key={n}
+                          onClick={() => setBestOf(n)}
+                          style={{
+                            flex: 1, padding: '10px 0',
+                            background: bestOf === n ? 'rgba(99,102,241,0.2)' : '#1e293b',
+                            border: `1px solid ${bestOf === n ? '#6366f1' : 'rgba(255,255,255,0.1)'}`,
+                            color: bestOf === n ? '#818cf8' : 'rgba(255,255,255,0.5)',
+                            borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: 700,
+                            transition: 'all 150ms',
+                          }}
+                        >
+                          BO{n}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  onClick={launchGame}
+                  style={{
+                    width: '100%', padding: '14px',
+                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                    border: 'none', borderRadius: '12px',
+                    color: '#fff', fontSize: '15px', fontWeight: 800,
+                    letterSpacing: '0.06em', textTransform: 'uppercase',
+                    cursor: 'pointer', transition: 'transform 100ms',
+                  }}
+                >
+                  LET IT RIP!
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,11 +1,11 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **1612 cases** across 14 files + 1 master reference.
+Total: **1651 cases** across 14 files + 1 master reference.
 
 ---
 
 ## NEXT AVAILABLE CASE NUMBER
 
-> **1643** — All new cases must start here. Update this block before writing any new case.
+> **1682** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
@@ -27,7 +27,7 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1497 · 1525–1545 · 1574–1591 · 1592–1603 · 1610–1633 | 604 | Franchise special moves, gimmick foundations, and derived combos |
+| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1497 · 1525–1545 · 1574–1591 · 1592–1603 · 1610–1633 · 1643–1681 | 643 | Franchise special moves, gimmick foundations, and derived combos |
 | [14 case study.md](14%20case%20study.md) | 892–910 | 19 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | — | Engine reference: constants, formulas, normalization |
 
@@ -129,12 +129,26 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1625–1627 | 3 | Icicle Edge — DF145 counter-deflection sword slam (Ice-Twin · Evil Gemios DF145FS) | CS13 |
 | 1628–1630 | 3 | Ignition Force — EXTENDS CS9 498–500; Ignition’ spring-clutch progressive acceleration (Dante · Command Dragon Ignition’) | CS13 |
 | 1631–1633 | 3 | Iron Wall Fist — EXTENDS CS9 1313–1318; Scythe macro-vortex ring-wall physically above ring-out threshold (Aguma · Scythe Kronos T125EDS) | CS13 |
+| 1643–1645 | 3 | Lion 100 Fang Fury — Rock Leone Rankine vortex + debris entrainment [M] 3.85× (Kyoya · Rock Leone 145WB) | CS13 |
+| 1646–1648 | 3 | King Lion Furious Blast Shot — EXTENDS 1634; ballistic tornado-cocoon trajectory + steerable passes (Kyoya · Rock Leone 145WB) | CS13 |
+| 1649–1651 | 3 | King Lion Tearing Blast — EXTENDS 1634; triple vortex superposition 3-fold Leone symmetry + orbit ejection (Kyoya · Rock Leone 145WB) | CS13 |
+| 1652–1654 | 3 | True King Lion Tearing Blast — EXTENDS 1640; quintet vortex lattice Γ_total=1.317 m²/s mobile tracking (Kyoya · Rock Leone 145WB) | CS13 |
+| 1655–1657 | 3 | King Lion Reverse Wind Strike — EXTENDS 1634; inverted CW vortex counter-spin + vertical drop (Kyoya · Rock Leone 145WB / Fang Leone 130W2D) | CS13 |
+| 1658–1660 | 3 | King Lion Crushing Fang — EXTENDS 1634 1646; funnel vortex capture + overhead plunge explosion [M] 19× (Kyoya · Fang Leone 130W2D) | CS13 |
+| 1661–1663 | 3 | Kick Counter — Kick driver spring-disc upper-attack k=1200 N/m + gyroscopic heading change 10.4° (Free · Vanish Fafnir Tapered Kick-3) | CS13 |
+| 1664–1666 | 3 | Infinite Assault — HF/S dual-mode multi-position illusion [M] 41× + BeySpirit wave (Hikaru · Wind Aquario 100HF/S) | CS13 |
+| 1667–1669 | 3 | Infinite Breaker — EXTENDS CS9 449–453; Infinite Ring Attack Mode 4-blade impulse J=0.562 N·s (Aiger · Infinite Achilles Dimension’ 1B) | CS13 |
+| 1670–1672 | 3 | Infinite Guard — EXTENDS CS9 449–453; Infinite Shield deflect-return ratio 3.56:1 (Aiger · Infinite Achilles Dimension’ 1B) | CS13 |
+| 1673–1675 | 3 | Ishtar Impact — RDF rubber traction speed-build + Quetzalcoatl Beast counter-endurance (Tithi · Death Quetzalcoatl 125RDF) | CS13 |
+| 1676–1678 | 3 | Keel Strangler — Ray Energy Ring rib barrage 197 Hz + RSF rubber spin-leech (Argo Garcia · Ray Gil 100RSF) | CS13 |
+| 1679–1681 | 3 | King of Darkness — Zeus AR 4-protrusion barrage J=0.609 N·s + Brooklyn BeySpirit darkness field [M] (Brooklyn · Zeus) | CS13 |
 
 ### Numbering Notes (Historical)
 
 All former conflicts have been resolved. The notes below document what was fixed.
 
 - **CS9/CS13 case-number collision (resolved)**: CS13 cases 1604–1627 (Hurricane Counter through Iron Wall Fist) were appended before CS9 Wind Aquario cases 1604–1609 were written, creating a 6-case overlap. CS13 block renumbered +6 to 1610–1633; CS9 block 1604–1609 retained as original.
+- **CS9/CS13 second collision (resolved)**: CS13 cases 1634–1672 (Lion 100 Fang Fury through King of Darkness) were appended before CS9 Ray Gil cases 1634–1642 were written, creating a 9-case overlap. CS13 block renumbered +9 to 1643–1681; CS9 block 1634–1642 retained as original.
 
 - **CS2 duplicates (resolved)**: Cases 106–118 appeared 2–3 times each. Second/third occurrences renumbered to 1025–1040 and 1088.
 - **CS3 overlap (resolved)**: Cases 116–155 conflicted with CS2. Renumbered to 911–950.
