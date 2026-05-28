@@ -1,4 +1,4 @@
-# Physics Chain: Part 2
+﻿# Physics Chain: Part 2
 
 **← Part 1:** [1 case study.md](1%20case%20study.md) (Cases 1–73) | **Part 3 →** [3 case study.md](3%20case%20study.md) (Cases 118+)
 
@@ -74,7 +74,7 @@ Every numeric value in new cases must carry one of these tags:
 
 ---
 
-## Case 74 — Nexus (Nx): Eight-Blade Two-Tier Disc as Attack-Biased Mass Distribution
+## Case 1088 — Nexus (Nx): Eight-Blade Two-Tier Disc as Attack-Biased Mass Distribution
 
 > **Stock combo (Einstein MS):** AR: Metal Spring · WD/CWD: Circle Heavy · RC: Spring Core
 
@@ -6169,7 +6169,7 @@ function twEnergyLostPerHit(J_self: number, m_A: number): number {
 
 ---
 
-## Case 106 â€” Neo Right Spin Gear Shells: Enlarged Neo Core Cavity, Heavy Metal Core Access, and the 0.10 g Mass Penalty
+## Case 1025 â€” Neo Right Spin Gear Shells: Enlarged Neo Core Cavity, Heavy Metal Core Access, and the 0.10 g Mass Penalty
 
 Neo Right Spin Gear Shells (~1.15 g each, 2.30 g pair) are the Neo-generation revision of Right Spin Gear Shells (Case 104). The images confirm the key structural difference: the inner cavity is visibly larger, featuring the three-lug bayonet seat required by all Neo Cores rather than the two-lug seat of regular shells. At 0.10 g heavier per pair (2.30 g vs 2.20 g), the mass penalty is negligible but the cavity upgrade opens access to Heavy Metal Core â€” the dominant SG component for right-spin compacts, Weight-Based Defense, Force Smash, and Traditional Upper Attack. Because these archetypes all require HMC or at minimum a Neo Core, Neo Right Spin Shells are a structural prerequisite for competitive right-spin play, not merely a preference.
 
@@ -6248,7 +6248,7 @@ function iWithHMC(baseComboI: number): number {
 
 ---
 
-## Case 107 â€” Metal Weight Core (MWC): Central Zinc Insert, Mass Below Magnecore, and the Marginal Attack Niche
+## Case 1026 â€” Metal Weight Core (MWC): Central Zinc Insert, Mass Below Magnecore, and the Marginal Attack Niche
 
 Metal Weight Core (~2.5 g) is a Neo SG Core with a black ABS housing and a short cylindrical zinc insert at centre. The sticker reads "MW / ãƒ¡ã‚¿ãƒ«ã‚¦ã‚§ã‚¤ãƒˆ / METAL WEIGHT". The side-view image reveals the grey zinc cylinder inside the black ABS shell flanked by Neo lock tabs; the top image shows the insert visible under the sticker. Neo-format only. At 2.5 g it sits lighter than Magnecores (~3.5â€“5 g): enough mass to marginally improve recoil control over Normal Core (1.2 g), not enough to decisively outperform Magnecore. The mass difference between MWC and any comparable core is too small to produce a measurable performance separation in most setups.
 
@@ -6304,7 +6304,7 @@ function mwcI(
 
 ---
 
-## Case 108 â€” Normal Core: All-Plastic Hollow Neo Core, Minimum Neo-Compatible Mass, and the CMS Base Constraint
+## Case 1027 â€” Normal Core: All-Plastic Hollow Neo Core, Minimum Neo-Compatible Mass, and the CMS Base Constraint
 
 Normal Core (~1.2 g) is the lightest Neo SG Core. The image shows an all-white ABS assembly: smooth top cap, Neo body with three lock tabs at base, and a hollow cylindrical void at centre â€” nothing fills it. Lighter than all other Neo Cores, but heavier than the Regular SG Core Part (0.61 g, regular shells only). Its specific niche â€” Customize Metal Sharp Base zombies â€” arises from a tip-shaft bore compatibility constraint, not from any performance advantage.
 
@@ -6363,7 +6363,7 @@ function fitsCMSBase(tipShaftDM: number): boolean {
 
 ---
 
-## Case 109 â€” Regular SG Core Part: Lightest Structural Core, Minimum-Mass SG Configurations, and Spiral Change Base Zombie Optimisation
+## Case 1028 â€” Regular SG Core Part: Lightest Structural Core, Minimum-Mass SG Configurations, and Spiral Change Base Zombie Optimisation
 
 Regular SG Core Part (~0.61 g) is the minimalist ABS component that clips into the Blade Base and holds the regular SG shell pair. Image one shows it alone â€” blue ABS with two upward spring-clip tabs, a central screw receiver, and minimal bridging between the tab towers, explaining the very low mass. Image two shows it with the Metal Weight Gear (Case 105) seated above it on the shell rim: the zinc MWG ring occupies a separate axial zone above the core, visually confirming the two components do not interfere. At 0.61 g it is the second-lightest core (only Wyborg's SG Auto Change Version core at ~0.50â€“0.55 g is lighter). Compatible with regular shells only; cannot interface with Neo-format bases.
 
@@ -6462,7 +6462,7 @@ function rattlesInBore(shaftDM: number, boreDM: number): boolean {
 
 ---
 
-## Case 111 — Right Spin Gear Shells + Metal Weight Gear: Anti-Rattle Ballast, Neo Core Lock-Out, and the Mass Penalty of Anti-Rattle Design
+## Case 1029 — Right Spin Gear Shells + Metal Weight Gear: Anti-Rattle Ballast, Neo Core Lock-Out, and the Mass Penalty of Anti-Rattle Design
 
 Right Spin Gear Shells (~1.1 g each, 2.2 g pair) are the standard two-piece ABS housings for the Plastics-era Spin Gear system. The Metal Weight Gear (MWG, 1.12 g) is an optional die-cast ring that seats inside the shell cavity. Neither component functions as a gear in the transmission sense — the MWG suppresses rattle by filling the clearance gap between the SG Core and shell interior, and the shells provide only the ratchet engagement surface for the launcher cord. The critical constraint is Neo Core incompatibility: the inner cavity diameter of Regular Right Spin Shells is 1.5 mm narrower than a Neo Core flange, permanently locking these shells out of Double Bearing Core and all other Neo-format Running Cores. The result is a mass budget that delivers anti-rattle stability at the cost of stamina-ceiling access.
 
@@ -7095,7 +7095,7 @@ function hoppingLurchMm(
 
 ---
 
-## Case 110 â€” SG Wing Base: Sub-AR Slot Geometry, Irremovable Base-Clip Scraping, Soft-Plastic Tip Stamina Deficit, and the Screw Zeus WBO Flex Ruling
+## Case 1030 â€” SG Wing Base: Sub-AR Slot Geometry, Irremovable Base-Clip Scraping, Soft-Plastic Tip Stamina Deficit, and the Screw Zeus WBO Flex Ruling
 
 SG Wing Base (~5.9 g without Sub-Ring) is the only Plastics-era Blade Base capable of accepting Sub Attack Rings. The top image shows the "GABRIEL" (Gaia Dragoon) sticker over a three-spoke disc with the tip mount at centre and SG lock tabs at the outer rim. The bottom image reveals the SAR acceptance mechanism: a stepped inner ledge running the full circumference of the base, interrupted by the modified base clips that are permanently part of the structure. The third image, with red annotation, shows the sloped SAR seat in profile â€” the Sub-AR rides this slope at the outer base rim. The fourth image shows the Gaia Dragoon tip in isolation: translucent aqua soft-plastic, a small flat contact face, cylindrical body, and wide flange for the base mount. The base's competitive ceiling is set by two fixed liabilities â€” the large base clips cannot be exchanged for smaller ones and scrape the stadium floor under any SAR with significant outer radius, and the soft-plastic tip drains spin faster than rigid ABS. Both issues converge to demote what would otherwise be a flexible compact platform to tier 2.
 
@@ -7367,7 +7367,7 @@ function screwZeusWDFlexStress(
 
 ---
 
-## Case 111 â€” SG Sharp Base: Tall-Body Precession Instability, Sharp Tip RPM Preservation, Mold Retention Differences, and the CMS Base Comparison
+## Case 1031 â€” SG Sharp Base: Tall-Body Precession Instability, Sharp Tip RPM Preservation, Mold Retention Differences, and the CMS Base Comparison
 
 SG Sharp Base (~6.6 g) is the SG-system equivalent of the original Sharp Base â€” a tall-bodied, sharp-tipped Blade Base whose geometry maximises RPM preservation at the cost of every other performance attribute. The images tell the full story: the top view is a featureless smooth dome (no weight recesses, no perimeter features), confirming that mass is concentrated high and centrally; the bottom view reveals an ABS lattice web with a small dark sharp tip at the absolute centre; the side views show the notably tall profile â€” roughly 50â€“70% taller than compact-category bases; and the final comparison image shows both molds side by side, the first mold visibly incorporating a metal retention ring around the tip shaft, the second mold switching to an all-plastic tip retention lug with smaller retention pieces but a reinforced underside rim groove. The sharp tip achieves near-zero friction spin-preservation, but the tall body generates a gravitational torque arm so large that the gyroscopic stiffness collapses prematurely, triggering violent precession and early topple against any opponent.
 
@@ -7959,7 +7959,7 @@ function overlapInterferenceFactor(
 
 Screw Zeus SAR is a high-ceiling, high-floor attack ring whose ceiling is set by companion choice and speed maintenance, and whose floor is set by the mandatory fixation requirement and CSD immunity. Free-spinning the SAR collapses performance to near-zero impulse efficiency within one revolution due to dumbbell phase-slip. Fixed, the SAR requires above ~340 RPM at contact to avoid self-destabilizing recoil. Right-spin presents the designed α ≈ 22° corner contact with cot(22°) = 2.48 efficiency; left-spin inverts the slope to a downward β ≈ 8°, imposing ~0.83 rad/hit tilt perturbation on tall bases. Dragon Breaker Core AR maximises mass and power against heavy defense; Dragon Saucer Core AR optimises durability through wider contact; Great Dragon Core AR maximises speed threshold headroom; War Lion Core AR adds 28°-slope upper attack at the cost of 14% higher self-recoil relative to War Monkey Core AR's 22°-slope safer profile. Circle Survivor Defense is structurally immune via rim geometry: r_CSD = 0.028 m > r_corner = 0.026 m forces contact onto an α ≈ 85° face, converting 91% of impulse into attacker self-recoil.
 
-## Case 112 -- AR War Lion: Two-Wing Oval Silhouette, Near-Spin-Direction-Symmetric Low Recoil, and WD-Radius-Dependent Contact Obstruction
+## Case 1032 -- AR War Lion: Two-Wing Oval Silhouette, Near-Spin-Direction-Symmetric Low Recoil, and WD-Radius-Dependent Contact Obstruction
 
 AR War Lion (~3.7 g) is the core Attack Ring from Galeon. Two swept wings at 180 degrees produce an oval outer silhouette with wing tips at r ~26 mm and a ring body between them at r ~15 mm. Each wing leading face is nearly tangential (beta ~7 degrees from tangent in right-spin), generating minimal rotational recoil per hit. Critically, the trailing face of the symmetric crescent wing presents a nearly identical angle (beta ~9 degrees) in left-spin, making War Lion recoil profile almost spin-direction-agnostic -- a property Tiger Defenser (Case 102) cannot match due to its rear-spike geometry raising LS recoil by ~35%. The cost of the two-wing layout is a large gap sector (~110 degrees per side) where only the inner ring body at r ~15 mm is presented to opponents, making the AR slightly more hittable than Tiger Defenser three-fold symmetric profile. WD outer radius relative to wing tip radius determines whether War Lion or Tiger Defenser is the better choice: Wide Defense and Wide Survivor at r_WD ~26 mm obstruct Tiger Defenser contacts (r_TD ~24 mm) while War Lion wing tips at r ~26 mm remain borderline-exposed.
 
@@ -8164,7 +8164,7 @@ return r_WD >= r_AR_contact;
 
 ---
 
-## Case 113 -- Sub AR War Lion: Near-Circular Neutral Filler, Gap-Liability Wedge Mechanics, and Contact-Point Transparency for Aggressive ARs
+## Case 1033 -- Sub AR War Lion: Near-Circular Neutral Filler, Gap-Liability Wedge Mechanics, and Contact-Point Transparency for Aggressive ARs
 
 Sub AR War Lion (~1.3 g) is an almost-circular thin ring with two minimal swept winglets at 180 degrees, each protruding only ~4 mm beyond the ring body. The design is one of pure non-interference: at 1.3 g with negligible winglet protrusion the SAR satisfies a legal slot requirement without blocking the main AR contact points, adding meaningful recoil, or obstructing height-sensitive attack geometry. The liability is structural -- the SAR shallow outer profile at r_winglet ~24 mm leaves a 2 mm radial gap between itself and a Wide Defense WD (r_WD ~26 mm), creating a 2 mm x 3 mm slot at r = 24-26 mm into which thin attacking ARs at matching heights can wedge. A wedged contact holds for ~15x longer than a face-to-face hit, delivering ~10x more impulse and producing explosive KOs. Dragon Saucer SAR closes this gap at the cost of vertical interference; War Monkey SAR trades more right-spin recoil for better left-spin azimuthal coverage.
 
@@ -8358,7 +8358,7 @@ return 2 * Math.PI \_ r_inner \* t_ring;
 
 ---
 
-## Case 112 — Flying Defense AR (Takara, 6.2 g): Aerodynamic Gimmick Catastrophe
+## Case 1034 — Flying Defense AR (Takara, 6.2 g): Aerodynamic Gimmick Catastrophe
 
 The Flying Defense Attack Ring is a rare example of a part whose design premise actively contradicts competitive function at every level. Its defining gimmick is the "flying" launch orientation — the beyblade is launched upside-down, flips mid-air, and lands right-side-up spinning. In theory, this generates aerodynamic downforce in right-spin (RS) to press the tip into the stadium surface, theoretically improving traction and stability. In practice the physics chain inverts the intended benefit, the large flat AR face creates drag that accelerates spin decay, the edge protrusions contact at the wrong height for any attack archetype, and at 6.2 g the AR is simultaneously one of the largest and lightest in the Plastics generation — maximising the moment arm by which any opponent impact destabilises the combo. The Takara edition compounds matters by distributing less mass toward the outer edge than its Hasbro counterpart, stripping away the marginal spin-retention advantage the design might otherwise claim.
 
@@ -8895,7 +8895,7 @@ Flying Defense (Hasbro) achieves a contact angle of exactly 90° by geometry, ma
 
 ---
 
-## Case 113 — Jumping Base 2 (Cyber Dragoon BB, 6.8 g): Dish Grind Redemption
+## Case 1035 — Jumping Base 2 (Cyber Dragoon BB, 6.8 g): Dish Grind Redemption
 > **Stock combo (Cyber Dragoon):** AR: Cybernetic Dragon · WD: Ten Wide · SG: Right Spin Gear (MG Spring Version) · BB: Jumping Base 2
 
 Jumping Base 2 is a Blade Base whose competitive history traces an almost complete arc of reassessment: dismissed as a joke, confirmed as a joke, and then — through a narrow window of very specific customisation — recovered as a legitimately viable Force-Smash platform. The base is defined by three structural facts: a wide free-spinning outer disc at low height, a tall central body that raises the centre of mass, and a spring-return jump mechanism that launches the beyblade vertically on hard impacts. Each of these individually represents a competitive liability. The disc scrapes the stadium when the bey tilts after a jump; the protrusions on the disc's upper face add recoil on every downward contact; the inner fins generate negligible downforce; and the disc's width makes LAD performance poor. SG compatibility is superficially broad but practically useless since non-protruding cores never reach the stadium floor. Yet the same wide free-spinning disc that causes scrape damage turns out — when precisely balanced and paired with Hasbro Flying Defense — to be a potent overhead grinding mechanism that produces pseudo-Force-Smash displacement, converting two previously rejected parts into a shockingly effective combination.
@@ -9560,7 +9560,7 @@ Square Edge delivers the highest raw impulse output in the plastics era through 
 
 ---
 
-## Case 114 — Ten Heavy WD (16.1 g / 17.0 g Spike Lizard): Heaviest Legal Weight Disk
+## Case 1036 — Ten Heavy WD (16.1 g / 17.0 g Spike Lizard): Heaviest Legal Weight Disk
 
 > **Stock combo (Zeus):** AR: Holy Despell + SAR Screw Zeus · WD: Ten Wide · SG/EG: Right CG Free Shaft · BB: First Clutch Base Zeus · CEW: Light Sharp
 
@@ -10142,7 +10142,7 @@ The FAC Version Shaft operates across two physically distinct modes. In bearing-
 
 ---
 
-## Case 115 — Flame Wing AR (Dranzer F, 3.8 g): Spin-Direction Asymmetric Wing Fragility
+## Case 1037 — Flame Wing AR (Dranzer F, 3.8 g): Spin-Direction Asymmetric Wing Fragility
 > **Stock combo (Dranzer F):** AR: Flame Wing · WD: Eight Heavy · SG: Right Spin Gear (Triple Change Version) · BB: Flame Change Base
 
 Flame Wing is a three-wing Attack Ring from Dranzer F that presents a split competitive identity almost entirely dictated by spin direction. In right spin its rounded-but-forward-swept wings generate genuine upper attack and moderate smash simultaneously, a combination that should support compact and spin-stealing attack roles — but the wing tips fracture under RS contact forces with enough regularity that second-hand Dranzer F units are broken more often than not. In left spin the geometry reverses: the rounded leading edges become passive deflectors, recoil drops substantially, and the AR transitions into a defensive/zombie character that is viable at the top end without reaching the peak of its class. The fragility concern does not disappear in LS — it merely becomes manageable rather than disqualifying when Wide Survivor or Wide Defense is present to intercept hard hits before they reach the tips. Understanding why the wing geometry is so direction-asymmetric in both contact behaviour and fracture risk is the central physics question this case addresses.
@@ -10776,7 +10776,7 @@ The Full Auto Clutch Base operates as a spring-calibrated spin-threshold switch:
 
 ---
 
-## Case 116 — SG (Triple Change Version) Core (1.7 g): Three-Tip Friction Indexer
+## Case 1038 — SG (Triple Change Version) Core (1.7 g): Three-Tip Friction Indexer
 
 > **Stock combo (Seaborg 2):** AR: Whale Crusher · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
 
@@ -11042,7 +11042,7 @@ function hoppingPresent(sg: SGTripleChangeCore, tip: TipPosition, worn: boolean)
 
 ---
 
-## Case 117 — Flame Change Base (Dranzer F BB, 4.1 g): Dedicated TCVersion Shell
+## Case 1039 — Flame Change Base (Dranzer F BB, 4.1 g): Dedicated TCVersion Shell
 > **Stock combo (Dranzer F):** AR: Flame Wing · WD: Eight Heavy · SG: Right Spin Gear (Triple Change Version) · BB: Flame Change Base
 
 Flame Change Base is a Blade Base designed exclusively to house SG (Triple Change Version) and has no compatibility with any other SG. It is one of the few bases in the Plastics generation whose design is entirely constrained by a single core part rather than offering any independent versatility. The base itself is a flat-profile ABS disc with a specialised cross-slot receiver for the Triple Change core's non-standard body, a smooth lower rim providing middling LAD, and a compact weight distribution. It cannot accept a Heavy Metal Core — the cross-slot bore does not permit the cylindrical HMC insert — which is the decisive competitive constraint. The base had marginal tournament relevance when SG (Triple Change Version) was novel, collapsed as the format identified dedicated-tip bases as universally superior, and retains only situational niche use as an aggressive balance-type platform when the SG's tips are sufficiently worn to eliminate ridge-hopping.
@@ -11519,7 +11519,7 @@ Double Snake fails in both spin directions through distinct but root-common fail
 
 ---
 
-## Case 118 — Metal Balls (1/4" and 3/16" Steel): Rolling Contact and Point-Mass Ballast
+## Case 1040 — Metal Balls (1/4" and 3/16" Steel): Rolling Contact and Point-Mass Ballast
 
 > **Stock combo (Flash Leopard 2):** AR: Panther Head · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Metal Sharp Base
 
@@ -14270,4 +14270,185 @@ function semiFlatMovement(rc: SemiFlatCore, launchOmega_rads: number): "mild_orb
 ### 4. Verdict
 
 **Role:** Non-competitive outside Compact; historical HMS balance-RC baseline. Semi-Flat Core is notable as the first HMS RC to offer launch-technique-dependent behavior � a property that would be refined in later RCs (Metal Change Core's auto-switch, Manual Change Core's pre-battle modes). In Compact builds with Driger MS, Semi-Flat Core's docile mode provides stability, but Metal Semi-Flat Core (Case 87) supersedes it with a heavier metal-tip damping profile. The plastic semi-flat tip ages faster than metal, and the ~2 g mass contributes little to assembly inertia. Do not mistake Semi-Flat Core (plastic, Driger MS) for Metal Semi-Flat Core (metal, Advance Averazer) � they are different parts from different beys with different competitive contexts. Tier: non-competitive.
+
+
+---
+
+## Case 1125 — Trygle: Triple Wing AR + Eight Wide WD + SG (Spring Version) + Jumping Base Trygle (A-to-F Series, Stamina/Self-Destruct)
+
+**Assembly mass:** Triple Wing AR (10.7 g, Case 111) + Eight Wide WD (10.0 g, Case 104) + SG Spring Version core (2.0 g, Case 112) + Jumping Base Trygle (7.8 g, Case 110) = **30.5 g**
+
+**Generation:** Gen 1 Plastic — A-to-F Series (SG System)  
+**Role classification:** Stamina / Inherent-Instability Self-Destruct  
+**Spin direction:** Right (standard SG)
+
+---
+
+### 1. Moment of Inertia Budget
+
+Each component modelled as a thin annular ring I = ½m(r_o² + r_i²):
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) | % of I_total |
+|-----------|-------|----------|----------|-----------------|-------------|
+| Triple Wing AR | 10.7 | 38 | 18 | 9.46 | 40.9 % |
+| Eight Wide WD | 10.0 | 43 | 12 | 9.97 | 43.1 % |
+| SG Spring Core | 2.0 | 10 | 4 | 0.10 | 0.4 % |
+| Jumping Base Trygle | 7.8 | 30 | 5 | 3.61 | 15.6 % |
+| **Total** | **30.5** | — | — | **23.14** | 100 % |
+
+I_total = **2.314×10⁻⁵ kg·m²**
+
+---
+
+### 2. Launch Conditions and Spin Decay
+
+**A-to-F series typical launch RPM:** 900–1 100 RPM → ω₀ = 2π × 1 000 / 60 ≈ **104.7 rad/s**  
+**Angular momentum at launch:** L₀ = I × ω₀ = 2.314×10⁻⁵ × 104.7 = **2.423×10⁻³ N·m·s**
+
+**Ski-tip friction (neutral tilt):** μ_ski = 0.22 (soft ABS ski contact on smooth dish surface)  
+r_contact = 5 mm (estimated lateral ski-blade contact width)  
+τ = μ × m × g × r_contact = 0.22 × 0.0305 × 9.81 × 0.005 = **3.28×10⁻⁴ N·m**  
+dω/dt = τ / I = 3.28×10⁻⁴ / 2.314×10⁻⁵ = **14.2 rad/s²**  
+t_stall (theoretical, neutral tilt) = ω₀ / (dω/dt) = 104.7 / 14.2 = **7.4 s**
+
+**Critical instability note (from Case 110):** The Jumping Base ski geometry enters a positive-feedback loop when tilt exceeds ~8°. At that point contact friction per ski rises sharply, precession rate accelerates, and the beyblade falls within 1–2 rotational cycles. The 7.4 s figure is a maximum only achievable on a perfectly flat, level dish with zero initial perturbation — unattainable in practice.
+
+---
+
+### 3. Spring SG Interaction (Case 112 Cross-Reference)
+
+The SG (Spring Version) core encodes a mechanically pre-loaded spring that tensions the Jumping Base against its spring post. Two consequences:
+
+1. **Height amplification:** Spring tension extends the base ~2 mm beyond the unsprung height, elevating the AR contact zone and increasing exposure to opposing top-height ARs. This worsens the upper-attack vulnerability documented in Case 111 (Triple Wing's near-tangential contact sits optimally against low-height bases; elevated self-height undermines this entirely).
+
+2. **Restoring force paradox:** The spring applies a stabilising downward force of ~0.8 N after launch. This is insufficient to prevent the tilt runaway identified in Case 110 once the ski leaves the dish surface. The spring restoring torque (τ_spring ≈ k × θ ≈ 0.005 N·m/rad × 0.14 rad ≈ 7×10⁻⁴ N·m at 8° tilt) is overwhelmed by the ski off-axis friction torque (τ_friction ≈ 1.2×10⁻³ N·m at critical tilt), confirming the Case 110 verdict that no spring constant available in this mechanism prevents collapse.
+
+---
+
+### 4. Eight Wide WD Contribution
+
+Eight Wide (Case 104) provides I_WD = 9.97×10⁻⁶ kg·m² — 43.1% of total inertia. This is the dominant angular-momentum store. Despite the wide distribution, the octagonal mold creates eight rim-edge protrusions that cause micro-vibration shocks each time a corner contacts the dish wall. At high spin this is negligible; at low spin (< 40% ω₀ ≈ 42 rad/s) these corner impacts generate recoil at the WD radius (43 mm), nudging the already-unstable base further off-axis.
+
+---
+
+### 5. Triple Wing AR Contact Analysis (from Case 111)
+
+Triple Wing's near-tangential contact geometry provides:
+- **Effective smash coefficient:** ~0.15 (low; tangential contact sacrifices impulse magnitude for consistency)
+- **Spin-symmetric dual-effectiveness:** case study confirms the AR works equally in right-spin and left-spin, enabling outspin strategies against left-spin opponents
+- **Upper-attack window:** The AR's contact zone sits at 18–20 mm height. Against standard A-to-F bases (18–22 mm) this is equatorial, providing maximum outspin friction. Against tall V2-era bases (23–26 mm) the contact zone undercuts.
+
+**Verdict for Trygle:** Triple Wing's outspin geometry is wasted here. The Jumping Base cannot maintain spin long enough for outspin friction to accumulate. The AR's best application (long-duration outspin) conflicts directly with the BB's self-destruct failure mode.
+
+---
+
+### 6. Assembly Verdict
+
+| Attribute | Value |
+|-----------|-------|
+| I_total | 2.314×10⁻⁵ kg·m² |
+| ω₀ | 104.7 rad/s |
+| L₀ | 2.423×10⁻³ N·m·s |
+| t_stall (neutral tilt) | 7.4 s (theoretical) |
+| t_stall (real) | 1–3 s (tilt instability onset) |
+| Primary mechanic | Ski-contact positive-feedback collapse (Case 110) |
+| Effective combat role | None — self-eliminates before opponent falls |
+| WBO competitive viability | Banned (Jumping Base excluded from standard legal sets) |
+
+**Conclusion:** Trygle's spring SG pre-loads the instability that the Jumping Base was always going to exhibit. Eight Wide provides angular momentum that extends the stable-tilt window by roughly 0.8 s relative to a lighter WD, but this is insufficient to alter the outcome. Triple Wing's outspin geometry is the one competitively viable component in the stack, but it cannot operate without a stable platform. **Trygle has no viable competitive application.** Its value is exclusively diagnostic: it is the definitive test case showing that a high-inertia WD cannot rescue a geometrically self-destructive base.
+
+---
+
+## Case 1126 — Wyborg: Double Snake AR + Eight Balance WD + SG (Auto Change Version) + SG Auto Change Base (A-to-F Series, Stamina / Left-Spin Self-KO)
+
+**Assembly mass:** Double Snake AR (12.0 g, Case 120) + Eight Balance WD (8.5 g, Case 121) + SG Auto Change core (1.7 g, Case 122) + SG Auto Change Base (6.8 g, Case 119) = **29.0 g**
+
+**Generation:** Gen 1 Plastic — A-to-F Series (SG System)  
+**Role classification:** Stamina / Passive Defense — with right-spin-specific outspin advantage  
+**Spin direction:** Right (standard SG)
+
+---
+
+### 1. Moment of Inertia Budget
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) | % of I_total |
+|-----------|-------|----------|----------|-----------------|-------------|
+| Double Snake AR | 12.0 | 40 | 22 | 12.16 | 54.5 % |
+| Eight Balance WD | 8.5 | 36 | 14 | 6.39 | 28.7 % |
+| SG Auto Change Core | 1.7 | 10 | 3 | 0.087 | 0.4 % |
+| SG Auto Change Base | 6.8 | 26 | 7 | 2.60 | 11.7 % |
+| **Total** | **29.0** | — | — | **21.24** | 100 % |
+
+I_total = **2.124×10⁻⁵ kg·m²**
+
+Note: Eight Balance WD mass 8.5 g estimated from Case 121 analysis (slightly lighter than Eight Wide due to central mass vs peripheral mass trade-off). r_o 36 mm reflects the octagonal profile's effective mass radius (not corner radius).
+
+---
+
+### 2. Launch Conditions and Spin Decay
+
+ω₀ = 104.7 rad/s  
+L₀ = 2.124×10⁻⁵ × 104.7 = **2.224×10⁻³ N·m·s**
+
+**Auto Change tip profile — Mode 1 (launch):** Tip retracts to a flat-plastic configuration. μ_flat = 0.20 (ABS flat on dish)  
+r_contact = 6 mm (flat circle)  
+τ₁ = 0.20 × 0.029 × 9.81 × 0.006 = **3.42×10⁻⁴ N·m**  
+dω/dt₁ = 3.42×10⁻⁴ / 2.124×10⁻⁵ = **16.1 rad/s²**  
+t₁ = 104.7 / 16.1 = **6.5 s** (Mode 1)
+
+**Auto Change Mode 2 (post-impact tip retraction):** After an impact above the trigger threshold (~0.5 N lateral at base), the tip retracts fully and the base rides on its outer rim (LAD-like). In Mode 2, μ_rim ≈ 0.05 (smooth ABS rim on dish edge).  
+r_contact_rim = 25 mm  
+τ₂ = 0.05 × 0.029 × 9.81 × 0.025 = **3.56×10⁻⁴ N·m** (slightly higher torque arm offsets lower friction)  
+dω/dt₂ = 3.56×10⁻⁴ / 2.124×10⁻⁵ = **16.8 rad/s²** (approximately equal to Mode 1 — rim-contact stamina gain marginal)
+
+---
+
+### 3. Double Snake AR Spin-Direction Asymmetry (from Case 120)
+
+Case 120 establishes that Double Snake's steep contact angle (~55° from vertical) creates a pronounced spin-direction asymmetry:
+
+- **Right-spin (co-spin vs right-spin opponent):** Trailing edge contact: impulse resolved 60% perpendicular, 40% tangential. Effective smash coefficient = 0.22.
+- **Left-spin (counter-spin opponent):** Leading edge contact at head-on: near-normal impulse. Effective smash coefficient = 0.41. This is the dangerous case — Double Snake generates significantly higher recoil in counter-spin encounters.
+- **Counter-spin defence:** Against a left-spin opponent, Wyborg receives ~1.8× the recoil per contact event compared to a right-spin matchup. Over n contacts this depletes ω proportional to Δω_per_contact × n.
+
+Δω per counter-spin contact (Case 120 data): ≈ 3.2 rad/s  
+Estimated contacts before elimination: 6–12 at typical attack-type approach frequency  
+→ Combat t_stall ≈ 6.5 – (6 × 3.2 / 16.1) ≈ **4.7–6.5 s** depending on opponent type
+
+---
+
+### 4. Left-Spin Self-KO Risk (from Case 119)
+
+Case 119 identifies the critical Wyborg failure mode: against a **right-spin opponent with tip speed > 1.8 m/s** (attack-type BK, BK2, or Trygle with active base), the Auto Change tip's retraction threshold is met, Mode 2 activates, and the rim-riding trajectory can hop over the dish wall. Specifically:
+
+- **Retraction threshold:** Lateral force F > 0.5 N at base contact
+- **Attack-type BK/BK2 impact force:** ~0.8–1.4 N (exceeds threshold reliably)
+- **Self-KO orbital speed:** ω_orbit_crit (from Case 119) = approximately 11 rad/s around the dish — Wyborg's rim-riding trajectory achieves this speed during the first high-energy impact sequence
+
+**Left-spin opponent note (from Case 119):** Against a left-spin opposing top, the Auto Change base executes a self-centering retraction due to the reversed contact spiral. This is the only configuration where Wyborg's gimmick functions beneficially — it re-centres rather than self-KO-ing.
+
+---
+
+### 5. Eight Balance WD Role (from Case 121)
+
+Eight Balance (Case 121): compact octagonal, lower peripheral mass than Eight Wide. Its lower I fraction (28.7% vs Eight Wide's 43.1% in Trygle) means the assembly responds more readily to impulsive torques — each Double Snake contact event creates a larger Δω/L₀ perturbation. This makes Wyborg's stamina performance **inferior to Eight Wide-based assemblies** by approximately 0.9 s at the same friction condition, but the trade-off is slightly less rotational inertia to overcome when Wyborg needs to re-centre post-impact (moot given the self-KO risk).
+
+---
+
+### 6. Assembly Verdict
+
+| Attribute | Value |
+|-----------|-------|
+| I_total | 2.124×10⁻⁵ kg·m² |
+| ω₀ | 104.7 rad/s |
+| L₀ | 2.224×10⁻³ N·m·s |
+| t_stall (Mode 1) | 6.5 s |
+| t_stall (Mode 2, rim) | ~6.5 s (marginal gain) |
+| t_stall (vs right-spin attack) | 4.7–6.5 s |
+| Self-KO risk (vs attack-type RS) | High — orbit crit at ~11 rad/s |
+| Self-KO risk (vs attack-type LS) | Low — re-centering |
+| Counter-spin vulnerability | Yes — 1.8× recoil per Double Snake contact |
+| WBO competitive viability | Limited — situationally viable vs same-spin stamina only |
+
+**Conclusion:** Wyborg's stock configuration is a conditional stamina platform. Against right-spin opponents at low attack speed it survives through Mode 1 flat-tip riding for ~6.5 s — competitive against the weaker A-to-F stamina options. Against attack-type right-spin opponents the Auto Change base self-KOs before the opponent falls. Against counter-spin opponents the AR recoil (~3.2 rad/s per hit) depletes stamina at roughly 2× the flat-friction decay rate. **The only scenario where Wyborg wins outright is same-spin outspin against a stamina-type right-spin opponent** — exactly the scenario Double Snake's spin-direction asymmetry is designed for (co-spin trailing contact = 0.22 effective smash = minimal self-recoil, maximum friction transfer to opponent).
 

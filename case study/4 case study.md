@@ -1,4 +1,4 @@
-# Physics Chain: Part 4
+﻿# Physics Chain: Part 4
 
 **« Part 1:** [1 case study.md](1%20case%20study.md) (Cases 1–73)
 **← Part 3:** [3 case study.md](3%20case%20study.md) (Cases 118–187)
@@ -7607,7 +7607,7 @@ function forceRatio(
 
 ---
 
-## Case 226 — CEW Metal Grip · 2.7g
+## Case 1097 — CEW Metal Grip · 2.7g
 **Thesis:** CEW Metal Grip's hard rubber semi-flat dome is the only CEW that converts a meaningful fraction (~38%) of the Left Engine Gear (Turbo) burst into lateral movement via traction coupling; outside that pairing rubber friction is a liability — the EG height penalty produces 2.5× more gravitational topple torque than a standard base, and on Right CG (Free Shaft Version) bevel-enabled precession delivers only ~6 s of LAD against SG (Bearing Version 2)'s effectively limitless equivalent.
 
 CEW Metal Grip is the only rubber-tipped CEW. Its construction is three-layer: a white plastic inner body carries the CEW slot mounting tabs; a thin grey metal annular ring forms the outer body and mounting wings; a blue rubber dome sits on top presenting a two-tier contact face — a wide outer semi-flat ring surrounding a central raised nub. The rubber is hard by Plastic-era standards, closer in compliance to Customize Grip Base than to the softer Storm Grip Base. At 2.7g it is the lightest CEW in the line.

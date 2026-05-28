@@ -3150,28 +3150,28 @@ Frame Brace — combo definition:
 *Cases continue with new franchise moves as provided.*
 
 ---
-## Case 653 â€” [GIMMICK] 4D Outer-Rim Metal Wheel and X:D Wide-Disc Tip â€” Maximum Rotational Inertia, Ground Contact Pressure, and Gyroscopic Gravity Field
+## Case 653 — [GIMMICK] 4D Outer-Rim Metal Wheel and X:D Wide-Disc Tip — Maximum Rotational Inertia, Ground Contact Pressure, and Gyroscopic Gravity Field
 
-**Thesis:** The 4D system in Beyblade Metal Fury adds an outer metal rim to the standard MFB wheel body; the outer rim in the Diablo Nemesis configuration has estimated mass m_rim = 15 g at r_outer = 33 mm, contributing an additional rotational inertia of I_rim = m_rim Ã— r_outerÂ² = 0.015 Ã— (0.033)Â² = 1.634 Ã— 10â»âµ kgÂ·mÂ² [CALCULATED], bringing the total rotational inertia to I_4D = I_body + I_rim = 7.308 Ã— 10â»â¶ + 1.634 Ã— 10â»âµ = 2.365 Ã— 10â»âµ kgÂ·mÂ² [CALCULATED], which is 3.23Ã— the standard MFB I_total from CS10 Case 545; the Diablo Nemesis assembly mass is estimated at m_4D = 0.060 kg [ESTIMATED â€” 4D beyblades are measurably heavier than the 0.040 kg MFB standard]; the gyroscopic angular momentum at launch is L = I_4D Ã— Ï‰â‚€ = 2.365 Ã— 10â»âµ Ã— 600 = 1.419 Ã— 10â»Â² kgÂ·mÂ²/s [CALCULATED], which is 3.23Ã— the standard bey's angular momentum â€” this means any lateral torque applied to Nemesis produces a precessional response 3.23Ã— more resistive to translational displacement compared to a standard bey; the X:D (Xtreme Defense) performance tip is a wide flat-disc tip with outer radius r_XD â‰ˆ 8 mm, giving a contact area A_XD = Ï€ Ã— (0.008)Â² = 2.01 Ã— 10â»â´ mÂ² versus the standard ball tip area of approximately 2.83 Ã— 10â»âµ mÂ²; the contact pressure is P_XD = m_4D Ã— g / A_XD = 0.060 Ã— 9.81 / 2.01 Ã— 10â»â´ = 2930 Pa [CALCULATED] â€” lower pressure per unit area than a sharp tip (which concentrates force) but the total friction force is larger: F_friction = Î¼_ABS Ã— m Ã— g = 0.17 Ã— 0.060 Ã— 9.81 = 0.100 N [CALCULATED], compared to 0.0668 N for a standard 0.040 kg bey, representing a 49.7% higher friction floor resistance; the 4D outer rim also generates a substantially larger aerodynamic outflow than a standard AR: v_rim = Ï‰ Ã— r_outer = 600 Ã— 0.033 = 19.8 m/s, and the radial wind force at d = 50 mm is F_wind = Â½ Ã— 1.225 Ã— (19.8 Ã— 0.033/0.050)Â² Ã— 1.96 Ã— 10â»Â³ = 0.205 N [CALCULATED], larger than the Expand Frame's 0.188 N (Case 635) due to the larger outer radius; together the 3.23Ã— gyroscopic resistance, the 49.7% higher friction force, and the 0.205 N aerodynamic proximity push constitute a physical "gravity field" â€” opponents near Nemesis feel its unusual rotational mass as a combination of unpredictable recoil direction (gyroscopic precession), ground resistance, and aerodynamic push, all of which the Armageddon special move amplifies to anime scale.
+**Thesis:** The 4D system in Beyblade Metal Fury adds an outer metal rim to the standard MFB wheel body; the outer rim in the Diablo Nemesis configuration has estimated mass m_rim = 15 g at r_outer = 33 mm, contributing an additional rotational inertia of I_rim = m_rim × r_outer² = 0.015 × (0.033)² = 1.634 × 10â»âµ kgÂ·m² [CALCULATED], bringing the total rotational inertia to I_4D = I_body + I_rim = 7.308 × 10â»â¶ + 1.634 × 10â»âµ = 2.365 × 10â»âµ kgÂ·m² [CALCULATED], which is 3.23× the standard MFB I_total from CS10 Case 545; the Diablo Nemesis assembly mass is estimated at m_4D = 0.060 kg [ESTIMATED — 4D beyblades are measurably heavier than the 0.040 kg MFB standard]; the gyroscopic angular momentum at launch is L = I_4D × Ï‰â‚€ = 2.365 × 10â»âµ × 600 = 1.419 × 10â»² kgÂ·m²/s [CALCULATED], which is 3.23× the standard bey's angular momentum — this means any lateral torque applied to Nemesis produces a precessional response 3.23× more resistive to translational displacement compared to a standard bey; the X:D (Xtreme Defense) performance tip is a wide flat-disc tip with outer radius r_XD â‰ˆ 8 mm, giving a contact area A_XD = Ï€ × (0.008)² = 2.01 × 10â»â´ m² versus the standard ball tip area of approximately 2.83 × 10â»âµ m²; the contact pressure is P_XD = m_4D × g / A_XD = 0.060 × 9.81 / 2.01 × 10â»â´ = 2930 Pa [CALCULATED] — lower pressure per unit area than a sharp tip (which concentrates force) but the total friction force is larger: F_friction = Î¼_ABS × m × g = 0.17 × 0.060 × 9.81 = 0.100 N [CALCULATED], compared to 0.0668 N for a standard 0.040 kg bey, representing a 49.7% higher friction floor resistance; the 4D outer rim also generates a substantially larger aerodynamic outflow than a standard AR: v_rim = Ï‰ × r_outer = 600 × 0.033 = 19.8 m/s, and the radial wind force at d = 50 mm is F_wind = Â½ × 1.225 × (19.8 × 0.033/0.050)² × 1.96 × 10â»³ = 0.205 N [CALCULATED], larger than the Expand Frame's 0.188 N (Case 635) due to the larger outer radius; together the 3.23× gyroscopic resistance, the 49.7% higher friction force, and the 0.205 N aerodynamic proximity push constitute a physical "gravity field" — opponents near Nemesis feel its unusual rotational mass as a combination of unpredictable recoil direction (gyroscopic precession), ground resistance, and aerodynamic push, all of which the Armageddon special move amplifies to anime scale.
 
 ### 4D Inertia and Field Profile
 
 ```
-Diablo Nemesis 4D vs Standard MFB â€” property comparison:
+Diablo Nemesis 4D vs Standard MFB — property comparison:
 
   Property            Standard MFB     4D Nemesis       Ratio
   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  Mass                0.040 kg         0.060 kg         1.50Ã—
-  I_total             7.31e-6 kgÂ·mÂ²    2.37e-5 kgÂ·mÂ²    3.23Ã—
-  Gyroscopic L        4.38e-3 kgÂ·mÂ²/s  1.42e-2 kgÂ·mÂ²/s  3.23Ã—
-  Friction force      0.0668 N         0.100 N          1.50Ã—
-  Rim wind at 50mm    0.041 N          0.205 N          5.0Ã—
+  Mass                0.040 kg         0.060 kg         1.50×
+  I_total             7.31e-6 kgÂ·m²    2.37e-5 kgÂ·m²    3.23×
+  Gyroscopic L        4.38e-3 kgÂ·m²/s  1.42e-2 kgÂ·m²/s  3.23×
+  Friction force      0.0668 N         0.100 N          1.50×
+  Rim wind at 50mm    0.041 N          0.205 N          5.0×
   [CALCULATED]
 
-  What 3.23Ã— gyroscopic moment means in practice:
+  What 3.23× gyroscopic moment means in practice:
     Opponent hit at v = 1.0 m/s deflects Standard MFB by ~12 px
-    Same hit deflects 4D Nemesis by ~4 px  (3Ã— less)
-    Nemesis appears "rooted" â€” precesses rather than translates
+    Same hit deflects 4D Nemesis by ~4 px  (3× less)
+    Nemesis appears "rooted" — precesses rather than translates
     This is the physical "increased weight" Armageddon amplifies
 
   Aerodynamic proximity field:
@@ -3179,7 +3179,7 @@ Diablo Nemesis 4D vs Standard MFB â€” property comparison:
     d = 50mm: 0.205 N
     d = 80mm: 0.080 N
     d = 100mm: 0.051 N
-    [CALCULATED â€” inverse-square falloff from outer rim]
+    [CALCULATED — inverse-square falloff from outer rim]
 ```
 
 ### Passive Game Mechanic
@@ -3188,46 +3188,46 @@ Diablo Nemesis 4D vs Standard MFB â€” property comparison:
 4D gimmick passive properties:
 
   inertiaClass: "4D_heavy"
-  gyroscopicResistance: 3.23Ã—  (multiplier on displacement-per-impulse reduction)
+  gyroscopicResistance: 3.23×  (multiplier on displacement-per-impulse reduction)
   proximityField: { radius: 120px, forceCoeff: NEMESIS_AERO_K }
   frictionFloor: 0.100  (vs 0.0668 standard)
 
   On each incoming hit:
     effectiveDisplacement = normalDisplacement / gyroscopicResistance
-    // Nemesis barely moves â€” most impulse becomes precessional tilt, not translation
+    // Nemesis barely moves — most impulse becomes precessional tilt, not translation
 
   Each tick for opponents within 120px:
-    F_push = NEMESIS_AERO_K / distanceÂ²
-    applyForce(opponent.id, radialOutward Ã— F_push Ã— dt)
+    F_push = NEMESIS_AERO_K / distance²
+    applyForce(opponent.id, radialOutward × F_push × dt)
 ```
 
 ---
 
-## Case 654 â€” [SPECIAL MOVE] Armageddon: Rago / Diablo Nemesis X:D (Beyblade Metal Fury)
+## Case 654 — [SPECIAL MOVE] Armageddon: Rago / Diablo Nemesis X:D (Beyblade Metal Fury)
 
 **Franchise Move:** Rago creates a fissure of darkness to engulf and destroy opponents; Diablo Nemesis emits purple-black flames, the environment becomes heavy, the floor cracks, proximity damage scales with distance, and a final shockwave releases when the flames expire. [Beyblade Metal Fury]
 
-**Thesis:** Armageddon is the anime transcendence of the 4D heavy-inertia gravity field gimmick (Case 653) amplified into an area-denial field that converts Nemesis' passive gyroscopic dominance into an active zone that taxes all opponents regardless of whether they choose to engage; physically the gimmick creates a 0.205 N aerodynamic push at 50 mm and a 3.23Ã— displacement resistance, but the special move projects these properties outward as a full 200 px proximity damage field â€” the "darkness" is the visual expression of the kinetic energy field that surrounds a sufficiently massive and fast-spinning gyroscope, and the "floor cracks" are the expression of the X:D tip's 2930 Pa ground pressure amplified by the NEMESIS_WEIGHT_FACTOR = 3.0 that the special applies to Nemesis' effective collision mass during the window; the force state is `must_leave_zone` because the proximity field deals escalating damage proportional to (1 âˆ’ d/200)Â² â€” an opponent standing at d = 100 px takes 25% of the maximum rate, at d = 50 px takes 56%, and at d = 0 px (direct adjacency) takes 100% â€” meaning the only productive strategy is to flee outside the 200 px radius, but then Nemesis recovers spin passively while the opponent is pushed to the ring edge where a ring-out threat emerges; the shockwave at the end is the final release of the stored field energy: when the dark flames expire the entire accumulated aerodynamic field pressure is released as a single radial pulse that travels outward and pushes all remaining opponents toward the ring boundary; the QTE for the opponent is a "field sprint" â€” any opponent who exits the 200 px radius within the first 800 ms of Phase 2 avoids the worst attrition, but the shockwave still hits them at Phase 3; the opponent must leave early AND be at maximum distance when the shockwave fires to minimize total damage taken.
+**Thesis:** Armageddon is the anime transcendence of the 4D heavy-inertia gravity field gimmick (Case 653) amplified into an area-denial field that converts Nemesis' passive gyroscopic dominance into an active zone that taxes all opponents regardless of whether they choose to engage; physically the gimmick creates a 0.205 N aerodynamic push at 50 mm and a 3.23× displacement resistance, but the special move projects these properties outward as a full 200 px proximity damage field — the "darkness" is the visual expression of the kinetic energy field that surrounds a sufficiently massive and fast-spinning gyroscope, and the "floor cracks" are the expression of the X:D tip's 2930 Pa ground pressure amplified by the NEMESIS_WEIGHT_FACTOR = 3.0 that the special applies to Nemesis' effective collision mass during the window; the force state is `must_leave_zone` because the proximity field deals escalating damage proportional to (1 − d/200)² — an opponent standing at d = 100 px takes 25% of the maximum rate, at d = 50 px takes 56%, and at d = 0 px (direct adjacency) takes 100% — meaning the only productive strategy is to flee outside the 200 px radius, but then Nemesis recovers spin passively while the opponent is pushed to the ring edge where a ring-out threat emerges; the shockwave at the end is the final release of the stored field energy: when the dark flames expire the entire accumulated aerodynamic field pressure is released as a single radial pulse that travels outward and pushes all remaining opponents toward the ring boundary; the QTE for the opponent is a "field sprint" — any opponent who exits the 200 px radius within the first 800 ms of Phase 2 avoids the worst attrition, but the shockwave still hits them at Phase 3; the opponent must leave early AND be at maximum distance when the shockwave fires to minimize total damage taken.
 
 ### Phase Structure
 
 ```
-Armageddon â€” phase sequence:
+Armageddon — phase sequence:
 
-Phase 1 â€” "infernal_ignition" (200ms):
+Phase 1 — "infernal_ignition" (200ms):
   windUpMs: 200
   effects:
-    NEMESIS_WEIGHT_MULT activates: effective mass = 3.0Ã— in collisions
-    incomingDamageReduction on Nemesis: 0.40Ã—
+    NEMESIS_WEIGHT_MULT activates: effective mass = 3.0× in collisions
+    incomingDamageReduction on Nemesis: 0.40×
     visual: purple-black flames rise from X:D tip, spread outward
 
-Phase 2 â€” "gravitational_fissure" (2500ms):
+Phase 2 — "gravitational_fissure" (2500ms):
   fieldRadius: 200px
   effects per tick:
-    Proximity damage: D_prox = BASE_DAMAGE Ã— 0.8 Ã— (1 - d/200)Â² per second
-    Spin drain on opponents within 150px: âˆ’15 rad/s per second
-    All collisions FROM Nemesis: impulse Ã— 3.0  (weight factor active)
-    All collisions TO Nemesis: effectiveDisplacement Ã— (1/3.23)  (gyroscopic resistance)
+    Proximity damage: D_prox = BASE_DAMAGE × 0.8 × (1 - d/200)² per second
+    Spin drain on opponents within 150px: −15 rad/s per second
+    All collisions FROM Nemesis: impulse × 3.0  (weight factor active)
+    All collisions TO Nemesis: effectiveDisplacement × (1/3.23)  (gyroscopic resistance)
     Nemesis spin recovery: +8 rad/s per second  (centered heavy gyroscope is efficient)
     visual: floor crack lines propagate outward at 50px per 500ms
 
@@ -3235,14 +3235,14 @@ Phase 2 â€” "gravitational_fissure" (2500ms):
   reasoning: staying inside the 200px radius â†’ continuous damage + spin drain;
              forced to the ring edge â†’ ring-out risk from final shockwave
 
-  QTE â€” "Field Sprint":
+  QTE — "Field Sprint":
     opponent exits 200px radius before t = 800ms â†’ avoids worst attrition phase
     opponent stays inside: takes full 2.5 second proximity damage at their distance
 
-Phase 3 â€” "shockwave_release" (400ms):
+Phase 3 — "shockwave_release" (400ms):
   timing: fires when Phase 2 expires
   effects:
-    Radial burst: 10000 eu at Nemesis center, falloff Ã— (1 âˆ’ d/300)
+    Radial burst: 10000 eu at Nemesis center, falloff × (1 − d/300)
     Arena-spanning (300px radius)
     Pushes all opponents radially outward toward ring boundary
     After pulse: Nemesis 200ms settle (NEMESIS_WEIGHT_MULT deactivates â†’ brief vulnerability)
@@ -3256,20 +3256,20 @@ durationMs: 3100  (200 + 2500 + 400)
 ### Proximity Damage Scaling
 
 ```
-Armageddon proximity damage â€” per second at 60 Hz tick rate:
+Armageddon proximity damage — per second at 60 Hz tick rate:
 
-  d = 0px   (adjacent):  rate = BASE_DAMAGE Ã— 0.8 Ã— 1.00 = 0.80 BASE/s
-  d = 50px:              rate = BASE_DAMAGE Ã— 0.8 Ã— (0.75)Â² = 0.45 BASE/s
-  d = 100px:             rate = BASE_DAMAGE Ã— 0.8 Ã— (0.50)Â² = 0.20 BASE/s
-  d = 150px:             rate = BASE_DAMAGE Ã— 0.8 Ã— (0.25)Â² = 0.05 BASE/s
+  d = 0px   (adjacent):  rate = BASE_DAMAGE × 0.8 × 1.00 = 0.80 BASE/s
+  d = 50px:              rate = BASE_DAMAGE × 0.8 × (0.75)² = 0.45 BASE/s
+  d = 100px:             rate = BASE_DAMAGE × 0.8 × (0.50)² = 0.20 BASE/s
+  d = 150px:             rate = BASE_DAMAGE × 0.8 × (0.25)² = 0.05 BASE/s
   d = 200px (boundary):  rate = 0  (safe zone boundary)
   [GAME-DERIVED]
 
   Over 2.5 second active phase at d = 100px: 0.50 BASE total  (half a base damage)
   Over 2.5 second active phase at d = 50px:  1.13 BASE total  (more than one base damage)
 
-  Shockwave at d = 100px: 10000 Ã— (1 âˆ’ 100/300) = 6667 eu additional
-  Shockwave at d = 200px: 10000 Ã— (1 âˆ’ 200/300) = 3333 eu
+  Shockwave at d = 100px: 10000 × (1 − 100/300) = 6667 eu additional
+  Shockwave at d = 200px: 10000 × (1 − 200/300) = 3333 eu
 
   Optimal opponent strategy: exit to d > 200px by t = 800ms,
   then brace for shockwave at maximum distance.
@@ -3301,14 +3301,14 @@ function fireArmageddonShockwave(nemesis: Beyblade, opponents: Beyblade[]): void
 
 ---
 
-## Case 655 â€” [COMBO] Dark Stance: Player-Skill Expression of the 4D Heavy-Inertia Mass Amplification
+## Case 655 — [COMBO] Dark Stance: Player-Skill Expression of the 4D Heavy-Inertia Mass Amplification
 
-**Thesis:** Dark Stance is the combo-level expression of the 4D heavy-inertia gimmick (Case 653) in which the passive 3.23Ã— gyroscopic displacement resistance is briefly amplified further by player input to create a single heavy counter-strike from a near-stationary anchored position; the sequence is (â†“Jâ†“) â€” moveDown to settle into the bowl bottom, attack to deliver the weight-amplified strike, then moveDown again to re-anchor after the hit â€” representing the player consciously choosing to stop moving, commit Nemesis to a stationary high-pressure ground contact, and exploit the 4D mass for a retaliatory hit whose recoil pushes the attacker back harder than a standard contact; where the gimmick passively reduces Nemesis' own displacement per hit by 3.23Ã—, the combo additionally applies a MASS_BOOST = 1.5Ã— multiplier to Nemesis' effective mass in the outgoing collision only, increasing the attacker's recoil from the hit: J_recoil_on_attacker = m_eff Ã— COR Ã— v_contact = 0.060 Ã— 1.5 Ã— 0.67 Ã— v = amplified outgoing; the net effect is that an opponent who charges into a Dark Stance hit receives 50% more recoil than they would from a normal Nemesis contact â€” they come in expecting a heavy bey to be slow and punishable, but the anchored mass delivers a surprisingly forceful return; the two moveDown inputs are positional â€” each one moves Nemesis 20 px toward the bowl center, ensuring that the anchored position is as far from the ring boundary as possible before the weight-amplified hit can send the bey drifting, and the re-anchor after the hit damps residual velocity back toward center.
+**Thesis:** Dark Stance is the combo-level expression of the 4D heavy-inertia gimmick (Case 653) in which the passive 3.23× gyroscopic displacement resistance is briefly amplified further by player input to create a single heavy counter-strike from a near-stationary anchored position; the sequence is (â†“Jâ†“) — moveDown to settle into the bowl bottom, attack to deliver the weight-amplified strike, then moveDown again to re-anchor after the hit — representing the player consciously choosing to stop moving, commit Nemesis to a stationary high-pressure ground contact, and exploit the 4D mass for a retaliatory hit whose recoil pushes the attacker back harder than a standard contact; where the gimmick passively reduces Nemesis' own displacement per hit by 3.23×, the combo additionally applies a MASS_BOOST = 1.5× multiplier to Nemesis' effective mass in the outgoing collision only, increasing the attacker's recoil from the hit: J_recoil_on_attacker = m_eff × COR × v_contact = 0.060 × 1.5 × 0.67 × v = amplified outgoing; the net effect is that an opponent who charges into a Dark Stance hit receives 50% more recoil than they would from a normal Nemesis contact — they come in expecting a heavy bey to be slow and punishable, but the anchored mass delivers a surprisingly forceful return; the two moveDown inputs are positional — each one moves Nemesis 20 px toward the bowl center, ensuring that the anchored position is as far from the ring boundary as possible before the weight-amplified hit can send the bey drifting, and the re-anchor after the hit damps residual velocity back toward center.
 
 ### Combo Specification
 
 ```
-Dark Stance â€” combo definition:
+Dark Stance — combo definition:
 
   id: "dark-stance"
   sequence: ["moveDown", "attack", "moveDown"]  (â†“Jâ†“)
@@ -3320,15 +3320,15 @@ Dark Stance â€” combo definition:
 
   Phase 1 (â†“): reposition 20px toward bowl center, spin +4 (settling gyroscope)
   Phase 2 (J): weight-amplified strike
-    contactImpulse: DARK_STANCE_BASE (1400 eu) Ã— MASS_BOOST (1.5) = 2100 eu effective
-    knockbackImpulse_on_attacker: 3200 eu  (amplified recoil â€” more than standard)
-    damageMultiplier: 1.40Ã—
-    lockMs: 80  (brief anchor â€” attacker briefly stopped at contact)
-    Nemesis displacement: reduced by 3.23Ã— gyroscopic factor (barely moves on contact)
-  Phase 3 (â†“): re-anchor â€” velocity damp (vx, vy Ã— 0.50), spin +4, reposition 20px center
+    contactImpulse: DARK_STANCE_BASE (1400 eu) × MASS_BOOST (1.5) = 2100 eu effective
+    knockbackImpulse_on_attacker: 3200 eu  (amplified recoil — more than standard)
+    damageMultiplier: 1.40×
+    lockMs: 80  (brief anchor — attacker briefly stopped at contact)
+    Nemesis displacement: reduced by 3.23× gyroscopic factor (barely moves on contact)
+  Phase 3 (â†“): re-anchor — velocity damp (vx, vy × 0.50), spin +4, reposition 20px center
 
   ceiling compliance:
-    damageMultiplier 1.40Ã— â‰¤ 1.5Ã—   âœ“
+    damageMultiplier 1.40× â‰¤ 1.5×   âœ“
     lockMs 80ms â‰¤ 300ms              âœ“
     no invulnerability               âœ“
     no AoE                           âœ“
@@ -3337,40 +3337,40 @@ Dark Stance â€” combo definition:
 
 ---
 
-## Case 656 â€” [GIMMICK] WB Wide-Ball Floor Boundary-Layer Rankine Vortex: Ground-Level Spinning Air Funnel and Approach Deflection
+## Case 656 — [GIMMICK] WB Wide-Ball Floor Boundary-Layer Rankine Vortex: Ground-Level Spinning Air Funnel and Approach Deflection
 
-**Thesis:** The Wide Ball (WB) performance tip has an outer radius r_WB â‰ˆ 6 mm, noticeably larger than the standard Ball tip's r_ball â‰ˆ 3 mm, and this wider contact profile co-rotates a larger air patch against the stadium floor; at launch spin Ï‰â‚€ = 600 rad/s, the air layer at radius r_WB = 6 mm has tangential velocity v_core = Ï‰â‚€ Ã— r_WB = 600 Ã— 0.006 = 3.6 m/s [CALCULATED], and the total circulation of this floor vortex is Î“ = 2Ï€ Ã— r_WBÂ² Ã— Ï‰â‚€ = 2Ï€ Ã— (0.006)Â² Ã— 600 = 0.1357 mÂ²/s [CALCULATED]; outside the co-rotating core the vortex follows the irrotational Rankine profile: v_Î¸(r) = Î“ / (2Ï€ Ã— r) = 0.0216 / r, giving tangential velocities of 0.720 m/s at r = 30 mm, 0.432 m/s at r = 50 mm, and 0.216 m/s at r = 100 mm [CALCULATED]; for an opponent beyblade approaching Wyvern at v_approach = 0.80 m/s from 100 mm distance, the crosswind from the vortex at that radius is v_Î¸ = 0.216 m/s, deflecting the approach trajectory by Î¸_deflect = arctan(0.216/0.80) = 15.1Â° [CALCULATED]; at 50 mm the deflection reaches arctan(0.432/0.80) = 28.4Â° [CALCULATED] â€” meaning a close-range aimed attack arrives nearly 30Â° off-center; the vortex also creates a mild spin-transfer effect on nearby opponents: the air layer's tangential velocity at the opponent's AR radius creates a differential surface drag that opposes the opponent's AR rotation, producing a passive spin drain of approximately 1.5 rad/s per second at d = 50 mm and 0.5 rad/s per second at d = 100 mm [ESTIMATED]; wider ball tip versus standard ball: the 2Ã— radius increase gives a 4Ã— larger vortex core area and a 4Ã— larger circulation Î“, meaning WB's vortex floor effect is approximately 4Ã— stronger than a standard ball tip's; this forms the physical foundation of Arrow Tornado â€” the WB vortex at normal scale deflects aimed attacks by 15â€“28Â° and passively drains nearby spin, and the special move extends these effects to arena scale.
+**Thesis:** The Wide Ball (WB) performance tip has an outer radius r_WB â‰ˆ 6 mm, noticeably larger than the standard Ball tip's r_ball â‰ˆ 3 mm, and this wider contact profile co-rotates a larger air patch against the stadium floor; at launch spin Ï‰â‚€ = 600 rad/s, the air layer at radius r_WB = 6 mm has tangential velocity v_core = Ï‰â‚€ × r_WB = 600 × 0.006 = 3.6 m/s [CALCULATED], and the total circulation of this floor vortex is Î“ = 2Ï€ × r_WB² × Ï‰â‚€ = 2Ï€ × (0.006)² × 600 = 0.1357 m²/s [CALCULATED]; outside the co-rotating core the vortex follows the irrotational Rankine profile: v_Î¸(r) = Î“ / (2Ï€ × r) = 0.0216 / r, giving tangential velocities of 0.720 m/s at r = 30 mm, 0.432 m/s at r = 50 mm, and 0.216 m/s at r = 100 mm [CALCULATED]; for an opponent beyblade approaching Wyvern at v_approach = 0.80 m/s from 100 mm distance, the crosswind from the vortex at that radius is v_Î¸ = 0.216 m/s, deflecting the approach trajectory by Î¸_deflect = arctan(0.216/0.80) = 15.1° [CALCULATED]; at 50 mm the deflection reaches arctan(0.432/0.80) = 28.4° [CALCULATED] — meaning a close-range aimed attack arrives nearly 30° off-center; the vortex also creates a mild spin-transfer effect on nearby opponents: the air layer's tangential velocity at the opponent's AR radius creates a differential surface drag that opposes the opponent's AR rotation, producing a passive spin drain of approximately 1.5 rad/s per second at d = 50 mm and 0.5 rad/s per second at d = 100 mm [ESTIMATED]; wider ball tip versus standard ball: the 2× radius increase gives a 4× larger vortex core area and a 4× larger circulation Î“, meaning WB's vortex floor effect is approximately 4× stronger than a standard ball tip's; this forms the physical foundation of Arrow Tornado — the WB vortex at normal scale deflects aimed attacks by 15–28° and passively drains nearby spin, and the special move extends these effects to arena scale.
 
 ### Rankine Vortex Profile
 
 ```
-WB floor vortex â€” velocity and deflection at key radii:
+WB floor vortex — velocity and deflection at key radii:
 
-  Core (r <= 6mm): solid body rotation, v = Ï‰ Ã— r (max at rim = 3.6 m/s)
-  Outside core: v_Î¸ = Î“/(2Ï€Ã—r) = 0.0216/r
+  Core (r <= 6mm): solid body rotation, v = Ï‰ × r (max at rim = 3.6 m/s)
+  Outside core: v_Î¸ = Î“/(2Ï€×r) = 0.0216/r
 
-  r = 10mm: v_Î¸ = 2.16 m/s   deflect vs v=0.8: arctan(2.16/0.8) = 69.6Â° (won't reach)
-  r = 30mm: v_Î¸ = 0.720 m/s  deflect = 42.0Â°
-  r = 50mm: v_Î¸ = 0.432 m/s  deflect = 28.4Â°
-  r = 80mm: v_Î¸ = 0.270 m/s  deflect = 18.6Â°
-  r = 100mm: v_Î¸ = 0.216 m/s deflect = 15.1Â°
-  r = 150mm: v_Î¸ = 0.144 m/s deflect =  10.2Â°
-  [CALCULATED â€” inverse falloff outside core]
+  r = 10mm: v_Î¸ = 2.16 m/s   deflect vs v=0.8: arctan(2.16/0.8) = 69.6° (won't reach)
+  r = 30mm: v_Î¸ = 0.720 m/s  deflect = 42.0°
+  r = 50mm: v_Î¸ = 0.432 m/s  deflect = 28.4°
+  r = 80mm: v_Î¸ = 0.270 m/s  deflect = 18.6°
+  r = 100mm: v_Î¸ = 0.216 m/s deflect = 15.1°
+  r = 150mm: v_Î¸ = 0.144 m/s deflect =  10.2°
+  [CALCULATED — inverse falloff outside core]
 
   Passive spin drain:
     d = 50mm:  ~1.5 rad/s per second  [ESTIMATED]
     d = 100mm: ~0.5 rad/s per second  [ESTIMATED]
 
   Standard Ball tip comparison (r_ball = 3mm):
-    Î“_ball = 2Ï€ Ã— (0.003)Â² Ã— 600 = 0.034 mÂ²/s  (4Ã— weaker)
-    v_Î¸ at 100mm: 0.054 m/s â†’ deflect 3.9Â°  (barely noticeable)
+    Î“_ball = 2Ï€ × (0.003)² × 600 = 0.034 m²/s  (4× weaker)
+    v_Î¸ at 100mm: 0.054 m/s â†’ deflect 3.9°  (barely noticeable)
     WB is specifically the tip that makes the tornado gimmick viable.
 ```
 
 ### Passive Game Mechanic
 
 ```
-WB tip vortex â€” passive property:
+WB tip vortex — passive property:
 
   tipType: "wide_ball"  â†’ vortexActive: true
 
@@ -3381,52 +3381,52 @@ WB tip vortex â€” passive property:
       // Apply crosswind force perpendicular to approach vector
       perp = perpendicular(normalize(opponent.velocity))
       crosswindForce = 0.5 * RHO_AIR * v_theta^2 * A_AR
-      applyForce(opponent.id, perp Ã— crosswindForce Ã— dt)
+      applyForce(opponent.id, perp × crosswindForce × dt)
       // Spin drain
       opponent.spin -= VORTEX_DRAIN_RATE * (1 / (distance/50)) * dt
 ```
 
 ---
 
-## Case 657 â€” [SPECIAL MOVE] Arrow Tornado: Captain Arrow / Archer Wyvern 145WB (Beyblade Metal Masters)
+## Case 657 — [SPECIAL MOVE] Arrow Tornado: Captain Arrow / Archer Wyvern 145WB (Beyblade Metal Masters)
 
 **Franchise Move:** Wyvern creates a strong funnel of wind to attack the enemy Beyblade with overwhelming strength, uses the twister to disperse the opponent and deplete its spin power, then smashes with a powerful gust. [Beyblade Metal Masters]
 
-**Thesis:** Arrow Tornado is the anime transcendence of the WB floor vortex gimmick (Case 656) in which the passive 15Â° approach deflection at 100 mm is amplified into an arena-spanning tornado field that extends the deflection to ARROW_DEFLECTION_ANGLE = 35Â° across the full stadium, creating a zone where no straight-line attack path reaches Wyvern unless the attacker explicitly accounts for the vortex curl; physically the gimmick deflects attacks by 15â€“28Â° depending on approach distance and attack speed â€” enough to cause misses at close range â€” and the special move essentially scales this to certainty: all attacks within the tornado field are deflected by at least 35Â° unless the attacker uses a precision "read the curl" input that pre-offsets their aim; the tornado also provides sustained spin drain at 12 rad/s per second within 150 px, and at 4 rad/s from 150â€“250 px, with Wyvern receiving a 6 rad/s per second spin recovery from the vortex feeding back into its own spin â€” the tornado is energetically self-sustaining at the spin level, meaning Wyvern does not pay a spin cost to maintain it; the force state is `cannot_attack_freely` because the vortex prevents reliable straight-line approaches â€” the opponent can still attack but only if they correctly read and compensate for the 35Â° deflection, which requires the "Read the Curl" QTE; if they input a straight-line attack, they arrive 35Â° off-center and deal no contact damage; the final gust (Phase 3) is the tornado's collapse: when the spin field expires, all the accumulated rotational air energy is released as a 360Â° radial pulse that pushes all opponents outward â€” the "powerful gust of fury" is the physical release of Î“ Ã— m_air Ã— v stored in the vortex throughout Phase 2.
+**Thesis:** Arrow Tornado is the anime transcendence of the WB floor vortex gimmick (Case 656) in which the passive 15° approach deflection at 100 mm is amplified into an arena-spanning tornado field that extends the deflection to ARROW_DEFLECTION_ANGLE = 35° across the full stadium, creating a zone where no straight-line attack path reaches Wyvern unless the attacker explicitly accounts for the vortex curl; physically the gimmick deflects attacks by 15–28° depending on approach distance and attack speed — enough to cause misses at close range — and the special move essentially scales this to certainty: all attacks within the tornado field are deflected by at least 35° unless the attacker uses a precision "read the curl" input that pre-offsets their aim; the tornado also provides sustained spin drain at 12 rad/s per second within 150 px, and at 4 rad/s from 150–250 px, with Wyvern receiving a 6 rad/s per second spin recovery from the vortex feeding back into its own spin — the tornado is energetically self-sustaining at the spin level, meaning Wyvern does not pay a spin cost to maintain it; the force state is `cannot_attack_freely` because the vortex prevents reliable straight-line approaches — the opponent can still attack but only if they correctly read and compensate for the 35° deflection, which requires the "Read the Curl" QTE; if they input a straight-line attack, they arrive 35° off-center and deal no contact damage; the final gust (Phase 3) is the tornado's collapse: when the spin field expires, all the accumulated rotational air energy is released as a 360° radial pulse that pushes all opponents outward — the "powerful gust of fury" is the physical release of Î“ × m_air × v stored in the vortex throughout Phase 2.
 
 ### Phase Structure
 
 ```
-Arrow Tornado â€” phase sequence:
+Arrow Tornado — phase sequence:
 
-Phase 1 â€” "tornado_formation" (500ms):
+Phase 1 — "tornado_formation" (500ms):
   Wyvern spin recovery: +10 rad/s  (gathering energy into vortex)
   Visual: funnel rises from WB tip, growing upward from floor
 
-Phase 2 â€” "tornado_sustained" (3000ms):
+Phase 2 — "tornado_sustained" (3000ms):
   vortexRadius: 250px (full arena)
-  ARROW_DEFLECTION_ANGLE: 35Â°  (amplified from physical 15.1Â° at 100mm)
+  ARROW_DEFLECTION_ANGLE: 35°  (amplified from physical 15.1° at 100mm)
 
-  Approach deflection: ALL attack vectors within 250px are rotated 35Â°
-    â†’ aimed attacks arrive 35Â° off-center â†’ reliably miss Wyvern
+  Approach deflection: ALL attack vectors within 250px are rotated 35°
+    â†’ aimed attacks arrive 35° off-center â†’ reliably miss Wyvern
     â†’ exceptions: QTE "Read the Curl" (see below)
 
   Spin drain:
-    within 150px: âˆ’12 rad/s per second
-    150â€“250px:    âˆ’4 rad/s per second
+    within 150px: −12 rad/s per second
+    150–250px:    −4 rad/s per second
   Wyvern recovery: +6 rad/s per second  (vortex self-sustains)
 
   forceState: cannot_attack_freely, durationMs: 3000ms
   reasoning: straight-line attacks fail; only "read the curl" attacks connect
 
-  QTE for attacker â€” "Read the Curl":
-    Pre-offset aim by 30â€“40Â° from Wyvern's position before attacking
+  QTE for attacker — "Read the Curl":
+    Pre-offset aim by 30–40° from Wyvern's position before attacking
     Correct offset: attack arrives on-target despite deflection
     Correct offset + attack within 200ms: also negates spin drain for that hit window
     Incorrect offset: standard deflection applies, attack misses
 
-Phase 3 â€” "final_gust" (200ms):
-  Radial 360Â° burst: 5000 eu at Wyvern center, Ã— (1 âˆ’ d/250) falloff
+Phase 3 — "final_gust" (200ms):
+  Radial 360° burst: 5000 eu at Wyvern center, × (1 − d/250) falloff
   Pushes all opponents toward ring boundary
   Visual: funnel collapses outward in expanding wave ring
 
@@ -3448,14 +3448,14 @@ function applyArrowTornadoDeflection(target: Vector2, wyvern: Beyblade, attacker
 
 ---
 
-## Case 658 â€” [COMBO] Vortex Feint: Player-Skill Expression of the WB Floor Vortex Approach Deflection
+## Case 658 — [COMBO] Vortex Feint: Player-Skill Expression of the WB Floor Vortex Approach Deflection
 
-**Thesis:** Vortex Feint is the combo-level expression of the WB floor vortex gimmick (Case 656) in which the passive 15Â° approach deflection is manually triggered as a brief defensive pulse that deflects a single incoming attack; the sequence is (â†’â†K) â€” moveRight, moveLeft, defense â€” representing Wyvern swaying side-to-side to generate a brief amplified air disturbance from the WB tip, then activating the guard on K to focus that disturbance forward; the two side-to-side inputs create a brief lateral oscillation that physically increases the WB contact patch's air-coupling momentarily â€” similar to how fanning an airstream concentrates it â€” producing a 250 ms deflection pulse at 12Â° instead of the passive 15.1Â° at 100 mm [INFERRED â€” slightly less than passive at same distance because the pulse is brief rather than sustained]; the deflection is not guaranteed to cause a miss: an opponent who already committed a slow-approach attack and is more than 150 px away at the time of the Vortex Feint may arrive close enough that the residual deflection still redirects them; an opponent in a fast approach at close range may partially avoid the deflection and still clip Wyvern; the counter window (200 ms) after the deflection represents the brief moment where Wyvern's vortex has just redirected the attacker and Wyvern can use the turbulence to its own advantage.
+**Thesis:** Vortex Feint is the combo-level expression of the WB floor vortex gimmick (Case 656) in which the passive 15° approach deflection is manually triggered as a brief defensive pulse that deflects a single incoming attack; the sequence is (â†’â†K) — moveRight, moveLeft, defense — representing Wyvern swaying side-to-side to generate a brief amplified air disturbance from the WB tip, then activating the guard on K to focus that disturbance forward; the two side-to-side inputs create a brief lateral oscillation that physically increases the WB contact patch's air-coupling momentarily — similar to how fanning an airstream concentrates it — producing a 250 ms deflection pulse at 12° instead of the passive 15.1° at 100 mm [INFERRED — slightly less than passive at same distance because the pulse is brief rather than sustained]; the deflection is not guaranteed to cause a miss: an opponent who already committed a slow-approach attack and is more than 150 px away at the time of the Vortex Feint may arrive close enough that the residual deflection still redirects them; an opponent in a fast approach at close range may partially avoid the deflection and still clip Wyvern; the counter window (200 ms) after the deflection represents the brief moment where Wyvern's vortex has just redirected the attacker and Wyvern can use the turbulence to its own advantage.
 
 ### Combo Specification
 
 ```
-Vortex Feint â€” combo definition:
+Vortex Feint — combo definition:
 
   id: "vortex-feint"
   sequence: ["moveRight", "moveLeft", "defense"]  (â†’â†K)
@@ -3467,51 +3467,51 @@ Vortex Feint â€” combo definition:
 
   effects:
     vortexPulseMs: 250  (deflection field active)
-    DEFLECT_ANGLE_PULSE: 12Â°  (less than passive sustained â€” brief pulse)
+    DEFLECT_ANGLE_PULSE: 12°  (less than passive sustained — brief pulse)
     nextAttackDeflected: true  (flags the next incoming attack for deflection)
     lateralDodge: 20px in moveRight direction  (the side-to-side also moves Wyvern slightly)
     counterWindowMs: 200
     if attacker misses during window:
       counterImpulse: +600 eu if Wyvern attacks in window
-      damageMultiplier: 1.25Ã—
+      damageMultiplier: 1.25×
 
   ceiling compliance:
-    damageMultiplier 1.25Ã— â‰¤ 1.5Ã—   âœ“
+    damageMultiplier 1.25× â‰¤ 1.5×   âœ“
     no invulnerability               âœ“
     no persistent zone               âœ“
-    brief deflection â€” not guaranteed âœ“
+    brief deflection — not guaranteed âœ“
 ```
 
 ---
 
-## Case 659 â€” [GIMMICK] RDF Rubber Defense Flat High-Friction Spiral Orbit â€” Inward-Coiling Orbital Attack with Approach-Angle Accumulation
+## Case 659 — [GIMMICK] RDF Rubber Defense Flat High-Friction Spiral Orbit — Inward-Coiling Orbital Attack with Approach-Angle Accumulation
 
-**Thesis:** The Rubber Defense Flat (RDF) performance tip has a rubber flat contact surface with Î¼_rubber = 0.50 [CS10 Case 545], giving a maximum lateral acceleration of a_lateral = Î¼ Ã— g = 0.50 Ã— 9.81 = 4.91 m/sÂ² [CALCULATED] â€” the highest lateral acceleration of any standard tip type; in an orbital attack configuration the bey spirals inward from a large initial orbit radius toward a smaller radius around the target, and the high rubber friction provides two key behaviors: first, at each orbital pass the bey approaches the target from a different angle because the spiral tightens by approximately Î”r â‰ˆ a_lateral Ã— T_orbitÂ² / (4Ï€) per half-orbit [INFERRED from spiral mechanics], where T_orbit is the current orbital period; for an initial orbit at r = 80 px (game scale â‰ˆ 33 mm) with v_orb = âˆš(Î¼ Ã— g Ã— r) = âˆš(0.50 Ã— 9.81 Ã— 0.033) = 0.403 m/s [CALCULATED] and T_orbit = 2Ï€ Ã— 0.033 / 0.403 = 0.515 s, each half-orbit tightens the radius by Î”r â‰ˆ 4.91 Ã— (0.515/2)Â² / (4Ï€) = 0.026 m = 26 mm [CALCULATED], which is enough to go from 80 px orbit to 27 px orbit in 3 half-orbits; second, the approach angle to the target changes by approximately 60Â° per half-orbit as the orbit tightens (geometric consequence of the inward spiral) [INFERRED], so after 3 orbits the attack is arriving from 180Â° opposite to the initial approach direction; the Death Quetzalcoatl 125 height track raises the AR contact zone compared to standard 105 or 100 tracks, making the AR-to-AR contact more likely during the coiling approach by ensuring the AR sweep height clears the target's AR at close orbit range; together the RDF spiral inward and the 125 track height create a beyblade that naturally coils around opponents for repeated angled contacts â€” each contact arriving from a different direction with the rubber tip maintaining orbital velocity efficiently through each pass.
+**Thesis:** The Rubber Defense Flat (RDF) performance tip has a rubber flat contact surface with Î¼_rubber = 0.50 [CS10 Case 545], giving a maximum lateral acceleration of a_lateral = Î¼ × g = 0.50 × 9.81 = 4.91 m/s² [CALCULATED] — the highest lateral acceleration of any standard tip type; in an orbital attack configuration the bey spirals inward from a large initial orbit radius toward a smaller radius around the target, and the high rubber friction provides two key behaviors: first, at each orbital pass the bey approaches the target from a different angle because the spiral tightens by approximately Î”r â‰ˆ a_lateral × T_orbit² / (4Ï€) per half-orbit [INFERRED from spiral mechanics], where T_orbit is the current orbital period; for an initial orbit at r = 80 px (game scale â‰ˆ 33 mm) with v_orb = âˆš(Î¼ × g × r) = âˆš(0.50 × 9.81 × 0.033) = 0.403 m/s [CALCULATED] and T_orbit = 2Ï€ × 0.033 / 0.403 = 0.515 s, each half-orbit tightens the radius by Î”r â‰ˆ 4.91 × (0.515/2)² / (4Ï€) = 0.026 m = 26 mm [CALCULATED], which is enough to go from 80 px orbit to 27 px orbit in 3 half-orbits; second, the approach angle to the target changes by approximately 60° per half-orbit as the orbit tightens (geometric consequence of the inward spiral) [INFERRED], so after 3 orbits the attack is arriving from 180° opposite to the initial approach direction; the Death Quetzalcoatl 125 height track raises the AR contact zone compared to standard 105 or 100 tracks, making the AR-to-AR contact more likely during the coiling approach by ensuring the AR sweep height clears the target's AR at close orbit range; together the RDF spiral inward and the 125 track height create a beyblade that naturally coils around opponents for repeated angled contacts — each contact arriving from a different direction with the rubber tip maintaining orbital velocity efficiently through each pass.
 
 ### Spiral Orbit Geometry
 
 ```
-RDF coiling orbit â€” radius and angle evolution:
+RDF coiling orbit — radius and angle evolution:
 
   Initial: râ‚€ = 80px, v_orb = 0.403 m/s, T_half = 0.258 s
 
-  Half-orbit 1 (approach from 0Â°):
-    Î”r = 4.91 Ã— (0.258)Â² / (4Ï€) â‰ˆ 26mm â†’ râ‚ = 54px
-    Approach angle to target: 0Â°  (initial heading)
+  Half-orbit 1 (approach from 0°):
+    Î”r = 4.91 × (0.258)² / (4Ï€) â‰ˆ 26mm â†’ râ‚ = 54px
+    Approach angle to target: 0°  (initial heading)
 
-  Half-orbit 2 (approach from ~60Â°):
+  Half-orbit 2 (approach from ~60°):
     râ‚ = 54px, vâ‚ = 0.333 m/s, T_halfâ‚ = 0.255 s
     Î”râ‚ â‰ˆ 24mm â†’ râ‚‚ = 35px
-    Approach angle: 60Â° from initial  [INFERRED â€” spiral geometry]
+    Approach angle: 60° from initial  [INFERRED — spiral geometry]
 
-  Half-orbit 3 (approach from ~120Â°):
+  Half-orbit 3 (approach from ~120°):
     râ‚‚ = 35px, vâ‚‚ = 0.269 m/s
-    Approach angle: 120Â°  [INFERRED]
+    Approach angle: 120°  [INFERRED]
 
   At 3 full orbits (6 half-orbits):
     Orbit radius has shrunk from 80px to ~10px (near-collision orbit)
-    Total approach angle rotation: ~360Â° (hit from all directions)
-    Each hit arrives from a direction ~60Â° off the previous one
+    Total approach angle rotation: ~360° (hit from all directions)
+    Each hit arrives from a direction ~60° off the previous one
 ```
 
 ### Passive Game Mechanic
@@ -3530,42 +3530,42 @@ RDF gimmick:
 
 ---
 
-## Case 660 â€” [SPECIAL MOVE] Ascent Spark: Tithi / Death Quetzalcoatl 125RDF (Beyblade Metal Masters)
+## Case 660 — [SPECIAL MOVE] Ascent Spark: Tithi / Death Quetzalcoatl 125RDF (Beyblade Metal Masters)
 
 **Franchise Move:** Quetzalcoatl utilizes the air and spins around in it until its beast appears and wraps around the opponent's beast and constricts the opponent's beast until it explodes. Coiling motion around the opponent with repeated hits; final stronger hit delivers all previous damage together in one tick. [Beyblade Metal Masters]
 
-**Thesis:** Ascent Spark is the anime transcendence of the RDF spiral orbit gimmick (Case 659) in which the natural inward-coiling approach is directed specifically around a single target, each orbit accumulating damage in a charge pool rather than dealing full damage immediately, and then releasing the entire pool amplified in a single explosive constriction hit; physically the gimmick produces coiling orbits that approach the target from progressively different angles (60Â° rotation per half-orbit), and the special move uses this same trajectory to execute 3 full coiling orbits (6 hits, each at a new 60Â° angle offset from the last) with each individual hit deliberately scaled to COIL_HIT_FRACTION = 0.45 of normal damage so the stacked damage pool reaches approximately 2.7 BASE before the release multiplier; the ASCENT_RELEASE_MULT = 1.8Ã— then applies to the entire pool, giving a total release hit of 2.7 Ã— 1.8 = 4.86 BASE in a single tick â€” this exceeds what any individual hit could deal and also bypasses per-tick damage caps that govern normal combat, as the single concentrated burst is delivered in one physics step; the `must_stay_still` force state is applied because the coiling orbit tracks the target's current position on each pass â€” if the target moves, Quetzalcoatl adjusts the next orbit entry point to compensate, meaning movement does not help the opponent escape and actually risks giving Quetzalcoatl a wider approach angle for the next hit; the franchise description of the beast "constricting" the opponent is the anime expression of the tightening orbital radius (80 px â†’ 10 px over 3 orbits), and the "explosion" is the final dump of accumulated charge.
+**Thesis:** Ascent Spark is the anime transcendence of the RDF spiral orbit gimmick (Case 659) in which the natural inward-coiling approach is directed specifically around a single target, each orbit accumulating damage in a charge pool rather than dealing full damage immediately, and then releasing the entire pool amplified in a single explosive constriction hit; physically the gimmick produces coiling orbits that approach the target from progressively different angles (60° rotation per half-orbit), and the special move uses this same trajectory to execute 3 full coiling orbits (6 hits, each at a new 60° angle offset from the last) with each individual hit deliberately scaled to COIL_HIT_FRACTION = 0.45 of normal damage so the stacked damage pool reaches approximately 2.7 BASE before the release multiplier; the ASCENT_RELEASE_MULT = 1.8× then applies to the entire pool, giving a total release hit of 2.7 × 1.8 = 4.86 BASE in a single tick — this exceeds what any individual hit could deal and also bypasses per-tick damage caps that govern normal combat, as the single concentrated burst is delivered in one physics step; the `must_stay_still` force state is applied because the coiling orbit tracks the target's current position on each pass — if the target moves, Quetzalcoatl adjusts the next orbit entry point to compensate, meaning movement does not help the opponent escape and actually risks giving Quetzalcoatl a wider approach angle for the next hit; the franchise description of the beast "constricting" the opponent is the anime expression of the tightening orbital radius (80 px â†’ 10 px over 3 orbits), and the "explosion" is the final dump of accumulated charge.
 
 ### Phase Structure
 
 ```
-Ascent Spark â€” phase sequence:
+Ascent Spark — phase sequence:
 
-Phase 1 â€” "ascent_coil" (1800ms â€” 3 full orbits):
+Phase 1 — "ascent_coil" (1800ms — 3 full orbits):
   orbitRadiusStart: 80px, decays per half-orbit as per gimmick spiral
   hitsPerOrbit: 2  (one per half-orbit)
-  totalCoilHits: 6  (3 full orbits Ã— 2 hits)
-  perHitDamage: BASE_DAMAGE Ã— 0.45  (fraction â€” accumulates in pool)
-  coilCharge: += hit.impulse Ã— 0.60 per hit  (stores kinetic contribution too)
-  perHitImpulse: 600 eu  (reduced â€” the coil conserves rather than expends)
-  approachAngleOffset: +60Â° per half-orbit
+  totalCoilHits: 6  (3 full orbits × 2 hits)
+  perHitDamage: BASE_DAMAGE × 0.45  (fraction — accumulates in pool)
+  coilCharge: += hit.impulse × 0.60 per hit  (stores kinetic contribution too)
+  perHitImpulse: 600 eu  (reduced — the coil conserves rather than expends)
+  approachAngleOffset: +60° per half-orbit
   forceState: must_stay_still, durationMs: 1800ms
-    reasoning: orbit adjusts to target's position â€” movement doesn't help; QTE is break-the-coil
+    reasoning: orbit adjusts to target's position — movement doesn't help; QTE is break-the-coil
 
-  QTE â€” "Break the Coil":
+  QTE — "Break the Coil":
     window: 50ms as Quetzalcoatl approaches on each half-orbit
     successful disruption (3 taps): breaks coil early, no final release
     partial disruption (1-2 taps): coil continues, disrupted orbits skip their hit
     0 taps: full coil completes, all 6 hits land, full release fires
 
-Phase 2 â€” "ascent_release" (200ms):
-  singleHitDamage: sum(coilCharge) Ã— ASCENT_RELEASE_MULT (1.8Ã—)
-  effective total: ~4.86 BASE at full 6-hit charge  (2.7 accumulated Ã— 1.8)
+Phase 2 — "ascent_release" (200ms):
+  singleHitDamage: sum(coilCharge) × ASCENT_RELEASE_MULT (1.8×)
+  effective total: ~4.86 BASE at full 6-hit charge  (2.7 accumulated × 1.8)
   impulse: 7000 eu  (concentrated burst)
-  spinDelta on target: âˆ’80 rad/s  (constriction strips spin)
+  spinDelta on target: −80 rad/s  (constriction strips spin)
   knockbackImpulse: 7000 eu
   visual: Quetzalcoatl beast coils fully around opponent and bursts outward
-  AoE: 0  (single target â€” the coil is focused)
+  AoE: 0  (single target — the coil is focused)
 
 powerCost: 100
 cooldownMs: 5000
@@ -3593,14 +3593,14 @@ function fireAscentRelease(bey: Beyblade, target: Beyblade, state: AscentState):
 
 ---
 
-## Case 661 â€” [COMBO] Coil Strike: Player-Skill Expression of the RDF Spiral Orbital Approach
+## Case 661 — [COMBO] Coil Strike: Player-Skill Expression of the RDF Spiral Orbital Approach
 
-**Thesis:** Coil Strike is the combo-level expression of the RDF spiral orbit gimmick (Case 659) in which the full 3-orbit coiling sequence of Ascent Spark is compressed to a single player-executed quarter-orbit arc that delivers one hit from a non-obvious angle; the sequence is (â†‘â†’J) â€” moveUp to begin an ascending orbit arc, moveRight to curve the orbit 90Â° around the nearest target, then attack to commit the hit at the 90Â° offset position â€” representing the player manually navigating Quetzalcoatl through one quarter of an inward spiral and striking from the target's flank; the skill is in the timing: the player must input â†’J at the correct moment to send the bey into the target from the 90Â° offset angle (the target's side, where their AR presents a narrower profile), and the result is a 1.25Ã— damageMultiplier from the flank-aspect bonus (the attacker's AR is not facing Quetzalcoatl); if the player inputs early or late, the approach angle is wrong and the attack lands from the front or back respectively â€” only the 80â€“100ms window where the arc is at 90Â° offset qualifies for the flank bonus; this is a higher-skill-ceiling version of the basic forward attack because it requires predicting the orbit timing while also managing the combo input window.
+**Thesis:** Coil Strike is the combo-level expression of the RDF spiral orbit gimmick (Case 659) in which the full 3-orbit coiling sequence of Ascent Spark is compressed to a single player-executed quarter-orbit arc that delivers one hit from a non-obvious angle; the sequence is (â†‘â†’J) — moveUp to begin an ascending orbit arc, moveRight to curve the orbit 90° around the nearest target, then attack to commit the hit at the 90° offset position — representing the player manually navigating Quetzalcoatl through one quarter of an inward spiral and striking from the target's flank; the skill is in the timing: the player must input â†’J at the correct moment to send the bey into the target from the 90° offset angle (the target's side, where their AR presents a narrower profile), and the result is a 1.25× damageMultiplier from the flank-aspect bonus (the attacker's AR is not facing Quetzalcoatl); if the player inputs early or late, the approach angle is wrong and the attack lands from the front or back respectively — only the 80–100ms window where the arc is at 90° offset qualifies for the flank bonus; this is a higher-skill-ceiling version of the basic forward attack because it requires predicting the orbit timing while also managing the combo input window.
 
 ### Combo Specification
 
 ```
-Coil Strike â€” combo definition:
+Coil Strike — combo definition:
 
   id: "coil-strike"
   sequence: ["moveUp", "moveRight", "attack"]  (â†‘â†’J)
@@ -3610,20 +3610,20 @@ Coil Strike â€” combo definition:
   typeRestriction: "attack"
   partRequirement: rubberFlatTip OR highFrictionTip
 
-  Phase 1 (â†‘): begin partial orbit arc â€” Quetzalcoatl arcs upward around target
-  Phase 2 (â†’): curve 90Â° â€” if timed correctly (80â€“100ms after Phase 1), arrives at flank
-    flankArrival: angle between Quetzalcoatl's approach and target's AR facing = 85â€“95Â°
-    â†’ flankBonus: damageMultiplier 1.25Ã—
+  Phase 1 (â†‘): begin partial orbit arc — Quetzalcoatl arcs upward around target
+  Phase 2 (â†’): curve 90° — if timed correctly (80–100ms after Phase 1), arrives at flank
+    flankArrival: angle between Quetzalcoatl's approach and target's AR facing = 85–95°
+    â†’ flankBonus: damageMultiplier 1.25×
     if NOT timed correctly:
-      frontArrival (< 80ms): normal hit, 1.0Ã— damageMultiplier (no bonus)
-      rearArrival  (> 100ms): 1.10Ã— damage (rear aspect â€” minor bonus, no penalty)
+      frontArrival (< 80ms): normal hit, 1.0× damageMultiplier (no bonus)
+      rearArrival  (> 100ms): 1.10× damage (rear aspect — minor bonus, no penalty)
   Phase 3 (J): commit strike
     contactImpulse: 900 eu
-    damageMultiplier: as above (1.25Ã—/1.10Ã—/1.0Ã— depending on arrival timing)
+    damageMultiplier: as above (1.25×/1.10×/1.0× depending on arrival timing)
     knockbackImpulse: 1400 eu
 
   ceiling compliance:
-    damageMultiplier 1.25Ã— â‰¤ 1.5Ã—   âœ“
+    damageMultiplier 1.25× â‰¤ 1.5×   âœ“
     lockMs: 0                         âœ“
     no invulnerability               âœ“
     no stacking                      âœ“
@@ -3893,16 +3893,16 @@ HF annular ring vs full Flat contact patch:
 
 ---
 
-## Case 667 â€” [SPECIAL MOVE] Avalanche Move: Sora Akatsuki / Cyber Pegasus 100HF (Beyblade Metal Fusion)
+## Case 667 — [SPECIAL MOVE] Avalanche Move: Sora Akatsuki / Cyber Pegasus 100HF (Beyblade Metal Fusion)
 
-**Franchise Move:** Cyber Pegasus shoots a column of red light, flies into the air in an uppercut-style fashion, but the move is too powerful â€” Cyber self-destructs from all the power it withstands. Used only once. A one-hit KO â€” either the opponent loses or Cyber Pegasus loses. Cross-shaped light (reference to Neon Genesis Evangelion). [Beyblade Metal Fusion]
+**Franchise Move:** Cyber Pegasus shoots a column of red light, flies into the air in an uppercut-style fashion, but the move is too powerful — Cyber self-destructs from all the power it withstands. Used only once. A one-hit KO — either the opponent loses or Cyber Pegasus loses. Cross-shaped light (reference to Neon Genesis Evangelion). [Beyblade Metal Fusion]
 
-**Thesis:** Avalanche Move is the most extreme special move in this case study set: a full-commitment OHKO attack in which the bey dumps 100% of its remaining spin energy into a single upward-trajectory strike, guaranteeing either an immediate win or an immediate self-defeat; physically the underlying mechanism is a total spin-to-kinetic-energy conversion: all stored angular momentum L = I Ã— Ï‰ is released through the HF tip's flat-face shunt at the moment of maximum alignment, converting rotational energy E_spin = Â½ Ã— I Ã— Ï‰Â² into translational KE Â½ Ã— m Ã— vÂ² giving v_launch = âˆš(I Ã— Ï‰Â² / m) = âˆš(7.308Ã—10â»â¶ Ã— 600Â² / 0.040) = âˆš(7.308Ã—10â»â¶ Ã— 360000 / 0.040) = âˆš(65.77) = 8.11 m/s [CALCULATED] â€” a launch velocity far exceeding anything achievable in normal combat, but immediately after the dump the bey has Ï‰ = 0 and topples; the 100H track's elevated AR means the resulting approach vector has a significant upward component (estimated 30â€“40Â° above horizontal for the uppercut angle) [ESTIMATED from franchise imagery], and the cross-shaped energy burst in the anime (NGE reference) represents the full omni-directional energy release of a body spending every last joule it has; the game mechanics reflect the OHKO coin-flip: Avalanche Move has a base hit probability of 25% (very low, like PokÃ©mon's Fissure), modified by opponent's spin deficit (lower opponent spin â†’ higher hit chance, up to 60%) and by proximity at activation (closer â†’ higher chance, up to +20%); if the hit lands, opponent.spin = 0 immediately â†’ burst/ring-out; if it misses (or if the opponent uses the "Last Stand" dodge QTE successfully), Cyber Pegasus' spin = 0 immediately â†’ self-defeat; this is the franchise's only documented self-destructing move, reflected in the game by making it the only move where both the activating player AND the opponent could lose from a single activation; the `must_stay_still` force state is briefly applied because the uppercut trajectory cannot adjust mid-air â€” the opponent must be in the strike zone when it fires, and the pre-activation glow (500ms) is the only warning.
+**Thesis:** Avalanche Move is the most extreme special move in this case study set: a full-commitment OHKO attack in which the bey dumps 100% of its remaining spin energy into a single upward-trajectory strike, guaranteeing either an immediate win or an immediate self-defeat; physically the underlying mechanism is a total spin-to-kinetic-energy conversion: all stored angular momentum L = I × Ï‰ is released through the HF tip's flat-face shunt at the moment of maximum alignment, converting rotational energy E_spin = Â½ × I × Ï‰² into translational KE Â½ × m × v² giving v_launch = âˆš(I × Ï‰² / m) = âˆš(7.308×10â»â¶ × 600² / 0.040) = âˆš(7.308×10â»â¶ × 360000 / 0.040) = âˆš(65.77) = 8.11 m/s [CALCULATED] — a launch velocity far exceeding anything achievable in normal combat, but immediately after the dump the bey has Ï‰ = 0 and topples; the 100H track's elevated AR means the resulting approach vector has a significant upward component (estimated 30–40° above horizontal for the uppercut angle) [ESTIMATED from franchise imagery], and the cross-shaped energy burst in the anime (NGE reference) represents the full omni-directional energy release of a body spending every last joule it has; the game mechanics reflect the OHKO coin-flip: Avalanche Move has a base hit probability of 25% (very low, like PokÃ©mon's Fissure), modified by opponent's spin deficit (lower opponent spin â†’ higher hit chance, up to 60%) and by proximity at activation (closer â†’ higher chance, up to +20%); if the hit lands, opponent.spin = 0 immediately â†’ burst/ring-out; if it misses (or if the opponent uses the "Last Stand" dodge QTE successfully), Cyber Pegasus' spin = 0 immediately â†’ self-defeat; this is the franchise's only documented self-destructing move, reflected in the game by making it the only move where both the activating player AND the opponent could lose from a single activation; the `must_stay_still` force state is briefly applied because the uppercut trajectory cannot adjust mid-air — the opponent must be in the strike zone when it fires, and the pre-activation glow (500ms) is the only warning.
 
 ### OHKO Probability and Outcome Matrix
 
 ```
-Avalanche Move â€” hit probability and outcomes:
+Avalanche Move — hit probability and outcomes:
 
   Base hit chance: 25%
 
@@ -3920,7 +3920,7 @@ Avalanche Move â€” hit probability and outcomes:
   â”‚ Hit (probability p):                                            â”‚
   â”‚   target.spin = 0  â†’ burst/ring-out  â†’ OPPONENT LOSES          â”‚
   â”‚   Cyber spin = 0   â†’ self-topple     â†’ CYBER ALSO LOSES spin   â”‚
-  â”‚   (Cyber survives but is at 0 spin â€” will topple in ~200ms)    â”‚
+  â”‚   (Cyber survives but is at 0 spin — will topple in ~200ms)    â”‚
   â”‚   Net: a win, but Cyber is immediately vulnerable               â”‚
   â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
   â”‚ Miss (probability 1-p):                                         â”‚
@@ -3954,7 +3954,7 @@ function activateAvalancheMove(cyber: Beyblade, targets: Beyblade[]): void {
 
   const hit = Math.random() < hitChance && !nearest.lastStandDodgeSuccess;
 
-  // Spin dump â€” Cyber always loses spin regardless of hit/miss
+  // Spin dump — Cyber always loses spin regardless of hit/miss
   cyber.spin = 0;
   cyber.selfDestructing = true;
   cyber.toppleIn = 200;  // ms until topple from 0 spin
@@ -4021,84 +4021,84 @@ Upper Shunt -- combo definition:
 ```
 ---
 
-## Case 669 â€” [GIMMICK] Merge Driver Left-Spin Asymmetric Floor Friction â€” Sustained Metal-Edge Grind and Directed Trajectory Rotation
+## Case 669 — [GIMMICK] Merge Driver Left-Spin Asymmetric Floor Friction — Sustained Metal-Edge Grind and Directed Trajectory Rotation
 
-**Thesis:** The Merge (MG) driver in the Beyblade Burst format is a compound tip that combines a central ABS body with an outer metal ring at the tip's contact rim; in right-spin the metal ring's leading edge trails in the direction of rotation and the contact behavior is relatively smooth, but in left-spin the metal ring's leading edge is the contact surface â€” it bites into the floor as the tip rotates forward in the left-spin direction, creating a sustained floor-grinding friction force analogous to a metal lathe tool removing material from the stadium floor surface; the effective friction coefficient for the grinding metal edge on the ABS/polycarbonate stadium floor is estimated at Î¼_grind = 0.25 [ESTIMATED â€” between metal sliding (0.20) and rubber (0.50)] and is directional: the grind force is oriented along the tangent to the tip's rotation at the contact point, which for left-spin points to the RIGHT of the bey's heading [INFERRED from left-spin contact geometry]; this right-of-heading friction force during sustained contact gradually rotates the bey's trajectory to the right: for a sustained grind of duration t_grind, the accumulated lateral impulse J_grind = Î¼_grind Ã— m Ã— g Ã— t_grind = 0.25 Ã— 0.040 Ã— 9.81 Ã— t_grind, and the resulting trajectory angle change is Î¸_change = arctan(J_grind / (m Ã— v_forward)) = arctan(Î¼_grind Ã— g Ã— t_grind / v_forward); for t_grind = 300 ms at v_forward = 0.591 m/s (orbital approach velocity): Î¸_change = arctan(0.25 Ã— 9.81 Ã— 0.300 / 0.591) = arctan(1.247) = 51.2Â° [CALCULATED]; this 51Â° trajectory rotation in 300 ms is the physical basis of the "trajectory change" in Axe Launch â€” the grind phase accumulates sideways momentum, and when the grind terminates (metal edge lifts) the bey is now traveling at 51Â° from its original heading; the 7-sided disc (Disc 7) on Legend Spryzen contributes a modest but non-trivial moment-arm shift from its 7-lobe asymmetric mass distribution, creating a similar (though weaker) 7Ã— per revolution inertia pulse compared to Quattro's 4Ã— [INFERRED from geometry].
+**Thesis:** The Merge (MG) driver in the Beyblade Burst format is a compound tip that combines a central ABS body with an outer metal ring at the tip's contact rim; in right-spin the metal ring's leading edge trails in the direction of rotation and the contact behavior is relatively smooth, but in left-spin the metal ring's leading edge is the contact surface — it bites into the floor as the tip rotates forward in the left-spin direction, creating a sustained floor-grinding friction force analogous to a metal lathe tool removing material from the stadium floor surface; the effective friction coefficient for the grinding metal edge on the ABS/polycarbonate stadium floor is estimated at Î¼_grind = 0.25 [ESTIMATED — between metal sliding (0.20) and rubber (0.50)] and is directional: the grind force is oriented along the tangent to the tip's rotation at the contact point, which for left-spin points to the RIGHT of the bey's heading [INFERRED from left-spin contact geometry]; this right-of-heading friction force during sustained contact gradually rotates the bey's trajectory to the right: for a sustained grind of duration t_grind, the accumulated lateral impulse J_grind = Î¼_grind × m × g × t_grind = 0.25 × 0.040 × 9.81 × t_grind, and the resulting trajectory angle change is Î¸_change = arctan(J_grind / (m × v_forward)) = arctan(Î¼_grind × g × t_grind / v_forward); for t_grind = 300 ms at v_forward = 0.591 m/s (orbital approach velocity): Î¸_change = arctan(0.25 × 9.81 × 0.300 / 0.591) = arctan(1.247) = 51.2° [CALCULATED]; this 51° trajectory rotation in 300 ms is the physical basis of the "trajectory change" in Axe Launch — the grind phase accumulates sideways momentum, and when the grind terminates (metal edge lifts) the bey is now traveling at 51° from its original heading; the 7-sided disc (Disc 7) on Legend Spryzen contributes a modest but non-trivial moment-arm shift from its 7-lobe asymmetric mass distribution, creating a similar (though weaker) 7× per revolution inertia pulse compared to Quattro's 4× [INFERRED from geometry].
 
 ### Grind Trajectory Rotation
 
 ```
-Merge tip left-spin grind â€” trajectory change calculation:
+Merge tip left-spin grind — trajectory change calculation:
 
   Grind parameters:
     Î¼_grind = 0.25  (metal edge on floor)
-    m = 0.040 kg, g = 9.81 m/sÂ²
-    F_lateral = Î¼ Ã— m Ã— g = 0.098 N  (rightward of heading)
+    m = 0.040 kg, g = 9.81 m/s²
+    F_lateral = Î¼ × m × g = 0.098 N  (rightward of heading)
 
   Trajectory rotation per grind duration:
-    t = 100ms: Î¸ = arctan(0.098Ã—0.1 / (0.040Ã—0.591)) = arctan(0.415) = 22.5Â°
-    t = 200ms: Î¸ = arctan(0.830) = 39.7Â°
-    t = 300ms: Î¸ = arctan(1.247) = 51.2Â°  [CALCULATED â€” Axe Launch grind duration]
-    t = 400ms: Î¸ = arctan(1.662) = 58.9Â°
+    t = 100ms: Î¸ = arctan(0.098×0.1 / (0.040×0.591)) = arctan(0.415) = 22.5°
+    t = 200ms: Î¸ = arctan(0.830) = 39.7°
+    t = 300ms: Î¸ = arctan(1.247) = 51.2°  [CALCULATED — Axe Launch grind duration]
+    t = 400ms: Î¸ = arctan(1.662) = 58.9°
 
   Wall-bounce variant:
-    After grind, bey hits wall at 51Â° to original heading
-    Wall normal reflection: approach angle = 51Â°, reflection = 180Â° âˆ’ 51Â° = 129Â° from original
-    Combined with grind + wall: bey arrives at opponent from ~130Â° off initial direction
-    [This is the full Axe Launch trajectory â€” grind + wall + reflection = unexpected vector]
+    After grind, bey hits wall at 51° to original heading
+    Wall normal reflection: approach angle = 51°, reflection = 180° − 51° = 129° from original
+    Combined with grind + wall: bey arrives at opponent from ~130° off initial direction
+    [This is the full Axe Launch trajectory — grind + wall + reflection = unexpected vector]
 
   Passive game mechanic (Merge tip left-spin):
     tipType: "merge_left"
     Each tick Spryzen is in motion:
-      lateralGrindForce = MU_GRIND Ã— mass Ã— g
+      lateralGrindForce = MU_GRIND × mass × g
       rightOfHeading = perpendicular(normalize(velocity), +1)  // rightward in left-spin
-      applyForce(bey.id, rightOfHeading Ã— lateralGrindForce Ã— dt)
+      applyForce(bey.id, rightOfHeading × lateralGrindForce × dt)
     Result: bey naturally curves right during all movement phases
     This also means: long-range approach paths drift and become less predictable
 ```
 
 ---
 
-## Case 670 â€” [SPECIAL MOVE] Axe Launch: Shu Kurenai / Legend Spryzen 7 Merge (Beyblade Burst Evolution)
+## Case 670 — [SPECIAL MOVE] Axe Launch: Shu Kurenai / Legend Spryzen 7 Merge (Beyblade Burst Evolution)
 
-**Franchise Move:** In Left Spin, Legend Spryzen grinds the Merge tip on the stadium floor to gain speed and power, then changes its trajectory to attack the opponent. Images show: floor grinding with sparks, ascending wall contact, airborne arc, final explosion on target contact. [Beyblade Burst Evolution â€” special technique]
+**Franchise Move:** In Left Spin, Legend Spryzen grinds the Merge tip on the stadium floor to gain speed and power, then changes its trajectory to attack the opponent. Images show: floor grinding with sparks, ascending wall contact, airborne arc, final explosion on target contact. [Beyblade Burst Evolution — special technique]
 
-**Thesis:** Axe Launch is the anime transcendence of the Merge left-spin grind gimmick (Case 669) in which the passive trajectory drift (22â€“51Â° over 100â€“300 ms) is amplified into a precisely aimed grind-then-redirect attack sequence: Phase 1 is a sustained floor grind that converts the metal-edge friction force into a GRIND_CHARGE pool while curving Legend Spryzen's path to aim at the stadium wall; Phase 2 is the wall contact, which is like the Case 647 wall-climb but horizontal rather than vertical â€” the grind-accumulated speed is redirected by the wall normal, creating a trajectory rotation of 90Â°+ from the original grind direction; Phase 3 is the dive-in attack arriving at the opponent from a completely different vector than the initial grind approach; the force state is `must_stay_still` because the grind's curved approach and the subsequent wall-bounce create a two-vector attack: the opponent must predict BOTH the grind approach (potentially from one direction) AND the wall-bounce arrival (from approximately 130Â° different direction); staying in place means the wall-bounce hits from behind; moving away from the grind means moving toward the wall-bounce vector; the franchise's "axe" metaphor is mechanical â€” the bey's path is the swing arc of an axe, starting from a wide arc (the grind curl) that terminates in the downward chop (the wall-bounce redirect); the Merge tip's metal edge is the axe blade that gains "sharpness" from the floor grind, manifesting in game as the GRIND_CHARGE damage multiplier that scales with grind duration.
+**Thesis:** Axe Launch is the anime transcendence of the Merge left-spin grind gimmick (Case 669) in which the passive trajectory drift (22–51° over 100–300 ms) is amplified into a precisely aimed grind-then-redirect attack sequence: Phase 1 is a sustained floor grind that converts the metal-edge friction force into a GRIND_CHARGE pool while curving Legend Spryzen's path to aim at the stadium wall; Phase 2 is the wall contact, which is like the Case 647 wall-climb but horizontal rather than vertical — the grind-accumulated speed is redirected by the wall normal, creating a trajectory rotation of 90°+ from the original grind direction; Phase 3 is the dive-in attack arriving at the opponent from a completely different vector than the initial grind approach; the force state is `must_stay_still` because the grind's curved approach and the subsequent wall-bounce create a two-vector attack: the opponent must predict BOTH the grind approach (potentially from one direction) AND the wall-bounce arrival (from approximately 130° different direction); staying in place means the wall-bounce hits from behind; moving away from the grind means moving toward the wall-bounce vector; the franchise's "axe" metaphor is mechanical — the bey's path is the swing arc of an axe, starting from a wide arc (the grind curl) that terminates in the downward chop (the wall-bounce redirect); the Merge tip's metal edge is the axe blade that gains "sharpness" from the floor grind, manifesting in game as the GRIND_CHARGE damage multiplier that scales with grind duration.
 
 ### Phase Structure
 
 ```
-Axe Launch â€” phase sequence:
+Axe Launch — phase sequence:
 
-Phase 1 â€” "axe_grind" (600ms):
+Phase 1 — "axe_grind" (600ms):
   Legend Spryzen performs sustained floor grind toward stadium wall
   metal edge contact: sparks visible, trajectory curves RIGHT
-  GRIND_CHARGE accumulates: += F_lateral Ã— dt  (kinetic energy stored)
-  trajectory angle change: 51Â° by end of 600ms grind  (toward wall contact point)
+  GRIND_CHARGE accumulates: += F_lateral × dt  (kinetic energy stored)
+  trajectory angle change: 51° by end of 600ms grind  (toward wall contact point)
   Visual: orange/white sparks trail from tip
 
-Phase 2 â€” "wall_redirect" (instant + 150ms):
-  wall contact: approach angle â‰ˆ 51Â° from original heading
-  wall normal reflection: exit angle â‰ˆ 129Â° from original heading
-    (the "axe changes direction" â€” opponent was watching the grind vector, not the bounce vector)
-  WALL_SPEED_MULT: Ã— 0.90  (10% wall energy loss â€” Merge metal edge helps maintain speed)
-  exitVelocity: grindVelocity Ã— 0.90  (near-full speed retained)
+Phase 2 — "wall_redirect" (instant + 150ms):
+  wall contact: approach angle â‰ˆ 51° from original heading
+  wall normal reflection: exit angle â‰ˆ 129° from original heading
+    (the "axe changes direction" — opponent was watching the grind vector, not the bounce vector)
+  WALL_SPEED_MULT: × 0.90  (10% wall energy loss — Merge metal edge helps maintain speed)
+  exitVelocity: grindVelocity × 0.90  (near-full speed retained)
   visual: Spryzen skims up the wall (slight wall-ride), then redirects inward
 
-Phase 3 â€” "axe_strike" (100ms):
-  arrivedFromAngle: ~130Â° from original grind direction  (opponent's blind side)
-  strikeImpulse: GRIND_CHARGE Ã— AXE_RELEASE_FACTOR (2.0Ã—)
-  damageMultiplier: 2.4Ã—  (grind-powered + blind-side approach + metal blade)
+Phase 3 — "axe_strike" (100ms):
+  arrivedFromAngle: ~130° from original grind direction  (opponent's blind side)
+  strikeImpulse: GRIND_CHARGE × AXE_RELEASE_FACTOR (2.0×)
+  damageMultiplier: 2.4×  (grind-powered + blind-side approach + metal blade)
   knockbackImpulse: 8500 eu
-  spinDelta on target: âˆ’60 rad/s  (metal edge strips spin on contact)
+  spinDelta on target: −60 rad/s  (metal edge strips spin on contact)
   forceState on opponent at activation: must_stay_still  (can't predict bounce direction)
 
-  QTE â€” "Predict the Bounce":
+  QTE — "Predict the Bounce":
     if opponent correctly moves to the wall-bounce arrival angle within the Phase 2 window:
       they dodge the Phase 3 strike completely
       Spryzen carries past (momentum committed to the strike vector)
       Spryzen faces a 300ms repositioning delay (committed trajectory)
-    Difficulty: must predict ~130Â° offset from grind direction within 150ms
+    Difficulty: must predict ~130° offset from grind direction within 150ms
     Reading hint: opponents who track the wall contact point can infer the bounce angle
 
 powerCost: 100
@@ -4120,14 +4120,14 @@ function computeAxeBouncePath(spryzen: Beyblade, grindAngle: number): { exitAngl
 
 ---
 
-## Case 671 â€” [COMBO] Axe Feint: Player-Skill Expression of the Merge Grind Trajectory Drift
+## Case 671 — [COMBO] Axe Feint: Player-Skill Expression of the Merge Grind Trajectory Drift
 
-**Thesis:** Axe Feint is the combo-level expression of the Merge grind gimmick (Case 669) in which the player uses a brief controlled grind to rotate their approach trajectory by approximately 22Â° before delivering a hit, creating a mild direction-change that makes the incoming attack slightly less predictable than a straight-line approach; the sequence is (â†’Kâ†‘) â€” moveRight to initiate the grind arc (curving rightward), defense to anchor the grind contact (pressing the metal edge into the floor for the brief accumulation), then moveUp to redirect the accumulated momentum into an attack arc at the changed heading; the grind duration is approximately 150 ms (between the â†’ and â†‘ inputs within the 350 ms combo window), giving a trajectory rotation of Î¸ = arctan(0.25 Ã— 9.81 Ã— 0.150 / 0.591) = arctan(0.624) = 32Â° [CALCULATED]; this 32Â° rotation is meaningful but not as dramatic as the full Axe Launch's 51Â° â€” the opponent can partially predict a 32Â° arc change if they read the grind direction, but the 32Â° is enough that a direct counter aimed at the grind vector will miss by 32Â°; the defense input serves dual purpose: it physically loads the metal edge into the floor (pressing the bey slightly downward from the K keyframe), and it also activates a brief 40 ms invulnerability during the grind transition that prevents the opponent from punishing the predictable grind path; post-hit, the trajectory continues at the 32Â° offset, setting up a natural orbit continuation.
+**Thesis:** Axe Feint is the combo-level expression of the Merge grind gimmick (Case 669) in which the player uses a brief controlled grind to rotate their approach trajectory by approximately 22° before delivering a hit, creating a mild direction-change that makes the incoming attack slightly less predictable than a straight-line approach; the sequence is (â†’Kâ†‘) — moveRight to initiate the grind arc (curving rightward), defense to anchor the grind contact (pressing the metal edge into the floor for the brief accumulation), then moveUp to redirect the accumulated momentum into an attack arc at the changed heading; the grind duration is approximately 150 ms (between the â†’ and â†‘ inputs within the 350 ms combo window), giving a trajectory rotation of Î¸ = arctan(0.25 × 9.81 × 0.150 / 0.591) = arctan(0.624) = 32° [CALCULATED]; this 32° rotation is meaningful but not as dramatic as the full Axe Launch's 51° — the opponent can partially predict a 32° arc change if they read the grind direction, but the 32° is enough that a direct counter aimed at the grind vector will miss by 32°; the defense input serves dual purpose: it physically loads the metal edge into the floor (pressing the bey slightly downward from the K keyframe), and it also activates a brief 40 ms invulnerability during the grind transition that prevents the opponent from punishing the predictable grind path; post-hit, the trajectory continues at the 32° offset, setting up a natural orbit continuation.
 
 ### Combo Specification
 
 ```
-Axe Feint â€” combo definition:
+Axe Feint — combo definition:
 
   id: "axe-feint"
   sequence: ["moveRight", "defense", "moveUp"]  (â†’Kâ†‘)
@@ -4137,20 +4137,20 @@ Axe Feint â€” combo definition:
   typeRestriction: "balanced"  (Spryzen is balanced type)
   partRequirement: mergeDriver OR leftSpinTip  (left-spin metal edge required)
 
-  Phase 1 (â†’): begin grind arc â€” trajectory starts curving right
+  Phase 1 (â†’): begin grind arc — trajectory starts curving right
     metalEdgeGrind: true, duration starts counting
-  Phase 2 (K): load metal edge â€” invulnerability 40ms (grind press)
+  Phase 2 (K): load metal edge — invulnerability 40ms (grind press)
     invulnerabilityMs: 40
     grindChargeAccumulates: true
   Phase 3 (â†‘): redirect and strike at changed heading
-    approachAngle: 32Â° right of original heading  (150ms grind)
+    approachAngle: 32° right of original heading  (150ms grind)
     contactImpulse: 850 eu
-    damageMultiplier: 1.30Ã—  (approach angle surprise factor)
+    damageMultiplier: 1.30×  (approach angle surprise factor)
     knockbackImpulse: 1200 eu
     trajectory continues at new heading post-hit
 
   ceiling compliance:
-    damageMultiplier 1.30Ã— â‰¤ 1.5Ã—   âœ“
+    damageMultiplier 1.30× â‰¤ 1.5×   âœ“
     invulnerabilityMs 40ms â‰¤ combo allowed  âœ“ (same as Quick Step/Tidal Brace)
     lockMs: 0                               âœ“
     no AoE                                  âœ“
@@ -4164,25 +4164,25 @@ Axe Feint â€” combo definition:
 
 ---
 
-## Case 673 â€” [LAUNCH TECHNIQUE / SPECIAL MOVE] Backflip Boost: Cuza Ackermann / Alter Cognite 6 Meteor Trans (Beyblade Burst Turbo)
+## Case 673 — [LAUNCH TECHNIQUE / SPECIAL MOVE] Backflip Boost: Cuza Ackermann / Alter Cognite 6 Meteor Trans (Beyblade Burst Turbo)
 
-**Franchise Move:** Cuza performs a backflip and launches his Bey in midair, giving Cognite a boost of speed and power. A launch technique â€” applied as a temporary boost to speed and power for a duration after activation. [Beyblade Burst Turbo]
+**Franchise Move:** Cuza performs a backflip and launches his Bey in midair, giving Cognite a boost of speed and power. A launch technique — applied as a temporary boost to speed and power for a duration after activation. [Beyblade Burst Turbo]
 
-**Thesis:** Backflip Boost is a launch-technique-derived special move in which the elevated aerial launch position â€” the blader at maximum height during the backflip's apex â€” imparts a higher string pull velocity to the launcher, converting the additional gravitational potential energy of the raised arm into extra rotational spin at launch; specifically, if the blader's arm is raised by Î”h = 0.6 m above the standard floor-level launch height [ESTIMATED for a standing backflip], the launcher string pulls through an additional arc equivalent to Î”h / r_launcher (where r_launcher â‰ˆ 0.10 m for a standard launcher gear ratio), giving additional revolutions Î”n = 0.6 / (2Ï€ Ã— 0.10) â‰ˆ 0.95 extra revolutions added to the initial spin [CALCULATED], and for a standard Burst launcher with pull velocity v_pull â‰ˆ 2.5 m/s and pull time t â‰ˆ 0.15 s, the additional revolutions contribute approximately Î”Ï‰ = Î”n Ã— 2Ï€ / t_effective â‰ˆ 40 rad/s additional launch spin [INFERRED]; in the game this is not a traditional combat special but a launch-phase modifier that applies a BOOST_WINDOW after the warmup phase: for the first 3000 ms of active physics, Alter Cognite's attack impulse is multiplied by BACKFLIP_BOOST_MULT = 1.25Ã— and its orbital velocity is increased by BACKFLIP_SPEED_BONUS = +0.15 m/s; this represents the real physical surplus spin manifesting as higher impact energy and faster movement in the early match; the boost decays linearly over the 3000 ms window (from 1.25Ã— at t = 0 to 1.0Ã— at t = 3000 ms), representing the gradual bleed of the initial spin surplus back to the standard decay curve; since Backflip Boost is a launch technique and not a combat special, it does not have a QTE counter or a force state â€” it simply provides a time-limited buff that rewards the blader for using the technique at launch; the powerCost is 0 (it's a launch choice, not a combat ability), and the cooldown is the entire match (it can only be used once per match, at launch).
+**Thesis:** Backflip Boost is a launch-technique-derived special move in which the elevated aerial launch position — the blader at maximum height during the backflip's apex — imparts a higher string pull velocity to the launcher, converting the additional gravitational potential energy of the raised arm into extra rotational spin at launch; specifically, if the blader's arm is raised by Î”h = 0.6 m above the standard floor-level launch height [ESTIMATED for a standing backflip], the launcher string pulls through an additional arc equivalent to Î”h / r_launcher (where r_launcher â‰ˆ 0.10 m for a standard launcher gear ratio), giving additional revolutions Î”n = 0.6 / (2Ï€ × 0.10) â‰ˆ 0.95 extra revolutions added to the initial spin [CALCULATED], and for a standard Burst launcher with pull velocity v_pull â‰ˆ 2.5 m/s and pull time t â‰ˆ 0.15 s, the additional revolutions contribute approximately Î”Ï‰ = Î”n × 2Ï€ / t_effective â‰ˆ 40 rad/s additional launch spin [INFERRED]; in the game this is not a traditional combat special but a launch-phase modifier that applies a BOOST_WINDOW after the warmup phase: for the first 3000 ms of active physics, Alter Cognite's attack impulse is multiplied by BACKFLIP_BOOST_MULT = 1.25× and its orbital velocity is increased by BACKFLIP_SPEED_BONUS = +0.15 m/s; this represents the real physical surplus spin manifesting as higher impact energy and faster movement in the early match; the boost decays linearly over the 3000 ms window (from 1.25× at t = 0 to 1.0× at t = 3000 ms), representing the gradual bleed of the initial spin surplus back to the standard decay curve; since Backflip Boost is a launch technique and not a combat special, it does not have a QTE counter or a force state — it simply provides a time-limited buff that rewards the blader for using the technique at launch; the powerCost is 0 (it's a launch choice, not a combat ability), and the cooldown is the entire match (it can only be used once per match, at launch).
 
 ### Boost Profile
 
 ```
-Backflip Boost â€” duration and power scaling:
+Backflip Boost — duration and power scaling:
 
   Activation: at launch (warmup â†’ launching transition)
   Boost window: 3000ms from first in-progress tick
 
-  t = 0ms:    attackMultiplier = 1.25Ã—, velocityBonus = +0.15 m/s
-  t = 1000ms: attackMultiplier = 1.17Ã—, velocityBonus = +0.10 m/s
-  t = 2000ms: attackMultiplier = 1.08Ã—, velocityBonus = +0.05 m/s
-  t = 3000ms: attackMultiplier = 1.00Ã—, velocityBonus = 0  (boost expires)
-  [Linear decay â€” GAME-DERIVED]
+  t = 0ms:    attackMultiplier = 1.25×, velocityBonus = +0.15 m/s
+  t = 1000ms: attackMultiplier = 1.17×, velocityBonus = +0.10 m/s
+  t = 2000ms: attackMultiplier = 1.08×, velocityBonus = +0.05 m/s
+  t = 3000ms: attackMultiplier = 1.00×, velocityBonus = 0  (boost expires)
+  [Linear decay — GAME-DERIVED]
 
   Physical basis:
     +40 rad/s initial spin = +0.6% of launch spin (600 rad/s base)
@@ -4195,20 +4195,20 @@ Backflip Boost â€” duration and power scaling:
     At launch: bey.spin = BURST_LAUNCH_SPIN + BACKFLIP_BONUS_SPIN  (640 vs 600)
     bey.backflipBoostActive = true
     bey.backflipBoostExpiry = matchStartTime + 3000
-    During boost: all outgoing impulses Ã— backflipBoostMult(elapsed)
+    During boost: all outgoing impulses × backflipBoostMult(elapsed)
     At expiry: boost removed, normal physics resume
 ```
 
 ---
 
-## Case 674 â€” [COMBO] Quick Surge: Player-Skill Combo Derived from the Launch-Surplus High-Spin Window
+## Case 674 — [COMBO] Quick Surge: Player-Skill Combo Derived from the Launch-Surplus High-Spin Window
 
-**Thesis:** Quick Surge is the combo designed specifically to be used during the Backflip Boost window (Case 673) to extract maximum value from the launch-phase spin surplus; the sequence is (Jâ†J) â€” attack, quick-left redirect, attack again â€” representing a rapid two-hit burst that capitalizes on the early-match heightened orbital velocity and attack multiplier before they decay; the combo operates as a standard two-hit sequence with no unique gimmick component, but it is flagged as a "launch-window combo" in the game engine: if Quick Surge is activated while bey.backflipBoostActive = true, both hits inherit the current backflipBoostMult scaling; at t = 500 ms (mid-early boost window), this gives 1.21Ã— Ã— 1.21Ã— â‰ˆ 1.46Ã— effective damage for the two-hit combo â€” just under the 1.5Ã— ceiling; the redirect between hits (â†) is a 30 px lateral repositioning that changes the attack angle for the second hit by approximately 45Â°, making the second hit harder to dodge once the first is committed to; the combo has no special gimmick interaction outside the Backflip Boost window â€” used later in the match (after t = 3000 ms) it is an ordinary 1.05Ã— / 1.05Ã— two-hit sequence with mediocre output, incentivizing the player to save it for the opening 3 seconds.
+**Thesis:** Quick Surge is the combo designed specifically to be used during the Backflip Boost window (Case 673) to extract maximum value from the launch-phase spin surplus; the sequence is (Jâ†J) — attack, quick-left redirect, attack again — representing a rapid two-hit burst that capitalizes on the early-match heightened orbital velocity and attack multiplier before they decay; the combo operates as a standard two-hit sequence with no unique gimmick component, but it is flagged as a "launch-window combo" in the game engine: if Quick Surge is activated while bey.backflipBoostActive = true, both hits inherit the current backflipBoostMult scaling; at t = 500 ms (mid-early boost window), this gives 1.21× × 1.21× â‰ˆ 1.46× effective damage for the two-hit combo — just under the 1.5× ceiling; the redirect between hits (â†) is a 30 px lateral repositioning that changes the attack angle for the second hit by approximately 45°, making the second hit harder to dodge once the first is committed to; the combo has no special gimmick interaction outside the Backflip Boost window — used later in the match (after t = 3000 ms) it is an ordinary 1.05× / 1.05× two-hit sequence with mediocre output, incentivizing the player to save it for the opening 3 seconds.
 
 ### Combo Specification
 
 ```
-Quick Surge â€” combo definition:
+Quick Surge — combo definition:
 
   id: "quick-surge"
   sequence: ["attack", "moveLeft", "attack"]  (Jâ†J)
@@ -4219,26 +4219,26 @@ Quick Surge â€” combo definition:
   partRequirement: none  (launch-window skill, no part requirement)
 
   Phase 1 (J): first hit
-    contactImpulse: 700 eu Ã— backflipBoostMult  (scales with boost window)
-    damageMultiplier: 1.05Ã— Ã— backflipBoostMult
-    during boost (t < 3000ms): effective 1.27Ã— at t=500ms
-    outside boost: 1.05Ã— (ordinary)
+    contactImpulse: 700 eu × backflipBoostMult  (scales with boost window)
+    damageMultiplier: 1.05× × backflipBoostMult
+    during boost (t < 3000ms): effective 1.27× at t=500ms
+    outside boost: 1.05× (ordinary)
 
-  Phase 2 (â†): redirect 30px left, changes approach angle +45Â°
+  Phase 2 (â†): redirect 30px left, changes approach angle +45°
 
-  Phase 3 (J): second hit from +45Â° angle
-    contactImpulse: 700 eu Ã— backflipBoostMult
-    damageMultiplier: 1.05Ã— Ã— backflipBoostMult
-    angle bonus: 0.10Ã— for 45Â° offset from first hit  (slight flank)
+  Phase 3 (J): second hit from +45° angle
+    contactImpulse: 700 eu × backflipBoostMult
+    damageMultiplier: 1.05× × backflipBoostMult
+    angle bonus: 0.10× for 45° offset from first hit  (slight flank)
 
   ceiling compliance (in boost window):
-    total effective (t=500ms): 1.27Ã— + 1.15Ã— â‰ˆ 2-hit = max 1.46Ã— per hit  âœ“
+    total effective (t=500ms): 1.27× + 1.15× â‰ˆ 2-hit = max 1.46× per hit  âœ“
     no invulnerability                                                         âœ“
     lockMs: 0 per hit                                                         âœ“
     no persistent AoE                                                         âœ“
 
   ceiling compliance (outside boost):
-    1.05Ã— per hit â€” standard                                                  âœ“
+    1.05× per hit — standard                                                  âœ“
 ```
 
 ---
@@ -4248,16 +4248,16 @@ Quick Surge â€” combo definition:
 
 ---
 
-## Case 675 â€” [GIMMICK] Baihu Claw: AR Claw-Geometry Contact-Point Architecture and Tiger-Fang Strike Sequencing
+## Case 675 — [GIMMICK] Baihu Claw: AR Claw-Geometry Contact-Point Architecture and Tiger-Fang Strike Sequencing
 
-**Beyblade:** Driger Slash (Plastic Generation) â€” Slash Attack AR + Heavy Attack WD + Flat Base  
+**Beyblade:** Driger Slash (Plastic Generation) — Slash Attack AR + Heavy Attack WD + Flat Base  
 **User:** Ray Kon (Metal Masters cross-gen anime appearance with upgraded Driger)  
 **Physics Domain:** AR contact-point geometry, multi-lobe rotational strike, claw-curvature recoil amplification
 
-**Thesis:** The Baihu Claw gimmick emerges from the Slash Attack AR's distinctive claw-shaped protrusion geometry â€” three asymmetric tiger-fang blades arranged at approximately 120Â° rotational intervals, each blade featuring a concave inner curve (the "claw hollow") and a convex outer edge (the "fang tip"). This geometry differs fundamentally from standard flat-wing ARs: whereas a flat wing delivers a single lateral impulse per contact, the claw hollow first cups the opposing beyblade's AR or WD during approach, concentrating normal force into a narrow contact arc (â‰ˆ12Â° of wrap), before the fang tip slides off and delivers a sharp tangential shear that imparts both linear momentum transfer and a counter-torque spike. The fang curvature radius r_fang â‰ˆ 4 mm produces a contact-point Hertz stress concentration factor Îº â‰ˆ 1.8Ã— relative to a flat edge of equal width, meaning the instantaneous peak contact force is 1.8Ã— higher for the same approach velocity. Because ABS COR = 0.67, the normal restitution is already non-trivial, but the fang geometry converts ~22% of that restitution into tangential spin-steal: the claw hollow's wrap angle Î¸_wrap = 12Â° creates a moment arm about the target's spin axis of r_target Ã— sin(Î¸_wrap) â‰ˆ r_target Ã— 0.208. For Driger Slash (m = 0.040 kg, r_AR = 0.036 m, I = 7.308Ã—10â»â¶ kgÂ·mÂ²) striking a standard MFB target at v_rel = 1.2 m/s, the single-fang impulse J_n = Î¼_contact Ã— m_red Ã— v_rel Ã— (1+e) â‰ˆ 0.040 Ã— 1.2 Ã— 1.67 Ã— 0.5 â‰ˆ 0.0401 NÂ·s, of which J_tang = J_n Ã— sin(Î¸_wrap) â‰ˆ 0.0401 Ã— 0.208 â‰ˆ 0.00834 NÂ·s tangential â€” a spinDelta Î”Ï‰ = J_tang Ã— r_target / I_target â‰ˆ 0.00834 Ã— 0.036 / 7.308Ã—10â»â¶ â‰ˆ 41.1 rad/s stolen per fang contact. With three fangs at 120Â° spacing and rotational frequency f = Ï‰ / 2Ï€ â‰ˆ 600 / 6.28 â‰ˆ 95.5 Hz at peak MFB spin, the maximum claw-strike rate is 3 Ã— 95.5 = 286.5 strikes/s â€” though in practice collision duration (~2 ms) and stadium geometry limit consecutive contacts to bursts of 4â€“8 rapid sequential micro-impacts during a single pass. The claw-hollow wrap also produces a brief radial pull force F_pull = J_tang / Î”t_contact â‰ˆ 0.00834 / 0.002 = 4.17 N directed inward, momentarily drawing the target closer before the fang tip flicks it away; this produces the characteristic "yanking" visual seen in the anime as the claw appears to grab and tear. The SG Flat Base provides high lateral mobility on the standard ABS dish floor, allowing Driger to execute repeated attack passes across the bowl at Î”x_pass â‰ˆ 0.8 Ã— r_arena per trajectory, ensuring multiple fang contacts per orbit rather than a single glancing hit.
+**Thesis:** The Baihu Claw gimmick emerges from the Slash Attack AR's distinctive claw-shaped protrusion geometry — three asymmetric tiger-fang blades arranged at approximately 120° rotational intervals, each blade featuring a concave inner curve (the "claw hollow") and a convex outer edge (the "fang tip"). This geometry differs fundamentally from standard flat-wing ARs: whereas a flat wing delivers a single lateral impulse per contact, the claw hollow first cups the opposing beyblade's AR or WD during approach, concentrating normal force into a narrow contact arc (â‰ˆ12° of wrap), before the fang tip slides off and delivers a sharp tangential shear that imparts both linear momentum transfer and a counter-torque spike. The fang curvature radius r_fang â‰ˆ 4 mm produces a contact-point Hertz stress concentration factor Îº â‰ˆ 1.8× relative to a flat edge of equal width, meaning the instantaneous peak contact force is 1.8× higher for the same approach velocity. Because ABS COR = 0.67, the normal restitution is already non-trivial, but the fang geometry converts ~22% of that restitution into tangential spin-steal: the claw hollow's wrap angle Î¸_wrap = 12° creates a moment arm about the target's spin axis of r_target × sin(Î¸_wrap) â‰ˆ r_target × 0.208. For Driger Slash (m = 0.040 kg, r_AR = 0.036 m, I = 7.308×10â»â¶ kgÂ·m²) striking a standard MFB target at v_rel = 1.2 m/s, the single-fang impulse J_n = Î¼_contact × m_red × v_rel × (1+e) â‰ˆ 0.040 × 1.2 × 1.67 × 0.5 â‰ˆ 0.0401 NÂ·s, of which J_tang = J_n × sin(Î¸_wrap) â‰ˆ 0.0401 × 0.208 â‰ˆ 0.00834 NÂ·s tangential — a spinDelta Î”Ï‰ = J_tang × r_target / I_target â‰ˆ 0.00834 × 0.036 / 7.308×10â»â¶ â‰ˆ 41.1 rad/s stolen per fang contact. With three fangs at 120° spacing and rotational frequency f = Ï‰ / 2Ï€ â‰ˆ 600 / 6.28 â‰ˆ 95.5 Hz at peak MFB spin, the maximum claw-strike rate is 3 × 95.5 = 286.5 strikes/s — though in practice collision duration (~2 ms) and stadium geometry limit consecutive contacts to bursts of 4–8 rapid sequential micro-impacts during a single pass. The claw-hollow wrap also produces a brief radial pull force F_pull = J_tang / Î”t_contact â‰ˆ 0.00834 / 0.002 = 4.17 N directed inward, momentarily drawing the target closer before the fang tip flicks it away; this produces the characteristic "yanking" visual seen in the anime as the claw appears to grab and tear. The SG Flat Base provides high lateral mobility on the standard ABS dish floor, allowing Driger to execute repeated attack passes across the bowl at Î”x_pass â‰ˆ 0.8 × r_arena per trajectory, ensuring multiple fang contacts per orbit rather than a single glancing hit.
 
 ```
-Tiger-Fang AR Cross-Section (top view, 3 fangs at 120Â°):
+Tiger-Fang AR Cross-Section (top view, 3 fangs at 120°):
 
          Fang A
         /~~~~~~\
@@ -4273,8 +4273,8 @@ Tiger-Fang AR Cross-Section (top view, 3 fangs at 120Â°):
 
 Fang geometry detail:
   r_fang = 4 mm
-  Î¸_wrap = 12Â°
-  Îº = 1.8Ã— Hertz concentration
+  Î¸_wrap = 12°
+  Îº = 1.8× Hertz concentration
   J_tang per fang = 0.00834 NÂ·s
   Î”Ï‰ stolen per contact = 41.1 rad/s
 ```
@@ -4298,19 +4298,19 @@ function computeClawImpulse(
 ```
 
 **Key physics constants established for Baihu Claw cases:**
-- Î¸_wrap = 12Â°, sin(Î¸_wrap) = 0.208, Îº = 1.8
+- Î¸_wrap = 12°, sin(Î¸_wrap) = 0.208, Îº = 1.8
 - J_tang_per_fang = 0.00834 NÂ·s â†’ Î”Ï‰ = 41.1 rad/s per fang contact
-- Max strike rate: 286.5 Hz theoretical, 4â€“8 rapid contacts per pass practical
+- Max strike rate: 286.5 Hz theoretical, 4–8 rapid contacts per pass practical
 
 ---
 
-## Case 676 â€” [SPECIAL MOVE] Baihu Claw: Full White Tiger Manifestation â€” Triple-Fang Simultaneous Orbital Rip
+## Case 676 — [SPECIAL MOVE] Baihu Claw: Full White Tiger Manifestation — Triple-Fang Simultaneous Orbital Rip
 
 **Beyblade:** Driger Slash.H.F (Plastic Generation, upgraded)  
 **User:** Ray Kon  
 **Activation:** Single-button special; requires â‰¥60% spin, full power charge
 
-The Baihu Claw special move transcends the passive multi-fang strike pattern by simultaneously manifesting all three claw blades as a spectral white tiger aura that extends the effective AR radius by 280% â€” from r_AR = 36 mm to r_spectral â‰ˆ 101 mm â€” allowing the phantom claws to reach opponents at distances far beyond normal AR contact range. In physics terms, the special applies three simultaneous non-contact force vectors (one per fang, at the 0Â°, 120Â°, 240Â° AR positions) directed radially inward from r_spectral, treating each as a high-velocity virtual contact with v_impact = Ï‰_driger Ã— r_spectral = 600 Ã— 0.101 â‰ˆ 60.6 m/s â€” roughly 50Ã— the normal arena approach speed. The spectral fang contact applies the full claw geometry impulse at this enhanced velocity: J_n_spec = m_red Ã— 60.6 Ã— 1.67 Ã— 0.5 Ã— 1.8 â‰ˆ 3.62 NÂ·s per fang, and since all three fire simultaneously, J_total = 10.86 NÂ·s delivered as a single instantaneous impulse spike. This corresponds to a linear velocity change in the target of Î”v = J_total / m_target = 10.86 / 0.040 = 271.5 m/s â€” clearly non-physical and intentionally exceeding standard physics, representing the anime's "rule-breaking" special move tier. For the game engine, this is scaled to a linearImpulse = 8200 units (â‰ˆ 8200 Ã— 3.60Ã—10â»âµ = 0.295 NÂ·s effective), a spinDelta = âˆ’1200 rad/s (spin-steal + target spin reversal if near zero), and a lockDurationMs = 0 (no lock â€” instead a knockback trajectory that cannot be controlled for 1800 ms via `forceState = "must_stay_still"`). The spectral claws also apply a radial pull before the final expulsion: the target is drawn toward Driger for 250 ms (attractive force 180 N_game_units) before the three-fang flick launches it away â€” replicating the anime "grabbed and ripped" visual at the physics level. The white tiger avatar persists for the pull-phase only (250 ms), then dissipates as the fang tips release. Driger pays a self-cost of spinDelta = âˆ’300 rad/s (spin loss from the triple-simultaneous emission), ensuring the move cannot be spammed without spin management. Opponent `forceState = "must_stay_still"` for 1800 ms following impact (stunned, cannot input lateral movement â€” only spin-management inputs accepted).
+The Baihu Claw special move transcends the passive multi-fang strike pattern by simultaneously manifesting all three claw blades as a spectral white tiger aura that extends the effective AR radius by 280% — from r_AR = 36 mm to r_spectral â‰ˆ 101 mm — allowing the phantom claws to reach opponents at distances far beyond normal AR contact range. In physics terms, the special applies three simultaneous non-contact force vectors (one per fang, at the 0°, 120°, 240° AR positions) directed radially inward from r_spectral, treating each as a high-velocity virtual contact with v_impact = Ï‰_driger × r_spectral = 600 × 0.101 â‰ˆ 60.6 m/s — roughly 50× the normal arena approach speed. The spectral fang contact applies the full claw geometry impulse at this enhanced velocity: J_n_spec = m_red × 60.6 × 1.67 × 0.5 × 1.8 â‰ˆ 3.62 NÂ·s per fang, and since all three fire simultaneously, J_total = 10.86 NÂ·s delivered as a single instantaneous impulse spike. This corresponds to a linear velocity change in the target of Î”v = J_total / m_target = 10.86 / 0.040 = 271.5 m/s — clearly non-physical and intentionally exceeding standard physics, representing the anime's "rule-breaking" special move tier. For the game engine, this is scaled to a linearImpulse = 8200 units (â‰ˆ 8200 × 3.60×10â»âµ = 0.295 NÂ·s effective), a spinDelta = −1200 rad/s (spin-steal + target spin reversal if near zero), and a lockDurationMs = 0 (no lock — instead a knockback trajectory that cannot be controlled for 1800 ms via `forceState = "must_stay_still"`). The spectral claws also apply a radial pull before the final expulsion: the target is drawn toward Driger for 250 ms (attractive force 180 N_game_units) before the three-fang flick launches it away — replicating the anime "grabbed and ripped" visual at the physics level. The white tiger avatar persists for the pull-phase only (250 ms), then dissipates as the fang tips release. Driger pays a self-cost of spinDelta = −300 rad/s (spin loss from the triple-simultaneous emission), ensuring the move cannot be spammed without spin management. Opponent `forceState = "must_stay_still"` for 1800 ms following impact (stunned, cannot input lateral movement — only spin-management inputs accepted).
 
 ```
 Spectral Claw Reach vs Normal AR:
@@ -4319,13 +4319,13 @@ Spectral Claw Reach vs Normal AR:
   Spectral extension: â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ 101mm (280% increase)
 
   Three-fang simultaneous impact timeline:
-  t=0 ms:   Pull phase begins (attractive F = 180 units, Î”x â‰ˆ âˆ’22mm)
+  t=0 ms:   Pull phase begins (attractive F = 180 units, Î”x â‰ˆ −22mm)
   t=250ms:  All three phantom fangs contact simultaneously
   t=251ms:  J_total = 8200 linearImpulse â†’ target launched
   t=251ms:  forceState "must_stay_still" applied (1800ms)
   t=2051ms: Target recovers control
 
-  Self-cost: âˆ’300 spinDelta (unavoidable)
+  Self-cost: −300 spinDelta (unavoidable)
 ```
 
 ```typescript
@@ -4360,19 +4360,19 @@ function activateBaihuClaw(driger: Beyblade, targets: Beyblade[]): void {
 }
 ```
 
-**Force Behavior Applied to Opponent:** `must_stay_still` (1800 ms stun) â€” opponent cannot approach or evade; they are locked in place after the rip, unable to retaliate. This classifies Baihu Claw as a **control + burst** special: it immobilizes and strips spin simultaneously, leaving the opponent exposed to follow-up AR hits as the stun expires.
+**Force Behavior Applied to Opponent:** `must_stay_still` (1800 ms stun) — opponent cannot approach or evade; they are locked in place after the rip, unable to retaliate. This classifies Baihu Claw as a **control + burst** special: it immobilizes and strips spin simultaneously, leaving the opponent exposed to follow-up AR hits as the stun expires.
 
 ---
 
-## Case 677 â€” [COMBO] Tiger Fang: Rapid AR-Pass Claw Chain (3-key: â†’â†’J)
+## Case 677 — [COMBO] Tiger Fang: Rapid AR-Pass Claw Chain (3-key: â†’â†’J)
 
 **Combo ID:** `tiger-fang`  
 **Sequence:** moveRight â†’ moveRight â†’ attack  
 **Cost:** 25 power  
 **Type Restriction:** attack (Driger Slash must have Slash Attack AR or equivalent claw-geometry AR equipped)  
-**Ceiling compliance:** damageMultiplier = 1.45Ã— âœ“, lockMs = 180 âœ“, no invulnerability âœ“, no AoE âœ“, no full spin recovery âœ“
+**Ceiling compliance:** damageMultiplier = 1.45× âœ“, lockMs = 180 âœ“, no invulnerability âœ“, no AoE âœ“, no full spin recovery âœ“
 
-Tiger Fang translates the Baihu Claw gimmick's multi-fang sequential-contact behavior into a player-skill combo bounded by the physics ceiling. The double-right input commands a rapid double-dash rightward (two short bursts of v_dash = 0.6 m/s each, 80 ms apart) that curves Driger into a tight arc approaching the opponent from the right side; the final `attack` input times a burst of rotational energy to the AR at the moment of maximum approach velocity (v_rel â‰ˆ 1.4 m/s, above the passive 1.2 m/s baseline). This enhanced approach velocity increases J_tang per fang: J_tang_combo = m_red Ã— 1.4 Ã— 1.67 Ã— 0.5 Ã— 1.8 Ã— sin(12Â°) â‰ˆ 0.00973 NÂ·s, a 16.7% improvement over passive. The combo chains up to three sequential fang contacts during the curved pass (the arc geometry ensures Driger's AR sweeps across the opponent's AR over ~28Â° of relative rotation, enough for ~2.8 fang contacts â†’ rounded to 3 discrete impacts). The three contacts deliver cumulative spinDelta = 3 Ã— (0.00973 Ã— 0.036 / 7.308Ã—10â»â¶) â‰ˆ 3 Ã— 48.0 = 144 rad/s stolen from target, and damageMultiplier = 1 + (0.144 / (2 Ã— I_target Ã— Ï‰_target / m_target)) capped at 1.45Ã—. The rightward arc approach also applies a brief lockMs = 180 positional constraint on the target post-contact (fang hollow's radial-pull physics applied at combo scale), preventing immediate counter-approach. Cost 25 power reflects the spin investment required to sustain three high-velocity fang contacts. Type-restricted to attack because claw-geometry ARs are exclusive to attack-type assemblies; defense/stamina ARs lack the fang curvature that generates the wrap-angle spin-steal.
+Tiger Fang translates the Baihu Claw gimmick's multi-fang sequential-contact behavior into a player-skill combo bounded by the physics ceiling. The double-right input commands a rapid double-dash rightward (two short bursts of v_dash = 0.6 m/s each, 80 ms apart) that curves Driger into a tight arc approaching the opponent from the right side; the final `attack` input times a burst of rotational energy to the AR at the moment of maximum approach velocity (v_rel â‰ˆ 1.4 m/s, above the passive 1.2 m/s baseline). This enhanced approach velocity increases J_tang per fang: J_tang_combo = m_red × 1.4 × 1.67 × 0.5 × 1.8 × sin(12°) â‰ˆ 0.00973 NÂ·s, a 16.7% improvement over passive. The combo chains up to three sequential fang contacts during the curved pass (the arc geometry ensures Driger's AR sweeps across the opponent's AR over ~28° of relative rotation, enough for ~2.8 fang contacts â†’ rounded to 3 discrete impacts). The three contacts deliver cumulative spinDelta = 3 × (0.00973 × 0.036 / 7.308×10â»â¶) â‰ˆ 3 × 48.0 = 144 rad/s stolen from target, and damageMultiplier = 1 + (0.144 / (2 × I_target × Ï‰_target / m_target)) capped at 1.45×. The rightward arc approach also applies a brief lockMs = 180 positional constraint on the target post-contact (fang hollow's radial-pull physics applied at combo scale), preventing immediate counter-approach. Cost 25 power reflects the spin investment required to sustain three high-velocity fang contacts. Type-restricted to attack because claw-geometry ARs are exclusive to attack-type assemblies; defense/stamina ARs lack the fang curvature that generates the wrap-angle spin-steal.
 
 ```
 Tiger Fang Curved Approach Path:
@@ -4385,13 +4385,13 @@ Tiger Fang Curved Approach Path:
      .   â†’ â†’ â†’ â†—      .
       .          â†—   .
        ....arc....â†—
-                  TARGET (3 fang contacts over 28Â° sweep)
+                  TARGET (3 fang contacts over 28° sweep)
 
-  Contact timeline (28Â° sweep at Ï‰_rel = 600 rad/s â†’ duration = 0.81ms per contact):
-  Contact 1: t=0ms,   Î”Ï‰_target = âˆ’48 rad/s
-  Contact 2: t=1.6ms, Î”Ï‰_target = âˆ’48 rad/s  
-  Contact 3: t=3.2ms, Î”Ï‰_target = âˆ’48 rad/s
-  Total:               Î”Ï‰_target = âˆ’144 rad/s, lockMs = 180
+  Contact timeline (28° sweep at Ï‰_rel = 600 rad/s â†’ duration = 0.81ms per contact):
+  Contact 1: t=0ms,   Î”Ï‰_target = −48 rad/s
+  Contact 2: t=1.6ms, Î”Ï‰_target = −48 rad/s  
+  Contact 3: t=3.2ms, Î”Ï‰_target = −48 rad/s
+  Total:               Î”Ï‰_target = −144 rad/s, lockMs = 180
 ```
 
 ```typescript
@@ -4404,42 +4404,42 @@ function applyTigerFang(driger: Beyblade, target: Beyblade): void {
   const J_tang = computeClawImpulse(driger, target, v_rel).J_tangential;
   const totalSpinSteal = fangsContacted * (J_tang * 0.036) / target.momentOfInertia;
 
-  applySpinDelta(target, -totalSpinSteal); // âˆ’144 rad/s
+  applySpinDelta(target, -totalSpinSteal); // −144 rad/s
   target.damageMultiplier = Math.min(target.damageMultiplier * 1.45, 1.45);
   target.locked = true;
   target.lockExpiresAt = Date.now() + 180;
 }
 ```
 
-**Design note:** Tiger Fang is the attack type's answer to sustained spin-drain: not a single devastating blow but a rapid three-contact pass that strips ~144 rad/s per activation. At cost 25, it can be used twice in a match from a full 50-power budget, making spin management a deliberate trade-off â€” use both early to cripple opponent stamina, or hold the second activation for a critical low-spin burst window.
+**Design note:** Tiger Fang is the attack type's answer to sustained spin-drain: not a single devastating blow but a rapid three-contact pass that strips ~144 rad/s per activation. At cost 25, it can be used twice in a match from a full 50-power budget, making spin management a deliberate trade-off — use both early to cripple opponent stamina, or hold the second activation for a critical low-spin burst window.
 
 ---
 
-## Case 678 â€” [GIMMICK] Barnard's Loop: Phantom Orion B:D Mode-Change Orbit-to-Stamina Transition and Seven-Nebula Resonance
+## Case 678 — [GIMMICK] Barnard's Loop: Phantom Orion B:D Mode-Change Orbit-to-Stamina Transition and Seven-Nebula Resonance
 
 **Beyblade:** Phantom Orion B:D (Metal Masters / 4D System)  
 **User:** Chris  
 **Physics Domain:** 4D Bottom mode-change mechanics, orbital-to-stationary stamina transition, Orion-constellation spin-resonance geometry
 
-**Thesis:** The Barnard's Loop gimmick is rooted in Phantom Orion B:D's 4D Bottom (B:D), which shares the Duo/Phantom family's mode-switching architecture: the bottom can transition between an active-orbit attack mode (bearing-assisted wide precession, effectively an HF-equivalent for aggressive angular sweeping) and a passive-stamina mode (centered-spin, rubber-tip-dampened micro-oscillation, Ultra-Defense archetype). The mode change is achieved by the internal spring mechanism releasing the outer bearing cage, lowering the effective contact radius from r_contact_attack = 14 mm to r_contact_stamina = 4 mm â€” a 3.5Ã— reduction in gyroscopic friction force F_friction = Î¼ Ã— m Ã— g Ã— (r_contact / r_spin_axis), reducing spin decay from Î³_attack = 12.1 rad/sÂ² down to Î³_stamina = 3.46 rad/sÂ². This transition is the passive gimmick: when Orion transitions to stamina mode naturally (triggered by spin drop below Ï‰_threshold = 1400 rad/s in Burst-gen equivalent, ~467 rad/s in MFB-scale), its precession radius collapses from R_prec_attack â‰ˆ 65 mm to R_prec_stamina â‰ˆ 8 mm, centering the beyblade at the bottom of the bowl and maximizing remaining spin efficiency. The "seven-nebula resonance" refers to an additional structural feature of the Orion fusion wheel: seven asymmetric protrusions arranged in the Orion-constellation spatial pattern (not evenly spaced, but matching the angular separations of Orion's seven principal stars â€” Betelgeuse, Rigel, Bellatrix, Mintaka, Alnilam, Alnitak, Saiph at approximate angles 0Â°, 52Â°, 98Â°, 141Â°, 180Â°, 219Â°, 278Â° from Betelgeuse reference). This asymmetric mass distribution creates seven distinct resonance frequencies at which Orion's precession orbit harmonizes constructively with the bowl wall curvature â€” at each resonance band, the precession orbit spontaneously shifts phase by exactly Ï€, causing the beyblade to "snap" to the next inner orbit ring rather than spiraling continuously inward. This produces a staircase-descent spin-retention curve rather than a smooth exponential decay, giving Orion anomalously high effective stamina: measured survival time at Ï‰â‚€ = 600 rad/s is ~340% longer than a standard HF tip at equivalent spin. The Barnard's Loop special move exploits the attack-mode phase specifically: it fires while Orion is in high-orbit attack mode, using the accumulated angular momentum of the wide precession orbit as the energy reservoir for the blast.
+**Thesis:** The Barnard's Loop gimmick is rooted in Phantom Orion B:D's 4D Bottom (B:D), which shares the Duo/Phantom family's mode-switching architecture: the bottom can transition between an active-orbit attack mode (bearing-assisted wide precession, effectively an HF-equivalent for aggressive angular sweeping) and a passive-stamina mode (centered-spin, rubber-tip-dampened micro-oscillation, Ultra-Defense archetype). The mode change is achieved by the internal spring mechanism releasing the outer bearing cage, lowering the effective contact radius from r_contact_attack = 14 mm to r_contact_stamina = 4 mm — a 3.5× reduction in gyroscopic friction force F_friction = Î¼ × m × g × (r_contact / r_spin_axis), reducing spin decay from Î³_attack = 12.1 rad/s² down to Î³_stamina = 3.46 rad/s². This transition is the passive gimmick: when Orion transitions to stamina mode naturally (triggered by spin drop below Ï‰_threshold = 1400 rad/s in Burst-gen equivalent, ~467 rad/s in MFB-scale), its precession radius collapses from R_prec_attack â‰ˆ 65 mm to R_prec_stamina â‰ˆ 8 mm, centering the beyblade at the bottom of the bowl and maximizing remaining spin efficiency. The "seven-nebula resonance" refers to an additional structural feature of the Orion fusion wheel: seven asymmetric protrusions arranged in the Orion-constellation spatial pattern (not evenly spaced, but matching the angular separations of Orion's seven principal stars — Betelgeuse, Rigel, Bellatrix, Mintaka, Alnilam, Alnitak, Saiph at approximate angles 0°, 52°, 98°, 141°, 180°, 219°, 278° from Betelgeuse reference). This asymmetric mass distribution creates seven distinct resonance frequencies at which Orion's precession orbit harmonizes constructively with the bowl wall curvature — at each resonance band, the precession orbit spontaneously shifts phase by exactly Ï€, causing the beyblade to "snap" to the next inner orbit ring rather than spiraling continuously inward. This produces a staircase-descent spin-retention curve rather than a smooth exponential decay, giving Orion anomalously high effective stamina: measured survival time at Ï‰â‚€ = 600 rad/s is ~340% longer than a standard HF tip at equivalent spin. The Barnard's Loop special move exploits the attack-mode phase specifically: it fires while Orion is in high-orbit attack mode, using the accumulated angular momentum of the wide precession orbit as the energy reservoir for the blast.
 
 ```
 Orion Seven-Star Protrusion Angular Map (Fusion Wheel top view):
 
-  Betelgeuse (0Â°)        â— 
-  Bellatrix  (98Â°)            â—
-  Mintaka    (141Â°)              â—
-  Alnilam    (180Â°)                â—
-  Alnitak    (219Â°)                    â—
-  Rigel      (52Â°)         â—
-  Saiph      (278Â°)                        â—
+  Betelgeuse (0°)        â— 
+  Bellatrix  (98°)            â—
+  Mintaka    (141°)              â—
+  Alnilam    (180°)                â—
+  Alnitak    (219°)                    â—
+  Rigel      (52°)         â—
+  Saiph      (278°)                        â—
 
   Asymmetric spacing â†’ 7 resonance frequencies
   At each: precession phase shifts Ï€ â†’ staircase orbit
   
   Mode-change B:D contact radius:
-  Attack mode:  r_contact = 14 mm â†’ Î³ = 12.1 rad/sÂ²
-  Stamina mode: r_contact = 4 mm  â†’ Î³ = 3.46 rad/sÂ²
+  Attack mode:  r_contact = 14 mm â†’ Î³ = 12.1 rad/s²
+  Stamina mode: r_contact = 4 mm  â†’ Î³ = 3.46 rad/s²
   Transition Ï‰_threshold: 1400 rad/s (Burst), 467 rad/s (MFB-scale)
 ```
 
@@ -4448,7 +4448,7 @@ interface PhantomOrionBD {
   mode: "attack" | "stamina";
   precessionRadius: number;      // mm
   contactRadius: number;         // mm
-  spinDecayRate: number;         // rad/sÂ²
+  spinDecayRate: number;         // rad/s²
   starAngles: number[];          // 7 Orion-constellation angles (degrees)
   resonanceBands: number[];      // Ï‰ values at which orbit staircase-shifts
 }
@@ -4466,31 +4466,31 @@ function updateOrionModeTransition(orion: Beyblade & PhantomOrionBD): void {
 
 ---
 
-## Case 679 â€” [SPECIAL MOVE] Barnard's Loop: Seven-Star QTE Constellation Blast â€” Area-Wide Nebula Shockwave
+## Case 679 — [SPECIAL MOVE] Barnard's Loop: Seven-Star QTE Constellation Blast — Area-Wide Nebula Shockwave
 
 **Beyblade:** Phantom Orion B:D  
 **User:** Chris  
 **Activation:** Single-button special; requires â‰¥50% spin, attack mode active; 7-star QTE formation
 
-Barnard's Loop is a QTE-gated area-wide special that scales its damage output linearly with the player's accuracy in tracing the Orion constellation formation across seven tap-targets. The underlying physics rationale mirrors the Barnard's Loop nebula itself â€” a vast emission nebula surrounding the Orion constellation formed by a supernova shockwave â€” translated as Orion emitting a spherical light-wall originating from all seven protrusion resonance nodes simultaneously. The base power at 0 correct stars is 30% of max damage (enough to apply a spinDelta = âˆ’180 rad/s to all targets within r_base = 0.4 Ã— r_arena), representing Orion's natural orbital momentum even without QTE amplification. Each correctly tapped star adds +10% power (so 7/7 stars = 100% power), increasing both damage and radius: power_pct = 0.30 + 0.10 Ã— stars_correct (capped at 1.00 for 7/7). The final blast parameters scale as: spinDelta_target = âˆ’600 Ã— power_pct rad/s, linearImpulse_radial = 3600 Ã— power_pct units (radially outward from Orion's center), r_blast = r_arena Ã— (0.40 + 0.60 Ã— power_pct) â€” at 100% (7/7 stars) r_blast = r_arena (full arena coverage), at 30% (0/7) r_blast = 0.40 Ã— r_arena (covers central third). The QTE star-tap sequence presents the seven stars in Orion-constellation screen-space positions, appearing sequentially at 280 ms intervals (total window = 7 Ã— 280 ms = 1960 ms); each star has a 120 ms hit window centered on its appearance time; a miss does not cancel the sequence but reduces final power by not adding that star's 10%. During the QTE phase, Orion itself switches from attack mode to stamina mode (the anime's depicted mode-change transition), centering its orbit and gathering energy for the final release. The stamina-mode transition during QTE means Orion's precession collapses inward while the player taps â€” providing a 280 ms "gather" animation that makes the QTE feel physically motivated. After the final (7th) star window closes, the blast fires regardless of hit count. Orion self-cost: spinDelta = âˆ’400 Ã— power_pct rad/s (scales with blast magnitude), and Orion exits the special in stamina mode (cannot revert to attack mode for 4000 ms cooldown). Opponent `forceState = "must_leave_zone"` within r_blast for 1200 ms (knocked outward, cannot re-enter blast radius zone while shockwave persists).
+Barnard's Loop is a QTE-gated area-wide special that scales its damage output linearly with the player's accuracy in tracing the Orion constellation formation across seven tap-targets. The underlying physics rationale mirrors the Barnard's Loop nebula itself — a vast emission nebula surrounding the Orion constellation formed by a supernova shockwave — translated as Orion emitting a spherical light-wall originating from all seven protrusion resonance nodes simultaneously. The base power at 0 correct stars is 30% of max damage (enough to apply a spinDelta = −180 rad/s to all targets within r_base = 0.4 × r_arena), representing Orion's natural orbital momentum even without QTE amplification. Each correctly tapped star adds +10% power (so 7/7 stars = 100% power), increasing both damage and radius: power_pct = 0.30 + 0.10 × stars_correct (capped at 1.00 for 7/7). The final blast parameters scale as: spinDelta_target = −600 × power_pct rad/s, linearImpulse_radial = 3600 × power_pct units (radially outward from Orion's center), r_blast = r_arena × (0.40 + 0.60 × power_pct) — at 100% (7/7 stars) r_blast = r_arena (full arena coverage), at 30% (0/7) r_blast = 0.40 × r_arena (covers central third). The QTE star-tap sequence presents the seven stars in Orion-constellation screen-space positions, appearing sequentially at 280 ms intervals (total window = 7 × 280 ms = 1960 ms); each star has a 120 ms hit window centered on its appearance time; a miss does not cancel the sequence but reduces final power by not adding that star's 10%. During the QTE phase, Orion itself switches from attack mode to stamina mode (the anime's depicted mode-change transition), centering its orbit and gathering energy for the final release. The stamina-mode transition during QTE means Orion's precession collapses inward while the player taps — providing a 280 ms "gather" animation that makes the QTE feel physically motivated. After the final (7th) star window closes, the blast fires regardless of hit count. Orion self-cost: spinDelta = −400 × power_pct rad/s (scales with blast magnitude), and Orion exits the special in stamina mode (cannot revert to attack mode for 4000 ms cooldown). Opponent `forceState = "must_leave_zone"` within r_blast for 1200 ms (knocked outward, cannot re-enter blast radius zone while shockwave persists).
 
 ```
 QTE Star Sequence (Orion constellation, screen positions):
 
-  Star 1 (Betelgeuse, 0Â°)     [tap] â†’  t=0ms
-  Star 2 (Rigel, 52Â°)         [tap] â†’  t=280ms
-  Star 3 (Bellatrix, 98Â°)     [tap] â†’  t=560ms
-  Star 4 (Mintaka, 141Â°)      [tap] â†’  t=840ms
-  Star 5 (Alnilam, 180Â°)      [tap] â†’  t=1120ms
-  Star 6 (Alnitak, 219Â°)      [tap] â†’  t=1400ms
-  Star 7 (Saiph, 278Â°)        [tap] â†’  t=1680ms
+  Star 1 (Betelgeuse, 0°)     [tap] â†’  t=0ms
+  Star 2 (Rigel, 52°)         [tap] â†’  t=280ms
+  Star 3 (Bellatrix, 98°)     [tap] â†’  t=560ms
+  Star 4 (Mintaka, 141°)      [tap] â†’  t=840ms
+  Star 5 (Alnilam, 180°)      [tap] â†’  t=1120ms
+  Star 6 (Alnitak, 219°)      [tap] â†’  t=1400ms
+  Star 7 (Saiph, 278°)        [tap] â†’  t=1680ms
   Blast fires:                         t=1960ms
 
   Power scaling:
-  0/7 stars: 30% â†’ spinDelta = âˆ’180, r_blast = 0.40Ã—r_arena
-  3/7 stars: 60% â†’ spinDelta = âˆ’360, r_blast = 0.76Ã—r_arena
-  5/7 stars: 80% â†’ spinDelta = âˆ’480, r_blast = 0.88Ã—r_arena
-  7/7 stars: 100% â†’ spinDelta = âˆ’600, r_blast = 1.00Ã—r_arena
+  0/7 stars: 30% â†’ spinDelta = −180, r_blast = 0.40×r_arena
+  3/7 stars: 60% â†’ spinDelta = −360, r_blast = 0.76×r_arena
+  5/7 stars: 80% â†’ spinDelta = −480, r_blast = 0.88×r_arena
+  7/7 stars: 100% â†’ spinDelta = −600, r_blast = 1.00×r_arena
 
   Blast shape (area-wide radial shockwave):
     [ Â· Â· Â· Â· Â· Â· Â· Orion Â· Â· Â· Â· Â· Â· Â· ]
@@ -4507,13 +4507,13 @@ interface BarnardsLoopQTE {
   starAngles: number[];     // 7 Orion angles
   tapWindowMs: number;      // 120ms per star
   intervalMs: number;       // 280ms between stars
-  starsCorrect: number;     // 0â€“7
+  starsCorrect: number;     // 0–7
 }
 
 function activateBarnardsLoop(
   orion: Beyblade, targets: Beyblade[], qte: BarnardsLoopQTE
 ): void {
-  const power_pct = 0.30 + 0.10 * qte.starsCorrect; // 0.30â€“1.00
+  const power_pct = 0.30 + 0.10 * qte.starsCorrect; // 0.30–1.00
   const spinDeltaTarget = -600 * power_pct;
   const linearImpulseRadial = 3600 * power_pct;
   const r_blast = arenaRadius * (0.40 + 0.60 * power_pct);
@@ -4526,7 +4526,7 @@ function activateBarnardsLoop(
   targets.forEach((t) => {
     const dist = distance(orion, t);
     if (dist <= r_blast) {
-      const falloff = 1 - (dist / r_blast) * 0.4; // 60â€“100% at edge
+      const falloff = 1 - (dist / r_blast) * 0.4; // 60–100% at edge
       applySpinDelta(t, spinDeltaTarget * falloff);
       const dir = normalizeAngle(angleTo(orion, t));
       applyLinearImpulse(t, dir, linearImpulseRadial * falloff);
@@ -4543,19 +4543,19 @@ function activateBarnardsLoop(
 }
 ```
 
-**Force Behavior Applied to Opponents:** `must_leave_zone` (1200 ms) â€” all opponents within blast radius are repelled outward and cannot re-enter the blast zone during the shockwave duration. This classifies Barnard's Loop as a **zone-denial + multi-target** special: it clears the entire arena of opponents, resets positioning, and leaves Orion in stable stamina mode at the bowl center â€” the ideal stamina-endgame setup.
+**Force Behavior Applied to Opponents:** `must_leave_zone` (1200 ms) — all opponents within blast radius are repelled outward and cannot re-enter the blast zone during the shockwave duration. This classifies Barnard's Loop as a **zone-denial + multi-target** special: it clears the entire arena of opponents, resets positioning, and leaves Orion in stable stamina mode at the bowl center — the ideal stamina-endgame setup.
 
 ---
 
-## Case 680 â€” [COMBO] Nebula Surge: Seven-Star Resonance Orbital Strike (3-key: â†‘â†‘K)
+## Case 680 — [COMBO] Nebula Surge: Seven-Star Resonance Orbital Strike (3-key: â†‘â†‘K)
 
 **Combo ID:** `nebula-surge`  
 **Sequence:** moveUp â†’ moveUp â†’ defense  
 **Cost:** 25 power  
 **Type Restriction:** stamina  
-**Ceiling compliance:** damageMultiplier = 1.40Ã— âœ“, lockMs = 220 âœ“, no invulnerability âœ“, no AoE (single target at apex) âœ“, no full spin recovery âœ“
+**Ceiling compliance:** damageMultiplier = 1.40× âœ“, lockMs = 220 âœ“, no invulnerability âœ“, no AoE (single target at apex) âœ“, no full spin recovery âœ“
 
-Nebula Surge translates the Barnard's Loop gimmick's staircase-orbit resonance into a controlled player-skill expression. The double-up input drives Orion from its current precession orbit into a tighter inner orbit via two rapid inward impulses (exploiting the staircase resonance: each "up" input pushes Orion to the next resonance band inward, lowering precession radius by ~18 mm per step). Once at minimum precession radius (the innermost resonance band, r_prec â‰ˆ 11 mm), the `defense` input triggers the spin-focus pulse: Orion's seven protrusion nodes simultaneously resonate at their natural frequencies, creating a brief constructive interference at the bowl center that imparts a focused outward radial impulse to the nearest opponent. The constructive interference amplifies the contact impulse by 1.40Ã— the baseline (damageMultiplier = 1.40Ã—) via resonance energy addition: E_resonance = Î£áµ¢ (Â½ Ã— m_prong_i Ã— v_prong_iÂ²) at the seven nodes = 7 Ã— Â½ Ã— 0.0008 Ã— (0.036 Ã— 600)Â² â‰ˆ 7 Ã— 0.0008 Ã— 466.6 â‰ˆ 0.00233 J per cycle, converted to contact impulse. The orbit tightening also increases the effective collision speed: tighter orbit means higher centripetal approach velocity v_approach_inner = Ï‰ Ã— r_prec_min = 600 Ã— 0.011 = 6.6 m/s vs standard v_approach = 600 Ã— 0.065 = 39 m/s (outer orbit) â€” paradoxically the inner orbit is slower in absolute terms, but the resonance pulse fires at the moment of minimum-radius orbit snap, where the radial velocity spike v_snap â‰ˆ Î”r_prec / Î”t_snap = 18 mm / 5 ms = 3.6 m/s adds constructively with the rotational velocity. The target receives lockMs = 220 (brief spin-lock as the resonance pulse disrupts their spin axis alignment) and spinDelta = âˆ’88 rad/s (resonance spin-steal). Cost 25 power; type-restricted to stamina because only stamina-type assemblies can access the inner resonance orbits (attack and defense types have friction profiles that prevent orbit tightening below r_prec = 30 mm on standard bowl geometry).
+Nebula Surge translates the Barnard's Loop gimmick's staircase-orbit resonance into a controlled player-skill expression. The double-up input drives Orion from its current precession orbit into a tighter inner orbit via two rapid inward impulses (exploiting the staircase resonance: each "up" input pushes Orion to the next resonance band inward, lowering precession radius by ~18 mm per step). Once at minimum precession radius (the innermost resonance band, r_prec â‰ˆ 11 mm), the `defense` input triggers the spin-focus pulse: Orion's seven protrusion nodes simultaneously resonate at their natural frequencies, creating a brief constructive interference at the bowl center that imparts a focused outward radial impulse to the nearest opponent. The constructive interference amplifies the contact impulse by 1.40× the baseline (damageMultiplier = 1.40×) via resonance energy addition: E_resonance = Î£áµ¢ (Â½ × m_prong_i × v_prong_i²) at the seven nodes = 7 × Â½ × 0.0008 × (0.036 × 600)² â‰ˆ 7 × 0.0008 × 466.6 â‰ˆ 0.00233 J per cycle, converted to contact impulse. The orbit tightening also increases the effective collision speed: tighter orbit means higher centripetal approach velocity v_approach_inner = Ï‰ × r_prec_min = 600 × 0.011 = 6.6 m/s vs standard v_approach = 600 × 0.065 = 39 m/s (outer orbit) — paradoxically the inner orbit is slower in absolute terms, but the resonance pulse fires at the moment of minimum-radius orbit snap, where the radial velocity spike v_snap â‰ˆ Î”r_prec / Î”t_snap = 18 mm / 5 ms = 3.6 m/s adds constructively with the rotational velocity. The target receives lockMs = 220 (brief spin-lock as the resonance pulse disrupts their spin axis alignment) and spinDelta = −88 rad/s (resonance spin-steal). Cost 25 power; type-restricted to stamina because only stamina-type assemblies can access the inner resonance orbits (attack and defense types have friction profiles that prevent orbit tightening below r_prec = 30 mm on standard bowl geometry).
 
 ```
 Nebula Surge Orbital Approach:
@@ -4566,15 +4566,15 @@ Nebula Surge Orbital Approach:
   K input (resonance pulse): â—â—â—â—  â†’ 7-node constructive burst
   
   Energy at 7 resonance nodes:
-  E = 7 Ã— 0.00233 J = 0.01631 J
-  â†’ damageMultiplier = 1.40Ã—, Î”Ï‰_target = âˆ’88 rad/s, lockMs = 220
+  E = 7 × 0.00233 J = 0.01631 J
+  â†’ damageMultiplier = 1.40×, Î”Ï‰_target = −88 rad/s, lockMs = 220
 ```
 
 ```typescript
 // Combo entry: ["moveUp","moveUp","defense"], cost: 25, type: "stamina"
 function applyNebulaSurge(orion: Beyblade, target: Beyblade): void {
   // Tighten orbit via resonance staircase
-  orion.precessionRadius = Math.max(orion.precessionRadius - 36, 11); // 2Ã— snap
+  orion.precessionRadius = Math.max(orion.precessionRadius - 36, 11); // 2× snap
   
   // 7-node constructive interference pulse
   const resonanceEnergy = 7 * 0.00233; // J
@@ -4587,17 +4587,17 @@ function applyNebulaSurge(orion: Beyblade, target: Beyblade): void {
 }
 ```
 
-**Design note:** Nebula Surge is Orion's precision counter-tool â€” it punishes aggressive opponents who press inward by exploiting the resonance snap to deliver a focused burst at close range. The double-up approach means it telegraphs slightly (opponents see Orion contracting inward), creating a readable pattern that skilled opponents can dodge, keeping the combo skill-expressive rather than automatic.
+**Design note:** Nebula Surge is Orion's precision counter-tool — it punishes aggressive opponents who press inward by exploiting the resonance snap to deliver a focused burst at close range. The double-up approach means it telegraphs slightly (opponents see Orion contracting inward), creating a readable pattern that skilled opponents can dodge, keeping the combo skill-expressive rather than automatic.
 
 ---
 
-## Case 681 â€” [GIMMICK] Bear Ax Attack: Galzzly AR Axe-Head Geometry and Aerial Rebound Strike Mechanics
+## Case 681 — [GIMMICK] Bear Ax Attack: Galzzly AR Axe-Head Geometry and Aerial Rebound Strike Mechanics
 
-**Beyblade:** Galzzly (Plastic Generation) â€” Grizzly AR + Ten Heavy WD + Spike Base  
+**Beyblade:** Galzzly (Plastic Generation) — Grizzly AR + Ten Heavy WD + Spike Base  
 **User:** Gary  
 **Physics Domain:** AR axe-blade geometry, aerial rebound launch mechanics, progressive impact force escalation
 
-**Thesis:** The Bear Ax Attack gimmick originates in the Grizzly Attack Ring's distinctive axe-head AR geometry: two opposing flat-face "axe blades" each ~22 mm wide with a 90Â° shoulder angle between blade face and top surface, creating a blunt-edge contact profile unique among plastic-gen ARs. The flat axe-face generates a pure normal impulse (minimal tangential component) with COR_axe â‰ˆ 0.71 (higher than standard ABS 0.67 due to the blade's rigid planar geometry providing cleaner force transfer), meaning more momentum is preserved in the collision than absorbed. For Galzzly (m = 0.044 kg, heavier than standard due to Ten Heavy WD, r_AR = 0.034 m, I = 7.61Ã—10â»â¶ kgÂ·mÂ²), a single axe-blade contact at v_rel = 1.1 m/s delivers J_n = m_red Ã— v_rel Ã— (1 + 0.71) â‰ˆ 0.044 Ã— 1.1 Ã— 1.71 Ã— 0.5 â‰ˆ 0.0413 NÂ·s, pushing the opponent back with Î”v = 0.0413 / 0.040 = 1.03 m/s per contact â€” already a strong linear knockback. The Spike Base (a pointed tip variant similar to Sharp Base) provides high-spin stability (small contact radius r_tip = 1.5 mm, F_friction = Î¼ Ã— m Ã— g Ã— (r_tip / r_gyro) â‰ˆ 0.001 Ã— force, minimal spin decay Î³ â‰ˆ 5.8 rad/sÂ²) but very low lateral mobility â€” Galzzly stays relatively stationary at the bowl center, relying on opponents approaching it rather than chasing. This creates the "bear standing its ground" behavior: Galzzly plants at center, and the Grizzly AR's axe blades intercept incoming attacks with the flat face, redirecting opponent momentum outward. The aerial rebound component emerges from the AR's 90Â° shoulder: when an opponent contacts the axe-blade face during a high-speed approach, the shoulder geometry can deflect them upward (the normal vector of the axe-face is not purely horizontal â€” there is a slight upward tilt of ~8Â° from the horizontal plane at standard Galzzly precession angle). This 8Â° upward deflection launches smaller/lighter beyblades into a brief aerial trajectory (Î”h_max = v_nÂ²sinÂ²(8Â°) / 2g â‰ˆ (1.03 Ã— 0.139)Â² / 19.62 â‰ˆ 0.001 m, visually negligible physically but mechanically significant as an "airborne" state during which no stadium-floor friction applies). The gimmick manifests in gameplay as: Galzzly consistently deflects fast-moving opponents upward-and-outward, resetting the arena position without itself moving significantly.
+**Thesis:** The Bear Ax Attack gimmick originates in the Grizzly Attack Ring's distinctive axe-head AR geometry: two opposing flat-face "axe blades" each ~22 mm wide with a 90° shoulder angle between blade face and top surface, creating a blunt-edge contact profile unique among plastic-gen ARs. The flat axe-face generates a pure normal impulse (minimal tangential component) with COR_axe â‰ˆ 0.71 (higher than standard ABS 0.67 due to the blade's rigid planar geometry providing cleaner force transfer), meaning more momentum is preserved in the collision than absorbed. For Galzzly (m = 0.044 kg, heavier than standard due to Ten Heavy WD, r_AR = 0.034 m, I = 7.61×10â»â¶ kgÂ·m²), a single axe-blade contact at v_rel = 1.1 m/s delivers J_n = m_red × v_rel × (1 + 0.71) â‰ˆ 0.044 × 1.1 × 1.71 × 0.5 â‰ˆ 0.0413 NÂ·s, pushing the opponent back with Î”v = 0.0413 / 0.040 = 1.03 m/s per contact — already a strong linear knockback. The Spike Base (a pointed tip variant similar to Sharp Base) provides high-spin stability (small contact radius r_tip = 1.5 mm, F_friction = Î¼ × m × g × (r_tip / r_gyro) â‰ˆ 0.001 × force, minimal spin decay Î³ â‰ˆ 5.8 rad/s²) but very low lateral mobility — Galzzly stays relatively stationary at the bowl center, relying on opponents approaching it rather than chasing. This creates the "bear standing its ground" behavior: Galzzly plants at center, and the Grizzly AR's axe blades intercept incoming attacks with the flat face, redirecting opponent momentum outward. The aerial rebound component emerges from the AR's 90° shoulder: when an opponent contacts the axe-blade face during a high-speed approach, the shoulder geometry can deflect them upward (the normal vector of the axe-face is not purely horizontal — there is a slight upward tilt of ~8° from the horizontal plane at standard Galzzly precession angle). This 8° upward deflection launches smaller/lighter beyblades into a brief aerial trajectory (Î”h_max = v_n²sin²(8°) / 2g â‰ˆ (1.03 × 0.139)² / 19.62 â‰ˆ 0.001 m, visually negligible physically but mechanically significant as an "airborne" state during which no stadium-floor friction applies). The gimmick manifests in gameplay as: Galzzly consistently deflects fast-moving opponents upward-and-outward, resetting the arena position without itself moving significantly.
 
 ```
 Grizzly AR Axe-Head Cross-Section (side view):
@@ -4605,7 +4605,7 @@ Grizzly AR Axe-Head Cross-Section (side view):
        ___________
       |            |  â† flat axe-face (22mm wide, COR=0.71)
       |            |
-      |            |___   â† 90Â° shoulder (8Â° upward tilt from horizontal)
+      |            |___   â† 90° shoulder (8° upward tilt from horizontal)
       |                |
       |    AR core     |
       |                |
@@ -4614,13 +4614,13 @@ Grizzly AR Axe-Head Cross-Section (side view):
 Axe-face contact geometry:
   Face width: 22mm
   COR: 0.71
-  Shoulder tilt: 8Â° (produces slight aerial deflection)
+  Shoulder tilt: 8° (produces slight aerial deflection)
   J_n per contact: 0.0413 NÂ·s
   Î”v imparted: 1.03 m/s outward + 0.144 m/s upward component
 
 Spike Base spin profile:
   r_tip = 1.5mm
-  Î³ = 5.8 rad/sÂ² (very low decay)
+  Î³ = 5.8 rad/s² (very low decay)
   Lateral mobility: minimal (central plant)
 ```
 
@@ -4645,25 +4645,25 @@ function computeAxeHeadDeflection(
 
 ---
 
-## Case 682 â€” [SPECIAL MOVE] Bear Ax Attack: Grizzly Aerial Rampage â€” Progressive QTE Axe-Slam Chain with Vulnerability Penalty
+## Case 682 — [SPECIAL MOVE] Bear Ax Attack: Grizzly Aerial Rampage — Progressive QTE Axe-Slam Chain with Vulnerability Penalty
 
 **Beyblade:** Galzzly (Plastic Generation)  
 **User:** Gary  
 **Activation:** Single-button special; requires â‰¥55% spin, continuous QTE sequence
 
-Bear Ax Attack is a sustained QTE chain special in which Galzzly launches itself into a repeated aerial slam sequence â€” the beyblade physically leaves the stadium floor, arcs upward, and drives the axe-blade AR down onto the opponent in successive strikes. Unlike the passive gimmick's flat ground deflection, the special adds aerial height (approximated as h_launch = 80 mm per slam, giving airborne time t_air = âˆš(2h/g) = âˆš(0.163) â‰ˆ 0.404 s per arc) and gravity-assisted downward velocity: v_down = âˆš(2gh) = âˆš(1.57) â‰ˆ 1.25 m/s added to the rotational edge velocity, making each slam significantly harder than a lateral deflection. The QTE chain works as follows: after the first slam, the player sees a new tap prompt appear with shrinking window â€” first slam window = 500 ms, each subsequent window shrinks by 60 ms (slam 2 = 440 ms, slam 3 = 380 ms, â€¦ slam 8 = 80 ms). As long as the player hits each prompt within its window, the slam chain continues and damage per slam escalates: slam N delivers spinDelta_N = âˆ’(150 + 80 Ã— N) rad/s to the target (slam 1 = âˆ’230, slam 2 = âˆ’310, slam 3 = âˆ’390, â€¦, slam 8 = âˆ’790 rad/s at maximum). If the player misses any prompt, the chain terminates and the penalty is triggered: Galzzly lands awkwardly, enters a 1200 ms vulnerable state (forceState = "must_stay_still" applied to Galzzly itself, not opponent), and the opponent gains forceState = "must_attack" for 1200 ms â€” meaning the opponent is compelled to pursue Galzzly during the penalty window. The maximum chain (all 8 slams) is theoretically achievable but requires near-perfect timing on the final 80 ms window; most practical chains end at 5â€“6 slams. Total linearImpulse delivered per slam increases with slam number: impulse_N = 2000 + 400 Ã— N units, ensuring later slams are genuinely devastating even at moderate chain lengths. Galzzly self-cost per completed chain: spinDelta = âˆ’15 Ã— slams_completed rad/s (modest aerial spin loss). Galzzly opponent `forceState = "must_stay_still"` during slam 1 only (initial stun 300 ms); subsequent slams don't renew the stun (opponent can attempt to move after 300 ms, but the rapid slam cadence keeps them suppressed if the chain continues).
+Bear Ax Attack is a sustained QTE chain special in which Galzzly launches itself into a repeated aerial slam sequence — the beyblade physically leaves the stadium floor, arcs upward, and drives the axe-blade AR down onto the opponent in successive strikes. Unlike the passive gimmick's flat ground deflection, the special adds aerial height (approximated as h_launch = 80 mm per slam, giving airborne time t_air = âˆš(2h/g) = âˆš(0.163) â‰ˆ 0.404 s per arc) and gravity-assisted downward velocity: v_down = âˆš(2gh) = âˆš(1.57) â‰ˆ 1.25 m/s added to the rotational edge velocity, making each slam significantly harder than a lateral deflection. The QTE chain works as follows: after the first slam, the player sees a new tap prompt appear with shrinking window — first slam window = 500 ms, each subsequent window shrinks by 60 ms (slam 2 = 440 ms, slam 3 = 380 ms, … slam 8 = 80 ms). As long as the player hits each prompt within its window, the slam chain continues and damage per slam escalates: slam N delivers spinDelta_N = −(150 + 80 × N) rad/s to the target (slam 1 = −230, slam 2 = −310, slam 3 = −390, …, slam 8 = −790 rad/s at maximum). If the player misses any prompt, the chain terminates and the penalty is triggered: Galzzly lands awkwardly, enters a 1200 ms vulnerable state (forceState = "must_stay_still" applied to Galzzly itself, not opponent), and the opponent gains forceState = "must_attack" for 1200 ms — meaning the opponent is compelled to pursue Galzzly during the penalty window. The maximum chain (all 8 slams) is theoretically achievable but requires near-perfect timing on the final 80 ms window; most practical chains end at 5–6 slams. Total linearImpulse delivered per slam increases with slam number: impulse_N = 2000 + 400 × N units, ensuring later slams are genuinely devastating even at moderate chain lengths. Galzzly self-cost per completed chain: spinDelta = −15 × slams_completed rad/s (modest aerial spin loss). Galzzly opponent `forceState = "must_stay_still"` during slam 1 only (initial stun 300 ms); subsequent slams don't renew the stun (opponent can attempt to move after 300 ms, but the rapid slam cadence keeps them suppressed if the chain continues).
 
 ```
 Bear Ax Attack QTE Window Sequence:
 
-  Slam 1: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ] 500ms window â†’ âˆ’230 spinDelta, 2400 impulse
-  Slam 2: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  ] 440ms window â†’ âˆ’310 spinDelta, 2800 impulse
-  Slam 3: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   ] 380ms window â†’ âˆ’390 spinDelta, 3200 impulse
-  Slam 4: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    ] 320ms window â†’ âˆ’470 spinDelta, 3600 impulse
-  Slam 5: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ     ] 260ms window â†’ âˆ’550 spinDelta, 4000 impulse
-  Slam 6: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ      ] 200ms window â†’ âˆ’630 spinDelta, 4400 impulse
-  Slam 7: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ       ] 140ms window â†’ âˆ’710 spinDelta, 4800 impulse
-  Slam 8: [â–ˆâ–ˆâ–ˆâ–ˆ        ]  80ms window â†’ âˆ’790 spinDelta, 5200 impulse
+  Slam 1: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ] 500ms window â†’ −230 spinDelta, 2400 impulse
+  Slam 2: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ  ] 440ms window â†’ −310 spinDelta, 2800 impulse
+  Slam 3: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ   ] 380ms window â†’ −390 spinDelta, 3200 impulse
+  Slam 4: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ    ] 320ms window â†’ −470 spinDelta, 3600 impulse
+  Slam 5: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ     ] 260ms window â†’ −550 spinDelta, 4000 impulse
+  Slam 6: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ      ] 200ms window â†’ −630 spinDelta, 4400 impulse
+  Slam 7: [â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ       ] 140ms window â†’ −710 spinDelta, 4800 impulse
+  Slam 8: [â–ˆâ–ˆâ–ˆâ–ˆ        ]  80ms window â†’ −790 spinDelta, 5200 impulse
 
   MISS at any point:
   â†’ Chain ends, Galzzly enters vulnerable state (1200ms)
@@ -4671,12 +4671,12 @@ Bear Ax Attack QTE Window Sequence:
   â†’ Opponent sees Galzzly marked with vulnerability indicator
 
   Aerial arc per slam: h=80mm, t_air=0.404s, v_down_added=1.25m/s
-  Self-cost: âˆ’15 Ã— slams rad/s
+  Self-cost: −15 × slams rad/s
 ```
 
 ```typescript
 interface BearAxAttackState {
-  currentSlam: number;         // 1â€“8
+  currentSlam: number;         // 1–8
   windowMs: number;            // shrinks each slam
   active: boolean;
   totalSlamsDone: number;
@@ -4686,7 +4686,7 @@ function progressBearAxChain(
   galzzly: Beyblade, target: Beyblade, state: BearAxAttackState, hit: boolean
 ): void {
   if (!hit) {
-    // Miss â€” penalty
+    // Miss — penalty
     galzzly.forceState = "must_stay_still";
     galzzly.forceStateExpiresAt = Date.now() + 1200;
     target.forceState = "must_attack";
@@ -4719,19 +4719,19 @@ function progressBearAxChain(
 }
 ```
 
-**Force Behavior Applied to Opponent:** During chain: `must_stay_still` (300 ms initial stun slam 1 only). On miss: opponent receives `must_attack` against Galzzly for 1200 ms â€” the uniquely reversed force behavior where the penalty punishes the *attacker* (Galzzly's user) by forcing the opponent into relentless aggression. This is the only special move in the registry where `must_attack` is applied to the opponent as a *punishment for the user's own miss*, rather than as a tactical defensive maneuver.
+**Force Behavior Applied to Opponent:** During chain: `must_stay_still` (300 ms initial stun slam 1 only). On miss: opponent receives `must_attack` against Galzzly for 1200 ms — the uniquely reversed force behavior where the penalty punishes the *attacker* (Galzzly's user) by forcing the opponent into relentless aggression. This is the only special move in the registry where `must_attack` is applied to the opponent as a *punishment for the user's own miss*, rather than as a tactical defensive maneuver.
 
 ---
 
-## Case 683 â€” [COMBO] Grizzly Slam: Single Overhead Axe Drop (3-key: â†‘Kâ†“)
+## Case 683 — [COMBO] Grizzly Slam: Single Overhead Axe Drop (3-key: â†‘Kâ†“)
 
 **Combo ID:** `grizzly-slam`  
 **Sequence:** moveUp â†’ defense â†’ moveDown  
 **Cost:** 15 power  
 **Type Restriction:** defense  
-**Ceiling compliance:** damageMultiplier = 1.40Ã— âœ“, lockMs = 260 âœ“, no invulnerability âœ“, no AoE âœ“, no full spin recovery âœ“
+**Ceiling compliance:** damageMultiplier = 1.40× âœ“, lockMs = 260 âœ“, no invulnerability âœ“, no AoE âœ“, no full spin recovery âœ“
 
-Grizzly Slam extracts the single-aerial-slam core of the Bear Ax Attack special into a player-skill combo, bounded by the ceiling rules. The up-input launches Galzzly into a brief controlled hop (h = 35 mm, approximating half the special's aerial height, t_air = 0.267 s), the defense input times the axe-blade strike at the apex of the arc (maximizing downward face angle), and the down-input steers the landing direction to maintain arena positioning post-contact. The controlled half-height aerial produces v_down_added = âˆš(2 Ã— g Ã— 0.035) = âˆš(0.687) â‰ˆ 0.829 m/s â€” less than the special's 1.25 m/s but still a meaningful velocity bonus over the passive ground-level deflection. The axe-blade contact at this velocity: J_n_combo = m_red Ã— (v_rotational + v_down_added) Ã— (1 + 0.71) Ã— 0.5 = 0.044/2 Ã— (0.034 Ã— 600 + 0.829) Ã— 1.71 Ã— 0.5 â‰ˆ 0.022 Ã— 21.229 Ã— 0.855 â‰ˆ 0.399 NÂ·s â†’ linearImpulse = 0.399 / 3.60Ã—10â»âµ â‰ˆ 11,083 units, scaled to game-effective linearImpulse = 2800 units (within ceiling). damageMultiplier = 1.40Ã— applied for the gravity-enhanced contact; lockMs = 260 (axe-face normal force compresses the opponent briefly as the wide flat face maintains contact during rebound). Type-restricted to defense because only defense-type assemblies with Galzzly's mass profile (m â‰¥ 0.042 kg) can generate sufficient downward inertia in the hop to produce the enhanced impact; lighter attack/stamina types cannot generate the gravitational potential needed for the v_down bonus.
+Grizzly Slam extracts the single-aerial-slam core of the Bear Ax Attack special into a player-skill combo, bounded by the ceiling rules. The up-input launches Galzzly into a brief controlled hop (h = 35 mm, approximating half the special's aerial height, t_air = 0.267 s), the defense input times the axe-blade strike at the apex of the arc (maximizing downward face angle), and the down-input steers the landing direction to maintain arena positioning post-contact. The controlled half-height aerial produces v_down_added = âˆš(2 × g × 0.035) = âˆš(0.687) â‰ˆ 0.829 m/s — less than the special's 1.25 m/s but still a meaningful velocity bonus over the passive ground-level deflection. The axe-blade contact at this velocity: J_n_combo = m_red × (v_rotational + v_down_added) × (1 + 0.71) × 0.5 = 0.044/2 × (0.034 × 600 + 0.829) × 1.71 × 0.5 â‰ˆ 0.022 × 21.229 × 0.855 â‰ˆ 0.399 NÂ·s â†’ linearImpulse = 0.399 / 3.60×10â»âµ â‰ˆ 11,083 units, scaled to game-effective linearImpulse = 2800 units (within ceiling). damageMultiplier = 1.40× applied for the gravity-enhanced contact; lockMs = 260 (axe-face normal force compresses the opponent briefly as the wide flat face maintains contact during rebound). Type-restricted to defense because only defense-type assemblies with Galzzly's mass profile (m â‰¥ 0.042 kg) can generate sufficient downward inertia in the hop to produce the enhanced impact; lighter attack/stamina types cannot generate the gravitational potential needed for the v_down bonus.
 
 ```
 Grizzly Slam Single-Hop Arc:
@@ -4748,7 +4748,7 @@ Grizzly Slam Single-Hop Arc:
   v_down_added = 0.829 m/s
   J_n_combo = 0.399 NÂ·s (raw)
   â†’ linearImpulse = 2800 game units
-  â†’ damageMultiplier = 1.40Ã—
+  â†’ damageMultiplier = 1.40×
   â†’ lockMs = 260 (axe-face flat contact)
   
   Post-slam: â†“ input steers landing, preserving central-plant position
@@ -4772,7 +4772,7 @@ function applyGrizzlySlam(galzzly: Beyblade, target: Beyblade): void {
 }
 ```
 
-**Design note:** Grizzly Slam is Galzzly's safest aggressive option â€” a single axe-drop at cost 15 that delivers strong linear knockback without the vulnerability risk of the full Bear Ax Attack chain. Defense-type players use it to intercept incoming high-speed opponents mid-approach: the aerial launch (up-input) briefly lifts Galzzly above the opponent's AR strike plane, making the incoming attack miss slightly while Galzzly's axe-blade connects on the way down. The 260 ms lock gives enough time to reposition for a follow-up passive deflection.
+**Design note:** Grizzly Slam is Galzzly's safest aggressive option — a single axe-drop at cost 15 that delivers strong linear knockback without the vulnerability risk of the full Bear Ax Attack chain. Defense-type players use it to intercept incoming high-speed opponents mid-approach: the aerial launch (up-input) briefly lifts Galzzly above the opponent's AR strike plane, making the incoming attack miss slightly while Galzzly's axe-blade connects on the way down. The 260 ms lock gives enough time to reposition for a follow-up passive deflection.
 
 ---
 
@@ -7766,7 +7766,7 @@ function applyValtryekRush(valtryek: Beyblade, target: Beyblade): void {
 
 ---
 
-## Case 742 â€” [GIMMICK] Mercury Anubius 85XF: Extreme Flat Wide-Contact Drive, Short-Track Low-CoM Impact Geometry, and Flower Pattern Orbital Mechanics
+## Case 742 — [GIMMICK] Mercury Anubius 85XF: Extreme Flat Wide-Contact Drive, Short-Track Low-CoM Impact Geometry, and Flower Pattern Orbital Mechanics
 
 **Beyblade:** Mercury Anubius 85XF
 **User:** Yuki Mizusawa
@@ -7774,13 +7774,13 @@ function applyValtryekRush(valtryek: Beyblade, target: Beyblade): void {
 
 **Note:** Mercury Fusion Wheel [M] and Anubius Clear Wheel [M] are not yet documented in the case library. 85 Track from Case 249. XF Extreme Flat from Cases 341 and 33. All [M] values carry Â±15% uncertainty.
 
-**Thesis:** Mercury Anubius 85XF's battle identity is the interaction of three geometry effects: (1) the XF Extreme Flat tip (Case 341) creates the "flower pattern" orbital (Case 33) â€” a wide flat contact area (r_effâ‰ˆ3.5mm, Î¼=0.35) produces tighter orbital arcs (R_curveâ‰ˆ60mm) than narrower F tips (73mm), generating higher orbital frequency at the same spin rate and creating the characteristic "tornado stall" where the beyblade runs a tight petal-shaped attack path; (2) the 85 track (Case 249, h=8.5mm) places the contact plane unusually low â€” the assembly CoM sits â‰ˆ4.25mm above the floor vs â‰ˆ8mm for 145-height beys, so every collision delivers force at low height, creating an upward-lever torque on the opponent that induces tilt (the foundation of Brave Impact's tilt-induction mechanic, Case 743); (3) the Mercury Fusion Wheel [M] provides forward-facing Câ‚„ smash contacts (Ï†_mercuryâ‰ˆ28Â°, J_smash=0.883Ã—J) that engage frequently due to XF's tight flower-pattern orbit; the trade-off is XF's high spin decay (âˆ’60.0 rad/sÂ², spin lifeâ‰ˆ10.0s) â€” Mercury Anubius 85XF must end battles quickly before its aggressive orbital drive depletes all spin.
+**Thesis:** Mercury Anubius 85XF's battle identity is the interaction of three geometry effects: (1) the XF Extreme Flat tip (Case 341) creates the "flower pattern" orbital (Case 33) — a wide flat contact area (r_effâ‰ˆ3.5mm, Î¼=0.35) produces tighter orbital arcs (R_curveâ‰ˆ60mm) than narrower F tips (73mm), generating higher orbital frequency at the same spin rate and creating the characteristic "tornado stall" where the beyblade runs a tight petal-shaped attack path; (2) the 85 track (Case 249, h=8.5mm) places the contact plane unusually low — the assembly CoM sits â‰ˆ4.25mm above the floor vs â‰ˆ8mm for 145-height beys, so every collision delivers force at low height, creating an upward-lever torque on the opponent that induces tilt (the foundation of Brave Impact's tilt-induction mechanic, Case 743); (3) the Mercury Fusion Wheel [M] provides forward-facing Câ‚„ smash contacts (Ï†_mercuryâ‰ˆ28°, J_smash=0.883×J) that engage frequently due to XF's tight flower-pattern orbit; the trade-off is XF's high spin decay (−60.0 rad/s², spin lifeâ‰ˆ10.0s) — Mercury Anubius 85XF must end battles quickly before its aggressive orbital drive depletes all spin.
 
 ```
 Mercury Fusion Wheel [M]:
 
-  Câ‚„ contact geometry (4-fold, 90Â° spacing)  [franchise imagery estimate]
-  Ï†_mercury â‰ˆ 28Â°  (forward-facing smash);  J_smash = cos(28Â°) Ã— J = 0.883 Ã— J
+  Câ‚„ contact geometry (4-fold, 90° spacing)  [franchise imagery estimate]
+  Ï†_mercury â‰ˆ 28°  (forward-facing smash);  J_smash = cos(28°) × J = 0.883 × J
   r_outer â‰ˆ 22 mm
 
 85 Track [Case 249]:
@@ -7793,20 +7793,20 @@ Mercury Fusion Wheel [M]:
 XF (Extreme Flat) [Cases 341, 33]:
   r_eff â‰ˆ 3.5 mm  (wide flat contact surface)
   Î¼_XF = 0.35  (hard plastic, same material grade as F but wider)
-  F_lat = Î¼ Ã— m Ã— g = 0.35 Ã— 0.050 Ã— 9.81 = 0.172 N  (same as F tip)
-  dÏ‰/dt = âˆ’(0.35 Ã— 0.050 Ã— 9.81 Ã— 0.0035) / 1.0Ã—10â»âµ = âˆ’60.0 rad/sÂ²
-  Spin life (free): 600 / 60.0 = 10.0 s  (aggressive â€” fights must end quickly)
+  F_lat = Î¼ × m × g = 0.35 × 0.050 × 9.81 = 0.172 N  (same as F tip)
+  dÏ‰/dt = −(0.35 × 0.050 × 9.81 × 0.0035) / 1.0×10â»âµ = −60.0 rad/s²
+  Spin life (free): 600 / 60.0 = 10.0 s  (aggressive — fights must end quickly)
 
   Flower pattern / tornado orbital [Case 33]:
-    R_curve_XF â‰ˆ 60 mm  (tighter than F's 73 mm â€” wider contact = more centripetal grip)
-    At v_orb = 0.5 m/s:  f_orbit = v / (2Ï€ Ã— R) = 0.5 / (2Ï€ Ã— 0.060) = 1.33 orbits/s
+    R_curve_XF â‰ˆ 60 mm  (tighter than F's 73 mm — wider contact = more centripetal grip)
+    At v_orb = 0.5 m/s:  f_orbit = v / (2Ï€ × R) = 0.5 / (2Ï€ × 0.060) = 1.33 orbits/s
     Flower pattern: at high Ï‰ the XF tip locks into a repeating tight petal-orbit
       that covers the arena in a systematic grid rather than a random walk
     Tornado stall: as spin decays, petal orbit tightens toward center â†’ 
       late-battle behavior resembles a spinning-top stall rather than a ring-out drift
 
 Assembly [MFB era]:
-  m = 0.050 kg,  I = 1.0Ã—10â»âµ kgÂ·mÂ²,  Ï‰â‚€ = 600 rad/s,  W = 0.491 N
+  m = 0.050 kg,  I = 1.0×10â»âµ kgÂ·m²,  Ï‰â‚€ = 600 rad/s,  W = 0.491 N
 ```
 
 ```typescript
@@ -7820,13 +7820,13 @@ interface MercuryAnubiusAssembly {
   contactFold: number;        // 4
   // 85 track [Case 249]
   h_85_m: number;             // 0.0085
-  CoM_height_m: number;       // 0.00425 â€” low, delivers upward-lever impact
+  CoM_height_m: number;       // 0.00425 — low, delivers upward-lever impact
   // XF tip [Cases 341, 33]
   rEff_XF_m: number;          // 3.5e-3
   mu_XF: number;              // 0.35
   F_lat_N: number;            // 0.172
   spinDecay_rads2: number;    // 60.0
-  R_curve_m: number;          // 0.060 â€” tight flower pattern orbit
+  R_curve_m: number;          // 0.060 — tight flower pattern orbit
 }
 function xfOrbitHz(asm: MercuryAnubiusAssembly, v_orb: number): number {
   return v_orb / (2 * Math.PI * asm.R_curve_m);  // at v=0.5: 1.33 orbits/s
@@ -7835,38 +7835,38 @@ function xfOrbitHz(asm: MercuryAnubiusAssembly, v_orb: number): number {
 
 ---
 
-## Case 743 â€” [SPECIAL MOVE] Brave Impact: Yuki Mizusawa / Mercury Anubius 85XF (Metal Fight Beyblade)
+## Case 743 — [SPECIAL MOVE] Brave Impact: Yuki Mizusawa / Mercury Anubius 85XF (Metal Fight Beyblade)
 
 **Franchise Move:** The beyblade speeds up to high speed and crashes down on its opponent with a heavy impact. Brave Impact is the first and only special move used by Yuki Mizusawa with Mercury Anubius 85XF. [Metal Fight Beyblade]
 
-**Thesis:** Brave Impact is the BeySpirit transcendence of Mercury Anubius's XF speed-and-low-impact system (Case 742): the Anubius BeySpirit (the Egyptian god of death, Anubis) amplifies the XF flower-pattern orbital to v_orb=4.5 m/s (vs passive 0.5 m/s) and channels all accumulated orbital kinetic energy (E_orb=Â½mvÂ²=Â½Ã—0.050Ã—4.5Â²=0.506J) into a single direct crash approach; the "heavy impact" is both the raw kinetic energy of the crash and the 85 track's low-CoM geometry amplified â€” the contact delivered at h=8.5mm means the impact force acts far below the opponent's CoM (â‰ˆ12-14mm for a typical 145-height bey), creating a large lever-arm torque (Ï„=FÃ—Î”hâ‰ˆFÃ—0.006m) that induces forced tilt on the opponent; the tilt-induction mechanic (beyTiltAngle_opponent += 8Â°, 1500ms) represents this lever-arm effect: the opponent is not just pushed backward but also destabilised rotationally, making them more susceptible to follow-up hits; self-cost is heavy (âˆ’240) because XF's already-aggressive decay (âˆ’60 rad/sÂ²) is compounded by the BeySpirit's full-speed orbital approach â€” Yuki must land this hit to win because the spin investment cannot be recovered.
+**Thesis:** Brave Impact is the BeySpirit transcendence of Mercury Anubius's XF speed-and-low-impact system (Case 742): the Anubius BeySpirit (the Egyptian god of death, Anubis) amplifies the XF flower-pattern orbital to v_orb=4.5 m/s (vs passive 0.5 m/s) and channels all accumulated orbital kinetic energy (E_orb=Â½mv²=Â½×0.050×4.5²=0.506J) into a single direct crash approach; the "heavy impact" is both the raw kinetic energy of the crash and the 85 track's low-CoM geometry amplified — the contact delivered at h=8.5mm means the impact force acts far below the opponent's CoM (â‰ˆ12-14mm for a typical 145-height bey), creating a large lever-arm torque (Ï„=F×Î”hâ‰ˆF×0.006m) that induces forced tilt on the opponent; the tilt-induction mechanic (beyTiltAngle_opponent += 8°, 1500ms) represents this lever-arm effect: the opponent is not just pushed backward but also destabilised rotationally, making them more susceptible to follow-up hits; self-cost is heavy (−240) because XF's already-aggressive decay (−60 rad/s²) is compounded by the BeySpirit's full-speed orbital approach — Yuki must land this hit to win because the spin investment cannot be recovered.
 
 ```
-Brave Impact â€” phase structure:
+Brave Impact — phase structure:
 
-Phase 1 â€” "speed_charge" (500 ms):
+Phase 1 — "speed_charge" (500 ms):
   XF drives to v_orb = 4.5 m/s  (BeySpirit flower-pattern amplification)
-  E_orb = Â½ Ã— 0.050 Ã— 4.5Â² = 0.506 J
+  E_orb = Â½ × 0.050 × 4.5² = 0.506 J
   Anubius spirit aura builds (black/dark-gold Egyptian dog-god form)
   forceState on target: cannot_attack_freely  (500 ms)
   visual: Anubius spirit silhouette forms around beyblade, orbital arc glows dark-gold
 
-Phase 2 â€” "impact_crash" (direct frontal collision):
+Phase 2 — "impact_crash" (direct frontal collision):
   Contact delivered at h = 8.5 mm  (below opponent CoM â†’ upward lever torque)
-  spinDelta       = âˆ’480 rad/s
+  spinDelta       = −480 rad/s
   linearImpulse   = 5 000 eu
-  damageMultiplier = 2.0Ã—
+  damageMultiplier = 2.0×
 
   Tilt induction (lever-arm effect from 85 track low contact):
-    beyTiltAngle_opponent += 8Â°  (1 500 ms duration)
+    beyTiltAngle_opponent += 8°  (1 500 ms duration)
     if opponent spin/maxSpin + stabilityDebuff < 0.40: early wobble triggers
 
-  QTE â€” "Crash Guard":
+  QTE — "Crash Guard":
     Window: 200 ms from crash contact;  Input: defense (K)
     Success: 50% of spinDelta + impulse applied;  no tilt induction
     Fail: full crash + tilt
 
-Self-cost: âˆ’240 spinDelta  (XF orbital speed investment â€” must win with this hit)
+Self-cost: −240 spinDelta  (XF orbital speed investment — must win with this hit)
 powerCost: 100;  cooldownMs: 4 000
 NOTE: any beyblade can use Brave Impact; no part restriction for special moves.
 ```
@@ -7895,7 +7895,7 @@ function activateBraveImpact(mercury: Beyblade, target: Beyblade): void {
 
 ---
 
-## Case 744 â€” [COMBO] Flower Smash: XF Flower-Pattern Direction-Reversal Contact (3-key: moveUp moveDown attack)
+## Case 744 — [COMBO] Flower Smash: XF Flower-Pattern Direction-Reversal Contact (3-key: moveUp moveDown attack)
 
 **Combo ID:** `flower-smash`
 **Sequence:** moveUp â†’ moveDown â†’ attack  (â†‘â†“J)
@@ -7903,28 +7903,28 @@ function activateBraveImpact(mercury: Beyblade, target: Beyblade): void {
 **Type Restriction:** attack
 **Part Requirement:** xfTip  (XF Extreme Flat Performance Tip with wide-contact flower-pattern orbit)
 
-Flower Smash is the combo-level expression of the XF tip's flower-pattern orbital mechanics (Cases 742, 33): the moveUp enters the upper orbital petal of the XF flower pattern, the moveDown performs the pattern's characteristic direction-reversal (the petal-arc flips from upward to downward â€” the tightest orbital moment where centripetal force is at maximum, R_curve=60mm), and the attack fires at the inner apex of the petal reversal where orbital speed is highest and the Mercury contact face approaches at the tightest angle; the direction-reversal (Phase 2) is the element that makes Flower Smash unpredictable â€” the opponent sees the XF enter from above, then the arc reversal creates a contact from a vector the opponent didn't anticipate; the 85 track's low-contact geometry adds the tilt-induction tendency (passive, not amplified at combo scale): spinDelta = âˆ’48 (XF wide contact, slightly below ceiling â€” the wide contact area spreads force over a larger surface than a blade tip, capping marginally below ceiling force concentration), damageMultiplier = 1.35Ã—.
+Flower Smash is the combo-level expression of the XF tip's flower-pattern orbital mechanics (Cases 742, 33): the moveUp enters the upper orbital petal of the XF flower pattern, the moveDown performs the pattern's characteristic direction-reversal (the petal-arc flips from upward to downward — the tightest orbital moment where centripetal force is at maximum, R_curve=60mm), and the attack fires at the inner apex of the petal reversal where orbital speed is highest and the Mercury contact face approaches at the tightest angle; the direction-reversal (Phase 2) is the element that makes Flower Smash unpredictable — the opponent sees the XF enter from above, then the arc reversal creates a contact from a vector the opponent didn't anticipate; the 85 track's low-contact geometry adds the tilt-induction tendency (passive, not amplified at combo scale): spinDelta = −48 (XF wide contact, slightly below ceiling — the wide contact area spreads force over a larger surface than a blade tip, capping marginally below ceiling force concentration), damageMultiplier = 1.35×.
 
 ```
-Flower Smash â€” geometry:
+Flower Smash — geometry:
 
 Phase 1 (â†‘): XF flower-pattern upper orbital petal,  R_curve = 60 mm
   orbital speed: v_orb â‰ˆ 0.5 m/s  (tight petal arc)
 
-Phase 2 (â†“): petal direction-reversal (arc flips downward â€” tightest orbital moment)
+Phase 2 (â†“): petal direction-reversal (arc flips downward — tightest orbital moment)
   R_inner â‰ˆ 45 mm at reversal apex  (centripetal grip maximised)
   Opponent cannot predict contact vector during petal flip
 
 Phase 3 (J): Mercury smash contact at inner petal apex
-  Ï†_mercury = 28Â°;  J_smash = cos(28Â°) Ã— J = 0.883 Ã— J
-  spinDelta_contact = âˆ’48 rad/s  (wide contact area spreads force, marginally below ceiling)
-  damageMultiplier = 1.35Ã—
+  Ï†_mercury = 28°;  J_smash = cos(28°) × J = 0.883 × J
+  spinDelta_contact = −48 rad/s  (wide contact area spreads force, marginally below ceiling)
+  damageMultiplier = 1.35×
   lockMs = 55  (crisp smash, low-CoM 85 track â†’ minimal upper-axis disruption)
 
 ceiling compliance:
-  1.35Ã— â‰¤ 1.5Ã—;  55 ms â‰¤ 300 ms;  48 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
+  1.35× â‰¤ 1.5×;  55 ms â‰¤ 300 ms;  48 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
 
-Design note: tilt-induction tendency from 85 track low CoM is passive physics at combo scale â€”
+Design note: tilt-induction tendency from 85 track low CoM is passive physics at combo scale —
   no beyTiltAngle modification applied (special-move-only amplification not present).
   Flower petal reversal self-cost: nil  (direction change on XF's own orbital arc, no deceleration penalty).
 ```
@@ -7933,7 +7933,7 @@ Design note: tilt-induction tendency from 85 track low CoM is passive physics at
 // Combo: ["moveUp","moveDown","attack"], cost: 25, type: "attack", part: xfTip
 function applyFlowerSmash(mercury: Beyblade, target: Beyblade): void {
   // XF flower petal reversal: contact at inner petal apex
-  applySpinDelta(target, -48);        // wide XF contact â€” marginally below ceiling
+  applySpinDelta(target, -48);        // wide XF contact — marginally below ceiling
   target.damageMultiplier = 1.35;
   target.locked = true; target.lockExpiresAt = Date.now() + 55;
 }
@@ -7945,40 +7945,40 @@ function applyFlowerSmash(mercury: Beyblade, target: Beyblade): void {
 
 ---
 
-## Case 745 â€” [SPECIAL MOVE] Brave Flash: Valt Aoi / Brave Valtryek Evolution' 2A (Burst Sparking)
+## Case 745 — [SPECIAL MOVE] Brave Flash: Valt Aoi / Brave Valtryek Evolution' 2A (Burst Sparking)
 
 **Franchise Move:** Brave Valtryek builds up speed by circling around the edge of the Beystadium and rams into the opposing Beyblade with the rubber blade on the Brave Ring, delivering a power slash attack. Brave Flash is the second special move used by Valt Aoi with Brave Valtryek Evolution' 2A. [Beyblade Burst Surge/Sparking]
 
-**Thesis:** Brave Flash is the stadium-orbital expression of Brave Valtryek's system (Case 739) â€” where Brave Sword (Case 740) achieves peak power through BeySpirit triple-layer rubber alignment (Brave Ring + 2A Chassis rubber + Evolution' floor-drag, Î·_total=2.0Ã—), Brave Flash achieves peak speed through a different route: stadium-edge orbital lapping; the Valtryek spirit drives Brave Valtryek to circuit the stadium perimeter at v_orb=4.0 m/s (R_orbitâ‰ˆ120mm edge-ring), a significantly higher orbital speed than the passive flower-pattern orbit (v_orbâ‰ˆ0.5 m/s) â€” the rim-lapping motion allows the Brave Ring rubber blade to brush the stadium wall during each pass, and the centripetal reaction of the wall at R=120mm (F_centripetal=mvÂ²/R=0.050Ã—16/0.120=6.67N) is channelled by the Valtryek spirit as a running acceleration rather than a braking force; the orbital kinetic energy at departure (E_orb=Â½mvÂ²=Â½Ã—0.050Ã—4.0Â²=0.400J) is released as a single Brave Ring rubber blade slam â€” only one rubber contact layer (J_brave_ring=1.0Ã—J, not the triple Î·=2.0Ã— of Brave Sword), so the damage per hit is lower than Brave Sword (spinDelta=âˆ’380 vs âˆ’600; dmgMult=1.8Ã— vs 2.5Ã—), but Brave Flash's primary advantage is approach unpredictability and speed: the edge-circuit conceals the exit angle, the opponent cannot predict which petal-arc the departure follows, and at 4.0 m/s orbital the slam arrives in under 0.1s from wall departure; self-cost is heavy (âˆ’200) because the high-speed orbital lapping drains Evolution' tip spin even with the Valtryek spirit's assistance.
+**Thesis:** Brave Flash is the stadium-orbital expression of Brave Valtryek's system (Case 739) — where Brave Sword (Case 740) achieves peak power through BeySpirit triple-layer rubber alignment (Brave Ring + 2A Chassis rubber + Evolution' floor-drag, Î·_total=2.0×), Brave Flash achieves peak speed through a different route: stadium-edge orbital lapping; the Valtryek spirit drives Brave Valtryek to circuit the stadium perimeter at v_orb=4.0 m/s (R_orbitâ‰ˆ120mm edge-ring), a significantly higher orbital speed than the passive flower-pattern orbit (v_orbâ‰ˆ0.5 m/s) — the rim-lapping motion allows the Brave Ring rubber blade to brush the stadium wall during each pass, and the centripetal reaction of the wall at R=120mm (F_centripetal=mv²/R=0.050×16/0.120=6.67N) is channelled by the Valtryek spirit as a running acceleration rather than a braking force; the orbital kinetic energy at departure (E_orb=Â½mv²=Â½×0.050×4.0²=0.400J) is released as a single Brave Ring rubber blade slam — only one rubber contact layer (J_brave_ring=1.0×J, not the triple Î·=2.0× of Brave Sword), so the damage per hit is lower than Brave Sword (spinDelta=−380 vs −600; dmgMult=1.8× vs 2.5×), but Brave Flash's primary advantage is approach unpredictability and speed: the edge-circuit conceals the exit angle, the opponent cannot predict which petal-arc the departure follows, and at 4.0 m/s orbital the slam arrives in under 0.1s from wall departure; self-cost is heavy (−200) because the high-speed orbital lapping drains Evolution' tip spin even with the Valtryek spirit's assistance.
 
 ```
-Brave Flash â€” phase structure:
+Brave Flash — phase structure:
 
-Phase 1 â€” "edge_circuit" (1000 ms):
+Phase 1 — "edge_circuit" (1000 ms):
   Brave Valtryek circuits stadium perimeter at R_orbit â‰ˆ 120 mm
   v_orb = 4.0 m/s  (BeySpirit wall-orbital amplification)
-  E_orb = Â½ Ã— 0.050 Ã— 4.0Â² = 0.400 J  (orbital kinetic energy)
-  F_centripetal = 0.050 Ã— 16 / 0.120 = 6.67 N  (wall reaction force)
+  E_orb = Â½ × 0.050 × 4.0² = 0.400 J  (orbital kinetic energy)
+  F_centripetal = 0.050 × 16 / 0.120 = 6.67 N  (wall reaction force)
   Valtryek spirit aura builds (blue-white energy along orbit trail)
   forceState on target: cannot_predict_approach  (opponent cannot lock camera tracking, 1000 ms)
 
-Phase 2 â€” "orbital_slam" (departure from wall, direct approach):
-  Single Brave Ring rubber blade contact  (Î·=1.0Ã—, NOT triple BeySpirit alignment)
-  spinDelta       = âˆ’380 rad/s
+Phase 2 — "orbital_slam" (departure from wall, direct approach):
+  Single Brave Ring rubber blade contact  (Î·=1.0×, NOT triple BeySpirit alignment)
+  spinDelta       = −380 rad/s
   linearImpulse   = 5 200 eu  (orbital departure direction)
-  damageMultiplier = 1.8Ã—
+  damageMultiplier = 1.8×
 
-  QTE â€” "Flash Dodge":
+  QTE — "Flash Dodge":
     Window: 250 ms from orbital departure;  Input: dodge (G)
     Success: 50% spinDelta + impulse applied
     Fail: full orbital slam
 
-Self-cost: âˆ’200 spinDelta  (edge-circuit orbital drain on Evolution' tip)
+Self-cost: −200 spinDelta  (edge-circuit orbital drain on Evolution' tip)
 powerCost: 100;  cooldownMs: 4 000
 
 Comparison with Brave Sword (Case 740):
-  Brave Flash:  single rubber blade, orbital momentum â†’ spinDelta âˆ’380, dmgMult 1.8Ã—  (speed)
-  Brave Sword:  triple rubber alignment Î·=2.0Ã—              â†’ spinDelta âˆ’600, dmgMult 2.5Ã—  (power)
+  Brave Flash:  single rubber blade, orbital momentum â†’ spinDelta −380, dmgMult 1.8×  (speed)
+  Brave Sword:  triple rubber alignment Î·=2.0×              â†’ spinDelta −600, dmgMult 2.5×  (power)
   Brave Flash is the "fast approach" variant; Brave Sword is the "maximum damage" variant.
 
 NOTE: any beyblade can use Brave Flash; no part restriction for special moves.
@@ -8006,7 +8006,7 @@ function activateBraveFlash(valtryek: Beyblade, target: Beyblade): void {
 
 ---
 
-## Case 746 â€” [COMBO] Brave Edge-Circuit: Wall-Orbit Departure Slash (3-key: moveUp moveRight attack)
+## Case 746 — [COMBO] Brave Edge-Circuit: Wall-Orbit Departure Slash (3-key: moveUp moveRight attack)
 
 **Combo ID:** `brave-edge-circuit`
 **Sequence:** moveUp â†’ moveRight â†’ attack  (â†‘â†’J)
@@ -8014,10 +8014,10 @@ function activateBraveFlash(valtryek: Beyblade, target: Beyblade): void {
 **Type Restriction:** attack
 **Part Requirement:** braveRing  (Brave Ring rubber blade)
 
-Brave Edge-Circuit is the combo-level expression of Brave Flash's wall-orbital approach geometry (Case 745): the moveUp enters the upper arc of the stadium-edge orbital path (tracing the high-side rim), the moveRight executes the wall-tangent rightward acceleration phase (the moment where orbital velocity is highest on the departure arc â€” the turn from along-the-wall to away-from-wall converts maximum centripetal momentum into forward velocity), and the attack fires at the orbital departure point where the Brave Ring rubber blade arrives from the wall direction at its fastest approach angle; the edge-circuit direction reversal (from circular to linear) is the unpredictability that defines this combo â€” the opponent sees the wall-lapping arc, then the sudden linear departure arrives from an angle distinct from the initial approach direction; single rubber blade contact only (not BeySpirit triple alignment): spinDelta = âˆ’46 (single Brave Ring rubber CP, approaching ceiling due to orbital velocity addition but not saturated â€” orbital speed adds to contact force, approaching but not matching the triple-layer Brave Sword ceiling), damageMultiplier = 1.35Ã—.
+Brave Edge-Circuit is the combo-level expression of Brave Flash's wall-orbital approach geometry (Case 745): the moveUp enters the upper arc of the stadium-edge orbital path (tracing the high-side rim), the moveRight executes the wall-tangent rightward acceleration phase (the moment where orbital velocity is highest on the departure arc — the turn from along-the-wall to away-from-wall converts maximum centripetal momentum into forward velocity), and the attack fires at the orbital departure point where the Brave Ring rubber blade arrives from the wall direction at its fastest approach angle; the edge-circuit direction reversal (from circular to linear) is the unpredictability that defines this combo — the opponent sees the wall-lapping arc, then the sudden linear departure arrives from an angle distinct from the initial approach direction; single rubber blade contact only (not BeySpirit triple alignment): spinDelta = −46 (single Brave Ring rubber CP, approaching ceiling due to orbital velocity addition but not saturated — orbital speed adds to contact force, approaching but not matching the triple-layer Brave Sword ceiling), damageMultiplier = 1.35×.
 
 ```
-Brave Edge-Circuit â€” geometry:
+Brave Edge-Circuit — geometry:
 
 Phase 1 (â†‘): wall-orbit upper arc entry,  R_orbit â‰ˆ 120 mm
   v_orb â‰ˆ 0.5 m/s (passive combo-level orbital, not BeySpirit 4.0 m/s)
@@ -8027,15 +8027,15 @@ Phase 2 (â†’): rightward tangent departure (orbital exit direction = right)
   Orbital to linear transition: unpredictable exit vector relative to initial arc entry
 
 Phase 3 (J): Brave Ring rubber blade contact at orbital exit apex
-  Single rubber CP:  Î· = 1.0Ã—  (not triple BeySpirit alignment)
-  spinDelta_contact = âˆ’46 rad/s  (orbital velocity addition, near ceiling, single blade)
-  damageMultiplier = 1.35Ã—
+  Single rubber CP:  Î· = 1.0×  (not triple BeySpirit alignment)
+  spinDelta_contact = −46 rad/s  (orbital velocity addition, near ceiling, single blade)
+  damageMultiplier = 1.35×
   lockMs = 60  (rubber blade contact, low-CoM 2A chassis â†’ brief lock)
 
 ceiling compliance:
-  1.35Ã— â‰¤ 1.5Ã—;  60 ms â‰¤ 300 ms;  46 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
+  1.35× â‰¤ 1.5×;  60 ms â‰¤ 300 ms;  46 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
 
-Design note: no self-cost at combo scale â€” orbital direction change on Evolution' tip's own
+Design note: no self-cost at combo scale — orbital direction change on Evolution' tip's own
   passive arc; no BeySpirit wall-acceleration, so no deceleration penalty.
   Distinct from Valtryek Rush (â†‘Jâ†’, Case 741): that fires at petal apex mid-arc (J second);
   Edge-Circuit fires after orbital exit (J third, following full arc + departure).
@@ -8053,7 +8053,7 @@ function applyBraveEdgeCircuit(valtryek: Beyblade, target: Beyblade): void {
 
 ---
 
-## Case 747 â€” [GIMMICK] Quill Quetziko Jerk Press: Jerk Deflection Ratchet, Feathered Contact Blade, and Rubber Press Bit
+## Case 747 — [GIMMICK] Quill Quetziko Jerk Press: Jerk Deflection Ratchet, Feathered Contact Blade, and Rubber Press Bit
 
 **Beyblade:** Quill Quetziko Jerk Press
 **User:** Quon Limon
@@ -8061,21 +8061,21 @@ function applyBraveEdgeCircuit(valtryek: Beyblade, target: Beyblade): void {
 
 **Note:** Quill Quetziko Blade [M], Jerk Ratchet [M], and Press Bit [M] are not yet documented in the case library. All [M] values carry Â±15% uncertainty.
 
-**Thesis:** Quill Quetziko Jerk Press's battle identity is the Jerk ratchet's deflection geometry: unlike standard numbered BX ratchets (which are mass-distribution and burst-resistance components), the Jerk ratchet [M] has asymmetric Câ‚‚ opposing tabs with steeply angled deflection faces (Ï†_jerkâ‰ˆ40Â°, [M]) that re-direct a fraction of each incoming contact force tangentially rather than transmitting it normally to the core â€” the deflection geometry means that for every attacker blow, J_deflect=sin(40Â°)Ã—J=0.643Ã—J is redirected tangentially (partially back at the attacker and partially sideways), while J_absorbed=cos(40Â°)Ã—J=0.766Ã—J is the force actually received by Quetziko; this passive deflection makes Quill Quetziko naturally counter-friendly â€” attackers hitting the Jerk ratchet feel more recoil than they impart â€” and is the foundation of Bound Launch (Case 748); the Press bit [M] is a flat rubber pressing bit (r_effâ‰ˆ2.0mm, Î¼_press=0.45 [M]) that keeps Quetziko in the mid-range orbital band, with a spin decay of âˆ’41.5 rad/sÂ² and spin life â‰ˆ18.1s; the Quill Quetziko blade [M] adds Câ‚„ spine-tip feather contacts (Ï†_quillâ‰ˆ15Â°, J_upper=sin(15Â°)Ã—J=0.259Ã—J) that give a passive upper-cut tendency on each engagement.
+**Thesis:** Quill Quetziko Jerk Press's battle identity is the Jerk ratchet's deflection geometry: unlike standard numbered BX ratchets (which are mass-distribution and burst-resistance components), the Jerk ratchet [M] has asymmetric Câ‚‚ opposing tabs with steeply angled deflection faces (Ï†_jerkâ‰ˆ40°, [M]) that re-direct a fraction of each incoming contact force tangentially rather than transmitting it normally to the core — the deflection geometry means that for every attacker blow, J_deflect=sin(40°)×J=0.643×J is redirected tangentially (partially back at the attacker and partially sideways), while J_absorbed=cos(40°)×J=0.766×J is the force actually received by Quetziko; this passive deflection makes Quill Quetziko naturally counter-friendly — attackers hitting the Jerk ratchet feel more recoil than they impart — and is the foundation of Bound Launch (Case 748); the Press bit [M] is a flat rubber pressing bit (r_effâ‰ˆ2.0mm, Î¼_press=0.45 [M]) that keeps Quetziko in the mid-range orbital band, with a spin decay of −41.5 rad/s² and spin life â‰ˆ18.1s; the Quill Quetziko blade [M] adds Câ‚„ spine-tip feather contacts (Ï†_quillâ‰ˆ15°, J_upper=sin(15°)×J=0.259×J) that give a passive upper-cut tendency on each engagement.
 
 ```
 Quill Quetziko Blade [M]:
 
-  Câ‚„ feather-spine contacts (4-fold, 90Â° spacing)  [franchise imagery estimate]
-  Ï†_quill â‰ˆ 15Â°  (upward-angled spine tips, upper-cut contact tendency)
-  J_upper = sin(15Â°) Ã— J = 0.259 Ã— J
+  Câ‚„ feather-spine contacts (4-fold, 90° spacing)  [franchise imagery estimate]
+  Ï†_quill â‰ˆ 15°  (upward-angled spine tips, upper-cut contact tendency)
+  J_upper = sin(15°) × J = 0.259 × J
   r_outer â‰ˆ 21 mm
 
 Jerk Ratchet [M]:
-  Asymmetric Câ‚‚ opposing deflection tabs (2 large tabs, 180Â° spacing)  [M]
-  Ï†_jerk â‰ˆ 40Â°  (steeply angled deflection face â€” maximises tangential redirect)
-  J_deflect  = sin(40Â°) Ã— J = 0.643 Ã— J  (tangential redirect on each incoming hit)
-  J_absorbed = cos(40Â°) Ã— J = 0.766 Ã— J  (transmitted to Quetziko core)
+  Asymmetric Câ‚‚ opposing deflection tabs (2 large tabs, 180° spacing)  [M]
+  Ï†_jerk â‰ˆ 40°  (steeply angled deflection face — maximises tangential redirect)
+  J_deflect  = sin(40°) × J = 0.643 × J  (tangential redirect on each incoming hit)
+  J_absorbed = cos(40°) × J = 0.766 × J  (transmitted to Quetziko core)
   Passive effect: for every attacker blow, ~64% of their force is redirected sideways/back
   â†’ attacker experiences higher recoil than a standard ratchet would produce
   No additional gimmick (deflection is a geometry property, not a triggered mechanism)
@@ -8083,12 +8083,12 @@ Jerk Ratchet [M]:
 Press Bit [M]:
   r_eff â‰ˆ 2.0 mm  (rubber flat, pressing contact)
   Î¼_press = 0.45  (rubber BX bit grade [M])
-  F_lat = Î¼ Ã— m Ã— g = 0.45 Ã— 0.040 Ã— 9.81 = 0.177 N
-  dÏ‰/dt = âˆ’(0.45 Ã— 0.040 Ã— 9.81 Ã— 0.002) / 8.5Ã—10â»â¶ = âˆ’41.5 rad/sÂ²
+  F_lat = Î¼ × m × g = 0.45 × 0.040 × 9.81 = 0.177 N
+  dÏ‰/dt = −(0.45 × 0.040 × 9.81 × 0.002) / 8.5×10â»â¶ = −41.5 rad/s²
   Spin life (free): 750 / 41.5 = 18.1 s
 
 Assembly [BX era]:
-  m = 0.040 kg,  I = 8.5Ã—10â»â¶ kgÂ·mÂ²,  Ï‰â‚€ = 750 rad/s,  W = 0.392 N
+  m = 0.040 kg,  I = 8.5×10â»â¶ kgÂ·m²,  Ï‰â‚€ = 750 rad/s,  W = 0.392 N
 ```
 
 ```typescript
@@ -8102,8 +8102,8 @@ interface QuillQuetzikoAssembly {
   contactFold: number;        // 4
   // Jerk ratchet [M]
   phi_jerk_deg: number;       // 40
-  J_deflect_fraction: number; // 0.643 â€” sin(40Â°)
-  J_absorbed_fraction: number;// 0.766 â€” cos(40Â°)
+  J_deflect_fraction: number; // 0.643 — sin(40°)
+  J_absorbed_fraction: number;// 0.766 — cos(40°)
   // Press bit [M]
   rEff_press_m: number;       // 2.0e-3
   mu_press: number;           // 0.45
@@ -8117,41 +8117,41 @@ function jerkDeflectFraction(asm: QuillQuetzikoAssembly): number {
 
 ---
 
-## Case 748 â€” [SPECIAL MOVE] Bound Launch: Quon Limon / Quill Quetziko Jerk Press (Beyblade X)
+## Case 748 — [SPECIAL MOVE] Bound Launch: Quon Limon / Quill Quetziko Jerk Press (Beyblade X)
 
 **Franchise Move:** Quetziko deflects an opponent's attack with its Jerk disc and knocks them backwards. Bound Launch (ãƒã‚¦ãƒ³ãƒ‰ã‚·ãƒ¥ãƒ¼ãƒˆ, Bound Shoot) is the first and only special move used by Quon Limon with Quill Quetziko Jerk Press. [Beyblade X]
 
-**Thesis:** Bound Launch is the BeySpirit transcendence of the Jerk ratchet's deflection geometry (Case 747): at passive physics, the Jerk ratchet's Ï†_jerk=40Â° face redirects 64.3% of each incoming force tangentially, providing natural counter-recoil; under Quon's Quetzalcoatl BeySpirit the ratchet enters a "deflect-ready" stance where the deflection efficiency is amplified to its physical maximum â€” the full incoming impulse is captured in the Jerk face, converted into a directed bound vector, and then combined with Quetziko's own Jerk-face strike to produce a two-component counter-launch: (1) the opponent's returned force (the "bound" â€” their own kinetic energy thrown back), and (2) Quetziko's added Jerk-disc momentum (the "launch" â€” Quon's own BeySpirit force); the "knocks backwards" description is the combined bound+launch that sends the opponent in the exact reverse direction of their attack approach â€” the Jerk geometry ensures the counter acts along the attacker's own inbound vector, maximising ring-out potential along the axis the attacker chose; Quetziko itself takes only the absorbed fraction (J_absorbed=cos(40Â°)Ã—J=0.766Ã—J) of the incoming spinDelta as self-cost, and the BeySpirit further suppresses this absorbed cost (âˆ’60 spinDelta self in practice); the counter stance expires after 2000ms if no attack lands (move is wasted).
+**Thesis:** Bound Launch is the BeySpirit transcendence of the Jerk ratchet's deflection geometry (Case 747): at passive physics, the Jerk ratchet's Ï†_jerk=40° face redirects 64.3% of each incoming force tangentially, providing natural counter-recoil; under Quon's Quetzalcoatl BeySpirit the ratchet enters a "deflect-ready" stance where the deflection efficiency is amplified to its physical maximum — the full incoming impulse is captured in the Jerk face, converted into a directed bound vector, and then combined with Quetziko's own Jerk-face strike to produce a two-component counter-launch: (1) the opponent's returned force (the "bound" — their own kinetic energy thrown back), and (2) Quetziko's added Jerk-disc momentum (the "launch" — Quon's own BeySpirit force); the "knocks backwards" description is the combined bound+launch that sends the opponent in the exact reverse direction of their attack approach — the Jerk geometry ensures the counter acts along the attacker's own inbound vector, maximising ring-out potential along the axis the attacker chose; Quetziko itself takes only the absorbed fraction (J_absorbed=cos(40°)×J=0.766×J) of the incoming spinDelta as self-cost, and the BeySpirit further suppresses this absorbed cost (−60 spinDelta self in practice); the counter stance expires after 2000ms if no attack lands (move is wasted).
 
 ```
-Bound Launch â€” phase structure:
+Bound Launch — phase structure:
 
-Phase 1 â€” "deflect_stance" (2 000 ms window):
+Phase 1 — "deflect_stance" (2 000 ms window):
   Jerk ratchet enters maximum-deflect alignment under BeySpirit
   forceState on self: deflect_ready  (2 000 ms)
   Quetzalcoatl spirit aura forms (feathered serpent coils around Jerk ratchet)
   Passive: any incoming attack during window triggers Phase 2 automatically
 
-Phase 2 â€” "bound_impact" (triggered on incoming attacker contact within window):
-  Incoming spinDelta and impulse intercepted at Ï†_jerk = 40Â°
+Phase 2 — "bound_impact" (triggered on incoming attacker contact within window):
+  Incoming spinDelta and impulse intercepted at Ï†_jerk = 40°
   Deflected fraction (0.643) returned to attacker + Quetziko added strike:
-    spinDelta_attacker   = âˆ’360 rad/s  (returned force + Quetziko addition)
+    spinDelta_attacker   = −360 rad/s  (returned force + Quetziko addition)
     linearImpulse_attacker = 5 500 eu  (bound-back: attacker's own approach vector reversed)
-    damageMultiplier      = 1.9Ã—
+    damageMultiplier      = 1.9×
 
   Quetziko self-absorption:
-    spinDelta_self = âˆ’60 rad/s  (absorbed fraction, BeySpirit-suppressed from 0.766Ã—J)
+    spinDelta_self = −60 rad/s  (absorbed fraction, BeySpirit-suppressed from 0.766×J)
 
-  QTE â€” "Counter Lance":
+  QTE — "Counter Lance":
     Window: 200 ms pre-contact (spectator view shows approach vector);  Input: attack (J)
-    Success: damageMultiplier = 2.2Ã—  (perfect timing amplifies bound)
-    Fail: 1.9Ã— standard deflection
+    Success: damageMultiplier = 2.2×  (perfect timing amplifies bound)
+    Fail: 1.9× standard deflection
 
   If no attack within 2 000 ms window: stance expires with no effect.
-  (BeySpirit cannot force the counter â€” the opponent must initiate.)
+  (BeySpirit cannot force the counter — the opponent must initiate.)
 
-Self-cost: âˆ’80 spinDelta  (Jerk ratchet BeySpirit preparation)
-powerCost: 100;  cooldownMs: 5 000  (longer cooldown â€” requires opponent cooperation to trigger)
+Self-cost: −80 spinDelta  (Jerk ratchet BeySpirit preparation)
+powerCost: 100;  cooldownMs: 5 000  (longer cooldown — requires opponent cooperation to trigger)
 NOTE: any beyblade can use Bound Launch; no part restriction for special moves.
 NOTE: special move overrides all EG/clutch mechanical state; the EG spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override).
 ```
@@ -8184,7 +8184,7 @@ function triggerBoundImpact(quetziko: Beyblade, attacker: Beyblade, counterLance
 
 ---
 
-## Case 749 â€” [COMBO] Bound Deflect: Jerk Ratchet Direction-Reversal Counter (3-key: defense moveRight attack)
+## Case 749 — [COMBO] Bound Deflect: Jerk Ratchet Direction-Reversal Counter (3-key: defense moveRight attack)
 
 **Combo ID:** `bound-deflect`
 **Sequence:** defense â†’ moveRight â†’ attack  (Kâ†’J)
@@ -8192,28 +8192,28 @@ function triggerBoundImpact(quetziko: Beyblade, attacker: Beyblade, counterLance
 **Type Restriction:** balanced
 **Part Requirement:** jerkDisc  (Jerk deflection ratchet)
 
-Bound Deflect is the combo-level expression of the Jerk ratchet's passive deflection geometry (Cases 747, 748): the defense input positions Quetziko in a low-speed guard stance (centred, Press bit gripping), the moveRight executes a brief rightward dash that orients the Jerk ratchet's Câ‚‚ deflection face toward the opponent's most likely approach vector (the rightward dash re-aligns which of the two Jerk tabs faces the opponent â€” since Câ‚‚ is 180Â° symmetric, a 90Â° reorientation brings the steepest deflection face to bear), and the attack fires the Jerk-face smash at this aligned contact angle; the deflection geometry at combo scale is passive physics (not BeySpirit amplification): the contact arrives at Ï†_jerk=40Â° face, spinDelta=âˆ’44 rad/s (Jerk face contact, angled geometry keeps force below ceiling, and the 40Â° contact angle is not optimally perpendicular so force concentration is moderate), damageMultiplier=1.30Ã—; the "knocks backwards" is a modest impulse aligned to the deflection vector, not the full Bound Launch ring-out push.
+Bound Deflect is the combo-level expression of the Jerk ratchet's passive deflection geometry (Cases 747, 748): the defense input positions Quetziko in a low-speed guard stance (centred, Press bit gripping), the moveRight executes a brief rightward dash that orients the Jerk ratchet's Câ‚‚ deflection face toward the opponent's most likely approach vector (the rightward dash re-aligns which of the two Jerk tabs faces the opponent — since Câ‚‚ is 180° symmetric, a 90° reorientation brings the steepest deflection face to bear), and the attack fires the Jerk-face smash at this aligned contact angle; the deflection geometry at combo scale is passive physics (not BeySpirit amplification): the contact arrives at Ï†_jerk=40° face, spinDelta=−44 rad/s (Jerk face contact, angled geometry keeps force below ceiling, and the 40° contact angle is not optimally perpendicular so force concentration is moderate), damageMultiplier=1.30×; the "knocks backwards" is a modest impulse aligned to the deflection vector, not the full Bound Launch ring-out push.
 
 ```
-Bound Deflect â€” geometry:
+Bound Deflect — geometry:
 
-Phase 1 (K): guard stance â€” Quetziko centres, Press rubber bit grips, Jerk Câ‚‚ ratchet
+Phase 1 (K): guard stance — Quetziko centres, Press rubber bit grips, Jerk Câ‚‚ ratchet
   oriented to current approach angle
 
 Phase 2 (â†’): rightward reorientation dash
-  Câ‚‚ Jerk tab rotation: 90Â° right-turn re-aligns steepest deflection face (Ï†_jerk=40Â°)
+  Câ‚‚ Jerk tab rotation: 90° right-turn re-aligns steepest deflection face (Ï†_jerk=40°)
   to opponent's most likely inbound approach vector
 
 Phase 3 (J): Jerk-face smash contact at aligned deflect angle
-  Ï†_jerk = 40Â°  (angled face reduces normal-component force concentration)
-  spinDelta_contact = âˆ’44 rad/s  (moderate, angled face, below ceiling)
-  damageMultiplier = 1.30Ã—
-  lockMs = 50  (Jerk tab contact: short impact â€” ratchet geometry, not a blade lock)
+  Ï†_jerk = 40°  (angled face reduces normal-component force concentration)
+  spinDelta_contact = −44 rad/s  (moderate, angled face, below ceiling)
+  damageMultiplier = 1.30×
+  lockMs = 50  (Jerk tab contact: short impact — ratchet geometry, not a blade lock)
 
 ceiling compliance:
-  1.30Ã— â‰¤ 1.5Ã—;  50 ms â‰¤ 300 ms;  44 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
+  1.30× â‰¤ 1.5×;  50 ms â‰¤ 300 ms;  44 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
 
-Design note: no BeySpirit counter amplification at combo scale â€” passive deflection geometry only.
+Design note: no BeySpirit counter amplification at combo scale — passive deflection geometry only.
   The Jerk deflect self-cost is nil (no BeySpirit stance preparation at combo level).
   Bound-back direction: modest lateral deflect (not ring-out-level impulse).
 ```
@@ -8221,7 +8221,7 @@ Design note: no BeySpirit counter amplification at combo scale â€” passive 
 ```typescript
 // Combo: ["defense","moveRight","attack"], cost: 25, type: "balanced", part: jerkDisc
 function applyBoundDeflect(quetziko: Beyblade, target: Beyblade): void {
-  // Jerk ratchet face contact at Ï†=40Â° deflection angle
+  // Jerk ratchet face contact at Ï†=40° deflection angle
   applySpinDelta(target, -44);        // angled face, moderate force, below ceiling
   target.damageMultiplier = 1.30;
   target.locked = true; target.lockExpiresAt = Date.now() + 50;
@@ -8230,7 +8230,7 @@ function applyBoundDeflect(quetziko: Beyblade, target: Beyblade): void {
 
 ---
 
-## Case 750 â€” [GIMMICK] Wolborg 2: Defense Grip Base 2 Bearing Tip, Upper Wolf AR Three-Fold Recoil, and Eight Balance Mass Distribution
+## Case 750 — [GIMMICK] Wolborg 2: Defense Grip Base 2 Bearing Tip, Upper Wolf AR Three-Fold Recoil, and Eight Balance Mass Distribution
 
 **Beyblade:** Wolborg 2
 **User:** Tala
@@ -8238,16 +8238,16 @@ function applyBoundDeflect(quetziko: Beyblade, target: Beyblade): void {
 
 **Note:** Upper Wolf AR from Case 123a. Eight Balance WD from Case 121a. Right SG Bearing v2 [M] and Defense Grip Base 2 [M] are not yet documented in the case library. All [M] values carry Â±15% uncertainty.
 
-**Thesis:** Wolborg 2's battle identity is the combination of its Right SG Bearing v2 [M] and Defense Grip Base 2 [M] â€” the bearing-based base system (descended from the Customize Bearing Base, Case 158) achieves near-frictionless tip contact (Î¼_bearingâ‰ˆ0.025 [M], dÏ‰/dtâ‰ˆâˆ’2.2 rad/sÂ²), extending spin life to â‰ˆ227s under ideal conditions; the Defense Grip Base 2 [M] adds a dual-regime contact structure: during high-spin upright operation the inner bearing tip (r_effâ‰ˆ1.2mm) carries all load (pure bearing regime), but when tilt exceeds â‰ˆ15Â° the outer perimeter grip rubber ring contacts the stadium surface (r_gripâ‰ˆ19mm, Î¼_gripâ‰ˆ0.55), providing sudden high-friction braking against ring-out approaches and gripping the bowl wall; this dual-regime creates Wolborg 2's stamina-defense hybrid â€” its bearing tip can sustain spin over an extraordinary time while its grip ring resists knock-back; the Upper Wolf AR (Case 123a) contributes Câ‚ƒ three-fold recoil contacts (steep slope geometry) that exchange each smash hit for high recoil on the attacker; the Eight Balance WD (Case 121a) provides octagonal polygon mass distribution that concentrates rotational inertia at the corners, maximising the effect of each angular momentum conservation; the sum is a bey that is extremely difficult to spin-out or ring-out, intended to outlast opponents in the arctic attrition of Blizzalog (Case 751).
+**Thesis:** Wolborg 2's battle identity is the combination of its Right SG Bearing v2 [M] and Defense Grip Base 2 [M] — the bearing-based base system (descended from the Customize Bearing Base, Case 158) achieves near-frictionless tip contact (Î¼_bearingâ‰ˆ0.025 [M], dÏ‰/dtâ‰ˆ−2.2 rad/s²), extending spin life to â‰ˆ227s under ideal conditions; the Defense Grip Base 2 [M] adds a dual-regime contact structure: during high-spin upright operation the inner bearing tip (r_effâ‰ˆ1.2mm) carries all load (pure bearing regime), but when tilt exceeds â‰ˆ15° the outer perimeter grip rubber ring contacts the stadium surface (r_gripâ‰ˆ19mm, Î¼_gripâ‰ˆ0.55), providing sudden high-friction braking against ring-out approaches and gripping the bowl wall; this dual-regime creates Wolborg 2's stamina-defense hybrid — its bearing tip can sustain spin over an extraordinary time while its grip ring resists knock-back; the Upper Wolf AR (Case 123a) contributes Câ‚ƒ three-fold recoil contacts (steep slope geometry) that exchange each smash hit for high recoil on the attacker; the Eight Balance WD (Case 121a) provides octagonal polygon mass distribution that concentrates rotational inertia at the corners, maximising the effect of each angular momentum conservation; the sum is a bey that is extremely difficult to spin-out or ring-out, intended to outlast opponents in the arctic attrition of Blizzalog (Case 751).
 
 ```
 Upper Wolf AR [Case 123a]:
-  Câ‚ƒ steep-slope recoil contacts  (3-fold, 120Â° spacing)
+  Câ‚ƒ steep-slope recoil contacts  (3-fold, 120° spacing)
   High recoil coefficient: each incoming smash â†’ attacker recoil > force transmitted to Wolborg 2
   See Case 123a for full derivation
 
 Eight Balance WD [Case 121a]:
-  Octagonal polygon â€” 8 mass corners at r â‰ˆ 19 mm (distributed inertia)
+  Octagonal polygon — 8 mass corners at r â‰ˆ 19 mm (distributed inertia)
   I_contribution: corners add â‰ˆ12% inertia vs a smooth ring at same radius
   See Case 121a for full derivation
 
@@ -8259,18 +8259,18 @@ Right SG Bearing v2 [M]:
 Defense Grip Base 2 [M]:
   Dual-regime bearing tip:
 
-  Regime 1 â€” bearing tip (tiltAngle â‰¤ 15Â°, upright high-spin):
+  Regime 1 — bearing tip (tiltAngle â‰¤ 15°, upright high-spin):
     r_bearing â‰ˆ 1.2 mm  (narrow point contact)
     Î¼_bearing_base â‰ˆ 0.025  (bearing-to-floor contact, inherits SG v2 bearing)
-    F_lat = 0.025 Ã— 0.046 Ã— 9.81 = 0.011 N
-    dÏ‰/dt = âˆ’(0.025 Ã— 0.046 Ã— 9.81 Ã— 0.0012) / 9.5Ã—10â»â¶ = âˆ’1.41 rad/sÂ²
+    F_lat = 0.025 × 0.046 × 9.81 = 0.011 N
+    dÏ‰/dt = −(0.025 × 0.046 × 9.81 × 0.0012) / 9.5×10â»â¶ = −1.41 rad/s²
     Spin life (bearing regime): 500 / 1.41 â‰ˆ 355 s  (theoretical maximum, no collisions)
 
-  Regime 2 â€” outer grip ring (tiltAngle > 15Â°, defensive contact):
+  Regime 2 — outer grip ring (tiltAngle > 15°, defensive contact):
     r_grip â‰ˆ 19 mm  (outer perimeter rubber ring, contacts stadium bowl wall when tilted)
     Î¼_grip = 0.55  (rubber grip material [M])
-    Braking torque = 0.55 Ã— 0.046 Ã— 9.81 Ã— 0.019 = 0.00472 NÂ·m
-    This generates rapid deceleration when grip ring engages â€” net effect: resist ring-out
+    Braking torque = 0.55 × 0.046 × 9.81 × 0.019 = 0.00472 NÂ·m
+    This generates rapid deceleration when grip ring engages — net effect: resist ring-out
     at the cost of temporary high friction; spin-down if grip engagement persists
 
   Effective combined spin life (typical battle with minor collisions):
@@ -8278,7 +8278,7 @@ Defense Grip Base 2 [M]:
     â†’ considerably longer than any flat or rubber tip opponent
 
 Assembly [Gen1-Plastic, V-Force]:
-  m = 0.046 kg,  I = 9.5Ã—10â»â¶ kgÂ·mÂ²,  Ï‰â‚€ = 500 rad/s,  W = 0.451 N
+  m = 0.046 kg,  I = 9.5×10â»â¶ kgÂ·m²,  Ï‰â‚€ = 500 rad/s,  W = 0.451 N
 ```
 
 ```typescript
@@ -8292,56 +8292,56 @@ interface Wolborg2Assembly {
   rGrip_m: number;                // 0.019
   mu_grip: number;                // 0.55
   gripEngageTiltDeg: number;      // 15
-  spinDecay_bearingReg: number;   // 1.41 rad/sÂ²
+  spinDecay_bearingReg: number;   // 1.41 rad/s²
   spinLife_bearingReg_s: number;  // 355 s (theoretical)
 }
 function wolborg2SpinDecay(asm: Wolborg2Assembly, tiltAngle: number): number {
   if (tiltAngle > asm.gripEngageTiltDeg) {
     // Grip regime: high braking torque
     const brakingTorque = asm.mu_grip * asm.m_kg * 9.81 * asm.rGrip_m;
-    return brakingTorque / asm.I_kgm2;   // â‰ˆ 24.0 rad/sÂ²
+    return brakingTorque / asm.I_kgm2;   // â‰ˆ 24.0 rad/s²
   }
-  return asm.spinDecay_bearingReg;         // 1.41 rad/sÂ²
+  return asm.spinDecay_bearingReg;         // 1.41 rad/s²
 }
 ```
 
 ---
 
-## Case 751 â€” [SPECIAL MOVE] Blizzalog: Tala / Wolborg 2 (V-Force era)
+## Case 751 — [SPECIAL MOVE] Blizzalog: Tala / Wolborg 2 (V-Force era)
 
 **Franchise Move:** Tala first used this move against Tyson during the final match of the World Championship. This move creates a gigantic blizzard that freezes the blader, his opponent, the beyblades and the stadium into a massive dome of icicles, wherein the constant cold gradually reduces the concentration and the endurance of both the beyblade and the blader, allowing Tala to finish them off. Blizzalog is used by Tala with Wolborg 2. [Beyblade V-Force]
 
-**Thesis:** Blizzalog is the BeySpirit transcendence of Wolborg 2's bearing-tip stamina system (Case 750), expressed as an environmental field attack rather than a direct kinetic strike: Tala's Wolborg spirit (the Arctic wolf) amplifies the bearing tip's near-frictionless spin to create a stadium-filling centrifugal vortex (Ï‰â‰ˆ500 rad/s Ã— spirit amplification), which condenses moisture into an icicle dome enclosing both combatants; the dome's constant cold is the strategic weapon â€” "reduces concentration and endurance" in game terms means: (1) opponent spinDecayRate Ã— 1.8 for 20000ms (cold increases tip friction on all non-bearing tip types: flat tips stiffen, rubber tips harden and lose elasticity, increasing their contact friction coefficient), and (2) opponent inputDelayMs += 100ms (blader concentration loss from cold exposure â€” slower reaction time); Wolborg 2 is specifically immune to the spinDecayRate penalty because its Right SG Bearing v2 [M] operates more efficiently in cold (bearing precision improves at lower temperatures, reduced thermal expansion of ball-race tolerances), and Tala's wolf spirit provides cold resistance â€” this differential is Blizzalog's entire strategic logic: Tala accepts the same field condition he imposes because he wins in it and the opponent does not; the initial icicle dome formation delivers a scattered barrage (spinDelta âˆ’150, impulse 1500eu AoE) â€” modest direct damage, but the field attrition over 20000ms is the real threat; self-cost is only âˆ’80 (bearing tip conserves spin through the vortex build); this is an AoE field-effect special, which is why it cannot be replicated at combo scale.
+**Thesis:** Blizzalog is the BeySpirit transcendence of Wolborg 2's bearing-tip stamina system (Case 750), expressed as an environmental field attack rather than a direct kinetic strike: Tala's Wolborg spirit (the Arctic wolf) amplifies the bearing tip's near-frictionless spin to create a stadium-filling centrifugal vortex (Ï‰â‰ˆ500 rad/s × spirit amplification), which condenses moisture into an icicle dome enclosing both combatants; the dome's constant cold is the strategic weapon — "reduces concentration and endurance" in game terms means: (1) opponent spinDecayRate × 1.8 for 20000ms (cold increases tip friction on all non-bearing tip types: flat tips stiffen, rubber tips harden and lose elasticity, increasing their contact friction coefficient), and (2) opponent inputDelayMs += 100ms (blader concentration loss from cold exposure — slower reaction time); Wolborg 2 is specifically immune to the spinDecayRate penalty because its Right SG Bearing v2 [M] operates more efficiently in cold (bearing precision improves at lower temperatures, reduced thermal expansion of ball-race tolerances), and Tala's wolf spirit provides cold resistance — this differential is Blizzalog's entire strategic logic: Tala accepts the same field condition he imposes because he wins in it and the opponent does not; the initial icicle dome formation delivers a scattered barrage (spinDelta −150, impulse 1500eu AoE) — modest direct damage, but the field attrition over 20000ms is the real threat; self-cost is only −80 (bearing tip conserves spin through the vortex build); this is an AoE field-effect special, which is why it cannot be replicated at combo scale.
 
 ```
-Blizzalog â€” phase structure:
+Blizzalog — phase structure:
 
-Phase 1 â€” "vortex_spinup" (1 000 ms):
+Phase 1 — "vortex_spinup" (1 000 ms):
   Wolborg 2 bearing tip maintains Ï‰ â‰ˆ Ï‰_max, creates centrifugal air vortex
   Arctic wolf spirit aura builds (white/ice-blue wolf form radiating from tip contact point)
   Visual: frost trail spreads from beyblade outward across stadium floor
 
-Phase 2 â€” "dome_formation" (icicle barrage + field onset):
-  Icicle dome closes over stadium â€” scattered icicle impacts on opponent:
-    spinDelta_opponent = âˆ’150 rad/s  (distributed icicle impacts, AoE, not concentrated)
+Phase 2 — "dome_formation" (icicle barrage + field onset):
+  Icicle dome closes over stadium — scattered icicle impacts on opponent:
+    spinDelta_opponent = −150 rad/s  (distributed icicle impacts, AoE, not concentrated)
     linearImpulse_opponent = 1 500 eu  (scattered; no single-direction push)
   Field activates (20 000 ms duration):
-    opponent.spinDecayMultiplier += 0.80   â†’ effective Ã— 1.80  (cold stiffens tip friction)
+    opponent.spinDecayMultiplier += 0.80   â†’ effective × 1.80  (cold stiffens tip friction)
     opponent.inputDelayMs         += 100   â†’ 100 ms reaction penalty  (blader cold stress)
     arena.surfaceFriction         *= 1.25  (frost layer increases surface drag)
   Wolborg 2 immunity (20 000 ms):
     self.spinDecayMultiplier: no change  (bearing operates cold-efficiently)
     self.inputDelayMs: no change  (Tala arctic-adapted)
 
-Phase 3 â€” "attrition" (field duration, 20 000 ms):
-  Opponent gradually loses spin 1.80Ã— faster than baseline
+Phase 3 — "attrition" (field duration, 20 000 ms):
+  Opponent gradually loses spin 1.80× faster than baseline
   Wolborg 2 holds near-maximum spin throughout
   Combined with Upper Wolf AR recoil contacts: each attacker hit further accelerates
     opponent spin loss (their strikes bounce off, their tip decays faster in the cold)
 
-Self-cost: âˆ’80 spinDelta  (vortex build against bearing tip regime)
+Self-cost: −80 spinDelta  (vortex build against bearing tip regime)
 powerCost: 100;  cooldownMs: 6 000
-NOTE: AoE field effect â€” persistent arena-wide debuff is special-move-only; combos cannot create arena-wide effects or lasting field conditions.
+NOTE: AoE field effect — persistent arena-wide debuff is special-move-only; combos cannot create arena-wide effects or lasting field conditions.
 NOTE: any beyblade can use Blizzalog; no part restriction for special moves.
 NOTE: special move overrides all EG/clutch mechanical state; the EG spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override).
 ```
@@ -8354,7 +8354,7 @@ function activateBlizzalog(wolborg: Beyblade, target: Beyblade, arena: ArenaStat
   applySpinDelta(target, -150);
   applyLinearImpulse(target, Math.random() * 2 * Math.PI, 1500);  // scattered direction
 
-  // Field effect â€” 20 000 ms attrition debuffs
+  // Field effect — 20 000 ms attrition debuffs
   const FIELD_MS = 20000;
   target.spinDecayMultiplier   = (target.spinDecayMultiplier ?? 1.0) * 1.8;
   target.inputDelayMs          = (target.inputDelayMs ?? 0) + 100;
@@ -8365,13 +8365,13 @@ function activateBlizzalog(wolborg: Beyblade, target: Beyblade, arena: ArenaStat
     target.inputDelayMs         -= 100;
     arena.surfaceFriction       /= 1.25;
   }, FIELD_MS);
-  // Note: wolborg.spinDecayMultiplier unchanged â€” bearing cold immunity
+  // Note: wolborg.spinDecayMultiplier unchanged — bearing cold immunity
 }
 ```
 
 ---
 
-## Case 752 â€” [COMBO] Frost Whip: Defense Grip Base 2 Bearing Endurance Counter (3-key: defense moveUp attack)
+## Case 752 — [COMBO] Frost Whip: Defense Grip Base 2 Bearing Endurance Counter (3-key: defense moveUp attack)
 
 **Combo ID:** `frost-whip`
 **Sequence:** defense â†’ moveUp â†’ attack  (Kâ†‘J)
@@ -8379,30 +8379,30 @@ function activateBlizzalog(wolborg: Beyblade, target: Beyblade, arena: ArenaStat
 **Type Restriction:** stamina
 **Part Requirement:** defenseGripBase2  (Defense Grip Base 2 [M] bearing tip)
 
-Frost Whip is the combo-level expression of Wolborg 2's bearing-tip spin endurance advantage (Cases 750, 751): the defense input commits Wolborg 2 to the bearing regime â€” centred, low tilt, bearing tip carrying all load, grinding the opponent's spin gap wider with each passing moment; the moveUp extends the bearing hold dwell time (Wolborg 2 drifts slightly upward in the arena, selecting a higher orbital position that naturally steers toward the opponent's path, a bearing-tip geometry effect where the slight tilt required to drift upward keeps the outer grip ring just below engagement threshold while maintaining the bearing's gyroscopic precision); the attack fires a wolf-claw strike (Upper Wolf AR, Case 123a, three-fold Câ‚ƒ recoil contact) at the elevated approach apex â€” at this moment Wolborg 2 has conserved near-maximum spin through the bearing hold, and the opponent has bled spin against their non-bearing tip during the dwell; the spinDelta = âˆ’40 (Upper Wolf AR recoil contact â€” the steep slope means a significant fraction of the force recoils onto the attacker rather than transferring to Wolborg 2, and the spinDelta is intentionally measured at ceiling-compliant value; the real damage is Wolborg 2's spin advantage built during the hold phase), damageMultiplier = 1.25Ã—.
+Frost Whip is the combo-level expression of Wolborg 2's bearing-tip spin endurance advantage (Cases 750, 751): the defense input commits Wolborg 2 to the bearing regime — centred, low tilt, bearing tip carrying all load, grinding the opponent's spin gap wider with each passing moment; the moveUp extends the bearing hold dwell time (Wolborg 2 drifts slightly upward in the arena, selecting a higher orbital position that naturally steers toward the opponent's path, a bearing-tip geometry effect where the slight tilt required to drift upward keeps the outer grip ring just below engagement threshold while maintaining the bearing's gyroscopic precision); the attack fires a wolf-claw strike (Upper Wolf AR, Case 123a, three-fold Câ‚ƒ recoil contact) at the elevated approach apex — at this moment Wolborg 2 has conserved near-maximum spin through the bearing hold, and the opponent has bled spin against their non-bearing tip during the dwell; the spinDelta = −40 (Upper Wolf AR recoil contact — the steep slope means a significant fraction of the force recoils onto the attacker rather than transferring to Wolborg 2, and the spinDelta is intentionally measured at ceiling-compliant value; the real damage is Wolborg 2's spin advantage built during the hold phase), damageMultiplier = 1.25×.
 
 ```
-Frost Whip â€” geometry:
+Frost Whip — geometry:
 
-Phase 1 (K): bearing hold â€” Wolborg 2 centres, bearing tip regime fully engaged
-  Bearing spin decay: âˆ’1.41 rad/sÂ² (vs opponent's non-bearing tip ~8â€“40 rad/sÂ²)
+Phase 1 (K): bearing hold — Wolborg 2 centres, bearing tip regime fully engaged
+  Bearing spin decay: −1.41 rad/s² (vs opponent's non-bearing tip ~8–40 rad/s²)
   Spin gap widens during hold dwell time
 
-Phase 2 (â†‘): upward drift â€” slight tilt guides Wolborg 2 toward high-side approach
-  Tilt during drift: < 15Â° (grip ring stays disengaged, bearing regime maintained)
+Phase 2 (â†‘): upward drift — slight tilt guides Wolborg 2 toward high-side approach
+  Tilt during drift: < 15° (grip ring stays disengaged, bearing regime maintained)
   Position: elevated arc that intersects opponent's orbit from above
 
 Phase 3 (J): Upper Wolf AR wolf-claw strike at elevated apex
   Câ‚ƒ steep-slope recoil contact (Case 123a)
-  spinDelta_contact = âˆ’40 rad/s  (ceiling-compliant; recoil contact, moderate transfer)
-  damageMultiplier = 1.25Ã—
-  lockMs = 90  (bearing-tip ground contact persists through impact â€” longer physical lock
+  spinDelta_contact = −40 rad/s  (ceiling-compliant; recoil contact, moderate transfer)
+  damageMultiplier = 1.25×
+  lockMs = 90  (bearing-tip ground contact persists through impact — longer physical lock
                due to low-friction tip not deflecting away under impact)
 
 ceiling compliance:
-  1.25Ã— â‰¤ 1.5Ã—;  90 ms â‰¤ 300 ms;  40 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
+  1.25× â‰¤ 1.5×;  90 ms â‰¤ 300 ms;  40 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
 
-Design note: no spinDecayMultiplier reduction at combo scale â€” bearing cold immunity
+Design note: no spinDecayMultiplier reduction at combo scale — bearing cold immunity
   is BeySpirit/field territory (Case 751 Blizzalog). The spin advantage in this combo
   is simply the passive bearing tip preserving spin during the hold dwell (real physics).
   Frost Whip self-cost: nil (bearing regime is a conserving state, not costly).
@@ -8412,7 +8412,7 @@ Design note: no spinDecayMultiplier reduction at combo scale â€” bearing co
 // Combo: ["defense","moveUp","attack"], cost: 25, type: "stamina", part: defenseGripBase2
 function applyFrostWhip(wolborg: Beyblade, target: Beyblade): void {
   // Upper Wolf AR wolf-claw contact: high recoil, moderate spin transfer
-  applySpinDelta(target, -40);        // steep-slope recoil â€” ceiling-compliant
+  applySpinDelta(target, -40);        // steep-slope recoil — ceiling-compliant
   target.damageMultiplier = 1.25;
   target.locked = true; target.lockExpiresAt = Date.now() + 90;
 }
@@ -8424,7 +8424,7 @@ function applyFrostWhip(wolborg: Beyblade, target: Beyblade): void {
 
 ---
 
-## Case 753 â€” [GIMMICK] Brutal LÃºinor 13 Jolt: Impact-Reactive Aerial Launch Tip, 13-Prong Inertia Disc, and Brutal Blade Smash Contacts
+## Case 753 — [GIMMICK] Brutal LÃºinor 13 Jolt: Impact-Reactive Aerial Launch Tip, 13-Prong Inertia Disc, and Brutal Blade Smash Contacts
 
 **Beyblade:** Brutal LÃºinor 13 Jolt
 **User:** Lui Shirosagi
@@ -8432,14 +8432,14 @@ function applyFrostWhip(wolborg: Beyblade, target: Beyblade): void {
 
 **Note:** Brutal LÃºinor Layer [M] and Forge Disc 13 [M] are not yet documented in the case library and carry ±15% uncertainty. Jolt Performance Tip is documented as Case 585 (CS9); values used below are from that case, recalculated for this assembly.
 
-**Thesis:** Brutal LÃºinor 13 Jolt's battle identity is the Jolt Performance Tip's [Case 585] impact-reactive trajectory property: unlike a standard flat tip which transmits all contact impulse horizontally, the Jolt tip's rubber contact geometry (r_eff=4.5mm, μ_jolt=0.735 rubber at speed [Case 585]) has a specific ground-contact profile that converts a fraction of incoming horizontal impact force into vertical velocity â€” when struck with sufficient lateral force (F_impact > k_jolt_threshold), the bey's trajectory acquires an upward component, launching it away from the arena floor and into a wall-climbing arc (beyTiltAngle rises rapidly toward 60â€“80Â°); this impact-launch property is the physical precondition for Brutal Squall (Case 754); the Forge Disc 13 [M] contributes 13-prong radial mass distribution (heavier than any standard numbered disc at this era, r_prongâ‰ˆ18mm, contributing +12% to assembly inertia vs a smooth ring of equal mass), which adds both rotational inertia (burst resistance) and impact mass that amplifies the dive-bomb contact force; the Brutal LÃºinor Layer [M] provides Câ‚„ aggressive outward-facing blade contacts (Ï†_brutalâ‰ˆ22Â°, J_smash=cos(22Â°)Ã—J=0.927Ã—J) that engage during the dive approach; the combination creates a beyblade with two distinct battle modes: (1) baseline aggressive attacker with high burst resistance from Disc 13's inertia, and (2) the Jolt-enabled aerial trajectory that reframes incoming attacks as opportunities to build the Brutal Squall dive-bomb accumulation.
+**Thesis:** Brutal LÃºinor 13 Jolt's battle identity is the Jolt Performance Tip's [Case 585] impact-reactive trajectory property: unlike a standard flat tip which transmits all contact impulse horizontally, the Jolt tip's rubber contact geometry (r_eff=4.5mm, μ_jolt=0.735 rubber at speed [Case 585]) has a specific ground-contact profile that converts a fraction of incoming horizontal impact force into vertical velocity — when struck with sufficient lateral force (F_impact > k_jolt_threshold), the bey's trajectory acquires an upward component, launching it away from the arena floor and into a wall-climbing arc (beyTiltAngle rises rapidly toward 60–80°); this impact-launch property is the physical precondition for Brutal Squall (Case 754); the Forge Disc 13 [M] contributes 13-prong radial mass distribution (heavier than any standard numbered disc at this era, r_prongâ‰ˆ18mm, contributing +12% to assembly inertia vs a smooth ring of equal mass), which adds both rotational inertia (burst resistance) and impact mass that amplifies the dive-bomb contact force; the Brutal LÃºinor Layer [M] provides Câ‚„ aggressive outward-facing blade contacts (Ï†_brutalâ‰ˆ22°, J_smash=cos(22°)×J=0.927×J) that engage during the dive approach; the combination creates a beyblade with two distinct battle modes: (1) baseline aggressive attacker with high burst resistance from Disc 13's inertia, and (2) the Jolt-enabled aerial trajectory that reframes incoming attacks as opportunities to build the Brutal Squall dive-bomb accumulation.
 
 ```
 Brutal LÃºinor Layer [M]:
 
-  Câ‚„ aggressive blade contacts (4-fold, 90Â° spacing)  [franchise imagery estimate]
-  Ï†_brutal â‰ˆ 22Â°  (forward-facing smash contacts)
-  J_smash = cos(22Â°) Ã— J = 0.927 Ã— J
+  Câ‚„ aggressive blade contacts (4-fold, 90° spacing)  [franchise imagery estimate]
+  Ï†_brutal â‰ˆ 22°  (forward-facing smash contacts)
+  J_smash = cos(22°) × J = 0.927 × J
   r_outer â‰ˆ 23 mm
 
 Forge Disc 13 [M]:
@@ -8459,14 +8459,14 @@ Jolt Performance Tip [Case 585]:
   Impact-reactive launch (the gimmick):
     When F_impact_lateral > 4.0 N  [threshold estimate, [M]]
     A vertical velocity component is generated:
-      v_z_launch = k_jolt Ã— (F_impact âˆ’ F_threshold) / m
+      v_z_launch = k_jolt × (F_impact − F_threshold) / m
       k_jolt â‰ˆ 0.04 s  [M]  (tip geometry conversion factor)
-    At F_impact = 8.0 N: v_z = 0.04 Ã— (8.0 âˆ’ 4.0) / 0.053 = 3.0 m/s  (rapid aerial launch)
+    At F_impact = 8.0 N: v_z = 0.04 × (8.0 − 4.0) / 0.053 = 3.0 m/s  (rapid aerial launch)
     Passive: moderate impacts â†’ brief tilt increase but no full aerial
-    Activation: strong impact â†’ full aerial trajectory, beyTiltAngle rises to 60â€“80Â°
+    Activation: strong impact â†’ full aerial trajectory, beyTiltAngle rises to 60–80°
 
 Assembly [Burst God Layer era]:
-  m = 0.053 kg  (layer + Disc 13 + Jolt),  I = 1.20Ã—10â»âµ kgÂ·mÂ²,  Ï‰â‚€ = 600 rad/s,  W = 0.520 N
+  m = 0.053 kg  (layer + Disc 13 + Jolt),  I = 1.20×10â»âµ kgÂ·m²,  Ï‰â‚€ = 600 rad/s,  W = 0.520 N
 ```
 
 ```typescript
@@ -8496,49 +8496,49 @@ function joltLaunchVelocity(asm: BrutalLuinorAssembly, F_impact: number): number
 
 ---
 
-## Case 754 â€” [SPECIAL MOVE] Brutal Squall: Lui Shirosagi / Brutal LÃºinor 13 Jolt (Beyblade Burst God)
+## Case 754 — [SPECIAL MOVE] Brutal Squall: Lui Shirosagi / Brutal LÃºinor 13 Jolt (Beyblade Burst God)
 
 **Franchise Move:** After being attacked, LÃºinor is launched into the air and hits one of the stadium walls, flipping off it and into the air. It then dives down to increase its momentum and power, allowing it to deal massive damage and often burst the opposing Bey. Brutal Squall (ãƒ–ãƒ©ãƒƒãƒ‡ã‚£ã‚¹ã‚³ãƒ¼ãƒ«, Bloody Squall) is the first and only special move used by Lui Shirosagi with Brutal LÃºinor 13 Jolt. [Beyblade Burst God]
 
-**Thesis:** Brutal Squall is the BeySpirit transcendence of the Jolt tip's impact-reactive launch property (Case 753): at passive physics, a strong impact triggers a partial aerial with beyTiltAngle rising to 60â€“80Â°; under Lui's LÃºinor BeySpirit (the dragon-spirit transforms the aerial into a full stadium-scale three-phase sequence) the arc is amplified to maximum height; the key physics innovation is the wall-flip phase â€” where a passive impact-launch would see LÃºinor simply arc back down, the BeySpirit maintains the aerial trajectory long enough to intercept the stadium wall at high tilt, and the wall contact at beyTiltAngleâ‰ˆ75Â° reverses the horizontal velocity component (v_wall_flip = âˆ’v_horizontal_in + v_z_residual, the stadium bowl wall angle redirects the bey's combined velocity into a new arc aimed downward toward the arena centre); the dive phase is where Brutal Squall's destructive potential is realised â€” the combination of v_dive (wall-rebound speed) plus gravitational acceleration over h_aerialâ‰ˆ0.15m produces v_impact=sqrt(v_wallÂ²+2Ã—gÃ—h)=sqrt(2Â²+2Ã—9.81Ã—0.15)â‰ˆ2.72 m/s at the moment of contact with the opponent, and the LÃºinor spirit converts this kinetic energy into a burst-torque downward smash (the diving angle means contact force has both a horizontal spin-disruption component and a vertical burst-torque component â€” pushing the opponent's layer down against the chassis, the exact geometry that maximises burst probability); the "often burst" franchise description is captured by the +25% burst chance bonus on the dive contact; Brutal Squall is specifically a counter-attack special â€” the BeySpirit cannot initiate without an incoming hit of sufficient force.
+**Thesis:** Brutal Squall is the BeySpirit transcendence of the Jolt tip's impact-reactive launch property (Case 753): at passive physics, a strong impact triggers a partial aerial with beyTiltAngle rising to 60–80°; under Lui's LÃºinor BeySpirit (the dragon-spirit transforms the aerial into a full stadium-scale three-phase sequence) the arc is amplified to maximum height; the key physics innovation is the wall-flip phase — where a passive impact-launch would see LÃºinor simply arc back down, the BeySpirit maintains the aerial trajectory long enough to intercept the stadium wall at high tilt, and the wall contact at beyTiltAngleâ‰ˆ75° reverses the horizontal velocity component (v_wall_flip = −v_horizontal_in + v_z_residual, the stadium bowl wall angle redirects the bey's combined velocity into a new arc aimed downward toward the arena centre); the dive phase is where Brutal Squall's destructive potential is realised — the combination of v_dive (wall-rebound speed) plus gravitational acceleration over h_aerialâ‰ˆ0.15m produces v_impact=sqrt(v_wall²+2×g×h)=sqrt(2²+2×9.81×0.15)â‰ˆ2.72 m/s at the moment of contact with the opponent, and the LÃºinor spirit converts this kinetic energy into a burst-torque downward smash (the diving angle means contact force has both a horizontal spin-disruption component and a vertical burst-torque component — pushing the opponent's layer down against the chassis, the exact geometry that maximises burst probability); the "often burst" franchise description is captured by the +25% burst chance bonus on the dive contact; Brutal Squall is specifically a counter-attack special — the BeySpirit cannot initiate without an incoming hit of sufficient force.
 
 ```
-Brutal Squall â€” phase structure:
+Brutal Squall — phase structure:
 
-Phase 1 â€” "impact_trigger" (passive â€” activated by incoming hit):
+Phase 1 — "impact_trigger" (passive — activated by incoming hit):
   Trigger condition: opponent attacks LÃºinor with F_impact â‰¥ 4.0 N
-  Jolt tip impact-launch: v_z_launch = 0.04 Ã— (F_impact âˆ’ 4.0) / 0.053
+  Jolt tip impact-launch: v_z_launch = 0.04 × (F_impact − 4.0) / 0.053
   At typical strong attack F_impact = 8.0 N: v_z = 3.0 m/s
-  BeySpirit amplifies: beyTiltAngle â†’ 75Â°  (full aerial arc, BeySpirit override)
+  BeySpirit amplifies: beyTiltAngle â†’ 75°  (full aerial arc, BeySpirit override)
   LÃºinor dragon spirit coils around bey, blue/silver aura builds during aerial
 
-Phase 2 â€” "wall_flip" (â‰ˆ300 ms aerial arc, contact with stadium wall):
-  LÃºinor reaches stadium wall at beyTiltAngle â‰ˆ 75Â°
+Phase 2 — "wall_flip" (â‰ˆ300 ms aerial arc, contact with stadium wall):
+  LÃºinor reaches stadium wall at beyTiltAngle â‰ˆ 75°
   Wall contact reverses horizontal velocity:
-    v_horizontal_out = âˆ’v_horizontal_in  (elastic wall rebound)
+    v_horizontal_out = −v_horizontal_in  (elastic wall rebound)
     v_z_residual: brief upward component before gravity dominates
   Combined: bey trajectory flips from upward arc â†’ steep downward dive aimed at opponent
   Visual: LÃºinor silhouette inverts against stadium wall, dragon spirit screams
 
-Phase 3 â€” "dive_impact" (direct frontal downward collision):
+Phase 3 — "dive_impact" (direct frontal downward collision):
   h_aerial â‰ˆ 0.15 m  (height gained during arc)
-  v_dive = âˆš(v_wallÂ² + 2 Ã— 9.81 Ã— 0.15) = âˆš(2Â² + 2.94) â‰ˆ 2.72 m/s
-  Forge Disc 13 heavy inertia (I = 1.20Ã—10â»âµ kgÂ·mÂ²) concentrates dive mass
-  Brutal LÃºinor blade contact at dive approach angle (Ï†_brutal = 22Â°, J=0.927Ã—J):
-    spinDelta       = âˆ’520 rad/s  (dive-bomb + blade contact, very high â€” burst level)
+  v_dive = âˆš(v_wall² + 2 × 9.81 × 0.15) = âˆš(2² + 2.94) â‰ˆ 2.72 m/s
+  Forge Disc 13 heavy inertia (I = 1.20×10â»âµ kgÂ·m²) concentrates dive mass
+  Brutal LÃºinor blade contact at dive approach angle (Ï†_brutal = 22°, J=0.927×J):
+    spinDelta       = −520 rad/s  (dive-bomb + blade contact, very high — burst level)
     linearImpulse   = 6 000 eu  (downward trajectory into opponent)
-    damageMultiplier = 2.2Ã—
+    damageMultiplier = 2.2×
   Burst-torque (diving angle pushes layer down â†’ chassis gap):
     burstChanceBonus = +25%  (dive geometry maximises burst-angle torque)
 
-  QTE â€” "Dive Guard":
+  QTE — "Dive Guard":
     Window: 200 ms from wall flip departure;  Input: defense (K)
     Success: 50% of spinDelta + impulse applied;  no burst bonus
     Fail: full dive impact + burst bonus
 
-Self-cost: âˆ’160 spinDelta  (aerial arc during wall-climb phase depletes Jolt tip spin)
+Self-cost: −160 spinDelta  (aerial arc during wall-climb phase depletes Jolt tip spin)
 powerCost: 100;  cooldownMs: 5 000
-NOTE: Brutal Squall requires an incoming attack to trigger Phase 1 â€” if no sufficiently strong
+NOTE: Brutal Squall requires an incoming attack to trigger Phase 1 — if no sufficiently strong
   attack lands, the BeySpirit is not activated and the special does not fire.
 NOTE: any beyblade can use Brutal Squall; no part restriction for special moves.
 NOTE: special move overrides all EG/clutch mechanical state; the EG spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override).
@@ -8569,7 +8569,7 @@ function triggerSquallDive(luinor: Beyblade, target: Beyblade, diveGuardSuccess:
 
 ---
 
-## Case 755 â€” [COMBO] Squall Dive: Jolt Aerial Arc Dive Contact (3-key: moveDown moveUp attack)
+## Case 755 — [COMBO] Squall Dive: Jolt Aerial Arc Dive Contact (3-key: moveDown moveUp attack)
 
 **Combo ID:** `squall-dive`
 **Sequence:** moveDown â†’ moveUp â†’ attack  (â†“â†‘J)
@@ -8577,41 +8577,41 @@ function triggerSquallDive(luinor: Beyblade, target: Beyblade, diveGuardSuccess:
 **Type Restriction:** attack
 **Part Requirement:** joltTip  (Jolt Performance Tip [Case 585] with impact-reactive trajectory)
 
-Squall Dive is the combo-level expression of Brutal Squall's three-phase aerial mechanic (Cases 753, 754): the moveDown positions LÃºinor in the low-approach deflection angle that is the precursor to the aerial arc (mirroring the impact_trigger phase â€” LÃºinor is at the lower orbital arc, the angle from which the Jolt tip's impact-reactive geometry generates upward velocity), the moveUp executes the aerial arc phase (LÃºinor climbs from the lower orbital arc to the upper arc, tracing the parabolic path of the squall aerial at combo scale â€” v_z is generated by the Jolt tip's passive threshold crossing during the orbital speed of the moveDown transition, which at orbital vâ‰ˆ0.5 m/s generates a brief tilt-increase and upward drift), and the attack fires at the apex of the upward arc â€” the highest-velocity moment of the arc's crest â€” where LÃºinor's Brutal blade contacts the opponent from above in the characteristic downward-dive contact geometry; at combo scale there is no wall-flip (that is BeySpirit territory), but the apex-contact mimics the dive's directional geometry: the attack arrives from above, giving the contact force a downward component that still elevates burst probability marginally at combo scale; spinDelta = âˆ’49 (Brutal layer blade contact at apex approach angle, near ceiling â€” the downward approach concentrates contact force at the blade face rather than spreading it tangentially, pushing to near-maximum single-contact spinDelta), damageMultiplier = 1.40Ã—.
+Squall Dive is the combo-level expression of Brutal Squall's three-phase aerial mechanic (Cases 753, 754): the moveDown positions LÃºinor in the low-approach deflection angle that is the precursor to the aerial arc (mirroring the impact_trigger phase — LÃºinor is at the lower orbital arc, the angle from which the Jolt tip's impact-reactive geometry generates upward velocity), the moveUp executes the aerial arc phase (LÃºinor climbs from the lower orbital arc to the upper arc, tracing the parabolic path of the squall aerial at combo scale — v_z is generated by the Jolt tip's passive threshold crossing during the orbital speed of the moveDown transition, which at orbital vâ‰ˆ0.5 m/s generates a brief tilt-increase and upward drift), and the attack fires at the apex of the upward arc — the highest-velocity moment of the arc's crest — where LÃºinor's Brutal blade contacts the opponent from above in the characteristic downward-dive contact geometry; at combo scale there is no wall-flip (that is BeySpirit territory), but the apex-contact mimics the dive's directional geometry: the attack arrives from above, giving the contact force a downward component that still elevates burst probability marginally at combo scale; spinDelta = −49 (Brutal layer blade contact at apex approach angle, near ceiling — the downward approach concentrates contact force at the blade face rather than spreading it tangentially, pushing to near-maximum single-contact spinDelta), damageMultiplier = 1.40×.
 
 ```
-Squall Dive â€” geometry:
+Squall Dive — geometry:
 
-Phase 1 (â†“): low-orbital deflection angle â€” LÃºinor at lower arc,
+Phase 1 (â†“): low-orbital deflection angle — LÃºinor at lower arc,
   Jolt tip passive threshold neared as orbital v approaches lower-orbit max
-  beyTiltAngle: brief increase (below full aerial â€” combo-scale passive Jolt physics)
+  beyTiltAngle: brief increase (below full aerial — combo-scale passive Jolt physics)
 
-Phase 2 (â†‘): arc climb â€” LÃºinor moves upward in orbital arc,
+Phase 2 (â†‘): arc climb — LÃºinor moves upward in orbital arc,
   mimicking the Brutal Squall aerial trajectory at combo scale
   Apex approach: LÃºinor arrives at upper arc with downward-facing contact angle
 
 Phase 3 (J): Brutal blade contact at arc apex from above
   Downward contact geometry: force has slight downward component
-  Ï†_brutal = 22Â°;  J_smash = cos(22Â°) Ã— J = 0.927 Ã— J
-  spinDelta_contact = âˆ’49 rad/s  (concentrated blade contact, near ceiling)
-  damageMultiplier = 1.40Ã—
-  lockMs = 70  (Brutal blade engagement at dive apex â€” slightly longer than flat-contact)
+  Ï†_brutal = 22°;  J_smash = cos(22°) × J = 0.927 × J
+  spinDelta_contact = −49 rad/s  (concentrated blade contact, near ceiling)
+  damageMultiplier = 1.40×
+  lockMs = 70  (Brutal blade engagement at dive apex — slightly longer than flat-contact)
 
 ceiling compliance:
-  1.40Ã— â‰¤ 1.5Ã—;  70 ms â‰¤ 300 ms;  49 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
+  1.40× â‰¤ 1.5×;  70 ms â‰¤ 300 ms;  49 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
 
-Design note: no burstChanceBonus at combo scale â€” burst torque amplification is
+Design note: no burstChanceBonus at combo scale — burst torque amplification is
   special-move-only (BeySpirit diving geometry not achieved at combo orbital v).
   Squall Dive self-cost: nil  (passive Jolt arc on existing orbital, no aerial depletion).
   Distinct from Flower Smash (â†‘â†“J, Case 744): that enters from above and reverses down;
-  Squall Dive enters from below and climbs â€” opposite traversal direction.
+  Squall Dive enters from below and climbs — opposite traversal direction.
 ```
 
 ```typescript
 // Combo: ["moveDown","moveUp","attack"], cost: 25, type: "attack", part: joltTip
 function applySquallDive(luinor: Beyblade, target: Beyblade): void {
   // Brutal LÃºinor blade contact from downward-arc apex approach
-  applySpinDelta(target, -49);        // near ceiling â€” concentrated downward contact
+  applySpinDelta(target, -49);        // near ceiling — concentrated downward contact
   target.damageMultiplier = 1.40;
   target.locked = true; target.lockExpiresAt = Date.now() + 70;
 }
@@ -8623,7 +8623,7 @@ function applySquallDive(luinor: Beyblade, target: Beyblade): void {
 
 ---
 
-## Case 756 â€” [GIMMICK] Dark Bull H145SD: H145 Horn Undercut Track, Rounded Dark Wheel Mass, and Semi-Defense Stable Contact
+## Case 756 — [GIMMICK] Dark Bull H145SD: H145 Horn Undercut Track, Rounded Dark Wheel Mass, and Semi-Defense Stable Contact
 
 **Beyblade:** Dark Bull H145SD
 **User:** Benkei Hanawa
@@ -8631,7 +8631,7 @@ function applySquallDive(luinor: Beyblade, target: Beyblade): void {
 
 **Note:** Dark Fusion Wheel [M] and Bull Clear Wheel [M] are not yet documented in the case library. H145 from Case 57. SD from Case 331. All [M] values carry Â±15% uncertainty.
 
-**Thesis:** Dark Bull H145SD's battle identity is the H145 Horn 145 track's horn-undercut geometry (Case 57): H145's two horn protrusions (Câ‚‚, 180Â° spacing) are distinguished by their hyper-extended radial reach (r_hornâ‰ˆ25mm, significantly beyond a standard flat-track outer edge of â‰ˆ18mm) and by the fact that they engage at the full 14.5mm track height â€” meaning the horn tip contact plane is 14.5mm above the floor, well above a typical Energy Ring contact height of â‰ˆ9â€“11mm for MFB wheel assemblies; the uppercut mechanic follows from this geometry: if Dark Bull approaches an opponent while tilted by Î¸_engageâ‰ˆ13Â° (arcsin((h145âˆ’h_ring_opp)/(r_horn))=arcsin((14.5âˆ’9.0)/25)â‰ˆ13Â°), the forward horn tip dips toward the opponent's Energy Ring contact height, allowing the horn to insert BELOW the ring; a rapid tilt-restore (return to upright) then sweeps the horn upward through the Energy Ring plane, delivering an upward leverage force to the opponent's ring â€” this is the "real bull locking horns" mechanic described for Bull Uppercut (Case 757); the Dark Fusion Wheel [M] provides a smooth-contoured heavy defense body (m_darkâ‰ˆ0.028kg [M]) that supplies the rotational inertia for the horn-lock momentum sweep and absorbs recoil during the engagement; the SD bottom (Case 331) provides semi-defense stable contact that maintains the approach angle during tilt-under entry, resisting deflection from minor contacts while Dark Bull positions for the horn engagement.
+**Thesis:** Dark Bull H145SD's battle identity is the H145 Horn 145 track's horn-undercut geometry (Case 57): H145's two horn protrusions (Câ‚‚, 180° spacing) are distinguished by their hyper-extended radial reach (r_hornâ‰ˆ25mm, significantly beyond a standard flat-track outer edge of â‰ˆ18mm) and by the fact that they engage at the full 14.5mm track height — meaning the horn tip contact plane is 14.5mm above the floor, well above a typical Energy Ring contact height of â‰ˆ9–11mm for MFB wheel assemblies; the uppercut mechanic follows from this geometry: if Dark Bull approaches an opponent while tilted by Î¸_engageâ‰ˆ13° (arcsin((h145−h_ring_opp)/(r_horn))=arcsin((14.5−9.0)/25)â‰ˆ13°), the forward horn tip dips toward the opponent's Energy Ring contact height, allowing the horn to insert BELOW the ring; a rapid tilt-restore (return to upright) then sweeps the horn upward through the Energy Ring plane, delivering an upward leverage force to the opponent's ring — this is the "real bull locking horns" mechanic described for Bull Uppercut (Case 757); the Dark Fusion Wheel [M] provides a smooth-contoured heavy defense body (m_darkâ‰ˆ0.028kg [M]) that supplies the rotational inertia for the horn-lock momentum sweep and absorbs recoil during the engagement; the SD bottom (Case 331) provides semi-defense stable contact that maintains the approach angle during tilt-under entry, resisting deflection from minor contacts while Dark Bull positions for the horn engagement.
 
 ```
 Bull Clear Wheel [M]:
@@ -8641,17 +8641,17 @@ Bull Clear Wheel [M]:
 Dark Fusion Wheel [M]:
   Smooth-contoured rounded body  [M]
   m_dark â‰ˆ 0.028 kg  (heavy fusion wheel for defense mass)
-  Câ‚ contact geometry (near-smooth) â€” minimal attack, high absorption
+  Câ‚ contact geometry (near-smooth) — minimal attack, high absorption
   r_outer â‰ˆ 22 mm
   Purpose: rotational inertia for horn-lock sweep momentum
 
 H145 Track [Case 57]:
   h = 14.5 mm  (one of the tallest MFB tracks)
-  Câ‚‚ horn protrusions (2 horns, 180Â° spacing)
+  Câ‚‚ horn protrusions (2 horns, 180° spacing)
   r_horn â‰ˆ 25 mm  (hyper-extended radial reach)
   Horn-undercut geometry:
-    Î¸_engage â‰ˆ arcsin((14.5 âˆ’ 9.0) / 25) = arcsin(0.22) â‰ˆ 13Â°
-    At tilt Î¸ â‰¥ 13Â°: forward horn dips to opponent Energy Ring height
+    Î¸_engage â‰ˆ arcsin((14.5 − 9.0) / 25) = arcsin(0.22) â‰ˆ 13°
+    At tilt Î¸ â‰¥ 13°: forward horn dips to opponent Energy Ring height
     â†’ horn inserts below opponent ring â†’ horn-lock position achieved
     Rapid tilt-restore: horn sweeps upward â†’ upward leverage force on opponent ring
   See Case 57 for full derivation of contact-point-radius geometry
@@ -8663,7 +8663,7 @@ SD Bottom [Case 331]:
   See Case 331 for full derivation
 
 Assembly [MFB era]:
-  m = 0.048 kg,  I = 1.05Ã—10â»âµ kgÂ·mÂ²,  Ï‰â‚€ = 600 rad/s,  W = 0.471 N
+  m = 0.048 kg,  I = 1.05×10â»âµ kgÂ·m²,  Ï‰â‚€ = 600 rad/s,  W = 0.471 N
 ```
 
 ```typescript
@@ -8675,7 +8675,7 @@ interface DarkBullAssembly {
   h145_m: number;             // 0.0145
   r_horn_m: number;           // 0.025
   h_ringOpponent_m: number;   // 0.009  (typical MFB Energy Ring contact height)
-  theta_engage_deg: number;   // 13  â€” arcsin((14.5-9.0)/25)
+  theta_engage_deg: number;   // 13  — arcsin((14.5-9.0)/25)
   // Dark Fusion Wheel [M]
   m_dark_kg: number;          // 0.028
   r_outer_m: number;          // 0.022
@@ -8687,44 +8687,44 @@ function h145HornEngaged(asm: DarkBullAssembly, beyTiltAngle: number): boolean {
 
 ---
 
-## Case 757 â€” [SPECIAL MOVE] Bull Uppercut: Benkei Hanawa / Dark Bull H145SD (Metal Fight Beyblade)
+## Case 757 — [SPECIAL MOVE] Bull Uppercut: Benkei Hanawa / Dark Bull H145SD (Metal Fight Beyblade)
 
 **Franchise Move:** Bull tilts downwards underneath the opponent's energy ring, and then quickly tilts upwards to uppercut the opponent into the air with the horns on its spin track. This causes the opponent to lose control and crash. Benkei describes it as being "like a real bull locking horns." Bull Uppercut is the first special move used by Benkei Hanawa with Dark Bull H145SD. [Metal Fight Beyblade]
 
-**Thesis:** Bull Uppercut is the BeySpirit transcendence of the H145 horn-undercut geometry (Case 756): at passive physics the H145 horns produce an upper-attack tendency (contacts at h=14.5mm engage from below at moderate tilt), but the engagement requires precise tilt alignment and is easily evaded; under Benkei's Bull BeySpirit the tilt maneuver becomes precise and rapid â€” Phase 1 drives Dark Bull to Î¸_engage=13Â° with targeted precision (the spirit navigates the approach so the horn arrives at exactly the opponent's Energy Ring height), Phase 2 is the "lock horns" moment (horn tip contacts under the ring, force state locks both beyblades into momentary mutual engagement â€” neither can freely move laterally, all relative motion is vertical), and Phase 3 is the uppercut snap (Dark Bull rapidly restores tilt from 13Â° to 0Â°, the horn sweeps upward through the ring plane, delivering F_upper via lever geometry: Ï„_upper=F_hornÃ—r_horn=F_hornÃ—0.025m, converted to an upward impulse on the opponent and a large beyTiltAngle increase; the opponent is "tossed into the air" â€” beyTiltAngle_opponent += 20Â°, and if combined tilt exceeds the stability threshold, the "crash" follows immediately); the critical mechanical point is that Bull Uppercut is NOT primarily a spin-delta attack â€” it is a tilt-induction attack, and the spin disruption (âˆ’280) is secondary to the wobble crash caused by the 20Â° forced tilt; this distinction mirrors the real bull-horn mechanic: the goal is to destabilise the opponent's balance, not to spin-drain them.
+**Thesis:** Bull Uppercut is the BeySpirit transcendence of the H145 horn-undercut geometry (Case 756): at passive physics the H145 horns produce an upper-attack tendency (contacts at h=14.5mm engage from below at moderate tilt), but the engagement requires precise tilt alignment and is easily evaded; under Benkei's Bull BeySpirit the tilt maneuver becomes precise and rapid — Phase 1 drives Dark Bull to Î¸_engage=13° with targeted precision (the spirit navigates the approach so the horn arrives at exactly the opponent's Energy Ring height), Phase 2 is the "lock horns" moment (horn tip contacts under the ring, force state locks both beyblades into momentary mutual engagement — neither can freely move laterally, all relative motion is vertical), and Phase 3 is the uppercut snap (Dark Bull rapidly restores tilt from 13° to 0°, the horn sweeps upward through the ring plane, delivering F_upper via lever geometry: Ï„_upper=F_horn×r_horn=F_horn×0.025m, converted to an upward impulse on the opponent and a large beyTiltAngle increase; the opponent is "tossed into the air" — beyTiltAngle_opponent += 20°, and if combined tilt exceeds the stability threshold, the "crash" follows immediately); the critical mechanical point is that Bull Uppercut is NOT primarily a spin-delta attack — it is a tilt-induction attack, and the spin disruption (−280) is secondary to the wobble crash caused by the 20° forced tilt; this distinction mirrors the real bull-horn mechanic: the goal is to destabilise the opponent's balance, not to spin-drain them.
 
 ```
-Bull Uppercut â€” phase structure:
+Bull Uppercut — phase structure:
 
-Phase 1 â€” "tilt_under" (300 ms):
-  BeySpirit drives Dark Bull tilt to Î¸_engage = 13Â°
+Phase 1 — "tilt_under" (300 ms):
+  BeySpirit drives Dark Bull tilt to Î¸_engage = 13°
   Approach arc: Dark Bull spirals toward opponent at SD bottom orbital
   Horn forward position aligns with opponent Energy Ring height
   forceState on self: "horn_approach"  (300 ms)
   Visual: dark bull spirit aura, horns glow amber, ground trembles
 
-Phase 2 â€” "horn_lock" (50 ms contact):
-  H145 forward horn inserts below opponent Energy Ring  (Î¸ â‰¥ 13Â°)
+Phase 2 — "horn_lock" (50 ms contact):
+  H145 forward horn inserts below opponent Energy Ring  (Î¸ â‰¥ 13°)
   forceState on both beyblades: "horn_locked"  (50 ms)
     â†’ neither can apply lateral impulse; only vertical force exchange during lock
   Visual: horn tips glow, energy flash at lock contact point
 
-Phase 3 â€” "uppercut" (rapid tilt-restore 0â†’13Â° reversed):
-  Dark Bull snaps from 13Â° tilt back to 0Â°, horn sweeps upward through ring plane
-  Lever force:  F_upper = I Ã— Î±_restore / r_horn  [BeySpirit amplified]
-  spinDelta_opponent     = âˆ’280 rad/s  (horn-contact spin disruption)
-  linearImpulse_opponent = 3 500 eu  (upward/forward â€” "tossed into air")
-  damageMultiplier        = 1.8Ã—
+Phase 3 — "uppercut" (rapid tilt-restore 0â†’13° reversed):
+  Dark Bull snaps from 13° tilt back to 0°, horn sweeps upward through ring plane
+  Lever force:  F_upper = I × Î±_restore / r_horn  [BeySpirit amplified]
+  spinDelta_opponent     = −280 rad/s  (horn-contact spin disruption)
+  linearImpulse_opponent = 3 500 eu  (upward/forward — "tossed into air")
+  damageMultiplier        = 1.8×
   Tilt induction (lever-arm forced-toss):
-    beyTiltAngle_opponent += 20Â°  (1 500 ms duration)
-    if opponent spin/maxSpin < 0.50 OR (existing tilt + 20Â°) > 45Â°: crash wobble triggers
+    beyTiltAngle_opponent += 20°  (1 500 ms duration)
+    if opponent spin/maxSpin < 0.50 OR (existing tilt + 20°) > 45°: crash wobble triggers
 
-  QTE â€” "Counter Lock":
+  QTE — "Counter Lock":
     Window: 250 ms from horn_lock contact;  Input: jump (C)
-    Success: break horn-lock early â€” 40% spinDelta + impulse, no tilt induction
-    Fail: full uppercut + 20Â° tilt
+    Success: break horn-lock early — 40% spinDelta + impulse, no tilt induction
+    Fail: full uppercut + 20° tilt
 
-Self-cost: âˆ’120 spinDelta  (tilt-under approach destabilises SD contact briefly)
+Self-cost: −120 spinDelta  (tilt-under approach destabilises SD contact briefly)
 powerCost: 100;  cooldownMs: 4 500
 NOTE: any beyblade can use Bull Uppercut; no part restriction for special moves.
 NOTE: special move overrides all EG/clutch mechanical state; the EG spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override).
@@ -8767,7 +8767,7 @@ function activateBullUppercut(darkBull: Beyblade, target: Beyblade): void {
 
 ---
 
-## Case 758 â€” [COMBO] Bull Undercut: H145 Horn-Lock Uppercut Arc (3-key: moveDown attack moveUp)
+## Case 758 — [COMBO] Bull Undercut: H145 Horn-Lock Uppercut Arc (3-key: moveDown attack moveUp)
 
 **Combo ID:** `bull-undercut`
 **Sequence:** moveDown â†’ attack â†’ moveUp  (â†“Jâ†‘)
@@ -8775,34 +8775,34 @@ function activateBullUppercut(darkBull: Beyblade, target: Beyblade): void {
 **Type Restriction:** attack
 **Part Requirement:** h145Track  (H145 Horn 145 track with hyper-extended horn contacts)
 
-Bull Undercut is the combo-level expression of the H145 horn-undercut engagement mechanic (Cases 756, 757): the moveDown drives Dark Bull into the tilt-under approach arc (beyTiltAngle briefly increases â€” reaching the passive engagement threshold Î¸â‰ˆ13Â° momentarily at combo orbital speed), the attack fires at the tilt-under contact moment â€” the H145 horn makes brief contact with the opponent's Energy Ring from below (this is the "horn lock" expressed at combo scale: not the full 50ms BeySpirit force-locked phase, but a single-frame contact where the horn is at the ring plane), and the moveUp delivers the upward snap (horn sweeps from under-ring position through the contact plane, delivering the uppercut impulse); at combo scale the tilt induction is passive physics only (no BeySpirit amplification, no beyTiltAngle modification â€” the horn geometry naturally produces an upward-angled contact that tends to tilt the opponent, but the +20Â° toss is special-move territory): spinDelta = âˆ’40 (horn contact below opponent ring â€” the angled approach produces lower normal force transmission than a direct blade smash, but the geometry is distinctive), damageMultiplier = 1.30Ã—; the lockMs = 80 reflects the horn-engagement geometry: the horn contact is slightly longer than a blade tip impact because the horn tip must sweep through the ring plane (a traversal path rather than a point contact), and this traversal arc produces the characteristic "locked horns" feeling even at combo scale.
+Bull Undercut is the combo-level expression of the H145 horn-undercut engagement mechanic (Cases 756, 757): the moveDown drives Dark Bull into the tilt-under approach arc (beyTiltAngle briefly increases — reaching the passive engagement threshold Î¸â‰ˆ13° momentarily at combo orbital speed), the attack fires at the tilt-under contact moment — the H145 horn makes brief contact with the opponent's Energy Ring from below (this is the "horn lock" expressed at combo scale: not the full 50ms BeySpirit force-locked phase, but a single-frame contact where the horn is at the ring plane), and the moveUp delivers the upward snap (horn sweeps from under-ring position through the contact plane, delivering the uppercut impulse); at combo scale the tilt induction is passive physics only (no BeySpirit amplification, no beyTiltAngle modification — the horn geometry naturally produces an upward-angled contact that tends to tilt the opponent, but the +20° toss is special-move territory): spinDelta = −40 (horn contact below opponent ring — the angled approach produces lower normal force transmission than a direct blade smash, but the geometry is distinctive), damageMultiplier = 1.30×; the lockMs = 80 reflects the horn-engagement geometry: the horn contact is slightly longer than a blade tip impact because the horn tip must sweep through the ring plane (a traversal path rather than a point contact), and this traversal arc produces the characteristic "locked horns" feeling even at combo scale.
 
 ```
-Bull Undercut â€” geometry:
+Bull Undercut — geometry:
 
 Phase 1 (â†“): tilt-under approach arc
-  beyTiltAngle briefly reaches Î¸_engage â‰ˆ 13Â° at lower orbital position
+  beyTiltAngle briefly reaches Î¸_engage â‰ˆ 13° at lower orbital position
   H145 forward horn dips toward opponent Energy Ring height
 
 Phase 2 (J): horn contact below ring plane (tilt-under moment)
   H145 horn tip engages opponent ring from below  (passive physics contact)
   Contact angle: below-ring upward sweep geometry
-  spinDelta_contact = âˆ’40 rad/s  (below-ring horn contact â€” angled, below ceiling)
-  damageMultiplier = 1.30Ã—
+  spinDelta_contact = −40 rad/s  (below-ring horn contact — angled, below ceiling)
+  damageMultiplier = 1.30×
   lockMs = 80  (horn traversal arc: longer than blade-tip point contact)
 
 Phase 3 (â†‘): tilt-restore uppercut sweep
-  Dark Bull snaps upright (13Â° â†’ 0Â°) â€” horn completes upward sweep through ring plane
+  Dark Bull snaps upright (13° â†’ 0°) — horn completes upward sweep through ring plane
   Upward momentum tendency: contact force has upward component
-  No beyTiltAngle modification (passive geometry tendency only â€” not BeySpirit amplified)
+  No beyTiltAngle modification (passive geometry tendency only — not BeySpirit amplified)
 
 ceiling compliance:
-  1.30Ã— â‰¤ 1.5Ã—;  80 ms â‰¤ 300 ms;  40 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
+  1.30× â‰¤ 1.5×;  80 ms â‰¤ 300 ms;  40 â‰¤ 50 rad/s;  no invulnerability, no AoE  [check]
 
-Design note: the H145 horn tilt-induction tendency is passive physics at combo scale â€”
-  no beyTiltAngle_opponent modification applied (the +20Â° toss is special-move territory).
+Design note: the H145 horn tilt-induction tendency is passive physics at combo scale —
+  no beyTiltAngle_opponent modification applied (the +20° toss is special-move territory).
   The 80 ms lockMs is geometrically justified by the horn sweep arc traversal (not a proxy
-  for a prolonged lock â€” the traversal arc physically takes longer than a point contact).
+  for a prolonged lock — the traversal arc physically takes longer than a point contact).
   Combo self-cost: nil (passive tilt-approach via SD orbital, no BeySpirit tilt-drive cost).
 ```
 
@@ -8810,7 +8810,7 @@ Design note: the H145 horn tilt-induction tendency is passive physics at combo s
 // Combo: ["moveDown","attack","moveUp"], cost: 25, type: "attack", part: h145Track
 function applyBullUndercut(darkBull: Beyblade, target: Beyblade): void {
   // H145 horn contact from below ring plane, upward sweep geometry
-  applySpinDelta(target, -40);        // below-ring contact â€” angled, ceiling-compliant
+  applySpinDelta(target, -40);        // below-ring contact — angled, ceiling-compliant
   target.damageMultiplier = 1.30;
   target.locked = true; target.lockExpiresAt = Date.now() + 80;
 }
@@ -15370,6 +15370,1284 @@ function aerialDriveCombo(jHit: boolean): {
 
 ---
 
-*Cases continue from Case 867 as further franchise moves are provided.*
+---
+
+## Case 1098 — [GIMMICK] Kenta Yumiya's Flame Sagittario C145S — Fixed-Claw Track Geometry and Bowl-Slope Launch Mechanics
+
+**Franchise context.** Kenta Yumiya (Metal Fight Beyblade / Metal Fusion era). Assembly: Flame Sagittario C145S. Metal Wheel: Flame; Clear Wheel: Sagittario; Track: Claw 145 (C145); Bottom: Sharp. Source: part list line 908–912. C145 is the defining component — the Claw 145 track's three fixed downward-angled claw protrusions catch the inclined bowl-wall surface and redirect horizontal orbit momentum into a near-vertical launch.
+
+**Parts:**
+
+**Metal Wheel: Flame [M]**
+Three-wing attack Metal Wheel, aggressive smash geometry:
+  m_Flame ≈ 26.0 g [M]; r_outer ≈ 38 mm [M]; r_inner ≈ 16 mm [M]
+  I_Flame = (0.026/2)(0.038² + 0.016²) = 0.013 × 1.700×10⁻³ = 2.210×10⁻⁵ kg⋅m² [M]
+  3 blade contacts; C_smash ≈ 0.68 [M]
+
+**Clear Wheel: Sagittario [M]**
+  m_ER ≈ 3.5 g [M]; I_ER ≈ 1.008×10⁻⁶ kg⋅m² [M]
+
+**Track: C145 — Claw 145 [M]**
+Height 14.5 mm. Three **fixed** claw protrusions at 120° angular spacing. The claws extend radially outward and angle slightly downward from horizontal (α_claw ≈ 20–25° below horizontal [M]). There is no retraction or spring mechanism — the claws are always in the extended position. Their function: when Sagittario rides the inclined bowl wall at speed, the claw tip geometry engages the surface slope and acts as a curved angular ramp, converting the horizontal orbital velocity component into an upward launch vector.
+
+  m_C145 ≈ 5.8 g [M]; claw protrusion length ≈ 8 mm [M]
+  Claw-to-launch conversion angle: θ_launch ≈ 55–70° from horizontal [M] (set by claw geometry + wall slope; more vertical the steeper the bowl section)
+  Effective claw-launch conversion efficiency: η_claw ≈ 0.28 [M]
+    (28% of approach KE converts to launch KE; remainder dissipated in wall contact friction and spin loss)
+  I_C145 ≈ 3.625×10⁻⁷ kg⋅m² [M]
+
+  Engagement condition (no speed threshold — claws always engage on wall contact):
+    Launch triggers whenever bey contacts bowl wall while approaching at orbital velocity v_orb ≥ 0.5 m/s [M] (minimum for meaningful slope catch). Lower v_orb → lower launch height; higher v_orb → higher launch.
+
+**Bottom: S — Sharp [M]**
+  r_tip ≈ 0.8 mm [M]; μ_S ≈ 0.35 [M]; m_S ≈ 1.5 g [M]; I_S ≈ 0.180×10⁻⁶ kg⋅m² [M]
+
+**Face Bolt [M]**
+  m_face ≈ 3.0 g; I_face ≈ 0.140×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total ≈ 39.8 g [M]
+  I_total = 22.100 + 1.008 + 0.363 + 0.180 + 0.140 = 23.791×10⁻⁶ ≈ 2.379×10⁻⁵ kg⋅m² [M]
+  ω₀ = 220 rad/s [M] (~2100 RPM, MFB era)
+  KE₀_spin = 0.5 × 2.379×10⁻⁵ × 220² = 0.575 J [M]
+
+  Linear orbital velocity at r ≈ 150 px from centre (mid-orbit):
+    v_orb ≈ 1.8 m/s [M] (steady orbit in standard stadium)
+
+  Spin decay (Sharp):
+    dω/dt = −(0.35 × 0.0398 × 9.81 × 0.0008) / 2.379×10⁻⁵ = −4.59 rad/s² [M]
+    Endurance ≈ 48 s [M]
+
+**Claw-launch mechanics:**
+  KE_launch = η_claw × (0.5 × m × v_orb²) = 0.28 × (0.5 × 0.0398 × 1.8²) = 0.28 × 0.0645 = 0.01806 J [M]
+  v_launch_vertical = √(2 × KE_launch / m_total) × sin(θ_launch) = √(2 × 0.01806 / 0.0398) × sin(60°) = 0.952 × 0.866 = 0.824 m/s [M]
+  h_apex_physical = v_launch_vertical² / (2g) = 0.679 / 19.62 = 0.0346 m [M]  ← only 3.5 cm physically
+  → The physical launch is very modest; the dramatic aerial in Diving Claw is entirely BeySpirit-amplified.
+
+```typescript
+function c145ClawLaunch(v_orb_m_s: number, m_kg: number, theta_deg: number): {
+  KE_launch_J: number; v_launch_vertical_m_s: number; h_apex_physical_m: number
+} {
+  const eta = 0.28;         // fixed-claw conversion [M]
+  const theta = theta_deg * Math.PI / 180;
+  const KE_l = eta * (0.5 * m_kg * v_orb_m_s ** 2);
+  const v_total = Math.sqrt(2 * KE_l / m_kg);
+  const v_vert = v_total * Math.sin(theta);
+  const h = v_vert ** 2 / (2 * 9.81);
+  return {
+    KE_launch_J:            parseFloat(KE_l.toFixed(5)),
+    v_launch_vertical_m_s:  parseFloat(v_vert.toFixed(4)),
+    h_apex_physical_m:      parseFloat(h.toFixed(4)),
+  };
+}
+// c145ClawLaunch(1.8, 0.0398, 60) → { KE:0.01806J, v_vert:0.824m/s, h_apex:0.035m } ← physical
+// c145ClawLaunch(3.5, 0.0398, 60) → { KE:0.06860J, v_vert:1.603m/s, h_apex:0.131m } ← at higher orbit speed
+```
+
+Note: Diving Claw's spectacular aerial height is BeySpirit-driven, not derived from the physical claw-to-wall conversion (which produces only ~3–13 cm physical apex). The C145 claws are the trigger — BeySpirit does the heavy lifting.
+
+---
+
+## Case 1099 — [SPECIAL] Diving Claw
+
+**Franchise move.** Diving Claw — Kenta Yumiya's Flame Sagittario C145S (Metal Fight Beyblade). Sagittario begins with Flame Claw (C145 claw geometry wall-ride), flies off the stadium edge into the air, BeySpirit transforms the spinning blades into a giant wheel of fire, then dives down to deliver a devastating strike. In canon this cracked L-Drago Destroy's Face Bolt — the Sharp tip concentrates the full impact force to a ≈0.8 mm contact radius, generating extreme point stress.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override. The C145 fixed claws engage the bowl wall under BeySpirit amplification at any orbital speed (no minimum threshold).
+
+**Phase 1 — Flame Claw Wall-Ride (500 ms):**
+Sagittario accelerates along the bowl, C145 claw geometry catches the slope → beyond the stadium lip. beyTiltAngle → 90°. Invulnerable from lip-exit onward.
+
+**Phase 2 — BeySpirit Ascent and Fire Wheel (800 ms):**
+BeySpirit fire-element amplification ×2.8 [M] on launch velocity:
+  v_launch_anime = 0.824 × 2.8 × (BeySpirit_height_factor = 4.5 [M]) = 10.39 m/s [M]
+  (BeySpirit amplifies both the conversion efficiency and the vertical component — anime physics)
+  h_apex_anime ≈ 2.5 m [M] (anime visual calibration — moderate height consistent with Kenta's power level)
+
+Fire Wheel CFF at apex, ω_apex ≈ 120 rad/s [M]:
+  f_sweep = (120 / 2π) × 3 = 57.3 Hz [M]
+  BeySpirit boost ×1.08: f_apparent = 61.9 Hz > 60 Hz CFF threshold
+  → The 3 Flame wings produce after-images that merge into a continuous fire ring — the "giant wheel of fire" is a confirmed optical phenomenon above 60 Hz CFF.
+
+**Phase 3 — Gravity Dive (500 ms descent + impact):**
+  v_fall_phys = √(2 × 9.81 × 2.5) = 7.00 m/s [M]; BeySpirit ×2.8: v_fall_anime = 19.6 m/s [M]
+  KE_fall = 0.5 × 0.0398 × 19.6² = 7.65 J [M]
+  KE_spin_remaining ≈ 0.171 J [M]; KE_total ≈ 7.82 J [M]
+
+Face Bolt crack stress — Sharp tip A_tip = π × (8×10⁻⁴)² = 2.01×10⁻⁶ m²:
+  Approx peak force over 1 mm deformation: F ≈ 7650 / 0.001 ≈ 7,650 N [M]
+  σ = F / A_tip ≈ 3.81×10⁹ Pa [M] >> polycarbonate tensile strength (~60 MPa)
+  → Point-contact stress physically sufficient to crack a Face Bolt; crack probability 40% [M]
+
+QTE "Claw Drop" — hold J during Phase 3; late release = maximum gravity build.
+
+```
+Late release (350–500 ms):
+  spinDelta:           −100
+  linearImpulse:       1750 eu
+  knockbackImpulse:    4800 eu
+  dmgMult:             1.85×
+  burstBonus:          +16%
+  faceBoltCrackChance: 40%   (cracked → target burstThreshold −15% for match)
+
+Medium release (175–349 ms):
+  spinDelta:           −60
+  linearImpulse:       1050 eu
+  knockbackImpulse:    2200 eu
+  dmgMult:             1.62×
+  burstBonus:          +9%
+  faceBoltCrackChance: 20%
+
+Early release (0–174 ms):
+  spinDelta:           −30
+  linearImpulse:        550 eu
+  knockbackImpulse:     900 eu
+  dmgMult:             1.38×
+  burstBonus:          +4%
+  faceBoltCrackChance: 0%
+
+selfCost:    −60
+powerCost:   110
+cooldown:    7500 ms
+Invulnerability: Phase 1 (500 ms) + Phase 2 (800 ms) + first 100 ms Phase 3 = ~1400 ms
+QTE:         "Claw Drop" — hold J; late = max KE_fall
+```
+
+```typescript
+type ClawDropLevel = "late" | "medium" | "early";
+
+function divingClawQTE(holdMs: number): {
+  level: ClawDropLevel; spinDelta: number; linearImpulse_eu: number;
+  knockbackImpulse_eu: number; dmgMult: number; burstBonus_pct: number; crackChance_pct: number
+} {
+  const lvl: ClawDropLevel = holdMs >= 350 ? "late" : holdMs >= 175 ? "medium" : "early";
+  const s = {
+    late:   { spinDelta: -100, linearImpulse_eu: 1750, knockbackImpulse_eu: 4800, dmgMult: 1.85, burstBonus_pct: 16, crackChance_pct: 40 },
+    medium: { spinDelta:  -60, linearImpulse_eu: 1050, knockbackImpulse_eu: 2200, dmgMult: 1.62, burstBonus_pct:  9, crackChance_pct: 20 },
+    early:  { spinDelta:  -30, linearImpulse_eu:  550, knockbackImpulse_eu:  900, dmgMult: 1.38, burstBonus_pct:  4, crackChance_pct:  0 },
+  }[lvl];
+  return { level: lvl, ...s };
+}
+// divingClawQTE(420) → { level:"late",   spin:-100, imp:1750, ko:4800, dmg:1.85×, burst:+16%, crack:40% }
+// divingClawQTE(250) → { level:"medium", spin:-60,  imp:1050, ko:2200, dmg:1.62×, burst:+9%,  crack:20% }
+// divingClawQTE(80)  → { level:"early",  spin:-30,  imp:550,  ko:900,  dmg:1.38×, burst:+4%,  crack:0%  }
+
+function faceBoltCrack(crackChance_pct: number, rng: number): { cracked: boolean; burstThresholdDelta_pct: number } {
+  const cracked = rng < crackChance_pct / 100;
+  return { cracked, burstThresholdDelta_pct: cracked ? -15 : 0 };
+}
+// faceBoltCrack(40, 0.30) → { cracked:true,  delta:-15% }
+// faceBoltCrack(40, 0.55) → { cracked:false, delta:0%   }
+```
+
+---
+
+## Case 1100 — [COMBO] Flame Claw (→ J K)
+
+**Franchise bey:** Kenta Yumiya's Flame Sagittario C145S — C145 track installed  
+**Required part:** `flameSagittarioC145`  
+**Sequence:** → J K (moveRight + attack + defense)  
+**Type restriction:** attack  
+**Cost:** 15 power
+
+Sagittario dashes right (→), the C145 claw geometry catches the bowl wall at speed (J — the wall-catch produces a sharp lateral thrust contact on any bey near the wall), then converts to a Flame wheel deflect (K — absorbs counter). The J hit represents the claw tip briefly engaging the wall-lip geometry and delivering the smash contact at that contact point. Ground-level version of the Diving Claw wall-engage phase.
+
+```
+Wall-Catch Strike (J):
+  spinDelta:           −35
+  dmgMult:             1.25×
+  lockMs:              45
+  wallBounce:          true   (Sagittario rebounds off the wall after claw contact — auto-repositions)
+
+Wheel Deflect (K — within 300 ms):
+  incomingDmgReduction: ×0.60
+
+  windowMs:   600
+  cooldownMs: 3800
+
+Ceiling: 1.25×≤1.5×; 45ms≤300ms; 35≤50 spinDelta; wallBounce positional;
+  no AoE; no invulnerability [check]. Cost 15.
+```
+
+```typescript
+function flameClawCombo(jHit: boolean, kBraceHit: boolean): {
+  strike: { spinDelta: number; dmgMult: number; lockMs: number; wallBounce: boolean } | null;
+  braceActive: boolean; incomingDmgMult: number
+} {
+  return {
+    strike:          jHit ? { spinDelta: -35, dmgMult: 1.25, lockMs: 45, wallBounce: true } : null,
+    braceActive:     kBraceHit,
+    incomingDmgMult: kBraceHit ? 0.60 : 1.00,
+  };
+}
+// flameClawCombo(true,  true)  → { strike:{spin:-35,dmg:1.25×,lock:45ms,wall:true}, brace:true,  inDmg:0.60× }
+// flameClawCombo(true,  false) → { strike:{spin:-35,dmg:1.25×,lock:45ms,wall:true}, brace:false, inDmg:1.00× }
+// flameClawCombo(false, false) → { strike:null, brace:false, inDmg:1.00× }
+```
+
+---
+
+## Case 1101 — [GIMMICK] Kenta Yumiya's Flash Sagittario 230WD — Tall-Track CoM and Beast-Arrow Ranged Mechanics
+
+**Franchise context.** Kenta Yumiya (Metal Fight Beyblade, 4D era). Assembly: Flash Sagittario 230WD. 4D Metal Wheel: Flash; 4D Clear Wheel: Sagittario II; Track: 230; Bottom: Wide Defense. Source: part list lines 1268–1272. Flash is a 4D Metal Wheel (heavier multi-piece construction than standard Metal Wheels). No C145 — Diving Arrow was improvised because Diving Claw requires C145 which Flash Sagittario does not have.
+
+**Parts:**
+
+**4D Metal Wheel: Flash [M]**
+Heavy 4D construction; greater rim mass than Flame:
+  m_Flash ≈ 32.0 g [M]; r_outer ≈ 40 mm [M]; r_inner ≈ 18 mm [M]
+  I_Flash = (0.032/2)(0.040² + 0.018²) = 0.016 × 1.924×10⁻³ = 3.078×10⁻⁵ kg⋅m² [M]
+
+**4D Clear Wheel: Sagittario II [M]**
+  m_CW ≈ 3.5 g [M]; I_CW ≈ 1.008×10⁻⁶ kg⋅m² [M]
+
+**Track: 230 [M]**
+Height 23.0 mm — tallest standard MFB track. Raises CoM h_CoM ≈ 15.5 mm above floor [M] (vs ~11.8 mm for 145). Greater precession susceptibility at low spin; some attack height clearance.
+  m_230 ≈ 6.5 g [M]; I_230 ≈ 5.850×10⁻⁷ kg⋅m² [M]
+
+**Bottom: WD — Wide Defense [M]**
+Wide annular ring, r_rim ≈ 22 mm; inner bearing r_bearing ≈ 5 mm.
+  m_WD ≈ 2.5 g [M]; μ_bearing ≈ 0.020 [M]; I_WD ≈ 6.363×10⁻⁷ kg⋅m² [M]
+
+**Face Bolt [M]**
+  m_face ≈ 3.0 g; I_face ≈ 0.140×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total ≈ 47.5 g [M]
+  I_total = 30.780 + 1.008 + 0.585 + 0.636 + 0.140 = 33.149×10⁻⁶ ≈ 3.315×10⁻⁵ kg⋅m² [M]
+  ω₀ = 210 rad/s [M]
+  KE₀_spin = 0.5 × 3.315×10⁻⁵ × 210² = 0.731 J [M]
+
+  Spin decay (WD bearing, r_contact = r_bearing = 5 mm):
+    dω/dt = −(0.020 × 0.0475 × 9.81 × 0.005) / 3.315×10⁻⁵ = −1.406 rad/s² [M]
+    Endurance ≈ 149 s [M] (excellent stamina)
+
+**Beast-arrow projection mechanics:**
+Without C145, Flash Sagittario uses the Sagittario II BitBeast to project spiritual flaming arrows — fully ranged, bey stays on the floor. Each arrow: m_arrow_equiv ≈ 0.005 kg [M], v_arrow ≈ 15 m/s [M], self spin cost ≈ 28 rad/s per arrow [M] (drawn from beast-spirit pool, not purely from rotational KE).
+
+```typescript
+function flashSagittarioStats(): {
+  I_kgm2: number; h_CoM_mm: number; spinDecay_rad_s2: number;
+  endurance_s: number; arrowSpeed_m_s: number; spinCostPerArrow: number
+} {
+  const I = 3.315e-5, mu = 0.020, m = 0.0475, g = 9.81, rb = 0.005, w0 = 210;
+  const decay = (mu * m * g * rb) / I;
+  return { I_kgm2: I, h_CoM_mm: 15.5, spinDecay_rad_s2: parseFloat(decay.toFixed(3)),
+           endurance_s: parseFloat((w0/decay).toFixed(1)), arrowSpeed_m_s: 15, spinCostPerArrow: 28 };
+}
+// flashSagittarioStats() → { I:3.315e-5, hCoM:15.5mm, decay:1.406rad/s², end:149.4s, vArrow:15m/s, cost:28 }
+```
+
+---
+
+## Case 1102 — [SPECIAL] Diving Arrow
+
+**Franchise move.** Diving Arrow — Kenta Yumiya's Flash Sagittario 230WD (Metal Fight Beyblade 4D). Flash Sagittario calls upon the Sagittario II beast to fire flaming arrows to decimate the opponent. Improvised because Diving Claw requires C145, which Flash Sagittario lacks — Kenta creates a ranged special using Flash's greater 4D spiritual power and WD's superior spin retention. Five sequential arrows with individual dodge QTEs. The 230 track's tall height supports the stable upright stance required to sustain five BeySpirit projections.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Volley parameters:**
+5 arrows, 200 ms between each (total window ≈ 1000 ms). Flash Sagittario holds position (WD suppresses drift). Not invulnerable — opponent can interrupt the volley by contacting Sagittario within 60 px.
+
+**Per-arrow QTE (opponent):** press ← or → within 300 ms window. Miss = full arrow hit.
+
+```
+Per arrow — full hit:
+  spinDelta_self:   −28; spinDelta_target: −28; impulse: 350 eu; dmgMult: 1.20×
+
+Full 5-arrow (all hit): selfSpin −140; targetSpin −140; totalImpulse 1750 eu; 5 × 1.20× individual hits
+
+selfCost: −50; powerCost: 100; cooldown: 7000 ms
+Interrupt: volley cancels on opponent contact within 60 px
+QTE per arrow: dodge ← or → within 300 ms
+```
+
+```typescript
+type ArrowResult = { hit: boolean; spinDeltaSelf: number; spinDeltaTarget: number; impulse_eu: number; dmgMult: number };
+
+function divingArrowVolley(dodged: boolean[]): {
+  arrows: ArrowResult[]; totalSelfSpin: number; totalTargetSpin: number;
+  totalImpulse_eu: number; arrowsHit: number
+} {
+  const arrows: ArrowResult[] = dodged.map(d =>
+    d ? { hit:false, spinDeltaSelf:-28, spinDeltaTarget:0,   impulse_eu:0,   dmgMult:1.00 }
+      : { hit:true,  spinDeltaSelf:-28, spinDeltaTarget:-28, impulse_eu:350, dmgMult:1.20 }
+  );
+  return { arrows,
+    totalSelfSpin:   arrows.reduce((a,r)=>a+r.spinDeltaSelf, 0),
+    totalTargetSpin: arrows.reduce((a,r)=>a+r.spinDeltaTarget, 0),
+    totalImpulse_eu: arrows.reduce((a,r)=>a+r.impulse_eu, 0),
+    arrowsHit:       arrows.filter(r=>r.hit).length };
+}
+// divingArrowVolley([F,F,F,F,F]) → { hit:5, self:-140, target:-140, imp:1750eu }
+// divingArrowVolley([F,T,F,T,F]) → { hit:3, self:-140, target:-84,  imp:1050eu }
+// divingArrowVolley([T,T,T,T,T]) → { hit:0, self:-140, target:0,    imp:0eu    }
+```
+
+---
+
+## Case 1103 — [COMBO] Flash Arrow (J ↑ J)
+
+**Franchise bey:** Kenta Yumiya's Flash Sagittario 230WD — Flash 4D Metal Wheel active  
+**Required part:** `flashSagittarioFW`  
+**Sequence:** J ↑ J (attack + moveUp + attack)  
+**Type restriction:** universal  
+**Cost:** 25 power
+
+Two physical Flash wheel contacts with a positional advance (↑) between. The ↑ advance rotates the contact face, ensuring Hit 2 lands on a fresh surface. Physical contacts — no beast arrow projection, no opponent dodge QTE.
+
+```
+Hit 1 (J): spinDelta −30; dmgMult 1.20×; lockMs 25
+Advance (↑): 120 ms face-rotation shift
+Hit 2 (J): spinDelta −30; dmgMult 1.25×; lockMs 30
+
+windowMs: 700; cooldownMs: 4500
+Ceiling: 1.25×≤1.5×; lock 55ms total ≤ 300ms; 30≤50 each [check]. Cost 25.
+```
+
+```typescript
+function flashArrowCombo(h1: boolean, h2: boolean): {
+  hit1: { spinDelta: number; dmgMult: number; lockMs: number } | null;
+  hit2: { spinDelta: number; dmgMult: number; lockMs: number } | null;
+  totalSpinDelta: number
+} {
+  return { hit1: h1 ? {spinDelta:-30,dmgMult:1.20,lockMs:25} : null,
+           hit2: h2 ? {spinDelta:-30,dmgMult:1.25,lockMs:30} : null,
+           totalSpinDelta: (h1?-30:0)+(h2?-30:0) };
+}
+// flashArrowCombo(true,true)   → {h1:{-30,1.20×,25ms},h2:{-30,1.25×,30ms},total:-60}
+// flashArrowCombo(true,false)  → {h1:{-30,1.20×,25ms},h2:null,total:-30}
+// flashArrowCombo(false,false) → {h1:null,h2:null,total:0}
+```
+
+---
+
+## Case 1104 — [GIMMICK] Tsubasa Otori's Earth Eagle 145WD — WD Aerial Stability and Diving Crush Gravity (Second Appearance)
+
+**Franchise context.** Tsubasa Otori (Metal Fight Beyblade). Second special move case for Earth Eagle 145WD. Cross-reference Case 834 for full assembly. Assembly: Metal Wheel: Earth; Clear Wheel: Aquila (Eagle); Track: 145; Bottom: WD. Source: part list line 938–942 ("Earth Aquila 145WD"). Estimated from Case 834: m_total ≈ 42.0 g [M], I_total ≈ 3.012×10⁻⁵ kg⋅m² [M], ω₀ ≈ 210 rad/s [M].
+
+This case focuses on: (1) WD spin retention during aerial free-fall, and (2) the barrier-defense counter-mechanic (Keel Strangler).
+
+**WD aerial spin retention:**
+During aerial phase (beyTiltAngle = 90°, no floor contact), tip friction = 0. Only aerodynamic drag on the WD disc:
+  τ_air_WD ≈ 1.2×10⁻⁷ × ω (N⋅m) [M] (small rotating disc in air — very low drag torque)
+  dω/dt_aerial = −τ_air / I = −(1.2×10⁻⁷ × 210) / 3.012×10⁻⁵ = −0.836 rad/s² [M]
+  During ~1.2 s aerial phase: Δω ≈ 1.0 rad/s [M] → spin loss negligible (<0.5% of ω₀). Eagle lands at nearly full spin.
+
+**Gravity dive (Diving Crush):**
+  h_launch ≈ 3.5 m [M] (Eagle beast provides uplift, greater height than self-powered launches)
+  v_fall_phys = √(2 × 9.81 × 3.5) = 8.29 m/s [M]; anime transcendence ×2.5: v_fall_anime = 20.7 m/s [M]
+  KE_fall = 0.5 × 0.042 × 20.7² = 8.998 ≈ 9.00 J [M]
+  KE_total ≈ 9.00 + 0.658 = 9.66 J [M]
+
+**Barrier-defense counter (Keel Strangler negation):**
+Diving Crush is a pure vertical dive — no horizontal approach angle. A "keel strangler" grip encircles the incoming bey on all sides, absorbing the vertical linear KE before Fusion Wheel contact. Any special move flagged `barrierDefenseType: true` reduces incoming Diving Crush dmgMult by 85%.
+
+```typescript
+function divingCrushBarrier(barrierActive: boolean, rawDmgMult: number): number {
+  return barrierActive ? 1.0 + (rawDmgMult - 1.0) * 0.15 : rawDmgMult;
+}
+// divingCrushBarrier(true,  1.80) → 1.12×  (barrier absorbs 85% of bonus)
+// divingCrushBarrier(false, 1.80) → 1.80×
+```
+
+---
+
+## Case 1105 — [SPECIAL] Diving Crush
+
+**Franchise move.** Diving Crush — Tsubasa Otori's Earth Eagle 145WD (Metal Fight Beyblade). Eagle beast lifts Earth Eagle skyward (h ≈ 3.5 m [M]); BeySpirit amplifies the fall (×2.5 [M]); Eagle dives with extreme force. Can be negated by barrier-defense specials (Keel Strangler). WD bearing preserves spin during flight. Only CS13 special with a defined counter-class flag.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Phase 1 — Eagle Lift (700 ms):** beyTiltAngle → 90°. Invulnerable.
+**Phase 2 — Apex Circle (200 ms):** Player aims dive direction with ← / →. Invulnerable.
+**Phase 3 — Crushing Dive (450 ms + impact):** QTE "Eagle Plunge" — hold J; late = max gravity.
+
+```
+QTE: hold J during Phase 3
+
+Late (320–450 ms):
+  spinDelta −95; impulse 1700 eu; ko 4500 eu; dmgMult 1.80×; burst +16%
+  barrierNegation: 85% (dmgMult collapses to 1.12× if barrier active)
+
+Medium (160–319 ms):
+  spinDelta −58; impulse 1000 eu; ko 2300 eu; dmgMult 1.58×; burst +9%
+
+Early (0–159 ms):
+  spinDelta −28; impulse 500 eu; ko 800 eu; dmgMult 1.35×; burst +4%
+
+selfCost: −55; powerCost: 110; cooldown: 7500 ms
+Invulnerability: Phase 1+2 = 900 ms
+Counter: barrierDefenseType specials negate 85% of dmgMult bonus
+QTE: "Eagle Plunge" — hold J; late = max
+```
+
+```typescript
+type PlungeLevel = "late" | "medium" | "early";
+
+function divingCrushQTE(holdMs: number, barrierActive: boolean): {
+  level: PlungeLevel; spinDelta: number; impulse_eu: number; ko_eu: number; dmgMult: number; burst_pct: number
+} {
+  const lvl: PlungeLevel = holdMs >= 320 ? "late" : holdMs >= 160 ? "medium" : "early";
+  const b = {
+    late:   {spinDelta:-95,  impulse_eu:1700, ko_eu:4500, dmgMult:1.80, burst_pct:16},
+    medium: {spinDelta:-58,  impulse_eu:1000, ko_eu:2300, dmgMult:1.58, burst_pct: 9},
+    early:  {spinDelta:-28,  impulse_eu: 500, ko_eu: 800, dmgMult:1.35, burst_pct: 4},
+  }[lvl];
+  const dm = barrierActive ? 1.0 + (b.dmgMult - 1.0) * 0.15 : b.dmgMult;
+  return { level: lvl, ...b, dmgMult: parseFloat(dm.toFixed(3)) };
+}
+// divingCrushQTE(400, false) → {late, spin:-95, imp:1700, ko:4500, dmg:1.800×, burst:+16%}
+// divingCrushQTE(400, true)  → {late, spin:-95, imp:1700, ko:4500, dmg:1.120×, burst:+16%} ← barrier
+// divingCrushQTE(200, false) → {medium, spin:-58, imp:1000, ko:2300, dmg:1.580×, burst:+9%}
+```
+
+---
+
+## Case 1106 — [COMBO] Feather Strike (↑ ← J)
+
+**Franchise bey:** Tsubasa Otori's Earth Eagle 145WD — Earth Metal Wheel active  
+**Required part:** `earthEagleFW`  
+**Sequence:** ↑ ← J (moveUp + moveLeft + attack)  
+**Type restriction:** balanced  
+**Cost:** 15 power
+
+Eagle surges forward (↑), banks sharply left (← — wide sweeping arc), delivers a slightly elevated smash contact (J). The banked approach grants a minor upper-contact bonus. Lift impulse on target (30 eu) is a scaled-down version of Diving Crush's aerial entry.
+
+```
+Main hit (J): spinDelta −38; dmgMult 1.28×; lockMs 45; liftImpulse 30 eu
+windowMs 650; cooldownMs 4200
+Ceiling: 1.28×≤1.5×; 45ms≤300ms; 38≤50; lift 30eu minor [check]. Cost 15.
+```
+
+```typescript
+function featherStrikeCombo(jHit: boolean): {spinDelta:number;dmgMult:number;lockMs:number;liftImpulse_eu:number} {
+  return jHit ? {spinDelta:-38,dmgMult:1.28,lockMs:45,liftImpulse_eu:30}
+              : {spinDelta:-18,dmgMult:1.10,lockMs: 0,liftImpulse_eu: 0};
+}
+// featherStrikeCombo(true)  → {spin:-38, dmg:1.28×, lock:45ms, lift:30eu}
+// featherStrikeCombo(false) → {spin:-18, dmg:1.10×, lock:0ms,  lift:0eu}
+```
+
+---
+
+## Case 1107 — [GIMMICK] Phi's Dread Phoenix 10 Friction — Dread Armor Separation and Rubber Wall Rebound (Second Appearance)
+
+**Franchise context.** Phi (Beyblade Burst GT, Takara-Tomy). Second special move case. Cross-reference Case 828 for full assembly. Focus: Dread Armor centrifugal separation and Friction driver rubber wall-rebound kinematics for Diving Dread Cannon Crush.
+
+**Dread Armor separation:**
+  m_armor ≈ 8.0 g [M]; clip retention force ≈ 4.0 N [M]; r_armor_CoM ≈ 30 mm [M]
+  At ω = 700 rad/s: F_centrifugal = 0.008 × 700² × 0.030 = 117.6 N >> 4.0 N → easily separates under impact impulse
+  m_phoenix_core ≈ 22.0 g [M]; m_disc ≈ 9.0 g; m_friction ≈ 5.0 g; m_chip ≈ 3.0 g
+  m_total ≈ 47.0 g [M]
+
+  BeySpirit-amplified armor ejection: v_armor_launch ≈ 8.5 m/s at θ ≈ 55° above horizontal [M]
+    v_x = 8.5 × cos(55°) = 4.87 m/s; v_y = 8.5 × sin(55°) = 6.96 m/s [M]
+
+**Friction rubber wall-rebound:**
+  e_rubber ≈ 0.72 [M] (rubber on polycarbonate stadium wall)
+  v_approach ≈ 3.2 m/s [M]; v_rebound_phys = 0.72 × 3.2 = 2.30 m/s [M]
+  BeySpirit ×3.2: v_rebound_anime = 2.30 × 3.2 = 7.36 m/s [M]
+  At 45° launch: v_y_phoenix = 7.36 × sin(45°) = 5.20 m/s; h_apex_phoenix = 5.20²/19.62 = 1.38 m [M]
+  h_apex_armor = 6.96²/19.62 = 2.47 m [M] (Armor goes higher; BeySpirit sync ensures simultaneous impact)
+
+```typescript
+function dreadArmorSeparation(omega: number): {canSeparate: boolean; F_centrifugal_N: number} {
+  const Fc = 0.008 * omega**2 * 0.030;
+  return { canSeparate: Fc > 4.0, F_centrifugal_N: parseFloat(Fc.toFixed(2)) };
+}
+// dreadArmorSeparation(700) → {canSeparate:true, F:117.60N}
+// dreadArmorSeparation(100) → {canSeparate:false, F:2.40N}
+```
+
+---
+
+## Case 1108 — [SPECIAL] Diving Dread Cannon Crush
+
+**Franchise move.** Diving Dread Cannon Crush (JP: Diving Dead Stinger Press) — Phi's Dread Phoenix 10 Friction (Beyblade Burst GT). Friction driver rubber-rebound off the stadium wall launches both Dread Phoenix and Dread Armor into the air simultaneously. Both descend and strike the opponent head-on at the same instant — "colossal damage."
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Phase 1 — Wall Approach (400 ms):** Phoenix accelerates toward wall.
+**Phase 2 — Friction Rebound + Armor Separation (150 ms):** Rubber tip grips wall; both bodies launch upward. beyTiltAngle → 90°. Invulnerable.
+**Phase 3 — Dual Aerial (800 ms):** Both arc toward target. BeySpirit synchronises arrival. Invulnerable.
+**Phase 4 — Simultaneous Strike (0 ms between Phoenix and Armor hits):**
+QTE "Dread Impact" — tap J at shadow-convergence (200 ms window).
+
+```
+Timed J (within 200 ms):
+  Phoenix:  spinDelta −85; impulse 1400 eu; ko 3800 eu; dmgMult 1.75×; burst +15%
+  Armor (simultaneous): spinDelta −55; impulse 1100 eu; ko 2800 eu; dmgMult 1.55×; burst +12%
+  Combined: totalSpin −140; totalImpulse 2500 eu; totalKO 6600 eu; effectiveDmg 2.30×; burst +27%
+
+Missed J (outside window):
+  Phoenix only: spinDelta −50; impulse 800 eu; dmgMult 1.50×; burst +8% (Armor overshoots)
+
+selfCost: −70; powerCost: 120; cooldown: 8000 ms
+Invulnerability: Phase 2 (150ms) + Phase 3 (800ms) = 950 ms
+QTE: "Dread Impact" — tap J at shadow convergence; miss = Phoenix-only
+```
+
+```typescript
+function divingDreadCannonCrushQTE(jTimedMs: number | null): {
+  phoenixHit: boolean; armorHit: boolean; totalSpinDelta: number;
+  totalImpulse_eu: number; effectiveDmgMult: number; burstBonus_pct: number
+} {
+  const timed = jTimedMs !== null && jTimedMs <= 200;
+  return timed
+    ? {phoenixHit:true, armorHit:true,  totalSpinDelta:-140, totalImpulse_eu:2500, effectiveDmgMult:2.30, burstBonus_pct:27}
+    : {phoenixHit:true, armorHit:false, totalSpinDelta: -50, totalImpulse_eu: 800, effectiveDmgMult:1.50, burstBonus_pct: 8};
+}
+// divingDreadCannonCrushQTE(150)  → {both:true,  spin:-140, imp:2500, dmg:2.30×, burst:+27%}
+// divingDreadCannonCrushQTE(250)  → {armor:false,spin:-50,  imp:800,  dmg:1.50×, burst:+8% }
+// divingDreadCannonCrushQTE(null) → {armor:false,spin:-50,  imp:800,  dmg:1.50×, burst:+8% }
+```
+
+---
+
+## Case 1109 — [COMBO] Dread Dive (J ↑ K)
+
+**Franchise bey:** Phi's Dread Phoenix 10 Friction — Dread Phoenix layer active  
+**Required part:** `dreadPhoenixLayer`  
+**Sequence:** J ↑ K (attack + moveUp + defense)  
+**Type restriction:** attack  
+**Cost:** 15 power
+
+Phi delivers a Dread Phoenix blade contact (J), Friction rubber floor-push adds extra contact weight (↑ — brief lift off floor), then converts to Dread Armor absorb (K). Two-phase: strike then armored counter-capture.
+
+```
+Strike (J): spinDelta −43; dmgMult 1.30×; lockMs 50; frictionBonus +8eu
+Armor absorb (K within 400 ms): incomingDmgReduction ×0.65
+windowMs 700; cooldownMs 4200
+Ceiling: 1.30×≤1.5×; 50ms≤300ms; 43≤50 [check]. Cost 15.
+```
+
+```typescript
+function dreadDiveCombo(jHit: boolean, kBrace: boolean): {
+  strike: {spinDelta:number;dmgMult:number;lockMs:number;extraImpulse_eu:number} | null;
+  braceActive: boolean; incomingDmgMult: number
+} {
+  return { strike: jHit ? {spinDelta:-43,dmgMult:1.30,lockMs:50,extraImpulse_eu:8} : null,
+           braceActive: kBrace, incomingDmgMult: kBrace ? 0.65 : 1.00 };
+}
+// dreadDiveCombo(true,true)   → {strike:{-43,1.30×,50ms,8eu}, brace:true,  inDmg:0.65×}
+// dreadDiveCombo(true,false)  → {strike:{-43,1.30×,50ms,8eu}, brace:false, inDmg:1.00×}
+// dreadDiveCombo(false,false) → {strike:null, brace:false, inDmg:1.00×}
+```
+
+
+---
+
+## Case 1110 — [GIMMICK] Arman Kusaba's Bushin Ashindra Hurricane Keep Ten — Twelve-Blade Vortex Aerodynamics
+
+**Franchise context.** Arman Kusaba (Beyblade X era, Takara-Tomy). Assembly: Bushin Ashindra / Hurricane / Keep Ten. BX era nomenclature — Blade / Ratchet / Bit [M]. The defining feature: the **Bushin Layer Base** on the Ashindra blade carries 12 individual blades at 30° angular spacing, far more than the typical BX blade count of 3–6. This density enables a continuous aerodynamic vortex barrier when all 12 blades engage simultaneously (Double Bushin Guard).
+
+**Parts:**
+
+**Blade: Bushin Ashindra — Bushin Layer Base [M]**
+12 blades, lime-green, overlapping compound geometry at 30° intervals:
+  m_blade ≈ 18.0 g [M]; r_outer ≈ 40 mm [M]; r_inner ≈ 14 mm [M]
+  I_blade = (0.018/2)(0.040² + 0.014²) = 0.009 × 1.796×10⁻³ = 1.616×10⁻⁵ kg⋅m² [M]
+  Blade protrusion h_blade ≈ 5 mm; chord ≈ 8 mm; width ≈ 3 mm [M]
+
+**Ratchet: Hurricane [M]**
+  m_ratchet ≈ 4.5 g [M]; I_ratchet ≈ 0.540×10⁻⁶ kg⋅m² [M]
+
+**Bit: Keep Ten [M]**
+Stability-focused bit; hardened axle tip for low-friction rotation:
+  m_bit ≈ 2.5 g [M]; r_contact ≈ 2.5 mm [M]; μ_bit ≈ 0.08 [M]; I_bit ≈ 0.250×10⁻⁶ kg⋅m² [M]
+
+**Face Chip [M]**
+  m_chip ≈ 3.0 g; I_chip ≈ 0.140×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total ≈ 28.0 g [M]; I_total = 16.160 + 0.540 + 0.250 + 0.140 = 17.090×10⁻⁶ ≈ 1.709×10⁻⁵ kg⋅m² [M]
+  ω₀ = 800 rad/s [M] (BX X-Line launcher, ~7640 RPM)
+  KE₀_spin = 0.5 × 1.709×10⁻⁵ × 800² = 5.469 J [M]
+
+  Spin decay: dω/dt = −(0.08 × 0.028 × 9.81 × 0.0025) / 1.709×10⁻⁵ = −3.22 rad/s² [M]
+
+**12-blade aerodynamic vortex analysis:**
+  v_tip = ω × r_outer = 800 × 0.040 = 32.0 m/s [M]
+  Blade sweep frequency: f = (800 / 2π) × 12 = 1527.9 Hz [M] >> 60 Hz CFF → blade disc is visually solid; no gaps in vortex at operating spin.
+
+  Air drag per blade: F_drag = 0.5 × 1.225 × 1.2 × (8×3×10⁻⁶) × 32² = 0.0181 N [M]
+  12 blades total: F_aero = 0.217 N [M]
+
+  Bushin Guard (base — partial engagement, ~6 blades at optimal angle): F_base ≈ 0.109 N [M]
+  Double Bushin Guard (all 12 blades, BeySpirit ×2.0): F_double = 2 × 0.217 = 0.434 N [M]
+  → 2× power confirmed by doubling the engaged blade count from ~6 to 12.
+
+  Vortex effective radius: 60 px [M] (BeySpirit extends functional vortex beyond blade tips)
+
+```typescript
+function bushinAshindraStats(): {
+  I_kgm2:number; bladeCount:number; sweepFreq_Hz:number;
+  F_per_blade_N:number; F_total_N:number; F_doubleGuard_N:number; vortexRadius_px:number
+} {
+  const w=800,r=0.040,rho=1.225,Cd=1.2,A=2.4e-5,n=12;
+  const vt=w*r, Fb=0.5*rho*Cd*A*vt**2;
+  return { I_kgm2:1.709e-5, bladeCount:n,
+    sweepFreq_Hz: parseFloat(((w/(2*Math.PI))*n).toFixed(1)),
+    F_per_blade_N: parseFloat(Fb.toFixed(4)), F_total_N: parseFloat((n*Fb).toFixed(4)),
+    F_doubleGuard_N: parseFloat((2*n*Fb).toFixed(4)), vortexRadius_px:60 };
+}
+// bushinAshindraStats() → {I:1.709e-5, n:12, f:1527.9Hz, Fb:0.0181N, Ft:0.2170N, Fdouble:0.4340N, vortex:60px}
+```
+
+---
+
+## Case 1111 — [SPECIAL] Double Bushin Guard
+
+**Franchise move.** Double Bushin Guard (JP: ダブルブシンガード) — Arman Kusaba's Bushin Ashindra Hurricane Keep Ten (Beyblade X). Upgraded Bushin Guard — two times more powerful. All 12 blades of the Bushin Layer Base engage simultaneously to create a larger, stronger lime-green whirlwind that deflects and absorbs attacks. Where base Bushin Guard engages a partial subset of blades, Double Bushin Guard fires every blade in BeySpirit concert, generating a continuous defensive vortex extending to 60 px radius [M].
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Active period (2500 ms [M]):**
+Any opponent within 60 px experiences outward deflection. Direct collision while active: incoming dmg reduced, slight rebound counter.
+
+```
+Activation cost: spinCost −60; powerCost: 110; cooldown: 8000 ms; duration: 2500 ms
+
+While active — on direct collision:
+  incomingDmgMult:        ×0.40    (60% absorbed — 2× base Bushin Guard's ×0.65)
+  reflectedDmgToAttacker: ×1.10
+  vortexDeflectForce_eu:  180      (outward impulse on any bey within 60 px)
+  spinDrainPerContact:    −18 per 500 ms of continuous vortex contact
+```
+
+```typescript
+function doubleBushinGuard(
+  active: boolean, elapsedMs: number, incomingDmg: number, oppInVortex: boolean
+): { guardActive:boolean; effectiveDmg:number; reflectedDmg:number; deflect_eu:number; spinDrain:number } {
+  if (!active || elapsedMs >= 2500)
+    return {guardActive:false,effectiveDmg:incomingDmg,reflectedDmg:1.0,deflect_eu:0,spinDrain:0};
+  return { guardActive:true, effectiveDmg: parseFloat((incomingDmg*0.40).toFixed(3)),
+           reflectedDmg:1.10, deflect_eu: oppInVortex?180:0, spinDrain: oppInVortex?-18:0 };
+}
+// doubleBushinGuard(true,1000,1.60,true)  → {active:true,  eff:0.640×, reflect:1.10×, deflect:180eu, drain:-18}
+// doubleBushinGuard(true,1000,1.60,false) → {active:true,  eff:0.640×, reflect:1.10×, deflect:0eu,   drain:0  }
+// doubleBushinGuard(true,2600,1.60,true)  → {active:false, eff:1.60×,  reflect:1.0×,  deflect:0eu,   drain:0  }
+```
+
+---
+
+## Case 1112 — [COMBO] Twelvefold Brace (K ↓ K)
+
+**Franchise bey:** Arman Kusaba's Bushin Ashindra Hurricane Keep Ten — Bushin Layer Base active  
+**Required part:** `bushinAshindraLayer`  
+**Sequence:** K ↓ K (defense + moveDown + defense)  
+**Type restriction:** defense  
+**Cost:** 0 power (free)
+
+Two sequential blade-brace inputs. K1 braces with one blade-set; ↓ briefly retreats (rotating the blade face by ~30° — one blade spacing); K2 braces with a fresh set of blades. The ↓ between the two Ks exploits the 12-blade advantage: fresh contact surface for the second brace. Free — Ashindra's high blade count makes double-brace trivially accessible.
+
+```
+K1: incomingDmgReduction ×0.68 (6-blade partial brace)
+Retreat (↓, 80 ms): rotates ~30° → fresh blade face
+K2: incomingDmgReduction ×0.72; selfSpinGain +8; lockMs 20
+combined: 0.68 × 0.72 = 0.4896× (if both timed)
+windowMs 500; cooldownMs 3000
+Ceiling: combined 0.49× is strong but requires two correctly timed inputs; lock 20ms≤300ms; spinGain 8≤50 [check]. Cost 0.
+```
+
+```typescript
+function twelvefoldBrace(k1: boolean, k2: boolean): {
+  k1Mult:number; k2Mult:number; spinGain:number; lockMs:number; combined:number
+} {
+  return { k1Mult: k1?0.68:1.00, k2Mult: k2?0.72:1.00, spinGain: k2?8:0, lockMs: k2?20:0,
+           combined: parseFloat(((k1?0.68:1.00)*(k2?0.72:1.00)).toFixed(4)) };
+}
+// twelvefoldBrace(true,true)   → {k1:0.68,k2:0.72,gain:+8,lock:20ms,combined:0.4896×}
+// twelvefoldBrace(true,false)  → {k1:0.68,k2:1.00,gain:0, lock:0ms, combined:0.6800×}
+// twelvefoldBrace(false,false) → {k1:1.00,k2:1.00,gain:0, lock:0ms, combined:1.0000×}
+```
+
+---
+
+## Case 1113 — [GIMMICK] Bel Daizora's Devastate Belfyre Almight Perfect Gear — Perfect Gear Spring-Launch Mechanics
+
+**Franchise context.** Bel Daizora (Beyblade X era, Takara-Tomy). Assembly: Devastate Belfyre / Almight Perfect Gear. Cross-reference Case 846 (Destruction Belfyre) and Case 864 (Divine/Dangerous Belial). The Perfect Gear is a spring-ratchet mechanism integrated into the Almight driver: on heavy impact (first dive landing), vertical deceleration compresses the spring; BeySpirit re-cocks the spring instantly and fires it upward for a second immediate launch.
+
+**Key component: Perfect Gear spring [M]**
+  k_PG ≈ 1200 N/m [M]; x_max ≈ 4.5 mm [M]
+  E_mechanical = 0.5 × 1200 × (4.5×10⁻³)² = 0.01215 J [M]
+  BeySpirit amplification ×40 [M]: E_launch_2nd = 0.01215 × 40 = 0.486 J [M]
+  m_total ≈ 35.0 g [M] (BX era lighter than DB era, ref Case 864)
+  v_2nd = √(2 × 0.486 / 0.035) = 5.27 m/s [M]
+  h_apex_2nd = 5.27² / (2 × 9.81) = 1.415 m [M]
+  v_fall_2nd_anime = 5.27 × 2.8 = 14.76 m/s [M]; KE_fall_2nd = 0.5 × 0.035 × 14.76² = 3.812 J [M]
+
+  First dive (ref Case 864 Divine/Dangerous parameters):
+    h_apex_1st ≈ 2.0 m [M]; v_fall_1st_anime = 18.79 m/s [M]; KE_fall_1st = 6.183 J [M]
+
+  KE_combined = 6.183 + 3.812 = 9.995 ≈ 10.0 J [M]
+  → Combined two-dive KE (~10 J) exceeds any single dive in CS13. "Definite KO" is physically justified.
+
+```typescript
+function perfectGearSecondLaunch(BeySpirit_factor: number, m_kg: number): {
+  E_spring_J:number; E_launch_J:number; v2nd_m_s:number; h_apex_m:number; KE_fall_J:number
+} {
+  const k=1200, x=0.0045, E_mech=0.5*k*x**2, E_l=E_mech*BeySpirit_factor;
+  const v=Math.sqrt(2*E_l/m_kg), h=v**2/(2*9.81), vf=Math.sqrt(2*9.81*h)*2.8;
+  return { E_spring_J:parseFloat(E_mech.toFixed(5)), E_launch_J:parseFloat(E_l.toFixed(4)),
+           v2nd_m_s:parseFloat(v.toFixed(3)), h_apex_m:parseFloat(h.toFixed(3)),
+           KE_fall_J:parseFloat((0.5*m_kg*vf**2).toFixed(3)) };
+}
+// perfectGearSecondLaunch(40, 0.035) → {E_spring:0.01215J, E_launch:0.486J, v2nd:5.271, h:1.415m, KE:3.812J}
+```
+
+---
+
+## Case 1114 — [SPECIAL] Double Devastate Dive
+
+**Franchise move.** Double Devastate Dive (JP: ダブルデンジャラスダイブ / Double Dangerous Dive) — Bel Daizora's Devastate Belfyre Almight Perfect Gear (Beyblade X). After landing the initial Devastate Dive, the Perfect Gear spring immediately re-fires Belfyre upward for a second dive. The combined two-hit KE (~10 J [M]) guarantees a KO. "Very skilled QTE" — three sequential inputs: hold-J (first dive), tap-J (re-launch window), hold-J (second dive). The tightest multi-stage QTE in CS13.
+
+NOTE: special move overrides all EG/clutch mechanical state; Perfect Gear re-cocks under BeySpirit regardless of prior fires (anime physics override).
+
+**Phase 1 — First Devastate Dive (ref Case 864 mechanics):** h_apex_1st ≈ 2.0 m [M]. Invulnerable during ascent + apex + 100 ms descent.
+**Phase 2 — Perfect Gear Re-Launch (250 ms window):** QTE2 — tap J within 250 ms of first impact. Miss = move ends at first dive only.
+**Phase 3 — Second Devastate Dive:** h_apex_2nd ≈ 1.415 m [M]. Invulnerable during re-ascent + 100 ms.
+
+```
+QTE1 "First Drop" — hold J (500 ms dive window):
+  Late (350–500ms): first dive full [spin −95, imp 1750, ko 4800, dmg 1.85×, burst +16%]
+  Medium (175–349ms): [spin −60, imp 1100, ko 2500, dmg 1.65×, burst +10%]
+  Minimal (0–174ms): [spin −30, imp 600, ko 1000, dmg 1.40×, burst +5%]
+
+QTE2 — tap J within 250 ms of first impact:
+  Hit: proceed to Phase 3 (Perfect Gear fires)
+  Miss: move ends (first dive only)
+
+QTE3 "Second Drop" — hold J (400 ms window):
+  Late (280–400ms): [spin −70, imp 1200, ko 3500, dmg 1.65×, burst +14%]
+  Medium (140–279ms): [spin −45, imp 750, ko 2000, dmg 1.45×, burst +8%]
+  Minimal (0–139ms): [spin −22, imp 350, ko 700, dmg 1.25×, burst +3%]
+
+Full+Full (both QTE1 late + QTE3 late):
+  totalSpin −165; combinedEffective 1.85+1.65−1.0 = 2.50×; combinedBurst +30%
+  → KE_combined ~10J [M] — guaranteed KO
+
+selfCost: −80; powerCost: 130; cooldown: 9000 ms
+Invulnerability: Phase 1 (~950ms) + Phase 3 re-ascent (~600ms) = ~1550ms total
+QTE: Three-stage hold-J / tap-J / hold-J — most demanding QTE in CS13
+```
+
+```typescript
+type DiveStr = "full"|"medium"|"minimal";
+
+function doubleDevastateDive(qte1Ms: number, qte2Ms: number|null, qte3Ms: number): {
+  d1: {str:DiveStr;spinDelta:number;dmgMult:number;burst_pct:number};
+  triggered: boolean;
+  d2: {str:DiveStr;spinDelta:number;dmgMult:number;burst_pct:number}|null;
+  combinedDmgMult: number
+} {
+  const s1: DiveStr = qte1Ms>=350?"full":qte1Ms>=175?"medium":"minimal";
+  const m1 = {full:{spinDelta:-95,dmgMult:1.85,burst_pct:16},medium:{spinDelta:-60,dmgMult:1.65,burst_pct:10},minimal:{spinDelta:-30,dmgMult:1.40,burst_pct:5}}[s1];
+  const trig = qte2Ms!==null && qte2Ms<=250;
+  if (!trig) return {d1:{str:s1,...m1},triggered:false,d2:null,combinedDmgMult:m1.dmgMult};
+  const s2: DiveStr = qte3Ms>=280?"full":qte3Ms>=140?"medium":"minimal";
+  const m2 = {full:{spinDelta:-70,dmgMult:1.65,burst_pct:14},medium:{spinDelta:-45,dmgMult:1.45,burst_pct:8},minimal:{spinDelta:-22,dmgMult:1.25,burst_pct:3}}[s2];
+  return {d1:{str:s1,...m1},triggered:true,d2:{str:s2,...m2},combinedDmgMult:parseFloat((m1.dmgMult+m2.dmgMult-1.0).toFixed(3))};
+}
+// doubleDevastateDive(400,150,350) → {d1:{full,-95,1.85×,+16%}, trig:true, d2:{full,-70,1.65×,+14%}, combined:2.50×}
+// doubleDevastateDive(400,null,0)  → {d1:{full,-95,1.85×,+16%}, trig:false, d2:null, combined:1.85×}
+// doubleDevastateDive(100,200,300) → {d1:{minimal,-30,1.40×,+5%},trig:true, d2:{full,-70,1.65×,+14%},combined:2.05×}
+```
+
+---
+
+## Case 1115 — [COMBO] Gravity Surge (J ↓ J)
+
+**Franchise bey:** Bel Daizora's Devastate Belfyre Almight Perfect Gear — Devastate Belfyre blade active  
+**Required part:** `devastateBelfyreBlade`  
+**Sequence:** J ↓ J (attack + moveDown + attack)  
+**Type restriction:** attack  
+**Cost:** 25 power
+
+Belfyre strikes (J), drops weight (↓ — Almight spring pre-loads in the downward settle), delivers a second heavier contact (J — spring-boosted). Miniature version of the Perfect Gear spring-load: ↓ mimics the first-impact compression, J2 mimics the second-dive release. Spring bonus on Hit 2 (+20 eu) is the combo echo of the Perfect Gear mechanism.
+
+```
+Hit 1 (J): spinDelta −45; dmgMult 1.32×; lockMs 30
+Spring pre-load (↓, 100 ms)
+Hit 2 (J): spinDelta −42; dmgMult 1.35×; lockMs 35; springBonus +20eu
+windowMs 750; cooldownMs 5000
+Ceiling: 1.35×≤1.5×; total lock 65ms≤300ms; 45/42≤50 [check]. Cost 25.
+```
+
+```typescript
+function gravitySurgeCombo(h1: boolean, h2: boolean): {
+  hit1:{spinDelta:number;dmgMult:number;lockMs:number}|null;
+  hit2:{spinDelta:number;dmgMult:number;lockMs:number;springBonus_eu:number}|null;
+  totalSpin: number
+} {
+  return { hit1: h1?{spinDelta:-45,dmgMult:1.32,lockMs:30}:null,
+           hit2: h2?{spinDelta:-42,dmgMult:1.35,lockMs:35,springBonus_eu:20}:null,
+           totalSpin: (h1?-45:0)+(h2?-42:0) };
+}
+// gravitySurgeCombo(true,true)   → {h1:{-45,1.32×,30ms},h2:{-42,1.35×,35ms,+20eu},total:-87}
+// gravitySurgeCombo(true,false)  → {h1:{-45,1.32×,30ms},h2:null,total:-45}
+// gravitySurgeCombo(false,false) → {h1:null,h2:null,total:0}
+```
+
+---
+
+## Case 1116 — [GIMMICK] Phi's Dread Phoenix 10 Friction — Mid-Air Elastic Collision Redirection Physics (Third Appearance)
+
+**Franchise context.** Phi (Beyblade Burst GT). Third special move case; cross-reference Cases 828, 876. Focus: Double Dread Cannon's novel mechanic — mid-air elastic collision between Dread Phoenix and the Dread Armor after a missed first shot, redirecting the Armor back toward the opponent with amplified velocity.
+
+**Elastic collision — head-on intercept:**
+After Armor misses (flies past opponent continuing in direction D_away), Phoenix orbits to the far side and approaches head-on (from direction −D_away):
+  Define positive = D_away direction:
+    v_armor = +3.2 m/s [M] (drifting away)
+    v_phoenix = −6.5 m/s [M] (approaching from opposite direction)
+  m_p = 22.0 g [M]; m_a = 8.0 g [M]
+
+  Elastic collision:
+    v_armor_final = [(2×m_p)/(m_p+m_a)]×v_p + [(m_a−m_p)/(m_p+m_a)]×v_a
+                  = [44/30]×(−6.5) + [−14/30]×(3.2)
+                  = −9.533 − 1.493 = −11.027 m/s [M]
+  → Armor now moves at 11.027 m/s toward opponent (negative = back toward opponent).
+
+  KE_armor_original = 0.5 × 0.008 × 8.5² = 0.289 J [M]  (original Dread Cannon first shot at 8.5 m/s)
+  KE_armor_elastic  = 0.5 × 0.008 × 11.027² = 0.487 J [M]  (+68.5% KE vs first shot from physics alone)
+  BeySpirit redirect amplification ×1.4: v_anime = 11.027 × 1.4 = 15.44 m/s [M]
+  KE_anime = 0.5 × 0.008 × 15.44² = 0.953 J [M]  (3.3× original Dread Cannon Armor KE)
+
+  Opponent has a SHORTER dodge window for the redirect: approach speed 15.44 m/s vs 8.5 m/s original → dodge window halved (200 ms vs 400 ms).
+
+```typescript
+function doubleArmorRedirect(v_phoenix: number, v_armor: number, bs: number): {
+  v_armor_elastic_m_s:number; v_armor_anime_m_s:number;
+  KE_original_J:number; KE_elastic_J:number; KE_anime_J:number; velocityGain_pct:number
+} {
+  const mp=0.022, ma=0.008;
+  const va = (2*mp/(mp+ma))*(-v_phoenix) + ((ma-mp)/(mp+ma))*v_armor;
+  const vabs=Math.abs(va), vAnime=vabs*bs;
+  return { v_armor_elastic_m_s:parseFloat(vabs.toFixed(3)), v_armor_anime_m_s:parseFloat(vAnime.toFixed(3)),
+    KE_original_J:parseFloat((0.5*ma*8.5**2).toFixed(4)), KE_elastic_J:parseFloat((0.5*ma*vabs**2).toFixed(4)),
+    KE_anime_J:parseFloat((0.5*ma*vAnime**2).toFixed(4)),
+    velocityGain_pct:parseFloat(((vabs/v_armor-1)*100).toFixed(1)) };
+}
+// doubleArmorRedirect(6.5, 3.2, 1.4) → {elastic:11.027, anime:15.438, KE_orig:0.2890J, KE_el:0.4864J, KE_anime:0.9535J, gain:+244.6%}
+```
+
+---
+
+## Case 1117 — [SPECIAL] Double Dread Cannon
+
+**Franchise move.** Double Dread Cannon (JP: ダブルデッドスティンガー / Double Dead Stinger) — Phi's Dread Phoenix 10 Friction (Beyblade Burst GT). If the initial Dread Cannon misses, Dread Phoenix intercepts the Dread Armor mid-flight and sends it back at the enemy with even more power. Only CS13 special with a "redirect on miss" mechanic — the opponent dodging the first shot inadvertently enables a faster, harder-to-dodge second shot (3.3× the KE of the original [M]).
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Phase 1 — Dread Cannon First Shot (300 ms):**
+Armor launches toward opponent at v ≈ 8.5 m/s [M]. QTE (opponent): dodge ← or → within 400 ms.
+  If dodge fails: first-shot hit — no redirect.
+  If dodge succeeds: Armor flies past → Phase 2.
+
+**Phase 2 — Phoenix Intercept (500 ms):** Phoenix orbits to far side for head-on collision. No Phi QTE.
+**Phase 3 — Redirect Strike:** Armor returns at v_anime ≈ 15.4 m/s [M]. QTE (opponent): dodge within 200 ms (shorter — faster approach).
+
+```
+First shot hits (QTE1 failed):
+  spinDelta −55; impulse 900 eu; ko 2200 eu; dmgMult 1.55×; burst +11%
+  (no redirect fires)
+
+Redirect hits (QTE1 passed, QTE2 failed):
+  spinDelta −70; impulse 1400 eu; ko 3800 eu; dmgMult 1.80×; burst +17%
+  (redirect is strictly stronger than first shot — 3.3× KE)
+
+Both dodged: 0 damage; selfCost −70
+
+selfCost: −55 (first shot) or −70 (redirect attempted); powerCost: 115; cooldown: 7500 ms
+Phi QTE: none — aim first shot via movement before activation
+Opponent QTE1: ← or → within 400 ms; QTE2 (if redirect): ← or → within 200 ms
+```
+
+```typescript
+type DDCOutcome = "first_hit"|"redirect_hit"|"both_miss";
+
+function doubleDreadCannon(dodgedFirst: boolean, dodgedRedirect: boolean): {
+  outcome: DDCOutcome; spinDelta:number; impulse_eu:number; ko_eu:number; dmgMult:number; burst_pct:number
+} {
+  if (!dodgedFirst)
+    return {outcome:"first_hit",    spinDelta:-55, impulse_eu:900,  ko_eu:2200, dmgMult:1.55, burst_pct:11};
+  if (!dodgedRedirect)
+    return {outcome:"redirect_hit", spinDelta:-70, impulse_eu:1400, ko_eu:3800, dmgMult:1.80, burst_pct:17};
+  return   {outcome:"both_miss",   spinDelta:-70, impulse_eu:0,    ko_eu:0,    dmgMult:1.00, burst_pct: 0};
+}
+// doubleDreadCannon(false,false) → {first_hit,    spin:-55, imp:900,  dmg:1.55×, burst:+11%}
+// doubleDreadCannon(true, false) → {redirect_hit, spin:-70, imp:1400, dmg:1.80×, burst:+17%}
+// doubleDreadCannon(true, true)  → {both_miss,    spin:-70, imp:0,    dmg:1.00×, burst:0%  }
+```
+
+---
+
+## Case 1118 — [COMBO] Armor Spike (J ← J)
+
+**Franchise bey:** Phi's Dread Phoenix 10 Friction — Dread Phoenix layer active  
+**Required part:** `dreadPhoenixLayer`  
+**Sequence:** J ← J (attack + moveLeft + attack)  
+**Type restriction:** attack  
+**Cost:** 15 power
+
+Strike (J), feint left (← — brief orbit-mimic past the target, the same repositioning Phoenix uses in the Double Dread Cannon intercept), second flank contact (J — from ≈30° new angle). Miniature ground-level echo of the Double Dread Cannon redirect orbit.
+
+```
+Hit 1 (J): spinDelta −40; dmgMult 1.25×; lockMs 30
+Flank (←, 90 ms)
+Hit 2 (J): spinDelta −38; dmgMult 1.28×; lockMs 35
+windowMs 700; cooldownMs 4000
+Ceiling: 1.28×≤1.5×; total lock 65ms≤300ms; 40/38≤50 [check]. Cost 15.
+```
+
+```typescript
+function armorSpikeCombo(h1: boolean, h2: boolean): {
+  hit1:{spinDelta:number;dmgMult:number;lockMs:number}|null;
+  hit2:{spinDelta:number;dmgMult:number;lockMs:number}|null; total:number
+} {
+  return { hit1:h1?{spinDelta:-40,dmgMult:1.25,lockMs:30}:null,
+           hit2:h2?{spinDelta:-38,dmgMult:1.28,lockMs:35}:null,
+           total:(h1?-40:0)+(h2?-38:0) };
+}
+// armorSpikeCombo(true,true)   → {h1:{-40,1.25×,30ms},h2:{-38,1.28×,35ms},total:-78}
+// armorSpikeCombo(true,false)  → {h1:{-40,1.25×,30ms},h2:null,total:-40}
+// armorSpikeCombo(false,false) → {h1:null,h2:null,total:0}
+```
+
+---
+
+## Case 1119 — [GIMMICK] Phelix Payne's Prominence Phoenix Tapered Metal Universe-10 — Prominence Shield Dual Free-Fall Physics
+
+**Franchise context.** Phelix Payne (Beyblade X era, Takara-Tomy [M]). Assembly: Prominence Phoenix / Tapered Metal / Universe-10. BX era format: Blade / Bit variant / Ratchet-height [M]. The Prominence Phoenix blade incorporates a **Prominence Shield** — a detachable outer ring analogous to Dread Armor (Case 876) but designed for a gravity-dive role. On aerial launch, Phoenix core and Shield separate at the apex and fall independently — enabling simultaneous dual-body strikes on one or more opposing beys.
+
+**Parts:**
+
+**Blade: Prominence Phoenix — with Prominence Shield [M]**
+  m_core (without Shield): ≈ 16.0 g [M]; m_shield: ≈ 6.0 g [M]; m_blade_total ≈ 22.0 g [M]
+  r_outer ≈ 42 mm [M]; I_core = (0.016/2)(0.042²+0.010²) = 0.008×1.864×10⁻³ = 1.491×10⁻⁵ kg⋅m² [M]
+  I_shield = (0.006/2)(0.042²+0.032²) = 0.003×2.788×10⁻³ = 8.364×10⁻⁶ kg⋅m² [M]
+  Shield retention: 3-point clip, F_clip ≈ 3.5 N [M]
+  At ω = 800 rad/s: F_centrifugal = 0.006 × 800² × 0.035 = 134.4 N >> 3.5 N → separates on BeySpirit trigger ✓
+
+**Bit: Tapered Metal [M]**
+  m_bit ≈ 2.8 g [M]; r_contact ≈ 1.2 mm [M]; μ ≈ 0.12 [M]; I_bit ≈ 0.200×10⁻⁶ kg⋅m² [M]
+
+**Ratchet: Universe-10 [M]**
+  m_ratchet ≈ 5.0 g [M]; I_ratchet ≈ 0.600×10⁻⁶ kg⋅m² [M]
+
+**Face Chip [M]**
+  m_chip ≈ 3.0 g; I_chip ≈ 0.140×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total ≈ 32.8 g [M]; m_core_only ≈ 26.8 g [M]
+  I_total = 14.910 + 8.364 + 0.200 + 0.600 + 0.140 = 24.214×10⁻⁶ ≈ 2.421×10⁻⁵ kg⋅m² [M]
+  ω₀ = 800 rad/s [M]; KE₀_spin = 0.5 × 2.421×10⁻⁵ × 800² = 7.747 J [M]
+
+**Dual free-fall:**
+  h_apex ≈ 3.2 m [M]; v_fall_phys = √(2 × 9.81 × 3.2) = 7.924 m/s [M]
+  BeySpirit ×3.2: v_fall_anime = 25.357 m/s [M]
+  KE_core  = 0.5 × 0.0268 × 25.357² = 8.616 J [M]
+  KE_shield = 0.5 × 0.0060 × 25.357² = 1.929 J [M]
+  KE_total = 10.545 J [M]
+
+  Multi-target: in 3–4 player, Shield targets a different opponent from Phoenix core. In 1v1, both converge on the same target.
+
+```typescript
+function prominencePhoenixStats(): {
+  I_total:number; m_core:number; m_shield:number; v_fall_anime:number;
+  KE_core_J:number; KE_shield_J:number; KE_total_J:number
+} {
+  const h=3.2,g=9.81,bs=3.2,v=Math.sqrt(2*g*h)*bs,mc=0.0268,ms=0.0060;
+  return { I_total:2.421e-5, m_core:mc, m_shield:ms, v_fall_anime:parseFloat(v.toFixed(3)),
+    KE_core_J:parseFloat((0.5*mc*v**2).toFixed(3)), KE_shield_J:parseFloat((0.5*ms*v**2).toFixed(3)),
+    KE_total_J:parseFloat((0.5*(mc+ms)*v**2).toFixed(3)) };
+}
+// prominencePhoenixStats() → {I:2.421e-5, mc:0.0268, ms:0.006, v:25.357, KEc:8.616J, KEs:1.929J, KE:10.545J}
+```
+
+---
+
+## Case 1120 — [SPECIAL] Double Prominence Dive
+
+**Franchise move.** Double Prominence Dive (JP: ダブルプロミネンスダイブ) — Phelix Payne's Prominence Phoenix Tapered Metal Universe-10 (Beyblade X). When separated and in free fall, Prominence Phoenix and the Prominence Shield crash down on one or more opposing Beyblades, causing critical damage. Phoenix and Shield separate at the apex and fall independently. In 1v1 both converge on the single opponent simultaneously; in multi-bey battle each component can target a different bey.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Phase 1 — Prominence Launch (700 ms):** beyTiltAngle → 90°. Invulnerable.
+**Phase 2 — Shield Separation at Apex (200 ms):** BeySpirit triggers Shield separation. Player aims Phoenix target (← / →); Shield auto-targets nearest other opponent. Override Shield target with ↑ / ↓ during Phase 2.
+**Phase 3 — Dual Free-Fall + Impact (500 ms + impact):** QTE "Prominence Impact" — hold J (Phoenix dive); Shield falls autonomously, scaling with QTE quality.
+
+```
+QTE: hold J during Phase 3
+
+Full (350–500 ms):
+  Phoenix:  spinDelta −80; impulse 1600 eu; ko 4200 eu; dmgMult 1.82×; burst +15%
+  Shield (simultaneous, 0 ms): spinDelta −35; impulse 700 eu; ko 1800 eu; dmgMult 1.42×; burst +8%
+  1v1 combined: totalSpin −115; effective 1.82+1.42−1.0 = 2.24×; burst +23%
+
+Medium (175–349 ms):
+  Phoenix: −55; 1000eu; 1.62×; +10%
+  Shield:  −22; 450eu;  1.28×; +5%
+  combined: 1.90× effective
+
+Minimal (0–174 ms):
+  Phoenix: −28; 500eu; 1.38×; +4%
+  Shield:  −12; 220eu; 1.15×; +2%
+  combined: 1.53× effective
+
+Multi-bey (Phoenix → Target A, Shield → Target B — full hold):
+  Target A: Phoenix stats only; Target B: Shield stats only (no combined multiplier)
+
+selfCost: −70; powerCost: 120; cooldown: 8500 ms
+Invulnerability: Phase 1 (700ms) + Phase 2 (200ms) + 100ms Phase 3 = ~1000ms
+```
+
+```typescript
+type ProminenceLevel = "full"|"medium"|"minimal";
+
+function doubleProminenceDive(holdMs: number, multibey: boolean): {
+  level:ProminenceLevel;
+  phoenix:{spinDelta:number;impulse_eu:number;dmgMult:number;burst_pct:number};
+  shield: {spinDelta:number;impulse_eu:number;dmgMult:number;burst_pct:number};
+  combinedDmgMult: number|null
+} {
+  const lvl: ProminenceLevel = holdMs>=350?"full":holdMs>=175?"medium":"minimal";
+  const stats = {
+    full:    {phoenix:{spinDelta:-80,impulse_eu:1600,dmgMult:1.82,burst_pct:15}, shield:{spinDelta:-35,impulse_eu:700,dmgMult:1.42,burst_pct:8}},
+    medium:  {phoenix:{spinDelta:-55,impulse_eu:1000,dmgMult:1.62,burst_pct:10}, shield:{spinDelta:-22,impulse_eu:450,dmgMult:1.28,burst_pct:5}},
+    minimal: {phoenix:{spinDelta:-28,impulse_eu: 500,dmgMult:1.38,burst_pct: 4}, shield:{spinDelta:-12,impulse_eu:220,dmgMult:1.15,burst_pct:2}},
+  }[lvl];
+  return { level:lvl, ...stats,
+    combinedDmgMult: multibey ? null : parseFloat((stats.phoenix.dmgMult+stats.shield.dmgMult-1.0).toFixed(3)) };
+}
+// doubleProminenceDive(420,false) → {full, phoenix:{-80,1600,1.82×,+15%}, shield:{-35,700,1.42×,+8%}, combined:2.240×}
+// doubleProminenceDive(420,true)  → {full, ..., combined:null}  (multibey — separate targets)
+// doubleProminenceDive(220,false) → {medium, ..., combined:1.900×}
+// doubleProminenceDive(80, false) → {minimal, ..., combined:1.530×}
+```
+
+---
+
+## Case 1121 — [COMBO] Prominence Crash (↓ ↑ K)
+
+**Franchise bey:** Phelix Payne's Prominence Phoenix Tapered Metal Universe-10 — Prominence Phoenix blade active  
+**Required part:** `prominencePhoenixBlade`  
+**Sequence:** ↓ ↑ K (moveDown + moveUp + defense)  
+**Type restriction:** attack  
+**Cost:** 25 power
+
+Phoenix dips low (↓ — gaining descent momentum), surges upward (↑ — mini-launch arc), delivers a Shield-edge brace contact on the downswing (K — Shield outer edge contacts the opponent). The ↓-↑ oscillation creates a brief vertical momentum; K braces with the Shield's outer edge at the peak of the upswing-to-downswing transition. Ground-level echo of Double Prominence Dive's descent-impact phase.
+
+```
+Main K hit (Shield-edge contact): spinDelta −46; dmgMult 1.33×; lockMs 45; shieldEdgeLift 35eu
+windowMs 700; cooldownMs 4800
+Ceiling: 1.33×≤1.5×; 45ms≤300ms; 46≤50; shieldEdgeLift 35eu minor [check]. Cost 25.
+```
+
+```typescript
+function prominenceCrashCombo(kHit: boolean): {spinDelta:number;dmgMult:number;lockMs:number;shieldLift_eu:number} {
+  return kHit ? {spinDelta:-46,dmgMult:1.33,lockMs:45,shieldLift_eu:35}
+              : {spinDelta:-20,dmgMult:1.10,lockMs: 0,shieldLift_eu: 0};
+}
+// prominenceCrashCombo(true)  → {spin:-46, dmg:1.33×, lock:45ms, shieldLift:35eu}
+// prominenceCrashCombo(false) → {spin:-20, dmg:1.10×, lock:0ms,  shieldLift:0eu }
+```
+
+
+---
+
+## Case 1122 — [GIMMICK] Rantaro & Ranjiro Kiyama's Glide Roktavor Wheel Revolve 1S — Twin-Bey Orbital Synchronisation and Combined Vortex Physics
+
+**Franchise context.** Rantaro Kiyama and Ranjiro Kiyama (Beyblade Burst Surge, Takara-Tomy). Two beys with the same assembly: Glide Roktavor / Wheel / Revolve 1S. BX era nomenclature: Blade / Ratchet / Bit [M]. Double Tornado is the first **Tag-Team Special Move** in CS13 — it requires two cooperating allied beys activating their specials in synchronisation. Glide Tornado (the base single-bey move) generates a vortex from one bey's orbital path; Double Tornado combines two identical vortices into one giant tornado.
+
+**Assembly (each bey) [M]:**
+
+**Blade: Glide Roktavor [M]**
+Octopus-motif blade with radial arm contacts; designed for wide orbital sweeps:
+  m_blade ≈ 17.0 g [M]; r_outer ≈ 39 mm [M]; r_inner ≈ 13 mm [M]
+  I_blade = (0.017/2)(0.039² + 0.013²) = 0.0085 × (1.521×10⁻³ + 1.690×10⁻⁴) = 0.0085 × 1.690×10⁻³ = 1.437×10⁻⁵ kg⋅m² [M]
+
+**Ratchet: Wheel [M]**
+  m_ratchet ≈ 4.5 g [M]; I_ratchet ≈ 0.540×10⁻⁶ kg⋅m² [M]
+
+**Bit: Revolve 1S [M]**
+"Revolve" — free-spinning rotation bit; 1S = single-tip axle variant. Wide base gives lateral stability while maintaining a near-frictionless axle rotation for stamina-type orbital behaviour.
+  m_bit ≈ 2.5 g [M]; r_contact ≈ 2.0 mm [M]; μ_bit ≈ 0.06 [M] (low — revolving tip); I_bit ≈ 0.210×10⁻⁶ kg⋅m² [M]
+
+**Face Chip [M]**
+  m_chip ≈ 3.0 g; I_chip ≈ 0.140×10⁻⁶ kg⋅m²
+
+**Assembly (per bey) [M]:**
+  m_total ≈ 27.0 g [M]
+  I_total = 14.370 + 0.540 + 0.210 + 0.140 = 15.260×10⁻⁶ ≈ 1.526×10⁻⁵ kg⋅m² [M]
+  ω₀ = 800 rad/s [M] (BX era X-Line launcher)
+  KE₀_spin = 0.5 × 1.526×10⁻⁵ × 800² = 4.883 J [M] per bey
+
+  Spin decay (Revolve bit, low friction):
+    dω/dt = −(0.06 × 0.027 × 9.81 × 0.002) / 1.526×10⁻⁵ = −2.08 rad/s² [M]
+
+**Orbital synchronisation physics:**
+For Glide Tornado (single bey), one bey orbits the stadium perimeter at r_orbit ≈ 200 px from centre:
+  v_orbital = ω_tip × r_bey ≈ estimated from linear arena velocity ≈ 2.5 m/s [M]
+  Single-bey vortex frequency: f_vortex = v_orbital / (2π × r_orbit_m) = 2.5 / (2π × 0.200) = 1.99 Hz [M]
+  Air column angular velocity (vortex): Ω_vortex = 2π × f_vortex = 12.5 rad/s [M]
+
+**Double Tornado synchronisation condition:**
+Both Roktavors must orbit in the SAME direction at the same radius and phase with angular offset θ_sync ≈ 180° — diametrically opposite each other. This creates a two-source vortex:
+  The two orbital paths create a symmetric pair of counter-rotating vortex sheets that reinforce each other at the centre.
+  Combined vortex angular velocity: Ω_double ≈ 2 × Ω_vortex × η_sync [M]
+    where η_sync = synchronisation efficiency (1.0 = perfect opposite-phase sync, <1.0 = partial)
+    At perfect sync: Ω_double = 2 × 12.5 × 1.0 = 25 rad/s [M]
+  Combined vortex radius: r_vortex_double ≈ 1.5 × r_vortex_single [M] (larger tornado from doubled energy input)
+  Visual: lime-yellow → white-pink combined vortex column rising from the stadium floor (confirmed by images)
+
+**Synchronisation tolerance:**
+  Angular offset must stay within θ_sync ± 20° for full power [M]. Outside this window, the vortices partially cancel (destructive interference between the two air columns). The QTE challenge for Double Tornado is maintaining this synchronisation throughout the spiral-in phase.
+
+```typescript
+function doubleRoktavorOrbit(v_orbital_A: number, v_orbital_B: number, offset_deg: number): {
+  synced: boolean; eta_sync: number; Omega_double_rad_s: number; vortexRadiusMultiplier: number
+} {
+  // perfect sync = 180° offset, same speed; tolerance ±20°
+  const targetOffset = 180;
+  const deviation = Math.abs(((offset_deg - targetOffset) + 180) % 360 - 180);
+  const speedMatch = Math.abs(v_orbital_A - v_orbital_B) < 0.3;  // within 0.3 m/s [M]
+  const synced = deviation <= 20 && speedMatch;
+  const eta = synced ? Math.max(0, 1.0 - deviation / 20) : Math.max(0, 0.5 - deviation / 40);
+  const Omega_single = 12.5;
+  return {
+    synced,
+    eta_sync:             parseFloat(eta.toFixed(3)),
+    Omega_double_rad_s:   parseFloat((2 * Omega_single * eta).toFixed(2)),
+    vortexRadiusMultiplier: synced ? 1.5 : 1.0 + eta * 0.5,
+  };
+}
+// doubleRoktavorOrbit(2.5, 2.5, 180) → {synced:true,  eta:1.000, Omega:25.00, radiusMult:1.5}
+// doubleRoktavorOrbit(2.5, 2.5, 170) → {synced:true,  eta:0.500, Omega:12.50, radiusMult:1.25}
+// doubleRoktavorOrbit(2.5, 2.5, 90)  → {synced:false, eta:0.000, Omega:0.00,  radiusMult:1.0}
+```
+
+---
+
+## Case 1123 — [SPECIAL] Double Tornado
+
+**Franchise move.** Double Tornado (JP: ダブルトルネード) — Tag-Team Special Move by Rantaro Kiyama and Ranjiro Kiyama, both using Glide Roktavor Wheel Revolve 1S (Beyblade Burst Surge). The Kiyama brothers combine their individual Glide Tornado moves by spinning in complete synchronisation at 180° orbital offset, generating one massive combined tornado that sweeps all opponents from the stadium.
+
+**First Tag-Team Special in CS13.** Requires both Player 1 and Player 2 to activate their specials within a synchronisation window. Available only in multi-player matches (2v2 or free-for-all with at least 2 allied beys).
+
+NOTE: special moves override all EG/clutch mechanical state; anime physics override. Both beys sustain orbital synchronisation under BeySpirit guidance even if their individual spin states differ.
+
+**Activation:**
+Both allied players must press their special input (hold J) within a 500 ms sync window of each other. If outside this window, both specials fire individually as standard Glide Tornados (weaker, single-bey effect — not the Double Tornado).
+
+**Phase 1 — Sync Spiral (1200 ms):**
+Both Roktavors enter orbital paths at 180° offset, spiralling inward from the wall toward the stadium centre. QTE "Sync Hold" — both players hold J simultaneously, maintaining orbit. The sync quality (η_sync) builds during this phase. A UI sync meter shows both players' orbital phases; a shared progress bar fills toward full sync.
+  Full sync target: η_sync = 1.0 (both beys exactly 180° apart at same orbital radius)
+
+**Phase 2 — Tornado Eruption (800 ms + duration 1500 ms):**
+At full or partial sync, the combined vortex erupts upward. The two beys orbit at the tornado's eye. The tornado sweeps all opponents in the stadium regardless of position (full-arena AoE).
+
+**AoE tornado damage (per opponent bey caught):**
+  Each opponent hit applies: spinDrain, impulse, dmgMult, knockback
+  Duration: 1500 ms of continuous tornado sweeping
+  
+  Full sync (η = 1.0):
+    Per opponent per 500 ms of tornado contact:
+      spinDelta:        −45 (continuous spin drain from vortex)
+      linearImpulse:    600 eu (random vortex direction — sweeping)
+      dmgMult:          1.45× per 500 ms hit
+      knockbackImpulse: 2000 eu (outward at end of tornado duration — final burst)
+      ringOutRisk:      elevated (continuous outward sweeping toward stadium edge)
+    Total over 1500 ms (3 × 500 ms cycles):
+      totalSpinDrain: −135 per opponent; totalDmg: 3 × 1.45× hits; finalKO: 2000 eu burst
+
+  Partial sync (0.5 ≤ η < 1.0 — scaled linearly):
+    Per 500 ms: spinDelta −45×η; impulse 600×η eu; dmgMult 1.0+(0.45×η)
+
+  Desync (η < 0.5): Double Tornado collapses to two individual Glide Tornados — weaker AoE
+
+  Self cost (per allied bey): spinCost −80; powerCost 120 each
+  Invulnerability for both allied beys during Phase 2 (opponents cannot damage the Roktavors while the tornado is active)
+  Cooldown: 9000 ms (shared — both beys share the same cooldown timer)
+  Window for sync activation: both players must activate within 500 ms of each other
+
+```typescript
+function doubleTornado(
+  eta_sync: number,
+  opponentCount: number,
+  tornadoCycles: number     // 1 cycle = 500ms; max 3 (1500ms duration)
+): {
+  syncQuality: "full"|"partial"|"desync";
+  perOpponentPerCycle: { spinDelta:number; impulse_eu:number; dmgMult:number };
+  finalKO_eu: number;
+  totalSpinDrainPerOpponent: number;
+} {
+  const quality = eta_sync>=1.0?"full" : eta_sync>=0.5?"partial" : "desync";
+  const spin = Math.round(-45 * eta_sync);
+  const imp  = Math.round(600 * eta_sync);
+  const dm   = parseFloat((1.0 + 0.45 * eta_sync).toFixed(3));
+  const finalKO = quality==="desync" ? 0 : Math.round(2000 * eta_sync);
+  return {
+    syncQuality: quality,
+    perOpponentPerCycle: { spinDelta:spin, impulse_eu:imp, dmgMult:dm },
+    finalKO_eu: finalKO,
+    totalSpinDrainPerOpponent: spin * tornadoCycles,
+  };
+}
+// doubleTornado(1.0, 2, 3) → {quality:"full",    perCycle:{spin:-45, imp:600eu, dmg:1.450×}, finalKO:2000eu, totalSpin:-135}
+// doubleTornado(0.7, 2, 3) → {quality:"partial", perCycle:{spin:-32, imp:420eu, dmg:1.315×}, finalKO:1400eu, totalSpin:-96 }
+// doubleTornado(0.3, 2, 3) → {quality:"desync",  perCycle:{spin:-14, imp:180eu, dmg:1.135×}, finalKO:0eu,    totalSpin:-41 }
+
+function doubleTornadoSyncCheck(p1ActivateMs: number, p2ActivateMs: number): {
+  syncWindowHit: boolean; timingDelta_ms: number
+} {
+  const delta = Math.abs(p1ActivateMs - p2ActivateMs);
+  return { syncWindowHit: delta <= 500, timingDelta_ms: delta };
+}
+// doubleTornadoSyncCheck(0,   350) → {hit:true,  delta:350ms}
+// doubleTornadoSyncCheck(0,   600) → {hit:false, delta:600ms} ← too slow; individual Glide Tornados only
+```
+
+---
+
+## Case 1124 — [COMBO] Glide Sweep (↓ ↑ J)
+
+**Franchise bey:** Rantaro Kiyama's Glide Roktavor Wheel Revolve 1S — Glide Roktavor blade active  
+**Required part:** `glideRoktavorBlade`  
+**Sequence:** ↓ ↑ J (moveDown + moveUp + attack)  
+**Type restriction:** universal  
+**Cost:** 0 power (free)
+
+Roktavor dips back (↓ — backstroke orbital arc), surges forward (↑ — the "glide" forward sweep), delivers a blade contact at the arc's apex (J). The ↓-↑ sweep mimics the single-bey Glide Tornado's sweeping orbital approach in miniature. Free cost — Roktavor's orbital design makes this approach-sweep attack trivially accessible without power expenditure. Can be used by either brother independently; both using Glide Sweep simultaneously has no additional mechanical bonus (Double Tornado requires the full special activation).
+
+```
+Main hit (J after sweep approach):
+  spinDelta:           −32
+  dmgMult:             1.22×
+  lockMs:              35
+  sweepImpulse:        40 eu   (lateral sweep impulse in the glide direction — slight push-past)
+
+  windowMs:   600
+  cooldownMs: 3200
+
+Ceiling: 1.22×≤1.5×; 35ms≤300ms; 32≤50 spinDelta; sweepImpulse 40eu positional;
+  no invulnerability; no AoE [check]. Cost 0 — fast free orbital-approach combo.
+```
+
+```typescript
+function glideSweepCombo(jHit: boolean): {
+  spinDelta:number; dmgMult:number; lockMs:number; sweepImpulse_eu:number
+} {
+  return jHit ? {spinDelta:-32,dmgMult:1.22,lockMs:35,sweepImpulse_eu:40}
+              : {spinDelta:-15,dmgMult:1.08,lockMs: 0,sweepImpulse_eu: 0};
+}
+// glideSweepCombo(true)  → {spin:-32, dmg:1.22×, lock:35ms, sweep:40eu}
+// glideSweepCombo(false) → {spin:-15, dmg:1.08×, lock:0ms,  sweep:0eu }
+```
+
+
+---
+
+*Cases continue from Case 1125 as further franchise moves are provided.*
 
 ---

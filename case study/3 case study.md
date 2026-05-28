@@ -35,7 +35,7 @@ All case studies share these confirmed values. When writing new cases or adding 
 |-------------|-----|--------|-----|
 | Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball) | **0.17** | CS10 Case 551 | [CONFIRMED] |
 | Rubber (RF, RB, rubber flat) | **0.50** | CS10 Case 545 | [CONFIRMED] |
-| Metal (MS, metal sharp, metal change) | **0.12** | CS3 Case 119 | [CONFIRMED] |
+| Metal (MS, metal sharp, metal change) | **0.12** | CS3 Case 914 | [CONFIRMED] |
 | Plastic (gen-1 old plastic) | **0.10** | CS1 | [CONFIRMED] |
 | B:D ball bearing | **0.05** | CS10 Case 551 | [CONFIRMED] |
 | EWD / CEW plastic sleeve bearing | **0.12** | CS1 line 2298 | [CONFIRMED] |
@@ -76,7 +76,7 @@ Every numeric value in new cases must carry one of these tags:
 
 ---
 
-## Case 118 — SG Metal Sharp Base: How a Near-Zero Contact Radius Tip Produces Irrecoverable Tilt, Why Underside Gaps and Spikes Destroy LAD, and the Clip Mass Surplus That Changes Nothing
+## Case 913 — SG Metal Sharp Base: How a Near-Zero Contact Radius Tip Produces Irrecoverable Tilt, Why Underside Gaps and Spikes Destroy LAD, and the Clip Mass Surplus That Changes Nothing
 
 > **Stock combo (Flash Leopard 2):** AR: Panther Head · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Metal Sharp Base
 
@@ -293,7 +293,7 @@ function upperAttackBonusVsMinHeight(base: SGMetalSharpBase, minHeightMm: number
 
 ---
 
-## Case 116 — Whale Crusher AR: Width as a Substitute for WD Overhang in Traditional Upper Attack, and Why Spike Geometry Collapses Left-Spin Effectiveness Through Recoil
+## Case 911 — Whale Crusher AR: Width as a Substitute for WD Overhang in Traditional Upper Attack, and Why Spike Geometry Collapses Left-Spin Effectiveness Through Recoil
 
 > **Stock combo (Seaborg 2):** AR: Whale Crusher · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
 
@@ -471,7 +471,7 @@ function forcesmashEfficiency(ar: WhaleCrusherAR): number {
 
 ---
 
-## Case 117 — SG Flat Base: Plastic Flat Tip Height Advantage for Upper Attack Offset by Friction Deficit, and Why LAD Cannot Rescue the Compact Role
+## Case 912 — SG Flat Base: Plastic Flat Tip Height Advantage for Upper Attack Offset by Friction Deficit, and Why LAD Cannot Rescue the Compact Role
 
 > **Stock combo (Kids Dragoon):** AR: Upper Dragoon · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
 > **Stock combo (Galzzly):** AR: War Bear · WD: Eight Wide · SG: Right SG · BB: SG Flat Base
@@ -635,7 +635,7 @@ function collisionRetention(base: SGFlatBase, impulseNs: number, massKg: number)
 ---
 
 
-## Case 119 — Panther Head AR: Directional Blade Asymmetry as the Sole Determinant of Left-Spin Smash Viability, and Why the Range Ceiling Inverts the WD Choice
+## Case 914 — Panther Head AR: Directional Blade Asymmetry as the Sole Determinant of Left-Spin Smash Viability, and Why the Range Ceiling Inverts the WD Choice
 
 > **Stock combo (Flash Leopard 2):** AR: Panther Head · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Metal Sharp Base
 
@@ -790,7 +790,7 @@ function wdContactPriority(arMm: number, wdMm: number): "AR-first" | "WD-first" 
 
 ---
 
-## Case 120 — Spin Gear Core: North Magnecore — Mid-Weight Core as Recoil Buffer, Magnetic Polarity as an Assembly Variable, and Why the Gimmick Force Is Irrelevant in Play
+## Case 915 — Spin Gear Core: North Magnecore — Mid-Weight Core as Recoil Buffer, Magnetic Polarity as an Assembly Variable, and Why the Gimmick Force Is Irrelevant in Play
 
 > **Stock combo (Flash Leopard):** AR: Panther Claw · WD: Ten Heavy · SG: Neo Right SG MW/North · BB: SG Semi-Flat Base
 > **Stock combo (Flash Leopard 2):** AR: Panther Head · WD: Ten Heavy · SG: Neo Right SG North · BB: SG Metal Sharp Base
@@ -934,7 +934,7 @@ function magneticForceFraction(fMagN: number, combMassKg: number): number {
 
 ---
 
-## Case 121 — Spin Gear Core: South Magnecore — Identical Mass Physics to North, Inverted Polarity Interactions, and Magne Stadia Offensive Role
+## Case 916 — Spin Gear Core: South Magnecore — Identical Mass Physics to North, Inverted Polarity Interactions, and Magne Stadia Offensive Role
 
 > **Stock combo (Metal Dranzer):** AR: Scissor Attacker · WD: Ten Balance · SG: Neo Right SG South · BB: SG Flat Base
 > **Stock combo (Driger V (Vulcan)):** AR: Sonic Tiger · WD: Ten Balance · SG: Neo Right SG South · BB: SG Metal Flat Base
@@ -942,7 +942,7 @@ function magneticForceFraction(fMagN: number, combMassKg: number): number {
 > **Stock combo (Guardian Driger):** AR: Great Tiger · WD: Eight Heavy · SG: Neo Right SG South · BB: SG Flat Base
 > **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right SG South · BB: SG Metal Flat Base GDV
 
-South Magnecore is physically and mechanically identical to North Magnecore (3.3 g, same geometry, same Neo SG shell compatibility) with a single variable changed: magnet polarity is south. All mass-mechanical analysis from Case 120 applies without modification. This case documents only the polarity differences and their consequences for assembly ergonomics and Magne Stadia behavior.
+South Magnecore is physically and mechanically identical to North Magnecore (3.3 g, same geometry, same Neo SG shell compatibility) with a single variable changed: magnet polarity is south. All mass-mechanical analysis from Case 915 applies without modification. This case documents only the polarity differences and their consequences for assembly ergonomics and Magne Stadia behavior.
 
 ---
 
@@ -955,7 +955,7 @@ South Magnecore is physically and mechanically identical to North Magnecore (3.3
    Recoil damping vs plastic core: -3.5%   (identical)
    Recoil damping vs HMC: +5.7% worse   (identical)
 
-   All performance analysis from Case 120 Sections 1-2 applies without change.
+   All performance analysis from Case 915 Sections 1-2 applies without change.
    Choosing between North and South Magnecore in standard play is a choice
    between two physically equivalent parts. Polarity does not alter mass distribution,
    moment of inertia, or any mechanical property.
@@ -966,13 +966,13 @@ South Magnecore is physically and mechanically identical to North Magnecore (3.3
 ### 2. South Polarity Interaction Map
 
 ```
-   South Magnecore polarity effects (contrast with North Magnecore, Case 120):
+   South Magnecore polarity effects (contrast with North Magnecore, Case 915):
 
    Magnetized tips (Customize Grip Base Tip, Magne Flat Base Tip): North pole exposed
    -> South Magnecore ATTRACTS these tips (opposite polarity)
    -> Assembly: tip pulled toward core during installation -> different ergonomic issue
       (tip snaps into contact too aggressively; harder to position before locking)
-   -> Performance during play: 19.6% of tip normal force at d=5mm, significant (same calculation as Case 120)
+   -> Performance during play: 19.6% of tip normal force at d=5mm, significant (same calculation as Case 915)
 
    Magne Weight Disk:
    -> South MWD face repels South Magnecore; North MWD face attracts.
@@ -995,7 +995,7 @@ South Magnecore is physically and mechanically identical to North Magnecore (3.3
 ### 3. Magnetic Force: Same Magnitude, Opposite Sign
 
 ```
-   F_mag magnitude at d = 5 mm: ~86.4 mN  (identical calculation to Case 120)
+   F_mag magnitude at d = 5 mm: ~86.4 mN  (identical calculation to Case 915)
    Direction: reversed relative to magnetized tip.
    North Magnecore vs magnetized tip (North exposed): repulsion -> tip pushed away.
    South Magnecore vs magnetized tip (North exposed): attraction -> tip pulled in.
@@ -1064,11 +1064,11 @@ function magnestadiaForceRatio(
 // magnestadiaForceRatio(0.05, 0.05, 0.005, 0.045) --> ~0.196 (standard arena at d=5mm, significant)
 ```
 
-**Verdict:** South Magnecore is mechanically North Magnecore with inverted polarity. Every mass-inertia result from Case 120 applies without change. The only consequential difference: in Magne Stadia, the stadium's embedded magnets repel South Magnecore (68% of tip normal force at 10 mm — genuinely significant), producing the erratic offensive movement the gimmick was designed for. In standard arenas, the magnetic force is 86.4 mN at d=5mm (19.6% of tip normal force) — a significant effect for magnetized-tip pairings. Between North and South Magnecore in standard competition, the correct selection criterion is whichever is available.
+**Verdict:** South Magnecore is mechanically North Magnecore with inverted polarity. Every mass-inertia result from Case 915 applies without change. The only consequential difference: in Magne Stadia, the stadium's embedded magnets repel South Magnecore (68% of tip normal force at 10 mm — genuinely significant), producing the erratic offensive movement the gimmick was designed for. In standard arenas, the magnetic force is 86.4 mN at d=5mm (19.6% of tip normal force) — a significant effect for magnetized-tip pairings. Between North and South Magnecore in standard competition, the correct selection criterion is whichever is available.
 
 ---
 
-## Case 122 — SG Metal Flat Base (Gaia Dragoon V Version): Low-Friction Metal Flat Tip as the Rotational-Recoil-to-Linear-Recoil Converter, Tornado Ridge Grip by Contact Area, and the Two-Mold Distinction
+## Case 917 — SG Metal Flat Base (Gaia Dragoon V Version): Low-Friction Metal Flat Tip as the Rotational-Recoil-to-Linear-Recoil Converter, Tornado Ridge Grip by Contact Area, and the Two-Mold Distinction
 
 > **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right Spin Gear (South Magnecore Version) · BB: SG Metal Flat Base (Gaia Dragoon V Version)
 
@@ -1313,11 +1313,11 @@ function spinLossPerHit(
 
 ---
 
-## Case 123 — Dragon Breaker Core AR: Heaviest Core AR as a Direction-Dependent Contact System, SAR-Conditional Performance Across Five Setups, and Weight as a WBD Counter Variable
+## Case 918 — Dragon Breaker Core AR: Heaviest Core AR as a Direction-Dependent Contact System, SAR-Conditional Performance Across Five Setups, and Weight as a WBD Counter Variable
 
 > **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right SG South · BB: SG Metal Flat Base GDV
 
-Dragon Breaker Core AR is 5.3 g — the heaviest core AR in the plastics library — with an asymmetric design that favours left-spin attack. Its contact geometry in right spin produces high recoil from sub-optimal blade backs; in left spin the serrations and exposed contact faces deliver competitive smash at the cost of significant rotational recoil, which is partially remedied by SGMF2's slip-conversion mechanism (Case 122). SAR choice is the primary performance variable: War Lion SAR fills the slot without interfering; Screw Zeus SAR adds the heaviest AR configuration in the generation; War Bear SAR fixes in left spin under wide WD pressure, enabling its outer contact points.
+Dragon Breaker Core AR is 5.3 g — the heaviest core AR in the plastics library — with an asymmetric design that favours left-spin attack. Its contact geometry in right spin produces high recoil from sub-optimal blade backs; in left spin the serrations and exposed contact faces deliver competitive smash at the cost of significant rotational recoil, which is partially remedied by SGMF2's slip-conversion mechanism (Case 917). SAR choice is the primary performance variable: War Lion SAR fills the slot without interfering; Screw Zeus SAR adds the heaviest AR configuration in the generation; War Bear SAR fixes in left spin under wide WD pressure, enabling its outer contact points.
 
 ---
 
@@ -1394,7 +1394,7 @@ Dragon Breaker Core AR is 5.3 g — the heaviest core AR in the plastics library
    tau_rot ~ 3e-4 to 5e-4 N.m per hit.
    On SGMF2 (mu = 0.12, tau_thresh = 1.58e-4 N.m): tau_rot > threshold -> slip -> linear.
    Rotational recoil converts to translation (bounce) rather than wobble spin drain.
-   (Case 122 mechanism applies here directly.)
+   (Case 917 mechanism applies here directly.)
 ```
 
 ---
@@ -1538,7 +1538,7 @@ function totalARMassG(sar: DragonBreakerCoreSetup["sar"]): number {
 
 ---
 
-## Case 124 — Dragon Breaker Sub AR: Large-Radius Free-Spinning Ring as Impulse Fractioner, Vertical Recoil from Long Moment Arms, and Why Gyro Engine Gear Is the One Context Where Size Helps
+## Case 919 — Dragon Breaker Sub AR: Large-Radius Free-Spinning Ring as Impulse Fractioner, Vertical Recoil from Long Moment Arms, and Why Gyro Engine Gear Is the One Context Where Size Helps
 
 > **Stock combo (Gaia Dragoon V):** AR: Dragon Breaker · WD: Ten Wide · SG: Neo Right SG South · BB: SG Metal Flat Base GDV
 
@@ -1717,7 +1717,7 @@ function verticalTiltTorque(fVert: number, radiusMm: number): number {
 
 ---
 
-## Case 125 — Volcano Change Base: Magnetic Tip Retention as a Structural Substitute, Height Minimisation Through Bracket-Only Design, and SG Grip Base Tip as the Performance Unlock
+## Case 920 — Volcano Change Base: Magnetic Tip Retention as a Structural Substitute, Height Minimisation Through Bracket-Only Design, and SG Grip Base Tip as the Performance Unlock
 
 > **Stock combo (Dranzer V (Volcano)):** AR: Cross Attacker · WD: Ten Balance · SG: Neo Right SG South · BB: Volcano Change Base
 
@@ -1825,7 +1825,7 @@ Volcano Change Base is 3.5 g — essentially a bracket ring with clips and an op
 
    Flower pattern condition:
    w_max_flower = sqrt(mu * g / r_orbit) = sqrt(0.85 * 9.81 / 0.15) ~ 7.45 rad/s
-   Rubber tip can execute flower pattern at full battle speed. (Case 117 comparison:
+   Rubber tip can execute flower pattern at full battle speed. (Case 912 comparison:
    plastic flat failed at 4.78 rad/s; rubber succeeds at 7.45 rad/s at same radius.)
 
    Recoil control: rubber tip tau_threshold = 0.85 * 0.44 * 0.004 = 1.50e-3 N.m.
@@ -1839,7 +1839,7 @@ Volcano Change Base is 3.5 g — essentially a bracket ring with clips and an op
 
    Wide Defense WD: r_WD ~ 23.5 mm.
    Mountain Hammer contact radius ~ 24-25 mm (slightly wider than WD).
-   WD sits inside Mountain Hammer contact zone -> AR contacts first (Case 119 logic applies).
+   WD sits inside Mountain Hammer contact zone -> AR contacts first (Case 914 logic applies).
    Wide Defense adds I ~ 4.0e-6 kg.m^2 -> spin retention for outspin capability.
 
    Outspin path: smash hits destabilise opponent -> opponent enters wobble ->
@@ -1939,7 +1939,7 @@ function upperAttackBonusFraction(base: VolcanoChangeBase, opponentHeightMm: num
 
 ---
 
-## Case 126 — Tryhorn (Land Attack AR / 8 Heavy / Right SG / SG Semi-Flat Base): V-Tread Circular Disk as the Only Mechanism That Recovers Smash from an Otherwise Zero-Smash Radial Profile
+## Case 921 — Tryhorn (Land Attack AR / 8 Heavy / Right SG / SG Semi-Flat Base): V-Tread Circular Disk as the Only Mechanism That Recovers Smash from an Otherwise Zero-Smash Radial Profile
 
 > **Stock combo (Tryhorn):** AR: Land Attack · WD: Eight Heavy · SG: Right Spin Gear · BB: SG Semi-Flat Base
 
@@ -2106,16 +2106,16 @@ Left spin: block trailing shoulders increase recoil without smash benefit.
    mu_plastic ~ 0.35, r_tip ~ 4 mm flat disk.
    F_friction = 0.35 * 0.44 ~ 0.154 N
 
-   Flower pattern maximum orbit speed (Case 117 derivation):
+   Flower pattern maximum orbit speed (Case 912 derivation):
    w_max_flower = sqrt(mu * g / r_orbit) = sqrt(0.35 * 9.81 / 0.15) ~ 4.78 rad/s
    Attack orbits run at 8-12 rad/s -> tip slips freely -> no consistent flower pattern.
 
-   Rotational recoil slip threshold (Case 117):
+   Rotational recoil slip threshold (Case 912):
    tau_thresh = mu * N_tip * r_tip = 0.35 * 0.44 * 0.004 = 6.16e-4 N.m
    At this threshold, rotational recoil from high-recoil contacts converts to linear bounce.
    V-tread rotational recoil per hit: tau_rot ~ 2e-4 to 4e-4 N.m.
    tau_rot < tau_thresh -> rotational recoil is absorbed as wobble, not linear bounce.
-   Contrast with SGMF2 (Case 122, tau_thresh = 1.58e-4): SGMF2 slips and bounces;
+   Contrast with SGMF2 (Case 917, tau_thresh = 1.58e-4): SGMF2 slips and bounces;
    SG Flat Base absorbs -> more wobble/spin drain per high-recoil hit on this combo.
 
    Height H = 13 mm (shortest base) -> AR sits lowest possible.
@@ -2123,7 +2123,7 @@ Left spin: block trailing shoulders increase recoil without smash benefit.
    gamma = arctan((16-13)/26) ~ 6.6 deg -> F_up_bonus = F * sin(6.6) ~ F * 0.115 (11.5%)
    Modest but real upper-attack geometric benefit.
 
-   LAD: acceptable (wide body), but spike-gap disruption limits it past ~8 deg tilt (Case 117).
+   LAD: acceptable (wide body), but spike-gap disruption limits it past ~8 deg tilt (Case 912).
 ```
 
 ---
@@ -2141,7 +2141,7 @@ Left spin: block trailing shoulders increase recoil without smash benefit.
    Effective J_smash at J = 0.08 N.s:
    J_smash = 0.08 * 0.643 = 0.051 N.s
 
-   Compare: Panther Head left spin (Case 119): 0.069 N.s
+   Compare: Panther Head left spin (Case 914): 0.069 N.s
    Land Attack: ~26% less smash per hit than a competitive left-spin smash AR.
    Compensating factors: V-tread spin equalization adds outspin potential;
    8 Heavy maximises spin so more equalization events occur before instability.
@@ -2188,7 +2188,7 @@ function vGrooveSpinEqualizationFraction(vGrooveAngleDeg: number): number {
 
 
 
-## Case 127 -- Cross Griffon AR: Four-Wing 90-Degree Symmetry as Contact-Frequency Multiplier, Thick Sharp Tip Concentration as Damage Mechanism, and Why Left Spin Fails by Wing-Back Contact Angle
+## Case 922 -- Cross Griffon AR: Four-Wing 90-Degree Symmetry as Contact-Frequency Multiplier, Thick Sharp Tip Concentration as Damage Mechanism, and Why Left Spin Fails by Wing-Back Contact Angle
 
 Cross Griffon is a 5.4 g four-pronged plastics AR from Griffon. Four wings at 90-degree intervals produce 34 percent more contact events per revolution than a three-wing AR (Triple Wing) at the same spin speed. The thick, sharp leading-edge tips concentrate impulse at small contact area, driving high contact pressure that damages opponents and the stadium while the AR itself is too thick to suffer stress fracture. In right spin the leading-face geometry delivers excellent smash with moderate recoil; in left spin the swept wing backs lead at a steep angle, producing heavy recoil and only partial smash. Wear is the key long-term variable: wing tips deform inward over use, shrinking the effective contact radius and producing a noticeable power drop.
 
@@ -2303,12 +2303,12 @@ Cross Griffon is a 5.4 g four-pronged plastics AR from Griffon. Four wings at 90
 ### 5. SGMF2 Synergy: Hard Hits, Stamina Drain, Slip Conversion
 
 "```"
-   Cross Griffon right spin on SG Metal Flat Base (Gaia Dragoon V Version, Case 122):
+   Cross Griffon right spin on SG Metal Flat Base (Gaia Dragoon V Version, Case 917):
 
    High smash fraction (92.1%) -> each contact delivers near-maximum forward impulse.
    34% more contacts per second -> more total impulse budget per battle.
 
-   SGMF2 slip conversion (Case 122):
+   SGMF2 slip conversion (Case 917):
    Rotational recoil from Cross Griffon hits: tau_rot ~ 3e-4 to 5e-4 N.m per hit.
    SGMF2 tau_thresh = 1.58e-4 N.m < tau_rot -> tip slips -> angular impulse exits as linear translation.
    Net: Cross Griffon's hard hits do NOT drain attacker spin via wobble.
@@ -2339,7 +2339,7 @@ Cross Griffon is a 5.4 g four-pronged plastics AR from Griffon. Four wings at 90
    J_smash_LS  ~ 0.046 N.s  -- below competitive threshold
    J_recoil_LS ~ 0.066 N.s  -- attacker receives large lateral impulse per hit
 
-   Compare competitive left-spin ARs (e.g. Panther Head, Case 119):
+   Compare competitive left-spin ARs (e.g. Panther Head, Case 914):
    J_smash PH left = 0.069 N.s vs CG left = 0.046 N.s  (-33% smash)
    J_recoil PH left = 0.040 N.s vs CG left = 0.066 N.s  (+65% more recoil)
 
@@ -2388,10 +2388,10 @@ function wornSmashFraction(rOriginalMm: number, wearPercent: number): number {
 // wornSmashFraction(26, 10)                          --> 0.90     (10% wear = 10% power loss)
 ""`
 
-**Verdict:** Cross Griffon's four-wing geometry delivers 34% more contact events per second than Triple Wing at the same RPM. Combined with a 23-degree leading-face contact angle (92.1% smash fraction), total smash output per second is 42% above Triple Wing. The thick sharp tip concentrates 80 N of normal force over a 0.3 mm^2 edge area (267 MPa) -- exceeding ABS yield strength and causing opponent AR deformation. The AR itself is too thick to self-fracture. Wear is the primary performance variable: 10% tip radius loss produces a 10% smash drop, sufficient to push below Triple Wing performance. SGMF2 synergy is strong: 191 hard hits per second with rotational recoil slipping to translation (Case 122) means no attacker spin drain while continuous impulse accumulates on the opponent. Left spin is non-viable: wing backs at 55 degrees deliver 57.4% smash with 81.9% recoil -- 33% less smash and 65% more recoil than competitive left-spin alternatives.
+**Verdict:** Cross Griffon's four-wing geometry delivers 34% more contact events per second than Triple Wing at the same RPM. Combined with a 23-degree leading-face contact angle (92.1% smash fraction), total smash output per second is 42% above Triple Wing. The thick sharp tip concentrates 80 N of normal force over a 0.3 mm^2 edge area (267 MPa) -- exceeding ABS yield strength and causing opponent AR deformation. The AR itself is too thick to self-fracture. Wear is the primary performance variable: 10% tip radius loss produces a 10% smash drop, sufficient to push below Triple Wing performance. SGMF2 synergy is strong: 191 hard hits per second with rotational recoil slipping to translation (Case 917) means no attacker spin drain while continuous impulse accumulates on the opponent. Left spin is non-viable: wing backs at 55 degrees deliver 57.4% smash with 81.9% recoil -- 33% less smash and 65% more recoil than competitive left-spin alternatives.
 
 ---
-## Case 128 -- Dual Dragon AR: Why Polycarbonate Sub-Frame Cannot Absorb Shock, Rounded Contact Point Physics in Both Spin Directions, and Width as the Ceiling That Bars the Defense Role
+## Case 923 -- Dual Dragon AR: Why Polycarbonate Sub-Frame Cannot Absorb Shock, Rounded Contact Point Physics in Both Spin Directions, and Width as the Ceiling That Bars the Defense Role
 
 Dual Dragon is a two-part 5.9 g AR (Core 4.4 g ABS white / Sub-Frame 1.5 g polycarbonate red). The PC sub-frame is marketed as shock-absorbing but polycarbonate and ABS share essentially identical Young's modulus -- the sub-frame is tougher against fracture, not compliant enough to reduce transmitted impulse. In left spin, rounded contact points produce near-radial contact normals that return most impulse as recoil with minimal smash. In right spin, the same rounded geometry provides a mildly defensive deflection surface, but the AR is slightly too wide and the ABS core geometry introduces residual recoil, leaving it outclassed in every role.
 
@@ -2498,7 +2498,7 @@ Dual Dragon is a two-part 5.9 g AR (Core 4.4 g ABS white / Sub-Frame 1.5 g polyc
    Optimal defense AR width: inner to WD radius (AR should not protrude far beyond WD rim).
    ARs wider than WD rim expose their outer edge to attack at the AR level.
    If AR protrudes beyond WD: attacker's AR contacts Dual Dragon AR at full contact radius.
-   Upper Attack ARs (Case 116 -- Whale Crusher) can reach underneath the protruding section.
+   Upper Attack ARs (Case 911 -- Whale Crusher) can reach underneath the protruding section.
 
    Dual Dragon r_outer ~ 27 mm, Wide Defense r_WD ~ 23.5 mm:
    Protrusion beyond WD: 27 - 23.5 = 3.5 mm.
@@ -2579,7 +2579,7 @@ function wideSurvivorRetentionGain(iWS: number, iWD: number): number {
 **Verdict:** The PC sub-frame shock absorption claim is false: ABS and polycarbonate share E ~ 2.3 GPa, so transmitted impulse is identical. The PC frame's actual contribution is its near-circular outer edge (contact angle ~88 deg), which returns ~100% of attacker impulse as lateral push with ~0% spin equalization -- a mild defensive benefit, not shock absorption. The Core AR's rounded left-spin contact points average 75 deg from tangent, producing only 25.9% smash and 96.6% recoil -- the attacker essentially bounces off itself. In right spin, the rounded backs provide some deflection but the Core's angular sections produce 76.6% recoil when contacted directly. Width at 27 mm exposes 3.5 mm beyond Wide Defense's rim to full contact; Wide Survivor at ~26 mm reduces this to ~1 mm and adds 41% more spin retention. Outclassed in every role but not catastrophic -- the PC frame at least prevents sub-frame fracture on hard hits.
 
 ---
-## Case 129 — Fantom Grip Base: Narrow Hard-Rubber Tip Trades Peak Grip for Flower-Pattern Accessibility
+## Case 924 — Fantom Grip Base: Narrow Hard-Rubber Tip Trades Peak Grip for Flower-Pattern Accessibility
 
 > **Stock combo (Dragoon F (Fantom)):** AR: Dual Dragon · WD: Eight Wide · SG: Left SG · BB: Fantom Grip Base
 
@@ -2708,7 +2708,7 @@ Against Defense Grip Base defense combos (WD-heavy, wide SG Flat Base contact), 
 
 The gap between Fantom Grip and Tier 1 is not a rounding difference — τ_threshold is 44 % of the leaders, meaning Fantom Grip absorbs less than half the recoil per contact. Against matchups where recoil absorption determines the outcome (top-tier Zombies, WBD, Circle Survivor Defense), this deficit is decisive. Against mid-tier targets and DGB-Defense, the base's survival edge compensates, maintaining competitive viability.
 
-## Case 130 — Eight Attacker: Flat Contacts Generate Uncontrolled Recoil with No Spin-Direction Asymmetry
+## Case 925 — Eight Attacker: Flat Contacts Generate Uncontrolled Recoil with No Spin-Direction Asymmetry
 
 > **Stock combo (Dragoon V (Victory)):** AR: Eight Attacker · WD: Ten Wide · SG: Neo Left SG MW · BB: Magne Flat Base
 
@@ -2849,7 +2849,7 @@ Eight Attacker delivers 36 % of Reverse Dragon's smash per contact. Even with 2�
 
 Reverse Dragon's better contact angle produces more than twice the net smash impulse at comparable impact speed. Eight Attacker's additional contacts do not compensate for the fundamental α ≈ 78° geometry.
 
-## Case 131 — Magne Flat Base: Removable-Tip SG Base Trades SP Mass for Magnetic Shaft Compatibility
+## Case 926 — Magne Flat Base: Removable-Tip SG Base Trades SP Mass for Magnetic Shaft Compatibility
 
 > **Stock combo (Dragoon V (Victory)):** AR: Eight Attacker · WD: Ten Wide · SG: Neo Left SG MW · BB: Magne Flat Base
 
@@ -2970,7 +2970,7 @@ const magneFlatBase: MagneFlatBaseConfig = {
 
 ---
 
-## Case 132 — Magne Flat Base Tip: Plastic Flat with Embedded South Magnet Fails at All Three Tip Roles
+## Case 927 — Magne Flat Base Tip: Plastic Flat with Embedded South Magnet Fails at All Three Tip Roles
 
 Magne Flat Base Tip is a removable plastic tip (not rubber — the translucent appearance is clear-tinted ABS, confirmed across both Takara and Hasbro moulds) with a South Magnet embedded at its centre and a contact face diameter matching SG Flat Base. It is the stock tip for Magne Flat Base and the weakest member of the three-tip family (Customize Grip Base Tip, SG Grip Base Tip, Magne Flat Base Tip). Its failures are additive: wrong material, problematic flange geometry, and no complementary role where the magnet compensates.
 
@@ -3031,11 +3031,11 @@ For comparison, a tip with no flange overhang (e.g. SG Flat Base spike) does not
 
 The embedded South Magnet interacts with any Magnecore present in the SG:
 
-- North Magnecore (Case 120): attraction → F_mag pulls tip down → increased N → F_friction increases marginally, but contact remains plastic (μ unchanged).
-- South Magnecore (Case 121): repulsion → F_mag pushes tip up → reduced N → F_friction decreases.
+- North Magnecore (Case 915): attraction → F_mag pulls tip down → increased N → F_friction increases marginally, but contact remains plastic (μ unchanged).
+- South Magnecore (Case 916): repulsion → F_mag pushes tip up → reduced N → F_friction decreases.
 - No Magnecore: no magnetic effect.
 
-The magnet cannot convert plastic μ to rubber μ. The maximum N increase from a typical Magnecore at d = 5 mm (from Case 120 field equations):
+The magnet cannot convert plastic μ to rubber μ. The maximum N increase from a typical Magnecore at d = 5 mm (from Case 915 field equations):
 
     F_mag ≈ (3 × 1.26×10⁻⁶) / (2π) × (0.05 × 0.04) / (0.005)⁴
           ≈ 6.02×10⁻⁷ / (6.25×10⁻¹⁰) × 0.002 ≈ 0.19 N
@@ -3071,7 +3071,7 @@ const magneFlatTip: TipProfile = {
 // ω_max_flower = √(0.35 × 9.81 / 0.15) ≈ 4.78 rad/s vs CGB Tip's 7.45 rad/s
 ""`
 
-## Case 133 — SG Grip Base Tip: Lighter Rubber Tip Matches CGB Tip on Grip while Enabling Force Smash and Volcano Change Base Combos
+## Case 928 — SG Grip Base Tip: Lighter Rubber Tip Matches CGB Tip on Grip while Enabling Force Smash and Volcano Change Base Combos
 
 > **Stock combo (Wolborg 03 (Uriel)):** AR: Cross Horn · WD: Revolver Attack · SG: Neo Right SG South · BB: SG Grip Base
 
@@ -3156,14 +3156,14 @@ The steel pole is passive — it contains no permanent magnet. When seated in a 
 
 where χ_steel ≈ 100–1000 (relative permeability), H is field strength at the pole-to-Magnecore interface, and V_pole is the pole volume. The induced pole aligns with the external field:
 
-- North Magnecore (Case 120): Magnecore north pole faces up → pole magnetised south-up → attracts toward Magnecore → tip pulled inward (downward in normal orientation) → increased N, increased F_friction
-- South Magnecore (Case 121): reverse → tip pushed outward → decreased N, decreased F_friction
+- North Magnecore (Case 915): Magnecore north pole faces up → pole magnetised south-up → attracts toward Magnecore → tip pulled inward (downward in normal orientation) → increased N, increased F_friction
+- South Magnecore (Case 916): reverse → tip pushed outward → decreased N, decreased F_friction
 
-Unlike the South Magnet embedded in Magne Flat Base Tip (Case 132), induction scales with Magnecore field strength rather than a fixed permanent moment. A stronger Magnecore produces stronger induced force; the effect is directional-agnostic (the pole always attracts toward whatever pole faces it).
+Unlike the South Magnet embedded in Magne Flat Base Tip (Case 927), induction scales with Magnecore field strength rather than a fixed permanent moment. A stronger Magnecore produces stronger induced force; the effect is directional-agnostic (the pole always attracts toward whatever pole faces it).
 
 ### 5. Volcano Change Base Compatibility: Height Geometry
 
-SG Grip Base Tip is one of only two tips compatible with Volcano Change Base (Case 125) — the other being Volcano Change Base Tip. The alignment tab at the base of SG Grip Base Tip locks into Volcano Change Base's socket.
+SG Grip Base Tip is one of only two tips compatible with Volcano Change Base (Case 920) — the other being Volcano Change Base Tip. The alignment tab at the base of SG Grip Base Tip locks into Volcano Change Base's socket.
 
 Effective combo height comparison (tip + base):
 
@@ -3216,7 +3216,7 @@ const sgGripBaseTip: SGGripBaseTipConfig = {
 // 0.9g lighter than CGB Tip → Force Smash weight-class window advantage
 ""`
 
-## Case 134 — Sonic Tiger: Separated Three-Segment Wing Geometry Multiplies Recoil Without Compensating Smash
+## Case 929 — Sonic Tiger: Separated Three-Segment Wing Geometry Multiplies Recoil Without Compensating Smash
 
 > **Stock combo (Driger V (Vulcan)):** AR: Sonic Tiger · WD: Ten Balance · SG: Neo Right SG South · BB: SG Metal Flat Base
 
@@ -3351,7 +3351,7 @@ const seg1Head: WingSegment = {
 // Gap-edge contact (22% of events): cos(85°) ≈ 0.087  — pure recoil, no defense
 ""`
 
-## Case 135 — SG Metal Flat Base: Truncated Cone Tip Sits One Flat-Diameter Away from Competitive Compact Stability
+## Case 930 — SG Metal Flat Base: Truncated Cone Tip Sits One Flat-Diameter Away from Competitive Compact Stability
 
 > **Stock combo (Driger V (Vulcan)):** AR: Sonic Tiger · WD: Ten Balance · SG: Neo Right SG South · BB: SG Metal Flat Base
 
@@ -3456,7 +3456,7 @@ Adequate for compact use (compact bases do not need high LAD — the goal is lim
 
 **Prototype Metal Flat tip:**
 
-The original design held a metal flat tip (r_flat ≈ 4 mm) onto a pole by Magnecore attraction — the same mechanical principle as Volcano Change Base (Case 125). At r_flat = 4 mm:
+The original design held a metal flat tip (r_flat ≈ 4 mm) onto a pole by Magnecore attraction — the same mechanical principle as Volcano Change Base (Case 920). At r_flat = 4 mm:
 
     τ_restore_proto = 0.44 × 0.004 × θ = 1.76 × 10⁻³ × θ   N·m/rad
 
@@ -3501,7 +3501,7 @@ const protoMetalFlat = { rFlat: 0.004 };
 // I_base = 4.92e-6 kg·m²  — strong stamina under contact
 ""`
 
-## Case 136 — Griffolyon Base (Hasbro): Four Pole Bases Destroy LAD While Shaft Friction Negates the Free-Spin Gimmick
+## Case 931 — Griffolyon Base (Hasbro): Four Pole Bases Destroy LAD While Shaft Friction Negates the Free-Spin Gimmick
 
 > **Stock combo (Griffolyon):** AR: Cross Griffon · WD: Eight Balance · BB: Griffolyon Base
 
@@ -3593,7 +3593,7 @@ The dome-top tip has a contact radius at the apex of r_tip ≈ 1.0 mm. Restoring
 
     τ_restore = N × r_tip × θ = 0.44 × 0.001 × θ = 4.4 × 10⁻⁴ × θ   N·m/rad
 
-This is comparable to the SG Metal Flat Base truncated cone tip (3.30 × 10⁻⁴, Case 135), which was already established as insufficiently stable. Compounding this, the dome shape means as tilt angle θ increases, the effective contact radius also increases (the dome rolls), creating a non-linear restoring torque that is poorly controlled — the bey does not precess stably but rocks.
+This is comparable to the SG Metal Flat Base truncated cone tip (3.30 × 10⁻⁴, Case 930), which was already established as insufficiently stable. Compounding this, the dome shape means as tilt angle θ increases, the effective contact radius also increases (the dome rolls), creating a non-linear restoring torque that is poorly controlled — the bey does not precess stably but rocks.
 
     τ_restore_dome(θ) ≈ N × r_tip × (1 + tan(θ)) × θ   [approximate]
 
@@ -3656,7 +3656,7 @@ const griffolyon: GriffoloyonBaseParams = {
 // I_base ≈ 5.29e-6 kg·m²  — high inertia, irrelevant given tip/LAD failures
 ""`
 
-## Case 137 — Cybernetic Dragon: Maximum-Area Flat Contact Faces Produce Near-Total Recoil and Structural Threading Failure
+## Case 932 — Cybernetic Dragon: Maximum-Area Flat Contact Faces Produce Near-Total Recoil and Structural Threading Failure
 
 > **Stock combo (Cyber Dragoon):** AR: Cybernetic Dragon · WD: Ten Wide · SG: Right SG MG Spring · BB: Jumping Base 2
 > **Stock combo (Cyber Dragoon Battle Spec.):** AR: Cybernetic Dragon · WD: Eight Wide · SG: Neo Right SG MW · BB: SG Wing Base
@@ -3812,7 +3812,7 @@ const cyberneticDragon: ARContactProfile = {
 // vs Square Edge: smashFrac(50°) = 0.643 → 3.09× more smash per contact
 ""`
 
-## Case 138 — Spike Dragon: Vertical-Line Flat Faces Generate High Smash-Area Contact but Cannot Reduce Rotational Recoil
+## Case 933 — Spike Dragon: Vertical-Line Flat Faces Generate High Smash-Area Contact but Cannot Reduce Rotational Recoil
 
 > **Stock combo (Dragoon V2):** AR: Spike Dragon · WD: Magne WD · SG: Neo Left SG · SP: Reverse Attack · BB: Customize Grip Base
 
@@ -3925,7 +3925,7 @@ const spikeDragon: SpikeDragonFace = {
 
 ---
 
-## Case 139 — Magne Weight Disk: Even Mass Distribution and Magnetic Gimmick Combine to Underperform Specialised WDs
+## Case 934 — Magne Weight Disk: Even Mass Distribution and Magnetic Gimmick Combine to Underperform Specialised WDs
 
 > **Stock combo (Ultimate Dragoon V):** AR: Cross Dragon · WD: Magne WD · BB: Flat Base
 > **Stock combo (Dragoon V2):** AR: Spike Dragon · WD: Magne WD · SG: Neo Left SG · SP: Reverse Attack · BB: Customize Grip Base
@@ -4072,7 +4072,7 @@ const mgwdMold1: MagneWDConfig = {
 // bearing drag ≈ 6.2e-5 N additional → 1.9e-5 W continuous spin drain
 ""`
 
-## Case 140 — Reverse Attack SP: Moderate Fin Angle Makes It the Least-Recoil-Prone Two-Part SP While Two-Part Design Limits Competitive Ceiling
+## Case 935 — Reverse Attack SP: Moderate Fin Angle Makes It the Least-Recoil-Prone Two-Part SP While Two-Part Design Limits Competitive Ceiling
 
 > **Stock combo (Dragoon V2):** AR: Spike Dragon · WD: Magne WD · SG: Neo Left SG · SP: Reverse Attack · BB: Customize Grip Base
 
@@ -4207,7 +4207,7 @@ const reverseAttackSP: SupportPart = {
 // ladAngleDeg(2.5, 0.031) ≈ 4.6°  — poor but rounded arm softens catch torque
 ""`
 
-## Case 141 — Customize Grip Base: SP-Compatible Wide Rim Provides Exceptional LAD Across Every Shaft and Tip Configuration
+## Case 936 — Customize Grip Base: SP-Compatible Wide Rim Provides Exceptional LAD Across Every Shaft and Tip Configuration
 
 > **Stock combo (Dragoon V2):** AR: Spike Dragon · WD: Magne WD · SG: Neo Left SG · SP: Reverse Attack · BB: Customize Grip Base
 
@@ -4275,7 +4275,7 @@ At 9.63 rad/s the bey can still orbit on its rim — considerably beyond where a
 
 CGB Tip: soft rubber, μ ≈ 0.85, r_tip ≈ 4.0mm, mass ≈ 1.84g.
 
-    τ_threshold = 0.85 × 0.44 × 0.004 = 1.50 × 10⁻³ N·m   (established, Case 129 table)
+    τ_threshold = 0.85 × 0.44 × 0.004 = 1.50 × 10⁻³ N·m   (established, Case 924 table)
     ω_max_flower = √(0.85 × 9.81 / 0.15) ≈ 7.45 rad/s
 
 Tip mass: 1.84g. Combined base + tip: 5.1 + 1.84 = 6.94g. Effective LAD:
@@ -4421,7 +4421,7 @@ const cgb: CGBConfig = {
 // CGB + CGB Tip total: 6.94g  →  CGB + SG GBT: 7.84g  →  + Defense Ring: ~12.3g
 ""`
 
-## Case 142 — Customize Grip Base Tip: Wide Hard-Rubber Flat with Central Magnet Trades Ridge Control for Stamina-Based Outspin
+## Case 937 — Customize Grip Base Tip: Wide Hard-Rubber Flat with Central Magnet Trades Ridge Control for Stamina-Based Outspin
 
 Customize Grip Base Tip is a 1.8g hard-rubber wide flat tip housing a South-polarity magnet at its centre. Its 4mm contact radius matches the wide rubber tip standard, but rubber hardness (μ ≈ 0.82) and the tip's internal mass distribution produce slightly lower orbital speed than the raw tip width would suggest. The rubber hardness also provides meaningful stamina — enough to outspin Defense Grip Base's sharp tip, which is the defining advantage of the CGB Tip over all other rubber attack tips. The rounded outer edge causes consistent ridge-skipping, which limits recoil control and makes height geometry the primary tool for managing matchup difficulty.
 
@@ -4507,7 +4507,7 @@ The route to outspin works differently. DGB (sharp tip) is in the Defensive Zomb
 
     ω_crit_sharp ≈ τ_topple / (I × Ω_prec)   → high ω_crit due to near-zero τ_restore
 
-The sharp tip destabilises while it still has meaningful spin. CGB Tip's rubber contact provides τ_restore = 1.44 × 10⁻³ N·m/rad (per Case 135 framework), allowing controlled precession far below the sharp tip's collapse point. In practice CGB Tip is still spinning and precessing at spin rates where DGB's sharp tip has already toppled. This is "no trouble outspinning the sharp tip of Defense Grip Base."
+The sharp tip destabilises while it still has meaningful spin. CGB Tip's rubber contact provides τ_restore = 1.44 × 10⁻³ N·m/rad (per Case 930 framework), allowing controlled precession far below the sharp tip's collapse point. In practice CGB Tip is still spinning and precessing at spin rates where DGB's sharp tip has already toppled. This is "no trouble outspinning the sharp tip of Defense Grip Base."
 
 Energy retained when DGB sharp tip collapses (at ω_DGB_collapse):
 
@@ -4542,8 +4542,8 @@ These use wide WD (WD-first contact, high r_WD) and bearing tips:
 
 CGB Tip's South magnet interacts with Magnecore configurations:
 
-    North Magnecore (Case 120): attraction → tip pulled downward → increased N → F_friction increases
-        Δτ = Δ(μ × ΔN × r_tip) = 0.82 × 0.15 × 0.004 = 4.92 × 10⁻⁴ N·m (from Case 120 F_mag estimate)
+    North Magnecore (Case 915): attraction → tip pulled downward → increased N → F_friction increases
+        Δτ = Δ(μ × ΔN × r_tip) = 0.82 × 0.15 × 0.004 = 4.92 × 10⁻⁴ N·m (from Case 915 F_mag estimate)
         → tip can orbit at slightly higher ω_max_flower
 
     South Magnecore (Dranzer V version) or SG Auto Change Version core:
@@ -4593,7 +4593,7 @@ const cgbTip: CGBTipConfig = {
 // mass 1.8g vs SG GBT 2.74g: 0.94g lighter → less Force Smash weight, more stamina
 ""`
 
-## Case 143 — Upper Claw: Multi-Mode Contact Geometry Combines Upper Attack, Upward Smash, and Smash Attack in Right Spin While Left Spin Inverted Slopes Self-Destabilise
+## Case 938 — Upper Claw: Multi-Mode Contact Geometry Combines Upper Attack, Upward Smash, and Smash Attack in Right Spin While Left Spin Inverted Slopes Self-Destabilise
 
 > **Stock combo (Driger V2):** AR: Upper Claw · WD: Ten Balance · SG: Neo Right SG MW · SP: Upper Attack · BB: Customize Metal Change Base
 
@@ -4791,7 +4791,7 @@ const upperClaw: UpperClawConfig = {
 // left spin: all vertical components invert → 42% of impulse destabilises self
 ""`
 
-## Case 144 — Ten Balance Weight Disk: Compact Edge-Focus vs Wide-Annular Trade-off
+## Case 939 — Ten Balance Weight Disk: Compact Edge-Focus vs Wide-Annular Trade-off
 
 > **Stock combo (Metal Dranzer):** AR: Scissor Attacker · WD: Ten Balance · SG: Neo Right SG South · BB: SG Flat Base
 > **Stock combo (Driger V (Vulcan)):** AR: Sonic Tiger · WD: Ten Balance · SG: Neo Right SG South · BB: SG Metal Flat Base
@@ -4905,7 +4905,7 @@ Ten Balance is a correct stamina disk only when compact or semi-flat tip geometr
 
 ---
 
-## Case 145 — Upper Attack Support Parts: Slope Extension, Orientation Alignment, and Mass Contribution
+## Case 940 — Upper Attack Support Parts: Slope Extension, Orientation Alignment, and Mass Contribution
 
 > **Stock combo (Driger V2):** AR: Upper Claw · WD: Ten Balance · SG: Neo Right SG MW · SP: Upper Attack · BB: Customize Metal Change Base
 
@@ -5029,7 +5029,7 @@ const redUp: SPOrientationConfig = {
 
 Upper Attack SP in blue-up orientation is a strict mechanical extension of Upper Claw: the joint system covers 0–10 mm with a continuous 25° ramp, adds ~3.0 × 10⁻⁶ kg·m² of peripheral inertia, and is the heaviest SP available. Red-up inverts the slope, converting the low-height contact zone from upper attack into a floor-press — geometrically incompatible with the AR's upper attack intent in right spin.
 
-## Case 146 — Customize Metal Change Base: Phase-Switching Tip Enables Multi-Role Use at Superior Mass
+## Case 941 — Customize Metal Change Base: Phase-Switching Tip Enables Multi-Role Use at Superior Mass
 
 > **Stock combo (Driger V2):** AR: Upper Claw · WD: Ten Balance · SG: Neo Right SG MW · SP: Upper Attack · BB: Customize Metal Change Base
 
@@ -5082,7 +5082,7 @@ With Upper Attack SP: m_total = 6.4 + 3.56 = 9.96 g ≈ SG Metal Ball Base (typi
 
 Peripheral I with SP:
   I_base   ≈ ½ × 0.0064 × (0.022² + 0.010²) = ½ × 0.0064 × 5.84 × 10⁻⁴ = 1.87 × 10⁻⁶ kg·m²
-  I_SP     = 2.99 × 10⁻⁶ kg·m²  (from Case 145)
+  I_SP     = 2.99 × 10⁻⁶ kg·m²  (from Case 940)
   I_total  = 4.86 × 10⁻⁶ kg·m²
 
 SG Metal Ball Base (no SP, m ≈ 8.8 g, r ≈ 20 mm):
@@ -5109,7 +5109,7 @@ This is ~120× lower than the skirt phase value (r_skirt = 3 mm):
 
 Without the skirt phase, the bey has no restoring torque at moderate tilt angles. Nutation onset is essentially immediate (ω_nutation ≈ ω_max, not bounded below ~40 % as in a normal tip). This negates tornado-ridge use, WBD viability, and compact stability simultaneously — all CMCB's distinguishing functions.
 
-The rarity (and alignment with CMSB tip dimensions — see Case 147) suggests a production assembly error using a Customize Metal Sharp Base tip rather than an intentional mold variant.
+The rarity (and alignment with CMSB tip dimensions — see Case 942) suggests a production assembly error using a Customize Metal Sharp Base tip rather than an intentional mold variant.
 
 ""`	ypescript
 interface ChangeTipConfig {
@@ -5139,7 +5139,7 @@ CMCB is the preferred Driger V2 base because it combines the lowest idle drag of
 
 ---
 
-## Case 147 — Customize Metal Sharp Base: Fixed Tip with Plastic Collar Achieves Best Same-Spin Stamina at Cost of Early Nutation
+## Case 942 — Customize Metal Sharp Base: Fixed Tip with Plastic Collar Achieves Best Same-Spin Stamina at Cost of Early Nutation
 
 > **Stock combo (Voltaic Ape):** AR: Mountain Hammer · WD: Magne WD · SG: Neo Right SG North · SP: Defense Ring · BB: Customize Metal Sharp Base
 
@@ -5177,7 +5177,7 @@ Reference: rubber flat tip (r = 3 mm, μ = 0.35):
 
 In same-spin matchups against a Zombie (bearing base), the Zombie's tip friction is similarly near zero. Spin steal occurs primarily at the AR level. CMSB minimises its own idle spin loss so that whatever AR-level coupling the Zombie creates is offset by CMSB's preserved spin. For same-spin direction, v_rel_AR = (ω_CMSB − ω_Zombie) × r_AR → approaches zero as spins equalise → spin steal halts → CMSB survival determined by whichever bey has less idle drag. CMSB wins this criterion.
 
-Zombie in opposite spin: v_rel_AR = (ω_CMSB + ω_Zombie) × r_AR → 3.3× higher coupling (Case 133 derivation). No same-spin advantage applies → CMSB loses to opposite-spin Zombie builds, which is why it is "outclassed by bearing-supported parts" in the general zombie role.
+Zombie in opposite spin: v_rel_AR = (ω_CMSB + ω_Zombie) × r_AR → 3.3× higher coupling (Case 928 derivation). No same-spin advantage applies → CMSB loses to opposite-spin Zombie builds, which is why it is "outclassed by bearing-supported parts" in the general zombie role.
 
 ### Stability Deficit at Low Spin
 
@@ -5246,7 +5246,7 @@ const cmsb: SharpCollarTip = {
 
 CMSB occupies a narrow but genuine niche: lowest idle drag of any non-bearing base in Plastics, making it the correct choice for same-spin stamina matchups where the opponent cannot deliver Force Smash at low spin. Against heavy Force Smash attackers it loses before the collar ever engages.
 
-## Case 148 — Mountain Hammer Attack Ring: High-Mass Smash, Rotational Recoil, and Elevated Contact Point Geometry
+## Case 943 — Mountain Hammer Attack Ring: High-Mass Smash, Rotational Recoil, and Elevated Contact Point Geometry
 
 > **Stock combo (Voltaic Ape):** AR: Mountain Hammer · WD: Magne WD · SG: Neo Right SG North · SP: Defense Ring · BB: Customize Metal Sharp Base
 
@@ -5396,7 +5396,7 @@ const mountainHammer: ARProfile = {
 
 Mountain Hammer's 6.0 g mass compensates for a moderately open contact angle, producing smash on par with or above Triple Wing. Rotational recoil dominance limits translational ejection (manageable) while elevating thread stress (monitor SG thread wear). Elevated CPs make mid-height base pairing mandatory and create a specific CSD-clearing advantage that Ten Heavy preserves by keeping WD radius out of the approach envelope.
 
-## Case 149 — Defense Ring Support Part: Widest LAD Onset, Maximum Peripheral Inertia, and Passive Low-Recoil Surface
+## Case 944 — Defense Ring Support Part: Widest LAD Onset, Maximum Peripheral Inertia, and Passive Low-Recoil Surface
 
 > **Stock combo (Voltaic Ape):** AR: Mountain Hammer · WD: Magne WD · SG: Neo Right SG North · SP: Defense Ring · BB: Customize Metal Sharp Base
 
@@ -5494,7 +5494,7 @@ Decision threshold: if bearing-catch event probability per match P_catch > I_adv
 
 ### Attack AR Compatibility (Mountain Hammer Example)
 
-Mountain Hammer CPs at h_CP = 8 mm (from Case 148). Defense Ring body height ≈ 5 mm — its top edge sits below Mountain Hammer's contact zone:
+Mountain Hammer CPs at h_CP = 8 mm (from Case 943). Defense Ring body height ≈ 5 mm — its top edge sits below Mountain Hammer's contact zone:
 
   h_DR_top = 5 mm < h_CP_MH = 8 mm  →  no geometric interference in the CP height band
 
@@ -5546,7 +5546,7 @@ const defenseRing: DefenseRingSP = {
 
 Defense Ring is the rational first choice for any build where LAD or survive-to-end-game matters. Its wide radius, near-floor mounting, flat bottom face, and smooth outer surface combine three independent advantages — earliest LAD engagement, lowest LAD-failure spin rate, and minimal recoil — in a single part that also outperforms heavier SPs in moment of inertia. No other SP matches it across all four metrics simultaneously.
 
-## Case 150 — Customize Clutch Change Base: Centrifugal Clutch Inverts the Useful Mode Order
+## Case 945 — Customize Clutch Change Base: Centrifugal Clutch Inverts the Useful Mode Order
 
 > **Stock combo (Dranzer V2):** AR: Cross Dranzer · WD: Ten Balance · SG: Neo Right SG MW · SP: Cross Survivor · BB: Customize Clutch Change
 
@@ -5690,7 +5690,7 @@ const cccb: ClutchConfig = {
 
 The centrifugal clutch cannot be retuned to solve the fundamental problem: any spring that causes engagement at high ω (to enable early attack) will cause a survival-mode bey with high friction to drain spin rapidly from launch, negating the stamina it was meant to provide. The mechanism is inherently sequenced in the wrong direction for competitive use. CCCB is a part where the gimmick actively works against the user at both ends of the spin curve.
 
-## Case 151 — Cross Dranzer Attack Ring: Four-Fold Symmetry Produces Spin-Neutral Performance with Incomplete Spin-Steal Aggression
+## Case 946 — Cross Dranzer Attack Ring: Four-Fold Symmetry Produces Spin-Neutral Performance with Incomplete Spin-Steal Aggression
 
 > **Stock combo (Dranzer V2):** AR: Cross Dranzer · WD: Ten Balance · SG: Neo Right SG MW · SP: Cross Survivor · BB: Customize Clutch Change
 
@@ -5737,11 +5737,11 @@ An overhanging AR (CPs extending below WD mounting height) contacts the stadium 
   Stadium contact during tilt: θ_AR_ground = arctan(h_oh / r_AR)
   Example h_oh = 3 mm:  θ_AR_ground = arctan(3 / 25) = 6.84°
 
-With Defense Ring (θ_onset_DR = 2.3°, from Case 149): DR contacts at 2.3°, overhanging AR contacts at 6.84°. At θ = 6.84° the AR edge drags on the stadium, imposing an additional torque orthogonal to the precession orbit and degrading the clean circular motion that LAD depends on. The result: effective LAD terminates before ω_LAD_min is reached.
+With Defense Ring (θ_onset_DR = 2.3°, from Case 944): DR contacts at 2.3°, overhanging AR contacts at 6.84°. At θ = 6.84° the AR edge drags on the stadium, imposing an additional torque orthogonal to the precession orbit and degrading the clean circular motion that LAD depends on. The result: effective LAD terminates before ω_LAD_min is reached.
 
 Cross Dranzer has no downward overhang — its CPs sit at or above WD mounting height. During precession, no AR-stadium contact occurs at any tilt angle below catastrophic topple. The SP LAD orbit runs uninterrupted:
 
-  LAD stability condition: ω ≥ √(μ_ABS × g / r_SP_outer)  (from Case 149)
+  LAD stability condition: ω ≥ √(μ_ABS × g / r_SP_outer)  (from Case 944)
 
 Cross Dranzer + Defense Ring: the formula applies without modification → full LAD survival to ω_min.
 
@@ -5784,7 +5784,7 @@ Cross Dranzer's spin neutrality, moderate I, and non-overhanging geometry are va
 
 ---
 
-## Case 152 — Cross Survivor Support Parts: Wide Defensive Buffer, 4-Tab Geometry, and Bidirectional Mounting Behaviour
+## Case 947 — Cross Survivor Support Parts: Wide Defensive Buffer, 4-Tab Geometry, and Bidirectional Mounting Behaviour
 
 > **Stock combo (Dranzer V2):** AR: Cross Dranzer · WD: Ten Balance · SG: Neo Right SG MW · SP: Cross Survivor · BB: Customize Clutch Change
 
@@ -5797,7 +5797,7 @@ All Support Parts in the MFB (V-Force) era are designed to mount in two orientat
   Normal insertion:   upper face of SP is active → slope/protrusion faces upward  →  certain angle α
   Flipped insertion:  lower face of SP is active → opposite slope faces upward → different angle α'
 
-This was analysed explicitly in Case 145 (Upper Attack SP: blue-up vs red-up ΔJ_vertical = ±0.423J). The principle applies to every SP: Cross Survivor's tab faces present one contact profile in standard orientation and a different one when flipped. Performance tables that list a single SP rating implicitly assume standard orientation.
+This was analysed explicitly in Case 940 (Upper Attack SP: blue-up vs red-up ΔJ_vertical = ±0.423J). The principle applies to every SP: Cross Survivor's tab faces present one contact profile in standard orientation and a different one when flipped. Performance tables that list a single SP rating implicitly assume standard orientation.
 
 ### Geometry and Inertia
 
@@ -5830,14 +5830,14 @@ Critical LAD spin rate:
   ω_min_CS = √(μ_eff_CS × g / r_outer) = √(0.568 × 9.8 / 0.037) = √(150.5) = 12.27 rad/s
   ω_min_DR = √(μ_eff_DR × g / r_outer) = √(0.387 × 9.8 / 0.037) = √(102.6) =  10.13 rad/s
 
-  (Defense Ring's 8.91 rad/s figure from Case 149 used μ_eff = μ_ABS only; updated here with φ = 5° slope correction → 10.13 rad/s. Cross Survivor: 12.27 rad/s.)
+  (Defense Ring's 8.91 rad/s figure from Case 944 used μ_eff = μ_ABS only; updated here with φ = 5° slope correction → 10.13 rad/s. Cross Survivor: 12.27 rad/s.)
 
 Δω_min = 12.27 − 10.13 = 2.14 rad/s → Defense Ring sustains LAD 2.14 rad/s lower than Cross Survivor.
 
 LAD onset angle:
 
   θ_onset_CS = arcsin(h_gap / r_outer) = arcsin(2.5 / 37) = 3.9°  (Cross Survivor, higher mount)
-  θ_onset_DR = 2.3°  (Defense Ring, Case 149)
+  θ_onset_DR = 2.3°  (Defense Ring, Case 944)
 
 Defense Ring's LAD both begins sooner (2.3° vs 3.9°) and persists to lower spin (10.13 vs 12.27 rad/s). This is why "Defense Ring is a better choice for Spin Stealing" — in the critical low-spin survival window, Cross Survivor fails LAD while Defense Ring still holds.
 
@@ -5863,7 +5863,7 @@ Cross Survivor outer radius = 37 mm with a continuous ring body (vs Defense Ring
   Tab gaps ≈ 20° each → coverage = (360° − 80°) / 360° = 78 %
 
 At 78 % coverage, opponents contacting Cross Survivor's height band encounter smooth ABS 78 % of the time:
-  J_recoil_smooth = J × sin(0°) ≈ 0  (smooth cylindrical surface, same analysis as Case 149)
+  J_recoil_smooth = J × sin(0°) ≈ 0  (smooth cylindrical surface, same analysis as Case 944)
   J_recoil_tab    = J × sin(30°) ≈ 0.5J  (tab face contact, 22 % of arc)
   J_recoil_avg = 0.78 × 0 + 0.22 × 0.5J = 0.11J
 
@@ -5909,7 +5909,7 @@ const crossSurvivor: CrossSurvivorConfig = {
 
 Cross Survivor is the correct SP when a defensive circular buffer is the priority and Defense Ring cannot be used. For any use case where LAD endurance is the deciding factor — spin-steal, zombie survival, defense against stamina — Defense Ring wins by 2.14 rad/s of critical spin advantage. Cross Survivor's tab geometry also makes it the preferred peripheral I SP for 2/4/8-fold ARs when no obstruction exists at the SP height.
 
-## Case 153 — Triple Attacker Attack Ring: Three Distinct Attack Vectors, Outer-Diagonal Contact Penalty, and Left-Spin Viability
+## Case 948 — Triple Attacker Attack Ring: Three Distinct Attack Vectors, Outer-Diagonal Contact Penalty, and Left-Spin Viability
 
 > **Stock combo (Burning Kerberous):** AR: Triple Attacker · WD: Ten Wide · SG: Neo Right SG DB · SP: Cross Attack · BB: Customize Bearing Base
 
@@ -6066,7 +6066,7 @@ const tripleAttackerLeft: TAWing[] = [
 
 Triple Attacker's conceptual appeal — three specialised attack types in one AR — is undermined in right spin by the outer-diagonal penalty that degrades each wing from its ideal geometry, and by the Force Smash being distributed across only one of three wings. Left spin avoids both problems (no diagonal penalty on head faces; all three heads contribute to the same attack type) and produces a surprisingly competitive tier-2 smash AR.
 
-## Case 154 — Ten Wide Weight Disk: Wide Outer Radius with Reduced Rim Concentration and Tab Recoil
+## Case 949 — Ten Wide Weight Disk: Wide Outer Radius with Reduced Rim Concentration and Tab Recoil
 
 > **Stock combo (Dragoon V (Victory)):** AR: Eight Attacker · WD: Ten Wide · SG: Neo Left SG MW · BB: Magne Flat Base
 > **Stock combo (Cyber Dragoon):** AR: Cybernetic Dragon · WD: Ten Wide · SG: Right SG MG Spring · BB: Jumping Base 2
@@ -6082,7 +6082,7 @@ Ten Wide (14.0 g Takara/Hasbro, 14.3 g SonoKong) has an outer radius comparable 
 
 ### Moment of Inertia vs Wide Defense
 
-Modelled with the two-ring method consistent with Case 144:
+Modelled with the two-ring method consistent with Case 939:
 
   Ten Wide: m = 14.0 g, r_outer = 21 mm, r_inner = 9 mm, edge fraction = 0.50
     (edge fraction less than WD's 0.55 — tabs extend from inner ring, not concentrated at rim)
@@ -6090,7 +6090,7 @@ Modelled with the two-ring method consistent with Case 144:
          = 3.09 × 10⁻⁶ + ½ × 0.007 × 5.22 × 10⁻⁴
          = 3.09 × 10⁻⁶ + 1.83 × 10⁻⁶ = 4.92 × 10⁻⁶ ... 
 
-Re-applying the WDProfile model from Case 144 directly:
+Re-applying the WDProfile model from Case 939 directly:
 
   mEdge = 0.014 × 0.50 = 0.007 kg at r_outer = 0.021 m
   mHub  = 0.014 × 0.50 = 0.007 kg at r_inner = 0.009 m, annular
@@ -6098,7 +6098,7 @@ Re-applying the WDProfile model from Case 144 directly:
   I_hub  = ½ × 0.007 × (0.021² + 0.009²) = ½ × 0.007 × 5.22 × 10⁻⁴ = 1.83 × 10⁻⁶ kg·m²
   I_TW   = 4.92 × 10⁻⁶ kg·m²   [model result]
 
-Wide Defense (Case 144, edgeFraction = 0.55, r_outer = 22 mm):  I_WD = 3.97 × 10⁻⁶ kg·m²
+Wide Defense (Case 939, edgeFraction = 0.55, r_outer = 22 mm):  I_WD = 3.97 × 10⁻⁶ kg·m²
 
 Note: the uniform-annular model underestimates WD's true I because WD's mass is far more rim-concentrated than the model captures. In reality I_WD >> I_TW for the same mass. The model result is used for relative comparison; the direction of the inequality reverses when real rim concentration is applied. Stated differently: at r_outer = 22 mm with near-pure rim concentration, WD achieves I ≈ m × r² ≈ 0.0145 × 0.022² = 7.02 × 10⁻⁶ kg·m². Ten Wide's intermediate distribution gives I closer to 4-5 × 10⁻⁶ kg·m² depending on tab geometry. WD's real advantage is approximately 1.4–1.7× higher I at comparable mass.
 
@@ -6119,7 +6119,7 @@ For J = 0.01 N·s (light WD contact): Δr_orbit ≈ 0.55 m — this is catastrop
 
 ### AR Obstruction and Smash Attack Utility
 
-Wide Defense r_outer = 22 mm. Certain ARs have CP approach paths that pass through the 19–22 mm radial zone at WD height, causing the WD rim to contact the opponent before the AR CP does (as derived in Case 148: Mountain Hammer + Ten Heavy). Ten Wide at r_outer = 21 mm provides 1 mm additional clearance, and the tab geometry (gaps between tabs at the outer rim) provides up to 3–4 mm clearance through the gaps.
+Wide Defense r_outer = 22 mm. Certain ARs have CP approach paths that pass through the 19–22 mm radial zone at WD height, causing the WD rim to contact the opponent before the AR CP does (as derived in Case 943: Mountain Hammer + Ten Heavy). Ten Wide at r_outer = 21 mm provides 1 mm additional clearance, and the tab geometry (gaps between tabs at the outer rim) provides up to 3–4 mm clearance through the gaps.
 
 For Smash Attack, recoil is not a liability — the bey should bounce away after delivering J_smash. Tab recoil amplifies rather than impedes this, making Ten Wide naturally suited to attack builds where recoil control is managed through other combo elements.
 
@@ -6168,7 +6168,7 @@ Ten Wide's spin-steal deficit has two independent causes: lower effective I than
 
 ---
 
-## Case 155 — Double Bearing Core: Two-Stage Coupling Attenuation and Multi-Shaft Compatibility
+## Case 950 — Double Bearing Core: Two-Stage Coupling Attenuation and Multi-Shaft Compatibility
 
 > **Stock combo (Burning Kerberous):** AR: Triple Attacker · WD: Ten Wide · SG: Neo Right SG DB · SP: Cross Attack · BB: Customize Bearing Base
 
@@ -6392,7 +6392,7 @@ Cross Attack (0.79 g each, 1.58 g total) consists of two arc-shaped pieces each 
 
 A support part is orientation-invariant when its cross-section through the horizontal mid-plane is an axis of symmetry — the top and bottom faces are mirror images. From the side-view image, each Cross Attack piece is a thin, uniformly flat structure: the same profile is presented from above and below. Flipping the piece 180° about the mounting axis yields the same geometry at every contact radius.
 
-The stickers ("Smash Attack" on one side, "Spike Attack" on the other) suggest two functional orientations. From Case 152 (Cross Survivor) the general SP bidirectionality principle was established: most SPs produce genuinely different contact profiles when flipped. Cross Attack is the exception — the sticker labelling is aspirational; the geometry does not deliver either labelled attack type in either orientation.
+The stickers ("Smash Attack" on one side, "Spike Attack" on the other) suggest two functional orientations. From Case 947 (Cross Survivor) the general SP bidirectionality principle was established: most SPs produce genuinely different contact profiles when flipped. Cross Attack is the exception — the sticker labelling is aspirational; the geometry does not deliver either labelled attack type in either orientation.
 
 ### Contact Angle: Triangular Tips Pointing Radially Outward
 
@@ -6405,7 +6405,7 @@ Each triangular protrusion has its tip directed radially outward (away from the 
 
 For reference, good smash ARs achieve J_smash ≥ 0.90J (α ≤ 26°). Cross Attack at α = 80° delivers smash below the threshold of a flat circular rim contact and produces near-total radial recoil.
 
-Contact area: the triangular apex is a point → stress concentrator as in Case 153 (Triple Attacker diagonal penalty). The effective J is reduced further by elastic absorption at the tip:
+Contact area: the triangular apex is a point → stress concentrator as in Case 948 (Triple Attacker diagonal penalty). The effective J is reduced further by elastic absorption at the tip:
   Effective J_smash ≤ 0.10J after elastic energy is returned to the deforming tip rather than transmitted to the opponent.
 
 "Very little attack power" and "high recoil" are direct consequences of α ≈ 80°. No recoil-control strategy compensates for a 0.174J smash fraction — even with an ideally stable SG and WD, the delivered smash is insufficient to ring-out any competent opponent.
@@ -6433,7 +6433,7 @@ Compare to Defense Ring:    I = 3.30 × 10⁻⁶ kg·m²
 Compare to Cross Survivor:  I = 2.68 × 10⁻⁶ kg·m²
 Compare to Reverse Attack:  I ≈ 1.10 × 10⁻⁶ kg·m²
 
-Cross Attack at 9.9 × 10⁻⁷ kg·m² is lighter than Reverse Attack (the next-lightest SP) and adds barely 11 % of Defense Ring's inertia contribution. The 4-fold tip symmetry produces spin-neutral behaviour (identical left/right, as derived in Case 151 for Cross Dranzer) but this is irrelevant given the contact angle failure.
+Cross Attack at 9.9 × 10⁻⁷ kg·m² is lighter than Reverse Attack (the next-lightest SP) and adds barely 11 % of Defense Ring's inertia contribution. The 4-fold tip symmetry produces spin-neutral behaviour (identical left/right, as derived in Case 946 for Cross Dranzer) but this is irrelevant given the contact angle failure.
 
 ### Summary of Failure Modes
 
@@ -6553,7 +6553,7 @@ This is ~12% lower than CGB's estimate (CGB carries its metal-ring mass at r ≈
 
 ### Setup 1: Double Bearing Core + Neo SG (DBV) Shaft
 
-This is the free-spin zombie configuration. From Case 155–156, the dual-bearing torque attenuation gives:
+This is the free-spin zombie configuration. From Case 950–156, the dual-bearing torque attenuation gives:
 `
 τ_transmitted ≈ 2 × μ_b × F_axial × r_b
               ≈ 2 × 0.002 × 0.6 × 0.001 = 2.4×10⁻⁶ N·m
@@ -6614,7 +6614,7 @@ F_ridge = μ_tip × N_contact × cos(θ_lean)
 
 This is the same restoring mechanism that makes the tornado ridge effective for stamina-type drivers in general, now accessible to a zombie setup that previously could not reach it.
 
-The FACS mechanism itself (centrifugal clutch behavior) was analyzed in Case 150. At spin above ω_crit the clutch engages; below it the shaft disengages. CBB's shape prevents tip ejection during the rotational transient of clutch engagement because the internal bore taper grips the casing before the tip can migrate axially:
+The FACS mechanism itself (centrifugal clutch behavior) was analyzed in Case 945. At spin above ω_crit the clutch engages; below it the shaft disengages. CBB's shape prevents tip ejection during the rotational transient of clutch engagement because the internal bore taper grips the casing before the tip can migrate axially:
 
 `
 F_retain = k_spring_casing × x_insertion ≈ 3.5 N/mm × 0.8mm = 2.8 N  [estimated grip]
@@ -7339,7 +7339,7 @@ f_wing_LS_eff ≈ 0.327 × 0.6 = 0.196   [undercut catches less aggressively]
 ω_LAD_min_TG_LS = √(0.300 × 9.81 / 0.019) ≈ √(154.9) ≈ 12.44 rad/s
 `
 
-This is better than RS (13.16 rad/s) but still above Defense Ring (12.02 rad/s) and Cross Survivor (12.44 rad/s based on its tab geometry from Case 152). Twin Guard's LS LAD is approximately equal to Cross Survivor — usable but not best-in-class.
+This is better than RS (13.16 rad/s) but still above Defense Ring (12.02 rad/s) and Cross Survivor (12.44 rad/s based on its tab geometry from Case 947). Twin Guard's LS LAD is approximately equal to Cross Survivor — usable but not best-in-class.
 
 ### LS Defense: Thin Profile as a Recoil Liability
 
@@ -9201,7 +9201,7 @@ The body profile has rounded, convex outer edges with no sharp protrusions. For 
    Recoil component = J × sin(φ_local) where φ_local is small for a smooth curve
 ```
 
-Tall edges (height ≈ 4–5 mm estimated from profile images) extend the contact surface vertically, reducing the probability of an opponent's AR hooking under or over the AR body and engaging the hub or WD. This is the same principle as Defense Ring Support Parts (Case 149) — a taller smooth wall presents more surface for glancing deflection and less gap for a hook-over failure.
+Tall edges (height ≈ 4–5 mm estimated from profile images) extend the contact surface vertically, reducing the probability of an opponent's AR hooking under or over the AR body and engaging the hub or WD. This is the same principle as Defense Ring Support Parts (Case 944) — a taller smooth wall presents more surface for glancing deflection and less gap for a hook-over failure.
 
 The combined round + tall geometry gives a body-contact recoil fraction ≈ 0.12–0.18 — comparable to, and in some contact angles lower than, SG Semi-Flat Base. This is the "shape of these contact points and the AR as a whole are the main source of its decent defensive ability" — the rollers supplement but do not create the defense.
 
@@ -10473,7 +10473,7 @@ For a defense role the outer AR wall must produce near-zero recoil (φ ≈ 5–1
 
 ### 4. SG Bearing Version 2 Synergy
 
-SG Bearing Version 2 bases elevate the AR relative to standard bases. The height increase aligns the raised protrusions more consistently with opponents' AR contact zones across a wider range of opponent types — not just Circle Survivor, but also mid-height AR combinations. This is why Fire Cracker "is nonetheless an option on Attackers using SG (Bearing Version 2) setups" — the base height compensates partially for the contact height selectivity problem. Mountain Hammer is noted as more reliable in this role because its raised contact points are paired with heavier mass (see Case 148: 7.0 g vs. Fire Cracker's 4.7/5.1 g), providing more impulse per contact event at the same contact height advantage.
+SG Bearing Version 2 bases elevate the AR relative to standard bases. The height increase aligns the raised protrusions more consistently with opponents' AR contact zones across a wider range of opponent types — not just Circle Survivor, but also mid-height AR combinations. This is why Fire Cracker "is nonetheless an option on Attackers using SG (Bearing Version 2) setups" — the base height compensates partially for the contact height selectivity problem. Mountain Hammer is noted as more reliable in this role because its raised contact points are paired with heavier mass (see Case 943: 7.0 g vs. Fire Cracker's 4.7/5.1 g), providing more impulse per contact event at the same contact height advantage.
 
 ---
 
@@ -10661,7 +10661,7 @@ This is the constraint: "one must be careful that the Blade Base is fast enough 
 
 ### 5. Rotational Smash (Square Edge) Synergy
 
-Rotational Smash, as derived in Case 139 (Magne Weight Disk) and referenced for Square Edge, generates an attack impulse with a large tangential component relative to the AR. The recoil from this tangential component spins the AR backward — this is "rotational recoil." For a rotational smash contact:
+Rotational Smash, as derived in Case 934 (Magne Weight Disk) and referenced for Square Edge, generates an attack impulse with a large tangential component relative to the AR. The recoil from this tangential component spins the AR backward — this is "rotational recoil." For a rotational smash contact:
 
 ```
 J_rotational_recoil = J × r_contact / I_combo × I_combo
@@ -11020,3 +11020,4 @@ function clutchBoostDisruption(
 // clutchBoostDisruption(0.003, 9e-6, 900, 0.003, 0.35)
 // → { deltaOmega: 333, tipSkips: true, selfKORisk: ~0.22 }
 ```
+

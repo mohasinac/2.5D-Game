@@ -1,4 +1,4 @@
-# Physics Chain: Part 6
+﻿# Physics Chain: Part 6
 
 **« Part 5:** [5 case study.md](5%20case%20study.md) (Cases 236–296) | **Part 7 »** [7 case study.md](7%20case%20study.md) (Cases 354–374)
 
@@ -2506,7 +2506,7 @@ function lightningKOThreshold(m_kg: number, v_KO: number): number {
 
 ---
 
-## Case 308a — Metal Wheel: Mercury (29.0 g)
+## Case 1041 — Metal Wheel: Mercury (29.0 g)
 
 > **Stock combo (Mercury Anubius 85XF):** Clear Wheel: Anubius · Metal Wheel: Mercury · Track: 85 · Bottom: Extreme Flat
 
@@ -4249,7 +4249,7 @@ function guardianScrapeAngle(h_border_mm: number, r_outer_mm: number): number {
 
 ---
 
-## Case 320a — Crystal Wheel: Archer (5.16 g)
+## Case 1042 — Crystal Wheel: Archer (5.16 g)
 
 > **Stock combos:** Archer Gryph C145S · Archer Gargole SA165WSF · Archer Ifraid W145SB · Archer Killerken 130B · Archer Phoenic 125B
 > **Hasbro name:** Archer (unchanged)
@@ -4331,7 +4331,7 @@ function archerNutationTorque(deltaI: number, omega: number): number {
 
 ---
 
-## Case 320b — Crystal Wheel: Bandid (4.8 g)
+## Case 1043 — Crystal Wheel: Bandid (4.8 g)
 
 > **Stock combos:** Bandid Goreim DF145BS · Bandid Genbull F230TB · Bandid Killerken 125W²D
 > **Hasbro name:** Bandid (unchanged); Goreim = Goreim (unchanged)
@@ -4412,7 +4412,7 @@ function bandidRidgeFrequency(omega_rad_s: number, r_outer_mm: number, n_ridges:
 
 ---
 
-## Case 320c — Crystal Wheel: Berserker (4.5 g)
+## Case 1044 — Crystal Wheel: Berserker (4.5 g)
 
 > **Stock combo:** Berserker Begirados SR200BWD
 > **Hasbro name:** Berserker (unchanged); Begirados = **Behemoth**
@@ -4494,7 +4494,7 @@ function berserkerChainSmashEfficiency(phi_max_deg: number): number {
 
 ---
 
-## Case 320d — Crystal Wheel: Dark Knight (3.87 g)
+## Case 1045 — Crystal Wheel: Dark Knight (3.87 g)
 
 > **Stock combo:** Dark Knight Dragooon LW160BSF
 > **Hasbro name:** Dark Knight = **Ronin**; Dragooon = Dragooon (unchanged)
@@ -4580,7 +4580,7 @@ function darkKnightSpinTransferEfficiency(I_chrome: number, I_total: number, mu_
 
 ---
 
-## Case 320e — Crystal Wheel: Gladiator (5.37 g)
+## Case 1046 — Crystal Wheel: Gladiator (5.37 g)
 
 > **Stock combo:** Gladiator Bahamdia SP230GF
 > **Hasbro name:** Gladiator (unchanged); Bahamdia = **Bahamoote**
@@ -4669,7 +4669,7 @@ function gladiatorTipSmashFraction(phi_tip_deg: number, f_tip: number,
 
 ---
 
-## Case 320f — Crystal Wheel: Pirates (4.0 g)
+## Case 1047 — Crystal Wheel: Pirates (4.0 g)
 
 > **Stock combos:** Pirates Orojya 145D · Pirates Killerken A230JSB · Pirates Ifraid T125GCF · Pirates Saramanda T125WB · Pirates Revizer M145CF · Pirates Gryph 160CF · Pirates Phoenic WD145SF
 > **Hasbro name:** Pirates (unchanged); Orojya = Orochi
@@ -4748,7 +4748,7 @@ function piratesGripTorque(m_system_kg: number, r_interface_mm: number, mu: numb
 
 ---
 
-## Case 320g — Crystal Wheel: Samurai (5.4 g)
+## Case 1048 — Crystal Wheel: Samurai (5.4 g)
 
 > **Stock combos:** Samurai Ifraid W145CF · Samurai Saramanda E230ES · Samurai Orojya 145WD · Samurai Revizer SA165Q · Samurai Pegasis W105R²F
 > **Hasbro name:** Samurai (unchanged); Ifraid = Ifraid (unchanged)
@@ -4833,7 +4833,7 @@ function samuraiOrbContactRadius(W: number, R_orb_mm: number, Estar_GPa: number)
 
 ---
 
-## Case 320h — Crystal Wheel: Shinobi / Ninja (5.4 g)
+## Case 1049 — Crystal Wheel: Shinobi / Ninja (5.4 g)
 
 > **Stock combos:** Shinobi Saramanda SW145SD · Shinobi Ifraid 230WD · Shinobi Orojya 145ES · Shinobi Orojya 160WSF · Shinobi Gryph WD145TB · Shinobi Genbull 130W²D
 > **Hasbro name:** Shinobi = **Ninja**; Saramanda = **Salamander**
@@ -4923,7 +4923,7 @@ function shinobiCurveDeflectionFraction(delta_deg: number): number {
 
 ---
 
-## Case 320i — Crystal Wheel: Thief (5.3 g)
+## Case 1050 — Crystal Wheel: Thief (5.3 g)
 
 > **Stock combos:** Thief Phoenic E230GCF · Thief Saramanda 230WB · Thief Saramanda F230SF
 > **Hasbro name:** Thief (unchanged); original release colour: grey-yellow
@@ -5789,7 +5789,7 @@ function wbRestoringForce(W: number, R_mm: number, r_off_mm: number): number {
 
 ---
 
-## Case 326a — Bottom: Jog Ball / JB (est. 0.7 g)
+## Case 1051 — Bottom: Jog Ball / JB (est. 0.7 g)
 
 > **Stock combo (Rock Escolpio T125JB):** Clear Wheel: Escolpio · Metal Wheel: Rock · Track: T125 · Bottom: Jog Ball
 
@@ -9210,7 +9210,7 @@ function csVsRS(r_eff_CS_mm: number, r_eff_RS_mm: number, mu: number, W: number)
 
 ---
 
-## Case 353a — Fusion Wheel: Forbidden (31.7 g)
+## Case 1052 — Fusion Wheel: Forbidden (31.7 g)
 
 > **Stock combo (Forbidden Eonis ED145FB):** Clear Wheel: Eonis · Metal Wheel: Forbidden · Track: ED145 · Bottom: Flat Ball
 > **Stock combo (Forbidden Eonis 130D):** Clear Wheel: Eonis · Metal Wheel: Forbidden · Track: 130 · Bottom: Defense
@@ -9318,7 +9318,7 @@ function forbiddenAngularMomentum(I: number, omega: number): number { return I *
 
 ---
 
-## Case 353b — Track: Eternal Defense 145 / ED145 (3.6 g)
+## Case 1053 — Track: Eternal Defense 145 / ED145 (3.6 g)
 
 > **Stock combo (Forbidden Eonis ED145FB):** Clear Wheel: Eonis · Metal Wheel: Forbidden · Track: ED145 · Bottom: Flat Ball
 > **Stock combo (Clay Aries ED145B):** Clear Wheel: Aries · Metal Wheel: Clay · Track: ED145 · Bottom: Ball
@@ -9435,7 +9435,7 @@ function ed145EnergyLoss(tau_pivot: number, delta_theta_rad: number): number {
 
 ---
 
-## Case 353c — Bottom: Flat Ball / FB (0.6 g)
+## Case 1054 — Bottom: Flat Ball / FB (0.6 g)
 
 > **Stock combo (Forbidden Eonis ED145FB):** Clear Wheel: Eonis · Metal Wheel: Forbidden · Track: ED145 · Bottom: Flat Ball
 > **Stock combo (Forbidden Eonis 130D):** — (this variant uses Defense)
@@ -9579,7 +9579,7 @@ function fbHertzPressure(W: number, a: number): number { return (3 * W) / (2 * M
 
 ---
 
-## Case 353d — Clear Wheel: Eonis / Ionis (2.8 g)
+## Case 1055 — Clear Wheel: Eonis / Ionis (2.8 g)
 
 > **Stock combo (Forbidden Eonis ED145FB):** Clear Wheel: Eonis · Metal Wheel: Forbidden · Track: ED145 · Bottom: Flat Ball
 > **Stock combo (Forbidden Eonis 130D):** Clear Wheel: Eonis · Metal Wheel: Forbidden · Track: 130 · Bottom: Defense
@@ -9643,7 +9643,7 @@ function eonisContribution(I_eonis: number, I_wheel: number): number {
 
 ---
 
-## Case 353e — Fusion Wheel: Dark (31.4 g)
+## Case 1056 — Fusion Wheel: Dark (31.4 g)
 
 > **Stock combo (Dark Wolf DF145FS):** Clear Wheel: Wolf · Metal Wheel: Dark · Track: DF145 · Bottom: Flat Sharp
 > **Stock combo (Dark Cancer CH120SF):** Clear Wheel: Cancer · Metal Wheel: Dark · Track: CH120 · Bottom: Semi Flat
@@ -9748,7 +9748,7 @@ function darkSpikeContact(phi_deg: number, n_spikes: number, omega: number): {
 
 ---
 
-## Case 353f — Bottom: Flat Spike / Flat Sharp / FS (0.6 g)
+## Case 1057 — Bottom: Flat Spike / Flat Sharp / FS (0.6 g)
 
 > **Stock combo (Dark Wolf DF145FS):** Clear Wheel: Wolf · Metal Wheel: Dark · Track: DF145 · Bottom: Flat Sharp
 > **Stock combo (Gemios DF145FS):** Clear Wheel: Gemios · Metal Wheel: Gemios · Track: DF145 · Bottom: Flat Sharp
@@ -9892,7 +9892,7 @@ function fsHertzPressure(W: number, a: number): number { return (3 * W) / (2 * M
 
 ---
 
-## Case 353g — Clear Wheel: Wolf (3.1 g)
+## Case 1058 — Clear Wheel: Wolf (3.1 g)
 
 > **Stock combos:** Dark Wolf DF145FS · Earth Wolf 105WD · Burn Wolf SW145WD
 
@@ -9944,7 +9944,7 @@ function wolfContribution(I_wolf: number, I_wheel: number): number {
 
 ---
 
-## Case 353h — Fusion Wheel: Poison (29.8 g)
+## Case 1059 — Fusion Wheel: Poison (29.8 g)
 
 > **Stock combo (Poison Serpent SW145SD):** Clear Wheel: Serpent · Metal Wheel: Poison · Track: SW145 · Bottom: Semi Defense
 > **Stock combo (Poison Giraffe S130MB):** Clear Wheel: Giraffe · Metal Wheel: Poison · Track: S130 · Bottom: Metal Ball
@@ -10075,7 +10075,7 @@ function poisonVsEarth(I_poison: number, I_earth: number, m_poison: number, m_ea
 
 ---
 
-## Case 353j — Fusion Wheel: Spiral (34.2 g)
+## Case 1060 — Fusion Wheel: Spiral (34.2 g)
 
 > **Stock combos:** Spiral Capricorn 90MF (BB-102, Dr. Ziggurat) · Spiral Lyre ED145MF · Spiral Fox TR145W2D · Spiral Tempo S130MF
 > **JP name:** Screw (スクリュー, Sukuryū) — English localisation is Spiral.
@@ -10280,7 +10280,7 @@ function spiralSystemFraction(I_wheel: number, I_system: number): number {
 
 ---
 
-## Case 353i — Clear Wheel: Serpent (2.9 g)
+## Case 1061 — Clear Wheel: Serpent (2.9 g)
 
 > **Stock combos:** Poison Serpent SW145SD · Earth Serpent 130WD · Burn Serpent (various)
 
@@ -10337,7 +10337,7 @@ function serpentContribution(I_serpent: number, I_wheel: number): number {
 
 ---
 
-## Case 353k — Chrome Wheel: Ifraid (51.26 g)
+## Case 1062 — Chrome Wheel: Ifraid (51.26 g)
 
 > **Stock combos:** Samurai Ifraid W145CF (BBG-01, Zyro Kurogane protagonist bey) · Saramanda Ifraid W145CF (top Ifraid Synchrome attack build)
 > **System:** ZeroG Synchrome · **Series:** Beyblade: Shogun Steel / Zero-G · **Type:** Attack (Warrior Wheel class)
@@ -10428,7 +10428,7 @@ function ifraidSynchromeAdvantage(I_Ifraid: number, I_partner: number): number {
 
 ---
 
-## Case 353l — Chrome Wheel: Begirados (45.6 g)
+## Case 1063 — Chrome Wheel: Begirados (45.6 g)
 
 > **Stock combos:** Berserker Begirados SR200BWD (BBG-22, Kira Hayama first bey) · Begirados Ifraid attack Synchrome (top partner for Ifraid)
 > **System:** ZeroG Synchrome · **Type:** Balance (heavy defensive profile) · **Spin Direction:** Right
@@ -10496,7 +10496,7 @@ function begirados3Zone(m_g: number): number {
 
 ---
 
-## Case 353m — Chrome Wheel: Goreim (21.04 g)
+## Case 1064 — Chrome Wheel: Goreim (21.04 g)
 
 > **Stock combos:** Bandid Goreim F230TB (defense) · Goreim Revizer E230SB (stamina Synchrome) · Goreim Dragooon (left-spin partner)
 > **System:** ZeroG Synchrome · **Type:** Defense · **Spin Direction:** Right
@@ -10562,7 +10562,7 @@ function goreimInertia(m_g: number): number {
 
 ---
 
-## Case 353n — Chrome Wheel: Saramanda (25.35 g)
+## Case 1065 — Chrome Wheel: Saramanda (25.35 g)
 
 > **Stock combos:** Saramanda Ifraid W145CF (top Ifraid Synchrome attack build, Zyro's upgraded combo) · Ronin Saramanda LW160BSF (left-spin attack variant)
 > **System:** ZeroG Synchrome · **Type:** Attack · **Spin Direction:** Right
@@ -10634,7 +10634,7 @@ function saramandaInertia(m_g: number): number {
 
 ---
 
-## Case 353o — Chrome Wheel: Orojya (25.94 g)
+## Case 1066 — Chrome Wheel: Orojya (25.94 g)
 
 > **Stock combos:** Pirate Orojya (various Pirate-faction builds) · Orojya Revizer (defense Synchrome)
 > **System:** ZeroG Synchrome · **Type:** Stamina/Balance · **Spin Direction:** Right
@@ -10672,7 +10672,7 @@ function orojyaInertia(m_g: number): number {
 
 ---
 
-## Case 353p — Chrome Wheel: Girago (29.8 g)
+## Case 1067 — Chrome Wheel: Girago (29.8 g)
 
 > **Stock combos:** Shinobi Girago (Ninja-faction builds) · Girago Ifraid attack Synchrome
 > **System:** ZeroG Synchrome · **Type:** Attack · **Spin Direction:** Right
@@ -10716,7 +10716,7 @@ function giragoInertia(m_g: number): number {
 
 ---
 
-## Case 353q — Chrome Wheel: Balro (29.4 g)
+## Case 1068 — Chrome Wheel: Balro (29.4 g)
 
 > **Stock combos:** Various SS-era attack builds · Balro Ifraid attack Synchrome
 > **System:** ZeroG Synchrome · **Type:** Attack · **Spin Direction:** Right
@@ -10756,7 +10756,7 @@ function balroInertia(m_g: number): number {
 
 ---
 
-## Case 353r — Chrome Wheel: Genbull (30.4 g)
+## Case 1069 — Chrome Wheel: Genbull (30.4 g)
 
 > **Stock combos:** Bandid Genbull F230TB (BBG-19, defense) · Genbull Revizer (defense Synchrome) · Goreim Genbull (heavy defense stack)
 > **System:** ZeroG Synchrome · **Type:** Defense · **Spin Direction:** Right
@@ -10807,7 +10807,7 @@ function genbullInertia(m_g: number): number {
 
 ---
 
-## Case 353s — Chrome Wheel: Wyvang (30.6 g)
+## Case 1070 — Chrome Wheel: Wyvang (30.6 g)
 
 > **Stock combos:** Wyvang attack Synchrome builds · Wyvang Genbull (mixed attack/defense)
 > **System:** ZeroG Synchrome · **Type:** Attack · **Spin Direction:** Right
@@ -10857,7 +10857,7 @@ function wyvangInertia(m_g: number): number {
 
 ---
 
-## Case 353t — Chrome Wheel: Leviathan (27.31 g)
+## Case 1071 — Chrome Wheel: Leviathan (27.31 g)
 
 > **Stock combos:** Guardian Leviathan 160SB (BBG-26, Kite's bey) · Pirate Leviathan 160D · Goreim Leviathan E230SB (stamina Synchrome)
 > **System:** ZeroG Synchrome · **Type:** Defense · **Spin Direction:** Right
@@ -10909,7 +10909,7 @@ function leviathanRevolverRecoil(theta_groove_deg: number, theta_contact_deg: nu
 
 ---
 
-## Case 353u — Spin Track: W145 (Wing 145) — ZeroG
+## Case 1072 — Spin Track: W145 (Wing 145) — ZeroG
 
 > **Stock combos:** Samurai Ifraid W145CF (BBG-01, Zyro protagonist) · Saramanda Ifraid W145CF (top attack Synchrome)
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Wing skirt
@@ -10972,7 +10972,7 @@ function w145Inertia(m_g: number): number {
 
 ---
 
-## Case 353v — Spin Track: LW160 (Left Wing 160) — ZeroG
+## Case 1073 — Spin Track: LW160 (Left Wing 160) — ZeroG
 
 > **Stock combos:** Ronin Dragoon LW160BSF (BBG-16, Sakyo Kurayami left-spin bey) · Samurai Pegasis W105R2F (different; LW160 dedicated to Dragoon builds)
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Left-Wing skirt
@@ -11030,7 +11030,7 @@ function lw160VsW145HeightEffect(h_lw160: number, h_w145: number): number {
 
 ---
 
-## Case 353w — Spin Track: 500 (50.0 mm Extreme Height) — ZeroG
+## Case 1074 — Spin Track: 500 (50.0 mm Extreme Height) — ZeroG
 
 > **Stock combos:** Pirate Orochi 500E (BBG-31, tallest bey in franchise history)
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Extreme height tube
@@ -11100,7 +11100,7 @@ function track500TopplingRisk(height_mm: number, standard_height_mm: number): nu
 
 ---
 
-## Case 353x — Spin Track: SP230 (Spike 230) — ZeroG
+## Case 1075 — Spin Track: SP230 (Spike 230) — ZeroG
 
 > **Stock combos:** Gladiator Bahamoote SP230GF (BBG-27, Kira Hayama second bey)
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Spike-claw 230
@@ -11169,7 +11169,7 @@ function sp230ClawResistance(m_bey_kg: number, tilt_deg: number, mu_claw: number
 
 ---
 
-## Case 353y — Spin Track: F230 (Free 230 / Fusion 230) — ZeroG
+## Case 1076 — Spin Track: F230 (Free 230 / Fusion 230) — ZeroG
 
 > **Stock combos:** Bandid Genbull F230TB (BBG-19)
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Free-spinning split track
@@ -11217,7 +11217,7 @@ function f230VibrationAttenuation(attenuation: number, impactForce: number): num
 
 ---
 
-## Case 353z — Spin Track: E230 (Energy 230 / Sliding) — ZeroG
+## Case 1077 — Spin Track: E230 (Energy 230 / Sliding) — ZeroG
 
 > **Stock combos:** Goreim Revizer E230SB (stamina Synchrome, top ZeroG stamina build)
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Sliding disc (vertical-shift)
@@ -11291,7 +11291,7 @@ function e230DiscSlideStaminaBonus(disc_slide_mm: number, track_height_mm: numbe
 
 ---
 
-## Case 354a — Performance Tip: CF (Circle Flat / Claw Flat) — ZeroG
+## Case 1078 — Performance Tip: CF (Circle Flat / Claw Flat) — ZeroG
 
 > **Stock combos:** Samurai Ifraid W145CF (BBG-01) · Saramanda Ifraid W145CF · various attack Synchrome builds
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Tip type:** Wide disc flat
@@ -11366,7 +11366,7 @@ function cfDecayRate(I_system: number, m_total_kg: number, mu_eff: number, r_cen
 
 ---
 
-## Case 354b — Performance Tip: BSF (Blade Semi-Flat) — ZeroG
+## Case 1079 — Performance Tip: BSF (Blade Semi-Flat) — ZeroG
 
 > **Stock combos:** Ronin Dragoon LW160BSF (BBG-16, Sakyo Kurayami) · various left-spin builds
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Tip type:** Semi-flat with 8 blade fins
@@ -11432,7 +11432,7 @@ function bsfSwaySout(m_total_kg: number, tilt_deg: number, mu_fin: number): numb
 
 ---
 
-## Case 354c — Performance Tip: BWD (Big Wide Defense) — ZeroG
+## Case 1080 — Performance Tip: BWD (Big Wide Defense) — ZeroG
 
 > **Stock combos:** Berserker Begirados SR200BWD (BBG-22, Kira Hayama bey) · Guardian Revizer E230BWD
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Tip type:** Wide defense cone
@@ -11493,7 +11493,7 @@ function bwdRecoil(theta_deg: number): { smash: number; recoil: number } {
 
 ---
 
-## Case 354d — Performance Tip: GCF (Gear Circle Flat) — ZeroG
+## Case 1081 — Performance Tip: GCF (Gear Circle Flat) — ZeroG
 
 > **Stock combos:** Gladiator Bahamoote SP230GCF (BBG-27) · various ZeroG balance builds
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Tip type:** Gear-edge disc flat
@@ -11544,7 +11544,7 @@ function gcfWallEngagement(mu_tooth: number, tooth_fraction: number): number {
 
 ---
 
-## Case 354e — Performance Tip: E (Eternal) — ZeroG / MFB
+## Case 1082 — Performance Tip: E (Eternal) — ZeroG / MFB
 
 > **Stock combos:** Pirate Orochi 500E (BBG-31) · various stamina builds requiring free-spinning tip
 > **System:** ZeroG Synchrome / HWS · **Gen:** Gen2 · **Tip type:** Free-spinning sharp point
@@ -11592,7 +11592,7 @@ function eternalSpinDecay(I_system: number, m_kg: number, mu_bearing: number, r_
 
 ---
 
-## Case 354f — Performance Tip: TB (Twin Ball) — ZeroG
+## Case 1083 — Performance Tip: TB (Twin Ball) — ZeroG
 
 > **Stock combos:** Bandid Genbull F230TB (BBG-19) · Bandid Goreim F230TB (defense builds)
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Tip type:** Twin-ball dual hemisphere
@@ -11645,7 +11645,7 @@ function tbWobbleForce(m_inner_kg: number, omega_rads: number, eccentricity_m: n
 
 ---
 
-## Case 354g — Fusion Wheel: Grand (29.3 g)
+## Case 1084 — Fusion Wheel: Grand (29.3 g)
 
 > **Stock combos:** Grand Capricorn 145D · Grand Aquario 145D · Grand Cygnus CH120GCF · Grand Ketos CH120GCF
 > **JP name:** Grand (グランド, Gurando)
@@ -11774,7 +11774,7 @@ function grandSystemDecay(I_system: number, m_total_kg: number, mu_D: number, r_
 
 ---
 
-## Case 354h — Energy Ring: Capricorn (2.9 g)
+## Case 1085 — Energy Ring: Capricorn (2.9 g)
 
 > **Stock combos:** Spiral Capricorn 90MF · Grand Capricorn 145D · Fury Capricorn 100HF · Rock Capricorn 90RF
 > **System:** HWS (Hybrid Wheel System) · **Gen:** Gen2-MFB · **CW type:** Two-goat-head angular ring
@@ -11846,7 +11846,7 @@ function capricornMassFraction(m_cw_g: number, m_fw_g: number): number {
 
 ---
 
-## Case 354i — Spin Track: 145 — MFB Standard
+## Case 1086 — Spin Track: 145 — MFB Standard
 
 > **Stock combos:** Grand Capricorn 145D · Rock Cancer CH120/145 · Lightning L-Drago 100HF/145LRF · Burn Fireblaze 135/145
 > **System:** HWS (Hybrid Wheel System) / MFS · **Gen:** Gen2-MFB · **Track type:** Plain fixed-height hexagonal
@@ -11912,7 +11912,7 @@ function track145TippingOmega(m_total_kg: number, h_CoG_m: number, I_spin: numbe
 
 ---
 
-## Case 354j — Performance Tip: D (Defense) — MFB
+## Case 1087 — Performance Tip: D (Defense) — MFB
 
 > **Stock combos:** Grand Capricorn 145D · Rock Leone 145D · Rock Aquario 145D · Earth Eagle 145WD (D variant)
 > **System:** HWS (Hybrid Wheel System) / MFS · **Gen:** Gen2-MFB · **Tip type:** Wide defense cone (first MFB defense tip)
@@ -11994,3 +11994,410 @@ function dTipRecoil(theta_deg: number): { smash: number; recoilDir: number; reco
 // dTipDecay(8.05e-6, 0.034)                   → 16.7 rad/s²  (Grand Capricorn 145D)
 // dTipRecoil(35)                              → { smash: 0.819, recoilDir: 0.574, recoveryAngle: 55 }
 //   → 55° recovery arc — bey self-centres after wall contact (passive defense recovery)
+
+---
+
+## Case 1127 — Samurai Ifraid W145CF: Ifraid Chrome Wheel + Samurai Crystal Wheel + W145 + CF (Zero-G / Synchrome System, Smash Attack)
+
+**Assembly mass:** Ifraid Chrome Wheel (51.26 g, Case 1062) + Samurai Crystal Wheel (5.4 g, Case 1048) + W145 Wing Track (Case 1072, est. 3.8 g) + CF tip (Case 1078, est. 0.7 g) = **61.16 g**
+
+**Generation:** Gen 2 — Zero-G (Synchrome System)  
+**Role classification:** Smash Attack / High-Mass KO  
+**Spin direction:** Right
+
+---
+
+### 1. Moment of Inertia Budget
+
+Zero-G Chrome Wheels use the outer shell as the primary inertia source. Synchrome inner Chrome Wheel modelled as dominant annular ring.
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) | % of I_total |
+|-----------|-------|----------|----------|-----------------|-------------|
+| Ifraid Chrome Wheel | 51.26 | 44 | 12 | 51.78 | 80.6 % |
+| Samurai Crystal Wheel | 5.4 | 38 | 26 | 5.16 | 8.0 % |
+| W145 Track | 3.8 | 30 | 6 | 1.73 | 2.7 % |
+| CF Tip | 0.7 | 12 | 0 | 0.050 | 0.1 % |
+| Stone Face + Bolt | ~1.0 | 5 | 0 | 0.013 | 0.0 % |
+| **Total** | **62.16** | — | — | **58.73** | 100 % |
+
+I_total = **5.873×10⁻⁵ kg·m²**
+
+---
+
+### 2. Launch Conditions and Spin Decay
+
+**Zero-G standard launch RPM:** 800–1 000 RPM with standard Zero-G launcher  
+ω₀ = 2π × 900 / 60 ≈ **94.2 rad/s**  
+L₀ = 5.873×10⁻⁵ × 94.2 = **5.533×10⁻³ N·m·s**
+
+**CF tip friction:** Case 1078 establishes CF as a medium-grip circular flat tip.  
+μ_CF = 0.28 (rubber compound, confirmed in Case 1078 analysis)  
+r_contact = 8 mm  
+τ = 0.28 × 0.06216 × 9.81 × 0.008 = **1.375×10⁻³ N·m**  
+dω/dt = 1.375×10⁻³ / 5.873×10⁻⁵ = **23.4 rad/s²**  
+t_stall = 94.2 / 23.4 = **4.0 s** (tip friction dominated)
+
+---
+
+### 3. Ifraid Chrome Wheel Dominance (Case 1062 Cross-Reference)
+
+Ifraid at 51.26 g is the **heaviest Zero-G Chrome Wheel in the standard library** (51.26 g vs Begirados 45.6 g second-heaviest). Its I contribution (51.78×10⁻⁶) accounts for 80.6% of the assembly total — Ifraid's geometry dictates combat performance almost entirely.
+
+Ifraid's six triangular blades create six equally-spaced smash contacts at r_contact ≈ 40 mm. Per-contact impulse:
+
+J_contact = m_eff × Δv_rel  
+m_eff = (m_Ifraid × m_opponent) / (m_Ifraid + m_opponent) ≈ (0.05126 × 0.055) / (0.05126 + 0.055) = 0.0266 kg (vs 55 g opponent)  
+Δv_rel at ω₀ = v_tip = ω₀ × r_blade = 94.2 × 0.040 = 3.77 m/s  
+J = m_eff × v_rel × (1 + e) = 0.0266 × 3.77 × 1.3 (e=0.3 for metal-on-plastic) = **0.130 N·s** per contact
+
+This is a very high impulse value — sufficient to ring-out a 55 g opponent from the center of a standard Zero-G dish in a single high-energy contact event.
+
+---
+
+### 4. W145 Track Effect (from Case 1072)
+
+W145 (Wing 145, Case 1072) provides three forward-swept plastic wings at 14.5 mm height. The wings serve two functions:
+1. **Upward deflection:** Wings catch glancing upper contacts from opponents using tall tracks (230+), deflecting force partially upward and reducing effective smash energy transfer to the assembly. This reduces self-destabilisation by ~15% per contact at high approach angles.
+2. **Rotational drag:** Wing surface area ~9.2 cm² per wing in the laminar flow regime. Drag torque at ω₀: τ_drag ≈ 0.5 × ρ_air × A × C_D × r³ × ω² ≈ 8×10⁻⁶ N·m (negligible vs friction torque 1.375×10⁻³ N·m; aerodynamic contribution < 0.6%).
+
+---
+
+### 5. Assembly Verdict
+
+| Attribute | Value |
+|-----------|-------|
+| I_total | 5.873×10⁻⁵ kg·m² |
+| ω₀ | 94.2 rad/s |
+| L₀ | 5.533×10⁻³ N·m·s |
+| t_stall | 4.0 s |
+| Single-contact KO impulse | 0.130 N·s (sufficient for ring-out) |
+| Primary KO mechanism | Six-blade smash at r=40 mm |
+| Effective combat role | Dominant smash attack — one of the highest-momentum assemblies in Zero-G |
+| WBO competitive viability | Tier 1 attack in Zero-G meta |
+
+**Conclusion:** Samurai Ifraid W145CF leverages Ifraid's status as the heaviest Chrome Wheel to deliver the highest angular momentum (5.533×10⁻³ N·m·s) among standard Single-Layer Zero-G assemblies. CF's rubber flat tip enables controlled flower-pattern movement while maintaining radial velocity at the blade tips. W145's upward deflection moderately reduces incoming recoil. The assembly has just 4.0 s of spin life, but this is irrelevant since it wins through KO, not stamina. **The stock configuration is functionally optimal for attack.**
+
+---
+
+## Case 1128 — Pirates Orojya 145D: Orojya Chrome Wheel + Pirates Crystal Wheel + 145 + D (Zero-G / Synchrome System, Defense / Stamina)
+
+**Assembly mass:** Orojya Chrome Wheel (25.94 g, Case 1066) + Pirates Crystal Wheel (4.0 g, Case 1047) + 145 track (Case 1086, est. 2.0 g) + D tip (Case 1087, est. 0.68 g) = **32.62 g**
+
+**Generation:** Gen 2 — Zero-G (Synchrome System)  
+**Role classification:** Defense / Stamina  
+**Spin direction:** Right
+
+---
+
+### 1. Moment of Inertia Budget
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) | % of I_total |
+|-----------|-------|----------|----------|-----------------|-------------|
+| Orojya Chrome Wheel | 25.94 | 42 | 15 | 26.01 | 83.7 % |
+| Pirates Crystal Wheel | 4.0 | 36 | 24 | 3.39 | 10.9 % |
+| 145 Track | 2.0 | 20 | 6 | 0.40 | 1.3 % |
+| D Defense Tip | 0.68 | 10 | 0 | 0.034 | 0.1 % |
+| **Total** | **32.62** | — | — | **29.83** | 100 % |
+
+I_total = **2.983×10⁻⁵ kg·m²**
+
+---
+
+### 2. Launch Conditions and Spin Decay
+
+ω₀ = 94.2 rad/s  
+L₀ = 2.983×10⁻⁵ × 94.2 = **2.810×10⁻³ N·m·s**
+
+**D tip friction:** Case 1087 establishes D (Defense) as a wide ball-type tip providing centripetal tendency back to center.  
+μ_D = 0.12 (smooth rubber hemisphere, controlled roll)  
+r_contact = 4 mm (hemisphere)  
+τ = 0.12 × 0.03262 × 9.81 × 0.004 = **1.533×10⁻⁴ N·m**  
+dω/dt = 1.533×10⁻⁴ / 2.983×10⁻⁵ = **5.14 rad/s²**  
+**t_stall = 94.2 / 5.14 = 18.3 s** (exceptional stamina for Zero-G)
+
+---
+
+### 3. Assembly Verdict
+
+| Attribute | Value |
+|-----------|-------|
+| I_total | 2.983×10⁻⁵ kg·m² |
+| ω₀ | 94.2 rad/s |
+| L₀ | 2.810×10⁻³ N·m·s |
+| t_stall | 18.3 s |
+| Primary mechanic | D tip centripetal centering + Orojya's low-recoil geometry |
+| Effective combat role | Stamina / passive defense hybrid |
+| WBO competitive viability | Solid stamina option in Zero-G format |
+
+**Conclusion:** Orojya's rounded outer profile (Case 1066: low-recoil geometry) combined with the D tip's centripetal tendency and 18.3 s theoretical spin life makes Pirates Orojya 145D the **most stamina-efficient single-Chrome-Wheel Zero-G assembly in the covered parts library**. Against attack types, the rounded shell deflects rather than absorbs, and the D tip recenters after knockback. The stock config is near-optimal for its intended defense/stamina role.
+
+---
+
+## Case 1129 — Thief Phoenic E230GCF: Phoenic Chrome Wheel + Thief Crystal Wheel + E230 + GCF (Zero-G / Synchrome System, Stamina / Tall Evasion)
+
+**Assembly mass:** Phoenic Chrome Wheel (29.8 g, Case 310) + Thief Crystal Wheel (5.3 g, Case 1050) + E230 track (Case 1077, est. 5.5 g) + GCF tip (Case 1081, est. 0.8 g) = **41.4 g**
+
+**Generation:** Gen 2 — Zero-G (Synchrome System)  
+**Role classification:** Tall-Height Stamina / Low-Contact Evasion  
+**Spin direction:** Right
+
+---
+
+### 1. Moment of Inertia Budget
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) | % of I_total |
+|-----------|-------|----------|----------|-----------------|-------------|
+| Phoenic Chrome Wheel | 29.8 | 42 | 16 | 28.99 | 79.8 % |
+| Thief Crystal Wheel | 5.3 | 36 | 24 | 4.49 | 12.4 % |
+| E230 Track | 5.5 | 22 | 6 | 1.41 | 3.9 % |
+| GCF Tip | 0.8 | 13 | 0 | 0.068 | 0.2 % |
+| **Total** | **41.4** | — | — | **34.96** | 100 % |
+
+I_total = **3.496×10⁻⁵ kg·m²**
+
+---
+
+### 2. Spin Decay
+
+ω₀ = 94.2 rad/s  
+**GCF tip (Case 1081):** Gear Circle Flat — gear ring outer contact, μ_GCF ≈ 0.18 (gear-tooth bearing contact, reduced sliding friction)  
+r_contact = 10 mm (outer gear ring)  
+τ = 0.18 × 0.0414 × 9.81 × 0.010 = **7.31×10⁻⁴ N·m** (surprisingly high — gear ring has larger contact radius than expected)  
+dω/dt = 7.31×10⁻⁴ / 3.496×10⁻⁵ = **20.9 rad/s²**  
+t_stall = 94.2 / 20.9 = **4.5 s**
+
+**E230 height advantage:** At 23.0 mm height, E230 elevates the Chrome Wheel contact zone to 28–32 mm above the dish. Standard-height opponents (145 = 14.5 mm) contact Phoenic at the lower-third of the wheel where blade geometry is thinner — reducing smash impulse transfer by approximately 35% vs equatorial contact.
+
+---
+
+### 3. Assembly Verdict
+
+| t_stall | 4.5 s |
+|---------|-------|
+| E230 effective contact evasion | ~35% impulse reduction vs 145-track opponents |
+| Primary weakness | GCF higher-than-expected friction; stamina shorter than D tip by 13.8 s |
+| WBO competitive viability | Situational — effective vs short-track opponents; loses stamina race to D/WD-tipped assemblies |
+
+**Conclusion:** Phoenic E230GCF's tall track provides meaningful contact evasion against standard-height Zero-G assemblies, but GCF's elevated friction (due to gear-ring contact radius) limits spin life to 4.5 s — well below optimal stamina. **The tall-height evasion is the only genuine advantage; this assembly loses outright to stamina-type configurations.**
+
+---
+
+## Case 1130 — Dark Knight Dragooon LW160BSF: Dragooon Chrome Wheel + Dark Knight Crystal Wheel + LW160 + BSF (Zero-G / Synchrome System, Left-Wing Stamina)
+
+**Assembly mass:** Dragooon Chrome Wheel (30.9 g, Case 316) + Dark Knight Crystal Wheel (3.87 g, Case 1045) + LW160 track (Case 1073, est. 4.2 g) + BSF tip (Case 1079, est. 0.8 g) = **39.77 g**
+
+**Generation:** Gen 2 — Zero-G (Synchrome System)  
+**Role classification:** Left-Wing Spin Stabilisation / Stamina  
+**Spin direction:** Right (LW160 functions with RS by design)
+
+---
+
+### 1. Moment of Inertia and Spin Decay
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) |
+|-----------|-------|----------|----------|-----------------|
+| Dragooon Chrome Wheel | 30.9 | 43 | 15 | 30.44 |
+| Dark Knight Crystal Wheel | 3.87 | 35 | 23 | 3.14 |
+| LW160 Track | 4.2 | 28 | 5 | 1.69 |
+| BSF Tip | 0.8 | 11 | 0 | 0.048 |
+| **Total** | **39.77** | — | — | **35.32** |
+
+I_total = **3.532×10⁻⁵ kg·m²**
+
+ω₀ = 94.2 rad/s; L₀ = 3.327×10⁻³ N·m·s
+
+**BSF tip (Case 1079):** Blade Semi-Flat — blade-shaped contact patch, μ_BSF ≈ 0.22  
+r_contact = 7 mm; τ = 0.22 × 0.03977 × 9.81 × 0.007 = **6.02×10⁻⁴ N·m**  
+dω/dt = 6.02×10⁻⁴ / 3.532×10⁻⁵ = **17.0 rad/s²**; t_stall = 94.2 / 17.0 = **5.5 s**
+
+**LW160 wing geometry (Case 1073):** Left-wing sweepback at 160 mm height. Left-swept wings at RS generate downward aerodynamic force at high ω, reducing effective normal force → reducing friction → extending spin life. Estimated spin life extension from aerodynamic download at ω₀: reduces τ_friction by ~8% → t_stall improves to ~**6.0 s** net.
+
+---
+
+### 2. Assembly Verdict
+
+| t_stall | ~6.0 s |
+|---------|--------|
+| LW160 aero benefit | ~8% spin extension |
+| BSF tip pattern | Blade contact → slightly directional movement |
+| Competitive viability | Mid-tier Zero-G stamina; LW160 aero benefit is real but modest |
+
+---
+
+## Case 1131 — Archer Gargole SA165WSF: Gargole Chrome Wheel + Archer Crystal Wheel + SA165 + WSF (Zero-G / Synchrome System, Attack-Defense Hybrid)
+
+**Assembly mass:** Gargole Chrome Wheel (29.5 g, Case 311) + Archer Crystal Wheel (5.16 g, Case 1042) + SA165 track (Case 312, est. 6.18 g) + WSF tip (Case 334, est. 0.7 g) = **41.54 g**
+
+**Generation:** Gen 2 — Zero-G (Synchrome System)  
+**Role classification:** Attack-Defense Hybrid / Switch-Height Contact  
+**Spin direction:** Right
+
+---
+
+### 1. Moment of Inertia and Spin Decay
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) |
+|-----------|-------|----------|----------|-----------------|
+| Gargole Chrome Wheel | 29.5 | 42 | 16 | 28.69 |
+| Archer Crystal Wheel | 5.16 | 36 | 24 | 4.37 |
+| SA165 Track | 6.18 | 28 | 5 | 2.49 |
+| WSF Tip | 0.7 | 11 | 0 | 0.042 |
+| **Total** | **41.54** | — | — | **35.59** |
+
+I_total = **3.559×10⁻⁵ kg·m²**  
+ω₀ = 94.2 rad/s; L₀ = 3.353×10⁻³ N·m·s
+
+**WSF tip (Case 334):** Wide Semi-Flat — μ_WSF ≈ 0.25, r_contact = 9 mm  
+τ = 0.25 × 0.04154 × 9.81 × 0.009 = **9.18×10⁻⁴ N·m**  
+dω/dt = 9.18×10⁻⁴ / 3.559×10⁻⁵ = **25.8 rad/s²**; t_stall = **3.7 s**
+
+**SA165 switch mechanism (Case 312):** SA165's switch attack design allows the outer wings to fold under impact and re-extend. This provides intermittent contact surface changing between standard 165-mm height and a folded ~140-mm profile. At high spin, wings extend due to centrifugal force, maximizing contact zone for attack. At low spin (< 35% ω₀), wings fold under impact, reducing the attack surface and lowering recoil vulnerability.
+
+---
+
+### 2. Assembly Verdict
+
+| t_stall | 3.7 s |
+|---------|-------|
+| SA165 active mechanism | Wing fold at low spin reduces late-match vulnerability |
+| WSF movement | Wide semi-flat → moderate flower pattern |
+| Primary role | Mid-match attack; late-match defense via wing fold |
+| Competitive viability | Useful in mixed-speed matchups; outclassed by pure attack (Ifraid) or pure stamina (Orojya/D) |
+
+---
+
+## Case 1132 — Berserker Begirados SR200BWD: Begirados Chrome Wheel + Berserker Crystal Wheel + SR200 + BWD (Zero-G / Synchrome System, Stamina / High-Track Defense)
+
+**Assembly mass:** Begirados Chrome Wheel (45.6 g, Case 1063) + Berserker Crystal Wheel (4.5 g, Case 1044) + SR200 track (Case 314, est. 3.3 g) + BWD tip (Case 1080, est. 0.8 g) = **54.2 g**
+
+**Generation:** Gen 2 — Zero-G (Synchrome System)  
+**Role classification:** Stamina / Defense at 200 mm height  
+**Spin direction:** Right
+
+---
+
+### 1. Moment of Inertia and Spin Decay
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) |
+|-----------|-------|----------|----------|-----------------|
+| Begirados Chrome Wheel | 45.6 | 44 | 13 | 45.71 |
+| Berserker Crystal Wheel | 4.5 | 36 | 24 | 3.81 |
+| SR200 Track | 3.3 | 24 | 6 | 1.01 |
+| BWD Tip | 0.8 | 14 | 0 | 0.078 |
+| **Total** | **54.2** | — | — | **50.60** |
+
+I_total = **5.060×10⁻⁵ kg·m²**  
+ω₀ = 94.2 rad/s; L₀ = 4.767×10⁻³ N·m·s
+
+**BWD tip (Case 1080):** Big Wide Defense — μ_BWD ≈ 0.10, r_contact = 12 mm (very wide ball)  
+τ = 0.10 × 0.0542 × 9.81 × 0.012 = **6.38×10⁻⁴ N·m**  
+dω/dt = 6.38×10⁻⁴ / 5.060×10⁻⁵ = **12.6 rad/s²**; t_stall = **7.5 s**
+
+**SR200 + Height at 200 mm:** SR200 elevates the Chrome Wheel contact zone to ~25–30 mm above dish. At 200 mm, most standard-height opponents (145, 165) cannot make equatorial contact with Begirados. They contact the lower shell edge instead — approximately 28% lower effective impulse transfer vs equatorial contact. Stamina benefit from reduced per-contact energy loss: approximately **+1.4 s** net over 145-height equivalent.
+
+Adjusted t_stall: **~8.9 s**
+
+---
+
+### 2. Assembly Verdict
+
+| I_total | 5.060×10⁻⁵ kg·m² |
+|---------|-----------------|
+| t_stall | ~8.9 s |
+| Height evasion bonus | +1.4 s (reduced per-contact energy loss at 200 mm) |
+| Primary strength | High-mass stamina with height evasion; Begirados 2nd-heaviest CW after Ifraid |
+| Primary weakness | Tall assembly susceptible to upper-attack from Ifraid/other smash types at correct angle |
+| WBO competitive viability | Strong stamina-defense tier |
+
+---
+
+## Case 1133 — Bandid Genbull F230TB: Genbull Chrome Wheel + Bandid Crystal Wheel + F230 + TB (Zero-G / Synchrome System, Extreme-Height Stamina)
+
+**Assembly mass:** Genbull Chrome Wheel (30.4 g, Case 1069) + Bandid Crystal Wheel (4.8 g, Case 1043) + F230 track (Case 1076, est. 5.5 g) + TB tip (Case 1083, est. 0.8 g) = **41.5 g**
+
+**Generation:** Gen 2 — Zero-G (Synchrome System)  
+**Role classification:** Extreme-Height Stamina / KO Evasion  
+**Spin direction:** Right
+
+---
+
+### 1. Moment of Inertia and Spin Decay
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) |
+|-----------|-------|----------|----------|-----------------|
+| Genbull Chrome Wheel | 30.4 | 43 | 16 | 29.93 |
+| Bandid Crystal Wheel | 4.8 | 36 | 24 | 4.07 |
+| F230 Track | 5.5 | 22 | 6 | 1.41 |
+| TB Tip | 0.8 | 13 | 0 | 0.068 |
+| **Total** | **41.5** | — | — | **35.48** |
+
+I_total = **3.548×10⁻⁵ kg·m²**  
+ω₀ = 94.2 rad/s; L₀ = 3.342×10⁻³ N·m·s
+
+**TB tip (Case 1083):** Twin Ball — μ_TB ≈ 0.14, two-ball contact, r_contact = 6 mm each  
+τ = 0.14 × 0.0415 × 9.81 × 0.006 = **3.44×10⁻⁴ N·m**  
+dω/dt = 3.44×10⁻⁴ / 3.548×10⁻⁵ = **9.70 rad/s²**; t_stall = **9.7 s**
+
+**F230 free-spin mechanism (Case 1076):** F230 (Free 230) allows the outer track casing to spin freely relative to the inner shaft — functioning as a bearing track. This reduces torque transmission from contact events to the core assembly. Effective contact energy transfer reduction: ~25% per impact. Adjusted combat t_stall accounting for impact damping: **~11.2 s** (significant improvement over fixed-track equivalents).
+
+---
+
+### 2. Assembly Verdict
+
+| t_stall | ~11.2 s (with F230 damping) |
+|---------|---------------------------|
+| F230 free-spin benefit | ~25% energy dissipation per contact |
+| Height: 23 mm | Contact evasion vs 145/165 opponents |
+| Primary weakness | TB twin-ball movement less stable than single-D; susceptible to erratic approach |
+| WBO competitive viability | High — Bandid Genbull F230TB is a known top-tier Zero-G stamina assembly |
+
+---
+
+## Case 1134 — Killerken Balro A230WB: Balro Chrome Wheel + Killerken Chrome Wheel + A230 + WB (Zero-G / Dual-Chrome Synchrome System, Defense)
+
+**Assembly mass:** Balro Chrome Wheel (29.4 g, Case 1068) + Killerken Chrome Wheel (30.45 g, Case 321) + A230 track (Case 322, est. 5.5 g) + WB tip (Case 326, est. 0.7 g) = **66.05 g**
+
+**Generation:** Gen 2 — Zero-G (Dual-Chrome Synchrome System)  
+**Role classification:** Defense / High-Mass KO Resistance  
+**Spin direction:** Right  
+**Note:** This is a dual-Chrome Wheel synchrome (no Crystal Wheel — two Chrome Wheels stacked).
+
+---
+
+### 1. Moment of Inertia and Spin Decay
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) |
+|-----------|-------|----------|----------|-----------------|
+| Balro Chrome Wheel (outer) | 29.4 | 44 | 14 | 29.66 |
+| Killerken Chrome Wheel (inner) | 30.45 | 42 | 16 | 29.50 |
+| A230 Track | 5.5 | 26 | 7 | 2.00 |
+| WB Tip | 0.7 | 12 | 0 | 0.050 |
+| **Total** | **66.05** | — | — | **61.21** |
+
+I_total = **6.121×10⁻⁵ kg·m²**
+
+**Dual-Chrome assembly note:** Dual-Chrome Wheel synchrome stacks two full-size Chrome Wheels in the same slot. This nearly doubles the rotational inertia vs single-Chrome + Crystal Wheel configurations (61.21 vs ~30–50×10⁻⁶ kg·m² for standard). Total mass 66.05 g is among the highest legal Zero-G assembly masses.
+
+ω₀ = 94.2 rad/s; L₀ = 6.121×10⁻⁵ × 94.2 = **5.766×10⁻³ N·m·s**
+
+**WB tip (Case 326):** Wide Ball — μ_WB ≈ 0.11, r_contact = 7 mm  
+τ = 0.11 × 0.06605 × 9.81 × 0.007 = **5.00×10⁻⁴ N·m**  
+dω/dt = 5.00×10⁻⁴ / 6.121×10⁻⁵ = **8.17 rad/s²**; t_stall = **11.5 s**
+
+**A230 height:** At 23.0 mm, A230 Armor-type track provides thick plastic outer walls that absorb low-angle contact before it reaches the Chrome Wheel blades — estimated 20% first-contact energy absorption.
+
+---
+
+### 2. Assembly Verdict
+
+| I_total | 6.121×10⁻⁵ kg·m² |
+|---------|-----------------|
+| L₀ | 5.766×10⁻³ N·m·s |
+| t_stall | 11.5 s |
+| Primary defense mechanism | Mass (66 g) resists KO; high I resists spin-steal |
+| A230 armor absorption | ~20% contact energy absorption |
+| Primary weakness | Very high mass makes launch harder; WB movement can be wide enough to self-KO at very high spin |
+| WBO competitive viability | Strong defensive tier; among the heaviest standard Zero-G assemblies |
+
+**Conclusion:** Killerken Balro A230WB's dual-Chrome configuration delivers the **highest angular momentum (5.766×10⁻³ N·m·s) of any assembly in this batch** — slightly above Samurai Ifraid (5.533×10⁻³). However its angular momentum is stored in two wide-radius shells vs Ifraid's attack blade geometry. The result is a defense/stamina hybrid: enormous inertia resists both spin-steal and KO, while WB keeps movement conservative. **This is the definitive defensive configuration in the covered Zero-G parts library.**
+

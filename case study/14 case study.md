@@ -1,11 +1,11 @@
-# Case Studies — Part 14: Launchers, Grips, and Accessories
+﻿# Case Studies — Part 14: Launchers, Grips, and Accessories
 
 > Cross-generation launcher physics: pull mechanics, launch energy transfer, spin initialization, ripcord and string systems.
 > Cases 759–780
 
 ---
 
-## Case 759 — Launch Physics Fundamentals: Energy Transfer from Pull to Beyblade Spin
+## Case 892 — Launch Physics Fundamentals: Energy Transfer from Pull to Beyblade Spin
 
 ### 1. Geometry
 
@@ -74,7 +74,7 @@ String launchers provide 2–3× more launch energy at equivalent blader effort.
 
 ---
 
-## Case 760 — Winder / Snap Launcher (Plastic Gen S1) — Manual Crank Pre-Ripcord Launch Mechanism
+## Case 893 — Winder / Snap Launcher (Plastic Gen S1) — Manual Crank Pre-Ripcord Launch Mechanism
 
 ### 1. Geometry
 
@@ -117,7 +117,7 @@ Pre-ripcord starter mechanism. Non-competitive. Historical significance as the o
 
 ---
 
-## Case 761 — Standard Ripcord Launcher (EZ Shooter) — Plastic Gen Baseline
+## Case 894 — Standard Ripcord Launcher (EZ Shooter) — Plastic Gen Baseline
 
 ### 1. Geometry
 
@@ -164,11 +164,11 @@ interface StandardRipcordLauncher {
 
 ### 4. Verdict
 
-The universal baseline for plastic gen competitive play. All plastic gen launch speed comparisons reference this launcher. Accessible, reliable, supports Sliding Shoot technique. The Customize Grip attachment (Case 765) improves ergonomics. Replaced by HMS Shooter for HMS format.
+The universal baseline for plastic gen competitive play. All plastic gen launch speed comparisons reference this launcher. Accessible, reliable, supports Sliding Shoot technique. The Customize Grip attachment (Case 898) improves ergonomics. Replaced by HMS Shooter for HMS format.
 
 ---
 
-## Case 762 — Reverse Shooter / Left Spin Shooter (SonoKong / Hasbro) — Left-Spin Launch Mechanism
+## Case 895 — Reverse Shooter / Left Spin Shooter (SonoKong / Hasbro) — Left-Spin Launch Mechanism
 
 ### 1. Geometry
 
@@ -179,7 +179,7 @@ Weight: ~35–45 g (same form factor as EZ Shooter). Pull distance: 250–270 mm
 ### 2. Physics
 
 **Mirror-image launch:**
-The internal gear train direction is reversed. Energy calculations are identical to the Standard EZ Shooter (Case 761):
+The internal gear train direction is reversed. Energy calculations are identical to the Standard EZ Shooter (Case 894):
 
     E_reverse = F_pull × d_pull × η_gear ≈ 11.4 J
     ω₀_LS ≈ 735 rad/s CCW
@@ -214,7 +214,7 @@ Required equipment for left-spin bey competitive use. Physics identical to Stand
 
 ---
 
-## Case 763 — HMS Double Shooter (HMS Era) — Compact High-Gear-Ratio Launcher for Small-Diameter HMS Beys
+## Case 896 — HMS Double Shooter (HMS Era) — Compact High-Gear-Ratio Launcher for Small-Diameter HMS Beys
 
 ### 1. Geometry
 
@@ -265,7 +265,7 @@ The correct launcher for HMS competitive play. Higher launch RPM than plastic ge
 
 ---
 
-## Case 764 — BeyStringer / String Launcher (MFB Era) — 2–3× Pull Distance, Highest Launch Energy
+## Case 897 — BeyStringer / String Launcher (MFB Era) — 2–3× Pull Distance, Highest Launch Energy
 
 ### 1. Geometry
 
@@ -321,7 +321,7 @@ The highest-energy mainstream launcher. BeyStringer's 3× energy advantage over 
 
 ---
 
-## Case 765 — Launcher Grip / Customize Grip (Cross-Gen) — Ergonomic Platform: Angle and Force Transfer Enhancement
+## Case 898 — Launcher Grip / Customize Grip (Cross-Gen) — Ergonomic Platform: Angle and Force Transfer Enhancement
 
 ### 1. Geometry
 
@@ -372,7 +372,7 @@ A high-impact competitive accessory. The catapult grip variant doubles effective
 
 ---
 
-## Case 766 — Light Launcher 2 (MFB Era) — Compact Reduced-Pull Entry Launcher
+## Case 899 — Light Launcher 2 (MFB Era) — Compact Reduced-Pull Entry Launcher
 
 ### 1. Geometry
 
@@ -413,7 +413,7 @@ Practice and casual launcher. 73% of full launcher energy — acceptable for cas
 
 ---
 
-## Case 767 — Burst Launcher (Standard Ripcord, L/R) — Generation 3 Standard: Lock-Tooth Ripcord for Burst Format
+## Case 900 — Burst Launcher (Standard Ripcord, L/R) — Generation 3 Standard: Lock-Tooth Ripcord for Burst Format
 
 ### 1. Geometry
 
@@ -462,7 +462,7 @@ Standard Burst era launcher. Higher engagement reliability (lock-tooth mechanism
 
 ---
 
-## Case 768 — Burst String Launcher (B-88 / B-99 Variants) — String Mechanism for Burst Era
+## Case 901 — Burst String Launcher (B-88 / B-99 Variants) — String Mechanism for Burst Era
 
 ### 1. Geometry
 
@@ -512,7 +512,7 @@ Top competitive Burst launcher. 76% higher launch spin than standard ripcord →
 
 ---
 
-## Case 769 — BX Launcher (Gen 4 / X Series) — Ratchet-Click Mechanism, Consistent High-Energy Pull
+## Case 902 — BX Launcher (Gen 4 / X Series) — Ratchet-Click Mechanism, Consistent High-Energy Pull
 
 ### 1. Geometry
 
@@ -565,7 +565,7 @@ The most consistent launcher per pull-force input. The ratchet mechanism virtual
 
 ---
 
-## Case 770 — Ripcord (Consumable Accessory) — Tooth Wear Physics, Launch Force Transmission
+## Case 903 — Ripcord (Consumable Accessory) — Tooth Wear Physics, Launch Force Transmission
 
 ### 1. Geometry
 
@@ -626,7 +626,7 @@ Consumable hardware requiring replacement every 50–100 competitive launches. W
 
 ---
 
-## Case 771 — Launcher Grip Level 5 / Custom Grip (Burst Era) — Spring-Loaded Grip, Wrist Angle Lock
+## Case 904 — Launcher Grip Level 5 / Custom Grip (Burst Era) — Spring-Loaded Grip, Wrist Angle Lock
 
 ### 1. Geometry
 
@@ -673,7 +673,7 @@ The highest-performance grip accessory in the competitive game. The spring-loade
 
 ---
 
-## Case 772 — Winder (Spring Wind Accessory, Burst Era) — Motor-Wound Gyroscope Precession Stabilizer
+## Case 905 — Winder (Spring Wind Accessory, Burst Era) — Motor-Wound Gyroscope Precession Stabilizer
 
 ### 1. Geometry
 
@@ -713,7 +713,7 @@ Tuning tool. No direct competitive function as a launcher. Valuable for pre-matc
 
 ---
 
-## Case 773 — RC Shooter / RC EG Launcher (Plastic Gen G-Rev Era) — Remote-Controlled Launch System
+## Case 906 — RC Shooter / RC EG Launcher (Plastic Gen G-Rev Era) — Remote-Controlled Launch System
 
 ### 1. Geometry
 
@@ -755,7 +755,7 @@ Mechanically interesting but competitively problematic. The remote EG trigger gi
 
 ---
 
-## Case 774 — Sliding Shoot Technique (All Ripcord Launchers) — Angle-Dependent Launch Tilt Initialization
+## Case 907 — Sliding Shoot Technique (All Ripcord Launchers) — Angle-Dependent Launch Tilt Initialization
 
 ### 1. Geometry
 
@@ -815,7 +815,7 @@ The highest-impact technique in plastic gen/HMS competitive play. Sliding Shoot'
 
 ---
 
-## Case 775 — Beypointer / BeyLogger (Burst Era) — Electronic Spin-Tracking Accessory
+## Case 908 — Beypointer / BeyLogger (Burst Era) — Electronic Spin-Tracking Accessory
 
 ### 1. Geometry
 
@@ -862,7 +862,7 @@ Electronic accessory — zero competitive physics impact. Valuable for empirical
 
 ---
 
-## Case 776 — Power Launcher / BeyMax Shooter (Plastic Gen Enhanced) — Spring-Tension Boost Mechanism
+## Case 909 — Power Launcher / BeyMax Shooter (Plastic Gen Enhanced) — Spring-Tension Boost Mechanism
 
 ### 1. Geometry
 
@@ -908,7 +908,7 @@ Marketing upgrade — minimal competitive benefit. The spring pre-load adds < 1%
 
 ---
 
-## Case 777 — Launcher Compatibility Matrix (Cross-Gen Reference) — Which Launcher Works With Which Bey
+## Case 910 — Launcher Compatibility Matrix (Cross-Gen Reference) — Which Launcher Works With Which Bey
 
 ### 1. Geometry
 
@@ -947,3 +947,4 @@ const launcherCompatibility: Record<string, string[]> = {
 ### 4. Verdict
 
 Reference table for cross-gen setup validation. HMS and BX formats require their dedicated launchers — no cross-compatibility. Plastic gen beys require EZ Shooter or Reverse Shooter; adapters exist for MFB use with EZ Shooter at minor energy loss.
+

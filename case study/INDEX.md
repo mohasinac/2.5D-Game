@@ -1,35 +1,66 @@
-# Beyblade Case Studies — Master Index
-Total: **812 cases** across 14 files + 1 master reference.
+﻿# Beyblade Case Studies — Master Index
+Total: **1130 cases** across 14 files + 1 master reference.
+
+---
+
+## NEXT AVAILABLE CASE NUMBER
+
+> **1135** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
 ## File Map
 
-| File | Cases | Scope |
-|------|-------|-------|
-| [1 case study.md](1%20case%20study.md) | 1–73 | Physics fundamentals → MFB/4D parts |
-| [2 case study.md](2%20case%20study.md) | 74–155 | HMS parts → Gen 1 Plastic SG-era parts + HMS RC supplement |
-| [3 case study.md](3%20case%20study.md) | 118–187 | Gen 1 Plastic SG/EG/CEW parts |
-| [4 case study.md](4%20case%20study.md) | 189–280 | Gen 1 EG/CEW parts → Anime-only → Magnacore ARs → A-F series ARs/BBs → WD/BB/AR supplement |
-| [5 case study.md](5%20case%20study.md) | 236–296 | System architectures → MFB wheels/tracks/bottoms |
-| [6 case study.md](6%20case%20study.md) | 297–353 + 308a, 320a–320i, 326a, 353a–353z, 354a–354j | MFB bottoms → 4D wheels/bottoms/tracks; MFB wheels; Zero-G Crystal/Chrome Wheels, ZeroG tracks/tips, Grand FW, D tip |
-| [7 case study.md](7%20case%20study.md) | 354–374 | BX/UX/CX system architecture → All-gen system summaries |
-| [8 case study.md](8%20case%20study.md) | 375–415 | BX/UX blades, ratchets, bits |
-| [9 case study.md](9%20case%20study.md) | 392–544 | Burst series (all subsystems) full lineage analysis |
-| [10 case study.md](10%20case%20study.md) | 545–585 | Arena mechanics, stadiums, launch physics |
-| [11 case study.md](11%20case%20study.md) | 586–600 | Special move physics: real-part archetypes → game-engine derivation |
-| [12 case study.md](12%20case%20study.md) | 601–618 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–863 | Franchise special moves, gimmick foundations, and derived combos (expanding) |
-| [14 case study.md](14%20case%20study.md) | 759–777 | Launchers, grips, and accessories (cross-gen) |
-| [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | Engine reference: constants, formulas, normalization |
+Each file owns multiple number blocks (primary sequential + overflow blocks created during the global renumber pass). All numbers are globally unique.
 
-### Numbering Notes
+| File | Blocks | Count | Scope |
+|------|--------|-------|-------|
+| [1 case study.md](1%20case%20study.md) | 1–74 | 74 | Physics fundamentals → MFB/4D parts |
+| [2 case study.md](2%20case%20study.md) | 75–155 · 1025–1040 · 1088 · 1125–1126 | 100 | HMS parts → Gen 1 Plastic SG-era parts + HMS RC supplement |
+| [3 case study.md](3%20case%20study.md) | 156–187 · 911–950 | 72 | Gen 1 Plastic SG/EG/CEW parts |
+| [4 case study.md](4%20case%20study.md) | 189–285 · 1097 | 98 | Gen 1 EG/CEW parts → Anime-only → Magnacore ARs → A-F series ARs/BBs |
+| [5 case study.md](5%20case%20study.md) | 286–296 · 951–1000 · 1089–1096 | 69 | System architectures → MFB wheels/tracks/bottoms |
+| [6 case study.md](6%20case%20study.md) | 297–353 · 1041–1087 · 1127–1134 | 112 | MFB bottoms → 4D wheels/bottoms/tracks; Zero-G Crystal/Chrome Wheels, ZeroG tracks/tips |
+| [7 case study.md](7%20case%20study.md) | 354–374 | 21 | BX/UX/CX system architecture → All-gen system summaries |
+| [8 case study.md](8%20case%20study.md) | 375–415 | 41 | BX/UX blades, ratchets, bits |
+| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 | 178 | Burst series (all subsystems) full lineage analysis |
+| [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
+| [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
+| [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
+| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1124 | 272 | Franchise special moves, gimmick foundations, and derived combos |
+| [14 case study.md](14%20case%20study.md) | 892–910 | 19 | Launchers, grips, and accessories (cross-gen) |
+| [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | — | Engine reference: constants, formulas, normalization |
 
-- **Duplicate numbers in CS2**: Cases 106–113 appear twice with different parts (second run uses garbled em-dash encoding). The first occurrence covers MFB-era parts (Dragon Head AR, Wide WD, etc.); the second covers Gen 1 Plastic SG parts (Neo Right SG Shells, Metal Weight Core, etc.).
-- **Out-of-order in CS1**: Case 16 (Kreis) placed after Case 21; Case 74 (Spring Core RC) placed between Cases 67 and 68.
-- **CS9 sequencing**: Cases are grouped by Beyblade lineage (Xcalibur, Valkyrie, Achilles, etc.) rather than strict numeric order. Cases 392–396 overlap numbering with CS8 (different parts).
-- **CS5 overlap**: Cases 236–237 in CS5 (system architectures) differ from Cases 236–237 in CS4 (specific EG parts).
-- **CS6 letter insertions**: Case 308a (Mercury Metal Wheel) inserted after Case 308 (Lightning). Cases 320a–320i (all Zero-G Crystal Wheels: Archer, Bandid, Berserker, Dark Knight/Ronin, Gladiator, Pirates, Samurai, Shinobi/Ninja, Thief) inserted after Case 320 (Guardian) and before Case 321 (Killerken). Case 326a (Jog Ball / JB) inserted after Case 326 (Wide Ball). Cases 353a–353z + 354a–354h appended after Case 353 (Coat Sharp): 353a = Forbidden wheel, 353b = ED145, 353c = Flat Ball/FB, 353d = Eonis/Ionis CW, 353e = Dark wheel, 353f = Flat Spike/Flat Sharp/FS, 353g = Wolf CW, 353h = Poison wheel, 353i = Serpent CW, 353j = Spiral FW (34.2g), 353k = Ifraid Chrome Wheel (51.26g), 353l = Begirados Chrome Wheel (45.6g), 353m = Goreim Chrome Wheel (21.04g), 353n = Saramanda Chrome Wheel (25.35g), 353o = Orojya Chrome Wheel (25.94g), 353p = Girago Chrome Wheel (29.8g), 353q = Balro Chrome Wheel (29.4g), 353r = Genbull Chrome Wheel (30.4g), 353s = Wyvang Chrome Wheel (30.6g), 353t = Leviathan Chrome Wheel (27.31g), 353u = W145 Wing 145 Track, 353v = LW160 Left Wing 160 Track, 353w = 500 Track (50.0mm extreme height), 353x = SP230 Spike 230 Track, 353y = F230 Free 230 Track, 353z = E230 Energy 230 Track; 354a = CF Circle Flat Tip, 354b = BSF Blade Semi-Flat Tip, 354c = BWD Big Wide Defense Tip, 354d = GCF Gear Circle Flat Tip, 354e = E Eternal Tip, 354f = TB Twin Ball Tip, 354g = Grand Fusion Wheel (29.3g HWS), 354h = Capricorn Energy Ring (2.9g), 354i = 145 Spin Track (plain), 354j = D Defense Tip (0.68g, 35°).
+### Overflow Block Registry
+
+Cases above 866 were assigned during the global renumber pass to resolve all cross-file and intra-file conflicts. Every overflow block is listed here so no range is ever reused.
+
+| Block | Count | Origin | File |
+|-------|-------|--------|------|
+| 867–891 | 25 | New Cho-Z/DB physics cases added in session (formerly 622–646 before conflict found) | CS9 |
+| 892–910 | 19 | CS14 launchers/grips (formerly 759–777, conflicted with CS13) | CS14 |
+| 911–950 | 40 | CS3 cases 116–155 (conflicted with CS2) | CS3 |
+| 951–1000 | 50 | CS5 cases 236–285 (conflicted with CS4) | CS5 |
+| 1001–1024 | 24 | CS9 cases 392–415 (conflicted with CS8) | CS9 |
+| 1025–1040 | 16 | CS2 internal duplicates (2nd/3rd occurrences of cases 106–118) | CS2 |
+| 1041–1087 | 47 | CS6 letter-insertion cases (308a, 320a–i, 326a, 353a–z, 354a–j) | CS6 |
+| 1088 | 1 | CS2 case 74 (conflicted with CS1's last case) | CS2 |
+| 1089–1096 | 8 | CS5 cases 297–304 (conflicted with CS6) | CS5 |
+| 1097 | 1 | CS4 internal duplicate case 226 (2nd occurrence) | CS4 |
+| 1125-1126 | 2 | Plastic Gen assembly cases: Trygle + Wyborg (Gen 1 A-F Series) | CS2 |
+| 1127-1134 | 8 | Zero-G assembly cases: 8 stock Synchrome combos | CS6 |
+| **1135+** | — | **NEXT AVAILABLE — all future cases start here** | — |
+### Numbering Notes (Historical)
+
+All former conflicts have been resolved. The notes below document what was fixed.
+
+- **CS2 duplicates (resolved)**: Cases 106–118 appeared 2–3 times each. Second/third occurrences renumbered to 1025–1040 and 1088.
+- **CS3 overlap (resolved)**: Cases 116–155 conflicted with CS2. Renumbered to 911–950.
+- **CS5 overlaps (resolved)**: Cases 236–285 conflicted with CS4 (→ 951–1000); cases 297–304 conflicted with CS6 (→ 1089–1096).
+- **CS6 letter insertions (resolved)**: 47 lettered cases (308a, 320a–i, 326a, 353a–z, 354a–j) renumbered to 1041–1087.
+- **CS9 overlap (resolved)**: Cases 392–415 conflicted with CS8 (→ 1001–1024).
+- **CS14 conflict (resolved)**: Cases 759–777 conflicted with CS13 (→ 892–910).
+- **CS13 encoding (resolved)**: UTF-8/Windows-1252 corruption from Case 653 onwards; 1,160 byte-sequences fixed.
 
 ---
 
@@ -43,7 +74,7 @@ Total: **812 cases** across 14 files + 1 master reference.
 
 ---
 
-## Part 1 — Cases 1–73
+## Part 1 — Cases 1–74
 
 > Physics fundamentals, MFB/4D/HMS individual parts
 
@@ -126,7 +157,7 @@ Total: **812 cases** across 14 files + 1 master reference.
 
 ---
 
-## Part 2 — Cases 74–123
+## Part 2 — Cases 75–155 · 1025–1040 · 1088
 
 > HMS parts → Gen 1 Plastic (Spin Gear era) parts
 
@@ -201,7 +232,7 @@ Total: **812 cases** across 14 files + 1 master reference.
 
 ---
 
-## Part 3 — Cases 118–187
+## Part 3 — Cases 156–187 · 911–950
 
 > Gen 1 Plastic: SG bases, ARs, WDs, EG parts, CEW tips
 
@@ -282,7 +313,7 @@ Total: **812 cases** across 14 files + 1 master reference.
 
 ---
 
-## Part 4 — Cases 189–285
+## Part 4 — Cases 189–285 · 1097
 
 > Gen 1 Plastic: Engine Gear era parts, CEW tips, anime-only entries, V-Force WD/BB supplement, Draciel Metal Ball Defenser, Galux (unreleased)
 
@@ -386,7 +417,7 @@ Total: **812 cases** across 14 files + 1 master reference.
 
 ---
 
-## Part 5 — Cases 236–296
+## Part 5 — Cases 286–296 · 951–1000 · 1089–1096
 
 > System architectures (all gens) → MFB-era wheels, tracks, bottoms
 
@@ -456,7 +487,7 @@ Total: **812 cases** across 14 files + 1 master reference.
 
 ---
 
-## Part 6 — Cases 297–353 (+ inserted: 308a, 320a–320i, 326a, 353a–353i)
+## Part 6 — Cases 297–353 · 1041–1087
 
 > MFB bottoms, tracks, 4D wheels/bottoms, Chrome Wheels (Zero-G/Synchrome)
 
@@ -622,7 +653,7 @@ Total: **812 cases** across 14 files + 1 master reference.
 
 ---
 
-## Part 9 — Cases 392–544
+## Part 9 — Cases 416–544 · 867–891 · 1001–1024
 
 > Burst series: full lineage analysis across all subsystems (Xcalibur, Valkyrie, Achilles, Kerbeus, Diabolos, Deathscyther, Bahamut/Lucifer, L-Drago/Longinus, Ragnaruk, Belial, Wyvern)
 
@@ -956,6 +987,44 @@ Total: **812 cases** across 14 files + 1 master reference.
 
 ---
 
+
+## Part 13 — Cases 619–866 · 1098–1124
+
+> Franchise special moves, gimmick foundations, and derived combos (CS13)
+
+| # | Title | Gen | System | Type | Tags |
+|---|-------|-----|--------|------|------|
+| 619–866 · 1098–1124 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
+
+---
+
+## Part 14 — Cases 892–910
+
+> Launchers, grips, and accessories (cross-generation) (CS14)
+
+| # | Title | Gen | System | Type | Tags |
+|---|-------|-----|--------|------|------|
+| 892–910 | See [14 case study.md](14%20case%20study.md) for full case-by-case table | Cross-Gen | — | Launcher/Grip/Accessory | launcher, grip, accessory |
+
+---
+
+## Part 15 — Overflow Blocks (Renumbered Cases)
+
+> Cases in these ranges were originally numbered within conflicting ranges and were moved here during the global renumber pass. The content belongs to the source file indicated.
+
+| Block | Source File | Content Type |
+|-------|-------------|--------------|
+| 867–891 | CS9 | Cho-Z / Dynamite Battle physics cases (Dead Phoenix, Revive Phoenix, Prominence, Twin Nemesis, Hell Salamander, Killer Deathscyther groups) |
+| 911–950 | CS3 | Gen 1 Plastic SG/EG/CEW parts (formerly CS3 cases 116–155) |
+| 951–1000 | CS5 | System architectures / MFB part cases (formerly CS5 cases 236–285) |
+| 1001–1024 | CS9 | Burst series cases (formerly CS9 cases 392–415) |
+| 1025–1040 | CS2 | Gen 1 Plastic SG parts — second occurrence group (formerly CS2 duplicate cases 106–118) |
+| 1041–1087 | CS6 | MFB bottoms/tracks/wheels / Zero-G parts — letter-insertion cases (formerly 308a–354j) |
+| 1088 | CS2 | Nexus (Nx) WD — Eight-Blade Disc (formerly CS2 case 74) |
+| 1089–1096 | CS5 | HMS parts — Upper Dragon AR through Free Shaft Core (formerly CS5 cases 297–304) |
+| 1097 | CS4 | CEW Metal Grip · 2.7g (formerly CS4 duplicate case 226) |
+
+---
 ## Tag Indexes
 
 ### By Generation
@@ -1420,3 +1489,10 @@ Pegasis III · Leone II · Lynx · Kronos · Jupiter · Uranus · Sagittario II 
 
 **Ark Pyramid AR (Desert Sphinxer):**
 Listed in part list but no dedicated case study.
+
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-# Physics Chain: Part 5
+﻿# Physics Chain: Part 5
 
 **« Part 4:** [4 case study.md](4%20case%20study.md) (Cases 189–237) | **Part 6 »** [6 case study.md](6%20case%20study.md) (Cases 297–353)
 
@@ -74,7 +74,7 @@ Every numeric value in new cases must carry one of these tags:
 
 ---
 
-## Case 236 — 4 Layer System: Why Four-Component Homogeneity Is the Physics Prerequisite for All Original Series Customisation, How Each Layer's Position in the Stack Determines Its Mechanical Role, and Why the Absence of a Spin Gear Constrains Tip and Weight Distribution to Single-Body Solutions
+## Case 951 — 4 Layer System: Why Four-Component Homogeneity Is the Physics Prerequisite for All Original Series Customisation, How Each Layer's Position in the Stack Determines Its Mechanical Role, and Why the Absence of a Spin Gear Constrains Tip and Weight Distribution to Single-Body Solutions
 
 > **Stock combo (Zeus):** AR: Holy Despell + SAR Screw Zeus · WD: Ten Wide · SG/EG: Right CG Free Shaft · BB: First Clutch Base Zeus · CEW: Light Sharp
 
@@ -351,7 +351,7 @@ function spinDecayRate(tau_friction_Nm: number, I_total_kgm2: number): number {
 
 ---
 
-## Case 237 — Spin Gear System: Why Adding a Fifth Layer Decouples Spin Direction from Blade Base Architecture, How the SG Shell-and-Core Structure Enables Bearing and Engine Gimmicks Without Replacing the Base, and Why 4L Blade Bases Are Mechanically Incomplete in This System
+## Case 952 — Spin Gear System: Why Adding a Fifth Layer Decouples Spin Direction from Blade Base Architecture, How the SG Shell-and-Core Structure Enables Bearing and Engine Gimmicks Without Replacing the Base, and Why 4L Blade Bases Are Mechanically Incomplete in This System
 
 The Spin Gear System is the second Original Series architecture, succeeding the 4 Layer System by adding one part — the Spin Gear — between the Weight Disk and the Blade Base. The 4L system locked spin direction into the Blade Base casting and could only rotate right; the 5-layer system moves spin-direction determination into a discrete, swappable SG shell. This single structural change produces three downstream capabilities that are impossible in the 4L system: left-spin customisation via a Left SG, gimmick upgrades (bearings, weights, engine springs) via SG-core swap without base replacement, and Sub-Attack Ring compatibility via a free-spinning secondary AR. The mechanical cost is one additional inter-layer coupling interface and the incompatibility it creates with 4L bases.
 
@@ -570,7 +570,7 @@ function isFourLayerBase(hasClipRecesses: boolean): boolean {
 
 ---
 
-## Case 238 — Magnacore System (NEO Spin Gear System): Why Separating the Core from the SG Shell Enables Stadium-Magnetic Coupling, How Magnecore Polarity Determines Whether the Magnetic Force Augments Attack or Defence, and Why the Six-Layer Structure Requires No New AR or WD Architecture
+## Case 953 — Magnacore System (NEO Spin Gear System): Why Separating the Core from the SG Shell Enables Stadium-Magnetic Coupling, How Magnecore Polarity Determines Whether the Magnetic Force Augments Attack or Defence, and Why the Six-Layer Structure Requires No New AR or WD Architecture
 
 The Magnacore System (December 2001) is the third Original Series architecture. Its defining change from the Spin Gear System is the hollowing of the NEO Spin Gear's centre, converting the previously fixed metal-ring core into an interchangeable slot that accepts discrete Core parts — primarily Magnecores (permanent magnet cores) and Metal Weight Cores (non-magnetic mass cores). This single structural change enables the system's central mechanic: a permanent magnet embedded in the spinning beyblade interacts with magnets embedded in the BeyStadium floor, producing a field-mediated lateral force that varies with core polarity, arena magnet layout, and radial position. The AR, WD, and BB layers are architecturally identical to the SG system; only the SG shell geometry changes (hollow centre) and two new part categories appear (Core, Support Part).
 
@@ -627,7 +627,7 @@ The Standard SG core (metal ring) is press-fitted and non-removable. The NEO SG 
    shooter tabs (right or left)      shooter tabs (right or left)
 ```
 
-The bore diameter is standardised across all NEO SG shells — NEO Right and NEO Left have the same bore geometry, differing only in tab position (same asymmetry as Standard SG, Case 237 §2). Any Core fits any NEO SG shell regardless of spin direction. The Core-SG interface is not directional.
+The bore diameter is standardised across all NEO SG shells — NEO Right and NEO Left have the same bore geometry, differing only in tab position (same asymmetry as Standard SG, Case 952 §2). Any Core fits any NEO SG shell regardless of spin direction. The Core-SG interface is not directional.
 
 Gimmick SGs (Bearing SG, Engine Gear) cannot be swapped for NEO SGs — their bases are shaped to the specific SG outer profile. These beyblades can still participate in Magnacore-system play by using Magnetic WDs, which provide a reduced magnetic coupling effect without a Magnecore.
 
@@ -816,7 +816,7 @@ function magneticDragPower_W(F_lateral_N: number, v_lateral_ms: number): number 
 
 ---
 
-## Case 239 — Hard Metal System: Why a 75% Linear Scale Reduction at Constant Mass Produces Disproportionate Air-Drag Savings That Outweigh the Tip-Friction Penalty, How the Metal Frame–ABS Caul AR Architecture Concentrates Hardness at the Contact Zone, and Why Consolidating the Spin Gear into the Running Core Breaks All Prior-System Compatibility by Structural Necessity
+## Case 954 — Hard Metal System: Why a 75% Linear Scale Reduction at Constant Mass Produces Disproportionate Air-Drag Savings That Outweigh the Tip-Friction Penalty, How the Metal Frame–ABS Caul AR Architecture Concentrates Hardness at the Contact Zone, and Why Consolidating the Spin Gear into the Running Core Breaks All Prior-System Compatibility by Structural Necessity
 
 The Hard Metal System (August 2003) is the fifth Original Series architecture and the first to completely break compatibility with all prior systems. Its four layers — Bit Protector (BP), Attack Ring (AR), Weight Disk (WD), Running Core (RC) — are physically smaller than any predecessor part, assembled in a different order, and retained by a different mechanism. The size reduction is approximately 75% of prior linear dimensions at maintained total mass; the physics consequence of this scaling is that air-drag spin loss falls as k³ (where k = 0.75), producing a 58% reduction in air-drag spin drain that dominates stamina performance for sharp-tip configurations. The Metal Frame component of the AR concentrates high-hardness material at the contact radius, increasing peak contact force at identical impulse. The Running Core merges the SG and BB into one body, removing the SG-clip interface entirely and making prior SGs and BBs structurally irrelevant — incompatibility is not a design choice but a geometric consequence.
 
@@ -1081,7 +1081,7 @@ The beyblade rolls freely with minimal rolling resistance. However, this configu
 
 ### 7. Spin Direction via Dual Shooter
 
-In the SG System, spin direction is set by SG tab orientation (Case 237 §2). In HMS, spin direction is set by which side of the Dual Shooter the BP engages:
+In the SG System, spin direction is set by SG tab orientation (Case 952 §2). In HMS, spin direction is set by which side of the Dual Shooter the BP engages:
 
 ```
 Dual Shooter:
@@ -1136,7 +1136,7 @@ interface RunningCore {
 
 ---
 
-## Case 240 — Metal System (Metal Fight Beyblade Initial Series): Why Separating Height from the Wheel into a Discrete Track Layer Decouples Contact-Height Tuning from Contact-Geometry Tuning, How the All-Metal Wheel Architecture Changes the Impulse Budget Relative to HMS, and Why Bottom Classification Into Three Functional Classes Is a Direct Consequence of the Friction–Velocity Phase Diagram
+## Case 955 — Metal System (Metal Fight Beyblade Initial Series): Why Separating Height from the Wheel into a Discrete Track Layer Decouples Contact-Height Tuning from Contact-Geometry Tuning, How the All-Metal Wheel Architecture Changes the Impulse Budget Relative to HMS, and Why Bottom Classification Into Three Functional Classes Is a Direct Consequence of the Friction–Velocity Phase Diagram
 
 The Metal System is the first Metal Fight Beyblade architecture. Its four layers — Face (assembly bolt), Wheel (contact body), Track (height shaft), Bottom (tip) — differ from all prior systems in one structural decision: height above the stadium floor is no longer fixed by the tip housing or base casting. It is set by an independent Track part whose sole function is to establish the AR-equivalent contact height. This decoupling means Wheel geometry (contact face angles, mass distribution, radius) can be optimised for the contact event alone, while Track selection independently tunes the height at which that contact occurs. The all-metal Wheel concentrates the entire combo's contact mass in one casting at a fixed, high radius, producing a higher I_total-per-gram than any prior AR architecture. Bottom classification into Attack / Defence / Stamina follows directly from the friction-velocity relationship of each tip profile.
 
@@ -1224,7 +1224,7 @@ I_Wheel = ½ × m × (r_inner² + r_outer²)
         ≈ 7.28×10⁻⁶ kg·m²
 ```
 
-Compare to a plastic-era Wide WD (m = 14 g, r_outer = 25 mm, Case 236):
+Compare to a plastic-era Wide WD (m = 14 g, r_outer = 25 mm, Case 951):
 
 ```
 I_WD_Wide = 4.82×10⁻⁶ kg·m²  (at twice the mass budget used by just the WD)
@@ -1240,7 +1240,7 @@ Wheel swap changes I_total by nearly 90% of its value — no other layer swap is
 
 **Contact impulse at metal-on-metal:**
 
-Wheel-to-Wheel contact is metal vs. metal (both castings). From the HMS analysis (Case 239 §3), metal-on-metal contact time Δt is shorter than ABS-on-ABS by ~(E_metal/E_metal)^{1/2} = 1 (same material stiffness on both sides), but both are shorter than ABS-on-ABS. Metal-on-metal contact stiffness:
+Wheel-to-Wheel contact is metal vs. metal (both castings). From the HMS analysis (Case 954 §3), metal-on-metal contact time Δt is shorter than ABS-on-ABS by ~(E_metal/E_metal)^{1/2} = 1 (same material stiffness on both sides), but both are shorter than ABS-on-ABS. Metal-on-metal contact stiffness:
 
 ```
 k_contact = (E₁⁻¹ + E₂⁻¹)⁻¹ × geometric_factor
@@ -1384,7 +1384,7 @@ function wheelFraction(I_wheel: number, I_track: number, I_bottom: number): numb
 
 ---
 
-## Case 241 — Engine Gear System: Why the Clutch BB Determines When the Spring Energy Enters the Battle, How Turbo Engine Gears Achieve 4× Release Power Through Spring Architecture Differences, Why the Reverse Engine Gear Trades Spin Budget for a Single High-Impulse Event, and How the Gyro Engine Gear Merges Spring Launch with Bearing LAD in One Housing
+## Case 956 — Engine Gear System: Why the Clutch BB Determines When the Spring Energy Enters the Battle, How Turbo Engine Gears Achieve 4× Release Power Through Spring Architecture Differences, Why the Reverse Engine Gear Trades Spin Budget for a Single High-Impulse Event, and How the Gyro Engine Gear Merges Spring Launch with Bearing LAD in One Housing
 
 The Engine Gear System (December 2002) is the fourth Original Series architecture. Its structural identity is the replacement of the Spin Gear with a much larger spring-wound Engine Gear — a mechanism that stores potential energy during winding and releases it as angular impulse at a moment determined by the Blade Base's clutch system. Every EG variant (Standard, Turbo, Reverse, Gyro, Customize Gear) is a different answer to the question of how to convert stored spring energy into a useful battle outcome. The Blade Base clutch type (First / Final / No Clutch / Engine Stopper) is the timing controller; it determines whether the energy is spent at launch, on impact, continuously, or not at all. These two axes — spring type and clutch type — are the complete mechanical design space of the EG System. Every competitive evaluation of an EG combo reduces to: (1) how much energy does the spring store, (2) when does the clutch release it, and (3) can the tip profile convert the resulting angular impulse into useful translational movement.
 
@@ -1613,7 +1613,7 @@ The Engine Stopper BB allows Flame Pegasus to be launched without a launcher by 
 
 ### 7. Heavy Metal Core: Cross-System Part in the EG Era
 
-The Heavy Metal Core (HMC) is the densest Core ever released — heavier than the Metal Weight Core (Magnacore System, Case 238 §7). Despite appearing in EG-era releases, it is designed for NEO SG bores (Magnacore System architecture). An EG-era beyblade can use the HMC by mounting it in a NEO SG shell in a Magnacore-compatible BB.
+The Heavy Metal Core (HMC) is the densest Core ever released — heavier than the Metal Weight Core (Magnacore System, Case 953 §7). Despite appearing in EG-era releases, it is designed for NEO SG bores (Magnacore System architecture). An EG-era beyblade can use the HMC by mounting it in a NEO SG shell in a Magnacore-compatible BB.
 
 Mass and I contribution:
 
@@ -1623,7 +1623,7 @@ r_outer ≈ 9 mm
 I_HMC = ½ × 0.007 × (0.003² + 0.009²) = ½ × 0.007 × 9.0×10⁻⁵ ≈ 3.15×10⁻⁷ kg·m²
 ```
 
-Negligible I contribution (same conclusion as MWC, Case 238 §7). Value is pure mass addition at low radius — lowers CoM slightly, increases total combo mass threshold for ring-out. "Improving a Beyblade's defensive power and stability" — heavier combo resists displacement impulse (Δv = J/m is smaller at larger m).
+Negligible I contribution (same conclusion as MWC, Case 953 §7). Value is pure mass addition at low radius — lowers CoM slightly, increases total combo mass threshold for ring-out. "Improving a Beyblade's defensive power and stability" — heavier combo resists displacement impulse (Δv = J/m is smaller at larger m).
 
 ---
 
@@ -1677,7 +1677,7 @@ function finalClutchLateralImpulse(
 
 ---
 
-## Case 242 — Hybrid Wheel System: Why Splitting the Single Metal Wheel Into a Polycarbonate Energy Ring and a Metal Fusion Wheel Relocates Mass Distribution Control to the Fusion Wheel Alone, How the Energy Ring's PC Material Contributes Launcher-Hook Geometry Without Affecting I_total Meaningfully, and Why the Five-Layer Stack Is Physically Identical to the Metal System Except for the Single Wheel-Split Change
+## Case 957 — Hybrid Wheel System: Why Splitting the Single Metal Wheel Into a Polycarbonate Energy Ring and a Metal Fusion Wheel Relocates Mass Distribution Control to the Fusion Wheel Alone, How the Energy Ring's PC Material Contributes Launcher-Hook Geometry Without Affecting I_total Meaningfully, and Why the Five-Layer Stack Is Physically Identical to the Metal System Except for the Single Wheel-Split Change
 
 The Hybrid Wheel System (March 2009) succeeds the Metal System by splitting its monolithic all-metal Wheel into two co-axial parts: the Energy Ring (polycarbonate, outer shell) and the Fusion Wheel (metal, inner contact body). The Spin Track and Performance Tip layers are identical to the Metal System's Track and Bottom in every respect — the same height-numbering convention, the same Bottom catalogue (F, HF, RF, RS, WD, S, MS, ES, EWD etc.), the same Face Bolt retention. The only structural change is the Wheel split. This change has two physics consequences: (1) the Energy Ring's PC material is ~7.4× less dense than the metal it replaces, so the same outer-radius geometry contributes far less I_total — mass distribution control shifts entirely to the Fusion Wheel's shape; (2) the Energy Ring becomes the launcher-hook interface, allowing the Fusion Wheel geometry to be optimised for contact physics alone without needing to carry the launcher-engagement feature. The result is that Fusion Wheel design space is wider than Metal System Wheel design space — the FW can have any mass distribution optimised for the contact role, unconstrained by launcher-hook requirements.
 
@@ -1695,7 +1695,7 @@ Spin Track                      Spin Track
 Performance Tip                 Performance Tip
 ```
 
-Everything outside the Wheel split is structurally identical. The Face Bolt still clamps all layers. The Track still sets height via length number. The Performance Tip still classifies as Attack/Defence/Stamina via friction-velocity behaviour (Case 240 §4). There is no new mechanism, no new coupling type, no new retention system.
+Everything outside the Wheel split is structurally identical. The Face Bolt still clamps all layers. The Track still sets height via length number. The Performance Tip still classifies as Attack/Defence/Stamina via friction-velocity behaviour (Case 955 §4). There is no new mechanism, no new coupling type, no new retention system.
 
 Naming convention carries the structure: "Storm Pegasus 105RF" → Energy Ring = Pegasus, Fusion Wheel = Storm, Track = 105 (10.5 mm height), Tip = RF (Rubber Flat). All four variable layers name the combo.
 
@@ -1791,7 +1791,7 @@ At r_contact = 0.022 m vs. a Metal System wheel at r = 0.020 m: 10% more smash i
 
 ### 4. Spin Track and Performance Tip: Structural Identity with Metal System
 
-These layers are unchanged. The height-numbering (e.g., 145 = 14.5 mm shaft), Track gimmick families (GB145, DF145, CH120, TH170, C145, H145, ED145), and Bottom classification (Attack/Defence/Stamina) all carry over exactly. The physics analysed in Case 240 §§2–4 applies without modification:
+These layers are unchanged. The height-numbering (e.g., 145 = 14.5 mm shaft), Track gimmick families (GB145, DF145, CH120, TH170, C145, H145, ED145), and Bottom classification (Attack/Defence/Stamina) all carry over exactly. The physics analysed in Case 955 §§2–4 applies without modification:
 
 - Track height decouples contact height from Fusion Wheel geometry (identical principle to Metal System)
 - Performance Tip friction-velocity classification is identical
@@ -1806,7 +1806,7 @@ No new derivation is needed for these layers — the HWS Track and Tip are the s
 Total Wheel mass in Metal System ≈ 25–34 g. In HWS: FW ≈ 20–27 g + ER ≈ 3–5 g = 23–32 g. The reduction is modest (~2–5 g), but the distribution changes significantly. In the Metal System, the full Wheel mass was metal at r ≈ 6–22 mm. In HWS, ~3–5 g is shifted to PC at r ≈ 17–23 mm:
 
 ```
-Metal System: I_total_wheel ≈ 7.28×10⁻⁶ kg·m² (28g metal wheel, Case 240)
+Metal System: I_total_wheel ≈ 7.28×10⁻⁶ kg·m² (28g metal wheel, Case 955)
 HWS FW+ER:   I_total = I_FW + I_ER ≈ 4.94×10⁻⁶ + 1.47×10⁻⁶ = 6.41×10⁻⁶ kg·m²
 ```
 
@@ -1852,7 +1852,7 @@ function smashImpulseRatio(r_FW_mm: number, r_metal_system_mm: number): number {
 
 ---
 
-## Case 243 — 4D System: Why Subdividing the Fusion Wheel Into PC Frame, Metal Frame, and Core Enables In-Part Mode Changes, How Final Drive (F:D) Merges Track and Tip Into One Speed-Dependent Tip Transition, and Why "Different Material, Divided Wheel, Dynamic Drive, Deep Custom" Are Four Independent Physics Variables on the Same Assembly
+## Case 958 — 4D System: Why Subdividing the Fusion Wheel Into PC Frame, Metal Frame, and Core Enables In-Part Mode Changes, How Final Drive (F:D) Merges Track and Tip Into One Speed-Dependent Tip Transition, and Why "Different Material, Divided Wheel, Dynamic Drive, Deep Custom" Are Four Independent Physics Variables on the Same Assembly
 
 The 4D System is the third Metal Saga architecture. It keeps the five-layer HWS stack (Face Bolt, Energy Ring, Fusion Wheel, Spin Track, Performance Tip) but allows each of those layers to be itself subdivided into multiple co-assembled components that can be repositioned or reconfigured. The Fusion Wheel is the primary site of 4D innovation: what was a single-piece HWS metal casting becomes a three-part assembly (PC Frame + Metal Frame + Core) whose relative orientations can be changed before a match, shifting mass distribution between attack and stamina configurations without replacing the Wheel. The Final Drive (F:D) Bottom eliminates the Track layer entirely by combining the height-setting shaft and the tip into one part whose contact surface transitions automatically during the match based on centrifugal force. The four Takara Tomy design principles — Different Material, Divided Wheel, Dynamic Drive, Deep Custom — map directly to four distinct physics mechanisms: material-density-based mass placement, sub-part positional mode change, speed-responsive automated tip transition, and expanded combinatorial customisation space.
 
@@ -1930,9 +1930,9 @@ I_Core = ½ × 0.005 × (0.003² + 0.009²) = ½ × 0.005 × 9.0×10⁻⁵  ≈ 
 I_FW_total = 2.13×10⁻⁶ + 3.75×10⁻⁶ + 2.25×10⁻⁷ ≈ 6.1×10⁻⁶ kg·m²
 ```
 
-Compare to HWS FW (Case 242): I_FW ≈ 4.94×10⁻⁶ kg·m². The 4D assembly is heavier overall — the extra PC Frame mass at r ≈ 18–23 mm lifts I_total above HWS. This is the "Deep Custom" effect on stamina: a 4D assembly can achieve higher I_total than a comparable HWS Wheel.
+Compare to HWS FW (Case 957): I_FW ≈ 4.94×10⁻⁶ kg·m². The 4D assembly is heavier overall — the extra PC Frame mass at r ≈ 18–23 mm lifts I_total above HWS. This is the "Deep Custom" effect on stamina: a 4D assembly can achieve higher I_total than a comparable HWS Wheel.
 
-The Metal Frame dominates I (3.75 of 6.1 = 62% of FW I). In attack mode, its protrusions extend to r_outer ≈ 20 mm where it is already positioned — so attack mode does not substantially change I_total but does change the contact impulse magnitude (metal face at r = 20 mm vs. PC face at r = 23 mm: metal has higher material stiffness → higher peak contact force as derived in Case 239 §3).
+The Metal Frame dominates I (3.75 of 6.1 = 62% of FW I). In attack mode, its protrusions extend to r_outer ≈ 20 mm where it is already positioned — so attack mode does not substantially change I_total but does change the contact impulse magnitude (metal face at r = 20 mm vs. PC face at r = 23 mm: metal has higher material stiffness → higher peak contact force as derived in Case 954 §3).
 
 ---
 
@@ -2042,7 +2042,7 @@ function omegaTransition(
 
 ---
 
-## Case 244 — Burst System (Base Structure): Why Collapsing the Stack to Three Layers Forces the Disc to Carry All Flywheel Function, How the Spring-Ratchet Burst Mechanism Converts Contact Impulse Into a Two-Point Win Condition, and Why Standardising Driver Height Eliminates the Height-Mismatch Exploit of All Prior Systems
+## Case 959 — Burst System (Base Structure): Why Collapsing the Stack to Three Layers Forces the Disc to Carry All Flywheel Function, How the Spring-Ratchet Burst Mechanism Converts Contact Impulse Into a Two-Point Win Condition, and Why Standardising Driver Height Eliminates the Height-Mismatch Exploit of All Prior Systems
 
 The Burst System (Beyblade Burst, Takara Tomy) reduces the assembly to three parts: the Layer (contact body, burst housing), the Disc (flywheel), and the Performance Tip (Driver, movement + burst spring). The elimination of height variance between Drivers standardises the Layer-to-Layer contact plane system-wide — the height-mismatch tactic used throughout the plastic era (EG base height vs. SG height, Track length selection in MFB) is structurally impossible in base Burst because all Drivers present at the same height. The Disc absorbs the WD flywheel role entirely; with no SG, no BB, and no Track sub-system, the Disc's metal mass distribution is the sole stamina lever. The Burst mechanism — a spring-loaded ratchet inside the Driver engaging the Layer's inner teeth — converts incoming contact impulse into relative Layer rotation; if that rotation accumulates past the tooth disengagement angle, the Layer releases and flies off, scoring the opponent two points instead of the usual one for ring-out. Every subsequent Burst subsystem modifies one or more of these three variables: Layer contact geometry, Disc mass distribution, or Driver burst resistance.
 
@@ -2214,7 +2214,7 @@ At the same impulse J:
 - Soft contact: lower peak force, longer duration — less destabilisation torque, more spin drain
 - Hard contact: higher peak force, shorter duration — more destabilisation, sharper impulse
 
-The soft inner piece absorbs burst-inducing peak impulse by extending Δt. The protrusions of the coloured piece that extend through holes in the clear casing produce the hard-contact attack points; the surrounding soft body provides shock absorption. This dual-material structure within a single layer is the Burst System's equivalent of the HMS Metal Frame + ABS Caul architecture (Case 239 §3).
+The soft inner piece absorbs burst-inducing peak impulse by extending Δt. The protrusions of the coloured piece that extend through holes in the clear casing produce the hard-contact attack points; the surrounding soft body provides shock absorption. This dual-material structure within a single layer is the Burst System's equivalent of the HMS Metal Frame + ABS Caul architecture (Case 954 §3).
 
 ---
 
@@ -2273,7 +2273,7 @@ function discFraction(I_disc: number, I_layer: number, I_driver: number): number
 
 ---
 
-## Case 245 — Burst Subsystems (Takara Tomy): How Each Generation's Structural Change Modifies Exactly One Axis of the Burst Physics Framework, Why Cho-Z Metal-Insert Layers Shift the Burst Balance Toward Attack by Raising Layer I and Contact Stiffness, How Three-Part Layers Enable Chip Swapping Without Full Layer Replacement, and Why High/Low Mode in Dynamite Battle Is a Contact-Height Selector Expressed Through Part Reorder
+## Case 960 — Burst Subsystems (Takara Tomy): How Each Generation's Structural Change Modifies Exactly One Axis of the Burst Physics Framework, Why Cho-Z Metal-Insert Layers Shift the Burst Balance Toward Attack by Raising Layer I and Contact Stiffness, How Three-Part Layers Enable Chip Swapping Without Full Layer Replacement, and Why High/Low Mode in Dynamite Battle Is a Contact-Height Selector Expressed Through Part Reorder
 
 The seven Takara Tomy Burst subsystems (Dual Layer through Burst Ultimate) are each defined by a single structural innovation applied to the base Burst System's Layer–Disc–Driver stack. Each innovation maps to exactly one physics variable: Dual Layer increases Layer mass; God Layer splits the Disc into Core + Frame; Cho-Z embeds metal in the Layer; Gatinko splits the Layer into three independently swappable parts; Superking replaces the Chip+Weight+Base with Chip+Ring+Chassis (Double Chassis can substitute the Disc); Dynamite Battle adds a two-mode assembly order to the three-part Layer; Burst Ultimate introduces gimmicked Blade variants. Hasbro-exclusive subsystems (SlingShock, HyperSphere, SpeedStorm, QuadDrive, QuadStrike) are omitted — they strip or re-engineer the TT mechanics for stadium-specific gimmicks and are not physics-equivalent to their TT counterparts.
 
@@ -2423,7 +2423,7 @@ The Chassis Disc allows the Disc slot to carry different weight profiles than st
 Limit Break Rings have gimmick features (blades that pop out, split rings, free-spinning sub-rings). These function as in-Layer mode changes — similar to Cho-Z Awakening wings but resident in the Ring component rather than the Chip. The split Ring (The End's mechanic) creates a free-spinning outer ring:
 
 ```
-Free-spinning Ring: I_ring free to rotate → absorbs contact impulse (SAR principle, Case 237 §5)
+Free-spinning Ring: I_ring free to rotate → absorbs contact impulse (SAR principle, Case 952 §5)
 J_transmitted = J × I_combo / (I_combo + I_free_ring)
 ```
 
@@ -2460,7 +2460,7 @@ Evolution Gears are sub-components that attach to specific parts (Blade, Armor, 
 
 The Burst Ultimate Layer Series introduces the BU Blade — a Blade variant with integrated gimmicks while retaining the Dynamite Battle D-Core + Blade + Armor structure. BU Blades feature active mechanisms (rubber components, retracting elements) within the Blade sub-part. The system is otherwise architecturally identical to Dynamite Battle — same High/Low Mode assembly order, same Evolution Gear compatibility.
 
-BU Blade gimmick physics follows the same framework as prior gimmicked layers: rubber segments → higher μ → higher τ_contact_rebound (defensive) or higher lateral impulse delivery (attack); retracting elements → mode-change via centrifugal threshold (same analysis as Cho-Z Awakening wings, Case 245 §3).
+BU Blade gimmick physics follows the same framework as prior gimmicked layers: rubber segments → higher μ → higher τ_contact_rebound (defensive) or higher lateral impulse delivery (attack); retracting elements → mode-change via centrifugal threshold (same analysis as Cho-Z Awakening wings, Case 960 §3).
 
 ---
 
@@ -2536,7 +2536,7 @@ function evolutionGearSmashBoost(
 
 ---
 
-## Case 246 — CobaltDrake 4-60F: Why a 38 g Blade Exceeding Contemporaries by 3 g Shifts Both I_total and Contact Impulse Simultaneously, How Upward-Slanting Contact Faces Decompose Smash Impulse Into Lateral and Destabilising Vertical Components, and Why the Flat Bit's Rail Coupling to the Xtreme Line Converts Rotational Energy to Directed Translational Velocity
+## Case 961 — CobaltDrake 4-60F: Why a 38 g Blade Exceeding Contemporaries by 3 g Shifts Both I_total and Contact Impulse Simultaneously, How Upward-Slanting Contact Faces Decompose Smash Impulse Into Lateral and Destabilising Vertical Components, and Why the Flat Bit's Rail Coupling to the Xtreme Line Converts Rotational Energy to Directed Translational Velocity
 
 CobaltDrake 4-60F is the introductory Beyblade X (BX) combo examined in this chain — it is also structurally representative of the BX system's three-part architecture: Blade (contact body), Ratchet (height + protrusion layer), Bit (tip + movement). CobaltDrake's defining property at release was mass: 38 g for the Blade alone, the heaviest Blade in the initial BX library and 3 g heavier than competing Attack Type Blades. This mass advantage operates on two physics axes simultaneously — I_total (burst resistance, spin retention) and contact impulse (heavier rotating mass delivers more J per hit at the same ω). The four upward-slanting blades add a vertical component to the contact impulse that destabilises the opponent's tilt angle without solely depending on lateral smash. The Flat Bit links to the BX-exclusive Xtreme Line rail, converting the beyblade's rotational energy into a guided high-speed translational burst via rail contact. The two molds (38 g and 36.3–37.6 g) create a measurable performance split — the lighter mold loses both the I_total advantage and the contact impulse premium.
 
@@ -2554,7 +2554,7 @@ Assembly (top to bottom):
   Bit            ← tip + movement (replaces Performance Tip/Driver)
 ```
 
-The Ratchet sets the Blade's height above the stadium floor via its stated height measurement (4-60: height = 6.0 mm). This is analogous to the MFB Track's height-setting function but at a much smaller scale — BX Blades sit at h ≈ 6–8 mm from floor, a far lower contact plane than any MFB combo. Lower contact height means all BX vs. BX engagements are Blade-to-Blade by default, with no height-mismatch exploit (same structural reason as Burst's uniform Driver heights, Case 244 §5).
+The Ratchet sets the Blade's height above the stadium floor via its stated height measurement (4-60: height = 6.0 mm). This is analogous to the MFB Track's height-setting function but at a much smaller scale — BX Blades sit at h ≈ 6–8 mm from floor, a far lower contact plane than any MFB combo. Lower contact height means all BX vs. BX engagements are Blade-to-Blade by default, with no height-mismatch exploit (same structural reason as Burst's uniform Driver heights, Case 959 §5).
 
 ---
 
@@ -2579,7 +2579,7 @@ I_35g = ½ × 0.035 × 5.93×10⁻⁴ ≈ 1.038×10⁻⁵ kg·m²
 ΔI = 1.127×10⁻⁵ − 1.038×10⁻⁵ = 8.9×10⁻⁷ kg·m²  (+8.6%)
 ```
 
-**Burst resistance improvement** (Case 244 §3):
+**Burst resistance improvement** (Case 959 §3):
 
 For the same contact impulse J at r_contact:
 
@@ -2681,7 +2681,7 @@ The Flat Bit's tip-to-rail contact depends on the Bit's length below the Ratchet
 
 ### 5. Flat Bit and Xtreme Dash: Rail-Coupling Physics
 
-The Flat Bit is an Attack-type Bit with a flat contact face and a shallow central indentation. The flat tip produces the same high-friction aggressive movement as flat tips in all prior systems (Case 240 §4) — high μ → high τ_tip → high lateral velocity.
+The Flat Bit is an Attack-type Bit with a flat contact face and a shallow central indentation. The flat tip produces the same high-friction aggressive movement as flat tips in all prior systems (Case 955 §4) — high μ → high τ_tip → high lateral velocity.
 
 **Xtreme Dash (X-Celerator Rail):**
 
@@ -2724,7 +2724,7 @@ LF is ~1 mm shorter; UF is ~2 mm shorter. Shorter tip = Blade sits ~1–2 mm clo
 
 - Shorter Bit → slightly lower CoM → marginally better gyroscopic stability at cost of floor clearance
 - Rail contact angle changes slightly — shorter tip may contact the rail from a different angle, altering Xtreme Dash launch direction by a few degrees
-- Contact height with opponent Ratchet/Blade is also lowered — LF/UF may catch opponents' Blades from slightly below, shifting the upper-attack angle φ from Case 246 §3
+- Contact height with opponent Ratchet/Blade is also lowered — LF/UF may catch opponents' Blades from slightly below, shifting the upper-attack angle φ from Case 961 §3
 
 ---
 
@@ -2813,9 +2813,9 @@ const CobaltDrake_1stMold: BXCombo = {
 
 ---
 
-## Case 247 — DranBuster 1-60A (Unique Line): Why a Single Off-Axis Protrusion Concentrates All Contact Mass at One Angular Position to Deliver Maximum Impulse in a Single Event, How the 1-Protrusion Ratchet's Imbalance Compounds the Blade's OWD Into a Controlled Eccentric Orbit, and Why 16 Accel Gears Increase Xtreme Dash Exit Speed at a Direct Spin-Energy Cost
+## Case 962 — DranBuster 1-60A (Unique Line): Why a Single Off-Axis Protrusion Concentrates All Contact Mass at One Angular Position to Deliver Maximum Impulse in a Single Event, How the 1-Protrusion Ratchet's Imbalance Compounds the Blade's OWD Into a Controlled Eccentric Orbit, and Why 16 Accel Gears Increase Xtreme Dash Exit Speed at a Direct Spin-Energy Cost
 
-DranBuster 1-60A is the first Beyblade X Unique Line (UX) combo examined here. The Unique Line introduces bespoke gimmicks to the standard BX Blade + Ratchet + Bit stack — DranBuster's defining gimmick is a single large broadsword protrusion on the Blade underside that serves as the sole primary contact point. The design philosophy is the inverse of CobaltDrake's eight-contact-point-equivalent upper-blade geometry (Case 246 §3): instead of distributing attack mass across four balanced blades, DranBuster concentrates all effective contact mass at one angular position. The physics consequence is that when the protrusion aligns with an opponent, the contact impulse is maximally concentrated — a "One Hit Kill" — but the dead zone between contacts is maximally large (360° / 1 = 360°, effectively a full revolution per contact opportunity). The 1-60 Ratchet is deliberately imbalanced to match the Blade's weight distribution, reinforcing the eccentric orbit. The Accel Bit's 16-gear engagement with the Xtreme Line (vs. the standard 12) increases the Xtreme Dash exit velocity by increasing angular coupling per rail revolution, at the cost of more spin energy extracted per Xtreme Dash event.
+DranBuster 1-60A is the first Beyblade X Unique Line (UX) combo examined here. The Unique Line introduces bespoke gimmicks to the standard BX Blade + Ratchet + Bit stack — DranBuster's defining gimmick is a single large broadsword protrusion on the Blade underside that serves as the sole primary contact point. The design philosophy is the inverse of CobaltDrake's eight-contact-point-equivalent upper-blade geometry (Case 961 §3): instead of distributing attack mass across four balanced blades, DranBuster concentrates all effective contact mass at one angular position. The physics consequence is that when the protrusion aligns with an opponent, the contact impulse is maximally concentrated — a "One Hit Kill" — but the dead zone between contacts is maximally large (360° / 1 = 360°, effectively a full revolution per contact opportunity). The 1-60 Ratchet is deliberately imbalanced to match the Blade's weight distribution, reinforcing the eccentric orbit. The Accel Bit's 16-gear engagement with the Xtreme Line (vs. the standard 12) increases the Xtreme Dash exit velocity by increasing angular coupling per rail revolution, at the cost of more spin energy extracted per Xtreme Dash event.
 
 ---
 
@@ -3055,9 +3055,9 @@ function effectiveContactMassPerFace(
 
 ---
 
-## Case 248 — DranBrave S6-60V (Custom Line): Why Splitting the Blade into Lock Chip + Main Blade + Assist Blade Introduces an Independent Secondary Contact Surface, How Brave's Smooth Tall Upper-Attack Blades Trade Bite for Height and Why That Reduces Effective Impulse Transfer, and How Vortex's Rightward-Spiral Spikes Generate a Screw-Pump Lateral Force That Increases Xtreme Line Coupling
+## Case 963 — DranBrave S6-60V (Custom Line): Why Splitting the Blade into Lock Chip + Main Blade + Assist Blade Introduces an Independent Secondary Contact Surface, How Brave's Smooth Tall Upper-Attack Blades Trade Bite for Height and Why That Reduces Effective Impulse Transfer, and How Vortex's Rightward-Spiral Spikes Generate a Screw-Pump Lateral Force That Increases Xtreme Line Coupling
 
-DranBrave S6-60V is the first Beyblade X Custom Line (CX) combo examined here. The Custom Line introduces a structural change to the Blade: it is now a five-component assembly — **Lock Chip** (identity + burst interface), **Main Blade** (primary contact body), **Assist Blade** (secondary contact modifier) — mounted on the standard **Ratchet** and **Bit**. The "S" in the combo name is the Assist Blade's first letter (Slash). This five-part structure is the BX equivalent of the Gatinko/Dynamite Battle three-part Layer in Burst (Case 245 §4), decoupling the character identity (Lock Chip), primary contact geometry (Main Blade), and secondary contact geometry (Assist Blade) into independently swappable components. Brave's three-bladed upper-attack geometry exhibits a critical design constraint: the blades are smooth and tall, which increases the vertical destabilisation component of contact impulse but reduces contact bite — the smooth face provides insufficient edge sharpness to grip the opponent's Blade surface, reducing J_smash transfer per hit. Vortex is a wider spiral-tipped Bit than Cyclone; its rightward spiral geometry generates a screw-pump force during floor contact that biases the beyblade outward and toward the Xtreme Line.
+DranBrave S6-60V is the first Beyblade X Custom Line (CX) combo examined here. The Custom Line introduces a structural change to the Blade: it is now a five-component assembly — **Lock Chip** (identity + burst interface), **Main Blade** (primary contact body), **Assist Blade** (secondary contact modifier) — mounted on the standard **Ratchet** and **Bit**. The "S" in the combo name is the Assist Blade's first letter (Slash). This five-part structure is the BX equivalent of the Gatinko/Dynamite Battle three-part Layer in Burst (Case 960 §4), decoupling the character identity (Lock Chip), primary contact geometry (Main Blade), and secondary contact geometry (Assist Blade) into independently swappable components. Brave's three-bladed upper-attack geometry exhibits a critical design constraint: the blades are smooth and tall, which increases the vertical destabilisation component of contact impulse but reduces contact bite — the smooth face provides insufficient edge sharpness to grip the opponent's Blade surface, reducing J_smash transfer per hit. Vortex is a wider spiral-tipped Bit than Cyclone; its rightward spiral geometry generates a screw-pump force during floor contact that biases the beyblade outward and toward the Xtreme Line.
 
 ---
 
@@ -3081,13 +3081,13 @@ Naming convention: "DranBrave S6-60V" = Lock Chip (Dran) + Main Blade (Brave) + 
 
 **Physics significance of Assist Blade:**
 
-The Assist Blade adds a secondary contact surface at a different height or radius from the Main Blade's contact faces. Two opposing beyblades with CX Blades can engage Main-to-Main, Main-to-Assist, or Assist-to-Main — depending on their relative heights (set by Ratchets) and tilt angles. The Assist Blade therefore extends the vertical contact range of the combo, functioning analogously to a SAR in the plastic era (Case 237 §5) but now integrated into the Blade layer at a fixed offset.
+The Assist Blade adds a secondary contact surface at a different height or radius from the Main Blade's contact faces. Two opposing beyblades with CX Blades can engage Main-to-Main, Main-to-Assist, or Assist-to-Main — depending on their relative heights (set by Ratchets) and tilt angles. The Assist Blade therefore extends the vertical contact range of the combo, functioning analogously to a SAR in the plastic era (Case 952 §5) but now integrated into the Blade layer at a fixed offset.
 
 ---
 
 ### 2. Brave Main Blade: Three-Blade Smooth Upper Attack and the Bite Deficit
 
-Brave has three blades angled upward — upper attack geometry as analysed for CobaltDrake (Case 246 §3). Three-blade vs. four-blade contact frequency at ω = 200 rad/s:
+Brave has three blades angled upward — upper attack geometry as analysed for CobaltDrake (Case 961 §3). Three-blade vs. four-blade contact frequency at ω = 200 rad/s:
 
 ```
 f_contact_Brave = 3 × (200 / 2π) ≈ 95.5 contacts/s
@@ -3258,7 +3258,7 @@ function ratchetDeadZone_deg(protrusions: number): number {
 
 ---
 
-## Case 249 — Track 85 · 0.86 g: Why the Minimum-Height Track Enables Wheel-Underside Contact Against Taller Opponents, How the 8.5 mm Shaft Cuts the Floor-Scrape Threshold Below the Sliding Shoot Tilt Envelope, and Why Boost Disk 145 and 230 Close the Low-Track Attack Window Structurally
+## Case 964 — Track 85 · 0.86 g: Why the Minimum-Height Track Enables Wheel-Underside Contact Against Taller Opponents, How the 8.5 mm Shaft Cuts the Floor-Scrape Threshold Below the Sliding Shoot Tilt Envelope, and Why Boost Disk 145 and 230 Close the Low-Track Attack Window Structurally
 
 > **Stock combo (Mercury Anubius 85XF):** Clear Wheel: Anubis · Metal Wheel: Mercury · Track: 85 · Bottom: Extreme Flat
 > **Stock combo (Omega Dragonis 85XF):** 4D Clear Wheel: Dragonis · 4D Metal Wheel: Omega · Track: 85 · Bottom: Extreme Flat
@@ -3342,7 +3342,7 @@ function comLowering_mm(tLow: Track, tHigh: Track, m_wheel_g: number, m_combo_g:
 
 ---
 
-## Case 250 — Track 90 · 0.9 g: Why a 0.5 mm Height Increase Over 85 Raises the Scrape Threshold by 1.4° Into a Safer Window While Retaining 92% of the CoM-Lowering Benefit, and When This Marginal Safety Advantage Is the Deciding Factor
+## Case 965 — Track 90 · 0.9 g: Why a 0.5 mm Height Increase Over 85 Raises the Scrape Threshold by 1.4° Into a Safer Window While Retaining 92% of the CoM-Lowering Benefit, and When This Marginal Safety Advantage Is the Deciding Factor
 
 Track 90 at 9.0 mm was the lowest Track before 85. The half-millimetre difference is geometrically small but falls at a sensitive operating point:
 
@@ -3367,7 +3367,7 @@ CoM lowering: (28/35) × 5.5 ≈ 4.4 mm — 91.7% of 85's benefit. "Outclassed s
 
 ---
 
-## Case 251 — Track 100 · 1.0 g: Why the 10 mm Shaft Clears the Scrape Threshold for the Full Practical Sliding Shoot Range While Providing Adequate Contact With Most Opposing Wheels, and How Wheel Overhang Compensates the 1.5 mm Undercut Deficit Relative to 85
+## Case 966 — Track 100 · 1.0 g: Why the 10 mm Shaft Clears the Scrape Threshold for the Full Practical Sliding Shoot Range While Providing Adequate Contact With Most Opposing Wheels, and How Wheel Overhang Compensates the 1.5 mm Undercut Deficit Relative to 85
 
 Track 100 at 10.0 mm and 1.0 g places the floor-scrape threshold at:
 
@@ -3403,7 +3403,7 @@ The overhang contacts at 13.0 mm — effectively producing the same contact heig
 
 ---
 
-## Case 252 — Track 105 · 1.0 g: Why Identical Mass to 100 With 0.5 mm More Height Produces No Practical Advantage and Marginally Worsens All Attack Metrics, Making It a Last-Resort-Only Choice
+## Case 967 — Track 105 · 1.0 g: Why Identical Mass to 100 With 0.5 mm More Height Produces No Practical Advantage and Marginally Worsens All Attack Metrics, Making It a Last-Resort-Only Choice
 
 Track 105 at 10.5 mm shares 1.0 g with Track 100 but adds 0.5 mm. Every metric is worse than or equal to 100:
 
@@ -3428,7 +3428,7 @@ Track | Scrape θ | Wheel h   | Undercut vs 145 | CoM lowering
 
 ---
 
-## Case 253 — AD145 (Armor Defense 145) · 2.8 g: Why a Funnel-Shaped Track at 145 Height With Outward Weight Distribution Becomes Top-Tier for Stamina Despite Failing at Its Named Defensive Role, and Why BD145 Structurally Supersedes It for Defense While AD145 Retains the Stamina Niche
+## Case 968 — AD145 (Armor Defense 145) · 2.8 g: Why a Funnel-Shaped Track at 145 Height With Outward Weight Distribution Becomes Top-Tier for Stamina Despite Failing at Its Named Defensive Role, and Why BD145 Structurally Supersedes It for Defense While AD145 Retains the Stamina Niche
 
 > **Stock combo (Gravity Perseus AD145WD):** Clear Wheel: Perseus · Metal Wheel: Gravity · Track: AD145 · Bottom: Wide Defense
 > **Stock combo (Fusion Hades AD145SWD):** 4D Clear Wheel: Hades · 4D Metal Wheel: Fusion · Track: AD145 · Bottom: Sharp Wide Defense
@@ -3483,7 +3483,7 @@ vs. AD145's 4.73×10⁻⁷ kg·m². GB145 contributes 6.1× more I from the Trac
 
 **vs. 230:** Height 230 = 23.0 mm places the Wheel far above standard attack height. No low-track attack reaches the Wheel. AD145 at 14.5 mm provides no such height immunity.
 
-**vs. BD145:** BD145's ball mechanism provides direct contact-force absorption at the outer rim (Case 249 §3). AD145's ridged funnel surface is not free-spinning — it transmits contact impulse to the combo body without absorption. BD145 "definitely surpassed" AD145 for defense because BD145's mechanism specifically dissipates contact energy, while AD145's funnel shape can only redirect (via the angle of the funnel walls) rather than absorb.
+**vs. BD145:** BD145's ball mechanism provides direct contact-force absorption at the outer rim (Case 964 §3). AD145's ridged funnel surface is not free-spinning — it transmits contact impulse to the combo body without absorption. BD145 "definitely surpassed" AD145 for defense because BD145's mechanism specifically dissipates contact energy, while AD145's funnel shape can only redirect (via the angle of the funnel walls) rather than absorb.
 
 ---
 
@@ -3534,7 +3534,7 @@ function funnelDragReduction(alpha_deg: number): number {
 
 ---
 
-## Case 254 — DF145 (Down Force 145) · 1.5 g: Why Four Upward-Facing Wings Cannot Generate Meaningful Downforce at Beyblade Spin Rates, and Why the Track Is Outclassed in Stamina and Irrelevant in Defense or Attack
+## Case 969 — DF145 (Down Force 145) · 1.5 g: Why Four Upward-Facing Wings Cannot Generate Meaningful Downforce at Beyblade Spin Rates, and Why the Track Is Outclassed in Stamina and Irrelevant in Defense or Attack
 
 > **Stock combo (Libra DF145BS):** Wheel: Libra · Track: DF145 · Bottom: Ball Sharp
 > **Stock combo (Virgo DF145BS):** Wheel: Virgo · Track: DF145 · Bottom: Ball Sharp
@@ -3610,7 +3610,7 @@ function dfTrackMoI(m_g: number, r_shaft_mm: number, r_wing_mm: number, m_wing_f
 
 ---
 
-## Case 255 — SW145 (Switch 145) · 4.2 g: Why Reversing Three Wings Changes the Contact Face Angle From Smash-Initiating to Deflection-Optimised, How 4.2 g of Mass at 38 mm Maximum Width Produces the Highest Track-Level I_total in the 145-Height Class, and Why Rigid Wing Attachment Produces Irremovable Recoil That Structurally Caps Its Defensive Ceiling
+## Case 970 — SW145 (Switch 145) · 4.2 g: Why Reversing Three Wings Changes the Contact Face Angle From Smash-Initiating to Deflection-Optimised, How 4.2 g of Mass at 38 mm Maximum Width Produces the Highest Track-Level I_total in the 145-Height Class, and Why Rigid Wing Attachment Produces Irremovable Recoil That Structurally Caps Its Defensive Ceiling
 
 > **Stock combo (Poison Serpent SW145SD):** Clear Wheel: Serpent · Metal Wheel: Poison · Track: SW145 · Bottom: Semi Defense
 > **Stock combo (Nightmare Rex SW145SD):** Clear Wheel: Rex · Metal Wheel: Nightmare · Track: SW145 · Bottom: Semi Defense
@@ -3657,7 +3657,7 @@ In Left Spin the beyblade rotates CCW — the leading edge is the mirror of RS. 
 
 Maximum wing width: 38 mm (full radius r_max = 19 mm). Minimum shaft width: 30.5 mm (r_shaft ≈ 15.25 mm). The wings extend from r ≈ 15 mm to r ≈ 19 mm at h = 14.5 mm (Track equator height).
 
-A beyblade using a shorter Track (e.g., 100 Track) has its Wheel centroid at h ≈ 17.0 mm (Case 251). The lower arc of that Wheel sits at h ≈ 13.0 mm — below the SW145 wing plane at h ≈ 14.5 mm. However, the SW145 wing tips at r = 19 mm and h = 14.5 mm extend into the contact zone of the opponent's Wheel at h = 13–17 mm:
+A beyblade using a shorter Track (e.g., 100 Track) has its Wheel centroid at h ≈ 17.0 mm (Case 966). The lower arc of that Wheel sits at h ≈ 13.0 mm — below the SW145 wing plane at h ≈ 14.5 mm. However, the SW145 wing tips at r = 19 mm and h = 14.5 mm extend into the contact zone of the opponent's Wheel at h = 13–17 mm:
 
 ```
    SW145 wing tip at r = 19 mm, h = 14.5 mm
@@ -3771,7 +3771,7 @@ function iComboFraction(I_SW145: number, I_wheel: number): number {
 
 ---
 
-## Case 256 — WD145 (Wide Defense 145) · 3.6 g: Why Fixed Wings That Cannot Free-Spin Transmit Full Contact Impulse Unlike ED145, How the Radial Gap Between Wheel Outer Edge and Wing Outer Edge Creates a Mechanical Trap for Attacker Protrusions, and Why the Trap-Coupling Event Produces Anomalously Large Mutual Spin Drain
+## Case 971 — WD145 (Wide Defense 145) · 3.6 g: Why Fixed Wings That Cannot Free-Spin Transmit Full Contact Impulse Unlike ED145, How the Radial Gap Between Wheel Outer Edge and Wing Outer Edge Creates a Mechanical Trap for Attacker Protrusions, and Why the Trap-Coupling Event Produces Anomalously Large Mutual Spin Drain
 
 > **Stock combo (Escolpio WD145B):** Wheel: Escolpio · Track: WD145 · Bottom: Ball
 > **Stock combo (Grand Ketos T125/WD145 RS):** Clear Wheel: Ketos · Metal Wheel: Grand · Track: T125/WD145 · Bottom: Rubber Sharp
@@ -3932,7 +3932,7 @@ function trapGapWidth_mm(r_wheel_outer: number, r_wing_outer = 19): number {
 
 ---
 
-## Case 257 — E230 (Elevator 230) · 7.4 g: Why a Gravity-Driven Free-Sliding Disk That Cannot Rotate Independently Acts as a Passive Speed Governor on Zero-G Stadium Walls, How the Disk's Inertial Lag Produces a Restoring Torque That Stabilises the Combo During Wall Climbs, and Why Normal-Mode and Boost-Mode Disk Positions Change the Contact Geometry by 2 mm With Measurable Wall-Grip Consequences
+## Case 972 — E230 (Elevator 230) · 7.4 g: Why a Gravity-Driven Free-Sliding Disk That Cannot Rotate Independently Acts as a Passive Speed Governor on Zero-G Stadium Walls, How the Disk's Inertial Lag Produces a Restoring Torque That Stabilises the Combo During Wall Climbs, and Why Normal-Mode and Boost-Mode Disk Positions Change the Contact Geometry by 2 mm With Measurable Wall-Grip Consequences
 
 > **Stock combo (Thief Phoenic E230GCF):** Chrome Wheel(s): Phoenic · Crystal Wheel: Thief · Track: E230 · Bottom: Gear Circle Flat
 
@@ -4149,13 +4149,13 @@ function topplingLeverReduction(h_wheel_mm: number, h_disk_mm: number): number {
 
 ---
 
-## Case 258 — SP230 (Spike 230) · weight unrecorded (est. ≈ 4.8 g)
+## Case 973 — SP230 (Spike 230) · weight unrecorded (est. ≈ 4.8 g)
 
 > **Stock combo (Gladiator Bahamdia SP230GF):** Chrome Wheel(s): Bahamdia · Crystal Wheel: Gladiator · Track: SP230 · Bottom: Giga Flat
 
 **Thesis: SP230's four fixed downward-facing spike protrusions extend the effective contact radius to r_spike ≈ 27 mm at mid-track height, creating a tilt-activated floor/wall contact that triggers at ~17° tilt angle regardless of spin rate; unlike BD145's centrifugal-extension mechanism the spike radius is spin-rate-independent and the contact geometry is always active.**
 
-SP230 is structurally analogous to BD145 in intent — both add outward protrusions to a tall disk body to extend the contact envelope beyond the Track shaft. BD145 uses centrifugal force to extend ball-bearing arms at high ω, retracting when spin drops. SP230 replaces the centrifugal mechanism with four rigid downward-facing diamond-tipped spikes at the disk perimeter: contact radius is fixed at all spin rates. The wiki claim of "speed control" is not aerodynamic — spike vane cross-section is negligible at beyblade spin rates (Case 257 established F_aero < 0.01% of gravitational force for thin sections at 10 000 RPM). The spikes are mechanical tilt-contact elements.
+SP230 is structurally analogous to BD145 in intent — both add outward protrusions to a tall disk body to extend the contact envelope beyond the Track shaft. BD145 uses centrifugal force to extend ball-bearing arms at high ω, retracting when spin drops. SP230 replaces the centrifugal mechanism with four rigid downward-facing diamond-tipped spikes at the disk perimeter: contact radius is fixed at all spin rates. The wiki claim of "speed control" is not aerodynamic — spike vane cross-section is negligible at beyblade spin rates (Case 972 established F_aero < 0.01% of gravitational force for thin sections at 10 000 RPM). The spikes are mechanical tilt-contact elements.
 
 ---
 
@@ -4324,7 +4324,7 @@ function orbitalBrakingEnergyPerRev(F_normal_N: number, alpha_wall_deg: number,
 
 ---
 
-## Case 259 — F230 (Free 230) · 4.6 g
+## Case 974 — F230 (Free 230) · 4.6 g
 
 > **Stock combo (Bandid Genbull F230TB):** Chrome Wheel(s): Genbull · Crystal Wheel: Bandid · Track: F230 · Bottom: Twin Ball
 
@@ -4379,7 +4379,7 @@ With a standard rigid Track (plain 230), when the combo enters LAD rolling, the 
            ≈ 1.59×10⁻³ N·m
 ```
 
-Using I_combo ≈ 8.5×10⁻⁶ kg·m² (Wheel-dominant combo, same basis as Case 257):
+Using I_combo ≈ 8.5×10⁻⁶ kg·m² (Wheel-dominant combo, same basis as Case 972):
 
 ```
 (dω/dt)_rigid_LAD = τ_coupling / I_combo
@@ -4408,7 +4408,7 @@ F230's bearing isolates the Wheel from the floor-rolling torque. The Wheel sees 
       ≈ 6.96×10⁻⁷ N·m
 ```
 
-(air-drag constant C_D established in Case 254 for MFB-scale wheels; ω ≈ 150 rad/s represents a low-spin LAD state)
+(air-drag constant C_D established in Case 969 for MFB-scale wheels; ω ≈ 150 rad/s represents a low-spin LAD state)
 
 ```
 (dω/dt)_F230_LAD = τ_air / I_combo
@@ -4508,7 +4508,7 @@ function spinShieldDelta(J_contact_Ns: number, r_cf_m: number, I_disk_free: numb
 
 ---
 
-## Case 260 — TB (Twin Ball) · weight unrecorded
+## Case 975 — TB (Twin Ball) · weight unrecorded
 
 > **Stock combo (Bandid Genbull F230TB):** Chrome Wheel(s): Genbull · Crystal Wheel: Bandid · Track: F230 · Bottom: Twin Ball
 
@@ -4739,7 +4739,7 @@ function hertzContactArea_mm2(F_N: number, R_dome_mm: number, E_star_GPa: number
 
 ---
 
-## Case 261 — Storm Metal Wheel · ≈ 28.5 g
+## Case 976 — Storm Metal Wheel · ≈ 28.5 g
 
 > **Stock combo (Storm Pegasis 105RF):** Clear Wheel: Pegasis · Metal Wheel: Storm · Track: 105 · Bottom: Rubber Flat
 > **Stock combo (Storm Capricorne M145Q):** Clear Wheel: Capricorne · Metal Wheel: Storm · Track: M145 · Bottom: Quake
@@ -4903,7 +4903,7 @@ function netAttackAdvantage(phi_deg: number): number {
 
 ---
 
-## Case 262 — Rock Metal Wheel · ≈ 28.0 g
+## Case 977 — Rock Metal Wheel · ≈ 28.0 g
 
 > **Stock combo (Rock Leone 145WB):** Clear Wheel: Leone · Metal Wheel: Rock · Track: 145 · Bottom: Wide Ball
 > **Stock combo (Rock Orso D125B):** Clear Wheel: Orso · Metal Wheel: Rock · Track: D125 · Bottom: Ball
@@ -5054,7 +5054,7 @@ function defenseSpinRetention(phi_deg: number, I_combo: number,
 
 ---
 
-## Case 263 — Lightning Metal Wheel (L-Drago) · ≈ 28.0 g
+## Case 978 — Lightning Metal Wheel (L-Drago) · ≈ 28.0 g
 
 > **Stock combo (Lightning L Drago 100HF):** CW: L Drago · MW: Lightning · Track: 100 · Bottom: Hole Flat
 
@@ -5194,7 +5194,7 @@ function upperAttackVertical(J: number, upper_angle_deg: number): number {
 
 ---
 
-## Case 264 — Flame Metal Wheel · ≈ 29.0 g
+## Case 979 — Flame Metal Wheel · ≈ 29.0 g
 
 > **Stock combo (Flame Sagittario C145S):** Clear Wheel: Sagittario · Metal Wheel: Flame · Track: C145 · Bottom: Sharp
 > **Stock combo (Flame Libra T125ES):** Clear Wheel: Libra · Metal Wheel: Flame · Track: T125 · Bottom: Eternal Sharp
@@ -5319,7 +5319,7 @@ function recoilReductionVsStorm_factor(phi_flame_deg: number, phi_storm_deg = 40
 
 ---
 
-## Case 265 — Burn Metal Wheel · ≈ 29.5 g
+## Case 980 — Burn Metal Wheel · ≈ 29.5 g
 
 > **Stock combo (Burn Phoenix 135MS):** Clear Wheel: Phoenix · Metal Wheel: Burn · Track: 135 · Bottom: Metal Sharp
 
@@ -5462,7 +5462,7 @@ function momentOfInertia(m_g: number, r_inner_mm: number, r_outer_mm: number): n
 
 ---
 
-## Case 266 — Earth Metal Wheel · ≈ 30.0 g
+## Case 981 — Earth Metal Wheel · ≈ 30.0 g
 
 > **Stock combo (Earth Aquila 145WD):** Clear Wheel: Aquila · Metal Wheel: Earth · Track: 145 · Bottom: Wide Defense
 > **Stock combo (Earth Virgo GB145BS):** Clear Wheel: Virgo · Metal Wheel: Earth · Track: GB145 · Bottom: Ball Sharp
@@ -5581,7 +5581,7 @@ Layer      Physics contribution
 Earth      Highest I (7.80×10⁻⁶ kg·m²) + near-zero recoil (φ ≈ 1.3°)
 145 Track  Standard mid-height; Wheel at correct contact plane for Stamina/Defense
 WD         Wide annular flat contact (r_WD ≈ 22 mm); spin-equalization resistance
-           (WD contact area ~25 mm² vs. TB's 0.045 mm² — Case 260)
+           (WD contact area ~25 mm² vs. TB's 0.045 mm² — Case 975)
 ```
 
 The WD bottom's high spin-steal friction resistance and Earth's high I create a combo that both outlasts attackers through I-driven spin endurance and resists spin-steal through WD's wide contact area. The combination was the defining "safe choice" for Metal Fusion first-series competitive play.
@@ -5626,7 +5626,7 @@ function spinDecayRateRatio(I_earth: number, I_other: number): number {
 
 ---
 
-## Case 267 — L Drago Metal Wheel · 32 g
+## Case 982 — L Drago Metal Wheel · 32 g
 
 > **Stock combo (L Drago 105F):** Wheel: L Drago · Track: 105 · Bottom: Flat
 
@@ -5779,7 +5779,7 @@ function leftSpinRelativeVelocity(omega_LDrago: number, omega_opponent: number,
 
 ---
 
-## Case 268 — Leone Metal Wheel · 38.0 g · r_outer = 21.79 mm · h = 8.97 mm
+## Case 983 — Leone Metal Wheel · 38.0 g · r_outer = 21.79 mm · h = 8.97 mm
 
 > **Stock combo (Leone 145D):** Wheel: Leone · Track: 145 · Bottom: Defense
 
@@ -5915,7 +5915,7 @@ function recoilVsRock(phi_leone_deg: number, phi_rock_deg = 7): number {
 
 ---
 
-## Case 269 — Libra Metal Wheel · 40.5 g (three molds)
+## Case 984 — Libra Metal Wheel · 40.5 g (three molds)
 
 > **Stock combo (Libra DF145BS):** Wheel: Libra · Track: DF145 · Bottom: Ball Sharp
 
@@ -6101,7 +6101,7 @@ function libraI(m_outer_g: number, r_out_mm: number, r_in_mm: number,
 
 ---
 
-## Case 270 — Pegasis Metal Wheel · 36.0 g · r_outer ≈ 22.20 mm · h = 12.16 mm
+## Case 985 — Pegasis Metal Wheel · 36.0 g · r_outer ≈ 22.20 mm · h = 12.16 mm
 
 > **Stock combo (Pegasis 105F):** Wheel: Pegasis · Track: 105 · Bottom: Flat
 
@@ -6292,7 +6292,7 @@ function smashRecoilRatio(phi_deg: number): number {
 
 ---
 
-## Case 271 — Pisces Metal Wheel · 35.4 g
+## Case 986 — Pisces Metal Wheel · 35.4 g
 
 > **Stock combo (Pisces D125BS):** Wheel: Pisces · Track: D125 · Bottom: Ball Sharp
 
@@ -6433,7 +6433,7 @@ function spinRetentionAfterNContacts(phi_deg: number, I: number, J: number,
 
 ---
 
-## Case 272 — Sagittario Metal Wheel · weight unrecorded (est. ≈ 31 g)
+## Case 987 — Sagittario Metal Wheel · weight unrecorded (est. ≈ 31 g)
 
 > **Stock combo (Sagittario 145S):** Wheel: Sagittario · Track: 145 · Bottom: Sharp
 
@@ -6568,7 +6568,7 @@ function spinLossVariance(J: number, phi_end_deg: number, phi_body_deg: number,
 
 ---
 
-## Case 273 — Virgo Metal Wheel · 37.0 g
+## Case 988 — Virgo Metal Wheel · 37.0 g
 
 > **Stock combo (Virgo DF145BS):** Wheel: Virgo · Track: DF145 · Bottom: Ball Sharp
 
@@ -6766,7 +6766,7 @@ Clear Wheels are always lighter than the Metal Wheel below them. Their physics c
 
 ---
 
-## Case 274 — Leone Clear Wheel · 3.0 g
+## Case 989 — Leone Clear Wheel · 3.0 g
 
 > **Stock combo (Rock Leone 145WB):** Clear Wheel: Leone · Metal Wheel: Rock · Track: 145 · Bottom: Wide Ball
 > **Stock combo (Counter Leone D125B):** Clear Wheel: Leone · Metal Wheel: Counter · Track: D125 · Bottom: Ball
@@ -6807,7 +6807,7 @@ I_CW_Leone ≈ ½ × m × (r_inner² + r_outer²)
            ≈ 5.79×10⁻⁷ kg·m²
 ```
 
-As a fraction of the Leone Metal Wheel's I (Case 262, 7.28×10⁻⁶ kg·m²):
+As a fraction of the Leone Metal Wheel's I (Case 977, 7.28×10⁻⁶ kg·m²):
 
 ```
 I_CW / I_Metal ≈ 5.79×10⁻⁷ / 7.28×10⁻⁶ ≈ 7.95%
@@ -6901,7 +6901,7 @@ function precessonOnsetShift(delta_h_com: number, h_com: number): number {
 
 ---
 
-## Case 275 — Nemesis 4D Clear Wheel · 3.23 g
+## Case 990 — Nemesis 4D Clear Wheel · 3.23 g
 
 > **Stock combo (Diablo Nemesis X:D):** 4D Clear Wheel: Nemesis · 4D Metal Wheel: Diablo · Bottom: X Drive
 
@@ -6940,7 +6940,7 @@ I_Nemesis_CW ≈ ½ × 0.00323 × (0.005² + 0.019²)
              ≈ 6.23×10⁻⁷ kg·m²
 ```
 
-Compared to Leone CW (Case 274, 5.79×10⁻⁷):
+Compared to Leone CW (Case 989, 5.79×10⁻⁷):
 
 ```
 ΔI = 6.23×10⁻⁷ − 5.79×10⁻⁷ = 4.44×10⁻⁸ kg·m²
@@ -7067,7 +7067,7 @@ function cwContactRecoil(J: number, phi_deg: number): number {
 
 ---
 
-## Case 276 — VariAres 4D Metal Wheel: Centrifugal PC Frame Retraction and Three-Wing Smash Geometry
+## Case 991 — VariAres 4D Metal Wheel: Centrifugal PC Frame Retraction and Three-Wing Smash Geometry
 
 > **Stock combo (VariAres D:D):** 4D Metal Wheel: VariAres · Bottom: Delta Drive
 
@@ -7199,7 +7199,7 @@ A swept wing tip has an asymmetric radial-normal direction: one spin presents lo
 This is the geometric reason VariAres is the second wheel effective in both L and R spin.
 
 ```typescript
-// VariAres 4D Metal Wheel — Case 276
+// VariAres 4D Metal Wheel — Case 991
 
 function vaInertiaThreeLobe(
   m_total_g: number,
@@ -7246,7 +7246,7 @@ function defenseModePCAttenuation(
 
 ---
 
-## Case 277 — D:D (Delta Drive) Bottom: Three-Tip Manual Mode Selector and CoM Height Gradient
+## Case 992 — D:D (Delta Drive) Bottom: Three-Tip Manual Mode Selector and CoM Height Gradient
 
 > **Stock combo (VariAres D:D):** 4D Metal Wheel: VariAres · Bottom: Delta Drive
 
@@ -7287,7 +7287,7 @@ Wide Ball (r_dome ≈ 4 mm, effective contact radius scales with sin(θ_tilt); a
   dω/dt = 9.3×10⁻⁵ / 1.29×10⁻⁵ = 7.2 rad/s²
 ```
 
-The WB contact radius is θ-dependent as in the TB hemispherical analysis (Case 244): sin(θ) appears in both numerator (friction arm) and the restoring torque denominator, so stability ratio R = μ × r_dome / h_CoM is θ-independent. WB lacks the ball bearing that CS uses to suppress friction to rolling contact (μ_CS ≈ 0.05 vs μ_WB ≈ 0.25), so dω/dt_WB ≈ 5× faster than CS at the same r_dome.
+The WB contact radius is θ-dependent as in the TB hemispherical analysis (Case 959): sin(θ) appears in both numerator (friction arm) and the restoring torque denominator, so stability ratio R = μ × r_dome / h_CoM is θ-independent. WB lacks the ball bearing that CS uses to suppress friction to rolling contact (μ_CS ≈ 0.05 vs μ_WB ≈ 0.25), so dω/dt_WB ≈ 5× faster than CS at the same r_dome.
 
 Flat (r_F ≈ 8 mm, μ_ABS ≈ 0.35):
 
@@ -7335,7 +7335,7 @@ Three axial detent positions at 120° intervals. Pull force releases a spring cl
 ```
 
 ```typescript
-// D:D Bottom — Case 277
+// D:D Bottom — Case 992
 
 function ddFrictionTorque(mu: number, m_combo_g: number, r_contact_mm: number): number {
   return mu * (m_combo_g / 1000) * 9.81 * (r_contact_mm / 1000);
@@ -7372,7 +7372,7 @@ function ddRFMultiple(tau_F: number, mu_RF: number, m_combo_g: number, r_RF_mm: 
 
 ---
 
-## Case 278 — Horogium Clear Wheel: Clock-Motif Asymmetry and Gear-Tooth Perimeter Air Drag
+## Case 993 — Horogium Clear Wheel: Clock-Motif Asymmetry and Gear-Tooth Perimeter Air Drag
 
 > **Stock combo (Basalt Horogium 145WD):** Clear Wheel: Horogium · Metal Wheel: Basalt · Track: 145 · Bottom: Wide Defense
 
@@ -7427,7 +7427,7 @@ At ω = 200 rad/s, r_outer = 19 mm, the total aerodynamic torque on the CW outer
 Horogium's internal geometry (thin, flat ring profile) exposes the sloped Attack features of the Screw Metal Wheel while adding minimal mass at the inner coupling radius — a case of geometric fit being the key constraint, not mass or balance.
 
 ```typescript
-// Horogium Clear Wheel — Case 278
+// Horogium Clear Wheel — Case 993
 
 function cwGapImbalance_mm(m_ring_g: number, gap_deg: number, r_gap_mm: number, m_total_CW_g: number): number {
   const m_gap = m_ring_g * (gap_deg / 360);
@@ -7451,7 +7451,7 @@ function toothDragFractionIncrease(N_teeth: number, h_tooth_mm: number, w_tooth_
 
 ---
 
-## Case 279 — Basalt Metal Wheel: Maximum-Weight Annular Defense and Spiral Staircase of Death Imbalance
+## Case 994 — Basalt Metal Wheel: Maximum-Weight Annular Defense and Spiral Staircase of Death Imbalance
 
 > **Stock combo (Basalt Horogium 145WD):** Clear Wheel: Horogium · Metal Wheel: Basalt · Track: 145 · Bottom: Wide Defense
 
@@ -7591,7 +7591,7 @@ The overhang also creates a slight step profile — a horizontal upper shelf —
 ```
 
 ```typescript
-// Basalt Metal Wheel — Case 279
+// Basalt Metal Wheel — Case 994
 
 function basaltInertiaModel(
   m_total_g: number,
@@ -7638,7 +7638,7 @@ function knurledSpinTransferFraction(tooth_width_mm: number, tooth_pitch_mm: num
 
 ---
 
-## Case 280 — 145 Track: Height-Limited Tilt Angle and Precession Amplitude
+## Case 995 — 145 Track: Height-Limited Tilt Angle and Precession Amplitude
 
 > **Stock combo (Sagittario 145S):** Wheel: Sagittario · Track: 145 · Bottom: Sharp
 > **Stock combo (Leone 145D):** Wheel: Leone · Track: 145 · Bottom: Defense
@@ -7706,7 +7706,7 @@ BD145 provides the same height (14.5 mm equivalent below the rubber balls) while
 Without any of these active features, plain 145 is simply an inert cylindrical spacer. Its only advantage is mechanical simplicity — no wear, no compliance variation, perfectly repeatable height.
 
 ```typescript
-// 145 Track — Case 280
+// 145 Track — Case 995
 
 function maxTiltAngle_deg(h_track_mm: number, r_wheel_mm: number): number {
   return Math.asin(h_track_mm / r_wheel_mm) * (180 / Math.PI);
@@ -7729,7 +7729,7 @@ function precessCircleRadius_mm(h_CoM_mm: number, tilt_deg: number): number {
 
 ---
 
-## Case 281 — WD (Wide Defense) Bottom: Annular Contact Geometry and Large-Angle Precession
+## Case 996 — WD (Wide Defense) Bottom: Annular Contact Geometry and Large-Angle Precession
 
 WD (0.7 g) is the widest standard Defense-series bottom, with a contact face diameter of 14.17 mm (r_contact = 7.09 mm) and a 40° outer shoulder bevel extending to the full 15.53 mm width. The flat annular contact ring spans from an inner recess (r ≈ 4 mm) to the outer shoulder (r ≈ 7 mm), creating an effective contact radius r_eff ≈ 5.5 mm for torque calculations. This wide ring serves two functions: it sustains precession at steep tilt angles by keeping floor contact within the flat face (rather than slipping to the wheel rim), and it provides resistance to lateral perturbations through the annular contact's inherent restoring geometry. Despite being partially eclipsed by CS and B:D, WD remains the reference standard for pure stamina bottom performance in standard MFB play.
 
@@ -7821,7 +7821,7 @@ Against an opponent spinning left (CCW from above), WD's annular contact produce
 The earlier entry into precession phase means WD's wide contact ring engages the stadium floor at large tilt angles sooner, reducing the window during which the bey is vulnerable to ring-out by a fast attacker.
 
 ```typescript
-// WD Bottom — Case 281
+// WD Bottom — Case 996
 
 function wdFrictionTorque(mu: number, m_combo_g: number, r_eff_mm: number): number {
   return mu * (m_combo_g / 1000) * 9.81 * (r_eff_mm / 1000);
@@ -7858,7 +7858,7 @@ function wdWeakShotPrecessionEntry_s(omega_weak: number, omega_precess_threshold
 
 ---
 
-## Case 282 — Aquila Clear Wheel: Two-Fold Wing Symmetry, Principal Moment Anisotropy, and Earth-Fit Geometry
+## Case 997 — Aquila Clear Wheel: Two-Fold Wing Symmetry, Principal Moment Anisotropy, and Earth-Fit Geometry
 
 > **Stock combo (Earth Aquila 145WD):** Clear Wheel: Aquila · Metal Wheel: Earth · Track: 145 · Bottom: Wide Defense
 
@@ -7933,7 +7933,7 @@ Aquila's two spikes align with recessed notches on Earth's inner ring wall. With
 This locked geometry is a deliberate design feature that pairs Aquila specifically with Earth — an early example of part-specific CW/MW keying.
 
 ```typescript
-// Aquila Clear Wheel — Case 282
+// Aquila Clear Wheel — Case 997
 
 function cwPrincipalMomentAnisotropy(
   m_wing_per_g: number,
@@ -7966,7 +7966,7 @@ function cwAngularCoverage(arc_deg: number, n_arcs: number, spike_deg: number, n
 
 ---
 
-## Case 283 — Earth Metal Wheel: Minimal-Gap Near-Circular Defense and Two-Mold Structural Evolution
+## Case 998 — Earth Metal Wheel: Minimal-Gap Near-Circular Defense and Two-Mold Structural Evolution
 
 > **Stock combo (Earth Aquila 145WD):** Clear Wheel: Aquila · Metal Wheel: Earth · Track: 145 · Bottom: Wide Defense
 > **Stock combo (Earth Virgo GB145BS):** Clear Wheel: Virgo · Metal Wheel: Earth · Track: GB145 · Bottom: Ball Sharp
@@ -8110,7 +8110,7 @@ The additional 2–3 g in the second mold is the material added to achieve this 
 Higher angular momentum means a larger impulse is required to produce the same change in spin rate. When hit by the same attacker: dω_Basalt / dω_Earth = I_Earth / I_Basalt = 0.69 — Basalt's spin changes only 69% as much per collision compared to Earth.
 
 ```typescript
-// Earth Metal Wheel — Case 283
+// Earth Metal Wheel — Case 998
 
 function earthInertia(m_total_g: number, outer_fraction: number,
   r_wing_i_mm: number, r_wing_o_mm: number,
@@ -8162,11 +8162,11 @@ function angularMomentumRatio(I1: number, I2: number): number {
 
 ---
 
-## Case 284 — Unicorno II 4D Clear Wheel: Iron-Powder Density Augmentation and Three-Fold Inertial Isotropy
+## Case 999 — Unicorno II 4D Clear Wheel: Iron-Powder Density Augmentation and Three-Fold Inertial Isotropy
 
 > **Stock combo (Blitz Unicorno 100RSF):** 4D Clear Wheel: Unicorno II · 4D Metal Wheel: Blitz · Track: 100 · Bottom: Rubber Semi-Flat
 
-The Unicorno II 4D Clear Wheel (3.27 g) is a translucent teal-blue ABS ring with three-fold (C₃) rotational symmetry, featuring three unicorn-horn protrusions at 120° intervals. It is physically wider and more elevated than the original Unicorno Clear Wheel and incorporates iron powder dispersed throughout the ABS matrix — the same composite technique used in Nemesis 4D (Case 275). Three-fold symmetry makes the in-plane inertia tensor isotropic (I_xx = I_yy for all axes through center), eliminating the principal moment anisotropy that drives nutation in two-fold designs like Aquila. This makes Unicorno II the superior choice among three-sided Clear Wheels where rotational stability matters.
+The Unicorno II 4D Clear Wheel (3.27 g) is a translucent teal-blue ABS ring with three-fold (C₃) rotational symmetry, featuring three unicorn-horn protrusions at 120° intervals. It is physically wider and more elevated than the original Unicorno Clear Wheel and incorporates iron powder dispersed throughout the ABS matrix — the same composite technique used in Nemesis 4D (Case 990). Three-fold symmetry makes the in-plane inertia tensor isotropic (I_xx = I_yy for all axes through center), eliminating the principal moment anisotropy that drives nutation in two-fold designs like Aquila. This makes Unicorno II the superior choice among three-sided Clear Wheels where rotational stability matters.
 
 ```
   UNICORNO II 4D CW — top view schematic
@@ -8228,7 +8228,7 @@ Unicorno II is "more elevated" — its increased height (~1-1.5 mm above origina
 Negligible for a single combat metric but directionally increases the precession rate slightly.
 
 ```typescript
-// Unicorno II 4D Clear Wheel — Case 284
+// Unicorno II 4D Clear Wheel — Case 999
 
 function cw4dIronPowderFraction(m_total_g: number, m_plain_baseline_g: number, delta_struct_g: number, rho_ABS: number, rho_Fe: number): number {
   const m_Fe_net = (m_total_g - m_plain_baseline_g - delta_struct_g) / 1000;
@@ -8253,7 +8253,7 @@ function cwCoMHeightShift_mm(m_CW_g: number, delta_h_CW_mm: number, m_combo_g: n
 
 ---
 
-## Case 285 — Blitz 4D Metal Wheel: Two-Piece Composite Inertia, Mode-Dependent Wing Geometry, and Slope-Bump Contact Profile
+## Case 1000 — Blitz 4D Metal Wheel: Two-Piece Composite Inertia, Mode-Dependent Wing Geometry, and Slope-Bump Contact Profile
 
 > **Stock combo (Blitz Unicorno 100RSF):** 4D Clear Wheel: Unicorno II · 4D Metal Wheel: Blitz · Track: 100 · Bottom: Rubber Semi-Flat
 
@@ -8386,7 +8386,7 @@ The swept wing geometry functions as a ratchet — it preferentially deflects R-
 ```
 
 ```typescript
-// Blitz 4D Metal Wheel — Case 285
+// Blitz 4D Metal Wheel — Case 1000
 
 function blitzCompositeInertia(
   m_core_inner_g: number, r_ci_i_mm: number, r_ci_o_mm: number,
@@ -10114,7 +10114,7 @@ function lSpinDecelerationRatio(v_attacker_norm: number, v_RS_norm: number): num
 
 ---
 
-## Case 297 — Upper Dragon AR (Dragoon MF) · ~19 g: Why the Most Aggressive Plastic Caul of the Shared Metal Frame Produces Tier-2 Attack Output, How Non-Uniform Three-Mass Distribution Limits Stamina Viability, and Why GFC Ultimate Mode Is the Only RC That Unlocks the AR's Throughput Ceiling
+## Case 1089 — Upper Dragon AR (Dragoon MF) · ~19 g: Why the Most Aggressive Plastic Caul of the Shared Metal Frame Produces Tier-2 Attack Output, How Non-Uniform Three-Mass Distribution Limits Stamina Viability, and Why GFC Ultimate Mode Is the Only RC That Unlocks the AR's Throughput Ceiling
 
 Upper Dragon is Dragoon MF's Attack Ring at approximately 19 g [FACT]. It is a two-component assembly sharing its Metal Frame with Upper Fox (Phantom Fox MS) and Devil Crusher (Bloody Devil MS). Of the three, Upper Dragon's ABS plastic caul is the most aggressive — it maximises contact point exposure and provides slightly more smash-biased weight distribution around the Metal Frame. The Metal Frame carries the hard zinc-alloy contact surfaces at three evenly spaced positions; the caul routes opponent AR contacts onto these faces. Despite "the epitome of middle-of-the-road Attack ARs" status, Upper Dragon sits above the considerable majority of HMS ARs that cannot execute attack at all, and is consistent in right spin where contact point geometry is cleaner. GFC Ultimate Mode is the required RC partner — slower rubber RCs cannot drive the orbital speed needed to extract the AR's contact throughput.
 
@@ -10122,7 +10122,7 @@ Upper Dragon is Dragoon MF's Attack Ring at approximately 19 g [FACT]. It is a t
 
 ### 1. Metal Frame + Caul Architecture (HMS Scale)
 
-HMS scale factor k = 0.75 (CS5 Case 239). Upper Dragon dimensions:
+HMS scale factor k = 0.75 (CS5 Case 954). Upper Dragon dimensions:
 
 ```
 r_contact ≈ 0.75 × r_plastic_equivalent ≈ 0.75 × 26 mm ≈ 19.5 mm  [ESTIMATED]
@@ -10255,7 +10255,7 @@ function upperDragonContactImpulse(
 
 ---
 
-## Case 298 — CWD Chain Attacker (Dragoon MF) · ~17 g: Why Distributed Chain-Link Protrusions Produce Non-Committal Contact Geometry Suited Only for Spin-Steal Niche, and Why the Part Is Functionally Neutral Across Most Archetypes
+## Case 1090 — CWD Chain Attacker (Dragoon MF) · ~17 g: Why Distributed Chain-Link Protrusions Produce Non-Committal Contact Geometry Suited Only for Spin-Steal Niche, and Why the Part Is Functionally Neutral Across Most Archetypes
 
 CWD Chain Attacker is Dragoon MF's stock CWD at approximately 17 g [FACT]. It is Dragoon MF's anime-combo default CWD. The "chain" geometry consists of ~12–14 small bi-lobed protrusions spaced around the CWD perimeter, resembling a bicycle chain link pattern. Each link provides a small contact surface — low per-contact impulse, high contact frequency. The part is "fairly sizeable but not so clunky as to be a complete detriment." This translates physically to: the protrusions extend modestly beyond a smooth-disc CWD (adding some contact area without creating large recoil-generating projections). The only genuine application is opposite-spin configurations where the chain links provide distributed spin-steal contact points — the low-mass protrusions avoid the self-KO recoil risk of large CWD projections.
 
@@ -10318,7 +10318,7 @@ interface CWDChainAttacker {
 
 ---
 
-## Case 299 — CWD Eternal Survivor (Dragoon MF) · ~17 g: Why Three Gear-Like Protrusions at Oversized Diameter Absorb Rather Than Amplify Attack Contact, How Fixed-Rotation Provides Solid Foundation Relative to Free-Spinning CWDs, and Why Diameter Excess Is the Single Limiting Factor
+## Case 1091 — CWD Eternal Survivor (Dragoon MF) · ~17 g: Why Three Gear-Like Protrusions at Oversized Diameter Absorb Rather Than Amplify Attack Contact, How Fixed-Rotation Provides Solid Foundation Relative to Free-Spinning CWDs, and Why Diameter Excess Is the Single Limiting Factor
 
 CWD Eternal Survivor is at approximately 17 g [FACT], found in RB3 (Secret Rare) for Dragoon MF. It has three pronounced gear-tooth protrusions placed 120° apart in a fixed (non-free-spinning) configuration. The source notes it was likely designed as a CWD companion to Advance Striker's Advance Attacker AR — the three protrusions "perfectly line up" with Advance Attacker's force-smash geometry slots. The critical physical problem is that the CWD diameter extends slightly beyond most HMS ARs' outer radius — meaning in an AR-vs-AR contact, Eternal Survivor makes contact first, at a level below the AR, absorbing some of the hit before the AR faces engage. This absorption reduces net smash delivery. Had it been 1–2 mm smaller in diameter it would be a staple AR companion rather than a niche CWD.
 
@@ -10402,7 +10402,7 @@ interface CWDEternalSurvivor {
 
 ---
 
-## Case 300 — Metal Weight Grip Core (Dragoon MF) · ~3 g: Why a Heavier Rubber RC With Smaller Tip Diameter Trades Maximum Orbital Speed for Consistency, and Why the Speed Deficit Disqualifies It Outside the Big Three Attack ARs
+## Case 1092 — Metal Weight Grip Core (Dragoon MF) · ~3 g: Why a Heavier Rubber RC With Smaller Tip Diameter Trades Maximum Orbital Speed for Consistency, and Why the Speed Deficit Disqualifies It Outside the Big Three Attack ARs
 
 Metal Weight Grip Core (MWGC) is Dragoon MF's stock Running Core at approximately 3 g [FACT]. It is a rubber-grip attack RC — heavier than both GFC variants. The rubber tip section (green in images) is slightly smaller in diameter than original GFC's rubber section. The extra mass (~1 g over GFC) increases F_N on the tip at all spin states, raising friction force and improving tip-to-stadium contact, which makes the RC more controllable on surfaces with less pronounced Tornado Ridges. The smaller tip radius reduces orbital speed vs GFC at the same spin rate. The speed deficit translates directly to reduced ring-out impulse for any AR below the top tier (Metal Upper, Jiraiya Blade, Circle Upper) — those ARs are powerful enough that the smaller impulse reduction is recoverable; mid-tier ARs like Upper Dragon cannot overcome it.
 
@@ -10509,7 +10509,7 @@ function mwgcVsGFCRingOutProbability(
 
 ---
 
-## Case 301 — Smash Phoenix AR (Dranzer MF) · ~18 g: Why Conservative Phoenix-Motif Geometry Produces Too Much Recoil for Stamina and Insufficient Smash for Attack, How Uneven Metal Frame Distribution Limits Stamina Potential, and Why Left-Spin Defense Is the Only Viable Competitive Role
+## Case 1093 — Smash Phoenix AR (Dranzer MF) · ~18 g: Why Conservative Phoenix-Motif Geometry Produces Too Much Recoil for Stamina and Insufficient Smash for Attack, How Uneven Metal Frame Distribution Limits Stamina Potential, and Why Left-Spin Defense Is the Only Viable Competitive Role
 
 Smash Phoenix is Dranzer MF's Attack Ring at approximately 18 g [FACT]. It shares the same Metal Frame as Smash Leopard (Dark Leopard MS) and God Smasher (Shining God MS). Of the three, Smash Phoenix's ABS caul is the most conservative — the most circular with only small Phoenix beak and head features serving as contact points. This conservative design produces a contradiction: too much recoil per contact for stamina (the near-smooth circular body causes each hit to generate sideways impulse that destabilises spin), but too little focused smash geometry for attack (the contact points are small and poorly angled). The uneven Metal Frame distribution — heavy at the Phoenix head locations, absent under the wing bodies — creates rotational mass asymmetry that prevents the smooth precession required for stamina and LAD. Left-spin defense is the only role where the conservative geometry provides a genuine benefit: in LS the Phoenix heads and beaks present lower-angle LS contact geometry with marginally reduced recoil.
 
@@ -10598,7 +10598,7 @@ interface SmashPhoenixAR {
 
 ---
 
-## Case 302 — CWD Wing Attacker (Dranzer MF) · ~17 g: Why Large Free-Spinning Plastic Wings Beyond the AR Diameter Create an Easy Destabilisation Vector, and Why the Part Is Functionally a Liability in All Competitive Contexts
+## Case 1094 — CWD Wing Attacker (Dranzer MF) · ~17 g: Why Large Free-Spinning Plastic Wings Beyond the AR Diameter Create an Easy Destabilisation Vector, and Why the Part Is Functionally a Liability in All Competitive Contexts
 
 CWD Wing Attacker is Dranzer MF's stock CWD at approximately 17 g [FACT], and is Dranzer MF's anime-combo default CWD. It is described as the HMS equivalent of Wing Base from plastic gen — the large wing extensions "extend well past any HMS AR" and are an easy contact point for opponents before they reach the AR itself. The free-spinning property means the wings can spin up or down independently of the main combo, absorbing no productive impulse from contacts but providing an always-accessible destabilisation target for opponents.
 
@@ -10675,7 +10675,7 @@ interface CWDWingAttacker {
 
 ---
 
-## Case 303 — CWD Reverse Defenser (Dranzer MF) · ~17 g: Why a Functionally Identical But Obscure Alternative to CWD God Ring Achieves the Same Defense and Zombie Role at Potentially Lower Cost
+## Case 1095 — CWD Reverse Defenser (Dranzer MF) · ~17 g: Why a Functionally Identical But Obscure Alternative to CWD God Ring Achieves the Same Defense and Zombie Role at Potentially Lower Cost
 
 CWD Reverse Defenser is at approximately 17 g [FACT], found in RB5. It is described as "essentially a slightly thinner and lighter God Ring" that performs identically for the primary defense CWD role. The name suggests it was designed for defensive reversal — absorbing hits and redirecting them — which is consistent with CWD God Ring's confirmed defense function. When worn naturally through play it develops a low-recoil surface profile and its shape becomes conducive to LAD, expanding its use into stamina configurations.
 
@@ -10743,7 +10743,7 @@ interface CWDReverseDefenser {
 
 ---
 
-## Case 304 — Free Shaft Core (Dranzer MF) · ~3 g: Why an Early-Precession-Prone Compact RC Cannot Compete Against Bearing Core in Stamina or Generate Ring-Out Force in Attack, and Why High-RPM Flat Launching Is the Only Recovery Strategy
+## Case 1096 — Free Shaft Core (Dranzer MF) · ~3 g: Why an Early-Precession-Prone Compact RC Cannot Compete Against Bearing Core in Stamina or Generate Ring-Out Force in Attack, and Why High-RPM Flat Launching Is the Only Recovery Strategy
 
 Free Shaft Core is Dranzer MF's stock RC at approximately 3 g [FACT]. The "free shaft" mechanism is analogous to the plastic-gen free-shaft SG concept: the outer shell is coupled to the inner shaft through a bearing or low-friction interface that allows partial spin decoupling. At high ω the coupling is tight; as ω decays the decoupling fraction increases. This produces earlier precession onset (the shaft-to-shell coupling loosens before the critical tilt threshold a fixed-shaft RC would reach) — the combo begins to wobble while still at relatively high spin. The precession itself is not tall enough (short RC height) to exploit any gyroscopic advantage during the wobble phase. Against Bearing Core, Free Shaft Core loses in stamina. Against attackers, the docile low-orbital movement makes it a stationary target. The best-case scenario is high-RPM flat-launch using Jiraiya Blade to attempt early ring-out before any spin decay.
 
@@ -10811,3 +10811,5 @@ interface FreeShaftCore {
 ```
 
 **Verdict:** Free Shaft Core's decoupling mechanism introduces early precession that shortens competitive spin life below Bearing Core's. Low-friction metal tip produces minimal orbital movement, disqualifying aggressive attack and making the combo a stationary target. The only viable strategy is high-RPM flat launch with Jiraiya Blade to attempt early ring-out via the AR's top-tier impulse output before orbital decay makes the combo passive. Not a competitive stamina or compact RC outside this narrow high-RPM window.
+
+
