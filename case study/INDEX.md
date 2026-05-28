@@ -1,11 +1,11 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **1561 cases** across 14 files + 1 master reference.
+Total: **1573 cases** across 14 files + 1 master reference.
 
 ---
 
 ## NEXT AVAILABLE CASE NUMBER
 
-> **1592** — All new cases must start here. Update this block before writing any new case.
+> **1604** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
@@ -27,7 +27,7 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1497 · 1525–1545 · 1574–1591 | 568 | Franchise special moves, gimmick foundations, and derived combos |
+| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1497 · 1525–1545 · 1574–1591 · 1592–1603 | 580 | Franchise special moves, gimmick foundations, and derived combos |
 | [14 case study.md](14%20case%20study.md) | 892–910 | 19 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | — | Engine reference: constants, formulas, normalization |
 
@@ -114,7 +114,11 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1583–1585 | 3 | Heaven’s Supreme Destruction Palm — WA130 forced-convection thermal fireball JOINT special (Chi-yun Li + Dashan Wang · Thermal Lacerta / Rock Zurafa) | CS13 |
 | 1586–1588 | 3 | Heavy Viper Wall — Draciel V/V2 hydrodynamic impeller wave F_hydro=37.9–47.3N drown + ring-out (Max Tate · Draciel V / Draciel V2) | CS13 |
 | 1589–1591 | 3 | Hunt Launch — Hunter tip rubber floor-grinding a=7.86 m/s² + Doomscizor eccentric wobble 114.6 Hz (Daigo Kurogami · Krusher Doomscizor 2Vortex Hunter) | CS13 |
-| **1592+** | — | **NEXT AVAILABLE — all future cases start here** | — |
+| 1592–1594 | 3 | Hammer Bolt — XF rubber triboelectric charge + turquoise-lightning strike (Ryuto · Omega Dragonis 85XF) | CS13 |
+| 1595–1597 | 3 | Horn Throw Destruction — ED145 free-spin bearing + B-tip low-strike uppercut + spin-track follow-up (Hyoma · Clay Aries ED145B) | CS13 |
+| 1598–1600 | 3 | Horusood Field — Claw driver Rankine vortex forced-air ejection ring-out (Hoji Konda · Hyper Horusood Upper-Claw) | CS13 |
+| 1601–1603 | 3 | Howling Bite — fang-capture orbital hammer-throw cyclone toss 3-target chain (Laban Vanot · Vice Leopard 12Lift Destroy) | CS13 |
+| **1604+** | — | **NEXT AVAILABLE — all future cases start here** | — |
 ### Numbering Notes (Historical)
 
 All former conflicts have been resolved. The notes below document what was fixed.

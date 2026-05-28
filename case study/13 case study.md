@@ -31106,5 +31106,485 @@ function huntSweep(
 
 **Ceiling check:** dmgMult 1.28× ≤ 1.5 ✓ | lockMs 120 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
 
-*Cases continue from Case 1592 as further franchise moves are provided.*
+## Case 1592
 
+**Bey:** Omega Dragonis 85XF
+**Blader:** Ryuto
+**Label:** GIMMICK — XF Rubber-Rim Triboelectric Accumulation (Hammer Bolt charging mechanism)
+**EXTENDS** Cases 1546–1554 (CS 9 — Omega Dragonis 85XF full assembly analysis)
+
+**New analysis:** Hammer Bolt begins with a sustained stadium charging run before the strike. CS 9 established XF tip geometry (outer rubber rim r_XF = 18.8 mm, rubber-on-PC contact) and Omega Dragonis mass m = 38.0 g. This case quantifies the electrostatic accumulation during the charge run and the resulting strike impulse.
+
+**XF tip kinematics:**
+At peak match-entry spin ω = 2π × 53.3 = 334.9 rad/s (3,200 RPM):
+
+v_contact = r_XF × ω = 0.0188 × 334.9 ≈ **6.30 m/s**
+
+Normal force from bey weight on tip:
+
+F_N = m_total × g = 0.038 × 9.81 ≈ **0.373 N**
+
+**Triboelectric charging:**
+Rubber-on-polycarbonate tribopair: specific charge density σ_t ≈ 3.0×10⁻⁸ C/m². Hertzian contact patch radius under F_N = 0.373 N, rubber modulus E* ≈ 5 MPa:
+
+a_contact = (3 × F_N × R_tip / (4 × E*))^(1/3) ≈ (3 × 0.373 × 0.003 / (4 × 5×10⁶))^(1/3) ≈ 1.9×10⁻³ m
+A_c = π × (1.9×10⁻³)² ≈ **1.13×10⁻⁵ m²**
+
+Charge transfer rate at v_contact = 6.30 m/s:
+
+dQ/dt ≈ σ_t × A_c × v_contact = 3.0×10⁻⁸ × 1.13×10⁻⁵ × 6.30 ≈ **2.14×10⁻¹² C/s**
+
+Accumulated charge over t_run = 0.5 s charging run:
+
+Q_acc = 2.14×10⁻¹² × 0.5 ≈ **1.07×10⁻¹² C**
+
+Surface voltage (body capacitance C_body ≈ 4.0×10⁻¹¹ F for a beyblade-scale sphere):
+
+V_physical ≈ Q_acc / C_body = 1.07×10⁻¹² / 4.0×10⁻¹¹ ≈ **0.027 V** [physical baseline, sub-volt]
+
+**[M] — BeySpirit amplification:** Physical triboelectric voltage is sub-volt and leaks immediately into humid stadium air (surface resistivity of dry PC ≈ 10¹⁵ Ω/sq; damp conditions reduce this by ×10⁻³). In Hammer Bolt, Ryuto's Dragonis constellation BeySpirit functions as a continuous charge pump that saturates the charge rate and suppresses dissipation. Observable turquoise lightning bolts imply arc-discharge thresholds: breakdown of air at 3×10⁶ V/m across a 0.5 mm gap requires V ≈ 1.5 kV. The [M] amplification factor ≈ 5.6×10⁴ applied to dQ/dt bridges physical (2.14×10⁻¹²) to BeySpirit-sustained (≈ 4.67×10⁻¹¹ C/s equivalent) — adequate to maintain visible arc discharge for the ~0.5 s lighting phase. Stone-pillar fracture is fully [M]: a 38 g bey at v_impact ≈ 2.0 m/s delivers 0.076 J — two orders short of limestone fracture energy (~5 J/m² × stone cross-section).
+
+**Strike impulse (into Case 1593):**
+Momentum of Omega Dragonis at charge-run terminal velocity:
+
+p_strike = m_Omega × v_approach = 0.038 × 2.0 = **0.076 N·s**
+
+Transfer to Cosmic Pegasus F:D (m_Pegasus ≈ 33 g):
+
+Δv_Pegasus = p_strike / m_Pegasus = 0.076 / 0.033 ≈ **2.3 m/s** [CALCULATED]
+
+At 2.3 m/s radial Δv, Pegasus crosses a 400 mm radius stadium in ~0.17 s — sufficient for ring-out under XF pursuit.
+
+
+## Case 1593
+
+**Bey:** Omega Dragonis 85XF
+**Blader:** Ryuto
+**Label:** SPECIAL — Hammer Bolt
+
+**Anime description:** Omega Dragonis accelerates across the stadium floor, building static electricity through its XF rubber tip's contact charging run while Ryuto channels his Dragonis constellation BeySpirit into his hands. Dragonis becomes sheathed in turquoise lightning before charging into the opposing Bey with an electro-kinetic blast strong enough to shatter stone pillars. First observed defeating Cosmic Pegasus F:D.
+
+**Compatible beys:** Any bey whose XF (Xtreme Flat) tip has sufficient rubber-contact charging time before the strike. The turquoise-lightning visual and stone-shattering kinetic output specifically require Ryuto's Omega Dragonis constellation BeySpirit; the base strike impulse (0.076 N·s → Δv = 2.3 m/s; Case 1592) is available to any bey with XF given equivalent stadium approach speed.
+
+```typescript
+function hammerBolt(
+  chargeRunMs: number,   // ms of continuous XF stadium contact before strike; max effective = 800
+  qteHit: boolean,
+  oppAtWall: boolean     // opponent within 80px of arena boundary
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  const chargeNorm = Math.min(chargeRunMs, 800) / 800;
+  if (qteHit) {
+    return {
+      spinDelta:    -(55 + Math.round(chargeNorm * 25)),  // −55 to −80
+      dmgMult:      1.45 + chargeNorm * 0.35,              // 1.45× to 1.80× [M full charge]
+      lockMs:       0,
+      powerCost:    105,
+      ringOutBonus: oppAtWall
+        ? 0.55 + chargeNorm * 0.25   // 0.55–0.80 near wall [M pillar-shatter ceiling]
+        : 0.10 + chargeNorm * 0.15,  // 0.10–0.25 open field
+    };
+  }
+  return { spinDelta: -18, dmgMult: 1.10, lockMs: 0, powerCost: 105, ringOutBonus: 0 };
+}
+```
+
+**Notes:**
+- `chargeRunMs` accumulates while the bey's XF tip maintains contact with the stadium floor during an approach run. A collision or aerial manoeuvre resets it to 0.
+- `dmgMult` at full charge (1.80×) is the [M] BeySpirit ceiling; physical contact at 0.076 N·s delivers modest momentum transfer — the rest is Dragonis constellation amplification.
+- `powerCost: 105` reflects the sustained BeySpirit output during the charge run (slightly above the standard 100-power special).
+- No `lockMs`: Hammer Bolt is a single directional strike — it does not immobilise the user after impact.
+
+
+## Case 1594
+
+**Bey:** Omega Dragonis 85XF
+**Blader:** Ryuto
+**Label:** COMBO — Thunder Lash
+
+**Sequence:** moveLeft → moveRight → jump (← → J)
+**Cost:** 15
+**Type restriction:** attack or balanced (XF tip requires aggressive lateral traversal to pre-load the rubber contact zone; defense and stamina beys lack the lateral-to-lateral approach speed to build meaningful contact charge within the ~80ms combo window)
+**Parent gimmick:** XF rubber-rim triboelectric accumulation (Case 1592)
+
+**Thesis:** Thunder Lash compresses Hammer Bolt's charge-direction-reversal pattern into a 3-key burst. ← drives the bey on a leftward arc (XF rubber begins contact pre-load on the leftward slide — a shorter pre-load than the 800ms special run, approximately 60–80ms of directional build), → sharply reverses into a rightward cut (the direction change concentrates contact pressure on the rubber rim's trailing edge, replicating the apex-velocity instant of the full Hammer Bolt charge run), and J fires the strike at peak approach momentum from the direction reversal. Against wall-side opponents the ← pre-load builds approach energy that the → reversal converts into a higher-impulse cut through the wall-proximity ring-out corridor.
+
+```typescript
+function thunderLash(
+  directionChangeRegistered: boolean, // both ← and → recorded within the 3-input window
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    directionChangeRegistered ? -22 : -13,
+      dmgMult:      directionChangeRegistered ? 1.30 : 1.17,
+      lockMs:       90,
+      powerCost:    15,
+      ringOutBonus: directionChangeRegistered ? 0.08 : 0.03,
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.04, lockMs: 0, powerCost: 15, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.30× ≤ 1.5 ✓ | lockMs 90 ≤ 300 ✓ | cost 15 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+
+## Case 1595
+
+**Bey:** Clay Aries ED145B
+**Blader:** Hyoma
+**Label:** GIMMICK — ED145 Free-Spin Bearing Ring and B-Tip Low-Profile Approach for Two-Phase Uppercut Throw
+**EXTENDS** Cases 1555–1559 (CS 9 — Clay Aries ED145B full assembly analysis)
+
+**New analysis:** Horn Throw Destruction deploys two mechanical phases sequenced by Aries' attack ring geometry and tip profile. CS 9 established Aries layer ram-horn protrusions (low contact angle, leading-edge taper), ED145 free-spin bearing ring (r_ED ≈ 19 mm outer radius, Energy Drain bearing), and B-tip kinematics (hemispherical, r_B ≈ 3 mm, μ_k ≈ 0.05). This case models Phase 1 (low-strike tilt induction), Phase 2 (uppercut throw), and Phase 3 (ED145 ring follow-up) in sequence.
+
+**Phase 1 — Low-strike tilt induction:**
+B-tip's hemispherical low-friction profile allows Aries to approach at a shallow floor angle (~5–8 mm above floor — below the opponent's equatorial plane at ~11–13 mm). Contact below the opponent's equatorial plane exerts a force with a lateral push component and an upward-directed torque arm on the opponent's gyroscopic axis.
+
+Clay Aries mass m_Aries ≈ 39.4 g (CS 9 1555 est); approach speed v_approach ≈ 1.5 m/s (B-tip circular orbit limited by μ ≈ 0.05):
+
+p_approach = m_Aries × v_approach = 0.0394 × 1.5 = **0.059 N·s**
+
+Over t_contact ≈ 5 ms: F_c ≈ 0.059 / 0.005 = **11.8 N**
+
+Tilt-induction torque at h_contact ≈ 4 mm below opponent's geometric centre:
+
+τ_tilt = F_c × h_contact = 11.8 × 0.004 = **0.047 N·m**
+
+Opponent angular momentum (m_opp ≈ 37 g, ω_opp ≈ 280 rad/s, r_opp ≈ 0.021 m):
+
+L_opp = I_opp × ω_opp ≈ (0.037 × 0.021²) × 280 ≈ 4.56×10⁻⁴ kg·m²/s
+
+Induced tilt per contact: δθ ≈ τ_tilt × t_contact / L_opp = 0.047 × 0.005 / 4.56×10⁻⁴ ≈ **0.52 rad ≈ 30°** [[M] amplified; physical contact induces 2–3° per event]
+
+**Phase 2 — Uppercut throw [M]:**
+After Phase 1 tilt induction, Aries "straightens up" — Aries' own tilt angle θ_Aries decreases rapidly through gyroscopic precession recovery. This recovery translates into a rising contact vector on the still-tilted opponent. Physically the vertical impulse from a precessing 39 g bey is in the millinewton range. In the anime, the opponent is visibly launched airborne: this is fully [M] — BeySpirit amplifies the gyroscopic recovery into an observable vertical throw. The uppercut vector is geometrically consistent with Aries' ram-horn profile providing an upward-angled second contact surface as the bey straightens.
+
+**Phase 3 — ED145 ring follow-up:**
+The still-spinning Aries contacts the airborne or descending opponent via the ED145 outer ring at r_ED ≈ 19 mm:
+
+v_ring = ω_Aries × r_ED = 314 rad/s × 0.019 ≈ **5.97 m/s** (tangential rim velocity)
+
+The ED145 free-spin bearing allows the outer ring to briefly couple with the opponent layer on contact, absorbing opponent spin (Energy Drain) while delivering a secondary lateral strike impulse. Ring moment of inertia: I_ring ≈ m_ring × r_ring² ≈ 0.002 × 0.019² ≈ 7.2×10⁻⁷ kg·m². The follow-up strike redirects the descending opponent horizontally — producing the observed "throw into wall or floor" outcome when the full three-phase sequence completes.
+
+
+## Case 1596
+
+**Bey:** Clay Aries ED145B
+**Blader:** Hyoma
+**Label:** SPECIAL — Horn Throw Destruction
+
+**Anime description:** Aries sweeps in with a low strike below the opponent's equatorial plane (Phase 1), abruptly straightens up in an uppercut motion that launches the opposing Bey into the air (Phase 2), then makes a follow-up contact with the ED145 spin track ring as the opponent descends (Phase 3). Hyoma executes this as a flowing three-phase sequence — a low strike, an upward throw, and a spin-track finish.
+
+**Compatible beys:** Any bey whose Layer has a downward-angled leading edge suitable for below-equator contact, combined with a low-friction hemispherical tip (B or equivalent) that supports the shallow approach angle. The Energy Drain spin-drain in Phase 3 is specific to ED145 or functionally equivalent free-spin ring tracks. The full three-phase aerial throw sequence is associated with Hyoma and Clay Aries' ram-horn BeySpirit.
+
+```typescript
+function hornThrowDestruction(
+  phaseReached: 1 | 2 | 3,     // phases completed: 1=low strike, 2=uppercut launch, 3=ED ring finish
+  qteHit: boolean,
+  opponentAirborne: boolean     // true when Phase 3 hits airborne or knockback-staggered opponent
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    const baseSpinDelta = phaseReached === 3 ? -65 : phaseReached === 2 ? -45 : -25;
+    const baseDmgMult  = phaseReached === 3 ? 1.70 : phaseReached === 2 ? 1.45 : 1.20;
+    const airborneBonus = (opponentAirborne && phaseReached === 3) ? 0.15 : 0;
+    return {
+      spinDelta:    baseSpinDelta,
+      dmgMult:      baseDmgMult + airborneBonus,
+      lockMs:       phaseReached >= 2 ? 120 : 0,
+      powerCost:    100,
+      ringOutBonus: phaseReached === 3 ? 0.30 : 0.08,
+    };
+  }
+  return { spinDelta: -14, dmgMult: 1.08, lockMs: 0, powerCost: 100, ringOutBonus: 0 };
+}
+```
+
+**Notes:**
+- `phaseReached`: the engine evaluates whether the full QTE sequence completes all three sub-strikes within the attack window. Opponent evasion or counter-hit caps the phase count.
+- `dmgMult` at Phase 3 + airborne (1.85×) is the [M] BeySpirit ceiling for the full sequence; physical Phase 3 contact is a glancing secondary blow — the observed aerial throw is BeySpirit-amplified (Case 1595, Phase 2).
+- `lockMs: 120` applies when Phase 2 or 3 is reached: the straightening uppercut temporarily reduces lateral agility during the recovery arc.
+- ED145 Energy Drain: Phase 3 contact implicitly drains ~8 spin from the opponent via the free-spin bearing, which is folded into the `spinDelta` totals rather than listed as a separate parameter.
+
+
+## Case 1597
+
+**Bey:** Clay Aries ED145B
+**Blader:** Hyoma
+**Label:** COMBO — Rising Horn
+
+**Sequence:** moveDown → moveUp → jump (↓ ↑ J)
+**Cost:** 15
+**Type restriction:** attack or balanced (the ↓↑ low-dip-to-rise pattern mirrors Horn Throw Destruction's Phase 1–2 geometry; stamina and defense beys lack the rotational momentum to generate the tilt-transfer contact force needed in the rising cut — movement executes but Phase 1 below-equator contact force is insufficient to trigger tilt induction)
+**Parent gimmick:** ED145 free-spin bearing and B-tip low-approach geometry (Case 1595)
+
+**Thesis:** Rising Horn compresses Horn Throw Destruction's Phase 1–2 into a 3-key burst. ↓ drives Aries into a low approach arc (B-tip floor contact directed below the opponent's equatorial height, mirroring Phase 1's shallow strike angle — briefer than the full 5ms contact but sufficient to direct the impact vector upward), ↑ executes the rising cut (reversal of the vertical direction vector replicates Aries straightening from the low-strike — tilt torque applied for approximately one input frame rather than the full Phase 2 gyroscopic recovery arc), and J fires the throw at the rising apex. Against beys near the stadium wall, the ↓ approach angles into the bowl slope so the ↑ rising cut catches the opponent in the wall-convergence zone.
+
+```typescript
+function risingHorn(
+  lowApproachRegistered: boolean,  // ↓ input caused below-equator approach before ↑+J
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    lowApproachRegistered ? -24 : -15,
+      dmgMult:      lowApproachRegistered ? 1.33 : 1.19,
+      lockMs:       lowApproachRegistered ? 100 : 60,
+      powerCost:    15,
+      ringOutBonus: lowApproachRegistered ? 0.07 : 0.02,
+    };
+  }
+  return { spinDelta: -7, dmgMult: 1.05, lockMs: 0, powerCost: 15, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.33× ≤ 1.5 ✓ | lockMs 100 ≤ 300 ✓ | cost 15 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+
+## Case 1598
+
+**Bey:** Hyper Horusood Upper-Claw
+**Blader:** Hoji Konda
+**Label:** GIMMICK — Claw Driver Forced-Vortex Air Circulation
+**EXTENDS** Cases 1560–1563 (CS 9 — Hyper Horusood Upper-Claw full assembly analysis)
+
+**New analysis:** Horusood Field depends on the Claw driver's rotating prong geometry to generate forced air circulation. CS 9 established Claw driver dimensions (three rotary prongs at r_prong ≈ 8 mm from tip axis, prong height h_prong ≈ 4 mm) and Hyper Horusood operational spin. This case models the Rankine vortex produced by the prongs and the [M] amplification required for stadium ring-out ejection.
+
+**Rankine vortex — core:**
+At match operational spin ω_H ≈ 2,800 RPM = 293 rad/s (Horusood: defense-balanced, slightly below pure attack types):
+
+v_core = r_prong × ω_H = 0.008 × 293 ≈ **2.34 m/s** (prong-tip tangential velocity)
+
+Solid-body rotation core (r ≤ r_prong = 0.008 m):
+
+v_θ(r) = ω_H × r
+
+Outer irrotational region (r > r_prong):
+
+v_θ(r) = (v_core × r_prong) / r = 0.01872 / r   [m²/s; circulation Γ = 2π × v_core × r_prong ≈ 0.1177 m²/s]
+
+**Pressure differential (Bernoulli, inviscid):**
+
+ΔP_core = ½ × ρ_air × v_core² = ½ × 1.20 × (2.34)² ≈ **3.28 Pa** [physical; below audible tornado threshold]
+
+**[M] — ring-out ejection threshold:**
+Aerodynamic ejection of an opposing bey requires outward air force to exceed stadium floor friction. For m_opp = 35 g, μ ≈ 0.3 (typical contact tip):
+
+F_friction = μ × m_opp × g = 0.3 × 0.035 × 9.81 ≈ **0.103 N**
+
+Required airspeed (bey cross-section A_opp ≈ 0.0025 m², C_D ≈ 1.0):
+
+F_aero = ½ × ρ × v_air² × C_D × A_opp = 0.0015 × v_air² ≥ 0.103 N
+
+v_air ≥ √(0.103 / 0.0015) ≈ **8.28 m/s** (≈ 29.8 km/h)
+
+Physical v_core = 2.34 m/s is a factor ~3.5 below the ejection threshold. In Horusood Field, Hoji Konda's raptor BeySpirit amplifies the circulation constant: Γ_[M] ≈ 1.47 m²/s ([M] factor ≈ 12.5), yielding v_θ ≈ 8.3 m/s at r = 0.025 m from Horusood's rim — sufficient to reach the ejection threshold for beys within ~25 mm of the vortex edge. The full visible air-column lift in the anime is [M].
+
+
+## Case 1599
+
+**Bey:** Hyper Horusood Upper-Claw
+**Blader:** Hoji Konda
+**Label:** SPECIAL — Horusood Field
+
+**Anime description:** The Claw driver's prongs engage the stadium surface and spin at high rotational speed, generating an expanding vortex of compressed air that spirals outward from Horusood. The vortex intensifies until it can literally lift and eject opposing Beyblades from the Beystadium without requiring direct physical collision. Hoji Konda uses this to force ring-outs at range, relying on air displacement rather than impact.
+
+**Compatible beys:** Any bey whose performance tip has raised rotating prong geometry capable of generating forced air circulation (Claw driver and functional equivalents; flat, sharp, or hemispherical tips without elevated prongs cannot form meaningful vortex flow). Ring-out-level vortex intensity requires Hoji Konda's Hyper Horusood raptor BeySpirit for the full [M] circulation amplification.
+
+```typescript
+function horusoodField(
+  clawEngaged: boolean,       // Claw prongs in active stadium contact (not airborne)
+  vortexBuildMs: number,      // ms of continuous Claw engagement; max effective = 1000
+  oppDistancePx: number,      // opponent distance from Horusood centre in game pixels
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (!clawEngaged) {
+    return { spinDelta: 0, dmgMult: 1.0, lockMs: 0, powerCost: 100, ringOutBonus: 0 };
+  }
+  const buildNorm       = Math.min(vortexBuildMs, 1000) / 1000;
+  const proximityFactor = Math.max(0, 1 - oppDistancePx / 200); // falls off beyond 200px
+  if (qteHit) {
+    return {
+      spinDelta:    -(20 + Math.round(buildNorm * 30)),                   // −20 to −50
+      dmgMult:      1.10 + buildNorm * 0.50,                               // 1.10× to 1.60× [M full vortex]
+      lockMs:       0,
+      powerCost:    100,
+      ringOutBonus: proximityFactor * (0.35 + buildNorm * 0.45),          // 0 to 0.80 [M ceiling]
+    };
+  }
+  return { spinDelta: -(8 + Math.round(buildNorm * 10)), dmgMult: 1.05, lockMs: 0, powerCost: 100, ringOutBonus: 0 };
+}
+```
+
+**Notes:**
+- `clawEngaged` gates the move: Horusood Field is ground-based — no prong-floor contact, no vortex.
+- `vortexBuildMs` accumulates while Claw tip maintains continuous floor engagement. Aerial manoeuvres reset it.
+- `oppDistancePx`: vortex force falls off with distance (1/r in the outer irrotational region). Beyond 200 px the aerodynamic contribution is negligible.
+- `ringOutBonus` at full build + close proximity (up to 0.80) is the [M] BeySpirit ceiling for complete Horusood Field; physical basis establishes mechanism (Case 1598: Rankine vortex, Γ = 0.1177 m²/s) while BeySpirit amplifies Γ ×12.5 to reach ejection velocity.
+- No `lockMs`: the vortex is a radial push field — the user's bey continues to move freely during vortex maintenance.
+
+
+## Case 1600
+
+**Bey:** Hyper Horusood Upper-Claw
+**Blader:** Hoji Konda
+**Label:** COMBO — Claw Whirl
+
+**Sequence:** moveLeft → moveDown → attack (← ↓ K)
+**Cost:** 25
+**Type restriction:** stamina or defense (Claw driver prong engagement requires sustained low-spin-loss floor contact; attack beys' high-speed directional approach separates the prongs from the stadium before vortex pressure can build; the orbital ← arc followed by the ↓ inward cut mirrors the descending funnel geometry of the full Horusood Field vortex at reduced [M] scale)
+**Parent gimmick:** Claw driver forced-vortex air circulation (Case 1598)
+
+**Thesis:** Claw Whirl compresses Horusood Field's build-and-eject into a 3-key orbital burst. ← places Horusood on a counterclockwise orbital arc (Claw prongs begin stadium engagement on the curved leftward path — ~80ms of floor contact pre-loads a minimal but directional air circulation column), ↓ cuts inward toward the stadium centre (the inward directional shift converts the orbital circulation into a centripetal funnel, concentrating the prong-pressure output into a narrow channel rather than spreading it in a ring), and K fires the burst at the apex of the funnel build-up. Against wall-proximate opponents the ← arc curves along the wall-side corridor so the ↓ inward cut catches the retreating bey in the narrowing gap between the vortex column and the stadium edge.
+
+```typescript
+function clawWhirl(
+  orbitalArcCompleted: boolean,  // ← input generated a curved approach path before ↓+K
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    orbitalArcCompleted ? -28 : -16,
+      dmgMult:      orbitalArcCompleted ? 1.38 : 1.22,
+      lockMs:       orbitalArcCompleted ? 140 : 80,
+      powerCost:    25,
+      ringOutBonus: orbitalArcCompleted ? 0.18 : 0.06,
+    };
+  }
+  return { spinDelta: -9, dmgMult: 1.05, lockMs: 0, powerCost: 25, ringOutBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.38× ≤ 1.5 ✓ | lockMs 140 ≤ 300 ✓ | cost 25 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+
+## Case 1601
+
+**Bey:** Vice Leopard 12Lift Destroy
+**Blader:** Laban Vanot
+**Label:** GIMMICK — Fang-Layer Capture Geometry and Orbital Hammer-Throw Mechanics
+**EXTENDS** Cases 1564–1568 (CS 9 — Vice Leopard 12Lift Destroy full assembly analysis)
+
+**New analysis:** Howling Bite deploys two phases: (1) the Vice Leopard layer's fang protrusions clamping the opponent's layer at orbital radius (brief sustained contact), and (2) angular momentum transfer to the captured bey followed by tangential release at peak velocity — kinematically equivalent to the hammer throw in track and field. CS 9 established Vice Leopard layer geometry (two prominent fang arcs at r_fang ≈ 24 mm outer reach) and Destroy driver kinematics. This case models the orbital capture and throw.
+
+**Fang capture geometry:**
+Vice Leopard (m_VL ≈ 37.0 g; CS 9 1564 est) orbit radius to captured bey:
+
+r_orbit = r_VL_fang + r_opp_half ≈ 0.024 + 0.016 = **0.040 m**
+
+Centripetal force required to hold captured bey (m_opp ≈ 35 g) in orbit at ω_VL:
+
+ω_VL = 2,800 RPM = 293 rad/s
+
+F_centripetal = m_opp × ω_VL² × r_orbit = 0.035 × (293)² × 0.040 = 0.035 × 85,849 × 0.040 ≈ **120 N** [M]
+
+Physical fang friction: F_friction ≤ μ × F_N_fang ≈ 0.3 × 1–2 N ≈ **0.3–0.6 N** — three orders of magnitude below centripetal requirement. Sustained orbital capture is fully [M]: Laban Vanot's Vice Leopard big-cat BeySpirit enables the fang protrusions to exert BeySpirit-amplified clamping force throughout the cyclone build.
+
+**Orbital cyclone:**
+Captured bey orbital velocity:
+
+v_orbit = ω_VL × r_orbit = 293 × 0.040 ≈ **11.72 m/s**
+
+System angular momentum:
+
+L = (I_VL + m_opp × r_orbit²) × ω_VL ≈ (0.037 × 0.024² + 0.035 × 0.040²) × 293
+  = (2.13×10⁻⁵ + 5.60×10⁻⁵) × 293 ≈ **0.0228 kg·m²/s**
+
+The captured bey traces a circular swept area of radius 0.040 m at 11.72 m/s — a miniature cyclone visible as a trailing blur consistent with the anime depiction and the user's "like the game where you spin a ball and throw it out" (hammer throw) description.
+
+**Hammer-throw release:**
+At tangential release (fangs disengage), captured bey exits at:
+
+v_release ≈ v_orbit ≈ **11.72 m/s**
+
+Impact kinetic energy:
+
+E_impact = ½ × m_opp × v_release² = ½ × 0.035 × (11.72)² ≈ **2.40 J**
+
+Against floor (ring-out): at 11.72 m/s toward the stadium boundary (~400 mm), transit time ≈ 0.034 s — essentially instantaneous ring-out if aimed correctly. Against wall: restitution e ≈ 0.5 → rebound at ~5.86 m/s, enabling a secondary chain collision. Against a third bey: collision energy redistributes across both targets (3-body scenario).
+
+Note: v_release = 11.72 m/s assumes orbital spin is fully maintained — this is [M]. Physical incidental fang-brush at μ ≈ 0.3 × 2 N over a single revolution (~0.14 ms) delivers v_physical ≈ 0.5–1.0 m/s tangential impulse. Full orbital lock and cyclone throw are BeySpirit-sustained.
+
+
+## Case 1602
+
+**Bey:** Vice Leopard 12Lift Destroy
+**Blader:** Laban Vanot
+**Label:** SPECIAL — Howling Bite
+
+**Anime description:** Vice Leopard seizes the opposing Beyblade with its powerful fang-like layer protrusions, then spins at increasing speed to create a miniature cyclone before hurling the captured Bey at the Beystadium floor, wall, or another opponent with devastating force. The throw can chain into triple collisions or wall-rebound secondary hits.
+
+**Compatible beys:** Any bey whose Layer has prominent fang-arc protrusions capable of engaging an opponent's layer edge at orbital contact radius. The full BeySpirit-amplified orbital lock and cyclone throw are specific to Laban Vanot and Vice Leopard's big-cat BeySpirit; the initial fang-contact glancing strike is available to any layer with comparable fang geometry.
+
+```typescript
+function howlingBite(
+  biteCapture: boolean,                         // fang lock established (QTE phase 1)
+  cycloneBuildMs: number,                       // ms of maintained orbital spin; max effective = 600
+  targetType: "floor" | "wall" | "opponent",
+  qteHit: boolean                               // QTE phase 2: throw direction confirmed
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number; chainBonus: number } {
+  if (!biteCapture) {
+    return { spinDelta: -12, dmgMult: 1.10, lockMs: 0, powerCost: 105, ringOutBonus: 0, chainBonus: 0 };
+  }
+  const buildNorm = Math.min(cycloneBuildMs, 600) / 600;
+  if (qteHit) {
+    const floorBonus = targetType === "floor"    ? 0.65 + buildNorm * 0.20 : 0;
+    const wallBonus  = targetType === "wall"     ? 0.25 + buildNorm * 0.10 : 0;
+    const oppBonus   = targetType === "opponent" ? 0.15 + buildNorm * 0.10 : 0;
+    return {
+      spinDelta:    -(60 + Math.round(buildNorm * 30)),   // −60 to −90 [M full cyclone]
+      dmgMult:      1.55 + buildNorm * 0.30,               // 1.55× to 1.85× [M full cyclone]
+      lockMs:       0,
+      powerCost:    105,
+      ringOutBonus: floorBonus + wallBonus + oppBonus,
+      chainBonus:   targetType === "wall" ? 0.30 + buildNorm * 0.20 : 0,  // wall-rebound chain
+    };
+  }
+  return { spinDelta: -20, dmgMult: 1.15, lockMs: 0, powerCost: 105, ringOutBonus: 0, chainBonus: 0 };
+}
+```
+
+**Notes:**
+- `biteCapture` is QTE phase 1 (fang-lock initiation). Failure here degrades to a glancing contact with no orbital build.
+- `cycloneBuildMs` accumulates after successful `biteCapture`. Longer build = greater angular momentum at throw (Case 1601: v_release ≈ 11.72 m/s at full BeySpirit orbital lock).
+- `targetType` directs the throw: "floor" gives highest ring-out probability; "wall" enables `chainBonus` (wall-rebound secondary collision at e ≈ 0.5 × v_release → ~5.86 m/s rebound); "opponent" targets a third bey in a 3-body chain.
+- `chainBonus` models the wall-rebound secondary hit probability — the rebounding captured bey re-enters the arena at high speed.
+- `powerCost: 105`: the sustained BeySpirit fang lock and orbital spin-up consume above-standard power output.
+- No `lockMs`: the throw is a release — Vice Leopard's movement is unimpeded after the fang disengagement.
+
+
+## Case 1603
+
+**Bey:** Vice Leopard 12Lift Destroy
+**Blader:** Laban Vanot
+**Label:** COMBO — Fang Rush
+
+**Sequence:** moveRight → attack → jump (→ K J)
+**Cost:** 35
+**Type restriction:** attack (the → charge approach, K fang-bite contact, J throw-release sequence requires a high-speed aggressive rightward vector for the fang geometry to achieve the hook angle in the combo window; stamina beys approach too slowly for the fang arc to register a contact hook; defense beys have sufficient approach speed but insufficient layer rotational inertia in the fang arc to hold the brief capture before J)
+**Parent gimmick:** Fang-layer capture geometry and orbital hammer-throw mechanics (Case 1601)
+
+**Thesis:** Fang Rush compresses Howling Bite's two-QTE sequence into a single 3-key burst. → drives Vice Leopard on an aggressive rightward approach (the directional vector aligns the fang arc's leading edge at r_fang ≈ 24 mm with the opponent's layer edge rather than meeting face-on — a hook geometry rather than a direct collision), K triggers the fang-bite contact at approach peak (analogous to QTE phase 1 but at combo intensity — ~40ms of fang engagement rather than the full cyclone build), and J fires the throw release at the apex of the brief orbital pre-load. Against opponents near the wall, → approaches along the wall-side corridor so the K hook angle deflects the opponent toward the wall-bounce trajectory, replicating Howling Bite's wall targetType chain at combo scale.
+
+```typescript
+function fangRush(
+  approachAngleCorrect: boolean,  // → input aligned fang arc with opponent layer edge (not head-on)
+  qteHit: boolean
+): { spinDelta: number; dmgMult: number; lockMs: number; powerCost: number; ringOutBonus: number; chainBonus: number } {
+  if (qteHit) {
+    return {
+      spinDelta:    approachAngleCorrect ? -30 : -18,
+      dmgMult:      approachAngleCorrect ? 1.42 : 1.25,
+      lockMs:       approachAngleCorrect ? 80 : 40,
+      powerCost:    35,
+      ringOutBonus: approachAngleCorrect ? 0.20 : 0.06,
+      chainBonus:   approachAngleCorrect ? 0.12 : 0,
+    };
+  }
+  return { spinDelta: -9, dmgMult: 1.06, lockMs: 0, powerCost: 35, ringOutBonus: 0, chainBonus: 0 };
+}
+```
+
+**Ceiling check:** dmgMult 1.42× ≤ 1.5 ✓ | lockMs 80 ≤ 300 ✓ | cost 35 ✓ | no full recovery ✓ | no persistent AoE ✓ | no invulnerability ✓
+
+*Cases continue from Case 1604 as further franchise moves are provided.*
