@@ -1,6 +1,6 @@
 // TouchControlsGBLayout — Game Boy Color (portrait) / Game Boy Advance (landscape) shell.
 //
-// Portrait  → GBC layout: screen centred, controls below (D-pad left, B/A right, SELECT/START centre)
+// Portrait  → GBC layout: screen at top, controls below (D-pad left, B/A right, SELECT/START centre)
 // Landscape → GBA layout: screen centred, D-pad left gutter, B/A right gutter, L/R shoulder tabs
 //
 // Button mapping:
@@ -11,8 +11,6 @@
 //   R tab  → SPECIAL (tap)
 //   SELECT → JUMP
 //   START  → DODGE
-//
-// The exit button lives near the SELECT/START row — same position on both orientations.
 
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -50,9 +48,14 @@ function shH():     number { return Math.max(26,  Math.min(34,  Math.round(7  * 
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
 
-const BODY   = '#14142a';   // device body
-const BEZEL  = '#07070e';   // screen bezel
-const BEZEL_W = 12;         // bezel thickness px
+const GBC_BODY     = '#1a1560';  // GBC deep indigo body
+const GBA_BODY     = '#4a3d8f';  // GBA purple body
+const GBC_SHOULDER = '#0f0e3a';  // GBC shoulder tab (darker)
+const GBA_SHOULDER = '#3a2f7a';  // GBA shoulder tab (darker)
+const BEZEL        = '#07070e';  // screen bezel ring
+const BEZEL_LIP    = '#2a2760';  // outer "display lip" ring (blends into body)
+const BEZEL_W      = 12;         // inner bezel thickness px
+const BEZEL_LIP_W  = 14;         // outer ring thickness px
 
 // ─── D-pad ────────────────────────────────────────────────────────────────────
 
@@ -130,6 +133,7 @@ function CrossDpad({ size }: { size: number }) {
   const arm   = (on: boolean) => `${on ? 'bg-[#3a5aff] border-white/30' : 'bg-[#1c1c38] border-white/8'} border flex items-center justify-center transition-colors duration-75 select-none touch-none`;
   const third  = Math.round(size / 3);
   const center_ = Math.round(size * 1.4 / 3);
+  const arrowSz = Math.max(9, Math.round(size * 0.11));
 
   return (
     <div
@@ -141,13 +145,22 @@ function CrossDpad({ size }: { size: number }) {
       className="select-none touch-none"
     >
       <div />
-      <div className={`${arm(dirs.up)} rounded-t-lg`} />
+      <div className={`${arm(dirs.up)} rounded-t-lg`}>
+        <span style={{ fontSize: arrowSz, color: dirs.up ? '#fff' : 'rgba(255,255,255,0.5)' }}>▲</span>
+      </div>
       <div />
-      <div className={`${arm(dirs.left)} rounded-l-lg`} />
-      <div className="bg-[#10103a] border border-white/6 rounded-sm" />
-      <div className={`${arm(dirs.right)} rounded-r-lg`} />
+      <div className={`${arm(dirs.left)} rounded-l-lg`}>
+        <span style={{ fontSize: arrowSz, color: dirs.left ? '#fff' : 'rgba(255,255,255,0.5)' }}>◀</span>
+      </div>
+      {/* Centre circle */}
+      <div className="bg-[#2a2760] border border-white/10 rounded-full" />
+      <div className={`${arm(dirs.right)} rounded-r-lg`}>
+        <span style={{ fontSize: arrowSz, color: dirs.right ? '#fff' : 'rgba(255,255,255,0.5)' }}>▶</span>
+      </div>
       <div />
-      <div className={`${arm(dirs.down)} rounded-b-lg`} />
+      <div className={`${arm(dirs.down)} rounded-b-lg`}>
+        <span style={{ fontSize: arrowSz, color: dirs.down ? '#fff' : 'rgba(255,255,255,0.5)' }}>▼</span>
+      </div>
       <div />
     </div>
   );
@@ -186,47 +199,7 @@ function GBBtn({
       className="flex items-center justify-center font-black text-white select-none touch-none cursor-pointer active:scale-90 active:translate-y-[2px] active:shadow-none transition-transform duration-75"
       onTouchStart={press} onTouchEnd={rel} onTouchCancel={rel} onMouseDown={mouseDown}
     >
-      <span style={{ fontSize: Math.max(10, Math.round(size * 0.22)), letterSpacing: '0.04em' }}>{label}</span>
-    </div>
-  );
-}
-
-// ─── Charge button (hold) ─────────────────────────────────────────────────────
-
-function ChargeBtn({ size }: { size: number }) {
-  const press = (e: React.TouchEvent | React.MouseEvent) => { e.preventDefault(); touchInputState.chargeHeld = true; };
-  const rel   = () => { touchInputState.chargeHeld = false; };
-  const mouseDown = (e: React.MouseEvent) => {
-    press(e);
-    const up = () => { rel(); window.removeEventListener("mouseup", up); };
-    window.addEventListener("mouseup", up);
-  };
-  return (
-    <div
-      style={{ width: size, height: size, borderRadius: '50%', boxShadow: '0 3px 0 #7a5500' }}
-      className="flex items-center justify-center font-black text-amber-200 text-[9px] tracking-widest select-none touch-none cursor-pointer active:scale-90 transition-transform duration-75 bg-[#3d2c00] border-2 border-amber-500/60"
-      onTouchStart={press} onTouchEnd={rel} onTouchCancel={rel} onMouseDown={mouseDown}
-    >
-      <span style={{ fontSize: Math.max(8, Math.round(size * 0.18)) }}>CHG</span>
-    </div>
-  );
-}
-
-// ─── Special button (tap) ─────────────────────────────────────────────────────
-
-function SpecialBtn({ size }: { size: number }) {
-  const fire = (e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault();
-    touchInputState.specialTap = true;
-    requestAnimationFrame(() => { touchInputState.specialTap = false; });
-  };
-  return (
-    <div
-      style={{ width: size, height: size, borderRadius: '50%', boxShadow: '0 3px 0 #1a4090' }}
-      className="flex items-center justify-center font-black text-blue-200 text-[9px] tracking-widest select-none touch-none cursor-pointer active:scale-90 transition-transform duration-75 bg-[#0c2060] border-2 border-blue-400/60"
-      onTouchStart={fire} onTouchEnd={() => {}} onTouchCancel={() => {}} onMouseDown={fire}
-    >
-      <span style={{ fontSize: Math.max(8, Math.round(size * 0.16)) }}>SPC</span>
+      <span style={{ fontSize: Math.max(10, Math.round(size * 0.22)), letterSpacing: '0.04em', fontWeight: 900 }}>{label}</span>
     </div>
   );
 }
@@ -263,10 +236,10 @@ function PillBtn({ label, field, onTap, w, h, accent = false }: {
 // ─── Shoulder tab button ──────────────────────────────────────────────────────
 
 function ShoulderTab({
-  side, label, hold, onTap, w, h,
+  side, label, hold, onTap, w, h, bg,
 }: {
   side: 'l' | 'r'; label: string; hold?: boolean;
-  onTap?: () => void; w: number; h: number;
+  onTap?: () => void; w: number; h: number; bg: string;
 }) {
   const press = (e: React.TouchEvent | React.MouseEvent) => {
     e.preventDefault();
@@ -283,11 +256,33 @@ function ShoulderTab({
   };
   return (
     <div
-      style={{ width: w, height: h, borderRadius: side === 'l' ? '10px 10px 0 10px' : '10px 10px 10px 0', background: '#1f1f40', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 2px 0 rgba(0,0,0,0.4)' }}
-      className="flex items-center justify-center font-bold text-white/50 select-none touch-none cursor-pointer active:brightness-125 transition-all duration-75"
+      style={{ width: w, height: h, borderRadius: side === 'l' ? '10px 10px 0 10px' : '10px 10px 10px 0', background: bg, border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 2px 0 rgba(0,0,0,0.4)' }}
+      className="flex items-center justify-center font-bold text-white/60 select-none touch-none cursor-pointer active:brightness-125 transition-all duration-75"
       onTouchStart={press} onTouchEnd={rel} onTouchCancel={rel} onMouseDown={mouseDown}
     >
       <span style={{ fontSize: Math.max(8, Math.round(h * 0.4)), letterSpacing: '0.1em' }}>{label}</span>
+    </div>
+  );
+}
+
+// ─── Speaker grill decoration ─────────────────────────────────────────────────
+
+function SpeakerGrill({ size }: { size: number }) {
+  return (
+    <div style={{ position: 'relative', width: size, height: size, overflow: 'hidden', opacity: 0.55 }}>
+      {[0,1,2,3,4].map(i => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute',
+            left: 0, top: i * (size / 5 + 1),
+            width: size, height: 1,
+            background: 'rgba(255,255,255,0.35)',
+            transform: 'rotate(-35deg)',
+            transformOrigin: 'left center',
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -311,7 +306,7 @@ function GBCFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
   const ctrlTop = Math.round(stripH * 0.08);
   const rowBot  = Math.round(stripH * 0.62);
 
-  // Shoulder tabs sit just below the canvas (at cb, overlapping the body panel)
+  // Shoulder tabs sit just below the canvas (at cb)
   const shTop = cb;
 
   // D-pad: bottom-left of control strip
@@ -329,26 +324,42 @@ function GBCFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
   const pillRowY = cb + rowBot;
   const pillCx   = vw / 2;
 
+  // Speaker grill: bottom-right of body strip
+  const grillSize = 40;
+  const grillRight = Math.max(12, (vw - cr) + 12);
+  const grillBottom = 10;
+
   return (
     <>
-      {/* SCREEN BEZEL — transparent centre, ring border only */}
+      {/* SCREEN BEZEL — dual ring: inner dark, outer blends into body */}
       <div
-        style={{ position: 'fixed', left: cl, top: ct, width: size, height: size, boxShadow: `0 0 0 ${BEZEL_W}px ${BEZEL}`, borderRadius: 6, zIndex: 51, pointerEvents: 'none', background: 'transparent' }}
+        style={{
+          position: 'fixed', left: cl, top: ct, width: size, height: size,
+          boxShadow: `0 0 0 ${BEZEL_W}px ${BEZEL}, 0 0 0 ${BEZEL_LIP_W}px ${BEZEL_LIP}`,
+          borderRadius: 6, zIndex: 51, pointerEvents: 'none', background: 'transparent',
+        }}
       />
 
       {/* BOTTOM BODY (below canvas — control area) */}
       <div
-        style={{ position: 'fixed', left: 0, top: cb, right: 0, bottom: 0, background: BODY, borderRadius: '0 0 36px 36px', zIndex: 52, pointerEvents: 'none' }}
+        style={{ position: 'fixed', left: 0, top: cb, right: 0, bottom: 0, background: GBC_BODY, borderRadius: '0 0 36px 36px', zIndex: 52, pointerEvents: 'none' }}
       />
+
+      {/* BRANDING — "BEYBLADE X" at top of body panel */}
+      <div style={{ position: 'fixed', left: 0, right: 0, top: cb + 2, zIndex: 53, pointerEvents: 'none', display: 'flex', justifyContent: 'center' }}>
+        <span style={{ fontSize: 8, letterSpacing: '0.22em', color: 'rgba(255,255,255,0.18)', fontWeight: 700, textTransform: 'uppercase', userSelect: 'none' }}>
+          BEYBLADE X
+        </span>
+      </div>
 
       {/* L SHOULDER (CHARGE) — at top of control strip, left side */}
       <div style={{ position: 'fixed', left: 0, top: shTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="l" label="CHG" hold w={shw} h={shh} />
+        <ShoulderTab side="l" label="CHG" hold w={shw} h={shh} bg={GBC_SHOULDER} />
       </div>
 
       {/* R SHOULDER (SPECIAL) — at top of control strip, right side */}
       <div style={{ position: 'fixed', right: 0, top: shTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="r" label="SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={shw} h={shh} />
+        <ShoulderTab side="r" label="SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={shw} h={shh} bg={GBC_SHOULDER} />
       </div>
 
       {/* D-PAD */}
@@ -363,7 +374,7 @@ function GBCFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
 
       {/* ATK BUTTON */}
       <div style={{ position: 'fixed', right: aRight, top: aTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <GBBtn field="attack" label="ATK" size={btnA} bg="#881122" border="#cc2233" />
+        <GBBtn field="attack" label="ATK" size={btnA} bg="#9b1926" border="#cc2233" />
       </div>
 
       {/* EXIT / JMP / DGE row */}
@@ -371,6 +382,11 @@ function GBCFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
         <PillBtn label="EXIT" onTap={() => nav('/game')} w={sW} h={sH} accent />
         <PillBtn label="JMP" field="jump"  w={sW} h={sH} />
         <PillBtn label="DGE" field="dodge" w={sW} h={sH} />
+      </div>
+
+      {/* Speaker grill — bottom-right of body strip */}
+      <div style={{ position: 'fixed', right: grillRight, bottom: grillBottom, zIndex: 53, pointerEvents: 'none' }}>
+        <SpeakerGrill size={grillSize} />
       </div>
 
       {/* Power LED — top-left corner of canvas */}
@@ -424,31 +440,35 @@ function GBAFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
   return (
     <>
       {/* LEFT BODY */}
-      <div style={{ position: 'fixed', left: 0, top: 0, width: leftGutterW, bottom: 0, background: BODY, zIndex: 52, pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', left: 0, top: 0, width: leftGutterW, bottom: 0, background: GBA_BODY, zIndex: 52, pointerEvents: 'none' }} />
 
       {/* RIGHT BODY */}
-      <div style={{ position: 'fixed', top: 0, right: 0, width: rightGutterW, bottom: 0, background: BODY, zIndex: 52, pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', top: 0, right: 0, width: rightGutterW, bottom: 0, background: GBA_BODY, zIndex: 52, pointerEvents: 'none' }} />
 
       {/* TOP BODY (narrow strip above canvas if any) */}
       {ct > 0 && (
-        <div style={{ position: 'fixed', left: 0, top: 0, right: 0, height: ct, background: BODY, zIndex: 52, pointerEvents: 'none' }} />
+        <div style={{ position: 'fixed', left: 0, top: 0, right: 0, height: ct, background: GBA_BODY, zIndex: 52, pointerEvents: 'none' }} />
       )}
       {/* BOTTOM BODY (narrow strip below canvas if any) */}
       {cb < vh && (
-        <div style={{ position: 'fixed', left: 0, top: cb, right: 0, bottom: 0, background: BODY, zIndex: 52, pointerEvents: 'none' }} />
+        <div style={{ position: 'fixed', left: 0, top: cb, right: 0, bottom: 0, background: GBA_BODY, zIndex: 52, pointerEvents: 'none' }} />
       )}
 
-      {/* SCREEN BEZEL — transparent centre, border ring only */}
-      <div style={{ position: 'fixed', left: cl, top: ct, width: size, height: size, boxShadow: `0 0 0 ${BEZEL_W}px ${BEZEL}`, borderRadius: 6, zIndex: 51, pointerEvents: 'none', background: 'transparent' }} />
+      {/* SCREEN BEZEL — dual ring: inner dark, outer blends into GBA body */}
+      <div style={{
+        position: 'fixed', left: cl, top: ct, width: size, height: size,
+        boxShadow: `0 0 0 ${BEZEL_W}px ${BEZEL}, 0 0 0 ${BEZEL_LIP_W}px ${BEZEL_LIP}`,
+        borderRadius: 6, zIndex: 51, pointerEvents: 'none', background: 'transparent',
+      }} />
 
       {/* L SHOULDER (CHARGE) — top of left gutter */}
       <div style={{ position: 'fixed', left: 0, top: 0, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="l" label="CHG" hold w={lShW} h={shh} />
+        <ShoulderTab side="l" label="CHG" hold w={lShW} h={shh} bg={GBA_SHOULDER} />
       </div>
 
       {/* R SHOULDER (SPECIAL) — top of right gutter */}
       <div style={{ position: 'fixed', right: 0, top: 0, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="r" label="SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={rShW} h={shh} />
+        <ShoulderTab side="r" label="SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={rShW} h={shh} bg={GBA_SHOULDER} />
       </div>
 
       {/* D-PAD (left gutter) */}
@@ -463,7 +483,7 @@ function GBAFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
 
       {/* ATK BUTTON */}
       <div style={{ position: 'fixed', left: aLeft, top: aTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <GBBtn field="attack" label="ATK" size={btnA} bg="#881122" border="#cc2233" />
+        <GBBtn field="attack" label="ATK" size={btnA} bg="#9b1926" border="#cc2233" />
       </div>
 
       {/* JMP + DGE + EXIT (centre-bottom area) */}

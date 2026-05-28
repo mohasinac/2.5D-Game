@@ -39,6 +39,8 @@ import BurstOverlay from "@/components/game/BurstOverlay";
 import LaunchCinematic from "@/components/game/LaunchCinematic";
 import VictoryOverlay from "@/components/game/VictoryOverlay";
 import KOOverlay from "@/components/game/KOOverlay";
+import { BitBeastCinematic } from "@/components/game/BitBeastCinematic";
+import { useBitBeastCinematic } from "@/hooks/useBitBeastCinematic";
 
 const TYPE_FLASH: Record<string, string> = { attack: "#ff4444", defense: "#4488ff", stamina: "#44ff88", balanced: "#ffcc44" };
 
@@ -86,6 +88,9 @@ export function BattleGamePage() {
   const [burstVisible, setBurstVisible] = useState(false);
   const [koVisible, setKoVisible] = useState<{ visible: boolean; type: "ko" | "ring_out" | "outspin" }>({ visible: false, type: "ko" });
   const [victoryVisible, setVictoryVisible] = useState(false);
+
+  const bitBeastCinematic = useBitBeastCinematic(settings.beybladeId ?? null);
+  const launchRevealShownRef = useRef(false);
 
   const isSpectatingRef = useRef(false);
   const handleQTEPrompt = useCallback((data: QTEPromptData) => {
@@ -249,6 +254,7 @@ export function BattleGamePage() {
       SoundManager.play("special-move");
       if (data.playerId === myBeyblade?.id) {
         setLastSpecialMove(data.type);
+        bitBeastCinematic.show(data.type, 1800);
       }
     });
     room.onMessage("combo", (data: any) => {
@@ -283,6 +289,13 @@ export function BattleGamePage() {
   const seriesLabel = gameState && (gameState.targetWins ?? 1) > 1
     ? `Game ${gameState.currentGame}/${(gameState.targetWins ?? 1) * 2 - 1}`
     : "";
+
+  useEffect(() => {
+    if (gameState?.status === "launching" && !launchRevealShownRef.current && !isSpectating) {
+      launchRevealShownRef.current = true;
+      bitBeastCinematic.show("LET IT RIP!", 1500);
+    }
+  }, [gameState?.status, isSpectating]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (gameState?.status === "series-finished" || (gameState?.status === "finished" && !gameEndData)) {
@@ -769,6 +782,7 @@ export function BattleGamePage() {
       <BurstOverlay visible={burstVisible} onComplete={() => setBurstVisible(false)} />
       <KOOverlay visible={koVisible.visible} type={koVisible.type} onComplete={() => setKoVisible({ visible: false, type: "ko" })} />
       <LaunchCinematic active={gameState?.status === "launching" && !gameEndData} power={myBeyblade?.launchPower ?? 0} />
+      <BitBeastCinematic imageUrl={bitBeastCinematic.imageUrl} moveName={bitBeastCinematic.moveName} visible={bitBeastCinematic.visible} />
       <VictoryOverlay
         visible={victoryVisible}
         winnerName={playerList.find((b) => b.userId === (seriesEndData?.winner ?? gameState?.winner))?.username ?? ""}

@@ -38,6 +38,8 @@ interface GameSettings {
   maxSpectatorsBattle: number;
   maxSpectatorsTournament: number;
   maxSpectatorsAI: number;
+  // Renderer
+  defaultRendererMode: "2d" | "2.5d";
 }
 
 const DEFAULTS: GameSettings = {
@@ -51,6 +53,7 @@ const DEFAULTS: GameSettings = {
   minimumTournamentGapMinutes: 30,
   maxActiveRooms: 20,
   maxSpectatorsBattle: 8, maxSpectatorsTournament: 8, maxSpectatorsAI: 8,
+  defaultRendererMode: "2.5d",
 };
 
 const inputCls = "w-full bg-bg1 border border-border rounded-md px-3 py-2 text-sm text-text placeholder:text-faint focus:outline-none focus:border-blue";
@@ -154,6 +157,21 @@ export function SettingsPage() {
             <div>
               <Label>Match Timeout (seconds)</Label>
               <input type="number" min={60} max={600} step={30} value={settings.matchTimeoutSeconds} onChange={(e) => set("matchTimeoutSeconds", +e.target.value)} className={inputCls} />
+            </div>
+          </div>
+          <div>
+            <Label>Default Renderer Mode</Label>
+            <p className="text-faint text-[11px] mb-2">Used for arenas that do not specify an explicit renderer mode. 2.5D adds tilt perspective; 2D is flat top-down.</p>
+            <div className="flex gap-2">
+              {(["2d", "2.5d"] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => set("defaultRendererMode", m)}
+                  className={`px-4 py-1.5 rounded-md text-sm font-semibold border transition-colors ${settings.defaultRendererMode === m ? "bg-blue border-blue text-white" : "bg-bg1 border-border text-faint hover:text-text"}`}
+                >
+                  {m === "2.5d" ? "2.5D (Tilt Perspective)" : "2D (Flat Top-Down)"}
+                </button>
+              ))}
             </div>
           </div>
         </Section>

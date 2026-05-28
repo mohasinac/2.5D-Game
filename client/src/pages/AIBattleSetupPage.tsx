@@ -84,7 +84,7 @@ export function AIBattleSetupPage() {
   const [playerBeyId, setPlayerBeyId] = useState(settings.beybladeId ?? "default");
   const [aiBeyId, setAiBeyId]         = useState("default");
   const [arenaId, setArenaId]         = useState(settings.arenaId ?? "default");
-  const [difficulty, setDifficulty]   = useState<Difficulty>("hard");
+  const [difficulty, setDifficulty]   = useState<Difficulty>("medium");
   const [bestOf, setBestOf]           = useState<BestOf>(1);
   const [aiCount, setAiCount]         = useState<number>(1);
   const [partOverrides, setPartOverrides] = useState<Record<string, string>>({});

@@ -16,6 +16,8 @@ import { CameraControls } from "@/components/game/CameraControls";
 import { ControlsLegend } from "@/components/game/ControlsLegend";
 import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
+import { BitBeastCinematic } from "@/components/game/BitBeastCinematic";
+import { useBitBeastCinematic } from "@/hooks/useBitBeastCinematic";
 import {
   LAUNCH_DURATION_S, LAUNCH_MAX_POWER, LAUNCH_MAX_TILT,
   LAUNCH_TILT_RATE, LAUNCH_POSITION_RATE, LAUNCH_GRACE_POWER,
@@ -209,6 +211,16 @@ export function TryoutGamePage() {
     load();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrated, settings.beybladeId, settings.arenaId, settings.userId, settings.username]);
+
+  const bitBeastCinematic = useBitBeastCinematic(settings.beybladeId ?? null);
+  const launchRevealShownRef = useRef(false);
+
+  useEffect(() => {
+    if (phase === "launching" && !launchRevealShownRef.current) {
+      launchRevealShownRef.current = true;
+      bitBeastCinematic.show("LET IT RIP!", 1500);
+    }
+  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Keyboard listeners ─────────────────────────────────────────────────────
   useEffect(() => {
@@ -542,6 +554,8 @@ export function TryoutGamePage() {
           <div className={`text-[11px] text-center font-mono ${stabilityColor}`}>{stabilityLabel}</div>
         </div>
       </div>
+
+      <BitBeastCinematic imageUrl={bitBeastCinematic.imageUrl} moveName={bitBeastCinematic.moveName} visible={bitBeastCinematic.visible} />
 
       {/* Spin-out overlay */}
       {spinOut && (

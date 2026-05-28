@@ -29,6 +29,8 @@ import { Countdown } from "@/components/game/Countdown";
 import { LaunchPhase } from "@/components/game/LaunchPhase";
 import { LAUNCH_DURATION_S } from "@/shared/constants/gameConstants";
 import { useLaunchInput } from "@/game/hooks/useLaunchInput";
+import { BitBeastCinematic } from "@/components/game/BitBeastCinematic";
+import { useBitBeastCinematic } from "@/hooks/useBitBeastCinematic";
 
 const ROUND_NAMES: Record<number, string> = { 1: "Round 1", 2: "Semifinals", 3: "Final" };
 const TYPE_FLASH: Record<string, string> = { attack: "#ff4444", defense: "#4488ff", stamina: "#44ff88", balanced: "#ffcc44" };
@@ -81,6 +83,9 @@ export function TournamentBattleGamePage() {
   const [lastSpecialMove, setLastSpecialMove] = useState<string | null>(null);
   const [lastCombo, setLastCombo] = useState<{ name: string; timestamp: number } | null>(null);
   const [seriesEndData, setSeriesEndData] = useState<{ winner: string; seriesScore: Record<string, number> } | null>(null);
+
+  const bitBeastCinematic = useBitBeastCinematic(settings.beybladeId ?? null);
+  const launchRevealShownRef = useRef(false);
 
   const colyseusOptions = useMemo(() => ({
     spectate,
@@ -183,6 +188,7 @@ export function TournamentBattleGamePage() {
       SoundManager.play("special-move");
       if (data.playerId === myBeyblade?.id) {
         setLastSpecialMove(data.type);
+        bitBeastCinematic.show(data.type, 1800);
       }
     });
     room.onMessage("combo", (data: any) => {
@@ -194,6 +200,13 @@ export function TournamentBattleGamePage() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room]);
+
+  useEffect(() => {
+    if (gameState?.status === "launching" && !launchRevealShownRef.current && !isSpectating) {
+      launchRevealShownRef.current = true;
+      bitBeastCinematic.show("LET IT RIP!", 1500);
+    }
+  }, [gameState?.status, isSpectating]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Dismiss game-end overlay after 4 seconds + play victory/defeat sound.
   useEffect(() => {
@@ -570,6 +583,8 @@ export function TournamentBattleGamePage() {
           arena={gameState.arena}
         />
       )}
+
+      <BitBeastCinematic imageUrl={bitBeastCinematic.imageUrl} moveName={bitBeastCinematic.moveName} visible={bitBeastCinematic.visible} />
 
       {/* Connecting overlay */}
       {connectionState !== "connected" && gameState === null && !loadError && (

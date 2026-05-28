@@ -3,10 +3,13 @@
  * Comprehensive visual screenshot test for the Beyblade game.
  *
  * Captures screenshots of:
- *   - Login, Home, Game-Select (3 viewports)
- *   - GBC portrait controls overlay (390 x 844)
- *   - GBA landscape controls overlay (844 x 390)
- *   - AI Battle: setup → loading → game (GB controls visible) → result
+ *   A  Login, Home, Game-Select (3 viewports)
+ *   B  GBC portrait controls overlay (390 x 844)
+ *   C  GBA landscape controls overlay (844 x 390)
+ *   D  AI Battle: setup → loading → game (GBC portrait) → 30 s gameplay
+ *   E  AI Battle: GBA landscape version
+ *   F  Tryout mode (server-free, portrait)
+ *   G  2.5D renderer: AI battle in tilt-perspective arena
  *
  * Run: node scripts/screenshot-game.js
  * Output: test-results/screenshots/
@@ -82,6 +85,82 @@ const pressKey = async (page, key, ms = 150) => {
   await sleep(ms);
   await page.keyboard.up(key);
 };
+
+// Wait for loading overlay to disappear, then sleep warmupMs before returning.
+// This replaces the old fixed 16-second wait. The loading overlay uses
+// data-testid="loading-progress". Once it's gone the warmup countdown has started
+// (or may already be past warmup and into launching).
+async function waitForLoadingGone(page, warmupMs = 3800) {
+  try {
+    await page.waitForFunction(
+      () => !document.querySelector('[data-testid="loading-progress"]'),
+      { timeout: 35_000 }
+    );
+    console.log("  ✅  Loading overlay gone — warmup starting");
+  } catch {
+    console.log("  ⚠️  Loading overlay did not disappear in 35 s — continuing anyway");
+  }
+  // Sleep through the warmup countdown (3 s) with a small buffer.
+  await sleep(warmupMs);
+}
+
+// Hold Space for the launch phase (5-s window), then release.
+async function doLaunch(page, holdMs = 5500) {
+  console.log(`  🚀  Holding Space for launch (${holdMs} ms)…`);
+  await page.focus("canvas").catch(() => {});
+  await page.keyboard.down("Space");
+  await sleep(holdMs);
+  await page.keyboard.up("Space");
+  await sleep(500);
+}
+
+// Navigate to AI battle, wait for game page, return true on success.
+async function startAiBattle(page) {
+  await sleep(3500); // Firestore auto-selection
+  await clickText(page, /medium/i);
+  await sleep(300);
+  await clickText(page, /^bo1$/i);
+  await sleep(300);
+
+  const startBtn = await waitForEnabledButton(page, /start/i, 10_000);
+  if (!startBtn) {
+    console.log("  ⚠️  Start button not enabled after 10 s — check Firestore data");
+    return false;
+  }
+  await page.evaluate((el) => el.click(), startBtn);
+  console.log("  ✅  Clicked Start");
+
+  try {
+    await page.waitForFunction(
+      () => window.location.pathname.includes("ai-battle/play"),
+      { timeout: 30_000 }
+    );
+    console.log("  ✅  Game page reached:", page.url());
+    return true;
+  } catch {
+    console.log("  ⚠️  Game page navigation timeout — still at:", page.url());
+    return false;
+  }
+}
+
+// Play gameplay loop for durationMs, pressing KEYS in sequence.
+const KEYS = ["KeyD","KeyA","KeyW","KeyS","KeyD","KeyJ","KeyK","KeyA","KeyD","KeyJ","KeyL","KeyW","KeyJ","KeyD","KeyA","KeyJ"];
+async function playLoop(page, label, durationMs) {
+  console.log(`  ⚔️   Playing ${durationMs / 1000} s (${label})…`);
+  const startMs = Date.now();
+  let turn = 0;
+  while (Date.now() - startMs < durationMs) {
+    const k = KEYS[turn % KEYS.length];
+    await pressKey(page, k, k === "KeyJ" || k === "KeyK" || k === "KeyL" ? 80 : 300);
+    await sleep(60);
+    turn++;
+    const elapsed = Date.now() - startMs;
+    if (Math.floor(elapsed / 10_000) > Math.floor((elapsed - 260) / 10_000)) {
+      await ss(page, `${label}-playing-${Math.floor(elapsed / 1000)}s`);
+      console.log(`    🕐  t=${Math.floor(elapsed/1000)}s`);
+    }
+  }
+}
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
@@ -202,56 +281,28 @@ async function run() {
 
   // ══════════════════════════════════════════════════════════════════════════════
   // SECTION D — Full AI battle run (portrait phone, GBC layout)
+  //
+  // Timing diagram:
+  //   t=0s   room join → connecting-ws → joining-room → loading steps
+  //   t=1-2s loading overlay hides (warmup starts)
+  //   t=1-2s + 3.8s sleep = t=4.8-5.8s (warmup just ended, launching started)
+  //   t=5-6s Space held during entire 5 s launch window
+  //   t=11s  Space released — beyblade launches at full power
+  //   t=11-41s 30 s gameplay + screenshots every 10 s
   // ══════════════════════════════════════════════════════════════════════════════
 
   console.log("\n━━━  D. Full AI battle run (GBC portrait)  ━━━");
 
   await setViewport(page, VIEWPORTS.portrait);
-
-  // Navigate to AI setup
   await page.goto(`${BASE_URL}/game/2d/ai-battle`, { waitUntil: "domcontentloaded", timeout: 20_000 });
-  // Wait for Firestore to load beyblades/arenas (page auto-selects first items)
-  await sleep(3500);
-
-  // Pick Medium difficulty
-  console.log("  👆  Selecting Medium difficulty…");
-  await clickText(page, /medium/i);
-  await sleep(300);
-
-  // Pick BO1
-  console.log("  👆  Selecting BO1…");
-  await clickText(page, /^bo1$/i);
-  await sleep(300);
-
   await ss(page, "battle-D-setup-ready");
 
-  // Wait for Start button to be enabled (Firestore data should already be there)
-  console.log("  ⏳  Waiting for Start button to be enabled…");
-  const startBtn = await waitForEnabledButton(page, /start/i, 10_000);
-  let started = false;
-  if (startBtn) {
-    await page.evaluate((el) => el.click(), startBtn);
-    console.log("  ✅  Clicked Start");
-    started = true;
-  } else {
-    console.log("  ⚠️  Start button not enabled after 10 s — check Firestore data");
-  }
-  await sleep(800);
+  const startedD = await startAiBattle(page);
 
-  // Wait for game page — longer timeout since server cold-start
-  try {
-    await page.waitForFunction(
-      () => window.location.pathname.includes("ai-battle/play"),
-      { timeout: 30_000 }
-    );
-    console.log("  ✅  Game page reached:", page.url());
-  } catch { console.log("  ⚠️  game page navigation timeout — still at:", page.url()); }
-
-  await sleep(2000);
+  await sleep(1500);
   await ss(page, "battle-D-loading");
 
-  // Wait for canvas + loading overlay to dismiss (up to 20s — fallback timers run at 14s)
-  console.log("  ⏳  Waiting for canvas + loading overlay to clear…");
+  // Wait for canvas to become visible
   try {
     await page.waitForSelector("canvas", { timeout: 30_000 });
     await page.waitForFunction(() => {
@@ -261,52 +312,21 @@ async function run() {
     console.log("  ✅  Canvas visible!");
   } catch { console.log("  ⚠️  canvas not visible in 30 s"); }
 
-  // Extra wait for loading overlay to dismiss (fallback timers: step4=3s, step5=8s, step6=14s)
-  await sleep(16_000);
-  await ss(page, "battle-D-loading-clear");
-
-  await sleep(1000);
   await ss(page, "battle-D-canvas");
 
-  // Wait through warmup (3-s countdown)
-  console.log("  ⏳  Warmup (3 s)…");
-  await sleep(3500);
-  await ss(page, "battle-D-warmup");
+  // Wait for loading overlay to clear, then sleep through warmup.
+  await waitForLoadingGone(page, 3800);
+  await ss(page, "battle-D-warmup-done");
 
-  // Launch — hold Space
-  console.log("  🚀  Launching (Space held 2.5 s)…");
-  await page.focus("canvas").catch(() => {});
-  await page.keyboard.down("Space");
-  await sleep(2500);
-  await page.keyboard.up("Space");
-  await sleep(800);
+  // Hold Space through the 5 s launch window.
+  await doLaunch(page, 5500);
   await ss(page, "battle-D-launched");
 
-  // Play 30 s (keyboard only — stable, no chrome crashes)
-  console.log("  ⚔️   Playing 30 s (keyboard)…");
-  const vp   = VIEWPORTS.portrait;
-  const W = vp.width, H = vp.height;
-  const joyX = Math.round(W * 0.18), joyY = Math.round(H * 0.75);
-
-  const KEYS = ["KeyD","KeyA","KeyW","KeyS","KeyD","KeyJ","KeyK","KeyA","KeyD","KeyJ","KeyL","KeyW","KeyJ","KeyD","KeyA","KeyJ"];
-  const startMs = Date.now();
-  let turn = 0;
-  while (Date.now() - startMs < 30_000) {
-    const k = KEYS[turn % KEYS.length];
-    await pressKey(page, k, k === "KeyJ" || k === "KeyK" || k === "KeyL" ? 80 : 300);
-    await sleep(60);
-    turn++;
-    const elapsed = Date.now() - startMs;
-    if (Math.floor(elapsed / 10_000) > Math.floor((elapsed - 260) / 10_000)) {
-      await ss(page, `battle-D-playing-${Math.floor(elapsed / 1000)}s`);
-      console.log(`    🕐  t=${Math.floor(elapsed/1000)}s`);
-    }
-  }
-
+  // Play 30 s
+  await playLoop(page, "battle-D", 30_000);
   await ss(page, "battle-D-end");
   console.log("  ✅  30 s play complete");
 
-  // Wait for result
   await sleep(5000);
   await ss(page, "battle-D-result");
 
@@ -317,35 +337,16 @@ async function run() {
   if (resultText) console.log("  🏆  Result:", resultText);
 
   // ══════════════════════════════════════════════════════════════════════════════
-  // SECTION E — GBA landscape battle run
+  // SECTION E — GBA landscape battle run (same timing fix as Section D)
   // ══════════════════════════════════════════════════════════════════════════════
 
   console.log("\n━━━  E. AI battle run (GBA landscape)  ━━━");
 
   await setViewport(page, VIEWPORTS.landscape);
   await page.goto(`${BASE_URL}/game/2d/ai-battle`, { waitUntil: "domcontentloaded", timeout: 20_000 });
-  await sleep(3500); // wait for Firestore auto-selection
-
-  await clickText(page, /medium/i);
-  await sleep(300);
-  await clickText(page, /^bo1$/i);
-  await sleep(300);
   await ss(page, "battle-E-setup");
 
-  const startBtnE = await waitForEnabledButton(page, /start/i, 10_000);
-  if (startBtnE) {
-    await page.evaluate((el) => el.click(), startBtnE);
-    console.log("  ✅  Clicked Start (landscape)");
-  } else {
-    console.log("  ⚠️  Start button not enabled (landscape)");
-  }
-
-  try {
-    await page.waitForFunction(
-      () => window.location.pathname.includes("ai-battle/play"),
-      { timeout: 20_000 }
-    );
-  } catch { console.log("  ⚠️  game page timeout"); }
+  await startAiBattle(page);
 
   await sleep(1500);
   await ss(page, "battle-E-loading");
@@ -358,30 +359,106 @@ async function run() {
     }, { timeout: 30_000 });
   } catch { console.log("  ⚠️  canvas timeout"); }
 
-  await sleep(1000);
   await ss(page, "battle-E-canvas");
 
-  await sleep(3500); // warmup
-  await page.focus("canvas").catch(() => {});
-  await page.keyboard.down("Space");
-  await sleep(2500);
-  await page.keyboard.up("Space");
-  await sleep(800);
+  await waitForLoadingGone(page, 3800);
+  await doLaunch(page, 5500);
   await ss(page, "battle-E-launched");
 
-  // 15 s quick play in landscape
-  console.log("  ⚔️   Playing 15 s (landscape)…");
-  const startEMs = Date.now();
-  let turnE = 0;
-  while (Date.now() - startEMs < 15_000) {
-    const k = KEYS[turnE % KEYS.length];
+  await playLoop(page, "battle-E", 15_000);
+  await ss(page, "battle-E-end");
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // SECTION F — Tryout mode (server-free, portrait)
+  //
+  // TryoutGamePage runs local physics with no Colyseus connection.
+  // Countdown is 3 s, launch phase is 5 s.
+  // Beyblade spins for ~60 s before spinning out (no AI — slow decay).
+  // ══════════════════════════════════════════════════════════════════════════════
+
+  console.log("\n━━━  F. Tryout mode (server-free, portrait)  ━━━");
+
+  await setViewport(page, VIEWPORTS.portrait);
+  await page.goto(`${BASE_URL}/game/2d/tryout`, { waitUntil: "domcontentloaded", timeout: 20_000 });
+  await sleep(1500);
+  await ss(page, "tryout-F-loaded");
+
+  // Wait for canvas
+  try {
+    await page.waitForSelector("canvas", { timeout: 20_000 });
+    await page.waitForFunction(() => {
+      const c = document.querySelector("canvas");
+      return c && c.getBoundingClientRect().width > 0;
+    }, { timeout: 20_000 });
+    console.log("  ✅  Tryout canvas visible");
+  } catch { console.log("  ⚠️  tryout canvas timeout"); }
+
+  await ss(page, "tryout-F-canvas");
+
+  // Wait through 3-s countdown + small buffer
+  console.log("  ⏳  Waiting for tryout countdown (3 s)…");
+  await sleep(3800);
+  await ss(page, "tryout-F-countdown-done");
+
+  // Hold Space through the 5 s launch window
+  await doLaunch(page, 5500);
+  await ss(page, "tryout-F-launched");
+
+  // Play 40 s — screenshot every 10 s to show beyblade spinning
+  console.log("  ⚔️   Playing 40 s (tryout — no AI)…");
+  const startFMs = Date.now();
+  let turnF = 0;
+  while (Date.now() - startFMs < 40_000) {
+    const k = KEYS[turnF % KEYS.length];
     await pressKey(page, k, k === "KeyJ" || k === "KeyK" || k === "KeyL" ? 80 : 300);
     await sleep(60);
-    turnE++;
+    turnF++;
+    const elapsed = Date.now() - startFMs;
+    if (Math.floor(elapsed / 10_000) > Math.floor((elapsed - 260) / 10_000)) {
+      await ss(page, `tryout-F-playing-${Math.floor(elapsed / 1000)}s`);
+      console.log(`    🕐  t=${Math.floor(elapsed/1000)}s`);
+    }
   }
-  await ss(page, "battle-E-playing");
-  await sleep(3000);
-  await ss(page, "battle-E-end");
+  await ss(page, "tryout-F-end");
+  console.log("  ✅  Tryout 40 s play complete");
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // SECTION G — 2.5D renderer test (AI battle, tilt perspective)
+  //
+  // All seeded arenas now have rendererMode: "2.5d" so any battle will use the
+  // 2.5D tilt-perspective renderer. Screenshots should show the isometric tilt.
+  // ══════════════════════════════════════════════════════════════════════════════
+
+  console.log("\n━━━  G. 2.5D tilt perspective renderer (desktop)  ━━━");
+
+  await setViewport(page, VIEWPORTS.desktop);
+  await page.goto(`${BASE_URL}/game/2d/ai-battle`, { waitUntil: "domcontentloaded", timeout: 20_000 });
+  await ss(page, "2d5-G-setup");
+
+  await startAiBattle(page);
+
+  await sleep(1500);
+  await ss(page, "2d5-G-loading");
+
+  try {
+    await page.waitForSelector("canvas", { timeout: 30_000 });
+    await page.waitForFunction(() => {
+      const c = document.querySelector("canvas");
+      return c && c.getBoundingClientRect().width > 0;
+    }, { timeout: 30_000 });
+    console.log("  ✅  2.5D canvas visible");
+  } catch { console.log("  ⚠️  canvas timeout"); }
+
+  await ss(page, "2d5-G-canvas");
+
+  await waitForLoadingGone(page, 3800);
+  await doLaunch(page, 5500);
+  await ss(page, "2d5-G-launched");
+
+  // Play 15 s — the tilt perspective should be visible
+  await playLoop(page, "2d5-G", 15_000);
+  await ss(page, "2d5-G-end");
+  console.log("  ✅  2.5D render test complete");
 
   // ══════════════════════════════════════════════════════════════════════════════
   // DONE

@@ -38,6 +38,8 @@ import BurstOverlay from "@/components/game/BurstOverlay";
 import LaunchCinematic from "@/components/game/LaunchCinematic";
 import VictoryOverlay from "@/components/game/VictoryOverlay";
 import KOOverlay from "@/components/game/KOOverlay";
+import { BitBeastCinematic } from "@/components/game/BitBeastCinematic";
+import { useBitBeastCinematic } from "@/hooks/useBitBeastCinematic";
 
 interface AIBattleLocationState {
   beybladeId?: string;
@@ -105,6 +107,10 @@ export function AIBattleGamePage() {
   const [burstVisible, setBurstVisible] = useState(false);
   const [koVisible, setKoVisible] = useState<{ visible: boolean; type: "ko" | "ring_out" | "outspin" }>({ visible: false, type: "ko" });
   const [victoryVisible, setVictoryVisible] = useState(false);
+
+  const playerBeyId = loc.beybladeId ?? settings.beybladeId ?? null;
+  const bitBeastCinematic = useBitBeastCinematic(playerBeyId);
+  const launchRevealShownRef = useRef(false);
 
   const isSpectatingRef = useRef(spectate);
   const handleQTEPrompt = useCallback((data: QTEPromptData) => {
@@ -261,6 +267,7 @@ export function AIBattleGamePage() {
       SoundManager.play("special-move");
       if (data.playerId === myBeyblade?.id) {
         setLastSpecialMove(data.type);
+        bitBeastCinematic.show(data.type, 1800);
       }
     });
     room.onMessage("combo", (data: any) => {
@@ -308,6 +315,14 @@ export function AIBattleGamePage() {
       setVictoryVisible(true);
     }
   }, [gameState?.status, gameEndData]);
+
+  useEffect(() => {
+    if (gameState?.status === "launching" && !launchRevealShownRef.current && !isSpectating) {
+      launchRevealShownRef.current = true;
+      bitBeastCinematic.show("LET IT RIP!", 1500);
+    }
+  }, [gameState?.status, isSpectating]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   // Once the room has been active (warmup/launching/in-progress) we never re-show
   // the loading overlay — prevents it flashing back between series games.
@@ -682,6 +697,7 @@ export function AIBattleGamePage() {
       <BurstOverlay visible={burstVisible} onComplete={() => setBurstVisible(false)} />
       <KOOverlay visible={koVisible.visible} type={koVisible.type} onComplete={() => setKoVisible({ visible: false, type: "ko" })} />
       <LaunchCinematic active={gameState?.status === "launching" && !gameEndData} power={myBeyblade?.launchPower ?? 0} />
+      <BitBeastCinematic imageUrl={bitBeastCinematic.imageUrl} moveName={bitBeastCinematic.moveName} visible={bitBeastCinematic.visible} />
       <VictoryOverlay
         visible={victoryVisible}
         winnerName={allBeyblades.find((b) => b.userId === (seriesEndData?.winner ?? gameState?.winner))?.username ?? ""}

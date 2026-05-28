@@ -2517,7 +2517,8 @@ async function seedArenas() {
 
   for (const arena of ARENAS) {
     const docData = {
-      ...arena,
+      rendererMode: "2.5d",   // default all seeded arenas to 2.5D perspective
+      ...arena,               // arena-level override wins if explicitly set
       createdAt: now,
       updatedAt: now,
       createdBy: "seed",

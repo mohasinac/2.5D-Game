@@ -1,5 +1,5 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **1458 cases** across 14 files + 1 master reference.
+Total: **1488 cases** across 14 files + 1 master reference.
 
 ---
 
@@ -27,7 +27,7 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1461 | 493 | Franchise special moves, gimmick foundations, and derived combos |
+| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1491 | 523 | Franchise special moves, gimmick foundations, and derived combos |
 | [14 case study.md](14%20case%20study.md) | 892–910 | 19 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | — | Engine reference: constants, formulas, normalization |
 
@@ -87,6 +87,16 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1456–1458 | 3 | Gatling Claw Maximum — BeySpirit over-rev imperceptible-speed assault (Ray Kon · Driger G) | CS13 |
 | 1459–1461 | 3 | Gatling Fang — multi-pass translational rush claw attack (Ray Kon · Driger G, manga) | CS13 |
 | 1500–1524 | 25 | CS9 Burst series: Aquario 105F (MFB), Berserker Byakko 125S (Zero-G), Shelter Regulus 5Star Tower (God), Hyperion Burn Cho Xceed'+X (SK), Greatest Raphael Over High Xtend+' (DB) | CS9 |
+| 1462–1464 | 3 | Gladiator Demolition — SP230 gyroscopic spike-tip impact + Bahamut Chrome Wheel momentum (Kira Hayama · Gladiator Bahamut SP230GF) | CS13 |
+| 1465–1467 | 3 | Final Ultimate Demolition — Synchrome dual-Chrome-Wheel stacked CoM impact (Pegasus Bahamoote SP230R2F) | CS13 |
+| 1468–1470 | 3 | Genesis Whip (God Slash) — Genesis Special dual-blade row alignment attack (Valt Aoi · Strike Valtryek 6Vortex Reboot) | CS13 |
+| 1471–1473 | 3 | Genesis Reboot (God Reboot) — Reboot driver spring-retract evasion + counter (Valt Aoi · Genesis Valtryek 6Vortex Reboot) | CS13 |
+| 1474–1476 | 3 | Gemini Crash — cooperative dual-bey tip-lock cutter attack (Julia + Raul Fernandez · Thunder + Torch Pegasus) | CS13 |
+| 1477–1479 | 3 | Geist Counter — Proof Frame floor-grinding tilt-recovery drift boost counterattack (Free De La Hoya · Geist Fafnir 8'Proof Absorb) | CS13 |
+| 1480–1482 | 3 | Geist Spin — rubber-blade retraction Rankine-vortex tornado counterattack (Free De La Hoya · Geist Fafnir 8'Proof Absorb) | CS13 |
+| 1483–1485 | 3 | Guilty Upper — Guilty Blade dragon-claw uppercut KE transfer (Lui Shirosagi · Guilty Luínor Karma Metal Destroy-2) | CS13 |
+| 1486–1488 | 3 | Guilty Smash — Karma Disc downward-force gyroscopic launch + aerial dive impact (Lui Shirosagi · Guilty Luínor Karma Metal Destroy-2) | CS13 |
+| 1489–1491 | 3 | Great Rock — gyroscopic immovable-stance spin-preservation defense (Joseph · Vanishing Moot) | CS13 |
 | **1525** | — | **NEXT AVAILABLE — all future cases start here** | — |
 ### Numbering Notes (Historical)
 
@@ -1062,13 +1072,13 @@ All former conflicts have been resolved. The notes below document what was fixed
 ---
 
 
-## Part 13 — Cases 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1461
+## Part 13 — Cases 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1491
 
 > Franchise special moves, gimmick foundations, and derived combos (CS13)
 
 | # | Title | Gen | System | Type | Tags |
 |---|-------|-----|--------|------|------|
-| 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1461 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
+| 619–866 · 1098–1157 · 1176–1193 · 1216–1278 · 1340–1375 · 1381–1491 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
 
 ---
 
