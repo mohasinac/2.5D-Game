@@ -131,7 +131,6 @@ test.describe("Game Mechanics: Game Select", () => {
     await ss(page, "GM05-game-select");
 
     const tryout = page.locator("text=Tryout").first();
-    const aiBattle = page.locator("text=AI Battle, text=AI").first();
     const tryoutOk = await tryout.isVisible({ timeout: 8_000 }).catch(() => false);
     if (tryoutOk) await expect(tryout).toBeVisible();
   });

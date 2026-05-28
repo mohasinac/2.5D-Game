@@ -967,6 +967,7 @@ export function useColyseus({
       connect();
     }
     return () => {
+      if (step4TimerRef.current) { clearTimeout(step4TimerRef.current); step4TimerRef.current = null; }
       disconnect();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

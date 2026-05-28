@@ -27357,7 +27357,7 @@ Any bey carrying the Bigbang Genesis layer may access the anime special moves in
 
 ---
 
-## Case 1267 — Energy Layer: Orb Egis (18.67 g, Burst Cho-Z Layer System, Defense Type)
+## Case 1319 — Energy Layer: Orb Egis (18.67 g, Burst Cho-Z Layer System, Defense Type)
 
 **Tags:** Gen3-Burst · Burst-CZ · Cho-Z · Layer · Defense · Metal · Destabilizer
 
@@ -27432,7 +27432,7 @@ On release, Orb Egis was a top-tier Defense choice because:
 
 ---
 
-## Case 1268 — Forge Disc: Outer (22.05 g, Burst Cho-Z)
+## Case 1320 — Forge Disc: Outer (22.05 g, Burst Cho-Z)
 
 **Tags:** Gen3-Burst · Burst-CZ · Disc · OWD · Stamina · LAD
 
@@ -27497,7 +27497,7 @@ Outer presents **no additional burst risk** relative to its weight: it is a sing
 
 ---
 
-## Case 1269 — Performance Tip: Quest (7.3 g, Burst Cho-Z, Defense Type — Suction Cup)
+## Case 1321 — Performance Tip: Quest (7.3 g, Burst Cho-Z, Defense Type — Suction Cup)
 
 **Tags:** Gen3-Burst · Burst-CZ · Driver · Defense · Suction-Cup · KO-Resistance
 
@@ -27571,7 +27571,7 @@ The poor stamina is mitigated when the combo wins before stamina becomes the dec
 
 ---
 
-## Case 1270 — Orb Egis Outer Quest: Full Assembly (Burst Cho-Z, Defense / Destabilizer)
+## Case 1322 — Orb Egis Outer Quest: Full Assembly (Burst Cho-Z, Defense / Destabilizer)
 
 **Tags:** Gen3-Burst · Burst-CZ · Assembly · Defense · Destabilizer · OWD · KO-Resist
 
@@ -27668,7 +27668,7 @@ High L_battle (1.739 × 10⁻² N·m·s) is one of the highest for a Cho-Z Defen
 
 ---
 
-## Case 1271 — Energy Layer: Kreis Satan (9.31 g, Burst God Layer System, Defense Type)
+## Case 1323 — Energy Layer: Kreis Satan (9.31 g, Burst God Layer System, Defense Type)
 
 **Tags:** Gen3-Burst · Burst-God · God-Layer · Layer · Defense · Roller-Gimmick
 
@@ -27759,7 +27759,7 @@ At battle ω, the non-circular cross-section generates ~5–10% more aerodynamic
 
 ---
 
-## Case 1272 — Forge Disc: 2 (21.21 g, Burst God / Burst Standard)
+## Case 1324 — Forge Disc: 2 (21.21 g, Burst God / Burst Standard)
 
 **Tags:** Gen3-Burst · Burst-God · Disc · Balanced · Jack-of-All-Trades
 
@@ -27822,7 +27822,7 @@ Disc 2 is deliberately mid-table on all metrics — adequate for any role when s
 
 ---
 
-## Case 1273 — Disc Frame: Glaive (2.34 g, Burst God / Burst Standard)
+## Case 1325 — Disc Frame: Glaive (2.34 g, Burst God / Burst Standard)
 
 **Tags:** Gen3-Burst · Burst-God · Frame · LAD · Stamina
 
@@ -27874,7 +27874,7 @@ Small mass but large r_eff: Glaive's I contribution is disproportionately high p
 
 ---
 
-## Case 1274 — Performance Tip: Loop (6.2 g, Burst God / Burst Standard, Defense Type)
+## Case 1326 — Performance Tip: Loop (6.2 g, Burst God / Burst Standard, Defense Type)
 
 **Tags:** Gen3-Burst · Burst-God · Driver · Defense · Roller · Braking · KO-Resist
 
@@ -27971,7 +27971,7 @@ Tab braking costs stamina:
 
 ---
 
-## Case 1275 — Kreis Satan 2Glaive Loop: Full Assembly (Burst God, Defense Type)
+## Case 1327 — Kreis Satan 2Glaive Loop: Full Assembly (Burst God, Defense Type)
 
 **Tags:** Gen3-Burst · Burst-God · Assembly · Defense · KO-Resist · Destabilizer · Roller-Gimmick
 
@@ -28090,7 +28090,7 @@ Glaive's near-circular LAD profile aids during mid-spin wobble phase. The upward
 
 ---
 
-## Case 1276 — Superking Chip: Lucifer 1 (5.7 g, Burst Superking / Sparking)
+## Case 1328 — Superking Chip: Lucifer 1 (5.7 g, Burst Superking / Sparking)
 
 **Tags:** Gen3-Burst · Burst-SK · Superking · Chip · Metal · Defense
 
@@ -28153,7 +28153,7 @@ The Superking Chip provides:
 
 ---
 
-## Case 1277 — Ring: Variant (5.9 g, Burst Superking)
+## Case 1329 — Ring: Variant (5.9 g, Burst Superking)
 
 **Tags:** Gen3-Burst · Burst-SK · Superking · Ring · Defense
 
@@ -28202,7 +28202,7 @@ With 2D chassis's Barrier Blades deploying at the mid/lower level, the Ring's co
 
 ---
 
-## Case 1278 — Chassis: 2D (47.1 g, Burst Superking, Defense Type — Barrier Blades)
+## Case 1330 — Chassis: 2D (47.1 g, Burst Superking, Defense Type — Barrier Blades)
 
 **Tags:** Gen3-Burst · Burst-SK · Superking · Chassis · Double-Chassis · Disc-Integrated · Defense · Barrier-Blades · Gimmick · Dual-Spin
 
@@ -28299,7 +28299,7 @@ The Superking Double Chassis line includes both attack (2A) and defense (2D) var
 
 ---
 
-## Case 1279 — Performance Tip: Mobius (7.7 g, Burst Superking, Stamina / Defense Type)
+## Case 1331 — Performance Tip: Mobius (7.7 g, Burst Superking, Stamina / Defense Type)
 
 **Tags:** Gen3-Burst · Burst-SK · Superking · Driver · Stamina · Free-Spin · Opposite-Spin
 
@@ -28384,7 +28384,7 @@ Small I contribution from driver; main role is friction management, not inertia.
 
 ---
 
-## Case 1280 — Variant Lucifer Mobius 2D: Full Assembly (Burst Superking, Defense Type, Dual-Spin)
+## Case 1332 — Variant Lucifer Mobius 2D: Full Assembly (Burst Superking, Defense Type, Dual-Spin)
 
 **Tags:** Gen3-Burst · Burst-SK · Superking · Assembly · Defense · Double-Chassis · Barrier-Blades · Stamina · Opposite-Spin
 
@@ -29619,3 +29619,742 @@ Tournament performance degrades significantly when EDS spike is worn. Players sh
 - tipType: eternal-spike
 - wheelType: defense-stamina-4D-freespin
 - beyType: stamina
+
+
+## Case 1333 — Gatinko Chip: Joker
+
+**Generation:** Burst GT (Gatinko System)
+**Part type:** Gatinko Chip
+**Beyblade:** Judgement Joker 00Turn Trick Zan
+**Blader:** Cuza Ackermann (anime)
+
+**Physical properties:**
+- Mass: m = 3.0 g = 0.003 kg
+- Spin direction: Right Spin (RS)
+- Design motif: Two symmetrical joker heads (European Medieval entertainer/jester)
+- Radius: r ≈ 11 mm (standard GT Chip outer lip)
+- Moment of inertia:
+  I_chip ≈ ½ × m × r² = ½ × 0.003 × 0.011² = **1.815 × 10⁻⁷ kg·m²**
+
+**Lock mechanism — Hard Lock:**
+In the GT system, the Gatinko Chip houses the burst lock mechanism (ratchet teeth). Joker has a "Hard Lock" — above-average tooth engagement depth/angle compared to standard GT chips.
+
+Standard GT chip soft-lock burst threshold: τ_burst ≈ 3.0–3.5 mN·m
+Joker Hard Lock: τ_burst ≈ **5.5 mN·m** (≈57% above standard)
+
+This means to Burst a Joker-chipped combination, the opponent must generate ≥ 5.5 mN·m of sustained burst torque at the layer contact. For comparison, strong GT attack layers (Dread, Judgement) at battle ω ≈ 420 rad/s can generate 50–200 mN·m of contact torque — so the lock can still be overcome by powerful attack types, but casual smash hits are unlikely to Burst a Joker combination.
+
+Even without a Dash-Driver (which usually adds rubber tabs to increase burst resistance), Joker maintains high burst resistance thanks to the Hard Lock alone.
+
+**Goku Layer Weight synergy:**
+The documentation notes Joker is "an excellent Gatinko Chip to use in right-spin Combinations" when paired with the Goku Layer Weight. The Goku Layer Weight (approx. 9–10 g) adds mass closer to the outer radius of the layer stack, which:
+1. Increases assembly I → higher L₀ at the same ω₀
+2. Reinforces the chip-base connection area → further increases de facto burst resistance at low ω
+
+In this stock combo, Zan (7.9 g) is used instead of Goku. Zan provides less weight but similar anti-burst structural contribution.
+
+**Hasbro variant:**
+Virtually identical geometry but manufactured with weaker materials → reduced burst resistance under heavy repeated impacts. Τ_burst_Hasbro ≈ 4.0–4.5 mN·m (estimated reduction of ~20% from material compliance).
+
+**Game engine:**
+- burstResistance: 5.5 mN·m (Hard Lock)
+- chipSpin: right
+- chipMass: 3.0 g
+
+---
+
+## Case 1334 — Layer Weight: Zan
+
+**Generation:** Burst GT (Gatinko System)
+**Part type:** Layer Weight
+**Beyblade:** Judgement Joker 00Turn Trick Zan
+
+**Physical properties:**
+- Mass: m = 7.9 g = 0.0079 kg
+- Shape: Annular ring with sawtooth outer edge detailing; fits between the Gatinko Chip base and the Layer Base top surface
+- Inner radius: r_i ≈ 18 mm (seats around the chip engagement collar)
+- Outer radius: r_o ≈ 32 mm (extends to the inner edge of the Layer Base contact zone)
+
+**Moment of inertia:**
+I_Zan = ½ × m × (r_i² + r_o²)
+= ½ × 0.0079 × (0.018² + 0.032²)
+= ½ × 0.0079 × (3.24 × 10⁻⁴ + 1.024 × 10⁻³)
+= ½ × 0.0079 × 1.348 × 10⁻³
+= **5.325 × 10⁻⁶ kg·m²**
+
+**Role in assembly:**
+The Layer Weight in the GT system is primarily a mass element — it increases the total assembly inertia and sits at a mid-range radius that contributes meaningfully to both:
+1. Stamina (I increase → longer spin time from same L₀)
+2. Burst resistance (mass clamped between chip and base adds friction to the chip-base interface, making it harder to peel the chip off the base under burst torque)
+
+At 7.9 g, Zan is a standard-weight Layer Weight. The Goku Layer Weight (~9–10 g) is heavier and therefore preferred for maximum burst resistance and Stamina; Zan at 7.9 g is mid-tier.
+
+**I contribution vs other parts:**
+At 5.325 × 10⁻⁶ kg·m², Zan contributes ~14.5% of assembly I (assembly I = 3.670 × 10⁻⁵). This is non-trivial — comparable to the Judgement base's own I contribution.
+
+---
+
+## Case 1335 — Layer Base: Judgement
+
+**Generation:** Burst GT (Gatinko System)
+**Part type:** Layer Base
+**Beyblade:** Judgement Joker 00Turn Trick Zan
+
+**Physical properties:**
+- Mass: m = 12.0 g = 0.012 kg
+- Type: Attack
+- Spin direction: Right Spin (RS)
+- Shape: Elliptical (8-shaped in top view) — two opposed lobes, each carrying one large rubber contact blade
+- Primary contact points: 2 rubber blades at r ≈ 33 mm from center
+- Outer extent: ~r = 36 mm (rubber blade tip)
+- Inner bore: r ≈ 8 mm (Gatinko Chip seat)
+
+**Construction breakdown:**
+| Sub-component | Est. mass | r_effective | Notes |
+|---------------|-----------|-------------|-------|
+| ABS frame body | ~8.0 g | r_i=8mm, r_o=28mm | Elliptical ring |
+| Rubber blades (×2) | ~2.0 g each (4.0 g total) | r ≈ 33 mm | Primary contact points |
+
+**Moment of inertia:**
+
+ABS frame (annular model):
+I_frame = ½ × 0.008 × (0.008² + 0.028²)
+= ½ × 0.008 × (6.4 × 10⁻⁵ + 7.84 × 10⁻⁴)
+= ½ × 0.008 × 8.48 × 10⁻⁴
+= **3.392 × 10⁻⁶ kg·m²**
+
+Rubber blades (2 point masses at r=33mm):
+I_blades = 0.004 × 0.033²
+= 0.004 × 1.089 × 10⁻³
+= **4.356 × 10⁻⁶ kg·m²**
+
+**I_Judgement = 3.392 + 4.356 = 7.748 × 10⁻⁶ kg·m²**
+
+**Attack mechanics — Rubber Smash:**
+Rubber blades provide significantly higher friction at contact than polycarbonate (ABS) blades:
+- μ_rubber ≈ 0.55 (rubber-on-polycarbonate stadium surface/opposing layer)
+- μ_ABS ≈ 0.15–0.20 (typical)
+
+At battle ω ≈ 420 rad/s (60% of ω₀=700), rubber blade tip velocity:
+v_tip = ω × r_blade = 420 × 0.033 = **13.86 m/s**
+
+Contact kinetic energy per blade:
+KE_blade = ½ × m_blade × v_tip² = ½ × 0.002 × 13.86² = **0.192 J per blade**
+Total: 2 × 0.192 = **0.384 J** in blade impact zone
+
+The elliptical shape concentrates both rubber blades on the long axis of the ellipse, providing:
+- High per-contact smash force (blade hits at 90° to the ellipse's major axis = full smash angle)
+- Attack angle φ ≈ 20–25° (efficient for KO and Burst attack)
+
+**Burst attack torque on opponent:**
+The rubber blade grip during contact generates a twist torque on the opponent's layer:
+τ_attack ≈ μ_rubber × F_impact × r_contact
+
+At contact, F_impact estimated from closing velocity v_rel ≈ 5–10 m/s and contact duration Δt ≈ 5–10 ms:
+F_impact ≈ (m_blade × v_rel) / Δt = (0.002 × 7.5) / 0.007 ≈ **2.14 N** (per blade)
+
+τ_attack = 0.55 × 2.14 × 0.033 ≈ **38.8 mN·m** per blade → total **77.6 mN·m** for dual-blade contact
+
+This τ_attack (77.6 mN·m) exceeds Joker's Hard Lock threshold (5.5 mN·m) by ~14×, confirming Judgement generates overwhelming Burst attack potential on its own. The key limiting factor in competitive play is achieving and sustaining contact — controlled by the driver.
+
+**Recommended drivers per the spec:**
+- Xtreme' (rubber flat, controllable movement pattern)
+- Quick' (semi-flat, predictable movement)
+- Both generate enough speed for flower patterns while keeping recoil manageable
+
+**Recoil concern:**
+The rubber blades that provide high attack also generate significant recoil when they catch an opponent's layer during a Burst attempt that fails. This is the design tradeoff — Judgement is the **strongest Attack Type Base** but also the most recoil-prone. Proper driver selection (Xtreme'/Quick') mitigates this.
+
+**Hasbro note:** Same architecture as Takara Tomy. Material differences reduce rubber friction slightly (μ_rubber ≈ 0.45), reducing attack torque by ~18%.
+
+---
+
+## Case 1336 — Forge Disc: 00 (Double Zero)
+
+**Generation:** Burst God / Cho-Z / GT / Superking / DB (universal core disc)
+**Part type:** Core Disc (Forge Disc)
+**Beyblade:** Judgement Joker 00Turn Trick Zan
+
+**Physical properties:**
+- Mass: m = 25.2 g = 0.0252 kg
+- Shape: Symmetrical elliptical disc — can accept Disc Frames in the outer groove
+- Inner radius: r_i ≈ 6 mm (central hub bore)
+- Outer radius: r_o ≈ 40 mm (outer rim, heavier elliptical sides)
+- Weight class: **Heaviest Core Disc** in the Burst series — exceeds Disc 0 (24.2 g) by 1.0 g
+
+**Moment of inertia:**
+I_00 = ½ × m × (r_i² + r_o²)
+= ½ × 0.0252 × (0.006² + 0.040²)
+= ½ × 0.0252 × (3.6 × 10⁻⁵ + 1.6 × 10⁻³)
+= ½ × 0.0252 × 1.6036 × 10⁻³
+= **2.021 × 10⁻⁵ kg·m²**
+
+**Why 00 outperforms 0:**
+Disc 0 (24.2 g) vs Disc 00 (25.2 g) — 1 g difference:
+ΔI = ½ × 0.001 × (r_i² + r_o²) = ½ × 0.001 × 1.6036 × 10⁻³ ≈ 8.0 × 10⁻⁷ kg·m²
+ΔL at ω₀ = 700: ΔL = 8.0 × 10⁻⁷ × 700 = **5.6 × 10⁻⁴ kg·m²/s** (+2.2% vs Disc 0)
+
+Small but meaningful for Stamina matchups.
+
+**Disc frame compatibility:**
+00's outer groove accepts any standard Disc Frame (Turn, Wall, Bump, Lift, etc.). This modularity makes 00 the most versatile Core Disc:
+- 00 + Turn (3.6 g): total disc mass = 28.8 g, I_disc ≈ 2.021×10⁻⁵ + 2.52×10⁻⁶ = 2.273×10⁻⁵
+- 00 + Wall (~4 g+): highest mass disc combination, maximum Stamina/Defense
+- 00 alone: lightest 00 configuration (max Speed at expense of Stamina)
+
+**Weight distribution analysis:**
+The elliptical shape concentrates mass at two opposing outer lobes of the disc. This creates a slight mass asymmetry (more mass along the major axis) which can in theory improve attack by concentrating momentum at certain contact angles. However, at 60 Hz rotation rates the asymmetry effect is negligible and the disc behaves effectively as an isotropic ring for spin-decay modeling.
+
+**Outward Weight Distribution (OWD) rank:**
+Among all Burst Core Discs, 00 has the highest OWD (highest proportion of mass at large r). The elliptical shape combined with the highest total mass gives 00:
+- Highest Stamina potential (maximum I, slowest spin decay)
+- High Defense potential (maximum angular momentum L = I × ω absorbs attack impulses)
+- High Attack potential (maximum recoil from opponent — greater Δω transferred to opponent on collision)
+
+**Game engine:**
+- discMass: 25.2 g
+- I_disc: 2.021 × 10⁻⁵ kg·m²
+- frameCompatible: true
+- weightClass: heaviest-core-disc
+
+---
+
+## Case 1337 — Disc Frame: Turn
+
+**Generation:** Burst Cho-Z / GT / Superking (universal frame)
+**Part type:** Disc Frame
+**Beyblade:** Judgement Joker 00Turn Trick Zan
+
+**Physical properties:**
+- Mass: m = 3.6 g = 0.0036 kg
+- Shape: Four-arm radial frame (X-cross profile) with hexagonal arm tips
+- Arm reach: r_inner ≈ 10 mm (hub), r_outer ≈ 40 mm (arm tip)
+- Frame weight rank: heavier than Lift (~3.0 g) and Bump (~2.6 g); lighter than Wall (~4.0+ g)
+
+**Moment of inertia (4-arm rod model):**
+Each arm: r_i = 10 mm to r_o = 40 mm, m_arm = 3.6/4 = 0.9 g
+
+I_arm = m_arm × (r_o² + r_o×r_i + r_i²) / 3
+= 0.0009 × (0.040² + 0.040×0.010 + 0.010²) / 3
+= 0.0009 × (1.60×10⁻³ + 4.0×10⁻⁴ + 1.0×10⁻⁴) / 3
+= 0.0009 × 2.10×10⁻³ / 3
+= **6.30 × 10⁻⁷ kg·m² per arm**
+
+**I_Turn = 4 × 6.30×10⁻⁷ = 2.520 × 10⁻⁶ kg·m²**
+
+**Gimmick: Defense Mode / Attack Mode:**
+Turn features two spring-loaded or geometry-driven mode positions (similar to Lift):
+
+- **Defense Mode:** Arms retracted or angled inward → the frame edge catches hits from opposing layers that make Disc-to-Layer contact, parrying the blow and dissipating recoil laterally
+- **Attack Mode:** Arms extended or angled outward → the frame edge presses against the opposing layer during contact, increasing burst attack torque
+
+**Why the gimmick rarely activates:**
+The mode switch is driven by the disc-to-layer contact force. This contact requires the opponent's layer to be at the same height as the Turn frame's arm tips. In the Burst GT/Cho-Z era, most drivers (Xtreme, Orbit, Quest, Bearing, etc.) place the layer at slightly different heights, meaning disc-frame contact is rare. The gimmick is effectively vestigial in standard competition.
+
+**Practical value — mass contribution:**
+Despite the gimmick being non-functional in most battles, Turn's 3.6 g at r ≈ 25–40 mm (arm span) adds meaningful I to the 00 disc combination:
+- Without Turn: I_disc = 2.021 × 10⁻⁵
+- With Turn: I_disc+frame = 2.021×10⁻⁵ + 2.520×10⁻⁶ = 2.273×10⁻⁵ (+12.5%)
+
+This 12.5% I increase from Turn is proportionally much larger than Bump (~2.6 g, +~7%) but slightly less than Wall (if Wall is ~4 g at similar radius, +~17%). Turn occupies the mid-tier frame slot that balances Stamina gain against attack potential.
+
+**Game engine:**
+- frameMass: 3.6 g
+- I_frame: 2.520 × 10⁻⁶ kg·m²
+- gimmickType: mode-switch-defense-attack (inactive in standard play)
+- scrapeRisk: low (arm geometry keeps tips above floor level when paired with 00)
+
+---
+
+## Case 1338 — Performance Tip: Trick
+
+**Generation:** Burst GT (Gatinko System)
+**Part type:** Performance Tip
+**Beyblade:** Judgement Joker 00Turn Trick Zan
+
+**Physical properties:**
+- Mass: m = 9.9 g = 0.0099 kg (one of the heaviest Burst-era drivers)
+- Modes: **Hole-Flat Mode** (primary) / **Sharp Mode** (secondary)
+- Mode switch mechanism: a tab on the driver body contacts the floor during spin, actuating the mode change
+- Overall height: standard Burst driver height
+
+**Contact geometry by mode:**
+
+| Mode | Contact shape | r_eff | μ | Notes |
+|------|--------------|-------|---|-------|
+| Hole-Flat | Ring/annulus with center hole | 4.5 mm | 0.30 | Wide contact ring, higher friction |
+| Sharp | Single spike point | 0.5 mm | 0.05 | Minimal friction, maximum wobble risk |
+
+**Spin decay (using assembly mass = 61.6 g):**
+
+*Hole-Flat Mode:*
+τ_flat = μ × m × g × r_eff = 0.30 × 0.0616 × 9.81 × 0.0045 = **8.15 × 10⁻⁴ N·m**
+dω/dt_flat = τ_flat / I_assembly = 8.15×10⁻⁴ / 3.670×10⁻⁵ = **22.21 rad/s²**
+t_stall_flat = 700 / 22.21 ≈ **31.5 s**
+
+*Sharp Mode:*
+τ_sharp = 0.05 × 0.0616 × 9.81 × 0.0005 = **1.51 × 10⁻⁵ N·m**
+dω/dt_sharp = 1.51×10⁻⁵ / 3.670×10⁻⁵ = **0.411 rad/s²**
+t_stall_sharp = 700 / 0.411 ≈ **1703 s** (theoretical only — destabilizes long before this)
+
+**Why the mode switch is detrimental:**
+A beyblade in **Hole-Flat mode** has controllable movement (erratic but floor-bound). If it switches to **Sharp mode** mid-battle:
+- The contact friction drops suddenly (from μ=0.30 to μ=0.05)
+- The bey rapidly destabilizes (sharp tips cannot maintain gyroscopic precession against low-friction floor contact at low spin)
+- The transition itself applies a brief uncontrolled lurch
+
+Conversely, if starting in **Sharp mode** and switching to Hole-Flat:
+- The sudden increase in friction (μ × 6× increase) causes an abrupt slowdown
+- This can destabilize or KO the bey if it hits a wall at the moment of transition
+
+Neither transition is beneficial — the gimmick is purely detrimental. The blader cannot reliably choose which mode the bey starts in, and cannot prevent the switch.
+
+**Movement pattern analysis:**
+
+*Hole-Flat:*
+- The hole in the center of the flat contact removes the center support → the flat ring traces an erratic, skipping orbit
+- Cannot sustain the consistent oval "flower pattern" that rubber flat tips (RF, HF, HS) execute
+- This means Trick cannot efficiently deliver high-speed attacks like an RF combo
+
+*Sharp:*
+- Identical instability issues to DS (Defense Spike) Sharp Mode, but DS has the advantage of being explicitly designed for Stamina
+- Trick's sharp mode destabilizes earlier due to the mode-switch mechanical play creating vibration
+
+**Mass penalty:**
+At 9.9 g, Trick is among the heaviest GT Drivers (for reference, Orbit Metal ≈ 8.0 g is heavy; most tips are 5–8 g). This adds mass without contributing performance:
+I_Trick = ½ × m × r_body² ≈ ½ × 0.0099 × 0.012² = **7.128 × 10⁻⁷ kg·m²**
+
+The high mass does add 0.7 × 10⁻⁶ kg·m² to assembly I (≈1.9% of I_total), which is marginally better Stamina than a lighter tip — but any tip that performs better (Orbit, Quest, Bearing, Xtreme') contributes similar or better I at better movement quality.
+
+**Verdict:** Trick is strictly a **collection piece**. In any competitive format, replace with Xtreme' (Attack) or Bearing/Orbit (Stamina/Defense). The mode-switch gimmick can only hurt the combination, never help it.
+
+**Game engine:**
+- tipType: trick-mode-switch
+- modes: [{name: "hole-flat", rEff: 4.5mm, mu: 0.30}, {name: "sharp", rEff: 0.5mm, mu: 0.05}]
+- modeSwitchTrigger: floor-tab (unreliable, random probability per tick)
+- modeSwitchDetrimental: true
+- competitiveRating: collection-only
+
+---
+
+## Case 1339 — Assembled Beyblade Analysis: Judgement Joker 00Turn Trick Zan
+
+**Generation:** Burst GT (Gatinko System)
+**Type:** Attack (Layer Base) / Non-competitive as built (Trick driver)
+**Beyblade:** Judgement Joker 00Turn Trick Zan
+
+**Assembly components:**
+| Part | Mass | I (kg·m²) |
+|------|------|-----------|
+| Gatinko Chip Joker | 3.0 g | 1.815 × 10⁻⁷ |
+| Layer Weight Zan | 7.9 g | 5.325 × 10⁻⁶ |
+| Layer Base Judgement | 12.0 g | 7.748 × 10⁻⁶ |
+| Forge Disc 00 | 25.2 g | 2.021 × 10⁻⁵ |
+| Disc Frame Turn | 3.6 g | 2.520 × 10⁻⁶ |
+| Performance Tip Trick | 9.9 g | 7.128 × 10⁻⁷ |
+
+**Total assembly mass:**
+m = 3.0 + 7.9 + 12.0 + 25.2 + 3.6 + 9.9 = **61.6 g = 0.0616 kg**
+
+**Total moment of inertia:**
+I_total = 0.182 + 5.325 + 7.748 + 20.21 + 2.520 + 0.713 (all × 10⁻⁶)
+= **36.698 × 10⁻⁶ = 3.670 × 10⁻⁵ kg·m²**
+
+*Part I contributions:*
+- Disc 00: 20.21/36.70 = **55.1%** (dominant)
+- Layer Base Judgement: 7.748/36.70 = **21.1%**
+- Turn frame: 2.520/36.70 = **6.9%**
+- Zan weight: 5.325/36.70 = **14.5%**
+- Trick tip + Joker chip: **2.4%** combined
+
+**Angular momentum at launch (GT, ω₀ = 700 rad/s):**
+L₀ = I_total × ω₀ = 3.670 × 10⁻⁵ × 700 = **2.569 × 10⁻² kg·m²/s**
+
+**Spin decay (Trick hole-flat mode — actual combat mode):**
+τ = μ_flat × m × g × r_eff = 0.30 × 0.0616 × 9.81 × 0.0045 = **8.15 × 10⁻⁴ N·m**
+dω/dt = τ / I_total = 8.15 × 10⁻⁴ / 3.670 × 10⁻⁵ = **22.21 rad/s²**
+t_stall = ω₀ / (dω/dt) = 700 / 22.21 = **31.5 s** (theoretical maximum in flat mode)
+
+**Battle ω (60% of ω₀):** 420 rad/s
+**Wobble threshold (40% of ω₀):** 280 rad/s
+t_wobble = (700 − 280) / 22.21 ≈ **18.9 s**
+
+This is poor Stamina for a 61.6 g bey — Trick's flat mode friction is ~10× that of a Bearing or Orbital tip at the same assembly mass. For comparison, a Judgement Joker 00Turn **Bearing** combination would achieve:
+τ_bearing = 0.015 × 0.0616 × 9.81 × 0.003 = 2.72 × 10⁻⁵ N·m
+dω/dt_bearing = 0.74 rad/s² → t_stall ≈ **946 s** (30× better)
+
+**Competitive assessment:**
+
+**As built (Trick driver) — not recommended:**
+- Trick's flat mode produces erratic, uncontrolled movement — cannot flower pattern
+- Trick's sharp mode destabilizes quickly; mode switch is uncontrolled and detrimental
+- t_stall ≈ 31.5 s at high friction; first wobble at ~18.9 s → bey is vulnerable long before most opponents are defeated
+- **Not viable for competitive play in any format**
+
+**Judgement base — standout performer (driver-independent):**
+- Strongest Attack Type Base in GT era
+- Two rubber blades generate τ_attack ≈ 77.6 mN·m at battle ω
+- This exceeds any opponent's burst threshold by a factor of ~14× (vs Joker's own 5.5 mN·m lock)
+- With proper driver, Judgement is a top-tier Attack Layer Base
+
+**Optimal combo using these parts:**
+| Role | Combo |
+|------|-------|
+| Pure Attack | Judgement Joker 00Turn **Xtreme'** Zan |
+| Balanced Attack | Judgement Joker 00Turn **Quick'** Zan |
+| Anti-Stamina | Judgement Joker **0**Turn Xtreme' Zan (lighter disc, faster movement) |
+
+Replacing Trick with Xtreme' transforms the combo from collection-only into a tournament-viable Attack archetype. Xtreme' provides the rubber flat movement pattern Judgement requires to execute consistent smash runs.
+
+**Game engine values:**
+- assemblyMass: 61.6 g
+- I_total: 3.670 × 10⁻⁵ kg·m²
+- ω₀: 700 rad/s (Burst GT LR String Launcher)
+- spinDecayRate: 22.21 rad/s² (Trick flat mode, stock configuration)
+- L₀: 2.569 × 10⁻² kg·m²/s
+- beyType: attack
+- burstResistance: 5.5 mN·m (Joker Hard Lock)
+- attackTorque: 77.6 mN·m (Judgement rubber blade dual contact)
+- driverRating: collection-only (Trick)
+- competitiveNote: Replace Trick with Xtreme' or Quick' for viable Attack combination
+
+
+## Case 1376 — Superking Chip: Hyperion 2
+
+**Generation:** Burst Sparking / Superking
+**Part type:** Superking Chip
+**Beyblade:** Hyperion Burn Cho Xceed'+X
+**Blader:** Hikaru Hizashi (anime)
+
+**Physical properties:**
+- Mass: m = 5.7 g = 0.0057 kg
+- Spin direction: Right Spin (RS)
+- Design motif: Side-profile portrait of Hyperion (solar epithet of Helios, Greek god of the sun)
+- Metal element: integrated metallic weight insert (one of five SK Chips featuring metal)
+- Compatible with Metal Chip Core: yes (along with Solomon only, among right-spin metal SK Chips)
+- Radius: r ≈ 11 mm (standard SK Chip outer lip)
+
+**Moment of inertia:**
+I_chip = ½ × m × r²
+= ½ × 0.0057 × 0.011²
+= **3.449 × 10⁻⁷ kg·m²**
+
+**Metal Chip Core compatibility:**
+Of the four right-spin SK Chips with metal, only Hyperion 2 and Solomon accept the Metal Chip Core (MCC) — an additional insert that further concentrates metallic mass at the chip level. With MCC (estimated +3.5 g at r ≈ 8 mm):
+ΔI_MCC ≈ 0.0035 × 0.008² = 2.24 × 10⁻⁷ kg·m²
+I_chip+MCC ≈ 5.69 × 10⁻⁷ kg·m²
+
+While the I gain from MCC is modest (~0.5% of assembly I), the mass increase stiffens the chip-to-ring interface, adding structural burst resistance. However, Solomon is heavier than Hyperion 2 and is generally preferred when burst resistance is the priority; Hyperion 2 is used when a lighter metal chip is needed or Solomon is unavailable.
+
+**Burst resistance profile:**
+SK Chips use a ratchet-tooth lock similar to GT Chips. Hyperion 2's metal construction provides a hard engagement surface:
+- Estimated τ_burst_chip: **4.5–5.0 mN·m**
+- Dash Driver (Xceed'+X) adds: +1.5–2.0 mN·m (stronger spring lock)
+- Combined τ_burst_assembly: ≈ **6.5 mN·m**
+
+**Hasbro note (Hyperion Flamebringer):**
+Hasbro's version retains the same geometry but uses softer plastics. The metal insert is present but binding torque is reduced (~20% lower). τ_burst_Hasbro ≈ 5.0 mN·m.
+
+---
+
+## Case 1377 — Ring: Burn (Limit Break)
+
+**Generation:** Burst Sparking / Superking
+**Part type:** Ring (Layer Ring — outer Superking layer component)
+**Beyblade:** Hyperion Burn Cho Xceed'+X
+
+**Physical properties:**
+- Mass: m = 24.5 g = 0.0245 kg
+- Type: Attack
+- Spin direction: Right Spin (RS)
+- Contact points: 4 blades (Normal Mode) → 4 super-large blades (Activated Mode)
+- Inner radius: r_i ≈ 14 mm (chip/core seat)
+- Outer radius, normal: r_tip_N ≈ 35 mm
+- Outer radius, activated: r_tip_A ≈ 40 mm
+
+**Limit Break gimmick:**
+Ring Burn features a spring-loaded blade deployment mechanism ("Limit Break"):
+- **Normal Mode:** Four large attack blades are held in their stowed position by an internal latch mechanism coupled to the burst lock
+- **Activated Mode (Limit Break):** The latch releases — blades spring outward to their extended super-large configuration
+
+**Trigger conditions (two independent routes):**
+1. **Lock advancement:** As the bey receives burst torque over multiple impacts, the internal lock advances position. At a threshold angle, the latch releases and triggers the transformation. This happens passively as burst resistance degrades.
+2. **Strong impact:** A single high-energy collision can force the latch past its threshold, triggering instant activation regardless of lock state.
+
+**Moment of inertia decomposition:**
+
+Ring frame body (~18.0 g, annular):
+I_body = ½ × 0.018 × (r_i² + r_o²) = ½ × 0.018 × (0.014² + 0.030²)
+= ½ × 0.018 × (1.96×10⁻⁴ + 9.0×10⁻⁴)
+= ½ × 0.018 × 1.096×10⁻³
+= **9.864 × 10⁻⁶ kg·m²**
+
+Blade mass (~4 × 1.625 g = 6.5 g total):
+
+*Normal Mode* (blades at r ≈ 35 mm):
+I_blades_N = m_blades × r_N²
+= 0.0065 × 0.035²
+= 0.0065 × 1.225×10⁻³
+= **7.963 × 10⁻⁶ kg·m²**
+
+*Activated Mode* (blades extended to r ≈ 40 mm):
+I_blades_A = 0.0065 × 0.040²
+= 0.0065 × 1.600×10⁻³
+= **1.040 × 10⁻⁵ kg·m²**
+
+**Summary:**
+- I_Burn (Normal) = 9.864×10⁻⁶ + 7.963×10⁻⁶ = **1.783 × 10⁻⁵ kg·m²**
+- I_Burn (Activated) = 9.864×10⁻⁶ + 1.040×10⁻⁵ = **2.026 × 10⁻⁵ kg·m²**
+- ΔI at activation = 2.026×10⁻⁵ − 1.783×10⁻⁵ = **2.43 × 10⁻⁶ kg·m²** (+13.6% ring I increase)
+
+**Angular momentum analysis at activation:**
+Angular momentum is conserved at the instant of blade deployment (internal energy release):
+ω_after = (I_assembly_normal × ω_before) / I_assembly_activated
+
+At battle ω = 420 rad/s (see Case 1368 for full assembly values):
+I_assembly_normal = 4.402×10⁻⁵ kg·m²
+I_assembly_activated = 4.645×10⁻⁵ kg·m²
+
+ω_after = (4.402×10⁻⁵ × 420) / 4.645×10⁻⁵ = 18487 / 4.645×10⁻⁵ = **397.9 rad/s**
+Δω = 420 − 397.9 = **−22.1 rad/s** (−5.3% spin drop at activation)
+
+**Attack amplification at activation:**
+Blade tip velocity post-activation:
+v_tip_A = ω_after × r_tip_A = 397.9 × 0.040 = **15.92 m/s**
+
+vs. normal mode:
+v_tip_N = ω_before × r_tip_N = 420 × 0.035 = **14.70 m/s**
+
+Blade KE (all 4 blades):
+KE_N = ½ × 0.0065 × 14.70² = **0.703 J**
+KE_A = ½ × 0.0065 × 15.92² = **0.824 J**
+
+Attack amplification: **+17.2% blade impact KE** at activation, despite the 5.3% spin drop.
+
+This is the Limit Break payoff: the blade extension more than compensates for the momentum-conservation spin drop, delivering a harder hit per contact event after activation.
+
+**"Late game spike" behaviour:**
+Trigger route 1 (lock advancement) means the transformation becomes increasingly likely as the battle progresses. This gives Burn a characteristic trajectory:
+- Early battle: standard 4-blade attack profile (v_tip = 14.70 m/s at battle ω)
+- Mid/late battle: lock threshold reached → blades deploy → +17% KE per hit
+- After activation: cannot revert — the bey continues in Activated Mode until battle ends
+
+---
+
+## Case 1378 — Forge Disc: Cho (超 — "Super")
+
+**Generation:** Burst Sparking / Superking
+**Part type:** Forge Disc (Limit Break Disc — dedicated disc type)
+**Beyblade:** Hyperion Burn Cho Xceed'+X
+
+**Physical properties:**
+- Mass: m = 31.3 g = 0.0313 kg
+- Name origin: Cho (超) = Japanese for "super / ultra / beyond"
+- Classification: **Limit Break Disc** — one of three discs purpose-built for Limit Break Rings (Burn, Volcano, The End)
+- Weight rank: **Heaviest of the three Limit Break Discs**
+- Inner radius: r_i ≈ 6 mm
+- Outer radius: r_o ≈ 40 mm (standard Burst disc outer edge)
+
+**The three Limit Break Discs (mass ranking):**
+| Disc | Mass | Notes |
+|------|------|-------|
+| Cho (超) | 31.3 g | Heaviest; paired with Burn (Attack) and Volcano (Balance) Rings |
+| Volcano (火) | ~28–29 g (est.) | Mid-weight; Balance |
+| The End (終) | ~25–27 g (est.) | Lightest; paired with The End Ring |
+
+**Moment of inertia:**
+I_Cho = ½ × m × (r_i² + r_o²)
+= ½ × 0.0313 × (0.006² + 0.040²)
+= ½ × 0.0313 × (3.6×10⁻⁵ + 1.6×10⁻³)
+= ½ × 0.0313 × 1.6036×10⁻³
+= **2.510 × 10⁻⁵ kg·m²**
+
+**Why Limit Break Discs are dedicated:**
+The Limit Break gimmick depends on a specific geometric interface between disc and ring: the disc's inner geometry must mate with the ring's spring/latch housing so that:
+1. The ring can rotate slightly relative to the disc to trigger the latch (lock advancement route)
+2. The disc provides the mechanical anchor for the spring mechanism at the correct height and profile
+
+Standard discs (0, 00, 2, 7, etc.) lack this interface geometry, so Limit Break Rings only mount correctly on their dedicated discs.
+
+**Angular momentum dominance:**
+At ω₀ = 700 rad/s:
+L_Cho = I_Cho × ω₀ = 2.510×10⁻⁵ × 700 = **1.757 × 10⁻² kg·m²/s**
+
+L_total_assembly = 3.081×10⁻² kg·m²/s (see Case 1368)
+
+L_Cho / L_total = 1.757/3.081 = **57.0%** — the disc stores more than half the total angular momentum of the assembly.
+
+**Cross-era mass comparison:**
+| Disc | Era | Mass | I |
+|------|-----|------|---|
+| Cho | SK Sparking | 31.3 g | 2.510×10⁻⁵ |
+| 00 | GT/God | 25.2 g | 2.021×10⁻⁵ |
+| Karma | DB/BU | 29.2 g | 2.545×10⁻⁵ |
+| Tapered | DB/BU | 29.3 g | 2.592×10⁻⁵ |
+
+Cho at 31.3 g has the highest mass among dedicated Burst-era disc types, though Tapered and Karma have slightly higher I due to different mass distribution profiles.
+
+---
+
+## Case 1379 — Performance Tip: Xceed'+X
+
+**Generation:** Burst Sparking / Superking
+**Part type:** Performance Tip
+**Beyblade:** Hyperion Burn Cho Xceed'+X
+
+**Physical properties:**
+- Mass: m = 10.4 g = 0.0104 kg
+- Base type: Xceed' (rubber flat + free-spinning plate)
+- Modification: Xceed Chip ("+X") inserted — **locks the free-spinning plate**
+- Driver class: **Dash Driver** (stronger spring lock for burst resistance)
+- Contact geometry: rubber flat (locked), r_eff ≈ 5 mm
+- Friction coefficient: μ_rubber = 0.50 (full rubber-on-stadium contact, no plate slip)
+
+**Xceed' baseline vs. Xceed'+X:**
+
+| Feature | Xceed' (standard) | Xceed'+X (with chip) |
+|---------|------------------|---------------------|
+| Free-spinning plate | Active (decouples rubber from body) | Locked (rigid coupling) |
+| Effective μ | ~0.30 (plate slip reduces friction transfer) | 0.50 (full rubber friction) |
+| Movement pattern | Semi-aggressive, moderate flower pattern | Aggressive, wide flower pattern |
+| Spin retention | Moderate (~29 s) | Reduced (~17.5 s) |
+| Burst resistance | Standard spring | Dash spring (+1.5–2.0 mN·m bonus) |
+
+**Effect of locking the free-spinning plate:**
+In standard Xceed', the rubber flat tip contacts the floor, but the outer plate can rotate independently, partially absorbing rotational friction. This is equivalent to reducing r_eff:
+r_eff_Xceed' ≈ 3.5 mm (plate-slip-corrected)
+
+With the Xceed Chip locking the plate:
+r_eff_Xceed'+X ≈ 5.0 mm (full rubber ring contact, no slip correction)
+
+τ ratio = r_eff_X / r_eff_base = 5.0 / 3.5 = **1.43×** (43% more friction torque with chip installed)
+
+**Spin decay (in assembly, m = 71.9 g, I = 4.402×10⁻⁵):**
+τ = μ × m × g × r_eff = 0.50 × 0.0719 × 9.81 × 0.005 = **1.764 × 10⁻³ N·m**
+dω/dt = τ / I = 1.764×10⁻³ / 4.402×10⁻⁵ = **40.07 rad/s²**
+t_stall = 700 / 40.07 ≈ **17.5 s**
+
+**Dash spring burst resistance contribution:**
+The Dash spring applies pre-tension to the lock mechanism:
+τ_Dash_bonus ≈ +1.5–2.0 mN·m (estimated from community benchmarks vs standard Xceed')
+Combined with Hyperion 2 chip lock (4.5–5.0 mN·m):
+τ_burst_total ≈ **6.5 mN·m**
+
+**Xceed chip physical properties:**
+The Xceed Chip is a small insert that engages a slot in the free-spinning plate, preventing its independent rotation. It does not add significant mass or change tip geometry — its only function is the plate-locking.
+
+**I contribution:**
+I_tip = ½ × m × r_body²
+≈ ½ × 0.0104 × 0.012²
+= **7.488 × 10⁻⁷ kg·m²** (~1.7% of assembly I)
+
+**Movement comparison:**
+| Mode | τ (N·m) | dω/dt (rad/s²) | t_stall | Character |
+|------|---------|----------------|---------|-----------|
+| Xceed'+X (locked) | 1.764×10⁻³ | 40.07 | 17.5 s | Aggressive wide attack |
+| Xceed' (free) | 1.059×10⁻³ | 24.05 | 29.1 s | Moderate controlled attack |
+| Bearing (reference) | ~2.72×10⁻⁵ | ~0.62 | ~1130 s | Pure stamina |
+
+Xceed'+X is a pure Attack configuration: maximum contact aggression at the cost of spin retention. This pairs with the Burn ring's Limit Break — the driver keeps the bey aggressive long enough to trigger blade activation, then delivers the amplified hits.
+
+---
+
+## Case 1380 — Assembled Beyblade Analysis: Hyperion Burn Cho Xceed'+X
+
+**Generation:** Burst Sparking / Superking
+**Type:** Attack (Limit Break — transforms mid-battle to amplified attack)
+**Beyblade:** Hyperion Burn Cho Xceed'+X (Hasbro: Hyperion Flamebringer Cho Xceed'+X)
+
+**Assembly components:**
+| Part | Mass | I — Normal Mode (kg·m²) | I — Activated Mode (kg·m²) |
+|------|------|------------------------|---------------------------|
+| SK Chip Hyperion 2 | 5.7 g | 3.449 × 10⁻⁷ | 3.449 × 10⁻⁷ |
+| Ring Burn | 24.5 g | 1.783 × 10⁻⁵ | 2.026 × 10⁻⁵ |
+| Forge Disc Cho | 31.3 g | 2.510 × 10⁻⁵ | 2.510 × 10⁻⁵ |
+| Performance Tip Xceed'+X | 10.4 g | 7.488 × 10⁻⁷ | 7.488 × 10⁻⁷ |
+
+**Total assembly mass:**
+m = 5.7 + 24.5 + 31.3 + 10.4 = **71.9 g = 0.0719 kg**
+
+**Total moment of inertia:**
+
+*Normal Mode:*
+I_N = 0.345 + 17.83 + 25.10 + 0.749 (× 10⁻⁶)
+= **44.024 × 10⁻⁶ = 4.402 × 10⁻⁵ kg·m²**
+
+*Activated Mode (Limit Break deployed):*
+I_A = I_N + ΔI_blades = 4.402×10⁻⁵ + 2.43×10⁻⁶ = **4.645 × 10⁻⁵ kg·m²**
+
+*I dominance (Normal Mode):*
+- Cho disc: 25.10/44.02 = **57.0%**
+- Ring Burn: 17.83/44.02 = **40.5%**
+- Chip + Tip: 1.09/44.02 = **2.5%**
+
+**Angular momentum at launch (ω₀ = 700 rad/s, SK LR String Launcher):**
+L₀ = I_N × ω₀ = 4.402×10⁻⁵ × 700 = **3.081 × 10⁻² kg·m²/s**
+
+**Spin decay (Xceed'+X locked, μ = 0.50, r_eff = 5 mm):**
+τ = 0.50 × 0.0719 × 9.81 × 0.005 = **1.764 × 10⁻³ N·m**
+dω/dt = τ / I_N = 1.764×10⁻³ / 4.402×10⁻⁵ = **40.07 rad/s²**
+t_stall = 700 / 40.07 = **17.5 s** (theoretical, rubber flat mode)
+
+**Battle ω (60% of ω₀):** 420 rad/s
+**Wobble threshold (40% of ω₀):** 280 rad/s
+t_wobble = (700 − 280) / 40.07 = **10.5 s**
+
+**Limit Break transition at battle ω = 420 rad/s:**
+
+Angular momentum conservation:
+ω_A = (I_N × ω_before) / I_A = (4.402×10⁻⁵ × 420) / 4.645×10⁻⁵
+= 1.849×10⁻² / 4.645×10⁻⁵ = **397.9 rad/s** (−5.3% spin drop)
+
+Post-activation blade tip velocity:
+v_tip_A = 397.9 × 0.040 = **15.92 m/s**
+
+Post-activation blade KE (4 blades, 6.5 g total):
+KE_A = ½ × 0.0065 × 15.92² = **0.824 J** (+17.2% vs normal mode 0.703 J)
+
+Post-activation spin decay (same driver friction):
+dω/dt_A = τ / I_A = 1.764×10⁻³ / 4.645×10⁻⁵ = **37.98 rad/s²**
+
+The activated mode decays slightly slower (−5.3% rate) due to higher I, but the practical combat window is still short.
+
+**Competitive characteristics:**
+
+**Attack type:**
+- Cho disc (31.3 g) provides maximum angular momentum storage for attack delivery
+- Xceed'+X drives an aggressive wide flower pattern (rubber flat, full contact)
+- Burn ring deploys Limit Break mid-battle for +17% blade KE on activation
+- Best use: KO or Burst attack before t_wobble ≈ 10.5 s
+
+**Burst resistance (combined):**
+τ_burst_total ≈ 6.5 mN·m (Hyperion 2 Hard Lock + Xceed'+X Dash spring)
+This is solid for an Attack type — prevents easy counter-Burst while delivering its own Burst attack.
+
+**Limit Break timing:**
+- Route 1 (lock advancement): Burn will typically activate after 3–5 moderate-impact exchanges, giving a natural mid-battle escalation
+- Route 2 (strong impact): Can trigger on the first heavy hit from an opponent's Attack type, making the transformation instant if the opponent lands a powerful blow
+
+**Known weakness:**
+The short t_wobble (10.5 s) means Hyperion Burn Cho Xceed'+X cannot outlast Stamina-type opponents. It must secure a KO or Burst win quickly. Against Defense types (high I, low recoil), the rubber flat Xceed'+X may not generate enough contact force to KO before spin-out.
+
+**Metal Chip Core upgrade:**
+If paired with Metal Chip Core on Hyperion 2 chip (+3.5 g):
+m_MCC = 75.4 g, ΔI ≈ +2.24×10⁻⁷ kg·m²
+L₀_MCC = 3.097×10⁻² kg·m²/s (+0.5% — marginal)
+Primary benefit: increased burst resistance from chip stiffening, not inertia.
+
+**Game engine values:**
+- assemblyMass: 71.9 g
+- I_normal: 4.402 × 10⁻⁵ kg·m²
+- I_activated: 4.645 × 10⁻⁵ kg·m²
+- ω₀: 700 rad/s
+- spinDecayRate_normal: 40.07 rad/s²
+- spinDecayRate_activated: 37.98 rad/s²
+- L₀: 3.081 × 10⁻² kg·m²/s
+- limitBreakTrigger: lock-advancement OR strong-impact
+- limitBreakDeltaKE: +17.2% blade KE at activation
+- limitBreakSpinDrop: −5.3% ω at activation
+- burstResistance: 6.5 mN·m (Hyperion 2 Hard Lock + Xceed'+X Dash)
+- beyType: attack
+- driverType: dash-rubber-flat-locked

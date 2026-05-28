@@ -276,7 +276,7 @@ test.describe("Responsive Smoke: Game setup pages", () => {
     await smokeProtected(page, {
       route: "/game",
       name: "RS05-game-select",
-      reachable: ["text=Tryout, text=AI Battle, text=PVP"],
+      reachable: ["text=Tryout", "text=AI Battle"],
     });
   });
 
@@ -345,7 +345,7 @@ test.describe("Responsive Smoke: Game setup pages", () => {
     await smokeProtected(page, {
       route: "/game/2d/team-battle/lobby",
       name: "RS10-team-battle-lobby",
-      reachable: ["text=Blue Team, text=Red Team"],
+      reachable: ["text=Blue Team", "text=Red Team"],
     });
   });
 
@@ -674,7 +674,7 @@ test.describe("Responsive Smoke: 2.5D Part Library", () => {
 
   test("PartSearchPage — search input + grid reachable at 390px", async ({ page }) => {
     await smokeProtected(page, {
-      route: "/admin/2d/parts/search",
+      route: "/admin/2d/parts",
       name: "RS41-parts-search",
       reachable: ["input"],
     });

@@ -18,7 +18,7 @@
  */
 
 import { test, expect, type Page } from "@playwright/test";
-import { tryLogin, gotoProtected, ss, diagnose } from "./helpers/auth";
+import { tryLogin, gotoProtected, ss, diagnose, filterErrors } from "./helpers/auth";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -182,11 +182,7 @@ test.describe("HUD: Player and Enemy StatCards", () => {
     await ss(page, "H02-all-hud-elements");
 
     // No critical JS errors
-    const critical = errors.filter(e => {
-      const l = e.toLowerCase();
-      return !l.includes("websocket") && !l.includes("net::err") && !l.includes("firebase") &&
-             !l.includes("failed to fetch") && !l.includes("alphamode") && !l.includes("webgl");
-    });
+    const critical = filterErrors(errors);
     if (critical.length) {
       console.log(`[H02] JS errors: ${critical.join(" | ")}`);
     }
@@ -398,10 +394,7 @@ test.describe("QTE: Launch Phase (tilt + position + power)", () => {
     await ss(page, "Q01-canvas-post-launch");
 
     // No critical errors
-    const critical = errors.filter(e => {
-      const l = e.toLowerCase();
-      return !l.includes("websocket") && !l.includes("net::err") && !l.includes("firebase") && !l.includes("failed to fetch");
-    });
+    const critical = filterErrors(errors);
     if (critical.length) console.log(`[Q01] JS errors: ${critical.join(" | ")}`);
   });
 
@@ -480,9 +473,9 @@ test.describe("QTE: Collision QTE (impact window button prompt)", () => {
 
     // Wait for collision QTE to appear (prompt with "J" key or collision button)
     // The QTE shows a prompt during the brief impact window
-    const qtePrompt = page.locator(
-      "text=/press.*J|collision|impact|QTE|counter|clash/i, [class*=qte], [class*=collision-prompt]"
-    ).first();
+    const qtePrompt = page.locator('[class*="qte"], [class*="collision-prompt"]')
+      .or(page.getByText(/press.*J|collision|impact|QTE|counter|clash/i))
+      .first();
 
     let qteFound = false;
     for (let attempt = 0; attempt < 6; attempt++) {
@@ -653,11 +646,7 @@ test.describe("Load Test: 1 human vs 7 AI bots in same arena", () => {
     }
 
     // Check JS errors
-    const critical = errors.filter(e => {
-      const l = e.toLowerCase();
-      return !l.includes("websocket") && !l.includes("net::err") && !l.includes("firebase") &&
-             !l.includes("failed to fetch") && !l.includes("alphamode") && !l.includes("webgl");
-    });
+    const critical = filterErrors(errors);
     if (critical.length) {
       console.log(`[L01] JS errors: ${critical.join(" | ")}`);
     }

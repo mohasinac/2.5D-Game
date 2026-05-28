@@ -66,7 +66,7 @@ export async function gotoProtected(page: Page, path: string): Promise<boolean> 
   await page.goto(path);
   await page.waitForLoadState("domcontentloaded");
   // Give React Router a tick to redirect (auth guard reads Firestore asynchronously)
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(2000);
   const currentUrl = page.url();
   if (currentUrl.includes("/login")) return false;
   // Detect admin guard redirecting to home ("/") when user lacks admin role.

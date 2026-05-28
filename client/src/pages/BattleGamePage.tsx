@@ -318,7 +318,7 @@ export function BattleGamePage() {
       {showLoading && (
         <LoadingProgress
           currentStep={loadingStep}
-          stepProgress={connectionState === "connected" ? 0.5 : 0.2}
+          stepProgress={loadingStep === "warmup-ready" ? 1 : connectionState === "connected" ? 0.5 : 0.2}
           error={loadingError}
         />
       )}

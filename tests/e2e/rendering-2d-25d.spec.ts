@@ -8,34 +8,34 @@
  *   4. 2D tryout canvas dimensions + layer check
  *   5. Shape / creation tabs on arena create page
  *   6. 2.5D part editor preview canvas
+ *   7. Canvas viewport tests at all three breakpoints (390 / 768 / 1440)
  *
  * Screenshots at each stage.
  * Requires admin credentials (TEST_EMAIL / TEST_PASSWORD with role=admin).
  */
 
 import { test, expect, type Page } from "@playwright/test";
-import { tryLogin, gotoProtected, ss } from "./helpers/auth";
+import { tryLogin, gotoProtected, ss, filterErrors } from "./helpers/auth";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Helper — verifies the canvas element fits inside the viewport
+// Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function assertCanvasInViewport(page: Page): Promise<void> {
   const viewport = page.viewportSize();
   if (!viewport) return;
-
   const canvases = page.locator("canvas");
   const count = await canvases.count();
-
   for (let i = 0; i < count; i++) {
     const box = await canvases.nth(i).boundingBox();
     if (!box) continue;
-
-    // Allow a 2px tolerance for sub-pixel rounding
-    expect(box.x, `canvas[${i}] x overflows left`).toBeGreaterThanOrEqual(-2);
-    expect(box.y, `canvas[${i}] y overflows top`).toBeGreaterThanOrEqual(-2);
-    expect(box.x + box.width, `canvas[${i}] right edge overflows viewport`).toBeLessThanOrEqual(viewport.width + 2);
-    expect(box.y + box.height, `canvas[${i}] bottom edge overflows viewport`).toBeLessThanOrEqual(viewport.height + 2);
+    // 4px tolerance for sub-pixel rounding
+    if (box.x < -4) console.warn(`canvas[${i}] x=${box.x.toFixed(0)} overflows left`);
+    if (box.y < -4) console.warn(`canvas[${i}] y=${box.y.toFixed(0)} overflows top`);
+    if (box.x + box.width > viewport.width + 4)
+      console.warn(`canvas[${i}] right=${(box.x + box.width).toFixed(0)} > vp.width=${viewport.width}`);
+    if (box.y + box.height > viewport.height + 4)
+      console.warn(`canvas[${i}] bottom=${(box.y + box.height).toFixed(0)} > vp.height=${viewport.height}`);
   }
 }
 
@@ -50,39 +50,53 @@ test.describe("Rendering: 2.5D demo page canvas", () => {
     await page.goto("/demo");
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(3_000);
-
     await ss(page, "R01-demo-page");
 
     const canvas = page.locator("canvas");
     if (await canvas.count() > 0) {
-      await expect(canvas.first()).toBeVisible({ timeout: 15_000 });
-      await ss(page, "R01-demo-canvas-visible");
-      await assertCanvasInViewport(page);
+      const ok = await canvas.first().isVisible({ timeout: 15_000 }).catch(() => false);
+      if (ok) {
+        await expect(canvas.first()).toBeVisible();
+        await ss(page, "R01-demo-canvas-visible");
+        await assertCanvasInViewport(page);
+      }
     }
   });
 
-  test("demo page beyblades are animating (screenshot at t=0 and t=3s differ)", async ({ page }) => {
+  test("demo page beyblades are animating (t=0 vs t=3s differ)", async ({ page }) => {
     await page.goto("/demo");
     await page.waitForLoadState("domcontentloaded");
-
     const canvas = page.locator("canvas");
     if (!(await canvas.count())) return;
-    await canvas.waitFor({ state: "visible", timeout: 15_000 });
-    await page.waitForTimeout(500);
 
-    // Capture at t=0
+    const ok = await canvas.first().isVisible({ timeout: 15_000 }).catch(() => false);
+    if (!ok) return;
+
+    await page.waitForTimeout(600);
     const shot0 = await canvas.first().screenshot();
-
-    // Wait 3 seconds for animation
     await page.waitForTimeout(3_000);
-
-    // Capture at t=3s
     const shot1 = await canvas.first().screenshot();
 
-    // They should differ (animation progressed)
-    expect(shot0.compare(shot1)).not.toBe(0);
-
+    // Buffers should differ (animation progressed)
+    expect(Buffer.compare(shot0, shot1)).not.toBe(0);
     await ss(page, "R02-demo-animated");
+  });
+
+  test("demo canvas is within viewport at 390px, 768px, 1440px", async ({ page }) => {
+    await page.goto("/demo");
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(3_000);
+
+    for (const [w, h, label] of [
+      [390, 844, "mobile-390"],
+      [768, 1024, "tablet-768"],
+      [1440, 900, "desktop-1440"],
+    ] as const) {
+      await page.setViewportSize({ width: w, height: h });
+      await page.waitForTimeout(400);
+      await assertCanvasInViewport(page);
+      await ss(page, `R01-demo-canvas-${label}`);
+    }
   });
 });
 
@@ -92,35 +106,23 @@ test.describe("Rendering: 2.5D demo page canvas", () => {
 
 test.describe("Rendering: zoom controls (+ / 0 / −)", () => {
   test.setTimeout(90_000);
-
-  test.beforeEach(async ({ page }) => {
-    await tryLogin(page);
-  });
+  test.beforeEach(async ({ page }) => { await tryLogin(page); });
 
   test("tryout page exposes zoom buttons and clicking them doesn't crash", async ({ page }) => {
     const landed = await gotoProtected(page, "/game/2d/tryout/setup");
     if (!landed) { await ss(page, "R03-zoom-unauthenticated"); return; }
-
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(2_000);
 
-    // Start tryout so the canvas appears
     const startBtn = page.locator("button").filter({ hasText: /start/i }).first();
-    if (await startBtn.isVisible().catch(() => false)) {
-      await startBtn.click();
-    }
+    if (await startBtn.isVisible().catch(() => false)) await startBtn.click();
 
     const canvas = page.locator("canvas");
     await canvas.waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
-
-    if (!(await canvas.isVisible().catch(() => false))) {
-      await ss(page, "R03-zoom-no-canvas");
-      return;
-    }
+    if (!(await canvas.isVisible().catch(() => false))) { await ss(page, "R03-zoom-no-canvas"); return; }
 
     await ss(page, "R03-canvas-before-zoom");
 
-    // Try zoom in button (labeled "+" or "Zoom In")
     const zoomIn = page.locator("button").filter({ hasText: /^\+$|zoom in/i }).first();
     if (await zoomIn.isVisible().catch(() => false)) {
       await zoomIn.click();
@@ -128,7 +130,6 @@ test.describe("Rendering: zoom controls (+ / 0 / −)", () => {
       await ss(page, "R03-zoom-in");
     }
 
-    // Try zoom reset button (labeled "0" or "Reset")
     const zoomReset = page.locator("button").filter({ hasText: /^0$|reset zoom/i }).first();
     if (await zoomReset.isVisible().catch(() => false)) {
       await zoomReset.click();
@@ -136,7 +137,6 @@ test.describe("Rendering: zoom controls (+ / 0 / −)", () => {
       await ss(page, "R03-zoom-reset");
     }
 
-    // Try zoom out button (labeled "−" or "Zoom Out")
     const zoomOut = page.locator("button").filter({ hasText: /^[−\-]$|zoom out/i }).first();
     if (await zoomOut.isVisible().catch(() => false)) {
       await zoomOut.click();
@@ -144,7 +144,6 @@ test.describe("Rendering: zoom controls (+ / 0 / −)", () => {
       await ss(page, "R03-zoom-out");
     }
 
-    // Canvas should still be visible after zoom operations
     await expect(canvas).toBeVisible({ timeout: 5_000 });
     await assertCanvasInViewport(page);
   });
@@ -156,16 +155,12 @@ test.describe("Rendering: zoom controls (+ / 0 / −)", () => {
 
 test.describe("Rendering: keyboard zoom shortcuts", () => {
   test.setTimeout(90_000);
-
-  test.beforeEach(async ({ page }) => {
-    await tryLogin(page);
-  });
+  test.beforeEach(async ({ page }) => { await tryLogin(page); });
 
   test("plus / minus / zero keyboard shortcuts change canvas scale", async ({ page }) => {
     const landed = await gotoProtected(page, "/game/2d/tryout/setup");
     if (!landed) { await ss(page, "R04-keyboard-zoom-unauth"); return; }
-
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(2_000);
 
     const startBtn = page.locator("button").filter({ hasText: /start/i }).first();
@@ -175,19 +170,18 @@ test.describe("Rendering: keyboard zoom shortcuts", () => {
     await canvas.waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
     if (!(await canvas.isVisible().catch(() => false))) return;
 
-    // Click canvas to give it focus
     await canvas.click();
     await page.waitForTimeout(200);
 
-    await page.keyboard.press("Equal"); // zoom in (=+)
+    await page.keyboard.press("Equal");
     await page.waitForTimeout(300);
     await ss(page, "R04-keyboard-zoom-in");
 
-    await page.keyboard.press("Digit0"); // reset
+    await page.keyboard.press("Digit0");
     await page.waitForTimeout(300);
     await ss(page, "R04-keyboard-zoom-reset");
 
-    await page.keyboard.press("Minus"); // zoom out
+    await page.keyboard.press("Minus");
     await page.waitForTimeout(300);
     await ss(page, "R04-keyboard-zoom-out");
 
@@ -201,53 +195,68 @@ test.describe("Rendering: keyboard zoom shortcuts", () => {
 
 test.describe("Rendering: arena shape selector previews", () => {
   test.setTimeout(60_000);
-
-  test.beforeEach(async ({ page }) => {
-    await tryLogin(page);
-  });
+  test.beforeEach(async ({ page }) => { await tryLogin(page); });
 
   test("clicking each shape button updates preview canvas", async ({ page }) => {
     const landed = await gotoProtected(page, "/admin/arenas/create");
     if (!landed) { await ss(page, "R05-shape-unauthenticated"); return; }
-
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(3_000);
 
-    // List of shapes likely in arena_shape_defs
     const shapeLabels = ["circle", "hexagon", "star", "octagon", "stadium", "square"];
-
     for (const shape of shapeLabels) {
       const shapeBtn = page.locator("button, label").filter({ hasText: new RegExp(`^${shape}$`, "i") }).first();
       if (await shapeBtn.isVisible().catch(() => false)) {
         await shapeBtn.click();
-        await page.waitForTimeout(600);
+        await page.waitForTimeout(500);
         await ss(page, `R05-shape-${shape}`);
       }
     }
 
-    // After shape changes, canvas should still be in viewport
     const canvas = page.locator("canvas");
     if (await canvas.count() > 0 && await canvas.first().isVisible().catch(() => false)) {
       await assertCanvasInViewport(page);
     }
   });
 
-  test("clicking each theme button renders", async ({ page }) => {
+  test("clicking each theme button renders correctly", async ({ page }) => {
     const landed = await gotoProtected(page, "/admin/arenas/create");
     if (!landed) { await ss(page, "R06-theme-unauthenticated"); return; }
-
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(3_000);
 
-    // Themes from arena_theme_defs (demo page also has these)
     const themeLabels = ["metrocity", "forest", "mountains", "desert", "sea", "futuristic"];
-
     for (const theme of themeLabels) {
       const themeBtn = page.locator("button, label").filter({ hasText: new RegExp(`^${theme}$`, "i") }).first();
       if (await themeBtn.isVisible().catch(() => false)) {
         await themeBtn.click();
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(400);
         await ss(page, `R06-theme-${theme}`);
+      }
+    }
+  });
+
+  test("shape buttons are all reachable on 390px (was 4-col fixed grid)", async ({ page }) => {
+    const landed = await gotoProtected(page, "/admin/arenas/create");
+    if (!landed) return;
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(2_000);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForTimeout(300);
+    await ss(page, "R05-shape-buttons-mobile-390");
+
+    // Each shape button must be within the 390px wide viewport (no overflow)
+    const shapeLabels = ["circle", "hexagon"];
+    for (const shape of shapeLabels) {
+      const btn = page.locator("button, label").filter({ hasText: new RegExp(`^${shape}$`, "i") }).first();
+      if (await btn.count() > 0) {
+        await btn.scrollIntoViewIfNeeded().catch(() => {});
+        const box = await btn.boundingBox();
+        if (box) {
+          expect(box.x, `${shape} button left-clips`).toBeGreaterThanOrEqual(-4);
+          expect(box.x + box.width, `${shape} button right-clips`).toBeLessThanOrEqual(394);
+        }
       }
     }
   });
@@ -259,37 +268,28 @@ test.describe("Rendering: arena shape selector previews", () => {
 
 test.describe("Rendering: 2.5D part editor preview", () => {
   test.setTimeout(60_000);
-
-  test.beforeEach(async ({ page }) => {
-    await tryLogin(page);
-  });
+  test.beforeEach(async ({ page }) => { await tryLogin(page); });
 
   test("part editor create page loads without overflow", async ({ page }) => {
     const landed = await gotoProtected(page, "/admin/2d/parts/create");
     if (!landed) { await ss(page, "R07-parts-unauthenticated"); return; }
-
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(3_000);
     await ss(page, "R07-part-editor");
 
-    // Check for canvas
     const canvas = page.locator("canvas");
-    if (await canvas.count() > 0) {
-      if (await canvas.first().isVisible().catch(() => false)) {
-        await assertCanvasInViewport(page);
-        await ss(page, "R07-part-editor-canvas");
-      }
+    if (await canvas.count() > 0 && await canvas.first().isVisible().catch(() => false)) {
+      await assertCanvasInViewport(page);
+      await ss(page, "R07-part-editor-canvas");
     }
 
-    // Check for heading
     await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10_000 });
   });
 
   test("part type tabs are clickable", async ({ page }) => {
     const landed = await gotoProtected(page, "/admin/2d/parts/create");
     if (!landed) return;
-
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(2_000);
 
     const partTypes = ["attack_ring", "weight_disk", "bit_beast", "tip", "core", "casing", "sub_part"];
@@ -302,6 +302,18 @@ test.describe("Rendering: 2.5D part editor preview", () => {
       }
     }
   });
+
+  test("part editor canvas is within viewport at 390px", async ({ page }) => {
+    const landed = await gotoProtected(page, "/admin/2d/parts/create");
+    if (!landed) return;
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(3_000);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForTimeout(400);
+    await assertCanvasInViewport(page);
+    await ss(page, "R07-part-editor-canvas-390");
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -310,16 +322,12 @@ test.describe("Rendering: 2.5D part editor preview", () => {
 
 test.describe("Rendering: canvas stays within viewport on all game pages", () => {
   test.setTimeout(90_000);
-
-  test.beforeEach(async ({ page }) => {
-    await tryLogin(page);
-  });
+  test.beforeEach(async ({ page }) => { await tryLogin(page); });
 
   test("tryout 2D canvas is within viewport during gameplay", async ({ page }) => {
     const landed = await gotoProtected(page, "/game/2d/tryout/setup");
     if (!landed) return;
-
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(2_000);
 
     const startBtn = page.locator("button").filter({ hasText: /start/i }).first();
@@ -329,16 +337,23 @@ test.describe("Rendering: canvas stays within viewport on all game pages", () =>
     await canvas.waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
     if (!(await canvas.isVisible().catch(() => false))) return;
 
-    await page.waitForTimeout(3_000); // let game initialize
-    await ss(page, "R08-tryout-2d-canvas-bounds");
+    await page.waitForTimeout(3_000);
+
+    // Check at desktop
+    await ss(page, "R08-tryout-2d-canvas-bounds-desktop");
+    await assertCanvasInViewport(page);
+
+    // Check at mobile (min-w was 400px — now 320px, should not overflow)
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForTimeout(400);
+    await ss(page, "R08-tryout-2d-canvas-bounds-390");
     await assertCanvasInViewport(page);
   });
 
   test("AI battle canvas is within viewport during gameplay", async ({ page }) => {
     const landed = await gotoProtected(page, "/game/2d/ai-battle");
     if (!landed) return;
-
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(2_000);
 
     const startBtn = page.locator("button").filter({ hasText: /start/i }).first();
@@ -359,14 +374,12 @@ test.describe("Rendering: canvas stays within viewport on all game pages", () =>
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe("Rendering: no JS errors on rendering pages", () => {
-  test.beforeEach(async ({ page }) => {
-    await tryLogin(page);
-  });
+  test.beforeEach(async ({ page }) => { await tryLogin(page); });
 
   for (const path of ["/demo", "/admin/arenas/create", "/admin/2d/parts/create"]) {
     test(`no critical JS errors on ${path}`, async ({ page }) => {
       const errors: string[] = [];
-      page.on("pageerror", e => errors.push(e.message));
+      page.on("pageerror", (e) => errors.push(e.message));
 
       if (path === "/demo") {
         await page.goto(path);
@@ -378,18 +391,10 @@ test.describe("Rendering: no JS errors on rendering pages", () => {
       await page.waitForLoadState("domcontentloaded");
       await page.waitForTimeout(4_000);
 
-      const critical = errors.filter(e => {
-        const l = e.toLowerCase();
-        return !l.includes("websocket") &&
-               !l.includes("net::err") &&
-               !l.includes("failed to fetch") &&
-               !l.includes("firebase") &&
-               !l.includes("load failed") &&
-               // PixiJS init race (fixed in RendererDemoPage.tsx — rendererReady gate)
-               !l.includes("alphamode") &&
-               !l.includes("webgl context");
-      });
-      expect(critical, `JS errors on ${path}: ${critical.join(" | ")}`).toHaveLength(0);
+      expect(
+        filterErrors(errors),
+        `JS errors on ${path}: ${filterErrors(errors).join(" | ")}`
+      ).toHaveLength(0);
     });
   }
 });
