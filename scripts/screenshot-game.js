@@ -477,33 +477,36 @@ async function run() {
   await ss(page, "tryout-F-launched");
 
   // ── 4-position arena shots ────────────────────────────────────────────────
-  // Steer the bey to each wall, screenshot, then move to next position.
+  // Zoom out far enough (15×) so the entire arena circle is visible in the
+  // viewport — camera still follows the bey but the full arena + boundary ring
+  // is shown, making the bey's position (top/right/bottom/left) obvious.
   await sleep(400);
+  await zoomOut(page, 15);
+  await sleep(300);
 
   console.log("  📍  Position: TOP (hold W)…");
-  await page.keyboard.down("KeyW"); await sleep(2800); await page.keyboard.up("KeyW");
-  await sleep(350);
+  await page.keyboard.down("KeyW"); await sleep(3500); await page.keyboard.up("KeyW");
+  await sleep(400);
   await ss(page, "tryout-F-position-top");
 
   console.log("  📍  Position: RIGHT (hold D)…");
-  await page.keyboard.down("KeyD"); await sleep(3200); await page.keyboard.up("KeyD");
-  await sleep(350);
+  await page.keyboard.down("KeyD"); await sleep(4000); await page.keyboard.up("KeyD");
+  await sleep(400);
   await ss(page, "tryout-F-position-right");
 
   console.log("  📍  Position: BOTTOM (hold S)…");
-  await page.keyboard.down("KeyS"); await sleep(3200); await page.keyboard.up("KeyS");
-  await sleep(350);
+  await page.keyboard.down("KeyS"); await sleep(4000); await page.keyboard.up("KeyS");
+  await sleep(400);
   await ss(page, "tryout-F-position-bottom");
 
   console.log("  📍  Position: LEFT (hold A)…");
-  await page.keyboard.down("KeyA"); await sleep(3200); await page.keyboard.up("KeyA");
-  await sleep(350);
+  await page.keyboard.down("KeyA"); await sleep(4000); await page.keyboard.up("KeyA");
+  await sleep(400);
   await ss(page, "tryout-F-position-left");
 
-  // Return roughly to centre
-  await page.keyboard.down("KeyD"); await sleep(800); await page.keyboard.up("KeyD");
-  await page.keyboard.down("KeyW"); await sleep(600); await page.keyboard.up("KeyW");
-  await sleep(500);
+  // Reset zoom to 1× (press 0) then zoom out 5× for balanced gameplay view
+  await page.keyboard.press("Digit0");
+  await sleep(200);
   await ss(page, "tryout-F-centre");
 
   // ── 40 s play: fire J at t=10s and t=20s (SP auto-refills) ───────────────
