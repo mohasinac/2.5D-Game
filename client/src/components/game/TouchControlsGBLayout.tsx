@@ -47,6 +47,13 @@ function getCanvas() {
   return { cl, ct, cr: cl + size, cb: ct + size, vw, vh };
 }
 
+// ─── Orientation helper ───────────────────────────────────────────────────────
+
+/** Returns 'ls' when landscape (width > height + 50px threshold), else 'pt'. */
+function currentOrient(): 'pt' | 'ls' {
+  return window.innerWidth > window.innerHeight + 50 ? 'ls' : 'pt';
+}
+
 // ─── Default position — canvas-relative, orientation-aware ───────────────────
 //
 // Portrait (phone): controls in the horizontal strip below the canvas.
@@ -77,10 +84,14 @@ function computeDefaultPos(key: string): Pos {
     }
   } else {
     const midY = vh / 2;
-    // Left gutter — flush to canvas left edge
-    const lx = Math.max(pad, cl - dp - pad);
-    // Right gutter — flush to canvas right edge
-    const rx = cr + pad;
+    // On narrow-gutter landscape phones the left gutter may overlap the notch area.
+    // Push controls 44 px inward when the gutter is < 160 px (typical of landscape phones,
+    // e.g. iPhone SE 375 px wide → cl ≈ 2 px). Desktop/tablet (cl ≥ 160) is unchanged.
+    const notchBuf = cl < 160 ? 44 : 0;
+    // Left gutter — flush to canvas left edge (with notch buffer)
+    const lx = Math.max(pad + notchBuf, cl - dp - pad);
+    // Right gutter — flush to canvas right edge (with notch buffer)
+    const rx = cr + pad + notchBuf;
     switch (key) {
       case "dpad":    return { x: lx,                     y: midY - dp / 2 };
       case "charge":  return { x: lx + (dp - bW) / 2,    y: midY + dp / 2 + 8 };
@@ -114,29 +125,57 @@ function FloatingControl({
   const dragRef = useRef<{ sp: Pos; se: Pos } | null>(null);
   const ctrlKey = storageKey.replace("tc2-", "");
 
-  const [pos,   setPos]   = useState<Pos>(() => loadPos(storageKey) ?? { x: 0, y: 0 });
-  const [ready, setReady] = useState(() => loadPos(storageKey) !== null);
+  // ── Orientation-specific keys ────────────────────────────────────────────────
+  // Each orientation gets its own localStorage key (e.g. "tc2-dpad-pt" / "tc2-dpad-ls").
+  // Old unoriented keys are ignored; fresh defaults are computed per orientation on first use.
+  const orientRef = useRef<'pt' | 'ls'>(currentOrient());
+  const [orient, setOrient] = useState<'pt' | 'ls'>(currentOrient);
+  const activeKey = `${storageKey}-${orient}`;
+
+  const [pos, setPos] = useState<Pos>(() => {
+    const o = currentOrient();
+    return loadPos(`${storageKey}-${o}`) ?? { x: 0, y: 0 };
+  });
+  const [ready, setReady] = useState(() =>
+    loadPos(`${storageKey}-${currentOrient()}`) !== null
+  );
 
   // First mount: compute anchor-based default if no stored position.
   useEffect(() => {
     if (!ready) { setPos(computeDefaultPos(ctrlKey)); setReady(true); }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Clamp to viewport on resize (orientation change, window resize).
+  // Resize / orientation-change handler.
+  // Uses orientRef so the closure is never stale, while setOrient triggers a re-render
+  // so activeKey updates and subsequent saves/clears use the correct key.
   useEffect(() => {
-    const clamp = () => {
-      const el = elRef.current;
-      if (!el) return;
-      const { vw, vh } = getCanvas();
-      const w = el.offsetWidth, h = el.offsetHeight;
-      setPos(p => ({
-        x: Math.max(0, Math.min(p.x, vw - w)),
-        y: Math.max(0, Math.min(p.y, vh - h)),
-      }));
+    const handleResize = () => {
+      const newOrient = currentOrient();
+      if (newOrient !== orientRef.current) {
+        // Orientation flipped — switch to new orientation's key and restore position.
+        orientRef.current = newOrient;
+        setOrient(newOrient);
+        const stored = loadPos(`${storageKey}-${newOrient}`);
+        if (stored) {
+          setPos(stored);
+        } else {
+          // rAF: give the browser one frame to settle viewport dims after rotation.
+          requestAnimationFrame(() => setPos(computeDefaultPos(ctrlKey)));
+        }
+      } else {
+        // Same orientation — clamp current position to the (possibly resized) viewport.
+        const el = elRef.current;
+        if (!el) return;
+        const { vw, vh } = getCanvas();
+        setPos(p => ({
+          x: Math.max(0, Math.min(p.x, vw - el.offsetWidth)),
+          y: Math.max(0, Math.min(p.y, vh - el.offsetHeight)),
+        }));
+      }
     };
-    window.addEventListener("resize", clamp);
-    return () => window.removeEventListener("resize", clamp);
-  }, []);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps — intentional: uses orientRef
 
   const onDragDown = (e: React.PointerEvent<HTMLButtonElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -153,14 +192,14 @@ function FloatingControl({
       y: dragRef.current.se.y + (e.clientY - dragRef.current.sp.y),
     };
     setPos(np);
-    savePos(storageKey, np);
+    savePos(activeKey, np);  // save to orientation-specific key
   };
   const onDragUp = () => { dragRef.current = null; };
 
   const snapBack = () => {
     const p = computeDefaultPos(ctrlKey);
     setPos(p);
-    clearPos(storageKey);
+    clearPos(activeKey);  // clear orientation-specific key
   };
 
   return (
@@ -378,7 +417,10 @@ function ToggleBar({ hidden, editMode, onToggle, onEdit, onKeys }: {
   onToggle: () => void; onEdit: () => void; onKeys: () => void;
 }) {
   return (
-    <div className="fixed left-1/2 -translate-x-1/2 bottom-4 z-[70] flex items-center gap-1.5 pointer-events-auto">
+    <div
+      className="fixed left-1/2 -translate-x-1/2 z-[70] flex items-center gap-1.5 pointer-events-auto"
+      style={{ bottom: 'max(16px, env(safe-area-inset-bottom, 0px))' }}
+    >
       {hidden ? (
         <button onClick={onToggle} className={TB_BTN}>🕹 Controls</button>
       ) : editMode ? (
