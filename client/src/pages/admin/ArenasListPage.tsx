@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { collection, getDocs, deleteDoc, doc, orderBy, query, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
@@ -73,7 +73,7 @@ export function ArenasListPage() {
   };
 
   return (
-    <div className="page-shell p-6">
+    <div className="page-shell p-4 sm:p-6">
       <div className="flex items-start justify-between mb-5">
         <div>
           <h1 className="text-[22px] font-bold text-theme-text">Arenas</h1>
@@ -154,7 +154,7 @@ export function ArenasListPage() {
       })()}
 
       {loading && (
-        <div className="grid grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {Array.from({ length: 4 }).map((_, i) => <div key={i} className="bg-bg2 rounded-[14px] border border-border-c h-40 pulse" />)}
         </div>
       )}
@@ -167,7 +167,7 @@ export function ArenasListPage() {
 
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-bg2 border border-border-c rounded-[20px] p-6 max-w-[360px] w-full">
+          <div className="bg-bg2 border border-border-c rounded-[20px] p-6 w-full max-w-[min(360px,calc(100vw-2rem))]">
             <h3 className="text-[18px] font-bold text-theme-text mb-2">Delete Arena</h3>
             <p className="text-theme-muted text-sm mb-6">Delete <strong className="text-theme-text">{confirmDelete.name}</strong>? This cannot be undone.</p>
             <div className="flex gap-2.5">

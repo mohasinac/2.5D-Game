@@ -227,7 +227,7 @@ export function BeybladeCreatePage() {
                   ))}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <Label>Mass (grams)</Label>
                   <input type="number" min={30} max={80} value={form.mass} onChange={e => set("mass",+e.target.value)} className={inputCls} />
@@ -405,7 +405,7 @@ export function BeybladeCreatePage() {
             {/* Advanced Physics */}
             <div className="mt-5 pt-5 border-t border-border">
               <label className="block text-xs text-muted font-bold mb-3 uppercase tracking-wider">Advanced Physics</label>
-              <div className="grid grid-cols-2 gap-3 mb-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                 <div>
                   <label className="block text-xs text-muted font-semibold mb-1.5">Jump Force (N, 0=off)</label>
                   <input type="number" min={0} max={2000} step={50} value={jumpForce}

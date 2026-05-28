@@ -1,4 +1,4 @@
-// [ADMIN-PAGE] ParticlePresetsPage — CRUD for particle_presets collection.
+﻿// [ADMIN-PAGE] ParticlePresetsPage — CRUD for particle_presets collection.
 // Each preset stores a PixiJS particle emitter JSON config + optional preview GIF.
 
 import { useState, useEffect, useRef } from "react";
@@ -123,7 +123,7 @@ export function ParticlePresetsPage() {
   }
 
   return (
-    <div className="page-shell p-6">
+    <div className="page-shell p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-[22px] font-bold text-theme-text">Particle Presets</h1>

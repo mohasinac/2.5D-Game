@@ -209,7 +209,7 @@ export function TryoutGamePage() {
 
     load();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHydrated]);
+  }, [isHydrated, settings.beybladeId, settings.arenaId, settings.userId, settings.username]);
 
   // ─── Keyboard listeners ─────────────────────────────────────────────────────
   useEffect(() => {
@@ -494,7 +494,7 @@ export function TryoutGamePage() {
       )}
 
       {/* HUD top bar */}
-      <div className="absolute top-0 left-0 right-0 flex items-start justify-between p-4 pointer-events-none">
+      <div className="absolute top-0 left-0 right-0 flex items-start justify-between p-4 pointer-events-none z-[60]">
         <div className="flex items-center gap-2">
           <div className={`w-2 h-2 rounded-full ${hud.loaded ? "bg-theme-green" : "bg-theme-yellow"} ${hud.loaded ? "pulse" : ""}`} />
           <span className="text-[11px] text-theme-muted font-mono uppercase">

@@ -153,6 +153,50 @@ Every numeric value in new cases must carry one of these tags:
 
 ---
 
+## Nomenclature Rules — TT JP Canonical Names
+
+All names follow **Takara Tomy Japan (TT JP)** official product naming. Hasbro EN names appear **only** as cross-references marked `[Hasbro: xyz]`. This file covers Beyblade X (Gen 4) and Burst-era cross-reference cases.
+
+### Gen 4: Beyblade X (BX / UX / CX) — Part Names
+| TT JP term (use this) | Do NOT use |
+|----------------------|-----------|
+| Blade | Attack Ring / Energy Layer / Fusion Wheel |
+| Ratchet | Ring / Disc (different components in BX) |
+| Bit | Performance Tip / Driver |
+| Gear Chip | — (BX-specific inner chip, no prior-gen analogue) |
+| BX (Basic Xtreme) | Hasbro line naming varies — use BX/UX/CX |
+| UX (Ultimate Xtreme) | — |
+| CX | — |
+
+### Gen 3: Burst Sub-System Names (for cross-reference cases)
+| TT JP (use this) | Hasbro (do not use) |
+|-----------------|---------------------|
+| Burst / Standard Burst (2015–2016) | (same) |
+| God Layer System (2017) | SwitchStrike |
+| Cho-Z Layer System (2018) | Turbo |
+| Gatinko / GT (2019) | (largely same) |
+| Sparking / SK (2020) | (largely same) |
+| Dynamite Battle / DB (2021) | (largely same) |
+| Burst Ultimate / BU (2022) | (largely same) |
+
+### Gen 3: Individual Bey Name Corrections
+| TT JP (use this) | Hasbro (do not use) |
+|-----------------|---------------------|
+| Valkyrie | Valtryek |
+| Spriggan | Spryzen |
+| Storm Spriggan | Spryzen S2 |
+| Spriggan Requiem | Turbo Spriggan / Spryzen Requiem |
+| Dead Phoenix | Dread Phoenix |
+| Dead Hades | Dread Hades |
+| Dead Armor | Dread Armor |
+| Dead Stinger (move) | Dread Cannon |
+| Cho-Z Valkyrie | Turbo Valkyrie |
+| Z Achilles | — (unchanged in Hasbro context) |
+
+**Note on "Dread" vs "Dead" Layer Bases:** In the Burst GT / Gatinko system, "Dead" (デッド) and "Dread" (ドレッド) are two DIFFERENT Layer Bases. Dead base → Dead Phoenix, Dead Hades. Dread base → Dread Bahamut. Both "Dread Bahamut" and "Dead Phoenix" are correct TT JP names for their respective assemblies.
+
+---
+
 ## Case 354 — Basic Line System (BX)
 
 **Thesis:** The Basic Line is the entry-level Beyblade X architecture: a three-component stack (Blade, Ratchet, Bit) in which the Blade carries zinc alloy contact points at the outer perimeter and metal launcher hooks at three inward positions; the metal hooks pull mass toward the center, keeping the center of gravity closer to the rotational axis and producing a balanced, stable spin geometry rather than maximum outward inertia; the Ratchet's twist-lock mechanism converts angular preload into burst resistance, where more indent engagement means a higher torque threshold before the Blade releases; the Bit's gear meshes with the Xtreme Stadium's X-Celerator Rail to deliver periodic speed bursts, and alternate tooth counts change both the burst frequency and peak velocity of those dashes.

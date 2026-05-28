@@ -170,7 +170,7 @@ export function AIBattlesPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000] p-4">
-          <div className="bg-bg1 border border-border rounded-2xl p-7 w-full max-w-[500px]">
+          <div className="bg-bg1 border border-border rounded-2xl p-7 w-full max-w-[min(500px,calc(100vw-2rem))]">
             <h3 className="text-lg font-bold text-text mb-5">
               {editing ? "Edit Preset" : "New AI Battle Preset"}
             </h3>

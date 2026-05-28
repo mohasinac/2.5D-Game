@@ -155,7 +155,7 @@ export default function RPGMapEditPage() {
         <h1 className="text-[22px] font-bold text-white mt-2">Edit Map: {id}</h1>
       </div>
 
-      <div className="flex gap-6 items-start">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 lg:items-start">
         {/* ── Form ── */}
         <div className={CARD + " space-y-4 flex-1 max-w-2xl"}>
 
@@ -268,7 +268,7 @@ export default function RPGMapEditPage() {
         </div>
 
         {/* ── Sticky live preview panel ── */}
-        <div className="sticky top-6 flex-shrink-0 w-[260px]">
+        <div className="w-full lg:w-[260px] lg:sticky lg:top-6 lg:flex-shrink-0">
           <div className="bg-gray-900 border border-gray-700 rounded-xl p-3">
             <div className="text-[11px] text-gray-500 uppercase tracking-wider mb-2 font-semibold">Live Preview</div>
 

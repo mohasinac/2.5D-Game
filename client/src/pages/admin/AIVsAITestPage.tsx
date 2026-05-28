@@ -1,4 +1,4 @@
-// AI vs AI test lab — admin-only. Pick two beyblades, an arena, and two
+﻿// AI vs AI test lab — admin-only. Pick two beyblades, an arena, and two
 // difficulties; the page navigates to AIBattleGamePage with aiVsAi=true so
 // the room spawns both contestants on the server and the admin spectates.
 
@@ -113,7 +113,7 @@ export function AIVsAITestPage() {
       </div>
 
       <Section title="Contestants">
-        <div className="grid grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <Field label="Player 1 Beyblade">
             <SearchableSelect
               value={p1BeyId}
@@ -131,7 +131,7 @@ export function AIVsAITestPage() {
             />
           </Field>
         </div>
-        <div className="grid grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <Field label="Player 1 Difficulty">
             <SearchableSelect
               value={p1Diff}
@@ -160,7 +160,7 @@ export function AIVsAITestPage() {
             className="w-full"
           />
         </Field>
-        <div className="grid grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <Field label="Best Of">
             <SearchableSelect
               value={String(bestOf)}

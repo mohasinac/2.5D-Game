@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -125,7 +125,7 @@ export default function MechanicDefsPage() {
   })).filter(g => g.items.length > 0);
 
   return (
-    <div className="py-8 px-10 max-w-[900px]">
+    <div className="p-4 sm:p-8 max-w-[900px]">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="m-0 text-[22px] text-theme-text">Mechanic Defs</h1>
@@ -184,7 +184,7 @@ export default function MechanicDefsPage() {
       {/* Create / Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000]">
-          <div className="bg-bg1 border border-border-c rounded-xl p-7 w-[520px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
+          <div className="bg-bg1 border border-border-c rounded-xl p-4 sm:p-7 w-[520px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
             <h2 className="m-0 mb-5 text-[17px] text-theme-text">{editing ? "Edit Mechanic" : "New Mechanic"}</h2>
 
             <label className="block mb-[14px]">
@@ -242,7 +242,7 @@ export default function MechanicDefsPage() {
       {/* Delete confirm */}
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100]">
-          <div className="bg-bg1 border border-border-c rounded-xl p-7 w-[380px] max-w-[95vw]">
+          <div className="bg-bg1 border border-border-c rounded-xl p-4 sm:p-7 w-[380px] max-w-[95vw]">
             <h3 className="m-0 mb-3 text-theme-text">Delete Mechanic?</h3>
             <p className="m-0 mb-5 text-theme-muted text-[13px]">
               Delete <strong className="text-theme-text">{confirmDelete.name}</strong>? Any gimmick_defs referencing <code className="font-mono">{confirmDelete.id}</code> will break at runtime.

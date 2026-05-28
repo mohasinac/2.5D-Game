@@ -183,7 +183,7 @@ export default function ComboEffectsPage() {
 
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000]">
-          <div className="bg-bg1 border border-border-c rounded-2xl p-7 max-w-[400px] w-[90%]">
+          <div className="bg-bg1 border border-border-c rounded-2xl p-7 w-full max-w-[min(400px,calc(100vw-2rem))]">
             <h3 className="text-[16px] font-bold text-theme-text mb-[10px]">Delete "{confirmDelete.name}"?</h3>
             <p className="text-theme-muted text-[13px] mb-5">This will permanently remove the combo effect.</p>
             <div className="flex gap-[10px] justify-end">

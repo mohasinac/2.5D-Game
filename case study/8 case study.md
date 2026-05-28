@@ -83,6 +83,39 @@ Every numeric value in new cases must carry one of these tags:
 
 ---
 
+## Nomenclature Rules — TT JP Canonical Names
+
+All names follow **Takara Tomy Japan (TT JP)** official product naming. Hasbro EN names appear **only** as cross-references marked `[Hasbro: xyz]`. This file covers Beyblade X (Gen 4 BX Blades) and Burst lineage cross-reference cases.
+
+### Gen 4: Beyblade X — Part Names
+- **Blade** (not Energy Layer / Fusion Wheel / Attack Ring)
+- **Ratchet** (not Ring or Disc)
+- **Bit** (not Performance Tip or Driver)
+- Sub-lines: BX / UX / CX — use as-is (TT JP sub-line designations)
+
+### Gen 3: Burst — Sub-System Names
+| TT JP (use this) | Hasbro (do not use) |
+|-----------------|---------------------|
+| God Layer System | SwitchStrike |
+| Cho-Z Layer System | Turbo |
+| Gatinko / GT | (same) |
+| Sparking / SK | (same) |
+| Dynamite Battle / DB | (same) |
+| Burst Ultimate / BU | (same) |
+
+### Gen 3: Bey Name Corrections
+| TT JP (use this) | Hasbro (do not use) |
+|-----------------|---------------------|
+| Valkyrie | Valtryek |
+| Spriggan | Spryzen |
+| Dead Phoenix | Dread Phoenix |
+| Dead Hades | Dread Hades |
+| Dead Stinger (move) | Dread Cannon |
+
+**Note:** In Burst GT, "Dead" base and "Dread" base are two separate TT JP Layer Bases. "Dread Bahamut" (uses Dread base) is the correct TT JP name. "Dead Phoenix" (uses Dead base) is the correct TT JP name for Phi's bey — NOT "Dread Phoenix."
+
+---
+
 ## Case 375 — Shark Edge (BX Blade): C₃ Dual-Face Attack Geometry, Upper Attack Force Decomposition, and Recoil-Driven Spin Depletion
 
 **Thesis:** Shark Edge is a Beyblade X generation zinc-alloy Blade with C₃ rotational symmetry, a total mass of 34–35 g, and a dual contact architecture that simultaneously presents two geometrically distinct strike faces per fin: a steeply upward-sloped upper face (angle α ≈ 35° from the horizontal plane) that redirects collision impulse into a vertical lifting vector capable of tilting the opponent backward and engaging their ratchet off-axis, and a near-radial flat smash face (contact angle φ ≈ 20° from the radial direction) that delivers the maximum possible horizontal smash fraction of cos(20°) ≈ 0.940 into the opponent's lateral surface; the three fins at C₃ symmetry generate three contact events per revolution, and at a typical battle speed of ω = 600 rad/s this yields a contact frequency of f ≈ 286 Hz — but each fin subtends approximately 40° of arc while leaving an 80° inter-fin gap, meaning 67% of each revolution presents no contact geometry, and an opponent whose own blade protrusion is angularly aligned with these gaps passes without impact; the upper attack mechanism is a three-dimensional force decomposition absent from the flat-face smash models used in all prior generations: the upward-sloped fin face forces the opponent blade to tilt at the moment of contact, temporarily rotating their Layer about a horizontal axis and altering the axial alignment between their Layer and Ratchet — this off-axis loading increases burst vulnerability by applying torque along the burst-unlock axis rather than purely tangentially — and the mechanism is effective whether the opponent is in High or Low mode because the fin height (extending upward from the Blade plane) reaches the Layer contact zone regardless of mode height offset; the recoil weakness is intrinsic to the near-radial smash face: at φ = 20° the recoil fraction is sin(20°) ≈ 0.342, meaning 34.2% of each collision impulse reverses back into Shark Edge's own spin axis as a decelerating torque, and with three contacts per revolution at battle spin rates this cumulative self-deceleration is large enough to deplete spin faster than a stamina-type Bit can recover, making Shark Edge a glass cannon whose optimal strategy is an early-match ring-out or burst before spin deficit becomes decisive.

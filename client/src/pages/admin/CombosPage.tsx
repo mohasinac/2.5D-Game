@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGameDataStore } from "@/stores/gameDataStore";
@@ -168,7 +168,7 @@ export function CombosPage() {
   const filtered = query ? items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()) || i.id.includes(query)) : items;
 
   return (
-    <div className="page-shell p-6">
+    <div className="page-shell p-4 sm:p-6">
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-[22px] font-bold text-theme-text">Combos</h1>
@@ -239,7 +239,7 @@ export function CombosPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3.5">
               <div>
                 <span className="text-xs text-theme-muted block mb-1">Cost</span>
                 <SearchableSelect value={String(form.cost)} onChange={v => setForm(f => ({ ...f, cost: Number(v) }))} options={COST_OPTIONS} placeholder="Cost…" />
@@ -250,7 +250,7 @@ export function CombosPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3.5">
               <label className="block">
                 <span className="text-xs text-theme-muted block mb-1">Cooldown (ms)</span>
                 <input type="number" min={0} value={form.cooldownMs} onChange={e => setForm(f => ({ ...f, cooldownMs: Number(e.target.value) }))} className={INP} />
@@ -275,7 +275,7 @@ export function CombosPage() {
 
             <div className="border border-border-c rounded-[10px] p-3.5 mb-3.5">
               <div className="text-xs font-semibold text-theme-muted mb-3">Combat Effect</div>
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {([
                   ["Damage Multiplier (1.0–1.5)", "damageMultiplier", 1.0, 1.5, 0.05] as const,
                   ["Force Impulse", "forceImpulse", 0, 5000, 50] as const,

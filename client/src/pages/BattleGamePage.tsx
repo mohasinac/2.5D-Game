@@ -291,11 +291,28 @@ export function BattleGamePage() {
     }
   }, [gameState?.status, gameEndData]);
 
-  // Show the loading overlay until the room reports gameplay status.
-  const showLoading = !gameState || (gameState.status !== "in-progress" && gameState.status !== "warmup" && gameState.status !== "launching" && gameState.status !== "finished" && gameState.status !== "series-finished");
+  // Once the room has been active (warmup/launching/in-progress) we never re-show
+  // the loading overlay — prevents it flashing back between series games.
+  const gameEverActiveRef = useRef(false);
+  if (
+    gameState?.status === "warmup" ||
+    gameState?.status === "launching" ||
+    gameState?.status === "in-progress"
+  ) {
+    gameEverActiveRef.current = true;
+  }
+  const showLoading = !gameEverActiveRef.current && (
+    !gameState || (
+      gameState.status !== "in-progress" &&
+      gameState.status !== "warmup" &&
+      gameState.status !== "launching" &&
+      gameState.status !== "finished" &&
+      gameState.status !== "series-finished"
+    )
+  );
 
   return (
-    <div className="min-w-[400px] max-w-[1920px] w-full mx-auto relative h-screen bg-black overflow-hidden">
+    <div className="min-w-[320px] max-w-[1920px] w-full mx-auto relative h-screen bg-black overflow-hidden">
       <div ref={containerRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(100vw,100vh)] h-[min(100vw,100vh)]" />
 
       {showLoading && (
@@ -307,7 +324,7 @@ export function BattleGamePage() {
       )}
 
       {/* HUD top bar */}
-      <div className="absolute top-0 left-0 right-0 flex items-start justify-between pointer-events-none z-10 flex-wrap p-[clamp(8px,2vw,16px)]">
+      <div className="absolute top-0 left-0 right-0 flex items-start justify-between pointer-events-none z-[60] flex-wrap p-[clamp(8px,2vw,16px)]">
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
             <div

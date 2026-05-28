@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
@@ -123,7 +123,7 @@ export function TournamentCreatePage() {
           <Field label="Description">
             <textarea className={inputCls + " resize-y min-h-[72px]"} value={form.description} onChange={(e) => set("description", e.target.value)} placeholder="Optional description..." />
           </Field>
-          <div className="grid grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <Field label="Type">
               <SearchableSelect
                 value={form.type}
@@ -155,7 +155,7 @@ export function TournamentCreatePage() {
         </Section>
 
         <Section title="Schedule">
-          <div className="grid grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <Field label="Start Time *">
               <input className={inputCls} type="datetime-local" value={form.scheduledStartTime} onChange={(e) => set("scheduledStartTime", e.target.value)} />
             </Field>

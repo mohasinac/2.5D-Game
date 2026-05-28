@@ -100,9 +100,9 @@ export function PartLibraryPage() {
   const activeMeta = PART_TYPE_MAP[typeFilter];
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-full overflow-hidden">
       {/* Left filter panel */}
-      <aside className="w-48 shrink-0 border-r border-border bg-bg1 flex flex-col overflow-y-auto">
+      <aside className="w-full max-h-[180px] lg:max-h-none lg:w-48 shrink-0 border-b lg:border-b-0 lg:border-r border-border bg-bg1 flex flex-col overflow-y-auto">
         <div className="px-3 py-4 border-b border-border">
           <p className="text-xs font-bold text-faint uppercase tracking-widest mb-1">Part Type</p>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+﻿import React, { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGameDataStore, type ArenaFeatureConfigDoc } from "@/stores/gameDataStore";
@@ -153,7 +153,7 @@ export function ArenaFeatureConfigsPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/[.75] flex items-center justify-center z-[1000] p-4">
-          <div className="bg-bg1 border border-border rounded-2xl p-7 w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
+          <div className="bg-bg1 border border-border rounded-2xl p-4 sm:p-7 w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
             <h3 className="text-base font-bold text-text mb-5">{editing ? "Edit Feature Config" : "New Feature Config"}</h3>
 
             <label className="block mb-3.5">
@@ -204,7 +204,7 @@ export function ArenaFeatureConfigsPage() {
 
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/[.75] flex items-center justify-center z-[1000]">
-          <div className="bg-bg1 border border-border rounded-2xl p-7 max-w-[400px] w-[90%]">
+          <div className="bg-bg1 border border-border rounded-2xl p-4 sm:p-7 max-w-[400px] w-[90%]">
             <h3 className="text-base font-bold text-text mb-2.5">Delete "{confirmDelete.label}"?</h3>
             <p className="text-muted text-sm mb-5">Arena features referencing this config ID will need to be updated manually.</p>
             <div className="flex gap-2.5 justify-end">

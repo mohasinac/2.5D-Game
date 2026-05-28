@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGameDataStore, type PartMaterialDoc } from "@/stores/gameDataStore";
@@ -157,7 +157,7 @@ export function PartMaterialsPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000] p-4 overflow-y-auto">
-          <div className="bg-bg1 border border-border-c rounded-2xl p-7 w-full max-w-[520px]">
+          <div className="bg-bg1 border border-border-c rounded-2xl p-4 sm:p-7 w-full max-w-[520px]">
             <h3 className="text-[17px] font-bold text-theme-text mb-5">
               {editing ? "Edit Material" : "New Material"}
             </h3>
@@ -203,7 +203,7 @@ export function PartMaterialsPage() {
 
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000]">
-          <div className="bg-bg1 border border-border-c rounded-2xl p-7 max-w-[400px] w-[90%]">
+          <div className="bg-bg1 border border-border-c rounded-2xl p-4 sm:p-7 max-w-[400px] w-[90%]">
             <h3 className="text-[16px] font-bold text-theme-text mb-[10px]">Delete "{confirmDelete.label}"?</h3>
             <p className="text-theme-muted text-[13px] mb-5">Tip parts referencing this material ID will retain the string value but lose profile defaults.</p>
             <div className="flex gap-[10px] justify-end">

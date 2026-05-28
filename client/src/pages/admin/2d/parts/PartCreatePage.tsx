@@ -72,7 +72,7 @@ export function PartCreatePage() {
   };
 
   return (
-    <div className="p-8 max-w-[560px]">
+    <div className="p-4 sm:p-8 max-w-[560px]">
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1.5">
           <Link to="/admin/2d/parts" className="text-theme-muted text-[12px] no-underline">Part Search</Link>

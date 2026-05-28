@@ -1,11 +1,11 @@
 ﻿# Beyblade Case Studies — Master Index
-Total: **1130 cases** across 14 files + 1 master reference.
+Total: **1193 cases** across 14 files + 1 master reference.
 
 ---
 
 ## NEXT AVAILABLE CASE NUMBER
 
-> **1135** — All new cases must start here. Update this block before writing any new case.
+> **1194** — All new cases must start here. Update this block before writing any new case.
 
 ---
 
@@ -23,11 +23,11 @@ Each file owns multiple number blocks (primary sequential + overflow blocks crea
 | [6 case study.md](6%20case%20study.md) | 297–353 · 1041–1087 · 1127–1134 | 112 | MFB bottoms → 4D wheels/bottoms/tracks; Zero-G Crystal/Chrome Wheels, ZeroG tracks/tips |
 | [7 case study.md](7%20case%20study.md) | 354–374 | 21 | BX/UX/CX system architecture → All-gen system summaries |
 | [8 case study.md](8%20case%20study.md) | 375–415 | 41 | BX/UX blades, ratchets, bits |
-| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 | 178 | Burst series (all subsystems) full lineage analysis |
+| [9 case study.md](9%20case%20study.md) | 416–544 · 867–891 · 1001–1024 · 1158–1175 | 196 | Burst series (all subsystems) full lineage analysis |
 | [10 case study.md](10%20case%20study.md) | 545–585 | 41 | Arena mechanics, stadiums, launch physics |
 | [11 case study.md](11%20case%20study.md) | 586–600 | 15 | Special move physics: real-part archetypes → game-engine derivation |
 | [12 case study.md](12%20case%20study.md) | 601–618 | 18 | Combo system physics: real-part archetypes, per-combo derivation, detection windows, cost tiers |
-| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1124 | 272 | Franchise special moves, gimmick foundations, and derived combos |
+| [13 case study.md](13%20case%20study.md) | 619–866 · 1098–1157 · 1176–1193 | 313 | Franchise special moves, gimmick foundations, and derived combos |
 | [14 case study.md](14%20case%20study.md) | 892–910 | 19 | Launchers, grips, and accessories (cross-gen) |
 | [MASTER ANALYSIS.md](MASTER%20ANALYSIS.md) | — | — | Engine reference: constants, formulas, normalization |
 
@@ -49,7 +49,12 @@ Cases above 866 were assigned during the global renumber pass to resolve all cro
 | 1097 | 1 | CS4 internal duplicate case 226 (2nd occurrence) | CS4 |
 | 1125-1126 | 2 | Plastic Gen assembly cases: Trygle + Wyborg (Gen 1 A-F Series) | CS2 |
 | 1127-1134 | 8 | Zero-G assembly cases: 8 stock Synchrome combos | CS6 |
-| **1135+** | — | **NEXT AVAILABLE — all future cases start here** | — |
+| 1135–1157 | 23 | Franchise specials: Down Burst, Dragon Crash, Double Winged Cyclone/Grande, Dragon Emperor Life Destructor, Soaring Bite Strike, Soaring Destruction, Supreme Flight, Double Strike | CS13 |
+| 1158–1163 | 6 | Dead Hades + Left Aeclipse Cho-Z parts (renumbered from 1135–1140 after CS13 conflict discovered) | CS9 |
+| 1164–1168 | 5 | Superking generation: Hyperion chip, Ring Super, 1A Chassis, Xceed' tip, Super Hyperion Xceed 1A assembly | CS9 |
+| 1169–1175 | 7 | Burst GT (Gatinko) generation: Bahamut chip, Gen weight, Dread base, Disc 7, Wall frame, Orbit Metal tip, Dread Bahamut 7Wall Orbit Metal assembly | CS9 |
+| 1176–1193 | 18 | Franchise specials: Dragon Scream, Dragoon Tank, Gemini Attack, Drain Spin, Driger Shadow, Drop Rock | CS13 |
+| **1194+** | — | **NEXT AVAILABLE — all future cases start here** | — |
 ### Numbering Notes (Historical)
 
 All former conflicts have been resolved. The notes below document what was fixed.
@@ -229,6 +234,38 @@ All former conflicts have been resolved. The notes below document what was fixed
 | 121a | Eight Balance WD: Octagonal Polygon Mass | Gen1-Plastic | SGS | WD | Eight Balance |
 | 122a | SG (Auto Change Version) Core: Height-Reduced | Gen1-Plastic | SGS | Core | AC Core |
 | 123a | Upper Wolf AR: Steeper Slope, Three-Fold Recoil | Gen1-Plastic | SGS | AR | Upper Wolf |
+| 124 | Metal Saucer AR (Gaia Dragoon MS): Saucer Profile, Spin-Steal via Orbit | Gen1-HMS | HMS | AR | Metal Saucer, spin-steal, orbit |
+| 125 | Spiral Upper AR (Dranzer MS): Omnidirectional Spiral Slopes | Gen1-HMS | HMS | AR | Spiral Upper, omnidirectional |
+| 126 | Upper Dragon AR (Dragoon MF): Shared-Frame Dual Attack | Gen1-HMS | HMS | AR | Upper Dragon, shared-frame |
+| 127 | Devil Crusher AR (Bloody Devil MS): Shared-Frame Upper/Defense | Gen1-HMS | HMS | AR | Devil Crusher, shared-frame |
+| 128 | Knight Crusher AR (Aero Knight MS): High-Recoil, F-Tier Both Spins | Gen1-HMS | HMS | AR | Knight Crusher, recoil |
+| 129 | God Smasher AR (Shining God MS): Shared-Frame Smash | Gen1-HMS | HMS | AR | God Smasher, shared-frame |
+| 130 | Smash Phoenix AR (Dranzer MF): Wide-Wing Horizontal Smash | Gen1-HMS | HMS | AR | Smash Phoenix, wide-wing |
+| 131 | CWD God Ring (Shining God MS): Near-Circular Top-Tier CWD | Gen1-HMS | HMS | CWD | God Ring, top-tier |
+| 132 | CWD Devil Saucer (Bloody Devil MS): Free-Spin Spike, F-Tier | Gen1-HMS | HMS | CWD | Devil Saucer, free-spin |
+| 133 | Wing Attacker CWD (Dranzer MF): Asymmetric Wing Protrusions | Gen1-HMS | HMS | CWD | Wing Attacker CWD, asymmetric |
+| 134 | Metal Change Core RC (Death Gargoyle MS): Auto Sharp→Flat Angle Switch | Gen1-HMS | HMS | RC | Metal Change Core, auto-switch |
+| 135 | Manual Change Core RC (Dranzer MS): Pre-Battle Three-Tip Selector | Gen1-HMS | HMS | RC | Manual Change, three-tip |
+| 136 | Shooter Change Core Alpha RC (Bloody Devil MS): Spin-Direction Tip Preset | Gen1-HMS | HMS | RC | Shooter Change Alpha, spin-direction |
+| 137 | Shooter Change Core Gamma RC (Shining God MS): Improved Spin-Direction Preset | Gen1-HMS | HMS | RC | Shooter Change Gamma, improved |
+| 138 | Metal Weight Grip Core RC (Dragoon MF): Rubber Flat + Internal Ballast | Gen1-HMS | HMS | RC | Metal Weight Grip, rubber, ballast |
+| 139 | Free Shaft Core RC (Dranzer MF): Spin-Retention Decoupled Shaft | Gen1-HMS | HMS | RC | Free Shaft, spin-retention |
+| 140 | CWD Defense Ring (Sea Dragon MS): Near-Circular Top-Tier CWD | Gen1-HMS | HMS | CWD | Defense Ring, top-tier |
+| 141 | Metal Upper AR (Driger MS): Paired Spiral Slopes, RS Primary | Gen1-HMS | HMS | AR | Metal Upper, spiral, Rei |
+| 142 | Jiraiya Blade AR (Jiraiya MS): Heaviest HMS AR, Rotational Smash | Gen1-HMS | HMS | AR | Jiraiya Blade, heaviest |
+| 143 | Metal Ape AR (Magical Ape MS): Upper Attack, Mid-Tier Gimmick | Gen1-HMS | HMS | AR | Metal Ape, upper |
+| 144 | Spark Dragon AR (Thunder Dragon): Free-Spinning Plastic, Non-Competitive | Gen1-HMS | HMS | AR | Spark Dragon, free-spin, non-competitive |
+| 145 | CWD Free Cross (Jiraiya MS): Cross-Shaped Asymmetric CWD | Gen1-HMS | HMS | CWD | Free Cross, asymmetric |
+| 146 | CWD Free Survivor (Thunder Dragon): Circular Survival CWD | Gen1-HMS | HMS | CWD | Free Survivor, survival |
+| 147 | CWD Free Saucer (Thunder Dragon): Saucer Profile Non-Competitive CWD | Gen1-HMS | HMS | CWD | Free Saucer, non-competitive |
+| 148 | Flat Core (Original) RC (Gaia Dragoon MS): Baseline Aggressive Flat | Gen1-HMS | HMS | RC | Flat Core Original, baseline |
+| 149 | Flat Core (New Revision) RC (Magical Ape MS): Improved Smallest-Diameter Flat | Gen1-HMS | HMS | RC | Flat Core Revised, improved |
+| 150 | Metal Weight Flat Core RC (Thunder Dragon): Most Controllable HMS Flat | Gen1-HMS | HMS | RC | Metal Weight Flat, controllable |
+| 151 | Reverse Defenser CWD (Dranzer MF alt-color): Defensive Circular CWD | Gen1-HMS | HMS | CWD | Reverse Defenser, defense |
+| 152 | Bearing Core 2 RC (Jiraiya MS): Rubber Tip, Wear-Dependent Zombie/Balance | Gen1-HMS | HMS | RC | Bearing Core 2, rubber, wear |
+| 153 | Sharp Core RC (Hasbro HMS): Mold-Dependent Sharpness, Non-Competitive | Gen1-HMS | HMS | RC | Sharp Core, Hasbro, non-competitive |
+| 154 | Metal Sharp Core RC (SonoKong Three Kingdoms HMS): Metal Tip, Below Threshold | Gen1-HMS | HMS | RC | Metal Sharp Core, SonoKong |
+| 155 | Semi-Flat Core RC (Driger MS A-124): First Balance-Style HMS RC | Gen1-HMS | HMS | RC | Semi-Flat Core, balance, Driger MS |
 
 ---
 
@@ -414,6 +451,10 @@ All former conflicts have been resolved. The notes below document what was fixed
 | 280 | Scissors Arm AR (Crab Diver): 4.6g LS Huge Power+Recoil, Self-KO Risk, Best Non-CCL | Gen1-Plastic | SGS | AR | Scissors Arm, Crab Diver, LS smash, self-KO |
 | 281 | Cross Gator AR (Trygator V-Force): 4.0g Balance AR, Moderate RS/LS, Non-Competitive in Both | Gen1-Plastic | SGS | AR | Cross Gator, Trygator, balance AR |
 | 282 | Vanishing Moot AR (ANIME-ONLY): 3-Fold Swept-Back Turbine, RS LAD/Survival, Magnacore Centering | Gen1-Plastic | Magnacore | AR | Vanishing Moot, anime-only, survival, LAD |
+| 283 | Neo Cross Horn AR (Uriel 2 / Capricorn Strike G): 3-Fold Dual-Direction Smash; Hasbro Competitive Both Directions | Gen1-Plastic | SGS | AR | Neo Cross Horn, dual-direction, GPS |
+| 284 | Trident Vector AR (Poseidon / Ocean Wrath G): 3-Fold High-Recoil, Non-Competitive Both Directions | Gen1-Plastic | SGS | AR | Trident Vector, recoil, non-competitive |
+| 285 | Mirage Goddess AR (Venus / Venusian G): Heaviest Competitive AR; Top-Tier RS Smash + LS Defense/Spin-Steal | Gen1-Plastic | SGS | AR | Mirage Goddess, heaviest, top-tier |
+| 1097 | CEW Metal Grip (Customize Engine Gear): Only Rubber CEW; Dome Tip, Left EG Turbo Synergy | Gen1-Plastic | EGS | CEW | Metal Grip, rubber, Left EG Turbo |
 
 ---
 
@@ -764,9 +805,9 @@ All former conflicts have been resolved. The notes below document what was fixed
 | 470 | Forge Disc 12 (Sparking) | Gen3-Burst | Burst-SK | Disc | 12 |
 | 471 | Disc Frame Axe (Sparking) | Gen3-Burst | Burst-SK | Frame | Axe |
 | 472 | High Accel' Performance Tip (Sparking) | Gen3-Burst | Burst-SK | Bottom | High Accel Dash |
-| 473 | Dark Deathscyther Energy Layer (SwitchStrike DL) | Gen3-Burst | Burst-DL | Layer | Dark Deathscyther |
-| 474 | Forge Disc Force (SwitchStrike DL) | Gen3-Burst | Burst-DL | Disc | Force |
-| 475 | Jaggy Performance Tip (SwitchStrike DL) | Gen3-Burst | Burst-DL | Bottom | Jaggy |
+| 473 | Dark Deathscyther Energy Layer (God Layer DL) | Gen3-Burst | Burst-DL | Layer | Dark Deathscyther |
+| 474 | Forge Disc Force (God Layer DL) | Gen3-Burst | Burst-DL | Disc | Force |
+| 475 | Jaggy Performance Tip (God Layer DL) | Gen3-Burst | Burst-DL | Bottom | Jaggy |
 
 ### Diabolos Lineage
 
@@ -832,7 +873,7 @@ All former conflicts have been resolved. The notes below document what was fixed
 | 513 | Forge Disc Wheel (Burst / Cho-Z / Sparking) | Gen3-Burst | Burst-SK | Disc | Wheel |
 | 514 | Revolve Performance Tip (Burst / Sparking) | Gen3-Burst | Burst-SK | Bottom | Revolve |
 | 515 | Crash Ragnaruk Energy Layer (Cho-Z) | Gen3-Burst | Burst-CZ | Layer | Crash Ragnaruk |
-| 516 | Forge Disc 11 (Burst / SwitchStrike / Cho-Z) | Gen3-Burst | Burst-CZ | Disc | 11 |
+| 516 | Forge Disc 11 (Burst / God Layer / Cho-Z) | Gen3-Burst | Burst-CZ | Disc | 11 |
 | 517 | Disc Frame Reach (Burst / Cho-Z) | Gen3-Burst | Burst-CZ | Frame | Reach |
 | 518 | Wedge Performance Tip (Cho-Z / Burst) | Gen3-Burst | Burst-CZ | Bottom | Wedge |
 | 519 | DB Core Ragnaruk (DB / BU) | Gen3-Burst | Burst-DB | Chip | DB Core Ragnaruk |
@@ -988,13 +1029,13 @@ All former conflicts have been resolved. The notes below document what was fixed
 ---
 
 
-## Part 13 — Cases 619–866 · 1098–1124
+## Part 13 — Cases 619–866 · 1098–1157 · 1176–1193
 
 > Franchise special moves, gimmick foundations, and derived combos (CS13)
 
 | # | Title | Gen | System | Type | Tags |
 |---|-------|-----|--------|------|------|
-| 619–866 · 1098–1124 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
+| 619–866 · 1098–1157 · 1176–1193 | See [13 case study.md](13%20case%20study.md) for full case-by-case table | Cross-Gen | — | SpecialMove/Gimmick/Combo | special-move, gimmick, combo |
 
 ---
 
@@ -1489,6 +1530,8 @@ Pegasis III · Leone II · Lynx · Kronos · Jupiter · Uranus · Sagittario II 
 
 **Ark Pyramid AR (Desert Sphinxer):**
 Listed in part list but no dedicated case study.
+
+
 
 
 

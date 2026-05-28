@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -113,7 +113,7 @@ export default function BehaviorDefsPage() {
   const inputCls = "w-full px-2.5 py-2 bg-bg0 border border-border-c rounded-lg text-theme-text text-[13px] box-border";
 
   return (
-    <div className="page-shell p-6">
+    <div className="page-shell p-4 sm:p-6">
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-[22px] font-bold text-theme-text">Behavior Definitions</h1>

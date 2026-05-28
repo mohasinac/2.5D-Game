@@ -127,7 +127,7 @@ export function SettingsPage() {
           <h1 className="text-2xl font-bold text-text">Settings</h1>
           <p className="text-faint text-sm mt-1">Game-wide configuration</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={() => setSettings(DEFAULTS)}>Reset Defaults</Button>
           <Button variant="primary" onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save Settings"}
@@ -142,7 +142,7 @@ export function SettingsPage() {
             <Label>Default Arena ID</Label>
             <input type="text" value={settings.defaultArenaId} onChange={(e) => set("defaultArenaId", e.target.value)} placeholder="Firestore arena document ID" className={inputCls} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>Max Players / Room</Label>
               <SearchableSelect
@@ -232,7 +232,7 @@ export function SettingsPage() {
               <span className="text-sm text-text min-w-[28px] text-right">{settings.maxActiveRooms}</span>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
             {([
               ["maxSpectatorsBattle", "Spectators / Battle Room"],
               ["maxSpectatorsTournament", "Spectators / Tournament Room"],

@@ -256,7 +256,7 @@ export function AIBattleSetupPage() {
 
           {/* Difficulty */}
           <Section title="Difficulty" icon="⚡">
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {(["medium","hard","hell"] as Difficulty[]).map(d => {
                 const info = DIFFICULTY_INFO[d];
                 const active = difficulty === d;
@@ -293,7 +293,7 @@ export function AIBattleSetupPage() {
 
           {/* Series format */}
           <Section title="Series Format" icon="🏅">
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {([1,3,5] as BestOf[]).map(n => (
                 <button key={n} onClick={() => setBestOf(n)}
                   className={`px-3 py-[14px] rounded-[10px] cursor-pointer text-center font-bold text-[14px] border ${bestOf === n ? "bg-blue-13 border-theme-blue text-theme-blue" : "bg-bg2 border-border-c text-theme-text"}`}

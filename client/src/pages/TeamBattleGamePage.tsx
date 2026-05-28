@@ -189,12 +189,24 @@ export function TeamBattleGamePage() {
     if (dir) sendInput(dir as Parameters<typeof sendInput>[0]);
   }, [sendInput]);
 
-  const showLoading = !gameState || (
-    gameState.status !== "in-progress" &&
-    gameState.status !== "warmup" &&
-    gameState.status !== "launching" &&
-    gameState.status !== "finished" &&
-    gameState.status !== "series-finished"
+  // Once the room has been active (warmup/launching/in-progress) we never re-show
+  // the loading overlay — prevents it flashing back between series games.
+  const gameEverActiveRef = useRef(false);
+  if (
+    gameState?.status === "warmup" ||
+    gameState?.status === "launching" ||
+    gameState?.status === "in-progress"
+  ) {
+    gameEverActiveRef.current = true;
+  }
+  const showLoading = !gameEverActiveRef.current && (
+    !gameState || (
+      gameState.status !== "in-progress" &&
+      gameState.status !== "warmup" &&
+      gameState.status !== "launching" &&
+      gameState.status !== "finished" &&
+      gameState.status !== "series-finished"
+    )
   );
 
   return (
@@ -232,7 +244,7 @@ export function TeamBattleGamePage() {
       )}
 
       {/* Top-right: Exit + camera controls */}
-      <div className="absolute flex flex-col items-end gap-1.5 pointer-events-auto z-10" style={{ top: 10, right: 10 }}>
+      <div className="absolute flex flex-col items-end gap-1.5 pointer-events-auto z-[60]" style={{ top: 10, right: 10 }}>
         <Link
           to="/game"
           className="rounded-md border no-underline min-h-[32px] flex items-center bg-black/60 text-theme-muted border-border-c px-3 py-1 text-[12px]"

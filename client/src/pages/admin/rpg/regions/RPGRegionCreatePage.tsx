@@ -43,7 +43,7 @@ export default function RPGRegionCreatePage() {
   };
 
   return (
-    <div className="p-6 w-full max-w-3xl">
+    <div className="p-4 sm:p-6 w-full max-w-3xl">
       <div className="mb-5">
         <Link to="/admin/rpg/regions" className="text-blue-400 text-sm hover:underline">&larr; Back to Regions</Link>
         <h1 className="text-[22px] font-bold text-white mt-2">Create Region</h1>
@@ -57,7 +57,7 @@ export default function RPGRegionCreatePage() {
         <div><label className={LBL}>Hub Map ID</label><input className={INP} value={hubMapId} onChange={e => setHubMapId(e.target.value)} /></div>
         <div><label className={LBL}>Connections (JSON)</label><textarea className={TEXTAREA} value={connectionsJson} onChange={e => setConnectionsJson(e.target.value)} rows={4} /></div>
         <div><label className={LBL}>Unlock Gate (JSON)</label><textarea className={TEXTAREA} value={unlockGateJson} onChange={e => setUnlockGateJson(e.target.value)} rows={3} /></div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div><label className={LBL}>World Map Tile X</label><input type="number" className={INP} value={worldMapX} onChange={e => setWorldMapX(+e.target.value)} /></div>
           <div><label className={LBL}>World Map Tile Y</label><input type="number" className={INP} value={worldMapY} onChange={e => setWorldMapY(+e.target.value)} /></div>
         </div>

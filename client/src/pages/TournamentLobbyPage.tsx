@@ -304,7 +304,7 @@ export function TournamentLobbyPage() {
   }, [myParticipant]);
 
   return (
-    <div className="min-h-screen bg-bg0 p-8">
+    <div className="min-h-screen bg-bg0 p-4 sm:p-8">
       <div className="max-w-[860px] mx-auto">
         {/* Header */}
         <div className="mb-7">

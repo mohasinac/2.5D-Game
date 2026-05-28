@@ -23,6 +23,60 @@
 
 ---
 
+## Nomenclature Rules — TT JP Canonical Names (Burst Generation)
+
+All names follow **Takara Tomy Japan (TT JP)** official product naming. Hasbro EN names appear **only** as cross-references marked `[Hasbro: xyz]` — never as the primary name in a case header, thesis, or analysis body.
+
+### Burst Sub-System Names
+| TT JP (use this) | Hasbro branding (do not use as primary) | Years |
+|-----------------|----------------------------------------|-------|
+| Burst / Standard Burst | (same) | 2015–2016 |
+| God Layer System | SwitchStrike | 2017 |
+| Cho-Z Layer System | Turbo | 2018 |
+| Gatinko / GT System | (same / "GT") | 2019 |
+| Sparking / SK | (same) | 2020 |
+| Dynamite Battle / DB | (same) | 2021 |
+| Burst Ultimate / BU | (same) | 2022 |
+
+**Dual Layer System:** Late S1 / early God Layer transition period. Some Energy Layers are two-piece (outer shell + inner core). Label these as "Dual Layer System" (TT JP) — NOT "SwitchStrike Dual Layer."
+
+### Bey Name Corrections
+| TT JP (use this) | Hasbro equivalent (do not use) |
+|-----------------|-------------------------------|
+| Valkyrie | Valtryek |
+| Storm Spriggan | Spryzen S2 |
+| Spriggan | Spryzen |
+| Spriggan Requiem | Turbo Spriggan / Spryzen Requiem |
+| Dead Phoenix | Dread Phoenix |
+| Dead Hades | Dread Hades |
+| Dead Armor | Dread Armor |
+| Cho-Z Valkyrie | Turbo Valkyrie |
+
+### Move / Technique Name Corrections (Burst GT)
+| TT JP (use this) | Hasbro / EN dub (do not use) |
+|-----------------|------------------------------|
+| Dead Stinger (デッドスティンガー) | Dread Cannon |
+| Diving Dead Stinger Press | Diving Dread Cannon Crush |
+| Double Dead Stinger | Double Dread Cannon |
+| Dead Dive | Dread Dive |
+
+### Critical Distinction: Dead vs Dread Layer Bases
+In the Burst GT / Gatinko system, **"Dead"** and **"Dread"** are two DISTINCT TT JP Layer Bases:
+- **Dead** base (デッド) → used in Dead Phoenix (B-148) and Dead Hades (B-155, B-171)
+- **Dread** base (ドレッド) → used in Dread Bahamut (B-155 variant)
+
+"Dread Bahamut" is **correct TT JP** (uses Dread base). "Dead Phoenix" is **correct TT JP** (uses Dead base). The confusion arises because Hasbro uses "Dread" for both (calling Dead Phoenix = "Dread Phoenix"). Never substitute "Dead" → "Dread" or vice versa without verifying which Layer Base the assembly actually uses.
+
+### Code Variable Naming
+Bey names in TypeScript function parameters and variable names follow the TT JP canonical name in camelCase:
+- `valkyrie` (not `valtryek`)
+- `spriggan` (not `spryzen`)
+- `deadPhoenix` (not `dreadPhoenix`)
+- `deadPhoenixLayer` (not `dreadPhoenixLayer`)
+- `deadStinger` / `doubleDeadStinger` (not `dreadCannon` / `doubleDreadCannon`)
+
+---
+
 ## Authoritative Physics Constants (Cross-Verified CS1–CS10)
 
 All case studies share these confirmed values. When writing new cases or adding parts, use these values exclusively. Do NOT substitute values from research batch files, linka files, or other pre-case-study sources.
@@ -9042,9 +9096,9 @@ function highBodyHeightAdvantage(deltaH_mm: number, sigmaTilt_mm: number): numbe
 
 ---
 
-## Case 473 — Energy Layer Dark Deathscyther (SwitchStrike Dual Layer System)
+## Case 473 — Energy Layer Dark Deathscyther (God Layer System)
 
-Energy Layer Dark Deathscyther weighs 7.0 g (r_outer ≈ 21 mm, r_inner ≈ 6 mm) and is composed entirely of ABS, featuring 4 compact blades arranged in two pairs: two blades angled upward at approximately 15° (Upper Attack geometry) and two blades angled to strike at burst-point locations on the opponent's layer (Burst Attack geometry). The layer's design philosophy prioritises burst finishes over stamina — the 4-blade contact pattern generates high inter-layer friction and applies torque to the opponent's ratchet through Burst Attack contacts, with estimated burst-assist torque τ_burst_assist ≈ F_contact × sin(5°) × r_eng_opp = 20 × 0.087 × 0.008 ≈ 13.9 mN·m applied to the opponent per strike. Inertia I_DD = ½ × 0.007 × (0.021² + 0.006²) ≈ 1.670×10⁻⁶ kg·m², which is light for a Dual Layer component, matching the lightweight design focus. The strong teeth represent a design contradiction typical of early SwitchStrike layers: aggressive burst-focused blade geometry paired with strong PC tabs (k_tab ≈ 3800 N/m, 3 tabs, r_eng = 7 mm, τ_own = 23.9 mN·m) means DD tries to burst opponents while resisting burst itself — a theoretically optimal combination that in practice was undermined by a documented breakage history where the compact blade geometry concentrated stress at blade roots. Fatigue crack propagation from repeated high-energy strikes eventually fractures the blade root in ABS (σ_fatigue_ABS ≈ 24 MPa, stress concentration factor K_t ≈ 2.2 at root radius 0.5 mm), limiting competitive longevity. The assembly Dark DS Force Jaggy totals 31.9 g (I_total ≈ 6.598×10⁻⁶ kg·m²).
+Energy Layer Dark Deathscyther weighs 7.0 g (r_outer ≈ 21 mm, r_inner ≈ 6 mm) and is composed entirely of ABS, featuring 4 compact blades arranged in two pairs: two blades angled upward at approximately 15° (Upper Attack geometry) and two blades angled to strike at burst-point locations on the opponent's layer (Burst Attack geometry). The layer's design philosophy prioritises burst finishes over stamina — the 4-blade contact pattern generates high inter-layer friction and applies torque to the opponent's ratchet through Burst Attack contacts, with estimated burst-assist torque τ_burst_assist ≈ F_contact × sin(5°) × r_eng_opp = 20 × 0.087 × 0.008 ≈ 13.9 mN·m applied to the opponent per strike. Inertia I_DD = ½ × 0.007 × (0.021² + 0.006²) ≈ 1.670×10⁻⁶ kg·m², which is light for a Dual Layer component, matching the lightweight design focus. The strong teeth represent a design contradiction typical of early God Layer-era layers: aggressive burst-focused blade geometry paired with strong PC tabs (k_tab ≈ 3800 N/m, 3 tabs, r_eng = 7 mm, τ_own = 23.9 mN·m) means DD tries to burst opponents while resisting burst itself — a theoretically optimal combination that in practice was undermined by a documented breakage history where the compact blade geometry concentrated stress at blade roots. Fatigue crack propagation from repeated high-energy strikes eventually fractures the blade root in ABS (σ_fatigue_ABS ≈ 24 MPa, stress concentration factor K_t ≈ 2.2 at root radius 0.5 mm), limiting competitive longevity. The assembly Dark DS Force Jaggy totals 31.9 g (I_total ≈ 6.598×10⁻⁶ kg·m²).
 
 ```
 ASCII Visual Geometry — Energy Layer Dark Deathscyther (top view)
@@ -9115,9 +9169,9 @@ function darkDeathscytherAssemblyMomentum(iTotal: number, omega0: number): numbe
 
 ---
 
-## Case 474 — Forge Disc Force (SwitchStrike Dual Layer System)
+## Case 474 — Forge Disc Force (God Layer System)
 
-Forge Disc Force weighs 19.2 g [FACT] (r_outer ≈ 26 mm, r_inner ≈ 8 mm) and is machined from zinc alloy with a C₄ (four-fold) symmetry profile — a diamond/plus shape with four trapezoidal protrusions extending to r_max ≈ 29 mm alternating with four recessed zones at r_min ≈ 17 mm. The C₄ geometry gives Force an inertia I_Force = ½ × 0.0192 × (0.026² + 0.008²) ≈ 7.114×10⁻⁶ kg·m², which places it mid-tier among SwitchStrike discs — heavier than Disc 7 (14.9 g) but lighter than Heavy (21.6 g). The four protrusions provide four contact surfaces at disc level, each capable of smash-type impacts; because the protrusions are trapezoidal (flat top, angled sides) the contact geometry is predominantly horizontal, generating pure smash without vertical lift. Inter-protrusion LAD behaviour suffers from the same oscillation problem as C₂ discs but with higher frequency (oscillates 4× per revolution vs 2× for C₂), creating a more chaotic LAD track. At ω = 694 rad/s the protrusion tip velocity v_tip = ω × r_max = 694 × 0.029 = 20.1 m/s — this is the contact velocity for disc-level strikes, which combined with zinc's elastic properties (e_rest ≈ 0.65) produces collision forces of F_contact ≈ m_reduced × v_tip × (1 + e_rest) / t_contact ≈ 0.0096 × 20.1 × 1.65 / 0.001 = 318 N at hard contact. The C₄ symmetry means Force is fully balanced with zero eccentricity by design — a significant improvement over C₂ discs (Disc 12) in a combo requiring driver stability for burst-finish opportunities.
+Forge Disc Force weighs 19.2 g [FACT] (r_outer ≈ 26 mm, r_inner ≈ 8 mm) and is machined from zinc alloy with a C₄ (four-fold) symmetry profile — a diamond/plus shape with four trapezoidal protrusions extending to r_max ≈ 29 mm alternating with four recessed zones at r_min ≈ 17 mm. The C₄ geometry gives Force an inertia I_Force = ½ × 0.0192 × (0.026² + 0.008²) ≈ 7.114×10⁻⁶ kg·m², which places it mid-tier among God Layer-era discs — heavier than Disc 7 (14.9 g) but lighter than Heavy (21.6 g). The four protrusions provide four contact surfaces at disc level, each capable of smash-type impacts; because the protrusions are trapezoidal (flat top, angled sides) the contact geometry is predominantly horizontal, generating pure smash without vertical lift. Inter-protrusion LAD behaviour suffers from the same oscillation problem as C₂ discs but with higher frequency (oscillates 4× per revolution vs 2× for C₂), creating a more chaotic LAD track. At ω = 694 rad/s the protrusion tip velocity v_tip = ω × r_max = 694 × 0.029 = 20.1 m/s — this is the contact velocity for disc-level strikes, which combined with zinc's elastic properties (e_rest ≈ 0.65) produces collision forces of F_contact ≈ m_reduced × v_tip × (1 + e_rest) / t_contact ≈ 0.0096 × 20.1 × 1.65 / 0.001 = 318 N at hard contact. The C₄ symmetry means Force is fully balanced with zero eccentricity by design — a significant improvement over C₂ discs (Disc 12) in a combo requiring driver stability for burst-finish opportunities.
 
 ```
 ASCII Visual Geometry — Forge Disc Force (top view)
@@ -9185,7 +9239,7 @@ function forceDiscSpinDecay(mTotal_g: number, iTotal: number): { dOmega: number;
 
 ---
 
-## Case 475 — Performance Tip Jaggy (SwitchStrike Dual Layer System)
+## Case 475 — Performance Tip Jaggy (God Layer System)
 
 Performance Tip Jaggy weighs 5.7 g (r_contact ≈ 18 mm flat star perimeter, shaft r ≈ 4 mm, height ≈ 10 mm) and is defined by its 8-pointed flat star profile — 8 triangular teeth extending outward from a central hub, creating a jagged irregular contact surface that dramatically disrupts smooth stadium banking. The star-shaped contact patch (r_outer ≈ 18 mm when fully deployed, but in practice the points contact at r ≈ 16 mm before the body prevents further tilt) produces a large effective contact radius r_eff ≈ 10 mm (mean of hub-to-tip), giving spin decay dω/dt = −(μ_Jaggy × m_total × g × r_eff) / I_total = −(0.45 × 0.0319 × 9.81 × 0.010) / 6.598×10⁻⁶ = −21.3 rad/s², t_battle = 416 / 21.3 = 19.5 s — a fast driver, though not as extreme as rubber tips. The key Jaggy property is anti-banking: when a spin-stealing stamina opponent attempts to bank along the stadium wall and drain spin via layer contact, Jaggy's star perimeter creates intermittent contact rather than smooth rolling, reducing the effective contact duration per orbit by approximately 60% (duty_cycle ≈ 0.4 vs 1.0 for smooth), halving the spin transfer rate. Inertia I_J = ½ × 0.0057 × (0.018² + 0.004²) ≈ 9.674×10⁻⁷ kg·m², contributing 14.66% of the 31.9 g assembly — a large share for a driver, amplifying the already-significant spin cost of the star contact. The Dark DS Force Jaggy assembly is a glass-cannon attack combination: high contact aggression from DD's burst-focused blades and Force's four protrusions, paired with Jaggy's rough-road disruption, at the cost of very short stamina (~19 s) and a lightweight assembly (31.9 g, L₀ = 4.579×10⁻³) that risks being KO'd by heavier opponents.
 
@@ -11664,9 +11718,9 @@ function crashRagnarukEccentricity(ecc_mm: number, omega_radps: number, mLevel_g
 
 ---
 
-## Case 516 — Forge Disc 11 (Burst / SwitchStrike / Cho-Z)
+## Case 516 — Forge Disc 11 (Burst / Cho-Z)
 
-The Forge Disc 11 is an 18.5 g acrylonitrile-butadiene-styrene core disc (not zinc-alloy forged despite the "Forge Disc" naming convention for the category) in an elliptical shape with each semi-ellipse featuring one large protrusion that together create the visual of the number 11. One protrusion contains a large indent intended to evoke an asymmetric character but the shallow depth (estimated h_indent=0.8 mm) displaces insufficient mass to produce a measurable eccentricity: dI_indent=rho_ABS x V_indent x r_indent^2=1100x(0.8e-3 x 3e-3 x 5e-3)x(0.016^2)=3.5x10^-9 kg*m^2 (negligible). The elliptical body has semi-major axis a=20 mm and semi-minor axis b=14 mm at its outer edge and an inner bore r_i=8 mm; approximating the elliptical ring inertia as I_11=(m/4)(a^2+b^2)-I_bore=0.0185/4x(0.020^2+0.014^2)-0.5x0.0185x0.008^2=0.004625x(4e-4+1.96e-4)-5.92e-7=2.755e-6 kg*m^2. The light weight (18.5 g) makes Disc 11 the lightest core disc in the Cho-Z / SwitchStrike lineup: compared to Disc 0 or Disc 7 (both approximately 21-24g), the 2.5-5.5g deficit translates directly to lower OWD, reducing total assembly I by approximately 1.5-2.5x10^-6 relative to those discs, and a corresponding reduction in t_battle of 20-35 seconds. The primary purpose of Disc 11 in the Crash Ragnaruk 11Reach Wedge assembly is as a frame mount: the Disc Frame system inserts thin annular frames into the 11 core to extend the effective outer radius from 20 mm (core alone) to whatever the Frame provides. With Reach frame (r_frame_o=21 mm, aggressive blade geometry), the combined 11Reach disc system achieves I_11Reach=I_11+I_Reach=2.755e-6+1.003e-6=3.758e-6 kg*m^2 at combined mass 21.0 g.
+The Forge Disc 11 is an 18.5 g acrylonitrile-butadiene-styrene core disc (not zinc-alloy forged despite the "Forge Disc" naming convention for the category) in an elliptical shape with each semi-ellipse featuring one large protrusion that together create the visual of the number 11. One protrusion contains a large indent intended to evoke an asymmetric character but the shallow depth (estimated h_indent=0.8 mm) displaces insufficient mass to produce a measurable eccentricity: dI_indent=rho_ABS x V_indent x r_indent^2=1100x(0.8e-3 x 3e-3 x 5e-3)x(0.016^2)=3.5x10^-9 kg*m^2 (negligible). The elliptical body has semi-major axis a=20 mm and semi-minor axis b=14 mm at its outer edge and an inner bore r_i=8 mm; approximating the elliptical ring inertia as I_11=(m/4)(a^2+b^2)-I_bore=0.0185/4x(0.020^2+0.014^2)-0.5x0.0185x0.008^2=0.004625x(4e-4+1.96e-4)-5.92e-7=2.755e-6 kg*m^2. The light weight (18.5 g) makes Disc 11 the lightest core disc in the Cho-Z / God Layer era lineup: compared to Disc 0 or Disc 7 (both approximately 21-24g), the 2.5-5.5g deficit translates directly to lower OWD, reducing total assembly I by approximately 1.5-2.5x10^-6 relative to those discs, and a corresponding reduction in t_battle of 20-35 seconds. The primary purpose of Disc 11 in the Crash Ragnaruk 11Reach Wedge assembly is as a frame mount: the Disc Frame system inserts thin annular frames into the 11 core to extend the effective outer radius from 20 mm (core alone) to whatever the Frame provides. With Reach frame (r_frame_o=21 mm, aggressive blade geometry), the combined 11Reach disc system achieves I_11Reach=I_11+I_Reach=2.755e-6+1.003e-6=3.758e-6 kg*m^2 at combined mass 21.0 g.
 
 ```
 Forge Disc 11 -- top view
@@ -11739,7 +11793,7 @@ function disc11LightWeightBattleTimePenalty(iTotal_with11: number, iHeavier: num
 
 ---
 
-## Case 517 — Disc Frame Reach (Burst / SwitchStrike / Cho-Z)
+## Case 517 — Disc Frame Reach (Burst / Cho-Z)
 
 The Disc Frame Reach is a 2.5 g polycarbonate annular frame with six clockwise-angled blades distributed around its circumference: three blades positioned at the upper height of the frame and three at a lower height, creating an interleaved staggered arrangement. Mounted into Disc 11 at r_i=19 mm, the frame outer blade tips extend to r_o=21 mm, adding I_Reach=0.5x0.0025x(0.019^2+0.021^2)=1.003x10^-6 kg*m^2 to the disc system inertia. The clockwise blade orientation in the right-spin Crash Ragnaruk assembly means the blade leading faces attack in the direction of rotation: when the disc rim contacts an opponent's layer during an interaction at disc height, the clockwise blade face presents at approximately theta_blade=30 degrees from radial, producing a normal force component that acts tangentially to apply a torque tau_reach_disc=mu_disc x F_contact x r_frame x sin(theta_blade)=0.10 x N x 0.020 x sin(30 deg)=0.001N per unit normal force. At a typical contact force of N=15 N this produces tau=15 mN*m of burst-direction torque on the opponent, which is small but cumulative over many contacts. The rough perimeter of the staggered blade arrangement (alternating high-low blades create an uneven rim) inhibits LAD by preventing smooth floor-sliding contact during tilt: LAD r_LAD is undefined for Reach because the rough edge transitions abruptly rather than smoothly. The frame mass of 2.5 g is among the heavier frames available, which is the primary reason to choose Reach over lighter frames (Cross, Glaive): the additional 1.5-2.0 g over those frames provides approximately 8x10^-7 kg*m^2 more inertia in the 11+Frame combination, though still far below heavier discs. When used in a left-spin combination the blade direction reversal means the blades trail rather than lead, reducing recoil during disc contacts.
 
@@ -11818,7 +11872,7 @@ function disc11ReachAssemblyInertia(mLayer_g: number, mDisc11_g: number, mFrame_
 
 ---
 
-## Case 518 — Performance Tip Wedge (Cho-Z / Burst / SwitchStrike)
+## Case 518 — Performance Tip Wedge (Burst / Cho-Z)
 
 The Performance Tip Wedge is a 7.0 g hollow zinc-alloy conical driver with a wide low-angle cone geometry designed to maximise stamina through the combination of minimal contact radius and metal low friction. The cone is hollow: the outer zinc-alloy shell (t_wall=0.8 mm) encloses an air cavity that reduces mass relative to a solid cone of the same dimensions, concentrating the 7.0 g primarily in the shell walls at a mean radius r_shell=7 mm and height h_cone=12 mm. The contact tip is a truncated cone terminating at r_tip=1 mm; the shallow half-angle of the cone theta_cone=20 degrees (measured from the vertical axis, so tip-to-wall angle = 70 deg from horizontal, very shallow) means the tip-floor contact is a near-point contact with mu_cone_metal=0.08 (zinc alloy on polycarbonate stadium). Spin decay dw/dt=-(mu x m x g x r_tip)/I_total=-(0.08x0.0469x9.81x0.001)/1.425e-5=-2.574 rad/s^2 and t_battle=416/2.574=162 s for the Crash Ragnaruk 11Reach assembly. Two major weaknesses define Wedge in competitive use: first, the low friction cone on a low-mass assembly (46.9 g total) means lateral friction coefficient for KO resistance is also mu_tip=0.08, far lower than the stabilising floor contact of rubber or flat tips, so the beyblade slides easily on impact and KO resistance is poor; second, the hollow metal body is intrinsically unbalanced (manufacturing cavity eccentricity e_Wedge=0.4 mm estimated from the hollow construction), adding to Crash Ragnaruk layer eccentricity for a combined e_total=0.6+0.4=1.0 mm, producing a pronounced wobble precession f_prec=1.0e-3x694^2/(2*pi*9.81)=7.78 Hz during battle. This wobble increases burst risk by cyclically increasing the normal force on one side of the ratchet teeth. Wedge has no Beystadium damage capability unlike its counterparts Metal Sharp (Hasbro) and Metal Needle (X series); the cone angle is too shallow and the tip is not sharp enough to score the stadium surface. The Crash Ragnaruk 11Reach Wedge assembly totals m_total=46.9 g, I_total=1.425x10^-5 kg*m^2, L0=9.889x10^-3 kg*m^2/s, t_battle=162 s.
 
@@ -14222,7 +14276,7 @@ function justDriverTwoPhase(mu_phase1: number, rEff_mm: number, mTotal_g: number
 
 ---
 
-### Case 543: Energy Layer — Storm Spriggan (God Layer / SwitchStrike System)
+### Case 543: Energy Layer — Storm Spriggan (God Layer System)
 
 **Thesis.** Storm Spriggan is a dual-spin right-spin Balance Type God Layer massing 8.8 g whose elliptical body carries two under-layer polycarbonate contact points at r_outer = 35 mm and two over-layer square-projection blades at the same radius, giving I_layer = 0.5 × 0.0088 × (0.008² + 0.035²) = 5.672×10⁻⁶ kg·m². The dual-spin gimmick is enabled by a reversible axle; switching to left-spin reduces recoil against right-spin opponents by converting the contact geometry from a trailing-to-leading impact to a gear-mesh cushion. The Layer's fatal competitive flaw lies in its teeth: Storm Spriggan's engagement tabs have an estimated spring constant k_tab ≈ 0.15 N/mm and engagement depth δ ≈ 0.30 mm, yielding τ_burst = N × k_tab × δ × r_engage = 2 × 150 × 3.0×10⁻⁴ × 0.014 = 1.26×10⁻³ N·m = 1.26 mN·m, only 12% of a standard God Layer's τ_burst ≈ 10.5 mN·m. At ω₀ = 694 rad/s any lateral recoil torque exceeding 1.26 mN·m — trivially achievable at normal play speeds — triggers an immediate Burst. The wiki notes the tabs are "smaller than Chaos, which are reputed to perform poorly," confirming the tab geometry sits at the absolute minimum of the competitive range. Storm Spriggan is excluded from serious play solely by this Burst deficiency; its mass distribution and dual-spin capability are otherwise sound.
 
@@ -24240,3 +24294,1869 @@ function killerDeathscyther2VortexHunter() {
 
 
 
+
+---
+
+## Case 1158 — Energy Layer: Dead Hades (22.2 g, Cho-Z Layer System, Balance Type, Right-Spin)
+
+**Generation:** Gen 3 Burst — Cho-Z Layer System  
+**Type:** Balance  
+**Spin direction:** Right  
+**Level Chip compatible:** Yes (Level Chip mitigates imbalance)
+
+---
+
+### 1. Mass and Metal Distribution
+
+Dead Hades carries seven discrete metal weights: one central weight and six peripheral weights arranged around the scythe blades.
+
+| Region | Est. mass (g) | r_eff (mm) | I_contribution (×10⁻⁶ kg·m²) |
+|--------|--------------|-----------|-------------------------------|
+| 6 outer blade weights | 5.0 | 37 | 6.845 |
+| 1 center weight | 1.5 | 10 | 0.150 |
+| ABS body (by difference) | 15.7 | annular r_o=42, r_i=16 | 15.860 |
+| **Total** | **22.2** | — | **22.855** |
+
+I_Dead_Hades = **2.286×10⁻⁵ kg·m²**
+
+Metal fraction: 6.5 g / 22.2 g = **29.3%** of mass  
+Metal I fraction: 6.995×10⁻⁶ / 2.286×10⁻⁵ = **30.6%** of I_total
+
+---
+
+### 2. Attack Geometry: Scythe Blade Contact Points
+
+Dead Hades has two large scythe-shaped blades arranged symmetrically (n=2). Each scythe blade presents a steep contact face.
+
+**Contact angle estimate:** ~40° from tangential (aggressive smash geometry)  
+**Effective contact radius:** r_contact ≈ 38 mm (blade tip reach)  
+**Smash coefficient (estimate):** F_smash / F_incoming ≈ sin(40°) = 0.643
+
+At Cho-Z launch ω₀ = 694 rad/s:  
+v_tip = ω₀ × r_contact = 694 × 0.038 = **26.4 m/s**
+
+Per-contact impulse vs 40 g opponent:  
+m_eff = (0.0222 × 0.040) / (0.0222 + 0.040) = **0.01426 kg**  
+J_contact = m_eff × v_tip × (1 + e) = 0.01426 × 26.4 × 1.2 (e=0.2, metal-on-ABS) = **0.451 N·s**
+
+This is an exceptionally high per-contact impulse — the heaviest Cho-Z layers in this library (e.g., Dead Phoenix at 21.8 g) produce J≈0.40–0.45 N·s. Dead Hades is at the high end.
+
+---
+
+### 3. Imbalance and Level Chip Interaction
+
+The official description confirms Dead Hades is "unbalanced, though not to the same degree as others." Quantifying this:
+
+The two scythe blades create a geometric imbalance due to their asymmetric mass distribution (the blades are swept rather than perfectly radially symmetric). Six outer metal weights partially compensate but cannot fully eliminate the center-of-mass offset.
+
+**Estimated CoM offset:** Δr_CoM ≈ 1.0–1.5 mm (less than Dead Phoenix's ~2.0–2.5 mm based on "not to the same degree")
+
+**Effect without Level Chip (at ω_battle = 416 rad/s):**  
+Wobble amplitude ∝ Δr_CoM × m / I = 0.0013 × 0.0222 / 2.286×10⁻⁵ = **1.26 rad/s per mm offset**  
+Effective wobble: ~1.6 rad/s → marginal precession increase
+
+**Effect with Level Chip (~0.5 g at r≈8 mm):**  
+Corrective I contribution: 0.0005 × (0.008)² = 3.2×10⁻⁸ kg·m² (negligible to I_total)  
+The Level Chip corrects CoM offset by filling the underside recess, reducing Δr_CoM by ~60–70% → wobble drops to ~0.5 rad/s. **Level Chip is strongly recommended for Dead Hades.**
+
+---
+
+### 4. Burst Resistance: Fine Locks
+
+Dead Hades uses fine (shallow) lock teeth. Fine locks reduce the burst-resistance torque T_lock available before skip-over occurs.
+
+**Standard lock depth Δ_std ≈ 0.8 mm** (coarse teeth, e.g., Valkyrie-type)  
+**Fine lock depth Δ_fine ≈ 0.4 mm** (Dead Hades)  
+**T_lock ∝ Δ_lock:** fine locks provide ~50% of the burst-resistance torque of coarse locks at equivalent contact geometry.
+
+Compensating factor: Dead Hades I_layer = 2.286×10⁻⁵ kg·m². High rotational inertia resists angular deceleration during a burst event, reducing the Δω spike that must overcome the lock tooth. At Cho-Z ω₀ = 694 rad/s:  
+Δω for lock skip = T_lock × t_contact / I  
+With fine locks: T_lock ≈ 0.008 N·m (estimate), t_contact ≈ 5 ms  
+Δω_required = 0.008 × 0.005 / 2.286×10⁻⁵ = **1.75 rad/s** — very easy to skip at high impact velocities.
+
+**Conclusion on burst risk:** Dead Hades is genuinely fine-lock-vulnerable. Against attack-type opponents with high tip speeds (≥2.0 m/s at blade), burst risk is elevated. Level Chip eliminates the imbalance contribution to burst risk but does not address the fine lock depth itself. A heavier disc (e.g., 0 or 10) is preferable over 11 to maximise inertia compensation.
+
+---
+
+### 5. Balance Type Assessment
+
+"Balance Type" in Cho-Z context means the scythes offer smash attack while the overall round-ish profile provides some recoil-softening. In practice:
+- **Too little recoil curvature for pure attack:** Scythe blades are large but the swept-back profile reduces the normal impulse component vs a sharp-angle attack type (e.g., Cho-Z Valkyrie ≈ 0.72 sin component vs Dead Hades ≈ 0.64). Attack ceiling is ~12% lower than dedicated attack layers.
+- **Too much recoil for defense/stamina:** The scythe blades still deflect incoming force partially inward rather than absorbing it, meaning each opponent contact causes non-negligible Δω to Dead Hades itself. Estimated self-spin-loss per contact: ~8–12 rad/s at typical battle conditions.
+
+**Best role:** Heavy attack combos where the operator accepts higher burst risk in exchange for the high mass and high impulse delivery.
+
+---
+
+## Case 1159 — Forge Disc 11 (est. 11.4 g, Cho-Z Era Core Disc)
+
+**Generation:** Gen 3 Burst — Cho-Z Layer System  
+**Type:** Core Disc (paired with Frames)  
+**Shape:** Elliptical, asymmetric indent on one side
+
+---
+
+### 1. Mass and Inertia
+
+Forge Disc 11 is described as one of the lightest Core Discs — lighter than most standard non-Core Burst discs (~15–22 g range). Estimated mass: **11.4 g** (lightest plausible Core Disc for this generation).
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) |
+|-----------|-------|----------|----------|-----------------|
+| Disc 11 body | 11.4 | 35 | 8 | 7.347 |
+
+I_11 = 0.5 × 0.0114 × (0.035² + 0.008²) = 0.5 × 0.0114 × 0.001289 = **7.347×10⁻⁶ kg·m²**
+
+Compared to Forge Disc 10 (Case 868: 23.8 g, I = 8.861×10⁻⁶) and Forge Disc 12 (Case 883: 16.1 g, I = 4.711×10⁻⁶):
+- Disc 11 mass: −52% vs Disc 10
+- Disc 11 I: −17% vs Disc 10 (despite halved mass, outer radius is similar → I deficit is less severe than mass deficit)
+
+---
+
+### 2. Impact on Burst Resistance
+
+**Burst resistance from disc mass:**  
+Adding disc inertia I_disc increases total I_assembly, requiring more angular deceleration to skip a lock tooth. With Disc 11 at I = 7.347×10⁻⁶:  
+Fraction of assembly I at launch: 7.347×10⁻⁶ / (I_Layer + I_11 + I_Frame + I_Driver)
+
+In the Dead Hades assembly (I_total = 3.711×10⁻⁵, see Case 1162):
+Disc 11 fraction = 7.347×10⁻⁶ / 3.711×10⁻⁵ = **19.8%**
+
+For comparison, Disc 10 (I = 8.861×10⁻⁶) in the same assembly would contribute 23.9%. The difference is ~4 percentage points — the "burst resistance from high I disc" argument does not apply strongly to either 11 or 10 when paired with Cho-Z layers.
+
+**Official verdict confirmed:** Disc 11's light weight provides no meaningful burst resistance advantage when paired with heavy Cho-Z layers.
+
+---
+
+### 3. Frame Compatibility
+
+Disc 11's elliptical profile and symmetric design make it compatible with a Frame. The "11" numeral indent is cosmetic only — the indent depth creates no measurable static imbalance effect (confirmed by official description).
+
+**Recommendation:** Disc 11 is a suboptimal choice in virtually all Cho-Z attack and defense combos. Its only niche is pairing with heavy Frames (e.g., Wall) where the Frame mass compensates, or in very light combinations where minimising total Disc mass is desired for tip-dominated movement at the cost of stability.
+
+---
+
+## Case 1160 — Disc Frame: Turn (3.6 g, Cho-Z Era)
+
+**Generation:** Gen 3 Burst — Cho-Z Layer System  
+**Type:** Disc Frame (two-mode gimmick)  
+**Modes:** Defense Mode / Attack Mode  
+**Mass ranking among frames:** Heavier than Lift and Bump; lighter than Wall
+
+---
+
+### 1. Mass and Inertia
+
+| Component | m (g) | r_o (mm) | r_i (mm) | I (×10⁻⁶ kg·m²) |
+|-----------|-------|----------|----------|-----------------|
+| Frame Turn | 3.6 | 46 | 33 | 5.726 |
+
+I_Turn = 0.5 × 0.0036 × (0.046² + 0.033²) = 0.5 × 0.0036 × (0.002116 + 0.001089) = 0.5 × 0.0036 × 0.003205 = **5.768×10⁻⁶ kg·m²**
+
+Turn sits near the top of Frame inertia values. Using established Frame comparisons:
+- Frame Glaive (Case 880, 2.0 g): I = 6.665×10⁻⁷ (n=1 blade, very low I despite label)
+- Frame Turn (3.6 g): I = 5.768×10⁻⁶ (compact annular ring, high I per gram ratio)
+- Frame Wall (est. 4.0–4.5 g): I_Wall ≈ 6.5–7.5×10⁻⁶ (heavier than Turn)
+
+---
+
+### 2. Defense Mode / Attack Mode Gimmick
+
+Turn's two-mode mechanism involves a physically rotatable outer ring or tab system (similar to Lift) that presents either a forward-facing slope (Attack Mode — deflects opponent upward/inward) or a recessed flat (Defense Mode — absorbs contact without redirection).
+
+**Contact height analysis:** For mode-switching between Defense and Attack to function, the Frame's contact zone must intersect with incoming attacks at Disc-to-Layer height. In Burst, the Layer sits above the Disc. Disc-to-Layer contact height is:
+
+h_contact ≈ (Layer height − Disc height) = typically 2–4 mm gap.
+
+Most Burst Performance Tips place the Disc at a nearly constant height relative to the stadium floor. For Disc-to-Layer contact to occur: the opponent's Layer contact radius must equal the assembly's Disc outer radius at the same height. With typical Burst layer radii (~42–46 mm) and standard tip heights, this geometry is achieved only when:
+1. Both assemblies are at similar tilt angles, OR
+2. One assembly launches from a much lower position
+
+**Quantified probability of Disc-to-Layer contact:** Given the 2–4 mm height gap and ±1–2 mm height variance, contact probability is approximately 15–25% of all Layer-to-Layer collision events — confirming the official text that "such contact is rare."
+
+**Practical implication:** Turn's gimmick is cosmetic in standard combat. Its value is purely the 3.6 g mass contribution, not the mode-switching. For heavy attack combos (paired with Discs 0 or 10), Turn provides useful inertia at the Frame radius (46 mm) without adding scrape risk.
+
+---
+
+### 3. Competitive Niche
+
+| Scenario | Assessment |
+|---------|------------|
+| Paired with Disc 0 (heavy, ~28 g) | Turn's I adds 5.768×10⁻⁶ to I_total → useful attack contribution at r=46 mm |
+| Paired with Disc 11 (light, 11.4 g) | Combined I = 7.347 + 5.768 = 13.115×10⁻⁶ — modest; Wall frame preferred for same disc |
+| Disc-to-Layer contact gimmick activation | Rare (~15–25% of impacts); negligible net effect |
+| Scrape risk vs Wall frame | None — Turn's profile is flush with or recessed below Layer plane at standard heights |
+
+**Verdict:** Turn is a competent heavyweight Frame whose gimmick never fires in practice. Use it when Wall is unavailable and you need Frame mass without scrape risk.
+
+---
+
+## Case 1161 — Performance Tip: Zephyr' (5.8 g, Cho-Z Era)
+
+**Generation:** Gen 3 Burst — Cho-Z Era  
+**Type:** Hollow plastic flat (hole-flat geometry)  
+**Height:** Standard  
+**Spring:** Thicker than predecessor Zephyr — higher burst resistance
+
+---
+
+### 1. Mass and Geometry
+
+Zephyr' (Prime) is a hollow-centre plastic flat tip — structurally equivalent to Hole Flat (HF) from MFB (Case 34 comparison: Metal Flat at ~1.3 g, vs Zephyr's polymer construction at 5.8 g driver mass including locking mechanism).
+
+**Contact geometry:** Annular flat with hollow centre  
+r_outer ≈ 5 mm (outer rim of flat disc)  
+r_inner ≈ 2 mm (hollow hole radius)  
+Effective friction radius r_eff = √(r_o² + r_i²)/√2 ≈ **4 mm**
+
+μ_Zephyr' = **0.15** (ABS flat on smooth polypropylene dish — confirmed plastic flat construction, lower friction than rubber tips, slightly higher than MFB Metal Flat at 0.10)
+
+---
+
+### 2. Spin Decay (Standalone Tip Contribution)
+
+For an assembly mass of m = 43.0 g (Dead Hades 11Turn, Case 1162):  
+τ_friction = μ × m × g × r_eff = 0.15 × 0.043 × 9.81 × 0.004 = **2.53×10⁻⁴ N·m**
+
+This is the dominant spin decay torque in the Dead Hades 11Turn Zephyr' assembly.
+
+---
+
+### 3. Movement Pattern Analysis
+
+**Tornado Ridge catch:** Zephyr' at ω₀ = 694 rad/s achieves sufficient tip velocity to reach the Tornado Ridge:  
+v_tip_orbit at Ridge radius (≈ 60 mm from center): v_orbit = ω_orbit × r_ridge  
+For Tornado Ridge stall: v_orbit ≈ 0.3–0.5 m/s → ω_orbit = 0.4/0.060 ≈ 6.7 rad/s  
+Zephyr' can sustain Ridge position until ω_assembly falls to ~6.7 rad/s — very late in spin life.
+
+**Banking pattern stability:** The official description confirms Zephyr' can lose its banking pattern in unbalanced assemblies. Dead Hades (Δr_CoM ≈ 1.0–1.5 mm) without Level Chip creates periodic centrifugal perturbation:  
+F_centrifugal = m × Δr_CoM × ω² = 0.043 × 0.0013 × 694² = **26.9 N** (at launch) → very significant  
+This force disrupts the banking pattern by pushing the assembly off the circular orbit each revolution. **Level Chip is mandatory when running Dead Hades with Zephyr'.**
+
+---
+
+### 4. Self-KO Risk Quantification
+
+Zephyr' self-KO risk occurs when orbital momentum exceeds the dish-edge containment force.
+
+**Critical orbital ω:** ω_orbit_crit = √(F_wall / (m × r_dish)) where F_wall ≈ 2 N (typical dish-edge contact force)  
+= √(2 / (0.043 × 0.12)) = √(2 / 0.00516) = √387.6 = **19.7 rad/s**
+
+At launch ω₀ = 694 rad/s, the assembly will orbit at much more than 19.7 rad/s — the Tornado Ridge acts as the speed governor, keeping orbital speed within bounds. Once ω drops and Ridge contact is lost, orbital speed drops with it. Self-KO risk is **low in practice** because the flat tip's friction with the stadium floor damps orbital speed automatically. However, in unbalanced assemblies (no Level Chip), the periodic centrifugal kick can push the assembly over the critical threshold during the first few seconds.
+
+---
+
+### 5. Spring Improvement vs Predecessor
+
+| Property | Zephyr | Zephyr' |
+|---------|--------|---------|
+| Spring thickness | Standard | Thicker (+~30% spring constant estimate) |
+| Burst resistance contribution | Moderate | Higher |
+| Driver damage risk after opponent burst | High (hollow shell deforms) | Reduced |
+| Movement speed | Accel-comparable | Accel-comparable (unchanged) |
+
+**Verdict for Zephyr':** An excellent mobile-stamina and attack/stamina tip. Its hollow flat geometry enables Tornado Ridge banking similar to Accel but with slightly less friction, extending spin life. The thicker spring meaningfully improves burst resistance over the base Zephyr. **Primary weakness is the self-KO risk in unbalanced assemblies — always pair with Level Chip when using on imbalanced layers.**
+
+---
+
+## Case 1162 — Dead Hades 11Turn Zephyr': Full Assembly (Cho-Z Layer System, Balance Attack / Stamina Hybrid)
+
+**Assembly mass:** Dead Hades Layer (22.2 g, Case 1158) + Forge Disc 11 (11.4 g, Case 1159) + Frame Turn (3.6 g, Case 1160) + Zephyr' Tip (5.8 g, Case 1161) + Level Chip (0.5 g est.) = **43.5 g**
+
+**Generation:** Gen 3 Burst — Cho-Z Layer System  
+**Spin direction:** Right
+
+---
+
+### 1. Moment of Inertia Budget
+
+| Component | I (×10⁻⁶ kg·m²) | % of I_total |
+|-----------|-----------------|-------------|
+| Dead Hades Layer | 22.855 | 61.6 % |
+| Forge Disc 11 | 7.347 | 19.8 % |
+| Frame Turn | 5.768 | 15.5 % |
+| Zephyr' Tip + LC | 1.186 | 3.2 % |
+| **Total** | **37.156** | 100 % |
+
+I_total = **3.716×10⁻⁵ kg·m²**
+
+The Layer contributes 61.6% of inertia — atypical for balanced assemblies where the Disc typically dominates. This reflects Disc 11's deficiency as a lightweight Core Disc.
+
+---
+
+### 2. Launch Conditions and Spin Decay Timeline
+
+ω₀ = 694 rad/s  
+L₀ = 3.716×10⁻⁵ × 694 = **2.579×10⁻² N·m·s**
+
+τ_friction = 2.53×10⁻⁴ N·m (from Case 1161)  
+dω/dt = 2.53×10⁻⁴ / 3.716×10⁻⁵ = **6.81 rad/s²**  
+t_stall (ideal) = 694 / 6.81 = **101.9 s**  
+t_to_battle_ω (416 rad/s) = (694 − 416) / 6.81 = **40.8 s**
+
+---
+
+### 3. Attack Performance Benchmark
+
+**Per-contact impulse at ω_battle = 416 rad/s:**  
+v_tip_blade = 416 × 0.038 = 15.8 m/s  
+J_contact = 0.01426 × 15.8 × 1.2 = **0.271 N·s** (vs standard opponent, m=40 g)
+
+**Angular momentum transferred per contact:**  
+Δω_opponent = J × r_contact / I_opponent = 0.271 × 0.038 / (2.0×10⁻⁵) = **515 rad/s** — more than sufficient to burst or ring-out a lighter opponent in a clean hit.
+
+**Δω self-loss per contact:**  
+Δω_self = J × r_contact / I_total = 0.271 × 0.038 / 3.716×10⁻⁵ = **277 rad/s** — significant self-deceleration. Dead Hades loses spin rapidly under heavy contact, transitioning from attack to survival mode faster than dedicated attack combos.
+
+---
+
+### 4. Zephyr' + Unbalance: Critical Interaction
+
+The most important constraint on this stock assembly is the interaction between Dead Hades' inherent imbalance and Zephyr''s banking-pattern sensitivity.
+
+**Without Level Chip:**  
+Centrifugal perturbation force at ω₀ = 694 rad/s → 26.9 N (Case 1161). This overwhelms the Tornado Ridge contact force (~2 N), immediately breaking the banking pattern. The assembly will move erratically rather than in a controlled orbit, drastically reducing attack accuracy and increasing self-KO risk.
+
+**With Level Chip (0.5 g):**  
+CoM offset reduced by ~65% → perturbation force at ω₀ drops to ~9.4 N — still significant but below the Ridge containment threshold at moderate ω. Banking pattern establishes after ~1–2 s of settling. **Level Chip is mandatory for this assembly.**
+
+---
+
+### 5. Disc 11 Deficit: Optimal Disc Substitution
+
+The official description confirms Disc 11's light weight "severely hinders Attack, Defense and Stamina potential." Quantifying the improvement from disc substitution:
+
+| Disc | I_disc | I_total | t_stall | dω/dt | L₀ (×10⁻²) |
+|------|--------|---------|---------|-------|-----------|
+| 11 (stock) | 7.347×10⁻⁶ | 3.716×10⁻⁵ | 101.9 s | 6.81 | 2.579 |
+| 10 (Case 868: 23.8 g) | 8.861×10⁻⁶ | 3.870×10⁻⁵ | 106.2 s | 6.54 | 2.686 |
+| 0 (est. 28 g, r_o=40mm) | ~12.5×10⁻⁶ | 4.226×10⁻⁵ | 115.9 s | 5.99 | 2.933 |
+
+Upgrading from Disc 11 to Disc 0 improves:
+- L₀: +13.7% → meaningfully more angular momentum to deliver per contact
+- t_stall: +13.7% → more spin endurance
+- Burst resistance: +13.7% more inertia dampening per lock-skip event
+
+**Verdict on stock 11Turn combination:** Turn Frame compensates somewhat for Disc 11's lightweight, adding 5.768×10⁻⁶ at the maximum Frame radius (46 mm) — the best Frame choice given Disc 11's limitations. But the whole 11Turn combination still provides ~25% less total Disc+Frame inertia than 0Wall (est. ~18–20×10⁻⁶).
+
+---
+
+### 6. Assembly Verdict
+
+| Attribute | Value |
+|-----------|-------|
+| I_total | 3.716×10⁻⁵ kg·m² |
+| L₀ | 2.579×10⁻² N·m·s |
+| t_stall (ideal) | 101.9 s |
+| t_battle_start | 40.8 s |
+| Single-contact impulse (battle ω) | 0.271 N·s |
+| Level Chip requirement | **Mandatory** |
+| Stock Disc 11 limitation | Severe — 25% inertia deficit vs optimal Disc/Frame |
+| Primary role | Balance Attack/Stamina — KO potential at high spin, survive via Zephyr' stamina |
+| Optimal upgrade path | Dead Hades 0Wall Zephyr' or Dead Hades 0Wall Atomic |
+
+**Conclusion:** Dead Hades 11Turn Zephyr' is a commercially packaged "demo" assembly that showcases all four components but pairs them suboptimally. Dead Hades' scythe geometry and metal mass deliver high impulse and good stamina via Zephyr'. However, Disc 11's light weight leaves ~25% of theoretical inertia unrealised, and the combination without Level Chip is actively unstable. The assembly performs adequately at casual play but is easily outclassed in competitive scenarios. Replace Disc 11 with Disc 0 or 10 and add Level Chip to realise Dead Hades' full attack potential.
+
+---
+
+## Case 1163 — Energy Layer: Left Aeclipse / Left Eclipse (19.8 g, Cho-Z Layer System, Balance Type, Left-Spin)
+
+**Generation:** Gen 3 Burst — Cho-Z Layer System  
+**Type:** Balance  
+**Spin direction:** Left (counter to standard Right-Spin meta)  
+**Origin:** Fusion of Left Apollos (sun, left side) + Right Artemis (moon, right side) via shared split-layer gimmick  
+**Level Chip compatible:** No (gimmick occupies the underside slot)
+
+---
+
+### 1. Mass and Metal Distribution
+
+Left Aeclipse's metal is described as "lining the blades" — distributed along the blade edges rather than concentrated in discrete weights.
+
+| Region | Est. mass (g) | r_eff (mm) | I_contribution (×10⁻⁶ kg·m²) |
+|--------|--------------|-----------|-------------------------------|
+| Metal blade lining (total) | 3.5 | 36 | 4.536 |
+| ABS body (by difference) | 16.3 | annular r_o=42, r_i=15 | 16.456 |
+| **Total** | **19.8** | — | **20.992** |
+
+I_ABS = 0.5 × 0.0163 × (0.042² + 0.015²) = 0.5 × 0.0163 × (0.001764 + 0.000225) = 0.5 × 0.0163 × 0.001989 = **1.621×10⁻⁵ kg·m²**  
+I_metal = 3.5×10⁻³ × (0.036)² = **4.536×10⁻⁶ kg·m²**  
+I_Left_Aeclipse = 16.21×10⁻⁶ + 4.536×10⁻⁶ = **2.075×10⁻⁵ kg·m²**
+
+Metal fraction: 3.5 / 19.8 = **17.7%** of mass  
+Metal I fraction: 4.536×10⁻⁶ / 2.075×10⁻⁵ = **21.9%** of I_total
+
+Compared to Dead Hades (22.2 g, I = 2.286×10⁻⁵): Left Aeclipse is lighter (−2.4 g) with lower I (−9.2%). The metal distribution at blade edges rather than in discrete outer weights means less concentrated outer mass — metal I fraction (21.9%) is lower than Dead Hades' (30.6%).
+
+---
+
+### 2. Eclipse Gimmick: Split-Layer Fusion Geometry
+
+Left Aeclipse is the physically merged result of two separate components — Left Apollos (sun layer, left half) and Right Artemis (moon layer, right half) — locked together by a shared center piece belonging to Left Apollos. This creates an inherently **asymmetric horizontal profile:**
+
+- **Left side (Left Apollos):** Multiple spikes in a pattern characteristic of attack-style geometry. Spike-type contacts generate sharp, high-normal-force impulses at near-radial angles.
+- **Right side (Right Artemis):** Three blades in a curved sweep. Blade contacts have a wider arc and more tangential energy transfer.
+
+The two halves present **n=1 effective rotational symmetry** — the layer does NOT have two identical contact zones. This asymmetry creates:
+
+**Static imbalance (Δr_CoM estimate):**  
+Left Apollos half (estimate ~10.5 g) centered at r≈20 mm offset left  
+Right Artemis half (~9.3 g) centered at r≈18 mm offset right  
+Net CoM shift ≈ (10.5×20 − 9.3×18) / 19.8 = (210 − 167.4) / 19.8 = **2.15 mm**
+
+This is a significant imbalance — larger than Dead Hades (≈1.0–1.5 mm) and comparable to the worst Cho-Z layers.
+
+**No Level Chip:** The gimmick occupies the underside slot used by Level Chip. Left Aeclipse **cannot** correct this imbalance mechanically. The ~2.15 mm CoM offset is permanent in standard configuration.
+
+---
+
+### 3. Left-Spin Physics: Counter-Spin Interaction
+
+Left Aeclipse is Left-Spin in a Right-Spin dominant meta. This fundamentally changes the contact physics:
+
+**Counter-spin collision (LS vs RS):**  
+Relative tip velocity = v_LS + v_RS = ω_LS × r_contact + ω_RS × r_contact  
+At battle ω = 416 rad/s (both): v_rel = (416 + 416) × 0.038 = **31.6 m/s**
+
+This is 2× the relative velocity of same-spin collisions (v_rel_same = 416 × 0.038 = 15.8 m/s).
+
+Per-contact impulse vs 40 g RS opponent:  
+J_counter = m_eff × v_rel × (1+e) = 0.01283 × 31.6 × 1.2 = **0.487 N·s**  
+vs J_same = 0.01426 × 15.8 × 1.2 = **0.271 N·s**
+
+Counter-spin contact delivers **1.8× more impulse** per collision. This cuts both ways:
+- Left Aeclipse delivers higher knock-out potential to RS opponents
+- Left Aeclipse also receives higher destabilising impulse from RS opponents
+
+**Δω self-loss per counter-spin contact:**  
+Δω_self = J × r / I = 0.487 × 0.038 / 2.075×10⁻⁵ = **892 rad/s** — catastrophic spin loss in a single clean hit.
+
+This reveals the fundamental balance-type dilemma in counter-spin:
+- The layer is not aggressive enough (too little contact angle slope) to maximise the counter-spin KO potential
+- The layer is not defensive enough (too much recoil surface) to minimise the Δω_self loss
+
+---
+
+### 4. Recoil Profile: Both Halves Analysed
+
+**Left Apollos half (spike side):**  
+Contact angle ≈ 70° from tangential (near-normal, high recoil)  
+Effective smash coefficient: sin(70°) = 0.940 — high  
+Recoil coefficient: cos(70°) = 0.342 — 34.2% of impact force reflected back  
+Self-spin-loss fraction: ~40% of contact energy lost to self-recoil
+
+**Right Artemis half (three-blade side):**  
+Contact angle ≈ 35° from tangential (moderate slope, lower recoil)  
+Effective smash coefficient: sin(35°) = 0.574 — moderate  
+Recoil coefficient: cos(35°) = 0.819 — 81.9% of force is tangential (not absorbed into opponent)
+
+**Combined average recoil profile:**  
+Weighted average recoil coefficient: (0.342 + 0.819) / 2 = **0.581** — intermediate between dedicated attack (0.3–0.4) and defense (0.8–0.9).
+
+For a Defense-type the ideal recoil coefficient is > 0.80. For Attack-type, < 0.40. At 0.581, Left Aeclipse is too recoil-prone for defense (each opponent hit bounces 58.1% of force back into Left Aeclipse) and too recoil-soft for attack (smash effectiveness averages only 0.757 of ideal).
+
+---
+
+### 5. Burst Risk: No Level Chip Compensation
+
+Without Level Chip, Dead Hades (Case 1158) had burst risk from:
+1. Fine lock geometry (shallow teeth)
+2. Imbalance creating periodic impulses
+
+Left Aeclipse's lock geometry is not specified as fine, but the imbalance issue is worse (Δr_CoM ≈ 2.15 mm, permanent):
+
+**Centrifugal perturbation at ω₀ = 694 rad/s:**  
+F_centrifugal = m × Δr_CoM × ω₀² = 0.0198 × 0.00215 × 694² = **20.5 N**
+
+This high periodic force creates repeated burst-inducing angular deceleration pulses at the lock teeth frequency. While the exact lock geometry (count and depth) is not specified, a 20.5 N centrifugal force on a 19.8 g layer produces severe internal stress cycles. **Left Aeclipse is inherently self-bursting at high spin without mechanical correction.**
+
+Practical consequence: Left Aeclipse at launch requires careful angle management and a sufficiently heavy Disc/Frame combination to resist self-burst in the first 5–10 s.
+
+---
+
+### 6. "Heavier Than Most God Layers" Context
+
+The official text notes Left Aeclipse at 19.8 g is "heavier than most God Layers." Confirming against cases in this library:
+
+| Layer | Mass (g) | I (×10⁻⁶ kg·m²) | Gen |
+|-------|---------|----------------|-----|
+| Storm Spriggan (### Case 543) | ~15.0 est. | ~15.5 est. | God |
+| Spriggan Requiem (### Case 547) | ~16.0 est. | ~16.2 est. | God |
+| **Left Aeclipse** | **19.8** | **20.75** | Cho-Z |
+| Dead Hades | 22.2 | 22.86 | Cho-Z |
+| Dead Phoenix | 21.8 | ~22.0 est. | Cho-Z |
+
+At 19.8 g, Left Aeclipse is indeed heavier than typical God Layers (~14–17 g) due to the Cho-Z metal lining. However it is among the lighter Cho-Z layers — the metal-at-edge distribution (rather than concentrated discrete weights) achieves a moderate inertia increase with lower mass penalty.
+
+---
+
+### 7. Competitive Assessment
+
+| Category | Rating | Reason |
+|----------|--------|--------|
+| KO Attack (RS opponent) | Low-Moderate | Counter-spin doubles impulse but recoil profile too soft for clean KO; likely self-destabilises before landing a winning hit |
+| Burst Attack (RS opponent) | Moderate | High counter-spin v_rel generates high Δω at opponent lock — burst potential is real at high ω |
+| Defense (RS opponent) | Poor | Recoil coefficient 0.58 too high; each hit loses significant spin to self-recoil |
+| Stamina | Poor | Imbalance (no Level Chip fix) causes excessive precession and premature wobble at low ω |
+| Counter (LS vs LS) | Moderate | Same-spin contact reduces impulse to normal levels; asymmetric profile creates unpredictable recoil |
+| WBO competitive viability | Below average | "Mediocre in both categories" confirmed — the hybrid design solves no role better than a dedicated layer |
+
+---
+
+### 8. Physics Verdict
+
+| I_layer | 2.075×10⁻⁵ kg·m² |
+|---------|-----------------|
+| Metal fraction | 17.7% mass / 21.9% I |
+| CoM offset | ~2.15 mm (permanent — no Level Chip) |
+| F_centrifugal at ω₀ | 20.5 N (severe) |
+| Self-burst risk | High without a heavy Disc; moderate with Disc 0 or 10 |
+| Average recoil coefficient | 0.581 (neither attack nor defense) |
+| Counter-spin impulse multiplier | 1.8× vs same-spin |
+| Best theoretical use case | Heavy Disc (0 or 10) with stable Driver (Bearing or Orbit) to stabilise imbalance; treat as high-mass Left-Spin stamina layer despite the attack geometry |
+| Level Chip | Incompatible — gimmick blocks the slot |
+
+**Conclusion:** Left Aeclipse is a cosmetically striking but mechanically compromised layer. Its eclipse gimmick (fusing Left Apollos + Right Artemis) creates a permanent ~2.15 mm center-of-mass offset with no Level Chip correction available. The two-half geometry delivers an average recoil coefficient of 0.581 — too high for effective attack, too low for effective defense. Against right-spin opponents, counter-spin contact doubles impulse transfer but Left Aeclipse's own high Δω_self per hit (892 rad/s at battle ω) makes it a mutual-destruction weapon rather than a precision attacker. **The only non-trivial application is as a Left-Spin burst-attacker at very high ω using Disc 0 and a free-spinning tip (e.g., Bearing), exploiting the counter-spin burst potential before the imbalance destabilises the assembly.**
+
+
+---
+
+## Superking Layer System — Gen 5 Burst (2020–2021)
+
+The **Superking Layer System** (B-series 2020, also styled "Super King") restructures the classic Layer + Disc + Driver tri-component design into a four-part stack where the Disc is absorbed into the Chassis:
+
+| Component | Superking name | Role |
+|-----------|---------------|------|
+| Superking Chip | Chip | Center face / burst spring mounting |
+| Ring | Ring | Outer attack ring, contact geometry |
+| Chassis | Chassis (Double) | Integrated disc mass + burst mechanism + tip bore |
+| Performance Tip | Driver | Ground contact tip |
+
+No separate Disc is used. The Chassis integrates what prior generations split across a Disc and a chassis frame, eliminating the disc-layer contact surface that was a burst-accumulation point in prior gens.
+
+---
+
+## Case 1164 — Superking Chip: Hyperion 1 (est. 5.5 g, Superking Layer System, Right-Spin)
+
+**Generation:** Gen 5 Burst — Superking Layer System
+**Type:** Attack (chip itself is neutral)
+**Spin direction:** Right
+**System role:** Center chip — burst spring seat and face sticker carrier
+
+---
+
+### 1. Official Description Summary
+
+Hyperion 1 (Takara Tomy) is a right-spin Superking Chip depicting a side-profile of Hyperion, an epithet for Helios, the Greek god of the sun. It is the **first of two Hyperion chips**. Official notes:
+
+- Average weight for a Superking Chip (no embedded metal)
+- Outclassed by: **Hyperion 2** and **Solomon** (carry metal); **Diabolos** and **Spriggan** (dual-spin capability)
+- Differences between most Superking Chips are primarily **cosmetic** — heavier or dual-spin chips are the only meaningful functional upgrade
+- Recommendation: use Hyperion 2 / Solomon / Diabolos / Spriggan over Hyperion 1 whenever available
+
+---
+
+### 2. Geometry and Mass
+
+Estimated mass: **5.5 g** (pure ABS, average chip; no metal inserts)
+
+| Dimension | Value |
+|-----------|-------|
+| Outer radius r_o | 16 mm |
+| Inner hub r_i | 5 mm |
+| Material | ABS plastic |
+| Metal inserts | None |
+
+---
+
+### 3. Moment of Inertia
+
+Annular disc approximation:
+
+I_chip = (1/2) * m * (r_i^2 + r_o^2)
+       = (1/2) * 0.0055 * (0.005^2 + 0.016^2)
+       = (1/2) * 0.0055 * (2.50e-5 + 2.56e-4)
+       = (1/2) * 0.0055 * 2.81e-4
+       = **7.73e-7 kg*m^2**
+
+Fraction of total assembly I (Case 1168): 7.73e-7 / 3.700e-5 = **2.1%** — negligible.
+
+---
+
+### 4. Physics Significance
+
+The Superking Chip role is structural and burst-mechanism-adjacent:
+
+1. **Burst spring seat** — the chip latches onto the Chassis burst spring. Heavier chips (with metal at r ~10–15 mm) add tangential inertia resisting the micro-rotation required to advance one burst tooth → marginal burst resistance improvement.
+2. **Mass at center** — all chips concentrate mass near r = 10–16 mm, contributing minimally to I_total.
+3. **No contact geometry** — chip is fully covered by the Ring in attack configurations; never makes direct contact.
+
+For Hyperion 1 (no metal), neither advantage is enhanced beyond baseline. The chip is a functional placeholder.
+
+---
+
+### 5. Physics Verdict
+
+| I_chip | 7.73e-7 kg*m^2 |
+|--------|----------------|
+| Assembly fraction | 2.1% |
+| Metal | None |
+| Competitive value | Cosmetic only — swap for Hyperion 2 / Solomon (burst resistance) or Diabolos / Spriggan (dual-spin) |
+
+**Conclusion:** Hyperion 1 is a functionally neutral chip. Its inertia contribution is below 2.2% and it carries no metal. For the Super Hyperion 1A assembly (Case 1168), burst resistance comes from 1A Chassis + Super Ring geometry, not the chip. Any heavier chip provides a marginal but measurable improvement.
+
+---
+
+## Case 1165 — Ring: Super (est. 21.5 g, Superking Layer System, Attack Type, Right-Spin)
+
+**Generation:** Gen 5 Burst — Superking Layer System
+**Type:** Attack
+**Spin direction:** Right
+**System role:** Outer attack ring — contact geometry, recoil profile, burst-tooth exposure depth
+
+---
+
+### 1. Official Description Summary
+
+Super (Takara Tomy) is a right-spin Attack Type Ring:
+
+- **Six contact blades**: 3 pairs of (large + medium blade molded together), each followed by 1 small blade
+- Blades **angled downwards** → **Upper Attack** — slides under opponent ring, creating an upward impulse
+- **Thick underside** raises mounted Chip+Ring above Chassis top, exposing burst teeth at correct depth → **great Burst Resistance** (official rating)
+- Compatible with any right-spin or dual-spin Superking Chip and Chassis
+- Aggressive contact points → **prone to chipping and denting**; recommend multiple copies for sustained competitive use
+- Best synergy: **1A Chassis** (designed together — correct tooth exposure for attack + burst resistance)
+- With **2A Chassis**: stronger attacks (rubber blades extend further) + greater LAD
+
+---
+
+### 2. Geometry and Mass
+
+Estimated total mass: **21.5 g**
+
+| Sub-component | Est. mass | Radius |
+|--------------|-----------|--------|
+| Metal inserts (3 curved pieces visible in image) | 3.0 g | r ~= 34 mm |
+| ABS plastic body | 18.5 g | r_i ~= 18 mm, r_o ~= 41 mm |
+
+Blade contact radius: r_contact ~= 41 mm
+Upper attack blade angle: ~20 deg from horizontal
+
+---
+
+### 3. Moment of Inertia
+
+**Plastic body** (annular):
+
+I_plastic = (1/2) * 0.0185 * (0.018^2 + 0.041^2)
+          = (1/2) * 0.0185 * (3.24e-4 + 1.681e-3)
+          = (1/2) * 0.0185 * 2.005e-3
+          = 1.855e-5 kg*m^2
+
+**Metal inserts** (3 point masses at r = 34 mm):
+
+I_metal = 3 * 0.001 * 0.034^2 = 3 * 1.156e-3 * 0.001 = 3.468e-6 kg*m^2
+
+**Total:**
+
+I_Ring = 1.855e-5 + 3.468e-6 = **2.202e-5 kg*m^2**
+
+Metal fraction of I: 3.468e-6 / 2.202e-5 = **15.7%**
+Metal fraction of mass: 3.0 / 21.5 = **14.0%**
+
+---
+
+### 4. Upper Attack Physics
+
+The downward blade angle creates an upward impulse component (Upper Attack) on contact.
+
+At battle omega = 420 rad/s:
+
+  v_tip = omega * r_contact = 420 * 0.041 = **17.2 m/s**
+
+Collision parameters (equal-mass opponent m2 = 51 g; v_approach = 2.0 m/s; e = 0.30):
+
+  mu_red = m1*m2/(m1+m2) = 0.051^2 / 0.102 = 0.0255 kg
+  J_total = 0.0255 * 2.0 * 1.30 = 0.0663 N*s
+
+Upper attack vertical component:
+
+  J_vert = 0.0663 * sin(20 deg) = 0.0663 * 0.342 = 0.0227 N*s
+  delta_v_vert = 0.0227 / 0.051 = **0.445 m/s** (lift velocity on opponent)
+
+Equivalent lift height: h = v^2 / 2g = 0.445^2 / 19.62 ~= 10 mm — sufficient to break floor contact and disrupt gyroscopic precession.
+
+---
+
+### 5. Burst Tooth Exposure (Thick Underside)
+
+Super Ring raises the Chip+Ring assembly ~1.5–2 mm above the Chassis surface. This positions the Chip burst latches over the Chassis teeth at optimal engagement depth. The geometry works best with 1A Chassis (designed together).
+
+---
+
+### 6. Durability Note
+
+Repeated metal-on-plastic impacts chip and dent blade corners after ~20–50 competitive matches. Performance degradation changes the Upper Attack angle. Recommendation: maintain 2–3 spare Super Rings for tournament play.
+
+---
+
+### 7. Physics Verdict
+
+| I_Ring | 2.202e-5 kg*m^2 |
+|--------|-----------------|
+| Metal fraction (I) | 15.7% |
+| Blade tip radius | 41 mm |
+| v_tip at battle omega | 17.2 m/s |
+| Upper attack J_vert per hit | 0.0227 N*s |
+| delta_v_vertical on opponent | 0.445 m/s |
+| Burst resistance contribution | High (optimal tooth exposure via thick underside) |
+
+**Conclusion:** Ring Super is one of the strongest attack rings in the Superking era. Six contact surfaces with genuine Upper Attack geometry, combined with thick-underside tooth-exposure geometry that solves burst resistance and attack viability simultaneously. Primary liability is chipping durability under sustained use.
+
+---
+
+## Case 1166 — Chassis: 1A (est. 18.5 g, Superking Layer System, Double Chassis, Attack Type, Right-Spin)
+
+**Generation:** Gen 5 Burst — Superking Layer System
+**Type:** Attack
+**Spin direction:** Right
+**System role:** Integrated disc + chassis, burst mechanism (spring + teeth), tip bore
+
+---
+
+### 1. Official Description Summary
+
+1A ("1-Attack") is a right-spin Attack Type **Double Chassis**:
+
+- **Double Chassis** = Disc mass integrated into chassis frame (no separate Disc component)
+- Symmetrical four-blade plan
+- Hosts burst spring and teeth directly
+- Synergizes with Super Ring for attack + burst resistance
+- With **2A Chassis**: larger rubber blades provide stronger attacks and better LAD
+
+---
+
+### 2. Geometry and Mass
+
+Estimated mass: **18.5 g** (all ABS; Double Chassis includes integrated disc mass)
+
+| Dimension | Value |
+|-----------|-------|
+| Outer radius (four blade tips) | r_o ~= 38 mm |
+| Inner hub (tip bore) | r_i ~= 8 mm |
+| Material | ABS plastic |
+| Disc integration | Yes (Double Chassis) |
+
+---
+
+### 3. Moment of Inertia
+
+I_1A = (1/2) * m * (r_i^2 + r_o^2)
+     = (1/2) * 0.0185 * (0.008^2 + 0.038^2)
+     = (1/2) * 0.0185 * (6.40e-5 + 1.444e-3)
+     = (1/2) * 0.0185 * 1.508e-3
+     = **1.395e-5 kg*m^2**
+
+Fraction of total assembly I (Case 1168): 1.395e-5 / 3.700e-5 = **37.7%** — second-largest contributor after the Ring.
+
+---
+
+### 4. Double Chassis Architecture
+
+| Generation | Layer stack |
+|------------|-------------|
+| Prior gens (God, Cho-Z, DB) | Layer + Disc (separate) + Driver |
+| Superking | Chip + Ring + Chassis (Disc absorbed) + Tip |
+
+The Chassis absorbs the Disc inertial mass role. I_1A = 1.395e-5 is comparable to a Cho-Z Disc 7 equivalent — competent at the disc-tier. Integration also eliminates the disc-layer relative rotation that accumulated burst count in prior gens.
+
+---
+
+### 5. Burst Mechanism
+
+| Parameter | Value |
+|-----------|-------|
+| Tooth depth delta | ~0.9 mm (Superking standard) |
+| Spring constant k | ~150 N/m |
+| Effective engaged teeth N | 2.5 (attack-type partial engagement average) |
+| Burst mechanism radius r_burst | ~15 mm |
+| Resisting torque per tooth | F = k * delta = 0.135 N |
+| Total burst torque threshold | T_burst = 2.5 * 0.135 * 0.015 = 5.06e-3 N*m |
+
+For comparison, Dead Hades fine locks (Case 1158): T_burst ~= 2.53e-3 N*m (50% of standard).
+1A at standard depth: T_burst ~= 5.06e-3 N*m (100% standard), consistent with "great burst resistance" from correct tooth exposure via Super Ring.
+
+---
+
+### 6. Physics Verdict
+
+| I_1A | 1.395e-5 kg*m^2 |
+|------|-----------------|
+| Assembly fraction | 37.7% |
+| Disc integration | Yes (Double Chassis) |
+| Burst torque threshold | ~5.06e-3 N*m ("great" with Super Ring alignment) |
+| Best chassis pairing | Super Ring (designed alignment) |
+
+**Conclusion:** 1A is a purpose-built attack chassis integrating disc-equivalent mass in a single rigid frame. The four-blade symmetric plan aligns cleanly with Super Ring blade geometry. Burst resistance is reliable through geometric alignment rather than special springs or metal chips.
+
+---
+
+## Case 1167 — Performance Tip: Xceed' (est. 5.5 g, Superking Era, Attack Type)
+
+**Generation:** Gen 5 Burst — Superking era
+**Naming note:** Product packaging reads "Xceed"; the official wiki description and competitive databases consistently use **Xceed'** (prime) to mark the improved Takara Tomy version (thicker internal spring vs the original Xceed). Both names refer to the same tip.
+
+---
+
+### 1. Official Description Summary
+
+Xceed' is an **Attack Type Driver** with two concentric contact zones:
+
+1. **Rubber flat tip** (center, fixed) — high-friction flat bottom drives aggressive orbital movement (tornado / flower pattern)
+2. **Free-spinning plate** (outer ring, bearing-mounted, rotates independently) — three functions:
+   - Reduces stadium friction during lateral motion (plate spins freely, rubber tip lifts from floor)
+   - **Gyroscopic stabiliser** after knockback — keeps combo upright
+   - **Anti-self-KO braking** — plate drags on outer bowl, reducing outward orbital drift
+
+The improved spring in Xceed' produces a more assertive orbital pattern and better recovery from strong impacts vs original Xceed.
+
+---
+
+### 2. Geometry and Mass
+
+Estimated total mass: **5.5 g**
+
+| Sub-component | Est. mass | Radius | Friction coeff. mu |
+|--------------|-----------|--------|--------------------|
+| Rubber flat tip | ~1.0 g | r_eff = 4 mm | mu_rubber ~= 0.70 |
+| Free-spinning plate | ~2.5 g | r_plate = 12 mm | mu_plate ~= 0.04 (pin bearing) |
+| Driver body + stem | ~2.0 g | r_body ~= 8 mm | — |
+
+---
+
+### 3. Moment of Inertia
+
+I_rubber = (1/2) * 0.001 * 0.004^2 = 8e-9 kg*m^2 (negligible)
+I_plate  = (1/2) * 0.0025 * 0.012^2 = 1.80e-7 kg*m^2
+I_body   = (1/2) * 0.002 * 0.008^2  = 6.40e-8 kg*m^2
+
+I_xceed' = **2.52e-7 kg*m^2** (0.7% of assembly I)
+
+---
+
+### 4. Dual-Mode Spin Decay
+
+**Mode 1 — Active (rubber tip ground contact):**
+
+  tau_active = mu_rubber * m_assembly * g * r_eff
+             = 0.70 * 0.051 * 9.81 * 0.004
+             = 1.403e-3 N*m
+
+  d_omega/dt_active = tau / I_assembly = 1.403e-3 / 3.700e-5 = 37.9 rad/s^2
+  t_stall (from omega_0 = 700 rad/s) = 700 / 37.9 = **18.5 s** (theoretical, no hits)
+
+**Mode 2 — Passive (free-spinning plate ground contact):**
+
+  tau_passive = 0.04 * 0.051 * 9.81 * 0.012 = 2.40e-4 N*m
+  d_omega/dt_passive = 2.40e-4 / 3.700e-5 = 6.49 rad/s^2
+  t_stall_passive = 700 / 6.49 = **107.9 s** (never sustained in attack use)
+
+| Mode | Condition | d_omega/dt (rad/s^2) | t_stall from omega_0 |
+|------|-----------|----------------------|----------------------|
+| Active (rubber) | Forward orbital motion | 37.9 | 18.5 s |
+| Passive (plate) | Stationary / outer bowl | 6.49 | 107.9 s |
+
+---
+
+### 5. Free-Spinning Plate Physics
+
+**Gyroscopic stabilisation:** Plate angular momentum at battle omega = 420 rad/s:
+  L_plate = I_plate * omega = 1.80e-7 * 420 = 7.56e-5 N*m*s
+Small relative to assembly L_battle (Case 1168: 1.554e-2 N*m*s) but provides persistent tilt-corrective torque after each impact.
+
+**Anti-KO braking:** At orbit radius 80 mm, orbital speed ~12 rad/s:
+  a_centrifugal = omega_orbit^2 * r_orbit = 144 * 0.08 = 11.5 m/s^2
+  F_drag_plate = 0.04 * 0.0025 * 11.5 = 1.15e-3 N (gentle inward restoring force over many orbits)
+
+---
+
+### 6. Physics Verdict
+
+| I_xceed' | 2.52e-7 kg*m^2 |
+|----------|----------------|
+| Assembly fraction | 0.7% |
+| Rubber tip mu | 0.70 |
+| Rubber r_eff | 4 mm |
+| Plate mu | 0.04 |
+| Plate radius | 12 mm |
+| d_omega/dt active | 37.9 rad/s^2 |
+| t_stall active | 18.5 s (no hits) |
+| t_stall passive | 107.9 s (theoretical) |
+
+**Conclusion:** Xceed' provides attack mobility, gyroscopic recovery, and anti-self-KO stability in the Super Hyperion combo. The improved spring vs original Xceed makes orbital tempo higher and hit recovery faster. The dominant spin drain is Mode 1 rubber friction (~85–90% of contact time during an attack pattern).
+
+---
+
+## Case 1168 — Super Hyperion Xceed 1A: Full Assembly (Superking Layer System, Attack Type, Right-Spin)
+
+**Generation:** Gen 5 Burst — Superking Layer System
+**Type:** Attack
+**Assembly:** Ring Super + Chip Hyperion 1 + Chassis 1A + Performance Tip Xceed'
+
+---
+
+### 1. Component Summary
+
+| Part | Case | Est. mass (g) | I (kg*m^2) | Assembly fraction |
+|------|------|--------------|-----------|------------------|
+| Ring: Super | 1165 | 21.5 | 2.202e-5 | 59.5% |
+| Chip: Hyperion 1 | 1164 | 5.5 | 7.73e-7 | 2.1% |
+| Chassis: 1A | 1166 | 18.5 | 1.395e-5 | 37.7% |
+| Tip: Xceed' | 1167 | 5.5 | 2.52e-7 | 0.7% |
+| **Total** | — | **51.0** | — | 100% |
+
+---
+
+### 2. Total Moment of Inertia
+
+I_total = I_Ring + I_chip + I_1A + I_xceed'
+        = 2.202e-5 + 7.73e-7 + 1.395e-5 + 2.52e-7
+        = (22.020 + 0.773 + 13.950 + 0.252) * 10^-6
+        = **3.700e-5 kg*m^2**
+
+---
+
+### 3. Angular Momentum at Launch
+
+omega_0 = 700 rad/s (Superking LR String Launcher)
+
+L_0 = I_total * omega_0 = 3.700e-5 * 700 = **2.590e-2 N*m*s**
+
+At battle omega (420 rad/s, ~3 s after launch):
+L_battle = 3.700e-5 * 420 = 1.554e-2 N*m*s
+
+---
+
+### 4. Spin Decay (Active Rubber, No Hits)
+
+tau_active = 0.70 * 0.051 * 9.81 * 0.004 = 1.403e-3 N*m
+d_omega/dt = 1.403e-3 / 3.700e-5 = 37.9 rad/s^2
+t_stall = 700 / 37.9 = **18.5 s** (theoretical maximum)
+
+---
+
+### 5. Attack Contact Analysis at omega_battle = 420 rad/s
+
+v_tip = 420 * 0.041 = **17.2 m/s** (blade tip speed)
+
+J_total = mu_red * v_app * (1+e) = 0.0255 * 2.0 * 1.30 = 0.0663 N*s
+
+Attacker spin loss per hit:
+  delta_omega_self = J * r_contact / I_total = 0.0663 * 0.041 / 3.700e-5 = **73.5 rad/s**
+
+Upper attack vertical impulse:
+  J_vert = 0.0663 * sin(20 deg) = 0.0227 N*s
+  delta_v_vert = 0.0227 / 0.051 = **0.445 m/s** lift on opponent
+
+---
+
+### 6. Effective Attack Window
+
+Wobble threshold: omega_wobble = 0.4 * omega_0 = 280 rad/s
+Spin margin from battle omega: 420 - 280 = 140 rad/s
+
+From friction alone: 140 / 37.9 = **3.7 s**
+From hits alone (at 0.5 hits/s): 140 / 73.5 = 1.9 -> **~4 direct contacts**
+
+Practical window: **4–8 s** from battle omega, producing 2–5 effective contacts before wobble onset. Value is in per-hit quality (Upper Attack KO/burst probability), not sustained spinning time.
+
+---
+
+### 7. Inertia Comparison
+
+| Assembly | I (1e-5 kg*m^2) | Mass (g) | Era |
+|----------|-----------------|----------|-----|
+| Super Hyperion Xceed 1A | 3.700 | 51.0 | Superking |
+| Dead Hades 11Turn Zephyr' (Case 1162) | 3.716 | 43.5 | Cho-Z |
+| Typical God Layer attack (~40 g) | ~2.8 | ~40 | God |
+
+Super Hyperion is heavier than Cho-Z attack combos (51.0 g vs 40–44 g) due to the Double Chassis integrating disc mass.
+
+---
+
+### 8. Burst Resistance Profile
+
+| Source | Contribution |
+|--------|-------------|
+| Super Ring thick underside | Correct tooth exposure -> great burst resistance |
+| 1A standard tooth depth | T_burst ~= 5.06e-3 N*m |
+| Hyperion 1 (no metal) | Baseline; no additional resistance |
+| Overall | **High ("great" per official text)** |
+
+---
+
+### 9. Competitive Assessment
+
+| Category | Rating | Reason |
+|----------|--------|--------|
+| KO Attack | High | Upper attack 0.445 m/s lift + Xceed' tornado orbit |
+| Burst Attack | High | Great self-burst resistance; 17.2 m/s blade speed threatens opponent burst |
+| Stamina | Poor | 18.5 s theoretical; 4–8 s realistic with hits |
+| Defense | Poor | High recoil from aggressive 6-blade Super Ring |
+| Self-burst risk | Low | "Great burst resistance" confirmed |
+| Best use | Pure attack — short match format |
+
+---
+
+### 10. Physics Verdict
+
+| I_total | 3.700e-5 kg*m^2 |
+|---------|-----------------|
+| Total mass | 51.0 g |
+| L_0 (omega_0 = 700 rad/s) | 2.590e-2 N*m*s |
+| d_omega/dt (active rubber) | 37.9 rad/s^2 |
+| t_stall (active, no hits) | 18.5 s |
+| v_tip at battle omega | 17.2 m/s |
+| J per hit | 0.0663 N*s |
+| delta_omega_self per hit | 73.5 rad/s |
+| Upper attack delta_v_vert | 0.445 m/s |
+| Burst resistance | High ("great" per official text) |
+| Effective attack window | 4–8 s |
+
+**Conclusion:** Super Hyperion Xceed 1A is a purpose-built Superking attack combo. The 1A + Super Ring geometric synergy delivers great burst resistance without special chips, the Super Ring upper attack provides consistent ~0.45 m/s lift per hit, and Xceed' maintains the tornado orbit while stabilising after knockback. At 51.0 g and I = 3.700e-5 kg*m^2, it outweighs most Cho-Z attack combos but achieves similar I through the Double Chassis design. Short effective spin window (~18.5 s theoretical, 4–8 s with hits) is the standard trade-off for rubber-flat attack: match value comes from landing decisive hits before spin depletion, not outlasting the opponent.
+
+---
+
+## Burst GT (Gatinko) System — Gen 4 Burst (2019–2020)
+
+The **Burst GT system** (also called "Gatinko" or "GT") introduced the **Gatinko Chip** as a small detachable center piece carrying a color-coded burst mechanism indicator, plus an optional **Layer Weight** that clicks into the Layer Base. The Layer Base replaces the full Layer from prior gens; Disc and Performance Tip remain as before with optional Disc Frames.
+
+| Component | GT name | Role |
+|-----------|---------|------|
+| Gatinko Chip | Chip | Small center chip — color = burst resistance tier |
+| Layer Weight | Weight (optional) | Clicks into Layer Base; adds burst resistance gimmick (e.g., Gen rubber stopper) |
+| Layer Base | Base | Main contact surface, contact geometry, burst spring + teeth |
+| Forge Disc | Disc | Primary inertial disc |
+| Disc Frame | Frame (optional) | Additional outer ring for inertia / CoM tuning |
+| Performance Tip | Driver | Ground contact tip |
+
+---
+
+## Case 1169 — Gatinko Chip: Bahamut (3.1 g, Burst GT / Gatinko System, Left-Spin)
+
+**Generation:** Gen 4 Burst — Gatinko (GT) Layer System
+**Type:** Defense (chip itself neutral; paired with Dread for defense)
+**Spin direction:** Left
+**System role:** Center chip — burst mechanism indicator color, burst spring seat
+**Also known as:** Balkesh (Hasbro Pro Series); the closely related chip Belial (Takara Tomy) is known as Belfyre (Hasbro)
+
+---
+
+### 1. Official Description Summary
+
+Bahamut (Takara Tomy) is a left-spin Gatinko Chip depicting a dragon head, reminiscent of its predecessor **Arc Bahamut**. Exact mass: **3.1 g** (Takara Tomy confirmed).
+
+- Standard weight for Gatinko Chips
+- **Average burst resistance** due to **seven fine locks** — same fine-lock penalty as Dead Hades (Case 1158)
+- Recommendation: use a **Dash Driver** with Bahamut combinations to compensate for the poor burst resistance
+- **Hasbro equivalents**: Balkesh (Pro Series) — identical mold but manufactured with weaker plastic; Belfyre is Hasbro's name for the related Belial chip
+- Official note: Hasbro's Balkesh manufactured with weaker plastic than Takara Tomy Bahamut
+
+---
+
+### 2. Fine Lock Burst Physics
+
+Seven fine locks creates the same burst-susceptibility mechanism as Dead Hades:
+
+Fine lock tooth depth vs standard:
+  delta_fine ~= 0.4 mm  (vs delta_standard ~= 0.8 mm)
+  T_burst_fine = N * k * delta_fine * r_burst
+
+  = 7 * (150 N/m) * 0.0004 / 0.015   (at burst mechanism r = 15 mm)
+  = 7 * 0.060 / 0.015
+  = 7 * 4.0 N*m... 
+
+Wait, let me redo this correctly:
+  T_burst per tooth = k * delta * r_burst = 150 * 0.0004 * 0.015 = 9.0e-4 N*m per tooth
+  T_burst_7_fine = 7 * 9.0e-4 = 6.30e-3 N*m
+
+But fine locks require only a small fraction of force because each tooth is shallow. In practice, the burst count advances more easily because each individual tooth slips at a lower torque. The "7 fine locks" means 7 teeth each requiring less torque to slip — effective burst threshold per contact is approximately 50% of standard per tooth, but there are more teeth.
+
+Estimated effective burst torque threshold for Bahamut chip alone:
+  T_burst_Bahamut ~= 0.5 * T_standard_7_teeth = 0.5 * 7 * (150 * 0.0008 * 0.015) = 0.5 * 7 * 1.80e-3 = 6.30e-3 N*m
+
+This is lower per increment than standard but adequate if Layer Base has its own tooth geometry. The weakness is that each slip accumulates burst count at half the torque of a standard lock.
+
+---
+
+### 3. Geometry and Mass
+
+Mass: **3.1 g** (official, Takara Tomy confirmed)
+
+| Dimension | Value |
+|-----------|-------|
+| Outer radius r_o | ~15 mm |
+| Inner hub r_i | ~5 mm |
+| Material | ABS plastic (Takara Tomy); weaker plastic (Hasbro Balkesh) |
+| Metal | None |
+| Fine locks | 7 |
+
+---
+
+### 4. Moment of Inertia
+
+I_chip = (1/2) * 0.0031 * (0.005^2 + 0.015^2)
+       = (1/2) * 0.0031 * (2.5e-5 + 2.25e-4)
+       = (1/2) * 0.0031 * 2.50e-4
+       = **3.88e-7 kg*m^2**
+
+Fraction of assembly I (Case 1175): 3.88e-7 / 3.758e-5 = **1.0%** — negligible.
+
+---
+
+### 5. Alias Notes
+
+| Name | Manufacturer | Notes |
+|------|-------------|-------|
+| Bahamut | Takara Tomy | Standard quality ABS; official Japanese release |
+| Balkesh | Hasbro Pro Series | Identical mold; **weaker plastic** per official note; lower performance ceiling |
+| Belial | Takara Tomy | Related chip (different character); Hasbro name is **Belfyre** |
+
+Bahamut and Belial are separate chips covering the same arc of the Beyblade Burst GT character lineup. Both have the dragon-head aesthetic; Belial has a distinct mold and different lock count.
+
+---
+
+### 6. Physics Verdict
+
+| I_chip | 3.88e-7 kg*m^2 |
+|--------|----------------|
+| Assembly fraction | 1.0% |
+| Fine locks | 7 |
+| Burst torque threshold | Low (~50% of standard per tooth) |
+| Mitigation | Gen Layer Weight (Case 1170) + Dash Driver recommended |
+| Hasbro name | Balkesh (weaker plastic) |
+
+**Conclusion:** Bahamut is a standard left-spin Gatinko Chip with the same fine-lock vulnerability as Dead Hades. The seven fine locks make it burst-prone without compensating measures. The Gen weight (Case 1170) provides the only meaningful burst mitigation for Dread-based combinations; Dash Drivers add a bias force that reduces unwanted tooth advancement.
+
+---
+
+## Case 1170 — Layer Weight: Gen (1.1 g, Burst GT / Gatinko System, Burst Stopper)
+
+**Generation:** Gen 4 Burst — Gatinko (GT) Layer System
+**Type:** Defense (burst stopper function)
+**System role:** Optional modifier inside Layer Base — rubber triangular protrusion prevents complete burst at one tooth position
+
+---
+
+### 1. Official Description Summary
+
+Gen (Takara Tomy) is a Layer Weight unlike standard weights:
+
+- **Material: rubber** (not ABS or metal)
+- Features a **triangular protrusion** on one side — acts as a **Burst Stopper**
+- Theory: makes the combination nearly unburstable at the tooth position the protrusion covers
+- **Downside: mass loss from Layer** — replacing a standard weight with Gen's 1.1 g reduces the layer's total mass
+  - Heavier Discs will skip teeth more on a lighter Layer (burst resistance relationship: heavier layer = more angular momentum resists burst advancement)
+  - Decreases Stamina, Attack, and Defense potential in any combination
+- **Only practical use**: makes **Dread** semi-functional — without Gen, Dread is "even more burst prone" (official)
+- Gen is a specialist component; not recommended outside Dread combinations
+
+---
+
+### 2. Rubber Burst Stopper Physics
+
+The triangular rubber protrusion catches the burst mechanism teeth at one specific angular position. When the burst spring tries to advance past that tooth:
+
+1. The rubber deforms elastically rather than slipping
+2. The tooth cannot advance past the rubber catch without extremely high torque
+3. This position becomes effectively **locked** until the rubber is compressed past its elastic limit (practically never in normal combat)
+
+Effective burst resistance model at Gen-covered tooth:
+  T_rubber_stop = E_rubber * A_contact * delta_max / r_catch
+where E_rubber ~= 1–5 MPa (soft rubber), A_contact ~= 4 mm^2, delta_max ~= 0.5 mm, r_catch ~= 12 mm
+
+  T_stop ~= 2 MPa * 4e-6 * 0.5e-3 / 0.012 = 3.33e-4 N*m
+
+This is modest but sufficient to prevent the final burst-completion advance at the one covered position, acting as a last-resort catch rather than a full burst prevention.
+
+The other 6 teeth (fine locks) remain at standard fine-lock burst threshold (~9.0e-4 N*m per tooth), so burst count still accumulates across those 6 positions at the normal fine-lock rate.
+
+**Net effect of Gen:**
+- Removes the final burst-completion at 1 tooth position
+- Does NOT prevent burst count accumulation across the other 6 teeth
+- Provides a "last-resort save" moment: the combination can be fully wound up (all fine locks at max) but the Gen catch prevents the final snap
+- In practice this extends burst-fail survivability in edge cases, not across the full match
+
+---
+
+### 3. Mass Tradeoff
+
+| Scenario | Layer assembly mass | Effect |
+|----------|--------------------|-|
+| Without Gen (standard weight) | +3–5 g at r ~= 15–25 mm | Higher angular momentum, better burst resistance through inertia |
+| With Gen (1.1 g rubber) | -2 to -4 g vs standard weight | Lower inertia, reduces all performance categories |
+
+The trade is clear: Gen sacrifices total combination performance (stamina, attack, defense) for the rubber burst stopper. Only justified when the base is Dread, which is so burst-prone (via fine locks + blade gaps) that even the Gen penalty is acceptable.
+
+---
+
+### 4. Geometry and Mass
+
+Mass: **1.1 g** (official, confirmed)
+
+| Dimension | Value |
+|-----------|-------|
+| Shape | Small irregular rubber piece |
+| Triangular protrusion | Burst stopper on one side |
+| r_cm from center | ~9 mm |
+| Material | Rubber |
+
+---
+
+### 5. Moment of Inertia
+
+Point mass approximation at r_cm = 9 mm:
+
+I_gen = m * r^2 = 0.0011 * 0.009^2 = 0.0011 * 8.1e-5 = **8.91e-8 kg*m^2**
+
+Assembly fraction (Case 1175): 8.91e-8 / 3.758e-5 = **0.24%** — negligible.
+
+---
+
+### 6. Physics Verdict
+
+| I_gen | 8.91e-8 kg*m^2 |
+|-------|---------------|
+| Assembly fraction | 0.24% |
+| Burst stopper | Yes — rubber catch at 1/7 tooth positions |
+| Mass penalty | Low (1.1 g replacing ~3–5 g standard weight) |
+| Practical use | Dread-only; provides "last-resort" burst prevention |
+
+**Conclusion:** Gen is a narrow-purpose modifier. Its rubber triangular protrusion provides genuine burst-prevention at one tooth position (the "last catch" that prevents a fully wound-up combination from completing its burst). However, the 1.1 g mass replaces a heavier standard weight, reducing total layer inertia and hurting all performance categories. Only justified in Dread combinations where the alternative (no weight) is even worse burst survivability.
+
+---
+
+## Case 1171 — Layer Base: Dread (14.5 g, Burst GT / Gatinko System, Defense Type, Left-Spin)
+
+**Generation:** Gen 4 Burst — Gatinko (GT) Layer System
+**Type:** Defense
+**Spin direction:** Left
+**System role:** Main contact surface, attack geometry, burst mechanism teeth (fine locks), movable sub-layer gimmick
+
+---
+
+### 1. Official Description Summary
+
+Dread (Takara Tomy) is a Left-Spin Defense Type Layer Base similar in philosophy to **Arc Bahamut**:
+
+- **Four clockwise blades** (for left-spin: these present a curved, deflecting contact surface to incoming right-spin attacks)
+- **Six gaps between the blades** — creates recoil on contact before gimmick activation
+- **Movable sub-layer gimmick**: the sub-layer fills the six gaps after receiving damage, creating a **circular profile**
+  - Circular profile reduces recoil on subsequent contacts
+  - Parries incoming attacks rather than catching them
+  - Official description: "A Defense Type Base that becomes circular each time it receives damage and parries the opponent's attacks to prevent bursts"
+- The gimmick activates from physical impact — each significant hit moves the sub-layer pieces outward
+
+The gimmick philosophy mirrors Cho-Z DB era contactpoint-management layers (e.g., Dead Phoenix), but uses physical sub-layer movement rather than spring retention.
+
+---
+
+### 2. Gimmick Physics
+
+**Pre-activation (gaps exposed):**
+Incoming blade contacts a gap edge. The gap creates a "catch" surface — the opponent's blade snags on the gap, delivering more torque to the burst mechanism than a smooth deflection would.
+
+  F_catch ~= J_impact / delta_t * (r_gap / r_blade)
+  (Gap geometry amplifies the effective lever arm vs smooth contact)
+
+The six gaps are the primary burst vulnerability of Dread: they increase effective burst torque per hit by ~30–50% vs a circular profile.
+
+**Post-activation (sub-layer fills gaps, circular profile):**
+The circular profile means incoming blades deflect smoothly. Tangential force (torque on burst mechanism) is minimised because the contact force is radially directed (perpendicular to the burst rotation axis).
+
+  T_burst_circular ~= 0.1–0.2 * T_burst_gap  (deflection vs catch)
+
+This is the theoretical benefit of the gimmick: once triggered, burst resistance improves 5–10x at each triggered gap. In practice, the sub-layer may not fully fill all six gaps simultaneously in every match.
+
+---
+
+### 3. Geometry and Mass
+
+Mass: **14.5 g** (official, confirmed)
+
+| Sub-component | Est. mass | Radius |
+|--------------|-----------|--------|
+| Main base ABS (hub + blade structures) | ~10.0 g | r_i = 10 mm, r_mid = 25 mm |
+| Movable sub-layer pieces (6 gap-filling segments) | ~4.5 g | r ~= 36 mm |
+
+---
+
+### 4. Moment of Inertia
+
+**Main base body:**
+
+I_base = (1/2) * 0.010 * (0.010^2 + 0.036^2)
+       = (1/2) * 0.010 * (1.0e-4 + 1.296e-3)
+       = (1/2) * 0.010 * 1.396e-3
+       = 6.98e-6 kg*m^2
+
+**Movable sub-layer segments** (ring at r ~= 36 mm when extended):
+
+I_sublayer = (1/2) * 0.0045 * (0.024^2 + 0.040^2)
+           = (1/2) * 0.0045 * (5.76e-4 + 1.60e-3)
+           = (1/2) * 0.0045 * 2.176e-3
+           = 4.90e-6 kg*m^2
+
+**Total:**
+
+I_Dread = 6.98e-6 + 4.90e-6 = **1.188e-5 kg*m^2**
+
+Fraction of assembly I (Case 1175): 1.188e-5 / 3.758e-5 = **31.6%** — second-largest contributor after Disc 7.
+
+---
+
+### 5. Burst Risk Analysis
+
+| State | Burst risk | Mechanism |
+|-------|-----------|-----------|
+| Pre-activation (gaps open) | High | Gaps catch incoming blades; increased torque to burst mechanism |
+| Post-activation (circular) | Low-moderate | Deflection profile; radial contact force; minimal burst torque |
+| Without Gen weight | Very high | Fine locks only; no rubber catch |
+| With Gen weight | Moderate | Fine locks + rubber catch at 1 tooth position |
+
+**Left-spin specific note:** As a left-spin Layer Base vs right-spin opponents, counter-rotation increases relative velocity (same mechanism as Left Aeclipse, Case 1163). However, Dread's circular post-activation profile converts this counter-spin impulse into a radial deflection rather than a torque spike, partially negating the burst risk from counter-spin amplification.
+
+---
+
+### 6. Sub-layer Reset Behavior
+
+The sub-layer is not spring-loaded to return to the open-gap position. Once triggered (moved outward by impact), the sub-layer stays in the circular position for the remainder of the match. This means:
+
+- **First ~1–3 hits**: gaps exposed, high burst risk
+- **After activation**: circular profile, reduced burst risk
+- **Once activated, cannot revert** during the match
+
+This one-time activation mirrors gimmicks like Cho-Z metal-unlock (e.g., Winning Valkyrie) — the initial vulnerability is the cost of accessing the post-activation performance.
+
+---
+
+### 7. Physics Verdict
+
+| I_Dread | 1.188e-5 kg*m^2 |
+|---------|----------------|
+| Assembly fraction | 31.6% |
+| Gimmick | Movable sub-layer fills 6 blade gaps -> circular deflection profile |
+| Pre-activation burst risk | High (gaps catch incoming blades) |
+| Post-activation burst risk | Low-moderate (circular deflection) |
+| Left-spin vs RS | Counter-spin amplified but circular profile deflects |
+| Gen weight interaction | Only viable burst mitigation for Dread |
+
+**Conclusion:** Dread is a defense layer base with a binary gimmick: pre-activation it is highly burst-prone (six gap catches amplify torque on fine locks), post-activation it deflects effectively. The gimmick is the payoff — once the sub-layer fills the gaps, Dread becomes a low-recoil circular deflector. The challenge is surviving the activation window. Gen weight and a Dash Driver are the recommended mitigations for the activation phase.
+
+---
+
+## Case 1172 — Forge Disc: 7 (23.2 g, Burst GT Era, High-OWD Stamina / All-Purpose)
+
+**Generation:** Gen 4 Burst — Burst GT era (compatible with Cho-Z and later gens)
+**Type:** All-purpose (stamina primary; attack and defense secondary per official text)
+**Material:** Metal (die-cast zinc alloy, like other Burst-era Forge Discs)
+
+---
+
+### 1. Official Description Summary
+
+Disc 7 (Takara Tomy) is:
+
+- Asymmetric, elliptical design — like other **odd-numbered Core Discs** (1, 3, 5, 7, 9, etc.)
+- Seven jutting sections resembling the number "7" — two sections on one side are halves, making it balanced overall
+- Can facilitate a **Disc Frame** (inner track for Frame attachment)
+- At 23.2 g: **one of the heaviest discs**, outclassed only by **10 and 0**
+- **Ideal OWD (Outward Weight Distribution) for Stamina**: high weight at large radius -> high I -> slow spin decay
+- Its weight grants high Attack and Defense potential "without the severe Burst Risk of 8" (Disc 8 is heavy but causes burst issues due to geometry)
+- With Disc Frames: "7 can be used to great effect in any Combination"
+
+---
+
+### 2. Geometry and Mass
+
+Mass: **23.2 g** (official, confirmed)
+
+| Dimension | Value |
+|-----------|-------|
+| Material | Metal (die-cast zinc/aluminum alloy) |
+| Outer radius r_o | ~39 mm |
+| Inner bore r_i | ~10 mm |
+| Design | 7-section asymmetric but balanced (halved sections on one side) |
+| Frame compatibility | Yes (odd Core Disc) |
+
+---
+
+### 3. Moment of Inertia
+
+Full annular metal disc approximation (7-section structure concentrates mass at outer ring, consistent with high OWD claim):
+
+I_7 = (1/2) * m * (r_i^2 + r_o^2)
+    = (1/2) * 0.0232 * (0.010^2 + 0.039^2)
+    = (1/2) * 0.0232 * (1.0e-4 + 1.521e-3)
+    = (1/2) * 0.0232 * 1.621e-3
+    = **1.880e-5 kg*m^2**
+
+---
+
+### 4. OWD Comparison
+
+"Outward Weight Distribution" (OWD) = fraction of I contributed by mass at large r.
+
+For Disc 7 (full metal at r_o = 39 mm):
+  I_outer_ring_equivalent = m * r_o^2 = 0.0232 * 0.039^2 = 3.524e-5 kg*m^2 (if all at r_o)
+  I_inner_equivalent = m * r_i^2 = 0.0232 * 0.010^2 = 2.32e-6 kg*m^2 (if all at r_i)
+  Actual I_7 = 1.880e-5 (annular = mass distributed between r_i and r_o)
+
+OWD metric (I / I_max): 1.880e-5 / 3.524e-5 = 53.3%
+
+For comparison:
+  Disc 0 (est. 24.5 g, r_o ~= 41 mm): I_0 ~= 2.065e-5 -> OWD ~= 54.4%
+  Disc 10 (est. 24.0 g, r_o ~= 41 mm): I_10 ~= 2.024e-5 -> OWD ~= 54.0%
+
+Disc 7 is close to Disc 0 and 10 in OWD percentage, but slightly lower in absolute I due to 1.2–1.3 g less mass. It occupies the #3 position in both mass and I among Burst GT-era core discs.
+
+---
+
+### 5. Compatibility with Wall Frame
+
+With Disc Frame Wall (Case 1173):
+  I_combined = I_7 + I_wall = 1.880e-5 + 5.40e-6 = 2.420e-5 kg*m^2
+  Mass combined = 23.2 + 4.1 = 27.3 g
+
+This pushes the disc+frame inertia well above Disc 0 alone, making 7Wall one of the heaviest disc configurations available in this era.
+
+---
+
+### 6. Physics Verdict
+
+| I_7 | 1.880e-5 kg*m^2 |
+|-----|----------------|
+| Mass | 23.2 g (official) |
+| Material | Metal (die-cast) |
+| OWD rank | 3rd among Burst GT core discs (after 0 and 10) |
+| Burst risk | Low (official: no "severe burst risk of 8") |
+| Frame compatibility | Yes |
+| Primary use | Stamina (OWD), all-purpose secondary |
+
+**Conclusion:** Disc 7 provides excellent OWD at 23.2 g with no burst risk penalty. Its 7-section asymmetric-but-balanced design concentrates mass near r_o = 39 mm, yielding I = 1.880e-5 kg*m^2 — comparable to Disc 0 and 10. The high mass benefits defense and attack applications as well as stamina. With Frame Wall, the combined disc+frame I rises to 2.420e-5 kg*m^2, making 7Wall one of the highest-I disc configurations in the Burst GT era.
+
+---
+
+## Case 1173 — Disc Frame: Wall (4.1 g, Burst GT Era, Defense / CoM Lowering)
+
+**Generation:** Gen 4 Burst — Burst GT era (used with odd Core Discs like 7)
+**Type:** Defense (CoM lowering + spin equalization synergy)
+**Material:** ABS plastic
+
+---
+
+### 1. Official Description Summary
+
+Wall (Takara Tomy):
+
+- Round, thick Frame with **eight large downward protrusions**
+- One of the **largest and heaviest Frames** (heavier than Bump or Lift)
+- High-attack implication from size is **negated by scrape risk**: large protrusions contact the stadium floor during banking patterns -> Stamina loss from scraping
+- Stationary Attack combos scrape "even at relatively high spin velocities" due to Wall's size
+- **Best use: Bearing-based combinations**
+  - Wall **lowers the combination's center of gravity** (downward protrusions shift CoM toward floor)
+  - Lower CoM allows Bearing combinations to stay upright longer
+  - More upright = more rotations + better Precession = more time for spin equalization
+  - Wall specifically enables Bearing spin-equalization combos to outlast opponents
+
+---
+
+### 2. CoM Lowering Physics
+
+For a spinning gyroscope, precession rate:
+
+  Omega_p = tau_gravity / L = (m * g * d_com) / (I * omega)
+
+where d_com = height of CoM above contact point.
+
+Wall's downward protrusions (extending ~8–10 mm below the Disc plane) shift the assembly CoM downward by approximately delta_d ~= 2–3 mm (depending on assembly).
+
+Precession rate reduction:
+  ratio = (d_com - delta_d) / d_com
+
+If d_com_base = 18 mm and delta_d = 2.5 mm:
+  ratio = (18 - 2.5) / 18 = 0.861
+
+Wall reduces precession rate by ~14% in a Bearing-based combination, extending the upright-spin window by 1 / 0.861 ~= 16%.
+
+This is the specific use case cited in the official text: Bearing + Wall enables longer precession stability -> more rotations before tipping -> more contact time for spin equalization.
+
+---
+
+### 3. Scrape Risk Analysis
+
+The eight protrusions extend downward by ~8–10 mm. The minimum ground clearance in banking patterns depends on tilt angle theta:
+
+  clearance = r_combo * sin(theta_tilt) - h_protrusion
+
+For typical banking theta ~= 5 deg at mid-spin, r_combo = 45 mm:
+  clearance = 45 * sin(5 deg) - 9 mm = 45 * 0.087 - 9 = 3.9 - 9 = **-5.1 mm**
+
+Negative clearance means Wall scrapes the stadium floor at any non-zero tilt angle in banking patterns. This confirms the official statement that Wall "makes it difficult to achieve banking patterns and makes Stationary Attack Combinations scrape even at relatively high spin velocities."
+
+For upright spinning (Bearing-based, near-zero tilt):
+  clearance at theta = 0: = 0 - 9 mm -> the protrusions are below the disc plane but the tip contacts the floor, so clearance is determined by tip height relative to protrusion length
+  Bearing tip height keeps the disc elevated ~5–6 mm above floor -> protrusions at -3 to -4 mm clearance but not contacting floor if protrusions are angled outward (round frame = protrusions point down-and-out, not straight down)
+
+Actually, the "downward protrusions" on Wall likely angle outward as well as downward, contacting the floor only when the bey tilts. For a near-vertical Bearing combination, the protrusions may clear the floor, consistent with Wall being recommended for Bearing use.
+
+---
+
+### 4. Geometry and Mass
+
+Mass: **4.1 g** (official, confirmed)
+
+| Dimension | Value |
+|-----------|-------|
+| Frame type | Round (annular ring with protrusions) |
+| Protrusions | 8, large, downward-oriented |
+| Outer radius r_o | ~43 mm |
+| Inner radius r_i (fits over Disc 7) | ~28 mm |
+| Material | ABS plastic |
+| Weight rank among Frames | Heavy (heavier than Bump, Lift) |
+
+---
+
+### 5. Moment of Inertia
+
+Annular approximation (8 protrusions distributed evenly = effective annular ring):
+
+I_wall = (1/2) * m * (r_i^2 + r_o^2)
+       = (1/2) * 0.0041 * (0.028^2 + 0.043^2)
+       = (1/2) * 0.0041 * (7.84e-4 + 1.849e-3)
+       = (1/2) * 0.0041 * 2.633e-3
+       = **5.40e-6 kg*m^2**
+
+Fraction of assembly I (Case 1175): 5.40e-6 / 3.758e-5 = **14.4%**
+
+---
+
+### 6. Physics Verdict
+
+| I_wall | 5.40e-6 kg*m^2 |
+|--------|---------------|
+| Assembly fraction | 14.4% |
+| CoM shift | ~2.5 mm downward (reduces precession rate ~14%) |
+| Scrape risk | High in banking patterns (protrusions below disc plane) |
+| Best use | Bearing-based spin equalization combos (upright, no banking) |
+| Worst use | Attack combos (scrape breaks banking orbit) or Stamina combos that bank |
+
+**Conclusion:** Wall is a specialist Frame for Bearing-based spin equalization. Its large downward protrusions cause stadium scraping in any combination that banks, eliminating it from attack and most stamina roles. For Bearing combos that spin nearly vertically, the scrape risk is minimised and the CoM-lowering benefit (~14% precession rate reduction) extends the upright-spin window measurably. In the Dread Bahamut 7Wall Orbit Metal assembly, Wall serves this exact role: Orbit Metal is a low-friction ball tip that keeps the combination upright without aggressive banking, allowing Wall to lower the CoM without triggering the scrape penalty.
+
+---
+
+## Case 1174 — Performance Tip: Orbit Metal (7.8 g, Burst GT Era, Defense Type)
+
+**Generation:** Gen 4 Burst — Burst GT era
+**Type:** Defense
+**Variant:** Metal ball tip (upgrade from original Orbit)
+
+---
+
+### 1. Official Description Summary
+
+Orbit Metal (Takara Tomy):
+
+- **Defense-type Driver**, variant of the original **Orbit** (plastic ball tip)
+- Primary difference: **metal ball tip** replacing the original plastic ball
+- Metal ball creates **less friction** against stadium floor
+- **Paradox:** despite being a Defense-type Driver, the metal ball **reduces KO resistance** vs the plastic Orbit
+  - Metal ball = lower friction = less traction on the stadium
+  - Less traction = harder to maintain position when struck by an opponent -> higher KO risk
+  - The Defense designation refers to the low-friction stable-orbit behavior, not high KO resistance
+
+Official note: "Ironically, while being a Defense-type Driver, the metal actually reduces Knockout (KO) Resistance, due to the reduction in friction and traction."
+
+---
+
+### 2. Metal Ball Contact Physics
+
+A metal ball tip rolling on a polycarbonate stadium surface:
+
+  mu_metal_ball ~= 0.03–0.06 (metal-on-polycarbonate rolling friction)
+
+vs original Orbit plastic ball:
+  mu_plastic_ball ~= 0.08–0.12 (plastic-on-polycarbonate)
+
+The metal ball tip effectively functions as a near-point contact on the stadium, with the ball rolling freely in its socket. The dominant friction mechanism is:
+
+1. **Rolling resistance** at ball-stadium interface: very low for metal (mu ~= 0.04)
+2. **Socket friction** at ball-body interface: depends on socket material; typically ~= 0.02–0.03 for metal-in-ABS socket
+
+Combined effective friction coefficient for spin decay:
+  mu_eff ~= 0.05 (metal ball tip on PC stadium)
+  r_eff = 3 mm (effective contact radius of ball near-point contact)
+
+---
+
+### 3. Spin Decay Analysis
+
+For assembly mass m = 53.8 g (Case 1175):
+
+  tau_tip = mu_eff * m * g * r_eff = 0.05 * 0.0538 * 9.81 * 0.003 = 7.91e-5 N*m
+
+  d_omega/dt = tau / I_assembly = 7.91e-5 / 3.758e-5 = **2.10 rad/s^2**
+
+  t_stall from omega_0 = 700 rad/s: 700 / 2.10 = **333 s** (theoretical ~5.6 minutes)
+
+This is among the lowest spin decay rates achievable in the Burst GT era, approaching Bearing tip performance (which reaches t_stall ~= 10+ minutes theoretically). The metal ball enables the long spin times needed for spin equalization strategies.
+
+**KO Resistance tradeoff (official note):**
+High friction (rubber) = bey grips the stadium = resists being pushed -> high KO resistance
+Low friction (metal ball) = bey slides easily = pushed more easily by opponent attacks -> low KO resistance
+
+  F_lateral_resistance = mu * N = mu * m * g
+  Orbit Metal: F_resistance = 0.05 * 0.0538 * 9.81 = 0.0264 N
+  Rubber flat (Xceed'): F_resistance = 0.70 * 0.051 * 9.81 = 0.350 N (13x higher)
+
+This 13x difference confirms why Orbit Metal has low KO resistance despite being labeled Defense: it barely grips the floor.
+
+---
+
+### 4. Orbit Pattern
+
+The ball-socket design allows the combination to orbit freely in any direction. The metal ball does not drive a tornado pattern (unlike rubber flat tips). Instead, the combination follows a gentle precession orbit determined by:
+
+1. The tilt of the combination (precession torque from gravity acting on offset CoM)
+2. The initial launch trajectory
+3. Wall Frame's CoM-lowering effect (reduces precession rate -> more upright -> slower orbital drift)
+
+For a near-upright combination (effective CoM offset d_com = 18 mm - 2.5 mm = 15.5 mm due to Wall):
+
+  Omega_precession = (m * g * d_com) / (I * omega)
+                   = (0.0538 * 9.81 * 0.0155) / (3.758e-5 * 420)
+                   = 8.18e-3 / 1.578e-2
+                   = **0.518 rad/s** at battle omega
+
+Precession period: T_p = 2*pi / 0.518 = **12.1 s per orbit**
+
+This is a slow, stable precession — the combination circles the bowl once every ~12 seconds, staying near the center and away from the edge (low KO risk from self-induced drift).
+
+---
+
+### 5. Geometry and Mass
+
+Mass: **7.8 g** (official, confirmed — notably heavy for a driver, due to metal ball)
+
+| Dimension | Value |
+|-----------|-------|
+| Ball tip material | Metal (steel or zinc) |
+| Ball radius | ~3 mm |
+| Driver body r | ~10 mm |
+| Contact friction mu | ~0.05 (metal-on-PC) |
+| Effective contact radius | ~3 mm |
+
+---
+
+### 6. Moment of Inertia
+
+I_orbit_metal = I_ball + I_body
+  I_ball = (2/5) * m_ball * r_ball^2 (solid sphere approximation)
+         = (2/5) * 0.003 * 0.003^2 = (2/5) * 0.003 * 9e-6 = 1.08e-8 kg*m^2 (negligible)
+  I_body = (1/2) * 0.0048 * (0.002^2 + 0.010^2)
+         = (1/2) * 0.0048 * (4e-6 + 1e-4)
+         = (1/2) * 0.0048 * 1.04e-4
+         = 2.50e-7 kg*m^2
+
+I_orbit_metal = **2.61e-7 kg*m^2** (0.7% of assembly I)
+
+---
+
+### 7. Physics Verdict
+
+| I_orbit_metal | 2.61e-7 kg*m^2 |
+|---------------|----------------|
+| Assembly fraction | 0.7% |
+| Ball material | Metal |
+| mu_eff | ~0.05 (metal ball on PC) |
+| d_omega/dt | 2.10 rad/s^2 |
+| t_stall | ~333 s theoretical (from omega_0) |
+| KO resistance | Low (per official note) |
+| Best use | Bearing-based spin equalization + Wall Frame combinations |
+
+**Conclusion:** Orbit Metal achieves near-Bearing-level spin decay rates through the metal ball tip, enabling the long spin times required for spin equalization. The official paradox (Defense type that reduces KO resistance) follows directly from the physics: metal-on-PC friction is 13x lower than rubber-on-PC, so the combination slides easily when struck (low KO resistance) while losing minimal spin from tip friction (excellent stamina). In the Dread Bahamut 7Wall Orbit Metal assembly, Orbit Metal's low friction enables the 333-second theoretical spin time, and its gentle orbital pattern keeps the combination upright for Wall Frame to maintain the CoM-lowering benefit.
+
+---
+
+## Case 1175 — Dread Bahamut 7Wall Orbit Metal: Full Assembly (Burst GT / Gatinko System, Defense / Spin Equalization, Left-Spin)
+
+**Generation:** Gen 4 Burst — Gatinko (GT) Layer System
+**Type:** Defense / Spin Equalization
+**Spin direction:** Left
+**Assembly:** Chip Bahamut + Weight Gen + Base Dread + Disc 7 + Frame Wall + Tip Orbit Metal
+
+---
+
+### 1. Component Summary
+
+| Part | Case | Mass (g) | I (kg*m^2) | Assembly fraction |
+|------|------|---------|-----------|------------------|
+| Chip: Bahamut | 1169 | 3.1 | 3.88e-7 | 1.0% |
+| Weight: Gen | 1170 | 1.1 | 8.91e-8 | 0.2% |
+| Base: Dread | 1171 | 14.5 | 1.188e-5 | 31.6% |
+| Disc: 7 | 1172 | 23.2 | 1.880e-5 | 50.0% |
+| Frame: Wall | 1173 | 4.1 | 5.40e-6 | 14.4% |
+| Tip: Orbit Metal | 1174 | 7.8 | 2.61e-7 | 0.7% |
+| **Total** | — | **53.8** | — | 100% |
+
+---
+
+### 2. Total Moment of Inertia
+
+I_total = I_chip + I_gen + I_Dread + I_7 + I_wall + I_orbit_metal
+        = 3.88e-7 + 8.91e-8 + 1.188e-5 + 1.880e-5 + 5.40e-6 + 2.61e-7
+        = (0.388 + 0.089 + 11.880 + 18.800 + 5.400 + 0.261) * 10^-6
+        = 36.818 * 10^-6
+        = **3.682e-5 kg*m^2**
+
+---
+
+### 3. Angular Momentum at Launch
+
+omega_0 = 700 rad/s (Burst GT string launcher)
+L_0 = I_total * omega_0 = 3.682e-5 * 700 = **2.577e-2 N*m*s**
+
+At battle omega (420 rad/s):
+L_battle = 3.682e-5 * 420 = 1.546e-2 N*m*s
+
+---
+
+### 4. Spin Decay (Orbit Metal tip)
+
+tau_tip = 0.05 * 0.0538 * 9.81 * 0.003 = 7.91e-5 N*m
+d_omega/dt = 7.91e-5 / 3.682e-5 = **2.15 rad/s^2**
+t_stall = omega_0 / (d_omega/dt) = 700 / 2.15 = **325.6 s** (~5.4 minutes theoretical)
+
+This confirms Dread Bahamut 7Wall Orbit Metal as a genuine **ultra-long-spin combination**. Theoretical stall time at 325 s far exceeds any attack or burst-attack combination.
+
+---
+
+### 5. Counter-Spin Analysis (Left-Spin vs Right-Spin)
+
+As a left-spin combination facing right-spin opponents, counter-rotation doubles relative contact velocity:
+
+  v_rel_counter = omega_self * r + omega_opp * r = (420 + 420) * 0.038 = 31.9 m/s
+
+vs same-spin:
+  v_rel_same = |omega_self - omega_opp| * r ~= 0 (if equal spin) to low values
+
+The high relative velocity in counter-spin means harder impacts. However, Dread's post-activation circular profile deflects these impacts radially:
+
+  J_radial = mu_red * v_rel * (1+e) * cos(theta_deflection)
+
+where theta_deflection for a circular surface at tangential approach is ~= 70-80 deg -> cos(theta) ~= 0.34
+
+  J_radial = 0.0255 * 31.9 * 1.3 * 0.34 = 0.360 N*s (after circular deflection)
+
+vs 1.8x raw counter-spin impulse without circular deflection:
+  J_raw = 0.0255 * 31.9 * 1.3 * 1.0 = 1.059 N*s
+
+The circular profile reduces the effective impulse by ~66% from the raw counter-spin value. The burst torque is further reduced because the impulse is radially directed rather than tangentially directed toward the burst mechanism.
+
+---
+
+### 6. Dread Gimmick Activation Timeline
+
+| Phase | Hits required | Burst risk | Status |
+|-------|--------------|-----------|--------|
+| Initial (gaps open) | 0 | High | Pre-activation: gaps catch incoming blades |
+| Transition | 1–3 significant hits | Very high | Most likely burst window |
+| Post-activation | All gaps filled | Low-moderate | Circular deflection active |
+| Remainder of match | N/A | Low-moderate | Deflection maintained |
+
+The activation window (1–3 hits before circular profile forms) is the most critical period. Gen weight and a Dash Driver are essential to survive this window.
+
+---
+
+### 7. Precession Analysis with Wall Frame
+
+CoM height above contact point:
+  d_com_base ~= 18 mm
+  CoM lowering from Wall Frame: ~= -2.5 mm
+  d_com_effective = 15.5 mm
+
+Precession rate at battle omega:
+  Omega_p = (m * g * d_com) / (I * omega)
+           = (0.0538 * 9.81 * 0.0155) / (3.682e-5 * 420)
+           = 8.18e-3 / 1.546e-2
+           = **0.529 rad/s**
+
+Precession period: T_p = 2*pi / 0.529 = **11.9 s per orbit**
+
+The combination precesses once around the bowl every ~12 seconds, maintaining upright spin throughout. This matches the intended behavior of Bearing-class combinations — slow, stable orbital drift that avoids arena walls while maximising spin time.
+
+---
+
+### 8. Left-Spin Burst Stopper Synergy
+
+Burst events in Burst GT occur when accumulated tooth advances reach the maximum count. For Bahamut (7 fine locks):
+
+Without Gen: Burst threshold per tooth ~= 9.0e-4 N*m (fine lock)
+With Gen at tooth position 1: tooth 1 effectively locked by rubber stopper
+
+Net: any single hit below Gen's rubber catch force will NOT complete a burst if 6/7 teeth are already advanced. The Gen catch prevents the final burst completion even after the Dread gimmick activation gap.
+
+In practice:
+  - Match start: all 7 teeth at zero advance count
+  - During activation window: teeth accumulate rapidly from gap-catch contacts
+  - Gen provides one guaranteed save per match (at the final tooth position)
+  - Expected burst prevention: ~1–2 saves per match in high-contact scenarios
+
+---
+
+### 9. Inertia and Mass Comparison
+
+| Assembly | I (1e-5 kg*m^2) | Mass (g) | Type |
+|----------|-----------------|----------|------|
+| Dread Bahamut 7Wall Orbit Metal | 3.682 | 53.8 | Defense/Spin-eq |
+| Super Hyperion Xceed 1A (Case 1168) | 3.700 | 51.0 | Attack |
+| Dead Hades 11Turn Zephyr' (Case 1162) | 3.716 | 43.5 | Balance-Attack |
+| Left Aeclipse Disc 0 est. | ~3.4 | ~49 | Balance-Attack |
+
+Despite being a defense/spin-equalization combo, Dread Bahamut 7Wall Orbit Metal has nearly identical I to Super Hyperion (the attack combo). This is because Disc 7 (23.2 g) + Frame Wall (4.1 g) = 27.3 g of disc mass at large radius, giving excellent inertial resistance.
+
+The key difference is the spin decay rate:
+  - Super Hyperion (Xceed'): d_omega/dt = 37.9 rad/s^2 (rubber flat)
+  - Dread Bahamut 7Wall Orbit Metal: d_omega/dt = 2.15 rad/s^2 (metal ball)
+  
+Dread Bahamut spins down **17.6x slower** than Super Hyperion in isolation. This is the defining competitive advantage of the combination.
+
+---
+
+### 10. Competitive Assessment
+
+| Category | Rating | Reason |
+|----------|--------|--------|
+| Stamina | Excellent | 325 s theoretical; metal ball tip + high-I disc combo |
+| KO Resistance | Low | Metal ball low friction = easy to slide (per official) |
+| Burst Resistance | Moderate (post-activation) | High before activation, low-moderate after; Gen provides last-resort save |
+| Counter-attack | Low-moderate | Counter-spin doubles impulse but circular profile deflects |
+| Spin equalization | High | Long spin time + left-spin counter-rotation drains RS opponents |
+| Best use | Outlasting stamina / burst-attack combos in left-spin format |
+
+**Critical limitation:** KO resistance is low (Orbit Metal official note). An opponent who can consistently hit the combination before Dread activates its gimmick faces a burst-prone assembly. The strategy depends on surviving the activation window (~1–3 hits) and then outlasting opponents via spin equalization.
+
+---
+
+### 11. Physics Verdict
+
+| I_total | 3.682e-5 kg*m^2 |
+|---------|----------------|
+| Total mass | 53.8 g |
+| L_0 (omega_0 = 700 rad/s) | 2.577e-2 N*m*s |
+| d_omega/dt (Orbit Metal) | 2.15 rad/s^2 |
+| t_stall | **325.6 s** (~5.4 min theoretical) |
+| Precession period (with Wall) | 11.9 s per orbit |
+| Post-activation burst risk | Low-moderate |
+| KO resistance | Low |
+
+**Conclusion:** Dread Bahamut 7Wall Orbit Metal is a high-mass, ultra-low-friction spin equalization combination. Its 325-second theoretical spin time and near-zero spin decay rate make it one of the longest-spinning configurations in the Burst GT era. The Dread gimmick converts the initial high-burst-risk (gap catches) into a post-activation circular deflector, Gen weight provides a last-resort burst save, and Wall Frame lowers the CoM to maintain the upright stable orbit required for Orbit Metal to function without scraping. The assembly is designed to outlast opponents through spin equalization and left-spin counter-rotation drain, accepting low KO resistance as the trade-off for exceptional stamina. The critical match moment is the activation window: surviving the first 1–3 hard contacts before Dread goes circular is the difference between victory and an early burst.

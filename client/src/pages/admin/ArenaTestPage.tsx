@@ -89,7 +89,7 @@ export function ArenaTestPage() {
 
       <div ref={containerRef} className="w-full h-[500px] bg-black rounded-2xl border border-border overflow-hidden" />
 
-      <div className="mt-3.5 grid grid-cols-2 gap-2.5">
+      <div className="mt-3.5 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         {[
           ["Red (Attack)", "Orbiting at 30% arena radius", "Spin: 1800 / 2000"],
           ["Blue (Defense)", "Opposite orbit", "Spin: 1800 / 2000"],

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+﻿import React, { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -118,7 +118,7 @@ export default function AnimationPresetsPage() {
   };
 
   return (
-    <div className="page-shell p-6">
+    <div className="page-shell p-4 sm:p-6">
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-[22px] font-bold text-theme-text">Animation Presets</h1>
@@ -177,7 +177,7 @@ export default function AnimationPresetsPage() {
               <SearchableSelect value={form.animationType} onChange={v => setForm(f => ({ ...f, animationType: v }))} options={ANIMATION_TYPE_OPTIONS} placeholder="Type…" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3.5">
               <label>
                 <span className="text-xs text-theme-muted block mb-1">Duration (ms)</span>
                 <input type="number" min={0} value={form.durationMs} onChange={e => setForm(f => ({ ...f, durationMs: Number(e.target.value) }))} className={INP} />
@@ -228,7 +228,7 @@ export default function AnimationPresetsPage() {
 
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000]">
-          <div className="bg-bg1 border border-border-c rounded-2xl p-7 max-w-[400px] w-[90%]">
+          <div className="bg-bg1 border border-border-c rounded-2xl p-7 w-full max-w-[min(400px,calc(100vw-2rem))]">
             <h3 className="text-base font-bold text-theme-text mb-2.5">Delete "{confirmDelete.name}"?</h3>
             <p className="text-theme-muted text-sm mb-5">This will permanently remove the animation preset.</p>
             <div className="flex gap-2.5 justify-end">

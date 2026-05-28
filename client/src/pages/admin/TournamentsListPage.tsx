@@ -124,8 +124,8 @@ export function TournamentsListPage() {
           }
         </div>
       ) : (
-        <div className="bg-bg1 rounded-[14px] border border-border overflow-hidden">
-          <table className="w-full border-collapse text-[13px]">
+        <div className="bg-bg1 rounded-[14px] border border-border overflow-hidden overflow-x-auto">
+          <table className="w-full border-collapse text-[13px] min-w-[640px]">
             <thead>
               <tr className="border-b border-border">
                 {["Name", "Type", "Status", "Participants", "Scheduled", "Actions"].map((h) => (

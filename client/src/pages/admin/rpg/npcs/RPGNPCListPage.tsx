@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+﻿import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { collection, getDocs, deleteDoc, doc, setDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
@@ -60,8 +60,8 @@ export default function RPGNPCListPage() {
   [items, filter]);
 
   return (
-    <div className="p-6 w-full">
-      <div className="flex items-start justify-between mb-5">
+    <div className="p-4 sm:p-6 w-full">
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-start sm:justify-between mb-5">
         <div>
           <h1 className="text-[22px] font-bold text-white">RPG NPCs</h1>
           <p className="text-gray-400 text-[13px] mt-1">{items.length} NPCs</p>

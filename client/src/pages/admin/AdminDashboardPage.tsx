@@ -99,7 +99,7 @@ export function AdminDashboardPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Quick links */}
         <div>
           <div className="text-[11px] font-semibold text-muted uppercase tracking-[0.08em] mb-3">Quick Actions</div>

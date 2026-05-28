@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import toast from "react-hot-toast";
@@ -34,8 +34,8 @@ export default function RPGArcListPage() {
   const sorted = [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (
-    <div className="p-6 w-full">
-      <div className="flex items-start justify-between mb-5">
+    <div className="p-4 sm:p-6 w-full">
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-start sm:justify-between mb-5">
         <div>
           <h1 className="text-[22px] font-bold text-white">RPG Arcs</h1>
           <p className="text-gray-400 text-[13px] mt-1">{items.length} arcs (generations)</p>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { collection, getDocs, deleteDoc, doc, orderBy, query } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
@@ -41,7 +41,7 @@ export function BeybladeSystemListPage() {
   };
 
   return (
-    <div className="p-8 max-w-[900px]">
+    <div className="p-4 sm:p-8 max-w-[900px]">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-[22px] font-bold text-theme-text m-0">Beyblade Systems</h1>

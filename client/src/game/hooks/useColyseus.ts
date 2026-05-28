@@ -325,6 +325,8 @@ export function useColyseus({
   const [collisionQTEResult, setCollisionQTEResult] = useState<CollisionQTEResultData | null>(null);
   const [splitScreenData, setSplitScreenData] = useState<SplitScreenCinematicData | null>(null);
   const lastMashTimeRef = useRef(0); // debounce mash at 50ms
+  // Auto-advance loading step 4 after 3 s in case the server takes time to reach warmup
+  const step4TimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // N1: client-side prediction state for the local beyblade.
   // Stores the current predicted position and is reconciled each server update.
@@ -417,6 +419,13 @@ export function useColyseus({
       // Advance past "joining-room" immediately so the user sees progress while
       // the server's async onJoin (Firestore loads) completes before warmup starts.
       setLoadingStep("loading-arena-assets");
+      // Advance to step 4 automatically after 3 s in case the server never signals warmup
+      // (e.g. PvP waiting for a second player, or Firestore slowness in onJoin).
+      // Cancelled immediately if status jumps to warmup/launching/in-progress first.
+      step4TimerRef.current = setTimeout(() => {
+        setLoadingStep(s => s === "loading-arena-assets" ? "loading-beyblade-assets" : s);
+        step4TimerRef.current = null;
+      }, 3000);
 
       // Detect spectator mode — spectators have no beyblade entry keyed to their sessionId
       const spectate = Boolean((options as any).spectate);
@@ -865,6 +874,7 @@ export function useColyseus({
       });
 
       connectedRoom.onLeave(() => {
+        if (step4TimerRef.current) { clearTimeout(step4TimerRef.current); step4TimerRef.current = null; }
         setConnectionState("disconnected");
         roomRef.current = null;
         setRoom(null);
@@ -874,6 +884,7 @@ export function useColyseus({
         setIsSpectating(false);
       });
     } catch (err) {
+      if (step4TimerRef.current) { clearTimeout(step4TimerRef.current); step4TimerRef.current = null; }
       console.error("Connection failed:", err);
       setConnectionState("error");
       setLoadingError(err instanceof Error ? err.message : String(err));
@@ -963,8 +974,12 @@ export function useColyseus({
   // Watch state.status to advance step to "warmup-ready" once the room reports it.
   useEffect(() => {
     if (gameState?.status === "in-progress" || gameState?.status === "launching") {
+      // Cancel the step-4 auto-timer — we're past it.
+      if (step4TimerRef.current) { clearTimeout(step4TimerRef.current); step4TimerRef.current = null; }
       setLoadingStep("warmup-ready");
     } else if (gameState?.status === "warmup") {
+      // Cancel the step-4 auto-timer — warmup means we're at step 5.
+      if (step4TimerRef.current) { clearTimeout(step4TimerRef.current); step4TimerRef.current = null; }
       // Treat warmup as "almost ready" — sit at loading-audio-assets so the bar shows ~85%.
       setLoadingStep((s) => (s === "warmup-ready" ? s : "loading-audio-assets"));
     }

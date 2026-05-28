@@ -62,7 +62,7 @@ export function StatsPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Leaderboard */}
         <div>
           <div className="flex items-center justify-between mb-2">

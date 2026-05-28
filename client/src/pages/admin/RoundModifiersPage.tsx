@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -103,7 +103,7 @@ export default function RoundModifiersPage() {
   const filtered = query ? items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()) || i.id.includes(query)) : items;
 
   return (
-    <div className="page-shell p-6">
+    <div className="page-shell p-4 sm:p-6">
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-[22px] font-bold text-theme-text">Round Modifiers</h1>
@@ -142,7 +142,7 @@ export default function RoundModifiersPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000] p-4">
-          <div className="bg-bg1 border border-border-c rounded-2xl p-7 w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
+          <div className="bg-bg1 border border-border-c rounded-2xl p-4 sm:p-7 w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
             <h3 className="text-[17px] font-bold text-theme-text mb-5">{editing ? "Edit Round Modifier" : "New Round Modifier"}</h3>
 
             <div className="grid grid-cols-[1fr_auto] gap-3 mb-3.5">
@@ -163,7 +163,7 @@ export default function RoundModifiersPage() {
               <SearchableSelect value={form.modifierType} onChange={v => setForm(f => ({ ...f, modifierType: v }))} options={MODIFIER_TYPE_OPTIONS} placeholder="Type…" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3.5">
               <label>
                 <span className="text-xs text-theme-muted block mb-1">Magnitude</span>
                 <input type="number" step="0.05" value={form.magnitude} onChange={e => setForm(f => ({ ...f, magnitude: Number(e.target.value) }))} className={INP} />
@@ -197,7 +197,7 @@ export default function RoundModifiersPage() {
 
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[1000]">
-          <div className="bg-bg1 border border-border-c rounded-2xl p-7 max-w-[400px] w-[90%]">
+          <div className="bg-bg1 border border-border-c rounded-2xl p-4 sm:p-7 max-w-[400px] w-[90%]">
             <h3 className="text-base font-bold text-theme-text mb-2.5">Delete "{confirmDelete.name}"?</h3>
             <p className="text-theme-muted text-sm mb-5">This will permanently remove the round modifier.</p>
             <div className="flex gap-2.5 justify-end">

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { SearchableMultiSelect } from "@/components/admin/SearchableSelect";
@@ -161,7 +161,7 @@ export default function GimmickDefsPage() {
   );
 
   return (
-    <div className="p-8 max-w-[900px]">
+    <div className="p-4 sm:p-8 max-w-[900px]">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="m-0 text-[22px] text-text">Gimmick Defs</h1>
@@ -214,7 +214,7 @@ export default function GimmickDefsPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000]">
-          <div className="bg-bg1 border border-border rounded-xl p-7 w-[580px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
+          <div className="bg-bg1 border border-border rounded-xl p-4 sm:p-7 w-[580px] max-w-[95vw] max-h-[90vh] overflow-y-auto">
             <h2 className="m-0 mb-5 text-[17px] text-text">{editing ? "Edit Gimmick" : "New Gimmick"}</h2>
 
             <div className="mb-3.5">
@@ -294,7 +294,7 @@ export default function GimmickDefsPage() {
 
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100]">
-          <div className="bg-bg1 border border-border rounded-xl p-7 w-[380px] max-w-[95vw]">
+          <div className="bg-bg1 border border-border rounded-xl p-4 sm:p-7 w-[380px] max-w-[95vw]">
             <h3 className="m-0 mb-3 text-text">Delete Gimmick?</h3>
             <p className="m-0 mb-5 text-muted text-[13px]">
               Delete <strong className="text-text">{confirmDelete.name}</strong>? Any beyblade_stats referencing <code className="font-mono">{confirmDelete.id}</code> in gimmickIds[] will not expand at match start.

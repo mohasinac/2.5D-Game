@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+﻿import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -184,7 +184,7 @@ export function BeybladeEditPage() {
   const remaining = TOTAL_POINTS - usedPoints;
 
   return (
-    <div className="page-shell p-6">
+    <div className="page-shell p-4 sm:p-6">
       <div className="flex items-center justify-between mb-5">
         <div>
           <Link to="/admin/beyblades" className="text-theme-faint text-[13px] no-underline">← Beyblades</Link>
@@ -243,7 +243,7 @@ export function BeybladeEditPage() {
                   ))}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div>
                   <label className={LBL}>Mass (g)</label>
                   <input type="number" min={30} max={80} value={beyblade.mass} onChange={e => set("mass", +e.target.value)} className={INP} />

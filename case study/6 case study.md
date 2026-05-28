@@ -151,6 +151,41 @@ Every numeric value in new cases must carry one of these tags:
 
 ---
 
+## Nomenclature Rules — TT JP Canonical Names
+
+All names follow **Takara Tomy Japan (TT JP)** official product naming. Hasbro EN names appear **only** as cross-references marked `[Hasbro: xyz]` — never as the primary name in a case header, thesis, or analysis.
+
+### Series Names
+| TT JP (use this) | Hasbro (do not use as primary) |
+|-----------------|-------------------------------|
+| Metal Fight Beyblade (MFB) | Metal Fusion / Metal Masters / Metal Fury |
+| Zero-G (Beyblade Zero-G) | Shogun Steel |
+| 4D System | (unchanged — "4D" is the TT JP sub-system name) |
+
+### Zero-G Chrome Wheel Names
+| TT JP Chrome Wheel (use this) | Hasbro equivalent (do not use) |
+|-------------------------------|-------------------------------|
+| Bahamdia | Bahamoote |
+| Orojya | Orochi |
+| Saramanda | Salamander |
+| Shinobi | Ninja |
+| Eonis | Ionis |
+| Begirados | Behemoth |
+| Dark Knight | Ronin |
+
+**Note on "Orochi" in combo names:** The TT JP product BBG-31 is *Pirates Orochi 500E* — "Orochi" here is the full product assembly name (eight-headed serpent motif). The standalone Chrome Wheel component is listed as "Orojya" in part catalogues. Both appear in stock combo names; use the exact product name from TT JP packaging.
+
+### MFB Performance Tip / Spin Track Abbreviations
+Use the TT-COMPONENT-GLOSSARY as authoritative for all abbreviations. Key examples where misreading occurs:
+- `GCF` = Gear Circle Flat (ZeroG disc, 33.47 mm, 2.5 g) — NOT "Gear Circle Flat" shorthand of "GF"
+- `GF` = Giga Flat (standard MFB plastic flat, 0.75 g) — different part from GCF
+- `DF145` = Down Force 145 — NOT "Defense Ring 145"
+- `SR200` = Stamina Ring 200 — NOT "Screw Rolling 200"
+- `BSF` = Blade Semi-Flat — NOT any other expansion
+- `WD` = Wide Defense (the tip) — NOT "Weight Disk" (different part in Gen 1)
+
+---
+
 ## Case 297 — Rubber Flat / RF (0.8 g [CONFIRMED])
 
 > **Stock combo (Storm Pegasis 105RF):** Clear Wheel: Pegasis · Metal Wheel: Storm · Track: 105 · Bottom: Rubber Flat
@@ -11102,7 +11137,7 @@ function track500TopplingRisk(height_mm: number, standard_height_mm: number): nu
 
 ## Case 1075 — Spin Track: SP230 (Spike 230) — ZeroG
 
-> **Stock combos:** Gladiator Bahamoote SP230GF (BBG-27, Kira Hayama second bey)
+> **Stock combos:** Gladiator Bahamdia SP230GF (BBG-27, Kira Hayama second bey)
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Track type:** Spike-claw 230
 
 **Thesis.** SP230 (Spike 230) is a 23.0 mm height track featuring four downward-projecting spike claws — BD145-style protrusions that engage the tilted ZeroG stadium floor. [FACT — linka gladiator-bahamoote.md: ~4.3 g, 23.0 mm height, ~25.0 mm wide, four downward spike claws.] The claws create floor friction during the ZeroG tilt phase, resisting the centrifugal slope-push that sends beys downhill toward the ring-out zone. In combination with the GF/GCF disc tip's wall engagement, SP230 enables Bahamoote to anchor the outer stadium ring.
@@ -11495,7 +11530,7 @@ function bwdRecoil(theta_deg: number): { smash: number; recoil: number } {
 
 ## Case 1081 — Performance Tip: GCF (Gear Circle Flat) — ZeroG
 
-> **Stock combos:** Gladiator Bahamoote SP230GCF (BBG-27) · various ZeroG balance builds
+> **Stock combos:** Gladiator Bahamdia SP230GCF (BBG-27) · various ZeroG balance builds
 > **System:** ZeroG Synchrome · **Gen:** Gen2-ZeroG · **Tip type:** Gear-edge disc flat
 > **Naming note:** Bey files and some community sources call this "GF (Gear Circle Flat)". The glossary distinguishes GF = Giga Flat (standard 0.75g plastic) and GCF = Gear Circle Flat (ZeroG disc, 33.47mm, 2.5g). CS6 Case 318 covers this tip; this case documents the full physics derivation.
 

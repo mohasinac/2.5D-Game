@@ -1,4 +1,4 @@
-# Beyblade Case Studies — Part 13: Franchise Special Moves, Gimmicks, and Derived Combos
+﻿# Beyblade Case Studies — Part 13: Franchise Special Moves, Gimmicks, and Derived Combos
 
 **« Part 12:** [12 case study.md](12%20case%20study.md) (Cases 601–618)
 
@@ -14,6 +14,52 @@
 - Three case types: `[GIMMICK]`, `[SPECIAL MOVE]`, `[COMBO]` — tagged in the case heading
 - Gimmick cases derive the passive physics; special move cases reference the gimmick case for the physical foundation and then describe how the anime/ultimate layer transcends it; combo cases reference the gimmick case and describe the player-skill bounded expression
 - Franchise move attribution included in each special move case header
+
+---
+
+## Nomenclature Rules — TT JP Canonical Names (All Generations)
+
+All names follow **Takara Tomy Japan (TT JP)** official product naming. Hasbro EN names appear **only** as secondary cross-references in parentheses — never as the primary bey name, move name, or part name. Code variable names (TypeScript function parameters, interface names, identifiers) follow the TT JP canonical name in camelCase.
+
+### Gen 1 — Plastics (4-Layer / SG / EG / Magnacore Systems)
+- System names: 4-Layer System, SG System, EG System, Magnacore/Neo SG System — all TT JP terms
+- Hasbro-only systems (no TT JP release) are excluded per CS scope rule
+- Part names: use TT JP catalogue names; Hasbro variants noted `[Hasbro: xyz]` only
+
+### Gen 2 — Metal Fight Beyblade (MFB) + Zero-G
+| TT JP (use this) | Hasbro (do not use as primary) |
+|-----------------|-------------------------------|
+| Metal Fight Beyblade (MFB) | Metal Fusion / Metal Masters / Metal Fury |
+| Zero-G (Beyblade Zero-G) | Shogun Steel |
+| Bahamdia | Bahamoote |
+| Orojya | Orochi |
+| Saramanda | Salamander |
+| Shinobi | Ninja |
+| Eonis | Ionis |
+| Begirados | Behemoth |
+| Dark Knight | Ronin |
+
+### Gen 3 — Burst (All Sub-Systems)
+| TT JP (use this) | Hasbro branding (do not use) |
+|-----------------|------------------------------|
+| God Layer System | SwitchStrike |
+| Cho-Z Layer System | Turbo |
+| Valkyrie | Valtryek |
+| Spriggan | Spryzen |
+| Storm Spriggan | Spryzen S2 |
+| Spriggan Requiem | Turbo Spriggan |
+| Dead Phoenix | Dread Phoenix |
+| Dead Hades | Dread Hades |
+| Dead Armor | Dread Armor |
+| Dead Stinger (デッドスティンガー) | Dread Cannon |
+| Diving Dead Stinger Press | Diving Dread Cannon Crush |
+| Double Dead Stinger (ダブルデッドスティンガー) | Double Dread Cannon |
+
+**Dead vs Dread:** "Dead" and "Dread" are two different TT JP Burst GT Layer Bases. "Dread Bahamut" is correct TT JP (Dread base). "Dead Phoenix" is correct TT JP (Dead base). Never conflate.
+
+### Gen 4 — Beyblade X (BX / UX / CX)
+- Part names: **Blade** / **Ratchet** / **Bit** (TT JP terms — do not use Energy Layer / Driver / Performance Tip)
+- Sub-line: BX / UX / CX — use TT JP sub-line designations
 
 ---
 
@@ -5030,9 +5076,9 @@ SW145 Defense-mode wing contact profile  [Case 255]:
 
 ## Case 691 — [SPECIAL MOVE] Blazing Ring Shot: Shinobu Hiryuin / Ninja Salamander SW145SD (Beyblade Metal Masters)
 
-**Franchise Move:** Spinning around like a vortex, Salamander leaves a trail of flames that creates a Ring of Fire. The entire ring engulfs the opponent in flames, knocking the bey upward while entrapped in a vortex of fire. First seen in Neo Battle Bladers; survived only by Gladiator Bahamoote SP230GF. [Beyblade Metal Masters]
+**Franchise Move:** Spinning around like a vortex, Salamander leaves a trail of flames that creates a Ring of Fire. The entire ring engulfs the opponent in flames, knocking the bey upward while entrapped in a vortex of fire. First seen in Neo Battle Bladers; survived only by Gladiator Bahamdia SP230GF. [Beyblade Metal Masters]
 
-**Thesis:** Blazing Ring Shot is the anime transcendence of the SW145 Defense-mode orbital persistence gimmick (Case 690) in which the sustained orbit powered by SD's stamina and SW145's forward recoil is amplified into a full arena-radius fire-trail circuit that creates a contracting ring of fire; where the gimmick deflects individual approach attempts while maintaining orbital speed, Blazing Ring Shot commits Salamander to one complete circuit at maximum arena radius (r_orbit approx 0.88*r_arena), leaves a persistent fire-trail at that orbital radius that marks the Ring of Fire, then contracts the ring inward at v_ring=40px/s — any opponent caught at or beyond the ring radius takes fire damage and is knocked upward as the ring passes; the vertical "upward knock" is the anime amplification of SD's cone contact geometry: at full-gimmick orbital speed the cone tip's 30 degree half-apex, when combined with the ring contraction (inward radial force component), converts the normally horizontal contact into a sharp upward jab — the same upward-angle concentration mechanism from Venom Jab (Case 686) but arena-scale and omnidirectional; the must_stay_still force state on all opponents inside the ring reflects the fire ring's inescapable closure — there is no gap in the 360 degree ring to dodge through once the full circuit is complete; Gladiator Bahamoote SP230GF's survival in the franchise is game-mechanically represented as a special class of ring-out immunity (SP230 = 230-height Spiral track, maximum height in the standard track table at the time, meaning the ring struck Bahamoote at a height below its Wheel plane — the fire ring passes through at h=14.5mm, and a 230-height track raises the wheel to approx h=24mm, meaning the ring physically misses the Wheel level and only clips the track).
+**Thesis:** Blazing Ring Shot is the anime transcendence of the SW145 Defense-mode orbital persistence gimmick (Case 690) in which the sustained orbit powered by SD's stamina and SW145's forward recoil is amplified into a full arena-radius fire-trail circuit that creates a contracting ring of fire; where the gimmick deflects individual approach attempts while maintaining orbital speed, Blazing Ring Shot commits Salamander to one complete circuit at maximum arena radius (r_orbit approx 0.88*r_arena), leaves a persistent fire-trail at that orbital radius that marks the Ring of Fire, then contracts the ring inward at v_ring=40px/s — any opponent caught at or beyond the ring radius takes fire damage and is knocked upward as the ring passes; the vertical "upward knock" is the anime amplification of SD's cone contact geometry: at full-gimmick orbital speed the cone tip's 30 degree half-apex, when combined with the ring contraction (inward radial force component), converts the normally horizontal contact into a sharp upward jab — the same upward-angle concentration mechanism from Venom Jab (Case 686) but arena-scale and omnidirectional; the must_stay_still force state on all opponents inside the ring reflects the fire ring's inescapable closure — there is no gap in the 360 degree ring to dodge through once the full circuit is complete; Gladiator Bahamdia SP230GF's survival in the franchise is game-mechanically represented as a special class of ring-out immunity (SP230 = 230-height Spiral track, maximum height in the standard track table at the time, meaning the ring struck Bahamdia at a height below its Wheel plane — the fire ring passes through at h=14.5mm, and a 230-height track raises the wheel to approx h=24mm, meaning the ring physically misses the Wheel level and only clips the track).
 
 ### Phase Structure
 
@@ -5067,13 +5113,13 @@ powerCost: 100
 cooldownMs: 5500
 NOTE: any beyblade can use Blazing Ring Shot; no part restriction for special moves.
 
-SP230 Height Exception (Bahamoote class):
+SP230 Height Exception (Bahamdia class):
   If target ratchetHeight >= 230 (track h >= 23mm):
     ring contact height (14.5mm) MISSES Wheel plane
     spinDelta: -120 (track-only clip, not wheel contact)
     linearImpulse_vertical: 0 (no upward knock at track level)
     fireDebuff: false  (glancing contact only)
-    [Gladiator Bahamoote SP230GF survival is faithfully encoded]
+    [Gladiator Bahamdia SP230GF survival is faithfully encoded]
 ```
 
 ---
@@ -12861,26 +12907,26 @@ cooldownMs:    4500
 
 **Ceiling compliance:** 1.30× ≤ 1.5×; 40 ms ≤ 300 ms; 43 ≤ 50 rad/s; no invulnerability, no AoE [check]
 
-## Case 828 — [GIMMICK] Dread Phoenix 10 Friction — Dread Armor Detachment, Projectile Physics, and Friction Driver
+## Case 828 — [GIMMICK] Dead Phoenix 10 Friction — Dead Armor Detachment, Projectile Physics, and Friction Driver
 
-**Franchise context.** Phi (Beyblade Burst GT / Gachi, 2019). Assembly: Dread Phoenix 10 Friction (JP: デッドフェニックス10フリクション). Burst GT generation (Takara-Tomy, in scope). All values [M] (±15%) — no dedicated prior case analysis.
+**Franchise context.** Phi (Beyblade Burst GT / Gachi, 2019). Assembly: Dead Phoenix 10 Friction (JP: デッドフェニックス10フリクション). Burst GT generation (Takara-Tomy, in scope). All values [M] (±15%) — no dedicated prior case analysis.
 
 **Parts:**
 
-**Energy Layer: Dread Phoenix — Dread Armor System [M]**
-The defining gimmick: a two-state energy layer. The **Dread Armor** (outer shell) wraps the Phoenix core layer, held by a friction/retention tab. On sufficient lateral impact, the Dread Armor detaches and separates from the layer assembly.
+**Energy Layer: Dead Phoenix — Dead Armor System [M]**
+The defining gimmick: a two-state energy layer. The **Dead Armor** (outer shell) wraps the Phoenix core layer, held by a friction/retention tab. On sufficient lateral impact, the Dead Armor detaches and separates from the layer assembly.
 
-**State 1 — Armed (Dread Armor attached):**
-  m_layer_armed ≈ 16.0 g [M]  (Phoenix core ~8.5 g + Dread Armor ~7.5 g)
+**State 1 — Armed (Dead Armor attached):**
+  m_layer_armed ≈ 16.0 g [M]  (Phoenix core ~8.5 g + Dead Armor ~7.5 g)
   r_armor ≈ 24 mm [M]; I_armed ≈ 4.75×10⁻⁶ kg⋅m² [M]
-  Contact geometry: Dread Armor presents a broad, rounded outer profile → high burst resistance (the armor absorbs and disperses impact before the inner burst tabs see force). τ_burst_effective ≈ very high [M] while armor is attached.
+  Contact geometry: Dead Armor presents a broad, rounded outer profile → high burst resistance (the armor absorbs and disperses impact before the inner burst tabs see force). τ_burst_effective ≈ very high [M] while armor is attached.
 
-**State 2 — Bare (Dread Armor detached):**
+**State 2 — Bare (Dead Armor detached):**
   m_layer_bare ≈ 8.5 g [M]; r_core ≈ 19 mm [M]; I_bare ≈ 1.53×10⁻⁶ kg⋅m² [M]
   Exposed Phoenix inner contact geometry: aggressive swept wing contacts at r_wing ≈ 20 mm [M], C_smash ≈ 0.92 [M]. Burst tabs now directly exposed → standard burst resistance (τ_burst ≈ 1.8 mNm per tab [M], 3 tabs).
   Note: without armor the layer is more offensively dangerous but far more burst-vulnerable.
 
-**Dread Armor detachment trigger:**
+**Dead Armor detachment trigger:**
   The retention tab releases when the lateral impact impulse on the armor exceeds threshold:
     J_detach ≥ J_threshold ≈ 0.035 N⋅s [M]
   In practice: any hit delivering linearImpulse ≥ ~1400 eu may trigger detachment [M].
@@ -12924,14 +12970,14 @@ Spin change at detachment: ω_bare ≈ ω_armed × (I_total_armed / I_total_bare
   → ω_bare ≈ ω_armed × 1.031 ≈ +3.1% spin increase [M] — slight spin-up as heavier armor separates
 
 ```typescript
-interface DreadArmorState {
+interface DeadArmorState {
   attached: boolean;
   armorInStadium: boolean;   // false if armor ring-outed
   armorPosition: { x: number; y: number } | null;
 }
 
 function dreadArmorDetachment(
-  impactImpulse_eu: number, currentState: DreadArmorState,
+  impactImpulse_eu: number, currentState: DeadArmorState,
   threshold_eu: number = 1400
 ): boolean {
   return !currentState.attached && impactImpulse_eu >= threshold_eu ? false
@@ -12947,17 +12993,17 @@ function dreadPhoenixStatPost(armorAttached: boolean): { mass_g: number; I_kgm2:
 
 ---
 
-## Case 829 — [SPECIAL] Dread Cannon (Dead Stinger / デッドスティンガー)
+## Case 829 — [SPECIAL] Dead Stinger (デッドスティンガー)
 
-**Franchise move.** Dread Cannon (JP: Dead Stinger, デッドスティンガー) — Phi's Dread Phoenix 10 Friction. After the Dread Armor is knocked off, Phoenix strikes the tumbling armor with a precision kick, sending it bouncing off the stadium wall and into the opponent with nearly Phoenix-level impact force. A variant (Episode 47) has Phoenix orbit the opponent while repeatedly launching armor in a multi-hit trapping cage.
+**Franchise move.** Dead Stinger (デッドスティンガー) — Phi's Dead Phoenix 10 Friction. After the Dead Armor is knocked off, Phoenix strikes the tumbling armor with a precision kick, sending it bouncing off the stadium wall and into the opponent with nearly Phoenix-level impact force. A variant (Episode 47) has Phoenix orbit the opponent while repeatedly launching armor in a multi-hit trapping cage.
 
 NOTE: special move overrides all EG/clutch mechanical state; the EG spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override).
 
-**Prerequisite:** Dread Armor must be detached AND within stadium bounds (`armorInStadium: true`). If armor has ring-outed or is not detached, the special cannot activate.
+**Prerequisite:** Dead Armor must be detached AND within stadium bounds (`armorInStadium: true`). If armor has ring-outed or is not detached, the special cannot activate.
 
 ---
 
-### Mode A — Dread Cannon (single wall-bounce projectile)
+### Mode A — Dead Stinger (single wall-bounce projectile)
 
 **Phase 1 — armor_kick (QTE "Cannon" — J, 250 ms window):**
 Phoenix accelerates toward the tumbling armor and delivers a precision strike. Elastic collision — Phoenix mass dominates:
@@ -12996,7 +13042,7 @@ Mode A — 55% power (QTE miss):
 
 ---
 
-### Mode B — Dread Cannon Variant (Episode 47: circling trap)
+### Mode B — Dead Stinger Variant (Episode 47: circling trap)
 
 Activated by **holding J** during the activation window instead of tapping. Phoenix enters a tight orbit around the opponent, repeatedly kicking the armor into the opponent from rotating angles. Armor does NOT wall-bounce in this mode — Phoenix launches directly.
 
@@ -13073,13 +13119,13 @@ function armorLaunchVelocity(
 
 ## Case 830 — [COMBO] Phoenix Kick (J←J)
 
-**Franchise bey:** Dread Phoenix 10 Friction — Dread Phoenix layer active  
-**Required part:** `dreadPhoenixLayer` (Dread Phoenix energy layer; any beyblade carrying this part qualifies)  
+**Franchise bey:** Dead Phoenix 10 Friction — Dead Phoenix layer active  
+**Required part:** `deadPhoenixLayer` (Dead Phoenix energy layer; any beyblade carrying this part qualifies)  
 **Sequence:** J ← J (attack + moveLeft + attack)  
 **Type restriction:** attack  
 **Cost:** 25 power
 
-A double-strike combo — Phoenix delivers an initial smash, sweeps left (re-approach), then fires a second strike with the inner Phoenix wing contacts. If the Dread Armor is currently detached and within 20 units of the opponent, the combo also delivers a third mini-impact from the armor sliding into the opponent (no wall bounce — direct floor slide).
+A double-strike combo — Phoenix delivers an initial smash, sweeps left (re-approach), then fires a second strike with the inner Phoenix wing contacts. If the Dead Armor is currently detached and within 20 units of the opponent, the combo also delivers a third mini-impact from the armor sliding into the opponent (no wall bounce — direct floor slide).
 
 ```
 Main double-strike:
@@ -13094,7 +13140,7 @@ Armor bonus (if armorDetached AND armorDistance ≤ 20 units):
   Additional impulse:    200 eu
 ```
 
-**Effect:** `armorKick` — if armor bonus triggers, the armor is consumed (shatters; cannot be reused for Dread Cannon). The main double-strike activates regardless.
+**Effect:** `armorKick` — if armor bonus triggers, the armor is consumed (shatters; cannot be reused for Dead Stinger). The main double-strike activates regardless.
 
 **Ceiling compliance (main hit):** 1.40× ≤ 1.5×; 50 ms ≤ 300 ms; 46 ≤ 50 rad/s; no invulnerability, no AoE [check]. Armor bonus is a separate source (−15 ≤ 50 [check]).
 
@@ -15830,11 +15876,11 @@ function featherStrikeCombo(jHit: boolean): {spinDelta:number;dmgMult:number;loc
 
 ---
 
-## Case 1107 — [GIMMICK] Phi's Dread Phoenix 10 Friction — Dread Armor Separation and Rubber Wall Rebound (Second Appearance)
+## Case 1107 — [GIMMICK] Phi's Dead Phoenix 10 Friction — Dead Armor Separation and Rubber Wall Rebound (Second Appearance)
 
-**Franchise context.** Phi (Beyblade Burst GT, Takara-Tomy). Second special move case. Cross-reference Case 828 for full assembly. Focus: Dread Armor centrifugal separation and Friction driver rubber wall-rebound kinematics for Diving Dread Cannon Crush.
+**Franchise context.** Phi (Beyblade Burst GT, Takara-Tomy). Second special move case. Cross-reference Case 828 for full assembly. Focus: Dead Armor centrifugal separation and Friction driver rubber wall-rebound kinematics for Diving Dead Stinger Press.
 
-**Dread Armor separation:**
+**Dead Armor separation:**
   m_armor ≈ 8.0 g [M]; clip retention force ≈ 4.0 N [M]; r_armor_CoM ≈ 30 mm [M]
   At ω = 700 rad/s: F_centrifugal = 0.008 × 700² × 0.030 = 117.6 N >> 4.0 N → easily separates under impact impulse
   m_phoenix_core ≈ 22.0 g [M]; m_disc ≈ 9.0 g; m_friction ≈ 5.0 g; m_chip ≈ 3.0 g
@@ -15861,9 +15907,9 @@ function dreadArmorSeparation(omega: number): {canSeparate: boolean; F_centrifug
 
 ---
 
-## Case 1108 — [SPECIAL] Diving Dread Cannon Crush
+## Case 1108 — [SPECIAL] Diving Dead Stinger Press
 
-**Franchise move.** Diving Dread Cannon Crush (JP: Diving Dead Stinger Press) — Phi's Dread Phoenix 10 Friction (Beyblade Burst GT). Friction driver rubber-rebound off the stadium wall launches both Dread Phoenix and Dread Armor into the air simultaneously. Both descend and strike the opponent head-on at the same instant — "colossal damage."
+**Franchise move.** Diving Dead Stinger Press (JP: ダイビングデッドスティンガープレス) — Phi's Dead Phoenix 10 Friction (Beyblade Burst GT). Friction driver rubber-rebound off the stadium wall launches both Dead Phoenix and Dead Armor into the air simultaneously. Both descend and strike the opponent head-on at the same instant — "colossal damage."
 
 NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
 
@@ -15871,7 +15917,7 @@ NOTE: special move overrides all EG/clutch mechanical state; anime physics overr
 **Phase 2 — Friction Rebound + Armor Separation (150 ms):** Rubber tip grips wall; both bodies launch upward. beyTiltAngle → 90°. Invulnerable.
 **Phase 3 — Dual Aerial (800 ms):** Both arc toward target. BeySpirit synchronises arrival. Invulnerable.
 **Phase 4 — Simultaneous Strike (0 ms between Phoenix and Armor hits):**
-QTE "Dread Impact" — tap J at shadow-convergence (200 ms window).
+QTE "Dead Impact" — tap J at shadow-convergence (200 ms window).
 
 ```
 Timed J (within 200 ms):
@@ -15884,11 +15930,11 @@ Missed J (outside window):
 
 selfCost: −70; powerCost: 120; cooldown: 8000 ms
 Invulnerability: Phase 2 (150ms) + Phase 3 (800ms) = 950 ms
-QTE: "Dread Impact" — tap J at shadow convergence; miss = Phoenix-only
+QTE: "Dead Impact" — tap J at shadow convergence; miss = Phoenix-only
 ```
 
 ```typescript
-function divingDreadCannonCrushQTE(jTimedMs: number | null): {
+function divingDeadStingerPressQTE(jTimedMs: number | null): {
   phoenixHit: boolean; armorHit: boolean; totalSpinDelta: number;
   totalImpulse_eu: number; effectiveDmgMult: number; burstBonus_pct: number
 } {
@@ -15897,22 +15943,22 @@ function divingDreadCannonCrushQTE(jTimedMs: number | null): {
     ? {phoenixHit:true, armorHit:true,  totalSpinDelta:-140, totalImpulse_eu:2500, effectiveDmgMult:2.30, burstBonus_pct:27}
     : {phoenixHit:true, armorHit:false, totalSpinDelta: -50, totalImpulse_eu: 800, effectiveDmgMult:1.50, burstBonus_pct: 8};
 }
-// divingDreadCannonCrushQTE(150)  → {both:true,  spin:-140, imp:2500, dmg:2.30×, burst:+27%}
-// divingDreadCannonCrushQTE(250)  → {armor:false,spin:-50,  imp:800,  dmg:1.50×, burst:+8% }
-// divingDreadCannonCrushQTE(null) → {armor:false,spin:-50,  imp:800,  dmg:1.50×, burst:+8% }
+// divingDeadStingerPressQTE(150)  → {both:true,  spin:-140, imp:2500, dmg:2.30×, burst:+27%}
+// divingDeadStingerPressQTE(250)  → {armor:false,spin:-50,  imp:800,  dmg:1.50×, burst:+8% }
+// divingDeadStingerPressQTE(null) → {armor:false,spin:-50,  imp:800,  dmg:1.50×, burst:+8% }
 ```
 
 ---
 
-## Case 1109 — [COMBO] Dread Dive (J ↑ K)
+## Case 1109 — [COMBO] Dead Dive (J ↑ K)
 
-**Franchise bey:** Phi's Dread Phoenix 10 Friction — Dread Phoenix layer active  
-**Required part:** `dreadPhoenixLayer`  
+**Franchise bey:** Phi's Dead Phoenix 10 Friction — Dead Phoenix layer active  
+**Required part:** `deadPhoenixLayer`  
 **Sequence:** J ↑ K (attack + moveUp + defense)  
 **Type restriction:** attack  
 **Cost:** 15 power
 
-Phi delivers a Dread Phoenix blade contact (J), Friction rubber floor-push adds extra contact weight (↑ — brief lift off floor), then converts to Dread Armor absorb (K). Two-phase: strike then armored counter-capture.
+Phi delivers a Dead Phoenix blade contact (J), Friction rubber floor-push adds extra contact weight (↑ — brief lift off floor), then converts to Dead Armor absorb (K). Two-phase: strike then armored counter-capture.
 
 ```
 Strike (J): spinDelta −43; dmgMult 1.30×; lockMs 50; frictionBonus +8eu
@@ -16191,9 +16237,9 @@ function gravitySurgeCombo(h1: boolean, h2: boolean): {
 
 ---
 
-## Case 1116 — [GIMMICK] Phi's Dread Phoenix 10 Friction — Mid-Air Elastic Collision Redirection Physics (Third Appearance)
+## Case 1116 — [GIMMICK] Phi's Dead Phoenix 10 Friction — Mid-Air Elastic Collision Redirection Physics (Third Appearance)
 
-**Franchise context.** Phi (Beyblade Burst GT). Third special move case; cross-reference Cases 828, 876. Focus: Double Dread Cannon's novel mechanic — mid-air elastic collision between Dread Phoenix and the Dread Armor after a missed first shot, redirecting the Armor back toward the opponent with amplified velocity.
+**Franchise context.** Phi (Beyblade Burst GT). Third special move case; cross-reference Cases 828, 876. Focus: Double Dead Stinger's novel mechanic — mid-air elastic collision between Dead Phoenix and the Dead Armor after a missed first shot, redirecting the Armor back toward the opponent with amplified velocity.
 
 **Elastic collision — head-on intercept:**
 After Armor misses (flies past opponent continuing in direction D_away), Phoenix orbits to the far side and approaches head-on (from direction −D_away):
@@ -16208,10 +16254,10 @@ After Armor misses (flies past opponent continuing in direction D_away), Phoenix
                   = −9.533 − 1.493 = −11.027 m/s [M]
   → Armor now moves at 11.027 m/s toward opponent (negative = back toward opponent).
 
-  KE_armor_original = 0.5 × 0.008 × 8.5² = 0.289 J [M]  (original Dread Cannon first shot at 8.5 m/s)
+  KE_armor_original = 0.5 × 0.008 × 8.5² = 0.289 J [M]  (original Dead Stinger first shot at 8.5 m/s)
   KE_armor_elastic  = 0.5 × 0.008 × 11.027² = 0.487 J [M]  (+68.5% KE vs first shot from physics alone)
   BeySpirit redirect amplification ×1.4: v_anime = 11.027 × 1.4 = 15.44 m/s [M]
-  KE_anime = 0.5 × 0.008 × 15.44² = 0.953 J [M]  (3.3× original Dread Cannon Armor KE)
+  KE_anime = 0.5 × 0.008 × 15.44² = 0.953 J [M]  (3.3× original Dead Stinger Armor KE)
 
   Opponent has a SHORTER dodge window for the redirect: approach speed 15.44 m/s vs 8.5 m/s original → dodge window halved (200 ms vs 400 ms).
 
@@ -16233,13 +16279,13 @@ function doubleArmorRedirect(v_phoenix: number, v_armor: number, bs: number): {
 
 ---
 
-## Case 1117 — [SPECIAL] Double Dread Cannon
+## Case 1117 — [SPECIAL] Double Dead Stinger
 
-**Franchise move.** Double Dread Cannon (JP: ダブルデッドスティンガー / Double Dead Stinger) — Phi's Dread Phoenix 10 Friction (Beyblade Burst GT). If the initial Dread Cannon misses, Dread Phoenix intercepts the Dread Armor mid-flight and sends it back at the enemy with even more power. Only CS13 special with a "redirect on miss" mechanic — the opponent dodging the first shot inadvertently enables a faster, harder-to-dodge second shot (3.3× the KE of the original [M]).
+**Franchise move.** Double Dead Stinger (JP: ダブルデッドスティンガー) — Phi's Dead Phoenix 10 Friction (Beyblade Burst GT). If the initial Dead Stinger misses, Dead Phoenix intercepts the Dead Armor mid-flight and sends it back at the enemy with even more power. Only CS13 special with a "redirect on miss" mechanic — the opponent dodging the first shot inadvertently enables a faster, harder-to-dodge second shot (3.3× the KE of the original [M]).
 
 NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
 
-**Phase 1 — Dread Cannon First Shot (300 ms):**
+**Phase 1 — Dead Stinger First Shot (300 ms):**
 Armor launches toward opponent at v ≈ 8.5 m/s [M]. QTE (opponent): dodge ← or → within 400 ms.
   If dodge fails: first-shot hit — no redirect.
   If dodge succeeds: Armor flies past → Phase 2.
@@ -16266,7 +16312,7 @@ Opponent QTE1: ← or → within 400 ms; QTE2 (if redirect): ← or → within 2
 ```typescript
 type DDCOutcome = "first_hit"|"redirect_hit"|"both_miss";
 
-function doubleDreadCannon(dodgedFirst: boolean, dodgedRedirect: boolean): {
+function doubleDeadStinger(dodgedFirst: boolean, dodgedRedirect: boolean): {
   outcome: DDCOutcome; spinDelta:number; impulse_eu:number; ko_eu:number; dmgMult:number; burst_pct:number
 } {
   if (!dodgedFirst)
@@ -16275,22 +16321,22 @@ function doubleDreadCannon(dodgedFirst: boolean, dodgedRedirect: boolean): {
     return {outcome:"redirect_hit", spinDelta:-70, impulse_eu:1400, ko_eu:3800, dmgMult:1.80, burst_pct:17};
   return   {outcome:"both_miss",   spinDelta:-70, impulse_eu:0,    ko_eu:0,    dmgMult:1.00, burst_pct: 0};
 }
-// doubleDreadCannon(false,false) → {first_hit,    spin:-55, imp:900,  dmg:1.55×, burst:+11%}
-// doubleDreadCannon(true, false) → {redirect_hit, spin:-70, imp:1400, dmg:1.80×, burst:+17%}
-// doubleDreadCannon(true, true)  → {both_miss,    spin:-70, imp:0,    dmg:1.00×, burst:0%  }
+// doubleDeadStinger(false,false) → {first_hit,    spin:-55, imp:900,  dmg:1.55×, burst:+11%}
+// doubleDeadStinger(true, false) → {redirect_hit, spin:-70, imp:1400, dmg:1.80×, burst:+17%}
+// doubleDeadStinger(true, true)  → {both_miss,    spin:-70, imp:0,    dmg:1.00×, burst:0%  }
 ```
 
 ---
 
 ## Case 1118 — [COMBO] Armor Spike (J ← J)
 
-**Franchise bey:** Phi's Dread Phoenix 10 Friction — Dread Phoenix layer active  
-**Required part:** `dreadPhoenixLayer`  
+**Franchise bey:** Phi's Dead Phoenix 10 Friction — Dead Phoenix layer active  
+**Required part:** `deadPhoenixLayer`  
 **Sequence:** J ← J (attack + moveLeft + attack)  
 **Type restriction:** attack  
 **Cost:** 15 power
 
-Strike (J), feint left (← — brief orbit-mimic past the target, the same repositioning Phoenix uses in the Double Dread Cannon intercept), second flank contact (J — from ≈30° new angle). Miniature ground-level echo of the Double Dread Cannon redirect orbit.
+Strike (J), feint left (← — brief orbit-mimic past the target, the same repositioning Phoenix uses in the Double Dead Stinger intercept), second flank contact (J — from ≈30° new angle). Miniature ground-level echo of the Double Dead Stinger redirect orbit.
 
 ```
 Hit 1 (J): spinDelta −40; dmgMult 1.25×; lockMs 30
@@ -16318,7 +16364,7 @@ function armorSpikeCombo(h1: boolean, h2: boolean): {
 
 ## Case 1119 — [GIMMICK] Phelix Payne's Prominence Phoenix Tapered Metal Universe-10 — Prominence Shield Dual Free-Fall Physics
 
-**Franchise context.** Phelix Payne (Beyblade X era, Takara-Tomy [M]). Assembly: Prominence Phoenix / Tapered Metal / Universe-10. BX era format: Blade / Bit variant / Ratchet-height [M]. The Prominence Phoenix blade incorporates a **Prominence Shield** — a detachable outer ring analogous to Dread Armor (Case 876) but designed for a gravity-dive role. On aerial launch, Phoenix core and Shield separate at the apex and fall independently — enabling simultaneous dual-body strikes on one or more opposing beys.
+**Franchise context.** Phelix Payne (Beyblade X era, Takara-Tomy [M]). Assembly: Prominence Phoenix / Tapered Metal / Universe-10. BX era format: Blade / Bit variant / Ratchet-height [M]. The Prominence Phoenix blade incorporates a **Prominence Shield** — a detachable outer ring analogous to Dead Armor (Case 876) but designed for a gravity-dive role. On aerial launch, Phoenix core and Shield separate at the apex and fall independently — enabling simultaneous dual-body strikes on one or more opposing beys.
 
 **Parts:**
 
@@ -16648,6 +16694,1897 @@ function glideSweepCombo(jHit: boolean): {
 
 ---
 
-*Cases continue from Case 1125 as further franchise moves are provided.*
+## Case 1135 — [GIMMICK] Dan & Reiki Sodo's Evil Gemios DF145FS — Down Force 145 Aerodynamic Stability and FS Dual-Mode Tip Drive
+
+**Franchise context.** Dan Sodo and Reiki Sodo (Metal Fight Beyblade, Takara-Tomy). Both brothers use identical assemblies: Evil Gemios DF145FS. MFB nomenclature: Face Bolt / Metal Wheel / Energy Ring / Spin Track / Performance Tip. **DF145 = Down Force 145** (confirmed part list) — a wide flanged disc that generates aerodynamic downforce (presses the bey toward the arena floor), NOT upward deflection. Down Burst is CS13's third Tag-Team Special Move. Dan (orange-fire aura) and Reiki (blue-ice aura) combine their elemental vortices into a thermally-amplified dual-element tornado that ascends then crushes downward — the DF145 downforce physically amplifies the final descent, giving the move its name.
+
+**Assembly (each bey) [M]:**
+
+**Metal Wheel: Evil [M]**
+Asymmetric twin-lobe design (Gemini/twin motif); two primary contact arcs at 180°, slight mass imbalance (~1.5% off-centre [M]) creating natural orbital precession drift during free spin:
+  m_wheel ≈ 23.0 g [M]; r_outer ≈ 40 mm [M]; r_inner ≈ 14 mm [M]
+  I_wheel = (0.023/2)(0.040² + 0.014²) = 0.0115 × (1.600×10⁻³ + 1.960×10⁻⁴) = 0.0115 × 1.796×10⁻³ = 2.065×10⁻⁵ kg⋅m² [M]
+
+**Energy Ring: Gemios [M]**
+Twin-protrusion ring (two raised contacts at 180°) matching Evil wheel's dual-lobe geometry:
+  m_ring ≈ 3.8 g [M]; r_outer ≈ 21 mm [M]; r_inner ≈ 17 mm [M]
+  I_ring = (0.0038/2)(0.021² + 0.017²) = 0.0019 × 7.300×10⁻⁴ = 1.387×10⁻⁶ kg⋅m² [M]
+
+**Spin Track: DF145 (Down Force 145) — confirmed part list**
+Wide flanged disc at h = 14.5 mm. Curved disc upper surface directs air upward above the disc, creating a high-pressure zone below that pushes the bey toward the arena floor (aerodynamic downforce). Keeps bey low and stable; resistant to aerial attacks and ring-out via tilt:
+  m_track ≈ 3.0 g [M]; r_flange ≈ 16 mm [M]; r_center ≈ 4 mm [M]
+  I_track = (0.003/2)(0.016² + 0.004²) = 0.0015 × 2.720×10⁻⁴ = 4.080×10⁻⁷ kg⋅m² [M]
+  Downforce at ω = 500 rad/s: v_flange = 500 × 0.016 = 8.0 m/s
+    F_df = C_L × ½ × ρ_air × v² × A_disc = 0.35 × 0.5 × 1.225 × 64 × (π × 0.016²) ≈ 0.011 N [M]
+    Normal play: a_df = F_df / m_total ≈ 0.32 m/s² [M] (minor stabilising)
+    Down Burst Phase 3 (BeySpirit amplification ×10 [M]): a_df_anime ≈ 3.24 m/s² [M]
+
+**Performance Tip: FS (Flat Sharp) — confirmed part list**
+Outer flat ring (r_flat ≈ 2.5 mm) + inner sharp pin (r_sharp ≈ 0.5 mm). Mode transition at ω_stable ≈ 420 rad/s [M]:
+  Above ω_stable: gyroscopic stiffness → sharp pin contact (μ ≈ 0.08); stamina mode
+  Below ω_stable: lateral tilt → flat ring contact (μ ≈ 0.45); aggressive orbital mode
+  r_contact_eff ≈ 1.5 mm [M] (mid-spin blend); m_tip ≈ 1.5 g; I_tip ≈ 0.100×10⁻⁶ kg⋅m²
+
+**Face Bolt [M]**
+  m_bolt ≈ 2.5 g; I_bolt ≈ 0.130×10⁻⁶ kg⋅m²
+
+**Assembly (per bey) [M]:**
+  m_total = 23.0 + 3.8 + 3.0 + 1.5 + 2.5 = 33.8 g ≈ 34.0 g [M]
+  I_total = 20.650 + 1.387 + 0.408 + 0.100 + 0.130 = 22.675×10⁻⁶ ≈ 2.268×10⁻⁵ kg⋅m² [M]
+  ω₀ = 750 rad/s [M] (MFB-era string launcher); KE₀_spin = 0.5 × 2.268×10⁻⁵ × 750² = 6.378 J [M] per bey
+  Spin decay (μ_eff ≈ 0.25, r_eff = 1.5 mm): dω/dt = −5.51 rad/s² [M]
+
+**Dual-element sync condition (Down Burst):**
+  Optimal offset θ_sync = 90° [M] (quadrature — maximises fire-ice thermal boundary area)
+  Tolerance ±25° [M]; both beys same orbital direction.
+  Single-bey vortex: v_orbital ≈ 2.2 m/s [M]; Ω_single = 11.00 rad/s [M]
+  Combined base: Ω_base = 22.00 × η_sync [M]
+  Thermal amplification (ΔT ≈ 280°C [M]; k_thermal = 0.5 [M]):
+    Ω_thermal = 22.00 × η_sync × (1 + 0.5 × η_sync); at η=1.0: Ω_thermal = 33.0 rad/s [M]
+  DF145 downforce descent amplification: g_eff_anime = 9.81 + η × 3.24 m/s² [M]
+
+```typescript
+function evilGemiosDualElement(
+  v_Dan: number, v_Reiki: number, offset_deg: number
+): { synced: boolean; eta_sync: number; Omega_thermal_rad_s: number; g_eff_descent: number } {
+  const targetOffset = 90;
+  const deviation = Math.abs(((offset_deg - targetOffset) + 180) % 360 - 180);
+  const speedMatch = Math.abs(v_Dan - v_Reiki) < 0.35;
+  const synced = deviation <= 25 && speedMatch;
+  const eta = synced ? 1.0 - deviation / 25 : Math.max(0, 0.6 - deviation / 60);
+  const Omega_thermal = (2 * 11.0 * eta) * (1 + 0.5 * eta);
+  return {
+    synced, eta_sync: parseFloat(eta.toFixed(3)),
+    Omega_thermal_rad_s: parseFloat(Omega_thermal.toFixed(2)),
+    g_eff_descent: parseFloat((9.81 + eta * 3.24).toFixed(2)),
+  };
+}
+// evilGemiosDualElement(2.2, 2.2, 90)  → {synced:true,  eta:1.000, Omega:33.00, g_eff:13.05}
+// evilGemiosDualElement(2.2, 2.2, 75)  → {synced:true,  eta:0.400, Omega:10.56, g_eff:11.11}
+// evilGemiosDualElement(2.2, 2.2, 45)  → {synced:false, eta:0.000, Omega:0.00,  g_eff:9.81}
+```
+
+---
+
+## Case 1136 — [SPECIAL] Down Burst
+
+**Franchise move.** Down Burst (ダウンバースト) — Tag-Team Special by Dan Sodo and Reiki Sodo, both using Evil Gemios DF145FS (Metal Fight Beyblade). Dan's orange-fire and Reiki's blue-ice auras combine into a thermally-amplified dual-element vortex that ascends from the stadium, then descends as a crushing aerial strike — the DF145 downforce disc physically amplifies the descent, giving the move its name.
+
+NOTE: special moves override all EG/clutch mechanical state; anime physics override. Both beys sustain the aerial vortex under BeySpirit power regardless of spin state.
+
+**Activation:** Both allied players hold J within 500 ms sync window. If missed: individual single-element blasts (no thermal combination, no aerial phases).
+
+**Phase 1 — Element Spiral (1000 ms):** Both beys orbit at 90° offset; UI sync meter shows phase difference. QTE: both players hold J. η_sync builds toward 1.0.
+
+**Phase 2 — Vortex Ascent (800 ms):** Combined vortex lifts both beys (BeySpirit-driven). Both allied beys invulnerable. No opponent damage during ascent. h_apex ≈ 1.5 m [M].
+
+**Phase 3 — Down Burst Strike (1200 ms):** Both beys descend in the vortex. Five elemental claw-arms (alternating fire/ice) spiral down onto primary target; AoE splash to adjacent beys (r_splash ≈ 100 px).
+  CFF check: n_arms = 5; Ω_thermal = 33.0 rad/s → f_claw = 5×33/(2π) = 26.3 Hz [M] (below 60 Hz — each claw visible as discrete streak, matching images)
+  Descent: g_eff_anime = 13.05 m/s² (η=1.0) [M]; v_descent = √(2×13.05×1.5) = 6.25 m/s [M]
+
+**Damage — full sync (η = 1.0), 3 cycles × 400 ms:**
+  Per cycle per primary:
+    spinDelta: −40; impulse: 480 eu (downward-diagonal ±30°); dmgMult: 1.40×
+    thermalBurn: spinDecayRate ×1.15 for 2000 ms (fire); iceSlow: moveSpeed ×0.75 for 1500 ms (ice)
+    [thermal/ice effects: η ≥ 0.7 only]
+  Final ground burst (end of 1200 ms): knockdownImpulse: 1800 eu; spinDelta: −60; ringOutRisk: very high
+  Total: totalSpinDrain −180; finalKO 1800 eu
+
+  Partial sync (0.5 ≤ η < 1.0): spinDelta −40×η; impulse 480×η eu; dmgMult 1.0+(0.40×η); no thermal below η < 0.7
+  Desync (η < 0.5): collapses to two individual element blasts (no aerial phases)
+  Secondary splash: 60% of primary values, no thermal/ice
+  Self cost (per allied bey): spinCost −70; powerCost 110; Cooldown: 9000 ms (shared); sync window: 500 ms
+
+```typescript
+function downBurst(eta_sync: number, cycles: number): {
+  syncQuality: "full"|"partial"|"desync";
+  perCyclePrimary: { spinDelta:number; impulse_eu:number; dmgMult:number; thermal:boolean };
+  finalKO_eu: number; totalSpinDrain: number;
+} {
+  const q = eta_sync>=1?"full": eta_sync>=0.5?"partial":"desync";
+  const spin=Math.round(-40*eta_sync), imp=Math.round(480*eta_sync);
+  const dm=parseFloat((1+0.4*eta_sync).toFixed(3));
+  const finalKO=q==="desync"?0:Math.round(1800*eta_sync);
+  return { syncQuality:q,
+    perCyclePrimary:{spinDelta:spin,impulse_eu:imp,dmgMult:dm,thermal:eta_sync>=0.7},
+    finalKO_eu:finalKO, totalSpinDrain:spin*cycles+(q!=="desync"?-60:0) };
+}
+// downBurst(1.0,3) → {q:"full",    perCycle:{spin:-40,imp:480eu,dmg:1.400,thermal:true}, finalKO:1800eu, total:-180}
+// downBurst(0.7,3) → {q:"partial", perCycle:{spin:-28,imp:336eu,dmg:1.280,thermal:true}, finalKO:1260eu, total:-144}
+// downBurst(0.3,3) → {q:"desync",  perCycle:{spin:-12,imp:144eu,dmg:1.120,thermal:false},finalKO:0eu,    total:-36 }
+
+function downBurstSyncCheck(p1Ms:number,p2Ms:number):{syncWindowHit:boolean;timingDelta_ms:number}{
+  const d=Math.abs(p1Ms-p2Ms); return{syncWindowHit:d<=500,timingDelta_ms:d};
+}
+// downBurstSyncCheck(0, 400) → {hit:true,  delta:400ms}
+// downBurstSyncCheck(0, 600) → {hit:false, delta:600ms} ← individual blasts only
+```
+
+---
+
+## Case 1137 — [COMBO] Gemios Arc (↑ ← J)
+
+**Franchise bey:** Dan / Reiki Sodo's Evil Gemios DF145FS — Evil metal wheel active  
+**Required part:** `evilGemiosBlade`  
+**Sequence:** ↑ ← J (moveUp + moveLeft + attack)  
+**Type restriction:** universal  
+**Cost:** 0 power (free)
+
+Evil wheel's asymmetric twin-lobe mass imbalance (~1.5% off-centre [M]) creates a natural leftward orbital precession bias during a forward approach. ↑ drives Gemios forward; the heavier lobe pulls the contact arc leftward (←) through natural precession; J delivers blade contact as the second lobe swings through the orbital apex — two-face sequential approach inherent to Evil wheel geometry. Free cost.
+
+```
+Main hit (J after arc):
+  spinDelta:      −28
+  dmgMult:        1.18×
+  lockMs:         30
+  arcImpulse:     35 eu  (orbital carry-through in ← direction after contact)
+  windowMs:       600
+  cooldownMs:    3000
+Ceiling: 1.18×≤1.5×; 30ms≤300ms; 28≤50 spinDelta; arcImpulse 35eu positional;
+  no invulnerability; no AoE [check]. Cost 0 — natural-drift free orbital combo.
+```
+
+```typescript
+function gemiosArcCombo(jHit:boolean):{spinDelta:number;dmgMult:number;lockMs:number;arcImpulse_eu:number}{
+  return jHit?{spinDelta:-28,dmgMult:1.18,lockMs:30,arcImpulse_eu:35}
+             :{spinDelta:-12,dmgMult:1.06,lockMs:0, arcImpulse_eu:0};
+}
+// gemiosArcCombo(true)  → {spin:-28, dmg:1.18×, lock:30ms, arc:35eu}
+// gemiosArcCombo(false) → {spin:-12, dmg:1.06×, lock:0ms,  arc:0eu }
+```
+
+---
+
+## Case 1138 — [GIMMICK] Lui Shirosagi's Nightmare Lúinor Destroy — Dragon Head Click Burst Regulation and Destroy Driver Aggression
+
+**Franchise context.** Lui Shirosagi (Beyblade Burst Superking, Takara-Tomy). Assembly: Nightmare Lúinor Destroy. Burst Superking nomenclature: [Superking Layer] / Driver. The gimmick foundation of Dragon Crash is the Nightmare Lúinor layer's **dragon head click mechanism** — three metallic dragon-head protrusions at 120° spacing on the outer layer ring, each click-indexed to the burst regulation ratchet. Under normal impact: each click ratchets toward burst (reducing resistance). Under Dragon Crash's BeySpirit: each of the three clicks instead **stores** the incoming angular impulse as a power charge, releasing all three simultaneously as a counterattack — trading burst risk for devastating power.
+
+**Assembly [M]:**
+
+**Superking Layer: Nightmare Lúinor [M]**
+Dual-ring Superking structure with integrated Lúinor chip; three dragon head protrusions at 120° on outer ring serving as both burst regulation contacts and Dragon Crash power conduits:
+  m_layer ≈ 37.0 g [M]; r_outer ≈ 43 mm [M]; r_inner ≈ 16 mm [M]
+  I_layer = (0.037/2)(0.043² + 0.016²) = 0.0185 × (1.849×10⁻³ + 2.56×10⁻⁴) = 0.0185 × 2.105×10⁻³ = 3.894×10⁻⁵ kg⋅m² [M]
+  Dragon head click: θ_click ≈ 15° per ratchet step [M]; 3 steps to burst threshold
+  Torsional spring per click: k_torsional ≈ 1.5×10⁻⁴ N⋅m/rad [M]
+  E_click = 0.5 × 1.5×10⁻⁴ × (15π/180)² = 5.1×10⁻⁶ J per click [M] (mechanical spring energy)
+
+**Driver: Destroy [M]**
+Wide rubber-compound disc driver; attack-class maximum aggression:
+  m_driver ≈ 4.0 g [M]; r_contact ≈ 7.0 mm [M]; μ_destroy ≈ 0.60 [M]; I_driver ≈ 0.380×10⁻⁶ kg⋅m²
+
+**Superking Chip: Lúinor [M]**
+  m_chip ≈ 3.5 g; I_chip ≈ 0.175×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total = 37.0 + 4.0 + 3.5 = 44.5 g [M]
+  I_total = 38.940 + 0.380 + 0.175 = 39.495×10⁻⁶ ≈ 3.950×10⁻⁵ kg⋅m² [M]
+  ω₀ = 580 rad/s [M] (Burst B-String launcher); KE₀_spin = 0.5 × 3.950×10⁻⁵ × 580² = 6.648 J [M]
+  Spin decay (Destroy, μ = 0.60, r = 7.0 mm):
+    dω/dt = −(0.60 × 0.0445 × 9.81 × 0.007) / 3.950×10⁻⁵ = −47.0 rad/s² [M]
+  (Very high decay — Destroy sacrifices stamina for maximum attack aggression)
+
+**Dragon Crash angular impulse physics:**
+Incoming trigger hit: L_hit = 400×10⁻³ N⋅s × r_outer = 0.400 × 0.043 = 0.01720 N⋅m⋅s [M]
+Per-click BeySpirit absorbed fraction: η_absorb = 0.40 [M] → 40% of hit energy stored per click
+After 3 clicks: L_counter = 3 × 0.40 × 0.01720 / r_outer = 0.02064 / 0.043 ≈ 480 eu [M]
+Power stage multipliers: ×1.2 (click 1) → ×1.5 (click 2) → ×2.0 (click 3) [M]
+
+```typescript
+function dragonHeadClick(clickCount: number): {
+  powerStage: number; dmgMult: number; burstRisk_pct: number; counterImpulse_eu: number
+} {
+  const mults    = [0, 1.2, 1.5, 2.0];
+  const bursts   = [0,  30,  50,  75];
+  const impulses = [0, 160, 320, 480];
+  const n = Math.min(clickCount, 3);
+  return { powerStage:n, dmgMult:mults[n], burstRisk_pct:bursts[n], counterImpulse_eu:impulses[n] };
+}
+// dragonHeadClick(0) → {stage:0, dmg:0,    burstRisk:0%,  counter:0eu}
+// dragonHeadClick(1) → {stage:1, dmg:1.2×, burstRisk:30%, counter:160eu}
+// dragonHeadClick(2) → {stage:2, dmg:1.5×, burstRisk:50%, counter:320eu}
+// dragonHeadClick(3) → {stage:3, dmg:2.0×, burstRisk:75%, counter:480eu}
+```
+
+---
+
+## Case 1139 — [SPECIAL] Dragon Crash
+
+**Franchise move.** Dragon Crash (メタルドラゴンクラッシュ) — Special Move by Lui Shirosagi, Nightmare Lúinor Destroy (Beyblade Burst Superking). A **reactive counterattack special**: Lúinor arms Dragon Crash stance; a powerful incoming hit drives all three dragon heads to click in rapid sequence — each click charges power while increasing burst risk — and on the third click Lúinor unleashes the accumulated counterattack.
+
+NOTE: special move overrides all burst regulation mechanical state; BeySpirit re-engages the dragon head click sequence regardless of prior burst risk accumulated in normal play (anime physics override).
+
+**Activation — Stance + Trigger:**
+Hold J (Dragon Crash Stance) up to 1500 ms [M]. While in stance, Lúinor glows with dark dragon aura. Any hit ≥ F_trigger = 400 eu [M] during the window automatically triggers Dragon Crash. If no qualifying hit arrives before timeout: 50 powerCost lost, no effect.
+
+**Trigger Phase — Three Clicks (600 ms total, 200 ms per click):**
+  Click 1 (0–200 ms):   powerStage 1, dmgMult ×1.2, burstRisk +30%
+  Click 2 (200–400 ms): powerStage 2, dmgMult ×1.5, burstRisk +50%
+  Click 3 (400–600 ms): powerStage 3, dmgMult ×2.0, burstRisk +75%
+  Burst check fires after click 3 → if cumulative burstRisk > current resistance: Lúinor bursts (special fails)
+  If survived: Dragon Crash counterattack fires immediately.
+
+**Counterattack (fires after click 3 if no burst):**
+  spinDelta:         −80 (direct axle/core impact from countercharge)
+  linearImpulse:     480 eu (reversed incoming vector — hits back at attacker)
+  dmgMult:           2.0×
+  lockMs:            120
+  knockbackBurst:    2200 eu (outward final burst — ring-out attempt)
+  Invulnerability during click sequence (0–600 ms): opponent cannot follow up mid-click
+
+  Self cost: powerCost 80 (arming); spinCost −40; post-Dragon-Crash residual burstRisk: +75% for remainder of match
+  Cooldown: 8000 ms; stance timeout: 1500 ms
+
+```typescript
+function dragonCrash(
+  incomingImpulse_eu: number, currentBurstResist: number
+): { triggered:boolean; survived:boolean; counterImpulse_eu:number; dmgMult:number; residualBurstRisk_pct:number } {
+  const triggered = incomingImpulse_eu >= 400;
+  if (!triggered) return {triggered:false,survived:true,counterImpulse_eu:0,dmgMult:0,residualBurstRisk_pct:0};
+  const burstAdded = 75;
+  const survived = currentBurstResist - burstAdded > 0;
+  return { triggered:true, survived,
+    counterImpulse_eu: survived?480:0, dmgMult: survived?2.0:0,
+    residualBurstRisk_pct: burstAdded };
+}
+// dragonCrash(500, 100) → {triggered:true,  survived:true,  counter:480eu, dmg:2.0×, residual:75%}
+// dragonCrash(500,  60) → {triggered:true,  survived:false, counter:0eu,   dmg:0,    residual:75%} ← Lúinor bursts
+// dragonCrash(300, 100) → {triggered:false, survived:true,  counter:0eu,   dmg:0,    residual:0%}  ← hit too weak
+```
+
+---
+
+## Case 1140 — [COMBO] Dragon Head Guard (K ↓ J)
+
+**Franchise bey:** Lui Shirosagi's Nightmare Lúinor Destroy — Nightmare Lúinor layer active  
+**Required part:** `nightmareLuinorLayer`  
+**Sequence:** K ↓ J (defense + moveDown + attack)  
+**Type restriction:** defense  
+**Cost:** 15 power
+
+Nightmare Lúinor's outer dragon head protrusions intercept an incoming contact at guard position (K), Lúinor drops its approach angle (↓ — Destroy driver's wide rubber base lowers contact plane under braking), then the layer sweeps a blade-face counter strike (J). Mimics Dragon Crash reactive logic in a skill-based combo: absorb → settle → hit. Defense-type — requires holding contact first.
+
+```
+Main hit (J after drop):
+  spinDelta:       −35
+  dmgMult:         1.28×
+  lockMs:          45
+  counterPush:     60 eu  (back toward attacker)
+  windowMs:        550
+  cooldownMs:      3200
+Ceiling: 1.28×≤1.5×; 45ms≤300ms; 35≤50 spinDelta; counterPush 60eu positional;
+  no invulnerability; no AoE [check]. Cost 15.
+```
+
+```typescript
+function dragonHeadGuardCombo(jHit:boolean):{spinDelta:number;dmgMult:number;lockMs:number;counterPush_eu:number}{
+  return jHit?{spinDelta:-35,dmgMult:1.28,lockMs:45,counterPush_eu:60}
+             :{spinDelta:-18,dmgMult:1.10,lockMs:0, counterPush_eu:0};
+}
+// dragonHeadGuardCombo(true)  → {spin:-35, dmg:1.28×, lock:45ms, push:60eu}
+// dragonHeadGuardCombo(false) → {spin:-18, dmg:1.10×, lock:0ms,  push:0eu }
+```
+
+---
+
+## Case 1141 — [GIMMICK] Ranzo Kiyama's Cyclone Roktavor Giga Never-6 — Double-Wing Vortex Generation and Never-6 Ball-Bearing Stamina Orbit
+
+**Franchise context.** Ranzo Kiyama (Beyblade X, Takara-Tomy; next-generation Kiyama blader in the Roktavor lineage). Assembly: Cyclone Roktavor Giga Never-6. BX nomenclature: Blade / Ratchet / Bit. The **Cyclone Blade** features two pairs of stamina wings (four wings total — double the count of Glide Roktavor, which had 2–3 wings). Double wing count = doubled vortex-generation power per revolution. Double Winged Cyclone (Case 1132) and Double Winged Cyclone Grande (Case 1133) both use this doubled-wing architecture. Lineage: Roktavor Storm → Roktavor Typhoon → Glide Tornado → Double Tornado (Cases 1122–1124) → Double Winged Cyclone / Grande.
+
+**Assembly [M]:**
+
+**Blade: Cyclone Roktavor [M]**
+Extended octopus-motif Roktavor blade with two wing pairs (four wings total); wider sweeping arm geometry than Glide Roktavor:
+  m_blade ≈ 18.5 g [M]; r_outer ≈ 39 mm [M]; r_inner ≈ 13 mm [M]
+  I_blade = (0.0185/2)(0.039² + 0.013²) = 0.00925 × 1.690×10⁻³ = 1.563×10⁻⁵ kg⋅m² [M]
+  n_wings = 4 [M]; w_wing ≈ 12 mm [M] (wing width)
+
+**Ratchet: Giga [M]**
+Larger-diameter ratchet disc providing increased gyroscopic stability and higher I contribution vs standard BX ratchets:
+  m_ratchet ≈ 6.5 g [M]; I_ratchet ≈ 0.780×10⁻⁶ kg⋅m²
+
+**Bit: Never-6 [M]**
+Ball-bearing type bit; near-frictionless continuous orbit (Never = perpetual orbital motion concept); -6 = 6th-generation bearing spec:
+  m_bit ≈ 2.5 g [M]; r_contact ≈ 1.8 mm [M]; μ_bit ≈ 0.05 [M]; I_bit ≈ 0.180×10⁻⁶ kg⋅m²
+
+**Face Chip [M]**
+  m_chip ≈ 3.0 g; I_chip ≈ 0.140×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total = 18.5 + 6.5 + 2.5 + 3.0 = 30.5 g [M]
+  I_total = 15.630 + 0.780 + 0.180 + 0.140 = 16.730×10⁻⁶ ≈ 1.673×10⁻⁵ kg⋅m² [M]
+  ω₀ = 800 rad/s [M] (BX X-Line launcher); KE₀_spin = 0.5 × 1.673×10⁻⁵ × 800² = 5.354 J [M]
+  Spin decay (Never-6, μ = 0.05, r = 1.8 mm):
+    dω/dt = −(0.05 × 0.0305 × 9.81 × 0.0018) / 1.673×10⁻⁵ = −1.61 rad/s² [M]
+  (Exceptional stamina — lowest spin decay of any BX assembly in CS13 to date)
+
+**Double-wing vortex scaling:**
+Baseline (Glide Roktavor, ~2.5 effective wings): Ω_single = 12.5 rad/s [M] (Case 1122)
+Cyclone Roktavor (4 wings): aerodynamic vortex power scales ∝ n_wings^0.6 [M]:
+  Ω_cyclone = 12.5 × (4/2.5)^0.6 = 12.5 × 1.296 = 16.20 rad/s [M]
+
+Shield geometry:
+  DWC shield radius: r_shield ≈ r_outer × 1.8 = 39 × 1.8 ≈ 70 mm from centre [M]
+  DWC Grande shield radius: r_shield_grande ≈ 70 × 1.35 ≈ 95 mm [M]
+  Ω_grande = Ω_cyclone × 1.6 = 25.92 rad/s [M] (full BeySpirit surge)
+
+```typescript
+function cycloneRoktavorVortex(
+  mode: "DWC"|"DWCG", eta_spin: number
+): { Omega_rad_s: number; shieldRadius_mm: number; deflectChance: number } {
+  const Omega = (mode==="DWCG" ? 16.20*1.6 : 16.20) * eta_spin;
+  const r_mm  = (mode==="DWCG" ? 95 : 70) * eta_spin;
+  const deflect = Math.min(0.95, 0.50 + 0.45 * (Omega / 26.0));
+  return { Omega_rad_s:parseFloat(Omega.toFixed(2)), shieldRadius_mm:Math.round(r_mm), deflectChance:parseFloat(deflect.toFixed(2)) };
+}
+// cycloneRoktavorVortex("DWC",  1.0) → {Omega:16.20, r:70mm, deflect:0.78}
+// cycloneRoktavorVortex("DWCG", 1.0) → {Omega:25.92, r:95mm, deflect:0.95}
+// cycloneRoktavorVortex("DWC",  0.5) → {Omega:8.10,  r:35mm, deflect:0.64}
+```
+
+---
+
+## Case 1142 — [SPECIAL] Double Winged Cyclone
+
+**Franchise move.** Double Winged Cyclone (ダブルウィングサイクロン) — Special Move by Ranzo Kiyama, Cyclone Roktavor Giga Never-6 (Beyblade X). The Cyclone Blade's four stamina wings generate a **sustained defensive cyclone shield** around Cyclone Roktavor, deflecting opponents and draining their spin on contact. Unlike the Roktavor offensive tornado lineage (Glide Tornado, Double Tornado), Double Winged Cyclone is **defensive** — the cyclone protects Roktavor rather than sweeping opponents from the stadium.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override.
+
+**Activation:** Hold J (1000 ms charge). Vortex builds during charge; cyclone shield activates at full power.
+
+**Active Phase (1500 ms):**
+  Shield radius: r_shield ≈ 70 mm from centre [M] (≈ 168 px at 24 px/cm).
+  Per 200 ms of opponent contact within shield:
+    spinDelta: −20 (vortex spin drain)
+    deflectionImpulse: 300 eu (radially outward — pushes attacker away from Roktavor)
+    dmgMult: 1.15× per contact window
+  Cyclone Roktavor invulnerable while shield active (opponents cannot deal damage)
+  Shield sustain cost: −8 ω per 200 ms (vortex consumes bey spin)
+  Shield collapses early if ω drops below ω_min = 200 rad/s [M]
+  Up to 7 contact windows (7 × 200 ms = 1400 ms within 1500 ms): max totalSpinDrain −140 per opponent
+
+  Self cost: powerCost 90; shield spin cost −56 total; Cooldown: 7000 ms
+
+```typescript
+function doubleWingedCyclone(contactWindows: number, current_omega: number): {
+  totalSpinDrain: number; totalImpulse_eu: number; shieldCollapsed: boolean
+} {
+  const w = Math.min(contactWindows, 7);
+  const shieldCollapsed = (current_omega - 8 * w) < 200;
+  return { totalSpinDrain: -20*w, totalImpulse_eu: 300*w, shieldCollapsed };
+}
+// doubleWingedCyclone(7, 800) → {spinDrain:-140, impulse:2100eu, collapsed:false}
+// doubleWingedCyclone(7, 240) → {spinDrain:-140, impulse:2100eu, collapsed:true}  ← shield fails
+// doubleWingedCyclone(3, 800) → {spinDrain:-60,  impulse:900eu,  collapsed:false}
+```
+
+---
+
+## Case 1143 — [SPECIAL] Double Winged Cyclone Grande
+
+**Franchise move.** Double Winged Cyclone Grande — Special Move by Ranzo Kiyama, Cyclone Roktavor Giga Never-6 (Beyblade X). An upgraded, more powerful form of Double Winged Cyclone (Case 1132). Grande operates at Ω_grande = 25.92 rad/s [M] (vs DWC 16.20 [M]), with a wider shield radius (r ≈ 95 mm [M]) and adds an **active capture** component — the vortex can trap opponents within the shield, continuously draining spin and preventing escape until the final burst eject.
+
+NOTE: special move overrides all EG/clutch mechanical state; anime physics override. References Case 1131 gimmick for Ω_grande and shield geometry.
+
+**Activation:** Double-tap J or hold J at full charge (extended 1500 ms [M]). Higher power cost.
+
+**Active Phase (2000 ms):**
+  Shield radius: r_shield_grande ≈ 95 mm [M].
+  Opponents entering radius with v < v_escape = 1.8 m/s [M] are **captured** (orbit within the cyclone; cannot escape under normal movement).
+  Escape QTE: opponent mashes input → builds escape momentum; escape triggered at accumulated > 200 eu [M].
+  Per 200 ms contact window:
+    spinDelta: −30; inwardImpulse: 250 eu (pulls captured opponents further toward eye); dmgMult: 1.25×
+  Final burst eject (end of 2000 ms): all captured opponents ejected outward
+    knockbackImpulse: 1600 eu; spinDelta: −50 (ring-out risk for edge opponents)
+  Cyclone Roktavor invulnerable throughout.
+  Self cost: powerCost 120; spinCost −60 total; Cooldown: 9000 ms
+
+```typescript
+function doubleWingedCycloneGrande(
+  opponentSpeed_m_s: number, contactWindows: number
+): { captured: boolean; totalSpinDrain: number; finalKnockback_eu: number } {
+  const captured = opponentSpeed_m_s < 1.8;
+  const w = Math.min(contactWindows, 10);
+  return {
+    captured,
+    totalSpinDrain: -30*w + (w>=10 ? -50 : 0),
+    finalKnockback_eu: w>=10 ? 1600 : Math.round(1600*w/10),
+  };
+}
+// doubleWingedCycloneGrande(1.2, 10) → {captured:true,  spinDrain:-350, final:1600eu}
+// doubleWingedCycloneGrande(2.5,  5) → {captured:false, spinDrain:-150, final:800eu}
+// doubleWingedCycloneGrande(0.8, 10) → {captured:true,  spinDrain:-350, final:1600eu}
+```
+
+---
+
+## Case 1144 — [COMBO] Cyclone Wing (↑ → J)
+
+**Franchise bey:** Ranzo Kiyama's Cyclone Roktavor Giga Never-6 — Cyclone Roktavor blade active  
+**Required part:** `cycloneRoktavorBlade`  
+**Sequence:** ↑ → J (moveUp + moveRight + attack)  
+**Type restriction:** universal  
+**Cost:** 0 power (free)
+
+Cyclone Roktavor's four stamina wings generate a minor trailing vortex during the ↑→ arc approach that slightly disrupts the opponent before blade contact (J). The arc approach mimics a small-scale cyclone generation, and the wing turbulence at the apex provides a fraction of spin-drain on hit. Free — orbital wing turbulence inherent to Cyclone Roktavor blade geometry.
+
+```
+Main hit (J at arc apex):
+  spinDelta:       −30
+  dmgMult:         1.20×
+  lockMs:          25
+  wakeImpulse:     30 eu  (trailing vortex wake — minor push in ↑ direction on hit)
+  windowMs:        600
+  cooldownMs:      3000
+Ceiling: 1.20×≤1.5×; 25ms≤300ms; 30≤50 spinDelta; wakeImpulse 30eu positional;
+  no invulnerability; no AoE [check]. Cost 0.
+```
+
+```typescript
+function cycloneWingCombo(jHit:boolean):{spinDelta:number;dmgMult:number;lockMs:number;wakeImpulse_eu:number}{
+  return jHit?{spinDelta:-30,dmgMult:1.20,lockMs:25,wakeImpulse_eu:30}
+             :{spinDelta:-14,dmgMult:1.07,lockMs:0, wakeImpulse_eu:0};
+}
+// cycloneWingCombo(true)  → {spin:-30, dmg:1.20×, lock:25ms, wake:30eu}
+// cycloneWingCombo(false) → {spin:-14, dmg:1.07×, lock:0ms,  wake:0eu }
+```
+
+---
+
+## Case 1145 — [GIMMICK] Ryuga's L-Drago Destructor F:S and L-Drago Destroy DF105LRF — Left-Spin Absorb Wings and Final Survive Mode Switch
+
+**Franchise context.** Ryuga (Metal Fight Beyblade: Metal Fury, Takara-Tomy). Two assemblies used for Dragon Emperor Life Destructor and Dragon Emperor Supreme Flight (Fury form): primary **L-Drago Destructor F:S** (Fury arc main bey); secondary **L-Drago Destroy DF105LRF** (confirmed part list: 4D Metal Wheel: L Drago Destroy). Both are **left-spinning** (ω < 0, CCW from above). Key gimmicks: (1) three absorb wings transfer spin from right-spin opponents to L-Drago during collisions; (2) F:S = Final Survive 4D bottom with two physical contact modes — **Hole Flat** (Final mode, flat disc with hollow centre, aggressive) and **Sharp** (Survive mode, sharp pin, stamina) — which govern which Dragon Emperor variant fires.
+
+**Assembly — L-Drago Destructor F:S [M]:**
+
+**4D Metal Wheel: L Drago Destructor [M]**
+Three left-spin-optimised absorb wings at 120°; wings curve backward relative to CCW rotation to scoop angular momentum from right-spin collisions:
+  m_wheel ≈ 42.0 g [M]; r_outer ≈ 44 mm [M]; r_inner ≈ 18 mm [M]
+  I_wheel = (0.042/2)(0.044² + 0.018²) = 0.021 × 2.260×10⁻³ = 4.746×10⁻⁵ kg⋅m² [M]
+  LEFT-SPIN: ω₀ = −750 rad/s [M] (CCW convention)
+  Spin absorb per right-spin collision: δω_absorb = k_absorb × (|ω_opp| + |ω_L-Drago|) × (I_opp/I_total) [M]
+    k_absorb ≈ 0.15 [M]
+
+**4D Clear Wheel: L Drago [M]**
+  m_cw ≈ 4.5 g; r_outer ≈ 23 mm; r_inner ≈ 19 mm
+  I_cw = (0.0045/2)(0.023² + 0.019²) = 0.00225 × 8.900×10⁻⁴ = 2.003×10⁻⁶ kg⋅m² [M]
+
+**4D Bottom: F:S (Final Survive) — confirmed part list**
+Two physical tip modes (user-confirmed: Hole Flat and Sharp):
+  **Hole Flat (Final mode):** flat disc with hollow centre; aggressive CCW orbital movement
+    r_hf ≈ 5.0 mm [M]; μ_hf ≈ 0.42 [M]; dω/dt ≈ −23.0 rad/s² [M]
+  **Sharp (Survive mode):** sharp centre pin; stamina spin
+    r_sharp ≈ 0.8 mm [M]; μ_sharp ≈ 0.08 [M]; dω/dt ≈ −1.64 rad/s² [M]
+  Mode switch: manual internal plunger — determines Dragon Emperor special variant
+  m_fs ≈ 3.8 g; I_fs ≈ 0.350×10⁻⁶ kg⋅m²
+
+**Spin Track [M]:** m_track ≈ 2.5 g; I_track ≈ 0.280×10⁻⁶ kg⋅m²
+
+**Face Bolt: L-Drago [M]:** m_bolt ≈ 2.8 g; I_bolt ≈ 0.150×10⁻⁶ kg⋅m²
+
+**Assembly — L-Drago Destructor F:S [M]:**
+  m_total = 42.0 + 4.5 + 3.8 + 2.5 + 2.8 = 55.6 g [M]
+  I_total = 47.460 + 2.003 + 0.350 + 0.280 + 0.150 = 50.243×10⁻⁶ ≈ 5.024×10⁻⁵ kg⋅m² [M]
+  KE₀_spin = 0.5 × 5.024×10⁻⁵ × 750² = 14.13 J [M]
+
+**Assembly — L-Drago Destroy DF105LRF (confirmed part list: 4D Metal Wheel L Drago Destroy) [M]:**
+  4D Metal Wheel: L Drago Destroy; m_wheel ≈ 40.0 g [M]
+  Track: DF105 (Down Force 105, h = 10.5 mm downforce disc, smaller than DF145); m_track ≈ 2.8 g [M]
+  Bottom: LRF (Left Flat adapted for left-spin rubber contact, confirmed part list nomenclature); r_contact ≈ 7.5 mm [M]; μ ≈ 0.55 [M]
+  m_total ≈ 52.0 g [M]; I_total ≈ 4.750×10⁻⁵ kg⋅m² [M]
+  More aggressive movement (wider LRF vs FS Hole Flat); DF105 downforce provides lower-height stability vs Destructor
+
+**Absorbed spin scaling (Dragon Emperor power):**
+  L-Drago accumulates absorbed spin throughout a match (each right-spin collision):
+  dmgMult_de = 1.0 + 0.005 × totalAbsorbed [M]; cap: 2.0× at totalAbsorbed = 200 [M]
+
+```typescript
+function lDragoFSAbsorb(
+  omega_opp: number, omega_LDrago: number, I_opp: number
+): { delta_omega: number; totalAbsorbIncrement: number } {
+  const k = 0.15, I_total = 5.024e-5;
+  const delta = k * (Math.abs(omega_opp) + Math.abs(omega_LDrago)) * (I_opp / I_total);
+  return { delta_omega: parseFloat(delta.toFixed(1)), totalAbsorbIncrement: parseFloat(delta.toFixed(1)) };
+}
+// lDragoFSAbsorb(500, -400, 1.5e-5) → {delta:+26.8, increment:+26.8}  ← fast right-spin opponent
+// lDragoFSAbsorb(300, -200, 2.0e-5) → {delta:+14.9, increment:+14.9}  ← slower match
+```
+
+---
+
+## Case 1146 — [SPECIAL] Dragon Emperor Life Destructor
+
+**Franchise move.** Dragon Emperor Life Destructor (竜皇命壊破) — Special Move by Ryuga, L-Drago Destructor F:S and L-Drago Destroy DF105LRF (Metal Fight Beyblade: Metal Fury). **Mode-dependent on the F:S bottom:** Hole Flat (Final) mode → wide fire ring sweep; Sharp (Survive) mode → directed inferno beam from Face Bolt. vs-Rago variant: flaming charge (BeySpirit override). Power scales with accumulated absorbed spin (Case 1135).
+
+NOTE: special move overrides all F:S mode mechanical state; both mode variants can fire regardless of physical mode position under BeySpirit power (anime physics override). L-Drago left-spin direction (CCW) governs fire ring sweep direction.
+
+**Hole Flat mode (Final) — Fire Ring Sweep:**
+Activation: Hold J in Hole Flat mode. L-Drago's aggressive CCW movement expands into a widening fire ring.
+AoE: full-arena sweep (ring expands from r_L-Drago → r_arena over 1200 ms).
+  Per opponent per 300 ms ring pass: spinDelta −35; impulse 550 eu radially outward; dmgMult 1.35×; fireDoT: +spinDecayRate ×1.20 for 2000 ms
+  3 cycles × 300 ms + 300 ms wind-up = 1200 ms; final ring burst: 1500 eu knockback; spinDelta −50
+
+**Sharp mode (Survive) — Face Bolt Inferno Beam:**
+Activation: Hold J in Sharp mode. L-Drago stabilises on sharp pin; dragon beast erupts through Face Bolt.
+Targeted: nearest opponent within 120° forward arc [M]; 800 ms beam duration.
+  spinDelta −60; impulse 400 eu (backward push); dmgMult 1.55×; fireDoT: +spinDecayRate ×1.30 for 3000 ms
+  Dragon slam after beam: finalImpulse 1800 eu (wall KO attempt)
+
+**vs-Rago variant (auto-fire when opponent HP < 40% AND totalAbsorbed > 100 [M]):**
+  chargeImpulse: 2500 eu; dmgMult: 2.5× [M]; spinDelta −100 (final KO burst)
+
+**Power scaling:** dmgMult_eff = base_mode_dmg + absorbBonus [M]
+  absorbBonus = min(totalAbsorbed / 200, 1.0) × 0.5 → at absorb=200: +0.5 bonus
+
+  Self cost: powerCost 100; spinCost −50; Cooldown: 8500 ms
+
+```typescript
+function dragonEmperorLifeDestructor(
+  mode: "HoleFlat"|"Sharp"|"vsRago", totalAbsorbed: number
+): { dmgMult_eff: number; impulse_eu: number; spinDelta: number } {
+  const absorbBonus = (mode==="vsRago") ? 0 : Math.min(totalAbsorbed/200, 1.0) * 0.5;
+  const base = { HoleFlat:{dm:1.35,imp:550, spin:-35}, Sharp:{dm:1.55,imp:400, spin:-60}, vsRago:{dm:2.50,imp:2500,spin:-100} }[mode];
+  return { dmgMult_eff:parseFloat((base.dm+absorbBonus).toFixed(3)), impulse_eu:base.imp, spinDelta:base.spin };
+}
+// dragonEmperorLifeDestructor("HoleFlat",   0) → {dm:1.350, imp:550eu,  spin:-35}
+// dragonEmperorLifeDestructor("Sharp",    100) → {dm:1.800, imp:400eu,  spin:-60}  ← +0.25 absorb bonus
+// dragonEmperorLifeDestructor("Sharp",    200) → {dm:2.050, imp:400eu,  spin:-60}  ← +0.50 absorb bonus
+// dragonEmperorLifeDestructor("vsRago",   200) → {dm:2.500, imp:2500eu, spin:-100}
+```
+
+---
+
+## Case 1147 — [COMBO] Dragon Fang (← ↑ J)
+
+**Franchise bey:** Ryuga's L-Drago Destructor F:S — L Drago Destructor wheel active (left-spin)  
+**Required part:** `lDragoDestructorWheel`  
+**Sequence:** ← ↑ J (moveLeft + moveUp + attack)  
+**Type restriction:** attack  
+**Cost:** 25 power
+
+L-Drago (left-spinning, CCW) exploits its natural CCW orbital momentum: ← aligns with L-Drago's spin-direction drift; ↑ drives forward through the arc; J delivers absorb-wing blade contact at the approach apex. The CCW absorb-wing geometry strikes at a more aggressive angle vs right-spin opponents, extracting extra spin on each fang contact. Partially recovers own spin via the absorb wing's normal collision transfer. Attack-type restriction: absorb wing approach requires high power to execute the guided approach.
+
+```
+Main hit (J after arc):
+  spinDelta:       −40  (CCW absorb-wing contact — extra spin disruption vs right-spin opponents)
+  dmgMult:         1.35×
+  lockMs:          50
+  absorbGain:      +15 ω to L-Drago (partial spin steal via absorb wing)
+  windowMs:        550
+  cooldownMs:      3500
+Ceiling: 1.35×≤1.5×; 50ms≤300ms; 40≤50 spinDelta; absorbGain is self-recovery;
+  no invulnerability; no AoE [check]. Cost 25.
+```
+
+```typescript
+function dragonFangCombo(jHit:boolean):{spinDelta:number;dmgMult:number;lockMs:number;absorbGain_omega:number}{
+  return jHit?{spinDelta:-40,dmgMult:1.35,lockMs:50,absorbGain_omega:15}
+             :{spinDelta:-20,dmgMult:1.12,lockMs:0, absorbGain_omega:0};
+}
+// dragonFangCombo(true)  → {spin:-40, dmg:1.35×, lock:50ms, absorb:+15ω}
+// dragonFangCombo(false) → {spin:-20, dmg:1.12×, lock:0ms,  absorb:0   }
+```
+
+---
+
+## Case 1148 — [GIMMICK] Ryuga's Lightning L-Drago 100HF — Upper Mode Wedge Contacts and Hole Flat Orbital Drive (Dark Moves)
+
+**Franchise context.** Ryuga (Metal Fight Beyblade original series, Takara-Tomy). Confirmed assembly (part list): Clear Wheel: L Drago; Metal Wheel: Lightning; Track: 100; Bottom: Hole Flat (HF). **LEFT-SPINNING** (ω < 0, CCW from above). Both Dark Moves originate from this assembly: Dragon Emperor Soaring Bite Strike (first Dark Move, Case 1139) and Dragon Emperor Soaring Destruction (second Dark Move, Case 1140). Dark Moves draw on the forbidden dark energy absorbed by Ryuga from the Dark Nebula's L-Drago seal — a BeySpirit amplification beyond normal special moves.
+
+**Assembly (confirmed from part list):**
+
+**Metal Wheel: Lightning [M]**
+Three wing contacts; **mode switch** rotates the metal wheel ~60° relative to the face bolt:
+  Attack Mode: horizontal blade contacts (h_contact ≈ 3 mm from ground [M])
+  Upper Mode: raised wedge contacts (h_contact ≈ 8 mm [M]; θ_upper ≈ 35° from horizontal [M])
+    Upper Mode upper-attack lift: F_z = sin(35°) × F_lateral = 0.574 × F_lateral [M]
+  m_wheel ≈ 28.5 g [M]; r_outer ≈ 40 mm [M]; r_inner ≈ 14 mm [M]
+  I_wheel = (0.0285/2)(0.040² + 0.014²) = 0.01425 × 1.796×10⁻³ = 2.560×10⁻⁵ kg⋅m² [M]
+  LEFT-SPIN: ω₀ = −750 rad/s [M]
+
+**Clear Wheel: L Drago [M]**
+  m_cw ≈ 3.5 g; I_cw ≈ 1.550×10⁻⁶ kg⋅m²
+
+**Track: 100 (h = 10.0 mm) — confirmed part list**
+Very short track; lowest centre of mass for maximum gyroscopic stability:
+  m_track ≈ 1.5 g; I_track ≈ 0.100×10⁻⁶ kg⋅m²
+
+**Bottom: Hole Flat (HF) — confirmed part list**
+Flat ring with hollow centre (r_outer ≈ 5.5 mm, r_hole ≈ 2.0 mm); hollow centre reduces low-speed friction while flat ring provides aggressive CCW orbital drive:
+  μ_hf ≈ 0.40 [M]; r_eff ≈ 4.5 mm [M]; m_bottom ≈ 2.0 g; I_bottom ≈ 0.180×10⁻⁶ kg⋅m²
+
+**Face Bolt: L-Drago [M]:** m_bolt ≈ 2.8 g; I_bolt ≈ 0.150×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total = 28.5 + 3.5 + 1.5 + 2.0 + 2.8 = 38.3 g [M]
+  I_total = 25.600 + 1.550 + 0.100 + 0.180 + 0.150 = 27.580×10⁻⁶ ≈ 2.758×10⁻⁵ kg⋅m² [M]
+  KE₀_spin = 0.5 × 2.758×10⁻⁵ × 750² = 7.757 J [M]
+  Spin decay (HF, μ = 0.40, r_eff = 4.5 mm):
+    dω/dt = −(0.40 × 0.0383 × 9.81 × 0.0045) / 2.758×10⁻⁵ = −24.5 rad/s² [M]
+
+**Three-dragon manifestation (Dark Move physics):**
+Lightning L-Drago (Upper Mode) at ω = 750 rad/s:
+  f_wing = 3 × 750 / (2π) = 357.9 Hz [M] (well above CFF 60 Hz — wings merge into continuous ring)
+  Under dark BeySpirit: each wing vortex manifests as a discrete spirit dragon independent of CFF (dark energy overcomes the temporal persistence of vision limit [M])
+  Three-dragon combined upper lift (all three contacts in Upper Mode simultaneous):
+    F_z_per_wing = sin(35°) × (200 eu / 3) ≈ 38 eu vertical per wing [M]
+    F_z_total = 3 × 38 = 114 eu upward impulse [M]
+
+**Dark BeySpirit amplification factors:**
+  Soaring Bite Strike (first Dark Move): k_dark = 1.8 [M]
+  Soaring Destruction (second Dark Move): k_dark = 2.5 [M] (full dark power released)
+
+```typescript
+function lightningLDragoUpperMode(
+  omega: number, mode: "Attack"|"Upper"
+): { contactHeight_mm: number; liftFraction: number; threeDragonLift_eu: number } {
+  const h = mode==="Upper" ? 8.0 : 3.0;
+  const lf = mode==="Upper" ? 0.574 : 0;
+  const lift = mode==="Upper" ? Math.round(3 * 0.574 * (200/3) * (Math.abs(omega)/750)) : 0;
+  return { contactHeight_mm:h, liftFraction:lf, threeDragonLift_eu:lift };
+}
+// lightningLDragoUpperMode(750, "Upper")  → {h:8mm, liftFrac:0.574, lift:114eu}
+// lightningLDragoUpperMode(750, "Attack") → {h:3mm, liftFrac:0,     lift:0eu }
+// lightningLDragoUpperMode(400, "Upper")  → {h:8mm, liftFrac:0.574, lift:61eu }
+```
+
+---
+
+## Case 1149 — [SPECIAL] Dragon Emperor Soaring Bite Strike
+
+**Franchise move.** Dragon Emperor Soaring Bite Strike (竜皇翔咬撃) — First Dark Move by Ryuga, Lightning L-Drago 100HF (Metal Fight Beyblade). Ryuga channels dark BeySpirit power (k_dark = 1.8 [M]) into his hands — a purple energy column rises skyward (images show spiral pillar of purple-pink rings ascending, then Ryuga's hands releasing white-purple light) — and three dragon spirits emerge from Lightning L-Drago's Upper Mode wing contacts. The three dragons push the opponent high into the air, then slam into it at speed as it descends.
+
+NOTE: special move overrides all EG/clutch mechanical state; dark BeySpirit (k_dark = 1.8 [M]) transcends physical Upper Mode contact limitations; Lightning L-Drago auto-switches to Upper Mode at activation (anime physics override).
+
+**Activation:** Hold J. Lightning L-Drago automatically switches to Upper Mode. Dark power spiral column appears (purple-pink).
+
+**Phase 1 — Three Dragon Ascent (800 ms):**
+  Three Upper Mode wing contacts on opponent (each 267 ms):
+    spinDelta per contact: −45 [M] (−25 × k_dark = −45); liftImpulse: 205 eu [M] (114 eu × k_dark = 205 eu)
+  Total Phase 1: opponent lifted h_aerial = 0.8 m [M] above stadium
+  Opponent invulnerable during ascent (cannot receive further hits until landing)
+
+**Phase 2 — Dragon Slam (600 ms):**
+  Three dragons pursue and slam into the airborne opponent at apex:
+    slamImpulse: 1170 eu [M] (650 eu × k_dark); spinDelta: −90 [M]; dmgMult: 2.0× [M]
+
+**Phase 3 — Ground Crash (200 ms):**
+  Opponent falls h_aerial = 0.8 m: v_fall = √(2×9.81×0.8) = 3.96 m/s [M]
+  groundImpulse: 800 eu [M]; spinDelta: −30 [M]
+
+  Total spinDelta: (−45×3) + (−90) + (−30) = −255 [M]
+  Self cost: powerCost 110; spinCost −60; Cooldown: 9000 ms
+
+```typescript
+function soaringBiteStrike(): {
+  phase1_liftImpulse_eu: number; phase2_slamImpulse_eu: number;
+  phase3_groundImpulse_eu: number; totalSpinDelta: number; dmgMult_peak: number
+} {
+  const k=1.8;
+  return {
+    phase1_liftImpulse_eu: Math.round(114*k),   // 205
+    phase2_slamImpulse_eu: Math.round(650*k),   // 1170
+    phase3_groundImpulse_eu: 800,
+    totalSpinDelta: (-45*3)+(-90)+(-30),          // -255
+    dmgMult_peak: 2.0,
+  };
+}
+// soaringBiteStrike() → {p1:205eu, p2:1170eu, p3:800eu, spinTotal:-255, dmg:2.0×}
+```
+
+---
+
+## Case 1150 — [SPECIAL] Dragon Emperor Soaring Destruction
+
+**Franchise move.** Dragon Emperor Soaring Destruction (竜皇天翔殺) — Second Dark Move by Ryuga, Lightning L-Drago 100HF (Metal Fight Beyblade). Ryuga unleashes ALL dark power in a single overwhelming attack (k_dark = 2.5 [M]). L-Drago launches at the opponent spinning within a vortex of dark energy (image shows a massive spiralling purple-blue dragon coiling around the bey, concentric spiral body from edge to centre), smashes the opponent high into the air, then slams it into the ground with catastrophic force. More powerful than Soaring Bite Strike; exhausts all dark power — one use per match [M].
+
+NOTE: special move overrides all EG/clutch mechanical state; full dark power exhaustion (k_dark = 2.5 [M]); L-Drago cannot use further Dark Moves in the same match after this activation (anime physics override — dark power fully depleted).
+
+**Activation:** Double-tap J or hold J at max charge (3000 ms [M]). Dark energy dragon coil forms around Lightning L-Drago (spiralling purple dragon body visible in images).
+
+**Phase 1 — Dark Vortex Charge (400 ms):**
+  L-Drago accelerates in dark coil at v_charge = 8.0 m/s [M]:
+    chargeImpulse: 2500 eu [M] (arena-physics cap); spinDelta: −80 [M]; dmgMult: 2.0× [M]
+
+**Phase 2 — Aerial Smash (600 ms):**
+  Opponent launched: h_aerial = 1.2 m [M] (higher than Bite Strike's 0.8 m)
+  Dark coil detonates at apex:
+    detonationImpulse: 1800 eu [M] (omnidirectional — ring-out risk regardless of position)
+    spinDelta: −70 [M]
+
+**Phase 3 — Ground Slam (300 ms):**
+  v_fall = √(2×9.81×1.2) = 4.85 m/s [M]; L-Drago follows down for final slam contact:
+    groundSlamImpulse: 1200 eu [M]; spinDelta: −50 [M]
+  Stadium floor shockwave AoE (r ≈ 120 px [M]):
+    adjacentImpulse: 400 eu; adjacentSpinDelta: −20
+
+  Primary totalSpinDelta: −80 + −70 + −50 = −200 [M]
+  Self cost: powerCost 130 (highest in CS13 to date); spinCost −80; Cooldown: 12000 ms
+  One-use per match [M]: L-Drago cannot use any Dark Move after Soaring Destruction fires
+
+```typescript
+function soaringDestruction(): {
+  phase1_eu: number; phase2_eu: number; phase3_eu: number;
+  totalSpinDelta: number; aoeAdjacent_eu: number; oneUsePerMatch: boolean
+} {
+  return {
+    phase1_eu: 2500, phase2_eu: 1800, phase3_eu: 1200,
+    totalSpinDelta: -200, aoeAdjacent_eu: 400, oneUsePerMatch: true,
+  };
+}
+// soaringDestruction() → {p1:2500eu, p2:1800eu, p3:1200eu, spin:-200, aoe:400eu, oneUse:true}
+```
+
+---
+
+## Case 1151 — [COMBO] Dark Upper (K ↑ J)
+
+**Franchise bey:** Ryuga's Lightning L-Drago 100HF — Lightning metal wheel in Upper Mode  
+**Required part:** `lightningLDragoWheel`  
+**Sequence:** K ↑ J (defense + moveUp + attack)  
+**Type restriction:** attack  
+**Cost:** 15 power
+
+Lightning L-Drago in Upper Mode intercepts an incoming contact at guard (K), redirects the lateral force upward through the wedge contact geometry (↑ — the Upper Mode wedge angle lifts L-Drago's approach line), then delivers the upper-attack blade strike (J) at raised contact height. A miniature single-contact version of the Dragon Emperor Soaring Bite Strike upper-lift mechanic: absorb → align → upper strike. Produces a small vertical lift impulse on the opponent (Upper Mode's θ_upper = 35° geometry). Attack-type: requires aggressive mode.
+
+```
+Main hit (J after upper approach):
+  spinDelta:       −35  (Upper Mode contact angle reaches axle region — deeper disruption)
+  dmgMult:         1.30×
+  lockMs:          40
+  liftImpulse:     180 eu  (vertical component — small aerial on hit; Upper Mode geometry)
+  windowMs:        550
+  cooldownMs:      3200
+Ceiling: 1.30×≤1.5×; 40ms≤300ms; 35≤50 spinDelta; liftImpulse 180eu vertical;
+  no invulnerability; no AoE [check]. Cost 15.
+```
+
+```typescript
+function darkUpperCombo(jHit:boolean):{spinDelta:number;dmgMult:number;lockMs:number;liftImpulse_eu:number}{
+  return jHit?{spinDelta:-35,dmgMult:1.30,lockMs:40,liftImpulse_eu:180}
+             :{spinDelta:-16,dmgMult:1.08,lockMs:0, liftImpulse_eu:0};
+}
+// darkUpperCombo(true)  → {spin:-35, dmg:1.30×, lock:40ms, lift:180eu}
+// darkUpperCombo(false) → {spin:-16, dmg:1.08×, lock:0ms,  lift:0eu }
+```
+
+---
+
+## Case 1152 — [GIMMICK] Ryuga's Meteo L-Drago LW105LF — Left Wing 105 Track Airfoil and Left Flat Rubber Drive
+
+**Franchise context.** Ryuga (Metal Fight Beyblade: Metal Masters, Takara-Tomy). Confirmed assembly (part list): Clear Wheel: L Drago II; Metal Wheel: Meteo; Track: Left Wing 105 (LW105); Bottom: Left Flat (LF). **LEFT-SPINNING** (ω < 0). Meteo L-Drago LW105LF is the Metal Masters evolution of L-Drago — the Meteo wheel has wider, more refined absorb wings than Lightning; LW105 provides CCW aerodynamic channelling; LF (Left Flat) is a rubber flat tip optimised for left-spin orbital drive. Dragon Emperor Supreme Flight (Masters form, Case 1143) uses this assembly. The Fury "Ultimate Move" form of Supreme Flight uses L-Drago Destructor F:S (Case 1135).
+
+**Assembly (confirmed from part list):**
+
+**Metal Wheel: Meteo [M]**
+Three evolved absorb wings at 120°; wider profile than Lightning for greater spin-steal surface contact:
+  m_wheel ≈ 32.0 g [M]; r_outer ≈ 41 mm [M]; r_inner ≈ 15 mm [M]
+  I_wheel = (0.032/2)(0.041² + 0.015²) = 0.016 × 1.906×10⁻³ = 3.050×10⁻⁵ kg⋅m² [M]
+  LEFT-SPIN: ω₀ = −750 rad/s [M]; k_absorb ≈ 0.18 [M] (improved vs Lightning's 0.15 [M])
+
+**Clear Wheel: L Drago II [M]**
+  m_cw ≈ 4.0 g; r_outer ≈ 22 mm; r_inner ≈ 18 mm
+  I_cw = (0.004/2)(0.022² + 0.018²) = 0.002 × 8.08×10⁻⁴ = 1.616×10⁻⁶ kg⋅m² [M]
+
+**Track: Left Wing 105 (LW105) — confirmed part list**
+Wing-shaped protrusions at h = 105 mm aligned with CCW rotation to channel airflow and reduce CCW drag:
+  m_track ≈ 2.5 g [M]; r_outer_wing ≈ 14 mm [M]; I_track ≈ 0.240×10⁻⁶ kg⋅m² [M]
+  CCW drag reduction: η_lw105 = 0.12 [M] → 12% reduction in aerodynamic spin decay vs standard track
+
+**Bottom: Left Flat (LF) — confirmed part list**
+Rubber flat tip optimised for CCW movement; r_contact ≈ 6.5 mm [M]; μ_lf ≈ 0.52 [M]; m_bottom ≈ 2.2 g; I_bottom ≈ 0.200×10⁻⁶ kg⋅m²
+
+**Face Bolt [M]:** m_bolt ≈ 2.8 g; I_bolt ≈ 0.150×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total = 32.0 + 4.0 + 2.5 + 2.2 + 2.8 = 43.5 g [M]
+  I_total = 30.500 + 1.616 + 0.240 + 0.200 + 0.150 = 32.706×10⁻⁶ ≈ 3.271×10⁻⁵ kg⋅m² [M]
+  KE₀_spin = 0.5 × 3.271×10⁻⁵ × 750² = 9.200 J [M]
+  Spin decay (LF, μ = 0.52, r = 6.5 mm):
+    dω/dt_base = −(0.52 × 0.0435 × 9.81 × 0.0065) / 3.271×10⁻⁵ = −27.6 rad/s² [M]
+    dω/dt_eff = −27.6 × (1 − 0.12) = −24.3 rad/s² [M] (LW105 CCW drag reduction benefit)
+
+**Dragon Emperor Supreme Flight — Masters form entanglement physics:**
+Meteo's three wider absorb wings can wrap around the opponent's body during close-orbit spin contact:
+  Entanglement threshold: |ω_opp| + |ω_Meteo| > 400 rad/s [M]
+  Entangled: spinTransfer rate = k_entangle = 0.35 per 200 ms window [M] (Meteo gains, opponent loses)
+  Fire breath engagement range: r_breath ≤ 50 px [M]; dragon beast fires from mouth at close range
+
+```typescript
+function meteoLDragoEntangle(
+  omega_Meteo: number, omega_opp: number
+): { entangled: boolean; spinTransferRate: number; fireBreathActive: boolean } {
+  const relSpeed = Math.abs(omega_Meteo) + Math.abs(omega_opp);
+  return { entangled: relSpeed > 400, spinTransferRate: relSpeed > 400 ? 0.35 : 0, fireBreathActive: true };
+}
+// meteoLDragoEntangle(-700,  500) → {entangled:true,  transfer:0.35, fireBreath:true}
+// meteoLDragoEntangle(-200,  150) → {entangled:false, transfer:0,    fireBreath:true}
+```
+
+---
+
+## Case 1153 — [SPECIAL] Dragon Emperor Supreme Flight
+
+**Franchise move.** Dragon Emperor Supreme Flight (竜皇剛覇翔) — Special Move by Ryuga. **Two assemblies, two eras:**
+- **Masters form:** Meteo L-Drago LW105LF (Metal Masters). L-Drago rises, entangles opponent with absorb wings, fires at point-blank range (or repeated fire blasts at range).
+- **Fury "Ultimate Move" form:** L-Drago Destructor F:S (Metal Fury). Mode-dependent on F:S bottom — **Hole Flat (Final)** → blazing spinning wall; **Sharp (Survive)** → flames from Face Bolt, dragon beast erupts from nova, crashes opponent into arena wall.
+
+NOTE: special move overrides all EG/clutch/mode mechanical state; anime physics override. Fury form power scales with absorbed spin (Case 1135 gimmick).
+
+---
+
+**MASTERS FORM (Meteo L-Drago LW105LF):**
+
+**Activation:** Hold J. Meteo L-Drago rises from floor contact (BeySpirit-driven lift ≈ 0.3 m [M]).
+
+**Phase 1 — Entangle (600 ms, 3 × 200 ms windows):**
+  Per 200 ms window at entanglement:
+    spinTransfer: +k_entangle × Δω_rel × (I_opp / I_Meteo) from opponent to Meteo [M]
+    effective spinDelta_opp: −40 per window [M]; Meteo gains +12 ω per window [M]
+
+**Phase 2a — Close Fire Breath (≤ 50 px, 800 ms):**
+  spinDelta: −65; dmgMult: 1.60×; impulse: 350 eu (backward push); fireDoT: +1.25× spinDecayRate for 2500 ms
+
+**Phase 2b — Repeated Fire Blasts (> 50 px, 3 × 250 ms):**
+  Per blast: spinDelta −25; impulse 280 eu; dmgMult 1.30×
+
+  Self cost: powerCost 100; spinCost −50; Cooldown: 8500 ms
+
+---
+
+**FURY ULTIMATE FORM (L-Drago Destructor F:S — references Case 1135):**
+
+**Hole Flat mode (Final) — Blazing Wall:**
+  CCW fire ring expands across full arena; 3 sweep cycles × 300 ms:
+    Per cycle: spinDelta −45; impulse 600 eu outward; dmgMult 1.50×; fireDoT +1.30× for 2500 ms
+    Final burst: 1600 eu knockback; spinDelta −50
+  AoE: full arena sweep
+
+**Sharp mode (Survive) — Face Bolt Nova + Rock Crash:**
+  Phase A — Nova: spinDelta −55; dmgMult 1.70×; fireDoT +1.40× for 3000 ms; impulse 500 eu
+  Phase B — Rock crash: wallImpact 2200 eu; spinDelta −80
+
+  Power scaling (both Fury variants): dmgMult_eff = base + min(totalAbsorbed/200, 1.0) × 0.50 [M]
+  Self cost: powerCost 110; spinCost −60; Cooldown: 9000 ms
+
+```typescript
+function dragonEmperorSupremeFlight(
+  form: "Masters"|"FuryHoleFlat"|"FurySharp",
+  totalAbsorbed: number
+): { dmgMult_peak: number; maxImpulse_eu: number; totalSpinDelta: number } {
+  const bonus = form==="Masters" ? 0 : Math.min(totalAbsorbed/200,1.0)*0.50;
+  const base = {
+    Masters:      { dm:1.60, imp:350,  spin:-145 },  // entangle×3 + breath (Phase 2a)
+    FuryHoleFlat: { dm:1.50, imp:600,  spin:-135 },  // 3 sweeps + burst
+    FurySharp:    { dm:1.70, imp:2200, spin:-135 },  // nova + rock crash
+  }[form];
+  return { dmgMult_peak:parseFloat((base.dm+bonus).toFixed(3)), maxImpulse_eu:base.imp, totalSpinDelta:base.spin };
+}
+// dragonEmperorSupremeFlight("Masters",       0) → {dm:1.600, imp:350eu,  spin:-145}
+// dragonEmperorSupremeFlight("FuryHoleFlat", 100) → {dm:1.750, imp:600eu,  spin:-135}
+// dragonEmperorSupremeFlight("FurySharp",    200) → {dm:2.200, imp:2200eu, spin:-135}
+```
+
+---
+
+## Case 1154 — [COMBO] Meteo Spiral (↑ J ↓)
+
+**Franchise bey:** Ryuga's Meteo L-Drago LW105LF — Meteo metal wheel active (left-spin)  
+**Required part:** `meteoLDragoWheel`  
+**Sequence:** ↑ J ↓ (moveUp + attack + moveDown)  
+**Type restriction:** universal  
+**Cost:** 0 power (free)
+
+Meteo L-Drago (CCW) surges forward (↑) along its natural left-spin orbital path; delivers an absorb-wing blade contact (J) at the approach apex; then pulls back (↓) to widen orbital spacing — the classic left-spin absorb approach-and-retreat. The LW105 track's CCW airflow channelling provides a mild spin-steal bonus during the ↑ surge phase. Free cost — left-wing orbital approach is natural to Meteo's CCW movement.
+
+```
+Main hit (J at apex):
+  spinDelta:       −32
+  dmgMult:         1.22×
+  lockMs:          35
+  absorbGain:      +10 ω  (partial spin steal from Meteo absorb-wing contact)
+  windowMs:        600
+  cooldownMs:      3100
+Ceiling: 1.22×≤1.5×; 35ms≤300ms; 32≤50 spinDelta; absorbGain is self-recovery;
+  no invulnerability; no AoE [check]. Cost 0.
+```
+
+```typescript
+function meteoSpiralCombo(jHit:boolean):{spinDelta:number;dmgMult:number;lockMs:number;absorbGain_omega:number}{
+  return jHit?{spinDelta:-32,dmgMult:1.22,lockMs:35,absorbGain_omega:10}
+             :{spinDelta:-14,dmgMult:1.07,lockMs:0, absorbGain_omega:0};
+}
+// meteoSpiralCombo(true)  → {spin:-32, dmg:1.22×, lock:35ms, absorb:+10ω}
+// meteoSpiralCombo(false) → {spin:-14, dmg:1.07×, lock:0ms,  absorb:0   }
+```
+
+---
+
+## Case 1155 — [GIMMICK] Daigo Kurogami / Black Eye's Krusher Doomscizor 2Vortex Hunter / Shadow Doomscizor 2Vortex Hunter — Sliding Scythe Sequential Strike Mechanism
+
+**Franchise context.** Daigo Kurogami (Krusher Doomscizor) and Black Eye (Shadow Doomscizor) (Beyblade Burst Turbo, Takara-Tomy). Identical assemblies: [Doomscizor Layer] / 2 [Disc] / Vortex Hunter [Driver]. Burst nomenclature: Layer / Disc / Driver. The Doomscizor Energy Layer's **sliding scythe mechanism** is the gimmick: the outer black scythe blade can retract axially (d_slide ≈ 8 mm [M]) under the force of a collision impact, exposing a secondary inner scythe that springs forward for a second hit ~100 ms later [M]. One orbital approach; two sequential blade contacts. Double Strike (Case 1146) fires both contacts as a special.
+
+**Assembly [M]:**
+
+**Energy Layer: Doomscizor [M]**
+Scythe-motif; outer black scythe with spring-return slide mechanism; inner secondary scythe exposed at d_slide retraction:
+  m_layer ≈ 17.0 g [M]; r_outer ≈ 36 mm [M]; r_inner ≈ 12 mm [M]
+  I_layer = (0.017/2)(0.036² + 0.012²) = 0.0085 × 1.440×10⁻³ = 1.224×10⁻⁵ kg⋅m² [M]
+  Outer scythe: r_scythe_outer ≈ 34 mm [M]; d_slide ≈ 8 mm [M]
+  Inner scythe: r_scythe_inner ≈ 28 mm [M] (contacts after outer retracts)
+  Slide spring: k_spring ≈ 80 N/m [M]; t_reload ≈ 100 ms [M]
+  Spring PE at full retraction: E_spring = 0.5 × 80 × 0.008² = 2.56×10⁻³ J [M]
+
+**Disc: 2 [M]**
+  m_disc ≈ 4.5 g; I_disc ≈ 0.450×10⁻⁶ kg⋅m²
+
+**Driver: Vortex Hunter [M]**
+Multi-mode orbital driver; "Vortex" — stamina-orbital movement; "Hunter" — aggressive approach tracking:
+  m_driver ≈ 2.5 g; r_contact ≈ 3.0 mm [M]; μ ≈ 0.12 [M]; I_driver ≈ 0.220×10⁻⁶ kg⋅m²
+
+**Layer Frame/Chip: Doomscizor [M]**
+  m_chip ≈ 3.0 g; I_chip ≈ 0.140×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total = 17.0 + 4.5 + 2.5 + 3.0 = 27.0 g [M]
+  I_total = 12.240 + 0.450 + 0.220 + 0.140 = 13.050×10⁻⁶ ≈ 1.305×10⁻⁵ kg⋅m² [M]
+  ω₀ = 580 rad/s [M]; KE₀_spin = 0.5 × 1.305×10⁻⁵ × 580² = 2.197 J [M]
+  Spin decay (Vortex Hunter orbital mode, μ = 0.12, r = 3.0 mm):
+    dω/dt = −(0.12 × 0.027 × 9.81 × 0.003) / 1.305×10⁻⁵ = −7.32 rad/s² [M]
+
+**Sliding scythe impulse transfer:**
+First contact (outer scythe): J_1 = standard blade collision impulse at orbital velocity
+Outer scythe retracts → spring stores E_spring = 2.56×10⁻³ J [M]
+BeySpirit-amplified spring release (k_bs = 15 [M]):
+  J_2_eff ≈ k_second × J_1 [M]; k_second = 0.65 [M] (65% of first-hit impulse for second hit)
+Reload time t_reload = 100 ms [M]
+
+```typescript
+function doomscizorSlideScythe(J1_eu: number): {
+  J2_eu: number; totalImpulse_eu: number; reloadTime_ms: number
+} {
+  const k = 0.65;
+  return { J2_eu:Math.round(J1_eu*k), totalImpulse_eu:J1_eu+Math.round(J1_eu*k), reloadTime_ms:100 };
+}
+// doomscizorSlideScythe(200) → {J2:130eu, total:330eu, reload:100ms}
+// doomscizorSlideScythe(380) → {J2:247eu, total:627eu, reload:100ms}
+```
+
+---
+
+## Case 1156 — [SPECIAL] Double Strike
+
+**Franchise move.** Double Strike (ダブルストライク) — Special Move by Daigo Kurogami (Krusher Doomscizor) and Black Eye (Shadow Doomscizor), [Doomscizor] 2 Vortex Hunter (Beyblade Burst Turbo). When the outer black scythe contacts the opponent, the impact force drives the outer scythe axially backward (d_slide = 8 mm [M]), exposing the inner secondary scythe which springs forward ~100 ms later — two distinct blade contacts from one orbital approach. BeySpirit amplifies the spring reload to superhuman force and speed.
+
+NOTE: special move overrides all burst regulation mechanical state; BeySpirit amplifies the slide spring reload beyond physical limits (anime physics override).
+
+**Activation:** Hold J. Doomscizor arms the double-scythe sequence; Vortex Hunter enters aggressive orbital mode for maximum first-hit approach vector.
+
+**First Strike (outer scythe — on contact):**
+  spinDelta: −25 (outer scythe grazes opponent core)
+  impulse_1: 380 eu (full orbital approach force); dmgMult_1: 1.20×; lockMs_1: 20
+
+**Slide Phase (100 ms):**
+  Outer scythe retracts; inner scythe springs forward. Both beys remain in contact (lockMs_1 engagement holds them together). Opponent cannot act.
+
+**Second Strike (inner scythe — 100 ms after first):**
+  spinDelta: −40 (inner scythe reaches axle region — deeper disruption)
+  impulse_2: 247 eu (380 × 0.65 = 247 [M]); dmgMult_2: 1.35×; lockMs_2: 60
+  burstBonus: +15% burst chance [M] (inner scythe engages burst regulation teeth more centrally)
+
+**Combined:**
+  totalSpinDelta: −65; effective sequential dmgMult: 1.20 × 1.35 = 1.620× [M]
+  totalImpulse: 627 eu; totalEngagement: 20 + 100 + 60 = 180 ms
+
+  Self cost: powerCost 80; spinCost −25; Cooldown: 6000 ms
+
+```typescript
+function doubleStrike(): {
+  strike1: {spinDelta:number;impulse_eu:number;dmgMult:number;lockMs:number};
+  slideTime_ms: number;
+  strike2: {spinDelta:number;impulse_eu:number;dmgMult:number;lockMs:number;burstBonus_pct:number};
+  totalSpinDelta: number; effectiveDmgMult: number;
+} {
+  return {
+    strike1: {spinDelta:-25,impulse_eu:380,dmgMult:1.20,lockMs:20},
+    slideTime_ms: 100,
+    strike2: {spinDelta:-40,impulse_eu:247,dmgMult:1.35,lockMs:60,burstBonus_pct:15},
+    totalSpinDelta: -65,
+    effectiveDmgMult: parseFloat((1.20*1.35).toFixed(3)),  // 1.620
+  };
+}
+// doubleStrike() → {s1:{spin:-25,imp:380eu,dmg:1.20×,lock:20ms}, slide:100ms, s2:{spin:-40,imp:247eu,dmg:1.35×,lock:60ms,burst:+15%}, totalSpin:-65, effDmg:1.620×}
+```
+
+---
+
+## Case 1157 — [COMBO] Scythe Edge (→ ↑ J)
+
+**Franchise bey:** Daigo / Black Eye's Doomscizor 2Vortex Hunter — Doomscizor layer active  
+**Required part:** `doomscizorLayer`  
+**Sequence:** → ↑ J (moveRight + moveUp + attack)  
+**Type restriction:** universal  
+**Cost:** 0 power (free)
+
+Vortex Hunter's orbital stamina drive gives Doomscizor a natural rightward orbital tendency (→); ↑ surges diagonally forward along the arc; J delivers the outer scythe at the orbital apex approach angle. Unlike Double Strike (which triggers the full spring-reload sequence), Scythe Edge fires only the outer scythe in a clean single-contact approach — the orbital setup maximises first-hit blade angle for cost-free damage. The outer scythe does NOT retract (no spring reload triggered at combo power level). Free cost — Vortex Hunter orbital tracking is inherent.
+
+```
+Main hit (J at orbital apex):
+  spinDelta:       −22
+  dmgMult:         1.16×
+  lockMs:          25
+  scytheSlide:     false  (outer scythe NOT retracted — single contact only)
+  windowMs:        600
+  cooldownMs:      2800
+Ceiling: 1.16×≤1.5×; 25ms≤300ms; 22≤50 spinDelta; no slide; no invuln; no AoE [check]. Cost 0.
+```
+
+```typescript
+function scytheEdgeCombo(jHit:boolean):{spinDelta:number;dmgMult:number;lockMs:number;scytheSlide:boolean}{
+  return jHit?{spinDelta:-22,dmgMult:1.16,lockMs:25,scytheSlide:false}
+             :{spinDelta:-10,dmgMult:1.05,lockMs:0, scytheSlide:false};
+}
+// scytheEdgeCombo(true)  → {spin:-22, dmg:1.16×, lock:25ms, slide:false}
+// scytheEdgeCombo(false) → {spin:-10, dmg:1.05×, lock:0ms,  slide:false}
+```
+
+
+---
+
+*Cases continue from Case 1158 as further franchise moves are provided.*
+
+---
+
+## Case 1176 — [GIMMICK] Lui Shirosagi's Brutal Lúinor (Bloody Longinus) 13 Jolt — Four Dragon Head Uppercut Geometry and Jolt Free-Disc Decoupling
+
+**Franchise context.** Lui Shirosagi (Beyblade Burst Turbo, Takara-Tomy). Assembly: Brutal Lúinor 13 Jolt (Hasbro/international alias: Bloody Longinus 13 Jolt — same assembly). Burst Turbo nomenclature: Blade / Disc / Driver + Chip. **Brutal Lúinor** evolves the Lúinor lineage (Cases 1138–1140, Nightmare Lúinor) from three dragon heads at 120° to **four dragon heads at 90° spacing** — maximum four-point contact coverage per revolution. Each head features an **uppercut profile**: entry angle θ_entry ≈ −15° below horizontal (dips under the opponent's Energy Layer base) and exit angle θ_exit ≈ +22° above horizontal (delivers upward impulse after bypass). Dragon Scream (Case 1159) exploits this four-head uppercut geometry in a head-on linear charge.
+
+**Assembly [M]:**
+
+**Blade: Brutal Lúinor (Bloody Longinus) [M]**
+Four dragon head protrusions at 90° spacing; Cho-Z generation reinforced blade; each head's contact edge enters below opponent layer (h_head ≈ 3.5 mm < h_opp_layer ≈ 5.5 mm [M]) to bypass outer defensive contact ridge:
+  m_blade ≈ 36.0 g [M]; r_outer ≈ 42 mm [M]; r_inner ≈ 15 mm [M]
+  I_blade = (0.036/2)(0.042² + 0.015²) = 0.018 × (1.764×10⁻³ + 2.25×10⁻⁴) = 0.018 × 1.989×10⁻³ = 3.580×10⁻⁵ kg⋅m² [M]
+  n_heads = 4; head spacing = 90°; θ_exit = 22° → F_z fraction = sin(22°) = 0.374 [M]
+
+**Disc: 13 [M]**
+13-sided balanced weight disc:
+  m_disc ≈ 6.5 g [M]; r_outer ≈ 32 mm [M]; r_inner ≈ 12 mm [M]
+  I_disc = (0.0065/2)(0.032² + 0.012²) = 0.00325 × 1.168×10⁻³ = 3.796×10⁻⁶ kg⋅m² [M]
+
+**Driver: Jolt [M]**
+Free-spinning upper disc + rubber ball tip; upper disc decouples from layer spin system (reduces energy bleed to ground during orbital movement); rubber ball provides high-grip bursts on contact change:
+  m_driver ≈ 3.5 g [M]; r_ball ≈ 3.0 mm [M]; μ_eff = 0.30 [M] (free-disc reduces raw rubber μ 0.45 by ~33%)
+  I_driver ≈ 0.280×10⁻⁶ kg⋅m²
+
+**Chip: Lúinor [M]**
+  m_chip ≈ 3.0 g; I_chip ≈ 0.140×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total = 36.0 + 6.5 + 3.5 + 3.0 = 49.0 g [M]
+  I_total = 35.800 + 3.796 + 0.280 + 0.140 = 40.016×10⁻⁶ ≈ 4.002×10⁻⁵ kg⋅m² [M]
+  ω₀ = 580 rad/s [M] (Burst B-String Cho-Z era launcher); KE₀ = 0.5 × 4.002×10⁻⁵ × 580² = 6.734 J [M]
+  Spin decay (Jolt, μ_eff = 0.30, r = 3.0 mm):
+    dω/dt = −(0.30 × 0.049 × 9.81 × 0.003) / 4.002×10⁻⁵ = −10.8 rad/s² [M]
+
+**Four-head sequential contact geometry:**
+At ω₀ = 580 rad/s:
+  f_head = 4 × 580 / (2π) = 369.4 Hz [M] >> 60 Hz CFF → heads blur to continuous ring in normal play
+  Δt_between = (π/2) / 580 = 2.71 ms per head [M]; full four-head window = 4 × 2.71 = 10.84 ms [M]
+  Under Dragon Scream (head-on linear charge, not orbital tangent): all four heads contact opponent sequentially within this 10.84 ms window — each slips below h_opp_layer before angling upward at θ_exit = 22° for the lift component.
+
+```typescript
+function brutalLuinorUppercut(
+  omega: number, F_contact_eu: number
+): { F_z_eu: number; contactWindow_ms: number; headFreq_Hz: number } {
+  const F_z = Math.round(Math.sin(22 * Math.PI / 180) * F_contact_eu);
+  const deltaT = (Math.PI / 2) / omega * 1000;
+  const freq = 4 * omega / (2 * Math.PI);
+  return { F_z_eu: F_z, contactWindow_ms: parseFloat((deltaT * 4).toFixed(2)), headFreq_Hz: parseFloat(freq.toFixed(1)) };
+}
+// brutalLuinorUppercut(580, 300) → {Fz:112eu, window:10.84ms, freq:369.4Hz}
+// brutalLuinorUppercut(400, 300) → {Fz:112eu, window:15.71ms, freq:254.6Hz}
+// brutalLuinorUppercut(580, 500) → {Fz:187eu, window:10.84ms, freq:369.4Hz}
+```
+
+---
+
+## Case 1177 — [SPECIAL] Dragon Scream
+
+**Franchise move.** Dragon Scream (ドラゴンスクリーム) — Special Move by Lui Shirosagi, Brutal Lúinor (Bloody Longinus) 13 Jolt (Beyblade Burst Turbo). Lúinor charges the opponent head-on; four dragon heads contact sequentially, each slipping under the opponent's Energy Layer to deliver uppercut attacks that **avoid points of contact** — bypassing the outer defensive contact ridge — dealing increased damage from below.
+
+NOTE: special move overrides all burst regulation mechanical state; BeySpirit (k_bs = 1.5 [M]) amplifies four discrete uppercut strikes from the CFF-blurred continuous ring (anime physics override).
+
+**Activation:** Hold J. Lúinor locks into linear head-on charge approach.
+
+**Four Dragon Head Charge Sequence (10.84 ms contact window, within 600 ms total):**
+  v_charge ≈ 3.0 m/s [M] (linear approach, not orbital tangent)
+  Per head (4 sequential, Δt = 2.71 ms each [M]):
+    entryBypass: h_head = 3.5 mm < h_opp = 5.5 mm → outer contact ridge bypassed [M]
+    spinDelta per head: −28 [M] (axle-region disruption via undercut angle)
+    liftImpulse per head: 160 eu upward [M] (F_z = sin(22°) × k_bs × base_contact)
+    lateralImpulse per head: 280 eu backward [M]
+    dmgMult per head: 1.25× [M]
+
+**Post-Charge Burst (200 ms after all 4 heads):**
+  Rotational disruption cascades into burst ratchet engagement:
+  finalImpulse: 1300 eu outward [M]; spinDelta: −45 [M]; burstBonus: +18% cumulative [M]
+
+  Total spinDelta: (−28×4) + (−45) = −157 [M]
+  Total liftImpulse: 640 eu [M] (each successive head gets longer travel under the progressively lifted layer)
+  Partial (< 3 heads): no final burst; scale linearly [M]
+  Self cost: powerCost 90; spinCost −45; Cooldown: 7500 ms
+
+```typescript
+function dragonScream(headsConnected: number): {
+  totalSpinDelta: number; totalLift_eu: number; totalLateral_eu: number;
+  burstBonus_pct: number; finalImpulse_eu: number
+} {
+  const n = Math.min(headsConnected, 4);
+  return {
+    totalSpinDelta: (-28 * n) + (n === 4 ? -45 : 0),
+    totalLift_eu:    160 * n,
+    totalLateral_eu: 280 * n,
+    burstBonus_pct:  Math.round(4.5 * n),
+    finalImpulse_eu: n === 4 ? 1300 : Math.round(1300 * n / 4),
+  };
+}
+// dragonScream(4) → {spin:-157, lift:640eu,  lat:1120eu, burst:18%, final:1300eu}
+// dragonScream(2) → {spin:-56,  lift:320eu,  lat:560eu,  burst:9%,  final:650eu }
+// dragonScream(0) → {spin:0,    lift:0eu,    lat:0eu,    burst:0%,  final:0eu  }
+```
+
+---
+
+## Case 1178 — [COMBO] Brutal Upper (↓ K J)
+
+**Franchise bey:** Lui Shirosagi's Brutal Lúinor (Bloody Longinus) 13 Jolt — Brutal Lúinor blade active
+**Required part:** `brutalLuinorBlade`
+**Sequence:** ↓ K J (moveDown + defense + attack)
+**Type restriction:** attack
+**Cost:** 15 power
+
+Jolt driver's rubber ball grip allows approach at a lowered contact plane (↓ — rubber grips as orbital radius tightens, pulling contact height down); dragon head braces at guard angle for undercut entry alignment (K — outer blade arm intercepts, positioning the head below the opponent layer base); then drives upward at θ_exit = 22° (J — single dragon head uppercut). Single-head precision version of Dragon Scream's bypass mechanic. Attack-type — requires controlled approach power to execute the sub-layer entry.
+
+```
+Main hit (J after undercut approach):
+  spinDelta:       −38
+  dmgMult:         1.32×
+  lockMs:          55
+  liftImpulse:     195 eu  (F_z at 22° undercut exit — bypassed outer ridge)
+  windowMs:        550
+  cooldownMs:      3500
+Ceiling: 1.32×≤1.5×; 55ms≤300ms; 38≤50 spinDelta; liftImpulse 195eu vertical;
+  no invulnerability; no AoE [check]. Cost 15.
+```
+
+```typescript
+function brutalUpperCombo(jHit: boolean): { spinDelta:number; dmgMult:number; lockMs:number; liftImpulse_eu:number } {
+  return jHit
+    ? { spinDelta:-38, dmgMult:1.32, lockMs:55, liftImpulse_eu:195 }
+    : { spinDelta:-18, dmgMult:1.10, lockMs:0,  liftImpulse_eu:0   };
+}
+// brutalUpperCombo(true)  → {spin:-38, dmg:1.32×, lock:55ms, lift:195eu}
+// brutalUpperCombo(false) → {spin:-18, dmg:1.10×, lock:0ms,  lift:0eu }
+```
+
+---
+
+## Case 1179 — [GIMMICK] Tyson Granger's Dragoon GT (Galaxy Turbo) and Daichi Sumeragi's Strata Dragoon G — Left Engine Gear Lateral Burst and Tip-Touch Coupled Orbital Drive
+
+**Franchise context.** Tyson Granger (Dragoon GT / Galaxy Turbo) and Daichi Sumeragi (Strata Dragoon G), Beyblade G-Revolution (Plastic Generation, Takara-Tomy). **Confirmed from part list — Dragoon GT (Galaxy Turbo):** AR: G Upper / WD: Ten Wide / SG: Left Engine Gear (Turbo) / BB: First Clutch Base (Dragoon GT Version) / CEW: Metal Grip. The Dragoon Tank gimmick has two confirmed physical mechanisms: (1) the **FCB trigger** — tip-to-tip contact fires the First Clutch Base, releasing the Left EG (Turbo) spring; (2) the **Left EG lateral burst** — the Left EG fires CCW (leftward) on a CW right-spin bey, producing a lateral centripetal force component. For a CW-orbiting Dragoon GT, leftward = inward toward arena center = centripetal reinforcement. This lateral EG impulse is the physical origin of the "energy ring" — it drives both coupled beys into a tight shared circular orbit at the moment of tip contact.
+
+**Assembly — Dragoon GT (Galaxy Turbo) — confirmed from part list:**
+
+**AR: G Upper (G-Revolution era upper-attack ring) [M]**
+Upper-attack geometry with upward-angled wedge contacts (θ_upper ≈ 30° from horizontal [M]); G-Revolution upgrade of the upper-contact series:
+  m_ar ≈ 21.0 g [M]; r_outer ≈ 38 mm [M]; r_inner ≈ 14 mm [M]
+  I_ar = (0.021/2)(0.038² + 0.014²) = 0.0105 × 1.640×10⁻³ = 1.722×10⁻⁵ kg⋅m² [M]
+  F_z_upper = sin(30°) × F_contact = 0.500 × F_contact [M]
+
+**WD: Ten Wide [M]**
+10-point wide weight disk; mass distributed at large radius for gyroscopic stability:
+  m_wd ≈ 14.0 g [M]; r_outer ≈ 22 mm [M]; r_inner ≈ 9 mm [M]
+  I_wd = (0.014/2)(0.022² + 0.009²) = 0.007 × 5.65×10⁻⁴ = 3.955×10⁻⁶ kg⋅m² [M]
+
+**SG: Left Engine Gear (Turbo) — confirmed from part list**
+Engine Gear spring mechanism firing in the LEFT (CCW) direction. On a right-spin (CW) bey, the Left EG fires OPPOSITE the main spin direction: creates a lateral leftward thrust on the bey body rather than a spin-boosting torque. For a clockwise-orbiting Dragoon GT, leftward = centripetal inward force:
+  m_EG ≈ 6.5 g [M]; I_EG ≈ 0.820×10⁻⁶ kg⋅m²; E_spring_EG ≈ 0.70 J [M]
+  Lateral impulse direction: CCW (inward centripetal for CW orbit)
+
+**CEW: Metal Grip — confirmed from part list**
+Metal outer shell + rubber grip inner; contact insert for the EG blade base:
+  m_cew ≈ 2.0 g [M]; r_contact ≈ 4.5 mm [M]; μ_MetalGrip ≈ 0.30 [M]; I_cew ≈ 0.080×10⁻⁶ kg⋅m²
+
+**BB: First Clutch Base (Dragoon GT Version) — confirmed from part list**
+Spring-loaded clutch fires at first contact; in Dragoon Tank, tip-to-tip contact triggers the FCB release, activating the Left EG (Turbo):
+  m_bb ≈ 5.0 g [M]; I_bb ≈ 0.400×10⁻⁶ kg⋅m²
+
+**Assembly — Dragoon GT [M]:**
+  m_GT = 21.0 + 14.0 + 6.5 + 2.0 + 5.0 = 48.5 g [M]
+  I_GT = 17.220 + 3.955 + 0.820 + 0.080 + 0.400 = 22.475×10⁻⁶ ≈ 2.248×10⁻⁵ kg⋅m² [M]
+  ω₀ = 750 rad/s [M] (Plastic Gen string launcher); KE₀ = 0.5 × 2.248×10⁻⁵ × 750² = 6.322 J [M]
+  Spin decay (Metal Grip, μ = 0.30, r = 4.5 mm):
+    dω/dt = −(0.30 × 0.0485 × 9.81 × 0.0045) / 2.248×10⁻⁵ = −28.6 rad/s² [M]
+
+**Assembly — Strata Dragoon G [M]:**
+
+**AR: Reverse Defenser-type (G-Revolution Strata Dragoon) [M]**
+  m_ar ≈ 20.0 g [M]; r_outer ≈ 35 mm [M]; r_inner ≈ 12 mm [M]
+  I_ar = (0.020/2)(0.035² + 0.012²) = 0.010 × 1.369×10⁻³ = 1.369×10⁻⁵ kg⋅m² [M]
+
+**WD: 10 Heavy [M]**
+  m_wd ≈ 22.0 g; I_wd = (0.022/2)(0.020² + 0.008²) = 0.011 × 4.64×10⁻⁴ = 5.104×10⁻⁶ [M]
+
+**BB + SG + CEW [M]:** m = 9.5 g; I ≈ 0.890×10⁻⁶ kg⋅m²
+
+**Assembly — Strata Dragoon G [M]:**
+  m_Strata = 20.0 + 22.0 + 9.5 = 51.5 g [M]
+  I_Strata = 13.690 + 5.104 + 0.890 = 19.684×10⁻⁶ ≈ 1.968×10⁻⁵ kg⋅m² [M]
+  KE₀_Strata = 0.5 × 1.968×10⁻⁵ × 750² = 5.535 J [M]
+
+**Tip-touch coupled system + Left EG orbital mechanics:**
+  m_coupled = 48.5 + 51.5 = 100.0 g [M]
+  KE_total = KE_GT + KE_Strata + E_spring = 6.322 + 5.535 + 0.70 = 12.557 J [M]
+  Left EG lateral impulse at tip-contact: J_lateral = √(2 × I_EG × E_spring) / r_EG_moment ≈ 0.064 N⋅s [M] → centripetal inward for CW orbit
+  η_couple = 0.80 [M]; KE_charge = 0.80 × 12.557 = 10.046 J [M]
+  v_charge = √(2 × 10.046 / 0.100) = √(200.9) = 14.17 m/s [M]
+  p_coupled = 0.100 × 14.17 = 1.417 kg⋅m/s [M]
+
+```typescript
+function dragoonTankCouple(
+  omega_GT: number, omega_Strata: number, fcbFired: boolean
+): { KE_total_J: number; v_charge_m_s: number; p_kg_m_s: number } {
+  const I_GT=2.248e-5, I_S=1.968e-5, m=0.100, eta=0.80;
+  const E_sp = fcbFired ? 0.70 : 0;
+  const KE = 0.5*(I_GT*omega_GT**2 + I_S*omega_Strata**2) + E_sp;
+  const v = Math.sqrt(2 * eta * KE / m);
+  return { KE_total_J:parseFloat(KE.toFixed(3)), v_charge_m_s:parseFloat(v.toFixed(2)), p_kg_m_s:parseFloat((m*v).toFixed(3)) };
+}
+// dragoonTankCouple(750, 750, true)  → {KE:12.557J, v:14.17m/s, p:1.417 kg⋅m/s}
+// dragoonTankCouple(750, 750, false) → {KE:11.857J, v:13.77m/s, p:1.377 kg⋅m/s} ← no FCB
+// dragoonTankCouple(600, 600, true)  → {KE:8.791J,  v:11.86m/s, p:1.186 kg⋅m/s}
+```
+
+---
+
+## Case 1180 — [SPECIAL] Dragoon Tank
+
+**Franchise move.** Dragoon Tank — Tag-Team Special Move by Tyson Granger (Dragoon GT) and Daichi Sumeragi (Strata Dragoon G), Beyblade G-Revolution (Plastic Generation). Tips touch → FCB fires → Left EG (Turbo) releases lateral centripetal impulse → both coupled beys enter their "energy ring" shared circular orbit → linear charge as a dumbbell pair strikes opponents out of the arena.
+
+NOTE: special move overrides all EG/clutch mechanical state; the Left EG (Turbo) spring re-engages under BeySpirit power regardless of whether it has already fired this match (anime physics override). Left EG lateral impulse maintains centripetal coupling even as spin decays.
+
+**Activation:** Both allied players hold J within 500 ms sync window.
+
+**Phase 1 — Tip-Touch Coupling (600 ms):**
+FCB triggers at tip contact; Left EG fires leftward centripetal impulse (0.064 N⋅s [M]) → both beys enter shared circular orbit ("energy ring"). Both invulnerable during coupling.
+
+**Phase 2 — Orbital Ring Run (800 ms):**
+Coupled pair orbits together; opponents in orbital path:
+  Per orbit-path contact: spinDelta −22; impulse 270 eu; dmgMult 1.22×
+
+**Phase 3 — Tank Charge (600 ms):**
+Linear head-on charge at v = 14.17 m/s [M]; m = 100.0 g [M]:
+  G Upper upper-attack wedge (θ = 30°) adds upward lift component to primary contact:
+  chargeImpulse: 1750 eu [M]; liftComponent: 875 eu (×sin30° = ×0.5) [M]
+  spinDelta: −85 [M]; dmgMult: 2.1× [M]; ringOutRisk: extreme (p = 1.417 kg⋅m/s [M])
+  AoE: r_splash ≈ 90 px; adjacentImpulse: 480 eu; adjacentSpinDelta: −25 [M]
+
+  Self cost per bey: powerCost 100; spinCost −60; Cooldown: 9000 ms (shared); sync window: 500 ms
+  Desync (η < 0.4): individual charges only; each at v ≈ 5.5 m/s [M], no coupled momentum
+
+```typescript
+function dragoonTank(syncDelta_ms: number, omega_GT: number, omega_Strata: number): {
+  synced: boolean; v_charge_m_s: number; chargeImpulse_eu: number; spinDelta: number
+} {
+  const synced = syncDelta_ms <= 500;
+  const v = synced ? parseFloat(Math.sqrt(2*0.80*(0.5*(2.248e-5*omega_GT**2+1.968e-5*omega_Strata**2)+0.70)/0.100).toFixed(2)) : 5.5;
+  const imp = synced ? Math.min(Math.round(v*0.100*1240), 1750) : Math.round(5.5*0.0485*1240);
+  return { synced, v_charge_m_s:v, chargeImpulse_eu:imp, spinDelta:synced?-85:-40 };
+}
+// dragoonTank(400, 750, 750) → {synced:true,  v:14.17m/s, imp:1750eu, spin:-85}
+// dragoonTank(600, 750, 750) → {synced:false, v:5.50m/s,  imp:331eu,  spin:-40} ← solo charges only
+```
+
+---
+
+## Case 1181 — [COMBO] Tank Dash (→ ↓ J)
+
+**Franchise bey:** Tyson Granger's Dragoon GT (Galaxy Turbo) — G Upper AR + Metal Grip CEW active
+**Required part:** `dragoonGTGUpperAR`
+**Sequence:** → ↓ J (moveRight + moveDown + attack)
+**Type restriction:** universal
+**Cost:** 0 power (free)
+
+Dragoon GT's Metal Grip CEW provides natural rightward orbital drift (→); lowering the approach angle (↓ — Metal Grip's rubber grip component increases friction as the bey descends, pulling the contact plane lower) brings the G Upper AR's wedge contact into the opponent's lower layer zone; J delivers the upper-attack wedge at the lowered approach — a single-direction version of Dragoon Tank's frontal drive. Free cost — Metal Grip orbital approach tendency is inherent to G-Revolution era CEW tips.
+
+```
+Main hit (J at lowered approach):
+  spinDelta:       −25
+  dmgMult:         1.18×
+  lockMs:          30
+  driveImpulse:    55 eu  (forward momentum carry in → direction)
+  windowMs:        600
+  cooldownMs:      2900
+Ceiling: 1.18×≤1.5×; 30ms≤300ms; 25≤50 spinDelta; driveImpulse 55eu positional;
+  no invulnerability; no AoE [check]. Cost 0.
+```
+
+```typescript
+function tankDashCombo(jHit: boolean): { spinDelta:number; dmgMult:number; lockMs:number; driveImpulse_eu:number } {
+  return jHit
+    ? { spinDelta:-25, dmgMult:1.18, lockMs:30, driveImpulse_eu:55 }
+    : { spinDelta:-12, dmgMult:1.06, lockMs:0,  driveImpulse_eu:0  };
+}
+// tankDashCombo(true)  → {spin:-25, dmg:1.18×, lock:30ms, drive:55eu}
+// tankDashCombo(false) → {spin:-12, dmg:1.06×, lock:0ms,  drive:0eu }
+```
+
+---
+
+## Case 1182 — [GIMMICK] Julia Fernandez's Thunder Pegasus and Raul Fernandez's Torch Pegasus — Atmospheric Electrical Charge and Blade-Tip Arc Coupling
+
+**Franchise context.** Julia Fernandez (Thunder Pegasus) and Raul Fernandez (Torch Pegasus), F-Dynasty team (Beyblade G-Revolution, Plastic Generation, Takara-Tomy). Both are Pegasus-type beys with three-wing ARs carrying lightning (Thunder) and flame (Torch) elemental motifs. Part list entries for these specific beys are not confirmed [M]; all values estimated. F-Dynasty's BeySpirit synergy (k_gemini = 2.2 [M]) creates triboelectric atmospheric charge at high RPM; an arc discharge fires when blade tips are brought into contact, adding a spin boost before the combined meteor dive. Gemini Attack beat World Champion Tyson and Daichi in the G-Revolution tournament.
+
+**Assembly — Thunder Pegasus (Julia Fernandez) [M]:**
+
+**AR: Thunder Pegasus [M]**
+Three-wing Pegasus ring with lightning blade protrusions at wing tips; f_blade = 3 × 750 / (2π) = 357.9 Hz [M] >> 60 Hz CFF:
+  m_ar ≈ 19.0 g [M]; r_outer ≈ 35 mm [M]; r_inner ≈ 12 mm [M]
+  I_ar = (0.019/2)(0.035² + 0.012²) = 0.0095 × 1.369×10⁻³ = 1.301×10⁻⁵ kg⋅m² [M]
+
+**WD: Wide Defense [M]**
+  m_wd ≈ 16.0 g; I_wd = (0.016/2)(0.021² + 0.009²) = 0.008 × 5.22×10⁻⁴ = 4.176×10⁻⁶ [M]
+
+**BB: Flat Base [M]**
+  m_bb ≈ 4.0 g; r_tip ≈ 3.0 mm; μ ≈ 0.40; I_bb ≈ 0.330×10⁻⁶ kg⋅m²
+
+**SG + Bit [M]:** m ≈ 4.0 g; I ≈ 0.350×10⁻⁶ kg⋅m²
+
+**Assembly — Thunder Pegasus [M]:**
+  m_Thunder = 43.0 g [M]; I_Thunder = 13.010 + 4.176 + 0.330 + 0.350 = 17.866×10⁻⁶ ≈ 1.787×10⁻⁵ [M]
+  ω₀ = 750 rad/s; KE₀ = 0.5 × 1.787×10⁻⁵ × 750² = 5.027 J [M]
+  dω/dt = −(0.40 × 0.043 × 9.81 × 0.003) / 1.787×10⁻⁵ = −28.3 rad/s² [M]
+
+**Assembly — Torch Pegasus (Raul Fernandez) [M]:**
+
+**AR: Torch Pegasus [M]**
+  m_ar ≈ 19.5 g; I_ar = 0.00975 × 1.369×10⁻³ = 1.335×10⁻⁵ [M]
+
+**WD + BB + SG [M]:** same structure as Thunder; m_Torch = 43.5 g; I_Torch = 18.206×10⁻⁶ ≈ 1.821×10⁻⁵ [M]
+  KE₀_Torch = 0.5 × 1.821×10⁻⁵ × 750² = 5.122 J [M]
+
+**Atmospheric charge and arc-discharge physics:**
+  v_blade_tip = 750 × 0.035 = 26.25 m/s [M]; k_gemini = 2.2 [M]
+  Arc discharge spin boost per bey: Δω_arc = 55 rad/s [M] (BeySpirit electrical discharge)
+  ω₀_charged = 750 + 55 = 805 rad/s [M]
+  KE_charged_total = 0.5×1.787e⁻⁵×805² + 0.5×1.821e⁻⁵×805² = 5.789 + 5.900 = 11.689 J [M]
+  Aerial component: h_aerial = 2.0 m [M]; m_total = 86.5 g [M]; PE = 0.0865 × 9.81 × 2.0 = 1.697 J [M]
+  KE_impact = 11.689 + 1.697 = 13.386 J [M]
+  v_dive = √(2 × 13.386 / 0.0865) = √(309.6) = 17.60 m/s [M]
+
+```typescript
+function geminiAttackCharge(omega_Julia: number, omega_Raul: number): {
+  KE_impact_J: number; v_dive_m_s: number; omega_boosted: number
+} {
+  const I_T=1.787e-5, I_R=1.821e-5, dw=55, m=0.0865, g=9.81, h=2.0;
+  const ow_T=omega_Julia+dw, ow_R=omega_Raul+dw;
+  const KE = 0.5*(I_T*ow_T**2+I_R*ow_R**2) + m*g*h;
+  return { KE_impact_J:parseFloat(KE.toFixed(3)), v_dive_m_s:parseFloat(Math.sqrt(2*KE/m).toFixed(2)), omega_boosted:Math.round(ow_T) };
+}
+// geminiAttackCharge(750, 750) → {KE:13.386J, v:17.60m/s, omega:805}
+// geminiAttackCharge(600, 600) → {KE:9.035J,  v:14.45m/s, omega:655}
+```
+
+---
+
+## Case 1183 — [SPECIAL] Gemini Attack
+
+**Franchise move.** Gemini Attack — Tag-Team Special Move by Julia Fernandez (Thunder Pegasus) and Raul Fernandez (Torch Pegasus), Beyblade G-Revolution. Twin BeySpirit arc synergy (k_gemini = 2.2 [M]) charges the atmosphere electrically; blade tips touch producing arc discharge; combined meteor dive at v = 17.60 m/s [M]. F-Dynasty's decisive win over Tyson and Daichi (World Champion BBA Revolution) in the World Tournament.
+
+NOTE: special move overrides all EG/clutch mechanical state; twin BeySpirit arc discharge (k_gemini = 2.2 [M]) amplifies atmospheric static charge beyond physical triboelectric limits (anime physics override). Tag-team; 500ms sync window.
+
+**Activation:** Both players hold J within 500ms.
+
+**Phase 1 — Atmospheric Charge (800 ms):**
+Both beys orbit 90° offset; atmospheric charge builds; each bey gains +55 ω [M]. Both invulnerable. Nearby opponents (r ≤ 80 px): arcDisrupt — spinDelta −20; impulse 150 eu [M].
+
+**Phase 2 — Blade-Tip Arc Contact (200 ms):**
+AR blade tips touch; arc fires; ω boosted to 805 rad/s [M]. Flash discharge: spinDelta −25; impulse 200 eu arc to all (r ≤ 100 px [M]).
+
+**Phase 3 — Meteor Dive (600 ms):**
+Both beys launch h = 2.0 m; dive at v = 17.60 m/s [M]:
+  Primary: spinDelta −95 [M]; impulse 2000 eu [M]; dmgMult 2.2× (k_gemini) [M]; ringOutForce 2200 eu [M]
+  AoE: r ≈ 100 px; adjacentSpinDelta −40; adjacentImpulse 650 eu [M]
+
+  Total primary spinDelta: −20 (Phase 1) + −25 (Phase 2) + −95 (Phase 3) = −140 [M]
+  Self cost per bey: powerCost 105; spinCost −50; Cooldown: 9500 ms (shared); sync window: 500 ms
+  Partial sync (η < 0.5): no aerial — ground charge at v ≈ 7.5 m/s [M]; dmgMult 1.3× only
+
+```typescript
+function geminiAttack(syncDelta_ms: number): {
+  syncWindowHit: boolean; v_dive_m_s: number; primaryImpulse_eu: number; totalSpinDelta: number
+} {
+  const hit = syncDelta_ms <= 500;
+  return { syncWindowHit:hit, v_dive_m_s:hit?17.60:0, primaryImpulse_eu:hit?2000:0, totalSpinDelta:hit?-140:0 };
+}
+// geminiAttack(400) → {hit:true,  v:17.60m/s, imp:2000eu, spin:-140}
+// geminiAttack(600) → {hit:false, v:0,         imp:0eu,    spin:0   }
+
+function geminiSyncCheck(p1Ms:number, p2Ms:number): {syncWindowHit:boolean; timingDelta_ms:number} {
+  const d=Math.abs(p1Ms-p2Ms); return{syncWindowHit:d<=500, timingDelta_ms:d};
+}
+// geminiSyncCheck(0, 450) → {hit:true,  delta:450ms}
+// geminiSyncCheck(0, 550) → {hit:false, delta:550ms}
+```
+
+---
+
+## Case 1184 — [COMBO] Pegasus Dive (↑ ↓ J)
+
+**Franchise bey:** Julia / Raul Fernandez's Pegasus-type (Thunder Pegasus / Torch Pegasus) — applies to either AR
+**Required part:** `thunderOrTorchPegasusAR`
+**Sequence:** ↑ ↓ J (moveUp + moveDown + attack)
+**Type restriction:** universal
+**Cost:** 0 power (free)
+
+Three-wing Pegasus AR surges forward (↑ — wide wing surface provides approach momentum); wing geometry pivots the contact arc downward at the approach apex (↓ — diving the contact angle, micro-version of Gemini Attack's meteor dive); J delivers the wing blade at the bottom of the dive arc (maximum contact approach force). The ↑↓ axis swing is natural to the Pegasus AR's wing geometry during forward engagement. Free cost.
+
+```
+Main hit (J at dive apex):
+  spinDelta:       −28
+  dmgMult:         1.20×
+  lockMs:          30
+  diveImpulse:     50 eu  (downward diagonal component at contact)
+  windowMs:        600
+  cooldownMs:      2900
+Ceiling: 1.20×≤1.5×; 30ms≤300ms; 28≤50 spinDelta; diveImpulse 50eu positional;
+  no invulnerability; no AoE [check]. Cost 0.
+```
+
+```typescript
+function pegasusDiveCombo(jHit: boolean): { spinDelta:number; dmgMult:number; lockMs:number; diveImpulse_eu:number } {
+  return jHit
+    ? { spinDelta:-28, dmgMult:1.20, lockMs:30, diveImpulse_eu:50 }
+    : { spinDelta:-13, dmgMult:1.07, lockMs:0,  diveImpulse_eu:0  };
+}
+// pegasusDiveCombo(true)  → {spin:-28, dmg:1.20×, lock:30ms, dive:50eu}
+// pegasusDiveCombo(false) → {spin:-13, dmg:1.07×, lock:0ms,  dive:0eu }
+```
+
+---
+
+## Case 1185 — [GIMMICK] Free De La Hoya's Drain Fafnir 8 Nothing and Shu Kurenai's Spryzen Requiem 0 Zeta — Rubber Counter-Spin Angular Momentum Absorption
+
+**Franchise context.** Free De La Hoya (Drain Fafnir 8 Nothing) and Shu Kurenai (Spryzen Requiem 0 Zeta, manga only), Beyblade Burst Standard/God Layer era (Takara-Tomy). Part list entries for Burst era beys are not confirmed [M]; all values estimated. **Drain Fafnir** is a LEFT-SPIN stamina bey whose rubber outer ring converts incoming right-spin impact energy into its own additional spin. **Nothing** driver is a near-frictionless bearing tip providing near-zero spin decay between drain hits. Spryzen Requiem (manga) achieves the same drain mechanic against opposite-spin opponents via its own rubber layer.
+
+**Assembly — Drain Fafnir 8 Nothing [M]:**
+
+**Layer: Drain Fafnir [M]**
+Three-blade Fafnir layer, **LEFT-SPIN** (ω < 0, CCW from above). Rubber compound outer ring at r_rubber ≈ 38 mm [M] covers the outer blade contact perimeter. At contact with a right-spin opponent: relative surface speed = (ω_opp × r_opp + |ω_Faf| × r_rubber) — both positive contributions → friction drives a torque that decelerates the opponent and accelerates Fafnir (CCW). Active when |ω_Faf| < ω_opp — once Fafnir exceeds opponent spin, relative surface velocity approaches zero and transfer reverses:
+  m_layer ≈ 19.0 g [M]; r_outer ≈ 40 mm [M]; r_inner ≈ 14 mm [M]
+  I_layer = (0.019/2)(0.040² + 0.014²) = 0.0095 × 1.796×10⁻³ = 1.706×10⁻⁵ kg⋅m² [M]
+  ω₀ = −640 rad/s [M] (LEFT-SPIN); μ_rubber ≈ 0.65 [M]; Δt_contact ≈ 12 ms [M] (rubber extends contact vs rigid ~3 ms)
+
+**Disc: 8 [M]**
+  m_disc ≈ 7.0 g [M]; r_outer ≈ 28 mm; r_inner ≈ 10 mm
+  I_disc = (0.007/2)(0.028² + 0.010²) = 0.0035 × 8.84×10⁻⁴ = 3.094×10⁻⁶ kg⋅m² [M]
+
+**Driver: Nothing [M]**
+Near-frictionless central bearing point; r_contact ≈ 0.5 mm [M]; μ_nothing ≈ 0.02 [M]:
+  m_driver ≈ 2.0 g; I_driver ≈ 0.120×10⁻⁶ kg⋅m²
+
+**Chip [M]:** m ≈ 2.5 g; I ≈ 0.110×10⁻⁶ kg⋅m²
+
+**Assembly — Drain Fafnir 8 Nothing [M]:**
+  m_total = 30.5 g [M]; I_total = 17.060 + 3.094 + 0.120 + 0.110 = 20.384×10⁻⁶ ≈ 2.038×10⁻⁵ kg⋅m² [M]
+  KE₀ = 0.5 × 2.038×10⁻⁵ × 640² = 4.175 J [M]
+  Spin decay (Nothing, μ = 0.02, r = 0.5 mm):
+    dω/dt = −(0.02 × 0.0305 × 9.81 × 0.0005) / 2.038×10⁻⁵ = −0.147 rad/s² [M]
+    (Near-zero — lowest spin decay in CS13; all gained drain spin is preserved between hits)
+
+**Assembly — Spryzen Requiem 0 Zeta (manga) [M]:**
+Dual-spin rubber layer; left-spin setup (−580 rad/s [M]) in manga usage against right-spin opponent:
+  m_SR ≈ 33.0 g [M]; I_SR ≈ 2.138×10⁻⁵ kg⋅m² [M]; k_rubber_SR = 0.10 [M]
+
+**Rubber drain per-hit physics (standard conditions: ω_opp = 500 rad/s, |ω_Faf| = 300 rad/s):**
+  drain_k = max(0, 1 − |ω_Faf| / ω_opp) = 1 − 300/500 = 0.40 [M]
+  k_rubber_spin = 0.08 [M] (fraction of angular velocity differential transferred per rubber hit)
+  Δω_Faf = k_rubber_spin × drain_k × (ω_opp + |ω_Faf|) × (I_opp / I_Faf) [M]
+  At I_opp = 1.500×10⁻⁵: Δω_Faf = 0.08 × 0.40 × 800 × (1.500/2.038) = +18.8 rad/s per hit [M] (non-special)
+  Drain Spin SPECIAL (k_drain = 1.8 [M]): Δω_Faf_special = 1.8 × 18.8 = +33.8 rad/s per hit [M]
+  Opponent loss per hit: Δω_opp = −Δω_Faf × I_Faf / I_opp = −33.8 × (2.038/1.500) = −45.9 rad/s [M] (heavier Fafnir means larger ω transfer to lighter opponent)
+
+```typescript
+function fafnirDrainHit(
+  omega_opp: number, omega_Faf_abs: number, I_opp: number, special: boolean
+): { delta_omega_Faf: number; delta_omega_opp: number; drainActive: boolean } {
+  const I_Faf=2.038e-5, k=0.08*(special?1.8:1.0);
+  const drain_k=Math.max(0, 1-omega_Faf_abs/omega_opp);
+  const dFaf=k*drain_k*(omega_opp+omega_Faf_abs)*(I_opp/I_Faf);
+  return { delta_omega_Faf:parseFloat(dFaf.toFixed(1)), delta_omega_opp:parseFloat(-(dFaf*I_Faf/I_opp).toFixed(1)), drainActive:drain_k>0 };
+}
+// fafnirDrainHit(500, 300, 1.5e-5, false) → {dFaf:+18.8, dOpp:-25.6, active:true}
+// fafnirDrainHit(500, 300, 1.5e-5, true)  → {dFaf:+33.8, dOpp:-46.1, active:true}  ← Drain Spin
+// fafnirDrainHit(300, 500, 1.5e-5, false) → {dFaf:0,     dOpp:0,     active:false} ← Faf too fast
+```
+
+---
+
+## Case 1186 — [SPECIAL] Drain Spin
+
+**Franchise move.** Drain Spin (ドレインスピン) — Special Move by Free De La Hoya, Drain Fafnir 8 Nothing (Beyblade Burst); also used by Shu Kurenai and Spryzen Requiem 0 Zeta in the manga. Fafnir's rubber absorbs right-spinning bey impacts and converts the kinetic energy into its own additional rotational velocity — getting faster and faster with each hit, **so long as it spins slower than the opponent**.
+
+NOTE: special move amplifies Fafnir's rubber drain efficiency (k_drain = 1.8 [M]) for the 5-hit active window; BeySpirit maintains peak rubber contact force regardless of spin-state decay (anime physics: Nothing driver preserves all drain-acquired spin; anime override). Drain condition |ω_Faf| < ω_opp is the physical baseline — each hit progressively closes the gap with diminishing returns (correct diminishing-return physics, no override needed there).
+
+**Activation:** Hold J. Fafnir enters Drain Spin stance (absorption vortex aura). Active for 5 hits [M] or 5000 ms [M], whichever first.
+
+**Per-hit drain cycle at standard entry (ω_opp = 500, |ω_Faf| = 300 [M]):**
+  Hit 1 (drain_k=0.400): Δω_Faf = +33.8; |ω_Faf| → 333.8; spinDelta_opp = −25 [M]
+  Hit 2 (drain_k=0.332): Δω_Faf = +28.1; |ω_Faf| → 361.9; spinDelta_opp = −21 [M]
+  Hit 3 (drain_k=0.276): Δω_Faf = +23.4; |ω_Faf| → 385.3; spinDelta_opp = −17 [M]
+  Hit 4 (drain_k=0.229): Δω_Faf = +19.4; |ω_Faf| → 404.7; spinDelta_opp = −14 [M]
+  Hit 5 (drain_k=0.190): Δω_Faf = +16.1; |ω_Faf| → 420.8; spinDelta_opp = −12 [M]
+  Cumulative: Δω_Faf total = +120.8 rad/s [M]; spinDelta_opp_total ≈ −89 [M]
+  (Diminishing returns — correct physics; Fafnir approaches but does not exceed opponent spin in 5 hits)
+
+**Post-special: passive drain at k = 1.0 continues as long as |ω_Faf| < ω_opp [M]**
+
+  Self cost: powerCost 70; spinCost 0 (Fafnir gains spin — net negative cost in practice); Cooldown: 6000 ms
+  Spryzen Requiem manga: same formula; k_rubber_SR = 0.10; lower per-hit gain but applies against any opposite-spin opponent [M]
+
+```typescript
+function drainSpinCycle(
+  n_hits: number, omega_opp_start: number, omega_Faf_start_abs: number
+): { omega_Faf_final: number; totalSpinDeltaOpp: number; hitsActive: number } {
+  let wF=omega_Faf_start_abs, wO=omega_opp_start, tDrain=0, hits=0;
+  const k=0.08*1.8, I_F=2.038e-5, I_O=1.5e-5;
+  for (let i=0; i<n_hits; i++) {
+    const dk=Math.max(0, 1-wF/wO); if (dk<=0) break;
+    const dw=k*dk*(wO+wF)*(I_O/I_F);
+    wF+=dw; tDrain-=Math.round(dw*I_F/I_O*0.75); wO-=dw*I_F/I_O; hits++;
+  }
+  return { omega_Faf_final:parseFloat(wF.toFixed(1)), totalSpinDeltaOpp:tDrain, hitsActive:hits };
+}
+// drainSpinCycle(5, 500, 300) → {wFaf:420.8, totalOpp:-89, hits:5}
+// drainSpinCycle(5, 300, 400) → {wFaf:400.0, totalOpp:0,   hits:0}  ← Faf already faster
+// drainSpinCycle(3, 600, 200) → {wFaf:~301,  totalOpp:-~84, hits:3}
+```
+
+---
+
+## Case 1187 — [COMBO] Fafnir Surge (↓ ↑ J)
+
+**Franchise bey:** Free De La Hoya's Drain Fafnir 8 Nothing — Fafnir rubber layer active (left-spin)
+**Required part:** `fafnirRubberLayer`
+**Sequence:** ↓ ↑ J (moveDown + moveUp + attack)
+**Type restriction:** universal
+**Cost:** 0 power (free)
+
+Nothing driver's near-zero contact friction allows approach from an extremely low contact plane (↓ — Fafnir skims the floor, aligning the rubber layer's widest contact arc with the opponent's base-level contact ring); a sudden upward surge (↑ — Nothing tip yields as orbital velocity rises, lifting the approach angle to rubber-contact height) angles the rubber outer ring into the opponent's AR; J delivers the rubber contact strike. The rubber absorbs partial impact and converts it to Fafnir spin (mini-drain even in combo form, no special active). Free cost — Nothing driver orbital approach shift is inherent.
+
+```
+Main hit (J at surge apex):
+  spinDelta:       −25  (rubber contact — sustained, softer than blade)
+  dmgMult:         1.16×
+  lockMs:          20
+  absorbGain:      +12 ω  (partial rubber spin steal — mini-drain on hit)
+  windowMs:        600
+  cooldownMs:      2500
+Ceiling: 1.16×≤1.5×; 20ms≤300ms; 25≤50 spinDelta; absorbGain self-recovery;
+  no invulnerability; no AoE [check]. Cost 0.
+```
+
+```typescript
+function fafnirSurgeCombo(jHit: boolean): { spinDelta:number; dmgMult:number; lockMs:number; absorbGain_omega:number } {
+  return jHit
+    ? { spinDelta:-25, dmgMult:1.16, lockMs:20, absorbGain_omega:12 }
+    : { spinDelta:-12, dmgMult:1.06, lockMs:0,  absorbGain_omega:0  };
+}
+// fafnirSurgeCombo(true)  → {spin:-25, dmg:1.16×, lock:20ms, absorb:+12ω}
+// fafnirSurgeCombo(false) → {spin:-12, dmg:1.06×, lock:0ms,  absorb:0   }
+```
+
+---
+
+## Case 1188 — [GIMMICK] Ray Kon's Driger S — Tiger Defenser Orbital Contact Geometry and Metal Change Base Auto-Mode Evasion Kinematics
+
+**Franchise context.** Ray Kon (Driger S), original Beyblade Plastic Generation (Takara-Tomy). **Confirmed from part list — Driger S:** AR: Tiger Defenser / WD: Eight Heavy / BB: Metal Change Base. Driger Shadow is exclusive to the GBA video game "Bakuten Shoot Beyblade 2002 — Fierce Battle! Team Battle!!" (回避技 = Evasion Technique, Lv.20). The **Tiger Defenser AR** has four tiger-claw blade protrusions at 90° spacing with inward-curved claw geometry (θ_claw ≈ 20° inward from tangent [M]) that deflects off-angle contacts. The **Metal Change Base** is a bearing-type BB that auto-switches between sharp pin (gyroscopic stability, near-frictionless) and metal bearing (orbital stamina) contact modes based on impact force — the Lv.20 Driger Shadow evasion exploits the Metal Change Base's low-friction bearing mode for the rapid orbital redirect.
+
+**Assembly (confirmed from part list):**
+
+**AR: Tiger Defenser — confirmed**
+Four tiger-claw protrusions at 90° spacing; inward-curved claw contacts deflect incoming attacks at glancing angles:
+  m_ar ≈ 20.0 g [M]; r_outer ≈ 36 mm [M]; r_inner ≈ 12 mm [M]
+  I_ar = (0.020/2)(0.036² + 0.012²) = 0.010 × 1.440×10⁻³ = 1.440×10⁻⁵ kg⋅m² [M]
+  n_claws = 4; θ_claw = 20° inward [M]; deflect fraction: sin(20°) = 0.342 [M]
+
+**WD: Eight Heavy — confirmed**
+8-point heavy weight disk:
+  m_wd ≈ 19.0 g [M]; r_outer ≈ 19 mm [M]; r_inner ≈ 9 mm [M]
+  I_wd = (0.019/2)(0.019² + 0.009²) = 0.0095 × 4.42×10⁻⁴ = 4.199×10⁻⁶ kg⋅m² [M]
+
+**BB: Metal Change Base — confirmed**
+Auto-switching tip: sharp pin (μ ≈ 0.06 [M]) at high spin → metal bearing (μ ≈ 0.02 [M]) under force/impact. Evasion physics: when Driger Shadow's redirect force is applied, the bearing mode activates (near-zero friction), allowing very low energy cost for the 45° orbital redirect:
+  m_bb ≈ 5.5 g [M]; I_bb ≈ 0.450×10⁻⁶ kg⋅m²
+  dω/dt_sharp = −1.2 rad/s² [M]; dω/dt_bearing = −0.5 rad/s² [M]; dω/dt_avg ≈ −4.5 rad/s² [M] (blended)
+
+**SG + Bit [M]:** m ≈ 4.0 g; I ≈ 0.350×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total = 20.0 + 19.0 + 5.5 + 4.0 = 48.5 g [M]
+  I_total = 14.400 + 4.199 + 0.450 + 0.350 = 19.399×10⁻⁶ ≈ 1.940×10⁻⁵ kg⋅m² [M]
+  ω₀ = 750 rad/s [M]; KE₀ = 0.5 × 1.940×10⁻⁵ × 750² = 5.456 J [M]
+  Spin decay (Metal Change, μ_avg = dω/dt_avg = −4.5 rad/s² [M])
+
+**Evasion redirect physics (Metal Change bearing mode active during redirect):**
+  v_orbital = 2.0 m/s [M] (standard Plastic Gen orbital speed); θ_evade = 45° [M]
+  F_redirect = m × v × sin(45°) / t_evade = 0.0485 × 2.0 × 0.707 / 0.080 = 0.857 N [M]
+  (achievable under bearing mode — no static friction to overcome)
+  Shadow wake at vacated position: decays at τ_wake ≈ 50 ms [M]; impact on attacker hitting wake = 30% of incoming force [M]
+  Counter window after evade: t_counter = 200 ms [M] (Tiger Defenser claw positioned for rear/side strike)
+
+```typescript
+function drigerShadowKinematics(
+  v_orbital: number, incomingImpulse_eu: number
+): { evadeForce_N: number; wakeImpulse_eu: number; counterWindow_ms: number } {
+  const m=0.0485, theta=45*Math.PI/180, t=0.080;
+  const F_red = m * v_orbital * Math.sin(theta) / t;
+  const wake = Math.round(incomingImpulse_eu * 0.30);
+  return { evadeForce_N:parseFloat(F_red.toFixed(3)), wakeImpulse_eu:wake, counterWindow_ms:200 };
+}
+// drigerShadowKinematics(2.0, 400) → {F:0.857N, wake:120eu, counter:200ms}
+// drigerShadowKinematics(2.0, 600) → {F:0.857N, wake:180eu, counter:200ms}
+// drigerShadowKinematics(3.5, 400) → {F:1.500N, wake:120eu, counter:200ms}  ← at BeySpirit force limit
+```
+
+---
+
+## Case 1189 — [SPECIAL] Driger Shadow
+
+**Franchise move.** Driger Shadow (ドライガーシャドー) — Evasion Technique (回避技) by Ray Kon and Driger S, available at Driger Lv.20 in Bakuten Shoot Beyblade 2002 — Fierce Battle! Team Battle!! (GBA). Driger rapidly redirects its orbital path by 45° before the opponent's attack lands; the opponent's bey strikes the trailing angular wake (the "shadow" in the vacated position) at 30% force; if the player inputs J within the 200ms counter window, Tiger Defenser fires a Tiger Claw counter strike from the new orbital position.
+
+NOTE: GBA video game exclusive — mechanics represent the Bakuten Shoot GBA 2002 Evasion Technique (回避技) system adapted to case study physics format. Metal Change Base bearing mode activates for near-frictionless evasion redirect. No anime BeySpirit override note applies — this is a game-engine mechanical technique, not an anime transcendence event.
+
+**Activation:** Tap J within 150 ms before projected contact (correct anticipation window [M]).
+
+**Evasion Phase (80 ms):**
+Metal Change Base auto-switches to bearing mode; Driger redirects 45° [M]:
+  Incoming force on Driger: reduced to 30% (shadow wake takes 70% of hit) [M]
+  drigerSpinDelta_actual: −0.30 × normal_loss [M] (partial evasion)
+  Driger invulnerable for 80ms evasion window [M]
+
+**Counter Window (200 ms after evasion):**
+  J input within window → Tiger Defenser Tiger Claw strike from new position (rear/side angle):
+    spinDelta: −42 [M]; impulse: 520 eu [M]; dmgMult: 1.40× [M]; lockMs: 50 [M]
+    (inward claw geometry at θ_claw = 20° delivers deeper disruption than frontal contact)
+  No J input: repositioned only; no counter damage [M]
+
+**Failed evasion (input outside 150ms window):**
+  Full hit lands on Driger; no counter window [M]
+  Self cost: powerCost 60 (cheapest special in CS13 — pure evasion); spinCost −20; Cooldown: 6500 ms
+
+```typescript
+function drigerShadow(
+  inputTimingMs: number,  // ms before contact; 0–150 = valid window; <0 or >150 = miss
+  incomingImpulse_eu: number
+): { evaded: boolean; drigerSpinDeltaActual: number; counterWindow_ms: number; counterDmgMult: number } {
+  const evaded = inputTimingMs >= 0 && inputTimingMs <= 150;
+  const spinScale = 0.12;  // rough impulse-to-spinDelta scaling
+  const drigerDelta = evaded
+    ? Math.round(-0.30 * incomingImpulse_eu * spinScale)
+    : Math.round(-incomingImpulse_eu * spinScale);
+  return { evaded, drigerSpinDeltaActual:drigerDelta, counterWindow_ms:evaded?200:0, counterDmgMult:evaded?1.40:0 };
+}
+// drigerShadow(100, 400) → {evaded:true,  drigerSpin:-14, counter:200ms, dmg:1.40×}  ← good input
+// drigerShadow(200, 400) → {evaded:false, drigerSpin:-48, counter:0ms,   dmg:0}      ← too late
+// drigerShadow(-10, 400) → {evaded:false, drigerSpin:-48, counter:0ms,   dmg:0}      ← too early
+```
+
+---
+
+## Case 1190 — [COMBO] Tiger Shadow (← K J)
+
+**Franchise bey:** Ray Kon's Driger S — Tiger Defenser AR active
+**Required part:** `drigerTigerDefenserAR`
+**Sequence:** ← K J (moveLeft + defense + attack)
+**Type restriction:** defense
+**Cost:** 0 power (free)
+
+Driger S shifts leftward out of the opponent's approach vector (← — Metal Change Base bearing mode lowers lateral friction; orbital path shifts left); Tiger Defenser claw braces at guard contact for deflection positioning (K — inward claw geometry intercepts at 20° deflection angle, partially absorbing incoming contact force); then drives the adjacent claw counter at the new position (J — Tiger claw strike from left-offset angle). A combo-level evade-then-counter using skill-based timing instead of the Driger Shadow evasion system. Defense-type — the K intercept is the keystone. Free cost.
+
+```
+Main hit (J after left-guard):
+  spinDelta:       −30
+  dmgMult:         1.22×
+  lockMs:          35
+  deflectBonus:    50 eu  (K claw deflects incoming; partial incoming damage reduction ~25% for 300ms)
+  windowMs:        550
+  cooldownMs:      3000
+Ceiling: 1.22×≤1.5×; 35ms≤300ms; 30≤50 spinDelta; deflectBonus 50eu positional;
+  no invulnerability; no AoE [check]. Cost 0.
+```
+
+```typescript
+function tigerShadowCombo(jHit: boolean): { spinDelta:number; dmgMult:number; lockMs:number; deflectBonus_eu:number } {
+  return jHit
+    ? { spinDelta:-30, dmgMult:1.22, lockMs:35, deflectBonus_eu:50 }
+    : { spinDelta:-15, dmgMult:1.08, lockMs:0,  deflectBonus_eu:0  };
+}
+// tigerShadowCombo(true)  → {spin:-30, dmg:1.22×, lock:35ms, deflect:50eu}
+// tigerShadowCombo(false) → {spin:-15, dmg:1.08×, lock:0ms,  deflect:0eu }
+```
+
+---
+
+## Case 1191 — [GIMMICK] Rick Anderson's Rock Bison — Double Horn Smash Geometry, Ten Heavy Inertial Mass, and Right Engine Gear Circle Defenser Orbital Drive
+
+**Franchise context.** Rick Anderson (Rock Bison), Beyblade V-Force era (Plastic Generation, Takara-Tomy). **Confirmed from part list — Rock Bison:** AR: Double Horn / WD: Ten Heavy / SG: Right Engine Gear (Circle Defenser) / BB: Normal Base (Rock Bison Version). The **Double Horn AR** features two large horn protrusions at 180° — heavy smash-type contacts with high impact mass concentration. The **Ten Heavy WD** provides maximum concentrated inertial mass. The **Right EG (Circle Defenser)** fires in the CW direction (same as Rock Bison's right-spin) with a circular defender CEW — on firing, the Circle Defenser creates a wide-radius circular contact disc, providing defensive orbital momentum rather than an attack thrust. Drop Rock (Case 1174) exploits the Right EG's CW spin-boost to launch the BeySpirit rock sphere upward, converting stored spring energy into aerial height.
+
+**Assembly (confirmed from part list):**
+
+**AR: Double Horn — confirmed**
+Two massive horn protrusions at 180° spacing; each horn angled for heavy smash contact (θ_horn ≈ 25° from tangent [M]) — high concentrated mass at horn tips:
+  m_ar ≈ 24.0 g [M]; r_outer ≈ 39 mm [M]; r_inner ≈ 14 mm [M]
+  I_ar = (0.024/2)(0.039² + 0.014²) = 0.012 × (1.521×10⁻³ + 1.96×10⁻⁴) = 0.012 × 1.717×10⁻³ = 2.060×10⁻⁵ kg⋅m² [M]
+  n_horns = 2; f_horn = 2 × 750 / (2π) = 238.7 Hz [M] >> 60 Hz CFF → blur in normal play
+
+**WD: Ten Heavy — confirmed**
+10-point heavy weight disk; concentrated mass for high inertia:
+  m_wd ≈ 22.0 g [M]; r_outer ≈ 20 mm [M]; r_inner ≈ 8 mm [M]
+  I_wd = (0.022/2)(0.020² + 0.008²) = 0.011 × 4.64×10⁻⁴ = 5.104×10⁻⁶ kg⋅m² [M]
+
+**SG: Right Engine Gear (Circle Defenser) — confirmed**
+EG fires CW (same direction as Rock Bison's right spin) with Circle Defenser CEW: circular defensive disc contact providing a wide-radius ground sweep when the EG fires; fires CW → spin boost (same direction):
+  m_EG ≈ 8.0 g [M]; I_EG ≈ 0.900×10⁻⁶ kg⋅m²; E_spring ≈ 0.65 J [M]
+  μ_CircleDefenser ≈ 0.20 [M]; r_contact ≈ 5.0 mm [M]
+  Circle Defenser fire direction: CW → for Drop Rock BeySpirit upward redirect, this CW spin energy is channelled vertically via BeySpirit (anime override)
+
+**BB: Normal Base (Rock Bison Version) — confirmed**
+Standard base housing the EG mechanism; no clutch-timing system (unlike FCB) — EG fires under BeySpirit trigger in Drop Rock:
+  m_bb ≈ 4.5 g [M]; I_bb ≈ 0.380×10⁻⁶ kg⋅m²
+
+**Assembly [M]:**
+  m_total = 24.0 + 22.0 + 8.0 + 4.5 = 58.5 g [M]
+  I_total = 20.600 + 5.104 + 0.900 + 0.380 = 26.984×10⁻⁶ ≈ 2.698×10⁻⁵ kg⋅m² [M]
+  ω₀ = 750 rad/s [M]; KE₀ = 0.5 × 2.698×10⁻⁵ × 750² = 7.588 J [M]
+  Spin decay (Circle Defenser, μ = 0.20, r = 5.0 mm):
+    dω/dt = −(0.20 × 0.0585 × 9.81 × 0.005) / 2.698×10⁻⁵ = −21.3 rad/s² [M]
+
+**Drop Rock rock-sphere accumulation (BeySpirit physics):**
+  Rock Bison's BeySpirit manifests the earth element as rock fragments orbiting the spinning bey:
+  m_rocks ≈ 1.5 kg [M] (BeySpirit-sustained rock sphere; anime scale)
+  m_sphere = m_Bison + m_rocks = 0.0585 + 1.5 = 1.559 kg [M]
+  Right EG CW fire (BeySpirit redirected vertically as drop-launch energy):
+  E_launch = E_spring + k_DropRock × KE₀ = 0.65 + 0.80 × 7.588 = 6.72 J [M]
+  (k_DropRock = 0.80 — BeySpirit converts 80% of Bison's rotational KE to vertical launch energy [M])
+  h_apex = E_launch / (m_sphere × g) = 6.72 / (1.559 × 9.81) = 6.72 / 15.29 = 0.439 m [M] (physical baseline)
+  BeySpirit anime override: h_apex_anime = 3.0 m [M] (as visible in images — significant height, meteor-like drop)
+  v_impact = √(2 × 9.81 × 3.0) = √(58.86) = 7.67 m/s [M]
+  p_sphere = 1.559 × 7.67 = 11.96 kg⋅m/s [M] (enormous linear momentum from combined rock mass)
+
+```typescript
+function dropRockSphere(
+  h_apex_m: number, m_rocks_kg: number
+): { m_sphere_kg: number; v_impact_m_s: number; p_sphere_kg_m_s: number; KE_impact_J: number } {
+  const m_Bison=0.0585, m=m_Bison+m_rocks_kg, g=9.81;
+  const v=Math.sqrt(2*g*h_apex_m);
+  return { m_sphere_kg:m, v_impact_m_s:parseFloat(v.toFixed(2)), p_sphere_kg_m_s:parseFloat((m*v).toFixed(3)), KE_impact_J:parseFloat((0.5*m*v**2).toFixed(3)) };
+}
+// dropRockSphere(3.0, 1.5) → {m:1.559kg, v:7.67m/s, p:11.958 kg⋅m/s, KE:45.80J}
+// dropRockSphere(2.0, 1.5) → {m:1.559kg, v:6.26m/s, p:9.759 kg⋅m/s,  KE:30.55J}
+// dropRockSphere(3.0, 0.5) → {m:0.559kg, v:7.67m/s, p:4.287 kg⋅m/s,  KE:16.44J}
+```
+
+---
+
+## Case 1192 — [SPECIAL] Drop Rock
+
+**Franchise move.** Drop Rock — Special Move by Rick Anderson, Rock Bison (Beyblade V-Force, Plastic Generation). Rock Bison is covered in bits of rock accumulating under BeySpirit earth power, forming a massive rock sphere; the Right EG fires (BeySpirit redirects CW spring energy vertically), launching the rock-encased bey h = 3.0 m [M] into the air; the rock meteor falls and strikes the opponent with the combined momentum of a 1.559 kg sphere at v = 7.67 m/s [M]. Rick first used this move against Michael.
+
+NOTE: special move overrides all EG/clutch mechanical state; the Right EG spring re-engages under BeySpirit power regardless of whether it has already fired this match; BeySpirit channels the CW lateral spring force vertically into the aerial launch (anime physics override — normal EG fires laterally in orbital direction; here fired upward).
+
+**Activation:** Hold J. Rock fragments begin accumulating (BeySpirit earth manifestation). Full sphere forms over 1000 ms charge window.
+
+**Phase 1 — Rock Accumulation (1000 ms):**
+Rock fragments spiral inward under BeySpirit centripetal hold; sphere radius r_sphere ≈ 100 mm [M] by end of accumulation. Both Bison and opponent within r ≤ 60 px receive pebble debris:
+  debrisSpinDelta: −8; debrisImpulse: 80 eu [M]
+  Bison invulnerable during accumulation [M]
+
+**Phase 2 — EG Launch (100 ms):**
+Right EG fires; BeySpirit redirects CW → vertical upward thrust:
+  launchImpulse_vertical ≈ 0.070 N⋅s [M] (spring); total including BeySpirit KE conversion → h_apex = 3.0 m [M]
+
+**Phase 3 — Meteor Descent and Impact (800 ms total):**
+v_impact = 7.67 m/s [M]; m_sphere = 1.559 kg [M]:
+  Primary impact: chargeImpulse 2800 eu [M]; spinDelta −90 [M]; dmgMult 2.3× [M]
+  Rock-sphere shatters on impact: AoE r_shrapnel ≈ 150 px [M]
+    adjacentShrapnelImpulse: 700 eu [M]; adjacentSpinDelta: −30 [M]
+  Ground shockwave: baseImpulse 1200 eu [M]; spinDelta −45 [M] (earth-element ground tremor)
+  ringOutRisk: extreme (p = 11.96 kg⋅m/s [M] — highest single-hit linear momentum in CS13 to date)
+
+  Self cost: powerCost 110; spinCost −55; Cooldown: 9500 ms
+  Partial charge (< 1000 ms accumulation): rock sphere incomplete (lower m_rocks); scale p and eu proportionally [M]
+
+```typescript
+function dropRock(chargeCompleteFraction: number): {
+  m_sphere_kg: number; v_impact_m_s: number; primaryImpulse_eu: number;
+  spinDelta: number; shrapnelImpulse_eu: number; dmgMult: number
+} {
+  const f=Math.min(chargeCompleteFraction, 1.0);
+  const m_sphere=0.0585+1.5*f, v=7.67*Math.sqrt(f);
+  const imp=Math.round(2800*f);
+  return {
+    m_sphere_kg:parseFloat(m_sphere.toFixed(3)),
+    v_impact_m_s:parseFloat(v.toFixed(2)),
+    primaryImpulse_eu:imp,
+    spinDelta:Math.round(-90*f),
+    shrapnelImpulse_eu:Math.round(700*f),
+    dmgMult:parseFloat((1.0+1.3*f).toFixed(2)),
+  };
+}
+// dropRock(1.0) → {m:1.559kg, v:7.67m/s, imp:2800eu, spin:-90, shrapnel:700eu, dmg:2.30×}
+// dropRock(0.7) → {m:1.108kg, v:6.42m/s, imp:1960eu, spin:-63, shrapnel:490eu, dmg:1.91×}
+// dropRock(0.4) → {m:0.659kg, v:4.85m/s, imp:1120eu, spin:-36, shrapnel:280eu, dmg:1.52×}
+```
+
+---
+
+## Case 1193 — [COMBO] Horn Charge (→ J ↓)
+
+**Franchise bey:** Rick Anderson's Rock Bison — Double Horn AR + Right EG Circle Defenser active
+**Required part:** `rockBisonDoubleHornAR`
+**Sequence:** → J ↓ (moveRight + attack + moveDown)
+**Type restriction:** universal
+**Cost:** 15 power
+
+Rock Bison's Ten Heavy WD provides strong rightward orbital momentum (→ — heaviest WD in CS13 to date; mass × radius creates high orbital inertia); J delivers the Double Horn smash contact at peak orbital approach speed; the horn's mass-concentrated tip continues downward through the contact (↓ — natural horn trajectory sweeps downward from contact apex, pinning the opponent for a grinding follow-through). Mimics a single-point version of Drop Rock's aerial descent combined with Double Horn's heavy smash geometry. Cost 15 — requires power to leverage the Ten Heavy orbital inertia.
+
+```
+Main hit (J at orbital peak + ↓ follow-through):
+  spinDelta:       −42
+  dmgMult:         1.38×
+  lockMs:          60
+  rockPressure:    80 eu  (downward grinding follow-through from horn trajectory — vertical component)
+  windowMs:        550
+  cooldownMs:      3500
+Ceiling: 1.38×≤1.5×; 60ms≤300ms; 42≤50 spinDelta; rockPressure 80eu positional;
+  no invulnerability; no AoE [check]. Cost 15.
+```
+
+```typescript
+function hornChargeCombo(jHit: boolean): { spinDelta:number; dmgMult:number; lockMs:number; rockPressure_eu:number } {
+  return jHit
+    ? { spinDelta:-42, dmgMult:1.38, lockMs:60, rockPressure_eu:80 }
+    : { spinDelta:-20, dmgMult:1.12, lockMs:0,  rockPressure_eu:0  };
+}
+// hornChargeCombo(true)  → {spin:-42, dmg:1.38×, lock:60ms, rock:80eu}
+// hornChargeCombo(false) → {spin:-20, dmg:1.12×, lock:0ms,  rock:0eu }
+```
+
+
+---
+
+*Cases continue from Case 1194 as further franchise moves are provided.*
 
 ---

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { SearchableSelect } from "@/components/admin/SearchableSelect";
@@ -148,7 +148,7 @@ export default function StatDefsPage() {
   })).filter(g => g.items.length > 0);
 
   return (
-    <div className="p-8 max-w-[900px]">
+    <div className="p-4 sm:p-8 max-w-[900px]">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="m-0 text-[22px] text-text">Stat Defs</h1>

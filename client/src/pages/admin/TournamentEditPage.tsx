@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc, serverTimestamp, Timestamp, collection, getDocs } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
@@ -149,7 +149,7 @@ export function TournamentEditPage() {
           <Field label="Description">
             <textarea className={inputCls + " resize-y min-h-[72px]"} value={form.description} onChange={e => set("description", e.target.value)} />
           </Field>
-          <div className="grid grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <Field label="Type">
               <SearchableSelect value={form.type} options={[
                 { value: "pvp", label: "PVP" },
@@ -172,7 +172,7 @@ export function TournamentEditPage() {
         </Section>
 
         <Section title="Schedule">
-          <div className="grid grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <Field label="Start Time *">
               <input type="datetime-local" className={inputCls} value={form.scheduledStartTime} onChange={e => set("scheduledStartTime", e.target.value)} />
             </Field>

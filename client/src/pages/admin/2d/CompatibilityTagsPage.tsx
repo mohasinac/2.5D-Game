@@ -175,7 +175,7 @@ export function CompatibilityTagsPage() {
     });
 
   return (
-    <div className="p-7 max-w-[860px]">
+    <div className="p-4 sm:p-7 max-w-[860px]">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-[21px] font-bold text-text m-0">Compatibility Tags</h1>

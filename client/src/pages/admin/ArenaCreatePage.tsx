@@ -98,7 +98,7 @@ export function ArenaCreatePage() {
 
         <div>
           <label className="block text-xs text-muted mb-1.5">Shape</label>
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
             {shapes.map(s => (
               <button key={s.value} onClick={() => set("shape", s.value as ArenaShape)}
                 className={[
@@ -118,7 +118,7 @@ export function ArenaCreatePage() {
 
         <div>
           <label className="block text-xs text-muted mb-1.5">Theme</label>
-          <div className="grid grid-cols-5 gap-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1.5">
             {themes.map(theme => (
               <button key={theme} onClick={() => set("theme", theme)}
                 className={[

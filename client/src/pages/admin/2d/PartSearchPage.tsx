@@ -36,7 +36,7 @@ export function PartSearchPage() {
       : PART_LINKS.filter((p) => p.slug === typeFilter);
 
   return (
-    <div className="p-8 max-w-[900px]">
+    <div className="p-4 sm:p-8 max-w-[900px]">
       <div className="mb-6">
         <h1 className="text-[22px] font-bold text-theme-text m-0">Part Search</h1>
         <p className="text-theme-muted text-[13px] mt-1">
@@ -64,7 +64,7 @@ export function PartSearchPage() {
         </div>
       </div>
 
-      <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(240px,1fr))]">
+      <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(240px,1fr))]">
         {visibleLinks.map((pt) => (
           <Link
             key={pt.slug}

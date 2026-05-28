@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db, COLLECTIONS } from "@/lib/firebase";
 import { useGameDataStore, type TurretAttackTypeDoc } from "@/stores/gameDataStore";
@@ -69,7 +69,7 @@ export function TurretAttackTypesPage() {
   const filtered = query ? items.filter(i => i.label.toLowerCase().includes(query.toLowerCase()) || i.id.includes(query)) : items;
 
   return (
-    <div className="page-shell p-6">
+    <div className="page-shell p-4 sm:p-6">
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-[22px] font-bold text-theme-text">Turret Attack Types</h1>
