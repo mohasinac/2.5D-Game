@@ -50,22 +50,31 @@ async function setViewport(page, vp) {
   await page.setViewport({ width: vp.width, height: vp.height, isMobile: vp.width < 600 });
 }
 
-async function clickText(page, regex, { touch = false } = {}) {
+async function clickText(page, regex) {
   const buttons = await page.$$("button,a,[role=button]");
   for (const btn of buttons) {
     const text = await page.evaluate((el) => el.textContent?.trim() ?? "", btn);
     if (regex.test(text)) {
-      const box = await btn.boundingBox();
-      if (!box) continue;
-      if (touch) {
-        await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
-      } else {
-        await btn.click();
-      }
+      await page.evaluate((el) => el.click(), btn); // evaluate-click bypasses overlay z-index
       return true;
     }
   }
   return false;
+}
+
+// Wait up to timeoutMs for a non-disabled button matching regex; returns the handle or null
+async function waitForEnabledButton(page, regex, timeoutMs = 8000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const buttons = await page.$$("button");
+    for (const btn of buttons) {
+      const text = await page.evaluate((el) => el.textContent?.trim() ?? "", btn);
+      const disabled = await page.evaluate((el) => el.disabled, btn);
+      if (regex.test(text) && !disabled) return btn;
+    }
+    await sleep(400);
+  }
+  return null;
 }
 
 const pressKey = async (page, key, ms = 150) => {
@@ -201,11 +210,12 @@ async function run() {
 
   // Navigate to AI setup
   await page.goto(`${BASE_URL}/game/2d/ai-battle`, { waitUntil: "domcontentloaded", timeout: 20_000 });
-  await sleep(2500); // wait for Firestore data (beyblades/arenas) to load
+  // Wait for Firestore to load beyblades/arenas (page auto-selects first items)
+  await sleep(3500);
 
   // Pick Medium difficulty
   console.log("  👆  Selecting Medium difficulty…");
-  await clickText(page, /medium/i, { touch: true });
+  await clickText(page, /medium/i);
   await sleep(300);
 
   // Pick BO1
@@ -213,42 +223,19 @@ async function run() {
   await clickText(page, /^bo1$/i);
   await sleep(300);
 
-  // Select first beyblade from the player picker (click first list item)
-  console.log("  👆  Selecting player beyblade…");
-  try {
-    // EntityPicker renders a list — click the first selectable item
-    const items = await page.$$('[role="option"], li[data-id], button[data-bey], .entity-item, [class*="cursor-pointer"]');
-    for (const item of items) {
-      const text = await page.evaluate((el) => el.textContent?.trim() ?? "", item);
-      if (text.length > 2) { // skip empty/icon-only elements
-        await item.click();
-        console.log("    ✅  Selected player bey:", text.slice(0, 30));
-        break;
-      }
-    }
-  } catch (e) { console.log("  ⚠️  bey select:", e.message); }
-  await sleep(500);
-  await ss(page, "battle-D-setup-bey");
-
   await ss(page, "battle-D-setup-ready");
 
-  // Start — use regular click (not touch) to ensure navigation fires
-  console.log("  ▶️   Starting battle…");
+  // Wait for Start button to be enabled (Firestore data should already be there)
+  console.log("  ⏳  Waiting for Start button to be enabled…");
+  const startBtn = await waitForEnabledButton(page, /start/i, 10_000);
   let started = false;
-  try {
-    const buttons = await page.$$("button");
-    for (const btn of buttons) {
-      const text = await page.evaluate((el) => el.textContent?.trim() ?? "", btn);
-      const disabled = await page.evaluate((el) => el.disabled, btn);
-      if (/^start\b/i.test(text) && !disabled) {
-        await btn.click();
-        console.log("  ✅  Clicked Start:", text);
-        started = true;
-        break;
-      }
-    }
-    if (!started) console.log("  ⚠️  Start button not found or disabled (selections missing)");
-  } catch (e) { console.log("  ⚠️  start:", e.message); }
+  if (startBtn) {
+    await page.evaluate((el) => el.click(), startBtn);
+    console.log("  ✅  Clicked Start");
+    started = true;
+  } else {
+    console.log("  ⚠️  Start button not enabled after 10 s — check Firestore data");
+  }
   await sleep(800);
 
   // Wait for game page — longer timeout since server cold-start
@@ -337,16 +324,21 @@ async function run() {
 
   await setViewport(page, VIEWPORTS.landscape);
   await page.goto(`${BASE_URL}/game/2d/ai-battle`, { waitUntil: "domcontentloaded", timeout: 20_000 });
-  await sleep(1500);
+  await sleep(3500); // wait for Firestore auto-selection
 
-  await clickText(page, /medium/i, { touch: true });
+  await clickText(page, /medium/i);
   await sleep(300);
   await clickText(page, /^bo1$/i);
   await sleep(300);
   await ss(page, "battle-E-setup");
 
-  const startedE = await clickText(page, /^start\b/i, { touch: true });
-  if (!startedE) await page.keyboard.press("Enter");
+  const startBtnE = await waitForEnabledButton(page, /start/i, 10_000);
+  if (startBtnE) {
+    await page.evaluate((el) => el.click(), startBtnE);
+    console.log("  ✅  Clicked Start (landscape)");
+  } else {
+    console.log("  ⚠️  Start button not enabled (landscape)");
+  }
 
   try {
     await page.waitForFunction(

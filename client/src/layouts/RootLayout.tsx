@@ -10,13 +10,19 @@ import { TouchControlsGBLayout } from "@/components/game/TouchControlsGBLayout";
 import { Settings } from "lucide-react";
 import toast from "react-hot-toast";
 
-const FULLSCREEN_GAME_PATHS = ["/game/tryout", "/game/battle/", "/game/ai-battle/play", "/rpg/game", "/rpg/battle"];
-function isFullScreenGame(pathname: string) {
-  return FULLSCREEN_GAME_PATHS.some(p => pathname.startsWith(p));
-}
-
-function isGameOrRpgRoute(pathname: string) {
-  return pathname.startsWith("/game") || pathname.startsWith("/rpg");
+// Play pages: active game sessions where GBC/GBA controls are needed.
+// Setup, lobby, list, and menu pages are excluded — controls would cover their interactive UI.
+function isGamePlayRoute(pathname: string): boolean {
+  const p = pathname;
+  return (
+    p.includes("/tryout/play")                                       ||  // /game/*/tryout/play
+    /\/(2d|2\.5d)\/tryout$/.test(p)                                  ||  // /game/2d/tryout (goes to TryoutGamePage)
+    p.includes("/ai-battle/play")                                    ||  // /game/*/ai-battle/play
+    (/\/battle\//.test(p) && !p.includes("/battle/lobby"))           ||  // /game/*/battle/:roomId (not lobby)
+    (/\/team-battle\//.test(p) && !p.includes("/team-battle/lobby")) ||  // /game/*/team-battle/:roomId (not lobby)
+    p.includes("/tournament/battle/")                                ||  // /game/*/tournament/battle/:tid/:mid
+    /^\/rpg\//.test(p)                                                   // /rpg/* game routes
+  );
 }
 
 function AuthChip() {
@@ -50,7 +56,7 @@ function AuthChip() {
 
 export function RootLayout() {
   const location = useLocation();
-  const hideAuth = isFullScreenGame(location.pathname);
+  const hideAuth = isGamePlayRoute(location.pathname);
 
   // Unlock Web Audio on the first user interaction anywhere in the app.
   // Browsers suspend AudioContext until a gesture fires; this lifts the block.
@@ -64,7 +70,7 @@ export function RootLayout() {
     };
   }, []);
 
-  const showControls = isGameOrRpgRoute(location.pathname);
+  const showControls = isGamePlayRoute(location.pathname);
 
   return (
     <GameProvider>
