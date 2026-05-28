@@ -144,7 +144,7 @@ async function run() {
     const buttons = await page.$$("button");
     for (const btn of buttons) {
       const text = await page.evaluate((el) => el.textContent, btn);
-      if (/start|launch|fight|play/i.test(text)) {
+      if (/^start\b/i.test(text.trim())) {
         const box = await btn.boundingBox();
         if (box) {
           await tap(page, box.x + box.width / 2, box.y + box.height / 2);
