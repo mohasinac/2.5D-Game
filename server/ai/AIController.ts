@@ -218,10 +218,10 @@ export class AIController {
         this.applyMoveDir(input, dx / dist, dy / dist);
       }
 
-      if (dist < 200) input.attack = true;
+      if (dist < 3200) input.attack = true;
 
       const spinRatio = ai.spin / ai.maxSpin;
-      if (dist < 150 && spinRatio < 0.5) input.defense = true;
+      if (dist < 2400 && spinRatio < 0.5) input.defense = true;
     }
 
     const dx = ai.x - cx;
@@ -273,7 +273,7 @@ export class AIController {
         const normX = dx / dist;
         const normY = dy / dist;
 
-        if (dist > 120) {
+        if (dist > 1920) {
           // #14: Hard — obstacle avoidance when approaching
           const dir = this.avoidObstacles(ai, normX, normY);
           this.applyMoveDir(input, dir.x, dir.y);
@@ -284,22 +284,22 @@ export class AIController {
         }
       }
 
-      if (dist < 180) input.attack = true;
+      if (dist < 2880) input.attack = true;
 
       const relVelX = nearest.velocityX - ai.velocityX;
       const relVelY = nearest.velocityY - ai.velocityY;
       const closingSpeed = -(relVelX * (nearest.x - ai.x) + relVelY * (nearest.y - ai.y)) / Math.max(dist, 1);
-      if (closingSpeed > 3 && dist < 200 && ai.power >= 10) {
+      if (closingSpeed > 3 && dist < 3200 && ai.power >= 10) {
         input.dodge = true;
       }
 
       const distFromCenter = Math.sqrt((ai.x - cx) ** 2 + (ai.y - cy) ** 2);
-      if (distFromCenter > r * 0.75 && dist < 200) {
+      if (distFromCenter > r * 0.75 && dist < 3200) {
         input.defense = true;
       }
 
       const spinRatio = ai.spin / ai.maxSpin;
-      if (ai.power >= 50 && dist < 250 && !this.specialMoveFired) {
+      if (ai.power >= 50 && dist < 4000 && !this.specialMoveFired) {
         input.specialTap = true;
         this.specialMoveFired = true;
       }
@@ -307,7 +307,7 @@ export class AIController {
       // Phase S: Hard AI — fire best eligible combo every 1s (60t) when in range
       if (this.pendingComboKeys.length > 0) {
         this.dequeuePendingCombo(input);
-      } else if (this.tickCounter - this.lastComboEvalTick >= 60 && dist < 300) {
+      } else if (this.tickCounter - this.lastComboEvalTick >= 60 && dist < 4800) {
         const slot = this.evaluateComboSlots(ai, nearest, "simple");
         if (slot) {
           this.stageCombo(slot);
@@ -362,15 +362,15 @@ export class AIController {
         const normX = dx / dist;
         const normY = dy / dist;
 
-        if (dist > 140) {
+        if (dist > 2240) {
           // Approach from the side that pushes opponent toward the wall.
           let preferX = normX;
           let preferY = normY;
           if (oppDistFromCenter > r * 0.45) {
             const pushNormX = oppDx / Math.max(oppDistFromCenter, 1);
             const pushNormY = oppDy / Math.max(oppDistFromCenter, 1);
-            const approachX = nearest.x - pushNormX * 80 - ai.x;
-            const approachY = nearest.y - pushNormY * 80 - ai.y;
+            const approachX = nearest.x - pushNormX * 1280 - ai.x;
+            const approachY = nearest.y - pushNormY * 1280 - ai.y;
             const aLen = Math.sqrt(approachX * approachX + approachY * approachY) || 1;
             preferX = approachX / aLen;
             preferY = approachY / aLen;
@@ -387,19 +387,19 @@ export class AIController {
       }
 
       // Attack inside a wider window than hard.
-      if (dist < 220) input.attack = true;
+      if (dist < 3520) input.attack = true;
 
       // Frame-perfect dodge: react to any incoming closing speed > 2.
       const relVelX = nearest.velocityX - ai.velocityX;
       const relVelY = nearest.velocityY - ai.velocityY;
       const closingSpeed = -(relVelX * (nearest.x - ai.x) + relVelY * (nearest.y - ai.y)) / Math.max(dist, 1);
-      if (closingSpeed > 2 && dist < 240 && ai.power >= 8) {
+      if (closingSpeed > 2 && dist < 3840 && ai.power >= 8) {
         input.dodge = true;
       }
 
       // Defense only when truly cornered; otherwise prefer offensive trade.
       const distFromCenter = Math.sqrt((ai.x - cx) ** 2 + (ai.y - cy) ** 2);
-      if (distFromCenter > r * 0.85 && dist < 180) {
+      if (distFromCenter > r * 0.85 && dist < 2880) {
         input.defense = true;
       }
 
@@ -425,10 +425,10 @@ export class AIController {
           slot = this.evaluateComboSlots(ai, nearest, "full", approachDirX, approachDirY);
         } else if (nearest && (nearest.beyTiltAngle ?? 0) > 35) {
           // Opponent is tilted — rush in for burst chance
-          if (dist < 300) {
+          if (dist < 4800) {
             slot = this.evaluateComboSlots(ai, nearest, "full", approachDirX, approachDirY);
           }
-        } else if (dist < 280) {
+        } else if (dist < 4480) {
           slot = this.evaluateComboSlots(ai, nearest, "full", approachDirX, approachDirY);
         }
 
@@ -468,11 +468,11 @@ export class AIController {
     ai: BeybladeSnapshot,
     dirX: number,
     dirY: number,
-    distance = 140,
+    distance = 2240,
   ): boolean {
     const obstacles = [...(ai.obstacles ?? []), ...(ai.pits ?? [])];
     if (obstacles.length === 0) return false;
-    const AI_RADIUS = 24; // physics px
+    const AI_RADIUS = 384; // physics units (24 cm * 16)
     for (const obs of obstacles) {
       // Check closest point on segment [ai → ai+dir*distance] to obs center.
       const toCx = obs.x - ai.x;
@@ -495,7 +495,7 @@ export class AIController {
     ai: BeybladeSnapshot,
     preferX: number,
     preferY: number,
-    distance = 140,
+    distance = 2240,
   ): { x: number; y: number } {
     if (!this.scanAhead(ai, preferX, preferY, distance)) return { x: preferX, y: preferY };
     const baseAngle = Math.atan2(preferY, preferX);

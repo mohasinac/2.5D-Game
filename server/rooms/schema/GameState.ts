@@ -684,8 +684,8 @@ export class ArenaState extends Schema {
 /**
  * Main game state - synchronizes between server and clients
  */
-// AoI filter: 1 cm = 24 px; inner zone radius = 60 cm = 1440 px.
-const AoI_INNER_PX = 60 * 24;
+// AoI filter: 1 cm = 24 px; physics scale = 16 px/Firestore-px; inner zone = 60 cm = 23040 physics units.
+const AoI_INNER_PX = 60 * 24 * 16;
 
 export class GameState extends Schema {
   // Phase 27: only send each beyblade to clients whose own bey is ≤60cm away
