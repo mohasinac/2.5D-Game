@@ -333,19 +333,19 @@ function GBCFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
         <div style={{ position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)', fontSize: 8, letterSpacing: 3, color: 'rgba(255,255,255,0.2)', fontWeight: 800, whiteSpace: 'nowrap' }}>BEYBLADE X</div>
       </div>
 
-      {/* SCREEN BEZEL */}
+      {/* SCREEN BEZEL — transparent centre, border ring only */}
       <div
-        style={{ position: 'fixed', left: cl - BEZEL_W, top: ct - BEZEL_W, width: size + BEZEL_W * 2, height: size + BEZEL_W * 2, background: BEZEL, borderRadius: 10, zIndex: 51, pointerEvents: 'none' }}
+        style={{ position: 'fixed', left: cl, top: ct, width: size, height: size, boxShadow: `0 0 0 ${BEZEL_W}px ${BEZEL}`, borderRadius: 6, zIndex: 51, pointerEvents: 'none', background: 'transparent' }}
       />
 
       {/* L SHOULDER (CHARGE) */}
       <div style={{ position: 'fixed', left: 0, top: ct - shh, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="l" label="L·CHG" hold w={shw} h={shh} />
+        <ShoulderTab side="l" label="CHG" hold w={shw} h={shh} />
       </div>
 
       {/* R SHOULDER (SPECIAL) */}
       <div style={{ position: 'fixed', right: 0, top: ct - shh, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="r" label="R·SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={shw} h={shh} />
+        <ShoulderTab side="r" label="SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={shw} h={shh} />
       </div>
 
       {/* BOTTOM BODY (below canvas) */}
@@ -358,21 +358,21 @@ function GBCFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
         <CrossDpad size={dp} />
       </div>
 
-      {/* B BUTTON (DEF) — upper-left of A */}
+      {/* DEF BUTTON — above ATK, shifted left */}
       <div style={{ position: 'fixed', right: bRight, top: bTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <GBBtn field="defense" label="B" size={btnB} bg="#0d3380" border="#2255bb" />
+        <GBBtn field="defense" label="DEF" size={btnB} bg="#0d3380" border="#2255bb" />
       </div>
 
-      {/* A BUTTON (ATK) — right */}
+      {/* ATK BUTTON — right */}
       <div style={{ position: 'fixed', right: aRight, top: aTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <GBBtn field="attack" label="A" size={btnA} bg="#881122" border="#cc2233" />
+        <GBBtn field="attack" label="ATK" size={btnA} bg="#881122" border="#cc2233" />
       </div>
 
-      {/* JUMP + DODGE + EXIT row (near bottom of strip) */}
+      {/* JMP + DGE + EXIT row (near bottom of strip) */}
       <div style={{ position: 'fixed', top: pillRowY, left: pillCx - sW * 1.8, zIndex: 60, pointerEvents: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
         <PillBtn label="EXIT" onTap={() => nav('/game')} w={sW} h={sH} accent />
-        <PillBtn label="SEL" field="jump"  w={sW} h={sH} />
-        <PillBtn label="STA" field="dodge" w={sW} h={sH} />
+        <PillBtn label="JMP" field="jump"  w={sW} h={sH} />
+        <PillBtn label="DGE" field="dodge" w={sW} h={sH} />
       </div>
 
       {/* Toggle bar */}
@@ -409,12 +409,12 @@ function GBAFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
   const dpLeft  = Math.max(4, cl - dp - 16);
   const dpTop   = (vh - dp) / 2;
 
-  // A button: near canvas right edge, vertically centred
+  // A (ATK): near canvas right edge, vertically centred
   const aLeft = cr + 16;
   const aTop  = (vh - btnA) / 2 + 8;
-  // B button: upper-left of A
-  const bLeft = aLeft + btnA * 0.05;
-  const bTop  = aTop - btnB * 0.8;
+  // B (DEF): to the upper-left of A — proper GBA diagonal offset, no overlap
+  const bLeft = aLeft - Math.round(btnA * 0.5);
+  const bTop  = aTop - Math.round(btnA * 0.55 + btnB * 0.5);
 
   // SELECT/START/EXIT: below canvas centre (or within gutter if no bottom space)
   const pillY = (vh - sH) / 2 + Math.round(size * 0.35);
@@ -437,17 +437,17 @@ function GBAFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
         <div style={{ position: 'fixed', left: 0, top: cb, right: 0, bottom: 0, background: BODY, zIndex: 52, pointerEvents: 'none' }} />
       )}
 
-      {/* SCREEN BEZEL */}
-      <div style={{ position: 'fixed', left: cl - BEZEL_W, top: ct - BEZEL_W, width: size + BEZEL_W * 2, height: size + BEZEL_W * 2, background: BEZEL, borderRadius: 10, zIndex: 51, pointerEvents: 'none' }} />
+      {/* SCREEN BEZEL — transparent centre, border ring only */}
+      <div style={{ position: 'fixed', left: cl, top: ct, width: size, height: size, boxShadow: `0 0 0 ${BEZEL_W}px ${BEZEL}`, borderRadius: 6, zIndex: 51, pointerEvents: 'none', background: 'transparent' }} />
 
       {/* L SHOULDER (CHARGE) — top of left gutter */}
       <div style={{ position: 'fixed', left: 0, top: 0, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="l" label="L  CHG" hold w={lShW} h={shh} />
+        <ShoulderTab side="l" label="CHG" hold w={lShW} h={shh} />
       </div>
 
       {/* R SHOULDER (SPECIAL) — top of right gutter */}
       <div style={{ position: 'fixed', right: 0, top: 0, zIndex: 60, pointerEvents: 'auto' }}>
-        <ShoulderTab side="r" label="SPC  R" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={rShW} h={shh} />
+        <ShoulderTab side="r" label="SPC" onTap={() => { touchInputState.specialTap = true; requestAnimationFrame(() => { touchInputState.specialTap = false; }); }} w={rShW} h={shh} />
       </div>
 
       {/* D-PAD (left gutter) */}
@@ -455,21 +455,21 @@ function GBAFrame({ canv, onHide, onKeys }: { canv: CanvInfo; onHide: () => void
         <CrossDpad size={dp} />
       </div>
 
-      {/* B BUTTON (DEF — upper-left of A) */}
+      {/* DEF BUTTON — upper-left of ATK, no overlap */}
       <div style={{ position: 'fixed', left: bLeft, top: bTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <GBBtn field="defense" label="B" size={btnB} bg="#0d3380" border="#2255bb" />
+        <GBBtn field="defense" label="DEF" size={btnB} bg="#0d3380" border="#2255bb" />
       </div>
 
-      {/* A BUTTON (ATK) */}
+      {/* ATK BUTTON */}
       <div style={{ position: 'fixed', left: aLeft, top: aTop, zIndex: 60, pointerEvents: 'auto' }}>
-        <GBBtn field="attack" label="A" size={btnA} bg="#881122" border="#cc2233" />
+        <GBBtn field="attack" label="ATK" size={btnA} bg="#881122" border="#cc2233" />
       </div>
 
-      {/* JUMP + DODGE + EXIT (centre-bottom area) */}
+      {/* JMP + DGE + EXIT (centre-bottom area) */}
       <div style={{ position: 'fixed', top: pillY, left: pillCx - sW * 1.8, zIndex: 60, pointerEvents: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
         <PillBtn label="EXIT" onTap={() => nav('/game')} w={sW} h={sH} accent />
-        <PillBtn label="SEL" field="jump"  w={sW} h={sH} />
-        <PillBtn label="STA" field="dodge" w={sW} h={sH} />
+        <PillBtn label="JMP" field="jump"  w={sW} h={sH} />
+        <PillBtn label="DGE" field="dodge" w={sW} h={sH} />
       </div>
 
       {/* Power LED */}
